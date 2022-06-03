@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/favicon/core/favicon_driver_observer.h"
 #include "content/public/browser/navigation_entry.h"
@@ -29,12 +28,14 @@ namespace task_manager {
 class RendererTask : public Task,
                      public favicon::FaviconDriverObserver {
  public:
-  RendererTask(const base::string16& title,
+  RendererTask(const std::u16string& title,
                const gfx::ImageSkia* icon,
                content::WebContents* web_contents);
-  RendererTask(const base::string16& title,
+  RendererTask(const std::u16string& title,
                const gfx::ImageSkia* icon,
                content::RenderFrameHost* subframe);
+  RendererTask(const RendererTask&) = delete;
+  RendererTask& operator=(const RendererTask&) = delete;
   ~RendererTask() override;
 
   // An abstract method that will be called when the event
@@ -48,11 +49,6 @@ class RendererTask : public Task,
   // can update their favicons.
   virtual void UpdateFavicon() = 0;
 
-  // An overridable method that will be called when the event
-  // WebContentsObserver::DidNavigateMainFrame() occurs, so that we can update
-  // their Rappor sample name when a navigation takes place.
-  virtual void UpdateRapporSampleName();
-
   // task_manager::Task:
   void Activate() override;
   void Refresh(const base::TimeDelta& update_interval,
@@ -61,7 +57,7 @@ class RendererTask : public Task,
   int GetChildProcessUniqueID() const override;
   void GetTerminationStatus(base::TerminationStatus* out_status,
                             int* out_error_code) const override;
-  base::string16 GetProfileName() const override;
+  std::u16string GetProfileName() const override;
   SessionID GetTabId() const override;
   int64_t GetV8MemoryAllocated() const override;
   int64_t GetV8MemoryUsed() const override;
@@ -87,7 +83,7 @@ class RendererTask : public Task,
 
  protected:
   // Returns the title of the given |web_contents|.
-  static base::string16 GetTitleFromWebContents(
+  static std::u16string GetTitleFromWebContents(
       content::WebContents* web_contents);
 
   // Returns the favicon of the given |web_contents| if any, and returns
@@ -98,14 +94,14 @@ class RendererTask : public Task,
   // Prefixes the given renderer |title| with the appropriate string based on
   // whether it's an app, an extension, incognito or a background page or
   // contents.
-  static const base::string16 PrefixRendererTitle(const base::string16& title,
+  static const std::u16string PrefixRendererTitle(const std::u16string& title,
                                                   bool is_app,
                                                   bool is_extension,
                                                   bool is_incognito,
                                                   bool is_background);
 
  private:
-  RendererTask(const base::string16& title,
+  RendererTask(const std::u16string& title,
                const gfx::ImageSkia* icon,
                content::WebContents* web_contents,
                content::RenderProcessHost* render_process_host);
@@ -133,12 +129,10 @@ class RendererTask : public Task,
 
   // The profile name associated with the browser context of the render view
   // host.
-  const base::string16 profile_name_;
+  const std::u16string profile_name_;
 
   base::TerminationStatus termination_status_;
   int termination_error_code_;
-
-  DISALLOW_COPY_AND_ASSIGN(RendererTask);
 };
 
 }  // namespace task_manager

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the sidebar uses the correct styling for mixed content subresources.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   const pageVisibleSecurityState = new Security.PageVisibleSecurityState(
@@ -16,16 +16,18 @@
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
         pageVisibleSecurityState);
 
-  var passive = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var passive = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   passive.mixedContentType = 'optionally-blockable';
   SecurityTestRunner.dispatchRequestFinished(passive);
 
-  var active = new SDK.NetworkRequest(0, 'http://bar.test', 'https://bar.test', 0, 0, null);
+  var active = SDK.NetworkRequest.create(
+      0, 'http://bar.test', 'https://bar.test', 0, 0, null);
   active.mixedContentType = 'blockable';
   SecurityTestRunner.dispatchRequestFinished(active);
 
   TestRunner.addResult('Origin sidebar:');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._sidebarTree.element);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().sidebarTree.element);
 
   TestRunner.completeTest();
 })();

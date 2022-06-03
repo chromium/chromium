@@ -4,7 +4,9 @@
 
 #include "media/capture/video/video_capture_buffer_handle.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/notreached.h"
 
 namespace media {
 

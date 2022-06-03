@@ -4,12 +4,14 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
@@ -18,6 +20,7 @@
 #include "media/media_buildflags.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
 namespace content {
@@ -60,7 +63,15 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupAudioAndVideoCall) {
   MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
 }
 
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, NetworkProcessCrashRecovery) {
+#if defined(OS_ANDROID)
+// Flaky on Android https://crbug.com/1099365
+#define MAYBE_NetworkProcessCrashRecovery DISABLED_NetworkProcessCrashRecovery
+#else
+#define MAYBE_NetworkProcessCrashRecovery NetworkProcessCrashRecovery
+#endif
+
+IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
+                       MAYBE_NetworkProcessCrashRecovery) {
   if (!IsOutOfProcessNetworkService())
     return;
   MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
@@ -91,15 +102,29 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        CanSetupVideoCallWith16To9AspectRatio) {
-  const std::string javascript =
+#if defined(OS_ANDROID)
+  // Android requires 16x16 alignment for hardware encoding.
+  constexpr int kExpectedAlignment = 16;
+#else
+  constexpr int kExpectedAlignment = 1;
+#endif
+  const std::string javascript = base::StringPrintf(
       "callAndExpectResolution({video: {mandatory: {minWidth: 640,"
-      " maxWidth: 640, minAspectRatio: 1.777}}}, 640, 360);";
+      " maxWidth: 640, minAspectRatio: 1.777}}}, 640, 360, %d);",
+      kExpectedAlignment);
   MakeTypicalPeerConnectionCall(javascript);
 }
 
-
+#if defined(OS_MAC)
+// TODO(https://crbug.com/1235254): This test is flakey on macOS.
+#define MAYBE_CanSetupVideoCallWith4To3AspectRatio \
+  DISABLED_CanSetupVideoCallWith4To3AspectRatio
+#else
+#define MAYBE_CanSetupVideoCallWith4To3AspectRatio \
+  CanSetupVideoCallWith4To3AspectRatio
+#endif
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
-                       CanSetupVideoCallWith4To3AspectRatio) {
+                       MAYBE_CanSetupVideoCallWith4To3AspectRatio) {
   const std::string javascript =
       "callAndExpectResolution({video: {mandatory: { minWidth: 320,"
       "maxWidth: 320, minAspectRatio: 1.333, maxAspectRatio: 1.333}}}, 320,"

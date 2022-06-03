@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/chooser_resource_loader.h"
 
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/blink/public/resources/grit/blink_resources.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
@@ -22,15 +23,6 @@ Vector<char> ChooserResourceLoader::GetSuggestionPickerStyleSheet() {
 Vector<char> ChooserResourceLoader::GetSuggestionPickerJS() {
 #if !defined(OS_ANDROID)
   return UncompressResourceAsBinary(IDR_SUGGESTION_PICKER_JS);
-#else
-  NOTREACHED();
-  return Vector<char>();
-#endif
-}
-
-Vector<char> ChooserResourceLoader::GetPickerButtonStyleSheet() {
-#if !defined(OS_ANDROID)
-  return UncompressResourceAsBinary(IDR_PICKER_BUTTON_CSS);
 #else
   NOTREACHED();
   return Vector<char>();
@@ -130,15 +122,6 @@ Vector<char> ChooserResourceLoader::GetColorSuggestionPickerJS() {
 Vector<char> ChooserResourceLoader::GetColorPickerStyleSheet() {
 #if !defined(OS_ANDROID)
   return UncompressResourceAsBinary(IDR_COLOR_PICKER_CSS);
-#else
-  NOTREACHED();
-  return Vector<char>();
-#endif
-}
-
-Vector<char> ChooserResourceLoader::GetCalendarPickerRefreshStyleSheet() {
-#if !defined(OS_ANDROID)
-  return UncompressResourceAsBinary(IDR_CALENDAR_PICKER_REFRESH_CSS);
 #else
   NOTREACHED();
   return Vector<char>();

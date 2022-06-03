@@ -21,6 +21,7 @@
 #include <utility>
 
 #include "gtest/gtest.h"
+#include "absl/random/internal/pcg_engine.h"
 #include "absl/random/internal/sequence_urbg.h"
 #include "absl/random/random.h"
 
@@ -63,7 +64,10 @@ TEST_P(BernoulliTest, Accuracy) {
   size_t trials = para.second;
   double p = para.first;
 
-  absl::InsecureBitGen rng;
+  // We use a fixed bit generator for distribution accuracy tests.  This allows
+  // these tests to be deterministic, while still testing the qualify of the
+  // implementation.
+  absl::random_internal::pcg64_2018_engine rng(0x2B7E151628AED2A6);
 
   size_t yes = 0;
   absl::bernoulli_distribution dist(p);
@@ -131,7 +135,7 @@ TEST(BernoulliTest, StabilityTest) {
       0x275b0dc7e0a18acfull, 0x36cebe0d2653682eull, 0x0361e9b23861596bull,
   });
 
-  // Generate a std::string of '0' and '1' for the distribution output.
+  // Generate a string of '0' and '1' for the distribution output.
   auto generate = [&urbg](absl::bernoulli_distribution& dist) {
     std::string output;
     output.reserve(36);
@@ -176,7 +180,7 @@ TEST(BernoulliTest, StabilityTest2) {
        0xECDD4775619F1510ull, 0x13CCA830EB61BD96ull, 0x0334FE1EAA0363CFull,
        0xB5735C904C70A239ull, 0xD59E9E0BCBAADE14ull, 0xEECC86BC60622CA7ull});
 
-  // Generate a std::string of '0' and '1' for the distribution output.
+  // Generate a string of '0' and '1' for the distribution output.
   auto generate = [&urbg](absl::bernoulli_distribution& dist) {
     std::string output;
     output.reserve(13);

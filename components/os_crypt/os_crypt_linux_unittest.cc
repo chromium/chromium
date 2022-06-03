@@ -4,7 +4,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "components/os_crypt/key_storage_linux.h"
 #include "components/os_crypt/os_crypt.h"
 #include "components/os_crypt/os_crypt_mocker_linux.h"
@@ -19,6 +18,9 @@ std::unique_ptr<KeyStorageLinux> GetNullKeyStorage() {
 class OSCryptLinuxTest : public testing::Test {
  public:
   OSCryptLinuxTest() : key_("something") { key_ptr_ = &key_; }
+
+  OSCryptLinuxTest(const OSCryptLinuxTest&) = delete;
+  OSCryptLinuxTest& operator=(const OSCryptLinuxTest&) = delete;
 
   ~OSCryptLinuxTest() override { key_ptr_ = nullptr; }
 
@@ -39,8 +41,6 @@ class OSCryptLinuxTest : public testing::Test {
   std::string key_;
   // Points to the |key_| of the currently running test.
   static std::string* key_ptr_;
-
-  DISALLOW_COPY_AND_ASSIGN(OSCryptLinuxTest);
 };
 
 std::string* OSCryptLinuxTest::key_ptr_;

@@ -23,7 +23,7 @@
 #include "base/scoped_native_library.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/windows_version.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -39,13 +39,14 @@ namespace api {
 
 namespace {
 
-typedef base::Callback<bool(const void* bytes, size_t size)>
+typedef base::RepeatingCallback<bool(const void* bytes, size_t size)>
     IsValidMacAddressCallback;
 
 class MacAddressProcessor {
  public:
-  MacAddressProcessor(const IsValidMacAddressCallback& is_valid_mac_address)
-      : is_valid_mac_address_(is_valid_mac_address), found_index_(ULONG_MAX) {}
+  explicit MacAddressProcessor(IsValidMacAddressCallback is_valid_mac_address)
+      : is_valid_mac_address_(std::move(is_valid_mac_address)),
+        found_index_(ULONG_MAX) {}
 
   // Iterate through the interfaces, looking for the valid MAC address with the
   // lowest IfIndex.
@@ -83,13 +84,13 @@ class MacAddressProcessor {
     found_index_ = index;
   }
 
-  const IsValidMacAddressCallback& is_valid_mac_address_;
+  IsValidMacAddressCallback is_valid_mac_address_;
   std::string found_mac_address_;
   NET_IFINDEX found_index_;
 };
 
 std::string GetMacAddressFromGetAdaptersAddresses(
-    const IsValidMacAddressCallback& is_valid_mac_address) {
+    IsValidMacAddressCallback is_valid_mac_address) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -113,11 +114,11 @@ std::string GetMacAddressFromGetAdaptersAddresses(
   }
 
   if (result != NO_ERROR) {
-    VLOG(ERROR) << "GetAdapatersAddresses failed with error " << result;
+    LOG(ERROR) << "GetAdapatersAddresses failed with error " << result;
     return "";
   }
 
-  MacAddressProcessor processor(is_valid_mac_address);
+  MacAddressProcessor processor(std::move(is_valid_mac_address));
   for (; adapterAddresses != NULL; adapterAddresses = adapterAddresses->Next) {
     processor.ProcessAdapterAddress(adapterAddresses);
   }
@@ -125,7 +126,7 @@ std::string GetMacAddressFromGetAdaptersAddresses(
 }
 
 std::string GetMacAddressFromGetIfTable2(
-    const IsValidMacAddressCallback& is_valid_mac_address) {
+    IsValidMacAddressCallback is_valid_mac_address) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -140,18 +141,18 @@ std::string GetMacAddressFromGetIfTable2(
   FreeMibTablePtr freeMibTablePtr = reinterpret_cast<FreeMibTablePtr>(
       library.GetFunctionPointer("FreeMibTable"));
   if (getIfTable == NULL || freeMibTablePtr == NULL) {
-    VLOG(ERROR) << "Could not get proc addresses for machine identifier.";
+    LOG(ERROR) << "Could not get proc addresses for machine identifier.";
     return "";
   }
 
   PMIB_IF_TABLE2 ifTable = NULL;
   DWORD result = getIfTable(&ifTable);
   if (result != NO_ERROR || ifTable == NULL) {
-    VLOG(ERROR) << "GetIfTable failed with error " << result;
+    LOG(ERROR) << "GetIfTable failed with error " << result;
     return "";
   }
 
-  MacAddressProcessor processor(is_valid_mac_address);
+  MacAddressProcessor processor(std::move(is_valid_mac_address));
   for (size_t i = 0; i < ifTable->NumEntries; i++) {
     processor.ProcessInterfaceRow(&(ifTable->Table[i]));
   }
@@ -163,8 +164,8 @@ std::string GetMacAddressFromGetIfTable2(
   return processor.mac_address();
 }
 
-void GetMacAddress(const IsValidMacAddressCallback& is_valid_mac_address,
-                   const DeviceId::IdCallback& callback) {
+void GetMacAddress(IsValidMacAddressCallback is_valid_mac_address,
+                   DeviceId::IdCallback callback) {
   std::string mac_address =
       GetMacAddressFromGetAdaptersAddresses(is_valid_mac_address);
   if (mac_address.empty())
@@ -176,8 +177,8 @@ void GetMacAddress(const IsValidMacAddressCallback& is_valid_mac_address,
     LOG(ERROR) << "Could not find appropriate MAC address.";
   }
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(callback, mac_address));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), mac_address));
 }
 
 std::string GetRlzMachineId() {
@@ -191,28 +192,29 @@ std::string GetRlzMachineId() {
 #endif
 }
 
-void GetMacAddressCallback(const DeviceId::IdCallback& callback,
+void GetMacAddressCallback(DeviceId::IdCallback callback,
                            const std::string& mac_address) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   std::string machine_id = GetRlzMachineId();
   if (mac_address.empty() || machine_id.empty()) {
-    callback.Run("");
+    std::move(callback).Run("");
     return;
   }
-  callback.Run(mac_address + machine_id);
+  std::move(callback).Run(mac_address + machine_id);
 }
 
 }  // namespace
 
 // static
-void DeviceId::GetRawDeviceId(const IdCallback& callback) {
+void DeviceId::GetRawDeviceId(IdCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTask(
+  base::ThreadPool::PostTask(
       FROM_HERE, traits(),
-      base::Bind(&GetMacAddress, base::Bind(&DeviceId::IsValidMacAddress),
-                 base::Bind(&GetMacAddressCallback, callback)));
+      base::BindOnce(
+          &GetMacAddress, base::BindRepeating(&DeviceId::IsValidMacAddress),
+          base::BindOnce(&GetMacAddressCallback, std::move(callback))));
 }
 
 }  // namespace api

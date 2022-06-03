@@ -13,6 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_switches.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -34,8 +35,8 @@ IN_PROC_BROWSER_TEST_F(TooltipAuraUiaTest, DISABLED_TooltipUiaEvents) {
   // Setup accessibility waiter
   HWND window_handle = GetDesktopWindow();
   UiaAccessibilityWaiterInfo opened_info = {
-      window_handle, base::ASCIIToUTF16("tooltip"),
-      base::ASCIIToUTF16("Reload this page"), ax::mojom::Event::kTooltipOpened};
+      window_handle, base::ASCIIToWide("tooltip"),
+      base::ASCIIToWide("Reload this page"), ax::mojom::Event::kTooltipOpened};
   UiaAccessibilityEventWaiter opened_waiter(opened_info);
 
   // Move mouse to Refresh button
@@ -51,8 +52,8 @@ IN_PROC_BROWSER_TEST_F(TooltipAuraUiaTest, DISABLED_TooltipUiaEvents) {
 
   // Setup accessibility waiter
   UiaAccessibilityWaiterInfo closed_info = {
-      window_handle, base::ASCIIToUTF16("tooltip"),
-      base::ASCIIToUTF16("Reload this page"), ax::mojom::Event::kTooltipClosed};
+      window_handle, base::ASCIIToWide("tooltip"),
+      base::ASCIIToWide("Reload this page"), ax::mojom::Event::kTooltipClosed};
   UiaAccessibilityEventWaiter closed_waiter(closed_info);
 
   // Move mouse away from the refresh button

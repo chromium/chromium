@@ -13,15 +13,15 @@ var ctx = document.createElement("canvas").getContext('2d');
 
 function draw() {
     // No arguments should get exception
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       ctx.drawImage();
     });
     // image argument only should get exception
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       ctx.drawImage(myImage);
     });
     // image argument plus one number should get exception
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       ctx.drawImage(myImage, 0);
     });
 

@@ -9,7 +9,5 @@ source_set("synchronization") {
     "shared_memory_seqlock_buffer.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

@@ -5,14 +5,10 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_UNVERIFIED_RULESET_DEALER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_UNVERIFIED_RULESET_DEALER_H_
 
-#include "base/macros.h"
 #include "components/subresource_filter/content/common/ruleset_dealer.h"
+#include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/renderer/render_thread_observer.h"
-#include "ipc/ipc_platform_file.h"
-
-namespace IPC {
-class Message;
-}  // namespace IPC
+#include "mojo/public/cpp/bindings/associated_receiver.h"
 
 namespace subresource_filter {
 
@@ -26,19 +22,34 @@ class MemoryMappedRuleset;
 // See RulesetDealerBase for details on the lifetime of MemoryMappedRuleset, and
 // the distribution pipeline diagram in content_ruleset_service.h.
 class UnverifiedRulesetDealer : public RulesetDealer,
-                                public content::RenderThreadObserver {
+                                public content::RenderThreadObserver,
+                                public mojom::SubresourceFilterRulesetObserver {
  public:
   UnverifiedRulesetDealer();
+
+  UnverifiedRulesetDealer(const UnverifiedRulesetDealer&) = delete;
+  UnverifiedRulesetDealer& operator=(const UnverifiedRulesetDealer&) = delete;
+
   ~UnverifiedRulesetDealer() override;
 
  private:
-  // content::RenderThreadObserver:
-  bool OnControlMessageReceived(const IPC::Message& message) override;
-  void OnSetRulesetForProcess(const IPC::PlatformFileForTransit& file);
+  // content::RenderThreadObserver overrides:
+  void RegisterMojoInterfaces(
+      blink::AssociatedInterfaceRegistry* associated_interfaces) override;
+  void UnregisterMojoInterfaces(
+      blink::AssociatedInterfaceRegistry* associated_interfaces) override;
 
-  DISALLOW_COPY_AND_ASSIGN(UnverifiedRulesetDealer);
+  // mojom::SubresourceFilterRulesetObserver overrides:
+  void SetRulesetForProcess(base::File ruleset_file) override;
+
+  void OnRendererAssociatedRequest(
+      mojo::PendingAssociatedReceiver<mojom::SubresourceFilterRulesetObserver>
+          receiver);
+
+  mojo::AssociatedReceiver<mojom::SubresourceFilterRulesetObserver> receiver_{
+      this};
 };
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_RULESET_DEALER_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_UNVERIFIED_RULESET_DEALER_H_

@@ -4,6 +4,7 @@ if (self.importScripts) {
 }
 
 var url = "data:application/json,report({jsonpResult: 'success'});";
+var {BASE_URL, REDIRECT_URL, OTHER_REDIRECT_URL} = get_thorough_test_options();
 
 var TEST_TARGETS = [
 // data: requests.

@@ -86,14 +86,14 @@ ElisionParameters GetElisionParameters(const GURL& gurl,
   return result;
 }
 
-TextFormatting CreateUrlFormatting(const base::string16& formatted_url,
+TextFormatting CreateUrlFormatting(const std::u16string& formatted_url,
                                    const url::Parsed& parsed,
                                    SkColor emphasized_color,
                                    SkColor deemphasized_color) {
   const url::Component& scheme = parsed.scheme;
   const url::Component& host = parsed.host;
 
-  const base::string16 url_scheme =
+  const std::u16string url_scheme =
       formatted_url.substr(scheme.begin, scheme.len);
 
   // Data URLs are rarely human-readable and can be used for spoofing, so draw

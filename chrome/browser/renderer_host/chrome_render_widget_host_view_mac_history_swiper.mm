@@ -4,14 +4,13 @@
 
 #import "chrome/browser/renderer_host/chrome_render_widget_host_view_mac_history_swiper.h"
 
-#import "base/mac/sdk_forward_declarations.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
 #import "chrome/browser/ui/cocoa/history_overlay_controller.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "third_party/blink/public/platform/web_gesture_event.h"
-#include "third_party/blink/public/platform/web_mouse_wheel_event.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
 namespace {
@@ -96,7 +95,7 @@ BOOL forceMagicMouse = NO;
 @implementation HistorySwiper
 @synthesize delegate = _delegate;
 
-- (id)initWithDelegate:(id<HistorySwiperDelegate>)delegate {
+- (instancetype)initWithDelegate:(id<HistorySwiperDelegate>)delegate {
   self = [super init];
   if (self) {
     _delegate = delegate;
@@ -126,7 +125,7 @@ BOOL forceMagicMouse = NO;
 - (void)rendererHandledGestureScrollEvent:(const blink::WebGestureEvent&)event
                                  consumed:(BOOL)consumed {
   switch (event.GetType()) {
-    case blink::WebInputEvent::kGestureScrollBegin:
+    case blink::WebInputEvent::Type::kGestureScrollBegin:
       if (event.data.scroll_begin.synthetic ||
           event.data.scroll_begin.inertial_phase ==
               blink::WebGestureEvent::InertialPhaseState::kMomentum) {
@@ -134,7 +133,7 @@ BOOL forceMagicMouse = NO;
       }
       _waitingForFirstGestureScroll = YES;
       break;
-    case blink::WebInputEvent::kGestureScrollUpdate:
+    case blink::WebInputEvent::Type::kGestureScrollUpdate:
       if (_waitingForFirstGestureScroll)
         _firstScrollUnconsumed = !consumed;
       _waitingForFirstGestureScroll = NO;
@@ -146,9 +145,7 @@ BOOL forceMagicMouse = NO;
 
 - (void)onOverscrolled:(const ui::DidOverscrollParams&)params {
   _overscrollTriggeredByRenderer =
-      params.overscroll_behavior.x ==
-      cc::OverscrollBehavior::OverscrollBehaviorType::
-          kOverscrollBehaviorTypeAuto;
+      params.overscroll_behavior.x == cc::OverscrollBehavior::Type::kAuto;
 }
 
 - (void)beginGestureWithEvent:(NSEvent*)event {

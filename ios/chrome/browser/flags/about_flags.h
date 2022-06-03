@@ -12,16 +12,22 @@
 #include <string>
 #include <vector>
 
+#include "base/values.h"
 #include "components/flags_ui/flags_state.h"
 
 namespace base {
 class CommandLine;
-class ListValue;
 }  // namespace base
 
 namespace flags_ui {
 class FlagsStorage;
 }
+
+// Adds all switches from experimental flags to |command_line|.
+void AppendSwitchesFromExperimentalSettings(base::CommandLine* command_line);
+
+// Monitors certain experimental flags for changes.
+void MonitorExperimentalSettingsChanges();
 
 // Reads the state from |flags_storage| and adds the command line flags
 // belonging to the active feature entries to |command_line| in addition
@@ -44,8 +50,8 @@ std::vector<std::string> RegisterAllFeatureVariationParameters(
 // to |unsupported_entries|.
 void GetFlagFeatureEntries(flags_ui::FlagsStorage* flags_storage,
                            flags_ui::FlagAccess access,
-                           base::ListValue* supported_entries,
-                           base::ListValue* unsupported_entries);
+                           base::Value::ListStorage& supported_entries,
+                           base::Value::ListStorage& unsupported_entries);
 
 // Enables or disables the current with id |internal_name|.
 void SetFeatureEntryEnabled(flags_ui::FlagsStorage* flags_storage,
@@ -58,7 +64,7 @@ void ResetAllFlags(flags_ui::FlagsStorage* flags_storage);
 namespace testing {
 
 // Returns the global set of feature entries.
-const flags_ui::FeatureEntry* GetFeatureEntries(size_t* count);
+base::span<const flags_ui::FeatureEntry> GetFeatureEntries();
 
 }  // namespace testing
 

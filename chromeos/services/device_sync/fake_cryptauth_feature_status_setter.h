@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_setter.h"
@@ -21,9 +20,7 @@ namespace chromeos {
 
 namespace device_sync {
 
-class ClientAppMetadataProvider;
 class CryptAuthClientFactory;
-class CryptAuthGCMManager;
 
 class FakeCryptAuthFeatureStatusSetter : public CryptAuthFeatureStatusSetter {
  public:
@@ -52,6 +49,12 @@ class FakeCryptAuthFeatureStatusSetter : public CryptAuthFeatureStatusSetter {
   };
 
   FakeCryptAuthFeatureStatusSetter();
+
+  FakeCryptAuthFeatureStatusSetter(const FakeCryptAuthFeatureStatusSetter&) =
+      delete;
+  FakeCryptAuthFeatureStatusSetter& operator=(
+      const FakeCryptAuthFeatureStatusSetter&) = delete;
+
   ~FakeCryptAuthFeatureStatusSetter() override;
 
   void set_delegate(Delegate* delegate) { delegate_ = delegate; }
@@ -69,46 +72,46 @@ class FakeCryptAuthFeatureStatusSetter : public CryptAuthFeatureStatusSetter {
 
   Delegate* delegate_ = nullptr;
   std::vector<Request> requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusSetter);
 };
 
 class FakeCryptAuthFeatureStatusSetterFactory
     : public CryptAuthFeatureStatusSetterImpl::Factory {
  public:
   FakeCryptAuthFeatureStatusSetterFactory();
+
+  FakeCryptAuthFeatureStatusSetterFactory(
+      const FakeCryptAuthFeatureStatusSetterFactory&) = delete;
+  FakeCryptAuthFeatureStatusSetterFactory& operator=(
+      const FakeCryptAuthFeatureStatusSetterFactory&) = delete;
+
   ~FakeCryptAuthFeatureStatusSetterFactory() override;
 
   const std::vector<FakeCryptAuthFeatureStatusSetter*>& instances() const {
     return instances_;
   }
 
-  const ClientAppMetadataProvider* last_client_app_metadata_provider() const {
-    return last_client_app_metadata_provider_;
+  const std::string& last_instance_id() const { return last_instance_id_; }
+
+  const std::string& last_instance_id_token() const {
+    return last_instance_id_token_;
   }
 
   const CryptAuthClientFactory* last_client_factory() const {
     return last_client_factory_;
   }
 
-  const CryptAuthGCMManager* last_gcm_manager() const {
-    return last_gcm_manager_;
-  }
-
  private:
   // CryptAuthFeatureStatusSetterImpl::Factory:
-  std::unique_ptr<CryptAuthFeatureStatusSetter> BuildInstance(
-      ClientAppMetadataProvider* client_app_metadata_provider,
+  std::unique_ptr<CryptAuthFeatureStatusSetter> CreateInstance(
+      const std::string& instance_id,
+      const std::string& instance_id_token,
       CryptAuthClientFactory* client_factory,
-      CryptAuthGCMManager* gcm_manager,
-      std::unique_ptr<base::OneShotTimer> timer = nullptr) override;
+      std::unique_ptr<base::OneShotTimer> timer) override;
 
   std::vector<FakeCryptAuthFeatureStatusSetter*> instances_;
-  ClientAppMetadataProvider* last_client_app_metadata_provider_ = nullptr;
+  std::string last_instance_id_;
+  std::string last_instance_id_token_;
   CryptAuthClientFactory* last_client_factory_ = nullptr;
-  CryptAuthGCMManager* last_gcm_manager_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusSetterFactory);
 };
 
 }  // namespace device_sync

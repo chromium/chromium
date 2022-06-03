@@ -17,14 +17,11 @@
 // styles and configurations, depending on its type.
 @interface BadgeButtonFactory : NSObject
 
-// Yes if in Incognito mode.
-@property(nonatomic, assign) BOOL incognito;
-
 // Action handler delegate for the buttons.
 @property(nonatomic, weak) id<BadgeDelegate> delegate;
 
 // Returns a properly configured BadgButton associated with |badgeType|.
-- (BadgeButton*)getBadgeButtonForBadgeType:(BadgeType)badgeType;
+- (BadgeButton*)badgeButtonForBadgeType:(BadgeType)badgeType;
 
 @end
 

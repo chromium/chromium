@@ -5,10 +5,12 @@
 #include "chrome/chrome_cleaner/pup_data/pup_data.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "chrome/chrome_cleaner/proto/shared_pup_enums.pb.h"
 #include "chrome/chrome_cleaner/pup_data/test_uws.h"
@@ -49,8 +51,8 @@ PUPData::RegistryFootprint::RegistryFootprint()
 
 PUPData::RegistryFootprint::RegistryFootprint(
     const RegKeyPath& key_path,
-    const base::string16& value_name,
-    const base::string16& value_substring,
+    const std::wstring& value_name,
+    const std::wstring& value_substring,
     RegistryMatchRule rule)
     : key_path(key_path),
       value_name(value_name),

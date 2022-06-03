@@ -7,20 +7,19 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/media/audio_stream_broker.h"
 #include "content/common/content_export.h"
-#include "content/common/media/renderer_audio_input_stream_factory.mojom.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
 #include "media/mojo/mojom/audio_input_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/audio/public/mojom/audio_processing.mojom.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 
 namespace media {
 class UserInputMonitorBase;
@@ -42,15 +41,17 @@ class CONTENT_EXPORT AudioInputStreamBroker final
       uint32_t shared_memory_count,
       media::UserInputMonitorBase* user_input_monitor,
       bool enable_agc,
-      audio::mojom::AudioProcessingConfigPtr processing_config,
       AudioStreamBroker::DeleterCallback deleter,
-      mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
+      mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client);
+
+  AudioInputStreamBroker(const AudioInputStreamBroker&) = delete;
+  AudioInputStreamBroker& operator=(const AudioInputStreamBroker&) = delete;
 
   ~AudioInputStreamBroker() final;
 
   // Creates the stream.
-  void CreateStream(audio::mojom::StreamFactory* factory) final;
+  void CreateStream(media::mojom::AudioStreamFactory* factory) final;
 
   // media::AudioInputStreamObserver implementation.
   void DidStartRecording() final;
@@ -59,7 +60,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
   void StreamCreated(mojo::PendingRemote<media::mojom::AudioInputStream> stream,
                      media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
                      bool initially_muted,
-                     const base::Optional<base::UnguessableToken>& stream_id);
+                     const absl::optional<base::UnguessableToken>& stream_id);
 
   void ObserverBindingLost(uint32_t reason, const std::string& description);
   void ClientBindingLost();
@@ -76,8 +77,7 @@ class CONTENT_EXPORT AudioInputStreamBroker final
 
   DeleterCallback deleter_;
 
-  audio::mojom::AudioProcessingConfigPtr processing_config_;
-  mojo::Remote<mojom::RendererAudioInputStreamFactoryClient>
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactoryClient>
       renderer_factory_client_;
   mojo::Receiver<AudioInputStreamObserver> observer_receiver_{this};
   mojo::PendingReceiver<media::mojom::AudioInputStreamClient>
@@ -88,8 +88,6 @@ class CONTENT_EXPORT AudioInputStreamBroker final
           kDocumentDestroyed;
 
   base::WeakPtrFactory<AudioInputStreamBroker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputStreamBroker);
 };
 
 }  // namespace content

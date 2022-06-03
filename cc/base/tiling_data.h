@@ -7,7 +7,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "cc/base/base_export.h"
 #include "cc/base/index_rect.h"
 #include "cc/base/reverse_spiral_iterator.h"

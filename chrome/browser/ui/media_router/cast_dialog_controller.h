@@ -7,9 +7,9 @@
 
 #include "base/callback_forward.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
-#include "chrome/common/media_router/issue.h"
-#include "chrome/common/media_router/media_route.h"
-#include "chrome/common/media_router/media_sink.h"
+#include "components/media_router/common/issue.h"
+#include "components/media_router/common/media_route.h"
+#include "components/media_router/common/media_sink.h"
 
 namespace ui {
 struct SelectedFileInfo;

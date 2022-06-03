@@ -1,0 +1,143 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="da">
+<translation id="1113173431709655881">Kameratilstand</translation>
+<translation id="1175958423215084756">Link registreret. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Roter 90 grader med uret</translation>
+<translation id="1276998909102132017">Galleribilleder</translation>
+<translation id="1300209025925956156">Scan dit dokument</translation>
+<translation id="1303487788671416818">Aktivér videosnapshot i fuld størrelse</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Tryk på søgetasten+venstrepil for at få adgang til dem.</translation>
+<translation id="1430915738399379752">Udskriv</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> er frakoblet.</translation>
+<translation id="1473110567575736769">Timer på 3 sekunder</translation>
+<translation id="1545749641540134597">Scan QR-kode</translation>
+<translation id="1560052704389894104">Gif</translation>
+<translation id="1588438908519853928">Normal</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1627744224761163218">4x4</translation>
+<translation id="1664224225747386870">Der er ingen optagelser</translation>
+<translation id="1838104802459806957">Drej opad</translation>
+<translation id="1851169887664797861">Yderligere styringselementer til kameraet er tilgængelige</translation>
+<translation id="1851616744363735765">SAT PÅ PAUSE</translation>
+<translation id="1862930711583847113"><ph name="FILE" /> kan ikke eksporteres</translation>
+<translation id="1899697626337024495">Billedopløsning</translation>
+<translation id="2022953316617983419">QR-kode</translation>
+<translation id="2036868001356139588">Varighed for timer</translation>
+<translation id="2050339315714019657">Stående</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> er aktiv</translation>
+<translation id="2144806332417375165">Tilpassede videoparametre</translation>
+<translation id="2175927920773552910">QR-kode</translation>
+<translation id="229579744168541441">Eksportér til disk</translation>
+<translation id="2320741269052147773">Panorer til venstre</translation>
+<translation id="2501278716633472235">Gå tilbage</translation>
+<translation id="2501853267655415902">Optagelsen er stoppet</translation>
+<translation id="2501953888035679275">Tag billeder, og optag videoer med dit kamera.</translation>
+<translation id="2517472476991765520">Scan</translation>
+<translation id="2549985041256363841">Start optagelse</translation>
+<translation id="2599796128805996109">Bagsidekamera</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> sek.</translation>
+<translation id="2761536921376153655">Scanningstype</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> er tilsluttet.</translation>
+<translation id="2968794441791257519">Billeder og videoer, der er taget med kameraet, flyttes til mappen Downloads. Du kan få adgang til dem i Filer.
+
+        Apps med lagertilladelser får adgang til dine billeder og videoer.</translation>
+<translation id="3067436040345934772">Panorer mod højre</translation>
+<translation id="3081586908890909590">Skift til videooptagelse</translation>
+<translation id="313467653172006084">30 FPS</translation>
+<translation id="3183731565330012717">Gittertype</translation>
+<translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3240426699337459095">Linket er kopieret</translation>
+<translation id="3259149966178251584">Kameraets opløsning</translation>
+<translation id="3260401663013584785">Der blev ikke registreret et dokument</translation>
+<translation id="3305962767867348165">Ret</translation>
+<translation id="3448774564454087943">Videoen blev ikke gemt, fordi den er for kort</translation>
+<translation id="346539236881580388">Tag igen</translation>
+<translation id="3517926952904427380">Det var ikke muligt at tage et billede i stående format</translation>
+<translation id="3569311554794739032">Er du sikker på, at du vil fjerne <ph name="FILE" />?</translation>
+<translation id="3573890771273113519">Skift til scanningstilstand</translation>
+<translation id="3789724198583203151">Roter 90 grader mod uret</translation>
+<translation id="3810838688059735925">Video</translation>
+<translation id="3838931309141338733">Scan stregkode</translation>
+<translation id="3892148308691398805">Kopiér tekst</translation>
+<translation id="4118525110028899586">Sæt optagelsen på pause</translation>
+<translation id="4121305183798804752">Et dokument blev registreret</translation>
+<translation id="4269820728363426813">Kopiér linkadresse</translation>
+<translation id="4279490309300973883">Spejling</translation>
+<translation id="4329152592498422850">Skift for at tage et kvadratisk billede</translation>
+<translation id="4383571725254449280">Effektivitetslogfiler for udskrivning</translation>
+<translation id="4445542136948522167">Stop med at tage billedet</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapixels</translation>
+<translation id="4570032796877367747">Frontkamera</translation>
+<translation id="4628948037717959914">Billede</translation>
+<translation id="4649291346448517080">Filen kan ikke gemmes</translation>
+<translation id="4890010094662541459">3x3</translation>
+<translation id="491895758387112773">Videooptagelse med flere streams</translation>
+<translation id="5057360777601936059">Dit kamera er ikke tilgængeligt lige nu.
+        Tjek, om kameraet er tilsluttet korrekt.</translation>
+<translation id="5152121255775685072">Gå til galleri</translation>
+<translation id="520537883758714667">Det er nu muligt at scanne dokumenter</translation>
+<translation id="5317780077021120954">Gem</translation>
+<translation id="5444515100983837161">Sørg for, at alle dokumentets kanter er inden for rammen. Scanning fungerer bedst, når dokumentet har en anden farve end baggrunden.</translation>
+<translation id="5671277269877808209">Kvadrat</translation>
+<translation id="5746169159649715125">Gem som PDF</translation>
+<translation id="5753488212459587150">Aktivér eksperttilstand</translation>
+<translation id="5759254179196327752">Dokumentscanning</translation>
+<translation id="5775960006311140197">Eksperttilstand</translation>
+<translation id="5869546221129391014">Gitter</translation>
+<translation id="5975083100439434680">Zoom ud</translation>
+<translation id="6073451960410192870">Stop optagelse</translation>
+<translation id="6197807149213783179">Gem metadata</translation>
+<translation id="6233780560267770709">3 gange 3</translation>
+<translation id="6243827288366940320">Det gyldne snit</translation>
+<translation id="6248749904681914629">Eksternt kamera</translation>
+<translation id="6353688143752491039">Tak for din feedback til appen Kamera.
+
+
+Hvis din feedback omhandler billed- eller videokvalitet, bedes du vedhæfte et billede eller en video af problemet og beskrive, hvad der er galt (f.eks. billedet er for mørkt, eller motivet er ikke i fokus).</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapixels</translation>
+<translation id="6527303717912515753">Del</translation>
+<translation id="667999046851023355">Dokument</translation>
+<translation id="6681668084120808868">Tag billede</translation>
+<translation id="6778482348691154169">Der kan ikke tages et billede</translation>
+<translation id="695140971690006676">Nulstil alle</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 sekunder</translation>
+<translation id="712848772518857951">Er du sikker på, at du vil fjerne <ph name="COUNT" /> elementer?</translation>
+<translation id="7134221860976209830">Timer på 10 sekunder</translation>
+<translation id="7191890674911603392">Optagelsestype</translation>
+<translation id="7243947652761655814">Videoopløsning</translation>
+<translation id="7337660886763914220">Der er fejl i filsystemet.</translation>
+<translation id="7450541714075000668">Teksten blev kopieret</translation>
+<translation id="7476762461674917065">Vis valgmulighed for gifoptagelse</translation>
+<translation id="7488619942230388918">Optag gifvideo</translation>
+<translation id="7557677699350329807">Skift til næste kamera</translation>
+<translation id="7607002721634913082">Sat på pause</translation>
+<translation id="7608223098072244877">4 gange 4</translation>
+<translation id="7649070708921625228">Hjælp</translation>
+<translation id="7658239707568436148">Annuller</translation>
+<translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Optag normal video</translation>
+<translation id="7983668134180549431">Tekst er registreret.</translation>
+<translation id="8067883171444229417">Afspil video</translation>
+<translation id="8120146556401698679">Panorer drej zoom</translation>
+<translation id="8131740175452115882">Bekræft</translation>
+<translation id="8145038249676204903">Skift for at tage et billede</translation>
+<translation id="8167081290930651932">Gem som billede</translation>
+<translation id="8239780215768881278">Tag et videoøjebliksbillede</translation>
+<translation id="8261506727792406068">Slet</translation>
+<translation id="8425673304802773841">Drej nedad</translation>
+<translation id="8428213095426709021">Indstillinger</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Forstået</translation>
+<translation id="8730621377337864115">Udfør</translation>
+<translation id="8732462232047530626">Se forhåndsvisning af metadata</translation>
+<translation id="8815966864175525708">Skift for at tage et billede i stående format</translation>
+<translation id="8828441885228359828">Genoptag optagelse</translation>
+<translation id="8870695351537079478">Det er ikke muligt at starte en optagelse</translation>
+<translation id="8903921497873541725">Zoom ind</translation>
+<translation id="9045010116236796332">Sørg for, at alle dokumentets kanter er inden for rammen</translation>
+<translation id="9045155556724273246">10 sekunder</translation>
+<translation id="906331135292332864">Billedet behandles…</translation>
+<translation id="945522503751344254">Send feedback</translation>
+</translationbundle>

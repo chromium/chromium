@@ -12,9 +12,7 @@ disable_qcms = false
 
 static_library("qcms") {
   if (disable_qcms) {
-    sources = [
-      "src/empty.c",
-    ]
+    sources = [ "src/empty.c" ]
   } else {
     sources = [
       "src/chain.c",

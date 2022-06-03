@@ -1,0 +1,6 @@
+include_rules = [
+  "+components/image_fetcher",
+  "+components/signin/public/identity_manager",
+  "+components/signin/public/base",
+  "+google_apis",
+]

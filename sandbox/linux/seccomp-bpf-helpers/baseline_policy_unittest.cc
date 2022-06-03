@@ -24,12 +24,13 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "base/clang_coverage_buildflags.h"
+#include "base/clang_profiling_buildflags.h"
 #include "base/files/scoped_file.h"
 #include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "sandbox/linux/seccomp-bpf-helpers/sigsys_handlers.h"
 #include "sandbox/linux/seccomp-bpf/bpf_tests.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
@@ -50,7 +51,8 @@ namespace sandbox {
 
 namespace {
 
-// This also tests that read(), write() and fstat() are allowed.
+// This also tests that read(), write(), fstat(), and fstatat(.., "", ..,
+// AT_EMPTY_PATH) are allowed.
 void TestPipeOrSocketPair(base::ScopedFD read_end, base::ScopedFD write_end) {
   BPF_ASSERT_LE(0, read_end.get());
   BPF_ASSERT_LE(0, write_end.get());
@@ -58,6 +60,20 @@ void TestPipeOrSocketPair(base::ScopedFD read_end, base::ScopedFD write_end) {
   int sys_ret = fstat(read_end.get(), &stat_buf);
   BPF_ASSERT_EQ(0, sys_ret);
   BPF_ASSERT(S_ISFIFO(stat_buf.st_mode) || S_ISSOCK(stat_buf.st_mode));
+
+  sys_ret = fstatat(read_end.get(), "", &stat_buf, AT_EMPTY_PATH);
+  BPF_ASSERT_EQ(0, sys_ret);
+  BPF_ASSERT(S_ISFIFO(stat_buf.st_mode) || S_ISSOCK(stat_buf.st_mode));
+
+  // Make sure fstatat with anything other than an empty string is denied.
+  sys_ret = fstatat(read_end.get(), "/", &stat_buf, AT_EMPTY_PATH);
+  BPF_ASSERT_EQ(sys_ret, -1);
+  BPF_ASSERT_EQ(EPERM, errno);
+
+  // Make sure fstatat without AT_EMPTY_PATH is denied.
+  sys_ret = fstatat(read_end.get(), "", &stat_buf, 0);
+  BPF_ASSERT_EQ(sys_ret, -1);
+  BPF_ASSERT_EQ(EPERM, errno);
 
   const ssize_t kTestTransferSize = 4;
   static const char kTestString[kTestTransferSize] = {'T', 'E', 'S', 'T'};
@@ -165,6 +181,19 @@ BPF_TEST_C(BaselinePolicy, CreateThread, BaselinePolicy) {
   base::Thread thread("sandbox_tests");
   BPF_ASSERT(thread.Start());
 }
+
+// Rseq should be enabled if it exists (i.e. shouldn't receive EPERM).
+#if !defined(OS_ANDROID)
+BPF_TEST_C(BaselinePolicy, RseqEnabled, BaselinePolicy) {
+  errno = 0;
+  int res = syscall(__NR_rseq, 0, 0, 0, 0);
+
+  BPF_ASSERT_EQ(-1, res);
+  // The parameters above are invalid so the system call should fail with
+  // EINVAL, or ENOSYS if the kernel is too old to recognize the system call.
+  BPF_ASSERT(EINVAL == errno || ENOSYS == errno);
+}
+#endif  // !defined(OS_ANDROID)
 
 BPF_DEATH_TEST_C(BaselinePolicy,
                  DisallowedCloneFlagCrashes,
@@ -289,12 +318,11 @@ TEST_BASELINE_SIGSYS(__NR_syslog)
 TEST_BASELINE_SIGSYS(__NR_timer_create)
 
 #if !defined(__aarch64__)
-TEST_BASELINE_SIGSYS(__NR_eventfd)
 TEST_BASELINE_SIGSYS(__NR_inotify_init)
 TEST_BASELINE_SIGSYS(__NR_vserver)
 #endif
 
-#if defined(LIBC_GLIBC) && !defined(OS_CHROMEOS)
+#if defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 BPF_TEST_C(BaselinePolicy, FutexEINVAL, BaselinePolicy) {
   int ops[] = {
       FUTEX_CMP_REQUEUE_PI, FUTEX_CMP_REQUEUE_PI_PRIVATE,
@@ -331,7 +359,7 @@ BPF_DEATH_TEST_C(BaselinePolicy,
   syscall(__NR_futex, nullptr, FUTEX_UNLOCK_PI_PRIVATE, 0, nullptr, nullptr, 0);
   _exit(1);
 }
-#endif  // defined(LIBC_GLIBC) && !defined(OS_CHROMEOS)
+#endif  // defined(LIBC_GLIBC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
 BPF_TEST_C(BaselinePolicy, PrctlDumpable, BaselinePolicy) {
   const int is_dumpable = prctl(PR_GET_DUMPABLE, 0, 0, 0, 0);
@@ -345,7 +373,7 @@ BPF_TEST_C(BaselinePolicy, PrctlDumpable, BaselinePolicy) {
 #define PR_CAPBSET_READ 23
 #endif
 
-#if !BUILDFLAG(CLANG_COVERAGE)
+#if !BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 BPF_DEATH_TEST_C(BaselinePolicy,
                  PrctlSigsys,
                  DEATH_SEGV_MESSAGE(GetPrctlErrorMessageContentForTests()),

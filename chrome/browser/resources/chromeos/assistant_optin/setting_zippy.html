@@ -5,9 +5,12 @@
 <link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
 <link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
+
+<link rel="import" href="/components/common_styles/common_styles.html">
+
 <dom-module id="setting-zippy">
   <template>
-    <link rel="stylesheet" href="../login/oobe_flex_layout.css">
+    <style include="oobe-common-styles"></style>
     <link rel="stylesheet" href="setting_zippy.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <template is="dom-if" if="[[expandStyle]]">
@@ -20,36 +23,36 @@
           </div>
           <div>
             <div class="sub-title">
-              <content select=".zippy-title"></content>
+              <slot name="title"></slot>
             </div>
             <div class="content">
-              <content select=".zippy-description, .learn-more-link"></content>
+              <slot name="content"></slot>
             </div>
           </div>
         </div>
       </cr-expand-button>
       <iron-collapse opened="[[expanded_]]">
         <div class="content indent">
-          <content select=.zippy-additional></content>
+          <slot name="additional"></slot>
         </div>
       </iron-collapse>
     </template>
     <template is="dom-if" if="[[!expandStyle]]">
       <div id="container" class="flex layout horizontal"
-          expandStyle$="[[expandStyle]]">
+          expandStyle$="[[expandStyle]]" cardStyle$="[[cardStyle]]">
         <div class="icon">
           <webview class="icon-view" src="[[iconSrc]]" tabindex="-1"></webview>
         </div>
         <div>
           <div class="sub-title">
-            <content select=".zippy-title"></content>
+            <slot name="title"></slot>
           </div>
           <div id="description" class="content">
-            <content select=".zippy-description, .learn-more-link"></content>
+            <slot name="content"></slot>
           </div>
         </div>
         <div class="toggle">
-          <content select=".zippy-toggle" hidden="[[!toggleStyle]]"></content>
+          <slot name="toggle"></slot>
         </div>
       </div>
     </template>

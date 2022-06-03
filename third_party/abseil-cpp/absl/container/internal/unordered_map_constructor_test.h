@@ -16,6 +16,7 @@
 #define ABSL_CONTAINER_INTERNAL_UNORDERED_MAP_CONSTRUCTOR_TEST_H_
 
 #include <algorithm>
+#include <unordered_map>
 #include <vector>
 
 #include "gmock/gmock.h"
@@ -24,6 +25,7 @@
 #include "absl/container/internal/hash_policy_testing.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
 template <class UnordMap>
@@ -177,7 +179,7 @@ TYPED_TEST_P(ConstructorTest, InputIteratorBucketHashEqualAlloc) {
   A alloc(0);
   std::vector<T> values;
   std::generate_n(std::back_inserter(values), 10,
-                  hash_internal::Generator<T>());
+                  hash_internal::UniqueGenerator<T>());
   TypeParam m(values.begin(), values.end(), 123, hasher, equal, alloc);
   EXPECT_EQ(m.hash_function(), hasher);
   EXPECT_EQ(m.key_eq(), equal);
@@ -196,7 +198,7 @@ void InputIteratorBucketAllocTest(std::true_type) {
   A alloc(0);
   std::vector<T> values;
   std::generate_n(std::back_inserter(values), 10,
-                  hash_internal::Generator<T>());
+                  hash_internal::UniqueGenerator<T>());
   TypeParam m(values.begin(), values.end(), 123, alloc);
   EXPECT_EQ(m.get_allocator(), alloc);
   EXPECT_THAT(items(m), ::testing::UnorderedElementsAreArray(values));
@@ -219,7 +221,7 @@ void InputIteratorBucketHashAllocTest(std::true_type) {
   A alloc(0);
   std::vector<T> values;
   std::generate_n(std::back_inserter(values), 10,
-                  hash_internal::Generator<T>());
+                  hash_internal::UniqueGenerator<T>());
   TypeParam m(values.begin(), values.end(), 123, hasher, alloc);
   EXPECT_EQ(m.hash_function(), hasher);
   EXPECT_EQ(m.get_allocator(), alloc);
@@ -239,8 +241,9 @@ TYPED_TEST_P(ConstructorTest, CopyConstructor) {
   H hasher;
   E equal;
   A alloc(0);
+  hash_internal::UniqueGenerator<T> gen;
   TypeParam m(123, hasher, equal, alloc);
-  for (size_t i = 0; i != 10; ++i) m.insert(hash_internal::Generator<T>()());
+  for (size_t i = 0; i != 10; ++i) m.insert(gen());
   TypeParam n(m);
   EXPECT_EQ(m.hash_function(), n.hash_function());
   EXPECT_EQ(m.key_eq(), n.key_eq());
@@ -260,8 +263,9 @@ void CopyConstructorAllocTest(std::true_type) {
   H hasher;
   E equal;
   A alloc(0);
+  hash_internal::UniqueGenerator<T> gen;
   TypeParam m(123, hasher, equal, alloc);
-  for (size_t i = 0; i != 10; ++i) m.insert(hash_internal::Generator<T>()());
+  for (size_t i = 0; i != 10; ++i) m.insert(gen());
   TypeParam n(m, A(11));
   EXPECT_EQ(m.hash_function(), n.hash_function());
   EXPECT_EQ(m.key_eq(), n.key_eq());
@@ -283,8 +287,9 @@ TYPED_TEST_P(ConstructorTest, MoveConstructor) {
   H hasher;
   E equal;
   A alloc(0);
+  hash_internal::UniqueGenerator<T> gen;
   TypeParam m(123, hasher, equal, alloc);
-  for (size_t i = 0; i != 10; ++i) m.insert(hash_internal::Generator<T>()());
+  for (size_t i = 0; i != 10; ++i) m.insert(gen());
   TypeParam t(m);
   TypeParam n(std::move(t));
   EXPECT_EQ(m.hash_function(), n.hash_function());
@@ -305,8 +310,9 @@ void MoveConstructorAllocTest(std::true_type) {
   H hasher;
   E equal;
   A alloc(0);
+  hash_internal::UniqueGenerator<T> gen;
   TypeParam m(123, hasher, equal, alloc);
-  for (size_t i = 0; i != 10; ++i) m.insert(hash_internal::Generator<T>()());
+  for (size_t i = 0; i != 10; ++i) m.insert(gen());
   TypeParam t(m);
   TypeParam n(std::move(t), A(1));
   EXPECT_EQ(m.hash_function(), n.hash_function());
@@ -323,7 +329,7 @@ TYPED_TEST_P(ConstructorTest, MoveConstructorAlloc) {
 
 TYPED_TEST_P(ConstructorTest, InitializerListBucketHashEqualAlloc) {
   using T = hash_internal::GeneratedType<TypeParam>;
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   std::initializer_list<T> values = {gen(), gen(), gen(), gen(), gen()};
   using H = typename TypeParam::hasher;
   using E = typename TypeParam::key_equal;
@@ -346,7 +352,7 @@ template <typename TypeParam>
 void InitializerListBucketAllocTest(std::true_type) {
   using T = hash_internal::GeneratedType<TypeParam>;
   using A = typename TypeParam::allocator_type;
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   std::initializer_list<T> values = {gen(), gen(), gen(), gen(), gen()};
   A alloc(0);
   TypeParam m(values, 123, alloc);
@@ -369,7 +375,7 @@ void InitializerListBucketHashAllocTest(std::true_type) {
   using A = typename TypeParam::allocator_type;
   H hasher;
   A alloc(0);
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   std::initializer_list<T> values = {gen(), gen(), gen(), gen(), gen()};
   TypeParam m(values, 123, hasher, alloc);
   EXPECT_EQ(m.hash_function(), hasher);
@@ -390,7 +396,7 @@ TYPED_TEST_P(ConstructorTest, Assignment) {
   H hasher;
   E equal;
   A alloc(0);
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   TypeParam m({gen(), gen(), gen()}, 123, hasher, equal, alloc);
   TypeParam n;
   n = m;
@@ -410,7 +416,7 @@ TYPED_TEST_P(ConstructorTest, MoveAssignment) {
   H hasher;
   E equal;
   A alloc(0);
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   TypeParam m({gen(), gen(), gen()}, 123, hasher, equal, alloc);
   TypeParam t(m);
   TypeParam n;
@@ -422,7 +428,7 @@ TYPED_TEST_P(ConstructorTest, MoveAssignment) {
 
 TYPED_TEST_P(ConstructorTest, AssignmentFromInitializerList) {
   using T = hash_internal::GeneratedType<TypeParam>;
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   std::initializer_list<T> values = {gen(), gen(), gen(), gen(), gen()};
   TypeParam m;
   m = values;
@@ -431,7 +437,7 @@ TYPED_TEST_P(ConstructorTest, AssignmentFromInitializerList) {
 
 TYPED_TEST_P(ConstructorTest, AssignmentOverwritesExisting) {
   using T = hash_internal::GeneratedType<TypeParam>;
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   TypeParam m({gen(), gen(), gen()});
   TypeParam n({gen()});
   n = m;
@@ -440,7 +446,7 @@ TYPED_TEST_P(ConstructorTest, AssignmentOverwritesExisting) {
 
 TYPED_TEST_P(ConstructorTest, MoveAssignmentOverwritesExisting) {
   using T = hash_internal::GeneratedType<TypeParam>;
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   TypeParam m({gen(), gen(), gen()});
   TypeParam t(m);
   TypeParam n({gen()});
@@ -450,7 +456,7 @@ TYPED_TEST_P(ConstructorTest, MoveAssignmentOverwritesExisting) {
 
 TYPED_TEST_P(ConstructorTest, AssignmentFromInitializerListOverwritesExisting) {
   using T = hash_internal::GeneratedType<TypeParam>;
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   std::initializer_list<T> values = {gen(), gen(), gen(), gen(), gen()};
   TypeParam m;
   m = values;
@@ -459,7 +465,7 @@ TYPED_TEST_P(ConstructorTest, AssignmentFromInitializerListOverwritesExisting) {
 
 TYPED_TEST_P(ConstructorTest, AssignmentOnSelf) {
   using T = hash_internal::GeneratedType<TypeParam>;
-  hash_internal::Generator<T> gen;
+  hash_internal::UniqueGenerator<T> gen;
   std::initializer_list<T> values = {gen(), gen(), gen(), gen(), gen()};
   TypeParam m(values);
   m = *&m;  // Avoid -Wself-assign
@@ -482,6 +488,7 @@ REGISTER_TYPED_TEST_CASE_P(
     AssignmentFromInitializerListOverwritesExisting, AssignmentOnSelf);
 
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_INTERNAL_UNORDERED_MAP_CONSTRUCTOR_TEST_H_

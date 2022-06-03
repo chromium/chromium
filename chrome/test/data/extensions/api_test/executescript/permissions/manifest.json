@@ -3,7 +3,8 @@
   "manifest_version": 2,
   "name": "Tests edge cases in chrome.tabs.executeScript() with permissions",
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   },
   "permissions": ["tabs", "http://a.com/", "http://b.com/"]
 }

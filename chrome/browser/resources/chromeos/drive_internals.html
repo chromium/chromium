@@ -5,6 +5,7 @@
     <meta charset="utf-8">
     <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
     <link rel="stylesheet" href="drive_internals.css">
+    <script src="chrome://resources/js/assert.js"></script>
     <script src="chrome://resources/js/util.js"></script>
     <script src="chrome://drive-internals/drive_internals.js"></script>
   </head>
@@ -24,20 +25,49 @@
       </ul>
     </section>
 
-    <section id="account-information-section" hidden>
-      <h2>Account Information</h2>
-      <ul>
-        <li>Remote Changestamp:
-          <span id="account-largest-changestamp-remote"></span>
-        </li>
-        <li>Quota Information: <span id="account-quota-info"></span></li>
-        <li>Root Resource Id: <span id="root-resource-id"></span></li>
-      </ul>
-    </section>
-
-    <section id="local-metadata-section" hidden>
-      <h2>Local Metadata</h2>
+    <section id="drive-debug" hidden>
+      <h2>Drive Debug</h2>
       <div>
+        <label>
+          Verbose logging
+          <input type="checkbox" id="verbose-logging-toggle">
+        </label>
+      </div>
+      <div>
+        Tracing
+        <button id="button-enable-tracing">Enable</button>
+        <button id="button-disable-tracing">Disable</button>
+      </div>
+      <div id="developer-mode-controls" hidden>
+        <div>
+          <div>Startup Arguments</div>
+          <form id="startup-arguments-form">
+            <input id="startup-arguments-input">
+            <button type="submit">Apply</button>
+            <span id="arguments-status-text"></span>
+          </form>
+
+          <div>Networking</div>
+          <div>
+            <button id="button-enable-networking">Enable</button>
+            <button id="button-disable-networking">Disable</button>
+          </div>
+
+          <div>Force pause syncing</div>
+          <div>
+            <button id="button-enable-force-pause-syncing">Enable</button>
+            <button id="button-disable-force-pause-syncing">Disable</button>
+          </div>
+
+          <div>Account settings</div>
+          <div>
+            <button id="button-dump-account-settings">Dump</button>
+            <button id="button-load-account-settings">Load</button>
+          </div>
+        </div>
+      </div>
+      <div>
+        <button id="button-restart-drive">Restart Drive</button>
         <button id="button-reset-drive-filesystem">
           Clear local data
         </button>
@@ -47,6 +77,17 @@
         <li>Local Free Space:
           <span id="local-storage-freespace"></span> MB
         </li>
+      </ul>
+    </section>
+
+    <section id="account-information-section" hidden>
+      <h2>Account Information</h2>
+      <ul>
+        <li>Remote Changestamp:
+          <span id="account-largest-changestamp-remote"></span>
+        </li>
+        <li>Quota Information: <span id="account-quota-info"></span></li>
+        <li>Root Resource Id: <span id="root-resource-id"></span></li>
       </ul>
     </section>
 

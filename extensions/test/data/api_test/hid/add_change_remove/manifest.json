@@ -1,0 +1,16 @@
+{
+  "name": "chrome.hid device changed",
+  "manifest_version": 2,
+  "version": "0.1",
+  "description": "browser test for updating HID device info",
+  "app": {
+    "background": {
+      "scripts": ["background.js"]
+    }
+  },
+  "permissions": [
+    "hid",
+    // This is a test device emulated by the mocks enabled for the test.
+    { "usbDevices": [{ "vendorId": 6353, "productId": 22768 }]}
+  ]
+}

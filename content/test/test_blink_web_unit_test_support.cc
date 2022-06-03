@@ -4,17 +4,18 @@
 
 #include "content/test/test_blink_web_unit_test_support.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/null_task_runner.h"
 #include "base/threading/platform_thread.h"
@@ -23,13 +24,12 @@
 #include "cc/trees/layer_tree_settings.h"
 #include "content/app/mojo/mojo_init.h"
 #include "content/child/child_process.h"
-#include "content/public/common/service_names.mojom.h"
-#include "content/test/mock_clipboard_host.h"
 #include "media/base/media.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "net/cookies/cookie_monster.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+#include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/public/platform/web_connection_type.h"
@@ -43,7 +43,7 @@
 #include "third_party/blink/public/web/blink.h"
 #include "v8/include/v8.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
@@ -61,6 +61,9 @@ namespace {
 class DummyTaskRunner : public base::SingleThreadTaskRunner {
  public:
   DummyTaskRunner() : thread_id_(base::PlatformThread::CurrentId()) {}
+
+  DummyTaskRunner(const DummyTaskRunner&) = delete;
+  DummyTaskRunner& operator=(const DummyTaskRunner&) = delete;
 
   bool PostDelayedTask(const base::Location& from_here,
                        base::OnceClosure task,
@@ -84,38 +87,15 @@ class DummyTaskRunner : public base::SingleThreadTaskRunner {
   ~DummyTaskRunner() override {}
 
   base::PlatformThreadId thread_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyTaskRunner);
-};
-
-// TODO(kinuko,toyoshim): Deprecate this, all Blink tests should not rely
-// on this //content implementation.
-class WebURLLoaderFactoryWithMock : public blink::WebURLLoaderFactory {
- public:
-  explicit WebURLLoaderFactoryWithMock(base::WeakPtr<blink::Platform> platform)
-      : platform_(std::move(platform)) {}
-  ~WebURLLoaderFactoryWithMock() override = default;
-
-  std::unique_ptr<blink::WebURLLoader> CreateURLLoader(
-      const blink::WebURLRequest& request,
-      std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-          task_runner_handle) override {
-    DCHECK(platform_);
-    return platform_->GetURLLoaderMockFactory()->CreateURLLoader();
-  }
-
- private:
-  base::WeakPtr<blink::Platform> platform_;
-  DISALLOW_COPY_AND_ASSIGN(WebURLLoaderFactoryWithMock);
 };
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kDefault;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kDefault;
 #endif
 #endif
 
@@ -127,19 +107,15 @@ namespace content {
 
 TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     TestBlinkWebUnitTestSupport::SchedulerType scheduler_type) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
-
-  url_loader_factory_ = blink::WebURLLoaderMockFactory::Create();
-  // Mock out clipboard calls so that tests don't mess
-  // with each other's copies/pastes when running in parallel.
-  mock_clipboard_host_ = std::make_unique<MockClipboardHost>();
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
 #endif
 
+  blink::Platform::InitializeBlink();
   scoped_refptr<base::SingleThreadTaskRunner> dummy_task_runner;
   std::unique_ptr<base::ThreadTaskRunnerHandle> dummy_task_runner_handle;
   if (scheduler_type == SchedulerType::kMockScheduler) {
@@ -153,8 +129,8 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
     // create their own thread bundles or message loops, and doing the same in
     // TestBlinkWebUnitTestSupport would introduce a conflict.
     dummy_task_runner = base::MakeRefCounted<base::NullTaskRunner>();
-    dummy_task_runner_handle.reset(
-        new base::ThreadTaskRunnerHandle(dummy_task_runner));
+    dummy_task_runner_handle =
+        std::make_unique<base::ThreadTaskRunnerHandle>(dummy_task_runner);
   } else {
     DCHECK_EQ(scheduler_type, SchedulerType::kRealScheduler);
     main_thread_scheduler_ =
@@ -186,28 +162,19 @@ TestBlinkWebUnitTestSupport::TestBlinkWebUnitTestSupport(
   // Test shell always exposes the GC.
   std::string flags("--expose-gc");
   v8::V8::SetFlagsFromString(flags.c_str(), flags.size());
-
-  GetBrowserInterfaceBroker()->SetBinderForTesting(
-      blink::mojom::ClipboardHost::Name_,
-      base::BindRepeating(&TestBlinkWebUnitTestSupport::BindClipboardHost,
-                          weak_factory_.GetWeakPtr()));
 }
 
 TestBlinkWebUnitTestSupport::~TestBlinkWebUnitTestSupport() {
-  url_loader_factory_.reset();
-  mock_clipboard_host_.reset();
   if (main_thread_scheduler_)
     main_thread_scheduler_->Shutdown();
   g_test_platform = nullptr;
 }
 
-std::unique_ptr<blink::WebURLLoaderFactory>
-TestBlinkWebUnitTestSupport::CreateDefaultURLLoaderFactory() {
-  return std::make_unique<WebURLLoaderFactoryWithMock>(
-      weak_factory_.GetWeakPtr());
+blink::WebString TestBlinkWebUnitTestSupport::UserAgent() {
+  return blink::WebString::FromUTF8("test_runner/0.0.0.0");
 }
 
-blink::WebString TestBlinkWebUnitTestSupport::UserAgent() {
+blink::WebString TestBlinkWebUnitTestSupport::ReducedUserAgent() {
   return blink::WebString::FromUTF8("test_runner/0.0.0.0");
 }
 
@@ -218,19 +185,19 @@ blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
     case IDS_FORM_FILE_NO_FILE_LABEL:
       return WebString::FromASCII("<<NoFileChosenLabel>>");
     case IDS_FORM_OTHER_DATE_LABEL:
-      return WebString::FromASCII("<<OtherDateLabel>>");
+      return WebString::FromASCII("<<OtherDate>>");
     case IDS_FORM_OTHER_MONTH_LABEL:
-      return WebString::FromASCII("<<OtherMonthLabel>>");
+      return WebString::FromASCII("<<OtherMonth>>");
     case IDS_FORM_OTHER_WEEK_LABEL:
-      return WebString::FromASCII("<<OtherWeekLabel>>");
+      return WebString::FromASCII("<<OtherWeek>>");
     case IDS_FORM_CALENDAR_CLEAR:
-      return WebString::FromASCII("<<CalendarClear>>");
+      return WebString::FromASCII("<<Clear>>");
     case IDS_FORM_CALENDAR_TODAY:
-      return WebString::FromASCII("<<CalendarToday>>");
+      return WebString::FromASCII("<<Today>>");
     case IDS_FORM_THIS_MONTH_LABEL:
-      return WebString::FromASCII("<<ThisMonthLabel>>");
+      return WebString::FromASCII("<<ThisMonth>>");
     case IDS_FORM_THIS_WEEK_LABEL:
-      return WebString::FromASCII("<<ThisWeekLabel>>");
+      return WebString::FromASCII("<<ThisWeek>>");
     case IDS_FORM_VALIDATION_VALUE_MISSING:
       return WebString::FromASCII("<<ValidationValueMissing>>");
     case IDS_FORM_VALIDATION_VALUE_MISSING_SELECT:
@@ -251,7 +218,7 @@ blink::WebString TestBlinkWebUnitTestSupport::QueryLocalizedString(
     case IDS_FORM_VALIDATION_RANGE_OVERFLOW:
       return blink::WebString::FromASCII("range overflow");
     case IDS_FORM_SELECT_MENU_LIST_TEXT:
-      return blink::WebString::FromASCII("$1 selected");
+      return blink::WebString::FromASCII(value.Ascii() + " selected");
   }
 
   return BlinkPlatformImpl::QueryLocalizedString(resource_id, value);
@@ -281,19 +248,16 @@ TestBlinkWebUnitTestSupport::GetIOTaskRunner() const {
                                  : nullptr;
 }
 
-blink::WebURLLoaderMockFactory*
-TestBlinkWebUnitTestSupport::GetURLLoaderMockFactory() {
-  return url_loader_factory_.get();
-}
-
 bool TestBlinkWebUnitTestSupport::IsThreadedAnimationEnabled() {
   return threaded_animation_;
 }
 
-void TestBlinkWebUnitTestSupport::BindClipboardHost(
-    mojo::ScopedMessagePipeHandle handle) {
-  mock_clipboard_host_->Bind(
-      mojo::PendingReceiver<blink::mojom::ClipboardHost>(std::move(handle)));
+bool TestBlinkWebUnitTestSupport::IsUseZoomForDSFEnabled() {
+  return use_zoom_for_dsf_;
+}
+
+cc::TaskGraphRunner* TestBlinkWebUnitTestSupport::GetTaskGraphRunner() {
+  return &test_task_graph_runner_;
 }
 
 // static
@@ -302,6 +266,15 @@ bool TestBlinkWebUnitTestSupport::SetThreadedAnimationEnabled(bool enabled) {
       << "Not using TestBlinkWebUnitTestSupport as blink::Platform";
   bool old = g_test_platform->threaded_animation_;
   g_test_platform->threaded_animation_ = enabled;
+  return old;
+}
+
+// static
+bool TestBlinkWebUnitTestSupport::SetUseZoomForDsfEnabled(bool enabled) {
+  DCHECK(g_test_platform)
+      << "Not using TestBlinkWebUnitTestSupport as blink::Platform";
+  bool old = g_test_platform->use_zoom_for_dsf_;
+  g_test_platform->use_zoom_for_dsf_ = enabled;
   return old;
 }
 

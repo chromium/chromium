@@ -16,7 +16,6 @@
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_macros.h"
 #include "remoting/base/logging.h"
-#include "remoting/host/chromoting_messages.h"
 #include "remoting/host/security_key/security_key_ipc_server_impl.h"
 
 namespace {
@@ -38,16 +37,17 @@ std::unique_ptr<SecurityKeyIpcServer> SecurityKeyIpcServer::Create(
     ClientSessionDetails* client_session_details,
     base::TimeDelta initial_connect_timeout,
     const SecurityKeyAuthHandler::SendMessageCallback& message_callback,
-    const base::Closure& connect_callback,
-    const base::Closure& done_callback) {
+    base::OnceClosure connect_callback,
+    base::OnceClosure done_callback) {
   std::unique_ptr<SecurityKeyIpcServer> ipc_server =
-      g_factory
-          ? g_factory->Create(connection_id, client_session_details,
-                              initial_connect_timeout, message_callback,
-                              connect_callback, done_callback)
-          : base::WrapUnique(new SecurityKeyIpcServerImpl(
-                connection_id, client_session_details, initial_connect_timeout,
-                message_callback, connect_callback, done_callback));
+      g_factory ? g_factory->Create(connection_id, client_session_details,
+                                    initial_connect_timeout, message_callback,
+                                    std::move(connect_callback),
+                                    std::move(done_callback))
+                : base::WrapUnique(new SecurityKeyIpcServerImpl(
+                      connection_id, client_session_details,
+                      initial_connect_timeout, message_callback,
+                      std::move(connect_callback), std::move(done_callback)));
 
   return ipc_server;
 }

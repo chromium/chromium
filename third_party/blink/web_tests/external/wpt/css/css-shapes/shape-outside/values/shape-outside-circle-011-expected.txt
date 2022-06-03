@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+FAIL circle(at calc(10in)) - inline style assert_equals: expected "circle(at calc(960px) 50%)" but got "circle(at calc(10in) 50%)"
+PASS circle(at calc(10in + 20px)) - inline style
+PASS circle(at calc(30%)) - inline style
+PASS circle(at calc(100%/4)) - inline style
+PASS circle(at calc(25%*3)) - inline style
+FAIL circle(at calc(25%*3 - 10in)) - inline style assert_equals: expected "circle(at calc(75% - 960px) 50%)" but got "circle(at calc(75% - 10in) 50%)"
+FAIL circle(at calc((12.5%*6 + 10in) / 4)) - inline style assert_equals: expected "circle(at calc(18.75% + 240px) 50%)" but got "circle(at calc((75% + 10in) / 4) 50%)"
+PASS circle(at calc(10in)) - computed style
+PASS circle(at calc(10in + 20px)) - computed style
+PASS circle(at calc(30%)) - computed style
+PASS circle(at calc(100%/4)) - computed style
+PASS circle(at calc(25%*3)) - computed style
+PASS circle(at calc(25%*3 - 10in)) - computed style
+PASS circle(at calc((12.5%*6 + 10in) / 4)) - computed style
+Harness: the test ran to completion.
+

@@ -105,14 +105,6 @@ extern const xmlChar *xsltXSLTAttrMarker;
  */
 /* #define XSLT_REFACTORED_XSLT_NSCOMP */
 
-/**
- * XSLT_REFACTORED_XPATHCOMP:
- *
- * Internal define to enable the optimization of the
- * compilation of XPath expressions.
- */
-#define XSLT_REFACTORED_XPATHCOMP
-
 #ifdef XSLT_REFACTORED_XSLT_NSCOMP
 
 extern const xmlChar *xsltConstNamespaceNameXSLT;
@@ -299,6 +291,9 @@ struct _xsltTemplate {
     int              templMax;		/* Size of the templtes stack */
     xsltTemplatePtr *templCalledTab;	/* templates called */
     int             *templCountTab;  /* .. and how often */
+
+    /* Conflict resolution */
+    int position;
 };
 
 /**
@@ -478,7 +473,7 @@ typedef void (*xsltElemPreCompDeallocator) (xsltElemPreCompPtr comp);
  */
 struct _xsltElemPreComp {
     xsltElemPreCompPtr next;		/* next item in the global chained
-					   list hold by xsltStylesheet. */
+					   list held by xsltStylesheet. */
     xsltStyleType type;		/* type of the element */
     xsltTransformFunction func;	/* handling function */
     xmlNodePtr inst;			/* the node in the stylesheet's tree
@@ -590,7 +585,7 @@ struct _xsltNsListContainer {
  */
 struct _xsltStylePreComp {
     xsltElemPreCompPtr next;    /* next item in the global chained
-				   list hold by xsltStylesheet */
+				   list held by xsltStylesheet */
     xsltStyleType type;         /* type of the item */
     xsltTransformFunction func; /* handling function */
     xmlNodePtr inst;		/* the node in the stylesheet's tree
@@ -1346,9 +1341,6 @@ struct _xsltCompilerCtxt {
     */
     int strict;
     xsltPrincipalStylesheetDataPtr psData;
-#ifdef XSLT_REFACTORED_XPATHCOMP
-    xmlXPathContextPtr xpathCtxt;
-#endif
     xsltStyleItemUknownPtr unknownItem;
     int hasNsAliases; /* Indicator if there was an xsl:namespace-alias. */
     xsltNsAliasPtr nsAliases;
@@ -1511,17 +1503,18 @@ struct _xsltStylesheet {
     /*
      * Template descriptions.
      */
-    xsltTemplatePtr templates;	/* the ordered list of templates */
-    void *templatesHash;	/* hash table or wherever compiled templates
-				   information is stored */
-    void *rootMatch;		/* template based on / */
-    void *keyMatch;		/* template based on key() */
-    void *elemMatch;		/* template based on * */
-    void *attrMatch;		/* template based on @* */
-    void *parentMatch;		/* template based on .. */
-    void *textMatch;		/* template based on text() */
-    void *piMatch;		/* template based on processing-instruction() */
-    void *commentMatch;		/* template based on comment() */
+    xsltTemplatePtr templates;           /* the ordered list of templates */
+    xmlHashTablePtr templatesHash;       /* hash table or wherever compiled
+                                            templates information is stored */
+    struct _xsltCompMatch *rootMatch;    /* template based on / */
+    struct _xsltCompMatch *keyMatch;     /* template based on key() */
+    struct _xsltCompMatch *elemMatch;    /* template based on * */
+    struct _xsltCompMatch *attrMatch;    /* template based on @* */
+    struct _xsltCompMatch *parentMatch;  /* template based on .. */
+    struct _xsltCompMatch *textMatch;    /* template based on text() */
+    struct _xsltCompMatch *piMatch;      /* template based on
+                                            processing-instruction() */
+    struct _xsltCompMatch *commentMatch; /* template based on comment() */
 
     /*
      * Namespace aliases.
@@ -1642,6 +1635,8 @@ struct _xsltStylesheet {
     int forwards_compatible;
 
     xmlHashTablePtr namedTemplates; /* hash table of named templates */
+
+    xmlXPathContextPtr xpathCtxt;
 };
 
 typedef struct _xsltTransformCache xsltTransformCache;
@@ -1789,6 +1784,8 @@ struct _xsltTransformContext {
     int depth;          /* Needed to catch recursions */
     int maxTemplateDepth;
     int maxTemplateVars;
+    unsigned long opLimit;
+    unsigned long opCount;
 };
 
 /**
@@ -1871,6 +1868,9 @@ XSLTPUBFUN xsltStylesheetPtr XSLTCALL
 XSLTPUBFUN xsltStylesheetPtr XSLTCALL
 			xsltParseStylesheetImportedDoc(xmlDocPtr doc,
 						xsltStylesheetPtr style);
+XSLTPUBFUN int XSLTCALL
+			xsltParseStylesheetUser(xsltStylesheetPtr style,
+						xmlDocPtr doc);
 XSLTPUBFUN xsltStylesheetPtr XSLTCALL
 			xsltLoadStylesheetPI	(xmlDocPtr doc);
 XSLTPUBFUN void XSLTCALL

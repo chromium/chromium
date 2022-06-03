@@ -14,7 +14,7 @@ class GURL;
 - (void)tabViewTapped:(TabView*)tabView;
 
 // Called when the TabView's close button was tapped.
-- (void)tabViewcloseButtonPressed:(TabView*)tabView;
+- (void)tabViewCloseButtonPressed:(TabView*)tabView;
 
 // Called when an item that can be interpreted as a URL is dropped on the tab
 // view.

@@ -18,6 +18,13 @@ class CommandLine;
 class SequencedTaskRunner;
 }
 
+namespace breadcrumbs {
+class BreadcrumbManager;
+class BreadcrumbPersistentStorageManager;
+}
+
+class ApplicationBreadcrumbsLogger;
+
 namespace network {
 class NetworkChangeManager;
 }
@@ -27,6 +34,10 @@ class ApplicationContextImpl : public ApplicationContext {
   ApplicationContextImpl(base::SequencedTaskRunner* local_state_task_runner,
                          const base::CommandLine& command_line,
                          const std::string& locale);
+
+  ApplicationContextImpl(const ApplicationContextImpl&) = delete;
+  ApplicationContextImpl& operator=(const ApplicationContextImpl&) = delete;
+
   ~ApplicationContextImpl() override;
 
   // Called before the browser threads are created.
@@ -59,7 +70,6 @@ class ApplicationContextImpl : public ApplicationContext {
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmRecorder* GetUkmRecorder() override;
   variations::VariationsService* GetVariationsService() override;
-  rappor::RapporServiceImpl* GetRapporServiceImpl() override;
   net::NetLog* GetNetLog() override;
   net_log::NetExportFileWriter* GetNetExportFileWriter() override;
   network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
@@ -67,7 +77,11 @@ class ApplicationContextImpl : public ApplicationContext {
   gcm::GCMDriver* GetGCMDriver() override;
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
+  SafeBrowsingService* GetSafeBrowsingService() override;
   network::NetworkConnectionTracker* GetNetworkConnectionTracker() override;
+  BrowserPolicyConnectorIOS* GetBrowserPolicyConnector() override;
+  breadcrumbs::BreadcrumbPersistentStorageManager*
+  GetBreadcrumbPersistentStorageManager() override;
 
  private:
   // Sets the locale used by the application.
@@ -80,6 +94,20 @@ class ApplicationContextImpl : public ApplicationContext {
   void CreateGCMDriver();
 
   base::ThreadChecker thread_checker_;
+
+  // Breadcrumb manager used to store application wide breadcrumb events. Will
+  // be null if breadcrumbs feature is not enabled.
+  std::unique_ptr<breadcrumbs::BreadcrumbManager> breadcrumb_manager_;
+  // Logger which observers and logs application wide events to
+  // |breadcrumb_manager_|. Will be null if breadcrumbs feature is not enabled.
+  std::unique_ptr<ApplicationBreadcrumbsLogger> application_breadcrumbs_logger_;
+
+  // Must be destroyed after |local_state_|. BrowserStatePolicyConnector isn't a
+  // keyed service because the pref service, which isn't a keyed service, has a
+  // hard dependency on the policy infrastructure. In order to outlive the pref
+  // service, the policy connector must live outside the keyed services.
+  std::unique_ptr<BrowserPolicyConnectorIOS> browser_policy_connector_;
+
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<net_log::NetExportFileWriter> net_export_file_writer_;
   std::unique_ptr<network_time::NetworkTimeTracker> network_time_tracker_;
@@ -98,9 +126,7 @@ class ApplicationContextImpl : public ApplicationContext {
   std::unique_ptr<network::NetworkConnectionTracker>
       network_connection_tracker_;
 
-  bool was_last_shutdown_clean_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApplicationContextImpl);
+  scoped_refptr<SafeBrowsingService> safe_browsing_service_;
 };
 
 #endif  // IOS_CHROME_BROWSER_APPLICATION_CONTEXT_IMPL_H_

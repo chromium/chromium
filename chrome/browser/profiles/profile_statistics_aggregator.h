@@ -24,12 +24,14 @@ class ProfileStatisticsAggregator {
 
  public:
   ProfileStatisticsAggregator(Profile* profile,
-                              const base::Closure& done_callback);
-
+                              base::OnceClosure done_callback);
+  ProfileStatisticsAggregator(const ProfileStatisticsAggregator&) = delete;
+  ProfileStatisticsAggregator& operator=(const ProfileStatisticsAggregator&) =
+      delete;
   ~ProfileStatisticsAggregator();
 
   void AddCallbackAndStartAggregator(
-      const profiles::ProfileStatisticsCallback& stats_callback);
+      profiles::ProfileStatisticsCallback stats_callback);
 
  private:
   // Start gathering statistics. Also cancels existing statistics tasks.
@@ -56,11 +58,9 @@ class ProfileStatisticsAggregator {
   std::vector<profiles::ProfileStatisticsCallback> stats_callbacks_;
 
   // Callback function to be called when all statistics are calculated.
-  base::Closure done_callback_;
+  base::OnceClosure done_callback_;
 
   std::vector<std::unique_ptr<browsing_data::BrowsingDataCounter>> counters_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileStatisticsAggregator);
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_STATISTICS_AGGREGATOR_H_

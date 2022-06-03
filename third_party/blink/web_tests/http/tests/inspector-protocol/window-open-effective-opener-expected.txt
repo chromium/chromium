@@ -1,0 +1,86 @@
+Tests for correct opener in Page.TargetCreated and Page.TargetInfoChanged protocol method.
+
+Opening without new browsing context
+{
+    attached : false
+    browserContextId : <string>
+    canAccessOpener : true
+    openerFrameId : <string>
+    openerId : <string>
+    targetId : <string>
+    title : 
+    type : page
+    url : 
+}
+PASS: Correct openerFrameId
+PASS: Correct openerId
+{
+    attached : false
+    browserContextId : <string>
+    canAccessOpener : true
+    openerFrameId : <string>
+    openerId : <string>
+    targetId : <string>
+    title : 127.0.0.1:8000/inspector-protocol/resources/resources/test-page.html
+    type : page
+    url : http://127.0.0.1:8000/inspector-protocol/resources/resources/test-page.html
+}
+PASS: Correct openerFrameId
+PASS: Correct openerId
+
+Opening with new browsing context
+{
+    attached : false
+    browserContextId : <string>
+    canAccessOpener : false
+    openerFrameId : <string>
+    openerId : <string>
+    targetId : <string>
+    title : 
+    type : page
+    url : 
+}
+PASS: Correct openerFrameId
+PASS: Correct openerId
+{
+    attached : false
+    browserContextId : <string>
+    canAccessOpener : false
+    openerFrameId : <string>
+    openerId : <string>
+    targetId : <string>
+    title : 127.0.0.1:8000/inspector-protocol/resources/resources/test-page.html
+    type : page
+    url : http://127.0.0.1:8000/inspector-protocol/resources/resources/test-page.html
+}
+PASS: Correct openerFrameId
+PASS: Correct openerId
+
+Opening with COOP header
+{
+    attached : false
+    browserContextId : <string>
+    canAccessOpener : true
+    openerFrameId : <string>
+    openerId : <string>
+    targetId : <string>
+    title : 
+    type : page
+    url : 
+}
+PASS: Correct openerFrameId
+PASS: Correct openerId
+{
+    attached : false
+    browserContextId : <string>
+    canAccessOpener : false
+    openerFrameId : <string>
+    openerId : <string>
+    targetId : <string>
+    title : https://127.0.0.1:8443/inspector-protocol/resources/resources/test-page.html
+    type : page
+    url : https://127.0.0.1:8443/inspector-protocol/resources/resources/test-page.html
+}
+PASS: Correct openerFrameId
+PASS: Correct openerId
+

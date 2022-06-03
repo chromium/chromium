@@ -5,17 +5,14 @@
 #include "services/audio/loopback_stream.h"
 
 #include <algorithm>
-#include <cinttypes>
 #include <string>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
+#include "base/containers/contains.h"
 #include "base/sync_socket.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "components/crash/core/common/crash_key.h"
 #include "media/base/audio_bus.h"
 #include "media/base/vector_math.h"
 #include "mojo/public/cpp/system/buffer.h"
@@ -27,8 +24,7 @@ namespace {
 
 // Start with a conservative, but reasonable capture delay that should work for
 // most platforms (i.e., not needing an increase during a loopback session).
-constexpr base::TimeDelta kInitialCaptureDelay =
-    base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kInitialCaptureDelay = base::Milliseconds(20);
 
 }  // namespace
 
@@ -77,9 +73,9 @@ LoopbackStream::LoopbackStream(
   if (writer) {
     base::ReadOnlySharedMemoryRegion shared_memory_region =
         writer->TakeSharedMemoryRegion();
-    mojo::ScopedHandle socket_handle;
+    mojo::PlatformHandle socket_handle;
     if (shared_memory_region.IsValid()) {
-      socket_handle = mojo::WrapPlatformFile(foreign_socket.Release());
+      socket_handle = mojo::PlatformHandle(foreign_socket.Take());
       if (socket_handle.is_valid()) {
         std::move(created_callback)
             .Run({base::in_place, std::move(shared_memory_region),
@@ -145,7 +141,7 @@ void LoopbackStream::SetVolume(double volume) {
                        TRACE_EVENT_SCOPE_THREAD, "volume", volume);
 
   if (!std::isfinite(volume) || volume < 0.0) {
-    mojo::ReportBadMessage("Invalid volume");
+    receiver_.ReportBadMessage("Invalid volume");
     OnError();
     return;
   }
@@ -174,7 +170,7 @@ void LoopbackStream::OnMemberJoinedGroup(LoopbackGroupMember* member) {
   }
 
   TRACE_EVENT1("audio", "LoopbackStream::OnMemberJoinedGroup", "member",
-               member);
+               static_cast<void*>(member));
 
   const media::AudioParameters& input_params = member->GetAudioParameters();
   const auto emplace_result = snoopers_.emplace(
@@ -199,7 +195,8 @@ void LoopbackStream::OnMemberLeftGroup(LoopbackGroupMember* member) {
     return;
   }
 
-  TRACE_EVENT1("audio", "LoopbackStream::OnMemberLeftGroup", "member", member);
+  TRACE_EVENT1("audio", "LoopbackStream::OnMemberLeftGroup", "member",
+               static_cast<void*>(member));
 
   SnooperNode* const snooper = &(snoop_it->second);
   member->StopSnooping(snooper);
@@ -218,7 +215,7 @@ void LoopbackStream::OnError() {
 
   receiver_.reset();
   if (client_) {
-    client_->OnError();
+    client_->OnError(media::mojom::InputStreamErrorCode::kUnknown);
     client_.reset();
   }
   observer_.reset();
@@ -240,9 +237,6 @@ void LoopbackStream::OnError() {
   // take care of the rest.
 }
 
-// static
-std::atomic<int> LoopbackStream::FlowNetwork::instance_count_;
-
 LoopbackStream::FlowNetwork::FlowNetwork(
     scoped_refptr<base::SequencedTaskRunner> flow_task_runner,
     const media::AudioParameters& output_params,
@@ -251,39 +245,26 @@ LoopbackStream::FlowNetwork::FlowNetwork(
       flow_task_runner_(flow_task_runner),
       output_params_(output_params),
       writer_(std::move(writer)),
-      mix_bus_(media::AudioBus::Create(output_params_)) {
-  ++instance_count_;
-  magic_bytes_ = 0x600DC0DEu;
-  HelpDiagnoseCauseOfLoopbackCrash("constructed");
-}
+      mix_bus_(media::AudioBus::Create(output_params_)) {}
 
 void LoopbackStream::FlowNetwork::AddInput(SnooperNode* node) {
-  CHECK_EQ(magic_bytes_, 0x600DC0DEu);
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
 
   base::AutoLock scoped_lock(lock_);
-  if (inputs_.empty()) {
-    HelpDiagnoseCauseOfLoopbackCrash("adding first input");
-  }
   DCHECK(!base::Contains(inputs_, node));
   inputs_.push_back(node);
 }
 
 void LoopbackStream::FlowNetwork::RemoveInput(SnooperNode* node) {
-  CHECK_EQ(magic_bytes_, 0x600DC0DEu);
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
 
   base::AutoLock scoped_lock(lock_);
   const auto it = std::find(inputs_.begin(), inputs_.end(), node);
   DCHECK(it != inputs_.end());
   inputs_.erase(it);
-  if (inputs_.empty()) {
-    HelpDiagnoseCauseOfLoopbackCrash("removed last input");
-  }
 }
 
 void LoopbackStream::FlowNetwork::SetVolume(double volume) {
-  CHECK_EQ(magic_bytes_, 0x600DC0DEu);
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
 
   base::AutoLock scoped_lock(lock_);
@@ -291,14 +272,11 @@ void LoopbackStream::FlowNetwork::SetVolume(double volume) {
 }
 
 void LoopbackStream::FlowNetwork::Start() {
-  CHECK_EQ(magic_bytes_, 0x600DC0DEu);
   DCHECK_CALLED_ON_VALID_SEQUENCE(control_sequence_);
   DCHECK(!is_started());
 
   timer_.emplace(clock_);
   // Note: GenerateMoreAudio() will schedule the timer.
-
-  HelpDiagnoseCauseOfLoopbackCrash("starting");
 
   first_generate_time_ = clock_->NowTicks();
   frames_elapsed_ = 0;
@@ -313,17 +291,11 @@ void LoopbackStream::FlowNetwork::Start() {
 }
 
 LoopbackStream::FlowNetwork::~FlowNetwork() {
-  CHECK_EQ(magic_bytes_, 0x600DC0DEu);
   DCHECK(flow_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(inputs_.empty());
-
-  HelpDiagnoseCauseOfLoopbackCrash("destructing");
-  magic_bytes_ = 0xDEADBEEFu;
-  --instance_count_;
 }
 
 void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
-  CHECK_EQ(magic_bytes_, 0x600DC0DEu);
   DCHECK(flow_task_runner_->RunsTasksInCurrentSequence());
 
   TRACE_EVENT_WITH_FLOW0("audio", "GenerateMoreAudio", this,
@@ -338,15 +310,13 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
     base::AutoLock scoped_lock(lock_);
     output_volume = volume_;
 
-    HelpDiagnoseCauseOfLoopbackCrash("generating");
-
     // Compute the reference time to use for audio rendering. Query each input
     // node and update |capture_delay_|, if necessary. This is used to always
     // generate audio from a "safe point" in the recent past, to prevent buffer
     // underruns in the inputs. http://crbug.com/934770
     delayed_capture_time = next_generate_time_ - capture_delay_;
     for (SnooperNode* node : inputs_) {
-      const base::Optional<base::TimeTicks> suggestion =
+      const absl::optional<base::TimeTicks> suggestion =
           node->SuggestLatestRenderTime(mix_bus_->frames());
       if (suggestion.value_or(delayed_capture_time) < delayed_capture_time) {
         const base::TimeDelta increase = delayed_capture_time - (*suggestion);
@@ -404,9 +374,8 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   frames_elapsed_ += frames_per_buffer;
   next_generate_time_ =
       first_generate_time_ +
-      base::TimeDelta::FromMicroseconds(frames_elapsed_ *
-                                        base::Time::kMicrosecondsPerSecond /
-                                        output_params_.sample_rate());
+      base::Microseconds(frames_elapsed_ * base::Time::kMicrosecondsPerSecond /
+                         output_params_.sample_rate());
   const base::TimeTicks now = clock_->NowTicks();
   if (next_generate_time_ < now) {
     TRACE_EVENT_INSTANT1("audio", "GenerateMoreAudio Is Behind",
@@ -422,9 +391,9 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
         (target_frame_count / frames_per_buffer + 1) * frames_per_buffer;
     next_generate_time_ =
         first_generate_time_ +
-        base::TimeDelta::FromMicroseconds(frames_elapsed_ *
-                                          base::Time::kMicrosecondsPerSecond /
-                                          output_params_.sample_rate());
+        base::Microseconds(frames_elapsed_ *
+                           base::Time::kMicrosecondsPerSecond /
+                           output_params_.sample_rate());
   }
 
   // Note: It's acceptable for |next_generate_time_| to be slightly before |now|
@@ -433,47 +402,6 @@ void LoopbackStream::FlowNetwork::GenerateMoreAudio() {
   // effects in the next GenerateMoreAudio() call. http://crbug.com/847487
   timer_->Start(FROM_HERE, next_generate_time_ - now, this,
                 &FlowNetwork::GenerateMoreAudio);
-}
-
-void LoopbackStream::FlowNetwork::HelpDiagnoseCauseOfLoopbackCrash(
-    const char* event) {
-  static crash_reporter::CrashKeyString<512> crash_string(
-      "audio-service-loopback");
-  const auto ToAbbreviatedParamsString =
-      [](const media::AudioParameters& params) {
-        return base::StringPrintf(
-            "F%d|L%d|R%d|FPB%d", static_cast<int>(params.format()),
-            static_cast<int>(params.channel_layout()), params.sample_rate(),
-            params.frames_per_buffer());
-      };
-  std::vector<std::string> input_formats;
-  input_formats.reserve(inputs_.size());
-  for (const SnooperNode* input : inputs_) {
-    input_formats.push_back(ToAbbreviatedParamsString(input->input_params()));
-  }
-  crash_string.Set(base::StringPrintf(
-      "num_instances=%d, event=%s, elapsed=%" PRId64 ", first_gen_ts=%" PRId64
-      ", next_gen_ts=%" PRId64
-      ", has_transfer_bus=%c, format=%s, volume=%f, has_timer=%c, inputs={%s}",
-      instance_count_.load(), event, frames_elapsed_,
-      (first_generate_time_ - base::TimeTicks()).InMicroseconds(),
-      (next_generate_time_ - base::TimeTicks()).InMicroseconds(),
-      transfer_bus_ ? 'Y' : 'N',
-      ToAbbreviatedParamsString(output_params_).c_str(), volume_,
-      timer_ ? 'Y' : 'N', base::JoinString(input_formats, ", ").c_str()));
-
-  // If there are any crashes from this code, please record to crbug.com/888478.
-  CHECK_EQ(magic_bytes_, 0x600DC0DEu);
-  CHECK(mix_bus_);
-  CHECK_GT(mix_bus_->channels(), 0);
-  CHECK_EQ(mix_bus_->channels(), output_params_.channels());
-  CHECK_GT(mix_bus_->frames(), 0);
-  CHECK_EQ(mix_bus_->frames(), output_params_.frames_per_buffer());
-  for (int i = 0; i < mix_bus_->channels(); ++i) {
-    float* const data = mix_bus_->channel(i);
-    CHECK(data);
-    memset(data, 0, mix_bus_->frames() * sizeof(data[0]));
-  }
 }
 
 }  // namespace audio

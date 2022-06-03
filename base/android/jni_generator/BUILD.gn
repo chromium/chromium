@@ -15,25 +15,21 @@ generate_jni("jni_sample_header") {
 }
 
 android_library("jni_sample_java") {
-  java_files = [
-    "java/src/org/chromium/example/jni_generator/SampleForTests.java",
+  sources = [
     "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java",
+    "java/src/org/chromium/example/jni_generator/SampleForTests.java",
   ]
 
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  deps = [ "//base:base_java" ]
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("jni_annotation_sample_java") {
-  java_files = [ "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java" ]
-  deps = [
-    "//base:base_java",
-    "//base:jni_java",
-  ]
+  sources = [ "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java" ]
+
+  deps = [ "//base:base_java" ]
+
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
@@ -64,11 +60,9 @@ shared_library("jni_sample_lib") {
 android_apk("sample_jni_apk") {
   apk_name = "SampleJni"
   android_manifest = "AndroidManifest.xml"
-  target_sdk_version = 24
   deps = [
     ":jni_sample_java",
     "//base:base_java",
-    "//base:jni_java",
   ]
   shared_libraries = [ ":jni_sample_lib" ]
   jni_registration_header = _registration_header
@@ -82,22 +76,14 @@ group("jni_generator_tests") {
   ]
 }
 
-java_cpp_template("processor_args_java") {
-  package_path = "org/chromium/jni_generator"
-  sources = [
-    "ProcessorArgs.template",
-  ]
-  defines = [ "HASH_JNI_NAMES_VALUE=$use_hashed_jni_names" ]
-}
-
 java_annotation_processor("jni_processor") {
-  java_files = [
+  sources = [
     "java/src/org/chromium/jni_generator/JniProcessor.java",
 
     # Avoids a circular dependency with base:base_java. This is okay because
     # no target should ever expect to package an annotation processor.
-    "//base/android/java/src/org/chromium/base/annotations/MainDex.java",
     "//base/android/java/src/org/chromium/base/annotations/CheckDiscard.java",
+    "//base/android/java/src/org/chromium/base/annotations/MainDex.java",
   ]
 
   main_class = "org.chromium.jni_generator.JniProcessor"
@@ -112,6 +98,4 @@ java_annotation_processor("jni_processor") {
     "//third_party/android_deps:com_squareup_javapoet_java",
     "//third_party/android_deps:javax_annotation_jsr250_api_java",
   ]
-
-  srcjar_deps = [ ":processor_args_java" ]
 }

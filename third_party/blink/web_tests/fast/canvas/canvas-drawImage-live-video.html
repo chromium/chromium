@@ -26,38 +26,29 @@ async_test(t => {
     function drawFirstFrame() {
       video.removeEventListener("canplaythrough", drawFirstFrame, true);
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      video.addEventListener("timeupdate", updateVideo, true);
+      video.requestVideoFrameCallback(t.step_func(processFirstFrame));
       video.play();
     }
 
     var referenceImageData;
-    var processedFirstFrame = false;
-    var imagesAreTheSame;
 
-    function updateVideo() {
-      t.step(function() {
-          if (!processedFirstFrame) {
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            referenceImageData = ctx.getImageData(
-                0, 0, canvas.width, canvas.height);
-            processedFirstFrame = true;
-          } else {
-            if (video.currentTime == 0)
-              return;
-            video.removeEventListener("timeupdate", updateVideo, true);
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-            imagesAreTheSame = true;
-            for(var i = 0; i < imageData.data.length; ++i) {
-              if (imageData.data[i] != referenceImageData.data[i]) {
-                imagesAreTheSame = false;
-                break;
-              }
-            }
-            assert_false(imagesAreTheSame);
-            t.done();
-          }
-      });
+    function processFirstFrame() {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      referenceImageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      video.requestVideoFrameCallback(t.step_func_done(processSecondFrame));
+    }
+
+    function processSecondFrame() {
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      var imagesAreTheSame = true;
+      for(var i = 0; i < imageData.data.length; ++i) {
+        if (imageData.data[i] != referenceImageData.data[i]) {
+          imagesAreTheSame = false;
+          break;
+        }
+      }
+      assert_false(imagesAreTheSame);
     }
 }, 'Verify that consecutive drawImage from a live video correctly propagates frame updates.');
 </script>

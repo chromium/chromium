@@ -4,7 +4,7 @@
 
 #include "chromeos/components/tether/test_timer_factory.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace chromeos {
 namespace tether {

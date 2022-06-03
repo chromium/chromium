@@ -1,0 +1,17 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+build/build_config.h",
+  "+build/chromeos_buildflags.h",
+  "+chrome/grit/generated_resources.h",
+  "+chrome/test",
+  "+content/public/browser",
+  "+content/public/test",
+  "+ipc",
+  "+services/data_decoder/public/cpp",
+  "+services/service_manager/public/cpp",
+  "+third_party/skia/include/core",
+  "+ui/base",
+  "+ui/gfx/geometry",
+]

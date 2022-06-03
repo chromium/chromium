@@ -1,0 +1,95 @@
+// Copyright 2014 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package storage;
+
+message ServiceWorkerOriginTrialFeature {
+  required string name = 1;
+  repeated string tokens = 2;
+}
+
+message ServiceWorkerOriginTrialInfo {
+  repeated ServiceWorkerOriginTrialFeature features = 1;
+}
+
+message ServiceWorkerNavigationPreloadState {
+  required bool enabled = 1;
+  optional string header = 2;
+}
+
+message ServiceWorkerRegistrationData {
+  enum ServiceWorkerScriptType {
+    CLASSIC = 0;
+    MODULE = 1;
+  }
+  enum ServiceWorkerUpdateViaCacheType {
+    IMPORTS = 0;
+    ALL = 1;
+    NONE = 2;
+  }
+  enum CrossOriginEmbedderPolicyValue {
+    NONE_OR_NOT_EXIST = 0;
+    REQUIRE_CORP = 1;
+    CREDENTIALLESS = 2;
+  }
+
+  required int64 registration_id = 1;
+  required string scope_url = 2;
+  required string script_url = 3;
+
+  // Versions are first stored once they successfully install and become the
+  // waiting version. Then they are updated when they transition to the active
+  // version.
+  required int64 version_id = 4;
+
+  required bool is_active = 5;
+  required bool has_fetch_handler = 6;
+
+  // Serialized by Time::FromDeltaSinceWindowsEpoch().
+  required int64 last_update_check_time = 7;
+
+  optional uint64 resources_total_size_bytes = 8;
+
+  // repeated string foreign_fetch_scope = 9;  // obsolete
+  // repeated string foreign_fetch_origin = 10; // obsolete
+
+  // If the registration data was created by old Chrome (< M56),
+  // |origin_trial_tokens| is not set. In this case, we have to start the
+  // Service Worker and load the main script resource in ServiceWorkerStorage
+  // to check the HTTP header.
+  optional ServiceWorkerOriginTrialInfo origin_trial_tokens = 11;
+
+  optional ServiceWorkerNavigationPreloadState navigation_preload_state = 12;
+
+  // The set of features that the worker used up until the time installation
+  // completed. The values must be from blink::UseCounter::Feature enum.
+  repeated uint32 used_features = 13;
+
+  optional ServiceWorkerUpdateViaCacheType update_via_cache = 14
+      [default = IMPORTS];
+  optional ServiceWorkerScriptType script_type = 15 [default = CLASSIC];
+
+  // The time when the browser received the service worker main script,
+  // serialized by Time::ToDeltaSinceWindowsEpoch().
+  optional int64 script_response_time = 16;
+
+  optional CrossOriginEmbedderPolicyValue cross_origin_embedder_policy_value =
+      17 [default = NONE_OR_NOT_EXIST];
+  optional string cross_origin_embedder_policy_reporting_endpoint = 18;
+  optional CrossOriginEmbedderPolicyValue
+      cross_origin_embedder_policy_report_only_value = 19
+      [default = NONE_OR_NOT_EXIST];
+  optional string cross_origin_embedder_policy_report_only_reporting_endpoint =
+      20;
+}
+
+message ServiceWorkerResourceRecord {
+  required int64 resource_id = 1;
+  required string url = 2;
+  optional uint64 size_bytes = 3;
+}

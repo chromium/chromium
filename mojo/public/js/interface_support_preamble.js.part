@@ -1,0 +1,12 @@
+'use strict';
+
+goog.require('mojo.interfaceControl.RUN_MESSAGE_ID');
+goog.require('mojo.interfaceControl.RunResponseMessageParamsSpec');
+goog.require('mojo.internal');
+
+goog.require('mojo.pipeControl.RUN_OR_CLOSE_PIPE_MESSAGE_ID');
+goog.require('mojo.pipeControl.RunOrClosePipeMessageParamsSpec');
+goog.require('mojo.pipeControl.RunOrClosePipeInput');
+
+goog.provide('mojo.internal.interfaceSupport');
+

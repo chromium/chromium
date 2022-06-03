@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/dark_mode_color_classifier.h"
 
-#include "third_party/blink/renderer/platform/graphics/graphics_types.h"
+#include "base/check_op.h"
 
 namespace blink {
 namespace {
@@ -13,36 +13,34 @@ class SimpleColorClassifier : public DarkModeColorClassifier {
  public:
   static std::unique_ptr<SimpleColorClassifier> NeverInvert() {
     return std::unique_ptr<SimpleColorClassifier>(
-        new SimpleColorClassifier(DarkModeClassification::kDoNotApplyFilter));
+        new SimpleColorClassifier(DarkModeResult::kDoNotApplyFilter));
   }
 
   static std::unique_ptr<SimpleColorClassifier> AlwaysInvert() {
     return std::unique_ptr<SimpleColorClassifier>(
-        new SimpleColorClassifier(DarkModeClassification::kApplyFilter));
+        new SimpleColorClassifier(DarkModeResult::kApplyFilter));
   }
 
-  DarkModeClassification ShouldInvertColor(const Color& color) override {
-    return value_;
-  }
+  DarkModeResult ShouldInvertColor(SkColor color) override { return value_; }
 
  private:
-  SimpleColorClassifier(DarkModeClassification value) : value_(value) {}
+  explicit SimpleColorClassifier(DarkModeResult value) : value_(value) {}
 
-  DarkModeClassification value_;
+  DarkModeResult value_;
 };
 
 class InvertLowBrightnessColorsClassifier : public DarkModeColorClassifier {
  public:
-  InvertLowBrightnessColorsClassifier(int brightness_threshold)
+  explicit InvertLowBrightnessColorsClassifier(int brightness_threshold)
       : brightness_threshold_(brightness_threshold) {
     DCHECK_GT(brightness_threshold_, 0);
     DCHECK_LT(brightness_threshold_, 256);
   }
 
-  DarkModeClassification ShouldInvertColor(const Color& color) override {
+  DarkModeResult ShouldInvertColor(SkColor color) override {
     if (CalculateColorBrightness(color) < brightness_threshold_)
-      return DarkModeClassification::kApplyFilter;
-    return DarkModeClassification::kDoNotApplyFilter;
+      return DarkModeResult::kApplyFilter;
+    return DarkModeResult::kDoNotApplyFilter;
   }
 
  private:
@@ -51,16 +49,16 @@ class InvertLowBrightnessColorsClassifier : public DarkModeColorClassifier {
 
 class InvertHighBrightnessColorsClassifier : public DarkModeColorClassifier {
  public:
-  InvertHighBrightnessColorsClassifier(int brightness_threshold)
+  explicit InvertHighBrightnessColorsClassifier(int brightness_threshold)
       : brightness_threshold_(brightness_threshold) {
     DCHECK_GT(brightness_threshold_, 0);
     DCHECK_LT(brightness_threshold_, 256);
   }
 
-  DarkModeClassification ShouldInvertColor(const Color& color) override {
+  DarkModeResult ShouldInvertColor(SkColor color) override {
     if (CalculateColorBrightness(color) > brightness_threshold_)
-      return DarkModeClassification::kApplyFilter;
-    return DarkModeClassification::kDoNotApplyFilter;
+      return DarkModeResult::kApplyFilter;
+    return DarkModeResult::kDoNotApplyFilter;
   }
 
  private:
@@ -74,28 +72,28 @@ class InvertHighBrightnessColorsClassifier : public DarkModeColorClassifier {
 //
 // We don't use HSL or HSV here because perceived brightness is a function of
 // hue as well as lightness/value.
-int DarkModeColorClassifier::CalculateColorBrightness(const Color& color) {
-  int weighted_red = color.Red() * 299;
-  int weighted_green = color.Green() * 587;
-  int weighted_blue = color.Blue() * 114;
+int DarkModeColorClassifier::CalculateColorBrightness(SkColor color) {
+  int weighted_red = SkColorGetR(color) * 299;
+  int weighted_green = SkColorGetG(color) * 587;
+  int weighted_blue = SkColorGetB(color) * 114;
   return (weighted_red + weighted_green + weighted_blue) / 1000;
 }
 
 std::unique_ptr<DarkModeColorClassifier>
-DarkModeColorClassifier::MakeTextColorClassifier(
+DarkModeColorClassifier::MakeForegroundColorClassifier(
     const DarkModeSettings& settings) {
-  DCHECK_LE(settings.text_brightness_threshold, 256);
-  DCHECK_GE(settings.text_brightness_threshold, 0);
+  DCHECK_LE(settings.foreground_brightness_threshold, 256);
+  DCHECK_GE(settings.foreground_brightness_threshold, 0);
 
   // The value should be between 0 and 256, but check for values outside that
   // range here to preserve correct behavior in non-debug builds.
-  if (settings.text_brightness_threshold >= 256)
+  if (settings.foreground_brightness_threshold >= 256)
     return SimpleColorClassifier::AlwaysInvert();
-  if (settings.text_brightness_threshold <= 0)
+  if (settings.foreground_brightness_threshold <= 0)
     return SimpleColorClassifier::NeverInvert();
 
   return std::make_unique<InvertLowBrightnessColorsClassifier>(
-      settings.text_brightness_threshold);
+      settings.foreground_brightness_threshold);
 }
 
 std::unique_ptr<DarkModeColorClassifier>

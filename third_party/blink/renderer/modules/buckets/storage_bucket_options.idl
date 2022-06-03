@@ -1,0 +1,17 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/storage-buckets
+
+enum StorageBucketDurability {
+  "strict",
+  "relaxed"
+};
+
+dictionary StorageBucketOptions {
+  boolean persisted = false;
+  StorageBucketDurability durability = "relaxed";
+  unsigned long long? quota = null;
+  DOMTimeStamp? expires = null;
+};

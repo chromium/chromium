@@ -7,7 +7,9 @@
 
 // Result of sending SharingMessage via sharing service.
 // These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
+// numeric values should never be reused. Please update the enum and suffix
+// named SharingSendMessageResult in enums.xml and histograms.xml when adding
+// a new entry here.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.sharing
 enum class SharingSendMessageResult {
   kSuccessful = 0,
@@ -16,7 +18,10 @@ enum class SharingSendMessageResult {
   kPayloadTooLarge = 3,
   kAckTimeout = 4,
   kInternalError = 5,
-  kMaxValue = kInternalError,
+  kEncryptionError = 6,
+  kCommitTimeout = 7,
+  kCancelled = 8,
+  kMaxValue = kCancelled,
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_SEND_MESSAGE_RESULT_H_

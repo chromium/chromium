@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/bind.h"
 #include "base/time/time.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -25,34 +26,19 @@ namespace {
 
 // Appearance.
 constexpr int kDotCount = 3;
-constexpr float kDotLargeSizeDip = 9.f;
-constexpr float kDotSmallSizeDip = 6.f;
-constexpr int kSpacingDip = 4;
-constexpr float kEmbeddedUiDotLargeSizeDip = 6.f;
-constexpr float kEmbeddedUiDotSmallSizeDip = 4.f;
-constexpr int kEmbeddedUiSpacingDip = 3;
-constexpr int kEmbeddedUiPreferredHeightDip = 9;
+constexpr float kDotLargeSizeDip = 6.f;
+constexpr float kDotSmallSizeDip = 4.f;
+constexpr int kDotSpacingDip = 3;
+constexpr int kPreferredHeightDip = 9;
 
-float GetDotLargeSizeDip() {
-  return app_list_features::IsAssistantLauncherUIEnabled()
-             ? kEmbeddedUiDotLargeSizeDip
-             : kDotLargeSizeDip;
-}
+// Animation.
+constexpr float kTranslationDip = -(kDotLargeSizeDip - kDotSmallSizeDip) / 2.f;
+constexpr float kScaleFactor = kDotLargeSizeDip / kDotSmallSizeDip;
 
-float GetDotSmallSizeDip() {
-  return app_list_features::IsAssistantLauncherUIEnabled()
-             ? kEmbeddedUiDotSmallSizeDip
-             : kDotSmallSizeDip;
-}
-
-int GetDotSpacingDip() {
-  return app_list_features::IsAssistantLauncherUIEnabled()
-             ? kEmbeddedUiSpacingDip
-             : kSpacingDip;
-}
+// Helpers ---------------------------------------------------------------------
 
 bool AreAnimationsEnabled() {
-  return ui::ScopedAnimationDurationScaleMode::duration_scale_mode() !=
+  return ui::ScopedAnimationDurationScaleMode::duration_multiplier() !=
          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION;
 }
 
@@ -61,6 +47,10 @@ bool AreAnimationsEnabled() {
 class DotBackground : public views::Background {
  public:
   DotBackground() = default;
+
+  DotBackground(const DotBackground&) = delete;
+  DotBackground& operator=(const DotBackground&) = delete;
+
   ~DotBackground() override = default;
 
   void Paint(gfx::Canvas* canvas, views::View* view) const override {
@@ -74,9 +64,6 @@ class DotBackground : public views::Background {
 
     canvas->DrawCircle(center, radius, flags);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DotBackground);
 };
 
 }  // namespace
@@ -100,9 +87,7 @@ gfx::Size AssistantProgressIndicator::CalculatePreferredSize() const {
 }
 
 int AssistantProgressIndicator::GetHeightForWidth(int width) const {
-  return app_list_features::IsAssistantLauncherUIEnabled()
-             ? kEmbeddedUiPreferredHeightDip
-             : views::View::GetHeightForWidth(width);
+  return kPreferredHeightDip;
 }
 
 void AssistantProgressIndicator::AddedToWidget() {
@@ -144,11 +129,8 @@ void AssistantProgressIndicator::VisibilityChanged(views::View* starting_from,
   // illusion that scaling is being performed about the center of the view as
   // the transformation origin, we also need to perform a translation.
   gfx::Transform transform;
-  const float translation_dip =
-      -(GetDotLargeSizeDip() - GetDotSmallSizeDip()) / 2.f;
-  const float scale_factor = GetDotLargeSizeDip() / GetDotSmallSizeDip();
-  transform.Translate(translation_dip, translation_dip);
-  transform.Scale(scale_factor, scale_factor);
+  transform.Translate(kTranslationDip, kTranslationDip);
+  transform.Scale(kScaleFactor, kScaleFactor);
 
   // Don't animate if animations are disabled (during unittests).
   // Otherwise we get in an infinite loop due to the cyclic animation used here
@@ -164,21 +146,19 @@ void AssistantProgressIndicator::VisibilityChanged(views::View* starting_from,
           start_offset,
           ui::LayerAnimationElement::AnimatableProperty::TRANSFORM);
     }
-    start_offset += base::TimeDelta::FromMilliseconds(216);
+    start_offset += base::Milliseconds(216);
 
     // Schedule transformation animation.
     child->layer()->GetAnimator()->ScheduleAnimation(
         CreateLayerAnimationSequence(
             // Animate scale up.
-            CreateTransformElement(transform,
-                                   base::TimeDelta::FromMilliseconds(266)),
+            CreateTransformElement(transform, base::Milliseconds(266)),
             // Animate scale down.
-            CreateTransformElement(gfx::Transform(),
-                                   base::TimeDelta::FromMilliseconds(450)),
+            CreateTransformElement(gfx::Transform(), base::Milliseconds(450)),
             // Pause before next iteration.
             ui::LayerAnimationElement::CreatePauseElement(
                 ui::LayerAnimationElement::AnimatableProperty::TRANSFORM,
-                base::TimeDelta::FromMilliseconds(500)),
+                base::Milliseconds(500)),
             // Animation parameters.
             {/*is_cyclic=*/true}));
   }
@@ -188,23 +168,22 @@ void AssistantProgressIndicator::InitLayout() {
   views::BoxLayout* layout_manager =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
           views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          GetDotSpacingDip()));
+          kDotSpacingDip));
 
   layout_manager->set_cross_axis_alignment(
       views::BoxLayout::CrossAxisAlignment::kCenter);
 
   // Initialize dots.
   for (int i = 0; i < kDotCount; ++i) {
-    views::View* dot_view = new views::View();
+    auto dot_view = std::make_unique<views::View>();
     dot_view->SetBackground(std::make_unique<DotBackground>());
-    dot_view->SetPreferredSize(
-        gfx::Size(GetDotSmallSizeDip(), GetDotSmallSizeDip()));
+    dot_view->SetPreferredSize(gfx::Size(kDotSmallSizeDip, kDotSmallSizeDip));
 
     // Dots will animate on their own layers.
     dot_view->SetPaintToLayer();
     dot_view->layer()->SetFillsBoundsOpaquely(false);
 
-    AddChildView(dot_view);
+    AddChildView(std::move(dot_view));
   }
 }
 

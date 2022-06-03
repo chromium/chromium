@@ -5,8 +5,6 @@
 #ifndef SERVICES_DEVICE_GEOLOCATION_GEOLOCATION_PROVIDER_H_
 #define SERVICES_DEVICE_GEOLOCATION_GEOLOCATION_PROVIDER_H_
 
-#include <memory>
-
 #include "base/callback_list.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
@@ -16,7 +14,7 @@ namespace device {
 // a single instance of this class and can register multiple clients to be
 // notified of location changes:
 // * Callbacks are registered by AddLocationUpdateCallback() and will keep
-//   receiving updates until the returned subscription object is destructed.
+//   receiving updates until the returned subscription object is destroyed.
 // The application must instantiate the GeolocationProvider on the UI thread and
 // must communicate with it on the same thread.
 // The underlying location arbitrator will only be enabled whilst there is at
@@ -34,13 +32,11 @@ class GeolocationProvider {
 
   typedef base::RepeatingCallback<void(const mojom::Geoposition&)>
       LocationUpdateCallback;
-  typedef base::CallbackList<void(const mojom::Geoposition&)>::Subscription
-      Subscription;
 
   // |enable_high_accuracy| is used as a 'hint' for the provider preferences for
   // this particular observer, however the observer could receive updates for
   // best available locations from any active provider whilst it is registered.
-  virtual std::unique_ptr<Subscription> AddLocationUpdateCallback(
+  virtual base::CallbackListSubscription AddLocationUpdateCallback(
       const LocationUpdateCallback& callback,
       bool enable_high_accuracy) = 0;
 

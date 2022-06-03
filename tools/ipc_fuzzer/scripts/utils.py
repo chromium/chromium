@@ -21,7 +21,7 @@ UNCOMMON_PREFIX_CHANCE = 10  # 1 in 10
 COMMON_LAUNCH_PREFIXES = [
     '--renderer-cmd-prefix',
 ]
-UNCOMMON_LAUNCH_PEFIXES = [
+UNCOMMON_LAUNCH_PREFIXES = [
     '--plugin-launcher',
     '--ppapi-plugin-launcher',
     '--utility-cmd-prefix',

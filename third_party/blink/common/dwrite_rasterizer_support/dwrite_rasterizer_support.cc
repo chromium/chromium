@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/dwrite_rasterizer_support/dwrite_rasterizer_support.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/win/windows_version.h"
 #include "ui/gfx/win/direct_write.h"
 

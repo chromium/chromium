@@ -10,7 +10,6 @@
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/browser_process.h"
@@ -28,9 +27,10 @@ namespace {
 
 // Create the icon image for the app-item with |id|.
 // TODO(mukai): consolidate the implementation with
-// ash/app_list/test/app_list_test_model.cc.
+// ash/app_list/model/app_list_test_model.cc.
 gfx::ImageSkia CreateImageSkia(int id) {
-  const int size = ash::AppListConfig::instance().grid_icon_dimension();
+  const int size =
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension();
   SkBitmap bitmap;
   bitmap.allocN32Pixels(size, size);
   bitmap.eraseARGB(255, 255 * ((id >> 2) % 2), 255 * ((id >> 1) % 2),

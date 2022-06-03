@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://wicg.github.io/serial
+// https://wicg.github.io/serial/#serial-interface
 
 [
-    Exposed(Window Serial,DedicatedWorker Serial),
+    Exposed(Window Serial, DedicatedWorker Serial),
     SecureContext
 ] interface Serial : EventTarget {
     attribute EventHandler onconnect;
@@ -15,5 +15,5 @@
     Promise<sequence<SerialPort>> getPorts();
 
     [CallWith=ScriptState, RaisesException, MeasureAs=SerialRequestPort, Exposed=Window]
-    Promise<SerialPort> requestPort(optional SerialPortRequestOptions options);
+    Promise<SerialPort> requestPort(optional SerialPortRequestOptions options = {});
 };

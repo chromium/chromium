@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL type extension from null should be treated as if "extends" is not given document.registerElement is not a function
-Harness: the test ran to completion.
-

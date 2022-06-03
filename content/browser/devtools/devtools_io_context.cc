@@ -5,9 +5,9 @@
 #include "content/browser/devtools/devtools_io_context.h"
 
 #include "base/bind.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/devtools_stream_blob.h"
 #include "content/browser/devtools/devtools_stream_file.h"

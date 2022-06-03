@@ -7,9 +7,8 @@
 
 #include <memory>
 
-#include "base/memory/shared_memory_mapping.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "media/base/user_input_monitor.h"
-#include "mojo/public/cpp/system/buffer.h"
 
 namespace audio {
 
@@ -18,11 +17,15 @@ namespace audio {
 class UserInputMonitor : public media::UserInputMonitor {
  public:
   explicit UserInputMonitor(base::ReadOnlySharedMemoryMapping memory_mapping);
+
+  UserInputMonitor(const UserInputMonitor&) = delete;
+  UserInputMonitor& operator=(const UserInputMonitor&) = delete;
+
   ~UserInputMonitor() override;
 
   // Returns nullptr for invalid handle.
   static std::unique_ptr<UserInputMonitor> Create(
-      mojo::ScopedSharedBufferHandle keypress_count_buffer);
+      base::ReadOnlySharedMemoryRegion keypress_count_buffer);
 
   void EnableKeyPressMonitoring() override;
   void DisableKeyPressMonitoring() override;
@@ -30,8 +33,6 @@ class UserInputMonitor : public media::UserInputMonitor {
 
  private:
   base::ReadOnlySharedMemoryMapping key_press_count_mapping_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInputMonitor);
 };
 
 }  // namespace audio

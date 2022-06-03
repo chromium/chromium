@@ -7,12 +7,15 @@
 #include <utility>
 
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -42,10 +45,11 @@ SubresourceFilter::SubresourceFilter(
   DCHECK(subresource_filter_);
   // Report the main resource as an ad if the subresource filter is
   // associated with an ad subframe.
-  if (auto* document = DynamicTo<Document>(execution_context_.Get())) {
-    auto* loader = document->Loader();
-    if (document->GetFrame()->IsAdSubframe()) {
-      ReportAdRequestId(loader->GetResponse().RequestId());
+  if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+    auto* frame = window->GetFrame();
+    if (frame->IsAdSubframe()) {
+      ReportAdRequestId(
+          frame->Loader().GetDocumentLoader()->GetResponse().RequestId());
     }
   }
 }
@@ -54,14 +58,14 @@ SubresourceFilter::~SubresourceFilter() = default;
 
 bool SubresourceFilter::AllowLoad(
     const KURL& resource_url,
-    mojom::RequestContextType request_context,
-    SecurityViolationReportingPolicy reporting_policy) {
+    mojom::blink::RequestContextType request_context,
+    ReportingDisposition reporting_disposition) {
   // TODO(csharrison): Implement a caching layer here which is a HashMap of
   // Pair<url string, context> -> LoadPolicy.
   WebDocumentSubresourceFilter::LoadPolicy load_policy =
       subresource_filter_->GetLoadPolicy(resource_url, request_context);
 
-  if (reporting_policy == SecurityViolationReportingPolicy::kReport)
+  if (reporting_disposition == ReportingDisposition::kReport)
     ReportLoad(resource_url, load_policy);
 
   last_resource_check_result_ = std::make_pair(
@@ -89,7 +93,7 @@ bool SubresourceFilter::AllowWebSocketConnection(const KURL& url) {
 
 bool SubresourceFilter::IsAdResource(
     const KURL& resource_url,
-    mojom::RequestContextType request_context) {
+    mojom::blink::RequestContextType request_context) {
   WebDocumentSubresourceFilter::LoadPolicy load_policy;
   if (last_resource_check_result_.first ==
       std::make_pair(resource_url, request_context)) {
@@ -121,19 +125,20 @@ void SubresourceFilter::ReportLoad(
       // TODO: Consider logging this as a kIntervention for showing
       // warning in Lighthouse.
       if (subresource_filter_->ShouldLogToConsole()) {
-        execution_context_->AddConsoleMessage(ConsoleMessage::Create(
-            mojom::ConsoleMessageSource::kOther,
-            mojom::ConsoleMessageLevel::kError,
-            GetErrorStringForDisallowedLoad(resource_url)));
+        execution_context_->AddConsoleMessage(
+            MakeGarbageCollected<ConsoleMessage>(
+                mojom::ConsoleMessageSource::kOther,
+                mojom::ConsoleMessageLevel::kError,
+                GetErrorStringForDisallowedLoad(resource_url)));
       }
       FALLTHROUGH;
     case WebDocumentSubresourceFilter::kWouldDisallow:
       // TODO(csharrison): Consider posting a task to the main thread from
       // worker thread, or adding support for DidObserveLoadingBehavior to
       // ExecutionContext.
-      if (auto* document = DynamicTo<Document>(execution_context_.Get())) {
-        if (DocumentLoader* loader = document->Loader()) {
-          loader->DidObserveLoadingBehavior(
+      if (auto* window = DynamicTo<LocalDOMWindow>(execution_context_.Get())) {
+        if (auto* frame = window->GetFrame()) {
+          frame->Loader().GetDocumentLoader()->DidObserveLoadingBehavior(
               kLoadingBehaviorSubresourceFilterMatch);
         }
       }
@@ -141,7 +146,7 @@ void SubresourceFilter::ReportLoad(
   }
 }
 
-void SubresourceFilter::Trace(blink::Visitor* visitor) {
+void SubresourceFilter::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
 }
 

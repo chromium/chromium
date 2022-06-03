@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Zoom to 2 and list height should be equal to line-height
+PASS Zoom to 3 and list height should be equal to line-height
+PASS Zoom to 4 and list height should be equal to line-height
+PASS Zoom to 5 and list height should be equal to line-height
+PASS Zoom to 0.5 and list height should be equal to line-height
+PASS Zoom to 0.2 and list height should be equal to line-height
+PASS Zoom to 1 and list height should be equal to line-height
+Harness: the test ran to completion.
+

@@ -20,12 +20,12 @@ FakeSigningService::FakeSigningService() {}
 FakeSigningService::~FakeSigningService() {}
 
 void FakeSigningService::SignData(const std::string& data,
-                                  const SigningCallback& callback) {
+                                  SigningCallback callback) {
   em::SignedData signed_data;
   if (success_) {
     SignDataSynchronously(data, &signed_data);
   }
-  callback.Run(success_, signed_data);
+  std::move(callback).Run(success_, signed_data);
 }
 
 void FakeSigningService::SignDataSynchronously(const std::string& data,

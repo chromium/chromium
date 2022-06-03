@@ -1,0 +1,94 @@
+The green box appear angled out from the yellow box and embedded in it.
+
+transform: translateZ(-100px) rotateY(45deg);
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='container'",
+      "position": [162, 108],
+      "bounds": [456, 456]
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='parent'",
+      "bounds": [420, 420],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV",
+      "bounds": [300, 300],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 5
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, -0.00133333333333333],
+        [0, 0, 0, 1]
+      ],
+      "origin": [390, 336]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [180, 126, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [0.766044443118978, -0.556670399226419, -0.32139380484327, 0],
+        [0, 0.5, -0.866025403784439, 0],
+        [0.642787609686539, 0.663413948168938, 0.383022221559489, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [210, 210],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [60, 60, 0, 1]
+      ],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    },
+    {
+      "id": 5,
+      "parent": 4,
+      "transform": [
+        [0.766044443118978, 0, 0.642787609686539, 0],
+        [0, 1, 0, 0],
+        [-0.642787609686539, 0, 0.766044443118978, 0],
+        [0, 0, 75, 1]
+      ],
+      "origin": [150, 150],
+      "flattenInheritedTransform": false,
+      "renderingContext": 1
+    }
+  ]
+}
+

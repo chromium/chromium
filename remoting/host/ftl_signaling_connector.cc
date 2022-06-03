@@ -19,8 +19,8 @@ namespace remoting {
 
 namespace {
 
-constexpr base::TimeDelta kBackoffResetDelay = base::TimeDelta::FromSeconds(30);
-constexpr base::TimeDelta kNetworkChangeDelay = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kBackoffResetDelay = base::Seconds(30);
+constexpr base::TimeDelta kNetworkChangeDelay = base::Seconds(5);
 
 const net::BackoffEntry::Policy kBackoffPolicy = {
     // Number of initial errors (in sequence) to ignore before applying

@@ -5,8 +5,6 @@
 #ifndef CHROME_CHROME_CLEANER_CRASH_CRASH_KEYS_H_
 #define CHROME_CHROME_CLEANER_CRASH_CRASH_KEYS_H_
 
-#include <string>
-
 #include "base/strings/string_piece_forward.h"
 
 namespace crashpad {

@@ -33,12 +33,12 @@ class MultiplexRouterTest : public testing::Test {
 
   void SetUp() override {
     MessagePipe pipe;
-    router0_ = new MultiplexRouter(std::move(pipe.handle0),
-                                   MultiplexRouter::MULTI_INTERFACE, false,
-                                   base::ThreadTaskRunnerHandle::Get());
-    router1_ = new MultiplexRouter(std::move(pipe.handle1),
-                                   MultiplexRouter::MULTI_INTERFACE, true,
-                                   base::ThreadTaskRunnerHandle::Get());
+    router0_ = MultiplexRouter::CreateAndStartReceiving(
+        std::move(pipe.handle0), MultiplexRouter::MULTI_INTERFACE, false,
+        base::ThreadTaskRunnerHandle::Get());
+    router1_ = MultiplexRouter::CreateAndStartReceiving(
+        std::move(pipe.handle1), MultiplexRouter::MULTI_INTERFACE, true,
+        base::ThreadTaskRunnerHandle::Get());
     ScopedInterfaceEndpointHandle::CreatePairPendingAssociation(&endpoint0_,
                                                                 &endpoint1_);
     auto id = router0_->AssociateInterface(std::move(endpoint1_));
@@ -127,8 +127,8 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
   client0.AcceptWithResponder(
       &request, std::make_unique<MessageAccumulator>(&message_queue));
 
-  router1_->WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE);
-  router0_->WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE);
+  router1_->WaitForIncomingMessage();
+  router0_->WaitForIncomingMessage();
 
   EXPECT_FALSE(message_queue.IsEmpty());
 
@@ -145,8 +145,8 @@ TEST_F(MultiplexRouterTest, BasicRequestResponse_Synchronous) {
   client0.AcceptWithResponder(
       &request2, std::make_unique<MessageAccumulator>(&message_queue));
 
-  router1_->WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE);
-  router0_->WaitForIncomingMessage(MOJO_DEADLINE_INDEFINITE);
+  router1_->WaitForIncomingMessage();
+  router0_->WaitForIncomingMessage();
 
   EXPECT_FALSE(message_queue.IsEmpty());
 

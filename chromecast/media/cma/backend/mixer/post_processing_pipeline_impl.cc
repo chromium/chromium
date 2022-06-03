@@ -108,7 +108,7 @@ PostProcessingPipelineImpl::PostProcessingPipelineImpl(
     processors_.emplace_back(PostProcessorInfo{
         factory_.CreatePostProcessor(library_path, processor_config_string,
                                      channels),
-        1.0 /* output_frames_per_input_frame */, processor_name});
+        1 /* output_frames_per_input_frame */, processor_name});
     channels = processors_.back().ptr->GetStatus().output_channels;
   }
   num_output_channels_ = channels;
@@ -119,6 +119,7 @@ PostProcessingPipelineImpl::~PostProcessingPipelineImpl() = default;
 double PostProcessingPipelineImpl::ProcessFrames(float* data,
                                                  int num_input_frames,
                                                  float current_multiplier,
+                                                 float target_multiplier,
                                                  bool is_silence) {
   DCHECK_GT(input_sample_rate_, 0);
   DCHECK(data);
@@ -146,13 +147,14 @@ double PostProcessingPipelineImpl::ProcessFrames(float* data,
     silence_frames_processed_ = 0;
   }
 
-  UpdateCastVolume(current_multiplier);
+  UpdateCastVolume(current_multiplier, target_multiplier);
+  AudioPostProcessor2::Metadata metadata = {current_dbfs_, target_dbfs_,
+                                            cast_volume_};
 
   delay_s_ = 0;
   for (auto& processor : processors_) {
     processor.ptr->ProcessFrames(output_buffer_,
-                                 processor.input_frames_per_write, cast_volume_,
-                                 current_dbfs_);
+                                 processor.input_frames_per_write, &metadata);
     const auto& status = processor.ptr->GetStatus();
     delay_s_ += static_cast<double>(status.rendering_delay_frames) /
                 status.input_sample_rate;
@@ -227,16 +229,23 @@ int PostProcessingPipelineImpl::GetRingingTimeInFrames() {
   return memory_frames;
 }
 
-void PostProcessingPipelineImpl::UpdateCastVolume(float multiplier) {
+void PostProcessingPipelineImpl::UpdateCastVolume(float multiplier,
+                                                  float target) {
   DCHECK_GE(multiplier, 0.0);
 
-  if (multiplier == current_multiplier_) {
-    return;
+  if (multiplier != current_multiplier_) {
+    current_multiplier_ = multiplier;
+    current_dbfs_ =
+        (multiplier == 0.0f ? -200.0f : std::log10(multiplier) * 20);
+    DCHECK(chromecast::media::VolumeControl::DbFSToVolume);
+    cast_volume_ =
+        chromecast::media::VolumeControl::DbFSToVolume(current_dbfs_);
   }
-  current_multiplier_ = multiplier;
-  current_dbfs_ = (multiplier == 0.0f ? -200.0f : std::log10(multiplier) * 20);
-  DCHECK(chromecast::media::VolumeControl::DbFSToVolume);
-  cast_volume_ = chromecast::media::VolumeControl::DbFSToVolume(current_dbfs_);
+
+  if (target != target_multiplier_) {
+    target_multiplier_ = target;
+    target_dbfs_ = (target == 0.0f ? -200.0f : std::log10(target) * 20);
+  }
 }
 
 // Send string |config| to postprocessor |name|.

@@ -26,7 +26,7 @@ function boom() {
     document.documentElement.appendChild(header);
 
     document.body.offsetTop;
-    var shadow = document.createElement('div').createShadowRoot();
+    var shadow = document.createElement('div').attachShadow({mode: 'open'});
     shadow.appendChild(tfoot);
 }
 window.onload = boom;

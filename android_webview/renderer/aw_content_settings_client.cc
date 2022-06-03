@@ -4,8 +4,9 @@
 
 #include "android_webview/renderer/aw_content_settings_client.h"
 
-#include "content/public/common/web_preferences.h"
+#include "content/public/common/url_constants.h"
 #include "content/public/renderer/render_frame.h"
+#include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/gurl.h"
@@ -34,6 +35,22 @@ AwContentSettingsClient::AwContentSettingsClient(
 AwContentSettingsClient::~AwContentSettingsClient() {
 }
 
+bool AwContentSettingsClient::AllowImage(bool enabled_per_settings,
+                                         const blink::WebURL& image_url) {
+  if (ShouldAllowlistForContentSettings()) {
+    return true;
+  }
+  return blink::WebContentSettingsClient::AllowImage(enabled_per_settings,
+                                                     image_url);
+}
+
+bool AwContentSettingsClient::AllowScript(bool enabled_per_settings) {
+  if (ShouldAllowlistForContentSettings()) {
+    return true;
+  }
+  return blink::WebContentSettingsClient::AllowScript(enabled_per_settings);
+}
+
 bool AwContentSettingsClient::AllowRunningInsecureContent(
     bool enabled_per_settings,
     const blink::WebURL& url) {
@@ -41,11 +58,16 @@ bool AwContentSettingsClient::AllowRunningInsecureContent(
 }
 
 bool AwContentSettingsClient::ShouldAutoupgradeMixedContent() {
-  return render_frame()->GetWebkitPreferences().allow_mixed_content_upgrades;
+  return render_frame()->GetBlinkPreferences().allow_mixed_content_upgrades;
 }
 
 void AwContentSettingsClient::OnDestruct() {
   delete this;
+}
+
+bool AwContentSettingsClient::ShouldAllowlistForContentSettings() const {
+  return render_frame()->GetWebFrame()->GetDocument().Url().GetString() ==
+         content::kUnreachableWebDataURL;
 }
 
 }  // namespace android_webview

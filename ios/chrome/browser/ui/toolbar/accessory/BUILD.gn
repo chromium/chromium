@@ -4,6 +4,7 @@
 
 source_set("accessory") {
   sources = [
+    "toolbar_accessory_coordinator_delegate.h",
     "toolbar_accessory_presenter.h",
     "toolbar_accessory_presenter.mm",
   ]
@@ -13,14 +14,15 @@ source_set("accessory") {
     "//base",
     "//base:i18n",
     "//ios/chrome/browser/ui/image_util",
+    "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/toolbar/public:constants",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("constants") {

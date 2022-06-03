@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 
 #include <stddef.h>
 #include <sys/sysctl.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#include "base/cxx17_backports.h"
 
 namespace base {
 

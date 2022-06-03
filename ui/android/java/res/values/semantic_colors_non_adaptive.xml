@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Semantic color references that don't change on night mode. -->
+    <!-- Common icon colors for drawables. -->
+    <!-- Same as ?attr/colorOnSurface. -->
+    <color name="default_icon_color_dark">@color/baseline_neutral_900</color>
+    <color name="default_icon_color_light">@color/baseline_neutral_100</color>
+    <!-- Same as ?attr/colorOnSurfaceVariant. -->
+    <color name="default_icon_color_secondary_dark">@color/baseline_neutral_variant_700</color>
+    <color name="default_icon_color_secondary_light">@color/baseline_neutral_variant_200</color>
+    <!-- Same as ?attr/colorPrimary. -->
+    <color name="default_icon_color_blue_dark">@color/baseline_primary_600</color>
+    <color name="default_icon_color_blue_light">@color/baseline_primary_200</color>
+    <!-- Same as ?attr/colorOnSurface. -->
+    <color name="default_icon_color_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
+    <color name="default_icon_color_disabled_light">@color/baseline_neutral_100_alpha_38</color>
+    <!-- Same as ?attr/colorOnSurfaceInverse -->
+    <color name="default_icon_color_inverse_light">@color/baseline_neutral_50</color>
+    <color name="default_icon_color_inverse_dark">@color/baseline_neutral_800</color>
+
+    <!-- Common text colors -->
+    <!-- Same as ?attr/colorOnSurface. -->
+    <color name="default_text_color_dark">@color/baseline_neutral_900</color>
+    <color name="default_text_color_light">@color/baseline_neutral_100</color>
+    <!-- Same as ?attr/colorOnSurfaceVariant. -->
+    <color name="default_text_color_secondary_dark">@color/baseline_neutral_variant_700</color>
+    <color name="default_text_color_secondary_light">@color/baseline_neutral_variant_200</color>
+    <!-- Same as ?attr/colorOnSurface with alpha. -->
+    <color name="default_text_color_disabled_light">@color/baseline_neutral_100_alpha_38</color>
+    <color name="default_text_color_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
+    <!-- Same as ?attr/colorPrimary. -->
+    <color name="default_text_color_link_dark">@color/baseline_primary_600</color>
+    <color name="default_text_color_link_light">@color/baseline_primary_200</color>
+    <!-- Same as ?attr/colorError. -->
+    <color name="default_text_color_error_light">@color/baseline_error_200</color>
+    <color name="default_text_color_error_dark">@color/baseline_error_600</color>
+    <!-- Same as ?attr/onSurface with alpha. -->
+    <color name="default_text_color_link_disabled_light">@color/baseline_neutral_100_alpha_38</color>
+    <color name="default_text_color_link_disabled_dark">@color/baseline_neutral_900_alpha_38</color>
+    <!-- Same as ?attr/colorOnPrimary. -->
+    <color name="default_text_color_on_accent1_light">@color/baseline_neutral_0</color>
+    <color name="default_text_color_on_accent1_dark">@color/baseline_primary_800</color>
+
+    <!-- Same as ?attr/colorError. -->
+    <color name="default_red_light">@color/baseline_error_200</color>
+    <color name="default_red_dark">@color/baseline_error_600</color>
+
+    <color name="default_green_light">@color/baseline_tertiary_200</color>
+    <color name="default_green_dark">@color/baseline_tertiary_600</color>
+
+    <!-- Common background colors. -->
+    <color name="default_bg_color_light">@color/modern_white</color>
+    <color name="default_bg_color_dark">@color/modern_grey_900</color>
+    <color name="default_bg_color_secondary_light">@color/baseline_neutral_0_with_neutral_600_alpha_5_with_primary_600_2</color>
+    <color name="default_bg_color_secondary_dark">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
+    <color name="default_bg_color_light_elev_1" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_5_with_primary_600_2</color>
+    <color name="default_bg_color_light_elev_2" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_8_with_primary_600_2</color>
+    <color name="default_bg_color_light_elev_3" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_11_with_primary_600_2</color>
+    <color name="default_bg_color_light_elev_4" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_12_with_primary_600_2</color>
+    <color name="default_bg_color_light_elev_5" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_14_with_primary_600_2</color>
+    <color name="default_bg_color_light_elev_6" tools:ignore="UnusedResources">@color/baseline_neutral_0_with_neutral_600_alpha_20_with_primary_600_2</color>
+    <color name="legacy_bg_color_light_elev_1">@color/modern_white</color>
+    <color name="legacy_bg_color_light_elev_4">@color/modern_white</color>
+    <color name="default_bg_color_dark_elev_1" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
+    <color name="default_bg_color_dark_elev_2" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_8_with_primary_200_alpha_2</color>
+    <color name="default_bg_color_dark_elev_3" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_11_with_primary_200_alpha_2</color>
+    <color name="default_bg_color_dark_elev_4" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2</color>
+    <color name="default_bg_color_dark_elev_5" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_14_with_primary_200_alpha_2</color>
+    <color name="default_bg_color_dark_elev_6" tools:ignore="UnusedResources">@color/baseline_neutral_900_with_neutral_200_alpha_20_with_primary_200_alpha_2</color>
+    <color name="legacy_bg_color_dark_elev_1">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
+    <color name="legacy_bg_color_dark_elev_4">@color/baseline_neutral_900_with_neutral_200_alpha_12_with_primary_200_alpha_2</color>
+
+    <!-- Same as ?attr/colorOutline. -->
+    <color name="hairline_stroke_color_light">@color/baseline_neutral_variant_400</color>
+    <color name="hairline_stroke_color_dark">@color/baseline_neutral_variant_500</color>
+    <!-- Same as ?attr/colorSurfaceVariant. -->
+    <color name="divider_line_bg_color_dark">@color/baseline_neutral_variant_100</color>
+    <color name="divider_line_bg_color_light">@color/baseline_neutral_variant_700</color>
+    <color name="default_bg_color_blue_dark">@color/modern_blue_600</color>
+    <color name="default_bg_color_blue_light">@color/modern_blue_300</color>
+    <color name="default_scrim_color">@color/black_alpha_65</color>
+    <color name="incognito_card_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_5_with_primary_200_alpha_2</color>
+
+    <!-- Chip Colors -->
+    <!-- Same as ?attr/colorOutline. -->
+    <color name="default_chip_outline_color_light">@color/baseline_neutral_variant_200</color>
+    <color name="default_chip_outline_color_dark">@color/baseline_neutral_variant_500</color>
+    <!-- Mix of ?attr/colorSecondaryContainer and ?attr/colorOnSurface. -->
+    <color name="chip_selected_hover_light">@color/baseline_secondary_300_with_neutral_100_alpha_8</color>
+    <color name="chip_selected_hover_dark">@color/baseline_secondary_100_with_neutral_900_alpha_8</color>
+    <!-- Mix of ?attr/colorSecondaryContainer and ?attr/colorOnSurface. -->
+    <color name="chip_selected_focused_light">@color/baseline_secondary_300_with_neutral_100_alpha_24</color>
+    <color name="chip_selected_focused_dark">@color/baseline_secondary_100_with_neutral_900_alpha_24</color>
+    <!-- Mix of ?attr/colorSecondaryContainer and ?attr/colorOnSurface. -->
+    <color name="chip_selected_hover_and_focused_light">@color/baseline_secondary_300_with_neutral_100_alpha_24</color>
+    <color name="chip_selected_hover_and_focused_dark">@color/baseline_secondary_100_with_neutral_900_alpha_24</color>
+    <!-- Same as ?attr/colorSecondaryContainer -->
+    <color name="chip_selected_light">@color/baseline_secondary_100</color>
+    <color name="chip_selected_dark">@color/baseline_secondary_300</color>
+    <color name="menu_chip_background_color_dark">@color/modern_blue_600_alpha_6</color>
+    <color name="menu_chip_background_color_light">@color/modern_blue_300_alpha_10</color>
+    <color name="menu_chip_background_color_disabled_dark">@color/modern_grey_100_alpha_38</color>
+    <color name="menu_chip_background_color_disabled_light">@color/white_alpha_6</color>
+    <color name="menu_footer_chip_background_color_dark">@color/modern_blue_600_alpha_10</color>
+    <color name="menu_footer_chip_background_color_light">@color/modern_blue_300_alpha_10</color>
+    <color name="menu_footer_chip_background_color_disabled_dark">@color/modern_grey_100</color>
+    <color name="menu_footer_chip_background_color_disabled_light">@color/white_alpha_6</color>
+
+    <!-- IPH Highlight Colors -->
+    <color name="iph_highlight_blue_dark">@color/modern_blue_600_alpha_10</color>
+    <color name="iph_highlight_blue_light">@color/modern_blue_300_alpha_50</color>
+
+    <!-- Colors used for Widgets (checkboxes, switches, buttons, etc)-->
+    <!-- Same as ?attr/colorOnSurface. -->
+    <color name="default_control_color_active_light" tools:ignore="UnusedResources">@color/baseline_primary_600</color>
+    <color name="default_control_color_active_dark" tools:ignore="UnusedResources">@color/baseline_primary_200</color>
+    <!-- Same as ?attr/colorOnSurfaceVariant. -->
+    <color name="default_control_color_normal_light" tools:ignore="UnusedResources">@color/baseline_neutral_variant_700</color>
+    <color name="default_control_color_normal_dark" tools:ignore="UnusedResources">@color/baseline_neutral_variant_200</color>
+    <!-- TODO(https://crbug/1216642): Rework to route through
+         ?attr/colorOnSurface with alpha. -->
+    <color name="default_control_color_highlight_light" tools:ignore="UnusedResources">@color/baseline_neutral_900_alpha_10</color>
+    <color name="default_control_color_highlight_dark" tools:ignore="UnusedResources">@color/baseline_neutral_100_alpha_10</color>
+
+    <!--  Filled Button  -->
+    <color name="filled_button_bg_color_dark">@color/modern_blue_600</color>
+    <color name="filled_button_bg_color_light">@color/baseline_primary_200</color>
+    <color name="filled_button_bg_color_disabled_dark">@color/baseline_neutral_900_alpha_12</color>
+    <color name="filled_button_bg_color_disabled_light">@color/baseline_neutral_100_alpha_12</color>
+
+    <!--  Dropdown divier  -->
+    <color name="dropdown_divider_color">@color/modern_grey_300</color>
+    <color name="dropdown_dark_divider_color">@color/white_alpha_12</color>
+
+    <!-- CircularProgressView colors -->
+    <!-- Same as ?attr/colorPrimary. -->
+    <color name="circular_progress_outer_circle_progress_color_small_light">@color/baseline_primary_600</color>
+    <color name="circular_progress_outer_circle_progress_color_small_dark">@color/baseline_primary_200</color>
+    <!-- Same as ?attr/colorPrimary. -->
+    <color name="circular_progress_icon_color_small_large_light">@color/baseline_primary_600</color>
+    <color name="circular_progress_icon_color_small_large_dark">@color/baseline_primary_200</color>
+
+    <!-- Ripple Colors -->
+    <color name="ripple_color_blue_dark">@color/modern_blue_600</color>
+    <color name="ripple_color_blue_light">@color/modern_blue_300</color>
+
+    <!-- Image loading colors -->
+    <color name="image_loading_color_dark">@color/modern_grey_300</color>
+    <color name="image_loading_color_light">@color/white_alpha_12</color>
+
+    <!-- Incognito icon colors -->
+    <color name="incognito_icon_filled_bg_color_dark">@color/modern_grey_800</color>
+    <color name="incognito_icon_filled_bg_color_light">@color/modern_grey_300</color>
+    <color name="ntp_incognito_icon_color" tools:ignore="UnusedResources">@color/baseline_neutral_50</color>
+
+    <!-- Illustration -->
+    <color name="promo_illustration_bg_color_light">@color/modern_grey_100_alpha_38</color>
+    <color name="promo_illustration_bg_color_dark">@color/modern_grey_800_alpha_38</color>
+
+    <!-- Omnibox bg color -->
+    <color name="omnibox_bg_color_light">@color/baseline_neutral_0_with_neutral_600_alpha_8_with_primary_600_2</color>
+    <color name="omnibox_bg_color_dark">@color/baseline_neutral_900_with_neutral_200_alpha_11_with_primary_200_alpha_2</color>
+    <color name="omnibox_bg_color_incognito" tools:ignore="UnusedResources">@color/black_alpha_38</color>
+
+    <!-- Settings -->
+    <color name="preference_highlighted_bg_color_dark">@color/modern_blue_600_alpha_12</color>
+    <color name="preference_highlighted_bg_color_light">@color/white_alpha_24</color>
+
+    <!-- Rating star colors -->
+    <color name="rating_star_yellow_dark">@color/modern_yellow_500</color>
+    <color name="rating_star_yellow_light">@color/modern_yellow_300</color>
+
+    <!-- Colors of adaptive toolbar -->
+    <color name="adaptive_toolbar_preference_header_background_light">@color/modern_white</color>
+    <color name="adaptive_toolbar_preference_header_background_dark">@color/modern_grey_900_with_grey_200_alpha_11</color>
+    <color name="adaptive_toolbar_preference_header_line_light">@color/modern_grey_800</color>
+    <color name="adaptive_toolbar_preference_header_line_dark">@color/modern_white</color>
+    <color name="adaptive_toolbar_preference_header_blue_light">@color/modern_blue_600</color>
+    <color name="adaptive_toolbar_preference_header_blue_dark">@color/modern_blue_300</color>
+    <color name="adaptive_toolbar_preference_header_omnibox_light">@color/modern_grey_100</color>
+    <color name="adaptive_toolbar_preference_header_omnibox_dark">@color/white_alpha_6</color>
+
+    <!-- Toast colors -->
+    <color name="toast_bg_color">@color/baseline_neutral_900_with_neutral_200_alpha_11_with_primary_200_alpha_2</color>
+</resources>

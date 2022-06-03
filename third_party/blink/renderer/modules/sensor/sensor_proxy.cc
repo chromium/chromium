@@ -6,14 +6,15 @@
 
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/public/platform/web_screen_info.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
+#include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_provider_proxy.h"
 #include "third_party/blink/renderer/modules/sensor/sensor_reading_remapper.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -26,12 +27,11 @@ SensorProxy::SensorProxy(device::mojom::blink::SensorType sensor_type,
     : PageVisibilityObserver(page),
       FocusChangedObserver(page),
       type_(sensor_type),
-      state_(SensorProxy::kUninitialized),
       provider_(provider) {}
 
-SensorProxy::~SensorProxy() {}
+SensorProxy::~SensorProxy() = default;
 
-void SensorProxy::Trace(blink::Visitor* visitor) {
+void SensorProxy::Trace(Visitor* visitor) const {
   visitor->Trace(observers_);
   visitor->Trace(provider_);
   PageVisibilityObserver::Trace(visitor);
@@ -128,10 +128,6 @@ bool SensorProxy::ShouldSuspendUpdates() const {
       this_frame->GetSecurityContext()->GetSecurityOrigin();
 
   return !focused_frame_origin->CanAccess(this_origin);
-}
-
-device::mojom::blink::SensorProvider* SensorProxy::sensor_provider() const {
-  return provider_->sensor_provider();
 }
 
 }  // namespace blink

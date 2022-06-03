@@ -15,9 +15,13 @@ bool StubCupsPrintersManager::IsPrinterInstalled(const Printer& printer) const {
   return false;
 }
 
-base::Optional<Printer> StubCupsPrintersManager::GetPrinter(
+absl::optional<Printer> StubCupsPrintersManager::GetPrinter(
     const std::string& id) const {
   return {};
+}
+
+PrintServersManager* StubCupsPrintersManager::GetPrintServersManager() const {
+  return nullptr;
 }
 
 }  // namespace chromeos

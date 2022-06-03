@@ -16,7 +16,6 @@
 
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "client/crashpad_info.h"
@@ -25,7 +24,7 @@
 #include "test/scoped_module_handle.h"
 #include "test/test_paths.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <dlfcn.h>
 #include "snapshot/mac/process_snapshot_mac.h"
 #elif defined(OS_WIN)
@@ -63,6 +62,11 @@ class ScopedUnsetCrashpadInfoOptions {
       : crashpad_info_(crashpad_info) {
   }
 
+  ScopedUnsetCrashpadInfoOptions(const ScopedUnsetCrashpadInfoOptions&) =
+      delete;
+  ScopedUnsetCrashpadInfoOptions& operator=(
+      const ScopedUnsetCrashpadInfoOptions&) = delete;
+
   ~ScopedUnsetCrashpadInfoOptions() {
     crashpad_info_->set_crashpad_handler_behavior(TriState::kUnset);
     crashpad_info_->set_system_crash_reporter_forwarding(TriState::kUnset);
@@ -72,12 +76,10 @@ class ScopedUnsetCrashpadInfoOptions {
 
  private:
   CrashpadInfo* crashpad_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedUnsetCrashpadInfoOptions);
 };
 
 CrashpadInfoClientOptions SelfProcessSnapshotAndGetCrashpadOptions() {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   ProcessSnapshotMac process_snapshot;
   EXPECT_TRUE(process_snapshot.Initialize(mach_task_self()));
 #elif defined(OS_WIN)
@@ -89,7 +91,7 @@ CrashpadInfoClientOptions SelfProcessSnapshotAndGetCrashpadOptions() {
   EXPECT_TRUE(process_snapshot.Initialize(*zx::process::self()));
 #else
 #error Port.
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
   CrashpadInfoClientOptions options;
   process_snapshot.GetCrashpadOptions(&options);
@@ -159,12 +161,12 @@ TEST(CrashpadInfoClientOptions, TwoModules) {
                               << dlerror();
 #elif defined(OS_WIN)
   ScopedModuleHandle module(LoadLibrary(module_path.value().c_str()));
-  ASSERT_TRUE(module.valid()) << "LoadLibrary "
-                              << base::UTF16ToUTF8(module_path.value()) << ": "
-                              << ErrorMessage();
+  ASSERT_TRUE(module.valid())
+      << "LoadLibrary " << base::WideToUTF8(module_path.value()) << ": "
+      << ErrorMessage();
 #else
 #error Port.
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
   // Get the function pointer from the module. This wraps GetCrashpadInfo(), but
   // because it runs in the module, it returns the remote module’s CrashpadInfo
@@ -258,11 +260,11 @@ TEST_P(CrashpadInfoSizes_ClientOptions, DifferentlySizedStruct) {
 #elif defined(OS_WIN)
   ScopedModuleHandle module(LoadLibrary(module_path.value().c_str()));
   ASSERT_TRUE(module.valid())
-      << "LoadLibrary " << base::UTF16ToUTF8(module_path.value()) << ": "
+      << "LoadLibrary " << base::WideToUTF8(module_path.value()) << ": "
       << ErrorMessage();
 #else
 #error Port.
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
   // Get the function pointer from the module.
   CrashpadInfo* (*TestModule_GetCrashpadInfo)() =

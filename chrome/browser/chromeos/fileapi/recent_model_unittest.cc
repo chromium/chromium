@@ -19,6 +19,7 @@
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace chromeos {
 
@@ -27,19 +28,18 @@ namespace {
 RecentFile MakeRecentFile(const std::string& name,
                           const base::Time& last_modified) {
   storage::FileSystemURL url = storage::FileSystemURL::CreateForTest(
-      url::Origin(),  // origin
-      storage::kFileSystemTypeNativeLocal, base::FilePath(name));
+      blink::StorageKey(), storage::kFileSystemTypeLocal, base::FilePath(name));
   return RecentFile(url, last_modified);
 }
 
 std::vector<std::unique_ptr<RecentSource>> BuildDefaultSources() {
   auto source1 = std::make_unique<FakeRecentSource>();
   source1->AddFile(MakeRecentFile("aaa.jpg", base::Time::FromJavaTime(1000)));
-  source1->AddFile(MakeRecentFile("ccc.jpg", base::Time::FromJavaTime(3000)));
+  source1->AddFile(MakeRecentFile("ccc.mp4", base::Time::FromJavaTime(3000)));
 
   auto source2 = std::make_unique<FakeRecentSource>();
-  source2->AddFile(MakeRecentFile("bbb.jpg", base::Time::FromJavaTime(2000)));
-  source2->AddFile(MakeRecentFile("ddd.jpg", base::Time::FromJavaTime(4000)));
+  source2->AddFile(MakeRecentFile("bbb.png", base::Time::FromJavaTime(2000)));
+  source2->AddFile(MakeRecentFile("ddd.ogg", base::Time::FromJavaTime(4000)));
 
   std::vector<std::unique_ptr<RecentSource>> sources;
   sources.emplace_back(std::move(source1));
@@ -60,7 +60,8 @@ class RecentModelTest : public testing::Test {
   std::vector<RecentFile> BuildModelAndGetRecentFiles(
       RecentSourceListFactory source_list_factory,
       size_t max_files,
-      const base::Time& cutoff_time) {
+      const base::Time& cutoff_time,
+      RecentModel::FileType file_type) {
     RecentModel* model = static_cast<RecentModel*>(
         RecentModelFactory::GetInstance()->SetTestingFactoryAndUse(
             &profile_,
@@ -80,7 +81,7 @@ class RecentModelTest : public testing::Test {
     base::RunLoop run_loop;
 
     model->GetRecentFiles(
-        nullptr /* file_system_context */, GURL() /* origin */,
+        nullptr /* file_system_context */, GURL() /* origin */, file_type,
         base::BindOnce(
             [](base::RunLoop* run_loop, std::vector<RecentFile>* files_out,
                const std::vector<RecentFile>& files) {
@@ -99,42 +100,44 @@ class RecentModelTest : public testing::Test {
 };
 
 TEST_F(RecentModelTest, GetRecentFiles) {
-  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
-      base::BindRepeating(&BuildDefaultSources), 10, base::Time());
+  std::vector<RecentFile> files =
+      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
+                                  base::Time(), RecentModel::FileType::kAll);
 
   ASSERT_EQ(4u, files.size());
-  EXPECT_EQ("ddd.jpg", files[0].url().path().value());
+  EXPECT_EQ("ddd.ogg", files[0].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
-  EXPECT_EQ("ccc.jpg", files[1].url().path().value());
+  EXPECT_EQ("ccc.mp4", files[1].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(3000), files[1].last_modified());
-  EXPECT_EQ("bbb.jpg", files[2].url().path().value());
+  EXPECT_EQ("bbb.png", files[2].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(2000), files[2].last_modified());
   EXPECT_EQ("aaa.jpg", files[3].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(1000), files[3].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_MaxFiles) {
-  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
-      base::BindRepeating(&BuildDefaultSources), 3, base::Time());
+  std::vector<RecentFile> files =
+      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 3,
+                                  base::Time(), RecentModel::FileType::kAll);
 
   ASSERT_EQ(3u, files.size());
-  EXPECT_EQ("ddd.jpg", files[0].url().path().value());
+  EXPECT_EQ("ddd.ogg", files[0].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
-  EXPECT_EQ("ccc.jpg", files[1].url().path().value());
+  EXPECT_EQ("ccc.mp4", files[1].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(3000), files[1].last_modified());
-  EXPECT_EQ("bbb.jpg", files[2].url().path().value());
+  EXPECT_EQ("bbb.png", files[2].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(2000), files[2].last_modified());
 }
 
 TEST_F(RecentModelTest, GetRecentFiles_CutoffTime) {
-  std::vector<RecentFile> files =
-      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
-                                  base::Time::FromJavaTime(2500));
+  std::vector<RecentFile> files = BuildModelAndGetRecentFiles(
+      base::BindRepeating(&BuildDefaultSources), 10,
+      base::Time::FromJavaTime(2500), RecentModel::FileType::kAll);
 
   ASSERT_EQ(2u, files.size());
-  EXPECT_EQ("ddd.jpg", files[0].url().path().value());
+  EXPECT_EQ("ddd.ogg", files[0].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
-  EXPECT_EQ("ccc.jpg", files[1].url().path().value());
+  EXPECT_EQ("ccc.mp4", files[1].url().path().value());
   EXPECT_EQ(base::Time::FromJavaTime(3000), files[1].last_modified());
 }
 
@@ -143,9 +146,41 @@ TEST_F(RecentModelTest, GetRecentFiles_UmaStats) {
 
   BuildModelAndGetRecentFiles(
       base::BindRepeating([]() { return RecentSourceList(); }), 10,
-      base::Time());
+      base::Time(), RecentModel::FileType::kAll);
 
   histogram_tester.ExpectTotalCount(RecentModel::kLoadHistogramName, 1);
+}
+
+TEST_F(RecentModelTest, GetRecentFiles_Audio) {
+  std::vector<RecentFile> files =
+      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
+                                  base::Time(), RecentModel::FileType::kAudio);
+
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ("ddd.ogg", files[0].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(4000), files[0].last_modified());
+}
+
+TEST_F(RecentModelTest, GetRecentFiles_Image) {
+  std::vector<RecentFile> files =
+      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
+                                  base::Time(), RecentModel::FileType::kImage);
+
+  ASSERT_EQ(2u, files.size());
+  EXPECT_EQ("bbb.png", files[0].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(2000), files[0].last_modified());
+  EXPECT_EQ("aaa.jpg", files[1].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(1000), files[1].last_modified());
+}
+
+TEST_F(RecentModelTest, GetRecentFiles_Video) {
+  std::vector<RecentFile> files =
+      BuildModelAndGetRecentFiles(base::BindRepeating(&BuildDefaultSources), 10,
+                                  base::Time(), RecentModel::FileType::kVideo);
+
+  ASSERT_EQ(1u, files.size());
+  EXPECT_EQ("ccc.mp4", files[0].url().path().value());
+  EXPECT_EQ(base::Time::FromJavaTime(3000), files[0].last_modified());
 }
 
 }  // namespace chromeos

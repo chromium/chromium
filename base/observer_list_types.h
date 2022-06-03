@@ -6,7 +6,6 @@
 #define BASE_OBSERVER_LIST_TYPES_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace base {
@@ -27,6 +26,8 @@ class CheckedObserverAdapter;
 class BASE_EXPORT CheckedObserver {
  public:
   CheckedObserver();
+  CheckedObserver(const CheckedObserver&) = delete;
+  CheckedObserver& operator=(const CheckedObserver&) = delete;
 
  protected:
   virtual ~CheckedObserver();
@@ -40,8 +41,6 @@ class BASE_EXPORT CheckedObserver {
 
   // Must be mutable to allow ObserverList<const Foo>.
   mutable WeakPtrFactory<CheckedObserver> factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CheckedObserver);
 };
 
 }  // namespace base

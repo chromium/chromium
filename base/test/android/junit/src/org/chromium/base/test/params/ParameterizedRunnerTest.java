@@ -86,6 +86,16 @@ public class ParameterizedRunnerTest {
         ParameterizedRunner.validateWidth(paramList);
     }
 
+    // This test ensures the class ParameterSet throws IllegalArgumentException
+    // when passed an unacceptable data type.
+    @Test(expected = IllegalArgumentException.class)
+    @SuppressWarnings("ModifiedButNotUsed")
+    public void testUnsupportedParameterType() throws Throwable {
+        class MyPair {};
+        List<ParameterSet> paramList = new ArrayList<>();
+        paramList.add(new ParameterSet().value(new MyPair()));
+    }
+
     @Test(expected = IllegalArgumentException.class)
     public void testBadClassWithNonListParameters() throws Throwable {
         new ParameterizedRunner(BadTestClassWithNonListParameters.class);

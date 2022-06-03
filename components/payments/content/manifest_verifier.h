@@ -12,14 +12,15 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
+#include "content/public/browser/installed_payment_apps_finder.h"
 #include "content/public/browser/payment_app_provider.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -58,23 +59,32 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   // remaining. If a payment handler does not have any valid payment method
   // names, then it's not included in the returned set of handlers.
   using VerifyCallback =
-      base::OnceCallback<void(content::PaymentAppProvider::PaymentApps,
+      base::OnceCallback<void(content::InstalledPaymentAppsFinder::PaymentApps,
                               const std::string& error_message)>;
 
   // Creates the verifier and starts up the parser utility process.
+  //
+  // |merchant_origin| should be the origin of the iframe that created the
+  // PaymentRequest object. It is used by security features like
+  // 'Sec-Fetch-Site' and 'Cross-Origin-Resource-Policy'.
+  //
   // The owner of ManifestVerifier owns |downloader|, |parser| and
   // |cache|. They should live until |finished_using_resources| parameter to
   // Verify() method is called.
-  ManifestVerifier(content::WebContents* web_contents,
+  ManifestVerifier(const url::Origin& merchant_origin,
+                   content::WebContents* web_contents,
                    PaymentManifestDownloader* downloader,
                    PaymentManifestParser* parser,
                    PaymentManifestWebDataService* cache);
+
+  ManifestVerifier(const ManifestVerifier&) = delete;
+  ManifestVerifier& operator=(const ManifestVerifier&) = delete;
 
   ~ManifestVerifier() override;
 
   // Initiates the verification. This object should be deleted after
   // |finished_using_resources| is invoked.
-  void Verify(content::PaymentAppProvider::PaymentApps apps,
+  void Verify(content::InstalledPaymentAppsFinder::PaymentApps apps,
               VerifyCallback finished_verification,
               base::OnceClosure finished_using_resources);
 
@@ -96,12 +106,12 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   void OnPaymentMethodManifestParsed(
       const GURL& method_manifest_url,
       const std::vector<GURL>& default_applications,
-      const std::vector<url::Origin>& supported_origins,
-      bool all_origins_supported);
+      const std::vector<url::Origin>& supported_origins);
 
   // Called immediately preceding the verification callback invocation.
   void RemoveInvalidPaymentApps();
 
+  const url::Origin merchant_origin_;
   DeveloperConsoleLogger log_;
 
   // Downloads the manifests.
@@ -114,7 +124,7 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   PaymentManifestWebDataService* cache_;
 
   // The list of payment apps being verified.
-  content::PaymentAppProvider::PaymentApps apps_;
+  content::InstalledPaymentAppsFinder::PaymentApps apps_;
 
   // A mapping from the payment app scope to the set of the URL-based payment
   // methods that it claims to support, but is not allowed due to the payment
@@ -128,9 +138,9 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   // cache.
   base::OnceClosure finished_using_resources_callback_;
 
-  // The mapping of payment method names to the origins of the apps that want to
+  // The mapping of payment method names to the id of the apps that want to
   // use these payment method names.
-  std::map<GURL, std::set<url::Origin>> manifest_url_to_app_origins_map_;
+  std::map<GURL, std::vector<int64_t>> manifest_url_to_app_id_map_;
 
   // The mapping of cache request handles to the payment method manifest URLs.
   std::map<WebDataServiceBase::Handle, GURL> cache_request_handles_;
@@ -160,8 +170,6 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   std::string first_error_message_;
 
   base::WeakPtrFactory<ManifestVerifier> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManifestVerifier);
 };
 
 }  // namespace payments

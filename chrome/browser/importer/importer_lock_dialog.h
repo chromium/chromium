@@ -14,7 +14,7 @@ namespace importer {
 // warning dialog. After closing the dialog, the ImportHost receives a callback
 // with the message either to skip the import, or to continue the process.
 void ShowImportLockDialog(gfx::NativeWindow parent,
-                          const base::Callback<void(bool)>& callback);
+                          base::OnceCallback<void(bool)> callback);
 
 }  // namespace importer
 

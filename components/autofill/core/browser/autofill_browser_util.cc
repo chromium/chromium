@@ -5,20 +5,60 @@
 #include "components/autofill/core/browser/autofill_browser_util.h"
 
 #include "components/autofill/core/browser/autofill_client.h"
+#include "components/autofill/core/browser/form_structure.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
+
+namespace {
+// Matches the blink check for mixed content.
+bool IsInsecureFormAction(const GURL& action_url) {
+  // blob: and filesystem: URLs never hit the network, and access is restricted
+  // to same-origin contexts, so they are not blocked. Some forms use
+  // javascript URLs to handle submissions in JS, those don't count as mixed
+  // content either.
+  if (action_url.SchemeIs(url::kJavaScriptScheme) ||
+      action_url.SchemeIs(url::kBlobScheme) ||
+      action_url.SchemeIs(url::kFileSystemScheme)) {
+    return false;
+  }
+  return !network::IsUrlPotentiallyTrustworthy(action_url);
+}
+}  // namespace
 
 namespace autofill {
 
-bool IsFormOrClientNonSecure(AutofillClient* client, const FormData& form) {
+bool IsFormOrClientNonSecure(const AutofillClient* client,
+                             const FormData& form) {
   return !client->IsContextSecure() ||
          (form.action.is_valid() && form.action.SchemeIs("http"));
 }
 
-bool ShouldAllowCreditCardFallbacks(AutofillClient* client,
+bool IsFormMixedContent(const AutofillClient* client, const FormData& form) {
+  return client->IsContextSecure() &&
+         (form.action.is_valid() && IsInsecureFormAction(form.action));
+}
+
+bool ShouldAllowCreditCardFallbacks(const AutofillClient* client,
                                     const FormData& form) {
   // Skip the form check if there wasn't a form yet:
-  if (form.unique_renderer_id == FormData::kNotSetRendererId)
+  if (form.unique_renderer_id.is_null())
     return client->IsContextSecure();
   return !IsFormOrClientNonSecure(client, form);
+}
+
+bool IsCompleteCreditCardFormIncludingCvcField(
+    const FormStructure& form_structure) {
+  // If card number field or expiration date field is not detected, return
+  // false.
+  if (!form_structure.IsCompleteCreditCardForm())
+    return false;
+
+  // If CVC field is detected, then all requirements are met, otherwise return
+  // false.
+  for (auto& field : form_structure) {
+    if (field->Type().GetStorableType() == CREDIT_CARD_VERIFICATION_CODE)
+      return true;
+  }
+  return false;
 }
 
 }  // namespace autofill

@@ -41,7 +41,7 @@ NativelyConnectableHandler::NativelyConnectableHandler() = default;
 NativelyConnectableHandler::~NativelyConnectableHandler() = default;
 
 bool NativelyConnectableHandler::Parse(Extension* extension,
-                                       base::string16* error) {
+                                       std::u16string* error) {
   const base::Value* natively_connectable_hosts = nullptr;
   if (!extension->manifest()->GetList(manifest_keys::kNativelyConnectable,
                                       &natively_connectable_hosts)) {

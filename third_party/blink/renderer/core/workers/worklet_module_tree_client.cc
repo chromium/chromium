@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/script/module_script.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
@@ -56,8 +57,15 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
   // Step 4: "If script's error to rethrow is not null, then queue a task on
   // outsideSettings's responsible event loop given script's error to rethrow to
   // run these steps:
+  ScriptState::Scope scope(script_state_);
   if (module_script->HasErrorToRethrow()) {
-    ScriptState::Scope scope(script_state_);
+    // TODO(crbug.com/1204965): SerializedScriptValue always assumes that the
+    // default microtask queue is used, so we have to put an explicit scope on
+    // the stack here. Ideally, all V8 bindings would understand non-default
+    // microtask queues.
+    v8::MicrotasksScope microtasks_scope(
+        script_state_->GetIsolate(), ToMicrotaskQueue(script_state_),
+        v8::MicrotasksScope::kDoNotRunMicrotasks);
     PostCrossThreadTask(
         *outside_settings_task_runner_, FROM_HERE,
         CrossThreadBindOnce(
@@ -70,15 +78,13 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
   }
 
   // Step 5: "Run a module script given script."
-  ScriptValue error =
-      Modulator::From(script_state_)
-          ->ExecuteModule(module_script,
-                          Modulator::CaptureEvalErrorFlag::kReport);
+  ScriptEvaluationResult result = module_script->RunScriptAndReturnValue();
 
   auto* global_scope =
       To<WorkletGlobalScope>(ExecutionContext::From(script_state_));
 
-  global_scope->ReportingProxy().DidEvaluateModuleScript(error.IsEmpty());
+  global_scope->ReportingProxy().DidEvaluateTopLevelScript(
+      result.GetResultType() == ScriptEvaluationResult::ResultType::kSuccess);
 
   // Step 6: "Queue a task on outsideSettings's responsible event loop to run
   // these steps:"
@@ -89,7 +95,7 @@ void WorkletModuleTreeClient::NotifyModuleTreeLoadFinished(
                           WrapCrossThreadPersistent(pending_tasks_.Get())));
 }
 
-void WorkletModuleTreeClient::Trace(blink::Visitor* visitor) {
+void WorkletModuleTreeClient::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   ModuleTreeClient::Trace(visitor);
 }

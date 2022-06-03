@@ -1,0 +1,52 @@
+This is a testharness.js-based test.
+PASS .grid 1
+PASS .grid 2
+PASS .grid 3
+PASS .grid 4
+PASS .grid 5
+PASS .grid 6
+PASS .grid 7
+PASS .grid 8
+PASS .grid 9
+FAIL .grid 10 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="117">
+        <div class="item borderPaddingMargin" style="min-width: 50%;" data-expected-width="74" data-expected-height="73">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="65" data-expected-height="15"></div>
+    </div>
+</div>
+width expected 74 but got 73
+FAIL .grid 11 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="75">
+        <div class="item min-width-min-content" data-expected-width="75" data-expected-height="50">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="75" data-expected-height="15"></div>
+    </div>
+</div>
+width expected 75 but got 74
+FAIL .grid 12 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="117">
+        <div class="item borderPaddingMargin min-width-min-content" data-expected-width="116" data-expected-height="73">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="140" data-expected-height="15"></div>
+    </div>
+</div>
+width expected 116 but got 115
+FAIL .grid 13 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="50">
+        <div class="item alignSelfStart min-width-max-content" data-expected-width="150" data-expected-height="25">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="150" data-expected-height="15"></div>
+    </div>
+</div>
+width expected 150 but got 148
+FAIL .grid 14 assert_equals: 
+<div class="container">
+    <div class="grid" data-expected-width="150" data-expected-height="92">
+        <div class="item alignSelfStart borderPaddingMargin min-width-max-content" data-expected-width="191" data-expected-height="48">XXX XX</div>
+        <div class="stretchedItem" data-expected-width="215" data-expected-height="15"></div>
+    </div>
+</div>
+width expected 191 but got 189
+Harness: the test ran to completion.
+

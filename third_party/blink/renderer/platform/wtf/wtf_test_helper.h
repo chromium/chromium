@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_TEST_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_WTF_TEST_HELPER_H_
 
-#include "base/macros.h"
+#include <type_traits>
+
 #include "base/memory/scoped_refptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -50,8 +51,6 @@ class MoveOnly {
 
  private:
   int i_;
-
-  DISALLOW_COPY_AND_ASSIGN(MoveOnly);
 };
 
 class MoveOnlyHashValue {
@@ -175,6 +174,81 @@ struct HashTraits<CountCopy> : public CountCopyHashTraits {};
 template <>
 struct DefaultHash<CountCopy> {
   using Hash = CountCopyHash;
+};
+
+template <typename T>
+class ValueInstanceCount final {
+ public:
+  static int* const kDeletedValue;
+
+  ValueInstanceCount() : counter_(nullptr), value_(T()) {}
+  explicit ValueInstanceCount(int* counter, T value = T())
+      : counter_(counter), value_(value) {
+    if (counter_ && counter_ != kDeletedValue)
+      ++*counter_;
+  }
+  ValueInstanceCount(const ValueInstanceCount& other)
+      : counter_(other.counter_), value_(other.value_) {
+    if (counter_ && counter_ != kDeletedValue)
+      ++*counter_;
+  }
+  ValueInstanceCount& operator=(const ValueInstanceCount& other) {
+    if (counter_ && counter_ != kDeletedValue)
+      --*counter_;
+    counter_ = other.counter_;
+    value_ = other.value_;
+    if (counter_ && counter_ != kDeletedValue)
+      ++*counter_;
+    return *this;
+  }
+  ~ValueInstanceCount() {
+    if (counter_ && counter_ != kDeletedValue)
+      --*counter_;
+  }
+
+  const int* Counter() const { return counter_; }
+  const T& Value() const { return value_; }
+
+ private:
+  int* counter_;
+  T value_;
+};
+
+template <typename T>
+struct ValueInstanceCountHashTraits
+    : public GenericHashTraits<ValueInstanceCount<T>> {
+  static const bool kEmptyValueIsZero = false;
+  static const bool kHasIsEmptyValueFunction = true;
+  static bool IsEmptyValue(const ValueInstanceCount<T>& value) {
+    return !value.Counter();
+  }
+  static void ConstructDeletedValue(ValueInstanceCount<T>& slot, bool) {
+    slot = ValueInstanceCount<T>(ValueInstanceCount<T>::kDeletedValue);
+  }
+  static bool IsDeletedValue(const ValueInstanceCount<T>& value) {
+    return value.Counter() == ValueInstanceCount<T>::kDeletedValue;
+  }
+};
+
+template <typename T>
+struct ValueInstanceCountHash : public PtrHash<const int*> {
+  static unsigned GetHash(const ValueInstanceCount<T>& value) {
+    return PtrHash<const int>::GetHash(value.Counter());
+  }
+  static bool Equal(const ValueInstanceCount<T>& left,
+                    const ValueInstanceCount<T>& right) {
+    return PtrHash<const int>::Equal(left.Counter(), right.Counter());
+  }
+  static const bool safe_to_compare_to_empty_or_deleted = true;
+};
+
+template <typename T>
+struct HashTraits<ValueInstanceCount<T>>
+    : public ValueInstanceCountHashTraits<T> {};
+
+template <typename T>
+struct DefaultHash<ValueInstanceCount<T>> {
+  using Hash = ValueInstanceCountHash<T>;
 };
 
 class DummyRefCounted : public RefCounted<DummyRefCounted> {

@@ -22,12 +22,16 @@ ScrollStateData::ScrollStateData()
       from_user_input(false),
       delta_consumed_for_scroll_sequence(false),
       is_direct_manipulation(false),
-      delta_granularity(0),
+      is_scrollbar_interaction(false),
+      delta_granularity(ui::ScrollGranularity::kScrollByPrecisePixel),
       caused_scroll_x(false),
       caused_scroll_y(false),
-      is_scroll_chain_cut(false) {}
+      is_scroll_chain_cut(false),
+      is_main_thread_hit_tested(false) {}
 
-ScrollStateData::ScrollStateData(const ScrollStateData& other) = default;
+ScrollStateData::ScrollStateData(const ScrollStateData&) = default;
+
+ScrollStateData& ScrollStateData::operator=(const ScrollStateData&) = default;
 
 ElementId ScrollStateData::current_native_scrolling_element() const {
   return current_native_scrolling_element_;

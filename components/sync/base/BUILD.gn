@@ -2,33 +2,33 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
 
-jumbo_static_library("base") {
+declare_args() {
+  # Controls the product part of the user agent calculated in sync_util.cc.
+  sync_user_agent_product = "Chrome"
+}
+
+static_library("base") {
   sources = [
     "bind_to_task_runner.h",
-    "cancelation_observer.cc",
-    "cancelation_observer.h",
-    "cancelation_signal.cc",
-    "cancelation_signal.h",
     "client_tag_hash.cc",
     "client_tag_hash.h",
     "data_type_histogram.cc",
     "data_type_histogram.h",
-    "encryptor.h",
-    "enum_set.h",
     "extensions_activity.cc",
     "extensions_activity.h",
     "hash_util.cc",
     "hash_util.h",
-    "immutable.h",
     "invalidation_adapter.cc",
     "invalidation_adapter.h",
     "invalidation_helper.cc",
     "invalidation_helper.h",
     "invalidation_interface.cc",
     "invalidation_interface.h",
+    "legacy_directory_deletion.cc",
+    "legacy_directory_deletion.h",
     "logging.cc",
     "logging.h",
     "model_type.cc",
@@ -51,26 +51,19 @@ jumbo_static_library("base") {
     "sync_prefs.cc",
     "sync_prefs.h",
     "sync_stop_metadata_fate.h",
+    "sync_util.cc",
+    "sync_util.h",
     "syncer_error.cc",
     "syncer_error.h",
-    "system_encryptor.cc",
-    "system_encryptor.h",
     "time.cc",
     "time.h",
     "unique_position.cc",
     "unique_position.h",
-    "unrecoverable_error_handler.h",
-    "unrecoverable_error_info.cc",
-    "unrecoverable_error_info.h",
-    "user_demographics.cc",
-    "user_demographics.h",
     "user_selectable_type.cc",
     "user_selectable_type.h",
     "weak_handle.cc",
     "weak_handle.h",
   ]
-
-  configs += [ "//build/config:precompiled_headers" ]
 
   public_deps = [
     "//base",
@@ -79,40 +72,39 @@ jumbo_static_library("base") {
     "//third_party/metrics_proto",
   ]
   deps = [
+    "//base",
     "//base:i18n",
-    "//components/os_crypt",
+    "//build:chromeos_buildflags",
     "//components/pref_registry",
     "//components/prefs",
     "//components/version_info",
+    "//components/version_info:generate_version_info",
     "//crypto",
     "//net",
     "//third_party/zlib",
+    "//ui/base",
   ]
 
-  if (is_chromeos) {
-    deps += [ "//chromeos/constants" ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
   }
+
+  defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
 }
 
+# TODO(crbug.com/948661): The other sync targets have their test support targets
+# declared outside of the production code directory. Do the same for this one.
 static_library("test_support") {
   testonly = true
   sources = [
-    "../test/callback_counter.h",
     "../test/mock_invalidation.cc",
     "../test/mock_invalidation.h",
     "../test/mock_invalidation_tracker.cc",
     "../test/mock_invalidation_tracker.h",
-    "../test/test_matchers.h",
     "../test/trackable_mock_invalidation.cc",
     "../test/trackable_mock_invalidation.h",
-    "fake_encryptor.cc",
-    "fake_encryptor.h",
-    "mock_unrecoverable_error_handler.cc",
-    "mock_unrecoverable_error_handler.h",
     "model_type_test_util.cc",
     "model_type_test_util.h",
-    "test_unrecoverable_error_handler.cc",
-    "test_unrecoverable_error_handler.h",
   ]
 
   public_deps = [
@@ -120,11 +112,6 @@ static_library("test_support") {
     "//components/sync/base",
     "//testing/gmock",
     "//testing/gtest",
-  ]
-
-  deps = [
-    # For test_matchers.h, which should probably be split up.
-    "//components/sync:rest_of_sync",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

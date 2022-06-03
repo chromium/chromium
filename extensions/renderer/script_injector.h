@@ -9,8 +9,14 @@
 #include <vector>
 
 #include "extensions/common/constants.h"
+#include "extensions/common/mojom/code_injection.mojom.h"
+#include "extensions/common/mojom/css_origin.mojom-shared.h"
+#include "extensions/common/mojom/execution_world.mojom-shared.h"
+#include "extensions/common/mojom/injection_type.mojom-shared.h"
+#include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/permissions/permissions_data.h"
 #include "extensions/common/user_script.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_script_source.h"
 
 class InjectionHost;
@@ -34,19 +40,28 @@ class ScriptInjector {
                         // (or just did not accept) the injection.
   };
 
+  struct CSSSource {
+    blink::WebString code;
+    blink::WebStyleSheetKey key;
+  };
+
   virtual ~ScriptInjector() {}
 
   // Returns the script type of this particular injection.
-  virtual UserScript::InjectionType script_type() const = 0;
+  virtual mojom::InjectionType script_type() const = 0;
 
   // Returns true if the script is running inside a user gesture.
   virtual bool IsUserGesture() const = 0;
 
-  // Returns the CSS origin of this injection.
-  virtual base::Optional<CSSOrigin> GetCssOrigin() const = 0;
+  // Returns the world in which to execute the javascript code.
+  virtual mojom::ExecutionWorld GetExecutionWorld() const = 0;
 
-  // Returns the key for this injection, if it's a CSS injection.
-  virtual const base::Optional<std::string> GetInjectionKey() const = 0;
+  // Returns the CSS origin of this injection.
+  virtual mojom::CSSOrigin GetCssOrigin() const = 0;
+
+  // Returns the type of CSS operation (addition or removal) that should be
+  // performed.
+  virtual mojom::CSSInjection::Operation GetCSSInjectionOperation() const = 0;
 
   // Returns true if the script expects results.
   virtual bool ExpectsResults() const = 0;
@@ -54,12 +69,13 @@ class ScriptInjector {
   // Returns true if the script should inject JS source at the given
   // |run_location|.
   virtual bool ShouldInjectJs(
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       const std::set<std::string>& executing_scripts) const = 0;
 
-  // Returns true if the script should inject CSS at the given |run_location|.
-  virtual bool ShouldInjectCss(
-      UserScript::RunLocation run_location,
+  // Returns true if the script should inject or remove CSS at the given
+  // |run_location|.
+  virtual bool ShouldInjectOrRemoveCss(
+      mojom::RunLocation run_location,
       const std::set<std::string>& injected_stylesheets) const = 0;
 
   // Returns true if the script should execute on the given |frame|.
@@ -71,31 +87,25 @@ class ScriptInjector {
   // Returns the javascript sources to inject at the given |run_location|.
   // Only called if ShouldInjectJs() is true.
   virtual std::vector<blink::WebScriptSource> GetJsSources(
-      UserScript::RunLocation run_location,
+      mojom::RunLocation run_location,
       std::set<std::string>* executing_scripts,
       size_t* num_injected_js_scripts) const = 0;
 
   // Returns the css to inject at the given |run_location|.
-  // Only called if ShouldInjectCss() is true.
-  virtual std::vector<blink::WebString> GetCssSources(
-      UserScript::RunLocation run_location,
+  // Only called if ShouldInjectOrRemoveCss() is true.
+  virtual std::vector<CSSSource> GetCssSources(
+      mojom::RunLocation run_location,
       std::set<std::string>* injected_stylesheets,
       size_t* num_injected_stylesheets) const = 0;
 
   // Notifies the script that injection has completed, with a possibly-populated
   // list of results (depending on whether or not ExpectsResults() was true).
-  // |render_frame| contains the render frame, or null if the frame was
-  // invalidated.
   virtual void OnInjectionComplete(
       std::unique_ptr<base::Value> execution_result,
-      UserScript::RunLocation run_location,
-      content::RenderFrame* render_frame) = 0;
+      mojom::RunLocation run_location) = 0;
 
   // Notifies the script that injection will never occur.
-  // |render_frame| contains the render frame, or null if the frame was
-  // invalidated.
-  virtual void OnWillNotInject(InjectFailureReason reason,
-                               content::RenderFrame* render_frame) = 0;
+  virtual void OnWillNotInject(InjectFailureReason reason) = 0;
 };
 
 }  // namespace extensions

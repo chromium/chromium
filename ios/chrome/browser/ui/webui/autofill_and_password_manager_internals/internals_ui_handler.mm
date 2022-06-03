@@ -5,7 +5,7 @@
 #include "ios/chrome/browser/ui/webui/autofill_and_password_manager_internals/internals_ui_handler.h"
 
 #include "components/autofill/core/browser/logging/log_router.h"
-#include "components/grit/components_resources.h"
+#include "components/grit/dev_ui_components_resources.h"
 #include "components/version_info/version_info.h"
 #include "components/version_ui/version_handler_helper.h"
 #include "components/version_ui/version_ui_constants.h"
@@ -61,26 +61,34 @@ InternalsUIHandler::~InternalsUIHandler() {
 }
 
 void InternalsUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "loaded", base::BindRepeating(&InternalsUIHandler::OnLoaded,
                                     base::Unretained(this)));
 }
 
 void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
-  web_ui()->CallJavascriptFunction(call_on_load_, {});
+  base::Value load_event(call_on_load_);
+  base::Value empty;
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
+                                   {&load_event, &empty});
 
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromWebUIIOS(web_ui());
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromWebUIIOS(web_ui());
   base::Value is_incognito(browser_state->IsOffTheRecord());
-  web_ui()->CallJavascriptFunction("notifyAboutIncognito", {&is_incognito});
-  web_ui()->CallJavascriptFunction("notifyAboutVariations",
-                                   {version_ui::GetVariationsList().get()});
+  base::Value incognito_event("notify-about-incognito");
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
+                                   {&incognito_event, &is_incognito});
+
+  base::Value variations_event("notify-about-variations");
+  base::Value variations_list = version_ui::GetVariationsList();
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
+                                   {&variations_event, &variations_list});
   StartSubscription();
 }
 
 void InternalsUIHandler::StartSubscription() {
-  LogRouter* log_router = get_log_router_function_.Run(
-      ios::ChromeBrowserState::FromWebUIIOS(web_ui()));
+  LogRouter* log_router =
+      get_log_router_function_.Run(ChromeBrowserState::FromWebUIIOS(web_ui()));
   if (!log_router)
     return;
 
@@ -95,8 +103,8 @@ void InternalsUIHandler::EndSubscription() {
   if (!registered_with_log_router_)
     return;
   registered_with_log_router_ = false;
-  LogRouter* log_router = get_log_router_function_.Run(
-      ios::ChromeBrowserState::FromWebUIIOS(web_ui()));
+  LogRouter* log_router =
+      get_log_router_function_.Run(ChromeBrowserState::FromWebUIIOS(web_ui()));
   if (log_router)
     log_router->UnregisterReceiver(this);
 }
@@ -104,7 +112,10 @@ void InternalsUIHandler::EndSubscription() {
 void InternalsUIHandler::LogEntry(const base::Value& entry) {
   if (!registered_with_log_router_ || entry.is_none())
     return;
-  web_ui()->CallJavascriptFunction("addRawLog", {&entry});
+
+  base::Value log_event("add-raw-log");
+  web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",
+                                   {&log_event, &entry});
 }
 
 }  //  namespace autofill

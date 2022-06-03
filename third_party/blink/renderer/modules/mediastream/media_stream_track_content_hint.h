@@ -24,4 +24,4 @@ class MediaStreamTrackContentHint final {
 
 }  // namespace blink
 
-#endif  // MediaStreamTrack_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MEDIA_STREAM_TRACK_CONTENT_HINT_H_

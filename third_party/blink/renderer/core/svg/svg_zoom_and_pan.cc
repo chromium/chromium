@@ -21,6 +21,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_zoom_and_pan.h"
 
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
 
 namespace blink {
@@ -37,13 +38,10 @@ bool SVGZoomAndPan::ParseAttribute(const QualifiedName& name,
     return false;
   zoom_and_pan_ = kSVGZoomAndPanUnknown;
   if (!value.IsEmpty()) {
-    if (value.Is8Bit()) {
-      const LChar* start = value.Characters8();
-      zoom_and_pan_ = Parse(start, start + value.length());
-    } else {
-      const UChar* start = value.Characters16();
-      zoom_and_pan_ = Parse(start, start + value.length());
-    }
+    zoom_and_pan_ =
+        WTF::VisitCharacters(value, [&](const auto* chars, unsigned length) {
+          return Parse(chars, chars + length);
+        });
   }
   return true;
 }

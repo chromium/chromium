@@ -30,9 +30,10 @@
 
 #include "third_party/blink/renderer/core/svg/svg_number.h"
 
-#include "third_party/blink/renderer/core/svg/svg_animate_element.h"
+#include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 
 namespace blink {
 
@@ -42,12 +43,18 @@ SVGNumber* SVGNumber::Clone() const {
   return MakeGarbageCollected<SVGNumber>(value_);
 }
 
+SVGPropertyBase* SVGNumber::CloneForAnimation(const String& value) const {
+  auto* property = MakeGarbageCollected<SVGNumber>();
+  property->SetValueAsString(value);
+  return property;
+}
+
 String SVGNumber::ValueAsString() const {
   return String::Number(value_);
 }
 
 template <typename CharType>
-SVGParsingError SVGNumber::Parse(const CharType*& ptr, const CharType* end) {
+SVGParsingError SVGNumber::Parse(const CharType* ptr, const CharType* end) {
   float value = 0;
   const CharType* start = ptr;
   if (!ParseNumber(ptr, end, value, kAllowLeadingAndTrailingWhitespace))
@@ -64,39 +71,39 @@ SVGParsingError SVGNumber::SetValueAsString(const String& string) {
   if (string.IsEmpty())
     return SVGParseStatus::kNoError;
 
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    return Parse(ptr, end);
-  }
-  const UChar* ptr = string.Characters16();
-  const UChar* end = ptr + string.length();
-  return Parse(ptr, end);
+  return WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+    return Parse(chars, chars + length);
+  });
 }
 
-void SVGNumber::Add(SVGPropertyBase* other, SVGElement*) {
-  SetValue(value_ + ToSVGNumber(other)->Value());
+void SVGNumber::Add(const SVGPropertyBase* other, const SVGElement*) {
+  SetValue(value_ + To<SVGNumber>(other)->Value());
 }
 
 void SVGNumber::CalculateAnimatedValue(
-    const SVGAnimateElement& animation_element,
+    const SMILAnimationEffectParameters& parameters,
     float percentage,
     unsigned repeat_count,
-    SVGPropertyBase* from,
-    SVGPropertyBase* to,
-    SVGPropertyBase* to_at_end_of_duration,
-    SVGElement*) {
-  SVGNumber* from_number = ToSVGNumber(from);
-  SVGNumber* to_number = ToSVGNumber(to);
-  SVGNumber* to_at_end_of_duration_number = ToSVGNumber(to_at_end_of_duration);
+    const SVGPropertyBase* from,
+    const SVGPropertyBase* to,
+    const SVGPropertyBase* to_at_end_of_duration,
+    const SVGElement*) {
+  auto* from_number = To<SVGNumber>(from);
+  auto* to_number = To<SVGNumber>(to);
+  auto* to_at_end_of_duration_number = To<SVGNumber>(to_at_end_of_duration);
 
-  animation_element.AnimateAdditiveNumber(
-      percentage, repeat_count, from_number->Value(), to_number->Value(),
-      to_at_end_of_duration_number->Value(), value_);
+  float result = ComputeAnimatedNumber(parameters, percentage, repeat_count,
+                                       from_number->Value(), to_number->Value(),
+                                       to_at_end_of_duration_number->Value());
+  if (parameters.is_additive)
+    result += value_;
+
+  value_ = result;
 }
 
-float SVGNumber::CalculateDistance(SVGPropertyBase* other, SVGElement*) {
-  return fabsf(value_ - ToSVGNumber(other)->Value());
+float SVGNumber::CalculateDistance(const SVGPropertyBase* other,
+                                   const SVGElement*) const {
+  return fabsf(value_ - To<SVGNumber>(other)->Value());
 }
 
 SVGNumber* SVGNumberAcceptPercentage::Clone() const {
@@ -128,16 +135,10 @@ SVGParsingError SVGNumberAcceptPercentage::SetValueAsString(
     return SVGParseStatus::kExpectedNumberOrPercentage;
 
   float number = 0;
-  SVGParsingError error;
-  if (string.Is8Bit()) {
-    const LChar* ptr = string.Characters8();
-    const LChar* end = ptr + string.length();
-    error = ParseNumberOrPercentage(ptr, end, number);
-  } else {
-    const UChar* ptr = string.Characters16();
-    const UChar* end = ptr + string.length();
-    error = ParseNumberOrPercentage(ptr, end, number);
-  }
+  SVGParsingError error =
+      WTF::VisitCharacters(string, [&](const auto* chars, unsigned length) {
+        return ParseNumberOrPercentage(chars, chars + length, number);
+      });
   if (error == SVGParseStatus::kNoError)
     value_ = number;
   return error;

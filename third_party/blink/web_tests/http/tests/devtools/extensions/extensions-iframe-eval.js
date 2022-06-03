@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests WebInspector extension API\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
   await TestRunner.loadHTML(`<iframe src="${TestRunner.url('../resources/extensions-frame-eval.html')}"></iframe>`);
   await ExtensionsTestRunner.runExtensionTests([
     function extension_testEvalInIFrame(nextTest) {

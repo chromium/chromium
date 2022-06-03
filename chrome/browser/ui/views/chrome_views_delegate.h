@@ -12,15 +12,21 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/views/views_delegate.h"
 
+class Profile;
 class ScopedKeepAlive;
+class ScopedProfileKeepAlive;
 
 class ChromeViewsDelegate : public views::ViewsDelegate {
  public:
   ChromeViewsDelegate();
+
+  ChromeViewsDelegate(const ChromeViewsDelegate&) = delete;
+  ChromeViewsDelegate& operator=(const ChromeViewsDelegate&) = delete;
+
   ~ChromeViewsDelegate() override;
 
   // views::ViewsDelegate:
@@ -32,10 +38,11 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
                                const std::string& window_name,
                                gfx::Rect* bounds,
                                ui::WindowShowState* show_state) const override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ProcessMenuAcceleratorResult ProcessAcceleratorWhileMenuShowing(
       const ui::Accelerator& accelerator) override;
-  views::NonClientFrameView* CreateDefaultNonClientFrameView(
+  bool ShouldCloseMenuIfMouseCaptureLost() const override;
+  std::unique_ptr<views::NonClientFrameView> CreateDefaultNonClientFrameView(
       views::Widget* widget) override;
 #endif
 
@@ -44,7 +51,9 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   HICON GetSmallWindowIcon() const override;
   int GetAppbarAutohideEdges(HMONITOR monitor,
                              base::OnceClosure callback) override;
-#elif defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   gfx::ImageSkia* GetDefaultWindowIcon() const override;
   bool WindowManagerProvidesTitleBar(bool maximized) override;
 #endif
@@ -55,8 +64,9 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   void OnBeforeWidgetInit(
       views::Widget::InitParams* params,
       views::internal::NativeWidgetDelegate* delegate) override;
+#if defined(OS_MAC)
   ui::ContextFactory* GetContextFactory() override;
-  ui::ContextFactoryPrivate* GetContextFactoryPrivate() override;
+#endif
   std::string GetApplicationName() override;
 
  private:
@@ -71,16 +81,11 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
                                 int edges);
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Called from GetSavedWindowPlacement() on ChromeOS to adjust the bounds.
   void AdjustSavedWindowPlacementChromeOS(const views::Widget* widget,
                                           gfx::Rect* bounds) const;
 #endif
-
-  // Function to retrieve default opacity value mainly based on platform
-  // and desktop context.
-  views::Widget::InitParams::WindowOpacity GetOpacityForInitParams(
-      const views::Widget::InitParams& params);
 
   views::NativeWidget* CreateNativeWidget(
       views::Widget::InitParams* params,
@@ -91,7 +96,13 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
   // to do that translation.
   unsigned int ref_count_ = 0u;
 
+  // Prevents BrowserProcess teardown while |ref_count_| is non-zero.
   std::unique_ptr<ScopedKeepAlive> keep_alive_;
+
+  // Prevents Profile* deletion while |ref_count_| is non-zero. See the
+  // DestroyProfileOnBrowserClose flag.
+  std::map<Profile*, std::unique_ptr<ScopedProfileKeepAlive>>
+      profile_keep_alives_;
 
 #if defined(OS_WIN)
   AppbarAutohideEdgeMap appbar_autohide_edge_map_;
@@ -101,8 +112,6 @@ class ChromeViewsDelegate : public views::ViewsDelegate {
 
   base::WeakPtrFactory<ChromeViewsDelegate> weak_factory_{this};
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeViewsDelegate);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_VIEWS_DELEGATE_H_

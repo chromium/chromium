@@ -15,12 +15,12 @@
 
 class GURL;
 
-namespace base {
-class CancelableTaskTracker;
-}
-
 namespace gfx {
 class Rect;
+}
+
+namespace tab_groups {
+class TabGroupId;
 }
 
 namespace sessions {
@@ -31,9 +31,9 @@ struct SessionWindow;
 
 // Callback from TabRestoreServiceClient::GetLastSession.
 // The second parameter is the id of the window that was last active.
-using GetLastSessionCallback =
-    base::Callback<void(std::vector<std::unique_ptr<SessionWindow>>,
-                        SessionID)>;
+// The third parameter indicates if there was an error reading from the file.
+using GetLastSessionCallback = base::OnceCallback<
+    void(std::vector<std::unique_ptr<SessionWindow>>, SessionID, bool)>;
 
 // A client interface that needs to be supplied to the tab restore service by
 // the embedder.
@@ -48,7 +48,8 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
       const std::string& app_name,
       const gfx::Rect& bounds,
       ui::WindowShowState show_state,
-      const std::string& workspace) = 0;
+      const std::string& workspace,
+      const std::string& user_title) = 0;
 
   // Returns the LiveTabContext instance that is associated with
   // |tab|, or null if there is no such instance.
@@ -57,6 +58,11 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
   // Returns the LiveTabContext instance that is associated with |desired_id|,
   // or null if there is no such instance.
   virtual LiveTabContext* FindLiveTabContextWithID(SessionID desired_id) = 0;
+
+  // Returns the LiveTabContext instance that contains the group with ID
+  // |group|, or null if there is no such instance.
+  virtual LiveTabContext* FindLiveTabContextWithGroup(
+      tab_groups::TabGroupId group) = 0;
 
   // Returns whether a given URL should be tracked for restoring.
   virtual bool ShouldTrackURLForRestore(const GURL& url) = 0;
@@ -78,8 +84,7 @@ class SESSIONS_EXPORT TabRestoreServiceClient {
   // Fetches the contents of the last session, notifying the callback when
   // done. If the callback is supplied an empty vector of SessionWindows
   // it means the session could not be restored.
-  virtual void GetLastSession(const GetLastSessionCallback& callback,
-                              base::CancelableTaskTracker* tracker) = 0;
+  virtual void GetLastSession(GetLastSessionCallback callback) = 0;
 
   // Called when a tab is restored. |url| is the URL that the tab is currently
   // visiting.

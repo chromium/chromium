@@ -1,0 +1,930 @@
+<!-- This test is only expected to not crash. There is no -expected.txt or -expected.png for it.
+     Therefore, it is marked as FAILURE in TestExpectations. -->
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<html xmlns="http://www.w3.org/1999/xhtml" style="transform: translateX(2000px); overflow-y:hidden;">
+<style type="text/css">
+*{display:table-row-group !important;}
+</style>
+<script type="text/javascript">
+async_test((t) => {
+  document.addEventListener('test-complete', t.done);
+}, "Page loads without crashing");
+
+var aoScriptElements = document.getElementsByTagName("script");
+for(var i = 0; i < aoScriptElements.length; i++) {
+  aoScriptElements[i].parentNode.removeChild(aoScriptElements[i]);
+}
+
+function cleanup() {
+  var iCleanup = setInterval(function(){
+    var oe = document.getElementsByTagName("*");
+    if (oe.length <= 1) {
+      clearInterval(iCleanup);
+      const event = new Event('test-complete');
+      document.dispatchEvent(event);
+      return;
+    }
+    for (var i = 0; i < oe.length; i++) {
+      var o = oe.item(i);
+      if (!o.firstElementChild && o != document.documentElement) {
+        o.offsetTop;
+        var c = o, p = o.parentNode;
+        try{p.replaceChild(document.createTextNode("<"+o.tagName+">"+o.textContent+"</"+o.tagName+">"), o)}
+        catch(e){}
+      }
+    }
+  }, 100);
+}
+var event_handler_C53_DOMFocusIn_active = false;
+var event_handler_C53_DOMFocusIn_fired_count = 0;
+function event_handler_C53_DOMFocusIn() {
+  if (event_handler_C53_DOMFocusIn_active) return ;
+  event_handler_C53_DOMFocusIn_fired_count++;
+  if (event_handler_C53_DOMFocusIn_fired_count >= 20) return;
+  event_handler_C53_DOMFocusIn_active = true;
+  var oElement = event.srcElement;
+  if (!oElement.parentNode) {
+    var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[9 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParent) {
+      var oPreviousSibling = oParent.childNodes[42 % oParent.childNodes.length];
+      if (oPreviousSibling) {
+        try{oParent.insertBefore(oElement, oPreviousSibling)}
+        catch(e){}
+      } else {
+        try{oParent.appendChild(oElement)}
+        catch(e){}
+      }
+    }
+  }
+  if (!oElement.parentNode) {
+    var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[70 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'feBlend');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParent) {
+      var oPreviousSibling = oParent.childNodes[12 % oParent.childNodes.length];
+      if (oPreviousSibling) {
+        try{oParent.insertBefore(oElement, oPreviousSibling)}
+        catch(e){}
+      } else {
+        try{oParent.appendChild(oElement)}
+        catch(e){}
+      }
+    }
+  }
+  if (oElement.parentNode) {
+  var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  if (oNewElement) {
+    try{oElement.parentNode.replaceChild(document.createElementNS('http://www.w3.org/2000/svg', 'feBlend'), oElement)}
+    catch(e){}
+  }
+  }
+  if (!oElement.parentNode) {
+    var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[41 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParent) {
+      var oPreviousSibling = oParent.childNodes[85 % oParent.childNodes.length];
+      if (oPreviousSibling) {
+        try{oParent.insertBefore(oElement, oPreviousSibling)}
+        catch(e){}
+      } else {
+        try{oParent.appendChild(oElement)}
+        catch(e){}
+      }
+    }
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  try{oSelection.deleteFromDocument()}
+  catch(e){}
+  document.execCommand('InsertHorizontalRule',false,'');
+  event_handler_C53_DOMFocusIn_active = false;
+}
+document.addEventListener("DOMFocusIn", event_handler_C53_DOMFocusIn, false);
+var event_handler_C54_select_active = false;
+var event_handler_C54_select_fired_count = 0;
+function event_handler_C54_select() {
+  if (event_handler_C54_select_active) return ;
+  event_handler_C54_select_fired_count++;
+  if (event_handler_C54_select_fired_count >= 20) return;
+  event_handler_C54_select_active = true;
+  var oElement = event.srcElement;
+  document.execCommand('MoveToBeginningOfParagraph',false,false);
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  document.execCommand('SelectParagraph',false,false);
+  document.execCommand('Undo',false,false);
+  document.execCommand('SelectWord',false,false);
+  event_handler_C54_select_active = false;
+}
+document.addEventListener("select", event_handler_C54_select, true);
+var event_handler_C55_selectstart_active = false;
+var event_handler_C55_selectstart_fired_count = 0;
+function event_handler_C55_selectstart() {
+  if (event_handler_C55_selectstart_active) return ;
+  event_handler_C55_selectstart_fired_count++;
+  if (event_handler_C55_selectstart_fired_count >= 20) return;
+  event_handler_C55_selectstart_active = true;
+  var oElement = event.srcElement;
+  var oSelection=window.getSelection();
+  var oSelectionElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[100 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'script');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (oSelectionElement) {
+    try{oSelection.extend(oSelectionElement, oSelectionElement.textContent.length?20 % oSelectionElement.textContent.length:0)}
+      catch(e){}
+  }
+  try{oSelection.collapseToStart()}
+  catch(e){}
+  try{oSelection.modify('move', 'forward', 'line')}
+  catch(e){}
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(21 % oSelection.rangeCount) : null;
+  if (oRange) {
+    var oInsertedElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[96 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'font-face-uri');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oInsertedElement) {
+      try{oRange.insertNode(oInsertedElement)}
+  catch(e){}
+    }
+  }
+  try{oSelection.deleteFromDocument()}
+  catch(e){}
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(94 % oSelection.rangeCount) : null;
+  if (oRange) {
+    var oParentElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[93 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'altGlyphDef');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParentElement) {
+      try{oRange.surroundContents(oParentElement)}
+  catch(e){}
+    }
+  }
+  var oSelection=window.getSelection();
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(0 % oSelection.rangeCount) : null;
+  if (oRange) {
+    try{oRange.deleteContents()}
+  catch(e){}
+  }
+  try{oElement = document.importNode(oElement, false)}
+  catch(e){}
+  try{oElement.insertAdjacentText('afterbegin', 'O@R;DDDDDMMMPjjjjjjjjjz66666666(')}
+  catch(e){}
+  if (!oElement.parentNode) {
+    var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[25 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'mpath');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParent) {
+      var oPreviousSibling = oParent.childNodes[74 % oParent.childNodes.length];
+      if (oPreviousSibling) {
+        try{oParent.insertBefore(oElement, oPreviousSibling)}
+        catch(e){}
+      } else {
+        try{oParent.appendChild(oElement)}
+        catch(e){}
+      }
+    }
+  }
+  event_handler_C55_selectstart_active = false;
+}
+document.addEventListener("selectstart", event_handler_C55_selectstart, false);
+var event_handler_C56_DOMNodeRemoved_active = false;
+var event_handler_C56_DOMNodeRemoved_fired_count = 0;
+function event_handler_C56_DOMNodeRemoved() {
+  if (event_handler_C56_DOMNodeRemoved_active) return ;
+  event_handler_C56_DOMNodeRemoved_fired_count++;
+  if (event_handler_C56_DOMNodeRemoved_fired_count >= 20) return;
+  event_handler_C56_DOMNodeRemoved_active = true;
+  var oElement = event.srcElement;
+  document.execCommand('InsertUnorderedList',false,false);
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  try{oElement.insertAdjacentText('afterend', 'yZ%%"<vL|||g},,,,,,,,,,,M6666666')}
+  catch(e){}
+  try{oElement = document.adoptNode(oElement)}
+  catch(e){}
+  if (oElement.parentNode) {
+  var oNewElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[31 % aoElements.length].cloneNode(true);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'font-face-format');
+  })();
+  if (oNewElement) {
+    try{oElement.parentNode.replaceChild((function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[37 % aoElements.length].cloneNode(false);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  })(), oElement)}
+    catch(e){}
+  }
+  }
+  try{oElement.focus()}
+  catch(e){}
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(73 % oSelection.rangeCount) : null;
+  if (oRange) {
+    try{oRange.deleteContents()}
+  catch(e){}
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(43 % oSelection.rangeCount) : null;
+  if (oRange) {
+    var oParentElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[100 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'feDistantLight');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParentElement) {
+      try{oRange.surroundContents(oParentElement)}
+  catch(e){}
+    }
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(28 % oSelection.rangeCount) : null;
+  if (oRange) oRange.detach();
+  event_handler_C56_DOMNodeRemoved_active = false;
+}
+document.addEventListener("DOMNodeRemoved", event_handler_C56_DOMNodeRemoved, false);
+var event_handler_C57_readystatechange_active = false;
+var event_handler_C57_readystatechange_fired_count = 0;
+function event_handler_C57_readystatechange() {
+  if (event_handler_C57_readystatechange_active) return ;
+  event_handler_C57_readystatechange_fired_count++;
+  if (event_handler_C57_readystatechange_fired_count >= 20) return;
+  event_handler_C57_readystatechange_active = true;
+  var oElement = event.srcElement;
+  try{oElement.contentEditable = oElement.contentEditable == "true" ? "false" : "true";}
+  catch(e){}
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(93 % oSelection.rangeCount) : null;
+  if (oRange) {
+    try{var oDocumentFragment = oRange.extractContents()}
+  catch(e){}
+    if (oDocumentFragment) {
+      var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[43 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'feBlend');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+      if (oParent) {
+        try{oParent.appendChild(oDocumentFragment)}
+  catch(e){}
+      }
+    }
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(77 % oSelection.rangeCount) : null;
+  if (oRange) {
+    try{oRange.deleteContents()}
+  catch(e){}
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(66 % oSelection.rangeCount) : null;
+  if (oRange) {
+    try{var oDocumentFragment = oRange.extractContents()}
+  catch(e){}
+    if (oDocumentFragment) {
+      var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[57 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'font-face-uri');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+      if (oParent) {
+        try{oParent.appendChild(oDocumentFragment)}
+  catch(e){}
+      }
+    }
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(14 % oSelection.rangeCount) : null;
+  if (oRange) oRange.detach();
+  event_handler_C57_readystatechange_active = false;
+}
+document.addEventListener("readystatechange", event_handler_C57_readystatechange, false);
+setTimeout(function(){
+  var oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[36 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'hkern');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (!oElement) oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[33 % aoElements.length].cloneNode(true);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'pattern');
+  })();
+  if (!oElement.parentNode) {
+    var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[51 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'feImage');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParent) {
+      var oPreviousSibling = oParent.childNodes[18 % oParent.childNodes.length];
+      if (oPreviousSibling) {
+        try{oParent.insertBefore(oElement, oPreviousSibling)}
+        catch(e){}
+      } else {
+        try{oParent.appendChild(oElement)}
+        catch(e){}
+      }
+    }
+  }
+  try{oElement = document.adoptNode(oElement)}
+  catch(e){}
+  var oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[33 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (!oElement) oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[27 % aoElements.length].cloneNode(true);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'color-profile');
+  })();
+  try{oElement.insertAdjacentText('afterend', 'D1EE!TTTTTTTTTTT#\\;*******{{{{{]')}
+  catch(e){}
+  try{oElement.blur()}
+  catch(e){}
+  try{oElement.insertAdjacentHTML('afterbegin', '<svg><animateMotion></animateMotion></svg><svg></svg><span></span><ins></ins>')}
+  catch(e){}
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(78 % oSelection.rangeCount) : null;
+  if (oRange) {
+    try{var oDocumentFragment = oRange.extractContents()}
+  catch(e){}
+    if (oDocumentFragment) {
+      var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[22 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+      if (oParent) {
+        try{oParent.appendChild(oDocumentFragment)}
+  catch(e){}
+      }
+    }
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oSelectionElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[73 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'linearGradient');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (oSelectionElement) {
+    try{oSelection.collapse(oSelectionElement, oSelectionElement.textContent.length?91 % oSelectionElement.textContent.length:0)}
+      catch(e){}
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(85 % oSelection.rangeCount) : null;
+  try{oSelection.deleteFromDocument()}
+  catch(e){}
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  try{oSelection.modify('extend', 'forward', 'lineboundary')}
+  catch(e){}
+  var oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[69 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'switch');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (!oElement) oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[0 % aoElements.length].cloneNode(true);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'feColorMatrix');
+  })();
+  try{oElement.insertAdjacentElement('beforebegin', document.createElementNS('http://www.w3.org/2000/svg', 'feFuncA'))}
+  catch(e){}
+  try{oElement = document.importNode(oElement, true)}
+  catch(e){}
+  if (!oElement.parentNode) {
+    var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[35 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'set');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParent) {
+      var oPreviousSibling = oParent.childNodes[68 % oParent.childNodes.length];
+      if (oPreviousSibling) {
+        try{oParent.insertBefore(oElement, oPreviousSibling)}
+        catch(e){}
+      } else {
+        try{oParent.appendChild(oElement)}
+        catch(e){}
+      }
+    }
+  }
+  if (oElement.outerHTML) {
+    try{oElement.outerHTML = ""}
+    catch(e){}
+  }
+  if (oElement.parentNode) {
+  var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  if (oNewElement) {
+    try{oElement.parentNode.replaceChild(document.createElementNS('http://www.w3.org/2000/svg', 'altGlyphDef'), oElement)}
+    catch(e){}
+  }
+  }
+  try{oElement.innerHTML = "<s>n@@@@@Rttt-:::::H:*)#####<?QQQQQ</s><svg></svg><time><caption>'Q>~)%%%%%%v((YYYYBBBBBBBBB&&&&&</caption></time><svg/>"}
+  catch(e){}
+  if (!oElement.parentNode) {
+    var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[90 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'desc');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParent) {
+      var oPreviousSibling = oParent.childNodes[71 % oParent.childNodes.length];
+      if (oPreviousSibling) {
+        try{oParent.insertBefore(oElement, oPreviousSibling)}
+        catch(e){}
+      } else {
+        try{oParent.appendChild(oElement)}
+        catch(e){}
+      }
+    }
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[55 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'feTile');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (!oElement) oElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+  try{oElement.insertAdjacentHTML('afterend', '<svg/><base></base><svg>g"QQQQQQQ////DD/_C>>>>>>>>>>>h.C</svg><dfn></dfn><rbc></rbc>')}
+  catch(e){}
+  try{oElement.target="_blank"}catch(e){}
+  var oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[24 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'a');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (!oElement) oElement = document.createElementNS('http://www.w3.org/2000/svg', 'font-face-name');
+  try{oElement.insertAdjacentElement('afterbegin', document.createElementNS('http://www.w3.org/2000/svg', 'use'))}
+  catch(e){}
+  if (oElement.parentNode) {
+  var oNewElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[53 % aoElements.length].cloneNode(false);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'feOffset');
+  })();
+  if (oNewElement) {
+    try{oElement.parentNode.replaceChild(document.createElementNS('http://www.w3.org/2000/svg', 'tspan'), oElement)}
+    catch(e){}
+  }
+  }
+  if (!oElement.parentNode) {
+    var oParent = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[17 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'feDistantLight');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParent) {
+      var oPreviousSibling = oParent.childNodes[87 % oParent.childNodes.length];
+      if (oPreviousSibling) {
+        try{oParent.insertBefore(oElement, oPreviousSibling)}
+        catch(e){}
+      } else {
+        try{oParent.appendChild(oElement)}
+        catch(e){}
+      }
+    }
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(7 % oSelection.rangeCount) : null;
+  if (oRange) {
+    try{oRange.deleteContents()}
+  catch(e){}
+  }
+  var oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[5 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'a');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (!oElement) oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[57 % aoElements.length].cloneNode(false);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'defs');
+  })();
+  try{oElement.focus()}
+  catch(e){}
+  try{oElement.insertAdjacentElement('beforeend', (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[52 % aoElements.length].cloneNode(true);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  })())}
+  catch(e){}
+  var oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[42 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'altGlyphItem');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (!oElement) oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[17 % aoElements.length].cloneNode(false);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'feTurbulence');
+  })();
+  if (oElement.parentNode) {
+  var oNewElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[80 % aoElements.length].cloneNode(false);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'feSpecularLighting');
+  })();
+  if (oNewElement) {
+    try{oElement.parentNode.replaceChild((function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[7 % aoElements.length].cloneNode(true);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  })(), oElement)}
+    catch(e){}
+  }
+  }
+  try{oElement.appendChild((function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[76 % aoElements.length].cloneNode(false);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'color-profile');
+  })())}
+  catch(e){}
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(42 % oSelection.rangeCount) : null;
+  if (oRange) {
+    var oParentElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[9 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'feMerge');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParentElement) {
+      try{oRange.surroundContents(oParentElement)}
+  catch(e){}
+    }
+  }
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  try{oSelection.collapseToEnd()}
+  catch(e){}
+  var oRange = oSelection.rangeCount ? oSelection.getRangeAt(6 % oSelection.rangeCount) : null;
+  if (oRange) {
+    var oParentElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[5 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'font-face');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+    if (oParentElement) {
+      try{oRange.surroundContents(oParentElement)}
+  catch(e){}
+    }
+  }
+  document.execCommand('MoveWordBackwardAndModifySelection',false,false);
+  var oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length) return aoElements[89 % aoElements.length];
+    var oNewElement = document.createElementNS('http://www.w3.org/2000/svg', 'desc');
+    if (oNewElement) {
+      try{document.appendChild(oNewElement)}
+      catch(e){}
+    }
+    return oNewElement;
+  })();
+  if (!oElement) oElement = (function(){
+    var aoElements = document.getElementsByTagName("*");
+    if (aoElements.length)
+        return aoElements[62 % aoElements.length].cloneNode(true);
+    return document.createElementNS('http://www.w3.org/2000/svg', 'stop');
+  })();
+  try{oElement.target="_blank"}catch(e){}
+  try{oResult = oElement.getSVGDocument(oResult,null,new Array(0x1000).join("x"))}catch(e){}
+  try{oResult = oElement.setCurrentTime(oResult,null,new Array(0x1000).join("x"))}catch(e){}
+  try{oResult = oElement.checkValidity(oResult,null,new Array(0x1000).join("x"))}catch(e){}
+  try{oResult = oElement.createSVGPathSegCurvetoCubicRel(oResult,null,new Array(0x1000).join("x"))}catch(e){}
+  try{oResult = oElement.getExtentOfChar(oResult,null,new Array(0x1000).join("x"))}catch(e){}
+  try{oResult = oElement.setCustomValidity(oResult,null,new Array(0x1000).join("x"))}catch(e){}
+  try{oResult = oElement.createCaption(oResult,null,new Array(0x1000).join("x"))}catch(e){}
+  try{oResult = oElement.submit(oResult,null,new Array(0x1000).join("x"))}catch(e){}
+  try{oElement.className += ' CLASS14'}
+  catch(e){}
+  if (oElement.outerHTML) {
+    try{oElement.outerHTML = ""}
+    catch(e){}
+  }
+  if (oElement.parentNode) {
+  try{oElement.parentNode.removeChild(oElement)}
+  catch(e){}
+  }
+  try{oElement.insertAdjacentHTML('afterbegin', "<bdi><svg></svg><svg></svg></bdi><svg>\\\\\\\\\\\\\\\\\\,,,,,k-'?_______%%%%%]R</svg><svg></svg>")}
+  catch(e){}
+  var oSelection=window.getSelection();
+  if (!oSelection.rangeCount) {
+  document.execCommand("SelectAll", false, false)
+  }
+  try{oSelection.collapseToEnd()}
+  catch(e){}
+  setTimeout(cleanup,100);
+}, 1);
+</script>
+<head dir="ltr">
+<meta xml:lang="en, nl" dir="ltr"/>
+<object xml:lang="en, nl" dir="rtl">
+<button accesskey="C" disabled="disabled">
+<del xml:lang="nl" cite="#">
+<ruby title="c AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
+</ruby>
+<input xml:lang="en" ismap="ismap"/>
+<button xml:lang="nl" tabindex="100">
+c
+</button>
+<select multiple="multiple" xml:space="preserve">
+<optgroup label="AxBxC AxBxC" title="B a" dir="rtl">
+</optgroup>
+<optgroup disabled="disabled" label="c">
+</optgroup>
+<option xml:lang="nl" selected="selected">
+AxBxC AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</option>
+</select>
+</del>
+AxBxC
+<dl title="C C" dir="rtl">
+<dt xml:space="preserve" dir="rtl">
+<button name="NAME46">
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" stroke-linecap="butt" clip-rule="evenodd">
+</svg>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" baseProfile="x AxBxC" width="1in">
+</svg>
+<div xml:lang="nl">
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</div>
+<ins xml:lang="en" title="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA A
+</ins>
+</button>
+C b
+</dt>
+</dl>
+<bdo dir="rtl" xml:lang="en" xml:space="preserve">
+A C
+<textarea rows="-100" cols="-1" accesskey="c" readonly="readonly">
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</textarea>
+<textarea rows="100" cols="-1" tabindex="-1" xml:lang="en">
+a AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</textarea>
+<textarea rows="1" xml:space="preserve" cols="0">
+AxBxC A
+</textarea>
+</bdo>
+<sub title="AxBxC" xml:lang="en, nl">
+<small title="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
+<textarea rows="0" cols="100">
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</textarea>
+<button value="AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA" xml:space="preserve">
+AxBxC a
+</button>
+<input xml:lang="en" readonly="readonly"/>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" zoomAndPan="disable" xml:space="preserve">
+<use dominant-baseline="text-after-edge" font-style="normal">
+</use>
+<use dominant-baseline="mathematical" clip-rule="inherit">
+</use>
+<view externalResourcesRequired="false" xml:lang="en, nl">
+</view>
+<symbol pointer-events="stroke" text-anchor="start">
+<foreignObject height="1cm" systemLanguage="en, nl" width="1pc">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="-//W3C//DTD XHTML 1.1//EN" dir="ltr">
+<head dir="ltr">
+</head>
+<body dir="rtl">
+<form enctype="application/x-www-form-urlencoded" action="/">
+</form>
+<form action="data:text/html,A" xml:lang="nl">
+<h1 xml:lang="en, nl" dir="rtl">
+AxBxC
+</h1>
+<div dir="rtl" xml:space="preserve">
+<form action="about:blank" dir="rtl">
+</form>
+<form action="about:blank" xml:lang="en" dir="ltr">
+<div xml:lang="en" dir="rtl">
+</div>
+<address dir="rtl" title="AxBxC AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA">
+AxBxC A
+</address>
+<pre title="c">
+<kbd dir="rtl">
+<button value="C x" title="AxBxC b">
+<br xml:space="preserve"/>
+</button>
+</kbd>
+b AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+</pre>
+</form>
+A
+</div>
+</form>
+</body>
+</html>
+</foreignObject>
+</symbol>
+</svg>
+</small>
+AxBxC AxBxC
+</sub>
+</button>
+AxBxC x
+</object>
+</head>
+</html>

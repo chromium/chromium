@@ -19,22 +19,34 @@ class CORE_EXPORT NGMathRowLayoutAlgorithm
                                NGBoxFragmentBuilder,
                                NGBlockBreakToken> {
  public:
-  NGMathRowLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
+  explicit NGMathRowLayoutAlgorithm(const NGLayoutAlgorithmParams& params);
 
- protected:
-  void LayoutRowItems(NGContainerFragmentBuilder::ChildrenVector*,
-                      LayoutUnit* max_row_block_baseline,
-                      LogicalSize* row_total_size);
+  struct ChildWithOffsetAndMargins {
+    DISALLOW_NEW();
+    ChildWithOffsetAndMargins(const NGBlockNode& child,
+                              const NGBoxStrut& margins,
+                              LogicalOffset offset,
+                              scoped_refptr<const NGLayoutResult> result)
+        : child(child),
+          margins(margins),
+          offset(offset),
+          result(std::move(result)) {}
+
+    NGBlockNode child;
+    NGBoxStrut margins;
+    LogicalOffset offset;
+    scoped_refptr<const NGLayoutResult> result;
+  };
+  typedef Vector<ChildWithOffsetAndMargins, 4> ChildrenVector;
 
  private:
   scoped_refptr<const NGLayoutResult> Layout() final;
 
-  base::Optional<MinMaxSize> ComputeMinMaxSize(
-      const MinMaxSizeInput&) const final;
+  MinMaxSizesResult ComputeMinMaxSizes(const MinMaxSizesFloatInput&) final;
 
-  LogicalSize child_available_size_;
-  const NGBoxStrut border_padding_;
-  const NGBoxStrut border_scrollbar_padding_;
+  void LayoutRowItems(ChildrenVector*,
+                      LayoutUnit* max_row_block_baseline,
+                      LogicalSize* row_total_size);
 };
 
 }  // namespace blink

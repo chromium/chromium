@@ -60,49 +60,31 @@ float FrameScale(const LocalFrameView* frame_view) {
 }
 
 gfx::Vector2dF FrameTranslation(const LocalFrameView* frame_view) {
-  IntPoint visual_viewport;
+  gfx::Point visual_viewport;
   FloatSize overscroll_offset;
   if (frame_view) {
     LocalFrameView* root_view = frame_view->GetFrame().LocalFrameRoot().View();
     if (root_view) {
       visual_viewport = FlooredIntPoint(
-          root_view->GetPage()->GetVisualViewport().VisibleRect().Location());
+          root_view->GetPage()->GetVisualViewport().VisibleRect().origin());
       overscroll_offset =
           root_view->GetPage()->GetChromeClient().ElasticOverscroll();
     }
   }
-  return gfx::Vector2dF(visual_viewport.X() + overscroll_offset.Width(),
-                        visual_viewport.Y() + overscroll_offset.Height());
+  return gfx::Vector2dF(visual_viewport.x() + overscroll_offset.width(),
+                        visual_viewport.y() + overscroll_offset.height());
 }
 
-FloatPoint ConvertAbsoluteLocationForLayoutObjectFloat(
-    const DoublePoint& location,
-    const LayoutObject* layout_object) {
-  return layout_object->AbsoluteToLocalFloatPoint(FloatPoint(location));
-}
-
-// FIXME: Change |LocalFrameView| to const FrameView& after RemoteFrames get
-// RemoteFrameViews.
 void UpdateWebMouseEventFromCoreMouseEvent(const MouseEvent& event,
-                                           const LocalFrameView* plugin_parent,
                                            const LayoutObject* layout_object,
                                            WebMouseEvent& web_event) {
   web_event.SetTimeStamp(event.PlatformTimeStamp());
   web_event.SetModifiers(event.GetModifiers());
-
-  // TODO(bokan): If plugin_parent == nullptr, pointInRootFrame will really be
-  // pointInRootContent.
-  // TODO(bokan): This conversion is wrong for RLS. https://crbug.com/781431.
-  IntPoint point_in_root_frame(event.AbsoluteLocation().X(),
-                               event.AbsoluteLocation().Y());
-  if (plugin_parent) {
-    point_in_root_frame =
-        plugin_parent->ConvertToRootFrame(point_in_root_frame);
-  }
   web_event.SetPositionInScreen(event.screenX(), event.screenY());
-  FloatPoint local_point = ConvertAbsoluteLocationForLayoutObjectFloat(
-      event.AbsoluteLocation(), layout_object);
-  web_event.SetPositionInWidget(local_point.X(), local_point.Y());
+
+  FloatPoint local_point = layout_object->AbsoluteToLocalFloatPoint(
+      FloatPoint(event.AbsoluteLocation()));
+  web_event.SetPositionInWidget(ToGfxPointF(local_point));
 }
 
 unsigned ToWebInputEventModifierFrom(WebMouseEvent::Button button) {
@@ -120,8 +102,8 @@ unsigned ToWebInputEventModifierFrom(WebMouseEvent::Button button) {
 WebPointerEvent TransformWebPointerEvent(float frame_scale,
                                          gfx::Vector2dF frame_translate,
                                          const WebPointerEvent& event) {
-  // frameScale is default initialized in debug builds to be 0.
-  DCHECK_EQ(0, event.FrameScale());
+  // frameScale is default initialized to 1.
+  DCHECK_EQ(1, event.FrameScale());
   DCHECK_EQ(0, event.FrameTranslate().x());
   DCHECK_EQ(0, event.FrameTranslate().y());
   WebPointerEvent result = event;
@@ -138,7 +120,7 @@ WebMouseEvent TransformWebMouseEvent(LocalFrameView* frame_view,
 
   // TODO(dtapuska): Perhaps the event should be constructed correctly?
   // crbug.com/686200
-  if (event.GetType() == WebInputEvent::kMouseUp) {
+  if (event.GetType() == WebInputEvent::Type::kMouseUp) {
     result.SetModifiers(event.GetModifiers() &
                         ~ToWebInputEventModifierFrom(event.button));
   }
@@ -170,32 +152,30 @@ WebPointerEvent TransformWebPointerEvent(LocalFrameView* frame_view,
                                   FrameTranslation(frame_view), event);
 }
 
-WebMouseEventBuilder::WebMouseEventBuilder(const LocalFrameView* plugin_parent,
-                                           const LayoutObject* layout_object,
+WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
                                            const MouseEvent& event) {
   // Code below here can be removed once OOPIF ships.
   // OOPIF will prevent synthetic events being dispatched into
   // other frames; but for now we allow the fallback to generate
   // WebMouseEvents from synthetic events.
   if (event.type() == event_type_names::kMousemove)
-    type_ = WebInputEvent::kMouseMove;
+    type_ = WebInputEvent::Type::kMouseMove;
   else if (event.type() == event_type_names::kMouseout)
-    type_ = WebInputEvent::kMouseLeave;
+    type_ = WebInputEvent::Type::kMouseLeave;
   else if (event.type() == event_type_names::kMouseover)
-    type_ = WebInputEvent::kMouseEnter;
+    type_ = WebInputEvent::Type::kMouseEnter;
   else if (event.type() == event_type_names::kMousedown)
-    type_ = WebInputEvent::kMouseDown;
+    type_ = WebInputEvent::Type::kMouseDown;
   else if (event.type() == event_type_names::kMouseup)
-    type_ = WebInputEvent::kMouseUp;
+    type_ = WebInputEvent::Type::kMouseUp;
   else if (event.type() == event_type_names::kContextmenu)
-    type_ = WebInputEvent::kContextMenu;
+    type_ = WebInputEvent::Type::kContextMenu;
   else
     return;  // Skip all other mouse events.
 
   time_stamp_ = event.PlatformTimeStamp();
   modifiers_ = event.GetModifiers();
-  UpdateWebMouseEventFromCoreMouseEvent(event, plugin_parent, layout_object,
-                                        *this);
+  UpdateWebMouseEventFromCoreMouseEvent(event, layout_object, *this);
 
   switch (event.button()) {
     case int16_t(WebPointerProperties::Button::kLeft):
@@ -244,8 +224,7 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LocalFrameView* plugin_parent,
 
 // Generate a synthetic WebMouseEvent given a TouchEvent (eg. for emulating a
 // mouse with touch input for plugins that don't support touch input).
-WebMouseEventBuilder::WebMouseEventBuilder(const LocalFrameView* plugin_parent,
-                                           const LayoutObject* layout_object,
+WebMouseEventBuilder::WebMouseEventBuilder(const LayoutObject* layout_object,
                                            const TouchEvent& event) {
   if (!event.touches())
     return;
@@ -263,11 +242,11 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LocalFrameView* plugin_parent,
     return;
 
   if (event.type() == event_type_names::kTouchstart)
-    type_ = kMouseDown;
+    type_ = WebInputEvent::Type::kMouseDown;
   else if (event.type() == event_type_names::kTouchmove)
-    type_ = kMouseMove;
+    type_ = WebInputEvent::Type::kMouseMove;
   else if (event.type() == event_type_names::kTouchend)
-    type_ = kMouseUp;
+    type_ = WebInputEvent::Type::kMouseUp;
   else
     return;
 
@@ -278,23 +257,17 @@ WebMouseEventBuilder::WebMouseEventBuilder(const LocalFrameView* plugin_parent,
 
   // The mouse event co-ordinates should be generated from the co-ordinates of
   // the touch point.
-  // FIXME: if plugin_parent == nullptr, pointInRootFrame will really be
-  // pointInAbsolute.
-  IntPoint point_in_root_frame = RoundedIntPoint(touch->AbsoluteLocation());
-  if (plugin_parent) {
-    point_in_root_frame =
-        plugin_parent->ConvertToRootFrame(point_in_root_frame);
-  }
   FloatPoint screen_point = touch->ScreenLocation();
-  SetPositionInScreen(screen_point.X(), screen_point.Y());
+  SetPositionInScreen(screen_point.x(), screen_point.y());
 
   button = WebMouseEvent::Button::kLeft;
   modifiers_ |= WebInputEvent::kLeftButtonDown;
-  click_count = (type_ == kMouseDown || type_ == kMouseUp);
+  click_count = (type_ == WebInputEvent::Type::kMouseDown ||
+                 type_ == WebInputEvent::Type::kMouseUp);
 
-  FloatPoint local_point = ConvertAbsoluteLocationForLayoutObjectFloat(
-      DoublePoint(touch->AbsoluteLocation()), layout_object);
-  SetPositionInWidget(local_point.X(), local_point.Y());
+  FloatPoint local_point = layout_object->AbsoluteToLocalFloatPoint(
+      FloatPoint(touch->AbsoluteLocation()));
+  SetPositionInWidget(ToGfxPointF(local_point));
 
   pointer_type = WebPointerProperties::PointerType::kTouch;
 }
@@ -306,11 +279,11 @@ WebKeyboardEventBuilder::WebKeyboardEventBuilder(const KeyboardEvent& event) {
   }
 
   if (event.type() == event_type_names::kKeydown)
-    type_ = kKeyDown;
+    type_ = WebInputEvent::Type::kKeyDown;
   else if (event.type() == event_type_names::kKeyup)
-    type_ = WebInputEvent::kKeyUp;
+    type_ = WebInputEvent::Type::kKeyUp;
   else if (event.type() == event_type_names::kKeypress)
-    type_ = WebInputEvent::kChar;
+    type_ = WebInputEvent::Type::kChar;
   else
     return;  // Skip all other keyboard events.
 
@@ -321,9 +294,9 @@ WebKeyboardEventBuilder::WebKeyboardEventBuilder(const KeyboardEvent& event) {
 
 Vector<WebMouseEvent> TransformWebMouseEventVector(
     LocalFrameView* frame_view,
-    const WebVector<const WebInputEvent*>& coalesced_events) {
+    const std::vector<std::unique_ptr<WebInputEvent>>& coalesced_events) {
   Vector<WebMouseEvent> result;
-  for (auto* const event : coalesced_events) {
+  for (const auto& event : coalesced_events) {
     DCHECK(WebInputEvent::IsMouseEventType(event->GetType()));
     result.push_back(TransformWebMouseEvent(
         frame_view, static_cast<const WebMouseEvent&>(*event)));
@@ -333,11 +306,11 @@ Vector<WebMouseEvent> TransformWebMouseEventVector(
 
 Vector<WebPointerEvent> TransformWebPointerEventVector(
     LocalFrameView* frame_view,
-    const WebVector<const WebInputEvent*>& coalesced_events) {
+    const std::vector<std::unique_ptr<WebInputEvent>>& coalesced_events) {
   float scale = FrameScale(frame_view);
   gfx::Vector2dF translation = FrameTranslation(frame_view);
   Vector<WebPointerEvent> result;
-  for (auto* const event : coalesced_events) {
+  for (const auto& event : coalesced_events) {
     DCHECK(WebInputEvent::IsPointerEventType(event->GetType()));
     result.push_back(TransformWebPointerEvent(
         scale, translation, static_cast<const WebPointerEvent&>(*event)));

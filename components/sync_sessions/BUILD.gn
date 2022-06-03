@@ -4,13 +4,9 @@
 
 static_library("sync_sessions") {
   sources = [
-    "favicon_cache.cc",
-    "favicon_cache.h",
     "local_session_event_handler_impl.cc",
     "local_session_event_handler_impl.h",
     "local_session_event_router.h",
-    "lost_navigations_recorder.cc",
-    "lost_navigations_recorder.h",
     "open_tabs_ui_delegate.cc",
     "open_tabs_ui_delegate.h",
     "open_tabs_ui_delegate_impl.cc",
@@ -31,6 +27,8 @@ static_library("sync_sessions") {
     "session_sync_service_impl.h",
     "sessions_global_id_mapper.cc",
     "sessions_global_id_mapper.h",
+    "switches.cc",
+    "switches.h",
     "sync_sessions_client.cc",
     "sync_sessions_client.h",
     "synced_session.cc",
@@ -57,7 +55,7 @@ static_library("sync_sessions") {
     "//components/bookmarks/browser",
     "//components/favicon/core",
     "//components/favicon_base",
-    "//components/history/core/browser",
+    "//components/history/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/sync_user_events",
@@ -98,9 +96,7 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "favicon_cache_unittest.cc",
     "local_session_event_handler_impl_unittest.cc",
-    "lost_navigations_recorder_unittest.cc",
     "open_tabs_ui_delegate_impl_unittest.cc",
     "session_store_unittest.cc",
     "session_sync_bridge_unittest.cc",
@@ -116,7 +112,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/favicon/core/test:test_support",
-    "//components/history/core/browser",
     "//components/prefs:test_support",
     "//components/sessions:test_support",
     "//components/sync:test_support",

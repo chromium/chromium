@@ -16,6 +16,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
 namespace base {

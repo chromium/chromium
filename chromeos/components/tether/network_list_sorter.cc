@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_type_pattern.h"
 

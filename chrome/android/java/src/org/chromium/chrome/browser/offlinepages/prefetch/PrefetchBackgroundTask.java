@@ -11,10 +11,8 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.DeviceConditions;
-import org.chromium.chrome.browser.background_task_scheduler.NativeBackgroundTask;
-import org.chromium.chrome.browser.flags.FeatureUtilities;
+import org.chromium.chrome.browser.device.DeviceConditions;
+import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskParameters;
 import org.chromium.net.ConnectionType;
@@ -30,7 +28,7 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
     private static final int MINIMUM_BATTERY_PERCENTAGE_FOR_PREFETCHING = 50;
 
     private static boolean sSkipConditionCheckingForTesting;
-    private static boolean sAlwaysSupportServiceManagerOnlyForTesting;
+    private static boolean sAlwaysSupportMinimalBrowserForTesting;
     private static boolean sSkipCachingFlagForTesting;
 
     private long mNativeTask;
@@ -88,8 +86,8 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
     }
 
     @VisibleForTesting
-    static void alwaysSupportServiceManagerOnlyForTesting() {
-        sAlwaysSupportServiceManagerOnlyForTesting = true;
+    static void alwaysSupportMinimalBrowserForTesting() {
+        sAlwaysSupportMinimalBrowserForTesting = true;
     }
 
     @Override
@@ -98,23 +96,11 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
         assert taskParameters.getTaskId() == TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID;
         if (mNativeTask != 0) return;
 
-        // Only Feed is supported in reduced mode.
-        // If we launched chrome in reduced mode but it turns out that Feed is not enabled (because
-        // the cached value of the flag was stale), we should cache the new value and reschedule
-        // this task so that next time full browser is started rather than just reduced mode.
-        if (isBrowserRunningInReducedMode()
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.INTEREST_FEED_CONTENT_SUGGESTIONS)) {
-            FeatureUtilities.cacheFeedEnabled();
-            mTaskFinishedCallback.taskFinished(true /* needsReschedule */);
-            return;
-        }
-
         PrefetchBackgroundTaskJni.get().startPrefetchTask(PrefetchBackgroundTask.this);
     }
 
     private boolean isBrowserRunningInReducedMode() {
-        return getBrowserStartupController().isRunningInServiceManagerMode();
+        return getBrowserStartupController().isRunningInMinimalBrowserMode();
     }
 
     @Override
@@ -201,12 +187,12 @@ public class PrefetchBackgroundTask extends NativeBackgroundTask {
     }
 
     @Override
-    protected boolean supportsServiceManagerOnly() {
-        if (sAlwaysSupportServiceManagerOnlyForTesting) {
+    protected boolean supportsMinimalBrowser() {
+        if (sAlwaysSupportMinimalBrowserForTesting) {
             return true;
         }
 
-        return FeatureUtilities.isServiceManagerForBackgroundPrefetchEnabled();
+        return PrefetchConfiguration.isMinimalBrowserForBackgroundPrefetchEnabled();
     }
 
     @NativeMethods

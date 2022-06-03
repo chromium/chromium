@@ -38,8 +38,6 @@ namespace blink {
 
 class MockResourceClient : public GarbageCollected<MockResourceClient>,
                            public ResourceClient {
-  USING_GARBAGE_COLLECTED_MIXIN(MockResourceClient);
-
  public:
   MockResourceClient() = default;
   ~MockResourceClient() override = default;

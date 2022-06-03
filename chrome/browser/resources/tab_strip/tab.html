@@ -2,6 +2,7 @@
   :host {
     --tabstrip-tab-transition-duration: 250ms;
 
+    display: block;
     height: var(--tabstrip-tab-height);
     padding-inline-end: var(--tabstrip-tab-spacing);
     position: relative;
@@ -11,6 +12,10 @@
 
   :host-context([dir='rtl']) {
     transform-origin: top right;
+  }
+
+  :host([dragged-out_]) {
+    display: none;
   }
 
   #tab {
@@ -84,6 +89,12 @@
 
   :host([pinned]) #faviconContainer {
     margin: 0;
+  }
+
+  :host([touch_pressed_]) #dragImage {
+    transform: scale(1.1);
+    transform-origin: center;
+    transition-duration: 300ms;
   }
 
   #progressSpinner,
@@ -188,8 +199,27 @@
     font-size: 100%;
     font-weight: normal;
     overflow: hidden;
-    text-overflow: ellipsis;
+    position: relative;
     white-space: nowrap;
+  }
+
+  #titleText::after {
+    background: linear-gradient(
+        to right, transparent, var(--tabstrip-tab-background-color));
+    content: '';
+    display: block;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 3ch;
+  }
+
+  :host-context([dir='rtl']) #titleText::after {
+    background: linear-gradient(
+        to left, transparent, var(--tabstrip-tab-background-color));
+    left: 0;
+    right: auto;
   }
 
   :host([has-alert-states_]) #titleText {
@@ -288,20 +318,18 @@
   /* When being dragged, the contents of the drag image needs to be off-screen
    * with nothing else on top or below obscuring it. */
   :host([dragging_]) #dragImage {
-    align-items: center;
-    display: flex;
-    height: 100%;
-    justify-content: center;
     /* Enough padding to not crop the box shadow set on #tab below. */
-    padding: 25px;
+    --drag-image-padding: 25px;
+    height: 100%;
+    padding: var(--drag-image-padding);
     position: absolute;
     top: 100vh;
     width: 100%;
   }
 
   :host([dragging_]) #tab {
-    box-shadow: 0 4px 4px 0 rgba(var(--google-grey-800-rgb), .3),
-                0 8px 12px 6px rgba(var(--google-grey-800-rgb), .15);
+    box-shadow: var(--tabstrip-tab-dragging-shadow);
+    transform: scale(var(--tabstrip-tab-drag-image-scale));
   }
 </style>
 

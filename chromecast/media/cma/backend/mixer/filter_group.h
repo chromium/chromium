@@ -9,8 +9,10 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/values.h"
@@ -43,12 +45,17 @@ class FilterGroup {
   // |pipeline| - processing pipeline.
   FilterGroup(int num_channels,
               const std::string& name,
-              std::unique_ptr<PostProcessingPipeline> pipeline);
+              std::unique_ptr<PostProcessingPipeline> pipeline,
+              const base::Value* volume_limits);
+
+  FilterGroup(const FilterGroup&) = delete;
+  FilterGroup& operator=(const FilterGroup&) = delete;
 
   ~FilterGroup();
 
   int num_channels() const { return num_channels_; }
   float last_volume() const { return last_volume_; }
+  float target_volume() const { return target_volume_; }
   std::string name() const { return name_; }
   AudioContentType content_type() const { return content_type_; }
   int input_frames_per_write() const { return input_frames_per_write_; }
@@ -118,6 +125,8 @@ class FilterGroup {
   void AddStreamType(const std::string& stream_type);
 
  private:
+  using VolumeLimitsMap = base::flat_map<std::string, std::pair<float, float>>;
+
   struct GroupInput {
     GroupInput(FilterGroup* group,
                std::unique_ptr<InterleavedChannelMixer> channel_mixer);
@@ -128,10 +137,17 @@ class FilterGroup {
     std::unique_ptr<InterleavedChannelMixer> channel_mixer;
   };
 
+  void ParseVolumeLimits(const base::Value* volume_limits);
+  void ZeroOutputBufferIfNeeded();
   void ResizeBuffers();
 
   const int num_channels_;
   const std::string name_;
+
+  VolumeLimitsMap volume_limits_;
+  float default_volume_min_ = 0.0f;
+  float default_volume_max_ = 1.0f;
+
   std::vector<GroupInput> mixed_inputs_;
   std::vector<std::string> stream_types_;
   base::flat_set<MixerInput*> active_inputs_;
@@ -140,7 +156,8 @@ class FilterGroup {
   int input_samples_per_second_ = 0;
   int input_frames_per_write_ = 0;
   int frames_zeroed_ = 0;
-  float last_volume_ = 0.0;
+  float last_volume_ = 0.0f;
+  float target_volume_ = 0.0f;
   double delay_seconds_ = 0;
   MediaPipelineBackend::AudioDecoder::RenderingDelay rendering_delay_to_output_;
   AudioContentType content_type_ = AudioContentType::kMedia;
@@ -155,8 +172,6 @@ class FilterGroup {
   AlignedBuffer<float> interleaved_;
 
   std::unique_ptr<PostProcessingPipeline> post_processing_pipeline_;
-
-  DISALLOW_COPY_AND_ASSIGN(FilterGroup);
 };
 
 }  // namespace media

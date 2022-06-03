@@ -1,0 +1,9 @@
+[document web]
+++[section] label-for
+++++[static] name='Choose a fruit, with text content'
+++[combo box] name='Choose a fruit, with text content' expandable controller-for labelled-by haspopup:listbox valuetext:Apple
+++++[static] name='Apple'
+++[list box] controlled-by
+++++[list item] name='Apple' selectable selected
+++++[list item] name='Banana' selectable
+++++[list item] name='Cherry' selectable

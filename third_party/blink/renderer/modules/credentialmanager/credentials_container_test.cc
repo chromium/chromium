@@ -11,28 +11,28 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
-#include "services/service_manager/public/cpp/interface_provider.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/credentialmanager/credential_manager.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_credential_request_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_creation_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_parameters.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_rp_entity.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/testing/gc_object_liveness_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential.h"
-#include "third_party/blink/renderer/modules/credentialmanager/credential_creation_options.h"
 #include "third_party/blink/renderer/modules/credentialmanager/credential_manager_proxy.h"
-#include "third_party/blink/renderer/modules/credentialmanager/credential_request_options.h"
 #include "third_party/blink/renderer/modules/credentialmanager/federated_credential.h"
 #include "third_party/blink/renderer/modules/credentialmanager/password_credential.h"
-#include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_creation_options.h"
-#include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_parameters.h"
-#include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_rp_entity.h"
-#include "third_party/blink/renderer/modules/credentialmanager/public_key_credential_user_entity.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
@@ -47,6 +47,10 @@ namespace {
 class MockCredentialManager : public mojom::blink::CredentialManager {
  public:
   MockCredentialManager() {}
+
+  MockCredentialManager(const MockCredentialManager&) = delete;
+  MockCredentialManager& operator=(const MockCredentialManager&) = delete;
+
   ~MockCredentialManager() override {}
 
   void Bind(mojo::PendingReceiver<::blink::mojom::blink::CredentialManager>
@@ -96,8 +100,6 @@ class MockCredentialManager : public mojom::blink::CredentialManager {
   mojo::Receiver<::blink::mojom::blink::CredentialManager> receiver_{this};
 
   GetCallback get_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCredentialManager);
 };
 
 class CredentialManagerTestingContext {
@@ -107,10 +109,7 @@ class CredentialManagerTestingContext {
   CredentialManagerTestingContext(
       MockCredentialManager* mock_credential_manager)
       : dummy_context_(KURL("https://example.test")) {
-    dummy_context_.GetDocument().SetSecureContextStateForTesting(
-        SecureContextState::kSecure);
-
-    dummy_context_.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
+    DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
         ::blink::mojom::blink::CredentialManager::Name_,
         WTF::BindRepeating(
             [](MockCredentialManager* mock_credential_manager,
@@ -124,12 +123,11 @@ class CredentialManagerTestingContext {
   }
 
   ~CredentialManagerTestingContext() {
-    dummy_context_.GetFrame().GetBrowserInterfaceBroker().SetBinderForTesting(
+    DomWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
         ::blink::mojom::blink::CredentialManager::Name_, {});
   }
 
-  Document* GetDocument() { return &dummy_context_.GetDocument(); }
-  LocalFrame* Frame() { return &dummy_context_.GetFrame(); }
+  LocalDOMWindow& DomWindow() { return dummy_context_.GetWindow(); }
   ScriptState* GetScriptState() { return dummy_context_.GetScriptState(); }
 
  private:
@@ -153,15 +151,12 @@ TEST(CredentialsContainerTest, PendingGetRequest_NoGCCycles) {
 
   {
     CredentialManagerTestingContext context(&mock_credential_manager);
-    document_observer.Observe(context.GetDocument());
-    MakeGarbageCollected<CredentialsContainer>()->get(
-        context.GetScriptState(), CredentialRequestOptions::Create());
+    document_observer.Observe(context.DomWindow().document());
+    CredentialsContainer::credentials(*context.DomWindow().navigator())
+        ->get(context.GetScriptState(), CredentialRequestOptions::Create());
     mock_credential_manager.WaitForCallToGet();
   }
 
-  V8GCController::CollectAllGarbageForTesting(
-      v8::Isolate::GetCurrent(),
-      v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
   ThreadState::Current()->CollectAllGarbageForTesting();
 
   ASSERT_TRUE(document_observer.WasCollected());
@@ -177,30 +172,28 @@ TEST(CredentialsContainerTest,
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
-  auto* proxy = CredentialManagerProxy::From(*context.GetDocument());
-  auto promise = MakeGarbageCollected<CredentialsContainer>()->get(
-      context.GetScriptState(), CredentialRequestOptions::Create());
+  auto promise =
+      CredentialsContainer::credentials(*context.DomWindow().navigator())
+          ->get(context.GetScriptState(), CredentialRequestOptions::Create());
   mock_credential_manager.WaitForCallToGet();
 
-  context.GetDocument()->Shutdown();
+  context.DomWindow().FrameDestroyed();
 
   mock_credential_manager.InvokeGetCallback();
-  proxy->FlushCredentialManagerConnectionForTesting();
 
-  EXPECT_EQ(v8::Promise::kPending,
-            promise.V8Value().As<v8::Promise>()->State());
+  EXPECT_EQ(v8::Promise::kPending, promise.V8Promise()->State());
 }
 
 TEST(CredentialsContainerTest, RejectPublicKeyCredentialStoreOperation) {
   MockCredentialManager mock_credential_manager;
   CredentialManagerTestingContext context(&mock_credential_manager);
 
-  auto promise = MakeGarbageCollected<CredentialsContainer>()->store(
-      context.GetScriptState(),
-      MakeGarbageCollected<MockPublicKeyCredential>());
+  auto promise =
+      CredentialsContainer::credentials(*context.DomWindow().navigator())
+          ->store(context.GetScriptState(),
+                  MakeGarbageCollected<MockPublicKeyCredential>());
 
-  EXPECT_EQ(v8::Promise::kRejected,
-            promise.V8Value().As<v8::Promise>()->State());
+  EXPECT_EQ(v8::Promise::kRejected, promise.V8Promise()->State());
 }
 
 TEST(CredentialsContainerTest,
@@ -212,10 +205,11 @@ TEST(CredentialsContainerTest,
   auto* credential = MakeGarbageCollected<PasswordCredential>(
       "id", "password", "name", invalid_url);
 
-  auto promise = MakeGarbageCollected<CredentialsContainer>()->store(
-      context.GetScriptState(), credential);
+  auto promise =
+      CredentialsContainer::credentials(*context.DomWindow().navigator())
+          ->store(context.GetScriptState(), credential);
 
-  auto v8promise = promise.V8Value().As<v8::Promise>();
+  auto v8promise = promise.V8Promise();
   EXPECT_EQ(v8::Promise::kRejected, v8promise->State());
 
   auto* exception = ToScriptWrappable(v8promise->Result().As<v8::Object>())
@@ -234,10 +228,11 @@ TEST(CredentialsContainerTest,
   auto* credential = MakeGarbageCollected<FederatedCredential>(
       "id", origin, "name", invalid_url);
 
-  auto promise = MakeGarbageCollected<CredentialsContainer>()->store(
-      context.GetScriptState(), credential);
+  auto promise =
+      CredentialsContainer::credentials(*context.DomWindow().navigator())
+          ->store(context.GetScriptState(), credential);
 
-  auto v8promise = promise.V8Value().As<v8::Promise>();
+  auto v8promise = promise.V8Promise();
   EXPECT_EQ(v8::Promise::kRejected, v8promise->State());
 
   auto* exception = ToScriptWrappable(v8promise->Result().As<v8::Object>())
@@ -257,8 +252,8 @@ TEST(CredentialsContainerTest,
 
   auto* user_options = PublicKeyCredentialUserEntity::Create();
   int dummy_buffer_source = 1;
-  auto dummy_buffer =
-      ArrayBufferOrArrayBufferView::FromArrayBuffer(DOMArrayBuffer::Create(
+  auto* dummy_buffer =
+      MakeGarbageCollected<V8BufferSource>(DOMArrayBuffer::Create(
           &dummy_buffer_source, sizeof(dummy_buffer_source)));
   user_options->setId(dummy_buffer);
   user_options->setIcon("invalid URL");
@@ -279,11 +274,12 @@ TEST(CredentialsContainerTest,
   auto* credential_options = CredentialCreationOptions::Create();
   credential_options->setPublicKey(public_key_options);
 
-  auto promise = MakeGarbageCollected<CredentialsContainer>()->create(
-      context.GetScriptState(), credential_options,
-      IGNORE_EXCEPTION_FOR_TESTING);
+  auto promise =
+      CredentialsContainer::credentials(*context.DomWindow().navigator())
+          ->create(context.GetScriptState(), credential_options,
+                   IGNORE_EXCEPTION_FOR_TESTING);
 
-  auto v8promise = promise.V8Value().As<v8::Promise>();
+  auto v8promise = promise.V8Promise();
   EXPECT_EQ(v8::Promise::kRejected, v8promise->State());
 
   auto* exception = ToScriptWrappable(v8promise->Result().As<v8::Object>())

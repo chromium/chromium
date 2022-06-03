@@ -12,23 +12,25 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/security/protocol_handler_security_level.h"
 
 using content::BrowserThread;
+using content::ProtocolHandler;
 
 namespace {
 
@@ -72,9 +74,9 @@ class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
     // the result with a task to the current thread.
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(callback, force_os_failure_
-                                     ? shell_integration::NOT_DEFAULT
-                                     : shell_integration::IS_DEFAULT));
+        base::BindOnce(std::move(callback),
+                       force_os_failure_ ? shell_integration::NOT_DEFAULT
+                                         : shell_integration::IS_DEFAULT));
 
     if (!force_os_failure_)
       os_registered_protocols_.insert(protocol);
@@ -108,8 +110,13 @@ class FakeDelegate : public ProtocolHandlerRegistry::Delegate {
 class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
  public:
   explicit ProtocolHandlerChangeListener(ProtocolHandlerRegistry* registry) {
-    registry_observer_.Add(registry);
+    registry_observation_.Observe(registry);
   }
+
+  ProtocolHandlerChangeListener(const ProtocolHandlerChangeListener&) = delete;
+  ProtocolHandlerChangeListener& operator=(
+      const ProtocolHandlerChangeListener&) = delete;
+
   ~ProtocolHandlerChangeListener() override = default;
 
   int events() { return events_; }
@@ -122,18 +129,21 @@ class ProtocolHandlerChangeListener : public ProtocolHandlerRegistry::Observer {
  private:
   int events_ = 0;
 
-  ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
-      registry_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProtocolHandlerChangeListener);
+  base::ScopedObservation<ProtocolHandlerRegistry,
+                          ProtocolHandlerRegistry::Observer>
+      registry_observation_{this};
 };
 
 class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
  public:
   explicit QueryProtocolHandlerOnChange(ProtocolHandlerRegistry* registry)
       : local_registry_(registry) {
-    registry_observer_.Add(registry);
+    registry_observation_.Observe(registry);
   }
+
+  QueryProtocolHandlerOnChange(const QueryProtocolHandlerOnChange&) = delete;
+  QueryProtocolHandlerOnChange& operator=(const QueryProtocolHandlerOnChange&) =
+      delete;
 
   // ProtocolHandlerRegistry::Observer:
   void OnProtocolHandlerRegistryChanged() override {
@@ -148,10 +158,9 @@ class QueryProtocolHandlerOnChange : public ProtocolHandlerRegistry::Observer {
   ProtocolHandlerRegistry* local_registry_;
   bool called_ = false;
 
-  ScopedObserver<ProtocolHandlerRegistry, ProtocolHandlerRegistry::Observer>
-      registry_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QueryProtocolHandlerOnChange);
+  base::ScopedObservation<ProtocolHandlerRegistry,
+                          ProtocolHandlerRegistry::Observer>
+      registry_observation_{this};
 };
 
 }  // namespace
@@ -168,14 +177,33 @@ class ProtocolHandlerRegistryTest : public testing::Test {
     return test_protocol_handler_;
   }
 
-  ProtocolHandler CreateProtocolHandler(const std::string& protocol,
-                                        const GURL& url) {
-    return ProtocolHandler::CreateProtocolHandler(protocol, url);
+  ProtocolHandler CreateProtocolHandler(
+      const std::string& protocol,
+      const GURL& url,
+      blink::ProtocolHandlerSecurityLevel security_level =
+          blink::ProtocolHandlerSecurityLevel::kStrict) {
+    return ProtocolHandler::CreateProtocolHandler(protocol, url,
+                                                  security_level);
   }
 
   ProtocolHandler CreateProtocolHandler(const std::string& protocol,
                                         const std::string& name) {
-    return CreateProtocolHandler(protocol, GURL("http://" + name + "/%s"));
+    return CreateProtocolHandler(protocol, GURL("https://" + name + "/%s"));
+  }
+
+  ProtocolHandler CreateWebAppProtocolHandler(const std::string& protocol,
+                                              const GURL& url,
+                                              const std::string& app_id) {
+    return ProtocolHandler::CreateWebAppProtocolHandler(protocol, url, app_id);
+  }
+
+  bool ProtocolHandlerCanRegisterProtocol(
+      const std::string& protocol,
+      const GURL& handler_url,
+      blink::ProtocolHandlerSecurityLevel security_level) {
+    registry()->OnAcceptRegisterProtocolHandler(
+        CreateProtocolHandler(protocol, handler_url, security_level));
+    return registry()->IsHandledProtocol(protocol);
   }
 
   void RecreateRegistry(bool initialize) {
@@ -186,7 +214,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   int InPrefHandlerCount() {
     const base::ListValue* in_pref_handlers =
         profile()->GetPrefs()->GetList(prefs::kRegisteredProtocolHandlers);
-    return static_cast<int>(in_pref_handlers->GetSize());
+    return static_cast<int>(in_pref_handlers->GetList().size());
   }
 
   int InMemoryHandlerCount() {
@@ -200,7 +228,7 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   int InPrefIgnoredHandlerCount() {
     const base::ListValue* in_pref_ignored_handlers =
         profile()->GetPrefs()->GetList(prefs::kIgnoredProtocolHandlers);
-    return static_cast<int>(in_pref_ignored_handlers->GetSize());
+    return static_cast<int>(in_pref_ignored_handlers->GetList().size());
   }
 
   int InMemoryIgnoredHandlerCount() {
@@ -216,8 +244,8 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   void SetUpRegistry(bool initialize) {
     auto delegate = std::make_unique<FakeDelegate>();
     delegate_ = delegate.get();
-    registry_.reset(
-        new ProtocolHandlerRegistry(profile(), std::move(delegate)));
+    registry_ = std::make_unique<ProtocolHandlerRegistry>(profile(),
+                                                          std::move(delegate));
     if (initialize) registry_->InitProtocolSettings();
   }
 
@@ -228,11 +256,11 @@ class ProtocolHandlerRegistryTest : public testing::Test {
   }
 
   void SetUp() override {
-    profile_.reset(new TestingProfile());
+    profile_ = std::make_unique<TestingProfile>();
     CHECK(profile_->GetPrefs());
     SetUpRegistry(true);
     test_protocol_handler_ =
-        CreateProtocolHandler("news", GURL("http://test.com/%s"));
+        CreateProtocolHandler("news", GURL("https://test.com/%s"));
   }
 
   void TearDown() override { TeadDownRegistry(); }
@@ -286,8 +314,8 @@ TEST_F(ProtocolHandlerRegistryTest, IgnoreProtocolHandler) {
 }
 
 TEST_F(ProtocolHandlerRegistryTest, IgnoreEquivalentProtocolHandler) {
-  ProtocolHandler ph1 = CreateProtocolHandler("news", GURL("http://test/%s"));
-  ProtocolHandler ph2 = CreateProtocolHandler("news", GURL("http://test/%s"));
+  ProtocolHandler ph1 = CreateProtocolHandler("news", GURL("https://test/%s"));
+  ProtocolHandler ph2 = CreateProtocolHandler("news", GURL("https://test/%s"));
 
   registry()->OnIgnoreRegisterProtocolHandler(ph1);
   ASSERT_TRUE(registry()->IsIgnored(ph1));
@@ -314,23 +342,27 @@ TEST_F(ProtocolHandlerRegistryTest, SaveAndLoad) {
 
 TEST_F(ProtocolHandlerRegistryTest, Encode) {
   base::Time now = base::Time::Now();
-  ProtocolHandler handler("news", GURL("http://example.com"), now);
+  ProtocolHandler handler("news", GURL("https://example.com"), "app_id", now,
+                          blink::ProtocolHandlerSecurityLevel::kStrict);
   auto value = handler.Encode();
   ProtocolHandler recreated =
       ProtocolHandler::CreateProtocolHandler(value.get());
   EXPECT_EQ("news", recreated.protocol());
-  EXPECT_EQ(GURL("http://example.com"), recreated.url());
+  EXPECT_EQ(GURL("https://example.com"), recreated.url());
   EXPECT_EQ(now, recreated.last_modified());
 }
 
 TEST_F(ProtocolHandlerRegistryTest, GetHandlersBetween) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago = now - base::TimeDelta::FromHours(1);
-  base::Time two_hours_ago = now - base::TimeDelta::FromHours(2);
-  ProtocolHandler handler1("bitcoin", GURL("http://example.com"),
-                           two_hours_ago);
-  ProtocolHandler handler2("geo", GURL("http://example.com"), one_hour_ago);
-  ProtocolHandler handler3("im", GURL("http://example.com"), now);
+  base::Time one_hour_ago = now - base::Hours(1);
+  base::Time two_hours_ago = now - base::Hours(2);
+  ProtocolHandler handler1("bitcoin", GURL("https://example.com"),
+                           two_hours_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler handler2("geo", GURL("https://example.com"), one_hour_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler handler3("im", GURL("https://example.com"), now,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
   registry()->OnAcceptRegisterProtocolHandler(handler1);
   registry()->OnAcceptRegisterProtocolHandler(handler2);
   registry()->OnAcceptRegisterProtocolHandler(handler3);
@@ -347,15 +379,21 @@ TEST_F(ProtocolHandlerRegistryTest, GetHandlersBetween) {
 
 TEST_F(ProtocolHandlerRegistryTest, ClearHandlersBetween) {
   base::Time now = base::Time::Now();
-  base::Time one_hour_ago = now - base::TimeDelta::FromHours(1);
-  base::Time two_hours_ago = now - base::TimeDelta::FromHours(2);
-  GURL url("http://example.com");
-  ProtocolHandler handler1("bitcoin", url, two_hours_ago);
-  ProtocolHandler handler2("geo", url, one_hour_ago);
-  ProtocolHandler handler3("im", url, now);
-  ProtocolHandler ignored1("irc", url, two_hours_ago);
-  ProtocolHandler ignored2("ircs", url, one_hour_ago);
-  ProtocolHandler ignored3("magnet", url, now);
+  base::Time one_hour_ago = now - base::Hours(1);
+  base::Time two_hours_ago = now - base::Hours(2);
+  GURL url("https://example.com");
+  ProtocolHandler handler1("bitcoin", url, two_hours_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler handler2("geo", url, one_hour_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler handler3("im", url, now,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler ignored1("irc", url, two_hours_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler ignored2("ircs", url, one_hour_ago,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
+  ProtocolHandler ignored3("magnet", url, now,
+                           blink::ProtocolHandlerSecurityLevel::kStrict);
   registry()->OnAcceptRegisterProtocolHandler(handler1);
   registry()->OnAcceptRegisterProtocolHandler(handler2);
   registry()->OnAcceptRegisterProtocolHandler(handler3);
@@ -509,8 +547,8 @@ TEST_F(ProtocolHandlerRegistryTest, TestIsRegistered) {
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestIsEquivalentRegistered) {
-  ProtocolHandler ph1 = CreateProtocolHandler("news", GURL("http://test/%s"));
-  ProtocolHandler ph2 = CreateProtocolHandler("news", GURL("http://test/%s"));
+  ProtocolHandler ph1 = CreateProtocolHandler("news", GURL("https://test/%s"));
+  ProtocolHandler ph2 = CreateProtocolHandler("news", GURL("https://test/%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph1);
 
   ASSERT_TRUE(registry()->IsRegistered(ph1));
@@ -518,10 +556,14 @@ TEST_F(ProtocolHandlerRegistryTest, TestIsEquivalentRegistered) {
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestSilentlyRegisterHandler) {
-  ProtocolHandler ph1 = CreateProtocolHandler("news", GURL("http://test/1/%s"));
-  ProtocolHandler ph2 = CreateProtocolHandler("news", GURL("http://test/2/%s"));
-  ProtocolHandler ph3 = CreateProtocolHandler("ignore", GURL("http://test/%s"));
-  ProtocolHandler ph4 = CreateProtocolHandler("ignore", GURL("http://test/%s"));
+  ProtocolHandler ph1 =
+      CreateProtocolHandler("news", GURL("https://test/1/%s"));
+  ProtocolHandler ph2 =
+      CreateProtocolHandler("news", GURL("https://test/2/%s"));
+  ProtocolHandler ph3 =
+      CreateProtocolHandler("ignore", GURL("https://test/%s"));
+  ProtocolHandler ph4 =
+      CreateProtocolHandler("ignore", GURL("https://test/%s"));
 
   ASSERT_FALSE(registry()->SilentlyHandleRegisterHandlerRequest(ph1));
   ASSERT_FALSE(registry()->IsRegistered(ph1));
@@ -660,7 +702,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestOSRegistration) {
   registry()->OnAcceptRegisterProtocolHandler(ph_do2);
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // TODO(benwells): When Linux support is more reliable and
 // http://crbug.com/88255 is fixed this test will pass.
 #define MAYBE_TestOSRegistrationFailure DISABLED_TestOSRegistrationFailure
@@ -726,9 +768,9 @@ TEST_F(ProtocolHandlerRegistryTest, TestRemovingDefaultDoesntChangeHandlers) {
 
 TEST_F(ProtocolHandlerRegistryTest, TestReplaceHandler) {
   ProtocolHandler ph1 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/%s"));
   ProtocolHandler ph2 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/updated-url/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/updated-url/%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph1);
   ASSERT_TRUE(registry()->AttemptReplace(ph2));
   const ProtocolHandler& handler(registry()->GetHandlerFor("mailto"));
@@ -737,11 +779,11 @@ TEST_F(ProtocolHandlerRegistryTest, TestReplaceHandler) {
 
 TEST_F(ProtocolHandlerRegistryTest, TestReplaceNonDefaultHandler) {
   ProtocolHandler ph1 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/%s"));
   ProtocolHandler ph2 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/updated-url/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/updated-url/%s"));
   ProtocolHandler ph3 =
-      CreateProtocolHandler("mailto", GURL("http://else.com/%s"));
+      CreateProtocolHandler("mailto", GURL("https://else.com/%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph1);
   registry()->OnAcceptRegisterProtocolHandler(ph3);
   ASSERT_TRUE(registry()->AttemptReplace(ph2));
@@ -751,11 +793,11 @@ TEST_F(ProtocolHandlerRegistryTest, TestReplaceNonDefaultHandler) {
 
 TEST_F(ProtocolHandlerRegistryTest, TestReplaceRemovesStaleHandlers) {
   ProtocolHandler ph1 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/%s"));
   ProtocolHandler ph2 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/updated-url/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/updated-url/%s"));
   ProtocolHandler ph3 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/third/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/third/%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph1);
   registry()->OnAcceptRegisterProtocolHandler(ph2);
 
@@ -769,25 +811,29 @@ TEST_F(ProtocolHandlerRegistryTest, TestReplaceRemovesStaleHandlers) {
 
 TEST_F(ProtocolHandlerRegistryTest, TestIsSameOrigin) {
   ProtocolHandler ph1 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/%s"));
   ProtocolHandler ph2 =
-      CreateProtocolHandler("mailto", GURL("http://test.com/updated-url/%s"));
+      CreateProtocolHandler("mailto", GURL("https://test.com/updated-url/%s"));
   ProtocolHandler ph3 =
-      CreateProtocolHandler("mailto", GURL("http://other.com/%s"));
-  ASSERT_EQ(ph1.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph1.IsSameOrigin(ph2));
-  ASSERT_EQ(ph1.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph2.IsSameOrigin(ph1));
-  ASSERT_EQ(ph2.url().GetOrigin() == ph3.url().GetOrigin(),
-      ph2.IsSameOrigin(ph3));
-  ASSERT_EQ(ph3.url().GetOrigin() == ph2.url().GetOrigin(),
-      ph3.IsSameOrigin(ph2));
+      CreateProtocolHandler("mailto", GURL("https://other.com/%s"));
+  ASSERT_EQ(ph1.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph1.IsSameOrigin(ph2));
+  ASSERT_EQ(ph1.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph2.IsSameOrigin(ph1));
+  ASSERT_EQ(ph2.url().DeprecatedGetOriginAsURL() ==
+                ph3.url().DeprecatedGetOriginAsURL(),
+            ph2.IsSameOrigin(ph3));
+  ASSERT_EQ(ph3.url().DeprecatedGetOriginAsURL() ==
+                ph2.url().DeprecatedGetOriginAsURL(),
+            ph3.IsSameOrigin(ph2));
 }
 
 TEST_F(ProtocolHandlerRegistryTest, TestInstallDefaultHandler) {
   RecreateRegistry(false);
   registry()->AddPredefinedHandler(
-      CreateProtocolHandler("news", GURL("http://test.com/%s")));
+      CreateProtocolHandler("news", GURL("https://test.com/%s")));
   registry()->InitProtocolSettings();
   std::vector<std::string> protocols;
   registry()->GetRegisteredProtocols(&protocols);
@@ -800,12 +846,12 @@ TEST_F(ProtocolHandlerRegistryTest, TestInstallDefaultHandler) {
   EXPECT_TRUE(registry()->IsHandledProtocol("news"));
 }
 
-#define URL_p1u1 "http://p1u1.com/%s"
-#define URL_p1u2 "http://p1u2.com/%s"
-#define URL_p1u3 "http://p1u3.com/%s"
-#define URL_p2u1 "http://p2u1.com/%s"
-#define URL_p2u2 "http://p2u2.com/%s"
-#define URL_p3u1 "http://p3u1.com/%s"
+#define URL_p1u1 "https://p1u1.com/%s"
+#define URL_p1u2 "https://p1u2.com/%s"
+#define URL_p1u3 "https://p1u3.com/%s"
+#define URL_p2u1 "https://p2u1.com/%s"
+#define URL_p2u2 "https://p2u2.com/%s"
+#define URL_p3u1 "https://p3u1.com/%s"
 
 TEST_F(ProtocolHandlerRegistryTest, TestPrefPolicyOverlapRegister) {
   base::ListValue handlers_registered_by_pref;
@@ -977,9 +1023,8 @@ TEST_F(ProtocolHandlerRegistryTest, TestURIPercentEncoding) {
 
   // Space character.
   translated_url = ph.TranslateUrl(GURL("web+custom://custom handler"));
-  // TODO(mgiuca): Check whether this(' ') should be encoded as '%20'.
   ASSERT_EQ(translated_url,
-            GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom+handler"));
+            GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%20handler"));
 
   // Query parameters.
   translated_url = ph.TranslateUrl(GURL("web+custom://custom?foo=bar&bar=baz"));
@@ -991,23 +1036,20 @@ TEST_F(ProtocolHandlerRegistryTest, TestURIPercentEncoding) {
   translated_url = ph.TranslateUrl(GURL("web+custom://custom/<>`{}#?\"'😂"));
   ASSERT_EQ(translated_url, GURL("https://test.com/"
                                  "url=web%2Bcustom%3A%2F%2Fcustom%2F%3C%3E%60%"
-                                 "7B%7D%23%3F%22'%25F0%259F%2598%2582"));
+                                 "7B%7D%23%3F%2522'%25F0%259F%2598%2582"));
 
-  // C0 characters. GURL constructor encodes U+001F as "%1F" first, because
-  // U+001F is an illegal char. Then the protocol handler translator encodes it
-  // to "%251F" again. That's why the expected result has double-encoded URL.
+  // ASCII characters from the C0 controls percent-encode set.
+  // GURL constructor encodes U+001F and U+007F as "%1F" and "%7F" first,
+  // Then the protocol handler translator encodes them to "%25%1F" and "%25%7F"
+  // again. That's why the expected result has double-encoded URL.
   translated_url = ph.TranslateUrl(GURL("web+custom://custom/\x1fhandler"));
   ASSERT_EQ(
       translated_url,
       GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%2F%251Fhandler"));
-
-  // Control characters.
-  // TODO(crbug.com/809852): Check why non-special URLs don't encode any
-  // characters above U+001F.
   translated_url = ph.TranslateUrl(GURL("web+custom://custom/\x7Fhandler"));
   ASSERT_EQ(
       translated_url,
-      GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%2F%7Fhandler"));
+      GURL("https://test.com/url=web%2Bcustom%3A%2F%2Fcustom%2F%257Fhandler"));
 
   // Path percent-encode set.
   translated_url =
@@ -1025,7 +1067,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestURIPercentEncoding) {
 
 TEST_F(ProtocolHandlerRegistryTest, TestMultiplePlaceholders) {
   ProtocolHandler ph =
-      CreateProtocolHandler("news", GURL("http://example.com/%s/url=%s"));
+      CreateProtocolHandler("news", GURL("https://example.com/%s/url=%s"));
   registry()->OnAcceptRegisterProtocolHandler(ph);
 
   GURL translated_url = ph.TranslateUrl(GURL("test:duplicated_placeholders"));
@@ -1033,7 +1075,7 @@ TEST_F(ProtocolHandlerRegistryTest, TestMultiplePlaceholders) {
   // When URL contains multiple placeholders, only the first placeholder should
   // be changed to the given URL.
   ASSERT_EQ(translated_url,
-            GURL("http://example.com/test%3Aduplicated_placeholders/url=%s"));
+            GURL("https://example.com/test%3Aduplicated_placeholders/url=%s"));
 }
 
 TEST_F(ProtocolHandlerRegistryTest, InvalidHandlers) {
@@ -1051,6 +1093,13 @@ TEST_F(ProtocolHandlerRegistryTest, InvalidHandlers) {
       CreateProtocolHandler("https", GURL("https://www.google.com/handler%s")));
   ASSERT_FALSE(registry()->IsHandledProtocol("https"));
 
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "ext+", GURL("https://www.google.com/handler%s"),
+      blink::ProtocolHandlerSecurityLevel::kStrict));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "ext+foo", GURL("https://www.google.com/handler%s"),
+      blink::ProtocolHandlerSecurityLevel::kStrict));
+
   // Invalid handler URL.
   // data: URL.
   registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
@@ -1066,11 +1115,133 @@ TEST_F(ProtocolHandlerRegistryTest, InvalidHandlers) {
       "news", GURL("blob:https://www.google.com/"
                    "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s")));
   ASSERT_FALSE(registry()->IsHandledProtocol("news"));
+  // http:// URL
+  registry()->OnAcceptRegisterProtocolHandler(
+      CreateProtocolHandler("news", GURL("http://www.google.com/handler%s")));
+  ASSERT_FALSE(registry()->IsHandledProtocol("news"));
+  // filesystem:// URL
+  registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
+      "news", GURL("filesystem:https://www.google.com/"
+                   "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s")));
+  ASSERT_FALSE(registry()->IsHandledProtocol("news"));
 }
 
 TEST_F(ProtocolHandlerRegistryTest, ExtensionHandler) {
+  GURL chrome_extension_handler_url(
+      "chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/test.html");
+
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", chrome_extension_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kStrict));
+
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", chrome_extension_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins));
+
+  EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
+      "news", chrome_extension_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+}
+
+// See
+// https://html.spec.whatwg.org/multipage/system-state.html#normalize-protocol-handler-parameters
+TEST_F(ProtocolHandlerRegistryTest, WebPlusPrefix) {
+  // Not ASCII alphas.
   registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
+      "web+***", GURL("https://www.google.com/handler%s")));
+  ASSERT_FALSE(registry()->IsHandledProtocol("web+***"));
+  registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
+      "web+123", GURL("https://www.google.com/handler%s")));
+  ASSERT_FALSE(registry()->IsHandledProtocol("web+123"));
+  registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
+      "web+   ", GURL("https://www.google.com/handler%s")));
+  ASSERT_FALSE(registry()->IsHandledProtocol("web+   "));
+  registry()->OnAcceptRegisterProtocolHandler(CreateProtocolHandler(
+      "web+name123", GURL("https://www.google.com/handler%s")));
+  ASSERT_FALSE(registry()->IsHandledProtocol("web+name123"));
+
+  // ASCII lower alphas.
+  registry()->OnAcceptRegisterProtocolHandler(
+      CreateProtocolHandler("web+abcdefghijklmnopqrstuvwxyz",
+                            GURL("https://www.google.com/handler%s")));
+  ASSERT_TRUE(registry()->IsHandledProtocol("web+abcdefghijklmnopqrstuvwxyz"));
+
+  // ASCII upper alphas are lowercased.
+  registry()->OnAcceptRegisterProtocolHandler(
+      CreateProtocolHandler("web+ZYXWVUTSRQPONMLKJIHGFEDCBA",
+                            GURL("https://www.google.com/handler%s")));
+  ASSERT_TRUE(registry()->IsHandledProtocol("web+zyxwvutsrqponmlkjihgfedcba"));
+}
+
+// See
+// https://html.spec.whatwg.org/multipage/system-state.html#safelisted-scheme
+TEST_F(ProtocolHandlerRegistryTest, SafelistedSchemes) {
+  std::string schemes[] = {
+      "bitcoin",  "cabal",       "dat",    "did",    "doi",   "dweb",
+      "ethereum", "geo",         "hyper",  "im",     "ipfs",  "ipns",
+      "irc",      "ircs",        "magnet", "mailto", "mms",   "news",
+      "nntp",     "openpgp4fpr", "sip",    "sms",    "smsto", "ssb",
+      "ssh",      "tel",         "urn",    "webcal", "wtai",  "xmpp"};
+  for (auto& scheme : schemes) {
+    registry()->OnAcceptRegisterProtocolHandler(
+        CreateProtocolHandler(scheme, GURL("https://example.com/url=%s")));
+    ASSERT_TRUE(registry()->IsHandledProtocol(scheme));
+  }
+}
+
+TEST_F(ProtocolHandlerRegistryTest, ProtocolHandlerSecurityLevels) {
+  GURL https_handler_url("https://www.google.com/handler%s");
+
+  // Invalid protocol.
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "foo", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "web", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "web+", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "https", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "ext+", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "ext+foo", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kUntrustedOrigins));
+
+  // Invalid handler URL.
+  // data: URL.
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
       "news",
-      GURL("chrome-extension://abcdefghijklmnopqrstuvwxyzabcdef/test.html")));
-  ASSERT_TRUE(registry()->IsHandledProtocol("news"));
+      GURL("data:text/html,<html><body><b>hello "
+           "world</b></body></html>%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // ftp:// URL.
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", GURL("ftp://www.google.com/handler%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // blob:// URL
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news",
+      GURL("blob:https://www.google.com/"
+           "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // http:// URL
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news", GURL("http://www.google.com/handler%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+  // filesystem:// URL
+  EXPECT_FALSE(ProtocolHandlerCanRegisterProtocol(
+      "news",
+      GURL("filesystem:https://www.google.com/"
+           "f2d8c47d-17d0-4bf5-8f0a-76e42cbed3bf/%s"),
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
+
+  // ext+foo scheme.
+  EXPECT_TRUE(ProtocolHandlerCanRegisterProtocol(
+      "ext+foo", https_handler_url,
+      blink::ProtocolHandlerSecurityLevel::kExtensionFeatures));
 }

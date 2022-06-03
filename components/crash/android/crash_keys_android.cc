@@ -6,6 +6,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
+#include "base/cxx17_backports.h"
 #include "components/crash/android/jni_headers/CrashKeys_jni.h"
 #include "components/crash/core/common/crash_key.h"
 
@@ -22,6 +23,7 @@ JavaCrashKey& GetCrashKey(int index) {
       {"installed_modules", JavaCrashKey::Tag::kArray},
       {"emulated_modules", JavaCrashKey::Tag::kArray},
       {"dynamic_module_dex_name", JavaCrashKey::Tag::kArray},
+      {"partner_customization_config", JavaCrashKey::Tag::kArray},
   };
   static_assert(
       base::size(crash_keys) == static_cast<size_t>(CrashKeyIndex::NUM_ENTRIES),

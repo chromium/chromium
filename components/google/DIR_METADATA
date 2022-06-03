@@ -1,0 +1,5 @@
+monorail {
+  component: "Internals"
+}
+
+team_email: "chromium-dev@chromium.org"

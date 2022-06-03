@@ -89,7 +89,7 @@ rva_t RelocReaderElf::GetRelocationTarget(elf::Elf64_Rel rel) const {
   return kInvalidRva;
 }
 
-base::Optional<Reference> RelocReaderElf::GetNext() {
+absl::optional<Reference> RelocReaderElf::GetNext() {
   offset_t cur_entry_size = cur_section_dimensions_->entry_size;
   offset_t cur_section_dimensions_end =
       base::checked_cast<offset_t>(cur_section_dimensions_->region.hi());
@@ -98,12 +98,12 @@ base::Optional<Reference> RelocReaderElf::GetNext() {
     while (cursor_ >= cur_section_dimensions_end) {
       ++cur_section_dimensions_;
       if (cur_section_dimensions_ == reloc_section_dimensions_.end())
-        return base::nullopt;
+        return absl::nullopt;
       cur_entry_size = cur_section_dimensions_->entry_size;
       cursor_ =
           base::checked_cast<offset_t>(cur_section_dimensions_->region.offset);
       if (cursor_ + cur_entry_size > hi_)
-        return base::nullopt;
+        return absl::nullopt;
       cur_section_dimensions_end =
           base::checked_cast<offset_t>(cur_section_dimensions_->region.hi());
     }
@@ -119,16 +119,20 @@ base::Optional<Reference> RelocReaderElf::GetNext() {
     }
     if (target_rva == kInvalidRva)
       continue;
+    // TODO(huangs): Make the check more strict: The reference body should not
+    // straddle section boundary.
+    offset_t target = target_rva_to_offset_.Convert(target_rva);
+    if (target == kInvalidOffset)
+      continue;
     // |target| will be used to obtain abs32 references, so we must ensure that
     // it lies inside |image_|.
-    offset_t target = target_rva_to_offset_.Convert(target_rva);
-    if (target == kInvalidOffset || !image_.covers({target, sizeof(offset_t)}))
+    if (!image_.covers({target, WidthOf(bitness_)}))
       continue;
     offset_t location = cursor_;
     cursor_ += cur_entry_size;
     return Reference{location, target};
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 /******** RelocWriterElf ********/

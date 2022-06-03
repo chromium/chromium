@@ -59,7 +59,7 @@ bool ParseInputArguments(v8::Local<v8::Context> context,
         return false;
 
       for (const auto& type : argument_types) {
-        base::Optional<CSSSyntaxDefinition> syntax_definition =
+        absl::optional<CSSSyntaxDefinition> syntax_definition =
             CSSSyntaxStringParser(type).Parse();
         if (!syntax_definition) {
           exception_state->ThrowTypeError("Invalid argument types.");
@@ -122,7 +122,10 @@ PaintWorkletGlobalScope::PaintWorkletGlobalScope(
     LocalFrame* frame,
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
     WorkerReportingProxy& reporting_proxy)
-    : WorkletGlobalScope(std::move(creation_params), reporting_proxy, frame) {}
+    : WorkletGlobalScope(std::move(creation_params),
+                         reporting_proxy,
+                         frame,
+                         /*create_microtask_queue=*/false) {}
 
 PaintWorkletGlobalScope::PaintWorkletGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params,
@@ -146,7 +149,8 @@ void PaintWorkletGlobalScope::Dispose() {
   WorkletGlobalScope::Dispose();
 }
 
-void PaintWorkletGlobalScope::registerPaint(const String& name,
+void PaintWorkletGlobalScope::registerPaint(const ScriptState* script_state,
+                                            const String& name,
                                             V8NoArgumentConstructor* paint_ctor,
                                             ExceptionState& exception_state) {
   // https://drafts.css-houdini.org/css-paint-api/#dom-paintworkletglobalscope-registerpaint
@@ -178,8 +182,11 @@ void PaintWorkletGlobalScope::registerPaint(const String& name,
   Vector<CSSPropertyID> native_invalidation_properties;
   Vector<AtomicString> custom_invalidation_properties;
 
+  const ExecutionContext* execution_context =
+      ExecutionContext::From(script_state);
+
   if (!V8ObjectParser::ParseCSSPropertyList(
-          context, v8_paint_ctor, "inputProperties",
+          context, execution_context, v8_paint_ctor, "inputProperties",
           &native_invalidation_properties, &custom_invalidation_properties,
           &exception_state))
     return;
@@ -212,7 +219,7 @@ void PaintWorkletGlobalScope::registerPaint(const String& name,
   auto* definition = MakeGarbageCollected<CSSPaintDefinition>(
       ScriptController()->GetScriptState(), paint_ctor, paint,
       native_invalidation_properties, custom_invalidation_properties,
-      input_argument_types, context_settings);
+      input_argument_types, context_settings, this);
   paint_definitions_.Set(name, definition);
 
   if (!WTF::IsMainThread()) {
@@ -229,7 +236,8 @@ void PaintWorkletGlobalScope::registerPaint(const String& name,
 
 CSSPaintDefinition* PaintWorkletGlobalScope::FindDefinition(
     const String& name) {
-  return paint_definitions_.at(name);
+  auto it = paint_definitions_.find(name);
+  return it != paint_definitions_.end() ? it->value : nullptr;
 }
 
 double PaintWorkletGlobalScope::devicePixelRatio() const {
@@ -238,7 +246,7 @@ double PaintWorkletGlobalScope::devicePixelRatio() const {
              : PaintWorkletProxyClient::From(Clients())->DevicePixelRatio();
 }
 
-void PaintWorkletGlobalScope::Trace(blink::Visitor* visitor) {
+void PaintWorkletGlobalScope::Trace(Visitor* visitor) const {
   visitor->Trace(paint_definitions_);
   WorkletGlobalScope::Trace(visitor);
 }

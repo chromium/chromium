@@ -5,6 +5,7 @@
 #include "media/base/bit_reader_core.h"
 
 #include <stdint.h>
+#include <cstring>
 
 #include "base/sys_byteorder.h"
 

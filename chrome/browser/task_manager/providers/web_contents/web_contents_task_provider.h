@@ -7,16 +7,15 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/task_provider.h"
 
 namespace content {
+class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
 namespace task_manager {
 
-class WebContentsEntry;
 class WebContentsTag;
 
 // Defines a provider to provide the renderer tasks that are associated with
@@ -25,6 +24,8 @@ class WebContentsTag;
 class WebContentsTaskProvider : public TaskProvider {
  public:
   WebContentsTaskProvider();
+  WebContentsTaskProvider(const WebContentsTaskProvider&) = delete;
+  WebContentsTaskProvider& operator=(const WebContentsTaskProvider&) = delete;
   ~WebContentsTaskProvider() override;
 
   // This will be called every time we're notified that a new |WebContentsTag|
@@ -40,8 +41,11 @@ class WebContentsTaskProvider : public TaskProvider {
   // Checks if the given |web_contents| is tracked by the provider.
   bool HasWebContents(content::WebContents* web_contents) const;
 
+  // Returns the task, if any, of the provided frame.
+  Task* GetTaskOfFrame(content::RenderFrameHost* frame);
+
  private:
-  friend class WebContentsEntry;
+  class WebContentsEntry;
 
   // task_manager::TaskProvider:
   void StartUpdating() override;
@@ -58,9 +62,7 @@ class WebContentsTaskProvider : public TaskProvider {
 
   // True if this provider is listening to WebContentsTags and updating its
   // observers, false otherwise.
-  bool is_updating_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsTaskProvider);
+  bool is_updating_ = false;
 };
 
 }  // namespace task_manager

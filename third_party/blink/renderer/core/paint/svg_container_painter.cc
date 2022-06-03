@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/svg_container_painter.h"
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_container.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_foreign_object.h"
@@ -19,12 +19,25 @@
 
 namespace blink {
 
-void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
-  // Spec: groups w/o children still may render filter content.
-  if (!layout_svg_container_.FirstChild() &&
-      !layout_svg_container_.SelfWillPaint())
-    return;
+namespace {
 
+bool HasReferenceFilterEffect(const ObjectPaintProperties& properties) {
+  return properties.Filter() &&
+         properties.Filter()->Filter().HasReferenceFilter();
+}
+
+}  // namespace
+
+bool SVGContainerPainter::CanUseCullRect() const {
+  // LayoutSVGHiddenContainer's visual rect is always empty but we need to
+  // paint its descendants so we cannot skip painting.
+  if (layout_svg_container_.IsSVGHiddenContainer())
+    return false;
+  return SVGModelObjectPainter::CanUseCullRect(
+      layout_svg_container_.StyleRef());
+}
+
+void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
   // Spec: An empty viewBox on the <svg> element disables rendering.
   DCHECK(layout_svg_container_.GetElement());
   auto* svg_svg_element =
@@ -32,69 +45,63 @@ void SVGContainerPainter::Paint(const PaintInfo& paint_info) {
   if (svg_svg_element && svg_svg_element->HasEmptyViewBox())
     return;
 
+  const auto* properties =
+      layout_svg_container_.FirstFragment().PaintProperties();
   PaintInfo paint_info_before_filtering(paint_info);
-
-  if (SVGModelObjectPainter(layout_svg_container_)
-          .CullRectSkipsPainting(paint_info_before_filtering)) {
-    return;
-  }
-
-  // We do not apply cull rect optimizations across transforms for two reasons:
-  //   1) Performance: We can optimize transform changes by not repainting.
-  //   2) Complexity: Difficulty updating clips when ancestor transforms change.
-  // This is why we use an infinite cull rect if there is a transform. Non-svg
-  // content, does this in PaintLayerPainter::PaintSingleFragment.
-  if (layout_svg_container_.StyleRef().HasTransform()) {
+  if (CanUseCullRect()) {
+    if (!paint_info.GetCullRect().IntersectsTransformed(
+            layout_svg_container_.LocalToSVGParentTransform(),
+            layout_svg_container_.VisualRectInLocalSVGCoordinates()))
+      return;
+    if (properties) {
+      if (const auto* transform = properties->Transform())
+        paint_info_before_filtering.TransformCullRect(*transform);
+    }
+  } else {
     paint_info_before_filtering.ApplyInfiniteCullRect();
-  } else if (const auto* properties =
-                 layout_svg_container_.FirstFragment().PaintProperties()) {
-    if (const auto* transform = properties->Transform())
-      paint_info_before_filtering.TransformCullRect(*transform);
   }
 
-  ScopedSVGTransformState transform_state(
-      paint_info_before_filtering, layout_svg_container_,
-      layout_svg_container_.LocalToSVGParentTransform());
+  ScopedSVGTransformState transform_state(paint_info_before_filtering,
+                                          layout_svg_container_);
   {
-    base::Optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
+    absl::optional<ScopedPaintChunkProperties> scoped_paint_chunk_properties;
     if (layout_svg_container_.IsSVGViewportContainer() &&
         SVGLayoutSupport::IsOverflowHidden(layout_svg_container_)) {
-      const auto* fragment = paint_info.FragmentToPaint(layout_svg_container_);
-      if (!fragment)
-        return;
-      const auto* properties = fragment->PaintProperties();
       // TODO(crbug.com/814815): The condition should be a DCHECK, but for now
       // we may paint the object for filters during PrePaint before the
       // properties are ready.
       if (properties && properties->OverflowClip()) {
         scoped_paint_chunk_properties.emplace(
-            paint_info.context.GetPaintController(),
+            paint_info_before_filtering.context.GetPaintController(),
             *properties->OverflowClip(), layout_svg_container_,
-            paint_info.DisplayItemTypeForClipping());
+            paint_info_before_filtering.DisplayItemTypeForClipping());
       }
     }
 
     ScopedSVGPaintState paint_state(layout_svg_container_,
                                     paint_info_before_filtering);
-    bool continue_rendering = true;
-    if (paint_state.GetPaintInfo().phase == PaintPhase::kForeground)
-      continue_rendering = paint_state.ApplyClipMaskAndFilterIfNecessary();
+    // When a filter applies to the container we need to make sure
+    // that it is applied even if nothing is painted.
+    if (paint_info_before_filtering.phase == PaintPhase::kForeground &&
+        properties && HasReferenceFilterEffect(*properties))
+      paint_info_before_filtering.context.GetPaintController().EnsureChunk();
 
-    if (continue_rendering) {
-      for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
-           child = child->NextSibling()) {
-        if (child->IsSVGForeignObject()) {
-          SVGForeignObjectPainter(ToLayoutSVGForeignObject(*child))
-              .PaintLayer(paint_state.GetPaintInfo());
-        } else {
-          child->Paint(paint_state.GetPaintInfo());
-        }
+    for (LayoutObject* child = layout_svg_container_.FirstChild(); child;
+         child = child->NextSibling()) {
+      if (auto* foreign_object = DynamicTo<LayoutSVGForeignObject>(*child)) {
+        SVGForeignObjectPainter(*foreign_object)
+            .PaintLayer(paint_info_before_filtering);
+      } else {
+        child->Paint(paint_info_before_filtering);
       }
     }
   }
 
-  SVGModelObjectPainter(layout_svg_container_)
-      .PaintOutline(paint_info_before_filtering);
+  // Only paint an outline if there are children.
+  if (layout_svg_container_.FirstChild()) {
+    SVGModelObjectPainter(layout_svg_container_)
+        .PaintOutline(paint_info_before_filtering);
+  }
 
   if (paint_info_before_filtering.ShouldAddUrlMetadata() &&
       paint_info_before_filtering.phase == PaintPhase::kForeground) {

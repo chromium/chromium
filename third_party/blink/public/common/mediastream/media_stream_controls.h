@@ -24,7 +24,7 @@ BLINK_COMMON_EXPORT extern const char
 struct BLINK_COMMON_EXPORT TrackControls {
   TrackControls();
   explicit TrackControls(bool request, mojom::MediaStreamType type);
-  explicit TrackControls(const TrackControls& other);
+  TrackControls(const TrackControls& other);
   ~TrackControls();
 
   bool requested = false;
@@ -53,6 +53,7 @@ struct BLINK_COMMON_EXPORT StreamControls {
   // TODO(crbug.com/577627): this is now never set and needs to be removed.
   bool hotword_enabled = false;
   bool disable_local_echo = false;
+  bool request_pan_tilt_zoom_permission = false;
 };
 
 }  // namespace blink

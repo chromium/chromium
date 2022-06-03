@@ -9,7 +9,6 @@
 
 #include "base/android/jni_weak_ref.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 namespace content {
@@ -18,16 +17,22 @@ namespace content {
 class TracingControllerAndroid {
  public:
   TracingControllerAndroid(JNIEnv* env, jobject obj);
+
+  TracingControllerAndroid(const TracingControllerAndroid&) = delete;
+  TracingControllerAndroid& operator=(const TracingControllerAndroid&) = delete;
+
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
 
   bool StartTracing(JNIEnv* env,
                     const base::android::JavaParamRef<jobject>& obj,
                     const base::android::JavaParamRef<jstring>& categories,
-                    const base::android::JavaParamRef<jstring>& trace_options);
+                    const base::android::JavaParamRef<jstring>& trace_options,
+                    bool use_protobuf);
   void StopTracing(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& obj,
                    const base::android::JavaParamRef<jstring>& jfilepath,
-                   bool compressfile,
+                   bool compress_file,
+                   bool use_protobuf,
                    const base::android::JavaParamRef<jobject>& callback);
   bool GetKnownCategoriesAsync(
       JNIEnv* env,
@@ -37,7 +42,11 @@ class TracingControllerAndroid {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& obj,
       const base::android::JavaParamRef<jobject>& callback);
-  static void GenerateTracingFilePath(base::FilePath* file_path);
+
+  // Locate the appropriate directory to write the trace to and use it to
+  // generate the path. |basename| might be empty, then TracingControllerAndroid
+  // will generate an appropriate one as well.
+  static base::FilePath GenerateTracingFilePath(const std::string& basename);
 
  private:
   ~TracingControllerAndroid();
@@ -53,8 +62,6 @@ class TracingControllerAndroid {
 
   JavaObjectWeakGlobalRef weak_java_object_;
   base::WeakPtrFactory<TracingControllerAndroid> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TracingControllerAndroid);
 };
 
 }  // namespace content

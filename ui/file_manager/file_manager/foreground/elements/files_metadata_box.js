@@ -2,7 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const FilesMetadataBox = Polymer({
+import './files_metadata_entry.js';
+
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'files-metadata-box',
 
   properties: {
@@ -10,10 +16,11 @@ const FilesMetadataBox = Polymer({
     filePath: String,
     type: String,
 
-    // File size, modification time, mimeType.
+    // File size, modification time, mimeType, location.
     size: String,
     modificationTime: String,
     mediaMimeType: String,
+    fileLocation: String,
 
     // True if the size field is loading.
     isSizeLoading: Boolean,
@@ -59,6 +66,7 @@ const FilesMetadataBox = Polymer({
       modificationTime: '',
       hasFileSpecificMetadata_: false,
       mediaMimeType: '',
+      fileLocation: '',
       ifd: null,
       imageWidth: 0,
       imageHeight: 0,
@@ -360,3 +368,5 @@ const FilesMetadataBox = Polymer({
     return result.trimEnd();
   },
 });
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_metadata_box.js

@@ -10,6 +10,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#include "ios/chrome/browser/signin/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
@@ -22,7 +24,7 @@
 @interface BookmarkPromoController ()<SigninPromoViewConsumer,
                                       IdentityManagerObserverBridgeDelegate> {
   bool _isIncognito;
-  ios::ChromeBrowserState* _browserState;
+  ChromeBrowserState* _browserState;
   std::unique_ptr<signin::IdentityManagerObserverBridge>
       _identityManagerObserverBridge;
 }
@@ -39,7 +41,7 @@
 @synthesize shouldShowSigninPromo = _shouldShowSigninPromo;
 @synthesize signinPromoViewMediator = _signinPromoViewMediator;
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                             delegate:
                                 (id<BookmarkPromoControllerDelegate>)delegate
                            presenter:(id<SigninPresenter>)presenter {
@@ -55,10 +57,14 @@
           new signin::IdentityManagerObserverBridge(
               IdentityManagerFactory::GetForBrowserState(_browserState), self));
       _signinPromoViewMediator = [[SigninPromoViewMediator alloc]
-          initWithBrowserState:_browserState
-                   accessPoint:signin_metrics::AccessPoint::
-                                   ACCESS_POINT_BOOKMARK_MANAGER
-                     presenter:presenter];
+          initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                            GetForBrowserState(_browserState)
+                            authService:AuthenticationServiceFactory::
+                                            GetForBrowserState(_browserState)
+                            prefService:_browserState->GetPrefs()
+                            accessPoint:signin_metrics::AccessPoint::
+                                            ACCESS_POINT_BOOKMARK_MANAGER
+                              presenter:presenter];
       _signinPromoViewMediator.consumer = self;
     }
     [self updateShouldShowSigninPromo];
@@ -67,7 +73,14 @@
 }
 
 - (void)dealloc {
-  [_signinPromoViewMediator signinPromoViewIsRemoved];
+  [self shutdown];
+}
+
+- (void)shutdown {
+  [_signinPromoViewMediator disconnect];
+  _signinPromoViewMediator = nil;
+
+  _identityManagerObserverBridge.reset();
 }
 
 - (void)hidePromoCell {
@@ -92,25 +105,32 @@
   if ([SigninPromoViewMediator
           shouldDisplaySigninPromoViewWithAccessPoint:
               signin_metrics::AccessPoint::ACCESS_POINT_BOOKMARK_MANAGER
-                                         browserState:_browserState]) {
+                                          prefService:_browserState
+                                                          ->GetPrefs()]) {
     signin::IdentityManager* identityManager =
         IdentityManagerFactory::GetForBrowserState(_browserState);
-    self.shouldShowSigninPromo = !identityManager->HasPrimaryAccount();
+    self.shouldShowSigninPromo =
+        !identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   }
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate
 
-// Called when a user signs into Google services such as sync.
-- (void)onPrimaryAccountSet:(const CoreAccountInfo&)primaryAccountInfo {
-  if (!self.signinPromoViewMediator.signinInProgress)
-    self.shouldShowSigninPromo = NO;
-}
-
-// Called when the currently signed-in user for a user has been signed out.
-- (void)onPrimaryAccountCleared:
-    (const CoreAccountInfo&)previousPrimaryAccountInfo {
-  [self updateShouldShowSigninPromo];
+// Called when a user changes the syncing state.
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      if (!self.signinPromoViewMediator.signinInProgress) {
+        self.shouldShowSigninPromo = NO;
+      }
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      [self updateShouldShowSigninPromo];
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      break;
+  }
 }
 
 #pragma mark - SigninPromoViewConsumer

@@ -41,10 +41,6 @@
   const elementHeight = 50;
 
   window.onload = async () => {
-    if (window.internals) {
-      internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
-    }
-
     await waitForCompositorCommit();
     array = document.getElementsByClassName('hoverme');
 

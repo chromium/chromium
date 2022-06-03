@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/download/internal/background_service/model.h"
 #include "components/download/internal/background_service/store.h"
@@ -24,6 +23,10 @@ struct Entry;
 class ModelImpl : public Model {
  public:
   ModelImpl(std::unique_ptr<Store> store);
+
+  ModelImpl(const ModelImpl&) = delete;
+  ModelImpl& operator=(const ModelImpl&) = delete;
+
   ~ModelImpl() override;
 
   // Model implementation.
@@ -65,8 +68,6 @@ class ModelImpl : public Model {
   OwnedEntryMap entries_;
 
   base::WeakPtrFactory<ModelImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModelImpl);
 };
 
 }  // namespace download

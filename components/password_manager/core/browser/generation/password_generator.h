@@ -5,11 +5,17 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GENERATION_PASSWORD_GENERATOR_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_GENERATION_PASSWORD_GENERATOR_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace autofill {
 
 class PasswordRequirementsSpec;
+
+// If neither lower nor upper case letters are included in the password
+// generation alphabet, add the '0' and '1' digit to the numeric alphabet
+// to increase the entropy of numeric-only passwords.
+void ConditionallyAddNumericDigitsToAlphabet(PasswordRequirementsSpec* spec);
 
 extern const uint32_t kDefaultPasswordLength;
 
@@ -23,7 +29,7 @@ extern const uint32_t kDefaultPasswordLength;
 // - at least 1 upper case latin character
 // - at least 1 number (digit)
 // - no symbols
-base::string16 GeneratePassword(const PasswordRequirementsSpec& spec);
+std::u16string GeneratePassword(const PasswordRequirementsSpec& spec);
 
 }  // namespace autofill
 

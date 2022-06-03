@@ -359,7 +359,7 @@ TEST_F(BluetoothGattApplicationServiceProviderTest, GetManagedObjects) {
   // Not setting the serial causes a crash.
   method_call.SetSerial(123);
   app_provider->GetManagedObjects(
-      &method_call, base::Bind(&ResponseSenderCallback, kExpectedMessage));
+      &method_call, base::BindOnce(&ResponseSenderCallback, kExpectedMessage));
 }
 
 TEST_F(BluetoothGattApplicationServiceProviderTest, SendValueChanged) {

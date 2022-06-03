@@ -5,47 +5,29 @@
 (async function() {
   TestRunner.addResult(`Tests that logging custom elements uses proper formatting.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
     <foo-bar></foo-bar>
-    <foo-bar2></foo-bar2>
   `);
   await TestRunner.evaluateInPagePromise(`
-    function registerNonElement()
-    {
-      var nonElementProto = {
-        createdCallback: function()
-        {
-          console.dir(this);
-        }
-      };
-      var nonElementOptions = { prototype: nonElementProto };
-      document.registerElement("foo-bar", nonElementOptions);
-    }
-
     function registerElement()
     {
-      var elementProto = Object.create(HTMLElement.prototype);
-      elementProto.createdCallback = function()
-      {
-        console.dir(this);
-      };
-      var elementOptions = { prototype: elementProto };
-      document.registerElement("foo-bar2", elementOptions);
+      class ElementProto extends HTMLElement {
+        constructor() {
+          super();
+          console.dir(this);
+        }
+      }
+      customElements.define("foo-bar", ElementProto);
     }
   `);
 
   ConsoleTestRunner.waitUntilMessageReceived(step1);
-  TestRunner.evaluateInPage('registerNonElement();');
+  TestRunner.evaluateInPage('registerElement();');
 
-  function step1() {
-    ConsoleTestRunner.waitUntilMessageReceived(step2);
-    TestRunner.evaluateInPage('registerElement();');
-  }
-
-  function step2() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step1() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

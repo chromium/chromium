@@ -7,5 +7,5 @@ module fuchsia.test.mojom;
 // Mojo struct of fidl::InterfaceRequest<TestInterface>. |request| is a
 // channel handle.
 struct TestInterfaceRequest {
-  handle request;
+  handle<platform> request;
 };

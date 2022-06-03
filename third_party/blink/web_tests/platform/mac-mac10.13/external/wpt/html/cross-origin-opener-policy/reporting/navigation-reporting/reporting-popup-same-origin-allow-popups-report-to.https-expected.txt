@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS coop reporting test reporting same origin with report-to to SAME_ORIGIN with same-origin; report-to="coop-popup-report-endpoint", , , 
+PASS coop reporting test reporting same origin with report-to to CROSS_ORIGIN with same-origin-allow-popups; report-to="coop-popup-report-endpoint", require-corp, , 
+PASS coop reporting test reporting same origin with report-to to CROSS_ORIGIN with same-origin, require-corp, , 
+FAIL verify remaining reports promise_test: Unhandled rejection with value: "coop-report-endpoint not empty"
+Harness: the test ran to completion.
+

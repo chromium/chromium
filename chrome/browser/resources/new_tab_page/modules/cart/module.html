@@ -1,0 +1,404 @@
+<style include="cr-hidden-style cr-icons">
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    --discount-chip-background: rgb(230, 244, 234);
+    --discount-chip-text-color: var(--google-green-700);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --discount-chip-background: linear-gradient(0deg,
+          rgba(129, 201, 149, 0.12), rgba(129, 201, 149, 0.12)), #202124;
+      --discount-chip-text-color: rgb(129,201,149);
+    }
+  }
+
+  #module:hover .side-scroll-button {
+    visibility: visible;
+  }
+
+  /* Adjusting header margin and cartCarousel to make sure
+   * the discount chip doesn't get clipped due to
+   * overflow-x: hidden */
+  ntp-module-header {
+    margin-bottom: 0;
+  }
+
+  #moduleContent {
+    display: flex;
+    height: 166px;
+    padding-bottom: 16px;
+    position: relative;
+  }
+
+  :host([header-description-text]) #moduleContent {
+    height: 158px;
+  }
+
+  #cartCarousel {
+    display: inline-block;
+    overflow: hidden;
+    padding-top: 24px;
+    white-space: nowrap;
+    z-index: 0;
+  }
+
+  :host([header-description-text]) #cartCarousel {
+    padding-top: 16px;
+  }
+
+  #consentCard,
+  .cart-container {
+    border: 1px solid var(--ntp-border-color);
+    border-radius: 4px;
+    display: inline-flex;
+    flex-direction: column;
+    height: 140px;
+    margin: 0 4px;
+  }
+
+  .cart-container {
+    outline: none;
+    position: relative;
+    width: 118px;
+  }
+
+  .cart-item {
+    cursor: pointer;
+    display: inline-flex;
+    flex-direction: column;
+    text-decoration: none;
+  }
+
+  #consentCard {
+    width: 244px;
+  }
+
+  #consentIconContainer {
+    background: var(--discount-chip-background);
+    border-radius: 4px;
+    height: 24px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 16px;
+    width: 24px;
+  }
+
+  #consentIcon {
+    -webkit-mask-image: url(modules/cart/icons/consent_label.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--discount-chip-text-color);
+    height: 15px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 4.5px;
+    width: 15px;
+  }
+
+  #consentContent {
+    color: var(--cr-primary-text-color);
+    font-size: 13px;
+    font-weight: 400;
+    height: 40px;
+    line-height: 20px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 4px;
+    text-align: center;
+    white-space: normal;
+    width: 220px;
+  }
+
+  #consentButtonContainer {
+    display: inline-block;
+    margin-inline-start: 16px;
+    margin-top: 8px;
+  }
+
+  .discount-chip {
+    background: var(--discount-chip-background);
+    border-radius: 4px;
+    color: var(--discount-chip-text-color);
+    font-size: 12px;
+    height: 24px;
+    left: 50%;
+    line-height: 24px;
+    position: absolute;
+    text-align: center;
+    top: -18px;
+    transform: translateX(-50%);
+    width: 102px;
+    z-index: 1;
+  }
+
+  :host-context(.focus-outline-visible) .cart-item:focus {
+    box-shadow: var(--ntp-focus-shadow);
+  }
+
+  .cart-title {
+    color: var(--cr-primary-text-color);
+    display: flex;
+    flex-direction: row;
+    font-size: 13px;
+    height: 20px;
+    justify-content: center;
+    margin: 4px 8px 0 8px;
+    text-align: center;
+  }
+
+  .cart-title .merchant {
+    font-weight: 400;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: var(--ntp-theme-text-shadow);
+    white-space: nowrap;
+  }
+
+  .cart-title .item-count {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .favicon-image {
+    border-radius: 2px;
+    display: block;
+    height: 24px;
+    margin-inline-end: auto;
+    margin-inline-start: auto;
+    margin-top: 16px;
+    width: 24px;
+  }
+
+  .thumbnail-container {
+    margin-top: 4px;
+    text-align: center;
+    width: auto;
+  }
+
+  .thumbnail-container ul {
+    list-style-type: none;
+    margin-inline-end: 24px;
+    padding: 0;
+  }
+
+  .thumbnail-container li {
+    display: inline;
+    margin-inline-end: -24px;
+  }
+
+  .thumbnail-img {
+    border: 2px solid var(--ntp-background-override-color);
+    border-radius: 50%;
+    height: 44px;
+    object-fit: cover;
+    width: 44px;
+  }
+
+  .thumbnail-fallback {
+    height: 48px;
+    margin-top: 8px;
+    position: relative;
+    width: 102px;
+  }
+
+  :host-context([dir=rtl]) cr-icon-button {
+    left: 0;
+    right: unset;
+  }
+
+  .cart-container cr-icon-button {
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    margin: 4px 4px;
+    position: absolute;
+    right: 0;
+    top: 2px;
+  }
+
+  .side-scroll-shadow {
+    background-color: var(--ntp-background-override-color);
+    display: flex;
+    height: 160px;
+    opacity: 0.38;
+    pointer-events: none;
+    position: absolute;
+    width: 24px;
+    z-index: 1;
+  }
+
+  #leftScrollShadow {
+    left: 0;
+  }
+
+  #rightScrollShadow {
+    right: 0;
+  }
+
+  .side-scroll-button {
+    --cr-icon-button-fill-color: var(--ntp-icon-button-color);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-margin-start: 0;
+    --cr-icon-button-margin-end: 0;
+    --cr-icon-image: url(icons/chevron.svg);
+    background-color: var(--ntp-module-scroll-button-color);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    visibility: hidden;
+    z-index: 2;
+  }
+
+  .side-scroll-button:hover {
+    --cr-icon-button-fill-color: var(--ntp-icon-button-color-active);
+    background-color: var(--ntp-module-scroll-button-hover-color);
+  }
+
+  #leftScrollButton {
+    --cr-icon-image-transform: rotate(90deg);
+    left: 0;
+    margin-inline-start: 4px;
+  }
+
+  #rightScrollButton {
+    --cr-icon-image-transform: rotate(270deg);
+    margin-inline-end: 4px;
+    right: 0;
+  }
+
+  .probe {
+    display: inline-flex;
+    width: 12px;
+  }
+</style>
+<div id="module">
+  <ntp-module-header
+      chip-text="[[headerChipText]]"
+      description-text="[[headerDescriptionText]]"
+      dismiss-text="[[i18nRecursive('',
+                                    'modulesDismissButtonText',
+                                    'modulesCartLowerThese')]]"
+      disable-text="[[i18nRecursive('',
+                                    'modulesDisableButtonText',
+                                    'modulesCartLower')]]"
+      show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+      on-disable-button-click="onDisableButtonClick_">
+    [[i18n('modulesCartSentence')]]
+  </ntp-module-header>
+  <div id="moduleContent">
+    <template is="dom-if" if="[[showLeftScrollButton_]]">
+      <div id="leftScrollShadow" class="side-scroll-shadow"></div>
+      <cr-icon-button id="leftScrollButton"
+          class="side-scroll-button" on-click="onLeftScrollClick_">
+      </cr-icon-button>
+    </template>
+    <div id="cartCarousel">
+      <div id="leftProbe" class="probe"></div>
+      <template id="consentCardElement" is="dom-if"
+          if="[[showDiscountConsent]]">
+        <div id="consentCard">
+          <div id="consentIconContainer">
+            <div id="consentIcon"></div>
+          </div>
+          <span id="consentContent">
+            [[i18n('modulesCartDiscountConsentContent')]]
+          </span>
+          <div id="consentButtonContainer">
+            <cr-button id="cancelButton"
+                class="cancel-button" on-click="onDisallowDiscount_"
+                on-auxclick="onDisallowDiscount_">
+              [[i18n('modulesCartDiscountConsentReject')]]
+            </cr-button>
+            <cr-button id="actionButton"
+                class="action-button" on-click="onAllowDiscount_"
+                on-auxclick="onAllowDiscount_">
+              [[i18n('modulesCartDiscountConsentAccept')]]
+            </cr-button>
+          </div>
+        </div>
+      </template>
+      <template id="cartItemRepeat" is="dom-repeat" items="[[cartItems]]">
+        <div class="cart-container">
+          <a class="cart-item" title="[[item.merchant]]"
+              href="[[item.cartUrl.url]]" on-click="onCartItemClick_"
+              on-auxclick="onCartItemClick_"
+              on-contextmenu="onCartItemContextMenuClick_">
+            <template is="dom-if" if="[[item.discountText]]">
+              <div class="discount-chip">[[item.discountText]]</div>
+            </template>
+            <img class="favicon-image" is="cr-auto-img"
+                auto-src="[[getFaviconUrl_(item.cartUrl.url)]]"></img>
+            <div class="cart-title">
+              <span class="merchant">[[item.merchant]]</span>
+              <template is="dom-if" if="[[item.productImageUrls.length]]">
+                <span class="item-count">
+                  &nbsp•&nbsp[[item.productImageUrls.length]]
+                </span>
+              </template>
+            </div>
+            <div class="thumbnail-container">
+              <template is="dom-if"
+                  if="[[item.productImageUrls.length]]">
+                <ul class="thumbnail-list">
+                  <template is="dom-repeat"
+                      items="[[getImagesToShow_(item.productImageUrls)]]">
+                    <li>
+                      <img class="thumbnail-img" is="cr-auto-img"
+                          auto-src="[[item.url]]"></img>
+                    </li>
+                  </template>
+                </ul>
+              </template>
+              <template id="thumbnailFallback" is="dom-if"
+                  if="[[!item.productImageUrls.length]]">
+                <img class="thumbnail-fallback"
+                    src="modules/cart/icons/cart_fallback.svg">
+              </template>
+            </div>
+          </a>
+          <cr-icon-button class="icon-more-vert"
+              title="[[i18n('moreActions')]]" on-click="onCartMenuButtonClick_">
+          </cr-icon-button>
+        </div>
+      </template>
+      <div id="rightProbe" class="probe"></div>
+    </div>
+    <cr-action-menu id="cartActionMenu">
+      <button id="hideCartButton" class="dropdown-item"
+          on-click="onCartHide_">
+        [[cartMenuHideItem_]]
+      </button>
+      <button id="removeCartButton" class="dropdown-item"
+          on-click="onCartRemove_">
+        [[cartMenuRemoveItem_]]
+      </button>
+    </cr-action-menu>
+    <template is="dom-if" if="[[showRightScrollButton_]]">
+      <div id="rightScrollShadow" class="side-scroll-shadow"> </div>
+      <cr-icon-button id="rightScrollButton"
+          class="side-scroll-button" on-click="onRightScrollClick_">
+      </cr-icon-button>
+    </template>
+  </div>
+</div>
+<cr-toast id="dismissCartToast" duration="10000">
+  <div id="dismissCartToastMessage">
+    [[dismissedCartData_.message]]
+  </div>
+  <cr-button id="undoDismissCartButton"
+      on-click="onUndoDismissCartButtonClick_">
+    [[i18n('undo')]]
+  </cr-button>
+</cr-toast>
+<cr-toast id="confirmDiscountConsentToast" duration="10000">
+  <div id="confirmDiscountConsentMessage">
+    [[confirmDiscountConsentString_]]
+  </div>
+  <cr-button id="confirmDiscountConsentButton"
+      on-click="onConfirmDiscountConsentClick_">
+    [[i18n('modulesCartDiscountConsentConfirmationDismiss')]]
+  </cr-button>
+</cr-toast>

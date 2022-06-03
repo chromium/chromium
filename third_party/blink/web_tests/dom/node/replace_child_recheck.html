@@ -11,7 +11,7 @@ test(() => {
     document.body.appendChild(document.querySelector('#next'));
   }, {once: true});
   let new_node = document.createElement('span');
-  assert_throws('NotFoundError', () => {
+  assert_throws_dom('NotFoundError', () => {
     parent.replaceChild(new_node, document.querySelector('#child'));
   });
   assert_equals(parent.firstChild, null);

@@ -174,7 +174,7 @@ def _PatchedSymbols(symbol_to_matching, profiled_symbols, max_outlined_index):
     # guarantee ordering after code changes before the next orderfile is
     # generated. So we double the number of outlined functions as a measure of
     # security.
-    for idx in xrange(2 * max_outlined_index + 1):
+    for idx in range(2 * max_outlined_index + 1):
       yield _OUTLINED_FUNCTION_FORMAT.format(idx)
 
 
@@ -189,7 +189,7 @@ def ReadOrderfile(orderfile):
     Symbol names, cleaned and unique.
   """
   with open(orderfile) as f:
-    for line in f.xreadlines():
+    for line in f:
       line = line.strip()
       if line:
         yield line
@@ -239,9 +239,7 @@ def GeneratePatchedOrderfile(unpatched_orderfile, native_lib_filename,
 def _CreateArgumentParser():
   """Creates and returns the argument parser."""
   parser = argparse.ArgumentParser()
-  parser.add_argument('--target-arch', action='store', default='arm',
-                      choices=['arm', 'arm64', 'x86', 'x86_64', 'x64', 'mips'],
-                      help='The target architecture for the library.')
+  parser.add_argument('--target-arch', help='Unused')
   parser.add_argument('--unpatched-orderfile', required=True,
                       help='Path to the unpatched orderfile')
   parser.add_argument('--native-library', required=True,
@@ -253,7 +251,6 @@ def _CreateArgumentParser():
 def main():
   parser = _CreateArgumentParser()
   options = parser.parse_args()
-  symbol_extractor.SetArchitecture(options.target_arch)
   GeneratePatchedOrderfile(options.unpatched_orderfile, options.native_library,
                            options.output_file)
   return 0

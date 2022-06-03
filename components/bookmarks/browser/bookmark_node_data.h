@@ -8,10 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -70,7 +70,7 @@ struct BookmarkNodeData {
     GURL url;
 
     // Title of the entry, used for both urls and folders.
-    base::string16 title;
+    std::u16string title;
 
     // Date of when this node was created.
     base::Time date_added;
@@ -89,7 +89,7 @@ struct BookmarkNodeData {
    private:
     friend struct BookmarkNodeData;
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_APPLE)
     // For reading/writing this Element.
     void WriteToPickle(base::Pickle* pickle) const;
     bool ReadFromPickle(base::PickleIterator* iterator);
@@ -99,7 +99,7 @@ struct BookmarkNodeData {
     int64_t id_;
   };
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_APPLE)
   // The MIME type for the clipboard format for BookmarkNodeData. This type is
   // not used on the Mac.
   static const char kClipboardFormatString[];
@@ -124,7 +124,7 @@ struct BookmarkNodeData {
   bool ReadFromVector(const std::vector<const BookmarkNode*>& nodes);
 
   // Creates a single-bookmark DragData from url/title pair.
-  bool ReadFromTuple(const GURL& url, const base::string16& title);
+  bool ReadFromTuple(const GURL& url, const std::u16string& title);
 
   // Writes bookmarks to the specified clipboard.
   void WriteToClipboard();
@@ -146,7 +146,7 @@ struct BookmarkNodeData {
   bool Read(const ui::OSExchangeData& data);
 #endif
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_APPLE)
   // Writes the data for a drag to |pickle|.
   void WriteToPickle(const base::FilePath& profile_path,
                      base::Pickle* pickle) const;

@@ -44,11 +44,11 @@ dictionary MediaTrackSupportedConstraints {
     boolean iso = true;
     boolean brightness = true;
     boolean contrast = true;
-    [RuntimeEnabled=MediaCapturePanTilt] boolean pan = true;
+    boolean pan = true;
     boolean saturation = true;
     boolean sharpness = true;
     boolean focusDistance = true;
-    [RuntimeEnabled=MediaCapturePanTilt] boolean tilt = true;
+    boolean tilt = true;
     boolean zoom = true;
     boolean torch = true;
 };

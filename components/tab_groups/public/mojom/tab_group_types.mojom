@@ -1,0 +1,18 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tab_groups.mojom;
+
+// The color Id associated with a given Tab Group. Maps to
+// tab_groups::TabGroupColorId in components/tab_groups/tab_group_color.h.
+enum Color {
+  kGrey,
+  kBlue,
+  kRed,
+  kYellow,
+  kGreen,
+  kPink,
+  kPurple,
+  kCyan,
+};

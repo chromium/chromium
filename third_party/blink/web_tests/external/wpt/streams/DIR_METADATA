@@ -1,0 +1,8 @@
+monorail {
+  component: "Blink>Network>StreamsAPI"
+}
+team_email: "blink-network-dev@chromium.org"
+wpt {
+  notify: YES
+}
+

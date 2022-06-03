@@ -10,17 +10,16 @@
 #include "cc/paint/paint_op_buffer.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
-gfx::Rect SolidColorContentLayerClient::PaintableRegion() {
+gfx::Rect SolidColorContentLayerClient::PaintableRegion() const {
   return gfx::Rect(size_);
 }
 
 scoped_refptr<DisplayItemList>
-SolidColorContentLayerClient::PaintContentsToDisplayList(
-    PaintingControlSetting painting_control) {
+SolidColorContentLayerClient::PaintContentsToDisplayList() {
   auto display_list = base::MakeRefCounted<DisplayItemList>();
   display_list->StartPaint();
   display_list->push<SaveOp>();
@@ -51,10 +50,6 @@ SolidColorContentLayerClient::PaintContentsToDisplayList(
 
 bool SolidColorContentLayerClient::FillsBoundsCompletely() const {
   return false;
-}
-
-size_t SolidColorContentLayerClient::GetApproximateUnsharedMemoryUsage() const {
-  return 0;
 }
 
 }  // namespace cc

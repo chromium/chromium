@@ -5,6 +5,7 @@
 #include "components/viz/test/test_in_process_context_provider.h"
 
 #include <stdint.h>
+#include <memory>
 #include <utility>
 
 #include "base/lazy_instance.h"
@@ -12,6 +13,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/resources/platform_color.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -19,14 +21,15 @@
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
-#include "gpu/command_buffer/common/skia_utils.h"
+#include "gpu/config/skia_limits.h"
 #include "gpu/ipc/gl_in_process_context.h"
+#include "gpu/ipc/gpu_task_scheduler_helper.h"
 #include "gpu/ipc/raster_in_process_context.h"
 #include "gpu/ipc/test_gpu_thread_holder.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -38,7 +41,8 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
     TestGpuMemoryBufferManager* gpu_memory_buffer_manager,
     TestImageFactory* image_factory,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-    bool oop_raster) {
+    bool oop_raster,
+    DisplayCompositorMemoryAndTaskController* display_controller) {
   const bool is_offscreen = true;
   gpu::ContextCreationAttribs attribs;
   attribs.alpha_size = -1;
@@ -51,28 +55,41 @@ std::unique_ptr<gpu::GLInProcessContext> CreateGLInProcessContext(
   attribs.enable_oop_rasterization = oop_raster;
 
   auto context = std::make_unique<gpu::GLInProcessContext>();
-  auto result = context->Initialize(
-      TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
-      is_offscreen, gpu::kNullSurfaceHandle, attribs, gpu::SharedMemoryLimits(),
-      gpu_memory_buffer_manager, image_factory, std::move(task_runner));
+  if (display_controller) {
+    auto result = context->Initialize(
+        TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
+        is_offscreen, gpu::kNullSurfaceHandle, attribs,
+        gpu::SharedMemoryLimits(), gpu_memory_buffer_manager, image_factory,
+        display_controller->gpu_task_scheduler(),
+        display_controller->controller_on_gpu(), std::move(task_runner));
 
-  DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+    DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+  } else {
+    auto result = context->Initialize(
+        TestGpuServiceHolder::GetInstance()->task_executor(), nullptr,
+        is_offscreen, gpu::kNullSurfaceHandle, attribs,
+        gpu::SharedMemoryLimits(), gpu_memory_buffer_manager, image_factory,
+        nullptr, nullptr, std::move(task_runner));
+    DCHECK_EQ(result, gpu::ContextResult::kSuccess);
+  }
   return context;
 }
 
 }  // namespace
 
 std::unique_ptr<gpu::GLInProcessContext> CreateTestInProcessContext() {
-  return CreateGLInProcessContext(nullptr, nullptr,
-                                  base::ThreadTaskRunnerHandle::Get(), false);
+  return CreateGLInProcessContext(
+      nullptr, nullptr, base::ThreadTaskRunnerHandle::Get(), false, nullptr);
 }
 
 TestInProcessContextProvider::TestInProcessContextProvider(
-    bool enable_oop_rasterization,
+    bool enable_gles2_interface,
     bool support_locking,
+    RasterInterfaceType raster_interface_type,
     gpu::raster::GrShaderCache* gr_shader_cache,
     gpu::GpuProcessActivityFlags* activity_flags)
-    : enable_oop_rasterization_(enable_oop_rasterization),
+    : enable_gles2_interface_(enable_gles2_interface),
+      raster_interface_type_(raster_interface_type),
       activity_flags_(activity_flags) {
   if (support_locking)
     context_lock_.emplace();
@@ -89,10 +106,13 @@ void TestInProcessContextProvider::Release() const {
 }
 
 gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
-  if (enable_oop_rasterization_) {
+  if (raster_interface_type_ == RasterInterfaceType::OOPR ||
+      raster_interface_type_ == RasterInterfaceType::Software) {
+    DCHECK(!enable_gles2_interface_);
     gpu::ContextCreationAttribs attribs;
     attribs.bind_generates_resource = false;
-    attribs.enable_oop_rasterization = true;
+    attribs.enable_oop_rasterization =
+        raster_interface_type_ == RasterInterfaceType::OOPR;
     attribs.enable_raster_interface = true;
     attribs.enable_gles2_interface = false;
 
@@ -105,20 +125,40 @@ gpu::ContextResult TestInProcessContextProvider::BindToCurrentThread() {
         holder->gpu_service()->gr_shader_cache(), activity_flags_);
     DCHECK_EQ(result, gpu::ContextResult::kSuccess);
 
-    cache_controller_.reset(
-        new ContextCacheController(raster_context_->GetContextSupport(),
-                                   base::ThreadTaskRunnerHandle::Get()));
-  } else {
+    cache_controller_ = std::make_unique<ContextCacheController>(
+        raster_context_->GetContextSupport(),
+        base::ThreadTaskRunnerHandle::Get());
+
+    caps_ = raster_context_->GetCapabilities();
+  } else if (raster_interface_type_ == RasterInterfaceType::GPU ||
+             enable_gles2_interface_) {
+    display_controller_ =
+        std::make_unique<DisplayCompositorMemoryAndTaskController>(
+            TestGpuServiceHolder::GetInstance()->task_executor(),
+            &image_factory_);
+
     gles2_context_ = CreateGLInProcessContext(
         &gpu_memory_buffer_manager_, &image_factory_,
-        base::ThreadTaskRunnerHandle::Get(), false /* oop_raster */);
-    cache_controller_.reset(
-        new ContextCacheController(gles2_context_->GetImplementation(),
-                                   base::ThreadTaskRunnerHandle::Get()));
-    raster_implementation_gles2_ =
-        std::make_unique<gpu::raster::RasterImplementationGLES>(
-            gles2_context_->GetImplementation());
+        base::ThreadTaskRunnerHandle::Get(), false /* oop_raster */,
+        display_controller_.get());
+    cache_controller_ = std::make_unique<ContextCacheController>(
+        gles2_context_->GetImplementation(),
+        base::ThreadTaskRunnerHandle::Get());
+    if (raster_interface_type_ == RasterInterfaceType::GPU) {
+      raster_implementation_gles2_ =
+          std::make_unique<gpu::raster::RasterImplementationGLES>(
+              gles2_context_->GetImplementation(), ContextSupport());
+    }
+
+    caps_ = gles2_context_->GetCapabilities();
   }
+
+  // We don't have a good way for tests to change what the in process gpu
+  // service will return for this capability. But we want to use gpu
+  // rasterization if and only if the test requests it.
+  caps_.gpu_rasterization =
+      raster_interface_type_ == RasterInterfaceType::GPU ||
+      raster_interface_type_ == RasterInterfaceType::OOPR;
 
   cache_controller_->SetLock(GetLock());
   return gpu::ContextResult::kSuccess;
@@ -129,6 +169,7 @@ gpu::gles2::GLES2Interface* TestInProcessContextProvider::ContextGL() {
 }
 
 gpu::raster::RasterInterface* TestInProcessContextProvider::RasterInterface() {
+  DCHECK(raster_interface_type_ != RasterInterfaceType::None);
   if (raster_context_) {
     return raster_context_->GetImplementation();
   } else {
@@ -144,7 +185,7 @@ gpu::ContextSupport* TestInProcessContextProvider::ContextSupport() {
   }
 }
 
-class GrContext* TestInProcessContextProvider::GrContext() {
+class GrDirectContext* TestInProcessContextProvider::GrContext() {
   if (gr_context_)
     return gr_context_->get();
 
@@ -154,11 +195,11 @@ class GrContext* TestInProcessContextProvider::GrContext() {
 
   size_t max_resource_cache_bytes;
   size_t max_glyph_cache_texture_bytes;
-  gpu::raster::DefaultGrCacheLimitsForTests(&max_resource_cache_bytes,
-                                            &max_glyph_cache_texture_bytes);
-  gr_context_.reset(new skia_bindings::GrContextForGLES2Interface(
+  gpu::DefaultGrCacheLimitsForTests(&max_resource_cache_bytes,
+                                    &max_glyph_cache_texture_bytes);
+  gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
       ContextGL(), ContextSupport(), ContextCapabilities(),
-      max_resource_cache_bytes, max_glyph_cache_texture_bytes));
+      max_resource_cache_bytes, max_glyph_cache_texture_bytes);
   cache_controller_->SetGrContext(gr_context_->get());
   return gr_context_->get();
 }
@@ -182,11 +223,7 @@ base::Lock* TestInProcessContextProvider::GetLock() {
 
 const gpu::Capabilities& TestInProcessContextProvider::ContextCapabilities()
     const {
-  if (gles2_context_) {
-    return gles2_context_->GetCapabilities();
-  } else {
-    return raster_context_->GetCapabilities();
-  }
+  return caps_;
 }
 
 const gpu::GpuFeatureInfo& TestInProcessContextProvider::GetGpuFeatureInfo()

@@ -5,32 +5,37 @@
 #ifndef DEVICE_FIDO_FIDO_AUTHENTICATOR_H_
 #define DEVICE_FIDO_FIDO_AUTHENTICATOR_H_
 
+#include <cstdint>
 #include <string>
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
+#include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/authenticator_supported_options.h"
 #include "device/fido/bio/enrollment.h"
 #include "device/fido/credential_management.h"
+#include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
-#include "device/fido/pin.h"
+#include "device/fido/large_blob.h"
+#include "device/fido/make_credential_request_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
 struct CtapGetAssertionRequest;
+struct CtapGetAssertionOptions;
 struct CtapMakeCredentialRequest;
+struct MakeCredentialOptions;
 
 namespace pin {
 struct RetriesResponse;
-struct KeyAgreementResponse;
 struct EmptyResponse;
 class TokenResponse;
 }  // namespace pin
@@ -42,139 +47,183 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
  public:
   using MakeCredentialCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<AuthenticatorMakeCredentialResponse>)>;
+      absl::optional<AuthenticatorMakeCredentialResponse>)>;
   using GetAssertionCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<AuthenticatorGetAssertionResponse>)>;
+      absl::optional<AuthenticatorGetAssertionResponse>)>;
   using GetRetriesCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<pin::RetriesResponse>)>;
-  using GetEphemeralKeyCallback =
+                              absl::optional<pin::RetriesResponse>)>;
+  using GetTokenCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<pin::KeyAgreementResponse>)>;
-  using GetPINTokenCallback =
-      base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<pin::TokenResponse>)>;
+                              absl::optional<pin::TokenResponse>)>;
   using SetPINCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<pin::EmptyResponse>)>;
+                              absl::optional<pin::EmptyResponse>)>;
   using ResetCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<pin::EmptyResponse>)>;
+                              absl::optional<pin::EmptyResponse>)>;
   using GetCredentialsMetadataCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<CredentialsMetadataResponse>)>;
+                              absl::optional<CredentialsMetadataResponse>)>;
   using EnumerateCredentialsCallback = base::OnceCallback<void(
       CtapDeviceResponseCode,
-      base::Optional<std::vector<AggregatedEnumerateCredentialsResponse>>)>;
+      absl::optional<std::vector<AggregatedEnumerateCredentialsResponse>>)>;
   using DeleteCredentialCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<DeleteCredentialResponse>)>;
+                              absl::optional<DeleteCredentialResponse>)>;
+  using UpdateUserInformationCallback =
+      base::OnceCallback<void(CtapDeviceResponseCode,
+                              absl::optional<UpdateUserInformationResponse>)>;
   using BioEnrollmentCallback =
       base::OnceCallback<void(CtapDeviceResponseCode,
-                              base::Optional<BioEnrollmentResponse>)>;
+                              absl::optional<BioEnrollmentResponse>)>;
+  using LargeBlobReadCallback = base::OnceCallback<void(
+      CtapDeviceResponseCode,
+      absl::optional<std::vector<std::pair<LargeBlobKey, std::vector<uint8_t>>>>
+          callback)>;
 
   FidoAuthenticator() = default;
+
+  FidoAuthenticator(const FidoAuthenticator&) = delete;
+  FidoAuthenticator& operator=(const FidoAuthenticator&) = delete;
+
   virtual ~FidoAuthenticator() = default;
 
   // Sends GetInfo request to connected authenticator. Once response to GetInfo
   // call is received, |callback| is invoked. Below MakeCredential() and
   // GetAssertion() must only called after |callback| is invoked.
   virtual void InitializeAuthenticator(base::OnceClosure callback) = 0;
+
+  // ExcludeAppIdCredentialsBeforeMakeCredential allows a device to probe for
+  // credential IDs from a request that used the appidExclude extension. This
+  // assumes that |MakeCredential| will be called afterwards with the same
+  // request. I.e. this function may do nothing if it believes that it can
+  // better handle the exclusion during |MakeCredential|.
+  //
+  // The optional bool is an unused response value as all the information is
+  // contained in the response code, which will be |kCtap2ErrCredentialExcluded|
+  // if an excluded credential is found. (An optional<void> is an error.)
+  virtual void ExcludeAppIdCredentialsBeforeMakeCredential(
+      CtapMakeCredentialRequest request,
+      MakeCredentialOptions options,
+      base::OnceCallback<void(CtapDeviceResponseCode, absl::optional<bool>)>);
+
   virtual void MakeCredential(CtapMakeCredentialRequest request,
+                              MakeCredentialOptions options,
                               MakeCredentialCallback callback) = 0;
   virtual void GetAssertion(CtapGetAssertionRequest request,
+                            CtapGetAssertionOptions options,
                             GetAssertionCallback callback) = 0;
   // GetNextAssertion fetches the next assertion from a device that indicated in
   // the response to |GetAssertion| that multiple results were available.
   virtual void GetNextAssertion(GetAssertionCallback callback);
   // GetTouch causes an (external) authenticator to flash and wait for a touch.
   virtual void GetTouch(base::OnceCallback<void()> callback);
-  // GetRetries gets the number of PIN attempts remaining before an
+  // GetPinRetries gets the number of PIN attempts remaining before an
   // authenticator locks. It is only valid to call this method if |Options|
   // indicates that the authenticator supports PINs.
-  virtual void GetRetries(GetRetriesCallback callback);
-  // GetEphemeralKey fetches an ephemeral P-256 key from the authenticator for
-  // use in protecting transmitted PINs. It is only valid to call this method if
-  // |Options| indicates that the authenticator supports PINs.
-  virtual void GetEphemeralKey(GetEphemeralKeyCallback callback);
-  // GetPINToken uses the given PIN to request a PIN-token from an
+  virtual void GetPinRetries(GetRetriesCallback callback);
+  // GetUvRetries gets the number of internal user verification attempts before
+  // internal user verification locks. It is only valid to call this method if
+  // |Options| indicates that the authenticator supports user verification.
+  virtual void GetUvRetries(GetRetriesCallback callback);
+  // GetPINToken uses the given PIN to request a PinUvAuthToken from an
   // authenticator. It is only valid to call this method if |Options| indicates
   // that the authenticator supports PINs.
+  // |permissions| are flags indicating which commands the token may be used
+  // for.
+  // |rp_id| binds the token to operations related to a given RP ID. |rp_id|
+  // must be set if |permissions| includes MakeCredential or GetAssertion.
   virtual void GetPINToken(std::string pin,
-                           const pin::KeyAgreementResponse& peer_key,
-                           GetPINTokenCallback callback);
+                           std::vector<pin::Permissions> permissions,
+                           absl::optional<std::string> rp_id,
+                           GetTokenCallback callback);
+  // Returns |true| if the authenticator supports GetUvToken.
+  virtual bool CanGetUvToken();
+  // GetUvToken uses internal user verification to request a PinUvAuthToken from
+  // an authenticator. It is only valid to call this method if CanGetUvToken()
+  // returns true.
+  // |rp_id| must be set if the PinUvAuthToken will be used for MakeCredential
+  // or GetAssertion.
+  virtual void GetUvToken(std::vector<pin::Permissions> permissions,
+                          absl::optional<std::string> rp_id,
+                          GetTokenCallback callback);
+  // Returns the minimum PIN length for this authenticator's currently set PIN.
+  virtual uint32_t CurrentMinPINLength();
+  // Returns the minimum PIN length required to set a new PIN for this
+  // authenticator.
+  virtual uint32_t NewMinPINLength();
+  // Returns |true| if the PIN must be changed before attempting to obtain a PIN
+  // token.
+  virtual bool ForcePINChange();
   // SetPIN sets a new PIN on a device that does not currently have one. The
   // length of |pin| must respect |pin::kMinLength| and |pin::kMaxLength|. It is
   // only valid to call this method if |Options| indicates that the
   // authenticator supports PINs.
-  virtual void SetPIN(const std::string& pin,
-                      const pin::KeyAgreementResponse& peer_key,
-                      SetPINCallback callback);
+  virtual void SetPIN(const std::string& pin, SetPINCallback callback);
   // ChangePIN alters the PIN on a device that already has a PIN set. The
   // length of |pin| must respect |pin::kMinLength| and |pin::kMaxLength|. It is
   // only valid to call this method if |Options| indicates that the
   // authenticator supports PINs.
   virtual void ChangePIN(const std::string& old_pin,
                          const std::string& new_pin,
-                         pin::KeyAgreementResponse& peer_key,
                          SetPINCallback callback);
 
-  // MakeCredentialPINDisposition enumerates the possible interactions between
-  // a user-verification level, the PIN configuration of an authenticator, and
-  // whether the embedder is capable of collecting PINs from the user.
-  enum class MakeCredentialPINDisposition {
-    // kNoPIN means that a PIN will not be needed to make this credential.
-    kNoPIN,
-    // kUsePIN means that a PIN must be gathered and used to make this
+  // PINUVDisposition enumerates the possible options for obtaining user
+  // verification when making a CTAP2 request.
+  enum class PINUVDisposition {
+    // No UV (neither clientPIN nor internal) is needed to make this
     // credential.
-    kUsePIN,
-    // kSetPIN means that the operation should set and then use a PIN to
-    // make this credential.
-    kSetPIN,
-    // kUnsatisfiable means that the request cannot be satisfied by this
-    // authenticator.
+    kNoUV,
+    // A PIN/UV Auth Token should be used to make this credential. The token
+    // needs to be obtained via clientPIN or internal UV, depending on which
+    // modality the device supports. The modality may need to be set up first.
+    kGetToken,
+    // The request should be sent with the `uv` bit set to true, in order to
+    // perform internal user verification without a PIN/UV Auth Token.
+    kNoTokenInternalUV,
+    // Same as kNoTokenInternalUV, but a PIN can be used as a fallback. (A PIN
+    // may have to be set first.)
+    kNoTokenInternalUVPINFallback,
+    // The request cannot be satisfied by this authenticator.
     kUnsatisfiable,
   };
-  // WillNeedPINToMakeCredential returns what type of PIN intervention will be
-  // needed to serve the given request on this authenticator.
-  virtual MakeCredentialPINDisposition WillNeedPINToMakeCredential(
+
+  // PINUVDisposition returns whether and how user verification
+  // should be obtained in order to serve the given request on this
+  // authenticator.
+  virtual PINUVDisposition PINUVDispositionForMakeCredential(
       const CtapMakeCredentialRequest& request,
       const FidoRequestHandlerBase::Observer* observer);
 
-  // GetAssertionPINDisposition enumerates the possible interactions between
-  // a user-verification level and the PIN support of an authenticator when
-  // getting an assertion.
-  enum class GetAssertionPINDisposition {
-    // kNoPIN means that a PIN will not be needed for this assertion.
-    kNoPIN,
-    // kUsePIN means that a PIN must be gathered and used for this assertion.
-    kUsePIN,
-    // kUnsatisfiable means that the request cannot be satisfied by this
-    // authenticator.
-    kUnsatisfiable,
-  };
   // WillNeedPINToGetAssertion returns whether a PIN prompt will be needed to
   // serve the given request on this authenticator.
-  virtual GetAssertionPINDisposition WillNeedPINToGetAssertion(
+  virtual PINUVDisposition PINUVDispositionForGetAssertion(
       const CtapGetAssertionRequest& request,
       const FidoRequestHandlerBase::Observer* observer);
 
-  virtual void GetCredentialsMetadata(base::span<const uint8_t> pin_token,
+  virtual void GetCredentialsMetadata(const pin::TokenResponse& pin_token,
                                       GetCredentialsMetadataCallback callback);
-  virtual void EnumerateCredentials(base::span<const uint8_t> pin_token,
+  virtual void EnumerateCredentials(const pin::TokenResponse& pin_token,
                                     EnumerateCredentialsCallback callback);
   virtual void DeleteCredential(
-      base::span<const uint8_t> pin_token,
+      const pin::TokenResponse& pin_token,
       const PublicKeyCredentialDescriptor& credential_id,
       DeleteCredentialCallback callback);
+
+  virtual void UpdateUserInformation(
+      const pin::TokenResponse& pin_token,
+      const PublicKeyCredentialDescriptor& credential_id,
+      const PublicKeyCredentialUserEntity& updated_user,
+      UpdateUserInformationCallback callback);
 
   // Biometric enrollment commands.
   virtual void GetModality(BioEnrollmentCallback callback);
   virtual void GetSensorInfo(BioEnrollmentCallback callback);
   virtual void BioEnrollFingerprint(
       const pin::TokenResponse&,
-      base::Optional<std::vector<uint8_t>> template_id,
+      absl::optional<std::vector<uint8_t>> template_id,
       BioEnrollmentCallback);
   virtual void BioEnrollCancel(BioEnrollmentCallback);
   virtual void BioEnrollEnumerate(const pin::TokenResponse&,
@@ -187,16 +236,52 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
                                std::vector<uint8_t> template_id,
                                BioEnrollmentCallback);
 
+  // Large blob commands.
+  // Attempts to write a |large_blob| into the credential. If there is an
+  // existing credential for the |large_blob_key|, it will be overwritten.
+  virtual void WriteLargeBlob(
+      const std::vector<uint8_t>& large_blob,
+      const LargeBlobKey& large_blob_key,
+      absl::optional<pin::TokenResponse> pin_uv_auth_token,
+      base::OnceCallback<void(CtapDeviceResponseCode)> callback);
+  // Attempts to read large blobs from the credential encrypted with
+  // |large_blob_keys|. Returns a map of keys to their blobs.
+  virtual void ReadLargeBlob(
+      const std::vector<LargeBlobKey>& large_blob_keys,
+      absl::optional<pin::TokenResponse> pin_uv_auth_token,
+      LargeBlobReadCallback callback);
+
+  // GetAlgorithms returns the list of supported COSEAlgorithmIdentifiers, or
+  // |nullopt| if this is unknown and thus all requests should be tried in case
+  // they work.
+  virtual absl::optional<base::span<const int32_t>> GetAlgorithms();
+
+  // DiscoverableCredentialStorageFull returns true if creation of a
+  // discoverable credential is likely to fail because authenticator storage is
+  // exhausted. Even if this method returns false, credential creation may still
+  // fail with `CTAP2_ERR_KEY_STORE_FULL` on some authenticators.
+  virtual bool DiscoverableCredentialStorageFull() const;
+
   // Reset triggers a reset operation on the authenticator. This erases all
   // stored resident keys and any configured PIN.
   virtual void Reset(ResetCallback callback);
   virtual void Cancel() = 0;
+  // GetId returns a unique string representing this device. This string should
+  // be distinct from all other devices concurrently discovered.
   virtual std::string GetId() const = 0;
-  virtual base::string16 GetDisplayName() const = 0;
+  // GetDisplayName returns a string identifying a device to a human, which
+  // might not be unique. For example, |GetDisplayName| could return the VID:PID
+  // of a HID device, but |GetId| could not because two devices can share the
+  // same VID:PID. It defaults to returning the value of |GetId|.
+  virtual std::string GetDisplayName() const;
   virtual ProtocolVersion SupportedProtocol() const;
-  virtual const base::Optional<AuthenticatorSupportedOptions>& Options()
+  virtual bool SupportsCredProtectExtension() const;
+  virtual bool SupportsHMACSecretExtension() const;
+  virtual bool SupportsEnterpriseAttestation() const;
+  virtual bool SupportsCredBlobOfSize(size_t num_bytes) const;
+  virtual const absl::optional<AuthenticatorSupportedOptions>& Options()
       const = 0;
-  virtual base::Optional<FidoTransportProtocol> AuthenticatorTransport()
+  virtual absl::optional<FidoTransportProtocol> AuthenticatorTransport()
       const = 0;
   virtual bool IsInPairingMode() const = 0;
   virtual bool IsPaired() const = 0;
@@ -204,13 +289,13 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
 #if defined(OS_WIN)
   virtual bool IsWinNativeApiAuthenticator() const = 0;
 #endif  // defined(OS_WIN)
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   virtual bool IsTouchIdAuthenticator() const = 0;
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  virtual bool IsChromeOSAuthenticator() const = 0;
+#endif
   virtual base::WeakPtr<FidoAuthenticator> GetWeakPtr() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FidoAuthenticator);
 };
 
 }  // namespace device

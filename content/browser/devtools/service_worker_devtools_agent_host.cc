@@ -5,90 +5,177 @@
 #include "content/browser/devtools/service_worker_devtools_agent_host.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/callback_helpers.h"
+#include "base/memory/ptr_util.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/devtools_session.h"
+#include "content/browser/devtools/network_service_devtools_observer.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
 #include "content/browser/devtools/protocol/inspector_handler.h"
+#include "content/browser/devtools/protocol/io_handler.h"
 #include "content/browser/devtools/protocol/network_handler.h"
 #include "content/browser/devtools/protocol/protocol.h"
 #include "content/browser/devtools/protocol/schema_handler.h"
 #include "content/browser/devtools/protocol/target_handler.h"
 #include "content/browser/devtools/service_worker_devtools_manager.h"
-#include "content/browser/service_worker/service_worker_context_core.h"
+#include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/browser/storage_partition_impl.h"
+#include "content/browser/url_loader_factory_params_helper.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "net/cookies/site_for_cookies.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
 
 namespace content {
 
 namespace {
 
-void TerminateServiceWorkerOnCoreThread(
-    base::WeakPtr<ServiceWorkerContextCore> context_weak,
-    int64_t version_id) {
-  if (ServiceWorkerContextCore* context = context_weak.get()) {
-    if (ServiceWorkerVersion* version = context->GetLiveVersion(version_id))
-      version->StopWorker(base::DoNothing());
-  }
-}
+/*
+ In addition to watching for dedicated workers (as all auto-attachers dealing
+ with renderer targets do), the service worker auto-attacher below would also
+ watch for the new versions of the same service workers. While these may
+ already be covered by the parent page auto-attacher, this is essemtial for
+ supporting a client that is only attached to the service worker target.
+ Please note that this may result with multiple `AutoAttach()` calls to
+ the client, but that's ok, as the client only sends CDP notifications for
+ that tatgets it hasn't seen previously.
+ Here is an example scenario.
 
-void SetDevToolsAttachedOnCoreThread(
-    base::WeakPtr<ServiceWorkerContextCore> context_weak,
-    int64_t version_id,
-    bool attached) {
-  if (ServiceWorkerContextCore* context = context_weak.get()) {
-    if (ServiceWorkerVersion* version = context->GetLiveVersion(version_id))
-      version->SetDevToolsAttached(attached);
-  }
-}
+      Client                                    Backend
+                                           (SW v1 created)
+ Target.getTargets()                   ->
+ Target.attachTarget(SW_v1)            ->
+ Target.autoAttachRelated(SW_v1)       ->
+                                           (SW v2 created)
+                                       <-  Target.attachedToTarget(SW_v2)
+ Target.autoAttachRelated(SW_v2)       ->
+ Runtime.runIfWaitingForDebugger       ->
+                                           (SW v1 stopped)
+                                           Target.detachedFromTarget(SW_v1)
+*/
 
-void UpdateLoaderFactoriesOnCoreThread(
-    base::WeakPtr<ServiceWorkerContextCore> context_weak,
-    int64_t version_id,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle,
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_bundle) {
-  auto* version =
-      context_weak ? context_weak->GetLiveVersion(version_id) : nullptr;
-  if (!version)
-    return;
-  version->embedded_worker()->UpdateLoaderFactories(
-      std::move(script_bundle), std::move(subresource_bundle));
-}
+class ServiceWorkerAutoAttacher
+    : public protocol::RendererAutoAttacherBase,
+      public ServiceWorkerDevToolsManager::Observer {
+ public:
+  ServiceWorkerAutoAttacher(DevToolsRendererChannel* renderer_channel,
+                            ServiceWorkerDevToolsAgentHost* host)
+      : RendererAutoAttacherBase(renderer_channel), host_(host) {}
+  ~ServiceWorkerAutoAttacher() override {
+    if (have_observer_)
+      ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+  }
+
+ private:
+  // ServiceWorkerDevToolsManager::Observer implementation.
+  void WorkerCreated(ServiceWorkerDevToolsAgentHost* host,
+                     bool* should_pause_on_start) override {
+    if (!IsNewerVersion(host))
+      return;
+    *should_pause_on_start = wait_for_debugger_on_start();
+    DispatchAutoAttach(host, *should_pause_on_start);
+  }
+
+  void WorkerDestroyed(ServiceWorkerDevToolsAgentHost* host) override {
+    // Report an auto-detached service worker for any host with same
+    // registration, to provide for the case where its older version that could
+    // have had it auto-attached may have been shut down at this point.
+    if (MatchRegistration(host))
+      DispatchAutoDetach(host);
+  }
+
+  void UpdateAutoAttach(base::OnceClosure callback) override {
+    bool enabled = auto_attach();
+    if (have_observer_ != enabled) {
+      if (enabled) {
+        ServiceWorkerDevToolsManager::GetInstance()->AddObserver(this);
+        ServiceWorkerDevToolsAgentHost::List agent_hosts;
+        ServiceWorkerDevToolsManager::GetInstance()->AddAllAgentHosts(
+            &agent_hosts);
+        for (auto& host : agent_hosts) {
+          if (IsNewerVersion(host.get()))
+            DispatchAutoAttach(host.get(), false);
+        }
+      } else {
+        ServiceWorkerDevToolsManager::GetInstance()->RemoveObserver(this);
+      }
+      have_observer_ = enabled;
+    }
+    RendererAutoAttacherBase::UpdateAutoAttach(std::move(callback));
+  }
+
+  bool MatchRegistration(ServiceWorkerDevToolsAgentHost* their_host) const {
+    return host_->context_wrapper() == their_host->context_wrapper() &&
+           host_->scope() == their_host->scope() &&
+           host_->GetURL() == their_host->GetURL();
+  }
+
+  bool IsNewerVersion(ServiceWorkerDevToolsAgentHost* their_host) {
+    return MatchRegistration(their_host) &&
+           their_host->version_id() > host_->version_id();
+  }
+
+  bool have_observer_ = false;
+  ServiceWorkerDevToolsAgentHost* host_;
+};
 
 }  // namespace
+
+// static
+scoped_refptr<DevToolsAgentHost> DevToolsAgentHost::GetForServiceWorker(
+    ServiceWorkerContext* context,
+    int64_t version_id) {
+  auto* context_wrapper = static_cast<ServiceWorkerContextWrapper*>(context);
+  ServiceWorkerDevToolsAgentHost::List hosts;
+  ServiceWorkerDevToolsManager::GetInstance()
+      ->AddAllAgentHostsForBrowserContext(context_wrapper->browser_context(),
+                                          &hosts);
+  for (auto& host : hosts) {
+    if (host->context_wrapper() == context_wrapper &&
+        host->version_id() == version_id) {
+      return host;
+    }
+  }
+  return nullptr;
+}
 
 ServiceWorkerDevToolsAgentHost::ServiceWorkerDevToolsAgentHost(
     int worker_process_id,
     int worker_route_id,
-    const ServiceWorkerContextCore* context,
-    base::WeakPtr<ServiceWorkerContextCore> context_weak,
+    scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
     int64_t version_id,
     const GURL& url,
     const GURL& scope,
     bool is_installed_version,
+    absl::optional<network::CrossOriginEmbedderPolicy>
+        cross_origin_embedder_policy,
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        coep_reporter,
     const base::UnguessableToken& devtools_worker_token)
     : DevToolsAgentHostImpl(devtools_worker_token.ToString()),
+      auto_attacher_(
+          std::make_unique<ServiceWorkerAutoAttacher>(GetRendererChannel(),
+                                                      this)),
       state_(WORKER_NOT_READY),
       devtools_worker_token_(devtools_worker_token),
       worker_process_id_(worker_process_id),
       worker_route_id_(worker_route_id),
-      context_(context),
-      context_weak_(context_weak),
+      context_wrapper_(context_wrapper),
       version_id_(version_id),
       url_(url),
       scope_(scope),
       version_installed_time_(is_installed_version ? base::Time::Now()
-                                                   : base::Time()) {
+                                                   : base::Time()),
+      cross_origin_embedder_policy_(std::move(cross_origin_embedder_policy)),
+      coep_reporter_(std::move(coep_reporter)) {
+  UpdateProcessHost();
   NotifyCreated();
 }
 
 BrowserContext* ServiceWorkerDevToolsAgentHost::GetBrowserContext() {
-  RenderProcessHost* rph = RenderProcessHost::FromID(worker_process_id_);
-  return rph ? rph->GetBrowserContext() : nullptr;
+  return context_wrapper_->browser_context();
 }
 
 std::string ServiceWorkerDevToolsAgentHost::GetType() {
@@ -111,9 +198,12 @@ void ServiceWorkerDevToolsAgentHost::Reload() {
 }
 
 bool ServiceWorkerDevToolsAgentHost::Close() {
-  RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-                        base::BindOnce(&TerminateServiceWorkerOnCoreThread,
-                                       context_weak_, version_id_));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (ServiceWorkerVersion* version =
+          context_wrapper_->GetLiveVersion(version_id_)) {
+    version->StopWorker(base::DoNothing());
+  }
+
   return true;
 }
 
@@ -125,29 +215,34 @@ void ServiceWorkerDevToolsAgentHost::WorkerVersionDoomed() {
   version_doomed_time_ = base::Time::Now();
 }
 
-bool ServiceWorkerDevToolsAgentHost::Matches(
-    const ServiceWorkerContextCore* context,
-    int64_t version_id) {
-  return context_ == context && version_id_ == version_id;
+void ServiceWorkerDevToolsAgentHost::WorkerMainScriptFetchingFailed() {
+  for (DevToolsSession* session : sessions())
+    session->ClearPendingMessages(/*did_crash=*/false);
 }
 
 ServiceWorkerDevToolsAgentHost::~ServiceWorkerDevToolsAgentHost() {
   ServiceWorkerDevToolsManager::GetInstance()->AgentHostDestroyed(this);
 }
 
-bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session) {
-  session->AddHandler(base::WrapUnique(new protocol::InspectorHandler()));
-  session->AddHandler(base::WrapUnique(new protocol::NetworkHandler(
-      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing())));
-  session->AddHandler(base::WrapUnique(new protocol::FetchHandler(
+bool ServiceWorkerDevToolsAgentHost::AttachSession(DevToolsSession* session,
+                                                   bool acquire_wake_lock) {
+  session->AddHandler(std::make_unique<protocol::IOHandler>(GetIOContext()));
+  session->AddHandler(std::make_unique<protocol::InspectorHandler>());
+  session->AddHandler(std::make_unique<protocol::NetworkHandler>(
+      GetId(), devtools_worker_token_, GetIOContext(), base::DoNothing()));
+  session->AddHandler(std::make_unique<protocol::FetchHandler>(
       GetIOContext(),
       base::BindRepeating(
           &ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories,
-          base::Unretained(this)))));
-  session->AddHandler(base::WrapUnique(new protocol::SchemaHandler()));
-  session->AddHandler(std::make_unique<protocol::TargetHandler>(
+          base::Unretained(this))));
+  session->AddHandler(std::make_unique<protocol::SchemaHandler>());
+
+  auto target_handler = std::make_unique<protocol::TargetHandler>(
       protocol::TargetHandler::AccessMode::kAutoAttachOnly, GetId(),
-      GetRendererChannel(), session->GetRootSession()));
+      auto_attacher_.get(), session->GetRootSession());
+  target_handler->DisableAutoAttachOfServiceWorkers();
+  session->AddHandler(std::move(target_handler));
+
   if (state_ == WORKER_READY && sessions().empty())
     UpdateIsAttached(true);
   return true;
@@ -157,6 +252,10 @@ void ServiceWorkerDevToolsAgentHost::DetachSession(DevToolsSession* session) {
   // Destroying session automatically detaches in renderer.
   if (state_ == WORKER_READY && sessions().empty())
     UpdateIsAttached(false);
+}
+
+protocol::TargetAutoAttacher* ServiceWorkerDevToolsAgentHost::auto_attacher() {
+  return auto_attacher_.get();
 }
 
 void ServiceWorkerDevToolsAgentHost::WorkerReadyForInspection(
@@ -172,15 +271,24 @@ void ServiceWorkerDevToolsAgentHost::WorkerReadyForInspection(
     UpdateIsAttached(true);
 }
 
-void ServiceWorkerDevToolsAgentHost::WorkerRestarted(int worker_process_id,
-                                                     int worker_route_id) {
-  DCHECK_EQ(WORKER_TERMINATED, state_);
+void ServiceWorkerDevToolsAgentHost::UpdateCrossOriginEmbedderPolicy(
+    network::CrossOriginEmbedderPolicy cross_origin_embedder_policy,
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        coep_reporter) {
+  cross_origin_embedder_policy_ = std::move(cross_origin_embedder_policy);
+  coep_reporter_.Bind(std::move(coep_reporter));
+}
+
+void ServiceWorkerDevToolsAgentHost::WorkerStarted(int worker_process_id,
+                                                   int worker_route_id) {
+  DCHECK(state_ == WORKER_NOT_READY || state_ == WORKER_TERMINATED);
   state_ = WORKER_NOT_READY;
   worker_process_id_ = worker_process_id;
   worker_route_id_ = worker_route_id;
+  UpdateProcessHost();
 }
 
-void ServiceWorkerDevToolsAgentHost::WorkerDestroyed() {
+void ServiceWorkerDevToolsAgentHost::WorkerStopped() {
   DCHECK_NE(WORKER_TERMINATED, state_);
   state_ = WORKER_TERMINATED;
   for (auto* inspector : protocol::InspectorHandler::ForAgentHost(this))
@@ -192,9 +300,30 @@ void ServiceWorkerDevToolsAgentHost::WorkerDestroyed() {
 }
 
 void ServiceWorkerDevToolsAgentHost::UpdateIsAttached(bool attached) {
-  RunOrPostTaskOnThread(FROM_HERE, ServiceWorkerContext::GetCoreThreadId(),
-                        base::BindOnce(&SetDevToolsAttachedOnCoreThread,
-                                       context_weak_, version_id_, attached));
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (ServiceWorkerVersion* version =
+          context_wrapper_->GetLiveVersion(version_id_))
+    version->SetDevToolsAttached(attached);
+}
+
+void ServiceWorkerDevToolsAgentHost::UpdateProcessHost() {
+  process_observation_.Reset();
+  if (auto* rph = RenderProcessHost::FromID(worker_process_id_))
+    process_observation_.Observe(rph);
+}
+
+// TODO(caseq): this is only relevant for shutdown, where a RPH may
+// go along with StoragePartition and we won't receive any signals from
+// the DevToolsWorkerManager, so agents would be still attached and
+// may access the storage partition. This is meant to be a temporary
+// workaround, the proper fix is likely to have ServiceWorkerInstance
+// deleted in such case.
+void ServiceWorkerDevToolsAgentHost::RenderProcessHostDestroyed(
+    RenderProcessHost* host) {
+  GetRendererChannel()->SetRenderer(mojo::NullRemote(), mojo::NullReceiver(),
+                                    ChildProcessHost::kInvalidUniqueID);
+  process_observation_.Reset();
 }
 
 void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
@@ -205,26 +334,80 @@ void ServiceWorkerDevToolsAgentHost::UpdateLoaderFactories(
     return;
   }
   const url::Origin origin = url::Origin::Create(url_);
-  auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
-      rph, worker_route_id_, origin,
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript);
-  auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundleOnUI(
-      rph, worker_route_id_, origin,
-      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource);
 
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    UpdateLoaderFactoriesOnCoreThread(context_weak_, version_id_,
-                                      std::move(script_bundle),
-                                      std::move(subresource_bundle));
-    std::move(callback).Run();
-  } else {
-    base::PostTaskAndReply(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&UpdateLoaderFactoriesOnCoreThread, context_weak_,
-                       version_id_, std::move(script_bundle),
-                       std::move(subresource_bundle)),
-        std::move(callback));
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter_for_script_loader;
+  mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+      coep_reporter_for_subresource_loader;
+  if (coep_reporter_) {
+    coep_reporter_->Clone(
+        coep_reporter_for_script_loader.InitWithNewPipeAndPassReceiver());
+    coep_reporter_->Clone(
+        coep_reporter_for_subresource_loader.InitWithNewPipeAndPassReceiver());
   }
+  // Use the default CrossOriginEmbedderPolicy if
+  // |cross_origin_embedder_policy_| is nullopt. It's acceptable because the
+  // factory bundles are updated with correct COEP value before any subresource
+  // requests in that case.
+  auto script_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
+      rph, worker_route_id_, origin,
+      cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
+                                    : network::CrossOriginEmbedderPolicy(),
+      std::move(coep_reporter_for_script_loader),
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerScript,
+      GetId());
+  auto subresource_bundle = EmbeddedWorkerInstance::CreateFactoryBundle(
+      rph, worker_route_id_, origin,
+      cross_origin_embedder_policy_ ? cross_origin_embedder_policy_.value()
+                                    : network::CrossOriginEmbedderPolicy(),
+      std::move(coep_reporter_for_subresource_loader),
+      ContentBrowserClient::URLLoaderFactoryType::kServiceWorkerSubResource,
+      GetId());
+
+  auto* version = context_wrapper_->GetLiveVersion(version_id_);
+  if (!version)
+    return;
+  version->embedded_worker()->UpdateLoaderFactories(
+      std::move(script_bundle), std::move(subresource_bundle));
+
+  std::move(callback).Run();
+}
+
+DevToolsAgentHostImpl::NetworkLoaderFactoryParamsAndInfo
+ServiceWorkerDevToolsAgentHost::CreateNetworkFactoryParamsForDevTools() {
+  RenderProcessHost* rph = RenderProcessHost::FromID(worker_process_id_);
+  const url::Origin origin = url::Origin::Create(url_);
+  // TODO(crbug.com/1231019): make sure client_security_state is no longer
+  // nullptr anywhere.
+  auto factory = URLLoaderFactoryParamsHelper::CreateForWorker(
+      rph, origin,
+      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kOther,
+                                 origin, origin,
+                                 net::SiteForCookies::FromOrigin(origin)),
+      /*coep_reporter=*/mojo::NullRemote(),
+      static_cast<StoragePartitionImpl*>(rph->GetStoragePartition())
+          ->CreateAuthCertObserverForServiceWorker(),
+      NetworkServiceDevToolsObserver::MakeSelfOwned(GetId()),
+      /*client_security_state=*/nullptr,
+      /*debug_tag=*/"SWDTAH::CreateNetworkFactoryParamsForDevTools");
+  return {url::Origin::Create(GetURL()), net::SiteForCookies::FromUrl(GetURL()),
+          std::move(factory)};
+}
+
+RenderProcessHost* ServiceWorkerDevToolsAgentHost::GetProcessHost() {
+  return RenderProcessHost::FromID(worker_process_id_);
+}
+
+absl::optional<network::CrossOriginEmbedderPolicy>
+ServiceWorkerDevToolsAgentHost::cross_origin_embedder_policy(
+    const std::string&) {
+  return cross_origin_embedder_policy_;
+}
+
+void ServiceWorkerDevToolsAgentHost::set_should_pause_on_start(
+    bool should_pause_on_start) {
+  DCHECK(base::FeatureList::IsEnabled(features::kPlzServiceWorker));
+  should_pause_on_start_ = should_pause_on_start;
 }
 
 }  // namespace content

@@ -25,7 +25,7 @@ if (window.internals) {
     shouldBe('internals.shadowRoot(p)', 'null');
 
     // Can bless ordinary elements with shadows
-    shadow = p.createShadowRoot(p);
+    shadow = p.attachShadow({mode: 'open'});
     shouldBe('shadow.nodeName', '"#document-fragment"');
     shouldBe('shadow === internals.shadowRoot(p)', 'true');
 }

@@ -15,6 +15,10 @@ namespace safe_browsing {
 class TelemetryService {
  public:
   TelemetryService();
+
+  TelemetryService(const TelemetryService&) = delete;
+  TelemetryService& operator=(const TelemetryService&) = delete;
+
   virtual ~TelemetryService();
 
   base::WeakPtr<TelemetryService> GetWeakPtr() {
@@ -23,7 +27,6 @@ class TelemetryService {
 
  private:
   base::WeakPtrFactory<TelemetryService> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(TelemetryService);
 };
 
 }  // namespace safe_browsing

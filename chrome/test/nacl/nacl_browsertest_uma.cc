@@ -4,11 +4,12 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
-#include "chrome/browser/metrics/subprocess_metrics_provider.h"
 #include "chrome/test/nacl/nacl_browsertest_util.h"
+#include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/renderer/platform_info.h"
 #include "components/nacl/renderer/ppb_nacl_private.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "native_client/src/trusted/service_runtime/nacl_error_code.h"
 
@@ -60,10 +61,16 @@ bool IsSubzeroSupportedForArch() {
 void FetchHistogramsFromChildProcesses() {
   // Support both traditional IPC and new "shared memory" channels.
   content::FetchHistogramsFromChildProcesses();
-  SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
+  metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
 }
 
-NACL_BROWSER_TEST_F(NaClBrowserTest, SuccessfulLoadUMA, {
+// TODO(crbug.com/1138451): Flaky on Win-32
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_SuccessfulLoadUMA DISABLED_SuccessfulLoadUMA
+#else
+#define MAYBE_SuccessfulLoadUMA SuccessfulLoadUMA
+#endif
+NACL_BROWSER_TEST_F(NaClBrowserTest, MAYBE_SuccessfulLoadUMA, {
   base::HistogramTester histograms;
   // Load a NaCl module to generate UMA data.
   RunLoadTest(FILE_PATH_LITERAL("nacl_load_test.html"));
@@ -122,7 +129,13 @@ NACL_BROWSER_TEST_F(NaClBrowserTest, SuccessfulLoadUMA, {
 })
 
 // Test that a successful load adds stats to Subzero buckets.
-IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero, SuccessfulLoadUMA) {
+// Test is flaky on Win7 (32).
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_SuccessfulLoadUMA DISABLED_SuccessfulLoadUMA
+#else
+#define MAYBE_SuccessfulLoadUMA SuccessfulLoadUMA
+#endif
+IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnaclSubzero, MAYBE_SuccessfulLoadUMA) {
   // Only test where Subzero is supported.
   if (!IsSubzeroSupportedForArch())
     return;
@@ -258,8 +271,15 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestGLibcVcacheExtension,
 
 // Test that validation for the 2 (or 3) PNaCl translator nexes can be cached.
 // This includes pnacl-llc.nexe, pnacl-ld.nexe, and possibly pnacl-sz.nexe.
+// Flaky on Windows https://crbug.com/1059468#c18
+#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#define MAYBE_ValidationCacheOfTranslatorNexes \
+  DISABLED_ValidationCacheOfTranslatorNexes
+#else
+#define MAYBE_ValidationCacheOfTranslatorNexes ValidationCacheOfTranslatorNexes
+#endif
 IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
-                       ValidationCacheOfTranslatorNexes) {
+                       MAYBE_ValidationCacheOfTranslatorNexes) {
   const bool uses_subzero_with_o0 = IsSubzeroSupportedForArch();
   base::HistogramBase::Count subzero_o0_count = (uses_subzero_with_o0 ? 1 : 0);
   base::HistogramTester histograms;
@@ -299,7 +319,6 @@ IN_PROC_BROWSER_TEST_F(NaClBrowserTestPnacl,
                                 nacl::NaClBrowser::CACHE_HIT,
                                 3 + subzero_o0_count);
 }
-
 
 // TODO(ncbray) convert the rest of nacl_uma.py (currently in the NaCl repo.)
 // Test validation failures and crashes.

@@ -7,12 +7,7 @@ import("//chrome/android/modules/buildflags.gni")
 stack_unwinder_module_desc = {
   name = "stack_unwinder"
   android_manifest = "//chrome/android/modules/stack_unwinder/internal/java/AndroidManifest.xml"
-  java_deps = [
-    "//chrome/android/features/stack_unwinder/internal:java",
-    "//chrome/android/modules/stack_unwinder/internal:java",
-  ]
-  native_deps = [
-    "//chrome/android/features/stack_unwinder/internal:native",
-    "//chrome/android/modules/stack_unwinder/internal:native",
-  ]
+  java_deps = [ "//chrome/android/modules/stack_unwinder/internal:java" ]
+  native_deps = [ "//chrome/android/modules/stack_unwinder/internal:native" ]
+  load_native_on_get_impl = false
 }

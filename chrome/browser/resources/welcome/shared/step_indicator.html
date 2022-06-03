@@ -16,7 +16,15 @@
   span.active {
     background: var(--navi-step-indicator-active-color);
   }
+
+  .screen-reader-only {
+    clip: rect(0, 0, 0, 0);
+    position: fixed;
+  }
 </style>
 <template is="dom-repeat" items="[[dots_]]">
   <span class$="[[getActiveClass_(index, model.active)]]"></span>
 </template>
+<div class="screen-reader-only">
+  [[computeLabel_(model.active, model.total)]]
+</div>

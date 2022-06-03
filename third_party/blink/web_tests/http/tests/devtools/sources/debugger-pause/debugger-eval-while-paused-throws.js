@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that evaluation in console that throws works fine when script is paused.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       var globalObj = {
@@ -62,9 +62,9 @@
   }
 
   function dumpConsoleMessages() {
-    TestRunner.deprecatedRunAfterPendingDispatches(() => {
+    TestRunner.deprecatedRunAfterPendingDispatches(async () => {
       TestRunner.addResult('Dumping console messages:\n');
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       SourcesTestRunner.completeDebuggerTest();
     });
   }

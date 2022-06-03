@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that clicks on console.group target the appropriate element.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -13,19 +13,19 @@
     console.log("Message inside group");
     console.groupEnd();
   `);
-  const messagesElement = Console.ConsoleView.instance()._messagesElement;
+  const messagesElement = Console.ConsoleView.instance().messagesElement;
 
   TestRunner.addResult(`\nBefore`);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
 
   TestRunner.addResult(`\nClick on the group`);
   messagesElement.querySelector('.console-group-title').click();
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
 
   TestRunner.addResult(`\nClick on the object`);
   messagesElement.querySelector('.console-object').click();
-  ConsoleTestRunner.waitForRemoteObjectsConsoleMessages(() => {
-    ConsoleTestRunner.dumpConsoleMessages();
+  ConsoleTestRunner.waitForRemoteObjectsConsoleMessages(async () => {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   });
 })();

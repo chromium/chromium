@@ -7,8 +7,8 @@
 
 #include "ash/keyboard/ui/keyboard_export.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/events/gestures/gesture_types.h"
 
 namespace aura {
 class Window;
@@ -27,6 +27,10 @@ class KEYBOARD_EXPORT KeyboardUI {
   using LoadCallback = base::OnceCallback<void()>;
 
   KeyboardUI();
+
+  KeyboardUI(const KeyboardUI&) = delete;
+  KeyboardUI& operator=(const KeyboardUI&) = delete;
+
   virtual ~KeyboardUI();
 
   // Begin loading the virtual keyboard window asynchronously.
@@ -40,6 +44,10 @@ class KEYBOARD_EXPORT KeyboardUI {
   // keyboard extensions are loaded. Returns null if the window has not started
   // loading.
   virtual aura::Window* GetKeyboardWindow() const = 0;
+
+  // Get the gesture consumer for the keyboard, which may be different to the
+  // window itself if there are nested windows.
+  virtual ui::GestureConsumer* GetGestureConsumer() const = 0;
 
   // Gets the InputMethod that will provide notifications about changes in the
   // text input context.
@@ -74,9 +82,7 @@ class KEYBOARD_EXPORT KeyboardUI {
   KeyboardUIController* keyboard_controller() { return keyboard_controller_; }
 
  private:
-  keyboard::KeyboardUIController* keyboard_controller_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(KeyboardUI);
+  KeyboardUIController* keyboard_controller_ = nullptr;
 };
 
 }  // namespace keyboard

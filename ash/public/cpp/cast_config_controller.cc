@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/cast_config_controller.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 

@@ -37,17 +37,3 @@ rad: 0.5236
 rad: 1.5708
 rad: 3.1416
 
-Running: testEulerAnglesFromRotationMatrix
-Euler angles: 29.9762 60.0238 45.0200
-Euler angles: 60.0238 29.9762 45.0200
-Euler angles: 0 19.8684 69.9875
-
-Running: testEulerAnglesToRotate3DString
-Transform: rotate3d(0,1,0,0deg) rotate3d(-1,0,0,0deg) rotate3d(0,0,1,0deg)
-Transform: rotate3d(0,1,0,1deg) rotate3d(-1,0,0,2deg) rotate3d(0,-0.03489949670250097,0.9993908270190958,3deg)
-Transform: rotate3d(0,1,0,-1deg) rotate3d(-1,0,0,-2deg) rotate3d(0,0.03489949670250097,0.9993908270190958,3deg)
-Transform: rotate3d(0,1,0,-1deg) rotate3d(-1,0,0,2deg) rotate3d(0,-0.03489949670250097,0.9993908270190958,-3deg)
-Transform: rotate3d(0,1,0,0deg) rotate3d(-1,0,0,1deg) rotate3d(0,-0.01745240643728351,0.9998476951563913,2deg)
-Transform: rotate3d(0,1,0,1deg) rotate3d(-1,0,0,0deg) rotate3d(0,0,1,2deg)
-Transform: rotate3d(0,1,0,1deg) rotate3d(-1,0,0,2deg) rotate3d(0,-0.03489949670250097,0.9993908270190958,0deg)
-

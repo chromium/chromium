@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+USE_PYTHON3 = True
+
 
 def _CommonChecks(input_api, output_api):
   """Performs common checks, which includes running pylint."""
@@ -41,6 +43,8 @@ def _CheckContribDir(input_api, output_api):
       invalid_contrib_files.append(file_path)
 
   for f in input_api.os_listdir(contrib_dir):
+    if f == '__pycache__':
+      continue
     path = input_api.os_path.join(contrib_dir, f)
     if input_api.os_path.isdir(path):
       results.extend(

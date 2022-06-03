@@ -20,7 +20,5 @@ source_set("dom_distiller") {
     "//ui/gfx",
     "//url",
   ]
-  public_deps = [
-    "//components/dom_distiller/core",
-  ]
+  public_deps = [ "//components/dom_distiller/core" ]
 }

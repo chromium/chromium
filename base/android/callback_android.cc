@@ -8,6 +8,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/base_jni_headers/Callback_jni.h"
+#include "base/time/time.h"
 
 namespace base {
 namespace android {
@@ -24,6 +25,11 @@ void RunBooleanCallbackAndroid(const JavaRef<jobject>& callback, bool arg) {
 
 void RunIntCallbackAndroid(const JavaRef<jobject>& callback, int arg) {
   Java_Helper_onIntResultFromNative(AttachCurrentThread(), callback, arg);
+}
+
+void RunTimeCallbackAndroid(const JavaRef<jobject>& callback, base::Time time) {
+  Java_Helper_onTimeResultFromNative(AttachCurrentThread(), callback,
+                                     time.ToJavaTime());
 }
 
 void RunStringCallbackAndroid(const JavaRef<jobject>& callback,

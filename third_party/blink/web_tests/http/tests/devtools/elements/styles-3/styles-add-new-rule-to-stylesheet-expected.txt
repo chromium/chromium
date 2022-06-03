@@ -4,15 +4,10 @@ Tests that adding new rule in the stylesheet end works as expected.
 element.style { ()
 
 [expanded] 
-#other, div { (different-r…ypes.css:48 -> different-rule-types.css:48:14)
+#other, div { (different-r…ypes.css:42 -> different-rule-types.css:42:14)
 
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 

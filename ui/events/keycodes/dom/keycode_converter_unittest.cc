@@ -10,7 +10,7 @@
 #include <map>
 #include <set>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -21,13 +21,13 @@ using ui::KeycodeConverter;
 namespace {
 
 // Number of native codes expected to be mapped for each kind of native code.
-// These are in the same order as the columns in keycode_converter_data.inc
-// as reflected in the USB_KEYMAP() macro below.
+// These are in the same order as the columns in dom_code_data.inc
+// as reflected in the DOM_CODE() macro below.
 const size_t expected_mapped_key_count[] = {
-  212,  // evdev
-  212,  // xkb
-  157,  // windows
-  118,  // mac
+    217,  // evdev
+    217,  // xkb
+    157,  // windows
+    119,  // mac
 };
 
 const size_t kNativeColumns = base::size(expected_mapped_key_count);
@@ -39,20 +39,20 @@ struct KeycodeConverterData {
   int native_keycode[kNativeColumns];
 };
 
-#define USB_KEYMAP(usb, evdev, xkb, win, mac, code, id) \
-  { usb, code, #id, { evdev, xkb, win, mac } }
-#define USB_KEYMAP_DECLARATION \
+#define DOM_CODE(usb, evdev, xkb, win, mac, code, id) \
+  {                                                   \
+    usb, code, #id, { evdev, xkb, win, mac }          \
+  }
+#define DOM_CODE_DECLARATION \
   const KeycodeConverterData kKeycodeConverterData[] =
-#include "ui/events/keycodes/dom/keycode_converter_data.inc"
-#undef USB_KEYMAP
-#undef USB_KEYMAP_DECLARATION
+#include "ui/events/keycodes/dom/dom_code_data.inc"
+#undef DOM_CODE
+#undef DOM_CODE_DECLARATION
 
 const uint32_t kUsbNonExistentKeycode = 0xffffff;
-const uint32_t kUsbUsBackslash =        0x070031;
-const uint32_t kUsbNonUsHash =          0x070032;
+const uint32_t kUsbUsBackslash = 0x070031;
+const uint32_t kUsbNonUsHash = 0x070032;
 
-// TODO(crbug.com/956756)
-#if !defined(NOTOUCH_BUILD)
 TEST(UsbKeycodeMap, KeycodeConverterData) {
   // This test looks at all kinds of supported native codes.
   // Verify that there are no duplicate entries in the mapping.
@@ -108,7 +108,6 @@ TEST(UsbKeycodeMap, EvdevXkb) {
     }
   }
 }
-#endif
 
 TEST(UsbKeycodeMap, Basic) {
   // Verify that the first element in the table is the "invalid" code.
@@ -173,6 +172,10 @@ TEST(KeycodeConverter, DomCode) {
       EXPECT_STREQ(entry->code,
                    ui::KeycodeConverter::DomCodeToCodeString(code));
     }
+    ui::DomCode code =
+        ui::KeycodeConverter::NativeKeycodeToDomCode(entry->native_keycode);
+    EXPECT_EQ(entry->native_keycode,
+              ui::KeycodeConverter::DomCodeToNativeKeycode(code));
   }
 }
 
@@ -183,40 +186,45 @@ TEST(KeycodeConverter, DomKey) {
     bool is_dead;
     bool test_to_string;
     const char* const string;
+    bool is_named;
   } test_cases[] = {
       // Invalid arguments to KeyStringToDomKey().
-      {ui::DomKey::NONE, false, false, true, ""},
-      {ui::DomKey::NONE, false, false, false, "?!?"},
-      {ui::DomKey::NONE, false, false, false, "\x61\xCC\x81"},
+      {ui::DomKey::NONE, false, false, true, "", false},
+      {ui::DomKey::NONE, false, false, false, "?!?", false},
+      {ui::DomKey::NONE, false, false, false, "\x61\xCC\x81", false},
       // Some single Unicode characters.
-      {ui::DomKey::Constant<'-'>::Character, true, false, true, "-"},
-      {ui::DomKey::Constant<'A'>::Character, true, false, true, "A"},
-      {ui::DomKey::Constant<0xE1>::Character, true, false, true, "\xC3\xA1"},
+      {ui::DomKey::Constant<'-'>::Character, true, false, true, "-", false},
+      {ui::DomKey::Constant<'A'>::Character, true, false, true, "A", false},
+      {ui::DomKey::Constant<0xE1>::Character, true, false, true, "\xC3\xA1",
+       false},
       {ui::DomKey::Constant<0x1F648>::Character, true, false, true,
-       "\xF0\x9F\x99\x88"},
+       "\xF0\x9F\x99\x88", false},
       // Unicode-equivalent named values.
-      {ui::DomKey::BACKSPACE, true, false, true, "Backspace"},
-      {ui::DomKey::TAB, true, false, true, "Tab"},
-      {ui::DomKey::ENTER, true, false, true, "Enter"},
-      {ui::DomKey::ESCAPE, true, false, true, "Escape"},
-      {ui::DomKey::DEL, true, false, true, "Delete"},
-      {ui::DomKey::BACKSPACE, true, false, false, "\b"},
-      {ui::DomKey::TAB, true, false, false, "\t"},
-      {ui::DomKey::ENTER, true, false, false, "\r"},
-      {ui::DomKey::ESCAPE, true, false, false, "\x1B"},
-      {ui::DomKey::DEL, true, false, false, "\x7F"},
-      {ui::DomKey::Constant<'\b'>::Character, true, false, true, "Backspace"},
-      {ui::DomKey::Constant<'\t'>::Character, true, false, true, "Tab"},
-      {ui::DomKey::Constant<'\r'>::Character, true, false, true, "Enter"},
-      {ui::DomKey::Constant<0x1B>::Character, true, false, true, "Escape"},
-      {ui::DomKey::Constant<0x7F>::Character, true, false, true, "Delete"},
+      {ui::DomKey::BACKSPACE, true, false, true, "Backspace", true},
+      {ui::DomKey::TAB, true, false, true, "Tab", true},
+      {ui::DomKey::ENTER, true, false, true, "Enter", true},
+      {ui::DomKey::ESCAPE, true, false, true, "Escape", true},
+      {ui::DomKey::DEL, true, false, true, "Delete", true},
+      {ui::DomKey::BACKSPACE, true, false, false, "\b", true},
+      {ui::DomKey::TAB, true, false, false, "\t", true},
+      {ui::DomKey::ENTER, true, false, false, "\r", true},
+      {ui::DomKey::ESCAPE, true, false, false, "\x1B", true},
+      {ui::DomKey::DEL, true, false, false, "\x7F", true},
+      {ui::DomKey::Constant<'\b'>::Character, true, false, true, "Backspace",
+       true},
+      {ui::DomKey::Constant<'\t'>::Character, true, false, true, "Tab", true},
+      {ui::DomKey::Constant<'\r'>::Character, true, false, true, "Enter", true},
+      {ui::DomKey::Constant<0x1B>::Character, true, false, true, "Escape",
+       true},
+      {ui::DomKey::Constant<0x7F>::Character, true, false, true, "Delete",
+       true},
       // 'Dead' key.
-      {ui::DomKey::Constant<0xFFFF>::Dead, false, true, true, "Dead"},
+      {ui::DomKey::Constant<0xFFFF>::Dead, false, true, true, "Dead", true},
       // Sample non-Unicode key names.
-      {ui::DomKey::SHIFT, false, false, true, "Shift"},
-      {ui::DomKey::F16, false, false, true, "F16"},
-      {ui::DomKey::ZOOM_IN, false, false, true, "ZoomIn"},
-      {ui::DomKey::UNIDENTIFIED, false, false, true, "Unidentified"},
+      {ui::DomKey::SHIFT, false, false, true, "Shift", true},
+      {ui::DomKey::F16, false, false, true, "F16", true},
+      {ui::DomKey::ZOOM_IN, false, false, true, "ZoomIn", true},
+      {ui::DomKey::UNIDENTIFIED, false, false, true, "Unidentified", true},
   };
   for (const auto& test : test_cases) {
     // Check KeyStringToDomKey().
@@ -229,6 +237,7 @@ TEST(KeycodeConverter, DomKey) {
       std::string s(ui::KeycodeConverter::DomKeyToKeyString(test.key));
       EXPECT_STREQ(test.string, s.c_str());
     }
+    EXPECT_EQ(ui::KeycodeConverter::IsDomKeyNamed(key), test.is_named);
   }
   // Round-trip test all UI Events KeyboardEvent.key strings, and check
   // that encodings are distinct.

@@ -1,0 +1,19 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x864
+      LayoutNGBlockFlow {P} at (0,0) size 1176x27
+        LayoutText {#text} at (0,0) size 1006x26
+          text run at (0,0) width 1006: "This tests for a bug where selection change notifications would post the wrong proposed selected range."
+      LayoutNGBlockFlow {DIV} at (0,51) size 1176x27
+        LayoutText {#text} at (0,0) size 552x26
+          text run at (0,0) width 552: "There should be five characters selected in this sentence."
+      LayoutNGBlockFlow {UL} at (0,102) size 1176x0
+selection start: position 0 of child 0 {#text} of child 2 {DIV} of body
+selection end:   position 2 of child 0 {#text} of child 2 {DIV} of body

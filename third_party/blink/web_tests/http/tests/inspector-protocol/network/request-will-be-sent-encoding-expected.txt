@@ -1,0 +1,5 @@
+Test to make sure header values are correctly encoded as UTF8.
+Network Enabled
+before-æøå-after
+before-ß-after
+

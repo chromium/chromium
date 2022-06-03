@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -16,10 +16,7 @@ TOOLS_DIR = os.path.dirname(SCRIPT_DIR)
 DATA_DIR = os.path.join(TOOLS_DIR, 'lib', 'tests', 'data')
 BUILD_TOOLS_DIR = os.path.join(os.path.dirname(TOOLS_DIR), 'build_tools')
 CHROME_SRC = os.path.dirname(os.path.dirname(os.path.dirname(TOOLS_DIR)))
-MOCK_DIR = os.path.join(CHROME_SRC, 'third_party', 'pymock')
 
-# For the mock library
-sys.path.append(MOCK_DIR)
 sys.path.append(TOOLS_DIR)
 sys.path.append(BUILD_TOOLS_DIR)
 
@@ -287,9 +284,9 @@ class TestNmfUtils(unittest.TestCase):
         new_k = StripSo(k)
         if isinstance(v, (str, unicode)):
           new_v = StripSo(v)
-        elif type(v) is list:
+        elif isinstance(v, list):
           new_v = v[:]
-        elif type(v) is dict:
+        elif isinstance(v, dict):
           new_v = StripSoCopyDict(v)
         else:
           # Assume that anything else can be copied directly.

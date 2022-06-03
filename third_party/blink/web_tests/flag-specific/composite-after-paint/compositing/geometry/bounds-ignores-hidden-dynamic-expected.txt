@@ -9,7 +9,15 @@
     {
       "name": "LayoutImage (positioned) IMG",
       "position": [10, 10],
-      "bounds": [540, 240],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
+      "backgroundColor": "#000000"
+    },
+    {
+      "name": "LayoutImage (positioned) IMG class='to-visible'",
+      "position": [500, 200],
+      "bounds": [50, 50],
+      "contentsOpaque": true,
       "backgroundColor": "#000000"
     },
     {

@@ -5,12 +5,10 @@
 #ifndef CHROME_CHROME_CLEANER_UI_MAIN_DIALOG_API_H_
 #define CHROME_CHROME_CLEANER_UI_MAIN_DIALOG_API_H_
 
-#include <windows.h>
-
+#include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/strings/string16.h"
+#include "base/memory/scoped_refptr.h"
 #include "chrome/chrome_cleaner/constants/uws_id.h"
 #include "chrome/chrome_cleaner/os/digest_verifier.h"
 #include "chrome/chrome_cleaner/os/file_path_set.h"
@@ -50,11 +48,6 @@ class MainDialogAPI {
   // Close the window.
   virtual void Close() = 0;
 
-  // Disables |extensions| by telling Chrome to do so.
-  // Calls the |on_disable| with the result on completion.
-  virtual void DisableExtensions(const std::vector<base::string16>& extensions,
-                                 base::OnceCallback<void(bool)> on_disable) = 0;
-
   // Checks if |found_pups| contains any files to clean. If so, calls
   // ConfirmCleanupWithFiles, otherwise calls NoPUPsFound.
   void ConfirmCleanupIfNeeded(const std::vector<UwSId>& found_pups,
@@ -68,7 +61,7 @@ class MainDialogAPI {
   virtual void ConfirmCleanup(
       const std::vector<UwSId>& found_pups,
       const FilePathSet& files_to_remove,
-      const std::vector<base::string16>& registry_keys) = 0;
+      const std::vector<std::wstring>& registry_keys) = 0;
 
   MainDialogDelegate* delegate() { return delegate_; }
 

@@ -13,8 +13,9 @@ function globalInterfaceListing(globalObject, propertyNamesInGlobal, platformSpe
 // objects have, so exercising them in a Blink test doesn't make sense.
 //
 // If new builtins are added, please update this list along with the one in
-// LayoutTests/http/tests/worklet/webexposed/resources/global-interface-listing-worklet.js
+// web_tests/http/tests/worklet/webexposed/resources/global-interface-listing-worklet.js
 var jsBuiltins = new Set([
+    'AggregateError',
     'Array',
     'ArrayBuffer',
     'Atomics',
@@ -26,6 +27,7 @@ var jsBuiltins = new Set([
     'Date',
     'Error',
     'EvalError',
+    'FinalizationRegistry',
     'Float32Array',
     'Float64Array',
     'Function',
@@ -58,6 +60,7 @@ var jsBuiltins = new Set([
     'Uint8Array',
     'Uint8ClampedArray',
     'WeakMap',
+    'WeakRef',
     'WeakSet',
     'WebAssembly',
     'decodeURI',
@@ -74,7 +77,7 @@ var jsBuiltins = new Set([
     'unescape',
 ]);
 
-function isWebIDLConstructor(propertyKey) {
+function isWebIDLInterface(propertyKey) {
     if (jsBuiltins.has(propertyKey))
         return false;
     var descriptor = Object.getOwnPropertyDescriptor(this, propertyKey);
@@ -83,7 +86,20 @@ function isWebIDLConstructor(propertyKey) {
     return descriptor.writable && !descriptor.enumerable && descriptor.configurable;
 }
 
+function isWebIDLNamespace(propertyKey) {
+    if (jsBuiltins.has(propertyKey))
+        return false;
+    let object = Object.getOwnPropertyDescriptor(this, propertyKey).value;
+    if (object == undefined || typeof(object) != 'object' ||
+        object.prototype != undefined) {
+        return false;
+    }
+    let classString = Object.getOwnPropertyDescriptor(object, Symbol.toStringTag);
+    return classString && classString.value == propertyKey;
+}
+
 var wellKnownSymbols = new Map([
+    [Symbol.asyncIterator, "@@asyncIterator"],
     [Symbol.hasInstance, "@@hasInstance"],
     [Symbol.isConcatSpreadable, "@@isConcatSpreadable"],
     [Symbol.iterator, "@@iterator"],
@@ -102,14 +118,15 @@ var wellKnownSymbols = new Map([
 // platform-specific expectations files to a bare minimum to make updates in the
 // common (platform-neutral) case as simple as possible.
 var platformSpecificInterfaces = new Set([
-    'Bluetooth',
-    'BluetoothCharacteristicProperties',
-    'BluetoothDevice',
-    'BluetoothRemoteGATTCharacteristic',
-    'BluetoothRemoteGATTDescriptor',
-    'BluetoothRemoteGATTServer',
-    'BluetoothRemoteGATTService',
-    'BluetoothUUID',
+  'BarcodeDetector',
+  'Bluetooth',
+  'BluetoothCharacteristicProperties',
+  'BluetoothDevice',
+  'BluetoothRemoteGATTCharacteristic',
+  'BluetoothRemoteGATTDescriptor',
+  'BluetoothRemoteGATTServer',
+  'BluetoothRemoteGATTService',
+  'BluetoothUUID',
 ]);
 
 // List of all platform-specific properties on interfaces that appear on all
@@ -188,13 +205,7 @@ function outputProperty(property) {
     outputFunc('    ' + property);
 }
 
-// FIXME: List interfaces with NoInterfaceObject specified in their IDL file.
-outputFunc('[INTERFACES]');
-var interfaceNames = Object.getOwnPropertyNames(this)
-                           .filter(isWebIDLConstructor)
-                           .filter(filterPlatformSpecificInterface);
-interfaceNames.sort();
-interfaceNames.forEach(function(interfaceName) {
+function outputWebIDLInterface(interfaceName) {
     var inheritsFrom = this[interfaceName].__proto__.name;
     if (inheritsFrom)
         outputFunc('interface ' + interfaceName + ' : ' + inheritsFrom);
@@ -211,12 +222,40 @@ interfaceNames.forEach(function(interfaceName) {
         propertyStrings.filter((property) => filterPlatformSpecificProperty(interfaceName, property))
             .sort().forEach(outputProperty);
     });
-});
+}
+
+function outputWebIDLNamespace(namespaceName) {
+    outputFunc('namespace ' + namespaceName);
+    let object = this[namespaceName];
+    let propertyKeys = collectPropertyKeys(object);
+    let propertyStrings = [];
+    propertyKeys.forEach((propertyKey) => {
+        collectPropertyInfo(object, propertyKey, propertyStrings);
+    });
+
+    propertyStrings.sort().forEach(outputProperty);
+}
+
+outputFunc('[INTERFACES]');
+var interfaceNames = Object.getOwnPropertyNames(this)
+                           .filter(isWebIDLInterface)
+                           .filter(filterPlatformSpecificInterface);
+interfaceNames.sort();
+interfaceNames.forEach(outputWebIDLInterface);
+
+outputFunc('[NAMESPACES]');
+let namespaceNames = Object.getOwnPropertyNames(this)
+                           .filter(isWebIDLNamespace)
+                           .filter(filterPlatformSpecificInterface);
+namespaceNames.sort();
+namespaceNames.forEach(outputWebIDLNamespace);
 
 outputFunc('[GLOBAL OBJECT]');
 var propertyStrings = [];
 var memberNames = propertyNamesInGlobal.filter(function(propertyKey) {
-    return !jsBuiltins.has(propertyKey) && !isWebIDLConstructor(propertyKey);
+    return !jsBuiltins.has(propertyKey)
+        && !isWebIDLInterface(propertyKey)
+        && !isWebIDLNamespace(propertyKey);
 });
 memberNames.forEach(function(propertyKey) {
     collectPropertyInfo(globalObject, propertyKey, propertyStrings);

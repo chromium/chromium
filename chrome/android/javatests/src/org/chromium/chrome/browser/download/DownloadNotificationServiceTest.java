@@ -8,10 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
-import android.content.SharedPreferences;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.SmallTest;
-import android.support.test.rule.UiThreadTestRule;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
@@ -20,14 +17,17 @@ import org.junit.Test;
 import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ContextUtils;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -35,6 +35,7 @@ import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem.Progress;
 import org.chromium.components.offline_items_collection.OfflineItemProgressUnit;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -47,6 +48,7 @@ import java.util.UUID;
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Features.DisableFeatures({ChromeFeatureList.DOWNLOAD_NOTIFICATION_BADGE,
         ChromeFeatureList.DOWNLOAD_OFFLINE_CONTENT_PROVIDER})
+@Batch(Batch.UNIT_TESTS)
 public class DownloadNotificationServiceTest {
     private static final ContentId ID1 =
             LegacyHelpers.buildLegacyContentId(false, UUID.randomUUID().toString());
@@ -65,9 +67,6 @@ public class DownloadNotificationServiceTest {
     @Rule
     public TestRule mFeaturesProcessor = new Features.JUnitProcessor();
 
-    @Rule
-    public UiThreadTestRule mUiThreadTestRule = new UiThreadTestRule();
-
     private MockDownloadNotificationService mDownloadNotificationService;
     private DownloadForegroundServiceManagerTest
             .MockDownloadForegroundServiceManager mDownloadForegroundServiceManager;
@@ -75,6 +74,7 @@ public class DownloadNotificationServiceTest {
 
     private final boolean mEnableOfflinePagesDescriptivePendingStatus;
     private final boolean mEnableOfflinePagesDescriptiveFailStatus;
+    private OTRProfileID mPrimaryOTRProfileID = OTRProfileID.getPrimaryOTRProfileID();
 
     public DownloadNotificationServiceTest(boolean enableOfflinePagesDescriptivePendingStatus,
             boolean enableOfflinePagesDescriptiveFailStatus) {
@@ -85,7 +85,7 @@ public class DownloadNotificationServiceTest {
     private static DownloadSharedPreferenceEntry buildEntryStringWithGuid(ContentId contentId,
             int notificationId, String fileName, boolean metered, boolean autoResume) {
         return new DownloadSharedPreferenceEntry(
-                contentId, notificationId, false, metered, fileName, autoResume, false);
+                contentId, notificationId, null, metered, fileName, autoResume, false);
     }
 
     @Before
@@ -102,22 +102,22 @@ public class DownloadNotificationServiceTest {
         } else {
             Features.getInstance().disable(ChromeFeatureList.OFFLINE_PAGES_DESCRIPTIVE_FAIL_STATUS);
         }
-        DownloadNotificationService.clearResumptionAttemptLeft();
-        mDownloadNotificationService = new MockDownloadNotificationService();
-        mDownloadForegroundServiceManager =
-                new DownloadForegroundServiceManagerTest.MockDownloadForegroundServiceManager();
-        mDownloadNotificationService.setDownloadForegroundServiceManager(
-                mDownloadForegroundServiceManager);
-        mDownloadSharedPreferenceHelper = DownloadSharedPreferenceHelper.getInstance();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            DownloadNotificationService.clearResumptionAttemptLeft();
+            mDownloadNotificationService = new MockDownloadNotificationService();
+            mDownloadForegroundServiceManager =
+                    new DownloadForegroundServiceManagerTest.MockDownloadForegroundServiceManager();
+            mDownloadNotificationService.setDownloadForegroundServiceManager(
+                    mDownloadForegroundServiceManager);
+            mDownloadSharedPreferenceHelper = DownloadSharedPreferenceHelper.getInstance();
+        });
     }
 
     @After
     public void tearDown() {
         DownloadNotificationService.clearResumptionAttemptLeft();
-        SharedPreferences sharedPrefs = ContextUtils.getAppSharedPreferences();
-        SharedPreferences.Editor editor = sharedPrefs.edit();
-        editor.remove(DownloadSharedPreferenceHelper.KEY_PENDING_DOWNLOAD_NOTIFICATIONS);
-        editor.apply();
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.DOWNLOAD_PENDING_DOWNLOAD_NOTIFICATIONS);
     }
 
     @Test
@@ -127,8 +127,8 @@ public class DownloadNotificationServiceTest {
     public void testBasicDownloadFlow() {
         // Download is in-progress.
         mDownloadNotificationService.notifyDownloadProgress(ID1, "test",
-                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L, true, true,
-                false, null, null, false);
+                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L,
+                mPrimaryOTRProfileID, true, false, null, null, false);
         mDownloadForegroundServiceManager.onServiceConnected();
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -139,8 +139,8 @@ public class DownloadNotificationServiceTest {
 
         // Download is paused.
         mDownloadNotificationService.notifyDownloadPaused(ID1, "test", true /* isResumable*/,
-                false /* isAutoResumable */, true, false, null, null, false, false, false,
-                PendingState.NOT_PENDING);
+                false /* isAutoResumable */, mPrimaryOTRProfileID, false, null, null, false, false,
+                false, PendingState.NOT_PENDING);
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertFalse(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
@@ -149,8 +149,8 @@ public class DownloadNotificationServiceTest {
 
         // Download is again in-progress.
         mDownloadNotificationService.notifyDownloadProgress(ID1, "test",
-                new Progress(20, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L, true,
-                true, false, null, null, false);
+                new Progress(20, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L,
+                mPrimaryOTRProfileID, true, false, null, null, false);
         mDownloadForegroundServiceManager.onServiceConnected();
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -160,7 +160,7 @@ public class DownloadNotificationServiceTest {
 
         // Download is successful.
         mDownloadNotificationService.notifyDownloadSuccessful(
-                ID1, "", "test", 1L, true, true, true, null, "", false, "", 0);
+                ID1, "", "test", 1L, mPrimaryOTRProfileID, true, true, null, "", false, "", 0);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertFalse(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
                 notificationId1));
@@ -174,8 +174,8 @@ public class DownloadNotificationServiceTest {
     public void testDownloadPendingAndCancelled() {
         // Download is in-progress.
         mDownloadNotificationService.notifyDownloadProgress(ID1, "test",
-                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L, true, true,
-                false, null, null, false);
+                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L,
+                mPrimaryOTRProfileID, true, false, null, null, false);
         mDownloadForegroundServiceManager.onServiceConnected();
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -186,8 +186,8 @@ public class DownloadNotificationServiceTest {
 
         // Download is interrupted and now is pending.
         mDownloadNotificationService.notifyDownloadPaused(ID1, "test", true /* isResumable */,
-                true /* isAutoResumable */, true, false, null, null, false, false, false,
-                PendingState.PENDING_NETWORK);
+                true /* isAutoResumable */, mPrimaryOTRProfileID, false, null, null, false, false,
+                false, PendingState.PENDING_NETWORK);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertTrue(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
                 notificationId1));
@@ -209,8 +209,8 @@ public class DownloadNotificationServiceTest {
     public void testDownloadInterruptedAndFailed() {
         // Download is in-progress.
         mDownloadNotificationService.notifyDownloadProgress(ID1, "test",
-                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L, true, true,
-                false, null, null, false);
+                new Progress(1, 100L, OfflineItemProgressUnit.PERCENTAGE), 100L, 1L, 1L,
+                mPrimaryOTRProfileID, true, false, null, null, false);
         mDownloadForegroundServiceManager.onServiceConnected();
 
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
@@ -221,44 +221,11 @@ public class DownloadNotificationServiceTest {
 
         // Download is interrupted but because it is not resumable, fails.
         mDownloadNotificationService.notifyDownloadPaused(ID1, "test", false /* isResumable*/,
-                true /* isAutoResumable */, true, false, null, null, false, false, false,
-                PendingState.PENDING_NETWORK);
+                true /* isAutoResumable */, mPrimaryOTRProfileID, false, null, null, false, false,
+                false, PendingState.PENDING_NETWORK);
         assertEquals(1, mDownloadNotificationService.getNotificationIds().size());
         assertFalse(mDownloadForegroundServiceManager.mDownloadUpdateQueue.containsKey(
                 notificationId1));
         assertFalse(mDownloadNotificationService.mDownloadsInProgress.contains(ID1));
-    }
-
-    @Test
-    @SmallTest
-    @UiThreadTest
-    @Feature({"Download"})
-    @DisabledTest(message = "https://crbug.com/837298")
-    public void testResumeAllPendingDownloads() {
-        // Queue a few pending downloads.
-        mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                buildEntryStringWithGuid(ID1, 3, "success", false, true));
-        mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                buildEntryStringWithGuid(ID2, 4, "failed", true, true));
-        mDownloadSharedPreferenceHelper.addOrReplaceSharedPreferenceEntry(
-                buildEntryStringWithGuid(ID3, 5, "nonresumable", true, false));
-
-        // Resume pending downloads when network is metered.
-        DownloadManagerService.disableNetworkListenerForTest();
-        DownloadManagerService.setIsNetworkMeteredForTest(true);
-        mDownloadNotificationService.resumeAllPendingDownloads();
-
-        assertEquals(1, mDownloadNotificationService.mResumedDownloads.size());
-        assertEquals(ID2.id, mDownloadNotificationService.mResumedDownloads.get(0));
-
-        // Resume pending downloads when network is not metered.
-        mDownloadNotificationService.mResumedDownloads.clear();
-        DownloadManagerService.setIsNetworkMeteredForTest(false);
-        mDownloadNotificationService.resumeAllPendingDownloads();
-        assertEquals(1, mDownloadNotificationService.mResumedDownloads.size());
-
-        mDownloadSharedPreferenceHelper.removeSharedPreferenceEntry(ID1);
-        mDownloadSharedPreferenceHelper.removeSharedPreferenceEntry(ID2);
-        mDownloadSharedPreferenceHelper.removeSharedPreferenceEntry(ID3);
     }
 }

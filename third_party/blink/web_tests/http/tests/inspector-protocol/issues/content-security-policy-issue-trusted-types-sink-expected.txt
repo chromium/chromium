@@ -1,0 +1,22 @@
+Verify that Trusted Types sink violation issue is generated.
+
+Inspector issue: {
+    issue : {
+        code : ContentSecurityPolicyIssue
+        details : {
+            contentSecurityPolicyIssueDetails : {
+                contentSecurityPolicyViolationType : kTrustedTypesSinkViolation
+                isReportOnly : false
+                sourceCodeLocation : {
+                    columnNumber : 55
+                    lineNumber : 5
+                    scriptId : <string>
+                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-trusted-types-sink.php
+                }
+                violatedDirective : require-trusted-types-for
+            }
+        }
+        issueId : <string>
+    }
+}
+

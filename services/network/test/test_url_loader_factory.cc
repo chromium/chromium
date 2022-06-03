@@ -4,7 +4,7 @@
 
 #include "services/network/test/test_url_loader_factory.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "net/http/http_status_code.h"
@@ -81,7 +81,8 @@ bool TestURLLoaderFactory::IsPending(const std::string& url,
     if (candidate.request.url == url) {
       if (request_out)
         *request_out = &candidate.request;
-      return candidate.client.is_connected();
+      if (candidate.client.is_connected())
+        return true;
     }
   }
   return false;
@@ -116,7 +117,6 @@ void TestURLLoaderFactory::SetInterceptor(const Interceptor& interceptor) {
 
 void TestURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<mojom::URLLoader> receiver,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const ResourceRequest& url_request,
@@ -131,8 +131,10 @@ void TestURLLoaderFactory::CreateLoaderAndStart(
 
   PendingRequest pending_request;
   pending_request.client = std::move(client_remote);
-  pending_request.request = url_request;
+  pending_request.request_id = request_id;
   pending_request.options = options;
+  pending_request.request = url_request;
+  pending_request.traffic_annotation = traffic_annotation;
   pending_requests_.push_back(std::move(pending_request));
 }
 
@@ -266,12 +268,16 @@ void TestURLLoaderFactory::SimulateResponse(
   }
 
   if (status.error_code == net::OK) {
-    mojo::DataPipe data_pipe(content.size());
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    CHECK_EQ(
+        mojo::CreateDataPipe(content.size(), producer_handle, consumer_handle),
+        MOJO_RESULT_OK);
     uint32_t bytes_written = content.size();
-    CHECK_EQ(MOJO_RESULT_OK, data_pipe.producer_handle->WriteData(
-                                 content.data(), &bytes_written,
-                                 MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
-    client->OnStartLoadingResponseBody(std::move(data_pipe.consumer_handle));
+    CHECK_EQ(MOJO_RESULT_OK,
+             producer_handle->WriteData(content.data(), &bytes_written,
+                                        MOJO_WRITE_DATA_FLAG_ALL_OR_NONE));
+    client->OnStartLoadingResponseBody(std::move(consumer_handle));
   }
   client->OnComplete(status);
 }

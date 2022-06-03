@@ -38,6 +38,14 @@ SK_API UIImage* SkBitmapToUIImageWithColorSpace(const SkBitmap& skia_bitmap,
 // vector if none can be decoded.
 SK_API std::vector<SkBitmap> ImageDataToSkBitmaps(NSData* image_data);
 
+// Decodes all image representations inside the data into a vector of SkBitmaps.
+// If a representation is bigger than max_size (either width or height), it is
+// ignored.
+// Returns a vector of all the successfully decoded representations or an empty
+// vector if none can be decoded.
+SK_API std::vector<SkBitmap> ImageDataToSkBitmapsWithMaxSize(NSData* image_data,
+                                                             CGFloat max_size);
+
 // Returns a UIColor for an SKColor. Used by iOS downstream.
 SK_API UIColor* UIColorFromSkColor(SkColor color);
 

@@ -8,9 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -21,7 +21,7 @@
 #if defined(OS_IOS)
 #include "base/mac/foundation_util.h"
 #include "ui/gfx/image/image_skia_util_ios.h"
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "ui/gfx/image/image_skia_util_mac.h"
@@ -83,7 +83,7 @@ class ImageRep {
     return const_cast<ImageRepCocoaTouch*>(
         static_cast<const ImageRep*>(this)->AsImageRepCocoaTouch());
   }
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   const ImageRepCocoa* AsImageRepCocoa() const {
     CHECK_EQ(type_, Image::kImageRepCocoa);
     return reinterpret_cast<const ImageRepCocoa*>(this);
@@ -112,6 +112,9 @@ class ImageRepPNG : public ImageRep {
   explicit ImageRepPNG(const std::vector<ImagePNGRep>& image_png_reps)
       : ImageRep(Image::kImageRepPNG), image_png_reps_(image_png_reps) {}
 
+  ImageRepPNG(const ImageRepPNG&) = delete;
+  ImageRepPNG& operator=(const ImageRepPNG&) = delete;
+
   ~ImageRepPNG() override {}
 
   int Width() const override { return Size().width(); }
@@ -139,15 +142,16 @@ class ImageRepPNG : public ImageRep {
   std::vector<ImagePNGRep> image_png_reps_;
 
   // Cached to avoid having to parse the raw data multiple times.
-  mutable base::Optional<gfx::Size> size_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageRepPNG);
+  mutable absl::optional<gfx::Size> size_cache_;
 };
 
 class ImageRepSkia : public ImageRep {
  public:
   explicit ImageRepSkia(ImageSkia image)
       : ImageRep(Image::kImageRepSkia), image_(image) {}
+
+  ImageRepSkia(const ImageRepSkia&) = delete;
+  ImageRepSkia& operator=(const ImageRepSkia&) = delete;
 
   ~ImageRepSkia() override {}
 
@@ -162,8 +166,6 @@ class ImageRepSkia : public ImageRep {
 
  private:
   ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageRepSkia);
 };
 
 #if defined(OS_IOS)
@@ -175,6 +177,9 @@ class ImageRepCocoaTouch : public ImageRep {
     CHECK(image_);
     base::mac::NSObjectRetain(image_);
   }
+
+  ImageRepCocoaTouch(const ImageRepCocoaTouch&) = delete;
+  ImageRepCocoaTouch& operator=(const ImageRepCocoaTouch&) = delete;
 
   ~ImageRepCocoaTouch() override {
     base::mac::NSObjectRelease(image_);
@@ -191,10 +196,8 @@ class ImageRepCocoaTouch : public ImageRep {
 
  private:
   UIImage* image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageRepCocoaTouch);
 };
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 class ImageRepCocoa : public ImageRep {
  public:
   explicit ImageRepCocoa(NSImage* image)
@@ -203,6 +206,9 @@ class ImageRepCocoa : public ImageRep {
     CHECK(image_);
     base::mac::NSObjectRetain(image_);
   }
+
+  ImageRepCocoa(const ImageRepCocoa&) = delete;
+  ImageRepCocoa& operator=(const ImageRepCocoa&) = delete;
 
   ~ImageRepCocoa() override {
     base::mac::NSObjectRelease(image_);
@@ -219,10 +225,8 @@ class ImageRepCocoa : public ImageRep {
 
  private:
   NSImage* image_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageRepCocoa);
 };
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 // The Storage class acts similarly to the pixels in a SkBitmap: the Image
 // class holds a refptr instance of Storage, which in turn holds all the
@@ -235,13 +239,16 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
  public:
   explicit ImageStorage(Image::RepresentationType default_type)
       : default_representation_type_(default_type)
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
         ,
         default_representation_color_space_(
             base::mac::GetGenericRGBColorSpace())
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
   {
   }
+
+  ImageStorage(const ImageStorage&) = delete;
+  ImageStorage& operator=(const ImageStorage&) = delete;
 
   Image::RepresentationType default_representation_type() const {
     DCHECK(IsOnValidSequence());
@@ -281,7 +288,7 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
     return result.first->second.get();
   }
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   void set_default_representation_color_space(CGColorSpaceRef color_space) {
     DCHECK(IsOnValidSequence());
     default_representation_color_space_ = color_space;
@@ -290,7 +297,7 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
     DCHECK(IsOnValidSequence());
     return default_representation_color_space_;
   }
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 
  private:
   friend class base::RefCounted<ImageStorage>;
@@ -301,19 +308,17 @@ class ImageStorage : public base::RefCounted<ImageStorage> {
   // exist in the |representations_| map.
   Image::RepresentationType default_representation_type_;
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   // The default representation's colorspace. This is used for converting to
   // NSImage. This field exists to compensate for PNGCodec not writing or
   // reading colorspace ancillary chunks. (sRGB, iCCP).
   // Not owned.
   CGColorSpaceRef default_representation_color_space_;
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 
   // All the representations of an Image. Size will always be at least one, with
   // more for any converted representations.
   mutable RepresentationMap representations_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageStorage);
 };
 
 }  // namespace internal
@@ -351,7 +356,7 @@ Image::Image(UIImage* image) {
     AddRepresentation(std::make_unique<internal::ImageRepCocoaTouch>(image));
   }
 }
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 Image::Image(NSImage* image) {
   if (image) {
     storage_ = new internal::ImageStorage(Image::kImageRepCocoa);
@@ -369,6 +374,10 @@ Image& Image::operator=(const Image& other) = default;
 Image& Image::operator=(Image&& other) noexcept = default;
 
 Image::~Image() {}
+
+bool Image::operator==(const Image& other) const {
+  return storage_ == other.storage_;
+}
 
 // static
 Image Image::CreateFrom1xBitmap(const SkBitmap& bitmap) {
@@ -423,7 +432,7 @@ const ImageSkia* Image::ToImageSkia() const {
             ImageSkia(ImageSkiaFromUIImage(native_rep->image())));
         break;
       }
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
       case kImageRepCocoa: {
         const internal::ImageRepCocoa* native_rep =
             GetRepresentation(kImageRepCocoa, true)->AsImageRepCocoa();
@@ -469,7 +478,7 @@ UIImage* Image::ToUIImage() const {
   }
   return rep->AsImageRepCocoaTouch()->image();
 }
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 NSImage* Image::ToNSImage() const {
   const internal::ImageRep* rep = GetRepresentation(kImageRepCocoa, false);
   if (!rep) {
@@ -530,7 +539,7 @@ scoped_refptr<base::RefCountedMemory> Image::As1xPNGBytes() const {
           cocoa_touch_rep->image());
       break;
     }
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
     case kImageRepCocoa: {
       const internal::ImageRepCocoa* cocoa_rep =
           GetRepresentation(kImageRepCocoa, true)->AsImageRepCocoa();
@@ -575,7 +584,7 @@ ImageSkia Image::AsImageSkia() const {
   return IsEmpty() ? ImageSkia() : *ToImageSkia();
 }
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 NSImage* Image::AsNSImage() const {
   return IsEmpty() ? nil : ToNSImage();
 }
@@ -611,12 +620,12 @@ gfx::Size Image::Size() const {
   return GetRepresentation(DefaultRepresentationType(), true)->Size();
 }
 
-#if defined(OS_MACOSX)  && !defined(OS_IOS)
+#if defined(OS_MAC)
 void Image::SetSourceColorSpace(CGColorSpaceRef color_space) {
   if (storage())
     storage()->set_default_representation_color_space(color_space);
 }
-#endif  // defined(OS_MACOSX) && !defined(OS_IOS)
+#endif  // defined(OS_MAC)
 
 Image::RepresentationType Image::DefaultRepresentationType() const {
   CHECK(storage());

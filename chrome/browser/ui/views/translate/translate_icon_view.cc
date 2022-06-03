@@ -15,19 +15,26 @@
 #include "chrome/browser/ui/views/translate/translate_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/translate/core/browser/language_state.h"
+#include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 
-TranslateIconView::TranslateIconView(CommandUpdater* command_updater,
-                                     PageActionIconView::Delegate* delegate)
-    : PageActionIconView(command_updater, IDC_TRANSLATE_PAGE, delegate) {
-  DCHECK(delegate);
+TranslateIconView::TranslateIconView(
+    CommandUpdater* command_updater,
+    IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+    PageActionIconView::Delegate* page_action_icon_delegate)
+    : PageActionIconView(command_updater,
+                         IDC_TRANSLATE_PAGE,
+                         icon_label_bubble_delegate,
+                         page_action_icon_delegate) {
   SetID(VIEW_ID_TRANSLATE_BUTTON);
 }
 
 TranslateIconView::~TranslateIconView() {}
 
-views::BubbleDialogDelegateView* TranslateIconView::GetBubble() const {
+views::BubbleDialogDelegate* TranslateIconView::GetBubble() const {
   return TranslateBubbleView::GetCurrentBubble();
 }
 
@@ -39,6 +46,11 @@ void TranslateIconView::UpdateImpl() {
       ChromeTranslateClient::FromWebContents(GetWebContents())
           ->GetLanguageState();
   bool enabled = language_state.translate_enabled();
+
+  ChromeTranslateClient::FromWebContents(GetWebContents())
+      ->GetTranslateManager()
+      ->GetActiveTranslateMetricsLogger()
+      ->LogOmniboxIconChange(enabled);
 
   // Enable Translate page command or disable icon.
   enabled &= SetCommandEnabled(enabled);
@@ -60,6 +72,9 @@ const gfx::VectorIcon& TranslateIconView::GetVectorIcon() const {
   return kTranslateIcon;
 }
 
-base::string16 TranslateIconView::GetTextForTooltipAndAccessibleName() const {
+std::u16string TranslateIconView::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(IDS_TOOLTIP_TRANSLATE);
 }
+
+BEGIN_METADATA(TranslateIconView, PageActionIconView)
+END_METADATA

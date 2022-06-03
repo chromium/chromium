@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_FACTORY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REACTION_FACTORY_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -13,7 +14,6 @@ namespace blink {
 class CustomElementDefinition;
 class CustomElementReaction;
 class Document;
-class FileOrUSVStringOrFormData;
 class HTMLFormElement;
 class QualifiedName;
 
@@ -22,8 +22,7 @@ class CustomElementReactionFactory {
 
  public:
   static CustomElementReaction& CreateUpgrade(
-      CustomElementDefinition& definition,
-      bool upgrade_invisible_elements);
+      CustomElementDefinition& definition);
   static CustomElementReaction& CreateConnected(
       CustomElementDefinition& definition);
   static CustomElementReaction& CreateDisconnected(
@@ -47,7 +46,7 @@ class CustomElementReactionFactory {
       bool is_disabled);
   static CustomElementReaction& CreateFormStateRestore(
       CustomElementDefinition& definition,
-      const FileOrUSVStringOrFormData& value,
+      const V8ControlValue* value,
       const String& mode);
 };
 

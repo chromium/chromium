@@ -4,7 +4,7 @@
 
 #include "extensions/browser/app_window/app_window_client.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace extensions {
 

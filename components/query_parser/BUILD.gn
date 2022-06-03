@@ -33,9 +33,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("query_parser_fuzzer") {
-  sources = [
-    "query_parser_fuzzer.cc",
-  ]
+  sources = [ "query_parser_fuzzer.cc" ]
   deps = [
     ":query_parser",
     "//base:base",

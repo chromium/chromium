@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/assist_ranker/ranker_example_util.h"
+
 #include <math.h>
 
-#include "components/assist_ranker/ranker_example_util.h"
 #include "base/bit_cast.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/metrics/metrics_hashes.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 
 namespace assist_ranker {

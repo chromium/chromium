@@ -9,6 +9,10 @@
 
 namespace net {
 
+// Returns the FilePath object representing the absolute path of //net in the
+// source tree.
+base::FilePath GetTestNetDirectory();
+
 // Returns the FilePath object representing the absolute path in the source
 // tree that contains net data files.
 base::FilePath GetTestNetDataDirectory();

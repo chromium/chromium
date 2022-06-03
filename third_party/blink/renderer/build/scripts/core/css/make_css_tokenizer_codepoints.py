@@ -27,31 +27,32 @@ const unsigned codePointsNumber = {array_size};
 
 
 def token_type(i):
-    codepoints = {'(': 'LeftParenthesis',
-                  ')': 'RightParenthesis',
-                  '[': 'LeftBracket',
-                  ']': 'RightBracket',
-                  '{': 'LeftBrace',
-                  '}': 'RightBrace',
-                  '+': 'PlusOrFullStop',
-                  '.': 'PlusOrFullStop',
-                  '-': 'HyphenMinus',
-                  '*': 'Asterisk',
-                  '<': 'LessThan',
-                  ',': 'Comma',
-                  '/': 'Solidus',
-                  '\\': 'ReverseSolidus',
-                  ':': 'Colon',
-                  ';': 'SemiColon',
-                  '#': 'Hash',
-                  '^': 'CircumflexAccent',
-                  '$': 'DollarSign',
-                  '|': 'VerticalLine',
-                  '~': 'Tilde',
-                  '@': 'CommercialAt',
-                  'u': 'LetterU',
-                  'U': 'LetterU',
-                  }
+    codepoints = {
+        '(': 'LeftParenthesis',
+        ')': 'RightParenthesis',
+        '[': 'LeftBracket',
+        ']': 'RightBracket',
+        '{': 'LeftBrace',
+        '}': 'RightBrace',
+        '+': 'PlusOrFullStop',
+        '.': 'PlusOrFullStop',
+        '-': 'HyphenMinus',
+        '*': 'Asterisk',
+        '<': 'LessThan',
+        ',': 'Comma',
+        '/': 'Solidus',
+        '\\': 'ReverseSolidus',
+        ':': 'Colon',
+        ';': 'SemiColon',
+        '#': 'Hash',
+        '^': 'CircumflexAccent',
+        '$': 'DollarSign',
+        '|': 'VerticalLine',
+        '~': 'Tilde',
+        '@': 'CommercialAt',
+        'u': 'LetterU',
+        'U': 'LetterU',
+    }
     c = chr(i)
     if c in codepoints:
         return codepoints[c]
@@ -79,10 +80,15 @@ class MakeCSSTokenizerCodePointsWriter(in_generator.Writer):
 
     def generate(self):
         array_size = 128  # SCHAR_MAX + 1
-        token_lines = ['    &CSSTokenizer::%s,' % token_type(i)
-                        if token_type(i) else '    0,'
-                        for i in range(array_size)]
-        return CPP_TEMPLATE.format(array_size=array_size, token_lines='\n'.join(token_lines), module_pyname=module_pyname)
+        token_lines = [
+            '    &CSSTokenizer::%s,' % token_type(i)
+            if token_type(i) else '    0,' for i in range(array_size)
+        ]
+        return CPP_TEMPLATE.format(
+            array_size=array_size,
+            token_lines='\n'.join(token_lines),
+            module_pyname=module_pyname)
+
 
 if __name__ == '__main__':
     in_generator.Maker(MakeCSSTokenizerCodePointsWriter).main(sys.argv)

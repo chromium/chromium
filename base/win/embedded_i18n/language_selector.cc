@@ -12,8 +12,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/i18n.h"
@@ -268,7 +267,7 @@ void SelectLanguageMatchingCandidate(
   DCHECK(matched_candidate);
   DCHECK(selected_language);
   DCHECK(!languages_to_offset.empty());
-  DCHECK_EQ(size_t{*selected_offset}, languages_to_offset.size());
+  DCHECK_EQ(static_cast<size_t>(*selected_offset), languages_to_offset.size());
   DCHECK(matched_candidate->empty());
   DCHECK(selected_language->empty());
   // Note: While DCHECK_IS_ON() seems redundant here, this is required to avoid

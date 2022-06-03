@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "chrome/browser/prefs/pref_service_incognito_whitelist.h"
+#include "chrome/browser/prefs/pref_service_incognito_allowlist.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 
@@ -23,5 +23,5 @@ CreateIncognitoPrefServiceSyncable(
     PrefStore* incognito_extension_pref_store) {
   return pref_service->CreateIncognitoPrefService(
       incognito_extension_pref_store,
-      prefs::GetIncognitoPersistentPrefsWhitelist());
+      prefs::GetIncognitoPersistentPrefsAllowlist());
 }

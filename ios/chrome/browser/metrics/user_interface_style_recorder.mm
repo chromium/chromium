@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/metrics/user_interface_style_recorder.h"
 
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
 

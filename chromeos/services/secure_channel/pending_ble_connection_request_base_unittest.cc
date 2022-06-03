@@ -50,6 +50,12 @@ class TestPendingBleConnectionRequestBase
 }  // namespace
 
 class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
+ public:
+  SecureChannelPendingBleConnectionRequestBaseTest(
+      const SecureChannelPendingBleConnectionRequestBaseTest&) = delete;
+  SecureChannelPendingBleConnectionRequestBaseTest& operator=(
+      const SecureChannelPendingBleConnectionRequestBaseTest&) = delete;
+
  protected:
   SecureChannelPendingBleConnectionRequestBaseTest() = default;
   ~SecureChannelPendingBleConnectionRequestBaseTest() override = default;
@@ -76,7 +82,7 @@ class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
         test_pending_ble_connection_request_.get()));
   }
 
-  const base::Optional<
+  const absl::optional<
       PendingConnectionRequestDelegate::FailedConnectionReason>&
   GetFailedConnectionReason() {
     return fake_pending_connection_request_delegate_
@@ -84,7 +90,7 @@ class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
             test_pending_ble_connection_request_->GetRequestId());
   }
 
-  const base::Optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<mojom::ConnectionAttemptFailureReason>&
   GetConnectionAttemptFailureReason() const {
     return fake_client_connection_parameters_->failure_reason();
   }
@@ -107,8 +113,6 @@ class SecureChannelPendingBleConnectionRequestBaseTest : public testing::Test {
 
   std::unique_ptr<TestPendingBleConnectionRequestBase>
       test_pending_ble_connection_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelPendingBleConnectionRequestBaseTest);
 };
 
 TEST_F(SecureChannelPendingBleConnectionRequestBaseTest,

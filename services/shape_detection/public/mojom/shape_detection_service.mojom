@@ -4,11 +4,20 @@
 
 module shape_detection.mojom;
 
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/shape_detection/public/mojom/barcodedetection_provider.mojom";
 import "services/shape_detection/public/mojom/facedetection_provider.mojom";
 import "services/shape_detection/public/mojom/textdetection.mojom";
 
-// The main interface to the Shape Detection service.
+[EnableIf=has_shape_detection_utility]
+const sandbox.mojom.Sandbox kShapeDetectionSandbox = sandbox.mojom.Sandbox.kUtility;
+[EnableIfNot=has_shape_detection_utility]
+const sandbox.mojom.Sandbox kShapeDetectionSandbox = sandbox.mojom.Sandbox.kGpu;
+
+// The main interface to the Shape Detection service. On ChromeOS Ash this is
+// launched as a service and runs in a utility process, but is otherwise bound
+// in the existing GPU process.
+[ServiceSandbox=kShapeDetectionSandbox]
 interface ShapeDetectionService {
   // Binds an endpoint which can be used to detect barcodes in images.
   BindBarcodeDetectionProvider(

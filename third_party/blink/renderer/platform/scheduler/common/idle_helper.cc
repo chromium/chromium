@@ -18,6 +18,9 @@ namespace scheduler {
 
 using base::sequence_manager::TaskQueue;
 
+// static
+constexpr base::TimeDelta IdleHelper::kMaximumIdlePeriod;
+
 IdleHelper::IdleHelper(
     SchedulerHelper* helper,
     Delegate* delegate,
@@ -81,34 +84,30 @@ IdleHelper::IdlePeriodState IdleHelper::ComputeNewLongIdlePeriodState(
     return IdlePeriodState::kNotInIdlePeriod;
   }
 
-  base::sequence_manager::LazyNow lazy_now(now);
-  base::Optional<base::TimeDelta> delay_till_next_task =
-      helper_->real_time_domain()->DelayTillNextTask(&lazy_now);
+  auto wake_up = helper_->GetNextDelayedWakeUp();
 
-  base::TimeDelta max_long_idle_period_duration =
-      base::TimeDelta::FromMilliseconds(kMaximumIdlePeriodMillis);
   base::TimeDelta long_idle_period_duration;
 
-  if (delay_till_next_task) {
+  if (wake_up) {
     // Limit the idle period duration to be before the next pending task.
     long_idle_period_duration =
-        std::min(*delay_till_next_task, max_long_idle_period_duration);
+        std::min(wake_up->time - now, kMaximumIdlePeriod);
   } else {
-    long_idle_period_duration = max_long_idle_period_duration;
+    long_idle_period_duration = kMaximumIdlePeriod;
   }
 
   if (long_idle_period_duration >=
-      base::TimeDelta::FromMilliseconds(kMinimumIdlePeriodDurationMillis)) {
+      base::Milliseconds(kMinimumIdlePeriodDurationMillis)) {
     *next_long_idle_period_delay_out = long_idle_period_duration;
-    if (!idle_queue_->HasTaskToRunImmediately())
+    if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask())
       return IdlePeriodState::kInLongIdlePeriodPaused;
-    if (long_idle_period_duration == max_long_idle_period_duration)
+    if (long_idle_period_duration == kMaximumIdlePeriod)
       return IdlePeriodState::kInLongIdlePeriodWithMaxDeadline;
     return IdlePeriodState::kInLongIdlePeriod;
   } else {
     // If we can't start the idle period yet then try again after wake-up.
-    *next_long_idle_period_delay_out = base::TimeDelta::FromMilliseconds(
-        kRetryEnableLongIdlePeriodDelayMillis);
+    *next_long_idle_period_delay_out =
+        base::Milliseconds(kRetryEnableLongIdlePeriodDelayMillis);
     return IdlePeriodState::kNotInIdlePeriod;
   }
 }
@@ -139,7 +138,7 @@ void IdleHelper::EnableLongIdlePeriod() {
   EndIdlePeriod();
 
   if (ShouldWaitForQuiescence()) {
-    helper_->ControlTaskQueue()->task_runner()->PostDelayedTask(
+    helper_->ControlTaskRunner()->PostDelayedTask(
         FROM_HERE, enable_next_long_idle_period_closure_.GetCallback(),
         required_quiescence_duration_before_long_idle_period_);
     delegate_->IsNotQuiescent();
@@ -155,7 +154,7 @@ void IdleHelper::EnableLongIdlePeriod() {
                     now + next_long_idle_period_delay);
   } else {
     // Otherwise wait for the next long idle period delay before trying again.
-    helper_->ControlTaskQueue()->task_runner()->PostDelayedTask(
+    helper_->ControlTaskRunner()->PostDelayedTask(
         FROM_HERE, enable_next_long_idle_period_closure_.GetCallback(),
         next_long_idle_period_delay);
   }
@@ -174,7 +173,7 @@ void IdleHelper::StartIdlePeriod(IdlePeriodState new_state,
 
   base::TimeDelta idle_period_duration(idle_period_deadline - now);
   if (idle_period_duration <
-      base::TimeDelta::FromMilliseconds(kMinimumIdlePeriodDurationMillis)) {
+      base::Milliseconds(kMinimumIdlePeriodDurationMillis)) {
     TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                  "NotStartingIdlePeriodBecauseDeadlineIsTooClose",
                  "idle_period_duration_ms",
@@ -248,7 +247,7 @@ void IdleHelper::UpdateLongIdlePeriodStateAfterIdleTask() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("renderer.scheduler"),
                "UpdateLongIdlePeriodStateAfterIdleTask");
 
-  if (!idle_queue_->HasTaskToRunImmediately()) {
+  if (!idle_queue_->HasTaskToRunImmediatelyOrReadyDelayedTask()) {
     // If there are no more idle tasks then pause long idle period ticks until a
     // new idle task is posted.
     state_.UpdateState(IdlePeriodState::kInLongIdlePeriodPaused,
@@ -263,7 +262,7 @@ void IdleHelper::UpdateLongIdlePeriodStateAfterIdleTask() {
     if (next_long_idle_period_delay.is_zero()) {
       EnableLongIdlePeriod();
     } else {
-      helper_->ControlTaskQueue()->task_runner()->PostDelayedTask(
+      helper_->ControlTaskRunner()->PostDelayedTask(
           FROM_HERE, enable_next_long_idle_period_closure_.GetCallback(),
           next_long_idle_period_delay);
     }
@@ -283,7 +282,7 @@ void IdleHelper::OnIdleTaskPosted() {
   if (idle_task_runner_->RunsTasksInCurrentSequence()) {
     OnIdleTaskPostedOnMainThread();
   } else {
-    helper_->ControlTaskQueue()->task_runner()->PostTask(
+    helper_->ControlTaskRunner()->PostTask(
         FROM_HERE, on_idle_task_posted_closure_.GetCallback());
   }
 }
@@ -296,7 +295,7 @@ void IdleHelper::OnIdleTaskPostedOnMainThread() {
   delegate_->OnPendingTasksChanged(true);
   if (state_.idle_period_state() == IdlePeriodState::kInLongIdlePeriodPaused) {
     // Restart long idle period ticks.
-    helper_->ControlTaskQueue()->task_runner()->PostTask(
+    helper_->ControlTaskRunner()->PostTask(
         FROM_HERE, enable_next_long_idle_period_closure_.GetCallback());
   }
 }
@@ -439,9 +438,15 @@ void IdleHelper::State::TraceEventIdlePeriodStateChange(
       !new_running_idle_task) {
     running_idle_task_for_tracing_ = false;
     if (!idle_period_deadline_.is_null() && now > idle_period_deadline_) {
-      TRACE_EVENT_ASYNC_STEP_INTO_WITH_TIMESTAMP0(
-          "renderer.scheduler", idle_period_tracing_name_, this,
-          "DeadlineOverrun",
+      if (last_sub_trace_event_name_) {
+        TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler",
+                                        last_sub_trace_event_name_,
+                                        TRACE_ID_LOCAL(this));
+      }
+      last_sub_trace_event_name_ = "DeadlineOverrun";
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
+          "renderer.scheduler", last_sub_trace_event_name_,
+          TRACE_ID_LOCAL(this),
           std::max(idle_period_deadline_, last_idle_task_trace_time_));
     }
   }
@@ -449,35 +454,46 @@ void IdleHelper::State::TraceEventIdlePeriodStateChange(
   if (IsInIdlePeriod(new_state)) {
     if (!idle_period_trace_event_started_) {
       idle_period_trace_event_started_ = true;
-      TRACE_EVENT_ASYNC_BEGIN1("renderer.scheduler", idle_period_tracing_name_,
-                               this, "idle_period_length_ms",
-                               (new_deadline - now).InMillisecondsF());
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
+          "renderer.scheduler", idle_period_tracing_name_, TRACE_ID_LOCAL(this),
+          "idle_period_length_ms", (new_deadline - now).InMillisecondsF());
     }
+
+    const char* new_sub_trace_event_name = nullptr;
 
     if (new_running_idle_task) {
       last_idle_task_trace_time_ = now;
       running_idle_task_for_tracing_ = true;
-      TRACE_EVENT_ASYNC_STEP_INTO0("renderer.scheduler",
-                                   idle_period_tracing_name_, this,
-                                   "RunningIdleTask");
+      new_sub_trace_event_name = "RunningIdleTask";
     } else if (new_state == IdlePeriodState::kInShortIdlePeriod) {
-      TRACE_EVENT_ASYNC_STEP_INTO0("renderer.scheduler",
-                                   idle_period_tracing_name_, this,
-                                   "ShortIdlePeriod");
+      new_sub_trace_event_name = "ShortIdlePeriod";
     } else if (IsInLongIdlePeriod(new_state) &&
                new_state != IdlePeriodState::kInLongIdlePeriodPaused) {
-      TRACE_EVENT_ASYNC_STEP_INTO0("renderer.scheduler",
-                                   idle_period_tracing_name_, this,
-                                   "LongIdlePeriod");
+      new_sub_trace_event_name = "LongIdlePeriod";
     } else if (new_state == IdlePeriodState::kInLongIdlePeriodPaused) {
-      TRACE_EVENT_ASYNC_STEP_INTO0("renderer.scheduler",
-                                   idle_period_tracing_name_, this,
-                                   "LongIdlePeriodPaused");
+      new_sub_trace_event_name = "LongIdlePeriodPaused";
+    }
+
+    if (new_sub_trace_event_name) {
+      if (last_sub_trace_event_name_) {
+        TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler",
+                                        last_sub_trace_event_name_,
+                                        TRACE_ID_LOCAL(this));
+      }
+      TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+          "renderer.scheduler", new_sub_trace_event_name, TRACE_ID_LOCAL(this));
+      last_sub_trace_event_name_ = new_sub_trace_event_name;
     }
   } else if (idle_period_trace_event_started_) {
+    if (last_sub_trace_event_name_) {
+      TRACE_EVENT_NESTABLE_ASYNC_END0("renderer.scheduler",
+                                      last_sub_trace_event_name_,
+                                      TRACE_ID_LOCAL(this));
+      last_sub_trace_event_name_ = nullptr;
+    }
+    TRACE_EVENT_NESTABLE_ASYNC_END0(
+        "renderer.scheduler", idle_period_tracing_name_, TRACE_ID_LOCAL(this));
     idle_period_trace_event_started_ = false;
-    TRACE_EVENT_ASYNC_END0("renderer.scheduler", idle_period_tracing_name_,
-                           this);
   }
 }
 

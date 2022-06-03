@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<title>Length unit ch used in webkit-scrollbar should be recalculated after loading a web font</title>
+<link rel="help" href="https://www.w3.org/TR/css-values-4/#font-relative-lengths">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4">
+<link rel="author" href="xiaochengh@chromium.org">
+<style>
+.container {
+  width: 600px;
+  height: 400px;
+  overflow: scroll;
+}
+
+.container::-webkit-scrollbar {
+  width: 25px; /* Refers to self font size. */
+  background-color: gray;
+}
+</style>
+
+<div class="container"></div>

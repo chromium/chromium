@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_REGISTRY_IMPL_H_
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_REGISTRY_IMPL_H_
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromeos/services/device_sync/cryptauth_key_registry.h"
 
@@ -24,11 +23,14 @@ class CryptAuthKeyRegistryImpl : public CryptAuthKeyRegistry {
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthKeyRegistry> BuildInstance(
+    static std::unique_ptr<CryptAuthKeyRegistry> Create(
         PrefService* pref_service);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<CryptAuthKeyRegistry> CreateInstance(
+        PrefService* pref_service) = 0;
 
    private:
     static Factory* test_factory_;
@@ -36,6 +38,9 @@ class CryptAuthKeyRegistryImpl : public CryptAuthKeyRegistry {
 
   // Registers the prefs used by this class to the given |registry|.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  CryptAuthKeyRegistryImpl(const CryptAuthKeyRegistryImpl&) = delete;
+  CryptAuthKeyRegistryImpl& operator=(const CryptAuthKeyRegistryImpl&) = delete;
 
   ~CryptAuthKeyRegistryImpl() override;
 
@@ -53,8 +58,6 @@ class CryptAuthKeyRegistryImpl : public CryptAuthKeyRegistry {
   // Contains preferences that outlive the lifetime of this object and across
   // process restarts. Not owned and must outlive this instance.
   PrefService* pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyRegistryImpl);
 };
 
 }  // namespace device_sync

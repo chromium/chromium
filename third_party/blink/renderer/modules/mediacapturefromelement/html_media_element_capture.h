@@ -25,4 +25,4 @@ class HTMLMediaElementCapture {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_HTML_MEDIA_ELEMENT_CAPTURE_H_

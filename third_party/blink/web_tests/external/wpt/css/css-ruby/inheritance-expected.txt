@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Property ruby-align has initial value space-around assert_true: ruby-align doesn't seem to be supported in the computed style expected true got false
+FAIL Property ruby-align inherits assert_true: ruby-align doesn't seem to be supported in the computed style expected true got false
+FAIL Property ruby-position has initial value alternate assert_equals: expected "alternate" but got "over"
+PASS Property ruby-position inherits
+Harness: the test ran to completion.
+

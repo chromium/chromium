@@ -7,16 +7,12 @@ source_set("feature_flags") {
     "browsing_data_features.cc",
     "browsing_data_features.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("browsing_data_remove_mask") {
-  sources = [
-    "browsing_data_remove_mask.h",
-  ]
+  sources = [ "browsing_data_remove_mask.h" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -24,8 +20,8 @@ source_set("browsing_data") {
   sources = [
     "browsing_data_counter_wrapper.cc",
     "browsing_data_counter_wrapper.h",
-    "browsing_data_remover.cc",
     "browsing_data_remover.h",
+    "browsing_data_remover.mm",
     "browsing_data_remover_factory.h",
     "browsing_data_remover_factory.mm",
     "browsing_data_remover_impl.h",
@@ -33,6 +29,8 @@ source_set("browsing_data") {
     "browsing_data_remover_observer.h",
     "browsing_data_remover_observer_bridge.h",
     "browsing_data_remover_observer_bridge.mm",
+    "sessions_storage_util.h",
+    "sessions_storage_util.mm",
   ]
   deps = [
     ":counters",
@@ -49,6 +47,7 @@ source_set("browsing_data") {
     "//components/open_from_clipboard",
     "//components/password_manager/core/browser",
     "//components/prefs",
+    "//components/safe_browsing/core/common",
     "//components/sessions",
     "//components/signin/ios/browser",
     "//components/translate/core/browser:browser",
@@ -59,8 +58,10 @@ source_set("browsing_data") {
     "//ios/chrome/browser/external_files",
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/language",
+    "//ios/chrome/browser/optimization_guide",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/reading_list:reading_list_remover",
+    "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:serialisation",
@@ -69,6 +70,8 @@ source_set("browsing_data") {
     "//ios/chrome/browser/snapshots",
     "//ios/chrome/browser/sync",
     "//ios/chrome/browser/translate:translate",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web/font_size",
     "//ios/chrome/browser/webdata_services",
     "//ios/net",
     "//ios/public/provider/chrome/browser",
@@ -139,11 +142,13 @@ source_set("test_support") {
     "fake_browsing_data_remover.mm",
     "fake_browsing_data_remover_observer.h",
     "fake_browsing_data_remover_observer.mm",
+    "session_storage_util_unittest.mm",
   ]
 
   deps = [
     ":browsing_data",
     "//base",
+    "//testing/gtest",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]

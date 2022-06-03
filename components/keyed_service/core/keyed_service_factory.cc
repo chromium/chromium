@@ -6,11 +6,12 @@
 
 #include <utility>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/trace_event/trace_event.h"
+#include "base/check.h"
+#include "base/containers/contains.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "services/tracing/public/cpp/perfetto/macros.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_keyed_service.pbzero.h"
 
 KeyedServiceFactory::KeyedServiceFactory(const char* name,
                                          DependencyManager* manager,
@@ -48,8 +49,10 @@ KeyedService* KeyedServiceFactory::SetTestingFactoryAndUse(
 
 KeyedService* KeyedServiceFactory::GetServiceForContext(void* context,
                                                         bool create) {
-  TRACE_EVENT1("browser,startup", "KeyedServiceFactory::GetServiceForContext",
-               "service_name", name());
+  TRACE_EVENT("browser,startup", "KeyedServiceFactory::GetServiceForContext",
+              [this](perfetto::EventContext ctx) {
+                ctx.event()->set_chrome_keyed_service()->set_name(name());
+              });
   context = GetContextToUse(context);
   if (!context)
     return nullptr;

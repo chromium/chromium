@@ -12,16 +12,14 @@
 
 namespace device {
 
-void RecordConnectedGamepad(uint16_t vendor_id, uint16_t product_id) {
-  GamepadId gamepad_id =
-      GamepadIdList::Get().GetGamepadId(vendor_id, product_id);
+void RecordConnectedGamepad(GamepadId gamepad_id) {
   // Avoid recording metrics for non-gamepads.
   if (gamepad_id == GamepadId::kUnknownGamepad)
     return;
   auto gamepad_id_as_underlying_type =
       static_cast<std::underlying_type<GamepadId>::type>(gamepad_id);
   base::UmaHistogramSparse("Gamepad.KnownGamepadConnectedWithId",
-                           int32_t{gamepad_id_as_underlying_type});
+                           static_cast<int32_t>(gamepad_id_as_underlying_type));
 }
 
 void RecordUnknownGamepad(GamepadSource source) {

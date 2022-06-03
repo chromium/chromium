@@ -8,16 +8,27 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/optional.h"
+#include "build/build_config.h"
+#include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
-#include "net/dns/host_resolver_source.h"
+#include "net/dns/public/host_resolver_source.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
+#include "net/net_buildflags.h"
 #include "services/network/host_resolver_mdns_listener.h"
 #include "services/network/public/cpp/host_resolver_mojom_traits.h"
+#include "services/network/public/mojom/host_resolver.mojom-shared.h"
+#include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/resolve_host_request.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_ANDROID)
+#include "services/network/public/cpp/features.h"
+#include "services/network/radio_monitor_android.h"
+#endif
 
 namespace network {
 namespace {
@@ -26,25 +37,35 @@ static base::LazyInstance<HostResolver::ResolveHostCallback>::Leaky
 }
 
 namespace {
-base::Optional<net::HostResolver::ResolveHostParameters>
+absl::optional<net::HostResolver::ResolveHostParameters>
 ConvertOptionalParameters(
     const mojom::ResolveHostParametersPtr& mojo_parameters) {
   if (!mojo_parameters)
-    return base::nullopt;
+    return absl::nullopt;
 
   net::HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = mojo_parameters->dns_query_type;
   parameters.initial_priority = mojo_parameters->initial_priority;
   parameters.source = mojo_parameters->source;
-  parameters.cache_usage =
-      mojo_parameters->allow_cached_response
-          ? net::HostResolver::ResolveHostParameters::CacheUsage::ALLOWED
-          : net::HostResolver::ResolveHostParameters::CacheUsage::DISALLOWED;
+  switch (mojo_parameters->cache_usage) {
+    case mojom::ResolveHostParameters::CacheUsage::ALLOWED:
+      parameters.cache_usage =
+          net::HostResolver::ResolveHostParameters::CacheUsage::ALLOWED;
+      break;
+    case mojom::ResolveHostParameters::CacheUsage::STALE_ALLOWED:
+      parameters.cache_usage =
+          net::HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
+      break;
+    case mojom::ResolveHostParameters::CacheUsage::DISALLOWED:
+      parameters.cache_usage =
+          net::HostResolver::ResolveHostParameters::CacheUsage::DISALLOWED;
+      break;
+  }
   parameters.include_canonical_name = mojo_parameters->include_canonical_name;
   parameters.loopback_only = mojo_parameters->loopback_only;
   parameters.is_speculative = mojo_parameters->is_speculative;
-  parameters.secure_dns_mode_override = mojo::FromOptionalSecureDnsMode(
-      mojo_parameters->secure_dns_mode_override);
+  mojo::EnumTraits<mojom::SecureDnsPolicy, net::SecureDnsPolicy>::FromMojom(
+      mojo_parameters->secure_dns_policy, &parameters.secure_dns_policy);
   return parameters;
 }
 }  // namespace
@@ -54,12 +75,16 @@ HostResolver::HostResolver(
     ConnectionShutdownCallback connection_shutdown_callback,
     net::HostResolver* internal_resolver,
     net::NetLog* net_log)
-    : receiver_(this, std::move(resolver_receiver)),
+    : receiver_(this),
+      pending_receiver_(std::move(resolver_receiver)),
       connection_shutdown_callback_(std::move(connection_shutdown_callback)),
       internal_resolver_(internal_resolver),
       net_log_(net_log) {
-  receiver_.set_disconnect_handler(
-      base::BindOnce(&HostResolver::OnConnectionError, base::Unretained(this)));
+  // Bind the pending receiver asynchronously to give the resolver a chance
+  // to set up (some resolvers need to obtain the system config asynchronously).
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&HostResolver::AsyncSetUp, weak_factory_.GetWeakPtr()));
 }
 
 HostResolver::HostResolver(net::HostResolver* internal_resolver,
@@ -102,6 +127,13 @@ void HostResolver::ResolveHost(
   if (rv != net::ERR_IO_PENDING)
     return;
 
+#if defined(OS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kRecordRadioWakeupTrigger)) {
+    RadioMonitorAndroid::GetInstance().MaybeRecordResolveHost(
+        optional_parameters);
+  }
+#endif
+
   // Store the request with the resolver so it can be cancelled on resolver
   // shutdown.
   bool insertion_result = requests_.emplace(std::move(request)).second;
@@ -138,6 +170,12 @@ size_t HostResolver::GetNumOutstandingRequestsForTesting() const {
 void HostResolver::SetResolveHostCallbackForTesting(
     ResolveHostCallback callback) {
   resolve_host_callback.Get() = std::move(callback);
+}
+
+void HostResolver::AsyncSetUp() {
+  receiver_.Bind(std::move(pending_receiver_));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&HostResolver::OnConnectionError, base::Unretained(this)));
 }
 
 void HostResolver::OnResolveHostComplete(ResolveHostRequest* request,

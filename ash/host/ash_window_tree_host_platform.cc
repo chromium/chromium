@@ -8,9 +8,6 @@
 
 #include "ash/host/root_window_transformer.h"
 #include "ash/host/transformer_helper.h"
-#include "ash/shell.h"
-#include "ash/shell_delegate.h"
-#include "ash/window_factory.h"
 #include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/aura/null_window_targeter.h"
@@ -22,27 +19,44 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/ozone/public/input_controller.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ash {
 
+class ScopedEnableUnadjustedMouseEventsOzone
+    : public aura::ScopedEnableUnadjustedMouseEvents {
+ public:
+  explicit ScopedEnableUnadjustedMouseEventsOzone(
+      ui::InputController* input_controller) {
+    input_controller_ = input_controller;
+    input_controller_->SuspendMouseAcceleration();
+  }
+
+  ~ScopedEnableUnadjustedMouseEventsOzone() override {
+    input_controller_->EndMouseAccelerationSuspension();
+  }
+
+ private:
+  ui::InputController* input_controller_;
+};
+
 AshWindowTreeHostPlatform::AshWindowTreeHostPlatform(
     ui::PlatformWindowInitProperties properties)
     : aura::WindowTreeHostPlatform(std::move(properties),
-                                   window_factory::NewWindow()),
-      transformer_helper_(this) {
+                                   std::make_unique<aura::Window>(nullptr)),
+      transformer_helper_(this),
+      input_controller_(
+          ui::OzonePlatform::GetInstance()->GetInputController()) {
   CommonInit();
 }
 
 AshWindowTreeHostPlatform::AshWindowTreeHostPlatform()
-    : aura::WindowTreeHostPlatform(window_factory::NewWindow()),
+    : aura::WindowTreeHostPlatform(std::make_unique<aura::Window>(nullptr)),
       transformer_helper_(this) {
-  CreateCompositor(viz::FrameSinkId(),
-                   /* force_software_compositor */ false,
+  CreateCompositor(/* force_software_compositor */ false,
                    /* use_external_begin_frame_control */ false);
   CommonInit();
 }
@@ -155,6 +169,12 @@ void AshWindowTreeHostPlatform::SetTapToClickPaused(bool state) {
   // Temporarily pause tap-to-click when the cursor is hidden.
   ui::OzonePlatform::GetInstance()->GetInputController()->SetTapToClickPaused(
       state);
+}
+
+std::unique_ptr<aura::ScopedEnableUnadjustedMouseEvents>
+AshWindowTreeHostPlatform::RequestUnadjustedMovement() {
+  return std::make_unique<ScopedEnableUnadjustedMouseEventsOzone>(
+      input_controller_);
 }
 
 void AshWindowTreeHostPlatform::DispatchEvent(ui::Event* event) {

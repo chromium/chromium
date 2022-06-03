@@ -1,5 +1,6 @@
 include_rules = [
   "+apps",
+  "+ash/components/audio",
   "+chromeos",
   "+components/keep_alive_registry",
   "+components/keyed_service",
@@ -10,6 +11,7 @@ include_rules = [
   "+components/sessions",
   "+components/update_client",
   "+components/user_prefs",
+  "+components/value_store",
   "+components/web_modal",
   "+content/public/browser",
 
@@ -27,8 +29,10 @@ include_rules = [
   "+net",
 
   "+ppapi",
-  "+services/network/session_cleanup_cookie_store.h",
+  "+services/metrics/public/cpp/ukm_source_id.h",
+  "+services/network/public/cpp/session_cookie_delete_predicate.h",
   "+services/network/public/mojom/cors_origin_pattern.mojom.h",
+  "+services/network/public/mojom/fetch_api.mojom.h",
   "+services/network/public/mojom/url_loader.mojom.h",
   "+storage/browser/quota",
   "+third_party/skia/include",
@@ -43,6 +47,7 @@ include_rules = [
   "+ui/wm",
 
   "+third_party/cros_system_api",
+  "+third_party/blink/public/common/associated_interfaces/associated_interface_registry.h",
 
   "-webkit",
 ]

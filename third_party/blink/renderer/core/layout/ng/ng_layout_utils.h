@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_LAYOUT_UTILS_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 
 namespace blink {
@@ -19,9 +20,10 @@ class NGLayoutResult;
 // See |NGSimplifiedLayoutAlgorithm| for details about the
 // |kNeedsSimplifiedLayout| cache miss type.
 enum class NGLayoutCacheStatus {
-  kHit,                   // Cache hit, no additional work required.
-  kNeedsLayout,           // Cache miss, full layout required.
-  kNeedsSimplifiedLayout  // Cache miss, simplified layout required.
+  kHit,                    // Cache hit, no additional work required.
+  kNeedsLayout,            // Cache miss, full layout required.
+  kNeedsSimplifiedLayout,  // Cache miss, simplified layout required.
+  kCanReuseLines           // Cache miss, may be possible to reuse lines.
 };
 
 // Calculates the |NGLayoutCacheStatus| based on sizing information. Returns:
@@ -36,7 +38,7 @@ NGLayoutCacheStatus CalculateSizeBasedLayoutCacheStatus(
     const NGBlockNode& node,
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
-    base::Optional<NGFragmentGeometry>* fragment_geometry);
+    absl::optional<NGFragmentGeometry>* fragment_geometry);
 
 // Similar to |MaySkipLayout| but for legacy layout roots. Doesn't attempt to
 // pre-compute the geometry of the fragment.
@@ -51,14 +53,14 @@ bool MaySkipLegacyLayout(const NGBlockNode& node,
 // |bfc_block_offset|, |block_offset_delta|, and |end_margin_strut| for the
 // layout result.
 //
-// |bfc_block_offset| may still be |base::nullopt| if not previously set.
+// |bfc_block_offset| may still be |absl::nullopt| if not previously set.
 //
 // If this function returns false, |bfc_block_offset|, |block_offset_delta|,
 // and |end_margin_strut| are in an undefined state and should not be used.
 bool MaySkipLayoutWithinBlockFormattingContext(
     const NGLayoutResult& cached_layout_result,
     const NGConstraintSpace& new_space,
-    base::Optional<LayoutUnit>* bfc_block_offset,
+    absl::optional<LayoutUnit>* bfc_block_offset,
     LayoutUnit* block_offset_delta,
     NGMarginStrut* end_margin_strut);
 

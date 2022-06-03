@@ -180,7 +180,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                                                 nodeId : <number>
                                                                                                 nodeName : #text
                                                                                                 nodeType : 3
-                                                                                                nodeValue :  function addShadowDOM() {     var host = document.getElementById("element_in_an_iframe").createShadowRoot();     var template = document.querySelector("#shadow-template");     host.appendChild(template.content);     template.remove(); } 
+                                                                                                nodeValue :  function addShadowDOM() {     var host = document.getElementById("element_in_an_iframe").attachShadow({mode: 'open'});     var template = document.querySelector("#shadow-template");     host.appendChild(template.content);     template.remove(); } 
                                                                                                 parentId : <number>
                                                                                             }
                                                                                         ]
@@ -209,6 +209,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                                                                         parentId : <number>
                                                                     }
                                                                 ]
+                                                                compatibilityMode : QuirksMode
                                                                 documentURL : <string>
                                                                 localName : 
                                                                 nodeId : <number>
@@ -283,6 +284,7 @@ Tests how DOM.getDocument reports all child nodes when asked.
                     parentId : <number>
                 }
             ]
+            compatibilityMode : QuirksMode
             documentURL : <string>
             localName : 
             nodeId : <number>

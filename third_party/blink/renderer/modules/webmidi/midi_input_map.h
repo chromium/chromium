@@ -19,4 +19,4 @@ class MIDIInputMap : public MIDIPortMap<MIDIInput> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBMIDI_MIDI_INPUT_MAP_H_

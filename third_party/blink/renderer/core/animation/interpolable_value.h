@@ -8,10 +8,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace blink {
 
@@ -38,6 +38,7 @@ class CORE_EXPORT InterpolableValue {
   virtual bool IsBool() const { return false; }
   virtual bool IsList() const { return false; }
   virtual bool IsLength() const { return false; }
+  virtual bool IsAspectRatio() const { return false; }
   virtual bool IsShadow() const { return false; }
   virtual bool IsFilter() const { return false; }
   virtual bool IsTransformList() const { return false; }
@@ -102,22 +103,15 @@ class CORE_EXPORT InterpolableNumber final : public InterpolableValue {
   double value_;
 };
 
-class CORE_EXPORT InterpolableList : public InterpolableValue {
+class CORE_EXPORT InterpolableList final : public InterpolableValue {
  public:
-  // Explicitly delete operator= because MSVC automatically generate
-  // copy constructors and operator= for dll-exported classes.
-  // Since InterpolableList is not copyable, automatically generated
-  // operator= causes MSVC compiler error.
-  // However, we cannot use DISALLOW_COPY_AND_ASSIGN because InterpolableList
-  // has its own copy constructor. So just delete operator= here.
-  InterpolableList& operator=(const InterpolableList&) = delete;
-
   explicit InterpolableList(wtf_size_t size) : values_(size) {}
 
-  InterpolableList(const InterpolableList& other) : values_(other.length()) {
-    for (wtf_size_t i = 0; i < length(); i++)
-      Set(i, other.values_[i]->Clone());
-  }
+  // Move-only; use Clone() to make a copy.
+  InterpolableList(const InterpolableList&) = delete;
+  InterpolableList& operator=(const InterpolableList&) = delete;
+  InterpolableList(InterpolableList&&) = default;
+  InterpolableList& operator=(InterpolableList&&) = default;
 
   const InterpolableValue* Get(wtf_size_t position) const {
     return values_[position].get();
@@ -144,24 +138,29 @@ class CORE_EXPORT InterpolableList : public InterpolableValue {
 
  private:
   InterpolableList* RawClone() const final {
-    return new InterpolableList(*this);
+    auto* result = new InterpolableList(length());
+    for (wtf_size_t i = 0; i < length(); i++)
+      result->Set(i, values_[i]->Clone());
+    return result;
   }
   InterpolableList* RawCloneAndZero() const final;
 
   Vector<std::unique_ptr<InterpolableValue>> values_;
 };
 
-DEFINE_TYPE_CASTS(InterpolableNumber,
-                  InterpolableValue,
-                  value,
-                  value->IsNumber(),
-                  value.IsNumber());
-DEFINE_TYPE_CASTS(InterpolableList,
-                  InterpolableValue,
-                  value,
-                  value->IsList(),
-                  value.IsList());
+template <>
+struct DowncastTraits<InterpolableNumber> {
+  static bool AllowFrom(const InterpolableValue& value) {
+    return value.IsNumber();
+  }
+};
+template <>
+struct DowncastTraits<InterpolableList> {
+  static bool AllowFrom(const InterpolableValue& value) {
+    return value.IsList();
+  }
+};
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_VALUE_H_

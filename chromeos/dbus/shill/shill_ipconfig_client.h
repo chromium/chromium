@@ -9,13 +9,11 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/dbus/shill/shill_client_helper.h"
 
 namespace base {
 class Value;
-class DictionaryValue;
-}  // namespace base
+}
 
 namespace dbus {
 class Bus;
@@ -31,13 +29,11 @@ class ShillPropertyChangedObserver;
 // initializes the DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
  public:
-  typedef ShillClientHelper::DictionaryValueCallback DictionaryValueCallback;
-
   class TestInterface {
    public:
     // Adds an IPConfig entry.
     virtual void AddIPConfig(const std::string& ip_config_path,
-                             const base::DictionaryValue& properties) = 0;
+                             const base::Value& properties) = 0;
 
    protected:
     virtual ~TestInterface() {}
@@ -59,6 +55,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
   // For normal usage, access the singleton via DBusThreadManager::Get().
   static ShillIPConfigClient* Create();
 
+  ShillIPConfigClient(const ShillIPConfigClient&) = delete;
+  ShillIPConfigClient& operator=(const ShillIPConfigClient&) = delete;
+
   // Adds a property changed |observer| for the ipconfig at |ipconfig_path|.
   virtual void AddPropertyChangedObserver(
       const dbus::ObjectPath& ipconfig_path,
@@ -69,10 +68,11 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
       const dbus::ObjectPath& ipconfig_path,
       ShillPropertyChangedObserver* observer) = 0;
 
-  // Calls GetProperties method.
-  // |callback| is called after the method call succeeds.
+  // Calls the GetProperties DBus method and invokes |callback| when complete.
+  // |callback| receives a dictionary Value containing the IPCOnfig properties
+  // on success or nullopt on failure.
   virtual void GetProperties(const dbus::ObjectPath& ipconfig_path,
-                             DictionaryValueCallback callback) = 0;
+                             DBusMethodCallback<base::Value> callback) = 0;
 
   // Calls SetProperty method.
   // |callback| is called after the method call succeeds.
@@ -101,9 +101,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillIPConfigClient {
   // Initialize/Shutdown should be used instead.
   ShillIPConfigClient();
   virtual ~ShillIPConfigClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShillIPConfigClient);
 };
 
 }  // namespace chromeos

@@ -40,16 +40,13 @@
 namespace blink {
 
 class ExecutionContext;
-class LocalFrame;
 class ScriptState;
 class ScriptStateProtectingContext;
 class ScriptValue;
 class V8Function;
-class WorkerGlobalScope;
 
 class ScheduledAction final : public GarbageCollected<ScheduledAction>,
                               public NameClient {
-  DISALLOW_COPY_AND_ASSIGN(ScheduledAction);
 
  public:
   ScheduledAction(ScriptState*,
@@ -60,20 +57,20 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
                   ExecutionContext* target,
                   const String& handler);
 
-  ~ScheduledAction();
+  ScheduledAction(const ScheduledAction&) = delete;
+  ScheduledAction& operator=(const ScheduledAction&) = delete;
+
+  ~ScheduledAction() override;
 
   void Dispose();
 
   void Execute(ExecutionContext*);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   const char* NameInHeapSnapshot() const override { return "ScheduledAction"; }
 
  private:
-  void Execute(LocalFrame*);
-  void Execute(WorkerGlobalScope*);
-
   Member<ScriptStateProtectingContext> script_state_;
   Member<V8Function> function_;
   HeapVector<ScriptValue> arguments_;
@@ -82,4 +79,4 @@ class ScheduledAction final : public GarbageCollected<ScheduledAction>,
 
 }  // namespace blink
 
-#endif  // ScheduledAction
+#endif  // THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_SCHEDULED_ACTION_H_

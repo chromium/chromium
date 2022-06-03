@@ -12,10 +12,9 @@
 #include "base/logging.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
-#include "base/task/post_task.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/media/media_internals.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -23,23 +22,27 @@
 #include "media/audio/audio_logging.h"
 #include "media/base/media_switches.h"
 #include "media/base/user_input_monitor.h"
-#include "mojo/public/cpp/system/platform_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/browser/media/keyboard_mic_registration.h"
 #endif
 
 namespace content {
 
+using DisconnectReason =
+    media::mojom::AudioInputStreamObserver::DisconnectReason;
+using InputStreamErrorCode = media::mojom::InputStreamErrorCode;
+
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 enum KeyboardMicAction { kRegister, kDeregister };
 
 void UpdateKeyboardMicRegistration(KeyboardMicAction action) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&UpdateKeyboardMicRegistration, action));
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&UpdateKeyboardMicRegistration, action));
     return;
   }
   BrowserMainLoop* browser_main_loop = BrowserMainLoop::GetInstance();
@@ -67,9 +70,8 @@ AudioInputStreamBroker::AudioInputStreamBroker(
     uint32_t shared_memory_count,
     media::UserInputMonitorBase* user_input_monitor,
     bool enable_agc,
-    audio::mojom::AudioProcessingConfigPtr processing_config,
     AudioStreamBroker::DeleterCallback deleter,
-    mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient>
+    mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
         renderer_factory_client)
     : AudioStreamBroker(render_process_id, render_frame_id),
       device_id_(device_id),
@@ -78,7 +80,6 @@ AudioInputStreamBroker::AudioInputStreamBroker(
       user_input_monitor_(user_input_monitor),
       enable_agc_(enable_agc),
       deleter_(std::move(deleter)),
-      processing_config_(std::move(processing_config)),
       renderer_factory_client_(std::move(renderer_factory_client)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(renderer_factory_client_);
@@ -96,7 +97,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
     params_.set_format(media::AudioParameters::AUDIO_FAKE);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (params_.channel_layout() ==
       media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
     UpdateKeyboardMicRegistration(kRegister);
@@ -107,7 +108,7 @@ AudioInputStreamBroker::AudioInputStreamBroker(
 AudioInputStreamBroker::~AudioInputStreamBroker() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (params_.channel_layout() ==
       media::CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC) {
     UpdateKeyboardMicRegistration(kDeregister);
@@ -130,13 +131,10 @@ AudioInputStreamBroker::~AudioInputStreamBroker() {
   TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "AudioInputStreamBroker", this,
                                   "disconnect reason",
                                   static_cast<uint32_t>(disconnect_reason_));
-
-  UMA_HISTOGRAM_ENUMERATION("Media.Audio.Capture.StreamBrokerDisconnectReason",
-                            disconnect_reason_);
 }
 
 void AudioInputStreamBroker::CreateStream(
-    audio::mojom::StreamFactory* factory) {
+    media::mojom::AudioStreamFactory* factory) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(!observer_receiver_.is_bound());
   DCHECK(!pending_client_receiver_);
@@ -173,8 +171,7 @@ void AudioInputStreamBroker::CreateStream(
           media::AudioLogFactory::AudioComponent::AUDIO_INPUT_CONTROLLER,
           log_component_id, render_process_id(), render_frame_id()),
       device_id_, params_, shared_memory_count_, enable_agc_,
-      mojo::WrapReadOnlySharedMemoryRegion(std::move(key_press_count_buffer)),
-      std::move(processing_config_),
+      std::move(key_press_count_buffer),
       base::BindOnce(&AudioInputStreamBroker::StreamCreated,
                      weak_ptr_factory_.GetWeakPtr(), std::move(stream)));
 }
@@ -188,15 +185,14 @@ void AudioInputStreamBroker::StreamCreated(
     mojo::PendingRemote<media::mojom::AudioInputStream> stream,
     media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
     bool initially_muted,
-    const base::Optional<base::UnguessableToken>& stream_id) {
+    const absl::optional<base::UnguessableToken>& stream_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   awaiting_created_ = false;
   TRACE_EVENT_NESTABLE_ASYNC_END1("audio", "CreateStream", this, "success",
                                   !!data_pipe);
 
   if (!data_pipe) {
-    disconnect_reason_ = media::mojom::AudioInputStreamObserver::
-        DisconnectReason::kStreamCreationFailed;
+    disconnect_reason_ = DisconnectReason::kStreamCreationFailed;
     Cleanup();
     return;
   }
@@ -207,29 +203,46 @@ void AudioInputStreamBroker::StreamCreated(
       std::move(stream), std::move(pending_client_receiver_),
       std::move(data_pipe), initially_muted, stream_id);
 }
+
+InputStreamErrorCode MapDisconnectReasonToErrorCode(DisconnectReason reason) {
+  switch (static_cast<DisconnectReason>(reason)) {
+    case DisconnectReason::kSystemPermissions:
+      return InputStreamErrorCode::kSystemPermissions;
+    case DisconnectReason::kDeviceInUse:
+      return InputStreamErrorCode::kDeviceInUse;
+    case DisconnectReason::kDefault:
+    case DisconnectReason::kPlatformError:
+    case DisconnectReason::kTerminatedByClient:
+    case DisconnectReason::kStreamCreationFailed:
+    case DisconnectReason::kDocumentDestroyed:
+      break;
+  }
+  return InputStreamErrorCode::kUnknown;
+}
+
 void AudioInputStreamBroker::ObserverBindingLost(
     uint32_t reason,
     const std::string& description) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  const uint32_t maxValidReason = static_cast<uint32_t>(
-      media::mojom::AudioInputStreamObserver::DisconnectReason::kMaxValue);
-  if (reason > maxValidReason) {
+  DisconnectReason disconnection_reason = static_cast<DisconnectReason>(reason);
+  if (!media::mojom::IsKnownEnumValue(disconnection_reason)) {
     DLOG(ERROR) << "Invalid reason: " << reason;
-  } else if (disconnect_reason_ == media::mojom::AudioInputStreamObserver::
-                                       DisconnectReason::kDocumentDestroyed) {
-    disconnect_reason_ =
-        static_cast<media::mojom::AudioInputStreamObserver::DisconnectReason>(
-            reason);
+  } else if (disconnect_reason_ == DisconnectReason::kDocumentDestroyed) {
+    disconnect_reason_ = disconnection_reason;
   }
+
+  renderer_factory_client_.ResetWithReason(
+      static_cast<uint32_t>(
+          MapDisconnectReasonToErrorCode(disconnection_reason)),
+      description);
 
   Cleanup();
 }
 
 void AudioInputStreamBroker::ClientBindingLost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  disconnect_reason_ = media::mojom::AudioInputStreamObserver::
-      DisconnectReason::kTerminatedByClient;
+  disconnect_reason_ = DisconnectReason::kTerminatedByClient;
   Cleanup();
 }
 

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<style>
+.flex {
+  display: inline-flex;
+  border: 1px solid rgba(255,0,0,0.5);
+  align-items: baseline;
+}
+
+*[contenteditable=true] {
+  display: inline-block;
+  background: #ddf;
+  min-width: 20px;
+  margin: 2px;
+}
+</style>
+<body>
+<p>abc
+<span class=flex><span contenteditable=true></span></span>
+<span class=flex><span contenteditable=true>a</span></span>
+<span class=flex><span contenteditable=true>a</span> <span contenteditable=true></span><span>non-editable</span></span>
+def</p>
+</body>

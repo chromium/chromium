@@ -1,35 +1,36 @@
 <!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
 <html>
 <head>
-<script src="../../../resources/js-test.js"></script>
+<title>This tests that the querySelector and querySelectorAll fast path for IDs is not overzelous.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 </head>
 <body>
 <script>
-description(
-"This tests that the querySelector and querySelectorAll fast path for IDs is not overzelous."
-);
+setup({ single_test: true });
 
 var root = document.createElement('div');
 var correctNode = document.createElement('div');
-correctNode.setAttribute("id", "testid")
+correctNode.setAttribute("id", "testid");
 root.appendChild(correctNode);
 document.body.appendChild(root);
 
-shouldBe("document.querySelector('div#testid')", "correctNode");
-shouldBe("document.querySelector('#testid')", "correctNode");
-shouldBeNull("document.querySelector('ul#testid')");
-shouldBeNull("document.querySelector('ul #testid')");
-shouldBeNull("document.querySelector('#testid[attr]')");
-shouldBeNull("document.querySelector('#testid:not(div)')");
+assert_equals(document.querySelector('div#testid'), correctNode);
+assert_equals(document.querySelector('#testid'), correctNode);
+assert_equals(document.querySelector('ul#testid'), null);
+assert_equals(document.querySelector('ul #testid'), null);
+assert_equals(document.querySelector('#testid[attr]'), null);
+assert_equals(document.querySelector('#testid:not(div)'), null);
 
-shouldBe("document.querySelectorAll('div#testid').length", "1");
-shouldBe("document.querySelectorAll('div#testid').item(0)", "correctNode");
-shouldBe("document.querySelectorAll('#testid').length", "1");
-shouldBe("document.querySelectorAll('#testid').item(0)", "correctNode");
-shouldBe("document.querySelectorAll('ul#testid').length", "0");
-shouldBe("document.querySelectorAll('ul #testid').length", "0");
-shouldBe("document.querySelectorAll('#testid[attr]').length", "0");
-shouldBe("document.querySelectorAll('#testid:not(div)').length", "0");
+assert_equals(document.querySelectorAll('div#testid').length, 1);
+assert_equals(document.querySelectorAll('div#testid').item(0), correctNode);
+assert_equals(document.querySelectorAll('#testid').length, 1);
+assert_equals(document.querySelectorAll('#testid').item(0), correctNode);
+assert_equals(document.querySelectorAll('ul#testid').length, 0);
+assert_equals(document.querySelectorAll('ul #testid').length, 0);
+assert_equals(document.querySelectorAll('#testid[attr]').length, 0);
+assert_equals(document.querySelectorAll('#testid:not(div)').length, 0);
+done();
 </script>
 </body>
 </html>

@@ -13,8 +13,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_handle.h"
 #include "ipc/ipc_logging.h"
@@ -118,10 +118,6 @@ IPC::Sender* PpapiDispatcher::GetBrowserSender() {
 std::string PpapiDispatcher::GetUILanguage() {
   NOTIMPLEMENTED();
   return std::string();
-}
-
-void PpapiDispatcher::PreCacheFontForFlash(const void* logfontw) {
-  NOTIMPLEMENTED();
 }
 
 void PpapiDispatcher::SetActiveURL(const std::string& url) {

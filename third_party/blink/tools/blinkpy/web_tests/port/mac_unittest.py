@@ -40,7 +40,8 @@ class MacPortTest(port_testcase.PortTestCase):
     port_maker = mac.MacPort
 
     def assert_name(self, port_name, os_version_string, expected):
-        port = self.make_port(os_version=os_version_string, port_name=port_name)
+        port = self.make_port(
+            os_version=os_version_string, port_name=port_name)
         self.assertEqual(expected, port.name())
 
     def test_operating_system(self):
@@ -48,19 +49,24 @@ class MacPortTest(port_testcase.PortTestCase):
 
     def test_get_platform_tags(self):
         port = self.make_port()
-        self.assertEqual(port.get_platform_tags(), {'mac', 'mac10.12', 'x86', 'release'})
+        self.assertEqual(port.get_platform_tags(),
+                         {'mac', 'mac10.12', 'x86', 'release'})
 
     def test_driver_name_option(self):
-        self.assertTrue(self.make_port()._path_to_driver().endswith('Content Shell'))
-        port = self.make_port(options=optparse.Values(dict(driver_name='OtherDriver')))
+        self.assertTrue(
+            self.make_port()._path_to_driver().endswith('Content Shell'))
+        port = self.make_port(
+            options=optparse.Values(dict(driver_name='OtherDriver')))
         self.assertTrue(port._path_to_driver().endswith('OtherDriver'))  # pylint: disable=protected-access
 
     def test_path_to_image_diff(self):
-        self.assertEqual(self.make_port()._path_to_image_diff(), '/mock-checkout/out/Release/image_diff')
+        self.assertEqual(self.make_port()._path_to_image_diff(),
+                         '/mock-checkout/out/Release/image_diff')
 
     def test_path_to_apache_config_file(self):
         port = self.make_port()
         port._apache_version = lambda: '2.4'  # pylint: disable=protected-access
         self.assertEqual(
             port.path_to_apache_config_file(),
-            '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7.conf')
+            '/mock-checkout/third_party/blink/tools/apache_config/apache2-httpd-2.4-php7.conf'
+        )

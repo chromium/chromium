@@ -10,8 +10,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/base_jni_headers/BundleUtils_jni.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 
 // These symbols are added by the lld linker when creating a partitioned shared
 // library. The symbols live in the base library, and are used to properly load
@@ -50,27 +51,30 @@ const void* ReadRelPtr(const int32_t* relptr) {
 }  // namespace
 
 // static
-std::string BundleUtils::ResolveLibraryPath(const std::string& library_name) {
+std::string BundleUtils::ResolveLibraryPath(const std::string& library_name,
+                                            const std::string& split_name) {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> java_path = Java_BundleUtils_getNativeLibraryPath(
-      env, base::android::ConvertUTF8ToJavaString(env, library_name));
+      env, ConvertUTF8ToJavaString(env, library_name),
+      ConvertUTF8ToJavaString(env, split_name));
   // TODO(https://crbug.com/1019853): Remove this tolerance.
   if (!java_path) {
     return std::string();
   }
-  return base::android::ConvertJavaStringToUTF8(env, java_path);
+  return ConvertJavaStringToUTF8(env, java_path);
 }
 
 // static
 bool BundleUtils::IsBundle() {
-  return Java_BundleUtils_isBundle(base::android::AttachCurrentThread());
+  return Java_BundleUtils_isBundleForNative(AttachCurrentThread());
 }
 
 // static
 void* BundleUtils::DlOpenModuleLibraryPartition(const std::string& library_name,
-                                                const std::string& partition) {
+                                                const std::string& partition,
+                                                const std::string& split_name) {
   // TODO(https://crbug.com/1019853): Remove this tolerance.
-  std::string library_path = ResolveLibraryPath(library_name);
+  std::string library_path = ResolveLibraryPath(library_name, split_name);
   if (library_path.empty()) {
     return nullptr;
   }

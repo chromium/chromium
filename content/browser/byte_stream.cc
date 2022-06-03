@@ -4,15 +4,15 @@
 
 #include "content/browser/byte_stream.h"
 
+#include <memory>
 #include <set>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace content {
 namespace {
@@ -31,14 +31,15 @@ class ByteStreamReaderImpl;
 struct LifetimeFlag : public base::RefCountedThreadSafe<LifetimeFlag> {
  public:
   LifetimeFlag() : is_alive(true) { }
+
+  LifetimeFlag(const LifetimeFlag&) = delete;
+  LifetimeFlag& operator=(const LifetimeFlag&) = delete;
+
   bool is_alive;
 
  protected:
   friend class base::RefCountedThreadSafe<LifetimeFlag>;
-  virtual ~LifetimeFlag() { }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LifetimeFlag);
+  virtual ~LifetimeFlag() {}
 };
 
 // For both ByteStreamWriterImpl and ByteStreamReaderImpl, Construction and
@@ -290,7 +291,7 @@ void ByteStreamWriterImpl::PostToPeer(bool complete, int status) {
   std::unique_ptr<ContentVector> transfer_buffer;
   size_t buffer_size = 0;
   if (0 != input_contents_size_) {
-    transfer_buffer.reset(new ContentVector);
+    transfer_buffer = std::make_unique<ContentVector>();
     transfer_buffer->swap(input_contents_);
     buffer_size = input_contents_size_;
     output_size_used_ += input_contents_size_;

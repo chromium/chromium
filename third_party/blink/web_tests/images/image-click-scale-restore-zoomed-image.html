@@ -7,7 +7,7 @@ var requestId = 0;
 
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.waitUntilDone();
 }
 
@@ -46,10 +46,10 @@ window.onload = function()
                 return;
             }
 
-            if (window.eventSender) {
+            if (window.testRunner) {
                 if (!clicked) {
                     // Zoom in level 1
-                    eventSender.zoomPageIn();
+                    testRunner.zoomPageIn();
                     var w = Math.round(image.clientWidth);
                     var h = Math.round(image.clientHeight);
                     log("Size at zoomed in level : "  + w + " x " + h);
@@ -67,9 +67,9 @@ window.onload = function()
                     click(newwindow, image);
                     count++;
                     // Brings to normal zoom
-                    eventSender.zoomPageOut();
+                    testRunner.zoomPageOut();
                     // Zoom out level 1
-                    eventSender.zoomPageOut();
+                    testRunner.zoomPageOut();
                     // Restore the image size
                     var w = Math.round(image.clientWidth);
                     var h = Math.round(image.clientHeight);

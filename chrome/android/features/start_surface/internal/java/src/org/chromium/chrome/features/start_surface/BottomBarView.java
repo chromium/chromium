@@ -5,11 +5,12 @@
 package org.chromium.chrome.features.start_surface;
 
 import android.content.Context;
-import android.support.design.widget.TabLayout;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+
+import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.start_surface.R;
 import org.chromium.ui.widget.ChromeImageView;

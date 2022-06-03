@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "services/device/public/mojom/sensor_provider.mojom.h"
 
 namespace device {
@@ -43,14 +43,11 @@ void PlatformSensorProviderBase::CreateSensor(mojom::SensorType type,
     return;
   }
 
-  auto it = requests_map_.find(type);
-  if (it != requests_map_.end()) {
-    it->second.push_back(std::move(callback));
-  } else {  // This is the first CreateSensor call.
-    auto& requests = requests_map_[type];
-    requests.clear();
-    requests.push_back(std::move(callback));
-
+  auto& requests = requests_map_[type];
+  const bool callback_queue_was_empty = requests.empty();
+  requests.push_back(std::move(callback));
+  if (callback_queue_was_empty) {
+    // This is the first CreateSensor call.
     CreateSensorInternal(
         type, reading_buffer,
         base::BindOnce(&PlatformSensorProviderBase::NotifySensorCreated,
@@ -107,12 +104,15 @@ void PlatformSensorProviderBase::RemoveSensor(mojom::SensorType type,
     // PlatformSensorFusion object is not added to the |sensor_map_|, but
     // its base class destructor PlatformSensor::~PlatformSensor() calls this
     // RemoveSensor() function with the PlatformSensorFusion type.
+    // It is also possible on PlatformSensorProviderChromeOS as late present
+    // sensors makes the previous sensor calls this RemoveSensor() function
+    // twice.
     return;
   }
 
   if (sensor != it->second) {
-    NOTREACHED()
-        << "not expecting to track more than one sensor of the same type";
+    // It is possible on PlatformSensorProviderChromeOS as late present sensors
+    // may change the devices chosen on specific types.
     return;
   }
 

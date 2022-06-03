@@ -1,0 +1,17 @@
+{
+  "name": "Load an iframe from content script",
+  "version": "0.1",
+  "manifest_version": 2,
+  "description": "Web accessible resource can be loaded as an iframe in a COEP frame.",
+  "permissions": ["https://*/*"],
+  "content_scripts": [
+    {
+      "matches": ["https://*/hello.html"],
+      "js": ["content-script.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    "iframe.html",
+    "script.js"
+  ]
+}

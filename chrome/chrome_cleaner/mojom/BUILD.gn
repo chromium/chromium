@@ -19,13 +19,9 @@ template("chrome_cleaner_mojom") {
 }
 
 chrome_cleaner_mojom("chrome_prompt_interface") {
-  sources = [
-    "chrome_prompt.mojom",
-  ]
+  sources = [ "chrome_prompt.mojom" ]
 
-  deps = [
-    ":footprints_interface",
-  ]
+  deps = [ ":footprints_interface" ]
 
   # NOTE: We avoid scrambling message IDs here because these messages cross an
   # IPC boundary to an external program built from a different source tree.
@@ -33,8 +29,42 @@ chrome_cleaner_mojom("chrome_prompt_interface") {
 }
 
 chrome_cleaner_mojom("footprints_interface") {
-  sources = [
-    "footprints.mojom",
+  sources = [ "footprints.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chrome_cleaner.mojom.FilePath"
+          cpp = "::base::FilePath"
+        },
+        {
+          mojom = "chrome_cleaner.mojom.RegistryKey"
+          cpp = "::std::wstring"
+        },
+        {
+          mojom = "chrome_cleaner.mojom.ExtensionId"
+          cpp = "::std::wstring"
+        },
+      ]
+      traits_headers = [ "typemaps/footprints_mojom_traits.h" ]
+      traits_sources = [ "typemaps/footprints_mojom_traits.cc" ]
+    },
+  ]
+}
+
+chrome_cleaner_mojom("wstring") {
+  sources = [ "wstring.mojom" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chrome_cleaner.mojom.WString"
+          cpp = "::std::wstring"
+        },
+      ]
+      traits_headers = [ "typemaps/wstring_mojom_traits.h" ]
+      traits_sources = [ "typemaps/wstring_mojom_traits.cc" ]
+    },
   ]
 }
 
@@ -45,28 +75,74 @@ chrome_cleaner_mojom("engine_sandbox_interface") {
     "engine_requests.mojom",
     "engine_sandbox.mojom",
     "pup.mojom",
-    "string16_embedded_nulls.mojom",
     "windows_handle.mojom",
+    "wstring_embedded_nulls.mojom",
   ]
   deps = [
     ":footprints_interface",
+    ":wstring",
     "//mojo/public/mojom/base",
+  ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "chrome_cleaner.mojom.TraceLocation"
+          cpp = "::chrome_cleaner::UwS::TraceLocation"
+        },
+        {
+          mojom = "chrome_cleaner.mojom.PUP"
+          cpp = "::chrome_cleaner::PUPData::PUP"
+        },
+      ]
+      traits_headers = [ "typemaps/pup_mojom_traits.h" ]
+      traits_sources = [ "typemaps/pup_mojom_traits.cc" ]
+      traits_public_deps = [
+        "//chrome/chrome_cleaner/os:common_os",
+        "//chrome/chrome_cleaner/proto:shared_pup_enums_proto",
+        "//chrome/chrome_cleaner/pup_data:pup_data_base",
+        "//chrome/chrome_cleaner/settings:settings",
+      ]
+    },
+    {
+      types = [
+        {
+          mojom = "chrome_cleaner.mojom.WStringEmbeddedNulls"
+          cpp = "::chrome_cleaner::WStringEmbeddedNulls"
+        },
+      ]
+      traits_headers = [ "typemaps/wstring_embedded_nulls_mojom_traits.h" ]
+      traits_sources = [ "typemaps/wstring_embedded_nulls_mojom_traits.cc" ]
+    },
+    {
+      types = [
+        {
+          mojom = "chrome_cleaner.mojom.PredefinedHandle"
+          cpp = "::HANDLE"
+          copyable_pass_by_value = true
+        },
+        {
+          mojom = "chrome_cleaner.mojom.WindowsHandle"
+          cpp = "::HANDLE"
+          copyable_pass_by_value = true
+        },
+      ]
+      traits_headers = [ "typemaps/windows_handle_mojom_traits.h" ]
+      traits_sources = [ "typemaps/windows_handle_mojom_traits.cc" ]
+    },
   ]
 }
 
 chrome_cleaner_mojom("parser_interface") {
-  sources = [
-    "parser_interface.mojom",
-  ]
+  sources = [ "parser_interface.mojom" ]
   deps = [
+    ":wstring",
     "//mojo/public/mojom/base",
   ]
 }
 
 chrome_cleaner_mojom("zip_archiver_interface") {
-  sources = [
-    "zip_archiver.mojom",
-  ]
+  sources = [ "zip_archiver.mojom" ]
 }
 
 chrome_cleaner_mojom("engine_sandbox_test_interface") {
@@ -74,18 +150,14 @@ chrome_cleaner_mojom("engine_sandbox_test_interface") {
 
   sources = [
     "test_pup_typemap.mojom",
-    "test_string16_embedded_nulls.mojom",
+    "test_wstring_embedded_nulls.mojom",
   ]
 
-  deps = [
-    ":engine_sandbox_interface",
-  ]
+  deps = [ ":engine_sandbox_interface" ]
 }
 
 chrome_cleaner_mojom("mojo_sandbox_hooks_test_interface") {
   testonly = true
 
-  sources = [
-    "test_mojo_sandbox_hooks.mojom",
-  ]
+  sources = [ "test_mojo_sandbox_hooks.mojom" ]
 }

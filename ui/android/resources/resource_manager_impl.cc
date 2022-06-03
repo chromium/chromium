@@ -117,17 +117,21 @@ Resource* ResourceManagerImpl::GetResource(AndroidResourceType res_type,
   return item->second.get();
 }
 
-void ResourceManagerImpl::RemoveUnusedTints(
-    const std::unordered_set<int>& used_tints) {
+void ResourceManagerImpl::RemoveUnusedTints() {
   // Iterate over the currently cached tints and remove ones that were not
   // used as defined in |used_tints|.
   for (auto it = tinted_resources_.cbegin(); it != tinted_resources_.cend();) {
-    if (used_tints.find(it->first) == used_tints.end()) {
-        it = tinted_resources_.erase(it);
+    if (used_tints_.find(it->first) == used_tints_.end()) {
+      it = tinted_resources_.erase(it);
     } else {
-        ++it;
+      ++it;
     }
   }
+}
+
+void ResourceManagerImpl::OnFrameUpdatesFinished() {
+  RemoveUnusedTints();
+  used_tints_.clear();
 }
 
 Resource* ResourceManagerImpl::GetStaticResourceWithTint(int res_id,
@@ -135,6 +139,8 @@ Resource* ResourceManagerImpl::GetStaticResourceWithTint(int res_id,
   if (tinted_resources_.find(tint_color) == tinted_resources_.end()) {
     tinted_resources_[tint_color] = std::make_unique<ResourceMap>();
   }
+
+  used_tints_.insert(tint_color);
   ResourceMap* resource_map = tinted_resources_[tint_color].get();
 
   // If the resource is already cached, use it.

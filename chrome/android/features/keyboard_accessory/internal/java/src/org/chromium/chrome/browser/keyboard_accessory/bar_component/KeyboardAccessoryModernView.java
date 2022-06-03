@@ -4,27 +4,49 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.content.res.AppCompatResources;
-import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Px;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.ViewCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
+import org.chromium.base.Callback;
 import org.chromium.chrome.browser.keyboard_accessory.R;
+import org.chromium.ui.widget.ViewRectProvider;
 
 /**
  * The Accessory sitting above the keyboard and below the content area. It is used for autofill
  * suggestions and manual entry points assisting the user in filling forms.
  */
 class KeyboardAccessoryModernView extends KeyboardAccessoryView {
+    private static final int ARRIVAL_ANIMATION_DURATION_MS = 300;
+    private static final float ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP = 200f;
+    private static final float ARRIVAL_ANIMATION_TENSION = 1f;
+
     private ImageView mKeyboardToggle;
     private TextView mSheetTitle;
+    private Callback<Integer> mObfuscatedLastChildAt;
+
+    // Records the first time a user scrolled to suppress an IPH explaining how scrolling works.
+    private final RecyclerView.OnScrollListener mScrollingIphCallback =
+            new RecyclerView.OnScrollListener() {
+                @Override
+                public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+                    if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                        mBarItemsView.removeOnScrollListener(mScrollingIphCallback);
+                        KeyboardAccessoryIPHUtils.emitScrollingEvent();
+                    }
+                }
+            };
 
     /**
      * This decoration ensures that the last item is right-aligned.
@@ -111,6 +133,7 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
         int pad = getResources().getDimensionPixelSize(R.dimen.keyboard_accessory_bar_item_padding);
         // Ensure the last element (although scrollable) is always end-aligned.
         mBarItemsView.addItemDecoration(new StickyLastItemDecoration(pad));
+        mBarItemsView.addOnScrollListener(mScrollingIphCallback);
 
         // Remove any paddings that might be inherited since this messes up the fading edge.
         ViewCompat.setPaddingRelative(mBarItemsView, 0, 0, 0, 0);
@@ -126,7 +149,49 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     @Override
     void setVisible(boolean visible) {
         super.setVisible(visible);
-        if (visible) mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
+        if (visible) {
+            mBarItemsView.post(mBarItemsView::invalidateItemDecorations);
+            // Animate the suggestions only if the bar wasn't visible already.
+            if (getVisibility() != View.VISIBLE) animateSuggestionArrival();
+        }
+    }
+
+    @Override
+    protected void onItemsChanged() {
+        super.onItemsChanged();
+        if (isLastChildObfuscated()) {
+            mObfuscatedLastChildAt.onResult(mBarItemsView.indexOfChild(getLastChild()));
+        }
+    }
+
+    ViewRectProvider getSwipingIphRect() {
+        View lastChild = getLastChild();
+        if (lastChild == null) return null;
+        ViewRectProvider provider = new ViewRectProvider(getLastChild());
+        provider.setIncludePadding(true);
+        return provider;
+    }
+
+    private boolean isLastChildObfuscated() {
+        View lastChild = getLastChild();
+        RecyclerView.Adapter adapter = mBarItemsView.getAdapter();
+        // The recycler view isn't ready yet, so no children can be considered:
+        if (lastChild == null || adapter == null) return false;
+        // The last child wasn't even rendered, so it's definitely not visible:
+        if (mBarItemsView.indexOfChild(lastChild) < adapter.getItemCount()) return true;
+        // The last child is partly off screen:
+        return getLayoutDirection() == LAYOUT_DIRECTION_RTL
+                ? lastChild.getX() < 0
+                : lastChild.getX() + lastChild.getWidth() > mBarItemsView.getWidth();
+    }
+
+    private View getLastChild() {
+        for (int i = mBarItemsView.getChildCount() - 1; i >= 0; --i) {
+            View lastChild = mBarItemsView.getChildAt(i);
+            if (lastChild == null) continue;
+            return lastChild;
+        }
+        return null;
     }
 
     void setKeyboardToggleVisibility(boolean hasActiveTab) {
@@ -143,5 +208,24 @@ class KeyboardAccessoryModernView extends KeyboardAccessoryView {
     void setShowKeyboardCallback(Runnable showKeyboardCallback) {
         mKeyboardToggle.setOnClickListener(
                 showKeyboardCallback == null ? null : view -> showKeyboardCallback.run());
+    }
+
+    void setObfuscatedLastChildAt(Callback<Integer> obfuscatedLastChildAt) {
+        mObfuscatedLastChildAt = obfuscatedLastChildAt;
+    }
+
+    private void animateSuggestionArrival() {
+        if (areAnimationsDisabled()) return;
+        int bounceDirection = getLayoutDirection() == LAYOUT_DIRECTION_RTL ? 1 : -1;
+        float basePosition = mBarItemsView.getX();
+        float start = basePosition
+                - bounceDirection * ARRIVAL_ANIMATION_BOUNCE_LENGTH_DIP
+                        * getContext().getResources().getDisplayMetrics().density;
+        mBarItemsView.setTranslationX(start);
+        ObjectAnimator animator =
+                ObjectAnimator.ofFloat(mBarItemsView, "translationX", start, basePosition);
+        animator.setDuration(ARRIVAL_ANIMATION_DURATION_MS);
+        animator.setInterpolator(new OvershootInterpolator(ARRIVAL_ANIMATION_TENSION));
+        animator.start();
     }
 }

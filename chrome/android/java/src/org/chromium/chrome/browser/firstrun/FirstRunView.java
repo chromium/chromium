@@ -5,11 +5,12 @@
 package org.chromium.chrome.browser.firstrun;
 
 import android.content.Context;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
+
+import androidx.core.view.ViewCompat;
 
 import org.chromium.chrome.R;
 

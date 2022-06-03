@@ -10,9 +10,9 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/file_manager/app_id.h"
-#include "chrome/browser/chromeos/file_manager/volume_manager.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/file_manager/app_id.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/extensions/api/file_system/request_file_system_notification.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/extensions/request_file_system_dialog_view.h"
@@ -29,12 +29,11 @@ namespace extensions {
 
 namespace {
 
-// List of whitelisted component apps and extensions by their ids for
+// List of allowlisted component apps and extensions by their ids for
 // chrome.fileSystem.requestFileSystem.
-const char* const kRequestFileSystemComponentWhitelist[] = {
-    file_manager::kFileManagerAppId, file_manager::kVideoPlayerAppId,
-    file_manager::kGalleryAppId, file_manager::kAudioPlayerAppId,
-    file_manager::kImageLoaderExtensionId, file_manager::kZipArchiverId,
+const char* const kRequestFileSystemComponentAllowlist[] = {
+    file_manager::kFileManagerAppId, file_manager::kAudioPlayerAppId,
+    file_manager::kImageLoaderExtensionId,
     // TODO(henryhsu,b/110126438): Remove this extension id, and add it only
     // for tests.
     "pkplfbidichfdicaijlchgnapepdginl"  // Testing extensions.
@@ -55,17 +54,20 @@ content::WebContents* GetWebContentsForAppId(Profile* profile,
 // Converts the clicked button to a consent result and passes it via the
 // |callback|.
 void DialogResultToConsent(
-    const file_system_api::ConsentProvider::ConsentCallback& callback,
+    file_system_api::ConsentProvider::ConsentCallback callback,
     ui::DialogButton button) {
   switch (button) {
     case ui::DIALOG_BUTTON_NONE:
-      callback.Run(file_system_api::ConsentProvider::CONSENT_IMPOSSIBLE);
+      std::move(callback).Run(
+          file_system_api::ConsentProvider::CONSENT_IMPOSSIBLE);
       break;
     case ui::DIALOG_BUTTON_OK:
-      callback.Run(file_system_api::ConsentProvider::CONSENT_GRANTED);
+      std::move(callback).Run(
+          file_system_api::ConsentProvider::CONSENT_GRANTED);
       break;
     case ui::DIALOG_BUTTON_CANCEL:
-      callback.Run(file_system_api::ConsentProvider::CONSENT_REJECTED);
+      std::move(callback).Run(
+          file_system_api::ConsentProvider::CONSENT_REJECTED);
       break;
   }
 }
@@ -87,24 +89,24 @@ void ConsentProvider::RequestConsent(
     content::RenderFrameHost* host,
     const base::WeakPtr<file_manager::Volume>& volume,
     bool writable,
-    const ConsentCallback& callback) {
+    ConsentCallback callback) {
   DCHECK(IsGrantableForVolume(extension, volume));
 
-  // If a whitelisted component, then no need to ask or inform the user.
-  if (extension.location() == Manifest::COMPONENT &&
-      delegate_->IsWhitelistedComponent(extension)) {
+  // If a allowlisted component, then no need to ask or inform the user.
+  if (extension.location() == mojom::ManifestLocation::kComponent &&
+      delegate_->IsAllowlistedComponent(extension)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, CONSENT_GRANTED));
+        FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
     return;
   }
 
-  // If a whitelisted app or extensions to access Downloads folder, then no
+  // If a allowlisted app or extensions to access Downloads folder, then no
   // need to ask or inform the user.
   if (volume.get() &&
       volume->type() == file_manager::VOLUME_TYPE_DOWNLOADS_DIRECTORY &&
       delegate_->HasRequestDownloadsPermission(extension)) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, CONSENT_GRANTED));
+        FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
     return;
   }
 
@@ -113,7 +115,7 @@ void ConsentProvider::RequestConsent(
   if (delegate_->IsAutoLaunched(extension)) {
     delegate_->ShowNotification(extension, volume, writable);
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, CONSENT_GRANTED));
+        FROM_HERE, base::BindOnce(std::move(callback), CONSENT_GRANTED));
     return;
   }
 
@@ -121,8 +123,9 @@ void ConsentProvider::RequestConsent(
   // the confirmation dialog.
   if (KioskModeInfo::IsKioskOnly(&extension) &&
       user_manager::UserManager::Get()->IsLoggedInAsKioskApp()) {
-    delegate_->ShowDialog(extension, host, volume, writable,
-                          base::Bind(&DialogResultToConsent, callback));
+    delegate_->ShowDialog(
+        extension, host, volume, writable,
+        base::BindOnce(&DialogResultToConsent, std::move(callback)));
     return;
   }
 
@@ -131,21 +134,21 @@ void ConsentProvider::RequestConsent(
 
 FileSystemDelegate::GrantVolumesMode ConsentProvider::GetGrantVolumesMode(
     const Extension& extension) {
-  const bool is_whitelisted_component =
-      delegate_->IsWhitelistedComponent(extension);
+  const bool is_allowlisted_component =
+      delegate_->IsAllowlistedComponent(extension);
 
   const bool is_running_in_kiosk_session =
       KioskModeInfo::IsKioskOnly(&extension) &&
       user_manager::UserManager::Get()->IsLoggedInAsKioskApp();
 
-  if (is_whitelisted_component || is_running_in_kiosk_session) {
+  if (is_allowlisted_component || is_running_in_kiosk_session) {
     return FileSystemDelegate::kGrantAll;
   }
 
-  const bool is_whitelisted_non_component =
+  const bool is_allowlisted_non_component =
       delegate_->HasRequestDownloadsPermission(extension);
 
-  return is_whitelisted_non_component ? FileSystemDelegate::kGrantPerVolume
+  return is_allowlisted_non_component ? FileSystemDelegate::kGrantPerVolume
                                       : FileSystemDelegate::kGrantNone;
 }
 
@@ -180,7 +183,7 @@ void ConsentProviderDelegate::ShowDialog(
     content::RenderFrameHost* host,
     const base::WeakPtr<file_manager::Volume>& volume,
     bool writable,
-    const file_system_api::ConsentProvider::ShowDialogCallback& callback) {
+    file_system_api::ConsentProvider::ShowDialogCallback callback) {
   DCHECK(host);
   content::WebContents* web_contents = nullptr;
 
@@ -199,7 +202,7 @@ void ConsentProviderDelegate::ShowDialog(
 
   if (!web_contents) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, ui::DIALOG_BUTTON_NONE));
+        FROM_HERE, base::BindOnce(std::move(callback), ui::DIALOG_BUTTON_NONE));
     return;
   }
 
@@ -207,15 +210,16 @@ void ConsentProviderDelegate::ShowDialog(
   // code design.
   if (g_auto_dialog_button_for_test != ui::DIALOG_BUTTON_NONE) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(callback, g_auto_dialog_button_for_test /* result */));
+        FROM_HERE, base::BindOnce(std::move(callback),
+                                  g_auto_dialog_button_for_test /* result */));
     return;
   }
 
   // If the volume is gone, then cancel the dialog.
   if (!volume.get()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, ui::DIALOG_BUTTON_CANCEL));
+        FROM_HERE,
+        base::BindOnce(std::move(callback), ui::DIALOG_BUTTON_CANCEL));
     return;
   }
 
@@ -223,7 +227,7 @@ void ConsentProviderDelegate::ShowDialog(
       web_contents, extension.name(),
       (volume->volume_label().empty() ? volume->volume_id()
                                       : volume->volume_label()),
-      writable, callback);
+      writable, std::move(callback));
 }
 
 void ConsentProviderDelegate::ShowNotification(
@@ -235,15 +239,15 @@ void ConsentProviderDelegate::ShowNotification(
 }
 
 bool ConsentProviderDelegate::IsAutoLaunched(const Extension& extension) {
-  chromeos::KioskAppManager::App app_info;
-  return chromeos::KioskAppManager::Get()->GetApp(extension.id(), &app_info) &&
+  ash::KioskAppManager::App app_info;
+  return ash::KioskAppManager::Get()->GetApp(extension.id(), &app_info) &&
          app_info.was_auto_launched_with_zero_delay;
 }
 
-bool ConsentProviderDelegate::IsWhitelistedComponent(
+bool ConsentProviderDelegate::IsAllowlistedComponent(
     const Extension& extension) {
-  for (auto* whitelisted_id : kRequestFileSystemComponentWhitelist) {
-    if (extension.id().compare(whitelisted_id) == 0)
+  for (auto* allowlisted_id : kRequestFileSystemComponentAllowlist) {
+    if (extension.id().compare(allowlisted_id) == 0)
       return true;
   }
   return false;
@@ -252,7 +256,7 @@ bool ConsentProviderDelegate::IsWhitelistedComponent(
 bool ConsentProviderDelegate::HasRequestDownloadsPermission(
     const Extension& extension) {
   return extension.permissions_data()->HasAPIPermission(
-      APIPermission::kFileSystemRequestDownloads);
+      mojom::APIPermissionID::kFileSystemRequestDownloads);
 }
 
 }  // namespace file_system_api

@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
-#include "components/signin/core/browser/android/jni_headers/ChildAccountInfoFetcher_jni.h"
 #include "components/signin/internal/identity_manager/account_fetcher_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
+#include "components/signin/public/android/jni_headers/ChildAccountInfoFetcher_jni.h"
+#include "components/signin/public/identity_manager/account_info.h"
 
 using base::android::JavaParamRef;
 
@@ -19,51 +19,40 @@ using base::android::JavaParamRef;
 std::unique_ptr<ChildAccountInfoFetcherAndroid>
 ChildAccountInfoFetcherAndroid::Create(AccountFetcherService* service,
                                        const CoreAccountId& account_id) {
-  std::string account_name =
-      service->account_tracker_service()->GetAccountInfo(account_id).email;
+  CoreAccountInfo account_info =
+      service->account_tracker_service()->GetAccountInfo(account_id);
   // The AccountTrackerService may not be populated correctly in tests.
-  if (account_name.empty())
+  if (account_info.email.empty())
     return nullptr;
 
   // Call the constructor directly instead of using std::make_unique because the
   // constructor is private.
   return base::WrapUnique(
-      new ChildAccountInfoFetcherAndroid(service, account_id, account_name));
-}
-
-void ChildAccountInfoFetcherAndroid::InitializeForTests() {
-  Java_ChildAccountInfoFetcher_initializeForTests(
-      base::android::AttachCurrentThread());
+      new ChildAccountInfoFetcherAndroid(service, account_info));
 }
 
 ChildAccountInfoFetcherAndroid::ChildAccountInfoFetcherAndroid(
     AccountFetcherService* service,
-    const CoreAccountId& account_id,
-    const std::string& account_name) {
+    const CoreAccountInfo& account_info) {
   JNIEnv* env = base::android::AttachCurrentThread();
-  j_child_account_info_fetcher_.Reset(Java_ChildAccountInfoFetcher_create(
-      env, reinterpret_cast<jlong>(service),
-      base::android::ConvertUTF8ToJavaString(env, account_id.ToString()),
-      base::android::ConvertUTF8ToJavaString(env, account_name)));
+  j_child_account_info_fetcher_.Reset(
+      signin::Java_ChildAccountInfoFetcher_create(
+          env, reinterpret_cast<jlong>(service),
+          ConvertToJavaCoreAccountInfo(env, account_info)));
 }
 
 ChildAccountInfoFetcherAndroid::~ChildAccountInfoFetcherAndroid() {
-  Java_ChildAccountInfoFetcher_destroy(base::android::AttachCurrentThread(),
-                                       j_child_account_info_fetcher_);
+  signin::Java_ChildAccountInfoFetcher_destroy(
+      base::android::AttachCurrentThread(), j_child_account_info_fetcher_);
 }
 
-// TODO(crbug.com/1028580) Pass |j_account_id| as a
-// org.chromium.components.signin.identitymanager.CoreAccountId and convert it
-// to CoreAccountId using ConvertFromJavaCoreAccountId.
-void JNI_ChildAccountInfoFetcher_SetIsChildAccount(
+void signin::JNI_ChildAccountInfoFetcher_SetIsChildAccount(
     JNIEnv* env,
     jlong native_service,
-    const JavaParamRef<jstring>& j_account_id,
+    const JavaParamRef<jobject>& j_account_id,
     jboolean is_child_account) {
   AccountFetcherService* service =
       reinterpret_cast<AccountFetcherService*>(native_service);
-  service->SetIsChildAccount(
-      CoreAccountId::FromString(
-          base::android::ConvertJavaStringToUTF8(env, j_account_id)),
-      is_child_account);
+  service->SetIsChildAccount(ConvertFromJavaCoreAccountId(env, j_account_id),
+                             is_child_account);
 }

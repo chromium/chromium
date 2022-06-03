@@ -6,20 +6,15 @@
  * @fileoverview This is a data model representin
  */
 
-// The include directives are put into Javascript-style comments to prevent
-// parsing errors in non-flattened mode. The flattener still sees them.
-// Note that this makes the flattener to comment out the first line of the
-// included file but that's all right since any javascript file should start
-// with a copyright comment anyway.
-
-// <include src="../../assert.js">
+// #import {assert} from '../../assert.m.js';
+// #import {NativeEventTarget as EventTarget} from '../event_target.m.js'
 
 cr.define('cr.ui', function() {
   /**
    * A data model that wraps a simple array and supports sorting by storing
    * initial indexes of elements for each position in sorted array.
    */
-  class ArrayDataModel extends cr.EventTarget {
+  /* #export */ class ArrayDataModel extends cr.EventTarget {
     /**
      * @param {!Array} array The underlying array.
      */
@@ -123,7 +118,7 @@ cr.define('cr.ui', function() {
      * Returns an array of elements in a selected range.
      * @param {number=} opt_from The starting index of the selected range.
      * @param {number=} opt_to The ending index of selected range.
-     * @return {Array} An array of elements in the selected range.
+     * @return {!Array} An array of elements in the selected range.
      */
     slice(opt_from, opt_to) {
       const arr = this.array_;
@@ -189,7 +184,7 @@ cr.define('cr.ui', function() {
           this.doSort_(this.sortStatus.field, this.sortStatus.direction);
       if (sortPermutation) {
         const splicePermutation = deletePermutation.map(function(element) {
-          return element != -1 ? sortPermutation[element] : -1;
+          return element !== -1 ? sortPermutation[element] : -1;
         });
         this.dispatchPermutedEvent_(splicePermutation);
         spliceEvent.index = sortPermutation[index];
@@ -322,8 +317,8 @@ cr.define('cr.ui', function() {
       setTimeout(function() {
         // If the sort status has been changed, sorting has already done
         // on the change event.
-        if (field == self.sortStatus.field &&
-            direction == self.sortStatus.direction) {
+        if (field === self.sortStatus.field &&
+            direction === self.sortStatus.direction) {
           self.sort(field, direction);
         }
       }, 0);
@@ -360,7 +355,7 @@ cr.define('cr.ui', function() {
         positions[this.indexes_[i]] = i;
       }
       const sorted = this.indexes_.every(function(element, index, array) {
-        return index == 0 || compareFunction(element, array[index - 1]) >= 0;
+        return index === 0 || compareFunction(element, array[index - 1]) >= 0;
       });
       if (!sorted) {
         this.indexes_.sort(compareFunction);
@@ -369,7 +364,7 @@ cr.define('cr.ui', function() {
       const sortPermutation = [];
       let changed = false;
       for (let i = 0; i < this.length; i++) {
-        if (positions[this.indexes_[i]] != i) {
+        if (positions[this.indexes_[i]] !== i) {
           changed = true;
         }
         sortPermutation[positions[this.indexes_[i]]] = i;
@@ -424,7 +419,7 @@ cr.define('cr.ui', function() {
       if (field !== null) {
         compareFunction = this.createCompareFunction_(field);
       }
-      const dirMultiplier = direction == 'desc' ? -1 : 1;
+      const dirMultiplier = direction === 'desc' ? -1 : 1;
 
       return function(index1, index2) {
         const item1 = this.array_[index1];
@@ -434,7 +429,7 @@ cr.define('cr.ui', function() {
         if (typeof (compareFunction) === 'function') {
           compareResult = compareFunction.call(null, item1, item2);
         }
-        if (compareResult != 0) {
+        if (compareResult !== 0) {
           return dirMultiplier * compareResult;
         }
         return dirMultiplier *
@@ -457,5 +452,7 @@ cr.define('cr.ui', function() {
     }
   }
 
+  // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {ArrayDataModel: ArrayDataModel};
 });

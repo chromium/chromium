@@ -6,7 +6,7 @@
 <!-- This widget automatically updates once per day, and whenever Chrome starts up. -->
 <appwidget-provider
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:minWidth="250dp"
+    android:minWidth="240dp"
     android:minHeight="48dp"
     android:initialLayout="@layout/search_widget_template"
     android:previewImage="@drawable/widget_preview"

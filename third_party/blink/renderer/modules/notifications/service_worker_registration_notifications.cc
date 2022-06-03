@@ -5,28 +5,28 @@
 #include "third_party/blink/renderer/modules/notifications/service_worker_registration_notifications.h"
 
 #include <utility>
+
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_get_notification_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_notification_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/modules/notifications/get_notification_options.h"
 #include "third_party/blink/renderer/modules/notifications/notification_data.h"
 #include "third_party/blink/renderer/modules/notifications/notification_manager.h"
-#include "third_party/blink/renderer/modules/notifications/notification_options.h"
+#include "third_party/blink/renderer/modules/notifications/notification_metrics.h"
 #include "third_party/blink/renderer/modules/notifications/notification_resources_loader.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
 ServiceWorkerRegistrationNotifications::ServiceWorkerRegistrationNotifications(
     ExecutionContext* context,
     ServiceWorkerRegistration* registration)
-    : ContextLifecycleObserver(context), registration_(registration) {}
+    : Supplement(*registration), ExecutionContextLifecycleObserver(context) {}
 
 ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
     ScriptState* script_state,
@@ -39,6 +39,8 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
   // If context object's active worker is null, reject the promise with a
   // TypeError exception.
   if (!registration.active()) {
+    RecordPersistentNotificationDisplayResult(
+        PersistentNotificationDisplayResult::kRegistrationNotActive);
     exception_state.ThrowTypeError(
         "No active registration available on "
         "the ServiceWorkerRegistration.");
@@ -49,6 +51,8 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
   // promise with a TypeError exception, and terminate these substeps.
   if (NotificationManager::From(execution_context)->GetPermissionStatus() !=
       mojom::blink::PermissionStatus::GRANTED) {
+    RecordPersistentNotificationDisplayResult(
+        PersistentNotificationDisplayResult::kPermissionNotGranted);
     exception_state.ThrowTypeError(
         "No notification permission has been granted for this origin.");
     return ScriptPromise();
@@ -64,10 +68,9 @@ ScriptPromise ServiceWorkerRegistrationNotifications::showNotification(
   //     0    -> underflow bucket,
   //     1-16 -> distinct buckets,
   //     17+  -> overflow bucket.
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      EnumerationHistogram, notification_count_histogram,
-      ("Notifications.PersistentNotificationActionCount", 17));
-  notification_count_histogram.Count(options->actions().size());
+  base::UmaHistogramExactLinear(
+      "Notifications.PersistentNotificationActionCount",
+      options->actions().size(), 17);
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
@@ -92,17 +95,15 @@ ScriptPromise ServiceWorkerRegistrationNotifications::getNotifications(
   return promise;
 }
 
-void ServiceWorkerRegistrationNotifications::ContextDestroyed(
-    ExecutionContext* context) {
+void ServiceWorkerRegistrationNotifications::ContextDestroyed() {
   for (auto loader : loaders_)
     loader->Stop();
 }
 
-void ServiceWorkerRegistrationNotifications::Trace(blink::Visitor* visitor) {
-  visitor->Trace(registration_);
+void ServiceWorkerRegistrationNotifications::Trace(Visitor* visitor) const {
   visitor->Trace(loaders_);
   Supplement<ServiceWorkerRegistration>::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 const char ServiceWorkerRegistrationNotifications::kSupplementName[] =
@@ -145,7 +146,7 @@ void ServiceWorkerRegistrationNotifications::DidLoadResources(
   DCHECK(loaders_.Contains(loader));
 
   NotificationManager::From(GetExecutionContext())
-      ->DisplayPersistentNotification(registration_->RegistrationId(),
+      ->DisplayPersistentNotification(GetSupplementable()->RegistrationId(),
                                       std::move(data), loader->GetResources(),
                                       WrapPersistent(resolver));
   loaders_.erase(loader);

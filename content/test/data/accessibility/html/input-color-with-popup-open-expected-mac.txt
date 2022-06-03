@@ -1,0 +1,21 @@
+AXWebArea AXRoleDescription='HTML content'
+++AXGroup AXRoleDescription='group'
+++++AXColorWell AXDescription='color picker' AXRoleDescription='color well' AXValue='rgb 1.00000 0.60000 0.00000 1'
+++++++AXWebArea AXRoleDescription='HTML content'
+++++++++AXGroup AXRoleDescription='group'
+++++++++++AXGroup AXRoleDescription='group'
+++++++++++++AXSlider AXDescription='Color well' AXRoleDescription='Color well with two-dimensional slider for selecting saturation and lightness' AXValue=227
+++++++++++AXGroup AXRoleDescription='group'
+++++++++++++AXButton AXDescription='Eyedropper' AXRoleDescription='button'
+++++++++++++AXGroup AXRoleDescription='group'
+++++++++++++++AXSlider AXDescription='Hue slider' AXRoleDescription='slider' AXValue=116
+++++++++++AXTextField AXDescription='Red channel' AXRoleDescription='text field' AXValue='255'
+++++++++++AXTextField AXDescription='Green channel' AXRoleDescription='text field' AXValue='153'
+++++++++++AXTextField AXDescription='Blue channel' AXRoleDescription='text field' AXValue='0'
+++++++++++AXIncrementor AXDescription='Format toggler' AXRoleDescription='stepper' AXValue=1
+++++++++++++AXStaticText AXRoleDescription='text' AXValue='R'
+++++++++++++AXStaticText AXRoleDescription='text' AXValue='G'
+++++++++++++AXStaticText AXRoleDescription='text' AXValue='B'
+++++++++++++AXGroup AXRoleDescription='group'
+++++++++++++++AXGroup AXRoleDescription='group'
+++++++++++AXGroup AXRoleDescription='group'

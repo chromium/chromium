@@ -5,16 +5,15 @@
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
+#include "components/autofill/core/browser/autofill_test_utils.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
-#import "ios/chrome/browser/ui/settings/autofill/features.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
-#import "ios/testing/earl_grey/app_launch_manager.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
-#import "ios/testing/earl_grey/keyboard_app_interface.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
@@ -44,19 +43,23 @@ const char kFormElementOtherStuff[] = "otherstuff";
 
 NSString* kLocalCardNumber = @"4111111111111111";
 NSString* kLocalCardHolder = @"Test User";
-NSString* kLocalCardExpirationMonth = @"11";
-NSString* kLocalCardExpirationYear = @"22";
+// The local card's expiration month and year (only the last two digits) are set
+// with next month and next year.
+NSString* kLocalCardExpirationMonth =
+    base::SysUTF8ToNSString(autofill::test::NextMonth());
+NSString* kLocalCardExpirationYear =
+    base::SysUTF8ToNSString(autofill::test::NextYear().substr(2, 2));
 
 // Unicode characters used in card number:
 //  - 0x0020 - Space.
 //  - 0x2060 - WORD-JOINER (makes string undivisible).
-constexpr base::char16 separator[] = {0x2060, 0x0020, 0};
-constexpr base::char16 kMidlineEllipsis[] = {
+constexpr char16_t separator[] = {0x2060, 0x0020, 0};
+constexpr char16_t kMidlineEllipsis[] = {
     0x2022, 0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0x2022,
     0x2060, 0x2006, 0x2060, 0x2022, 0x2060, 0x2006, 0x2060, 0};
 NSString* kObfuscatedNumberPrefix = base::SysUTF16ToNSString(
-    kMidlineEllipsis + base::string16(separator) + kMidlineEllipsis +
-    base::string16(separator) + kMidlineEllipsis + base::string16(separator));
+    kMidlineEllipsis + std::u16string(separator) + kMidlineEllipsis +
+    std::u16string(separator) + kMidlineEllipsis + std::u16string(separator));
 
 NSString* kLocalNumberObfuscated =
     [NSString stringWithFormat:@"%@1111", kObfuscatedNumberPrefix];
@@ -72,27 +75,12 @@ id<GREYMatcher> NotSecureWebsiteAlert() {
       IDS_IOS_MANUAL_FALLBACK_NOT_SECURE_TITLE);
 }
 
-// Polls the JavaScript query |java_script_condition| until the returned
-// |boolValue| is YES with a kWaitForActionTimeout timeout.
-BOOL WaitForJavaScriptCondition(NSString* java_script_condition) {
-  auto verify_block = ^BOOL {
-    id value = [ChromeEarlGrey executeJavaScript:java_script_condition];
-    return [value isEqual:@YES];
-  };
-  NSTimeInterval timeout = base::test::ios::kWaitForActionTimeout;
-  NSString* condition_name = [NSString
-      stringWithFormat:@"Wait for JS condition: %@", java_script_condition];
-  GREYCondition* condition = [GREYCondition conditionWithName:condition_name
-                                                        block:verify_block];
-  return [condition waitWithTimeout:timeout];
-}
-
 // Waits for the keyboard to appear. Returns NO on timeout.
 BOOL WaitForKeyboardToAppear() {
   GREYCondition* waitForKeyboard = [GREYCondition
       conditionWithName:@"Wait for keyboard"
                   block:^BOOL {
-                    return [ChromeEarlGrey isKeyboardShownWithError:nil];
+                    return [EarlGrey isKeyboardShownWithError:nil];
                   }];
   return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout];
 }
@@ -105,14 +93,6 @@ BOOL WaitForKeyboardToAppear() {
 
 @implementation CreditCardViewControllerTestCase
 
-- (void)launchAppForTestMethod {
-  [[AppLaunchManager sharedManager]
-      ensureAppLaunchedWithFeaturesEnabled:{kSettingsAddPaymentMethod,
-                                            kCreditCardScanner}
-                                  disabled:{}
-                            relaunchPolicy:NoForceRelaunchAndResetState];
-}
-
 - (void)setUp {
   [super setUp];
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
@@ -124,8 +104,7 @@ BOOL WaitForKeyboardToAppear() {
 
 - (void)tearDown {
   [AutofillAppInterface clearCreditCardStore];
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   [super tearDown];
 }
 
@@ -271,10 +250,12 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
       performAction:grey_tap()];
 
-  // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    // Try to scroll on iPhone.
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  }
 
   // Tap the "Add Credit Cards..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackAddCreditCardsMatcher()]
@@ -303,10 +284,12 @@ BOOL WaitForKeyboardToAppear() {
   [[EarlGrey selectElementWithMatcher:ManualFallbackCreditCardIconMatcher()]
       performAction:grey_tap()];
 
-  // Try to scroll.
-  [[EarlGrey
-      selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  // Scroll if not iPad.
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeBottom)];
+  }
 
   // Tap the "Add Credit Cards..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackAddCreditCardsMatcher()]
@@ -458,9 +441,10 @@ BOOL WaitForKeyboardToAppear() {
       selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [[EarlGrey
-      selectElementWithMatcher:[KeyboardAppInterface keyboardWindowMatcher]]
-      performAction:grey_typeText(@"text")];
+  // Tap a keyboard key directly. Typing with EG helpers do not trigger physical
+  // keyboard presses.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(@"G")]
+      performAction:grey_tap()];
 
   // Verify the credit card controller table view and the credit card icon is
   // NOT visible.
@@ -511,8 +495,8 @@ BOOL WaitForKeyboardToAppear() {
       selectElementWithMatcher:ManualFallbackCreditCardTableViewMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
-  [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                      error:nil];
+  [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                error:nil];
 
   // Verify the credit card controller table view is still visible.
   [[EarlGrey
@@ -621,7 +605,7 @@ BOOL WaitForKeyboardToAppear() {
   NSString* javaScriptCondition = [NSString
       stringWithFormat:@"window.document.getElementById('%s').value === '%@'",
                        kFormElementUsername, result];
-  XCTAssertTrue(WaitForJavaScriptCondition(javaScriptCondition));
+  [ChromeEarlGrey waitForJavaScriptCondition:javaScriptCondition];
 }
 
 @end

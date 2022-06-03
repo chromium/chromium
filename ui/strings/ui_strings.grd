@@ -18,6 +18,36 @@ need to be translated for each locale.-->
     </output>
     <if expr="is_android">
       <output filename="ui_strings_af.pak" type="data_package" lang="af" />
+      <output filename="ui_strings_as.pak" type="data_package" lang="as" />
+      <output filename="ui_strings_az.pak" type="data_package" lang="az" />
+      <output filename="ui_strings_be.pak" type="data_package" lang="be" />
+      <output filename="ui_strings_bs.pak" type="data_package" lang="bs" />
+      <output filename="ui_strings_eu.pak" type="data_package" lang="eu" />
+      <output filename="ui_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="ui_strings_gl.pak" type="data_package" lang="gl" />
+      <output filename="ui_strings_hy.pak" type="data_package" lang="hy" />
+      <output filename="ui_strings_is.pak" type="data_package" lang="is" />
+      <output filename="ui_strings_ka.pak" type="data_package" lang="ka" />
+      <output filename="ui_strings_kk.pak" type="data_package" lang="kk" />
+      <output filename="ui_strings_km.pak" type="data_package" lang="km" />
+      <output filename="ui_strings_ky.pak" type="data_package" lang="ky" />
+      <output filename="ui_strings_lo.pak" type="data_package" lang="lo" />
+      <output filename="ui_strings_mk.pak" type="data_package" lang="mk" />
+      <output filename="ui_strings_mn.pak" type="data_package" lang="mn" />
+      <output filename="ui_strings_my.pak" type="data_package" lang="my" />
+      <output filename="ui_strings_ne.pak" type="data_package" lang="ne" />
+      <output filename="ui_strings_or.pak" type="data_package" lang="or" />
+      <output filename="ui_strings_pa.pak" type="data_package" lang="pa" />
+      <output filename="ui_strings_si.pak" type="data_package" lang="si" />
+      <output filename="ui_strings_sq.pak" type="data_package" lang="sq" />
+      <output filename="ui_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="ui_strings_ur.pak" type="data_package" lang="ur" />
+      <output filename="ui_strings_uz.pak" type="data_package" lang="uz" />
+      <output filename="ui_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="ui_strings_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="ui_strings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="ui_strings_am.pak" type="data_package" lang="am" />
     <output filename="ui_strings_ar.pak" type="data_package" lang="ar" />
@@ -40,7 +70,6 @@ need to be translated for each locale.-->
     </if>
     <output filename="ui_strings_et.pak" type="data_package" lang="et" />
     <output filename="ui_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="ui_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="ui_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="ui_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="ui_strings_fr.pak" type="data_package" lang="fr" />
@@ -89,6 +118,10 @@ need to be translated for each locale.-->
     <output filename="ui_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="ui_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="ui_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="ui_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="ui_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="translations/ui_strings_af.xtb" lang="af" />
@@ -158,6 +191,7 @@ need to be translated for each locale.-->
     <file path="translations/ui_strings_sl.xtb" lang="sl" />
     <file path="translations/ui_strings_sq.xtb" lang="sq" />
     <file path="translations/ui_strings_sr.xtb" lang="sr" />
+    <file path="translations/ui_strings_sr-Latn.xtb" lang="sr-Latn" />
     <file path="translations/ui_strings_sv.xtb" lang="sv" />
     <file path="translations/ui_strings_sw.xtb" lang="sw" />
     <file path="translations/ui_strings_ta.xtb" lang="ta" />
@@ -173,7 +207,7 @@ need to be translated for each locale.-->
     <file path="translations/ui_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="translations/ui_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
 
       <!-- time format -->
@@ -341,8 +375,44 @@ need to be translated for each locale.-->
       <message name="IDS_APP_MENU_EMPTY_SUBMENU" desc="Used when a submenu has no entries">
         (empty)
       </message>
+        <message name="IDS_CLIPBOARD_MENU_HTML" desc="Used when HTML is stored in the clipboard history">
+        HTML Content
+      </message>
+      <message name="IDS_CLIPBOARD_MENU_IMAGE" desc="Used when an image is stored in the clipboard history">
+        Image
+      </message>
+      <message name="IDS_CLIPBOARD_MENU_RTF_CONTENT" desc="Used when Rich Text Format (RTF) content is stored in the clipboard history">
+        RTF Content
+      </message>
+      <message name="IDS_CLIPBOARD_MENU_WEB_SMART_PASTE" desc="Used when web smart paste content is stored in the clipboard history">
+        Web Smart Paste Content
+      </message>
+      <message name="IDS_CLIPBOARD_MENU_CLIPBOARD" desc="The name of the system clipboard">
+        Clipboard
+      </message>
+      <message name="IDS_CLIPBOARD_MENU_DELETE_ALL" desc="Used to indicate to a user that all clipboard items will be deleted if selected">
+        Delete All
+      </message>
+
+      <!-- New Badge (user education) -->
+      <message name="IDS_NEW_BADGE" desc="Appears as a badge on UI elements like menus, denoting new features">
+        New
+      </message>
+      <message name="IDS_NEW_BADGE_SCREEN_READER_MESSAGE"
+               desc="Message appended to screen reader description of UI elements which have the 'New' badge">
+        This is a new feature
+      </message>
 
       <!-- General application strings -->
+      <message name="IDS_SENTENCE_END" desc="The symbol that is used to end a sentence.">
+        .
+      </message>
+      <message name="IDS_CONCAT_TWO_STRINGS_WITH_COMMA" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a comma and a whitespace in between the other strings. For example: '1 compromised password, 2 weak passwords'">
+        <ph name="TYPE_1">$1<ex>2 compromised passwords</ex></ph>, <ph name="TYPE_2">$2<ex>7 weak passwords</ex></ph>
+      </message>
+      <message name="IDS_CONCAT_TWO_STRINGS_WITH_PERIODS" desc="This string concatenates two other strings. In the English language, this particular concatenation is done via a period and a whitespace after the first string, and a period after the second string. For example: '1 compromised password. 2 weak passwords.'">
+        <ph name="TYPE_1">$1<ex>2 compromised passwords</ex></ph>. <ph name="TYPE_2">$2<ex>7 weak passwords</ex></ph>.
+      </message>
       <if expr="is_win or is_ios">
         <message name="IDS_APP_UNTITLED_SHORTCUT_FILE_NAME" desc="The name of the Internet Shortcut file created for URLs dragged that have no title">
           Untitled Webpage
@@ -457,17 +527,457 @@ need to be translated for each locale.-->
         uncheck
       </message>
 
-      <!--Accessible name strings-->
-      <if expr="is_macosx">
-        <message name="IDS_ACCNAME_TAB_ROLE_DESCRIPTION" desc="A generic description of a tab button's role." meaning="UI element">
-          Tab
-        </message>
-        <message name="IDS_ACCNAME_DISCLOSURE_TRIANGLE_ROLE_DESCRIPTION" desc="A generic description of a disclosure triangle's role.">
-          Disclosure triangle
+      <!-- Accessible role localized names -->
+      <message name="IDS_AX_ROLE_ARTICLE" desc="Accessibility role description for article">
+        article
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-audio -->
+      <message name="IDS_AX_ROLE_AUDIO" desc="Accessible role description for audio">
+        audio
+      </message>
+      <message name="IDS_AX_ROLE_BANNER" desc="Accessibility role description for banner">
+        banner
+      </message>
+      <message name="IDS_AX_ROLE_CODE" desc="Accessibility role description for a section whose content represents a fragment of computer code">
+        code
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-input-color -->
+      <message name="IDS_AX_ROLE_COLOR_WELL" desc="Accessibility role description for a color picker">
+        color picker
+      </message>
+      <message name="IDS_AX_ROLE_COMMENT" desc="Accessibility role description for a single comment">
+        comment
+      </message>
+      <message name="IDS_AX_ROLE_COMPLEMENTARY" desc="Accessibility role description for complementary">
+        complementary
+      </message>
+      <message name="IDS_AX_ROLE_CONTENT_DELETION" desc="Accessibility role description for content deletion, meaning content that is has been or is suggested to be removed from a document, such as in a revision review">
+        deletion
+      </message>
+      <message name="IDS_AX_ROLE_CONTENT_INSERTION" desc="Accessibility role description for content insertion, meaning content that has been marked or is suggested to be inserted into a document, such as in a revision review">
+        insertion
+      </message>
+      <message name="IDS_AX_ROLE_CHECK_BOX" desc="Accessibility role description for a check box">
+        checkbox
+      </message>
+      <message name="IDS_AX_ROLE_CONTENT_INFO" desc="Accessibility role description for credits and information about the content of the page, like copyrights and privacy statements">
+        content information
+      </message>
+      <message name="IDS_AX_ROLE_DATE" desc="Accessibility role description for a date input">
+        date picker
+      </message>
+      <message name="IDS_AX_ROLE_DATE_TIME_LOCAL" desc="Accessibility role description for a datetime-local input">
+        local date and time picker
+      </message>
+      <message name="IDS_AX_ROLE_DEFINITION" desc="Accessibility role description for a definition">
+        definition
+      </message>
+      <message name="IDS_AX_ROLE_DESCRIPTION_LIST" desc="Accessibility role description for a definition list">
+        definition list
+      </message>
+      <message name="IDS_AX_ROLE_DESCRIPTION_TERM" desc="Accessibility role description for description term (as in a description list)">
+        term
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-details -->
+      <message name="IDS_AX_ROLE_DETAILS" desc="Accessibility role description for details">
+        details
+      </message>
+      <message name="IDS_AX_ROLE_DISCLOSURE_TRIANGLE" desc="Accessibility role description for a disclosure triangle, a control shaped like a triangle that expands or collapses to show or hide extra content">
+        disclosure triangle
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ABSTRACT" desc="Accessibility role description for abstract, meaning the summary of the contents of an article or book">
+        abstract
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ACKNOWLEDGMENTS" desc="Accessibility role description for acknowledgments">
+        acknowledgments
+      </message>
+      <message name="IDS_AX_ROLE_DOC_AFTERWORD" desc="Accessibility role description for afterword">
+        afterword
+      </message>
+      <message name="IDS_AX_ROLE_DOC_APPENDIX" desc="Accessibility role description for appendix, meaning the summary of the contents of an article or book">
+        appendix
+      </message>
+      <message name="IDS_AX_ROLE_DOC_BACKLINK" desc="Accessibility role description for back link">
+        back link
+      </message>
+      <message name="IDS_AX_ROLE_DOC_BIBLIO_ENTRY" desc="Accessibility role description for bibliography entry">
+        bibliography entry
+      </message>
+      <message name="IDS_AX_ROLE_DOC_BIBLIOGRAPHY" desc="Accessibility role description for bibliography">
+        bibliography
+      </message>
+      <message name="IDS_AX_ROLE_DOC_BIBLIO_REF" desc="Accessibility role description for bibliography reference">
+        bibliography reference
+      </message>
+      <message name="IDS_AX_ROLE_DOC_CHAPTER" desc="Accessibility role description for chapter">
+        chapter
+      </message>
+      <message name="IDS_AX_ROLE_DOC_COLOPHON" desc="Accessibility role description for colophon">
+        colophon
+      </message>
+      <message name="IDS_AX_ROLE_DOC_CONCLUSION" desc="Accessibility role description for conclusion">
+        conclusion
+      </message>
+      <message name="IDS_AX_ROLE_DOC_COVER" desc="Accessibility role description for cover">
+        cover
+      </message>
+      <message name="IDS_AX_ROLE_DOC_CREDIT" desc="Accessibility role description for credit, a public acknowledgement of someone who was responsible for helping with something">
+        credit
+      </message>
+      <message name="IDS_AX_ROLE_DOC_CREDITS" desc="Accessibility role description for credits">
+        credits
+      </message>
+      <message name="IDS_AX_ROLE_DOC_DEDICATION" desc="Accessibility role description for dedication">
+        dedication
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ENDNOTE" desc="Accessibility role description for endnote">
+        endnote
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ENDNOTES" desc="Accessibility role description for endnotes">
+        endnotes
+      </message>
+      <message name="IDS_AX_ROLE_DOC_EPIGRAPH" desc="Accessibility role description for epigraph">
+        epigraph
+      </message>
+      <message name="IDS_AX_ROLE_DOC_EPILOGUE" desc="Accessibility role description for epilogue">
+        epilogue
+      </message>
+      <message name="IDS_AX_ROLE_DOC_ERRATA" desc="Accessibility role description for errata">
+        errata
+      </message>
+      <message name="IDS_AX_ROLE_DOC_EXAMPLE" desc="Accessibility role description for example">
+        example
+      </message>
+      <message name="IDS_AX_ROLE_DOC_FOOTNOTE" desc="Accessibility role description for footnote">
+        footnote
+      </message>
+      <message name="IDS_AX_ROLE_DOC_FOREWORD" desc="Accessibility role description for foreword">
+        foreword
+      </message>
+      <message name="IDS_AX_ROLE_DOC_GLOSSARY" desc="Accessibility role description for glossary">
+        glossary
+      </message>
+      <message name="IDS_AX_ROLE_DOC_GLOSS_REF" desc="Accessibility role description for glossary reference">
+        glossary reference
+      </message>
+      <message name="IDS_AX_ROLE_DOC_INDEX" desc="Accessibility role description for index">
+        index
+      </message>
+      <message name="IDS_AX_ROLE_DOC_INTRODUCTION" desc="Accessibility role description for introduction">
+        introduction
+      </message>
+      <message name="IDS_AX_ROLE_DOC_NOTE_REF" desc="Accessibility role description for note reference">
+        note reference
+      </message>
+      <message name="IDS_AX_ROLE_DOC_NOTICE" desc="Accessibility role description for notice">
+        notice
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_BREAK" desc="Accessibility role description for page break">
+        page break
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_FOOTER" desc="Accessibility role description for page footer">
+        page footer
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_HEADER" desc="Accessibility role description for page header">
+        page header
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PAGE_LIST" desc="Accessibility role description for page list">
+        page list
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PART" desc="Accessibility role description for part, as in a part of a book">
+        part
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PREFACE" desc="Accessibility role description for preface">
+        preface
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PROLOGUE" desc="Accessibility role description for prologue">
+        prologue
+      </message>
+      <message name="IDS_AX_ROLE_DOC_PULLQUOTE" desc="Accessibility role description for pullquote">
+        pullquote
+      </message>
+      <message name="IDS_AX_ROLE_DOC_QNA" desc="Accessibility role description for Q+A (questions and answers)">
+        Q&amp;A
+      </message>
+      <message name="IDS_AX_ROLE_DOC_SUBTITLE" desc="Accessibility role description for subtitle">
+        subtitle
+      </message>
+      <message name="IDS_AX_ROLE_DOC_TIP" desc="Accessibility role description for tip, as in a suggestion or idea">
+        tip
+      </message>
+      <message name="IDS_AX_ROLE_DOC_TOC" desc="Accessibility role description for table of contents">
+        table of contents
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-input-email -->
+      <message name="IDS_AX_ROLE_EMAIL" desc="Accessibility role description for email input">
+        email
+      </message>
+      <message name="IDS_AX_ROLE_EMPHASIS" desc="Accessibility role description for one or more emphasized characters">
+        emphasis
+      </message>
+      <message name="IDS_AX_ROLE_FEED" desc="Accessibility role description for a scrollable list of articles.">
+        feed
+      </message>
+      <message name="IDS_AX_ROLE_FIGURE" desc="Accessibility role description for figure">
+        figure
+      </message>
+      <message name="IDS_AX_ROLE_FORM" desc="Accessibility role description for form">
+        form
+      </message>
+      <message name="IDS_AX_ROLE_FOOTER" desc="Accessibility role description for footers">
+        footer
+      </message>
+      <message name="IDS_AX_ROLE_GRAPHICS_DOCUMENT" desc="Accessibility role description for graphics document">
+        graphics document
+      </message>
+      <message name="IDS_AX_ROLE_GRAPHICS_OBJECT" desc="Accessibility role description for graphics object">
+        graphics object
+      </message>
+      <message name="IDS_AX_ROLE_GRAPHICS_SYMBOL" desc="Accessibility role description for graphics symbol">
+        graphics symbol
+      </message>
+      <message name="IDS_AX_ROLE_HEADER" desc="Accessibility role description for header">
+        header
+      </message>
+      <message name="IDS_AX_ROLE_HEADING" desc="Accessibility role description for headings">
+        heading
+      </message>
+      <message name="IDS_AX_ROLE_LINK" desc="Accessibility role description for link">
+        link
+      </message>
+      <message name="IDS_AX_ROLE_MAIN_CONTENT" desc="Accessibility role description for main content of the document.">
+        main
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-mark -->
+      <message name="IDS_AX_ROLE_MARK" desc="Accessibility role description for highlighted content.">
+        highlight
+      </message>
+      <message name="IDS_AX_ROLE_MATH" desc="Accessibility role description for math">
+        math
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-meter -->
+      <message name="IDS_AX_ROLE_METER" desc="Accessibility role description for a meter, for example a temperature indicator or progress bar">
+          meter
+      </message>
+      <message name="IDS_AX_ROLE_MONTH" desc="Accessibility role description for a month input">
+        month picker
+      </message>
+      <message name="IDS_AX_ROLE_NAVIGATIONAL_LINK" desc="Accessibility role description for group of navigational links.">
+        navigation
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-output -->
+      <message name="IDS_AX_ROLE_OUTPUT" desc="Accessibility role description for output">
+        output
+      </message>
+      <message name="IDS_AX_ROLE_REGION" desc="Accessibility role description for region">
+        region
+      </message>
+      <!-- https://www.w3.org/TR/core-aam-1.1/#role-map-searchbox -->
+      <if expr="is_win">
+        <message name="IDS_AX_ROLE_SEARCH_BOX" desc="UIA role description for search text field">
+          search box
         </message>
       </if>
+      <if expr="not is_win">
+        <message name="IDS_AX_ROLE_SEARCH_BOX" desc="Accessibility role description for search text field">
+          search text field
+        </message>
+      </if>
+      <!-- https://w3c.github.io/html-aam/#el-section -->
+      <message name="IDS_AX_ROLE_SECTION" desc="Accessibility role description for a section of a document, like the main body text, the table of contents, a header, or a footer">
+        section
+      </message>
+      <message name="IDS_AX_ROLE_STATUS" desc="Accessibility role description for status">
+        status
+      </message>
+      <if expr="is_macosx">
+        <message name="IDS_AX_ROLE_STEPPER" desc="Accessibility role description for a stepper - a control where you can use up/down arrows to increment or decrement it. The name 'stepper' is how this user interface element is described by VoiceOver on Mac OS X; the translation should be consistent with VoiceOver.">
+          stepper
+        </message>
+      </if>
+      <message name="IDS_AX_ROLE_STRONG" desc="Accessibility role description for content which is important, serious, or urgent">
+        strong
+      </message>
+      <message name="IDS_AX_ROLE_SUBSCRIPT" desc="Accessibility role description for subscript" is_accessibility_with_no_ui="true">
+        subscript
+      </message>
+      <message name="IDS_AX_ROLE_SUGGESTION" desc="Accessibility role description for suggestion, meaning a suggested change to some content">
+        suggestion
+      </message>
+      <message name="IDS_AX_ROLE_SUPERSCRIPT" desc="Accessibility role description for superscript" is_accessibility_with_no_ui="true">
+        superscript
+      </message>
+      <message name="IDS_AX_ROLE_SWITCH" desc="Accessibility role description for switch">
+        switch
+      </message>
+      <message name="IDS_AX_ROLE_TAB" desc="Accessibility role description for a tab">
+        tab
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-input-tel -->
+      <message name="IDS_AX_ROLE_TELEPHONE" desc="Accessibility role description for telephone number input">
+        telephone
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-time -->
+      <message name="IDS_AX_ROLE_TIME" desc="Accessibility role description for a time">
+        time
+      </message>
+      <message name="IDS_AX_ROLE_TOGGLE_BUTTON" desc="Accessibility role description for a toggle button">
+        toggle button
+      </message>
+      <!-- https://w3c.github.io/html-aam/#el-input-url -->
+      <message name="IDS_AX_ROLE_URL" desc="Accessibility role description for URL input">
+        url
+      </message>
+      <message name="IDS_AX_ROLE_WEB_AREA" desc="Accessibility role description for web area">
+        HTML content
+      </message>
+      <message name="IDS_AX_ROLE_WEEK" desc="Accessibility role description for a week input">
+        week picker
+      </message>
+      <if expr="is_android">
+        <message name="IDS_AX_ROLE_ALERT" desc="Accessibility role description for an alert">
+          alert
+        </message>
+        <message name="IDS_AX_ROLE_ALERT_DIALOG" desc="Accessibility role description for an alert dialog">
+          alert_dialog
+        </message>
+        <message name="IDS_AX_ROLE_APPLICATION" desc="Accessibility role description for an application">
+          application
+        </message>
+        <message name="IDS_AX_ROLE_BLOCKQUOTE" desc="Accessibility role description for a blockquote">
+          blockquote
+        </message>
+        <message name="IDS_AX_ROLE_BUTTON" desc="Accessibility role description for a button">
+          button
+        </message>
+        <message name="IDS_AX_ROLE_COLUMN_HEADER" desc="Accessibility role description for a column header">
+          column header
+        </message>
+        <message name="IDS_AX_ROLE_COMBO_BOX" desc="Accessibility role description for a combo box, an editable text control with an associated drop-down list">
+          combo box
+        </message>
+        <message name="IDS_AX_ROLE_DATE_TIME" desc="Accessibility role description for a date / time picker">
+          date and time picker
+        </message>
+        <message name="IDS_AX_ROLE_DIALOG" desc="Accessibility role description for a dialog">
+          dialog
+        </message>
+        <message name="IDS_AX_ROLE_DIRECTORY" desc="Accessibility role description for a directory, for example a table of contents or list of employees">
+          directory
+        </message>
+        <message name="IDS_AX_ROLE_DOCUMENT" desc="Accessibility role description for a document">
+          document
+        </message>
+        <message name="IDS_AX_ROLE_EMBEDDED_OBJECT" desc="Accessibility role description for an embedded object, like a video inside a web page">
+          object
+        </message>
+        <message name="IDS_AX_ROLE_GRAPHIC" desc="Accessibility role description for a graphic or image">
+          graphic
+        </message>
+        <message name="IDS_AX_ROLE_HEADING_WITH_LEVEL" desc="Accessibility role description for a heading with a heading level, for example 'heading 1' is the most important heading and 'heading 3' is less important">
+          heading <ph name="HEADING_LEVEL">$1<ex>1</ex></ph>
+        </message>
+        <message name="IDS_AX_ROLE_INPUT_TIME" desc="Accessibility role description for a time picker control">
+          time picker
+        </message>
+        <message name="IDS_AX_ROLE_LIST_BOX" desc="Accessibility role description for a list box control">
+          list box
+        </message>
+        <message name="IDS_AX_ROLE_LOG" desc="Accessibility role description for an information log, such as a chat log or error log">
+          log
+        </message>
+        <message name="IDS_AX_ROLE_MARQUEE" desc="Accessibility role description for a marquee, such as a stock ticker or ad banner that frequently changes">
+          marquee
+        </message>
+        <message name="IDS_AX_ROLE_MENU" desc="Accessibility role description for a menu">
+          menu
+        </message>
+        <message name="IDS_AX_ROLE_MENU_BAR" desc="Accessibility role description for a menu bar">
+          menu bar
+        </message>
+        <message name="IDS_AX_ROLE_MENU_ITEM" desc="Accessibility role description for a menu item">
+          menu item
+        </message>
+        <message name="IDS_AX_ROLE_NOTE" desc="Accessibility role description for a note">
+          note
+        </message>
+        <message name="IDS_AX_ROLE_PDF_HIGHLIGHT" desc="Accessibility role description for PDF highlight.">
+          highlight
+        </message>
+        <message name="IDS_AX_ROLE_POP_UP_BUTTON" desc="Accessibility role description for a pop up button">
+          pop up button
+        </message>
+        <message name="IDS_AX_ROLE_POP_UP_BUTTON_MENU" desc="Accessibility role description for a pop up button that opens a menu">
+          menu pop up button
+        </message>
+        <message name="IDS_AX_ROLE_POP_UP_BUTTON_DIALOG" desc="Accessibility role description for a pop up button that opens a dialog">
+          dialog pop up button
+        </message>
+        <message name="IDS_AX_ROLE_PROGRESS_INDICATOR" desc="Accessibility role description for a progress indicator">
+          progress indicator
+        </message>
+        <message name="IDS_AX_ROLE_RADIO" desc="Accessibility role description for a radio button">
+          radio button
+        </message>
+        <message name="IDS_AX_ROLE_RADIO_GROUP" desc="Accessibility role description for a group of related radio buttons">
+          radio group
+        </message>
+        <message name="IDS_AX_ROLE_ROW_GROUP" desc="Accessibility role description for a row group in a table">
+          row group
+        </message>
+        <message name="IDS_AX_ROLE_ROW_HEADER" desc="Accessibility role description for a row header in a table">
+          row header
+        </message>
+        <message name="IDS_AX_ROLE_SCROLL_BAR" desc="Accessibility role description for a scroll bar">
+          scroll bar
+        </message>
+        <message name="IDS_AX_ROLE_SEARCH" desc="Accessibility role description for the section of a web page containing controls for searching the page or site">
+          search
+        </message>
+        <message name="IDS_AX_ROLE_SLIDER" desc="Accessibility role description for a slider">
+          slider
+        </message>
+        <message name="IDS_AX_ROLE_SPIN_BUTTON" desc="Accessibility role description for a spin button, a control containing a numerical value that can be incremented or decremented by 1">
+          spin button
+        </message>
+        <message name="IDS_AX_ROLE_SPLITTER" desc="Accessibility role description for a splitter, a control that splits the window in two pieces and can usually be dragged">
+          splitter
+        </message>
+        <message name="IDS_AX_ROLE_TABLE" desc="Accessibility role description for a table">
+          table
+        </message>
+        <message name="IDS_AX_ROLE_TAB_LIST" desc="Accessibility role description for a tab list">
+          tab list
+        </message>
+        <message name="IDS_AX_ROLE_TAB_PANEL" desc="Accessibility role description for a tab panel, the part of the window that changes when selecting a new tab">
+          tab panel
+        </message>
+        <message name="IDS_AX_ROLE_TIMER" desc="Accessibility role description for a timer">
+          timer
+        </message>
+        <message name="IDS_AX_ROLE_TOOLBAR" desc="Accessibility role description for a toolbar">
+          toolbar
+        </message>
+        <message name="IDS_AX_ROLE_TOOLTIP" desc="Accessibility role description for a tooltip">
+          tooltip
+        </message>
+        <message name="IDS_AX_ROLE_TREE" desc="Accessibility role description for a tree">
+          tree
+        </message>
+        <message name="IDS_AX_ROLE_TREE_GRID" desc="Accessibility role description for a tree grid">
+          tree grid
+        </message>
+        <message name="IDS_AX_ROLE_TREE_ITEM" desc="Accessibility role description for a tree item">
+          tree item
+        </message>
+      </if>
+
+      <!--Accessible name strings-->
       <message name="IDS_APP_ACCNAME_BACK" desc="The accessible name for the back button on the window frame.">
         Back button
+      </message>
+      <message name="IDS_APP_ACCNAME_CENTER" desc="The accessible name for the center button on the window frame.">
+        Center button
       </message>
       <message name="IDS_APP_ACCNAME_CLOSE" desc="The accessible name for the Close button.">
         Close
@@ -523,6 +1033,17 @@ need to be translated for each locale.-->
         Scroll Down
       </message>
 
+      <!-- TableView accessible strings -->
+      <message name="IDS_APP_TABLE_COLUMN_NOT_SORTED_ACCNAME" desc="The text to be announced when specified column becomes unsorted.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> unsorted.
+      </message>
+      <message name="IDS_APP_TABLE_COLUMN_SORTED_ASC_ACCNAME" desc="The text to be announced when specified column is sorted in ascending order.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in ascending order.
+      </message>
+      <message name="IDS_APP_TABLE_COLUMN_SORTED_DESC_ACCNAME" desc="The text to be announced when specified column is sorted in descending order.">
+        Column <ph name="COLUMN_NAME">$1<ex>Column Name</ex></ph> sorted in descending order.
+      </message>
+
       <!-- Textfield context menu item labels. -->
       <message name="IDS_APP_UNDO" desc="The text label of the Undo menu item">
         &amp;Undo
@@ -557,6 +1078,11 @@ need to be translated for each locale.-->
       <if expr="is_macosx">
         <message name="IDS_CONTENT_CONTEXT_EMOJI" desc="The context menu item to display the OS-provided emoji picker.">
           Emoji &amp;&amp; Symbols
+        </message>
+      </if>
+      <if expr="chromeos">
+        <message name="IDS_APP_SHOW_CLIPBOARD_HISTORY" desc="The context menu item to show the clipboard history menu.">
+          Clipboard
         </message>
       </if>
 
@@ -617,6 +1143,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_F1_KEY" desc="F1 key">
         F1
       </message>
+      <message name="IDS_APP_F6_KEY" is_accessibility_with_no_ui="true" desc="F6 key">
+        F6
+      </message>
       <message name="IDS_APP_F11_KEY" desc="F11 key">
         F11
       </message>
@@ -660,6 +1189,11 @@ need to be translated for each locale.-->
         <message name="IDS_APP_WINDOWS_KEY" desc="This refers to the 'Windows' key on certain
             keyboards (often between Ctrl and Alt). This may not need to be translated.">
           Win
+        </message>
+      </if>
+      <if expr="chromeos">
+        <message name="IDS_APP_FULLSCREEN_KEY" desc="This refers to the 'Fullscreen' media key on certain keyboards.">
+          Fullscreen
         </message>
       </if>
 
@@ -840,8 +1374,14 @@ need to be translated for each locale.-->
       <message name="IDS_ALL_APPS_INDICATOR" desc="Indicator text in the launcher on top of all apps.">
         ALL APPS
       </message>
-      <message name="IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to.">
+      <message name="IDS_APP_LIST_APP_FOCUS_NOTIFICATION_BADGE" desc="The spoken feedback text for when an app icon is focused and has a notification badge shown on the icon.">
+        <ph name="FOCUSED_APP_NAME">$1<ex>App Name</ex></ph> requests your attention.
+      </message>
+      <message name="IDS_APP_LIST_APP_DRAG_LOCATION_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to when the app list has pages.">
         Moved to Page <ph name="PAGE_NUMBER">$1<ex>1</ex></ph>, row <ph name="ROW_NUMBER">$2<ex>4</ex></ph>, column <ph name="COLUMN_NUMBER">$3<ex>2</ex></ph>.
+      </message>
+      <message name="IDS_APP_LIST_APP_DRAG_ROW_COLUMN_ACCESSIBILE_NAME" desc="The spoken feedback which tells the location that a dragged app has dropped to when the app list does not have pages.">
+        Moved to row <ph name="ROW_NUMBER">$1<ex>4</ex></ph>, column <ph name="COLUMN_NUMBER">$2<ex>2</ex></ph>.
       </message>
       <message name="IDS_APP_LIST_APP_DRAG_CREATE_FOLDER_ACCESSIBILE_NAME" desc="The spoken feedback text which describes the app that is currently being dragged over another app, and how to create a folder.">
         <ph name="DRAGGED_APP_NAME">$1<ex>App Name</ex></ph> on top of <ph name="IN_PLACE_APP">$2<ex>Other App Name</ex></ph>, release to create folder.
@@ -882,6 +1422,9 @@ need to be translated for each locale.-->
       <message name="IDS_APP_LIST_SUGGESTED_APPS_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that the UI is showing a small version of the app list">
         Launcher, partial view
       </message>
+      <message name="IDS_APP_LIST_LAUNCHER_ACCESSIBILITY_ANNOUNCEMENT" desc="The accessibility announcement that notifies users that the UI is showing the search results">
+        Launcher
+      </message>
       <message name="IDS_APP_LIST_CLEAR_SEARCHBOX" desc="Tooltip for the button that clears all text from the search box in the app list.">
         Clear searchbox text
       </message>
@@ -921,6 +1464,12 @@ need to be translated for each locale.-->
       <message name="IDS_SHELF_ITEM_WAS_UNPINNED" desc="Accessibility announcement notifying users that an item was un-pinned from the shelf">
         <ph name="ITEM_TITLE">$1<ex>Files</ex></ph> was un-pinned
       </message>
+      <message name="IDS_SHELF_ITEMS_WERE_SWAPPED" desc="Accessibility announcement notifying users that two shelf items have been swapped">
+        <ph name="FIRST_ITEM_TITLE">$1<ex>Files</ex></ph> swapped with <ph name="SECOND_ITEM_TITLE">$2<ex>Settings</ex></ph>
+      </message>
+      <message name="IDS_SHELF_ITEM_HAS_NOTIFICATION_BADGE" desc="Accessibility announcement notifying users that the currently focused shelf app button has a notification badge shown on the app button's icon.">
+        <ph name="APP_ITEM_TITLE">$1<ex>App Name</ex></ph> requests your attention.
+      </message>
       <message name="IDS_SHELF_NEXT" desc="Tooltip for the shelf arrow button that scrolls the shelf forward">
         Next
       </message>
@@ -948,11 +1497,11 @@ need to be translated for each locale.-->
       <message name="IDS_APP_LIST_LEARN_MORE" desc="Text of Learn more links.">
         Learn more
       </message>
-      <message name="IDS_APP_LIST_ASSISTANT_PRIVACY_INFO" desc="Text shown in Launcher to imply Assistant search.">
-        Your searches are powered by the Google Assistant. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+      <message name="IDS_APP_LIST_MANAGE_SETTINGS" desc="Text of Manage settings links.">
+        Manage settings
       </message>
-      <message name="IDS_APP_LIST_ASSISTANT_PRIVACY_INFO_CLOSE" desc="Close button text.">
-        Close
+      <message name="IDS_APP_LIST_SUGGESTED_CONTENT_INFO" desc="Text shown in launcher to notify users about Suggested Content. Suggested Content includes app search recommendations and website recommendations which can show up in places such as launcher search and suggestion chips.">
+          Chrome OS shows suggestions for new content to explore. Sends statistics to improve quality only if you’ve chosen to share usage data. <ph name="MANAGE_SETTINGS">$1<ex>Manage settings</ex></ph>
       </message>
 
 
@@ -974,6 +1523,33 @@ need to be translated for each locale.-->
       <message name="IDS_APP_ACCESSIBILITY_APP_RECOMMENDATION_ARC" desc="Accessibility text to specify a search result is an app recommendation.">
         <ph name="APP_NAME">$1<ex>Instagram</ex></ph>, App recommendation
       </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_CLAMSHELL" desc="Hint text for the search box in fullscreen app list window with additional instructions to use the arrow keys in Accessibility mode.">
+        Search your device, apps, settings, and web. Use the arrow keys to navigate your apps.
+      </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_ACCESSIBILITY_NAME_TABLET" desc="Hint text for the search box in fullscreen app list window. Tablet mode only, so we don't mention the arrow keys.">
+        Search your device, apps, settings, and web.
+      </message>
+      <message name="IDS_APP_LIST_SEARCH_BOX_PLACEHOLDER" desc="Placeholder text for the search box shown in the app list UI.">
+        Search your device, apps, settings, web...
+      </message>
+
+      <!-- Clipboard history menu -->
+      <message name="IDS_CLIPBOARD_HISTORY_MENU_PNG_IMAGE" desc="Accessibility text for the PNG image shown on the clipboard history menu">
+        Image.
+      </message>
+      <message name="IDS_CLIPBOARD_HISTORY_MENU_HTML_IMAGE" desc="Accessibility text for the HTML-rendered image shown on the clipboard history menu">
+        HTML content.
+      </message>
+      <message name="IDS_CLIPBOARD_HISTORY_MENU_TITLE" desc="The title of the clipboard history menu which shows the history of the clipboard data">
+        Clipboard history
+      </message>
+      <message name="IDS_CLIPBOARD_HISTORY_DELETE_BUTTON" desc="Accessibility name of the button which functions to delete a clipboard history menu entry">
+        Remove from clipboard.
+      </message>
+      <message name="IDS_CLIPBOARD_HISTORY_ITEM_DELETION" desc="Accessibility text when a clipboard history menu entry is deleted">
+        Removed.
+      </message>
+
       <!-- Strings describing the touch calibration UX -->
       <message name="IDS_DISPLAY_TOUCH_CALIBRATION_EXIT_LABEL" desc="A message to notify the user about using the escape key to exit the calibration mode.">
         To exit calibration press Esc.
@@ -996,7 +1572,7 @@ need to be translated for each locale.-->
         Unknown Display
       </message>
       <message name="IDS_DISPLAY_NAME_INTERNAL" desc="The name used for internal displays, which is shown in the display settings.">
-        Internal Display
+        Built-in display
       </message>
 
       <!-- Crostini app context menu item names, dialog message and button strings -->
@@ -1007,13 +1583,7 @@ need to be translated for each locale.-->
         Use high density
       </message>
       <message name="IDS_CROSTINI_APP_RESTART_BODY" desc="Description for the Crostini app restart dialog.">
-        To adjust the window display density, restart the app.
-      </message>
-      <message name="IDS_CROSTINI_APP_RESTART_BUTTON" desc="Label for the button in the Crostini app restart dialog to restart an app.">
-        Restart
-      </message>
-      <message name="IDS_CROSTINI_NOT_NOW_BUTTON" desc="Label for the button in the Crostini app restart dialog to dismiss the dialog.">
-        Not now
+        Your application's display settings will take effect when it is next restarted.
       </message>
 
       <!-- Badging -->
@@ -1036,15 +1606,6 @@ need to be translated for each locale.-->
       </message>
       <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TITLE_NO_DEVICES" desc="The label to be shown as the title of the dialog when user click on a phone number, if there are no phones or apps to choose from.">
         Call this number from your phone?
-      </message>
-      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
-        To send a number from here to your Android phone, <ph name="TROUBLESHOOT_LINK">$1<ex>turn on sync</ex></ph> for both devices in settings.
-      </message>
-      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_HELP_TEXT_NO_DEVICES_ORIGIN" desc="The label to be shown as a help text of the dialog when user click on a phone number, if there are no phones to choose from.">
-        To send a number from <ph name="ORIGIN">$1<ex>www.google.com</ex></ph> to your Android phone, <ph name="TROUBLESHOOT_LINK">$2<ex>turn on sync</ex></ph> for both devices in settings.
-      </message>
-      <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_TROUBLESHOOT_LINK" desc="The label to be shown on the dialog when user click on a phone number for the link to a help page to turn on sync.">
-        turn on sync
       </message>
       <message name="IDS_BROWSER_SHARING_CLICK_TO_CALL_DIALOG_CALL_BUTTON_LABEL" desc="The button label to make a call, shown in the Click to Call dialog.">
         Make call
@@ -1075,9 +1636,6 @@ need to be translated for each locale.-->
         Couldn't share <ph name="CONTENT_TYPE">$1<ex>video</ex></ph>
       </message>
 
-      <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_DEVICE_NOT_FOUND" desc="The text to be shown on the dialog when an error occurred because the device is not synced.">
-        Make sure <ph name="TARGET_DEVICE_NAME">$1<ex>Pixel XL</ex></ph> has sync turned on in Chrome, and then try sending again.
-      </message>
       <message name="IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_NETWORK_ERROR" desc="The text to be shown on the dialog when the sender device has network issues.">
         Make sure this device is connected to the internet.
       </message>
@@ -1099,7 +1657,7 @@ need to be translated for each locale.-->
       <if expr="is_android">
         <!-- DevUI DFM Loader error strings -->
         <message name="IDS_DEV_UI_LOADER_ERROR_HEADING" desc="Heading text for error page shown when Chrome fails to dynamically install the DevUI module.">
-          Something went wrong
+          Page load failed because the developer UI module (dev_ui) is not installed
         </message>
         <message name="IDS_DEV_UI_LOADER_ERROR_SUGGEST_RELOAD" desc="Suggests to reload page to retry install of the DevUI module.">
           Reloading this page
@@ -1108,6 +1666,19 @@ need to be translated for each locale.-->
           Checking your internet connection
         </message>
       </if>
+
+      <!-- Settings string -->
+      <message name="IDS_SETTINGS_PASSWORD_SHOW" desc="A tool tip on a button that reveals the saved password.">
+       Show password
+      </message>
+      <message name="IDS_SETTINGS_PASSWORD_HIDE" desc="A tool tip on a button that hides the saved password that is being shown.">
+       Hide password
+      </message>
+
+      <!-- Table View -->
+      <message name="IDS_TABLE_VIEW_AX_ANNOUNCE_ROW_SELECTED" desc="Screenreader announcement that a row is selected">
+        <ph name="ROW_NAME">$1<ex>A row in the table</ex></ph> is selected.
+      </message>
     </messages>
   </release>
 </grit>

@@ -8,11 +8,14 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "net/base/features.h"
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
@@ -53,18 +56,24 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
                                      public WithTaskEnvironment {
  public:
   void SetUp() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kSplitHostCacheByNetworkIsolationKey);
+    network_isolation_key_ = NetworkIsolationKey::CreateTransient();
 #if defined(OS_WIN)
     auth_library_ = new MockAuthLibrary(const_cast<wchar_t*>(NEGOSSP_NAME));
 #else
     auth_library_ = new MockAuthLibrary();
 #endif
-    resolver_.reset(new MockHostResolver());
-    resolver_->rules_map()[HostResolverSource::ANY]->AddIPLiteralRule(
-        "alias", "10.0.0.2", "canonical.example.com");
+    resolver_ = std::make_unique<MockCachingHostResolver>(
+        /*cache_invalidation_num=*/0,
+        /*default_result=*/MockHostResolverBase::RuleResolver::
+            GetLocalhostResult());
+    resolver_->rules()->AddIPLiteralRule("alias", "10.0.0.2",
+                                         "canonical.example.com");
 
-    http_auth_preferences_.reset(new MockAllowHttpAuthPreferences());
-    factory_.reset(
-        new HttpAuthHandlerNegotiate::Factory(HttpAuthMechanismFactory()));
+    http_auth_preferences_ = std::make_unique<MockAllowHttpAuthPreferences>();
+    factory_ = std::make_unique<HttpAuthHandlerNegotiate::Factory>(
+        HttpAuthMechanismFactory());
     factory_->set_http_auth_preferences(http_auth_preferences_.get());
 #if defined(OS_ANDROID)
     http_auth_preferences_->set_auth_android_negotiate_account_type(
@@ -81,7 +90,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
 
   void SetupMocks(MockAuthLibrary* mock_library) {
 #if defined(OS_WIN)
-    security_package_.reset(new SecPkgInfoW);
+    security_package_ = std::make_unique<SecPkgInfoW>();
     memset(security_package_.get(), 0x0, sizeof(SecPkgInfoW));
     security_package_->cbMaxToken = 1337;
     mock_library->ExpectQuerySecurityPackageInfo(SEC_E_OK,
@@ -227,8 +236,9 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     std::unique_ptr<HttpAuthHandler> generic_handler;
     SSLInfo null_ssl_info;
     int rv = factory_->CreateAuthHandlerFromString(
-        "Negotiate", HttpAuth::AUTH_SERVER, null_ssl_info, gurl,
-        NetLogWithSource(), resolver_.get(), &generic_handler);
+        "Negotiate", HttpAuth::AUTH_SERVER, null_ssl_info,
+        network_isolation_key(), gurl, NetLogWithSource(), resolver_.get(),
+        &generic_handler);
     if (rv != OK)
       return rv;
     HttpAuthHandlerNegotiate* negotiate_handler =
@@ -238,12 +248,20 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
   }
 
   MockAuthLibrary* AuthLibrary() { return auth_library_; }
-  MockHostResolver* resolver() { return resolver_.get(); }
+  MockCachingHostResolver* resolver() { return resolver_.get(); }
   MockAllowHttpAuthPreferences* http_auth_preferences() {
     return http_auth_preferences_.get();
   }
 
+  const NetworkIsolationKey& network_isolation_key() const {
+    return network_isolation_key_;
+  }
+
  private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  NetworkIsolationKey network_isolation_key_;
+
 #if defined(OS_WIN)
   std::unique_ptr<SecPkgInfoW> security_package_;
 #endif
@@ -251,7 +269,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
   // can't be a scoped pointer to it since the tests need access when they set
   // up the mocks after passing ownership.
   MockAuthLibrary* auth_library_;
-  std::unique_ptr<MockHostResolver> resolver_;
+  std::unique_ptr<MockCachingHostResolver> resolver_;
   std::unique_ptr<MockAllowHttpAuthPreferences> http_auth_preferences_;
   std::unique_ptr<HttpAuthHandlerNegotiate::Factory> factory_;
 };
@@ -314,8 +332,8 @@ TEST_F(HttpAuthHandlerNegotiateTest, DisableCnameNonstandardPort) {
 TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   SetupMocks(AuthLibrary());
   std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
-  EXPECT_EQ(OK, CreateHandler(
-      false, false, true, "http://alias:500", &auth_handler));
+  const std::string url_string = "http://alias:500";
+  EXPECT_EQ(OK, CreateHandler(false, false, true, url_string, &auth_handler));
   ASSERT_TRUE(auth_handler.get() != nullptr);
   TestCompletionCallback callback;
   HttpRequestInfo request_info;
@@ -327,13 +345,35 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
 #else
   EXPECT_EQ("HTTP@canonical.example.com", auth_handler->spn_for_testing());
 #endif
+
+  // Make sure a cache-only lookup with the wrong NetworkIsolationKey (an empty
+  // one) fails, to make sure the right NetworkIsolationKey was used.
+  HostPortPair host_port_pair = HostPortPair::FromURL(GURL(url_string));
+  HostResolver::ResolveHostParameters resolve_params;
+  resolve_params.include_canonical_name = true;
+  resolve_params.source = HostResolverSource::LOCAL_ONLY;
+  std::unique_ptr<HostResolver::ResolveHostRequest> host_request1 =
+      resolver()->CreateRequest(host_port_pair, NetworkIsolationKey(),
+                                NetLogWithSource(), resolve_params);
+  TestCompletionCallback callback2;
+  int result = host_request1->Start(callback2.callback());
+  EXPECT_EQ(ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));
+
+  // Make sure a cache-only lookup with the same NetworkIsolationKey succeeds,
+  // to make sure the right NetworkIsolationKey was used.
+  std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
+      resolver()->CreateRequest(host_port_pair, network_isolation_key(),
+                                NetLogWithSource(), resolve_params);
+  TestCompletionCallback callback3;
+  result = host_request2->Start(callback3.callback());
+  EXPECT_EQ(OK, callback3.GetResult(result));
 }
 
 TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   SetupMocks(AuthLibrary());
   std::unique_ptr<HttpAuthHandlerNegotiate> auth_handler;
-  EXPECT_EQ(OK, CreateHandler(
-      false, false, false, "http://alias:500", &auth_handler));
+  const std::string url_string = "http://alias:500";
+  EXPECT_EQ(OK, CreateHandler(false, false, false, url_string, &auth_handler));
   ASSERT_TRUE(auth_handler.get() != nullptr);
   TestCompletionCallback callback;
   HttpRequestInfo request_info;
@@ -347,6 +387,28 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
 #else
   EXPECT_EQ("HTTP@canonical.example.com", auth_handler->spn_for_testing());
 #endif
+
+  // Make sure a cache-only lookup with the wrong NetworkIsolationKey (an empty
+  // one) fails, to make sure the right NetworkIsolationKey was used.
+  HostPortPair host_port_pair = HostPortPair::FromURL(GURL(url_string));
+  HostResolver::ResolveHostParameters resolve_params;
+  resolve_params.include_canonical_name = true;
+  resolve_params.source = HostResolverSource::LOCAL_ONLY;
+  std::unique_ptr<HostResolver::ResolveHostRequest> host_request1 =
+      resolver()->CreateRequest(host_port_pair, NetworkIsolationKey(),
+                                NetLogWithSource(), resolve_params);
+  TestCompletionCallback callback2;
+  int result = host_request1->Start(callback2.callback());
+  EXPECT_EQ(ERR_NAME_NOT_RESOLVED, callback2.GetResult(result));
+
+  // Make sure a cache-only lookup with the same NetworkIsolationKey succeeds,
+  // to make sure the right NetworkIsolationKey was used.
+  std::unique_ptr<HostResolver::ResolveHostRequest> host_request2 =
+      resolver()->CreateRequest(host_port_pair, network_isolation_key(),
+                                NetLogWithSource(), resolve_params);
+  TestCompletionCallback callback3;
+  result = host_request2->Start(callback3.callback());
+  EXPECT_EQ(OK, callback3.GetResult(result));
 }
 
 #if defined(OS_POSIX)
@@ -397,15 +459,15 @@ TEST_F(HttpAuthHandlerNegotiateTest, MissingGSSAPI) {
   GURL gurl("http://www.example.com");
   std::unique_ptr<HttpAuthHandler> generic_handler;
   int rv = negotiate_factory->CreateAuthHandlerFromString(
-      "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(), gurl, NetLogWithSource(),
-      resolver(), &generic_handler);
+      "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(), NetworkIsolationKey(),
+      gurl, NetLogWithSource(), resolver(), &generic_handler);
   EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
   EXPECT_TRUE(generic_handler.get() == nullptr);
 }
 #endif  // BUILDFLAG(USE_EXTERNAL_GSSAPI)
 
 // AllowGssapiLibraryLoad() is only supported on Chrome OS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(HttpAuthHandlerNegotiateTest, AllowGssapiLibraryLoad) {
   // Disabling allow_gssapi_library_load should prevent handler creation.
   SetupMocks(AuthLibrary());
@@ -421,7 +483,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, AllowGssapiLibraryLoad) {
   EXPECT_EQ(OK, rv);
   EXPECT_TRUE(auth_handler);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #endif  // defined(OS_POSIX)
 
@@ -470,8 +532,9 @@ TEST_F(HttpAuthHandlerNegotiateTest, OverrideAuthSystem) {
   GURL gurl("http://www.example.com");
   std::unique_ptr<HttpAuthHandler> handler;
   EXPECT_EQ(OK, negotiate_factory->CreateAuthHandlerFromString(
-                    "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(), gurl,
-                    NetLogWithSource(), resolver(), &handler));
+                    "Negotiate", HttpAuth::AUTH_SERVER, SSLInfo(),
+                    NetworkIsolationKey(), gurl, NetLogWithSource(), resolver(),
+                    &handler));
   EXPECT_TRUE(handler);
 
   TestCompletionCallback callback;

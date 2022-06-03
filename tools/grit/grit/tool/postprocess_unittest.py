@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -57,7 +57,7 @@ class DummyPostProcessor(grit.tool.postprocess_interface.PostProcessor):
       name_attr = node.attrs['name']
       m = smarter.search(name_attr)
       if m:
-         node.attrs['name'] = 'SMART' + m.group(2)
+        node.attrs['name'] = 'SMART' + m.group(2)
     return grdnode
 
 if __name__ == '__main__':

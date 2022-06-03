@@ -4,7 +4,6 @@
 
 #include "chrome/browser/notifications/win/notification_launch_id.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(NotificationLaunchIdTest, SerializationTests) {

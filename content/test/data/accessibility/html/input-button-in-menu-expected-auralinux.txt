@@ -1,5 +1,0 @@
-[document web]
-++[section]
-++++[menu item] name='Button in menu element'
-++[menu] vertical xml-roles:menu
-++++[menu item] name='Button in element with menu role'

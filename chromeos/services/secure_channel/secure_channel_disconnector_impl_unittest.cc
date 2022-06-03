@@ -7,9 +7,8 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/secure_channel/fake_connection.h"
@@ -21,14 +20,19 @@ namespace chromeos {
 namespace secure_channel {
 
 class SecureChannelSecureChannelDisconnectorImplTest : public testing::Test {
+ public:
+  SecureChannelSecureChannelDisconnectorImplTest(
+      const SecureChannelSecureChannelDisconnectorImplTest&) = delete;
+  SecureChannelSecureChannelDisconnectorImplTest& operator=(
+      const SecureChannelSecureChannelDisconnectorImplTest&) = delete;
+
  protected:
   SecureChannelSecureChannelDisconnectorImplTest() = default;
   ~SecureChannelSecureChannelDisconnectorImplTest() override = default;
 
   // testing::Test:
   void SetUp() override {
-    disconnector_ =
-        SecureChannelDisconnectorImpl::Factory::Get()->BuildInstance();
+    disconnector_ = SecureChannelDisconnectorImpl::Factory::Create();
   }
 
   // Returns an ID associated with the request as well as a pointer to the
@@ -65,8 +69,6 @@ class SecureChannelSecureChannelDisconnectorImplTest : public testing::Test {
   base::flat_set<base::UnguessableToken> deleted_request_ids_;
 
   std::unique_ptr<SecureChannelDisconnector> disconnector_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelSecureChannelDisconnectorImplTest);
 };
 
 TEST_F(SecureChannelSecureChannelDisconnectorImplTest,

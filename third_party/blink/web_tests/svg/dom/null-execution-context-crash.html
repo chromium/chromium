@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body></body>
+<script>
+test(function() {
+  // Regression test for crbug.com/1125293.
+  let svg = document.createElementNS("http://www.w3.org/2000/svg", "feImage");
+  let body = document.body;
+  body.appendChild(svg);
+  let iframe = document.createElement('iframe');
+  body.appendChild(iframe);
+  iframe.contentDocument.body.appendChild(body);
+});
+</script>
+</body>

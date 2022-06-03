@@ -45,6 +45,9 @@ XSLTPUBFUN int XSLTCALL
 					 xmlNodePtr node,
 					 xsltCompMatchPtr comp);
 XSLTPUBFUN void XSLTCALL
+		xsltCompMatchClearCache	(xsltTransformContextPtr ctxt,
+					 xsltCompMatchPtr comp);
+XSLTPUBFUN void XSLTCALL
 		xsltNormalizeCompSteps	(void *payload,
 					 void *data,
 					 const xmlChar *name);

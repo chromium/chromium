@@ -1,0 +1,19 @@
+Verifies that CSS.fontsUpdated events contain additional information for variable fonts
+Variation axes of the Sixtyfour font (can be verified using Python fontTools or wakamaifondue.com):
+[
+    [0] : {
+        defaultValue : 200
+        maxValue : 900
+        minValue : 200
+        name : Weight
+        tag : wght
+    }
+    [1] : {
+        defaultValue : 100
+        maxValue : 200
+        minValue : 100
+        name : Width
+        tag : wdth
+    }
+]
+

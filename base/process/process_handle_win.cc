@@ -7,6 +7,8 @@
 #include <windows.h>
 #include <tlhelp32.h>
 
+#include <ostream>
+
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 

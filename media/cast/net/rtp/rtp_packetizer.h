@@ -9,10 +9,7 @@
 #include <stdint.h>
 
 #include <cmath>
-#include <list>
-#include <map>
 
-#include "base/time/time.h"
 #include "media/cast/common/rtp_time.h"
 #include "media/cast/net/rtp/packet_storage.h"
 

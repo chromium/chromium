@@ -7,6 +7,7 @@
 #include <string>
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/i18n/rtl.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -14,9 +15,9 @@
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/process_resource_usage.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/task_manager/task_manager_observer.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -40,7 +41,7 @@ ProcessResourceUsage* CreateRendererResourcesSampler(
 
 // Gets the profile name associated with the browser context of the given
 // |render_process_host| from the profile info cache.
-base::string16 GetRendererProfileName(
+std::u16string GetRendererProfileName(
     content::RenderProcessHost* render_process_host) {
   Profile* profile =
       Profile::FromBrowserContext(render_process_host->GetBrowserContext());
@@ -51,13 +52,9 @@ bool IsRendererResourceSamplingDisabled(int64_t flags) {
   return (flags & (REFRESH_TYPE_V8_MEMORY | REFRESH_TYPE_WEBCACHE_STATS)) == 0;
 }
 
-std::string GetRapporSampleName(content::WebContents* web_contents) {
-  return web_contents->GetVisibleURL().GetOrigin().spec();
-}
-
 }  // namespace
 
-RendererTask::RendererTask(const base::string16& title,
+RendererTask::RendererTask(const std::u16string& title,
                            const gfx::ImageSkia* icon,
                            content::WebContents* web_contents)
     : RendererTask(title,
@@ -65,7 +62,7 @@ RendererTask::RendererTask(const base::string16& title,
                    web_contents,
                    web_contents->GetMainFrame()->GetProcess()) {}
 
-RendererTask::RendererTask(const base::string16& title,
+RendererTask::RendererTask(const std::u16string& title,
                            const gfx::ImageSkia* icon,
                            content::RenderFrameHost* subframe)
     : RendererTask(title,
@@ -73,14 +70,11 @@ RendererTask::RendererTask(const base::string16& title,
                    content::WebContents::FromRenderFrameHost(subframe),
                    subframe->GetProcess()) {}
 
-RendererTask::RendererTask(const base::string16& title,
+RendererTask::RendererTask(const std::u16string& title,
                            const gfx::ImageSkia* icon,
                            content::WebContents* web_contents,
                            content::RenderProcessHost* render_process_host)
-    : Task(title,
-           GetRapporSampleName(web_contents),
-           icon,
-           render_process_host->GetProcess().Handle()),
+    : Task(title, icon, render_process_host->GetProcess().Handle()),
       web_contents_(web_contents),
       render_process_host_(render_process_host),
       renderer_resources_sampler_(
@@ -106,10 +100,6 @@ RendererTask::~RendererTask() {
       RemoveObserver(this);
 }
 
-void RendererTask::UpdateRapporSampleName() {
-  set_rappor_sample_name(GetRapporSampleName(web_contents()));
-}
-
 void RendererTask::Activate() {
   if (!web_contents_->GetDelegate())
     return;
@@ -128,7 +118,7 @@ void RendererTask::Refresh(const base::TimeDelta& update_interval,
   // it and record the current values (which might be invalid at the moment. We
   // can safely ignore that and count on future refresh cycles potentially
   // having valid values).
-  renderer_resources_sampler_->Refresh(base::Closure());
+  renderer_resources_sampler_->Refresh(base::DoNothing());
 
   v8_memory_allocated_ = base::saturated_cast<int64_t>(
       renderer_resources_sampler_->GetV8MemoryAllocated());
@@ -154,12 +144,12 @@ void RendererTask::GetTerminationStatus(base::TerminationStatus* out_status,
   *out_error_code = termination_error_code_;
 }
 
-base::string16 RendererTask::GetProfileName() const {
+std::u16string RendererTask::GetProfileName() const {
   return profile_name_;
 }
 
 SessionID RendererTask::GetTabId() const {
-  return SessionTabHelper::IdForTab(web_contents_);
+  return sessions::SessionTabHelper::IdForTab(web_contents_);
 }
 
 int64_t RendererTask::GetV8MemoryAllocated() const {
@@ -188,10 +178,10 @@ void RendererTask::OnFaviconUpdated(favicon::FaviconDriver* favicon_driver,
 }
 
 // static
-base::string16 RendererTask::GetTitleFromWebContents(
+std::u16string RendererTask::GetTitleFromWebContents(
     content::WebContents* web_contents) {
   DCHECK(web_contents);
-  base::string16 title = web_contents->GetTitle();
+  std::u16string title = web_contents->GetTitle();
   if (title.empty()) {
     GURL url = web_contents->GetURL();
     title = base::UTF8ToUTF16(url.spec());
@@ -230,8 +220,8 @@ const gfx::ImageSkia* RendererTask::GetFaviconFromWebContents(
 }
 
 // static
-const base::string16 RendererTask::PrefixRendererTitle(
-    const base::string16& title,
+const std::u16string RendererTask::PrefixRendererTitle(
+    const std::u16string& title,
     bool is_app,
     bool is_extension,
     bool is_incognito,

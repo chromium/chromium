@@ -3,16 +3,12 @@
  * found in the LICENSE file.
  */
 
-body {
-  font-family: sans-serif;
-}
-
 .time-picker {
   background: #FFFFFF;
-  border: 1px solid transparent;
+  border: 1px solid #bfbfbf;
   display: flex;
   flex-direction: column;
-  height: 298px;
+  height: 258px;
 }
 
 .time-columns {
@@ -31,7 +27,7 @@ body {
   outline: none;
   overflow: scroll;
   padding: 0;
-  scroll-snap-type: y mandatory;
+  position: relative;
   width: 52px;
 }
 
@@ -46,57 +42,23 @@ body {
   font-size: 14px;
   height: 32px;
   line-height: 32px;
-  scroll-snap-align: start;
+  position: relative;
   text-align: center;
   width: 48px;
 }
 
 .time-cell:hover {
-  background: #E5E5E5;
+  background-color: rgba(0, 117, 255, 0.3);
 }
 
 .time-cell.selected {
-  background-color: #CECECE;
+  background-color: #0075FF;
+  color: #FFFFFF;
   font-weight: bold;
 }
 
 .time-column:focus .time-cell.selected {
-  border-color: highlight;
-}
-
-.submission-controls {
-  align-items: center;
-  border-top: 1px solid #CECECE;
-  bottom: 0px;
-  display: flex;
-  flex-direction: row;
-  height: 40px;
-  position: absolute;
-  width: 100%;
-}
-
-#submission-controls-padding {
-  height: 100%;
-  width: 84%;
-}
-
-.submission-button {
-  background-color: #FFFFFF;
-  border: 2px solid transparent;
-  border-radius: 2px;
-  height: 32px;
-  margin: 4px;
-  padding: 8px;
-  width: 32px;
-}
-
-.submission-button:hover {
-  background-color: #E5E5E5;
-}
-
-.submission-button:focus {
-  border-color: highlight;
-  outline: none;
+  border-color: #101010;
 }
 
 @media (forced-colors: active) {
@@ -119,22 +81,28 @@ body {
   .time-column:focus .time-cell.selected {
     border-color: WindowText;
   }
+}
 
-  .submission-button {
-    background-color: Window;
-    forced-color-adjust: none;
+@media (prefers-color-scheme: dark) {
+  .time-picker {
+    background: #3B3B3B;
+    border: 1px solid #858585;
   }
 
-  .submission-button:hover {
-    background-color: Window;
-    border-color: Highlight;
+  .time-cell {
+    border: 1px solid transparent;
+    color: #ffffff;
   }
 
-  .submission-button:focus {
-    border-color: WindowText;
+  .time-cell:hover {
+    background-color: #D1E6FF;
+    color: #3B3B3B;
   }
 
-  .submission-button path {
-    fill: WindowText;
+  .time-column:focus .time-cell.selected,
+  .time-cell.selected {
+    background-color: #99C8FF;
+    color: #3B3B3B;
+    border: 1px solid #FFFFFF;
   }
 }

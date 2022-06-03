@@ -12,7 +12,7 @@
 #include "components/sync/base/progress_marker_map.h"
 #include "components/sync/driver/sync_token_status.h"
 #include "components/sync/engine/cycle/model_neutral_state.h"
-#include "crypto/ec_private_key.h"
+#include "components/sync/model/type_entities_count.h"
 
 namespace syncer {
 
@@ -26,11 +26,11 @@ SyncCycleSnapshot MakeDefaultCycleSnapshot() {
       /*num_server_conflicts=*/7, /*notifications_enabled=*/false,
       /*num_entries=*/0, /*sync_start_time=*/base::Time::Now(),
       /*poll_finish_time=*/base::Time::Now(),
-      /*num_entries_by_type=*/std::vector<int>(ModelType::NUM_ENTRIES, 0),
+      /*num_entries_by_type=*/std::vector<int>(GetNumModelTypes(), 0),
       /*num_to_delete_entries_by_type=*/
-      std::vector<int>(ModelType::NUM_ENTRIES, 0),
+      std::vector<int>(GetNumModelTypes(), 0),
       /*get_updates_origin=*/sync_pb::SyncEnums::UNKNOWN_ORIGIN,
-      /*poll_interval=*/base::TimeDelta::FromMinutes(30),
+      /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
 }
 
@@ -40,9 +40,7 @@ TestSyncService::TestSyncService()
     : user_settings_(this),
       preferred_data_types_(ModelTypeSet::All()),
       active_data_types_(ModelTypeSet::All()),
-      last_cycle_snapshot_(MakeDefaultCycleSnapshot()),
-      user_demographics_result_(UserDemographicsResult::ForStatus(
-          UserDemographicsStatus::kIneligibleDemographicsData)) {}
+      last_cycle_snapshot_(MakeDefaultCycleSnapshot()) {}
 
 TestSyncService::~TestSyncService() = default;
 
@@ -58,8 +56,7 @@ void TestSyncService::SetLocalSyncEnabled(bool local_sync_enabled) {
   local_sync_enabled_ = local_sync_enabled;
 }
 
-void TestSyncService::SetAuthenticatedAccountInfo(
-    const CoreAccountInfo& account_info) {
+void TestSyncService::SetAccountInfo(const CoreAccountInfo& account_info) {
   account_info_ = account_info;
 }
 
@@ -67,8 +64,8 @@ void TestSyncService::SetSetupInProgress(bool in_progress) {
   setup_in_progress_ = in_progress;
 }
 
-void TestSyncService::SetIsAuthenticatedAccountPrimary(bool is_primary) {
-  account_is_primary_ = is_primary;
+void TestSyncService::SetHasSyncConsent(bool has_sync_consent) {
+  has_sync_consent_ = has_sync_consent;
 }
 
 void TestSyncService::SetAuthError(const GoogleServiceAuthError& auth_error) {
@@ -94,16 +91,6 @@ void TestSyncService::SetLastCycleSnapshot(const SyncCycleSnapshot& snapshot) {
   last_cycle_snapshot_ = snapshot;
 }
 
-void TestSyncService::SetUserDemographics(
-    const UserDemographicsResult& user_demographics_result) {
-  user_demographics_result_ = user_demographics_result;
-}
-
-void TestSyncService::SetExperimentalAuthenticationKey(
-    std::unique_ptr<crypto::ECPrivateKey> experimental_authentication_key) {
-  experimental_authentication_key_ = std::move(experimental_authentication_key);
-}
-
 void TestSyncService::SetEmptyLastCycleSnapshot() {
   SetLastCycleSnapshot(SyncCycleSnapshot());
 }
@@ -127,13 +114,21 @@ void TestSyncService::SetPassphraseRequiredForPreferredDataTypes(
   user_settings_.SetPassphraseRequiredForPreferredDataTypes(required);
 }
 
+void TestSyncService::SetTrustedVaultKeyRequired(bool required) {
+  user_settings_.SetTrustedVaultKeyRequired(required);
+}
+
 void TestSyncService::SetTrustedVaultKeyRequiredForPreferredDataTypes(
     bool required) {
   user_settings_.SetTrustedVaultKeyRequiredForPreferredDataTypes(required);
 }
 
-void TestSyncService::SetIsUsingSecondaryPassphrase(bool enabled) {
-  user_settings_.SetIsUsingSecondaryPassphrase(enabled);
+void TestSyncService::SetTrustedVaultRecoverabilityDegraded(bool degraded) {
+  user_settings_.SetTrustedVaultRecoverabilityDegraded(degraded);
+}
+
+void TestSyncService::SetIsUsingExplicitPassphrase(bool enabled) {
+  user_settings_.SetIsUsingExplicitPassphrase(enabled);
 }
 
 void TestSyncService::FireStateChanged() {
@@ -166,12 +161,12 @@ bool TestSyncService::IsLocalSyncEnabled() const {
   return local_sync_enabled_;
 }
 
-CoreAccountInfo TestSyncService::GetAuthenticatedAccountInfo() const {
+CoreAccountInfo TestSyncService::GetAccountInfo() const {
   return account_info_;
 }
 
-bool TestSyncService::IsAuthenticatedAccountPrimary() const {
-  return account_is_primary_;
+bool TestSyncService::HasSyncConsent() const {
+  return has_sync_consent_;
 }
 
 GoogleServiceAuthError TestSyncService::GetAuthError() const {
@@ -187,14 +182,6 @@ bool TestSyncService::RequiresClientUpgrade() const {
          syncer::UPGRADE_CLIENT;
 }
 
-std::unique_ptr<crypto::ECPrivateKey>
-TestSyncService::GetExperimentalAuthenticationKey() const {
-  if (!experimental_authentication_key_)
-    return nullptr;
-
-  return experimental_authentication_key_->Copy();
-}
-
 std::unique_ptr<SyncSetupInProgressHandle>
 TestSyncService::GetSetupInProgressHandle() {
   return nullptr;
@@ -202,10 +189,6 @@ TestSyncService::GetSetupInProgressHandle() {
 
 bool TestSyncService::IsSetupInProgress() const {
   return setup_in_progress_;
-}
-
-ModelTypeSet TestSyncService::GetRegisteredDataTypes() const {
-  return ModelTypeSet::All();
 }
 
 ModelTypeSet TestSyncService::GetPreferredDataTypes() const {
@@ -217,6 +200,8 @@ ModelTypeSet TestSyncService::GetActiveDataTypes() const {
 }
 
 void TestSyncService::StopAndClear() {}
+
+void TestSyncService::SetSyncAllowedByPlatform(bool allowed) {}
 
 void TestSyncService::OnDataTypeRequestsSyncStartup(ModelType type) {}
 
@@ -234,10 +219,6 @@ void TestSyncService::RemoveObserver(SyncServiceObserver* observer) {
 
 bool TestSyncService::HasObserver(const SyncServiceObserver* observer) const {
   return observers_.HasObserver(observer);
-}
-
-UserShare* TestSyncService::GetUserShare() const {
-  return nullptr;
 }
 
 SyncTokenStatus TestSyncService::GetSyncTokenStatusForDebugging() const {
@@ -270,6 +251,12 @@ std::unique_ptr<base::Value> TestSyncService::GetTypeStatusMapForDebugging() {
   return std::make_unique<base::ListValue>();
 }
 
+void TestSyncService::GetEntityCountsForDebugging(
+    base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+    const {
+  std::move(callback).Run({});
+}
+
 const GURL& TestSyncService::GetSyncServiceUrlForDebugging() const {
   return sync_service_url_;
 }
@@ -289,26 +276,25 @@ void TestSyncService::AddProtocolEventObserver(
 void TestSyncService::RemoveProtocolEventObserver(
     ProtocolEventObserver* observer) {}
 
-void TestSyncService::AddTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {}
-
-void TestSyncService::RemoveTypeDebugInfoObserver(
-    TypeDebugInfoObserver* observer) {}
-
-base::WeakPtr<JsController> TestSyncService::GetJsController() {
-  return base::WeakPtr<JsController>();
-}
-
 void TestSyncService::GetAllNodesForDebugging(
-    const base::Callback<void(std::unique_ptr<base::ListValue>)>& callback) {}
+    base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) {}
 
 void TestSyncService::SetInvalidationsForSessionsEnabled(bool enabled) {}
 
-UserDemographicsResult TestSyncService::GetUserNoisedBirthYearAndGender(
-    base::Time now) {
-  return user_demographics_result_;
-}
+void TestSyncService::AddTrustedVaultDecryptionKeysFromWeb(
+    const std::string& gaia_id,
+    const std::vector<std::vector<uint8_t>>& keys,
+    int last_key_version) {}
 
-void TestSyncService::Shutdown() {}
+void TestSyncService::AddTrustedVaultRecoveryMethodFromWeb(
+    const std::string& gaia_id,
+    const std::vector<uint8_t>& public_key,
+    int method_type_hint,
+    base::OnceClosure callback) {}
+
+void TestSyncService::Shutdown() {
+  for (auto& observer : observers_)
+    observer.OnSyncShutdown(this);
+}
 
 }  // namespace syncer

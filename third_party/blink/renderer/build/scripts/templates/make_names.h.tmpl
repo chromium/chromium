@@ -19,7 +19,7 @@
 namespace blink {
 namespace {{namespace}} {
 
-{% for entry in entries|sort %}
+{% for entry in entries %}
 {{symbol_export}}extern const WTF::AtomicString& {{entry|symbol}};
 {% endfor %}
 

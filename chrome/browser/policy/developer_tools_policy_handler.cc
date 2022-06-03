@@ -4,7 +4,6 @@
 
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
 
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/common/pref_names.h"
@@ -15,6 +14,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_value_map.h"
 #include "components/strings/grit/components_strings.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 
@@ -54,7 +54,7 @@ PolicyCheckResult CheckDeveloperToolsDisabled(
 // Returns the target value of the |kDevToolsAvailability| pref derived only
 // from the legacy DeveloperToolsDisabled policy. If this policy is not set or
 // does not have a valid value, returns |nullopt|.
-base::Optional<Availability> GetValueFromDeveloperToolsDisabledPolicy(
+absl::optional<Availability> GetValueFromDeveloperToolsDisabledPolicy(
     const PolicyMap& policies) {
   const base::Value* developer_tools_disabled =
       policies.GetValue(key::kDeveloperToolsDisabled);
@@ -62,7 +62,7 @@ base::Optional<Availability> GetValueFromDeveloperToolsDisabledPolicy(
   if (CheckDeveloperToolsDisabled(developer_tools_disabled,
                                   nullptr /*error*/) !=
       PolicyCheckResult::kValid) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return developer_tools_disabled->GetBool() ? Availability::kDisallowed
@@ -106,7 +106,7 @@ PolicyCheckResult CheckDeveloperToolsAvailability(
 // Returns the target value of the |kDevToolsAvailability| pref derived only
 // from the DeveloperToolsAvailability policy. If this policy is not set or does
 // not have a valid value, returns |nullopt|.
-base::Optional<Availability> GetValueFromDeveloperToolsAvailabilityPolicy(
+absl::optional<Availability> GetValueFromDeveloperToolsAvailabilityPolicy(
     const PolicyMap& policies) {
   const base::Value* developer_tools_availability =
       policies.GetValue(key::kDeveloperToolsAvailability);
@@ -114,7 +114,7 @@ base::Optional<Availability> GetValueFromDeveloperToolsAvailabilityPolicy(
   if (CheckDeveloperToolsAvailability(developer_tools_availability,
                                       nullptr /*error*/) !=
       PolicyCheckResult::kValid) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return static_cast<Availability>(developer_tools_availability->GetInt());
@@ -124,9 +124,9 @@ base::Optional<Availability> GetValueFromDeveloperToolsAvailabilityPolicy(
 // both the DeveloperToolsDisabled policy and the
 // DeveloperToolsAvailability policy. If both policies are set,
 // DeveloperToolsAvailability wins.
-base::Optional<Availability> GetValueFromBothPolicies(
+absl::optional<Availability> GetValueFromBothPolicies(
     const PolicyMap& policies) {
-  const base::Optional<Availability> developer_tools_availability =
+  const absl::optional<Availability> developer_tools_availability =
       GetValueFromDeveloperToolsAvailabilityPolicy(policies);
 
   if (developer_tools_availability.has_value()) {
@@ -171,7 +171,7 @@ bool DeveloperToolsPolicyHandler::CheckPolicySettings(
 
 void DeveloperToolsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                       PrefValueMap* prefs) {
-  const base::Optional<Availability> value = GetValueFromBothPolicies(policies);
+  const absl::optional<Availability> value = GetValueFromBothPolicies(policies);
 
   if (value.has_value()) {
     prefs->SetInteger(prefs::kDevToolsAvailability,

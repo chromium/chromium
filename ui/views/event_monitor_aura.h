@@ -5,7 +5,8 @@
 #ifndef UI_VIEWS_EVENT_MONITOR_AURA_H_
 #define UI_VIEWS_EVENT_MONITOR_AURA_H_
 
-#include "base/macros.h"
+#include <set>
+
 #include "ui/views/event_monitor.h"
 
 namespace ui {
@@ -20,6 +21,10 @@ class EventMonitorAura : public EventMonitor {
   EventMonitorAura(ui::EventObserver* event_observer,
                    ui::EventTarget* event_target,
                    const std::set<ui::EventType>& types);
+
+  EventMonitorAura(const EventMonitorAura&) = delete;
+  EventMonitorAura& operator=(const EventMonitorAura&) = delete;
+
   ~EventMonitorAura() override;
 
   // EventMonitor:
@@ -32,8 +37,6 @@ class EventMonitorAura : public EventMonitor {
  private:
   ui::EventObserver* event_observer_;  // Weak. Owned by our owner.
   ui::EventTarget* event_target_;      // Weak.
-
-  DISALLOW_COPY_AND_ASSIGN(EventMonitorAura);
 };
 
 }  // namespace views

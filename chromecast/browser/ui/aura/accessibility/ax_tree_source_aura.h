@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_UI_AURA_ACCESSIBILITY_AX_TREE_SOURCE_AURA_H_
 #define CHROMECAST_BROWSER_UI_AURA_ACCESSIBILITY_AX_TREE_SOURCE_AURA_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "ui/views/accessibility/ax_tree_source_views.h"
 
@@ -17,6 +15,10 @@ class AXTreeSourceAura : public views::AXTreeSourceViews {
   AXTreeSourceAura(views::AXAuraObjWrapper* root,
                    const ui::AXTreeID& tree_id,
                    views::AXAuraObjCache* cache);
+
+  AXTreeSourceAura(const AXTreeSourceAura&) = delete;
+  AXTreeSourceAura& operator=(const AXTreeSourceAura&) = delete;
+
   ~AXTreeSourceAura() override;
 
   // AXTreeSource:
@@ -25,7 +27,7 @@ class AXTreeSourceAura : public views::AXTreeSourceViews {
                      ui::AXNodeData* out_data) const override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AXTreeSourceAura);
+  views::AXAuraObjCache* cache_;
 };
 
 #endif  // CHROMECAST_BROWSER_UI_AURA_ACCESSIBILITY_AX_TREE_SOURCE_AURA_H_

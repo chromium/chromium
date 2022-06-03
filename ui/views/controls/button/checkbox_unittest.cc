@@ -4,10 +4,12 @@
 
 #include "ui/views/controls/button/checkbox.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/strings/utf_string_conversions.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/views_test_base.h"
 
@@ -16,6 +18,10 @@ namespace views {
 class CheckboxTest : public ViewsTestBase {
  public:
   CheckboxTest() = default;
+
+  CheckboxTest(const CheckboxTest&) = delete;
+  CheckboxTest& operator=(const CheckboxTest&) = delete;
+
   ~CheckboxTest() override = default;
 
   void SetUp() override {
@@ -30,8 +36,7 @@ class CheckboxTest : public ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    checkbox_ = new Checkbox(base::string16());
-    widget_->SetContentsView(checkbox_);
+    checkbox_ = widget_->SetContentsView(std::make_unique<Checkbox>());
   }
 
   void TearDown() override {
@@ -45,13 +50,12 @@ class CheckboxTest : public ViewsTestBase {
  private:
   std::unique_ptr<Widget> widget_;
   Checkbox* checkbox_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CheckboxTest);
 };
 
 TEST_F(CheckboxTest, AccessibilityTest) {
-  const base::string16 label_text = base::ASCIIToUTF16("Some label");
-  StyledLabel label(label_text, nullptr);
+  const std::u16string label_text = u"Some label";
+  StyledLabel label;
+  label.SetText(label_text);
   checkbox()->SetAssociatedLabel(&label);
 
   ui::AXNodeData ax_data;

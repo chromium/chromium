@@ -50,13 +50,21 @@ CreateUnifiedManagedDisplayModeList(
 // internal display.
 bool ForceFirstDisplayInternal();
 
-// Computes the bounds that defines the bounds between two displays.
-// Returns false if two displays do not intersect.
-DISPLAY_MANAGER_EXPORT bool ComputeBoundary(
-    const Display& primary_display,
-    const Display& secondary_display,
-    gfx::Rect* primary_edge_in_screen,
-    gfx::Rect* secondary_edge_in_screen);
+// If |a_bounds| and |b_bounds| share an edge, the shared edges are computed and
+// filled in |a_edge| and |b_edge|, and true is returned. Otherwise, it returns
+// false.
+DISPLAY_MANAGER_EXPORT bool ComputeBoundary(const gfx::Rect& a_bounds,
+                                            const gfx::Rect& b_bounds,
+                                            gfx::Rect* a_edge,
+                                            gfx::Rect* b_edge);
+
+// If |display_a| and |display_b| share an edge, the shared edges are computed
+// and filled in |a_edge_in_screen| and |b_edge_in_screen|, and true is
+// returned. Otherwise, it returns false.
+DISPLAY_MANAGER_EXPORT bool ComputeBoundary(const Display& display_a,
+                                            const Display& display_b,
+                                            gfx::Rect* a_edge_in_screen,
+                                            gfx::Rect* b_edge_in_screen);
 
 // Sorts id list using |CompareDisplayIds| below.
 DISPLAY_MANAGER_EXPORT void SortDisplayIdList(DisplayIdList* list);

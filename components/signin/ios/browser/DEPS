@@ -9,10 +9,12 @@ include_rules = [
 specific_include_rules = {
     "account_consistency_service.mm": [
       "+components/signin/core/browser/account_reconcilor.h",
+      "+components/signin/core/browser/chrome_connected_header_helper.h",
       "+components/signin/core/browser/signin_header_helper.h",
     ],
     "account_consistency_service_unittest.mm": [
       "+components/signin/core/browser/account_reconcilor.h",
       "+components/signin/core/browser/account_reconcilor_delegate.h",
+      "+components/signin/core/browser/chrome_connected_header_helper.h",
     ],
 }

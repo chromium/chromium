@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINTING_METRICS_API_H_
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_PRINTING_METRICS_PRINTING_METRICS_API_H_
 
-#include <memory>
 #include <vector>
 
 #include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
@@ -22,10 +21,9 @@ class PrintingMetricsGetPrintJobsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnPrintJobsRetrieved(
-      bool success,
-      std::unique_ptr<std::vector<chromeos::printing::proto::PrintJobInfo>>
-          print_job_info_protos);
+  void OnPrintJobsRetrieved(bool success,
+                            std::vector<chromeos::printing::proto::PrintJobInfo>
+                                print_job_info_protos);
   DECLARE_EXTENSION_FUNCTION("printingMetrics.getPrintJobs",
                              PRINTINGMETRICS_GETPRINTJOBS)
 };

@@ -4,7 +4,6 @@
 
 #include "components/metrics/ui/screen_info_metrics_provider.h"
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "ui/gfx/geometry/size.h"
@@ -21,11 +20,16 @@ const float kScreenScaleFactor = 2;
 class TestScreenInfoMetricsProvider : public ScreenInfoMetricsProvider {
  public:
   TestScreenInfoMetricsProvider() {}
+
+  TestScreenInfoMetricsProvider(const TestScreenInfoMetricsProvider&) = delete;
+  TestScreenInfoMetricsProvider& operator=(
+      const TestScreenInfoMetricsProvider&) = delete;
+
   ~TestScreenInfoMetricsProvider() override {}
 
  private:
-  base::Optional<gfx::Size> GetScreenSize() const override {
-    return base::make_optional(gfx::Size(kScreenWidth, kScreenHeight));
+  absl::optional<gfx::Size> GetScreenSize() const override {
+    return absl::make_optional(gfx::Size(kScreenWidth, kScreenHeight));
   }
 
   float GetScreenDeviceScaleFactor() const override {
@@ -33,8 +37,6 @@ class TestScreenInfoMetricsProvider : public ScreenInfoMetricsProvider {
   }
 
   int GetScreenCount() const override { return kScreenCount; }
-
-  DISALLOW_COPY_AND_ASSIGN(TestScreenInfoMetricsProvider);
 };
 
 }  // namespace
@@ -42,10 +44,12 @@ class TestScreenInfoMetricsProvider : public ScreenInfoMetricsProvider {
 class ScreenInfoMetricsProviderTest : public testing::Test {
  public:
   ScreenInfoMetricsProviderTest() {}
-  ~ScreenInfoMetricsProviderTest() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenInfoMetricsProviderTest);
+  ScreenInfoMetricsProviderTest(const ScreenInfoMetricsProviderTest&) = delete;
+  ScreenInfoMetricsProviderTest& operator=(
+      const ScreenInfoMetricsProviderTest&) = delete;
+
+  ~ScreenInfoMetricsProviderTest() override {}
 };
 
 TEST_F(ScreenInfoMetricsProviderTest, ProvideSystemProfileMetrics) {

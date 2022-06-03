@@ -4,12 +4,10 @@
 
 #include "components/domain_reliability/google_configs.h"
 
-#include <stddef.h>
-
 #include <memory>
 
-#include "base/stl_util.h"
-#include "components/domain_reliability/config.h"
+#include "base/strings/string_util.h"
+#include "net/base/url_util.h"
 
 namespace domain_reliability {
 
@@ -256,7 +254,7 @@ const GoogleConfigParams kGoogleConfigs[] = {
     {"l.google.com", true, true, true},
 
     // google.com is a special case. We have a custom config for www.google.com,
-    // so set generate_config_for_www_subdomain = false.
+    // so set duplicate_for_www = false.
     {"google.com", true, true, false},
 
     // Origins with subdomains and without same-origin collectors.
@@ -300,9 +298,6 @@ const GoogleConfigParams kGoogleConfigs[] = {
     {"ampproject.net", true, false, false},
     {"ampproject.org", true, false, false},
     {"android.com", true, false, false},
-    {"anycast-edge.metric.gstatic.com", true, false, false},
-    {"anycast-stb.metric.gstatic.com", true, false, false},
-    {"anycast.metric.gstatic.com", true, false, false},
     {"cdn.ampproject.org", true, false, false},
     {"chromecast.com", true, false, false},
     {"chromeexperiments.com", true, false, false},
@@ -359,19 +354,6 @@ const GoogleConfigParams kGoogleConfigs[] = {
     {"picasa.com", true, false, false},
     {"recaptcha.net", true, false, false},
     {"stackdriver.com", true, false, false},
-    {"stbcast-stb.metric.gstatic.com", true, false, false},
-    {"stbcast.metric.gstatic.com", true, false, false},
-    {"stbcast2-stb.metric.gstatic.com", true, false, false},
-    {"stbcast2.metric.gstatic.com", true, false, false},
-    {"stbcast3-stb.metric.gstatic.com", true, false, false},
-    {"stbcast3.metric.gstatic.com", true, false, false},
-    {"stbcast4-stb.metric.gstatic.com", true, false, false},
-    {"stbcast4.metric.gstatic.com", true, false, false},
-    {"unicast-edge.metric.gstatic.com", true, false, false},
-    {"unicast-stb.metric.gstatic.com", true, false, false},
-    {"unicast.metric.gstatic.com", true, false, false},
-    {"unicast2-stb.metric.gstatic.com", true, false, false},
-    {"unicast2.metric.gstatic.com", true, false, false},
     {"waze.com", true, false, false},
     {"withgoogle.com", true, false, false},
     {"youtu.be", true, false, false},
@@ -541,7 +523,7 @@ const char* const kGoogleStandardCollectors[] = {
 const char* const kGoogleOriginSpecificCollectorPathString =
     "/domainreliability/upload";
 
-static std::unique_ptr<DomainReliabilityConfig> CreateGoogleConfig(
+std::unique_ptr<const DomainReliabilityConfig> CreateGoogleConfig(
     const GoogleConfigParams& params,
     bool is_www) {
   if (is_www)
@@ -550,8 +532,7 @@ static std::unique_ptr<DomainReliabilityConfig> CreateGoogleConfig(
   std::string hostname = (is_www ? "www." : "") + std::string(params.hostname);
   bool include_subdomains = params.include_subdomains && !is_www;
 
-  std::unique_ptr<DomainReliabilityConfig> config(
-      new DomainReliabilityConfig());
+  auto config = std::make_unique<DomainReliabilityConfig>();
   config->origin = GURL("https://" + hostname + "/");
   config->include_subdomains = include_subdomains;
   config->collectors.clear();
@@ -561,9 +542,9 @@ static std::unique_ptr<DomainReliabilityConfig> CreateGoogleConfig(
     config->collectors.push_back(
         std::make_unique<GURL>(config->origin.ReplaceComponents(replacements)));
   }
-  for (size_t i = 0; i < base::size(kGoogleStandardCollectors); i++)
-    config->collectors.push_back(
-        std::make_unique<GURL>(kGoogleStandardCollectors[i]));
+  for (const char* collector : kGoogleStandardCollectors) {
+    config->collectors.push_back(std::make_unique<GURL>(collector));
+  }
   config->success_sample_rate = 0.05;
   config->failure_sample_rate = 1.00;
   config->path_prefixes.clear();
@@ -572,16 +553,56 @@ static std::unique_ptr<DomainReliabilityConfig> CreateGoogleConfig(
 
 }  // namespace
 
-// static
-void GetAllGoogleConfigs(
-    std::vector<std::unique_ptr<DomainReliabilityConfig>>* configs_out) {
-  configs_out->clear();
+std::unique_ptr<const DomainReliabilityConfig> MaybeGetGoogleConfig(
+    const std::string& hostname) {
+  bool is_www_subdomain =
+      base::StartsWith(hostname, "www.", base::CompareCase::SENSITIVE);
+  std::string hostname_parent = net::GetSuperdomain(hostname);
 
-  for (auto& params : kGoogleConfigs) {
-    configs_out->push_back(CreateGoogleConfig(params, false));
-    if (params.duplicate_for_www)
-      configs_out->push_back(CreateGoogleConfig(params, true));
+  std::unique_ptr<const DomainReliabilityConfig> config;
+  std::unique_ptr<const DomainReliabilityConfig> superdomain_config;
+
+  for (const auto& params : kGoogleConfigs) {
+    if (params.hostname == hostname) {
+      config = CreateGoogleConfig(params, false);
+      break;
+    }
+    if (params.duplicate_for_www && is_www_subdomain &&
+        params.hostname == hostname_parent) {
+      config = CreateGoogleConfig(params, true);
+      break;
+    }
+    // Don't break out of the loop upon finding a superdomain config, because
+    // there might be an exact match later on.
+    if (params.include_subdomains && params.hostname == hostname_parent) {
+      superdomain_config = CreateGoogleConfig(params, false);
+    }
   }
+
+  if (config) {
+    DCHECK(config->origin.host() == hostname);
+    return config;
+  }
+
+  if (!superdomain_config)
+    return nullptr;
+
+  DCHECK(superdomain_config->origin.host() == hostname_parent);
+  DCHECK(superdomain_config->include_subdomains);
+
+  return superdomain_config;
+}
+
+std::vector<std::unique_ptr<const DomainReliabilityConfig>>
+GetAllGoogleConfigsForTesting() {
+  std::vector<std::unique_ptr<const DomainReliabilityConfig>> configs_out;
+
+  for (const auto& params : kGoogleConfigs) {
+    configs_out.push_back(CreateGoogleConfig(params, false));
+    if (params.duplicate_for_www)
+      configs_out.push_back(CreateGoogleConfig(params, true));
+  }
+  return configs_out;
 }
 
 }  // namespace domain_reliability

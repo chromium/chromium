@@ -1,0 +1,1 @@
+ipp://server-name-or-ip:123456/printers/printername

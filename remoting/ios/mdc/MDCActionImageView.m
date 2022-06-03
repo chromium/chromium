@@ -4,7 +4,7 @@
 
 #import "remoting/ios/mdc/MDCActionImageView.h"
 
-#import "ios/third_party/material_components_ios/src/components/AnimationTiming/src/MaterialAnimationTiming.h"
+#import <MaterialComponents/MaterialAnimationTiming.h>
 
 static const CGFloat kIconRotationRadians = 0.375f * 2 * M_PI;
 static const CGFloat kIconTransitionAnimationDuration = 0.3f;

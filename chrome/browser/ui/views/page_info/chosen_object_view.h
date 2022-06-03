@@ -5,39 +5,47 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_
 
-#include "base/macros.h"
-#include "chrome/browser/ui/page_info/page_info_ui.h"
-#include "ui/views/controls/button/button.h"
+#include <string>
+
+#include "components/page_info/page_info_ui.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 namespace views {
 class ImageButton;
-class ImageView;
-}  // namespace views
+}
 
 class ChosenObjectViewObserver;
+class PageInfoRowView;
 
 // A ChosenObjectView is a row in the Page Info bubble that shows an individual
 // object (e.g. a Bluetooth device, a USB device) that the current site has
 // access to.
-class ChosenObjectView : public views::View, public views::ButtonListener {
+class ChosenObjectView : public views::View {
  public:
-  explicit ChosenObjectView(std::unique_ptr<PageInfoUI::ChosenObjectInfo> info);
+  METADATA_HEADER(ChosenObjectView);
+  explicit ChosenObjectView(std::unique_ptr<PageInfoUI::ChosenObjectInfo> info,
+                            std::u16string display_name);
+  ChosenObjectView(const ChosenObjectView&) = delete;
+  ChosenObjectView& operator=(const ChosenObjectView&) = delete;
   ~ChosenObjectView() override;
 
   void AddObserver(ChosenObjectViewObserver* observer);
+  void ResetPermission();
+
+  // views::View:
+  void OnThemeChanged() override;
 
  private:
-  // views::ButtonListener implementation.
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void UpdateIconImage(bool is_deleted) const;
 
-  views::ImageView* icon_;             // Owned by the views hierarchy.
-  views::ImageButton* delete_button_;  // Owned by the views hierarchy.
+  void ExecuteDeleteCommand();
+
+  views::ImageButton* delete_button_ = nullptr;
+  PageInfoRowView* row_view_ = nullptr;
 
   base::ObserverList<ChosenObjectViewObserver>::Unchecked observer_list_;
   std::unique_ptr<PageInfoUI::ChosenObjectInfo> info_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChosenObjectView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_CHOSEN_OBJECT_VIEW_H_

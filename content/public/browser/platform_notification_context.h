@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_database_data.h"
 #include "content/public/browser/notification_resource_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -58,6 +59,9 @@ class PlatformNotificationContext
   using ReDisplayNotificationsResultCallback =
       base::OnceCallback<void(size_t /* display_count */)>;
 
+  using CountResultCallback =
+      base::OnceCallback<void(bool /* success */, int /* count */)>;
+
   // Reasons for updating a notification, triggering a read.
   enum class Interaction {
     // No interaction was taken with the notification.
@@ -100,6 +104,15 @@ class PlatformNotificationContext
       int64_t service_worker_registration_id,
       ReadAllResultCallback callback) = 0;
 
+  // Counts all currently visible notifications associated with
+  // |service_worker_registration_id| belonging to |origin| in the database.
+  // |callback| will be invoked with the success status and the count when
+  // completed.
+  virtual void CountVisibleNotificationsForServiceWorkerRegistration(
+      const GURL& origin,
+      int64_t service_worker_registration_id,
+      CountResultCallback callback) = 0;
+
   // Writes the data associated with a notification to a database and displays
   // it either immediately or at the desired time if the notification has a show
   // trigger defined. When this action is completed, |callback| will be invoked
@@ -135,6 +148,16 @@ class PlatformNotificationContext
                                       bool close_notification,
                                       DeleteResultCallback callback) = 0;
 
+  // Deletes all data of notifications with |tag|, optionally filtered by
+  // |is_shown_by_browser|, belonging to |origin| from the database and closes
+  // the notifications. |callback| will be invoked with the success status and
+  // the number of closed notifications when the operation has completed.
+  virtual void DeleteAllNotificationDataWithTag(
+      const std::string& tag,
+      absl::optional<bool> is_shown_by_browser,
+      const GURL& origin,
+      DeleteAllResultCallback callback) = 0;
+
   // Checks permissions for all notifications in the database and deletes all
   // that do not have the permission anymore.
   virtual void DeleteAllNotificationDataForBlockedOrigins(
@@ -147,7 +170,7 @@ class PlatformNotificationContext
   friend class base::DeleteHelper<PlatformNotificationContext>;
   friend struct BrowserThread::DeleteOnThread<BrowserThread::UI>;
 
-  virtual ~PlatformNotificationContext() {}
+  virtual ~PlatformNotificationContext() = default;
 };
 
 }  // namespace content

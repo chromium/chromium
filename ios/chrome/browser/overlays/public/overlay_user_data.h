@@ -57,7 +57,7 @@ class OverlayUserData : public base::SupportsUserData::Data {
     if (!FromUserData(user_data)) {
       std::unique_ptr<DataType> data =
           base::WrapUnique(new DataType(std::forward<Args>(args)...));
-      data->CreateAuxilliaryData(user_data);
+      data->CreateAuxiliaryData(user_data);
       user_data->SetUserData(UserDataKey(), std::move(data));
     }
   }
@@ -79,7 +79,7 @@ class OverlayUserData : public base::SupportsUserData::Data {
   // Adds auxilliary OverlayUserData to |data|.  Used to allow multiple
   // OverlayUserData templates to share common functionality in a separate data
   // stored in |user_data|.
-  virtual void CreateAuxilliaryData(base::SupportsUserData* user_data) {}
+  virtual void CreateAuxiliaryData(base::SupportsUserData* user_data) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_USER_DATA_H_

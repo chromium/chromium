@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<title>MediaSession Mojo Test</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+
+const inputPositions = [
+  { duration: 10 },
+  { duration: 10, playbackRate: 2.0, position: 5 },
+  null
+];
+
+const expectations = [
+  { duration: 10, playbackRate: 1, position: 0 },
+  { duration: 10, playbackRate: 2.0, position: 5 },
+  null
+];
+
+function toSecs(timeDelta) {
+  return Number(timeDelta.microseconds / 1000000n);
+}
+
+async_test((t) => {
+  const m = new MediaSessionServiceMock();
+  let nextExpectation = 0;
+
+  m.setPositionStateCallback(t.step_func((position) => {
+    const expectation = expectations[nextExpectation++];
+
+    if (expectation === null) {
+      assert_equals(expectation, position);
+    } else {
+      assert_equals(toSecs(position.duration), expectation.duration);
+      assert_equals(toSecs(position.position), expectation.position);
+      assert_equals(position.playbackRate, expectation.playbackRate);
+    }
+
+    if (nextExpectation == inputPositions.length)
+      t.done();
+  }));
+
+  for (let position of inputPositions)
+    window.navigator.mediaSession.setPositionState(position);
+}, "test that MediaSession.setPositionState is correctly propagated");
+</script>

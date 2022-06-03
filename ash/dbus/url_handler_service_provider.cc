@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
+#include "base/logging.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "extensions/common/constants.h"
@@ -45,7 +46,7 @@ void UrlHandlerServiceProvider::Start(
       chromeos::kUrlHandlerServiceOpenUrlMethod,
       base::BindRepeating(&UrlHandlerServiceProvider::OpenUrl,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&OnExported));
+      base::BindOnce(&OnExported));
 }
 
 bool UrlHandlerServiceProvider::UrlAllowed(const GURL& gurl) const {
@@ -66,16 +67,21 @@ void UrlHandlerServiceProvider::OpenUrl(
     return;
   }
 
+  VLOG(1) << "Got request to open url";
+
   const GURL gurl(url);
   if (!UrlAllowed(gurl)) {
+    VLOG(1) << "Url is not allowed";
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(method_call, DBUS_ERROR_FAILED,
                                                  "Invalid URL"));
     return;
   }
 
-  NewWindowDelegate::GetInstance()->NewTabWithUrl(
-      gurl, false /* from_user_interaction */);
+  VLOG(1) << "Opening url now";
+
+  NewWindowDelegate::GetPrimary()->OpenUrl(gurl,
+                                           false /* from_user_interaction */);
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
 

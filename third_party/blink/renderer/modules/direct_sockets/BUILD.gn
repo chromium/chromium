@@ -1,0 +1,47 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("direct_sockets") {
+  sources = [
+    "navigator_socket.cc",
+    "navigator_socket.h",
+    "tcp_readable_stream_wrapper.cc",
+    "tcp_readable_stream_wrapper.h",
+    "tcp_socket.cc",
+    "tcp_socket.h",
+    "tcp_writable_stream_wrapper.cc",
+    "tcp_writable_stream_wrapper.h",
+    "udp_socket.cc",
+    "udp_socket.h",
+  ]
+  deps = [ "//net:net" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "tcp_readable_stream_wrapper_unittest.cc",
+    "tcp_socket_unittest.cc",
+    "tcp_writable_stream_wrapper_unittest.cc",
+  ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/renderer/controller:blink_bindings_test_sources",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+}

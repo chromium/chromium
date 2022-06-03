@@ -5,7 +5,6 @@
 #include "content/shell/gpu/shell_content_gpu_client.h"
 
 #include "base/bind.h"
-#include "content/shell/common/power_monitor_test.mojom.h"
 #include "content/shell/common/power_monitor_test_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -17,6 +16,7 @@ ShellContentGpuClient::~ShellContentGpuClient() = default;
 
 void ShellContentGpuClient::ExposeInterfacesToBrowser(
     const gpu::GpuPreferences& gpu_preferences,
+    const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     mojo::BinderMap* binders) {
   binders->Add<mojom::PowerMonitorTest>(
       base::BindRepeating(&PowerMonitorTestImpl::MakeSelfOwnedReceiver),

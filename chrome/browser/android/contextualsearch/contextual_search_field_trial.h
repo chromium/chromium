@@ -7,12 +7,15 @@
 
 #include <stddef.h>
 
-#include "base/values.h"
+#include <string>
 
-// This class manages the Contextual Search native field trials.
+// Manages the Contextual Search field trials for native classes.
 class ContextualSearchFieldTrial {
  public:
   ContextualSearchFieldTrial();
+  ContextualSearchFieldTrial(const ContextualSearchFieldTrial&) = delete;
+  ContextualSearchFieldTrial& operator=(const ContextualSearchFieldTrial&) =
+      delete;
   virtual ~ContextualSearchFieldTrial();
 
   // Returns a partial URL to use for a Contextual Search Resolve request, or
@@ -27,9 +30,6 @@ class ContextualSearchFieldTrial {
 
   // Gets the size of the surrounding text to return as a sample to Java.
   int GetSampleSurroundingSize();
-
-  // Gets whether sending the URL of the base page is disabled.
-  bool IsSendBasePageURLDisabled();
 
   // Gets whether decoding the mentions fields in the Resolve is disabled.
   bool IsDecodeMentionsDisabled();
@@ -81,16 +81,11 @@ class ContextualSearchFieldTrial {
   bool is_sample_surrounding_size_cached_;
   int sample_surrounding_size_;
 
-  bool is_send_base_page_url_disabled_cached_;
-  bool is_send_base_page_url_disabled_;
-
   bool is_decode_mentions_disabled_cached_;
   bool is_decode_mentions_disabled_;
 
   bool is_contextual_cards_version_cached_;
   int contextual_cards_version_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContextualSearchFieldTrial);
 };
 
 #endif  // CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_FIELD_TRIAL_H_

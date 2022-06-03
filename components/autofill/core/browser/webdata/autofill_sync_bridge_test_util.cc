@@ -4,6 +4,8 @@
 
 #include "components/autofill/core/browser/webdata/autofill_sync_bridge_test_util.h"
 
+#include "components/sync/protocol/autofill_specifics.pb.h"
+
 namespace autofill {
 
 AutofillProfile CreateServerProfile(const std::string& server_id) {
@@ -18,7 +20,8 @@ CreditCard CreateServerCreditCard(const std::string& server_id) {
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForCard(
     const std::string& client_tag,
-    const std::string& billing_address_id) {
+    const std::string& billing_address_id,
+    const std::string& nickname) {
   sync_pb::AutofillWalletSpecifics wallet_specifics;
   wallet_specifics.set_type(
       sync_pb::AutofillWalletSpecifics_WalletInfoType::
@@ -28,6 +31,8 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForCard(
       wallet_specifics.mutable_masked_card();
   card_specifics->set_id(client_tag);
   card_specifics->set_billing_address_id(billing_address_id);
+  if (!nickname.empty())
+    card_specifics->set_nickname(nickname);
   return wallet_specifics;
 }
 

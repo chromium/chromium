@@ -5,6 +5,7 @@
 #include "components/prefs/overlay_user_pref_store.h"
 
 #include <memory>
+#include <ostream>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
@@ -63,7 +64,7 @@ void OverlayUserPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 }
 
 bool OverlayUserPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 bool OverlayUserPrefStore::IsInitializationComplete() const {
@@ -92,10 +93,9 @@ std::unique_ptr<base::DictionaryValue> OverlayUserPrefStore::GetValues() const {
   // overwritten by the content of |persistent_user_pref_store_| (the persistent
   // store).
   for (const auto& key : persistent_names_set_) {
-    std::unique_ptr<base::Value> out_value;
-    persistent_values->Remove(key, &out_value);
-    if (out_value) {
-      values->Set(key, std::move(out_value));
+    absl::optional<base::Value> out_value = persistent_values->ExtractPath(key);
+    if (out_value.has_value()) {
+      values->SetPath(key, std::move(*out_value));
     }
   }
   return values;
@@ -116,7 +116,7 @@ bool OverlayUserPrefStore::GetMutableValue(const std::string& key,
     return false;
 
   ephemeral_user_pref_store_->SetValue(
-      key, persistent_value->CreateDeepCopy(),
+      key, base::Value::ToUniquePtrValue(persistent_value->Clone()),
       WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   ephemeral_user_pref_store_->GetMutableValue(key, result);
   return true;
@@ -157,6 +157,11 @@ void OverlayUserPrefStore::RemoveValue(const std::string& key, uint32_t flags) {
 
   written_ephemeral_names_.insert(key);
   ephemeral_user_pref_store_->RemoveValue(key, flags);
+}
+
+void OverlayUserPrefStore::RemoveValuesByPrefixSilently(
+    const std::string& prefix) {
+  NOTIMPLEMENTED();
 }
 
 bool OverlayUserPrefStore::ReadOnly() const {

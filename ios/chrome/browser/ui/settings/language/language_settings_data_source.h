@@ -7,7 +7,6 @@
 
 #include <Foundation/Foundation.h>
 
-#include <string>
 
 @class LanguageItem;
 @protocol LanguageSettingsConsumer;
@@ -24,6 +23,9 @@
 
 // Returns whether or not Translate is enabled.
 - (BOOL)translateEnabled;
+
+// Returns whether or not Translate is managed by enterprise policy.
+- (BOOL)translateManaged;
 
 // Stops observing the model. This is required during the shutdown.
 - (void)stopObservingModel;

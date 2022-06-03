@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_KILL_RING_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_KILL_RING_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -37,13 +36,13 @@ class CORE_EXPORT KillRing {
 
  public:
   KillRing() = default;
+  KillRing(const KillRing&) = delete;
+  KillRing& operator=(const KillRing&) = delete;
   void Append(const String&);
   void Prepend(const String&);
   String Yank();
   void StartNewSequence();
   void SetToYankedState();
-
-  DISALLOW_COPY_AND_ASSIGN(KillRing);
 };
 
 }  // namespace blink

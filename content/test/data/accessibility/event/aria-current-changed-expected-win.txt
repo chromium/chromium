@@ -1,0 +1,1 @@
+IA2_EVENT_OBJECT_ATTRIBUTE_CHANGED on <li#about> role=ROLE_SYSTEM_LISTITEM level=1 PosInSet=2 SetSize=2

@@ -5,8 +5,10 @@
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_error.h"
 
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
+#include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
@@ -34,6 +36,8 @@ String GetDefaultMessage(mojom::CacheStorageError web_error) {
       return "Method is not implemented.";
     case mojom::CacheStorageError::kErrorDuplicateOperation:
       return "Duplicate operation.";
+    case mojom::CacheStorageError::kErrorCrossOriginResourcePolicy:
+      return "Failed Cross-Origin-Resource-Policy check.";
   }
   NOTREACHED();
   return String();
@@ -41,42 +45,55 @@ String GetDefaultMessage(mojom::CacheStorageError web_error) {
 
 }  // namespace
 
-DOMException* CacheStorageError::CreateException(
-    mojom::CacheStorageError web_error,
-    const String& message) {
+void RejectCacheStorageWithError(ScriptPromiseResolver* resolver,
+                                 mojom::blink::CacheStorageError web_error,
+                                 const String& message) {
   String final_message =
+
       !message.IsEmpty() ? message : GetDefaultMessage(web_error);
   switch (web_error) {
     case mojom::CacheStorageError::kSuccess:
       // This function should only be called with an error.
-      break;
+      NOTREACHED();
+      return;
     case mojom::CacheStorageError::kErrorExists:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidAccessError, final_message);
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidAccessError, final_message));
+      return;
     case mojom::CacheStorageError::kErrorStorage:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kUnknownError,
-                                                final_message);
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kUnknownError, final_message));
+      return;
     case mojom::CacheStorageError::kErrorNotFound:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError, final_message);
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError, final_message));
+      return;
     case mojom::CacheStorageError::kErrorQuotaExceeded:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kQuotaExceededError, final_message);
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kQuotaExceededError, final_message));
+      return;
     case mojom::CacheStorageError::kErrorCacheNameNotFound:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotFoundError, final_message);
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotFoundError, final_message));
+      return;
     case mojom::CacheStorageError::kErrorQueryTooLarge:
-      return MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                                final_message);
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kAbortError, final_message));
+      return;
     case mojom::CacheStorageError::kErrorNotImplemented:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kNotSupportedError, final_message);
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kNotSupportedError, final_message));
+      return;
     case mojom::CacheStorageError::kErrorDuplicateOperation:
-      return MakeGarbageCollected<DOMException>(
-          DOMExceptionCode::kInvalidStateError, final_message);
+      resolver->Reject(MakeGarbageCollected<DOMException>(
+          DOMExceptionCode::kInvalidStateError, final_message));
+      return;
+    case mojom::CacheStorageError::kErrorCrossOriginResourcePolicy:
+      ScriptState::Scope scope(resolver->GetScriptState());
+      resolver->Reject(V8ThrowException::CreateTypeError(
+          resolver->GetScriptState()->GetIsolate(), message));
+      return;
   }
-  NOTREACHED();
-  return nullptr;
 }
 
 }  // namespace blink

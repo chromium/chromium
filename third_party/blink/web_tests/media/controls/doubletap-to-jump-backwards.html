@@ -11,7 +11,7 @@ async_test(t => {
   const video = document.querySelector('video');
   let time = 0;
 
-  video.addEventListener('playing', t.step_func(() => {
+  video.addEventListener('canplaythrough', t.step_func(() => {
     // Seek the video to the middle
     video.currentTime = 30;
   }), { once: true });
@@ -39,7 +39,7 @@ async_test(t => {
     }
   });
 
-  video.play();
+  video.load();
 });
 </script>
 </html>

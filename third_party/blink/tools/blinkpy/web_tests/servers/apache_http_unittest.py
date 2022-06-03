@@ -37,7 +37,6 @@ from blinkpy.web_tests.servers.apache_http import ApacheHTTP
 
 
 class TestApacheHTTP(unittest.TestCase):
-
     def test_start_cmd(self):
         # Fails on win - see https://bugs.webkit.org/show_bug.cgi?id=84726
         if sys.platform == 'win32':
@@ -50,9 +49,17 @@ class TestApacheHTTP(unittest.TestCase):
         host = MockHost()
         host.executive = MockExecutive(should_log=True)
         test_port = test.TestPort(host)
-        host.filesystem.write_text_file(test_port.path_to_apache_config_file(), '')
+        host.filesystem.write_text_file(test_port.path_to_apache_config_file(),
+                                        '')
+        output_dir = '/mock/output_dir'
+        host.filesystem.maybe_make_directory(output_dir)
+        host.filesystem.maybe_make_directory(
+            '/mock-checkout/out/Release/gen/third_party/devtools-frontend/src/front_end'
+        )
+        host.filesystem.maybe_make_directory('/mock-checkout/out/Release/gen')
 
-        server = ApacheHTTP(test_port, '/mock/output_dir', additional_dirs=[], number_of_servers=4)
+        server = ApacheHTTP(
+            test_port, output_dir, additional_dirs=[], number_of_servers=4)
         server._check_that_all_ports_are_available = lambda: True
         server._is_server_running_on_all_ports = lambda: True
         server._wait_for_action = fake_pid

@@ -4,15 +4,15 @@
 
 #include "device/gamepad/game_controller_data_fetcher_mac.h"
 
+#import <GameController/GameController.h>
 #include <string.h>
 
+#include <string>
+
 #include "base/mac/mac_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
-
-#import <GameController/GameController.h>
 
 namespace device {
 
@@ -27,34 +27,20 @@ bool IsSupported(GCController* controller) {
   if (![controller extendedGamepad])
     return false;
 
-  // In OS X 10.15, Game Controller API added support for Xbox Wireless
-  // Controller and Dualshock 4. A productCategory property was added to
-  // GCController to allow applications to detect these new categories of
-  // devices.
-  //
-  // In Chrome for Mac, Xbox Wireless Controller and Dualshock 4 are
-  // enumerated by XboxDataFetcher and GamepadPlatformDataFetcherMac,
-  // respectively. If GameControllerDataFetcherMac also enumerates these
-  // devices, it will add duplicate gamepads to the gamepad list.
-  //
-  // On macOS 10.15 or later, use the productCategory property to distinguish
-  // Xbox One and Dualshock 4 and block them from being enumerated by this
-  // data fetcher. On 10.14 or earlier, compare the |vendor_name| against
-  // known values for these devices. Once Chrome no longer supports 10.14, the
-  // |vendor_name| path may be removed.
-  if (base::mac::IsAtLeastOS10_15()) {
-    NSString* product_category =
-        [controller performSelector:@selector(productCategory)];
-    if ([product_category isEqualToString:@"Xbox One"])
+  // In macOS 10.15, support for some console gamepads was added to the Game
+  // Controller framework and a productCategory property was added to enable
+  // applications to detect the new devices. These gamepads are already
+  // supported in Chrome through other data fetchers and must be blocked here to
+  // avoid double-enumeration.
+  if (@available(macOS 10.15, *)) {
+    NSString* product_category = [controller productCategory];
+    if ([product_category isEqualToString:@"Xbox One"] ||
+        [product_category isEqualToString:@"DualShock 4"] ||
+        [product_category isEqualToString:@"DualSense"] ||
+        [product_category isEqualToString:@"Switch Pro Controller"] ||
+        [product_category isEqualToString:@"Nintendo Switch JoyCon (L/R)"]) {
       return false;
-    if ([product_category isEqualToString:@"DualShock 4"])
-      return false;
-  } else {
-    NSString* vendor_name = [controller vendorName];
-    if ([vendor_name isEqualToString:@"Xbox Wireless Controller"])
-      return false;
-    if ([vendor_name isEqualToString:@"Wireless Controller"])
-      return false;
+    }
   }
 
   return true;
@@ -62,9 +48,9 @@ bool IsSupported(GCController* controller) {
 
 }  // namespace
 
-GameControllerDataFetcherMac::GameControllerDataFetcherMac() {}
+GameControllerDataFetcherMac::GameControllerDataFetcherMac() = default;
 
-GameControllerDataFetcherMac::~GameControllerDataFetcherMac() {}
+GameControllerDataFetcherMac::~GameControllerDataFetcherMac() = default;
 
 GamepadSource GameControllerDataFetcherMac::source() {
   return Factory::static_source();
@@ -81,7 +67,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
     if (!IsSupported(controller))
       continue;
 
-    int player_index = [controller playerIndex];
+    int player_index = controller.playerIndex;
     if (player_index != GCControllerPlayerIndexUnset)
       player_indices[player_index] = true;
   }
@@ -97,7 +83,7 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
     if (!IsSupported(controller))
       continue;
 
-    int player_index = [controller playerIndex];
+    int player_index = controller.playerIndex;
     if (player_index == GCControllerPlayerIndexUnset) {
       player_index = NextUnusedPlayerIndex();
       if (player_index == GCControllerPlayerIndexUnset)
@@ -127,16 +113,8 @@ void GameControllerDataFetcherMac::GetGamepadData(bool) {
       pad.connected = true;
       connected_[player_index] = true;
 
-// In OS X 10.11, the type of the GCController playerIndex member was
-// changed from NSInteger to a GCControllerPlayerIndex enum. Once Chrome
-// no longer supports OSX 10.10, the integer version can be removed.
-#if !defined(MAC_OS_X_VERSION_10_11) || \
-    MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_11
-      [controller setPlayerIndex:player_index];
-#else
-      [controller
-          setPlayerIndex:static_cast<GCControllerPlayerIndex>(player_index)];
-#endif
+      controller.playerIndex =
+          static_cast<GCControllerPlayerIndex>(player_index);
     }
 
     pad.timestamp = CurrentTimeInMicroseconds();

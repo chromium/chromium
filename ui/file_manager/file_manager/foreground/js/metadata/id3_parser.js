@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/function_sequence.js');
-importScripts(
-    'chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/foreground/js/metadata/function_parallel.js');
+import {MetadataParserLogger} from '../../../externs/metadata_worker_window.js';
+
+import {ByteReader} from './byte_reader.js';
+import {FunctionParallel} from './function_parallel.js';
+import {FunctionSequence} from './function_sequence.js';
+import {MetadataParser} from './metadata_parser.js';
+
 
 /**
  * ID3 parser.
  * @final
  */
-class Id3Parser extends MetadataParser {
+export class Id3Parser extends MetadataParser {
   /**
    * @param {!MetadataParserLogger} parent A metadata dispatcher.
    */

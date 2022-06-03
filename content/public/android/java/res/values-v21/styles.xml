@@ -25,7 +25,7 @@
         <item name="android:textAppearance">@style/TextAppearance.TextSuggestionButtonText</item>
     </style>
 
-    <style name="TextAppearance.TextSuggestionButtonText" parent="@style/TextAppearance.BlueButtonText2">
+    <style name="TextAppearance.TextSuggestionButtonText" parent="@style/TextAppearance.Button.Text.Blue">
         <item name="android:textColor">?android:attr/colorAccent</item>
     </style>
 </resources>

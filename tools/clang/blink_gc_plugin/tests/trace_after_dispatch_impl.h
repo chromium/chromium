@@ -11,7 +11,7 @@ namespace blink {
 
 class X : public GarbageCollected<X> {
  public:
-  void Trace(Visitor*) {}
+  void Trace(Visitor*) const {}
 };
 
 enum ClassTag {
@@ -23,9 +23,9 @@ class TraceAfterDispatchInlinedBase
  public:
   explicit TraceAfterDispatchInlinedBase(ClassTag tag) : tag_(tag) {}
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
-  void TraceAfterDispatch(Visitor* visitor) { visitor->Trace(x_base_); }
+  void TraceAfterDispatch(Visitor* visitor) const { visitor->Trace(x_base_); }
 
  private:
   ClassTag tag_;
@@ -36,7 +36,7 @@ class TraceAfterDispatchInlinedDerived : public TraceAfterDispatchInlinedBase {
  public:
   TraceAfterDispatchInlinedDerived() : TraceAfterDispatchInlinedBase(DERIVED) {}
 
-  void TraceAfterDispatch(Visitor* visitor) {
+  void TraceAfterDispatch(Visitor* visitor) const {
     visitor->Trace(x_derived_);
     TraceAfterDispatchInlinedBase::TraceAfterDispatch(visitor);
   }
@@ -50,9 +50,9 @@ class TraceAfterDispatchExternBase
  public:
   explicit TraceAfterDispatchExternBase(ClassTag tag) : tag_(tag) {}
 
-  void Trace(Visitor* visitor);
+  void Trace(Visitor* visitor) const;
 
-  void TraceAfterDispatch(Visitor* visitor);
+  void TraceAfterDispatch(Visitor* visitor) const;
 
  private:
   ClassTag tag_;
@@ -63,7 +63,7 @@ class TraceAfterDispatchExternDerived : public TraceAfterDispatchExternBase {
  public:
   TraceAfterDispatchExternDerived() : TraceAfterDispatchExternBase(DERIVED) {}
 
-  void TraceAfterDispatch(Visitor* visitor);
+  void TraceAfterDispatch(Visitor* visitor) const;
 
  private:
   Member<X> x_derived_;

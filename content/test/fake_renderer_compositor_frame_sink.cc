@@ -14,14 +14,14 @@ FakeRendererCompositorFrameSink::FakeRendererCompositorFrameSink(
 FakeRendererCompositorFrameSink::~FakeRendererCompositorFrameSink() = default;
 
 void FakeRendererCompositorFrameSink::DidReceiveCompositorFrameAck(
-    const std::vector<viz::ReturnedResource>& resources) {
-  ReclaimResources(resources);
+    std::vector<viz::ReturnedResource> resources) {
+  ReclaimResources(std::move(resources));
   did_receive_ack_ = true;
 }
 
 void FakeRendererCompositorFrameSink::ReclaimResources(
-    const std::vector<viz::ReturnedResource>& resources) {
-  last_reclaimed_resources_ = resources;
+    std::vector<viz::ReturnedResource> resources) {
+  last_reclaimed_resources_ = std::move(resources);
 }
 
 void FakeRendererCompositorFrameSink::Reset() {

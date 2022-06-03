@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ENCODING_ENCODING_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCODING_ENCODING_H_
 
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 

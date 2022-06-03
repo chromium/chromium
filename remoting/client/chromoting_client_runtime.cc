@@ -4,17 +4,20 @@
 
 #include "remoting/client/chromoting_client_runtime.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/task/current_thread.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "remoting/base/chromium_url_request.h"
+#include "remoting/base/directory_service_client.h"
 #include "remoting/base/oauth_token_getter_proxy.h"
 #include "remoting/base/telemetry_log_writer.h"
 #include "remoting/base/url_request_context_getter.h"
@@ -31,11 +34,11 @@ ChromotingClientRuntime* ChromotingClientRuntime::GetInstance() {
 ChromotingClientRuntime::ChromotingClientRuntime() {
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Remoting");
 
-  DCHECK(!base::MessageLoopCurrent::Get());
+  DCHECK(!base::CurrentThread::Get());
 
   VLOG(1) << "Starting main message loop";
-  ui_task_executor_.reset(
-      new base::SingleThreadTaskExecutor(base::MessagePumpType::UI));
+  ui_task_executor_ = std::make_unique<base::SingleThreadTaskExecutor>(
+      base::MessagePumpType::UI);
 
 #if defined(DEBUG)
   net::URLFetcher::SetIgnoreCertificateRequests(true);
@@ -89,6 +92,28 @@ ChromotingClientRuntime::CreateOAuthTokenGetter() {
       delegate_->oauth_token_getter(), ui_task_runner());
 }
 
+base::SequenceBound<DirectoryServiceClient>
+ChromotingClientRuntime::CreateDirectoryServiceClient() {
+  // A DirectoryServiceClient subclass that calls url_loader_factory() in its
+  // constructor, as we can't call it on a non-network thread then pass it via
+  // base::SequenceBound.
+  class ClientDirectoryServiceClient : public DirectoryServiceClient {
+   public:
+    ClientDirectoryServiceClient(ChromotingClientRuntime* runtime,
+                                 std::unique_ptr<OAuthTokenGetter> token_getter)
+        : DirectoryServiceClient(token_getter.get(),
+                                 runtime->url_loader_factory()),
+          token_getter_(std::move(token_getter)) {}
+    ~ClientDirectoryServiceClient() override = default;
+
+   private:
+    std::unique_ptr<OAuthTokenGetter> token_getter_;
+  };
+
+  return base::SequenceBound<ClientDirectoryServiceClient>(
+      network_task_runner(), this, CreateOAuthTokenGetter());
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 ChromotingClientRuntime::url_loader_factory() {
   DCHECK(network_task_runner()->BelongsToCurrentThread());
@@ -100,6 +125,7 @@ void ChromotingClientRuntime::InitializeOnNetworkThread() {
   url_loader_factory_owner_ =
       std::make_unique<network::TransitionalURLLoaderFactoryOwner>(
           url_requester_);
+  log_writer_->Init(url_loader_factory_owner_->GetURLLoaderFactory());
 }
 
 }  // namespace remoting

@@ -106,13 +106,13 @@ bool SeekToExtensions(der::Input in,
   if (!tbs_cert_parser.SkipTag(der::kSequence))
     return false;
   // issuerUniqueID
-  if (!tbs_cert_parser.SkipOptionalTag(
-          der::kTagConstructed | der::kTagContextSpecific | 1, &present)) {
+  if (!tbs_cert_parser.SkipOptionalTag(der::kTagContextSpecific | 1,
+                                       &present)) {
     return false;
   }
   // subjectUniqueID
-  if (!tbs_cert_parser.SkipOptionalTag(
-          der::kTagConstructed | der::kTagContextSpecific | 2, &present)) {
+  if (!tbs_cert_parser.SkipOptionalTag(der::kTagContextSpecific | 2,
+                                       &present)) {
     return false;
   }
 
@@ -182,14 +182,6 @@ bool ExtractExtensionWithOID(base::StringPiece cert,
   return true;
 }
 
-bool HasExtensionWithOID(base::StringPiece cert, der::Input extension_oid) {
-  bool extension_present;
-  ParsedExtension extension;
-  return ExtractExtensionWithOID(cert, extension_oid, &extension_present,
-                                 &extension) &&
-         extension_present;
-}
-
 }  // namespace
 
 bool ExtractSubjectFromDERCert(base::StringPiece cert,
@@ -243,15 +235,6 @@ bool ExtractSubjectPublicKeyFromSPKI(base::StringPiece spki,
     return false;
   *spk_out = spk.AsStringPiece();
   return true;
-}
-
-bool HasTLSFeatureExtension(base::StringPiece cert) {
-  // kTLSFeatureExtensionOID is the DER encoding of the OID for the
-  // X.509 TLS Feature Extension.
-  static const uint8_t kTLSFeatureExtensionOID[] = {0x2B, 0x06, 0x01, 0x05,
-                                                    0x05, 0x07, 0x01, 0x18};
-
-  return HasExtensionWithOID(cert, der::Input(kTLSFeatureExtensionOID));
 }
 
 bool HasCanSignHttpExchangesDraftExtension(base::StringPiece cert) {
@@ -333,7 +316,7 @@ bool ExtractExtensionFromDERCert(base::StringPiece cert,
                                  base::StringPiece* out_contents) {
   *out_extension_present = false;
   *out_extension_critical = false;
-  out_contents->clear();
+  *out_contents = base::StringPiece();
 
   ParsedExtension extension;
   if (!ExtractExtensionWithOID(cert, der::Input(extension_oid),

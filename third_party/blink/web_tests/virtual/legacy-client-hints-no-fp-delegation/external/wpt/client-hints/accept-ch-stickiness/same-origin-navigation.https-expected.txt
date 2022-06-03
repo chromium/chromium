@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS same origin navigation precondition: Test that the browser does not have client hints preferences cached
+PASS same origin navigation set Accept-CH
+FAIL same origin navigation got client hints according to expectations. assert_equals: message from opened page expected "PASS" but got "FAIL"
+Harness: the test ran to completion.
+

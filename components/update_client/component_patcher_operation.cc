@@ -6,12 +6,13 @@
 
 #include <stdint.h>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -53,11 +54,9 @@ DeltaUpdateOp* CreateDeltaUpdateOp(const std::string& operation,
   return nullptr;
 }
 
-DeltaUpdateOp::DeltaUpdateOp() {
-}
+DeltaUpdateOp::DeltaUpdateOp() = default;
 
-DeltaUpdateOp::~DeltaUpdateOp() {
-}
+DeltaUpdateOp::~DeltaUpdateOp() = default;
 
 void DeltaUpdateOp::Run(const base::DictionaryValue* command_args,
                         const base::FilePath& input_dir,
@@ -108,11 +107,9 @@ UnpackerError DeltaUpdateOp::CheckHash() {
              : UnpackerError::kDeltaVerificationFailure;
 }
 
-DeltaUpdateOpCopy::DeltaUpdateOpCopy() {
-}
+DeltaUpdateOpCopy::DeltaUpdateOpCopy() = default;
 
-DeltaUpdateOpCopy::~DeltaUpdateOpCopy() {
-}
+DeltaUpdateOpCopy::~DeltaUpdateOpCopy() = default;
 
 UnpackerError DeltaUpdateOpCopy::DoParseArguments(
     const base::DictionaryValue* command_args,
@@ -135,11 +132,9 @@ void DeltaUpdateOpCopy::DoRun(ComponentPatcher::Callback callback) {
     std::move(callback).Run(UnpackerError::kNone, 0);
 }
 
-DeltaUpdateOpCreate::DeltaUpdateOpCreate() {
-}
+DeltaUpdateOpCreate::DeltaUpdateOpCreate() = default;
 
-DeltaUpdateOpCreate::~DeltaUpdateOpCreate() {
-}
+DeltaUpdateOpCreate::~DeltaUpdateOpCreate() = default;
 
 UnpackerError DeltaUpdateOpCreate::DoParseArguments(
     const base::DictionaryValue* command_args,
@@ -168,8 +163,7 @@ DeltaUpdateOpPatch::DeltaUpdateOpPatch(const std::string& operation,
   DCHECK(operation == kBsdiff || operation == kCourgette);
 }
 
-DeltaUpdateOpPatch::~DeltaUpdateOpPatch() {
-}
+DeltaUpdateOpPatch::~DeltaUpdateOpPatch() = default;
 
 UnpackerError DeltaUpdateOpPatch::DoParseArguments(
     const base::DictionaryValue* command_args,

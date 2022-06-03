@@ -12,7 +12,7 @@ from pywinauto.application import Application
 UnsafePageLink = "http://testsafebrowsing.appspot.com/s/malware.html"
 UnsafePageLinkTabText = "Security error"
 
-UnsafeDownloadLink = "http://testsafebrowsing.appspot.com/s/content.exe"
+UnsafeDownloadLink = "http://testsafebrowsing.appspot.com/s/badrep.exe"
 UnsafeDownloadTextRe = ".* is dangerous,\s*so\s*Chrom.* has blocked it"
 
 
@@ -42,30 +42,30 @@ def main(argv):
   # experiments have shown 3-4 minutes in most cases, so 5 should be plenty.
   time.sleep(60 * 5)
 
-  print "Visiting unsafe page: %s" % UnsafePageLink
+  print("Visiting unsafe page: %s" % UnsafePageLink)
   visit(window, UnsafePageLink)
 
   unsafe_page = False
   for desc in app.top_window().descendants():
     if desc.window_text():
-      print "unsafe_page.item: %s" % desc.window_text()
+      print("unsafe_page.item: %s" % desc.window_text())
       if UnsafePageLinkTabText in desc.window_text():
         unsafe_page = True
         break
 
-  print "Downloading unsafe file: %s" % UnsafeDownloadLink
+  print("Downloading unsafe file: %s" % UnsafeDownloadLink)
   visit(window, UnsafeDownloadLink)
 
   unsafe_download = False
   for desc in app.top_window().descendants():
     if desc.window_text():
-      print "unsafe_download.item: %s" % desc.window_text()
+      print("unsafe_download.item: %s" % desc.window_text())
       if re.search(UnsafeDownloadTextRe, desc.window_text()):
         unsafe_download = True
         break
 
-  print "RESULTS.unsafe_page: %s" % unsafe_page
-  print "RESULTS.unsafe_download: %s" % unsafe_download
+  print("RESULTS.unsafe_page: %s" % unsafe_page)
+  print("RESULTS.unsafe_download: %s" % unsafe_download)
 
   driver.quit()
 

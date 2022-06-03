@@ -7,9 +7,9 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/gmock_move_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -21,7 +21,6 @@
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/components/proximity_auth/proximity_monitor_observer.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/services/secure_channel/fake_connection.h"
 #include "chromeos/services/secure_channel/public/cpp/client/fake_client_channel.h"
@@ -34,7 +33,6 @@ using device::BluetoothDevice;
 using testing::_;
 using testing::NiceMock;
 using testing::Return;
-using testing::SaveArg;
 
 namespace proximity_auth {
 namespace {
@@ -46,12 +44,14 @@ const int kRssiThreshold = -70;
 class MockProximityMonitorObserver : public ProximityMonitorObserver {
  public:
   MockProximityMonitorObserver() {}
+
+  MockProximityMonitorObserver(const MockProximityMonitorObserver&) = delete;
+  MockProximityMonitorObserver& operator=(const MockProximityMonitorObserver&) =
+      delete;
+
   ~MockProximityMonitorObserver() override {}
 
   MOCK_METHOD0(OnProximityStateChanged, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockProximityMonitorObserver);
 };
 
 // Creates a mock Bluetooth adapter and sets it as the global adapter for
@@ -97,13 +97,13 @@ class ProximityAuthProximityMonitorImplTest : public testing::Test {
     ON_CALL(*bluetooth_adapter_, GetDevice(std::string()))
         .WillByDefault(Return(&remote_bluetooth_device_));
     ON_CALL(remote_bluetooth_device_, GetConnectionInfo(_))
-        .WillByDefault(SaveArg<0>(&connection_info_callback_));
+        .WillByDefault(MoveArg<0>(&connection_info_callback_));
     monitor_->AddObserver(&observer_);
   }
 
   void RunPendingTasks() { task_runner_->RunPendingTasks(); }
 
-  void ProvideRssi(base::Optional<int32_t> rssi) {
+  void ProvideRssi(absl::optional<int32_t> rssi) {
     RunPendingTasks();
 
     std::vector<chromeos::secure_channel::mojom::ConnectionCreationDetail>
@@ -180,7 +180,7 @@ TEST_F(ProximityAuthProximityMonitorImplTest, IsUnlockAllowed_UnknownRssi) {
   monitor_->Start();
 
   ProvideRssi(0);
-  ProvideRssi(base::nullopt);
+  ProvideRssi(absl::nullopt);
 
   EXPECT_FALSE(monitor_->IsUnlockAllowed());
 }

@@ -13,11 +13,11 @@
 #include <algorithm>
 #include <unordered_map>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
@@ -448,25 +448,20 @@ bool IsDeviceOfType(const ui::GesturePropertyProvider::DevicePtr device,
   switch (type) {
     case ui::DT_KEYBOARD:
       return (evdev_class == EvdevClassKeyboard);
-      break;
     case ui::DT_MOUSE:
       return is_mouse;
-      break;
+    case ui::DT_POINTING_STICK:
+      return (evdev_class == EvdevClassPointingStick);
     case ui::DT_TOUCHPAD:
       return (!is_mouse) && is_touchpad;
-      break;
     case ui::DT_TOUCHSCREEN:
       return (evdev_class == EvdevClassTouchscreen);
-      break;
     case ui::DT_MULTITOUCH:
       return is_touchpad;
-      break;
     case ui::DT_MULTITOUCH_MOUSE:
       return is_mouse && is_touchpad;
-      break;
     case ui::DT_ALL:
       return true;
-      break;
     default:
       break;
   }
@@ -816,6 +811,7 @@ bool MatchIsPointer::Match(const DevicePtr device) {
   if (!is_valid_)
     return true;
   return (value_ == (device->info.evdev_class == EvdevClassMouse ||
+                     device->info.evdev_class == EvdevClassPointingStick ||
                      device->info.evdev_class == EvdevClassMultitouchMouse));
 }
 
@@ -894,9 +890,8 @@ std::vector<std::string> GesturePropertyProvider::GetPropertyNamesById(
 
   // Dump all property names of the device.
   std::vector<std::string> names;
-  for (auto it = device_data->properties.begin();
-       it != device_data->properties.end(); ++it)
-    names.push_back(it->first);
+  for (const auto& pair : device_data->properties)
+    names.push_back(pair.first);
   return names;
 }
 

@@ -13,14 +13,8 @@
 // from what kind of possibly nested source contexts.
 // The objects are represented as JSON objects (not JavaScript/Python classes
 // in a strict sense) to be passed between JavaScript/Python code.
-
-// Note: So far this document covers:
-// - resources/common.sub.js : client-side test infra code
-// - scope/ - server-side scripts that serves nested source contexts
-// but doesn't cover:
-// - tools/ - generator scripts that generates top-level HTML documents.
-// There are some policies only handled by generators (e.g. mixed-content
-// opt-ins) and not yet covered by the docs here.
+//
+// See also common/security-features/Types.md for high-level description.
 
 /**
   @typedef PolicyDelivery
@@ -92,33 +86,6 @@
 /**
   @typedef SourceContext
   @type {object}
-  Requests can be possibly sent from various kinds of source contexts, i.e.
-  fetch client's environment settings objects:
-  top-level windows, iframes, or workers.
-  A SourceContext object specifies one environment settings object, and
-  an Array<SourceContext> specifies a possibly nested context,
-  from the outer-most to inner-most environment settings objects.
-
-  For example:
-    [{sourceContextType: "srcdoc"}, {sourceContextType: "worker-classic"}]
-  means that a subresource request is to be sent from
-  a classic dedicated worker created from <iframe srcdoc>
-  inside the top-level HTML document.
-  Note: the top-level document is not included in the array and
-  is assumed implicitly.
-
-  SourceContext (or Array<SourceContext>) is set based on
-  the fetch client's settings object that is used for the subresource request,
-  NOT on module map settings object, and
-  NOT on the inner-most settings object that appears in the test.
-  For example, Array<SourceContext> is `[]` (indicating the top Window)
-  for `worker.js`
-  - When it is the root worker script: `new Worker('worker.js')`, or
-  - When it is imported from the root worker script:
-    `new Worker('top.js', {type: 'module'})`
-    where `top.js` has `import 'worker.js'`.
-  because the request for `worker.js` uses the Window as its fetch client's
-  settings object, while a WorkerGlobalScope is created though.
 
   @property {string} sourceContextType
     Kind of the source context to be used.
@@ -398,7 +365,7 @@ function wrapResult(server_data) {
   requestViaPicture                3        -        Y       -
   requestViaScript                 2        Y        Y       -
   requestViaSendBeacon             3        -        Y       -
-  requestViaSharedWorker           2        Y        -       -
+  requestViaSharedWorker           2        Y        Y       Y
   requestViaVideo                  3        -        Y       -
   requestViaWebSocket              3        -        Y       -
   requestViaWorklet                3        -        Y       Y
@@ -519,6 +486,11 @@ function dedicatedWorkerUrlThatFetches(url) {
 }
 
 function workerUrlThatImports(url) {
+  return `/common/security-features/subresource/static-import.py` +
+      `?import_url=${encodeURIComponent(url)}`;
+}
+
+function workerDataUrlThatImports(url) {
   return `data:text/javascript,import '${url}';`;
 }
 
@@ -542,10 +514,10 @@ function requestViaDedicatedWorker(url, options) {
     .then(event => wrapResult(event.data));
 }
 
-function requestViaSharedWorker(url) {
+function requestViaSharedWorker(url, options) {
   var worker;
   try {
-    worker = new SharedWorker(url);
+    worker = new SharedWorker(url, options);
   } catch(e) {
     return Promise.reject(e);
   }
@@ -651,6 +623,24 @@ function requestViaScript(url, additionalAttributes) {
   const script = createElement(
       "script",
       Object.assign({"src": url}, additionalAttributes),
+      document.body,
+      false);
+
+  return bindEvents2(window, "message", script, "error", window, "error")
+    .then(event => wrapResult(event.data));
+}
+
+/**
+ * Creates a new script element that performs a dynamic import to `url`, and
+ * appends the script element to {@code document.body}.
+ * @param {string} url The src URL.
+ * @return {Promise} The promise for success/error events.
+ */
+function requestViaDynamicImport(url, additionalAttributes) {
+  const scriptUrl = `data:text/javascript,import("${url}");`;
+  const script = createElement(
+      "script",
+      Object.assign({"src": scriptUrl}, additionalAttributes),
       document.body,
       false);
 
@@ -894,6 +884,10 @@ const subresourceMap = {
     path: "/common/security-features/subresource/script.py",
     invoker: requestViaScript,
   },
+  "script-tag-dynamic-import": {
+    path: "/common/security-features/subresource/script.py",
+    invoker: requestViaDynamicImport,
+  },
   "video-tag": {
     path: "/common/security-features/subresource/video.py",
     invoker: requestViaVideo,
@@ -911,14 +905,33 @@ const subresourceMap = {
     path: "/common/security-features/subresource/worker.py",
     invoker: url => requestViaDedicatedWorker(url, {type: "module"}),
   },
-  "worker-import-data": {
+  "worker-import": {
     path: "/common/security-features/subresource/worker.py",
     invoker: url =>
         requestViaDedicatedWorker(workerUrlThatImports(url), {type: "module"}),
   },
+  "worker-import-data": {
+    path: "/common/security-features/subresource/worker.py",
+    invoker: url =>
+        requestViaDedicatedWorker(workerDataUrlThatImports(url), {type: "module"}),
+  },
   "sharedworker-classic": {
     path: "/common/security-features/subresource/shared-worker.py",
-    invoker: requestViaSharedWorker,
+    invoker: url => requestViaSharedWorker(url),
+  },
+  "sharedworker-module": {
+    path: "/common/security-features/subresource/shared-worker.py",
+    invoker: url => requestViaSharedWorker(url, {type: "module"}),
+  },
+  "sharedworker-import": {
+    path: "/common/security-features/subresource/shared-worker.py",
+    invoker: url =>
+        requestViaSharedWorker(workerUrlThatImports(url), {type: "module"}),
+  },
+  "sharedworker-import-data": {
+    path: "/common/security-features/subresource/shared-worker.py",
+    invoker: url =>
+        requestViaSharedWorker(workerDataUrlThatImports(url), {type: "module"}),
   },
 
   "websocket": {
@@ -934,7 +947,7 @@ for (const workletType of ['animation', 'audio', 'layout', 'paint']) {
   subresourceMap[`worklet-${workletType}-import-data`] = {
       path: "/common/security-features/subresource/worker.py",
       invoker: url =>
-          requestViaWorklet(workletType, workerUrlThatImports(url))
+          requestViaWorklet(workletType, workerDataUrlThatImports(url))
     };
 }
 
@@ -1120,19 +1133,35 @@ function invokeRequest(subresource, sourceContextList) {
     },
     "worker-classic": {
       // Classic dedicated worker loaded from same-origin.
-      invoker: invokeFromWorker.bind(undefined, false, {}),
+      invoker: invokeFromWorker.bind(undefined, "worker", false, {}),
     },
     "worker-classic-data": {
       // Classic dedicated worker loaded from data: URL.
-      invoker: invokeFromWorker.bind(undefined, true, {}),
+      invoker: invokeFromWorker.bind(undefined, "worker", true, {}),
     },
     "worker-module": {
       // Module dedicated worker loaded from same-origin.
-      invoker: invokeFromWorker.bind(undefined, false, {type: 'module'}),
+      invoker: invokeFromWorker.bind(undefined, "worker", false, {type: 'module'}),
     },
     "worker-module-data": {
       // Module dedicated worker loaded from data: URL.
-      invoker: invokeFromWorker.bind(undefined, true, {type: 'module'}),
+      invoker: invokeFromWorker.bind(undefined, "worker", true, {type: 'module'}),
+    },
+    "sharedworker-classic": {
+      // Classic shared worker loaded from same-origin.
+      invoker: invokeFromWorker.bind(undefined, "sharedworker", false, {}),
+    },
+    "sharedworker-classic-data": {
+      // Classic shared worker loaded from data: URL.
+      invoker: invokeFromWorker.bind(undefined, "sharedworker", true, {}),
+    },
+    "sharedworker-module": {
+      // Module shared worker loaded from same-origin.
+      invoker: invokeFromWorker.bind(undefined, "sharedworker", false, {type: 'module'}),
+    },
+    "sharedworker-module-data": {
+      // Module shared worker loaded from data: URL.
+      invoker: invokeFromWorker.bind(undefined, "sharedworker", true, {type: 'module'}),
     },
   };
 
@@ -1153,6 +1182,8 @@ self.invokeRequest = invokeRequest;
 */
 
 /**
+  @param {string} workerType
+    "worker" (for dedicated worker) or "sharedworker".
   @param {boolean} isDataUrl
     true if the worker script is loaded from data: URL.
     Otherwise, the script is loaded from same-origin.
@@ -1161,7 +1192,7 @@ self.invokeRequest = invokeRequest;
 
   Other parameters and return values are the same as those of invokeRequest().
 */
-function invokeFromWorker(isDataUrl, workerOptions,
+function invokeFromWorker(workerType, isDataUrl, workerOptions,
                           subresource, sourceContextList) {
   const currentSourceContext = sourceContextList[0];
   let workerUrl =
@@ -1185,10 +1216,20 @@ function invokeFromWorker(isDataUrl, workerOptions,
 
   return promise
     .then(url => {
-      const worker = new Worker(url, workerOptions);
-      worker.postMessage({subresource: subresource,
-                          sourceContextList: sourceContextList.slice(1)});
-      return bindEvents2(worker, "message", worker, "error", window, "error");
+      if (workerType === "worker") {
+        const worker = new Worker(url, workerOptions);
+        worker.postMessage({subresource: subresource,
+                            sourceContextList: sourceContextList.slice(1)});
+        return bindEvents2(worker, "message", worker, "error", window, "error");
+      } else if (workerType === "sharedworker") {
+        const worker = new SharedWorker(url, workerOptions);
+        worker.port.start();
+        worker.port.postMessage({subresource: subresource,
+                                 sourceContextList: sourceContextList.slice(1)});
+        return bindEvents2(worker.port, "message", worker, "error", window, "error");
+      } else {
+        throw new Error('Invalid worker type: ' + workerType);
+      }
     })
     .then(event => {
         if (event.data.error)

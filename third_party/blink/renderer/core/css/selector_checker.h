@@ -30,8 +30,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/css/css_selector.h"
+#include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 
@@ -44,12 +45,10 @@ class ComputedStyle;
 class Element;
 class PartNames;
 
-class SelectorChecker {
+class CORE_EXPORT SelectorChecker {
   STACK_ALLOCATED();
 
  public:
-  enum VisitedMatchType { kVisitedMatchDisabled, kVisitedMatchEnabled };
-
   enum Mode {
     // Used when matching selectors inside style recalc. This mode will set
     // restyle flags across the tree during matching which impact how style
@@ -76,25 +75,29 @@ class SelectorChecker {
     kQueryingRules,
   };
 
-  struct Init {
-    STACK_ALLOCATED();
+  explicit inline SelectorChecker(const Mode& mode)
+      : element_style_(nullptr),
+        scrollbar_(nullptr),
+        part_names_(nullptr),
+        pseudo_argument_(g_null_atom),
+        scrollbar_part_(kNoPart),
+        mode_(mode),
+        is_ua_rule_(false) {}
+  inline SelectorChecker(ComputedStyle* element_style,
+                         PartNames* part_names,
+                         const StyleRequest& style_request,
+                         const Mode& mode,
+                         const bool& is_ua_rule)
+      : element_style_(element_style),
+        scrollbar_(style_request.scrollbar),
+        part_names_(part_names),
+        pseudo_argument_(style_request.pseudo_argument),
+        scrollbar_part_(style_request.scrollbar_part),
+        mode_(mode),
+        is_ua_rule_(is_ua_rule) {}
 
-   public:
-    Mode mode = kResolvingStyle;
-    bool is_ua_rule = false;
-    ComputedStyle* element_style = nullptr;
-    Member<CustomScrollbar> scrollbar = nullptr;
-    ScrollbarPart scrollbar_part = kNoPart;
-    PartNames* part_names = nullptr;
-  };
-
-  explicit SelectorChecker(const Init& init)
-      : mode_(init.mode),
-        is_ua_rule_(init.is_ua_rule),
-        element_style_(init.element_style),
-        scrollbar_(init.scrollbar),
-        scrollbar_part_(init.scrollbar_part),
-        part_names_(init.part_names) {}
+  SelectorChecker(const SelectorChecker&) = delete;
+  SelectorChecker& operator=(const SelectorChecker&) = delete;
 
   // Wraps the current element and a CSSSelector and stores some other state of
   // the selector matching process.
@@ -103,43 +106,83 @@ class SelectorChecker {
 
    public:
     // Initial selector constructor
-    SelectorCheckingContext(Element* element,
-                            VisitedMatchType visited_match_type)
-        : selector(nullptr),
-          element(element),
-          previous_element(nullptr),
-          scope(nullptr),
-          visited_match_type(visited_match_type),
-          pseudo_id(kPseudoIdNone),
-          is_sub_selector(false),
-          in_rightmost_compound(true),
-          has_scrollbar_pseudo(false),
-          has_selection_pseudo(false),
-          treat_shadow_host_as_normal_scope(false),
-          is_from_vtt(false) {}
+    explicit SelectorCheckingContext(Element* element) : element(element) {}
 
-    const CSSSelector* selector;
-    Member<Element> element;
-    Member<Element> previous_element;
-    Member<const ContainerNode> scope;
-    VisitedMatchType visited_match_type;
-    PseudoId pseudo_id;
-    bool is_sub_selector;
-    bool in_rightmost_compound;
-    bool has_scrollbar_pseudo;
-    bool has_selection_pseudo;
-    bool treat_shadow_host_as_normal_scope;
-    bool is_from_vtt;
+    const CSSSelector* selector = nullptr;
+    Element* element = nullptr;
+    Element* previous_element = nullptr;
+    const ContainerNode* scope = nullptr;
+    PseudoId pseudo_id = kPseudoIdNone;
+    bool is_sub_selector = false;
+    bool in_rightmost_compound = true;
+    bool has_scrollbar_pseudo = false;
+    bool has_selection_pseudo = false;
+    bool treat_shadow_host_as_normal_scope = false;
+    Element* vtt_originating_element = nullptr;
+    bool in_nested_complex_selector = false;
+    bool is_inside_visited_link = false;
+    const ContainerNode* relative_leftmost_element = nullptr;
   };
 
   struct MatchResult {
     STACK_ALLOCATED();
 
    public:
-    MatchResult() : dynamic_pseudo(kPseudoIdNone), specificity(0) {}
+    PseudoId dynamic_pseudo{kPseudoIdNone};
 
-    PseudoId dynamic_pseudo;
-    unsigned specificity;
+    // From the shortest argument selector match, we need to get the element
+    // that matches the leftmost compound selector to mark the correct scope
+    // elements of :has() pseudo class having the argument selectors starts
+    // with descendant combinator.
+    //
+    // <main id=main>
+    //   <div id=d1>
+    //     <div id=d2 class="a">
+    //       <div id=d3 class="a">
+    //         <div id=d4>
+    //           <div id=d5 class="b">
+    //           </div>
+    //         </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
+    // <script>
+    //  main.querySelectorAll('div:has(.a .b)'); // Should return #d1, #d2
+    // </script>
+    //
+    // In case of the above example, div#d5 element matches the argument
+    // selector '.a .b'. Among the ancestors of the div#d5, the div#d3 and
+    // div#d4 is not the correct candidate scope element of ':has(.a .b)'
+    // because those elements don't have .a element as it's descendant.
+    // So instead of marking ancestors of div#d5, we should mark ancestors
+    // of div#d3 to prevent incorrect marking.
+    // In case of the shortest match for the argument selector '.a .b' on
+    // div#d5 element, the div#d3 is the element that matches the leftmost
+    // compound selector '.a'. So the MatchResult will return the div#d3
+    // element for the matching operation.
+    //
+    // In case of matching none desendant relative argument selectors, we
+    // can get the candidate leftmost compound matches while matching the
+    // argument selector.
+    // To process the 'main.querySelectorAll("div:has(:scope > .a .b)")'
+    // on the above DOM tree, selector checker will try to match the
+    // argument selector ':scope > .a .b' on the descendants of #d1 div
+    // element with the :scope element as #d1. When it matches the argument
+    // selector on #d5 element, the matching result is true and it can get
+    // the element that matches the leftmost(except :scope) compound '.a'
+    // as #d2 element. But while matching the argument selector on the #d5
+    // element, selector checker can also aware that the #d3 element can
+    // be a leftmost compound matching element when the scope element is
+    // #d2 element. So the selector checker will return the #d2 and #d3
+    // element so that the #d1 and #d2 can be marked as matched with the
+    // ':has(:scope > .a .b)'
+    //
+    // Instead of having vector for the :has argument matching, MatchResult
+    // has a pointer field to hold a element vector instance to minimize the
+    // MatchResult instance allocation overhead for none-has matching operations
+    HeapVector<Member<Element>>* has_argument_leftmost_compound_matches{
+        nullptr};
   };
 
   bool Match(const SelectorCheckingContext& context, MatchResult& result) const;
@@ -158,7 +201,6 @@ class SelectorChecker {
   // to by the context are a match. Delegates most of the work to the Check*
   // methods below.
   bool CheckOne(const SelectorCheckingContext&, MatchResult&) const;
-  bool CheckOneForVTT(const SelectorCheckingContext&, MatchResult&) const;
 
   enum MatchStatus {
     kSelectorMatches,
@@ -185,45 +227,36 @@ class SelectorChecker {
   // to try (e.g. same element, parent, sibling) depends on the combinators in
   // the selectors.
   MatchStatus MatchSelector(const SelectorCheckingContext&, MatchResult&) const;
-  MatchStatus MatchSelectorForVTT(const SelectorCheckingContext&,
-                                  MatchResult&) const;
   MatchStatus MatchForSubSelector(const SelectorCheckingContext&,
                                   MatchResult&) const;
-  MatchStatus MatchForSubSelectorForVTT(const SelectorCheckingContext&,
-                                        MatchResult&) const;
   MatchStatus MatchForRelation(const SelectorCheckingContext&,
                                MatchResult&) const;
-  MatchStatus MatchForRelationForVTT(const SelectorCheckingContext&,
-                                     MatchResult&) const;
   MatchStatus MatchForPseudoContent(const SelectorCheckingContext&,
                                     const Element&,
                                     MatchResult&) const;
   MatchStatus MatchForPseudoShadow(const SelectorCheckingContext&,
                                    const ContainerNode*,
                                    MatchResult&) const;
-  bool MatchVTTBlockSelector(const SelectorCheckingContext& context,
-                             MatchResult& result) const;
   bool CheckPseudoClass(const SelectorCheckingContext&, MatchResult&) const;
-  bool CheckPseudoClassForVTT(const SelectorCheckingContext&,
-                              MatchResult&) const;
   bool CheckPseudoElement(const SelectorCheckingContext&, MatchResult&) const;
-  bool CheckPseudoElementForVTT(const SelectorCheckingContext&,
-                                MatchResult&) const;
   bool CheckScrollbarPseudoClass(const SelectorCheckingContext&,
                                  MatchResult&) const;
   bool CheckPseudoHost(const SelectorCheckingContext&, MatchResult&) const;
   bool CheckPseudoNot(const SelectorCheckingContext&, MatchResult&) const;
-  bool CheckPseudoNotForVTT(const SelectorCheckingContext&, MatchResult&) const;
+  bool CheckPseudoHas(const SelectorCheckingContext&, MatchResult&) const;
 
+  ComputedStyle* element_style_;
+  CustomScrollbar* scrollbar_;
+  PartNames* part_names_;
+  const String pseudo_argument_;
+  ScrollbarPart scrollbar_part_;
   Mode mode_;
   bool is_ua_rule_;
-  ComputedStyle* element_style_;
-  Member<CustomScrollbar> scrollbar_;
-  ScrollbarPart scrollbar_part_;
-  PartNames* part_names_;
-  DISALLOW_COPY_AND_ASSIGN(SelectorChecker);
+#if DCHECK_IS_ON()
+  mutable bool inside_match_ = false;
+#endif
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_SELECTOR_CHECKER_H_

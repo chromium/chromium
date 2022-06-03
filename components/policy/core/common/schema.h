@@ -11,6 +11,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "components/policy/policy_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace policy {
 namespace internal {
@@ -36,13 +37,17 @@ enum SchemaOnErrorStrategy {
   // No errors will be allowed. This should not be used for policies, since it
   // basically prevents future changes to the policy (Server sends newField, but
   // clients running older versions of Chrome reject the policy because they
-  // don't know newField). Prefer to use |SCHEMA_ALLOW_UNKNOWN| for policies
+  // don't know newField). Prefer to use |SCHEMA_ALLOW_UNKNOWN| or
+  // |SCHEMA_ALLOW_UNKOWN_AND_INVALID_LIST_ENTRY| for policies
   // instead.
   SCHEMA_STRICT = 0,
   // Unknown properties in any dictionary will be ignored.
   SCHEMA_ALLOW_UNKNOWN,
-  // Mismatched values will be ignored.
-  SCHEMA_ALLOW_INVALID,
+  // In addition to the previous, invalid list entries will be ignored for all
+  // lists in the schema. Should only be used in cases where dropping list items
+  // is safe. For example, can't be used if an empty list has a special meaning,
+  // like allowing everything.
+  SCHEMA_ALLOW_UNKNOWN_AND_INVALID_LIST_ENTRY,
 };
 
 // Schema validation options for Schema::ParseToDictAndValidate().
@@ -97,49 +102,50 @@ class POLICY_EXPORT Schema {
   // Verifies if |schema| is a valid JSON v3 schema. When this validation passes
   // then |schema| is valid JSON that can be parsed into a Value, and that Value
   // can be used to build a |Schema|. Returns the parsed Value when |schema|
-  // validated, otherwise returns nullptr. In that case, |error| contains an
+  // validated, otherwise returns nullopt. In that case, |error| contains an
   // error description. For performance reasons, currently IsValidSchema() won't
   // check the correctness of regular expressions used in "pattern" and
   // "patternProperties" and in Validate() invalid regular expression don't
   // accept any strings.
   // |options| is a bitwise-OR combination of the options above (see
   // |kSchemaOptions*| above).
-  static std::unique_ptr<base::Value> ParseToDictAndValidate(
+  static absl::optional<base::Value> ParseToDictAndValidate(
       const std::string& schema,
       int options,
       std::string* error);
 
   // Returns true if this Schema is valid. Schemas returned by the methods below
   // may be invalid, and in those cases the other methods must not be used.
-  bool valid() const { return node_ != NULL; }
+  bool valid() const { return !!node_; }
 
   base::Value::Type type() const;
 
   // Validate |value| against current schema, |strategy| is the strategy to
   // handle unknown properties or invalid values. Allowed errors will be
-  // ignored. |error_path| and |error| will contain the last error location and
-  // detailed message if |value| doesn't strictly conform to the schema. If
-  // |value| doesn't conform to the schema even within the allowance of
-  // |strategy|, false will be returned and |error_path| and |error| will
-  // contain the corresponding error that caused the failure. |error_path| can
-  // be NULL and in that case no error path will be returned.
+  // ignored. |out_error_path| and |out_error| will contain the last error
+  // location and detailed message if |value| doesn't strictly conform to the
+  // schema. If |value| doesn't conform to the schema even within the allowance
+  // of |strategy|, false will be returned and |out_error_path| and |out_error|
+  // will contain the corresponding error that caused the failure.
+  // |out_error_path| and |out_error| can be nullptr and in that case no value
+  // will be returned.
   bool Validate(const base::Value& value,
                 SchemaOnErrorStrategy strategy,
-                std::string* error_path,
-                std::string* error) const;
+                std::string* out_error_path,
+                std::string* out_error) const;
 
   // Similar to Validate() but drop values with errors instead of ignoring them.
-  // |changed| is a pointer to a boolean value, and indicate whether |value|
+  // |out_changed| is a pointer to a boolean value, and indicate whether |value|
   // is changed or not (probably dropped properties or items). Be sure to set
-  // the bool that |changed| pointed to to false before calling Normalize().
-  // |changed| can be NULL and in that case no boolean will be set.
-  // This function will also take the ownership of dropped base::Value and
-  // destroy them.
+  // the bool that |out_changed| pointed to false before calling Normalize().
+  // |out_error_path|, |out_error| and |out_changed| can be nullptr and in that
+  // case no value will be set. This function will also take the ownership of
+  // dropped base::Value and destroy them.
   bool Normalize(base::Value* value,
                  SchemaOnErrorStrategy strategy,
-                 std::string* error_path,
-                 std::string* error,
-                 bool* changed) const;
+                 std::string* out_error_path,
+                 std::string* out_error,
+                 bool* out_changed) const;
 
   // Modifies |value| in place - masks values that have been marked as sensitive
   // ("sensitiveValue": true) in this Schema. Note that |value| may not be

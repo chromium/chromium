@@ -1,0 +1,80 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//components/soda/buildflags.gni")
+
+assert(!is_android)
+
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [ "ENABLE_SODA=$enable_soda" ]
+}
+
+component("soda") {
+  sources = [
+    "soda_installer.cc",
+    "soda_installer.h",
+  ]
+
+  defines = [ "IS_SODA_INSTALLER_IMPL" ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/live_caption:constants",
+    "//components/prefs",
+    "//media",
+  ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "soda_installer_impl_chromeos.cc",
+      "soda_installer_impl_chromeos.h",
+    ]
+
+    deps += [
+      "//ash/constants",
+      "//chromeos/dbus/dlcservice",
+      "//ui/base",
+    ]
+  }
+}
+
+source_set("constants") {
+  sources = [
+    "constants.cc",
+    "constants.h",
+    "pref_names.cc",
+    "pref_names.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/component_updater",
+    "//components/crx_file",
+    "//components/strings/",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  if (is_chromeos_ash) {
+    sources = [ "soda_installer_impl_chromeos_unittest.cc" ]
+
+    deps = [
+      ":constants",
+      ":soda",
+      "//ash/constants",
+      "//chromeos/dbus/dlcservice",
+      "//components/live_caption:constants",
+      "//components/prefs:test_support",
+      "//content/test:test_support",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

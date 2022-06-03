@@ -31,18 +31,14 @@ struct IsRefCountedType<T,
                                decltype(std::declval<T*>()->Release())>>
     : std::true_type {};
 
+// Human readable translation: you needed to be a scoped_refptr if you are a raw
+// pointer type and are convertible to a RefCounted(Base|ThreadSafeBase) type.
 template <typename T>
-struct NeedsScopedRefptrButGetsRawPtr {
+struct NeedsScopedRefptrButGetsRawPtr
+    : conjunction<std::is_pointer<T>,
+                  IsRefCountedType<std::remove_pointer_t<T>>> {
   static_assert(!std::is_reference<T>::value,
                 "NeedsScopedRefptrButGetsRawPtr requires non-reference type.");
-
-  enum {
-    // Human readable translation: you needed to be a scoped_refptr if you are a
-    // raw pointer type and are convertible to a RefCounted(Base|ThreadSafeBase)
-    // type.
-    value = std::is_pointer<T>::value &&
-            IsRefCountedType<std::remove_pointer_t<T>>::value
-  };
 };
 
 }  // namespace internal

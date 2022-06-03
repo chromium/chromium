@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Šteta! Nije uspjelo generiranje nasumičnog RSA osobnog ključa.</translation>
 <translation id="1445572445564823378">Ovo proširenje usporava uslugu <ph name="PRODUCT_NAME" />. Trebali biste ga onemogućiti da biste vratili uspješan rad usluge <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nije podržan.</translation>
-<translation id="149347756975725155">Nije uspjelo učitavanje ikone proširenja "<ph name="ICON" />".</translation>
 <translation id="1803557475693955505">Nije uspjelo učitavanje pozadinske stranice "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">Nije uspjelo dekodiranje slike: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Lokalizacija je korištena, ali default_locale nije naveden u manifestu.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Čitanje osobnog ključa nije uspjelo.</translation>
 <translation id="6391538222494443604">Mora postojati direktorij za unos.</translation>
 <translation id="641087317769093025">Nije uspjelo raspakiravanje proširenja</translation>
-<translation id="6413453408918378296">Ikona "<ph name="ICON" />" nije dovoljno vidljiva.</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" zahtijeva pristup nekim od vaših uređaja:</translation>
 <translation id="657064425229075395">Nije bilo moguće učitati pozadinsku skriptu "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167">pristupiti uređaju <ph name="PRODUCT_NAME" /> dobavljača <ph name="VENDOR_NAME" /> (serijski broj <ph name="SERIAL_NUMBER" />)</translation>

@@ -4,6 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests search query parsing.\n`);
+  await TestRunner.loadLegacyModule('search');
   await TestRunner.showPanel('sources');
 
   function dumpParsedSearchQuery(query, isRegex) {

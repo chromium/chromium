@@ -2,8 +2,8 @@ Test createImageBitmap from a SVG image without intrinsic size and with zero siz
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS createImageBitmap from a SVG without intrinsic size rejected: InvalidStateError: The image element contains an SVG image without intrinsic dimensions, and no resize options or crop region are specified.
-PASS createImageBitmap from a SVG with zero size rejected: InvalidStateError: The image element contains an SVG image without intrinsic dimensions, and no resize options or crop region are specified.
+PASS createImageBitmap from a SVG without intrinsic size rejected: InvalidStateError: Failed to execute 'createImageBitmap' on 'Window': The image element contains an SVG image without intrinsic dimensions, and no resize options or crop region are specified.
+PASS createImageBitmap from a SVG with zero size rejected: InvalidStateError: Failed to execute 'createImageBitmap' on 'Window': The image element contains an SVG image without intrinsic dimensions, and no resize options or crop region are specified.
 PASS createImageBitmap from a zero size SVG with cropRect succeed
 PASS d[0] is 0
 PASS d[1] is 0

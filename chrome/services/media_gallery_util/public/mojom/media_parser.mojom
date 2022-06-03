@@ -5,9 +5,10 @@
 module chrome.mojom;
 
 import "media/mojo/mojom/media_types.mojom";
-import "mojo/public/mojom/base/file.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
 // Contains either encoded video frame in |encoded_data|, or decoded video
 // frame in |decoded_frame|.
@@ -46,7 +47,7 @@ interface MediaParser {
   // Note: it is still not safe to decode the file in the calling process after
   // this check.
   CheckMediaFile(mojo_base.mojom.TimeDelta decode_time,
-                 mojo_base.mojom.File file)
+                 mojo_base.mojom.ReadOnlyFile file)
       => (bool success);
 
   // Used by tests to validate the right CPU information is set on third-party
@@ -54,6 +55,7 @@ interface MediaParser {
   GetCpuInfo() => (int64 libyuv_cpu_flags, int64 ffmpeg_cpu_flags);
 };
 
+[ServiceSandbox=sandbox.mojom.Sandbox.kUtility]
 interface MediaParserFactory {
   // Creates a MediaParser. |libyuv_cpuf_lags| are the flags returned by
   // libyuv::InitCpuFlags() from third-party/libyuv and |libavutil_cpu_flags|

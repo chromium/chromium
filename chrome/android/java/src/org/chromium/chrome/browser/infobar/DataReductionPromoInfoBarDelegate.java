@@ -12,6 +12,7 @@ import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.widget.Toast;
 

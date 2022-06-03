@@ -131,7 +131,7 @@ struct NextCharUTF8 {
 };
 
 struct NextCharUTF16 {
-  base_icu::UChar32 operator()(const char16** p, const char16* end) {
+  base_icu::UChar32 operator()(const char16_t** p, const char16_t* end) {
     base_icu::UChar32 c;
     int offset = 0;
     CBU16_NEXT(*p, offset, end - *p, c);

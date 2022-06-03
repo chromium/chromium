@@ -5,23 +5,27 @@
 #include "ash/rotator/screen_rotation_animator.h"
 
 #include <memory>
+#include <utility>
 
-#include "ash/public/cpp/ash_switches.h"
+#include "ash/public/cpp/metrics_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/rotator/screen_rotation_animation.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
 #include "ash/shell.h"
+#include "ash/utility/layer_util.h"
 #include "ash/utility/transformer_util.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
-#include "third_party/khronos/GLES2/gl2.h"
 #include "ui/aura/window.h"
 #include "ui/base/class_property.h"
+#include "ui/compositor/animation_throughput_reporter.h"
 #include "ui/compositor/callback_layer_animation_observer.h"
+#include "ui/compositor/compositor.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animation_sequence.h"
@@ -37,8 +41,8 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/wm/core/window_util.h"
 
 DEFINE_UI_CLASS_PROPERTY_TYPE(ash::ScreenRotationAnimator*)
@@ -56,6 +60,9 @@ const int kRotationDurationInMs = 250;
 // The rotation factors.
 const int kCounterClockWiseRotationFactor = 1;
 const int kClockWiseRotationFactor = -1;
+
+constexpr char kRotationAnimationSmoothness[] =
+    "Ash.Rotation.AnimationSmoothness";
 
 // A property key to store the ScreenRotationAnimator of the window; Used for
 // screen rotation.
@@ -79,7 +86,7 @@ int GetRotationFactor(display::Display::Rotation initial_rotation,
 }
 
 aura::Window* GetScreenRotationContainer(aura::Window* root_window) {
-  return root_window->GetChildById(kShellWindowId_ScreenRotationContainer);
+  return root_window->GetChildById(kShellWindowId_ScreenAnimationContainer);
 }
 
 // Returns true if the rotation between |initial_rotation| and |new_rotation| is
@@ -154,20 +161,6 @@ std::unique_ptr<ui::LayerTreeOwner> CreateMaskLayerTreeOwner(
   return std::make_unique<ui::LayerTreeOwner>(std::move(mask_layer));
 }
 
-class ScreenRotationAnimationMetricsReporter
-    : public ui::AnimationMetricsReporter {
- public:
-  ScreenRotationAnimationMetricsReporter() = default;
-  ~ScreenRotationAnimationMetricsReporter() override = default;
-
-  void Report(int value) override {
-    UMA_HISTOGRAM_PERCENTAGE("Ash.Rotation.AnimationSmoothness", value);
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScreenRotationAnimationMetricsReporter);
-};
-
 }  // namespace
 
 // static
@@ -185,27 +178,19 @@ ScreenRotationAnimator* ScreenRotationAnimator::GetForRootWindow(
 void ScreenRotationAnimator::SetScreenRotationAnimatorForTest(
     aura::Window* root_window,
     std::unique_ptr<ScreenRotationAnimator> animator) {
-  root_window->SetProperty(kScreenRotationAnimatorKey, animator.release());
+  root_window->SetProperty(kScreenRotationAnimatorKey, std::move(animator));
 }
 
 ScreenRotationAnimator::ScreenRotationAnimator(aura::Window* root_window)
     : root_window_(root_window),
       screen_rotation_state_(IDLE),
       rotation_request_id_(0),
-      metrics_reporter_(
-          std::make_unique<ScreenRotationAnimationMetricsReporter>()),
       disable_animation_timers_for_test_(false) {}
 
 ScreenRotationAnimator::~ScreenRotationAnimator() {
   // To prevent a call to |AnimationEndedCallback()| from calling a method on
   // the |animator_|.
   weak_factory_.InvalidateWeakPtrs();
-
-  // Explicitly reset the |old_layer_tree_owner_| and |metrics_reporter_| in
-  // order to make sure |metrics_reporter_| outlives the attached animation
-  // sequence.
-  old_layer_tree_owner_.reset();
-  metrics_reporter_.reset();
 }
 
 void ScreenRotationAnimator::StartRotationAnimation(
@@ -227,7 +212,8 @@ void ScreenRotationAnimator::StartRotationAnimation(
     current_async_rotation_request_ = ScreenRotationRequest(*rotation_request);
     RequestCopyScreenRotationContainerLayer(
         std::make_unique<viz::CopyOutputRequest>(
-            viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+            viz::CopyOutputRequest::ResultFormat::RGBA,
+            viz::CopyOutputRequest::ResultDestination::kNativeTextures,
             CreateAfterCopyCallbackBeforeRotation(
                 std::move(rotation_request))));
     screen_rotation_state_ = COPY_REQUESTED;
@@ -271,6 +257,8 @@ void ScreenRotationAnimator::RequestCopyScreenRotationContainerLayer(
       GetScreenRotationContainer(root_window_)->layer();
   copy_output_request->set_area(
       gfx::Rect(screen_rotation_container_layer->size()));
+  copy_output_request->set_result_task_runner(
+      base::SequencedTaskRunnerHandle::Get());
   screen_rotation_container_layer->RequestCopyOfOutput(
       std::move(copy_output_request));
 }
@@ -281,7 +269,7 @@ ScreenRotationAnimator::CreateAfterCopyCallbackBeforeRotation(
   return base::BindOnce(&ScreenRotationAnimator::
                             OnScreenRotationContainerLayerCopiedBeforeRotation,
                         weak_factory_.GetWeakPtr(),
-                        base::Passed(&rotation_request));
+                        std::move(rotation_request));
 }
 
 ScreenRotationAnimator::CopyCallback
@@ -290,7 +278,7 @@ ScreenRotationAnimator::CreateAfterCopyCallbackAfterRotation(
   return base::BindOnce(&ScreenRotationAnimator::
                             OnScreenRotationContainerLayerCopiedAfterRotation,
                         weak_factory_.GetWeakPtr(),
-                        base::Passed(&rotation_request));
+                        std::move(rotation_request));
 }
 
 void ScreenRotationAnimator::OnScreenRotationContainerLayerCopiedBeforeRotation(
@@ -334,7 +322,8 @@ void ScreenRotationAnimator::OnScreenRotationContainerLayerCopiedBeforeRotation(
 
   RequestCopyScreenRotationContainerLayer(
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_TEXTURE,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kNativeTextures,
           CreateAfterCopyCallbackAfterRotation(std::move(rotation_request))));
 }
 
@@ -373,20 +362,16 @@ void ScreenRotationAnimator::CreateOldLayerTreeForSlowAnimation() {
 
 std::unique_ptr<ui::LayerTreeOwner> ScreenRotationAnimator::CopyLayerTree(
     std::unique_ptr<viz::CopyOutputResult> result) {
-  DCHECK(!result->IsEmpty());
-  DCHECK_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_TEXTURE);
-  auto transfer_resource = viz::TransferableResource::MakeGL(
-      result->GetTextureResult()->mailbox, GL_LINEAR, GL_TEXTURE_2D,
-      result->GetTextureResult()->sync_token, result->size(),
-      false /* is_overlay_candidate */);
-  std::unique_ptr<viz::SingleReleaseCallback> release_callback =
-      result->TakeTextureOwnership();
-  const gfx::Rect rect(
-      GetScreenRotationContainer(root_window_)->layer()->size());
-  std::unique_ptr<ui::Layer> copy_layer = std::make_unique<ui::Layer>();
-  copy_layer->SetBounds(rect);
-  copy_layer->SetTransferableResource(transfer_resource,
-                                      std::move(release_callback), rect.size());
+  gfx::Size layer_size =
+      GetScreenRotationContainer(root_window_)->layer()->size();
+  std::unique_ptr<ui::Layer> copy_layer =
+      CreateLayerFromCopyOutputResult(std::move(result), layer_size);
+  DCHECK_EQ(copy_layer->size(),
+            GetScreenRotationContainer(root_window_)->layer()->size());
+
+  // TODO(crbug.com/1040279): This is a workaround and should be removed once
+  // the issue is fixed.
+  copy_layer->SetFillsBoundsOpaquely(false);
   return std::make_unique<ui::LayerTreeOwner>(std::move(copy_layer));
 }
 
@@ -397,8 +382,7 @@ void ScreenRotationAnimator::AnimateRotation(
                                                 rotation_request->new_rotation);
   const int old_layer_initial_rotation_degrees = GetInitialDegrees(
       rotation_request->old_rotation, rotation_request->new_rotation);
-  const base::TimeDelta duration =
-      base::TimeDelta::FromMilliseconds(kRotationDurationInMs);
+  const base::TimeDelta duration = base::Milliseconds(kRotationDurationInMs);
   const gfx::Tween::Type tween_type = gfx::Tween::FAST_OUT_LINEAR_IN;
   const gfx::Rect rotated_screen_bounds = root_window_->GetTargetBounds();
   const gfx::Point pivot = gfx::Point(rotated_screen_bounds.width() / 2,
@@ -466,8 +450,11 @@ void ScreenRotationAnimator::AnimateRotation(
       new_layer_animator->set_disable_timer_for_test(true);
     old_layer_animator->set_disable_timer_for_test(true);
   }
-  old_layer_animation_sequence->SetAnimationMetricsReporter(
-      metrics_reporter_.get());
+  ui::AnimationThroughputReporter reporter(
+      old_layer_animator,
+      metrics_util::ForSmoothness(base::BindRepeating([](int smoothness) {
+        UMA_HISTOGRAM_PERCENTAGE(kRotationAnimationSmoothness, smoothness);
+      })));
 
   // Add an observer so that the cloned/copied layers can be cleaned up with the
   // animation completes/aborts.

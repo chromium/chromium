@@ -5,13 +5,14 @@
 #ifndef COMPONENTS_OMNIBOX_BROWSER_VERBATIM_MATCH_H_
 #define COMPONENTS_OMNIBOX_BROWSER_VERBATIM_MATCH_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "url/gurl.h"
 
 struct AutocompleteMatch;
+class AutocompleteProvider;
 class AutocompleteProviderClient;
-class HistoryURLProvider;
 
 // Returns a verbatim match for input.text() with a relevance of
 // |verbatim_relevance|. If |verbatim_relevance| is negative then a default
@@ -21,11 +22,26 @@ class HistoryURLProvider;
 // implementation for details) than the default code path.
 // input.text() must not be empty.
 AutocompleteMatch VerbatimMatchForURL(
+    AutocompleteProvider* provider,
     AutocompleteProviderClient* client,
     const AutocompleteInput& input,
     const GURL& destination_url,
-    const base::string16& destination_description,
-    HistoryURLProvider* history_url_provider,
+    const std::u16string& destination_description,
     int verbatim_relevance);
+
+// Returns a match representing a navigation to |destination_url|, highlighted
+// appropriately against |input|.  |trim_default_scheme| controls whether the
+// match's |fill_into_edit| and |contents| should have the scheme (http or
+// https only) stripped off, and should not be set to true if the user's
+// original input contains the scheme. The default scheme is https if |input|
+// is upgraded to https, otherwise it's http.
+// NOTES: This does not set the relevance of the returned match, as different
+//        callers want different behavior. Callers must set this manually.
+//        This function should only be called on the UI thread.
+AutocompleteMatch VerbatimMatchForInput(AutocompleteProvider* provider,
+                                        AutocompleteProviderClient* client,
+                                        const AutocompleteInput& input,
+                                        const GURL& destination_url,
+                                        bool trim_http);
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_VERBATIM_MATCH_H_

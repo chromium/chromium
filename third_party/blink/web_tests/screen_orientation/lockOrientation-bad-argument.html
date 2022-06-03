@@ -15,47 +15,47 @@ window.screen.orientation.addEventListener('change', test.step_func(onOrientatio
 
 test.step(function() {
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock('invalid-orientation');
     });
 
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock(null);
     });
 
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock(undefined);
     });
 
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock(undefined);
     });
 
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock(123);
     });
 
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock(window);
     });
 
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock(['portrait-primary']);
     });
 
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock(['portrait-primary', 'landscape-primary']);
     });
 
     assert_equals(screen.orientation.type, 'portrait-primary');
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         screen.lock();
     });
 });

@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,24 +9,35 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/views/view.h"
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace ash {
 
 class LoginTooltipView : public LoginBaseBubbleView {
  public:
-  LoginTooltipView(const base::string16& message, views::View* anchor_view);
+  LoginTooltipView(const std::u16string& message, views::View* anchor_view);
+
+  LoginTooltipView(const LoginTooltipView&) = delete;
+  LoginTooltipView& operator=(const LoginTooltipView&) = delete;
+
   ~LoginTooltipView() override;
 
-  void SetText(const base::string16& message);
+  void set_text(const std::u16string& message) { label_->SetText(message); }
+
+  void UpdateIcon();
 
   // LoginBaseBubbleView:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
-  gfx::Point CalculatePosition() override;
+  void OnThemeChanged() override;
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
+ protected:
+  views::Label* label() { return label_; }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(LoginTooltipView);
+  views::Label* label_ = nullptr;
+  views::ImageView* info_icon_ = nullptr;
 };
 
 }  // namespace ash

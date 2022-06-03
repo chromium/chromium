@@ -68,9 +68,9 @@ class ValidationMessageClient : public GarbageCollectedMixin {
   // For CompositeAfterPaint.
   virtual void PaintOverlay(GraphicsContext&) {}
 
-  void Trace(blink::Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VALIDATION_MESSAGE_CLIENT_H_

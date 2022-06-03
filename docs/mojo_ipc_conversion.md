@@ -216,8 +216,7 @@ decide how to proceed:
           `RenderFrameHostImpl` and `RenderFrameImpl`.
         - If the message is sent from a renderer to the browser:
             - If an existing interface is bound by `RenderFrameHostImpl` and
-              acquired either via `RenderFrame::GetRemoteInterfaces` or
-              `RenderFrame::GetBrowserInterfaceBroker` and the interface seems
+              acquired via `RenderFrame::GetBrowserInterfaceBroker` and the interface seems
               to be a good fit for this message, add the equivalent Mojo message
               to that interface.
             - If no such interface exists, consider adding one and registering it
@@ -274,7 +273,7 @@ Occasionally it is useful to do partial IPC conversions, where you want to
 convert a message to a Mojo interface method but you don't want to necessarily
 convert every structure passed by the message. In this case, you can leverage
 Mojo's
-[type-mapping](https://chromium.googlesource.com/chromium/src/+/master/mojo/public/cpp/bindings/README.md#Type-Mapping)
+[type-mapping](https://chromium.googlesource.com/chromium/src/+/main/mojo/public/cpp/bindings/README.md#Type-Mapping)
 system to repurpose existing `IPC::ParamTraits`.
 
 *** aside

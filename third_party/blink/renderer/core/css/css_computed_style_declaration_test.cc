@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
+#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -13,7 +14,7 @@ namespace blink {
 class CSSComputedStyleDeclarationTest : public PageTestBase {};
 
 TEST_F(CSSComputedStyleDeclarationTest, CleanAncestorsNoRecalc) {
-  GetDocument().body()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().body()->setInnerHTML(R"HTML(
     <div id=dirty></div>
     <div>
       <div id=target style='color:green'></div>
@@ -34,7 +35,7 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanAncestorsNoRecalc) {
 }
 
 TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
-  GetDocument().body()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().body()->setInnerHTML(R"HTML(
     <div id=dirty></div>
     <div id=host></div>
   )HTML");
@@ -43,7 +44,7 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
 
   ShadowRoot& shadow_root =
       host->AttachShadowRootInternal(ShadowRootType::kOpen);
-  shadow_root.SetInnerHTMLFromString(R"HTML(
+  shadow_root.setInnerHTML(R"HTML(
     <div id=target style='color:green'></div>
   )HTML");
 
@@ -62,7 +63,7 @@ TEST_F(CSSComputedStyleDeclarationTest, CleanShadowAncestorsNoRecalc) {
 }
 
 TEST_F(CSSComputedStyleDeclarationTest, NeedsAdjacentStyleRecalc) {
-  GetDocument().body()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().body()->setInnerHTML(R"HTML(
     <style>
       #a + #b { color: green }
     </style>
@@ -115,6 +116,44 @@ TEST_F(CSSComputedStyleDeclarationTest,
       computed->GetPropertyCSSValue(CSSPropertyID::kVariable);
   EXPECT_FALSE(result);
   // Don't crash.
+}
+
+// https://crbug.com/1115877
+TEST_F(CSSComputedStyleDeclarationTest, SVGBlockSizeLayoutDependent) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <svg viewBox="0 0 400 400">
+      <rect width="400" height="400"></rect>
+    </svg>
+  )HTML");
+
+  Element* rect = GetDocument().QuerySelector("rect");
+  auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(rect);
+
+  EXPECT_EQ("400px", computed->GetPropertyValue(CSSPropertyID::kBlockSize));
+
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*rect));
+  EXPECT_FALSE(rect->NeedsStyleRecalc());
+  EXPECT_FALSE(rect->GetLayoutObject()->NeedsLayout());
+}
+
+// https://crbug.com/1115877
+TEST_F(CSSComputedStyleDeclarationTest, SVGInlineSizeLayoutDependent) {
+  GetDocument().body()->setInnerHTML(R"HTML(
+    <svg viewBox="0 0 400 400">
+      <rect width="400" height="400"></rect>
+    </svg>
+  )HTML");
+
+  Element* rect = GetDocument().QuerySelector("rect");
+  auto* computed = MakeGarbageCollected<CSSComputedStyleDeclaration>(rect);
+
+  EXPECT_EQ("400px", computed->GetPropertyValue(CSSPropertyID::kInlineSize));
+
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdate());
+  EXPECT_FALSE(GetDocument().NeedsLayoutTreeUpdateForNode(*rect));
+  EXPECT_FALSE(rect->NeedsStyleRecalc());
+  EXPECT_FALSE(rect->GetLayoutObject()->NeedsLayout());
 }
 
 }  // namespace blink

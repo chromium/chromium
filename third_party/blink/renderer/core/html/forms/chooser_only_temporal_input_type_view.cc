@@ -47,7 +47,7 @@ ChooserOnlyTemporalInputTypeView::~ChooserOnlyTemporalInputTypeView() {
   DCHECK(!date_time_chooser_);
 }
 
-void ChooserOnlyTemporalInputTypeView::Trace(Visitor* visitor) {
+void ChooserOnlyTemporalInputTypeView::Trace(Visitor* visitor) const {
   visitor->Trace(input_type_);
   visitor->Trace(date_time_chooser_);
   InputTypeView::Trace(visitor);
@@ -63,19 +63,27 @@ void ChooserOnlyTemporalInputTypeView::HandleDOMActivateEvent(Event& event) {
 
   if (date_time_chooser_)
     return;
-  if (!document.IsActive())
-    return;
-  DateTimeChooserParameters parameters;
-  if (!GetElement().SetupDateTimeChooserParameters(parameters))
+  // SetupDateTimeChooserParameters() in OpenPopupView() early-outs if we
+  // don't have a View, so do the same here just to avoid adding to the
+  // use counter.
+  if (!document.IsActive() || !document.View())
     return;
   UseCounter::Count(
       document,
       (event.UnderlyingEvent() && event.UnderlyingEvent()->isTrusted())
           ? WebFeature::kTemporalInputTypeChooserByTrustedClick
           : WebFeature::kTemporalInputTypeChooserByUntrustedClick);
-  date_time_chooser_ =
-      document.GetPage()->GetChromeClient().OpenDateTimeChooser(
-          document.GetFrame(), this, parameters);
+  OpenPopupView();
+}
+
+void ChooserOnlyTemporalInputTypeView::OpenPopupView() {
+  DateTimeChooserParameters parameters;
+  if (GetElement().SetupDateTimeChooserParameters(parameters)) {
+    Document& document = GetElement().GetDocument();
+    date_time_chooser_ =
+        document.GetPage()->GetChromeClient().OpenDateTimeChooser(
+            document.GetFrame(), this, parameters);
+  }
 }
 
 void ChooserOnlyTemporalInputTypeView::CreateShadowSubtree() {
@@ -126,11 +134,15 @@ Element& ChooserOnlyTemporalInputTypeView::OwnerElement() const {
 }
 
 void ChooserOnlyTemporalInputTypeView::DidChooseValue(const String& value) {
+  if (will_be_destroyed_)
+    return;
   GetElement().setValue(value,
                         TextFieldEventBehavior::kDispatchInputAndChangeEvent);
 }
 
 void ChooserOnlyTemporalInputTypeView::DidChooseValue(double value) {
+  if (will_be_destroyed_)
+    return;
   DCHECK(std::isfinite(value) || std::isnan(value));
   if (std::isnan(value)) {
     GetElement().setValue(g_empty_string,

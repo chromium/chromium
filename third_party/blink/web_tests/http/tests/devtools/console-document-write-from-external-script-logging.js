@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that ignored document.write() called from an external asynchronously loaded script is reported to console as a warning\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function loadExternalScript()
       {
@@ -18,8 +18,8 @@
   ConsoleTestRunner.addConsoleSniffer(step1);
   TestRunner.evaluateInPage('loadExternalScript()', function() {});
 
-  function step1() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step1() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

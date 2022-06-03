@@ -5,14 +5,15 @@
 #ifndef CHROME_BROWSER_UI_PROCESS_SINGLETON_DIALOG_LINUX_H_
 #define CHROME_BROWSER_UI_PROCESS_SINGLETON_DIALOG_LINUX_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 // Displays an error to the user when the ProcessSingleton cannot acquire the
 // lock.  This runs the message loop itself as the browser message loop has not
 // started by that point in the startup process.
 
 // Shows the dialog, and returns once the dialog has been closed.
-bool ShowProcessSingletonDialog(const base::string16& message,
-                                const base::string16& relaunch_text);
+bool ShowProcessSingletonDialog(const std::u16string& message,
+                                const std::u16string& relaunch_text);
 
 #endif  // CHROME_BROWSER_UI_PROCESS_SINGLETON_DIALOG_LINUX_H_

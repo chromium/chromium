@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/keyed_service/core/dependency_graph.h"
+
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_piece.h"
-#include "components/keyed_service/core/dependency_graph.h"
 #include "components/keyed_service/core/dependency_node.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/re2/src/re2/re2.h"
@@ -21,12 +21,13 @@ class DummyNode : public DependencyNode {
     dependency_graph_->AddNode(this);
   }
 
+  DummyNode(const DummyNode&) = delete;
+  DummyNode& operator=(const DummyNode&) = delete;
+
   ~DummyNode() { dependency_graph_->RemoveNode(this); }
 
  private:
   DependencyGraph* dependency_graph_;
-
-  DISALLOW_COPY_AND_ASSIGN(DummyNode);
 };
 
 // Tests that we can deal with a single component.
@@ -207,8 +208,8 @@ TEST_F(DependencyGraphTest, DumpAsGraphviz_Escaping) {
 
   for (const char* name : names) {
     SCOPED_TRACE(testing::Message("name=") << name);
-    std::string graph_str =
-        graph.DumpAsGraphviz("Test", base::Bind(&NodeNameProvider, name));
+    std::string graph_str = graph.DumpAsGraphviz(
+        "Test", base::BindRepeating(&NodeNameProvider, name));
     base::StringPiece dumped_name(LocateNodeNameInGraph(graph_str));
     EXPECT_TRUE(IsValidDotId(dumped_name)) << "dumped_name=" << dumped_name;
   }

@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div>
+  <a id="link" href="#">
+    <noscript><img alt="noscripty"></noscript>
+    <img alt="scripty">
+  </a>
+</div>
+
+<script>
+function axElementById(id) {
+    return accessibilityController.accessibleElementById(id);
+}
+
+test(function(t) {
+    let link = axElementById("link");
+    assert_equals(link.name, 'scripty');
+}, "Noscript should not contribute to name when scripting is on");
+</script>

@@ -1,0 +1,22 @@
+Name: OpenCV
+Short Name: opencv
+URL: https://opencv.org/releases/
+Version: 4.3.0
+Date: 2020/04/06
+License: BSD
+License File: src/LICENSE
+Security Critical: Yes
+CPEPrefix: cpe:/a:opencv:opencv:4.3.0
+
+Description:
+This package includes the Earth Mover's Distance (EMD) implementation from
+OpenCV, a standard metric for comparing histograms of visual data.
+
+Local Modifications:
+- Included only the source for EMD computation
+- Added a C++ API to avoid needing to include the entire OpenCV C++ API.
+
+Process for incorporating a new release:
+- Download the newest release from https://opencv.org/releases/
+- Copy modules/imgproc/src/emd.cpp and LICENSE from the release.
+- Apply emd_patch.patch

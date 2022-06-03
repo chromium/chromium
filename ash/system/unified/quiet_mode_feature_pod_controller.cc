@@ -10,6 +10,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/machine_learning/user_settings_event_logger.h"
 #include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "base/metrics/histogram_macros.h"
@@ -20,6 +21,16 @@
 using message_center::MessageCenter;
 
 namespace ash {
+namespace {
+
+void LogUserQuietModeEvent(const bool enabled) {
+  auto* logger = ml::UserSettingsEventLogger::Get();
+  if (logger) {
+    logger->LogQuietModeUkmEvent(enabled);
+  }
+}
+
+}  // namespace
 
 QuietModeFeaturePodController::QuietModeFeaturePodController(
     UnifiedSystemTrayController* tray_controller)
@@ -53,6 +64,7 @@ FeaturePodButton* QuietModeFeaturePodController::CreateButton() {
 void QuietModeFeaturePodController::OnIconPressed() {
   MessageCenter* message_center = MessageCenter::Get();
   bool is_quiet_mode = message_center->IsQuietMode();
+  LogUserQuietModeEvent(!is_quiet_mode);
   message_center->SetQuietMode(!is_quiet_mode);
 
   if (message_center->IsQuietMode()) {
@@ -97,6 +109,7 @@ void QuietModeFeaturePodController::OnNotifiersUpdated(
     if (!notifier.enabled)
       ++disabled_count;
   }
+  RecordDisabledNotifierCount(disabled_count);
 
   if (disabled_count > 0) {
     button_->SetSubLabel(l10n_util::GetPluralStringFUTF16(
@@ -113,11 +126,28 @@ void QuietModeFeaturePodController::OnNotifiersUpdated(
   }
 }
 
-base::string16 QuietModeFeaturePodController::GetQuietModeStateTooltip() {
+std::u16string QuietModeFeaturePodController::GetQuietModeStateTooltip() {
   return l10n_util::GetStringUTF16(
       MessageCenter::Get()->IsQuietMode()
           ? IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_ON_STATE
           : IDS_ASH_STATUS_TRAY_NOTIFICATIONS_DO_NOT_DISTURB_OFF_STATE);
+}
+
+void QuietModeFeaturePodController::RecordDisabledNotifierCount(
+    int disabled_count) {
+  if (!last_disabled_count_.has_value()) {
+    last_disabled_count_ = disabled_count;
+    UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.BlockedNotifiersOnOpen",
+                             disabled_count);
+    return;
+  }
+
+  if (*last_disabled_count_ == disabled_count)
+    return;
+
+  last_disabled_count_ = disabled_count;
+  UMA_HISTOGRAM_COUNTS_100("ChromeOS.SystemTray.BlockedNotifiersAfterUpdate",
+                           disabled_count);
 }
 
 }  // namespace ash

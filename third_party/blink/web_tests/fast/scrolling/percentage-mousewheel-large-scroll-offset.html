@@ -1,0 +1,57 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<style>
+#scroll-div {
+  width:400px; height:100px;
+  overflow: auto;
+  position:relative;
+}
+#range-div {
+  width:4194410px; height: 4194410px;
+  border:1px solid red;
+  position:absolute;
+  top: 10px;
+  left: 10px;
+}
+</style>
+<div id="scroll-div">
+  <div id="range-div"></div>
+</div>
+<script>
+  const scroller = document.querySelector("#scroll-div");
+  // Scroll div to some large offset that is > 0.5*4194410
+  const LARGE_SCROLL_OFFSET = 2097206;
+  scroller.scrollTop = LARGE_SCROLL_OFFSET;
+  scroller.scrollLeft = LARGE_SCROLL_OFFSET;
+  const SCROLL_PERCENTAGE = 0.1;
+  promise_test(async () => {
+    // Scroll the inner scroller by the SCROLL_PERCENTAGE.
+    const originalTopOffset = scroller.scrollTop;
+    const originalLeftOffset = scroller.scrollLeft;
+
+    const x = 50;
+    const y = 50;
+    await mouseMoveTo(x, y);
+
+    // Use negative scroll percentages because we want to scroll up and left
+    await percentScroll(-SCROLL_PERCENTAGE, -SCROLL_PERCENTAGE,
+                        x, y, GestureSourceType.MOUSE_INPUT);
+
+    function isCorrectOffset() {
+      return scroller.scrollTop <=
+          Math.round(originalTopOffset - scroller.clientHeight * SCROLL_PERCENTAGE);
+    }
+    await waitForScrollEnd(
+              scroller, isCorrectOffset, true,
+              "Scrolling by 10% must scroll the correct amount.");
+
+    assert_less_than(scroller.scrollTop, originalTopOffset,
+        "Must be able to scroll vertically by percentage even when at large " +
+        "offset");
+    assert_less_than(scroller.scrollLeft, originalLeftOffset,
+        "Must be able to scroll horizontally by percentage even when at " +
+        "large offset");
+  }, "Can scroll by percentage at large offset");
+</script>

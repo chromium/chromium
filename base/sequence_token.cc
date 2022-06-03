@@ -5,7 +5,7 @@
 #include "base/sequence_token.h"
 
 #include "base/atomic_sequence_num.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_local.h"
 

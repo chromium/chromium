@@ -11,28 +11,29 @@
 #include "base/command_line.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
-#include "base/task/post_task.h"
-#include "content/browser/frame_host/render_frame_host_delegate.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
-#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_delegate.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_delegate.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "media/base/media_switches.h"
+#include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 
 namespace content {
 
 namespace {
 
-std::string GetDefaultMediaDeviceIDOnUIThread(
-    blink::MediaDeviceType device_type,
-    int render_process_id,
-    int render_frame_id) {
+std::string GetDefaultMediaDeviceIDOnUIThread(MediaDeviceType device_type,
+                                              int render_process_id,
+                                              int render_frame_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHostImpl* frame_host =
       RenderFrameHostImpl::FromID(render_process_id, render_frame_id);
@@ -45,10 +46,10 @@ std::string GetDefaultMediaDeviceIDOnUIThread(
 
   blink::mojom::MediaStreamType media_stream_type;
   switch (device_type) {
-    case blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT:
+    case MediaDeviceType::MEDIA_AUDIO_INPUT:
       media_stream_type = blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE;
       break;
-    case blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT:
+    case MediaDeviceType::MEDIA_VIDEO_INPUT:
       media_stream_type = blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE;
       break;
     default:
@@ -61,7 +62,7 @@ std::string GetDefaultMediaDeviceIDOnUIThread(
 // This function is intended for testing purposes. It returns an empty string
 // if no default device is supplied via the command line.
 std::string GetDefaultMediaDeviceIDFromCommandLine(
-    blink::MediaDeviceType device_type) {
+    MediaDeviceType device_type) {
   DCHECK(base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kUseFakeDeviceForMediaStream));
   const std::string option =
@@ -74,21 +75,21 @@ std::string GetDefaultMediaDeviceIDFromCommandLine(
   option_tokenizer.set_quote_chars("\"");
 
   while (option_tokenizer.GetNext()) {
-    std::vector<std::string> param =
-        base::SplitString(option_tokenizer.token(), "=", base::TRIM_WHITESPACE,
-                          base::SPLIT_WANT_NONEMPTY);
+    std::vector<base::StringPiece> param = base::SplitStringPiece(
+        option_tokenizer.token_piece(), "=", base::TRIM_WHITESPACE,
+        base::SPLIT_WANT_NONEMPTY);
     if (param.size() != 2u) {
       DLOG(WARNING) << "Forgot a value '" << option << "'? Use name=value for "
                     << switches::kUseFakeDeviceForMediaStream << ".";
       return std::string();
     }
 
-    if (device_type == blink::MEDIA_DEVICE_TYPE_AUDIO_INPUT &&
+    if (device_type == MediaDeviceType::MEDIA_AUDIO_INPUT &&
         param.front() == "audio-input-default-id") {
-      return param.back();
-    } else if (device_type == blink::MEDIA_DEVICE_TYPE_VIDEO_INPUT &&
+      return std::string(param.back());
+    } else if (device_type == MediaDeviceType::MEDIA_VIDEO_INPUT &&
                param.front() == "video-input-default-id") {
-      return param.back();
+      return std::string(param.back());
     }
   }
 
@@ -101,13 +102,20 @@ MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin() = default;
 
 MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(std::string device_id_salt,
                                                    std::string group_id_salt,
-                                                   url::Origin origin)
+                                                   url::Origin origin,
+                                                   bool has_focus,
+                                                   bool is_background)
     : device_id_salt(std::move(device_id_salt)),
       group_id_salt(std::move(group_id_salt)),
-      origin(std::move(origin)) {}
+      origin(std::move(origin)),
+      has_focus(has_focus),
+      is_background(is_background) {}
+
+MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin(
+    const MediaDeviceSaltAndOrigin& other) = default;
 
 void GetDefaultMediaDeviceID(
-    blink::MediaDeviceType device_type,
+    MediaDeviceType device_type,
     int render_process_id,
     int render_frame_id,
     base::OnceCallback<void(const std::string&)> callback) {
@@ -121,8 +129,8 @@ void GetDefaultMediaDeviceID(
     }
   }
 
-  base::PostTaskAndReplyWithResult(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&GetDefaultMediaDeviceIDOnUIThread, device_type,
                      render_process_id, render_frame_id),
       std::move(callback));
@@ -138,9 +146,11 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
 
   url::Origin origin;
   GURL url;
-  GURL site_for_cookies;
+  net::SiteForCookies site_for_cookies;
   url::Origin top_level_origin;
   std::string frame_salt;
+  bool has_focus = true;
+  bool is_background = false;
 
   if (frame_host) {
     origin = frame_host->GetLastCommittedOrigin();
@@ -151,6 +161,12 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
                            ->GetMainFrame()
                            ->GetLastCommittedOrigin();
     frame_salt = frame_host->GetMediaDeviceIDSaltBase();
+    has_focus = frame_host->GetView()->HasFocus();
+
+    auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
+    is_background =
+        web_contents && web_contents->GetDelegate() &&
+        web_contents->GetDelegate()->IsNeverComposited(web_contents);
   }
 
   bool are_persistent_ids_allowed = false;
@@ -176,7 +192,7 @@ MediaDeviceSaltAndOrigin GetMediaDeviceSaltAndOrigin(int render_process_id,
   group_id_salt += frame_salt + "groupid";
 
   return {std::move(device_id_salt), std::move(group_id_salt),
-          std::move(origin)};
+          std::move(origin), has_focus, is_background};
 }
 
 blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
@@ -184,16 +200,22 @@ blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfo& device_info) {
   return blink::WebMediaDeviceInfo(
-      GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
-                              salt_and_origin.origin, device_info.device_id),
+      !base::FeatureList::IsEnabled(features::kEnumerateDevicesHideDeviceIDs) ||
+              has_permission
+          ? GetHMACForMediaDeviceID(salt_and_origin.device_id_salt,
+                                    salt_and_origin.origin,
+                                    device_info.device_id)
+          : std::string(),
       has_permission ? device_info.label : std::string(),
       device_info.group_id.empty()
           ? std::string()
           : GetHMACForMediaDeviceID(salt_and_origin.group_id_salt,
                                     salt_and_origin.origin,
                                     device_info.group_id),
+      has_permission ? device_info.video_control_support
+                     : media::VideoCaptureControlSupport(),
       has_permission ? device_info.video_facing
-                     : media::MEDIA_VIDEO_FACING_NONE);
+                     : blink::mojom::FacingMode::NONE);
 }
 
 blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(

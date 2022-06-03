@@ -6,11 +6,15 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_EULA_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "chrome/browser/ash/login/help_app_launcher.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "components/login/secure_module_util_chromeos.h"
-#include "content/public/browser/web_ui.h"
+
+namespace ash {
+class EulaScreen;
+}
 
 namespace base {
 class DictionaryValue;
@@ -18,24 +22,22 @@ class DictionaryValue;
 
 namespace chromeos {
 
-class CoreOobeView;
-class EulaScreen;
-class HelpAppLauncher;
-
 // Interface between eula screen and its representation, either WebUI
 // or Views one. Note, do not forget to call OnViewDestroyed in the
 // dtor.
 class EulaView {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"eula"};
+  constexpr static StaticOobeScreenId kScreenId{"oobe-eula-md"};
 
   virtual ~EulaView() {}
 
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  virtual void Bind(EulaScreen* screen) = 0;
+  virtual void Bind(ash::EulaScreen* screen) = 0;
   virtual void Unbind() = 0;
-  virtual void OnPasswordFetched(const std::string& tpm_password) = 0;
+  virtual void ShowStatsUsageLearnMore() = 0;
+  virtual void ShowAdditionalTosDialog() = 0;
+  virtual void ShowSecuritySettingsDialog() = 0;
 };
 
 // WebUI implementation of EulaScreenView. It is used to interact
@@ -44,54 +46,53 @@ class EulaScreenHandler : public EulaView, public BaseScreenHandler {
  public:
   using TView = EulaView;
 
-  EulaScreenHandler(JSCallsContainer* js_calls_container,
-                    CoreOobeView* core_oobe_view);
+  explicit EulaScreenHandler(JSCallsContainer* js_calls_container);
+
+  EulaScreenHandler(const EulaScreenHandler&) = delete;
+  EulaScreenHandler& operator=(const EulaScreenHandler&) = delete;
+
   ~EulaScreenHandler() override;
 
   // EulaView implementation:
   void Show() override;
   void Hide() override;
-  void Bind(EulaScreen* screen) override;
+  void Bind(ash::EulaScreen* screen) override;
   void Unbind() override;
-  void OnPasswordFetched(const std::string& tpm_password) override;
+  void ShowStatsUsageLearnMore() override;
+  void ShowAdditionalTosDialog() override;
+  void ShowSecuritySettingsDialog() override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
-  void DeclareJSCallbacks() override;
   void GetAdditionalParameters(base::DictionaryValue* dict) override;
   void Initialize() override;
 
-  static void set_eula_url_for_testing(const char* eula_test_url) {
-    eula_url_for_testing_ = eula_test_url;
-  }
-
  private:
-  // JS messages handlers.
-  void HandleOnLearnMore();
-  void HandleOnInstallationSettingsPopupOpened();
-  void HandleUsageStatsEnabled(bool enabled);
-
   // Determines the online URL to use.
   std::string GetEulaOnlineUrl();
-  static const char* eula_url_for_testing_;
+  std::string GetAdditionalToSUrl();
 
-  void UpdateLocalizedValues(::login::SecureModuleUsed secure_module_used);
+  void UpdateTpmDesc(::login::SecureModuleUsed secure_module_used);
 
-  EulaScreen* screen_ = nullptr;
-  CoreOobeView* core_oobe_view_ = nullptr;
-
-  // Help application used for help dialogs.
-  scoped_refptr<HelpAppLauncher> help_app_;
+  ash::EulaScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
 
-  base::WeakPtrFactory<EulaScreenHandler> weak_factory_{this};
+  // Help application used for help dialogs.
+  scoped_refptr<HelpAppLauncher> help_app_;
 
-  DISALLOW_COPY_AND_ASSIGN(EulaScreenHandler);
+  base::WeakPtrFactory<EulaScreenHandler> weak_factory_{this};
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::EulaScreenHandler;
+using ::chromeos::EulaView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_EULA_SCREEN_HANDLER_H_

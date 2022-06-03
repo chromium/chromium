@@ -11,11 +11,17 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "components/metrics/metrics_service_client.h"
 #include "components/prefs/pref_registry_simple.h"
-#include "components/ukm/unsent_log_store_metrics_impl.h"
 #include "components/ukm/ukm_pref_names.h"
 #include "components/ukm/ukm_service.h"
+#include "components/ukm/unsent_log_store_metrics_impl.h"
+#include "third_party/zlib/google/compression_utils.h"
+
+#if defined(OS_IOS)
+#include "components/ukm/ios/ukm_reporting_ios_util.h"
+#endif
 
 namespace ukm {
 
@@ -62,12 +68,13 @@ UkmReportingService::UkmReportingService(metrics::MetricsServiceClient* client,
                                          PrefService* local_state)
     : ReportingService(client, local_state, kMaxLogRetransmitSize),
       unsent_log_store_(std::make_unique<ukm::UnsentLogStoreMetricsImpl>(),
-                      local_state,
-                      prefs::kUkmUnsentLogStore,
-                      kMinUnsentLogCount,
-                      kMinUnsentLogBytes,
-                      kMaxLogRetransmitSize,
-                      client->GetUploadSigningKey()) {}
+                        local_state,
+                        prefs::kUkmUnsentLogStore,
+                        nullptr,
+                        kMinUnsentLogCount,
+                        kMinUnsentLogBytes,
+                        kMaxLogRetransmitSize,
+                        client->GetUploadSigningKey()) {}
 
 UkmReportingService::~UkmReportingService() {}
 
@@ -105,8 +112,41 @@ void UkmReportingService::LogResponseOrErrorCode(int response_code,
                            response_code >= 0 ? response_code : error_code);
 }
 
-void UkmReportingService::LogSuccess(size_t log_size) {
+void UkmReportingService::LogSuccessLogSize(size_t log_size) {
+#if defined(OS_IOS)
+  IncrementUkmLogSizeOnSuccessCounter();
+#endif
   UMA_HISTOGRAM_COUNTS_10000("UKM.LogSize.OnSuccess", log_size / 1024);
+}
+
+void UkmReportingService::LogSuccessMetadata(const std::string& staged_log) {
+  // Recover the report from the compressed staged log.
+  std::string uncompressed_log_data;
+  bool uncompress_successful =
+      compression::GzipUncompress(staged_log, &uncompressed_log_data);
+  DCHECK(uncompress_successful);
+  Report report;
+  report.ParseFromString(uncompressed_log_data);
+
+  // Log the relative size of the report with relevant UKM data omitted. This
+  // helps us to estimate the bandwidth usage of logs upload that is not
+  // directly attributed to UKM data, for example the system profile info.
+  // Note that serialized logs are further compressed before upload, thus the
+  // percentages here are not the exact percentage of bandwidth they ended up
+  // taking.
+  std::string log_without_ukm_data;
+  report.clear_sources();
+  report.clear_source_counts();
+  report.clear_entries();
+  report.clear_aggregates();
+  report.SerializeToString(&log_without_ukm_data);
+
+  int non_ukm_percentage =
+      log_without_ukm_data.length() * 100 / uncompressed_log_data.length();
+  DCHECK_GE(non_ukm_percentage, 0);
+  DCHECK_LE(non_ukm_percentage, 100);
+  base::UmaHistogramPercentage("UKM.ReportSize.NonUkmPercentage",
+                               non_ukm_percentage);
 }
 
 void UkmReportingService::LogLargeRejection(size_t log_size) {}

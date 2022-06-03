@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_PUBLIC_BROWSER_PROVISION_FETCHER_FACTORY_H
-#define CONTENT_PUBLIC_BROWSER_PROVISION_FETCHER_FACTORY_H
+#ifndef CONTENT_PUBLIC_BROWSER_PROVISION_FETCHER_FACTORY_H_
+#define CONTENT_PUBLIC_BROWSER_PROVISION_FETCHER_FACTORY_H_
 
 #include <memory>
 
@@ -27,4 +27,4 @@ std::unique_ptr<media::ProvisionFetcher> CreateProvisionFetcher(
 
 }  // namespace content
 
-#endif  // CONTENT_PUBLIC_BROWSER_PROVISION_FETCHER_FACTORY_H
+#endif  // CONTENT_PUBLIC_BROWSER_PROVISION_FETCHER_FACTORY_H_

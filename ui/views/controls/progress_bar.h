@@ -5,9 +5,10 @@
 #ifndef UI_VIEWS_CONTROLS_PROGRESS_BAR_H_
 #define UI_VIEWS_CONTROLS_PROGRESS_BAR_H_
 
+#include <memory>
+
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/views/view.h"
 
@@ -26,11 +27,17 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   // layout managers that size to preferred size.
   explicit ProgressBar(int preferred_height = 5,
                        bool allow_round_corner = true);
+
+  ProgressBar(const ProgressBar&) = delete;
+  ProgressBar& operator=(const ProgressBar&) = delete;
+
   ~ProgressBar() override;
 
-  // Overridden from View:
+  // View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   gfx::Size CalculatePreferredSize() const override;
+  void VisibilityChanged(View* starting_from, bool is_visible) override;
+  void AddedToWidget() override;
   void OnPaint(gfx::Canvas* canvas) override;
 
   double GetValue() const;
@@ -57,6 +64,9 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
   bool IsIndeterminate();
   void OnPaintIndeterminate(gfx::Canvas* canvas);
 
+  // Fire an accessibility event if visible and the progress has changed.
+  void MaybeNotifyAccessibilityValueChanged();
+
   // Current progress to display, should be in the range 0.0 to 1.0.
   double current_value_ = 0.0;
 
@@ -65,12 +75,12 @@ class VIEWS_EXPORT ProgressBar : public View, public gfx::AnimationDelegate {
 
   const bool allow_round_corner_;
 
-  base::Optional<SkColor> foreground_color_;
-  base::Optional<SkColor> background_color_;
+  absl::optional<SkColor> foreground_color_;
+  absl::optional<SkColor> background_color_;
 
   std::unique_ptr<gfx::LinearAnimation> indeterminate_bar_animation_;
 
-  DISALLOW_COPY_AND_ASSIGN(ProgressBar);
+  int last_announced_percentage_ = -1;
 };
 
 }  // namespace views

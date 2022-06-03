@@ -36,6 +36,7 @@ class GURL;
                                        URL:(const GURL&)URL
                           injectionHandler:
                               (ManualFillInjectionHandler*)injectionHandler
+                    invokedOnPasswordField:(BOOL)invokedOnPasswordField
     NS_DESIGNATED_INITIALIZER;
 
 // Unavailable, use

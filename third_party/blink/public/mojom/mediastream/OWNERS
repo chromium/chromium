@@ -1,8 +1,5 @@
+eladalon@chromium.org
 guidou@chromium.org
-hbos@chromium.org
 
 per-file *.mojom=set noparent
 per-file *.mojom=file://ipc/SECURITY_OWNERS
-
-# TEAM: webrtc-dev@chromium.org
-# COMPONENT: Blink>GetUserMedia

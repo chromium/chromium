@@ -4,10 +4,14 @@
 
 #include "components/viz/service/display/overlay_processor_surface_control.h"
 
+#include <memory>
+
+#include "cc/base/math_util.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/display/overlay_strategy_underlay.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/overlay_transform_utils.h"
-#include "ui/gl/android/android_surface_control_compat.h"
 
 namespace viz {
 namespace {
@@ -28,22 +32,20 @@ gfx::RectF ClipFromOrigin(gfx::RectF input) {
 
 }  // namespace
 
-OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl(
-    bool enable_overlay)
-    : OverlayProcessorUsingStrategy(), overlay_enabled_(enable_overlay) {
-  if (overlay_enabled_) {
-    strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(
-        this, OverlayStrategyUnderlay::OpaqueMode::AllowTransparentCandidates));
-  }
+OverlayProcessorSurfaceControl::OverlayProcessorSurfaceControl()
+    : OverlayProcessorUsingStrategy(),
+      use_real_color_space_(features::UseRealVideoColorSpaceForDisplay()) {
+  strategies_.push_back(std::make_unique<OverlayStrategyUnderlay>(
+      this, OverlayStrategyUnderlay::OpaqueMode::AllowTransparentCandidates));
 }
 
 OverlayProcessorSurfaceControl::~OverlayProcessorSurfaceControl() {}
 
 bool OverlayProcessorSurfaceControl::IsOverlaySupported() const {
-  return overlay_enabled_;
+  return true;
 }
 
-bool OverlayProcessorSurfaceControl::NeedsSurfaceOccludingDamageRect() const {
+bool OverlayProcessorSurfaceControl::NeedsSurfaceDamageRectList() const {
   return true;
 }
 
@@ -53,9 +55,16 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
   DCHECK(!candidates->empty());
 
   for (auto& candidate : *candidates) {
-    if (!gl::SurfaceControl::SupportsColorSpace(candidate.color_space)) {
-      candidate.overlay_handled = false;
-      return;
+    // If we're going to use real color space from media codec, we should check
+    // if it's supported.
+    if (use_real_color_space_) {
+      if (!gfx::SurfaceControl::SupportsColorSpace(candidate.color_space)) {
+        candidate.overlay_handled = false;
+        return;
+      }
+    } else {
+      candidate.color_space = gfx::ColorSpace::CreateSRGB();
+      candidate.hdr_metadata.reset();
     }
 
     // Check if screen rotation matches.
@@ -67,8 +76,8 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
 
     gfx::RectF orig_display_rect = candidate.display_rect;
     gfx::RectF display_rect = orig_display_rect;
-    if (candidate.is_clipped)
-      display_rect.Intersect(gfx::RectF(candidate.clip_rect));
+    if (candidate.clip_rect)
+      display_rect.Intersect(gfx::RectF(*candidate.clip_rect));
     // The framework doesn't support display rects positioned at a negative
     // offset.
     display_rect = ClipFromOrigin(display_rect);
@@ -85,6 +94,9 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
     display_inverse.TransformRect(&orig_display_rect);
     display_inverse.TransformRect(&display_rect);
 
+    candidate.unclipped_display_rect = orig_display_rect;
+    candidate.unclipped_uv_rect = candidate.uv_rect;
+
     candidate.display_rect = gfx::RectF(gfx::ToEnclosingRect(display_rect));
     candidate.uv_rect = cc::MathUtil::ScaleRectProportional(
         candidate.uv_rect, orig_display_rect, candidate.display_rect);
@@ -93,13 +105,13 @@ void OverlayProcessorSurfaceControl::CheckOverlaySupport(
 }
 
 void OverlayProcessorSurfaceControl::AdjustOutputSurfaceOverlay(
-    base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
+    absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) {
   // For surface control, we should always have a valid |output_surface_plane|
   // here.
   DCHECK(output_surface_plane && output_surface_plane->has_value());
 
   OutputSurfaceOverlayPlane& plane = output_surface_plane->value();
-  DCHECK(gl::SurfaceControl::SupportsColorSpace(plane.color_space))
+  DCHECK(gfx::SurfaceControl::SupportsColorSpace(plane.color_space))
       << "The main overlay must only use color space supported by the "
          "device";
 

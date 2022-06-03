@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<body>
+<form action="?" name=f>
+ <textarea name=ta_WrapHard cols=5 style="-webkit-appearance:textarea" wrap=hard>123456789</textarea><br>
+ <textarea name=ta_WrapSoft cols=5 style="-webkit-appearance:textarea" wrap=soft>123456789</textarea><br>
+ <textarea name=ta_WrapOff cols=5 style="-webkit-appearance:textarea" wrap=off>123456789</textarea><br>
+ <textarea name=ta_WrapHardRTL cols=5 style="-webkit-appearance:textarea; direction:rtl" wrap=hard>&#1488;&#1489;&#1490;&#1488;&#1489;&#1490;&#1488;&#1489;&#1490;&#1488;&#1489;&#1490;</textarea><br>
+ <textarea name=ta_WrapHardBidi cols=5 style="-webkit-appearance:textarea; direction:ltr" wrap=hard>abc&#1488;&#1489;&#1490;&#1488;&#1489;&#1490;abc</textarea><br>
+ <textarea name=ta_WrapHardHidden cols=5 style="-webkit-appearance:textarea; visibility:hidden" wrap=hard>123456789</textarea><br>
+</form>
+
+<script>
+function assertLineWrap(description, formData, name, shouldHaveLineBreakInResult) {
+  // Textarea wrapping takes place with LF newlines, which are then normalized
+  // to CRLF when the form payload is encoded.
+  const LINE_WRAP = "\n";
+  const formDataValue = formData.get(name);
+  if (shouldHaveLineBreakInResult) {
+    assert_not_equals(formDataValue.indexOf(LINE_WRAP), -1,
+        `"${formDataValue}" should contain \\n`);
+  } else {
+    assert_equals(formDataValue.indexOf(LINE_WRAP), -1,
+        `"${formDataValue}" should not contain \\n`);
+  }
+}
+
+test(() => {
+  const formData = new FormData(document.f);
+
+  assertLineWrap("wrap=hard", formData, 'ta_WrapHard', true);
+  assertLineWrap("wrap=soft", formData, 'ta_WrapSoft', false);
+  assertLineWrap("wrap=off", formData, 'ta_WrapOff', false);
+  assertLineWrap("wrap=hard rtl text", formData, 'ta_WrapHardRTL', true);
+  assertLineWrap("wrap=hard mixed rtl and ltr text", formData,
+                 'ta_WrapHardBidi', true);
+  assertLineWrap("wrap=hard visibility:hidden", formData, 'ta_WrapHardHidden',
+                 true);
+}, 'This tests that textarea wrap attributes work correctly when submitting a form.');
+</script>
+</body>
+</html>

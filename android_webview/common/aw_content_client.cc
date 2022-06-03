@@ -4,6 +4,7 @@
 
 #include "android_webview/common/aw_content_client.h"
 
+#include "android_webview/common/aw_features.h"
 #include "android_webview/common/aw_media_drm_bridge_client.h"
 #include "android_webview/common/aw_resource.h"
 #include "android_webview/common/crash_reporter/crash_keys.h"
@@ -12,12 +13,12 @@
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/no_destructor.h"
+#include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
 #include "components/version_info/version_info.h"
 #include "content/public/common/content_switches.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
-#include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,14 +26,19 @@
 
 namespace android_webview {
 
+AwContentClient::AwContentClient() = default;
+AwContentClient::~AwContentClient() = default;
+
 void AwContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->local_schemes.push_back(url::kContentScheme);
   schemes->secure_schemes.push_back(
       android_webview::kAndroidWebViewVideoPosterScheme);
+  schemes->csp_bypassing_schemes.push_back(
+      android_webview::kAndroidWebViewVideoPosterScheme);
   schemes->allow_non_standard_schemes_in_origins = true;
 }
 
-base::string16 AwContentClient::GetLocalizedString(int message_id) {
+std::u16string AwContentClient::GetLocalizedString(int message_id) {
   // TODO(boliu): Used only by WebKit, so only bundle those resources for
   // Android WebView.
   return l10n_util::GetStringUTF16(message_id);
@@ -40,7 +46,7 @@ base::string16 AwContentClient::GetLocalizedString(int message_id) {
 
 base::StringPiece AwContentClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) {
+    ui::ResourceScaleFactor scale_factor) {
   // TODO(boliu): Used only by WebKit, so only bundle those resources for
   // Android WebView.
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
@@ -52,20 +58,7 @@ base::RefCountedMemory* AwContentClient::GetDataResourceBytes(int resource_id) {
       resource_id);
 }
 
-bool AwContentClient::CanSendWhileSwappedOut(const IPC::Message* message) {
-  // For legacy API support we perform a few browser -> renderer synchronous IPC
-  // messages that block the browser. However, the synchronous IPC replies might
-  // be dropped by the renderer during a swap out, deadlocking the browser.
-  // Because of this we should never drop any synchronous IPC replies.
-  return message->type() == IPC_REPLY_ID;
-}
-
 void AwContentClient::SetGpuInfo(const gpu::GPUInfo& gpu_info) {
-  gpu_fingerprint_ = gpu_info.gl_version + '|' + gpu_info.gl_vendor + '|' +
-                     gpu_info.gl_renderer;
-  std::replace_if(gpu_fingerprint_.begin(), gpu_fingerprint_.end(),
-                  [](char c) { return !::isprint(c); }, '_');
-
   gpu::SetKeysForCrashLogging(gpu_info);
 }
 
@@ -93,6 +86,21 @@ void AwContentClient::ExposeInterfacesToBrowser(
             profiling_client->BindToInterface(std::move(receiver));
           }),
       io_task_runner);
+}
+
+blink::OriginTrialPolicy* AwContentClient::GetOriginTrialPolicy() {
+  if (!base::FeatureList::IsEnabled(features::kWebViewOriginTrials)) {
+    return nullptr;
+  }
+
+  // Prevent initialization race (see crbug.com/721144). There may be a
+  // race when the policy is needed for worker startup (which happens on a
+  // separate worker thread).
+  base::AutoLock auto_lock(origin_trial_policy_lock_);
+  if (!origin_trial_policy_)
+    origin_trial_policy_ =
+        std::make_unique<embedder_support::OriginTrialPolicyImpl>();
+  return origin_trial_policy_.get();
 }
 
 }  // namespace android_webview

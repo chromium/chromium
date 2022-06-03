@@ -1,5 +1,7 @@
 <html>
 <head>
+<script src="../resources/js-test.js"></script>
+<script src="../resources/gesture-util.js"></script>
 <style>
   body {
     height: 2000px;
@@ -13,10 +15,11 @@
 </style>
 </head>
 
-<body>
+<body onload="runTest();">
 <embed id="plugin" type="application/x-webkit-test-webplugin" primitive="triangle" background-color="green" primitive-color="blue"></embed>
 <script>
-
+jsTestIsAsync = true;
+async function runTest() {
     if (!window.testRunner) {
         document.write("This test does not work in manual mode.");
     } else {
@@ -33,13 +36,11 @@
         // Send some gesture events to the plugin.
         var positionX = 30;
         var positionY = 110;
-        eventSender.gestureTap(positionX, positionY);
-        eventSender.gestureScrollBegin(positionX, positionY);
-        eventSender.gestureScrollUpdate(30, 0);
-        eventSender.gestureScrollUpdate(30, 0);
-        eventSender.gestureScrollEnd(0, 0);
+        await touchTapOn(positionX, positionY);
+        await smoothScrollWithXY(30, 0, positionX, positionY, GestureSourceType.TOUCH_INPUT, SPEED_INSTANT);
     }
-
+    finishJSTest();
+}
 </script>
 </body>
 </html>

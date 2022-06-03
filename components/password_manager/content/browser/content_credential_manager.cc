@@ -16,7 +16,7 @@ ContentCredentialManager::ContentCredentialManager(
     PasswordManagerClient* client)
     : impl_(client) {}
 
-ContentCredentialManager::~ContentCredentialManager() {}
+ContentCredentialManager::~ContentCredentialManager() = default;
 
 void ContentCredentialManager::BindRequest(
     mojo::PendingReceiver<blink::mojom::CredentialManager> receiver) {

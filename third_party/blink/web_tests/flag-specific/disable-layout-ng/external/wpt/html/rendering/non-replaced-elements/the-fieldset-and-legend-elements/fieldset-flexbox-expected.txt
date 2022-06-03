@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Flex assert_equals: height expected "20px" but got "180px"
+FAIL Inline flex assert_equals: height expected "20px" but got "180px"
+FAIL Dynamic change of flex-direction assert_equals: expected 48 but got 28
+Harness: the test ran to completion.
+

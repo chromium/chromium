@@ -14,13 +14,14 @@
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/scoped_observer.h"
+#include "base/notreached.h"
+#include "base/scoped_observation.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_factory.h"
@@ -31,7 +32,6 @@
 #include "extensions/common/extension.h"
 
 namespace extensions {
-class CastChannelAsyncApiFunction;
 
 namespace api {
 class BluetoothSocketApiFunction;
@@ -54,7 +54,7 @@ struct NamedThreadTraits {
   }
 
   static scoped_refptr<base::SequencedTaskRunner> GetSequencedTaskRunner() {
-    return base::CreateSingleThreadTaskRunner({T::kThreadId});
+    return content::BrowserThread::GetTaskRunnerForThread(T::kThreadId);
   }
 };
 
@@ -106,8 +106,8 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
  public:
   explicit ApiResourceManager(content::BrowserContext* context)
       : data_(base::MakeRefCounted<ApiResourceData>()) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(context));
-    process_manager_observer_.Add(ProcessManager::Get(context));
+    extension_registry_observation_.Observe(ExtensionRegistry::Get(context));
+    process_manager_observation_.Observe(ProcessManager::Get(context));
   }
 
   virtual ~ApiResourceManager() {
@@ -175,7 +175,6 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
   // TODO(rockot): ApiResourceData could be moved out of ApiResourceManager and
   // we could avoid maintaining a friends list here.
   friend class BluetoothAPI;
-  friend class CastChannelAsyncApiFunction;
   friend class api::BluetoothSocketApiFunction;
   friend class api::BluetoothSocketEventDispatcher;
   friend class api::SerialConnectFunction;
@@ -315,14 +314,14 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
                                        bool remove_all) {
       DCHECK(sequence_checker_.CalledOnValidSequence());
 
-      ExtensionToResourceMap::iterator it =
+      ExtensionToResourceMap::iterator extension_it =
           extension_resource_map_.find(extension_id);
-      if (it == extension_resource_map_.end())
+      if (extension_it == extension_resource_map_.end())
         return;
 
       // Remove all resources, or the non persistent ones only if |remove_all|
       // is false.
-      std::unordered_set<int>& resource_ids = it->second;
+      std::unordered_set<int>& resource_ids = extension_it->second;
       for (std::unordered_set<int>::iterator it = resource_ids.begin();
            it != resource_ids.end();) {
         bool erase = false;
@@ -375,10 +374,10 @@ class ApiResourceManager : public BrowserContextKeyedAPI,
   content::NotificationRegistrar registrar_;
   scoped_refptr<ApiResourceData> data_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-  ScopedObserver<ProcessManager, ProcessManagerObserver>
-      process_manager_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
+  base::ScopedObservation<ProcessManager, ProcessManagerObserver>
+      process_manager_observation_{this};
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

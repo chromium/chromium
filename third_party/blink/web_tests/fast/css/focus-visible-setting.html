@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>CSS Test (Selectors): "Always show focus" preference causes :focus-visible to always match</title>
+  <script src="../../resources/testharness.js"></script>
+  <script src="../../resources/testharnessreport.js"></script>
+  <style>
+    :focus-visible {
+      outline: darkgreen dotted 1px; /* fallback for Edge */
+      outline: darkgreen auto 5px;
+    }
+
+    :focus:not(:focus-visible) {
+      outline-color: darkred;
+      background-color: darkred;
+    }
+  </style>
+</head>
+<body>
+  <div id="el" tabindex="0">Focus me.</div>
+  <script>
+    function clickOn(element) {
+      return new Promise(function(resolve, reject) {
+        if (!window.eventSender)
+          return reject();
+
+        var rect = element.getBoundingClientRect();
+        var x = rect.left + (rect.width / 2);
+        var y = rect.top + (rect.height / 2);
+        var pointerActions = [{
+          source: "mouse",
+          actions: [
+              { name: "pointerMove", x: x, y: y },
+              { name: "pointerDown", x: x, y: y, button: 0 },
+              { name: "pointerUp", x: x, y: y, button: 0 },
+              { name: "pointerMove", x: 0, y: 0 }
+          ]
+        }];
+        chrome.gpuBenchmarking.pointerActionSequence(pointerActions, resolve);
+      });
+    }
+
+    async_test(function(t) {
+      el.addEventListener("focus", t.step_func(function() {
+        assert_equals(getComputedStyle(el).outlineColor, "rgb(139, 0, 0)");
+        internals.settings.setAccessibilityAlwaysShowFocus(true);
+        // changing the setting should trigger style recalc
+        assert_equals(getComputedStyle(el).outlineColor, "rgb(0, 100, 0)");
+      }), true);
+
+      // Click the div; without the setting, this would not trigger :focus-visible matching
+      clickOn(el)
+        .then(t.step_func(() => {
+          t.done();
+        })).catch(t.step_func((reason) => {
+          assert_true(false, reason);
+          t.done();
+        }));
+    }, ":focus-visible always matches if the 'always show focus' setting is enabled.");
+  </script>
+</body>
+</html>

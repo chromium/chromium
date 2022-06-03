@@ -7,9 +7,7 @@ if (is_nacl) {
   # dummy target in order for clients to not have to special-case the
   # dependency.
   source_set("dynamic_annotations") {
-    sources = [
-      "dynamic_annotations.h",
-    ]
+    sources = [ "dynamic_annotations.h" ]
   }
 } else {
   # Should be static library, see documentation on //base:base for discussion.
@@ -23,5 +21,7 @@ if (is_nacl) {
       configs -= [ "//build/config/compiler:default_optimization" ]
       configs += [ "//build/config/compiler:optimize_max" ]
     }
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
   }
 }

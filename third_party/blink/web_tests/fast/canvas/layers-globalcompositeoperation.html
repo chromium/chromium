@@ -1,0 +1,37 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>
+<script>
+// TODO(crbug.com/1231615): We were not able to test this with reference tests.
+test(function(t) {
+    var canvas, ctx;
+    canvas = document.createElement("canvas");
+    canvas.width = 200;
+    canvas.height = 200;
+    document.body.appendChild(canvas);
+
+    ctx = canvas.getContext("2d");
+    ctx.fillStyle = 'rgba(0,0,255,1)';
+    ctx.fillRect(60,60,75,50);
+    ctx.globalCompositeOperation = 'source-in';
+
+    ctx.beginLayer();
+
+    ctx.fillStyle = 'rgba(225,0,0,1)';
+    ctx.fillRect(50,50,75,50);
+    ctx.fillStyle = 'rgba(0,255,0,1)';
+    ctx.fillRect(70,70,75,50);
+
+    ctx.endLayer();
+
+    var out = ctx.getImageData(51,51,1,1);
+    var overlap = ctx.getImageData(71,71,1,1);
+
+    // because the mode is source-in, this pixel should be white
+    assert_approx_equals(out.data[2], 0, 2);
+    // since global composite operation gets reset, the overlap should be green
+    assert_approx_equals(overlap.data[1], 255, 2);
+
+}, "Test that ensure layers work for global composite operation.");
+</script>
+</body>

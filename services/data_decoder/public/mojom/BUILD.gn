@@ -2,26 +2,47 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   sources = [
     "data_decoder_service.mojom",
+    "gzipper.mojom",
     "image_decoder.mojom",
     "json_parser.mojom",
-    "web_bundle_parser.mojom",
+    "web_bundler.mojom",
     "xml_parser.mojom",
   ]
 
   public_deps = [
+    ":mojom_resource_snapshot_for_web_bundle",
+    "//components/web_package/mojom",
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "ble_scan_parser.mojom" ]
     public_deps += [ "//device/bluetooth/public/mojom" ]
+  }
+}
+
+mojom("mojom_resource_snapshot_for_web_bundle") {
+  generate_java = true
+  sources = [ "resource_snapshot_for_web_bundle.mojom" ]
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
   }
 }

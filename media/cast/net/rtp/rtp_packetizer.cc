@@ -7,7 +7,7 @@
 #include <string>
 
 #include "base/big_endian.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "media/cast/net/pacing/paced_sender.h"
 #include "media/cast/net/rtp/rtp_defines.h"
 

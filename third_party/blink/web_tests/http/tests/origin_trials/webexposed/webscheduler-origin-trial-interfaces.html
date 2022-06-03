@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py http://127.0.0.1:8000 WebScheduler --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="AgI/hQqppiQTeU0i+L9ErL3h/z99WZG86H+iZxKVwKx9W1nIt4SCPJU3mDTajezisQWHRaDMR2OgV4FvBFwx4AwAAABUeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiV2ViU2NoZWR1bGVyIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9" />
+<title>WebScheduler API - interfaces and properties exposed by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/origin-trials-helper.js"></script>
+<script>
+test(t => {
+  OriginTrialsHelper.check_properties_exist(this,
+      {'Scheduler': ['postTask'],
+       'TaskController': ['setPriority'],
+       'TaskSignal': ['priority']
+      });
+}, 'WebScheduler API interfaces and properties in Origin-Trial enabled document.');
+</script>

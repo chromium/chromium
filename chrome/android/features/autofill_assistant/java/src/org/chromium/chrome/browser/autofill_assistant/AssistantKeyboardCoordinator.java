@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
-import org.chromium.chrome.browser.ChromeActivity;
+import android.app.Activity;
+import android.widget.TextView;
+
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.ui.KeyboardVisibilityDelegate.KeyboardVisibilityListener;
 import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
 
@@ -12,15 +17,29 @@ import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
  * Coordinator responsible for enabling or disabling the soft keyboard.
  */
 class AssistantKeyboardCoordinator {
-    private final ChromeActivity mActivity;
+    private final Activity mActivity;
     private final ActivityKeyboardVisibilityDelegate mKeyboardDelegate;
+    private final CompositorViewHolder mCompositorViewHolder;
     private final KeyboardVisibilityListener mKeyboardVisibilityListener =
             this::onKeyboardVisibilityChanged;
     private boolean mAllowShowingSoftKeyboard = true;
+    private Delegate mDelegate;
+    private final BottomSheetController mBottomSheetController;
 
-    AssistantKeyboardCoordinator(ChromeActivity activity, AssistantModel model) {
+    interface Delegate {
+        void onKeyboardVisibilityChanged(boolean visible);
+    }
+
+    // TODO(b/173103628): refactor and inject the keyboard delegate directly.
+    AssistantKeyboardCoordinator(Activity activity,
+            ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+            CompositorViewHolder compositorViewHolder, AssistantModel model, Delegate delegate,
+            BottomSheetController controller) {
         mActivity = activity;
-        mKeyboardDelegate = activity.getWindowAndroid().getKeyboardDelegate();
+        mKeyboardDelegate = keyboardVisibilityDelegate;
+        mCompositorViewHolder = compositorViewHolder;
+        mDelegate = delegate;
+        mBottomSheetController = controller;
 
         model.addObserver((source, propertyKey) -> {
             if (AssistantModel.VISIBLE == propertyKey) {
@@ -37,27 +56,27 @@ class AssistantKeyboardCoordinator {
 
     /** Returns whether the keyboard is currently shown. */
     boolean isKeyboardShown() {
-        return mKeyboardDelegate.isKeyboardShowing(mActivity, mActivity.getCompositorViewHolder());
+        return mKeyboardDelegate.isKeyboardShowing(mActivity, mCompositorViewHolder);
+    }
+
+    /** Returns whether the BottomSheet is currently shown. */
+    private boolean isBottomSheetShown() {
+        return mBottomSheetController.getSheetState() != SheetState.HIDDEN;
     }
 
     /** Hides the keyboard. */
     void hideKeyboard() {
-        mKeyboardDelegate.hideKeyboard(mActivity.getCompositorViewHolder());
+        mKeyboardDelegate.hideKeyboard(mCompositorViewHolder);
     }
 
-    /**
-     * Enable or disable the soft keyboard.
-     */
-    private void allowShowingSoftKeyboard(boolean allowed) {
-        mAllowShowingSoftKeyboard = allowed;
-        if (!allowed) {
-            mKeyboardDelegate.hideKeyboard(mActivity.getCompositorViewHolder());
+    /** Hides the keyboard after a delay if the focus is not on a TextView */
+    void hideKeyboardIfFocusNotOnText() {
+        if (!(mActivity.getCurrentFocus() instanceof TextView)) {
+            hideKeyboard();
         }
     }
 
-    /**
-     * Start or stop listening for keyboard visibility changes.
-     */
+    /** Start or stop listening for keyboard visibility changes. */
     private void enableListenForKeyboardVisibility(boolean enabled) {
         if (enabled) {
             mKeyboardDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
@@ -66,10 +85,18 @@ class AssistantKeyboardCoordinator {
         }
     }
 
-    // TODO(crbug.com/806868): Current solution only hides the keyboard once it has been already
-    // shown. We should improve it and prevent from the showing in the first place.
+    /** Set soft keyboard allowed state. */
+    private void allowShowingSoftKeyboard(boolean allowed) {
+        mAllowShowingSoftKeyboard = allowed;
+        if (!allowed && isBottomSheetShown()) {
+            hideKeyboard();
+        }
+    }
+
+    /** If the keyboard shows up and is not allowed, hide it. */
     private void onKeyboardVisibilityChanged(boolean isShowing) {
-        if (isShowing && !mAllowShowingSoftKeyboard) {
+        mDelegate.onKeyboardVisibilityChanged(isShowing);
+        if (isShowing && !mAllowShowingSoftKeyboard && isBottomSheetShown()) {
             hideKeyboard();
         }
     }

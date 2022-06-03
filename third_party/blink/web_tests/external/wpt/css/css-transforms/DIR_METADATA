@@ -1,0 +1,8 @@
+monorail {
+  component: "Blink>Transforms"
+}
+team_email: "paint-dev@chromium.org"
+wpt {
+  notify: YES
+}
+

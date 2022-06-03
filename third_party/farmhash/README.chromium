@@ -1,0 +1,19 @@
+Name: FarmHash
+Short Name: farmhash
+URL: https://github.com/google/farmhash
+Version: 1.1
+Date: 2017/09/13
+Revision: 816a4ae622e964763ca0862d9dbd19324a1eaf45
+License: Custom
+License File: LICENSE
+Security Critical: Yes
+License Android Compatible: Yes
+
+Description:
+FarmHash, a family of hash functions.
+
+Local Modifications:
+- Included only the source files in `src/`:
+  - farmhash.h
+  - farmhash.cc
+- Extracted LICENSE file separately.

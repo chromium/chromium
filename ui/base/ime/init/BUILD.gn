@@ -2,10 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 
-jumbo_component("init") {
+component("init") {
   output_name = "ui_base_ime_init"
 
   sources = [
@@ -24,6 +24,7 @@ jumbo_component("init") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//ui/base",
   ]
 
@@ -33,7 +34,10 @@ jumbo_component("init") {
   if (is_mac) {
     deps += [ "//ui/base/ime/mac" ]
   }
-  if (is_linux && !is_chromeos) {
+  if (is_chromeos_ash) {
+    deps += [ "//ui/base/ime/ash" ]
+  }
+  if (is_linux || is_chromeos_lacros) {
     deps += [ "//ui/base/ime/linux" ]
   }
   if (use_ozone) {

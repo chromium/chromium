@@ -1,2 +1,2 @@
-CONSOLE ERROR: line 2: Error: <svg> attribute width: Expected length, "1re".
+CONSOLE ERROR: Error: <svg> attribute width: Expected length, "1re".
 This test passes if it doesn't crash in ASAN.

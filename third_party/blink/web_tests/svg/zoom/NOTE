@@ -1,5 +1,5 @@
 All tests contained here are duplicated, once in the page/ and once in the text/ subdirectories.
-The page/ tests all call eventSender.zoomPageIn(), the text/ tests all call eventSender.textZoomIn().
+The page/ tests all call testRunner.zoomPageIn(), the text/ tests all call testRunner.textZoomIn().
 
 The name of the tests, for instance "absolute-sized-document-scrollbars.svg" refers to the regular SVG zoom
 behaviour when full page zoom (!) is used. So the names of the tests in the text/ subdirectory do NOT

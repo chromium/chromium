@@ -24,6 +24,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ANCHOR_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_ANCHOR_ELEMENT_H_
 
+#include "third_party/blink/public/platform/web_impression.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -56,6 +57,7 @@ enum {
   //     RelationTag         = 0x00010000,
   //     RelationUp          = 0x00020000,
   kRelationNoOpener = 0x00040000,
+  kRelationOpener = 0x00080000
 };
 
 class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
@@ -68,14 +70,18 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
 
   KURL Href() const;
   void SetHref(const AtomicString&);
+  void setHref(const String&);
 
   const AtomicString& GetName() const;
+
+  // Returns the anchor's |target| attribute, unless it is empty, in which case
+  // the BaseTarget from the document is returned.
+  const AtomicString& GetEffectiveTarget() const;
 
   KURL Url() const final;
   void SetURL(const KURL&) final;
 
   String Input() const final;
-  void SetInput(const String&) final;
 
   bool IsLiveLink() const final;
 
@@ -90,9 +96,13 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   LinkHash VisitedLinkHash() const;
   void InvalidateCachedVisitedLinkHash() { cached_visited_link_hash_ = 0; }
 
+  // Returns whether this element is a valid impression declaration tag. This is
+  // determined by looking at the presence of required attributes.
+  bool HasImpression() const;
+
   void SendPings(const KURL& destination_url) const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   void ParseAttribute(const AttributeModificationParams&) override;
@@ -106,7 +116,6 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
   void DefaultEventHandler(Event&) final;
   bool HasActivationBehavior() const override;
   void SetActive(bool active) final;
-  void AccessKeyAction(bool send_mouse_events) final;
   bool IsURLAttribute(const Attribute&) const final;
   bool HasLegalLinkAttribute(const QualifiedName&) const final;
   bool CanStartSelection() const final;
@@ -132,7 +141,7 @@ inline LinkHash HTMLAnchorElement::VisitedLinkHash() const {
 // Functions shared with the other anchor elements (i.e., SVG).
 
 bool IsEnterKeyKeydownEvent(Event&);
-Event* GetClickEventOrNull(Event&);
+bool IsLinkClick(Event&);
 
 }  // namespace blink
 

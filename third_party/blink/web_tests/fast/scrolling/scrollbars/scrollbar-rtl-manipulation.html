@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<title>Tests mouse interactions for rtl scrollbars.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<style>
+  .rtl_container {
+    overflow: scroll;
+    border: 1px solid black;
+    width: 100px;
+    height: 100px;
+    direction: rtl;
+  }
+  .space {
+    width:1000px;
+    height:1000px;
+  }
+</style>
+
+<div class="rtl_container" id="standard">
+  <div class="space">Text</div>
+</div>
+
+<script>
+window.onload = () => {
+  const standardDiv = document.getElementById("standard");
+  const standardRect = standardDiv.getBoundingClientRect();
+  const onMacPlatform = navigator.userAgent.includes("Mac OS X");
+
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  assert_true(TRACK_WIDTH > 0);
+  const BUTTON_WIDTH = TRACK_WIDTH;
+  const SCROLL_CORNER = BUTTON_WIDTH;
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+
+    standardDiv.scrollTop = 0;
+    standardDiv.scrollLeft = 0;
+    assert_equals(standardDiv.clientHeight, standardDiv.clientWidth,
+    "This test assumes that the height and width of 'standardDiv' are equivalent." +
+    "If this changes please update SCROLL_AMOUNT to be X/Y specific");
+    const SCROLL_AMOUNT = getScrollbarButtonScrollDelta(standardDiv).y;
+
+    // Since Mac scrollbars don't have arrows, this will end up testing track scrolls.
+    const EXPECTED_DELTA = onMacPlatform ? 74 : SCROLL_AMOUNT;
+
+    // Testing vertical scroll.
+    let x = standardRect.left + TRACK_WIDTH / 2;
+    let y = standardRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+    await mouseClickOn(x, y);
+    await waitForAnimationEndTimeBased(() => {return standardDiv.scrollTop;});
+    // TODO(arakeri): Replace with assert_equals once crbug.com/1056083 is fixed.
+    assert_approx_equals(standardDiv.scrollTop, EXPECTED_DELTA, 1, "Vertical click scrolling failed.");
+
+    // Testing horizontal scroll.
+    x = standardRect.left + SCROLL_CORNER + BUTTON_WIDTH / 2;
+    y = standardRect.bottom - TRACK_WIDTH / 2;
+    await mouseClickOn(x, y);
+    await waitForAnimationEndTimeBased(() => {return standardDiv.scrollLeft;});
+    assert_approx_equals(standardDiv.scrollLeft, -EXPECTED_DELTA, 1, "Horizontal click scrolling failed.");
+  }, "Test click scrolling on rtl scrollbar.");
+
+  promise_test (async () => {
+    await waitForCompositorCommit();
+
+    standardDiv.scrollTop = 0;
+    standardDiv.scrollLeft = 0;
+
+    // Since this test runs with native scrollbars, they have different dimensions
+    // on different platforms, hence the expectations need to be platform specific.
+    const EXPECTED_DELTA = navigator.userAgent.includes("Linux") ? 549 :
+                           navigator.userAgent.includes("Windows") ? 361 :
+                           navigator.userAgent.includes("Mac OS X") ? 211 :
+                           (() => { throw "Platform unsupported."; })();
+    // Testing vertical scroll.
+    let x = standardRect.left + TRACK_WIDTH / 2;
+    let y = standardRect.top + (onMacPlatform ? 0 : BUTTON_WIDTH) + 2;
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+    await mouseMoveTo(x, y + 15, Buttons.LEFT);
+    await mouseUpAt(x, y + 15);
+    // TODO(arakeri): Replace with assert_equals once crbug.com/1009892 is fixed.
+    assert_approx_equals(standardDiv.scrollTop, EXPECTED_DELTA, 1, "Vertical thumb drag failed.");
+
+    // Testing horizontal scroll.
+    x = standardRect.right - (onMacPlatform ? 0 : BUTTON_WIDTH) - 2;
+    y = standardRect.bottom - TRACK_WIDTH / 2;
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+    await mouseMoveTo(x - 15, y, Buttons.LEFT);
+    await mouseUpAt(x - 15, y);
+    assert_approx_equals(standardDiv.scrollLeft, -EXPECTED_DELTA, 1, "Horizontal thumb drag failed.");
+  }, "Test thumb drag on rtl scrollbar.");
+}
+</script>

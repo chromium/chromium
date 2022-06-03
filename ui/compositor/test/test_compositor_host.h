@@ -13,17 +13,14 @@ namespace ui {
 
 class Compositor;
 class ContextFactory;
-class ContextFactoryPrivate;
 
 class TestCompositorHost {
  public:
   virtual ~TestCompositorHost() {}
 
   // Creates a new TestCompositorHost. The caller owns the returned value.
-  static TestCompositorHost* Create(
-      const gfx::Rect& bounds,
-      ui::ContextFactory* context_factory,
-      ui::ContextFactoryPrivate* context_factory_private);
+  static TestCompositorHost* Create(const gfx::Rect& bounds,
+                                    ui::ContextFactory* context_factory);
 
   // Shows the TestCompositorHost. Must only be called once.
   virtual void Show() = 0;

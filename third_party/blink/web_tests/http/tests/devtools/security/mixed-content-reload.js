@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that the mixed content explanation prompts the user to refresh when there are no recorded requests, and links to the network panel when there are recorded requests.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   TestRunner.addResult('\nBefore Refresh --------------');
@@ -20,7 +20,7 @@
 
   // At this point, the page has mixed content but no mixed requests have been recorded, so the user should be prompted to refresh.
   var explanations =
-      Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel.instance().mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
 
@@ -32,12 +32,13 @@
         Security.SecurityModel.Events.VisibleSecurityStateChanged,
         pageVisibleSecurityState);
 
-  var request = new SDK.NetworkRequest(0, 'http://foo.test', 'https://foo.test', 0, 0, null);
+  var request = SDK.NetworkRequest.create(
+      0, 'http://foo.test', 'https://foo.test', 0, 0, null);
   request.mixedContentType = 'optionally-blockable';
   SecurityTestRunner.dispatchRequestFinished(request);
 
   var explanations =
-      Security.SecurityPanel._instance()._mainView.contentElement.getElementsByClassName('security-explanation');
+      Security.SecurityPanel.instance().mainView.contentElement.getElementsByClassName('security-explanation');
   for (var i = 0; i < explanations.length; i++)
     TestRunner.dumpDeepInnerHTML(explanations[i]);
   TestRunner.completeTest();

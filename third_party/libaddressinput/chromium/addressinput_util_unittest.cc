@@ -11,6 +11,8 @@ namespace autofill {
 namespace addressinput {
 
 using ::i18n::addressinput::AddressData;
+using ::i18n::addressinput::AddressField;
+using ::i18n::addressinput::AddressProblem;
 
 TEST(AddressinputUtilTest, AddressRequiresRegionCode) {
   AddressData address;
@@ -35,6 +37,75 @@ TEST(AddressinputUtilTest, CompleteAddressReturnsTrue) {
   address.locality = "Los Angeles";
   address.address_line.push_back("340 Main St.");
   EXPECT_TRUE(HasAllRequiredFields(address));
+}
+
+TEST(AddressinputUtilTest, MissingFieldsAreAddedToProblems) {
+  AddressData address;
+  address.region_code = "US";
+  // Leave postal code empty.
+  // Leave state empty.
+  address.locality = "Los Angeles";
+  address.address_line.push_back("340 Main St.");
+
+  std::multimap<AddressField, AddressProblem> empty_filter;
+  std::multimap<AddressField, AddressProblem> problems;
+
+  ValidateRequiredFields(address, &empty_filter, &problems);
+  EXPECT_EQ(problems.size(), 2);
+}
+
+TEST(AddressinputUtilTest, OnlyFieldsContainedInFilterAreAddedToProblems) {
+  AddressData address;
+  address.region_code = "US";
+  // Leave postal code empty.
+  // Leave state empty.
+  address.locality = "Los Angeles";
+  address.address_line.push_back("340 Main St.");
+
+  std::multimap<AddressField, AddressProblem> include_postal_code_filter;
+  include_postal_code_filter.insert(std::make_pair(
+      AddressField::POSTAL_CODE, AddressProblem::MISSING_REQUIRED_FIELD));
+  std::multimap<AddressField, AddressProblem> problems;
+
+  ValidateRequiredFields(address, &include_postal_code_filter, &problems);
+  ASSERT_EQ(problems.size(), 1);
+  EXPECT_EQ(problems.begin()->first, AddressField::POSTAL_CODE);
+  EXPECT_EQ(problems.begin()->second, AddressProblem::MISSING_REQUIRED_FIELD);
+}
+
+TEST(AddressinputUtilTest, AllMissingFieldsAreAddedToProblems) {
+  AddressData address;
+  address.region_code = "US";
+  // Leave postal code empty.
+  // Leave state empty.
+  address.locality = "Los Angeles";
+  address.address_line.push_back("340 Main St.");
+
+  std::multimap<AddressField, AddressProblem> empty_filter;
+  std::multimap<AddressField, AddressProblem> problems;
+
+  ValidateRequiredFieldsExceptFilteredOut(address, &empty_filter, &problems);
+  EXPECT_EQ(problems.size(), 2);
+}
+
+TEST(AddressinputUtilTest, FieldsContainedInFilterAreExcludedFromProblems) {
+  AddressData address;
+  address.region_code = "US";
+  // Leave postal code empty.
+  // Leave state empty.
+  address.locality = "Los Angeles";
+  address.address_line.push_back("340 Main St.");
+
+  std::multimap<AddressField, AddressProblem> exclude_postal_code_filter;
+  exclude_postal_code_filter.insert(std::make_pair(
+      AddressField::POSTAL_CODE, AddressProblem::MISSING_REQUIRED_FIELD));
+  std::multimap<AddressField, AddressProblem> problems;
+
+  ValidateRequiredFieldsExceptFilteredOut(address, &exclude_postal_code_filter,
+                                          &problems);
+  ASSERT_EQ(problems.size(), 1);
+  EXPECT_EQ(problems.begin()->first, AddressField::ADMIN_AREA);
+  EXPECT_EQ(problems.begin()->second, AddressProblem::MISSING_REQUIRED_FIELD);
 }
 
 }  // namespace addressinput

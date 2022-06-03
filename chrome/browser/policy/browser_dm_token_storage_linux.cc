@@ -8,21 +8,22 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/syslog_logging.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/common/chrome_paths.h"
@@ -34,9 +35,6 @@ namespace {
 const char kDmTokenBaseDir[] = FILE_PATH_LITERAL("Policy/Enrollment/");
 const char kEnrollmentTokenFilename[] =
     FILE_PATH_LITERAL("enrollment/CloudManagementEnrollmentToken");
-// TODO(crbug.com/907589) : Remove once no longer in use.
-const char kEnrollmentTokenOldFilename[] =
-    FILE_PATH_LITERAL("enrollment/enrollment_token");
 const char kMachineIdFilename[] = FILE_PATH_LITERAL("/etc/machine-id");
 
 // Enrollment Mandatory Option.
@@ -73,22 +71,15 @@ bool StoreDMTokenInUserDataDir(const std::string& token,
 
 }  // namespace
 
-// static
-BrowserDMTokenStorage* BrowserDMTokenStorage::Get() {
-  if (storage_for_testing_)
-    return storage_for_testing_;
-
-  static base::NoDestructor<BrowserDMTokenStorageLinux> storage;
-  return storage.get();
-}
-
 BrowserDMTokenStorageLinux::BrowserDMTokenStorageLinux()
-    : task_runner_(
-          base::CreateTaskRunner({base::ThreadPool(), base::MayBlock()})) {}
+    : task_runner_(base::ThreadPool::CreateTaskRunner({base::MayBlock()})) {}
 
 BrowserDMTokenStorageLinux::~BrowserDMTokenStorageLinux() {}
 
 std::string BrowserDMTokenStorageLinux::InitClientId() {
+  if (!client_id_.empty())
+    return client_id_;
+
   // The client ID is derived from /etc/machine-id
   // (https://www.freedesktop.org/software/systemd/man/machine-id.html). As per
   // guidelines, this ID must not be transmitted outside of the machine, which
@@ -110,7 +101,9 @@ std::string BrowserDMTokenStorageLinux::InitClientId() {
   base::Base64UrlEncode(base::SHA1HashString(std::string(machine_id_trimmed)),
                         base::Base64UrlEncodePolicy::OMIT_PADDING,
                         &machine_id_base64);
-  return machine_id_base64;
+
+  client_id_ = machine_id_base64;
+  return client_id_;
 }
 
 std::string BrowserDMTokenStorageLinux::InitEnrollmentToken() {
@@ -125,30 +118,23 @@ std::string BrowserDMTokenStorageLinux::InitEnrollmentToken() {
   base::FilePath token_file_path =
       dir_policy_files_path.Append(kEnrollmentTokenFilename);
 
-  // Read the enrollment token from the new location. If that fails, try the old
-  // location (which will be deprecated soon). If that also fails, bail as there
-  // is no token set.
-  if (!base::ReadFileToString(token_file_path, &enrollment_token)) {
-    // TODO(crbug.com/907589) : Remove once no longer in use.
-    token_file_path = dir_policy_files_path.Append(kEnrollmentTokenOldFilename);
-    if (!base::ReadFileToString(token_file_path, &enrollment_token))
-      return std::string();
-  }
+  if (!base::ReadFileToString(token_file_path, &enrollment_token))
+    return std::string();
 
-  return base::TrimWhitespaceASCII(enrollment_token, base::TRIM_ALL)
-      .as_string();
+  return std::string(
+      base::TrimWhitespaceASCII(enrollment_token, base::TRIM_ALL));
 }
 
 std::string BrowserDMTokenStorageLinux::InitDMToken() {
   base::FilePath token_file_path;
-  if (!GetDmTokenFilePath(&token_file_path, RetrieveClientId(), false))
+  if (!GetDmTokenFilePath(&token_file_path, InitClientId(), false))
     return std::string();
 
   std::string token;
   if (!base::ReadFileToString(token_file_path, &token))
     return std::string();
 
-  return base::TrimWhitespaceASCII(token, base::TRIM_ALL).as_string();
+  return std::string(base::TrimWhitespaceASCII(token, base::TRIM_ALL));
 }
 
 bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
@@ -166,7 +152,7 @@ bool BrowserDMTokenStorageLinux::InitEnrollmentErrorOption() {
   if (!base::ReadFileToString(options_file_path, &options))
     return false;
 
-  return base::TrimWhitespaceASCII(options, base::TRIM_ALL).as_string() ==
+  return base::TrimWhitespaceASCII(options, base::TRIM_ALL) ==
          kEnrollmentMandatoryOption;
 }
 

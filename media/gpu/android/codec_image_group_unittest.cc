@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread.h"
@@ -20,13 +20,18 @@
 namespace media {
 
 namespace {
+// Size used to create MockCodecImage.
+constexpr gfx::Size kMockImageSize(100, 100);
+
 // Subclass of CodecImageGroup which will notify us when it's destroyed.
 class CodecImageGroupWithDestructionHook : public CodecImageGroup {
  public:
   CodecImageGroupWithDestructionHook(
       scoped_refptr<base::SequencedTaskRunner> task_runner,
       scoped_refptr<CodecSurfaceBundle> surface_bundle)
-      : CodecImageGroup(std::move(task_runner), std::move(surface_bundle)) {}
+      : CodecImageGroup(std::move(task_runner),
+                        std::move(surface_bundle),
+                        /*lock=*/nullptr) {}
 
   void SetDestructionCallback(base::OnceClosure cb) {
     destruction_cb_ = std::move(cb);
@@ -108,7 +113,8 @@ TEST_F(CodecImageGroupTest, SurfaceBundleWithoutOverlayDoesntCrash) {
   scoped_refptr<CodecSurfaceBundle> surface_bundle =
       base::MakeRefCounted<CodecSurfaceBundle>();
   scoped_refptr<CodecImageGroup> image_group =
-      base::MakeRefCounted<CodecImageGroup>(gpu_task_runner_, surface_bundle);
+      base::MakeRefCounted<CodecImageGroup>(gpu_task_runner_, surface_bundle,
+                                            /*lock=*/nullptr);
   // TODO(liberato): we should also make sure that adding an image doesn't call
   // ReleaseCodecBuffer when it's added.
 }
@@ -119,7 +125,7 @@ TEST_F(CodecImageGroupTest, ImagesRetainRefToGroup) {
   bool was_destroyed = false;
   rec.image_group->SetDestructionCallback(
       base::BindOnce([](bool* flag) -> void { *flag = true; }, &was_destroyed));
-  scoped_refptr<CodecImage> image = new MockCodecImage();
+  scoped_refptr<CodecImage> image = new MockCodecImage(kMockImageSize);
   // We're supposed to call this from |gpu_task_runner_|, but all
   // CodecImageGroup really cares about is being single sequence.
   rec.image_group->AddCodecImage(image.get());
@@ -138,8 +144,8 @@ TEST_F(CodecImageGroupTest, ImageGroupDropsForwardsSurfaceDestruction) {
   // also verify that the image group drops its ref to the surface bundle, so
   // that it doesn't prevent destruction of the overlay that provided it.
   Record rec = CreateImageGroup();
-  scoped_refptr<MockCodecImage> image_1 = new MockCodecImage();
-  scoped_refptr<MockCodecImage> image_2 = new MockCodecImage();
+  scoped_refptr<MockCodecImage> image_1 = new MockCodecImage(kMockImageSize);
+  scoped_refptr<MockCodecImage> image_2 = new MockCodecImage(kMockImageSize);
   rec.image_group->AddCodecImage(image_1.get());
   rec.image_group->AddCodecImage(image_2.get());
 

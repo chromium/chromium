@@ -90,7 +90,7 @@ bool FlingTracker::TrackMovement(base::TimeDelta time_elapsed,
     return false;
   }
 
-  float time_elapsed_ms = time_elapsed.InMilliseconds();
+  float time_elapsed_ms = time_elapsed.InMillisecondsF();
 
   if (time_elapsed_ms > fling_duration_) {
     StopFling();

@@ -14,11 +14,10 @@ class CORE_EXPORT GrammarMarkerListImpl final
     : public SpellCheckMarkerListImpl {
  public:
   GrammarMarkerListImpl() = default;
+  GrammarMarkerListImpl(const GrammarMarkerListImpl&) = delete;
+  GrammarMarkerListImpl& operator=(const GrammarMarkerListImpl&) = delete;
 
   DocumentMarker::MarkerType MarkerType() const final;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GrammarMarkerListImpl);
 };
 
 }  // namespace blink

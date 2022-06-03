@@ -10,7 +10,6 @@
 
 #include <list>
 
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -22,6 +21,7 @@
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_cert_types.h"
 #include "net/cert/x509_certificate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -32,8 +32,9 @@ const char kDefaultTPMPin[] = "111111";
 
 namespace {
 
-// Extracts the type and descriptor (referenced GUID or client cert pattern) of
-// a ONC-specified client certificate specification for a network
+// Extracts the type and descriptor (referenced GUID or client cert pattern
+// or provisioning profile id) of a ONC-specified client certificate
+// specification for a network
 // (|dict_with_client_cert|) and stores it in |cert_config|.
 void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
                                     const base::Value& dict_with_client_cert,
@@ -54,7 +55,7 @@ void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
     const base::Value* pattern_value = dict_with_client_cert.FindKeyOfType(
         ::onc::client_cert::kClientCertPattern, base::Value::Type::DICTIONARY);
     if (pattern_value) {
-      base::Optional<OncCertificatePattern> pattern =
+      absl::optional<OncCertificatePattern> pattern =
           OncCertificatePattern::ReadFromONCDictionary(*pattern_value);
       if (!pattern.has_value()) {
         LOG(ERROR) << "ClientCertPattern invalid";
@@ -68,6 +69,16 @@ void GetClientCertTypeAndDescriptor(onc::ONCSource onc_source,
                                             base::Value::Type::STRING);
     if (client_cert_ref_key)
       cert_config->guid = client_cert_ref_key->GetString();
+  } else if (cert_config->client_cert_type ==
+             ::onc::client_cert::kProvisioningProfileId) {
+    const std::string* provisioning_profile_id =
+        dict_with_client_cert.FindStringKey(
+            ::onc::client_cert::kClientCertProvisioningProfileId);
+    if (!provisioning_profile_id) {
+      LOG(ERROR) << "ProvisioningProfileId missing";
+      return;
+    }
+    cert_config->provisioning_profile_id = *provisioning_profile_id;
   }
 }
 
@@ -112,20 +123,26 @@ void GetClientCertFromShillProperties(
   const base::DictionaryValue* provider_properties = NULL;
   if (shill_properties.GetDictionaryWithoutPathExpansion(
           shill::kProviderProperty, &provider_properties)) {
+    const std::string* pkcs11_id_str = nullptr;
     // Look for OpenVPN specific properties.
-    if (provider_properties->GetStringWithoutPathExpansion(
-            shill::kOpenVPNClientCertIdProperty, pkcs11_id)) {
+    pkcs11_id_str =
+        provider_properties->FindStringKey(shill::kOpenVPNClientCertIdProperty);
+    if (pkcs11_id_str) {
+      *pkcs11_id = *pkcs11_id_str;
       *cert_config_type = CONFIG_TYPE_OPENVPN;
       return;
     }
     // Look for L2TP-IPsec specific properties.
-    if (provider_properties->GetStringWithoutPathExpansion(
-                   shill::kL2tpIpsecClientCertIdProperty, pkcs11_id)) {
-      std::string cert_slot;
-      provider_properties->GetStringWithoutPathExpansion(
-          shill::kL2tpIpsecClientCertSlotProperty, &cert_slot);
-      if (!cert_slot.empty() && !base::StringToInt(cert_slot, tpm_slot)) {
-        LOG(ERROR) << "Cert slot is not an integer: " << cert_slot << ".";
+    pkcs11_id_str = provider_properties->FindStringKey(
+        shill::kL2tpIpsecClientCertIdProperty);
+    if (pkcs11_id_str) {
+      *pkcs11_id = *pkcs11_id_str;
+
+      const std::string* cert_slot = provider_properties->FindStringKey(
+          shill::kL2tpIpsecClientCertSlotProperty);
+      if (cert_slot && !cert_slot->empty() &&
+          !base::StringToInt(*cert_slot, tpm_slot)) {
+        LOG(ERROR) << "Cert slot is not an integer: " << *cert_slot << ".";
         return;
       }
 
@@ -136,21 +153,23 @@ void GetClientCertFromShillProperties(
 
   // Look for EAP specific client certificate properties, which can either be
   // part of a WiFi or EthernetEAP configuration.
-  std::string cert_id;
-  if (shill_properties.GetStringWithoutPathExpansion(shill::kEapCertIdProperty,
-                                                     &cert_id)) {
+  const std::string* cert_id =
+      shill_properties.FindStringKey(shill::kEapCertIdProperty);
+  if (cert_id) {
     // Shill requires both CertID and KeyID for TLS connections, despite the
     // fact that by convention they are the same ID, because one identifies
     // the certificate and the other the private key.
     std::string key_id;
-    shill_properties.GetStringWithoutPathExpansion(shill::kEapKeyIdProperty,
-                                                   &key_id);
+    const std::string* key_id_str =
+        shill_properties.FindStringKey(shill::kEapKeyIdProperty);
+    if (key_id_str)
+      key_id = *key_id_str;
     // Assume the configuration to be invalid, if the two IDs are not identical.
-    if (cert_id != key_id) {
+    if (*cert_id != key_id) {
       LOG(ERROR) << "EAP CertID differs from KeyID";
       return;
     }
-    *pkcs11_id = GetPkcs11AndSlotIdFromEapCertId(cert_id, tpm_slot);
+    *pkcs11_id = GetPkcs11AndSlotIdFromEapCertId(*cert_id, tpm_slot);
     *cert_config_type = CONFIG_TYPE_EAP;
   }
 }

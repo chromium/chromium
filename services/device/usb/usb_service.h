@@ -11,14 +11,14 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
 
 namespace device {
@@ -50,10 +50,10 @@ class UsbService {
     virtual void WillDestroyUsbService();
   };
 
-  // These task traits are to be used for posting blocking tasks to the task
-  // scheduler.
+  // These task traits are to be used for posting blocking tasks to the thread
+  // pool.
   static constexpr base::TaskTraits kBlockingTaskTraits = {
-      base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+      base::MayBlock(), base::TaskPriority::USER_VISIBLE,
       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN};
 
   // Returns nullptr when initialization fails.
@@ -61,6 +61,9 @@ class UsbService {
 
   // Creates a SequencedTaskRunner with kBlockingTaskTraits.
   static scoped_refptr<base::SequencedTaskRunner> CreateBlockingTaskRunner();
+
+  UsbService(const UsbService&) = delete;
+  UsbService& operator=(const UsbService&) = delete;
 
   virtual ~UsbService();
 
@@ -98,8 +101,6 @@ class UsbService {
   std::unordered_map<std::string, scoped_refptr<UsbDevice>> devices_;
   std::unordered_set<std::string> testing_devices_;
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbService);
 };
 
 }  // namespace device

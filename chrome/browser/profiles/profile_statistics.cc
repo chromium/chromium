@@ -5,7 +5,6 @@
 #include "chrome/browser/profiles/profile_statistics.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,7 +17,7 @@ ProfileStatistics::~ProfileStatistics() {
 }
 
 void ProfileStatistics::GatherStatistics(
-    const profiles::ProfileStatisticsCallback& callback) {
+    profiles::ProfileStatisticsCallback callback) {
   // IsValidProfile() can be false in unit tests.
   if (!g_browser_process->profile_manager()->IsValidProfile(profile_))
     return;
@@ -26,10 +25,10 @@ void ProfileStatistics::GatherStatistics(
 
   if (!aggregator_) {
     aggregator_ = std::make_unique<ProfileStatisticsAggregator>(
-        profile_, base::Bind(&ProfileStatistics::DeregisterAggregator,
-                             weak_ptr_factory_.GetWeakPtr()));
+        profile_, base::BindOnce(&ProfileStatistics::DeregisterAggregator,
+                                 weak_ptr_factory_.GetWeakPtr()));
   }
-  aggregator_->AddCallbackAndStartAggregator(callback);
+  aggregator_->AddCallbackAndStartAggregator(std::move(callback));
 }
 
 void ProfileStatistics::DeregisterAggregator() {

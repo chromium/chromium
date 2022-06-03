@@ -19,7 +19,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Supports the parsing of command-line options for check_blink_style.py."""
 
 import logging
@@ -102,7 +101,6 @@ _EPILOG = ('This script can miss errors and does not substitute for '
 
 # This class should not have knowledge of the flag key names.
 class DefaultCommandOptionValues(object):
-
     """Stores the default check_blink_style.py command-line options.
 
     Attributes:
@@ -117,7 +115,6 @@ class DefaultCommandOptionValues(object):
 
 # This class should not have knowledge of the flag key names.
 class CommandOptionValues(object):
-
     """Stores the option values passed by the user via the command line.
 
     Attributes:
@@ -192,7 +189,6 @@ class CommandOptionValues(object):
 
 
 class ArgumentPrinter(object):
-
     """Supports the printing of check_blink_style.py command arguments."""
 
     def _flag_pair_to_string(self, flag_key, flag_value):
@@ -282,55 +278,86 @@ class ArgumentParser(object):
         self.default_options = default_options
         self.stderr_write = stderr.write
 
-        self._parser = self._create_option_parser(stderr=stderr,
-                                                  usage=usage,
-                                                  default_min_confidence=self.default_options.min_confidence,
-                                                  default_output_format=self.default_options.output_format)
+        self._parser = self._create_option_parser(
+            stderr=stderr,
+            usage=usage,
+            default_min_confidence=self.default_options.min_confidence,
+            default_output_format=self.default_options.output_format)
 
-    def _create_option_parser(self, stderr, usage,
-                              default_min_confidence, default_output_format):
+    def _create_option_parser(self, stderr, usage, default_min_confidence,
+                              default_output_format):
         # Since the epilog string is short, it is not necessary to replace
         # the epilog string with a mock epilog string when testing.
         # For this reason, we use _EPILOG directly rather than passing it
         # as an argument like we do for the usage string.
         parser = OptionParser(usage=usage, epilog=_EPILOG)
 
-        filter_help = ('set a filter to control what categories of style '
-                       'errors to report.  Specify a filter using a comma-'
-                       'delimited list of boolean filter rules, for example '
-                       '"--filter -whitespace,+whitespace/braces".  To display '
-                       'all categories and which are enabled by default, pass '
-                       """no value (e.g. '-f ""' or '--filter=').""")
-        parser.add_option('-f', '--filter-rules', metavar='RULES',
-                          dest='filter_value', help=filter_help)
+        filter_help = (
+            'set a filter to control what categories of style '
+            'errors to report.  Specify a filter using a comma-'
+            'delimited list of boolean filter rules, for example '
+            '"--filter -whitespace,+whitespace/braces".  To display '
+            'all categories and which are enabled by default, pass '
+            """no value (e.g. '-f ""' or '--filter=').""")
+        parser.add_option(
+            '-f',
+            '--filter-rules',
+            metavar='RULES',
+            dest='filter_value',
+            help=filter_help)
 
-        git_commit_help = ('check all changes in the given commit. '
-                           "Use 'commit_id..' to check all changes after commit_id")
-        parser.add_option('-g', '--git-diff', '--git-commit',
-                          metavar='COMMIT', dest='git_commit', help=git_commit_help,)
+        git_commit_help = (
+            'check all changes in the given commit. '
+            "Use 'commit_id..' to check all changes after commit_id")
+        parser.add_option(
+            '-g',
+            '--git-diff',
+            '--git-commit',
+            metavar='COMMIT',
+            dest='git_commit',
+            help=git_commit_help,
+        )
 
         diff_files_help = 'diff the files passed on the command line rather than checking the style of every line'
-        parser.add_option('--diff-files', action='store_true', dest='diff_files', default=False, help=diff_files_help)
+        parser.add_option(
+            '--diff-files',
+            action='store_true',
+            dest='diff_files',
+            default=False,
+            help=diff_files_help)
 
         min_confidence_help = ('set the minimum confidence of style errors '
                                'to report.  Can be an integer 1-5, with 1 '
                                'displaying all errors.  Defaults to %default.')
-        parser.add_option('-m', '--min-confidence', metavar='INT',
-                          type='int', dest='min_confidence',
-                          default=default_min_confidence,
-                          help=min_confidence_help)
+        parser.add_option(
+            '-m',
+            '--min-confidence',
+            metavar='INT',
+            type='int',
+            dest='min_confidence',
+            default=default_min_confidence,
+            help=min_confidence_help)
 
         output_format_help = ('set the output format, which can be "emacs" '
                               'or "vs7" (for Visual Studio).  '
                               'Defaults to "%default".')
-        parser.add_option('-o', '--output-format', metavar='FORMAT',
-                          choices=['emacs', 'vs7'],
-                          dest='output_format', default=default_output_format,
-                          help=output_format_help)
+        parser.add_option(
+            '-o',
+            '--output-format',
+            metavar='FORMAT',
+            choices=['emacs', 'vs7'],
+            dest='output_format',
+            default=default_output_format,
+            help=output_format_help)
 
         verbose_help = 'enable verbose logging.'
-        parser.add_option('-v', '--verbose', dest='is_verbose', default=False,
-                          action='store_true', help=verbose_help)
+        parser.add_option(
+            '-v',
+            '--verbose',
+            dest='is_verbose',
+            default=False,
+            action='store_true',
+            help=verbose_help)
 
         # Override OptionParser's error() method so that option help will
         # also display when an error occurs.  Normally, just the usage
@@ -425,9 +452,9 @@ class ArgumentParser(object):
 
         min_confidence = int(min_confidence)
         if (min_confidence < 1) or (min_confidence > 5):
-            self._parse_error('option --min-confidence: invalid integer: '
-                              '%s: value must be between 1 and 5'
-                              % min_confidence)
+            self._parse_error(
+                'option --min-confidence: invalid integer: '
+                '%s: value must be between 1 and 5' % min_confidence)
 
         if filter_value:
             filter_rules = self._parse_filter_flag(filter_value)
@@ -439,11 +466,12 @@ class ArgumentParser(object):
         except ValueError as err:
             self._parse_error(err)
 
-        options = CommandOptionValues(filter_rules=filter_rules,
-                                      git_commit=git_commit,
-                                      diff_files=diff_files,
-                                      is_verbose=is_verbose,
-                                      min_confidence=min_confidence,
-                                      output_format=output_format)
+        options = CommandOptionValues(
+            filter_rules=filter_rules,
+            git_commit=git_commit,
+            diff_files=diff_files,
+            is_verbose=is_verbose,
+            min_confidence=min_confidence,
+            output_format=output_format)
 
         return (paths, options)

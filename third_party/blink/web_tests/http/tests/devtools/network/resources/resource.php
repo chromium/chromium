@@ -1,6 +1,7 @@
 <?php
     $type = $_GET["type"];
     $wait = $_GET["wait"];
+    $tail_wait = $_GET["tail_wait"];
     $send = $_GET["send"];
     $size = $_GET["size"];
     $gzip = $_GET["gzip"];
@@ -11,6 +12,7 @@
     $cached = $_GET["cached"];
     $nosniff = $_GET["nosniff"];
     $download = $_GET["download"];
+    $named_download = $_GET["named_download"];
     $mime_type = $_GET["mime_type"];
     $body_pattern = $_GET["body_pattern"];
 
@@ -56,6 +58,14 @@
     if ($download)
         header("Content-Disposition: attachment; filename=hello.txt");
 
+    if (isset($named_download)) {
+        $filename_part = "";
+        if ($named_download !== "") {
+            $filename_part = "; filename=" . $named_download;
+        }
+        header("Content-Disposition: attachment" . $filename_part);
+    }
+
     if ($mime_type)
         header("Content-type: " . $mime_type);
 
@@ -93,7 +103,7 @@ __foo(<?php echo($jsdelay)?>);
                 echo("/");
         }
     } else if ($type == "image") {
-        $base64data = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAYCAYAAACbU/80AAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9kICQsw" . 
+        $base64data = "iVBORw0KGgoAAAANSUhEUgAAACAAAAAYCAYAAACbU/80AAAAAXNSR0IArs4c6QAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9kICQsw" .
             "ARCJCogAAABFSURBVEjH7ZLBCQAwCAONdP+V0xVqq0gx9w+Gi2ZCTAcXGWbe8G4Dq9DekS" .
             "kPaGeFgfYJVODlCTnWADILoEg3vplACLEBN9UGG9+mxboAAAAASUVORK5CYII=";
         $data = base64_decode($base64data);
@@ -129,5 +139,11 @@ __foo(<?php echo($jsdelay)?>);
             if ($random)
                 echo(": " . rand());
         }
+    }
+    # Useful in some download-related tests
+    if ($tail_wait) {
+        flush();
+        ob_flush();
+        usleep($tail_wait * 1000);
     }
 ?>

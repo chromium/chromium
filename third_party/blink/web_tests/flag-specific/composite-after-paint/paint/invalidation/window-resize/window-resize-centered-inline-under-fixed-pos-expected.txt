@@ -11,17 +11,8 @@
       "bounds": [600, 250],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
-          "rect": [0, 0, 600, 250],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV class='child'",
-          "rect": [0, 125, 6, 30],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 0, 600, 250]
       ]
     }
   ]
@@ -39,12 +30,8 @@
       "bounds": [400, 250],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
-          "rect": [0, 0, 400, 250],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 0, 400, 250]
       ]
     }
   ]
@@ -56,12 +43,8 @@
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 250, 400, 350],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [0, 250, 400, 350]
       ]
     },
     {
@@ -69,27 +52,8 @@
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
-          "rect": [0, 0, 400, 600],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutNGBlockFlow DIV class='parent'",
-          "rect": [0, 250, 6, 350],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV class='child'",
-          "rect": [0, 300, 6, 30],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV class='child'",
-          "rect": [0, 125, 6, 30],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 0, 400, 600]
       ]
     }
   ]
@@ -101,12 +65,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [400, 0, 400, 600],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [400, 0, 400, 600]
       ]
     },
     {
@@ -114,12 +74,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#D3D3D3",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='container'",
-          "rect": [0, 0, 800, 600],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 0, 800, 600]
       ]
     }
   ]

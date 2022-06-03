@@ -5,20 +5,21 @@
 #import "ios/chrome/browser/ui/infobars/test/test_infobar_password_delegate.h"
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/infobars/core/infobar.h"
 #include "components/password_manager/core/browser/credential_manager_password_form_manager.h"
 #include "components/password_manager/core/browser/fake_form_fetcher.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/stub_form_saver.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
+#include "ios/chrome/browser/infobars/infobar_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-using autofill::PasswordForm;
+using password_manager::PasswordForm;
 using base::ASCIIToUTF16;
 
 namespace {
@@ -32,35 +33,37 @@ class MockDelegate
 class MockFormSaver : public password_manager::StubFormSaver {
  public:
   MockFormSaver() = default;
+
+  MockFormSaver(const MockFormSaver&) = delete;
+  MockFormSaver& operator=(const MockFormSaver&) = delete;
+
   ~MockFormSaver() override = default;
 
   // FormSaver:
   MOCK_METHOD3(Save,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
   MOCK_METHOD3(Update,
                void(PasswordForm pending,
                     const std::vector<const PasswordForm*>& matches,
-                    const base::string16& old_password));
+                    const std::u16string& old_password));
 
   // Convenience downcasting method.
   static MockFormSaver& Get(
       password_manager::PasswordFormManager* form_manager) {
-    return *static_cast<MockFormSaver*>(form_manager->form_saver());
+    return *static_cast<MockFormSaver*>(
+        form_manager->profile_store_form_saver());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockFormSaver);
 };
 
 std::unique_ptr<password_manager::CredentialManagerPasswordFormManager>
 CreateFormManager() {
   PasswordForm form_to_save;
-  form_to_save.origin = GURL("https://example.com/path");
+  form_to_save.url = GURL("https://example.com/path");
   form_to_save.signon_realm = "https://example.com/";
-  form_to_save.username_value = ASCIIToUTF16("user1");
-  form_to_save.password_value = ASCIIToUTF16("pass1");
+  form_to_save.username_value = u"user1";
+  form_to_save.password_value = u"pass1";
   form_to_save.scheme = PasswordForm::Scheme::kHtml;
   form_to_save.type = PasswordForm::Type::kApi;
   MockDelegate delegate;
@@ -86,8 +89,8 @@ TestInfobarPasswordDelegate::TestInfobarPasswordDelegate(
 bool TestInfobarPasswordDelegate::Create(
     infobars::InfoBarManager* infobar_manager) {
   DCHECK(infobar_manager);
-  return !!infobar_manager->AddInfoBar(infobar_manager->CreateConfirmInfoBar(
-      std::unique_ptr<ConfirmInfoBarDelegate>(this)));
+  return !!infobar_manager->AddInfoBar(
+      CreateConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate>(this)));
 }
 
 TestInfobarPasswordDelegate::InfoBarIdentifier
@@ -95,7 +98,7 @@ TestInfobarPasswordDelegate::GetIdentifier() const {
   return TEST_INFOBAR;
 }
 
-base::string16 TestInfobarPasswordDelegate::GetMessageText() const {
+std::u16string TestInfobarPasswordDelegate::GetMessageText() const {
   return base::SysNSStringToUTF16(infobar_message_);
 }
 

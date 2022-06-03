@@ -4,12 +4,11 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/messaging/transferable_message.mojom";
-import "third_party/blink/public/mojom/referrer.mojom";
 import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
-import "url/mojom/origin.mojom";
 
 enum PortalActivateResult {
   // The predecessor was not adopted by its successor and will be
@@ -19,9 +18,22 @@ enum PortalActivateResult {
   // The predecessor was adopted by its successor.
   kPredecessorWasAdopted,
 
+  // The activation could not proceed because the portal had not yet begun
+  // to load a document, or its load was canceled.
+  kRejectedDueToPortalNotReady,
+
+  // The activation could not proceed because the portal is showing an error
+  // page.
+  kRejectedDueToErrorInPortal,
+
   // The activation could not proceed since the predecessor main frame was
   // navigating and the navigation could not be cancelled.
   kRejectedDueToPredecessorNavigation,
+
+  // The connection with the remote was closed (usually happens during a
+  // browser shutdown). This error code is never sent as an IPC response, but
+  // is synthesized by the renderer.
+  kDisconnected,
 
   // The activation was attempted but was aborted due to a logic error, such as
   // a nonsensical reply from the other renderer. This should never happen; it
@@ -33,17 +45,21 @@ enum PortalActivateResult {
 // process to interact with the browser side implementation of a portal
 // (content::Portal). It is 1:1 with PortalClient (defined below).
 interface Portal {
-  // Navigates the portal to |url|.
+  // Navigates the portal to |url|. A renderer may only pass a URL that a
+  // portal would be allowed to load (HTTP(S) only).
+  // See https://github.com/jeremyroman/alternate-loading-modes/blob/main/browsing-context.md#restrictions-on-loaded-content
   Navigate(url.mojom.Url url, Referrer referrer) => ();
 
   // When a portal is activated, it'll replace the current tab with the portal.
-  Activate(TransferableMessage data) => (PortalActivateResult result);
+  // |activation_time| represents the time where HTMLPortalElement.activate()
+  // was called. The |trace_id| is used to generate activation flow events for
+  // performance tracing.
+  Activate(TransferableMessage data, mojo_base.mojom.TimeTicks activation_time,
+           uint64 trace_id) => (PortalActivateResult result);
 
   // Sends message to the browser process, where it can be forwarded to the
-  // portal's main frame. |targetOrigin| indicates which origin the message can
-  // be delivered to, and if null, it indicates that the message can be
-  // delivered to any origin.
-  PostMessageToGuest(TransferableMessage message, url.mojom.Origin? target_origin);
+  // portal's main frame.
+  PostMessageToGuest(TransferableMessage message);
 };
 
 // The PortalClient interface is used by the browser side implementation of a
@@ -53,8 +69,7 @@ interface PortalClient {
   // Forwards message sent from the portal's guest to the portal's host
   // HTMLPortalElement.
   ForwardMessageFromGuest(TransferableMessage message,
-                          url.mojom.Origin source_origin,
-                          url.mojom.Origin? target_origin);
+                          url.mojom.Origin source_origin);
 
   // Dispatches the load event on the HTMLPortalElement when the portal finishes
   // loading.
@@ -65,8 +80,6 @@ interface PortalClient {
 // the browser side representation of the portal (content::Portal).
 interface PortalHost {
   // Sends message to the browser process, from where it can be delivered to
-  // the portal's host HTMLPortalElement. |targetOrigin| indicates which origin
-  // the message can be delivered to, and if null, it indicates that the message
-  // can be delivered to any origin.
-  PostMessageToHost(TransferableMessage message, url.mojom.Origin? target_origin);
+  // the portal's host HTMLPortalElement.
+  PostMessageToHost(TransferableMessage message);
 };

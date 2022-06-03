@@ -5,8 +5,8 @@
 #include "media/renderers/decrypting_renderer.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/single_thread_task_runner.h"
+#include "base/callback_helpers.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -41,12 +41,12 @@ class DecryptingRendererTest : public testing::Test {
         std::move(renderer), &null_media_log_,
         task_environment_.GetMainThreadTaskRunner());
 
+    EXPECT_CALL(cdm_context_, RegisterEventCB(_)).Times(AnyNumber());
     EXPECT_CALL(cdm_context_, GetDecryptor())
         .WillRepeatedly(Return(&decryptor_));
     EXPECT_CALL(decryptor_, CanAlwaysDecrypt())
         .WillRepeatedly(ReturnPointee(&use_aes_decryptor_));
     EXPECT_CALL(decryptor_, CancelDecrypt(_)).Times(AnyNumber());
-    EXPECT_CALL(decryptor_, RegisterNewKeyCB(_, _)).Times(AnyNumber());
     EXPECT_CALL(media_resource_, GetAllStreams())
         .WillRepeatedly(Invoke(this, &DecryptingRendererTest::GetAllStreams));
     EXPECT_CALL(media_resource_, GetType())
@@ -87,7 +87,7 @@ class DecryptingRendererTest : public testing::Test {
 
   bool use_aes_decryptor_ = false;
   base::test::TaskEnvironment task_environment_;
-  base::MockCallback<CdmAttachedCB> set_cdm_cb_;
+  base::MockCallback<Renderer::CdmAttachedCB> set_cdm_cb_;
   base::MockOnceCallback<void(PipelineStatus)> renderer_init_cb_;
   NullMediaLog null_media_log_;
   StrictMock<MockCdmContext> cdm_context_;

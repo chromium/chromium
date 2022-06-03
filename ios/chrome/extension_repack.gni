@@ -20,8 +20,6 @@ template("extension_repack_all_locales") {
 
     source_patterns = [ "$root_gen_dir/ios/${invoker.extension}/ios_${invoker.extension}_strings_" ]
 
-    deps = [
-      "//ios/chrome/${invoker.extension}/strings",
-    ]
+    deps = [ "//ios/chrome/${invoker.extension}/strings" ]
   }
 }

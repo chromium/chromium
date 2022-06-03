@@ -12,7 +12,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/url_pattern_index/proto/rules.pb.h"
 
@@ -62,6 +61,10 @@ struct TestRulesetPair {
 class TestRulesetCreator {
  public:
   TestRulesetCreator();
+
+  TestRulesetCreator(const TestRulesetCreator&) = delete;
+  TestRulesetCreator& operator=(const TestRulesetCreator&) = delete;
+
   ~TestRulesetCreator();
 
   // Creates both the indexed and unindexed versions of a testing ruleset that
@@ -76,6 +79,14 @@ class TestRulesetCreator {
   void CreateUnindexedRulesetToDisallowURLsWithPathSuffix(
       base::StringPiece suffix,
       TestRuleset* test_unindexed_ruleset);
+
+  // Creates both the indexed and unindexed versions of a testing ruleset that
+  // consists of filtering rules that disallow subresource loads from URLs
+  // containing any of the given `substrings`. Enclose call in
+  // ASSERT_NO_FATAL_FAILURE to detect errors.
+  void CreateRulesetToDisallowURLWithSubstrings(
+      std::vector<base::StringPiece> substrings,
+      TestRulesetPair* test_ruleset_pair);
 
   // Similar to CreateRulesetToDisallowURLsWithPathSuffix, but the resulting
   // ruleset consists of |num_of_suffixes| rules, each of them disallowing URLs
@@ -104,8 +115,6 @@ class TestRulesetCreator {
 
   std::unique_ptr<base::ScopedTempDir> scoped_temp_dir_;
   int next_unique_file_suffix = 1;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRulesetCreator);
 };
 
 }  // namespace testing

@@ -4,12 +4,13 @@
 <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
 <style>
   body {
-    margin: 0;
     display: flex;
     flex-direction: column;
+    margin: 0;
   }
 
-  #header, #footer {
+  #header,
+  #footer {
     display: flex;
     flex: none;
   }
@@ -103,17 +104,24 @@ function setupHeaderFooterTemplate(options) {
       <span class='pageNumber'></span>/<span class='totalPages'></span>
     </div>`;
 
-  options.date = new Date(options.date).toLocaleDateString();
+  const date = new Date(options.date);
+  const formatter =
+      new Intl.DateTimeFormat(
+          navigator.languages[0],
+          { dateStyle: 'short', timeStyle: 'short' });
+  options.date = formatter.format(date);
   for (const cssClass of ['date', 'title', 'url', 'pageNumber', 'totalPages']) {
     for (const element of document.querySelectorAll(`.${cssClass}`)) {
       element.textContent = options[cssClass];
-      if (options.isRtl)
-        element.dir = 'rtl';
-
-      if (elementIntersects(element, topMargin, bottomMargin, leftMargin,
-                            rightMargin)) {
-        element.style.visibility = 'hidden';
-      }
+    }
+  }
+  for (const element of document.querySelectorAll(`.text`)) {
+    if (options.isRtl) {
+      element.dir = 'rtl';
+    }
+    if (elementIntersects(element, topMargin, bottomMargin, leftMargin,
+                          rightMargin)) {
+      element.style.visibility = 'hidden';
     }
   }
 }

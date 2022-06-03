@@ -9,12 +9,12 @@ namespace installer {
 void UpdateInstallStatus(installer::ArchiveType archive_type,
                          installer::InstallStatus install_status) {}
 
-base::string16 GetDistributionData() {
-  return base::string16();
+std::wstring GetDistributionData() {
+  return std::wstring();
 }
 
 void DoPostUninstallOperations(const base::Version& version,
                                const base::FilePath& local_data_path,
-                               const base::string16& distribution_data) {}
+                               const std::wstring& distribution_data) {}
 
 }  // namespace installer

@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that fetch logging works when XMLHttpRequest Logging is Enabled and doesn't show logs when it is Disabled.\n`);
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function requestHelper(method, url, callback)
       {
@@ -57,14 +57,14 @@
   Common.settingForTest('monitoringXHREnabled').set(true);
   await TestRunner.callFunctionInPageAsync('makeRequests');
   await ConsoleTestRunner.waitForPendingViewportUpdates();
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   Console.ConsoleView.clearConsole();
 
   TestRunner.addResult('Making requests with monitoring DISABLED');
   Common.settingForTest('monitoringXHREnabled').set(false);
   await TestRunner.callFunctionInPageAsync('makeRequests');
   await ConsoleTestRunner.waitForPendingViewportUpdates();
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
 
   TestRunner.completeTest();
 })();

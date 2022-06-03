@@ -14,20 +14,15 @@
 #include "components/gcm_driver/instance_id/instance_id_profile_service.h"
 #include "components/invalidation/impl/fcm_invalidation_service.h"
 #include "components/invalidation/impl/fcm_network_handler.h"
-#include "components/invalidation/impl/invalidator_storage.h"
 #include "components/invalidation/impl/profile_identity_provider.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
-#include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/gcm/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 #include "ios/chrome/browser/gcm/ios_chrome_gcm_profile_service_factory.h"
-#include "ios/chrome/browser/json_parser/in_process_json_parser.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/web/public/web_client.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -39,7 +34,7 @@ using invalidation::ProfileInvalidationProvider;
 // static
 invalidation::ProfileInvalidationProvider*
 IOSChromeProfileInvalidationProviderFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<ProfileInvalidationProvider*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -68,8 +63,8 @@ IOSChromeProfileInvalidationProviderFactory::
 std::unique_ptr<KeyedService>
 IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
 
   auto identity_provider =
       std::make_unique<invalidation::ProfileIdentityProvider>(
@@ -79,17 +74,17 @@ IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
       std::make_unique<invalidation::FCMInvalidationService>(
           identity_provider.get(),
           base::BindRepeating(
-              &syncer::FCMNetworkHandler::Create,
+              &invalidation::FCMNetworkHandler::Create,
               IOSChromeGCMProfileServiceFactory::GetForBrowserState(
                   browser_state)
                   ->driver(),
               IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
                   browser_state)
                   ->driver()),
-          base::BindRepeating(&syncer::PerUserTopicRegistrationManager::Create,
-                              identity_provider.get(),
-                              browser_state->GetPrefs(),
-                              browser_state->GetURLLoaderFactory()),
+          base::BindRepeating(
+              &invalidation::PerUserTopicSubscriptionManager::Create,
+              identity_provider.get(), browser_state->GetPrefs(),
+              browser_state->GetURLLoaderFactory()),
           IOSChromeInstanceIDProfileServiceFactory::GetForBrowserState(
               browser_state)
               ->driver(),
@@ -98,4 +93,9 @@ IOSChromeProfileInvalidationProviderFactory::BuildServiceInstanceFor(
 
   return std::make_unique<ProfileInvalidationProvider>(
       std::move(service), std::move(identity_provider));
+}
+
+void IOSChromeProfileInvalidationProviderFactory::RegisterBrowserStatePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  ProfileInvalidationProvider::RegisterProfilePrefs(registry);
 }

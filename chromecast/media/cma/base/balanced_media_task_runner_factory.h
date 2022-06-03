@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_BASE_BALANCED_TASK_RUNNER_FACTORY_H_
-#define CHROMECAST_MEDIA_CMA_BASE_BALANCED_TASK_RUNNER_FACTORY_H_
+#ifndef CHROMECAST_MEDIA_CMA_BASE_BALANCED_MEDIA_TASK_RUNNER_FACTORY_H_
+#define CHROMECAST_MEDIA_CMA_BASE_BALANCED_MEDIA_TASK_RUNNER_FACTORY_H_
 
 #include <set>
 
@@ -29,6 +29,11 @@ class BalancedMediaTaskRunnerFactory
     : public base::RefCountedThreadSafe<BalancedMediaTaskRunnerFactory> {
  public:
   explicit BalancedMediaTaskRunnerFactory(base::TimeDelta max_delta);
+
+  BalancedMediaTaskRunnerFactory(const BalancedMediaTaskRunnerFactory&) =
+      delete;
+  BalancedMediaTaskRunnerFactory& operator=(
+      const BalancedMediaTaskRunnerFactory&) = delete;
 
   // Creates a media task runner using |task_runner| as the underlying
   // regular task runner.
@@ -58,11 +63,9 @@ class BalancedMediaTaskRunnerFactory
   // Task runners created by the factory that have not been unregistered yet.
   base::Lock lock_;
   MediaTaskRunnerSet task_runners_;
-
-  DISALLOW_COPY_AND_ASSIGN(BalancedMediaTaskRunnerFactory);
 };
 
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_BASE_BALANCED_TASK_RUNNER_FACTORY_H_
+#endif  // CHROMECAST_MEDIA_CMA_BASE_BALANCED_MEDIA_TASK_RUNNER_FACTORY_H_

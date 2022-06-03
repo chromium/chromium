@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS Initial iceGatheringState should be new
-PASS iceGatheringState should eventually become complete after setLocalDescription
-FAIL connection with one data channel should eventually have connected connection state assert_equals: Expect ICE transport to be in checking gatheringState when iceGatheringState is checking expected (string) "gathering" but got (undefined) undefined
-Harness: the test ran to completion.
-

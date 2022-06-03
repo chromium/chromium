@@ -90,7 +90,7 @@
                         if (r == false) {
                             window.document.title = 'Success';
                         } else {
-                            window.document.title = 'Fail';
+                            window.document.title = 'Fail: expected response to be false, got ' + r + ' instead';
                         }
                     })
                     .catch(e => {

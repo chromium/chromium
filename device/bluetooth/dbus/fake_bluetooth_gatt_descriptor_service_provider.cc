@@ -62,7 +62,7 @@ FakeBluetoothGattDescriptorServiceProvider::
       flags_(flags),
       characteristic_path_(characteristic_path),
       delegate_(std::move(delegate)) {
-  VLOG(1) << "Creating Bluetooth GATT descriptor: " << object_path_.value();
+  DVLOG(1) << "Creating Bluetooth GATT descriptor: " << object_path_.value();
 
   DCHECK(object_path_.IsValid());
   DCHECK(characteristic_path_.IsValid());
@@ -81,7 +81,7 @@ FakeBluetoothGattDescriptorServiceProvider::
 
 FakeBluetoothGattDescriptorServiceProvider::
     ~FakeBluetoothGattDescriptorServiceProvider() {
-  VLOG(1) << "Cleaning up Bluetooth GATT descriptor: " << object_path_.value();
+  DVLOG(1) << "Cleaning up Bluetooth GATT descriptor: " << object_path_.value();
 
   FakeBluetoothGattManagerClient* fake_bluetooth_gatt_manager_client =
       static_cast<FakeBluetoothGattManagerClient*>(
@@ -91,16 +91,15 @@ FakeBluetoothGattDescriptorServiceProvider::
 
 void FakeBluetoothGattDescriptorServiceProvider::SendValueChanged(
     const std::vector<uint8_t>& value) {
-  VLOG(1) << "Sent descriptor value changed: " << object_path_.value()
-          << " UUID: " << uuid_;
+  DVLOG(1) << "Sent descriptor value changed: " << object_path_.value()
+           << " UUID: " << uuid_;
 }
 
 void FakeBluetoothGattDescriptorServiceProvider::GetValue(
     const dbus::ObjectPath& device_path,
-    device::BluetoothLocalGattService::Delegate::ValueCallback callback,
-    device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
-  VLOG(1) << "GATT descriptor value Get request: " << object_path_.value()
-          << " UUID: " << uuid_;
+    device::BluetoothLocalGattService::Delegate::ValueCallback callback) {
+  DVLOG(1) << "GATT descriptor value Get request: " << object_path_.value()
+           << " UUID: " << uuid_;
   // Check if this descriptor is registered.
   FakeBluetoothGattManagerClient* fake_bluetooth_gatt_manager_client =
       static_cast<FakeBluetoothGattManagerClient*>(
@@ -109,27 +108,29 @@ void FakeBluetoothGattDescriptorServiceProvider::GetValue(
       fake_bluetooth_gatt_manager_client->GetCharacteristicServiceProvider(
           characteristic_path_);
   if (!characteristic) {
-    VLOG(1) << "GATT characteristic for descriptor does not exist: "
-            << characteristic_path_.value();
+    DVLOG(1) << "GATT characteristic for descriptor does not exist: "
+             << characteristic_path_.value();
     return;
   }
   if (!fake_bluetooth_gatt_manager_client->IsServiceRegistered(
           characteristic->service_path())) {
-    VLOG(1) << "GATT descriptor not registered.";
-    std::move(error_callback).Run();
+    DVLOG(1) << "GATT descriptor not registered.";
+    std::move(callback).Run(
+        device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED,
+        /*value=*/std::vector<uint8_t>());
     return;
   }
 
   if (!CanRead(flags_)) {
-    VLOG(1) << "GATT descriptor not readable.";
-    std::move(error_callback).Run();
+    std::move(callback).Run(
+        device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED,
+        /*value=*/std::vector<uint8_t>());
     return;
   }
 
   // Pass on to the delegate.
   DCHECK(delegate_);
-  delegate_->GetValue(device_path, std::move(callback),
-                      std::move(error_callback));
+  delegate_->GetValue(device_path, std::move(callback));
 }
 
 void FakeBluetoothGattDescriptorServiceProvider::SetValue(
@@ -137,8 +138,8 @@ void FakeBluetoothGattDescriptorServiceProvider::SetValue(
     const std::vector<uint8_t>& value,
     base::OnceClosure callback,
     device::BluetoothLocalGattService::Delegate::ErrorCallback error_callback) {
-  VLOG(1) << "GATT descriptor value Set request: " << object_path_.value()
-          << " UUID: " << uuid_;
+  DVLOG(1) << "GATT descriptor value Set request: " << object_path_.value()
+           << " UUID: " << uuid_;
 
   // Check if this descriptor is registered.
   FakeBluetoothGattManagerClient* fake_bluetooth_gatt_manager_client =
@@ -148,19 +149,19 @@ void FakeBluetoothGattDescriptorServiceProvider::SetValue(
       fake_bluetooth_gatt_manager_client->GetCharacteristicServiceProvider(
           characteristic_path_);
   if (!characteristic) {
-    VLOG(1) << "GATT characteristic for descriptor does not exist: "
-            << characteristic_path_.value();
+    DVLOG(1) << "GATT characteristic for descriptor does not exist: "
+             << characteristic_path_.value();
     return;
   }
   if (!fake_bluetooth_gatt_manager_client->IsServiceRegistered(
           characteristic->service_path())) {
-    VLOG(1) << "GATT descriptor not registered.";
+    DVLOG(1) << "GATT descriptor not registered.";
     std::move(error_callback).Run();
     return;
   }
 
   if (!CanWrite(flags_)) {
-    VLOG(1) << "GATT descriptor not writeable.";
+    DVLOG(1) << "GATT descriptor not writeable.";
     std::move(error_callback).Run();
     return;
   }

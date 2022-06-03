@@ -4,12 +4,16 @@
 
 #import "ios/web/navigation/wk_navigation_util.h"
 
+#include <algorithm>
+
 #include "base/json/json_writer.h"
 #include "base/mac/bundle_locations.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "ios/web/common/features.h"
+#import "ios/web/navigation/crw_error_page_helper.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/web_client.h"
 #include "net/base/escape.h"
@@ -31,75 +35,41 @@ const int kMaxSessionSize = 75;
 
 const char kRestoreSessionSessionHashPrefix[] = "session=";
 const char kRestoreSessionTargetUrlHashPrefix[] = "targetUrl=";
-const char kOriginalUrlKey[] = "for";
 NSString* const kReferrerHeaderName = @"Referer";
 
-namespace {
-// Returns begin and end iterators and an updated last committed index for the
-// given navigation items. The length of these iterators range will not exceed
-// kMaxSessionSize. If |items.size()| is greater than kMaxSessionSize, then this
-// function will trim navigation items, which are the furthest to
-// |last_committed_item_index|.
-int GetSafeItemIterators(
-    int last_committed_item_index,
-    const std::vector<std::unique_ptr<NavigationItem>>& items,
-    std::vector<std::unique_ptr<NavigationItem>>::const_iterator* begin,
-    std::vector<std::unique_ptr<NavigationItem>>::const_iterator* end) {
-  if (items.size() <= kMaxSessionSize) {
-    // No need to trim anything.
-    *begin = items.begin();
-    *end = items.end();
-    return last_committed_item_index;
-  }
-
-  if (last_committed_item_index < kMaxSessionSize / 2) {
-    // Items which are the furthest to |last_committed_item_index| are located
-    // on the right side of the vector. Trim those.
-    *begin = items.begin();
-    *end = items.begin() + kMaxSessionSize;
-    return last_committed_item_index;
-  }
-
-  if (items.size() - last_committed_item_index <= kMaxSessionSize / 2) {
-    // Items which are the furthest to |last_committed_item_index| are located
-    // on the left side of the vector. Trim those.
-    *begin = items.end() - kMaxSessionSize;
-    *end = items.end();
-  } else {
-    // Trim items from both sides of the vector. Keep the same number of items
-    // on the left and right side of |last_committed_item_index|.
-    *begin = items.begin() + last_committed_item_index - kMaxSessionSize / 2;
-    *end = items.begin() + last_committed_item_index + kMaxSessionSize / 2 + 1;
-  }
-
-  // The beginning of the vector has been trimmed, so move up the last committed
-  // item index by whatever was trimmed from the left.
-  return last_committed_item_index - (*begin - items.begin());
-}
+int GetSafeItemRange(int last_committed_item_index,
+                     int item_count,
+                     int* offset,
+                     int* size) {
+  *size = std::min(kMaxSessionSize, item_count);
+  *offset = std::min(last_committed_item_index - kMaxSessionSize / 2,
+                     item_count - kMaxSessionSize);
+  *offset = std::max(*offset, 0);
+  return last_committed_item_index - *offset;
 }
 
 bool IsWKInternalUrl(const GURL& url) {
-  return IsPlaceholderUrl(url) || IsRestoreSessionUrl(url);
+  return IsRestoreSessionUrl(url);
 }
 
 bool IsWKInternalUrl(NSURL* url) {
-  return IsPlaceholderUrl(url) || IsRestoreSessionUrl(url);
+  return IsRestoreSessionUrl(url);
 }
 
 bool URLNeedsUserAgentType(const GURL& url) {
   if (web::GetWebClient()->IsAppSpecificURL(url))
     return false;
 
-  if (url.SchemeIs(url::kAboutScheme) && IsPlaceholderUrl(url)) {
-    return !web::GetWebClient()->IsAppSpecificURL(
-        ExtractUrlFromPlaceholderUrl(url));
-  }
-
   if (url.SchemeIs(url::kAboutScheme))
     return false;
 
   if (url.SchemeIs(url::kFileScheme) && IsRestoreSessionUrl(url))
     return true;
+
+  if (url.SchemeIs(url::kFileScheme) &&
+      [CRWErrorPageHelper isErrorPageFileURL:url]) {
+    return true;
+  }
 
   if (url.SchemeIs(url::kFileScheme))
     return false;
@@ -125,27 +95,26 @@ void CreateRestoreSessionUrl(
   DCHECK(last_committed_item_index >= 0 &&
          last_committed_item_index < static_cast<int>(items.size()));
 
-  std::vector<std::unique_ptr<NavigationItem>>::const_iterator begin;
-  std::vector<std::unique_ptr<NavigationItem>>::const_iterator end;
+  int first_restored_item_offset = 0;
+  int new_size = 0;
   int new_last_committed_item_index =
-      GetSafeItemIterators(last_committed_item_index, items, &begin, &end);
-  size_t new_size = end - begin;
+      GetSafeItemRange(last_committed_item_index, items.size(),
+                       &first_restored_item_offset, &new_size);
 
   // The URLs and titles of the restored entries are stored in two separate
   // lists instead of a single list of objects to reduce the size of the JSON
   // string to be included in the query parameter.
   base::Value restored_urls(base::Value::Type::LIST);
   base::Value restored_titles(base::Value::Type::LIST);
-  restored_urls.GetList().reserve(new_size);
-  restored_titles.GetList().reserve(new_size);
-  for (auto it = begin; it != end; ++it) {
-    NavigationItem* item = (*it).get();
-    restored_urls.Append(base::Value(item->GetURL().spec()));
-    restored_titles.Append(base::Value(item->GetTitle()));
+  for (int i = first_restored_item_offset;
+       i < new_size + first_restored_item_offset; i++) {
+    NavigationItem* item = items[i].get();
+    restored_urls.Append(item->GetURL().spec());
+    restored_titles.Append(item->GetTitle());
   }
   base::Value session(base::Value::Type::DICTIONARY);
-  int offset = new_last_committed_item_index + 1 - new_size;
-  session.SetKey("offset", base::Value(offset));
+  int committed_item_offset = new_last_committed_item_index + 1 - new_size;
+  session.SetKey("offset", base::Value(committed_item_offset));
   session.SetKey("urls", std::move(restored_urls));
   session.SetKey("titles", std::move(restored_titles));
 
@@ -156,7 +125,7 @@ void CreateRestoreSessionUrl(
       net::EscapeQueryParamValue(session_json, false /* use_plus */);
   GURL::Replacements replacements;
   replacements.SetRefStr(ref);
-  *first_index = begin - items.begin();
+  *first_index = first_restored_item_offset;
   *url = GetRestoreSessionBaseUrl().ReplaceComponents(replacements);
 }
 
@@ -194,40 +163,6 @@ bool ExtractTargetURL(const GURL& restore_session_url, GURL* target_url) {
   }
 
   return success;
-}
-
-bool IsPlaceholderUrl(const GURL& url) {
-  return url.IsAboutBlank() && base::StartsWith(url.query(), kOriginalUrlKey,
-                                                base::CompareCase::SENSITIVE);
-}
-
-bool IsPlaceholderUrl(NSURL* url) {
-  // about:blank NSURLs don't have nil host and query, so use absolute string
-  // matching.
-  return [url.scheme isEqual:@"about"] &&
-         ([url.absoluteString hasPrefix:@"about:blank?for="] ||
-          [url.absoluteString hasPrefix:@"about://blank?for="]);
-}
-
-GURL CreatePlaceholderUrlForUrl(const GURL& original_url) {
-  if (!original_url.is_valid())
-    return GURL::EmptyGURL();
-
-  GURL placeholder_url = net::AppendQueryParameter(
-      GURL(url::kAboutBlankURL), kOriginalUrlKey, original_url.spec());
-  DCHECK(placeholder_url.is_valid());
-  return placeholder_url;
-}
-
-GURL ExtractUrlFromPlaceholderUrl(const GURL& url) {
-  std::string value;
-  if (IsPlaceholderUrl(url) &&
-      net::GetValueForKeyInQuery(url, kOriginalUrlKey, &value)) {
-    GURL decoded_url(value);
-    if (decoded_url.is_valid())
-      return decoded_url;
-  }
-  return GURL::EmptyGURL();
 }
 
 }  // namespace wk_navigation_util

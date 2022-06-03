@@ -1,5 +1,6 @@
 include_rules = [
   "+cc/paint",
+  "+components/database_utils",
   "+components/history/core/browser",
   "+components/history/core/test",
   "+components/image_fetcher/core",
@@ -8,7 +9,9 @@ include_rules = [
   "+net/base",
   "+net/traffic_annotation",
   "+skia",
+  "+sql",
   "+third_party/skia",
   "+third_party/skia/include",
+  "+third_party/sqlite",
   "+ui/gfx",
 ]

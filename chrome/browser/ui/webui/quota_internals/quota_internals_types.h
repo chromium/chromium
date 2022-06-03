@@ -21,7 +21,7 @@ class Value;
 
 namespace quota_internals {
 
-// Represends global usage and quota information for specific type of storage.
+// Represents global usage and quota information for specific type of storage.
 class GlobalStorageInfo {
  public:
   explicit GlobalStorageInfo(blink::mojom::StorageType type);
@@ -67,16 +67,12 @@ class PerHostStorageInfo {
   int64_t quota_;
 };
 
-// Represendts per origin usage and access time information.
+// Represents per origin usage and access time information.
 class PerOriginStorageInfo {
  public:
   PerOriginStorageInfo(const GURL& origin, blink::mojom::StorageType type);
   PerOriginStorageInfo(const PerOriginStorageInfo& other);
   ~PerOriginStorageInfo();
-
-  void set_in_use(bool in_use) {
-    in_use_ = in_use ? 1 : 0;
-  }
 
   void set_used_count(int used_count) {
     used_count_ = used_count;
@@ -98,7 +94,6 @@ class PerOriginStorageInfo {
   blink::mojom::StorageType type_;
   std::string host_;
 
-  int in_use_;
   int used_count_;
   base::Time last_access_time_;
   base::Time last_modified_time_;

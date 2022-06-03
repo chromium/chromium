@@ -29,13 +29,11 @@
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_policy.h"
 #include "skia/ext/skia_utils_mac.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/platform/mac/web_scrollbar_theme.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_mouse_event.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/platform/web_theme_engine.h"
 #include "third_party/blink/renderer/core/scroll/ns_scroller_imp_details.h"
-#include "third_party/blink/renderer/core/scroll/scroll_animator_mac.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context_state_saver.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
@@ -43,9 +41,6 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "ui/gfx/mac/cocoa_scrollbar_painter.h"
-
-using gfx::CocoaScrollbarPainter;
 
 @interface BlinkScrollbarObserver : NSObject {
   blink::Scrollbar* _scrollbar;
@@ -53,15 +48,16 @@ using gfx::CocoaScrollbarPainter;
   BOOL _suppressSetScrollbarsHidden;
   CGFloat _saved_knob_alpha;
 }
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
-                painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter;
+- (instancetype)
+    initWithScrollbar:(blink::Scrollbar*)scrollbar
+              painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter;
 @end
 
 @implementation BlinkScrollbarObserver
 
-- (id)initWithScrollbar:(blink::Scrollbar*)scrollbar
-                painter:
-                    (const base::scoped_nsobject<ScrollbarPainter>&)painter {
+- (instancetype)
+    initWithScrollbar:(blink::Scrollbar*)scrollbar
+              painter:(const base::scoped_nsobject<ScrollbarPainter>&)painter {
   if (!(self = [super init]))
     return nil;
   _scrollbar = scrollbar;
@@ -83,7 +79,7 @@ using gfx::CocoaScrollbarPainter;
     _saved_knob_alpha = [_scrollbarPainter knobAlpha];
   } else {
     [_scrollbarPainter setKnobAlpha:_saved_knob_alpha];
-    _scrollbar->SetScrollbarsHiddenIfOverlay(_saved_knob_alpha == 0);
+    _scrollbar->SetScrollbarsHiddenFromExternalAnimator(_saved_knob_alpha == 0);
   }
 }
 
@@ -99,7 +95,7 @@ using gfx::CocoaScrollbarPainter;
   if ([keyPath isEqualToString:@"knobAlpha"]) {
     if (!_suppressSetScrollbarsHidden) {
       BOOL visible = [_scrollbarPainter knobAlpha] > 0;
-      _scrollbar->SetScrollbarsHiddenIfOverlay(!visible);
+      _scrollbar->SetScrollbarsHiddenFromExternalAnimator(!visible);
     }
   }
 }
@@ -131,13 +127,37 @@ static ScrollbarPainterMap& GetScrollbarPainterMap() {
   return *map;
 }
 
-static bool SupportsExpandedScrollbars() {
-  // FIXME: This is temporary until all platforms that support ScrollbarPainter
-  // support this part of the API.
-  static bool global_supports_expanded_scrollbars =
-      [NSClassFromString(@"NSScrollerImp")
-          instancesRespondToSelector:@selector(setExpanded:)];
-  return global_supports_expanded_scrollbars;
+static int ScrollbarThicknessInternal(NSControlSize control_size,
+                                      NSScrollerStyle scroller_style) {
+  ScrollbarPainter scrollbar_painter =
+      [NSClassFromString(@"NSScrollerImp") scrollerImpWithStyle:scroller_style
+                                                    controlSize:control_size
+                                                     horizontal:NO
+                                           replacingScrollerImp:nil];
+  if ([scrollbar_painter respondsToSelector:@selector(setExpanded:)]) {
+    [scrollbar_painter setExpanded:YES];
+  }
+  return [scrollbar_painter trackBoxWidth];
+}
+
+static int OverlayScrollbarThickness(NSControlSize control_size) {
+  static int small_scrollbar_thickness =
+      ScrollbarThicknessInternal(NSControlSizeSmall, NSScrollerStyleOverlay);
+  static int regular_scrollbar_thickness =
+      ScrollbarThicknessInternal(NSControlSizeRegular, NSScrollerStyleOverlay);
+
+  return control_size == NSControlSizeSmall ? small_scrollbar_thickness
+                                            : regular_scrollbar_thickness;
+}
+
+static int LegacyScrollbarThickness(NSControlSize control_size) {
+  static int small_scrollbar_thickness =
+      ScrollbarThicknessInternal(NSControlSizeSmall, NSScrollerStyleLegacy);
+  static int regular_scrollbar_thickness =
+      ScrollbarThicknessInternal(NSControlSizeRegular, NSScrollerStyleLegacy);
+
+  return control_size == NSControlSizeSmall ? small_scrollbar_thickness
+                                            : regular_scrollbar_thickness;
 }
 
 ScrollbarThemeMac::ScrollbarThemeMac() {
@@ -152,8 +172,8 @@ void ScrollbarThemeMac::PaintTickmarks(GraphicsContext& context,
                                        const Scrollbar& scrollbar,
                                        const IntRect& rect) {
   IntRect tickmark_track_rect = rect;
-  tickmark_track_rect.SetX(tickmark_track_rect.X() + 1);
-  tickmark_track_rect.SetWidth(tickmark_track_rect.Width() - 1);
+  tickmark_track_rect.set_x(tickmark_track_rect.x() + 1);
+  tickmark_track_rect.set_width(tickmark_track_rect.width() - 1);
   ScrollbarTheme::PaintTickmarks(context, scrollbar, tickmark_track_rect);
 }
 
@@ -168,11 +188,11 @@ ScrollbarThemeMac::~ScrollbarThemeMac() {
 }
 
 base::TimeDelta ScrollbarThemeMac::InitialAutoscrollTimerDelay() {
-  return base::TimeDelta::FromSecondsD(s_initial_button_delay);
+  return base::Seconds(s_initial_button_delay);
 }
 
 base::TimeDelta ScrollbarThemeMac::AutoscrollTimerDelay() {
-  return base::TimeDelta::FromSecondsD(s_autoscroll_button_delay);
+  return base::Seconds(s_autoscroll_button_delay);
 }
 
 bool ScrollbarThemeMac::ShouldDragDocumentInsteadOfThumb(
@@ -185,20 +205,25 @@ ScrollbarPart ScrollbarThemeMac::PartsToInvalidateOnThumbPositionChange(
     const Scrollbar& scrollbar,
     float old_position,
     float new_position) const {
-  // ScrollAnimatorMac will invalidate scrollbar parts if necessary.
+  // MacScrollbarAnimatorImpl will invalidate scrollbar parts if necessary.
   return kNoPart;
 }
 
 void ScrollbarThemeMac::RegisterScrollbar(Scrollbar& scrollbar) {
   GetScrollbarSet().insert(&scrollbar);
 
+  NSControlSize size;
+  if (scrollbar.CSSScrollbarWidth() == EScrollbarWidth::kThin)
+    size = NSControlSizeSmall;
+  else
+    size = NSControlSizeRegular;
+
   bool is_horizontal = scrollbar.Orientation() == kHorizontalScrollbar;
-  base::scoped_nsobject<ScrollbarPainter> scrollbar_painter(
-      [[NSClassFromString(@"NSScrollerImp")
-          scrollerImpWithStyle:RecommendedScrollerStyle()
-                   controlSize:(NSControlSize)scrollbar.GetControlSize()
-                    horizontal:is_horizontal
-          replacingScrollerImp:nil] retain]);
+  base::scoped_nsobject<ScrollbarPainter> scrollbar_painter([[NSClassFromString(
+      @"NSScrollerImp") scrollerImpWithStyle:RecommendedScrollerStyle()
+                                 controlSize:size
+                                  horizontal:is_horizontal
+                        replacingScrollerImp:nil] retain]);
   base::scoped_nsobject<BlinkScrollbarObserver> observer(
       [[BlinkScrollbarObserver alloc] initWithScrollbar:&scrollbar
                                                 painter:scrollbar_painter]);
@@ -223,25 +248,41 @@ void ScrollbarThemeMac::SetNewPainterForScrollbar(
 
 ScrollbarPainter ScrollbarThemeMac::PainterForScrollbar(
     const Scrollbar& scrollbar) const {
-  return
-      [GetScrollbarPainterMap().at(const_cast<Scrollbar*>(&scrollbar)) painter];
+  auto it = GetScrollbarPainterMap().find(const_cast<Scrollbar*>(&scrollbar));
+  return it != GetScrollbarPainterMap().end() ? [it->value painter] : nil;
 }
 
-CocoaScrollbarPainter::Params GetPaintParams(const Scrollbar& scrollbar,
-                                             bool overlay) {
-  CocoaScrollbarPainter::Params params;
-  params.orientation = CocoaScrollbarPainter::Orientation::kVerticalOnRight;
-  if (scrollbar.Orientation() == kHorizontalScrollbar)
-    params.orientation = CocoaScrollbarPainter::Orientation::kHorizontal;
-  if (scrollbar.IsLeftSideVerticalScrollbar())
-    params.orientation = CocoaScrollbarPainter::Orientation::kVerticalOnLeft;
+WebThemeEngine::ExtraParams GetPaintParams(const Scrollbar& scrollbar,
+                                           bool overlay) {
+  WebThemeEngine::ExtraParams params;
 
-  params.overlay = overlay;
-  // Only enable dark mode for overlay scrollbars (for now).
-  if (overlay)
-    params.dark_mode = scrollbar.GetScrollbarOverlayColorTheme() ==
-                       kScrollbarOverlayColorThemeLight;
-  params.hovered = scrollbar.HoveredPart() != ScrollbarPart::kNoPart;
+  params.scrollbar_extra.orientation =
+      WebThemeEngine::ScrollbarOrientation::kVerticalOnRight;
+  if (scrollbar.Orientation() == kHorizontalScrollbar) {
+    params.scrollbar_extra.orientation =
+        WebThemeEngine::ScrollbarOrientation::kHorizontal;
+  } else if (scrollbar.IsLeftSideVerticalScrollbar()) {
+    params.scrollbar_extra.orientation =
+        WebThemeEngine::ScrollbarOrientation::kVerticalOnLeft;
+  }
+
+  params.scrollbar_extra.scrollbar_theme =
+      (scrollbar.UsedColorScheme() == mojom::blink::ColorScheme::kDark)
+          ? mojom::blink::ColorScheme::kDark
+          : mojom::blink::ColorScheme::kLight;
+  params.scrollbar_extra.is_overlay = overlay;
+
+  if (overlay) {
+    params.scrollbar_extra.scrollbar_theme =
+        (scrollbar.GetScrollbarOverlayColorTheme() ==
+         kScrollbarOverlayColorThemeLight)
+            ? mojom::blink::ColorScheme::kDark
+            : mojom::blink::ColorScheme::kLight;
+  }
+
+  params.scrollbar_extra.is_hovering =
+      scrollbar.HoveredPart() != ScrollbarPart::kNoPart;
+  params.scrollbar_extra.scale_from_dip = scrollbar.ScaleFromDIP();
   return params;
 }
 
@@ -249,7 +290,7 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
                                    const Scrollbar& scrollbar,
                                    const IntRect& rect) {
   GraphicsContextStateSaver state_saver(context);
-  context.Translate(rect.X(), rect.Y());
+  context.Translate(rect.x(), rect.y());
 
   // The track opacity will be read from the ScrollbarPainter.
   float opacity = 1.f;
@@ -261,6 +302,7 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
   {
     CGRect frame_rect = CGRect(scrollbar.FrameRect());
     ScrollbarPainter scrollbar_painter = PainterForScrollbar(scrollbar);
+    DCHECK(scrollbar_painter);
     [scrollbar_painter setEnabled:scrollbar.Enabled()];
     [scrollbar_painter setBoundsSize:NSSizeFromCGSize(frame_rect.size)];
     opacity = [scrollbar_painter trackAlpha];
@@ -271,20 +313,28 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
 
   if (opacity != 1)
     context.BeginLayer(opacity);
-  CocoaScrollbarPainter::Params params =
+  WebThemeEngine::ExtraParams params =
       GetPaintParams(scrollbar, UsesOverlayScrollbars());
-  SkIRect bounds = SkIRect::MakeXYWH(0, 0, scrollbar.FrameRect().Width(),
-                                     scrollbar.FrameRect().Height());
-  CocoaScrollbarPainter::PaintTrack(context.Canvas(), bounds, params);
+  IntRect bounds(0, 0, scrollbar.FrameRect().width(),
+                 scrollbar.FrameRect().height());
+  WebThemeEngine::Part track_part =
+      params.scrollbar_extra.orientation ==
+              WebThemeEngine::ScrollbarOrientation::kHorizontal
+          ? WebThemeEngine::Part::kPartScrollbarHorizontalTrack
+          : WebThemeEngine::Part::kPartScrollbarVerticalTrack;
+  Platform::Current()->ThemeEngine()->Paint(
+      context.Canvas(), track_part, WebThemeEngine::State::kStateNormal,
+      ToGfxRect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
   if (opacity != 1)
     context.EndLayer();
 }
 
-void ScrollbarThemeMac::PaintScrollCorner(GraphicsContext& context,
-                                          const Scrollbar* vertical_scrollbar,
-                                          const DisplayItemClient& item,
-                                          const IntRect& rect,
-                                          WebColorScheme color_scheme) {
+void ScrollbarThemeMac::PaintScrollCorner(
+    GraphicsContext& context,
+    const Scrollbar* vertical_scrollbar,
+    const DisplayItemClient& item,
+    const IntRect& rect,
+    mojom::blink::ColorScheme color_scheme) {
   if (!vertical_scrollbar) {
     ScrollbarTheme::PaintScrollCorner(context, vertical_scrollbar, item, rect,
                                       color_scheme);
@@ -294,14 +344,18 @@ void ScrollbarThemeMac::PaintScrollCorner(GraphicsContext& context,
                                                   DisplayItem::kScrollCorner)) {
     return;
   }
-  DrawingRecorder recorder(context, item, DisplayItem::kScrollCorner);
+  DrawingRecorder recorder(context, item, DisplayItem::kScrollCorner,
+                           ToGfxRect(rect));
 
   GraphicsContextStateSaver state_saver(context);
-  context.Translate(rect.X(), rect.Y());
-  SkIRect bounds = SkIRect::MakeXYWH(0, 0, rect.Width(), rect.Height());
-  CocoaScrollbarPainter::Params params =
+  context.Translate(rect.x(), rect.y());
+  IntRect bounds(0, 0, rect.width(), rect.height());
+  WebThemeEngine::ExtraParams params =
       GetPaintParams(*vertical_scrollbar, UsesOverlayScrollbars());
-  CocoaScrollbarPainter::PaintCorner(context.Canvas(), bounds, params);
+  Platform::Current()->ThemeEngine()->Paint(
+      context.Canvas(), WebThemeEngine::Part::kPartScrollbarCorner,
+      WebThemeEngine::State::kStateNormal, ToGfxRect(bounds), &params,
+      params.scrollbar_extra.scrollbar_theme);
 }
 
 void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
@@ -312,11 +366,12 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
           context, scrollbar, DisplayItem::kScrollbarThumb)) {
     return;
   }
-  DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb);
+  DrawingRecorder recorder(context, scrollbar, DisplayItem::kScrollbarThumb,
+                           ToGfxRect(rect));
 
   GraphicsContextStateSaver state_saver(context);
-  context.Translate(rect.X(), rect.Y());
-  IntRect local_rect(IntPoint(), rect.Size());
+  context.Translate(rect.x(), rect.y());
+  IntRect local_rect(gfx::Point(), rect.size());
 
   // The thumb size will be read from the ScrollbarPainter.
   int thumb_size = 0;
@@ -331,16 +386,6 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
         base::scoped_policy::RETAIN);
     ScrollbarPainter scrollbar_painter = [observer painter];
     [scrollbar_painter setEnabled:scrollbar.Enabled()];
-    // drawKnob aligns the thumb to right side of the draw rect.
-    // If the vertical overlay scrollbar is on the left, use trackWidth instead
-    // of scrollbar width, to avoid the gap on the left side of the thumb.
-    IntRect draw_rect = IntRect(rect);
-    if (UsesOverlayScrollbars() && scrollbar.IsLeftSideVerticalScrollbar()) {
-      int thumb_width = [scrollbar_painter trackWidth];
-      draw_rect.SetWidth(thumb_width);
-    }
-    [scrollbar_painter
-        setBoundsSize:NSSizeFromCGSize(CGSize(draw_rect.Size()))];
 
     [scrollbar_painter setDoubleValue:0];
     [scrollbar_painter setKnobProportion:1];
@@ -351,31 +396,29 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
     // will only cause the scrollbar to engorge when moved over the top of the
     // scrollbar area.
     [scrollbar_painter
-        setBoundsSize:NSSizeFromCGSize(CGSize(scrollbar.FrameRect().Size()))];
+        setBoundsSize:NSSizeFromCGSize(CGSize(scrollbar.FrameRect().size()))];
     [observer setSuppressSetScrollbarsHidden:NO];
 
-    thumb_size = [scrollbar_painter trackBoxWidth];
+    thumb_size = [scrollbar_painter trackBoxWidth] * scrollbar.ScaleFromDIP();
   }
 
   if (!scrollbar.Enabled())
     return;
 
-  CocoaScrollbarPainter::Params params =
+  WebThemeEngine::ExtraParams params =
       GetPaintParams(scrollbar, UsesOverlayScrollbars());
 
   // Compute the bounds for the thumb, accounting for lack of engorgement.
-  SkIRect bounds;
-  switch (params.orientation) {
-    case CocoaScrollbarPainter::Orientation::kVerticalOnRight:
-      bounds = SkIRect::MakeXYWH(rect.Width() - thumb_size, 0, thumb_size,
-                                 rect.Height());
+  IntRect bounds;
+  switch (params.scrollbar_extra.orientation) {
+    case WebThemeEngine::ScrollbarOrientation::kVerticalOnRight:
+      bounds = IntRect(rect.width() - thumb_size, 0, thumb_size, rect.height());
       break;
-    case CocoaScrollbarPainter::Orientation::kVerticalOnLeft:
-      bounds = SkIRect::MakeXYWH(0, 0, thumb_size, rect.Height());
+    case WebThemeEngine::ScrollbarOrientation::kVerticalOnLeft:
+      bounds = IntRect(0, 0, thumb_size, rect.height());
       break;
-    case CocoaScrollbarPainter::Orientation::kHorizontal:
-      bounds = SkIRect::MakeXYWH(0, rect.Height() - thumb_size, rect.Width(),
-                                 thumb_size);
+    case WebThemeEngine::ScrollbarOrientation::kHorizontal:
+      bounds = IntRect(0, rect.height() - thumb_size, rect.width(), thumb_size);
       break;
   }
 
@@ -383,27 +426,31 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
     FloatRect float_local_rect(local_rect);
     context.BeginLayer(opacity, SkBlendMode::kSrcOver, &float_local_rect);
   }
-  CocoaScrollbarPainter::PaintThumb(context.Canvas(), bounds, params);
+
+  WebThemeEngine::Part thumb_part =
+      params.scrollbar_extra.orientation ==
+              WebThemeEngine::ScrollbarOrientation::kHorizontal
+          ? WebThemeEngine::Part::kPartScrollbarHorizontalThumb
+          : WebThemeEngine::Part::kPartScrollbarVerticalThumb;
+  Platform::Current()->ThemeEngine()->Paint(
+      context.Canvas(), thumb_part, WebThemeEngine::State::kStateNormal,
+      ToGfxRect(bounds), &params, params.scrollbar_extra.scrollbar_theme);
   if (opacity != 1.0f)
     context.EndLayer();
 }
 
-int ScrollbarThemeMac::ScrollbarThickness(ScrollbarControlSize control_size) {
-  NSControlSize ns_control_size = static_cast<NSControlSize>(control_size);
-  ScrollbarPainter scrollbar_painter = [NSClassFromString(@"NSScrollerImp")
-      scrollerImpWithStyle:RecommendedScrollerStyle()
-               controlSize:ns_control_size
-                horizontal:NO
-      replacingScrollerImp:nil];
-  BOOL was_expanded = NO;
-  if (SupportsExpandedScrollbars()) {
-    was_expanded = [scrollbar_painter isExpanded];
-    [scrollbar_painter setExpanded:YES];
-  }
-  int thickness = [scrollbar_painter trackBoxWidth];
-  if (SupportsExpandedScrollbars())
-    [scrollbar_painter setExpanded:was_expanded];
-  return thickness;
+int ScrollbarThemeMac::ScrollbarThickness(float scale_from_dip,
+                                          EScrollbarWidth scrollbar_width) {
+  if (scrollbar_width == EScrollbarWidth::kNone)
+    return 0;
+
+  NSControlSize control_size = scrollbar_width == EScrollbarWidth::kThin
+                                   ? NSControlSizeSmall
+                                   : NSControlSizeRegular;
+
+  return RecommendedScrollerStyle() == NSScrollerStyleOverlay
+             ? OverlayScrollbarThickness(control_size) * scale_from_dip
+             : LegacyScrollbarThickness(control_size) * scale_from_dip;
 }
 
 bool ScrollbarThemeMac::UsesOverlayScrollbars() const {
@@ -413,6 +460,7 @@ bool ScrollbarThemeMac::UsesOverlayScrollbars() const {
 void ScrollbarThemeMac::UpdateScrollbarOverlayColorTheme(
     const Scrollbar& scrollbar) {
   ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
   switch (scrollbar.GetScrollbarOverlayColorTheme()) {
     case kScrollbarOverlayColorThemeDark:
       [painter setKnobStyle:NSScrollerKnobStyleDark];
@@ -423,12 +471,9 @@ void ScrollbarThemeMac::UpdateScrollbarOverlayColorTheme(
   }
 }
 
-WebScrollbarButtonsPlacement ScrollbarThemeMac::ButtonsPlacement() const {
-  return kWebScrollbarButtonsPlacementNone;
-}
-
 bool ScrollbarThemeMac::HasThumb(const Scrollbar& scrollbar) {
   ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
   int min_length_for_thumb =
       [painter knobMinLength] + [painter trackOverlapEndInset] +
       [painter knobOverlapEndInset] +
@@ -439,40 +484,44 @@ bool ScrollbarThemeMac::HasThumb(const Scrollbar& scrollbar) {
               : scrollbar.Height()) >= min_length_for_thumb;
 }
 
-IntRect ScrollbarThemeMac::BackButtonRect(const Scrollbar& scrollbar,
-                                          ScrollbarPart part) {
-  DCHECK_EQ(ButtonsPlacement(), kWebScrollbarButtonsPlacementNone);
+IntRect ScrollbarThemeMac::BackButtonRect(const Scrollbar& scrollbar) {
   return IntRect();
 }
 
-IntRect ScrollbarThemeMac::ForwardButtonRect(const Scrollbar& scrollbar,
-                                             ScrollbarPart part) {
-  DCHECK_EQ(ButtonsPlacement(), kWebScrollbarButtonsPlacementNone);
+IntRect ScrollbarThemeMac::ForwardButtonRect(const Scrollbar& scrollbar) {
   return IntRect();
 }
 
 IntRect ScrollbarThemeMac::TrackRect(const Scrollbar& scrollbar) {
-  DCHECK(!HasButtons(scrollbar));
   return scrollbar.FrameRect();
 }
 
 int ScrollbarThemeMac::MinimumThumbLength(const Scrollbar& scrollbar) {
-  return [PainterForScrollbar(scrollbar) knobMinLength];
+  ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
+  return [painter knobMinLength];
 }
 
 void ScrollbarThemeMac::UpdateEnabledState(const Scrollbar& scrollbar) {
-  [PainterForScrollbar(scrollbar) setEnabled:scrollbar.Enabled()];
+  ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
+  [painter setEnabled:scrollbar.Enabled()];
 }
 
-float ScrollbarThemeMac::ThumbOpacity(const Scrollbar& scrollbar) const {
-  ScrollbarPainter scrollbar_painter = PainterForScrollbar(scrollbar);
-  return [scrollbar_painter knobAlpha];
+float ScrollbarThemeMac::Opacity(const Scrollbar& scrollbar) const {
+  ScrollbarPainter painter = PainterForScrollbar(scrollbar);
+  DCHECK(painter);
+  return [painter knobAlpha];
+}
+
+bool ScrollbarThemeMac::JumpOnTrackClick() const {
+  return s_jump_on_track_click;
 }
 
 // static
 void ScrollbarThemeMac::UpdateScrollbarsWithNSDefaults(
-    base::Optional<float> initial_button_delay,
-    base::Optional<float> autoscroll_button_delay,
+    absl::optional<float> initial_button_delay,
+    absl::optional<float> autoscroll_button_delay,
     NSScrollerStyle preferred_scroller_style,
     bool redraw,
     bool jump_on_track_click) {

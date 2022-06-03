@@ -17,6 +17,7 @@ namespace cc {
 struct CC_EXPORT StickyPositionConstraint {
   StickyPositionConstraint();
   StickyPositionConstraint(const StickyPositionConstraint& other);
+  StickyPositionConstraint& operator=(const StickyPositionConstraint& other);
 
   bool is_anchored_left : 1;
   bool is_anchored_right : 1;
@@ -32,18 +33,18 @@ struct CC_EXPORT StickyPositionConstraint {
 
   // The rectangle in which the sticky box is able to be positioned. This may be
   // smaller than the scroller viewport due to things like padding.
-  gfx::Rect constraint_box_rect;
+  gfx::RectF constraint_box_rect;
 
   // The rectangle corresponding to original layout position of the sticky box
   // relative to the scroll ancestor. The sticky box is only offset once the
   // scroll has passed its initial position (e.g. top_offset will only push
   // the element down from its original position).
-  gfx::Rect scroll_container_relative_sticky_box_rect;
+  gfx::RectF scroll_container_relative_sticky_box_rect;
 
   // The layout rectangle of the sticky box's containing block relative to the
   // scroll ancestor. The sticky box is only moved as far as its containing
   // block boundary.
-  gfx::Rect scroll_container_relative_containing_block_rect;
+  gfx::RectF scroll_container_relative_containing_block_rect;
 
   // The nearest ancestor sticky element ids that affect the sticky box
   // constraint rect and the containing block constraint rect respectively.

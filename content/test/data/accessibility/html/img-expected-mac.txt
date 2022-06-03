@@ -1,6 +1,8 @@
 AXWebArea
 ++AXGroup
-++++AXImage AXRoleDescription='image' AXDescription='pipe'
+++++AXImage AXDescription='pipe' AXRoleDescription='image'
 ++++AXStaticText AXValue=' '
 ++++AXStaticText AXValue=' '
-++++AXImage AXRoleDescription='image' AXDescription='  '
+++++AXImage AXDescription='  ' AXRoleDescription='image'
+++++AXStaticText AXValue=' '
+++++AXImage AXDescription='SVG face' AXRoleDescription='image'

@@ -6,24 +6,26 @@
 
 #include <utility>
 
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom-blink.h"
-#include "third_party/blink/public/platform/interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_notification_permission.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/notifications/notification.h"
+#include "third_party/blink/renderer/modules/notifications/notification_metrics.h"
 #include "third_party/blink/renderer/modules/permissions/permission_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -48,7 +50,9 @@ NotificationManager* NotificationManager::From(ExecutionContext* context) {
 const char NotificationManager::kSupplementName[] = "NotificationManager";
 
 NotificationManager::NotificationManager(ExecutionContext& context)
-    : Supplement<ExecutionContext>(context) {}
+    : Supplement<ExecutionContext>(context),
+      notification_service_(&context),
+      permission_service_(&context) {}
 
 NotificationManager::~NotificationManager() = default;
 
@@ -56,6 +60,8 @@ mojom::blink::PermissionStatus NotificationManager::GetPermissionStatus() {
   if (GetSupplementable()->IsContextDestroyed())
     return mojom::blink::PermissionStatus::DENIED;
 
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Blink.NotificationManager.GetPermissionStatusTime");
   mojom::blink::PermissionStatus permission_status;
   if (!GetNotificationService()->GetPermissionStatus(&permission_status)) {
     NOTREACHED();
@@ -70,7 +76,7 @@ ScriptPromise NotificationManager::RequestPermission(
     V8NotificationPermissionCallback* deprecated_callback) {
   ExecutionContext* context = ExecutionContext::From(script_state);
 
-  if (!permission_service_) {
+  if (!permission_service_.is_bound()) {
     // See https://bit.ly/2S0zRAS for task types
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         context->GetTaskRunner(TaskType::kMiscPlatformAPI);
@@ -85,10 +91,10 @@ ScriptPromise NotificationManager::RequestPermission(
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
 
-  Document* doc = DynamicTo<Document>(context);
+  LocalDOMWindow* win = To<LocalDOMWindow>(context);
   permission_service_->RequestPermission(
       CreatePermissionDescriptor(mojom::blink::PermissionName::NOTIFICATIONS),
-      LocalFrame::HasTransientUserActivation(doc ? doc->GetFrame() : nullptr),
+      LocalFrame::HasTransientUserActivation(win ? win->GetFrame() : nullptr),
       WTF::Bind(&NotificationManager::OnPermissionRequestComplete,
                 WrapPersistent(this), WrapPersistent(resolver),
                 WrapPersistent(deprecated_callback)));
@@ -101,8 +107,10 @@ void NotificationManager::OnPermissionRequestComplete(
     V8NotificationPermissionCallback* deprecated_callback,
     mojom::blink::PermissionStatus status) {
   String status_string = Notification::PermissionString(status);
-  if (deprecated_callback)
-    deprecated_callback->InvokeAndReportException(nullptr, status_string);
+  if (deprecated_callback) {
+    deprecated_callback->InvokeAndReportException(
+        nullptr, V8NotificationPermission::Create(status_string).value());
+  }
 
   resolver->Resolve(status_string);
 }
@@ -158,14 +166,14 @@ void NotificationManager::DisplayPersistentNotification(
   size_t author_data_size =
       notification_data->data.has_value() ? notification_data->data->size() : 0;
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      CustomCountHistogram, notification_data_size_histogram,
-      ("Notifications.AuthorDataSize", 1, 1000, 50));
-  notification_data_size_histogram.Count(
+  base::UmaHistogramCounts1000(
+      "Notifications.AuthorDataSize",
       base::saturated_cast<base::HistogramBase::Sample>(author_data_size));
 
   if (author_data_size >
       mojom::blink::NotificationData::kMaximumDeveloperDataSize) {
+    RecordPersistentNotificationDisplayResult(
+        PersistentNotificationDisplayResult::kTooMuchData);
     resolver->Reject();
     return;
   }
@@ -182,10 +190,18 @@ void NotificationManager::DidDisplayPersistentNotification(
     mojom::blink::PersistentNotificationError error) {
   switch (error) {
     case mojom::blink::PersistentNotificationError::NONE:
+      RecordPersistentNotificationDisplayResult(
+          PersistentNotificationDisplayResult::kOk);
       resolver->Resolve();
       return;
     case mojom::blink::PersistentNotificationError::INTERNAL_ERROR:
+      RecordPersistentNotificationDisplayResult(
+          PersistentNotificationDisplayResult::kInternalError);
+      resolver->Reject();
+      return;
     case mojom::blink::PersistentNotificationError::PERMISSION_DENIED:
+      RecordPersistentNotificationDisplayResult(
+          PersistentNotificationDisplayResult::kPermissionDenied);
       // TODO(https://crbug.com/832944): Throw a TypeError if permission denied.
       resolver->Reject();
       return;
@@ -230,9 +246,9 @@ void NotificationManager::DidGetNotifications(
   resolver->Resolve(notifications);
 }
 
-const mojo::Remote<mojom::blink::NotificationService>&
+mojom::blink::NotificationService*
 NotificationManager::GetNotificationService() {
-  if (!notification_service_) {
+  if (!notification_service_.is_bound()) {
     // See https://bit.ly/2S0zRAS for task types
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI);
@@ -244,10 +260,12 @@ NotificationManager::GetNotificationService() {
                   WrapWeakPersistent(this)));
   }
 
-  return notification_service_;
+  return notification_service_.get();
 }
 
-void NotificationManager::Trace(blink::Visitor* visitor) {
+void NotificationManager::Trace(Visitor* visitor) const {
+  visitor->Trace(notification_service_);
+  visitor->Trace(permission_service_);
   Supplement<ExecutionContext>::Trace(visitor);
 }
 

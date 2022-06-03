@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace views {
 
 class MenuController;
@@ -19,6 +17,9 @@ class Widget;
 // try dispatching them first.
 class MenuPreTargetHandler {
  public:
+  MenuPreTargetHandler(const MenuPreTargetHandler&) = delete;
+  MenuPreTargetHandler& operator=(const MenuPreTargetHandler&) = delete;
+
   virtual ~MenuPreTargetHandler() = default;
 
   // There are separate implementations of this method for Aura platforms and
@@ -29,9 +30,6 @@ class MenuPreTargetHandler {
 
  protected:
   MenuPreTargetHandler() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MenuPreTargetHandler);
 };
 
 }  // namespace views

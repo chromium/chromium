@@ -8,46 +8,31 @@ assert(is_chromeos, "Only ChromeOS components belong here.")
 
 group("closure_compile") {
   deps = [
-    ":chromeos_resources",
-    "cellular_setup:closure_compile",
+    "bluetooth:closure_compile_module",
+    "cellular_setup:closure_compile_module",
+    "localized_link:closure_compile_module",
     "multidevice_setup:closure_compile",
+    "multidevice_setup:closure_compile_module",
     "network:closure_compile",
+    "network:closure_compile_module",
+    "network_health:closure_compile_module",
     "quick_unlock:closure_compile",
-    "smb_shares:closure_compile",
-
-    # Targets for auto-generated Polymer 3 JS Modules
+    "quick_unlock:closure_compile_module",
     "smb_shares:closure_compile_module",
-  ]
-}
-
-js_type_check("chromeos_resources") {
-  deps = [
-    ":bluetooth_dialog",
-  ]
-}
-
-js_library("bluetooth_dialog") {
-  deps = [
-    "//third_party/polymer/v1_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior-extracted",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-  externs_list = [
-    "$externs_path/bluetooth.js",
-    "$externs_path/bluetooth_private.js",
-  ]
-  extra_sources = [
-    "$interfaces_path/bluetooth_interface.js",
-    "$interfaces_path/bluetooth_private_interface.js",
+    "traffic_counters:closure_compile_module",
   ]
 }
 
 group("polymer3_elements") {
-  deps = [
-    "smb_shares:add_smb_share_dialog_module",
-    "smb_shares:smb_browser_proxy_module",
+  public_deps = [
+    "bluetooth:polymer3_elements",
+    "cellular_setup:polymer3_elements",
+    "localized_link:web_components",
+    "multidevice_setup:polymer3_elements",
+    "network:polymer3_elements",
+    "network_health:polymer3_elements",
+    "quick_unlock:polymer3_elements",
+    "smb_shares:web_components",
+    "traffic_counters:web_components",
   ]
 }

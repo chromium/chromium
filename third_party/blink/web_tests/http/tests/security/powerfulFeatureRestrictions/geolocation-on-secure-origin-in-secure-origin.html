@@ -41,7 +41,7 @@
 
         // A sandboxed iframe should use the frame's URL as the origin to check.
         var iframe = document.createElement("iframe");
-        iframe.sandbox = "allow-scripts";
+        iframe.sandbox = "allow-scripts allow-same-origin";
         iframe.src = "/security/powerfulFeatureRestrictions/resources/" +
                      "geolocation.html";
         iframe.allow = 'geolocation *;';
@@ -50,7 +50,7 @@
         // Insecure origin frames sandboxed secure origin frames secure
         // origin.
         var iframe = document.createElement("iframe");
-        iframe.sandbox = "allow-scripts";
+        iframe.sandbox = "allow-scripts allow-same-origin";
         iframe.src = get_host_info().HTTP_ORIGIN +
                      "/security/powerfulFeatureRestrictions/resources/" +
                      "geolocation-in-iframe.html";
@@ -59,15 +59,16 @@
 
         // Regression test for crbug.com/478784
         var iframe = document.createElement("iframe");
-        iframe.srcdoc = "<script>" +
-                        "window.addEventListener('message', function (evt) {" +
-                        "window.parent.postMessage(evt.data, '*'); });" +
-                        "</sc" + "ript>" +
-                        "<iframe sandbox='allow-scripts' src='" +
-                        get_host_info().HTTP_ORIGIN +
-                        "/security/powerfulFeatureRestrictions/resources/" +
-                        "geolocation.html' allow='geolocation *;'>" +
-                        "</iframe>";
+        iframe.srcdoc =
+            "<script>" +
+            "window.addEventListener('message', function (evt) {" +
+            "window.parent.postMessage(evt.data, '*'); });" +
+            "</sc" + "ript>" +
+            "<iframe sandbox='allow-scripts allow-same-origin' src='" +
+            get_host_info().HTTP_ORIGIN +
+            "/security/powerfulFeatureRestrictions/resources/" +
+            "geolocation.html' allow='geolocation *;'>" +
+            "</iframe>";
         document.body.appendChild(iframe);
 
     }, 'getCurrentPosition in iframe');

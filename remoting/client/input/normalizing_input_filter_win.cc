@@ -6,7 +6,7 @@
 
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace remoting {

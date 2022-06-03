@@ -1,0 +1,7 @@
+file://build/fuchsia/OWNERS
+
+per-file *.test-cmx=set noparent
+per-file *.test-cmx=ddorwin@chromium.org
+per-file *.test-cmx=wez@chromium.org
+# Please prefer the above when possible.
+per-file *.test-cmx=file://fuchsia/SECURITY_OWNERS

@@ -31,6 +31,11 @@ class WebContentsDestroyedObserver : public content::WebContentsObserver {
  public:
   WebContentsDestroyedObserver(BackgroundTabManager* owner,
                                content::WebContents* watched_contents);
+
+  WebContentsDestroyedObserver(const WebContentsDestroyedObserver&) = delete;
+  WebContentsDestroyedObserver& operator=(const WebContentsDestroyedObserver&) =
+      delete;
+
   ~WebContentsDestroyedObserver() override;
 
   // WebContentsObserver:
@@ -38,8 +43,6 @@ class WebContentsDestroyedObserver : public content::WebContentsObserver {
 
  private:
   BackgroundTabManager* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsDestroyedObserver);
 };
 
 // BackgroundTabManager is responsible for storing state for the current

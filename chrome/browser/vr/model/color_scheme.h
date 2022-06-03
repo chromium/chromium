@@ -46,6 +46,7 @@ struct VR_UI_EXPORT ColorScheme {
 
   ColorScheme();
   ColorScheme(const ColorScheme& other);
+  ColorScheme& operator=(const ColorScheme& other);
 
   // These colors should be named generically, if possible, so that they can be
   // meaningfully reused by multiple elements.

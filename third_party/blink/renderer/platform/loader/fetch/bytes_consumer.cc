@@ -66,4 +66,32 @@ BytesConsumer* BytesConsumer::CreateClosed() {
   return MakeGarbageCollected<ClosedBytesConsumer>();
 }
 
+std::ostream& operator<<(std::ostream& out,
+                         const BytesConsumer::PublicState& state) {
+  switch (state) {
+    case BytesConsumer::PublicState::kReadableOrWaiting:
+      return out << "kReadableOrWaiting";
+    case BytesConsumer::PublicState::kClosed:
+      return out << "kClosed";
+    case BytesConsumer::PublicState::kErrored:
+      return out << "kErrored";
+  }
+  NOTREACHED();
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         const BytesConsumer::Result& result) {
+  switch (result) {
+    case BytesConsumer::Result::kOk:
+      return out << "kOk";
+    case BytesConsumer::Result::kShouldWait:
+      return out << "kShouldWait";
+    case BytesConsumer::Result::kDone:
+      return out << "kDone";
+    case BytesConsumer::Result::kError:
+      return out << "kError";
+  }
+  NOTREACHED();
+}
+
 }  // namespace blink

@@ -17,7 +17,7 @@ void FakeLayerTreeFrameSinkClient::SetBeginFrameSource(
   begin_frame_source_ = source;
 }
 
-base::Optional<viz::HitTestRegionList>
+absl::optional<viz::HitTestRegionList>
 FakeLayerTreeFrameSinkClient::BuildHitTestData() {
   return hit_test_region_list_;
 }

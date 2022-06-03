@@ -23,8 +23,8 @@ DestructionObserver::DestructionObserver(DestructionObservable* observable)
   // Only one observer is allowed.
   DCHECK(!observable->destruction_cb.Release());
   observable->destruction_cb.ReplaceClosure(
-      base::Bind(&DestructionObserver::OnObservableDestructed,
-                 weak_factory_.GetWeakPtr()));
+      base::BindOnce(&DestructionObserver::OnObservableDestructed,
+                     weak_factory_.GetWeakPtr()));
 }
 
 DestructionObserver::~DestructionObserver() {

@@ -1,61 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment ' eleifend lacus, at'",
-          "rect": [8, 122, 196, 79],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Integer sollicitudin nisi ut urna'",
-          "rect": [8, 122, 196, 79],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'blandit convallis.'",
-          "rect": [8, 122, 196, 79],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sagittis eros leo pulvinar velit.'",
-          "rect": [8, 122, 196, 79],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Cras faucibus. Nunc adipiscing,'",
-          "rect": [8, 82, 190, 59],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'augue '",
-          "rect": [8, 82, 190, 59],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'enim in scelerisque convallis,'",
-          "rect": [8, 82, 190, 59],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutInline SPAN id='t'",
-          "rect": [47, 92, 33, 49],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'purus'",
-          "rect": [77, 122, 33, 19],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'purus'",
-          "rect": [47, 122, 33, 19],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [8, 122, 196, 79],
+        [8, 82, 190, 59]
       ]
     }
   ]

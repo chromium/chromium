@@ -5,14 +5,24 @@
 #ifndef COMPONENTS_EXO_DRAG_DROP_OPERATION_H_
 #define COMPONENTS_EXO_DRAG_DROP_OPERATION_H_
 
+#include <memory>
+#include <string>
+
+#include "build/chromeos_buildflags.h"
 #include "components/exo/data_device.h"
 #include "components/exo/data_offer_observer.h"
 #include "components/exo/data_source_observer.h"
 #include "components/exo/surface_observer.h"
-#include "components/exo/surface_tree_host.h"
 #include "components/exo/wm_helper.h"
 #include "ui/aura/client/drag_drop_client_observer.h"
-#include "ui/base/dragdrop/drag_drop_types.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
+#include "ui/gfx/geometry/point_f.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/exo/extended_drag_source.h"
+#endif
+
+class SkBitmap;
 
 namespace ash {
 class DragDropController;
@@ -28,12 +38,11 @@ namespace ui {
 class OSExchangeData;
 }
 
-namespace viz {
-class CopyOutputResult;
-}
-
 namespace exo {
+class DataExchangeDelegate;
 class ScopedDataSource;
+class Surface;
+class ScopedSurface;
 
 // This class represents an ongoing drag-drop operation started by an exo
 // client. It manages its own lifetime. It will delete itself when the drag
@@ -41,16 +50,23 @@ class ScopedDataSource;
 // (e.g. the client deletes the data source used to start the drag operation),
 // or if another drag operation races with this one to start and wins.
 class DragDropOperation : public DataSourceObserver,
-                          public SurfaceTreeHost,
                           public SurfaceObserver,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+                          public ExtendedDragSource::Observer,
+#endif
                           public aura::client::DragDropClientObserver {
  public:
   // Create an operation for a drag-drop originating from a wayland app.
   static base::WeakPtr<DragDropOperation> Create(
+      DataExchangeDelegate* data_exchange_delegate,
       DataSource* source,
       Surface* origin,
       Surface* icon,
-      ui::DragDropTypes::DragEventSource event_source);
+      const gfx::PointF& drag_start_point,
+      ui::mojom::DragEventSource event_source);
+
+  DragDropOperation(const DragDropOperation&) = delete;
+  DragDropOperation& operator=(const DragDropOperation&) = delete;
 
   // Abort the operation if it hasn't been started yet, otherwise do nothing.
   void AbortIfPending();
@@ -58,33 +74,45 @@ class DragDropOperation : public DataSourceObserver,
   // DataSourceObserver:
   void OnDataSourceDestroying(DataSource* source) override;
 
-  // SurfaceDelegate:
-  void OnSurfaceCommit() override;
-
   // SurfaceObserver:
   void OnSurfaceDestroying(Surface* surface) override;
 
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;
   void OnDragEnded() override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnDragActionsChanged(int actions) override;
+
+  // ExtendedDragSource::Observer:
+  void OnExtendedDragSourceDestroying(ExtendedDragSource* source) override;
 #endif
 
  private:
+  class IconSurface;
+
   // A private constructor and destructor are used to prevent anyone else from
   // attempting to manage the lifetime of a DragDropOperation.
-  DragDropOperation(DataSource* source,
+  DragDropOperation(DataExchangeDelegate* data_exchange_delegate,
+                    DataSource* source,
                     Surface* origin,
                     Surface* icon,
-                    ui::DragDropTypes::DragEventSource event_source);
+                    const gfx::PointF& drag_start_point,
+                    ui::mojom::DragEventSource event_source);
   ~DragDropOperation() override;
 
-  void CaptureDragIcon();
-  void OnDragIconCaptured(std::unique_ptr<viz::CopyOutputResult> icon_result);
+  void OnDragIconCaptured(const SkBitmap& icon_bitmap);
 
-  void OnTextRead(const std::string& mime_type, base::string16 data);
-  void OnHTMLRead(const std::string& mime_type, base::string16 data);
+  void OnTextRead(const std::string& mime_type, std::u16string data);
+  void OnHTMLRead(const std::string& mime_type, std::u16string data);
+  void OnFilenamesRead(DataExchangeDelegate* data_exchange_delegate,
+                       aura::Window* source,
+                       const std::string& mime_type,
+                       const std::vector<uint8_t>& data);
+  void OnFileContentsRead(const std::string& mime_type,
+                          const base::FilePath& filename,
+                          const std::vector<uint8_t>& data);
+  void OnWebCustomDataRead(const std::string& mime_type,
+                           const std::vector<uint8_t>& data);
 
   void ScheduleStartDragDropOperation();
 
@@ -92,16 +120,20 @@ class DragDropOperation : public DataSourceObserver,
   // directly. Use ScheduleStartDragDropOperation instead.
   void StartDragDropOperation();
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void ResetExtendedDragSource();
+#endif
+
   std::unique_ptr<ScopedDataSource> source_;
   std::unique_ptr<ScopedSurface> icon_;
   std::unique_ptr<ScopedSurface> origin_;
-  gfx::Point drag_start_point_;
+  gfx::PointF drag_start_point_;
   std::unique_ptr<ui::OSExchangeData> os_exchange_data_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::DragDropController* drag_drop_controller_;
 #else
   aura::client::DragDropClient* drag_drop_controller_;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::RepeatingClosure counter_;
 
@@ -117,11 +149,13 @@ class DragDropOperation : public DataSourceObserver,
   // change in the future.
   std::string mime_type_;
 
-  ui::DragDropTypes::DragEventSource event_source_;
+  ui::mojom::DragEventSource event_source_;
 
-  base::WeakPtrFactory<DragDropOperation> weak_ptr_factory_;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ExtendedDragSource* extended_drag_source_;
+#endif
 
-  DISALLOW_COPY_AND_ASSIGN(DragDropOperation);
+  base::WeakPtrFactory<DragDropOperation> weak_ptr_factory_{this};
 };
 
 }  // namespace exo

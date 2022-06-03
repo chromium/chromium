@@ -4,15 +4,15 @@
 
 #include "extensions/browser/api/declarative_net_request/filter_list_converter/converter.h"
 
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace extensions {
 namespace declarative_net_request {
@@ -31,7 +31,7 @@ void TestConversion(std::vector<std::string> filter_list_rules,
            static_cast<size_t>(base::WriteFile(input_path, filterlist.c_str(),
                                                filterlist.size())));
 
-  base::Optional<base::Value> expected_json =
+  absl::optional<base::Value> expected_json =
       base::JSONReader::Read(json_result);
   CHECK(expected_json.has_value());
 
@@ -39,7 +39,7 @@ void TestConversion(std::vector<std::string> filter_list_rules,
   if (write_type == WriteType::kJSONRuleset)
     output_path = output_path.AppendASCII("rules.json");
 
-  ConvertRuleset({input_path}, output_path, write_type, false /* noisy */);
+  ConvertRuleset({input_path}, output_path, write_type, true /* noisy */);
 
   base::FilePath output_json_path =
       temp_dir.GetPath().AppendASCII("rules.json");
@@ -63,7 +63,15 @@ TEST_P(FilterListConverterTest, Convert) {
       "||example.com^|$script,image,font",
       "@@allowed.com$domain=example.com|~sub.example.com",
       "|https://*.abc.com|$match-case,~image,third-party",
-      "abc.com$~third-party"};
+      "abc.com$~third-party",
+      "@@||yahoo.com^$document,subdocument",
+      "@@||yahoo.com^$document",
+
+      // This rule is invalid and should be ignored.
+      "@@||yahoo.com^$document,script",
+
+      "@@||yahoo.com^$subdocument",
+  };
 
   std::string expected_result = R"(
     [ {
@@ -75,7 +83,8 @@ TEST_P(FilterListConverterTest, Convert) {
           "resourceTypes": [ "script", "image", "font" ],
           "urlFilter": "||example.com^|"
        },
-       "id": 1
+       "id": 1,
+       "priority": 1
     }, {
        "action": {
           "type": "allow"
@@ -86,7 +95,8 @@ TEST_P(FilterListConverterTest, Convert) {
           "isUrlFilterCaseSensitive": false,
           "urlFilter": "allowed.com"
        },
-       "id": 2
+       "id": 2,
+       "priority": 1
     }, {
        "action": {
           "type": "block"
@@ -94,11 +104,12 @@ TEST_P(FilterListConverterTest, Convert) {
        "condition": {
           "resourceTypes": [ "other", "script", "stylesheet", "object",
               "xmlhttprequest", "sub_frame", "ping", "media", "font",
-              "websocket" ],
+              "websocket", "webtransport", "webbundle"],
           "urlFilter": "|https://*.abc.com|",
           "domainType": "thirdParty"
        },
-       "id": 3
+       "id": 3,
+       "priority": 1
     }, {
        "action": {
           "type": "block"
@@ -108,7 +119,41 @@ TEST_P(FilterListConverterTest, Convert) {
           "urlFilter": "abc.com",
           "domainType": "firstParty"
        },
-       "id": 4
+       "id": 4,
+       "priority": 1
+    }, {
+       "action": {
+          "type": "allowAllRequests"
+       },
+       "condition": {
+          "isUrlFilterCaseSensitive": false,
+          "resourceTypes": [ "sub_frame", "main_frame" ],
+          "urlFilter": "||yahoo.com^"
+       },
+       "id": 5,
+       "priority": 1
+    }, {
+       "action": {
+          "type": "allowAllRequests"
+       },
+       "condition": {
+          "isUrlFilterCaseSensitive": false,
+          "resourceTypes": [ "main_frame" ],
+          "urlFilter": "||yahoo.com^"
+       },
+       "id": 6,
+       "priority": 1
+    }, {
+       "action": {
+          "type": "allow"
+       },
+       "condition": {
+          "isUrlFilterCaseSensitive": false,
+          "resourceTypes": [ "sub_frame" ],
+          "urlFilter": "||yahoo.com^"
+       },
+       "id": 7,
+       "priority": 1
     } ]
 
 )";

@@ -1,0 +1,30 @@
+Test description generation for custom elements.
+{
+    className : HTMLElement
+    description : word-count
+    objectId : <string>
+    subtype : node
+    type : object
+}
+{
+    className : HTMLElement
+    description : word-count#x_id
+    objectId : <string>
+    subtype : node
+    type : object
+}
+{
+    className : HTMLElement
+    description : word-count#x_id.x_class
+    objectId : <string>
+    subtype : node
+    type : object
+}
+{
+    className : HTMLElement
+    description : word-count#x_id.x_class1.x_class2
+    objectId : <string>
+    subtype : node
+    type : object
+}
+

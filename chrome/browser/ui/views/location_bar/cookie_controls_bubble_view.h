@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_
 
-#include "base/macros.h"
-#include "base/optional.h"
-#include "chrome/browser/ui/cookie_controls/cookie_controls_controller.h"
-#include "chrome/browser/ui/cookie_controls/cookie_controls_view.h"
+#include "chrome/browser/ui/cookie_controls/cookie_controls_service.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "components/content_settings/browser/ui/cookie_controls_controller.h"
+#include "components/content_settings/browser/ui/cookie_controls_view.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
+#include "components/content_settings/core/common/cookie_controls_enforcement.h"
+#include "components/content_settings/core/common/cookie_controls_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/views/bubble/tooltip_icon.h"
 #include "ui/views/controls/button/button.h"
-#include "ui/views/controls/link_listener.h"
 
 namespace content {
 class WebContents;
@@ -21,26 +23,35 @@ class WebContents;
 namespace views {
 class ImageView;
 class Label;
-class Link;
 }  // namespace views
 
 // View used to display the cookie controls ui.
 class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
-                                 public views::LinkListener,
-                                 public CookieControlsView {
+                                 public views::TooltipIcon::Observer,
+                                 public content_settings::CookieControlsView {
  public:
+  enum DialogViewID {
+    VIEW_ID_NONE = 0,
+    VIEW_ID_COOKIE_CONTROLS_NOT_WORKING_LINK,
+  };
+
+  CookieControlsBubbleView(const CookieControlsBubbleView&) = delete;
+  CookieControlsBubbleView& operator=(const CookieControlsBubbleView&) = delete;
+
   static void ShowBubble(views::View* anchor_view,
                          views::Button* highlighted_button,
                          content::WebContents* web_contents,
-                         CookieControlsController* controller,
-                         CookieControlsController::Status status);
+                         content_settings::CookieControlsController* controller,
+                         CookieControlsStatus status);
 
   static CookieControlsBubbleView* GetCookieBubble();
 
-  // CookieControlsView:
-  void OnStatusChanged(CookieControlsController::Status status,
+  // content_settings::CookieControlsView:
+  void OnStatusChanged(CookieControlsStatus status,
+                       CookieControlsEnforcement enforcement,
+                       int allowed_cookies,
                        int blocked_cookies) override;
-  void OnBlockedCookiesCountChanged(int blocked_cookies) override;
+  void OnCookiesCountChanged(int allowed_cookies, int blocked_cookies) override;
 
  private:
   enum class IntermediateStep {
@@ -49,47 +60,51 @@ class CookieControlsBubbleView : public LocationBarBubbleDelegateView,
     kTurnOffButton,
   };
 
-  CookieControlsBubbleView(views::View* anchor_view,
-                           content::WebContents* web_contents,
-                           CookieControlsController* cookie_contols);
+  CookieControlsBubbleView(
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      content_settings::CookieControlsController* cookie_contols);
   ~CookieControlsBubbleView() override;
 
   void UpdateUi();
 
   // LocationBarBubbleDelegateView:
   void CloseBubble() override;
-  int GetDialogButtons() const override;
-  base::string16 GetDialogButtonLabel(ui::DialogButton button) const override;
   void Init() override;
-  base::string16 GetWindowTitle() const override;
-  bool ShouldShowWindowTitle() const override;
-  bool ShouldShowCloseButton() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
-  bool Accept() override;
-  bool Close() override;
   gfx::Size CalculatePreferredSize() const override;
   void AddedToWidget() override;
 
-  // views::LinkListener:
-  void LinkClicked(views::Link* source, int event_flags) override;
+  void OnShowCookiesLinkClicked();
+  void OnNotWorkingLinkClicked();
+  void OnDialogAccepted();
 
-  CookieControlsController* controller_ = nullptr;
+  // views::TooltipIcon::Observer:
+  void OnTooltipBubbleShown(views::TooltipIcon* icon) override;
+  void OnTooltipIconDestroying(views::TooltipIcon* icon) override;
 
-  CookieControlsController::Status status_ =
-      CookieControlsController::Status::kUninitialized;
+  content_settings::CookieControlsController* controller_ = nullptr;
+
+  CookieControlsStatus status_ = CookieControlsStatus::kUninitialized;
+
+  CookieControlsEnforcement enforcement_ =
+      CookieControlsEnforcement::kNoEnforcement;
 
   IntermediateStep intermediate_step_ = IntermediateStep::kNone;
 
-  base::Optional<int> blocked_cookies_;
+  absl::optional<int> blocked_cookies_;
 
   views::ImageView* header_view_ = nullptr;
   views::Label* text_ = nullptr;
   views::View* extra_view_ = nullptr;
-  views::Link* show_cookies_link_ = nullptr;
+  views::View* show_cookies_link_ = nullptr;
 
-  ScopedObserver<CookieControlsController, CookieControlsView> observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CookieControlsBubbleView);
+  base::ScopedObservation<content_settings::CookieControlsController,
+                          content_settings::CookieControlsView>
+      controller_observation_{this};
+  base::ScopedObservation<views::TooltipIcon, views::TooltipIcon::Observer>
+      tooltip_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_COOKIE_CONTROLS_BUBBLE_VIEW_H_

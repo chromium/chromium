@@ -46,15 +46,6 @@
     </message>
   </if>
 
-  <message name="IDS_ERRORPAGES_SUGGESTION_VISIT_GOOGLE_CACHE" desc="When a page fails to load, sometimes we viewing a version of the page cached on Google's servers.">
-    Access a <ph name="BEGIN_LINK">&lt;a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)"&gt;</ph>cached copy<ph name="END_LINK">&lt;/a&gt;</ph> of <ph name="URL">&lt;span jscontent="originalUrlForDisplay"&gt;&lt;/span&gt;<ex>www.hats-for-goats.com/shiny</ex></ph>
-  </message>
-  <message name="IDS_ERRORPAGES_SUGGESTION_CORRECTED_URL" desc="When a page fails to load, sometimes we suggest different URL because we think the one the user entered had a typo.">
-    Did you mean <ph name="LINK">&lt;a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)" jscontent="urlCorrectionForDisplay"&gt;&lt;/a&gt;<ex>www.somewhere-spelled-correctly.com</ex></ph>?
-  </message>
-  <message name="IDS_ERRORPAGES_SUGGESTION_ALTERNATE_URL" desc="When a page fails to load, sometimes we suggest different URL (maybe a different page on the same site, or a site with similar content, for example).">
-    Go to <ph name="LINK">&lt;a jsvalues="href:urlCorrection;.jstdata:$this" onmousedown="linkClicked(this.jstdata)" jscontent="urlCorrectionForDisplay"&gt;&lt;/a&gt;<ex>www.somewhere.com</ex></ph>
-  </message>
   <message name="IDS_ERRORPAGES_SUGGESTION_RELOAD_REPOST_SUMMARY" desc="When a page fails to load, sometimes we suggest reloading a page.  In the case that reloading the page requires resubmitting data to a website, this is displayed in a list.">
     Press the reload button to resubmit the data needed to load the page.
   </message>
@@ -65,6 +56,15 @@
     Check any cables and reboot any routers, modems, or other network
     devices you may be using.
   </message>
+  <if expr="not is_ios">
+    <message name="IDS_ERRORPAGES_SUGGESTION_SECURE_DNS_CONFIG_HEADER" desc="When a page fails to load, sometimes we suggest checking the secure DNS configuration.  This is a header above above some details.">
+      Check your Secure DNS settings
+    </message>
+    <message name="IDS_ERRORPAGES_SUGGESTION_SECURE_DNS_CONFIG_BODY" desc="When a page fails to load, sometimes we suggest checking the secure DNS configuration.  This contains details below the
+    suggestion.">
+      Check your secure DNS settings. You may have configured a secure DNS server to which connections are failing.
+    </message>
+  </if>
   <if expr="not is_ios or not is_android">
     <message name="IDS_ERRORPAGES_SUGGESTION_DNS_CONFIG_HEADER" desc="When a page fails to load, sometimes we suggest checking the DNS configuration.  This is a header above above some details.">
       Check your DNS settings
@@ -98,7 +98,7 @@
     Check your administrator's policies
   </message>
   <message name="IDS_ERRORPAGES_SUGGESTION_VIEW_POLICIES_BODY" desc="When a webpage fails to load, sometimes we suggest to the user to view the current policies.  These are instructions below a header.">
-    Visit &lt;strong&gt;chrome://policy&lt;/strong&gt; to see the list of blacklisted URLs and other policies enforced by your system administrator.
+    Visit &lt;strong&gt;chrome://policy&lt;/strong&gt; to see the list of blocked URLs and other policies enforced by your system administrator.
   </message>
   <message name="IDS_ERRORPAGES_SUGGESTION_UNSUPPORTED_CIPHER_HEADER" desc="This is the header displayed above the explanation for SSL cipher and version errors.">
     Unsupported protocol
@@ -127,8 +127,8 @@
   <message name="IDS_ERRORPAGES_HEADING_NOT_FOUND" desc="Heading in the error page when the server returns a 404 or 410.">
     This <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.whatever.com</ex></ph> page can’t be found
   </message>
-  <message name="IDS_ERRORPAGES_HEADING_FILE_NOT_FOUND" desc="Heading in the error page when the local file was not found.">
-    Your file was not found
+  <message name="IDS_ERRORPAGES_HEADING_FILE_NOT_FOUND" desc="Heading in the error page when the local file could not be accessed.">
+    Your file couldn’t be accessed
   </message>
   <message name="IDS_ERRORPAGES_HEADING_BLOCKED" desc="Heading of the error page when a request is blocked by the administrator policy, extension or the browser itself.">
     <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.example.com</ex></ph> is blocked
@@ -190,8 +190,8 @@
   <message name="IDS_ERRORPAGES_SUMMARY_NOT_FOUND" desc="Summary in the error page when the server returns a 404.">
     No webpage was found for the web address: <ph name="URL">&lt;strong jscontent="failedUrl"&gt;&lt;/strong&gt;</ph>
   </message>
-  <message name="IDS_ERRORPAGES_SUMMARY_FILE_NOT_FOUND" desc="Summary in the error page when a local file is not found.">
-    It may have been moved or deleted.
+  <message name="IDS_ERRORPAGES_SUMMARY_FILE_NOT_FOUND" desc="Summary in the error page when a local file could not be accessed.">
+    It may have been moved, edited, or deleted.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_TOO_MANY_REDIRECTS" desc="Summary in the error page when there are too many URL redirects.">
     <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> redirected you too many times.
@@ -248,10 +248,14 @@
     <ph name="HOST_NAME">&lt;strong jscontent="hostName"&gt;&lt;/strong&gt;<ex>www.whatever.com</ex></ph> didn’t accept your login certificate, or one may not have been provided.
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_EXTENSION" desc="Summary in the error page when an extension blocks a request.">
-    Requests to the server have been blocked by an extension.
+    This page has been blocked by an extension
   </message>
   <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_ADMINISTRATOR" desc="Summary in the error page when an administrator policy blocks a request.">
     The person who set up this computer has chosen to block this site.
+  </message>
+
+  <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_SECURITY" desc="Summary in the error page when the request has been blocked because of some security configuration of the site.">
+    This content is blocked. Contact the site owner to fix the issue.
   </message>
 
   <message name="IDS_ERRORPAGES_HTTP_POST_WARNING" desc="The error message displayed when the user navigates back or forward to a page which would resubmit post data. They can hit reload to send POST data again and load the page.">
@@ -265,9 +269,17 @@
   <message name="IDS_ERRORPAGES_SUGGESTION_CHECK_CONNECTION_SUMMARY" desc="The message displayed in a list of suggestions following a network error, suggesting the user should try checking their connnection. The suggestions list is prefixed with 'Try:'.">
     Checking the connection
   </message>
+  <if expr="is_android">
+    <message name="IDS_ERRORPAGES_SUGGESTION_CHECK_SECURE_DNS_SUMMARY" desc="The message displayed in a list of suggestions following a network error suggesting the user should try checking their secure DNS configuration. The suggestions list is prefixed with 'Try:'.">
+      <ph name="BEGIN_LINK">&lt;a href="#buttons" onclick="toggleHelpBox()"&gt;</ph>Checking the secure DNS configuration<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    </message>
+  </if>
   <if expr="not is_ios or not is_android">
     <message name="IDS_ERRORPAGES_SUGGESTION_CHECK_PROXY_FIREWALL_DNS_SUMMARY" desc="The message displayed in a list of suggestions following a network error suggesting the user should try checking their proxy, firewall and DNS configuration. The suggestions list is prefixed with 'Try:'.">
       <ph name="BEGIN_LINK">&lt;a href="#buttons" onclick="toggleHelpBox()"&gt;</ph>Checking the proxy, firewall, and DNS configuration<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
+    </message>
+    <message name="IDS_ERRORPAGES_SUGGESTION_CHECK_PROXY_FIREWALL_SECURE_DNS_SUMMARY" desc="The message displayed in a list of suggestions following a network error suggesting the user should try checking their proxy, firewall and secure DNS configuration. The suggestions list is prefixed with 'Try:'.">
+      <ph name="BEGIN_LINK">&lt;a href="#buttons" onclick="toggleHelpBox()"&gt;</ph>Checking the proxy, firewall, and Secure DNS configuration<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
     </message>
     <message name="IDS_ERRORPAGES_SUGGESTION_CHECK_FIREWALL_ANTIVIRUS_SUMMARY" desc="The message displayed in a list of suggestions following a network error suggesting the user should try checking their firewall and anti-virus configuration. The suggestions list is prefixed with 'Try:'.">
       <ph name="BEGIN_LINK">&lt;a href="#buttons" onclick="toggleHelpBox()"&gt;</ph>Checking firewall and antivirus configurations<ph name="END_LINK">&lt;/a&gt;<ex>&lt;/a&gt;</ex></ph>
@@ -320,15 +332,19 @@
   <message name="IDS_ERRORPAGES_SUGGESTION_DISABLE_EXTENSION_SUMMARY" desc="When a page fails to load, we provide a suggestion that the user try disabling the extension that's blocking it.">
     Try disabling your extensions.
   </message>
-  <message name="IDS_ERRORPAGES_SUGGESTION_GOOGLE_SEARCH_SUMMARY" desc="When a page fails to load, sometimes we suggest a specific Google search.">
-    Search Google for <ph name="LINK">&lt;a jsvalues="href:searchUrl;.jstdata:$this" onclick="linkClicked(this.jstdata)" jscontent="searchTerms" id="search-link"&gt;<ex>Example search terms</ex>&lt;/a&gt;</ph>
+  <message name="IDS_ERRORPAGES_CHECK_TYPO_SUMMARY" desc="When a page fails to load, we provide a suggestion to the user to check for spelling errors">
+    Check if there is a typo in <ph name="HOST_NAME">&lt;span jscontent="hostName"&gt;&lt;/span&gt;<ex>www.whatever.com</ex></ph>.
   </message>
+
   <if expr="is_macosx">
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE" desc="Label for the link that invokes the connection diagnostic tool on the error page displayed in a list of suggestions. The suggestions list is prefixed with 'Try:'.">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>
     </message>
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE" desc="Standalone text for the link that invokes the connection diagnostic tool on the error page">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
+    <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
+      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
   </if>
   <if expr="is_win">
@@ -338,6 +354,9 @@
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE" desc="Standalone text for the link that invokes the connection diagnostic tool on the error page">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Windows Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
+   <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
+      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Windows Network Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
   </if>
   <if expr="chromeos">
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE" desc="Label for the link that invokes the connection diagnostic tool on the error page displayed in a list of suggestions. The suggestions list is prefixed with 'Try:'.">
@@ -346,6 +365,42 @@
     <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_STANDALONE" desc="Standalone text for the link that invokes the connection diagnostic tool on the error page">
       <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>Try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
     </message>
+    <message name="IDS_ERRORPAGES_SUGGESTION_DIAGNOSE_CHECK_TYPO_STANDALONE" desc="Suggestion text that follows request to check for typos in the URL. This provides a link that invokes the connection diagnostic tool on the error page">
+      If spelling is correct, <ph name="BEGIN_LINK">&lt;a href="javascript:diagnoseErrors()" id="diagnose-link"&gt;</ph>try running Connectivity Diagnostics<ph name="END_LINK">&lt;/a&gt;</ph>.
+    </message>
   </if>
-
+  <if expr="is_android or is_ios">
+    <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS" desc="Mobile: Instructions on how to start playing the offline game. 'dino' is an acceptable English nickname that refers to 'dinosaur'">
+      Tap the dino to play
+    </message>
+    <message name="IDS_ERRORPAGE_DINO_GAME_DESCRIPTION" desc="Message to be spoken by a screen reader to give the user context and instructions for playing the net error dino game. Tapping the screen activates the game and causes the dinosaur to jump. Mobile platforms only.">
+      Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, tap to jump over obstacles.
+    </message>
+  </if>
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_ERRORPAGES_GAME_INSTRUCTIONS" desc="Instructions on how to start playing the offline game.">
+      Press space to play
+    </message>
+    <message name="IDS_ERRORPAGE_DINO_GAME_DESCRIPTION" desc="Message to be spoken by a screen reader to give the user context and instructions for playing the net error dino game. Pressing space activates the game and causes the dinosaur to jump. Desktop platforms only.">
+      Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, press space to jump over obstacles.
+    </message>
+  </if>
+  <message name="IDS_ERRORPAGE_DINO_ARIA_LABEL" desc="Message to be spoken by a screen reader to for the dino button element used to start the net error dino game.">
+    Dino game, play
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_GAME_START" desc="Message to be spoken by a screen reader to notify the user that the dino game has started and the dinosaur is running.">
+    Game started.
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_GAME_OVER" desc="Message to be spoken by a screen reader to notify the user that the dino game has ended and tell the user the score.">
+    Game over, your score is <ph name="SCORE">$1<ex>100</ex></ph>.
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_HIGH_SCORE" desc="Message to be spoken by a screen reader to tell the user the highest recorded dino game score.">
+    Your highest score is <ph name="SCORE">$1<ex>100</ex></ph>.
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_JUMP" desc="Message to be spoken by a screen reader while the dino game is running to tell the user to jump because an obstacle is near.">
+    Jump!
+  </message>
+  <message name="IDS_ERRORPAGE_DINO_SLOW_SPEED_TOGGLE" desc="Label for a toggle which allows a user to select a slower speed for the dino game.">
+    Start slower
+  </message>
 </grit-part>

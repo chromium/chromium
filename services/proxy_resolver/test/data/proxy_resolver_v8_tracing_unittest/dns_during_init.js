@@ -10,5 +10,5 @@ function FindProxyForURL(url, host) {
   // Note that host1 and host2 should not resolve using the same cache as was
   // used for g_ips!
   var ips = g_ips.concat([dnsResolve('host1'), dnsResolve('host2')]);
-  return 'PROXY ' + ips.join('-') + ':99';
+  return 'PROXY ' + ips.join('-') + '.test:99';
 }

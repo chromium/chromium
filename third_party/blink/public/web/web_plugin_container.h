@@ -33,7 +33,9 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_CONTAINER_H_
 
 #include "third_party/blink/public/platform/web_common.h"
-#include "v8/include/v8.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "v8/include/v8-forward.h"
 
 namespace cc {
 class Layer;
@@ -45,11 +47,8 @@ class WebDocument;
 class WebElement;
 class WebPlugin;
 class WebString;
-class WebURL;
 class WebURLRequest;
 class WebDOMMessageEvent;
-struct WebPoint;
-struct WebRect;
 
 class WebPluginContainer {
  public:
@@ -78,8 +77,6 @@ class WebPluginContainer {
   virtual void EnqueueMessageEvent(const WebDOMMessageEvent&) = 0;
 
   virtual void Invalidate() = 0;
-  virtual void InvalidateRect(const WebRect&) = 0;
-  virtual void ScrollRect(const WebRect&) = 0;
 
   // Schedules an animation of the WebView that contains the plugin, as well as
   // the plugin.
@@ -93,11 +90,6 @@ class WebPluginContainer {
   // containing the plugin as a native v8 object.
   virtual v8::Local<v8::Object> V8ObjectForElement() = 0;
 
-  // Executes a "javascript:" URL on behalf of the plugin in the context
-  // of the frame containing the plugin.  Returns the result of script
-  // execution, if any.
-  virtual WebString ExecuteScriptURL(const WebURL&, bool popups_allowed) = 0;
-
   // Loads an URL in the specified frame (or the frame containing this
   // plugin if target is empty).  If notifyNeeded is true, then upon
   // completion, WebPlugin::didFinishLoadingFrameRequest is called if the
@@ -109,7 +101,7 @@ class WebPluginContainer {
 
   // Determines whether the given rectangle in this plugin is above all other
   // content. The rectangle is in the plugin's coordinate system.
-  virtual bool IsRectTopmost(const WebRect&) = 0;
+  virtual bool IsRectTopmost(const gfx::Rect&) = 0;
 
   // Notifies when the plugin changes the kind of touch-events it accepts.
   virtual void RequestTouchEventType(TouchEventRequestType) = 0;
@@ -121,10 +113,10 @@ class WebPluginContainer {
   virtual void SetWantsWheelEvents(bool) = 0;
 
   // Converts root frame's coordinates to plugin's local coordinates.
-  virtual WebPoint RootFrameToLocalPoint(const WebPoint&) = 0;
+  virtual gfx::Point RootFrameToLocalPoint(const gfx::Point&) = 0;
 
   // Converts plugin's local coordinate to root frame's coordinates.
-  virtual WebPoint LocalToRootFramePoint(const WebPoint&) = 0;
+  virtual gfx::Point LocalToRootFramePoint(const gfx::Point&) = 0;
 
   // Returns the plugin this container owns. This plugin will be
   // automatically destroyed when the container is destroyed.
@@ -149,11 +141,24 @@ class WebPluginContainer {
 
   // Sets the layer representing the plugin for compositing. The
   // WebPluginContainer does *not* take ownership.
-  virtual void SetCcLayer(cc::Layer*, bool prevent_contents_opaque_changes) = 0;
+  virtual void SetCcLayer(cc::Layer*) = 0;
 
   virtual void RequestFullscreen() = 0;
   virtual bool IsFullscreenElement() const = 0;
   virtual void CancelFullscreen() = 0;
+
+  // Returns true if this container was the target for the last mouse event.
+  virtual bool WasTargetForLastMouseEvent() = 0;
+
+  // Whether this plugin current has the mouse lock or not.
+  virtual bool IsMouseLocked() = 0;
+
+  // Request to lock the mouse. A subsequent callback on
+  // WebPlugin::DidReceiveMouseLockResult will be called.
+  virtual bool LockMouse(bool request_unadjusted_movement) = 0;
+
+  // Request to unlock a current mouse lock.
+  virtual void UnlockMouse() = 0;
 
  protected:
   ~WebPluginContainer() = default;
@@ -161,4 +166,4 @@ class WebPluginContainer {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_PLUGIN_CONTAINER_H_

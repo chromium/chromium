@@ -11,12 +11,11 @@
 
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/cronet/cronet_buildflags.h"
 #include "components/cronet/ios/test/cronet_test_base.h"
 #include "components/cronet/ios/test/start_cronet.h"
-#include "components/cronet/test/test_server.h"
+#include "components/cronet/testing/test_server/test_server.h"
 #include "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -25,6 +24,10 @@
 #include "testing/gtest_mac.h"
 
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -258,6 +261,27 @@ TEST_F(HttpTest, SetUserAgentIsExact) {
       net::NSURLWithGURL(GURL(TestServer::GetEchoHeaderURL("User-Agent")));
   [Cronet setRequestFilterBlock:nil];
   NSURLSessionDataTask* task = [session_ dataTaskWithURL:url];
+  StartDataTaskAndWaitForCompletion(task);
+  EXPECT_EQ(nil, [delegate_ error]);
+  EXPECT_STREQ(kUserAgent,
+               base::SysNSStringToUTF8([delegate_ responseBody]).c_str());
+}
+
+TEST_F(HttpTest, SetUserAgentIsAllowed) {
+  NSURL* url =
+      net::NSURLWithGURL(GURL(TestServer::GetEchoHeaderURL("User-Agent")));
+  NSMutableURLRequest* mutableRequest =
+      [[NSURLRequest requestWithURL:url] mutableCopy];
+  [mutableRequest addValue:@"foo,bar" forHTTPHeaderField:@"User-Agent"];
+  NSURLSessionDataTask* task = [session_ dataTaskWithRequest:mutableRequest];
+  StartDataTaskAndWaitForCompletion(task);
+  EXPECT_EQ(nil, [delegate_ error]);
+  EXPECT_TRUE([[delegate_ responseBody] containsString:@"foo,bar"]);
+
+  // Now check to see if the User-Agent string is restored to default when
+  // creating a new task from a request.
+  mutableRequest = [[NSURLRequest requestWithURL:url] mutableCopy];
+  task = [session_ dataTaskWithRequest:mutableRequest];
   StartDataTaskAndWaitForCompletion(task);
   EXPECT_EQ(nil, [delegate_ error]);
   EXPECT_STREQ(kUserAgent,

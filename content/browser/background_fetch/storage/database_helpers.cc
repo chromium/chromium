@@ -5,6 +5,7 @@
 #include "content/browser/background_fetch/storage/database_helpers.h"
 
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 namespace content {
@@ -62,9 +63,11 @@ DatabaseStatus ToDatabaseStatus(blink::ServiceWorkerStatusCode status) {
       return DatabaseStatus::kOk;
     case blink::ServiceWorkerStatusCode::kErrorFailed:
     case blink::ServiceWorkerStatusCode::kErrorAbort:
-      // FAILED is for invalid arguments (e.g. empty key) or database errors.
-      // ABORT is for unexpected failures, e.g. because shutdown is in progress.
-      // BackgroundFetchDataManager handles both of these the same way.
+    case blink::ServiceWorkerStatusCode::kErrorStorageDisconnected:
+      // kErrorFailed is for invalid arguments (e.g. empty key) or database
+      // errors. kErrorAbort is for unexpected failures, e.g. because shutdown
+      // is in progress. kErrorStorageDisconnected is for the Storage Service
+      // disconnection. BackgroundFetchDataManager handles these the same way.
       return DatabaseStatus::kFailed;
     case blink::ServiceWorkerStatusCode::kErrorNotFound:
       // This can also happen for writes, if the ServiceWorkerRegistration has

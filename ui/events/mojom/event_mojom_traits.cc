@@ -8,6 +8,7 @@
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_event_details.h"
+#include "ui/events/ipc/ui_events_param_traits_macros.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/events/mojom/event_constants.mojom.h"
@@ -282,8 +283,10 @@ StructTraits<ui::mojom::EventDataView, EventUniquePtr>::mouse_data(
   mouse_data->changed_button_flags = mouse_event->changed_button_flags();
   mouse_data->pointer_details = mouse_event->pointer_details();
   mouse_data->location = CreateLocationData(mouse_event);
-  if (mouse_event->IsMouseWheelEvent())
+  if (mouse_event->IsMouseWheelEvent()) {
     mouse_data->wheel_offset = mouse_event->AsMouseWheelEvent()->offset();
+    mouse_data->tick_120ths = mouse_event->AsMouseWheelEvent()->tick_120ths();
+  }
   return mouse_data;
 }
 
@@ -363,7 +366,7 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
       if (!event.ReadKeyData<ui::mojom::KeyDataPtr>(&key_data))
         return false;
 
-      base::Optional<ui::DomKey> dom_key =
+      absl::optional<ui::DomKey> dom_key =
           ui::DomKey::FromBase(key_data->dom_key);
       if (!dom_key)
         return false;
@@ -434,7 +437,7 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
         mouse_event = std::make_unique<ui::MouseWheelEvent>(
             mouse_data->wheel_offset, mouse_data->location->relative_location,
             mouse_data->location->root_location, time_stamp, event.flags(),
-            mouse_data->changed_button_flags);
+            mouse_data->changed_button_flags, mouse_data->tick_120ths);
       } else {
         mouse_event = std::make_unique<ui::MouseEvent>(
             mojo::ConvertTo<ui::EventType>(event.action()),
@@ -474,11 +477,11 @@ bool StructTraits<ui::mojom::EventDataView, EventUniquePtr>::Read(
   if (!event.ReadLatency((*out)->latency()))
     return false;
 
-  ui::Event::Properties properties;
+  absl::optional<ui::Event::Properties> properties;
   if (!event.ReadProperties(&properties))
     return false;
-  if (!properties.empty())
-    (*out)->SetProperties(properties);
+  if (properties && !properties->empty())
+    (*out)->SetProperties(std::move(*properties));
 
   return true;
 }

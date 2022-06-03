@@ -4,7 +4,7 @@
 
 #include "chromeos/services/device_sync/fake_ecies_encryption.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace chromeos {
 

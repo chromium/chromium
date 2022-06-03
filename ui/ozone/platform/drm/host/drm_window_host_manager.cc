@@ -4,7 +4,8 @@
 
 #include "ui/ozone/platform/drm/host/drm_window_host_manager.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "ui/ozone/platform/drm/host/drm_window_host.h"
 
 namespace ui {

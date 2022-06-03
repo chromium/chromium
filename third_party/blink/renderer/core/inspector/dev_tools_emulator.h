@@ -5,16 +5,17 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_
 
-#include <memory>
-#include "base/optional.h"
-#include "third_party/blink/public/platform/pointer_properties.h"
-#include "third_party/blink/public/platform/web_float_point.h"
-#include "third_party/blink/public/platform/web_viewport_style.h"
-#include "third_party/blink/public/web/web_device_emulation_params.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/widget/device_emulation_params.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+
+namespace gfx {
+class PointF;
+}  // namespace gfx
 
 namespace blink {
 
@@ -25,13 +26,13 @@ class CORE_EXPORT DevToolsEmulator final
     : public GarbageCollected<DevToolsEmulator> {
  public:
   explicit DevToolsEmulator(WebViewImpl*);
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   // Settings overrides.
   void SetTextAutosizingEnabled(bool);
   void SetDeviceScaleAdjustment(float);
   void SetPreferCompositingToLCDTextEnabled(bool);
-  void SetViewportStyle(WebViewportStyle);
+  void SetViewportStyle(mojom::blink::ViewportStyle);
   void SetPluginsEnabled(bool);
   void SetScriptEnabled(bool);
   void SetHideScrollbars(bool);
@@ -39,14 +40,18 @@ class CORE_EXPORT DevToolsEmulator final
   void SetDoubleTapToZoomEnabled(bool);
   bool DoubleTapToZoomEnabled() const;
   void SetAvailablePointerTypes(int);
-  void SetPrimaryPointerType(PointerType);
+  void SetPrimaryPointerType(mojom::blink::PointerType);
   void SetAvailableHoverTypes(int);
-  void SetPrimaryHoverType(HoverType);
+  void SetPrimaryHoverType(mojom::blink::HoverType);
   void SetMainFrameResizesAreOrientationChanges(bool);
+  void SetDefaultPageScaleLimits(float min_scale, float max_scale);
+  void SetShrinksViewportContentToFit(bool shrink_viewport_content);
+  void SetViewportEnabled(bool);
+  void SetViewportMetaEnabled(bool);
 
   // Enables and/or sets the parameters for emulation. Returns the emulation
   // transform to be used as a result.
-  TransformationMatrix EnableDeviceEmulation(const WebDeviceEmulationParams&);
+  TransformationMatrix EnableDeviceEmulation(const DeviceEmulationParams&);
   // Disables emulation.
   void DisableDeviceEmulation();
 
@@ -55,6 +60,8 @@ class CORE_EXPORT DevToolsEmulator final
   void SetScriptExecutionDisabled(bool);
   void SetScrollbarsHidden(bool);
   void SetDocumentCookieDisabled(bool);
+  void SetAutoDarkModeOverride(bool);
+  void ResetAutoDarkModeOverride();
 
   bool HasViewportOverride() const { return !!viewport_override_; }
 
@@ -75,7 +82,7 @@ class CORE_EXPORT DevToolsEmulator final
   // device metics.
   float InputEventsScaleForEmulation();
 
-  TransformationMatrix ForceViewportForTesting(const WebFloatPoint& position,
+  TransformationMatrix ForceViewportForTesting(const gfx::PointF& position,
                                                float scale) {
     return ForceViewport(position, scale);
   }
@@ -88,8 +95,7 @@ class CORE_EXPORT DevToolsEmulator final
   // Enables viewport override and returns the emulation transform to be used.
   // The |position| is in CSS pixels, and |scale| is relative to a page scale of
   // 1.0.
-  TransformationMatrix ForceViewport(const WebFloatPoint& position,
-                                     float scale);
+  TransformationMatrix ForceViewport(const gfx::PointF& position, float scale);
   // Disables viewport override and returns the emulation transform to be used.
   TransformationMatrix ResetViewport();
 
@@ -104,29 +110,32 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool device_metrics_enabled_;
   bool emulate_mobile_enabled_;
-  WebDeviceEmulationParams emulation_params_;
+  DeviceEmulationParams emulation_params_;
 
   struct ViewportOverride {
     FloatPoint position;
     double scale;
   };
-  base::Optional<ViewportOverride> viewport_override_;
+  absl::optional<ViewportOverride> viewport_override_;
 
   bool is_overlay_scrollbars_enabled_;
   bool is_orientation_event_enabled_;
   bool is_mobile_layout_theme_enabled_;
-  float original_default_minimum_page_scale_factor_;
-  float original_default_maximum_page_scale_factor_;
   bool embedder_text_autosizing_enabled_;
   float embedder_device_scale_adjustment_;
   bool embedder_prefer_compositing_to_lcd_text_enabled_;
-  WebViewportStyle embedder_viewport_style_;
+  mojom::blink::ViewportStyle embedder_viewport_style_;
   bool embedder_plugins_enabled_;
   int embedder_available_pointer_types_;
-  PointerType embedder_primary_pointer_type_;
+  mojom::blink::PointerType embedder_primary_pointer_type_;
   int embedder_available_hover_types_;
-  HoverType embedder_primary_hover_type_;
+  mojom::blink::HoverType embedder_primary_hover_type_;
   bool embedder_main_frame_resizes_are_orientation_changes_;
+  float embedder_min_page_scale_;
+  float embedder_max_page_scale_;
+  bool embedder_shrink_viewport_content_;
+  bool embedder_viewport_enabled_;
+  bool embedder_viewport_meta_enabled_;
 
   bool touch_event_emulation_enabled_;
   bool double_tap_to_zoom_enabled_;
@@ -140,8 +149,11 @@ class CORE_EXPORT DevToolsEmulator final
 
   bool embedder_cookie_enabled_;
   bool document_cookie_disabled_;
+
+  bool embedder_force_dark_mode_enabled_;
+  bool auto_dark_overriden_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_DEV_TOOLS_EMULATOR_H_

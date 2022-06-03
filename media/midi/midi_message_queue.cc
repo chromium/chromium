@@ -6,7 +6,8 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "media/midi/message_util.h"
 
 namespace midi {

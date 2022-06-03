@@ -17,7 +17,7 @@ SearchEngineBaseURLTracker::SearchEngineBaseURLTracker(
       previous_google_base_url_(search_terms_data_->GoogleBaseURLValue()) {
   DCHECK(template_url_service_);
 
-  observer_.Add(template_url_service_);
+  observation_.Observe(template_url_service_);
 
   const TemplateURL* default_search_provider =
       template_url_service_->GetDefaultSearchProvider();
@@ -45,7 +45,7 @@ void SearchEngineBaseURLTracker::OnTemplateURLServiceChanged() {
     if (template_url)
       previous_default_search_provider_data_ = template_url->data();
     else
-      previous_default_search_provider_data_ = base::nullopt;
+      previous_default_search_provider_data_ = absl::nullopt;
 
     // Also update the cached Google base URL, without separately notifying.
     previous_google_base_url_ = google_base_url;

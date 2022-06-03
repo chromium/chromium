@@ -4,16 +4,12 @@
 
 package org.chromium.content.browser.accessibility.captioning;
 
-import android.annotation.TargetApi;
-import android.os.Build;
-
 import java.util.Objects;
 
 /**
  * Bundles the Closed Caption Track Settings and ensures that non-null
  * strings are used used by the recipient of this bundle.
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public final class TextTrackSettings {
     private static final String DEFAULT_VALUE = "";
     private boolean mTextTracksEnabled;

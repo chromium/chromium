@@ -10,7 +10,8 @@ chrome.test.runTests([
           // runs in a normal session (with a user marked as kiosk user) since
           // executing a real real kiosk session is tests is very complicated.
           // Whether Drive is available in the real kiosk session is tested
-          // separetely in: chrome/browser/chromeos/login/kiosk_browsertest.cc.
+          // separately in:
+          // chrome/browser/ash/login/app_mode/kiosk_browsertest.cc.
           chrome.test.assertEq(5, volumeList.length);
           chrome.test.assertTrue(/^downloads:.*/.test(volumeList[0].volumeId));
           chrome.test.assertTrue(volumeList[0].writable);

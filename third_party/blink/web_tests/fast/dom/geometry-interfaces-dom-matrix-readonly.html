@@ -79,7 +79,7 @@ test(() => {
       seq[i] = num;
       var matrix2d = new DOMMatrixReadOnly(seq, 6);
       assert_true(matrix2d.is2D);
-      assert_throws("InvalidStateError", () => { matrix2d.toString() });
+      assert_throws_dom("InvalidStateError", () => { matrix2d.toString() });
     }
   }, `DOMMatrixReadOnly toString() - 2D matrix with ${num}`);
 
@@ -89,7 +89,7 @@ test(() => {
       seq[i] = num;
       var matrix3d = new DOMMatrixReadOnly(seq, 12);
       assert_false(matrix3d.is2D);
-      assert_throws("InvalidStateError", () => { matrix3d.toString() });
+      assert_throws_dom("InvalidStateError", () => { matrix3d.toString() });
     }
   }, `DOMMatrixReadOnly toString() - 3D matrix with ${num}`);
 });
@@ -130,80 +130,80 @@ test(() => {
 }, "DOMMatrixReadOnly toJSON() - 3D matrix");
 
 test(() => {
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly(1, 2, 3, 4, 5, 6); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly(1, 2, 3, 4, 5, 6); },
     "DOMMatrixReadOnly(transformList) can't parse unknown keyword - DOMMatrixReadOnly(1, 2, 3, 4, 5, 6) is same with DOMMatrixReadOnly('1')");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("myString"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("myString"); },
     "DOMMatrixReadOnly(transformList) can't parse unknown keyword");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("initial");},
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("initial");},
     "CSS-wide keywords are disallowed");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("notExistFunction()"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("notExistFunction()"); },
     "can't parse not exist function");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateY(50%)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateY(50%)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(1.2em)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(1.2em)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(10ex)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(10ex)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(10ch)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(10ch)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(10rem)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(10rem)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(10vw)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(10vw)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(10vh)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(10vh)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(10vmin)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(10vmin)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(10vmax)"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(10vmax)"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new SyntaxError(), () => { new DOMMatrixReadOnly("translateX(calc(10px + 1em))"); },
+  assert_throws_dom("SyntaxError", () => { new DOMMatrixReadOnly("translateX(calc(10px + 1em))"); },
     "using relative units should throw a SyntaxError");
-  assert_throws(new TypeError(), () => { new DOMMatrixReadOnly([1, 2, 3]); },
+  assert_throws_js(TypeError, () => { new DOMMatrixReadOnly([1, 2, 3]); },
     "DOMMatrixReadOnly constructor only accepts 1 number sequence with 6 or 16 elements");
 }, "DOMMatrixReadOnly constructor - invalid arguments");
 
 test(() => {
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1, 2, 3, 4, 5])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1, 2, 3, 4, 5])); },
     "fromFloat32Array function only accepts 1 Float32Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1, 2, 3, 4, 5])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1, 2, 3, 4, 5])); },
     "fromFloat64Array function only accepts 1 Float64Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1, 2, 3, 4, 5, 6 ,7])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1, 2, 3, 4, 5, 6 ,7])); },
     "fromFloat32Array function only accepts 1 Float32Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1, 2, 3, 4, 5, 6 ,7])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1, 2, 3, 4, 5, 6 ,7])); },
     "fromFloat64Array function only accepts 1 Float64Array with 6 or 16 elements");
 }, "DOMMatrixReadOnly fromFloat*Array - invalid array size of nearby 6");
 
 test(() => {
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1, 2, 3, 4, 5, 6 ,7, 8, 9, 10, 11, 12, 13, 14, 15])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1, 2, 3, 4, 5, 6 ,7, 8, 9, 10, 11, 12, 13, 14, 15])); },
     "fromFloat32Array function only accepts 1 Float32Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1, 2, 3, 4, 5, 6 ,7, 8, 9, 10, 11, 12, 13, 14, 15])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1, 2, 3, 4, 5, 6 ,7, 8, 9, 10, 11, 12, 13, 14, 15])); },
     "fromFloat64Array function only accepts 1 Float64Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1, 2, 3, 4, 5, 6 ,7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1, 2, 3, 4, 5, 6 ,7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])); },
     "fromFloat32Array function only accepts 1 Float32Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1, 2, 3, 4, 5, 6 ,7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1, 2, 3, 4, 5, 6 ,7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17])); },
     "fromFloat64Array function only accepts 1 Float64Array with 6 or 16 elements");
 }, "DOMMatrixReadOnly fromFloat*Array - invalid array size of nearby 16");
 
 test(() => {
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([])); },
     "fromFloat32Array function only accepts 1 Float32Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([])); },
     "fromFloat64Array function only accepts 1 Float64Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array([1])); },
     "fromFloat32Array function only accepts 1 Float32Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1])); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array([1])); },
     "fromFloat64Array function only accepts 1 Float64Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array(65536)); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array(65536)); },
     "fromFloat32Array function only accepts 1 Float32Array with 6 or 16 elements");
-  assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array(65536)); },
+  assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array(65536)); },
     "fromFloat64Array function only accepts 1 Float64Array with 6 or 16 elements");
 }, "DOMMatrixReadOnly fromFloat*Array - invalid array size");
 
 if (window.SharedArrayBuffer) {
   test(() => {
-    assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array(new SharedArrayBuffer(24))); },
+    assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat32Array(new Float32Array(new SharedArrayBuffer(24))); },
       "");
-    assert_throws(new TypeError(), () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array(new SharedArrayBuffer(32))); },
+    assert_throws_js(TypeError, () => { DOMMatrixReadOnly.fromFloat64Array(new Float64Array(new SharedArrayBuffer(32))); },
       "");
   }, "DOMMatrixReadOnly fromFloat*Array - can't use SharedArrayBuffer view");
 }
@@ -255,10 +255,10 @@ test(() => {
 }, "DOMMatrixReadOnly.fromMatrix(): NaN test");
 
 test(() => {
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     DOMMatrixReadOnly.fromMatrix({a: 1, b: 2, m33: 3, m44: 4, is2D: true});
   }, "The 'is2D' property is set to true but the input matrix is 3d matrix");
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     DOMMatrixReadOnly.fromMatrix({a: 1, b: 2, m11: 3});
   }, "The 'a' property should equal the 'm11' property");
 }, "DOMMatrixReadOnly.fromMatrix(): Exception test");

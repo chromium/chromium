@@ -1946,6 +1946,9 @@ int main(int argc, const char* argv[]) {
     edit_tracker->SerializeTo(llvm::outs());
   llvm::outs() << "==== END TRACKED EDITS ====\n";
 
+  if (replacements.empty())
+    return 0;
+
   // Serialization format is documented in tools/clang/scripts/run_tool.py
   llvm::outs() << "==== BEGIN EDITS ====\n";
   for (const auto& r : replacements) {

@@ -8,10 +8,11 @@
 
 #include <shellapi.h>
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/win/windows_types.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/notification_helper/notification_helper_util.h"
@@ -123,7 +124,7 @@ HRESULT NotificationActivator::Activate(
     }
   }
 
-  base::string16 params(command_line.GetCommandLineString());
+  std::wstring params(command_line.GetCommandLineString());
 
   SHELLEXECUTEINFO info;
   memset(&info, 0, sizeof(info));

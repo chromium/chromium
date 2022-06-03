@@ -14,8 +14,10 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/common/frame.mojom.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/resource_usage_reporter.mojom.h"
@@ -28,8 +30,8 @@
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
-#include "third_party/blink/public/common/features.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-statistics.h"
 
 namespace content {
 
@@ -119,7 +121,7 @@ class ResourceUsageReporterImpl : public content::mojom::ResourceUsageReporter {
           FROM_HERE,
           base::BindOnce(&ResourceUsageReporterImpl::SendResults,
                          weak_factory_.GetWeakPtr()),
-          base::TimeDelta::FromMilliseconds(kWaitForWorkersStatsTimeoutMS));
+          base::Milliseconds(kWaitForWorkersStatsTimeoutMS));
     } else {
       // No worker threads so just send out the main thread data right away.
       SendResults();
@@ -142,43 +144,17 @@ void CreateResourceUsageReporter(
       std::move(receiver));
 }
 
-class FrameFactoryImpl : public mojom::FrameFactory {
- public:
-  FrameFactoryImpl() = default;
-  FrameFactoryImpl(const FrameFactoryImpl&) = delete;
-  FrameFactoryImpl& operator=(const FrameFactoryImpl&) = delete;
-
- private:
-  // mojom::FrameFactory:
-  void CreateFrame(
-      int32_t frame_routing_id,
-      mojo::PendingReceiver<mojom::Frame> frame_receiver) override {
-    // TODO(morrita): This is for investigating http://crbug.com/415059 and
-    // should be removed once it is fixed.
-    CHECK_LT(routing_id_highmark_, frame_routing_id);
-    routing_id_highmark_ = frame_routing_id;
-
-    RenderFrameImpl* frame = RenderFrameImpl::FromRoutingID(frame_routing_id);
-    // We can receive a GetServiceProviderForFrame message for a frame not yet
-    // created due to a race between the message and a
-    // mojom::Renderer::CreateView IPC that triggers creation of the RenderFrame
-    // we want.
-    if (!frame) {
-      RenderThreadImpl::current()->RegisterPendingFrameCreate(
-          frame_routing_id, std::move(frame_receiver));
-      return;
-    }
-
-    frame->BindFrame(std::move(frame_receiver));
-  }
-
- private:
-  int32_t routing_id_highmark_ = -1;
-};
-
-void CreateFrameFactory(mojo::PendingReceiver<mojom::FrameFactory> receiver) {
-  mojo::MakeSelfOwnedReceiver(std::make_unique<FrameFactoryImpl>(),
-                              std::move(receiver));
+void CreateEmbeddedWorker(
+    scoped_refptr<base::SingleThreadTaskRunner> initiator_task_runner,
+    base::WeakPtr<RenderThreadImpl> render_thread,
+    mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
+        receiver) {
+  initiator_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&EmbeddedWorkerInstanceClientImpl::CreateForRequest,
+                     initiator_task_runner,
+                     render_thread->cors_exempt_header_list(),
+                     std::move(receiver)));
 }
 
 }  // namespace
@@ -193,26 +169,17 @@ void ExposeRendererInterfacesToBrowser(
   binders->Add(base::BindRepeating(&CreateResourceUsageReporter, render_thread),
                base::ThreadTaskRunnerHandle::Get());
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kOffMainThreadServiceWorkerStartup)) {
-    auto task_runner = base::CreateSingleThreadTaskRunner(
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskPriority::USER_BLOCKING,
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-    binders->Add(
-        base::BindRepeating(&EmbeddedWorkerInstanceClientImpl::CreateForRequest,
-                            task_runner),
-        task_runner);
-  } else {
-    auto task_runner =
-        render_thread->GetWebMainThreadScheduler()->DefaultTaskRunner();
-    binders->Add(
-        base::BindRepeating(&EmbeddedWorkerInstanceClientImpl::CreateForRequest,
-                            task_runner),
-        task_runner);
-  }
-
-  binders->Add(base::BindRepeating(&CreateFrameFactory),
+  auto task_runner_for_service_worker_startup =
+      base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+  // TODO(crbug.com/1186912): Bind on `task_runner_for_service_worker_startup`
+  // instead of the main thread, so startup isn't blocked on the main thread.
+  // Currently it's on the main thread as CreateEmbeddedWorker accesses
+  // `cors_exempt_header_list` from `render_thread`.
+  binders->Add(base::BindRepeating(&CreateEmbeddedWorker,
+                                   task_runner_for_service_worker_startup,
+                                   render_thread),
                base::ThreadTaskRunnerHandle::Get());
 
   GetContentClient()->renderer()->ExposeInterfacesToBrowser(binders);

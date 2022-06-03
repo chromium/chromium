@@ -1,0 +1,23 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_geometry = [
+  "dom_matrix.cc",
+  "dom_matrix.h",
+  "dom_matrix_read_only.cc",
+  "dom_matrix_read_only.h",
+  "dom_point.cc",
+  "dom_point.h",
+  "dom_point_read_only.cc",
+  "dom_point_read_only.h",
+  "dom_quad.cc",
+  "dom_quad.h",
+  "dom_rect.cc",
+  "dom_rect.h",
+  "dom_rect_list.cc",
+  "dom_rect_list.h",
+  "dom_rect_read_only.cc",
+  "dom_rect_read_only.h",
+  "geometry_util.h",
+]

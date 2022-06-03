@@ -9,11 +9,11 @@
 #include <stdint.h>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace gpu {
 
@@ -342,7 +342,7 @@ SyncPointManager::~SyncPointManager() {
 
 scoped_refptr<SyncPointOrderData> SyncPointManager::CreateSyncPointOrderData() {
   base::AutoLock auto_lock(lock_);
-  SequenceId sequence_id = SequenceId::FromUnsafeValue(next_sequence_id_++);
+  SequenceId sequence_id = sequence_id_generator_.GenerateNextId();
   scoped_refptr<SyncPointOrderData> order_data =
       new SyncPointOrderData(this, sequence_id);
   DCHECK(!order_data_map_.count(sequence_id));

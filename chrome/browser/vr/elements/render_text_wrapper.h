@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_RENDER_TEXT_WRAPPER_H_
 #define CHROME_BROWSER_VR_ELEMENTS_RENDER_TEXT_WRAPPER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "ui/gfx/render_text.h"
 
@@ -16,6 +15,10 @@ namespace vr {
 class VR_UI_EXPORT RenderTextWrapper {
  public:
   explicit RenderTextWrapper(gfx::RenderText* render_text);
+
+  RenderTextWrapper(const RenderTextWrapper&) = delete;
+  RenderTextWrapper& operator=(const RenderTextWrapper&) = delete;
+
   virtual ~RenderTextWrapper();
 
   virtual void SetColor(SkColor value);
@@ -33,8 +36,6 @@ class VR_UI_EXPORT RenderTextWrapper {
 
  private:
   gfx::RenderText* render_text_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderTextWrapper);
 };
 
 }  // namespace vr

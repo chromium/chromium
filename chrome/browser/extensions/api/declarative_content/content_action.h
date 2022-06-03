@@ -8,8 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "extensions/browser/declarative_user_script_master.h"
+#include "base/scoped_observation.h"
+#include "extensions/browser/user_script_loader.h"
+#include "extensions/common/mojom/host_id.mojom-forward.h"
 #include "extensions/common/user_script.h"
 
 namespace base {
@@ -25,6 +26,7 @@ class WebContents;
 namespace extensions {
 
 class Extension;
+class ExtensionUserScriptLoader;
 
 // Base class for all ContentActions of the Declarative Content API.
 //
@@ -67,16 +69,17 @@ class ContentAction {
 };
 
 // Action that injects a content script.
-class RequestContentScript : public ContentAction {
+class RequestContentScript : public ContentAction,
+                             public UserScriptLoader::Observer {
  public:
   struct ScriptData;
 
   RequestContentScript(content::BrowserContext* browser_context,
                        const Extension* extension,
                        const ScriptData& script_data);
-  RequestContentScript(DeclarativeUserScriptMaster* master,
-                       const Extension* extension,
-                       const ScriptData& script_data);
+
+  RequestContentScript(const RequestContentScript&) = delete;
+  RequestContentScript& operator=(const RequestContentScript&) = delete;
 
   ~RequestContentScript() override;
 
@@ -84,12 +87,6 @@ class RequestContentScript : public ContentAction {
       content::BrowserContext* browser_context,
       const Extension* extension,
       const base::DictionaryValue* dict,
-      std::string* error);
-
-  static std::unique_ptr<ContentAction> CreateForTest(
-      DeclarativeUserScriptMaster* master,
-      const Extension* extension,
-      const base::Value& json_action,
       std::string* error);
 
   static bool InitScriptData(const base::DictionaryValue* dict,
@@ -102,7 +99,7 @@ class RequestContentScript : public ContentAction {
   void Revert(const ApplyInfo& apply_info) const override;
 
  private:
-  void InitScript(const HostID& host_id,
+  void InitScript(const mojom::HostID& host_id,
                   const Extension* extension,
                   const ScriptData& script_data);
 
@@ -111,10 +108,15 @@ class RequestContentScript : public ContentAction {
   void InstructRenderProcessToInject(content::WebContents* contents,
                                      const Extension* extension) const;
 
-  UserScript script_;
-  DeclarativeUserScriptMaster* master_;
+  // UserScriptLoader::Observer:
+  void OnScriptsLoaded(UserScriptLoader* loader,
+                       content::BrowserContext* browser_context) override;
+  void OnUserScriptLoaderDestroyed(UserScriptLoader* loader) override;
 
-  DISALLOW_COPY_AND_ASSIGN(RequestContentScript);
+  UserScript script_;
+  ExtensionUserScriptLoader* script_loader_ = nullptr;
+  base::ScopedObservation<UserScriptLoader, UserScriptLoader::Observer>
+      scoped_observation_{this};
 };
 
 }  // namespace extensions

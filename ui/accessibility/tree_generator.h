@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifndef UI_ACCESSIBILITY_TREE_GENERATOR_H_
+#define UI_ACCESSIBILITY_TREE_GENERATOR_H_
+
 #include <vector>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/accessibility/ax_tree_update_forward.h"
 
 namespace ui {
 
 class AXTree;
 
+// This class is only used for fuzz testing.
+//
 // A class to create all possible trees with up to <n> nodes and the
 // ids [1...n].
 //
@@ -39,19 +47,59 @@ class AXTree;
 // tree code on smaller trees at least.
 class TreeGenerator {
  public:
+  // Compute total number of trees.
+  static constexpr int ComputeUniqueTreeCount(int max_node_count,
+                                              bool permutations) {
+    int tree_count = 0;
+    for (int i = 1; i <= max_node_count; ++i)
+      tree_count += UniqueTreeCountForNodeCount(i, permutations);
+    return tree_count;
+  }
+
   // Will generate all trees with up to |max_node_count| nodes.
   // If |permutations| is true, will return every possible permutation of
   // ids, otherwise the root will always have id 1, and so on.
   TreeGenerator(int max_node_count, bool permutations);
   ~TreeGenerator();
 
+  // Build all unique trees (no nodes ignored).
   int UniqueTreeCount() const;
-
   void BuildUniqueTree(int tree_index, AXTree* out_tree) const;
 
+  // Support for returning every permutation of ignored nodes
+  // (other than the root, which is never ignored) per unique tree.
+  int IgnoredPermutationCountPerUniqueTree(int tree_index) const;
+
+  // The focused node is never ignored, even if marked as such. To enable
+  // testing how focus could affect the ignored state when unserializing
+  // trees, the `focused_node` argument (if specified) indicates which node
+  // should be focused.
+  void BuildUniqueTreeWithIgnoredNodes(int tree_index,
+                                       int ignored_index,
+                                       absl::optional<int> focused_node,
+                                       AXTree* out_tree) const;
+
  private:
-  void BuildUniqueTreeWithSize(
-      int node_count, int tree_index, AXTree* out_tree) const;
+  static constexpr int UniqueTreeCountForNodeCount(int node_count,
+                                                   bool permutations) {
+    int unique_tree_count = 1;
+
+    // (n-1)! for the possible trees.
+    for (int i = 2; i < node_count; ++i)
+      unique_tree_count *= i;
+
+    // n! for the permutations of ids.
+    if (permutations)
+      unique_tree_count = unique_tree_count * unique_tree_count * node_count;
+
+    return unique_tree_count;
+  }
+
+  void BuildUniqueTreeUpdate(int tree_index,
+                             AXTreeUpdate* out_tree_update) const;
+  void BuildUniqueTreeUpdateWithSize(int node_count,
+                                     int tree_index,
+                                     AXTreeUpdate* out_tree_update) const;
 
   int max_node_count_;
   bool permutations_;
@@ -60,3 +108,5 @@ class TreeGenerator {
 };
 
 }  // namespace ui
+
+#endif  // UI_ACCESSIBILITY_TREE_GENERATOR_H_

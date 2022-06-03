@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL worklets interfaces promise_test: Unhandled rejection with value: object "WebIDLParseError: Syntax error at line 1:
+{"error": {"code"
+^ Unrecognised tokens"
+Harness: the test ran to completion.
+

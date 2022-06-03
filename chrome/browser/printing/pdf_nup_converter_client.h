@@ -6,12 +6,10 @@
 #define CHROME_BROWSER_PRINTING_PDF_NUP_CONVERTER_CLIENT_H_
 
 #include <map>
-#include <memory>
 
 #include "chrome/services/printing/public/mojom/pdf_nup_converter.mojom.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "services/service_manager/public/cpp/connector.h"
 
 namespace printing {
 
@@ -24,6 +22,10 @@ class PdfNupConverterClient
     : public content::WebContentsUserData<PdfNupConverterClient> {
  public:
   explicit PdfNupConverterClient(content::WebContents* web_contents);
+
+  PdfNupConverterClient(const PdfNupConverterClient&) = delete;
+  PdfNupConverterClient& operator=(const PdfNupConverterClient&) = delete;
+
   ~PdfNupConverterClient() override;
 
   void DoNupPdfConvert(
@@ -57,8 +59,6 @@ class PdfNupConverterClient
 
   mojo::Remote<mojom::PdfNupConverter> CreatePdfNupConverterRemote();
 
-  std::unique_ptr<service_manager::Connector> connector_;
-
   // Stores the mapping between document cookies and their corresponding
   // mojo::Remote.
   std::map<int, mojo::Remote<mojom::PdfNupConverter>> pdf_nup_converter_map_;
@@ -66,8 +66,6 @@ class PdfNupConverterClient
   content::WebContents* web_contents_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PdfNupConverterClient);
 };
 
 }  // namespace printing

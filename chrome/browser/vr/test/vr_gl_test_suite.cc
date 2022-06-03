@@ -19,10 +19,10 @@ VrGlTestSuite::VrGlTestSuite(int argc, char** argv) : VrTestSuite(argc, argv) {}
 void VrGlTestSuite::Initialize() {
   VrTestSuite::Initialize();
 
-  gl::GLImageTestSupport::InitializeGL(base::nullopt);
+  gl::GLImageTestSupport::InitializeGL(absl::nullopt);
 
 #if defined(VR_USE_COMMAND_BUFFER)
-  // Always enable gpu and oop raster, regardless of platform and blacklist.
+  // Always enable gpu and oop raster, regardless of platform and denylist.
   auto* gpu_feature_info = gpu::GetTestGpuThreadHolder()->GetGpuFeatureInfo();
   gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
       gpu::kGpuFeatureStatusEnabled;

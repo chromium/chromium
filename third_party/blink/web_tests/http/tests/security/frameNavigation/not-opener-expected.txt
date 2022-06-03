@@ -1,2 +1,2 @@
 PASS
-There are currently 4 windows opened.
+There are currently 3 windows opened.

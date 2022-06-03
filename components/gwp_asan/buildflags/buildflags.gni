@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//base/allocator/allocator.gni")
-import("//build/config/allocator.gni")
 import("//build/config/compiler/compiler.gni")
 
 # Windows/x86 is disabled due to https://crbug.com/969146
@@ -11,7 +10,7 @@ import("//build/config/compiler/compiler.gni")
 # Android requires frame pointers for unwinding, unwind tables aren't shipped in
 # official builds.
 supported_platform =
-    is_mac || (is_win && current_cpu == "x64") ||
+    is_linux || is_chromeos || is_mac || (is_win && current_cpu == "x64") ||
     (is_android && !is_component_build && enable_frame_pointers)
 
 declare_args() {

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body>
+  <div id="d0"></div>
+  <div id="d1"></div>
+  <div id="d2"></div>
+  <div id="d3"></div>
+  <div id="d4" style="text-indent: 10px"></div>
+  <div id="d5" style="text-indent: inherit"></div>
+  <div id="d6" style="text-indent: initial"></div>
+  <script>
+    function go() {
+      // Should fire an event when text-indent changes to something that does not
+      // resolve to the default value of 0.
+      document.getElementById('d0').style.setProperty('text-indent', '10px');
+      document.getElementById('d1').style.setProperty('text-indent', '-10px');
+      document.getElementById('d2').style.setProperty('text-indent', '0px');
+      document.getElementById('d3').style.setProperty('text-indent', '10%');
+      document.getElementById('d4').style.setProperty('text-indent', '20px');
+      document.getElementById('d5').style.setProperty('text-indent', '0px');
+      document.getElementById('d6').style.setProperty('text-indent', '0px');
+    }
+  </script>
+</body>
+</html>

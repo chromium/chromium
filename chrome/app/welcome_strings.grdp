@@ -7,6 +7,9 @@
   <message name="IDS_WELCOME_SKIP" desc="Label for a button to skip the current welcome step.">
     Skip
   </message>
+  <message name="IDS_WELCOME_STEPS" desc="Label indicating what step the user is in and how many steps there are in total.">
+    Step <ph name="CURRENT_STEP">$1<ex>1</ex></ph> of <ph name="TOTAL_STEPS">$2<ex>2</ex></ph>
+  </message>
   <message name="IDS_WELCOME_BOOKMARK_ADDED" desc="String read for accessibility to inform the user a bookmark was added.">
     Bookmark added
   </message>

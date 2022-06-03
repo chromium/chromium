@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <link href="../css-intrinsic-dimensions/resources/width-keyword-classes.css" rel="stylesheet">
 <link href="../css-intrinsic-dimensions/resources/height-keyword-classes.css" rel="stylesheet">
 <link href="resources/grid.css" rel="stylesheet">
@@ -22,60 +21,12 @@ div { font: 10px/1 Ahem; }
 
 <body onload="checkLayout('.grid')">
 
-<p>This test checks that fr tracks are properly sized whenever grid have intrinsic sizes.</p>
-
-<div class="container">
-  <div class="grid" data-expected-width="100" data-expected-height="10">
-    <div>XXX XXX</div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="grid min-content" data-expected-width="30" data-expected-height="20">
-    <div>XXX XXX</div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="grid max-content" data-expected-width="70" data-expected-height="10">
-    <div>XXX XXX</div>
-  </div>
-</div>
-
-<div class="container">
-  <div class="grid fit-content" data-expected-width="70" data-expected-height="10">
-    <div>XXX XXX</div>
-  </div>
-</div>
+<p>This test checks that fr tracks are properly sized when the grid container is under a fill-available constraint.</p>
 
 <div class="container">
   <div class="grid fill-available" data-expected-width="100" data-expected-height="100">
     <div>XXX XXX</div>
   </div>
 </div>
-
-<div class="min-content">
-    <div class="grid" data-expected-width="40" data-expected-height="50">
-        <div>XXX XXXX XX X XX XXX</div>
-    </div>
-</div>
-
-<div class="grid container" data-expected-width="100" data-expected-height="100">
-    <div style="display: grid; grid-template-columns: 3fr; grid-template-rows: 2fr;" data-expected-width="100" data-expected-height="100">
-        <div>XXX XXXX XX X XX XXX</div>
-    </div>
-</div>
-
-<div class="grid" style="grid; grid: 1fr 2fr / 2fr 1fr; width: 300px; height: 300px;" data-expected-width="300" data-expected-height="300">
-    <div class="firstRowFirstColumn" style="display: grid; grid: 1fr 3fr / 3fr 1fr;" data-expected-width="200" data-expected-height="100">
-        <div style="border: 2px solid magenta;" data-expected-width="150" data-expected-height="25">XXXX</div>
-        <div class="secondRowSecondColumn" style="border: 2px solid cyan;" data-expected-width="50" data-expected-height="75">XXXX XX XX</div>
-    </div>
-    <div class="secondRowSecondColumn" style="display: grid; grid: 3fr 4fr / 4fr 3fr;" data-expected-width="100" data-expected-height="200">
-        <div style="border: 2px solid lime;" data-expected-width="56" data-expected-height="86">XXX XX X</div>
-        <div class="secondRowSecondColumn" style="border: 2px solid navy;" data-expected-width="44" data-expected-height="114">XXXX XXX XXXX XXX XXXX</div>
-    </div>
-</div>
-
 
 </body>

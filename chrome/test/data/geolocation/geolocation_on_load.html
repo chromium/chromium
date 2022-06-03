@@ -29,12 +29,14 @@ function showPosition(position) {
   var lng = position.coords.longitude;
   document.getElementById('lat').innerHTML = lat;
   document.getElementById('lng').innerHTML = lng;
+  window.document.title = "Granted";
 }
 
 function showError(positionError) {
   document.getElementById('lat').innerHTML =
       positionError.message;
   document.getElementById('lng').innerHTML = '';
+  window.document.title = "Denied";
 }
 
     </script>

@@ -4,12 +4,12 @@
 
 #include "components/sync_bookmarks/bookmark_model_type_processor.h"
 
-#include <map>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/feature_list.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -17,13 +17,16 @@
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
+#include "components/sync/base/client_tag_hash.h"
 #include "components/sync/base/data_type_histogram.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/commit_queue.h"
-#include "components/sync/engine/cycle/status_counters.h"
+#include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/engine/model_type_processor_metrics.h"
 #include "components/sync/engine/model_type_processor_proxy.h"
 #include "components/sync/model/data_type_activation_request.h"
+#include "components/sync/model/type_entities_count.h"
 #include "components/sync/protocol/bookmark_model_metadata.pb.h"
 #include "components/sync/protocol/proto_value_conversions.h"
 #include "components/sync_bookmarks/bookmark_local_changes_builder.h"
@@ -31,62 +34,12 @@
 #include "components/sync_bookmarks/bookmark_model_observer_impl.h"
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
+#include "components/sync_bookmarks/switches.h"
 #include "components/undo/bookmark_undo_utils.h"
-#include "ui/base/models/tree_node_iterator.h"
 
 namespace sync_bookmarks {
 
 namespace {
-
-// Metrics: "Sync.MissingBookmarkPermanentNodes"
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class MissingPermanentNodes {
-  kBookmarkBar = 0,
-  kOtherBookmarks = 1,
-  kMobileBookmarks = 2,
-  kBookmarkBarAndOtherBookmarks = 3,
-  kBookmarkBarAndMobileBookmarks = 4,
-  kOtherBookmarksAndMobileBookmarks = 5,
-  kBookmarkBarAndOtherBookmarksAndMobileBookmarks = 6,
-
-  kMaxValue = kBookmarkBarAndOtherBookmarksAndMobileBookmarks,
-};
-
-void LogMissingPermanentNodes(
-    const SyncedBookmarkTracker::Entity* bookmark_bar,
-    const SyncedBookmarkTracker::Entity* other_bookmarks,
-    const SyncedBookmarkTracker::Entity* mobile_bookmarks) {
-  MissingPermanentNodes missing_nodes;
-  if (!bookmark_bar && other_bookmarks && mobile_bookmarks) {
-    missing_nodes = MissingPermanentNodes::kBookmarkBar;
-  } else if (bookmark_bar && !other_bookmarks && mobile_bookmarks) {
-    missing_nodes = MissingPermanentNodes::kOtherBookmarks;
-  } else if (bookmark_bar && other_bookmarks && !mobile_bookmarks) {
-    missing_nodes = MissingPermanentNodes::kMobileBookmarks;
-  } else if (!bookmark_bar && !other_bookmarks && mobile_bookmarks) {
-    missing_nodes = MissingPermanentNodes::kBookmarkBarAndOtherBookmarks;
-  } else if (!bookmark_bar && other_bookmarks && !mobile_bookmarks) {
-    missing_nodes = MissingPermanentNodes::kBookmarkBarAndMobileBookmarks;
-  } else if (bookmark_bar && !other_bookmarks && !mobile_bookmarks) {
-    missing_nodes = MissingPermanentNodes::kOtherBookmarksAndMobileBookmarks;
-  } else {
-    // All must be missing.
-    missing_nodes =
-        MissingPermanentNodes::kBookmarkBarAndOtherBookmarksAndMobileBookmarks;
-  }
-  UMA_HISTOGRAM_ENUMERATION("Sync.MissingBookmarkPermanentNodes",
-                            missing_nodes);
-}
-
-// Enables scheduling bookmark model saving only upon changes in entity sync
-// metadata. This would stop persisting changes to the model type state that
-// doesn't involve changes to the entity metadata as well.
-// TODO(crbug.com/945820): This should be removed in M80 if not issues are
-// observed.
-const base::Feature kSyncScheduleForEntityMetadataChangesOnly{
-    "SyncScheduleForEntityMetadataChangesOnly",
-    base::FEATURE_ENABLED_BY_DEFAULT};
 
 class ScopedRemoteUpdateBookmarks {
  public:
@@ -108,6 +61,10 @@ class ScopedRemoteUpdateBookmarks {
     bookmark_model_->RemoveObserver(observer_);
   }
 
+  ScopedRemoteUpdateBookmarks(const ScopedRemoteUpdateBookmarks&) = delete;
+  ScopedRemoteUpdateBookmarks& operator=(const ScopedRemoteUpdateBookmarks&) =
+      delete;
+
   ~ScopedRemoteUpdateBookmarks() {
     // Notify UI intensive observers of BookmarkModel that all updates have been
     // applied, and that they may now be consumed. This prevents issues like the
@@ -124,8 +81,6 @@ class ScopedRemoteUpdateBookmarks {
   ScopedSuspendBookmarkUndo suspend_undo_;
 
   bookmarks::BookmarkModelObserver* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedRemoteUpdateBookmarks);
 };
 
 std::string ComputeServerDefinedUniqueTagForDebugging(
@@ -141,24 +96,6 @@ std::string ComputeServerDefinedUniqueTagForDebugging(
     return "synced_bookmarks";
   }
   return "";
-}
-
-// Returns a map from id to node for all nodes in |model|.
-std::map<int64_t, const bookmarks::BookmarkNode*> BuildIdToBookmarkNodeMap(
-    const bookmarks::BookmarkModel* model) {
-  std::map<int64_t, const bookmarks::BookmarkNode*> id_to_bookmark_node_map;
-
-  // The TreeNodeIterator used below doesn't include the node itself, and hence
-  // add the root node separately.
-  id_to_bookmark_node_map[model->root_node()->id()] = model->root_node();
-
-  ui::TreeNodeIterator<const bookmarks::BookmarkNode> iterator(
-      model->root_node());
-  while (iterator.has_next()) {
-    const bookmarks::BookmarkNode* node = iterator.Next();
-    id_to_bookmark_node_map[node->id()] = node;
-  }
-  return id_to_bookmark_node_map;
 }
 
 }  // namespace
@@ -204,32 +141,38 @@ void BookmarkModelTypeProcessor::GetLocalChanges(
     GetLocalChangesCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BookmarkLocalChangesBuilder builder(bookmark_tracker_.get(), bookmark_model_);
-  syncer::CommitRequestDataList local_changes =
-      builder.BuildCommitRequests(max_entries);
-  for (const std::unique_ptr<syncer::CommitRequestData>& local_change :
-       local_changes) {
-    bookmark_tracker_->MarkCommitMayHaveStarted(local_change->entity->id);
-  }
-  std::move(callback).Run(std::move(local_changes));
+  std::move(callback).Run(builder.BuildCommitRequests(max_entries));
 }
 
 void BookmarkModelTypeProcessor::OnCommitCompleted(
     const sync_pb::ModelTypeState& type_state,
-    const syncer::CommitResponseDataList& response_list) {
+    const syncer::CommitResponseDataList& committed_response_list,
+    const syncer::FailedCommitResponseDataList& error_response_list) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  for (const syncer::CommitResponseData& response : response_list) {
+  // |error_response_list| is ignored, because all errors are treated as
+  // transientand the processor with eventually retry.
+
+  for (const syncer::CommitResponseData& response : committed_response_list) {
     // In order to save space, |response.id_in_request| is written when it's
     // different from |response.id|. If it's empty, then there was no id change
     // during the commit, and |response.id| carries both the old and new ids.
     const std::string& old_sync_id =
         response.id_in_request.empty() ? response.id : response.id_in_request;
-    bookmark_tracker_->UpdateUponCommitResponse(old_sync_id, response.id,
-                                                response.sequence_number,
-                                                response.response_version);
+    const SyncedBookmarkTracker::Entity* entity =
+        bookmark_tracker_->GetEntityForSyncId(old_sync_id);
+    if (!entity) {
+      DLOG(WARNING) << "Received a commit response for an unknown entity: "
+                    << old_sync_id;
+      continue;
+    }
+
+    bookmark_tracker_->UpdateUponCommitResponse(entity, response.id,
+                                                response.response_version,
+                                                response.sequence_number);
   }
-  bookmark_tracker_->set_model_type_state(
-      std::make_unique<sync_pb::ModelTypeState>(type_state));
+
+  bookmark_tracker_->set_model_type_state(type_state);
   schedule_save_closure_.Run();
 }
 
@@ -241,9 +184,19 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
   DCHECK_EQ(model_type_state.cache_guid(), cache_guid_);
   DCHECK(model_type_state.initial_sync_done());
 
+  syncer::LogUpdatesReceivedByProcessorHistogram(
+      syncer::BOOKMARKS,
+      /*is_initial_sync=*/!bookmark_tracker_, updates.size());
+
   if (!bookmark_tracker_) {
     OnInitialUpdateReceived(model_type_state, std::move(updates));
     return;
+  }
+
+  // Before applying incremental updates, run a quirk to mitigate some data
+  // corruption issue introduced by crbug.com/1231450.
+  for (syncer::UpdateResponseData& update : updates) {
+    MaybeFixGuidInSpecificsDueToPastBug(*bookmark_tracker_, &update.entity);
   }
 
   // Incremental updates.
@@ -254,14 +207,16 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
   const bool got_new_encryption_requirements =
       bookmark_tracker_->model_type_state().encryption_key_name() !=
       model_type_state.encryption_key_name();
-  bookmark_tracker_->set_model_type_state(
-      std::make_unique<sync_pb::ModelTypeState>(model_type_state));
+  bookmark_tracker_->set_model_type_state(model_type_state);
+  bookmark_tracker_->UpdateLastSyncTime();
   updates_handler.Process(updates, got_new_encryption_requirements);
+  if (bookmark_tracker_->ReuploadBookmarksOnLoadIfNeeded()) {
+    NudgeForCommitIfNeeded();
+  }
   // There are cases when we receive non-empty updates that don't result in
   // model changes (e.g. reflections). In that case, issue a write to persit the
   // progress marker in order to avoid downloading those updates again.
-  if (!updates.empty() || !base::FeatureList::IsEnabled(
-                              kSyncScheduleForEntityMetadataChangesOnly)) {
+  if (!updates.empty()) {
     // Schedule save just in case one is needed.
     schedule_save_closure_.Run();
   }
@@ -301,39 +256,25 @@ void BookmarkModelTypeProcessor::ModelReadyToSync(
   bookmark_model_ = model;
   schedule_save_closure_ = schedule_save_closure;
 
-  base::TimeTicks start_time = base::TimeTicks::Now();
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.ParseFromString(metadata_str);
 
-  if (model_metadata.model_type_state().initial_sync_done() &&
-      SyncedBookmarkTracker::BookmarkModelMatchesMetadata(model,
-                                                          model_metadata)) {
-    std::map<int64_t, const bookmarks::BookmarkNode*> id_to_bookmark_node_map =
-        BuildIdToBookmarkNodeMap(bookmark_model_);
-    std::vector<NodeMetadataPair> nodes_metadata;
-    for (sync_pb::BookmarkMetadata& bookmark_metadata :
-         *model_metadata.mutable_bookmarks_metadata()) {
-      const bookmarks::BookmarkNode* node = nullptr;
-      if (!bookmark_metadata.metadata().is_deleted()) {
-        node = id_to_bookmark_node_map[bookmark_metadata.id()];
-        DCHECK(node);
-      }
-      auto metadata = std::make_unique<sync_pb::EntityMetadata>();
-      metadata->Swap(bookmark_metadata.mutable_metadata());
-      nodes_metadata.emplace_back(node, std::move(metadata));
-    }
-    auto model_type_state = std::make_unique<sync_pb::ModelTypeState>();
-    model_type_state->Swap(model_metadata.mutable_model_type_state());
-    StartTrackingMetadata(std::move(nodes_metadata),
-                          std::move(model_type_state));
+  bookmark_tracker_ = SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
+      model, std::move(model_metadata));
+
+  if (bookmark_tracker_) {
     bookmark_tracker_->CheckAllNodesTracked(bookmark_model_);
-    UMA_HISTOGRAM_TIMES("Sync.BookmarksModelReadyToSyncTime",
-                        base::TimeTicks::Now() - start_time);
-  } else if (!model_metadata.model_type_state().initial_sync_done() &&
-             !model_metadata.bookmarks_metadata().empty()) {
-    DLOG(ERROR)
-        << "Persisted Metadata not empty while initial sync is not done.";
+    StartTrackingMetadata();
+  } else if (!metadata_str.empty()) {
+    DLOG(WARNING)
+        << "Persisted bookmark sync metadata invalidated when loading.";
+    // Schedule a save to make sure the corrupt metadata is deleted from disk as
+    // soon as possible, to avoid reporting again after restart if nothing else
+    // schedules a save meanwhile (which is common if sync is not running
+    // properly, e.g. auth error).
+    schedule_save_closure_.Run();
   }
+
   ConnectIfReady();
 }
 
@@ -478,18 +419,19 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
     syncer::UpdateResponseDataList updates) {
   DCHECK(!bookmark_tracker_);
 
-  StartTrackingMetadata(
-      std::vector<NodeMetadataPair>(),
-      std::make_unique<sync_pb::ModelTypeState>(model_type_state));
+  TRACE_EVENT0("sync", "BookmarkModelTypeProcessor::OnInitialUpdateReceived");
+
+  bookmark_tracker_ = SyncedBookmarkTracker::CreateEmpty(model_type_state);
+  StartTrackingMetadata();
 
   {
     ScopedRemoteUpdateBookmarks update_bookmarks(
         bookmark_model_, bookmark_undo_service_,
         bookmark_model_observer_.get());
 
-    BookmarkModelMerger(std::move(updates), bookmark_model_, favicon_service_,
-                        bookmark_tracker_.get())
-        .Merge();
+    BookmarkModelMerger model_merger(std::move(updates), bookmark_model_,
+                                     favicon_service_, bookmark_tracker_.get());
+    model_merger.Merge();
   }
 
   // If any of the permanent nodes is missing, we treat it as failure.
@@ -499,12 +441,6 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
           bookmark_model_->other_node()) ||
       !bookmark_tracker_->GetEntityForBookmarkNode(
           bookmark_model_->mobile_node())) {
-    LogMissingPermanentNodes(bookmark_tracker_->GetEntityForBookmarkNode(
-                                 bookmark_model_->bookmark_bar_node()),
-                             bookmark_tracker_->GetEntityForBookmarkNode(
-                                 bookmark_model_->other_node()),
-                             bookmark_tracker_->GetEntityForBookmarkNode(
-                                 bookmark_model_->mobile_node()));
     StopTrackingMetadata();
     bookmark_tracker_.reset();
     error_handler_.Run(
@@ -518,11 +454,9 @@ void BookmarkModelTypeProcessor::OnInitialUpdateReceived(
   NudgeForCommitIfNeeded();
 }
 
-void BookmarkModelTypeProcessor::StartTrackingMetadata(
-    std::vector<NodeMetadataPair> nodes_metadata,
-    std::unique_ptr<sync_pb::ModelTypeState> model_type_state) {
-  bookmark_tracker_ = std::make_unique<SyncedBookmarkTracker>(
-      std::move(nodes_metadata), std::move(model_type_state));
+void BookmarkModelTypeProcessor::StartTrackingMetadata() {
+  DCHECK(bookmark_tracker_);
+  DCHECK(!bookmark_model_observer_);
 
   bookmark_model_observer_ = std::make_unique<BookmarkModelObserverImpl>(
       base::BindRepeating(&BookmarkModelTypeProcessor::NudgeForCommitIfNeeded,
@@ -591,10 +525,10 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   data.modification_time =
       syncer::ProtoTimeToTime(metadata->modification_time());
   data.name = base::UTF16ToUTF8(node->GetTitle());
-  data.is_folder = node->is_folder();
-  data.unique_position = metadata->unique_position();
   data.specifics = CreateSpecificsFromBookmarkNode(
-      node, bookmark_model_, /*force_favicon_load=*/false);
+      node, bookmark_model_, metadata->unique_position(),
+      /*force_favicon_load=*/false);
+
   if (node->is_permanent_node()) {
     data.server_defined_unique_tag =
         ComputeServerDefinedUniqueTagForDebugging(node, bookmark_model_);
@@ -627,8 +561,11 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
   }
   data_dictionary->SetInteger("LOCAL_EXTERNAL_ID", node->id());
   data_dictionary->SetInteger("positionIndex", index);
-  data_dictionary->Set("metadata", syncer::EntityMetadataToValue(*metadata));
+  data_dictionary->SetKey("metadata",
+                          base::Value::FromUniquePtrValue(
+                              syncer::EntityMetadataToValue(*metadata)));
   data_dictionary->SetString("modelType", "Bookmarks");
+  data_dictionary->SetBoolean("IS_DIR", node->is_folder());
   all_nodes->Append(std::move(data_dictionary));
 
   int i = 0;
@@ -636,18 +573,16 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
     AppendNodeAndChildrenForDebugging(child.get(), i++, all_nodes);
 }
 
-void BookmarkModelTypeProcessor::GetStatusCountersForDebugging(
-    StatusCountersCallback callback) {
+void BookmarkModelTypeProcessor::GetTypeEntitiesCountForDebugging(
+    base::OnceCallback<void(const syncer::TypeEntitiesCount&)> callback) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  syncer::StatusCounters counters;
+  syncer::TypeEntitiesCount count(syncer::BOOKMARKS);
   if (bookmark_tracker_) {
-    counters.num_entries =
-        bookmark_tracker_->TrackedBookmarksCountForDebugging();
-    counters.num_entries_and_tombstones =
-        counters.num_entries +
-        bookmark_tracker_->TrackedUncommittedTombstonesCountForDebugging();
+    count.non_tombstone_entities = bookmark_tracker_->TrackedBookmarksCount();
+    count.entities = count.non_tombstone_entities +
+                     bookmark_tracker_->TrackedUncommittedTombstonesCount();
   }
-  std::move(callback).Run(syncer::BOOKMARKS, counters);
+  std::move(callback).Run(count);
 }
 
 void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
@@ -655,8 +590,7 @@ void BookmarkModelTypeProcessor::RecordMemoryUsageAndCountsHistograms() {
   SyncRecordModelTypeMemoryHistogram(syncer::BOOKMARKS, EstimateMemoryUsage());
   if (bookmark_tracker_) {
     SyncRecordModelTypeCountHistogram(
-        syncer::BOOKMARKS,
-        bookmark_tracker_->TrackedBookmarksCountForDebugging());
+        syncer::BOOKMARKS, bookmark_tracker_->TrackedBookmarksCount());
   } else {
     SyncRecordModelTypeCountHistogram(syncer::BOOKMARKS, 0);
   }

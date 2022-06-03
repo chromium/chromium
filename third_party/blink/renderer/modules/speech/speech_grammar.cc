@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_grammar.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 
 namespace blink {
@@ -39,8 +38,7 @@ SpeechGrammar* SpeechGrammar::Create(const KURL& src, double weight) {
 }
 
 void SpeechGrammar::setSrc(ScriptState* script_state, const String& src) {
-  Document* document = To<Document>(ExecutionContext::From(script_state));
-  src_ = document->CompleteURL(src);
+  src_ = ExecutionContext::From(script_state)->CompleteURL(src);
 }
 
 SpeechGrammar::SpeechGrammar() : weight_(1.0) {}

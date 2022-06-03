@@ -4,17 +4,17 @@
 
 module blink.mojom;
 
-import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
-import "services/network/public/mojom/data_pipe_getter.mojom";
 import "services/network/public/mojom/fetch_api.mojom";
-import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/request_priority.mojom";
+import "services/network/public/mojom/url_request.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/loader/request_context_frame_type.mojom";
-import "third_party/blink/public/mojom/referrer.mojom";
+import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "url/mojom/origin.mojom";
 import "url/mojom/url.mojom";
 
 
@@ -41,7 +41,6 @@ enum RequestContextType {
   IFRAME,
   IMAGE,
   IMAGE_SET,
-  IMPORT,
   INTERNAL,
   LOCATION,
   MANIFEST,
@@ -53,6 +52,7 @@ enum RequestContextType {
   SERVICE_WORKER,
   SHARED_WORKER,
   SUBRESOURCE,
+  SUBRESOURCE_WEBBUNDLE,
   STYLE,
   TRACK,
   VIDEO,
@@ -114,29 +114,6 @@ struct FetchAPIRequestHeaders {
   map<string, string> headers;
 };
 
-// Represents part of an upload body. This could be either one of bytes, file or
-// a data pipe.
-struct FetchAPIDataElement {
-  // The type of the internal contents of network::DataElement.
-  network.mojom.DataElementType type;
-  // For kBytes.
-  array<uint8> buf;
-  // For kFile and kRawFile
-  mojo_base.mojom.FilePath path;
-  // For kRawFile
-  mojo_base.mojom.File? file;
-  // For kBlob
-  string? blob_uuid;
-  // For kDataPipe
-  pending_remote<network.mojom.DataPipeGetter>? data_pipe_getter;
-  // For kChunkedDataPipe
-  pending_remote<network.mojom.ChunkedDataPipeGetter>? chunked_data_pipe_getter;
-
-  uint64 offset;
-  uint64 length;
-  mojo_base.mojom.Time expected_modification_time;
-};
-
 // Struct representing a Body for a Request:
 // https://fetch.spec.whatwg.org/#body
 // This has the same members definition with network.mojom.URLRequestBody, which
@@ -147,8 +124,9 @@ struct FetchAPIDataElement {
 // scoped_refptr<network::ResourceRequestBody> but this is typemapped to
 // scoped_refptr<blink::EncodedFormData>.
 struct FetchAPIRequestBody {
-  // Store upload bodies
-  array<FetchAPIDataElement> elements;
+  // The body contents. DataElementChunkedDataPipe can be used in `elements`
+  // only if `elements` consists of one element.
+  array<network.mojom.DataElement> elements;
 
   // Identifies a particular upload instance, which is used by the cache to
   // formulate a cache key.
@@ -171,10 +149,8 @@ struct FetchAPIRequestBody {
 struct FetchAPIRequest {
   network.mojom.RequestMode mode = network.mojom.RequestMode.kNoCors;
   bool is_main_resource_load = false;
-  RequestContextType request_context_type = RequestContextType.UNSPECIFIED;
   network.mojom.RequestDestination destination = network.mojom.RequestDestination.kEmpty;
-  network.mojom.RequestContextFrameType frame_type =
-    network.mojom.RequestContextFrameType.kNone;
+  RequestContextFrameType frame_type = RequestContextFrameType.kNone;
   url.mojom.Url url;
   string method;
   FetchAPIRequestHeaders headers;
@@ -186,6 +162,23 @@ struct FetchAPIRequest {
   // TODO(crbug.com/911930): Remove |blob| and use |body| instead everywhere.
   SerializedBlob? blob;
   FetchAPIRequestBody? body;
+
+  // `request_initiator` indicates the origin that initiated the request.  See
+  // also `network::ResourceRequest::request_initiator`, and the doc comment
+  // for `request_initiator` in services/network/public/mojom/url_request.mojom.
+  //
+  // Note that the origin may be missing for browser-initiated navigations
+  // (e.g. ones initiated from the Omnibox).
+  url.mojom.Origin? request_initiator;
+
+  // The chain of URLs seen during navigation redirects.  This should only
+  // contain values if the mode is `RedirectMode::kNavigate`.  This list
+  // will contain the initial network request URL, but not URLs from previous
+  // state in the DOM.  For example, if a frame has URL A and sets its location
+  // to URL B, then the redirect chain will begin with URL B.  The chain also
+  // includes the current request URL, however, it will not reflect any changes
+  // made by throttles.
+  array<url.mojom.Url> navigation_redirect_chain;
 
   Referrer? referrer;
   network.mojom.CredentialsMode credentials_mode =
@@ -203,4 +196,10 @@ struct FetchAPIRequest {
   bool keepalive = false;
   bool is_reload = false;
   bool is_history_navigation = false;
+
+  // A V8 stack id string describing where the request was initiated.
+  // DevTools can use this to display the initiator call stack when debugging
+  // a process that later intercepts the request, e.g., in a service worker
+  // fetch event handler.
+  string? devtools_stack_id;
 };

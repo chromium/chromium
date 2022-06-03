@@ -8,8 +8,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/sync/glue/extensions_activity_monitor.h"
 #include "components/browser_sync/browser_sync_client.h"
 #include "components/sync/model/model_type_store_service.h"
@@ -19,16 +19,17 @@ class Profile;
 
 namespace autofill {
 class AutofillWebDataService;
-}
+}  // namespace autofill
 
 namespace password_manager {
-class PasswordStore;
-}
+class PasswordStoreInterface;
+}  // namespace password_manager
 
 namespace syncer {
 class ModelTypeController;
 class SyncService;
-}
+class SyncableService;
+}  // namespace syncer
 
 namespace browser_sync {
 
@@ -37,10 +38,15 @@ class ProfileSyncComponentsFactoryImpl;
 class ChromeSyncClient : public browser_sync::BrowserSyncClient {
  public:
   explicit ChromeSyncClient(Profile* profile);
+
+  ChromeSyncClient(const ChromeSyncClient&) = delete;
+  ChromeSyncClient& operator=(const ChromeSyncClient&) = delete;
+
   ~ChromeSyncClient() override;
 
   // BrowserSyncClient implementation.
   PrefService* GetPrefService() override;
+  signin::IdentityManager* GetIdentityManager() override;
   base::FilePath GetLocalSyncBackendFolder() override;
   syncer::ModelTypeStoreService* GetModelTypeStoreService() override;
   syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() override;
@@ -50,23 +56,25 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   send_tab_to_self::SendTabToSelfSyncService* GetSendTabToSelfSyncService()
       override;
   sync_sessions::SessionSyncService* GetSessionSyncService() override;
-  base::Closure GetPasswordStateChangedCallback() override;
+  sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() override;
   syncer::DataTypeController::TypeVector CreateDataTypeControllers(
       syncer::SyncService* sync_service) override;
   syncer::TrustedVaultClient* GetTrustedVaultClient() override;
   invalidation::InvalidationService* GetInvalidationService() override;
+  syncer::SyncInvalidationsService* GetSyncInvalidationsService() override;
   BookmarkUndoService* GetBookmarkUndoService() override;
   scoped_refptr<syncer::ExtensionsActivity> GetExtensionsActivity() override;
-  base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
-      syncer::ModelType type) override;
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetControllerDelegateForModelType(syncer::ModelType type) override;
-  scoped_refptr<syncer::ModelSafeWorker> CreateModelWorkerForGroup(
-      syncer::ModelSafeGroup group) override;
   syncer::SyncApiComponentFactory* GetSyncApiComponentFactory() override;
   syncer::SyncTypePreferenceProvider* GetPreferenceProvider() override;
+  void OnLocalSyncTransportDataCleared() override;
 
  private:
+  // Convenience function used during controller creation.
+  base::WeakPtr<syncer::SyncableService> GetSyncableServiceForType(
+      syncer::ModelType type);
+
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Creates the ModelTypeController for syncer::APPS.
   std::unique_ptr<syncer::ModelTypeController> CreateAppsModelTypeController(
@@ -84,8 +92,6 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   Profile* const profile_;
 
   // The sync api component factory in use by this client.
-  // TODO(crbug.com/915154): Revert to SyncApiComponentFactory once common
-  // controller creation is moved elsewhere.
   std::unique_ptr<browser_sync::ProfileSyncComponentsFactoryImpl>
       component_factory_;
 
@@ -95,16 +101,16 @@ class ChromeSyncClient : public browser_sync::BrowserSyncClient {
   // respective backend threads.
   scoped_refptr<autofill::AutofillWebDataService> profile_web_data_service_;
   scoped_refptr<autofill::AutofillWebDataService> account_web_data_service_;
-  scoped_refptr<password_manager::PasswordStore> profile_password_store_;
-  scoped_refptr<password_manager::PasswordStore> account_password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      profile_password_store_;
+  scoped_refptr<password_manager::PasswordStoreInterface>
+      account_password_store_;
 
   // The task runner for the |web_data_service_|, if any.
   scoped_refptr<base::SequencedTaskRunner> web_data_service_thread_;
 
   // Generates and monitors the ExtensionsActivity object used by sync.
   ExtensionsActivityMonitor extensions_activity_monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSyncClient);
 };
 
 }  // namespace browser_sync

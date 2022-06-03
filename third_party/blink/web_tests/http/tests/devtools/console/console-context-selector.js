@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(`Tests console execution context selector.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -119,12 +119,12 @@
 
   function dump() {
     var consoleView = Console.ConsoleView.instance();
-    var selector = consoleView._consoleContextSelector;
+    var selector = consoleView.consoleContextSelector;
     TestRunner.addResult('Console context selector:');
 
     for (var executionContext of selector._items) {
       var selected = UI.context.flavor(SDK.ExecutionContext) === executionContext;
-      var text = '____'.repeat(selector._depthFor(executionContext)) + selector.titleFor(executionContext);
+      var text = '____'.repeat(selector.depthFor(executionContext)) + selector.titleFor(executionContext);
       var disabled = !selector.isItemSelectable(executionContext);
       TestRunner.addResult(`${selected ? '*' : ' '} ${text} ${disabled ? '[disabled]' : ''}`);
     }

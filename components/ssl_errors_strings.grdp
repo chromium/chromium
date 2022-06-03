@@ -123,6 +123,13 @@
     The server's certificate was not disclosed via Certificate Transparency.
   </message>
 
+  <message name="IDS_SSL_ERROR_OBSOLETE_VERSION_DETAILS" desc="Details of the error page for a site that used a deprecated version of TLS">
+    The server used an obsolete version of TLS.
+  </message>
+  <message name="IDS_SSL_ERROR_OBSOLETE_VERSION_DESCRIPTION" desc="Description of the error page for a site that used a deprecated version of TLS">
+    The server should upgrade to TLS 1.2 or later.
+  </message>
+
   <if expr="_google_chrome">
     <if expr="is_ios">
       <message name="IDS_CERT_ERROR_AUTHORITY_INVALID_DETAILS" desc="Details for an X509 certificate with an invalid authority">

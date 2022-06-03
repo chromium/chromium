@@ -60,9 +60,13 @@ void ProfileOAuth2TokenServiceDelegate::EndBatchChanges() {
   --batch_change_depth_;
   DCHECK_LE(0, batch_change_depth_);
   if (batch_change_depth_ == 0) {
-    for (auto& observer : observer_list_)
-      observer.OnEndBatchChanges();
+    FireEndBatchChanges();
   }
+}
+
+void ProfileOAuth2TokenServiceDelegate::FireEndBatchChanges() {
+  for (auto& observer : observer_list_)
+    observer.OnEndBatchChanges();
 }
 
 void ProfileOAuth2TokenServiceDelegate::FireRefreshTokenAvailable(

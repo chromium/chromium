@@ -1,7 +1,6 @@
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
-main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 ALERT: SUCCESS
 main frame - didHandleOnloadEventsForFrame
@@ -10,7 +9,6 @@ main frame - BeginNavigation request to 'http://127.0.0.1:8000/loading/resources
 main frame - DidStartNavigation
 main frame - ReadyToCommitNavigation
 main frame - didCommitLoadForFrame
-main frame - didReceiveTitle: 
 main frame - didFinishDocumentLoadForFrame
 main frame - didHandleOnloadEventsForFrame
 main frame - didFinishLoadForFrame

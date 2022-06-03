@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<a id="a-code" href="www.igalia.com" title="oops">
+  <code>code</code>
+</div>
+
+<a id="a-dfn" href="www.igalia.com" title="oops">
+  <dfn>definition</dfn>
+</div>
+
+<a id="a-p" href="www.igalia.com" title="oops">
+  <p>paragraph</p>
+</div>
+
+<a id="a-time" href="www.igalia.com" title="oops">
+  <time datetime="2016-04-12T11:27:16+02:00">12/04/2016</time>
+</div>
+
+<a id="a-norecursion" href="www.igalia.com" title="yay">
+  <table role="table"><tr><td>cell</td></tr></table>
+</div>
+
+<!-- Chrome will use a maximum of 100 descendants in the recursive name calc -->
+<a id="a-truncate-because-too-many-nodes" href="#">
+  <span>a1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>b1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>c1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>d1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>e1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>f1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>g1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>h1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>i1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>j1</span><span>2<span><span>3</span>4</span></span><span>5</span><span>6</span><span>7</span><span>8</span><span>9</span><span>0</span>
+  <span>Extra-A</span>
+  <span>Extra-B</span>
+  <span>Extra-C</span>
+</button>
+
+
+
+<script>
+test(function(t) {
+  const snippets = [
+    [ 'a-code', 'code' ],
+    [ 'a-dfn', 'definition' ],
+    [ 'a-p', 'paragraph' ],
+    [ 'a-time', '12/04/2016' ],
+    [ 'a-truncate-because-too-many-nodes', 'a1234567890b1234567890c1234567890d1234567890e1234567890f1234567890g1234567890h1234567890i1234567890j1234567890' ],
+  ];
+  for (let [ id, expectedName ] of snippets) {
+    let a = accessibilityController.accessibleElementById(id);
+    assert_equals(a.name, expectedName, `Name from ${id} subtree`);
+  }
+
+  // Example when recursion is not allowed for name computation.
+  let a = accessibilityController.accessibleElementById('a-norecursion');
+  assert_equals(a.name, 'yay', `No name from a-norecursion subtree`);
+}, 'Names from subtree');
+</script>

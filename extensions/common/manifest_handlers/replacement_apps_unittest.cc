@@ -42,8 +42,7 @@ class ReplacementAppsManifestTest : public ManifestTest {
            })";
       base::Value manifest = base::test::ParseJson(base::StringPrintf(
           kManifest, replacement_web_app, replacement_android_app));
-      return ManifestData(base::Value::ToUniquePtrValue(std::move(manifest)),
-                          "test");
+      return ManifestData(std::move(manifest), "test");
     } else if (replacement_web_app != nullptr) {
       // only web replacement app specified
       constexpr char kManifest[] =
@@ -55,8 +54,7 @@ class ReplacementAppsManifestTest : public ManifestTest {
            })";
       base::Value manifest = base::test::ParseJson(
           base::StringPrintf(kManifest, replacement_web_app));
-      return ManifestData(base::Value::ToUniquePtrValue(std::move(manifest)),
-                          "test");
+      return ManifestData(std::move(manifest), "test");
     } else if (replacement_android_app != nullptr) {
       // only Android replacement app specified
       constexpr char kManifest[] =
@@ -73,8 +71,7 @@ class ReplacementAppsManifestTest : public ManifestTest {
             })";
       base::Value manifest = base::test::ParseJson(
           base::StringPrintf(kManifest, replacement_android_app));
-      return ManifestData(base::Value::ToUniquePtrValue(std::move(manifest)),
-                          "test");
+      return ManifestData(std::move(manifest), "test");
     }
 
     base::Value manifest = base::test::ParseJson(
@@ -83,8 +80,7 @@ class ReplacementAppsManifestTest : public ManifestTest {
              "version": "1",
              "manifest_version": 2
            })");
-    return ManifestData(base::Value::ToUniquePtrValue(std::move(manifest)),
-                        "test");
+    return ManifestData(std::move(manifest), "test");
   }
 
  private:

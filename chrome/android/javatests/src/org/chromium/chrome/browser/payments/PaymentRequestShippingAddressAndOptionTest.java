@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -14,13 +14,12 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
-import org.chromium.chrome.browser.autofill.CardType;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -46,16 +45,16 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a shipping address associated with a credit card.
         String firstAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "555-555-5555", "", "en-US"));
+                true, "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA",
+                "Los Angeles", "", "90291", "", "US", "555-555-5555", "", "en-US"));
         helper.setCreditCard(new CreditCard("", "https://example.com", true, true, "Jon Doe",
                 "4111111111111111", "1111", "12", "2050", "visa", R.drawable.visa_card,
-                CardType.UNKNOWN, firstAddressId, "" /* serverId */));
+                firstAddressId, "" /* serverId */));
 
         // The user has a second address.
         String secondAddressId = helper.setProfile(new AutofillProfile("", "https://example.com",
-                true, "Fred Doe", "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "",
-                "US", "555-555-5555", "", "en-US"));
+                true, "" /* honorific prefix */, "Fred Doe", "Google", "340 Main St", "CA",
+                "Los Angeles", "", "90291", "", "US", "555-555-5555", "", "en-US"));
 
         // Set the fist profile to have a better frecency score that the second one.
         helper.setProfileUseStatsForTesting(firstAddressId, 10, 10);
@@ -65,6 +64,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     /** Verifies that the shipping address format in bottomsheet mode is as expected. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_BottomSheet() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -86,6 +86,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     /** Verifies that the shipping address format in fullsheet mode is as expected. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_FullSheet() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -109,6 +110,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     /** Verifies that the shipping address format in fullsheet mode is as expected. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_Expanded() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -139,6 +141,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
     /** Verifies that the shipping address format of a new address is as expected. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testShippingAddressFormat_NewAddress() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -148,8 +151,6 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
                 R.id.payments_section, mPaymentRequestTestRule.getReadyForInput());
         mPaymentRequestTestRule.clickInShippingAddressAndWait(
                 R.id.payments_add_option_button, mPaymentRequestTestRule.getReadyToEdit());
-        Boolean is_company_name_enabled =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_COMPANY_NAME);
         mPaymentRequestTestRule.setTextInEditorAndWait(
                 new String[] {"Seb Doe", "Google", "340 Main St", "Los Angeles", "CA", "90291",
                         "650-253-0000"},
@@ -170,6 +171,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
@@ -194,6 +196,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditShippingAddressAndClickAndroidBackButtonShouldKeepAddressSelected()
             throws TimeoutException {
@@ -218,6 +221,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddShippingAddressAndCancelEditorShouldKeepAddressSelected()
             throws TimeoutException {
@@ -242,6 +246,7 @@ public class PaymentRequestShippingAddressAndOptionTest implements MainActivityS
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddShippingAddressAndClickAndroidBackButtonShouldKeepAddressSelected()
             throws TimeoutException {

@@ -9,16 +9,19 @@
 #include <algorithm>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/multi_user_window_manager.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_window_manager_helper.h"
@@ -59,7 +62,7 @@ bool BrowserMatches(Browser* browser,
     return false;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Get the profile on which the window is currently shown.
   // MultiUserWindowManagerHelper might be NULL under test scenario.
   ash::MultiUserWindowManager* const multi_user_window_manager =
@@ -80,7 +83,7 @@ bool BrowserMatches(Browser* browser,
     if (browser->profile()->GetOriginalProfile() !=
         profile->GetOriginalProfile())
       return false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (shown_profile &&
         shown_profile->GetOriginalProfile() != profile->GetOriginalProfile()) {
       return false;
@@ -89,7 +92,7 @@ bool BrowserMatches(Browser* browser,
   } else {
     if (browser->profile() != profile)
       return false;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     if (shown_profile && shown_profile != profile)
       return false;
 #endif
@@ -152,10 +155,10 @@ Browser* FindBrowserWithTabbedOrAnyType(
   if (match_current_workspace)
     match_types |= kMatchCurrentWorkspace;
 #endif
-  Browser* browser =
-      FindBrowserMatching(browser_list_impl->begin_last_active(),
-                          browser_list_impl->end_last_active(), profile,
-                          Browser::FEATURE_NONE, match_types, display_id);
+  Browser* browser = FindBrowserMatching(
+      browser_list_impl->begin_browsers_ordered_by_activation(),
+      browser_list_impl->end_browsers_ordered_by_activation(), profile,
+      Browser::FEATURE_NONE, match_types, display_id);
   // Fall back to a forward scan of all Browsers if no active one was found.
   return browser ? browser
                  : FindBrowserMatching(
@@ -232,11 +235,23 @@ Browser* FindBrowserWithWebContents(const WebContents* web_contents) {
   return (it == all_tabs.end()) ? nullptr : it.browser();
 }
 
+Browser* FindBrowserWithGroup(tab_groups::TabGroupId group, Profile* profile) {
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if ((!profile || browser->profile() == profile) &&
+        browser->tab_strip_model() &&
+        browser->tab_strip_model()->group_model()->ContainsTabGroup(group)) {
+      return browser;
+    }
+  }
+  return nullptr;
+}
+
 Browser* FindLastActiveWithProfile(Profile* profile) {
   BrowserList* list = BrowserList::GetInstance();
   // We are only interested in last active browsers, so we don't fall back to
   // all browsers like FindBrowserWith* do.
-  return FindBrowserMatching(list->begin_last_active(), list->end_last_active(),
+  return FindBrowserMatching(list->begin_browsers_ordered_by_activation(),
+                             list->end_browsers_ordered_by_activation(),
                              profile, Browser::FEATURE_NONE, kMatchAny);
 }
 

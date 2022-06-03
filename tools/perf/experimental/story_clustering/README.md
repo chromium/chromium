@@ -24,7 +24,8 @@ rendering.desktop \
 --platforms ChromiumPerf:mac-10_13_laptop_high_end-perf ChromiumPerf:mac-10_12_laptop_low_end-perf \
 --testcases-path //tmp/story_clustering/rendering.desktop/test_cases.txt \
 --days=100 \
---normalize
+--normalize \
+--processes 20
 ```
 
 ```shell
@@ -49,5 +50,7 @@ rendering.mobile \
 ```
 
 Results of the clustering will be written in `clusters.json` file, located in the output directory given to the script
+
+If the script fails due to a "HTTP Error 429: Rate exceeded" error, try a smaller number for the `--processes` argument (defaulted to 20).
 
 [Method explanation](https://goto.google.com/chrome-benchmark-clustering)

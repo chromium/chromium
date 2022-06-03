@@ -1,0 +1,43 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/proposals/WEBGL_webcodecs_video_frame/
+
+dictionary WebGLWebCodecsVideoFrameHandle {
+  required FrozenArray<WebGLWebCodecsTextureInfo> textureInfoArray;
+
+  // The GLSL extension to be enabled in the shader.
+  // {"GL_NV_EGL_stream_consumer_external", "GL_OES_EGL_image_external", ...}
+  DOMString? requiredExtension;
+
+  // {"NV12", "I420", "ABGR", ...}
+  // TODO(jie.a.chen@intel.com): Move this to WebCodecs VideoFrame.
+  VideoPixelFormat? pixelFormat;
+
+  // The color space of texel color fetched from the video frame texture.
+  // With this information, it's possible to accurately interpret and convert
+  // the texels of video frame into the canvas' color space of this WebGL
+  // context, so that developers can write their own GLSL function for color
+  // conversion.
+  // TODO(jie.a.chen@intel.com): Figure out SDR white level, which may be needed
+  // for HDR video.
+  VideoColorSpace colorSpace;
+
+  // This generates an GLSL "vec3 DoColorConversion(vec3 color)" function,
+  // which can be used to convert the video frame from its original color
+  // space to the current WebGL context's canvas color space.
+  // If developers won't bother to write their own color conversion function,
+  // this helper function is for their convenience.
+  // TODO(jie.a.chen@intel.com): Add function name prefix/suffix to avoid
+  // potential name confliction.
+  DOMString colorConversionShaderFunc;
+
+  // Indicates whether the video frame is Y flipped.
+  // TODO(jie.a.chen@intel.com): Move this to WebCodecs VideoFrame.
+  boolean flipY;
+
+  // Indicates whether the video frame is alpha premultiplied.
+  // TODO(jie.a.chen@intel.com): Move this to WebCodecs VideoFrame.
+  boolean premultipliedAlpha;
+};

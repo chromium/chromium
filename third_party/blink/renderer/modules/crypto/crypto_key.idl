@@ -31,6 +31,7 @@
 // https://w3c.github.io/webcrypto/Overview.html#cryptokey-interface
 
 [
+    SecureContext,
     Exposed=(Window,Worker)
 ] interface CryptoKey {
     readonly attribute DOMString type;

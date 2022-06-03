@@ -23,10 +23,8 @@ namespace guest_os {
 
 namespace {
 
-constexpr base::TimeDelta kUpdateEngagementTimePeriod =
-    base::TimeDelta::FromMinutes(1);
-constexpr base::TimeDelta kSaveEngagementTimeToPrefsPeriod =
-    base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kUpdateEngagementTimePeriod = base::Minutes(1);
+constexpr base::TimeDelta kSaveEngagementTimeToPrefsPeriod = base::Minutes(30);
 
 int GetDayId(const base::Clock* clock) {
   return clock->Now().LocalMidnight().since_origin().InDays();
@@ -39,19 +37,41 @@ GuestOsEngagementMetrics::GuestOsEngagementMetrics(
     WindowMatcher window_matcher,
     const std::string& pref_prefix,
     const std::string& uma_name)
+    : GuestOsEngagementMetrics(pref_service,
+                               window_matcher,
+                               pref_prefix,
+                               uma_name,
+                               base::DefaultClock::GetInstance(),
+                               base::DefaultTickClock::GetInstance()) {}
+
+// Private, for testing use only
+GuestOsEngagementMetrics::GuestOsEngagementMetrics(
+    PrefService* pref_service,
+    WindowMatcher window_matcher,
+    const std::string& pref_prefix,
+    const std::string& uma_name,
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
     : pref_service_(pref_service),
       window_matcher_(window_matcher),
       pref_prefix_(pref_prefix),
       uma_name_(uma_name),
-      clock_(base::DefaultClock::GetInstance()),
-      tick_clock_(base::DefaultTickClock::GetInstance()),
+      clock_(clock),
+      tick_clock_(tick_clock),
       last_update_ticks_(tick_clock_->NowTicks()) {
-  // If WMHelper doesn't exist, do nothing. This occurs in tests.
+  // WMHelper, SessionManager and PowerManagerClient may not exist in tests.
   if (exo::WMHelper::HasInstance())
     exo::WMHelper::GetInstance()->AddActivationObserver(this);
 
-  session_manager::SessionManager::Get()->AddObserver(this);
-  chromeos::PowerManagerClient::Get()->AddObserver(this);
+  if (session_manager::SessionManager::Get()) {
+    session_active_ =
+        (session_manager::SessionManager::Get()->session_state() ==
+         session_manager::SessionState::ACTIVE);
+    session_manager::SessionManager::Get()->AddObserver(this);
+  }
+
+  if (chromeos::PowerManagerClient::Get())
+    chromeos::PowerManagerClient::Get()->AddObserver(this);
 
   DCHECK(pref_service_);
   RestoreEngagementTimeFromPrefs();
@@ -69,8 +89,12 @@ GuestOsEngagementMetrics::~GuestOsEngagementMetrics() {
   UpdateEngagementTime();
   SaveEngagementTimeToPrefs();
 
-  chromeos::PowerManagerClient::Get()->RemoveObserver(this);
-  session_manager::SessionManager::Get()->RemoveObserver(this);
+  // Observers for WMHelper, SessionManager and PowerManagerClient may not
+  // have been added in tests.
+  if (chromeos::PowerManagerClient::Get())
+    chromeos::PowerManagerClient::Get()->RemoveObserver(this);
+  if (session_manager::SessionManager::Get())
+    session_manager::SessionManager::Get()->RemoveObserver(this);
 
   // If WMHelper is already destroyed, do nothing.
   // TODO(crbug.com/748380): Fix shutdown order.
@@ -83,14 +107,6 @@ void GuestOsEngagementMetrics::SetBackgroundActive(bool background_active) {
     return;
   UpdateEngagementTime();
   background_active_ = background_active;
-}
-
-void GuestOsEngagementMetrics::SetClocksForTesting(
-    base::Clock* clock,
-    base::TickClock* tick_clock) {
-  clock_ = clock;
-  tick_clock_ = tick_clock;
-  ResetEngagementTimePrefs();
 }
 
 void GuestOsEngagementMetrics::OnWindowActivated(
@@ -178,23 +194,19 @@ void GuestOsEngagementMetrics::RecordEngagementTimeToUmaIfNeeded() {
   if (!ShouldRecordEngagementTimeToUma())
     return;
   VLOG(2) << "day changed, recording engagement time to UMA";
-  UmaHistogramCustomTimes(
-      uma_name_ + ".EngagementTime.Total", engagement_time_total_,
-      base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromDays(1) + kUpdateEngagementTimePeriod, 50);
+  UmaHistogramCustomTimes(uma_name_ + ".EngagementTime.Total",
+                          engagement_time_total_, base::Seconds(1),
+                          base::Days(1) + kUpdateEngagementTimePeriod, 50);
   UmaHistogramCustomTimes(
       uma_name_ + ".EngagementTime." + uma_name_ + "Total",
       engagement_time_foreground_ + engagement_time_background_,
-      base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromDays(1) + kUpdateEngagementTimePeriod, 50);
-  UmaHistogramCustomTimes(
-      uma_name_ + ".EngagementTime.Foreground", engagement_time_foreground_,
-      base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromDays(1) + kUpdateEngagementTimePeriod, 50);
-  UmaHistogramCustomTimes(
-      uma_name_ + ".EngagementTime.Background", engagement_time_background_,
-      base::TimeDelta::FromSeconds(1),
-      base::TimeDelta::FromDays(1) + kUpdateEngagementTimePeriod, 50);
+      base::Seconds(1), base::Days(1) + kUpdateEngagementTimePeriod, 50);
+  UmaHistogramCustomTimes(uma_name_ + ".EngagementTime.Foreground",
+                          engagement_time_foreground_, base::Seconds(1),
+                          base::Days(1) + kUpdateEngagementTimePeriod, 50);
+  UmaHistogramCustomTimes(uma_name_ + ".EngagementTime.Background",
+                          engagement_time_background_, base::Seconds(1),
+                          base::Days(1) + kUpdateEngagementTimePeriod, 50);
   ResetEngagementTimePrefs();
 }
 
@@ -222,6 +234,20 @@ bool GuestOsEngagementMetrics::ShouldAccumulateEngagementBackgroundTime()
 
 bool GuestOsEngagementMetrics::ShouldRecordEngagementTimeToUma() const {
   return day_id_ != GetDayId(clock_);
+}
+
+std::unique_ptr<GuestOsEngagementMetrics>
+GuestOsEngagementMetrics::GetEngagementMetricsForTesting(
+    PrefService* pref_service,
+    WindowMatcher window_matcher,
+    const std::string& pref_prefix,
+    const std::string& uma_name,
+    const base::Clock* clock,
+    const base::TickClock* tick_clock) {
+  GuestOsEngagementMetrics* metrics = new GuestOsEngagementMetrics(
+      pref_service, window_matcher, pref_prefix, uma_name, clock, tick_clock);
+  // WrapUnique is needed because the constructor is private.
+  return base::WrapUnique(metrics);
 }
 
 }  // namespace guest_os

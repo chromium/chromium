@@ -1,0 +1,13 @@
+# APIs that have their externs generated.
+# TODO(rdevlin.cronin): Add more!
+audio.idl
+automation.idl
+bluetooth.idl
+bluetooth_private.idl
+clipboard.idl
+feedback_private.idl
+management.json
+metrics_private.json
+mime_handler_private.idl
+networking_private.idl
+system_display.idl

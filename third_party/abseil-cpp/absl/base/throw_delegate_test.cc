@@ -18,6 +18,7 @@
 #include <new>
 #include <stdexcept>
 
+#include "absl/base/config.h"
 #include "gtest/gtest.h"
 
 namespace {
@@ -38,31 +39,43 @@ constexpr const char* what_arg = "The quick brown fox jumps over the lazy dog";
 
 template <typename E>
 void ExpectThrowChar(void (*f)(const char*)) {
+#ifdef ABSL_HAVE_EXCEPTIONS
   try {
     f(what_arg);
     FAIL() << "Didn't throw";
   } catch (const E& e) {
     EXPECT_STREQ(e.what(), what_arg);
   }
+#else
+  EXPECT_DEATH_IF_SUPPORTED(f(what_arg), what_arg);
+#endif
 }
 
 template <typename E>
 void ExpectThrowString(void (*f)(const std::string&)) {
+#ifdef ABSL_HAVE_EXCEPTIONS
   try {
     f(what_arg);
     FAIL() << "Didn't throw";
   } catch (const E& e) {
     EXPECT_STREQ(e.what(), what_arg);
   }
+#else
+  EXPECT_DEATH_IF_SUPPORTED(f(what_arg), what_arg);
+#endif
 }
 
 template <typename E>
 void ExpectThrowNoWhat(void (*f)()) {
+#ifdef ABSL_HAVE_EXCEPTIONS
   try {
     f();
     FAIL() << "Didn't throw";
   } catch (const E& e) {
   }
+#else
+  EXPECT_DEATH_IF_SUPPORTED(f(), "");
+#endif
 }
 
 TEST(ThrowHelper, Test) {

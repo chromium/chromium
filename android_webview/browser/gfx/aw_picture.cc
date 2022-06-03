@@ -34,6 +34,9 @@ void AwPicture::Draw(JNIEnv* env,
                      const JavaParamRef<jobject>& obj,
                      const JavaParamRef<jobject>& canvas) {
   const SkIRect bounds = picture_->cullRect().roundOut();
+  if (bounds.isEmpty()) {
+    return;
+  }
   std::unique_ptr<SoftwareCanvasHolder> canvas_holder =
       SoftwareCanvasHolder::Create(canvas, gfx::Vector2d(),
                                    gfx::Size(bounds.width(), bounds.height()),

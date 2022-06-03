@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://os-settings/chromeos/lazy_load.js';
+
+// #import {PrinterType} from 'chrome://os-settings/chromeos/lazy_load.js';
+// #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// clang-format on
+
 /**
  * Helper function to verify that printers in |printerListEntries| that contain
  * |searchTerm| are not in |hiddenEntries|.
@@ -18,7 +25,7 @@ function verifyFilteredPrinters(printerEntryListTestElement, searchTerm) {
 
   for (let i = 0; i < printerListEntries.length; ++i) {
     const entry = printerListEntries[i];
-    if (hiddenEntries.indexOf(entry) == -1) {
+    if (hiddenEntries.indexOf(entry) === -1) {
       assertTrue(
           entry.printerEntry.printerInfo.printerName.toLowerCase().includes(
               searchTerm.toLowerCase()));
@@ -73,7 +80,36 @@ function verifySearchQueryResults(
   }
 }
 
-suite('CupsPrintersEntry', function() {
+/**
+ * Returns a printer entry with the given |printerType|.
+ * @param {!PrinterType} printerType
+ * @return {!PrinterListEntry}
+ */
+function createPrinterEntry(printerType) {
+  return {
+    printerInfo: {
+      ppdManufacturer: '',
+      ppdModel: '',
+      printerAddress: 'test:123',
+      printerDescription: '',
+      printerId: 'id_123',
+      printerMakeAndModel: '',
+      printerName: 'Test name',
+      printerPPDPath: '',
+      printerPpdReference: {
+        userSuppliedPpdUrl: '',
+        effectiveMakeAndModel: '',
+        autoconf: false,
+      },
+      printerProtocol: 'ipp',
+      printerQueue: 'moreinfohere',
+      printerStatus: '',
+    },
+    printerType: printerType,
+  };
+}
+
+suite('CupsPrinterEntry', function() {
   /** A printer list entry created before each test. */
   let printerEntryTestElement = null;
 
@@ -94,29 +130,8 @@ suite('CupsPrintersEntry', function() {
     const expectedPrinterName = 'Test name';
     const expectedPrinterSubtext = 'Test subtext';
 
-    printerEntryTestElement.printerEntry = {
-      printerInfo: {
-        ppdManufacturer: '',
-        ppdModel: '',
-        printerAddress: 'test:123',
-        printerDescription: '',
-        printerId: 'id_123',
-        printerManufacturer: '',
-        printerModel: '',
-        printerMakeAndModel: '',
-        printerName: expectedPrinterName,
-        printerPPDPath: '',
-        printerPpdReference: {
-          userSuppliedPpdUrl: '',
-          effectiveMakeAndModel: '',
-          autoconf: false,
-        },
-        printerProtocol: 'ipp',
-        printerQueue: 'moreinfohere',
-        printerStatus: '',
-      },
-      printerType: PrinterType.SAVED,
-    };
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
     assertEquals(
         expectedPrinterName,
         printerEntryTestElement.shadowRoot.querySelector('#printerName')
@@ -139,29 +154,8 @@ suite('CupsPrintersEntry', function() {
   });
 
   test('savedPrinterShowsThreeDotMenu', function() {
-    printerEntryTestElement.printerEntry = {
-      printerInfo: {
-        ppdManufacturer: '',
-        ppdModel: '',
-        printerAddress: 'test:123',
-        printerDescription: '',
-        printerId: 'id_123',
-        printerManufacturer: '',
-        printerModel: '',
-        printerMakeAndModel: '',
-        printerName: 'test1',
-        printerPPDPath: '',
-        printerPpdReference: {
-          userSuppliedPpdUrl: '',
-          effectiveMakeAndModel: '',
-          autoconf: false,
-        },
-        printerProtocol: 'ipp',
-        printerQueue: 'moreinfohere',
-        printerStatus: '',
-      },
-      printerType: PrinterType.SAVED,
-    };
+    printerEntryTestElement.printerEntry =
+        createPrinterEntry(PrinterType.SAVED);
 
     // Assert that three dot menu is not shown before the dom is updated.
     assertFalse(!!printerEntryTestElement.$$('.icon-more-vert'));
@@ -171,5 +165,35 @@ suite('CupsPrintersEntry', function() {
     // Three dot menu should be visible when |printerType| is set to
     // PrinterType.SAVED.
     assertTrue(!!printerEntryTestElement.$$('.icon-more-vert'));
+  });
+
+  test('disableButtonWhenSavingPrinterOrDisallowedByPolicy', function() {
+    const printerTypes = [
+      PrinterType.DISCOVERED, PrinterType.AUTOMATIC, PrinterType.PRINTSERVER
+    ];
+    const printerIds = [
+      '#setupPrinterButton', '#automaticPrinterButton', '#savePrinterButton'
+    ];
+    for (let i = 0; i < printerTypes.length; i++) {
+      printerEntryTestElement.printerEntry =
+          createPrinterEntry(printerTypes[i]);
+      Polymer.dom.flush();
+      const actionButton = printerEntryTestElement.$$(printerIds[i]);
+      printerEntryTestElement.savingPrinter = true;
+      printerEntryTestElement.userPrintersAllowed = true;
+      assertTrue(actionButton.disabled);
+
+      printerEntryTestElement.savingPrinter = true;
+      printerEntryTestElement.userPrintersAllowed = false;
+      assertTrue(actionButton.disabled);
+
+      printerEntryTestElement.savingPrinter = false;
+      printerEntryTestElement.userPrintersAllowed = true;
+      assertFalse(actionButton.disabled);
+
+      printerEntryTestElement.savingPrinter = false;
+      printerEntryTestElement.userPrintersAllowed = false;
+      assertTrue(actionButton.disabled);
+    }
   });
 });

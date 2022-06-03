@@ -5,7 +5,7 @@
 package org.chromium.chromecast.shell;
 
 import org.chromium.base.Consumer;
-import org.chromium.base.Supplier;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chromecast.base.Scope;
 

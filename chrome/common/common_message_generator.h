@@ -4,18 +4,8 @@
 
 // Multiply-included file, hence no include guard.
 
-#include "chrome/common/instant_mojom_traits.h"
+#include "chrome/common/search/instant_mojom_traits.h"
 #include "services/network/public/cpp/p2p_param_traits.h"
-#undef CHROME_COMMON_PRERENDER_MESSAGES_H_
-#include "chrome/common/prerender_messages.h"
-#ifndef CHROME_COMMON_PRERENDER_MESSAGES_H_
-#error "Failed to include header chrome/common/prerender_messages.h"
-#endif
-#undef CHROME_COMMON_RENDER_MESSAGES_H_
-#include "chrome/common/render_messages.h"
-#ifndef CHROME_COMMON_RENDER_MESSAGES_H_
-#error "Failed to include header chrome/common/render_messages.h"
-#endif
 #include "components/safe_browsing/buildflags.h"
 #include "content/public/common/common_param_traits.h"
 #include "content/public/common/common_param_traits_macros.h"
@@ -23,20 +13,12 @@
 #include "media/media_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#undef CHROME_COMMON_CAST_MESSAGES_H_
-#include "chrome/common/cast_messages.h"
-#ifndef CHROME_COMMON_CAST_MESSAGES_H_
-#error "Failed to include header chrome/common/cast_messages.h"
-#endif
-#endif
-
 #if BUILDFLAG(ENABLE_PRINTING)
-#undef CHROME_COMMON_CHROME_UTILITY_PRINTING_MESSAGES_H_
-#include "chrome/common/chrome_utility_printing_messages.h"
-#ifndef CHROME_COMMON_CHROME_UTILITY_PRINTING_MESSAGES_H_
+#undef CHROME_COMMON_CHROME_UTILITY_PRINTING_PARAM_TRAITS_MACROS_H_
+#include "chrome/common/chrome_utility_printing_param_traits_macros.h"
+#ifndef CHROME_COMMON_CHROME_UTILITY_PRINTING_PARAM_TRAITS_MACROS_H_
 #error \
-    "Failed to include header chrome/common/chrome_utility_printing_messages.h"
+    "Failed to include header chrome/common/chrome_utility_printing_param_traits_macros.h"
 #endif
 #endif
 

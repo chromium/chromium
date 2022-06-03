@@ -6,7 +6,9 @@
 
 #include <utility>
 
+#include "base/logging.h"
 #include "ui/color/color_mixer.h"
+#include "ui/color/color_provider_utils.h"
 
 namespace ui {
 
@@ -33,9 +35,12 @@ ColorRecipe& ColorRecipe::operator+=(const ColorTransform& transform) {
 
 SkColor ColorRecipe::GenerateResult(SkColor input,
                                     const ColorMixer& mixer) const {
+  SkColor output_color = input;
   for (const auto& transform : transforms_)
-    input = transform.Run(input, mixer);
-  return input;
+    output_color = transform.Run(output_color, mixer);
+  DVLOG(2) << "ColorRecipe::GenerateResult: Input Color " << SkColorName(input)
+           << " Result Color " << SkColorName(output_color);
+  return output_color;
 }
 
 ColorRecipe operator+(ColorRecipe recipe, const ColorTransform& transform) {

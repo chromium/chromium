@@ -5,6 +5,9 @@
 // Please see inteface_ppb_public_stable for the documentation on the format of
 // this file.
 
+// no-include-guard-because-multiply-included
+// NOLINT(build/header_guard)
+
 #include "ppapi/thunk/interfaces_preamble.h"
 
 // Map the old dev console interface to the stable one (which is the same) to
@@ -17,7 +20,6 @@ PROXIED_IFACE(PPB_IME_INPUT_EVENT_DEV_INTERFACE_0_2, PPB_IMEInputEvent_Dev_0_2)
 PROXIED_IFACE(PPB_MEMORY_DEV_INTERFACE_0_1, PPB_Memory_Dev_0_1)
 PROXIED_IFACE(PPB_PRINTING_DEV_INTERFACE_0_7, PPB_Printing_Dev_0_7)
 PROXIED_IFACE(PPB_TEXTINPUT_DEV_INTERFACE_0_2, PPB_TextInput_Dev_0_2)
-PROXIED_IFACE(PPB_TRUETYPEFONT_DEV_INTERFACE_0_1, PPB_TrueTypeFont_Dev_0_1)
 PROXIED_IFACE(PPB_VIEW_DEV_INTERFACE_0_1, PPB_View_Dev_0_1)
 
 #if !defined(OS_NACL)

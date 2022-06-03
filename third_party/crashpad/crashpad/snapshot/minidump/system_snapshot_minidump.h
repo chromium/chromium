@@ -17,7 +17,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "minidump/minidump_extensions.h"
 #include "snapshot/system_snapshot.h"
 #include "util/file/file_reader.h"
@@ -30,6 +29,10 @@ namespace internal {
 class SystemSnapshotMinidump : public SystemSnapshot {
  public:
   SystemSnapshotMinidump();
+
+  SystemSnapshotMinidump(const SystemSnapshotMinidump&) = delete;
+  SystemSnapshotMinidump& operator=(const SystemSnapshotMinidump&) = delete;
+
   ~SystemSnapshotMinidump() override;
 
   //! \brief Initializes the object.
@@ -77,8 +80,6 @@ class SystemSnapshotMinidump : public SystemSnapshot {
   std::string minidump_build_name_;
   std::string full_version_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotMinidump);
 };
 
 }  // namespace internal

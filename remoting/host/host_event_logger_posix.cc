@@ -4,10 +4,13 @@
 
 #include "remoting/host/host_event_logger.h"
 
-// Included here, since the #define for LOG_USER in syslog.h conflicts with the
-// constants in base/logging.h, and this source file should use the version in
-// syslog.h.
+// Included order is important, since the #define for LOG_USER in syslog.h
+// conflicts with the constants in base/logging.h, and this source file should
+// use the version in syslog.h.
+// clang-format off
+#include "base/logging.h"
 #include <syslog.h>
+// clang-format on
 
 #include <memory>
 
@@ -29,6 +32,9 @@ class HostEventLoggerPosix : public HostEventLogger, public HostStatusObserver {
   HostEventLoggerPosix(scoped_refptr<HostStatusMonitor> monitor,
                        const std::string& application_name);
 
+  HostEventLoggerPosix(const HostEventLoggerPosix&) = delete;
+  HostEventLoggerPosix& operator=(const HostEventLoggerPosix&) = delete;
+
   ~HostEventLoggerPosix() override;
 
   // HostStatusObserver implementation.  These methods will be called from the
@@ -47,8 +53,6 @@ class HostEventLoggerPosix : public HostEventLogger, public HostStatusObserver {
 
   scoped_refptr<HostStatusMonitor> monitor_;
   std::string application_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostEventLoggerPosix);
 };
 
 } //namespace
@@ -85,8 +89,14 @@ void HostEventLoggerPosix::OnClientRouteChange(
   Log(base::StringPrintf(
       "Channel IP for client: %s ip='%s' host_ip='%s' channel='%s' "
       "connection='%s'",
-      jid.c_str(), route.remote_address.ToString().c_str(),
-      route.local_address.ToString().c_str(), channel_name.c_str(),
+      jid.c_str(),
+      route.remote_address.address().IsValid()
+          ? route.remote_address.ToString().c_str()
+          : "unknown",
+      route.local_address.address().IsValid()
+          ? route.local_address.ToString().c_str()
+          : "unknown",
+      channel_name.c_str(),
       protocol::TransportRoute::GetTypeString(route.type).c_str()));
 }
 

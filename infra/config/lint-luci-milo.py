@@ -55,8 +55,10 @@ def compare_builders(name, main_builders, sub_builders):
 
 def main():
   project = project_pb2.Project()
-  with open(os.path.join(THIS_DIR, 'generated', 'luci-milo.cfg'), 'rb') as f:
-    google.protobuf.text_format.Parse(f.read(), project)
+  with open(os.path.join(THIS_DIR, 'generated', 'luci', 'luci-milo.cfg'),
+            'rb') as f:
+    google.protobuf.text_format.Parse(f.read(), project,
+                                      allow_unknown_field=True)
 
   # Maps subwaterfall name to list of builders on that subwaterfall
   # on the main waterfall.

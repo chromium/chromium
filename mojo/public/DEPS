@@ -9,4 +9,5 @@ include_rules = [
 
   # Temporary until mojom [Native] is gone.
   "+ipc/ipc_param_traits.h",
+  "+third_party/perfetto/protos/perfetto/trace/track_event",
 ]

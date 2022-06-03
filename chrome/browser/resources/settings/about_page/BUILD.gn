@@ -2,56 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":about_page",
-    ":about_page_browser_proxy",
-  ]
-
-  if (is_chromeos) {
-    deps += [
-      ":channel_switcher_dialog",
-      ":detailed_build_info",
-    ]
-  }
-}
-
-js_library("about_page") {
-  deps = [
-    ":about_page_browser_proxy",
-    "..:lifetime_browser_proxy",
-    "..:route",
-    "../settings_page:main_page_behavior",
-    "../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:parse_html_subset",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("about_page_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-  externs_list = [ "$externs_path/chrome_send.js" ]
-}
-
-js_library("detailed_build_info") {
-  deps = [
-    ":about_page_browser_proxy",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator_behavior",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("channel_switcher_dialog") {
-  deps = [
-    ":about_page_browser_proxy",
-    "//ui/webui/resources/js:load_time_data",
-  ]
+html_to_js("web_components") {
+  js_files = [ "about_page.ts" ]
 }

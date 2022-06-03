@@ -5,16 +5,13 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CERT_REPORT_HELPER_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CERT_REPORT_HELPER_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "net/ssl/ssl_info.h"
 #include "url/gurl.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace content {
@@ -50,7 +47,11 @@ class CertReportHelper {
       CertificateErrorReport::InterstitialReason interstitial_reason,
       bool overridable,
       const base::Time& interstitial_time,
+      bool can_show_enhanced_protection_message,
       security_interstitials::MetricsHelper* metrics_helper);
+
+  CertReportHelper(const CertReportHelper&) = delete;
+  CertReportHelper& operator=(const CertReportHelper&) = delete;
 
   virtual ~CertReportHelper();
 
@@ -60,7 +61,11 @@ class CertReportHelper {
 
   // Populates data that JavaScript code on the interstitial uses to show
   // the checkbox.
-  void PopulateExtendedReportingOption(base::DictionaryValue* load_time_data);
+  void PopulateExtendedReportingOption(base::Value* load_time_data);
+
+  // Populates data that JavaScript code on the interstitial uses to show
+  // the enhanced protection message.
+  void PopulateEnhancedProtectionMessage(base::Value* load_time_data);
 
   // Allows tests to inject a mock reporter.
   void SetSSLCertReporterForTesting(
@@ -90,6 +95,9 @@ class CertReportHelper {
   // the user to opt in to Safe Browsing extended reporting.
   bool ShouldShowCertificateReporterCheckbox();
 
+  // Checks whether a enhanced protection message should be shown on the page.
+  bool ShouldShowEnhancedProtectionMessage();
+
   // Returns true if a certificate report should be sent for the SSL
   // error for this page.
   bool ShouldReportCertificateError();
@@ -109,6 +117,13 @@ class CertReportHelper {
   bool overridable_;
   // The time at which the interstitial was constructed.
   const base::Time interstitial_time_;
+  // Whether to show enhanced protection message in the interstitial. If it is
+  // set to false, the message will be hidden. If it is set to true, other
+  // states and user preferences will still be checked.
+  // TODO(crbug.com/1078381): This is currently set to false in WebLayer and
+  // true in other platforms. Remove this member once WebLayer supports enhanced
+  // protection.
+  bool can_show_enhanced_protection_message_;
   // Helpful for recording metrics about cert reports.
   security_interstitials::MetricsHelper* metrics_helper_;
   // Appends additional details to a report.
@@ -119,8 +134,6 @@ class CertReportHelper {
   // taking an action on the interstitial is counted as not proceeding.
   CertificateErrorReport::ProceedDecision user_action_ =
       CertificateErrorReport::USER_DID_NOT_PROCEED;
-
-  DISALLOW_COPY_AND_ASSIGN(CertReportHelper);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_CERT_REPORT_HELPER_H_

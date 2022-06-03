@@ -8,6 +8,7 @@
 
 namespace gpu {
 
+using testing::_;
 using testing::Invoke;
 using testing::Return;
 
@@ -18,19 +19,14 @@ MockTextureOwner::MockTextureOwner(GLuint fake_texture_id,
     : TextureOwner(binds_texture_on_update,
                    std::make_unique<MockAbstractTexture>(fake_texture_id)),
       fake_context(fake_context),
-      fake_surface(fake_surface),
-      expect_update_tex_image(!binds_texture_on_update) {
+      fake_surface(fake_surface) {
   ON_CALL(*this, GetTextureId()).WillByDefault(Return(fake_texture_id));
   ON_CALL(*this, GetContext()).WillByDefault(Return(fake_context));
   ON_CALL(*this, GetSurface()).WillByDefault(Return(fake_surface));
-  ON_CALL(*this, EnsureTexImageBound()).WillByDefault(Invoke([this] {
-    CHECK(expect_update_tex_image);
-  }));
+  ON_CALL(*this, RunWhenBufferIsAvailable(_))
+      .WillByDefault(Invoke([](base::OnceClosure cb) { std::move(cb).Run(); }));
 }
 
-MockTextureOwner::~MockTextureOwner() {
-  // TextureOwner requires this.
-  ClearAbstractTexture();
-}
+MockTextureOwner::~MockTextureOwner() {}
 
 }  // namespace gpu

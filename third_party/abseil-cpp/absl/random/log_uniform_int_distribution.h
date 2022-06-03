@@ -23,13 +23,15 @@
 #include <ostream>
 #include <type_traits>
 
-#include "absl/random/internal/distribution_impl.h"
+#include "absl/numeric/bits.h"
 #include "absl/random/internal/fastmath.h"
+#include "absl/random/internal/generate_real.h"
 #include "absl/random/internal/iostream_state_saver.h"
 #include "absl/random/internal/traits.h"
 #include "absl/random/uniform_int_distribution.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // log_uniform_int_distribution:
 //
@@ -67,8 +69,10 @@ class log_uniform_int_distribution {
       if (base_ == 2) {
         // Determine where the first set bit is on range(), giving a log2(range)
         // value which can be used to construct bounds.
-        log_range_ = (std::min)(random_internal::LeadingSetBit(range()),
-                                std::numeric_limits<unsigned_type>::digits);
+        log_range_ =
+            (std::min)(bit_width(range()),
+                       static_cast<unsigned_type>(
+                           std::numeric_limits<unsigned_type>::digits));
       } else {
         // NOTE: Computing the logN(x) introduces error from 2 sources:
         // 1. Conversion of int to double loses precision for values >=
@@ -192,13 +196,15 @@ log_uniform_int_distribution<IntType>::Generate(
     const double r = std::pow(p.base(), d);
     const double s = (r * p.base()) - 1.0;
 
-    base_e = (r > (std::numeric_limits<unsigned_type>::max)())
-                 ? (std::numeric_limits<unsigned_type>::max)()
-                 : static_cast<unsigned_type>(r);
+    base_e =
+        (r > static_cast<double>((std::numeric_limits<unsigned_type>::max)()))
+            ? (std::numeric_limits<unsigned_type>::max)()
+            : static_cast<unsigned_type>(r);
 
-    top_e = (s > (std::numeric_limits<unsigned_type>::max)())
-                ? (std::numeric_limits<unsigned_type>::max)()
-                : static_cast<unsigned_type>(s);
+    top_e =
+        (s > static_cast<double>((std::numeric_limits<unsigned_type>::max)()))
+            ? (std::numeric_limits<unsigned_type>::max)()
+            : static_cast<unsigned_type>(s);
   }
 
   const unsigned_type lo = (base_e >= p.range()) ? p.range() : base_e;
@@ -245,6 +251,7 @@ std::basic_istream<CharT, Traits>& operator>>(
   return is;
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_LOG_UNIFORM_INT_DISTRIBUTION_H_

@@ -9,38 +9,33 @@
 #include "base/feature_list.h"
 #include "media/base/media_log.h"
 #include "media/base/media_switches.h"
+#include "media/base/win/mf_helpers.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
+#include "media/gpu/windows/d3d11_video_device_format_support.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/direct_composition_surface_win.h"
 
 namespace media {
 
 TextureSelector::TextureSelector(VideoPixelFormat pixfmt,
-                                 DXGI_FORMAT dxgifmt,
-                                 GUID decoder_guid,
-                                 gfx::Size coded_size,
-                                 bool is_encrypted,
-                                 bool supports_swap_chain)
+                                 DXGI_FORMAT output_dxgifmt,
+                                 ComD3D11VideoDevice video_device,
+                                 ComD3D11DeviceContext device_context,
+                                 bool shared_image_use_shared_handle)
     : pixel_format_(pixfmt),
-      dxgi_format_(dxgifmt),
-      decoder_guid_(decoder_guid),
-      coded_size_(coded_size),
-      is_encrypted_(is_encrypted),
-      supports_swap_chain_(supports_swap_chain) {
-  SetUpDecoderDescriptor();
-  SetUpTextureDescriptor();
-}
+      output_dxgifmt_(output_dxgifmt),
+      video_device_(std::move(video_device)),
+      device_context_(std::move(device_context)),
+      shared_image_use_shared_handle_(shared_image_use_shared_handle) {}
+
+TextureSelector::~TextureSelector() = default;
 
 bool SupportsZeroCopy(const gpu::GpuPreferences& preferences,
                       const gpu::GpuDriverBugWorkarounds& workarounds) {
   if (!preferences.enable_zero_copy_dxgi_video)
     return false;
 
-  // If we're ignoring workarounds, then pretend that it does support
-  // zero copy.  Otherwise, believe the workaround.
-  if (!base::FeatureList::IsEnabled(kD3D11VideoDecoderIgnoreWorkarounds))
-    if (workarounds.disable_dxgi_zero_copy_video)
-      return false;
+  if (workarounds.disable_dxgi_zero_copy_video)
+    return false;
 
   return true;
 }
@@ -49,131 +44,182 @@ bool SupportsZeroCopy(const gpu::GpuPreferences& preferences,
 std::unique_ptr<TextureSelector> TextureSelector::Create(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& workarounds,
-    const VideoDecoderConfig& config,
-    MediaLog* media_log) {
-  bool supports_nv12_decode_swap_chain =
-      gl::DirectCompositionSurfaceWin::IsDecodeSwapChainSupported();
+    DXGI_FORMAT decoder_output_format,
+    TextureSelector::HDRMode hdr_output_mode,
+    const FormatSupportChecker* format_checker,
+    ComD3D11VideoDevice video_device,
+    ComD3D11DeviceContext device_context,
+    MediaLog* media_log,
+    bool shared_image_use_shared_handle) {
+  VideoPixelFormat output_pixel_format;
+  DXGI_FORMAT output_dxgi_format;
+  absl::optional<gfx::ColorSpace> output_color_space;
+
   bool needs_texture_copy = !SupportsZeroCopy(gpu_preferences, workarounds);
 
-  DXGI_FORMAT input_dxgi_format = DXGI_FORMAT_NV12;
-  DXGI_FORMAT output_dxgi_format = DXGI_FORMAT_NV12;
-  GUID decoder_guid = {};
-  if (config.codec() == kCodecH264) {
-    decoder_guid = D3D11_DECODER_PROFILE_H264_VLD_NOFGT;
-  } else if (config.profile() == VP9PROFILE_PROFILE0) {
-    decoder_guid = D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0;
-  } else if (config.profile() == VP9PROFILE_PROFILE2) {
-    decoder_guid = D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2;
-    input_dxgi_format = DXGI_FORMAT_P010;
-    output_dxgi_format = DXGI_FORMAT_R16_FLOAT;
-    needs_texture_copy = true;
-  } else {
-    // TODO(tmathmeyer) support other profiles in the future.
-    return nullptr;
-  }
-
-  // Force texture copy on if requested for debugging.
-  if (base::FeatureList::IsEnabled(kD3D11VideoDecoderAlwaysCopy))
-    needs_texture_copy = true;
-
-  if ((input_dxgi_format != output_dxgi_format) || needs_texture_copy) {
-    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is copying textures";
-    return std::make_unique<CopyTextureSelector>(
-        PIXEL_FORMAT_NV12, input_dxgi_format, output_dxgi_format, decoder_guid,
-        config.coded_size(), config.is_encrypted(),
-        supports_nv12_decode_swap_chain);  // TODO(tmathmeyer) false always?
-  } else {
-    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is binding textures";
-    return std::make_unique<TextureSelector>(
-        PIXEL_FORMAT_NV12, output_dxgi_format, decoder_guid,
-        config.coded_size(), config.is_encrypted(),
-        supports_nv12_decode_swap_chain);
-  }
-}
-
-bool TextureSelector::SupportsDevice(
-    Microsoft::WRL::ComPtr<ID3D11VideoDevice> video_device) {
-  for (UINT i = video_device->GetVideoDecoderProfileCount(); i--;) {
-    GUID profile = {};
-    if (SUCCEEDED(video_device->GetVideoDecoderProfile(i, &profile))) {
-      if (profile == decoder_guid_)
-        return true;
+  auto supports_fmt = [format_checker](auto fmt) {
+    return format_checker->CheckOutputFormatSupport(fmt);
+  };
+  // TODO(liberato): add other options here, like "copy to rgb" for NV12.
+  switch (decoder_output_format) {
+    case DXGI_FORMAT_NV12: {
+      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing NV12";
+      if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_NV12)) {
+        output_pixel_format = PIXEL_FORMAT_NV12;
+        output_dxgi_format = DXGI_FORMAT_NV12;
+        // Leave |output_color_space| the same, since we'll bind either the
+        // original or the copy. Downstream will handle it, either in the
+        // shaders or in the overlay, if needed.
+        output_color_space.reset();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected NV12";
+      } else if (supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
+        output_pixel_format = PIXEL_FORMAT_ARGB;
+        output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        output_color_space.reset();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+      } else {
+        MEDIA_LOG(INFO, media_log) << "NV12 not supported";
+        return nullptr;
+      }
+      break;
+    }
+    case DXGI_FORMAT_P010: {
+      MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder producing P010";
+      if (hdr_output_mode == HDRMode::kSDROnly &&
+          supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
+        output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
+        output_pixel_format = PIXEL_FORMAT_ARGB;
+        output_color_space = gfx::ColorSpace::CreateSRGB();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
+      } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
+        output_dxgi_format = DXGI_FORMAT_P010;
+        output_pixel_format = PIXEL_FORMAT_P016LE;
+        output_color_space.reset();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected P010";
+      } else if (supports_fmt(DXGI_FORMAT_R16G16B16A16_FLOAT)) {
+        output_dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+        output_pixel_format = PIXEL_FORMAT_RGBAF16;
+        output_color_space = gfx::ColorSpace::CreateSCRGBLinear();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected RGBAF16";
+      } else if (supports_fmt(DXGI_FORMAT_R10G10B10A2_UNORM)) {
+        output_dxgi_format = DXGI_FORMAT_R10G10B10A2_UNORM;
+        output_pixel_format = PIXEL_FORMAT_XB30;
+        output_color_space = gfx::ColorSpace::CreateHDR10();
+        MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected XB30";
+      } else {
+        MEDIA_LOG(INFO, media_log) << "P010 not supported";
+        return nullptr;
+      }
+      break;
+    }
+    default: {
+      // TODO(tmathmeyer) support other profiles in the future.
+      MEDIA_LOG(INFO, media_log)
+          << "D3D11VideoDecoder does not support " << decoder_output_format;
+      return nullptr;
     }
   }
-  return false;
-}
 
-ComD3D11Texture2D TextureSelector::CreateOutputTexture(ComD3D11Device device,
-                                                       gfx::Size size) {
-  texture_desc_.Width = size.width();
-  texture_desc_.Height = size.height();
+  // If we're trying to produce an output texture that's different from what
+  // the decoder is providing, then we need to copy it. If sharing decoder
+  // textures is not allowed, then copy either way.
+  needs_texture_copy |= (decoder_output_format != output_dxgi_format);
 
-  ComD3D11Texture2D result;
-  if (!SUCCEEDED(device->CreateTexture2D(&texture_desc_, nullptr, &result)))
-    return nullptr;
+  MEDIA_LOG(INFO, media_log)
+      << "D3D11VideoDecoder output color space: "
+      << (output_color_space ? output_color_space->ToString()
+                             : "(same as input)");
 
-  return result;
+  if (needs_texture_copy) {
+    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is copying textures";
+    return std::make_unique<CopyTextureSelector>(
+        output_pixel_format, decoder_output_format, output_dxgi_format,
+        output_color_space, std::move(video_device), std::move(device_context),
+        shared_image_use_shared_handle);
+  } else {
+    MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder is binding textures";
+    // Binding can't change the color space. The consumer has to do it, if they
+    // want to.
+    DCHECK(!output_color_space);
+    return std::make_unique<TextureSelector>(
+        output_pixel_format, output_dxgi_format, std::move(video_device),
+        std::move(device_context), shared_image_use_shared_handle);
+  }
 }
 
 std::unique_ptr<Texture2DWrapper> TextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
+    gfx::Size size) {
+  // TODO(liberato): If the output format is rgb, then create a pbuffer wrapper.
+  return std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat());
+}
+
+bool TextureSelector::DoesDecoderOutputUseSharedHandle() const {
+  return shared_image_use_shared_handle_;
+}
+
+bool TextureSelector::WillCopyForTesting() const {
+  return false;
+}
+
+CopyTextureSelector::CopyTextureSelector(
+    VideoPixelFormat pixfmt,
+    DXGI_FORMAT input_dxgifmt,
+    DXGI_FORMAT output_dxgifmt,
+    absl::optional<gfx::ColorSpace> output_color_space,
     ComD3D11VideoDevice video_device,
     ComD3D11DeviceContext device_context,
-    ComD3D11Texture2D input_texture,
-    gfx::Size size) {
-  return std::make_unique<DefaultTexture2DWrapper>(input_texture);
-}
+    bool shared_image_use_shared_handle)
+    : TextureSelector(pixfmt,
+                      output_dxgifmt,
+                      std::move(video_device),
+                      std::move(device_context),
+                      shared_image_use_shared_handle),
+      output_color_space_(std::move(output_color_space)),
+      video_processor_proxy_(
+          base::MakeRefCounted<VideoProcessorProxy>(this->video_device(),
+                                                    this->device_context())) {}
 
-// private
-void TextureSelector::SetUpDecoderDescriptor() {
-  decoder_desc_ = {};
-  decoder_desc_.Guid = decoder_guid_;
-  decoder_desc_.SampleWidth = coded_size_.width();
-  decoder_desc_.SampleHeight = coded_size_.height();
-  decoder_desc_.OutputFormat = dxgi_format_;
-}
-
-// private
-void TextureSelector::SetUpTextureDescriptor() {
-  texture_desc_ = {};
-  texture_desc_.MipLevels = 1;
-  texture_desc_.ArraySize = TextureSelector::BUFFER_COUNT;
-  texture_desc_.Format = dxgi_format_;
-  texture_desc_.SampleDesc.Count = 1;
-  texture_desc_.Usage = D3D11_USAGE_DEFAULT;
-  texture_desc_.BindFlags = D3D11_BIND_DECODER | D3D11_BIND_SHADER_RESOURCE;
-
-  // Decode swap chains do not support shared resources.
-  // TODO(sunnyps): Find a workaround for when the decoder moves to its own
-  // thread and D3D device.  See https://crbug.com/911847
-  texture_desc_.MiscFlags =
-      supports_swap_chain_ ? 0 : D3D11_RESOURCE_MISC_SHARED;
-
-  if (is_encrypted_)
-    texture_desc_.MiscFlags |= D3D11_RESOURCE_MISC_HW_PROTECTED;
-}
+CopyTextureSelector::~CopyTextureSelector() = default;
 
 std::unique_ptr<Texture2DWrapper> CopyTextureSelector::CreateTextureWrapper(
     ComD3D11Device device,
-    ComD3D11VideoDevice video_device,
-    ComD3D11DeviceContext device_context,
-    ComD3D11Texture2D input_texture,
     gfx::Size size) {
-  // Change the texture descriptor flags to make different output textures
-  texture_desc_.BindFlags =
+  D3D11_TEXTURE2D_DESC texture_desc = {};
+  texture_desc.MipLevels = 1;
+  texture_desc.ArraySize = 1;
+  texture_desc.CPUAccessFlags = 0;
+  texture_desc.Format = output_dxgifmt_;
+  texture_desc.SampleDesc.Count = 1;
+  texture_desc.Usage = D3D11_USAGE_DEFAULT;
+  texture_desc.BindFlags =
       D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
-  texture_desc_.ArraySize = 1;
-  texture_desc_.CPUAccessFlags = 0;
-  texture_desc_.Format = output_dxgifmt_;
+  texture_desc.Width = size.width();
+  texture_desc.Height = size.height();
+  if (DoesSharedImageUseSharedHandle()) {
+    texture_desc.MiscFlags = D3D11_RESOURCE_MISC_SHARED_NTHANDLE |
+                             D3D11_RESOURCE_MISC_SHARED_KEYEDMUTEX;
+  }
 
-  ComD3D11Texture2D out_texture = CreateOutputTexture(device, size);
-  if (!out_texture)
+  ComD3D11Texture2D out_texture;
+  if (FAILED(device->CreateTexture2D(&texture_desc, nullptr, &out_texture)))
+    return nullptr;
+
+  if (FAILED(
+          SetDebugName(out_texture.Get(), "D3D11Decoder_CopyTextureSelector")))
     return nullptr;
 
   return std::make_unique<CopyingTexture2DWrapper>(
-      std::make_unique<DefaultTexture2DWrapper>(out_texture),
-      std::make_unique<VideoProcessorProxy>(video_device, device_context),
-      input_texture);
+      size, std::make_unique<DefaultTexture2DWrapper>(size, OutputDXGIFormat()),
+      video_processor_proxy_, out_texture, output_color_space_);
+}
+
+bool CopyTextureSelector::DoesDecoderOutputUseSharedHandle() const {
+  return false;
+}
+
+bool CopyTextureSelector::WillCopyForTesting() const {
+  return true;
 }
 
 }  // namespace media

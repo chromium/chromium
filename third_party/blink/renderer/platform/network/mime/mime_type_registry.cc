@@ -193,7 +193,7 @@ bool MIMETypeRegistry::IsSupportedFontMIMEType(const String& mime_type) {
   static const unsigned kFontLen = 5;
   if (!mime_type.StartsWithIgnoringASCIICase("font/"))
     return false;
-  String sub_type = mime_type.Substring(kFontLen).DeprecatedLower();
+  String sub_type = mime_type.Substring(kFontLen).LowerASCII();
   return sub_type == "woff" || sub_type == "woff2" || sub_type == "otf" ||
          sub_type == "ttf" || sub_type == "sfnt";
 }
@@ -215,6 +215,71 @@ bool MIMETypeRegistry::IsLosslessImageMIMEType(const String& mime_type) {
          EqualIgnoringASCIICase(mime_type, "image/webp") ||
          EqualIgnoringASCIICase(mime_type, "image/x-xbitmap") ||
          EqualIgnoringASCIICase(mime_type, "image/x-png");
+}
+
+bool MIMETypeRegistry::IsXMLMIMEType(const String& mime_type) {
+  if (EqualIgnoringASCIICase(mime_type, "text/xml") ||
+      EqualIgnoringASCIICase(mime_type, "application/xml") ||
+      EqualIgnoringASCIICase(mime_type, "text/xsl"))
+    return true;
+
+  // Per RFCs 3023 and 2045, an XML MIME type is of the form:
+  // ^[0-9a-zA-Z_\\-+~!$\\^{}|.%'`#&*]+/[0-9a-zA-Z_\\-+~!$\\^{}|.%'`#&*]+\+xml$
+
+  int length = mime_type.length();
+  if (length < 7)
+    return false;
+
+  if (mime_type[0] == '/' || mime_type[length - 5] == '/' ||
+      !mime_type.EndsWithIgnoringASCIICase("+xml"))
+    return false;
+
+  bool has_slash = false;
+  for (int i = 0; i < length - 4; ++i) {
+    UChar ch = mime_type[i];
+    if (ch >= '0' && ch <= '9')
+      continue;
+    if (ch >= 'a' && ch <= 'z')
+      continue;
+    if (ch >= 'A' && ch <= 'Z')
+      continue;
+    switch (ch) {
+      case '_':
+      case '-':
+      case '+':
+      case '~':
+      case '!':
+      case '$':
+      case '^':
+      case '{':
+      case '}':
+      case '|':
+      case '.':
+      case '%':
+      case '\'':
+      case '`':
+      case '#':
+      case '&':
+      case '*':
+        continue;
+      case '/':
+        if (has_slash)
+          return false;
+        has_slash = true;
+        continue;
+      default:
+        return false;
+    }
+  }
+
+  return true;
+}
+
+bool MIMETypeRegistry::IsPlainTextMIMEType(const String& mime_type) {
+  return mime_type.StartsWithIgnoringASCIICase("text/") &&
+         !(EqualIgnoringASCIICase(mime_type, "text/html") ||
+           EqualIgnoringASCIICase(mime_type, "text/xml") ||
+           EqualIgnoringASCIICase(mime_type, "text/xsl"));
 }
 
 }  // namespace blink

@@ -9,11 +9,19 @@
 
 namespace signin {
 
-// Features to trigger the startup sign-in promo at boot.
-extern const base::Feature kForceStartupSigninPromo;
-
 // Returns true if the startup sign-in promo should be displayed at boot.
 bool ForceStartupSigninPromo();
+
+// Returns true if extended sync promos should be disabled unconditionally.
+bool ForceDisableExtendedSyncPromos();
+
+// Name of multi-value switch that controls the delay (in minutes) for polling
+// for the existence of Gaia cookies for google.com.
+extern const char kDelayThresholdMinutesToUpdateGaiaCookie[];
+
+// Name of multi-value switch that controls the max time (in seconds) for
+// waiting for a response from the Account Capabilities API.
+extern const char kWaitThresholdMillisecondsForCapabilitiesApi[];
 
 }  // namespace signin
 

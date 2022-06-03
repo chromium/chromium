@@ -2,16 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assertDeepEquals, assertEquals} from '../chai_assert.js';
+
 /**
  * Create a mock function that records function calls and validates against
  * expectations.
+ * @extends Function
  */
-/* #export */ class MockMethod {
+export class MockMethod {
   constructor() {
+    /** @type {MockMethod|Function} */
     var fn = function() {
       var args = Array.prototype.slice.call(arguments);
       var callbacks = args.filter(function(arg) {
-        return (typeof arg == 'function');
+        return (typeof arg === 'function');
       });
 
       if (callbacks.length > 1) {
@@ -20,12 +24,13 @@
         return;
       }
 
-      fn.recordCall(args);
-      if (callbacks.length == 1) {
-        callbacks[0].apply(undefined, fn.callbackData);
+      var fnAsMethod = /** @type {!MockMethod} */ (fn);
+      fnAsMethod.recordCall(args);
+      if (callbacks.length === 1) {
+        callbacks[0].apply(undefined, fnAsMethod.callbackData);
         return;
       }
-      return fn.returnValue;
+      return fnAsMethod.returnValue;
     };
 
     /**
@@ -33,43 +38,50 @@
      * @type {!Array<!Array>}
      * @private
      */
-    fn.calls_ = [];
+    this.calls_ = [];
 
     /**
      * List of expected call signatures.
      * @type {!Array<!Array>}
      * @private
      */
-    fn.expectations_ = [];
+    this.expectations_ = [];
 
     /**
      * Value returned from call to function.
      * @type {*}
      */
-    fn.returnValue = undefined;
+    this.returnValue = undefined;
 
     /**
      * List of arguments for callback function.
      * @type {!Array<!Array>}
      */
-    fn.callbackData = [];
+    this.callbackData = [];
 
-    Object.setPrototypeOf(fn, MockMethod.prototype);
-    return fn;
+    /**
+     * Name of the function being replaced.
+     * @type {?string}
+     */
+    this.functionName = null;
+
+    var fnAsMethod = /** @type {!MockMethod} */ (fn);
+    Object.assign(fnAsMethod, this);
+    Object.setPrototypeOf(fnAsMethod, MockMethod.prototype);
+    return fnAsMethod;
   }
 
   /**
    * Adds an expected call signature.
-   * @param {...}  var_args Expected arguments for the function call.
+   * @param {...} args Expected arguments for the function call.
    */
-  addExpectation() {
-    var args = Array.prototype.slice.call(arguments);
+  addExpectation(...args) {
     this.expectations_.push(args.filter(this.notFunction_));
   }
 
   /**
    * Adds a call signature.
-   * @param {!Array} args.
+   * @param {!Array} args
    */
   recordCall(args) {
     this.calls_.push(args.filter(this.notFunction_));
@@ -97,7 +109,7 @@
    *     base implementation, but provides context that may be useful for
    *     overrides.
    * @param {!Array} expected The expected arguments.
-   * @parma {!Array} observed The observed arguments.
+   * @param {!Array} observed The observed arguments.
    */
   validateCall(index, expected, observed) {
     assertDeepEquals(expected, observed);
@@ -109,7 +121,7 @@
    * @return True if arg is not function type.
    */
   notFunction_(arg) {
-    return typeof arg != 'function';
+    return typeof arg !== 'function';
   }
 }
 
@@ -117,7 +129,7 @@
  * Controller for mocking methods. Tracks calls to mocked methods and verifies
  * that call signatures match expectations.
  */
-/* #export */ class MockController {
+export class MockController {
   constructor() {
     /**
      * Original functions implementations, which are restored when |reset| is

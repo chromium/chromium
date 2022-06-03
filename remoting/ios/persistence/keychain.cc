@@ -4,7 +4,7 @@
 
 #include "remoting/ios/persistence/keychain.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace remoting {
 

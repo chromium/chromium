@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/disks/disk_mount_manager.h"
 
 namespace chromeos {
@@ -48,14 +49,20 @@ class COMPONENT_EXPORT(CHROMEOS_DISKS) MountPoint {
   ~MountPoint();
 
   // Unmounts the mount point, and runs |callback| when done. |callback| must be
-  // non-null.
+  // non-null, and will not be run if |this| is destroyed before the unmount has
+  // completed.
   void Unmount(UnmountCallback callback);
 
   const base::FilePath& mount_path() const { return mount_path_; }
 
  private:
+  // Callback for DiskMountManager::UnmountPath().
+  void OnUmountDone(UnmountCallback callback, MountError unmount_error);
+
   base::FilePath mount_path_;
   DiskMountManager* const disk_mount_manager_;
+
+  base::WeakPtrFactory<MountPoint> weak_factory_{this};
 };
 
 }  // namespace disks

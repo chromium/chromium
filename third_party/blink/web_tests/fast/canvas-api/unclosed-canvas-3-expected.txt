@@ -1,1 +1,0 @@
-There should be no text below this, because the text is inside a canvas element and the </div> that's also inside the canvas element does not close an open element. The canvas is never closed, and the rest of the body ends up inside it. There's nothing special about div; we get the same results with other types of elements.

@@ -1,17 +1,10 @@
 /* BraIA64.c -- Converter for IA-64 code
-2013-11-12 : Igor Pavlov : Public domain */
+2017-01-26 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
+#include "CpuArch.h"
 #include "Bra.h"
-
-static const Byte kBranchTable[32] =
-{
-  0, 0, 0, 0, 0, 0, 0, 0,
-  0, 0, 0, 0, 0, 0, 0, 0,
-  4, 4, 6, 6, 0, 0, 7, 7,
-  4, 4, 0, 0, 4, 4, 0, 0
-};
 
 SizeT IA64_Convert(Byte *data, SizeT size, UInt32 ip, int encoding)
 {
@@ -19,51 +12,42 @@ SizeT IA64_Convert(Byte *data, SizeT size, UInt32 ip, int encoding)
   if (size < 16)
     return 0;
   size -= 16;
-  for (i = 0; i <= size; i += 16)
+  i = 0;
+  do
   {
-    UInt32 instrTemplate = data[i] & 0x1F;
-    UInt32 mask = kBranchTable[instrTemplate];
-    UInt32 bitPos = 5;
-    int slot;
-    for (slot = 0; slot < 3; slot++, bitPos += 41)
+    unsigned m = ((UInt32)0x334B0000 >> (data[i] & 0x1E)) & 3;
+    if (m)
     {
-      UInt32 bytePos, bitRes;
-      UInt64 instruction, instNorm;
-      int j;
-      if (((mask >> slot) & 1) == 0)
-        continue;
-      bytePos = (bitPos >> 3);
-      bitRes = bitPos & 0x7;
-      instruction = 0;
-      for (j = 0; j < 6; j++)
-        instruction += (UInt64)data[i + j + bytePos] << (8 * j);
-
-      instNorm = instruction >> bitRes;
-      if (((instNorm >> 37) & 0xF) == 0x5 && ((instNorm >> 9) & 0x7) == 0)
+      m++;
+      do
       {
-        UInt32 src = (UInt32)((instNorm >> 13) & 0xFFFFF);
-        UInt32 dest;
-        src |= ((UInt32)(instNorm >> 36) & 1) << 20;
-        
-        src <<= 4;
-        
-        if (encoding)
-          dest = ip + (UInt32)i + src;
-        else
-          dest = src - (ip + (UInt32)i);
-        
-        dest >>= 4;
-        
-        instNorm &= ~((UInt64)(0x8FFFFF) << 13);
-        instNorm |= ((UInt64)(dest & 0xFFFFF) << 13);
-        instNorm |= ((UInt64)(dest & 0x100000) << (36 - 20));
-        
-        instruction &= (1 << bitRes) - 1;
-        instruction |= (instNorm << bitRes);
-        for (j = 0; j < 6; j++)
-          data[i + j + bytePos] = (Byte)(instruction >> (8 * j));
+        Byte *p = data + (i + (size_t)m * 5 - 8);
+        if (((p[3] >> m) & 15) == 5
+            && (((p[-1] | ((UInt32)p[0] << 8)) >> m) & 0x70) == 0)
+        {
+          unsigned raw = GetUi32(p);
+          unsigned v = raw >> m;
+          v = (v & 0xFFFFF) | ((v & (1 << 23)) >> 3);
+          
+          v <<= 4;
+          if (encoding)
+            v += ip + (UInt32)i;
+          else
+            v -= ip + (UInt32)i;
+          v >>= 4;
+          
+          v &= 0x1FFFFF;
+          v += 0x700000;
+          v &= 0x8FFFFF;
+          raw &= ~((UInt32)0x8FFFFF << m);
+          raw |= (v << m);
+          SetUi32(p, raw);
+        }
       }
+      while (++m <= 4);
     }
+    i += 16;
   }
+  while (i <= size);
   return i;
 }

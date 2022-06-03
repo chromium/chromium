@@ -15,8 +15,8 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process_metrics.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
 #include "ipc/ipc_listener.h"
@@ -43,7 +43,7 @@ class ChannelReflectorListener : public Listener {
 
   ~ChannelReflectorListener() override;
 
-  void Init(Sender* channel, const base::Closure& quit_closure);
+  void Init(Sender* channel, base::OnceClosure quit_closure);
 
   bool OnMessageReceived(const Message& message) override;
 
@@ -59,7 +59,7 @@ class ChannelReflectorListener : public Listener {
 
  private:
   Sender* channel_;
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
 };
 
 // This class locks the current thread to a particular CPU core. This is
@@ -71,17 +71,18 @@ class LockThreadAffinity {
  public:
   explicit LockThreadAffinity(int cpu_number);
 
+  LockThreadAffinity(const LockThreadAffinity&) = delete;
+  LockThreadAffinity& operator=(const LockThreadAffinity&) = delete;
+
   ~LockThreadAffinity();
 
  private:
   bool affinity_set_ok_;
 #if defined(OS_WIN)
   DWORD_PTR old_affinity_;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   cpu_set_t old_cpuset_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(LockThreadAffinity);
 };
 
 // Avoid core 0 due to conflicts with Intel's Power Gadget.
@@ -106,7 +107,7 @@ class MojoPerfTestClient {
 class ReflectorImpl : public IPC::mojom::Reflector {
  public:
   explicit ReflectorImpl(mojo::ScopedMessagePipeHandle handle,
-                         const base::Closure& quit_closure);
+                         base::OnceClosure quit_closure);
 
   ~ReflectorImpl() override;
 
@@ -118,7 +119,7 @@ class ReflectorImpl : public IPC::mojom::Reflector {
 
   void Quit() override;
 
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
   mojo::Receiver<IPC::mojom::Reflector> receiver_;
 };
 

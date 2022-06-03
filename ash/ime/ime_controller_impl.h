@@ -13,13 +13,13 @@
 #include "ash/public/cpp/ime_controller.h"
 #include "ash/public/cpp/ime_controller_client.h"
 #include "ash/public/cpp/ime_info.h"
-#include "base/macros.h"
+#include "ash/system/screen_security/screen_capture_observer.h"
 #include "base/observer_list.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/base/ime/chromeos/ime_keyset.h"
+#include "ui/base/ime/ash/ime_keyset.h"
 #include "ui/display/display_observer.h"
 
 namespace ui {
@@ -34,7 +34,8 @@ class ModeIndicatorObserver;
 // which might live in Chrome browser or in a separate mojo service.
 class ASH_EXPORT ImeControllerImpl : public ImeController,
                                      public display::DisplayObserver,
-                                     public CastConfigController::Observer {
+                                     public CastConfigController::Observer,
+                                     public ScreenCaptureObserver {
  public:
   class Observer {
    public:
@@ -47,14 +48,19 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   };
 
   ImeControllerImpl();
+
+  ImeControllerImpl(const ImeControllerImpl&) = delete;
+  ImeControllerImpl& operator=(const ImeControllerImpl&) = delete;
+
   ~ImeControllerImpl() override;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
-  const ImeInfo& current_ime() const { return current_ime_; }
+  const std::vector<ImeInfo>& GetVisibleImes() const;
+  bool IsCurrentImeVisible() const;
 
-  const std::vector<ImeInfo>& available_imes() const { return available_imes_; }
+  const ImeInfo& current_ime() const { return current_ime_; }
 
   bool is_extra_input_options_enabled() const {
     return is_extra_input_options_enabled_;
@@ -82,9 +88,9 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   void SwitchImeById(const std::string& ime_id, bool show_message);
   void ActivateImeMenuItem(const std::string& key);
   void SetCapsLockEnabled(bool caps_enabled);
-  void OverrideKeyboardKeyset(chromeos::input_method::ImeKeyset keyset);
+  void OverrideKeyboardKeyset(input_method::ImeKeyset keyset);
   void OverrideKeyboardKeyset(
-      chromeos::input_method::ImeKeyset keyset,
+      input_method::ImeKeyset keyset,
       ImeControllerClient::OverrideKeyboardKeysetCallback callback);
 
   // Returns true if the switch is allowed and the keystroke should be
@@ -110,7 +116,7 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   // Show the mode indicator UI with the given text at the anchor bounds.
   // The anchor bounds is in the universal screen coordinates in DIP.
   void ShowModeIndicator(const gfx::Rect& anchor_bounds,
-                         const base::string16& ime_short_name) override;
+                         const std::u16string& ime_short_name) override;
 
   // display::DisplayObserver:
   void OnDisplayMetricsChanged(const display::Display& display,
@@ -118,6 +124,13 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
 
   // CastConfigController::Observer:
   void OnDevicesUpdated(const std::vector<SinkAndRoute>& devices) override;
+
+  // ScreenCaptureObserver:
+  void OnScreenCaptureStart(
+      const base::RepeatingClosure& stop_callback,
+      const base::RepeatingClosure& source_callback,
+      const std::u16string& screen_capture_status) override;
+  void OnScreenCaptureStop() override;
 
   // Synchronously returns the cached caps lock state.
   bool IsCapsLockEnabled() const;
@@ -146,6 +159,10 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
 
   // "Available" IMEs are both installed and enabled by the user in settings.
   std::vector<ImeInfo> available_imes_;
+
+  // "Visible" IMEs are installed, enabled, and don't include built-in IMEs that
+  // shouldn't be shown to the user, like Dictation.
+  std::vector<ImeInfo> visible_imes_;
 
   // True if the available IMEs are currently managed by enterprise policy.
   // For example, can occur at the login screen with device-level policy.
@@ -184,10 +201,8 @@ class ASH_EXPORT ImeControllerImpl : public ImeController,
   base::ObserverList<Observer>::Unchecked observers_;
 
   std::unique_ptr<ModeIndicatorObserver> mode_indicator_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImeControllerImpl);
 };
 
 }  // namespace ash
 
-#endif  // ASH_IME_IME_CONTROLLER_H_
+#endif  // ASH_IME_IME_CONTROLLER_IMPL_H_

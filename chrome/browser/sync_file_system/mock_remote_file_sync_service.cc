@@ -8,8 +8,9 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
 
@@ -43,12 +44,12 @@ MockRemoteFileSyncService::~MockRemoteFileSyncService() {
 }
 
 void MockRemoteFileSyncService::DumpFiles(const GURL& origin,
-                                          const ListCallback& callback) {
-  callback.Run(nullptr);
+                                          ListCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
-void MockRemoteFileSyncService::DumpDatabase(const ListCallback& callback) {
-  callback.Run(nullptr);
+void MockRemoteFileSyncService::DumpDatabase(ListCallback callback) {
+  std::move(callback).Run(nullptr);
 }
 
 void MockRemoteFileSyncService::SetServiceState(RemoteServiceState state) {
@@ -91,24 +92,25 @@ void MockRemoteFileSyncService::AddFileStatusObserverStub(
 
 void MockRemoteFileSyncService::RegisterOriginStub(
     const GURL& origin,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, SYNC_STATUS_OK));
+      FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
 }
 
 void MockRemoteFileSyncService::DeleteOriginDirectoryStub(
     const GURL& origin,
     UninstallFlag flag,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, SYNC_STATUS_OK));
+      FROM_HERE, base::BindOnce(std::move(callback), SYNC_STATUS_OK));
 }
 
 void MockRemoteFileSyncService::ProcessRemoteChangeStub(
-    const SyncFileCallback& callback) {
+    SyncFileCallback callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(callback, SYNC_STATUS_NO_CHANGE_TO_SYNC,
-                                storage::FileSystemURL()));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), SYNC_STATUS_NO_CHANGE_TO_SYNC,
+                     storage::FileSystemURL()));
 }
 
 RemoteServiceState MockRemoteFileSyncService::GetCurrentStateStub() const {

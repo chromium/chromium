@@ -22,7 +22,6 @@
 
 #include <limits>
 
-#include "base/logging.h"
 
 namespace {
 

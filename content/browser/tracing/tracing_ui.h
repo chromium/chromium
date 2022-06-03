@@ -10,7 +10,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -28,18 +27,20 @@ class TracingDelegate;
 class CONTENT_EXPORT TracingUI : public WebUIController {
  public:
   explicit TracingUI(WebUI* web_ui);
+
+  TracingUI(const TracingUI&) = delete;
+  TracingUI& operator=(const TracingUI&) = delete;
+
   ~TracingUI() override;
 
   // Public for testing.
   static bool GetTracingOptions(const std::string& data64,
-                                base::trace_event::TraceConfig* trace_config);
-
+                                base::trace_event::TraceConfig& trace_config,
+                                std::string& out_stream_format);
 
  private:
   std::unique_ptr<TracingDelegate> delegate_;
   base::WeakPtrFactory<TracingUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TracingUI);
 };
 
 }  // namespace content

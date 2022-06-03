@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/single_thread_task_runner.h"
-#include "third_party/blink/public/platform/web_media_stream_track.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/peerconnection/webrtc_media_stream_track_adapter_map.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
@@ -22,6 +21,9 @@
 #include "third_party/webrtc/api/scoped_refptr.h"
 
 namespace blink {
+
+class RTCEncodedAudioStreamTransformer;
+class RTCEncodedVideoStreamTransformer;
 
 // This class represents the state of a sender; a snapshot of what a
 // webrtc-layer sender looked like when it was inspected on the signaling thread
@@ -120,7 +122,9 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   RTCRtpSenderImpl(
       scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
       scoped_refptr<blink::WebRtcMediaStreamTrackAdapterMap> track_map,
-      RtpSenderState state);
+      RtpSenderState state,
+      bool force_encoded_audio_insertable_streams,
+      bool force_encoded_video_insertable_streams);
   RTCRtpSenderImpl(const RTCRtpSenderImpl& other);
   ~RTCRtpSenderImpl() override;
   RTCRtpSenderImpl& operator=(const RTCRtpSenderImpl& other);
@@ -133,24 +137,28 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
   uintptr_t Id() const override;
   rtc::scoped_refptr<webrtc::DtlsTransportInterface> DtlsTransport() override;
   webrtc::DtlsTransportInformation DtlsTransportInformation() override;
-  blink::WebMediaStreamTrack Track() const override;
+  MediaStreamComponent* Track() const override;
   Vector<String> StreamIds() const override;
-  void ReplaceTrack(blink::WebMediaStreamTrack with_track,
-                    blink::RTCVoidRequest* request) override;
+  void ReplaceTrack(MediaStreamComponent* with_track,
+                    RTCVoidRequest* request) override;
   std::unique_ptr<blink::RtcDtmfSenderHandler> GetDtmfSender() const override;
   std::unique_ptr<webrtc::RtpParameters> GetParameters() const override;
   void SetParameters(Vector<webrtc::RtpEncodingParameters>,
-                     webrtc::DegradationPreference,
+                     absl::optional<webrtc::DegradationPreference>,
                      blink::RTCVoidRequest*) override;
   void GetStats(RTCStatsReportCallback,
                 const Vector<webrtc::NonStandardGroupId>&) override;
   void SetStreams(const Vector<String>& stream_ids) override;
+  RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer()
+      const override;
+  RTCEncodedVideoStreamTransformer* GetEncodedVideoStreamTransformer()
+      const override;
 
   // The ReplaceTrack() that takes a blink::RTCVoidRequest is implemented on
   // top of this, which returns the result in a callback instead. Allows doing
   // ReplaceTrack() without having a blink::RTCVoidRequest, which can only be
   // constructed inside of blink.
-  void ReplaceTrack(blink::WebMediaStreamTrack with_track,
+  void ReplaceTrack(MediaStreamComponent* with_track,
                     base::OnceCallback<void(bool)> callback);
   bool RemoveFromPeerConnection(webrtc::PeerConnectionInterface* pc);
 
@@ -162,7 +170,7 @@ class MODULES_EXPORT RTCRtpSenderImpl : public blink::RTCRtpSenderPlatform {
 };
 
 class MODULES_EXPORT RTCRtpSenderOnlyTransceiver
-    : public RTCRtpTransceiverPlatform {
+    : public RTCRtpPlanBTransceiverPlatform {
  public:
   explicit RTCRtpSenderOnlyTransceiver(
       std::unique_ptr<blink::RTCRtpSenderPlatform> sender);
@@ -176,10 +184,11 @@ class MODULES_EXPORT RTCRtpSenderOnlyTransceiver
   std::unique_ptr<RTCRtpReceiverPlatform> Receiver() const override;
   bool Stopped() const override;
   webrtc::RtpTransceiverDirection Direction() const override;
-  void SetDirection(webrtc::RtpTransceiverDirection direction) override;
-  base::Optional<webrtc::RtpTransceiverDirection> CurrentDirection()
+  webrtc::RTCError SetDirection(
+      webrtc::RtpTransceiverDirection direction) override;
+  absl::optional<webrtc::RtpTransceiverDirection> CurrentDirection()
       const override;
-  base::Optional<webrtc::RtpTransceiverDirection> FiredDirection()
+  absl::optional<webrtc::RtpTransceiverDirection> FiredDirection()
       const override;
   webrtc::RTCError SetCodecPreferences(
       Vector<webrtc::RtpCodecCapability>) override;

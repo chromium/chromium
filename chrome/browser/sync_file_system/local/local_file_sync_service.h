@@ -10,10 +10,8 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -51,12 +49,16 @@ class LocalFileSyncService
       public LocalOriginChangeObserver,
       public base::SupportsWeakPtr<LocalFileSyncService> {
  public:
-  typedef base::Callback<LocalChangeProcessor*(const GURL& origin)>
+  typedef base::RepeatingCallback<LocalChangeProcessor*(const GURL& origin)>
       GetLocalChangeProcessorCallback;
 
   class Observer {
    public:
     Observer() {}
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // This is called when there're one or more local changes available.
@@ -64,19 +66,20 @@ class LocalFileSyncService
     // scheduling but the value may not be accurately reflect the real-time
     // value.
     virtual void OnLocalChangeAvailable(int64_t pending_changes_hint) = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
-  typedef base::Callback<void(SyncStatusCode status,
-                              bool has_pending_changes)>
+  typedef base::OnceCallback<void(SyncStatusCode status,
+                                  bool has_pending_changes)>
       HasPendingLocalChangeCallback;
 
   static std::unique_ptr<LocalFileSyncService> Create(Profile* profile);
   static std::unique_ptr<LocalFileSyncService> CreateForTesting(
       Profile* profile,
       leveldb::Env* env_override);
+
+  LocalFileSyncService(const LocalFileSyncService&) = delete;
+  LocalFileSyncService& operator=(const LocalFileSyncService&) = delete;
+
   ~LocalFileSyncService() override;
 
   void Shutdown();
@@ -84,7 +87,7 @@ class LocalFileSyncService
   void MaybeInitializeFileSystemContext(
       const GURL& app_origin,
       storage::FileSystemContext* file_system_context,
-      const SyncStatusCallback& callback);
+      SyncStatusCallback callback);
 
   void AddChangeObserver(Observer* observer);
 
@@ -95,13 +98,13 @@ class LocalFileSyncService
   // Calling this method again while this already has another URL waiting
   // for sync will overwrite the previously registered URL.
   void RegisterURLForWaitingSync(const storage::FileSystemURL& url,
-                                 const base::Closure& on_syncable_callback);
+                                 base::OnceClosure on_syncable_callback);
 
   // Synchronize one (or a set of) local change(s) to the remote server
   // using local_change_processor given by SetLocalChangeProcessor().
   // |processor| must have same or longer lifetime than this service.
   // It is invalid to call this method before calling SetLocalChangeProcessor().
-  void ProcessLocalChange(const SyncFileCallback& callback);
+  void ProcessLocalChange(SyncFileCallback callback);
 
   // Sets a local change processor. The value is ignored if
   // SetLocalChangeProcessorCallback() is called separately.
@@ -118,33 +121,32 @@ class LocalFileSyncService
   // TODO(kinuko): Remove this method once we stop using multiple backends
   // (crbug.com/324215), or deprecate the other if we keep doing so.
   void SetLocalChangeProcessorCallback(
-      const GetLocalChangeProcessorCallback& get_local_change_processor);
+      GetLocalChangeProcessorCallback get_local_change_processor);
 
   // Returns true via |callback| if the given file |url| has local pending
   // changes.
   void HasPendingLocalChanges(const storage::FileSystemURL& url,
-                              const HasPendingLocalChangeCallback& callback);
+                              HasPendingLocalChangeCallback callback);
 
-  void PromoteDemotedChanges(const base::Closure& callback);
+  void PromoteDemotedChanges(base::RepeatingClosure callback);
 
   // Returns the metadata of a remote file pointed by |url|.
   virtual void GetLocalFileMetadata(const storage::FileSystemURL& url,
-                                    const SyncFileMetadataCallback& callback);
+                                    SyncFileMetadataCallback callback);
 
   // RemoteChangeProcessor overrides.
-  void PrepareForProcessRemoteChange(
-      const storage::FileSystemURL& url,
-      const PrepareChangeCallback& callback) override;
+  void PrepareForProcessRemoteChange(const storage::FileSystemURL& url,
+                                     PrepareChangeCallback callback) override;
   void ApplyRemoteChange(const FileChange& change,
                          const base::FilePath& local_path,
                          const storage::FileSystemURL& url,
-                         const SyncStatusCallback& callback) override;
+                         SyncStatusCallback callback) override;
   void FinalizeRemoteSync(const storage::FileSystemURL& url,
                           bool clear_local_changes,
-                          const base::Closure& completion_callback) override;
+                          base::OnceClosure completion_callback) override;
   void RecordFakeLocalChange(const storage::FileSystemURL& url,
                              const FileChange& change,
-                             const SyncStatusCallback& callback) override;
+                             SyncStatusCallback callback) override;
 
   // LocalOriginChangeObserver override.
   void OnChangesAvailableInOrigins(const std::set<GURL>& origins) override;
@@ -191,25 +193,23 @@ class LocalFileSyncService
   void DidInitializeFileSystemContext(
       const GURL& app_origin,
       storage::FileSystemContext* file_system_context,
-      const SyncStatusCallback& callback,
+      SyncStatusCallback callback,
       SyncStatusCode status);
   void DidInitializeForRemoteSync(
       const storage::FileSystemURL& url,
       storage::FileSystemContext* file_system_context,
-      const PrepareChangeCallback& callback,
+      PrepareChangeCallback callback,
       SyncStatusCode status);
 
   // Callback for ApplyRemoteChange.
-  void DidApplyRemoteChange(
-      const SyncStatusCallback& callback,
-      SyncStatusCode status);
+  void DidApplyRemoteChange(SyncStatusCallback callback, SyncStatusCode status);
 
   // Callbacks for ProcessLocalChange.
-  void DidGetFileForLocalSync(const SyncFileCallback& callback,
+  void DidGetFileForLocalSync(SyncFileCallback callback,
                               SyncStatusCode status,
                               const LocalFileSyncInfo& sync_file_info,
                               storage::ScopedFile snapshot);
-  void ProcessNextChangeForURL(const SyncFileCallback& callback,
+  void ProcessNextChangeForURL(SyncFileCallback callback,
                                storage::ScopedFile snapshot,
                                const LocalFileSyncInfo& sync_file_info,
                                const FileChange& last_change,
@@ -239,8 +239,6 @@ class LocalFileSyncService
   GetLocalChangeProcessorCallback get_local_change_processor_;
 
   base::ObserverList<Observer>::Unchecked change_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LocalFileSyncService);
 };
 
 }  // namespace sync_file_system

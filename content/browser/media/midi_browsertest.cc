@@ -4,6 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -22,25 +23,23 @@ class MidiBrowserTest : public ContentBrowserTest {
   ~MidiBrowserTest() override {}
 
   void NavigateAndCheckResult(const std::string& path) {
-    const base::string16 expected = base::ASCIIToUTF16("pass");
+    const std::u16string expected = u"pass";
     content::TitleWatcher watcher(shell()->web_contents(), expected);
-    const base::string16 failed = base::ASCIIToUTF16("fail");
+    const std::u16string failed = u"fail";
     watcher.AlsoWaitForTitle(failed);
 
     EXPECT_TRUE(NavigateToURL(shell(), https_test_server_->GetURL(path)));
 
-    const base::string16 result = watcher.WaitAndGetTitle();
-#if defined(OS_LINUX)
+    const std::u16string result = watcher.WaitAndGetTitle();
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     // Try does not allow accessing /dev/snd/seq, and it results in a platform
     // specific initialization error. See http://crbug.com/371230.
     // Also, Chromecast does not support the feature and results in
     // NotSupportedError.
     EXPECT_TRUE(result == failed || result == expected);
     if (result == failed) {
-      std::string error_message;
-      ASSERT_TRUE(ExecuteScriptAndExtractString(
-          shell(), "domAutomationController.send(error_message)",
-          &error_message));
+      std::string error_message =
+          EvalJs(shell(), "error_message").ExtractString();
       EXPECT_TRUE("Platform dependent initialization failed." ==
                       error_message ||
                   "The implementation did not support the requested type of "

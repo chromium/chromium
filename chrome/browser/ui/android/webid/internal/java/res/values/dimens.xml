@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+  <dimen name="account_selection_sheet_horizontal_margin">16dp</dimen>
+
+  <dimen name="account_selection_sheet_handlebar_height">4dp</dimen>
+  <dimen name="account_selection_sheet_handlebar_margin">6dp</dimen>
+
+  <dimen name="account_selection_sheet_title_height">32dp</dimen>
+  <dimen name="account_selection_sheet_title_margin_bottom">8dp</dimen>
+
+  <dimen name="account_selection_sheet_item_padding_bottom">8dp</dimen>
+
+  <dimen name="account_selection_favicon_border_size">1dp</dimen>
+
+  <dimen name="account_selection_sheet_button_margin">2dp</dimen>
+</resources>

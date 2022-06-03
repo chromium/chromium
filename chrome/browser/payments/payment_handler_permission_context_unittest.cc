@@ -2,29 +2,28 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/payments/payment_handler_permission_context.h"
+#include "components/permissions/contexts/payment_handler_permission_context.h"
 
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/permission_request_id.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_request_id.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/infobars/infobar_service.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #else
-#include "chrome/browser/permissions/permission_request_manager.h"
+#include "components/permissions/permission_request_manager.h"
 #endif
 
 namespace {
@@ -56,6 +55,12 @@ class TestPermissionContext : public payments::PaymentHandlerPermissionContext {
 
 class PaymentHandlerPermissionContextTests
     : public ChromeRenderViewHostTestHarness {
+ public:
+  PaymentHandlerPermissionContextTests(
+      const PaymentHandlerPermissionContextTests&) = delete;
+  PaymentHandlerPermissionContextTests& operator=(
+      const PaymentHandlerPermissionContextTests&) = delete;
+
  protected:
   PaymentHandlerPermissionContextTests() = default;
 
@@ -64,13 +69,11 @@ class PaymentHandlerPermissionContextTests
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 #if defined(OS_ANDROID)
-    InfoBarService::CreateForWebContents(web_contents());
+    infobars::ContentInfoBarManager::CreateForWebContents(web_contents());
 #else
-    PermissionRequestManager::CreateForWebContents(web_contents());
+    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
 #endif
   }
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentHandlerPermissionContextTests);
 };
 
 // PaymentHandler permission should be denied for insecure origin.
@@ -79,22 +82,23 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureRequestingUrl) {
   GURL url("http://www.example.com");
   content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
 
-  const PermissionRequestID id(
+  const permissions::PermissionRequestID id(
       web_contents()->GetMainFrame()->GetProcess()->GetID(),
-      web_contents()->GetMainFrame()->GetRoutingID(), -1);
+      web_contents()->GetMainFrame()->GetRoutingID(),
+      permissions::PermissionRequestID::RequestLocalId());
   permission_context.RequestPermission(
       web_contents(), id, url, true,
-      base::Bind(&TestPermissionContext::TrackPermissionDecision,
-                 base::Unretained(&permission_context)));
+      base::BindOnce(&TestPermissionContext::TrackPermissionDecision,
+                     base::Unretained(&permission_context)));
 
   EXPECT_TRUE(permission_context.permission_set());
   EXPECT_FALSE(permission_context.permission_granted());
 
   ContentSetting setting =
       HostContentSettingsMapFactory::GetForProfile(profile())
-          ->GetContentSetting(url.GetOrigin(), url.GetOrigin(),
-                              ContentSettingsType::PAYMENT_HANDLER,
-                              std::string());
+          ->GetContentSetting(url.DeprecatedGetOriginAsURL(),
+                              url.DeprecatedGetOriginAsURL(),
+                              ContentSettingsType::PAYMENT_HANDLER);
   EXPECT_EQ(CONTENT_SETTING_ALLOW, setting);
 }
 
@@ -107,19 +111,19 @@ TEST_F(PaymentHandlerPermissionContextTests, TestInsecureQueryingUrl) {
   // Check that there is no saved content settings.
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             HostContentSettingsMapFactory::GetForProfile(profile())
-                ->GetContentSetting(
-                    insecure_url.GetOrigin(), insecure_url.GetOrigin(),
-                    ContentSettingsType::PAYMENT_HANDLER, std::string()));
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             HostContentSettingsMapFactory::GetForProfile(profile())
-                ->GetContentSetting(
-                    secure_url.GetOrigin(), insecure_url.GetOrigin(),
-                    ContentSettingsType::PAYMENT_HANDLER, std::string()));
+                ->GetContentSetting(secure_url.DeprecatedGetOriginAsURL(),
+                                    insecure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             HostContentSettingsMapFactory::GetForProfile(profile())
-                ->GetContentSetting(
-                    insecure_url.GetOrigin(), secure_url.GetOrigin(),
-                    ContentSettingsType::PAYMENT_HANDLER, std::string()));
+                ->GetContentSetting(insecure_url.DeprecatedGetOriginAsURL(),
+                                    secure_url.DeprecatedGetOriginAsURL(),
+                                    ContentSettingsType::PAYMENT_HANDLER));
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             permission_context

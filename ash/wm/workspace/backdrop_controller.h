@@ -10,14 +10,15 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "ash/public/cpp/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_observer.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -47,16 +48,21 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
                                       public OverviewObserver,
                                       public SplitViewObserver,
                                       public WallpaperControllerObserver,
-                                      public TabletModeObserver {
+                                      public TabletModeObserver,
+                                      public WindowBackdrop::Observer {
  public:
   explicit BackdropController(aura::Window* container);
+
+  BackdropController(const BackdropController&) = delete;
+  BackdropController& operator=(const BackdropController&) = delete;
+
   ~BackdropController() override;
 
-  void OnWindowAddedToLayout();
-  void OnWindowRemovedFromLayout();
-  void OnChildWindowVisibilityChanged();
-  void OnWindowStackingChanged();
-  void OnPostWindowStateTypeChange();
+  void OnWindowAddedToLayout(aura::Window* window);
+  void OnWindowRemovedFromLayout(aura::Window* window);
+  void OnChildWindowVisibilityChanged(aura::Window* window);
+  void OnWindowStackingChanged(aura::Window* window);
+  void OnPostWindowStateTypeChange(aura::Window* window);
   void OnDisplayMetricsChanged();
 
   // Called when the desk content is changed in order to update the state of the
@@ -74,6 +80,8 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   aura::Window* GetTopmostWindowWithBackdrop();
 
   aura::Window* backdrop_window() { return backdrop_window_; }
+
+  aura::Window* window_having_backdrop() { return window_having_backdrop_; }
 
   // OverviewObserver:
   void OnOverviewModeStarting() override;
@@ -95,7 +103,11 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
 
+  // WindowBackdrop::Observer:
+  void OnWindowBackdropPropertyChanged(aura::Window* window) override;
+
  private:
+  class WindowAnimationWaiter;
   friend class WorkspaceControllerTestApi;
 
   // Reenables updates previously pause by calling PauseUpdates().
@@ -103,7 +115,7 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
 
   void UpdateBackdropInternal();
 
-  void EnsureBackdropWidget(BackdropWindowMode mode);
+  void EnsureBackdropWidget();
 
   void UpdateAccessibilityMode();
 
@@ -111,7 +123,9 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
 
   bool WindowShouldHaveBackdrop(aura::Window* window);
 
-  // Show the backdrop window.
+  // Show the backdrop window if the |window_having_backdrop_| is not animating,
+  // otherwise it will wait for that animation to finish. If it can show the
+  // backdrop, it will update its bounds and stacking order before its shown.
   void Show();
 
   // Hide the backdrop window. If |destroy| is true, the backdrop widget will be
@@ -130,8 +144,17 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   // backdrop bounds should be the bounds of the snapped window.
   gfx::Rect GetBackdropBounds();
 
-  // Sets the animtion type of |backdrop_window_| to |type|.
-  void SetBackdropAnimationType(int type);
+  // If |window_having_backdrop_| is animating such that we shouldn't update the
+  // backdrop until that animation is complete, starts observing this animation
+  // (if not already done) and returns true. Returns false otherwise.
+  bool MaybeWaitForWindowAnimation();
+
+  // Updates the layout of the backdrop if one exists and is visible.
+  void MaybeUpdateLayout();
+
+  // Returns true if changes to |window| may require updating the backdrop
+  // visibility and availability.
+  bool DoesWindowCauseBackdropUpdates(aura::Window* window) const;
 
   aura::Window* root_window_;
 
@@ -141,8 +164,15 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   // aura::Window for |backdrop_|.
   aura::Window* backdrop_window_ = nullptr;
 
+  // The window for which a backdrop has been installed.
+  aura::Window* window_having_backdrop_ = nullptr;
+
   // The container of the window that should have a backdrop.
   aura::Window* container_;
+
+  // If |window_having_backdrop_| is animating while we're trying to show the
+  // backdrop, we postpone showing it until the animation completes.
+  std::unique_ptr<WindowAnimationWaiter> window_animation_waiter_;
 
   // Event hanlder used to implement actions for accessibility.
   std::unique_ptr<ui::EventHandler> backdrop_event_handler_;
@@ -153,9 +183,10 @@ class ASH_EXPORT BackdropController : public AccessibilityObserver,
   // in overview mode.
   bool pause_update_ = false;
 
-  base::WeakPtrFactory<BackdropController> weak_ptr_factory_{this};
+  base::ScopedMultiSourceObservation<WindowBackdrop, WindowBackdrop::Observer>
+      window_backdrop_observations_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(BackdropController);
+  base::WeakPtrFactory<BackdropController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

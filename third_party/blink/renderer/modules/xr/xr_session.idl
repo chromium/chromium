@@ -22,6 +22,21 @@ enum XRVisibilityState {
   "hidden",
 };
 
+enum XRInteractionMode {
+  "screen-space",
+  "world-space"
+};
+
+enum XRImageTrackingScore {
+  "untrackable",
+  "trackable",
+};
+
+enum XRReflectionFormat {
+  "srgba8",
+  "rgba16f",
+};
+
 [
     ActiveScriptWrappable,
     SecureContext,
@@ -29,9 +44,12 @@ enum XRVisibilityState {
     RuntimeEnabled=WebXR
 ] interface XRSession : EventTarget {
   [RuntimeEnabled=WebXRARModule] readonly attribute XREnvironmentBlendMode environmentBlendMode;
+  [RuntimeEnabled=WebXRARModule] readonly attribute XRInteractionMode interactionMode;
   readonly attribute XRVisibilityState visibilityState;
   [SameObject] readonly attribute XRRenderState renderState;
-  [MeasureAs=XRSessionGetInputSources, SameObject] readonly attribute XRInputSourceArray inputSources;
+  [CallWith=ScriptState, MeasureAs=XRSessionGetInputSources, SameObject] readonly attribute XRInputSourceArray inputSources;
+  [SameObject] readonly attribute XRDOMOverlayState domOverlayState;
+  [RuntimeEnabled=WebXRLightEstimation] readonly attribute XRReflectionFormat preferredReflectionFormat;
 
   attribute EventHandler onend;
   attribute EventHandler onselect;
@@ -39,28 +57,33 @@ enum XRVisibilityState {
   attribute EventHandler onselectstart;
   attribute EventHandler onselectend;
   attribute EventHandler onvisibilitychange;
+  attribute EventHandler onsqueeze;
+  attribute EventHandler onsqueezestart;
+  attribute EventHandler onsqueezeend;
 
-  [RaisesException] void updateRenderState(optional XRRenderStateInit init);
+  [RaisesException] void updateRenderState(optional XRRenderStateInit init = {});
 
   [CallWith=ScriptState, RaisesException] Promise<XRReferenceSpace> requestReferenceSpace(XRReferenceSpaceType type);
 
   long requestAnimationFrame(XRFrameRequestCallback callback);
   void cancelAnimationFrame(long handle);
 
-  [RuntimeEnabled=WebXRHitTest, CallWith=ScriptState, RaisesException] Promise<FrozenArray<XRHitResult>> requestHitTest(XRRay ray, XRSpace space);
-
-  // https://github.com/immersive-web/real-world-geometry/blob/master/plane-detection-explainer.md
-  [RuntimeEnabled=WebXRPlaneDetection] readonly attribute XRWorldTrackingState worldTrackingState;
-  [RuntimeEnabled=WebXRPlaneDetection, RaisesException] void updateWorldTrackingState(optional XRWorldTrackingStateInit state);
-
-  [RuntimeEnabled=WebXRAnchors] readonly attribute XRAnchorSet trackedAnchors;
-  [RuntimeEnabled=WebXRAnchors, CallWith=ScriptState, RaisesException] Promise<XRAnchor> createAnchor(XRRigidTransform initial_pose, XRSpace space);
-
   [CallWith=ScriptState, Measure, RaisesException] Promise<void> end();
 
   // https://github.com/immersive-web/hit-test/blob/master/hit-testing-explainer.md
-  [RuntimeEnabled=WebXRHitTest, CallWith=ScriptState, RaisesException]
+  [RuntimeEnabled=WebXRHitTest, CallWith=ScriptState, MeasureAs=XRSessionRequestHitTestSource, RaisesException]
   Promise<XRHitTestSource> requestHitTestSource(XRHitTestOptionsInit options);
-  [RuntimeEnabled=WebXRHitTest, CallWith=ScriptState, RaisesException]
+  [RuntimeEnabled=WebXRHitTest, CallWith=ScriptState, MeasureAs=XRSessionRequestHitTestSourceForTransientInput, RaisesException]
   Promise<XRTransientInputHitTestSource> requestHitTestSourceForTransientInput(XRTransientInputHitTestOptionsInit options);
+
+  [RuntimeEnabled=WebXRLightEstimation, CallWith=ScriptState, MeasureAs=XRSessionRequestLightProbe, RaisesException]
+  Promise<XRLightProbe> requestLightProbe(optional XRLightProbeInit options = {});
+
+  [RuntimeEnabled=WebXRImageTracking, CallWith=ScriptState, MeasureAs=XRSessionGetTrackedImageScores, RaisesException]
+  Promise<FrozenArray<XRImageTrackingScore>> getTrackedImageScores();
+
+  [RuntimeEnabled=WebXRDepth, RaisesException]
+  readonly attribute XRDepthUsage? depthUsage;
+  [RuntimeEnabled=WebXRDepth, RaisesException]
+  readonly attribute XRDepthDataFormat? depthDataFormat;
 };

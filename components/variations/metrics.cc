@@ -4,6 +4,7 @@
 
 #include "components/variations/metrics.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 
 namespace variations {
@@ -16,18 +17,37 @@ void RecordFirstRunSeedImportResult(FirstRunSeedImportResult result) {
 #endif  // OS_ANDROID
 
 void RecordLoadSeedResult(LoadSeedResult state) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.SeedLoadResult", state,
-                            LoadSeedResult::ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.SeedLoadResult", state);
 }
 
 void RecordLoadSafeSeedResult(LoadSeedResult state) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.SafeMode.LoadSafeSeed.Result", state,
-                            LoadSeedResult::ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.SafeMode.LoadSafeSeed.Result",
+                                state);
 }
 
 void RecordStoreSeedResult(StoreSeedResult result) {
-  UMA_HISTOGRAM_ENUMERATION("Variations.SeedStoreResult", result,
-                            StoreSeedResult::ENUM_SIZE);
+  base::UmaHistogramEnumeration("Variations.SeedStoreResult", result);
+}
+
+void ReportUnsupportedSeedFormatError() {
+  RecordStoreSeedResult(StoreSeedResult::kFailedUnsupportedSeedFormat);
+}
+
+void RecordStoreSafeSeedResult(StoreSeedResult result) {
+  base::UmaHistogramEnumeration("Variations.SafeMode.StoreSafeSeed.Result",
+                                result);
+}
+
+void RecordSeedInstanceManipulations(const InstanceManipulations& im) {
+  if (im.delta_compressed && im.gzip_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::kGzipDeltaCount);
+  } else if (im.delta_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::kNonGzipDeltaCount);
+  } else if (im.gzip_compressed) {
+    RecordStoreSeedResult(StoreSeedResult::kGzipFullCount);
+  } else {
+    RecordStoreSeedResult(StoreSeedResult::kNonGzipFullCount);
+  }
 }
 
 }  // namespace variations

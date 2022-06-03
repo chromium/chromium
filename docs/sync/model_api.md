@@ -10,7 +10,7 @@ API] (aka Directory), which as of mid-2019 is still used by several legacy model
 types, but "wrapped into" USS (see [SyncableServiceBasedBridge]).
 
 [SyncableService API]: https://www.chromium.org/developers/design-documents/sync/syncable-service-api
-[SyncableServiceBasedBridge]: https://cs.chromium.org/chromium/src/components/sync/model_impl/syncable_service_based_bridge.h
+[SyncableServiceBasedBridge]: https://cs.chromium.org/chromium/src/components/sync/model/syncable_service_based_bridge.h
 
 [TOC]
 
@@ -81,7 +81,7 @@ to add one (e.g. a GUID, though be wary as they have the potential to conflict).
 While the hash gets written to disk as part of the metadata, the tag itself is
 never persisted locally.
 
-[EntityData]: https://cs.chromium.org/chromium/src/components/sync/model/entity_data.h
+[EntityData]: https://cs.chromium.org/chromium/src/components/sync/engine/entity_data.h
 
 ## Storage
 
@@ -183,7 +183,7 @@ local state.
 Here’s an example implementation of a type using `ModelTypeStore`:
 
 ```cpp
-base::Optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
+absl::optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
     std::unique_ptr<MetadataChangeList> metadata_change_list,
     EntityChangeList entity_changes) {
   std::unique_ptr<WriteBatch> batch = store_->CreateWriteBatch();
@@ -197,7 +197,7 @@ base::Optional<ModelError> DeviceInfoSyncBridge::ApplySyncChanges(
   }
 
   batch->TakeMetadataChangesFrom(std::move(metadata_change_list));
-  store_->CommitWriteBatch(std::move(batch), base::Bind(...));
+  store_->CommitWriteBatch(std::move(batch), base::BindOnce(...));
   NotifyModelOfChanges();
   return {};
 }
@@ -230,8 +230,8 @@ void WriteLocalChange(std::string key, ModelData data) {
     change_processor()->Put(key, ModelToEntityData(data),
                             batch->GetMetadataChangeList());
   }
-  batch->WriteData(key, specifics->SerializeAsString());
-  store_->CommitWriteBatch(std::move(batch), base::Bind(...));
+  batch->WriteData(key, data.specifics->SerializeAsString());
+  store_->CommitWriteBatch(std::move(batch), base::BindOnce(...));
 }
 ```
 
@@ -264,11 +264,8 @@ the next client restart.
     [`ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers`][CreateCommonDataTypeControllers] or platform-specific equivalent in
     [`ChromeSyncClient::CreateDataTypeControllers`][CreateDataTypeControllers].
 *   Add your KeyedService dependency to
-    [`ProfileSyncServiceFactory`][ProfileSyncServiceFactory].
-*   Add to the [start order list][kStartOrder].
+    [`SyncServiceFactory`][SyncServiceFactory].
 *   Add an field for encrypted data to [`NigoriSpecifics`][NigoriSpecifics].
-*   Add to two encrypted types translation functions in
-    [`nigori_util.cc`][nigori_util].
 *   If your type should have its own toggle in sync settings, add an entry to
     the [`UserSelectableType`][UserSelectableType] enum, add a
     [preference][pref_names] for tracking whether your type is enabled, and
@@ -286,10 +283,8 @@ the next client restart.
 [ModelTypeController]: https://cs.chromium.org/chromium/src/components/sync/driver/model_type_controller.h
 [CreateCommonDataTypeControllers]: https://cs.chromium.org/search/?q="ProfileSyncComponentsFactoryImpl::CreateCommonDataTypeControllers"
 [CreateDataTypeControllers]: https://cs.chromium.org/search/?q="ChromeSyncClient::CreateDataTypeControllers"
-[ProfileSyncServiceFactory]: https://cs.chromium.org/search/?q=:ProfileSyncServiceFactory%5C(%5C)
-[kStartOrder]: https://cs.chromium.org/search/?q="kStartOrder[]"
+[SyncServiceFactory]: https://cs.chromium.org/search/?q=:SyncServiceFactory%5C(%5C)
 [NigoriSpecifics]: https://cs.chromium.org/chromium/src/components/sync/protocol/nigori_specifics.proto
-[nigori_util]: https://cs.chromium.org/chromium/src/components/sync/syncable/nigori_util.cc
 [UserSelectableType]: https://cs.chromium.org/chromium/src/components/sync/base/user_selectable_type.h?type=cs&q="enum+class+UserSelectableType"
 [pref_names]: https://cs.chromium.org/chromium/src/components/sync/base/pref_names.h
 [GetPrefName]: https://cs.chromium.org/search/?q=GetPrefNameForType+file:sync_prefs.cc

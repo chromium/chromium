@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GL_YUV420_RGB_CONVERTER_H_
-#define UI_GL_YUV420_RGB_CONVERTER_H_
+#ifndef UI_GL_YUV_TO_RGB_CONVERTER_H_
+#define UI_GL_YUV_TO_RGB_CONVERTER_H_
 
 #include "ui/gfx/geometry/size.h"
 
@@ -18,7 +18,7 @@ struct GLVersionInfo;
 class YUVToRGBConverter {
  public:
   explicit YUVToRGBConverter(const GLVersionInfo& gl_version_info,
-                             const gfx::ColorSpace color_space);
+                             const gfx::ColorSpace& color_space);
   ~YUVToRGBConverter();
 
   // The input Y and UV textures should be bound to these texture objects
@@ -28,7 +28,8 @@ class YUVToRGBConverter {
 
   void CopyYUV420ToRGB(unsigned target,
                        const gfx::Size& size,
-                       unsigned rgb_texture);
+                       unsigned rgb_texture,
+                       unsigned rgb_texture_type);
 
  private:
   unsigned framebuffer_ = 0;
@@ -40,8 +41,12 @@ class YUVToRGBConverter {
   unsigned y_texture_ = 0;
   unsigned uv_texture_ = 0;
   unsigned vertex_array_object_ = 0;
+  unsigned source_texture_target_ = 0;
+  bool has_get_tex_level_parameter_ = false;
+  bool has_robust_resource_init_ = false;
+  bool has_sampler_objects_ = false;
 };
 
 }  // namespace gl
 
-#endif  // UI_GL_YUV420_RGB_CONVERTER_H_
+#endif  // UI_GL_YUV_TO_RGB_CONVERTER_H_

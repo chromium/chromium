@@ -1,0 +1,71 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+
+<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
+<link rel="import" href="../../shared/nearby_contact_visibility.html">
+<link rel="import" href="../../shared/nearby_onboarding_page.html">
+<link rel="import" href="../../shared/nearby_share_settings_behavior.html">
+<link rel="import" href="../../shared/nearby_visibility_page.html">
+
+<!-- TODO(vecore): The two imports above for onboarding and visibility pages are
+         temporary. They are need to ensure the pages are included in the
+         bundling until they are actually referenced by a settings hosted
+         onboarding flow.
+-->
+
+<dom-module id="nearby-share-contact-visibility-dialog">
+  <template>
+    <style>
+      h1.title {
+        color: var(--cr-primary-text-color);
+        font-family: 'Google Sans';
+        font-weight: normal;
+        margin: 0;
+        padding-block-end: 0;
+        padding-block-start: 24px;
+      }
+
+      h2.header {
+        color: var(--cr-secondary-text-color);
+        font-size: inherit;
+        font-weight: inherit;
+        margin: 0;
+        padding-block-end: 16px;
+        padding-inline-start: 20px;
+      }
+
+      #manageContactsButton iron-icon {
+        --iron-icon-fill-color: var(--text-color);
+        margin-inline-end: 8px;
+      }
+
+      #flex {
+        flex: 1;
+      }
+    </style>
+    <cr-dialog id="dialog" show-on-attach>
+      <h1 slot="title" class="title">
+        $i18n{nearbyShareVisibilityDialogTitle}
+      </h1>
+      <h2 slot="header" class="header">
+        $i18n{nearbyShareVisibilityPageSubtitle}
+      </h2>
+      <div slot="body">
+        <nearby-contact-visibility id="contactVisibility"
+            settings="{{settings}}">
+        </nearby-contact-visibility>
+      </div>
+      <div class="layout horizontal center" slot="button-container">
+        <cr-button id="manageContactsButton" on-click="onManageContactsClick_">
+          <iron-icon icon="cr:open-in-new"></iron-icon>
+          <span>$i18n{nearbyShareManageContactsLabel}</span>
+        </cr-button>
+        <div id="flex"></div>
+        <cr-button class="action-button" on-click="onSaveClick_">
+          $i18n{nearbyShareVisibilityDialogSave}
+        </cr-button>
+      </div>
+    </cr-dialog>
+  </template>
+  <script src="nearby_share_contact_visibility_dialog.js"></script>
+</dom-module>

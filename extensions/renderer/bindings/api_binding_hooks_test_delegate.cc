@@ -4,6 +4,8 @@
 
 #include "extensions/renderer/bindings/api_binding_hooks_test_delegate.h"
 
+#include "base/strings/string_piece.h"
+
 namespace extensions {
 
 APIBindingHooksTestDelegate::APIBindingHooksTestDelegate() {}
@@ -22,7 +24,7 @@ bool APIBindingHooksTestDelegate::CreateCustomEvent(
 
 void APIBindingHooksTestDelegate::AddHandler(base::StringPiece name,
                                              RequestHandler handler) {
-  request_handlers_[name.as_string()] = std::move(handler);
+  request_handlers_[std::string(name)] = std::move(handler);
 }
 
 void APIBindingHooksTestDelegate::SetCustomEvent(

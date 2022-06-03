@@ -10,6 +10,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest-spi.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::ElementsAre;
@@ -66,18 +67,57 @@ TEST_F(HistogramTesterTest, GetHistogramSamplesSinceCreationNotNull) {
 TEST_F(HistogramTesterTest, TestUniqueSample) {
   HistogramTester tester;
 
-  // Record into a sample thrice
+  // Emit '2' three times.
   UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
   UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
   UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
 
   tester.ExpectUniqueSample(kHistogram2, 2, 3);
+  tester.ExpectUniqueTimeSample(kHistogram2, base::Milliseconds(2), 3);
+}
+
+// Verify that the expectation is violated if the bucket contains an incorrect
+// number of samples.
+TEST_F(HistogramTesterTest, TestUniqueSample_TooManySamplesInActualBucket) {
+  auto failing_code = [] {
+    HistogramTester tester;
+
+    // Emit '2' four times.
+    UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
+    UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
+    UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
+    UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
+
+    // Expect exactly three samples in bucket 2. This is supposed to fail.
+    tester.ExpectUniqueSample(kHistogram2, 2, 3);
+  };
+  EXPECT_NONFATAL_FAILURE(failing_code(),
+                          "Histogram \"Test2\" did not meet its expectations.");
+}
+
+// Verify that the expectation is violated if the bucket contains the correct
+// number of samples but another bucket contains extra samples.
+TEST_F(HistogramTesterTest, TestUniqueSample_OneExtraSampleInWrongBucket) {
+  auto failing_code = [] {
+    HistogramTester tester;
+
+    // Emit '2' three times.
+    UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
+    UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
+    UMA_HISTOGRAM_COUNTS_100(kHistogram2, 2);
+    // Emit one unexpected '3'.
+    UMA_HISTOGRAM_COUNTS_100(kHistogram2, 3);
+
+    // Expect exactly three samples in bucket 2. This is supposed to fail.
+    tester.ExpectUniqueSample(kHistogram2, 2, 3);
+  };
+  EXPECT_NONFATAL_FAILURE(failing_code(),
+                          "Histogram \"Test2\" did not meet its expectations.");
 }
 
 TEST_F(HistogramTesterTest, TestBucketsSample) {
   HistogramTester tester;
 
-  // Record into a sample twice
   UMA_HISTOGRAM_COUNTS_100(kHistogram3, 2);
   UMA_HISTOGRAM_COUNTS_100(kHistogram3, 2);
   UMA_HISTOGRAM_COUNTS_100(kHistogram3, 2);
@@ -91,7 +131,7 @@ TEST_F(HistogramTesterTest, TestBucketsSample) {
 }
 
 TEST_F(HistogramTesterTest, TestBucketsSampleWithScope) {
-  // Record into a sample twice, once before the tester creation and once after.
+  // Emit values twice, once before the tester creation and once after.
   UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
 
   HistogramTester tester;
@@ -119,6 +159,17 @@ TEST_F(HistogramTesterTest, TestGetAllSamples_NoSamples) {
   EXPECT_THAT(tester.GetAllSamples(kHistogram5), IsEmpty());
 }
 
+TEST_F(HistogramTesterTest, TestGetTotalSum) {
+  // Emit values twice, once before the tester creation and once after.
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 2);
+
+  HistogramTester tester;
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 3);
+  UMA_HISTOGRAM_COUNTS_100(kHistogram4, 4);
+
+  EXPECT_EQ(7, tester.GetTotalSum(kHistogram4));
+}
+
 TEST_F(HistogramTesterTest, TestGetTotalCountsForPrefix) {
   HistogramTester tester;
   UMA_HISTOGRAM_ENUMERATION("Test1.Test2.Test3", 2, 5);
@@ -130,7 +181,7 @@ TEST_F(HistogramTesterTest, TestGetTotalCountsForPrefix) {
 }
 
 TEST_F(HistogramTesterTest, TestGetAllChangedHistograms) {
-  // Record into a sample twice, once before the tester creation.
+  // Emit multiple values, some before tester creation.
   UMA_HISTOGRAM_COUNTS_100(kHistogram6, true);
   UMA_HISTOGRAM_COUNTS_100(kHistogram4, 4);
 
@@ -164,6 +215,7 @@ TEST_F(HistogramTesterTest, MissingHistogramMeansEmptyBuckets) {
   tester.ExpectBucketCount(kHistogram, 42, 0);
   tester.ExpectTotalCount(kHistogram, 0);
   EXPECT_TRUE(tester.GetAllSamples(kHistogram).empty());
+  EXPECT_EQ(0, tester.GetTotalSum(kHistogram));
   EXPECT_EQ(0, tester.GetBucketCount(kHistogram, 42));
   EXPECT_EQ(0,
             tester.GetHistogramSamplesSinceCreation(kHistogram)->TotalCount());

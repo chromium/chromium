@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_INSTALLER_UTIL_CREATE_REG_KEY_WORK_ITEM_H__
-#define CHROME_INSTALLER_UTIL_CREATE_REG_KEY_WORK_ITEM_H__
+#ifndef CHROME_INSTALLER_UTIL_CREATE_REG_KEY_WORK_ITEM_H_
+#define CHROME_INSTALLER_UTIL_CREATE_REG_KEY_WORK_ITEM_H_
 
 #include <windows.h>
 
@@ -51,4 +51,4 @@ class CreateRegKeyWorkItem : public WorkItem {
   bool key_created_;
 };
 
-#endif  // CHROME_INSTALLER_UTIL_CREATE_REG_KEY_WORK_ITEM_H__
+#endif  // CHROME_INSTALLER_UTIL_CREATE_REG_KEY_WORK_ITEM_H_

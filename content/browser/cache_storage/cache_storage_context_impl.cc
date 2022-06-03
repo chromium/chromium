@@ -5,305 +5,164 @@
 #include "content/browser/cache_storage/cache_storage_context_impl.h"
 
 #include "base/bind.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "content/browser/blob_storage/chrome_blob_storage_context.h"
+#include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
+#include "components/services/storage/public/mojom/storage_policy_update.mojom.h"
+#include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
+#include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_dispatcher_host.h"
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
-#include "content/browser/cache_storage/cross_sequence/cross_sequence_cache_storage_manager.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage_manager.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "storage/browser/blob/blob_storage_context.h"
+#include "mojo/public/cpp/bindings/self_owned_receiver.h"
+#include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
-#include "storage/browser/quota/special_storage_policy.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/origin.h"
 
 namespace content {
 
-namespace {
-
-const base::Feature kCacheStorageSequenceFeature{
-    "CacheStorageSequence", base::FEATURE_DISABLED_BY_DEFAULT};
-
-scoped_refptr<base::SequencedTaskRunner> CreateSchedulerTaskRunner() {
-  if (!base::FeatureList::IsEnabled(kCacheStorageSequenceFeature))
-    return base::CreateSingleThreadTaskRunner({BrowserThread::IO});
-  return base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::TaskPriority::USER_VISIBLE});
-}
-
-}  // namespace
-
 CacheStorageContextImpl::CacheStorageContextImpl(
-    BrowserContext* browser_context)
-    : task_runner_(CreateSchedulerTaskRunner()),
-      observers_(base::MakeRefCounted<ObserverList>()),
-      shutdown_(false) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy)
+    : quota_manager_proxy_(std::move(quota_manager_proxy)) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 CacheStorageContextImpl::~CacheStorageContextImpl() {
-  // Can be destroyed on any thread.
-  task_runner_->ReleaseSoon(FROM_HERE, std::move(cache_manager_));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  for (const auto& storage_key : storage_keys_to_purge_on_shutdown_) {
+    cache_manager_->DeleteStorageKeyData(
+        storage_key, storage::mojom::CacheStorageOwner::kCacheAPI,
+
+        // Retain a reference to the manager until the deletion is
+        // complete, since it internally uses weak pointers for
+        // the various stages of deletion and nothing else will
+        // keep it alive during shutdown.
+        base::BindOnce([](scoped_refptr<CacheStorageManager> cache_manager,
+                          blink::mojom::QuotaStatusCode) {},
+                       cache_manager_));
+  }
+}
+
+// static
+scoped_refptr<base::SequencedTaskRunner>
+CacheStorageContextImpl::CreateSchedulerTaskRunner() {
+  return base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE});
 }
 
 void CacheStorageContextImpl::Init(
+    mojo::PendingReceiver<storage::mojom::CacheStorageControl> control,
     const base::FilePath& user_data_directory,
-    scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+    mojo::PendingReceiver<storage::mojom::QuotaClient>
+        cache_storage_client_remote,
+    mojo::PendingReceiver<storage::mojom::QuotaClient>
+        background_fetch_client_remote,
+    mojo::PendingRemote<storage::mojom::BlobStorageContext>
+        blob_storage_context) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  receivers_.Add(this, std::move(control));
   is_incognito_ = user_data_directory.empty();
-  special_storage_policy_ = std::move(special_storage_policy);
 
   scoped_refptr<base::SequencedTaskRunner> cache_task_runner =
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
-
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CacheStorageContextImpl::CreateCacheStorageManagerOnTaskRunner, this,
-          user_data_directory, std::move(cache_task_runner),
-          quota_manager_proxy));
-
-  // If our target sequence is the IO thread, then the manager is guaranteed to
-  // be created before this task fires to create the quota clients.  If we are
-  // running with a different target sequence then the quota client code will
-  // get a cross-sequence wrapper that is guaranteed to initialize its internal
-  // SequenceBound<> object after the real manager is created.
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&CacheStorageContextImpl::CreateQuotaClientsOnIOThread,
-                     base::WrapRefCounted(this),
-                     std::move(quota_manager_proxy)));
-}
-
-void CacheStorageContextImpl::Shutdown() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!shutdown_);
-
-  // Set an atomic flag indicating shutdown has been entered.  This allows us to
-  // avoid creating CrossSequenceCacheStorageManager objects when there will
-  // no longer be an underlying manager.
-  shutdown_ = true;
-
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CacheStorageContextImpl::ShutdownOnTaskRunner, this));
-}
-
-void CacheStorageContextImpl::AddReceiver(
-    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
-    const url::Origin& origin) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!dispatcher_host_) {
-    dispatcher_host_ =
-        base::SequenceBound<CacheStorageDispatcherHost>(task_runner_);
-    dispatcher_host_.Post(FROM_HERE, &CacheStorageDispatcherHost::Init,
-                          base::RetainedRef(this));
-  }
-  dispatcher_host_.Post(FROM_HERE, &CacheStorageDispatcherHost::AddReceiver,
-                        std::move(receiver), origin);
-}
-
-scoped_refptr<CacheStorageManager> CacheStorageContextImpl::CacheManager() {
-  // Always return nullptr once shutdown has begun regardless of which
-  // sequence we are called on.  This check is necessary to avoid creating
-  // CrossSequenceCacheStorageManager wrappers when there will no longer be an
-  // underlying manager.
-  if (shutdown_)
-    return nullptr;
-  // If we're already on the target sequence, then just return the real manager.
-  //
-  // Note, we can't check for nullptr cache_manager_ here because it is not
-  // threadsafe.  In addition we may be creating a cross-sequence manager
-  // wrapper while the task to set cache_manager_ is waiting to run.  This
-  // should be fine since the cross-sequence wrapper will initialize after the
-  // manager is set.  See the comment in Init().
-  if (task_runner_->RunsTasksInCurrentSequence())
-    return cache_manager_;
-  // Otherwise we have to create a cross-sequence wrapper to provide safe
-  // access.
-  return base::MakeRefCounted<CrossSequenceCacheStorageManager>(task_runner_,
-                                                                this);
-}
-
-void CacheStorageContextImpl::SetBlobParametersForCache(
-    ChromeBlobStorageContext* blob_storage_context) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!blob_storage_context)
-    return;
-
-  // TODO(enne): this remote will need to be sent to the storage service when
-  // cache storage is moved.
-  mojo::PendingRemote<storage::mojom::BlobStorageContext> remote;
-  auto receiver = remote.InitWithNewPipeAndPassReceiver();
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &CacheStorageContextImpl::SetBlobParametersForCacheOnTaskRunner, this,
-          std::move(remote)));
-
-  // We can only bind a mojo interface for BlobStorageContext on the IO thread.
-  // TODO(enne): clean this up in the future to not require this bounce and
-  // to have this mojo context live on the cache storage sequence.
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(
-          &CacheStorageContextImpl::BindBlobStorageMojoContextOnIOThread, this,
-          base::RetainedRef(blob_storage_context), std::move(receiver)));
-}
-
-void CacheStorageContextImpl::GetAllOriginsInfo(
-    CacheStorageContext::GetUsageInfoCallback callback) {
-  // Can be called on any sequence.
-
-  callback = base::BindOnce(
-      [](scoped_refptr<base::SequencedTaskRunner> reply_task_runner,
-         GetUsageInfoCallback inner,
-         const std::vector<StorageUsageInfo>& entries) {
-        reply_task_runner->PostTask(FROM_HERE,
-                                    base::BindOnce(std::move(inner), entries));
-      },
-      base::SequencedTaskRunnerHandle::Get(), std::move(callback));
-
-  task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](scoped_refptr<CacheStorageContextImpl> context,
-             GetUsageInfoCallback callback) {
-            if (!context->CacheManager()) {
-              std::move(callback).Run(std::vector<StorageUsageInfo>());
-              return;
-            }
-            context->CacheManager()->GetAllOriginsUsage(
-                CacheStorageOwner::kCacheAPI, std::move(callback));
-          },
-          base::RetainedRef(this), std::move(callback)));
-}
-
-void CacheStorageContextImpl::DeleteForOrigin(const GURL& origin) {
-  // Can be called on any sequence.
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(
-                             [](scoped_refptr<CacheStorageContextImpl> context,
-                                const GURL& origin) {
-                               if (!context->CacheManager())
-                                 return;
-                               context->CacheManager()->DeleteOriginData(
-                                   url::Origin::Create(origin),
-                                   CacheStorageOwner::kCacheAPI);
-                             },
-                             base::RetainedRef(this), origin));
-}
-
-void CacheStorageContextImpl::AddObserver(
-    CacheStorageContextImpl::Observer* observer) {
-  // Any sequence
-  observers_->AddObserver(observer);
-}
-
-void CacheStorageContextImpl::RemoveObserver(
-    CacheStorageContextImpl::Observer* observer) {
-  // Any sequence
-  observers_->RemoveObserver(observer);
-}
-
-void CacheStorageContextImpl::CreateCacheStorageManagerOnTaskRunner(
-    const base::FilePath& user_data_directory,
-    scoped_refptr<base::SequencedTaskRunner> cache_task_runner,
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   DCHECK(!cache_manager_);
   cache_manager_ = LegacyCacheStorageManager::Create(
-      user_data_directory, std::move(cache_task_runner), task_runner_,
-      quota_manager_proxy, observers_);
+      user_data_directory, std::move(cache_task_runner),
+      base::SequencedTaskRunnerHandle::Get(), quota_manager_proxy_,
+      base::MakeRefCounted<BlobStorageContextWrapper>(
+          std::move(blob_storage_context)));
+
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<CacheStorageQuotaClient>(
+          cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI),
+      std::move(cache_storage_client_remote));
+  mojo::MakeSelfOwnedReceiver(
+      std::make_unique<CacheStorageQuotaClient>(
+          cache_manager_, storage::mojom::CacheStorageOwner::kBackgroundFetch),
+      std::move(background_fetch_client_remote));
 }
 
-void CacheStorageContextImpl::ShutdownOnTaskRunner() {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  DCHECK(shutdown_);
+void CacheStorageContextImpl::AddReceiver(
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        coep_reporter,
+    const blink::StorageKey& storage_key,
+    storage::mojom::CacheStorageOwner owner,
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Delete session-only ("clear on exit") origins.
-  if (special_storage_policy_ &&
-      special_storage_policy_->HasSessionOnlyOrigins()) {
-    cache_manager_->GetAllOriginsUsage(
-        CacheStorageOwner::kCacheAPI,
-        // TODO(jsbell): Make this BindOnce.
-        base::BindRepeating(
-            [](scoped_refptr<CacheStorageManager> cache_manager,
-               scoped_refptr<storage::SpecialStoragePolicy>
-                   special_storage_policy,
-               const std::vector<StorageUsageInfo>& usage_info) {
-              for (const auto& info : usage_info) {
-                if (special_storage_policy->IsStorageSessionOnly(
-                        info.origin.GetURL()) &&
-                    !special_storage_policy->IsStorageProtected(
-                        info.origin.GetURL())) {
-                  cache_manager->DeleteOriginData(
-                      info.origin, CacheStorageOwner::kCacheAPI,
+  quota_manager_proxy_->GetOrCreateBucket(
+      storage_key, storage::kDefaultBucketName,
+      base::SequencedTaskRunnerHandle::Get(),
+      base::BindOnce(&CacheStorageContextImpl::AddReceiverWithBucketInfo,
+                     weak_factory_.GetWeakPtr(), cross_origin_embedder_policy,
+                     std::move(coep_reporter), storage_key, owner,
+                     std::move(receiver)));
+}
 
-                      // Retain a reference to the manager until the deletion is
-                      // complete, since it internally uses weak pointers for
-                      // the various stages of deletion and nothing else will
-                      // keep it alive during shutdown.
-                      base::BindOnce(
-                          [](scoped_refptr<CacheStorageManager> cache_manager,
-                             blink::mojom::QuotaStatusCode) {},
-                          cache_manager));
-                }
-              }
-            },
-            cache_manager_, special_storage_policy_));
+void CacheStorageContextImpl::GetAllStorageKeysInfo(
+    storage::mojom::CacheStorageControl::GetAllStorageKeysInfoCallback
+        callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cache_manager_->GetAllStorageKeysUsage(
+      storage::mojom::CacheStorageOwner::kCacheAPI, std::move(callback));
+}
+
+void CacheStorageContextImpl::DeleteForStorageKey(
+    const blink::StorageKey& storage_key) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cache_manager_->DeleteStorageKeyData(
+      storage_key, storage::mojom::CacheStorageOwner::kCacheAPI);
+}
+
+void CacheStorageContextImpl::AddObserver(
+    mojo::PendingRemote<storage::mojom::CacheStorageObserver> observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  cache_manager_->AddObserver(std::move(observer));
+}
+
+void CacheStorageContextImpl::ApplyPolicyUpdates(
+    std::vector<storage::mojom::StoragePolicyUpdatePtr> policy_updates) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& update : policy_updates) {
+    if (!update->purge_on_shutdown)
+      storage_keys_to_purge_on_shutdown_.erase(
+          blink::StorageKey(update->origin));
+    else
+      storage_keys_to_purge_on_shutdown_.insert(
+          blink::StorageKey(std::move(update->origin)));
   }
-
-  // Release |cache_manager_|. New clients will get a nullptr if they request
-  // an instance of CacheStorageManager after this. Any other client that
-  // ref-wrapped |cache_manager_| will be able to continue using it, and the
-  // CacheStorageManager will be destroyed when all the references are
-  // destroyed.
-  cache_manager_ = nullptr;
 }
 
-void CacheStorageContextImpl::BindBlobStorageMojoContextOnIOThread(
-    ChromeBlobStorageContext* blob_storage_context,
-    mojo::PendingReceiver<storage::mojom::BlobStorageContext> receiver) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(blob_storage_context);
-  DCHECK(receiver.is_valid());
+void CacheStorageContextImpl::AddReceiverWithBucketInfo(
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
+        coep_reporter,
+    const blink::StorageKey& storage_key,
+    storage::mojom::CacheStorageOwner owner,
+    mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
+    storage::QuotaErrorOr<storage::BucketInfo> result) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(result.ok());
 
-  blob_storage_context->BindMojoContext(std::move(receiver));
-}
-
-void CacheStorageContextImpl::SetBlobParametersForCacheOnTaskRunner(
-    mojo::PendingRemote<storage::mojom::BlobStorageContext> remote) {
-  DCHECK(task_runner_->RunsTasksInCurrentSequence());
-  if (!cache_manager_)
-    return;
-  cache_manager_->SetBlobParametersForCache(
-      base::MakeRefCounted<BlobStorageContextWrapper>(std::move(remote)));
-}
-
-void CacheStorageContextImpl::CreateQuotaClientsOnIOThread(
-    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy) {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (!quota_manager_proxy.get())
-    return;
-  quota_manager_proxy->RegisterClient(
-      base::MakeRefCounted<CacheStorageQuotaClient>(
-          CacheManager(), CacheStorageOwner::kCacheAPI));
-  quota_manager_proxy->RegisterClient(
-      base::MakeRefCounted<CacheStorageQuotaClient>(
-          CacheManager(), CacheStorageOwner::kBackgroundFetch));
+  if (!dispatcher_host_)
+    dispatcher_host_ = std::make_unique<CacheStorageDispatcherHost>(this);
+  dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
+                                std::move(coep_reporter), storage_key, owner,
+                                std::move(receiver));
 }
 
 }  // namespace content

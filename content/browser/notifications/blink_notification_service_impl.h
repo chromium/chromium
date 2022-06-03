@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/content_export.h"
@@ -18,6 +17,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/notifications/notification_service.mojom.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
+#include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
@@ -41,7 +41,13 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       BrowserContext* browser_context,
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context,
       const url::Origin& origin,
+      const GURL& document_url,
       mojo::PendingReceiver<blink::mojom::NotificationService> receiver);
+
+  BlinkNotificationServiceImpl(const BlinkNotificationServiceImpl&) = delete;
+  BlinkNotificationServiceImpl& operator=(const BlinkNotificationServiceImpl&) =
+      delete;
+
   ~BlinkNotificationServiceImpl() override;
 
   // blink::mojom::NotificationService implementation.
@@ -71,19 +77,14 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
   // Check the permission status for the current |origin_|.
   blink::mojom::PermissionStatus CheckPermissionStatus();
 
-  // Validate |notification_resources| received in a Mojo IPC message.
-  // If the validation failed, we'd close the Mojo connection |binding_| and
-  // destroy |this| by calling OnConnectionError() directly, then return false.
-  // So, please do not touch |this| again after you got a false return value.
-  bool ValidateNotificationResources(
+  // Validate |notification_data| and |notification_resources| received in a
+  // Mojo IPC message. If the validation failed, we'd close the Mojo connection
+  // |binding_| and destroy |this| by calling OnConnectionError() directly, then
+  // return false. So, please do not touch |this| again after you got a false
+  // return value.
+  bool ValidateNotificationDataAndResources(
+      const blink::PlatformNotificationData& notification_data,
       const blink::NotificationResources& notification_resources);
-
-  // Validate |notification_data| received in a Mojo IPC message.
-  // If the validation failed, we'd close the Mojo connection |binding_| and
-  // destroy |this| by calling OnConnectionError() directly, then return false.
-  // So, please do not touch |this| again after you got a false return value.
-  bool ValidateNotificationData(
-      const blink::PlatformNotificationData& notification_data);
 
   void DidWriteNotificationData(DisplayPersistentNotificationCallback callback,
                                 bool success,
@@ -96,6 +97,9 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
       bool success,
       const std::vector<NotificationDatabaseData>& notifications);
 
+  bool ValidateServiceWorkerRegistrationID(
+      int64_t service_worker_registration_id);
+
   // The notification context that owns this service instance.
   PlatformNotificationContextImpl* notification_context_;
 
@@ -105,13 +109,14 @@ class CONTENT_EXPORT BlinkNotificationServiceImpl
 
   // The origin that this notification service is communicating with.
   url::Origin origin_;
+  // The document url that this notification service is communicating with.
+  // This is empty when used for a worker.
+  GURL document_url_;
 
   mojo::Receiver<blink::mojom::NotificationService> receiver_;
 
   base::WeakPtrFactory<BlinkNotificationServiceImpl> weak_factory_for_io_{this};
   base::WeakPtrFactory<BlinkNotificationServiceImpl> weak_factory_for_ui_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BlinkNotificationServiceImpl);
 };
 
 }  // namespace content

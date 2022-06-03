@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -71,11 +71,11 @@ Profile* ChooseProfileFromStoreId(const std::string& store_id,
   DCHECK(profile);
   bool allow_original = !profile->IsOffTheRecord();
   bool allow_incognito = profile->IsOffTheRecord() ||
-      (include_incognito && profile->HasOffTheRecordProfile());
+                         (include_incognito && profile->HasPrimaryOTRProfile());
   if (store_id == kOriginalProfileStoreId && allow_original)
     return profile->GetOriginalProfile();
   if (store_id == kOffTheRecordProfileStoreId && allow_incognito)
-    return profile->GetOffTheRecordProfile();
+    return profile->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   return NULL;
 }
 
@@ -138,7 +138,8 @@ CookieStore CreateCookieStore(Profile* profile,
   DCHECK(tab_ids);
   base::DictionaryValue dict;
   dict.SetString(cookies_api_constants::kIdKey, GetStoreIdFromProfile(profile));
-  dict.Set(cookies_api_constants::kTabIdsKey, std::move(tab_ids));
+  dict.SetKey(cookies_api_constants::kTabIdsKey,
+              base::Value::FromUniquePtrValue(std::move(tab_ids)));
 
   CookieStore cookie_store;
   bool rv = CookieStore::Populate(dict, &cookie_store);
@@ -151,6 +152,7 @@ void GetCookieListFromManager(
     const GURL& url,
     network::mojom::CookieManager::GetCookieListCallback callback) {
   manager->GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
+                         net::CookiePartitionKeychain::Todo(),
                          std::move(callback));
 }
 
@@ -161,14 +163,14 @@ void GetAllCookiesFromManager(
 }
 
 GURL GetURLFromCanonicalCookie(const net::CanonicalCookie& cookie) {
-  const std::string& domain_key = cookie.Domain();
-  const std::string scheme =
-      cookie.IsSecure() ? url::kHttpsScheme : url::kHttpScheme;
-  const std::string host =
-      base::StartsWith(domain_key, ".", base::CompareCase::SENSITIVE)
-          ? domain_key.substr(1)
-          : domain_key;
-  return GURL(scheme + url::kStandardSchemeSeparator + host + "/");
+  // This is only ever called for CanonicalCookies that have come from a
+  // CookieStore, which means they should not have an empty domain. Only file
+  // cookies are allowed to have empty domains, and those are only permitted on
+  // Android, and hopefully not for much longer (see crbug.com/582985).
+  DCHECK(!cookie.Domain().empty());
+
+  return net::cookie_util::CookieOriginToURL(cookie.Domain(),
+                                             cookie.IsSecure());
 }
 
 void AppendMatchingCookiesFromCookieListToVector(
@@ -182,14 +184,14 @@ void AppendMatchingCookiesFromCookieListToVector(
   }
 }
 
-void AppendMatchingCookiesFromCookieStatusListToVector(
-    const net::CookieStatusList& all_cookies_with_statuses,
+void AppendMatchingCookiesFromCookieAccessResultListToVector(
+    const net::CookieAccessResultList& all_cookies_with_access_result,
     const GetAll::Params::Details* details,
     const Extension* extension,
     std::vector<Cookie>* match_vector) {
-  for (const net::CookieWithStatus& cookie_with_status :
-       all_cookies_with_statuses) {
-    const net::CanonicalCookie& cookie = cookie_with_status.cookie;
+  for (const net::CookieWithAccessResult& cookie_with_access_result :
+       all_cookies_with_access_result) {
+    const net::CanonicalCookie& cookie = cookie_with_access_result.cookie;
     AppendCookieToVectorIfMatchAndHasHostPermission(cookie, details, extension,
                                                     match_vector);
   }
@@ -200,8 +202,7 @@ void AppendToTabIdList(Browser* browser, base::ListValue* tab_ids) {
   DCHECK(tab_ids);
   TabStripModel* tab_strip = browser->tab_strip_model();
   for (int i = 0; i < tab_strip->count(); ++i) {
-    tab_ids->AppendInteger(
-        ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
+    tab_ids->Append(ExtensionTabUtil::GetTabId(tab_strip->GetWebContentsAt(i)));
   }
 }
 

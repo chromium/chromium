@@ -8,9 +8,12 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.display.DisplayManager;
 import android.hardware.display.DisplayManager.DisplayListener;
+import android.os.Build;
 import android.util.SparseArray;
 import android.view.Display;
 import android.view.WindowManager;
+
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
@@ -18,6 +21,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.compat.ApiHelperForR;
 
 /**
  * DisplayAndroidManager is a class that informs its observers Display changes.
@@ -96,6 +100,25 @@ public class DisplayAndroidManager {
     }
 
     public static Display getDefaultDisplayForContext(Context context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Display display = null;
+            try {
+                display = ApiHelperForR.getDisplay(context);
+            } catch (UnsupportedOperationException e) {
+                // Context is not associated with a display.
+            }
+            if (display != null) return display;
+            return getGlobalDefaultDisplay();
+        }
+        return getDisplayForContextNoChecks(context);
+    }
+
+    private static Display getGlobalDefaultDisplay() {
+        return getDisplayManager().getDisplay(Display.DEFAULT_DISPLAY);
+    }
+
+    // Passing a non-window display may cause problems on newer android versions.
+    private static Display getDisplayForContextNoChecks(Context context) {
         WindowManager windowManager =
                 (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
         return windowManager.getDefaultDisplay();
@@ -123,16 +146,14 @@ public class DisplayAndroidManager {
     private DisplayAndroidManager() {}
 
     private void initialize() {
-        Display display;
-
         // Make sure the display map contains the built-in primary display.
         // The primary display is never removed.
-        display = getDisplayManager().getDisplay(Display.DEFAULT_DISPLAY);
+        Display display = getGlobalDefaultDisplay();
 
         // Android documentation on Display.DEFAULT_DISPLAY suggests that the above
         // method might return null. In that case we retrieve the default display
         // from the application context and take it as the primary display.
-        if (display == null) display = getDefaultDisplayForContext(getContext());
+        if (display == null) display = getDisplayForContextNoChecks(getContext());
 
         mMainSdkDisplayId = display.getDisplayId();
         addDisplay(display); // Note this display is never removed.
@@ -209,5 +230,11 @@ public class DisplayAndroidManager {
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
         void setPrimaryDisplayId(
                 long nativeDisplayAndroidManager, DisplayAndroidManager caller, int sdkDisplayId);
+    }
+
+    /** Clears the object returned by {@link #getInstance()} */
+    @VisibleForTesting
+    public static void resetInstanceForTesting() {
+        sDisplayAndroidManager = null;
     }
 }

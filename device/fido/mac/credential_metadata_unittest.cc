@@ -4,7 +4,6 @@
 
 #include "device/fido/mac/credential_metadata.h"
 
-#include "base/logging.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "device/fido/public_key_credential_user_entity.h"
@@ -35,7 +34,7 @@ class CredentialMetadataTest : public ::testing::Test {
   }
 
   std::vector<uint8_t> SealCredentialId(CredentialMetadata user) {
-    return *device::fido::mac::SealCredentialId(key_, rp_id_, std::move(user));
+    return device::fido::mac::SealCredentialId(key_, rp_id_, std::move(user));
   }
 
   CredentialMetadata UnsealCredentialId(
@@ -44,11 +43,11 @@ class CredentialMetadataTest : public ::testing::Test {
   }
 
   std::string EncodeRpIdAndUserId(base::StringPiece user_id) {
-    return *device::fido::mac::EncodeRpIdAndUserId(key_, rp_id_,
-                                                   to_bytes(user_id));
+    return device::fido::mac::EncodeRpIdAndUserId(key_, rp_id_,
+                                                  to_bytes(user_id));
   }
   std::string EncodeRpId() {
-    return *device::fido::mac::EncodeRpId(key_, rp_id_);
+    return device::fido::mac::EncodeRpId(key_, rp_id_);
   }
 
   std::string DecodeRpId(const std::string& ct) {
@@ -70,11 +69,11 @@ TEST_F(CredentialMetadataTest, CredentialId) {
 
 TEST_F(CredentialMetadataTest, LegacyCredentialId) {
   auto user = DefaultUser();
-  auto id = SealLegacyV0CredentialIdForTestingOnly(
+  std::vector<uint8_t> id = SealLegacyV0CredentialIdForTestingOnly(
       key_, rp_id_, user.user_id, user.user_name, user.user_display_name);
-  EXPECT_EQ(0, (*id)[0]);
-  EXPECT_EQ(54u, id->size());
-  EXPECT_TRUE(MetadataEq(UnsealCredentialId(*id), DefaultUser()));
+  EXPECT_EQ(0, id[0]);
+  EXPECT_EQ(54u, id.size());
+  EXPECT_TRUE(MetadataEq(UnsealCredentialId(id), DefaultUser()));
 }
 
 TEST_F(CredentialMetadataTest, CredentialId_IsRandom) {
@@ -106,26 +105,26 @@ TEST_F(CredentialMetadataTest, EncodeRpIdAndUserId) {
   EXPECT_EQ(EncodeRpIdAndUserId("user"), EncodeRpIdAndUserId("user"));
   EXPECT_NE(EncodeRpIdAndUserId("userA"), EncodeRpIdAndUserId("userB"));
   EXPECT_NE(EncodeRpIdAndUserId("user"),
-            *device::fido::mac::EncodeRpIdAndUserId(key_, "notacme.com",
-                                                    to_bytes("user")));
+            device::fido::mac::EncodeRpIdAndUserId(key_, "notacme.com",
+                                                   to_bytes("user")));
   EXPECT_NE(EncodeRpIdAndUserId("user"),
-            *device::fido::mac::EncodeRpIdAndUserId(wrong_key_, rp_id_,
-                                                    to_bytes("user")));
+            device::fido::mac::EncodeRpIdAndUserId(wrong_key_, rp_id_,
+                                                   to_bytes("user")));
 }
 
 TEST_F(CredentialMetadataTest, EncodeRpId) {
   EXPECT_EQ(48u, EncodeRpId().size());
 
   EXPECT_EQ(EncodeRpId(), EncodeRpId());
-  EXPECT_NE(EncodeRpId(), *device::fido::mac::EncodeRpId(key_, "notacme.com"));
-  EXPECT_NE(EncodeRpId(), *device::fido::mac::EncodeRpId(wrong_key_, rp_id_));
+  EXPECT_NE(EncodeRpId(), device::fido::mac::EncodeRpId(key_, "notacme.com"));
+  EXPECT_NE(EncodeRpId(), device::fido::mac::EncodeRpId(wrong_key_, rp_id_));
 }
 
 TEST_F(CredentialMetadataTest, DecodeRpId) {
   EXPECT_EQ(rp_id_, DecodeRpId(EncodeRpId()));
   EXPECT_NE(rp_id_,
             *device::fido::mac::DecodeRpId(
-                key_, *device::fido::mac::EncodeRpId(key_, "notacme.com")));
+                key_, device::fido::mac::EncodeRpId(key_, "notacme.com")));
   EXPECT_FALSE(device::fido::mac::DecodeRpId(wrong_key_, EncodeRpId()));
 }
 

@@ -1,0 +1,1 @@
+CONSOLE ERROR: Document policy violation: oversized-images is not allowed in this document.

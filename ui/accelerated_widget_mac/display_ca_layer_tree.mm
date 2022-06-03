@@ -8,13 +8,14 @@
 #include <IOSurface/IOSurface.h>
 
 #include "base/debug/dump_without_crashing.h"
+#include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/base/cocoa/animation_utils.h"
 #include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/geometry/dip_util.h"
+#include "ui/gfx/geometry/size_conversions.h"
 
 @interface CALayer (PrivateAPI)
 - (void)setContentsChanged;
@@ -144,7 +145,10 @@ void DisplayCALayerTree::GotIOSurfaceFrame(
     [io_surface_layer_ setContentsChanged];
   else
     [io_surface_layer_ setContents:new_contents];
-  gfx::Size bounds_dip = gfx::ConvertSizeToDIP(scale_factor, pixel_size);
+  // TODO(danakj): We should avoid lossy conversions to integer DIPs. The OS
+  // wants a floating point value.
+  gfx::Size bounds_dip =
+      gfx::ToFlooredSize(gfx::ConvertSizeToDips(pixel_size, scale_factor));
   [io_surface_layer_
       setBounds:CGRectMake(0, 0, bounds_dip.width(), bounds_dip.height())];
   if ([io_surface_layer_ contentsScale] != scale_factor)

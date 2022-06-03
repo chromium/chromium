@@ -5,9 +5,11 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_IEEM_SITELIST_PARSER_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_IEEM_SITELIST_PARSER_H_
 
+#include <string>
+#include <vector>
+
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace browser_switcher {
@@ -18,14 +20,14 @@ class ParsedXml {
   ParsedXml();
   ParsedXml(ParsedXml&&);
   ParsedXml(std::vector<std::string>&& rules,
-            base::Optional<std::string>&& error);
+            absl::optional<std::string>&& error);
   ~ParsedXml();
 
-  std::vector<std::string> rules;
-  base::Optional<std::string> error;
+  ParsedXml(const ParsedXml&) = delete;
+  ParsedXml& operator=(const ParsedXml&) = delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ParsedXml);
+  std::vector<std::string> rules;
+  absl::optional<std::string> error;
 };
 
 // Parses the XML contained in |xml|, and calls |callback| with the parsed XML

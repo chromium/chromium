@@ -7,15 +7,14 @@
 
 #include <stdint.h>
 
+#include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/host/viz_host_export.h"
-
-namespace viz {
-class RendererSettings;
-}  // namespace viz
 
 namespace viz {
 
 VIZ_HOST_EXPORT RendererSettings CreateRendererSettings();
+
+VIZ_HOST_EXPORT DebugRendererSettings CreateDefaultDebugRendererSettings();
 
 }  // namespace viz
 

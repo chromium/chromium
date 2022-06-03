@@ -8,14 +8,14 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "cc/paint/skottie_frame_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/text_constants.h"
@@ -96,6 +96,9 @@ class GFX_EXPORT Canvas {
   // RecreateBackingCanvas is called.
   Canvas(cc::PaintCanvas* sk_canvas, float image_scale);
 
+  Canvas(const Canvas&) = delete;
+  Canvas& operator=(const Canvas&) = delete;
+
   virtual ~Canvas();
 
   // Recreates the backing platform canvas with DIP |size| and |image_scale_|.
@@ -113,7 +116,7 @@ class GFX_EXPORT Canvas {
   // height and then width as needed to make the text fit. This method
   // supports multiple lines. On Skia only a line_height can be specified and
   // specifying a 0 value for it will cause the default height to be used.
-  static void SizeStringInt(const base::string16& text,
+  static void SizeStringInt(const std::u16string& text,
                             const FontList& font_list,
                             int* width,
                             int* height,
@@ -122,7 +125,7 @@ class GFX_EXPORT Canvas {
 
   // This is same as SizeStringInt except that fractional size is returned.
   // See comment in GetStringWidthF for its usage.
-  static void SizeStringFloat(const base::string16& text,
+  static void SizeStringFloat(const std::u16string& text,
                               const FontList& font_list,
                               float* width,
                               float* height,
@@ -131,7 +134,7 @@ class GFX_EXPORT Canvas {
 
   // Returns the number of horizontal pixels needed to display the specified
   // |text| with |font_list|.
-  static int GetStringWidth(const base::string16& text,
+  static int GetStringWidth(const std::u16string& text,
                             const FontList& font_list);
 
   // This is same as GetStringWidth except that fractional width is returned.
@@ -139,7 +142,7 @@ class GFX_EXPORT Canvas {
   // summed up. This is because GetStringWidth returns the ceiled width and
   // adding multiple ceiled widths could cause more precision loss for certain
   // platform like Mac where the fractional width is used.
-  static float GetStringWidthF(const base::string16& text,
+  static float GetStringWidthF(const std::u16string& text,
                                const FontList& font_list);
 
   // Returns the default text alignment to be used when drawing text on a
@@ -150,9 +153,6 @@ class GFX_EXPORT Canvas {
   // This function returns either Canvas::TEXT_ALIGN_LEFT or
   // Canvas::TEXT_ALIGN_RIGHT.
   static int DefaultCanvasTextAlignment();
-
-  // Draws a dashed rectangle of the specified color.
-  void DrawDashedRect(const RectF& rect, SkColor color);
 
   // Unscales by the image scale factor (aka device scale factor), and returns
   // that factor.  This is useful when callers want to draw directly in the
@@ -359,15 +359,18 @@ class GFX_EXPORT Canvas {
 
   // Draws the frame of the |skottie| animation specified by the normalized time
   // instant t [0->first frame .. 1->last frame] onto the region corresponded by
-  // |dst| in the canvas.
+  // |dst| in the canvas. |images| is a map from asset id to the corresponding
+  // image to use when rendering this frame; it may be empty if this animation
+  // frame does not contain any images in it.
   void DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                    const Rect& dst,
-                   float t);
+                   float t,
+                   cc::SkottieFrameDataMap images);
 
   // Draws text with the specified color, fonts and location. The text is
   // aligned to the left, vertically centered, clipped to the region. If the
   // text is too big, it is truncated and '...' is added to the end.
-  void DrawStringRect(const base::string16& text,
+  void DrawStringRect(const std::u16string& text,
                       const FontList& font_list,
                       SkColor color,
                       const Rect& display_rect);
@@ -375,19 +378,11 @@ class GFX_EXPORT Canvas {
   // Draws text with the specified color, fonts and location. The last argument
   // specifies flags for how the text should be rendered. It can be one of
   // TEXT_ALIGN_CENTER, TEXT_ALIGN_RIGHT or TEXT_ALIGN_LEFT.
-  void DrawStringRectWithFlags(const base::string16& text,
+  void DrawStringRectWithFlags(const std::u16string& text,
                                const FontList& font_list,
                                SkColor color,
                                const Rect& display_rect,
                                int flags);
-
-  // Draws a dotted gray rectangle used for focus purposes.
-  // DEPRECATED in favor of the RectF version below.
-  // TODO(funkysidd): Remove this (http://crbug.com/553726)
-  void DrawFocusRect(const Rect& rect);
-
-  // Draws a dotted gray rectangle used for focus purposes.
-  void DrawFocusRect(const RectF& rect);
 
   // Draws a |rect| in the specified region with the specified |color|. The
   // width of the stroke is |thickness| dip, but the actual pixel width will be
@@ -468,11 +463,9 @@ class GFX_EXPORT Canvas {
   // in which case bitmap_ and owned_canvas_ will be set. Other times we are
   // just borrowing someone else's canvas, in which case canvas_ will point
   // there but bitmap_ and owned_canvas_ will not exist.
-  base::Optional<SkBitmap> bitmap_;
-  base::Optional<cc::SkiaPaintCanvas> owned_canvas_;
+  absl::optional<SkBitmap> bitmap_;
+  absl::optional<cc::SkiaPaintCanvas> owned_canvas_;
   cc::PaintCanvas* canvas_;
-
-  DISALLOW_COPY_AND_ASSIGN(Canvas);
 };
 
 }  // namespace gfx

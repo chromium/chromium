@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "ash/app_list/app_list_export.h"
+#include "ash/ash_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "ui/views/controls/button/button.h"
@@ -17,42 +17,36 @@ namespace gfx {
 class SlideAnimation;
 }  // namespace gfx
 
-namespace views {
-class InkDrop;
-class InkDropMask;
-class InkDropRipple;
-}  // namespace views
-
 namespace ash {
 
 class AppListView;
 class ContentsView;
 
 // A tile item for the expand arrow on the start page.
-class APP_LIST_EXPORT ExpandArrowView : public views::Button,
-                                        public views::ButtonListener,
-                                        public views::ViewTargeterDelegate {
+class ASH_EXPORT ExpandArrowView : public views::Button,
+                                   public views::ViewTargeterDelegate {
  public:
   ExpandArrowView(ContentsView* contents_view, AppListView* app_list_view);
+
+  ExpandArrowView(const ExpandArrowView&) = delete;
+  ExpandArrowView& operator=(const ExpandArrowView&) = delete;
+
   ~ExpandArrowView() override;
 
-  // Overridden from views::Button:
+  // views::Button:
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
-  // Overridden from views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  // Overridden from views::View:
+  // views::View:
   gfx::Size CalculatePreferredSize() const override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnFocus() override;
   void OnBlur() override;
   const char* GetClassName() const override;
 
-  // Overridden from views::InkDropHost:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
+  // Calculates vertical offset between expand arrow circle's positions with app
+  // list view drag progress |progress| and the current app list progress
+  // (calculated without taking app list animation state into account).
+  float CalculateOffsetFromCurrentAppListProgress(double progress) const;
 
   void MaybeEnableHintingAnimation(bool enabled);
 
@@ -61,9 +55,11 @@ class APP_LIST_EXPORT ExpandArrowView : public views::Button,
   }
 
  private:
-  // gfx::AnimationDelegate overrides:
+  // gfx::AnimationDelegate:
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationEnded(const gfx::Animation* animation) override;
+
+  void OnButtonPressed();
 
   void TransitToFullscreenAllAppsState();
 
@@ -96,8 +92,6 @@ class APP_LIST_EXPORT ExpandArrowView : public views::Button,
   base::OneShotTimer hinting_animation_timer_;
 
   base::WeakPtrFactory<ExpandArrowView> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExpandArrowView);
 };
 
 }  // namespace ash

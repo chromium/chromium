@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_BROWSER_SWITCHER_BROWSER_SWITCHER_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -24,6 +23,10 @@ class BrowserSwitcherServiceFactory : public BrowserContextKeyedServiceFactory {
   static BrowserSwitcherService* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  BrowserSwitcherServiceFactory(const BrowserSwitcherServiceFactory&) = delete;
+  BrowserSwitcherServiceFactory& operator=(
+      const BrowserSwitcherServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BrowserSwitcherServiceFactory>;
 
@@ -35,8 +38,6 @@ class BrowserSwitcherServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSwitcherServiceFactory);
 };
 
 }  // namespace browser_switcher

@@ -6,10 +6,9 @@
 
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
-#include "extensions/browser/view_type_utils.h"
-#include "extensions/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
 #if !defined(OS_ANDROID)
@@ -17,15 +16,18 @@
 #include "chrome/browser/task_manager/providers/web_contents/devtools_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/extension_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/guest_tag.h"
+#include "chrome/browser/task_manager/providers/web_contents/portal_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/prerender_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/printing_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/tab_contents_tag.h"
+#include "chrome/browser/task_manager/providers/web_contents/tool_tag.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
 #endif  // !defined(OS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "components/guest_view/browser/guest_view_base.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/view_type_utils.h"
 #endif
 
 namespace task_manager {
@@ -55,10 +57,10 @@ bool IsExtensionWebContents(content::WebContents* contents) {
   if (guest_view::GuestViewBase::IsGuest(contents))
     return false;
 
-  extensions::ViewType view_type = extensions::GetViewType(contents);
-  return (view_type != extensions::VIEW_TYPE_INVALID &&
-          view_type != extensions::VIEW_TYPE_TAB_CONTENTS &&
-          view_type != extensions::VIEW_TYPE_BACKGROUND_CONTENTS);
+  extensions::mojom::ViewType view_type = extensions::GetViewType(contents);
+  return (view_type != extensions::mojom::ViewType::kInvalid &&
+          view_type != extensions::mojom::ViewType::kTabContents &&
+          view_type != extensions::mojom::ViewType::kBackgroundContents);
 }
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
@@ -94,7 +96,7 @@ void WebContentsTags::CreateForDevToolsContents(
 }
 
 // static
-void WebContentsTags::CreateForPrerenderContents(
+void WebContentsTags::CreateForNoStatePrefetchContents(
     content::WebContents* web_contents) {
 #if !defined(OS_ANDROID)
   if (!WebContentsTag::FromWebContents(web_contents)) {
@@ -140,10 +142,12 @@ void WebContentsTags::CreateForGuestContents(
 #endif  // !defined(OS_ANDROID)
 }
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
 // static
-void WebContentsTags::CreateForExtension(content::WebContents* web_contents,
-                                         extensions::ViewType view_type) {
-#if !defined(OS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS)
+void WebContentsTags::CreateForExtension(
+    content::WebContents* web_contents,
+    extensions::mojom::ViewType view_type) {
+#if !defined(OS_ANDROID)
   DCHECK(IsExtensionWebContents(web_contents));
 
   if (!WebContentsTag::FromWebContents(web_contents)) {
@@ -151,13 +155,40 @@ void WebContentsTags::CreateForExtension(content::WebContents* web_contents,
                    base::WrapUnique(new ExtensionTag(web_contents, view_type)),
                    WebContentsTag::kTagKey);
   }
-#endif  // !defined(OS_ANDROID) && BUILDFLAG(ENABLE_EXTENSIONS)
+#endif  // !defined(OS_ANDROID)
+}
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
+// static
+void WebContentsTags::CreateForPortal(content::WebContents* web_contents) {
+#if !defined(OS_ANDROID)
+  if (!WebContentsTag::FromWebContents(web_contents)) {
+    TagWebContents(web_contents, base::WrapUnique(new PortalTag(web_contents)),
+                   WebContentsTag::kTagKey);
+  }
+#endif  // !defined(OS_ANDROID)
+}
+
+// static
+void WebContentsTags::CreateForToolContents(content::WebContents* web_contents,
+                                            int tool_name) {
+#if !defined(OS_ANDROID)
+  if (!WebContentsTag::FromWebContents(web_contents)) {
+    TagWebContents(web_contents,
+                   base::WrapUnique(new ToolTag(web_contents, tool_name)),
+                   WebContentsTag::kTagKey);
+  }
+#endif  // !defined(OS_ANDROID)
 }
 
 // static
 void WebContentsTags::ClearTag(content::WebContents* web_contents) {
 #if !defined(OS_ANDROID)
+  // Some callers may clear the tag of a contents that is currently untagged
+  // (for example, it may have previously been cleared). Doing so is a no-op.
   const WebContentsTag* tag = WebContentsTag::FromWebContents(web_contents);
+  if (!tag)
+    return;
   WebContentsTagsManager::GetInstance()->ClearFromProvider(tag);
   web_contents->RemoveUserData(WebContentsTag::kTagKey);
 #endif  // !defined(OS_ANDROID)

@@ -9,7 +9,7 @@ test(() => {
   let editor = document.querySelector('div');
   editor.addEventListener('focus', () => { selection.removeAllRanges(); });
   selection.collapse(editor, 0);
-  assert_throws('InvalidStateError', () => { selection.extend(editor, 1);});
+  assert_throws_dom('InvalidStateError', () => { selection.extend(editor, 1);});
 }, 'Focus event handler should not make inconsistent state of Selection, and extend() should not crash.');
 </script>
 </body>

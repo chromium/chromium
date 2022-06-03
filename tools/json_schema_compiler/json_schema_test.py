@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -76,7 +76,7 @@ class JsonSchemaUnittest(unittest.TestCase):
     ]
 
     schema = json_schema.CachedLoad('test/json_schema_test.json')
-    self.assertEquals(compiled, json_schema.DeleteNodes(schema, 'nocompile'))
+    self.assertEqual(compiled, json_schema.DeleteNodes(schema, 'nocompile'))
 
     def should_delete(value):
       return isinstance(value, dict) and not value.get('valid', True)
@@ -91,7 +91,7 @@ class JsonSchemaUnittest(unittest.TestCase):
       {},
       {'valid': False}
     ]
-    self.assertEquals(
+    self.assertEqual(
         expected, json_schema.DeleteNodes(given, matcher=should_delete))
 
 

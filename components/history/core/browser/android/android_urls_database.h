@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_ANDROID_URLS_DATABASE_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_ANDROID_ANDROID_URLS_DATABASE_H_
 
-#include "base/macros.h"
 #include "components/history/core/browser/android/android_history_types.h"
 
 namespace sql {
@@ -28,30 +27,34 @@ namespace history {
 class AndroidURLsDatabase {
  public:
   AndroidURLsDatabase();
+
+  AndroidURLsDatabase(const AndroidURLsDatabase&) = delete;
+  AndroidURLsDatabase& operator=(const AndroidURLsDatabase&) = delete;
+
   virtual ~AndroidURLsDatabase();
 
   // Creates the android_urls table if it doesn't exist. Returns true if the
   // table was created or already exists.
   bool CreateAndroidURLsTable();
 
-  // Adds a new mapping between |raw_url| and |url_id|, returns the id if it
+  // Adds a new mapping between `raw_url` and `url_id`, returns the id if it
   // succeeds, otherwise 0 is returned.
   AndroidURLID AddAndroidURLRow(const std::string& raw_url, URLID url_id);
 
-  // Looks up the given |url_id| in android_urls table. Returns true if success,
-  // and fill in the |row| if it not NULL, returns false if the |url_id| is not
+  // Looks up the given `url_id` in android_urls table. Returns true if success,
+  // and fill in the `row` if it not NULL, returns false if the `url_id` is not
   // found.
   bool GetAndroidURLRow(URLID url_id, AndroidURLRow* row);
 
-  // Deletes the rows whose url_id is in |url_ids|. Returns true if all
-  // |url_ids| were found and deleted, otherwise false is returned.
+  // Deletes the rows whose url_id is in `url_ids`. Returns true if all
+  // `url_ids` were found and deleted, otherwise false is returned.
   bool DeleteAndroidURLRows(const std::vector<URLID>& url_ids);
 
   // Deletes all the rows whose url_id doesn't exist in urls table. Returns true
   // on success.
   bool DeleteUnusedAndroidURLs();
 
-  // Updates the row of |id| with the given |raw_url| and |url_id|. Returns true
+  // Updates the row of `id` with the given `raw_url` and `url_id`. Returns true
   // on success.
   bool UpdateAndroidURLRow(AndroidURLID id,
                            const std::string& raw_url,
@@ -68,9 +71,6 @@ class AndroidURLsDatabase {
   // Returns the database for the functions in this interface. The decendent of
   // this class implements these functions to return its objects.
   virtual sql::Database& GetDB() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidURLsDatabase);
 };
 
 }  // namespace history

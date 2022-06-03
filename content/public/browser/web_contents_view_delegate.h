@@ -51,8 +51,17 @@ class CONTENT_EXPORT WebContentsViewDelegate {
   virtual WebDragDestDelegate* GetDragDestDelegate();
 
   // Shows a context menu.
-  virtual void ShowContextMenu(RenderFrameHost* render_frame_host,
+  //
+  // The `render_frame_host` represents the frame that requests the context menu
+  // (typically this frame is focused, but this is not necessarily the case -
+  // see https://crbug.com/1257907#c14).
+  virtual void ShowContextMenu(RenderFrameHost& render_frame_host,
                                const ContextMenuParams& params);
+
+  // Tests can use ExecuteCommandForTesting to simulate executing a context menu
+  // item (after first opening the context menu using the ShowContextMenu
+  // method).
+  virtual void ExecuteCommandForTesting(int command_id, int event_flags);
 
   // Store the current focused view and start tracking it.
   virtual void StoreFocus();

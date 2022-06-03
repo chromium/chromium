@@ -27,9 +27,9 @@ consent_auditor::ConsentStatus ConvertConsentStatus(
 
 namespace consent_auditor {
 
-FakeConsentAuditor::FakeConsentAuditor() {}
+FakeConsentAuditor::FakeConsentAuditor() = default;
 
-FakeConsentAuditor::~FakeConsentAuditor() {}
+FakeConsentAuditor::~FakeConsentAuditor() = default;
 
 void FakeConsentAuditor::RecordSyncConsent(
     const CoreAccountId& account_id,
@@ -46,6 +46,12 @@ void FakeConsentAuditor::RecordSyncConsent(
 void FakeConsentAuditor::RecordAssistantActivityControlConsent(
     const CoreAccountId& account_id,
     const sync_pb::UserConsentTypes::AssistantActivityControlConsent& consent) {
+  NOTIMPLEMENTED();
+}
+
+void FakeConsentAuditor::RecordAccountPasswordsConsent(
+    const CoreAccountId& account_id,
+    const sync_pb::UserConsentTypes::AccountPasswordsConsent& consent) {
   NOTIMPLEMENTED();
 }
 

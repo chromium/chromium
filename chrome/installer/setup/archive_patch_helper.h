@@ -6,7 +6,6 @@
 #define CHROME_INSTALLER_SETUP_ARCHIVE_PATCH_HELPER_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/installer/setup/setup_util.h"
 #include "chrome/installer/util/lzma_util.h"
 
@@ -39,6 +38,9 @@ class ArchivePatchHelper {
                      const base::FilePath& target,
                      UnPackConsumer consumer);
 
+  ArchivePatchHelper(const ArchivePatchHelper&) = delete;
+  ArchivePatchHelper& operator=(const ArchivePatchHelper&) = delete;
+
   ~ArchivePatchHelper();
 
   // Uncompresses |compressed_archive| in |working_directory| then applies the
@@ -53,8 +55,8 @@ class ArchivePatchHelper {
                                  UnPackConsumer consumer);
 
   // Uncompresses compressed_archive() into the working directory. On success,
-  // last_uncompressed_file (if not NULL) is populated with the path to the last
-  // file extracted from the archive.
+  // last_uncompressed_file (if not nullptr) is populated with the path to the
+  // last file extracted from the archive.
   bool Uncompress(base::FilePath* last_uncompressed_file);
 
   // Performs ensemble patching on the uncompressed version of
@@ -82,12 +84,8 @@ class ArchivePatchHelper {
   void set_patch_source(const base::FilePath& patch_source) {
     patch_source_ = patch_source;
   }
-  const base::FilePath& patch_source() const {
-    return patch_source_;
-  }
-  const base::FilePath& target() const {
-    return target_;
-  }
+  const base::FilePath& patch_source() const { return patch_source_; }
+  const base::FilePath& target() const { return target_; }
 
   // Returns the path of the last file extracted by Uncompress().
   const base::FilePath& last_uncompressed_file() const {
@@ -105,8 +103,6 @@ class ArchivePatchHelper {
   base::FilePath target_;
   base::FilePath last_uncompressed_file_;
   UnPackConsumer consumer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArchivePatchHelper);
 };
 
 }  // namespace installer

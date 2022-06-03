@@ -1,0 +1,61 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# //.vpython doesn't have scipy, so we have to use our own .vpython file.
+# The wheel specs are from //v8/tools/callstats.py.vpython and //.vpython.
+
+# pandas for python3 is not yet available in cipd.
+# TODO(crbug.com/1130251): update to python3
+python_version: "2.7"
+
+wheel: <
+  name: "infra/python/wheels/scipy/${vpython_platform}"
+  version: "version:0.19.0"
+  match_tag: <
+    abi: "cp27mu"
+    platform: "manylinux1_i686"
+  >
+  match_tag: <
+    abi: "cp27mu"
+    platform: "manylinux1_x86_64"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/numpy/${vpython_platform}"
+  version: "version:1.11.3"
+>
+wheel: <
+  name: "infra/python/wheels/six-py2_py3"
+  version: "version:1.15.0"
+>
+wheel: <
+  name: "infra/python/wheels/pandas/${vpython_platform}"
+  version: "version:0.23.4"
+  match_tag: <
+    platform: "win32"
+  >
+  match_tag: <
+    platform: "win_amd64"
+  >
+  match_tag: <
+    abi: "cp27mu"
+    platform: "manylinux1_i686"
+  >
+  match_tag: <
+    abi: "cp27mu"
+    platform: "manylinux1_x86_64"
+  >
+  match_tag: <
+    platform: "macosx_10_6_intel"
+  >
+>
+wheel: <
+  name: "infra/python/wheels/pytz-py2_py3"
+  version: "version:2018.4"
+>
+wheel: <
+  name: "infra/python/wheels/python-dateutil-py2_py3"
+  version: "version:2.7.3"
+>
+

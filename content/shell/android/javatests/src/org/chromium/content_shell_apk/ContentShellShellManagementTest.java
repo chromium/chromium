@@ -4,7 +4,7 @@
 
 package org.chromium.content_shell_apk;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -13,7 +13,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_shell.Shell;
 
@@ -35,23 +34,18 @@ public class ContentShellShellManagementTest {
     @Test
     @SmallTest
     @Feature({"Main"})
-    @RetryOnFailure
     public void testMultipleShellsLaunched() throws ExecutionException {
         final ContentShellActivity activity =
                 mActivityTestRule.launchContentShellWithUrl(TEST_PAGE_1);
-        Assert.assertEquals(TEST_PAGE_1,
-                activity.getActiveShell()
-                        .getWebContents()
-                        .getVisibleUrl());
+        Assert.assertEquals(
+                TEST_PAGE_1, activity.getActiveShell().getWebContents().getVisibleUrl().getSpec());
 
         Shell previousActiveShell = activity.getActiveShell();
         Assert.assertFalse(previousActiveShell.isDestroyed());
 
         mActivityTestRule.loadNewShell(TEST_PAGE_2);
-        Assert.assertEquals(TEST_PAGE_2,
-                activity.getActiveShell()
-                        .getWebContents()
-                        .getVisibleUrl());
+        Assert.assertEquals(
+                TEST_PAGE_2, activity.getActiveShell().getWebContents().getVisibleUrl().getSpec());
 
         Assert.assertNotSame(previousActiveShell, activity.getActiveShell());
         Assert.assertNull(previousActiveShell.getWebContents());

@@ -8,13 +8,13 @@ FAIL canonicalize('../../../bar.html') should be file:///C:/bar.html. Was file:/
 FAIL canonicalize('/../bar.html') should be file:///C:/bar.html. Was file:///bar.html.
 FAIL canonicalize('\\\\another\\path') should be . Was http://another/path.
 FAIL canonicalize('//c:/foo') should be file:///C:/foo. Was file://c:/foo.
-FAIL canonicalize('//localhost/c:/foo') should be file:///C:/foo. Was file://localhost/c:/foo.
+FAIL canonicalize('//localhost/c:/foo') should be file:///C:/foo. Was file:///c:/foo.
 FAIL canonicalize('c:') should be . Was c:.
 FAIL canonicalize('c:/foo') should be . Was c:/foo.
 FAIL canonicalize('c:\\foo') should be . Was c:\foo.
 FAIL canonicalize('/z:/bar') should be file:///Z:/bar. Was file:///z:/bar.
 FAIL canonicalize('/bar') should be file:///C:/bar. Was file:///bar.
-FAIL canonicalize('/bar') should be file://localhost/C:/bar. Was file://localhost/bar.
+FAIL canonicalize('/bar') should be file:///C:/bar. Was file:///bar.
 FAIL canonicalize('/bar') should be file:///C:/bar. Was file:///bar.
 PASS canonicalize('//somehost/path') is 'file://somehost/path'
 FAIL canonicalize('/\\//somehost/path') should be file://somehost/path. Was file:///somehost/path.

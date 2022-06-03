@@ -15,30 +15,18 @@ group("2d") {
 
 ppapi_example("graphics_2d") {
   output_name = "ppapi_example_graphics_2d"
-  sources = [
-    "graphics_2d_example.c",
-  ]
-  deps = [
-    "//ppapi/c",
-  ]
+  sources = [ "graphics_2d_example.c" ]
+  deps = [ "//ppapi/c" ]
 }
 
 ppapi_example("paint_manager") {
   output_name = "ppapi_example_paint_manager"
-  sources = [
-    "paint_manager_example.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "paint_manager_example.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }
 
 ppapi_example("scroll") {
   output_name = "ppapi_example_scroll"
-  sources = [
-    "scroll.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "scroll.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

@@ -1,0 +1,2 @@
+mixins: "//components/autofill/COMMON_METADATA"
+mixins: "//chrome/android/java/src/org/chromium/chrome/browser/autofill/COMMON_METADATA"

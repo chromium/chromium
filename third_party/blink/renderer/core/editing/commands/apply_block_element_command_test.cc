@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/core/editing/selection_template.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/editing/testing/selection_sample.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/html/html_head_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -36,7 +37,7 @@ TEST_F(ApplyBlockElementCommandTest, selectionCrossingOverBody) {
 
   GetDocument().body()->setContentEditable("false", ASSERT_NO_EXCEPTION);
   GetDocument().setDesignMode("on");
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kTest);
   Selection().SetSelection(
       SelectionInDOMTree::Builder()
           .SetBaseAndExtent(
@@ -50,9 +51,12 @@ TEST_F(ApplyBlockElementCommandTest, selectionCrossingOverBody) {
   command->Apply();
 
   EXPECT_EQ(
+      "<head>"
+      "<style> .CLASS13 { -webkit-user-modify: read-write; }</style>"
+      "</head>foo"
       "<body contenteditable=\"false\">\n"
       "<pre><var id=\"va\" class=\"CLASS13\">\nC\n</var></pre><input></body>",
-      GetDocument().documentElement()->InnerHTMLAsString());
+      GetDocument().documentElement()->innerHTML());
 }
 
 // This is a regression test for https://crbug.com/660801
@@ -77,7 +81,7 @@ TEST_F(ApplyBlockElementCommandTest, visibilityChangeDuringCommand) {
   EXPECT_EQ(
       "<head><style>li:first-child { visibility:visible; }</style></head>"
       "<body><ul style=\"visibility:hidden\"><ul></ul><li>xyz</li></ul></body>",
-      GetDocument().documentElement()->InnerHTMLAsString());
+      GetDocument().documentElement()->innerHTML());
 }
 
 // This is a regression test for https://crbug.com/712510
@@ -106,10 +110,10 @@ TEST_F(ApplyBlockElementCommandTest, IndentHeadingIntoBlockquote) {
       "<h6><button></button></h6>"
       "<h6><button><table></table></button></h6>"
       "</blockquote>"
-      "<h6><button></button></h6><br>"
+      "<br>"
       "<object></object>"
       "</div>",
-      GetDocument().body()->InnerHTMLAsString());
+      GetDocument().body()->innerHTML());
 }
 
 // This is a regression test for https://crbug.com/806525
@@ -123,9 +127,9 @@ TEST_F(ApplyBlockElementCommandTest, InsertPlaceHolderAtDisconnectedPosition) {
   auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
                                                            html_names::kPreTag);
   // Crash happens here.
-  EXPECT_FALSE(command->Apply());
+  EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "<pre>|<input></pre><input class=\"input\" style=\"position:absolute\">",
+      "<pre>^<input>|</pre><input class=\"input\" style=\"position:absolute\">",
       GetSelectionTextFromBody());
 }
 
@@ -139,9 +143,10 @@ TEST_F(ApplyBlockElementCommandTest, FormatBlockCrossingUserModifyBoundary) {
   auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
                                                            html_names::kPreTag);
   // Shouldn't crash here.
-  EXPECT_FALSE(command->Apply());
+  EXPECT_TRUE(command->Apply());
   EXPECT_EQ(
-      "^<b style=\"-webkit-user-modify:read-only\"><button>|</button></b>",
+      "<pre>|<br></pre>"
+      "<b style=\"-webkit-user-modify:read-only\"><button></button></b>",
       GetSelectionTextFromBody());
 }
 
@@ -165,4 +170,190 @@ TEST_F(ApplyBlockElementCommandTest,
       GetSelectionTextFromBody());
 }
 
+// https://crbug.com/1172656
+TEST_F(ApplyBlockElementCommandTest, FormatBlockWithDirectChildrenOfRoot) {
+  GetDocument().setDesignMode("on");
+  DocumentFragment* fragment = DocumentFragment::Create(GetDocument());
+  Element* root = GetDocument().documentElement();
+  fragment->ParseXML("a<div>b</div>c", root);
+  root->setTextContent("");
+  root->appendChild(fragment);
+  UpdateAllLifecyclePhasesForTest();
+
+  Selection().SetSelection(
+      SelectionInDOMTree::Builder().SelectAllChildren(*root).Build(),
+      SetSelectionOptions());
+  auto* command = MakeGarbageCollected<FormatBlockCommand>(GetDocument(),
+                                                           html_names::kPreTag);
+  // Shouldn't crash here.
+  EXPECT_FALSE(command->Apply());
+  const SelectionInDOMTree& selection = Selection().GetSelectionInDOMTree();
+  EXPECT_EQ("^a<div>b</div>c|",
+            SelectionSample::GetSelectionText(*root, selection));
+}
+
+// This is a regression test for https://crbug.com/1180699
+TEST_F(ApplyBlockElementCommandTest, OutdentEmptyBlockquote) {
+  Vector<std::string> selection_texts = {
+      "<blockquote style='padding:5px'>|</blockquote>",
+      "a<blockquote style='padding:5px'>|</blockquote>",
+      "<blockquote style='padding:5px'>|</blockquote>b",
+      "a<blockquote style='padding:5px'>|</blockquote>b"};
+  Vector<std::string> expectations = {"|", "a|<br>", "|<br>b", "a<br>|b"};
+
+  GetDocument().setDesignMode("on");
+  for (unsigned i = 0; i < selection_texts.size(); ++i) {
+    Selection().SetSelection(SetSelectionTextToBody(selection_texts[i]),
+                             SetSelectionOptions());
+    auto* command = MakeGarbageCollected<IndentOutdentCommand>(
+        GetDocument(), IndentOutdentCommand::kOutdent);
+
+    // Shouldn't crash here.
+    command->Apply();
+    EXPECT_EQ(expectations[i], GetSelectionTextFromBody());
+  }
+}
+
+// This is a regression test for https://crbug.com/1188871
+TEST_F(ApplyBlockElementCommandTest, IndentSVGWithTable) {
+  GetDocument().setDesignMode("on");
+  Selection().SetSelection(SetSelectionTextToBody("<svg><foreignObject>|"
+                                                  "<table>&#x20;</table>&#x20;x"
+                                                  "</foreignObject></svg>"),
+                           SetSelectionOptions());
+  auto* command = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  // Shouldn't crash here.
+  EXPECT_TRUE(command->Apply());
+  EXPECT_EQ(
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "<svg><foreignObject><table>| </table></foreignObject></svg>"
+      "</blockquote>"
+      "<svg><foreignObject>x</foreignObject></svg>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesDoubleBr) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "|a<br><br>"
+                                                  "b"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+  EXPECT_TRUE(indent->Apply());
+
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "|a"
+      "</blockquote>"
+      "<br>"
+      "b"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // When moving "a" out of the blockquote, the empty line should be preserved.
+  EXPECT_TRUE(outdent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "|a"
+      "<br>"
+      "<br>"
+      "b"
+      "</div>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesCrash) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "^a<br>"
+                                                  "b|<br><br>"
+                                                  "c"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  EXPECT_TRUE(indent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "^a<br>"
+      "b|"
+      "</blockquote>"
+      "<br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // Shouldn't crash, and the empty line between b and c should be preserved.
+  // TODO(editing-dev): Get rid of the empty blockquote.
+  EXPECT_TRUE(outdent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: "
+      "0px;\"></blockquote>"
+      "^a<br>"
+      "b|<br><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+}
+
+// This is a regression test for https://crbug.com/673056
+TEST_F(ApplyBlockElementCommandTest, IndentOutdentLinesWithJunkCrash) {
+  Selection().SetSelection(SetSelectionTextToBody("<div contenteditable>"
+                                                  "^a<br>"
+                                                  "b|<br>"
+                                                  "<!----><br>"
+                                                  "c"
+                                                  "</div>"),
+                           SetSelectionOptions());
+
+  auto* indent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kIndent);
+
+  EXPECT_TRUE(indent->Apply());
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: 0px;\">"
+      "^a<br>"
+      "b|"
+      "</blockquote>"
+      "<!----><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+
+  auto* outdent = MakeGarbageCollected<IndentOutdentCommand>(
+      GetDocument(), IndentOutdentCommand::kOutdent);
+
+  // Shouldn't crash.
+  EXPECT_TRUE(outdent->Apply());
+
+  // TODO(editing-dev): The result is wrong. We should preserve the empty line
+  // between b and c, and get rid of the empty blockquote.
+  EXPECT_EQ(
+      "<div contenteditable>"
+      "<blockquote style=\"margin: 0 0 0 40px; border: none; padding: "
+      "0px;\"></blockquote>"
+      "^a<br>"
+      "b|"
+      "<!----><br>"
+      "c"
+      "</div>",
+      GetSelectionTextFromBody());
+}
 }  // namespace blink

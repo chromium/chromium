@@ -17,7 +17,6 @@
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -30,9 +29,9 @@ const unsigned kWindowInteractionTimeout = 10;
 const unsigned kWindowInteractionTimeoutForTest = 1;
 
 base::TimeDelta WindowInteractionTimeout() {
-  return base::TimeDelta::FromSeconds(WebTestSupport::IsRunningWebTest()
-                                          ? kWindowInteractionTimeoutForTest
-                                          : kWindowInteractionTimeout);
+  return base::Seconds(WebTestSupport::IsRunningWebTest()
+                           ? kWindowInteractionTimeoutForTest
+                           : kWindowInteractionTimeout);
 }
 
 }  // anonymous namespace
@@ -63,7 +62,7 @@ class WaitUntilObserver::ThenFunction final : public ScriptFunction {
         resolve_type_(type),
         callback_(std::move(callback)) {}
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(observer_);
     ScriptFunction::Trace(visitor);
   }
@@ -93,12 +92,13 @@ class WaitUntilObserver::ThenFunction final : public ScriptFunction {
       event_loop->EnqueueMicrotask(
           WTF::Bind(&WaitUntilObserver::OnPromiseRejected,
                     WrapPersistent(observer_.Get())));
-      value = ScriptPromise::Reject(GetScriptState(), value).GetScriptValue();
-    } else {
-      event_loop->EnqueueMicrotask(
-          WTF::Bind(&WaitUntilObserver::OnPromiseFulfilled,
-                    WrapPersistent(observer_.Get())));
+      observer_ = nullptr;
+      return ScriptPromise::Reject(GetScriptState(), value).AsScriptValue();
     }
+
+    event_loop->EnqueueMicrotask(
+        WTF::Bind(&WaitUntilObserver::OnPromiseFulfilled,
+                  WrapPersistent(observer_.Get())));
     observer_ = nullptr;
     return value;
   }
@@ -189,7 +189,7 @@ bool WaitUntilObserver::IsDispatchingEvent() const {
 WaitUntilObserver::WaitUntilObserver(ExecutionContext* context,
                                      EventType type,
                                      int event_id)
-    : ContextClient(context),
+    : ExecutionContextClient(context),
       type_(type),
       event_id_(event_id),
       consume_window_interaction_timer_(
@@ -334,8 +334,9 @@ void WaitUntilObserver::ConsumeWindowInteraction(TimerBase*) {
     context->ConsumeWindowInteraction();
 }
 
-void WaitUntilObserver::Trace(blink::Visitor* visitor) {
-  ContextClient::Trace(visitor);
+void WaitUntilObserver::Trace(Visitor* visitor) const {
+  visitor->Trace(consume_window_interaction_timer_);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

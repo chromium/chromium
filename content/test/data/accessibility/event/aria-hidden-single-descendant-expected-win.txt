@@ -1,0 +1,5 @@
+EVENT_OBJECT_HIDE on <div.test-case> role=ROLE_SYSTEM_GROUPING INVISIBLE
+EVENT_OBJECT_STATECHANGE on <button> role=ROLE_SYSTEM_PUSHBUTTON name="expect invisible subtree" INVISIBLE,FOCUSABLE
+=== Start Continuation ===
+EVENT_OBJECT_SHOW on <div.test-case> role=ROLE_SYSTEM_GROUPING
+EVENT_OBJECT_STATECHANGE on <button> role=ROLE_SYSTEM_PUSHBUTTON name="expect visible subtree" FOCUSABLE

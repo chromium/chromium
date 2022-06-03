@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="time" id="time" value="14:15:02">
+<script>
+
+let t = async_test('Test cancel select value with keyboard in time popup');
+
+function cancelSelectValue() {
+  let timeElement = document.getElementById("time");
+  assert_equals(timeElement.value, "14:15:02");
+  assert_not_equals(internals.pagePopupWindow, null);
+
+  // change hours value
+  eventSender.keyDown('ArrowDown');
+  eventSender.keyDown('ArrowDown');
+  assert_equals(timeElement.value, "16:15:02");
+
+  // move to minutes column
+  eventSender.keyDown('ArrowRight');
+  // change minutes value
+  eventSender.keyDown('ArrowDown');
+  eventSender.keyDown('ArrowDown');
+  eventSender.keyDown('ArrowDown');
+  assert_equals(timeElement.value, "16:18:02");
+
+  // move to seconds column
+  eventSender.keyDown('ArrowRight');
+  // change seconds value
+  eventSender.keyDown('ArrowUp');
+  eventSender.keyDown('ArrowUp');
+  eventSender.keyDown('ArrowUp');
+  eventSender.keyDown('ArrowUp');
+  eventSender.keyDown('ArrowUp');
+  eventSender.keyDown('ArrowUp');
+  assert_equals(timeElement.value, "16:18:56");
+
+  // move to ampm column
+  eventSender.keyDown('ArrowRight');
+  // change ampm value
+  eventSender.keyDown('ArrowDown');
+  assert_equals(timeElement.value, "04:18:56");
+
+  // First escape resets popup to original value
+  eventSender.keyDown('Escape');
+  assert_equals(timeElement.value, "14:15:02");
+
+  // Second escape closes the popup
+  eventSender.keyDown('Escape');
+  assert_equals(internals.pagePopupWindow, null);
+
+  t.done();
+}
+
+t.step(() => {
+  openPicker(document.getElementById('time'), t.step_func(cancelSelectValue));
+});
+</script>
+</body>
+</html>

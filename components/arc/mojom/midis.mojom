@@ -66,7 +66,8 @@ interface MidisServer {
 // by the client).
 // Next Method ID: 1
 interface MidisHost {
-  Connect@0(MidisServer& server, MidisClient client);
+  Connect@0(
+      pending_receiver<MidisServer> server, pending_remote<MidisClient> client);
 };
 
 // MidisInstance is implemented in the ARC MIDI JNI code that
@@ -74,8 +75,8 @@ interface MidisHost {
 // Next Method ID: 2
 interface MidisInstance {
   // DEPRECATED: Please use Init@1 instead.
-  InitDeprecated@0(MidisHost host_ptr);
+  InitDeprecated@0(pending_remote<MidisHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=1] Init@1(MidisHost host_ptr) => ();
+  [MinVersion=1] Init@1(pending_remote<MidisHost> host_remote) => ();
 };

@@ -15,10 +15,10 @@ enum ChromeIsolatedWorldIDs {
   // Isolated world ID for internal Chrome features.
   ISOLATED_WORLD_ID_CHROME_INTERNAL,
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Isolated world ID for AppleScript.
   ISOLATED_WORLD_ID_APPLESCRIPT,
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
   // Numbers for isolated worlds for extensions are set in
   // extensions/renderer/script_injection.cc, and are are greater than or equal

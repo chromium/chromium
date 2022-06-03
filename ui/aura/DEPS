@@ -21,10 +21,14 @@ include_rules = [
   "+ui/gl/test",
   "+ui/ozone/public",
   "+ui/platform_window",
+  "+ui/base/ui_base_features.h",
 ]
 
 specific_include_rules = {
   "native_window_occlusion_tracker_win_interactive_test\.cc": [
     "+mojo/core/embedder/embedder.h",
+  ],
+  "window_event_dispatcher_unittest\.cc": [
+    "+ui/wm/core",
   ],
 }

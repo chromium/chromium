@@ -50,7 +50,7 @@ class MODULES_EXPORT DOMError : public ScriptWrappable {
         DOMException::GetErrorName(exception_code),
         DOMException::GetErrorMessage(exception_code));
   }
-  static DOMError* Create(mojom::QuotaStatusCode status_code);
+  static DOMError* Create(mojom::blink::QuotaStatusCode status_code);
 
   explicit DOMError(const String& name);
   DOMError(const String& name, const String& message);

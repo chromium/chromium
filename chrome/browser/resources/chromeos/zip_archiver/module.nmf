@@ -1,9 +1,0 @@
-{
-  "program": {
-    "portable": {
-      "pnacl-translate": {
-        "url": "zip_archiver_pnacl.pexe"
-      }
-    }
-  }
-}

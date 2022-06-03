@@ -4,14 +4,15 @@
 
 #include "net/test/spawned_test_server/remote_test_server_spawner_request.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "net/base/elements_upload_data_stream.h"
@@ -31,6 +32,10 @@ static const int kBufferSize = 2048;
 class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core() override;
 
   void SendRequest(const GURL& url, const std::string& post_data);
@@ -61,8 +66,6 @@ class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
   scoped_refptr<IOBuffer> read_buffer_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 RemoteTestServerSpawnerRequest::Core::Core()
@@ -79,7 +82,7 @@ void RemoteTestServerSpawnerRequest::Core::SendRequest(
 
   // Prepare the URLRequest for sending the command.
   DCHECK(!request_.get());
-  context_.reset(new TestURLRequestContext);
+  context_ = std::make_unique<TestURLRequestContext>();
   request_ = context_->CreateRequest(url, DEFAULT_PRIORITY, this,
                                      TRAFFIC_ANNOTATION_FOR_TESTS);
 

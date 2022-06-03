@@ -1,9 +1,0 @@
-# Mainly for ML search-ranking purposes, see app_list/OWNERS for other reviews.
-per-file search_controller*=jiameng@chromium.org
-per-file mixer*=jiameng@chromium.org
-per-file zero_state_file_provider*=file:search_result_ranker/OWNERS
-per-file zero_state_file_result*=file:search_result_ranker/OWNERS
-per-file drive_quick_access_provider*=file:search_result_ranker/OWNERS
-per-file drive_quick_access_result*=file:search_result_ranker/OWNERS
-
-# COMPONENT: UI>Shell>Launcher

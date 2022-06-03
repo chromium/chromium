@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -27,7 +27,7 @@ bool InspectedFrames::Contains(LocalFrame* frame) const {
 LocalFrame* InspectedFrames::FrameWithSecurityOrigin(
     const String& origin_raw_string) {
   for (LocalFrame* frame : *this) {
-    if (frame->GetDocument()->GetSecurityOrigin()->ToRawString() ==
+    if (frame->DomWindow()->GetSecurityOrigin()->ToRawString() ==
         origin_raw_string)
       return frame;
   }
@@ -68,7 +68,7 @@ bool InspectedFrames::Iterator::operator!=(const Iterator& other) {
   return !(*this == other);
 }
 
-void InspectedFrames::Trace(blink::Visitor* visitor) {
+void InspectedFrames::Trace(Visitor* visitor) const {
   visitor->Trace(root_);
 }
 

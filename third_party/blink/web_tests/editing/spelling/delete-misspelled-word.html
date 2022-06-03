@@ -16,7 +16,7 @@ spellcheck_test(
       title: 'Has marker on initially misspelled word.',
       callback: sample => spellcheck_test(
           sample,
-          document => {
+          (document, testRunner) => {
             testRunner.execCommand('DeleteBackward');
             testRunner.execCommand('DeleteBackward');
             document.execCommand('InsertText', false, ' ');

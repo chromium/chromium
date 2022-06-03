@@ -9,8 +9,7 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/time/time.h"
+#include "base/sequence_checker.h"
 #include "media/base/audio_buffer.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/demuxer_stream.h"
@@ -22,7 +21,7 @@ struct AVCodecContext;
 struct AVFrame;
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
@@ -33,20 +32,25 @@ class FFmpegDecodingLoop;
 
 class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
  public:
+  FFmpegAudioDecoder() = delete;
+
   FFmpegAudioDecoder(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log);
+
+  FFmpegAudioDecoder(const FFmpegAudioDecoder&) = delete;
+  FFmpegAudioDecoder& operator=(const FFmpegAudioDecoder&) = delete;
+
   ~FFmpegAudioDecoder() override;
 
   // AudioDecoder implementation.
-  std::string GetDisplayName() const override;
+  AudioDecoderType GetDecoderType() const override;
   void Initialize(const AudioDecoderConfig& config,
                   CdmContext* cdm_context,
                   InitCB init_cb,
                   const OutputCB& output_cb,
                   const WaitingCB& waiting_cb) override;
-  void Decode(scoped_refptr<DecoderBuffer> buffer,
-              const DecodeCB& decode_cb) override;
+  void Decode(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb) override;
   void Reset(base::OnceClosure closure) override;
 
   // Callback called from within FFmpeg to allocate a buffer based on the
@@ -74,18 +78,13 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   //     A decoding error occurs and decoding needs to stop.
   // (any state) -> kNormal:
   //     Any time Reset() is called.
-  enum DecoderState {
-    kUninitialized,
-    kNormal,
-    kDecodeFinished,
-    kError
-  };
+  enum class DecoderState { kUninitialized, kNormal, kDecodeFinished, kError };
 
   // Reset decoder and call |reset_cb_|.
   void DoReset();
 
   // Handles decoding an unencrypted encoded buffer.
-  void DecodeBuffer(const DecoderBuffer& buffer, const DecodeCB& decode_cb);
+  void DecodeBuffer(const DecoderBuffer& buffer, DecodeCB decode_cb);
   bool FFmpegDecode(const DecoderBuffer& buffer);
   bool OnNewFrame(const DecoderBuffer& buffer,
                   bool* decoded_frame_this_loop,
@@ -100,7 +99,8 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
 
   void ResetTimestampState(const AudioDecoderConfig& config);
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
   OutputCB output_cb_;
 
@@ -121,8 +121,6 @@ class MEDIA_EXPORT FFmpegAudioDecoder : public AudioDecoder {
   scoped_refptr<AudioBufferMemoryPool> pool_;
 
   std::unique_ptr<FFmpegDecodingLoop> decoding_loop_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(FFmpegAudioDecoder);
 };
 
 }  // namespace media

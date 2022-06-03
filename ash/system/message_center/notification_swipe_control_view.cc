@@ -4,8 +4,13 @@
 
 #include "ash/system/message_center/notification_swipe_control_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/message_center/message_center_style.h"
+#include "ash/system/message_center/metrics_utils.h"
+#include "base/bind.h"
+#include "base/i18n/rtl.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/event.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -105,6 +110,9 @@ void NotificationSwipeControlView::UpdateButtonsVisibility() {
 
 void NotificationSwipeControlView::UpdateCornerRadius(int top_radius,
                                                       int bottom_radius) {
+  // In the new notification UI, there will be no swipe control background.
+  if (features::IsNotificationsRefreshEnabled())
+    return;
   SetBackground(views::CreateBackgroundFromPainter(
       std::make_unique<message_center::NotificationBackgroundPainter>(
           top_radius, bottom_radius,
@@ -114,7 +122,9 @@ void NotificationSwipeControlView::UpdateCornerRadius(int top_radius,
 
 void NotificationSwipeControlView::ShowSettingsButton(bool show) {
   if (show && !settings_button_) {
-    settings_button_ = new views::ImageButton(this);
+    settings_button_ = new views::ImageButton(
+        base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
+                            base::Unretained(this), ButtonId::kSettings));
     settings_button_->SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(
@@ -135,6 +145,7 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
         IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
     settings_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
+    settings_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     AddChildView(settings_button_);
     Layout();
@@ -147,7 +158,9 @@ void NotificationSwipeControlView::ShowSettingsButton(bool show) {
 
 void NotificationSwipeControlView::ShowSnoozeButton(bool show) {
   if (show && !snooze_button_) {
-    snooze_button_ = new views::ImageButton(this);
+    snooze_button_ = new views::ImageButton(
+        base::BindRepeating(&NotificationSwipeControlView::ButtonPressed,
+                            base::Unretained(this), ButtonId::kSnooze));
     snooze_button_->SetImage(
         views::Button::STATE_NORMAL,
         gfx::CreateVectorIcon(
@@ -167,6 +180,7 @@ void NotificationSwipeControlView::ShowSnoozeButton(bool show) {
         IDS_MESSAGE_NOTIFICATION_SETTINGS_BUTTON_ACCESSIBLE_NAME));
     snooze_button_->SetBackground(
         views::CreateSolidBackground(SK_ColorTRANSPARENT));
+    snooze_button_->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
     AddChildViewAt(snooze_button_, 0);
     Layout();
@@ -181,13 +195,27 @@ const char* NotificationSwipeControlView::GetClassName() const {
   return kViewClassName;
 }
 
-void NotificationSwipeControlView::ButtonPressed(views::Button* sender,
+void NotificationSwipeControlView::ButtonPressed(ButtonId button,
                                                  const ui::Event& event) {
-  DCHECK(sender);
-  if (sender == settings_button_)
+  auto weak_this = weak_factory_.GetWeakPtr();
+
+  const std::string notification_id = message_view_->notification_id();
+  if (button == ButtonId::kSettings) {
     message_view_->OnSettingsButtonPressed(event);
-  else if (sender == snooze_button_)
+    metrics_utils::LogSettingsShown(notification_id,
+                                    /*is_slide_controls=*/true,
+                                    /*is_popup=*/false);
+  } else {
     message_view_->OnSnoozeButtonPressed(event);
+    metrics_utils::LogSnoozed(notification_id,
+                              /*is_slide_controls=*/true,
+                              /*is_popup=*/false);
+  }
+
+  // Button handlers of |message_view_| may have closed |this|.
+  if (!weak_this)
+    return;
+
   HideButtons();
 
   // Closing the swipe control is done in these button pressed handlers.

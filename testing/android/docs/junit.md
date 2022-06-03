@@ -108,8 +108,9 @@ public class MyRobolectricJUnitTest {
 ```python
 junit_binary("my_robolectric_tests") {
 
-    java_files = [
+    sources = [
         "java/src/foo/bar/MyJUnitTest.java"
+    ]
 
     deps = [
         "//my/test:dependency",

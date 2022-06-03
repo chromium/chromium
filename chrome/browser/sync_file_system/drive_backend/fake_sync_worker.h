@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_worker_interface.h"
@@ -42,35 +41,36 @@ class SyncEngineContext;
 class FakeSyncWorker : public SyncWorkerInterface {
  public:
   FakeSyncWorker();
+
+  FakeSyncWorker(const FakeSyncWorker&) = delete;
+  FakeSyncWorker& operator=(const FakeSyncWorker&) = delete;
+
   ~FakeSyncWorker() override;
 
   // SyncWorkerInterface overrides.
   void Initialize(
       std::unique_ptr<SyncEngineContext> sync_engine_context) override;
-  void RegisterOrigin(const GURL& origin,
-                      const SyncStatusCallback& callback) override;
-  void EnableOrigin(const GURL& origin,
-                    const SyncStatusCallback& callback) override;
-  void DisableOrigin(const GURL& origin,
-                     const SyncStatusCallback& callback) override;
+  void RegisterOrigin(const GURL& origin, SyncStatusCallback callback) override;
+  void EnableOrigin(const GURL& origin, SyncStatusCallback callback) override;
+  void DisableOrigin(const GURL& origin, SyncStatusCallback callback) override;
   void UninstallOrigin(const GURL& origin,
                        RemoteFileSyncService::UninstallFlag flag,
-                       const SyncStatusCallback& callback) override;
-  void ProcessRemoteChange(const SyncFileCallback& callback) override;
+                       SyncStatusCallback callback) override;
+  void ProcessRemoteChange(SyncFileCallback callback) override;
   void SetRemoteChangeProcessor(RemoteChangeProcessorOnWorker*
                                     remote_change_processor_on_worker) override;
   RemoteServiceState GetCurrentState() const override;
   void GetOriginStatusMap(
-      const RemoteFileSyncService::StatusMapCallback& callback) override;
+      RemoteFileSyncService::StatusMapCallback callback) override;
   std::unique_ptr<base::ListValue> DumpFiles(const GURL& origin) override;
   std::unique_ptr<base::ListValue> DumpDatabase() override;
   void SetSyncEnabled(bool enabled) override;
-  void PromoteDemotedChanges(const base::Closure& callback) override;
+  void PromoteDemotedChanges(base::OnceClosure callback) override;
   void ApplyLocalChange(const FileChange& local_change,
                         const base::FilePath& local_path,
                         const SyncFileMetadata& local_metadata,
                         const storage::FileSystemURL& url,
-                        const SyncStatusCallback& callback) override;
+                        SyncStatusCallback callback) override;
   void ActivateService(RemoteServiceState service_state,
                        const std::string& description) override;
   void DeactivateService(const std::string& description) override;
@@ -98,8 +98,6 @@ class FakeSyncWorker : public SyncWorkerInterface {
 
   base::ObserverList<Observer>::Unchecked observers_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSyncWorker);
 };
 
 }  // namespace drive_backend

@@ -7,8 +7,11 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "content/browser/webauth/authenticator_environment_impl.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_discovery_factory.h"
 
@@ -18,10 +21,82 @@
 
 namespace content {
 
+WebAuthenticationDelegate::WebAuthenticationDelegate() = default;
+
+WebAuthenticationDelegate::~WebAuthenticationDelegate() = default;
+
+absl::optional<std::string>
+WebAuthenticationDelegate::MaybeGetRelyingPartyIdOverride(
+    const std::string& claimed_relying_party_id,
+    const url::Origin& caller_origin) {
+  return absl::nullopt;
+}
+
+bool WebAuthenticationDelegate::ShouldPermitIndividualAttestation(
+    BrowserContext* browser_context,
+    const std::string& relying_party_id) {
+  return false;
+}
+
+bool WebAuthenticationDelegate::SupportsResidentKeys(
+    RenderFrameHost* render_frame_host) {
+  // The testing API supports resident keys, but for real requests //content
+  // doesn't by default.
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  if (AuthenticatorEnvironmentImpl::GetInstance()
+          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
+    return true;
+  }
+  return false;
+}
+
+bool WebAuthenticationDelegate::IsFocused(WebContents* web_contents) {
+  return true;
+}
+
+#if defined(OS_MAC)
+absl::optional<WebAuthenticationDelegate::TouchIdAuthenticatorConfig>
+WebAuthenticationDelegate::GetTouchIdAuthenticatorConfig(
+    BrowserContext* browser_context) {
+  return absl::nullopt;
+}
+#endif  // defined(OS_MAC)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+WebAuthenticationDelegate::ChromeOSGenerateRequestIdCallback
+WebAuthenticationDelegate::GetGenerateRequestIdCallback(
+    RenderFrameHost* render_frame_host) {
+  return base::NullCallback();
+}
+#endif
+
+absl::optional<bool> WebAuthenticationDelegate::
+    IsUserVerifyingPlatformAuthenticatorAvailableOverride(
+        RenderFrameHost* render_frame_host) {
+  FrameTreeNode* frame_tree_node =
+      static_cast<RenderFrameHostImpl*>(render_frame_host)->frame_tree_node();
+  if (AuthenticatorEnvironmentImpl::GetInstance()
+          ->IsVirtualAuthenticatorEnabledFor(frame_tree_node)) {
+    return AuthenticatorEnvironmentImpl::GetInstance()
+        ->HasVirtualUserVerifyingPlatformAuthenticator(frame_tree_node);
+  }
+  return absl::nullopt;
+}
+
+WebAuthenticationRequestProxy* WebAuthenticationDelegate::MaybeGetRequestProxy(
+    BrowserContext* browser_context) {
+  return nullptr;
+}
+
 AuthenticatorRequestClientDelegate::AuthenticatorRequestClientDelegate() =
     default;
+
 AuthenticatorRequestClientDelegate::~AuthenticatorRequestClientDelegate() =
     default;
+
+void AuthenticatorRequestClientDelegate::SetRelyingPartyId(const std::string&) {
+}
 
 bool AuthenticatorRequestClientDelegate::DoesBlockRequestOnFailure(
     InterestingFailureReason reason) {
@@ -32,44 +107,21 @@ void AuthenticatorRequestClientDelegate::RegisterActionCallbacks(
     base::OnceClosure cancel_callback,
     base::RepeatingClosure start_over_callback,
     device::FidoRequestHandlerBase::RequestCallback request_callback,
-    base::RepeatingClosure bluetooth_adapter_power_on_callback,
-    device::FidoRequestHandlerBase::BlePairingCallback ble_pairing_callback) {}
-
-bool AuthenticatorRequestClientDelegate::ShouldPermitIndividualAttestation(
-    const std::string& relying_party_id) {
-  return false;
-}
+    base::RepeatingClosure bluetooth_adapter_power_on_callback) {}
 
 void AuthenticatorRequestClientDelegate::ShouldReturnAttestation(
     const std::string& relying_party_id,
     const device::FidoAuthenticator* authenticator,
+    bool is_enterprise_attestation,
     base::OnceCallback<void(bool)> callback) {
-  std::move(callback).Run(true);
+  std::move(callback).Run(!is_enterprise_attestation);
 }
 
-bool AuthenticatorRequestClientDelegate::SupportsResidentKeys() {
-  return false;
-}
-
-void AuthenticatorRequestClientDelegate::SetMightCreateResidentCredential(
-    bool v) {}
-
-bool AuthenticatorRequestClientDelegate::ShouldPermitCableExtension(
-    const url::Origin& origin) {
-  return false;
-}
-
-bool AuthenticatorRequestClientDelegate::SetCableTransportInfo(
-    bool cable_extension_provided,
-    bool have_paired_phones,
-    base::Optional<device::QRGeneratorKey> qr_generator_key) {
-  return false;
-}
-
-std::vector<device::CableDiscoveryData>
-AuthenticatorRequestClientDelegate::GetCablePairings() {
-  return {};
-}
+void AuthenticatorRequestClientDelegate::ConfigureCable(
+    const url::Origin& origin,
+    device::FidoRequestType request_type,
+    base::span<const device::CableDiscoveryData> pairings_from_extension,
+    device::FidoDiscoveryFactory* fido_discovery_factory) {}
 
 void AuthenticatorRequestClientDelegate::SelectAccount(
     std::vector<device::AuthenticatorGetAssertionResponse> responses,
@@ -79,56 +131,14 @@ void AuthenticatorRequestClientDelegate::SelectAccount(
   NOTREACHED();
 }
 
-bool AuthenticatorRequestClientDelegate::IsFocused() {
-  return true;
-}
-
-#if defined(OS_MACOSX)
-base::Optional<AuthenticatorRequestClientDelegate::TouchIdAuthenticatorConfig>
-AuthenticatorRequestClientDelegate::GetTouchIdAuthenticatorConfig() {
-  return base::nullopt;
-}
-#endif  // defined(OS_MACOSX)
-
-bool AuthenticatorRequestClientDelegate::
-    IsUserVerifyingPlatformAuthenticatorAvailable() {
-  return false;
-}
-
-device::FidoDiscoveryFactory*
-AuthenticatorRequestClientDelegate::GetDiscoveryFactory() {
-#if defined(OS_ANDROID)
-  // Android uses an internal FIDO API to manage device discovery.
-  NOTREACHED();
-  return nullptr;
-#else
-  if (!discovery_factory_) {
-    discovery_factory_ = std::make_unique<device::FidoDiscoveryFactory>();
-#if defined(OS_MACOSX)
-    discovery_factory_->set_mac_touch_id_info(GetTouchIdAuthenticatorConfig());
-#endif  // defined(OS_MACOSX)
-
-#if defined(OS_WIN)
-    if (base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
-      discovery_factory_->set_win_webauthn_api(
-          device::WinWebAuthnApi::GetDefault());
-    }
-#endif  // defined(OS_WIN)
-
-    CustomizeDiscoveryFactory(discovery_factory_.get());
-  }
-  return discovery_factory_.get();
-#endif
-}
-
-void AuthenticatorRequestClientDelegate::UpdateLastTransportUsed(
-    device::FidoTransportProtocol transport) {}
-
 void AuthenticatorRequestClientDelegate::DisableUI() {}
 
 bool AuthenticatorRequestClientDelegate::IsWebAuthnUIEnabled() {
   return false;
 }
+
+void AuthenticatorRequestClientDelegate::SetConditionalRequest(
+    bool is_conditional) {}
 
 void AuthenticatorRequestClientDelegate::OnTransportAvailabilityEnumerated(
     device::FidoRequestHandlerBase::TransportAvailabilityInfo data) {}
@@ -147,30 +157,25 @@ void AuthenticatorRequestClientDelegate::FidoAuthenticatorAdded(
 void AuthenticatorRequestClientDelegate::FidoAuthenticatorRemoved(
     base::StringPiece device_id) {}
 
-void AuthenticatorRequestClientDelegate::FidoAuthenticatorIdChanged(
-    base::StringPiece old_authenticator_id,
-    std::string new_authenticator_id) {}
-
-void AuthenticatorRequestClientDelegate::FidoAuthenticatorPairingModeChanged(
-    base::StringPiece authenticator_id,
-    bool is_in_pairing_mode,
-    base::string16 display_name) {}
-
 bool AuthenticatorRequestClientDelegate::SupportsPIN() const {
   return false;
 }
 
 void AuthenticatorRequestClientDelegate::CollectPIN(
-    base::Optional<int> attempts,
-    base::OnceCallback<void(std::string)> provide_pin_cb) {
+    CollectPINOptions options,
+    base::OnceCallback<void(std::u16string)> provide_pin_cb) {
   NOTREACHED();
 }
 
-void AuthenticatorRequestClientDelegate::FinishCollectPIN() {
-  NOTREACHED();
-}
+void AuthenticatorRequestClientDelegate::StartBioEnrollment(
+    base::OnceClosure next_callback) {}
 
-void AuthenticatorRequestClientDelegate::CustomizeDiscoveryFactory(
-    device::FidoDiscoveryFactory* discovery_factory) {}
+void AuthenticatorRequestClientDelegate::OnSampleCollected(
+    int bio_samples_remaining) {}
+
+void AuthenticatorRequestClientDelegate::FinishCollectToken() {}
+
+void AuthenticatorRequestClientDelegate::OnRetryUserVerification(int attempts) {
+}
 
 }  // namespace content

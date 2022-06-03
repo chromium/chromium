@@ -8,10 +8,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
@@ -60,8 +60,7 @@ base::Time StringToTime(const std::string& time) {
     return base::Time();
   }
 
-  return base::Time::UnixEpoch() +
-         base::TimeDelta::FromSeconds(seconds_from_epoch);
+  return base::Time::UnixEpoch() + base::Seconds(seconds_from_epoch);
 }
 
 // Convert a history file's timestamp, which is the number of seconds since
@@ -130,12 +129,11 @@ bool WebRtcEventLogHistoryFileWriter::Init() {
   DCHECK(!valid_);
 
   if (base::PathExists(path_)) {
-    if (!base::DeleteFile(path_, /*recursive=*/false)) {
+    if (!base::DeleteFile(path_)) {
       LOG(ERROR) << "History file already exists, and could not be deleted.";
       return false;
-    } else {
-      LOG(WARNING) << "History file already existed; deleted.";
     }
+    LOG(WARNING) << "History file already existed; deleted.";
   }
 
   // Attempt to create the file.
@@ -144,7 +142,7 @@ bool WebRtcEventLogHistoryFileWriter::Init() {
   file_.Initialize(path_, file_flags);
   if (!file_.IsValid() || !file_.created()) {
     LOG(WARNING) << "Couldn't create history file.";
-    if (!base::DeleteFile(path_, /*recursive=*/false)) {
+    if (!base::DeleteFile(path_)) {
       LOG(ERROR) << "Failed to delete " << path_ << ".";
     }
     return false;
@@ -218,7 +216,7 @@ bool WebRtcEventLogHistoryFileWriter::WriteUploadId(
 }
 
 void WebRtcEventLogHistoryFileWriter::Delete() {
-  if (!base::DeleteFile(path_, /*recursive=*/false)) {
+  if (!base::DeleteFile(path_)) {
     LOG(ERROR) << "History file could not be deleted.";
   }
 
@@ -301,7 +299,7 @@ bool WebRtcEventLogHistoryFileReader::Init() {
   base::File file(path_, file_flags);
   if (!file.IsValid()) {
     LOG(WARNING) << "Couldn't read history file.";
-    if (!base::DeleteFile(path_, /*recursive=*/false)) {
+    if (!base::DeleteFile(path_)) {
       LOG(ERROR) << "Failed to delete " << path_ << ".";
     }
     return false;

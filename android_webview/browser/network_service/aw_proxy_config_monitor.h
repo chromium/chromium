@@ -14,6 +14,12 @@
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
+namespace network {
+namespace mojom {
+class ProxyConfigClient;
+}
+}  // namespace network
+
 namespace android_webview {
 
 // This class configures proxy settings for NetworkContext if network service
@@ -26,11 +32,12 @@ class AwProxyConfigMonitor : public net::ProxyConfigService::Observer {
   static AwProxyConfigMonitor* GetInstance();
 
   void AddProxyToNetworkContextParams(
-      network::mojom::NetworkContextParamsPtr& network_context_params);
+      network::mojom::NetworkContextParams* network_context_params);
   std::string SetProxyOverride(
       const std::vector<net::ProxyConfigServiceAndroid::ProxyOverrideRule>&
           proxy_rules,
       const std::vector<std::string>& bypass_rules,
+      const bool reverse_bypass,
       base::OnceClosure callback);
   void ClearProxyOverride(base::OnceClosure callback);
 

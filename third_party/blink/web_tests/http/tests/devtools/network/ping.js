@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult('Tests that hyperlink auditing (ping) requests appear in network panel')
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.loadHTML(`<a id="pingLink" href="#" ping="ping.js">ping</a>`);
   await TestRunner.evaluateInPagePromise(`
@@ -22,7 +22,8 @@
   TestRunner.evaluateInPage('navigateLink()');
   await snifferPromise;
 
-  var request = NetworkTestRunner.networkRequests().peekLast();
+  const networkRequests = NetworkTestRunner.networkRequests();
+  var request = networkRequests[networkRequests.length - 1];
   if (request.url().endsWith('/')) {
     await TestRunner.addSnifferPromise(SDK.NetworkDispatcher.prototype, 'requestWillBeSent');
     request = NetworkTestRunner.networkRequests().pop();

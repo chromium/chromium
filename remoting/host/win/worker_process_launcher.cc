@@ -4,18 +4,20 @@
 
 #include "remoting/host/win/worker_process_launcher.h"
 
+#include <Windows.h>
+
 #include <utility>
 
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "ipc/ipc_message.h"
+#include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
 #include "remoting/host/chromoting_messages.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/worker_process_ipc_delegate.h"
 
-using base::TimeDelta;
 using base::win::ScopedHandle;
 
 const net::BackoffEntry::Policy kDefaultBackoffPolicy = {
@@ -58,8 +60,7 @@ WorkerProcessLauncher::WorkerProcessLauncher(
       launcher_delegate_(std::move(launcher_delegate)),
       exit_code_(CONTROL_C_EXIT),
       ipc_enabled_(false),
-      kill_process_timeout_(
-          base::TimeDelta::FromSeconds(kKillProcessTimeoutSeconds)),
+      kill_process_timeout_(base::Seconds(kKillProcessTimeoutSeconds)),
       launch_backoff_(&kDefaultBackoffPolicy) {
   DCHECK(ipc_handler_ != nullptr);
 
@@ -102,6 +103,12 @@ void WorkerProcessLauncher::Send(IPC::Message* message) {
   } else {
     delete message;
   }
+}
+
+void WorkerProcessLauncher::GetRemoteAssociatedInterface(
+    mojo::GenericPendingAssociatedReceiver receiver) {
+  DCHECK(ipc_enabled_);
+  launcher_delegate_->GetRemoteAssociatedInterface(std::move(receiver));
 }
 
 void WorkerProcessLauncher::OnProcessLaunched(
@@ -162,6 +169,17 @@ void WorkerProcessLauncher::OnChannelError() {
   }
 }
 
+void WorkerProcessLauncher::OnAssociatedInterfaceRequest(
+    const std::string& interface_name,
+    mojo::ScopedInterfaceEndpointHandle handle) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!ipc_enabled_)
+    return;
+
+  ipc_handler_->OnAssociatedInterfaceRequest(interface_name, std::move(handle));
+}
+
 void WorkerProcessLauncher::OnObjectSignaled(HANDLE object) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!process_watcher_.GetWatchedObject());
@@ -189,9 +207,9 @@ void WorkerProcessLauncher::LaunchWorker() {
   exit_code_ = CONTROL_C_EXIT;
 
   // Make sure launching a process will not take forever.
-  launch_result_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kLaunchResultTimeoutSeconds),
-      this, &WorkerProcessLauncher::RecordLaunchResult);
+  launch_result_timer_.Start(FROM_HERE,
+                             base::Seconds(kLaunchResultTimeoutSeconds), this,
+                             &WorkerProcessLauncher::RecordLaunchResult);
 
   launcher_delegate_->LaunchProcess(this);
 }

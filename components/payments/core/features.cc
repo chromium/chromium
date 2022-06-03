@@ -4,14 +4,14 @@
 
 #include "components/payments/core/features.h"
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+
 namespace payments {
 namespace features {
 
 const base::Feature kWebPaymentsExperimentalFeatures{
     "WebPaymentsExperimentalFeatures", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kReturnGooglePayInBasicCard{
-    "ReturnGooglePayInBasicCard", base::FEATURE_DISABLED_BY_DEFAULT};
 
 #if defined(OS_IOS)
 const base::Feature kWebPaymentsNativeApps{"WebPaymentsNativeApps",
@@ -34,27 +34,36 @@ const base::Feature kWebPaymentsSingleAppUiSkip{
 const base::Feature kWebPaymentsJustInTimePaymentApp{
     "WebPaymentsJustInTimePaymentApp", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kAlwaysAllowJustInTimePaymentApp{
-    "AlwaysAllowJustInTimePaymentApp", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kWebPaymentsPerMethodCanMakePaymentQuota{
-    "WebPaymentsPerMethodCanMakePaymentQuota",
-    base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kWebPaymentsRedactShippingAddress{
     "WebPaymentsRedactShippingAddress", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kStrictHasEnrolledAutofillInstrument{
-    "StrictHasEnrolledAutofillInstrument", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kAppStoreBilling {
+  "AppStoreBilling",
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif  // OS_ANDROID || BUILDFLAG(IS_CHROMEOS_ASH)
+};
 
-const base::Feature kPaymentRequestSkipToGPay{
-    "PaymentRequestSkipToGPay", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kPaymentRequestSkipToGPayIfNoCard{
-    "PaymentRequestSkipToGPayIfNoCard", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kWebPaymentsMinimalUI{"WebPaymentsMinimalUI",
+const base::Feature kAppStoreBillingDebug{"AppStoreBillingDebug",
                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDownRankJustInTimePaymentApp{
+    "DownRankJustInTimePaymentApp", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kPaymentHandlerPopUpSizeWindow{
+    "PaymentHandlerPopUpSizeWindow", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kAllowJITInstallationWhenAppIconIsMissing{
+    "AllowJITInstallationWhenAppIconIsMissing",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnforceFullDelegation{"EnforceFullDelegation",
+                                           base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kGPayAppDynamicUpdate{"GPayAppDynamicUpdate",
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace payments

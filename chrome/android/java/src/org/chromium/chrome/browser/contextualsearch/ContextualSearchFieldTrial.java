@@ -11,8 +11,8 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.components.variations.VariationsAssociatedData;
 
 import java.lang.annotation.Retention;
@@ -22,17 +22,28 @@ import java.lang.annotation.RetentionPolicy;
  * Provides Field Trial support for the Contextual Search application within Chrome for Android.
  */
 public class ContextualSearchFieldTrial {
-    //==========================================================================================
-    // Public settings synchronized with src/components/contextual_search/core/browser/public.cc
-    //==========================================================================================
-    public static final String LONGPRESS_RESOLVE_PARAM_NAME = "longpress_resolve_variation";
-    public static final String LONGPRESS_RESOLVE_PRESERVE_TAP = "3";
-
-    //==========================================================================================
     private static final String FIELD_TRIAL_NAME = "ContextualSearch";
     private static final String DISABLED_PARAM = "disabled";
     private static final String ENABLED_VALUE = "true";
 
+    //==========================================================================================
+    // Related Searches FieldTrial and parameter names.
+    //==========================================================================================
+    // Params used elsewhere but gathered here since they may be present in FieldTrial configs.
+    static final String RELATED_SEARCHES_NEEDS_URL_PARAM_NAME = "needs_url";
+    static final String RELATED_SEARCHES_NEEDS_CONTENT_PARAM_NAME = "needs_content";
+    // A comma-separated list of lower-case ISO 639 language codes.
+    static final String RELATED_SEARCHES_LANGUAGE_ALLOWLIST_PARAM_NAME = "language_allowlist";
+    private static final String RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME = "stamp";
+
+    static final String RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME = "default_query_chip";
+    static final String RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME =
+            "default_query_max_width_sp";
+
+    static final String CONTEXTUAL_SEARCH_PROMO_CARD_MAX_SHOWN_PARAM_NAME = "promo_card_max_shown";
+    private static final int PROMO_DEFAULT_LIMIT = 3;
+
+    // Deprecated.
     private static final int MANDATORY_PROMO_DEFAULT_LIMIT = 10;
 
     // Cached values to avoid repeated and redundant JNI operations.
@@ -62,7 +73,8 @@ public class ContextualSearchFieldTrial {
             ContextualSearchSwitch.IS_UKM_RANKER_LOGGING_DISABLED,
             ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION_ENABLED,
             ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_SECOND_TAP_ML_OVERRIDE_ENABLED,
-            ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED})
+            ContextualSearchSwitch.IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED,
+            ContextualSearchSwitch.IS_SEND_BASE_PAGE_URL_DISABLED})
     @Retention(RetentionPolicy.SOURCE)
     /**
      * Boolean Switch values that are backed by either a Feature or a Variations parameter.
@@ -136,8 +148,10 @@ public class ContextualSearchFieldTrial {
          * panel.
          */
         int IS_CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE_ENABLED = 20;
+        /** Whether sending the URL of the page viewed by the user is disabled. */
+        int IS_SEND_BASE_PAGE_URL_DISABLED = 21;
 
-        int NUM_ENTRIES = 21;
+        int NUM_ENTRIES = 22;
     }
 
     @VisibleForTesting
@@ -167,7 +181,8 @@ public class ContextualSearchFieldTrial {
             "disable_ukm_ranker_logging", // IS_UKM_RANKER_LOGGING_DISABLED
             ChromeFeatureList.CONTEXTUAL_SEARCH_ML_TAP_SUPPRESSION, // (related to Chrome Feature)
             ChromeFeatureList.CONTEXTUAL_SEARCH_SECOND_TAP, // (related to Chrome Feature)
-            ChromeFeatureList.CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE // (related to Chrome Feature)
+            ChromeFeatureList.CONTEXTUAL_SEARCH_TAP_DISABLE_OVERRIDE, // (related to Chrome Feature)
+            "disable_send_url" // IS_SEND_BASE_PAGE_URL_DISABLED
     };
 
     @IntDef({ContextualSearchSetting.MANDATORY_PROMO_LIMIT,
@@ -265,6 +280,70 @@ public class ContextualSearchFieldTrial {
                             : 0);
         }
         return sSettings[value].intValue();
+    }
+
+    /**
+     * Gets the "stamp" parameter from the RelatedSearches FieldTrial feature.
+     * @return The stamp parameter from the feature. If no stamp param is present then an empty
+     *         string is returned.
+     */
+    static String getRelatedSearchesExperimentConfigurationStamp() {
+        return getRelatedSearchesParam(RELATED_SEARCHES_CONFIG_STAMP_PARAM_NAME);
+    }
+
+    /**
+     * Gets the given parameter from the RelatedSearches FieldTrial feature.
+     * @param paramName The name of the parameter to get.
+     * @return The value of the parameter from the feature. If no param is present then an empty
+     *         string is returned.
+     */
+    static String getRelatedSearchesParam(String paramName) {
+        return ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.RELATED_SEARCHES, paramName);
+    }
+
+    /**
+     * Determines whether the specified parameter is present and enabled in the RelatedSearches
+     * Feature.
+     * @param relatedSearchesParamName The name of the param to get from the Feature.
+     * @return Whether the given parameter is enabled or not (has a value of "true").
+     */
+    static boolean isRelatedSearchesParamEnabled(String relatedSearchesParamName) {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.RELATED_SEARCHES, relatedSearchesParamName, false);
+    }
+
+    static boolean showDefaultChipInBar() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+                RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME, false);
+    }
+
+    static boolean showDefaultChipInPanel() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
+                RELATED_SEARCHES_SHOW_DEFAULT_QUERY_CHIP_PARAM_NAME, false);
+    }
+
+    /* Return the max width of the bar's default chip in Sp. */
+    static int getDefaultChipWidthSpInBar() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.RELATED_SEARCHES_IN_BAR,
+                RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME, 0);
+    }
+
+    /* Return the max width of the panel's default chip in Sp. */
+    static int getDefaultChipWidthSpInPanel() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.RELATED_SEARCHES_ALTERNATE_UX,
+                RELATED_SEARCHES_DEFAULT_QUERY_CHIP_MAX_WIDTH_SP_PARAM_NAME, 0);
+    }
+
+    /* Return the max times to show the promo card. */
+    static int getDefaultPromoCardShownTimes() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.CONTEXTUAL_SEARCH_NEW_SETTINGS,
+                CONTEXTUAL_SEARCH_PROMO_CARD_MAX_SHOWN_PARAM_NAME, PROMO_DEFAULT_LIMIT);
     }
 
     // --------------------------------------------------------------------------------------------

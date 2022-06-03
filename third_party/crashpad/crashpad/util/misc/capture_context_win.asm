@@ -25,10 +25,6 @@ ifdef _M_IX86
 .model flat
 endif
 
-offsetof macro structure, field
-  exitm <structure.&field>
-endm
-
 ; The CONTEXT structure definitions that follow are based on those in <winnt.h>.
 ; Field names are prefixed (as in c_Rax) to avoid colliding with the predefined
 ; register names (such as Rax).
@@ -481,8 +477,7 @@ CAPTURECONTEXT_SYMBOL proc frame
   cld
   lea rdi, [rcx.CONTEXT].c_FltSave
   xor rax, rax
-  mov rcx, (sizeof(CONTEXT) - offsetof(CONTEXT, c_FltSave)) / \
-           sizeof(qword)  ; 122
+  mov rcx, (sizeof(CONTEXT) - CONTEXT.c_FltSave) / sizeof(qword)  ; 122
   rep stosq
   mov rcx, rbx
 

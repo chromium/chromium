@@ -23,6 +23,10 @@ namespace net {
 class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
  public:
   ProofSourceChromium();
+
+  ProofSourceChromium(const ProofSourceChromium&) = delete;
+  ProofSourceChromium& operator=(const ProofSourceChromium&) = delete;
+
   ~ProofSourceChromium() override;
 
   // Initializes this object based on the certificate chain in |cert_path|,
@@ -33,23 +37,33 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
                   const base::FilePath& sct_path);
 
   // quic::ProofSource interface
-  void GetProof(const quic::QuicSocketAddress& server_ip,
+  void GetProof(const quic::QuicSocketAddress& server_address,
+                const quic::QuicSocketAddress& client_address,
                 const std::string& hostname,
                 const std::string& server_config,
                 quic::QuicTransportVersion quic_version,
-                quiche::QuicheStringPiece chlo_hash,
+                absl::string_view chlo_hash,
                 std::unique_ptr<Callback> callback) override;
 
   quic::QuicReferenceCountedPointer<Chain> GetCertChain(
       const quic::QuicSocketAddress& server_address,
-      const std::string& hostname) override;
+      const quic::QuicSocketAddress& client_address,
+      const std::string& hostname,
+      bool* cert_matched_sni) override;
 
   void ComputeTlsSignature(
       const quic::QuicSocketAddress& server_address,
+      const quic::QuicSocketAddress& client_address,
       const std::string& hostname,
       uint16_t signature_algorithm,
-      quiche::QuicheStringPiece in,
+      absl::string_view in,
       std::unique_ptr<SignatureCallback> callback) override;
+
+  absl::InlinedVector<uint16_t, 8> SupportedTlsSignatureAlgorithms()
+      const override;
+
+  TicketCrypter* GetTicketCrypter() override;
+  void SetTicketCrypter(std::unique_ptr<TicketCrypter> ticket_crypter);
 
  private:
   bool GetProofInner(
@@ -57,15 +71,15 @@ class NET_EXPORT_PRIVATE ProofSourceChromium : public quic::ProofSource {
       const std::string& hostname,
       const std::string& server_config,
       quic::QuicTransportVersion quic_version,
-      quiche::QuicheStringPiece chlo_hash,
+      absl::string_view chlo_hash,
       quic::QuicReferenceCountedPointer<quic::ProofSource::Chain>* out_chain,
       quic::QuicCryptoProof* proof);
 
   std::unique_ptr<crypto::RSAPrivateKey> private_key_;
+  CertificateList certs_in_file_;
   quic::QuicReferenceCountedPointer<quic::ProofSource::Chain> chain_;
   std::string signed_certificate_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProofSourceChromium);
+  std::unique_ptr<TicketCrypter> ticket_crypter_;
 };
 
 }  // namespace net

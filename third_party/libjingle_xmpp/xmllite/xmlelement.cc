@@ -15,7 +15,7 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/libjingle_xmpp/xmllite/qname.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlbuilder.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlconstants.h"

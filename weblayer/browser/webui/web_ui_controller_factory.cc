@@ -7,6 +7,7 @@
 #include "base/memory/ptr_util.h"
 #include "content/public/browser/web_ui.h"
 #include "url/gurl.h"
+#include "weblayer/browser/webui/net_export_ui.h"
 #include "weblayer/browser/webui/weblayer_internals_ui.h"
 
 namespace weblayer {
@@ -29,12 +30,16 @@ WebUIFactoryFunctionPointer GetWebUIFactoryFunctionPointer(const GURL& url) {
   if (url.host() == kChromeUIWebLayerHost) {
     return &NewWebUI<WebLayerInternalsUI>;
   }
+  if (url.host() == kChromeUINetExportHost) {
+    return &NewWebUI<NetExportUI>;
+  }
 
   return nullptr;
 }
 
 content::WebUI::TypeID GetWebUITypeID(const GURL& url) {
-  if (url.host() == kChromeUIWebLayerHost) {
+  if (url.host() == kChromeUIWebLayerHost ||
+      url.host() == kChromeUINetExportHost) {
     return kWebLayerID;
   }
 
@@ -49,9 +54,9 @@ WebUIControllerFactory* WebUIControllerFactory::GetInstance() {
   return instance.get();
 }
 
-WebUIControllerFactory::WebUIControllerFactory() {}
+WebUIControllerFactory::WebUIControllerFactory() = default;
 
-WebUIControllerFactory::~WebUIControllerFactory() {}
+WebUIControllerFactory::~WebUIControllerFactory() = default;
 
 content::WebUI::TypeID WebUIControllerFactory::GetWebUIType(
     content::BrowserContext* browser_context,
@@ -63,12 +68,6 @@ bool WebUIControllerFactory::UseWebUIForURL(
     content::BrowserContext* browser_context,
     const GURL& url) {
   return GetWebUIType(browser_context, url) != content::WebUI::kNoWebUI;
-}
-
-bool WebUIControllerFactory::UseWebUIBindingsForURL(
-    content::BrowserContext* browser_context,
-    const GURL& url) {
-  return UseWebUIForURL(browser_context, url);
 }
 
 std::unique_ptr<content::WebUIController>

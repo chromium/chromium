@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("crxfs") {
   output_name = "ppapi_example_crxfs"
-  sources = [
-    "crxfs.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "crxfs.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

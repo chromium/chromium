@@ -284,7 +284,7 @@ def InstallFiles(src_root, dest_root, file_list):
     # The list of files to install can be a simple list of
     # strings or a list of pairs, where each pair corresponds
     # to a mapping from source to destination names.
-    if type(file_spec) == str:
+    if isinstance(file_spec, str):
       src_file = dest_file = file_spec
     else:
       src_file, dest_file = file_spec

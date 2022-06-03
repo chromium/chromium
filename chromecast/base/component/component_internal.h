@@ -5,12 +5,8 @@
 #ifndef CHROMECAST_BASE_COMPONENT_COMPONENT_INTERNAL_H_
 #define CHROMECAST_BASE_COMPONENT_COMPONENT_INTERNAL_H_
 
-#include <set>
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -37,6 +33,10 @@ class DependencyCount;
 class DependencyBase {
  public:
   DependencyBase(const WeakReferenceBase& dependency, ComponentBase* dependent);
+
+  DependencyBase(const DependencyBase&) = delete;
+  DependencyBase& operator=(const DependencyBase&) = delete;
+
   ~DependencyBase();
 
   void StartUsing();
@@ -56,8 +56,6 @@ class DependencyBase {
 
   const scoped_refptr<DependencyCount> counter_;
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(DependencyBase);
 };
 
 // Base class for weak dependencies. Weak dependencies cannot be used

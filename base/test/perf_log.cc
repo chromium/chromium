@@ -5,7 +5,7 @@
 #include "base/test/perf_log.h"
 
 #include "base/files/file_util.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace base {
 

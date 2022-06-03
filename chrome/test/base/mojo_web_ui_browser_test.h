@@ -5,10 +5,7 @@
 #ifndef CHROME_TEST_BASE_MOJO_WEB_UI_BROWSER_TEST_H_
 #define CHROME_TEST_BASE_MOJO_WEB_UI_BROWSER_TEST_H_
 
-#include <string>
-
 #include "chrome/test/base/web_ui_browser_test.h"
-#include "chrome/test/data/webui/web_ui_test.mojom.h"
 
 // The runner of Mojo WebUI javascript based tests. The main difference between
 // this and WebUIBrowserTest is that tests subclassing from this class use a
@@ -18,6 +15,7 @@ class MojoWebUIBrowserTest : public BaseWebUIBrowserTest {
   MojoWebUIBrowserTest();
   ~MojoWebUIBrowserTest() override;
 
+  void set_use_mojo_modules() { use_mojo_modules_ = true; }
   void set_use_mojo_lite_bindings() { use_mojo_lite_bindings_ = true; }
 
   // WebUIBrowserTest:
@@ -29,6 +27,7 @@ class MojoWebUIBrowserTest : public BaseWebUIBrowserTest {
   class WebUITestContentBrowserClient;
   std::unique_ptr<WebUITestContentBrowserClient> test_content_browser_client_;
 
+  bool use_mojo_modules_ = false;
   bool use_mojo_lite_bindings_ = false;
 };
 

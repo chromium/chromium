@@ -39,47 +39,55 @@
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_selection.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
-#include "third_party/blink/renderer/core/html/forms/text_control_element.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
+#include "third_party/blink/renderer/core/paint/selection_bounds_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
 
 #include <unicode/ubidi.h>
 
 namespace blink {
 
+const PaintLayer* EnclosingCompositedContainer(
+    const LayoutObject& layout_object) {
+  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+  return layout_object.PaintingLayer()
+      ->EnclosingLayerForPaintInvalidationCrossingFrameBoundaries();
+}
+
 // Convert a local point into the coordinate system of backing coordinates.
 static gfx::Point LocalToInvalidationBackingPoint(
     const PhysicalOffset& local_point,
     const LayoutObject& layout_object,
     const GraphicsLayer& graphics_layer) {
-  const LayoutBoxModelObject& paint_invalidation_container =
-      layout_object.ContainerForPaintInvalidation();
-  const PaintLayer& paint_layer = *paint_invalidation_container.Layer();
+  const PaintLayer* paint_invalidation_container =
+      EnclosingCompositedContainer(layout_object);
+  if (!paint_invalidation_container)
+    return gfx::Point();
 
   PhysicalOffset container_point = layout_object.LocalToAncestorPoint(
-      local_point, &paint_invalidation_container, kTraverseDocumentBoundaries);
+      local_point, &paint_invalidation_container->GetLayoutObject(),
+      kTraverseDocumentBoundaries);
 
   // A layoutObject can have no invalidation backing if it is from a detached
   // frame, or when forced compositing is disabled.
-  if (paint_layer.GetCompositingState() == kNotComposited)
-    return RoundedIntPoint(container_point);
+  if (paint_invalidation_container->GetCompositingState() == kNotComposited)
+    return ToRoundedPoint(container_point);
 
   PaintLayer::MapPointInPaintInvalidationContainerToBacking(
-      paint_invalidation_container, container_point);
+      paint_invalidation_container->GetLayoutObject(), container_point);
   container_point -= PhysicalOffset(graphics_layer.OffsetFromLayoutObject());
 
   // Ensure the coordinates are in the scrolling contents space, if the object
   // is a scroller.
-  if (paint_invalidation_container.UsesCompositedScrolling()) {
-    container_point +=
-        PhysicalOffset::FromFloatSizeRound(paint_invalidation_container.Layer()
-                                               ->GetScrollableArea()
-                                               ->GetScrollOffset());
+  if (paint_invalidation_container->GetLayoutObject()
+          .UsesCompositedScrolling()) {
+    container_point += PhysicalOffset::FromFloatSizeRound(
+        paint_invalidation_container->GetScrollableArea()->GetScrollOffset());
   }
 
-  return RoundedIntPoint(container_point);
+  return ToRoundedPoint(container_point);
 }
 
 std::pair<PhysicalOffset, PhysicalOffset> static GetLocalSelectionStartpoints(
@@ -107,49 +115,6 @@ std::pair<PhysicalOffset, PhysicalOffset> static GetLocalSelectionEndpoints(
   return {rect.MinXMinYCorner(), rect.MaxXMinYCorner()};
 }
 
-static PhysicalOffset GetSamplePointForVisibility(
-    const PhysicalOffset& edge_start_in_layer,
-    const PhysicalOffset& edge_end_in_layer,
-    float zoom_factor) {
-  FloatSize diff(edge_start_in_layer - edge_end_in_layer);
-  // Adjust by ~1px to avoid integer snapping error. This logic is the same
-  // as that in ComputeViewportSelectionBound in cc.
-  diff.Scale(zoom_factor / diff.DiagonalLength());
-  PhysicalOffset sample_point = edge_end_in_layer;
-  sample_point += PhysicalOffset::FromFloatSizeRound(diff);
-  return sample_point;
-}
-
-// Returns whether this position is not visible on the screen (because
-// clipped out).
-static bool IsVisible(const LayoutObject& rect_layout_object,
-                      const PhysicalOffset& edge_start_in_layer,
-                      const PhysicalOffset& edge_end_in_layer) {
-  Node* const node = rect_layout_object.GetNode();
-  if (!node)
-    return true;
-  TextControlElement* text_control = EnclosingTextControl(node);
-  if (!text_control)
-    return true;
-  if (!IsA<HTMLInputElement>(text_control))
-    return true;
-
-  LayoutObject* layout_object = text_control->GetLayoutObject();
-  if (!layout_object || !layout_object->IsBox())
-    return true;
-
-  const PhysicalOffset sample_point =
-      GetSamplePointForVisibility(edge_start_in_layer, edge_end_in_layer,
-                                  rect_layout_object.View()->ZoomFactor());
-
-  LayoutBox* const text_control_object = ToLayoutBox(layout_object);
-  const PhysicalOffset position_in_input =
-      rect_layout_object.LocalToAncestorPoint(sample_point, text_control_object,
-                                              kTraverseDocumentBoundaries);
-  return text_control_object->PhysicalBorderBoxRect().Contains(
-      position_in_input);
-}
-
 static cc::LayerSelectionBound ComputeSelectionBound(
     const LayoutObject& layout_object,
     const GraphicsLayer& graphics_layer,
@@ -161,9 +126,9 @@ static cc::LayerSelectionBound ComputeSelectionBound(
       edge_start_in_layer, layout_object, graphics_layer);
   bound.edge_end = LocalToInvalidationBackingPoint(
       edge_end_in_layer, layout_object, graphics_layer);
-  bound.layer_id = graphics_layer.CcLayer()->id();
-  bound.hidden =
-      !IsVisible(layout_object, edge_start_in_layer, edge_end_in_layer);
+  bound.layer_id = graphics_layer.CcLayer().id();
+  bound.hidden = !SelectionBoundsRecorder::IsVisible(
+      layout_object, edge_start_in_layer, edge_end_in_layer);
   return bound;
 }
 
@@ -178,28 +143,26 @@ static inline bool IsTextDirectionRTL(const Node& node,
 }
 
 static GraphicsLayer* GetGraphicsLayerFor(const LayoutObject& layout_object) {
-  const LayoutBoxModelObject& paint_invalidation_container =
-      layout_object.ContainerForPaintInvalidation();
-  DCHECK(paint_invalidation_container.Layer()) << layout_object;
-  if (!paint_invalidation_container.Layer())
+  const PaintLayer* paint_invalidation_container =
+      EnclosingCompositedContainer(layout_object);
+  if (!paint_invalidation_container)
     return nullptr;
-  const PaintLayer& paint_layer = *paint_invalidation_container.Layer();
-  if (paint_layer.GetCompositingState() == kNotComposited)
+  if (paint_invalidation_container->GetCompositingState() == kNotComposited)
     return nullptr;
-  return paint_layer.GraphicsLayerBacking(&layout_object);
+  return paint_invalidation_container->GraphicsLayerBacking(&layout_object);
 }
 
-static base::Optional<cc::LayerSelectionBound>
+static absl::optional<cc::LayerSelectionBound>
 StartPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
   const PositionWithAffinity position(selection.ComputeStartPosition(),
                                       selection.Affinity());
   const LocalCaretRect& local_caret_rect = LocalCaretRectOfPosition(position);
   const LayoutObject* const layout_object = local_caret_rect.layout_object;
   if (!layout_object)
-    return base::nullopt;
+    return absl::nullopt;
   GraphicsLayer* graphics_layer = GetGraphicsLayerFor(*layout_object);
   if (!graphics_layer)
-    return base::nullopt;
+    return absl::nullopt;
 
   PhysicalOffset edge_start_in_layer, edge_end_in_layer;
   std::tie(edge_start_in_layer, edge_end_in_layer) =
@@ -216,17 +179,17 @@ StartPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
   return bound;
 }
 
-static base::Optional<cc::LayerSelectionBound>
+static absl::optional<cc::LayerSelectionBound>
 EndPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
   const PositionWithAffinity position(selection.ComputeEndPosition(),
                                       selection.Affinity());
   const LocalCaretRect& local_caret_rect = LocalCaretRectOfPosition(position);
   const LayoutObject* const layout_object = local_caret_rect.layout_object;
   if (!layout_object)
-    return base::nullopt;
+    return absl::nullopt;
   GraphicsLayer* graphics_layer = GetGraphicsLayerFor(*layout_object);
   if (!graphics_layer)
-    return base::nullopt;
+    return absl::nullopt;
 
   PhysicalOffset edge_start_in_layer, edge_end_in_layer;
   std::tie(edge_start_in_layer, edge_end_in_layer) =
@@ -245,6 +208,10 @@ EndPositionInGraphicsLayerBacking(const SelectionInDOMTree& selection) {
 
 cc::LayerSelection ComputeLayerSelection(
     const FrameSelection& frame_selection) {
+  // See `SelectionBoundsRecorder` and its usage for CAP implementation.
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
+    return {};
+
   if (!frame_selection.IsHandleVisible() || frame_selection.IsHidden())
     return {};
 

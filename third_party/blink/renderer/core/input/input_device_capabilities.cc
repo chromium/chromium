@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_input_device_capabilities_init.h"
+
 namespace blink {
 
 InputDeviceCapabilities::InputDeviceCapabilities(bool fires_touch_events) {

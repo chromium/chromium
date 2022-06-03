@@ -7,13 +7,14 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/activity_log/activity_action_constants.h"
 #include "chrome/browser/extensions/activity_log/activity_actions.h"
@@ -22,7 +23,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/render_process_host.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/extension_messages.h"
@@ -55,18 +55,13 @@ void AddActionToExtensionActivityLog(Profile* profile,
 
 }  // namespace
 
-ChromeExtensionMessageFilter::ChromeExtensionMessageFilter(
-    int render_process_id,
-    Profile* profile)
+ChromeExtensionMessageFilter::ChromeExtensionMessageFilter(Profile* profile)
     : BrowserMessageFilter(kExtensionFilteredMessageClasses,
                            base::size(kExtensionFilteredMessageClasses)),
-      render_process_id_(render_process_id),
       profile_(profile),
-      activity_log_(extensions::ActivityLog::GetInstance(profile)),
-      extension_info_map_(
-          extensions::ExtensionSystem::Get(profile)->info_map()) {
+      activity_log_(extensions::ActivityLog::GetInstance(profile)) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  observed_profiles_.Add(profile);
+  observed_profile_.Observe(profile);
 }
 
 ChromeExtensionMessageFilter::~ChromeExtensionMessageFilter() {
@@ -109,7 +104,7 @@ void ChromeExtensionMessageFilter::OnDestruct() const {
   if (BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     delete this;
   } else {
-    base::DeleteSoon(FROM_HERE, {BrowserThread::UI}, this);
+    content::GetUIThreadTaskRunner({})->DeleteSoon(FROM_HERE, this);
   }
 }
 
@@ -159,8 +154,8 @@ void ChromeExtensionMessageFilter::OnGetExtMessageBundle(
   }
 
   // This blocks tab loading. Priority is inherited from the calling context.
-  base::PostTask(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(
           &ChromeExtensionMessageFilter::OnGetExtMessageBundleAsync, this,
           paths_to_load, extension_id, default_locale,
@@ -193,7 +188,7 @@ void ChromeExtensionMessageFilter::OnAddAPIActionToExtensionActivityLog(
   scoped_refptr<extensions::Action> action = new extensions::Action(
       extension_id, base::Time::Now(), extensions::Action::ACTION_API_CALL,
       params.api_call);
-  action->set_args(base::WrapUnique(params.arguments.DeepCopy()));
+  action->set_args(params.arguments.CreateDeepCopy());
   if (!params.extra.empty()) {
     action->mutable_other()->SetString(
         activity_log_constants::kActionExtra, params.extra);
@@ -210,7 +205,7 @@ void ChromeExtensionMessageFilter::OnAddDOMActionToExtensionActivityLog(
   scoped_refptr<extensions::Action> action = new extensions::Action(
       extension_id, base::Time::Now(), extensions::Action::ACTION_DOM_ACCESS,
       params.api_call);
-  action->set_args(base::WrapUnique(params.arguments.DeepCopy()));
+  action->set_args(params.arguments.CreateDeepCopy());
   action->set_page_url(params.url);
   action->set_page_title(base::UTF16ToUTF8(params.url_title));
   action->mutable_other()->SetInteger(activity_log_constants::kActionDomVerb,
@@ -227,7 +222,7 @@ void ChromeExtensionMessageFilter::OnAddEventToExtensionActivityLog(
   scoped_refptr<extensions::Action> action = new extensions::Action(
       extension_id, base::Time::Now(), extensions::Action::ACTION_API_EVENT,
       params.api_call);
-  action->set_args(base::WrapUnique(params.arguments.DeepCopy()));
+  action->set_args(params.arguments.CreateDeepCopy());
   if (!params.extra.empty()) {
     action->mutable_other()->SetString(activity_log_constants::kActionExtra,
                                        params.extra);
@@ -237,7 +232,8 @@ void ChromeExtensionMessageFilter::OnAddEventToExtensionActivityLog(
 
 void ChromeExtensionMessageFilter::OnProfileWillBeDestroyed(Profile* profile) {
   DCHECK_EQ(profile_, profile);
-  observed_profiles_.Remove(profile_);
+  DCHECK(observed_profile_.IsObservingSource(profile_));
+  observed_profile_.Reset();
   profile_ = nullptr;
   activity_log_ = nullptr;
 }

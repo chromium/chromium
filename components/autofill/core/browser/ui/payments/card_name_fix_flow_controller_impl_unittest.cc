@@ -8,11 +8,10 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/payments/card_name_fix_flow_view.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -28,32 +27,35 @@ class CardNameFixFlowControllerImplGenericTest {
  public:
   CardNameFixFlowControllerImplGenericTest() {}
 
+  CardNameFixFlowControllerImplGenericTest(
+      const CardNameFixFlowControllerImplGenericTest&) = delete;
+  CardNameFixFlowControllerImplGenericTest& operator=(
+      const CardNameFixFlowControllerImplGenericTest&) = delete;
+
   void ShowPromptWithInferredName() {
-    inferred_name_ = base::ASCIIToUTF16("John Doe");
+    inferred_name_ = u"John Doe";
     ShowPrompt();
   }
 
   void ShowPromptWithoutInferredName() {
-    inferred_name_ = base::ASCIIToUTF16("");
+    inferred_name_ = u"";
     ShowPrompt();
   }
 
   void AcceptWithInferredName() { controller_->OnNameAccepted(inferred_name_); }
 
-  void AcceptWithEditedName() {
-    controller_->OnNameAccepted(base::ASCIIToUTF16("Edited Name"));
-  }
+  void AcceptWithEditedName() { controller_->OnNameAccepted(u"Edited Name"); }
 
  protected:
   std::unique_ptr<TestCardNameFixFlowView> test_card_name_fix_flow_view_;
   std::unique_ptr<CardNameFixFlowControllerImpl> controller_;
-  base::string16 inferred_name_;
-  base::string16 accepted_name_;
+  std::u16string inferred_name_;
+  std::u16string accepted_name_;
   base::WeakPtrFactory<CardNameFixFlowControllerImplGenericTest>
       weak_ptr_factory_{this};
 
  private:
-  void OnNameAccepted(const base::string16& name) { accepted_name_ = name; }
+  void OnNameAccepted(const std::u16string& name) { accepted_name_ = name; }
 
   void ShowPrompt() {
     controller_->Show(
@@ -62,8 +64,6 @@ class CardNameFixFlowControllerImplGenericTest {
             &CardNameFixFlowControllerImplGenericTest::OnNameAccepted,
             weak_ptr_factory_.GetWeakPtr()));
   }
-
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowControllerImplGenericTest);
 };
 
 class CardNameFixFlowControllerImplTest
@@ -71,15 +71,18 @@ class CardNameFixFlowControllerImplTest
       public testing::Test {
  public:
   CardNameFixFlowControllerImplTest() {}
+
+  CardNameFixFlowControllerImplTest(const CardNameFixFlowControllerImplTest&) =
+      delete;
+  CardNameFixFlowControllerImplTest& operator=(
+      const CardNameFixFlowControllerImplTest&) = delete;
+
   ~CardNameFixFlowControllerImplTest() override {}
 
   void SetUp() override {
-    test_card_name_fix_flow_view_.reset(new TestCardNameFixFlowView());
-    controller_.reset(new CardNameFixFlowControllerImpl());
+    test_card_name_fix_flow_view_ = std::make_unique<TestCardNameFixFlowView>();
+    controller_ = std::make_unique<CardNameFixFlowControllerImpl>();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CardNameFixFlowControllerImplTest);
 };
 
 TEST_F(CardNameFixFlowControllerImplTest, LogShown) {

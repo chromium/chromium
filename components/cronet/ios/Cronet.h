@@ -178,8 +178,8 @@ GRPC_SUPPORT_EXPORT
 // not in progress this call is ignored.
 + (void)stopNetLog;
 
-// Returns the full user-agent that the stack uses.
-// This is the exact string servers will see.
+// Returns the full user-agent that will be used unless it is overridden on the
+// NSURLRequest used.
 + (NSString*)getUserAgent;
 
 // Sets priority of the network thread. The |priority| should be a

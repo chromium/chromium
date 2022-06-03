@@ -32,6 +32,10 @@ void OnDisplayOwnershipChanged(
 class DisplayServiceProvider::Impl {
  public:
   Impl() = default;
+
+  Impl(const Impl&) = delete;
+  Impl& operator=(const Impl&) = delete;
+
   ~Impl() = default;
 
   void SetDimming(bool dimmed);
@@ -40,8 +44,6 @@ class DisplayServiceProvider::Impl {
 
  private:
   std::unique_ptr<ScreenDimmer> screen_dimmer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Impl);
 };
 
 void DisplayServiceProvider::Impl::SetDimming(bool dimmed) {
@@ -84,32 +86,32 @@ void DisplayServiceProvider::Start(
       chromeos::kDisplayServiceSetPowerMethod,
       base::BindRepeating(&DisplayServiceProvider::SetDisplayPower,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&DisplayServiceProvider::OnExported,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DisplayServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   exported_object->ExportMethod(
       chromeos::kDisplayServiceInterface,
       chromeos::kDisplayServiceSetSoftwareDimmingMethod,
       base::BindRepeating(&DisplayServiceProvider::SetDisplaySoftwareDimming,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&DisplayServiceProvider::OnExported,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DisplayServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   exported_object->ExportMethod(
       chromeos::kDisplayServiceInterface,
       chromeos::kDisplayServiceTakeOwnershipMethod,
       base::BindRepeating(&DisplayServiceProvider::TakeDisplayOwnership,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&DisplayServiceProvider::OnExported,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DisplayServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 
   exported_object->ExportMethod(
       chromeos::kDisplayServiceInterface,
       chromeos::kDisplayServiceReleaseOwnershipMethod,
       base::BindRepeating(&DisplayServiceProvider::ReleaseDisplayOwnership,
                           weak_ptr_factory_.GetWeakPtr()),
-      base::BindRepeating(&DisplayServiceProvider::OnExported,
-                          weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&DisplayServiceProvider::OnExported,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void DisplayServiceProvider::SetDisplayPower(

@@ -28,8 +28,12 @@ blink_modules_sources("mediacapturefromelement") {
 
   deps = [
     "//components/viz/common",
+    "//gpu/command_buffer/client:raster_interface",
     "//media",
+    "//media/capture:capture_lib",
     "//skia",
+    "//third_party/blink/renderer/modules/encryptedmedia",
+    "//third_party/blink/renderer/modules/mediastream",
     "//third_party/libyuv",
   ]
 }

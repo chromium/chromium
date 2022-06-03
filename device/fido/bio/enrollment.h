@@ -5,13 +5,13 @@
 #ifndef DEVICE_FIDO_BIO_ENROLLMENT_H_
 #define DEVICE_FIDO_BIO_ENROLLMENT_H_
 
+#include <map>
+
 #include "base/component_export.h"
-#include "base/optional.h"
-
 #include "components/cbor/values.h"
-
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -68,7 +68,8 @@ enum class BioEnrollmentResponseKey : uint8_t {
   kTemplateId = 0x04,
   kLastEnrollSampleStatus = 0x05,
   kRemainingSamples = 0x06,
-  kTemplateInfos = 0x07
+  kTemplateInfos = 0x07,
+  kMaxTemplateFriendlyName = 0x08,
 };
 
 enum class BioEnrollmentTemplateInfoParam : uint8_t {
@@ -89,7 +90,6 @@ enum class BioEnrollmentSampleStatus : uint8_t {
   kTooShort = 0x09,
   kMergeFailure = 0x0A,
   kExists = 0x0B,
-  kDatabaseFull = 0x0C,
   kNoUserActivity = 0x0D,
   kNoUserPresenceTransition = 0x0E,
   kMin = kGood,
@@ -97,11 +97,11 @@ enum class BioEnrollmentSampleStatus : uint8_t {
 };
 
 template <typename T>
-static base::Optional<T> ToBioEnrollmentEnum(uint8_t v) {
+static absl::optional<T> ToBioEnrollmentEnum(uint8_t v) {
   // Check if enum-class is in range...
   if (v < static_cast<int>(T::kMin) || v > static_cast<int>(T::kMax)) {
     // ...to avoid possible undefined behavior (casting from int to enum).
-    return base::nullopt;
+    return absl::nullopt;
   }
   return static_cast<T>(v);
 }
@@ -133,24 +133,24 @@ struct BioEnrollmentRequest {
                                         std::vector<uint8_t> id);
 
   Version version;
-  base::Optional<BioEnrollmentModality> modality;
-  base::Optional<BioEnrollmentSubCommand> subcommand;
-  base::Optional<cbor::Value::MapValue> params;
-  base::Optional<uint8_t> pin_protocol;
-  base::Optional<std::vector<uint8_t>> pin_auth;
-  base::Optional<bool> get_modality;
+  absl::optional<BioEnrollmentModality> modality;
+  absl::optional<BioEnrollmentSubCommand> subcommand;
+  absl::optional<cbor::Value::MapValue> params;
+  absl::optional<PINUVAuthProtocol> pin_protocol;
+  absl::optional<std::vector<uint8_t>> pin_auth;
+  absl::optional<bool> get_modality;
 
   BioEnrollmentRequest(BioEnrollmentRequest&&);
   BioEnrollmentRequest& operator=(BioEnrollmentRequest&&);
   ~BioEnrollmentRequest();
 
  private:
-  BioEnrollmentRequest(Version);
+  explicit BioEnrollmentRequest(Version);
 };
 
 struct COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentResponse {
-  static base::Optional<BioEnrollmentResponse> Parse(
-      const base::Optional<cbor::Value>& cbor_response);
+  static absl::optional<BioEnrollmentResponse> Parse(
+      const absl::optional<cbor::Value>& cbor_response);
 
   BioEnrollmentResponse();
   BioEnrollmentResponse(BioEnrollmentResponse&&);
@@ -159,17 +159,18 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) BioEnrollmentResponse {
 
   bool operator==(const BioEnrollmentResponse&) const;
 
-  base::Optional<BioEnrollmentModality> modality;
-  base::Optional<BioEnrollmentFingerprintKind> fingerprint_kind;
-  base::Optional<uint8_t> max_samples_for_enroll;
-  base::Optional<std::vector<uint8_t>> template_id;
-  base::Optional<BioEnrollmentSampleStatus> last_status;
-  base::Optional<uint8_t> remaining_samples;
-  base::Optional<std::map<std::vector<uint8_t>, std::string>> template_infos;
+  absl::optional<BioEnrollmentModality> modality;
+  absl::optional<BioEnrollmentFingerprintKind> fingerprint_kind;
+  absl::optional<uint8_t> max_samples_for_enroll;
+  absl::optional<std::vector<uint8_t>> template_id;
+  absl::optional<BioEnrollmentSampleStatus> last_status;
+  absl::optional<uint8_t> remaining_samples;
+  absl::optional<std::map<std::vector<uint8_t>, std::string>> template_infos;
+  absl::optional<uint32_t> max_template_friendly_name;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::pair<CtapRequestCommand, base::Optional<cbor::Value>>
+std::pair<CtapRequestCommand, absl::optional<cbor::Value>>
 AsCTAPRequestValuePair(const BioEnrollmentRequest& request);
 
 }  // namespace device

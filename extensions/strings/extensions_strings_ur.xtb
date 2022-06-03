@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">‏اوہ! بے ترتیب RSA کی نجی کلید بنانے میں ناکام ہوگیا۔</translation>
 <translation id="1445572445564823378">یہ ایکسٹینشن <ph name="PRODUCT_NAME" /> کو سست کر رہی ہے۔ <ph name="PRODUCT_NAME" /> کی کارکردگی کو بحال کرنے کیلئے آپ کو اسے غیر فعال کر دینا چاہیے۔</translation>
 <translation id="1468038450257740950">‏WebGL تعاون یافتہ نہیں ہے۔</translation>
-<translation id="149347756975725155">ایکسٹینشن آئیکن '<ph name="ICON" />' کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="1803557475693955505">پس منظر کا صفحہ '<ph name="BACKGROUND_PAGE" />' لوڈ نہں کیا جا سکا۔</translation>
 <translation id="2159915644201199628">تصویر کو ڈیکوڈ نہیں کیا جا سکا: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏لوکلائزیشن کا استعمال کیا گیا، لیکن مینی فیسٹ میں default_locale کی وضاحت نہیں کی گئی۔</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">نجی کلید کو پڑھنے میں ناکام۔</translation>
 <translation id="6391538222494443604">ان پٹ ڈائرکٹری موجود ہونا ضروری ہے۔</translation>
 <translation id="641087317769093025">ایکسٹینشن کو زپ سے نہیں نکالا نہیں جا سکا</translation>
-<translation id="6413453408918378296">یہ آئیکن واضع طور پر نظر نہیں آ رہا ہے '<ph name="ICON" />'۔</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" آپ کے آلات میں سے ایک یا زائد تک رسائی طلب کر رہی ہے:</translation>
 <translation id="657064425229075395">پس منظر کی اسکرپٹ '<ph name="BACKGROUND_SCRIPT" />' لوڈ نہیں کی جا سکی۔</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> منجانب <ph name="VENDOR_NAME" /> (نمبر شمار <ph name="SERIAL_NUMBER" />)</translation>

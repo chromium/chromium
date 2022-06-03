@@ -1,0 +1,64 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + mojom_js_args
+  deps = [
+    ":browser_proxy",
+    ":most_visited",
+    ":window_proxy",
+  ]
+}
+
+mojom("mojom") {
+  sources = [ "most_visited.mojom" ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  webui_module_path = "chrome://resources/cr_components/most_visited/"
+}
+
+js_library("browser_proxy") {
+  deps = [
+    ":mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("most_visited") {
+  deps = [
+    ":browser_proxy",
+    ":window_proxy",
+    "//skia/public/mojom:mojom_webui_js",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
+    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
+    "//ui/webui/resources/cr_elements/cr_toast:cr_toast",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:i18n_behavior.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
+  ]
+}
+
+js_library("window_proxy") {
+}
+
+html_to_js("web_components_local") {
+  js_files = [ "most_visited.js" ]
+}
+
+group("web_components") {
+  public_deps = [
+    ":mojom_webui_js",
+    ":web_components_local",
+  ]
+}

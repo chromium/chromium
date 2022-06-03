@@ -22,7 +22,8 @@ void BlobReader::Read(content::BrowserContext* browser_context,
   CHECK_GT(length, 0);
   CHECK_LE(offset, std::numeric_limits<int64_t>::max() - length);
 
-  base::Optional<Range> range = Range{offset, length};
+  absl::optional<Range> range =
+      Range{static_cast<uint64_t>(offset), static_cast<uint64_t>(length)};
   Read(browser_context, blob_uuid, std::move(callback), std::move(range));
 }
 
@@ -31,7 +32,7 @@ void BlobReader::Read(content::BrowserContext* browser_context,
                       const std::string& blob_uuid,
                       BlobReader::BlobReadCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  Read(browser_context, blob_uuid, std::move(callback), base::nullopt);
+  Read(browser_context, blob_uuid, std::move(callback), absl::nullopt);
 }
 
 BlobReader::~BlobReader() { DCHECK_CURRENTLY_ON(content::BrowserThread::UI); }
@@ -40,10 +41,9 @@ BlobReader::~BlobReader() { DCHECK_CURRENTLY_ON(content::BrowserThread::UI); }
 void BlobReader::Read(content::BrowserContext* browser_context,
                       const std::string& blob_uuid,
                       BlobReader::BlobReadCallback callback,
-                      base::Optional<BlobReader::Range> range) {
+                      absl::optional<BlobReader::Range> range) {
   std::unique_ptr<BlobReader> reader(new BlobReader(
-      content::BrowserContext::GetBlobRemote(browser_context, blob_uuid),
-      std::move(range)));
+      browser_context->GetBlobRemote(blob_uuid), std::move(range)));
 
   // Move the reader to be owned by the callback, so hold onto a temporary
   // pointer to it so we can still call Start on it.
@@ -58,7 +58,7 @@ void BlobReader::Read(content::BrowserContext* browser_context,
 }
 
 BlobReader::BlobReader(mojo::PendingRemote<blink::mojom::Blob> blob,
-                       base::Optional<Range> range)
+                       absl::optional<Range> range)
     : blob_(std::move(blob)), read_range_(std::move(range)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   blob_.set_disconnect_handler(
@@ -71,8 +71,7 @@ void BlobReader::Start(base::OnceClosure callback) {
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  MojoResult result =
-      CreateDataPipe(nullptr, &producer_handle, &consumer_handle);
+  MojoResult result = CreateDataPipe(nullptr, producer_handle, consumer_handle);
   if (result != MOJO_RESULT_OK) {
     Failed();
     return;

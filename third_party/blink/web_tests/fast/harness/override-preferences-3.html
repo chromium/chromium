@@ -3,34 +3,32 @@
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
 <script>
-type_error = new TypeError();
-
 test(() => {
-  assert_throws(type_error, () => {
+  assert_throws_js(TypeError, () => {
     testRunner.overridePreference();
   });
 }, "No parameters");
 
 test(() => {
-  assert_throws(type_error, () => {
+  assert_throws_js(TypeError, () => {
     testRunner.overridePreference("WebKitDefaultFontSize");
   });
 }, "Only one parameter");
 
 test(() => {
-  assert_throws(type_error, () => {
+  assert_throws_js(TypeError, () => {
     testRunner.overridePreference(5, 5);
   });
 }, "Invalid type for key parameter");
 
 test(() => {
-  assert_throws(type_error, () => {
+  assert_throws_js(TypeError, () => {
     testRunner.overridePreference("foo", 5);
   });
 }, "Unknown key parameter");
 
 test(() => {
-  assert_throws(type_error, () => {
+  assert_throws_js(TypeError, () => {
     testRunner.overridePreference("WebKitDefaultFontSize", Symbol.iterator);
   });
 }, "Failed conversion from value");

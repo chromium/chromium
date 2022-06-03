@@ -1,0 +1,8 @@
+# Compile-time options passed to SQLite when compiling and building
+# the Chromium developer tools amalgamation.
+#
+# The vast majority of the macros here are documented at
+# https://www.sqlite.org/compile.html
+#
+# This file is read by a GN build script as well as generate_amalgamation.py
+sqlite_dev_configuration_flags = [ "SQLITE_ENABLE_EXPLAIN_COMMENTS" ]

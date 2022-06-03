@@ -11,5 +11,11 @@ namespace prefs {
 // device. Not synced.
 const char kReadingListHasUnseenEntries[] = "reading_list.has_unseen_entries";
 
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
+// Boolean to track if the first-use experience has been shown on desktop.
+const char kReadingListDesktopFirstUseExperienceShown[] =
+    "reading_list.desktop_first_use_experience_shown";
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+
 }  // namespace prefs
 }  // namespace reading_list

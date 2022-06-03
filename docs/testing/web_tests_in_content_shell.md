@@ -1,5 +1,7 @@
 # Running web tests using the content shell
 
+[TOC]
+
 ## Compiling
 
 If you want to run web tests,
@@ -14,11 +16,15 @@ You can run web tests using `run_web_tests.py` (in
 `src/third_party/blink/tools`).
 
 ```bash
-python third_party/blink/tools/run_web_tests.py storage/indexeddb
+third_party/blink/tools/run_web_tests.py -t <build directory> storage/indexeddb
 ```
 To see a complete list of arguments supported, run with `--help`.
 
-***promo
+*** promo
+Windows users need to use `third_party/blink/tools/run_web_tests.bat` instead.
+***
+
+*** promo
 You can add `<path>/third_party/blink/tools` into `PATH` so that you can
 run it from anywhere without the full path.
 ***
@@ -60,7 +66,7 @@ browser](#As-a-simple-browser).
 
 In rare cases, to run Content Shell in the exact same way as
 `run_web_tests.py` runs it, you need to run it in the
-[protocol mode](../../content_shell/browser/web_test/test_info_extractor.h).
+[protocol mode](../../content/web_test/browser/test_info_extractor.h).
 
 *** note
 On the Mac, use `Content Shell.app`, not `content_shell`.
@@ -74,16 +80,19 @@ On Windows, use `content_shell.exe`.
 #### Running HTTP Tests in Content Shell
 
 HTTP tests reside under [web_tests/http/tests](../../third_party/blink/web_tests/http/tests).
-You need to start a web server first:
+You need to start a web server first. By default it serves generated files from
+out/Release:
 
 ```bash
-python third_party/blink/tools/run_blink_httpd.py
+python third_party/blink/tools/run_blink_httpd.py -t <build directory>
 ```
 Then run the test with a localhost URL:
 
 ```bash
 out/Default/content_shell --run-web-tests http://localhost:8000/<test>
 ```
+
+It may be necessary specify [--enable-blink-features](https://source.chromium.org/search?q=%22--enable-blink-features%3D%22) explicitly for some tests.
 
 #### Running WPT Tests in Content Shell
 
@@ -92,8 +101,9 @@ Similar to HTTP tests, many WPT (a.k.a. web-platform-tests under
 tests require some setup before running in Content Shell:
 
 ```bash
-python third_party/blink/tools/run_blink_wptserve.py
+python third_party/blink/tools/run_blink_wptserve.py -t <build directory>
 ```
+
 Then run the test:
 
 ```bash

@@ -6,9 +6,9 @@
 
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
-#include "base/task/lazy_task_runner.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 
 namespace download {
@@ -18,18 +18,14 @@ namespace {
 #if defined(OS_WIN)
 // On Windows, the download code dips into COM and the shell here and there,
 // necessitating the use of a COM single-threaded apartment sequence.
-base::LazyCOMSTATaskRunner g_download_task_runner =
+base::LazyThreadPoolCOMSTATaskRunner g_download_task_runner =
     LAZY_COM_STA_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::ThreadPool(),
-                         base::MayBlock(),
-                         base::TaskPriority::USER_VISIBLE),
+        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE),
         base::SingleThreadTaskRunnerThreadMode::SHARED);
 #else
-base::LazySequencedTaskRunner g_download_task_runner =
-    LAZY_SEQUENCED_TASK_RUNNER_INITIALIZER(
-        base::TaskTraits(base::ThreadPool(),
-                         base::MayBlock(),
-                         base::TaskPriority::USER_VISIBLE));
+base::LazyThreadPoolSequencedTaskRunner g_download_task_runner =
+    LAZY_THREAD_POOL_SEQUENCED_TASK_RUNNER_INITIALIZER(
+        base::TaskTraits(base::MayBlock(), base::TaskPriority::USER_VISIBLE));
 #endif
 
 base::LazyInstance<scoped_refptr<base::SingleThreadTaskRunner>>::

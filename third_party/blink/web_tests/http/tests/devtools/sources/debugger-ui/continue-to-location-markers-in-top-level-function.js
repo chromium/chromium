@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that continue to location markers are computed correctly.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
     function testFunction() {
@@ -42,7 +42,7 @@
     var debuggerPlugin = SourcesTestRunner.debuggerPlugin(currentFrame);
     var decorations = debuggerPlugin._continueToLocationDecorations;
     var lines = [];
-    for (var decoration of decorations.keysArray()) {
+    for (var decoration of decorations.keys()) {
       var find = decoration.find();
       var line = find.from.line;
       var text = currentFrame.textEditor.line(line).substring(find.from.ch, find.to.ch);

@@ -11,7 +11,6 @@ mojom_component("mojom") {
   sources = [
     "memory_instrumentation/constants.mojom",
     "memory_instrumentation/memory_instrumentation.mojom",
-    "resource_coordinator_service.mojom",
   ]
 
   public_deps = [
@@ -20,7 +19,54 @@ mojom_component("mojom") {
   ]
 
   enabled_features = []
-  if (is_linux || is_android) {
+  if (is_linux || is_chromeos || is_android) {
     enabled_features += [ "private_swap_info" ]
   }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "memory_instrumentation.mojom.DumpType"
+          cpp = "::base::trace_event::MemoryDumpType"
+        },
+        {
+          mojom = "memory_instrumentation.mojom.LevelOfDetail"
+          cpp = "::base::trace_event::MemoryDumpLevelOfDetail"
+        },
+        {
+          mojom = "memory_instrumentation.mojom.Determinism"
+          cpp = "::base::trace_event::MemoryDumpDeterminism"
+        },
+        {
+          mojom = "memory_instrumentation.mojom.RequestArgs"
+          cpp = "::base::trace_event::MemoryDumpRequestArgs"
+        },
+        {
+          mojom = "memory_instrumentation.mojom.RawAllocatorDumpEdge"
+          cpp =
+              "::base::trace_event::ProcessMemoryDump::MemoryAllocatorDumpEdge"
+        },
+        {
+          mojom = "memory_instrumentation.mojom.RawAllocatorDumpEntry"
+          cpp = "::base::trace_event::MemoryAllocatorDump::Entry"
+          move_only = true
+        },
+        {
+          mojom = "memory_instrumentation.mojom.RawAllocatorDump"
+          cpp = "::std::unique_ptr<::base::trace_event::MemoryAllocatorDump>"
+          move_only = true
+        },
+        {
+          mojom = "memory_instrumentation.mojom.RawProcessMemoryDump"
+          cpp = "::std::unique_ptr<::base::trace_event::ProcessMemoryDump>"
+          move_only = true
+          nullable_is_same_type = true
+        },
+      ]
+      traits_headers = [ "//services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation_mojom_traits.h" ]
+      traits_sources = [ "//services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation_mojom_traits.cc" ]
+      traits_public_deps = [ "//base" ]
+    },
+  ]
 }

@@ -57,6 +57,12 @@ class ElfImageReader::ProgramHeaderTableSpecific
     : public ElfImageReader::ProgramHeaderTable {
  public:
   ProgramHeaderTableSpecific<PhdrType>() {}
+
+  ProgramHeaderTableSpecific<PhdrType>(
+      const ProgramHeaderTableSpecific<PhdrType>&) = delete;
+  ProgramHeaderTableSpecific<PhdrType>& operator=(
+      const ProgramHeaderTableSpecific<PhdrType>&) = delete;
+
   ~ProgramHeaderTableSpecific<PhdrType>() {}
 
   bool Initialize(const ProcessMemoryRange& memory,
@@ -183,8 +189,6 @@ class ElfImageReader::ProgramHeaderTableSpecific
  private:
   std::vector<PhdrType> table_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgramHeaderTableSpecific<PhdrType>);
 };
 
 ElfImageReader::NoteReader::~NoteReader() = default;
@@ -587,6 +591,14 @@ bool ElfImageReader::ReadDynamicStringTableAtOffset(VMSize offset,
   if (offset >= string_table_size) {
     LOG(ERROR) << "bad offset";
     return false;
+  }
+
+  // GNU ld.so doesn't adjust the vdso's dynamic array entries by the load bias.
+  // If the address is too small to point into the loaded module range and is
+  // small enough to be an offset from the base of the module, adjust it now.
+  if (string_table_address < memory_.Base() &&
+      string_table_address < memory_.Size()) {
+    string_table_address += GetLoadBias();
   }
 
   if (!memory_.ReadCStringSizeLimited(

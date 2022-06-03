@@ -19,8 +19,9 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
-import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
+import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.lib.common.WebApkMetaDataUtils;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserLauncherParams;
@@ -35,11 +36,9 @@ import java.lang.annotation.RetentionPolicy;
 
 /** Displays splash screen. */
 public class SplashActivity extends Activity {
-    /** Whether {@link mSplashView} was laid out. */
-    private boolean mSplashViewLaidOut;
-
     /** Task to screenshot and encode splash. */
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
+    @Nullable
     private android.os.AsyncTask mScreenshotSplashTask;
 
     @IntDef({ActivityResult.NONE, ActivityResult.CANCELED, ActivityResult.IGNORE})
@@ -51,16 +50,33 @@ public class SplashActivity extends Activity {
     }
 
     private View mSplashView;
+    private Bitmap mBitmap;
     private HostBrowserLauncherParams mParams;
     private @ActivityResult int mResult;
-    private boolean mResumed;
-    private boolean mPendingLaunch;
+
+    private final LaunchTrigger mLaunchTrigger = new LaunchTrigger(this::encodeSplashInBackground);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        showSplashScreen();
+        boolean androidSSplashSuccess = false;
+        if (isAtLeastS() && getIntent().hasCategory("android.intent.category.LAUNCHER")) {
+            // When launched with a data Intent, the splash screen is created, but
+            // SplashScreen.OnExitAnimationListener#onSplashScreenExit is not called.
+            // Fall back to manually creating out own splash screen in that case.
+            androidSSplashSuccess =
+                    SplashUtilsForS.listenForSplashScreen(this, getWindow(), (view, bitmap) -> {
+                        mSplashView = view;
+                        mBitmap = bitmap;
+                        mLaunchTrigger.onSplashScreenReady();
+                    });
+        }
+        if (!androidSSplashSuccess) {
+            // Fall back to the old behaviour if our reflection based method to launch the Android S
+            // splash screen fails.
+            showPreSSplashScreen();
+        }
         final long splashAddedToLayoutTimeMs = SystemClock.elapsedRealtime();
 
         // On Android O+, if:
@@ -75,7 +91,6 @@ public class SplashActivity extends Activity {
             return;
         }
 
-        mPendingLaunch = true;
         selectHostBrowser(splashAddedToLayoutTimeMs);
     }
 
@@ -97,7 +112,7 @@ public class SplashActivity extends Activity {
         // "singleTask".
         mResult = ActivityResult.IGNORE;
 
-        mPendingLaunch = true;
+        mLaunchTrigger.reset();
 
         selectHostBrowser(-1 /* splashShownTimeMs */);
     }
@@ -105,20 +120,16 @@ public class SplashActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        mResumed = true;
+
+        // If Activity#onActivityResult() will be called, it will be called prior to the
+        // activity being resumed.
         if (mResult == ActivityResult.CANCELED) {
             finish();
             return;
         }
 
         mResult = ActivityResult.NONE;
-        maybeScreenshotSplashAndLaunch();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mResumed = false;
+        mLaunchTrigger.onWillLaunch();
     }
 
     @Override
@@ -150,16 +161,22 @@ public class SplashActivity extends Activity {
                 });
     }
 
-    private void showSplashScreen() {
+    private void showPreSSplashScreen() {
         Bundle metadata = WebApkUtils.readMetaData(this);
         updateStatusBar(metadata);
 
-        int orientation = WebApkUtils.computeScreenLockOrientationFromMetaData(this, metadata);
+        int orientation =
+                WebApkUtils.computeNaturalScreenLockOrientationFromMetaData(this, metadata);
         if (orientation != ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED) {
             setRequestedOrientation(orientation);
         }
 
-        mSplashView = SplashUtils.createSplashView(this);
+        if (isAtLeastS()) {
+            // This case will be hit when we are launched by a data intent.
+            mSplashView = SplashUtilsForS.createSplashView(this);
+        } else {
+            mSplashView = SplashUtils.createSplashView(this);
+        }
         mSplashView.getViewTreeObserver().addOnGlobalLayoutListener(
                 new ViewTreeObserver.OnGlobalLayoutListener() {
                     @Override
@@ -167,8 +184,9 @@ public class SplashActivity extends Activity {
                         if (mSplashView.getWidth() == 0 || mSplashView.getHeight() == 0) return;
 
                         mSplashView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
-                        mSplashViewLaidOut = true;
-                        maybeScreenshotSplashAndLaunch();
+                        mBitmap = SplashUtils.screenshotView(
+                                mSplashView, SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);
+                        mLaunchTrigger.onSplashScreenReady();
                     }
                 });
         setContentView(mSplashView);
@@ -206,22 +224,7 @@ public class SplashActivity extends Activity {
         }
 
         mParams = params;
-        maybeScreenshotSplashAndLaunch();
-    }
-
-    /**
-     * Screenshots {@link mSplashView} if:
-     * - host browser was selected
-     * AND
-     * - splash view was laid out
-     */
-    private void maybeScreenshotSplashAndLaunch() {
-        // If Activity#onActivityResult() will be called, it will be called prior to the
-        // activity being resumed.
-        if (mParams == null || !mSplashViewLaidOut || !mResumed || !mPendingLaunch) return;
-        mPendingLaunch = false;
-
-        screenshotAndEncodeSplashInBackground();
+        mLaunchTrigger.onHostBrowserSelected();
     }
 
     /**
@@ -240,10 +243,8 @@ public class SplashActivity extends Activity {
      * Screenshots and encodes {@link mSplashView} on a background thread.
      */
     @SuppressWarnings("NoAndroidAsyncTaskCheck")
-    private void screenshotAndEncodeSplashInBackground() {
-        final Bitmap bitmap = SplashUtils.screenshotView(
-                mSplashView, SplashContentProvider.MAX_TRANSFER_SIZE_BYTES);
-        if (bitmap == null) {
+    private void encodeSplashInBackground() {
+        if (mBitmap == null) {
             launch(null, Bitmap.CompressFormat.PNG);
             return;
         }
@@ -257,8 +258,8 @@ public class SplashActivity extends Activity {
                                 try (ByteArrayOutputStream out = new ByteArrayOutputStream()) {
                                     Bitmap.CompressFormat encodingFormat =
                                             SplashUtils.selectBitmapEncoding(
-                                                    bitmap.getWidth(), bitmap.getHeight());
-                                    bitmap.compress(encodingFormat, 100, out);
+                                                    mBitmap.getWidth(), mBitmap.getHeight());
+                                    mBitmap.compress(encodingFormat, 100, out);
                                     return Pair.create(out.toByteArray(), encodingFormat);
                                 } catch (IOException e) {
                                 }
@@ -277,5 +278,19 @@ public class SplashActivity extends Activity {
                             // Do nothing if task was cancelled.
                         }
                         .executeOnExecutor(android.os.AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    /**
+     * Checks if the device is running on a pre-release version of Android S or a release version of
+     * Android S or newer.
+     * <p>
+     * <strong>Note:</strong> When Android S is finalized for release, this method will be
+     * deprecated and all calls should be replaced with {@code Build.VERSION.SDK_INT >=
+     * Build.VERSION_CODES.S}.
+     *
+     * @return {@code true} if S APIs are available for use, {@code false} otherwise
+     */
+    static boolean isAtLeastS() {
+        return Build.VERSION.SDK_INT >= 31;
     }
 }

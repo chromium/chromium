@@ -7,11 +7,11 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_model.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -29,20 +29,27 @@ class EventHandler {
   // Interface for observers of the event handler.
   class Observer : public base::CheckedObserver {
    public:
-    virtual void OnEvent(const EventKey& key, const ValueProto& value) = 0;
+    virtual void OnEvent(const EventKey& key) = 0;
   };
 
   EventHandler();
+
+  EventHandler(const EventHandler&) = delete;
+  EventHandler& operator=(const EventHandler&) = delete;
+
   ~EventHandler();
 
-  void DispatchEvent(const EventKey& key, const ValueProto& value);
+  void DispatchEvent(const EventKey& key);
+
+  static absl::optional<EventKey> CreateEventKeyFromProto(
+      const EventProto& proto);
 
   void AddObserver(Observer* observer);
   void RemoveObserver(const Observer* observer);
 
  private:
-  base::ReentrantObserverList<Observer> observers_;
-  DISALLOW_COPY_AND_ASSIGN(EventHandler);
+  base::ReentrantObserverList<Observer> observers_{
+      base::ObserverListPolicy::EXISTING_ONLY};
 };
 
 // Intended for debugging.

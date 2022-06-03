@@ -42,9 +42,7 @@ void MockCameraModule::GetCameraInfo(int32_t camera_id,
 void MockCameraModule::SetCallbacks(
     mojo::PendingRemote<cros::mojom::CameraModuleCallbacks> callbacks,
     SetCallbacksCallback callback) {
-  DoSetCallbacks(callbacks, callback);
-  callbacks_.Bind(std::move(callbacks));
-  std::move(callback).Run(0);
+  // Method deprecated and not expected to be called.
 }
 
 void MockCameraModule::Init(InitCallback callback) {
@@ -66,12 +64,20 @@ void MockCameraModule::GetVendorTagOps(
   std::move(callback).Run();
 }
 
+void MockCameraModule::SetCallbacksAssociated(
+    mojo::PendingAssociatedRemote<cros::mojom::CameraModuleCallbacks> callbacks,
+    SetCallbacksAssociatedCallback callback) {
+  DoSetCallbacksAssociated(callbacks, callback);
+  callbacks_.Bind(std::move(callbacks));
+  std::move(callback).Run(0);
+}
 void MockCameraModule::NotifyCameraDeviceChange(
     int camera_id,
     cros::mojom::CameraDeviceStatus status) {
   mock_module_thread_.task_runner()->PostTask(
-      FROM_HERE, base::Bind(&MockCameraModule::NotifyCameraDeviceChangeOnThread,
-                            base::Unretained(this), camera_id, status));
+      FROM_HERE,
+      base::BindOnce(&MockCameraModule::NotifyCameraDeviceChangeOnThread,
+                     base::Unretained(this), camera_id, status));
 }
 
 void MockCameraModule::NotifyCameraDeviceChangeOnThread(

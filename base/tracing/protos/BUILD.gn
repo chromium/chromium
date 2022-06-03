@@ -1,0 +1,35 @@
+# Copyright (c) 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/perfetto/gn/proto_library.gni")
+import("//third_party/protobuf/proto_library.gni")
+import("//tools/grit/grit_rule.gni")
+import("sources.gni")
+
+proto_library("chrome_track_event") {
+  proto_in_dir = "//"
+  proto_out_dir = "base/tracing/protos"
+  import_dirs = [ "//third_party/perfetto/" ]
+  sources = chrome_track_event_sources
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "chrome_track_event.descriptor"
+}
+
+protozero_library("chrome_track_event_zero") {
+  perfetto_root_path = "//third_party/perfetto/"
+  sources = chrome_track_event_sources
+  import_dirs = [ "//third_party/perfetto/" ]
+  generator_plugin_options = "wrapper_namespace=pbzero"
+  omit_protozero_dep = true
+}
+
+grit("chrome_track_event_resources") {
+  source = "resources.grd"
+  outputs = [
+    "grit/tracing_proto_resources.h",
+    "tracing_proto_resources.pak",
+  ]
+  deps = [ ":chrome_track_event" ]
+}

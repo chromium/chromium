@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "chromecast/graphics/gestures/cast_gesture_handler.h"
 #include "third_party/skia/include/core/SkPaint.h"
 #include "third_party/skia/include/core/SkPath.h"
@@ -17,8 +17,8 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace chromecast {
 
@@ -57,7 +57,7 @@ gfx::Point ConvertPixelsToDIPWithOriginalTransform(
 
 // Correct the given scale value if necessary.
 void ValidateScale(float* scale) {
-  *scale = base::ClampToRange(*scale, kNonMagnifiedScale, kMaxMagnifiedScale);
+  *scale = base::clamp(*scale, kNonMagnifiedScale, kMaxMagnifiedScale);
   DCHECK(kNonMagnifiedScale <= *scale && *scale <= kMaxMagnifiedScale);
 }
 
@@ -67,6 +67,10 @@ class FullscreenMagnificationController::GestureProviderClient
     : public ui::GestureProviderAuraClient {
  public:
   GestureProviderClient() = default;
+
+  GestureProviderClient(const GestureProviderClient&) = delete;
+  GestureProviderClient& operator=(const GestureProviderClient&) = delete;
+
   ~GestureProviderClient() override = default;
 
   // ui::GestureProviderAuraClient overrides:
@@ -82,9 +86,6 @@ class FullscreenMagnificationController::GestureProviderClient
     DCHECK_NE(ui::ET_GESTURE_PINCH_END, event->type());
     DCHECK_NE(ui::ET_GESTURE_PINCH_UPDATE, event->type());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureProviderClient);
 };
 
 FullscreenMagnificationController::FullscreenMagnificationController(
@@ -193,7 +194,7 @@ ui::EventDispatchDetails FullscreenMagnificationController::RewriteEvent(
   if (gesture_provider_->OnTouchEvent(&touch_event_dip)) {
     gesture_provider_->OnTouchEventAck(
         touch_event_dip.unique_event_id(), false /* event_consumed */,
-        false /* is_source_touch_event_set_non_blocking */);
+        false /* is_source_touch_event_set_blocking */);
   } else {
     return DiscardEvent(continuation);
   }

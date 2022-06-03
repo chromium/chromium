@@ -25,13 +25,27 @@ cast_source_set("desktop") {
     "//media",
   ]
   if (enable_video_with_mixed_audio) {
+    sources += [ "desktop_system_volume_control.cc" ]
     deps += [
       "//chromecast/media/cma/backend:for_mixer_audio",
       "//chromecast/media/cma/backend:null_video",
-      "//chromecast/media/cma/backend/alsa:volume_control",
+      "//chromecast/media/cma/backend:public",
       "//chromecast/media/cma/backend/video:av_sync_video",
     ]
   } else {
     sources += [ "volume_control_desktop.cc" ]
   }
 }
+
+cast_source_set("mixer_output") {
+  sources = [
+    "mixer_output_stream_desktop.h",
+    "mixer_output_stream_desktop.cc"
+  ]
+  deps = [
+    "//base",
+    "//chromecast/public/media",
+    "//media",
+  ]
+}
+

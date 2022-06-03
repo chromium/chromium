@@ -7,22 +7,14 @@ test(function() {
 }, 'Element.animate() should be exposed.');
 
 test(function() {
-    assert_false('getAnimations' in Element.prototype);
-}, 'Element.getAnimations() should not be exposed without experimental web platform features enabled.\nThis test is expected to fail in LayoutTests/webexposed.')
+    assert_true('getAnimations' in Element.prototype);
+}, 'Element.getAnimations() should be exposed.')
 
 test(function() {
-    assert_false('AnimationTimeline' in window);
-},'Timeline should not be exposed without experimental web platform features enabled.\nThis test is expected to fail in LayoutTests/webexposed.');
+    assert_true('AnimationTimeline' in window);
+},'Timeline should be exposed.');
 
 test(function() {
-    assert_false('timeline' in document);
-},'document.timeline should not be exposed without experimental web platform features enabled.\nThis test is expected to fail in LayoutTests/webexposed.');
-
-test(function() {
-    assert_false('Timing' in window);
-},'Timing should not be exposed without experimental web platform features enabled.\nThis test is expected to fail in LayoutTests/webexposed.');
-
-test(function() {
-    assert_false('AnimationNode' in window);
-},'AnimationNode should not be exposed without experimental web platform features enabled.\nThis test is expected to fail in LayoutTests/webexposed.');
+    assert_true('timeline' in document);
+},'document.timeline should be exposed.');
 </script>

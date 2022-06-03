@@ -22,6 +22,10 @@ class StreamSocket;
 class NET_EXPORT ServerSocket {
  public:
   ServerSocket();
+
+  ServerSocket(const ServerSocket&) = delete;
+  ServerSocket& operator=(const ServerSocket&) = delete;
+
   virtual ~ServerSocket();
 
   // Binds the socket and starts listening. Destroys the socket to stop
@@ -42,8 +46,12 @@ class NET_EXPORT ServerSocket {
   virtual int Accept(std::unique_ptr<StreamSocket>* socket,
                      CompletionOnceCallback callback) = 0;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServerSocket);
+  // Accepts connection. Callback is called when new connection is accepted.
+  // Note: |peer_address| may or may not be populated depending on the
+  // implementation.
+  virtual int Accept(std::unique_ptr<StreamSocket>* socket,
+                     CompletionOnceCallback callback,
+                     IPEndPoint* peer_address);
 };
 
 }  // namespace net

@@ -12,13 +12,6 @@ html:not([subframe]) #sub-frame-error {
   display: none;
 }
 
-#diagnose-button {
-  float: none;
-  margin-bottom: 10px;
-  margin-inline-start: 0;
-  margin-top: 20px;
-}
-
 h1 {
   margin-top: 0;
   word-wrap: break-word;
@@ -26,13 +19,6 @@ h1 {
 
 h1 span {
   font-weight: 500;
-}
-
-h2 {
-  color: var(--heading-color);
-  font-size: 1.2em;
-  font-weight: normal;
-  margin: 10px 0;
 }
 
 a {
@@ -45,10 +31,8 @@ a {
 }
 
 .icon-generic {
-  /**
-   * Can't access chrome://theme/IDR_ERROR_NETWORK_GENERIC from an untrusted
-   * renderer process, so embed the resource manually.
-   */
+  /* Can't access chrome://theme/IDR_ERROR_NETWORK_GENERIC from an untrusted
+   * renderer process, so embed the resource manually. */
   content: -webkit-image-set(
       url(../../resources/default_100_percent/neterror/error_network_generic.png) 1x,
       url(../../resources/default_200_percent/neterror/error_network_generic.png) 2x);
@@ -68,29 +52,8 @@ a {
   width: 112px;
 }
 
-.error-code {
-  display: block;
-  font-size: .8em;
-}
-
-#content-top {
-  margin: 20px;
-}
-
-#help-box-inner {
-  background-color: #f9f9f9;
-  border-top: 1px solid #EEE;
-  color: #444;
-  padding: 20px;
-  text-align: start;
-}
-
 .hidden {
   display: none;
-}
-
-#suggestion {
-  margin-top: 15px;
 }
 
 #suggestions-list a {
@@ -107,11 +70,7 @@ a {
 
 .single-suggestion {
   list-style-type: none;
-  padding-left: 0;
-}
-
-#short-suggestion {
-  margin-top: 5px;
+  padding-inline-start: 0;
 }
 
 #error-information-button {
@@ -169,7 +128,7 @@ a {
 }
 
 #error-information-popup-close {
-  margin-bottom: 0px;
+  margin-bottom: 0;
   margin-inline-end: 35px;
   margin-top: 15px;
   text-align: end;
@@ -198,46 +157,6 @@ a {
   overflow-wrap: break-word;
 }
 
-#search-container {
-  /* Prevents a space between controls. */
-  display: flex;
-  margin-top: 20px;
-}
-
-#search-box {
-  border: 1px solid #cdcdcd;
-  flex-grow: 1;
-  font-size: 1em;
-  height: 26px;
-  margin-right: 0;
-  padding: 1px 9px;
-}
-
-#search-box:focus {
-  border: 1px solid rgb(93, 154, 255);
-  outline: none;
-}
-
-#search-button {
-  border: none;
-  border-bottom-left-radius: 0;
-  border-top-left-radius: 0;
-  box-shadow: none;
-  display: flex;
-  height: 30px;
-  margin: 0;
-  padding: 0;
-  width: 60px;
-}
-
-#search-image {
-  content:
-      -webkit-image-set(
-          url(../../resources/default_100_percent/neterror/search_glass.png) 1x,
-          url(../../resources/default_200_percent/neterror/search_glass.png) 2x);
-  margin: auto;
-}
-
 .secondary-button {
   background: #d9d9d9;
   color: #696969;
@@ -264,8 +183,8 @@ a {
 
 .snackbar-show {
   -webkit-animation:
-    show-snackbar .25s cubic-bezier(0.0, 0.0, 0.2, 1) forwards,
-    hide-snackbar .25s cubic-bezier(0.4, 0.0, 1, 1) forwards 5s;
+    show-snackbar 250ms cubic-bezier(0, 0, 0.2, 1) forwards,
+    hide-snackbar 250ms cubic-bezier(0.4, 0, 1, 1) forwards 5s;
 }
 
 @-webkit-keyframes show-snackbar {
@@ -299,23 +218,10 @@ a {
   color: #777;
 }
 
-/* Increase line height at higher resolutions. */
-@media (min-width: 641px) and (min-height: 641px) {
-  #help-box-inner {
-    line-height: 18px;
-  }
-}
-
 /* Decrease padding at low sizes. */
 @media (max-width: 640px), (max-height: 640px) {
   h1 {
     margin: 0 0 15px;
-  }
-  #content-top {
-    margin: 15px;
-  }
-  #help-box-inner {
-    padding: 20px;
   }
   .suggestions {
     margin-top: 10px;
@@ -325,7 +231,8 @@ a {
   }
 }
 
-#download-link, #download-link-clicked {
+#download-link,
+#download-link-clicked {
   margin-bottom: 30px;
   margin-top: 30px;
 }
@@ -334,16 +241,17 @@ a {
   color: #BBB;
 }
 
-#download-link:before, #download-link-clicked:before {
+#download-link::before,
+#download-link-clicked::before {
   content: url(images/download-blue.svg);
   display: inline-block;
   margin-inline-end: 4px;
   vertical-align: -webkit-baseline-middle;
 }
 
-#download-link-clicked:before {
-  width: 0px;
+#download-link-clicked::before {
   opacity: 0;
+  width: 0;
 }
 
 #offline-content-list-visibility-card {
@@ -367,7 +275,8 @@ a {
   color: var(--google-gray-700);
 }
 
-#offline-content-list-show-text, #offline-content-list-hide-text {
+#offline-content-list-show-text,
+#offline-content-list-hide-text {
   color: rgb(66, 133, 244);
 }
 
@@ -389,8 +298,8 @@ a {
    * when the actual height is smaller then the animation is not as smooth.
    */
   max-height: 27em;
-  transition: max-height 0.2s ease-in, visibility 0s 0.2s,
-              opacity 0.2s 0.2s linear;
+  transition: max-height 200ms ease-in, visibility 0s 200ms,
+              opacity 200ms 200ms linear;
 }
 
 /* Controls the animation of the offline content list when it is
@@ -398,10 +307,10 @@ a {
  */
 #offline-content-list.list-hidden #offline-content-suggestions {
   max-height: 0;
-  visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s linear, visibility 0s 0.2s,
-              max-height 0.2s 0.2s ease-out;
+  transition: opacity 200ms linear, visibility 0s 200ms,
+              max-height 200ms 200ms ease-out;
+  visibility: hidden;
 }
 
 #offline-content-list {
@@ -548,7 +457,7 @@ div.offline-content-suggestion {
 }
 
 .suggestion-with-icon .offline-content-suggestion-texts {
-  padding-inline-start: 0px;
+  padding-inline-start: 0;
 }
 
 .offline-content-suggestion-attribution-freshness {
@@ -564,8 +473,8 @@ div.offline-content-suggestion {
   display: -webkit-box;
   flex-shrink: 1;
   margin-inline-end: 0.3em;
-  overflow-wrap: break-word;
   overflow: hidden;
+  overflow-wrap: break-word;
   text-overflow: ellipsis;
   word-break: break-all;
 }
@@ -574,7 +483,7 @@ div.offline-content-suggestion {
   display: none;
 }
 
-.offline-content-suggestion-freshness:before {
+.offline-content-suggestion-freshness::before {
   content: '-';
   display: inline-block;
   flex-shrink: 0;
@@ -582,7 +491,7 @@ div.offline-content-suggestion {
   margin-inline-start: .1em;
 }
 
-.no-attribution .offline-content-suggestion-freshness:before {
+.no-attribution .offline-content-suggestion-freshness::before {
   display: none;
 }
 
@@ -591,8 +500,8 @@ div.offline-content-suggestion {
 }
 
 .suggestion-with-image .offline-content-suggestion-pin-spacer {
-  flex-shrink: 1;
   flex-grow: 100;
+  flex-shrink: 1;
 }
 
 .suggestion-with-image .offline-content-suggestion-pin {
@@ -608,16 +517,16 @@ div.offline-content-suggestion {
  */
 #offline-content-list-action {
   text-align: center;
-  transition: visibility 0s 0.2s, opacity 0.2s 0.2s linear;
+  transition: visibility 0s 200ms, opacity 200ms 200ms linear;
 }
 
 /* Controls the animation of the launch-downloads-home action button when the
  * offline content list is collapsed/hidden.
  */
 #offline-content-list.list-hidden #offline-content-list-action {
-  visibility: hidden;
   opacity: 0;
-  transition: opacity 0.2s linear, visibility 0s 0.2s;
+  transition: opacity 200ms linear, visibility 0s 200ms;
+  visibility: hidden;
 }
 
 #cancel-save-page-button {
@@ -635,7 +544,7 @@ div.offline-content-suggestion {
   text-align: start;
 }
 
-html[dir="rtl"] #cancel-save-page-button {
+html[dir='rtl'] #cancel-save-page-button {
   background-position: left 27px center;
 }
 
@@ -644,7 +553,7 @@ html[dir="rtl"] #cancel-save-page-button {
   justify-content: start;
 }
 
-#save-page-for-later-button a:before {
+#save-page-for-later-button a::before {
   content: url(images/download-blue.svg);
   display: inline-block;
   margin-inline-end: 4px;
@@ -662,16 +571,16 @@ html[subframe] body {
 
 #sub-frame-error {
   -webkit-align-items: center;
+  -webkit-flex-flow: column;
+  -webkit-justify-content: center;
   background-color: #DDD;
   display: -webkit-flex;
-  -webkit-flex-flow: column;
   height: 100%;
-  -webkit-justify-content: center;
   left: 0;
   position: absolute;
   text-align: center;
   top: 0;
-  transition: background-color .2s ease-in-out;
+  transition: background-color 200ms ease-in-out;
   width: 100%;
 }
 
@@ -730,7 +639,7 @@ html[subframe] body {
 }
 
 .suggested-left .secondary-button {
-  margin-inline-end: 0px;
+  margin-inline-end: 0;
   margin-inline-start: 16px;
 }
 
@@ -745,39 +654,23 @@ html[subframe] body {
   position: relative;
 }
 
-#download-button:before {
+#download-button::before {
   background: -webkit-image-set(
       url(../../resources/default_100_percent/neterror/download.png) 1x,
       url(../../resources/default_200_percent/neterror/download.png) 2x)
     no-repeat;
   content: '';
   display: inline-block;
-  width: 24px;
   height: 24px;
   margin-inline-end: 4px;
   margin-inline-start: -4px;
   vertical-align: middle;
+  width: 24px;
 }
 
 #download-button:disabled {
   background: rgb(180, 206, 249);
   color: rgb(255, 255, 255);
-}
-
-/*
-TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
-*/
-.suggested-thumbnail {
-  width: 25vw;
-  height: 25vw;
-}
-
-/* Alternate dino page button styles */
-#control-buttons .reload-button-alternate:disabled {
-  background: #ccc;
-  color: #fff;
-  font-size: 14px;
-  height: 48px;
 }
 
 #buttons::after {
@@ -788,6 +681,11 @@ TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
 }
 
 /* Offline page */
+html[dir='rtl'] .runner-container,
+html[dir='rtl'].offline .icon-offline {
+  transform: scaleX(-1);
+}
+
 .offline {
   transition: filter 1.5s cubic-bezier(0.65, 0.05, 0.36, 1),
               background-color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
@@ -804,16 +702,9 @@ TODO(https://crbug.com/852872): UI for offline suggested content is incomplete.
   display: none;
 }
 
-/* iOS WKWebView inverts the background color set at the HTML level
-whereas Blink does not. */
 .offline.inverted {
-  filter: invert(1);
-<if expr="not is_ios">
-  background-color: #000;
-</if>
-<if expr="is_ios">
   background-color: #fff;
-</if>
+  filter: invert(1);
 }
 
 .offline.inverted body {
@@ -827,6 +718,7 @@ whereas Blink does not. */
   margin: 0 auto;
   max-width: 600px;
   padding-top: 100px;
+  position: relative;
   width: 100%;
 }
 
@@ -840,6 +732,14 @@ whereas Blink does not. */
   width: 44px;
 }
 
+.offline .runner-container:focus {
+  outline: none;
+}
+
+.offline .runner-container:focus-visible {
+  outline: 3px solid var(--google-blue-300);
+}
+
 .offline .runner-canvas {
   height: 150px;
   max-width: 600px;
@@ -851,7 +751,6 @@ whereas Blink does not. */
 }
 
 .offline .controller {
-  background: rgba(247,247,247, .1);
   height: 100vh;
   left: 0;
   position: absolute;
@@ -874,6 +773,116 @@ whereas Blink does not. */
   width: fit-content;
 }
 
+.offline-runner-live-region {
+  bottom: 0;
+  clip-path: polygon(0 0, 0 0, 0 0);
+  color: var(--background-color);
+  display: block;
+  font-size: xx-small;
+  overflow: hidden;
+  position: absolute;
+  text-align: center;
+  transition: color 1.5s cubic-bezier(0.65, 0.05, 0.36, 1);
+  user-select: none;
+}
+
+/* Custom toggle */
+.slow-speed-option {
+  align-items: center;
+  background: var(--google-gray-50);
+  border-radius: 24px/50%;
+  bottom: 0;
+  color: var(--error-code-color);
+  display: inline-flex;
+  font-size: 1em;
+  left: 0;
+  line-height: 1.1em;
+  margin: 5px auto;
+  padding: 2px 12px 3px 20px;
+  position: absolute;
+  right: 0;
+  width: max-content;
+  z-index: 999;
+}
+
+.slow-speed-option.hidden {
+  display: none;
+}
+
+.slow-speed-option [type=checkbox] {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.slow-speed-option .slow-speed-toggle {
+  cursor: pointer;
+  margin-inline-start: 8px;
+  padding: 8px 4px;
+  position: relative;
+}
+
+.slow-speed-option [type=checkbox]:disabled ~ .slow-speed-toggle {
+  cursor: default;
+}
+
+.slow-speed-option-label [type=checkbox] {
+  opacity: 0;
+  pointer-events: none;
+  position: absolute;
+}
+
+.slow-speed-option .slow-speed-toggle::before,
+.slow-speed-option .slow-speed-toggle::after {
+  content: '';
+  display: block;
+  margin: 0 3px;
+  transition: all 100ms cubic-bezier(0.4, 0, 1, 1);
+}
+
+.slow-speed-option .slow-speed-toggle::before {
+  background: rgb(189,193,198);
+  border-radius: 0.65em;
+  height: 0.9em;
+  width: 2em;
+}
+
+.slow-speed-option .slow-speed-toggle::after {
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 40%);
+  height: 1.2em;
+  position: absolute;
+  top: 51%;
+  transform: translate(-20%, -50%);
+  width: 1.1em;
+}
+
+.slow-speed-option [type=checkbox]:focus + .slow-speed-toggle {
+  box-shadow: 0 0 8px rgb(94, 158, 214);
+  outline: 1px solid rgb(93, 157, 213);
+}
+
+.slow-speed-option [type=checkbox]:checked + .slow-speed-toggle::before {
+  background: var(--google-blue-600);
+  opacity: 0.5;
+}
+
+.slow-speed-option [type=checkbox]:checked + .slow-speed-toggle::after {
+  background: var(--google-blue-600);
+  transform: translate(calc(2em - 90%), -50%);
+}
+
+.slow-speed-option [type=checkbox]:checked:disabled +
+  .slow-speed-toggle::before {
+  background: rgb(189,193,198);
+}
+
+.slow-speed-option [type=checkbox]:checked:disabled +
+  .slow-speed-toggle::after {
+  background: var(--google-gray-50);
+}
+
 @media (max-width: 420px) {
   #download-button {
     padding-bottom: 12px;
@@ -886,10 +895,10 @@ whereas Blink does not. */
   }
 
   .snackbar {
-    left: 0;
-    bottom: 0;
-    width: 100%;
     border-radius: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
   }
 }
 
@@ -951,8 +960,8 @@ whereas Blink does not. */
 
 @media (max-width: 240px) {
   button {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-inline-end: 12px;
+    padding-inline-start: 12px;
   }
 
   .interstitial-wrapper {
@@ -992,7 +1001,7 @@ whereas Blink does not. */
   margin: auto;
   right: 0;
   transform-origin: top center;
-  transition: transform 250ms cubic-bezier(0.4, 0.0, 1, 1) .4s;
+  transition: transform 250ms cubic-bezier(0.4, 0, 1, 1) 400ms;
   z-index: 2;
 }
 
@@ -1006,17 +1015,16 @@ whereas Blink does not. */
   }
 
   .offline.inverted {
-    filter: invert(0);
-  <if expr="not is_ios">
     background-color: var(--background-color);
-  </if>
-  <if expr="is_ios">
-    background-color: #fff;
-  </if>
+    filter: invert(0);
   }
 
   .offline.inverted body {
     background-color: #fff;
+  }
+
+  .offline.inverted .offline-runner-live-region {
+    color: #fff;
   }
 
   #suggestions-list a {
@@ -1025,5 +1033,21 @@ whereas Blink does not. */
 
   #error-information-button {
     filter: invert(0.6);
+  }
+
+  .slow-speed-option {
+    background: var(--google-gray-800);
+    color: var(--google-gray-100);
+  }
+
+  .slow-speed-option .slow-speed-toggle::before,
+  .slow-speed-option [type=checkbox]:checked:disabled +
+    .slow-speed-toggle::before {
+     background: rgb(189,193,198);
+  }
+
+  .slow-speed-option [type=checkbox]:checked + .slow-speed-toggle::after,
+  .slow-speed-option [type=checkbox]:checked + .slow-speed-toggle::before {
+    background: var(--google-blue-300);
   }
 }

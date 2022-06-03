@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/message_loop/message_pump.h"
 #include "base/message_loop/watchable_io_message_pump_posix.h"
-#include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 
@@ -29,6 +28,10 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   class FdWatchController : public FdWatchControllerInterface {
    public:
     explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     ~FdWatchController() override;
 
     // FdWatchControllerInterface:
@@ -66,11 +69,13 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
     // If this pointer is non-null, the pointee is set to true in the
     // destructor.
     bool* was_destroyed_ = nullptr;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   MessagePumpGlib();
+
+  MessagePumpGlib(const MessagePumpGlib&) = delete;
+  MessagePumpGlib& operator=(const MessagePumpGlib&) = delete;
+
   ~MessagePumpGlib() override;
 
   // Part of WatchableIOMessagePumpPosix interface.
@@ -112,10 +117,11 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
 
   RunState* state_;
 
-  // This is a GLib structure that we can add event sources to.  We use the
-  // default GLib context, which is the one to which all GTK events are
-  // dispatched.
-  GMainContext* context_;
+  // This is a GLib structure that we can add event sources to.  On the main
+  // thread, we use the default GLib context, which is the one to which all GTK
+  // events are dispatched.
+  GMainContext* context_ = nullptr;
+  bool context_owned_ = false;
 
   // The work source.  It is shared by all calls to Run and destroyed when
   // the message pump is destroyed.
@@ -131,8 +137,6 @@ class BASE_EXPORT MessagePumpGlib : public MessagePump,
   std::unique_ptr<GPollFD> wakeup_gpollfd_;
 
   THREAD_CHECKER(watch_fd_caller_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpGlib);
 };
 
 }  // namespace base

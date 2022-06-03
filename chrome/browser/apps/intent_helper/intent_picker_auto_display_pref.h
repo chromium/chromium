@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "url/gurl.h"
 
@@ -23,11 +22,14 @@ class IntentPickerAutoDisplayPref final {
 
   IntentPickerAutoDisplayPref(const GURL& origin,
                               HostContentSettingsMap* settings);
+  IntentPickerAutoDisplayPref(const IntentPickerAutoDisplayPref&) = delete;
+  IntentPickerAutoDisplayPref& operator=(const IntentPickerAutoDisplayPref&) =
+      delete;
   ~IntentPickerAutoDisplayPref();
 
   void IncrementCounter();
 
-  bool HasExceededThreshold();
+  bool HasExceededThreshold() const;
 
   Platform GetPlatform();
 
@@ -60,8 +62,6 @@ class IntentPickerAutoDisplayPref final {
 
   // Content settings map used to persist the local values.
   HostContentSettingsMap* settings_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(IntentPickerAutoDisplayPref);
 };
 
 #endif  // CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_AUTO_DISPLAY_PREF_H_

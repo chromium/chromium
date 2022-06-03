@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_FAVICON_CORE_FALLBACK_URL_UTIL_H_
 #define COMPONENTS_FAVICON_CORE_FALLBACK_URL_UTIL_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 class GURL;
 
@@ -13,7 +14,7 @@ namespace favicon {
 
 // Returns a very short string (e.g., capitalized first letter in a domain's
 // name) to represent |url|.
-base::string16 GetFallbackIconText(const GURL& url);
+std::u16string GetFallbackIconText(const GURL& url);
 
 }  // namespace favicon
 

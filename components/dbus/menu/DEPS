@@ -3,4 +3,6 @@ include_rules = [
   "+ui/base",
   "+ui/events/keycodes",
   "+ui/gfx/image",
+  "+ui/gfx/x",
+  "+ui/ozone/public",
 ]

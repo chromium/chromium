@@ -18,4 +18,4 @@ typedef int gid_t;
 
 #endif
 
-#endif  /* LIBRARIES_NACL_IO_OSTYPES_H_ */
+#endif  // LIBRARIES_NACL_IO_OSTYPES_H_

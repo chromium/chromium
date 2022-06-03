@@ -4,7 +4,6 @@
 
 #include "chrome/browser/sharing/vapid_key_manager.h"
 
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/sharing/features.h"
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -23,7 +22,6 @@ class VapidKeyManagerTest : public testing::Test {
     SharingSyncPreference::RegisterProfilePrefs(prefs_.registry());
   }
 
-  base::test::ScopedFeatureList scoped_feature_list_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   syncer::FakeDeviceInfoSyncService fake_device_info_sync_service_;
   SharingSyncPreference sharing_sync_preference_;
@@ -34,10 +32,8 @@ class VapidKeyManagerTest : public testing::Test {
 }  // namespace
 
 TEST_F(VapidKeyManagerTest, CreateKeyFlow) {
-  scoped_feature_list_.InitAndDisableFeature(kSharingDeriveVapidKey);
-
   // No keys stored in preferences.
-  EXPECT_EQ(base::nullopt, sharing_sync_preference_.GetVapidKey());
+  EXPECT_EQ(absl::nullopt, sharing_sync_preference_.GetVapidKey());
 
   // Expected to create new keys and store in preferences.
   crypto::ECPrivateKey* key_1 = vapid_key_manager_.GetOrCreateKey();
@@ -54,9 +50,21 @@ TEST_F(VapidKeyManagerTest, CreateKeyFlow) {
   EXPECT_EQ(key_info, key_info_2);
 }
 
-TEST_F(VapidKeyManagerTest, ReadFromPreferenceFlow) {
-  scoped_feature_list_.InitAndDisableFeature(kSharingDeriveVapidKey);
+TEST_F(VapidKeyManagerTest, SkipCreateKeyFlow) {
+  test_sync_service_.SetActiveDataTypes({});
 
+  // No keys stored in preferences.
+  EXPECT_EQ(absl::nullopt, sharing_sync_preference_.GetVapidKey());
+
+  // Expected to skip creating keys when sync preference is not available.
+  EXPECT_FALSE(vapid_key_manager_.GetOrCreateKey());
+
+  // Refreshing keys still won't generate keys.
+  vapid_key_manager_.RefreshCachedKey();
+  EXPECT_FALSE(vapid_key_manager_.GetOrCreateKey());
+}
+
+TEST_F(VapidKeyManagerTest, ReadFromPreferenceFlow) {
   // VAPID key already stored in preferences.
   auto preference_key_1 = crypto::ECPrivateKey::Create();
   ASSERT_TRUE(preference_key_1);
@@ -85,32 +93,4 @@ TEST_F(VapidKeyManagerTest, ReadFromPreferenceFlow) {
   std::vector<uint8_t> key_info_2;
   EXPECT_TRUE(key_2->ExportPrivateKey(&key_info_2));
   EXPECT_EQ(preference_key_info_2, key_info_2);
-}
-
-TEST_F(VapidKeyManagerTest, DeriveKeyFlow) {
-  scoped_feature_list_.InitAndEnableFeature(kSharingDeriveVapidKey);
-  test_sync_service_.SetExperimentalAuthenticationKey(
-      crypto::ECPrivateKey::Create());
-
-  // No keys stored in preferences.
-  EXPECT_EQ(base::nullopt, sharing_sync_preference_.GetVapidKey());
-
-  // Expected to derive key from sync secret and store in sync preferences.
-  crypto::ECPrivateKey* key_1 = vapid_key_manager_.GetOrCreateKey();
-  EXPECT_TRUE(key_1);
-  std::vector<uint8_t> key_info_1;
-  EXPECT_TRUE(key_1->ExportPrivateKey(&key_info_1));
-  EXPECT_EQ(key_info_1, sharing_sync_preference_.GetVapidKey());
-
-  // Change sync secret.
-  test_sync_service_.SetExperimentalAuthenticationKey(
-      crypto::ECPrivateKey::Create());
-
-  // Refresh local cache with new sync secret.
-  EXPECT_TRUE(vapid_key_manager_.RefreshCachedKey());
-  crypto::ECPrivateKey* key_2 = vapid_key_manager_.GetOrCreateKey();
-  EXPECT_TRUE(key_2);
-  std::vector<uint8_t> key_info_2;
-  EXPECT_TRUE(key_2->ExportPrivateKey(&key_info_2));
-  EXPECT_NE(key_info_1, key_info_2);
 }

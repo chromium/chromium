@@ -4,7 +4,6 @@
 
 package org.chromium.components.gcm_driver.instance_id;
 
-import android.os.Bundle;
 import android.os.Looper;
 import android.util.Pair;
 
@@ -99,8 +98,9 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
         // triggers a strict mode violation if it's called on the main thread, by reading from
         // SharedPreferences. Since we can't override those static methods to simulate the strict
         // mode violation in tests, check the thread here (which is only called from getInstance).
-        if (Looper.getMainLooper() == Looper.myLooper())
+        if (Looper.getMainLooper() == Looper.myLooper()) {
             throw new AssertionError(InstanceID.ERROR_MAIN_THREAD);
+        }
     }
 
     @Override
@@ -112,8 +112,9 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
     public String getId() {
         // InstanceID.getId sometimes triggers a strict mode violation if it's called on the main
         // thread, by reading from SharedPreferences.
-        if (Looper.getMainLooper() == Looper.myLooper())
+        if (Looper.getMainLooper() == Looper.myLooper()) {
             throw new AssertionError(InstanceID.ERROR_MAIN_THREAD);
+        }
 
         if (mId == null) {
             mCreationTime = System.currentTimeMillis();
@@ -126,20 +127,15 @@ public class FakeInstanceIDWithSubtype extends InstanceIDWithSubtype {
     public long getCreationTime() {
         // InstanceID.getCreationTime sometimes triggers a strict mode violation if it's called on
         // the main thread, by reading from SharedPreferences.
-        if (Looper.getMainLooper() == Looper.myLooper())
+        if (Looper.getMainLooper() == Looper.myLooper()) {
             throw new AssertionError(InstanceID.ERROR_MAIN_THREAD);
+        }
 
         return mCreationTime;
     }
 
     @Override
     public String getToken(String authorizedEntity, String scope) throws IOException {
-        return getToken(authorizedEntity, scope, null);
-    }
-
-    @Override
-    public String getToken(String authorizedEntity, String scope, Bundle extras)
-            throws IOException {
         // InstanceID.getToken enforces this.
         if (Looper.getMainLooper() == Looper.myLooper()) {
             throw new IOException(InstanceID.ERROR_MAIN_THREAD);

@@ -132,6 +132,10 @@ void WindowModalityController::OnTouchEvent(ui::TouchEvent* event) {
     event->SetHandled();
 }
 
+base::StringPiece WindowModalityController::GetLogContext() const {
+  return "WindowModalityController";
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // WindowModalityController, aura::EnvObserver implementation:
 

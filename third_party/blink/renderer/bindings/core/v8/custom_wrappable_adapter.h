@@ -49,7 +49,7 @@ class CORE_EXPORT CustomWrappableAdapter : public CustomWrappable {
 
   ~CustomWrappableAdapter() override = default;
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(wrapper_);
     CustomWrappable::Trace(visitor);
   }

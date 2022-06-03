@@ -1,8 +1,0 @@
-This is a testharness.js-based test.
-PASS form.elements should be accessed correctly by index
-FAIL Trying to delete an indexed property name should never work assert_throws: function "function() {
-    "use strict";
-    delete form[0];
-  }" did not throw
-Harness: the test ran to completion.
-

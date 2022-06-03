@@ -22,7 +22,8 @@ using Callback = UsbMidiDevice::Factory::Callback;
 
 }  // namespace
 
-UsbMidiDeviceFactoryAndroid::UsbMidiDeviceFactoryAndroid() : delegate_(NULL) {}
+UsbMidiDeviceFactoryAndroid::UsbMidiDeviceFactoryAndroid()
+    : delegate_(nullptr) {}
 
 UsbMidiDeviceFactoryAndroid::~UsbMidiDeviceFactoryAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();

@@ -26,6 +26,8 @@ namespace subresource_filter {
 struct UnindexedRulesetInfo {
   UnindexedRulesetInfo();
   ~UnindexedRulesetInfo();
+  UnindexedRulesetInfo(const UnindexedRulesetInfo&);
+  UnindexedRulesetInfo& operator=(const UnindexedRulesetInfo&);
 
   // The version of the ruleset contents. Because the wire format of unindexed
   // rules is expected to be stable over time (at least backwards compatible),
@@ -35,8 +37,16 @@ struct UnindexedRulesetInfo {
   // There is no ordering defined on versions.
   std::string content_version;
 
-  // The path to the file containing the unindexed subresource filtering rules.
+  // The (optional) path to the file containing the unindexed subresource
+  // filtering rules. One (but not both) of |ruleset_path| and |resource_id|
+  // should be set.
   base::FilePath ruleset_path;
+
+  // The (optional) grit resource id containing the unindexed subresource
+  // filtering rules, which if supplied is given to the ResourceBundle to
+  // resolve to a string. One (but not both) of |ruleset_path| and |resource_id|
+  // should be set.
+  int resource_id = 0;
 
   // The (optional) path to a file containing the applicable license, which will
   // be copied next to the indexed ruleset. For convenience, the lack of license

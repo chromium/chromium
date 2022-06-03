@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "base/metrics/field_trial.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
@@ -23,12 +23,15 @@ class VariationsSeed;
 
 // VariationsSeedSimulator simulates the result of creating a set of studies
 // and detecting which studies would result in group changes.
-class VariationsSeedSimulator {
+class COMPONENT_EXPORT(VARIATIONS) VariationsSeedSimulator {
  public:
   // The result of variations seed simulation, counting the number of experiment
   // group changes of each type that are expected to occur on a restart with the
   // seed.
-  struct Result {
+  struct COMPONENT_EXPORT(VARIATIONS) Result {
+    Result();
+    ~Result();
+
     // The number of expected group changes that do not fall into any special
     // category. This is a lower bound due to session randomized studies.
     int normal_group_change_count;
@@ -40,9 +43,6 @@ class VariationsSeedSimulator {
     // The number of expected group changes that fall in the category of killed
     // experiments that should trigger the "critical" restart mechanism.
     int kill_critical_group_change_count;
-
-    Result();
-    ~Result();
   };
 
   // Creates the simulator with the given default and low entropy providers. The
@@ -53,6 +53,10 @@ class VariationsSeedSimulator {
   VariationsSeedSimulator(
       const base::FieldTrial::EntropyProvider& default_entropy_provider,
       const base::FieldTrial::EntropyProvider& low_entropy_provider);
+
+  VariationsSeedSimulator(const VariationsSeedSimulator&) = delete;
+  VariationsSeedSimulator& operator=(const VariationsSeedSimulator&) = delete;
+
   virtual ~VariationsSeedSimulator();
 
   // Computes differences between the current process' field trial state and
@@ -98,8 +102,6 @@ class VariationsSeedSimulator {
 
   const base::FieldTrial::EntropyProvider& default_entropy_provider_;
   const base::FieldTrial::EntropyProvider& low_entropy_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(VariationsSeedSimulator);
 };
 
 }  // namespace variations

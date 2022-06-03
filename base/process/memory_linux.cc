@@ -25,20 +25,12 @@
 
 namespace base {
 
-size_t g_oom_size = 0U;
-
 namespace {
 
-void OnNoMemorySize(size_t size) {
-  g_oom_size = size;
-
-  if (size != 0)
-    LOG(FATAL) << "Out of memory, size = " << size;
-  LOG(FATAL) << "Out of memory.";
-}
-
-void OnNoMemory() {
-  OnNoMemorySize(0);
+void ReleaseReservationOrTerminate() {
+  if (internal::ReleaseAddressSpaceReservation())
+    return;
+  TerminateBecauseOutOfMemory(0);
 }
 
 }  // namespace
@@ -49,7 +41,7 @@ void EnableTerminationOnHeapCorruption() {
 
 void EnableTerminationOnOutOfMemory() {
   // Set the new-out of memory handler.
-  std::set_new_handler(&OnNoMemory);
+  std::set_new_handler(&ReleaseReservationOrTerminate);
   // If we're using glibc's allocator, the above functions will override
   // malloc and friends and make them die on out of memory.
 
@@ -69,10 +61,11 @@ void EnableTerminationOnOutOfMemory() {
 // without the class.
 class AdjustOOMScoreHelper {
  public:
-  static bool AdjustOOMScore(ProcessId process, int score);
+  AdjustOOMScoreHelper() = delete;
+  AdjustOOMScoreHelper(const AdjustOOMScoreHelper&) = delete;
+  AdjustOOMScoreHelper& operator=(const AdjustOOMScoreHelper&) = delete;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AdjustOOMScoreHelper);
+  static bool AdjustOOMScore(ProcessId process, int score);
 };
 
 // static.
@@ -124,11 +117,11 @@ bool UncheckedMalloc(size_t size, void** result) {
 #if BUILDFLAG(USE_ALLOCATOR_SHIM)
   *result = allocator::UncheckedAlloc(size);
 #elif defined(MEMORY_TOOL_REPLACES_ALLOCATOR) || \
-    (!defined(LIBC_GLIBC) && !defined(USE_TCMALLOC))
+    (!defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC))
   *result = malloc(size);
-#elif defined(LIBC_GLIBC) && !defined(USE_TCMALLOC)
+#elif defined(LIBC_GLIBC) && !BUILDFLAG(USE_TCMALLOC)
   *result = __libc_malloc(size);
-#elif defined(USE_TCMALLOC)
+#elif BUILDFLAG(USE_TCMALLOC)
   *result = tc_malloc_skip_new_handler(size);
 #endif
   return *result != nullptr;

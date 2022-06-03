@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Ojej! Nie można wygenerować losowego klucza prywatnego RSA.</translation>
 <translation id="1445572445564823378">To rozszerzenie spowalnia pracę <ph name="PRODUCT_NAME" />. Wyłącz je, aby przywrócić wydajność przeglądarki <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Interfejs WebGL nie jest obsługiwany.</translation>
-<translation id="149347756975725155">Nie można wczytać ikony rozszerzenia „<ph name="ICON" />”.</translation>
 <translation id="1803557475693955505">Nie można wczytać strony w tle „<ph name="BACKGROUND_PAGE" />”.</translation>
 <translation id="2159915644201199628">Nie można odkodować obrazu: „<ph name="IMAGE_NAME" />”</translation>
 <translation id="2350172092385603347">Lokalizacja została użyta, ale nie określono języka default_locale w pliku manifestu.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Nie można odczytać klucza prywatnego.</translation>
 <translation id="6391538222494443604">Katalog wejściowy musi istnieć.</translation>
 <translation id="641087317769093025">Nie można rozpakować rozszerzenia</translation>
-<translation id="6413453408918378296">Ikona „<ph name="ICON" />” nie jest wystarczająco widoczna.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> żąda dostępu do co najmniej jednego Twojego urządzenia:</translation>
 <translation id="657064425229075395">Nie udało się wczytać skryptu działającego w tle „<ph name="BACKGROUND_SCRIPT" />”.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> firmy <ph name="VENDOR_NAME" /> (numer seryjny <ph name="SERIAL_NUMBER" />)</translation>

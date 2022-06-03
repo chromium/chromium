@@ -5,8 +5,8 @@
 #include "content/browser/tracing/background_startup_tracing_observer.h"
 
 #include "build/build_config.h"
+#include "components/tracing/common/trace_startup_config.h"
 #include "content/browser/tracing/background_tracing_rule.h"
-#include "content/public/test/test_browser_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -88,18 +88,18 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
   EXPECT_EQ(1u, config_impl->rules().size());
   TestStartupRuleExists(*config_impl, true);
 
-  // A GPU config without preference set should not set preference and keep
+  // A custom config without preference set should not set preference and keep
   // config same.
-  std::unique_ptr<base::DictionaryValue> rules_dict(
-      new base::DictionaryValue());
-  rules_dict->SetString("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
-  rules_dict->SetString("trigger_name", "test");
-  rules_dict->SetString("category", "BENCHMARK_GPU");
-  base::DictionaryValue dict;
-  std::unique_ptr<base::ListValue> rules_list(new base::ListValue());
-  rules_list->Append(std::move(rules_dict));
-  dict.Set("configs", std::move(rules_list));
-  config_impl = BackgroundTracingConfigImpl::ReactiveFromDict(&dict);
+  base::Value rules_dict(base::Value::Type::DICTIONARY);
+  rules_dict.SetStringKey("rule", "MONITOR_AND_DUMP_WHEN_TRIGGER_NAMED");
+  rules_dict.SetStringKey("trigger_name", "test");
+  base::Value dict(base::Value::Type::DICTIONARY);
+  base::Value rules_list(base::Value::Type::LIST);
+  rules_list.Append(std::move(rules_dict));
+  dict.SetKey("configs", std::move(rules_list));
+  dict.SetStringKey("custom_categories",
+                    tracing::TraceStartupConfig::kDefaultStartupCategories);
+  config_impl = BackgroundTracingConfigImpl::ReactiveFromDict(dict);
   ASSERT_TRUE(config_impl);
 
   preferences->SetBackgroundStartupTracingEnabled(false);
@@ -109,8 +109,8 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
   EXPECT_EQ(1u, config_impl->rules().size());
   TestStartupRuleExists(*config_impl, false);
 
-  // A GPU config with preference set should include startup config and disable
-  // preference.
+  // A custom config with preference set should include startup config and
+  // disable preference.
   preferences->SetBackgroundStartupTracingEnabled(true);
   config_impl = observer->IncludeStartupConfigIfNeeded(std::move(config_impl));
   EXPECT_TRUE(observer->enabled_in_current_session());
@@ -120,15 +120,10 @@ TEST(BackgroundStartupTracingObserverTest, IncludeStartupConfigIfNeeded) {
   EXPECT_EQ(BackgroundTracingConfig::TracingMode::REACTIVE,
             config_impl->tracing_mode());
   TestStartupRuleExists(*config_impl, true);
+  EXPECT_EQ(
+      config_impl->category_preset(),
+      BackgroundTracingConfigImpl::CategoryPreset::CUSTOM_CATEGORY_PRESET);
 
-  bool found_gpu = false;
-  for (const auto& rule : config_impl->rules()) {
-    if (rule->category_preset() ==
-        BackgroundTracingConfigImpl::CategoryPreset::BENCHMARK_GPU) {
-      found_gpu = true;
-    }
-  }
-  EXPECT_TRUE(found_gpu);
   preferences->SetBackgroundStartupTracingEnabled(false);
 }
 

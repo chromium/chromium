@@ -75,6 +75,10 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   };
 
   DiskCacheTestWithCache();
+
+  DiskCacheTestWithCache(const DiskCacheTestWithCache&) = delete;
+  DiskCacheTestWithCache& operator=(const DiskCacheTestWithCache&) = delete;
+
   ~DiskCacheTestWithCache() override;
 
   void CreateBackend(uint32_t flags);
@@ -155,7 +159,7 @@ class DiskCacheTestWithCache : public DiskCacheTest {
   int DoomEntriesSince(const base::Time initial_time);
   std::unique_ptr<TestIterator> CreateIterator();
   void FlushQueueForTest();
-  void RunTaskForTest(const base::Closure& closure);
+  void RunTaskForTest(base::OnceClosure closure);
   int ReadData(disk_cache::Entry* entry, int index, int offset,
                net::IOBuffer* buf, int len);
   int WriteData(disk_cache::Entry* entry, int index, int offset,
@@ -168,6 +172,7 @@ class DiskCacheTestWithCache : public DiskCacheTest {
                       int64_t offset,
                       net::IOBuffer* buf,
                       int len);
+  // TODO(morlovich): Port all the tests using this to RangeResult.
   int GetAvailableRange(disk_cache::Entry* entry,
                         int64_t offset,
                         int len,
@@ -214,8 +219,6 @@ class DiskCacheTestWithCache : public DiskCacheTest {
  private:
   void InitMemoryCache();
   void InitDiskCache();
-
-  DISALLOW_COPY_AND_ASSIGN(DiskCacheTestWithCache);
 };
 
 #endif  // NET_DISK_CACHE_DISK_CACHE_TEST_BASE_H_

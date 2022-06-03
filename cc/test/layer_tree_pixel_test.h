@@ -16,7 +16,6 @@
 #include "cc/trees/effect_node.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "ui/gl/gl_implementation.h"
 
 class SkBitmap;
@@ -43,7 +42,7 @@ class TextureLayer;
 
 class LayerTreePixelTest : public LayerTreeTest {
  protected:
-  LayerTreePixelTest();
+  explicit LayerTreePixelTest(viz::RendererType renderer_type);
   ~LayerTreePixelTest() override;
 
   // LayerTreeTest overrides.
@@ -53,10 +52,15 @@ class LayerTreePixelTest : public LayerTreeTest {
       scoped_refptr<viz::ContextProvider> compositor_context_provider,
       scoped_refptr<viz::RasterContextProvider> worker_context_provider)
       override;
+  std::unique_ptr<viz::DisplayCompositorMemoryAndTaskController>
+  CreateDisplayControllerOnThread() override;
   std::unique_ptr<viz::SkiaOutputSurface>
-  CreateDisplaySkiaOutputSurfaceOnThread() override;
+  CreateDisplaySkiaOutputSurfaceOnThread(
+      viz::DisplayCompositorMemoryAndTaskController*) override;
   std::unique_ptr<viz::OutputSurface> CreateDisplayOutputSurfaceOnThread(
       scoped_refptr<viz::ContextProvider> compositor_context_provider) override;
+  void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override;
+  void InitializeSettings(LayerTreeSettings* settings) override;
 
   virtual std::unique_ptr<viz::CopyOutputRequest> CreateCopyOutputRequest();
 
@@ -66,7 +70,6 @@ class LayerTreePixelTest : public LayerTreeTest {
   void SetupTree() override;
   void AfterTest() override;
   void EndTest() override;
-  void InitializeSettings(LayerTreeSettings* settings) override;
 
   void TryEndTest();
 
@@ -85,23 +88,18 @@ class LayerTreePixelTest : public LayerTreeTest {
       SkColor border_color,
       std::vector<scoped_refptr<SolidColorLayer>>&);
 
-  void RunPixelTest(RendererType renderer_type,
-                    scoped_refptr<Layer> content_root,
+  void RunPixelTest(scoped_refptr<Layer> content_root,
                     base::FilePath file_name);
 
-  void RunPixelTest(RendererType renderer_type,
-                    scoped_refptr<Layer> content_root,
+  void RunPixelTest(scoped_refptr<Layer> content_root,
                     const SkBitmap& expected_bitmap);
 
-  void RunPixelTestWithLayerList(RendererType renderer_type,
-                                 base::FilePath file_name);
+  void RunPixelTestWithLayerList(base::FilePath file_name);
 
-  void RunSingleThreadedPixelTest(RendererType renderer_type,
-                                  scoped_refptr<Layer> content_root,
+  void RunSingleThreadedPixelTest(scoped_refptr<Layer> content_root,
                                   base::FilePath file_name);
 
-  void RunPixelTestWithReadbackTarget(RendererType renderer_type,
-                                      scoped_refptr<Layer> content_root,
+  void RunPixelTestWithReadbackTarget(scoped_refptr<Layer> content_root,
                                       Layer* target,
                                       base::FilePath file_name);
 
@@ -119,6 +117,19 @@ class LayerTreePixelTest : public LayerTreeTest {
     enlarge_texture_amount_ = enlarge_texture_amount;
   }
 
+  // Gpu rasterization is not used in pixel tests by default, and OOP
+  // rasterization is used by default only for Vulkan and Skia Dawn. Tests may
+  // opt into using a different raster mode.
+  void set_raster_type(TestRasterType raster_type) {
+    raster_type_ = raster_type;
+  }
+
+  TestRasterType raster_type() const { return raster_type_; }
+  bool use_accelerated_raster() const {
+    return raster_type_ == TestRasterType::kGpu ||
+           raster_type_ == TestRasterType::kOop;
+  }
+
   // Common CSS colors defined for tests to use.
   static const SkColor kCSSOrange = 0xffffa500;
   static const SkColor kCSSBrown = 0xffa52a2a;
@@ -126,6 +137,7 @@ class LayerTreePixelTest : public LayerTreeTest {
   static const SkColor kCSSLime = 0xff00ff00;
   static const SkColor kCSSBlack = 0xff000000;
 
+  TestRasterType raster_type_;
   gl::DisableNullDrawGLBindings enable_pixel_output_;
   std::unique_ptr<PixelComparator> pixel_comparator_;
   scoped_refptr<Layer> content_root_;  // Not used in layer list mode.

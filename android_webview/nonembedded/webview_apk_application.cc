@@ -5,14 +5,15 @@
 #include "android_webview/nonembedded/nonembedded_jni_headers/WebViewApkApplication_jni.h"
 
 #include "android_webview/common/aw_resource_bundle.h"
+#include "android_webview/nonembedded/webview_apk_process.h"
 #include "base/android/base_jni_onload.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace android_webview {
 
-void JNI_WebViewApkApplication_InitializePakResources(JNIEnv* env) {
-  CHECK(base::android::OnJNIOnLoadInit());
+void JNI_WebViewApkApplication_InitializeGlobalsAndResources(JNIEnv* env) {
   InitIcuAndResourceBundleBrowserSide();
+  WebViewApkProcess::Init();
 }
 
 }  // namespace android_webview

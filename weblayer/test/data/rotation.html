@@ -1,0 +1,32 @@
+<html>
+  <script>
+    var gotHide = false;
+    var gotOrientationChange = false;
+    var attachedListeners = false;
+    async function doRequestFullscreen() {
+        return document.documentElement.requestFullscreen();
+    }
+    async function toggleFullscreen() {
+      if (!attachedListeners) {
+        attachedListeners = true;
+        document.addEventListener("visibilitychange", function() {
+          if (document.visibilityState !== 'visible') {
+            gotHide = true;
+          }
+        });
+        window.addEventListener("orientationchange", function() {
+          gotOrientationChange = true;
+        });
+      }
+      if (!document.fullscreenElement) {
+          await doRequestFullscreen();
+          await screen.orientation.lock("landscape");
+      } else {
+        document.exitFullscreen();
+      }
+    }
+  </script>
+  <body style="height:5000px" onclick="toggleFullscreen();">
+    <p>A (mostly) empty page.</p>
+  </body>
+</html>

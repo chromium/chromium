@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/c/pp_resource.h"
 #include "ppapi/shared_impl/resource_var.h"
@@ -32,6 +31,9 @@ class HostResourceVar : public ppapi::ResourceVar {
   // the plugin-side resource. Its type depends on the type of resource.
   HostResourceVar(int pending_renderer_host_id,
                   const IPC::Message& creation_message);
+
+  HostResourceVar(const HostResourceVar&) = delete;
+  HostResourceVar& operator=(const HostResourceVar&) = delete;
 
   // ResourceVar override.
   PP_Resource GetPPResource() const override;
@@ -59,8 +61,6 @@ class HostResourceVar : public ppapi::ResourceVar {
   // If the plugin-side resource has not yet been created, carries a message to
   // create a resource of the specific type on the plugin side. Otherwise, NULL.
   std::unique_ptr<IPC::Message> creation_message_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostResourceVar);
 };
 
 }  // namespace content

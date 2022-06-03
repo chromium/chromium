@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<style>
+.container {
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+  direction: ltr;
+}
+.content {
+  width: 200px;
+  height: 200px;
+}
+</style>
+<div id="target1" class="container">
+  <div class="content"></div>
+</div>
+<div id="target2" class="container" style="will-change: transform">
+  <div class="content"></div>
+</div>
+<script>
+runAfterLayoutAndPaint(() => {
+  document.querySelectorAll('.container').forEach((e) => {
+    e.style.direction = 'rtl';
+  });
+  document.querySelectorAll('.content').forEach((e) => {
+    e.style.height = '300px';
+  });
+}, true);
+</script>

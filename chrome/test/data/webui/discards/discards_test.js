@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Need to import this manually as test_api.js assumes that Mojo JS bindings
-// already exist, for all tests of "mojo_lite_webui" type.
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+// We need to import this manually, because test_api.js assumes it will be
+// be loaded for any test of "mojo_webui" type.
+import '../mojo_webui_test_support.js';
 
 import {durationToString, maybeMakePlural} from 'chrome://discards/discards.js';
 import {compareTabDiscardsInfos} from 'chrome://discards/discards_tab.js';
@@ -16,8 +16,6 @@ suite('discards', function() {
       tabUrl: 'http://urlone.com',
       visibility: 0,  // hidden
       state: 0,       // active
-      canFreeze: false,
-      canDiscard: false,
       isAutoDiscardable: false,
       discardCount: 0,
       utilityRank: 0,
@@ -28,23 +26,19 @@ suite('discards', function() {
       tabUrl: 'http://urltwo.com',
       visibility: 1,  // occluded
       state: 3,       // frozen
-      canFreeze: true,
-      canDiscard: true,
-      isFrozen: true,
-      isDiscarded: true,
       isAutoDiscardable: true,
       discardCount: 1,
       utilityRank: 1,
       lastActiveSeconds: 1
     };
 
-    ['title', 'tabUrl', 'visibility', 'state', 'canFreeze', 'canDiscard',
-     'isAutoDiscardable', 'discardCount', 'utilityRank', 'lastActiveSeconds']
+    ['title', 'tabUrl', 'visibility', 'state', 'isAutoDiscardable',
+     'discardCount', 'utilityRank', 'lastActiveSeconds']
         .forEach((sortKey) => {
           assertTrue(compareTabDiscardsInfos(sortKey, dummy1, dummy2) < 0);
           assertTrue(compareTabDiscardsInfos(sortKey, dummy2, dummy1) > 0);
-          assertTrue(compareTabDiscardsInfos(sortKey, dummy1, dummy1) == 0);
-          assertTrue(compareTabDiscardsInfos(sortKey, dummy2, dummy2) == 0);
+          assertTrue(compareTabDiscardsInfos(sortKey, dummy1, dummy1) === 0);
+          assertTrue(compareTabDiscardsInfos(sortKey, dummy2, dummy2) === 0);
         });
   });
 

@@ -6,8 +6,8 @@
 #define ASH_SHELF_SHELF_LOCKING_MANAGER_H_
 
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/session/session_observer.h"
 #include "ash/wm/lock_state_observer.h"
 
 namespace ash {
@@ -20,6 +20,10 @@ class ASH_EXPORT ShelfLockingManager : public SessionObserver,
                                        public LockStateObserver {
  public:
   explicit ShelfLockingManager(Shelf* shelf);
+
+  ShelfLockingManager(const ShelfLockingManager&) = delete;
+  ShelfLockingManager& operator=(const ShelfLockingManager&) = delete;
+
   ~ShelfLockingManager() override;
 
   bool is_locked() const { return session_locked_ || screen_locked_; }
@@ -42,8 +46,6 @@ class ASH_EXPORT ShelfLockingManager : public SessionObserver,
   ShelfAlignment stored_alignment_;
 
   ScopedSessionObserver scoped_session_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfLockingManager);
 };
 
 }  // namespace ash

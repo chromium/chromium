@@ -6,17 +6,17 @@
 #define CHROME_TEST_CHROMEDRIVER_NET_ADB_CLIENT_SOCKET_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/socket/stream_socket.h"
 
 class AdbClientSocket {
  public:
-  typedef base::Callback<void(int, const std::string&)> CommandCallback;
-  typedef base::Callback<void(int result,
-                              net::StreamSocket*)> SocketCallback;
-  typedef base::Callback<void(const std::string&)> ParserCallback;
+  typedef base::RepeatingCallback<void(int, const std::string&)>
+      CommandCallback;
+  typedef base::RepeatingCallback<void(int result, net::StreamSocket*)>
+      SocketCallback;
+  typedef base::RepeatingCallback<void(const std::string&)> ParserCallback;
 
   static void AdbQuery(int port,
                        const std::string& query,
@@ -46,6 +46,10 @@ class AdbClientSocket {
                        const CommandCallback& callback);
 
   explicit AdbClientSocket(int port);
+
+  AdbClientSocket(const AdbClientSocket&) = delete;
+  AdbClientSocket& operator=(const AdbClientSocket&) = delete;
+
   ~AdbClientSocket();
 
  protected:
@@ -80,6 +84,5 @@ class AdbClientSocket {
   int port_;
 
   friend class AdbClientSocketTest;
-  DISALLOW_COPY_AND_ASSIGN(AdbClientSocket);
 };
 #endif  // CHROME_TEST_CHROMEDRIVER_NET_ADB_CLIENT_SOCKET_H_

@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests that console logging dumps large arrays properly.\n');
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -62,19 +62,21 @@
     })();
   `);
 
-  ObjectUI.ArrayGroupingTreeElement._bucketThreshold = 20;
-  var messages = Console.ConsoleView.instance()._visibleViewMessages;
+  ObjectUI.ArrayGroupingTreeElement.bucketThreshold = 20;
+  var messages = Console.ConsoleView.instance().visibleViewMessages;
   var sections = [];
 
   for (var i = 0; i < messages.length; ++i) {
     var consoleMessage = messages[i].consoleMessage();
-    var element = messages[i].toMessageElement();
+    var element = messages[i].element();
     var node = element.traverseNextNode(element);
 
     while (node) {
-      if (node._section) {
-        sections.push(node._section);
-        node._section.expand();
+      const section =
+          ObjectUI.ObjectPropertiesSection.getObjectPropertiesSectionFrom(node);
+      if (section) {
+        sections.push(section);
+        section.expand();
       }
 
       node = node.traverseNextNode(element);
@@ -96,7 +98,7 @@
 
       for (var j = 0; j < children.length; ++j) {
         for (var treeElement = children[j]; treeElement; treeElement = treeElement.traverseNextTreeElement(true, null, true)) {
-          if (treeElement.listItemElement.textContent.indexOf('__proto__') === -1)
+          if (treeElement.listItemElement.textContent.indexOf('[[Prototype]]') === -1)
             treeElement.expand();
         }
       }
@@ -108,8 +110,8 @@
       TestRunner.deprecatedRunAfterPendingDispatches(expandRecursively);
   }
 
-  function completeTest() {
-    ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+  async function completeTest() {
+    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
     TestRunner.completeTest();
   }
 })();

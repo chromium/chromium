@@ -30,6 +30,10 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   class FdWatchController : public FdWatchControllerInterface {
    public:
     explicit FdWatchController(const Location& from_here);
+
+    FdWatchController(const FdWatchController&) = delete;
+    FdWatchController& operator=(const FdWatchController&) = delete;
+
     ~FdWatchController() override;
 
     // FdWatchControllerInterface:
@@ -53,8 +57,6 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
     int mode_ = 0;
     FdWatcher* watcher_ = nullptr;
     WeakPtr<MessagePumpKqueue> pump_;
-
-    DISALLOW_COPY_AND_ASSIGN(FdWatchController);
   };
 
   // Delegate interface that provides notifications of Mach message receive
@@ -70,6 +72,10 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   class MachPortWatchController {
    public:
     explicit MachPortWatchController(const Location& from_here);
+
+    MachPortWatchController(const MachPortWatchController&) = delete;
+    MachPortWatchController& operator=(const MachPortWatchController&) = delete;
+
     ~MachPortWatchController();
 
     bool StopWatchingMachPort();
@@ -90,11 +96,13 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
     MachPortWatcher* watcher_ = nullptr;
     WeakPtr<MessagePumpKqueue> pump_;
     const Location from_here_;
-
-    DISALLOW_COPY_AND_ASSIGN(MachPortWatchController);
   };
 
   MessagePumpKqueue();
+
+  MessagePumpKqueue(const MessagePumpKqueue&) = delete;
+  MessagePumpKqueue& operator=(const MessagePumpKqueue&) = delete;
+
   ~MessagePumpKqueue() override;
 
   // MessagePump:
@@ -118,6 +126,15 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
                            FdWatchController* controller,
                            FdWatcher* delegate);
 
+  bool GetIsLudicrousTimerSlackEnabledAndNotSuspendedForTesting() const;
+  void MaybeUpdateWakeupTimerForTesting(const base::TimeTicks& wakeup_time);
+
+ protected:
+  // Virtual for testing.
+  virtual void SetWakeupTimerEvent(const base::TimeTicks& wakeup_time,
+                                   bool use_slack,
+                                   kevent64_s* timer_event);
+
  private:
   // Called by the watch controller implementations to stop watching the
   // respective types of handles.
@@ -129,12 +146,22 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // amount of time specified by the NextWorkInfo or until an event is
   // triggered. Returns whether any events were dispatched, with the events
   // stored in |events_|.
-  bool DoInternalWork(Delegate::NextWorkInfo* next_work_info);
+  bool DoInternalWork(Delegate* delegate,
+                      Delegate::NextWorkInfo* next_work_info);
 
   // Called by DoInternalWork() to dispatch the user events stored in |events_|
   // that were triggered. |count| is the number of events to process. Returns
   // true if work was done, or false if no work was done.
-  bool ProcessEvents(int count);
+  bool ProcessEvents(Delegate* delegate, int count);
+
+  // Updates the wakeup timer to |wakeup_time| if it differs from the currently
+  // scheduled wakeup. Clears the wakeup timer if |wakeup_time| is
+  // base::TimeTicks::Max().
+  // Updates |scheduled_wakeup_time_| to follow.
+  void MaybeUpdateWakeupTimer(const base::TimeTicks& wakeup_time);
+
+  // Ludicrous slack is applied when this function returns true.
+  bool IsLudicrousTimerSlackEnabledAndNotSuspended() const;
 
   // Receive right to which an empty Mach message is sent to wake up the pump
   // in response to ScheduleWork().
@@ -159,6 +186,17 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   // Whether the pump has been Quit() or not.
   bool keep_running_ = true;
 
+  // Cache flag for ease of testing.
+  const bool is_ludicrous_timer_slack_enabled_;
+
+  // True if Ludicrous slack was suspended last time the wakeup timer was
+  // updated.
+  bool ludicrous_timer_slack_was_suspended_;
+
+  // The currently scheduled wakeup, if any. If no wakeup is scheduled,
+  // contains base::TimeTicks::Max().
+  base::TimeTicks scheduled_wakeup_time_{base::TimeTicks::Max()};
+
   // The number of events scheduled on the |kqueue_|. There is always at least
   // 1, for the |wakeup_| port (or |port_set_|).
   size_t event_count_ = 1;
@@ -167,8 +205,6 @@ class BASE_EXPORT MessagePumpKqueue : public MessagePump,
   std::vector<kevent64_s> events_{event_count_};
 
   WeakPtrFactory<MessagePumpKqueue> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpKqueue);
 };
 
 }  // namespace base

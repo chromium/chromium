@@ -31,4 +31,4 @@ class PamAuthorizationFactory : public protocol::AuthenticatorFactory {
 
 }  // namespace remoting
 
-#endif
+#endif  // REMOTING_HOST_PAM_AUTHORIZATION_FACTORY_POSIX_H_

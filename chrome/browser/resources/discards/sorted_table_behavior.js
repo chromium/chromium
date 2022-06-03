@@ -31,7 +31,7 @@ export const SortedTableBehavior = {
    * @param {string} sortKey The new sort key.
    * @public
    */
-  setSortKey: function(sortKey) {
+  setSortKey(sortKey) {
     this.sortKey = sortKey;
   },
 
@@ -41,7 +41,7 @@ export const SortedTableBehavior = {
    * @param {Event} e The event.
    * @public
    */
-  onSortClick: function(e) {
+  onSortClick(e) {
     // Remove the presentation style on the old sort header.
     const oldElement = this.$$('.sort-column, .sort-column-reverse');
     if (oldElement) {
@@ -50,7 +50,7 @@ export const SortedTableBehavior = {
     }
 
     const newSortKey = e.currentTarget.dataset.sortKey;
-    if (newSortKey == this.sortKey) {
+    if (newSortKey === this.sortKey) {
       this.sortReverse = !this.sortReverse;
     } else {
       this.setSortKey(newSortKey);

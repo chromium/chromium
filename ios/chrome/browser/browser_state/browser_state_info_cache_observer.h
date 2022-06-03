@@ -5,8 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BROWSER_STATE_BROWSER_STATE_INFO_CACHE_OBSERVER_H_
 #define IOS_CHROME_BROWSER_BROWSER_STATE_BROWSER_STATE_INFO_CACHE_OBSERVER_H_
 
+
 #include "base/macros.h"
-#include "base/strings/string16.h"
 
 namespace base {
 class FilePath;
@@ -16,6 +16,11 @@ class FilePath;
 class BrowserStateInfoCacheObserver {
  public:
   BrowserStateInfoCacheObserver() {}
+
+  BrowserStateInfoCacheObserver(const BrowserStateInfoCacheObserver&) = delete;
+  BrowserStateInfoCacheObserver& operator=(
+      const BrowserStateInfoCacheObserver&) = delete;
+
   virtual ~BrowserStateInfoCacheObserver() {}
 
   // Called when a BrowserState has been added.
@@ -23,9 +28,6 @@ class BrowserStateInfoCacheObserver {
 
   // Called when a BrowserState has been removed.
   virtual void OnBrowserStateWasRemoved(const base::FilePath& path) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BrowserStateInfoCacheObserver);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSER_STATE_BROWSER_STATE_INFO_CACHE_OBSERVER_H_

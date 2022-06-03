@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<head>
+  <style>
+    div {
+      margin: 0.5em;
+      padding: 0.5em;
+    }
+
+    .clickme {
+      width: 500px;
+      height: 2000px;
+      background: palegoldenrod;
+    }
+
+    .logdiv {
+      position: fixed;
+      top: 1em;
+      right: 1em;
+    }
+
+    .logdiv2 {
+      background: paleturquoise;
+      overflow: scroll;
+      height: 60vh;
+    }
+
+    .container {
+      display: flex;
+      flex-direction: row;
+    }
+
+    p {
+      margin: 0;
+    }
+  </style>
+  <link rel="help" href="crbug.com/1063722">
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="../resources/gesture-util.js"></script>
+</head>
+<body>
+<h1>When pointer is locked and preventDefault is called the wheel event has to be cancelable and no scrolling should occur</h1>
+<div class='container'>
+  <div class='clickme'>
+    This example was taken from <a
+      href='https://stackoverflow.com/questions/54428499/preventing-mouse-wheel-event-during-pointer-lock-in-chrome'>this
+      SO question</a>, and slightly modified.
+
+    Steps:
+    <ul>
+      <li>Clicking this div locks pointer on it (it calls <code>requestPointerLock</code>)</li>
+      <li>After clicking this div, while pointer lock is in effect, <code>wheel</code> events should be cancelable, and <code>preventDefault</code> should work (i.e.
+        scrolling is prevented)
+      </li>
+    </ul>
+  </div>
+  <div class='logdiv'>
+    Newest events at the top.<br>This log window should not scroll at all.
+    <div class='logdiv2'></div>
+  </div>
+</div>
+
+<script>
+  const wheel_event_cancelable = async_test("When pointer is locked and preventDefault is called the wheel event has to be cancelable and no scrolling should occur.");
+  const logdiv2 = document.querySelector('.logdiv2');
+  function log(...things) {
+    logdiv2.innerHTML = `<p>${things.map(t => t.toString()).join(' ')}</p>` + logdiv2.innerHTML;
+  }
+
+  const clickme = document.querySelector('.clickme');
+  let locked = false;
+
+
+  document.addEventListener('pointerlockchange', async () => {
+    locked = document.pointerLockElement !== null;
+    log("setting locked:", locked);
+  });
+
+  clickme.addEventListener('click', () => {
+    clickme.requestPointerLock();
+  });
+
+  document.addEventListener('wheel', event => {
+    wheel_event_cancelable.step(()=>{
+      assert_true(locked, "pointer has to be locked");
+      assert_true(event.cancelable, "wheel event has to be cancelable");
+      assert_equals(document.body.scrollTop, 0, "no scrolling should occur");
+    });
+
+    log("locked:", locked, "| cancelable:", event.cancelable);
+
+    event.stopImmediatePropagation();
+    event.preventDefault();
+  }, { passive: false });
+
+  async function runTest(){
+     let rect = clickme.getBoundingClientRect();
+     let x = rect.left + 5;
+     let y = rect.top + 5;
+
+     await mouseMoveTo(x,y);
+     await mouseClickOn(x,y);
+
+     // send a number of wheel events and check that all of them are cancelable
+     let maxWheelEvents = 25;
+     for(let i=0;i<maxWheelEvents;i++){
+       let distance = 5;
+       await smoothScroll(distance, x, y, GestureSourceType.MOUSE_INPUT, 'downright', SPEED_INSTANT);
+       x += distance;
+       y += distance;
+     }
+
+     wheel_event_cancelable.done();
+  }
+
+  runTest();
+</script>
+</body>

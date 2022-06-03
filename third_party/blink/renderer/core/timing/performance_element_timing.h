@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 
 namespace blink {
 
@@ -23,7 +24,7 @@ class CORE_EXPORT PerformanceElementTiming final : public PerformanceEntry {
  public:
   static PerformanceElementTiming* Create(const AtomicString& name,
                                           const String& url,
-                                          const FloatRect& intersection_rect,
+                                          const gfx::RectF& intersection_rect,
                                           DOMHighResTimeStamp render_time,
                                           DOMHighResTimeStamp load_time,
                                           const AtomicString& identifier,
@@ -34,7 +35,7 @@ class CORE_EXPORT PerformanceElementTiming final : public PerformanceEntry {
   PerformanceElementTiming(const AtomicString& name,
                            DOMHighResTimeStamp start_time,
                            const String& url,
-                           const FloatRect& intersection_rect,
+                           const gfx::RectF& intersection_rect,
                            DOMHighResTimeStamp render_time,
                            DOMHighResTimeStamp load_time,
                            const AtomicString& identifier,
@@ -58,7 +59,9 @@ class CORE_EXPORT PerformanceElementTiming final : public PerformanceEntry {
   String url() const { return url_; }
   Element* element() const;
 
-  void Trace(blink::Visitor*) override;
+  std::unique_ptr<TracedValue> ToTracedValue() const;
+
+  void Trace(Visitor*) const override;
 
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;

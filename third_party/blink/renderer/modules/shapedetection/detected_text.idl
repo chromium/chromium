@@ -4,15 +4,10 @@
 
 // https://wicg.github.io/shape-detection-api/text.html#detectedtext-section
 
-[
-    Serializable,
-    Exposed=(Window,Worker),
-    SecureContext,
-    RuntimeEnabled=ShapeDetection
-] interface DetectedText {
-    [SameObject] readonly attribute DOMString rawValue;
-    [SameObject] readonly attribute DOMRectReadOnly boundingBox;
+dictionary DetectedText {
+    required DOMString rawValue;
+    required DOMRectReadOnly boundingBox;
     // 4 corner points in clockwise direction starting with top-left. Due to
     // possible perspective distortions, this is not necessarily a rectangle.
-    [SameObject] readonly attribute FrozenArray<Point2D> cornerPoints;
+    required FrozenArray<Point2D> cornerPoints;
 };

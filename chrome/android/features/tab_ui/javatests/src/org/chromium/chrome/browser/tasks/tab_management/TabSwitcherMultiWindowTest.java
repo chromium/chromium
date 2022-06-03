@@ -4,89 +4,83 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static android.support.test.espresso.Espresso.onView;
-import static android.support.test.espresso.action.ViewActions.click;
-import static android.support.test.espresso.matcher.ViewMatchers.withId;
-
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.moveActivityToFront;
 import static org.chromium.chrome.browser.multiwindow.MultiWindowTestHelper.waitForSecondChromeTabbedActivity;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstCardFromTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.clickFirstTabInDialog;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.createTabs;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.enterTabSwitcher;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllIncognitoTabsToAGroup;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.mergeAllNormalTabsToAGroup;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.switchTabModel;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabModelTabCount;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabStripFaviconCount;
+import static org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper.verifyTabSwitcherCardCount;
 
 import android.annotation.TargetApi;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.filters.MediumTest;
-import android.support.v7.widget.RecyclerView;
-import android.view.ViewGroup;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
-import org.chromium.chrome.browser.flags.FeatureUtilities;
-import org.chromium.chrome.browser.toolbar.IncognitoToggleTabLayout;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.features.start_surface.StartSurfaceLayout;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
 /** Tests for Multi-window related behavior in grid tab switcher. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
-                ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING})
+        ChromeSwitches.DISABLE_TAB_MERGING_FOR_TESTING})
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
 @MinAndroidSdkLevel(Build.VERSION_CODES.N)
+@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 public class TabSwitcherMultiWindowTest {
     // clang-format on
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
-
     @Before
     public void setUp() {
-        FeatureUtilities.setGridTabSwitcherEnabledForTesting(true);
         mActivityTestRule.startMainActivityFromLauncher();
         Layout layout = mActivityTestRule.getActivity().getLayoutManager().getOverviewLayout();
         assertTrue(layout instanceof StartSurfaceLayout);
-        CriteriaHelper.pollUiThread(Criteria.equals(true,
-                mActivityTestRule.getActivity()
-                        .getTabModelSelector()
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()::isTabModelRestored));
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
 
     @Test
     @MediumTest
     @TargetApi(Build.VERSION_CODES.N)
-    @DisableIf.Build(message = "crbug.com/1017141", sdk_is_less_than = Build.VERSION_CODES.P)
-    public void testMoveTabsAcrossWindow_GTS_WithoutGroup() throws InterruptedException {
+    @DisabledTest(message = "https://crbug.com/1231616")
+    public void testMoveTabsAcrossWindow_GTS_WithoutGroup() {
         final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
         // Initially, we have 4 normal tabs and 3 incognito tabs in cta1.
-        initializeTabModel(cta1, false, 4);
-        initializeTabModel(cta1, true, 3);
+        createTabs(cta1, false, 4);
+        createTabs(cta1, true, 3);
         verifyTabModelTabCount(cta1, 4, 3);
 
         // Enter tab switcher in cta1 in incognito mode.
@@ -94,114 +88,196 @@ public class TabSwitcherMultiWindowTest {
         assertTrue(cta1.getTabModelSelector().getCurrentModel().isIncognito());
 
         // Before move, there are 3 incognito tabs in cta1.
-        RecyclerView recyclerView1 = cta1.findViewById(R.id.tab_list_view);
-        CriteriaHelper.pollUiThread(Criteria.equals(3, recyclerView1::getChildCount));
+        verifyTabSwitcherCardCount(cta1, 3);
 
         // Move 2 incognito tabs to cta2.
-        enterFirstTabFromTabSwitcher(cta1);
-        moveTabsToOtherWindow(cta1, 2);
+        clickFirstCardFromTabSwitcher(cta1);
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta1,
+                R.id.move_to_other_window_menu_id);
+        final ChromeTabbedActivity cta2 = waitForSecondChromeTabbedActivity();
+        moveActivityToFront(cta1);
+        moveTabsToOtherWindow(cta1, 1);
 
         // After move, there are 1 incognito tab in cta1 and 2 incognito tabs in cta2.
-        final ChromeTabbedActivity cta2 = waitForSecondChromeTabbedActivity();
-        verifyTabModelTabCount(cta1, 4, 1);
-        verifyTabModelTabCount(cta2, 0, 2);
         enterTabSwitcher(cta1);
-        CriteriaHelper.pollUiThread(Criteria.equals(1, recyclerView1::getChildCount));
-
-        // Enter tab switcher in cta2.
+        verifyTabSwitcherCardCount(cta1, 1);
+        clickFirstCardFromTabSwitcher(cta1);
         moveActivityToFront(cta2);
         enterTabSwitcher(cta2);
-
-        // There should be two incognito tabs in tab switcher in cta2.
-        RecyclerView recyclerView2 = cta2.findViewById(R.id.tab_list_view);
-        CriteriaHelper.pollUiThread(Criteria.equals(2, recyclerView2::getChildCount));
+        verifyTabSwitcherCardCount(cta2, 2);
+        verifyTabModelTabCount(cta1, 4, 1);
+        verifyTabModelTabCount(cta2, 0, 2);
 
         // Move 1 incognito tab back to cta1.
-        enterFirstTabFromTabSwitcher(cta2);
+        clickFirstCardFromTabSwitcher(cta2);
         moveTabsToOtherWindow(cta2, 1);
 
         // After move, there are 2 incognito tabs in cta1 and 1 incognito tab in cta2.
+        enterTabSwitcher(cta2);
+        verifyTabSwitcherCardCount(cta2, 1);
+        clickFirstCardFromTabSwitcher(cta2);
+        moveActivityToFront(cta1);
+        enterTabSwitcher(cta1);
+        verifyTabSwitcherCardCount(cta1, 2);
         verifyTabModelTabCount(cta1, 4, 2);
         verifyTabModelTabCount(cta2, 0, 1);
-        enterTabSwitcher(cta2);
-        CriteriaHelper.pollUiThread(Criteria.equals(1, recyclerView2::getChildCount));
-
-        // Enter tab switcher in cta1.
-        moveActivityToFront(cta1);
-
-        // There should be two incognito tabs in tab switcher in cta1.
-        CriteriaHelper.pollUiThread(Criteria.equals(2, recyclerView1::getChildCount));
 
         // Switch to normal tab list in cta1.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            IncognitoToggleTabLayout toggleTabLayout =
-                    cta1.findViewById(R.id.incognito_toggle_tabs);
-            ViewGroup toggleButtons = (ViewGroup) toggleTabLayout.getChildAt(0);
-            toggleButtons.getChildAt(0).performClick();
-        });
-        assertEquals(false, cta1.getTabModelSelector().getCurrentModel().isIncognito());
+        switchTabModel(cta1, false);
+        assertFalse(cta1.getTabModelSelector().getCurrentModel().isIncognito());
 
         // Move 3 normal tabs to cta2.
-        enterFirstTabFromTabSwitcher(cta1);
+        clickFirstCardFromTabSwitcher(cta1);
         moveTabsToOtherWindow(cta1, 3);
 
         // After move, there are 1 normal tab in cta1 and 3 normal tabs in cta2.
-        verifyTabModelTabCount(cta1, 1, 2);
-        verifyTabModelTabCount(cta2, 3, 1);
         enterTabSwitcher(cta1);
-        CriteriaHelper.pollUiThread(Criteria.equals(1, recyclerView1::getChildCount));
-
-        // Enter tab switcher in cta2.
+        verifyTabSwitcherCardCount(cta1, 1);
+        clickFirstCardFromTabSwitcher(cta1);
         moveActivityToFront(cta2);
         enterTabSwitcher(cta2);
-
-        // There should be 3 normal tabs in tab switcher in cta2.
-        CriteriaHelper.pollUiThread(Criteria.equals(3, recyclerView2::getChildCount));
+        verifyTabSwitcherCardCount(cta2, 3);
+        verifyTabModelTabCount(cta1, 1, 2);
+        verifyTabModelTabCount(cta2, 3, 1);
 
         // Move 2 normal tabs back to cta1.
-        enterFirstTabFromTabSwitcher(cta2);
+        clickFirstCardFromTabSwitcher(cta2);
         moveTabsToOtherWindow(cta2, 2);
 
         // After move, there are 3 normal tabs in cta1 and 1 normal tab in cta2.
+        enterTabSwitcher(cta2);
+        verifyTabSwitcherCardCount(cta2, 1);
+        clickFirstCardFromTabSwitcher(cta2);
+        moveActivityToFront(cta1);
+        enterTabSwitcher(cta1);
+        verifyTabSwitcherCardCount(cta1, 3);
         verifyTabModelTabCount(cta1, 3, 2);
         verifyTabModelTabCount(cta2, 1, 1);
-        enterTabSwitcher(cta2);
-        CriteriaHelper.pollUiThread(Criteria.equals(1, recyclerView2::getChildCount));
     }
 
-    private void initializeTabModel(ChromeTabbedActivity cta, boolean isIncognito, int tabsCount) {
-        for (int i = 0; i < (isIncognito ? tabsCount : tabsCount - 1); i++) {
-            ChromeTabUtils.newTabFromMenu(
-                    InstrumentationRegistry.getInstrumentation(), cta, isIncognito, true);
-        }
+    @Test
+    @MediumTest
+    @TargetApi(Build.VERSION_CODES.N)
+    @Features.
+    EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID, ChromeFeatureList.TAB_REPARENTING})
+    @DisabledTest(message = "https://crbug.com/1163569")
+    public void testMoveTabsAcrossWindow_GTS_WithGroup() {
+        // Initially, we have 5 normal tabs and 5 incognito tabs in cta1.
+        final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
+        createTabs(cta1, false, 5);
+        createTabs(cta1, true, 5);
+        verifyTabModelTabCount(cta1, 5, 5);
+
+        // Enter tab switcher in cta1 in incognito mode.
+        enterTabSwitcher(cta1);
+        assertTrue(cta1.getTabModelSelector().getCurrentModel().isIncognito());
+
+        // Merge all incognito tabs into one group.
+        mergeAllIncognitoTabsToAGroup(cta1);
+        verifyTabSwitcherCardCount(cta1, 1);
+
+        // Enter group and verify there are 5 favicons in tab strip.
+        clickFirstCardFromTabSwitcher(cta1);
+        clickFirstTabInDialog(cta1);
+        verifyTabStripFaviconCount(cta1, 5);
+
+        // Move 3 incognito tabs in this group to cta2.
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta1,
+                org.chromium.chrome.R.id.move_to_other_window_menu_id);
+        final ChromeTabbedActivity cta2 = waitForSecondChromeTabbedActivity();
+        moveActivityToFront(cta1);
+        moveTabsToOtherWindow(cta1, 2);
+
+        // After move, there is a group of 2 incognito tabs in cta1 and a group of 3 incognito tabs
+        // in cta2.
+        verifyTabStripFaviconCount(cta1, 2);
+        moveActivityToFront(cta2);
+        verifyTabStripFaviconCount(cta2, 3);
+        verifyTabModelTabCount(cta1, 5, 2);
+        verifyTabModelTabCount(cta2, 0, 3);
+
+        // Move one incognito tab in group back to cta1.
+        moveTabsToOtherWindow(cta2, 1);
+
+        // After move, there is group of 3 incognito tabs in cta1 and a group of 2 incognito tabs in
+        // cta2.
+        verifyTabStripFaviconCount(cta2, 2);
+        moveActivityToFront(cta1);
+        verifyTabStripFaviconCount(cta1, 3);
+        verifyTabModelTabCount(cta1, 5, 3);
+        verifyTabModelTabCount(cta2, 0, 2);
+
+        // Switch to normal tab model in cta1 and create a tab group with 5 normal tabs.
+        enterTabSwitcher(cta1);
+        switchTabModel(cta1, false);
+        mergeAllNormalTabsToAGroup(cta1);
+        verifyTabSwitcherCardCount(cta1, 1);
+
+        // Enter group and verify there are 5 favicons in tab strip.
+        clickFirstCardFromTabSwitcher(cta1);
+        clickFirstTabInDialog(cta1);
+        verifyTabStripFaviconCount(cta1, 5);
+
+        // Move 3 normal tabs in this group to cta2.
+        moveTabsToOtherWindow(cta1, 3);
+
+        // After move, there is a group of 2 normal tabs in cta1 and a group of 3 normal tabs in
+        // cta2.
+        verifyTabStripFaviconCount(cta1, 2);
+        moveActivityToFront(cta2);
+        verifyTabStripFaviconCount(cta2, 3);
+        verifyTabModelTabCount(cta1, 2, 3);
+        verifyTabModelTabCount(cta2, 3, 2);
+
+        // Move one normal tab in group back to cta1.
+        moveTabsToOtherWindow(cta2, 1);
+
+        // After move, there is a group of 3 normal tabs in cta1 and a group of 2 normal tabs in
+        // cta2.
+        verifyTabStripFaviconCount(cta2, 2);
+        moveActivityToFront(cta1);
+        verifyTabStripFaviconCount(cta1, 3);
+        verifyTabModelTabCount(cta1, 3, 3);
+        verifyTabModelTabCount(cta2, 2, 2);
+    }
+
+    @Test
+    @MediumTest
+    @TargetApi(Build.VERSION_CODES.N)
+    // clang-format off
+    @Features.EnableFeatures({ChromeFeatureList.TAB_GROUPS_ANDROID,
+        ChromeFeatureList.TAB_REPARENTING})
+    public void testMoveLastIncognitoTab() {
+        // clang-format on
+        // Initially, we have 1 normal tab and 1 incognito tab in cta1.
+        final ChromeTabbedActivity cta1 = mActivityTestRule.getActivity();
+        createTabs(cta1, false, 1);
+        createTabs(cta1, true, 1);
+        verifyTabModelTabCount(cta1, 1, 1);
+
+        // Move the incognito tab to cta2.
+        assertTrue(cta1.getTabModelSelector().getCurrentModel().isIncognito());
+        MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta1,
+                org.chromium.chrome.R.id.move_to_other_window_menu_id);
+        final ChromeTabbedActivity cta2 = waitForSecondChromeTabbedActivity();
+
+        assertThat(cta1.getTabModelSelector()
+                           .getTabModelFilterProvider()
+                           .getTabModelFilter(true)
+                           .getCount(),
+                is(0));
+        assertThat(cta2.getTabModelSelector()
+                           .getTabModelFilterProvider()
+                           .getTabModelFilter(true)
+                           .getCount(),
+                is(1));
     }
 
     private void moveTabsToOtherWindow(ChromeTabbedActivity cta, int number) {
         for (int i = 0; i < number; i++) {
             MenuUtils.invokeCustomMenuActionSync(InstrumentationRegistry.getInstrumentation(), cta,
-                    org.chromium.chrome.R.id.move_to_other_window_menu_id);
+                    R.id.move_to_other_window_menu_id);
+            moveActivityToFront(cta);
         }
-    }
-
-    private void enterTabSwitcher(ChromeTabbedActivity cta) {
-        assertFalse(cta.getLayoutManager().overviewVisible());
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { cta.findViewById(R.id.tab_switcher_button).performClick(); });
-        CriteriaHelper.pollUiThread(
-                Criteria.equals(true, () -> cta.getLayoutManager().overviewVisible()));
-    }
-
-    private void enterFirstTabFromTabSwitcher(ChromeTabbedActivity cta) {
-        onView(withId(R.id.tab_list_view))
-                .perform(RecyclerViewActions.actionOnItemAtPosition(0, click()));
-        CriteriaHelper.pollInstrumentationThread(() -> !cta.getLayoutManager().overviewVisible());
-    }
-
-    private void verifyTabModelTabCount(
-            ChromeTabbedActivity cta, int normalTabs, int incognitoTabs) {
-        CriteriaHelper.pollUiThread(Criteria.equals(
-                normalTabs, () -> cta.getTabModelSelector().getModel(false).getCount()));
-        CriteriaHelper.pollUiThread(Criteria.equals(
-                incognitoTabs, () -> cta.getTabModelSelector().getModel(true).getCount()));
     }
 }

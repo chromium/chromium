@@ -1,0 +1,7 @@
+# builders.json needs to be changed whenever we add or remove builders
+# from the waterfalls.
+#
+# So, it makes sense to let infra troopers be owners of it as well, rather
+# than having to route their changes through the .../tools OWNERS.
+
+per-file builders.json=file://infra/OWNERS

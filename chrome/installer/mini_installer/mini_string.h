@@ -36,14 +36,14 @@ size_t SafeStrLen(const wchar_t* str, size_t alloc_size);
 
 // Simple replacement for CRT string copy method that does not overflow.
 // Returns true if the source was copied successfully otherwise returns false.
-// Parameter src is assumed to be NULL terminated and the NULL character is
-// copied over to string dest.
+// Parameter src is assumed to be nullptr terminated and the nullptr character
+// is copied over to string dest.
 bool SafeStrCopy(wchar_t* dest, size_t dest_size, const wchar_t* src);
 
 // Simple replacement for CRT string copy method that does not overflow.
 // Returns true if the source was copied successfully otherwise returns false.
-// Parameter src is assumed to be NULL terminated and the NULL character is
-// copied over to string dest.  If the return value is false, the |dest|
+// Parameter src is assumed to be nullptr terminated and the nullptr character
+// is copied over to string dest.  If the return value is false, the |dest|
 // string should be the same as it was before.
 bool SafeStrCat(wchar_t* dest, size_t dest_size, const wchar_t* src);
 
@@ -60,8 +60,10 @@ const wchar_t* SearchStringI(const wchar_t* source, const wchar_t* find);
 
 // Searches for |tag| within |str|.  Returns true if |tag| is found and is
 // immediately followed by '-' or is at the end of the string.  If |position|
-// is non-NULL, the location of the tag is returned in |*position| on success.
-bool FindTagInStr(const wchar_t* str, const wchar_t* tag,
+// is non-nullptr, the location of the tag is returned in |*position| on
+// success.
+bool FindTagInStr(const wchar_t* str,
+                  const wchar_t* tag,
                   const wchar_t** position);
 
 // Takes the path to file and returns a pointer to the basename component.
@@ -90,12 +92,17 @@ class StackString {
 
   // Returns the number of reserved characters in this buffer, _including_
   // the reserved char for the terminator.
-  size_t capacity() const {
-    return kCapacity;
-  }
+  size_t capacity() const { return kCapacity; }
+
+  const wchar_t* get() const { return buffer_; }
 
   wchar_t* get() {
-    return buffer_;
+    return const_cast<wchar_t*>(
+        const_cast<const StackString<kCapacity>*>(this)->get());
+  }
+
+  void assign(const StackString<kCapacity>& str) {
+    SafeStrCopy(buffer_, kCapacity, str.get());
   }
 
   bool assign(const wchar_t* str) {
@@ -106,13 +113,11 @@ class StackString {
     return SafeStrCat(buffer_, kCapacity, str);
   }
 
-  void clear() {
-    buffer_[0] = L'\0';
-  }
+  void clear() { buffer_[0] = L'\0'; }
 
-  size_t length() const {
-    return SafeStrLen(buffer_, kCapacity);
-  }
+  size_t length() const { return SafeStrLen(buffer_, kCapacity); }
+
+  bool empty() const { return length() == 0; }
 
   // Does a case insensitive search for a substring.
   const wchar_t* findi(const wchar_t* find) const {
@@ -120,14 +125,10 @@ class StackString {
   }
 
   // Case insensitive string compare.
-  int comparei(const wchar_t* str) const {
-    return lstrcmpiW(buffer_, str);
-  }
+  int comparei(const wchar_t* str) const { return lstrcmpiW(buffer_, str); }
 
   // Case sensitive string compare.
-  int compare(const wchar_t* str) const {
-    return lstrcmpW(buffer_, str);
-  }
+  int compare(const wchar_t* str) const { return lstrcmpW(buffer_, str); }
 
   // Terminates the string at the specified location.
   // Note: this method has no effect if this object's length is less than

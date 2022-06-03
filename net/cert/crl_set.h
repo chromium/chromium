@@ -35,6 +35,9 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // Parses the bytes in |data| and, on success, puts a new CRLSet in
   // |out_crl_set| and returns true.
   static bool Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set);
+  // Same as the above, but stores the string |data| in the resulting CRLSet.
+  static bool ParseAndStoreUnparsedData(std::string data,
+                                        scoped_refptr<CRLSet>* out_crl_set);
 
   // CheckSPKI checks whether the given SPKI has been listed as blocked.
   //   spki_hash: the SHA256 of the SubjectPublicKeyInfo of the certificate.
@@ -42,12 +45,12 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
 
   // CheckSerial returns the information contained in the set for a given
   // certificate:
-  //   serial_number: the serial number of the certificate
+  //   serial_number: the serial number of the certificate, as the DER-encoded
+  //       value
   //   issuer_spki_hash: the SHA256 of the SubjectPublicKeyInfo of the CRL
   //       signer
-  Result CheckSerial(
-      const base::StringPiece& serial_number,
-      const base::StringPiece& issuer_spki_hash) const;
+  Result CheckSerial(const base::StringPiece& serial_number,
+                     const base::StringPiece& issuer_spki_hash) const;
 
   // CheckSubject returns the information contained in the set for a given,
   // encoded subject name and SPKI hash. The subject name is encoded as a DER
@@ -68,6 +71,8 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // by the same source are given strictly monotonically increasing sequence
   // numbers.
   uint32_t sequence() const;
+
+  const std::string& unparsed_crl_set() const;
 
   // CRLList contains a map of (issuer SPKI hash, revoked serial numbers)
   // pairs.
@@ -91,16 +96,16 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // ForTesting returns a CRLSet for testing. If |is_expired| is true, calling
   // IsExpired on the result will return true. If |issuer_spki| is not NULL,
   // the CRLSet will cover certificates issued by that SPKI. If |serial_number|
-  // is not empty, then that big-endian serial number will be considered to
-  // have been revoked by |issuer_spki|. If |common_name| is not empty then the
-  // CRLSet will consider certificates with a subject consisting only of that
-  // common name to be revoked unless they match an SPKI hash from
-  // |acceptable_spki_hashes_for_cn|.
+  // is not empty, then that DER-encoded serial number will be considered to
+  // have been revoked by |issuer_spki|. If |utf8_common_name| is not empty
+  // then the CRLSet will consider certificates with a subject consisting only
+  // of that common name as a UTF8String to be revoked unless they match an
+  // SPKI hash from |acceptable_spki_hashes_for_cn|.
   static scoped_refptr<CRLSet> ForTesting(
       bool is_expired,
       const SHA256HashValue* issuer_spki,
       const std::string& serial_number,
-      const std::string common_name,
+      const std::string utf8_common_name,
       const std::vector<std::string> acceptable_spki_hashes_for_cn);
 
  private:
@@ -126,6 +131,12 @@ class NET_EXPORT CRLSet : public base::RefCountedThreadSafe<CRLSet> {
   // limited_subjects_ is a map from the SHA256 hash of an X.501 subject name
   // to a list of allowed SPKI hashes for certificates with that subject name.
   std::unordered_map<std::string, std::vector<std::string>> limited_subjects_;
+
+  // A string that holds the unparsed version of the CRLSet. Only populated in
+  // the case that the OOP CertVerifier is enabled.
+  // TODO(crbug.com/1046728): temporary until the network service doesn't need
+  // to know about CRLSets.
+  std::string unparsed_crl_set_;
 };
 
 }  // namespace net

@@ -28,12 +28,11 @@
 #include <memory>
 #include <utility>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -78,10 +77,10 @@ void BackgroundHTMLParser::Init(
     bool priority_hints_origin_trial_enabled) {
   TRACE_EVENT1("loading", "BackgroundHTMLParser::Init", "url",
                document_url.GetString().Utf8());
-  preload_scanner_.reset(new TokenPreloadScanner(
+  preload_scanner_ = std::make_unique<TokenPreloadScanner>(
       document_url, std::move(cached_document_parameters),
       media_values_cached_data, TokenPreloadScanner::ScannerType::kMainDocument,
-      priority_hints_origin_trial_enabled));
+      priority_hints_origin_trial_enabled);
 }
 
 BackgroundHTMLParser::Configuration::Configuration() {}
@@ -164,6 +163,7 @@ void BackgroundHTMLParser::Finish() {
 }
 
 void BackgroundHTMLParser::Stop() {
+  ClearParser();
   delete this;
 }
 
@@ -175,6 +175,10 @@ void BackgroundHTMLParser::ForcePlaintextForTextDocument() {
   tokenizer_->SetState(HTMLTokenizer::kPLAINTEXTState);
 }
 
+void BackgroundHTMLParser::ClearParser() {
+  parser_.Clear();
+}
+
 void BackgroundHTMLParser::MarkEndOfFile() {
   DCHECK(!input_.Current().IsClosed());
   input_.Append(String(&kEndOfFileMarker, 1));
@@ -182,7 +186,7 @@ void BackgroundHTMLParser::MarkEndOfFile() {
 }
 
 void BackgroundHTMLParser::PumpTokenizer() {
-  TRACE_EVENT0("loading", "BackgroundHTMLParser::pumpTokenizer");
+  TRACE_EVENT0("loading", "BackgroundHTMLParser::PumpTokenizer");
   HTMLTreeBuilderSimulator::SimulatedToken simulated_token =
       HTMLTreeBuilderSimulator::kOtherToken;
 
@@ -223,6 +227,7 @@ void BackgroundHTMLParser::PumpTokenizer() {
         simulated_token == HTMLTreeBuilderSimulator::kStyleEnd ||
         simulated_token == HTMLTreeBuilderSimulator::kLink ||
         simulated_token == HTMLTreeBuilderSimulator::kCustomElementBegin ||
+        simulated_token == HTMLTreeBuilderSimulator::kDeclarativeShadowDOMEnd ||
         pending_tokens_.size() >= kPendingTokenLimit) {
       EnqueueTokenizedChunk();
 
@@ -241,9 +246,6 @@ void BackgroundHTMLParser::EnqueueTokenizedChunk() {
     return;
 
   auto chunk = std::make_unique<HTMLDocumentParser::TokenizedChunk>();
-  TRACE_EVENT_WITH_FLOW0("blink,loading",
-                         "BackgroundHTMLParser::sendTokensToMainThread",
-                         chunk.get(), TRACE_EVENT_FLAG_FLOW_OUT);
 
   chunk->preloads.swap(pending_preloads_);
   if (viewport_description_.has_value())

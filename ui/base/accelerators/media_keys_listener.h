@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/callback.h"
+#include "base/component_export.h"
 #include "base/observer_list_types.h"
-#include "ui/base/ui_base_export.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
@@ -17,7 +17,7 @@ namespace ui {
 class Accelerator;
 
 // Create MediaKeyListener to receive accelerators on media keys.
-class UI_BASE_EXPORT MediaKeysListener {
+class COMPONENT_EXPORT(UI_BASE) MediaKeysListener {
  public:
   enum class Scope {
     kGlobal,   // Listener works whenever application in focus or not.
@@ -25,7 +25,7 @@ class UI_BASE_EXPORT MediaKeysListener {
   };
 
   // Media keys accelerators receiver.
-  class UI_BASE_EXPORT Delegate : public base::CheckedObserver {
+  class COMPONENT_EXPORT(UI_BASE) Delegate : public base::CheckedObserver {
    public:
     ~Delegate() override;
 
@@ -49,13 +49,6 @@ class UI_BASE_EXPORT MediaKeysListener {
   virtual bool StartWatchingMediaKey(KeyboardCode key_code) = 0;
   // Stop listening for a given media key.
   virtual void StopWatchingMediaKey(KeyboardCode key_code) = 0;
-
-  // Informs the listener whether or not media is currently playing. In some
-  // implementations this will prevent us from calling PlayPause unnecessarily.
-  // TODO(https://crbug.com/974035): Once the MediaKeysListenerManager has been
-  // refactored to work with system media controls this should no longer be
-  // needed and should be deleted.
-  virtual void SetIsMediaPlaying(bool is_playing) = 0;
 };
 
 }  // namespace ui

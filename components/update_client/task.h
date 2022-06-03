@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace update_client {
@@ -17,9 +16,11 @@ namespace update_client {
 // Each invocation of the update client API results in a task being created and
 // run. In most cases, a task corresponds to a set of CRXs, which are updated
 // together.
-class Task : public base::RefCounted<Task> {
+class Task : public base::RefCountedThreadSafe<Task> {
  public:
   Task() = default;
+  Task(const Task&) = delete;
+  Task& operator=(const Task&) = delete;
   virtual void Run() = 0;
 
   // Does a best effort attempt to make a task release its resources and stop
@@ -31,11 +32,8 @@ class Task : public base::RefCounted<Task> {
   virtual std::vector<std::string> GetIds() const = 0;
 
  protected:
-  friend class base::RefCounted<Task>;
+  friend class base::RefCountedThreadSafe<Task>;
   virtual ~Task() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Task);
 };
 
 }  // namespace update_client

@@ -10,7 +10,6 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/system/sys_info.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_switches.h"

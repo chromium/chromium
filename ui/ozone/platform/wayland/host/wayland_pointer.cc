@@ -5,51 +5,35 @@
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
 
 #include <linux/input.h>
-#include <wayland-client.h>
-#include <memory>
 
-#include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
+#include "ui/events/types/event_type.h"
+#include "ui/ozone/platform/wayland/common/wayland_util.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_serial_tracker.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
 
 // TODO(forney): Handle version 5 of wl_pointer.
 
 namespace ui {
 
-namespace {
-
-bool VerifyFlagsAfterMasking(int flags, int original_flags, int modifiers) {
-  flags &= ~modifiers;
-  return flags == original_flags;
-}
-
-bool HasAnyButtonFlag(int flags) {
-  return (flags & (EF_LEFT_MOUSE_BUTTON | EF_MIDDLE_MOUSE_BUTTON |
-                   EF_RIGHT_MOUSE_BUTTON | EF_BACK_MOUSE_BUTTON |
-                   EF_FORWARD_MOUSE_BUTTON)) != 0;
-}
-
-}  // namespace
-
 WaylandPointer::WaylandPointer(wl_pointer* pointer,
-                               const EventDispatchCallback& callback)
-    : obj_(pointer), callback_(callback), weak_ptr_factory_(this) {
-  static const wl_pointer_listener listener = {
-      &WaylandPointer::Enter,  &WaylandPointer::Leave, &WaylandPointer::Motion,
-      &WaylandPointer::Button, &WaylandPointer::Axis,
-  };
+                               WaylandConnection* connection,
+                               Delegate* delegate)
+    : obj_(pointer), connection_(connection), delegate_(delegate) {
+  static constexpr wl_pointer_listener listener = {
+      &Enter, &Leave,      &Motion,   &Button,      &Axis,
+      &Frame, &AxisSource, &AxisStop, &AxisDiscrete};
 
   wl_pointer_add_listener(obj_.get(), &listener, this);
-
-  cursor_ = std::make_unique<WaylandCursor>();
 }
 
 WaylandPointer::~WaylandPointer() {
-  if (window_with_pointer_focus_) {
-    window_with_pointer_focus_->SetPointerFocus(false);
-    window_with_pointer_focus_->set_has_implicit_grab(false);
-  }
+  // Even though, WaylandPointer::Leave is always called when Wayland destroys
+  // wl_pointer, it's better to be explicit as some Wayland compositors may have
+  // bugs.
+  delegate_->OnPointerFocusChanged(nullptr, {});
+  delegate_->OnResetPointerFlags();
 }
 
 // static
@@ -59,13 +43,15 @@ void WaylandPointer::Enter(void* data,
                            wl_surface* surface,
                            wl_fixed_t surface_x,
                            wl_fixed_t surface_y) {
+  DCHECK(data);
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
-  pointer->location_.SetPoint(wl_fixed_to_double(surface_x),
-                              wl_fixed_to_double(surface_y));
-  pointer->FocusWindow(surface);
-  MouseEvent event(ET_MOUSE_ENTERED, pointer->location_, pointer->location_,
-                   EventTimeForNow(), pointer->flags_, 0);
-  pointer->callback_.Run(&event);
+  pointer->connection_->serial_tracker().UpdateSerial(
+      wl::SerialType::kMouseEnter, serial);
+
+  WaylandWindow* window = wl::RootWindowFromWlSurface(surface);
+  gfx::PointF location{static_cast<float>(wl_fixed_to_double(surface_x)),
+                       static_cast<float>(wl_fixed_to_double(surface_y))};
+  pointer->delegate_->OnPointerFocusChanged(window, location);
 }
 
 // static
@@ -73,11 +59,13 @@ void WaylandPointer::Leave(void* data,
                            wl_pointer* obj,
                            uint32_t serial,
                            wl_surface* surface) {
+  DCHECK(data);
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
-  MouseEvent event(ET_MOUSE_EXITED, gfx::Point(), gfx::Point(),
-                   EventTimeForNow(), pointer->flags_, 0);
-  pointer->callback_.Run(&event);
-  pointer->UnfocusWindow(surface);
+  pointer->connection_->serial_tracker().ResetSerial(
+      wl::SerialType::kMouseEnter);
+
+  pointer->delegate_->OnPointerFocusChanged(
+      nullptr, pointer->delegate_->GetPointerLocation());
 }
 
 // static
@@ -87,14 +75,9 @@ void WaylandPointer::Motion(void* data,
                             wl_fixed_t surface_x,
                             wl_fixed_t surface_y) {
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
-  pointer->location_.SetPoint(wl_fixed_to_double(surface_x),
-                              wl_fixed_to_double(surface_y));
-  MouseEvent event(ET_MOUSE_MOVED, gfx::Point(), gfx::Point(),
-                   EventTimeForNow(), pointer->GetFlagsWithKeyboardModifiers(),
-                   0);
-  event.set_location_f(pointer->location_);
-  event.set_root_location_f(pointer->location_);
-  pointer->callback_.Run(&event);
+  gfx::PointF location(wl_fixed_to_double(surface_x),
+                       wl_fixed_to_double(surface_y));
+  pointer->delegate_->OnPointerMotionEvent(location);
 }
 
 // static
@@ -117,46 +100,24 @@ void WaylandPointer::Button(void* data,
       changed_button = EF_RIGHT_MOUSE_BUTTON;
       break;
     case BTN_BACK:
+    case BTN_SIDE:
       changed_button = EF_BACK_MOUSE_BUTTON;
       break;
     case BTN_FORWARD:
+    case BTN_EXTRA:
       changed_button = EF_FORWARD_MOUSE_BUTTON;
       break;
     default:
       return;
   }
 
-  EventType type;
-  if (state == WL_POINTER_BUTTON_STATE_PRESSED) {
-    type = ET_MOUSE_PRESSED;
-    pointer->flags_ |= changed_button;
-    pointer->connection_->set_serial(serial);
-  } else {
-    type = ET_MOUSE_RELEASED;
-    pointer->flags_ &= ~changed_button;
+  EventType type = state == WL_POINTER_BUTTON_STATE_PRESSED ? ET_MOUSE_PRESSED
+                                                            : ET_MOUSE_RELEASED;
+  if (type == ET_MOUSE_PRESSED) {
+    pointer->connection_->serial_tracker().UpdateSerial(
+        wl::SerialType::kMousePress, serial);
   }
-
-  // See comment bellow.
-  if (type == ET_MOUSE_PRESSED)
-    pointer->MaybeSetOrResetImplicitGrab();
-
-  // MouseEvent's flags should contain the button that was released too.
-  const int flags = pointer->GetFlagsWithKeyboardModifiers() | changed_button;
-  MouseEvent event(type, gfx::Point(), gfx::Point(), EventTimeForNow(), flags,
-                   changed_button);
-  event.set_location_f(pointer->location_);
-  event.set_root_location_f(pointer->location_);
-
-  auto weak_ptr = pointer->weak_ptr_factory_.GetWeakPtr();
-  pointer->callback_.Run(&event);
-
-  // Reset implicit grab only after the event has been sent. Otherwise,
-  // we may end up in a situation, when a target checks for a pointer grab on
-  // the MouseRelease event type, and fails to release capture due to early
-  // pointer focus reset. Setting implicit grab is done normally before the
-  // event has been sent.
-  if (weak_ptr && type == ET_MOUSE_RELEASED)
-    pointer->MaybeSetOrResetImplicitGrab();
+  pointer->delegate_->OnPointerButtonEvent(type, changed_button);
 }
 
 // static
@@ -167,67 +128,66 @@ void WaylandPointer::Axis(void* data,
                           wl_fixed_t value) {
   static const double kAxisValueScale = 10.0;
   WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
-  gfx::Vector2d offset;
+  gfx::Vector2dF offset;
   // Wayland compositors send axis events with values in the surface coordinate
   // space. They send a value of 10 per mouse wheel click by convention, so
   // clients (e.g. GTK+) typically scale down by this amount to convert to
   // discrete step coordinates. wl_pointer version 5 improves the situation by
   // adding axis sources and discrete axis events.
-  if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL)
+  if (axis == WL_POINTER_AXIS_VERTICAL_SCROLL) {
     offset.set_y(-wl_fixed_to_double(value) / kAxisValueScale *
                  MouseWheelEvent::kWheelDelta);
-  else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL)
-    offset.set_x(wl_fixed_to_double(value) / kAxisValueScale *
+  } else if (axis == WL_POINTER_AXIS_HORIZONTAL_SCROLL) {
+    offset.set_x(-wl_fixed_to_double(value) / kAxisValueScale *
                  MouseWheelEvent::kWheelDelta);
-  else
+  } else {
     return;
-  MouseWheelEvent event(offset, gfx::Point(), gfx::Point(), EventTimeForNow(),
-                        pointer->GetFlagsWithKeyboardModifiers(), 0);
-  event.set_location_f(pointer->location_);
-  event.set_root_location_f(pointer->location_);
-  pointer->callback_.Run(&event);
-}
-
-void WaylandPointer::MaybeSetOrResetImplicitGrab() {
-  if (!window_with_pointer_focus_)
-    return;
-
-  window_with_pointer_focus_->set_has_implicit_grab(HasAnyButtonFlag(flags_));
-}
-
-int WaylandPointer::GetFlagsWithKeyboardModifiers() {
-  assert(sizeof(flags_) == sizeof(keyboard_modifiers_));
-
-  // Remove old modifiers from flags and then update them with new modifiers.
-  flags_ &= ~keyboard_modifiers_;
-  keyboard_modifiers_ = connection_->GetKeyboardModifiers();
-
-  int old_flags = flags_;
-  flags_ |= keyboard_modifiers_;
-  DCHECK(VerifyFlagsAfterMasking(flags_, old_flags, keyboard_modifiers_));
-  return flags_;
-}
-
-void WaylandPointer::ResetFlags() {
-  flags_ = 0;
-  keyboard_modifiers_ = 0;
-}
-
-void WaylandPointer::FocusWindow(wl_surface* surface) {
-  if (surface) {
-    WaylandWindow* window = WaylandWindow::FromSurface(surface);
-    window->SetPointerFocus(true);
-    window_with_pointer_focus_ = window;
   }
+  // If we did not receive the axis event source explicitly, set it to the mouse
+  // wheel so far.  Should this be a part of some complex event coming from the
+  // different source, the compositor will let us know sooner or later.
+  if (!pointer->axis_source_received_)
+    pointer->delegate_->OnPointerAxisSourceEvent(WL_POINTER_AXIS_SOURCE_WHEEL);
+  pointer->delegate_->OnPointerAxisEvent(offset);
 }
 
-void WaylandPointer::UnfocusWindow(wl_surface* surface) {
-  if (surface) {
-    WaylandWindow* window = WaylandWindow::FromSurface(surface);
-    window->SetPointerFocus(false);
-    window->set_has_implicit_grab(false);
-    window_with_pointer_focus_ = nullptr;
-  }
+// ---- Version 5 ----
+
+// static
+void WaylandPointer::Frame(void* data, wl_pointer* obj) {
+  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  // The frame event ends the sequence of pointer events.  Clear the flag.  The
+  // next frame will set it when necessary.
+  pointer->axis_source_received_ = false;
+  pointer->delegate_->OnPointerFrameEvent();
+}
+
+// static
+void WaylandPointer::AxisSource(void* data,
+                                wl_pointer* obj,
+                                uint32_t axis_source) {
+  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  pointer->axis_source_received_ = true;
+  pointer->delegate_->OnPointerAxisSourceEvent(axis_source);
+}
+
+// static
+void WaylandPointer::AxisStop(void* data,
+                              wl_pointer* obj,
+                              uint32_t time,
+                              uint32_t axis) {
+  WaylandPointer* pointer = static_cast<WaylandPointer*>(data);
+  pointer->delegate_->OnPointerAxisStopEvent(axis);
+}
+
+// static
+void WaylandPointer::AxisDiscrete(void* data,
+                                  wl_pointer* obj,
+                                  uint32_t axis,
+                                  int32_t discrete) {
+  // TODO(fukino): Use this events for better handling of mouse wheel events.
+  // crbug.com/1129259.
+  NOTIMPLEMENTED_LOG_ONCE();
 }
 
 }  // namespace ui

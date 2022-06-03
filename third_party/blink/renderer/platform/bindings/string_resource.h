@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_STRING_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_STRING_RESOURCE_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -31,7 +31,7 @@ class StringResourceBase {
   }
 
   explicit StringResourceBase(const AtomicString& string)
-      : plain_string_(string.GetString()), atomic_string_(string) {
+      : atomic_string_(string) {
 #if DCHECK_IS_ON()
     thread_id_ = WTF::CurrentThread();
 #endif
@@ -51,6 +51,9 @@ class StringResourceBase {
         string.CharactersSizeInBytes());
   }
 
+  StringResourceBase(const StringResourceBase&) = delete;
+  StringResourceBase& operator=(const StringResourceBase&) = delete;
+
   virtual ~StringResourceBase() {
 #if DCHECK_IS_ON()
     DCHECK(thread_id_ == WTF::CurrentThread());
@@ -69,7 +72,7 @@ class StringResourceBase {
       DCHECK(atomic_string_.IsNull());
       return parkable_string_.ToString();
     }
-    return plain_string_;
+    return String(GetStringImpl());
   }
 
   AtomicString GetAtomicString() {
@@ -93,25 +96,33 @@ class StringResourceBase {
   }
 
  protected:
-  // A shallow copy of the string. Keeps the string buffer alive until the V8
-  // engine garbage collects it.
+  StringImpl* GetStringImpl() const {
+    if (!plain_string_.IsNull())
+      return plain_string_.Impl();
+    DCHECK(!atomic_string_.IsNull());
+    return atomic_string_.Impl();
+  }
+
+  const ParkableString& GetParkableString() const { return parkable_string_; }
+
+ private:
+  // If this StringResourceBase was initialized from a String then plain_string_
+  // will be non-null. If the string becomes atomic later, the atomic version
+  // of the string will be held in atomic_string_. When that happens, it is
+  // necessary to keep the original string alive because v8 may keep derived
+  // pointers into that string.
+  // If this StringResourceBase was initialized from an AtomicString then
+  // plain_string_ will be null and atomic_string_ will be non-null.
   String plain_string_;
-  // If this string is atomic or has been made atomic earlier the
-  // atomic string is held here. In the case where the string starts
-  // off non-atomic and becomes atomic later it is necessary to keep
-  // the original string alive because v8 may keep derived pointers
-  // into that string.
   AtomicString atomic_string_;
+
   // If this string is parkable, its value is held here, and the other
   // members above are null.
   ParkableString parkable_string_;
 
- private:
 #if DCHECK_IS_ON()
   base::PlatformThreadId thread_id_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(StringResourceBase);
 };
 
 // Even though StringResource{8,16}Base are effectively empty in release mode,
@@ -137,7 +148,8 @@ class StringResource16Base : public StringResourceBase,
     DCHECK(!parkable_string.Is8Bit());
   }
 
-  DISALLOW_COPY_AND_ASSIGN(StringResource16Base);
+  StringResource16Base(const StringResource16Base&) = delete;
+  StringResource16Base& operator=(const StringResource16Base&) = delete;
 };
 
 class StringResource16 final : public StringResource16Base {
@@ -148,13 +160,13 @@ class StringResource16 final : public StringResource16Base {
   explicit StringResource16(const AtomicString& string)
       : StringResource16Base(string) {}
 
-  size_t length() const override { return plain_string_.Impl()->length(); }
-  const uint16_t* data() const override {
-    return reinterpret_cast<const uint16_t*>(
-        plain_string_.Impl()->Characters16());
-  }
+  StringResource16(const StringResource16&) = delete;
+  StringResource16& operator=(const StringResource16&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(StringResource16);
+  size_t length() const override { return GetStringImpl()->length(); }
+  const uint16_t* data() const override {
+    return reinterpret_cast<const uint16_t*>(GetStringImpl()->Characters16());
+  }
 };
 
 class ParkableStringResource16 final : public StringResource16Base {
@@ -162,21 +174,23 @@ class ParkableStringResource16 final : public StringResource16Base {
   explicit ParkableStringResource16(const ParkableString& string)
       : StringResource16Base(string) {}
 
+  ParkableStringResource16(const ParkableStringResource16&) = delete;
+  ParkableStringResource16& operator=(const ParkableStringResource16&) = delete;
+
   bool IsCacheable() const override {
-    return !parkable_string_.may_be_parked();
+    return !GetParkableString().may_be_parked();
   }
 
-  void Lock() const override { parkable_string_.Lock(); }
+  void Lock() const override { GetParkableString().Lock(); }
 
-  void Unlock() const override { parkable_string_.Unlock(); }
+  void Unlock() const override { GetParkableString().Unlock(); }
 
-  size_t length() const override { return parkable_string_.length(); }
+  size_t length() const override { return GetParkableString().length(); }
 
   const uint16_t* data() const override {
-    return reinterpret_cast<const uint16_t*>(parkable_string_.Characters16());
+    return reinterpret_cast<const uint16_t*>(
+        GetParkableString().Characters16());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ParkableStringResource16);
 };
 
 class StringResource8Base : public StringResourceBase,
@@ -197,7 +211,8 @@ class StringResource8Base : public StringResourceBase,
     DCHECK(parkable_string.Is8Bit());
   }
 
-  DISALLOW_COPY_AND_ASSIGN(StringResource8Base);
+  StringResource8Base(const StringResource8Base&) = delete;
+  StringResource8Base& operator=(const StringResource8Base&) = delete;
 };
 
 class StringResource8 final : public StringResource8Base {
@@ -208,12 +223,13 @@ class StringResource8 final : public StringResource8Base {
   explicit StringResource8(const AtomicString& string)
       : StringResource8Base(string) {}
 
-  size_t length() const override { return plain_string_.Impl()->length(); }
-  const char* data() const override {
-    return reinterpret_cast<const char*>(plain_string_.Impl()->Characters8());
-  }
+  StringResource8(const StringResource8&) = delete;
+  StringResource8& operator=(const StringResource8&) = delete;
 
-  DISALLOW_COPY_AND_ASSIGN(StringResource8);
+  size_t length() const override { return GetStringImpl()->length(); }
+  const char* data() const override {
+    return reinterpret_cast<const char*>(GetStringImpl()->Characters8());
+  }
 };
 
 class ParkableStringResource8 final : public StringResource8Base {
@@ -221,28 +237,46 @@ class ParkableStringResource8 final : public StringResource8Base {
   explicit ParkableStringResource8(const ParkableString& string)
       : StringResource8Base(string) {}
 
+  ParkableStringResource8(const ParkableStringResource8&) = delete;
+  ParkableStringResource8& operator=(const ParkableStringResource8&) = delete;
+
   bool IsCacheable() const override {
-    return !parkable_string_.may_be_parked();
+    return !GetParkableString().may_be_parked();
   }
 
-  void Lock() const override { parkable_string_.Lock(); }
+  void Lock() const override { GetParkableString().Lock(); }
 
-  void Unlock() const override { parkable_string_.Unlock(); }
+  void Unlock() const override { GetParkableString().Unlock(); }
 
-  size_t length() const override { return parkable_string_.length(); }
+  size_t length() const override { return GetParkableString().length(); }
 
   const char* data() const override {
-    return reinterpret_cast<const char*>(parkable_string_.Characters8());
+    return reinterpret_cast<const char*>(GetParkableString().Characters8());
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ParkableStringResource8);
 };
 
 enum ExternalMode { kExternalize, kDoNotExternalize };
 
 template <typename StringType>
 PLATFORM_EXPORT StringType ToBlinkString(v8::Local<v8::String>, ExternalMode);
+
+// This method is similar to ToBlinkString() except when the underlying
+// v8::String cannot be externalized (often happens with short strings like "id"
+// on 64-bit platforms where V8 uses pointer compression) the v8::String is
+// copied into the given StringView::StackBackingStore which avoids creating an
+// AtomicString unnecessarily.
+PLATFORM_EXPORT StringView ToBlinkStringView(v8::Local<v8::String>,
+                                             StringView::StackBackingStore&,
+                                             ExternalMode);
+
 PLATFORM_EXPORT String ToBlinkString(int value);
+
+// The returned StringView is guaranteed to be valid as long as `backing_store`
+// and `v8_string` are alive.
+PLATFORM_EXPORT StringView
+ToBlinkStringView(v8::Local<v8::String> v8_string,
+                  StringView::StackBackingStore& backing_store,
+                  ExternalMode external);
 
 }  // namespace blink
 

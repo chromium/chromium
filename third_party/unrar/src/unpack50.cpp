@@ -436,6 +436,10 @@ byte* Unpack::ApplyFilter(byte *Data,uint DataSize,UnpackFilter *Flt)
       }
       return SrcData;
     case FILTER_ARM:
+      // 2019-11-15: we turned off ARM filter by default when compressing,
+      // mostly because it is inefficient for modern 64 bit ARM binaries.
+      // It was turned on by default in 5.0 - 5.80b3 , so we still need it
+      // here for compatibility with some of previously created archives.
       {
         uint FileOffset=(uint)WrittenFileSize;
         // DataSize is unsigned, so we use "CurPos+3" and not "DataSize-3"

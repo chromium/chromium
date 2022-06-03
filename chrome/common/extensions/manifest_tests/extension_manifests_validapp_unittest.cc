@@ -8,6 +8,7 @@
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
+#include "components/services/app_service/public/mojom/types.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 typedef ChromeManifestTest ValidAppManifestTest;

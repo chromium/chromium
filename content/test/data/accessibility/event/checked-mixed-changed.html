@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<body>
+<input id="c" type="checkbox" aria-label="My Checkbox">
+<div id="treeitem" role="treeitem" aria-checked="false">Treeitem</div>
+<script>
+  function go() {
+    document.getElementById('c').indeterminate = true;
+    document.getElementById('treeitem').setAttribute('aria-checked', 'mixed');
+  }
+</script>
+</body>
+</html>

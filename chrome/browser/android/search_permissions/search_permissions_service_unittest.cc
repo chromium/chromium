@@ -9,14 +9,22 @@
 
 #include "base/callback.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/values.h"
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_tab_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/permissions/permission_decision_auto_blocker.h"
-#include "chrome/browser/permissions/permission_result.h"
+#include "chrome/browser/permissions/permission_decision_auto_blocker_factory.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/pref_names.h"
+#include "components/permissions/features.h"
+#include "components/permissions/permission_decision_auto_blocker.h"
+#include "components/permissions/permission_result.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
@@ -27,10 +35,10 @@ namespace {
 
 const char kDSESettingKeyDeprecated[] = "dse_setting";
 
-const char kGoogleURL[] = "https://www.google.com";
-const char kGoogleAusURL[] = "https://www.google.com.au";
-const char kGoogleHTTPURL[] = "http://www.google.com";
-const char kExampleURL[] = "https://www.example.com";
+const char kGoogleURL[] = "https://www.google.com/";
+const char kGoogleAusURL[] = "https://www.google.com.au/";
+const char kGoogleHTTPURL[] = "http://www.google.com/";
+const char kExampleURL[] = "https://www.example.com/";
 
 url::Origin ToOrigin(const char* url) {
   return url::Origin::Create(GURL(url));
@@ -42,17 +50,17 @@ class TestSearchEngineDelegate
  public:
   TestSearchEngineDelegate()
       : dse_origin_(url::Origin::Create(GURL(kGoogleURL))) {}
-  base::string16 GetDSEName() override {
+  std::u16string GetDSEName() override {
     if (dse_origin_.host().find("google") != std::string::npos)
-      return base::ASCIIToUTF16("Google");
+      return u"Google";
 
-    return base::ASCIIToUTF16("Example");
+    return u"Example";
   }
 
   url::Origin GetDSEOrigin() override { return dse_origin_; }
 
-  void SetDSEChangedCallback(const base::Closure& callback) override {
-    dse_changed_callback_ = callback;
+  void SetDSEChangedCallback(base::RepeatingClosure callback) override {
+    dse_changed_callback_ = std::move(callback);
   }
 
   void ChangeDSEOrigin(const std::string& dse_origin) {
@@ -66,7 +74,7 @@ class TestSearchEngineDelegate
 
  private:
   url::Origin dse_origin_;
-  base::Closure dse_changed_callback_;
+  base::RepeatingClosure dse_changed_callback_;
 };
 
 }  // namespace
@@ -74,9 +82,11 @@ class TestSearchEngineDelegate
 class SearchPermissionsServiceTest : public testing::Test {
  public:
   void SetUp() override {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
 
-    ClearNotificationsChannels();
+    // Because notification channel settings aren't tied to the profile, they
+    // will persist across tests. We need to make sure they're clean here.
+    ClearContentSettings(ContentSettingsType::NOTIFICATIONS);
 
     auto test_delegate = std::make_unique<TestSearchEngineDelegate>();
     test_delegate_ = test_delegate.get();
@@ -87,22 +97,18 @@ class SearchPermissionsServiceTest : public testing::Test {
   void TearDown() override {
     test_delegate_ = nullptr;
 
-    ClearNotificationsChannels();
+    // Because notification channel settings aren't tied to the profile, they
+    // will persist across tests. We need to make sure they're reset here.
+    ClearContentSettings(ContentSettingsType::NOTIFICATIONS);
 
     profile_.reset();
   }
 
-  void ClearNotificationsChannels() {
-    // Because notification channel settings aren't tied to the profile, they
-    // will persist across tests. We need to make sure they're reset here.
-    SetContentSetting(kGoogleURL, ContentSettingsType::NOTIFICATIONS,
-                      CONTENT_SETTING_DEFAULT);
-    SetContentSetting(kGoogleAusURL, ContentSettingsType::NOTIFICATIONS,
-                      CONTENT_SETTING_DEFAULT);
-    SetContentSetting(kGoogleHTTPURL, ContentSettingsType::NOTIFICATIONS,
-                      CONTENT_SETTING_DEFAULT);
-    SetContentSetting(kExampleURL, ContentSettingsType::NOTIFICATIONS,
-                      CONTENT_SETTING_DEFAULT);
+  void ClearContentSettings(ContentSettingsType type) {
+    SetContentSetting(kGoogleURL, type, CONTENT_SETTING_DEFAULT);
+    SetContentSetting(kGoogleAusURL, type, CONTENT_SETTING_DEFAULT);
+    SetContentSetting(kGoogleHTTPURL, type, CONTENT_SETTING_DEFAULT);
+    SetContentSetting(kExampleURL, type, CONTENT_SETTING_DEFAULT);
   }
 
   TestingProfile* profile() { return profile_.get(); }
@@ -128,16 +134,16 @@ class SearchPermissionsServiceTest : public testing::Test {
     // should never be changed between ALLOW<->BLOCK on Android. Do not copy
     // this code. Check with the notifications team if you need to do something
     // like this.
-    hcsm->SetContentSettingDefaultScope(url, url, type, std::string(),
+    hcsm->SetContentSettingDefaultScope(url, url, type,
                                         CONTENT_SETTING_DEFAULT);
-    hcsm->SetContentSettingDefaultScope(url, url, type, std::string(), setting);
+    hcsm->SetContentSettingDefaultScope(url, url, type, setting);
   }
 
   ContentSetting GetContentSetting(const std::string& origin_string,
                                    ContentSettingsType type) {
     GURL url(origin_string);
     return HostContentSettingsMapFactory::GetForProfile(profile())
-        ->GetContentSetting(url, url, type, std::string());
+        ->GetContentSetting(url, url, type);
   }
 
   // Simulates the initialization that happens when recreating the service. If
@@ -246,9 +252,21 @@ TEST_F(SearchPermissionsServiceTest, InitializationInconsistent) {
       GetContentSetting(kGoogleAusURL, ContentSettingsType::NOTIFICATIONS));
 }
 
-TEST_F(SearchPermissionsServiceTest, OffTheRecord) {
-  // Service isn't constructed for an OTR profile.
-  Profile* otr_profile = profile()->GetOffTheRecordProfile();
+TEST_F(SearchPermissionsServiceTest, Incognito) {
+  // Service isn't constructed for Incognito profile.
+  Profile* incognito_profile =
+      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  SearchPermissionsService* service =
+      SearchPermissionsService::Factory::GetForBrowserContext(
+          incognito_profile);
+  EXPECT_EQ(nullptr, service);
+}
+
+TEST_F(SearchPermissionsServiceTest, NonPrimaryOffTheRecord) {
+  // Service isn't constructed for non-primary OTR profiles.
+  Profile* otr_profile = profile()->GetOffTheRecordProfile(
+      Profile::OTRProfileID::CreateUniqueForTesting(),
+      /*create_if_needed=*/true);
   SearchPermissionsService* service =
       SearchPermissionsService::Factory::GetForBrowserContext(otr_profile);
   EXPECT_EQ(nullptr, service);
@@ -326,6 +344,21 @@ TEST_F(SearchPermissionsServiceTest, IsPermissionControlledByDSE) {
   // False for permissions not controlled by the DSE.
   EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
       ContentSettingsType::COOKIES, ToOrigin(kExampleURL)));
+
+  // If autogrant is reverted, permissions are not controlled by DSE anymore.
+  base::test::ScopedFeatureList features(
+      permissions::features::kRevertDSEAutomaticPermissions);
+  EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
+      ContentSettingsType::NOTIFICATIONS, ToOrigin(kExampleURL)));
+  EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
+      ContentSettingsType::GEOLOCATION, ToOrigin(kExampleURL)));
+
+  // Still applies after changing the search engine origin.
+  test_delegate()->ChangeDSEOrigin(kGoogleURL);
+  EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
+      ContentSettingsType::NOTIFICATIONS, ToOrigin(kGoogleURL)));
+  EXPECT_FALSE(GetService()->IsPermissionControlledByDSE(
+      ContentSettingsType::GEOLOCATION, ToOrigin(kGoogleURL)));
 }
 
 TEST_F(SearchPermissionsServiceTest, DSEChanges) {
@@ -474,24 +507,25 @@ TEST_F(SearchPermissionsServiceTest, Embargo) {
 
   // Place another origin under embargo.
   GURL google_aus_url(kGoogleAusURL);
-  PermissionDecisionAutoBlocker* auto_blocker =
-      PermissionDecisionAutoBlocker::GetForProfile(profile());
+  permissions::PermissionDecisionAutoBlocker* auto_blocker =
+      PermissionDecisionAutoBlockerFactory::GetForProfile(profile());
   auto_blocker->RecordDismissAndEmbargo(
       google_aus_url, ContentSettingsType::GEOLOCATION, false);
   auto_blocker->RecordDismissAndEmbargo(
       google_aus_url, ContentSettingsType::GEOLOCATION, false);
   auto_blocker->RecordDismissAndEmbargo(
       google_aus_url, ContentSettingsType::GEOLOCATION, false);
-  PermissionResult result = auto_blocker->GetEmbargoResult(
+  permissions::PermissionResult result = auto_blocker->GetEmbargoResult(
       GURL(kGoogleAusURL), ContentSettingsType::GEOLOCATION);
-  EXPECT_EQ(result.source, PermissionStatusSource::MULTIPLE_DISMISSALS);
+  EXPECT_EQ(result.source,
+            permissions::PermissionStatusSource::MULTIPLE_DISMISSALS);
   EXPECT_EQ(result.content_setting, CONTENT_SETTING_BLOCK);
 
   // Now change the DSE to this origin and make sure the embargo is cleared.
   test_delegate()->ChangeDSEOrigin(kGoogleAusURL);
   result = auto_blocker->GetEmbargoResult(GURL(kGoogleAusURL),
                                           ContentSettingsType::GEOLOCATION);
-  EXPECT_EQ(result.source, PermissionStatusSource::UNSPECIFIED);
+  EXPECT_EQ(result.source, permissions::PermissionStatusSource::UNSPECIFIED);
   EXPECT_EQ(result.content_setting, CONTENT_SETTING_ASK);
 }
 
@@ -622,4 +656,471 @@ TEST_F(SearchPermissionsServiceTest, ResetDSEPermissions) {
       GetContentSetting(kGoogleAusURL, ContentSettingsType::NOTIFICATIONS));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             GetContentSetting(kGoogleURL, ContentSettingsType::GEOLOCATION));
+
+  // After enabling `kRevertDSEAutomaticPermissions` ResetDSEPermissions reverts
+  // it to ASK.
+  base::test::ScopedFeatureList features(
+      permissions::features::kRevertDSEAutomaticPermissions);
+  SetContentSetting(kGoogleAusURL, ContentSettingsType::GEOLOCATION,
+                    CONTENT_SETTING_BLOCK);
+  SetContentSetting(kGoogleAusURL, ContentSettingsType::NOTIFICATIONS,
+                    CONTENT_SETTING_BLOCK);
+
+  GetService()->ResetDSEPermissions();
+  EXPECT_EQ(CONTENT_SETTING_ASK,
+            GetContentSetting(kGoogleAusURL, ContentSettingsType::GEOLOCATION));
+  EXPECT_EQ(
+      CONTENT_SETTING_ASK,
+      GetContentSetting(kGoogleAusURL, ContentSettingsType::NOTIFICATIONS));
+}
+
+// Setting the `RevertDSEAutomaticPermissions` feature disables DSE permissions.
+TEST_F(SearchPermissionsServiceTest, DSEPermissionsCanBeDisabledByFeature) {
+  constexpr struct {
+    ContentSetting initial_setting;
+    ContentSetting expected_setting_after_autogrant;
+    ContentSetting expected_setting_after_autogrant_reverted;
+  } kTests[] = {
+      {CONTENT_SETTING_DEFAULT, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK},
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK},
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK},
+  };
+
+  test_delegate()->ChangeDSEOrigin(kGoogleURL);
+
+  for (const auto& test : kTests) {
+    for (const auto type : {ContentSettingsType::NOTIFICATIONS,
+                            ContentSettingsType::GEOLOCATION}) {
+      // Notifications can not be set to ASK.
+      if (test.initial_setting == CONTENT_SETTING_ASK &&
+          type == ContentSettingsType::NOTIFICATIONS) {
+        continue;
+      }
+
+      ClearContentSettings(type);
+      SetContentSetting(kGoogleURL, type, test.initial_setting);
+
+      // Initialize DSE and verify the expected setting.
+      ReinitializeService(true /* clear_pref */);
+      EXPECT_EQ(test.expected_setting_after_autogrant,
+                GetContentSetting(kGoogleURL, type));
+
+      // Enable `RevertDSEAutomaticPermissions`. DSE stops being controlled by
+      // the SearchPermissionsService.
+      {
+        base::test::ScopedFeatureList features(
+            permissions::features::kRevertDSEAutomaticPermissions);
+        ReinitializeService(false /* clear_pref */);
+        EXPECT_EQ(test.expected_setting_after_autogrant_reverted,
+                  GetContentSetting(kGoogleURL, type));
+      }
+
+      // If the feature is disabled again, DSE starts being controlled by the
+      // SearchPermissionsService.
+      ReinitializeService(false /* clear_pref */);
+      EXPECT_EQ(test.expected_setting_after_autogrant,
+                GetContentSetting(kGoogleURL, type));
+    }
+  }
+}
+
+// Change the permission state for the DSE origin while DSE is active. Also test
+// how the `RevertDSEAutomaticPermissions` feature interacts with this scenario.
+TEST_F(SearchPermissionsServiceTest,
+       DSEOriginPermissionsChangeBeforeFeatureIsEnabled) {
+  constexpr struct {
+    ContentSetting initial_setting;
+    ContentSetting expected_setting_after_autogrant;
+    ContentSetting updated_setting;
+    ContentSetting expected_setting_after_update;
+    ContentSetting expected_setting_after_autogrant_reverted;
+    ContentSetting expected_setting_after_autogrant_reverted_disabled;
+  } kTests[] = {
+      {CONTENT_SETTING_DEFAULT, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
+       CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW},
+      // Critical journey: if the user decided to change the DSE origin's
+      // setting to BLOCK then disabling DSE should still keep it at BLOCK.
+      {CONTENT_SETTING_DEFAULT, CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+       CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK},
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
+       CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW},
+      // Critical journey: if the user decided to change the DSE origin's
+      // setting to BLOCK then disabling DSE should still keep it at BLOCK.
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+       CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
+       CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
+       CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK},
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
+       CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW},
+      // Critical journey: if the user decided to change the DSE origin's
+      // setting to BLOCK then disabling DSE should still keep it at BLOCK.
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+       CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK},
+  };
+
+  for (const auto& test : kTests) {
+    for (const auto type : {ContentSettingsType::NOTIFICATIONS,
+                            ContentSettingsType::GEOLOCATION}) {
+      // Notifications can not be set to ASK on Android as notification channels
+      // explicitly rely on the state being only BLOCK/ALLOW/DEFAULT.
+      if (test.initial_setting == CONTENT_SETTING_ASK &&
+          type == ContentSettingsType::NOTIFICATIONS) {
+        continue;
+      }
+
+      ClearContentSettings(type);
+      SetContentSetting(kGoogleURL, type, test.initial_setting);
+
+      // Initialize DSE and verify the expected setting.
+      ReinitializeService(true /* clear_pref */);
+      EXPECT_EQ(test.expected_setting_after_autogrant,
+                GetContentSetting(kGoogleURL, type));
+
+      // Change the setting of the DSE origin and verify the result.
+      SetContentSetting(kGoogleURL, type, test.updated_setting);
+      ReinitializeService(false /* clear_pref */);
+      EXPECT_EQ(test.expected_setting_after_update,
+                GetContentSetting(kGoogleURL, type));
+
+      // Enable `RevertDSEAutomaticPermissions`. DSE stops being controlled by
+      // the SearchPermissionsService.
+      {
+        base::test::ScopedFeatureList features(
+            permissions::features::kRevertDSEAutomaticPermissions);
+        ReinitializeService(false /* clear_pref */);
+        EXPECT_EQ(test.expected_setting_after_autogrant_reverted,
+                  GetContentSetting(kGoogleURL, type));
+      }
+
+      // If the feature is disabled again, DSE starts being controlled by the
+      // SearchPermissionsService.
+      ReinitializeService(false /* clear_pref */);
+      EXPECT_EQ(test.expected_setting_after_autogrant_reverted_disabled,
+                GetContentSetting(kGoogleURL, type));
+    }
+  }
+}
+
+// Change the permission state for the DSE origin while the
+// `RevertDSEAutomaticPermissions` feature is active. Also test how disabling
+// the feature again afterwards will affect the permission.
+TEST_F(SearchPermissionsServiceTest,
+       DSEOriginPermissionsChangeAfterFeatureIsEnabled) {
+  constexpr struct {
+    ContentSetting initial_setting;
+    ContentSetting expected_setting_after_autogrant;
+    ContentSetting expected_setting_after_autogrant_reverted;
+  } kTestsBeforeSettingUpdate[] = {
+      {CONTENT_SETTING_DEFAULT, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK},
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK},
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK},
+  };
+
+  constexpr struct {
+    ContentSetting updated_setting;
+    ContentSetting expected_setting_after_update;
+    ContentSetting expected_setting_after_autogrant_reverted_disabled;
+  } kTestsAfterSettingUpdate[] = {
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK},
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW},
+      {CONTENT_SETTING_DEFAULT, CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW},
+  };
+
+  // The test cases are split into two halves. Every combination of
+  // `kTestsBeforeSettingUpdate` and `kTestsBeforeSettingUpdate` entries
+  // produces a test case.
+  for (const auto& test_before : kTestsBeforeSettingUpdate) {
+    for (const auto& test_after : kTestsAfterSettingUpdate) {
+      for (const auto type : {ContentSettingsType::NOTIFICATIONS,
+                              ContentSettingsType::GEOLOCATION}) {
+        // Notifications can not be set to ASK on Android as notification
+        // channels explicitly rely on the state being only BLOCK/ALLOW/DEFAULT.
+        if (test_before.initial_setting == CONTENT_SETTING_ASK &&
+            type == ContentSettingsType::NOTIFICATIONS) {
+          continue;
+        }
+
+        ClearContentSettings(type);
+        SetContentSetting(kGoogleURL, type, test_before.initial_setting);
+
+        // Initialize DSE and verify the expected setting.
+        ReinitializeService(true /* clear_pref */);
+        EXPECT_EQ(test_before.expected_setting_after_autogrant,
+                  GetContentSetting(kGoogleURL, type));
+
+        // Enable `RevertDSEAutomaticPermissions`. DSE stops being controlled by
+        // the SearchPermissionsService.
+        {
+          base::test::ScopedFeatureList features(
+              permissions::features::kRevertDSEAutomaticPermissions);
+          ReinitializeService(false /* clear_pref */);
+          EXPECT_EQ(test_before.expected_setting_after_autogrant_reverted,
+                    GetContentSetting(kGoogleURL, type));
+
+          // Notifications can not be set to ASK on Android as notification
+          // channels explicitly rely on the state being only
+          // BLOCK/ALLOW/DEFAULT.
+          if (test_after.updated_setting == CONTENT_SETTING_ASK &&
+              type == ContentSettingsType::NOTIFICATIONS) {
+            continue;
+          }
+
+          // Change the setting of the DSE origin and verify the result. This
+          // means that the user made a decision for the DSE origin while DSE
+          // is inactive.
+          SetContentSetting(kGoogleURL, type, test_after.updated_setting);
+          ReinitializeService(false /* clear_pref */);
+          EXPECT_EQ(test_after.expected_setting_after_update,
+                    GetContentSetting(kGoogleURL, type));
+        }
+
+        // If the feature is disabled again, DSE starts being controlled by the
+        // SearchPermissionsService. Test how it handles the user's setting
+        // change while DSE was inactive.
+        ReinitializeService(false /* clear_pref */);
+        EXPECT_EQ(test_after.expected_setting_after_autogrant_reverted_disabled,
+                  GetContentSetting(kGoogleURL, type));
+      }
+    }
+  }
+}
+
+// Tests the scenario in which the permission is disabled by default for all
+// origins.
+TEST_F(SearchPermissionsServiceTest, PermissionsDisabledByDefault) {
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  for (const auto type :
+       {ContentSettingsType::GEOLOCATION, ContentSettingsType::NOTIFICATIONS}) {
+    ClearContentSettings(type);
+    hcsm->SetDefaultContentSetting(type, CONTENT_SETTING_BLOCK);
+
+    // Global setting should still apply.
+    ReinitializeService(true /* clear_pref */);
+    EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(kGoogleURL, type));
+
+    // Enable `RevertDSEAutomaticPermissions`. DSE stops being controlled by the
+    // SearchPermissionsService.
+    {
+      base::test::ScopedFeatureList features(
+          permissions::features::kRevertDSEAutomaticPermissions);
+      ReinitializeService(false /* clear_pref */);
+      EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(kGoogleURL, type));
+    }
+
+    // If the feature is disabled again, DSE starts being controlled by the
+    // SearchPermissionsService.
+    ReinitializeService(false /* clear_pref */);
+    EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(kGoogleURL, type));
+  }
+}
+
+// Tests the scenario in which the permission is disabled by default for all
+// origins after DSE has granted permission.
+TEST_F(SearchPermissionsServiceTest,
+       PermissionsDisabledByDefaultAfterAutogrant) {
+  HostContentSettingsMap* hcsm =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+
+  for (const auto type :
+       {ContentSettingsType::GEOLOCATION, ContentSettingsType::NOTIFICATIONS}) {
+    ClearContentSettings(type);
+    ReinitializeService(true /* clear_pref */);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(kGoogleURL, type));
+
+    // Set the default content setting after the DSE has been applied.
+    hcsm->SetDefaultContentSetting(type, CONTENT_SETTING_BLOCK);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(kGoogleURL, type));
+
+    // Enable `RevertDSEAutomaticPermissions`. DSE stops being controlled by the
+    // SearchPermissionsService.
+    {
+      base::test::ScopedFeatureList features(
+          permissions::features::kRevertDSEAutomaticPermissions);
+      ReinitializeService(false /* clear_pref */);
+      EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(kGoogleURL, type));
+    }
+
+    // If the feature is disabled again, DSE starts being controlled by the
+    // SearchPermissionsService.
+    ReinitializeService(false /* clear_pref */);
+    EXPECT_EQ(CONTENT_SETTING_BLOCK, GetContentSetting(kGoogleURL, type));
+  }
+}
+
+// Test repeatedly enabling and disabling the `RevertDSEAutomaticPermissions`
+// feature.
+TEST_F(SearchPermissionsServiceTest,
+       DSEPermissionsRepeatedlyDisabledByFeature) {
+  for (const auto type :
+       {ContentSettingsType::GEOLOCATION, ContentSettingsType::NOTIFICATIONS}) {
+    ClearContentSettings(type);
+    ReinitializeService(true /* clear_pref */);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(kGoogleURL, type));
+
+    int num_repetitions = 5;
+    while (num_repetitions--) {
+      // Enable `RevertDSEAutomaticPermissions`. DSE stops being controlled by
+      // the SearchPermissionsService.
+      {
+        base::test::ScopedFeatureList features(
+            permissions::features::kRevertDSEAutomaticPermissions);
+        ReinitializeService(false /* clear_pref */);
+        EXPECT_EQ(CONTENT_SETTING_ASK, GetContentSetting(kGoogleURL, type));
+      }
+
+      // If the feature is disabled again, DSE starts being controlled by the
+      // SearchPermissionsService.
+      ReinitializeService(false /* clear_pref */);
+      EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(kGoogleURL, type));
+    }
+  }
+}
+
+// Test disabling DSE via the `RevertDSEAutomaticPermissions` feature after the
+// DSE origin has changed at least once.
+TEST_F(SearchPermissionsServiceTest,
+       AutoDSEPermissionRevertedAfterOriginChange) {
+  for (const auto type :
+       {ContentSettingsType::GEOLOCATION, ContentSettingsType::NOTIFICATIONS}) {
+    test_delegate()->ChangeDSEOrigin(kGoogleURL);
+    ClearContentSettings(type);
+    ReinitializeService(true /* clear_pref */);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(kGoogleURL, type));
+
+    // Change DSE origin and make sure the setting is correctly updated.
+    test_delegate()->ChangeDSEOrigin(kGoogleAusURL);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(kGoogleAusURL, type));
+    EXPECT_EQ(CONTENT_SETTING_ASK, GetContentSetting(kGoogleURL, type));
+
+    // Enable `RevertDSEAutomaticPermissions`. DSE stops being controlled by
+    // the SearchPermissionsService.
+    {
+      base::test::ScopedFeatureList features(
+          permissions::features::kRevertDSEAutomaticPermissions);
+      ReinitializeService(false /* clear_pref */);
+      EXPECT_EQ(CONTENT_SETTING_ASK, GetContentSetting(kGoogleAusURL, type));
+      EXPECT_EQ(CONTENT_SETTING_ASK, GetContentSetting(kGoogleURL, type));
+    }
+
+    // If the feature is disabled again, DSE starts being controlled by the
+    // SearchPermissionsService.
+    ReinitializeService(false /* clear_pref */);
+    EXPECT_EQ(CONTENT_SETTING_ALLOW, GetContentSetting(kGoogleAusURL, type));
+    EXPECT_EQ(CONTENT_SETTING_ASK, GetContentSetting(kGoogleURL, type));
+  }
+}
+
+// Test that the appropriate UMA metrics have been recorded when the DSE is
+// disabled.
+TEST_F(SearchPermissionsServiceTest,
+       MetricsAndPrefsAreRecordedWhenAutoDSEPermissionReverted) {
+  constexpr struct {
+    ContentSetting initial_setting;
+    ContentSetting updated_setting;
+    permissions::AutoDSEPermissionRevertTransition expected_transition;
+  } kTests[] = {
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW,
+       permissions::AutoDSEPermissionRevertTransition::NO_DECISION_ASK},
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW,
+       permissions::AutoDSEPermissionRevertTransition::PRESERVE_ALLOW},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW,
+       permissions::AutoDSEPermissionRevertTransition::CONFLICT_ASK},
+      {CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK,
+       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ASK},
+      {CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
+       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_ALLOW},
+      {CONTENT_SETTING_BLOCK, CONTENT_SETTING_BLOCK,
+       permissions::AutoDSEPermissionRevertTransition::PRESERVE_BLOCK_BLOCK},
+  };
+
+  for (const auto& test : kTests) {
+    for (const auto& type : {ContentSettingsType::NOTIFICATIONS,
+                             ContentSettingsType::GEOLOCATION}) {
+      // Notifications can not be set to ASK on Android as notification channels
+      // explicitly rely on the state being only BLOCK/ALLOW/DEFAULT.
+      if (test.initial_setting == CONTENT_SETTING_ASK &&
+          type == ContentSettingsType::NOTIFICATIONS) {
+        continue;
+      }
+
+      ClearContentSettings(type);
+      SetContentSetting(kGoogleURL, type, test.initial_setting);
+      ReinitializeService(true /* clear_pref */);
+      SetContentSetting(kGoogleURL, type, test.updated_setting);
+      ReinitializeService(false /* clear_pref */);
+
+      // Enable `RevertDSEAutomaticPermissions`. DSE stops being controlled by
+      // the SearchPermissionsService.
+      {
+        base::HistogramTester histograms;
+        base::test::ScopedFeatureList features(
+            permissions::features::kRevertDSEAutomaticPermissions);
+        ReinitializeService(false /* clear_pref */);
+
+        // Test that the expected samples are recorded in histograms.
+        for (auto sample = static_cast<int>(
+                 permissions::AutoDSEPermissionRevertTransition::
+                     NO_DECISION_ASK);
+             sample <
+             static_cast<int>(
+                 permissions::AutoDSEPermissionRevertTransition::kMaxValue);
+             ++sample) {
+          std::string histogram =
+              "Permissions.DSE.AutoPermissionRevertTransition.";
+          histogram += type == ContentSettingsType::NOTIFICATIONS
+                           ? "Notifications"
+                           : "Geolocation";
+          histograms.ExpectBucketCount(
+              histogram, sample,
+              static_cast<int>(test.expected_transition) == sample ? 1 : 0);
+        }
+      }
+
+      // If DSE starts being controlled again by the `SearchPermissionService`,
+      // the pref is cleared.
+      ReinitializeService(false /* clear_pref */);
+    }
+  }
+}
+
+// Records DSE origin settings whenever the service is initialized.
+TEST_F(SearchPermissionsServiceTest, DSEEffectiveSettingMetric) {
+  base::HistogramTester histograms;
+  ClearContentSettings(ContentSettingsType::NOTIFICATIONS);
+  ClearContentSettings(ContentSettingsType::GEOLOCATION);
+  ReinitializeService(true /* clear_pref */);
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Notifications",
+                               CONTENT_SETTING_ALLOW, 1);
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Geolocation",
+                               CONTENT_SETTING_ALLOW, 1);
+
+  SetContentSetting(kGoogleURL, ContentSettingsType::NOTIFICATIONS,
+                    CONTENT_SETTING_BLOCK);
+  ReinitializeService(false /* clear_pref */);
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Notifications",
+                               CONTENT_SETTING_ALLOW, 1);
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Notifications",
+                               CONTENT_SETTING_BLOCK, 1);
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Geolocation",
+                               CONTENT_SETTING_ALLOW, 2);
+
+  base::test::ScopedFeatureList features(
+      permissions::features::kRevertDSEAutomaticPermissions);
+  ReinitializeService(false /* clear_pref */);
+
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Notifications",
+                               CONTENT_SETTING_ALLOW, 1);
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Notifications",
+                               CONTENT_SETTING_BLOCK, 2);
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Geolocation",
+                               CONTENT_SETTING_ALLOW, 2);
+  histograms.ExpectBucketCount("Permissions.DSE.EffectiveSetting.Geolocation",
+                               CONTENT_SETTING_ASK, 1);
 }

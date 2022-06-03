@@ -4,7 +4,7 @@
 
 #include "chrome/browser/safe_browsing/incident_reporting/module_integrity_unittest_util_win.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 
 namespace safe_browsing {
 

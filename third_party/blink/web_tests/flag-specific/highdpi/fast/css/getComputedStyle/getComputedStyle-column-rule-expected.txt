@@ -1,0 +1,13 @@
+Tests that the -webkit-column-rule shorthand is computed properly.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL computedStyle.getPropertyValue('-webkit-column-rule') should be 1px dotted rgb(0, 0, 0). Was 0.666667px dotted rgb(0, 0, 0).
+PASS computedStyle.getPropertyValue('-webkit-column-rule') is "0px none rgb(255, 0, 0)"
+FAIL computedStyle.getPropertyValue('-webkit-column-rule') should be 3px dashed rgb(255, 0, 0). Was 2.66667px dashed rgb(255, 0, 0).
+PASS computedStyle.getPropertyValue('-webkit-column-rule') is "0px none rgb(0, 0, 255)"
+PASS computedStyle.getPropertyValue('-webkit-column-rule') is "0px hidden rgb(0, 0, 255)"
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

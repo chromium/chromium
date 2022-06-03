@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_LAYER_DELEGATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCROLL_SCROLLBAR_LAYER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "cc/input/scrollbar.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
@@ -20,14 +19,18 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
  public:
   ScrollbarLayerDelegate(blink::Scrollbar& scrollbar,
                          float device_scale_factor);
+  ScrollbarLayerDelegate(const ScrollbarLayerDelegate&) = delete;
+  ScrollbarLayerDelegate& operator=(const ScrollbarLayerDelegate&) = delete;
 
   // cc::Scrollbar implementation.
+  bool IsSame(const cc::Scrollbar& other) const override;
   cc::ScrollbarOrientation Orientation() const override;
   bool IsLeftSideVerticalScrollbar() const override;
   bool HasThumb() const override;
   bool IsSolidColor() const override;
   bool IsOverlay() const override;
   bool SupportsDragSnapBack() const override;
+  bool JumpOnTrackClick() const override;
 
   // The following rects are all relative to the scrollbar's origin.
   gfx::Rect ThumbRect() const override;
@@ -35,7 +38,7 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
   gfx::Rect BackButtonRect() const override;
   gfx::Rect ForwardButtonRect() const override;
 
-  float ThumbOpacity() const override;
+  float Opacity() const override;
   bool NeedsRepaintPart(cc::ScrollbarPart part) const override;
   bool HasTickmarks() const override;
   void PaintPart(cc::PaintCanvas* canvas,
@@ -53,8 +56,6 @@ class CORE_EXPORT ScrollbarLayerDelegate : public cc::Scrollbar {
 
   Persistent<blink::Scrollbar> scrollbar_;
   float device_scale_factor_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScrollbarLayerDelegate);
 };
 
 }  // namespace blink

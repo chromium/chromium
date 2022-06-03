@@ -1,6 +1,12 @@
 # Traffic Annotation Scripts
 This file describes the scripts in `tools/traffic_annotation/scripts`.
 
+# auditor/auditor.py
+
+The new implementation of `traffic_annotation_auditor`. It is meant as a
+drop-in replacement, i.e. you can call it with the same command-line arguments
+and it should give similar output.
+
 # check_annotations.py
 Runs traffic annotation tests on the changed files or all repository. The tests
 are run in error resilient mode. Requires a compiled build directory to run.
@@ -8,7 +14,7 @@ are run in error resilient mode. Requires a compiled build directory to run.
 # traffic_annotation_auditor_tests.py
 Runs tests to ensure traffic_annotation_auditor is performing as expected. Tests
 include:
- - Checking if auditor and underlying clang tool run, and an expected minimum
+ - Checking if auditor and underlying extractor run, and an expected minimum
    number of outputs are returned.
  - Checking if enabling or disabling heuristics that make tests faster has any
    effect on the output.
@@ -29,3 +35,25 @@ annotations in code. It uses regex expressions on source files.
 
 # extractor_test.py
 Unit tests for extractor.py.
+
+# update_annotations_doc.py
+Updates the Chrome Browser Network Traffic Annotations document that presents
+all network traffic annotations specified within `summary/grouping.xml`.
+  - You can use the `hidden="true"` attribute within a group to suppress the
+    group and its nested senders and annotations from appearing in the document.
+  - You can use the `hidden="true"` attribute within the annotations in
+    `grouping.xml` to suppress them from appearing in the document.
+  - `grouping.xml` needn't be organized in alphabetical order, the script
+    automatically places them in alphabetical order.
+
+# update_annotations_doc_tests.py
+Unit tests for update_annotations_doc.py.
+
+# generator_utils.py
+Parses the `grouping.xml` and `annotations.tsv` files to provide
+`update_annotations_doc.py` with the annotations and their relevant information,
+e.g. unique_id, data, trigger, etc. Also includes methods to parse the json
+object returned by the Google Docs API `get()` method.
+
+# generator_utils_tests.py
+Unit tests for generator_utils.py.

@@ -21,13 +21,22 @@ export class OmniboxElement extends HTMLElement {
   }
 
   /**
-   * Get an element that's known to exist within this OmniboxElement.
-   * Searches local shadow root for element by query.
+   * Finds the 1st element matching the query within the local shadow root. At
+   * least 1 matching element should exist.
    * @param {string} query
    * @return {!Element}
    */
-  $$(query) {
+  $(query) {
     return OmniboxElement.getByQuery_(query, this.shadowRoot);
+  }
+
+  /**
+   * Finds all elements matching the query within the local shadow root.
+   * @param {string} query
+   * @return {!NodeList<!Element>}
+   */
+  $$(query) {
+    return (this.shadowRoot || document).querySelectorAll(query);
   }
 
   /**

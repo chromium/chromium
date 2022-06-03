@@ -1,0 +1,146 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("../../build/crashpad_buildconfig.gni")
+
+if (crashpad_is_in_chromium) {
+  group("edo") {
+    testonly = true
+    public_deps = [
+      "//ios/third_party/edo",
+    ]
+  }
+} else {
+  config("config") {
+    include_dirs = [ "../../third_party/edo/edo" ]
+  }
+
+  source_set("edo") {
+    testonly = true
+
+    sources = [
+      "edo/Channel/Sources/EDOBlockingQueue.h",
+      "edo/Channel/Sources/EDOBlockingQueue.m",
+      "edo/Channel/Sources/EDOChannel.h",
+      "edo/Channel/Sources/EDOChannelErrors.h",
+      "edo/Channel/Sources/EDOChannelErrors.m",
+      "edo/Channel/Sources/EDOChannelForwarder.h",
+      "edo/Channel/Sources/EDOChannelForwarder.m",
+      "edo/Channel/Sources/EDOChannelMultiplexer.h",
+      "edo/Channel/Sources/EDOChannelMultiplexer.m",
+      "edo/Channel/Sources/EDOChannelPool.h",
+      "edo/Channel/Sources/EDOChannelPool.m",
+      "edo/Channel/Sources/EDOChannelUtil.h",
+      "edo/Channel/Sources/EDOChannelUtil.m",
+      "edo/Channel/Sources/EDOHostPort.h",
+      "edo/Channel/Sources/EDOHostPort.m",
+      "edo/Channel/Sources/EDOListenSocket.h",
+      "edo/Channel/Sources/EDOListenSocket.m",
+      "edo/Channel/Sources/EDOSocket.h",
+      "edo/Channel/Sources/EDOSocket.m",
+      "edo/Channel/Sources/EDOSocketChannel.h",
+      "edo/Channel/Sources/EDOSocketChannel.m",
+      "edo/Channel/Sources/EDOSocketPort.h",
+      "edo/Channel/Sources/EDOSocketPort.m",
+      "edo/Device/Sources/EDODeviceChannel.h",
+      "edo/Device/Sources/EDODeviceChannel.m",
+      "edo/Device/Sources/EDODeviceConnector.h",
+      "edo/Device/Sources/EDODeviceConnector.m",
+      "edo/Device/Sources/EDODeviceDetector.h",
+      "edo/Device/Sources/EDODeviceDetector.m",
+      "edo/Device/Sources/EDOUSBMuxUtil.h",
+      "edo/Device/Sources/EDOUSBMuxUtil.m",
+      "edo/DeviceForwarder/Sources/EDODeviceForwardersManager.h",
+      "edo/DeviceForwarder/Sources/EDODeviceForwardersManager.m",
+      "edo/Measure/Sources/EDONumericMeasure.h",
+      "edo/Measure/Sources/EDONumericMeasure.m",
+      "edo/Service/Sources/EDOBlockObject.h",
+      "edo/Service/Sources/EDOBlockObject.m",
+      "edo/Service/Sources/EDOClassMessage.h",
+      "edo/Service/Sources/EDOClassMessage.m",
+      "edo/Service/Sources/EDOClientService+Private.h",
+      "edo/Service/Sources/EDOClientService.h",
+      "edo/Service/Sources/EDOClientService.m",
+      "edo/Service/Sources/EDOClientServiceStatsCollector.h",
+      "edo/Service/Sources/EDOClientServiceStatsCollector.m",
+      "edo/Service/Sources/EDODeallocationTracker.h",
+      "edo/Service/Sources/EDODeallocationTracker.m",
+      "edo/Service/Sources/EDOExecutor.h",
+      "edo/Service/Sources/EDOExecutor.m",
+      "edo/Service/Sources/EDOExecutorMessage.h",
+      "edo/Service/Sources/EDOExecutorMessage.m",
+      "edo/Service/Sources/EDOHostNamingService+Private.h",
+      "edo/Service/Sources/EDOHostNamingService.h",
+      "edo/Service/Sources/EDOHostNamingService.m",
+      "edo/Service/Sources/EDOHostService+Handlers.h",
+      "edo/Service/Sources/EDOHostService+Handlers.m",
+      "edo/Service/Sources/EDOHostService+Private.h",
+      "edo/Service/Sources/EDOHostService.h",
+      "edo/Service/Sources/EDOHostService.m",
+      "edo/Service/Sources/EDOInvocationMessage.h",
+      "edo/Service/Sources/EDOInvocationMessage.m",
+      "edo/Service/Sources/EDOMessage.h",
+      "edo/Service/Sources/EDOMessage.m",
+      "edo/Service/Sources/EDOMethodSignatureMessage.h",
+      "edo/Service/Sources/EDOMethodSignatureMessage.m",
+      "edo/Service/Sources/EDOObject+EDOParameter.m",
+      "edo/Service/Sources/EDOObject+Invocation.m",
+      "edo/Service/Sources/EDOObject+Private.h",
+      "edo/Service/Sources/EDOObject.h",
+      "edo/Service/Sources/EDOObject.m",
+      "edo/Service/Sources/EDOObjectAliveMessage.h",
+      "edo/Service/Sources/EDOObjectAliveMessage.m",
+      "edo/Service/Sources/EDOObjectMessage.h",
+      "edo/Service/Sources/EDOObjectMessage.m",
+      "edo/Service/Sources/EDOObjectReleaseMessage.h",
+      "edo/Service/Sources/EDOObjectReleaseMessage.m",
+      "edo/Service/Sources/EDOParameter.h",
+      "edo/Service/Sources/EDOParameter.m",
+      "edo/Service/Sources/EDOProtocolObject.h",
+      "edo/Service/Sources/EDOProtocolObject.m",
+      "edo/Service/Sources/EDORemoteException.h",
+      "edo/Service/Sources/EDORemoteException.m",
+      "edo/Service/Sources/EDORemoteVariable.h",
+      "edo/Service/Sources/EDORemoteVariable.m",
+      "edo/Service/Sources/EDOServiceError.h",
+      "edo/Service/Sources/EDOServiceError.m",
+      "edo/Service/Sources/EDOServiceException.h",
+      "edo/Service/Sources/EDOServiceException.m",
+      "edo/Service/Sources/EDOServicePort.h",
+      "edo/Service/Sources/EDOServicePort.m",
+      "edo/Service/Sources/EDOServiceRequest.h",
+      "edo/Service/Sources/EDOServiceRequest.m",
+      "edo/Service/Sources/EDOTimingFunctions.h",
+      "edo/Service/Sources/EDOTimingFunctions.m",
+      "edo/Service/Sources/EDOValueObject+EDOParameter.m",
+      "edo/Service/Sources/EDOValueObject.h",
+      "edo/Service/Sources/EDOValueObject.m",
+      "edo/Service/Sources/EDOValueType.m",
+      "edo/Service/Sources/EDOWeakObject.h",
+      "edo/Service/Sources/EDOWeakObject.m",
+      "edo/Service/Sources/NSBlock+EDOInvocation.m",
+      "edo/Service/Sources/NSKeyedArchiver+EDOAdditions.h",
+      "edo/Service/Sources/NSKeyedArchiver+EDOAdditions.m",
+      "edo/Service/Sources/NSKeyedUnarchiver+EDOAdditions.h",
+      "edo/Service/Sources/NSKeyedUnarchiver+EDOAdditions.m",
+      "edo/Service/Sources/NSObject+EDOBlockedType.h",
+      "edo/Service/Sources/NSObject+EDOBlockedType.m",
+      "edo/Service/Sources/NSObject+EDOParameter.h",
+      "edo/Service/Sources/NSObject+EDOParameter.m",
+      "edo/Service/Sources/NSObject+EDOValue.h",
+      "edo/Service/Sources/NSObject+EDOValue.m",
+      "edo/Service/Sources/NSObject+EDOValueObject.h",
+      "edo/Service/Sources/NSObject+EDOValueObject.m",
+      "edo/Service/Sources/NSObject+EDOWeakObject.h",
+      "edo/Service/Sources/NSObject+EDOWeakObject.m",
+      "edo/Service/Sources/NSProxy+EDOParameter.h",
+      "edo/Service/Sources/NSProxy+EDOParameter.m",
+    ]
+
+    public_configs = [ ":config" ]
+    deps = [
+      "../../build:ios_enable_arc",
+    ]
+  }
+}

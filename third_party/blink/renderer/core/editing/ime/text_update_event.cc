@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/ime/text_update_event.h"
 
-#include "third_party/blink/renderer/core/editing/ime/text_update_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_text_update_event_init.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 

@@ -12,6 +12,10 @@ namespace display {
 class Display;
 }
 
+namespace ui {
+enum class CursorSize;
+}
+
 namespace aura {
 namespace client {
 

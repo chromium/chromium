@@ -1,0 +1,11 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  sources = [ "media_playback_options.mojom" ]
+
+  deps = [ "//content/public/common:renderer_type" ]
+}

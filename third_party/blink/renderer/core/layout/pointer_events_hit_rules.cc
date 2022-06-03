@@ -19,7 +19,7 @@
 
 #include "third_party/blink/renderer/core/layout/pointer_events_hit_rules.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
@@ -27,9 +27,7 @@ struct SameSizeAsPointerEventsHitRules {
   unsigned bitfields;
 };
 
-static_assert(sizeof(PointerEventsHitRules) <=
-                  sizeof(SameSizeAsPointerEventsHitRules),
-              "PointerEventsHitRules should stay small");
+ASSERT_SIZE(PointerEventsHitRules, SameSizeAsPointerEventsHitRules);
 
 PointerEventsHitRules::PointerEventsHitRules(EHitTesting hit_testing,
                                              const HitTestRequest& request,

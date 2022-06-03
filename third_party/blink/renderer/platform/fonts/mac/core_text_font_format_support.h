@@ -8,7 +8,7 @@
 namespace blink {
 
 bool CoreTextVersionSupportsVariations();
-bool CoreTextVersionSupportsColrCpal();
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_MAC_CORE_TEXT_FONT_FORMAT_SUPPORT_H_

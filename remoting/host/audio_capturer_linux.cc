@@ -8,9 +8,9 @@
 
 #include <utility>
 
+#include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "remoting/proto/audio.pb.h"
 

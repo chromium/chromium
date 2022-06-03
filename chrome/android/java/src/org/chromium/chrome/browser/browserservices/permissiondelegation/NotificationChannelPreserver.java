@@ -6,10 +6,10 @@ package org.chromium.chrome.browser.browserservices.permissiondelegation;
 
 import android.os.Build;
 
-import org.chromium.chrome.browser.browserservices.Origin;
 import org.chromium.chrome.browser.notifications.NotificationChannelStatus;
-import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
+import org.chromium.components.embedder_support.util.Origin;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -48,7 +48,7 @@ public class NotificationChannelPreserver {
         if (beforeAndroidO()) return;
 
         String channelId = mSiteChannelsManager.getChannelIdForOrigin(origin.toString());
-        if (ChannelDefinitions.ChannelId.SITES.equals(channelId)) {
+        if (ChromeChannelDefinitions.ChannelId.SITES.equals(channelId)) {
             // If we were given the generic "sites" channel that meant no origin-specific channel
             // existed. We don't need to do anything.
             return;

@@ -9,15 +9,17 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
+#include "base/feature_list.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
 #include "base/thread_annotations.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -35,9 +37,14 @@
 #include "extensions/common/permissions/permissions_data.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/common/webui_url_constants.h"
+#endif
+
 using content::BrowserThread;
 using extensions::APIPermission;
 using extensions::Extension;
+using extensions::mojom::APIPermissionID;
 using storage::SpecialStoragePolicy;
 
 class ExtensionSpecialStoragePolicy::CookieSettingsObserver
@@ -74,8 +81,8 @@ class ExtensionSpecialStoragePolicy::CookieSettingsObserver
     // Post a task to avoid any potential re-entrancy issues with
     // |NotifyPolicyChangedImpl()| since it holds a lock while calling back into
     // ExtensionSpecialStoragePolicy.
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&CookieSettingsObserver::NotifyPolicyChangedImpl,
                        base::Unretained(this)));
   }
@@ -97,8 +104,7 @@ ExtensionSpecialStoragePolicy::ExtensionSpecialStoragePolicy(
     : cookie_settings_(cookie_settings),
       cookie_settings_observer_(
           new CookieSettingsObserver(cookie_settings_, this),
-          base::OnTaskRunnerDeleter(
-              base::CreateSequencedTaskRunner({BrowserThread::UI}))) {}
+          base::OnTaskRunnerDeleter(content::GetUIThreadTaskRunner({}))) {}
 
 ExtensionSpecialStoragePolicy::~ExtensionSpecialStoragePolicy() {
   cookie_settings_observer_->WillDestroyPolicy();
@@ -120,6 +126,14 @@ bool ExtensionSpecialStoragePolicy::IsStorageUnlimited(const GURL& origin) {
       origin.host_piece() == chrome::kChromeUIDevToolsHost)
     return true;
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // chrome-untrusted://terminal/ runs the SSH extension code which can store
+  // SSH known_hosts, config, and Identity keys. Use unlimitedStorage to match
+  // extension config.
+  if (origin == chrome::kChromeUIUntrustedTerminalURL)
+    return true;
+#endif
+
   base::AutoLock locker(lock_);
   return unlimited_extensions_.Contains(origin) ||
          content_capabilities_unlimited_extensions_.GrantsCapabilitiesTo(
@@ -132,10 +146,10 @@ bool ExtensionSpecialStoragePolicy::IsStorageSessionOnly(const GURL& origin) {
   return cookie_settings_->IsCookieSessionOnly(origin);
 }
 
-network::SessionCleanupCookieStore::DeleteCookiePredicate
+network::DeleteCookiePredicate
 ExtensionSpecialStoragePolicy::CreateDeleteCookieOnExitPredicate() {
   if (!cookie_settings_)
-    return network::SessionCleanupCookieStore::DeleteCookiePredicate();
+    return network::DeleteCookiePredicate();
   // Fetch the list of cookies related content_settings and bind it
   // to CookieSettings::ShouldDeleteCookieOnExit to avoid fetching it on
   // every call.
@@ -172,7 +186,18 @@ bool ExtensionSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
 
 bool ExtensionSpecialStoragePolicy::NeedsProtection(
     const extensions::Extension* extension) {
-  return extension->is_hosted_app() && !extension->from_bookmark();
+  // We only consider "protecting" storage for hosted apps (excluding bookmark
+  // apps, which are only hosted apps as an implementation detail).
+  if (!extension->is_hosted_app() || extension->from_bookmark())
+    return false;
+
+  // Default-installed apps don't have protected storage.
+  if (extension->was_installed_by_default())
+    return false;
+
+  // Otherwise, this is a user-installed hosted app, and we grant it
+  // special protected storage.
+  return true;
 }
 
 const extensions::ExtensionSet*
@@ -188,31 +213,32 @@ void ExtensionSpecialStoragePolicy::GrantRightsForExtension(
   DCHECK(extension);
 
   int change_flags = 0;
-  if (extensions::ContentCapabilitiesInfo::Get(extension)
-          .permissions.count(APIPermission::kUnlimitedStorage) > 0) {
+  if (extensions::ContentCapabilitiesInfo::Get(extension).permissions.count(
+          APIPermissionID::kUnlimitedStorage) > 0) {
     content_capabilities_unlimited_extensions_.Add(extension);
     change_flags |= SpecialStoragePolicy::STORAGE_UNLIMITED;
   }
 
   if (NeedsProtection(extension) ||
       extension->permissions_data()->HasAPIPermission(
-          APIPermission::kUnlimitedStorage) ||
+          APIPermissionID::kUnlimitedStorage) ||
       extension->permissions_data()->HasAPIPermission(
-          APIPermission::kFileBrowserHandler) ||
+          APIPermissionID::kFileBrowserHandler) ||
       extensions::AppIsolationInfo::HasIsolatedStorage(extension) ||
       extension->is_app()) {
     if (NeedsProtection(extension) && protected_apps_.Add(extension))
       change_flags |= SpecialStoragePolicy::STORAGE_PROTECTED;
 
     if (extension->permissions_data()->HasAPIPermission(
-            APIPermission::kUnlimitedStorage) &&
+            APIPermissionID::kUnlimitedStorage) &&
         unlimited_extensions_.Add(extension)) {
       change_flags |= SpecialStoragePolicy::STORAGE_UNLIMITED;
     }
 
     if (extension->permissions_data()->HasAPIPermission(
-            APIPermission::kFileBrowserHandler))
+            APIPermissionID::kFileBrowserHandler)) {
       file_handler_extensions_.Add(extension);
+    }
 
     if (extensions::AppIsolationInfo::HasIsolatedStorage(extension))
       isolated_extensions_.Add(extension);
@@ -230,30 +256,32 @@ void ExtensionSpecialStoragePolicy::RevokeRightsForExtension(
   DCHECK(extension);
 
   int change_flags = 0;
-  if (extensions::ContentCapabilitiesInfo::Get(extension)
-          .permissions.count(APIPermission::kUnlimitedStorage) > 0) {
+  if (extensions::ContentCapabilitiesInfo::Get(extension).permissions.count(
+          APIPermissionID::kUnlimitedStorage) > 0) {
     content_capabilities_unlimited_extensions_.Remove(extension);
     change_flags |= SpecialStoragePolicy::STORAGE_UNLIMITED;
   }
 
   if (NeedsProtection(extension) ||
       extension->permissions_data()->HasAPIPermission(
-          APIPermission::kUnlimitedStorage) ||
+          APIPermissionID::kUnlimitedStorage) ||
       extension->permissions_data()->HasAPIPermission(
-          APIPermission::kFileBrowserHandler) ||
+          APIPermissionID::kFileBrowserHandler) ||
       extensions::AppIsolationInfo::HasIsolatedStorage(extension) ||
       extension->is_app()) {
     if (NeedsProtection(extension) && protected_apps_.Remove(extension))
       change_flags |= SpecialStoragePolicy::STORAGE_PROTECTED;
 
     if (extension->permissions_data()->HasAPIPermission(
-            APIPermission::kUnlimitedStorage) &&
-        unlimited_extensions_.Remove(extension))
+            APIPermissionID::kUnlimitedStorage) &&
+        unlimited_extensions_.Remove(extension)) {
       change_flags |= SpecialStoragePolicy::STORAGE_UNLIMITED;
+    }
 
     if (extension->permissions_data()->HasAPIPermission(
-            APIPermission::kFileBrowserHandler))
+            APIPermissionID::kFileBrowserHandler)) {
       file_handler_extensions_.Remove(extension);
+    }
 
     if (extensions::AppIsolationInfo::HasIsolatedStorage(extension))
       isolated_extensions_.Remove(extension);
@@ -282,30 +310,32 @@ void ExtensionSpecialStoragePolicy::NotifyGranted(
     const GURL& origin,
     int change_flags) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTask(FROM_HERE, {BrowserThread::IO},
-                   base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyGranted,
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyGranted,
                                   this, origin, change_flags));
     return;
   }
-  SpecialStoragePolicy::NotifyGranted(origin, change_flags);
+  SpecialStoragePolicy::NotifyGranted(url::Origin::Create(origin),
+                                      change_flags);
 }
 
 void ExtensionSpecialStoragePolicy::NotifyRevoked(
     const GURL& origin,
     int change_flags) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTask(FROM_HERE, {BrowserThread::IO},
-                   base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyRevoked,
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyRevoked,
                                   this, origin, change_flags));
     return;
   }
-  SpecialStoragePolicy::NotifyRevoked(origin, change_flags);
+  SpecialStoragePolicy::NotifyRevoked(url::Origin::Create(origin),
+                                      change_flags);
 }
 
 void ExtensionSpecialStoragePolicy::NotifyCleared() {
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&ExtensionSpecialStoragePolicy::NotifyCleared, this));
     return;
   }

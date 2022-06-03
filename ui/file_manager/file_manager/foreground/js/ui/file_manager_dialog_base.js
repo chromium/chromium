@@ -2,15 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BaseDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
+import {util} from '../../../common/js/util.js';
+import {xfm} from '../../../common/js/xfm.js';
+
 /**
  * This class is an extended class, to manage the status of the dialogs.
  */
-class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
+export class FileManagerDialogBase extends BaseDialog {
   /**
    * @param {HTMLElement} parentNode Parent node of the dialog.
    */
   constructor(parentNode) {
     super(parentNode);
+
+    this.container.classList.add('files-ng');
+  }
+
+  /**
+   * @protected
+   * @override
+   */
+  initDom() {
+    super.initDom();
+    super.hasModalContainer = true;
   }
 
   /**
@@ -42,7 +58,7 @@ class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
     FileManagerDialogBase.shown = true;
 
     // If a dialog is shown, activate the window.
-    const appWindow = chrome.app.window.current();
+    const appWindow = xfm.getCurrentWindow();
     if (appWindow) {
       appWindow.focus();
     }
@@ -50,6 +66,22 @@ class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
     super.showWithTitle(title, message, onOk, onCancel, null);
 
     return true;
+  }
+
+  /**
+   * @override
+   */
+  showWithTitle(title, message, ...args) {
+    this.frame.classList.toggle('no-title', !title);
+    super.showWithTitle(title, message, ...args);
+  }
+
+  /**
+   * @override
+   */
+  showHtml(title, message, ...args) {
+    this.frame.classList.toggle('no-title', !title);
+    super.showHtml(title, message, ...args);
   }
 
   /**
@@ -81,15 +113,25 @@ class FileManagerDialogBase extends cr.ui.dialogs.BaseDialog {
   }
 
   /**
-   * @param {Function=} opt_onHide Called when the dialog is hidden.
+   * @override
+   * @suppress {accessControls}
    */
-  hide(opt_onHide) {
+  show_(...args) {
+    this.parentNode_ = util.getFilesAppModalDialogInstance();
+
+    super.show_(...args);
+
+    this.parentNode_.showModal();
+  }
+
+  /**
+   * @override
+   */
+  hide(...args) {
+    this.parentNode_.close();
+
     FileManagerDialogBase.shown = false;
-    super.hide(() => {
-      if (opt_onHide) {
-        opt_onHide();
-      }
-    });
+    super.hide(...args);
   }
 }
 

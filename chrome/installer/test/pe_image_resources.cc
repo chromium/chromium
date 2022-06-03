@@ -38,26 +38,26 @@ bool EnumResourcesWorker(const base::win::PEImage& image,
   if (!StructureAt(tree_base + directory_offset, tree_size - directory_offset,
                    &resource_directory) ||
       directory_offset + sizeof(IMAGE_RESOURCE_DIRECTORY) +
-          (resource_directory->NumberOfNamedEntries +
-           resource_directory->NumberOfIdEntries) *
-          sizeof(IMAGE_RESOURCE_DIRECTORY_ENTRY) > tree_size) {
+              (resource_directory->NumberOfNamedEntries +
+               resource_directory->NumberOfIdEntries) *
+                  sizeof(IMAGE_RESOURCE_DIRECTORY_ENTRY) >
+          tree_size) {
     LOG(DFATAL) << "Insufficient room in resource segment for directory entry.";
     return false;
   }
 
   const IMAGE_RESOURCE_DIRECTORY_ENTRY* scan =
       reinterpret_cast<const IMAGE_RESOURCE_DIRECTORY_ENTRY*>(
-          tree_base + directory_offset +
-          sizeof(IMAGE_RESOURCE_DIRECTORY));
-  const IMAGE_RESOURCE_DIRECTORY_ENTRY* end = scan +
-      resource_directory->NumberOfNamedEntries +
+          tree_base + directory_offset + sizeof(IMAGE_RESOURCE_DIRECTORY));
+  const IMAGE_RESOURCE_DIRECTORY_ENTRY* end =
+      scan + resource_directory->NumberOfNamedEntries +
       resource_directory->NumberOfIdEntries;
   for (; success && scan != end; ++scan) {
     if ((scan->NameIsString != 0) !=
         (scan - reinterpret_cast<const IMAGE_RESOURCE_DIRECTORY_ENTRY*>(
-            tree_base + directory_offset +
-            sizeof(IMAGE_RESOURCE_DIRECTORY)) <
-            resource_directory->NumberOfNamedEntries)) {
+                    tree_base + directory_offset +
+                    sizeof(IMAGE_RESOURCE_DIRECTORY)) <
+         resource_directory->NumberOfNamedEntries)) {
       LOG(DFATAL) << "Inconsistent number of named or numbered entries.";
       success = false;
       break;
@@ -67,21 +67,21 @@ bool EnumResourcesWorker(const base::win::PEImage& image,
       if (!StructureAt(tree_base + scan->NameOffset,
                        tree_size - scan->NameOffset, &dir_string) ||
           scan->NameOffset + sizeof(WORD) +
-              dir_string->Length * sizeof(wchar_t) > tree_size) {
+                  dir_string->Length * sizeof(wchar_t) >
+              tree_size) {
         LOG(DFATAL) << "Insufficient room in resource segment for entry name.";
         success = false;
         break;
       }
-      path->push_back(
-          upgrade_test::EntryId(std::wstring(&dir_string->NameString[0],
-                                             dir_string->Length)));
+      path->push_back(upgrade_test::EntryId(
+          std::wstring(&dir_string->NameString[0], dir_string->Length)));
     } else {
       path->push_back(upgrade_test::EntryId(scan->Id));
     }
     if (scan->DataIsDirectory) {
-      success = EnumResourcesWorker(image, tree_base, tree_size,
-                                    scan->OffsetToDirectory, path, callback,
-                                    context);
+      success =
+          EnumResourcesWorker(image, tree_base, tree_size,
+                              scan->OffsetToDirectory, path, callback, context);
     } else {
       const IMAGE_RESOURCE_DATA_ENTRY* data_entry;
       if (StructureAt(tree_base + scan->OffsetToData,
@@ -91,8 +91,9 @@ bool EnumResourcesWorker(const base::win::PEImage& image,
                   data_entry->Size <=
               tree_base + tree_size) {
         // Despite what winnt.h says, OffsetToData is an RVA.
-        callback(*path, reinterpret_cast<uint8_t*>(
-                            image.RVAToAddr(data_entry->OffsetToData)),
+        callback(*path,
+                 reinterpret_cast<uint8_t*>(
+                     image.RVAToAddr(data_entry->OffsetToData)),
                  data_entry->Size, data_entry->CodePage, context);
       } else {
         LOG(DFATAL) << "Insufficient room in resource segment for data entry.";
@@ -110,15 +111,17 @@ bool EnumResourcesWorker(const base::win::PEImage& image,
 namespace upgrade_test {
 
 // static
-bool EnumResources(const base::win::PEImage& image, EnumResource_Fn callback,
+bool EnumResources(const base::win::PEImage& image,
+                   EnumResource_Fn callback,
                    uintptr_t context) {
   DWORD resources_size =
       image.GetImageDirectoryEntrySize(IMAGE_DIRECTORY_ENTRY_RESOURCE);
   if (resources_size != 0) {
     EntryPath path_storage;
     return EnumResourcesWorker(
-        image, reinterpret_cast<uint8_t*>(image.GetImageDirectoryEntryAddr(
-                   IMAGE_DIRECTORY_ENTRY_RESOURCE)),
+        image,
+        reinterpret_cast<uint8_t*>(
+            image.GetImageDirectoryEntryAddr(IMAGE_DIRECTORY_ENTRY_RESOURCE)),
         resources_size, 0, &path_storage, callback, context);
   }
   return true;

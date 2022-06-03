@@ -39,7 +39,6 @@ class SocketUnitTest : public ExtensionApiUnittest {
 TEST_F(SocketUnitTest, Create) {
   // Create SocketCreateFunction and put it on BrowserThread
   SocketCreateFunction* function = new SocketCreateFunction();
-  function->set_work_task_runner(base::SequencedTaskRunnerHandle::Get());
 
   // Run tests
   std::unique_ptr<base::DictionaryValue> result(

@@ -1,5 +1,3 @@
 CONSOLE WARNING: Failed to decode downloaded font: custom-font-data-crash2.html
-CONSOLE WARNING: OTS parsing error: invalid version tag
-CONSOLE WARNING: line 15: Failed to decode downloaded font: custom-font-data-crash2.html
-CONSOLE WARNING: line 15: OTS parsing error: invalid version tag
+CONSOLE WARNING: OTS parsing error: invalid sfntVersion: 1008813135
 PASS

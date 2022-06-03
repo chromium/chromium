@@ -1,0 +1,527 @@
+// Copyright 2016 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "mojo/public/mojom/base/big_buffer.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/url_loader_network_service_observer.mojom";
+import "services/network/public/mojom/client_security_state.mojom";
+import "services/network/public/mojom/cors.mojom";
+import "services/network/public/mojom/cookie_access_observer.mojom";
+import "services/network/public/mojom/cookie_manager.mojom";
+import "services/network/public/mojom/chunked_data_pipe_getter.mojom";
+import "services/network/public/mojom/data_pipe_getter.mojom";
+import "services/network/public/mojom/devtools_observer.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/http_raw_headers.mojom";
+import "services/network/public/mojom/http_request_headers.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
+import "services/network/public/mojom/isolation_info.mojom";
+import "services/network/public/mojom/network_param.mojom";
+import "services/network/public/mojom/referrer_policy.mojom";
+import "services/network/public/mojom/request_priority.mojom";
+import "services/network/public/mojom/site_for_cookies.mojom";
+import "services/network/public/mojom/trust_tokens.mojom";
+import "services/network/public/mojom/url_response_head.mojom";
+import "services/network/public/mojom/web_bundle_handle.mojom";
+import "services/network/public/mojom/accept_ch_frame_observer.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+// This enums corresponds to net::SourceStream::SourceType.
+enum SourceType {
+  kBrotli,
+  kDeflate,
+  kGzip,
+  kNone,
+  kUnknown,
+};
+
+// See documentation at `URLRequest.trusted_params`.
+struct TrustedUrlRequestParams {
+  // If non-empty, this value will be used to set the SiteForCookies and
+  // NetworkIsolationKey used by the network request.
+  IsolationInfo isolation_info;
+
+  // Whether secure DNS should be disabled for the request.
+  bool disable_secure_dns;
+
+  // Whether a navigation is triggered with a user gesture.
+  // Always true for navigations except the one triggered from a document
+  // without user gesture. Used to determine the `Sec-Fetch-User` header.
+  bool has_user_activation;
+
+  // Observer which should be notified when this URLRequest reads or writes
+  // a cookie. If this is set to non-null, the observer passed to
+  // URLLoaderFactory will be ignored.
+  pending_remote<CookieAccessObserver>? cookie_observer;
+
+  // Observer which should be notified when this URLRequest has authentication
+  // and certificate events. If this is set to non-null, the observer passed to
+  // URLLoaderFactory will be ignored.
+  pending_remote<URLLoaderNetworkServiceObserver>? url_loader_network_observer;
+
+  pending_remote<DevToolsObserver>? devtools_observer;
+
+  // Specifies the security state of the client, for cases when the
+  // URLLoaderFactory is shared among multiple clients.
+  //
+  // This field is only used if no ClientSecurityState was specified in the
+  // URLLoaderFactoryParams passed to the factory. Otherwise, the value from
+  // the factory params is used unconditionally.
+  ClientSecurityState? client_security_state;
+
+  // An observer that should be notified when an ACCEPT_CH H2/3 frame is
+  // received. Can be null to signify that the requestor is not interested in
+  // ACCEPT_CH frames.
+  pending_remote<AcceptCHFrameObserver>? accept_ch_frame_observer;
+};
+
+// Options that may only be set on URLRequests which are related to WebBundle.
+struct WebBundleTokenParams {
+  // The URL of the WebBundle.
+  url.mojom.Url bundle_url;
+  // Unique token to identify a WebBundle.
+  mojo_base.mojom.UnguessableToken token;
+  // Handle for the WebBundle-related communication between the network process
+  // and the renderer. This is also used as a 'keep-alive' handle. We clean up
+  // the WebBundle data in the network process when the renderer-side endpoint
+  // is deleted.
+  pending_remote<WebBundleHandle>? web_bundle_handle;
+  // Renderer process ID of the request initiator frame. Set by the browser
+  // process, for subframe navigation requests to bundled resources. Not used
+  // for subresource requests sent by renderer processes.
+  int32 render_process_id;
+};
+
+// Options that may be set when URLRequests need to take over NetLog related
+// parameters. The URLRequest will use these parameters on logging.
+// Typemapped to net::NetLogSource.
+struct NetLogSource {
+  uint32 source_type;
+  uint32 source_id;
+  mojo_base.mojom.TimeTicks start_time;
+};
+
+// Typemapped to network::ResourceRequest.
+struct URLRequest {
+  // The request method: GET, POST, etc.
+  string method;
+
+  // The absolute requested URL encoded in ASCII per the rules of RFC-2396.
+  url.mojom.Url url;
+
+  // Represents the first-party for the request, which may be checked by
+  // the third-party cookie blocking policy or by some cookies. Leaving it empty
+  // may lead to undesired cookie blocking. Third-party cookie blocking can be
+  // bypassed by setting site_for_cookies = SiteForCookies::FromUrl(url), but
+  // this should only be done if the fetch can be reasonably said to be done by
+  // the same principal as what |url| represents.
+  //
+  // Currently if a renderer is compromised an attacker could alter the
+  // SiteForCookies. This would allow the renderer to send cookies to a
+  // third-party context when it otherwise wouldn't be able to.
+  // https://crbug.com/1060631 will move the SFC computation into the browser
+  // process to prevent this.
+  // TODO(https://crbug.com/1060631): Remove this message after the fix is
+  // landed.
+  SiteForCookies site_for_cookies;
+
+  // First-party URL redirect policy: During server redirects, the first-party
+  // URL for cookies normally doesn't change. However, if this is true, the
+  // the first-party URL should be updated to the URL on every redirect.
+  bool update_first_party_url_on_redirect;
+
+  // |request_initiator| indicates the origin initiating the resource request.
+  //
+  // For all requests initiated via web (both subresource requests and
+  // navigations), |request_initiator| should always be set to the origin of
+  // the frame (or worker) that has initiated the request.  This is true even
+  // if the request might have been initiated by an isolated world (e.g. from a
+  // content script of an extension, with its own, separate origin).  This
+  // needs to be true even if the request might be "proxied" in the browser
+  // process on behalf of a web origin (e.g. as is the case for PaymentRequest
+  // API).
+  //
+  // |request_initiator| should be omitted (i.e. set to absl::nullopt) for
+  // browser-initiated requests (e.g. navigations initiated via omnibox or
+  // bookmarks, internal subresource requests like fetching the SafeBrowsing
+  // data, etc.).  Various security features may treat browser-initiated
+  // requests in a special way - for example in such requests 1) the special
+  // `Sec-Fetch-Site: none` request header is sent, 2) http responses are not
+  // blocked based on their Cross-Origin-Resource-Policy header, etc.
+  //
+  // SECURITY NOTE: Factories with |process_id| set to |kBrowserProcessId| do
+  // not enforce |request_initiator_origin_lock| and instead rely on the
+  // factory user to ensure that a valid, non-nullopt |request_initiator| is
+  // provided.  Failure to provide a correct, verified |request_initiator| may
+  // lead to bypasses of CORS, CORB, SameSite cookies and other HTTP security
+  // features.  An untrustworthy process (e.g. a renderer or a utility process)
+  // should not be able to trigger or influence requests with a absl::nullopt
+  // |request_initiator|).
+  //
+  // See also:
+  // - |isolated_world_origin|
+  // - URLLoaderFactoryParams::request_initiator_origin_lock
+  url.mojom.Origin? request_initiator;
+
+  // The chain of URLs seen during navigation redirects.  This should only
+  // contain values if the mode is `RedirectMode::kNavigate`.  This list
+  // will contain the initial network request URL, but not URLs from previous
+  // state in the DOM.  For example, if a frame has URL A and sets its location
+  // to URL B, then the redirect chain will begin with URL B.  The chain also
+  // includes the current request URL, however, it will not reflect any changes
+  // made by throttles.
+  array<url.mojom.Url> navigation_redirect_chain;
+
+  // If this is a subresource request initiated from an isolated world (e.g.
+  // from a content script of a Chrome Extension), then
+  // |isolated_world_origin| indicates the origin of the isolated world.
+  // Otherwise, |isolated_world_origin| is null.
+  //
+  // Example #1: XHR initiated from a content script of chrome-extension://foo
+  // that was injected into a https://example.com web frame:
+  // - |request_initiator| is "https://example.com"
+  // - |isolated_world_origin| is "chrome-extension://foo"
+  //
+  // Example #2: XHR initiated from a Chrome Extension frame (e.g. from an
+  // extension background page):
+  // - |request_initiator| is "chrome-extension://foo"
+  // - |isolated_world_origin| is null (this request is not associated with an
+  //   isolated world)
+  //
+  // |isolated_world_origin| is consulted by OOR-CORS, to determine if this
+  // request might need to be exempt from CORS, based on OriginAccessList.
+  //
+  // TODO(lukasza): https://crbug.com/936310: Attempt to remove
+  // |isolated_world_origin| after removing the global/per-NetworkContext
+  // OriginAccessList and replacing it with per-URLLoaderFactory
+  // OriginAccessList.
+  url.mojom.Origin? isolated_world_origin;
+
+  // The referrer to use (may be empty).
+  url.mojom.Url referrer;
+
+  // The referrer policy to use.
+  URLRequestReferrerPolicy referrer_policy;
+
+  // Additional HTTP request headers.
+  HttpRequestHeaders headers;
+
+  // HTTP request headers that has been internally added. Some consumers want to
+  // set additional HTTP headers, but such internal headers must be ignored by
+  // CORS check (which run inside Network Service), so the values are stored
+  // here (rather than in |headers|) and later merged into the |headers| after
+  // CORS check. If this request is sent to the network service, the header
+  // names stored in this member should be declared in
+  // NetworkContextParams::cors_exempt_header_list for the NetworkContext.
+  // Otherwise, the request will fail.
+  //
+  // *Warning*: Adding new headers to this list is strongly discouraged and
+  // should only be done for non-standard headers used for legacy reasons. What
+  // usually you need is to update the fetch spec, and add your custom headers
+  // to the CORS-safelisted header so to pass proper CORS checks. 'Proxy-' or
+  // 'Sec-' prefixes are also available. See cors::IsCORSSafelistedHeader and
+  // cors::IsForbiddenHeader for details, and Loading and CORS OWNERS when you
+  // need to add your own headers to the list.
+  HttpRequestHeaders cors_exempt_headers;  // See Note above before using.
+
+  // net::URLRequest load flags.
+  int32 load_flags;
+
+  // What this resource load is for (main frame, sub-frame, sub-resource,
+  // object).
+  // Note: this is an enum of type blink::mojom::ResourceType.
+  // TODO(https://crbug.com/1059639): remove this in favor of `destination`.
+  int32 resource_type;
+
+  // The priority of this request determined by Blink.
+  RequestPriority priority;
+
+  // True if corresponding AppCache group should be reset.
+  bool should_reset_appcache;
+
+  // https://wicg.github.io/cors-rfc1918/#external-request
+  // TODO(toyoshim): The browser should know better than renderers do.
+  // This is used to plumb Blink decided information for legacy code path, but
+  // eventually we should remove this.
+  bool is_external_request;
+
+  // A policy to decide if CORS-preflight fetch should be performed.
+  CorsPreflightPolicy cors_preflight_policy;
+
+  // True if the request originated from a Service Worker, e.g. due to a
+  // fetch() in the Service Worker script.
+  bool originated_from_service_worker;
+
+  // The service worker mode that indicates which service workers should get
+  // events for this request.
+  // TODO(jam): remove this from the struct since network service shouldn't know
+  // about this.
+  bool skip_service_worker;
+
+  // If true then the request continues even if it's blocked by CORB.
+  bool corb_detachable = false;
+
+  // https://fetch.spec.whatwg.org/#concept-request-mode
+  // Used mainly by CORS handling (out-of-blink CORS), CORB, Service Worker.
+  // CORS handling needs a proper origin (including a unique opaque origin).
+  // Hence a request with kSameOrigin, kCors, or kCorsWithForcedPreflight should
+  // have a non-null request_initiator.
+  RequestMode mode;
+
+  // https://fetch.spec.whatwg.org/#concept-request-credentials-mode
+  // Controls whether credentials are attached to this request.
+  // |kSameOrigin| credentials mode requires a non-null |request_initiator|.
+  // When |mode| is |kNavigate|, this needs to be |kInclude|.
+  CredentialsMode credentials_mode;
+
+  // https://fetch.spec.whatwg.org/#concept-request-redirect-mode
+  // Used mainly by CORS handling (out-of-blink CORS), Service Worker.
+  // This member must be kFollow as long as |mode| is kNoCors.
+  RedirectMode redirect_mode;
+
+  // The integrity used in Fetch API.
+  string fetch_integrity;
+
+  // https://fetch.spec.whatwg.org/#concept-request-destination
+  RequestDestination destination;
+
+  // Optional resource request body.
+  URLRequestBody? request_body;
+
+  // True if the request can work after the fetch group is terminated.
+  // https://fetch.spec.whatwg.org/#request-keepalive-flag
+  bool keepalive;
+
+  // True if the request was user initiated.
+  bool has_user_gesture;
+
+  // TODO(mmenke): Investigate if enable_load_timing is safe to remove.
+  //
+  // True if load timing data should be collected for request.
+  bool enable_load_timing;
+
+  // True if upload progress should be available for request.
+  bool enable_upload_progress;
+
+  // True if login prompts for this request should be suppressed. Cached
+  // credentials or default credentials may still be used for authentication.
+  bool do_not_prompt_for_login;
+
+  // True if |frame_id| is the main frame of a RenderView.
+  bool is_main_frame;
+
+  // Note: this is an enum of type ui::PageTransition.
+  // TODO(jam): remove this from the struct since network service shouldn't know
+  // about this.
+  int32 transition_type;
+
+  // Whether or not to request a Preview version of the resource or let the
+  // browser decide.
+  // Note: this is an enum of type PreviewsState.
+  // TODO(jam): remove this from the struct since network service shouldn't know
+  // about this.
+  int32 previews_state;
+
+  // Whether or not this request (including redirects) should be upgraded to
+  // HTTPS due to an Upgrade-Insecure-Requests requirement.
+  bool upgrade_if_insecure;
+
+  // True when the request is revalidating.
+  // Some users, notably blink, has its own cache. This flag is set to exempt
+  // some CORS logic for a revalidating request.
+  bool is_revalidating;
+
+  // The profile ID of network conditions to throttle the network request.
+  mojo_base.mojom.UnguessableToken? throttling_profile_id;
+
+  // See https://fetch.spec.whatwg.org/#concept-request-window
+  //
+  // This is an opaque id of the original requestor of the resource, which might
+  // be different to the current requestor which is |render_frame_id|. For
+  // example, if a navigation for window "abc" is intercepted by a service
+  // worker, which re-issues the request via fetch, the re-issued request has
+  // |render_frame_id| of MSG_ROUTING_NONE (the service worker) and |window_id|
+  // of "abc". This is used for, e.g., client certificate selection. It's
+  // important that this id be unguessable so renderers cannot impersonate
+  // other renderers.
+  //
+  // This may be empty when the original requestor is the current requestor or
+  // is not a window. When it's empty, use |render_frame_id| instead. In
+  // practical terms, it's empty for requests that didn't go through a service
+  // worker, or if the original requestor is not a window. When the request
+  // goes through a service worker, the id is
+  // ServiceWorkerContainerHost::fetch_request_window_id.
+  mojo_base.mojom.UnguessableToken? fetch_window_id;
+
+  // The ID that DevTools uses to track network requests. It is generated in the
+  // renderer process and is only present when DevTools is enabled in the
+  // renderer.
+  string? devtools_request_id;
+
+  // A V8 stack id string describing where the request was initiated. DevTools
+  // can use this to display the initiator call stack when debugging a process
+  // that later intercepts the request, e.g., in a service worker fetch event
+  // handler.
+  string? devtools_stack_id;
+
+  // True for prefetch requests when SignedExchangePrefetchCacheForNavigations
+  // feature is enabled by flags or SignedExchangeSubresourcePrefetch feature is
+  // enabled by flags, or OriginTrial. TODO(horo): Remove this when these
+  // features are enabled by default.
+  bool is_signed_exchange_prefetch_cache_enabled;
+
+  // True for XHR, Fetch, and EventSource.
+  bool is_fetch_like_api;
+
+  // True for favicon.
+  bool is_favicon;
+
+  // If set, the network service will attempt to retrieve the appropriate origin
+  // policy, if necessary, and attach it to the ResourceResponseHead.
+  // Spec: https://wicg.github.io/origin-policy/
+  bool obey_origin_policy;
+
+  // The original destination of a request that was passed through by a service
+  // worker.
+  RequestDestination original_destination;
+
+  // Params intended to be set by a trusted requestor which sends the request
+  // to a trusted URLLoaderFactory. Note that the main implementation of
+  // URLLoaderFactory is the one created in the network service via
+  // NetworkContext.CreateURLLoaderFactory(), and the trusted concept is
+  // specified for that one, and is not specified for implementations outside
+  // the network service. In more detail:
+  // * The parameters are intended to be used and consumed in the network
+  //   service only when the request is sent to a trusted URLLoaderFactory.
+  // * Whether a URLLoaderFactory in the network service is trusted or not is
+  //   determined when it is created by calling
+  //   `NetworkContext.CreateURLLoaderFactory`. The caller (i.e., the browser
+  //   process) is expected to set `URLLoaderFactoryParams.is_trusted` to true
+  //   when it wants to create a trusted URLLoaderFactory.
+  // * Note that NetworkContext should never be exposed to a process other than
+  //   the one that created the network service, i.e., the browser process
+  //   (other than in tests).
+  // * The trusted process (i.e., the browser process) is responsible for
+  //   setting the `is_trusted` flag to true only for the URLLoaderFactories
+  //   used exclusively by the trusted process.
+  // * In the network service, CorsUrlLoaderFactory is the C++ implementation
+  //   that is created by CreateURLLoaderFactory, and therefore it has a
+  //   trusted bit which is true when it's the instance used by the browser
+  //   process to make requests.
+  // * CorsUrlLoaderFactory instances without the trusted bit set fail requests
+  //   with `trusted_params` set.
+  // * URLLoaderFactory implementations outside the network service should
+  //   generally not use `trusted_params`, unless it is guaranteed that the
+  //   requestor can be trusted to set this security-sensitive information.
+  //   Typically this means that the requestor is the browser process or lives
+  //   in the same process as the factory.
+  TrustedUrlRequestParams? trusted_params;
+
+  // Set for recursive prefetch requests originating from cross-origin
+  // prefetches. These requests take the form of `Link: rel=preload` HTTP
+  // response headers. For more information on these requests see
+  // https://github.com/w3c/resource-hints/issues/77.
+  mojo_base.mojom.UnguessableToken? recursive_prefetch_token;
+
+  // Set when Trust Tokens (https://github.com/wicg/trust-token-api) is enabled
+  // and the request has set the trustToken Fetch parameter, denoting that it
+  // wishes to execute a Trust Tokens protocol operation.
+  TrustTokenParams? trust_token_params;
+
+  // Set for WebBundle related requests. See the comment of WebBundleTokenParams
+  // for details.
+  WebBundleTokenParams? web_bundle_token_params;
+
+  // If not null, the network service will not advertise any stream types
+  // (via Accept-Encoding) that are not listed. Also, it will not attempt
+  // decoding any non-listed stream types.
+  array<SourceType>? devtools_accepted_stream_types;
+
+  // This field is filled and used when network service creates a new request
+  // for preflights (which happens in CorsURLLoader). So this field is set
+  // within the network service, more concretely by CorsURLLoader, and solely
+  // used there unless the loader factory is overridden. Setting this field by
+  // the process outside the network service is currently not expected and is
+  // invalid.
+  // If set, it contains NetLog related parameters to construct a NetLogSource
+  // for the request. If not set, URLRequest constructs a NetLogSource with
+  // default parameters.
+  NetLogSource? net_log_create_info;
+
+  // This field is filled and used within network service. Setting this field
+  // by the process outside the network service is currently not expected and
+  // is invalid.
+  // If set, it contains NetLog related parameters to identify the initiator
+  // of the request in NetLog.
+  NetLogSource? net_log_reference_info;
+
+  // The IP address space to which the target endpoint of this request should
+  // belong, or `kUnknown` if there is no such requirement.
+  // If the target endpoint of the network socket does not belong to this
+  // address space, the request is failed with a CORS error.
+  // Clients outside the network service must not set this field to a value
+  // other than `kUnknown`.
+  IPAddressSpace target_ip_address_space;
+};
+
+// URLRequestBody represents body (i.e. upload data) of a HTTP request.
+// Typemapped to network::ResourceRequestBody
+struct URLRequestBody {
+  // The body contents. DataElementChunkedDataPipe can be used in `elements`
+  // only if `elements` consists of one element.
+  array<DataElement> elements;
+
+  // Identifies a particular upload instance, which is used by the cache to
+  // formulate a cache key.
+  uint64 identifier;
+
+  // Indicates whether the post data contains sensitive information like
+  // passwords.
+  bool contains_sensitive_info;
+
+  // Indicates whether fetch upload streaming is allowed/rejected over H/1.
+  // Even if this is false but there is a QUIC/H2 stream, the upload is allowed.
+  bool allow_http1_for_streaming_upload;
+};
+
+// Represents part of an upload body consisting of bytes.
+struct DataElementBytes {
+  mojo_base.mojom.BigBuffer data;
+};
+
+// Represents part of an upload body consisting of (part of) a file.
+struct DataElementFile {
+  mojo_base.mojom.FilePath path;
+  uint64 offset;
+  uint64 length;
+  mojo_base.mojom.Time expected_modification_time;
+};
+
+// Represents part of an upload body consisting of a data pipe with a known
+// size.
+struct DataElementDataPipe {
+  pending_remote<network.mojom.DataPipeGetter> data_pipe_getter;
+};
+
+// Represents part of an upload body consisting of a data pipe without a known
+// size.
+struct DataElementChunkedDataPipe {
+  pending_remote<network.mojom.ChunkedDataPipeGetter> data_pipe_getter;
+  // When true, a data pipe can be gotten from `chunked_data_pipe_getter` only
+  // once.
+  bool read_only_once;
+};
+
+// Represents part of an upload body.
+union DataElement {
+  DataElementBytes bytes;
+  DataElementFile file;
+  DataElementDataPipe data_pipe;
+  DataElementChunkedDataPipe chunked_data_pipe;
+};

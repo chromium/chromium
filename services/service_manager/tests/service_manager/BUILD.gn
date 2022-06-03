@@ -36,13 +36,9 @@ source_set("service_manager") {
 
 mojom("interfaces") {
   testonly = true
-  sources = [
-    "service_manager.test-mojom",
-  ]
+  sources = [ "service_manager.test-mojom" ]
 
-  deps = [
-    "//services/service_manager/public/mojom",
-  ]
+  deps = [ "//services/service_manager/public/mojom" ]
 }
 
 source_set("test_manifests") {
@@ -62,9 +58,7 @@ source_set("test_manifests") {
 executable("service_manager_unittest_target") {
   testonly = true
 
-  sources = [
-    "target.cc",
-  ]
+  sources = [ "target.cc" ]
 
   deps = [
     ":interfaces",
@@ -78,9 +72,7 @@ executable("service_manager_unittest_target") {
 
 service_executable("service_manager_unittest_embedder") {
   testonly = true
-  sources = [
-    "embedder.cc",
-  ]
+  sources = [ "embedder.cc" ]
 
   deps = [
     ":interfaces",

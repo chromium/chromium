@@ -6,6 +6,8 @@ import("//build/config/ui.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 
 static_library("browser") {
+  friend = [ "//components/bookmarks/test" ]
+
   public = [
     "base_bookmark_model_observer.h",
     "bookmark_client.h",
@@ -19,10 +21,10 @@ static_library("browser") {
     "bookmark_undo_delegate.h",
     "bookmark_undo_provider.h",
     "bookmark_utils.h",
+    "features.h",
     "history_bookmark_model.h",
     "model_loader.h",
     "scoped_group_bookmark_actions.h",
-    "startup_task_runner_service.h",
     "titled_url_index.h",
     "titled_url_match.h",
     "titled_url_node.h",
@@ -35,15 +37,16 @@ static_library("browser") {
     "bookmark_client.cc",
     "bookmark_codec.cc",
     "bookmark_expanded_state_tracker.cc",
+    "bookmark_load_details.cc",
+    "bookmark_load_details.h",
     "bookmark_model.cc",
     "bookmark_node.cc",
     "bookmark_node_data.cc",
-    "bookmark_node_data_ios.cc",
     "bookmark_storage.cc",
     "bookmark_utils.cc",
+    "features.cc",
     "model_loader.cc",
     "scoped_group_bookmark_actions.cc",
-    "startup_task_runner_service.cc",
     "titled_url_index.cc",
     "titled_url_match.cc",
     "typed_count_sorter.cc",
@@ -52,9 +55,7 @@ static_library("browser") {
     "url_index.h",
   ]
 
-  public_deps = [
-    "//components/bookmarks/common",
-  ]
+  public_deps = [ "//components/bookmarks/common" ]
 
   deps = [
     "//base",
@@ -90,10 +91,14 @@ static_library("browser") {
       "bookmark_pasteboard_helper_mac.h",
       "bookmark_pasteboard_helper_mac.mm",
     ]
-    libs = [
+    frameworks = [
       "AppKit.framework",
       "Foundation.framework",
     ]
+  }
+
+  if (is_ios) {
+    sources += [ "bookmark_node_data_ios.cc" ]
   }
 }
 
@@ -106,6 +111,7 @@ static_library("test_support") {
 
   deps = [
     ":browser",
+    "//base",
   ]
 }
 
@@ -116,10 +122,8 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/bookmarks/meta_info_as_string.json",
     "//components/test/data/bookmarks/model_without_sync.json",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
@@ -127,41 +131,42 @@ source_set("unit_tests") {
   sources = [
     "bookmark_codec_unittest.cc",
     "bookmark_expanded_state_tracker_unittest.cc",
-    "bookmark_index_unittest.cc",
     "bookmark_model_unittest.cc",
+    "bookmark_storage_unittest.cc",
     "bookmark_utils_unittest.cc",
+    "titled_url_index_unittest.cc",
     "titled_url_match_unittest.cc",
   ]
-
-  if (toolkit_views) {
-    sources += [ "bookmark_node_data_unittest.cc" ]
-  }
-
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   deps = [
     ":browser",
     ":unit_tests_bundle_data",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/bookmarks/common",
     "//components/bookmarks/test",
     "//components/favicon_base",
     "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/query_parser",
     "//testing/gtest",
     "//ui/base",
+    "//ui/base:data_exchange",
     "//ui/base/clipboard",
     "//url",
   ]
+
+  if (toolkit_views) {
+    sources += [ "bookmark_node_data_unittest.cc" ]
+    deps += [ "//build:chromeos_buildflags" ]
+  }
 }
 
 # The fuzzer depends on code that is not built on Mac.
 if (!is_mac) {
   fuzzer_test("bookmark_node_data_read_fuzzer") {
-    sources = [
-      "bookmark_node_data_read_fuzzer.cc",
-    ]
+    sources = [ "bookmark_node_data_read_fuzzer.cc" ]
     deps = [
       ":browser",
       "//base",

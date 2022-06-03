@@ -22,11 +22,10 @@ Polymer({
     indicatorType: {
       type: String,
       value: CrPolicyIndicatorType.NONE,
-      computed: 'getIndicatorTypeForPref_(pref.controlledBy, pref.enforcement)',
+      computed: 'getIndicatorTypeForPref_(pref.*, associatedValue)',
     },
 
-    /** @private */
-    indicatorTooltip_: {
+    indicatorTooltip: {
       type: String,
       computed: 'getIndicatorTooltipForPref_(indicatorType, pref.*)',
     },
@@ -37,19 +36,40 @@ Polymer({
      * @type {!chrome.settingsPrivate.PrefObject|undefined}
      */
     pref: Object,
+
+    /**
+     * Optional value for the preference value this indicator is associated
+     * with. If this is set, no indicator will be shown if it is a member
+     * of |pref.userSelectableValues| and is not |pref.recommendedValue|.
+     * @type {*}
+     */
+    associatedValue: Object,
   },
 
   /**
-   * @param {!chrome.settingsPrivate.ControlledBy|undefined} controlledBy
-   * @param {!chrome.settingsPrivate.Enforcement|undefined} enforcement
-   * @return {CrPolicyIndicatorType} The indicator type based on |controlledBy|
-   *     and |enforcement|.
+   * @return {CrPolicyIndicatorType} The indicator type based on |pref| and
+   *    |associatedValue|.
    */
-  getIndicatorTypeForPref_: function(controlledBy, enforcement) {
-    if (enforcement == chrome.settingsPrivate.Enforcement.RECOMMENDED) {
+  getIndicatorTypeForPref_() {
+    const {enforcement, userSelectableValues, controlledBy, recommendedValue} =
+        this.pref;
+    if (enforcement === chrome.settingsPrivate.Enforcement.RECOMMENDED) {
+      if (this.associatedValue !== undefined &&
+          this.associatedValue !== recommendedValue) {
+        return CrPolicyIndicatorType.NONE;
+      }
       return CrPolicyIndicatorType.RECOMMENDED;
     }
-    if (enforcement == chrome.settingsPrivate.Enforcement.ENFORCED) {
+    if (enforcement === chrome.settingsPrivate.Enforcement.ENFORCED) {
+      // An enforced preference may also have some values still available for
+      // the user to select from.
+      if (userSelectableValues !== undefined) {
+        if (recommendedValue && this.associatedValue === recommendedValue) {
+          return CrPolicyIndicatorType.RECOMMENDED;
+        } else if (userSelectableValues.includes(this.associatedValue)) {
+          return CrPolicyIndicatorType.NONE;
+        }
+      }
       switch (controlledBy) {
         case chrome.settingsPrivate.ControlledBy.EXTENSION:
           return CrPolicyIndicatorType.EXTENSION;
@@ -67,29 +87,28 @@ Polymer({
           return CrPolicyIndicatorType.CHILD_RESTRICTION;
       }
     }
-    if (enforcement == chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED) {
+    if (enforcement === chrome.settingsPrivate.Enforcement.PARENT_SUPERVISED) {
       return CrPolicyIndicatorType.PARENT;
     }
     return CrPolicyIndicatorType.NONE;
   },
 
   /**
-   * @param {CrPolicyIndicatorType} indicatorType
    * @return {string} The tooltip text for |indicatorType|.
    * @private
    */
-  getIndicatorTooltipForPref_: function(indicatorType) {
+  getIndicatorTooltipForPref_() {
     if (!this.pref) {
       return '';
     }
 
-    const matches = this.pref && this.pref.value == this.pref.recommendedValue;
+    const matches = this.pref && this.pref.value === this.pref.recommendedValue;
     return this.getIndicatorTooltip(
-        indicatorType, this.pref.controlledByName || '', matches);
+        this.indicatorType, this.pref.controlledByName || '', matches);
   },
 
   /** @return {!Element} */
-  getFocusableElement: function() {
+  getFocusableElement() {
     return this.$$('cr-tooltip-icon').getFocusableElement();
   },
 });

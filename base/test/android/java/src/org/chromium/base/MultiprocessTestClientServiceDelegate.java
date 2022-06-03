@@ -51,7 +51,7 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
     }
 
     @Override
-    public void preloadNativeLibrary(Context hostContext) {
+    public void preloadNativeLibrary(String packageName) {
         LibraryLoader.getInstance().preloadNow();
     }
 
@@ -83,4 +83,7 @@ public class MultiprocessTestClientServiceDelegate implements ChildProcessServic
             Log.e(TAG, "Failed to notify parent process of main returning.");
         }
     }
+
+    @Override
+    public void consumeRelroBundle(Bundle bundle) {}
 }

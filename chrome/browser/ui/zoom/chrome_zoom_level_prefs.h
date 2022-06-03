@@ -7,10 +7,8 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -34,9 +32,6 @@ class ZoomEventManager;
 // OnZoomLevelChanged.
 class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
  public:
-  typedef base::CallbackList<void(void)>::Subscription
-      DefaultZoomLevelSubscription;
-
   // Initialize the pref_service and the partition_key via the constructor,
   // as these concepts won't be available in the content base class
   // ZoomLevelDelegate, which will define the InitHostZoomMap interface.
@@ -46,6 +41,10 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
       const base::FilePath& profile_path,
       const base::FilePath& partition_path,
       base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager);
+
+  ChromeZoomLevelPrefs(const ChromeZoomLevelPrefs&) = delete;
+  ChromeZoomLevelPrefs& operator=(const ChromeZoomLevelPrefs&) = delete;
+
   ~ChromeZoomLevelPrefs() override;
 
   static std::string GetPartitionKeyForTesting(
@@ -53,8 +52,8 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
 
   void SetDefaultZoomLevelPref(double level);
   double GetDefaultZoomLevelPref() const;
-  std::unique_ptr<DefaultZoomLevelSubscription>
-  RegisterDefaultZoomLevelCallback(const base::Closure& callback);
+  base::CallbackListSubscription RegisterDefaultZoomLevelCallback(
+      base::RepeatingClosure callback);
 
   void ExtractPerHostZoomLevels(
       const base::DictionaryValue* host_zoom_dictionary,
@@ -72,11 +71,9 @@ class ChromeZoomLevelPrefs : public content::ZoomLevelDelegate {
   PrefService* pref_service_;
   base::WeakPtr<zoom::ZoomEventManager> zoom_event_manager_;
   content::HostZoomMap* host_zoom_map_;
-  std::unique_ptr<content::HostZoomMap::Subscription> zoom_subscription_;
+  base::CallbackListSubscription zoom_subscription_;
   std::string partition_key_;
-  base::CallbackList<void(void)> default_zoom_changed_callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeZoomLevelPrefs);
+  base::RepeatingClosureList default_zoom_changed_callbacks_;
 };
 
 #endif  // CHROME_BROWSER_UI_ZOOM_CHROME_ZOOM_LEVEL_PREFS_H_

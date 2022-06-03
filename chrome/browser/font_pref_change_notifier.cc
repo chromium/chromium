@@ -5,7 +5,7 @@
 #include "chrome/browser/font_pref_change_notifier.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "chrome/common/pref_names_util.h"
 #include "components/prefs/pref_service.h"

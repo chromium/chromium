@@ -19,22 +19,3 @@ function expectCursorUpdate(expectedInfo, completion) {
         requestAnimationFrame(onFrame);
     });
 }
-
-function expectSendFakeMouseMove(expectedInfo, completion) {
-    // Need to give style application a chance to take effect first.
-    requestAnimationFrame(function() {
-        // Note that fakeMouseMovePending should (almost?) always be true at this
-        // point, but we probably shouldn't depend on that in case scheduler changes
-        // result in rAF not firing until after the fake_mouse_move_event_timer_ as
-        // already fired.
-        var onFrame = function() {
-            if (internals.fakeMouseMovePending) {
-                requestAnimationFrame(onFrame);
-            } else {
-                shouldBeEqualToString('internals.getCurrentCursorInfo()', expectedInfo);
-                completion();
-            }
-        }
-        requestAnimationFrame(onFrame);
-    });
-}

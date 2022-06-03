@@ -60,11 +60,15 @@ struct IsolationContextMetricsProcessDataImpl
           IsolationContextMetricsProcessDataImpl> {
   explicit IsolationContextMetricsProcessDataImpl(
       const ProcessNode* process_node) {}
+
+  IsolationContextMetricsProcessDataImpl(
+      const IsolationContextMetricsProcessDataImpl&) = delete;
+  IsolationContextMetricsProcessDataImpl& operator=(
+      const IsolationContextMetricsProcessDataImpl&) = delete;
+
   ~IsolationContextMetricsProcessDataImpl() override = default;
 
   IsolationContextMetrics::ProcessData process_data;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolationContextMetricsProcessDataImpl);
 };
 
 // static
@@ -77,16 +81,6 @@ const char IsolationContextMetrics::kProcessDataByTimeHistogramName[] =
 // static
 const char IsolationContextMetrics::kProcessDataByProcessHistogramName[] =
     "PerformanceManager.FrameSiteInstanceProcessRelationship.ByProcess2";
-
-// static
-const char
-    IsolationContextMetrics::kBrowsingInstanceDataByPageTimeHistogramName[] =
-        "PerformanceManager.BrowsingInstancePluralityVisibilityState."
-        "ByPageTime";
-
-// static
-const char IsolationContextMetrics::kBrowsingInstanceDataByTimeHistogramName[] =
-    "PerformanceManager.BrowsingInstancePluralityVisibilityState.ByTime";
 
 // static
 const char IsolationContextMetrics::kFramesPerRendererByTimeHistogram[] =
@@ -122,25 +116,6 @@ void IsolationContextMetrics::OnBeforeFrameNodeRemoved(
     const FrameNode* frame_node) {
   // Track frame node deaths and use that to keep ProcessData up to date.
   ChangeFrameCount(frame_node, -1);
-
-  // If the frame is the current main frame of a page, then remove the page
-  // from the browsing instance as well.
-  if (frame_node->IsMainFrame() && frame_node->IsCurrent()) {
-    ChangePageCount(frame_node->GetPageNode(),
-                    frame_node->GetBrowsingInstanceId(), -1);
-  }
-}
-
-void IsolationContextMetrics::OnIsCurrentChanged(const FrameNode* frame_node) {
-  if (!frame_node->IsMainFrame())
-    return;
-
-  const auto* page_node = frame_node->GetPageNode();
-  DCHECK(page_node);
-  const int32_t browsing_instance_id = frame_node->GetBrowsingInstanceId();
-
-  const int delta = frame_node->IsCurrent() ? 1 : -1;
-  ChangePageCount(page_node, browsing_instance_id, delta);
 }
 
 void IsolationContextMetrics::OnPassedToGraph(Graph* graph) {
@@ -151,46 +126,6 @@ void IsolationContextMetrics::OnPassedToGraph(Graph* graph) {
 void IsolationContextMetrics::OnTakenFromGraph(Graph* graph) {
   UnregisterObservers(graph);
   graph_ = nullptr;
-}
-
-void IsolationContextMetrics::OnIsVisibleChanged(const PageNode* page_node) {
-  // If there is no current main frame node associated with the page, we will
-  // capture the visibility event when a node is added and made current via
-  // "OnIsCurrentChanged".
-  const auto* frame_node = page_node->GetMainFrameNode();
-  if (!frame_node || !frame_node->IsCurrent())
-    return;
-
-  // Get the data related to this browsing instance. Since there is a current
-  // main frame it must already have existed.
-  DCHECK(base::Contains(browsing_instance_data_,
-                        frame_node->GetBrowsingInstanceId()));
-  auto* data = &browsing_instance_data_[frame_node->GetBrowsingInstanceId()];
-  const BrowsingInstanceDataState old_state =
-      GetBrowsingInstanceDataState(data);
-  const int old_page_count = data->page_count;
-  DCHECK_NE(BrowsingInstanceDataState::kUndefined, old_state);
-  DCHECK_LT(0, data->page_count);
-
-  if (page_node->IsVisible()) {
-    ++data->visible_page_count;
-    DCHECK_LE(data->visible_page_count, data->page_count);
-  } else {
-    DCHECK_LT(0, data->visible_page_count);
-    --data->visible_page_count;
-  }
-
-  // Report the data if the state has changed.
-  const BrowsingInstanceDataState new_state =
-      GetBrowsingInstanceDataState(data);
-  if (old_state != new_state) {
-    // Report the state change. Flush all other related data so as not to
-    // introduce bias into the metrics when only a partial reporting cycle
-    // occurs.
-    const auto now = base::TimeTicks::Now();
-    ReportBrowsingInstanceData(data, old_page_count, old_state, now);
-    ReportAllBrowsingInstanceData(now);
-  }
 }
 
 void IsolationContextMetrics::OnBeforeProcessNodeRemoved(
@@ -211,14 +146,12 @@ void IsolationContextMetrics::OnBeforeProcessNodeRemoved(
 
 void IsolationContextMetrics::RegisterObservers(Graph* graph) {
   graph->AddFrameNodeObserver(this);
-  graph->AddPageNodeObserver(this);
   graph->AddProcessNodeObserver(this);
   StartTimer();
 }
 
 void IsolationContextMetrics::UnregisterObservers(Graph* graph) {
   graph->RemoveFrameNodeObserver(this);
-  graph->RemovePageNodeObserver(this);
   graph->RemoveProcessNodeObserver(this);
 
   // Drain all metrics on shutdown to avoid losing the tail.
@@ -320,99 +253,9 @@ void IsolationContextMetrics::ChangeFrameCount(const FrameNode* frame_node,
   ReportAllProcessData(now);
 }
 
-// static
-IsolationContextMetrics::BrowsingInstanceDataState
-IsolationContextMetrics::GetBrowsingInstanceDataState(
-    const BrowsingInstanceData* browsing_instance_data) {
-  if (browsing_instance_data->page_count == 0)
-    return BrowsingInstanceDataState::kUndefined;
-
-  if (browsing_instance_data->page_count == 1) {
-    if (browsing_instance_data->visible_page_count == 1)
-      return BrowsingInstanceDataState::kSinglePageForeground;
-    return BrowsingInstanceDataState::kSinglePageBackground;
-  }
-
-  if (browsing_instance_data->visible_page_count > 0)
-    return BrowsingInstanceDataState::kMultiPageSomeForeground;
-  return BrowsingInstanceDataState::kMultiPageBackground;
-}
-
-// static
-void IsolationContextMetrics::ReportBrowsingInstanceData(
-    BrowsingInstanceData* browsing_instance_data,
-    int page_count,
-    BrowsingInstanceDataState state,
-    base::TimeTicks now) {
-  const int seconds = GetSecondsSinceLastReportAndUpdate(
-      now, kReportingInterval, browsing_instance_data);
-  if (seconds) {
-    DCHECK_LT(0, page_count);
-    AddCountsToHistogram<kBrowsingInstanceDataByPageTimeHistogramName>(
-        state, seconds * page_count);
-    AddCountsToHistogram<kBrowsingInstanceDataByTimeHistogramName>(state,
-                                                                   seconds);
-  }
-}
-
-void IsolationContextMetrics::ReportAllBrowsingInstanceData(
-    base::TimeTicks now) {
-  for (auto& id_data_pair : browsing_instance_data_) {
-    auto* data = &id_data_pair.second;
-    ReportBrowsingInstanceData(data, data->page_count,
-                               GetBrowsingInstanceDataState(data), now);
-  }
-}
-
-void IsolationContextMetrics::ChangePageCount(const PageNode* page_node,
-                                              int32_t browsing_instance_id,
-                                              int delta) {
-  DCHECK(delta == -1 || delta == 1);
-
-  auto iter =
-      browsing_instance_data_
-          .insert(std::make_pair(browsing_instance_id, BrowsingInstanceData()))
-          .first;
-  auto* data = &iter->second;
-
-  BrowsingInstanceDataState old_state = GetBrowsingInstanceDataState(data);
-  int old_page_count = data->page_count;
-
-  // Modify the page counts, checking invariants before and after.
-  DCHECK_LE(0, data->page_count);
-  DCHECK_LE(0, data->visible_page_count);
-  DCHECK_LE(data->visible_page_count, data->page_count);
-  data->page_count += delta;
-  if (page_node->IsVisible())
-    data->visible_page_count += delta;
-  DCHECK_LE(0, data->page_count);
-  DCHECK_LE(0, data->visible_page_count);
-  DCHECK_LE(data->visible_page_count, data->page_count);
-
-  BrowsingInstanceDataState new_state = GetBrowsingInstanceDataState(data);
-
-  // No point reporting anything if this is newly created, or if the state
-  // hasn't changed.
-  if (old_state != BrowsingInstanceDataState::kUndefined &&
-      old_state != new_state) {
-    // Report the state change. Flush all other related data so as not to
-    // introduce bias into the metrics when only a partial reporting cycle
-    // occurs.
-    const auto now = base::TimeTicks::Now();
-    ReportBrowsingInstanceData(data, old_page_count, old_state, now);
-    ReportAllBrowsingInstanceData(now);
-  }
-
-  // If the page count is down to zero then the browsing instance can be
-  // erased. Note that |data| becomes an invalid pointer after this point.
-  if (data->page_count == 0)
-    browsing_instance_data_.erase(iter);
-}
-
 void IsolationContextMetrics::OnReportingTimerFired() {
   const auto now = base::TimeTicks::Now();
   ReportAllProcessData(now);
-  ReportAllBrowsingInstanceData(now);
 }
 
 IsolationContextMetrics::ProcessData::ProcessData()
@@ -436,11 +279,5 @@ IsolationContextMetrics::ProcessData::GetOrCreate(
   return &IsolationContextMetricsProcessDataImpl::GetOrCreate(process_node)
               ->process_data;
 }
-
-IsolationContextMetrics::BrowsingInstanceData::BrowsingInstanceData()
-    : last_reported(base::TimeTicks::Now()) {}
-
-IsolationContextMetrics::BrowsingInstanceData::~BrowsingInstanceData() =
-    default;
 
 }  // namespace performance_manager

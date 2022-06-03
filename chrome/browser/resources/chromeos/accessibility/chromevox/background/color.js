@@ -20,8 +20,8 @@ Color.getColorDescription = function(color) {
   // Convert to unsigned integer.
   color = color >>> 0;
   // The following 24 bits represent the rgb value. Filter out first 8 bits.
-  var rgb = color & 0x00ffffff;
-  var optSubs =
+  const rgb = color & 0x00ffffff;
+  const optSubs =
       [Color.findClosestMatchingColor(rgb), Color.getOpacityPercentage(color)];
   return Msgs.getMsg('color_description', optSubs);
 };
@@ -41,12 +41,12 @@ Color.getOpacityPercentage = function(color) {
  * @return {string}
  */
 Color.findClosestMatchingColor = function(target) {
-  var bestMessageId;
-  var bestDistance = Number.MAX_VALUE;
+  let bestMessageId;
+  let bestDistance = Number.MAX_VALUE;
 
   Color.ColorObjectArray.forEach(function(obj) {
-    var val = obj.value;
-    var distance = Color.findDistance(target, val);
+    const val = obj.value;
+    const distance = Color.findDistance(target, val);
     if (distance < bestDistance) {
       bestMessageId = obj.colorMessageId;
       bestDistance = distance;
@@ -72,12 +72,12 @@ Color.findClosestMatchingColor = function(target) {
  */
 Color.findDistance = function(firstColor, secondColor) {
   // Extract x, y, and z components.
-  var firstColorX = (firstColor & 0xff0000) >> 16;
-  var firstColorY = (firstColor & 0x00ff00) >> 8;
-  var firstColorZ = (firstColor & 0x0000ff);
-  var secondColorX = (secondColor & 0xff0000) >> 16;
-  var secondColorY = (secondColor & 0x00ff00) >> 8;
-  var secondColorZ = (secondColor & 0x0000ff);
+  const firstColorX = (firstColor & 0xff0000) >> 16;
+  const firstColorY = (firstColor & 0x00ff00) >> 8;
+  const firstColorZ = (firstColor & 0x0000ff);
+  const secondColorX = (secondColor & 0xff0000) >> 16;
+  const secondColorY = (secondColor & 0x00ff00) >> 8;
+  const secondColorZ = (secondColor & 0x0000ff);
 
   return Math.pow(secondColorX - firstColorX, 2) +
       Math.pow(secondColorY - firstColorY, 2) +

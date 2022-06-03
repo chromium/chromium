@@ -1,0 +1,22 @@
+mojo.internal.Union(
+    {{union.name}}Spec.$, '{{union.name}}',
+    {
+{%- for field in union.fields %}
+      '{{field.name}}': {
+        'ordinal': {{field.ordinal}},
+        'type': {{field.kind|spec_type_in_js_module}},
+{%-    if field.kind.is_nullable %}
+        'nullable': true,
+{%-    endif %}
+      },
+{%- endfor %}
+    });
+
+/**
+ * @typedef { {
+{%- for field in union.fields %}
+ *   {{field.name}}: ({{field.kind|type_in_js_module_with_nullability}}|undefined),
+{%-  endfor %}
+ * } }
+ */
+export const {{union.name}} = {};

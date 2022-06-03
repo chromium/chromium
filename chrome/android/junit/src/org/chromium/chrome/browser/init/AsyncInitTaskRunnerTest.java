@@ -64,7 +64,7 @@ public class AsyncInitTaskRunnerTest {
                 mLatch.countDown();
             }
             @Override
-            protected void onFailure() {
+            protected void onFailure(Exception failureCause) {
                 mLatch.countDown();
             }
             @Override
@@ -96,15 +96,14 @@ public class AsyncInitTaskRunnerTest {
 
     @Test
     public void libraryLoaderFailTest() throws InterruptedException {
-        doThrow(new ProcessInitException(LoaderErrors.NATIVE_LIBRARY_LOAD_FAILED))
-                .when(mLoader)
-                .ensureInitialized();
+        Exception failureCause = new ProcessInitException(LoaderErrors.NATIVE_LIBRARY_LOAD_FAILED);
+        doThrow(failureCause).when(mLoader).ensureInitialized();
         mRunner.startBackgroundTasks(false, false);
 
         Robolectric.flushBackgroundThreadScheduler();
         Robolectric.flushForegroundThreadScheduler();
         assertTrue(mLatch.await(0, TimeUnit.SECONDS));
-        verify(mRunner).onFailure();
+        verify(mRunner).onFailure(failureCause);
         verify(mVariationsSeedFetcher, never()).fetchSeed(anyString(), anyString(), anyString());
     }
 

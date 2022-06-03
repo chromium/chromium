@@ -21,6 +21,9 @@ namespace content {
 
 namespace {
 
+static const GlobalRenderFrameHostId kFrameId = {20, 30};
+static const int kPid = 35;
+static const int kLid = 75;
 static const char kConstraints[] = "c";
 static const char kRtcConfiguration[] = "r";
 static const char kUrl[] = "u";
@@ -52,7 +55,7 @@ class WebRtcInternalsMessageHandlerTest : public RenderViewHostTestHarness {
  protected:
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    web_ui_.reset(new TestWebUI());
+    web_ui_ = std::make_unique<TestWebUI>();
     web_ui_->set_web_contents(web_contents());
   }
 
@@ -74,8 +77,8 @@ TEST_F(WebRtcInternalsMessageHandlerTest, DontRunJSBeforeNavigationCommitted) {
                                                 web_ui_.get());
 
   NavigateAndCommit(example_url);
-  webrtc_internals.OnAddPeerConnection(0, 1, 2, kUrl, kRtcConfiguration,
-                                       kConstraints);
+  webrtc_internals.OnPeerConnectionAdded(kFrameId, kPid, kLid, kUrl,
+                                         kRtcConfiguration, kConstraints);
   base::RunLoop().RunUntilIdle();
 
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
@@ -83,7 +86,7 @@ TEST_F(WebRtcInternalsMessageHandlerTest, DontRunJSBeforeNavigationCommitted) {
   navigation->Start();
   // We still shouldn't run JS, since navigation to webrtc-internals isn't
   // finished.
-  webrtc_internals.OnRemovePeerConnection(1, 2);
+  webrtc_internals.OnPeerConnectionRemoved(kFrameId, kLid);
   base::RunLoop().RunUntilIdle();
 
   webrtc_internals.RemoveObserver(&observer);

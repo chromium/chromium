@@ -33,6 +33,7 @@
 #include <sddl.h>
 #include <shellapi.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <stdlib.h>
 
 #include <initializer_list>
@@ -41,13 +42,12 @@
 #include "chrome/installer/mini_installer/appid.h"
 #include "chrome/installer/mini_installer/configuration.h"
 #include "chrome/installer/mini_installer/decompress.h"
+#include "chrome/installer/mini_installer/delete_with_retry.h"
 #include "chrome/installer/mini_installer/mini_installer_constants.h"
 #include "chrome/installer/mini_installer/pe_resource.h"
 #include "chrome/installer/mini_installer/regkey.h"
 
 namespace mini_installer {
-
-typedef StackString<MAX_PATH> PathString;
 
 // This structure passes data back and forth for the processing
 // of resource callbacks.
@@ -58,25 +58,28 @@ struct Context {
   PathString* chrome_resource_path;
   // Second output from call back method. Full path of Setup archive/exe.
   PathString* setup_resource_path;
+  // A Windows error code corresponding to an extraction error.
+  DWORD error_code;
 };
 
+// Deletes |path|, updating |max_delete_attempts| if more attempts were taken
+// than indicated in |max_delete_attempts|.
+void DeleteWithRetryAndMetrics(const wchar_t* path, int& max_delete_attempts) {
+  int attempts = 0;
+  DeleteWithRetry(path, attempts);
+  if (attempts > max_delete_attempts)
+    max_delete_attempts = attempts;
+}
+
 // TODO(grt): Frame this in terms of whether or not the brand supports
-// integation with Omaha, where Google Update is the Google-specific fork of
+// integration with Omaha, where Google Update is the Google-specific fork of
 // the open-source Omaha project.
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-// Opens the Google Update ClientState key. If |binaries| is false, opens the
-// key for Google Chrome or Chrome SxS (canary). If |binaries| is true and an
-// existing multi-install Chrome is being updated, opens the key for the
-// multi-install binaries; otherwise, returns false.
-bool OpenInstallStateKey(const Configuration& configuration,
-                         bool binaries,
-                         RegKey* key) {
-  if (binaries && !configuration.is_updating_multi_chrome())
-    return false;
+// Opens the Google Update ClientState key for the current install mode.
+bool OpenInstallStateKey(const Configuration& configuration, RegKey* key) {
   const HKEY root_key =
       configuration.is_system_level() ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  const wchar_t* app_guid = binaries ? google_update::kMultiInstallAppGuid
-                                     : configuration.chrome_app_guid();
+  const wchar_t* app_guid = configuration.chrome_app_guid();
   const REGSAM key_access = KEY_QUERY_VALUE | KEY_SET_VALUE;
 
   return OpenClientStateKey(root_key, app_guid, key_access, key) ==
@@ -93,24 +96,58 @@ void WriteInstallResults(const Configuration& configuration,
   if (result.IsSuccess())
     return;
 
-  // Write the value in Chrome ClientState key and in the binaries' if an
-  // existing multi-install Chrome is being updated.
-  for (bool binaries : {false, true}) {
-    RegKey key;
-    DWORD value;
-    if (OpenInstallStateKey(configuration, binaries, &key)) {
-      if (key.ReadDWValue(kInstallerResultRegistryValue, &value) !=
-              ERROR_SUCCESS ||
-          value == 0) {
-        key.WriteDWValue(kInstallerResultRegistryValue,
-                         result.exit_code ? 1 /* FAILED_CUSTOM_ERROR */
-                                          : 0 /* SUCCESS */);
-        key.WriteDWValue(kInstallerErrorRegistryValue, result.exit_code);
-        key.WriteDWValue(kInstallerExtraCode1RegistryValue,
-                         result.windows_error);
-      }
+  // Write the value in Chrome ClientState key.
+  RegKey key;
+  DWORD value;
+  if (OpenInstallStateKey(configuration, &key)) {
+    if (key.ReadDWValue(kInstallerResultRegistryValue, &value) !=
+            ERROR_SUCCESS ||
+        value == 0) {
+      key.WriteDWValue(kInstallerResultRegistryValue,
+                       result.exit_code ? 1 /* FAILED_CUSTOM_ERROR */
+                                        : 0 /* SUCCESS */);
+      key.WriteDWValue(kInstallerErrorRegistryValue, result.exit_code);
+      key.WriteDWValue(kInstallerExtraCode1RegistryValue, result.windows_error);
     }
   }
+}
+
+// Success metric reporting ----------------------------------------------------
+
+// A single DWORD value may be written to the ExtraCode1 registry value on
+// success. This is used to report a sample for a metric of a specific category.
+
+// Categories of metrics written into ExtraCode1 on success. Values should not
+// be reordered or reused unless the population reporting such categories
+// becomes insiginficant or is filtered out based on release version.
+enum MetricCategory : uint16_t {
+  // The sample 0 indicates that %TMP% was used to hold the work dir. Active
+  // from release 86.0.4237.0 through 88.0.4313.0.
+  // kTemporaryDirectoryWithFallback = 1,
+
+  // The sample 0 indicates that CWD was used to hold the work dir. Active from
+  // release 86.0.4237.0 through 88.0.4313.0.
+  // kTemporaryDirectoryWithoutFallback = 2,
+
+  // Values indicate the maximum number of retries needed to delete a file or
+  // directory via DeleteWithRetry. Active from release 88.0.4314.0.
+  kMaxDeleteRetryCount = 3,
+};
+
+using MetricSample = uint16_t;
+
+// Returns an ExtraCode1 value encoding a sample for a particular category.
+constexpr DWORD MetricToExtraCode1(MetricCategory category,
+                                   MetricSample sample) {
+  return category << 16 | sample;
+}
+
+// Writes the value |extra_code_1| into ExtraCode1 for reporting by Omaha.
+void WriteExtraCode1(const Configuration& configuration, DWORD extra_code_1) {
+  // Write the value in Chrome ClientState key.
+  RegKey key;
+  if (OpenInstallStateKey(configuration, &key))
+    key.WriteDWValue(kInstallerExtraCode1RegistryValue, extra_code_1);
 }
 
 // This function sets the flag in registry to indicate that Google Update
@@ -119,26 +156,27 @@ void WriteInstallResults(const Configuration& configuration,
 void SetInstallerFlags(const Configuration& configuration) {
   StackString<128> value;
 
-  for (bool binaries : {false, true}) {
-    RegKey key;
-    if (!OpenInstallStateKey(configuration, binaries, &key))
-      continue;
+  RegKey key;
+  if (!OpenInstallStateKey(configuration, &key))
+    return;
 
-    LONG ret = key.ReadSZValue(kApRegistryValue, value.get(), value.capacity());
+  // TODO(grt): Trim legacy modifiers (chrome,chromeframe,apphost,applauncher,
+  // multi,readymode,stage,migrating,multifail) from the ap value.
 
-    // The conditions below are handling two cases:
-    // 1. When ap value is present, we want to add the required tag only if it
-    //    is not present.
-    // 2. When ap value is missing, we are going to create it with the required
-    //    tag.
-    if ((ret == ERROR_SUCCESS) || (ret == ERROR_FILE_NOT_FOUND)) {
-      if (ret == ERROR_FILE_NOT_FOUND)
-        value.clear();
+  LONG ret = key.ReadSZValue(kApRegistryValue, value.get(), value.capacity());
 
-      if (!StrEndsWith(value.get(), kFullInstallerSuffix) &&
-          value.append(kFullInstallerSuffix)) {
-        key.WriteSZValue(kApRegistryValue, value.get());
-      }
+  // The conditions below are handling two cases:
+  // 1. When ap value is present, we want to add the required tag only if it
+  //    is not present.
+  // 2. When ap value is missing, we are going to create it with the required
+  //    tag.
+  if ((ret == ERROR_SUCCESS) || (ret == ERROR_FILE_NOT_FOUND)) {
+    if (ret == ERROR_FILE_NOT_FOUND)
+      value.clear();
+
+    if (!StrEndsWith(value.get(), kFullInstallerSuffix) &&
+        value.append(kFullInstallerSuffix)) {
+      key.WriteSZValue(kApRegistryValue, value.get());
     }
   }
 }
@@ -184,24 +222,11 @@ ProcessExitResult GetSetupExePathForAppGuid(bool system_level,
 ProcessExitResult GetPreviousSetupExePath(const Configuration& configuration,
                                           wchar_t* path,
                                           size_t size) {
-  bool system_level = configuration.is_system_level();
-  const wchar_t* previous_version = configuration.previous_version();
-  ProcessExitResult exit_code = ProcessExitResult(GENERIC_ERROR);
-
   // Check Chrome's ClientState key for the path to setup.exe. This will have
   // the correct path for all well-functioning installs.
-  exit_code =
-      GetSetupExePathForAppGuid(system_level, configuration.chrome_app_guid(),
-                                previous_version, path, size);
-
-  // Failing that, check the binaries if updating multi-install Chrome.
-  if (!exit_code.IsSuccess() && configuration.is_updating_multi_chrome()) {
-    exit_code = GetSetupExePathForAppGuid(system_level,
-                                          google_update::kMultiInstallAppGuid,
-                                          previous_version, path, size);
-  }
-
-  return exit_code;
+  return GetSetupExePathForAppGuid(
+      configuration.is_system_level(), configuration.chrome_app_guid(),
+      configuration.previous_version(), path, size);
 }
 
 // Calls CreateProcess with good default parameters and waits for the process to
@@ -220,8 +245,8 @@ ProcessExitResult RunProcessAndWait(const wchar_t* exe_path,
                                     DWORD generic_failure_code) {
   STARTUPINFOW si = {sizeof(si)};
   PROCESS_INFORMATION pi = {0};
-  if (!::CreateProcess(exe_path, cmdline, NULL, NULL, FALSE, CREATE_NO_WINDOW,
-                       NULL, NULL, &si, &pi)) {
+  if (!::CreateProcess(exe_path, cmdline, nullptr, nullptr, FALSE,
+                       CREATE_NO_WINDOW, nullptr, nullptr, &si, &pi)) {
     // Split specific failure modes. If setup.exe couldn't be launched because
     // its file/path couldn't be found, report its attributes in ExtraCode1.
     // This will help diagnose the prevalence of launch failures due to Image
@@ -299,40 +324,56 @@ void AppendCommandLineFlags(const wchar_t* command_line,
   buffer->append(command_line);
 }
 
-// Windows defined callback used in the EnumResourceNames call. For each
-// matching resource found, the callback is invoked and at this point we write
-// it to disk. We expect resource names to start with 'chrome' or 'setup'. Any
-// other name is treated as an error.
-BOOL CALLBACK OnResourceFound(HMODULE module, const wchar_t* type,
-                              wchar_t* name, LONG_PTR context) {
-  if (NULL == context)
-    return FALSE;
+// Processes a resource of type |type| in |module| on behalf of a call to
+// EnumResourceNames. On each call, |name| contains the name of a resource. A
+// TRUE return value continues the enumeration, whereas FALSE stops it. This
+// function extracts the first resource starting with "chrome" and/or "setup",
+// populating |context| (which must be a pointer to a Context struct) with the
+// path(s) of the extracted file(s). Enumeration stops early in case of error,
+// which includes any unexpected resources or duplicate matching resources.
+// |context|'s |error_code| member may be populated with a Windows error code
+// corresponding to an error condition.
+BOOL CALLBACK OnResourceFound(HMODULE module,
+                              const wchar_t* type,
+                              wchar_t* name,
+                              LONG_PTR l_param) {
+  if (!l_param)
+    return FALSE;  // Break: impossible condition.
 
-  Context* ctx = reinterpret_cast<Context*>(context);
+  if (IS_INTRESOURCE(name))
+    return FALSE;  // Break: resources with integer names are unexpected.
+
+  Context& context = *reinterpret_cast<Context*>(l_param);
 
   PEResource resource(name, type, module);
   if (!resource.IsValid() || resource.Size() < 1)
-    return FALSE;
+    return FALSE;  // Break: invalid/empty resources are unexpected.
 
   PathString full_path;
-  if (!full_path.assign(ctx->base_path) ||
-      !full_path.append(name) ||
-      !resource.WriteToDisk(full_path.get()))
-    return FALSE;
+  if (!full_path.assign(context.base_path) || !full_path.append(name))
+    return FALSE;  // Break: failed to form the output path.
 
-  if (StrStartsWith(name, kChromeArchivePrefix)) {
-    if (!ctx->chrome_resource_path->assign(full_path.get()))
-      return FALSE;
-  } else if (StrStartsWith(name, kSetupPrefix)) {
-    if (!ctx->setup_resource_path->assign(full_path.get()))
-      return FALSE;
+  if (StrStartsWith(name, kChromeArchivePrefix) &&
+      context.chrome_resource_path->empty()) {
+    if (!resource.WriteToDisk(full_path.get())) {
+      context.error_code = ::GetLastError();
+      return FALSE;  // Break: failed to write resource.
+    }
+    context.chrome_resource_path->assign(full_path);
+  } else if (StrStartsWith(name, kSetupPrefix) &&
+             context.setup_resource_path->empty()) {
+    if (!resource.WriteToDisk(full_path.get())) {
+      context.error_code = ::GetLastError();
+      return FALSE;  // Break: failed to write resource.
+    }
+    context.setup_resource_path->assign(full_path);
   } else {
-    // Resources should either start with 'chrome' or 'setup'. We don't handle
-    // anything else.
+    // Break: unexpected resource names or multiple {chrome,setup}* resources
+    // are unexpected.
     return FALSE;
   }
 
-  return TRUE;
+  return TRUE;  // Continue: advance to the next resource.
 }
 
 #if defined(COMPONENT_BUILD)
@@ -346,10 +387,28 @@ BOOL CALLBACK WriteResourceToDirectory(HMODULE module,
   PathString full_path;
 
   PEResource resource(name, type, module);
-  return (resource.IsValid() &&
-          full_path.assign(base_path) &&
-          full_path.append(name) &&
-          resource.WriteToDisk(full_path.get()));
+  return (resource.IsValid() && full_path.assign(base_path) &&
+          full_path.append(name) && resource.WriteToDisk(full_path.get()));
+}
+
+// An EnumResNameProc callback that deletes the file corresponding to the
+// resource |name| from the directory |base_path_ptr| (which must end with a
+// path separator).
+BOOL CALLBACK DeleteResourceInDirectory(HMODULE module,
+                                        const wchar_t* type,
+                                        wchar_t* name,
+                                        LONG_PTR base_path_ptr) {
+  PathString full_path;
+
+  if (full_path.assign(reinterpret_cast<const wchar_t*>(base_path_ptr)) &&
+      full_path.append(name)) {
+    // Do not record metrics for these deletes, as they are not done for release
+    // builds.
+    int attempts;
+    DeleteWithRetry(full_path.get(), attempts);
+  }
+
+  return TRUE;  // Continue enumeration.
 }
 #endif
 
@@ -365,34 +424,40 @@ BOOL CALLBACK WriteResourceToDirectory(HMODULE module,
 // For component builds (where setup.ex_ is always used), all files stored as
 // uncompressed 'BN' resources are also extracted. This is generally the set of
 // DLLs/resources needed by setup.exe to run.
+// |max_delete_attempts| is set to the highest number of attempts needed by
+// DeleteWithRetry to delete files that are unpacked and processed
+// (setup_patch.packed.7z or setup.ex_).
 ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
-                                      HMODULE module, const wchar_t* base_path,
-                                      PathString* archive_path,
-                                      PathString* setup_path) {
+                                        HMODULE module,
+                                        const wchar_t* base_path,
+                                        PathString* archive_path,
+                                        PathString* setup_path,
+                                        int& max_delete_attempts) {
   // Generate the setup.exe path where we patch/uncompress setup resource.
   PathString setup_dest_path;
-  if (!setup_dest_path.assign(base_path) ||
-      !setup_dest_path.append(kSetupExe))
+  if (!setup_dest_path.assign(base_path) || !setup_dest_path.append(kSetupExe))
     return ProcessExitResult(PATH_STRING_OVERFLOW);
 
   // Prepare the input to OnResourceFound method that needs a location where
   // it will write all the resources.
   Context context = {
-    base_path,
-    archive_path,
-    setup_path,
+      base_path,
+      archive_path,
+      setup_path,
+      ERROR_SUCCESS,
   };
 
   // Get the resources of type 'B7' (7zip archive).
   // We need a chrome archive to do the installation. So if there
   // is a problem in fetching B7 resource, just return an error.
   if (!::EnumResourceNames(module, kLZMAResourceType, OnResourceFound,
-                           reinterpret_cast<LONG_PTR>(&context))) {
+                           reinterpret_cast<LONG_PTR>(&context)) ||
+      archive_path->empty()) {
+    const DWORD enum_error = ::GetLastError();
     return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE,
-                             ::GetLastError());
-  }
-  if (archive_path->length() == 0) {
-    return ProcessExitResult(UNABLE_TO_EXTRACT_CHROME_ARCHIVE);
+                             enum_error == ERROR_RESOURCE_ENUM_USER_STOP
+                                 ? context.error_code
+                                 : enum_error);
   }
 
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
@@ -400,7 +465,7 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
   // If we found setup 'B7' resource (used for differential updates), handle
   // it.  Note that this is only for Chrome; Chromium installs are always
   // "full" installs.
-  if (setup_path->length() > 0) {
+  if (!setup_path->empty()) {
     CommandString cmd_line;
     PathString exe_path;
     // Get the path to setup.exe first.
@@ -427,39 +492,38 @@ ProcessExitResult UnpackBinaryResources(const Configuration& configuration,
           SETUP_PATCH_FAILED_PATH_NOT_FOUND,
           SETUP_PATCH_FAILED_COULD_NOT_CREATE_PROCESS);
     }
-
-    if (!exit_code.IsSuccess())
-      DeleteFile(setup_path->get());
-    else if (!setup_path->assign(setup_dest_path.get()))
-      exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
+    DeleteWithRetryAndMetrics(setup_path->get(), max_delete_attempts);
+    if (exit_code.IsSuccess())
+      setup_path->assign(setup_dest_path);
+    else
+      setup_path->clear();
 
     return exit_code;
   }
 
   // setup.exe wasn't sent as 'B7', lets see if it was sent as 'BL'
   // (compressed setup).
+  context.error_code = ERROR_SUCCESS;
   if (!::EnumResourceNames(module, kLZCResourceType, OnResourceFound,
-                           reinterpret_cast<LONG_PTR>(&context))) {
-    return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP_BL, ::GetLastError());
-  }
-  if (setup_path->length() == 0) {
-    // Neither setup_patch.packed.7z nor setup.ex_ was found.
-    return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP);
+                           reinterpret_cast<LONG_PTR>(&context)) ||
+      setup_path->empty()) {
+    const DWORD enum_error = ::GetLastError();
+    return ProcessExitResult(UNABLE_TO_EXTRACT_SETUP,
+                             enum_error == ERROR_RESOURCE_ENUM_USER_STOP
+                                 ? context.error_code
+                                 : enum_error);
   }
 
   // Uncompress LZ compressed resource. Setup is packed with 'MSCF'
   // as opposed to old DOS way of 'SZDD'. Hence we don't use LZCopy.
   bool success =
       mini_installer::Expand(setup_path->get(), setup_dest_path.get());
-  ::DeleteFile(setup_path->get());
-  if (success) {
-    if (!setup_path->assign(setup_dest_path.get())) {
-      ::DeleteFile(setup_dest_path.get());
-      exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
-    }
-  } else {
+  DeleteWithRetryAndMetrics(setup_path->get(), max_delete_attempts);
+
+  if (success)
+    setup_path->assign(setup_dest_path);
+  else
     exit_code = ProcessExitResult(UNABLE_TO_EXTRACT_SETUP_EXE);
-  }
 
 #if defined(COMPONENT_BUILD)
   if (exit_code.IsSuccess()) {
@@ -516,8 +580,7 @@ ProcessExitResult RunSetup(const Configuration& configuration,
 
   // Append the command line param for the previous version of Chrome.
   if (configuration.previous_version() &&
-      (!cmd_line.append(L" --") ||
-       !cmd_line.append(kCmdPreviousVersion) ||
+      (!cmd_line.append(L" --") || !cmd_line.append(kCmdPreviousVersion) ||
        !cmd_line.append(L"=\"") ||
        !cmd_line.append(configuration.previous_version()) ||
        !cmd_line.append(L"\""))) {
@@ -534,14 +597,26 @@ ProcessExitResult RunSetup(const Configuration& configuration,
                            RUN_SETUP_FAILED_COULD_NOT_CREATE_PROCESS);
 }
 
-// Deletes given files and working dir.
-void DeleteExtractedFiles(const wchar_t* base_path,
-                          const wchar_t* archive_path,
-                          const wchar_t* setup_path) {
-  ::DeleteFile(archive_path);
-  ::DeleteFile(setup_path);
+// Deletes the files extracted by UnpackBinaryResources and the work directory
+// created by GetWorkDir.
+void DeleteExtractedFiles(HMODULE module,
+                          const PathString& archive_path,
+                          const PathString& setup_path,
+                          const PathString& base_path,
+                          int& max_delete_attempts) {
+  if (!archive_path.empty())
+    DeleteWithRetryAndMetrics(archive_path.get(), max_delete_attempts);
+  if (!setup_path.empty())
+    DeleteWithRetryAndMetrics(setup_path.get(), max_delete_attempts);
+
+#if defined(COMPONENT_BUILD)
+  // Delete the modules in a component build extracted for use by setup.exe.
+  ::EnumResourceNames(module, kBinResourceType, DeleteResourceInDirectory,
+                      reinterpret_cast<LONG_PTR>(base_path.get()));
+#endif
+
   // Delete the temp dir (if it is empty, otherwise fail).
-  ::RemoveDirectory(base_path);
+  DeleteWithRetryAndMetrics(base_path.get(), max_delete_attempts);
 }
 
 // Returns true if the supplied path supports ACLs.
@@ -550,8 +625,8 @@ bool IsAclSupportedForPath(const wchar_t* path) {
   DWORD flags = 0;
   return ::GetVolumePathName(path, volume.get(),
                              static_cast<DWORD>(volume.capacity())) &&
-         ::GetVolumeInformation(volume.get(), NULL, 0, NULL, NULL, &flags, NULL,
-                                0) &&
+         ::GetVolumeInformation(volume.get(), nullptr, 0, nullptr, nullptr,
+                                &flags, nullptr, 0) &&
          (flags & FILE_PERSISTENT_ACLS);
 }
 
@@ -567,7 +642,7 @@ bool GetCurrentOwnerSid(wchar_t** sid) {
   bool result = false;
   // We get the TokenOwner rather than the TokenUser because e.g. under UAC
   // elevation we want the admin to own the directory rather than the user.
-  ::GetTokenInformation(token, TokenOwner, NULL, 0, &size);
+  ::GetTokenInformation(token, TokenOwner, nullptr, 0, &size);
   if (size && GetLastError() == ERROR_INSUFFICIENT_BUFFER) {
     if (TOKEN_OWNER* owner =
             reinterpret_cast<TOKEN_OWNER*>(::LocalAlloc(LPTR, size))) {
@@ -584,31 +659,65 @@ bool GetCurrentOwnerSid(wchar_t** sid) {
 // ACLs allowing access to only the current owner, admin, and system.
 // NOTE: On success the |sd| parameter must be freed with LocalFree().
 bool SetSecurityDescriptor(const wchar_t* path, PSECURITY_DESCRIPTOR* sd) {
-  *sd = NULL;
+  *sd = nullptr;
   // We succeed without doing anything if ACLs aren't supported.
   if (!IsAclSupportedForPath(path))
     return true;
 
-  wchar_t* sid = NULL;
+  wchar_t* sid = nullptr;
   if (!GetCurrentOwnerSid(&sid))
     return false;
 
   // The largest SID is under 200 characters, so 300 should give enough slack.
   StackString<300> sddl;
-  bool result = sddl.append(L"D:PAI"  // Protected, auto-inherited DACL.
+  bool result = sddl.append(
+                    L"D:PAI"         // Protected, auto-inherited DACL.
                     L"(A;;FA;;;BA)"  // Admin: Full control.
                     L"(A;OIIOCI;GA;;;BA)"
                     L"(A;;FA;;;SY)"  // System: Full control.
                     L"(A;OIIOCI;GA;;;SY)"
                     L"(A;OIIOCI;GA;;;CO)"  // Owner: Full control.
-                    L"(A;;FA;;;") && sddl.append(sid) && sddl.append(L")");
+                    L"(A;;FA;;;") &&
+                sddl.append(sid) && sddl.append(L")");
   if (result) {
     result = !!::ConvertStringSecurityDescriptorToSecurityDescriptor(
-        sddl.get(), SDDL_REVISION_1, sd, NULL);
+        sddl.get(), SDDL_REVISION_1, sd, nullptr);
   }
 
   ::LocalFree(sid);
   return result;
+}
+
+bool GetModuleDir(HMODULE module, PathString* directory) {
+  DWORD len = ::GetModuleFileName(module, directory->get(),
+                                  static_cast<DWORD>(directory->capacity()));
+  if (!len || len >= directory->capacity())
+    return false;  // Failed to get module path.
+
+  // Chop off the basename of the path.
+  wchar_t* name = GetNameFromPathExt(directory->get(), len);
+  if (name == directory->get())
+    return false;  // No path separator found.
+
+  *name = L'\0';
+
+  return true;
+}
+
+bool GetTempDir(PathString* directory, ProcessExitResult* exit_code) {
+  DWORD len = ::GetTempPath(static_cast<DWORD>(directory->capacity()),
+                            directory->get());
+  if (!len) {
+    *exit_code =
+        ProcessExitResult(UNABLE_TO_GET_WORK_DIRECTORY, ::GetLastError());
+    return false;
+  }
+  if (len >= directory->capacity()) {
+    *exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
+    return false;
+  }
+
+  return true;
 }
 
 // Creates a temporary directory under |base_path| and returns the full path
@@ -621,7 +730,8 @@ bool SetSecurityDescriptor(const wchar_t* path, PSECURITY_DESCRIPTOR* sd) {
 // delete it and create a directory in its place.  So, we use our own mechanism
 // for creating a directory with a hopefully-unique name.  In the case of a
 // collision, we retry a few times with a new name before failing.
-bool CreateWorkDir(const wchar_t* base_path, PathString* work_dir,
+bool CreateWorkDir(const wchar_t* base_path,
+                   PathString* work_dir,
                    ProcessExitResult* exit_code) {
   *exit_code = ProcessExitResult(PATH_STRING_OVERFLOW);
   if (!work_dir->assign(base_path) || !work_dir->append(kTempPrefix))
@@ -642,8 +752,8 @@ bool CreateWorkDir(const wchar_t* base_path, PathString* work_dir,
   SECURITY_ATTRIBUTES sa = {};
   sa.nLength = sizeof(SECURITY_ATTRIBUTES);
   if (!SetSecurityDescriptor(base_path, &sa.lpSecurityDescriptor)) {
-    *exit_code = ProcessExitResult(UNABLE_TO_SET_DIRECTORY_ACL,
-                                   ::GetLastError());
+    *exit_code =
+        ProcessExitResult(UNABLE_TO_SET_DIRECTORY_ACL, ::GetLastError());
     return false;
   }
 
@@ -668,7 +778,7 @@ bool CreateWorkDir(const wchar_t* base_path, PathString* work_dir,
     work_dir->append(L".tmp");
 
     if (::CreateDirectory(work_dir->get(),
-                          sa.lpSecurityDescriptor ? &sa : NULL)) {
+                          sa.lpSecurityDescriptor ? &sa : nullptr)) {
       // Yay!  Now let's just append the backslash and we're done.
       work_dir->append(L"\\");
       *exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
@@ -683,176 +793,25 @@ bool CreateWorkDir(const wchar_t* base_path, PathString* work_dir,
 
 // Creates and returns a temporary directory in |work_dir| that can be used to
 // extract mini_installer payload. |work_dir| ends with a path separator.
-bool GetWorkDir(HMODULE module, PathString* work_dir,
+// Returns true if |work_dir| is available for use, or false in case of error
+// (indicated by |exit_code|).
+bool GetWorkDir(HMODULE module,
+                PathString* work_dir,
                 ProcessExitResult* exit_code) {
   PathString base_path;
-  DWORD len = ::GetTempPath(static_cast<DWORD>(base_path.capacity()),
-                            base_path.get());
-  if (!len || len >= base_path.capacity() ||
-      !CreateWorkDir(base_path.get(), work_dir, exit_code)) {
-    // Problem creating the work dir under TEMP path, so try using the
-    // current directory as the base path.
-    len = ::GetModuleFileName(module, base_path.get(),
-                              static_cast<DWORD>(base_path.capacity()));
-    if (len >= base_path.capacity() || !len)
-      return false;  // Can't even get current directory? Return an error.
 
-    wchar_t* name = GetNameFromPathExt(base_path.get(), len);
-    if (name == base_path.get())
-      return false;  // There was no directory in the string!  Bail out.
-
-    *name = L'\0';
-
-    *exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
-    return CreateWorkDir(base_path.get(), work_dir, exit_code);
-  }
-  return true;
-}
-
-// Returns true for ".." and "." directories.
-bool IsCurrentOrParentDirectory(const wchar_t* dir) {
-  return dir &&
-         dir[0] == L'.' &&
-         (dir[1] == L'\0' || (dir[1] == L'.' && dir[2] == L'\0'));
-}
-
-// Best effort directory tree deletion including the directory specified
-// by |path|, which must not end in a separator.
-// The |path| argument is writable so that each recursion can use the same
-// buffer as was originally allocated for the path.  The path will be unchanged
-// upon return.
-void RecursivelyDeleteDirectory(PathString* path) {
-  // |path| will never have a trailing backslash.
-  size_t end = path->length();
-  if (!path->append(L"\\*.*"))
-    return;
-
-  WIN32_FIND_DATA find_data = {0};
-  HANDLE find = ::FindFirstFile(path->get(), &find_data);
-  if (find != INVALID_HANDLE_VALUE) {
-    do {
-      // Use the short name if available to make the most of our buffer.
-      const wchar_t* name = find_data.cAlternateFileName[0] ?
-          find_data.cAlternateFileName : find_data.cFileName;
-      if (IsCurrentOrParentDirectory(name))
-        continue;
-
-      path->truncate_at(end + 1);  // Keep the trailing backslash.
-      if (!path->append(name))
-        continue;  // Continue in spite of too long names.
-
-      if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-        RecursivelyDeleteDirectory(path);
-      } else {
-        ::DeleteFile(path->get());
-      }
-    } while (::FindNextFile(find, &find_data));
-    ::FindClose(find);
+  // Try to create a directory next to the current module.
+  if (GetModuleDir(module, &base_path) &&
+      CreateWorkDir(base_path.get(), work_dir, exit_code)) {
+    return true;
   }
 
-  // Restore the path and delete the directory before we return.
-  path->truncate_at(end);
-  ::RemoveDirectory(path->get());
-}
-
-// Enumerates subdirectories of |parent_dir| and deletes all subdirectories
-// that match with a given |prefix|.  |parent_dir| must have a trailing
-// backslash.
-// The process is done on a best effort basis, so conceivably there might
-// still be matches left when the function returns.
-void DeleteDirectoriesWithPrefix(const wchar_t* parent_dir,
-                                 const wchar_t* prefix) {
-  // |parent_dir| is guaranteed to always have a trailing backslash.
-  PathString spec;
-  if (!spec.assign(parent_dir) || !spec.append(prefix) || !spec.append(L"*.*"))
-    return;
-
-  WIN32_FIND_DATA find_data = {0};
-  HANDLE find = ::FindFirstFileEx(spec.get(), FindExInfoStandard, &find_data,
-                                  FindExSearchLimitToDirectories, NULL, 0);
-  if (find == INVALID_HANDLE_VALUE)
-    return;
-
-  PathString path;
-  do {
-    if (find_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-      // Use the short name if available to make the most of our buffer.
-      const wchar_t* name = find_data.cAlternateFileName[0] ?
-          find_data.cAlternateFileName : find_data.cFileName;
-      if (IsCurrentOrParentDirectory(name))
-        continue;
-      if (path.assign(parent_dir) && path.append(name))
-        RecursivelyDeleteDirectory(&path);
-    }
-  } while (::FindNextFile(find, &find_data));
-  ::FindClose(find);
-}
-
-// Attempts to free up space by deleting temp directories that previous
-// installer runs have failed to clean up.
-void DeleteOldChromeTempDirectories() {
-  static const wchar_t* const kDirectoryPrefixes[] = {
-    kTempPrefix,
-    L"chrome_"  // Previous installers created directories with this prefix
-                // and there are still some lying around.
-  };
-
-  PathString temp;
-  // GetTempPath always returns a path with a trailing backslash.
-  DWORD len = ::GetTempPath(static_cast<DWORD>(temp.capacity()), temp.get());
-  // GetTempPath returns 0 or number of chars copied, not including the
-  // terminating '\0'.
-  if (!len || len >= temp.capacity())
-    return;
-
-  for (size_t i = 0; i < _countof(kDirectoryPrefixes); ++i) {
-    DeleteDirectoriesWithPrefix(temp.get(), kDirectoryPrefixes[i]);
-  }
-}
-
-// Checks the command line for specific mini installer flags.
-// If the function returns true, the command line has been processed and all
-// required actions taken.  The installer must exit and return the returned
-// |exit_code|.
-bool ProcessNonInstallOperations(const Configuration& configuration,
-                                 ProcessExitResult* exit_code) {
-  switch (configuration.operation()) {
-    case Configuration::CLEANUP:
-      // Cleanup has already taken place in DeleteOldChromeTempDirectories at
-      // this point, so just tell our caller to exit early.
-      *exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
-      return true;
-
-    default:
-      return false;
-  }
-}
-
-// Returns true if we should delete the temp files we create (default).
-// Returns false iff the user has manually created a ChromeInstallerCleanup
-// string value in the registry under HKCU\\Software\\[Google|Chromium]
-// and set its value to "0".  That explicitly forbids the mini installer from
-// deleting these files.
-// Support for this has been publicly mentioned in troubleshooting tips so
-// we continue to support it.
-bool ShouldDeleteExtractedFiles() {
-  wchar_t value[2] = {0};
-  if (RegKey::ReadSZValue(HKEY_CURRENT_USER, kCleanupRegistryKey,
-                          kCleanupRegistryValue, value, _countof(value)) &&
-      value[0] == L'0') {
-    return false;
-  }
-
-  return true;
+  // Failing that, try to create one in the TMP directory.
+  return GetTempDir(&base_path, exit_code) &&
+         CreateWorkDir(base_path.get(), work_dir, exit_code);
 }
 
 ProcessExitResult WMain(HMODULE module) {
-  // Always start with deleting potential leftovers from previous installations.
-  // This can make the difference between success and failure.  We've seen
-  // many installations out in the field fail due to out of disk space problems
-  // so this could buy us some space.
-  DeleteOldChromeTempDirectories();
-
   ProcessExitResult exit_code = ProcessExitResult(SUCCESS_EXIT_CODE);
 
   // Parse configuration from the command line and resources.
@@ -864,11 +823,6 @@ ProcessExitResult WMain(HMODULE module) {
   // command line.
   if (configuration.has_invalid_switch())
     return ProcessExitResult(INVALID_OPTION);
-
-  // If the --cleanup switch was specified on the command line, then that means
-  // we should only do the cleanup and then exit.
-  if (ProcessNonInstallOperations(configuration, &exit_code))
-    return exit_code;
 
   // First get a path where we can extract payload
   PathString base_path;
@@ -884,10 +838,12 @@ ProcessExitResult WMain(HMODULE module) {
   SetInstallerFlags(configuration);
 #endif
 
+  int max_delete_attempts = 0;
   PathString archive_path;
   PathString setup_path;
-  exit_code = UnpackBinaryResources(configuration, module, base_path.get(),
-                                    &archive_path, &setup_path);
+  exit_code =
+      UnpackBinaryResources(configuration, module, base_path.get(),
+                            &archive_path, &setup_path, max_delete_attempts);
 
   // While unpacking the binaries, we paged in a whole bunch of memory that
   // we don't need anymore.  Let's give it back to the pool before running
@@ -897,11 +853,23 @@ ProcessExitResult WMain(HMODULE module) {
   if (exit_code.IsSuccess())
     exit_code = RunSetup(configuration, archive_path.get(), setup_path.get());
 
-  if (ShouldDeleteExtractedFiles())
-    DeleteExtractedFiles(base_path.get(), archive_path.get(), setup_path.get());
+  if (configuration.should_delete_extracted_files()) {
+    DeleteExtractedFiles(module, archive_path, setup_path, base_path,
+                         max_delete_attempts);
+  }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  WriteInstallResults(configuration, exit_code);
+  if (exit_code.IsSuccess()) {
+    // Send up a signal in ExtraCode1 upon successful install indicating the
+    // maximum number of retries needed to delete a file or directory by
+    // DeleteWithRetry; see https://crbug.com/1138157.
+    MetricSample max_retries =
+        (max_delete_attempts > 1 ? max_delete_attempts - 1 : 0);
+    WriteExtraCode1(configuration,
+                    MetricToExtraCode1(kMaxDeleteRetryCount, max_retries));
+  } else {
+    WriteInstallResults(configuration, exit_code);
+  }
 #endif
 
   return exit_code;

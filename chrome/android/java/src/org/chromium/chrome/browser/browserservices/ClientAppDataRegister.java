@@ -13,6 +13,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Collections;
 import java.util.HashSet;

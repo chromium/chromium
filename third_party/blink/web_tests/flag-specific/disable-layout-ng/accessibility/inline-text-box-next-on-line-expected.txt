@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Test |NextOnLine| and |PreviousOnLine| on |AXInlineTextBox|.
+PASS Test |NextOnLine| and |PreviousOnLine| on |AXLayoutObject|.
+PASS Test |NextOnLine| and |PreviousOnLine| on paragraphs with links.
+PASS Test |NextOnLine| and |PreviousOnLine| on paragraphs with anonymous blocks.
+FAIL Test |NextOnLine| and |PreviousOnLine| on list markers. assert_equals: expected "AXRole: AXListMarker" but got "AXRole: AXList"
+PASS Test |NextOnLine| and |PreviousOnLine| on multiline inline elements.
+PASS Test |NextOnLine| and |PreviousOnLine| on anonymous multiline inline elements.
+Harness: the test ran to completion.
+

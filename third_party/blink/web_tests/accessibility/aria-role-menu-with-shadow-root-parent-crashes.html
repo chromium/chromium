@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<div id="container"></div>
+<div id="menu" role="menu"></div>
+
+<script>
+    test(() => {
+        document.getElementById('container')
+            .attachShadow({mode: 'open'})
+            // Reparent menu element with shadow root
+            .appendChild(document.getElementById('menu'));
+
+        const axMenu = accessibilityController.accessibleElementById('menu');
+        assert_equals(axMenu.role, 'AXRole: AXMenu');
+    }, 'Shadow root can be parent of element with aria-role menu without crash');
+</script>

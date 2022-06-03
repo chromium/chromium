@@ -10,10 +10,11 @@
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "base/timer/elapsed_timer.h"
 #include "net/base/test_completion_callback.h"
@@ -82,14 +83,14 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
   }
 
   CanonicalCookie CookieFromIndices(int domain_num, int cookie_num) {
-    base::Time t(test_start_ +
-                 base::TimeDelta::FromMicroseconds(
-                     domain_num * kCookiesPerDomain + cookie_num));
+    base::Time t(
+        test_start_ +
+        base::Microseconds(domain_num * kCookiesPerDomain + cookie_num));
     std::string domain_name(base::StringPrintf(".domain_%d.com", domain_num));
-    return CanonicalCookie(base::StringPrintf("Cookie_%d", cookie_num), "1",
-                           domain_name, "/", t, t, t, false, false,
-                           CookieSameSite::NO_RESTRICTION,
-                           COOKIE_PRIORITY_DEFAULT);
+    return *CanonicalCookie::CreateUnsafeCookieForTesting(
+        base::StringPrintf("Cookie_%d", cookie_num), "1", domain_name, "/", t,
+        t, t, false, false, CookieSameSite::NO_RESTRICTION,
+        COOKIE_PRIORITY_DEFAULT, false);
   }
 
   void SetUp() override {
@@ -149,9 +150,9 @@ class SQLitePersistentCookieStorePerfTest : public testing::Test {
   base::Time test_start_;
   base::test::TaskEnvironment task_environment_;
   const scoped_refptr<base::SequencedTaskRunner> background_task_runner_ =
-      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   const scoped_refptr<base::SequencedTaskRunner> client_task_runner_ =
-      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   base::WaitableEvent loaded_event_;
   base::WaitableEvent key_loaded_event_;
   std::vector<std::unique_ptr<CanonicalCookie>> cookies_;

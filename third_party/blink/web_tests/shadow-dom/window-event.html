@@ -10,8 +10,6 @@
 
 <script>
 const normalDiv = document.querySelector('#normal-div');
-const shadowHostV0 = document.querySelector('#shadow-host-v0');
-shadowHostV0.createShadowRoot();
 const shadowHostV1 = document.querySelector('#shadow-host-v1');
 shadowHostV1.attachShadow({mode : 'open'});
 const test_event = new Event('test_event');
@@ -24,15 +22,6 @@ async_test((test) => {
   }));
   normalDiv.dispatchEvent(test_event);
 }, 'window.event should contain the current event being handled when the target is a normal DOM node');
-
-async_test((test) => {
-  shadowHostV0.shadowRoot.addEventListener('test_event', test.step_func_done((e) => {
-    assert_not_equals(event, null);
-    assert_equals(event, e);
-    assert_equals(event, test_event);
-  }));
-  shadowHostV0.shadowRoot.dispatchEvent(test_event);
-}, 'window.event should contain the current event being handled when the target is a V0 Shadow DOM node');
 
 async_test((test) => {
   shadowHostV1.shadowRoot.addEventListener('test_event', test.step_func_done((e) => {

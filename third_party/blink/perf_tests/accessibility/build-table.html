@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="../resources/runner.js"></script>
+
+<table id="table"></table>
+
+<script>
+
+var isDone = false;
+var startTime;
+
+function runTest() {
+    if (startTime) {
+        PerfTestRunner.measureValueAsync(PerfTestRunner.now() - startTime);
+        PerfTestRunner.addRunTestEndMarker();
+    }
+    if (!isDone) {
+        PerfTestRunner.addRunTestStartMarker();
+        startTime = PerfTestRunner.now();
+
+        // Add 100 rows with just a header in each.
+        let table = document.getElementById('table');
+        table.innerHTML = '';
+        for (let i = 0; i < 100; i++) {
+            let row = document.createElement('tr');
+            row.innerHTML = '<th>Header</th>';
+            table.appendChild(row);
+        }
+
+        setTimeout(() => {
+            // Add 100 cells to each row.
+            for (let row = table.firstElementChild;
+                 row;
+                 row = row.nextElementSibling) {
+                for (let i = 0; i < 100; i++) {
+                    let cell = document.createElement('td');
+                    cell.innerHTML = i;
+                    row.appendChild(cell);
+                }
+            }
+        }, 10);
+
+        // Wait to allow the asynchronous accessibility code that's
+        // covered by traceEventsToMeasure to have a chance to run.
+        setTimeout(runTest, 1500);
+    }
+}
+
+PerfTestRunner.startMeasureValuesAsync({
+    description: 'Test accessibility performance when dynamically building a table.',
+    unit: 'ms',
+    done: function () {
+        isDone = true;
+    },
+    run: function() {
+        runTest();
+    },
+    iterationCount: 6,
+    tracingCategories: 'accessibility',
+    traceEventsToMeasure: [
+        'ProcessDeferredAccessibilityEvents'
+    ]
+});
+</script>
+
+</html>

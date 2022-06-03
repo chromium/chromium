@@ -8,8 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package optimization_guide.proto;
 
-import "hints.proto";
-import "models.proto";
+import "components/optimization_guide/proto/hints.proto";
+import "components/optimization_guide/proto/models.proto";
 
 // The types of StoreEntries.
 //

@@ -1,0 +1,7 @@
+rootWebArea name=''
+++genericContainer ignored
+++++genericContainer
+++++++meter valueForRange=0.00 minValueForRange=0.00 maxValueForRange=1.00
+++++++++genericContainer
+++++++++++genericContainer
+++++++++++++genericContainer ignored

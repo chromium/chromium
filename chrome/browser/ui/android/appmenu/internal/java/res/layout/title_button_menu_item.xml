@@ -6,25 +6,28 @@
 -->
 
 <!-- Represents a menu item that can display any of the following options:
-     * A text label
-     * A text label with a checkbox indicating that it is enabled or disabled
-     * A text label with an icon
+     * [text label]
+     * [text label] [checkbox indicating that it is enabled or disabled]
+     * [text label] [icon]
+     * [icon] [text label]
+     * [icon] [text label] [checkbox indicating that it is enabled or disabled]
+     * [icon] [text label] [icon]
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
-              android:layout_height="?android:attr/listPreferredItemHeightSmall">
-    <TextView
+              android:layout_height="?android:attr/listPreferredItemHeightSmall"
+              android:gravity="center_vertical"
+              android:orientation="horizontal">
+
+     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/title"
+        style="@style/AppMenuItemTextViewWithCompoundDrawables"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_gravity="start"
         android:layout_weight="1"
-        android:background="?attr/listChoiceBackgroundIndicator"
-        android:gravity="center_vertical"
         android:paddingStart="16dp"
-        android:paddingEnd="9dp"
-        android:singleLine="true"
-        android:textAppearance="?android:attr/textAppearanceLargePopupMenu" />
+        android:background="?attr/listChoiceBackgroundIndicator"/>
 
     <!-- Checkbox.  Paddings account for built-in padding from the Android resource. -->
     <org.chromium.chrome.browser.ui.appmenu.AppMenuItemIcon

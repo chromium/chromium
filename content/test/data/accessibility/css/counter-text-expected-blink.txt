@@ -1,0 +1,29 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++list
+++++++++++listItem
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='1'
+++++++++++++++++inlineTextBox name='1'
+++++++++++++++staticText name=':'
+++++++++++++++++inlineTextBox name=':'
+++++++++++++staticText name='line1'
+++++++++++++++inlineTextBox name='line1'
+++++++++++listItem
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='2'
+++++++++++++++++inlineTextBox name='2'
+++++++++++++++staticText name=':'
+++++++++++++++++inlineTextBox name=':'
+++++++++++++staticText name='line2'
+++++++++++++++inlineTextBox name='line2'
+++++++++++listItem
+++++++++++++genericContainer ignored
+++++++++++++++staticText name='3'
+++++++++++++++++inlineTextBox name='3'
+++++++++++++++staticText name=':'
+++++++++++++++++inlineTextBox name=':'
+++++++++++++staticText name='line3'
+++++++++++++++inlineTextBox name='line3'

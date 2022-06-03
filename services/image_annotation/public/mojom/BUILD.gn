@@ -5,7 +5,5 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "image_annotation.mojom",
-  ]
+  sources = [ "image_annotation.mojom" ]
 }

@@ -82,7 +82,7 @@ function assertThrows(f) {
 function assertArrayEquals(expected, observed) {
   const v1 = Array.prototype.slice.call(expected);
   const v2 = Array.prototype.slice.call(observed);
-  let equal = v1.length == v2.length;
+  let equal = v1.length === v2.length;
   if (equal) {
     for (let i = 0; i < v1.length; i++) {
       if (v1[i] !== v2[i]) {
@@ -104,7 +104,7 @@ function assertArrayEquals(expected, observed) {
  * @param {*} observed The actual result.
  */
 function assertDeepEquals(expected, observed, opt_message) {
-  if (typeof expected == 'object' && expected != null) {
+  if (typeof expected === 'object' && expected !== null) {
     assertNotEqual(null, observed);
     for (const key in expected) {
       assertTrue(key in observed, opt_message);
@@ -201,7 +201,7 @@ function runTests(opt_testScope) {
   testHarness = /** @type{!WebUiTestHarness} */ (testScope);
   for (const name in testScope) {
     // To avoid unnecessary getting properties, test name first.
-    if (/^test/.test(name) && typeof testScope[name] == 'function') {
+    if (/^test/.test(name) && typeof testScope[name] === 'function') {
       testCases.push(name);
     }
   }
@@ -236,7 +236,7 @@ function startTesting() {
  * @param {boolean=} opt_asyncTestFailure Optional parameter indicated if the
  *     last asynchronous test failed.
  */
-function continueTesting(opt_asyncTestFailure) {
+async function continueTesting(opt_asyncTestFailure) {
   const now = performance.now();
   if (testName) {
     console.log(
@@ -263,7 +263,7 @@ function continueTesting(opt_asyncTestFailure) {
         testHarness.setUp();
       }
       pendingTearDown = testHarness.tearDown || null;
-      testScope[testName](continueTesting);
+      await testScope[testName](continueTesting);
     } catch (err) {
       console.error('Failure in test ' + testName + '\n' + err);
       console.log(err.stack);
@@ -290,7 +290,7 @@ function continueTesting(opt_asyncTestFailure) {
  */
 function endTests(success) {
   const duration =
-      runnerStartTime == 0 ? 0 : performance.now() - runnerStartTime;
+      runnerStartTime === 0 ? 0 : performance.now() - runnerStartTime;
   console.log(
       'TEST all complete, status=' + (success ? 'PASS' : 'FAIL') +
       ', duration=' + Math.round(duration) + 'ms');

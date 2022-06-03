@@ -5,19 +5,15 @@
 #ifndef CONTENT_BROWSER_WEBAUTH_VIRTUAL_FIDO_DISCOVERY_FACTORY_H_
 #define CONTENT_BROWSER_WEBAUTH_VIRTUAL_FIDO_DISCOVERY_FACTORY_H_
 
-#include <map>
 #include <memory>
 #include <set>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "content/browser/webauth/virtual_authenticator_manager_impl.h"
 #include "content/common/content_export.h"
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/virtual_fido_device.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
 
 namespace device {
 class FidoDiscoveryBase;
@@ -27,72 +23,46 @@ namespace content {
 
 class VirtualAuthenticator;
 class VirtualFidoDiscovery;
+class VirtualFidoDiscoveryFactory;
 
-// Implements the Mojo interface representing a virtual authenticator manager
-// for the Web Authentication API. Allows setting up and configurating virtual
-// authenticator devices for testing.
+// VirtualFidoDiscoveryFactory is instantiated by
+// VirtualAuthenticatorManagerImpl. It produces FidoDiscovery instances that
+// instantiate a virtual device for each authenticator configured in
+// VirtualAuthenticatorManagerImpl.
+//
+// Its lifetime is limited to the duration of a WebAuthn request. Note that this
+// differs from VirtualAuthenticatorManagerImpl which is instantiated and
+// destroyed in response to operations on the Virtual Authenticator API.
 class CONTENT_EXPORT VirtualFidoDiscoveryFactory
-    : public blink::test::mojom::VirtualAuthenticatorManager,
-      public device::FidoDiscoveryFactory {
+    : public device::FidoDiscoveryFactory,
+      public VirtualAuthenticatorManagerImpl::Observer {
  public:
-  VirtualFidoDiscoveryFactory();
+  explicit VirtualFidoDiscoveryFactory(
+      base::WeakPtr<VirtualAuthenticatorManagerImpl> authenticator_manager);
+  VirtualFidoDiscoveryFactory(const VirtualFidoDiscoveryFactory&) = delete;
+  VirtualFidoDiscoveryFactory& operator=(const VirtualFidoDiscoveryFactory&) =
+      delete;
   ~VirtualFidoDiscoveryFactory() override;
 
-  // Create an authenticator that will generate virtual devices for the given
-  // parameters. Returns nullptr if an error occurs when trying to create the
-  // authenticator.
-  VirtualAuthenticator* CreateAuthenticator(
-      device::ProtocolVersion protocol,
-      device::FidoTransportProtocol transport,
-      device::AuthenticatorAttachment attachment,
-      bool has_resident_key,
-      bool has_user_verification);
-
-  // Returns the authenticator with the given |id|. Returns nullptr if no
-  // authenticator matches the ID.
-  VirtualAuthenticator* GetAuthenticator(const std::string& id);
-
-  // Returns all the authenticators attached to the factory.
-  std::vector<VirtualAuthenticator*> GetAuthenticators();
-
-  // Removes the authenticator with the given |id|. Returns true if an
-  // authenticator matched the |id|, false otherwise.
-  bool RemoveAuthenticator(const std::string& id);
-
-  void AddReceiver(
-      mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
-          receiver);
-
-  // Notify that a discovery has been destroyed.
-  void OnDiscoveryDestroyed(VirtualFidoDiscovery* discovery);
-
   // device::FidoDiscoveryFactory:
-  std::unique_ptr<::device::FidoDiscoveryBase> Create(
+  std::vector<std::unique_ptr<::device::FidoDiscoveryBase>> Create(
       device::FidoTransportProtocol transport) override;
-
- protected:
-  // blink::test::mojom::VirtualAuthenticatorManager:
-  void CreateAuthenticator(
-      blink::test::mojom::VirtualAuthenticatorOptionsPtr options,
-      CreateAuthenticatorCallback callback) override;
-  void GetAuthenticators(GetAuthenticatorsCallback callback) override;
-  void RemoveAuthenticator(const std::string& id,
-                           RemoveAuthenticatorCallback callback) override;
-  void ClearAuthenticators(ClearAuthenticatorsCallback callback) override;
+  bool IsTestOverride() override;
 
  private:
-  mojo::ReceiverSet<blink::test::mojom::VirtualAuthenticatorManager> receivers_;
+  // VirtualAuthenticatorManagerImpl::Observer:
+  void AuthenticatorAdded(VirtualAuthenticator*) override;
+  void AuthenticatorRemoved(const std::string& authenticator_id) override;
 
-  // The key is the unique_id of the corresponding value (the authenticator).
-  std::map<std::string, std::unique_ptr<VirtualAuthenticator>> authenticators_;
+  // VirtualAuthenticatorManagerImpl is held weakly because the virtual
+  // authenticator environment may be disabled in during an ongoing WebAuthn
+  // request, in which case the manager instance would be freed, while the
+  // discovery factory and its associated FidoDiscovery intances live on until
+  // the WebAuthn request completes.
+  base::WeakPtr<VirtualAuthenticatorManagerImpl> weak_authenticator_manager_;
 
-  // Discoveries are owned by U2fRequest and FidoRequestHandler, and
-  // automatically unregister themselves upon their destruction.
+  // Individual discoveries are owned by the FidoRequestHandler.
   std::set<VirtualFidoDiscovery*> discoveries_;
-
-  scoped_refptr<device::VirtualFidoDevice::State> virtual_device_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(VirtualFidoDiscoveryFactory);
 };
 
 }  // namespace content

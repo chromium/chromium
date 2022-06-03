@@ -1,6 +1,6 @@
 # Invalidations Component
 
-### Introduction
+## Introduction
 Let's start with an example.  On Chrome OS there exists a concept called
 "policy" - one can think of them as dynamic flags that change Chrome's
 behaviour.  They are changed on the Admin Panel from where they get propagated
@@ -22,157 +22,128 @@ the server, so should the copy of this object in the client device. All the
 invalidation related interaction between client device and server is done
 through Invalidation Service.
 
-**Invalidation** (message to invalidate some object) is sent and received using
-a publish/subscribe service. We have a couple of those publish/subscribe
-services, some of which are Tango - [go/tango](http://go/tango) and Fandango -
-[go/fandango](http://go/fandango).
+An **Invalidation** (a message to invalidate some object) is sent and received
+using a publish/subscribe service. In practice, this is Firebase Cloud Messaging
+(FCM, see
+[firebase.google.com/docs/cloud-messaging](https://firebase.google.com/docs/cloud-messaging)
+or [go/fcm](http://go/fcm)) and Fandango (see
+[go/fandango](http://go/fandango)).
 
 In general the whole thing looks as follows:
 ![Invalidations component UML](../images/InvalidationService.png)
 
 ***
 
+## Terminology
+
+* **InstanceID**: An identifier for "a specific app installed on a specific
+  device". The term comes from GMSCore on Android. Here, an "app" is a client of
+  invalidations, such as Sync, Drive, or Policy. It's just a mostly random
+  string of 8 bytes, created by Chrome.
+* **Registration**: As in "registering with FCM"; means making an InstanceID
+  known to the FCM server. The result of registering is an **InstanceID token**
+  (note that this is different from an InstanceID).
+* **Topic**: A "namespace" or "channel" of messages that clients can subscribe
+  to. For Sync, they correspond to data types. A topic can be either private
+  (i.e. GAIA-keyed) or public. For private topics, a unique ID derived from the
+  user's GAIA ID is appended to the topic name to make it unique (though this
+  is an implementation detail which is hidden from clients).
+* **Subscription**: As in "subscribing to a topic", i.e. telling the server that
+  this client (identified by InstanceID token) is interested in a given topic.
+* **ProjectID** (aka **SenderID**): An ID from the Google Cloud Platform console
+  that identifies a client of invalidations (such as Sync, Drive, or Policy).
+  E.g. for Sync its value is kInvalidationGCMSenderId. Note that (as opposed to
+  InstanceID) this is constant across all users and Chrome instances.
+
+***
+
+## Classes
+
 ### InvalidationHandler
 
-**InvalidationHandler** - is a client of InvalidationService (see below).
-Everyone who wants to use InvalidationService to receive Invalidation
-(notification of change in some object) needs to implement
-**InvalidationHandler** to receive those messages. **InvalidationHandler** has
-the following methods (the list is not full):
+An **InvalidationHandler** is a client (receiver) of Invalidations. Every
+feature that wants to receive Invalidations needs to implement an
+InvalidationHandler and register it with InvalidationService (see below).
+InvalidationHandler has the following methods (the list is not exhaustive):
 
-* **OnIncomingInvalidation** - is called from InvalidationService to notify
-about incoming Invalidation.
-
-At the end of documentation, one can find the additional material for adding
-**InvalidationHandler**.
+* **OnIncomingInvalidation** is called from InvalidationService to notify
+about incoming Invalidation messages.
+* **GetOwnerName** must return a unique name for this InvalidationHandler.
 
 ***
 
 ### InvalidationService
 
-Class **InvalidationService** is just an interface which provides the following
-methods (the list is not exhaustive).
+**InvalidationService** is the main entry point for clients of the Invalidations
+system. This is where an InvalidationHandler registers/unregisters itself, and
+where it registers the Topics it is interested in. When a message arrives,
+InvalidationService calls OnIncomingInvalidation for the receiving
+InvalidationHandler.
 
-* **RegisterInvalidationHandler** - allows InvalidationHandler to register
-itself as a observer for Invalidations. **InvalidationService** will only
+InvalidationService provides the following methods (the list is not exhaustive):
+
+* **RegisterInvalidationHandler** allows an InvalidationHandler to register
+itself as a observer for Invalidations. InvalidationService will only
 dispatch messages to registered handlers.
+* **UpdateInterestedTopics** allows InvalidationHandler to change the set of
+Topics it is interested in.
+* **UnregisterInvalidationHandler** lets an InvalidationHandler unregister
+itself again, after which it stops receiving Invalidations.
 
-* **UpdateRegisteredInvalidationIds** - allows InvalidationHandler to change the
-ids of Objects it is interested in receiving Invalidations for.
-
-* **UnregisterInvalidationHandler** - when InvalidationHandler unregisters it
-stops receiving Invalidations.
+An InvalidationService instance is usually tied to a profile (via
+**ProfileInvalidationProviderFactory**), but on ChromeOS there is also a
+device-scoped instance, managed by **AffiliatedInvalidationServiceProvider**
+(used for device policies, which must apply even before any user is signed in).
 
 ***
 
 ### FCMInvalidationService
 
-**FCMInvalidationService** - is the implementation of InvalidationService that
-uses [Fandango](http://go/fandango) as its publish/subscribe service.
-
-**FCMInvalidationService** is the main entry point for InvalidationHandler. This
-is where InvalidationHandler registers/unregisters itself in
-InvalidationService, and registers Objects to invalidate. When a message comes,
-**FCMInvalidationService** calls OnIncomingInvalidation for the receiving
-InvalidationHandler.
-
-Actually **FCMInvalidationService** just provides the abstraction above for
-InvalidationHandler, while in fact it just manages
-InvalidatorRegistrarWithMemory and FCMInvalidationListener, who do the actual
-work.
+**FCMInvalidationService** is the only real (non-test) implementation of
+InvalidationService, using [FCM](http://go/fcm)+[Fandango](http://go/fandango)
+as its publish/subscribe service. It delegates most of the work to
+InvalidatorRegistrarWithMemory and FCMInvalidationListener.
 
 ***
 
 ### InvalidatorRegistrarWithMemory
 
-**InvalidatorRegistrarWithMemory** stores registered InvalidationHandlers,
-stores objects to invalidate and stores mapping between objects and
-InvalidationHandlers to know which InvalidationHandlers are interested in which
-objects. When a message comes from FCMInvalidationListener,
-**InvalidatorRegistrarWithMemory** dispatches that message (Invalidation) to the
-receiving InvalidationHandler.
+**InvalidatorRegistrarWithMemory** maintains the mapping between Topics and
+InvalidationHandlers. When a message arrives via FCMInvalidationListener,
+InvalidatorRegistrarWithMemory dispatches that message (invalidation) to the
+appropriate InvalidationHandler.
+
+InvalidatorRegistrarWithMemory also persists the set of Topics per handler, to
+avoid redundant re-subscriptions after every Chrome restart.
 
 ***
 
 ### FCMInvalidationListener
 
-**FCMInvalidationListener** just gets the list of topics to subscribe from
-FCMInvalidationService, and when **FCMInvalidationListener** receives
-Invalidations on those topics, it just passes them up to FCMInvalidationService.
-
-And again the description above is just a good abstraction of
-**FCMInvalidationListener** for FCMInvalidationService, while in fact
-**FCMInvalidationListener** manages PerUserTopicRegistrationManager and
-FCMNetworkHandler who do the actual work.
+**FCMInvalidationListener** gets the list of interesting Topics from
+FCMInvalidationService. It passes the Topics to PerUserTopicSubscriptionManager
+(see below) for subscription/unsubscription, receives Invalidation messages from
+FCMNetworkHandler, and passes Invalidations for the interesting Topics back to
+FCMInvalidationService.
 
 ***
 
-### PerUserTopicRegistrationManager
+### PerUserTopicSubscriptionManager
 
-**PerUserTopicRegistrationManager** manages subscriptions to topics. Topics in
-this case are objects we are interested in invalidating.
+**PerUserTopicSubscriptionManager** manages subscriptions to Topics, sending
+subscription or unsubscriptions requests to the server as necessary. It persists
+the set of subscribed Topics in prefs to avoid redundant re-subscriptions after
+Chrome restarts.
 
 ***
 
 ### FCMNetworkHandler
 
-**FCMNetworkHandler** is the class responsible for communication via GCM
-channel. Provides the following functionality:
+**FCMNetworkHandler** is responsible for communication via GCM channel. It
+provides the following functionality:
 
-* Retrieves the auth token required for the subscription. When this token is
-received, it is passed to PerUserTopicRegistrationManager which subscribes to
-topics with the given auth token.
-
+* Retrieves the InstanceID token required for the subscription. When this token
+  is received, it is passed to PerUserTopicSubscriptionManager which subscribes
+  to Topics with the given token.
 * Receives messages from GCM driver and passes them up to
-FCMInvalidationListener, where they are converted to Invalidations.
-
-***
-
-### TiclInvalidationService (deprecated)
-
-TiclInvalidationService - is the implementation of InvalidationService that uses
-[Tango](http://go/tango) as its publish/subscribe service.
-
-***
-
-## For those who want to add InvalidationHandler
-
-### Public vs. Private topics
-
-FCMInvalidationService has a different registration process for public and
-private topics. When registering with a public topic, publish/subscribe service
-will fan out all outgoing messages to all devices subscribed to this topic. For
-example: If a device subscribes to "DeviceGuestModeEnabled" public topic all
-instances subscribed to this topic will receive all outgoing messages addressed
-to topic "DeviceGuestModeEnabled". But if 2 devices with different InstanceID
-subscribe to private topic "BOOKMARK", they will receive different set of
-messages addressed to pair ("BOOKMARK", InstanceID) respectively.
-
-### Project Id
-
-In the UML diagram above there are 3 classes that inherit from
-InvalidationHandler:
-
-* SyncEngineImpl
-
-* CloudPolicyInvalidator
-
-* DriveNotificationManager
-
-There is a notion of SenderId which is different for every InvalidationHandler.
-SenderId is used when registering to topics, to receive a topic of a particular
-sender. So for example server side logic of CloudPolicy posts messages using
-SenderId of "1013309121859", and client side logic which is
-CloudPolicyInvalidator should register to topics using the SenderId
-"1013309121859".
-
-### InvalidationService for profile and for device
-
-Usually InvalidationService is bound to a profile which can be spinned up using
-**ProfileInvalidationProviderFactory**, but sometimes there is no profile as in
-the special case of CloudPolicyInvalidator. CloudPolicyInvalidator is interested
-in receiving Invalidations on policies. Chrome OS team defines 2 types of
-policies - User and Device. Device policies should be received even when there
-is no one signed in to a Chrome OS device, thus there is no profile. For this
-reason there is a special class **AffiliatedInvalidationServiceProvider** which
-spawns InvalidationService even when there is no profile.
+  FCMInvalidationListener, where they are converted to Invalidations.

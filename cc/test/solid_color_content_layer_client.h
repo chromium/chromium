@@ -26,13 +26,10 @@ class SolidColorContentLayerClient : public ContentLayerClient {
         border_size_(border_size),
         border_color_(border_color) {}
 
-  gfx::Rect PaintableRegion() override;
-
   // ContentLayerClient implementation.
-  scoped_refptr<DisplayItemList> PaintContentsToDisplayList(
-      PaintingControlSetting painting_control) override;
+  gfx::Rect PaintableRegion() const override;
+  scoped_refptr<DisplayItemList> PaintContentsToDisplayList() override;
   bool FillsBoundsCompletely() const override;
-  size_t GetApproximateUnsharedMemoryUsage() const override;
 
  private:
   SkColor color_;

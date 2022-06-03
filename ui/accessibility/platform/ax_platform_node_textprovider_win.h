@@ -7,12 +7,12 @@
 
 #include <wrl/client.h>
 
-#include <string>
 
 #include "ui/accessibility/platform/ax_platform_node_win.h"
 
 namespace ui {
-class __declspec(uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca"))
+
+class AX_EXPORT __declspec(uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca"))
     AXPlatformNodeTextProviderWin
     : public CComObjectRootEx<CComMultiThreadModel>,
       public ITextEditProvider {
@@ -33,34 +33,38 @@ class __declspec(uuid("3e1c192b-4348-45ac-8eb6-4b58eeb3dcca"))
   // ITextProvider methods.
   //
 
-  STDMETHOD(GetSelection)(SAFEARRAY** selection) override;
+  IFACEMETHODIMP GetSelection(SAFEARRAY** selection) override;
 
-  STDMETHOD(GetVisibleRanges)(SAFEARRAY** visible_ranges) override;
+  IFACEMETHODIMP GetVisibleRanges(SAFEARRAY** visible_ranges) override;
 
-  STDMETHOD(RangeFromChild)
-  (IRawElementProviderSimple* child, ITextRangeProvider** range) override;
+  IFACEMETHODIMP RangeFromChild(IRawElementProviderSimple* child,
+                                ITextRangeProvider** range) override;
 
-  STDMETHOD(RangeFromPoint)
-  (UiaPoint point, ITextRangeProvider** range) override;
+  IFACEMETHODIMP RangeFromPoint(UiaPoint point,
+                                ITextRangeProvider** range) override;
 
-  STDMETHOD(get_DocumentRange)(ITextRangeProvider** range) override;
+  IFACEMETHODIMP get_DocumentRange(ITextRangeProvider** range) override;
 
-  STDMETHOD(get_SupportedTextSelection)
-  (enum SupportedTextSelection* text_selection) override;
+  IFACEMETHODIMP get_SupportedTextSelection(
+      enum SupportedTextSelection* text_selection) override;
 
   //
   // ITextEditProvider methods.
   //
 
-  STDMETHOD(GetActiveComposition)(ITextRangeProvider** range) override;
+  IFACEMETHODIMP GetActiveComposition(ITextRangeProvider** range) override;
 
-  STDMETHOD(GetConversionTarget)(ITextRangeProvider** range) override;
+  IFACEMETHODIMP GetConversionTarget(ITextRangeProvider** range) override;
 
   // ITextProvider supporting methods.
 
   static ITextRangeProvider* GetRangeFromChild(
       ui::AXPlatformNodeWin* ancestor,
       ui::AXPlatformNodeWin* descendant);
+
+  // Create a dengerate text range at the start of the specified node.
+  static ITextRangeProvider* CreateDegenerateRangeAtStart(
+      ui::AXPlatformNodeWin* node);
 
  private:
   friend class AXPlatformNodeTextProviderTest;

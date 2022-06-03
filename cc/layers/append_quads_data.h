@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/optional.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/surfaces/surface_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cc {
 
@@ -34,7 +34,7 @@ class CC_EXPORT AppendQuadsData {
 
   // The non-default number of BeginFrames to wait before forcibly activating
   // this CompositorFrame.
-  base::Optional<uint32_t> deadline_in_frames;
+  absl::optional<uint32_t> deadline_in_frames;
 
   // Indicates whether or not one of the layers wants to use the default
   // activation deadline.
@@ -44,6 +44,10 @@ class CC_EXPORT AppendQuadsData {
   // active CompositorFrames so that this CompositorFrame can
   // activate.
   std::vector<viz::SurfaceId> activation_dependencies;
+
+  // Indicates if any layer has SharedElementResourceIds which need to be
+  // swapped with actual viz::ResourceIds in the Viz process.
+  bool has_shared_element_resources = false;
 };
 
 }  // namespace cc

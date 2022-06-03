@@ -13,11 +13,12 @@
         if (counter == 1) {
             assert_equals(message.data, "remove");
             ++counter;
-            document.getElementById("frame").contentWindow.postMessage("remove", "*");
+            child.postMessage("remove", "*");
         } else {
             assert_equals(message.data, "success");
             t.done();
         }
     }));
+    var child = window.open("resources/window-ch-with-picture-removal.php",
+                            "helper", "innerWidth=800, innerHeight=600");
 </script>
-<iframe src="resources/iframe-ch-with-picture-removal.php" onerror="console.log('failed to load iframe');t.done()" id=frame style="width: 800px"></iframe>

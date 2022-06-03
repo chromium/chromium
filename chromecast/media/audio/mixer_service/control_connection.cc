@@ -6,9 +6,9 @@
 
 #include <utility>
 
-#include "base/logging.h"
-#include "chromecast/media/audio/mixer_service/conversions.h"
-#include "chromecast/media/audio/mixer_service/mixer_service.pb.h"
+#include "chromecast/media/audio/mixer_service/mixer_service_transport.pb.h"
+#include "chromecast/media/audio/net/common.pb.h"
+#include "chromecast/media/audio/net/conversions.h"
 #include "net/socket/stream_socket.h"
 
 namespace chromecast {
@@ -34,9 +34,11 @@ void ControlConnection::SetVolume(AudioContentType type,
   if (socket_) {
     Generic message;
     auto* volume = message.mutable_set_device_volume();
-    volume->set_content_type(ConvertContentType(type));
+    volume->set_content_type(audio_service::ConvertContentType(type));
     volume->set_volume_multiplier(volume_multiplier);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      OnSendFailed();
+    }
   }
 }
 
@@ -49,9 +51,11 @@ void ControlConnection::SetMuted(AudioContentType type, bool muted) {
   if (socket_) {
     Generic message;
     auto* mute_message = message.mutable_set_device_muted();
-    mute_message->set_content_type(ConvertContentType(type));
+    mute_message->set_content_type(audio_service::ConvertContentType(type));
     mute_message->set_muted(muted);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      OnSendFailed();
+    }
   }
 }
 
@@ -65,23 +69,47 @@ void ControlConnection::SetVolumeLimit(AudioContentType type,
   if (socket_) {
     Generic message;
     auto* limit = message.mutable_set_volume_limit();
-    limit->set_content_type(ConvertContentType(type));
+    limit->set_content_type(audio_service::ConvertContentType(type));
     limit->set_max_volume_multiplier(max_volume_multiplier);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      OnSendFailed();
+    }
+  }
+}
+
+void ControlConnection::ListPostprocessors(
+    ListPostprocessorsCallback callback) {
+  list_postprocessors_callbacks_.push_back(std::move(callback));
+  if (!socket_) {
+    return;
+  }
+  Generic message;
+  message.mutable_list_postprocessors();
+  if (!socket_->SendProto(0, message)) {
+    OnSendFailed();
   }
 }
 
 void ControlConnection::ConfigurePostprocessor(std::string postprocessor_name,
                                                std::string config) {
-  SendPostprocessorMessage(postprocessor_name, config);
-  postprocessor_config_.insert_or_assign(std::move(postprocessor_name),
-                                         std::move(config));
+  postprocessor_config_.insert_or_assign(postprocessor_name, config);
+  if (!SendPostprocessorMessageInternal(std::move(postprocessor_name),
+                                        std::move(config))) {
+    OnSendFailed();
+  }
 }
 
 void ControlConnection::SendPostprocessorMessage(std::string postprocessor_name,
                                                  std::string message) {
+  SendPostprocessorMessageInternal(std::move(postprocessor_name),
+                                   std::move(message));
+}
+
+bool ControlConnection::SendPostprocessorMessageInternal(
+    std::string postprocessor_name,
+    std::string message) {
   if (!socket_) {
-    return;
+    return true;
   }
 
   // Erase any ? and subsequent substring from the name.
@@ -94,7 +122,7 @@ void ControlConnection::SendPostprocessorMessage(std::string postprocessor_name,
   auto* content = proto.mutable_configure_postprocessor();
   content->set_name(std::move(postprocessor_name));
   content->set_config(std::move(message));
-  socket_->SendProto(proto);
+  return socket_->SendProto(0, proto);
 }
 
 void ControlConnection::ReloadPostprocessors() {
@@ -103,7 +131,7 @@ void ControlConnection::ReloadPostprocessors() {
   }
   Generic message;
   message.mutable_reload_postprocessors();
-  socket_->SendProto(message);
+  socket_->SendProto(0, message);
 }
 
 void ControlConnection::SetStreamCountCallback(StreamCountCallback callback) {
@@ -112,7 +140,9 @@ void ControlConnection::SetStreamCountCallback(StreamCountCallback callback) {
     Generic message;
     message.mutable_request_stream_count()->set_subscribe(
         !stream_count_callback_.is_null());
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      OnSendFailed();
+    }
   }
 }
 
@@ -121,7 +151,9 @@ void ControlConnection::SetNumOutputChannels(int num_channels) {
   if (socket_) {
     Generic message;
     message.mutable_set_num_output_channels()->set_channels(num_channels);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      OnSendFailed();
+    }
   }
 }
 
@@ -132,47 +164,72 @@ void ControlConnection::OnConnected(std::unique_ptr<MixerSocket> socket) {
   for (const auto& item : volume_limit_) {
     Generic message;
     auto* limit = message.mutable_set_volume_limit();
-    limit->set_content_type(ConvertContentType(item.first));
+    limit->set_content_type(audio_service::ConvertContentType(item.first));
     limit->set_max_volume_multiplier(item.second);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      return OnSendFailed();
+    }
   }
 
   for (const auto& item : muted_) {
     Generic message;
     auto* muted = message.mutable_set_device_muted();
-    muted->set_content_type(ConvertContentType(item.first));
+    muted->set_content_type(audio_service::ConvertContentType(item.first));
     muted->set_muted(item.second);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      return OnSendFailed();
+    }
   }
 
   for (const auto& item : volume_) {
     Generic message;
     auto* volume = message.mutable_set_device_volume();
-    volume->set_content_type(ConvertContentType(item.first));
+    volume->set_content_type(audio_service::ConvertContentType(item.first));
     volume->set_volume_multiplier(item.second);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      return OnSendFailed();
+    }
   }
 
   if (stream_count_callback_) {
     Generic message;
     message.mutable_request_stream_count()->set_subscribe(true);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      return OnSendFailed();
+    }
   }
 
   if (num_output_channels_) {
     Generic message;
     message.mutable_set_num_output_channels()->set_channels(
         num_output_channels_);
-    socket_->SendProto(message);
+    if (!socket_->SendProto(0, message)) {
+      return OnSendFailed();
+    }
   }
 
   for (const auto& item : postprocessor_config_) {
-    SendPostprocessorMessage(item.first, item.second);
+    if (!SendPostprocessorMessageInternal(item.first, item.second)) {
+      return OnSendFailed();
+    }
+  }
+
+  if (!list_postprocessors_callbacks_.empty()) {
+    Generic message;
+    message.mutable_list_postprocessors();
+    if (!socket_->SendProto(0, message)) {
+      return OnSendFailed();
+    }
   }
 
   if (connect_callback_) {
     connect_callback_.Run();
   }
+}
+
+void ControlConnection::OnSendFailed() {
+  LOG(WARNING) << "Failed to send a control message";
+  OnConnectionError();
 }
 
 void ControlConnection::OnConnectionError() {
@@ -185,6 +242,18 @@ bool ControlConnection::HandleMetadata(const Generic& message) {
     stream_count_callback_.Run(message.stream_count().primary(),
                                message.stream_count().sfx());
   }
+  if (message.has_postprocessor_list()) {
+    std::vector<std::string> post_processors;
+    for (const auto& post_processor :
+         message.postprocessor_list().postprocessors()) {
+      post_processors.push_back(post_processor);
+    }
+    while (!list_postprocessors_callbacks_.empty()) {
+      std::move(list_postprocessors_callbacks_.front()).Run(post_processors);
+      list_postprocessors_callbacks_.pop_front();
+    }
+  }
+
   return true;
 }
 

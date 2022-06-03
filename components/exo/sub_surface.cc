@@ -8,6 +8,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "components/exo/surface.h"
+#include "ui/aura/client/aura_constants.h"
 
 namespace exo {
 
@@ -111,6 +112,11 @@ bool SubSurface::IsSurfaceSynchronized() const {
 
 bool SubSurface::IsInputEnabled(Surface* surface) const {
   return !parent_ || parent_->IsInputEnabled(surface);
+}
+
+void SubSurface::OnSetParent(Surface* parent, const gfx::Point&) {
+  if (parent->window()->GetProperty(aura::client::kSkipImeProcessing))
+    surface_->window()->SetProperty(aura::client::kSkipImeProcessing, true);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

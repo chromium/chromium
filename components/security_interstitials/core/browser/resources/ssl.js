@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 function setupSSLDebuggingInfo() {
-  if (loadTimeData.getString('type') != 'SSL') {
+  if (loadTimeData.getString('type') !== 'SSL') {
     return;
   }
 
@@ -21,4 +21,6 @@ function setupSSLDebuggingInfo() {
   }
 
   $('error-code').addEventListener('click', toggleDebuggingInfo);
+  $('error-code').setAttribute('role', 'button');
+  $('error-code').setAttribute('aria-expanded', false);
 }

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "chromeos/components/multidevice/logging/logging.h"
@@ -14,8 +15,8 @@
 #include "chromeos/components/tether/device_status_util.h"
 #include "chromeos/components/tether/gms_core_notifications_state_tracker_impl.h"
 #include "chromeos/components/tether/host_scan_cache.h"
-#include "chromeos/components/tether/master_host_scan_cache.h"
 #include "chromeos/components/tether/tether_host_fetcher.h"
+#include "chromeos/components/tether/top_level_host_scan_cache.h"
 #include "chromeos/network/network_state.h"
 #include "components/session_manager/core/session_manager.h"
 
@@ -67,7 +68,7 @@ void HostScannerImpl::StartScan() {
     return;
 
   is_fetching_hosts_ = true;
-  tether_host_fetcher_->FetchAllTetherHosts(base::Bind(
+  tether_host_fetcher_->FetchAllTetherHosts(base::BindOnce(
       &HostScannerImpl::OnTetherHostsFetched, weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -100,7 +101,7 @@ void HostScannerImpl::OnTetherHostsFetched(
   tether_guids_in_cache_before_scan_ =
       host_scan_cache_->GetTetherGuidsInCache();
 
-  host_scanner_operation_ = HostScannerOperation::Factory::NewInstance(
+  host_scanner_operation_ = HostScannerOperation::Factory::Create(
       tether_hosts, device_sync_client_, secure_channel_client_,
       host_scan_device_prioritizer_, tether_host_response_recorder_,
       connection_preserver_);

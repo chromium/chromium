@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
@@ -62,12 +61,12 @@ CryptAuthKeyCreatorImpl::Factory*
     CryptAuthKeyCreatorImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthKeyCreatorImpl::Factory* CryptAuthKeyCreatorImpl::Factory::Get() {
+std::unique_ptr<CryptAuthKeyCreator>
+CryptAuthKeyCreatorImpl::Factory::Create() {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance();
 
-  static base::NoDestructor<CryptAuthKeyCreatorImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthKeyCreatorImpl());
 }
 
 // static
@@ -78,21 +77,16 @@ void CryptAuthKeyCreatorImpl::Factory::SetFactoryForTesting(
 
 CryptAuthKeyCreatorImpl::Factory::~Factory() = default;
 
-std::unique_ptr<CryptAuthKeyCreator>
-CryptAuthKeyCreatorImpl::Factory::BuildInstance() {
-  return base::WrapUnique(new CryptAuthKeyCreatorImpl());
-}
-
 CryptAuthKeyCreatorImpl::CryptAuthKeyCreatorImpl()
     : secure_message_delegate_(
-          multidevice::SecureMessageDelegateImpl::Factory::NewInstance()) {}
+          multidevice::SecureMessageDelegateImpl::Factory::Create()) {}
 
 CryptAuthKeyCreatorImpl::~CryptAuthKeyCreatorImpl() = default;
 
 void CryptAuthKeyCreatorImpl::CreateKeys(
     const base::flat_map<CryptAuthKeyBundle::Name, CreateKeyData>&
         keys_to_create,
-    const base::Optional<CryptAuthKey>& server_ephemeral_dh,
+    const absl::optional<CryptAuthKey>& server_ephemeral_dh,
     CreateKeysCallback create_keys_callback) {
   DCHECK(!keys_to_create.empty());
 
@@ -107,12 +101,12 @@ void CryptAuthKeyCreatorImpl::CreateKeys(
   if (IsClientEphemeralDhKeyNeeded(keys_to_create_)) {
     DCHECK(server_ephemeral_dh && server_ephemeral_dh->IsAsymmetricKey());
     secure_message_delegate_->GenerateKeyPair(
-        base::Bind(&CryptAuthKeyCreatorImpl::OnClientDiffieHellmanGenerated,
-                   base::Unretained(this), *server_ephemeral_dh));
+        base::BindOnce(&CryptAuthKeyCreatorImpl::OnClientDiffieHellmanGenerated,
+                       base::Unretained(this), *server_ephemeral_dh));
     return;
   }
 
-  StartKeyCreation(base::nullopt /* dh_handshake_secret */);
+  StartKeyCreation(absl::nullopt /* dh_handshake_secret */);
 }
 
 void CryptAuthKeyCreatorImpl::OnClientDiffieHellmanGenerated(
@@ -125,7 +119,7 @@ void CryptAuthKeyCreatorImpl::OnClientDiffieHellmanGenerated(
   // |dh_handshake_secret|; the symmetric key creation code will handle the
   // errors.
   if (public_key.empty() || private_key.empty()) {
-    StartKeyCreation(base::nullopt /* dh_handshake_secret */);
+    StartKeyCreation(absl::nullopt /* dh_handshake_secret */);
     return;
   }
 
@@ -135,7 +129,7 @@ void CryptAuthKeyCreatorImpl::OnClientDiffieHellmanGenerated(
 
   secure_message_delegate_->DeriveKey(
       client_ephemeral_dh_->private_key(), server_ephemeral_dh.public_key(),
-      base::Bind(
+      base::BindOnce(
           &CryptAuthKeyCreatorImpl::OnDiffieHellmanHandshakeSecretDerived,
           base::Unretained(this)));
 }
@@ -147,7 +141,7 @@ void CryptAuthKeyCreatorImpl::OnDiffieHellmanHandshakeSecretDerived(
   // |dh_handshake_secret|; the symmetric key creation code will handle the
   // errors.
   if (symmetric_key.empty()) {
-    StartKeyCreation(base::nullopt /* dh_handshake_secret */);
+    StartKeyCreation(absl::nullopt /* dh_handshake_secret */);
     return;
   }
 
@@ -156,7 +150,7 @@ void CryptAuthKeyCreatorImpl::OnDiffieHellmanHandshakeSecretDerived(
 }
 
 void CryptAuthKeyCreatorImpl::StartKeyCreation(
-    const base::Optional<CryptAuthKey>& dh_handshake_secret) {
+    const absl::optional<CryptAuthKey>& dh_handshake_secret) {
   for (const auto& key_to_create : keys_to_create_) {
     const CryptAuthKeyBundle::Name& bundle_name = key_to_create.first;
     const CreateKeyData& key_data = key_to_create.second;
@@ -196,8 +190,8 @@ void CryptAuthKeyCreatorImpl::StartKeyCreation(
     }
 
     secure_message_delegate_->GenerateKeyPair(
-        base::Bind(&CryptAuthKeyCreatorImpl::OnAsymmetricKeyPairGenerated,
-                   base::Unretained(this), key_to_create.first));
+        base::BindOnce(&CryptAuthKeyCreatorImpl::OnAsymmetricKeyPairGenerated,
+                       base::Unretained(this), key_to_create.first));
   }
 }
 
@@ -208,7 +202,7 @@ void CryptAuthKeyCreatorImpl::OnAsymmetricKeyPairGenerated(
   DCHECK(num_keys_to_create_ > 0);
   if (public_key.empty() || private_key.empty()) {
     // Use null CryptAuthKey if key generation failed.
-    new_keys_.insert_or_assign(bundle_name, base::nullopt);
+    new_keys_.insert_or_assign(bundle_name, absl::nullopt);
   } else {
     const CryptAuthKeyCreator::CreateKeyData& create_key_data =
         keys_to_create_.find(bundle_name)->second;
@@ -230,7 +224,7 @@ void CryptAuthKeyCreatorImpl::OnSymmetricKeyDerived(
   DCHECK(num_keys_to_create_ > 0);
   if (symmetric_key.empty()) {
     // Use null CryptAuthKey if key generation failed.
-    new_keys_.insert_or_assign(bundle_name, base::nullopt);
+    new_keys_.insert_or_assign(bundle_name, absl::nullopt);
   } else {
     const CryptAuthKeyCreator::CreateKeyData& create_key_data =
         keys_to_create_.find(bundle_name)->second;

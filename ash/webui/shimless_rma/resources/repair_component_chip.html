@@ -1,0 +1,46 @@
+<style include="cr-shared-style shimless-rma-shared">
+  :host {
+    padding: 1px;
+  }
+
+  /* TODO(gavinwill): update colors to CrOS */
+  :host([checked]) #componentButton {
+    background-color: lightskyblue;
+  }
+
+  #componentButton {
+    align-items: normal;
+    border-radius: 4px;
+    box-shadow: var(--cr-card-shadow);
+    height: 70px;
+    margin-bottom: 20px;
+    margin-inline-end: 10px;
+    width: 190px;
+  }
+
+  #labelDiv {
+    color: grey;
+    flex-basis: 155px;
+    margin-bottom: auto;
+    margin-top: auto;
+    padding-inline-start: 20px;
+  }
+
+  :host([checked]) #labelDiv {
+    color: blue;
+  }
+
+  iron-icon {
+    margin-top: 6px;
+  }
+</style>
+
+<cr-button id="componentButton" disabled="[[disabled]]"
+    on-click="onComponentButtonClicked_">
+  <div id="labelDiv">
+    <span id="componentName">[[componentName]]</span>
+    <div>[[componentId]]</div>
+  </div>
+  <iron-icon icon="shimless-icon24:check-circle" hidden="[[!checked]]">
+  </iron-icon>
+</cr-button>

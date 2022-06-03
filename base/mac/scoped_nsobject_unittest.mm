@@ -96,4 +96,23 @@ TEST(ScopedNSObjectTest, ScopedNSObjectFreeFunctions) {
   ASSERT_EQ(o1, p2.get());
 }
 
+TEST(ScopedNSObjectTest, ResetWithAnotherScopedNSObject) {
+  base::scoped_nsobject<id> p1([[NSObject alloc] init]);
+  id o1 = p1.get();
+
+  id o2 = nil;
+  {
+    base::scoped_nsobject<id> p2([[NSObject alloc] init]);
+    o2 = p2.get();
+    p1.reset(p2);
+    EXPECT_EQ(2u, [p1 retainCount]);
+  }
+
+  EXPECT_NE(o1, p1.get());
+  EXPECT_EQ(o2, p1.get());
+  EXPECT_NE(p1.get(), nil);
+
+  EXPECT_EQ(1u, [p1 retainCount]);
+}
+
 }  // namespace

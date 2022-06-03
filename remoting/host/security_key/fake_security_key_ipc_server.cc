@@ -26,12 +26,12 @@ FakeSecurityKeyIpcServer::FakeSecurityKeyIpcServer(
     ClientSessionDetails* client_session_details,
     base::TimeDelta initial_connect_timeout,
     const SecurityKeyAuthHandler::SendMessageCallback& send_message_callback,
-    const base::Closure& connect_callback,
-    const base::Closure& channel_closed_callback)
+    base::OnceClosure connect_callback,
+    base::OnceClosure channel_closed_callback)
     : connection_id_(connection_id),
       send_message_callback_(send_message_callback),
-      connect_callback_(connect_callback),
-      channel_closed_callback_(channel_closed_callback) {}
+      connect_callback_(std::move(connect_callback)),
+      channel_closed_callback_(std::move(channel_closed_callback)) {}
 
 FakeSecurityKeyIpcServer::~FakeSecurityKeyIpcServer() = default;
 
@@ -42,7 +42,7 @@ void FakeSecurityKeyIpcServer::SendRequest(const std::string& message_data) {
 void FakeSecurityKeyIpcServer::CloseChannel() {
   ipc_channel_.reset();
   mojo_connection_.reset();
-  channel_closed_callback_.Run();
+  std::move(channel_closed_callback_).Run();
 }
 
 base::WeakPtr<FakeSecurityKeyIpcServer> FakeSecurityKeyIpcServer::AsWeakPtr() {
@@ -62,7 +62,7 @@ bool FakeSecurityKeyIpcServer::OnMessageReceived(const IPC::Message& message) {
 }
 
 void FakeSecurityKeyIpcServer::OnChannelConnected(int32_t peer_pid) {
-  connect_callback_.Run();
+  std::move(connect_callback_).Run();
 }
 
 bool FakeSecurityKeyIpcServer::CreateChannel(
@@ -90,7 +90,7 @@ bool FakeSecurityKeyIpcServer::SendResponse(const std::string& message_data) {
   // to be created and used for notification and the second mode where the test
   // wants to notified of a response via a callback.  If a callback is set then
   // we use it, otherwise we will use the IPC connection to send a message.
-  if (!send_response_callback_.is_null()) {
+  if (send_response_callback_) {
     send_response_callback_.Run();
     return true;
   }
@@ -122,11 +122,12 @@ std::unique_ptr<SecurityKeyIpcServer> FakeSecurityKeyIpcServerFactory::Create(
     ClientSessionDetails* client_session_details,
     base::TimeDelta initial_connect_timeout,
     const SecurityKeyAuthHandler::SendMessageCallback& send_message_callback,
-    const base::Closure& connect_callback,
-    const base::Closure& done_callback) {
+    base::OnceClosure connect_callback,
+    base::OnceClosure done_callback) {
   auto fake_ipc_server = std::make_unique<FakeSecurityKeyIpcServer>(
       connection_id, client_session_details, initial_connect_timeout,
-      send_message_callback, connect_callback, done_callback);
+      send_message_callback, std::move(connect_callback),
+      std::move(done_callback));
 
   ipc_server_map_[connection_id] = fake_ipc_server->AsWeakPtr();
 

@@ -10,7 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -46,7 +46,7 @@ void CheckSuccess(const std::string& json) {
   EXPECT_TRUE(result_received);
 }
 
-// Verifies that |json| is rejected by the sanitizer as an invlid string.
+// Verifies that |json| is rejected by the sanitizer as an invalid string.
 void CheckError(const std::string& json) {
   base::RunLoop loop;
   bool result_received = false;
@@ -135,10 +135,44 @@ TEST_F(DataDecoderJsonSanitizerTest, Unicode) {
   // A low surrogate followed by a high surrogate.
   CheckError("[\"\\ude03\\ud83d\"]");
 
-  // Valid escaped UTF-16 that encodes non-characters:
-  CheckError("[\"\\ufdd0\"]");
-  CheckError("[\"\\ufffe\"]");
-  CheckError("[\"\\ud83f\\udffe\"]");
+  // Valid escaped UTF-16 that encodes non-characters.
+  CheckSuccess("[\"\\uFDD0\"]");         // U+FDD0
+  CheckSuccess("[\"\\uFDDF\"]");         // U+FDDF
+  CheckSuccess("[\"\\uFDEF\"]");         // U+FDEF
+  CheckSuccess("[\"\\uFFFE\"]");         // U+FFFE
+  CheckSuccess("[\"\\uFFFF\"]");         // U+FFFF
+  CheckSuccess("[\"\\uD83F\\uDFFE\"]");  // U+01FFFE
+  CheckSuccess("[\"\\uD83F\\uDFFF\"]");  // U+01FFFF
+  CheckSuccess("[\"\\uD87F\\uDFFE\"]");  // U+02FFFE
+  CheckSuccess("[\"\\uD87F\\uDFFF\"]");  // U+02FFFF
+  CheckSuccess("[\"\\uD8BF\\uDFFE\"]");  // U+03FFFE
+  CheckSuccess("[\"\\uD8BF\\uDFFF\"]");  // U+03FFFF
+  CheckSuccess("[\"\\uD8FF\\uDFFE\"]");  // U+04FFFE
+  CheckSuccess("[\"\\uD8FF\\uDFFF\"]");  // U+04FFFF
+  CheckSuccess("[\"\\uD93F\\uDFFE\"]");  // U+05FFFE
+  CheckSuccess("[\"\\uD93F\\uDFFF\"]");  // U+05FFFF
+  CheckSuccess("[\"\\uD97F\\uDFFE\"]");  // U+06FFFE
+  CheckSuccess("[\"\\uD97F\\uDFFF\"]");  // U+06FFFF
+  CheckSuccess("[\"\\uD9BF\\uDFFE\"]");  // U+07FFFE
+  CheckSuccess("[\"\\uD9BF\\uDFFF\"]");  // U+07FFFF
+  CheckSuccess("[\"\\uD9FF\\uDFFE\"]");  // U+08FFFE
+  CheckSuccess("[\"\\uD9FF\\uDFFF\"]");  // U+08FFFF
+  CheckSuccess("[\"\\uDA3F\\uDFFE\"]");  // U+09FFFE
+  CheckSuccess("[\"\\uDA3F\\uDFFF\"]");  // U+09FFFF
+  CheckSuccess("[\"\\uDA7F\\uDFFE\"]");  // U+0AFFFE
+  CheckSuccess("[\"\\uDA7F\\uDFFF\"]");  // U+0AFFFF
+  CheckSuccess("[\"\\uDABF\\uDFFE\"]");  // U+0BFFFE
+  CheckSuccess("[\"\\uDABF\\uDFFF\"]");  // U+0BFFFF
+  CheckSuccess("[\"\\uDAFF\\uDFFE\"]");  // U+0CFFFE
+  CheckSuccess("[\"\\uDAFF\\uDFFF\"]");  // U+0CFFFF
+  CheckSuccess("[\"\\uDB3F\\uDFFE\"]");  // U+0DFFFE
+  CheckSuccess("[\"\\uDB3F\\uDFFF\"]");  // U+0DFFFF
+  CheckSuccess("[\"\\uDB7F\\uDFFE\"]");  // U+0EFFFE
+  CheckSuccess("[\"\\uDB7F\\uDFFF\"]");  // U+0EFFFF
+  CheckSuccess("[\"\\uDBBF\\uDFFE\"]");  // U+0FFFFE
+  CheckSuccess("[\"\\uDBBF\\uDFFF\"]");  // U+0FFFFF
+  CheckSuccess("[\"\\uDBFF\\uDFFE\"]");  // U+10FFFE
+  CheckSuccess("[\"\\uDBFF\\uDFFF\"]");  // U+10FFFF
 }
 
 }  // namespace

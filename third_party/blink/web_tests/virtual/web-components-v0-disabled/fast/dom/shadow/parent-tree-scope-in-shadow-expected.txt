@@ -1,6 +1,0 @@
-CONSOLE ERROR: line 14: Uncaught TypeError: div.createShadowRoot is not a function
-Creating shadow dom subtrees from top to bottom.
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

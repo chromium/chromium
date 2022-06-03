@@ -8,22 +8,20 @@
 #include <memory>
 #include <vector>
 
-namespace autofill {
-struct PasswordForm;
-}
-
 namespace password_manager {
+
+struct PasswordForm;
 
 // This is a delegate of the ExportFlow interface used to retrieve exportable
 // passwords.
+// TODO(1047726): Merge this interface with SavedPasswordsPresenter.
 class CredentialProviderInterface {
  public:
   // Gets all password entries.
-  virtual std::vector<std::unique_ptr<autofill::PasswordForm>>
-  GetAllPasswords() = 0;
+  virtual std::vector<std::unique_ptr<PasswordForm>> GetAllPasswords() = 0;
 
  protected:
-  virtual ~CredentialProviderInterface() {}
+  virtual ~CredentialProviderInterface() = default;
 };
 
 }  // namespace password_manager

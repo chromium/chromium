@@ -1,4 +1,4 @@
-CONSOLE MESSAGE: line 26: Image description:  Image 
+CONSOLE MESSAGE: Image description:  Image 
 
 
 

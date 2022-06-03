@@ -16,6 +16,6 @@ import java.lang.annotation.Target;
  * Proguard. Other optimizations may still apply. Do not use this annotation to fix class
  * verification errors - use the @VerifiesOnX annotations instead.
  */
-@Target({ElementType.CONSTRUCTOR, ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.CONSTRUCTOR, ElementType.FIELD, ElementType.METHOD, ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)
 public @interface DoNotInline {}

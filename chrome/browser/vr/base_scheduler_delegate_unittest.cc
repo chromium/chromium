@@ -54,8 +54,7 @@ class SchedulerDelegateTest : public testing::Test {
   void SetUp() override {
     test_task_runner_ =
         base::WrapRefCounted(new base::TestMockTimeTaskRunner());
-    on_destroy_ =
-        base::ThreadTaskRunnerHandle::OverrideForTesting(test_task_runner_);
+    task_runner_handle_override_.emplace(test_task_runner_);
   }
 
   void FastForwardBy(base::TimeDelta delta) {
@@ -64,7 +63,8 @@ class SchedulerDelegateTest : public testing::Test {
 
  private:
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
-  base::ScopedClosureRunner on_destroy_;
+  absl::optional<base::ThreadTaskRunnerHandleOverrideForTesting>
+      task_runner_handle_override_;
 };
 
 TEST_F(SchedulerDelegateTest, NoTimeoutWhenWebXrFrameArrivesFast) {
@@ -74,9 +74,9 @@ TEST_F(SchedulerDelegateTest, NoTimeoutWhenWebXrFrameArrivesFast) {
 
   EXPECT_CALL(ui, OnWebXrTimeoutImminent()).Times(0);
   EXPECT_CALL(ui, OnWebXrTimedOut()).Times(0);
-  FastForwardBy(base::TimeDelta::FromSeconds(1));
+  FastForwardBy(base::Seconds(1));
   scheduler_delegate.OnNewWebXrFrame();
-  FastForwardBy(base::TimeDelta::FromSeconds(10));
+  FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(SchedulerDelegateTest, OneTimeoutWhenWebXrFrameArrivesSlow) {
@@ -86,9 +86,9 @@ TEST_F(SchedulerDelegateTest, OneTimeoutWhenWebXrFrameArrivesSlow) {
 
   EXPECT_CALL(ui, OnWebXrTimeoutImminent()).Times(1);
   EXPECT_CALL(ui, OnWebXrTimedOut()).Times(0);
-  FastForwardBy(base::TimeDelta::FromSeconds(3));
+  FastForwardBy(base::Seconds(3));
   scheduler_delegate.OnNewWebXrFrame();
-  FastForwardBy(base::TimeDelta::FromSeconds(10));
+  FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(SchedulerDelegateTest, TwoTimeoutsWhenWebXrFrameDoesNotArrive) {
@@ -98,7 +98,7 @@ TEST_F(SchedulerDelegateTest, TwoTimeoutsWhenWebXrFrameDoesNotArrive) {
 
   EXPECT_CALL(ui, OnWebXrTimeoutImminent()).Times(1);
   EXPECT_CALL(ui, OnWebXrTimedOut()).Times(1);
-  FastForwardBy(base::TimeDelta::FromSeconds(10));
+  FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(SchedulerDelegateTest, NoTimeoutIfExitPresent) {
@@ -109,7 +109,7 @@ TEST_F(SchedulerDelegateTest, NoTimeoutIfExitPresent) {
   EXPECT_CALL(ui, OnWebXrTimeoutImminent()).Times(0);
   EXPECT_CALL(ui, OnWebXrTimedOut()).Times(0);
   scheduler_delegate.OnExitPresent();
-  FastForwardBy(base::TimeDelta::FromSeconds(10));
+  FastForwardBy(base::Seconds(10));
 }
 
 TEST_F(SchedulerDelegateTest, NoTimeoutIfUnsetWebXrMode) {
@@ -120,7 +120,7 @@ TEST_F(SchedulerDelegateTest, NoTimeoutIfUnsetWebXrMode) {
   EXPECT_CALL(ui, OnWebXrTimeoutImminent()).Times(0);
   EXPECT_CALL(ui, OnWebXrTimedOut()).Times(0);
   scheduler_delegate.SetWebXrMode(false);
-  FastForwardBy(base::TimeDelta::FromSeconds(10));
+  FastForwardBy(base::Seconds(10));
 }
 
 }  // namespace vr

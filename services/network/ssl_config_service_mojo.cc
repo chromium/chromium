@@ -5,6 +5,7 @@
 #include "services/network/ssl_config_service_mojo.h"
 
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
 #include "mojo/public/cpp/bindings/type_converter.h"
 #include "services/network/ssl_config_type_converter.h"
 
@@ -22,7 +23,7 @@ bool IsSubdomain(const base::StringPiece hostname,
   if (hostname.length() <= (pattern.length() + 1)) {
     return false;
   }
-  if (!hostname.ends_with(pattern)) {
+  if (!base::EndsWith(hostname, pattern)) {
     return false;
   }
   return hostname[hostname.length() - pattern.length() - 1] == '.';

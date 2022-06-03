@@ -10,7 +10,7 @@ test(function(t) {
     assert_equals(canvas.getContext('2d\0'), null);
     assert_equals(canvas.getContext('2\uFF44'), null);
     assert_equals(canvas.getContext('2D'), null);
-    assert_throws(new TypeError(), function() {canvas.getContext()});
+    assert_throws_js(TypeError, function() {canvas.getContext()});
     assert_equals(canvas.getContext('null'), null);
     assert_equals(canvas.getContext('undefined'), null);
 }, "Test that invalid canvas getContext() requests return null.");

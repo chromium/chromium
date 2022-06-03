@@ -43,8 +43,8 @@ void CalculateWindowStylesFromInitParams(
     *style |= WS_MINIMIZE;
   if (!params.accept_events)
     *ex_style |= WS_EX_TRANSPARENT;
-  DCHECK_NE(Widget::InitParams::ACTIVATABLE_DEFAULT, params.activatable);
-  if (params.activatable == Widget::InitParams::ACTIVATABLE_NO)
+  DCHECK_NE(Widget::InitParams::Activatable::kDefault, params.activatable);
+  if (params.activatable == Widget::InitParams::Activatable::kNo)
     *ex_style |= WS_EX_NOACTIVATE;
   if (params.EffectiveZOrderLevel() != ui::ZOrderLevel::kNormal)
     *ex_style |= WS_EX_TOPMOST;
@@ -109,8 +109,7 @@ void CalculateWindowStylesFromInitParams(
       break;
     case Widget::InitParams::TYPE_MENU:
       *style |= WS_POPUP;
-      if (::features::IsFormControlsRefreshEnabled() &&
-          params.remove_standard_frame) {
+      if (params.remove_standard_frame) {
         // If the platform doesn't support drop shadow, decorate the Window
         // with just a border.
         if (ui::win::IsAeroGlassEnabled())
@@ -118,6 +117,8 @@ void CalculateWindowStylesFromInitParams(
         else
           *style |= WS_BORDER;
       }
+      if (!params.force_show_in_taskbar)
+        *ex_style |= WS_EX_TOOLWINDOW;
       break;
     case Widget::InitParams::TYPE_TOOLTIP:
       *style |= WS_POPUP;

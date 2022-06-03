@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/common/scheduling_priority.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace gpu {
 

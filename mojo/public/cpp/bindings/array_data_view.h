@@ -9,10 +9,12 @@
 
 #include "mojo/public/cpp/bindings/lib/array_internal.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
-#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 #include "mojo/public/cpp/bindings/lib/serialization_forward.h"
 
 namespace mojo {
+
+class Message;
+
 namespace internal {
 
 template <typename T, typename EnableType = void>
@@ -26,8 +28,8 @@ class ArrayDataViewImpl<
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
-  ArrayDataViewImpl(Data_* data, SerializationContext* context)
-      : data_(data), context_(context) {}
+  ArrayDataViewImpl(Data_* data, Message* message)
+      : data_(data), message_(message) {}
 
   T operator[](size_t index) const { return data_->at(index); }
 
@@ -35,7 +37,7 @@ class ArrayDataViewImpl<
 
  protected:
   Data_* data_;
-  SerializationContext* context_;
+  Message* message_;
 };
 
 template <typename T>
@@ -46,14 +48,14 @@ class ArrayDataViewImpl<
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
-  ArrayDataViewImpl(Data_* data, SerializationContext* context)
-      : data_(data), context_(context) {}
+  ArrayDataViewImpl(Data_* data, Message* message)
+      : data_(data), message_(message) {}
 
   bool operator[](size_t index) const { return data_->at(index); }
 
  protected:
   Data_* data_;
-  SerializationContext* context_;
+  Message* message_;
 };
 
 template <typename T>
@@ -62,16 +64,17 @@ class ArrayDataViewImpl<
     typename std::enable_if<
         BelongsTo<T, MojomTypeCategory::kEnum>::value>::type> {
  public:
-  static_assert(sizeof(T) == sizeof(int32_t), "Unexpected enum size");
+  static_assert(std::is_same<std::underlying_type_t<T>, int32_t>::value,
+                "Unexpected enum type");
 
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
-  ArrayDataViewImpl(Data_* data, SerializationContext* context)
-      : data_(data), context_(context) {}
+  ArrayDataViewImpl(Data_* data, Message* message)
+      : data_(data), message_(message) {}
 
-  T operator[](size_t index) const { return static_cast<T>(data_->at(index)); }
-
-  const T* data() const { return reinterpret_cast<const T*>(data_->storage()); }
+  T operator[](size_t index) const {
+    return ToKnownEnumValueHelper(static_cast<T>(data_->at(index)));
+  }
 
   template <typename U>
   bool Read(size_t index, U* output) {
@@ -80,7 +83,7 @@ class ArrayDataViewImpl<
 
  protected:
   Data_* data_;
-  SerializationContext* context_;
+  Message* message_;
 };
 
 template <typename T>
@@ -95,20 +98,20 @@ class ArrayDataViewImpl<
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
-  ArrayDataViewImpl(Data_* data, SerializationContext* context)
-      : data_(data), context_(context) {}
+  ArrayDataViewImpl(Data_* data, Message* message)
+      : data_(data), message_(message) {}
 
   template <typename U>
   U Take(size_t index) {
     U result;
-    bool ret = Deserialize<T>(&data_->at(index), &result, context_);
+    bool ret = Deserialize<T>(&data_->at(index), &result, message_);
     DCHECK(ret);
     return result;
   }
 
  protected:
   Data_* data_;
-  SerializationContext* context_;
+  Message* message_;
 };
 
 template <typename T>
@@ -119,19 +122,19 @@ class ArrayDataViewImpl<
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
-  ArrayDataViewImpl(Data_* data, SerializationContext* context)
-      : data_(data), context_(context) {}
+  ArrayDataViewImpl(Data_* data, Message* message)
+      : data_(data), message_(message) {}
 
   T Take(size_t index) {
     T result;
-    bool ret = Deserialize<T>(&data_->at(index), &result, context_);
+    bool ret = Deserialize<T>(&data_->at(index), &result, message_);
     DCHECK(ret);
     return result;
   }
 
  protected:
   Data_* data_;
-  SerializationContext* context_;
+  Message* message_;
 };
 
 template <typename T>
@@ -145,21 +148,21 @@ class ArrayDataViewImpl<
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
-  ArrayDataViewImpl(Data_* data, SerializationContext* context)
-      : data_(data), context_(context) {}
+  ArrayDataViewImpl(Data_* data, Message* message)
+      : data_(data), message_(message) {}
 
   void GetDataView(size_t index, T* output) {
-    *output = T(data_->at(index).Get(), context_);
+    *output = T(data_->at(index).Get(), message_);
   }
 
   template <typename U>
   bool Read(size_t index, U* output) {
-    return Deserialize<T>(data_->at(index).Get(), output, context_);
+    return Deserialize<T>(data_->at(index).Get(), output, message_);
   }
 
  protected:
   Data_* data_;
-  SerializationContext* context_;
+  Message* message_;
 };
 
 template <typename T>
@@ -170,21 +173,21 @@ class ArrayDataViewImpl<
  public:
   using Data_ = typename MojomTypeTraits<ArrayDataView<T>>::Data;
 
-  ArrayDataViewImpl(Data_* data, SerializationContext* context)
-      : data_(data), context_(context) {}
+  ArrayDataViewImpl(Data_* data, Message* message)
+      : data_(data), message_(message) {}
 
   void GetDataView(size_t index, T* output) {
-    *output = T(&data_->at(index), context_);
+    *output = T(&data_->at(index), message_);
   }
 
   template <typename U>
   bool Read(size_t index, U* output) {
-    return Deserialize<T>(&data_->at(index), output, context_);
+    return Deserialize<T>(&data_->at(index), output, message_);
   }
 
  protected:
   Data_* data_;
-  SerializationContext* context_;
+  Message* message_;
 };
 
 }  // namespace internal
@@ -200,8 +203,8 @@ class ArrayDataView : public internal::ArrayDataViewImpl<T> {
 
   ArrayDataView() : internal::ArrayDataViewImpl<T>(nullptr, nullptr) {}
 
-  ArrayDataView(Data_* data, internal::SerializationContext* context)
-      : internal::ArrayDataViewImpl<T>(data, context) {}
+  ArrayDataView(Data_* data, Message* message)
+      : internal::ArrayDataViewImpl<T>(data, message) {}
 
   bool is_null() const { return !this->data_; }
 
@@ -219,7 +222,6 @@ class ArrayDataView : public internal::ArrayDataViewImpl<T> {
 
   // Enums:
   //   T operator[](size_t index) const;
-  //   const T* data() const;
   //   template <typename U>
   //   bool Read(size_t index, U* output);
 

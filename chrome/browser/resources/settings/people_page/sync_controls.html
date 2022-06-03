@@ -1,16 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/util.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_toggle/cr_toggle.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="sync_browser_proxy.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-sync-controls">
-  <template>
-    <style include="settings-shared">
+    <style include="cr-shared-style settings-shared iron-flex">
       #sync-data-types .list-item:not([hidden]) ~ .list-item:not([hidden]) {
         border-top: var(--cr-separator-line);
       }
@@ -23,15 +11,32 @@
         flex: 1;
       }
     </style>
-    <div class="settings-box first">
-      <div id="syncEverythingCheckboxLabel" class="start">
-        $i18n{syncEverythingCheckboxLabel}
+
+<if expr="chromeos or lacros">
+    <!-- TODO(crbug.com/1231500): Remove this warning after Lacros side-by-side
+      rollout stage. -->
+    <template is="dom-if" if="[[shouldShowLacrosSideBySideWarning_()]]">
+      <div class="cr-row first cr-padded-text">
+        $i18n{syncSettingsLacrosSideBySideWarning}
       </div>
-      <cr-toggle id="syncAllDataTypesControl"
-          checked="{{syncPrefs.syncAllDataTypes}}"
-          on-change="onSyncAllDataTypesChanged_"
-          aria-labelledby="syncEverythingCheckboxLabel">
-      </cr-toggle>
+    </template>
+</if>
+
+    <div id="sync-data-radio" class="cr-row first">
+      <cr-radio-group
+          selected="[[selectedSyncDataRadio_(syncPrefs)]]"
+          on-selected-changed="onSyncDataRadioSelectionChanged_">
+        <cr-radio-button name="sync-everything">
+          $i18n{syncEverythingCheckboxLabel}
+        </cr-radio-button>
+        <cr-radio-button name="customize-sync">
+          $i18n{customizeSyncLabel}
+        </cr-radio-button>
+      </cr-radio-group>
+    </div>
+
+    <div class="cr-row first">
+      <h2 class="cr-title-text flex">$i18n{syncData}</h2>
     </div>
 
     <div class="list-frame" id="sync-data-types">
@@ -104,6 +109,17 @@
         </cr-toggle>
       </div>
 
+      <div class="list-item" hidden="[[!syncPrefs.readingListRegistered]]">
+        <div id="readingListCheckboxLabel">
+          $i18n{readingListCheckboxLabel}
+        </div>
+        <cr-toggle checked="{{syncPrefs.readingListSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[syncPrefs.syncAllDataTypes]]"
+            aria-labelledby="readingListCheckboxLabel">
+        </cr-toggle>
+      </div>
+
       <div class="list-item" hidden="[[!syncPrefs.tabsRegistered]]">
         <div id="openTabsCheckboxLabel">
           $i18n{openTabsCheckboxLabel}
@@ -153,7 +169,18 @@
             aria-label="$i18n{enablePaymentsIntegrationCheckboxLabel}">
         </cr-toggle>
       </div>
+
+<if expr="chromeos">
+      <div class="list-item"
+           hidden="[[!syncPrefs.wifiConfigurationsRegistered]]">
+        <div id="wifiConfigurationsCheckboxLabel">
+          $i18n{wifiConfigurationsCheckboxLabel}
+        </div>
+        <cr-toggle checked="{{syncPrefs.wifiConfigurationsSynced}}"
+            on-change="onSingleSyncDataTypeChanged_"
+            disabled="[[syncPrefs.syncAllDataTypes]]"
+            aria-labelledby="wifiConfigurationsCheckboxLabel">
+        </cr-toggle>
+      </div>
     </div>
-  </template>
-  <script src="sync_controls.js"></script>
-</dom-module>
+</if>

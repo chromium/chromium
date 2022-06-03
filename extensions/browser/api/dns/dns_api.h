@@ -5,8 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_DNS_DNS_API_H_
 #define EXTENSIONS_BROWSER_API_DNS_DNS_API_H_
 
-#include <string>
-
 #include "extensions/browser/extension_function.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_list.h"
@@ -33,7 +31,7 @@ class DnsResolveFunction : public ExtensionFunction,
   void OnComplete(
       int result,
       const net::ResolveErrorInfo& resolve_error_info,
-      const base::Optional<net::AddressList>& resolved_addresses) override;
+      const absl::optional<net::AddressList>& resolved_addresses) override;
 
   // A reference to |this| must be taken while the request is being made on this
   // receiver so the object is alive when the request completes.

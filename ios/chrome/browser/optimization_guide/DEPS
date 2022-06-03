@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/optimization_guide/core",
+  "+components/optimization_guide/proto",
+  "+ios/web/public",
+]

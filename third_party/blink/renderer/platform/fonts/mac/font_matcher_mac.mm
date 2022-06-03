@@ -32,45 +32,18 @@
 #import <AppKit/AppKit.h>
 #import <Foundation/Foundation.h>
 #import <math.h>
+
+#include "base/cxx17_backports.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #import "third_party/blink/renderer/platform/wtf/hash_set.h"
 #import "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 
-@interface NSFont (YosemiteAdditions)
-+ (NSFont*)systemFontOfSize:(CGFloat)size weight:(CGFloat)weight;
-@end
+namespace blink {
 
 namespace {
-
-static CGFloat toYosemiteFontWeight(blink::FontSelectionValue font_weight) {
-  static uint64_t ns_font_weights[] = {
-      0xbfe99999a0000000,  // NSFontWeightUltraLight
-      0xbfe3333340000000,  // NSFontWeightThin
-      0xbfd99999a0000000,  // NSFontWeightLight
-      0x0000000000000000,  // NSFontWeightRegular
-      0x3fcd70a3e0000000,  // NSFontWeightMedium
-      0x3fd3333340000000,  // NSFontWeightSemibold
-      0x3fd99999a0000000,  // NSFontWeightBold
-      0x3fe1eb8520000000,  // NSFontWeightHeavy
-      0x3fe3d70a40000000,  // NSFontWeightBlack
-  };
-  if (font_weight <= 50 || font_weight >= 950)
-    return ns_font_weights[3];
-
-  size_t select_weight = roundf(font_weight / 100) - 1;
-  DCHECK_GE(select_weight, 0ul);
-  DCHECK_LE(select_weight, base::size(ns_font_weights));
-  CGFloat* return_weight =
-      reinterpret_cast<CGFloat*>(&ns_font_weights[select_weight]);
-  return *return_weight;
-}
-}
-
-namespace blink {
 
 const NSFontTraitMask SYNTHESIZED_FONT_TRAITS =
     (NSBoldFontMask | NSItalicFontMask);
@@ -80,18 +53,18 @@ const NSFontTraitMask IMPORTANT_FONT_TRAITS =
      NSItalicFontMask | NSNarrowFontMask | NSPosterFontMask |
      NSSmallCapsFontMask);
 
-static BOOL AcceptableChoice(NSFontTraitMask desired_traits,
-                             NSFontTraitMask candidate_traits) {
+BOOL AcceptableChoice(NSFontTraitMask desired_traits,
+                      NSFontTraitMask candidate_traits) {
   desired_traits &= ~SYNTHESIZED_FONT_TRAITS;
   return (candidate_traits & desired_traits) == desired_traits;
 }
 
-static BOOL BetterChoice(NSFontTraitMask desired_traits,
-                         int desired_weight,
-                         NSFontTraitMask chosen_traits,
-                         int chosen_weight,
-                         NSFontTraitMask candidate_traits,
-                         int candidate_weight) {
+BOOL BetterChoice(NSFontTraitMask desired_traits,
+                  NSInteger desired_weight,
+                  NSFontTraitMask chosen_traits,
+                  NSInteger chosen_weight,
+                  NSFontTraitMask candidate_traits,
+                  NSInteger candidate_weight) {
   if (!AcceptableChoice(desired_traits, candidate_traits))
     return NO;
 
@@ -116,8 +89,9 @@ static BOOL BetterChoice(NSFontTraitMask desired_traits,
       return NO;
   }
 
-  int chosen_weight_delta_magnitude = abs(chosen_weight - desired_weight);
-  int candidate_weight_delta_magnitude = abs(candidate_weight - desired_weight);
+  NSInteger chosen_weight_delta_magnitude = abs(chosen_weight - desired_weight);
+  NSInteger candidate_weight_delta_magnitude =
+      abs(candidate_weight - desired_weight);
 
   // If both are the same distance from the desired weight, prefer the candidate
   // if it is further from medium.
@@ -127,6 +101,23 @@ static BOOL BetterChoice(NSFontTraitMask desired_traits,
   // Otherwise, prefer the one closer to the desired weight.
   return candidate_weight_delta_magnitude < chosen_weight_delta_magnitude;
 }
+
+NSFontWeight ToFontWeight(blink::FontSelectionValue font_weight) {
+  if (font_weight <= 50 || font_weight >= 950)
+    return NSFontWeightRegular;
+
+  const NSFontWeight ns_font_weights[] = {
+      NSFontWeightUltraLight, NSFontWeightThin,   NSFontWeightLight,
+      NSFontWeightRegular,    NSFontWeightMedium, NSFontWeightSemibold,
+      NSFontWeightBold,       NSFontWeightHeavy,  NSFontWeightBlack,
+  };
+  size_t select_weight = roundf(font_weight / 100) - 1;
+  DCHECK_GE(select_weight, 0ul);
+  DCHECK_LE(select_weight, base::size(ns_font_weights));
+  return ns_font_weights[select_weight];
+}
+
+}  // namespace
 
 NSFont* MatchUniqueFont(const AtomicString& unique_font_name, float size) {
   // Testing with a large list of fonts available on Mac OS shows that matching
@@ -174,17 +165,8 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   DCHECK_NE(desired_family_string, FontCache::LegacySystemFontFamily());
 
   if (desired_family_string == font_family_names::kSystemUi) {
-    NSFont* font = nil;
-// Normally we'd use an availability macro here, but
-// systemFontOfSize:weight: is available but not visible on macOS 10.10,
-// so it's been forward declared earlier in this file.
-// On OSX 10.10+, the default system font has more weights.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-    font = [NSFont systemFontOfSize:size
-                             weight:toYosemiteFontWeight(desired_weight)];
-#pragma clang diagnostic pop
-
+    NSFont* font = [NSFont systemFontOfSize:size
+                                     weight:ToFontWeight(desired_weight)];
     if (desired_traits & IMPORTANT_FONT_TRAITS)
       font = [[NSFontManager sharedFontManager] convertFont:font
                                                 toHaveTrait:desired_traits];
@@ -209,7 +191,7 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
     available_family = desired_family;
   }
 
-  int app_kit_font_weight = ToAppKitFontWeight(desired_weight);
+  NSInteger app_kit_font_weight = ToAppKitFontWeight(desired_weight);
   if (!available_family) {
     // Match by PostScript name.
     NSEnumerator* available_fonts =
@@ -244,22 +226,21 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
 
   // Found a family, now figure out what weight and traits to use.
   BOOL chose_font = false;
-  int chosen_weight = 0;
+  NSInteger chosen_weight = 0;
   NSFontTraitMask chosen_traits = 0;
   NSString* chosen_full_name = 0;
 
   NSArray* fonts = [font_manager availableMembersOfFontFamily:available_family];
-  unsigned n = [fonts count];
-  unsigned i;
+  NSUInteger n = [fonts count];
+  NSUInteger i;
   for (i = 0; i < n; i++) {
-    NSArray* font_info = [fonts objectAtIndex:i];
+    NSArray* font_info = fonts[i];
 
     // Array indices must be hard coded because of lame AppKit API.
-    NSString* font_full_name = [font_info objectAtIndex:0];
-    NSInteger font_weight = [[font_info objectAtIndex:2] intValue];
+    NSString* font_full_name = font_info[0];
+    NSInteger font_weight = [font_info[2] intValue];
 
-    NSFontTraitMask font_traits =
-        [[font_info objectAtIndex:3] unsignedIntValue];
+    NSFontTraitMask font_traits = [font_info[3] unsignedIntValue];
 
     BOOL new_winner;
     if (!chose_font)
@@ -293,7 +274,7 @@ NSFont* MatchNSFontFamily(const AtomicString& desired_family_string,
   NSFontTraitMask actual_traits = 0;
   if (desired_traits & NSFontItalicTrait)
     actual_traits = [font_manager traitsOfFont:font];
-  int actual_weight = [font_manager weightOfFont:font];
+  NSInteger actual_weight = [font_manager weightOfFont:font];
 
   bool synthetic_bold = app_kit_font_weight >= 7 && actual_weight < 7;
   bool synthetic_italic = (desired_traits & NSFontItalicTrait) &&

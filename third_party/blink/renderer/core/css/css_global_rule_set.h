@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GLOBAL_RULE_SET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_GLOBAL_RULE_SET_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/rule_feature_set.h"
 
 namespace blink {
@@ -25,6 +24,8 @@ class RuleSet;
 class CSSGlobalRuleSet final : public GarbageCollected<CSSGlobalRuleSet> {
  public:
   CSSGlobalRuleSet() = default;
+  CSSGlobalRuleSet(const CSSGlobalRuleSet&) = delete;
+  CSSGlobalRuleSet& operator=(const CSSGlobalRuleSet&) = delete;
 
   void Dispose();
   void InitWatchedSelectorsRuleSet(Document&);
@@ -41,7 +42,7 @@ class CSSGlobalRuleSet final : public GarbageCollected<CSSGlobalRuleSet> {
   }
   bool HasFullscreenUAStyle() const { return has_fullscreen_ua_style_; }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   // Constructed from rules in all TreeScopes including UA style and style
@@ -53,7 +54,6 @@ class CSSGlobalRuleSet final : public GarbageCollected<CSSGlobalRuleSet> {
 
   bool has_fullscreen_ua_style_ = false;
   bool is_dirty_ = true;
-  DISALLOW_COPY_AND_ASSIGN(CSSGlobalRuleSet);
 };
 
 }  // namespace blink

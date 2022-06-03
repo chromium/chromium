@@ -1,0 +1,4 @@
+Verifies that requestPaused does not have a networkId for internal requests
+requestPaused.url: http://127.0.0.1:8000/inspector-protocol/fetch/resources/hello-world.html
+requestPaused.networkId: undefined
+

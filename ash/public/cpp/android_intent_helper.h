@@ -8,8 +8,8 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/macros.h"
-#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "chromeos/services/assistant/public/cpp/assistant_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 
@@ -18,20 +18,20 @@ class ASH_PUBLIC_EXPORT AndroidIntentHelper {
  public:
   static AndroidIntentHelper* GetInstance();
 
+  AndroidIntentHelper(const AndroidIntentHelper&) = delete;
+  AndroidIntentHelper& operator=(const AndroidIntentHelper&) = delete;
+
   // Launch the given Android |intent|.
   virtual void LaunchAndroidIntent(const std::string& intent) = 0;
 
   // Get the intent that can be used to launch an Android activity specified by
   // the |app_info|.
-  virtual base::Optional<std::string> GetAndroidAppLaunchIntent(
-      chromeos::assistant::mojom::AndroidAppInfoPtr app_info) = 0;
+  virtual absl::optional<std::string> GetAndroidAppLaunchIntent(
+      const chromeos::assistant::AndroidAppInfo& app_info) = 0;
 
  protected:
   AndroidIntentHelper();
   virtual ~AndroidIntentHelper();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AndroidIntentHelper);
 };
 
 ASH_PUBLIC_EXPORT bool IsAndroidIntent(const GURL& url);

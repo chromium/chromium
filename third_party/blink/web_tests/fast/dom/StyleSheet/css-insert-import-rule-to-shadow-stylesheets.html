@@ -8,7 +8,7 @@ if (window.testRunner)
 
 var sandbox = document.getElementById('sandbox');
 var host = document.createElement('p');
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = '<style>div { width: 100px; height: 100px; }</style><div></div>';
 sandbox.appendChild(host);
 document.body.offsetLeft;

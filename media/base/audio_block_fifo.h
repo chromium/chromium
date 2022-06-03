@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_AUDIO_BLOCK_FIFO_H_
 #define MEDIA_BASE_AUDIO_BLOCK_FIFO_H_
 
-#include "base/macros.h"
 #include "media/base/audio_bus.h"
 #include "media/base/media_export.h"
 
@@ -21,6 +20,10 @@ class MEDIA_EXPORT AudioBlockFifo {
   // Creates a new AudioBlockFifo and allocates |blocks| memory, each block
   // of memory can store |channels| of length |frames| data.
   AudioBlockFifo(int channels, int frames, int blocks);
+
+  AudioBlockFifo(const AudioBlockFifo&) = delete;
+  AudioBlockFifo& operator=(const AudioBlockFifo&) = delete;
+
   virtual ~AudioBlockFifo();
 
   // Pushes interleaved audio data from |source| to the FIFO.
@@ -78,8 +81,6 @@ class MEDIA_EXPORT AudioBlockFifo {
 
   // Current write position in the current written block.
   int write_pos_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioBlockFifo);
 };
 
 }  // namespace media

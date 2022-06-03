@@ -11,8 +11,8 @@ color: red
   shorthex: #f00
   hexa: #ff0000ff
   shorthexa: #f00f
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 color: #F00
   simple: true
@@ -22,8 +22,8 @@ color: #F00
   shorthex: #F00
   hexa: #ff0000ff
   shorthexa: #f00f
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 color: #F00F
   simple: true
@@ -33,8 +33,8 @@ color: #F00F
   shorthex: #f00
   hexa: #ff0000ff
   shorthexa: #F00F
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 color: #FF0000
   simple: true
@@ -44,8 +44,8 @@ color: #FF0000
   shorthex: #f00
   hexa: #ff0000ff
   shorthexa: #f00f
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 color: #FF0000FF
   simple: true
@@ -55,8 +55,8 @@ color: #FF0000FF
   shorthex: #f00
   hexa: #FF0000FF
   shorthexa: #f00f
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 color: rgb(255,0,0)
   simple: true
@@ -67,7 +67,7 @@ color: rgb(255,0,0)
   hexa: #ff0000ff
   shorthexa: #f00f
   rgb: rgb(255,0,0)
-  hsl: hsl(0, 100%, 50%)
+  hsl: hsl(0deg 100% 50%)
 
 color: rgb(300,0,0)
   simple: true
@@ -77,8 +77,8 @@ color: rgb(300,0,0)
   shorthex: #f00
   hexa: #ff0000ff
   shorthexa: #f00f
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 color: rgb(255,-10,0)
   simple: true
@@ -88,8 +88,8 @@ color: rgb(255,-10,0)
   shorthex: #f00
   hexa: #ff0000ff
   shorthexa: #f00f
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 color: rgb(110%, 0%, 0%)
   simple: true
@@ -99,38 +99,38 @@ color: rgb(110%, 0%, 0%)
   shorthex: #f00
   hexa: #ff0000ff
   shorthexa: #f00f
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 color: rgba(0,0,0,0.5)
   simple: false
   original: rgba(0,0,0,0.5)
   hexa: #00000080
   shorthexa: null
-  rgb: null
+  rgb: rgb(0 0 0 / 50%)
   rgba: rgba(0,0,0,0.5)
-  hsl: null
-  hsla: hsla(0, 0%, 0%, 0.5)
+  hsl: hsl(0deg 0% 0% / 50%)
+  hsla: hsl(0deg 0% 0% / 50%)
 
 color: rgb(0,0,0,50%)
   simple: false
   original: rgb(0,0,0,50%)
   hexa: #00000080
   shorthexa: null
-  rgb: null
+  rgb: rgb(0 0 0 / 50%)
   rgba: rgb(0,0,0,50%)
-  hsl: null
-  hsla: hsla(0, 0%, 0%, 0.5)
+  hsl: hsl(0deg 0% 0% / 50%)
+  hsla: hsl(0deg 0% 0% / 50%)
 
 color: rgb( 0  0   0   /   50%  )
   simple: false
   original: rgb( 0  0   0   /   50%  )
   hexa: #00000080
   shorthexa: null
-  rgb: null
+  rgb: rgb(0 0 0 / 50%)
   rgba: rgb( 0  0   0   /   50%  )
-  hsl: null
-  hsla: hsla(0, 0%, 0%, 0.5)
+  hsl: hsl(0deg 0% 0% / 50%)
+  hsla: hsl(0deg 0% 0% / 50%)
 
 color: rgb(1 1 1/1)
   simple: true
@@ -138,8 +138,8 @@ color: rgb(1 1 1/1)
   hex: #010101
   hexa: #010101ff
   shorthexa: null
-  rgb: rgb(1, 1, 1)
-  hsl: hsl(0, 0%, 0%)
+  rgb: rgb(1 1 1)
+  hsl: hsl(0deg 0% 0%)
 
 color: rgb(1 1 1/ 1)
   simple: true
@@ -147,8 +147,8 @@ color: rgb(1 1 1/ 1)
   hex: #010101
   hexa: #010101ff
   shorthexa: null
-  rgb: rgb(1, 1, 1)
-  hsl: hsl(0, 0%, 0%)
+  rgb: rgb(1 1 1)
+  hsl: hsl(0deg 0% 0%)
 
 color: rgba(1.5 1.5 1.5)
   simple: true
@@ -157,7 +157,7 @@ color: rgba(1.5 1.5 1.5)
   hexa: #020202ff
   shorthexa: null
   rgb: rgba(1.5 1.5 1.5)
-  hsl: hsl(0, 0%, 1%)
+  hsl: hsl(0deg 0% 1%)
 
 color: hsl(-120, 100%, 50%)
   simple: true
@@ -167,7 +167,7 @@ color: hsl(-120, 100%, 50%)
   shorthex: #00f
   hexa: #0000ffff
   shorthexa: #00ff
-  rgb: rgb(0, 0, 255)
+  rgb: rgb(0 0 255)
   hsl: hsl(-120, 100%, 50%)
 
 color: hsl(-120deg, 100%, 50%)
@@ -178,7 +178,7 @@ color: hsl(-120deg, 100%, 50%)
   shorthex: #00f
   hexa: #0000ffff
   shorthexa: #00ff
-  rgb: rgb(0, 0, 255)
+  rgb: rgb(0 0 255)
   hsl: hsl(-120deg, 100%, 50%)
 
 color: hsl(-120, 200%, 200%)
@@ -189,7 +189,7 @@ color: hsl(-120, 200%, 200%)
   shorthex: #fff
   hexa: #ffffffff
   shorthexa: #ffff
-  rgb: rgb(255, 255, 255)
+  rgb: rgb(255 255 255)
   hsl: hsl(-120, 200%, 200%)
 
 color: hsl(-120, -200%, -200%)
@@ -200,8 +200,8 @@ color: hsl(-120, -200%, -200%)
   shorthex: #000
   hexa: #000000ff
   shorthexa: #000f
-  rgb: rgb(0, 0, 0)
-  hsl: hsl(0, 0%, 0%)
+  rgb: rgb(0 0 0)
+  hsl: hsl(0deg 0% 0%)
 
 color: hsla(-120, -200%, -200%, -5)
   simple: false
@@ -209,19 +209,19 @@ color: hsla(-120, -200%, -200%, -5)
   nickname: transparent
   hexa: #00000000
   shorthexa: #0000
-  rgb: null
-  rgba: rgba(0, 0, 0, 0)
-  hsl: null
-  hsla: hsla(0, 0%, 0%, 0)
+  rgb: rgb(0 0 0 / 0%)
+  rgba: rgb(0 0 0 / 0%)
+  hsl: hsl(0deg 0% 0% / 0%)
+  hsla: hsl(0deg 0% 0% / 0%)
 
 color: hsla(240,100%,50%,0.05)
   simple: false
   original: hsla(240,100%,50%,0.05)
   hexa: #0000ff0d
   shorthexa: null
-  rgb: null
-  rgba: rgba(0, 0, 255, 0.05)
-  hsl: null
+  rgb: rgb(0 0 255 / 5%)
+  rgba: rgb(0 0 255 / 5%)
+  hsl: hsl(240deg 100% 50% / 5%)
   hsla: hsla(240,100%,50%,0.05)
 
 color: hsl(200.5,0%,50%)
@@ -231,7 +231,7 @@ color: hsl(200.5,0%,50%)
   hex: #808080
   hexa: #808080ff
   shorthexa: null
-  rgb: rgb(128, 128, 128)
+  rgb: rgb(128 128 128)
   hsl: hsl(200.5,0%,50%)
 
 color: hsla(200,1.5%,50%,1)
@@ -240,27 +240,27 @@ color: hsla(200,1.5%,50%,1)
   hex: #7e8081
   hexa: #7e8081ff
   shorthexa: null
-  rgb: rgb(126, 128, 129)
-  hsl: hsl(200, 1%, 50%)
+  rgb: rgb(126 128 129)
+  hsl: hsl(200deg 1% 50%)
 
 color: rgba(0,0,0,.5)
   simple: false
   original: rgba(0,0,0,.5)
   hexa: #00000080
   shorthexa: null
-  rgb: null
+  rgb: rgb(0 0 0 / 50%)
   rgba: rgba(0,0,0,.5)
-  hsl: null
-  hsla: hsla(0, 0%, 0%, 0.5)
+  hsl: hsl(0deg 0% 0% / 50%)
+  hsla: hsl(0deg 0% 0% / 50%)
 
 color: hsla(.5,.5%,.5%,.5)
   simple: false
   original: hsla(.5,.5%,.5%,.5)
   hexa: #01010180
   shorthexa: null
-  rgb: null
-  rgba: rgba(1, 1, 1, 0.5)
-  hsl: null
+  rgb: rgb(1 1 1 / 50%)
+  rgba: rgb(1 1 1 / 50%)
+  hsl: hsl(1deg 0% 1% / 50%)
   hsla: hsla(.5,.5%,.5%,.5)
 
 color: hsla(100.5,50.5%,50.5%,.5)
@@ -268,9 +268,9 @@ color: hsla(100.5,50.5%,50.5%,.5)
   original: hsla(100.5,50.5%,50.5%,.5)
   hexa: #6ac14180
   shorthexa: null
-  rgb: null
-  rgba: rgba(106, 193, 65, 0.5)
-  hsl: null
+  rgb: rgb(106 193 65 / 50%)
+  rgba: rgb(106 193 65 / 50%)
+  hsl: hsl(101deg 50% 51% / 50%)
   hsla: hsla(100.5,50.5%,50.5%,.5)
 
 color: rgba(255, 0, 0, -5)
@@ -278,10 +278,10 @@ color: rgba(255, 0, 0, -5)
   original: rgba(255, 0, 0, -5)
   hexa: #ff000000
   shorthexa: #f000
-  rgb: null
-  rgba: rgba(255, 0, 0, 0)
-  hsl: null
-  hsla: hsla(0, 100%, 50%, 0)
+  rgb: rgb(255 0 0 / 0%)
+  rgba: rgb(255 0 0 / 0%)
+  hsl: hsl(0deg 100% 50% / 0%)
+  hsla: hsl(0deg 100% 50% / 0%)
 
 color: rgba(255, 0, 0, 5)
   simple: true
@@ -291,8 +291,8 @@ color: rgba(255, 0, 0, 5)
   shorthex: #f00
   hexa: #ff0000ff
   shorthexa: #f00f
-  rgb: rgb(255, 0, 0)
-  hsl: hsl(0, 100%, 50%)
+  rgb: rgb(255 0 0)
+  hsl: hsl(0deg 100% 50%)
 
 Running: testInvalidColors
 

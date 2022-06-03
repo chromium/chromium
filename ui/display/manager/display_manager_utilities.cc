@@ -6,16 +6,19 @@
 
 #include <algorithm>
 #include <set>
+#include <sstream>
+#include <vector>
 
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/system/sys_info.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/display/display_switches.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/system/statistics_provider.h"
 #endif
 
@@ -62,7 +65,7 @@ ManagedDisplayInfo::ManagedDisplayModeList CreateUnifiedManagedDisplayModeList(
 bool ForceFirstDisplayInternal() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   bool ret = command_line->HasSwitch(::switches::kUseFirstDisplayAsInternal);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Touch view mode is only available to internal display. We force the
   // display as internal for emulator to test touch view mode.
   ret = ret ||
@@ -71,13 +74,10 @@ bool ForceFirstDisplayInternal() {
   return ret;
 }
 
-bool ComputeBoundary(const Display& a_display,
-                     const Display& b_display,
-                     gfx::Rect* a_edge_in_screen,
-                     gfx::Rect* b_edge_in_screen) {
-  const gfx::Rect& a_bounds = a_display.bounds();
-  const gfx::Rect& b_bounds = b_display.bounds();
-
+bool ComputeBoundary(const gfx::Rect& a_bounds,
+                     const gfx::Rect& b_bounds,
+                     gfx::Rect* a_edge,
+                     gfx::Rect* b_edge) {
   // Find touching side.
   int rx = std::max(a_bounds.x(), b_bounds.x());
   int ry = std::max(a_bounds.y(), b_bounds.y());
@@ -123,11 +123,11 @@ bool ComputeBoundary(const Display& a_display,
       int left = std::max(a_bounds.x(), b_bounds.x());
       int right = std::min(a_bounds.right(), b_bounds.right());
       if (position == DisplayPlacement::TOP) {
-        a_edge_in_screen->SetRect(left, a_bounds.y(), right - left, 1);
-        b_edge_in_screen->SetRect(left, b_bounds.bottom() - 1, right - left, 1);
+        a_edge->SetRect(left, a_bounds.y(), right - left, 1);
+        b_edge->SetRect(left, b_bounds.bottom() - 1, right - left, 1);
       } else {
-        a_edge_in_screen->SetRect(left, a_bounds.bottom() - 1, right - left, 1);
-        b_edge_in_screen->SetRect(left, b_bounds.y(), right - left, 1);
+        a_edge->SetRect(left, a_bounds.bottom() - 1, right - left, 1);
+        b_edge->SetRect(left, b_bounds.y(), right - left, 1);
       }
       break;
     }
@@ -136,16 +136,24 @@ bool ComputeBoundary(const Display& a_display,
       int top = std::max(a_bounds.y(), b_bounds.y());
       int bottom = std::min(a_bounds.bottom(), b_bounds.bottom());
       if (position == DisplayPlacement::LEFT) {
-        a_edge_in_screen->SetRect(a_bounds.x(), top, 1, bottom - top);
-        b_edge_in_screen->SetRect(b_bounds.right() - 1, top, 1, bottom - top);
+        a_edge->SetRect(a_bounds.x(), top, 1, bottom - top);
+        b_edge->SetRect(b_bounds.right() - 1, top, 1, bottom - top);
       } else {
-        a_edge_in_screen->SetRect(a_bounds.right() - 1, top, 1, bottom - top);
-        b_edge_in_screen->SetRect(b_bounds.x(), top, 1, bottom - top);
+        a_edge->SetRect(a_bounds.right() - 1, top, 1, bottom - top);
+        b_edge->SetRect(b_bounds.x(), top, 1, bottom - top);
       }
       break;
     }
   }
   return true;
+}
+
+bool ComputeBoundary(const Display& display_a,
+                     const Display& display_b,
+                     gfx::Rect* a_edge_in_screen,
+                     gfx::Rect* b_edge_in_screen) {
+  return ComputeBoundary(display_a.bounds(), display_b.bounds(),
+                         a_edge_in_screen, b_edge_in_screen);
 }
 
 DisplayIdList CreateDisplayIdList(const Displays& list) {

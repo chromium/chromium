@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_RECALC_FORBIDDEN_SCOPE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_RECALC_FORBIDDEN_SCOPE_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 
 namespace blink {
@@ -20,11 +20,14 @@ class SlotAssignmentRecalcForbiddenScope {
     ++count_;
   }
 
+  SlotAssignmentRecalcForbiddenScope(
+      const SlotAssignmentRecalcForbiddenScope&) = delete;
+  SlotAssignmentRecalcForbiddenScope& operator=(
+      const SlotAssignmentRecalcForbiddenScope&) = delete;
   ~SlotAssignmentRecalcForbiddenScope() { --count_; }
 
  private:
   unsigned& count_;
-  DISALLOW_COPY_AND_ASSIGN(SlotAssignmentRecalcForbiddenScope);
 };
 #else
 class SlotAssignmentRecalcForbiddenScope {
@@ -32,12 +35,13 @@ class SlotAssignmentRecalcForbiddenScope {
 
  public:
   explicit SlotAssignmentRecalcForbiddenScope(Document&) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SlotAssignmentRecalcForbiddenScope);
+  SlotAssignmentRecalcForbiddenScope(
+      const SlotAssignmentRecalcForbiddenScope&) = delete;
+  SlotAssignmentRecalcForbiddenScope& operator=(
+      const SlotAssignmentRecalcForbiddenScope&) = delete;
 };
 #endif
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_SLOT_ASSIGNMENT_RECALC_FORBIDDEN_SCOPE_H_

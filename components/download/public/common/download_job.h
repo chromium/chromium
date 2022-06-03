@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_JOB_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_JOB_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "components/download/public/common/download_export.h"
 #include "components/download/public/common/download_file.h"
 #include "components/download/public/common/download_interrupt_reasons.h"
@@ -28,6 +26,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJob {
 
   DownloadJob(DownloadItem* download_item,
               CancelRequestCallback cancel_request_callback);
+
+  DownloadJob(const DownloadJob&) = delete;
+  DownloadJob& operator=(const DownloadJob&) = delete;
+
   virtual ~DownloadJob();
 
   // Download operations.
@@ -76,8 +78,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadJob {
   bool is_paused_;
 
   base::WeakPtrFactory<DownloadJob> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadJob);
 };
 
 }  // namespace download

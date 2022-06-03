@@ -8,10 +8,11 @@
 
 namespace blink {
 
-void FlatTreeNodeData::Trace(Visitor* visitor) {
+void FlatTreeNodeData::Trace(Visitor* visitor) const {
   visitor->Trace(assigned_slot_);
   visitor->Trace(previous_in_assigned_nodes_);
   visitor->Trace(next_in_assigned_nodes_);
+  visitor->Trace(manually_assigned_slot_);
 }
 
 }  // namespace blink

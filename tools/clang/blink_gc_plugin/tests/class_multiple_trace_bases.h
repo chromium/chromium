@@ -11,27 +11,25 @@ namespace blink {
 
 class Base : public GarbageCollected<Base> {
 public:
-    virtual void Trace(Visitor*);
+ virtual void Trace(Visitor*) const;
 };
 
 class Mixin1 : public GarbageCollectedMixin {
 public:
-    void Trace(Visitor*);
+ void Trace(Visitor*) const;
 };
 
 class Mixin2 : public GarbageCollectedMixin {
 public:
-    void Trace(Visitor*);
+ void Trace(Visitor*) const;
 };
 
 class Derived1 : public Base, public Mixin1 {
-    USING_GARBAGE_COLLECTED_MIXIN(Derived1);
     // Requires Trace method.
 };
 
 class Derived2 : public Base, public Mixin1, public Mixin2 {
-    USING_GARBAGE_COLLECTED_MIXIN(Derived2);
-    void Trace(Visitor*) override;
+    void Trace(Visitor*) const override;
 };
 
 }

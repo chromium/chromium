@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #include "third_party/libwebp/src/webp/decode.h"
 
@@ -22,9 +21,7 @@ namespace webp_transcode {
 class WebpDecoder : public base::RefCountedThreadSafe<WebpDecoder> {
  public:
   // Format of the decoded image.
-  // This enum is used for UMA reporting, keep it in sync with the histogram
-  // definition.
-  enum DecodedImageFormat { JPEG = 1, PNG, TIFF, DECODED_FORMAT_COUNT };
+  enum DecodedImageFormat { JPEG = 1, PNG, TIFF };
 
   class Delegate : public base::RefCountedThreadSafe<WebpDecoder::Delegate> {
    public:
@@ -89,8 +86,8 @@ class WebpDecoder : public base::RefCountedThreadSafe<WebpDecoder> {
   WebPDecoderConfig config_;
   WebpDecoder::State state_;
   std::unique_ptr<WebPIDecoder, WebPIDecoderDeleter> incremental_decoder_;
-  base::scoped_nsobject<NSData> output_buffer_;
-  base::scoped_nsobject<NSMutableData> features_;
+  __strong NSData* output_buffer_;
+  __strong NSMutableData* features_;
   int has_alpha_;
 };
 

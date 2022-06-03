@@ -5,32 +5,28 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_
 
-#include <set>
+#include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-#include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
-#include "chrome/browser/notifications/alert_dispatcher_mac.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
 
-@class NotificationCenterDelegate;
-@class NSDictionary;
-@class NSUserNotificationCenter;
-@class NSXPCConnection;
+class NotificationDispatcherMac;
 
-namespace message_cener {
+namespace message_center {
 class Notification;
-}
+}  // namespace message_center
 
 // This class is an implementation of NotificationPlatformBridge that will
-// send platform notifications to the the MacOSX notification center.
+// send platform notifications to the MacOS notification center.
 class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
  public:
-  NotificationPlatformBridgeMac(NSUserNotificationCenter* notification_center,
-                                id<AlertDispatcher> alert_dispatcher);
-
+  NotificationPlatformBridgeMac(
+      std::unique_ptr<NotificationDispatcherMac> banner_dispatcher,
+      std::unique_ptr<NotificationDispatcherMac> alert_dispatcher);
+  NotificationPlatformBridgeMac(const NotificationPlatformBridgeMac&) = delete;
+  NotificationPlatformBridgeMac& operator=(
+      const NotificationPlatformBridgeMac&) = delete;
   ~NotificationPlatformBridgeMac() override;
 
   // NotificationPlatformBridge implementation.
@@ -45,26 +41,15 @@ class NotificationPlatformBridgeMac : public NotificationPlatformBridge {
   void SetReadyCallback(NotificationBridgeReadyCallback callback) override;
   void DisplayServiceShutDown(Profile* profile) override;
 
-  // Processes a notification response generated from a user action
-  // (click close, etc.).
-  static void ProcessNotificationResponse(NSDictionary* response);
-
-  // Validates contents of the |response| dictionary as received from the system
-  // when a notification gets activated.
-  static bool VerifyNotificationData(NSDictionary* response) WARN_UNUSED_RESULT;
-
  private:
-  // Cocoa class that receives callbacks from the NSUserNotificationCenter.
-  base::scoped_nsobject<NotificationCenterDelegate> delegate_;
+  // Closes all notifications for the given |profile|.
+  void CloseAllNotificationsForProfile(Profile* profile);
 
-  // The notification center to use for local banner notifications,
-  // this can be overriden in tests.
-  base::scoped_nsobject<NSUserNotificationCenter> notification_center_;
+  // The object in charge of dispatching banner notifications.
+  std::unique_ptr<NotificationDispatcherMac> banner_dispatcher_;
 
   // The object in charge of dispatching remote notifications.
-  base::scoped_nsprotocol<id<AlertDispatcher>> alert_dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeMac);
+  std::unique_ptr<NotificationDispatcherMac> alert_dispatcher_;
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_MAC_H_

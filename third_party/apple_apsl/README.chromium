@@ -7,11 +7,12 @@ License: Apple Public Source License 2.0
 Four files are excerpted here:
 
 malloc.h from:
-http://www.opensource.apple.com/source/Libc/Libc-763.11/include/malloc/malloc.h
+https://opensource.apple.com/source/libmalloc/libmalloc-283/include/malloc/malloc.h
 
 Modifications:
 - Modified #ifdef guards.
 - Removed everything but the definition of malloc_zone_t.
+- Added a header for the definition of boolean_t.
 - Renamed _malloc_zone_t to ChromeMallocZone to avoid possible name conflicts.
 
 CFRuntime.h from:

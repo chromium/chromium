@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>GamepadAPI"
+}
+team_email: "device-dev@chromium.org"
+

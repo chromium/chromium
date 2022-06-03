@@ -1,0 +1,84 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash || is_chromeos_lacros,
+       "Non-Chrome-OS or Lacros builds must not depend on //chromeos")
+
+# C++ headers and sources that can be used by both ash and lacros builds.
+source_set("frame") {
+  defines = [ "IS_CHROMEOS_UI_FRAME_IMPL" ]
+
+  sources = [
+    "caption_buttons/caption_button_model.h",
+    "caption_buttons/frame_back_button.cc",
+    "caption_buttons/frame_back_button.h",
+    "caption_buttons/frame_caption_button_container_view.cc",
+    "caption_buttons/frame_caption_button_container_view.h",
+    "caption_buttons/frame_center_button.cc",
+    "caption_buttons/frame_center_button.h",
+    "caption_buttons/frame_size_button.cc",
+    "caption_buttons/frame_size_button.h",
+    "caption_buttons/frame_size_button_delegate.h",
+    "caption_buttons/snap_controller.cc",
+    "caption_buttons/snap_controller.h",
+    "default_frame_header.cc",
+    "default_frame_header.h",
+    "desks/move_to_desks_menu_delegate.cc",
+    "desks/move_to_desks_menu_delegate.h",
+    "desks/move_to_desks_menu_model.cc",
+    "desks/move_to_desks_menu_model.h",
+    "frame_header.cc",
+    "frame_header.h",
+    "frame_utils.cc",
+    "frame_utils.h",
+    "immersive/immersive_context.cc",
+    "immersive/immersive_context.h",
+    "immersive/immersive_focus_watcher.cc",
+    "immersive/immersive_focus_watcher.h",
+    "immersive/immersive_fullscreen_controller.cc",
+    "immersive/immersive_fullscreen_controller.h",
+    "immersive/immersive_fullscreen_controller_delegate.h",
+    "immersive/immersive_revealed_lock.cc",
+    "immersive/immersive_revealed_lock.h",
+    "interior_resize_handler_targeter.cc",
+    "interior_resize_handler_targeter.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chromeos/strings:strings_grit",
+    "//chromeos/ui/base",
+    "//chromeos/ui/vector_icons",
+    "//chromeos/ui/wm",
+    "//skia",
+    "//ui/aura",
+    "//ui/base",
+    "//ui/strings:ui_strings_grit",
+    "//ui/views",
+    "//ui/views/window/vector_icons",
+    "//ui/wm/public",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "immersive/immersive_fullscreen_controller_test_api.cc",
+    "immersive/immersive_fullscreen_controller_test_api.h",
+  ]
+
+  deps = [
+    ":frame",
+    "//base",
+    "//services/device/public/cpp:test_support",
+    "//services/network/public/cpp:cpp",
+    "//ui/aura",
+    "//ui/aura:test_support",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+    "//ui/views",
+  ]
+}

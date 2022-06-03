@@ -13,21 +13,20 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/logging.h"
+#include "base/memory/ref_counted_memory.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "third_party/skia/include/core/SkSurface.h"
-#include "ui/base/x/x11_util.h"
-#include "ui/base/x/x11_util_internal.h"
-#include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_error_tracker.h"
-#include "ui/gfx/x/x11_types.h"
-
-#if defined(USE_OZONE)
-#include "ui/base/x/x11_shm_image_pool_ozone.h"
-#else
 #include "ui/base/x/x11_shm_image_pool.h"
-#endif
+#include "ui/base/x/x11_util.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/x11_atom_cache.h"
+#include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_types.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace ui {
 
@@ -37,75 +36,76 @@ constexpr int kMaxFramesPending = 2;
 
 class ScopedPixmap {
  public:
-  ScopedPixmap(XDisplay* display, Pixmap pixmap)
-      : display_(display), pixmap_(pixmap) {}
+  ScopedPixmap(x11::Connection* connection, x11::Pixmap pixmap)
+      : connection_(connection), pixmap_(pixmap) {}
+
+  ScopedPixmap(const ScopedPixmap&) = delete;
+  ScopedPixmap& operator=(const ScopedPixmap&) = delete;
 
   ~ScopedPixmap() {
-    if (pixmap_)
-      XFreePixmap(display_, pixmap_);
+    if (pixmap_ != x11::Pixmap::None)
+      connection_->FreePixmap({pixmap_});
   }
 
-  operator Pixmap() const { return pixmap_; }
-
  private:
-  XDisplay* display_;
-  Pixmap pixmap_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedPixmap);
+  x11::Connection* const connection_;
+  x11::Pixmap pixmap_;
 };
 
 }  // namespace
 
 // static
-bool X11SoftwareBitmapPresenter::CompositeBitmap(XDisplay* display,
-                                                 XID widget,
+bool X11SoftwareBitmapPresenter::CompositeBitmap(x11::Connection* connection,
+                                                 x11::Drawable widget,
                                                  int x,
                                                  int y,
                                                  int width,
                                                  int height,
                                                  int depth,
-                                                 GC gc,
+                                                 x11::GraphicsContext gc,
                                                  const void* data) {
-  XClearArea(display, widget, x, y, width, height, false);
+  int16_t x_i16 = x;
+  int16_t y_i16 = y;
+  uint16_t w_u16 = width;
+  uint16_t h_u16 = height;
+  uint8_t d_u8 = depth;
+  connection->ClearArea({false, widget, x_i16, y_i16, w_u16, h_u16});
 
-  ui::XScopedImage bg;
-  {
-    gfx::X11ErrorTracker ignore_x_errors;
-    bg.reset(
-        XGetImage(display, widget, x, y, width, height, AllPlanes, ZPixmap));
-  }
+  constexpr auto kAllPlanes =
+      std::numeric_limits<decltype(x11::GetImageRequest::plane_mask)>::max();
 
-  // XGetImage() may fail if the drawable is a window and the window is not
-  // fully in the bounds of its parent.
-  if (!bg) {
-    ScopedPixmap pixmap(display,
-                        XCreatePixmap(display, widget, width, height, depth));
-    if (!pixmap)
+  scoped_refptr<base::RefCountedMemory> bg;
+  auto req = connection->GetImage({x11::ImageFormat::ZPixmap, widget, x_i16,
+                                   y_i16, w_u16, h_u16, kAllPlanes});
+  if (auto reply = req.Sync()) {
+    bg = reply->data;
+  } else {
+    auto pixmap_id = connection->GenerateId<x11::Pixmap>();
+    connection->CreatePixmap({d_u8, pixmap_id, widget, w_u16, h_u16});
+    ScopedPixmap pixmap(connection, pixmap_id);
+
+    connection->ChangeGC(x11::ChangeGCRequest{
+        .gc = gc, .subwindow_mode = x11::SubwindowMode::IncludeInferiors});
+    connection->CopyArea(
+        {widget, pixmap_id, gc, x_i16, y_i16, 0, 0, w_u16, h_u16});
+    connection->ChangeGC(x11::ChangeGCRequest{
+        .gc = gc, .subwindow_mode = x11::SubwindowMode::ClipByChildren});
+
+    auto req = connection->GetImage(
+        {x11::ImageFormat::ZPixmap, pixmap_id, 0, 0, w_u16, h_u16, kAllPlanes});
+    if (auto reply = req.Sync())
+      bg = reply->data;
+    else
       return false;
-
-    XGCValues gcv;
-    gcv.subwindow_mode = IncludeInferiors;
-    XChangeGC(display, gc, GCSubwindowMode, &gcv);
-
-    XCopyArea(display, widget, pixmap, gc, x, y, width, height, 0, 0);
-
-    gcv.subwindow_mode = ClipByChildren;
-    XChangeGC(display, gc, GCSubwindowMode, &gcv);
-
-    bg.reset(
-        XGetImage(display, pixmap, 0, 0, width, height, AllPlanes, ZPixmap));
   }
-
-  if (!bg)
-    return false;
 
   SkBitmap bg_bitmap;
-  SkImageInfo image_info =
-      SkImageInfo::Make(bg->width, bg->height,
-                        bg->byte_order == LSBFirst ? kBGRA_8888_SkColorType
-                                                   : kRGBA_8888_SkColorType,
-                        kPremul_SkAlphaType);
-  if (!bg_bitmap.installPixels(image_info, bg->data, bg->bytes_per_line))
+  SkImageInfo image_info = SkImageInfo::Make(
+      width, height, kBGRA_8888_SkColorType, kPremul_SkAlphaType);
+  if (!bg_bitmap.installPixels(image_info, const_cast<uint8_t*>(bg->data()),
+                               image_info.minRowBytes())) {
     return false;
+  }
   SkCanvas canvas(bg_bitmap);
 
   SkBitmap fg_bitmap;
@@ -113,53 +113,49 @@ bool X11SoftwareBitmapPresenter::CompositeBitmap(XDisplay* display,
                                  kPremul_SkAlphaType);
   if (!fg_bitmap.installPixels(image_info, const_cast<void*>(data), 4 * width))
     return false;
-  canvas.drawBitmap(fg_bitmap, 0, 0);
+  canvas.drawImage(fg_bitmap.asImage(), 0, 0);
   canvas.flush();
 
-  XPutImage(display, widget, gc, bg.get(), x, y, x, y, width, height);
+  connection->PutImage({x11::ImageFormat::ZPixmap, widget, gc, w_u16, h_u16,
+                        x_i16, y_i16, 0, d_u8, bg});
 
-  XFlush(display);
   return true;
 }
 
 X11SoftwareBitmapPresenter::X11SoftwareBitmapPresenter(
+    x11::Connection* connection,
     gfx::AcceleratedWidget widget,
-    scoped_refptr<base::SequencedTaskRunner> host_task_runner,
-    scoped_refptr<base::SequencedTaskRunner> event_task_runner)
-    : widget_(widget),
-      display_(gfx::GetXDisplay()),
-      gc_(nullptr),
-      host_task_runner_(host_task_runner) {
-  DCHECK_NE(widget_, gfx::kNullAcceleratedWidget);
-  gc_ = XCreateGC(display_, widget_, 0, nullptr);
-  memset(&attributes_, 0, sizeof(attributes_));
-  if (!XGetWindowAttributes(display_, widget_, &attributes_)) {
-    LOG(ERROR) << "XGetWindowAttributes failed for window " << widget_;
+    bool enable_multibuffering)
+    : widget_(static_cast<x11::Window>(widget)),
+      connection_(connection),
+      enable_multibuffering_(enable_multibuffering) {
+  DCHECK_NE(widget_, x11::Window::None);
+
+  gc_ = connection_->GenerateId<x11::GraphicsContext>();
+  connection_->CreateGC({gc_, widget_});
+
+  if (auto response = connection_->GetWindowAttributes({widget_}).Sync()) {
+    visual_ = response->visual;
+    depth_ = connection_->GetVisualInfoFromId(visual_)->format->depth;
+  } else {
+    LOG(ERROR) << "XGetWindowAttributes failed for window "
+               << static_cast<uint32_t>(widget_);
     return;
   }
 
-#if defined(USE_OZONE)
-  shm_pool_ = base::MakeRefCounted<ui::X11ShmImagePoolOzone>(
-      host_task_runner, event_task_runner, display_, widget_,
-      attributes_.visual, attributes_.depth, kMaxFramesPending);
-#else
-  shm_pool_ = base::MakeRefCounted<ui::X11ShmImagePool>(
-      host_task_runner, event_task_runner, display_, widget_,
-      attributes_.visual, attributes_.depth, kMaxFramesPending);
-#endif
-  shm_pool_->Initialize();
+  shm_pool_ = std::make_unique<ui::XShmImagePool>(connection_, widget_, visual_,
+                                                  depth_, MaxFramesPending(),
+                                                  enable_multibuffering_);
 
   // TODO(thomasanderson): Avoid going through the X11 server to plumb this
   // property in.
-  ui::GetIntProperty(widget_, "CHROMIUM_COMPOSITE_WINDOW", &composite_);
+  GetProperty(widget_, x11::GetAtom("CHROMIUM_COMPOSITE_WINDOW"), &composite_);
 }
 
 X11SoftwareBitmapPresenter::~X11SoftwareBitmapPresenter() {
-  if (gc_)
-    XFreeGC(display_, gc_);
-
-  if (shm_pool_)
-    shm_pool_->Teardown();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (gc_ != x11::GraphicsContext{})
+    connection_->FreeGC({gc_});
 }
 
 bool X11SoftwareBitmapPresenter::ShmPoolReady() const {
@@ -167,6 +163,7 @@ bool X11SoftwareBitmapPresenter::ShmPoolReady() const {
 }
 
 void X11SoftwareBitmapPresenter::Resize(const gfx::Size& pixel_size) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (pixel_size == viewport_pixel_size_)
     return;
   viewport_pixel_size_ = pixel_size;
@@ -178,14 +175,19 @@ void X11SoftwareBitmapPresenter::Resize(const gfx::Size& pixel_size) {
     needs_swap_ = false;
     surface_ = nullptr;
   } else {
-    SkImageInfo info = SkImageInfo::Make(
-        viewport_pixel_size_.width(), viewport_pixel_size_.height(),
-        ColorTypeForVisual(attributes_.visual), kOpaque_SkAlphaType);
-    surface_ = SkSurface::MakeRaster(info);
+    SkColorType color_type = ColorTypeForVisual(visual_);
+    if (color_type == kUnknown_SkColorType)
+      return;
+    SkImageInfo info = SkImageInfo::Make(viewport_pixel_size_.width(),
+                                         viewport_pixel_size_.height(),
+                                         color_type, kOpaque_SkAlphaType);
+    SkSurfaceProps props = skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+    surface_ = SkSurface::MakeRaster(info, &props);
   }
 }
 
 SkCanvas* X11SoftwareBitmapPresenter::GetSkCanvas() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ShmPoolReady())
     return shm_pool_->CurrentCanvas();
   else if (surface_)
@@ -194,6 +196,7 @@ SkCanvas* X11SoftwareBitmapPresenter::GetSkCanvas() {
 }
 
 void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   gfx::Rect rect = damage_rect;
   rect.Intersect(gfx::Rect(viewport_pixel_size_));
   if (rect.IsEmpty())
@@ -204,70 +207,70 @@ void X11SoftwareBitmapPresenter::EndPaint(const gfx::Rect& damage_rect) {
   if (ShmPoolReady()) {
     // TODO(thomasanderson): Investigate direct rendering with DRI3 to avoid any
     // unnecessary X11 IPC or buffer copying.
-    if (XShmPutImage(display_, widget_, gc_, shm_pool_->CurrentImage(),
-                     rect.x(), rect.y(), rect.x(), rect.y(), rect.width(),
-                     rect.height(), x11::True)) {
-      needs_swap_ = true;
-      XFlush(display_);
-      return;
-    }
-    skia_pixmap = shm_pool_->CurrentBitmap().pixmap();
-  } else {
-    surface_->peekPixels(&skia_pixmap);
+    x11::Shm::PutImageRequest put_image_request{
+        .drawable = widget_,
+        .gc = gc_,
+        .total_width =
+            static_cast<uint16_t>(shm_pool_->CurrentBitmap().width()),
+        .total_height =
+            static_cast<uint16_t>(shm_pool_->CurrentBitmap().height()),
+        .src_x = static_cast<uint16_t>(rect.x()),
+        .src_y = static_cast<uint16_t>(rect.y()),
+        .src_width = static_cast<uint16_t>(rect.width()),
+        .src_height = static_cast<uint16_t>(rect.height()),
+        .dst_x = static_cast<int16_t>(rect.x()),
+        .dst_y = static_cast<int16_t>(rect.y()),
+        .depth = static_cast<uint8_t>(depth_),
+        .format = x11::ImageFormat::ZPixmap,
+        .send_event = enable_multibuffering_,
+        .shmseg = shm_pool_->CurrentSegment(),
+        .offset = 0,
+    };
+    connection_->shm().PutImage(put_image_request);
+    needs_swap_ = true;
+    // Flush now to ensure the X server gets the request as early as
+    // possible to reduce frame-to-frame latency.
+    connection_->Flush();
+    return;
   }
+  if (surface_)
+    surface_->peekPixels(&skia_pixmap);
+
+  if (!skia_pixmap.addr())
+    return;
 
   if (composite_ &&
-      CompositeBitmap(display_, widget_, rect.x(), rect.y(), rect.width(),
-                      rect.height(), attributes_.depth, gc_,
-                      skia_pixmap.addr())) {
+      CompositeBitmap(connection_, widget_, rect.x(), rect.y(), rect.width(),
+                      rect.height(), depth_, gc_, skia_pixmap.addr())) {
+    // Flush now to ensure the X server gets the request as early as
+    // possible to reduce frame-to-frame latency.
+
+    connection_->Flush();
     return;
   }
 
-  XImage image = {};
-  image.width = viewport_pixel_size_.width();
-  image.height = viewport_pixel_size_.height();
-  image.format = ZPixmap;
-  image.byte_order = LSBFirst;
-  image.bitmap_unit = 8;
-  image.bitmap_bit_order = LSBFirst;
-  image.depth = attributes_.depth;
+  auto* connection = x11::Connection::Get();
+  DrawPixmap(connection, visual_, widget_, gc_, skia_pixmap, rect.x(), rect.y(),
+             rect.x(), rect.y(), rect.width(), rect.height());
 
-  image.bits_per_pixel = attributes_.visual->bits_per_rgb;
-  image.bits_per_pixel = skia_pixmap.info().bytesPerPixel() * 8;
-
-  image.bytes_per_line = skia_pixmap.rowBytes();
-  image.red_mask = attributes_.visual->red_mask;
-  image.green_mask = attributes_.visual->green_mask;
-  image.blue_mask = attributes_.visual->blue_mask;
-
-  image.data = reinterpret_cast<char*>(const_cast<void*>(skia_pixmap.addr()));
-  XPutImage(display_, widget_, gc_, &image, rect.x(), rect.y(), rect.x(),
-            rect.y(), rect.width(), rect.height());
-
-  // Ensure the new window content appears immediately. On a TYPE_UI thread we
-  // can rely on the message loop to flush for us so XFlush() isn't necessary.
-  // However, this code can run on a different thread and would have to wait for
-  // the TYPE_UI thread to no longer be idle before a flush happens.
-  XFlush(display_);
+  // Flush now to ensure the X server gets the request as early as
+  // possible to reduce frame-to-frame latency.
+  connection_->Flush();
 }
 
 void X11SoftwareBitmapPresenter::OnSwapBuffers(
     SwapBuffersCallback swap_ack_callback) {
-  if (ShmPoolReady()) {
-    if (needs_swap_)
-      shm_pool_->SwapBuffers(std::move(swap_ack_callback));
-    else
-      std::move(swap_ack_callback).Run(viewport_pixel_size_);
-    needs_swap_ = false;
-  } else {
-    host_task_runner_->PostTask(
-        FROM_HERE,
-        base::BindOnce(std::move(swap_ack_callback), viewport_pixel_size_));
-  }
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (enable_multibuffering_ && ShmPoolReady() && needs_swap_)
+    shm_pool_->SwapBuffers(std::move(swap_ack_callback));
+  else
+    std::move(swap_ack_callback).Run(viewport_pixel_size_);
+  needs_swap_ = false;
 }
 
 int X11SoftwareBitmapPresenter::MaxFramesPending() const {
-  return kMaxFramesPending;
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return enable_multibuffering_ ? kMaxFramesPending : 1;
 }
 
 }  // namespace ui

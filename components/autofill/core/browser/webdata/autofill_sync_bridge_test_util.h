@@ -9,7 +9,10 @@
 
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
-#include "components/sync/protocol/sync.pb.h"
+
+namespace sync_pb {
+class AutofillWalletSpecifics;
+}
 
 namespace autofill {
 
@@ -22,7 +25,8 @@ sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForAddress(
 
 sync_pb::AutofillWalletSpecifics CreateAutofillWalletSpecificsForCard(
     const std::string& client_tag,
-    const std::string& billing_address_id = "");
+    const std::string& billing_address_id = "",
+    const std::string& nickname = "");
 
 sync_pb::AutofillWalletSpecifics
 CreateAutofillWalletSpecificsForPaymentsCustomerData(

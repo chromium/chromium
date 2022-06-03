@@ -10,6 +10,7 @@
 #include <stdint.h>
 #include <string.h>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/win/com_init_util.h"
@@ -91,6 +92,9 @@ class HookManager {
     static auto* hook_manager = new HookManager();
     return hook_manager;
   }
+
+  HookManager(const HookManager&) = delete;
+  HookManager& operator=(const HookManager&) = delete;
 
   void RegisterHook() {
     AutoLock auto_lock(lock_);
@@ -269,11 +273,14 @@ class HookManager {
     return true;
   }
 
-  static HRESULT __stdcall DCheckedCoCreateInstance(const CLSID& rclsid,
-                                                    IUnknown* pUnkOuter,
-                                                    DWORD dwClsContext,
-                                                    REFIID riid,
-                                                    void** ppv) {
+  // Indirect call to original_co_create_instance_body_function_ triggers CFI
+  // so this function must have CFI disabled.
+  static DISABLE_CFI_ICALL HRESULT __stdcall DCheckedCoCreateInstance(
+      const CLSID& rclsid,
+      IUnknown* pUnkOuter,
+      DWORD dwClsContext,
+      REFIID riid,
+      void** ppv) {
     // Chromium COM callers need to make sure that their thread is configured to
     // process COM objects to avoid creating an implicit MTA or silently failing
     // STA object creation call due to the SUCCEEDED() pattern for COM calls.
@@ -312,8 +319,6 @@ class HookManager {
   StructuredHotpatch structured_hotpatch_;
   static decltype(
       ::CoCreateInstance)* original_co_create_instance_body_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(HookManager);
 };
 
 decltype(::CoCreateInstance)*

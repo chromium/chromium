@@ -12,6 +12,7 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
 class KeywordWebDataService;
 class TokenWebData;
 class WebDataServiceWrapper;
@@ -22,43 +23,43 @@ class AutofillWebDataService;
 }
 
 namespace ios {
-
-class ChromeBrowserState;
-
 // Singleton that owns all WebDataServiceWrappers and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   // Returns the AutofillWebDataService associated with |browser_state|.
   static WebDataServiceWrapper* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state,
+      ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
   static WebDataServiceWrapper* GetForBrowserStateIfExists(
-      ios::ChromeBrowserState* browser_state,
+      ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
   // Returns the AutofillWebDataService associated with |browser_state|.
   static scoped_refptr<autofill::AutofillWebDataService>
-  GetAutofillWebDataForBrowserState(ios::ChromeBrowserState* browser_state,
+  GetAutofillWebDataForBrowserState(ChromeBrowserState* browser_state,
                                     ServiceAccessType access_type);
 
   // Returns the account-scoped AutofillWebDataService associated with the
   // |browser_state|.
   static scoped_refptr<autofill::AutofillWebDataService>
-  GetAutofillWebDataForAccount(ios::ChromeBrowserState* browser_state,
+  GetAutofillWebDataForAccount(ChromeBrowserState* browser_state,
                                ServiceAccessType access_type);
 
   // Returns the KeywordWebDataService associated with |browser_state|.
   static scoped_refptr<KeywordWebDataService> GetKeywordWebDataForBrowserState(
-      ios::ChromeBrowserState* browser_state,
+      ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
   // Returns the TokenWebData associated with |browser_state|.
   static scoped_refptr<TokenWebData> GetTokenWebDataForBrowserState(
-      ios::ChromeBrowserState* browser_state,
+      ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
   static WebDataServiceFactory* GetInstance();
+
+  WebDataServiceFactory(const WebDataServiceFactory&) = delete;
+  WebDataServiceFactory& operator=(const WebDataServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<WebDataServiceFactory>;
@@ -72,8 +73,6 @@ class WebDataServiceFactory : public BrowserStateKeyedServiceFactory {
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebDataServiceFactory);
 };
 
 }  // namespace ios

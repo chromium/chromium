@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught TypeError: Cannot set properties of undefined (setting 'onnoupdate')
+PASS noupdate event test
+Harness: the test ran to completion.
+

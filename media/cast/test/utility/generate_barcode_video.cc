@@ -8,7 +8,7 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "media/base/video_frame.h"
 #include "media/cast/test/utility/barcode.h"
 

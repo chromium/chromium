@@ -9,9 +9,10 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
-#include "ppapi/cpp/image_data.h"
-#include "ppapi/cpp/rect.h"
+#include "base/check_op.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace chrome_pdf {
 namespace draw_utils {
@@ -110,11 +111,11 @@ ShadowMatrix::~ShadowMatrix() = default;
 
 namespace {
 
-void PaintShadow(pp::ImageData* image,
-                 const pp::Rect& clip_rc,
-                 const pp::Rect& shadow_rc,
+void PaintShadow(SkBitmap& image,
+                 const gfx::Rect& clip_rc,
+                 const gfx::Rect& shadow_rc,
                  const ShadowMatrix& matrix) {
-  pp::Rect draw_rc = shadow_rc.Intersect(clip_rc);
+  gfx::Rect draw_rc = gfx::IntersectRects(shadow_rc, clip_rc);
   if (draw_rc.IsEmpty())
     return;
 
@@ -125,7 +126,7 @@ void PaintShadow(pp::ImageData* image,
                                   depth - shadow_rc.right() + x);
       int32_t matrix_y = std::max(depth + shadow_rc.y() - y - 1,
                                   depth - shadow_rc.bottom() + y);
-      uint32_t* pixel = image->GetAddr32(pp::Point(x, y));
+      uint32_t* pixel = image.getAddr32(x, y);
 
       if (matrix_x < 0)
         matrix_x = 0;
@@ -144,33 +145,33 @@ void PaintShadow(pp::ImageData* image,
 
 }  // namespace
 
-void DrawShadow(pp::ImageData* image,
-                const pp::Rect& shadow_rc,
-                const pp::Rect& object_rc,
-                const pp::Rect& clip_rc,
+void DrawShadow(SkBitmap& image,
+                const gfx::Rect& shadow_rc,
+                const gfx::Rect& object_rc,
+                const gfx::Rect& clip_rc,
                 const ShadowMatrix& matrix) {
   if (shadow_rc == object_rc)
     return;  // Nothing to paint.
 
   // Fill top part.
-  pp::Rect rc(shadow_rc.point(),
-              pp::Size(shadow_rc.width(), object_rc.y() - shadow_rc.y()));
-  PaintShadow(image, rc.Intersect(clip_rc), shadow_rc, matrix);
+  gfx::Rect rc(shadow_rc.origin(),
+               gfx::Size(shadow_rc.width(), object_rc.y() - shadow_rc.y()));
+  PaintShadow(image, gfx::IntersectRects(rc, clip_rc), shadow_rc, matrix);
 
   // Fill bottom part.
-  rc = pp::Rect(shadow_rc.x(), object_rc.bottom(), shadow_rc.width(),
-                shadow_rc.bottom() - object_rc.bottom());
-  PaintShadow(image, rc.Intersect(clip_rc), shadow_rc, matrix);
+  rc = gfx::Rect(shadow_rc.x(), object_rc.bottom(), shadow_rc.width(),
+                 shadow_rc.bottom() - object_rc.bottom());
+  PaintShadow(image, gfx::IntersectRects(rc, clip_rc), shadow_rc, matrix);
 
   // Fill left part.
-  rc = pp::Rect(shadow_rc.x(), object_rc.y(), object_rc.x() - shadow_rc.x(),
-                object_rc.height());
-  PaintShadow(image, rc.Intersect(clip_rc), shadow_rc, matrix);
+  rc = gfx::Rect(shadow_rc.x(), object_rc.y(), object_rc.x() - shadow_rc.x(),
+                 object_rc.height());
+  PaintShadow(image, gfx::IntersectRects(rc, clip_rc), shadow_rc, matrix);
 
   // Fill right part.
-  rc = pp::Rect(object_rc.right(), object_rc.y(),
-                shadow_rc.right() - object_rc.right(), object_rc.height());
-  PaintShadow(image, rc.Intersect(clip_rc), shadow_rc, matrix);
+  rc = gfx::Rect(object_rc.right(), object_rc.y(),
+                 shadow_rc.right() - object_rc.right(), object_rc.height());
+  PaintShadow(image, gfx::IntersectRects(rc, clip_rc), shadow_rc, matrix);
 }
 
 }  // namespace draw_utils

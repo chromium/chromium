@@ -2,6 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert, assertInstanceof, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {List} from 'chrome://resources/js/cr/ui/list.m.js';
+import {ListItem} from 'chrome://resources/js/cr/ui/list_item.m.js';
+import {ListSelectionModel} from 'chrome://resources/js/cr/ui/list_selection_model.m.js';
+import {ListSingleSelectionModel} from 'chrome://resources/js/cr/ui/list_single_selection_model.m.js';
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {DialogType} from '../../../common/js/dialog_type.js';
+import {util} from '../../../common/js/util.js';
+import {FileListModel} from '../file_list_model.js';
+import {ListThumbnailLoader} from '../list_thumbnail_loader.js';
+
+import {FileGrid} from './file_grid.js';
+import {FileTable} from './file_table.js';
+
 class TextSearchState {
   constructor() {
     /** @public {string} */
@@ -15,13 +31,14 @@ class TextSearchState {
 /**
  * List container for the file table and the grid view.
  */
-class ListContainer {
+export class ListContainer {
   /**
    * @param {!HTMLElement} element Element of the container.
    * @param {!FileTable} table File table.
    * @param {!FileGrid} grid File grid.
+   * @param {DialogType} type The type of the main dialog.
    */
-  constructor(element, table, grid) {
+  constructor(element, table, grid, type) {
     /**
      * The container element of the file list.
      * @type {!HTMLElement}
@@ -63,7 +80,8 @@ class ListContainer {
      * @type {!HTMLElement}
      * @const
      */
-    this.spinner = queryRequiredElement('.loading-indicator', element);
+    this.spinner =
+        queryRequiredElement('files-spinner.loading-indicator', element);
 
     /**
      * @type {FileListModel}
@@ -76,7 +94,7 @@ class ListContainer {
     this.listThumbnailLoader = null;
 
     /**
-     * @type {cr.ui.ListSelectionModel|cr.ui.ListSingleSelectionModel}
+     * @type {ListSelectionModel|ListSingleSelectionModel}
      */
     this.selectionModel = null;
 
@@ -88,11 +106,11 @@ class ListContainer {
 
     /**
      * Selection model which is used as a placefolder in inactive file list.
-     * @type {!cr.ui.ListSelectionModel}
+     * @type {!ListSelectionModel}
      * @const
      * @private
      */
-    this.emptySelectionModel_ = new cr.ui.ListSelectionModel();
+    this.emptySelectionModel_ = new ListSelectionModel();
 
     /**
      * @type {!TextSearchState}
@@ -119,6 +137,8 @@ class ListContainer {
     this.element.addEventListener(
         'contextmenu', this.onContextMenu_.bind(this), /* useCapture */ true);
 
+    // Disables context menu by long-tap when at least one file/folder is
+    // selected, while still enabling two-finger tap.
     this.element.addEventListener('touchstart', function(e) {
       if (e.touches.length > 1) {
         this.allowContextMenuByTouch_ = true;
@@ -140,6 +160,13 @@ class ListContainer {
         e.stopPropagation();
       }
     }.bind(this), true);
+
+    // Ensure the list and grid are marked ARIA single select for save as.
+    if (type === DialogType.SELECT_SAVEAS_FILE) {
+      const list = table.querySelector('#file-list');
+      list.setAttribute('aria-multiselectable', 'false');
+      grid.setAttribute('aria-multiselectable', 'false');
+    }
   }
 
   /**
@@ -156,7 +183,7 @@ class ListContainer {
   }
 
   /**
-   * @return {!cr.ui.List}
+   * @return {!List}
    */
   get currentList() {
     switch (this.currentListType) {
@@ -246,13 +273,13 @@ class ListContainer {
   /**
    * Finds list item element from the ancestor node.
    * @param {!HTMLElement} node
-   * @return {cr.ui.ListItem}
+   * @return {ListItem}
    */
   findListItemForNode(node) {
     const item = this.currentList.getListItemAncestor(node);
     // TODO(serya): list should check that.
     return item && this.currentList.isItem(item) ?
-        assertInstanceof(item, cr.ui.ListItem) :
+        assertInstanceof(item, ListItem) :
         null;
   }
 
@@ -350,7 +377,7 @@ class ListContainer {
     this.textSearchState.date = now;
 
     if (this.textSearchState.text) {
-      cr.dispatchSimpleEvent(this.element, ListContainer.EventType.TEXT_SEARCH);
+      dispatchSimpleEvent(this.element, ListContainer.EventType.TEXT_SEARCH);
     }
   }
 

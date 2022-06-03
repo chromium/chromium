@@ -55,10 +55,6 @@ class CONTENT_EXPORT BrowserIOThreadDelegate : public base::Thread::Delegate {
 
   scoped_refptr<Handle> GetHandle() { return task_queues_->GetHandle(); }
 
-  // Must be called on the IO thread.
-  const scoped_refptr<base::SequencedTaskRunner>& GetTaskRunnerForCurrentTask()
-      const;
-
  private:
   class TLSMultiplexer;
 

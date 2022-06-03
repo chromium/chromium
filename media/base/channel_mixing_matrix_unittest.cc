@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "media/base/channel_mixer.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -92,6 +92,36 @@ TEST(ChannelMixingMatrixTest, MonoToStereo) {
   EXPECT_EQ(1.0f, matrix[0][0]);
   EXPECT_EQ(1u, matrix[1].size());
   EXPECT_EQ(1.0f, matrix[1][0]);
+}
+
+TEST(ChannelMixingMatrixTest, MonoToSurround) {
+  ChannelLayout input_layout = CHANNEL_LAYOUT_MONO;
+  ChannelLayout output_layout = CHANNEL_LAYOUT_5_1;
+  ChannelMixingMatrix matrix_builder(
+      input_layout, ChannelLayoutToChannelCount(input_layout), output_layout,
+      ChannelLayoutToChannelCount(output_layout));
+  std::vector<std::vector<float>> matrix;
+  bool remapping = matrix_builder.CreateTransformationMatrix(&matrix);
+
+  //                       Input: mono
+  //                       CENTER
+  // Output: surround LEFT   1
+  //                  RIGHT  1
+  //                  CENTER 0
+  //                  LFE    0
+  //                  SL     0
+  //                  SR     0
+  //
+  EXPECT_FALSE(remapping);
+  EXPECT_EQ(6u, matrix.size());
+  EXPECT_EQ(1u, matrix[0].size());
+  EXPECT_EQ(1.0f, matrix[0][0]);
+  EXPECT_EQ(1u, matrix[1].size());
+  EXPECT_EQ(1.0f, matrix[1][0]);
+  for (size_t i = 2; i < 6; i++) {
+    EXPECT_EQ(1u, matrix[i].size());
+    EXPECT_EQ(0.0f, matrix[i][0]);
+  }
 }
 
 TEST(ChannelMixingMatrixTest, FiveOneToMono) {

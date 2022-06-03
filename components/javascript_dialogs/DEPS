@@ -1,0 +1,15 @@
+include_rules = [
+  "+components/navigation_metrics",
+  "+components/strings/grit/components_strings.h",
+  "+components/ukm/content",
+  "+components/url_formatter",
+  "+content/public/browser",
+  "+content/public/common",
+  "+net/base",
+  "+services/metrics/public/cpp",
+  "+ui/aura",
+  "+ui/base",
+  "+ui/compositor",
+  "+ui/gfx",
+  "+ui/gfx/geometry",
+]

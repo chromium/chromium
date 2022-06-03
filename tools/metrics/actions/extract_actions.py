@@ -25,7 +25,6 @@ from __future__ import print_function
 
 __author__ = 'evanm (Evan Martin)'
 
-from HTMLParser import HTMLParser
 import logging
 import os
 import re
@@ -33,8 +32,13 @@ import shutil
 import sys
 from xml.dom import minidom
 
+if sys.version_info.major == 2:
+  from HTMLParser import HTMLParser
+else:
+  from html.parser import HTMLParser
+
 import action_utils
-import actions_print_style
+import actions_model
 
 # Import the metrics/common module for pretty print xml.
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
@@ -92,26 +96,28 @@ QUOTED_STRING_RE = re.compile(r"""('[^']+'|"[^"]+")$""")
 # To add a new file, add it to this list and add the appropriate logic to
 # generate the known actions to AddComputedActions() below.
 KNOWN_COMPUTED_USERS = (
-  'back_forward_menu_model.cc',
-  'options_page_view.cc',
-  'render_view_host.cc',  # called using webkit identifiers
-  'user_metrics.cc',  # method definition
-  'new_tab_ui.cc',  # most visited clicks 1-9
-  'extension_metrics_module.cc', # extensions hook for user metrics
-  'language_options_handler_common.cc', # languages and input methods in CrOS
-  'cros_language_options_handler.cc', # languages and input methods in CrOS
-  'external_metrics.cc',  # see AddChromeOSActions()
-  'core_options_handler.cc',  # see AddWebUIActions()
-  'browser_render_process_host.cc',  # see AddRendererActions()
-  'render_thread_impl.cc',  # impl of RenderThread::RecordComputedAction()
-  'render_process_host_impl.cc',  # browser side impl for
-                                  # RenderThread::RecordComputedAction()
-  'mock_render_thread.cc',  # mock of RenderThread::RecordComputedAction()
-  'ppb_pdf_impl.cc',  # see AddClosedSourceActions()
-  'pepper_pdf_host.cc',  # see AddClosedSourceActions()
-  'record_user_action.cc', # see RecordUserAction.java
-  'blink_platform_impl.cc', # see WebKit/public/platform/Platform.h
-  'devtools_ui_bindings.cc', # see AddDevToolsActions()
+    'back_forward_menu_model.cc',
+    'options_page_view.cc',
+    'render_view_host.cc',  # called using webkit identifiers
+    'user_metrics.cc',  # method definition
+    'new_tab_ui.cc',  # most visited clicks 1-9
+    'extension_metrics_module.cc',  # extensions hook for user metrics
+    'language_options_handler_common.cc',  # languages and input methods in CrOS
+    'cros_language_options_handler.cc',  # languages and input methods in CrOS
+    'external_metrics.cc',  # see AddChromeOSActions()
+    'core_options_handler.cc',  # see AddWebUIActions()
+    'browser_render_process_host.cc',  # see AddRendererActions()
+    'render_thread_impl.cc',  # impl of RenderThread::RecordComputedAction()
+    'render_process_host_impl.cc',  # browser side impl for
+    # RenderThread::RecordComputedAction()
+    'mock_render_thread.cc',  # mock of RenderThread::RecordComputedAction()
+    'ppb_pdf_impl.cc',  # see AddClosedSourceActions()
+    'pepper_pdf_host.cc',  # see AddClosedSourceActions()
+    'record_user_action.cc',  # see RecordUserAction.java
+    'blink_platform_impl.cc',  # see WebKit/public/platform/Platform.h
+    'devtools_ui_bindings.cc',  # see AddDevToolsActions()
+    'sharing_hub_bubble_controller.cc',  # share targets
+    'sharing_hub_sub_menu_model.cc',  # share targets
 )
 
 # Language codes used in Chrome. The list should be updated when a new
@@ -177,6 +183,12 @@ TAGS = {'description': 'Please enter the description of the metric.',
         'owner': ('Please list the metric\'s owners. Add more owner tags as '
                   'needed.')}
 
+SHARE_TARGETS = {
+    'CopyURLSelected', 'QRCodeSelected', 'ScreenshotSelected',
+    'SendTabToSelfSelected', 'CastSelected', 'SavePageSelected',
+    'ThirdPartyAppSelected'
+}
+
 
 def AddComputedActions(actions):
   """Add computed actions to the actions list.
@@ -204,6 +216,11 @@ def AddComputedActions(actions):
   for language_code in LANGUAGE_CODES:
     actions.add('LanguageOptions_UiLanguageChange_%s' % language_code)
     actions.add('LanguageOptions_SpellCheckLanguageChange_%s' % language_code)
+
+  # Actions for sharing_hub_bubble_controller.cc and
+  # sharing_hub_sub_menu_model.cc.
+  for share_target in SHARE_TARGETS:
+    actions.add('SharingHubDesktop.%s' % share_target)
 
 
 def AddPDFPluginActions(actions):
@@ -372,7 +389,7 @@ def GrepForActions(path, actions):
       if not action_name:
         break
       actions.add(action_name)
-    except InvalidStatementException, e:
+    except InvalidStatementException as e:
       logging.warning(str(e))
 
   if action_re != USER_METRICS_ACTION_RE:
@@ -439,7 +456,7 @@ def GrepForWebUIActions(path, actions):
     # ensure the path of the file being parsed gets printed if that happens.
     close_called = True
     parser.close()
-  except Exception, e:
+  except Exception as e:
     print("Error encountered for path %s" % path)
     raise e
   finally:
@@ -468,7 +485,7 @@ def GrepForDevToolsActions(path, actions):
       if not action_name:
         break
       actions.add(action_name)
-    except InvalidStatementException, e:
+    except InvalidStatementException as e:
       logging.warning(str(e))
 
 def WalkDirectory(root_path, actions, extensions, callback):
@@ -478,8 +495,8 @@ def WalkDirectory(root_path, actions, extensions, callback):
     if '.git' in dirs:
       dirs.remove('.git')
     for file in files:
-      ext = os.path.splitext(file)[1]
-      if ext in extensions:
+      filename, ext = os.path.splitext(file)
+      if ext in extensions and not filename.endswith('test'):
         callback(os.path.join(path, file), actions)
 
 def AddLiteralActions(actions):
@@ -760,7 +777,7 @@ def PrettyPrint(actions_dict, comment_nodes, suffixes):
   for suffix_tag in suffixes:
     actions_element.appendChild(suffix_tag)
 
-  return actions_print_style.GetPrintStyle().PrettyPrintXml(doc)
+  return actions_model.PrettifyTree(doc)
 
 
 def UpdateXml(original_xml):
@@ -770,12 +787,7 @@ def UpdateXml(original_xml):
   AddComputedActions(actions)
   AddWebUIActions(actions)
   AddDevToolsActions(actions)
-
   AddLiteralActions(actions)
-
-  # print("Scanned {0} number of files".format(number_of_files_total))
-  # print("Found {0} entries".format(len(actions)))
-
   AddAutomaticResetBannerActions(actions)
   AddBookmarkManagerActions(actions)
   AddChromeOSActions(actions)
@@ -791,8 +803,13 @@ def UpdateXml(original_xml):
 
 
 def main(argv):
-  presubmit_util.DoPresubmitMain(argv, 'actions.xml', 'actions.old.xml',
-                                 'extract_actions.py', UpdateXml)
+  presubmit_util.DoPresubmitMain(
+      argv,
+      'actions.xml',
+      'actions.old.xml',
+      UpdateXml,
+      script_name='extract_actions.py')
+
 
 if '__main__' == __name__:
   sys.exit(main(sys.argv))

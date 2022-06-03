@@ -1,0 +1,11 @@
+Test for chromium bug : 258420. Table rows are incorrectly collapsed in case of hidden cells and rowspans.
+A spanning cell whose rows have only empty cell(s) shouldn't have a non-zero height.
+A	A1	A1.1
+A2	
+FAIL:
+Expected 57 for width, but got 56. 
+
+<td rowspan="2" id="a" data-expected-width="57">A2</td>
+
+
+long last row

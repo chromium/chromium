@@ -4,18 +4,18 @@
 
 #include "apps/browser_context_keyed_service_factories.h"
 
+#include "apps/app_lifetime_monitor_factory.h"
 #include "apps/app_restore_service.h"
 #include "apps/app_restore_service_factory.h"
 #include "apps/saved_files_service.h"
 #include "apps/saved_files_service_factory.h"
 #include "content/public/browser/browser_context.h"
-#include "extensions/browser/app_window/app_window_geometry_cache.h"
 
 namespace apps {
 
 void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
-  apps::AppRestoreServiceFactory::GetInstance();
-  extensions::AppWindowGeometryCache::Factory::GetInstance();
+  AppLifetimeMonitorFactory::GetInstance();
+  AppRestoreServiceFactory::GetInstance();
 }
 
 void NotifyApplicationTerminating(content::BrowserContext* browser_context) {

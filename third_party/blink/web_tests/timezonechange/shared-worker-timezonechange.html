@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<title>Test shared worker handle ontimezonechange event.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script>
+promise_test(async t => {
+    const worker = new SharedWorker('resources/shared-worker-timezonechange.js', 'name');
+    const msg1 = await new Promise(r => worker.port.onmessage = r);
+    assert_equals(msg1.data, "READY");
+    // Once we know the worker is ready, we change the timezone.
+    internals.setSystemTimeZone("Asia/Taipei");
+    const msg2 = await new Promise(r => worker.port.onmessage = r);
+    assert_equals(msg2.data, "SUCCESS");
+}, "Test a shared worker handles ontimezonechange event.");
+</script>

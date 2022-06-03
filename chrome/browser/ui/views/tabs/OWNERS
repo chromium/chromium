@@ -1,9 +1,10 @@
+connily@chromium.org
 kylixrd@chromium.org
 pkasting@chromium.org
 sky@chromium.org
 tbergquist@chromium.org
 
-# For changes related to the tab alert indicator/button.
-miu@chromium.org
+per-file tab_search_button*=tluk@chromium.org
 
-# COMPONENT: UI>Browser>TabStrip
+# For changes related to the tab alert indicator/button.
+mfoltz@chromium.org

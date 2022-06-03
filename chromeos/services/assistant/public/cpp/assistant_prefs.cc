@@ -4,11 +4,16 @@
 
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 
+#include "base/notreached.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace chromeos {
 namespace assistant {
 namespace prefs {
+
+// NOTE: These values are persisted in preferences and cannot be changed.
+const char kAssistantOnboardingModeDefault[] = "Default";
+const char kAssistantOnboardingModeEducation[] = "Education";
 
 // A preference that indicates the activity control consent status from user.
 // This preference should only be changed in browser.
@@ -47,6 +52,13 @@ const char kAssistantLaunchWithMicOpen[] =
 // This preference should only be changed in browser.
 const char kAssistantNotificationEnabled[] =
     "settings.voice_interaction.notification.enabled";
+// A preference that indicates the mode of the Assistant onboarding experience.
+// This preference should only be changed via policy.
+const char kAssistantOnboardingMode[] = "settings.assistant.onboarding_mode";
+// A preference that indicates whether Voice Match is enabled during OOBE.
+// This preference should only be changed via policy.
+const char kAssistantVoiceMatchEnabledDuringOobe[] =
+    "settings.voice_interaction.oobe_voice_match.enabled";
 
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(kAssistantConsentStatus,
@@ -58,6 +70,28 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kAssistantHotwordEnabled, false);
   registry->RegisterBooleanPref(kAssistantLaunchWithMicOpen, false);
   registry->RegisterBooleanPref(kAssistantNotificationEnabled, true);
+  registry->RegisterBooleanPref(kAssistantVoiceMatchEnabledDuringOobe, true);
+  registry->RegisterStringPref(kAssistantOnboardingMode,
+                               kAssistantOnboardingModeDefault);
+}
+
+AssistantOnboardingMode ToOnboardingMode(const std::string& onboarding_mode) {
+  if (onboarding_mode == kAssistantOnboardingModeEducation)
+    return AssistantOnboardingMode::kEducation;
+  if (onboarding_mode != kAssistantOnboardingModeDefault)
+    NOTREACHED();
+  return AssistantOnboardingMode::kDefault;
+}
+
+std::string ToOnboardingModeString(AssistantOnboardingMode onboarding_mode) {
+  switch (onboarding_mode) {
+    case AssistantOnboardingMode::kDefault:
+      return kAssistantOnboardingModeDefault;
+    case AssistantOnboardingMode::kEducation:
+      return kAssistantOnboardingModeEducation;
+  }
+  NOTREACHED();
+  return std::string();
 }
 
 }  // namespace prefs

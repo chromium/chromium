@@ -1,0 +1,25 @@
+<!doctype html>
+<style>
+div[contenteditable] {
+    font: 20px/25px monospace;
+    border: solid 1px green;
+    padding: 5px;
+}
+
+.multicol {
+    column-count: 3;
+    column-gap: 0;
+    column-rule: none;
+    column-width: 100px;
+    width: 300px;
+}
+</style>
+<div class="multicol" contenteditable id="target"></div>
+<script>
+const selection = window.getSelection();
+const target = document.getElementById('target');
+for (let i = 0; i < 10; ++i)
+  target.innerHTML += `<span id="c${i}">line ${i}<br></span>`;
+selection.collapse(document.getElementById('c5').firstChild, 3);
+target.focus();
+</script>

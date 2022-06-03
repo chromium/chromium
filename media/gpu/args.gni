@@ -2,6 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/ozone.gni")
+
+declare_args() {
+  # Indicates if X11 VA-API-based hardware acceleration is to be used.
+  # See also the comment near the |use_vaapi| arg.
+  use_vaapi_x11 =
+      is_linux && ozone_platform_x11 && !is_chromecast && !is_chromeos_lacros &&
+      (target_cpu == "x86" || target_cpu == "x64")
+}
+
 declare_args() {
   # Indicates if V4L plugin is used.
   use_v4lplugin = false
@@ -10,7 +21,39 @@ declare_args() {
   # platforms which have v4l2 hardware encoder / decoder.
   use_v4l2_codec = false
 
+  # Indicates if Video4Linux2 AML encoder is used. This is used for AML
+  # platforms which have v4l2 hardware encoder
+  use_v4l2_codec_aml = false
+
   # Indicates if VA-API-based hardware acceleration is to be used. This
   # is typically the case on x86-based ChromeOS devices.
-  use_vaapi = false
+  # VA-API should also be compiled by default on x11-using linux devices
+  # using x86/x64.
+  use_vaapi = use_vaapi_x11
+
+  # Indicates if ChromeOS protected media support exists. This is used
+  # to enable the CDM daemon in Chrome OS as well as support for
+  # encrypted content with HW video decoders.
+  # TODO(jkardatzke): Enable this for Lacros always, it is determined at runtime
+  # in that configuration.
+  use_chromeos_protected_media = false
+
+  # Indicates if ChromeOS protected media supports the AV1 codec. By default
+  # H.264, VP9 and HEVC are enabled if protected media is enabled; AV1 is
+  # optional.
+  use_chromeos_protected_av1 = false
+}
+
+if (use_chromeos_protected_av1) {
+  assert(
+      use_chromeos_protected_media,
+      "use_chromeos_protected_media must be set if use_chromeos_protected_av1 is")
+}
+
+# GN requires args that depend on other args to be declared in successive
+# declare_args() blocks.
+declare_args() {
+  # VA-API also allows decoding of images, but we don't want to use this
+  # outside of chromeos, even if video decoding is enabled.
+  use_vaapi_image_codecs = use_vaapi && is_chromeos_ash
 }

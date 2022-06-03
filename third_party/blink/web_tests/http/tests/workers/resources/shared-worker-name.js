@@ -121,11 +121,11 @@ function test8()
 
 function test9()
 {
-    // Creating a worker with a null name should match an existing worker with name 'null'
+    // Creating a worker with a null name should match an existing worker with no name.
     var worker = new SharedWorker('resources/shared-worker-common.js', null);
     worker.port.postMessage("eval self.foo");
     worker.port.onmessage = function(event) {
-        shouldBeEqual("creating worker with a null name", event.data, "self.foo: 5678");
+        shouldBeEqual("creating worker with a null name", event.data, "self.foo: 1234");
         nextTest();
     }
 }

@@ -4,7 +4,6 @@
 
 #include "chromeos/services/device_sync/cryptauth_gcm_manager_impl.h"
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
@@ -42,6 +41,10 @@ const CryptAuthFeatureType kFeatureType2 =
 class MockGCMDriver : public gcm::FakeGCMDriver {
  public:
   MockGCMDriver() {}
+
+  MockGCMDriver(const MockGCMDriver&) = delete;
+  MockGCMDriver& operator=(const MockGCMDriver&) = delete;
+
   ~MockGCMDriver() override {}
 
   MOCK_METHOD2(AddAppHandler,
@@ -52,9 +55,6 @@ class MockGCMDriver : public gcm::FakeGCMDriver {
                     const std::vector<std::string>& sender_ids));
 
   using gcm::GCMDriver::RegisterFinished;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockGCMDriver);
 };
 
 }  // namespace
@@ -62,6 +62,12 @@ class MockGCMDriver : public gcm::FakeGCMDriver {
 class DeviceSyncCryptAuthGCMManagerImplTest
     : public testing::Test,
       public CryptAuthGCMManager::Observer {
+ public:
+  DeviceSyncCryptAuthGCMManagerImplTest(
+      const DeviceSyncCryptAuthGCMManagerImplTest&) = delete;
+  DeviceSyncCryptAuthGCMManagerImplTest& operator=(
+      const DeviceSyncCryptAuthGCMManagerImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthGCMManagerImplTest()
       : gcm_manager_(&gcm_driver_, &pref_service_) {}
@@ -97,32 +103,30 @@ class DeviceSyncCryptAuthGCMManagerImplTest
   }
 
   void OnReenrollMessage(
-      const base::Optional<std::string>& session_id,
-      const base::Optional<CryptAuthFeatureType>& feature_type) override {
+      const absl::optional<std::string>& session_id,
+      const absl::optional<CryptAuthFeatureType>& feature_type) override {
     OnReenrollMessageProxy(session_id, feature_type);
   }
 
   void OnResyncMessage(
-      const base::Optional<std::string>& session_id,
-      const base::Optional<CryptAuthFeatureType>& feature_type) override {
+      const absl::optional<std::string>& session_id,
+      const absl::optional<CryptAuthFeatureType>& feature_type) override {
     OnResyncMessageProxy(session_id, feature_type);
   }
 
   MOCK_METHOD1(OnGCMRegistrationResultProxy, void(bool));
   MOCK_METHOD2(OnReenrollMessageProxy,
-               void(base::Optional<std::string> session_id,
-                    base::Optional<CryptAuthFeatureType> feature_type));
+               void(absl::optional<std::string> session_id,
+                    absl::optional<CryptAuthFeatureType> feature_type));
   MOCK_METHOD2(OnResyncMessageProxy,
-               void(base::Optional<std::string> session_id,
-                    base::Optional<CryptAuthFeatureType> feature_type));
+               void(absl::optional<std::string> session_id,
+                    absl::optional<CryptAuthFeatureType> feature_type));
 
   testing::StrictMock<MockGCMDriver> gcm_driver_;
 
   TestingPrefServiceSimple pref_service_;
 
   CryptAuthGCMManagerImpl gcm_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthGCMManagerImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, RegisterPrefs) {
@@ -193,8 +197,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
        ReenrollmentMessagesReceived_RegistrationTickleType) {
   EXPECT_CALL(*this,
               OnReenrollMessageProxy(
-                  base::Optional<std::string>() /* session_id */,
-                  base::Optional<CryptAuthFeatureType>() /* feature_type */))
+                  absl::optional<std::string>() /* session_id */,
+                  absl::optional<CryptAuthFeatureType>() /* feature_type */))
       .Times(2);
 
   gcm::IncomingMessage message;
@@ -216,12 +220,12 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
 
     EXPECT_CALL(*this,
                 OnReenrollMessageProxy(
-                    base::Optional<std::string>(kSessionId1),
-                    base::Optional<CryptAuthFeatureType>(kFeatureType1)));
+                    absl::optional<std::string>(kSessionId1),
+                    absl::optional<CryptAuthFeatureType>(kFeatureType1)));
     EXPECT_CALL(*this,
                 OnReenrollMessageProxy(
-                    base::Optional<std::string>(kSessionId2),
-                    base::Optional<CryptAuthFeatureType>(kFeatureType2)));
+                    absl::optional<std::string>(kSessionId2),
+                    absl::optional<CryptAuthFeatureType>(kFeatureType2)));
   }
 
   gcm::IncomingMessage message;
@@ -248,8 +252,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
        ResyncMessagesReceived_RegistrationTickleType) {
   EXPECT_CALL(*this,
               OnResyncMessageProxy(
-                  base::Optional<std::string>() /* session_id */,
-                  base::Optional<CryptAuthFeatureType>() /* feature_type */))
+                  absl::optional<std::string>() /* session_id */,
+                  absl::optional<CryptAuthFeatureType>() /* feature_type */))
       .Times(2);
 
   gcm::IncomingMessage message;
@@ -270,12 +274,12 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
 
     EXPECT_CALL(*this,
                 OnResyncMessageProxy(
-                    base::Optional<std::string>(kSessionId1),
-                    base::Optional<CryptAuthFeatureType>(kFeatureType1)));
+                    absl::optional<std::string>(kSessionId1),
+                    absl::optional<CryptAuthFeatureType>(kFeatureType1)));
     EXPECT_CALL(*this,
                 OnResyncMessageProxy(
-                    base::Optional<std::string>(kSessionId2),
-                    base::Optional<CryptAuthFeatureType>(kFeatureType2)));
+                    absl::optional<std::string>(kSessionId2),
+                    absl::optional<CryptAuthFeatureType>(kFeatureType2)));
   }
 
   gcm::IncomingMessage message;
@@ -374,8 +378,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
   // contained in the same GCM message. If they are, a valid "S" value is
   // arbitrarily preferred.
   EXPECT_CALL(*this, OnReenrollMessageProxy(
-                         base::Optional<std::string>(kSessionId1),
-                         base::Optional<CryptAuthFeatureType>(kFeatureType1)));
+                         absl::optional<std::string>(kSessionId1),
+                         absl::optional<CryptAuthFeatureType>(kFeatureType1)));
   EXPECT_CALL(*this, OnResyncMessageProxy(_, _)).Times(0);
 
   gcm::IncomingMessage message;
@@ -401,8 +405,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
   // invalid,, try the "registrationTickleType" value.
   EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
   EXPECT_CALL(*this, OnResyncMessageProxy(
-                         base::Optional<std::string>(kSessionId1),
-                         base::Optional<CryptAuthFeatureType>(kFeatureType1)));
+                         absl::optional<std::string>(kSessionId1),
+                         absl::optional<CryptAuthFeatureType>(kFeatureType1)));
 
   gcm::IncomingMessage message;
   message.data["registrationTickleType"] = "3";  // DEVICE_SYNC
@@ -422,8 +426,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest,
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, MissingFeatureType) {
   EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
   EXPECT_CALL(*this,
-              OnResyncMessageProxy(base::Optional<std::string>(kSessionId1),
-                                   base::Optional<CryptAuthFeatureType>()));
+              OnResyncMessageProxy(absl::optional<std::string>(kSessionId1),
+                                   absl::optional<CryptAuthFeatureType>()));
 
   // Do not include feature type key "F" in the message.
   gcm::IncomingMessage message;
@@ -443,8 +447,8 @@ TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, MissingFeatureType) {
 TEST_F(DeviceSyncCryptAuthGCMManagerImplTest, InvalidFeatureType) {
   EXPECT_CALL(*this, OnReenrollMessageProxy(_, _)).Times(0);
   EXPECT_CALL(*this,
-              OnResyncMessageProxy(base::Optional<std::string>(kSessionId1),
-                                   base::Optional<CryptAuthFeatureType>()));
+              OnResyncMessageProxy(absl::optional<std::string>(kSessionId1),
+                                   absl::optional<CryptAuthFeatureType>()));
 
   // Do not include feature type key "F" in the message.
   gcm::IncomingMessage message;

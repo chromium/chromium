@@ -6,14 +6,15 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/signin/public/base/device_id_helper.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/command_line.h"
 #include "base/guid.h"
 #include "base/logging.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -22,7 +23,7 @@
 #endif
 
 std::string GetSigninScopedDeviceIdForProfile(Profile* profile) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableSigninScopedDeviceId)) {
     return std::string();
@@ -47,7 +48,7 @@ std::string GetSigninScopedDeviceIdForProfile(Profile* profile) {
 #endif
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::string GenerateSigninScopedDeviceId(bool for_ephemeral) {
   constexpr char kEphemeralUserDeviceIDPrefix[] = "t_";

@@ -1,0 +1,24 @@
+{
+  "facets": {
+    "fuchsia.test": {
+      "injected-services": {
+        "fuchsia.accessibility.semantics.SemanticsManager": "fuchsia-pkg://fuchsia.com/a11y-manager#meta/a11y-manager.cmx",
+        "fuchsia.ui.input3.Keyboard": "fuchsia-pkg://fuchsia.com/ime_service#meta/ime_service.cmx",
+      },
+      "system-services": [
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.ui.policy.Presenter",
+        "fuchsia.ui.scenic.Scenic"
+      ]
+    }
+  },
+  "sandbox": {
+    "services": [
+      "fuchsia.accessibility.semantics.SemanticsManager",
+      "fuchsia.sysmem.Allocator",
+      "fuchsia.ui.input3.Keyboard",
+      "fuchsia.ui.policy.Presenter",
+      "fuchsia.ui.scenic.Scenic"
+    ]
+  }
+}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H
-#define COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H
+#ifndef COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H_
+#define COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H_
 
 #include <memory>
 #include <set>
@@ -78,4 +78,4 @@ class JsonManifest {
 
 }  // namespace nacl
 
-#endif  // COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H
+#endif  // COMPONENTS_NACL_RENDERER_JSON_MANIFEST_H_

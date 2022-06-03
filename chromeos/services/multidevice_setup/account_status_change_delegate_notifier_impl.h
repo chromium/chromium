@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/account_status_change_delegate_notifier.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 #include "chromeos/services/multidevice_setup/public/cpp/oobe_completion_tracker.h"
@@ -39,21 +38,33 @@ class AccountStatusChangeDelegateNotifierImpl
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<AccountStatusChangeDelegateNotifier> BuildInstance(
+    static std::unique_ptr<AccountStatusChangeDelegateNotifier> Create(
         HostStatusProvider* host_status_provider,
         PrefService* pref_service,
         HostDeviceTimestampManager* host_device_timestamp_manager,
         OobeCompletionTracker* oobe_completion_tracker,
         base::Clock* clock);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<AccountStatusChangeDelegateNotifier> CreateInstance(
+        HostStatusProvider* host_status_provider,
+        PrefService* pref_service,
+        HostDeviceTimestampManager* host_device_timestamp_manager,
+        OobeCompletionTracker* oobe_completion_tracker,
+        base::Clock* clock) = 0;
 
    private:
     static Factory* test_factory_;
   };
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  AccountStatusChangeDelegateNotifierImpl(
+      const AccountStatusChangeDelegateNotifierImpl&) = delete;
+  AccountStatusChangeDelegateNotifierImpl& operator=(
+      const AccountStatusChangeDelegateNotifierImpl&) = delete;
 
   ~AccountStatusChangeDelegateNotifierImpl() override;
 
@@ -95,23 +106,23 @@ class AccountStatusChangeDelegateNotifierImpl
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device);
   void CheckForNoLongerNewUserEvent(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-      const base::Optional<mojom::HostStatus> host_status_before_update);
+      const absl::optional<mojom::HostStatus> host_status_before_update);
   void CheckForExistingUserHostSwitchedEvent(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-      const base::Optional<std::string>& verified_host_device_id_before_update);
+      const absl::optional<std::string>& verified_host_device_id_before_update);
   void CheckForExistingUserChromebookAddedEvent(
       const HostStatusProvider::HostStatusWithDevice& host_status_with_device,
-      const base::Optional<std::string>& verified_host_device_id_before_update);
+      const absl::optional<std::string>& verified_host_device_id_before_update);
 
   // Loads data from previous session using PrefService.
-  base::Optional<std::string> LoadHostDeviceIdFromEndOfPreviousSession();
+  absl::optional<std::string> LoadHostDeviceIdFromEndOfPreviousSession();
 
-  // Set to base::nullopt if there was no enabled host in the most recent
+  // Set to absl::nullopt if there was no enabled host in the most recent
   // host status update.
-  base::Optional<std::string> verified_host_device_id_from_most_recent_update_;
+  absl::optional<std::string> verified_host_device_id_from_most_recent_update_;
 
-  // Set to base::nullopt until the first host status update.
-  base::Optional<mojom::HostStatus> host_status_from_most_recent_update_;
+  // Set to absl::nullopt until the first host status update.
+  absl::optional<mojom::HostStatus> host_status_from_most_recent_update_;
 
   mojo::Remote<mojom::AccountStatusChangeDelegate> delegate_remote_;
   HostStatusProvider* host_status_provider_;
@@ -119,8 +130,6 @@ class AccountStatusChangeDelegateNotifierImpl
   HostDeviceTimestampManager* host_device_timestamp_manager_;
   OobeCompletionTracker* oobe_completion_tracker_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountStatusChangeDelegateNotifierImpl);
 };
 
 }  // namespace multidevice_setup

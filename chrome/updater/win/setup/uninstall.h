@@ -5,9 +5,13 @@
 #ifndef CHROME_UPDATER_WIN_SETUP_UNINSTALL_H_
 #define CHROME_UPDATER_WIN_SETUP_UNINSTALL_H_
 
+#include "chrome/updater/updater_scope.h"
+
 namespace updater {
 
-int Uninstall();
+int Uninstall(UpdaterScope scope);
+
+int UninstallCandidate(UpdaterScope scope);
 
 }  // namespace updater
 

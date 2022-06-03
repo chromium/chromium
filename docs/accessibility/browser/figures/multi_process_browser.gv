@@ -1,0 +1,23 @@
+digraph graphname {
+    graph [fontname = "helvetica", fontsize=11];
+    node [shape="box", fontname = "helvetica", fontsize=11];
+    edge [fontname = "helvetica", fontsize=11];
+    rankdir="RL";
+
+    subgraph cluster_renderer {
+        label = "Sandboxed Render Process";
+	web_page [label="Web Page Renderer (HTML, CSS, JS)"];
+    }
+
+    subgraph cluster_browser {
+        label = "Browser Process";
+	browser_window [label="Browser Window"];
+    }
+
+    browser_window -> web_page [label="User input events"];
+    web_page -> browser_window [label="Pixels"];
+
+    os [label="Operating System"];
+    os -> browser_window;
+    browser_window -> os;
+}

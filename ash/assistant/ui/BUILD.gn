@@ -7,9 +7,7 @@ import("//chromeos/assistant/assistant.gni")
 
 assert(is_chromeos)
 
-component("constants") {
-  output_name = "assistant_ui_constants"
-
+source_set("constants") {
   defines = [ "IS_ASSISTANT_UI_CONSTANTS_IMPL" ]
 
   sources = [
@@ -18,6 +16,7 @@ component("constants") {
   ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//skia",
     "//ui/aura",
@@ -26,35 +25,14 @@ component("constants") {
   ]
 }
 
-component("ui") {
-  output_name = "assistant_ui"
-
+source_set("ui") {
   defines = [ "IS_ASSISTANT_UI_IMPL" ]
 
   sources = [
-    "assistant_container_view.cc",
-    "assistant_container_view.h",
-    "assistant_container_view_animator.cc",
-    "assistant_container_view_animator.h",
-    "assistant_container_view_animator_legacy_impl.cc",
-    "assistant_container_view_animator_legacy_impl.h",
-    "assistant_container_view_focus_traversable.cc",
-    "assistant_container_view_focus_traversable.h",
-    "assistant_main_view.cc",
-    "assistant_main_view.h",
-    "assistant_mini_view.cc",
-    "assistant_mini_view.h",
-    "assistant_notification_overlay.cc",
-    "assistant_notification_overlay.h",
-    "assistant_notification_view.cc",
-    "assistant_notification_view.h",
-    "assistant_overlay.h",
     "assistant_view_delegate.h",
     "assistant_view_ids.h",
     "assistant_web_container_view.cc",
     "assistant_web_container_view.h",
-    "assistant_web_view.cc",
-    "assistant_web_view.h",
     "assistant_web_view_delegate.h",
     "base/assistant_button.cc",
     "base/assistant_button.h",
@@ -63,10 +41,6 @@ component("ui") {
     "base/assistant_scroll_view.h",
     "base/stack_layout.cc",
     "base/stack_layout.h",
-    "caption_bar.cc",
-    "caption_bar.h",
-    "dialog_plate/dialog_plate.cc",
-    "dialog_plate/dialog_plate.h",
     "dialog_plate/mic_view.cc",
     "dialog_plate/mic_view.h",
     "logo_view/logo_view.cc",
@@ -75,12 +49,14 @@ component("ui") {
     "main_stage/animated_container_view.h",
     "main_stage/assistant_card_element_view.cc",
     "main_stage/assistant_card_element_view.h",
+    "main_stage/assistant_error_element_view.cc",
+    "main_stage/assistant_error_element_view.h",
     "main_stage/assistant_footer_view.cc",
     "main_stage/assistant_footer_view.h",
-    "main_stage/assistant_header_view.cc",
-    "main_stage/assistant_header_view.h",
-    "main_stage/assistant_main_stage.cc",
-    "main_stage/assistant_main_stage.h",
+    "main_stage/assistant_onboarding_suggestion_view.cc",
+    "main_stage/assistant_onboarding_suggestion_view.h",
+    "main_stage/assistant_onboarding_view.cc",
+    "main_stage/assistant_onboarding_view.h",
     "main_stage/assistant_opt_in_view.cc",
     "main_stage/assistant_opt_in_view.h",
     "main_stage/assistant_progress_indicator.cc",
@@ -89,6 +65,14 @@ component("ui") {
     "main_stage/assistant_query_view.h",
     "main_stage/assistant_text_element_view.cc",
     "main_stage/assistant_text_element_view.h",
+    "main_stage/assistant_ui_element_view.cc",
+    "main_stage/assistant_ui_element_view.h",
+    "main_stage/assistant_ui_element_view_animator.cc",
+    "main_stage/assistant_ui_element_view_animator.h",
+    "main_stage/assistant_ui_element_view_factory.cc",
+    "main_stage/assistant_ui_element_view_factory.h",
+    "main_stage/assistant_zero_state_view.cc",
+    "main_stage/assistant_zero_state_view.h",
     "main_stage/element_animator.cc",
     "main_stage/element_animator.h",
     "main_stage/suggestion_chip_view.cc",
@@ -97,29 +81,26 @@ component("ui") {
     "main_stage/suggestion_container_view.h",
     "main_stage/ui_element_container_view.cc",
     "main_stage/ui_element_container_view.h",
-    "proactive_suggestions_rich_view.cc",
-    "proactive_suggestions_rich_view.h",
-    "proactive_suggestions_simple_view.cc",
-    "proactive_suggestions_simple_view.h",
-    "proactive_suggestions_view.cc",
-    "proactive_suggestions_view.h",
   ]
 
   deps = [
     "//ash/assistant/model",
     "//ash/assistant/ui:constants",
+    "//ash/assistant/ui/colors:assistant_colors_util",
+    "//ash/assistant/ui/colors:assistant_colors_views",
     "//ash/assistant/util",
     "//ash/keyboard/ui",
     "//ash/public/cpp",
-    "//ash/public/cpp/vector_icons",
     "//ash/resources/vector_icons",
     "//ash/strings",
     "//base",
     "//chromeos/assistant:buildflags",
-    "//chromeos/services/assistant/public:feature_flags",
+    "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
-    "//services/content/public/cpp",
+    "//chromeos/services/libassistant/public/cpp:structs",
+    "//chromeos/ui/vector_icons",
     "//ui/aura",
+    "//ui/chromeos/styles:cros_styles_views",
     "//ui/compositor",
     "//ui/gfx",
     "//ui/views",

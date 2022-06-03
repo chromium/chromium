@@ -12,14 +12,14 @@ import org.chromium.components.content_capture.PlatformSession.PlatformSessionDa
  * The task to notify platform of the captured content
  */
 class ContentCapturedTask extends ProcessContentCaptureDataTask {
-    public ContentCapturedTask(FrameSession session, ContentCaptureData contentCaptureData,
+    public ContentCapturedTask(FrameSession session, ContentCaptureFrame contentCaptureData,
             PlatformSession platformSession) {
         super(session, contentCaptureData, platformSession);
     }
 
     @Override
     protected AutofillId notifyPlatform(
-            PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {
+            PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data) {
         return notifyViewAppeared(parentPlatformSessionData, data);
     }
 }

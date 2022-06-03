@@ -28,6 +28,14 @@ imageset("bookmark_blue_new_folder") {
   ]
 }
 
+imageset("bookmark_empty") {
+  sources = [
+    "bookmark_empty.imageset/Contents.json",
+    "bookmark_empty.imageset/bookmark_empty.pdf",
+    "bookmark_empty.imageset/bookmark_empty_dark.pdf",
+  ]
+}
+
 imageset("bookmark_empty_star") {
   sources = [
     "bookmark_empty_star.imageset/Contents.json",

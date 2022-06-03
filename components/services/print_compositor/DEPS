@@ -1,0 +1,16 @@
+include_rules = [
+  "+cc/paint",
+  "+components/crash/core/common/crash_key.h",
+  "+components/discardable_memory/client",
+  "+content/public/child",  # Windows direct write proxy access.
+  "+content/public/common",
+  "+content/public/utility",
+  "+mojo/public/cpp",
+  "+printing/buildflags",
+  "+printing/common",
+  "+skia",
+  "+third_party/skia",
+  "+third_party/blink/public/platform", # Test web sandbox support.
+  "+ui/base/ui_base_features.h",  # UI features.
+  "+ui/accessibility",  # Tagged PDF exporting.
+]

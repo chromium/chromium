@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_union_csscolorvalue_canvasgradient_canvaspattern_string.h"
 
 namespace blink {
 namespace {
@@ -16,13 +17,15 @@ static const float kZoom = 1.0;
 void TrySettingStrokeStyle(PaintRenderingContext2D* ctx,
                            const String& expected,
                            const String& value) {
-  StringOrCanvasGradientOrCanvasPattern result, arg, dummy;
-  dummy.SetString("red");
-  arg.SetString(value);
-  ctx->setStrokeStyle(dummy);
-  ctx->setStrokeStyle(arg);
-  ctx->strokeStyle(result);
-  EXPECT_EQ(expected, result.GetAsString());
+  ctx->setStrokeStyle(
+      MakeGarbageCollected<
+          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>("red"));
+  ctx->setStrokeStyle(
+      MakeGarbageCollected<
+          V8UnionCSSColorValueOrCanvasGradientOrCanvasPatternOrString>(value));
+  auto* result = ctx->strokeStyle();
+  ASSERT_TRUE(result);
+  EXPECT_EQ(expected, result->GetAsString());
 }
 
 TEST(PaintRenderingContext2DTest, testParseColorOrCurrentColor) {

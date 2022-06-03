@@ -6,16 +6,13 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/containers/contains.h"
 #include "base/mac/bundle_locations.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/stl_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/voice/speech_input_locale_match_config.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_language.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_provider.h"
+#include "ios/chrome/browser/voice/speech_input_locale_match.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,16 +43,12 @@ std::string GetCanonicalLocaleForLocale(NSString* locale_code) {
 
 namespace voice {
 
-// static
-SpeechInputLocaleConfigImpl* SpeechInputLocaleConfigImpl::GetInstance() {
-  static base::NoDestructor<SpeechInputLocaleConfigImpl> instance;
-  return instance.get();
-}
-
-SpeechInputLocaleConfigImpl::SpeechInputLocaleConfigImpl() {
-  InitializeAvailableLocales();
-  InitializeLocaleMatches();
-  InitializeTextToSpeechLangauges();
+SpeechInputLocaleConfigImpl::SpeechInputLocaleConfigImpl(
+    NSArray<VoiceSearchLanguage*>* languages,
+    NSArray<SpeechInputLocaleMatch*>* locale_matches) {
+  InitializeAvailableLocales(languages);
+  InitializeLocaleMatches(locale_matches);
+  InitializeTextToSpeechLanguages();
 }
 
 SpeechInputLocaleConfigImpl::~SpeechInputLocaleConfigImpl() {}
@@ -148,10 +141,8 @@ std::string SpeechInputLocaleConfigImpl::GetDefaultLocaleCode() const {
       [NSString stringWithFormat:@"%@-%@", language, country]);
 }
 
-void SpeechInputLocaleConfigImpl::InitializeAvailableLocales() {
-  NSArray* languages = ios::GetChromeBrowserProvider()
-                           ->GetVoiceSearchProvider()
-                           ->GetAvailableLanguages();
+void SpeechInputLocaleConfigImpl::InitializeAvailableLocales(
+    NSArray<VoiceSearchLanguage*>* languages) {
   for (VoiceSearchLanguage* language in languages) {
     // Store the InputLocale in |available_locales_|.
     std::string locale_code = GetCanonicalLocaleForLocale(language.identifier);
@@ -171,14 +162,14 @@ void SpeechInputLocaleConfigImpl::InitializeAvailableLocales() {
   }
 }
 
-void SpeechInputLocaleConfigImpl::InitializeLocaleMatches() {
-  NSArray* matches = [SpeechInputLocaleMatchConfig sharedInstance].matches;
-  for (SpeechInputLocaleMatch* match in matches) {
-    std::string locale = GetCanonicalLocaleForLocale(match.matchedLocaleCode);
+void SpeechInputLocaleConfigImpl::InitializeLocaleMatches(
+    NSArray<SpeechInputLocaleMatch*>* locale_matches) {
+  for (SpeechInputLocaleMatch* match in locale_matches) {
+    std::string locale = GetCanonicalLocaleForLocale(match.matchedLocale);
     auto index_iterator = locale_indices_for_codes_.find(locale);
     if (index_iterator != locale_indices_for_codes_.end()) {
       size_t index = index_iterator->second;
-      for (NSString* matching_locale in match.matchingLocaleCodes) {
+      for (NSString* matching_locale in match.matchingLocales) {
         // Record the regional variant matches.
         std::string locale_code = GetCanonicalLocaleForLocale(matching_locale);
         locale_indices_for_codes_[locale_code] = index;
@@ -192,7 +183,7 @@ void SpeechInputLocaleConfigImpl::InitializeLocaleMatches() {
   }
 }
 
-void SpeechInputLocaleConfigImpl::InitializeTextToSpeechLangauges() {
+void SpeechInputLocaleConfigImpl::InitializeTextToSpeechLanguages() {
   text_to_speech_languages_ = {"de", "en", "es", "fr", "it", "ja", "ko"};
 }
 

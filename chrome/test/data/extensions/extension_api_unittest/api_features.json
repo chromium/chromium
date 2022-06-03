@@ -60,6 +60,42 @@
     "matches": ["http://bar.com/*"],
     "dependencies": ["test7.foo"]
   },
+  "test8": {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": [
+      "chrome://test/*",
+      "chrome://other-test/*"
+    ]
+  },
+  "test9": {
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches": [
+      "chrome-untrusted://test/*",
+      "chrome-untrusted://other-test/*"
+    ]
+  },
+  "test10": {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": ["chrome://test/*"]
+  },
+  "test10.foo": {
+    "channel": "stable",
+    "contexts": ["webui"],
+    "matches": ["chrome://other-test/*"]
+  },
+  "test11": {
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches" : ["chrome-untrusted://test/*"]
+  },
+  "test11.foo": {
+    "channel": "stable",
+    "contexts": ["webui_untrusted"],
+    "matches" : ["chrome-untrusted://other-test/*"]
+  },
 
   "parent1": {
     "channel": "stable",

@@ -9,6 +9,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_window_builder.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
 #include "base/compiler_specific.h"
@@ -29,6 +30,9 @@ class TestObserver : public VideoDetector::Observer {
  public:
   TestObserver() = default;
 
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   bool empty() const { return states_.empty(); }
   void reset() { states_.clear(); }
 
@@ -48,18 +52,20 @@ class TestObserver : public VideoDetector::Observer {
  private:
   // States in the order they were received.
   base::circular_deque<VideoDetector::State> states_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 class VideoDetectorTest : public AshTestBase {
  public:
-  VideoDetectorTest() : next_window_id_(1000) {}
+  VideoDetectorTest() = default;
+
+  VideoDetectorTest(const VideoDetectorTest&) = delete;
+  VideoDetectorTest& operator=(const VideoDetectorTest&) = delete;
+
   ~VideoDetectorTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
-    observer_.reset(new TestObserver);
+    observer_ = std::make_unique<TestObserver>();
     detector_ = Shell::Get()->video_detector();
     detector_->AddObserver(observer_.get());
   }
@@ -72,18 +78,15 @@ class VideoDetectorTest : public AshTestBase {
  protected:
   // Creates and returns a new window with |bounds|.
   std::unique_ptr<aura::Window> CreateTestWindow(const gfx::Rect& bounds) {
-    return std::unique_ptr<aura::Window>(
-        CreateTestWindowInShell(SK_ColorRED, next_window_id_++, bounds));
+    return TestWindowBuilder()
+        .SetColorWindowDelegate(SK_ColorRED)
+        .SetBounds(bounds)
+        .AllowAllWindowStates()
+        .Build();
   }
 
   VideoDetector* detector_;  // not owned
   std::unique_ptr<TestObserver> observer_;
-
-  // Next ID to be assigned by CreateTestWindow().
-  int next_window_id_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoDetectorTest);
 };
 
 // Verify that the video detector can distinguish fullscreen and windowed video

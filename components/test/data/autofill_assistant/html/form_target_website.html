@@ -5,8 +5,41 @@
     <meta name="robots" content="noindex, nofollow">
     <title>Form tests.</title>
   </head>
+  <style>
+      .terms {
+        background-color: yellow;
+        height: 5em;
+      }
+  </style>
+  <script>
+    function onClick() {
+      var on = document.getElementById("toggle_on");
+      if (on.style.display === "none") {
+        on.style.display = "block";
+      } else {
+        on.style.display = "none";
+      }
+    }
+
+    function onDropdown() {
+      document.getElementById("js_dropdown_options").style.display = "block";
+    }
+
+    function onOption(value) {
+      const el = document.getElementById("js_dropdown_value");
+      el.innerHTML = value;
+      el.value = value;
+      document.getElementById("js_dropdown_options").style.display = "none";
+    }
+  </script>
   <body>
     <h3>Form filling</h3>
+
+    <h4>Terms and conditions</h4>
+    <div id="terms" class="terms">
+      <button id="button" onclick="onClick()"> Button </button>
+      <div id="toggle_on" style="display: none"> Toggle on </div>
+    </div>
 
     <h4>Credit card</h4>
     <div>
@@ -36,6 +69,20 @@
           <option value="2023">2023</option>
           <option value="2050">2050</option>
         </select>
+        Fallback: <input type="text" id="fallback_entry" name="fallback_entry"/><br/>
+        <select id="fallback_dropdown">
+          <option value="null">None</option>
+          <option value="mastercard">Master Card</option>
+          <option value="visa">Visa Card</option>
+        </select>
+        Created Dropdown: <div id="js_dropdown_value" onclick="onDropdown()">Click me</div>
+        <ul id="js_dropdown_options" style="display: none;">
+          <li onclick="onOption('2020')">2020</li>
+          <li onclick="onOption('2021')">2021</li>
+          <li onclick="onOption('2022')">2022</li>
+          <li onclick="onOption('2023')">2023</li>
+          <li onclick="onOption('2050')">2050</li>
+        </ul>
       </form>
     </div>
 
@@ -46,5 +93,36 @@
         EMail: <input type="text" id="email" name="email" autocomplete="email"/>
       </form>
     </div>
+
+    <h4>Login Form</h4>
+    <div>
+      <form id="form5" action="https://example.com/" method="post">
+        <div>Username: <input type="text" id="login-username" name="login-username"></div>
+        <div>Password: <input type="password" id="login-password" name="login-password"></div>
+      </form>
+    </div>
+
+    <h4>Password Form</h4>
+    <div>
+      <form id="form3" action="https://example.com/" method="post">
+        <div>Username: <input type="text" id="username" name="username"></div>
+        <div>Old password: <input type="password" id="old-password" name="old-password"></div>
+        <div>New password: <input type="password" id="new-password" name="new-password"></div>
+        <div>Confirmation password: <input type="password" id="password-conf" name="password-conf"></div>
+      </form>
+    </div>
+
+    <h4>Address</h4>
+    <div>
+      <form id="form4" action="https://example.com" method="post">
+        Name: <input type="text" id="address_name" name="name" autocomplete="name"/><br/>
+        Street: <input type="text" id="street" name="street-address" autocomplete="street-address"/><br/>
+        Zip: <input type="text" id="zip" autocomplete="postal-code"/><br/>
+        State: <input type="text" id="state" autocomplete="address-level1"/><br/>
+      </form>
+    </div>
+
+    <iframe id="iframe" name="test_iframe" width="100%" height="500" src=
+        "autofill_assistant_target_website_iframe_one.html"></iframe>
   </body>
 </html>

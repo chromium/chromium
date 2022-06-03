@@ -10,6 +10,7 @@
 
 #include "base/base_paths_win.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 
@@ -207,8 +208,8 @@ std::vector<base::FilePath> GetRewrittenPaths() {
   return paths;
 }
 
-std::map<int, base::string16> PathKeyToSanitizeString() {
-  std::map<int, base::string16> path_key_to_sanitize_string;
+std::map<int, std::wstring> PathKeyToSanitizeString() {
+  std::map<int, std::wstring> path_key_to_sanitize_string;
   for (const auto* rule = sanitization_internal::rewrite_rules;
        rule->path != nullptr; ++rule) {
     path_key_to_sanitize_string.insert(std::make_pair(rule->id, rule->path));
@@ -221,12 +222,12 @@ int CsidlToPathServiceKey(int CSIDL) {
 }
 
 base::FilePath NormalizePath(const base::FilePath& path) {
-  base::string16 long_path;
+  std::wstring long_path;
   ConvertToLongPath(path.value(), &long_path);
   return base::FilePath(base::ToLowerASCII(long_path));
 }
 
-void ConvertToLongPath(const base::string16& path, base::string16* long_path) {
+void ConvertToLongPath(const std::wstring& path, std::wstring* long_path) {
   DCHECK(long_path);
   DWORD long_path_len = ::GetLongPathName(path.c_str(), nullptr, 0);
   if (long_path_len > 0UL) {
@@ -238,11 +239,11 @@ void ConvertToLongPath(const base::string16& path, base::string16* long_path) {
   }
 }
 
-base::string16 SanitizePath(const base::FilePath& path) {
+std::wstring SanitizePath(const base::FilePath& path) {
   return SanitizePathImpl(path).value();
 }
 
-base::string16 SanitizeCommandLine(const base::CommandLine& command_line) {
+std::wstring SanitizeCommandLine(const base::CommandLine& command_line) {
   base::FilePath sanitized_program =
       SanitizePathImpl(command_line.GetProgram());
   base::CommandLine sanitized_command_line(sanitized_program);

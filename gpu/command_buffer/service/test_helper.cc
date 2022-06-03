@@ -10,8 +10,9 @@
 #include <algorithm>
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -175,8 +176,8 @@ void TestHelper::SetupTextureInitializationExpectations(
           GL_TEXTURE_CUBE_MAP_POSITIVE_Z,
           GL_TEXTURE_CUBE_MAP_NEGATIVE_Z,
         };
-        for (size_t ii = 0; ii < base::size(faces); ++ii) {
-          EXPECT_CALL(*gl, TexImage2D(faces[ii], 0, GL_RGBA, 1, 1, 0, GL_RGBA,
+        for (size_t face = 0; face < base::size(faces); ++face) {
+          EXPECT_CALL(*gl, TexImage2D(faces[face], 0, GL_RGBA, 1, 1, 0, GL_RGBA,
                                       GL_UNSIGNED_BYTE, _))
               .Times(1)
               .RetiresOnSaturation();
@@ -490,6 +491,10 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
       .WillOnce(Return(reinterpret_cast<const uint8_t*>(gl_version)))
       .RetiresOnSaturation();
 
+  EXPECT_CALL(*gl, GetString(GL_RENDERER))
+      .WillOnce(Return(reinterpret_cast<const uint8_t*>(gl_renderer)))
+      .RetiresOnSaturation();
+
   gfx::ExtensionSet extension_set(gfx::MakeExtensionSet(extensions));
   // Persistent storage is needed for the split extension string.
   split_extensions_ =
@@ -672,6 +677,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         .RetiresOnSaturation();
   }
 
+#if !defined(OS_MAC)
   if (gl_info.is_es3 || gl_info.is_desktop_core_profile ||
       gfx::HasExtension(extension_set, "GL_EXT_texture_rg") ||
       (gfx::HasExtension(extension_set, "GL_ARB_texture_rg"))) {
@@ -730,6 +736,7 @@ void TestHelper::SetupFeatureInfoInitExpectationsWithGLVersion(
         .RetiresOnSaturation();
 #endif
   }
+#endif  // !defined(OS_MAC)
 }
 
 void TestHelper::SetupExpectationsForClearingUniforms(::gl::MockGLInterface* gl,
@@ -928,50 +935,6 @@ void TestHelper::SetupProgramSuccessExpectations(
     }
   }
 
-  if (feature_info->feature_flags().chromium_path_rendering) {
-    EXPECT_CALL(*gl, GetProgramInterfaceiv(service_id, GL_FRAGMENT_INPUT_NV,
-                                           GL_ACTIVE_RESOURCES, _))
-        .WillOnce(SetArgPointee<3>(int(num_varyings)))
-        .RetiresOnSaturation();
-    size_t max_varying_len = 0;
-    for (size_t ii = 0; ii < num_varyings; ++ii) {
-      size_t len = strlen(varyings[ii].name) + 1;
-      max_varying_len = std::max(max_varying_len, len);
-    }
-    EXPECT_CALL(*gl, GetProgramInterfaceiv(service_id, GL_FRAGMENT_INPUT_NV,
-                                           GL_MAX_NAME_LENGTH, _))
-        .WillOnce(SetArgPointee<3>(int(max_varying_len)))
-        .RetiresOnSaturation();
-    for (size_t ii = 0; ii < num_varyings; ++ii) {
-      VaryingInfo& info = varyings[ii];
-      EXPECT_CALL(*gl, GetProgramResourceName(service_id, GL_FRAGMENT_INPUT_NV,
-                                              ii, max_varying_len, _, _))
-          .WillOnce(DoAll(SetArgPointee<4>(strlen(info.name)),
-                          SetArrayArgument<5>(
-                              info.name, info.name + strlen(info.name) + 1)))
-          .RetiresOnSaturation();
-      if (ProgramManager::HasBuiltInPrefix(info.name))
-        continue;
-
-        static const GLenum kPropsArray[] = {GL_LOCATION, GL_TYPE,
-                                             GL_ARRAY_SIZE};
-        static const size_t kPropsSize = base::size(kPropsArray);
-        EXPECT_CALL(
-            *gl, GetProgramResourceiv(
-                     service_id, GL_FRAGMENT_INPUT_NV, ii, kPropsSize,
-                     _ /*testing::ElementsAreArray(kPropsArray, kPropsSize)*/,
-                     kPropsSize, _, _))
-            .WillOnce(testing::Invoke([info](GLuint, GLenum, GLuint, GLsizei,
-                                             const GLenum*, GLsizei,
-                                             GLsizei* length, GLint* params) {
-              *length = kPropsSize;
-              params[0] = info.real_location;
-              params[1] = info.type;
-              params[2] = info.size;
-            }))
-            .RetiresOnSaturation();
-      }
-  }
   if (feature_info->gl_version_info().is_es3_capable &&
       !feature_info->disable_shader_translator()) {
     for (size_t ii = 0; ii < num_program_outputs; ++ii) {

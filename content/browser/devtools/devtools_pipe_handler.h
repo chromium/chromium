@@ -5,31 +5,34 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_PIPE_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_DEVTOOLS_PIPE_HANDLER_H_
 
-#include "base/macros.h"
+#include "base/callback.h"
+#include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/devtools_agent_host_client.h"
-
-namespace base {
-class Thread;
-}
 
 namespace content {
 
 class PipeReaderBase;
+class PipeWriterBase;
 
 class DevToolsPipeHandler : public DevToolsAgentHostClient {
  public:
-  DevToolsPipeHandler();
+  explicit DevToolsPipeHandler(base::OnceClosure on_disconnect);
+
+  DevToolsPipeHandler(const DevToolsPipeHandler&) = delete;
+  DevToolsPipeHandler& operator=(const DevToolsPipeHandler&) = delete;
+
   ~DevToolsPipeHandler() override;
 
-  void HandleMessage(const std::string& message);
-  void DetachFromTarget();
+  void HandleMessage(std::vector<uint8_t> message);
+  void OnDisconnect();
 
   // DevToolsAgentHostClient overrides
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
-                               const std::string& message) override;
+                               base::span<const uint8_t> message) override;
   void AgentHostClosed(DevToolsAgentHost* agent_host) override;
   bool UsesBinaryProtocol() override;
+  bool AllowUnsafeOperations() override;
 
   void Shutdown();
 
@@ -42,17 +45,15 @@ class DevToolsPipeHandler : public DevToolsAgentHostClient {
   };
 
   ProtocolMode mode_;
+  base::OnceClosure on_disconnect_;
 
   std::unique_ptr<PipeReaderBase> pipe_reader_;
-  std::unique_ptr<base::Thread> read_thread_;
-  std::unique_ptr<base::Thread> write_thread_;
+  std::unique_ptr<PipeWriterBase> pipe_writer_;
   scoped_refptr<DevToolsAgentHost> browser_target_;
   int read_fd_;
   int write_fd_;
   bool shutting_down_ = false;
   base::WeakPtrFactory<DevToolsPipeHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsPipeHandler);
 };
 
 }  // namespace content

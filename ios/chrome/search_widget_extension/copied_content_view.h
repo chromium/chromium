@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/common/highlight_button.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 
 typedef NS_ENUM(NSInteger, CopiedContentType) {
   CopiedContentTypeNone,
@@ -30,8 +30,7 @@ typedef NS_ENUM(NSInteger, CopiedContentType) {
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 - (instancetype)initWithCoder:(NSCoder*)aDecoder NS_UNAVAILABLE;
 
-- (void)setCopiedContentType:(CopiedContentType)type
-                  copiedText:(NSString*)copiedText;
+- (void)setCopiedContentType:(CopiedContentType)type;
 
 @end
 

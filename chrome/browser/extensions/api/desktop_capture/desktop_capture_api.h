@@ -21,7 +21,7 @@ class DesktopCaptureChooseDesktopMediaFunction
   ~DesktopCaptureChooseDesktopMediaFunction() override;
 
   // ExtensionFunction overrides.
-  bool RunAsync() override;
+  ResponseAction Run() override;
 
   // Returns the target name to show in the picker when capture is requested for
   // an extension.  Currently this is the same as the application name.

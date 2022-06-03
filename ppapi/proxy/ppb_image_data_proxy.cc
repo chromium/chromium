@@ -192,7 +192,7 @@ void ImageDataInstanceCache::ImageDataUsable(ImageData* image_data) {
 
 bool ImageDataInstanceCache::ExpireEntries() {
   base::TimeTicks threshold_time =
-      base::TimeTicks::Now() - base::TimeDelta::FromSeconds(kMaxAgeSeconds);
+      base::TimeTicks::Now() - base::Seconds(kMaxAgeSeconds);
 
   bool has_entry = false;
   for (size_t i = 0; i < kCacheSize; i++) {
@@ -223,6 +223,10 @@ void ImageDataInstanceCache::IncrementInsertionPoint() {
 class ImageDataCache {
  public:
   ImageDataCache() {}
+
+  ImageDataCache(const ImageDataCache&) = delete;
+  ImageDataCache& operator=(const ImageDataCache&) = delete;
+
   ~ImageDataCache() {}
 
   static ImageDataCache* GetInstance();
@@ -257,8 +261,6 @@ class ImageDataCache {
   // this will never happen and this factory is unnecessary. However, it's
   // probably better not to make assumptions about the lifetime of this class.
   base::WeakPtrFactory<ImageDataCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImageDataCache);
 };
 
 // static
@@ -284,10 +286,10 @@ void ImageDataCache::Add(ImageData* image_data) {
   // Schedule a timer to invalidate this entry.
   PpapiGlobals::Get()->GetMainThreadMessageLoop()->PostDelayedTask(
       FROM_HERE,
-      RunWhileLocked(base::Bind(&ImageDataCache::OnTimer,
-                                weak_factory_.GetWeakPtr(),
-                                image_data->pp_instance())),
-      base::TimeDelta::FromSeconds(kMaxAgeSeconds));
+      RunWhileLocked(base::BindOnce(&ImageDataCache::OnTimer,
+                                    weak_factory_.GetWeakPtr(),
+                                    image_data->pp_instance())),
+      base::Seconds(kMaxAgeSeconds));
 }
 
 void ImageDataCache::ImageDataUsable(ImageData* image_data) {

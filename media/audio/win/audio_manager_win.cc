@@ -17,7 +17,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/windows_version.h"
@@ -120,10 +120,16 @@ void AudioManagerWin::ShutdownOnAudioThread() {
 }
 
 bool AudioManagerWin::HasAudioOutputDevices() {
+  if (CoreAudioUtil::IsSupported())
+    return CoreAudioUtil::NumberOfActiveDevices(eRender) > 0;
+
   return (::waveOutGetNumDevs() != 0);
 }
 
 bool AudioManagerWin::HasAudioInputDevices() {
+  if (CoreAudioUtil::IsSupported())
+    return CoreAudioUtil::NumberOfActiveDevices(eCapture) > 0;
+
   return (::waveInGetNumDevs() != 0);
 }
 
@@ -241,7 +247,7 @@ AudioOutputStream* AudioManagerWin::MakeLowLatencyOutputStream(
       communications || device_id == AudioDeviceDescription::kDefaultDeviceId
           ? std::string()
           : device_id,
-      params, communications ? eCommunications : eConsole);
+      params, communications ? eCommunications : eConsole, log_callback);
 }
 
 // Factory for the implementations of AudioInputStream for AUDIO_PCM_LINEAR
@@ -261,7 +267,6 @@ AudioInputStream* AudioManagerWin::MakeLowLatencyInputStream(
     const std::string& device_id,
     const LogCallback& log_callback) {
   // Used for both AUDIO_PCM_LOW_LATENCY and AUDIO_PCM_LINEAR.
-  DVLOG(1) << "MakeLowLatencyInputStream: " << device_id;
   return new WASAPIAudioInputStream(this, params, device_id, log_callback);
 }
 

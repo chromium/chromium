@@ -7,8 +7,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_COMMON_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_WEBSOCKET_COMMON_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -30,6 +28,10 @@ class MODULES_EXPORT WebSocketCommon {
 
  public:
   WebSocketCommon() = default;
+
+  WebSocketCommon(const WebSocketCommon&) = delete;
+  WebSocketCommon& operator=(const WebSocketCommon&) = delete;
+
   ~WebSocketCommon() = default;
 
   enum State { kConnecting = 0, kOpen = 1, kClosing = 2, kClosed = 3 };
@@ -73,8 +75,6 @@ class MODULES_EXPORT WebSocketCommon {
 
   KURL url_;
   State state_ = kConnecting;
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketCommon);
 };
 
 }  // namespace blink

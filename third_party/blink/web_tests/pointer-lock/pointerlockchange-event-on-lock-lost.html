@@ -24,7 +24,7 @@
         function () {
             shouldBe("document.pointerLockElement", "targetDiv1");
             expectOnlyChangeEvent("Host initiated unlock.");
-            testRunner.didLosePointerLock();
+            testRunner.dropPointerLock();
             // doNextStep called by event handler.
         },
         function () {
@@ -36,4 +36,3 @@
 </script>
 </body>
 </html>
-

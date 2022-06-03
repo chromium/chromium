@@ -20,6 +20,7 @@ static_library("version_info") {
     "//base",
     "//base:sanitizer_buildflags",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
   ]
 
   public_deps = [
@@ -47,9 +48,7 @@ static_library("version_string") {
 }
 
 source_set("channel") {
-  sources = [
-    "channel.h",
-  ]
+  sources = [ "channel.h" ]
 }
 
 process_version("generate_version_info") {

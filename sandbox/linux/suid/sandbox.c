@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox.md
 
 #include "sandbox/linux/suid/common/sandbox.h"
 
@@ -403,7 +403,7 @@ bool CheckAndExportApiVersion() {
         "The setuid sandbox provides API version %d, "
         "but you need %d\n"
         "Please read "
-        "https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md."
+        "https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md."
         "\n\n",
         kSUIDSandboxApiNumber,
         api_number);
@@ -480,6 +480,4 @@ int main(int argc, char** argv) {
 
   execv(argv[1], &argv[1]);
   FatalError("execv failed");
-
-  return 1;
 }

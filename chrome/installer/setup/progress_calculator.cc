@@ -6,7 +6,7 @@
 
 #include <math.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 // An install operation generally proceeds through the stages in order. A
 // progress value is computed assuming all stages take an equal amount of

@@ -18,8 +18,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_context_writer.h"
@@ -97,7 +97,7 @@ TEST(MinidumpThreadWriter, EmptyThreadList) {
 }
 
 // The MINIDUMP_THREADs |expected| and |observed| are compared against each
-// other using gtest assertions. If |stack| is not nullptr, |observed| is
+// other using Google Test assertions. If |stack| is not nullptr, |observed| is
 // expected to contain a populated MINIDUMP_MEMORY_DESCRIPTOR in its Stack
 // field, otherwise, its Stack field is expected to be zeroed out. The memory
 // descriptor will be placed in |stack|. |observed| must contain a populated
@@ -108,33 +108,41 @@ void ExpectThread(const MINIDUMP_THREAD* expected,
                   const std::string& file_contents,
                   const MINIDUMP_MEMORY_DESCRIPTOR** stack,
                   const void** context_base) {
-  EXPECT_EQ(observed->ThreadId, expected->ThreadId);
-  EXPECT_EQ(observed->SuspendCount, expected->SuspendCount);
-  EXPECT_EQ(observed->PriorityClass, expected->PriorityClass);
-  EXPECT_EQ(observed->Priority, expected->Priority);
-  EXPECT_EQ(observed->Teb, expected->Teb);
+  MINIDUMP_THREAD expected_thread, observed_thread;
+  memcpy(&expected_thread, expected, sizeof(expected_thread));
+  memcpy(&observed_thread, observed, sizeof(observed_thread));
 
-  EXPECT_EQ(observed->Stack.StartOfMemoryRange,
-            expected->Stack.StartOfMemoryRange);
-  EXPECT_EQ(observed->Stack.Memory.DataSize, expected->Stack.Memory.DataSize);
+  EXPECT_EQ(observed_thread.ThreadId, expected_thread.ThreadId);
+  EXPECT_EQ(observed_thread.SuspendCount, expected_thread.SuspendCount);
+  EXPECT_EQ(observed_thread.PriorityClass, expected_thread.PriorityClass);
+  EXPECT_EQ(observed_thread.Priority, expected_thread.Priority);
+  EXPECT_EQ(observed_thread.Teb, expected_thread.Teb);
+
+  EXPECT_EQ(observed_thread.Stack.StartOfMemoryRange,
+            expected_thread.Stack.StartOfMemoryRange);
+  EXPECT_EQ(observed_thread.Stack.Memory.DataSize,
+            expected_thread.Stack.Memory.DataSize);
   if (stack) {
-    ASSERT_NE(observed->Stack.Memory.DataSize, 0u);
-    ASSERT_NE(observed->Stack.Memory.Rva, 0u);
+    ASSERT_NE(observed_thread.Stack.Memory.DataSize, 0u);
+    ASSERT_NE(observed_thread.Stack.Memory.Rva, 0u);
     ASSERT_GE(file_contents.size(),
-              observed->Stack.Memory.Rva + observed->Stack.Memory.DataSize);
+              observed_thread.Stack.Memory.Rva +
+                  observed_thread.Stack.Memory.DataSize);
     *stack = &observed->Stack;
   } else {
-    EXPECT_EQ(observed->Stack.StartOfMemoryRange, 0u);
-    EXPECT_EQ(observed->Stack.Memory.DataSize, 0u);
-    EXPECT_EQ(observed->Stack.Memory.Rva, 0u);
+    EXPECT_EQ(observed_thread.Stack.StartOfMemoryRange, 0u);
+    EXPECT_EQ(observed_thread.Stack.Memory.DataSize, 0u);
+    EXPECT_EQ(observed_thread.Stack.Memory.Rva, 0u);
   }
 
-  EXPECT_EQ(observed->ThreadContext.DataSize, expected->ThreadContext.DataSize);
-  ASSERT_NE(observed->ThreadContext.DataSize, 0u);
-  ASSERT_NE(observed->ThreadContext.Rva, 0u);
+  EXPECT_EQ(observed_thread.ThreadContext.DataSize,
+            expected_thread.ThreadContext.DataSize);
+  ASSERT_NE(observed_thread.ThreadContext.DataSize, 0u);
+  ASSERT_NE(observed_thread.ThreadContext.Rva, 0u);
   ASSERT_GE(file_contents.size(),
-            observed->ThreadContext.Rva + expected->ThreadContext.DataSize);
-  *context_base = &file_contents[observed->ThreadContext.Rva];
+            observed_thread.ThreadContext.Rva +
+                expected_thread.ThreadContext.DataSize);
+  *context_base = &file_contents[observed_thread.ThreadContext.Rva];
 }
 
 TEST(MinidumpThreadWriter, OneThread_x86_NoStack) {

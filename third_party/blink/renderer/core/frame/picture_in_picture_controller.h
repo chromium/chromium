@@ -6,11 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PICTURE_IN_PICTURE_CONTROLLER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace blink {
 
+class Document;
+class Element;
 class HTMLElement;
 class HTMLVideoElement;
 class PictureInPictureOptions;
@@ -22,11 +23,12 @@ class ScriptPromiseResolver;
 class CORE_EXPORT PictureInPictureController
     : public GarbageCollected<PictureInPictureController>,
       public Supplement<Document> {
-  USING_GARBAGE_COLLECTED_MIXIN(PictureInPictureController);
-
  public:
   static const char kSupplementName[];
 
+  PictureInPictureController(const PictureInPictureController&) = delete;
+  PictureInPictureController& operator=(const PictureInPictureController&) =
+      delete;
   virtual ~PictureInPictureController() = default;
 
   // Should be called before any other call to make sure a document is attached.
@@ -45,7 +47,7 @@ class CORE_EXPORT PictureInPictureController
     kMetadataNotLoaded,
     kVideoTrackNotAvailable,
     kDisabledBySystem,
-    kDisabledByFeaturePolicy,
+    kDisabledByPermissionsPolicy,
     kDisabledByAttribute,
     kInvalidWidthOrHeightOption,
   };
@@ -79,7 +81,7 @@ class CORE_EXPORT PictureInPictureController
   // Notifies that one of the states used by Picture-in-Picture has changed.
   virtual void OnPictureInPictureStateChange() = 0;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   explicit PictureInPictureController(Document&);
@@ -88,8 +90,6 @@ class CORE_EXPORT PictureInPictureController
   // It is protected so that clients use the static method
   // IsElementInPictureInPicture() that avoids creating the controller.
   virtual bool IsPictureInPictureElement(const Element*) const = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureController);
 };
 
 }  // namespace blink

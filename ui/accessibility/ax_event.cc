@@ -6,25 +6,47 @@
 
 #include "base/strings/string_number_conversions.h"
 #include "ui/accessibility/ax_enum_util.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 
 namespace ui {
 
-// Mojo enums are initialized here so the header can include the much smaller
-// mojom-forward.h header.
-AXEvent::AXEvent()
-    : event_type(ax::mojom::Event::kNone),
-      event_from(ax::mojom::EventFrom::kNone) {}
+AXEvent::AXEvent() = default;
+
+AXEvent::AXEvent(AXNodeData::AXID id,
+                 ax::mojom::Event event_type,
+                 ax::mojom::EventFrom event_from,
+                 ax::mojom::Action event_from_action,
+                 const std::vector<AXEventIntent>& event_intents,
+                 int action_request_id)
+    : id(id),
+      event_type(event_type),
+      event_from(event_from),
+      event_from_action(event_from_action),
+      event_intents(event_intents),
+      action_request_id(action_request_id) {}
 
 AXEvent::~AXEvent() = default;
 
+AXEvent::AXEvent(const AXEvent& event) = default;
+
+AXEvent& AXEvent::operator=(const AXEvent& event) = default;
+
 std::string AXEvent::ToString() const {
-  std::string result = "AXEvent";
+  std::string result = "AXEvent ";
 
   result += ui::ToString(event_type);
   result += " on node id=" + base::NumberToString(id);
   if (event_from != ax::mojom::EventFrom::kNone)
     result += std::string(" from ") + ui::ToString(event_from);
+  if (event_from_action != ax::mojom::Action::kNone)
+    result += std::string(" from accessibility action ") +
+              ui::ToString(event_from_action);
+  if (!event_intents.empty()) {
+    result += " caused by [ ";
+    for (const AXEventIntent& intent : event_intents) {
+      result += intent.ToString() + ' ';
+    }
+    result += ']';
+  }
   if (action_request_id)
     result += " action_request_id=" + base::NumberToString(action_request_id);
   return result;

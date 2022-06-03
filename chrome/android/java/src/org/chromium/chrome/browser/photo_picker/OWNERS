@@ -1,6 +1,1 @@
-finnur@chromium.org
-peter@chromium.org
-twellington@chromium.org
-
-per-file *.aidl=set noparent
-per-file *.aidl=file://ipc/SECURITY_OWNERS
+file://components/browser_ui/photo_picker/android/OWNERS

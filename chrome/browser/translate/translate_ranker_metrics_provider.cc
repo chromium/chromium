@@ -13,6 +13,15 @@
 
 namespace translate {
 
+TranslateRankerMetricsProvider::TranslateRankerMetricsProvider()
+    : logging_enabled_(false) {
+  g_browser_process->profile_manager()->AddObserver(this);
+}
+
+TranslateRankerMetricsProvider::~TranslateRankerMetricsProvider() {
+  g_browser_process->profile_manager()->RemoveObserver(this);
+}
+
 void TranslateRankerMetricsProvider::ProvideCurrentSessionData(
     metrics::ChromeUserMetricsExtension* uma_proto) {
   std::vector<Profile*> loaded_profiles =
@@ -51,6 +60,10 @@ void TranslateRankerMetricsProvider::OnRecordingEnabled() {
 
 void TranslateRankerMetricsProvider::OnRecordingDisabled() {
   logging_enabled_ = false;
+  UpdateLoggingState();
+}
+
+void TranslateRankerMetricsProvider::OnProfileAdded(Profile* profile) {
   UpdateLoggingState();
 }
 

@@ -1,0 +1,59 @@
+Verifies multiple CSP issues in report-only mode.
+
+Inspector issue: {
+    issue : {
+        code : ContentSecurityPolicyIssue
+        details : {
+            contentSecurityPolicyIssueDetails : {
+                blockedURL : https://devtools.test:8443/inspector-protocol/resources/style.css
+                contentSecurityPolicyViolationType : kURLViolation
+                isReportOnly : true
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : 2
+                    scriptId : 0
+                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
+                }
+                violatedDirective : style-src-elem
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : ContentSecurityPolicyIssue
+        details : {
+            contentSecurityPolicyIssueDetails : {
+                contentSecurityPolicyViolationType : kEvalViolation
+                isReportOnly : true
+                sourceCodeLocation : {
+                    columnNumber : 13
+                    lineNumber : 4
+                    scriptId : 4
+                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
+                }
+                violatedDirective : script-src
+            }
+        }
+    }
+}
+Inspector issue: {
+    issue : {
+        code : ContentSecurityPolicyIssue
+        details : {
+            contentSecurityPolicyIssueDetails : {
+                contentSecurityPolicyViolationType : kInlineViolation
+                isReportOnly : true
+                sourceCodeLocation : {
+                    columnNumber : 0
+                    lineNumber : 5
+                    scriptId : 0
+                    url : https://devtools.test:8443/inspector-protocol/resources/content-security-policy-issue-report-only.php
+                }
+                violatedDirective : style-src-attr
+                violatingNodeId : <number>
+            }
+        }
+    }
+}
+

@@ -16,34 +16,6 @@ blink_modules_sources("peerconnection") {
     "adapters/ice_transport_host.h",
     "adapters/ice_transport_proxy.cc",
     "adapters/ice_transport_proxy.h",
-    "adapters/p2p_quic_crypto_config_factory.h",
-    "adapters/p2p_quic_crypto_config_factory_impl.cc",
-    "adapters/p2p_quic_crypto_config_factory_impl.h",
-    "adapters/p2p_quic_crypto_stream_factory.h",
-    "adapters/p2p_quic_crypto_stream_factory_impl.cc",
-    "adapters/p2p_quic_crypto_stream_factory_impl.h",
-    "adapters/p2p_quic_packet_transport.h",
-    "adapters/p2p_quic_stream.h",
-    "adapters/p2p_quic_stream_impl.cc",
-    "adapters/p2p_quic_stream_impl.h",
-    "adapters/p2p_quic_transport.h",
-    "adapters/p2p_quic_transport_factory.h",
-    "adapters/p2p_quic_transport_factory_impl.cc",
-    "adapters/p2p_quic_transport_factory_impl.h",
-    "adapters/p2p_quic_transport_impl.cc",
-    "adapters/p2p_quic_transport_impl.h",
-    "adapters/p2p_quic_transport_stats.cc",
-    "adapters/p2p_quic_transport_stats.h",
-    "adapters/quic_packet_transport_adapter.cc",
-    "adapters/quic_packet_transport_adapter.h",
-    "adapters/quic_stream_host.cc",
-    "adapters/quic_stream_host.h",
-    "adapters/quic_stream_proxy.cc",
-    "adapters/quic_stream_proxy.h",
-    "adapters/quic_transport_host.cc",
-    "adapters/quic_transport_host.h",
-    "adapters/quic_transport_proxy.cc",
-    "adapters/quic_transport_proxy.h",
     "adapters/sctp_transport_proxy.cc",
     "adapters/sctp_transport_proxy.h",
     "adapters/web_rtc_cross_thread_copier.cc",
@@ -52,6 +24,8 @@ blink_modules_sources("peerconnection") {
     "byte_buffer_queue.h",
     "call_setup_state_tracker.cc",
     "call_setup_state_tracker.h",
+    "identifiability_metrics.cc",
+    "identifiability_metrics.h",
     "media_stream_remote_video_source.cc",
     "media_stream_remote_video_source.h",
     "media_stream_track_metrics.cc",
@@ -76,6 +50,26 @@ blink_modules_sources("peerconnection") {
     "rtc_dtmf_sender.h",
     "rtc_dtmf_tone_change_event.cc",
     "rtc_dtmf_tone_change_event.h",
+    "rtc_encoded_audio_frame.cc",
+    "rtc_encoded_audio_frame.h",
+    "rtc_encoded_audio_frame_delegate.cc",
+    "rtc_encoded_audio_frame_delegate.h",
+    "rtc_encoded_audio_receiver_sink_optimizer.cc",
+    "rtc_encoded_audio_receiver_sink_optimizer.h",
+    "rtc_encoded_audio_receiver_source_optimizer.cc",
+    "rtc_encoded_audio_receiver_source_optimizer.h",
+    "rtc_encoded_audio_underlying_sink.cc",
+    "rtc_encoded_audio_underlying_sink.h",
+    "rtc_encoded_audio_underlying_source.cc",
+    "rtc_encoded_audio_underlying_source.h",
+    "rtc_encoded_video_frame.cc",
+    "rtc_encoded_video_frame.h",
+    "rtc_encoded_video_frame_delegate.cc",
+    "rtc_encoded_video_frame_delegate.h",
+    "rtc_encoded_video_underlying_sink.cc",
+    "rtc_encoded_video_underlying_sink.h",
+    "rtc_encoded_video_underlying_source.cc",
+    "rtc_encoded_video_underlying_source.h",
     "rtc_error.cc",
     "rtc_error.h",
     "rtc_error_event.cc",
@@ -98,12 +92,6 @@ blink_modules_sources("peerconnection") {
     "rtc_peer_connection_ice_error_event.h",
     "rtc_peer_connection_ice_event.cc",
     "rtc_peer_connection_ice_event.h",
-    "rtc_quic_stream.cc",
-    "rtc_quic_stream.h",
-    "rtc_quic_stream_event.cc",
-    "rtc_quic_stream_event.h",
-    "rtc_quic_transport.cc",
-    "rtc_quic_transport.h",
     "rtc_rtp_receiver.cc",
     "rtc_rtp_receiver.h",
     "rtc_rtp_receiver_impl.cc",
@@ -139,6 +127,12 @@ blink_modules_sources("peerconnection") {
     "rtc_void_request_promise_impl.h",
     "rtc_void_request_script_promise_resolver_impl.cc",
     "rtc_void_request_script_promise_resolver_impl.h",
+    "speed_limit_uma_listener.cc",
+    "speed_limit_uma_listener.h",
+    "thermal_resource.cc",
+    "thermal_resource.h",
+    "thermal_uma_listener.cc",
+    "thermal_uma_listener.h",
     "transceiver_state_surfacer.cc",
     "transceiver_state_surfacer.h",
     "web_rtc_stats_report_callback_resolver.cc",
@@ -151,15 +145,23 @@ blink_modules_sources("peerconnection") {
     "webrtc_set_description_observer.h",
   ]
 
-  public_deps = [
-    "//third_party/webrtc_overrides:webrtc_component",
-  ]
+  public_deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
   deps = [
-    "//third_party/abseil-cpp/absl/types:optional",
+    "//jingle:webrtc_glue",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/abseil-cpp:absl",
+    "//third_party/blink/public/mojom:web_feature_mojo_bindings",
+    "//third_party/blink/renderer/modules/crypto",
+    "//third_party/blink/renderer/modules/mediastream",
+    "//third_party/blink/renderer/modules/webrtc",
+    "//third_party/re2",
   ]
+
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/modules/mediastream" ]
 }
 
-jumbo_source_set("test_support") {
+source_set("test_support") {
   testonly = true
 
   sources = [
@@ -184,7 +186,11 @@ jumbo_source_set("test_support") {
     "//base/test:test_support",
     "//testing/gmock",
     "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/modules",
     "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+
+  configs += [ "//third_party/blink/renderer:inside_blink" ]
 }

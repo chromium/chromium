@@ -2,22 +2,23 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/android/channel.gni")
 import("//build/config/android/rules.gni")
 import("//build/util/process_version.gni")
-import("//chrome/android/channel.gni")
 
 _version_constants_java_file = "$target_gen_dir/java/org/chromium/components/version_info/VersionConstants.java"
 
 # Depend on this on the Java side to get org.components.version_info.Channel and
 # org.components.version_info.VersionConstants.
 android_library("version_constants_java") {
-  java_files = [
+  sources = [
     "java/src/org/chromium/components/version_info/VersionConstantsBridge.java",
     _version_constants_java_file,
   ]
   deps = [
     ":generate_version_constants",
     "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   srcjar_deps = [ ":channel_enum_srcjar" ]
 }
@@ -37,18 +38,14 @@ static_library("channel_getter") {
 }
 
 java_cpp_enum("channel_enum_srcjar") {
-  sources = [
-    "../channel.h",
-  ]
+  sources = [ "../channel.h" ]
 }
 
 process_version("generate_version_constants") {
   process_only = true
   template_file = "java/VersionConstants.java.version"
   output = _version_constants_java_file
-  sources = [
-    "//chrome/VERSION",
-  ]
+  sources = [ "//chrome/VERSION" ]
   extra_args = [
     "-e",
     "CHANNEL=str.upper('$android_channel')",

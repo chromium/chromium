@@ -11,7 +11,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 
 namespace base {
 
@@ -74,12 +74,15 @@ void VoidPolymorphic1(T t) {
 void TakesMoveOnly(std::unique_ptr<int>) {
 }
 
+void TakesIntRef(int& ref) {}
+
 struct NonEmptyFunctor {
   int x;
   void operator()() const {}
 };
 
-#if defined(NCTEST_METHOD_ON_CONST_OBJECT)  // [r"fatal error: static_assert failed due to requirement 'param_is_forwardable' \"Bound argument |i| of type |Arg| cannot be forwarded as |Unwrapped| to the bound functor, which declares it as |Param|.\""]
+#if defined(NCTEST_METHOD_ON_CONST_OBJECT)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
+
 // Method bound to const-object.
 //
 // Only const methods should be allowed to work with const objects.
@@ -116,8 +119,7 @@ void WontCompile() {
   no_ref_const_cb.Run();
 }
 
-#elif defined(NCTEST_CONST_POINTER)  // [r"fatal error: static_assert failed due to requirement 'param_is_forwardable' \"Bound argument |i| of type |Arg| cannot be forwarded as |Unwrapped| to the bound functor, which declares it as |Param|.\""]
-
+#elif defined(NCTEST_CONST_POINTER)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
 // Const argument used with non-const pointer parameter of same type.
 //
 // This is just a const-correctness check.
@@ -128,7 +130,7 @@ void WontCompile() {
   pointer_same_cb.Run();
 }
 
-#elif defined(NCTEST_CONST_POINTER_SUBTYPE)  // [r"fatal error: static_assert failed due to requirement 'param_is_forwardable' \"Bound argument |i| of type |Arg| cannot be forwarded as |Unwrapped| to the bound functor, which declares it as |Param|.\""]
+#elif defined(NCTEST_CONST_POINTER_SUBTYPE)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor.+?Type mismatch between bound argument and bound functor's parameter\."]
 
 // Const argument used with non-const pointer parameter of super type.
 //
@@ -157,18 +159,44 @@ void WontCompile() {
   ref_arg_cb.Run(p);
 }
 
-#elif defined(NCTEST_DISALLOW_BIND_TO_NON_CONST_REF_PARAM)  // [r"fatal error: static_assert failed due to requirement 'param_is_forwardable' \"Bound argument |i| of type |Arg| cannot be forwarded as |Unwrapped| to the bound functor, which declares it as |Param|.\""]
+#elif defined(NCTEST_BIND_ONCE_WITH_NON_CONST_REF_PARAM)  // [r"static_assert failed due to requirement 'BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kNonConstRefParamMustBeWrapped' \"Bound argument for non-const reference parameter must be wrapped in std::ref\(\) or base::OwnedRef\(\).\""]
 
-// Binding functions with reference parameters, unsupported.
-//
-// See comment in NCTEST_DISALLOW_NON_CONST_REF_PARAM
+// Binding functions with reference parameters requires `std::ref()` or
+// 'base::OwnedRef()`.
 void WontCompile() {
-  Parent p;
-  RepeatingCallback<int()> ref_cb = BindRepeating(&UnwrapParentRef, p);
-  ref_cb.Run();
+  int v = 1;
+  auto cb = BindOnce(&TakesIntRef, v);
 }
 
-#elif defined(NCTEST_NO_IMPLICIT_ARRAY_PTR_CONVERSION)  // [r"fatal error: static_assert failed due to requirement '!std::is_array<base::HasRef \[10\]>::value' \"First bound argument to a method cannot be an array.\""]
+#elif defined(NCTEST_BIND_REPEATING_WITH_NON_CONST_REF_PARAM)  // [r"static_assert failed due to requirement 'BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kNonConstRefParamMustBeWrapped' \"Bound argument for non-const reference parameter must be wrapped in std::ref\(\) or base::OwnedRef\(\).\""]
+
+// Binding functions with reference parameters requires `std::ref()` or
+// 'base::OwnedRef()`.
+void WontCompile() {
+  int v = 1;
+  auto cb = BindRepeating(&TakesIntRef, v);
+}
+
+#elif defined(NCTEST_NON_CONST_REF_PARAM_WRONG_TYPE)  // [r"static_assert failed due to requirement 'BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor' \"Type mismatch between bound argument and bound functor's parameter.\""]
+
+// If the argument and parameter types mismatch then the compile error should be
+// the generic type mismatch error.
+void WontCompile() {
+  float f = 1.0f;
+  auto cb = BindOnce(&TakesIntRef, f);
+}
+
+#elif defined(NCTEST_NON_CONST_REF_PARAM_WRONG_TYPE_AND_WRAPPED)  // [r"static_assert failed due to requirement 'BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kCanBeForwardedToBoundFunctor' \"Type mismatch between bound argument and bound functor's parameter.\""]
+
+// If the argument and parameter types mismatch then the compile error should be
+// the generic type mismatch error even if the argument is wrapped in
+// base::OwnedRef().
+void WontCompile() {
+  float f = 1.0f;
+  auto cb = BindOnce(&TakesIntRef, base::OwnedRef(f));
+}
+
+#elif defined(NCTEST_NO_IMPLICIT_ARRAY_PTR_CONVERSION)  // [r"fatal error: static_assert failed due to requirement '!std::is_array<base::HasRef\[10\]>::value' \"First bound argument to a method cannot be an array.\""]
 
 // A method should not be bindable with an array of objects.
 //
@@ -232,7 +260,7 @@ void WontCompile() {
   weak_ptr_with_non_void_return_type.Run();
 }
 
-#elif defined(NCTEST_DISALLOW_ASSIGN_DIFFERENT_TYPES)  // [r"fatal error: no viable conversion from 'RepeatingCallback<MakeUnboundRunType<void \(\*\)\(int\)>>' to 'RepeatingCallback<void \(\)>'"]
+#elif defined(NCTEST_DISALLOW_ASSIGN_DIFFERENT_TYPES)  // [r"fatal error: no viable conversion from 'RepeatingCallback<internal::MakeUnboundRunType<void \(\*\)\(int\)>>' to 'RepeatingCallback<void \(\)>'"]
 
 // Bind result cannot be assigned to Callbacks with a mismatching type.
 void WontCompile() {
@@ -240,7 +268,7 @@ void WontCompile() {
       BindRepeating(&VoidPolymorphic1<int>);
 }
 
-#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<\(lambda at (\.\./)+base/bind_unittest.nc:[0-9]+:[0-9]+\), void>'"]
+#elif defined(NCTEST_DISALLOW_CAPTURING_LAMBDA)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<\(lambda at (\.\./)+base/bind_unittest.nc:[0-9]+:[0-9]+\)>'"]
 
 void WontCompile() {
   int i = 0, j = 0;
@@ -268,7 +296,7 @@ void WontCompile() {
   std::move(cb).Run();
 }
 
-#elif defined(NCTEST_DISALLOW_BIND_ONCECALLBACK)  // [r"fatal error: static_assert failed due to requirement '!base::internal::IsOnceCallback<base::OnceCallback<void \(int\)> >\(\)' \"BindRepeating cannot bind OnceCallback. Use BindOnce with std::move\(\).\""]
+#elif defined(NCTEST_DISALLOW_BIND_ONCECALLBACK)  // [r"fatal error: static_assert failed due to requirement '!base::internal::IsOnceCallback<base::OnceCallback<void \(int\)> ?>\(\)' \"BindRepeating cannot bind OnceCallback. Use BindOnce with std::move\(\).\""]
 
 void WontCompile() {
   BindRepeating(BindOnce([](int) {}), 42);
@@ -287,28 +315,28 @@ void WontCompile() {
   BindOnce(std::move(cb), 42);
 }
 
-#elif defined(NCTEST_BINDONCE_MOVEONLY_TYPE_BY_VALUE)  // [r"fatal error: static_assert failed due to requirement 'arg_is_storable || !std::is_constructible<std::__1::unique_ptr<int, std::__1::default_delete<int> >, std::__1::unique_ptr<int, std::__1::default_delete<int> > &&>::value' \"Bound argument |i| is move-only but will be bound by copy. Ensure |Arg| is mutable and bound using std::move\(\).\""]
+#elif defined(NCTEST_BINDONCE_MOVEONLY_TYPE_BY_VALUE)  // [r"static_assert failed.+?BindArgument<0>::BoundAs<.+?>::StoredAs<.+?>::kMoveOnlyTypeMustUseStdMove.+?Attempting to bind a move-only type\. Use std::move\(\) to transfer ownership to the created callback\."]
 
 void WontCompile() {
   std::unique_ptr<int> x;
   BindOnce(&TakesMoveOnly, x);
 }
 
-#elif defined(NCTEST_BIND_MOVEONLY_TYPE_BY_VALUE)  // [r"Bound argument \|i\| is move-only but will be forwarded by copy\. Ensure \|Arg\| is bound using base::Passed\(\), not std::move\(\)."]
+#elif defined(NCTEST_BIND_MOVEONLY_TYPE_BY_VALUE)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kMoveOnlyTypeMustUseBasePassed.+?base::BindRepeating\(\) argument is a move-only type\. Use base::Passed\(\) instead of std::move\(\) to transfer ownership from the callback to the bound functor\."]
 
 void WontCompile() {
   std::unique_ptr<int> x;
   BindRepeating(&TakesMoveOnly, x);
 }
 
-#elif defined(NCTEST_BIND_MOVEONLY_TYPE_WITH_STDMOVE)  // [r"Bound argument \|i\| is move-only but will be forwarded by copy\. Ensure \|Arg\| is bound using base::Passed\(\), not std::move\(\)."]
+#elif defined(NCTEST_BIND_MOVEONLY_TYPE_WITH_STDMOVE)  // [r"static_assert failed.+?BindArgument<0>::ForwardedAs<.+?>::ToParamWithType<.+?>::kMoveOnlyTypeMustUseBasePassed.+?base::BindRepeating\(\) argument is a move-only type\. Use base::Passed\(\) instead of std::move\(\) to transfer ownership from the callback to the bound functor\."]
 
 void WontCompile() {
   std::unique_ptr<int> x;
   BindRepeating(&TakesMoveOnly, std::move(x));
 }
 
-#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<base::NonEmptyFunctor, void>'"]
+#elif defined(NCTEST_BIND_NON_EMPTY_FUNCTOR)  // [r"fatal error: implicit instantiation of undefined template 'base::internal::FunctorTraits<base::NonEmptyFunctor>'"]
 
 void WontCompile() {
   BindRepeating(NonEmptyFunctor());
@@ -328,6 +356,45 @@ void WontCompile() {
   const auto mutable_lambda = [&]() mutable {};
   BindLambdaForTesting(std::move(mutable_lambda));
 }
+
+#elif defined(NCTEST_BIND_UNCOPYABLE_AND_UNMOVABLE_TYPE)  // [r"static_assert failed.+?BindArgument<0>::BoundAs<.+?>::StoredAs<.+?>::kBindArgumentCanBeCaptured.+?Cannot capture argument: is the argument copyable or movable\?"]
+
+void WontCompile() {
+  struct UncopyableUnmovable {
+    UncopyableUnmovable() = default;
+    UncopyableUnmovable(const UncopyableUnmovable&) = delete;
+    UncopyableUnmovable& operator=(const UncopyableUnmovable&) = delete;
+  };
+
+  UncopyableUnmovable u;
+  BindOnce([] (const UncopyableUnmovable&) {}, u);
+}
+
+#elif defined(NCTEST_BIND_ONCE_WITH_PASSED)  // [r"static_assert failed.+?Use std::move\(\) instead of base::Passed\(\) with base::BindOnce\(\)"]
+
+void WontCompile() {
+  std::unique_ptr<int> x;
+  BindOnce([] (std::unique_ptr<int>) {}, Passed(&x));
+}
+
+#elif defined(NCTEST_BIND_ONCE_WITH_ADDRESS_OF_OVERLOADED_FUNCTION)  // [r"fatal error: reference to overloaded function could not be resolved; did you mean to call it\?"]
+
+void F(int);
+void F(float);
+
+void WontCompile() {
+  BindOnce(&F, 1, 2, 3);
+}
+
+#elif defined(NCTEST_BIND_REPEATING_WITH_ADDRESS_OF_OVERLOADED_FUNCTION)  // [r"fatal error: reference to overloaded function could not be resolved; did you mean to call it\?"]
+
+void F(int);
+void F(float);
+
+void WontCompile() {
+  BindRepeating(&F, 1, 2, 3);
+}
+
 #endif
 
 }  // namespace base

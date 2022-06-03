@@ -24,9 +24,7 @@ function handleMessage(event) {
       assert_greater_than(event.data.scrollTop, 0,
           "iframe1 scroll offset greater than 0.")} );
     last_frame_scrolled = 2;
-    iframe2.contentWindow.postMessage(
-        {clickScrollbar: true, frame_id: 2, left: iframe2.offsetLeft,
-        top: iframe2.offsetTop}, "*");
+    iframe2.contentWindow.postMessage({clickScrollbar: true, frame_id: 2}, "*");
   } else if (event.data.scrolled == 2) {
     scroll_test.step(() => {
         assert_greater_than(event.data.scrollTop, 0,
@@ -42,8 +40,7 @@ window.addEventListener("message", handleMessage);
 iframe1.onload = (() => {
   last_frame_scrolled = 1;
   console.log('posting');
-  iframe1.contentWindow.postMessage({clickScrollbar: true, frame_id: 1,
-      left: iframe1.offsetLeft, top: iframe1.offsetTop}, "*");
+  iframe1.contentWindow.postMessage({clickScrollbar: true, frame_id: 1}, "*");
 });
 
 </script>

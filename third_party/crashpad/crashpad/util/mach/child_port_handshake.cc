@@ -26,14 +26,17 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_port.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "util/file/file_io.h"
+#include "util/mach/bootstrap.h"
 #include "util/mach/child_port.h"
 #include "util/mach/child_port_server.h"
 #include "util/mach/mach_extensions.h"
@@ -48,6 +51,10 @@ namespace {
 class ChildPortHandshakeServer final : public ChildPortServer::Interface {
  public:
   ChildPortHandshakeServer();
+
+  ChildPortHandshakeServer(const ChildPortHandshakeServer&) = delete;
+  ChildPortHandshakeServer& operator=(const ChildPortHandshakeServer&) = delete;
+
   ~ChildPortHandshakeServer();
 
   mach_port_t RunServer(base::ScopedFD server_write_fd,
@@ -66,8 +73,6 @@ class ChildPortHandshakeServer final : public ChildPortServer::Interface {
   mach_port_t port_;
   mach_msg_type_name_t right_type_;
   bool checked_in_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildPortHandshakeServer);
 };
 
 ChildPortHandshakeServer::ChildPortHandshakeServer()

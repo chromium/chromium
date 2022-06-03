@@ -1,0 +1,33 @@
+<style include="cr-shared-style">
+  #container {
+    height: 200px;
+    margin-top: 12px;
+  }
+
+  #deviceListTitle {
+    margin-top: 24px;
+  }
+</style>
+<bluetooth-base-page show-scan-progress  button-bar-state="[[buttonBarState_]]">
+  <div slot="page-body" id="pageBody">
+    <localized-link
+        localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
+    </localized-link>
+    <div id="deviceListTitle">[[getDeviceListTitle_(devices.*)]]</div>
+    <!-- TODO(crbug.com/1010321): Fix item focus. -->
+    <template  is="dom-if" if="[[shouldShowDeviceList_(devices.*)]]">
+      <div id="container" class="layout vertical flex" scrollable
+          no-bottom-scroll-border>
+        <iron-list items="[[devices]]" preserve-focus>
+          <template>
+            <bluetooth-pairing-device-item
+                device="[[item]]"
+                device-item-state="[[getDeviceItemState_(
+                    item, devicePendingPairing.*, failedPairingDeviceId)]]" >
+            </bluetooth-pairing-device-item>
+          </template>
+        </iron-list>
+      </div>
+    </template>
+  </div>
+</bluetooth-base-page>

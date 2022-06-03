@@ -5,14 +5,16 @@
 #include "ui/views/controls/native/native_view_host_aura.h"
 
 #include <memory>
+#include <utility>
+#include <vector>
 
-#include "base/macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_targeter.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/cursor/cursor.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/native/native_view_host.h"
 #include "ui/views/controls/native/native_view_host_test_base.h"
@@ -47,6 +49,11 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
   };
 
   NativeViewHostWindowObserver() = default;
+
+  NativeViewHostWindowObserver(const NativeViewHostWindowObserver&) = delete;
+  NativeViewHostWindowObserver& operator=(const NativeViewHostWindowObserver&) =
+      delete;
+
   ~NativeViewHostWindowObserver() override = default;
 
   const std::vector<EventDetails>& events() const { return events_; }
@@ -76,28 +83,27 @@ class NativeViewHostWindowObserver : public aura::WindowObserver {
   }
 
   void OnWindowDestroyed(aura::Window* window) override {
-    EventDetails event = { EVENT_DESTROYED, window, gfx::Rect() };
+    EventDetails event = {EVENT_DESTROYED, window, gfx::Rect()};
     events_.push_back(event);
   }
 
  private:
   std::vector<EventDetails> events_;
   gfx::Rect bounds_at_visibility_changed_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostWindowObserver);
 };
 
 class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
  public:
   NativeViewHostAuraTest() = default;
 
+  NativeViewHostAuraTest(const NativeViewHostAuraTest&) = delete;
+  NativeViewHostAuraTest& operator=(const NativeViewHostAuraTest&) = delete;
+
   NativeViewHostAura* native_host() {
     return static_cast<NativeViewHostAura*>(GetNativeWrapper());
   }
 
-  Widget* child() {
-    return child_.get();
-  }
+  Widget* child() { return child_.get(); }
 
   aura::Window* clipping_window() {
     return native_host()->clipping_window_.get();
@@ -107,8 +113,7 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
     CreateTopLevel();
     CreateTestingHost();
     child_.reset(CreateChildForHost(toplevel()->GetNativeView(),
-                                    toplevel()->GetRootView(),
-                                    new View,
+                                    toplevel()->GetRootView(), new View,
                                     host()));
   }
 
@@ -120,8 +125,6 @@ class NativeViewHostAuraTest : public test::NativeViewHostTestBase {
 
  private:
   std::unique_ptr<Widget> child_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeViewHostAuraTest);
 };
 
 // Verifies NativeViewHostAura stops observing native view on destruction.
@@ -165,12 +168,12 @@ TEST_F(NativeViewHostAuraTest, HostViewPropertyKey) {
 TEST_F(NativeViewHostAuraTest, CursorForNativeView) {
   CreateHost();
 
-  toplevel()->SetCursor(ui::CursorType::kHand);
-  child()->SetCursor(ui::CursorType::kWait);
+  toplevel()->SetCursor(ui::mojom::CursorType::kHand);
+  child()->SetCursor(ui::mojom::CursorType::kWait);
   ui::MouseEvent move_event(ui::ET_MOUSE_MOVED, gfx::Point(0, 0),
                             gfx::Point(0, 0), ui::EventTimeForNow(), 0, 0);
 
-  EXPECT_EQ(ui::CursorType::kWait, host()->GetCursor(move_event).native_type());
+  EXPECT_EQ(ui::mojom::CursorType::kWait, host()->GetCursor(move_event).type());
 
   DestroyHost();
 }
@@ -449,6 +452,9 @@ class TestFocusChangeListener : public FocusChangeListener {
     focus_manager_->AddFocusChangeListener(this);
   }
 
+  TestFocusChangeListener(const TestFocusChangeListener&) = delete;
+  TestFocusChangeListener& operator=(const TestFocusChangeListener&) = delete;
+
   ~TestFocusChangeListener() override {
     focus_manager_->RemoveFocusChangeListener(this);
   }
@@ -464,8 +470,6 @@ class TestFocusChangeListener : public FocusChangeListener {
 
   FocusManager* focus_manager_;
   int did_change_focus_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFocusChangeListener);
 };
 
 }  // namespace

@@ -7,8 +7,8 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/removable_device_constants.h"
@@ -27,7 +27,7 @@ const char kRootPath[] = "/";
 std::string GetStorageIdFromStorageName(const std::string& storage_name) {
   std::vector<base::StringPiece> name_parts = base::SplitStringPiece(
       storage_name, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  return name_parts.size() == 3 ? name_parts[2].as_string() : std::string();
+  return name_parts.size() == 3 ? std::string(name_parts[2]) : std::string();
 }
 
 // Returns the |data_store_id| string in the required format.
@@ -67,7 +67,7 @@ std::string GetDeviceIdFromStorageInfo(
 }
 
 // Helper function to get device label from storage information.
-base::string16 GetDeviceLabelFromStorageInfo(
+std::u16string GetDeviceLabelFromStorageInfo(
     const device::mojom::MtpStorageInfo& storage_info) {
   std::string device_label;
   const std::string& vendor_name = storage_info.vendor;

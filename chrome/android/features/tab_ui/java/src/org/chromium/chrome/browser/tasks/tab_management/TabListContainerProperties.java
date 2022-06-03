@@ -22,22 +22,25 @@ class TabListContainerProperties {
      * Integer, but not {@link PropertyModel.WritableIntPropertyKey} so that we can force update on
      * the same value.
      */
-    public static final PropertyModel.WritableObjectPropertyKey INITIAL_SCROLL_INDEX =
-            new PropertyModel.WritableObjectPropertyKey(true);
+    public static final PropertyModel.WritableObjectPropertyKey<Integer> INITIAL_SCROLL_INDEX =
+            new PropertyModel.WritableObjectPropertyKey<>(true);
 
     public static final PropertyModel.WritableBooleanPropertyKey ANIMATE_VISIBILITY_CHANGES =
             new PropertyModel.WritableBooleanPropertyKey();
 
-    public static final PropertyModel.WritableIntPropertyKey TOP_CONTROLS_HEIGHT =
+    public static final PropertyModel.WritableIntPropertyKey TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
 
     public static final PropertyModel.WritableIntPropertyKey BOTTOM_CONTROLS_HEIGHT =
             new PropertyModel.WritableIntPropertyKey();
 
-    public static final PropertyModel.WritableIntPropertyKey SHADOW_TOP_MARGIN =
+    public static final PropertyModel.WritableIntPropertyKey SHADOW_TOP_OFFSET =
+            new PropertyModel.WritableIntPropertyKey();
+
+    public static final PropertyModel.WritableIntPropertyKey BOTTOM_PADDING =
             new PropertyModel.WritableIntPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {IS_VISIBLE, IS_INCOGNITO,
-            VISIBILITY_LISTENER, INITIAL_SCROLL_INDEX, ANIMATE_VISIBILITY_CHANGES,
-            TOP_CONTROLS_HEIGHT, BOTTOM_CONTROLS_HEIGHT, SHADOW_TOP_MARGIN};
+            VISIBILITY_LISTENER, INITIAL_SCROLL_INDEX, ANIMATE_VISIBILITY_CHANGES, TOP_MARGIN,
+            BOTTOM_CONTROLS_HEIGHT, SHADOW_TOP_OFFSET, BOTTOM_PADDING};
 }

@@ -23,6 +23,9 @@ struct Suggestion;
 
 - (void)hideAutofillPopup;
 
+// Checks whether the qurrent query is the most recent one.
+- (bool)isQueryIDRelevant:(int)queryID;
+
 @end
 
 #endif  // COMPONENTS_AUTOFILL_IOS_BROWSER_AUTOFILL_CLIENT_IOS_BRIDGE_H_

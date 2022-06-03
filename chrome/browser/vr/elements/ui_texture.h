@@ -5,11 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_UI_TEXTURE_H_
 #define CHROME_BROWSER_VR_ELEMENTS_UI_TEXTURE_H_
 
-#include <memory>
-#include <vector>
-
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -28,6 +24,10 @@ namespace vr {
 class UiTexture {
  public:
   UiTexture();
+
+  UiTexture(const UiTexture&) = delete;
+  UiTexture& operator=(const UiTexture&) = delete;
+
   virtual ~UiTexture();
 
   void DrawTexture(SkCanvas* canvas, const gfx::Size& texture_size);
@@ -73,10 +73,8 @@ class UiTexture {
  private:
   bool measured_ = false;
   bool dirty_ = true;
-  base::Optional<SkColor> foreground_color_;
-  base::Optional<SkColor> background_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiTexture);
+  absl::optional<SkColor> foreground_color_;
+  absl::optional<SkColor> background_color_;
 };
 
 }  // namespace vr

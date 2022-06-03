@@ -9,20 +9,20 @@
 #include <string>
 #include <vector>
 
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/time/time.h"
-#include "net/url_request/url_request.h"
+#include "net/url_request/referrer_policy.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace content {
 class BrowserContext;
-}
+}  // namespace content
 
 namespace net {
 struct RedirectInfo;
-}
+}  // namespace net
 
 namespace network {
 class SimpleURLLoader;
@@ -39,7 +39,7 @@ namespace customtabs {
 // This is a UI thread class.
 class DetachedResourceRequest {
  public:
-  static constexpr int kMaxResponseSize = 100 * 1024;
+  static constexpr int kMaxResponseSize = 500 * 1024;
 
   // The motivation of the resource request, used for histograms reporting.
   // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.customtabs
@@ -48,23 +48,28 @@ class DetachedResourceRequest {
 
   using OnResultCallback = base::OnceCallback<void(int net_error)>;
 
+  DetachedResourceRequest(const DetachedResourceRequest&) = delete;
+  DetachedResourceRequest& operator=(const DetachedResourceRequest&) = delete;
+
   ~DetachedResourceRequest();
 
-  // Creates a detached request to a |url|, with a given initiating URL,
-  // |first_party_for_cookies|. Called on the UI thread.
-  // Optional |cb| to get notified about the fetch result.
+  // Creates a detached request to a `url`, with a given initiating URL,
+  // `site_for_referrer`. Called on the UI thread.
+  // Optional `cb` to get notified about the fetch result.
   static void CreateAndStart(content::BrowserContext* browser_context,
                              const GURL& url,
-                             const GURL& first_party_for_cookies,
-                             net::URLRequest::ReferrerPolicy referer_policy,
+                             const GURL& site_for_referrer,
+                             net::ReferrerPolicy referer_policy,
                              Motivation motivation,
+                             const std::string& package_name,
                              OnResultCallback cb = base::DoNothing());
 
  private:
   DetachedResourceRequest(const GURL& url,
-                          const GURL& site_for_cookies,
-                          net::URLRequest::ReferrerPolicy referer_policy,
+                          const GURL& site_for_referrer,
+                          net::ReferrerPolicy referer_policy,
                           Motivation motivation,
+                          const std::string& package_name,
                           OnResultCallback cb);
 
   static void Start(std::unique_ptr<DetachedResourceRequest> request,
@@ -75,14 +80,13 @@ class DetachedResourceRequest {
   void OnResponseCallback(std::unique_ptr<std::string> response_body);
 
   const GURL url_;
-  const GURL site_for_cookies_;
+  const GURL site_for_referrer_;
   base::TimeTicks start_time_;
   Motivation motivation_;
   OnResultCallback cb_;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
   int redirects_;
-
-  DISALLOW_COPY_AND_ASSIGN(DetachedResourceRequest);
+  bool is_from_aga_;
 };
 
 }  // namespace customtabs

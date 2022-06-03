@@ -1,168 +1,96 @@
-// Copyright (c) 2015 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "ui/gl/gl_surface_egl_x11.h"
 
-#include "ui/events/platform/platform_event_source.h"
-#include "ui/gfx/x/x11.h"
+#include "base/containers/contains.h"
+#include "ui/base/x/x11_util.h"
+#include "ui/base/x/x11_xrandr_interval_only_vsync_provider.h"
+#include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_util.h"
 #include "ui/gl/egl_util.h"
-
-using ui::GetLastEGLErrorString;
-using ui::PlatformEvent;
-using ui::PlatformEventSource;
 
 namespace gl {
 
-NativeViewGLSurfaceEGLX11::NativeViewGLSurfaceEGLX11(EGLNativeWindowType window)
-    : NativeViewGLSurfaceEGL(0, nullptr), parent_window_(window) {}
+NativeViewGLSurfaceEGLX11::NativeViewGLSurfaceEGLX11(x11::Window window)
+    : NativeViewGLSurfaceEGL(static_cast<uint32_t>(window), nullptr) {}
 
-bool NativeViewGLSurfaceEGLX11::InitializeNativeWindow() {
-  Display* x11_display = GetNativeDisplay();
-  XWindowAttributes attributes;
-  if (!XGetWindowAttributes(x11_display, parent_window_, &attributes)) {
-    LOG(ERROR) << "XGetWindowAttributes failed for window " << parent_window_
-        << ".";
+bool NativeViewGLSurfaceEGLX11::Initialize(GLSurfaceFormat format) {
+  if (!NativeViewGLSurfaceEGL::Initialize(format))
     return false;
+
+  auto* connection = x11::Connection::Get();
+  // Query all child windows and store them. ANGLE creates a child window when
+  // eglCreateWindowSurface is called on X11 and expose events from this window
+  // need to be received by this class.  Since ANGLE is using a separate
+  // connection, we have to select expose events on our own connection.
+  if (auto reply =
+          connection->QueryTree({static_cast<x11::Window>(window_)}).Sync()) {
+    children_ = std::move(reply->children);
+  }
+  for (auto child : children_) {
+    connection->ChangeWindowAttributes(
+        {.window = child, .event_mask = x11::EventMask::Exposure});
   }
 
-  size_ = gfx::Size(attributes.width, attributes.height);
-
-  // Create a child window, with a CopyFromParent visual (to avoid inducing
-  // extra blits in the driver), that we can resize exactly in Resize(),
-  // correctly ordered with GL, so that we don't have invalid transient states.
-  // See https://crbug.com/326995.
-  XSetWindowAttributes swa;
-  memset(&swa, 0, sizeof(swa));
-  swa.background_pixmap = 0;
-  swa.bit_gravity = NorthWestGravity;
-  window_ = XCreateWindow(x11_display, parent_window_, 0, 0, size_.width(),
-                          size_.height(), 0, CopyFromParent, InputOutput,
-                          CopyFromParent, CWBackPixmap | CWBitGravity, &swa);
-  XMapWindow(x11_display, window_);
-  XSelectInput(x11_display, window_, ExposureMask);
-  XFlush(x11_display);
-
+  dispatcher_set_ = true;
+  connection->AddEventObserver(this);
   return true;
 }
 
 void NativeViewGLSurfaceEGLX11::Destroy() {
   NativeViewGLSurfaceEGL::Destroy();
+  if (dispatcher_set_)
+    x11::Connection::Get()->RemoveEventObserver(this);
+}
 
-  if (window_) {
-    Display* x11_display = GetNativeDisplay();
-    XDestroyWindow(x11_display, window_);
-    window_ = 0;
-    XFlush(x11_display);
+gfx::SwapResult NativeViewGLSurfaceEGLX11::SwapBuffers(
+    PresentationCallback callback) {
+  auto result = NativeViewGLSurfaceEGL::SwapBuffers(std::move(callback));
+  if (result == gfx::SwapResult::SWAP_FAILED)
+    return result;
+
+  // We need to restore the background pixel that we set to WhitePixel on
+  // views::DesktopWindowTreeHostX11::InitX11Window back to None for the
+  // XWindow associated to this surface after the first SwapBuffers has
+  // happened, to avoid showing a weird white background while resizing.
+  if (GetXNativeConnection()->Ready() && !has_swapped_buffers_) {
+    GetXNativeConnection()->ChangeWindowAttributes({
+        .window = static_cast<x11::Window>(window_),
+        .background_pixmap = x11::Pixmap::None,
+    });
+    GetXNativeConnection()->Flush();
+    has_swapped_buffers_ = true;
   }
-}
-
-EGLConfig NativeViewGLSurfaceEGLX11::GetConfig() {
-  if (!config_) {
-    // Get a config compatible with the window
-    DCHECK(window_);
-    XWindowAttributes win_attribs;
-    if (!XGetWindowAttributes(GetNativeDisplay(), window_, &win_attribs)) {
-      return NULL;
-    }
-
-    // Try matching the window depth with an alpha channel,
-    // because we're worried the destination alpha width could
-    // constrain blending precision.
-    const int kBufferSizeOffset = 1;
-    const int kAlphaSizeOffset = 3;
-    EGLint config_attribs[] = {
-      EGL_BUFFER_SIZE, ~0,
-      EGL_ALPHA_SIZE, 8,
-      EGL_BLUE_SIZE, 8,
-      EGL_GREEN_SIZE, 8,
-      EGL_RED_SIZE, 8,
-      EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
-      EGL_SURFACE_TYPE, EGL_WINDOW_BIT | EGL_PBUFFER_BIT,
-      EGL_NONE
-    };
-    config_attribs[kBufferSizeOffset] = win_attribs.depth;
-
-    EGLDisplay display = GetHardwareDisplay();
-    EGLint num_configs;
-    if (!eglChooseConfig(display,
-                         config_attribs,
-                         &config_,
-                         1,
-                         &num_configs)) {
-      LOG(ERROR) << "eglChooseConfig failed with error "
-                 << GetLastEGLErrorString();
-      return NULL;
-    }
-
-    if (num_configs) {
-      EGLint config_depth;
-      if (!eglGetConfigAttrib(display,
-                              config_,
-                              EGL_BUFFER_SIZE,
-                              &config_depth)) {
-        LOG(ERROR) << "eglGetConfigAttrib failed with error "
-                   << GetLastEGLErrorString();
-        return NULL;
-      }
-
-      if (config_depth == win_attribs.depth) {
-        return config_;
-      }
-    }
-
-    // Try without an alpha channel.
-    config_attribs[kAlphaSizeOffset] = 0;
-    if (!eglChooseConfig(display,
-                         config_attribs,
-                         &config_,
-                         1,
-                         &num_configs)) {
-      LOG(ERROR) << "eglChooseConfig failed with error "
-                 << GetLastEGLErrorString();
-      return NULL;
-    }
-
-    if (num_configs == 0) {
-      LOG(ERROR) << "No suitable EGL configs found.";
-      return NULL;
-    }
-  }
-  return config_;
-}
-
-bool NativeViewGLSurfaceEGLX11::Resize(const gfx::Size& size,
-                                       float scale_factor,
-                                       ColorSpace color_space,
-                                       bool has_alpha) {
-  if (size == GetSize())
-    return true;
-
-  size_ = size;
-
-  eglWaitGL();
-  XResizeWindow(GetNativeDisplay(), window_, size.width(), size.height());
-  eglWaitNative(EGL_CORE_NATIVE_ENGINE);
-
-  return true;
-}
-
-bool NativeViewGLSurfaceEGLX11::CanDispatchEvent(const PlatformEvent& event) {
-  return event->type == Expose && event->xexpose.window == window_;
-}
-
-uint32_t NativeViewGLSurfaceEGLX11::DispatchEvent(const PlatformEvent& event) {
-  XEvent x_event = *event;
-  x_event.xexpose.window = parent_window_;
-
-  Display* x11_display = GetNativeDisplay();
-  XSendEvent(x11_display, parent_window_, x11::False, ExposureMask, &x_event);
-  XFlush(x11_display);
-  return ui::POST_DISPATCH_STOP_PROPAGATION;
+  return result;
 }
 
 NativeViewGLSurfaceEGLX11::~NativeViewGLSurfaceEGLX11() {
   Destroy();
+}
+
+x11::Connection* NativeViewGLSurfaceEGLX11::GetXNativeConnection() const {
+  return x11::Connection::Get();
+}
+
+std::unique_ptr<gfx::VSyncProvider>
+NativeViewGLSurfaceEGLX11::CreateVsyncProviderInternal() {
+  return std::make_unique<ui::XrandrIntervalOnlyVSyncProvider>();
+}
+
+void NativeViewGLSurfaceEGLX11::OnEvent(const x11::Event& x11_event) {
+  // When ANGLE is used for EGL, it creates an X11 child window. Expose events
+  // from this window need to be forwarded to this class.
+  auto* expose = x11_event.As<x11::ExposeEvent>();
+  if (!expose || !base::Contains(children_, expose->window))
+    return;
+
+  auto expose_copy = *expose;
+  auto window = static_cast<x11::Window>(window_);
+  expose_copy.window = window;
+  x11::SendEvent(expose_copy, window, x11::EventMask::Exposure);
+  x11::Connection::Get()->Flush();
 }
 
 }  // namespace gl

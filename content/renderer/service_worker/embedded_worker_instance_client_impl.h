@@ -12,8 +12,8 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/service_worker/embedded_worker.mojom.h"
-#include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom.h"
-#include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_installed_scripts_manager.mojom-forward.h"
+#include "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom-forward.h"
 #include "third_party/blink/public/web/web_embedded_worker_start_data.h"
 
 namespace content {
@@ -26,9 +26,7 @@ class ServiceWorkerContextClient;
 // the Mojo connection to the browser breaks first, the instance waits for the
 // service worker to stop and then deletes itself.
 //
-// All methods are called on the thread that creates the instance of this class.
-// Currently it's the main thread but it could be a background thread in the
-// future. https://crbug.com/692909
+// Created and lives on a ThreadPool background thread.
 class CONTENT_EXPORT EmbeddedWorkerInstanceClientImpl
     : public blink::mojom::EmbeddedWorkerInstanceClient {
  public:
@@ -46,16 +44,23 @@ class CONTENT_EXPORT EmbeddedWorkerInstanceClientImpl
   // instead of just creating an instance of EmbeddedWorkerInstanceClient.
   static void Create(
       scoped_refptr<base::SingleThreadTaskRunner> initiator_task_runner,
+      const std::vector<std::string>& cors_exempt_header_list,
       mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
           receiver);
 
   // TODO(https://crbug.com/955171): Remove this method and use Create once
-  // RenderFrameHostImpl uses service_manager::BinderMap instead of
+  // RenderFrameHostImpl uses mojo::BinderMap instead of
   // service_manager::BinderRegistry.
   static void CreateForRequest(
       scoped_refptr<base::SingleThreadTaskRunner> initiator_task_runner,
+      const std::vector<std::string>& cors_exempt_header_list,
       mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
           receiver);
+
+  EmbeddedWorkerInstanceClientImpl(const EmbeddedWorkerInstanceClientImpl&) =
+      delete;
+  EmbeddedWorkerInstanceClientImpl& operator=(
+      const EmbeddedWorkerInstanceClientImpl&) = delete;
 
   ~EmbeddedWorkerInstanceClientImpl() override;
 
@@ -72,11 +77,11 @@ class CONTENT_EXPORT EmbeddedWorkerInstanceClientImpl
   EmbeddedWorkerInstanceClientImpl(
       mojo::PendingReceiver<blink::mojom::EmbeddedWorkerInstanceClient>
           receiver,
-      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner);
+      scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner,
+      const std::vector<std::string>& cors_exempt_header_list);
 
   // blink::mojom::EmbeddedWorkerInstanceClient implementation
   void StartWorker(blink::mojom::EmbeddedWorkerStartParamsPtr params) override;
-  void ResumeAfterDownload() override;
 
   // Handler of connection error bound to |receiver_|.
   void OnError();
@@ -90,10 +95,10 @@ class CONTENT_EXPORT EmbeddedWorkerInstanceClientImpl
   // StartWorker().
   scoped_refptr<base::SingleThreadTaskRunner> initiator_thread_task_runner_;
 
+  std::vector<std::string> cors_exempt_header_list_;
+
   // nullptr means worker is not running.
   std::unique_ptr<ServiceWorkerContextClient> service_worker_context_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedWorkerInstanceClientImpl);
 };
 
 }  // namespace content

@@ -20,10 +20,16 @@ class InterfaceRegistrar {
 
     @CalledByNative
     static void bindBarcodeDetectionProvider(int nativeHandle) {
+        // Immediately wrap |nativeHandle| as it cannot be allowed to leak.
+        MessagePipeHandle handle = messagePipeHandleFromNative(nativeHandle);
+
         BarcodeDetectionProvider impl = BarcodeDetectionProviderImpl.create();
-        if (impl != null) {
-            BarcodeDetectionProvider.MANAGER.bind(impl, messagePipeHandleFromNative(nativeHandle));
+        if (impl == null) {
+            handle.close();
+            return;
         }
+
+        BarcodeDetectionProvider.MANAGER.bind(impl, handle);
     }
 
     @CalledByNative
@@ -34,9 +40,15 @@ class InterfaceRegistrar {
 
     @CalledByNative
     static void bindTextDetection(int nativeHandle) {
+        // Immediately wrap |nativeHandle| as it cannot be allowed to leak.
+        MessagePipeHandle handle = messagePipeHandleFromNative(nativeHandle);
+
         TextDetection impl = TextDetectionImpl.create();
-        if (impl != null) {
-            TextDetection.MANAGER.bind(impl, messagePipeHandleFromNative(nativeHandle));
+        if (impl == null) {
+            handle.close();
+            return;
         }
+
+        TextDetection.MANAGER.bind(impl, handle);
     }
 }

@@ -8,9 +8,9 @@
 #include "base/containers/flat_map.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "mojo/core/handle_signals_state.h"
 #include "mojo/core/watcher_dispatcher.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 namespace core {
@@ -24,6 +24,10 @@ class WatcherSet {
  public:
   // |owner| is the Dispatcher who owns this WatcherSet.
   explicit WatcherSet(Dispatcher* owner);
+
+  WatcherSet(const WatcherSet&) = delete;
+  WatcherSet& operator=(const WatcherSet&) = delete;
+
   ~WatcherSet();
 
   // Notifies all watchers of the handle's current signals state.
@@ -45,23 +49,23 @@ class WatcherSet {
 
   struct Entry {
     Entry(const scoped_refptr<WatcherDispatcher>& dispatcher);
+
+    Entry(const Entry&) = delete;
+    Entry& operator=(const Entry&) = delete;
+
     Entry(Entry&& other);
+
     ~Entry();
 
     Entry& operator=(Entry&& other);
 
     scoped_refptr<WatcherDispatcher> dispatcher;
     ContextSet contexts;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Entry);
   };
 
   Dispatcher* const owner_;
   base::flat_map<WatcherDispatcher*, Entry> watchers_;
-  base::Optional<HandleSignalsState> last_known_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(WatcherSet);
+  absl::optional<HandleSignalsState> last_known_state_;
 };
 
 }  // namespace core

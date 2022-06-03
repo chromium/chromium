@@ -20,11 +20,17 @@ class PrefRegistrySyncable;
 
 namespace ios {
 
+extern const char kNTPPromoFinchExperiment[];
+
 // Class that parses and manages promotion data from either a finch trial, json,
 // or prefs.
 class NotificationPromo {
  public:
   explicit NotificationPromo(PrefService* local_state);
+
+  NotificationPromo(const NotificationPromo&) = delete;
+  NotificationPromo& operator=(const NotificationPromo&) = delete;
+
   ~NotificationPromo();
 
   // Initialize from finch parameters.
@@ -102,8 +108,6 @@ class NotificationPromo {
 
   int views_;
   bool closed_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPromo);
 };
 
 }  // namespace ios

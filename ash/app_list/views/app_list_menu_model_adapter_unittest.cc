@@ -13,6 +13,11 @@ namespace ash {
 class AppListMenuModelAdapterTest : public views::ViewsTestBase {
  public:
   AppListMenuModelAdapterTest() {}
+
+  AppListMenuModelAdapterTest(const AppListMenuModelAdapterTest&) = delete;
+  AppListMenuModelAdapterTest& operator=(const AppListMenuModelAdapterTest&) =
+      delete;
+
   ~AppListMenuModelAdapterTest() override = default;
 
   void SetUp() override {
@@ -25,16 +30,13 @@ class AppListMenuModelAdapterTest : public views::ViewsTestBase {
   }
 
   std::unique_ptr<AppListMenuModelAdapter> app_list_menu_model_adapter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppListMenuModelAdapterTest);
 };
 
 // Tests that NOTIFICATION_CONTAINER is enabled. This ensures that the
 // container is able to handle gesture events.
 TEST_F(AppListMenuModelAdapterTest, NotificationContainerEnabled) {
-  EXPECT_TRUE(app_list_menu_model_adapter_->IsCommandEnabled(
-      ash::NOTIFICATION_CONTAINER));
+  EXPECT_TRUE(
+      app_list_menu_model_adapter_->IsCommandEnabled(NOTIFICATION_CONTAINER));
 }
 
 }  // namespace ash

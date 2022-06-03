@@ -10,11 +10,11 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
-#include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/lazy_task_runner.h"
+#include "base/observer_list_types.h"
+#include "base/task/lazy_thread_pool_task_runner.h"
 #include "base/task/sequence_manager/sequence_manager.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/traits_bag.h"
@@ -36,20 +36,23 @@ namespace test {
 // This header exposes SingleThreadTaskEnvironment and TaskEnvironment.
 //
 // SingleThreadTaskEnvironment enables the following APIs within its scope:
-//  - ThreadTaskRunnerHandle & GetContinuationTaskRunner on the main thread
+//  - (Thread|Sequenced)TaskRunnerHandle on the main thread
 //  - RunLoop on the main thread
 //
 // TaskEnvironment additionally enables:
-//  - posting to base::ThreadPool() through base/task/post_task.h.
+//  - posting to base::ThreadPool through base/task/thread_pool.h.
 //
 // Hint: For content::BrowserThreads, use content::BrowserTaskEnvironment.
 //
 // Tests should prefer SingleThreadTaskEnvironment over TaskEnvironment when the
 // former is sufficient.
 //
-// Tasks posted to the APIs listed above run synchronously when
+// Tasks posted to the (Thread|Sequenced)TaskRunnerHandle run synchronously when
 // RunLoop::Run(UntilIdle) or TaskEnvironment::RunUntilIdle is called on the
 // main thread.
+//
+// The TaskEnvironment requires TestTimeouts::Initialize() to be called in order
+// to run posted tasks, so that it can watch for problematic long-running tasks.
 //
 // The TimeSource trait can be used to request that delayed tasks be under the
 // manual control of RunLoop::Run() and TaskEnvironment::FastForward*() methods.
@@ -115,6 +118,10 @@ class TaskEnvironment {
     DEFAULT = SYSTEM_TIME
   };
 
+  // This type will determine what types of messages will get pumped by the main
+  // thread.
+  // Note: If your test needs to use a custom MessagePump you should
+  // consider using a SingleThreadTaskExecutor instead.
   enum class MainThreadType {
     // The main thread doesn't pump system messages.
     DEFAULT,
@@ -152,6 +159,28 @@ class TaskEnvironment {
     DEFAULT = MULTIPLE_THREADS
   };
 
+  // On Windows, sets the COM environment for the ThreadPoolInstance. Ignored
+  // on other platforms.
+  enum class ThreadPoolCOMEnvironment {
+    // Do not initialize COM for the pool's workers.
+    NONE,
+
+    // Place the pool's workers in a COM MTA.
+    COM_MTA,
+
+    // Enable the MTA by default in unit tests to match the browser process's
+    // ThreadPoolInstance configuration.
+    //
+    // This has the adverse side-effect of enabling the MTA in non-browser unit
+    // tests as well but the downside there is not as bad as not having it in
+    // browser unit tests. It just means some COM asserts may pass in unit
+    // tests where they wouldn't in integration tests or prod. That's okay
+    // because unit tests are already generally very loose on allowing I/O,
+    // waits, etc. Such misuse will still be caught in later phases (and COM
+    // usage should already be pretty much inexistent in sandboxed processes).
+    DEFAULT = COM_MTA,
+  };
+
   // List of traits that are valid inputs for the constructor below.
   struct ValidTraits {
     ValidTraits(TimeSource);
@@ -159,6 +188,7 @@ class TaskEnvironment {
     ValidTraits(ThreadPoolExecutionMode);
     ValidTraits(SubclassCreatesDefaultTaskRunner);
     ValidTraits(ThreadingMode);
+    ValidTraits(ThreadPoolCOMEnvironment);
   };
 
   // Constructor accepts zero or more traits which customize the testing
@@ -176,12 +206,18 @@ class TaskEnvironment {
                                    ThreadPoolExecutionMode::DEFAULT>(traits...),
             trait_helpers::GetEnum<ThreadingMode, ThreadingMode::DEFAULT>(
                 traits...),
+            trait_helpers::GetEnum<ThreadPoolCOMEnvironment,
+                                   ThreadPoolCOMEnvironment::DEFAULT>(
+                traits...),
             trait_helpers::HasTrait<SubclassCreatesDefaultTaskRunner,
                                     TaskEnvironmentTraits...>(),
             trait_helpers::NotATraitTag()) {}
 
+  TaskEnvironment(const TaskEnvironment&) = delete;
+  TaskEnvironment& operator=(const TaskEnvironment&) = delete;
+
   // Waits until no undelayed ThreadPool tasks remain. Then, unregisters the
-  // ThreadPoolInstance and the APIs listed in the top level comment.
+  // ThreadPoolInstance and the (Thread|Sequenced)TaskRunnerHandle.
   virtual ~TaskEnvironment();
 
   // Returns a TaskRunner that schedules tasks on the main thread.
@@ -191,11 +227,11 @@ class TaskEnvironment {
   // always return true if called right after RunUntilIdle.
   bool MainThreadIsIdle() const;
 
-  // Runs tasks until both the APIs listed in the top level comment and the
-  // ThreadPool's non-delayed queues are empty. While RunUntilIdle() is quite
-  // practical and sometimes even necessary -- for example, to flush all tasks
-  // bound to Unretained() state before destroying test members -- it should be
-  // used with caution per the following warnings:
+  // Runs tasks until both the (Thread|Sequenced)TaskRunnerHandle and the
+  // ThreadPool's non-delayed queues are empty.
+  // While RunUntilIdle() is quite practical and sometimes even necessary -- for
+  // example, to flush all tasks bound to Unretained() state before destroying
+  // test members -- it should be used with caution per the following warnings:
   //
   // WARNING #1: This may run long (flakily timeout) and even never return! Do
   //             not use this when repeating tasks such as animated web pages
@@ -229,12 +265,20 @@ class TaskEnvironment {
   // by |delta|. Unlike FastForwardBy, this does not run tasks. Prefer
   // FastForwardBy() when possible but this can be useful when testing blocked
   // pending tasks where being idle (required to fast-forward) is not possible.
+  //
+  // Delayed tasks that are ripe as a result of this will be scheduled.
+  // RunUntilIdle() can be used after this call to ensure those tasks have run.
+  // Note: AdvanceClock(delta) + RunUntilIdle() is slightly different from
+  // FastForwardBy(delta) in that time passes instantly before running any task
+  // (whereas FastForwardBy() will advance the clock in the smallest increments
+  // possible at a time). Hence FastForwardBy() is more realistic but
+  // AdvanceClock() can be useful when testing edge case scenarios that
+  // specifically handle more time than expected to have passed.
   void AdvanceClock(TimeDelta delta);
 
   // Only valid for instances using TimeSource::MOCK_TIME. Returns a
   // TickClock whose time is updated by FastForward(By|UntilNoTasksRemain).
   const TickClock* GetMockTickClock() const;
-  std::unique_ptr<TickClock> DeprecatedGetMockTickClock();
 
   // Only valid for instances using TimeSource::MOCK_TIME. Returns a
   // Clock whose time is updated by FastForward(By|UntilNoTasksRemain). The
@@ -251,10 +295,9 @@ class TaskEnvironment {
   // TimeSource::MOCK_TIME.
   base::TimeTicks NowTicks() const;
 
-  // Only valid for instances using TimeSource::MOCK_TIME. Returns the
-  // number of pending tasks (delayed and non-delayed) of the main thread's
-  // TaskRunner. When debugging, you can use DescribePendingMainThreadTasks() to
-  // see what those are.
+  // Only valid for instances using TimeSource::MOCK_TIME. Returns the number of
+  // pending tasks (delayed and non-delayed) of the main thread's TaskRunner.
+  // When debugging, you can use DescribeCurrentTasks() to see what those are.
   size_t GetPendingMainThreadTaskCount() const;
 
   // Only valid for instances using TimeSource::MOCK_TIME.
@@ -268,8 +311,13 @@ class TaskEnvironment {
   bool NextTaskIsDelayed() const;
 
   // For debugging purposes: Dumps information about pending tasks on the main
-  // thread.
-  void DescribePendingMainThreadTasks() const;
+  // thread, and currently running tasks on the thread pool.
+  void DescribeCurrentTasks() const;
+
+  class TestTaskTracker;
+  // Callers outside of TaskEnvironment may not use the returned pointer. They
+  // should just use base::ThreadPoolInstance::Get().
+  static TestTaskTracker* CreateThreadPool();
 
   class DestructionObserver : public CheckedObserver {
    public:
@@ -288,6 +336,14 @@ class TaskEnvironment {
   static void AddDestructionObserver(DestructionObserver* observer);
   static void RemoveDestructionObserver(DestructionObserver* observer);
 
+  // The number of foreground workers in the ThreadPool managed by a
+  // TaskEnvironment instance. This can be used to determine the maximum
+  // parallelism in tests that require each parallel task it spawns to be
+  // running at once. Having multiple threads prevents deadlocks should some
+  // blocking APIs not use ScopedBlockingCall. It also allows enough concurrency
+  // to allow TSAN to spot data races.
+  static constexpr int kNumForegroundThreadPoolThreads = 4;
+
  protected:
   explicit TaskEnvironment(TaskEnvironment&& other);
 
@@ -299,8 +355,9 @@ class TaskEnvironment {
     return thread_pool_execution_mode_;
   }
 
-  // Returns the TimeDomain driving this TaskEnvironment.
-  sequence_manager::TimeDomain* GetTimeDomain() const;
+  // Returns the MockTimeDomain driving this TaskEnvironment if this instance is
+  // using TimeSource::MOCK_TIME, nullptr otherwise.
+  sequence_manager::TimeDomain* GetMockTimeDomain() const;
 
   sequence_manager::SequenceManager* sequence_manager() const;
 
@@ -311,7 +368,6 @@ class TaskEnvironment {
   void NotifyDestructionObserversAndReleaseSequenceManager();
 
  private:
-  class TestTaskTracker;
   class MockTimeDomain;
 
   void InitializeThreadPool();
@@ -325,12 +381,14 @@ class TaskEnvironment {
                   MainThreadType main_thread_type,
                   ThreadPoolExecutionMode thread_pool_execution_mode,
                   ThreadingMode threading_mode,
+                  ThreadPoolCOMEnvironment thread_pool_com_environment,
                   bool subclass_creates_default_taskrunner,
                   trait_helpers::NotATraitTag tag);
 
   const MainThreadType main_thread_type_;
   const ThreadPoolExecutionMode thread_pool_execution_mode_;
   const ThreadingMode threading_mode_;
+  const ThreadPoolCOMEnvironment thread_pool_com_environment_;
   const bool subclass_creates_default_taskrunner_;
 
   std::unique_ptr<sequence_manager::SequenceManager> sequence_manager_;
@@ -358,11 +416,11 @@ class TaskEnvironment {
   TestTaskTracker* task_tracker_ = nullptr;
 
   // Ensures destruction of lazy TaskRunners when this is destroyed.
-  std::unique_ptr<internal::ScopedLazyTaskRunnerListForTesting>
+  std::unique_ptr<base::internal::ScopedLazyTaskRunnerListForTesting>
       scoped_lazy_task_runner_list_for_testing_;
 
   // Sets RunLoop::Run() to LOG(FATAL) if not Quit() in a timely manner.
-  std::unique_ptr<RunLoop::ScopedRunTimeoutForTest> run_loop_timeout_;
+  std::unique_ptr<ScopedRunLoopTimeout> run_loop_timeout_;
 
   std::unique_ptr<bool> owns_instance_ = std::make_unique<bool>(true);
 
@@ -373,8 +431,6 @@ class TaskEnvironment {
   // thread. This is the case for anything that modifies or drives the
   // |sequence_manager_|.
   THREAD_CHECKER(main_thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(TaskEnvironment);
 };
 
 // SingleThreadTaskEnvironment takes the same traits as TaskEnvironment and is

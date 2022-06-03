@@ -67,7 +67,6 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -98,6 +97,9 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
       const AudioSinkParameters& sink_params,
       base::TimeDelta authorization_timeout);
 
+  AudioOutputDevice(const AudioOutputDevice&) = delete;
+  AudioOutputDevice& operator=(const AudioOutputDevice&) = delete;
+
   // Request authorization to use the device specified in the constructor.
   void RequestDeviceAuthorization();
 
@@ -122,7 +124,7 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
                           const AudioParameters& output_params,
                           const std::string& matched_device_id) override;
   void OnStreamCreated(base::UnsafeSharedMemoryRegion shared_memory_region,
-                       base::SyncSocket::Handle socket_handle,
+                       base::SyncSocket::ScopedHandle socket_handle,
                        bool play_automatically) override;
   void OnIPCClosed() override;
 
@@ -208,7 +210,7 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   // received in OnDeviceAuthorized().
   std::string matched_device_id_;
 
-  base::Optional<base::UnguessableToken> processing_id_;
+  absl::optional<base::UnguessableToken> processing_id_;
 
   // In order to avoid a race between OnStreamCreated and Stop(), we use this
   // guard to control stopping and starting the audio thread.
@@ -239,8 +241,6 @@ class MEDIA_EXPORT AudioOutputDevice : public AudioRendererSink,
   // if you add more usage of this lock ensure you have not added a deadlock.
   base::Lock device_info_lock_;
   OutputDeviceInfoCB pending_device_info_cb_ GUARDED_BY(device_info_lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(AudioOutputDevice);
 };
 
 }  // namespace media

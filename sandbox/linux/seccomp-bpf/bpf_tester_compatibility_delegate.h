@@ -27,6 +27,11 @@ class BPFTesterCompatibilityDelegate : public BPFTesterDelegate {
   explicit BPFTesterCompatibilityDelegate(TestFunction test_function)
       : aux_(), test_function_(test_function) {}
 
+  BPFTesterCompatibilityDelegate(const BPFTesterCompatibilityDelegate&) =
+      delete;
+  BPFTesterCompatibilityDelegate& operator=(
+      const BPFTesterCompatibilityDelegate&) = delete;
+
   ~BPFTesterCompatibilityDelegate() override {}
 
   std::unique_ptr<bpf_dsl::Policy> GetSandboxBPFPolicy() override {
@@ -47,8 +52,6 @@ class BPFTesterCompatibilityDelegate : public BPFTesterDelegate {
  private:
   Aux aux_;
   TestFunction test_function_;
-
-  DISALLOW_COPY_AND_ASSIGN(BPFTesterCompatibilityDelegate);
 };
 
 }  // namespace sandbox

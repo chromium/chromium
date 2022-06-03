@@ -1,16 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutIFrame IFRAME id='iframe'",
-          "rect": [8, 72, 732, 94],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [8, 72, 732, 94]
       ]
     }
   ]

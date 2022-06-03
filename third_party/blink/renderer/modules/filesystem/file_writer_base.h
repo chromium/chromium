@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_WRITER_BASE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_WRITER_BASE_H_
 
-#include <memory>
 #include "base/files/file.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -47,7 +46,7 @@ class MODULES_EXPORT FileWriterBase : public GarbageCollectedMixin {
   int64_t position() const { return position_; }
   int64_t length() const { return length_; }
 
-  void Trace(blink::Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 
   virtual void Truncate(int64_t length);
   virtual void Write(int64_t position, const String& id);

@@ -1,0 +1,121 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/ios/ios_sdk.gni")
+
+# Template to compile an .intentdefinition file.
+#
+# Arguments
+#
+#   intent_file
+#     path to .intentdefinition file that must be compiled
+#
+#   intent_names
+#     list of string corresponding to the intent defined in intent_file;
+#     must include all the intents as only the intents listed will be
+#     compiled
+#
+#   developer_dir
+#     (optional) path to developer_dir to use
+#
+template("intent_definition") {
+  assert(defined(invoker.intent_file) && invoker.intent_file != "",
+         "intent_file must be defined for $target_name")
+
+  assert(defined(invoker.intent_names) && invoker.intent_names != [],
+         "intent_names must be defined for $target_name")
+
+  assert(xcode_version_int >= 1140,
+         "intent_definition requires Xcode 11.4 or higher")
+
+  _compile_intent_target = "${target_name}_compile_intent"
+  _compile_intent_output =
+      "$target_gen_dir/" + get_path_info(invoker.intent_file, "file")
+
+  action(_compile_intent_target) {
+    script = "//build/apple/xcrun.py"
+    inputs = [ invoker.intent_file ]
+    outputs = [ _compile_intent_output ]
+    args = [
+      "intentbuilderc",
+      "compile",
+      "-input",
+      rebase_path(invoker.intent_file, root_build_dir),
+      "-output",
+      rebase_path(target_gen_dir, root_build_dir),
+    ]
+
+    if (defined(invoker.developer_dir)) {
+      args += [
+        "--developer-dir",
+        rebase_path(invoker.developer_dir, root_build_dir),
+      ]
+    }
+  }
+
+  _compile_intent_bundle = "${target_name}_compile_intent_bundle"
+  bundle_data(_compile_intent_bundle) {
+    sources = [ _compile_intent_output ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+    public_deps = [ ":$_compile_intent_target" ]
+  }
+
+  _generate_source_target = "${target_name}_generate_source"
+  _generate_source_output = []
+  foreach(_intent, invoker.intent_names) {
+    _generate_source_output += [
+      "$target_gen_dir/$_intent.h",
+      "$target_gen_dir/$_intent.m",
+    ]
+  }
+
+  action(_generate_source_target) {
+    script = "//build/apple/xcrun.py"
+    inputs = [ invoker.intent_file ]
+    outputs = _generate_source_output
+    args = [
+      "intentbuilderc",
+      "generate",
+      "-input",
+      rebase_path(invoker.intent_file, root_build_dir),
+      "-output",
+      rebase_path(target_gen_dir, root_build_dir),
+      "-language",
+      "Objective-C",
+    ]
+
+    if (defined(invoker.developer_dir)) {
+      args += [
+        "--developer-dir",
+        rebase_path(invoker.developer_dir, root_build_dir),
+      ]
+    }
+  }
+
+  source_set(target_name) {
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "developer_dir",
+                             "intent_file",
+                             "intent_names",
+                             "sources",
+                           ])
+
+    if (!defined(deps)) {
+      deps = []
+    }
+    if (!defined(frameworks)) {
+      frameworks = []
+    }
+
+    sources = _generate_source_output
+    configs += [ "//build/config/compiler:enable_arc" ]
+    deps += [
+      ":$_compile_intent_bundle",
+      ":$_generate_source_target",
+    ]
+    frameworks += [ "Intents.framework" ]
+  }
+}

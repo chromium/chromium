@@ -4,121 +4,92 @@
 
 package org.chromium.android_webview.test.devui.util;
 
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 
 import static org.chromium.android_webview.test.OnlyRunIn.ProcessMode.SINGLE_PROCESS;
+import static org.chromium.android_webview.test.common.crash.CrashInfoEqualityMatcher.equalsTo;
+import static org.chromium.android_webview.test.common.crash.CrashInfoTest.createCrashInfo;
+import static org.chromium.android_webview.test.common.crash.CrashInfoTest.createHiddenCrashInfo;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
-import org.hamcrest.BaseMatcher;
-import org.hamcrest.Description;
+import org.json.JSONException;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.common.crash.CrashInfo;
 import org.chromium.android_webview.common.crash.CrashInfo.UploadState;
+import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
+import org.chromium.android_webview.devui.util.CrashInfoLoader;
 import org.chromium.android_webview.devui.util.WebViewCrashInfoCollector;
+import org.chromium.android_webview.devui.util.WebViewCrashInfoCollector.CrashInfoLoadersFactory;
+import org.chromium.android_webview.devui.util.WebViewCrashLogParser;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
 import org.chromium.android_webview.test.OnlyRunIn;
+import org.chromium.base.FileUtils;
+import org.chromium.base.test.util.Batch;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * Unit tests for WebViewCrashInfoCollector.
  */
 @RunWith(AwJUnit4ClassRunner.class)
-@OnlyRunIn(SINGLE_PROCESS)
+@OnlyRunIn(SINGLE_PROCESS) // These are unit tests
+@Batch(Batch.UNIT_TESTS)
 public class WebViewCrashInfoCollectorTest {
-    private CrashInfo createCrashInfo(String localId, long captureTime, String uploadId,
-            long uploadTime, String packageName, String variations, UploadState state) {
-        CrashInfo crashInfo = new CrashInfo(localId);
-        crashInfo.captureTime = captureTime;
-        crashInfo.uploadId = uploadId;
-        crashInfo.uploadTime = uploadTime;
-        crashInfo.packageName = packageName;
-        if (variations != null) crashInfo.variations = Arrays.asList(variations.split(","));
-        crashInfo.uploadState = state;
+    private static class CrashInfoLoadersTestFactory extends CrashInfoLoadersFactory {
+        private final List<CrashInfo> mCrashInfoList;
 
-        return crashInfo;
-    }
-
-    private class CrashInfoEqualityMatcher extends BaseMatcher<CrashInfo> {
-        private final CrashInfo mCrashInfo;
-
-        CrashInfoEqualityMatcher(CrashInfo crashInfo) {
-            mCrashInfo = crashInfo;
+        public CrashInfoLoadersTestFactory(List<CrashInfo> crashInfoList) {
+            mCrashInfoList = crashInfoList;
         }
 
         @Override
-        public boolean matches(Object o) {
-            if (o == mCrashInfo) return true;
-            if (o == null || o.getClass() != mCrashInfo.getClass()) return false;
-
-            CrashInfo c = (CrashInfo) o;
-            return mCrashInfo.uploadState == c.uploadState
-                    && Objects.equals(mCrashInfo.localId, c.localId)
-                    && mCrashInfo.captureTime == c.captureTime
-                    && Objects.equals(mCrashInfo.packageName, c.packageName)
-                    && Objects.equals(mCrashInfo.variations, c.variations)
-                    && Objects.equals(mCrashInfo.uploadId, c.uploadId)
-                    && mCrashInfo.uploadTime == c.uploadTime;
-        }
-
-        @Override
-        public void describeTo(Description description) {
-            description.appendText("equals CrashInfo");
+        public CrashInfoLoader[] create() {
+            CrashInfoLoader loader = new CrashInfoLoader() {
+                @Override
+                public List<CrashInfo> loadCrashesInfo() {
+                    return mCrashInfoList;
+                }
+            };
+            return new CrashInfoLoader[] {loader};
         }
     }
 
-    /**
-     * Test that merging two {@code CrashInfo} objects works correctly.
-     */
-    @Test
-    @SmallTest
-    public void testMergeCrashInfo() {
-        CrashInfo a = createCrashInfo("123456", 10987654321L, null, -1, null, "123456,78910", null);
-        CrashInfo b = createCrashInfo(
-                "123456", -1, "abcdefg", 12345678910L, null, null, UploadState.UPLOADED);
-        WebViewCrashInfoCollector.mergeCrashInfo(a, b);
-        Assert.assertEquals("123456", a.localId);
-        Assert.assertEquals(10987654321L, a.captureTime);
-        Assert.assertEquals("abcdefg", a.uploadId);
-        Assert.assertEquals(12345678910L, a.uploadTime);
-        Assert.assertNull(a.packageName);
-        Assert.assertEquals(Arrays.asList("123456", "78910"), a.variations);
-        Assert.assertEquals(UploadState.UPLOADED, a.uploadState);
+    @After
+    public void tearDown() {
+        FileUtils.recursivelyDeleteFile(SystemWideCrashDirectories.getWebViewCrashLogDir(), null);
     }
 
-    /**
-     * Test that merging two {@code CrashInfo} objects works correctly.
-     */
-    @Test
-    @SmallTest
-    public void testMergeCrashInfo_differentUploadStates() {
-        CrashInfo a = createCrashInfo("123456", -1, null, -1, null, null, UploadState.PENDING);
-        CrashInfo b = createCrashInfo("123456", -1, null, -1, null, null, UploadState.UPLOADED);
-        WebViewCrashInfoCollector.mergeCrashInfo(a, b);
-        Assert.assertEquals("123456", a.localId);
-        // UPLOADED state is the merge result, regardless of order.
-        Assert.assertEquals(UploadState.UPLOADED, a.uploadState);
+    private static File writeJsonLogFile(CrashInfo crashInfo) throws IOException {
+        File dir = SystemWideCrashDirectories.getOrCreateWebViewCrashLogDir();
+        File jsonFile = File.createTempFile(crashInfo.localId, ".json", dir);
+        FileWriter writer = new FileWriter(jsonFile);
+        writer.write(crashInfo.serializeToJson());
+        writer.close();
+        return jsonFile;
     }
 
-    /**
-     * Test that merging two {@code CrashInfo} objects works correctly.
-     */
-    @Test
-    @SmallTest
-    public void testMergeCrashInfo_differentCaptureTime() {
-        CrashInfo a = createCrashInfo("123456", 1234567, null, -1, null, null, null);
-        CrashInfo b = createCrashInfo("123456", 1234555, null, -1, null, null, null);
-        WebViewCrashInfoCollector.mergeCrashInfo(a, b);
-        Assert.assertEquals("123456", a.localId);
-        // Older capture time is the merging result regardless of the order.
-        Assert.assertEquals(1234555, a.captureTime);
+    private static CrashInfo getCrashFromJsonLogFile(String localId)
+            throws IOException, JSONException {
+        File logDir = SystemWideCrashDirectories.getOrCreateWebViewCrashLogDir();
+        File[] logFiles = logDir.listFiles();
+        for (File logFile : logFiles) {
+            if (!logFile.isFile() || !logFile.getName().endsWith(".json")) continue;
+            if (!logFile.getName().contains(localId)) continue;
+            String jsonObject = WebViewCrashLogParser.readEntireFile(logFile);
+            return CrashInfo.readFromJsonString(jsonObject);
+        }
+        return null;
     }
 
     /**
@@ -128,26 +99,45 @@ public class WebViewCrashInfoCollectorTest {
     @SmallTest
     public void testMergeDuplicates() {
         List<CrashInfo> testList = Arrays.asList(
-                createCrashInfo("xyz123", 112233445566L, null, -1, null, null, UploadState.PENDING),
+                createCrashInfo("xyz123", 112233445566L, null, -1, null, UploadState.PENDING),
                 createCrashInfo(
-                        "def789", -1, "55667788", 123344556677L, null, null, UploadState.UPLOADED),
-                createCrashInfo("abc456", -1, null, -1, null, null, UploadState.PENDING),
+                        "def789", -1, "55667788", 123344556677L, null, UploadState.UPLOADED),
+                createCrashInfo("abc456", -1, null, -1, null, UploadState.PENDING),
+                createCrashInfo("xyz123", 112233445566L, null, -1, "com.test.package", null),
+                createCrashInfo("abc456", 445566778899L, null, -1, "org.test.package", null),
+                createCrashInfo("abc456", -1, null, -1, null, null),
                 createCrashInfo(
-                        "xyz123", 112233445566L, null, -1, "com.test.package", "222222", null),
-                createCrashInfo("abc456", 445566778899L, null, -1, "org.test.package", null, null),
-                createCrashInfo("abc456", -1, null, -1, null, null, null),
-                createCrashInfo(
-                        "xyz123", -1, "11223344", 223344556677L, null, null, UploadState.UPLOADED));
+                        "xyz123", -1, "11223344", 223344556677L, null, UploadState.UPLOADED));
         List<CrashInfo> uniqueList = WebViewCrashInfoCollector.mergeDuplicates(testList);
         Assert.assertThat(uniqueList,
-                containsInAnyOrder(
-                        new CrashInfoEqualityMatcher(createCrashInfo("abc456", 445566778899L, null,
-                                -1, "org.test.package", null, UploadState.PENDING)),
-                        new CrashInfoEqualityMatcher(
-                                createCrashInfo("xyz123", 112233445566L, "11223344", 223344556677L,
-                                        "com.test.package", "222222", UploadState.UPLOADED)),
-                        new CrashInfoEqualityMatcher(createCrashInfo("def789", -1, "55667788",
-                                123344556677L, null, null, UploadState.UPLOADED))));
+                containsInAnyOrder(equalsTo(createCrashInfo("abc456", 445566778899L, null, -1,
+                                           "org.test.package", UploadState.PENDING)),
+                        equalsTo(createCrashInfo("xyz123", 112233445566L, "11223344", 223344556677L,
+                                "com.test.package", UploadState.UPLOADED)),
+                        equalsTo(createCrashInfo("def789", -1, "55667788", 123344556677L, null,
+                                UploadState.UPLOADED))));
+    }
+
+    /**
+     * Test that merging hidden {@code CrashInfo} that has the same {@code localID} works correctly.
+     */
+    @Test
+    @SmallTest
+    public void testMergeDuplicatesAndIgnoreHidden() {
+        List<CrashInfo> testList = Arrays.asList(
+                createHiddenCrashInfo("xyz123", 112233445566L, null, -1, null, UploadState.PENDING),
+                createCrashInfo(
+                        "def789", -1, "55667788", 123344556677L, null, UploadState.UPLOADED),
+                createHiddenCrashInfo("abc456", -1, null, -1, null, UploadState.PENDING),
+                createCrashInfo("xyz123", 112233445566L, null, -1, "com.test.package", null),
+                createCrashInfo("abc456", 445566778899L, null, -1, "org.test.package", null),
+                createCrashInfo("abc456", -1, null, -1, null, null),
+                createCrashInfo(
+                        "xyz123", -1, "11223344", 223344556677L, null, UploadState.UPLOADED));
+        List<CrashInfo> uniqueList = WebViewCrashInfoCollector.mergeDuplicates(testList);
+        Assert.assertThat(uniqueList,
+                containsInAnyOrder(equalsTo(createCrashInfo(
+                        "def789", -1, "55667788", 123344556677L, null, UploadState.UPLOADED))));
     }
 
     /**
@@ -158,28 +148,88 @@ public class WebViewCrashInfoCollectorTest {
     @SmallTest
     public void testSortByRecentCaptureTime() {
         List<CrashInfo> testList = Arrays.asList(
-                createCrashInfo("xyz123", -1, "11223344", 123L, null, null, UploadState.UPLOADED),
-                createCrashInfo("def789", 111L, "55667788", 100L, null, null, UploadState.UPLOADED),
-                createCrashInfo("abc456", -1, null, -1, null, null, UploadState.PENDING),
-                createCrashInfo("ghijkl", 112L, null, -1, "com.test.package", "222222", null),
-                createCrashInfo("abc456", 112L, null, 112L, "org.test.package", null, null),
-                createCrashInfo(null, 100, "11223344", -1, "com.test.package", null, null),
-                createCrashInfo("abc123", 100, null, -1, null, null, null));
+                createCrashInfo("xyz123", -1, "11223344", 123L, null, UploadState.UPLOADED),
+                createCrashInfo("def789", 111L, "55667788", 100L, null, UploadState.UPLOADED),
+                createCrashInfo("abc456", -1, null, -1, null, UploadState.PENDING),
+                createCrashInfo("ghijkl", 112L, null, -1, "com.test.package", null),
+                createCrashInfo("abc456", 112L, null, 112L, "org.test.package", null),
+                createCrashInfo(null, 100, "11223344", -1, "com.test.package", null),
+                createCrashInfo("abc123", 100, null, -1, null, null));
         WebViewCrashInfoCollector.sortByMostRecent(testList);
         Assert.assertThat(testList,
-                contains(new CrashInfoEqualityMatcher(createCrashInfo(
-                                 "abc456", 112L, null, 112L, "org.test.package", null, null)),
-                        new CrashInfoEqualityMatcher(createCrashInfo(
-                                "ghijkl", 112L, null, -1, "com.test.package", "222222", null)),
-                        new CrashInfoEqualityMatcher(createCrashInfo("def789", 111L, "55667788",
-                                100L, null, null, UploadState.UPLOADED)),
-                        new CrashInfoEqualityMatcher(createCrashInfo(
-                                null, 100, "11223344", -1, "com.test.package", null, null)),
-                        new CrashInfoEqualityMatcher(
-                                createCrashInfo("abc123", 100, null, -1, null, null, null)),
-                        new CrashInfoEqualityMatcher(createCrashInfo(
-                                "xyz123", -1, "11223344", 123L, null, null, UploadState.UPLOADED)),
-                        new CrashInfoEqualityMatcher(createCrashInfo(
-                                "abc456", -1, null, -1, null, null, UploadState.PENDING))));
+                contains(equalsTo(createCrashInfo(
+                                 "abc456", 112L, null, 112L, "org.test.package", null)),
+                        equalsTo(createCrashInfo(
+                                "ghijkl", 112L, null, -1, "com.test.package", null)),
+                        equalsTo(createCrashInfo(
+                                "def789", 111L, "55667788", 100L, null, UploadState.UPLOADED)),
+                        equalsTo(createCrashInfo(
+                                null, 100, "11223344", -1, "com.test.package", null)),
+                        equalsTo(createCrashInfo("abc123", 100, null, -1, null, null)),
+                        equalsTo(createCrashInfo(
+                                "xyz123", -1, "11223344", 123L, null, UploadState.UPLOADED)),
+                        equalsTo(createCrashInfo(
+                                "abc456", -1, null, -1, null, UploadState.PENDING))));
+    }
+
+    /**
+     * Test loading, sort and filter crashes.
+     */
+    @Test
+    @SmallTest
+    public void testLoadCrashesInfoFilteredNoLimit() {
+        List<CrashInfo> testList = Arrays.asList(
+                createCrashInfo("xyz123", 112233445566L, null, -1, null, UploadState.PENDING),
+                createCrashInfo(
+                        "def789", -1, "55667788", 123344556677L, null, UploadState.UPLOADED),
+                createCrashInfo("abc456", -1, null, -1, null, UploadState.PENDING),
+                createCrashInfo("xyz123", 112233445566L, null, -1, "com.test.package", null),
+                createCrashInfo("abc456", 445566778899L, null, -1, "org.test.package", null),
+                createCrashInfo("abc456", -1, null, -1, null, null),
+                createCrashInfo(
+                        "xyz123", -1, "11223344", 223344556677L, null, UploadState.UPLOADED));
+
+        WebViewCrashInfoCollector collector =
+                new WebViewCrashInfoCollector(new CrashInfoLoadersTestFactory(testList));
+
+        // Get crashes with UPLOAD state only.
+        List<CrashInfo> result =
+                collector.loadCrashesInfo(c -> c.uploadState == UploadState.UPLOADED);
+        Assert.assertThat(result,
+                contains(equalsTo(createCrashInfo("xyz123", 112233445566L, "11223344",
+                                 223344556677L, "com.test.package", UploadState.UPLOADED)),
+                        equalsTo(createCrashInfo("def789", -1, "55667788", 123344556677L, null,
+                                UploadState.UPLOADED))));
+    }
+
+    /**
+     * Test updating crash JSON log file with the new crash info
+     */
+    @Test
+    @SmallTest
+    public void testUpdateCrashLogFileWithNewCrashInfo() throws Throwable {
+        CrashInfo oldCrashInfo = createCrashInfo("xyz123", 112233445566L, null, -1, null, null);
+        assertThat("temp json log file should exist", writeJsonLogFile(oldCrashInfo).exists());
+
+        CrashInfo newCrashInfo =
+                createHiddenCrashInfo("xyz123", 112233445566L, null, -1, "com.test.package", null);
+        WebViewCrashInfoCollector.updateCrashLogFileWithNewCrashInfo(newCrashInfo);
+
+        CrashInfo resultCrashInfo = getCrashFromJsonLogFile("xyz123");
+        Assert.assertThat(resultCrashInfo, equalsTo(newCrashInfo));
+    }
+
+    /**
+     * Test updating non-existing crash JSON log file with the new crash info
+     */
+    @Test
+    @SmallTest
+    public void testUpdateNonExistingCrashLogFileWithNewCrashInfo() throws Throwable {
+        CrashInfo newCrashInfo =
+                createHiddenCrashInfo("xyz123", 112233445566L, null, -1, "com.test.package", null);
+        WebViewCrashInfoCollector.updateCrashLogFileWithNewCrashInfo(newCrashInfo);
+
+        CrashInfo resultCrashInfo = getCrashFromJsonLogFile("xyz123");
+        Assert.assertThat(resultCrashInfo, equalsTo(newCrashInfo));
     }
 }

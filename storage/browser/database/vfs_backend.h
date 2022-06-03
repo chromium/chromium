@@ -10,7 +10,6 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 
 namespace base {
 class FilePath;
@@ -29,8 +28,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) VfsBackend {
   static int DeleteFile(const base::FilePath& file_path, bool sync_dir);
 
   static uint32_t GetFileAttributes(const base::FilePath& file_path);
-
-  static int64_t GetFileSize(const base::FilePath& file_path);
 
   static bool SetFileSize(const base::FilePath& file_path, int64_t size);
 

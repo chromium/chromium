@@ -1,0 +1,3 @@
+# This is a non-LUCI generated file
+# This is consumed by presubmit checks that need to validate the config
+{"validate_source_side_specs_have_builder": True}

@@ -28,6 +28,7 @@
 
 #include <utility>
 
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -35,6 +36,7 @@
 #include "third_party/blink/renderer/core/layout/generated_children.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_quote.h"
+#include "third_party/blink/renderer/core/layout/list_marker.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
@@ -93,6 +95,17 @@ const AtomicString& PseudoElement::PseudoElementNameForEvents(
     return PseudoElementTagName(pseudo_id).LocalName();
 }
 
+bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
+  switch (pseudo_id) {
+    case kPseudoIdMarker:
+      if (parent && parent->IsPseudoElement())
+        return RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled();
+      return true;
+    default:
+      return true;
+  }
+}
+
 PseudoElement::PseudoElement(Element* parent, PseudoId pseudo_id)
     : Element(PseudoElementTagName(pseudo_id),
               &parent->GetDocument(),
@@ -109,9 +122,12 @@ PseudoElement::PseudoElement(Element* parent, PseudoId pseudo_id)
   }
 }
 
-scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject() {
-  return ParentOrShadowHostElement()->StyleForPseudoElement(
-      PseudoElementStyleRequest(pseudo_id_));
+scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
+    const StyleRecalcContext& style_recalc_context) {
+  Element* parent = ParentOrShadowHostElement();
+  return parent->StyleForPseudoElement(
+      style_recalc_context,
+      StyleRequest(pseudo_id_, parent->GetComputedStyle()));
 }
 
 scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
@@ -119,7 +135,8 @@ scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
   // For display:contents we should not generate a box, but we generate a non-
   // observable inline box for pseudo elements to be able to locate the
   // anonymous layout objects for generated content during DetachLayoutTree().
-  scoped_refptr<ComputedStyle> layout_style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> layout_style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   layout_style->InheritFrom(style);
   layout_style->SetContent(style.GetContentData());
   layout_style->SetDisplay(EDisplay::kInline);
@@ -160,6 +177,17 @@ PseudoElement::AttachLayoutTreeScope::~AttachLayoutTreeScope() {
 
 void PseudoElement::AttachLayoutTree(AttachContext& context) {
   DCHECK(!GetLayoutObject());
+
+  // Some elements may have 'display: list-item' but not be list items.
+  // Do not create a layout object for the ::marker in that case.
+  if (pseudo_id_ == kPseudoIdMarker) {
+    LayoutObject* originating_layout = parentNode()->GetLayoutObject();
+    if (!originating_layout || !originating_layout->IsListItemIncludingNG()) {
+      Node::AttachLayoutTree(context);
+      return;
+    }
+  }
+
   {
     AttachLayoutTreeScope scope(this);
     Element::AttachLayoutTree(context);
@@ -176,12 +204,23 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
   DCHECK(CanHaveGeneratedChildren(*layout_object->Parent()));
 
   const ComputedStyle& style = layout_object->StyleRef();
-  if (style.StyleType() != kPseudoIdBefore &&
-      style.StyleType() != kPseudoIdAfter &&
-      style.StyleType() != kPseudoIdMarker)
-    return;
-  DCHECK(style.GetContentData());
+  switch (pseudo_id_) {
+    case kPseudoIdMarker: {
+      if (ListMarker* marker = ListMarker::Get(layout_object))
+        marker->UpdateMarkerContentIfNeeded(*layout_object);
+      if (style.ContentBehavesAsNormal())
+        return;
+      break;
+    }
+    case kPseudoIdBefore:
+    case kPseudoIdAfter:
+      break;
+    default:
+      return;
+  }
 
+  DCHECK(!style.ContentBehavesAsNormal());
+  DCHECK(!style.ContentPreventsBoxGeneration());
   for (const ContentData* content = style.GetContentData(); content;
        content = content->Next()) {
     LegacyLayout legacy = context.force_legacy_layout ? LegacyLayout::kForce
@@ -191,7 +230,7 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
       if (layout_object->IsChildAllowed(child, style)) {
         layout_object->AddChild(child);
         if (child->IsQuote())
-          ToLayoutQuote(child)->AttachQuote();
+          To<LayoutQuote>(child)->AttachQuote();
       } else {
         child->Destroy();
       }
@@ -200,22 +239,54 @@ void PseudoElement::AttachLayoutTree(AttachContext& context) {
 }
 
 bool PseudoElement::LayoutObjectIsNeeded(const ComputedStyle& style) const {
-  return PseudoElementLayoutObjectIsNeeded(&style);
+  return PseudoElementLayoutObjectIsNeeded(&style, parentElement());
+}
+
+bool PseudoElement::CanGeneratePseudoElement(PseudoId pseudo_id) const {
+  switch (pseudo_id_) {
+    case kPseudoIdBefore:
+    case kPseudoIdAfter:
+      if (pseudo_id != kPseudoIdMarker)
+        return false;
+      break;
+    default:
+      return false;
+  }
+  return Element::CanGeneratePseudoElement(pseudo_id);
 }
 
 Node* PseudoElement::InnerNodeForHitTesting() const {
-  return ParentOrShadowHostNode();
+  Node* parent = ParentOrShadowHostNode();
+  if (parent && parent->IsPseudoElement())
+    return To<PseudoElement>(parent)->InnerNodeForHitTesting();
+  return parent;
 }
 
-bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* style) {
-  if (!style)
+bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
+                                       const Element* originating_element) {
+  if (!pseudo_style)
     return false;
-  if (style->Display() == EDisplay::kNone)
+  if (pseudo_style->Display() == EDisplay::kNone)
     return false;
-  if (style->StyleType() == kPseudoIdFirstLetter ||
-      style->StyleType() == kPseudoIdBackdrop)
-    return true;
-  return style->GetContentData();
+  switch (pseudo_style->StyleType()) {
+    case kPseudoIdFirstLetter:
+    case kPseudoIdBackdrop:
+      return true;
+    case kPseudoIdBefore:
+    case kPseudoIdAfter:
+      return !pseudo_style->ContentPreventsBoxGeneration();
+    case kPseudoIdMarker: {
+      if (!pseudo_style->ContentBehavesAsNormal())
+        return !pseudo_style->ContentPreventsBoxGeneration();
+      const ComputedStyle* parent_style =
+          originating_element->GetComputedStyle();
+      return parent_style && (parent_style->ListStyleType() ||
+                              parent_style->GeneratesMarkerImage());
+    }
+    default:
+      NOTREACHED();
+      return false;
+  }
 }
 
 }  // namespace blink

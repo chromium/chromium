@@ -9,7 +9,7 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -21,6 +21,8 @@
 #include "components/search_engines/template_url_service.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -36,6 +38,8 @@ namespace {
 
 class ChipLabel : public views::Label {
  public:
+  METADATA_HEADER(ChipLabel);
+
   using views::Label::Label;
 
   // views::Label
@@ -43,7 +47,7 @@ class ChipLabel : public views::Label {
     const int icon_size = GetLayoutConstant(LOCATION_BAR_ICON_SIZE);
     const int chip_corner_radius =
         views::LayoutProvider::Get()->GetCornerRadiusMetric(
-            views::EMPHASIS_MAXIMUM, gfx::Size(icon_size, icon_size));
+            views::Emphasis::kMaximum, gfx::Size(icon_size, icon_size));
     return gfx::Insets(0, chip_corner_radius, 0, chip_corner_radius);
   }
   gfx::Size CalculatePreferredSize() const override {
@@ -52,57 +56,38 @@ class ChipLabel : public views::Label {
   }
 };
 
+BEGIN_METADATA(ChipLabel, views::Label)
+END_METADATA
+
 }  // namespace
 
-KeywordHintView::KeywordHintView(LocationBarView* parent, Profile* profile)
-    : Button(parent), profile_(profile) {
+KeywordHintView::KeywordHintView(PressedCallback callback, Profile* profile)
+    : Button(std::move(callback)), profile_(profile) {
   auto chip_container = std::make_unique<views::View>();
-  auto chip_label =
-      std::make_unique<ChipLabel>(base::string16(), CONTEXT_OMNIBOX_DECORATION);
+
+  chip_label_ = chip_container->AddChildView(std::make_unique<ChipLabel>(
+      std::u16string(), CONTEXT_OMNIBOX_DECORATION));
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
       .SetDefault(views::kFlexBehaviorKey,
-                  views::FlexSpecification::ForSizeRule(
+                  views::FlexSpecification(
                       views::MinimumFlexSizeRule::kPreferredSnapToZero,
                       views::MaximumFlexSizeRule::kPreferred, true));
 
-  const ui::ThemeProvider* theme_provider =
-      &ThemeService::GetThemeProviderForProfile(profile_);
-  const SkColor leading_label_text_color =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
-  const SkColor background_color =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
-  leading_label_ = CreateLabel(leading_label_text_color, background_color);
+  leading_label_ = AddChildView(std::make_unique<views::Label>(
+      std::u16string(), CONTEXT_OMNIBOX_DECORATION));
 
-  const SkColor tab_border_color =
-      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BUBBLE_OUTLINE);
-  SkColor text_color = leading_label_text_color;
-  SkColor tab_bg_color =
-      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND);
-  if (OmniboxFieldTrial::IsExperimentalKeywordModeEnabled()) {
-    text_color = SK_ColorWHITE;
-    tab_bg_color = tab_border_color;
-  }
-  chip_label->SetEnabledColor(text_color);
-  chip_label->SetBackgroundColor(tab_bg_color);
-
-  chip_container->SetBackground(CreateBackgroundFromPainter(
-      views::Painter::CreateRoundRectWith1PxBorderPainter(
-          tab_bg_color, tab_border_color,
-          views::LayoutProvider::Get()->GetCornerRadiusMetric(
-              views::EMPHASIS_HIGH))));
-  chip_label_ = chip_container->AddChildView(std::move(chip_label));
   chip_container->SetLayoutManager(std::make_unique<views::FillLayout>());
   chip_container->SetProperty(
       views::kFlexBehaviorKey,
-      views::FlexSpecification::ForSizeRule(
-          views::MinimumFlexSizeRule::kPreferred,
-          views::MaximumFlexSizeRule::kPreferred, true));
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kPreferred, true));
   chip_container->SizeToPreferredSize();
   chip_container_ = AddChildView(std::move(chip_container));
 
-  trailing_label_ = CreateLabel(text_color, background_color);
+  trailing_label_ = AddChildView(std::make_unique<views::Label>(
+      std::u16string(), CONTEXT_OMNIBOX_DECORATION));
 
   SetFocusBehavior(FocusBehavior::NEVER);
 
@@ -114,7 +99,11 @@ KeywordHintView::KeywordHintView(LocationBarView* parent, Profile* profile)
 
 KeywordHintView::~KeywordHintView() {}
 
-void KeywordHintView::SetKeyword(const base::string16& keyword) {
+std::u16string KeywordHintView::GetKeyword() const {
+  return keyword_;
+}
+
+void KeywordHintView::SetKeyword(const std::u16string& keyword) {
   // When the virtual keyboard is visible, we show a modified touch UI
   // containing only the chip and no surrounding labels.
   const bool was_touch_ui = leading_label_->GetText().empty();
@@ -124,6 +113,9 @@ void KeywordHintView::SetKeyword(const base::string16& keyword) {
     return;
 
   keyword_ = keyword;
+  OnPropertyChanged(&keyword_, views::kPropertyEffectsNone);
+  // TODO(pkasting): Arguably, much of the code below would be better as
+  // property change handlers in file-scope subclasses of Label etc.
   if (keyword_.empty())
     return;
   DCHECK(profile_);
@@ -133,35 +125,35 @@ void KeywordHintView::SetKeyword(const base::string16& keyword) {
     return;
 
   bool is_extension_keyword;
-  base::string16 short_name(
+  std::u16string short_name(
       url_service->GetKeywordShortName(keyword, &is_extension_keyword));
 
   if (is_touch_ui) {
     int message_id = is_extension_keyword
                          ? IDS_OMNIBOX_EXTENSION_KEYWORD_HINT_TOUCH
                          : IDS_OMNIBOX_KEYWORD_HINT_TOUCH;
-    base::string16 visible_text =
+    std::u16string visible_text =
         l10n_util::GetStringFUTF16(message_id, short_name);
     chip_label_->SetText(visible_text);
     SetAccessibleName(visible_text);
 
-    leading_label_->SetText(base::string16());
-    trailing_label_->SetText(base::string16());
+    leading_label_->SetText(std::u16string());
+    trailing_label_->SetText(std::u16string());
   } else {
     chip_label_->SetText(l10n_util::GetStringUTF16(IDS_APP_TAB_KEY));
 
     std::vector<size_t> content_param_offsets;
     int message_id = is_extension_keyword ? IDS_OMNIBOX_EXTENSION_KEYWORD_HINT
                                           : IDS_OMNIBOX_KEYWORD_HINT;
-    const base::string16 keyword_hint = l10n_util::GetStringFUTF16(
-        message_id, base::string16(), short_name, &content_param_offsets);
+    const std::u16string keyword_hint = l10n_util::GetStringFUTF16(
+        message_id, std::u16string(), short_name, &content_param_offsets);
     DCHECK_EQ(2U, content_param_offsets.size());
     leading_label_->SetText(
         keyword_hint.substr(0, content_param_offsets.front()));
     trailing_label_->SetText(
         keyword_hint.substr(content_param_offsets.front()));
 
-    const base::string16 tab_key_name =
+    const std::u16string tab_key_name =
         l10n_util::GetStringUTF16(IDS_OMNIBOX_KEYWORD_HINT_KEY_ACCNAME);
     SetAccessibleName(leading_label_->GetText() + tab_key_name +
                       trailing_label_->GetText());
@@ -185,7 +177,7 @@ gfx::Insets KeywordHintView::GetInsets() const {
       << "LOCATION_BAR_HEIGHT must be tall enough to contain the chip.";
   const float subsumed_width =
       std::sqrt(hypotenuse * hypotenuse - extent * extent);
-  const int horizontal_margin = gfx::ToCeiledInt(radius - subsumed_width);
+  const int horizontal_margin = base::ClampCeil(radius - subsumed_width);
   // This ensures the end of the KeywordHintView doesn't touch the edge of the
   // omnibox, but the padding should be symmetrical, so use it on both sides,
   // collapsing into the horizontal padding used by the previous View.
@@ -202,23 +194,22 @@ gfx::Size KeywordHintView::GetMinimumSize() const {
   return chip_size;
 }
 
-const char* KeywordHintView::GetClassName() const {
-  return "KeywordHintView";
-}
-
 void KeywordHintView::OnThemeChanged() {
-  const SkColor leading_label_text_color = GetOmniboxColor(
-      GetThemeProvider(), OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
+  views::Button::OnThemeChanged();
+  const ui::ThemeProvider* theme_provider = GetThemeProvider();
+
+  const SkColor leading_label_text_color =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_TEXT_DEFAULT);
   const SkColor background_color =
-      GetOmniboxColor(GetThemeProvider(), OmniboxPart::LOCATION_BAR_BACKGROUND);
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BACKGROUND);
   leading_label_->SetEnabledColor(leading_label_text_color);
   leading_label_->SetBackgroundColor(background_color);
 
-  const SkColor tab_border_color = GetOmniboxColor(
-      GetThemeProvider(), OmniboxPart::LOCATION_BAR_BUBBLE_OUTLINE);
+  const SkColor tab_border_color =
+      GetOmniboxColor(theme_provider, OmniboxPart::LOCATION_BAR_BUBBLE_OUTLINE);
   SkColor text_color = leading_label_text_color;
   SkColor tab_bg_color =
-      GetOmniboxColor(GetThemeProvider(), OmniboxPart::RESULTS_BACKGROUND);
+      GetOmniboxColor(theme_provider, OmniboxPart::RESULTS_BACKGROUND);
   if (OmniboxFieldTrial::IsExperimentalKeywordModeEnabled()) {
     text_color = SK_ColorWHITE;
     tab_bg_color = tab_border_color;
@@ -230,17 +221,12 @@ void KeywordHintView::OnThemeChanged() {
       views::Painter::CreateRoundRectWith1PxBorderPainter(
           tab_bg_color, tab_border_color,
           views::LayoutProvider::Get()->GetCornerRadiusMetric(
-              views::EMPHASIS_HIGH))));
+              views::Emphasis::kHigh))));
 
   trailing_label_->SetEnabledColor(text_color);
   trailing_label_->SetBackgroundColor(background_color);
 }
 
-views::Label* KeywordHintView::CreateLabel(SkColor text_color,
-                                           SkColor background_color) {
-  auto label = std::make_unique<views::Label>(base::string16(),
-                                              CONTEXT_OMNIBOX_DECORATION);
-  label->SetEnabledColor(text_color);
-  label->SetBackgroundColor(background_color);
-  return AddChildView(std::move(label));
-}
+BEGIN_METADATA(KeywordHintView, views::Button)
+ADD_PROPERTY_METADATA(std::u16string, Keyword)
+END_METADATA

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env vpython
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -6,14 +6,16 @@
 """Unittests for test_runner.py."""
 
 import collections
-import glob
 import logging
 import mock
 import os
-import subprocess
 import tempfile
 import unittest
 
+import iossim_util
+import result_sink_util
+import test_apps
+from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
 
 
@@ -49,85 +51,21 @@ class TestCase(unittest.TestCase):
         setattr(obj, member, original_value)
 
 
-class GetKIFTestFilterTest(TestCase):
-  """Tests for test_runner.get_kif_test_filter."""
-
-  def test_correct(self):
-    """Ensures correctness of filter."""
-    tests = [
-      'KIF.test1',
-      'KIF.test2',
-    ]
-    expected = 'NAME:test1|test2'
-
-    self.assertEqual(test_runner.get_kif_test_filter(tests), expected)
-
-  def test_correct_inverted(self):
-    """Ensures correctness of inverted filter."""
-    tests = [
-      'KIF.test1',
-      'KIF.test2',
-    ]
-    expected = '-NAME:test1|test2'
-
-    self.assertEqual(
-        test_runner.get_kif_test_filter(tests, invert=True), expected)
-
-
-class GetGTestFilterTest(TestCase):
-  """Tests for test_runner.get_gtest_filter."""
-
-  def test_correct(self):
-    """Ensures correctness of filter."""
-    tests = [
-      'test.1',
-      'test.2',
-    ]
-    expected = 'test.1:test.2'
-
-    self.assertEqual(test_runner.get_gtest_filter(tests), expected)
-
-  def test_correct_inverted(self):
-    """Ensures correctness of inverted filter."""
-    tests = [
-      'test.1',
-      'test.2',
-    ]
-    expected = '-test.1:test.2'
-
-    self.assertEqual(
-        test_runner.get_gtest_filter(tests, invert=True), expected)
-
-
-class InstallXcodeTest(TestCase):
-  """Tests install_xcode."""
-
-  def setUp(self):
-    super(InstallXcodeTest, self).setUp()
-    self.mock(test_runner, 'xcode_select', lambda _: None)
-    self.mock(os.path, 'exists', lambda _: True)
-
-  def test_success(self):
-    self.assertTrue(test_runner.install_xcode('test_build', 'true', 'path'))
-
-  def test_failure(self):
-    self.assertFalse(test_runner.install_xcode('test_build', 'false', 'path'))
-
-
 class SimulatorTestRunnerTest(TestCase):
   """Tests for test_runner.SimulatorTestRunner."""
 
   def setUp(self):
     super(SimulatorTestRunnerTest, self).setUp()
-
-    def install_xcode(build, mac_toolchain_cmd, xcode_app_path):
-      return True
+    self.mock(iossim_util, 'get_simulator', lambda _1, _2: 'sim-UUID')
+    self.mock(result_sink_util.ResultSinkClient,
+              'post', lambda *args, **kwargs: None)
 
     self.mock(test_runner, 'get_current_xcode_info', lambda: {
         'version': 'test version', 'build': 'test build', 'path': 'test/path'})
-    self.mock(test_runner, 'install_xcode', install_xcode)
-    self.mock(test_runner.subprocess, 'check_output',
-              lambda _: 'fake-bundle-id')
+    self.mock(test_apps, 'get_bundle_id', lambda _: 'fake-bundle-id')
+    self.mock(test_apps.SimulatorXCTestUnitTestsApp,
+              '_xctest_path', lambda _: 'fake-path')
+    self.mock(test_apps.plistlib, 'writePlist', lambda _1, _2: '')
     self.mock(os.path, 'abspath', lambda path: '/abs/path/to/%s' % path)
     self.mock(os.path, 'exists', lambda _: True)
     self.mock(test_runner.TestRunner, 'set_sigterm_handler',
@@ -145,8 +83,6 @@ class SimulatorTestRunnerTest(TestCase):
         'fake-iossim',
         'platform',
         'os',
-        'xcode-version',
-        '', # Empty xcode-build
         'out-dir',
       )
 
@@ -158,10 +94,8 @@ class SimulatorTestRunnerTest(TestCase):
       test_runner.SimulatorTestRunner(
         'fake-app',
         'fake-iossim',
-        'platform',
-        'os',
-        'xcode-version',
-        'xcode-build',
+        'iPhone X',
+        '11.4',
         'out-dir',
       )
 
@@ -170,135 +104,33 @@ class SimulatorTestRunnerTest(TestCase):
     tr = test_runner.SimulatorTestRunner(
         'fake-app',
         'fake-iossim',
-        'platform',
-        'os',
-        'xcode-version',
-        'xcode-build',
+        'iPhone X',
+        '11.4',
         'out-dir',
     )
 
     self.assertTrue(tr)
 
-  def test_startup_crash(self):
+  @mock.patch('test_runner.SimulatorTestRunner.tear_down')
+  @mock.patch('test_runner.SimulatorTestRunner.set_up')
+  @mock.patch('test_runner.TestRunner._run')
+  def test_startup_crash(self, mock_run, _1, _2):
     """Ensures test is relaunched once on startup crash."""
-    def set_up(self):
-      return
-
-    @staticmethod
-    def _run(cmd, shards=None):
-      return collections.namedtuple('result', ['crashed', 'crashed_test'])(
-          crashed=True, crashed_test=None)
-
-    def tear_down(self):
-      return
-
-    self.mock(test_runner.SimulatorTestRunner, 'set_up', set_up)
-    self.mock(test_runner.TestRunner, '_run', _run)
-    self.mock(test_runner.SimulatorTestRunner, 'tear_down', tear_down)
+    result = ResultCollection()
+    result.crashed = True
+    mock_run.return_value = result
 
     tr = test_runner.SimulatorTestRunner(
         'fake-app',
         'fake-iossim',
-        'platform',
-        'os',
-        'xcode-version',
-        'xcode-build',
+        'iPhone X',
+        '11.4',
         'out-dir',
         xctest=True,
     )
     with self.assertRaises(test_runner.AppLaunchError):
       tr.launch()
-
-  def test_run(self):
-    """Ensures the _run method is correct with test sharding."""
-    def shard_xctest(object_path, shards, test_cases=None):
-      return [['a/1', 'b/2'], ['c/3', 'd/4'], ['e/5']]
-
-    def run_tests(self, test_shard=None):
-      out = []
-      for test in test_shard:
-        testname = test.split('/')
-        out.append('Test Case \'-[%s %s]\' started.' %
-                   (testname[0], testname[1]))
-        out.append('Test Case \'-[%s %s]\' passed (0.1 seconds)' %
-                   (testname[0], testname[1]))
-      return (out, 0, 0)
-
-    tr = test_runner.SimulatorTestRunner(
-      'fake-app',
-      'fake-iossim',
-      'platform',
-      'os',
-      'xcode-version',
-      'xcode-build',
-      'out-dir',
-      xctest=True,
-    )
-    self.mock(test_runner, 'shard_xctest', shard_xctest)
-    self.mock(test_runner.SimulatorTestRunner, 'run_tests', run_tests)
-
-    tr.xctest_path = 'fake.xctest'
-    cmd = tr.get_launch_command()
-    result = tr._run(cmd=cmd, shards=3)
-    self.assertIn('a/1', result.passed_tests)
-    self.assertIn('b/2', result.passed_tests)
-    self.assertIn('c/3', result.passed_tests)
-    self.assertIn('d/4', result.passed_tests)
-    self.assertIn('e/5', result.passed_tests)
-
-  def test_run_with_system_alert(self):
-    """Ensures SystemAlertPresentError is raised when warning 'System alert
-      view is present, so skipping all tests' is in the output."""
-    with self.assertRaises(test_runner.SystemAlertPresentError):
-      tr = test_runner.SimulatorTestRunner(
-        'fake-app',
-        'fake-iossim',
-        'platform',
-        'os',
-        'xcode-version',
-        'xcode-build',
-        'out-dir',
-        xctest=True,
-      )
-      tr.xctest_path = 'fake.xctest'
-      cmd = ['echo', 'System alert view is present, so skipping all tests!']
-      result = tr._run(cmd=cmd)
-
-  def test_get_launch_command(self):
-    """Ensures launch command is correct with test_filters, test sharding and
-      test_cases."""
-    tr = test_runner.SimulatorTestRunner(
-      'fake-app',
-      'fake-iossim',
-      'platform',
-      'os',
-      'xcode-version',
-      'xcode-build',
-      'out-dir',
-    )
-    tr.xctest_path = 'fake.xctest'
-    # Cases test_filter is not empty, with empty/non-empty self.test_cases.
-    tr.test_cases = []
-    cmd = tr.get_launch_command(['a'], invert=False)
-    self.assertIn('-t', cmd)
-    self.assertIn('a', cmd)
-
-    tr.test_cases = ['a', 'b']
-    cmd = tr.get_launch_command(['a'], invert=False)
-    self.assertIn('-t', cmd)
-    self.assertIn('a', cmd)
-    self.assertNotIn('b', cmd)
-
-    # Cases test_filter is empty, with empty/non-empty self.test_cases.
-    tr.test_cases = []
-    cmd = tr.get_launch_command(test_filter=None, invert=False)
-    self.assertNotIn('-t', cmd)
-
-    tr.test_cases = ['a', 'b']
-    cmd = tr.get_launch_command(test_filter=None, invert=False)
-    self.assertIn('-t', cmd)
-    self.assertIn('a', cmd)
-    self.assertIn('b', cmd)
+    self.assertEquals(len(mock_run.mock_calls), 2)
 
   def test_relaunch(self):
     """Ensures test is relaunched on test crash until tests complete."""
@@ -307,32 +139,18 @@ class SimulatorTestRunnerTest(TestCase):
 
     @staticmethod
     def _run(cmd, shards=None):
-      result = collections.namedtuple(
-          'result', [
-              'crashed',
-              'crashed_test',
-              'failed_tests',
-              'flaked_tests',
-              'passed_tests',
-          ],
-      )
-      if '-e' not in cmd:
+      if not any('retry_after_crash' in cmd_arg for cmd_arg in cmd):
         # First run, has no test filter supplied. Mock a crash.
-        return result(
-            crashed=True,
-            crashed_test='c',
-            failed_tests={'b': ['b-out'], 'c': ['Did not complete.']},
-            flaked_tests={'d': ['d-out']},
-            passed_tests=['a'],
-        )
+        result = ResultCollection(
+            test_results=[TestResult('crash', TestStatus.CRASH)])
+        result.crashed = True
+        result.add_test_result(TestResult('pass', TestStatus.PASS))
+        result.add_test_result(
+            TestResult('fail', TestStatus.FAIL, test_log='some logs'))
+        return result
       else:
-        return result(
-            crashed=False,
-            crashed_test=None,
-            failed_tests={},
-            flaked_tests={},
-            passed_tests=[],
-        )
+        return ResultCollection(
+            test_results=[TestResult('crash', TestStatus.PASS)])
 
     def tear_down(self):
       return
@@ -344,13 +162,110 @@ class SimulatorTestRunnerTest(TestCase):
     tr = test_runner.SimulatorTestRunner(
         'fake-app',
         'fake-iossim',
-        'platform',
-        'os',
-        'xcode-version',
-        'xcode-build',
+        'iPhone X',
+        '11.4',
         'out-dir',
     )
     tr.launch()
+    self.assertTrue(tr.logs)
+
+  @mock.patch('test_runner.SimulatorTestRunner.tear_down')
+  @mock.patch('test_runner.SimulatorTestRunner.set_up')
+  @mock.patch('test_runner.TestRunner._run')
+  def test_failed_test_retry(self, mock_run, _1, _2):
+    test1_fail_result = TestResult('test1', TestStatus.FAIL)
+    test2_fail_result = TestResult('test2', TestStatus.FAIL)
+    test1_pass_result = TestResult('test1', TestStatus.PASS)
+    test2_pass_result = TestResult('test2', TestStatus.PASS)
+    result1 = ResultCollection(
+        test_results=[test1_fail_result, test2_fail_result])
+    retry_result1 = ResultCollection(test_results=[test1_pass_result])
+    retry_result2 = ResultCollection(test_results=[test2_pass_result])
+    mock_run.side_effect = [result1, retry_result1, retry_result2]
+    tr = test_runner.SimulatorTestRunner(
+        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+    tr.launch()
+    self.assertEquals(len(mock_run.mock_calls), 3)
+    self.assertTrue(tr.logs)
+
+  @mock.patch('test_runner.SimulatorTestRunner.tear_down')
+  @mock.patch('test_runner.SimulatorTestRunner.set_up')
+  @mock.patch('test_runner.TestRunner._run')
+  def test_crashed_if_crash_in_final_crash_retry(self, mock_run, _1, _2):
+    test1_crash_result = TestResult('test1', TestStatus.CRASH)
+    test2_crash_result = TestResult('test2', TestStatus.CRASH)
+    test3_pass_result = TestResult('test3', TestStatus.PASS)
+    test1_pass_result = TestResult('test1', TestStatus.PASS)
+    test2_pass_result = TestResult('test2', TestStatus.PASS)
+    initial_result = ResultCollection(test_results=[test1_crash_result])
+    initial_result.crashed = True
+    crash_retry1_result = ResultCollection(test_results=[test2_crash_result])
+    crash_retry1_result.crashed = True
+    crash_retry2_result = ResultCollection(test_results=[test3_pass_result])
+    crash_retry2_result.crashed = True
+    test_retry1_result = ResultCollection(test_results=[test1_pass_result])
+    test_retry2_result = ResultCollection(test_results=[test2_pass_result])
+    mock_run.side_effect = [
+        initial_result, crash_retry1_result, crash_retry2_result,
+        test_retry1_result, test_retry2_result
+    ]
+    tr = test_runner.SimulatorTestRunner(
+        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+    tr.launch()
+    self.assertEquals(len(mock_run.mock_calls), 5)
+    self.assertTrue(tr.test_results['interrupted'])
+    self.assertIn('BUILD_INTERRUPTED', tr.test_results['tests'])
+    self.assertTrue(tr.logs)
+
+  @mock.patch('test_runner.SimulatorTestRunner.tear_down')
+  @mock.patch('test_runner.SimulatorTestRunner.set_up')
+  @mock.patch('test_runner.TestRunner._run')
+  def test_not_crashed_if_no_crash_in_final_crash_retry(self, mock_run, _1, _2):
+    test1_crash_result = TestResult('test1', TestStatus.CRASH)
+    test2_crash_result = TestResult('test2', TestStatus.CRASH)
+    test3_pass_result = TestResult('test3', TestStatus.PASS)
+    test1_pass_result = TestResult('test1', TestStatus.PASS)
+    test2_pass_result = TestResult('test2', TestStatus.PASS)
+    initial_result = ResultCollection(test_results=[test1_crash_result])
+    initial_result.crashed = True
+    crash_retry1_result = ResultCollection(test_results=[test2_crash_result])
+    crash_retry1_result.crashed = True
+    crash_retry2_result = ResultCollection(test_results=[test3_pass_result])
+    test_retry1_result = ResultCollection(test_results=[test1_pass_result])
+    test_retry2_result = ResultCollection(test_results=[test2_pass_result])
+    mock_run.side_effect = [
+        initial_result, crash_retry1_result, crash_retry2_result,
+        test_retry1_result, test_retry2_result
+    ]
+    tr = test_runner.SimulatorTestRunner(
+        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+    tr.launch()
+    self.assertEquals(len(mock_run.mock_calls), 5)
+    self.assertFalse(tr.test_results['interrupted'])
+    self.assertTrue(tr.logs)
+
+  @mock.patch('test_runner.SimulatorTestRunner.tear_down')
+  @mock.patch('test_runner.SimulatorTestRunner.set_up')
+  @mock.patch('test_runner.TestRunner._run')
+  def test_not_crashed_if_crashed_in_failed_test_retry(self, mock_run, _1, _2):
+    test1_fail_result = TestResult('test1', TestStatus.FAIL)
+    initial_result = ResultCollection(test_results=[test1_fail_result])
+    test1_retry1_result = ResultCollection(test_results=[test1_fail_result])
+    test1_retry2_result = ResultCollection(test_results=[test1_fail_result])
+    test1_retry3_result = ResultCollection()
+    test1_retry3_result.crashed = True
+
+    mock_run.side_effect = [
+        initial_result, test1_retry1_result, test1_retry2_result,
+        test1_retry3_result
+    ]
+    tr = test_runner.SimulatorTestRunner(
+        'fake-app', 'fake-iossim', 'iPhone X', '11.4', 'out-dir', retries=3)
+    tr.launch()
+    self.assertEquals(len(mock_run.mock_calls), 4)
+    self.assertFalse(tr.test_results['interrupted'])
+    self.assertEquals(tr.test_results['tests']['test1']['actual'],
+                      'FAIL FAIL FAIL SKIP')
     self.assertTrue(tr.logs)
 
 
@@ -361,6 +276,8 @@ class DeviceTestRunnerTest(TestCase):
     def install_xcode(build, mac_toolchain_cmd, xcode_app_path):
       return True
 
+    self.mock(result_sink_util.ResultSinkClient,
+              'post', lambda *args, **kwargs: None)
     self.mock(test_runner, 'get_current_xcode_info', lambda: {
         'version': 'test version', 'build': 'test build', 'path': 'test/path'})
     self.mock(test_runner, 'install_xcode', install_xcode)
@@ -377,102 +294,7 @@ class DeviceTestRunnerTest(TestCase):
         'xcode-build',
         'out-dir',
     )
-    self.tr.xctestrun_data = {'TestTargetName':{}}
-
-  def test_with_test_filter_without_test_cases(self):
-    """Ensures tests in the run with test_filter and no test_cases."""
-    self.tr.set_xctest_filters(['a', 'b'], invert=False)
-    self.assertEqual(
-        self.tr.xctestrun_data['TestTargetName']['OnlyTestIdentifiers'],
-        ['a', 'b']
-    )
-
-  def test_invert_with_test_filter_without_test_cases(self):
-    """Ensures tests in the run invert with test_filter and no test_cases."""
-    self.tr.set_xctest_filters(['a', 'b'], invert=True)
-    self.assertEqual(
-        self.tr.xctestrun_data['TestTargetName']['SkipTestIdentifiers'],
-        ['a', 'b']
-    )
-
-  def test_with_test_filter_with_test_cases(self):
-    """Ensures tests in the run with test_filter and test_cases."""
-    self.tr.test_cases = ['a', 'b', 'c', 'd']
-    self.tr.set_xctest_filters(['a', 'b', 'irrelevant test'], invert=False)
-    self.assertEqual(
-        self.tr.xctestrun_data['TestTargetName']['OnlyTestIdentifiers'],
-        ['a', 'b']
-    )
-
-  def test_invert_with_test_filter_with_test_cases(self):
-    """Ensures tests in the run invert with test_filter and test_cases."""
-    self.tr.test_cases = ['a', 'b', 'c', 'd']
-    self.tr.set_xctest_filters(['a', 'b', 'irrelevant test'], invert=True)
-    self.assertEqual(
-        self.tr.xctestrun_data['TestTargetName']['OnlyTestIdentifiers'],
-        ['c', 'd']
-    )
-
-  def test_without_test_filter_without_test_cases(self):
-    """Ensures tests in the run with no test_filter and no test_cases."""
-    self.tr.set_xctest_filters(test_filter=None, invert=False)
-    self.assertIsNone(
-        self.tr.xctestrun_data['TestTargetName'].get('OnlyTestIdentifiers'))
-
-  def test_invert_without_test_filter_without_test_cases(self):
-    """Ensures tests in the run invert with no test_filter and no test_cases."""
-    self.tr.set_xctest_filters(test_filter=None, invert=True)
-    self.assertIsNone(
-        self.tr.xctestrun_data['TestTargetName'].get('OnlyTestIdentifiers'))
-
-  def test_without_test_filter_with_test_cases(self):
-    """Ensures tests in the run with no test_filter but test_cases."""
-    self.tr.test_cases = ['a', 'b', 'c', 'd']
-    self.tr.set_xctest_filters(test_filter=None, invert=False)
-    self.assertEqual(
-        self.tr.xctestrun_data['TestTargetName']['OnlyTestIdentifiers'],
-        ['a', 'b', 'c', 'd']
-    )
-
-  def test_invert_without_test_filter_with_test_cases(self):
-    """Ensures tests in the run invert with no test_filter but test_cases."""
-    self.tr.test_cases = ['a', 'b', 'c', 'd']
-    self.tr.set_xctest_filters(test_filter=None, invert=True)
-    self.assertEqual(
-        self.tr.xctestrun_data['TestTargetName']['OnlyTestIdentifiers'],
-        ['a', 'b', 'c', 'd']
-    )
-
-  @mock.patch('subprocess.check_output', autospec=True)
-  def test_get_test_names(self, mock_subprocess):
-    otool_output = (
-        'imp 0x102492020 -[BrowserViewControllerTestCase testJavaScript]'
-        'name 0x105ee8b84 testFixForCrbug801165'
-        'types 0x105f0c842 v16 @ 0:8'
-        'name 0x105ee8b9a testOpenURLFromNTP'
-        'types 0x105f0c842 v16 @ 0:8'
-        'imp 0x102493b30 -[BrowserViewControllerTestCase testOpenURLFromNTP]'
-        'name 0x105ee8bad testOpenURLFromTab'
-        'types 0x105f0c842 v16 @ 0:8'
-        'imp 0x102494180 -[BrowserViewControllerTestCase testOpenURLFromTab]'
-        'name 0x105ee8bc0 testOpenURLFromTabSwitcher'
-        'types 0x105f0c842 v16 @ 0:8'
-        'imp 0x102494f70 -[BrowserViewControllerTestCase testTabSwitch]'
-        'types 0x105f0c842 v16 @ 0:8'
-        'imp 0x102494f70 -[BrowserViewControllerTestCase helper]'
-        'imp 0x102494f70 -[BrowserViewControllerTestCCCCCCCCC testMethod]'
-    )
-    mock_subprocess.return_value = otool_output
-    tests = test_runner.get_test_names('')
-    self.assertEqual(
-        [
-            ('BrowserViewControllerTestCase', 'testJavaScript'),
-            ('BrowserViewControllerTestCase', 'testOpenURLFromNTP'),
-            ('BrowserViewControllerTestCase', 'testOpenURLFromTab'),
-            ('BrowserViewControllerTestCase', 'testTabSwitch')
-        ],
-        tests
-    )
+    self.tr.xctestrun_data = {'TestTargetName': {}}
 
 
 if __name__ == '__main__':

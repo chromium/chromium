@@ -5,21 +5,35 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_UPDATE_SCREEN_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_UPDATE_SCREEN_HANDLER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
-namespace chromeos {
-
+namespace ash {
 class UpdateScreen;
+}
+
+namespace chromeos {
 
 // Interface for dependency injection between WelcomeScreen and its actual
 // representation. Owned by UpdateScreen.
 class UpdateView {
  public:
-  constexpr static StaticOobeScreenId kScreenId{"update"};
+  // The screen name must never change. It's stored into local state as a
+  // pending screen during OOBE update. So the value should be the same between
+  // versions.
+  constexpr static StaticOobeScreenId kScreenId{"oobe-update"};
+
+  enum class UIState {
+    kCheckingForUpdate = 0,
+    kUpdateInProgress = 1,
+    kRestartInProgress = 2,
+    kManualReboot = 3,
+    kCellularPermission = 4,
+  };
 
   virtual ~UpdateView() {}
 
@@ -29,20 +43,18 @@ class UpdateView {
   // Hides the contents of the screen.
   virtual void Hide() = 0;
 
-  // Binds |screen| to the view.
-  virtual void Bind(UpdateScreen* screen) = 0;
+  // Binds `screen` to the view.
+  virtual void Bind(ash::UpdateScreen* screen) = 0;
 
   // Unbinds the screen from the view.
   virtual void Unbind() = 0;
 
-  // Set the estimated time left, in seconds.
-  virtual void SetEstimatedTimeLeft(int value) = 0;
-  virtual void SetShowEstimatedTimeLeft(bool value) = 0;
-  virtual void SetUpdateCompleted(bool value) = 0;
-  virtual void SetShowCurtain(bool value) = 0;
-  virtual void SetProgressMessage(const base::string16& value) = 0;
-  virtual void SetProgress(int value) = 0;
-  virtual void SetRequiresPermissionForCellular(bool value) = 0;
+  virtual void SetUpdateState(UIState value) = 0;
+  virtual void SetUpdateStatus(int percent,
+                               const std::u16string& percent_message,
+                               const std::u16string& timeleft_message) = 0;
+  virtual void ShowLowBatteryWarningMessage(bool value) = 0;
+  virtual void SetAutoTransition(bool value) = 0;
   virtual void SetCancelUpdateShortcutEnabled(bool value) = 0;
 };
 
@@ -51,36 +63,48 @@ class UpdateScreenHandler : public UpdateView, public BaseScreenHandler {
   using TView = UpdateView;
 
   explicit UpdateScreenHandler(JSCallsContainer* js_calls_container);
+
+  UpdateScreenHandler(const UpdateScreenHandler&) = delete;
+  UpdateScreenHandler& operator=(const UpdateScreenHandler&) = delete;
+
   ~UpdateScreenHandler() override;
 
  private:
   // UpdateView:
   void Show() override;
   void Hide() override;
-  void Bind(UpdateScreen* screen) override;
+  void Bind(ash::UpdateScreen* screen) override;
   void Unbind() override;
-  void SetEstimatedTimeLeft(int value) override;
-  void SetShowEstimatedTimeLeft(bool value) override;
-  void SetUpdateCompleted(bool value) override;
-  void SetShowCurtain(bool value) override;
-  void SetProgressMessage(const base::string16& value) override;
-  void SetProgress(int value) override;
-  void SetRequiresPermissionForCellular(bool value) override;
+
+  void SetUpdateState(UpdateView::UIState value) override;
+  void SetUpdateStatus(int percent,
+                       const std::u16string& percent_message,
+                       const std::u16string& timeleft_message) override;
+  void ShowLowBatteryWarningMessage(bool value) override;
+  void SetAutoTransition(bool value) override;
   void SetCancelUpdateShortcutEnabled(bool value) override;
+
+  void OnAccessibilityStatusChanged(
+      const ash::AccessibilityStatusEventDetails& details);
 
   // BaseScreenHandler:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
   void Initialize() override;
 
-  UpdateScreen* screen_ = nullptr;
+  ash::UpdateScreen* screen_ = nullptr;
 
   // If true, Initialize() will call Show().
   bool show_on_init_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::UpdateScreenHandler;
+using ::chromeos::UpdateView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_UPDATE_SCREEN_HANDLER_H_

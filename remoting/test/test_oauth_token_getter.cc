@@ -7,7 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "google_apis/google_api_keys.h"
@@ -115,7 +116,7 @@ void TestOAuthTokenGetter::InvalidateCache() {
   is_authenticating_ = true;
 
   printf(
-      "Is your account whitelisted to use 1P scope in consent page? [Y/n]: ");
+      "Is your account allowlisted to use 1P scope in consent page? [Y/n]: ");
   bool show_consent_page = test::ReadYNBool(true);
 
   static const std::string read_auth_code_prompt = base::StringPrintf(
@@ -165,7 +166,7 @@ std::unique_ptr<OAuthTokenGetter> TestOAuthTokenGetter::CreateWithRefreshToken(
           email, refresh_token, is_service_account);
 
   return std::make_unique<OAuthTokenGetterImpl>(
-      std::move(oauth_credentials), base::DoNothing(),
+      std::move(oauth_credentials),
       url_loader_factory_owner_->GetURLLoaderFactory(),
       /*auto_refresh=*/true);
 }

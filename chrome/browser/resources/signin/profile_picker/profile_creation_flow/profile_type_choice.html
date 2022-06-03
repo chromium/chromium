@@ -1,0 +1,121 @@
+<style include="profile-creation-shared">
+  #actionContainer {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #infoContainer {
+    bottom: 0;
+    box-sizing: border-box;
+    margin-bottom: 58px;
+    position: absolute;
+    text-align: center;
+    width: 100%;
+  }
+
+  .info-box {
+    align-items: center;
+    border: 1px solid var(--google-grey-200);
+    border-radius: 8px;
+    color: var(--google-grey-refresh-700);
+    display: inline-flex;
+    flex-direction: row;
+    margin-inline: auto;
+    max-width: 780px;
+    padding-block: 12px;
+    padding-inline-end: 18px;
+  }
+
+  .info-box > p {
+    flex-grow: 1;
+    margin-block: 0;
+    text-align: start;
+  }
+
+  .icon-container {
+    --icon-container-size: 28px;
+    --icon-container-margin: 16px;
+    background-color: var(--google-grey-refresh-100);
+    border-radius: 50%;
+    height: var(--icon-container-size);
+    margin-inline: var(--icon-container-margin);
+    width: var(--icon-container-size);
+  }
+
+  .icon-container iron-icon {
+    --icon-size: 16px;
+    height: var(--icon-size);
+    padding: calc((var(--icon-container-size) - var(--icon-size)) / 2);
+    width: var(--icon-size);
+  }
+
+  cr-button {
+    font-size: 1em;
+    font-weight: normal;
+    min-width: 210px;
+  }
+
+  #notNowButton {
+    margin-top: 18px;
+  }
+
+  .title-container {
+    margin: 104px auto;
+    margin-bottom: 48px;
+    text-align: center;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .info-box {
+      border-color: var(--google-grey-600);
+      color: var(--google-grey-refresh-100);
+    }
+
+    .icon-container {
+      background-color: var(--google-grey-refresh-700);
+    }
+  }
+</style>
+
+<div id="headerContainer"
+    style$="--theme-frame-color:[[profileThemeInfo.themeFrameColor]];
+            --theme-text-color:[[profileThemeInfo.themeFrameTextColor]];">
+  <cr-icon-button id="backButton" iron-icon="cr:arrow-back"
+      on-click="onBackClick_" aria-label$="[[getBackButtonAriaLabel_()]]"
+      disabled="[[loadSigninInProgess_]]">
+  </cr-icon-button>
+  <div id="signinPromoBanner" class="banner"></div>
+  <div id="avatarContainer">
+    <img class="avatar" alt="" src="[[profileThemeInfo.themeGenericAvatar]]">
+  </div>
+</div>
+<div class="title-container">
+  <h2>$i18n{profileTypeChoiceTitle}</h2>
+  <h3>$i18n{profileTypeChoiceSubtitle}</h3>
+</div>
+<div id="actionContainer">
+  <cr-button id="signInButton" class="action-button" on-click="onSignInClick_"
+      disabled="[[loadSigninInProgess_]]">
+    $i18n{signInButtonLabel}
+  </cr-button>
+  <if expr="not lacros">
+    <cr-button id="notNowButton" on-click="onNotNowClick_"
+        disabled="[[loadSigninInProgess_]]">
+      $i18n{notNowButtonLabel}
+    </cr-button>
+  </if>
+</div>
+
+<template is="dom-if" if="[[managedDeviceDisclaimer_]]">
+  <div id="infoContainer">
+    <div class="info-box">
+      <div class="icon-container">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
+      <p>
+        $i18n{managedDeviceDisclaimer}
+      </p>
+    </div>
+  </div>
+</template>

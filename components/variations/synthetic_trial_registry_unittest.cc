@@ -6,8 +6,10 @@
 
 #include <string>
 
+#include "base/containers/contains.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/variations/active_field_trials.h"
 #include "components/variations/hashing.h"
@@ -17,11 +19,14 @@
 
 namespace variations {
 
-namespace {
-
 class SyntheticTrialRegistryTest : public ::testing::Test {
  public:
   SyntheticTrialRegistryTest() { InitCrashKeys(); }
+
+  SyntheticTrialRegistryTest(const SyntheticTrialRegistryTest&) = delete;
+  SyntheticTrialRegistryTest& operator=(const SyntheticTrialRegistryTest&) =
+      delete;
+
   ~SyntheticTrialRegistryTest() override { ClearCrashKeysInstanceForTesting(); }
 
   // Returns true if there is a synthetic trial in the given vector that matches
@@ -42,17 +47,22 @@ class SyntheticTrialRegistryTest : public ::testing::Test {
   // take between 1-15ms per the documented resolution of base::TimeTicks.
   void WaitUntilTimeChanges(const base::TimeTicks& value) {
     while (base::TimeTicks::Now() == value) {
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(1));
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     }
   }
 
+  // Gets the current synthetic trials.
+  void GetSyntheticTrials(const SyntheticTrialRegistry& registry,
+                          std::vector<ActiveGroupId>* synthetic_trials) {
+    // Ensure that time has advanced by at least a tick before proceeding.
+    WaitUntilTimeChanges(base::TimeTicks::Now());
+    registry.GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
+                                              synthetic_trials);
+  }
+
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticTrialRegistryTest);
+  base::test::TaskEnvironment task_environment_;
 };
-
-}  // namespace
 
 TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   SyntheticTrialRegistry registry;
@@ -95,64 +105,96 @@ TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticTrial) {
   EXPECT_EQ(1U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial2", "Group2"));
 
-  // Ensure that time has advanced by at least a tick before proceeding.
-  WaitUntilTimeChanges(base::TimeTicks::Now());
-
   // Start a new log and ensure all three trials appear in it.
-  registry.GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
-                                            &synthetic_trials);
+  GetSyntheticTrials(registry, &synthetic_trials);
   EXPECT_EQ(3U, synthetic_trials.size());
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial1", "Group2"));
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial2", "Group2"));
   EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial3", "Group3"));
 }
 
-TEST_F(SyntheticTrialRegistryTest, RegisterSyntheticMultiGroupFieldTrial) {
-  SyntheticTrialRegistry registry;
+TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_NoAllowlist) {
+  SyntheticTrialRegistry registry(false);
+  const std::string context = "TestTrial1";
+  const auto mode = SyntheticTrialRegistry::kOverrideExistingIds;
 
-  // Register a synthetic trial TestTrial1 with groups A and B.
-  uint32_t trial_name_hash = HashName("TestTrial1");
-  std::vector<uint32_t> group_name_hashes = {HashName("A"), HashName("B")};
-  registry.RegisterSyntheticMultiGroupFieldTrial(trial_name_hash,
-                                                 group_name_hashes);
-  // Ensure that time has advanced by at least a tick before proceeding.
-  WaitUntilTimeChanges(base::TimeTicks::Now());
-
+  registry.RegisterExternalExperiments(context, {100, 200}, mode);
   std::vector<ActiveGroupId> synthetic_trials;
-  registry.GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
-                                            &synthetic_trials);
+  GetSyntheticTrials(registry, &synthetic_trials);
   EXPECT_EQ(2U, synthetic_trials.size());
-  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial1", "A"));
-  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial1", "B"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial1", "100"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial1", "200"));
 
   // Change the group for the trial to a single group.
-  group_name_hashes = {HashName("X")};
-  registry.RegisterSyntheticMultiGroupFieldTrial(trial_name_hash,
-                                                 group_name_hashes);
-  // Ensure that time has advanced by at least a tick before proceeding.
-  WaitUntilTimeChanges(base::TimeTicks::Now());
-
-  registry.GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
-                                            &synthetic_trials);
+  registry.RegisterExternalExperiments(context, {500}, mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
   EXPECT_EQ(1U, synthetic_trials.size());
-  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial1", "X"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "TestTrial1", "500"));
 
   // Register a trial with no groups, which should effectively remove the trial.
-  group_name_hashes.clear();
-  registry.RegisterSyntheticMultiGroupFieldTrial(trial_name_hash,
-                                                 group_name_hashes);
-  // Ensure that time has advanced by at least a tick before proceeding.
-  WaitUntilTimeChanges(base::TimeTicks::Now());
+  registry.RegisterExternalExperiments(context, {}, mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(0U, synthetic_trials.size());
+}
 
-  registry.GetSyntheticFieldTrialsOlderThan(base::TimeTicks::Now(),
-                                            &synthetic_trials);
+TEST_F(SyntheticTrialRegistryTest, RegisterExternalExperiments_WithAllowlist) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      internal::kExternalExperimentAllowlist,
+      {{"100", "A"}, {"101", "A"}, {"300", "C,xyz"}});
+
+  const std::string context = "Test";
+  const auto override_mode = SyntheticTrialRegistry::kOverrideExistingIds;
+  SyntheticTrialRegistry registry;
+  std::vector<ActiveGroupId> synthetic_trials;
+
+  // Register a synthetic trial TestTrial1 with groups A and B.
+  registry.RegisterExternalExperiments(context, {100, 200, 300}, override_mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(2U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "100"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "300"));
+
+  // A new call that only contains 100 will clear the other ones.
+  registry.RegisterExternalExperiments(context, {101}, override_mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(1U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "101"));
+
+  const auto dont_override = SyntheticTrialRegistry::kDoNotOverrideExistingIds;
+  // Now, register another id that doesn't exist with kDoNotOverrideExistingIds.
+  registry.RegisterExternalExperiments(context, {300}, dont_override);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(2U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "101"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "300"));
+
+  // Registering 100, which already has a trial A registered, shouldn't work.
+  registry.RegisterExternalExperiments(context, {100}, dont_override);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(2U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "101"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "300"));
+
+  // Registering an empty set should also do nothing.
+  registry.RegisterExternalExperiments(context, {}, dont_override);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(2U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "101"));
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "C", "300"));
+
+  // Registering with an override should reset existing ones.
+  registry.RegisterExternalExperiments(context, {100}, override_mode);
+  GetSyntheticTrials(registry, &synthetic_trials);
+  EXPECT_EQ(1U, synthetic_trials.size());
+  EXPECT_TRUE(HasSyntheticTrial(synthetic_trials, "A", "100"));
 }
 
 TEST_F(SyntheticTrialRegistryTest, GetSyntheticFieldTrialActiveGroups) {
   SyntheticTrialRegistry registry;
 
-  // Instantiate and setup the corresponding singleton observer which tracks the
-  // creation of all SyntheticTrialGroups.
+  // Instantiate and set up the corresponding singleton observer which tracks
+  // the creation of all SyntheticTrialGroups.
   registry.AddSyntheticTrialObserver(
       SyntheticTrialsActiveGroupIdProvider::GetInstance());
 

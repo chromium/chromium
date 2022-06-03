@@ -12,6 +12,8 @@
 
 #include "base/observer_list.h"
 #include "base/time/time.h"
+#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
+#include "chrome/browser/printing/print_job.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -50,10 +52,24 @@ class CupsPrintJobManager : public KeyedService {
   static CupsPrintJobManager* CreateInstance(Profile* profile);
 
   explicit CupsPrintJobManager(Profile* profile);
+  CupsPrintJobManager(const CupsPrintJobManager&) = delete;
+  CupsPrintJobManager& operator=(const CupsPrintJobManager&) = delete;
   ~CupsPrintJobManager() override;
 
   // KeyedService override:
   void Shutdown() override;
+
+  // Add a CUPS print job to the print job management application and monitor
+  // it for completion. The print job must already have been sent to CUPS
+  // before calling this function.
+  virtual bool CreatePrintJob(
+      const std::string& printer_id,
+      const std::string& title,
+      int job_id,
+      int total_page_number,
+      ::printing::PrintJob::Source source,
+      const std::string& source_id,
+      const printing::proto::PrintSettings& settings) = 0;
 
   // Cancel a print job |job|. Note the |job| will be deleted after cancelled.
   // There will be no notifications after cancellation.
@@ -84,8 +100,6 @@ class CupsPrintJobManager : public KeyedService {
 
   // Keyed by CupsPrintJob's unique ID
   std::map<std::string, base::TimeTicks> print_job_start_times_;
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintJobManager);
 };
 
 }  // namespace chromeos

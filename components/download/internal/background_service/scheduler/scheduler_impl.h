@@ -10,7 +10,6 @@
 #include <map>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/download/internal/background_service/entry.h"
 
 namespace download {
@@ -33,6 +32,10 @@ class SchedulerImpl : public Scheduler {
   SchedulerImpl(TaskScheduler* task_scheduler,
                 Configuration* config,
                 const std::vector<DownloadClient>& clients);
+
+  SchedulerImpl(const SchedulerImpl&) = delete;
+  SchedulerImpl& operator=(const SchedulerImpl&) = delete;
+
   ~SchedulerImpl() override;
 
   // Scheduler implementation.
@@ -63,8 +66,6 @@ class SchedulerImpl : public Scheduler {
   // The index of the current client.
   // See |download_clients_|.
   size_t current_client_index_;
-
-  DISALLOW_COPY_AND_ASSIGN(SchedulerImpl);
 };
 
 }  // namespace download

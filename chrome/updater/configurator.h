@@ -10,8 +10,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/update_client/configurator.h"
 
 class GURL;
@@ -24,17 +23,26 @@ class Version;
 namespace update_client {
 class ActivityDataService;
 class NetworkFetcherFactory;
+class CrxDownloaderFactory;
 class ProtocolHandlerFactory;
 }  // namespace update_client
 
 namespace updater {
 
+class ActivityDataService;
+class ExternalConstants;
+class PolicyService;
+class UpdaterPrefs;
+
 class Configurator : public update_client::Configurator {
  public:
-  Configurator();
+  Configurator(scoped_refptr<UpdaterPrefs> prefs,
+               scoped_refptr<ExternalConstants> external_constants);
+  Configurator(const Configurator&) = delete;
+  Configurator& operator=(const Configurator&) = delete;
 
   // Configurator for update_client::Configurator.
-  int InitialDelay() const override;
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -50,6 +58,8 @@ class Configurator : public update_client::Configurator {
   std::string GetDownloadPreference() const override;
   scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()
       override;
+  scoped_refptr<update_client::CrxDownloaderFactory> GetCrxDownloaderFactory()
+      override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
   bool EnabledDeltas() const override;
@@ -61,16 +71,21 @@ class Configurator : public update_client::Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<update_client::ProtocolHandlerFactory>
   GetProtocolHandlerFactory() const override;
+  int ServerKeepAliveSeconds() const;
+  scoped_refptr<PolicyService> GetPolicyService() const;
 
  private:
   friend class base::RefCountedThreadSafe<Configurator>;
   ~Configurator() override;
 
-  std::unique_ptr<PrefService> pref_service_;
+  scoped_refptr<UpdaterPrefs> prefs_;
+  scoped_refptr<PolicyService> policy_service_;
+  scoped_refptr<ExternalConstants> external_constants_;
+  std::unique_ptr<ActivityDataService> activity_data_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
+  scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
-  DISALLOW_COPY_AND_ASSIGN(Configurator);
 };
 
 }  // namespace updater

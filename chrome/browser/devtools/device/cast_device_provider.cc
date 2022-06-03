@@ -11,10 +11,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/local_discovery/service_discovery_shared_client.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -152,33 +151,33 @@ CastDeviceProvider::CastDeviceProvider() {}
 
 CastDeviceProvider::~CastDeviceProvider() {}
 
-void CastDeviceProvider::QueryDevices(const SerialsCallback& callback) {
+void CastDeviceProvider::QueryDevices(SerialsCallback callback) {
   if (!lister_delegate_) {
     lister_delegate_.reset(new DeviceListerDelegate(
         weak_factory_.GetWeakPtr(), base::ThreadTaskRunnerHandle::Get()));
-    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                   base::BindOnce(&DeviceListerDelegate::StartDiscovery,
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DeviceListerDelegate::StartDiscovery,
                                   lister_delegate_->AsWeakPtr()));
   }
   std::set<net::HostPortPair> targets;
   for (const auto& device_entry : device_info_map_)
     targets.insert(net::HostPortPair(device_entry.first, kCastInspectPort));
   tcp_provider_ = new TCPDeviceProvider(targets);
-  tcp_provider_->QueryDevices(callback);
+  tcp_provider_->QueryDevices(std::move(callback));
 }
 
 void CastDeviceProvider::QueryDeviceInfo(const std::string& serial,
-                                         const DeviceInfoCallback& callback) {
+                                         DeviceInfoCallback callback) {
   auto it_device = device_info_map_.find(serial);
   if (it_device == device_info_map_.end())
     return;
-  callback.Run(it_device->second);
+  std::move(callback).Run(it_device->second);
 }
 
 void CastDeviceProvider::OpenSocket(const std::string& serial,
                                     const std::string& socket_name,
-                                    const SocketCallback& callback) {
-  tcp_provider_->OpenSocket(serial, socket_name, callback);
+                                    SocketCallback callback) {
+  tcp_provider_->OpenSocket(serial, socket_name, std::move(callback));
 }
 
 void CastDeviceProvider::OnDeviceChanged(

@@ -7,10 +7,10 @@
 #include <memory>
 
 #include "base/debug/alias.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
-#include "base/stl_util.h"
 
 namespace base {
 
@@ -20,16 +20,16 @@ namespace {
 // an error if the flag is already set.
 class MakeActive {
  public:
-  MakeActive(std::atomic<bool>* is_active) : is_active_(is_active) {
+  explicit MakeActive(std::atomic<bool>* is_active) : is_active_(is_active) {
     bool was_active = is_active_->exchange(true, std::memory_order_relaxed);
     CHECK(!was_active);
   }
+  MakeActive(const MakeActive&) = delete;
+  MakeActive& operator=(const MakeActive&) = delete;
   ~MakeActive() { is_active_->store(false, std::memory_order_relaxed); }
 
  private:
   std::atomic<bool>* is_active_;
-
-  DISALLOW_COPY_AND_ASSIGN(MakeActive);
 };
 
 }  // namespace

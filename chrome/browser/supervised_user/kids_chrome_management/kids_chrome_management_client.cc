@@ -8,29 +8,31 @@
 
 #include "base/json/json_reader.h"
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "components/google/core/common/google_util.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
+#include "components/signin/public/identity_manager/scope_set.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/escape.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_request_status.h"
-#include "services/identity/public/cpp/scope_set.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -49,8 +51,6 @@ constexpr char kClassifyUrlDataContentType[] =
 constexpr char kClassifyUrlRequestApiPath[] =
     "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/people/"
     "me:classifyUrl";
-constexpr char kClassifyUrlKidPermissionScope[] =
-    "https://www.googleapis.com/auth/kid.permission";
 constexpr char kClassifyUrlOauthConsumerName[] = "kids_url_classifier";
 constexpr char kClassifyUrlDataFormat[] = "url=%s&region_code=%s";
 constexpr char kClassifyUrlAllowed[] = "allowed";
@@ -73,7 +73,7 @@ std::string GetClassifyURLRequestString(
 // ClassifyUrlResponse proto object.
 std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
 GetClassifyURLResponseProto(const std::string& response) {
-  base::Optional<base::Value> optional_value = base::JSONReader::Read(response);
+  absl::optional<base::Value> optional_value = base::JSONReader::Read(response);
   const base::DictionaryValue* dict = nullptr;
 
   auto response_proto =
@@ -117,6 +117,15 @@ GetClassifyURLResponseProto(const std::string& response) {
   return response_proto;
 }
 
+std::unique_ptr<network::ResourceRequest>
+CreateResourceRequestForUrlClassifier() {
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = GURL(kClassifyUrlRequestApiPath);
+  resource_request->method = "POST";
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  return resource_request;
+}
+
 }  // namespace
 
 struct KidsChromeManagementClient::KidsChromeManagementRequest {
@@ -154,9 +163,8 @@ struct KidsChromeManagementClient::KidsChromeManagementRequest {
 };
 
 KidsChromeManagementClient::KidsChromeManagementClient(Profile* profile) {
-  url_loader_factory_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  url_loader_factory_ = profile->GetDefaultStoragePartition()
+                            ->GetURLLoaderFactoryForBrowserProcess();
 
   identity_manager_ = IdentityManagerFactory::GetForProfile(profile);
 }
@@ -167,11 +175,6 @@ void KidsChromeManagementClient::ClassifyURL(
     std::unique_ptr<kids_chrome_management::ClassifyUrlRequest> request_proto,
     KidsChromeManagementCallback callback) {
   DVLOG(1) << "Checking URL:  " << request_proto->url();
-
-  auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = GURL(kClassifyUrlRequestApiPath);
-  resource_request->method = "POST";
-  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   const net::NetworkTrafficAnnotationTag traffic_annotation =
       net::DefineNetworkTrafficAnnotation(
@@ -202,8 +205,9 @@ void KidsChromeManagementClient::ClassifyURL(
 
   auto kids_chrome_request = std::make_unique<KidsChromeManagementRequest>(
       std::move(request_proto), std::move(callback),
-      std::move(resource_request), traffic_annotation,
-      kClassifyUrlOauthConsumerName, kClassifyUrlKidPermissionScope,
+      CreateResourceRequestForUrlClassifier(), traffic_annotation,
+      kClassifyUrlOauthConsumerName,
+      GaiaConstants::kClassifyUrlKidPermissionOAuth2Scope,
       RequestMethod::kClassifyUrl);
 
   MakeHTTPRequest(std::move(kids_chrome_request));
@@ -216,14 +220,17 @@ void KidsChromeManagementClient::MakeHTTPRequest(
   StartFetching(requests_in_progress_.begin());
 }
 
-// Helpful reading for the next 4 methods:
-// https://chromium.googlesource.com/chromium/src.git/+/master/docs/callback.md#partial-binding-of-parameters-currying
-
 void KidsChromeManagementClient::StartFetching(
     KidsChromeRequestList::iterator it) {
   KidsChromeManagementRequest* req = it->get();
 
-  identity::ScopeSet scopes{req->scope};
+  // This is a quick fix for https://crbug.com/1192222. `resource_request` is
+  // moved during creation of SimpleURLLoader. Retrying the request causes
+  // dereferencing nullptr. To avoid that recreate the `resource_request` here.
+  if (!req->resource_request)
+    req->resource_request = CreateResourceRequestForUrlClassifier();
+
+  signin::ScopeSet scopes{req->scope};
 
   req->access_token_fetcher =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
@@ -231,7 +238,9 @@ void KidsChromeManagementClient::StartFetching(
           base::BindOnce(
               &KidsChromeManagementClient::OnAccessTokenFetchComplete,
               base::Unretained(this), it),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
+          // This class doesn't care about browser sync consent.
+          signin::ConsentLevel::kSignin);
 }
 
 void KidsChromeManagementClient::OnAccessTokenFetchComplete(
@@ -241,7 +250,7 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
   if (error.state() != GoogleServiceAuthError::NONE) {
     DLOG(WARNING) << "Token error: " << error.ToString();
 
-    std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+    std::unique_ptr<google::protobuf::MessageLite> response_proto;
     DispatchResult(it, std::move(response_proto),
                    KidsChromeManagementClient::ErrorCode::kTokenError);
     return;
@@ -262,7 +271,7 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
             req->request_proto.get()));
   } else {
     DVLOG(1) << "Could not detect the request proto's class.";
-    std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+    std::unique_ptr<google::protobuf::MessageLite> response_proto;
     DispatchResult(it, std::move(response_proto),
                    KidsChromeManagementClient::ErrorCode::kServiceError);
     return;
@@ -275,7 +284,8 @@ void KidsChromeManagementClient::OnAccessTokenFetchComplete(
   simple_url_loader->AttachStringForUpload(request_data,
                                            kClassifyUrlDataContentType);
 
-  simple_url_loader->DownloadToString(
+  auto* const simple_url_loader_ptr = simple_url_loader.get();
+  simple_url_loader_ptr->DownloadToString(
       url_loader_factory_.get(),
       base::BindOnce(&KidsChromeManagementClient::OnSimpleLoaderComplete,
                      base::Unretained(this), it, std::move(simple_url_loader),
@@ -300,15 +310,16 @@ void KidsChromeManagementClient::OnSimpleLoaderComplete(
     if (response_code == net::HTTP_UNAUTHORIZED && !req->access_token_expired) {
       DLOG(WARNING) << "Access token expired:\n" << token_info.token;
       req->access_token_expired = true;
-      identity::ScopeSet scopes{req->scope};
+      signin::ScopeSet scopes{req->scope};
       identity_manager_->RemoveAccessTokenFromCache(
-          identity_manager_->GetPrimaryAccountId(), scopes, token_info.token);
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSignin),
+          scopes, token_info.token);
       StartFetching(it);
       return;
     }
   }
 
-  std::unique_ptr<google::protobuf::MessageLite> response_proto = nullptr;
+  std::unique_ptr<google::protobuf::MessageLite> response_proto;
 
   int net_error = simple_url_loader->NetError();
 

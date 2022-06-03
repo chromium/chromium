@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -15,10 +15,27 @@ import zlib
 if __name__ == '__main__':
   sys.path.append(os.path.join(os.path.dirname(__file__), '../..'))
 
+import grit.format.resource_map
 from grit.node import misc
 from grit.node import include
 from grit.node import empty
 from grit import util
+
+
+def checkIsGzipped(filename, compress_attr):
+  test_data_root = util.PathFromRoot('grit/testdata')
+  root = util.ParseGrdForUnittest(
+      '''
+      <includes>
+        <include name="TEST_TXT" file="%s" %s type="BINDATA"/>
+      </includes>''' % (filename, compress_attr),
+      base_dir=test_data_root)
+  node, = root.GetChildrenOfType(include.IncludeNode)
+  compressed = node.GetDataPackValue(lang='en', encoding=util.BINARY)
+
+  decompressed_data = zlib.decompress(compressed, 16 + zlib.MAX_WBITS)
+  expected = util.ReadFile(os.path.join(test_data_root, filename), util.BINARY)
+  return expected == decompressed_data
 
 
 class IncludeNodeUnittest(unittest.TestCase):
@@ -72,15 +89,18 @@ class IncludeNodeUnittest(unittest.TestCase):
                      expected_path)
 
   def testCompressGzip(self):
-    root = util.ParseGrdForUnittest('''
-        <includes>
-          <include name="TEST_TXT" file="test_text.txt"
-                   compress="gzip" type="BINDATA"/>
-        </includes>''', base_dir = util.PathFromRoot('grit/testdata'))
-    inc, = root.GetChildrenOfType(include.IncludeNode)
-    compressed = inc.GetDataPackValue(lang='en', encoding=1)
+    self.assertTrue(checkIsGzipped('test_text.txt', 'compress="gzip"'))
 
-    decompressed_data = zlib.decompress(compressed, 16 + zlib.MAX_WBITS)
+  def testCompressGzipByDefault(self):
+    self.assertTrue(checkIsGzipped('test_html.html', ''))
+    self.assertTrue(checkIsGzipped('test_js.js', ''))
+    self.assertTrue(checkIsGzipped('test_css.css', ''))
+    self.assertTrue(checkIsGzipped('test_svg.svg', ''))
+
+    self.assertTrue(checkIsGzipped('test_html.html', 'compress="default"'))
+    self.assertTrue(checkIsGzipped('test_js.js', 'compress="default"'))
+    self.assertTrue(checkIsGzipped('test_css.css', 'compress="default"'))
+    self.assertTrue(checkIsGzipped('test_svg.svg', 'compress="default"'))
 
   def testSkipInResourceMap(self):
     root = util.ParseGrdForUnittest('''
@@ -97,17 +117,50 @@ class IncludeNodeUnittest(unittest.TestCase):
     self.assertTrue(inc[2].IsResourceMapSource())
 
   def testAcceptsPreprocess(self):
-    root = util.ParseGrdForUnittest('''
+    root = util.ParseGrdForUnittest(
+        '''
         <includes>
           <include name="PREPROCESS_TEST" file="preprocess_test.html"
-                   preprocess="true" type="chrome_html"/>
-        </includes>''', base_dir = util.PathFromRoot('grit/testdata'))
+                   preprocess="true" compress="false" type="chrome_html"/>
+        </includes>''',
+        base_dir=util.PathFromRoot('grit/testdata'))
     inc, = root.GetChildrenOfType(include.IncludeNode)
-    result = inc.GetDataPackValue(lang='en', encoding=1)
-    self.failUnless(result.find('should be kept') != -1)
-    self.failUnless(result.find('in the middle...') != -1)
-    self.failUnless(result.find('should be removed') == -1)
+    result = inc.GetDataPackValue(lang='en', encoding=util.BINARY)
+    self.assertIn(b'should be kept', result)
+    self.assertIn(b'in the middle...', result)
+    self.assertNotIn(b'should be removed', result)
 
+  def testAcceptsResourcePath(self):
+    root = util.ParseGrdForUnittest(
+        '''
+        <outputs>
+          <output filename="grit/test1_resources.h" type="rc_header">
+            <emit emit_type='prepend'></emit>
+          </output>
+          <output filename="grit/test1_resources_map.cc"
+              type="resource_file_map_source" />
+          <output filename="grit/test1_resources_map.h"
+              type="resource_map_header" />
+        </outputs>
+        <release seq="3">
+          <includes>
+            <include name="TEST1_TEXT" file="test1_text.txt"
+                     resource_path="foo/renamed1_text.txt"
+                     compress="false" type="BINDATA"/>
+          </includes>
+        </release>''',
+        base_dir=util.PathFromRoot('grit/testdata'))
+    inc, = root.GetChildrenOfType(include.IncludeNode)
+    formatter = grit.format.resource_map.GetFormatter(
+        'resource_file_map_source')
+    formatted = formatter(root,
+                          lang='en',
+                          output_dir=util.PathFromRoot('grit/testdata'))
+    found = False
+    for segment in formatted:
+      found = found or 'foo/renamed1_text.txt' in segment
+      self.assertNotIn('test1_text.txt', segment)
+    self.assertTrue(found)
 
 if __name__ == '__main__':
   unittest.main()

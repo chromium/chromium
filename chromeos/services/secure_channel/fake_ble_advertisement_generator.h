@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_ADVERTISEMENT_GENERATOR_H_
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_BLE_ADVERTISEMENT_GENERATOR_H_
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_advertisement_generator.h"
 #include "chromeos/services/secure_channel/data_with_timestamp.h"
 
@@ -17,6 +16,11 @@ namespace secure_channel {
 class FakeBleAdvertisementGenerator : public BleAdvertisementGenerator {
  public:
   FakeBleAdvertisementGenerator();
+
+  FakeBleAdvertisementGenerator(const FakeBleAdvertisementGenerator&) = delete;
+  FakeBleAdvertisementGenerator& operator=(
+      const FakeBleAdvertisementGenerator&) = delete;
+
   ~FakeBleAdvertisementGenerator() override;
 
   // Sets the advertisement to be returned by the next call to
@@ -34,8 +38,6 @@ class FakeBleAdvertisementGenerator : public BleAdvertisementGenerator {
 
  private:
   std::unique_ptr<DataWithTimestamp> advertisement_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBleAdvertisementGenerator);
 };
 
 }  // namespace secure_channel

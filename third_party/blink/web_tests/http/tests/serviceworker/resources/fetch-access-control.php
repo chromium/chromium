@@ -1,4 +1,5 @@
 <?php
+require_once '../../resources/portabilityLayer.php';
 header('X-ServiceWorker-ServerHeader: SetInTheServer');
 
 $prefix = '';
@@ -10,6 +11,8 @@ $prefix = '';
 //   PACRMethod/Headers parameter, if set, in preflight.
 //   The special value 'missing' for PACRHeaders can be used to
 //   test for the absence of ACRHeaders on the preflight request.
+clearstatcache();
+$tmp_file = isset($_GET['Token']) ? (sys_get_temp_dir() . "/" . $_GET['Token']) : 'undefined';
 if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && isset($_GET['PreflightTest'])) {
     $prefix = 'P';
 
@@ -37,7 +40,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS' && isset($_GET['PreflightTest'])) {
         exit;
     }
     header("HTTP/1.1 {$_GET['PreflightTest']}");
+
+    if (isset($_GET['Token'])) {
+      touch($tmp_file);
+    }
 }
+
+$did_preflight = false;
+if ($_SERVER['REQUEST_METHOD'] != 'OPTIONS' && file_exists($tmp_file)) {
+  $did_preflight = true;
+  unlink($tmp_file);
+}
+
+if (isset($_GET['PACMAge']))
+  header('Access-Control-Max-Age: ' . $_GET['PACMAge']);
 
 if (isset($_GET[$prefix . 'ACAOrigin'])) {
     $origins = explode(',', $_GET[$prefix . 'ACAOrigin']);
@@ -54,17 +70,9 @@ if (isset($_GET[$prefix . 'ACACredentials']))
 if (isset($_GET[$prefix . 'ACEHeaders']))
     header('Access-Control-Expose-Headers: ' . $_GET[$prefix . 'ACEHeaders']);
 
-// Whether the Set-Cookie line needs to include SameSite=None and Secure (for
-// cross-site use).
-$cookie_cross_site = isset($_GET['SameSiteNone']);
-
 if (isset($_GET[$prefix . 'SetCookie'])) {
-    if ($cookie_cross_site) {
-        header('Set-Cookie: cookie=' . $_GET[$prefix . 'SetCookie'] .
-               '; SameSite=None; Secure');
-    } else {
-        header('Set-Cookie: cookie=' . $_GET[$prefix . 'SetCookie']);
-    }
+    header('Set-Cookie: cookie=' . $_GET[$prefix . 'SetCookie'] .
+           '; SameSite=None; Secure');
 }
 if (isset($_GET[$prefix . 'SetCookie2']))
     header('Set-Cookie2: cookie=' . $_GET[$prefix . 'SetCookie2']);
@@ -125,7 +133,8 @@ $arr = array('jsonpResult' => 'success',
              'post' => $_POST,
              'username' => $username,
              'password' => $password,
-             'cookie' => $cookie);
+             'cookie' => $cookie,
+             'did_preflight' => $did_preflight);
 $json = json_encode($arr);
 echo "report( $json );";
 ?>

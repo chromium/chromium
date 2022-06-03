@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/xml/xpath_parser.h"
 #include "third_party/blink/renderer/core/xml/xpath_util.h"
 #include "third_party/blink/renderer/core/xmlns_names.h"
@@ -50,7 +51,7 @@ Step::Step(Axis axis,
 
 Step::~Step() = default;
 
-void Step::Trace(blink::Visitor* visitor) {
+void Step::Trace(Visitor* visitor) const {
   visitor->Trace(node_test_);
   visitor->Trace(predicates_);
   ParseNode::Trace(visitor);
@@ -192,6 +193,11 @@ static inline bool NodeMatchesBasicTest(Node* node,
           return namespace_uri.IsEmpty() ||
                  attr->namespaceURI() == namespace_uri;
 
+        if (attr->GetDocument().IsHTMLDocument() && attr->ownerElement() &&
+            attr->ownerElement()->IsHTMLElement() && namespace_uri.IsNull() &&
+            attr->namespaceURI().IsNull())
+          return EqualIgnoringASCIICase(attr->localName(), name);
+
         return attr->localName() == name &&
                attr->namespaceURI() == namespace_uri;
       }
@@ -213,7 +219,7 @@ static inline bool NodeMatchesBasicTest(Node* node,
                namespace_uri == element->namespaceURI();
       }
 
-      if (element->GetDocument().IsHTMLDocument()) {
+      if (IsA<HTMLDocument>(element->GetDocument())) {
         if (element->IsHTMLElement()) {
           // Paths without namespaces should match HTML elements in HTML
           // documents despite those having an XHTML namespace. Names are
@@ -385,8 +391,15 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
       // need anyway.
       if (GetNodeTest().GetKind() == NodeTest::kNameTest &&
           GetNodeTest().Data() != g_star_atom) {
-        Attr* attr = context_element->getAttributeNodeNS(
-            GetNodeTest().NamespaceURI(), GetNodeTest().Data());
+        Attr* attr;
+        // We need this branch because getAttributeNodeNS() doesn't do
+        // ignore-case matching even for an HTML element in an HTML document.
+        if (GetNodeTest().NamespaceURI().IsNull()) {
+          attr = context_element->getAttributeNode(GetNodeTest().Data());
+        } else {
+          attr = context_element->getAttributeNodeNS(
+              GetNodeTest().NamespaceURI(), GetNodeTest().Data());
+        }
         // In XPath land, namespace nodes are not accessible on the attribute
         // axis.
         if (attr && attr->namespaceURI() != xmlns_names::kNamespaceURI) {

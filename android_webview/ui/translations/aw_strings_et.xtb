@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="et">
-<translation id="6106989379647458772">Veebileht <ph name="PAGE" /> võib olla ajutiselt maas või see viidi jäädavalt üle uuele veebiaadressile.</translation>
-<translation id="6312113039770857350">Veebileht ei ole saadaval</translation>
-<translation id="8681531050781943054">Veebilehte <ph name="PAGE" /> ei saanud laadida järgmisel põhjusel.</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Soovitused.<ph name="MARKUP_2" />Veenduge, et andmesideühendus oleks olemas<ph name="MARKUP_3" />Laadige veebileht hiljem uuesti<ph name="MARKUP_4" />Kontrollige sisestatud aadressi<ph name="MARKUP_5" /></translation>
 </translationbundle>

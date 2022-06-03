@@ -1,6 +1,0 @@
-typemaps = [
-  "//services/service_manager/public/cpp/bind_source_info.typemap",
-  "//services/service_manager/public/cpp/identity.typemap",
-  "//services/service_manager/public/cpp/interface_provider_spec.typemap",
-  "//services/service_manager/public/cpp/service_filter.typemap",
-]

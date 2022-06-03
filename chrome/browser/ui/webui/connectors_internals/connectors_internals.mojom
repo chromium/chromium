@@ -1,0 +1,20 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module connectors_internals.mojom;
+
+struct ZeroTrustState {
+  // Whether the connector is enabled or not.
+  bool is_enabled;
+
+  // Dictionary containing device signals.
+  map<string, string> signals_dictionary;
+};
+
+// Browser interface for the page. Consists of calls for data and hooks for
+// interactivity.
+interface PageHandler {
+  // Get state information about the Zero Trust connector.
+  GetZeroTrustState() => (ZeroTrustState state);
+};

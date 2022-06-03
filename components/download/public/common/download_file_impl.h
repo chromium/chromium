@@ -17,11 +17,10 @@
 
 #include "base/cancelable_callback.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -30,7 +29,6 @@
 #include "components/download/public/common/download_save_info.h"
 #include "components/download/public/common/rate_estimator.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 
 namespace download {
@@ -53,13 +51,15 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
                    uint32_t download_id,
                    base::WeakPtr<DownloadDestinationObserver> observer);
 
+  DownloadFileImpl(const DownloadFileImpl&) = delete;
+  DownloadFileImpl& operator=(const DownloadFileImpl&) = delete;
+
   ~DownloadFileImpl() override;
 
   // DownloadFile functions.
   void Initialize(InitializeCallback initialize_callback,
-                  const CancelRequestCallback& cancel_request_callback,
-                  const DownloadItem::ReceivedSlices& received_slices,
-                  bool is_parallelizable) override;
+                  CancelRequestCallback cancel_request_callback,
+                  const DownloadItem::ReceivedSlices& received_slices) override;
   void AddInputStream(std::unique_ptr<InputStream> stream,
                       int64_t offset) override;
   void RenameAndUniquify(const base::FilePath& full_path,
@@ -103,6 +103,10 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
     SourceStream(int64_t offset,
                  int64_t starting_file_write_offset,
                  std::unique_ptr<InputStream> stream);
+
+    SourceStream(const SourceStream&) = delete;
+    SourceStream& operator=(const SourceStream&) = delete;
+
     ~SourceStream();
 
     void Initialize();
@@ -192,8 +196,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
     // Cancelable callback to read from the |input_stream_|.
     base::CancelableOnceClosure read_stream_callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(SourceStream);
   };
 
   // Sets the task runner for testing purpose, must be called before
@@ -325,6 +327,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   // See |cancel_request_callback_|.
   void CancelRequest(int64_t offset);
 
+  // Called when the download is completed.
+  void OnDownloadCompleted();
+
   // Print the internal states for debugging.
   void DebugStates() const;
 
@@ -361,12 +366,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   base::TimeTicks download_start_;
   RateEstimator rate_estimator_;
   int num_active_streams_;
-  bool record_stream_bandwidth_;
-  base::TimeTicks last_update_time_;
-  size_t bytes_seen_with_parallel_streams_;
-  size_t bytes_seen_without_parallel_streams_;
-  base::TimeDelta download_time_with_parallel_streams_;
-  base::TimeDelta download_time_without_parallel_streams_;
 
   // The slices received, this is being updated when new data are written.
   std::vector<DownloadItem::ReceivedSlice> received_slices_;
@@ -396,8 +395,6 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
 
   base::WeakPtr<DownloadDestinationObserver> observer_;
   base::WeakPtrFactory<DownloadFileImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadFileImpl);
 };
 
 }  // namespace download

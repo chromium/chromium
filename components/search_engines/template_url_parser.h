@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 
 class SearchTermsData;
 class TemplateURL;
@@ -32,6 +31,9 @@ class TemplateURLParser {
       base::RepeatingCallback<bool(const std::string&, const std::string&)>;
 
   using ParseCallback = base::OnceCallback<void(std::unique_ptr<TemplateURL>)>;
+
+  TemplateURLParser(const TemplateURLParser&) = delete;
+  TemplateURLParser& operator=(const TemplateURLParser&) = delete;
 
   // Decodes the chunk of data representing a TemplateURL, creates the
   // TemplateURL, and calls the |completion_callback| with the result. A null
@@ -59,8 +61,6 @@ class TemplateURLParser {
  private:
   // No one should create one of these.
   TemplateURLParser();
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLParser);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_TEMPLATE_URL_PARSER_H_

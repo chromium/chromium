@@ -2,6 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {str} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FakeEntry, FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+
 /**
  * Represents each volume, such as "drive", "download directory", each "USB
  * flush storage", or "mounted zip archive" etc.
@@ -9,7 +17,7 @@
  * @final
  * @implements {VolumeInfo}
  */
-class VolumeInfoImpl {
+export class VolumeInfoImpl {
   /**
    * @param {VolumeManagerCommon.VolumeType} volumeType The type of the volume.
    * @param {string} volumeId ID of the volume.
@@ -40,12 +48,15 @@ class VolumeInfoImpl {
    * @param {(string|undefined)} driveLabel Drive label of the volume. Removable
    *     partitions belonging to the same device will share the same drive
    *     label.
+   * @param {(string|undefined)} remoteMountPath The path on the remote host
+   *     where this volume is mounted, for crostini this is the user's homedir
+   *     (/home/<username>).
    */
   constructor(
       volumeType, volumeId, fileSystem, error, deviceType, devicePath,
       isReadOnly, isReadOnlyRemovableDevice, profile, label, providerId,
       hasMedia, configurable, watchable, source, diskFileSystemType, iconSet,
-      driveLabel) {
+      driveLabel, remoteMountPath) {
     this.volumeType_ = volumeType;
     this.volumeId_ = volumeId;
     this.fileSystem_ = fileSystem;
@@ -66,12 +77,12 @@ class VolumeInfoImpl {
 
     if (volumeType === VolumeManagerCommon.VolumeType.DRIVE) {
       this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_OFFLINE] =
-          new FakeEntry(
+          new FakeEntryImpl(
               str('DRIVE_OFFLINE_COLLECTION_LABEL'),
               VolumeManagerCommon.RootType.DRIVE_OFFLINE);
 
       this.fakeEntries_[VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME] =
-          new FakeEntry(
+          new FakeEntryImpl(
               str('DRIVE_SHARED_WITH_ME_COLLECTION_LABEL'),
               VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME);
     }
@@ -93,6 +104,7 @@ class VolumeInfoImpl {
     this.diskFileSystemType_ = diskFileSystemType;
     this.iconSet_ = iconSet;
     this.driveLabel_ = driveLabel;
+    this.remoteMountPath_ = remoteMountPath;
 
     /** @private @const {Promise<!DirectoryEntry>} */
     this.displayRootPromise_ = this.resolveDisplayRootImpl_();
@@ -260,6 +272,15 @@ class VolumeInfoImpl {
   }
 
   /**
+   * The path on the remote host where this volume is mounted, for crostini this
+   * is the user's homedir (/home/<username>).
+   * @return {(string|undefined)}
+   */
+  get remoteMountPath() {
+    return this.remoteMountPath_;
+  }
+
+  /**
    * @type {FilesAppEntry} an entry to be used as prefix of this volume on
    *     breadcrumbs, e.g. "My Files > Downloads", "My Files" is a prefixEntry
    *     on "Downloads" VolumeInfo.
@@ -335,16 +356,15 @@ class VolumeInfoImpl {
    * @return {Promise<!DirectoryEntry>} Volume type.
    */
   resolveDisplayRootImpl_() {
-    // TODO(mtomasz): Do not add VolumeInfo which failed to resolve root, and
-    // remove this if logic.
-    if (this.volumeType !== VolumeManagerCommon.VolumeType.DRIVE) {
-      if (this.fileSystem_) {
-        this.displayRoot_ = this.fileSystem_.root;
-        return Promise.resolve(this.displayRoot_);
-      } else {
-        return Promise.reject(this.error);
-      }
+    if (!this.fileSystem_) {
+      return Promise.reject(this.error);
     }
+
+    if (this.volumeType !== VolumeManagerCommon.VolumeType.DRIVE) {
+      this.displayRoot_ = this.fileSystem_.root;
+      return Promise.resolve(this.displayRoot_);
+    }
+
     // For Drive, we need to resolve.
     const displayRootURL = this.fileSystem_.root.toURL() + 'root';
     return Promise

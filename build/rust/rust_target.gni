@@ -1,0 +1,221 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/rust.gni")
+import("//build/rust/rust_cxx.gni")
+import("//build/rust/rust_unit_test.gni")
+
+# Creates a Rust target (rlib, executable, proc macro etc.) with
+# ability to understand some handy variables such as "edition" and
+# "features" and also to build any associated unit tests.
+#
+# Normally, you should not use this directly. Use either
+#   cargo_crate.gni - for 3p crates only
+#   rust_source_set.gni - for 1p Rust code
+# You might, rarely, want to use this for a Rust executable.
+#
+# Because the common use of this is rust_source_set, all the documentation
+# for the supported options is given in rust_source_set.gni. Please refer
+# over there.
+#
+# If you're using rust_chrome_target directly, you will also need to specify:
+#   target_type
+#     executable, rust_library etc. per GN norms
+#
+#   create_cpp_groups (bool)
+#     Whether both C++ and Rust may link against this. If so, groups
+#     are created for downstream targets to link against in both languages
+#     (again, see rust_source_set for docs). Only works for rust_library
+#     types.
+#
+# There is one area where this differs from `rust_source_set`: configs.
+# Here, you must specify `executable_configs` or `library_configs`
+# depending on the type of thing you're generating. This is so that
+# different defaults can be provided.
+
+template("rust_target") {
+  _target_name = target_name
+  _crate_name = _target_name
+  if (defined(invoker.crate_name)) {
+    _crate_name = invoker.crate_name
+  }
+  if (defined(invoker.crate_root)) {
+    _crate_root = invoker.crate_root
+  } else if (invoker.target_type == "executable") {
+    _crate_root = "src/main.rs"
+  } else {
+    _crate_root = "src/lib.rs"
+  }
+  crate_root = _crate_root
+
+  _rustflags = []
+  if (defined(invoker.rustflags)) {
+    _rustflags += invoker.rustflags
+  }
+  if (defined(invoker.features)) {
+    foreach(i, invoker.features) {
+      _rustflags += [ "--cfg=feature=\"${i}\"" ]
+    }
+  }
+  if (defined(invoker.edition) && invoker.edition == "2015") {
+    _configs = [ "//build/rust:edition_2015" ]
+  } else {
+    _configs = [ "//build/rust:edition_2018" ]
+  }
+  if (invoker.target_type == "executable") {
+    if (defined(invoker.executable_configs)) {
+      _configs += invoker.executable_configs
+    }
+  } else {
+    if (defined(invoker.library_configs)) {
+      _configs += invoker.library_configs
+    }
+  }
+
+  _deps_for_rust_targets = []
+  if (defined(invoker.mutually_dependent_target)) {
+    _deps_for_rust_targets += [ invoker.mutually_dependent_target ]
+  }
+  _deps = []
+  if (defined(invoker.deps)) {
+    _deps += invoker.deps
+  }
+  _build_unit_tests = build_rust_unit_tests
+  if (defined(invoker.skip_unit_tests) && invoker.skip_unit_tests == true) {
+    _build_unit_tests = false
+  }
+  if (defined(invoker.cxx_bindings)) {
+    _deps_for_rust_targets += [
+      ":${_target_name}_cxx",
+      "//build/rust:cxx_rustdeps",
+    ]
+    _cxx_bindings = invoker.cxx_bindings
+  }
+
+  # TODO(danakj): This could be a hash generated from the input crate, such as
+  # from its path, in which case the BUILD.gn would not need to specify
+  # anything. But GN doesn't give us a hash function to make that easy.
+  _metadata = "0"
+  if (defined(invoker.epoch)) {
+    _metadata = invoker.epoch
+  }
+
+  # We require that all source files are listed, even though this is
+  # not a requirement for rustc. The reason is to ensure that tools
+  # such as `gn deps` give the correct answer, and thus we trigger
+  # the right test suites etc. on code change.
+  # TODO(crbug.com/1256930) - verify this is correct
+  assert(defined(invoker.sources), "sources must be listed")
+
+  # If this code may be linked by both C++ and Rust, make differing
+  # groups of deps for each of them, because unfortunately there are
+  # differences in what they need to link against.
+  main_target_suffix = ""
+  if (invoker.create_cpp_groups) {
+    assert(invoker.target_type == "rust_library")
+    main_target_suffix = "__rlib"
+
+    # Downstream Rust targets should include this in their deps.
+    group(target_name) {
+      deps = [ ":${_target_name}${main_target_suffix}" ]
+      deps += _deps_for_rust_targets
+      forward_variables_from(invoker, [ "visibility" ])
+    }
+
+    # Downstream C++ targets should include this in their deps.
+    group("${_target_name}_cpp_bindings") {
+      deps = [
+        ":${_target_name}${main_target_suffix}",
+        "//build/rust/std",  # explanation: any C++ code depending on this
+                             # target should also depend on the Rust standard
+                             # library to ensure it's linked into the final
+                             # binary by the C++ linker.
+      ]
+      if (defined(invoker.mutually_dependent_target)) {
+        visibility = [ invoker.mutually_dependent_target ]
+      } else {
+        forward_variables_from(invoker, [ "visibility" ])
+      }
+      if (defined(_cxx_bindings)) {
+        public_deps = [ ":${_target_name}_cxx" ]
+      }
+    }
+  } else {
+    # This is a plain simple single Rust target.
+    assert(!defined(invoker.mutually_dependent_target))
+    assert(_deps_for_rust_targets == [])
+    assert(main_target_suffix == "")
+  }
+
+  target(invoker.target_type, "${target_name}${main_target_suffix}") {
+    crate_name = _crate_name
+    crate_root = _crate_root
+    configs = []
+    configs = _configs
+    deps = _deps
+    if (defined(_cxx_bindings)) {
+      deps += [ "//build/rust:cxx_rustdeps" ]
+    }
+    rustflags = _rustflags
+    rustflags += [ string_join("",
+                               [
+                                 "-Cmetadata=",
+                                 _metadata,
+                               ]) ]
+    forward_variables_from(invoker,
+                           "*",
+                           [
+                             "features",
+                             "deps",
+                             "rustflags",
+                             "configs",
+                             "output_name",
+                             "crate_root",
+                             "unit_test_target",
+                             "visibility",
+                           ])
+    if (invoker.create_cpp_groups) {
+      visibility = [
+        ":${_target_name}",
+        ":${_target_name}_cpp_bindings",
+      ]
+    } else {
+      forward_variables_from(invoker, [ "visibility" ])
+    }
+  }
+
+  if (_build_unit_tests) {
+    _unit_test_target = "${_target_name}_unittests"
+    if (defined(invoker.unit_test_target)) {
+      _unit_test_target = invoker.unit_test_target
+    }
+
+    rust_unit_test(_unit_test_target) {
+      forward_variables_from(invoker, [ "sources" ])
+      crate_root = _crate_root
+      rustflags = _rustflags
+      deps = _deps
+      if (defined(invoker.executable_configs)) {
+        configs = []
+        configs = invoker.executable_configs
+      }
+      if (defined(invoker.test_deps)) {
+        deps += invoker.test_deps
+      }
+      deps += _deps_for_rust_targets
+    }
+  }
+
+  if (defined(_cxx_bindings)) {
+    rust_cxx("${_target_name}_cxx") {
+      inputs = _cxx_bindings
+      native_header_deps = _deps
+    }
+  }
+}
+
+set_defaults("rust_target") {
+  executable_configs = default_executable_configs
+  library_configs = default_compiler_configs
+}

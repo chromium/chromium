@@ -19,6 +19,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InOrder;
@@ -29,22 +30,14 @@ import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Promise;
-import org.chromium.base.metrics.CachedMetrics;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateInteractionSource;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateState;
-import org.chromium.chrome.browser.omaha.UpdateStatusProvider.UpdateStatus;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Source;
 import org.chromium.chrome.browser.omaha.metrics.UpdateProtos.Tracking.Type;
-import org.chromium.chrome.browser.omaha.metrics.UpdateSuccessMetrics.UpdateType;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.version_info.VersionConstants;
-
-import java.util.HashMap;
-import java.util.Map;
 
 /** Tests the API surface of UpdateSuccessMetrics. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -55,6 +48,7 @@ public class UpdateSuccessMetricsTest {
 
     private static final int NOT_UPDATING = 0;
     private static final int UPDATING = 1;
+    private static final String NOT_CURRENT_VERSION = "---";
 
     @Mock
     private TrackingProvider mProvider;
@@ -64,13 +58,11 @@ public class UpdateSuccessMetricsTest {
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
+
     @Before
     public void setUp() {
-        Map<String, Boolean> featureList = new HashMap<>();
-        // The value we use does not matter.  ChromeFeatureList just needs to be initialized.
-        featureList.put(ChromeFeatureList.INLINE_UPDATE_FLOW, false);
-        ChromeFeatureList.setTestFeatures(featureList);
-
         mMetrics = new UpdateSuccessMetrics(mProvider);
     }
 
@@ -86,24 +78,12 @@ public class UpdateSuccessMetricsTest {
 
         InOrder order = inOrder(mProvider);
 
-        mMetrics.startUpdate(UpdateType.INLINE, UpdateInteractionSource.FROM_MENU);
-        mMetrics.startUpdate(UpdateType.INLINE, UpdateInteractionSource.FROM_INFOBAR);
-        mMetrics.startUpdate(UpdateType.INLINE, UpdateInteractionSource.FROM_NOTIFICATION);
-        mMetrics.startUpdate(UpdateType.INTENT, UpdateInteractionSource.FROM_MENU);
-        mMetrics.startUpdate(UpdateType.INTENT, UpdateInteractionSource.FROM_INFOBAR);
-        mMetrics.startUpdate(UpdateType.INTENT, UpdateInteractionSource.FROM_NOTIFICATION);
+        mMetrics.startUpdate();
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INLINE, Source.FROM_MENU)));
-        order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INLINE, Source.FROM_INFOBAR)));
-        order.verify(mProvider).put(
-                argThat(new TrackingMatcher(Type.INLINE, Source.FROM_NOTIFICATION)));
         order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INTENT, Source.FROM_MENU)));
-        order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INTENT, Source.FROM_INFOBAR)));
-        order.verify(mProvider).put(
-                argThat(new TrackingMatcher(Type.INTENT, Source.FROM_NOTIFICATION)));
 
-        Assert.assertEquals(6,
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "GoogleUpdate.StartingUpdateState", NOT_UPDATING));
     }
@@ -114,29 +94,16 @@ public class UpdateSuccessMetricsTest {
      */
     @Test
     public void testStartTrackingWhenAlreadyTracking() {
-        when(mProvider.get())
-                .thenReturn(Promise.fulfilled(buildProto(Type.INLINE, Source.FROM_MENU)));
+        when(mProvider.get()).thenReturn(Promise.fulfilled(buildProto()));
 
         InOrder order = inOrder(mProvider);
 
-        mMetrics.startUpdate(UpdateType.INLINE, UpdateInteractionSource.FROM_MENU);
-        mMetrics.startUpdate(UpdateType.INLINE, UpdateInteractionSource.FROM_INFOBAR);
-        mMetrics.startUpdate(UpdateType.INLINE, UpdateInteractionSource.FROM_NOTIFICATION);
-        mMetrics.startUpdate(UpdateType.INTENT, UpdateInteractionSource.FROM_MENU);
-        mMetrics.startUpdate(UpdateType.INTENT, UpdateInteractionSource.FROM_INFOBAR);
-        mMetrics.startUpdate(UpdateType.INTENT, UpdateInteractionSource.FROM_NOTIFICATION);
+        mMetrics.startUpdate();
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INLINE, Source.FROM_MENU)));
-        order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INLINE, Source.FROM_INFOBAR)));
-        order.verify(mProvider).put(
-                argThat(new TrackingMatcher(Type.INLINE, Source.FROM_NOTIFICATION)));
         order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INTENT, Source.FROM_MENU)));
-        order.verify(mProvider).put(argThat(new TrackingMatcher(Type.INTENT, Source.FROM_INFOBAR)));
-        order.verify(mProvider).put(
-                argThat(new TrackingMatcher(Type.INTENT, Source.FROM_NOTIFICATION)));
 
-        Assert.assertEquals(6,
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
                         "GoogleUpdate.StartingUpdateState", UPDATING));
     }
@@ -146,27 +113,9 @@ public class UpdateSuccessMetricsTest {
     public void testAnalyzeNoState() {
         when(mProvider.get()).thenReturn(Promise.fulfilled(null));
 
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.NONE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UNSUPPORTED_OS_VERSION));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_DOWNLOADING));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_READY));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_FAILED));
+        mMetrics.analyzeFirstStatus();
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        verify(mProvider, never()).clear();
-        verify(mProvider, never()).put(any());
-    }
-
-    /** Tests still updating when called. */
-    @Test
-    public void testAnalyzeStillUpdating() {
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_DOWNLOADING));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_READY));
-
-        Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        verify(mProvider, never()).get();
         verify(mProvider, never()).clear();
         verify(mProvider, never()).put(any());
     }
@@ -175,145 +124,143 @@ public class UpdateSuccessMetricsTest {
     @Test
     public void testRecordSessionSuccess() {
         when(mProvider.get())
-                .thenReturn(Promise.fulfilled(buildProto(
-                        System.currentTimeMillis(), "---", Type.INLINE, Source.FROM_MENU, false)));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.NONE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UNSUPPORTED_OS_VERSION));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_FAILED));
+                .thenReturn(Promise.fulfilled(
+                        buildProto(System.currentTimeMillis(), NOT_CURRENT_VERSION, false)));
+        mMetrics.analyzeFirstStatus();
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        verify(mProvider, times(5)).clear();
+        verify(mProvider, times(1)).clear();
         verify(mProvider, never()).put(any());
-        Assert.assertEquals(5,
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.Session.Inline.Menu", SUCCESS));
-        Assert.assertEquals(5,
+                        "GoogleUpdate.Result.Session.Intent.Menu", SUCCESS));
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.TimeWindow.Inline.Menu", SUCCESS));
+                        "GoogleUpdate.Result.TimeWindow.Intent.Menu", SUCCESS));
     }
 
     /** Tests recording a session failure. */
     @Test
     public void testRecordSessionFailure() {
         when(mProvider.get())
-                .thenReturn(Promise.fulfilled(buildProto(System.currentTimeMillis(),
-                        VersionConstants.PRODUCT_VERSION, Type.INLINE, Source.FROM_MENU, false)));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.NONE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UNSUPPORTED_OS_VERSION));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_FAILED));
+                .thenReturn(Promise.fulfilled(buildProto(
+                        System.currentTimeMillis(), VersionConstants.PRODUCT_VERSION, false)));
+        mMetrics.analyzeFirstStatus();
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
         verify(mProvider, never()).clear();
-        verify(mProvider, times(5))
+        verify(mProvider, times(1))
                 .put(argThat(new TrackingMatcher(
-                        VersionConstants.PRODUCT_VERSION, Type.INLINE, Source.FROM_MENU, true)));
-        Assert.assertEquals(5,
+                        VersionConstants.PRODUCT_VERSION, Type.INTENT, Source.FROM_MENU, true)));
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.Session.Inline.Menu", FAILED));
+                        "GoogleUpdate.Result.Session.Intent.Menu", FAILED));
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.TimeWindow.Inline.Menu", FAILED));
+                        "GoogleUpdate.Result.TimeWindow.Intent.Menu", FAILED));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "GoogleUpdate.Result.TimeWindow.Intent.Menu", SUCCESS));
     }
 
     /** Tests recording a time window success. */
     @Test
     public void testRecordTimeWindowSuccess() {
         when(mProvider.get())
-                .thenReturn(Promise.fulfilled(
-                        buildProto(1, "---", Type.INLINE, Source.FROM_MENU, false)));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.NONE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UNSUPPORTED_OS_VERSION));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_FAILED));
+                .thenReturn(Promise.fulfilled(buildProto(1, NOT_CURRENT_VERSION, false)));
+        mMetrics.analyzeFirstStatus();
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        verify(mProvider, times(5)).clear();
+        verify(mProvider, times(1)).clear();
         verify(mProvider, never()).put(any());
-        Assert.assertEquals(5,
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.Session.Inline.Menu", SUCCESS));
-        Assert.assertEquals(5,
+                        "GoogleUpdate.Result.Session.Intent.Menu", SUCCESS));
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.TimeWindow.Inline.Menu", SUCCESS));
+                        "GoogleUpdate.Result.TimeWindow.Intent.Menu", SUCCESS));
     }
 
     /** Tests recording a time window failure. */
     @Test
     public void testRecordTimeWindowFailure() {
         when(mProvider.get())
-                .thenReturn(Promise.fulfilled(buildProto(1, VersionConstants.PRODUCT_VERSION,
-                        Type.INLINE, Source.FROM_MENU, false)));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.NONE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UNSUPPORTED_OS_VERSION));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_FAILED));
+                .thenReturn(
+                        Promise.fulfilled(buildProto(1, VersionConstants.PRODUCT_VERSION, false)));
+        mMetrics.analyzeFirstStatus();
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        verify(mProvider, times(5)).clear();
+        verify(mProvider, times(1)).clear();
         verify(mProvider, never()).put(any());
-        Assert.assertEquals(5,
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.Session.Inline.Menu", FAILED));
-        Assert.assertEquals(5,
+                        "GoogleUpdate.Result.Session.Intent.Menu", FAILED));
+        Assert.assertEquals(1,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.TimeWindow.Inline.Menu", FAILED));
+                        "GoogleUpdate.Result.TimeWindow.Intent.Menu", FAILED));
+    }
+
+    /** Tests recording a time window failure. */
+    @Test
+    public void testRecordTimeWindowSuccessSessionAlreadyRecorded() {
+        when(mProvider.get())
+                .thenReturn(Promise.fulfilled(buildProto(1, NOT_CURRENT_VERSION, true)));
+        mMetrics.analyzeFirstStatus();
+
+        Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
+        verify(mProvider, times(1)).clear();
+        verify(mProvider, never()).put(any());
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "GoogleUpdate.Result.Session.Intent.Menu", FAILED));
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "GoogleUpdate.Result.Session.Intent.Menu", SUCCESS));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "GoogleUpdate.Result.TimeWindow.Intent.Menu", SUCCESS));
     }
 
     /** Tests recording session failure only happens once. */
     @Test
     public void testNoDuplicateSessionFailures() {
         when(mProvider.get())
-                .thenReturn(Promise.fulfilled(buildProto(
-                        1, VersionConstants.PRODUCT_VERSION, Type.INLINE, Source.FROM_MENU, true)));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.NONE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.UNSUPPORTED_OS_VERSION));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_AVAILABLE));
-        mMetrics.analyzeFirstStatus(buildStatus(UpdateState.INLINE_UPDATE_FAILED));
+                .thenReturn(
+                        Promise.fulfilled(buildProto(1, VersionConstants.PRODUCT_VERSION, true)));
+        mMetrics.analyzeFirstStatus();
 
         Shadows.shadowOf(Looper.myLooper()).runToEndOfTasks();
-        verify(mProvider, times(5)).clear();
+        verify(mProvider, times(1)).clear();
         verify(mProvider, never()).put(any());
-        CachedMetrics.commitCachedMetrics();
         Assert.assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.Session.Inline.Menu", FAILED));
-        Assert.assertEquals(5,
+                        "GoogleUpdate.Result.Session.Intent.Menu", FAILED));
+        Assert.assertEquals(0,
                 RecordHistogram.getHistogramValueCountForTesting(
-                        "GoogleUpdate.Result.TimeWindow.Inline.Menu", FAILED));
+                        "GoogleUpdate.Result.Session.Intent.Menu", SUCCESS));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "GoogleUpdate.Result.TimeWindow.Intent.Menu", FAILED));
     }
 
-    private static Tracking buildProto(Type type, Source source) {
+    private static Tracking buildProto() {
         return Tracking.newBuilder()
                 .setTimestampMs(System.currentTimeMillis())
                 .setVersion(VersionConstants.PRODUCT_VERSION)
-                .setType(type)
-                .setSource(source)
+                .setType(Type.INTENT)
+                .setSource(Source.FROM_MENU)
                 .setRecordedSession(false)
                 .build();
     }
 
-    private static Tracking buildProto(
-            long timestamp, String version, Type type, Source source, boolean recordedSession) {
+    private static Tracking buildProto(long timestamp, String version, boolean recordedSession) {
         return Tracking.newBuilder()
                 .setTimestampMs(timestamp)
                 .setVersion(version)
-                .setType(type)
-                .setSource(source)
+                .setType(Type.INTENT)
+                .setSource(Source.FROM_MENU)
                 .setRecordedSession(recordedSession)
                 .build();
-    }
-
-    private static UpdateStatus buildStatus(@UpdateState int state) {
-        UpdateStatus status = new UpdateStatus();
-        status.updateState = state;
-        return status;
     }
 
     private static class TrackingMatcher implements ArgumentMatcher<Tracking> {

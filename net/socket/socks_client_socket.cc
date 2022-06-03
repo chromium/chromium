@@ -9,10 +9,11 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -65,7 +66,7 @@ SOCKSClientSocket::SOCKSClientSocket(
     const NetworkIsolationKey& network_isolation_key,
     RequestPriority priority,
     HostResolver* host_resolver,
-    bool disable_secure_dns,
+    SecureDnsPolicy secure_dns_policy,
     const NetworkTrafficAnnotationTag& traffic_annotation)
     : transport_socket_(std::move(transport_socket)),
       next_state_(STATE_NONE),
@@ -74,7 +75,7 @@ SOCKSClientSocket::SOCKSClientSocket(
       bytes_received_(0),
       was_ever_used_(false),
       host_resolver_(host_resolver),
-      disable_secure_dns_(disable_secure_dns),
+      secure_dns_policy_(secure_dns_policy),
       destination_(destination),
       network_isolation_key_(network_isolation_key),
       priority_(priority),
@@ -309,8 +310,7 @@ int SOCKSClientSocket::DoResolveHost() {
   HostResolver::ResolveHostParameters parameters;
   parameters.dns_query_type = DnsQueryType::A;
   parameters.initial_priority = priority_;
-  if (disable_secure_dns_)
-    parameters.secure_dns_mode_override = DnsConfig::SecureDnsMode::OFF;
+  parameters.secure_dns_policy = secure_dns_policy_;
   resolve_host_request_ = host_resolver_->CreateRequest(
       destination_, network_isolation_key_, net_log_, parameters);
 

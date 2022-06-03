@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/update_required_screen.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/update_required_screen.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -33,20 +33,21 @@ UpdateRequiredScreenHandler::~UpdateRequiredScreenHandler() {
 
 void UpdateRequiredScreenHandler::DeclareLocalizedValues(
     ::login::LocalizedValuesBuilder* builder) {
-  builder->Add("updateRequiredMessage",
-               IDS_UPDATE_REQUIRED_LOGIN_SCREEN_MESSAGE);
+  builder->Add("updateRequiredTitle", IDS_UPDATE_REQUIRED_SCREEN_TITLE);
+  builder->Add("updateRequiredMessage", IDS_UPDATE_REQUIRED_SCREEN_MESSAGE);
   builder->Add("errorMessage",
                IDS_BROWSER_SHARING_ERROR_DIALOG_TEXT_INTERNAL_ERROR);
-  builder->Add("eolMessage",
-               ui::SubstituteChromeOSDeviceType(IDS_EOL_NOTIFICATION_EOL));
-  builder->Add("selectNetworkButtonCaption", IDS_APP_START_CONFIGURE_NETWORK);
-  builder->Add("updateButtonCaption",
-               IDS_SETTINGS_ABOUT_PAGE_CHECK_FOR_UPDATES);
+  builder->Add("eolTitle", IDS_UPDATE_REQUIRED_SCREEN_EOL_TITLE);
+  builder->Add("eolMessage", IDS_UPDATE_REQUIRED_SCREEN_EOL_MESSAGE);
+  builder->Add("selectNetworkButtonCaption",
+               IDS_UPDATE_REQUIRED_SCREEN_OPEN_NETWORK_SETTINGS);
+  builder->Add("updateButtonCaption", IDS_UPDATE_REQUIRED_SCREEN_START_UPDATE);
   builder->Add("rebootNeededMessage", IDS_UPDATE_COMPLETED);
-
   builder->Add("checkingForUpdatesTitle", IDS_CHECKING_FOR_UPDATES);
   builder->Add("updatingTitle", IDS_UPDATING_SCREEN_TITLE);
-
+  builder->Add("updatingMessage", IDS_UPDATE_REQUIRED_UPDATING_MESSAGE);
+  builder->AddF("updatingMessage", IDS_UPDATE_REQUIRED_UPDATING_MESSAGE,
+                ui::GetChromeOSDeviceName());
   builder->Add("downloading", IDS_DOWNLOADING);
   builder->Add("downloadingTimeLeftLong", IDS_DOWNLOADING_TIME_LEFT_LONG);
   builder->Add("downloadingTimeLeftStatusOneHour",
@@ -58,12 +59,27 @@ void UpdateRequiredScreenHandler::DeclareLocalizedValues(
   builder->Add(
       "updateOverCellularPromptTitle",
       ui::SubstituteChromeOSDeviceType(IDS_UPDATE_OVER_CELLULAR_PROMPT_TITLE));
-  builder->Add("updateOverCellularPromptMessage",
-               IDS_UPDATE_OVER_CELLULAR_PROMPT_MESSAGE);
+  builder->Add("updateOverMeteredNetworkMessage",
+               IDS_UPDATE_REQUIRED_SCREEN_METERED_MESSAGE);
   builder->Add("AcceptUpdateOverCellularButton",
-               IDS_OFFERS_CONSENT_INFOBAR_ENABLE_BUTTON);
+               IDS_UPDATE_REQUIRED_SCREEN_ALLOW_METERED);
   builder->Add("RejectUpdateOverCellularButton",
                IDS_OFFERS_CONSENT_INFOBAR_DISABLE_BUTTON);
+  builder->Add("noNetworkMessage",
+               IDS_UPDATE_REQUIRED_SCREEN_NO_NETWORK_MESSAGE);
+  builder->Add("eolAdminMessageTitle", IDS_UPDATE_REQUIRED_EOL_ADMIN_MESSAGE);
+  builder->Add("eolDeleteUsersDataMessage",
+               IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_MESSAGE);
+  builder->Add("eolNoUsersDataMessage",
+               IDS_UPDATE_REQUIRED_EOL_NO_USERS_DATA_MESSAGE);
+  builder->Add("eolDeleteUsersDataPopupMessage",
+               IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_POPUP_MESSAGE);
+  builder->Add("eolDeleteUsersDataPopupTitle",
+               IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_POPUP_TITLE);
+  builder->Add("eolDeleteUsersDataConfirm",
+               IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_CONFIRM);
+  builder->Add("eolDeleteUsersDataCancel",
+               IDS_UPDATE_REQUIRED_EOL_DELETE_USERS_DATA_CANCEL);
 }
 
 void UpdateRequiredScreenHandler::Initialize() {
@@ -71,6 +87,17 @@ void UpdateRequiredScreenHandler::Initialize() {
     Show();
     show_on_init_ = false;
   }
+}
+
+void UpdateRequiredScreenHandler::SetEnterpriseAndDeviceName(
+    const std::string& enterpriseDomain,
+    const std::u16string& deviceName) {
+  CallJS("login.UpdateRequiredScreen.setEnterpriseAndDeviceName",
+         enterpriseDomain, deviceName);
+}
+
+void UpdateRequiredScreenHandler::SetEolMessage(const std::string& eolMessage) {
+  CallJS("login.UpdateRequiredScreen.setEolMessage", eolMessage);
 }
 
 void UpdateRequiredScreenHandler::Show() {
@@ -108,7 +135,7 @@ void UpdateRequiredScreenHandler::SetUpdateProgressValue(int progress) {
 }
 
 void UpdateRequiredScreenHandler::SetUpdateProgressMessage(
-    const base::string16& message) {
+    const std::u16string& message) {
   CallJS("login.UpdateRequiredScreen.setUpdateProgressMessage", message);
 }
 
@@ -123,6 +150,10 @@ void UpdateRequiredScreenHandler::SetEstimatedTimeLeft(int seconds_left) {
 void UpdateRequiredScreenHandler::SetUIState(
     UpdateRequiredView::UIState ui_state) {
   CallJS("login.UpdateRequiredScreen.setUIState", static_cast<int>(ui_state));
+}
+
+void UpdateRequiredScreenHandler::SetIsUserDataPresent(bool data_present) {
+  CallJS("login.UpdateRequiredScreen.setIsUserDataPresent", data_present);
 }
 
 }  // namespace chromeos

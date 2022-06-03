@@ -1,5 +1,5 @@
 /**
- * xzlib.h: header for the front end for the transparent suport of lzma
+ * xzlib.h: header for the front end for the transparent support of lzma
  *          compression at the I/O layer
  *
  * See Copyright for the status of this software.

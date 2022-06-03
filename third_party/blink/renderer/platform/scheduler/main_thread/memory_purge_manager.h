@@ -5,8 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_MAIN_THREAD_MEMORY_PURGE_MANAGER_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/timer/timer.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/scheduler/public/page_lifecycle_state.h"
@@ -17,6 +16,8 @@ namespace blink {
 class PLATFORM_EXPORT MemoryPurgeManager {
  public:
   MemoryPurgeManager(scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  MemoryPurgeManager(const MemoryPurgeManager&) = delete;
+  MemoryPurgeManager& operator=(const MemoryPurgeManager&) = delete;
   ~MemoryPurgeManager();
 
   // Called when a page is created or destroyed, to maintain the total count of
@@ -100,8 +101,6 @@ class PLATFORM_EXPORT MemoryPurgeManager {
 
   // Timer to delay memory purging.
   base::OneShotTimer purge_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemoryPurgeManager);
 };
 
 }  // namespace blink

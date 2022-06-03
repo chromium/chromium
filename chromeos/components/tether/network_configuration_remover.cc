@@ -41,8 +41,8 @@ void NetworkConfigurationRemover::RemoveNetworkConfigurationByPath(
     const std::string& wifi_network_path) {
   managed_network_configuration_handler_->RemoveConfiguration(
       wifi_network_path,
-      base::Bind(&RemoveConfigurationSuccessCallback, wifi_network_path),
-      base::Bind(&RemoveConfigurationFailureCallback, wifi_network_path));
+      base::BindOnce(&RemoveConfigurationSuccessCallback, wifi_network_path),
+      base::BindOnce(&RemoveConfigurationFailureCallback, wifi_network_path));
 }
 
 }  // namespace tether

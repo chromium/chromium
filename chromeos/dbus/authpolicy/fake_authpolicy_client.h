@@ -10,14 +10,13 @@
 #include <utility>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/authpolicy/authpolicy_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
@@ -27,6 +26,10 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
     : public AuthPolicyClient {
  public:
   FakeAuthPolicyClient();
+
+  FakeAuthPolicyClient(const FakeAuthPolicyClient&) = delete;
+  FakeAuthPolicyClient& operator=(const FakeAuthPolicyClient&) = delete;
+
   ~FakeAuthPolicyClient() override;
 
   // Returns the fake global instance if initialized. May return null.
@@ -41,7 +44,8 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
                     int password_fd,
                     JoinCallback callback) override;
 
-  // Runs |callback| with |auth_error_|.
+  // Runs `callback` with `auth_error_`. Stores given password in
+  // `auth_password_`.
   void AuthenticateUser(const authpolicy::AuthenticateUserRequest& request,
                         int password_fd,
                         AuthCallback callback) override;
@@ -130,9 +134,10 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
     refresh_user_policy_error_ = error;
   }
 
+  std::string auth_password() const { return auth_password_; }
+
   void DisableOperationDelayForTesting() {
-    dbus_operation_delay_ = disk_operation_delay_ =
-        base::TimeDelta::FromSeconds(0);
+    dbus_operation_delay_ = disk_operation_delay_ = base::Seconds(0);
   }
 
  protected:
@@ -156,6 +161,9 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
   std::string user_kerberos_creds_;
   std::string user_kerberos_conf_;
 
+  // Stores the password received in the last `AuthenticateUser()` call.
+  std::string auth_password_;
+
   std::set<std::string> user_affiliation_ids_;
   std::set<std::string> device_affiliation_ids_;
 
@@ -167,22 +175,25 @@ class COMPONENT_EXPORT(AUTHPOLICY) FakeAuthPolicyClient
       authpolicy::ActiveDirectoryUserStatus::TGT_VALID;
 
   // Delay operations to be more realistic.
-  base::TimeDelta dbus_operation_delay_ = base::TimeDelta::FromSeconds(3);
-  base::TimeDelta disk_operation_delay_ =
-      base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta dbus_operation_delay_ = base::Seconds(3);
+  base::TimeDelta disk_operation_delay_ = base::Milliseconds(100);
 
   enterprise_management::ChromeDeviceSettingsProto device_policy_;
 
   std::vector<WaitForServiceToBeAvailableCallback>
       wait_for_service_to_be_available_callbacks_;
 
-  base::Optional<authpolicy::ErrorType> refresh_user_policy_error_;
+  absl::optional<authpolicy::ErrorType> refresh_user_policy_error_;
 
   base::WeakPtrFactory<FakeAuthPolicyClient> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthPolicyClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::FakeAuthPolicyClient;
+}
 
 #endif  // CHROMEOS_DBUS_AUTHPOLICY_FAKE_AUTHPOLICY_CLIENT_H_

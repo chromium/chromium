@@ -14,6 +14,7 @@
 #include "chrome/grit/browser_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace {
@@ -36,7 +37,8 @@ content::WebUIDataSource* CreateGraphicsDataSource() {
                           IDR_ARC_GRAPHICS_TRACING_UI_JS);
   source->AddResourcePath(kArcTracingCssPath, IDR_ARC_TRACING_CSS);
   source->AddResourcePath(kArcTracingUiJsPath, IDR_ARC_TRACING_UI_JS);
-  source->OverrideContentSecurityPolicyScriptSrc(
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
 
   base::DictionaryValue localized_strings;
@@ -58,7 +60,8 @@ content::WebUIDataSource* CreateOverviewDataSource() {
                           IDR_ARC_OVERVIEW_TRACING_UI_JS);
   source->AddResourcePath(kArcTracingCssPath, IDR_ARC_TRACING_CSS);
   source->AddResourcePath(kArcTracingUiJsPath, IDR_ARC_TRACING_UI_JS);
-  source->OverrideContentSecurityPolicyScriptSrc(
+  source->OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName::ScriptSrc,
       "script-src chrome://resources 'self';");
 
   base::DictionaryValue localized_strings;

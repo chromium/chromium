@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_SOLID_COLOR_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_SOLID_COLOR_DRAW_QUAD_H_
 
-#include <memory>
-
 #include "components/viz/common/quads/draw_quad.h"
 #include "components/viz/common/viz_common_export.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -20,15 +18,15 @@ class VIZ_COMMON_EXPORT SolidColorDrawQuad : public DrawQuad {
   void SetNew(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
-              SkColor color,
-              bool force_anti_aliasing_off);
+              SkColor c,
+              bool anti_aliasing_off);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
               const gfx::Rect& visible_rect,
               bool needs_blending,
-              SkColor color,
-              bool force_anti_aliasing_off);
+              SkColor c,
+              bool anti_aliasing_off);
 
   SkColor color;
   bool force_anti_aliasing_off;

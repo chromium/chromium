@@ -9,12 +9,11 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/patch/content/patch_service.h"
@@ -22,13 +21,14 @@
 #include "components/update_client/component_patcher_operation.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "courgette/courgette.h"
 #include "courgette/third_party/bsdiff/bsdiff.h"
 
 namespace {
 
-constexpr base::TaskTraits kTaskTraits = {
-    base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+constexpr base::TaskTraits kThreadPoolTaskTraits = {
+    base::MayBlock(), base::TaskPriority::BEST_EFFORT,
     base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 
 }  // namespace
@@ -40,6 +40,9 @@ class PatchTest : public InProcessBrowserTest {
     EXPECT_TRUE(input_dir_.CreateUniqueTempDir());
     EXPECT_TRUE(unpack_dir_.CreateUniqueTempDir());
   }
+
+  PatchTest(const PatchTest&) = delete;
+  PatchTest& operator=(const PatchTest&) = delete;
 
   static base::FilePath TestFile(const char* name) {
     base::FilePath path;
@@ -55,8 +58,8 @@ class PatchTest : public InProcessBrowserTest {
     base::FilePath path = installed_dir_.GetPath().AppendASCII(name);
 
     base::RunLoop run_loop;
-    base::PostTaskAndReply(
-        FROM_HERE, kTaskTraits,
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, kThreadPoolTaskTraits,
         base::BindOnce(&PatchTest::CopyFile, TestFile(name), path),
         run_loop.QuitClosure());
 
@@ -68,8 +71,8 @@ class PatchTest : public InProcessBrowserTest {
     base::FilePath path = input_dir_.GetPath().AppendASCII(name);
 
     base::RunLoop run_loop;
-    base::PostTaskAndReply(
-        FROM_HERE, kTaskTraits,
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, kThreadPoolTaskTraits,
         base::BindOnce(&PatchTest::CopyFile, TestFile(name), path),
         run_loop.QuitClosure());
 
@@ -94,7 +97,7 @@ class PatchTest : public InProcessBrowserTest {
     quit_closure_ = run_loop.QuitClosure();
     done_called_ = false;
 
-    base::CreateSequencedTaskRunner(kTaskTraits)
+    base::ThreadPool::CreateSequencedTaskRunner(kThreadPoolTaskTraits)
         ->PostTask(FROM_HERE,
                    base::BindOnce(&PatchTest::PatchAsyncSequencedTaskRunner,
                                   base::Unretained(this), operation, input,
@@ -118,8 +121,8 @@ class PatchTest : public InProcessBrowserTest {
   void PatchDone(int expected, int result) {
     EXPECT_EQ(expected, result);
     done_called_ = true;
-    base::CreateSingleThreadTaskRunner({content::BrowserThread::UI})
-        ->PostTask(FROM_HERE, std::move(quit_closure_));
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE,
+                                                 std::move(quit_closure_));
   }
 
   static void CopyFile(const base::FilePath& source,
@@ -132,8 +135,6 @@ class PatchTest : public InProcessBrowserTest {
   base::ScopedTempDir unpack_dir_;
   base::OnceClosure quit_closure_;
   bool done_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(PatchTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PatchTest, CheckBsdiffOperation) {

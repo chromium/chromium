@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/win/windows_version.h"
 
 namespace {
@@ -26,9 +27,8 @@ void CaptionSettingsDialogCallback() {
 namespace captions {
 
 void CaptionSettingsDialog::ShowCaptionSettingsDialog() {
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(CaptionSettingsDialogCallback));
 }
 

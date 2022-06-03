@@ -7,7 +7,9 @@
 #include <utility>
 
 #include "chrome/browser/extensions/extension_tab_util.h"
-#include "chrome/browser/prerender/prerender_contents.h"
+#include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
+#include "components/no_state_prefetch/browser/no_state_prefetch_contents.h"
+#include "components/sessions/core/session_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -25,12 +27,12 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
     int frame_tree_node_id,
     int render_process_id,
     int render_frame_id,
-    content::mojom::TransferrableURLLoaderPtr transferrable_loader,
+    blink::mojom::TransferrableURLLoaderPtr transferrable_loader,
     const GURL& original_url) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   content::WebContents* web_contents = nullptr;
-  if (frame_tree_node_id != -1) {
+  if (frame_tree_node_id != content::RenderFrameHost::kNoFrameTreeNodeId) {
     web_contents =
         content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
   } else {
@@ -40,13 +42,14 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   if (!web_contents)
     return;
 
-  // If the request was for a prerender, abort the prerender and do not
-  // continue. This is because plugins cancel prerender, see
+  // If the request was for NoStatePrefetch, abort the prefetcher and do not
+  // continue. This is because plugins cancel NoStatePrefetch, see
   // http://crbug.com/343590.
-  prerender::PrerenderContents* prerender_contents =
-      prerender::PrerenderContents::FromWebContents(web_contents);
-  if (prerender_contents) {
-    prerender_contents->Destroy(prerender::FINAL_STATUS_DOWNLOAD);
+  prerender::NoStatePrefetchContents* no_state_prefetch_contents =
+      prerender::ChromeNoStatePrefetchContentsDelegate::FromWebContents(
+          web_contents);
+  if (no_state_prefetch_contents) {
+    no_state_prefetch_contents->Destroy(prerender::FINAL_STATUS_DOWNLOAD);
     return;
   }
 
@@ -66,7 +69,19 @@ void StreamsPrivateAPI::SendExecuteMimeTypeHandlerEvent(
   // will take ownership of the stream.
   GURL handler_url(Extension::GetBaseURLFromExtensionId(extension_id).spec() +
                    handler->handler_url());
-  int tab_id = ExtensionTabUtil::GetTabId(web_contents);
+
+  // If this is an inner contents, then (a) it's a guest view and doesn't have a
+  // tab id anyway, or (b) it's a portal. In the portal case, providing a
+  // distinct tab id breaks the pdf viewer / extension APIs. For now we just
+  // indicate that a portal contents has no tab id. Unfortunately, this will
+  // still be broken in subtle ways once the portal is activated (e.g. some
+  // forms of zooming won't work).
+  // TODO(1042323): Present a coherent representation of a tab id for portal
+  // contents.
+  int tab_id = web_contents->GetOuterWebContents()
+                   ? SessionID::InvalidValue().id()
+                   : ExtensionTabUtil::GetTabId(web_contents);
+
   std::unique_ptr<StreamContainer> stream_container(
       new StreamContainer(tab_id, embedded, handler_url, extension_id,
                           std::move(transferrable_loader), original_url));

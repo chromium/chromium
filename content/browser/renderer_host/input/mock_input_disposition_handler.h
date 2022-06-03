@@ -27,14 +27,15 @@ class MockInputDispositionHandler : public InputDispositionHandler {
 
   // InputDispositionHandler
   void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
-                       InputEventAckSource ack_source,
-                       InputEventAckState ack_result) override;
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result) override;
   void OnTouchEventAck(const TouchEventWithLatencyInfo& event,
-                       InputEventAckSource ack_source,
-                       InputEventAckState ack_result) override;
-  void OnGestureEventAck(const GestureEventWithLatencyInfo& event,
-                         InputEventAckSource ack_source,
-                         InputEventAckState ack_result) override;
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result) override;
+  void OnGestureEventAck(
+      const GestureEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) override;
 
   size_t GetAndResetAckCount();
 
@@ -52,9 +53,9 @@ class MockInputDispositionHandler : public InputDispositionHandler {
     touch_followup_event_ = std::move(event);
   }
 
-  InputEventAckState ack_state() const { return ack_state_; }
+  blink::mojom::InputEventResultState ack_state() const { return ack_state_; }
 
-  InputEventAckState acked_wheel_event_state() const {
+  blink::mojom::InputEventResultState acked_wheel_event_state() const {
     return acked_wheel_event_state_;
   }
 
@@ -75,21 +76,21 @@ class MockInputDispositionHandler : public InputDispositionHandler {
 
  private:
   void RecordAckCalled(blink::WebInputEvent::Type eventType,
-                       InputEventAckState ack_result);
+                       blink::mojom::InputEventResultState ack_result);
 
   void OnKeyboardEventAck(const NativeWebKeyboardEventWithLatencyInfo& event,
-                          InputEventAckSource ack_source,
-                          InputEventAckState ack_result);
+                          blink::mojom::InputEventResultSource ack_source,
+                          blink::mojom::InputEventResultState ack_result);
   void OnMouseEventAck(const MouseEventWithLatencyInfo& event,
-                       InputEventAckSource ack_source,
-                       InputEventAckState ack_result);
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result);
 
   InputRouter* input_router_;
 
   size_t ack_count_;
   blink::WebInputEvent::Type ack_event_type_;
-  InputEventAckState ack_state_;
-  InputEventAckState acked_wheel_event_state_;
+  blink::mojom::InputEventResultState ack_state_;
+  blink::mojom::InputEventResultState acked_wheel_event_state_;
   std::unique_ptr<NativeWebKeyboardEvent> acked_key_event_;
   blink::WebMouseWheelEvent acked_wheel_event_;
   TouchEventWithLatencyInfo acked_touch_event_;

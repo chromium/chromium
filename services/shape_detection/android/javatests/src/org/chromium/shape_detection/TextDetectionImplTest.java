@@ -4,6 +4,8 @@
 
 package org.chromium.shape_detection;
 
+import android.os.Build;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -11,6 +13,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.gfx.mojom.RectF;
 import org.chromium.shape_detection.mojom.TextDetection;
@@ -23,19 +27,21 @@ import java.util.concurrent.TimeUnit;
  * Test suite for TextDetectionImpl.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
+@DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.N_MR1, message = "crbug.com/1153716")
 public class TextDetectionImplTest {
     private static final String[] DETECTION_EXPECTED_TEXT = {
             "The quick brown fox jumped over the lazy dog.", "Helvetica Neue 36."};
     private static final float[][] TEXT_BOUNDING_BOX = {
             {0.0f, 71.0f, 753.0f, 36.0f}, {4.0f, 173.0f, 307.0f, 28.0f}};
-    private static final org.chromium.skia.mojom.Bitmap TEXT_DETECTION_BITMAP =
+    private static final org.chromium.skia.mojom.BitmapN32 TEXT_DETECTION_BITMAP =
             TestUtils.mojoBitmapFromText(DETECTION_EXPECTED_TEXT);
 
-    private static TextDetectionResult[] detect(org.chromium.skia.mojom.Bitmap mojoBitmap) {
+    private static TextDetectionResult[] detect(org.chromium.skia.mojom.BitmapN32 mojoBitmap) {
         TextDetection detector = new TextDetectionImpl();
 
         final ArrayBlockingQueue<TextDetectionResult[]> queue = new ArrayBlockingQueue<>(1);
-        detector.detect(mojoBitmap, new TextDetection.DetectResponse() {
+        detector.detect(mojoBitmap, new TextDetection.Detect_Response() {
             @Override
             public void call(TextDetectionResult[] results) {
                 queue.add(results);

@@ -7,6 +7,7 @@
 #include <cstdlib>
 #include <memory>
 
+#include "base/memory/ptr_util.h"
 #include "base/test/mock_callback.h"
 #include "content/public/browser/permission_controller_delegate.h"
 #include "content/public/browser/permission_type.h"
@@ -31,24 +32,31 @@ constexpr char kTestUrl[] = "https://google.com";
 class MockManagerWithRequests : public MockPermissionManager {
  public:
   MockManagerWithRequests() {}
-  ~MockManagerWithRequests() override {}
-  MOCK_METHOD5(
-      RequestPermissions,
-      int(const std::vector<PermissionType>& permission,
-          RenderFrameHost* render_frame_host,
-          const GURL& requesting_origin,
-          bool user_gesture,
-          const base::OnceCallback<void(
-              const std::vector<blink::mojom::PermissionStatus>&)> callback));
-  MOCK_METHOD2(SetPermissionOverridesForDevTools,
-               void(const url::Origin& origin,
-                    const PermissionOverrides& overrides));
-  MOCK_METHOD0(ResetPermissionOverridesForDevTools, void());
-  MOCK_METHOD2(IsPermissionOverridableByDevTools,
-               bool(PermissionType, const url::Origin&));
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockManagerWithRequests);
+  MockManagerWithRequests(const MockManagerWithRequests&) = delete;
+  MockManagerWithRequests& operator=(const MockManagerWithRequests&) = delete;
+
+  ~MockManagerWithRequests() override {}
+  MOCK_METHOD(
+      void,
+      RequestPermissions,
+      (const std::vector<PermissionType>& permission,
+       RenderFrameHost* render_frame_host,
+       const GURL& requesting_origin,
+       bool user_gesture,
+       const base::OnceCallback<
+           void(const std::vector<blink::mojom::PermissionStatus>&)> callback),
+      (override));
+  MOCK_METHOD(void,
+              SetPermissionOverridesForDevTools,
+              (const absl::optional<url::Origin>& origin,
+               const PermissionOverrides& overrides),
+              (override));
+  MOCK_METHOD(void, ResetPermissionOverridesForDevTools, (), (override));
+  MOCK_METHOD(bool,
+              IsPermissionOverridableByDevTools,
+              (PermissionType, const absl::optional<url::Origin>&),
+              (override));
 };
 
 class PermissionControllerImplTest : public ::testing::Test {
@@ -59,6 +67,11 @@ class PermissionControllerImplTest : public ::testing::Test {
     permission_controller_ =
         std::make_unique<PermissionControllerImpl>(&browser_context_);
   }
+
+  PermissionControllerImplTest(const PermissionControllerImplTest&) = delete;
+  PermissionControllerImplTest& operator=(const PermissionControllerImplTest&) =
+      delete;
+
   ~PermissionControllerImplTest() override {}
 
   void SetUp() override {
@@ -81,8 +94,6 @@ class PermissionControllerImplTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestBrowserContext browser_context_;
   std::unique_ptr<PermissionControllerImpl> permission_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(PermissionControllerImplTest);
 };
 
 TEST_F(PermissionControllerImplTest, ResettingOverridesForwardsReset) {
@@ -91,7 +102,7 @@ TEST_F(PermissionControllerImplTest, ResettingOverridesForwardsReset) {
 }
 
 TEST_F(PermissionControllerImplTest, SettingOverridesForwardsUpdates) {
-  url::Origin kTestOrigin = url::Origin::Create(GURL(kTestUrl));
+  auto kTestOrigin = absl::make_optional(url::Origin::Create(GURL(kTestUrl)));
   EXPECT_CALL(*mock_manager(),
               SetPermissionOverridesForDevTools(
                   kTestOrigin, testing::ElementsAre(testing::Pair(

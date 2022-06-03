@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/mac/scoped_cftyperef.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "ui/events/base_event_utils.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
@@ -225,6 +226,19 @@ NSEvent* TestScrollEvent(NSPoint window_point,
   DCHECK_EQ(window_point.x, [event locationInWindow].x);
   DCHECK_EQ(window_point.y, [event locationInWindow].y);
   return event;
+}
+
+NSEvent* KeyDownEventWithRepeat() {
+  return [NSEvent keyEventWithType:NSKeyDown
+                          location:NSZeroPoint
+                     modifierFlags:0
+                         timestamp:TimeIntervalSinceSystemStartup()
+                      windowNumber:0
+                           context:nil
+                        characters:@""
+       charactersIgnoringModifiers:@""
+                         isARepeat:YES
+                           keyCode:0x78];
 }
 
 NSEvent* KeyEventWithCharacter(unichar c) {

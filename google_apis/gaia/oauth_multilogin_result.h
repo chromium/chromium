@@ -6,9 +6,8 @@
 #define GOOGLE_APIS_GAIA_OAUTH_MULTILOGIN_RESULT_H_
 
 #include <string>
-#include <unordered_map>
 
-#include "base/time/time.h"
+#include "base/gtest_prod_util.h"
 #include "base/values.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/cookies/canonical_cookie.h"
@@ -71,6 +70,8 @@ class OAuthMultiloginResult {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest, TryParseCookiesFromValue);
+  FRIEND_TEST_ALL_PREFIXES(OAuthMultiloginResultTest,
+                           ParseRealResponseFromGaia_2021_10);
 
   // Response body that has a form of JSON contains protection characters
   // against XSSI that have to be removed. See go/xssi.

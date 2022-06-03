@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 /** @fileoverview Externs generated from namespace: management */
 
-/**
- * @const
- */
+/** @const */
 chrome.management = {};
 
 /**
@@ -103,8 +101,17 @@ chrome.management.ExtensionInstallType = {
 chrome.management.ExtensionInfo;
 
 /**
+ * Options for how to handle the extension's uninstallation.
+ * @typedef {{
+ *   showConfirmDialog: (boolean|undefined)
+ * }}
+ * @see https://developer.chrome.com/extensions/management#type-UninstallOptions
+ */
+chrome.management.UninstallOptions;
+
+/**
  * Returns a list of information about installed extensions and apps.
- * @param {function(!Array<!chrome.management.ExtensionInfo>):void=} callback
+ * @param {function(!Array<!chrome.management.ExtensionInfo>): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-getAll
  */
 chrome.management.getAll = function(callback) {};
@@ -113,7 +120,7 @@ chrome.management.getAll = function(callback) {};
  * Returns information about the installed extension, app, or theme that has the
  * given ID.
  * @param {string} id The ID from an item of $(ref:management.ExtensionInfo).
- * @param {function(!chrome.management.ExtensionInfo):void=} callback
+ * @param {function(!chrome.management.ExtensionInfo): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-get
  */
 chrome.management.get = function(id, callback) {};
@@ -122,7 +129,7 @@ chrome.management.get = function(id, callback) {};
  * Returns information about the calling extension, app, or theme. Note: This
  * function can be used without requesting the 'management' permission in the
  * manifest.
- * @param {function(!chrome.management.ExtensionInfo):void=} callback
+ * @param {function(!chrome.management.ExtensionInfo): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-getSelf
  */
 chrome.management.getSelf = function(callback) {};
@@ -131,7 +138,7 @@ chrome.management.getSelf = function(callback) {};
  * Returns a list of <a href='permission_warnings'>permission warnings</a> for
  * the given extension id.
  * @param {string} id The ID of an already installed extension.
- * @param {function(!Array<string>):void=} callback
+ * @param {function(!Array<string>): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-getPermissionWarningsById
  */
 chrome.management.getPermissionWarningsById = function(id, callback) {};
@@ -141,7 +148,7 @@ chrome.management.getPermissionWarningsById = function(id, callback) {};
  * the given extension manifest string. Note: This function can be used without
  * requesting the 'management' permission in the manifest.
  * @param {string} manifestStr Extension manifest JSON string.
- * @param {function(!Array<string>):void=} callback
+ * @param {function(!Array<string>): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-getPermissionWarningsByManifest
  */
 chrome.management.getPermissionWarningsByManifest = function(manifestStr, callback) {};
@@ -154,30 +161,30 @@ chrome.management.getPermissionWarningsByManifest = function(manifestStr, callba
  * @param {string} id This should be the id from an item of
  *     $(ref:management.ExtensionInfo).
  * @param {boolean} enabled Whether this item should be enabled or disabled.
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-setEnabled
  */
 chrome.management.setEnabled = function(id, enabled, callback) {};
 
 /**
- * Uninstalls a currently installed app or extension.
+ * Uninstalls a currently installed app or extension. Note: This function does
+ * not work in managed environments when the user is not allowed to uninstall
+ * the specified extension/app.
  * @param {string} id This should be the id from an item of
  *     $(ref:management.ExtensionInfo).
- * @param {{
- *   showConfirmDialog: (boolean|undefined)
- * }=} options
- * @param {function():void=} callback
+ * @param {!chrome.management.UninstallOptions=} options
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-uninstall
  */
 chrome.management.uninstall = function(id, options, callback) {};
 
 /**
  * Uninstalls the calling extension. Note: This function can be used without
- * requesting the 'management' permission in the manifest.
- * @param {{
- *   showConfirmDialog: (boolean|undefined)
- * }=} options
- * @param {function():void=} callback
+ * requesting the 'management' permission in the manifest. This function does
+ * not work in managed environments when the user is not allowed to uninstall
+ * the specified extension/app.
+ * @param {!chrome.management.UninstallOptions=} options
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-uninstallSelf
  */
 chrome.management.uninstallSelf = function(options, callback) {};
@@ -185,7 +192,7 @@ chrome.management.uninstallSelf = function(options, callback) {};
 /**
  * Launches an application.
  * @param {string} id The extension id of the application.
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-launchApp
  */
 chrome.management.launchApp = function(id, callback) {};
@@ -195,7 +202,7 @@ chrome.management.launchApp = function(id, callback) {};
  * shortcuts can be created.
  * @param {string} id This should be the id from an app item of
  *     $(ref:management.ExtensionInfo).
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-createAppShortcut
  */
 chrome.management.createAppShortcut = function(id, callback) {};
@@ -208,7 +215,7 @@ chrome.management.createAppShortcut = function(id, callback) {};
  *     Always check and make sure this launch type is in
  *     $(ref:ExtensionInfo.availableLaunchTypes), because the available launch
  *     types vary on different platforms and configurations.
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-setLaunchType
  */
 chrome.management.setLaunchType = function(id, launchType, callback) {};
@@ -218,7 +225,7 @@ chrome.management.setLaunchType = function(id, launchType, callback) {};
  * @param {string} url The URL of a web page. The scheme of the URL can only be
  *     "http" or "https".
  * @param {string} title The title of the generated app.
- * @param {function(!chrome.management.ExtensionInfo):void=} callback
+ * @param {function(!chrome.management.ExtensionInfo): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-generateAppForLink
  */
 chrome.management.generateAppForLink = function(url, title, callback) {};
@@ -227,7 +234,7 @@ chrome.management.generateAppForLink = function(url, title, callback) {};
  * Checks if the replacement android app can be installed. Errors generated by
  * this API are reported by setting $(ref:runtime.lastError) and executing the
  * function's regular callback.
- * @param {function(boolean):void} callback
+ * @param {function(boolean): void} callback
  * @see https://developer.chrome.com/extensions/management#method-canInstallReplacementAndroidApp
  */
 chrome.management.canInstallReplacementAndroidApp = function(callback) {};
@@ -236,7 +243,7 @@ chrome.management.canInstallReplacementAndroidApp = function(callback) {};
  * Prompts the user to install the replacement Android app from the manifest.
  * Errors generated by this API are reported by setting $(ref:runtime.lastError)
  * and executing the function's regular callback.
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-installReplacementAndroidApp
  */
 chrome.management.installReplacementAndroidApp = function(callback) {};
@@ -244,7 +251,7 @@ chrome.management.installReplacementAndroidApp = function(callback) {};
 /**
  * Launches the replacement_web_app specified in the manifest. Prompts the user
  * to install if not already installed.
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  * @see https://developer.chrome.com/extensions/management#method-installReplacementWebApp
  */
 chrome.management.installReplacementWebApp = function(callback) {};

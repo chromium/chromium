@@ -58,7 +58,7 @@ FileHandlersParser::~FileHandlersParser() {
 bool LoadFileHandler(const std::string& handler_id,
                      const base::Value& handler_info,
                      FileHandlersInfo* file_handlers,
-                     base::string16* error,
+                     std::u16string* error,
                      std::vector<InstallWarning>* install_warnings) {
   DCHECK(error);
   apps::FileHandlerInfo handler;
@@ -144,7 +144,7 @@ bool LoadFileHandler(const std::string& handler_id,
   file_handlers->push_back(handler);
 
   // Check for unknown keys.
-  for (const auto& entry : handler_info.DictItems()) {
+  for (auto entry : handler_info.DictItems()) {
     if (entry.first != keys::kFileHandlerExtensions &&
         entry.first != keys::kFileHandlerTypes &&
         entry.first != keys::kFileHandlerIncludeDirectories &&
@@ -158,18 +158,7 @@ bool LoadFileHandler(const std::string& handler_id,
   return true;
 }
 
-bool FileHandlersParser::Parse(Extension* extension, base::string16* error) {
-  // Don't load file handlers for hosted_apps unless they're also bookmark apps.
-  // This check can be removed when bookmark apps are migrated off hosted apps,
-  // and hosted_apps should be removed from the list of valid extension types
-  // for "file_handling" in extensions/common/api/_manifest_features.json.
-  if (extension->is_hosted_app() && !extension->from_bookmark()) {
-    extension->AddInstallWarning(
-        InstallWarning(errors::kInvalidFileHandlersHostedAppsNotSupported,
-                       keys::kFileHandlers));
-    return true;
-  }
-
+bool FileHandlersParser::Parse(Extension* extension, std::u16string* error) {
   std::unique_ptr<FileHandlers> info(new FileHandlers);
   const base::Value* all_handlers = nullptr;
   if (!extension->manifest()->GetDictionary(keys::kFileHandlers,
@@ -179,7 +168,7 @@ bool FileHandlersParser::Parse(Extension* extension, base::string16* error) {
   }
 
   std::vector<InstallWarning> install_warnings;
-  for (const auto& entry : all_handlers->DictItems()) {
+  for (auto entry : all_handlers->DictItems()) {
     if (!entry.second.is_dict()) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileHandlers);
       return false;

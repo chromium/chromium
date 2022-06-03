@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/test/test_confirm_bubble_model.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 
 TestConfirmBubbleModel::TestConfirmBubbleModel(bool* model_deleted,
@@ -22,22 +23,17 @@ TestConfirmBubbleModel::~TestConfirmBubbleModel() {
     *model_deleted_ = true;
 }
 
-base::string16 TestConfirmBubbleModel::GetTitle() const {
-  return base::ASCIIToUTF16("Test");
+std::u16string TestConfirmBubbleModel::GetTitle() const {
+  return u"Test";
 }
 
-base::string16 TestConfirmBubbleModel::GetMessageText() const {
-  return base::ASCIIToUTF16("Test Message");
+std::u16string TestConfirmBubbleModel::GetMessageText() const {
+  return u"Test Message";
 }
 
-int TestConfirmBubbleModel::GetButtons() const {
-  return BUTTON_OK | BUTTON_CANCEL;
-}
-
-base::string16 TestConfirmBubbleModel::GetButtonLabel(
-    BubbleButton button) const {
-  return button == BUTTON_OK ? base::ASCIIToUTF16("OK")
-                             : base::ASCIIToUTF16("Cancel");
+std::u16string TestConfirmBubbleModel::GetButtonLabel(
+    ui::DialogButton button) const {
+  return button == ui::DIALOG_BUTTON_OK ? u"OK" : u"Cancel";
 }
 
 void TestConfirmBubbleModel::Accept() {
@@ -50,8 +46,8 @@ void TestConfirmBubbleModel::Cancel() {
     *cancel_clicked_ = true;
 }
 
-base::string16 TestConfirmBubbleModel::GetLinkText() const {
-  return base::ASCIIToUTF16("Link");
+std::u16string TestConfirmBubbleModel::GetLinkText() const {
+  return u"Link";
 }
 
 void TestConfirmBubbleModel::OpenHelpPage() {

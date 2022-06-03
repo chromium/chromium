@@ -52,7 +52,21 @@ class ShapingLineBreakerTest : public testing::Test {
   void SetUp() override {
     font_description.SetComputedSize(12.0);
     font = Font(font_description);
-    font.Update(nullptr);
+  }
+
+  void SelectLucidaFont() {
+    FontFamily lucida_family;
+    // Windows 10
+    lucida_family.SetFamily("Lucida Grande", FontFamily::Type::kFamilyName);
+    // Windows 7
+    lucida_family.AppendFamily("Lucida Grande", FontFamily::Type::kFamilyName);
+    // Linux
+    lucida_family.AppendFamily("Lucida Medium", FontFamily::Type::kFamilyName);
+    // Mac
+    lucida_family.AppendFamily("Lucida Medium", FontFamily::Type::kFamilyName);
+
+    font_description.SetFamily(lucida_family);
+    font = Font(font_description);
   }
 
   void TearDown() override {}
@@ -321,6 +335,41 @@ TEST_F(ShapingLineBreakerTest, ShapeLineRangeEndMidWord) {
   line = ShapeLine(&breaker, 0, LayoutUnit::Max(), &break_offset);
   EXPECT_EQ(2u, break_offset);
   EXPECT_EQ(result->Width(), line->Width());
+}
+
+TEST_F(ShapingLineBreakerTest, ShapeLineWithLucidaFont) {
+  SelectLucidaFont();
+  FontDescription::VariantLigatures ligatures;
+  ligatures.common = FontDescription::kEnabledLigaturesState;
+
+  //              012345678901234567890123456789012345
+  String string(u"Lorem ipsum, consexx porttitxx. xxx");
+  LazyLineBreakIterator break_iterator(string, "en-US", LineBreakType::kNormal);
+  // In LayoutNG we use kAfterSpaceRun as TextBreakIterator`s default behavior.
+  break_iterator.SetBreakSpace(BreakSpaceType::kAfterSpaceRun);
+  TextDirection direction = TextDirection::kLtr;
+
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<const ShapeResult> result =
+      shaper.Shape(&font, direction, 0, 35);
+  scoped_refptr<const ShapeResult> segment1 =
+      shaper.Shape(&font, direction, 13, 31);
+  scoped_refptr<const ShapeResult> segment2 =
+      shaper.Shape(&font, direction, 13, 32);
+
+  HarfBuzzShaperCallbackContext context{&shaper, &font, result->Direction()};
+  ShapingLineBreaker breaker(result, &break_iterator, nullptr,
+                             HarfBuzzShaperCallback, &context);
+  scoped_refptr<const ShapeResultView> line;
+  unsigned break_offset = 0;
+
+  line = ShapeLine(&breaker, 13, segment1->SnappedWidth(), &break_offset);
+  EXPECT_EQ(31u, break_offset);
+  EXPECT_EQ(segment1->Width(), line->Width());
+
+  line = ShapeLine(&breaker, 13, segment2->SnappedWidth(), &break_offset);
+  EXPECT_EQ(31u, break_offset);
+  EXPECT_EQ(segment1->Width(), line->Width());
 }
 
 struct BreakOpportunityTestData {

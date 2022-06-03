@@ -5,7 +5,7 @@
 #ifndef TOOLS_ANDROID_FORWARDER2_UTIL_H_
 #define TOOLS_ANDROID_FORWARDER2_UTIL_H_
 
-#include "base/logging.h"
+#include "base/check.h"
 
 #include <utility>
 

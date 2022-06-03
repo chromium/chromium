@@ -33,7 +33,7 @@ std::string BlobToString(blink::mojom::Blob* blob) {
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
   CHECK_EQ(MOJO_RESULT_OK,
-           mojo::CreateDataPipe(/*options=*/nullptr, &producer, &consumer));
+           mojo::CreateDataPipe(/*options=*/nullptr, producer, consumer));
   blob->ReadAll(std::move(producer), mojo::NullRemote());
   DataPipeDrainerClient client(&output);
   mojo::DataPipeDrainer drainer(&client, std::move(consumer));

@@ -37,7 +37,7 @@ const Touch* TouchList::item(unsigned index) const {
   return const_cast<TouchList*>(this)->item(index);
 }
 
-void TouchList::Trace(blink::Visitor* visitor) {
+void TouchList::Trace(Visitor* visitor) const {
   visitor->Trace(values_);
   ScriptWrappable::Trace(visitor);
 }

@@ -11,16 +11,15 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/process/process_metrics.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/permissions/permission_manager.h"
-#include "chrome/browser/permissions/permission_result.h"
+#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/resource_coordinator/intervention_policy_database.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom.h"
-#include "chrome/browser/resource_coordinator/local_site_characteristics_data_store_factory.h"
 #include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_helper.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
@@ -29,15 +28,21 @@
 #include "chrome/browser/resource_coordinator/tab_manager_features.h"
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/resource_coordinator/utils.h"
+#include "chrome/browser/tab_contents/form_interaction_tab_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/usb/usb_tab_helper.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/device_event_log/device_event_log.h"
 #include "components/performance_manager/public/decorators/page_live_state_decorator.h"
+#include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_result.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/sudden_termination_disabler_type.mojom.h"
 #include "url/gurl.h"
 
@@ -47,15 +52,6 @@ namespace {
 
 using StateChangeReason = LifecycleUnitStateChangeReason;
 
-bool IsDiscardedOrPendingDiscard(LifecycleUnitState state) {
-  return state == LifecycleUnitState::DISCARDED ||
-         state == LifecycleUnitState::PENDING_DISCARD;
-}
-
-bool IsFrozenOrPendingFreeze(LifecycleUnitState state) {
-  return state == LifecycleUnitState::FROZEN ||
-         state == LifecycleUnitState::PENDING_FREEZE;
-}
 
 // Returns true if it is valid to transition from |from| to |to| for |reason|.
 bool IsValidStateChange(LifecycleUnitState from,
@@ -64,11 +60,6 @@ bool IsValidStateChange(LifecycleUnitState from,
   switch (from) {
     case LifecycleUnitState::ACTIVE: {
       switch (to) {
-        // Freeze() is called.
-        case LifecycleUnitState::PENDING_FREEZE:
-        // Discard(PROACTIVE) is called.
-        case LifecycleUnitState::PENDING_DISCARD:
-          return reason == StateChangeReason::BROWSER_INITIATED;
         // Discard(URGENT|EXTERNAL) is called.
         case LifecycleUnitState::DISCARDED: {
           return reason == StateChangeReason::SYSTEM_MEMORY_PRESSURE ||
@@ -86,25 +77,6 @@ bool IsValidStateChange(LifecycleUnitState from,
     case LifecycleUnitState::THROTTLED: {
       return false;
     }
-    case LifecycleUnitState::PENDING_FREEZE: {
-      switch (to) {
-        // Discard(PROACTIVE) is called.
-        case LifecycleUnitState::PENDING_DISCARD:
-          return reason == StateChangeReason::BROWSER_INITIATED;
-        // Discard(URGENT|EXTERNAL) is called.
-        case LifecycleUnitState::DISCARDED:
-          return reason == StateChangeReason::SYSTEM_MEMORY_PRESSURE ||
-                 reason == StateChangeReason::EXTENSION_INITIATED;
-        // The renderer notifies the browser that the page has been frozen.
-        case LifecycleUnitState::FROZEN:
-          return reason == StateChangeReason::RENDERER_INITIATED;
-        // Unfreeze() is called.
-        case LifecycleUnitState::PENDING_UNFREEZE:
-          return reason == StateChangeReason::BROWSER_INITIATED;
-        default:
-          return false;
-      }
-    }
     case LifecycleUnitState::FROZEN: {
       switch (to) {
         // The renderer notifies the browser that the page was unfrozen after
@@ -112,33 +84,12 @@ bool IsValidStateChange(LifecycleUnitState from,
         case LifecycleUnitState::ACTIVE: {
           return reason == StateChangeReason::RENDERER_INITIATED;
         }
-        // Discard(PROACTIVE|URGENT|EXTERNAL) is called.
+        // Discard(URGENT|EXTERNAL) is called.
         case LifecycleUnitState::DISCARDED: {
           return reason == StateChangeReason::BROWSER_INITIATED ||
                  reason == StateChangeReason::SYSTEM_MEMORY_PRESSURE ||
                  reason == StateChangeReason::EXTENSION_INITIATED;
         }
-        // Unfreeze() is called.
-        case LifecycleUnitState::PENDING_UNFREEZE: {
-          return reason == StateChangeReason::BROWSER_INITIATED;
-        }
-        default:
-          return false;
-      }
-    }
-    case LifecycleUnitState::PENDING_DISCARD: {
-      switch (to) {
-        // - Discard(URGENT|EXTERNAL) is called, or,
-        // - The proactive discard can be completed because:
-        //   - The freeze timeout expires, or,
-        //   - The renderer notifies the browser that the page has been frozen.
-        case LifecycleUnitState::DISCARDED:
-          return reason == StateChangeReason::BROWSER_INITIATED ||
-                 reason == StateChangeReason::SYSTEM_MEMORY_PRESSURE ||
-                 reason == StateChangeReason::EXTENSION_INITIATED;
-        // The WebContents is focused.
-        case LifecycleUnitState::PENDING_FREEZE:
-          return reason == StateChangeReason::USER_INITIATED;
         default:
           return false;
       }
@@ -152,23 +103,6 @@ bool IsValidStateChange(LifecycleUnitState from,
           return false;
       }
     }
-    case LifecycleUnitState::PENDING_UNFREEZE: {
-      switch (to) {
-        // The renderer notifies the browser that the page was unfrozen after
-        // Unfreeze() was called in the browser.
-        case LifecycleUnitState::ACTIVE: {
-          return reason == StateChangeReason::RENDERER_INITIATED;
-        }
-        // Discard(URGENT|EXTERNAL) is called.
-        case LifecycleUnitState::DISCARDED: {
-          return reason == StateChangeReason::SYSTEM_MEMORY_PRESSURE ||
-                 reason == StateChangeReason::EXTENSION_INITIATED;
-        }
-        default: {
-          return false;
-        }
-      }
-    }
   }
 }
 
@@ -177,79 +111,8 @@ StateChangeReason DiscardReasonToStateChangeReason(
   switch (reason) {
     case LifecycleUnitDiscardReason::EXTERNAL:
       return StateChangeReason::EXTENSION_INITIATED;
-    case LifecycleUnitDiscardReason::PROACTIVE:
-      return StateChangeReason::BROWSER_INITIATED;
     case LifecycleUnitDiscardReason::URGENT:
       return StateChangeReason::SYSTEM_MEMORY_PRESSURE;
-  }
-}
-
-struct FeatureUsageEntry {
-  performance_manager::SiteFeatureUsage usage;
-  DecisionFailureReason failure_reason;
-};
-
-void CheckFeatureUsage(const SiteCharacteristicsDataReader* reader,
-                       DecisionDetails* details) {
-  const FeatureUsageEntry features[] = {
-      {reader->UsesAudioInBackground(), DecisionFailureReason::HEURISTIC_AUDIO},
-      {reader->UpdatesFaviconInBackground(),
-       DecisionFailureReason::HEURISTIC_FAVICON},
-      {reader->UpdatesTitleInBackground(),
-       DecisionFailureReason::HEURISTIC_TITLE}};
-
-  // Avoid adding 'insufficient observation' reason multiple times.
-  bool insufficient_observation = false;
-
-  const auto* last = features + base::size(features);
-  for (const auto* f = features; f != last; f++) {
-    if (f->usage == performance_manager::SiteFeatureUsage::kSiteFeatureInUse) {
-      details->AddReason(f->failure_reason);
-    } else if (f->usage == performance_manager::SiteFeatureUsage::
-                               kSiteFeatureUsageUnknown) {
-      insufficient_observation = true;
-    }
-  }
-
-  if (insufficient_observation) {
-    details->AddReason(
-        DecisionFailureReason::HEURISTIC_INSUFFICIENT_OBSERVATION);
-  }
-}
-
-void CheckIfTabCanCommunicateWithUserWhileInBackground(
-    content::WebContents* web_contents,
-    DecisionDetails* details) {
-  DCHECK(details);
-
-  if (!web_contents->GetLastCommittedURL().is_valid() ||
-      web_contents->GetLastCommittedURL().is_empty()) {
-    return;
-  }
-
-  if (!URLShouldBeStoredInLocalDatabase(web_contents->GetLastCommittedURL()))
-    return;
-
-  auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
-  SiteCharacteristicsDataStore* data_store =
-      LocalSiteCharacteristicsDataStoreFactory::GetForProfile(profile);
-  if (!data_store)
-    return;
-
-  auto reader = data_store->GetReaderForOrigin(
-      url::Origin::Create(web_contents->GetLastCommittedURL()));
-
-  // TODO(sebmarchand): Add a failure reason for when the data isn't ready yet.
-
-  CheckFeatureUsage(reader.get(), details);
-
-  auto notif_permission = PermissionManager::Get(profile)->GetPermissionStatus(
-      ContentSettingsType::NOTIFICATIONS, web_contents->GetLastCommittedURL(),
-      web_contents->GetLastCommittedURL());
-  if (notif_permission.content_setting == CONTENT_SETTING_ALLOW) {
-    details->AddReason(
-        DecisionFailureReason::LIVE_STATE_HAS_NOTIFICATIONS_PERMISSION);
   }
 }
 
@@ -275,23 +138,16 @@ class TabLifecycleUnitExternalImpl : public TabLifecycleUnitExternal {
     tab_lifecycle_unit_->SetAutoDiscardable(auto_discardable);
   }
 
-  bool DiscardTab() override {
-    return tab_lifecycle_unit_->Discard(LifecycleUnitDiscardReason::EXTERNAL);
+  bool DiscardTab(LifecycleUnitDiscardReason reason) override {
+    return tab_lifecycle_unit_->Discard(reason);
   }
 
   bool IsDiscarded() const override {
-    // External code does not need to know about the intermediary
-    // PENDING_DISCARD state. To external callers, the tab is discarded while in
-    // the PENDING_DISCARD state.
-    return IsDiscardedOrPendingDiscard(tab_lifecycle_unit_->GetState());
+    return tab_lifecycle_unit_->GetState() == LifecycleUnitState::DISCARDED;
   }
 
   int GetDiscardCount() const override {
     return tab_lifecycle_unit_->GetDiscardCount();
-  }
-
-  bool IsFrozen() const override {
-    return IsFrozenOrPendingFreeze(tab_lifecycle_unit_->GetState());
   }
 
  private:
@@ -360,20 +216,6 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetFocused(bool focused) {
       break;
     }
 
-    case LifecycleUnitState::PENDING_DISCARD: {
-      // PENDING_DISCARD indicates that a freeze request is being processed by
-      // the renderer and that the page should be discarded as soon as it is
-      // frozen. On focus, we transition the state to PENDING_FREEZE and we stop
-      // the freeze timeout timer to indicate that a freeze request is being
-      // processed, but that the page should not be discarded once frozen. After
-      // the renderer has processed the freeze request, it will realize that the
-      // page is focused, unfreeze it and initiate a transition to ACTIVE.
-      freeze_timeout_timer_->Stop();
-      SetState(LifecycleUnitState::PENDING_FREEZE,
-               StateChangeReason::USER_INITIATED);
-      break;
-    }
-
     default:
       break;
   }
@@ -387,38 +229,12 @@ void TabLifecycleUnitSource::TabLifecycleUnit::SetRecentlyAudible(
     recently_audible_time_ = NowTicks();
 }
 
-void TabLifecycleUnitSource::TabLifecycleUnit::SetInitialStateFromPageNodeData(
-    performance_manager::mojom::InterventionPolicy origin_trial_policy,
-    bool is_holding_weblock,
-    bool is_holding_indexeddb_lock) {
-  origin_trial_freeze_policy_ = origin_trial_policy;
-  is_holding_weblock_ = is_holding_weblock;
-  is_holding_indexeddb_lock_ = is_holding_indexeddb_lock;
-}
-
 void TabLifecycleUnitSource::TabLifecycleUnit::UpdateLifecycleState(
     performance_manager::mojom::LifecycleState state) {
   switch (state) {
     case performance_manager::mojom::LifecycleState::kFrozen: {
-      switch (GetState()) {
-        case LifecycleUnitState::PENDING_DISCARD: {
-          freeze_timeout_timer_->Stop();
-          FinishDiscard(GetDiscardReason());
-          break;
-        }
-        case LifecycleUnitState::PENDING_UNFREEZE: {
-          // By the time the kFrozen state message arrive the tab might have
-          // been reloaded by the user (by right-clicking on the tab) and might
-          // have been switched to the PENDING_UNFREEZE state. It's safe to just
-          // ignore this message here as an unfreeze signal has been sent to the
-          // tab and so a |kRunning| transition will follow this one.
-          break;
-        }
-        default: {
-          SetState(LifecycleUnitState::FROZEN,
-                   StateChangeReason::RENDERER_INITIATED);
-        }
-      }
+      SetState(LifecycleUnitState::FROZEN,
+               StateChangeReason::RENDERER_INITIATED);
       break;
     }
 
@@ -435,52 +251,6 @@ void TabLifecycleUnitSource::TabLifecycleUnit::UpdateLifecycleState(
   }
 }
 
-void TabLifecycleUnitSource::TabLifecycleUnit::UpdateOriginTrialFreezePolicy(
-    performance_manager::mojom::InterventionPolicy policy) {
-  // The origin trial policy should only be updated when its value changes.
-  DCHECK_NE(policy, origin_trial_freeze_policy_);
-  // Unfreeze the tab if needed. This can happen if the tab gets frozen
-  // before all its frames are loaded and if one of these frames
-  // causes the tab to be opted out.
-  if (policy == performance_manager::mojom::InterventionPolicy::kOptOut &&
-      IsFrozenOrPendingFreeze(GetState())) {
-    Unfreeze();
-  }
-
-  origin_trial_freeze_policy_ = policy;
-}
-
-void TabLifecycleUnitSource::TabLifecycleUnit::SetIsHoldingWebLock(
-    bool is_holding_weblock) {
-  // Unfreeze the tab if it receive a lock while being frozen.
-  if (is_holding_weblock && IsFrozenOrPendingFreeze(GetState()))
-    Unfreeze();
-
-  is_holding_weblock_ = is_holding_weblock;
-}
-
-void TabLifecycleUnitSource::TabLifecycleUnit::SetIsHoldingIndexedDBLock(
-    bool is_holding_indexeddb_lock) {
-  // Unfreeze the tab if it receive a lock while being frozen.
-  if (is_holding_indexeddb_lock && IsFrozenOrPendingFreeze(GetState()))
-    Unfreeze();
-  is_holding_indexeddb_lock_ = is_holding_indexeddb_lock;
-}
-
-void TabLifecycleUnitSource::TabLifecycleUnit::RequestFreezeForDiscard(
-    LifecycleUnitDiscardReason reason) {
-  DCHECK_EQ(reason, LifecycleUnitDiscardReason::PROACTIVE);
-
-  SetState(LifecycleUnitState::PENDING_DISCARD,
-           DiscardReasonToStateChangeReason(reason));
-  EnsureFreezeTimeoutTimerInitialized();
-  freeze_timeout_timer_->Start(
-      FROM_HERE, kProactiveDiscardFreezeTimeout,
-      base::BindRepeating(&TabLifecycleUnit::FinishDiscard,
-                          base::Unretained(this), reason));
-  web_contents()->SetPageFrozen(true);
-}
-
 TabLifecycleUnitExternal*
 TabLifecycleUnitSource::TabLifecycleUnit::AsTabLifecycleUnitExternal() {
   // Create an impl the first time this is called.
@@ -489,7 +259,7 @@ TabLifecycleUnitSource::TabLifecycleUnit::AsTabLifecycleUnitExternal() {
   return external_impl_.get();
 }
 
-base::string16 TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
+std::u16string TabLifecycleUnitSource::TabLifecycleUnit::GetTitle() const {
   return web_contents()->GetTitle();
 }
 
@@ -545,94 +315,6 @@ int TabLifecycleUnitSource::TabLifecycleUnit::
   return GetPrivateMemoryKB(GetProcessHandle());
 }
 
-bool TabLifecycleUnitSource::TabLifecycleUnit::CanFreeze(
-    DecisionDetails* decision_details) const {
-  DCHECK(decision_details->reasons().empty());
-
-  // Leave the |decision_details| empty and return immediately for "trivial"
-  // rejection reasons. These aren't worth reporting about, as they have nothing
-  // to do with the content itself.
-
-  if (!IsValidStateChange(GetState(), LifecycleUnitState::PENDING_FREEZE,
-                          StateChangeReason::BROWSER_INITIATED)) {
-    return false;
-  }
-
-  // Allow a page to load fully before freezing it.
-  if (TabLoadTracker::Get()->GetLoadingState(web_contents()) !=
-      TabLoadTracker::LoadingState::LOADED) {
-    return false;
-  }
-
-  // IMPORTANT: Only the first reason added to |decision_details| determines
-  // whether the tab can be frozen. Additional reasons can be added for
-  // reporting purposes, but do not affect whether the tab can be frozen.
-
-  if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
-    decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
-
-  // Do not freeze tabs using media, irrespective of any opt-in, as this usually
-  // breaks functionality.
-  CheckMediaUsage(decision_details);
-
-  if (!GetStaticProactiveTabFreezeAndDiscardParams()
-           .freezing_protect_media_only) {
-    // Do not freeze tabs if disallowed by enterprise policy.
-    if (!GetTabSource()->tab_lifecycles_enterprise_policy()) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT);
-    }
-
-    // Respect opt-in/out requested by the page.
-    CheckFreezingOriginTrial(decision_details);
-
-    // Consult the local database to see if this tab could try to communicate
-    // with the user while in background.
-    CheckIfTabCanCommunicateWithUserWhileInBackground(web_contents(),
-                                                      decision_details);
-
-    // Don't freeze tabs sharing a browsing instance, as other tabs may not
-    // work properly if the work they request from this tab does not run.
-    if (web_contents()->GetSiteInstance()->GetRelatedActiveContentsCount() >
-        1U) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_SHARING_BROWSING_INSTANCE);
-    }
-
-    // Do not freeze tabs using device APIs, as this usually breaks
-    // functionality.
-    CheckDeviceUsage(decision_details);
-
-    // Do not freeze tabs holding Web Locks to avoid hangs in other tabs from
-    // the same origin that try to acquire the same Web Lock.
-    if (is_holding_weblock_) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_USING_WEBLOCK);
-    }
-
-    // Do not freeze tabs holding IndexedDB connections to avoid hangs in other
-    // tabs from the same origin that also use IndexedDB.
-    if (is_holding_indexeddb_lock_) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_USING_INDEXEDDB_LOCK);
-    }
-
-    // Do not freeze tabs that are currently using DevTools, as developers could
-    // be surprised that injected scripts don't run.
-    if (DevToolsWindow::GetInstanceForInspectedWebContents(web_contents())) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_DEVTOOLS_OPEN);
-    }
-  }
-
-  if (decision_details->reasons().empty()) {
-    decision_details->AddReason(
-        DecisionSuccessReason::HEURISTIC_OBSERVED_TO_BE_SAFE);
-  }
-
-  return decision_details->IsPositive();
-}
-
 bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
     LifecycleUnitDiscardReason reason,
     DecisionDetails* decision_details) const {
@@ -646,12 +328,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
   if (!tab_strip_model_)
     return false;
 
-  const LifecycleUnitState target_state =
-      reason == LifecycleUnitDiscardReason::PROACTIVE &&
-              GetState() != LifecycleUnitState::FROZEN
-          ? LifecycleUnitState::PENDING_DISCARD
-          : LifecycleUnitState::DISCARDED;
-  if (!IsValidStateChange(GetState(), target_state,
+  if (!IsValidStateChange(GetState(), LifecycleUnitState::DISCARDED,
                           DiscardReasonToStateChangeReason(reason))) {
     return false;
   }
@@ -671,7 +348,7 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
 // Fix for urgent discarding woes in crbug.com/883071. These protections only
 // apply on non-ChromeOS desktop platforms (Linux, Mac, Win).
 // NOTE: These do not currently provide DecisionDetails!
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   if (reason == LifecycleUnitDiscardReason::URGENT) {
     // Limit urgent discarding to once only, unless discarding for the
     // enterprise memory limit feature.
@@ -693,18 +370,23 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
   // whether the tab can be discarded. Additional reasons can be added for
   // reporting purposes, but do not affect whether the tab can be discarded.
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
     decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
 #else
   // Do not discard the tab if it is currently active in its window.
   if (tab_strip_model_->GetActiveWebContents() == web_contents())
     decision_details->AddReason(DecisionFailureReason::LIVE_STATE_VISIBLE);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Do not discard tabs in which the user has entered text in a form.
-  if (web_contents()->GetPageImportanceSignals().had_form_interaction)
-    decision_details->AddReason(DecisionFailureReason::LIVE_STATE_FORM_ENTRY);
+
+  // The FormInteractionTabHelper isn't available in some unit tests.
+  if (auto* form_interaction_helper =
+          FormInteractionTabHelper::FromWebContents(web_contents())) {
+    if (form_interaction_helper->had_form_interaction())
+      decision_details->AddReason(DecisionFailureReason::LIVE_STATE_FORM_ENTRY);
+  }
 
   // Do not discard PDFs as they might contain entry that is not saved and they
   // don't remember their scrolling positions. See crbug.com/547286 and
@@ -733,25 +415,12 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
         DecisionFailureReason::LIVE_STATE_DEVTOOLS_OPEN);
   }
 
-  // TODO(fdoray): Remove support for proactive discarding.
-  if (reason == LifecycleUnitDiscardReason::PROACTIVE) {
-    if (!GetTabSource()->tab_lifecycles_enterprise_policy()) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIFECYCLES_ENTERPRISE_POLICY_OPT_OUT);
-    }
-
-    // Consult the local database to see if this tab could try to communicate
-    // with the user while in background.
-    CheckIfTabCanCommunicateWithUserWhileInBackground(web_contents(),
-                                                      decision_details);
-
-    // Don't discard tabs sharing a browsing instance, as other tabs may not
-    // work properly if the work they request from this tab does not run.
-    if (web_contents()->GetSiteInstance()->GetRelatedActiveContentsCount() >
-        1U) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_SHARING_BROWSING_INSTANCE);
-    }
+  web_app::WebAppProvider* web_app_provider =
+      web_app::WebAppProvider::GetForWebContents(web_contents());
+  if (web_app_provider &&
+      web_app_provider->ui_manager().IsInAppWindow(web_contents())) {
+    // Do not discard Desktop PWA windows. Preserve native-app experience.
+    decision_details->AddReason(DecisionFailureReason::LIVE_WEB_APP);
   }
 
   if (decision_details->reasons().empty()) {
@@ -760,38 +429,6 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::CanDiscard(
     DCHECK(decision_details->IsPositive());
   }
   return decision_details->IsPositive();
-}
-
-bool TabLifecycleUnitSource::TabLifecycleUnit::Freeze() {
-  if (!IsValidStateChange(GetState(), LifecycleUnitState::PENDING_FREEZE,
-                          StateChangeReason::BROWSER_INITIATED)) {
-    return false;
-  }
-
-  // WebContents::SetPageFrozen() DCHECKs if the page is visible.
-  if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
-    return false;
-
-  SetState(LifecycleUnitState::PENDING_FREEZE,
-           StateChangeReason::BROWSER_INITIATED);
-  web_contents()->SetPageFrozen(true);
-  return true;
-}
-
-bool TabLifecycleUnitSource::TabLifecycleUnit::Unfreeze() {
-  if (!IsValidStateChange(GetState(), LifecycleUnitState::PENDING_UNFREEZE,
-                          StateChangeReason::BROWSER_INITIATED)) {
-    return false;
-  }
-
-  // WebContents::SetPageFrozen() DCHECKs if the page is visible.
-  if (web_contents()->GetVisibility() == content::Visibility::VISIBLE)
-    return false;
-
-  SetState(LifecycleUnitState::PENDING_UNFREEZE,
-           StateChangeReason::BROWSER_INITIATED);
-  web_contents()->SetPageFrozen(false);
-  return true;
 }
 
 ukm::SourceId TabLifecycleUnitSource::TabLifecycleUnit::GetUkmSourceId() const {
@@ -824,7 +461,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
     LifecycleUnitDiscardReason discard_reason) {
   UMA_HISTOGRAM_BOOLEAN(
       "TabManager.Discarding.DiscardedTabHasBeforeUnloadHandler",
-      web_contents()->NeedToFireBeforeUnloadOrUnload());
+      web_contents()->NeedToFireBeforeUnloadOrUnloadEvents());
 
   content::WebContents* const old_contents = web_contents();
   content::WebContents::CreateParams create_params(tab_strip_model_->profile());
@@ -860,7 +497,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
   bool fast_shutdown_success =
       GetRenderProcessHost()->FastShutdownIfPossible(1u, false);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!fast_shutdown_success &&
       discard_reason == LifecycleUnitDiscardReason::URGENT) {
     content::RenderFrameHost* main_frame = old_contents->GetMainFrame();
@@ -910,37 +547,23 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
   // Can't discard a tab when it isn't in a tabstrip.
   if (!tab_strip_model_) {
     // Logs are used to diagnose user feedback reports.
-    MEMORY_LOG(ERROR) << "Skipped discarding " << GetTitle()
+    MEMORY_LOG(ERROR) << "Skipped discarding unit " << GetID()
                       << " because it isn't in a tab strip.";
     return false;
   }
 
-  const LifecycleUnitState target_state =
-      reason == LifecycleUnitDiscardReason::PROACTIVE &&
-              GetState() != LifecycleUnitState::FROZEN
-          ? LifecycleUnitState::PENDING_DISCARD
-          : LifecycleUnitState::DISCARDED;
-  if (!IsValidStateChange(GetState(), target_state,
+  if (!IsValidStateChange(GetState(), LifecycleUnitState::DISCARDED,
                           DiscardReasonToStateChangeReason(reason))) {
     // Logs are used to diagnose user feedback reports.
-    MEMORY_LOG(ERROR) << "Skipped discarding " << GetTitle()
-                      << " because a transition from " << GetState() << " to "
-                      << target_state << " is not allowed.";
+    MEMORY_LOG(ERROR) << "Skipped discarding unit " << GetID()
+                      << " because a transition from " << GetState()
+                      << "to discarded is not allowed.";
     return false;
   }
 
   discard_reason_ = reason;
 
-  // If the tab is not going through an urgent discard, it should be frozen
-  // first. Freeze the tab and set a timer to callback to FinishDiscard() in
-  // case the freeze callback takes too long.
-  //
-  // TODO(fdoray): Request a freeze for EXTERNAL discards too once that doesn't
-  // cause asynchronous change of tab id. https://crbug.com/632839
-  if (target_state == LifecycleUnitState::PENDING_DISCARD)
-    RequestFreezeForDiscard(reason);
-  else
-    FinishDiscard(reason);
+  FinishDiscard(reason);
 
   return true;
 }
@@ -976,23 +599,16 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckMediaUsage(
       decision_details->AddReason(DecisionFailureReason::LIVE_STATE_MIRRORING);
   }
 
-  if (media_indicator->IsCapturingDesktop(web_contents())) {
-      decision_details->AddReason(
-          DecisionFailureReason::LIVE_STATE_DESKTOP_CAPTURE);
+  if (media_indicator->IsCapturingWindow(web_contents()) ||
+      media_indicator->IsCapturingDisplay(web_contents())) {
+    decision_details->AddReason(
+        DecisionFailureReason::LIVE_STATE_DESKTOP_CAPTURE);
   }
 }
 
 content::RenderProcessHost*
 TabLifecycleUnitSource::TabLifecycleUnit::GetRenderProcessHost() const {
   return web_contents()->GetMainFrame()->GetProcess();
-}
-
-void TabLifecycleUnitSource::TabLifecycleUnit::
-    EnsureFreezeTimeoutTimerInitialized() {
-  if (!freeze_timeout_timer_) {
-    freeze_timeout_timer_ =
-        std::make_unique<base::OneShotTimer>(GetTickClock());
-  }
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::OnLifecycleUnitStateChanged(
@@ -1003,35 +619,21 @@ void TabLifecycleUnitSource::TabLifecycleUnit::OnLifecycleUnitStateChanged(
       << " to " << GetState() << " with reason " << reason;
 
   // Invoke OnDiscardedStateChange() if necessary.
-  const bool was_discarded = IsDiscardedOrPendingDiscard(last_state);
-  const bool is_discarded = IsDiscardedOrPendingDiscard(GetState());
+  const bool was_discarded = last_state == LifecycleUnitState::DISCARDED;
+  const bool is_discarded = GetState() == LifecycleUnitState::DISCARDED;
   if (was_discarded != is_discarded) {
-    for (auto& observer : *observers_)
+    for (auto& observer : *observers_) {
       observer.OnDiscardedStateChange(web_contents(), GetDiscardReason(),
                                       is_discarded);
-  }
-
-  // Invoke OnFrozenStateChange() if necessary.
-  const bool was_frozen = IsFrozenOrPendingFreeze(last_state);
-  const bool is_frozen = IsFrozenOrPendingFreeze(GetState());
-  if (was_frozen != is_frozen) {
-    for (auto& observer : *observers_)
-      observer.OnFrozenStateChange(web_contents(), is_frozen);
+    }
   }
 }
 
 void TabLifecycleUnitSource::TabLifecycleUnit::DidStartLoading() {
-  if (IsDiscardedOrPendingDiscard(GetState())) {
+  if (GetState() == LifecycleUnitState::DISCARDED) {
     // This happens when a discarded tab is explicitly reloaded without being
     // focused first (right-click > Reload).
     SetState(LifecycleUnitState::ACTIVE, StateChangeReason::USER_INITIATED);
-  } else if (IsFrozenOrPendingFreeze(GetState())) {
-    // This happens when a frozen tab is explicitly reloaded without being
-    // focused first (right-click > Reload).
-    Unfreeze();
-
-    if (freeze_timeout_timer_)
-      freeze_timeout_timer_->Stop();
   }
 }
 
@@ -1054,21 +656,6 @@ void TabLifecycleUnitSource::TabLifecycleUnit::CheckDeviceUsage(
   if (web_contents()->IsConnectedToBluetoothDevice()) {
     decision_details->AddReason(
         DecisionFailureReason::LIVE_STATE_USING_BLUETOOTH);
-  }
-}
-
-void TabLifecycleUnitSource::TabLifecycleUnit::CheckFreezingOriginTrial(
-    DecisionDetails* decision_details) const {
-  switch (origin_trial_freeze_policy_) {
-    case performance_manager::mojom::InterventionPolicy::kOptOut:
-      decision_details->AddReason(DecisionFailureReason::ORIGIN_TRIAL_OPT_OUT);
-      break;
-    case performance_manager::mojom::InterventionPolicy::kOptIn:
-      decision_details->AddReason(DecisionSuccessReason::ORIGIN_TRIAL_OPT_IN);
-      break;
-    case performance_manager::mojom::InterventionPolicy::kDefault:
-      // Let other heuristics determine whether the tab can be frozen.
-      break;
   }
 }
 

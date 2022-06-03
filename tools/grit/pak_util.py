@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -19,8 +19,9 @@ import shutil
 import sys
 import tempfile
 
-# Import grit first to get local third_party modules.
-import grit  # pylint: disable=ungrouped-imports,unused-import
+_HERE_PATH = os.path.dirname(__file__)
+_SRC_PATH = os.path.normpath(os.path.join(_HERE_PATH, '..', '..'))
+sys.path.insert(0, os.path.join(_SRC_PATH, 'third_party', 'six', 'src'))
 
 import six
 
@@ -40,7 +41,9 @@ def _RepackMain(args):
       output_info_filepath = splitext[0] + '.info'
   else:
     out_path = args.output_pak_file
-  data_pack.RePack(out_path, args.input_pak_files, args.whitelist,
+  data_pack.RePack(out_path,
+                   args.input_pak_files,
+                   args.allowlist,
                    args.suppress_removed_key_output,
                    output_info_filepath=output_info_filepath)
   if args.compress:
@@ -58,7 +61,7 @@ def _ExtractMain(args):
         info_dict[resource_id].textual_id
         if args.textual_id else str(resource_id))
     path = os.path.join(args.output_dir, filename)
-    with open(path, 'w') as f:
+    with open(path, 'wb') as f:
       f.write(payload)
 
 
@@ -107,7 +110,7 @@ def _PrintMain(args):
       try:
         desc = six.text_type(data, encoding)
         if len(desc) > 60:
-          desc = desc[:60] + u'...'
+          desc = desc[:60] + '...'
         desc = desc.replace('\n', '\\n')
       except UnicodeDecodeError:
         pass
@@ -116,13 +119,13 @@ def _PrintMain(args):
       textual_id = info_dict[resource_id].textual_id
       canonical_textual_id = info_dict[canonical_id].textual_id
       output.write(
-          u'Entry(id={}, canonical_id={}, size={}, sha1={}): {}\n'.format(
+          'Entry(id={}, canonical_id={}, size={}, sha1={}): {}\n'.format(
               textual_id, canonical_textual_id, len(data), sha1,
-              desc).encode('utf-8'))
+              desc))
     else:
       output.write(
-          u'Entry(id={}, canonical_id={}, size={}, sha1={}): {}\n'.format(
-              resource_id, canonical_id, len(data), sha1, desc).encode('utf-8'))
+          'Entry(id={}, canonical_id={}, size={}, sha1={}): {}\n'.format(
+              resource_id, canonical_id, len(data), sha1, desc))
 
 
 def _ListMain(args):
@@ -156,10 +159,13 @@ def main():
   sub_parser.add_argument('output_pak_file', help='File to create.')
   sub_parser.add_argument('input_pak_files', nargs='+',
       help='Input .pak files.')
-  sub_parser.add_argument('--whitelist',
-      help='Path to a whitelist used to filter output pak file resource IDs.')
-  sub_parser.add_argument('--suppress-removed-key-output', action='store_true',
-      help='Do not log which keys were removed by the whitelist.')
+  sub_parser.add_argument(
+      '--allowlist',
+      help='Path to a allowlist used to filter output pak file resource IDs.')
+  sub_parser.add_argument(
+      '--suppress-removed-key-output',
+      action='store_true',
+      help='Do not log which keys were removed by the allowlist.')
   sub_parser.add_argument('--compress', dest='compress', action='store_true',
       default=False, help='Compress output_pak_file using gzip.')
   sub_parser.set_defaults(func=_RepackMain)

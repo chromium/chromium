@@ -3,9 +3,16 @@
 # found in the LICENSE file.
 
 
+USE_PYTHON3 = True
+
+
 def _RunTests(input_api, output_api):
   return (input_api.canned_checks.RunUnitTestsInDirectory(
-          input_api, output_api, '.', whitelist=[r'.+_test.py$']))
+      input_api,
+      output_api,
+      '.',
+      files_to_check=[r'.+_test.py$'],
+      skip_shebang_check=True))
 
 
 def CheckChangeOnUpload(input_api, output_api):

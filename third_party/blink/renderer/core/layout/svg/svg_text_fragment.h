@@ -48,15 +48,15 @@ struct SVGTextFragment {
     kTransformIgnoringTextLength
   };
 
-  FloatRect BoundingBox(float baseline) const {
-    FloatRect fragment_rect(x, y - baseline, width, height);
+  gfx::RectF BoundingBox(float baseline) const {
+    gfx::RectF fragment_rect(x, y - baseline, width, height);
     if (!IsTransformed())
       return fragment_rect;
     return BuildNormalFragmentTransform().MapRect(fragment_rect);
   }
 
-  FloatRect OverflowBoundingBox(float baseline) const {
-    FloatRect fragment_rect(
+  gfx::RectF OverflowBoundingBox(float baseline) const {
+    gfx::RectF fragment_rect(
         x - glyph_overflow.left, y - baseline - glyph_overflow.top,
         width + glyph_overflow.left + glyph_overflow.right,
         height + glyph_overflow.top + glyph_overflow.bottom);
@@ -170,4 +170,4 @@ struct SVGTextFragment {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_SVG_TEXT_FRAGMENT_H_

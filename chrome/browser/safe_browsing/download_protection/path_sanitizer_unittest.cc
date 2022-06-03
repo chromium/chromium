@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

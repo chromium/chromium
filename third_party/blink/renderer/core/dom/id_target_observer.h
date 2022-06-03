@@ -36,7 +36,7 @@ class IdTargetObserverRegistry;
 class IdTargetObserver : public GarbageCollected<IdTargetObserver> {
  public:
   virtual ~IdTargetObserver();
-  virtual void Trace(Visitor*);
+  virtual void Trace(Visitor*) const;
   virtual void IdTargetChanged() = 0;
   virtual void Unregister();
 

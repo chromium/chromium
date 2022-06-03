@@ -27,7 +27,7 @@ class MODULES_EXPORT MediaControlAnimatedArrowContainerElement final
 
   void ShowArrowAnimation(ArrowDirection);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class MediaControlAnimatedArrowContainerElementTest;
@@ -37,8 +37,6 @@ class MODULES_EXPORT MediaControlAnimatedArrowContainerElement final
   class MODULES_EXPORT AnimatedArrow final
       : public HTMLDivElement,
         public MediaControlAnimationEventListener::Observer {
-    USING_GARBAGE_COLLECTED_MIXIN(AnimatedArrow);
-
    public:
     AnimatedArrow(const AtomicString& id, Document& document);
 
@@ -52,7 +50,7 @@ class MODULES_EXPORT MediaControlAnimatedArrowContainerElement final
     // iteration.
     void Show();
 
-    void Trace(Visitor*) override;
+    void Trace(Visitor*) const override;
 
    private:
     void HideInternal();

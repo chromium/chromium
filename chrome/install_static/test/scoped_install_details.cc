@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "chrome/install_static/install_details.h"
 #include "chrome/install_static/install_modes.h"
 
@@ -20,6 +20,12 @@ ScopedInstallDetails::ScopedInstallDetails(bool system_level,
   details->set_mode(mode);
   details->set_channel(mode->default_channel_name);
   details->set_system_level(system_level);
+  these_details_ = details.get();
+  previous_details_ = InstallDetails::Swap(std::move(details));
+}
+
+ScopedInstallDetails::ScopedInstallDetails(
+    std::unique_ptr<InstallDetails> details) {
   these_details_ = details.get();
   previous_details_ = InstallDetails::Swap(std::move(details));
 }

@@ -5,7 +5,8 @@
 #include "components/reading_list/core/reading_list_model_impl.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/time/clock.h"
 #include "components/prefs/pref_service.h"
@@ -48,6 +49,12 @@ void ReadingListModelImpl::StoreLoaded(
   }
   DCHECK(read_entry_count_ + unread_entry_count_ == entries_->size());
   loaded_ = true;
+
+  base::UmaHistogramCounts1000("ReadingList.Unread.Count.OnModelLoaded",
+                               unread_entry_count_);
+  base::UmaHistogramCounts1000("ReadingList.Read.Count.OnModelLoaded",
+                               read_entry_count_);
+
   for (auto& observer : observers_)
     observer.ReadingListModelLoaded(this);
 }
@@ -318,15 +325,20 @@ void ReadingListModelImpl::RemoveEntryByURLImpl(const GURL& url,
     observer.ReadingListDidApplyChanges(this);
 }
 
+bool ReadingListModelImpl::IsUrlSupported(const GURL& url) {
+  return url.SchemeIsHTTPOrHTTPS();
+}
+
 const ReadingListEntry& ReadingListModelImpl::AddEntry(
     const GURL& url,
     const std::string& title,
-    reading_list::EntrySource source) {
+    reading_list::EntrySource source,
+    base::TimeDelta estimated_read_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(loaded());
-  DCHECK(url.SchemeIsHTTPOrHTTPS());
+  DCHECK(IsUrlSupported(url));
   std::unique_ptr<ReadingListModel::ScopedReadingListBatchUpdate>
-      scoped_model_batch_updates = nullptr;
+      scoped_model_batch_updates;
   if (GetEntryByURL(url)) {
     scoped_model_batch_updates = BeginBatchUpdates();
     RemoveEntryByURL(url);
@@ -335,6 +347,9 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
   std::string trimmed_title = base::CollapseWhitespaceASCII(title, false);
 
   ReadingListEntry entry(url, trimmed_title, clock_->Now());
+  if (!estimated_read_time.is_zero()) {
+    entry.SetEstimatedReadTime(estimated_read_time);
+  }
   for (auto& observer : observers_)
     observer.ReadingListWillAddEntry(this, entry);
   UpdateEntryStateCountersOnEntryInsertion(entry);
@@ -351,6 +366,13 @@ const ReadingListEntry& ReadingListModelImpl::AddEntry(
   }
 
   return entries_->at(url);
+}
+
+const ReadingListEntry& ReadingListModelImpl::AddEntry(
+    const GURL& url,
+    const std::string& title,
+    reading_list::EntrySource source) {
+  return AddEntry(url, title, source, base::TimeDelta());
 }
 
 void ReadingListModelImpl::SetReadStatus(const GURL& url, bool read) {
@@ -399,6 +421,31 @@ void ReadingListModelImpl::SetEntryTitle(const GURL& url,
     observer.ReadingListWillUpdateEntry(this, url);
   }
   entry.SetTitle(trimmed_title, clock_->Now());
+  if (storage_layer_) {
+    storage_layer_->SaveEntry(entry);
+  }
+  for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListDidApplyChanges(this);
+  }
+}
+
+void ReadingListModelImpl::SetEstimatedReadTime(
+    const GURL& url,
+    base::TimeDelta estimated_read_time) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(loaded());
+  auto iterator = entries_->find(url);
+  if (iterator == entries_->end()) {
+    return;
+  }
+  ReadingListEntry& entry = iterator->second;
+  if (entry.EstimatedReadTime() == estimated_read_time) {
+    return;
+  }
+  for (ReadingListModelObserver& observer : observers_) {
+    observer.ReadingListWillUpdateEntry(this, url);
+  }
+  entry.SetEstimatedReadTime(estimated_read_time);
   if (storage_layer_) {
     storage_layer_->SaveEntry(entry);
   }
@@ -504,6 +551,13 @@ ReadingListModelImpl::ScopedReadingListBatchUpdate::
 ReadingListModelImpl::ScopedReadingListBatchUpdate::
     ~ScopedReadingListBatchUpdate() {
   storage_token_.reset();
+}
+
+void ReadingListModelImpl::ScopedReadingListBatchUpdate::
+    ReadingListModelBeingShutdown(const ReadingListModel* model) {
+  storage_token_.reset();
+  ReadingListModel::ScopedReadingListBatchUpdate::ReadingListModelBeingShutdown(
+      model);
 }
 
 void ReadingListModelImpl::LeavingBatchUpdates() {

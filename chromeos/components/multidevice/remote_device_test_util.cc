@@ -59,6 +59,7 @@ std::string InstanceIdFromInt64(int64_t number) {
 // Attributes of the default test remote device.
 const char kTestRemoteDeviceName[] = "remote device";
 const char kTestRemoteDevicePublicKey[] = "public key";
+const char kTestRemoteDeviceBluetoothPublicAddress[] = "01:23:45:67:89:AB";
 
 RemoteDeviceRefBuilder::RemoteDeviceRefBuilder() {
   remote_device_ = std::make_shared<RemoteDevice>(CreateRemoteDeviceForTest());
@@ -123,6 +124,12 @@ RemoteDeviceRefBuilder& RemoteDeviceRefBuilder::SetBeaconSeeds(
   return *this;
 }
 
+RemoteDeviceRefBuilder& RemoteDeviceRefBuilder::SetBluetoothPublicAddress(
+    const std::string& bluetooth_public_address) {
+  remote_device_->bluetooth_public_address = bluetooth_public_address;
+  return *this;
+}
+
 RemoteDeviceRef RemoteDeviceRefBuilder::Build() {
   return RemoteDeviceRef(remote_device_);
 }
@@ -141,7 +148,8 @@ RemoteDevice CreateRemoteDeviceForTest() {
       kTestRemoteDeviceLastUpdateTimeMillis, software_features,
       {multidevice::BeaconSeed(
           kBeaconSeedData, base::Time::FromJavaTime(kBeaconSeedStartTimeMillis),
-          base::Time::FromJavaTime(kBeaconSeedEndTimeMillis))});
+          base::Time::FromJavaTime(kBeaconSeedEndTimeMillis))},
+      kTestRemoteDeviceBluetoothPublicAddress);
 }
 
 RemoteDeviceRef CreateRemoteDeviceRefForTest() {

@@ -56,7 +56,7 @@ bool ContextMenuContentTypeWebView::SupportsGroup(int group) {
           auto* web_view_guest =
               extensions::WebViewGuest::FromWebContents(source_web_contents());
           // Note that this check might not be sufficient to hide dev tools
-          // items on OS_MACOSX if we start supporting <webview> inside
+          // items on OS_MAC if we start supporting <webview> inside
           // component extensions.
           // For a list of places where <webview>/GuestViews are supported, see:
           // https://goo.gl/xfJkwp.
@@ -68,7 +68,7 @@ bool ContextMenuContentTypeWebView::SupportsGroup(int group) {
 
         // TODO(lazyboy): Enable this for mac too when http://crbug.com/380405
         // is fixed.
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
         // Add dev tools for unpacked extensions.
         return !embedder_extension ||
                extensions::Manifest::IsUnpackedLocation(

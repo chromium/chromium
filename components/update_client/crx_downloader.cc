@@ -7,11 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/task/post_task.h"
-#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #if defined(OS_WIN)
@@ -30,32 +29,13 @@ CrxDownloader::DownloadMetrics::DownloadMetrics()
       error(0),
       downloaded_bytes(-1),
       total_bytes(-1),
-      download_time_ms(0) {
-}
+      download_time_ms(0) {}
 
-// On Windows, the first downloader in the chain is a background downloader,
-// which uses the BITS service.
-std::unique_ptr<CrxDownloader> CrxDownloader::Create(
-    bool is_background_download,
-    scoped_refptr<NetworkFetcherFactory> network_fetcher_factory) {
-  std::unique_ptr<CrxDownloader> url_fetcher_downloader =
-      std::make_unique<UrlFetcherDownloader>(nullptr, network_fetcher_factory);
-
-#if defined(OS_WIN)
-  if (is_background_download) {
-    return std::make_unique<BackgroundDownloader>(
-        std::move(url_fetcher_downloader));
-  }
-#endif
-
-  return url_fetcher_downloader;
-}
-
-CrxDownloader::CrxDownloader(std::unique_ptr<CrxDownloader> successor)
+CrxDownloader::CrxDownloader(scoped_refptr<CrxDownloader> successor)
     : main_task_runner_(base::ThreadTaskRunnerHandle::Get()),
       successor_(std::move(successor)) {}
 
-CrxDownloader::~CrxDownloader() {}
+CrxDownloader::~CrxDownloader() = default;
 
 void CrxDownloader::set_progress_callback(
     const ProgressCallback& progress_callback) {
@@ -88,7 +68,7 @@ void CrxDownloader::StartDownloadFromUrl(const GURL& url,
 void CrxDownloader::StartDownload(const std::vector<GURL>& urls,
                                   const std::string& expected_hash,
                                   DownloadCallback download_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto error = CrxDownloaderError::NONE;
   if (urls.empty()) {
@@ -117,64 +97,70 @@ void CrxDownloader::OnDownloadComplete(
     bool is_handled,
     const Result& result,
     const DownloadMetrics& download_metrics) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!result.error)
-    base::PostTask(
-        FROM_HERE, kTaskTraits,
-        base::BindOnce(&CrxDownloader::VerifyResponse, base::Unretained(this),
-                       is_handled, result, download_metrics));
-  else
+  if (result.error) {
     main_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(&CrxDownloader::HandleDownloadError,
-                                  base::Unretained(this), is_handled, result,
-                                  download_metrics));
+        FROM_HERE, base::BindOnce(&CrxDownloader::HandleDownloadError, this,
+                                  is_handled, result, download_metrics));
+    return;
+  }
+
+  DCHECK_EQ(0, download_metrics.error);
+  DCHECK(is_handled);
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, kTaskTraits,
+      base::BindOnce(
+          // Verifies the hash of a CRX file. Returns NONE or BAD_HASH if
+          // the hash of the CRX does not match the |expected_hash|. The input
+          // file is deleted in case of errors.
+          [](const base::FilePath& filepath, const std::string& expected_hash) {
+            if (VerifyFileHash256(filepath, expected_hash))
+              return CrxDownloaderError::NONE;
+            DeleteFileAndEmptyParentDirectory(filepath);
+            return CrxDownloaderError::BAD_HASH;
+          },
+          result.response, expected_hash_),
+      base::BindOnce(
+          // Handles CRX verification result, and retries the download from
+          // a different URL if the verification fails.
+          [](scoped_refptr<CrxDownloader> downloader, Result result,
+             DownloadMetrics download_metrics, CrxDownloaderError error) {
+            if (error == CrxDownloaderError::NONE) {
+              downloader->download_metrics_.push_back(download_metrics);
+              downloader->main_task_runner()->PostTask(
+                  FROM_HERE,
+                  base::BindOnce(std::move(downloader->download_callback_),
+                                 result));
+              return;
+            }
+            result.response.clear();
+            result.error = static_cast<int>(error);
+            download_metrics.error = result.error;
+            downloader->main_task_runner()->PostTask(
+                FROM_HERE,
+                base::BindOnce(&CrxDownloader::HandleDownloadError, downloader,
+                               true, result, download_metrics));
+          },
+          scoped_refptr<CrxDownloader>(this), result, download_metrics));
 }
 
-void CrxDownloader::OnDownloadProgress() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+void CrxDownloader::OnDownloadProgress(int64_t downloaded_bytes,
+                                       int64_t total_bytes) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (progress_callback_.is_null())
     return;
 
-  progress_callback_.Run();
-}
-
-// The function mutates the values of the parameters |result| and
-// |download_metrics|.
-void CrxDownloader::VerifyResponse(bool is_handled,
-                                   Result result,
-                                   DownloadMetrics download_metrics) {
-  DCHECK_EQ(0, result.error);
-  DCHECK_EQ(0, download_metrics.error);
-  DCHECK(is_handled);
-
-  if (VerifyFileHash256(result.response, expected_hash_)) {
-    download_metrics_.push_back(download_metrics);
-    main_task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(download_callback_), result));
-    return;
-  }
-
-  // The download was successful but the response is not trusted. Clean up
-  // the download, mutate the result, and try the remaining fallbacks when
-  // handling the error.
-  result.error = static_cast<int>(CrxDownloaderError::BAD_HASH);
-  download_metrics.error = result.error;
-  DeleteFileAndEmptyParentDirectory(result.response);
-  result.response.clear();
-
-  main_task_runner()->PostTask(
-      FROM_HERE, base::BindOnce(&CrxDownloader::HandleDownloadError,
-                                base::Unretained(this), is_handled, result,
-                                download_metrics));
+  progress_callback_.Run(downloaded_bytes, total_bytes);
 }
 
 void CrxDownloader::HandleDownloadError(
     bool is_handled,
     const Result& result,
     const DownloadMetrics& download_metrics) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_NE(0, result.error);
   DCHECK(result.response.empty());
   DCHECK_NE(0, download_metrics.error);

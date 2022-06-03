@@ -34,7 +34,9 @@ ScopedLogMessage::~ScopedLogMessage() {
     return;
 
   const std::string string_from_stream = stream_.str();
-  LogBuffer::GetInstance()->AddLogMessage(LogBuffer::LogMessage(
+  auto* log_buffer = LogBuffer::GetInstance();
+  CHECK(log_buffer);
+  log_buffer->AddLogMessage(LogBuffer::LogMessage(
       string_from_stream, base::Time::Now(), file_, line_, severity_));
 
   // Don't emit VERBOSE-level logging to the standard logging system unless

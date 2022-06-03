@@ -4,7 +4,7 @@
 
 #include "chrome/browser/safe_browsing/download_protection/path_sanitizer.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 
 namespace safe_browsing {

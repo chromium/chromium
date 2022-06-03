@@ -9,12 +9,9 @@
 
 #include <memory>
 #include <set>
+#include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
-#include "base/time/time.h"
-#include "base/values.h"
 #include "chrome/browser/ui/webui/downloads/downloads.mojom.h"
 #include "components/download/content/public/all_download_item_notifier.h"
 #include "components/download/public/common/download_item.h"
@@ -32,6 +29,10 @@ class DownloadsListTracker
  public:
   DownloadsListTracker(content::DownloadManager* download_manager,
                        mojo::PendingRemote<downloads::mojom::Page> page);
+
+  DownloadsListTracker(const DownloadsListTracker&) = delete;
+  DownloadsListTracker& operator=(const DownloadsListTracker&) = delete;
+
   ~DownloadsListTracker() override;
 
   // Clears all downloads on the page if currently sending updates and resets
@@ -63,9 +64,10 @@ class DownloadsListTracker
 
  protected:
   // Testing constructor.
-  DownloadsListTracker(content::DownloadManager* download_manager,
-                       mojo::PendingRemote<downloads::mojom::Page> page,
-                       base::Callback<bool(const download::DownloadItem&)>);
+  DownloadsListTracker(
+      content::DownloadManager* download_manager,
+      mojo::PendingRemote<downloads::mojom::Page> page,
+      base::RepeatingCallback<bool(const download::DownloadItem&)>);
 
   // Creates a dictionary value that's sent to the page as JSON.
   virtual downloads::mojom::DataPtr CreateDownloadData(
@@ -114,7 +116,7 @@ class DownloadsListTracker
 
   // Callback used to determine if an item should show on the page. Set to
   // |ShouldShow()| in default constructor, passed in while testing.
-  base::Callback<bool(const download::DownloadItem&)> should_show_;
+  base::RepeatingCallback<bool(const download::DownloadItem&)> should_show_;
 
   // When this is true, all changes to downloads that affect the page are sent
   // via JavaScript.
@@ -129,9 +131,7 @@ class DownloadsListTracker
   size_t chunk_size_ = 20u;
 
   // Current search terms.
-  std::vector<base::string16> search_terms_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloadsListTracker);
+  std::vector<std::u16string> search_terms_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOWNLOADS_DOWNLOADS_LIST_TRACKER_H_

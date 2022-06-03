@@ -8,8 +8,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
-#include "base/strings/stringprintf.h"
+#include "base/check_op.h"
 #include "cc/base/math_util.h"
 #include "cc/debug/debug_colors.h"
 #include "cc/layers/append_quads_data.h"
@@ -21,16 +20,16 @@
 #include "cc/trees/occlusion.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/display/de_jelly.h"
+#include "components/viz/common/quads/compositor_render_pass.h"
+#include "components/viz/common/quads/compositor_render_pass_draw_quad.h"
 #include "components/viz/common/quads/content_draw_quad_base.h"
 #include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/render_pass.h"
-#include "components/viz/common/quads/render_pass_draw_quad.h"
 #include "components/viz/common/quads/shared_quad_state.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/common/quads/tile_draw_quad.h"
 #include "third_party/skia/include/core/SkImageFilter.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 
@@ -45,6 +44,7 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
       ancestor_property_changed_(false),
       contributes_to_drawn_surface_(false),
       is_render_surface_list_member_(false),
+      intersects_damage_under_(true),
       nearest_occlusion_immune_ancestor_(nullptr) {
   damage_tracker_ = DamageTracker::Create();
 }
@@ -84,8 +84,8 @@ gfx::RectF RenderSurfaceImpl::DrawableContentRect() const {
   gfx::Rect surface_content_rect = content_rect();
   const FilterOperations& filters = Filters();
   if (!filters.IsEmpty()) {
-    surface_content_rect =
-        filters.MapRect(surface_content_rect, SurfaceScale().matrix());
+    surface_content_rect = filters.MapRect(surface_content_rect,
+                                           SkMatrix(SurfaceScale().matrix()));
   }
   gfx::RectF drawable_content_rect = MathUtil::MapClippedRect(
       draw_transform(), gfx::RectF(surface_content_rect));
@@ -107,10 +107,6 @@ gfx::RectF RenderSurfaceImpl::DrawableContentRect() const {
 
 SkBlendMode RenderSurfaceImpl::BlendMode() const {
   return OwningEffectNode()->blend_mode;
-}
-
-bool RenderSurfaceImpl::UsesDefaultBlendMode() const {
-  return BlendMode() == SkBlendMode::kSrcOver;
 }
 
 SkColor RenderSurfaceImpl::GetDebugBorderColor() const {
@@ -137,10 +133,6 @@ const FilterOperations& RenderSurfaceImpl::Filters() const {
   return OwningEffectNode()->filters;
 }
 
-gfx::PointF RenderSurfaceImpl::FiltersOrigin() const {
-  return OwningEffectNode()->filters_origin;
-}
-
 gfx::Transform RenderSurfaceImpl::SurfaceScale() const {
   gfx::Transform surface_scale;
   surface_scale.Scale(OwningEffectNode()->surface_contents_scale.x(),
@@ -152,7 +144,7 @@ const FilterOperations& RenderSurfaceImpl::BackdropFilters() const {
   return OwningEffectNode()->backdrop_filters;
 }
 
-base::Optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
+absl::optional<gfx::RRectF> RenderSurfaceImpl::BackdropFilterBounds() const {
   return OwningEffectNode()->backdrop_filter_bounds;
 }
 
@@ -164,8 +156,21 @@ bool RenderSurfaceImpl::HasCopyRequest() const {
   return OwningEffectNode()->has_copy_request;
 }
 
+viz::SubtreeCaptureId RenderSurfaceImpl::SubtreeCaptureId() const {
+  return OwningEffectNode()->subtree_capture_id;
+}
+
+gfx::Size RenderSurfaceImpl::SubtreeSize() const {
+  return OwningEffectNode()->subtree_size;
+}
+
 bool RenderSurfaceImpl::ShouldCacheRenderSurface() const {
   return OwningEffectNode()->cache_render_surface;
+}
+
+bool RenderSurfaceImpl::CopyOfOutputRequired() const {
+  return HasCopyRequest() || ShouldCacheRenderSurface() ||
+         SubtreeCaptureId().is_valid();
 }
 
 int RenderSurfaceImpl::TransformTreeIndex() const {
@@ -183,6 +188,11 @@ int RenderSurfaceImpl::EffectTreeIndex() const {
 const EffectNode* RenderSurfaceImpl::OwningEffectNode() const {
   return layer_tree_impl_->property_trees()->effect_tree.Node(
       EffectTreeIndex());
+}
+
+const DocumentTransitionSharedElementId&
+RenderSurfaceImpl::GetDocumentTransitionSharedElementId() const {
+  return OwningEffectNode()->document_transition_shared_element_id;
 }
 
 void RenderSurfaceImpl::SetClipRect(const gfx::Rect& clip_rect) {
@@ -209,15 +219,15 @@ gfx::Rect RenderSurfaceImpl::CalculateExpandedClipForFilters(
     const gfx::Transform& target_to_surface) {
   gfx::Rect clip_in_surface_space =
       MathUtil::ProjectEnclosingClippedRect(target_to_surface, clip_rect());
-  gfx::Rect expanded_clip_in_surface_space =
-      Filters().MapRectReverse(clip_in_surface_space, SurfaceScale().matrix());
+  gfx::Rect expanded_clip_in_surface_space = Filters().MapRect(
+      clip_in_surface_space, SkMatrix(SurfaceScale().matrix()));
   gfx::Rect expanded_clip_in_target_space = MathUtil::MapEnclosingClippedRect(
       draw_transform(), expanded_clip_in_surface_space);
   return expanded_clip_in_target_space;
 }
 
 gfx::Rect RenderSurfaceImpl::CalculateClippedAccumulatedContentRect() {
-  if (ShouldCacheRenderSurface() || HasCopyRequest() || !is_clipped())
+  if (CopyOfOutputRequired() || !is_clipped())
     return accumulated_content_rect();
 
   if (accumulated_content_rect().IsEmpty())
@@ -306,7 +316,7 @@ void RenderSurfaceImpl::AccumulateContentRectFromContributingLayer(
   if (render_target() == this)
     return;
 
-  accumulated_content_rect_.Union(layer->drawable_content_rect());
+  accumulated_content_rect_.Union(layer->visible_drawable_content_rect());
 }
 
 void RenderSurfaceImpl::AccumulateContentRectFromContributingRenderSurface(
@@ -372,29 +382,43 @@ void RenderSurfaceImpl::ResetPropertyChangedFlags() {
   ancestor_property_changed_ = false;
 }
 
-std::unique_ptr<viz::RenderPass> RenderSurfaceImpl::CreateRenderPass() {
-  std::unique_ptr<viz::RenderPass> pass =
-      viz::RenderPass::Create(num_contributors_);
+std::unique_ptr<viz::CompositorRenderPass>
+RenderSurfaceImpl::CreateRenderPass() {
+  std::unique_ptr<viz::CompositorRenderPass> pass =
+      viz::CompositorRenderPass::Create(num_contributors_);
   gfx::Rect damage_rect = GetDamageRect();
   damage_rect.Intersect(content_rect());
-  pass->SetNew(id(), content_rect(), damage_rect,
+  pass->SetNew(render_pass_id(), content_rect(), damage_rect,
                draw_properties_.screen_space_transform);
   pass->filters = Filters();
   pass->backdrop_filters = BackdropFilters();
   pass->backdrop_filter_bounds = BackdropFilterBounds();
   pass->generate_mipmap = TrilinearFiltering();
+  pass->subtree_capture_id = SubtreeCaptureId();
+  // The subtree size may be slightly larger than our content rect during
+  // some animations, so we clamp it here.
+  pass->subtree_size = SubtreeSize();
+  pass->subtree_size.SetToMin(content_rect().size());
   pass->cache_render_pass = ShouldCacheRenderSurface();
   pass->has_damage_from_contributing_content =
       HasDamageFromeContributingContent();
+  pass->shared_element_resource_id =
+      OwningEffectNode()->shared_element_resource_id;
   return pass;
 }
 
 void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
-                                    viz::RenderPass* render_pass,
+                                    viz::CompositorRenderPass* render_pass,
                                     AppendQuadsData* append_quads_data) {
   gfx::Rect unoccluded_content_rect =
       occlusion_in_content_space().GetUnoccludedContentRect(content_rect());
   if (unoccluded_content_rect.IsEmpty())
+    return;
+
+  // If this render surface has a valid |shared_element_resource_id| then its
+  // being used to produce live content. Its content will be drawn to its
+  // actual position in the Viz process.
+  if (OwningEffectNode()->shared_element_resource_id.IsValid())
     return;
 
   const PropertyTrees* property_trees = layer_tree_impl_->property_trees();
@@ -404,10 +428,14 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
-  shared_quad_state->SetAll(
-      draw_transform(), content_rect(), content_rect(), rounded_corner_bounds(),
-      draw_properties_.clip_rect, draw_properties_.is_clipped, contents_opaque,
-      draw_properties_.draw_opacity, BlendMode(), sorting_context_id);
+  absl::optional<gfx::Rect> clip_rect;
+  if (draw_properties_.is_clipped) {
+    clip_rect = draw_properties_.clip_rect;
+  }
+  shared_quad_state->SetAll(draw_transform(), content_rect(), content_rect(),
+                            mask_filter_info(), clip_rect, contents_opaque,
+                            draw_properties_.draw_opacity, BlendMode(),
+                            sorting_context_id);
 
   if (layer_tree_impl_->debug_state().show_debug_borders.test(
           DebugBorderType::RENDERPASS)) {
@@ -419,7 +447,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   }
 
   LayerImpl* mask_layer = BackdropMaskLayer();
-  viz::ResourceId mask_resource_id = 0;
+  viz::ResourceId mask_resource_id = viz::kInvalidResourceId;
   gfx::Size mask_texture_size;
   gfx::RectF mask_uv_rect;
   gfx::Vector2dF surface_contents_scale =
@@ -456,12 +484,14 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
   }
 
   gfx::RectF tex_coord_rect(gfx::Rect(content_rect().size()));
-  auto* quad = render_pass->CreateAndAppendDrawQuad<viz::RenderPassDrawQuad>();
-  quad->SetNew(shared_quad_state, content_rect(), unoccluded_content_rect, id(),
-               mask_resource_id, mask_uv_rect, mask_texture_size,
-               surface_contents_scale, FiltersOrigin(), tex_coord_rect,
-               !layer_tree_impl_->settings().enable_edge_anti_aliasing,
-               OwningEffectNode()->backdrop_filter_quality);
+  auto* quad =
+      render_pass->CreateAndAppendDrawQuad<viz::CompositorRenderPassDrawQuad>();
+  quad->SetAll(
+      shared_quad_state, content_rect(), unoccluded_content_rect,
+      /*needs_blending=*/true, render_pass_id(), mask_resource_id, mask_uv_rect,
+      mask_texture_size, surface_contents_scale, gfx::PointF(), tex_coord_rect,
+      !layer_tree_impl_->settings().enable_edge_anti_aliasing,
+      OwningEffectNode()->backdrop_filter_quality, intersects_damage_under_);
 }
 
 }  // namespace cc

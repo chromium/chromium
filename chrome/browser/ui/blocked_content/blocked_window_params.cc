@@ -37,9 +37,10 @@ BlockedWindowParams::BlockedWindowParams(const BlockedWindowParams& other) =
 BlockedWindowParams::~BlockedWindowParams() = default;
 
 NavigateParams BlockedWindowParams::CreateNavigateParams(
+    content::RenderProcessHost* opener_process,
     content::WebContents* web_contents) const {
   GURL popup_url(target_url_);
-  web_contents->GetMainFrame()->GetProcess()->FilterURL(false, &popup_url);
+  opener_process->FilterURL(false, &popup_url);
   NavigateParams nav_params(
       Profile::FromBrowserContext(web_contents->GetBrowserContext()), popup_url,
       ui::PAGE_TRANSITION_LINK);
@@ -51,7 +52,7 @@ NavigateParams BlockedWindowParams::CreateNavigateParams(
   nav_params.is_renderer_initiated = true;
   nav_params.window_action = NavigateParams::SHOW_WINDOW;
   nav_params.user_gesture = user_gesture_;
-  nav_params.created_with_opener = !opener_suppressed_;
+  nav_params.opened_by_another_window = !opener_suppressed_;
   nav_params.window_bounds = web_contents->GetContainerBounds();
   if (features_.has_x)
     nav_params.window_bounds.set_x(features_.x);

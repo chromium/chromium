@@ -29,11 +29,11 @@
 import cgi
 import logging
 import threading
-import Queue
+
+from six.moves import queue as Queue
 
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.web_tests.breakpad.dump_reader import DumpReader
-
 
 _log = logging.getLogger(__name__)
 
@@ -70,7 +70,10 @@ class DumpReaderMultipart(DumpReader):
         f.write('\r\n'.join(dump['upload_file_minidump']))
         f.close()
 
-        cmd = [self._path_to_minidump_stackwalk(), temp_name, self._symbols_dir()]
+        cmd = [
+            self._path_to_minidump_stackwalk(), temp_name,
+            self._symbols_dir()
+        ]
         try:
             stack = self._host.executive.run_command(cmd, return_stderr=False)
         except:
@@ -81,7 +84,8 @@ class DumpReaderMultipart(DumpReader):
         return stack
 
     def _read_dump(self, dump_file):
-        with self._host.filesystem.open_binary_file_for_reading(dump_file) as f:
+        with self._host.filesystem.open_binary_file_for_reading(
+                dump_file) as f:
             boundary = f.readline().strip()[2:]
             f.seek(0)
             try:
@@ -108,7 +112,9 @@ class DumpReaderMultipart(DumpReader):
                 _log.error('    at %s', full_path)
 
         if not result:
-            _log.error("    Could not find breakpad tools, unexpected crashes won't be symbolized")
+            _log.error(
+                "    Could not find breakpad tools, unexpected crashes won't be symbolized"
+            )
             _log.error('    Did you build the target blink_tests?')
             _log.error('')
 
@@ -116,14 +122,17 @@ class DumpReaderMultipart(DumpReader):
         return self._breakpad_tools_available
 
     def _path_to_minidump_stackwalk(self):
-        return self._host.filesystem.join(self._build_dir, 'minidump_stackwalk')
+        return self._host.filesystem.join(self._build_dir,
+                                          'minidump_stackwalk')
 
     def _path_to_generate_breakpad_symbols(self):
         return self._path_finder.path_from_chromium_base(
-            'components', 'crash', 'content', 'tools', 'generate_breakpad_symbols.py')
+            'components', 'crash', 'content', 'tools',
+            'generate_breakpad_symbols.py')
 
     def _symbols_dir(self):
-        return self._host.filesystem.join(self._build_dir, 'content_shell.syms')
+        return self._host.filesystem.join(self._build_dir,
+                                          'content_shell.syms')
 
     def _generate_breakpad_symbols_if_necessary(self):
         if self._generated_symbols:
@@ -132,7 +141,7 @@ class DumpReaderMultipart(DumpReader):
 
         _log.debug('Generating breakpad symbols')
         queue = Queue.Queue()
-        thread = threading.Thread(target=_symbolize_keepalive, args=(queue,))
+        thread = threading.Thread(target=_symbolize_keepalive, args=(queue, ))
         thread.start()
         try:
             for binary in self._binaries_to_symbolize():

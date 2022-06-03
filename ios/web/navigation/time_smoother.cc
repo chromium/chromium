@@ -12,7 +12,7 @@ base::Time TimeSmoother::GetSmoothedTime(base::Time t) {
   // or just getting out of it, so increase the high-water mark to get
   // a time that probably hasn't been used before and return it.
   if (low_water_mark_ <= t && t <= high_water_mark_) {
-    high_water_mark_ += base::TimeDelta::FromMicroseconds(1);
+    high_water_mark_ += base::Microseconds(1);
     return high_water_mark_;
   }
 

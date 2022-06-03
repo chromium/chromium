@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/xml/xsl_style_sheet.h"
 #include "third_party/blink/renderer/core/xml/xslt_extensions.h"
 #include "third_party/blink/renderer/core/xml/xslt_unicode_sort.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/raw_resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
@@ -48,7 +49,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 #include "third_party/blink/renderer/platform/wtf/text/utf8.h"
@@ -79,7 +79,7 @@ void XSLTProcessor::ParseErrorFunc(void* user_data, xmlError* error) {
       break;
   }
 
-  console->AddMessage(ConsoleMessage::Create(
+  console->AddMessage(MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kXml, level, error->message,
       std::make_unique<SourceLocation>(error->file, error->line, 0, nullptr)));
 }
@@ -105,7 +105,7 @@ static xmlDocPtr DocLoaderFunc(const xmlChar* uri,
                reinterpret_cast<const char*>(uri));
       xmlFree(base);
 
-      ResourceLoaderOptions fetch_options;
+      ResourceLoaderOptions fetch_options(nullptr /* world */);
       fetch_options.initiator_info.name = fetch_initiator_type_names::kXml;
       FetchParameters params(ResourceRequest(url), fetch_options);
       params.MutableResourceRequest().SetMode(
@@ -136,8 +136,9 @@ static xmlDocPtr DocLoaderFunc(const xmlChar* uri,
         size_t offset = 0;
         for (const auto& span : *data) {
           bool final_chunk = offset + span.size() == data->size();
-          if (!xmlParseChunk(ctx, span.data(), static_cast<int>(span.size()),
-                             final_chunk))
+          // Stop parsing chunks if xmlParseChunk returns an error.
+          if (xmlParseChunk(ctx, span.data(), static_cast<int>(span.size()),
+                            final_chunk))
             break;
           offset += span.size();
         }

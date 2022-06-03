@@ -4,36 +4,52 @@
 
 #include "ash/assistant/model/assistant_screen_context_model.h"
 
-#include "ash/assistant/model/assistant_screen_context_model_observer.h"
-
 namespace ash {
+
+AssistantStructureFuture::AssistantStructureFuture() = default;
+
+AssistantStructureFuture::~AssistantStructureFuture() = default;
+
+void AssistantStructureFuture::SetValue(
+    ax::mojom::AssistantStructurePtr structure) {
+  DCHECK(!HasValue());
+  structure_ = std::move(structure);
+  Notify();
+}
+
+void AssistantStructureFuture::GetValueAsync(Callback callback) {
+  if (HasValue()) {
+    RunCallback(std::move(callback));
+    return;
+  }
+  callbacks_.push_back(std::move(callback));
+}
+
+bool AssistantStructureFuture::HasValue() const {
+  return !structure_.is_null();
+}
+
+void AssistantStructureFuture::Clear() {
+  structure_.reset();
+}
+
+void AssistantStructureFuture::Notify() {
+  for (auto& callback : callbacks_)
+    RunCallback(std::move(callback));
+
+  callbacks_.clear();
+}
+
+void AssistantStructureFuture::RunCallback(Callback callback) {
+  std::move(callback).Run(*structure_);
+}
 
 AssistantScreenContextModel::AssistantScreenContextModel() = default;
 
 AssistantScreenContextModel::~AssistantScreenContextModel() = default;
 
-void AssistantScreenContextModel::AddObserver(
-    AssistantScreenContextModelObserver* observer) {
-  observers_.AddObserver(observer);
-}
-
-void AssistantScreenContextModel::RemoveObserver(
-    AssistantScreenContextModelObserver* observer) {
-  observers_.RemoveObserver(observer);
-}
-
-void AssistantScreenContextModel::SetRequestState(
-    ScreenContextRequestState request_state) {
-  if (request_state == request_state_)
-    return;
-
-  request_state_ = request_state;
-  NotifyRequestStateChanged();
-}
-
-void AssistantScreenContextModel::NotifyRequestStateChanged() {
-  for (AssistantScreenContextModelObserver& observer : observers_)
-    observer.OnScreenContextRequestStateChanged(request_state_);
+void AssistantScreenContextModel::Clear() {
+  assistant_structure_.Clear();
 }
 
 }  // namespace ash

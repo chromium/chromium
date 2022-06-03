@@ -6,7 +6,7 @@
 Presubmit for Chromium HTML/CSS/JS resources. See chrome/browser/PRESUBMIT.py.
 """
 
-import regex_check
+from . import regex_check
 
 
 class ResourceChecker(object):
@@ -46,7 +46,7 @@ class ResourceChecker(object):
   def _RunCheckOnAffectedFiles(self, check, msg_template, is_error=False,
                                only_changed_lines=False):
     """Check for violations of the Chromium web development style guide. See
-       https://chromium.googlesource.com/chromium/src/+/master/styleguide/web/web.md
+       https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md
     """
     results = []
 

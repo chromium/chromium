@@ -4,8 +4,9 @@
 
 package org.chromium.chrome.browser.vr;
 
-import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
  * Gets and sets preferences related to the status of the Vr feedback infobar.
@@ -13,9 +14,6 @@ import org.chromium.chrome.browser.ChromeFeatureList;
 public class VrFeedbackStatus {
     private static final String FEEDBACK_FREQUENCY_PARAM_NAME = "feedback_frequency";
     private static final int DEFAULT_FEEDBACK_FREQUENCY = 10;
-
-    private static final String VR_FEEDBACK_OPT_OUT = "VR_FEEDBACK_OPT_OUT";
-    private static final String VR_EXIT_TO_2D_COUNT = "VR_EXIT_TO_2D_COUNT";
 
     /**
      * Returns how often we should show the feedback prompt.
@@ -31,17 +29,16 @@ public class VrFeedbackStatus {
      * @param optOut Whether the VR feedback option has been opted-out of.
      */
     public static void setFeedbackOptOut(boolean optOut) {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .putBoolean(VR_FEEDBACK_OPT_OUT, optOut)
-                .apply();
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.VR_FEEDBACK_OPT_OUT, optOut);
     }
 
     /**
      * Returns whether the user opted out of entering feedback for their VR experience.
      */
     public static boolean getFeedbackOptOut() {
-        return ContextUtils.getAppSharedPreferences().getBoolean(VR_FEEDBACK_OPT_OUT, false);
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.VR_FEEDBACK_OPT_OUT, false);
     }
 
     /**
@@ -49,7 +46,8 @@ public class VrFeedbackStatus {
      * @param count The number of times the user exited VR and entered 2D browsing mode
      */
     public static void setUserExitedAndEntered2DCount(int count) {
-        ContextUtils.getAppSharedPreferences().edit().putInt(VR_EXIT_TO_2D_COUNT, count).apply();
+        SharedPreferencesManager.getInstance().writeInt(
+                ChromePreferenceKeys.VR_EXIT_TO_2D_COUNT, count);
     }
 
     /**
@@ -57,6 +55,7 @@ public class VrFeedbackStatus {
      * mode.
      */
     public static int getUserExitedAndEntered2DCount() {
-        return ContextUtils.getAppSharedPreferences().getInt(VR_EXIT_TO_2D_COUNT, 0);
+        return SharedPreferencesManager.getInstance().readInt(
+                ChromePreferenceKeys.VR_EXIT_TO_2D_COUNT, 0);
     }
 }

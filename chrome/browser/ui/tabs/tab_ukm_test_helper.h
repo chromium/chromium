@@ -7,15 +7,14 @@
 
 #include <map>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A UKM entry consists of named metrics with int64_t values. Use a map to
 // specify expected metrics to test against an actual entry for tests.
 // A value of |nullopt| implies a value shouldn't exist for the given metric
 // name.
-using UkmMetricMap = std::map<const char*, base::Optional<int64_t>>;
+using UkmMetricMap = std::map<const char*, absl::optional<int64_t>>;
 using SourceUkmMetricMap =
     std::map<ukm::SourceId, std::pair<GURL, UkmMetricMap>>;
 
@@ -27,6 +26,8 @@ using SourceUkmMetricMap =
 class UkmEntryChecker {
  public:
   UkmEntryChecker();
+  UkmEntryChecker(const UkmEntryChecker&) = delete;
+  UkmEntryChecker& operator=(const UkmEntryChecker&) = delete;
   ~UkmEntryChecker();
 
   // Expects that the next untested entry for |entry_name| matches the value
@@ -72,8 +73,6 @@ class UkmEntryChecker {
   // |num_entries_| records the number of entries that have been expected via
   // calls to ExpectNewEntries() or similar.
   std::map<std::string, size_t> num_entries_;
-
-  DISALLOW_COPY_AND_ASSIGN(UkmEntryChecker);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_UKM_TEST_HELPER_H_

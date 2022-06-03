@@ -49,6 +49,7 @@ std::unique_ptr<SequenceManagerForTest> SequenceManagerForTest::Create(
     scoped_refptr<SingleThreadTaskRunner> task_runner,
     const TickClock* clock,
     SequenceManager::Settings settings) {
+  settings.clock = clock;
   std::unique_ptr<SequenceManagerForTest> manager(new SequenceManagerForTest(
       std::make_unique<ThreadControllerForTest>(funneled_sequence_manager,
                                                 std::move(task_runner), clock),
@@ -71,7 +72,8 @@ std::unique_ptr<SequenceManagerForTest> SequenceManagerForTest::Create(
 std::unique_ptr<SequenceManagerForTest>
 SequenceManagerForTest::CreateOnCurrentThread(
     SequenceManager::Settings settings) {
-  return Create(CreateThreadControllerImplForCurrentThread(settings.clock),
+  const auto* clock = settings.clock;
+  return Create(CreateThreadControllerImplForCurrentThread(clock),
                 std::move(settings));
 }
 

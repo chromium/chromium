@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "gpu/command_buffer/service/buffer_manager.h"
 #include "gpu/command_buffer/service/error_state_mock.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -35,8 +35,8 @@ class BufferManagerTestBase : public GpuServiceTest {
       TestHelper::SetupFeatureInfoInitExpectations(gl_.get(), extensions);
       feature_info->InitializeForTesting();
     }
-    error_state_.reset(new MockErrorState());
-    manager_.reset(new BufferManager(memory_tracker, feature_info));
+    error_state_ = std::make_unique<MockErrorState>();
+    manager_ = std::make_unique<BufferManager>(memory_tracker, feature_info);
   }
 
   void TearDown() override {

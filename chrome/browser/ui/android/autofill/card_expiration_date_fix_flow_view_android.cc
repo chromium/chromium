@@ -34,10 +34,15 @@ void CardExpirationDateFixFlowViewAndroid::OnUserAccept(
                           base::android::ConvertJavaStringToUTF16(env, year));
 }
 
-void CardExpirationDateFixFlowViewAndroid::PromptDismissed(
+void CardExpirationDateFixFlowViewAndroid::OnUserDismiss(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj) {
   controller_->OnDismissed();
+}
+
+void CardExpirationDateFixFlowViewAndroid::PromptDismissed(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
   delete this;
 }
 
@@ -55,7 +60,8 @@ void CardExpirationDateFixFlowViewAndroid::Show() {
 
   java_object_.Reset(Java_AutofillExpirationDateFixFlowBridge_create(
       env, reinterpret_cast<intptr_t>(this), dialog_title, confirm,
-      ResourceMapper::MapFromChromiumId(controller_->GetIconId()), card_label));
+      ResourceMapper::MapToJavaDrawableId(controller_->GetIconId()),
+      card_label));
 
   Java_AutofillExpirationDateFixFlowBridge_show(
       env, java_object_,

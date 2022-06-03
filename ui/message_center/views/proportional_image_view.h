@@ -5,7 +5,6 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_PROPORTIONAL_IMAGE_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_PROPORTIONAL_IMAGE_VIEW_H_
 
-#include "base/macros.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/views/view.h"
@@ -16,32 +15,33 @@ namespace message_center {
 // original proportions.
 class MESSAGE_CENTER_EXPORT ProportionalImageView : public views::View {
  public:
-  // Internal class name.
-  static const char kViewClassName[];
-
+  METADATA_HEADER(ProportionalImageView);
   explicit ProportionalImageView(const gfx::Size& view_size);
+  ProportionalImageView(const ProportionalImageView&) = delete;
+  ProportionalImageView& operator=(const ProportionalImageView&) = delete;
   ~ProportionalImageView() override;
 
-  // |image| is scaled to fit within |view_size| and |max_image_size| while
+  // |image| is scaled to fit within `view_size` and `max_image_size` while
   // maintaining its original aspect ratio. It is then centered within the view.
+  // Applies rounded corners OnPaint if `apply_rounded_corners` is set.
   void SetImage(const gfx::ImageSkia& image,
-                const gfx::Size& max_image_size);
+                const gfx::Size& max_image_size,
+                bool apply_rounded_corners = false);
 
   const gfx::ImageSkia& image() const { return image_; }
 
   // Overridden from views::View:
   void OnPaint(gfx::Canvas* canvas) override;
-  const char* GetClassName() const override;
 
  private:
   gfx::Size GetImageDrawingSize();
 
   gfx::ImageSkia image_;
   gfx::Size max_image_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProportionalImageView);
+  // Whether to apply rounded corners OnPaint.
+  bool apply_rounded_corners_ = false;
 };
 
 }  // namespace message_center
 
-#endif // UI_MESSAGE_CENTER_VIEWS_PROPORTIONAL_IMAGE_VIEW_H_
+#endif  // UI_MESSAGE_CENTER_VIEWS_PROPORTIONAL_IMAGE_VIEW_H_

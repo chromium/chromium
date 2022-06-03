@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 5: Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 PASS internals.updateStyleAndReturnAffectedElementCount() is 1
 PASS getComputedStyle(rootDiv).backgroundColor is "rgb(255, 0, 0)"
 PASS internals.updateStyleAndReturnAffectedElementCount() is 1

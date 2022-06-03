@@ -10,13 +10,15 @@
 
 #include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
+#include "chrome/browser/media/router/discovery/dial/dial_app_discovery_service.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
-#include "chrome/common/media_router/discovery/media_sink_internal.h"
-#include "chrome/common/media_router/media_route.h"
-#include "chrome/common/media_router/media_source.h"
-#include "chrome/common/media_router/mojom/media_router.mojom.h"
-#include "chrome/common/media_router/route_request_result.h"
+#include "components/media_router/common/discovery/media_sink_internal.h"
+#include "components/media_router/common/media_route.h"
+#include "components/media_router/common/media_source.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/route_request_result.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace media_router {
 
@@ -25,7 +27,7 @@ struct CustomDialLaunchMessageBody;
 // Represents parameters used to complete a custom DIAL launch sequence.
 struct DialLaunchInfo {
   DialLaunchInfo(const std::string& app_name,
-                 const base::Optional<std::string>& post_data,
+                 const absl::optional<std::string>& post_data,
                  const std::string& client_id,
                  const GURL& app_launch_url);
   DialLaunchInfo(const DialLaunchInfo& other);
@@ -35,7 +37,7 @@ struct DialLaunchInfo {
 
   // The data to include with the app launch POST request. Note this may be
   // overridden by the launchParameter in the CUSTOM_DIAL_LAUNCH response.
-  base::Optional<std::string> post_data;
+  absl::optional<std::string> post_data;
 
   // Cast SDK client ID.
   std::string client_id;
@@ -53,19 +55,21 @@ struct DialActivity {
   static std::unique_ptr<DialActivity> From(const std::string& presentation_id,
                                             const MediaSinkInternal& sink,
                                             const MediaSource::Id& source_id,
-                                            bool incognito);
+                                            const url::Origin& client_origin,
+                                            bool off_the_record);
 
-  DialActivity(const DialLaunchInfo& launch_info, const MediaRoute& route);
+  DialActivity(const DialLaunchInfo& launch_info,
+               const MediaRoute& route,
+               const MediaSinkInternal& sink,
+               const url::Origin& client_origin);
   ~DialActivity();
+  DialActivity(const DialActivity&);
 
   DialLaunchInfo launch_info;
-
-  // TODO(https://crbug.com/816628): The MediaRoute itself does not contain
-  // sufficient information to tell the current state of the activity (launching
-  // vs. launched). Because of this, the route is rendered in the Media Router
-  // UI the same way for both states. Consider introducing a state property in
-  // MediaRoute so that the UI can render them differently.
   MediaRoute route;
+  MediaSinkInternal sink;
+  // The origin of the web frame that launched the activity.
+  url::Origin client_origin;
 };
 
 template <typename CallbackType>
@@ -74,12 +78,14 @@ struct DialPendingRequest {
   DialPendingRequest(std::unique_ptr<DialURLFetcher> fetcher,
                      CallbackType callback)
       : fetcher(std::move(fetcher)), callback(std::move(callback)) {}
+
+  DialPendingRequest(const DialPendingRequest&) = delete;
+  DialPendingRequest& operator=(const DialPendingRequest&) = delete;
+
   ~DialPendingRequest() = default;
 
   std::unique_ptr<DialURLFetcher> fetcher;
   CallbackType callback;
-
-  DISALLOW_COPY_AND_ASSIGN(DialPendingRequest);
 };
 
 // Keeps track of all ongoing custom DIAL launch activities, and is the source
@@ -102,7 +108,11 @@ class DialActivityManager {
  public:
   using LaunchAppCallback = base::OnceCallback<void(bool)>;
 
-  DialActivityManager();
+  explicit DialActivityManager(DialAppDiscoveryService* app_discovery_service);
+
+  DialActivityManager(const DialActivityManager&) = delete;
+  DialActivityManager& operator=(const DialActivityManager&) = delete;
+
   virtual ~DialActivityManager();
 
   // Adds |activity| to the manager. This call is valid only if there is no
@@ -116,6 +126,13 @@ class DialActivityManager {
   // Returns the DialActivity associated with |sink_id| or nullptr if not
   // found.
   const DialActivity* GetActivityBySinkId(const MediaSink::Id& sink_id) const;
+
+  // Returns a DialActivity that can be joined by a request with the given
+  // properties, or a nullptr if there is no such activity.
+  const DialActivity* GetActivityToJoin(const std::string& presentation_id,
+                                        const MediaSource& media_source,
+                                        const url::Origin& client_origin,
+                                        bool off_the_record) const;
 
   // Launches the app specified in the activity associated with |route_id|.
   // If |message.launch_parameter| is set, then it overrides the post data
@@ -135,7 +152,7 @@ class DialActivityManager {
   // to fail, such as |route_id| being invalid or there already being a pending
   // stop request. If so, returns the error message and error code. Returns
   // nullopt and RouteRequestResult::OK otherwise.
-  std::pair<base::Optional<std::string>, RouteRequestResult::ResultCode>
+  std::pair<absl::optional<std::string>, RouteRequestResult::ResultCode>
   CanStopApp(const MediaRoute::Id& route_id) const;
 
   // Stops the app that is currently active on |route_id|. Assumes that
@@ -156,6 +173,10 @@ class DialActivityManager {
   // Represents the state of a launch activity.
   struct Record {
     explicit Record(const DialActivity& activity);
+
+    Record(const Record&) = delete;
+    Record& operator=(const Record&) = delete;
+
     ~Record();
 
     enum State { kLaunching, kLaunched };
@@ -165,8 +186,6 @@ class DialActivityManager {
     std::unique_ptr<DialLaunchRequest> pending_launch_request;
     std::unique_ptr<DialStopRequest> pending_stop_request;
     State state = kLaunching;
-
-    DISALLOW_COPY_AND_ASSIGN(Record);
   };
 
   // Marked virtual for tests.
@@ -177,18 +196,25 @@ class DialActivityManager {
   void OnLaunchSuccess(const MediaRoute::Id& route_id,
                        const std::string& response);
   void OnLaunchError(const MediaRoute::Id& route_id,
-                     int response_code,
-                     const std::string& message);
+                     const std::string& message,
+                     absl::optional<int> http_response_code);
   void OnStopSuccess(const MediaRoute::Id& route_id,
                      const std::string& response);
   void OnStopError(const MediaRoute::Id& route_id,
-                   int response_code,
-                   const std::string& message);
+                   const std::string& message,
+                   absl::optional<int> http_response_code);
+
+  void OnInfoFetchedAfterStopError(const MediaRoute::Id& route_id,
+                                   const std::string& message,
+                                   const MediaSink::Id& sink_id,
+                                   const std::string& app_name,
+                                   DialAppInfoResult result);
 
   base::flat_map<MediaRoute::Id, std::unique_ptr<Record>> records_;
 
+  DialAppDiscoveryService* const app_discovery_service_;
+
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(DialActivityManager);
 };
 
 }  // namespace media_router

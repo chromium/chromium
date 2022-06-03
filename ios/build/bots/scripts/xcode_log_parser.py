@@ -11,48 +11,100 @@ import plistlib
 import re
 import shutil
 import subprocess
+import sys
 
+import file_util
+from test_result_util import ResultCollection, TestResult, TestStatus
 import test_runner
+import xcode_util
 
 
+# Some system errors are reported as failed tests in Xcode test result log in
+# Xcode 12, e.g. test app crash in xctest parallel testing. This is reported
+# as 'BUILD_INTERRUPTED' if it's in final attempt. If not in final attempt, it
+# will be ignored since future attempts will cover tests not ran.
+SYSTEM_ERROR_TEST_NAME_SUFFIXES = ['encountered an error']
 LOGGER = logging.getLogger(__name__)
 
+_XCRESULT_SUFFIX = '.xcresult'
 
-def parse_passed_tests_for_interrupted_run(output):
-  """Parses xcode runner output to get passed tests only.
+
+def _sanitize_str(line):
+  """Encodes str when in python 2."""
+  if sys.version_info.major == 2:
+    if isinstance(line, unicode):
+      line = line.encode('utf-8')
+  return line
+
+
+def _sanitize_str_list(lines):
+  """Encodes any unicode in list when in python 2."""
+  sanitized_lines = []
+  for line in lines:
+    sanitized_lines.append(_sanitize_str(line))
+  return sanitized_lines
+
+
+def get_parser():
+  """Returns correct parser from version of Xcode installed."""
+  if xcode_util.using_xcode_11_or_higher():
+    return Xcode11LogParser()
+  return XcodeLogParser()
+
+
+def parse_passed_failed_tests_for_interrupted_run(output):
+  """Parses xcode runner output to get passed & failed tests.
 
   Args:
     output: [str] An output of test run.
 
   Returns:
-    The list of passed tests only that will be a filter for next attempt.
+    test_result_util.ResultCollection: Results of tests parsed.
   """
+  result = ResultCollection()
   passed_tests = []
+  failed_tests = []
   # Test has format:
   # [09:04:42:INFO] Test case '-[Test_class test_method]' passed.
-  # [09:04:42:INFO] Test Case '-[Test_class test_method]' passed.
+  # [09:04:42:INFO] Test Case '-[Test_class test_method]' failed.
   passed_test_regex = re.compile(r'Test [Cc]ase \'\-\[(.+?)\s(.+?)\]\' passed')
+  failed_test_regex = re.compile(r'Test [Cc]ase \'\-\[(.+?)\s(.+?)\]\' failed')
 
-  for test_line in output:
-    m_test = passed_test_regex.search(test_line)
-    if m_test:
-      passed_tests.append('%s/%s' % (m_test.group(1), m_test.group(2)))
+  def _find_list_of_tests(tests, regex):
+    """Adds test names matched by regex to result list."""
+    for test_line in output:
+      m_test = regex.search(test_line)
+      if m_test:
+        tests.append('%s/%s' % (m_test.group(1), m_test.group(2)))
+
+  _find_list_of_tests(passed_tests, passed_test_regex)
+  _find_list_of_tests(failed_tests, failed_test_regex)
+  result.add_test_names_status(passed_tests, TestStatus.PASS)
+  result.add_test_names_status(
+      failed_tests,
+      TestStatus.FAIL,
+      test_log='Test failed in interrupted(timedout) run.')
+
   LOGGER.info('%d passed tests for interrupted build.' % len(passed_tests))
-  return passed_tests
+  LOGGER.info('%d failed tests for interrupted build.' % len(failed_tests))
+  return result
 
 
 def format_test_case(test_case):
   """Format test case from `-[TestClass TestMethod]` to `TestClass_TestMethod`.
 
   Args:
-    test_case: (str) Test case id in format `-[TestClass TestMethod]` or
+    test_case: (basestring) Test case id in format `-[TestClass TestMethod]` or
                `[TestClass/TestMethod]`
 
   Returns:
-    Test case id in format TestClass_TestMethod.
+    (str) Test case id in format TestClass/TestMethod.
   """
-  return test_case.replace('[', '').replace(']', '').replace(
-      '-', '').replace(' ', '/')
+  test_case = _sanitize_str(test_case)
+  test = test_case.replace('[', '').replace(']',
+                                            '').replace('-',
+                                                        '').replace(' ', '/')
+  return test
 
 
 def copy_screenshots_for_failed_test(failure_message, test_case_folder):
@@ -120,7 +172,7 @@ class Xcode11LogParser(object):
     return subprocess.check_output(xcresult_command).strip()
 
   @staticmethod
-  def _list_of_failed_tests(actions_invocation_record):
+  def _list_of_failed_tests(actions_invocation_record, excluded=None):
     """Gets failed tests from xcresult root data.
 
     ActionsInvocationRecord is an object that contains properties:
@@ -133,38 +185,44 @@ class Xcode11LogParser(object):
 
     Args:
       actions_invocation_record: An output of `xcresult get --path xcresult`.
+      excluded: A set of tests that will be excluded.
 
     Returns:
-      Failed tests as a map:
-      {
-          'failed_test': ['StackTrace']
-      }
+      test_results.ResultCollection: Results of failed tests.
     """
-    failed = {}
+    excluded = excluded or set()
+    result = ResultCollection()
     if 'testFailureSummaries' not in actions_invocation_record['issues']:
-      return failed
+      return result
     for failure_summary in actions_invocation_record['issues'][
         'testFailureSummaries']['_values']:
-      error_line = failure_summary['documentLocationInCreatingWorkspace'][
-          'url']['_value']
-      fail_message = [error_line] + failure_summary['message'][
-          '_value'].splitlines()
       test_case_id = format_test_case(failure_summary['testCaseName']['_value'])
-      failed[test_case_id] = fail_message
-    return failed
+      if test_case_id in excluded:
+        continue
+      error_line = _sanitize_str(
+          failure_summary['documentLocationInCreatingWorkspace']['url']
+          ['_value'])
+      fail_message = error_line + '\n' + _sanitize_str(
+          failure_summary['message']['_value'])
+      result.add_test_result(
+          TestResult(test_case_id, TestStatus.FAIL, test_log=fail_message))
+    return result
 
   @staticmethod
-  def _list_of_passed_tests(xcresult):
-    """Gets list of passed tests from xcresult.
+  def _get_test_statuses(xcresult):
+    """Returns test results from xcresult.
+
+    Also extracts and stores attachments for failed tests.
 
     Args:
       xcresult: (str) A path to xcresult.
 
     Returns:
-      A list of passed tests.
+      test_result.ResultCollection: Test results.
     """
+    result = ResultCollection()
+    # See TESTS_REF in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(Xcode11LogParser._xcresulttool_get(xcresult, 'testsRef'))
-    passed_tests = []
     for summary in root['summaries']['_values'][0][
         'testableSummaries']['_values']:
       if not summary['tests']:
@@ -177,83 +235,212 @@ class Xcode11LogParser(object):
           # can be parsed from root.
           continue
         for test in test_suite['subtests']['_values']:
+          test_name = _sanitize_str(test['identifier']['_value'])
+          if any(
+              test_name.endswith(suffix)
+              for suffix in SYSTEM_ERROR_TEST_NAME_SUFFIXES):
+            result.crashed = True
+            result.crash_message += 'System error in %s: %s\n' % (xcresult,
+                                                                  test_name)
+            continue
+          # If a test case was executed multiple times, there will be multiple
+          # |test| objects of it. Each |test| corresponds to an execution of the
+          # test case.
           if test['testStatus']['_value'] == 'Success':
-            passed_tests.append(test['identifier']['_value'])
-    return passed_tests
+            result.add_test_result(TestResult(test_name, TestStatus.PASS))
+          else:
+            # Parse data for failed test by its id. See SINGLE_TEST_SUMMARY_REF
+            # in xcode_log_parser_test.py for an example of |summary_ref|.
+            summary_ref = json.loads(
+                Xcode11LogParser._xcresulttool_get(
+                    xcresult, test['summaryRef']['id']['_value']))
+
+            failure_message = 'Logs from "failureSummaries" in .xcresult:\n'
+            # On rare occasions rootFailure doesn't have 'failureSummaries'.
+            for failure in summary_ref.get('failureSummaries',
+                                           {}).get('_values', []):
+              file_name = _sanitize_str(
+                  failure.get('fileName', {}).get('_value', ''))
+              line_number = _sanitize_str(
+                  failure.get('lineNumber', {}).get('_value', ''))
+              failure_location = 'file: %s, line: %s' % (file_name, line_number)
+              failure_message += failure_location + '\n'
+              failure_message += _sanitize_str(
+                  failure['message']['_value']) + '\n'
+
+            attachments = Xcode11LogParser._extract_artifacts_for_test(
+                test_name, summary_ref, xcresult)
+
+            result.add_test_result(
+                TestResult(
+                    test_name,
+                    TestStatus.FAIL,
+                    test_log=failure_message,
+                    attachments=attachments))
+    return result
 
   @staticmethod
-  def collect_test_results(xcresult, output):
-    """Gets test result and diagnostic data from xcresult.
+  def collect_test_results(output_path, output):
+    """Gets XCTest results, diagnostic data & artifacts from xcresult.
 
     Args:
-      xcresult: (str) A path to xcresult.
+      output_path: (str) An output path passed in --resultBundlePath when
+          running xcodebuild.
       output: [str] An output of test run.
 
     Returns:
-      Test result as a map:
-        {
-          'passed': [passed_tests],
-          'failed': {
-              'failed_test': ['StackTrace']
-          }
-        }
+      test_result.ResultCollection: Test results.
     """
-    LOGGER.info('Reading %s' % xcresult)
-    test_results = {
-        'passed': [],
-        'failed': {}
-    }
+    output_path = _sanitize_str(output_path)
+    output = _sanitize_str_list(output)
+    LOGGER.info('Reading %s' % output_path)
+    overall_collected_result = ResultCollection()
+
+    # Xcodebuild writes staging data to |output_path| folder during test
+    # execution. If |output_path| doesn't exist, it means tests didn't start at
+    # all.
+    if not os.path.exists(output_path):
+      overall_collected_result.crashed = True
+      overall_collected_result.crash_message = (
+          '%s with staging data does not exist.\n' % output_path +
+          '\n'.join(output))
+      return overall_collected_result
+
+    # During a run `xcodebuild .. -resultBundlePath %output_path%`
+    # that generates output_path folder,
+    # but Xcode 11+ generates `output_path.xcresult` and `output_path`
+    # where output_path.xcresult is a folder with results and `output_path`
+    # is symlink to the `output_path.xcresult` folder.
+    # `xcresulttool` with folder/symlink behaves in different way on laptop and
+    # on bots. This piece of code uses .xcresult folder.
+    xcresult = output_path + _XCRESULT_SUFFIX
+
+    # |output_path|.xcresult folder is created at the end of tests. If
+    # |output_path| folder exists but |output_path|.xcresult folder doesn't
+    # exist, it means xcodebuild exited or was killed half way during tests.
     if not os.path.exists(xcresult):
-      test_results['failed']['TESTS_DID_NOT_START'] = [
-          '%s with test results does not exist.' % xcresult]
-      return test_results
+      overall_collected_result.crashed = True
+      overall_collected_result.crash_message = (
+          '%s with test results does not exist.\n' % xcresult +
+          '\n'.join(output))
+      overall_collected_result.add_result_collection(
+          parse_passed_failed_tests_for_interrupted_run(output))
+      return overall_collected_result
 
-    plist_path = os.path.join(xcresult + '.xcresult', 'Info.plist')
-    if not os.path.exists(plist_path):
-      test_results['failed']['BUILD_INTERRUPTED'] = [
-          '%s with test results does not exist.' % plist_path] + output
-      test_results['passed'] = parse_passed_tests_for_interrupted_run(output)
-      return test_results
-
+    # See XCRESULT_ROOT in xcode_log_parser_test.py for an example of |root|.
     root = json.loads(Xcode11LogParser._xcresulttool_get(xcresult))
     metrics = root['metrics']
     # In case of test crash both numbers of run and failed tests are equal to 0.
     if (metrics.get('testsCount', {}).get('_value', 0) == 0 and
         metrics.get('testsFailedCount', {}).get('_value', 0) == 0):
-      test_results['failed']['TESTS_DID_NOT_START'] = ['0 tests executed!']
+      overall_collected_result.crashed = True
+      overall_collected_result.crash_message = '0 tests executed!'
     else:
-      test_results['failed'] = Xcode11LogParser._list_of_failed_tests(root)
-      test_results['passed'] = Xcode11LogParser._list_of_passed_tests(xcresult)
-    Xcode11LogParser._export_diagnostic_data(xcresult + '.xcresult')
-    return test_results
+      overall_collected_result.add_result_collection(
+          Xcode11LogParser._get_test_statuses(xcresult))
+      # For some crashed tests info about error contained only in root node.
+      overall_collected_result.add_result_collection(
+          Xcode11LogParser._list_of_failed_tests(
+              root, excluded=overall_collected_result.all_test_names()))
+    Xcode11LogParser.export_diagnostic_data(output_path)
+    # Remove the symbol link file.
+    if os.path.islink(output_path):
+      os.unlink(output_path)
+    file_util.zip_and_remove_folder(xcresult)
+    return overall_collected_result
 
   @staticmethod
-  def copy_screenshots(output_folder):
-    """Copy screenshots of failed tests to output folder.
+  def copy_artifacts(output_path):
+    """Copy screenshots, crash logs of failed tests to output folder.
+
+    Warning: This method contains duplicate logic as |collect_test_results|
+    method. Do not use these on the same test output path.
 
     Args:
-      output_folder: (str) A full path to folder where
+      output_path: (str) An output path passed in --resultBundlePath when
+          running xcodebuild.
     """
-    plist_path = os.path.join(output_folder + '.xcresult', 'Info.plist')
-    if not os.path.exists(plist_path):
-      LOGGER.info('%s does not exist.' % plist_path)
+    xcresult = output_path + _XCRESULT_SUFFIX
+    if not os.path.exists(xcresult):
+      LOGGER.warn('%s does not exist.' % xcresult)
       return
 
-    root = json.loads(Xcode11LogParser._xcresulttool_get(output_folder))
-    if 'testFailureSummaries' not in root['issues']:
-      LOGGER.info('No failures in %s' % output_folder)
+    root = json.loads(Xcode11LogParser._xcresulttool_get(xcresult))
+    if 'testFailureSummaries' not in root.get('issues', {}):
+      LOGGER.info('No failures in %s' % xcresult)
       return
 
-    for failure_summary in root['issues']['testFailureSummaries']['_values']:
-      test_case = failure_summary['testCaseName']['_value']
-      test_case_folder = os.path.join(output_folder, 'failures',
-                                      format_test_case(test_case))
-      copy_screenshots_for_failed_test(failure_summary['message']['_value'],
-                                       test_case_folder)
+    # See TESTS_REF['summaries']['_values'] in xcode_log_parser_test.py.
+    test_summaries = json.loads(
+        Xcode11LogParser._xcresulttool_get(xcresult, 'testsRef')).get(
+            'summaries', {}).get('_values', [])
+
+    test_summary_refs = {}
+
+    for summaries in test_summaries:
+      for summary in summaries.get('testableSummaries', {}).get('_values', []):
+        for all_tests in summary.get('tests', {}).get('_values', []):
+          for test_suite in all_tests.get('subtests', {}).get('_values', []):
+            for test_case in test_suite.get('subtests', {}).get('_values', []):
+              for test in test_case.get('subtests', {}).get('_values', []):
+                if test['testStatus']['_value'] != 'Success':
+                  test_summary_refs[
+                      test['identifier']
+                      ['_value']] = test['summaryRef']['id']['_value']
+
+    for test, summary_ref_id in test_summary_refs.iteritems():
+      # See SINGLE_TEST_SUMMARY_REF in xcode_log_parser_test.py for an example
+      # of |test_summary|.
+      test_summary = json.loads(
+          Xcode11LogParser._xcresulttool_get(xcresult, summary_ref_id))
+      Xcode11LogParser._extract_artifacts_for_test(test, test_summary, xcresult)
 
   @staticmethod
-  def _export_diagnostic_data(xcresult):
-    """Exports diagnostic data from xcresult to xcresult_diagnostic folder.
+  def export_diagnostic_data(output_path):
+    """Exports diagnostic data from xcresult to xcresult_diagnostic.zip.
+
+    Since Xcode 11 format of result bundles changed, to get diagnostic data
+    need to run command below:
+    xcresulttool export --type directory --id DIAGNOSTICS_REF --output-path
+    ./export_folder --path ./RB.xcresult
+
+    Args:
+      output_path: (str) An output path passed in --resultBundlePath when
+          running xcodebuild.
+    """
+    xcresult = output_path + _XCRESULT_SUFFIX
+    if not os.path.exists(xcresult):
+      LOGGER.warn('%s does not exist.' % xcresult)
+      return
+    root = json.loads(Xcode11LogParser._xcresulttool_get(xcresult))
+    try:
+      diagnostics_ref = root['actions']['_values'][0]['actionResult'][
+          'diagnosticsRef']['id']['_value']
+      diagnostic_folder = '%s_diagnostic' % xcresult
+      Xcode11LogParser._export_data(xcresult, diagnostics_ref, 'directory',
+                                    diagnostic_folder)
+      # Copy log files out of diagnostic_folder if any. Use |name_count| to
+      # generate an index for same name files produced from Xcode parallel
+      # testing.
+      name_count = {}
+      for root, dirs, files in os.walk(diagnostic_folder):
+        for filename in files:
+          if 'StandardOutputAndStandardError' in filename:
+            file_index = name_count.get(filename, 0)
+            output_filename = (
+                '%s_simulator#%d_%s' %
+                (os.path.basename(output_path), file_index, filename))
+            output_filepath = os.path.join(output_path, os.pardir,
+                                           output_filename)
+            shutil.copy(os.path.join(root, filename), output_filepath)
+            name_count[filename] = name_count.get(filename, 0) + 1
+      file_util.zip_and_remove_folder(diagnostic_folder)
+    except KeyError:
+      LOGGER.warn('Did not parse diagnosticsRef from %s!' % xcresult)
+
+  @staticmethod
+  def _export_data(xcresult, ref_id, output_type, output_path):
+    """Exports data from xcresult using xcresulttool.
 
     Since Xcode 11 format of result bundles changed, to get diagnostic data
     need to run command below:
@@ -262,22 +449,102 @@ class Xcode11LogParser(object):
 
     Args:
       xcresult: (str) A path to xcresult directory.
+      ref_id: (str) A reference id of exporting entity.
+      output_type: (str) An export type (can be directory or file).
+      output_path: (str) An output location.
     """
-    plist_path = os.path.join(xcresult, 'Info.plist')
-    if not (os.path.exists(xcresult) and os.path.exists(plist_path)):
-      return
-    root = json.loads(Xcode11LogParser._xcresulttool_get(xcresult))
-    try:
-      diagnostics_ref = root['actions']['_values'][0]['actionResult'][
-          'diagnosticsRef']['id']['_value']
-      export_command = ['xcresulttool', 'export',
-                        '--type', 'directory',
-                        '--id', diagnostics_ref,
-                        '--path', xcresult,
-                        '--output-path', '%s_diagnostic' % xcresult]
-      subprocess.check_output(export_command).strip()
-    except KeyError:
-      LOGGER.warn('Did not parse diagnosticsRef from %s!' % xcresult)
+    export_command = [
+        'xcresulttool', 'export', '--type', output_type, '--id', ref_id,
+        '--path', xcresult, '--output-path', output_path
+    ]
+    subprocess.check_output(export_command).strip()
+
+  @staticmethod
+  def _extract_attachments(test,
+                           test_activities,
+                           xcresult,
+                           attachments,
+                           include_jpg=True):
+    """Exrtact attachments from xcresult folder for a single test result.
+
+    Copies all attachments under test_activities and nested subactivities (if
+    any) to the same directory as xcresult directory. Saves abs paths of
+    extracted attachments in |attachments|.
+
+    Filenames are in format `${output}_TestCase_testMethod_${index}`, where
+    ${output} is the basename of |xcresult| folder, ${index} is the index of
+    attachment for a test case, e.g.:
+        attempt_0_TestCase_testMethod_1.jpg
+        ....
+        attempt_0_TestCase_testMethod_3.crash
+
+    Args:
+      test: (str) Test name.
+      test_activities: (list) List of test activities (dict) that
+          store data about each test step.
+      xcresult: (str) A path to test results.
+      attachments: (dict) File basename to abs path mapping for extracted
+          attachments to be stored in. Its length is also used as part of file
+          name to avoid duplicated filename.
+      include_jpg: (bool) Whether include jpg or jpeg attachments.
+    """
+    for activity_summary in test_activities:
+      if 'subactivities' in activity_summary:
+        Xcode11LogParser._extract_attachments(
+            test,
+            activity_summary.get('subactivities', {}).get('_values', []),
+            xcresult, attachments, include_jpg)
+      for attachment in activity_summary.get('attachments',
+                                             {}).get('_values', []):
+        payload_ref = attachment['payloadRef']['id']['_value']
+        _, file_name_extension = os.path.splitext(
+            str(attachment['filename']['_value']))
+        if not include_jpg and file_name_extension in ['.jpg', '.jpeg']:
+          continue
+
+        attachment_index = len(attachments) + 1
+        attachment_filename = (
+            '%s_%s_%d%s' %
+            (os.path.splitext(os.path.basename(xcresult))[0],
+             test.replace('/', '_'), attachment_index, file_name_extension))
+        # Extracts attachment to the same folder containing xcresult.
+        attachment_output_path = os.path.abspath(
+            os.path.join(xcresult, os.pardir, attachment_filename))
+        Xcode11LogParser._export_data(xcresult, payload_ref, 'file',
+                                      attachment_output_path)
+        attachments[attachment_filename] = attachment_output_path
+
+  @staticmethod
+  def _extract_artifacts_for_test(test, summary_ref, xcresult):
+    """Extracts artifacts for a test case result.
+
+    Args:
+      test: (str) Test name.
+      summary_ref: (dict) Summary ref field of a test result parsed by
+          xcresulttool . See SINGLE_TEST_SUMMARY_REF in xcode_log_parser_test.py
+          for an example.
+      xcresult: (str) A path to test results.
+
+    Returns:
+      (dict) File basename to abs path mapping for extracted attachments.
+    """
+    attachments = {}
+    # Extract all attachments except for screenshots from each step of the
+    # test.
+    Xcode11LogParser._extract_attachments(
+        test,
+        summary_ref.get('activitySummaries', {}).get('_values', []),
+        xcresult,
+        attachments,
+        include_jpg=False)
+    # Extract all attachments of the failure step (applied to failed tests).
+    Xcode11LogParser._extract_attachments(
+        test,
+        summary_ref.get('failureSummaries', {}).get('_values', []),
+        xcresult,
+        attachments,
+        include_jpg=True)
+    return attachments
 
 
 class XcodeLogParser(object):
@@ -291,95 +558,81 @@ class XcodeLogParser(object):
       summary_plist: (str) A path to plist-file.
 
     Returns:
-      A dict that contains all passed and failed tests from the egtests.app.
-      e.g.
-      {
-          'passed': [passed_tests],
-          'failed': {
-              'failed_test': ['StackTrace']
-          }
-      }
+      test_results.ResultCollection: Results of tests parsed.
     """
+    result = ResultCollection()
     root_summary = plistlib.readPlist(summary_plist)
-    status_summary = {
-        'passed': [],
-        'failed': {}
-    }
     for summary in root_summary['TestableSummaries']:
-      failed_egtests = {}  # Contains test identifier and message
-      passed_egtests = []
       if not summary['Tests']:
         continue
       for test_suite in summary['Tests'][0]['Subtests'][0]['Subtests']:
         for test in test_suite['Subtests']:
           if test['TestStatus'] == 'Success':
-            passed_egtests.append(test['TestIdentifier'])
+            result.add_test_result(
+                TestResult(test['TestIdentifier'], TestStatus.PASS))
           else:
-            message = []
+            message = ''
             for failure_summary in test['FailureSummaries']:
               failure_message = failure_summary['FileName']
               if failure_summary['LineNumber']:
                 failure_message = '%s: line %s' % (
                     failure_message, failure_summary['LineNumber'])
-              message.append(failure_message)
-              message.extend(failure_summary['Message'].splitlines())
-            failed_egtests[test['TestIdentifier']] = message
-      if failed_egtests:
-        status_summary['failed'] = failed_egtests
-      if passed_egtests:
-        status_summary['passed'] = passed_egtests
-    return status_summary
+              message += failure_message + '\n'
+              message += failure_summary['Message'] + '\n'
+            result.add_test_result(
+                TestResult(
+                    test['TestIdentifier'], TestStatus.FAIL, test_log=message))
+    return result
 
   @staticmethod
   def collect_test_results(output_folder, output):
-    """Gets test result data from Info.plist.
+    """Gets XCtest result data from Info.plist and copies artifacts.
 
     Args:
       output_folder: (str) A path to output folder.
       output: [str] An output of test run.
     Returns:
-      Test result as a map:
-        {
-          'passed': [passed_tests],
-          'failed': {
-              'failed_test': ['StackTrace']
-          }
-      }
+      test_result.ResultCollection representing all test results.
     """
-    test_results = {
-        'passed': [],
-        'failed': {}
-    }
+    output_folder = _sanitize_str(output_folder)
+    output = _sanitize_str_list(output)
+    overall_collected_result = ResultCollection()
     plist_path = os.path.join(output_folder, 'Info.plist')
     if not os.path.exists(plist_path):
-      test_results['failed']['BUILD_INTERRUPTED'] = [
-          '%s with test results does not exist.' % plist_path] + output
-      test_results['passed'] = parse_passed_tests_for_interrupted_run(output)
-      return test_results
+      overall_collected_result.crashed = True
+      overall_collected_result.crash_message += (
+          '%s with test results does not exist.\n' % plist_path +
+          '\n'.join(output))
+      overall_collected_result.add_result_collection(
+          parse_passed_failed_tests_for_interrupted_run(output))
+      return overall_collected_result
 
     root = plistlib.readPlist(plist_path)
 
     for action in root['Actions']:
       action_result = action['ActionResult']
-      if ((root['TestsCount'] == 0 and
-           root['TestsFailedCount'] == 0)
-          or 'TestSummaryPath' not in action_result):
-        test_results['failed']['TESTS_DID_NOT_START'] = []
-        if ('ErrorSummaries' in action_result
-            and action_result['ErrorSummaries']):
-          test_results['failed']['TESTS_DID_NOT_START'].append('\n'.join(
-              error_summary['Message']
-              for error_summary in action_result['ErrorSummaries']))
+      if ((root['TestsCount'] == 0 and root['TestsFailedCount'] == 0) or
+          'TestSummaryPath' not in action_result):
+        overall_collected_result.crashed = True
+        if ('ErrorSummaries' in action_result and
+            action_result['ErrorSummaries']):
+          overall_collected_result.crash_message = '\n'.join(
+              _sanitize_str_list([
+                  error_summary['Message']
+                  for error_summary in action_result['ErrorSummaries']
+              ]))
+
       else:
-        summary_plist = os.path.join(os.path.dirname(plist_path),
-                                     action_result['TestSummaryPath'])
-        summary = XcodeLogParser._test_status_summary(summary_plist)
-        test_results['failed'] = summary['failed']
-        test_results['passed'] = summary['passed']
-    return test_results
+        summary_plist = os.path.join(
+            os.path.dirname(plist_path), action_result['TestSummaryPath'])
+        overall_collected_result.add_result_collection(
+            XcodeLogParser._test_status_summary(summary_plist))
+
+    XcodeLogParser._copy_screenshots(output_folder)
+    return overall_collected_result
 
   @staticmethod
-  def copy_screenshots(output_folder):
+  def _copy_screenshots(output_folder):
     """Copy screenshots of failed tests to output folder.
 
     Args:
@@ -401,3 +654,15 @@ class XcodeLogParser(object):
       test_case_folder = os.path.join(output_folder, 'failures', test_case_id)
       copy_screenshots_for_failed_test(failure_summary['Message'],
                                        test_case_folder)
+
+  @staticmethod
+  def copy_artifacts(output_path):
+    """Invokes _copy_screenshots(). To make public methods consistent."""
+    LOGGER.info('Invoking _copy_screenshots call for copy_artifacts in'
+                'XcodeLogParser')
+    XcodeLogParser._copy_screenshots(output_path)
+
+  @staticmethod
+  def export_diagnostic_data(output_path):
+    """No-op. To make parser public methods consistent."""
+    LOGGER.warn('Exporting diagnostic data only supported in Xcode 11+')

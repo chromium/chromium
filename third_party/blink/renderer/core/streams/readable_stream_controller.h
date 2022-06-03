@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be found
+// in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_CONTROLLER_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_CONTROLLER_H_
+
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "v8/include/v8.h"
+
+namespace blink {
+
+class ScriptState;
+class StreamPromiseResolver;
+
+class ReadableStreamController : public ScriptWrappable {
+ public:
+  virtual bool IsDefaultController() const = 0;
+  virtual bool IsByteStreamController() const = 0;
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamcontroller-cancelsteps
+  virtual v8::Local<v8::Promise> CancelSteps(ScriptState*,
+                                             v8::Local<v8::Value> reason) = 0;
+
+  // https://streams.spec.whatwg.org/#abstract-opdef-readablestreamcontroller-pullsteps
+  virtual StreamPromiseResolver* PullSteps(ScriptState*) = 0;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_READABLE_STREAM_CONTROLLER_H_

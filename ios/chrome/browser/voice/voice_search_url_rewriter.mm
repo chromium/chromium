@@ -11,7 +11,7 @@
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_prefs.h"
+#include "ios/chrome/browser/voice/voice_search_prefs.h"
 #include "net/base/url_util.h"
 #include "url/gurl.h"
 
@@ -23,8 +23,8 @@ bool VoiceSearchURLRewriter(GURL* url, web::BrowserState* browser_state) {
   if (!google_util::IsGoogleSearchUrl(*url))
     return false;
 
-  ios::ChromeBrowserState* chrome_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(browser_state);
+  ChromeBrowserState* chrome_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
   std::string language =
       chrome_browser_state->GetPrefs()->GetString(prefs::kVoiceSearchLocale);
   GURL rewritten_url(*url);

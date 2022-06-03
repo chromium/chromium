@@ -18,10 +18,6 @@
 #include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
-#include "chromeos/components/proximity_auth/messenger.h"
-#include "chromeos/components/proximity_auth/remote_device_life_cycle_impl.h"
-#include "chromeos/components/proximity_auth/remote_status_update.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/proto/enum_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -42,7 +38,15 @@ constexpr const multidevice::SoftwareFeature kAllSoftareFeatures[] = {
     multidevice::SoftwareFeature::kInstantTetheringHost,
     multidevice::SoftwareFeature::kInstantTetheringClient,
     multidevice::SoftwareFeature::kMessagesForWebHost,
-    multidevice::SoftwareFeature::kMessagesForWebClient};
+    multidevice::SoftwareFeature::kMessagesForWebClient,
+    multidevice::SoftwareFeature::kPhoneHubHost,
+    multidevice::SoftwareFeature::kPhoneHubClient,
+    multidevice::SoftwareFeature::kWifiSyncHost,
+    multidevice::SoftwareFeature::kWifiSyncClient,
+    multidevice::SoftwareFeature::kEcheHost,
+    multidevice::SoftwareFeature::kEcheClient,
+    multidevice::SoftwareFeature::kPhoneHubCameraRollHost,
+    multidevice::SoftwareFeature::kPhoneHubCameraRollClient};
 
 // Keys in the JSON representation of a log message.
 const char kLogMessageTextKey[] = "text";
@@ -57,6 +61,21 @@ const char kSyncStateLastSuccessTime[] = "lastSuccessTime";
 const char kSyncStateNextRefreshTime[] = "nextRefreshTime";
 const char kSyncStateRecoveringFromFailure[] = "recoveringFromFailure";
 const char kSyncStateOperationInProgress[] = "operationInProgress";
+
+// 9999 days in milliseconds.
+const double kFakeInfinityMillis = 863913600000;
+
+double ConvertNextAttemptTimeToDouble(base::TimeDelta delta) {
+  // If no future attempt is scheduled, the next-attempt time is
+  // base::TimeDelta::Max(), which corresponds to an infinite double value. In
+  // order to store the next-attempt time as a double base::Value,
+  // std::isfinite() must be true. So, here we use 9999 days to represent the
+  // max next-attempt time to allow use with base::Value.
+  if (delta.is_max())
+    return kFakeInfinityMillis;
+
+  return delta.InMillisecondsF();
+}
 
 // Converts |log_message| to a raw dictionary value used as a JSON argument to
 // JavaScript functions.
@@ -82,14 +101,7 @@ const char kExternalDeviceFriendlyName[] = "friendlyDeviceName";
 const char kExternalDeviceNoPiiName[] = "noPiiName";
 const char kExternalDeviceUnlockKey[] = "unlockKey";
 const char kExternalDeviceMobileHotspot[] = "hasMobileHotspot";
-const char kExternalDeviceConnectionStatus[] = "connectionStatus";
 const char kExternalDeviceFeatureStates[] = "featureStates";
-const char kExternalDeviceRemoteState[] = "remoteState";
-
-// The possible values of the |kExternalDeviceConnectionStatus| field.
-const char kExternalDeviceConnected[] = "connected";
-const char kExternalDeviceDisconnected[] = "disconnected";
-const char kExternalDeviceConnecting[] = "connecting";
 
 // Creates a SyncState JSON object that can be passed to the WebUI.
 std::unique_ptr<base::DictionaryValue> CreateSyncStateDictionary(
@@ -99,8 +111,8 @@ std::unique_ptr<base::DictionaryValue> CreateSyncStateDictionary(
     bool is_enrollment_in_progress) {
   std::unique_ptr<base::DictionaryValue> sync_state(
       new base::DictionaryValue());
-  sync_state->SetDouble(kSyncStateLastSuccessTime, last_success_time);
-  sync_state->SetDouble(kSyncStateNextRefreshTime, next_refresh_time);
+  sync_state->SetDoubleKey(kSyncStateLastSuccessTime, last_success_time);
+  sync_state->SetDoubleKey(kSyncStateNextRefreshTime, next_refresh_time);
   sync_state->SetBoolean(kSyncStateRecoveringFromFailure,
                          is_recovering_from_failure);
   sync_state->SetBoolean(kSyncStateOperationInProgress,
@@ -135,10 +147,8 @@ std::string GenerateFeaturesString(const multidevice::RemoteDeviceRef& device) {
 }  // namespace
 
 ProximityAuthWebUIHandler::ProximityAuthWebUIHandler(
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client)
+    device_sync::DeviceSyncClient* device_sync_client)
     : device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
       web_contents_initialized_(false) {}
 
 ProximityAuthWebUIHandler::~ProximityAuthWebUIHandler() {
@@ -148,49 +158,34 @@ ProximityAuthWebUIHandler::~ProximityAuthWebUIHandler() {
 }
 
 void ProximityAuthWebUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "onWebContentsInitialized",
       base::BindRepeating(&ProximityAuthWebUIHandler::OnWebContentsInitialized,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "clearLogBuffer",
       base::BindRepeating(&ProximityAuthWebUIHandler::ClearLogBuffer,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLogMessages",
       base::BindRepeating(&ProximityAuthWebUIHandler::GetLogMessages,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
-      "toggleUnlockKey",
-      base::BindRepeating(&ProximityAuthWebUIHandler::ToggleUnlockKey,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "findEligibleUnlockDevices",
-      base::BindRepeating(&ProximityAuthWebUIHandler::FindEligibleUnlockDevices,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getLocalState",
       base::BindRepeating(&ProximityAuthWebUIHandler::GetLocalState,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "forceEnrollment",
       base::BindRepeating(&ProximityAuthWebUIHandler::ForceEnrollment,
                           base::Unretained(this)));
 
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "forceDeviceSync",
       base::BindRepeating(&ProximityAuthWebUIHandler::ForceDeviceSync,
-                          base::Unretained(this)));
-
-  web_ui()->RegisterMessageCallback(
-      "toggleConnection",
-      base::BindRepeating(&ProximityAuthWebUIHandler::ToggleConnection,
                           base::Unretained(this)));
 }
 
@@ -249,33 +244,6 @@ void ProximityAuthWebUIHandler::ClearLogBuffer(const base::ListValue* args) {
   multidevice::LogBuffer::GetInstance()->Clear();
 }
 
-void ProximityAuthWebUIHandler::ToggleUnlockKey(const base::ListValue* args) {
-  std::string public_key_b64, public_key;
-  bool make_unlock_key;
-  if (args->GetSize() != 2 || !args->GetString(0, &public_key_b64) ||
-      !args->GetBoolean(1, &make_unlock_key) ||
-      !base::Base64UrlDecode(public_key_b64,
-                             base::Base64UrlDecodePolicy::REQUIRE_PADDING,
-                             &public_key)) {
-    PA_LOG(ERROR) << "Invalid arguments to toggleUnlockKey";
-    return;
-  }
-
-  device_sync_client_->SetSoftwareFeatureState(
-      public_key, multidevice::SoftwareFeature::kSmartLockHost,
-      true /* enabled */, true /* is_exclusive */,
-      base::BindOnce(&ProximityAuthWebUIHandler::OnSetSoftwareFeatureState,
-                     weak_ptr_factory_.GetWeakPtr(), public_key));
-}
-
-void ProximityAuthWebUIHandler::FindEligibleUnlockDevices(
-    const base::ListValue* args) {
-  device_sync_client_->FindEligibleDevices(
-      multidevice::SoftwareFeature::kSmartLockHost,
-      base::BindOnce(&ProximityAuthWebUIHandler::OnFindEligibleDevices,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void ProximityAuthWebUIHandler::ForceEnrollment(const base::ListValue* args) {
   device_sync_client_->ForceEnrollmentNow(
       base::BindOnce(&ProximityAuthWebUIHandler::OnForceEnrollmentNow,
@@ -286,34 +254,6 @@ void ProximityAuthWebUIHandler::ForceDeviceSync(const base::ListValue* args) {
   device_sync_client_->ForceSyncNow(
       base::BindOnce(&ProximityAuthWebUIHandler::OnForceSyncNow,
                      weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ProximityAuthWebUIHandler::ToggleConnection(const base::ListValue* args) {
-  std::string b64_public_key;
-  std::string public_key;
-  if (!args->GetSize() || !args->GetString(0, &b64_public_key) ||
-      !base::Base64UrlDecode(b64_public_key,
-                             base::Base64UrlDecodePolicy::REQUIRE_PADDING,
-                             &public_key)) {
-    PA_LOG(ERROR) << "Unlock key (" << b64_public_key << ") not found";
-    return;
-  }
-
-  std::string selected_device_public_key;
-  if (selected_remote_device_)
-    selected_device_public_key = selected_remote_device_->public_key();
-
-  for (const auto& remote_device : device_sync_client_->GetSyncedDevices()) {
-    if (remote_device.public_key() != public_key)
-      continue;
-
-    if (life_cycle_ && selected_device_public_key == public_key) {
-      CleanUpRemoteDeviceLifeCycle();
-      return;
-    }
-
-    StartRemoteDeviceLifeCycle(remote_device);
-  }
 }
 
 void ProximityAuthWebUIHandler::GetLocalState(const base::ListValue* args) {
@@ -327,7 +267,7 @@ void ProximityAuthWebUIHandler::GetLocalState(const base::ListValue* args) {
 
 std::unique_ptr<base::Value>
 ProximityAuthWebUIHandler::GetTruncatedLocalDeviceId() {
-  base::Optional<multidevice::RemoteDeviceRef> local_device_metadata =
+  absl::optional<multidevice::RemoteDeviceRef> local_device_metadata =
       device_sync_client_->GetLocalDeviceMetadata();
 
   std::string device_id =
@@ -346,30 +286,6 @@ ProximityAuthWebUIHandler::GetRemoteDevicesList() {
     devices_list_value->Append(RemoteDeviceToDictionary(remote_device));
 
   return devices_list_value;
-}
-
-void ProximityAuthWebUIHandler::StartRemoteDeviceLifeCycle(
-    multidevice::RemoteDeviceRef remote_device) {
-  base::Optional<multidevice::RemoteDeviceRef> local_device;
-  local_device = device_sync_client_->GetLocalDeviceMetadata();
-
-  selected_remote_device_ = remote_device;
-  life_cycle_.reset(new proximity_auth::RemoteDeviceLifeCycleImpl(
-      *selected_remote_device_, local_device, secure_channel_client_));
-  life_cycle_->AddObserver(this);
-  life_cycle_->Start();
-}
-
-void ProximityAuthWebUIHandler::CleanUpRemoteDeviceLifeCycle() {
-  if (selected_remote_device_) {
-    PA_LOG(VERBOSE) << "Cleaning up connection to "
-                    << selected_remote_device_->name();
-  }
-  life_cycle_.reset();
-  selected_remote_device_ = base::nullopt;
-  last_remote_status_update_.reset();
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "LocalStateInterface.onRemoteDevicesChanged", *GetRemoteDevicesList());
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -393,93 +309,10 @@ ProximityAuthWebUIHandler::RemoteDeviceToDictionary(
       remote_device.GetSoftwareFeatureState(
           multidevice::SoftwareFeature::kInstantTetheringHost) ==
           multidevice::SoftwareFeatureState::kSupported);
-  dictionary->SetString(kExternalDeviceConnectionStatus,
-                        kExternalDeviceDisconnected);
   dictionary->SetString(kExternalDeviceFeatureStates,
                         GenerateFeaturesString(remote_device));
 
-  // TODO(crbug.com/852836): Add kExternalDeviceIsArcPlusPlusEnrollment and
-  // kExternalDeviceIsPixelPhone values to the dictionary once RemoteDevice
-  // carries those relevant fields.
-
-  std::string selected_device_public_key;
-  if (selected_remote_device_)
-    selected_device_public_key = selected_remote_device_->public_key();
-
-  // If it's the selected remote device, combine the already-populated
-  // dictionary with corresponding local device data (e.g. connection status and
-  // remote status updates).
-  if (selected_device_public_key != remote_device.public_key())
-    return dictionary;
-
-  // Fill in the current Bluetooth connection status.
-  std::string connection_status = kExternalDeviceDisconnected;
-  if (life_cycle_ && life_cycle_->GetState() ==
-                         proximity_auth::RemoteDeviceLifeCycle::State::
-                             SECURE_CHANNEL_ESTABLISHED) {
-    connection_status = kExternalDeviceConnected;
-  } else if (life_cycle_) {
-    connection_status = kExternalDeviceConnecting;
-  }
-  dictionary->SetString(kExternalDeviceConnectionStatus, connection_status);
-
-  // Fill the remote status dictionary.
-  if (last_remote_status_update_) {
-    std::unique_ptr<base::DictionaryValue> status_dictionary(
-        new base::DictionaryValue());
-    status_dictionary->SetInteger("userPresent",
-                                  last_remote_status_update_->user_presence);
-    status_dictionary->SetInteger(
-        "secureScreenLock",
-        last_remote_status_update_->secure_screen_lock_state);
-    status_dictionary->SetInteger(
-        "trustAgent", last_remote_status_update_->trust_agent_state);
-    dictionary->Set(kExternalDeviceRemoteState, std::move(status_dictionary));
-  }
-
   return dictionary;
-}
-
-void ProximityAuthWebUIHandler::OnLifeCycleStateChanged(
-    proximity_auth::RemoteDeviceLifeCycle::State old_state,
-    proximity_auth::RemoteDeviceLifeCycle::State new_state) {
-  // Do not re-attempt to find a connection after the first one fails--just
-  // abort.
-  if ((old_state != proximity_auth::RemoteDeviceLifeCycle::State::STOPPED &&
-       new_state ==
-           proximity_auth::RemoteDeviceLifeCycle::State::FINDING_CONNECTION) ||
-      new_state ==
-          proximity_auth::RemoteDeviceLifeCycle::State::AUTHENTICATION_FAILED) {
-    // Clean up the life cycle asynchronously, because we are currently in the
-    // call stack of |life_cycle_|.
-    base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&ProximityAuthWebUIHandler::CleanUpRemoteDeviceLifeCycle,
-                       weak_ptr_factory_.GetWeakPtr()));
-  } else if (new_state == proximity_auth::RemoteDeviceLifeCycle::State::
-                              SECURE_CHANNEL_ESTABLISHED) {
-    life_cycle_->GetMessenger()->AddObserver(this);
-  }
-
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "LocalStateInterface.onRemoteDevicesChanged", *GetRemoteDevicesList());
-}
-
-void ProximityAuthWebUIHandler::OnRemoteStatusUpdate(
-    const proximity_auth::RemoteStatusUpdate& status_update) {
-  PA_LOG(VERBOSE) << "Remote status update:"
-                  << "\n  user_presence: "
-                  << static_cast<int>(status_update.user_presence)
-                  << "\n  secure_screen_lock_state: "
-                  << static_cast<int>(status_update.secure_screen_lock_state)
-                  << "\n  trust_agent_state: "
-                  << static_cast<int>(status_update.trust_agent_state);
-
-  last_remote_status_update_.reset(
-      new proximity_auth::RemoteStatusUpdate(status_update));
-  std::unique_ptr<base::ListValue> synced_devices = GetRemoteDevicesList();
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "LocalStateInterface.onRemoteDevicesChanged", *synced_devices);
 }
 
 void ProximityAuthWebUIHandler::OnForceEnrollmentNow(bool success) {
@@ -504,34 +337,6 @@ void ProximityAuthWebUIHandler::OnSetSoftwareFeatureState(
   }
 }
 
-void ProximityAuthWebUIHandler::OnFindEligibleDevices(
-    device_sync::mojom::NetworkRequestResult result_code,
-    multidevice::RemoteDeviceRefList eligible_devices,
-    multidevice::RemoteDeviceRefList ineligible_devices) {
-  if (result_code != device_sync::mojom::NetworkRequestResult::kSuccess) {
-    PA_LOG(ERROR) << "Failed to find eligible devices: " << result_code;
-    return;
-  }
-
-  base::ListValue eligible_devices_list_value;
-  for (const auto& device : eligible_devices) {
-    eligible_devices_list_value.Append(RemoteDeviceToDictionary(device));
-  }
-
-  base::ListValue ineligible_devices_list_value;
-  for (const auto& device : ineligible_devices) {
-    ineligible_devices_list_value.Append(RemoteDeviceToDictionary(device));
-  }
-
-  PA_LOG(VERBOSE) << "Found " << eligible_devices_list_value.GetSize()
-                  << " eligible devices and "
-                  << ineligible_devices_list_value.GetSize()
-                  << " ineligible devices.";
-  web_ui()->CallJavascriptFunctionUnsafe(
-      "CryptAuthInterface.onGotEligibleDevices", eligible_devices_list_value,
-      ineligible_devices_list_value);
-}
-
 void ProximityAuthWebUIHandler::OnGetDebugInfo(
     device_sync::mojom::DebugInfoPtr debug_info_ptr) {
   // If enrollment is not yet complete, no debug information is available.
@@ -544,20 +349,21 @@ void ProximityAuthWebUIHandler::OnGetDebugInfo(
         true /* success */,
         CreateSyncStateDictionary(
             debug_info_ptr->last_enrollment_time.ToJsTime(),
-            debug_info_ptr->time_to_next_enrollment_attempt.InMillisecondsF(),
+            ConvertNextAttemptTimeToDouble(
+                debug_info_ptr->time_to_next_enrollment_attempt),
             debug_info_ptr->is_recovering_from_enrollment_failure,
             debug_info_ptr->is_enrollment_in_progress));
   }
 
   if (sync_update_waiting_for_debug_info_) {
     sync_update_waiting_for_debug_info_ = false;
-    NotifyOnSyncFinished(
-        true /* was_sync_successful */, true /* changed */,
-        CreateSyncStateDictionary(
-            debug_info_ptr->last_sync_time.ToJsTime(),
-            debug_info_ptr->time_to_next_sync_attempt.InMillisecondsF(),
-            debug_info_ptr->is_recovering_from_sync_failure,
-            debug_info_ptr->is_sync_in_progress));
+    NotifyOnSyncFinished(true /* was_sync_successful */, true /* changed */,
+                         CreateSyncStateDictionary(
+                             debug_info_ptr->last_sync_time.ToJsTime(),
+                             ConvertNextAttemptTimeToDouble(
+                                 debug_info_ptr->time_to_next_sync_attempt),
+                             debug_info_ptr->is_recovering_from_sync_failure,
+                             debug_info_ptr->is_sync_in_progress));
   }
 
   if (get_local_state_update_waiting_for_debug_info_) {
@@ -566,12 +372,14 @@ void ProximityAuthWebUIHandler::OnGetDebugInfo(
         GetTruncatedLocalDeviceId(),
         CreateSyncStateDictionary(
             debug_info_ptr->last_enrollment_time.ToJsTime(),
-            debug_info_ptr->time_to_next_enrollment_attempt.InMillisecondsF(),
+            ConvertNextAttemptTimeToDouble(
+                debug_info_ptr->time_to_next_enrollment_attempt),
             debug_info_ptr->is_recovering_from_enrollment_failure,
             debug_info_ptr->is_enrollment_in_progress),
         CreateSyncStateDictionary(
             debug_info_ptr->last_sync_time.ToJsTime(),
-            debug_info_ptr->time_to_next_sync_attempt.InMillisecondsF(),
+            ConvertNextAttemptTimeToDouble(
+                debug_info_ptr->time_to_next_sync_attempt),
             debug_info_ptr->is_recovering_from_sync_failure,
             debug_info_ptr->is_sync_in_progress),
         GetRemoteDevicesList());

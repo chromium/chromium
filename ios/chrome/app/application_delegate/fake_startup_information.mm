@@ -14,9 +14,11 @@
 @implementation FakeStartupInformation
 
 @synthesize appLaunchTime = _appLaunchTime;
-@synthesize isPresentingFirstRunUI = _isPresentingFirstRunUI;
+@synthesize didFinishLaunchingTime = _didFinishLaunchingTime;
+@synthesize firstSceneConnectionTime = _firstSceneConnectionTime;
+@synthesize isFirstRun = _isFirstRun;
 @synthesize isColdStart = _isColdStart;
-@synthesize startupParameters = _startupParameters;
+@synthesize restoreHelper = _restoreHelper;
 
 - (FirstUserActionRecorder*)firstUserActionRecorder {
   // Stub.
@@ -50,6 +52,11 @@
 
 - (void)startChromeMain {
   // Stub.
+}
+
+- (NSDictionary*)launchOptions {
+  // Stub.
+  return @{};
 }
 
 @end

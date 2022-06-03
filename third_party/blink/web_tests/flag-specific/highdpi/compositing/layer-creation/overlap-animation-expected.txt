@@ -1,0 +1,54 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='to-animate' class='animating box'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
+      "position": [29, 194],
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV class='box'",
+      "position": [27, 390],
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF"
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [...],
+        [...],
+        [...],
+        [...]
+      ],
+      "origin": [75, 75]
+    }
+  ]
+}
+

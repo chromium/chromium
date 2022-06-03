@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial.h"
 #include "base/path_service.h"
 #include "base/posix/global_descriptors.h"
 #include "base/strings/stringprintf.h"
@@ -16,25 +14,23 @@
 #include "content/grit/content_resources.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/result_codes.h"
 #include "content/public/common/sandboxed_process_launcher_delegate.h"
 #include "sandbox/mac/seatbelt_exec.h"
-#include "services/service_manager/embedder/result_codes.h"
-#include "services/service_manager/sandbox/mac/sandbox_mac.h"
-#include "services/service_manager/sandbox/sandbox.h"
-#include "services/service_manager/sandbox/sandbox_type.h"
-#include "services/service_manager/sandbox/switches.h"
+#include "sandbox/policy/mac/sandbox_mac.h"
+#include "sandbox/policy/sandbox.h"
+#include "sandbox/policy/sandbox_type.h"
+#include "sandbox/policy/switches.h"
 
 namespace content {
 namespace internal {
 
-base::Optional<mojo::NamedPlatformChannel>
+absl::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
   DCHECK(client_task_runner_->RunsTasksInCurrentSequence());
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
@@ -56,9 +52,6 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   options->fds_to_remap = files_to_register.GetMappingWithIDAdjustment(
       base::GlobalDescriptors::kBaseDescriptor);
 
-  base::FieldTrialList::InsertFieldTrialHandleIfNeeded(
-      &options->mach_ports_for_rendezvous);
-
   mojo::PlatformHandle endpoint =
       mojo_channel_->TakeRemoteEndpoint().TakePlatformHandle();
   DCHECK(endpoint.is_valid_mach_receive());
@@ -68,21 +61,19 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
   options->environment = delegate_->GetEnvironment();
 
   options->disclaim_responsibility = delegate_->DisclaimResponsibility();
+  options->enable_cpu_security_mitigations =
+      delegate_->EnableCpuSecurityMitigations();
 
   auto sandbox_type =
-      service_manager::SandboxTypeFromCommandLine(*command_line_);
+      sandbox::policy::SandboxTypeFromCommandLine(*command_line_);
 
   bool no_sandbox =
-      command_line_->HasSwitch(service_manager::switches::kNoSandbox) ||
-      service_manager::IsUnsandboxedSandboxType(sandbox_type);
+      command_line_->HasSwitch(sandbox::policy::switches::kNoSandbox) ||
+      sandbox::policy::IsUnsandboxedSandboxType(sandbox_type);
 
-  bool use_v2 = (sandbox_type != service_manager::SandboxType::kGpu) ||
-                base::FeatureList::IsEnabled(features::kMacV2GPUSandbox);
-
-  if (use_v2 && !no_sandbox) {
+  if (!no_sandbox) {
     // Generate the profile string.
-    std::string profile =
-        service_manager::SandboxMac::GetSandboxProfile(sandbox_type);
+    std::string profile = sandbox::policy::GetSandboxProfile(sandbox_type);
 
     // Disable os logging to com.apple.diagnosticd which is a performance
     // problem.
@@ -160,7 +151,7 @@ void ChildProcessLauncherHelper::ForceNormalProcessTerminationSync(
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   // Client has gone away, so just kill the process.  Using exit code 0 means
   // that UMA won't treat this as a crash.
-  process.process.Terminate(service_manager::RESULT_CODE_NORMAL_EXIT, false);
+  process.process.Terminate(RESULT_CODE_NORMAL_EXIT, false);
   base::EnsureProcessTerminated(std::move(process.process));
 }
 

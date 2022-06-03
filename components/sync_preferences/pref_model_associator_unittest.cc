@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
@@ -28,8 +27,13 @@ const char kCustomMergePrefName[] = "pref.custom";
 
 class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
  public:
-  TestPrefModelAssociatorClient() {}
-  ~TestPrefModelAssociatorClient() override {}
+  TestPrefModelAssociatorClient() = default;
+
+  TestPrefModelAssociatorClient(const TestPrefModelAssociatorClient&) = delete;
+  TestPrefModelAssociatorClient& operator=(
+      const TestPrefModelAssociatorClient&) = delete;
+
+  ~TestPrefModelAssociatorClient() override = default;
 
   // PrefModelAssociatorClient implementation.
   bool IsMergeableListPreference(const std::string& pref_name) const override {
@@ -50,9 +54,6 @@ class TestPrefModelAssociatorClient : public PrefModelAssociatorClient {
     }
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestPrefModelAssociatorClient);
 };
 
 class AbstractPreferenceMergeTest : public testing::Test {
@@ -98,9 +99,9 @@ class AbstractPreferenceMergeTest : public testing::Test {
     ASSERT_TRUE(pref);
     base::Value::Type type = pref->GetType();
     if (type == base::Value::Type::DICTIONARY)
-      empty_value.reset(new base::DictionaryValue);
+      empty_value = std::make_unique<base::DictionaryValue>();
     else if (type == base::Value::Type::LIST)
-      empty_value.reset(new base::ListValue);
+      empty_value = std::make_unique<base::ListValue>();
     else
       FAIL();
     pref_service_->Set(pref_name.c_str(), *empty_value);
@@ -135,8 +136,8 @@ class ListPreferenceMergeTest : public AbstractPreferenceMergeTest {
         server_url1_("http://example.com/server1"),
         local_url0_("http://example.com/local0"),
         local_url1_("http://example.com/local1") {
-    server_url_list_.AppendString(server_url0_);
-    server_url_list_.AppendString(server_url1_);
+    server_url_list_.Append(server_url0_);
+    server_url_list_.Append(server_url1_);
   }
 
   std::string server_url0_;
@@ -170,7 +171,7 @@ TEST_F(ListPreferenceMergeTest, ServerNull) {
   {
     ListPrefUpdate update(pref_service_.get(), kListPrefName);
     base::ListValue* local_list_value = update.Get();
-    local_list_value->AppendString(local_url0_);
+    local_list_value->Append(local_url0_);
   }
 
   const PrefService::Preference* pref =
@@ -187,7 +188,7 @@ TEST_F(ListPreferenceMergeTest, ServerEmpty) {
   {
     ListPrefUpdate update(pref_service_.get(), kListPrefName);
     base::ListValue* local_list_value = update.Get();
-    local_list_value->AppendString(local_url0_);
+    local_list_value->Append(local_url0_);
   }
 
   const PrefService::Preference* pref =
@@ -203,8 +204,8 @@ TEST_F(ListPreferenceMergeTest, Merge) {
   {
     ListPrefUpdate update(pref_service_.get(), kListPrefName);
     base::ListValue* local_list_value = update.Get();
-    local_list_value->AppendString(local_url0_);
-    local_list_value->AppendString(local_url1_);
+    local_list_value->Append(local_url0_);
+    local_list_value->Append(local_url1_);
   }
 
   const PrefService::Preference* pref =
@@ -213,10 +214,10 @@ TEST_F(ListPreferenceMergeTest, Merge) {
       pref->name(), *pref->GetValue(), server_url_list_));
 
   base::ListValue expected;
-  expected.AppendString(server_url0_);
-  expected.AppendString(server_url1_);
-  expected.AppendString(local_url0_);
-  expected.AppendString(local_url1_);
+  expected.Append(server_url0_);
+  expected.Append(server_url1_);
+  expected.Append(local_url0_);
+  expected.Append(local_url1_);
   EXPECT_TRUE(merged_value->Equals(&expected));
 }
 
@@ -224,9 +225,9 @@ TEST_F(ListPreferenceMergeTest, Duplicates) {
   {
     ListPrefUpdate update(pref_service_.get(), kListPrefName);
     base::ListValue* local_list_value = update.Get();
-    local_list_value->AppendString(local_url0_);
-    local_list_value->AppendString(server_url0_);
-    local_list_value->AppendString(server_url1_);
+    local_list_value->Append(local_url0_);
+    local_list_value->Append(server_url0_);
+    local_list_value->Append(server_url1_);
   }
 
   const PrefService::Preference* pref =
@@ -235,9 +236,9 @@ TEST_F(ListPreferenceMergeTest, Duplicates) {
       pref->name(), *pref->GetValue(), server_url_list_));
 
   base::ListValue expected;
-  expected.AppendString(server_url0_);
-  expected.AppendString(server_url1_);
-  expected.AppendString(local_url0_);
+  expected.Append(server_url0_);
+  expected.Append(server_url1_);
+  expected.Append(local_url0_);
   EXPECT_TRUE(merged_value->Equals(&expected));
 }
 
@@ -245,16 +246,16 @@ TEST_F(ListPreferenceMergeTest, Equals) {
   {
     ListPrefUpdate update(pref_service_.get(), kListPrefName);
     base::ListValue* local_list_value = update.Get();
-    local_list_value->AppendString(server_url0_);
-    local_list_value->AppendString(server_url1_);
+    local_list_value->Append(server_url0_);
+    local_list_value->Append(server_url1_);
   }
 
-  std::unique_ptr<base::Value> original(server_url_list_.DeepCopy());
+  base::Value original = server_url_list_.Clone();
   const PrefService::Preference* pref =
       pref_service_->FindPreference(kListPrefName);
   std::unique_ptr<base::Value> merged_value(pref_sync_service_->MergePreference(
       pref->name(), *pref->GetValue(), server_url_list_));
-  EXPECT_TRUE(merged_value->Equals(original.get()));
+  EXPECT_TRUE(*merged_value == original);
 }
 
 class DictionaryPreferenceMergeTest : public AbstractPreferenceMergeTest {
@@ -417,7 +418,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
         url1_("http://example.com/server1"),
         expression0_("expression0"),
         expression1_("expression1") {
-    server_url_list_.AppendString(url0_);
+    server_url_list_.Append(url0_);
     SetContentPattern(&server_patterns_, expression0_, 1);
   }
 
@@ -425,7 +426,7 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
     {
       ListPrefUpdate update(pref_service_.get(), pref);
       base::ListValue* local_list_value = update.Get();
-      local_list_value->AppendString(url1_);
+      local_list_value->Append(url1_);
     }
 
     std::unique_ptr<base::Value> merged_value(
@@ -433,8 +434,8 @@ class IndividualPreferenceMergeTest : public AbstractPreferenceMergeTest {
             pref, *pref_service_->GetUserPrefValue(pref), server_url_list_));
 
     base::ListValue expected;
-    expected.AppendString(url0_);
-    expected.AppendString(url1_);
+    expected.Append(url0_);
+    expected.Append(url1_);
     return merged_value->Equals(&expected);
   }
 

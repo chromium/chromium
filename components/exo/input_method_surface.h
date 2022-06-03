@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_EXO_INPUT_METHOD_SURFACE_H_
 #define COMPONENTS_EXO_INPUT_METHOD_SURFACE_H_
 
-#include "base/macros.h"
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/surface_delegate.h"
 #include "components/exo/surface_observer.h"
@@ -19,13 +18,20 @@ class InputMethodSurface : public ClientControlledShellSurface {
  public:
   InputMethodSurface(InputMethodSurfaceManager* manager,
                      Surface* surface,
-                     double default_device_scale_factor);
+                     bool default_scale_cancellation);
+
+  InputMethodSurface(const InputMethodSurface&) = delete;
+  InputMethodSurface& operator=(const InputMethodSurface&) = delete;
+
   ~InputMethodSurface() override;
 
   static exo::InputMethodSurface* GetInputMethodSurface();
 
   // Overridden from SurfaceDelegate:
   void OnSurfaceCommit() override;
+
+  // Overridden from ShellSurfaceBase:
+  void SetWidgetBounds(const gfx::Rect& bounds) override;
 
   gfx::Rect GetBounds() const;
 
@@ -34,9 +40,6 @@ class InputMethodSurface : public ClientControlledShellSurface {
   bool added_to_manager_ = false;
   // The bounds of this surface in DIP.
   gfx::Rect input_method_bounds_;
-  double default_device_scale_factor_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodSurface);
 };
 
 }  // namespace exo

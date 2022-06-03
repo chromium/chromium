@@ -35,7 +35,7 @@ DOMTimer* DOMTimerCoordinator::RemoveTimeoutByID(int timeout_id) {
   return removed_timer;
 }
 
-void DOMTimerCoordinator::Trace(blink::Visitor* visitor) {
+void DOMTimerCoordinator::Trace(Visitor* visitor) const {
   visitor->Trace(timers_);
 }
 

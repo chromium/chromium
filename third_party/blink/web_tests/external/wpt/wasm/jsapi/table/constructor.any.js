@@ -1,16 +1,7 @@
-// META: global=jsshell
+// META: global=window,dedicatedworker,jsshell
+// META: script=/wasm/jsapi/wasm-module-builder.js
 // META: script=/wasm/jsapi/assertions.js
-
-function assert_Table(actual, expected) {
-  assert_equals(Object.getPrototypeOf(actual), WebAssembly.Table.prototype,
-                "prototype");
-  assert_true(Object.isExtensible(actual), "extensible");
-
-  assert_equals(actual.length, expected.length, "length");
-  for (let i = 0; i < expected.length; ++i) {
-    assert_equals(actual.get(i), null, `actual.get(${i})`);
-  }
-}
+// META: script=/wasm/jsapi/table/assertions.js
 
 test(() => {
   assert_function_name(WebAssembly.Table, "Table", "WebAssembly.Table");
@@ -21,16 +12,16 @@ test(() => {
 }, "length");
 
 test(() => {
-  assert_throws(new TypeError(), () => new WebAssembly.Table());
+  assert_throws_js(TypeError, () => new WebAssembly.Table());
 }, "No arguments");
 
 test(() => {
   const argument = { "element": "anyfunc", "initial": 0 };
-  assert_throws(new TypeError(), () => WebAssembly.Table(argument));
+  assert_throws_js(TypeError, () => WebAssembly.Table(argument));
 }, "Calling");
 
 test(() => {
-  assert_throws(new TypeError(), () => new WebAssembly.Table({}));
+  assert_throws_js(TypeError, () => new WebAssembly.Table({}));
 }, "Empty descriptor");
 
 test(() => {
@@ -47,18 +38,18 @@ test(() => {
     {},
   ];
   for (const invalidArgument of invalidArguments) {
-    assert_throws(new TypeError(),
-                  () => new WebAssembly.Table(invalidArgument),
-                  `new Table(${format_value(invalidArgument)})`);
+    assert_throws_js(TypeError,
+                     () => new WebAssembly.Table(invalidArgument),
+                     `new Table(${format_value(invalidArgument)})`);
   }
 }, "Invalid descriptor argument");
 
 test(() => {
-  assert_throws(new TypeError(), () => new WebAssembly.Table({ "element": "anyfunc", "initial": undefined }));
+  assert_throws_js(TypeError, () => new WebAssembly.Table({ "element": "anyfunc", "initial": undefined }));
 }, "Undefined initial value in descriptor");
 
 test(() => {
-  assert_throws(new TypeError(), () => new WebAssembly.Table({ "element": undefined, "initial": 0 }));
+  assert_throws_js(TypeError, () => new WebAssembly.Table({ "element": undefined, "initial": 0 }));
 }, "Undefined element value in descriptor");
 
 const outOfRangeValues = [
@@ -72,16 +63,16 @@ const outOfRangeValues = [
 
 for (const value of outOfRangeValues) {
   test(() => {
-    assert_throws(new TypeError(), () => new WebAssembly.Table({ "element": "anyfunc", "initial": value }));
+    assert_throws_js(TypeError, () => new WebAssembly.Table({ "element": "anyfunc", "initial": value }));
   }, `Out-of-range initial value in descriptor: ${format_value(value)}`);
 
   test(() => {
-    assert_throws(new TypeError(), () => new WebAssembly.Table({ "element": "anyfunc", "initial": 0, "maximum": value }));
+    assert_throws_js(TypeError, () => new WebAssembly.Table({ "element": "anyfunc", "initial": 0, "maximum": value }));
   }, `Out-of-range maximum value in descriptor: ${format_value(value)}`);
 }
 
 test(() => {
-  assert_throws(new RangeError(), () => new WebAssembly.Table({ "element": "anyfunc", "initial": 10, "maximum": 9 }));
+  assert_throws_js(RangeError, () => new WebAssembly.Table({ "element": "anyfunc", "initial": 10, "maximum": 9 }));
 }, "Initial value exceeds maximum");
 
 test(() => {
@@ -177,3 +168,41 @@ test(() => {
     "maximum valueOf",
   ]);
 }, "Order of evaluation for descriptor");
+
+test(() => {
+  const testObject = {};
+  const argument = { "element": "externref", "initial": 3 };
+  const table = new WebAssembly.Table(argument, testObject);
+  assert_equals(table.length, 3);
+  assert_equals(table.get(0), testObject);
+  assert_equals(table.get(1), testObject);
+  assert_equals(table.get(2), testObject);
+}, "initialize externref table with default value");
+
+test(() => {
+  const argument = { "element": "i32", "initial": 3 };
+  assert_throws_js(TypeError, () => new WebAssembly.Table(argument));
+}, "initialize table with a wrong element value");
+
+test(() => {
+  const builder = new WasmModuleBuilder();
+  builder
+    .addFunction("fn", kSig_v_v)
+    .addBody([])
+    .exportFunc();
+  const bin = builder.toBuffer();
+  const fn = new WebAssembly.Instance(new WebAssembly.Module(bin)).exports.fn;
+  const argument = { "element": "anyfunc", "initial": 3 };
+  const table = new WebAssembly.Table(argument, fn);
+  assert_equals(table.length, 3);
+  assert_equals(table.get(0), fn);
+  assert_equals(table.get(1), fn);
+  assert_equals(table.get(2), fn);
+}, "initialize anyfunc table with default value");
+
+test(() => {
+  const argument = { "element": "anyfunc", "initial": 3 };
+  assert_throws_js(TypeError, () => new WebAssembly.Table(argument, {}));
+  assert_throws_js(TypeError, () => new WebAssembly.Table(argument, "cannot be used as a wasm function"));
+  assert_throws_js(TypeError, () => new WebAssembly.Table(argument, 37));
+}, "initialize anyfunc table with a bad default value");

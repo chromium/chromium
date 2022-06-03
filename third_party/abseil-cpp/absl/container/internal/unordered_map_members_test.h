@@ -21,6 +21,7 @@
 #include "absl/meta/type_traits.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 
 template <class UnordMap>
@@ -80,6 +81,7 @@ TYPED_TEST_P(MembersTest, BeginEnd) {
 REGISTER_TYPED_TEST_SUITE_P(MembersTest, Typedefs, SimpleFunctions, BeginEnd);
 
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_INTERNAL_UNORDERED_MAP_MEMBERS_TEST_H_

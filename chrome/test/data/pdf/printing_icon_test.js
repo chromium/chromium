@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {PDFViewerElement} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+
 chrome.test.runTests([
   function testPrintingEnabled() {
-    const toolbar = document.body.querySelector('#toolbar');
+    const viewer = /** @type {!PDFViewerElement} */ (
+        document.body.querySelector('#viewer'));
+    const toolbar = viewer.shadowRoot.querySelector('#toolbar');
     toolbar.printingEnabled = true;
     const printIcon = toolbar.shadowRoot.querySelector('#print');
     chrome.test.assertTrue(!!printIcon);
@@ -12,7 +16,9 @@ chrome.test.runTests([
     chrome.test.succeed();
   },
   function testPrintingDisabled() {
-    const toolbar = document.body.querySelector('#toolbar');
+    const viewer = /** @type {!PDFViewerElement} */ (
+        document.body.querySelector('#viewer'));
+    const toolbar = viewer.shadowRoot.querySelector('#toolbar');
     toolbar.printingEnabled = false;
     const printIcon = toolbar.shadowRoot.querySelector('#print');
     chrome.test.assertTrue(!!printIcon);

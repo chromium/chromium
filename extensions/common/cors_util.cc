@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -33,7 +34,7 @@ void AddURLPatternSetToList(
     network::mojom::CorsOriginAccessMatchPriority priority) {
   static const char* const kSchemes[] = {
     content::kChromeUIScheme,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     content::kExternalFileScheme,
 #endif
     extensions::kExtensionScheme,
@@ -69,14 +70,12 @@ void AddURLPatternSetToList(
 }  // namespace
 
 std::vector<network::mojom::CorsOriginPatternPtr>
-CreateCorsOriginAccessAllowList(
-    const Extension& extension,
-    PermissionsData::EffectiveHostPermissionsMode mode) {
+CreateCorsOriginAccessAllowList(const Extension& extension) {
   std::vector<network::mojom::CorsOriginPatternPtr> allow_list;
 
   // Permissions declared by the extension.
   URLPatternSet origin_permissions =
-      extension.permissions_data()->GetEffectiveHostPermissions(mode);
+      extension.permissions_data()->GetEffectiveHostPermissions();
   AddURLPatternSetToList(
       origin_permissions, &allow_list,
       network::mojom::CorsOriginAccessMatchPriority::kDefaultPriority);

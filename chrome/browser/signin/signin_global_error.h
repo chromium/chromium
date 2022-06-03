@@ -8,7 +8,6 @@
 #include <set>
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/global_error/global_error.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/signin/core/browser/signin_error_controller.h"
@@ -22,6 +21,10 @@ class SigninGlobalError : public GlobalErrorWithStandardBubble,
  public:
   SigninGlobalError(SigninErrorController* error_controller,
                     Profile* profile);
+
+  SigninGlobalError(const SigninGlobalError&) = delete;
+  SigninGlobalError& operator=(const SigninGlobalError&) = delete;
+
   ~SigninGlobalError() override;
 
   // Returns true if there is an authentication error.
@@ -37,13 +40,13 @@ class SigninGlobalError : public GlobalErrorWithStandardBubble,
   // GlobalErrorWithStandardBubble:
   bool HasMenuItem() override;
   int MenuItemCommandID() override;
-  base::string16 MenuItemLabel() override;
+  std::u16string MenuItemLabel() override;
   void ExecuteMenuItem(Browser* browser) override;
   bool HasBubbleView() override;
-  base::string16 GetBubbleViewTitle() override;
-  std::vector<base::string16> GetBubbleViewMessages() override;
-  base::string16 GetBubbleViewAcceptButtonLabel() override;
-  base::string16 GetBubbleViewCancelButtonLabel() override;
+  std::u16string GetBubbleViewTitle() override;
+  std::vector<std::u16string> GetBubbleViewMessages() override;
+  std::u16string GetBubbleViewAcceptButtonLabel() override;
+  std::u16string GetBubbleViewCancelButtonLabel() override;
   void OnBubbleViewDidClose(Browser* browser) override;
   void BubbleViewAcceptButtonPressed(Browser* browser) override;
   void BubbleViewCancelButtonPressed(Browser* browser) override;
@@ -56,8 +59,6 @@ class SigninGlobalError : public GlobalErrorWithStandardBubble,
 
   // The SigninErrorController that provides auth status.
   SigninErrorController* error_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninGlobalError);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_SIGNIN_GLOBAL_ERROR_H_

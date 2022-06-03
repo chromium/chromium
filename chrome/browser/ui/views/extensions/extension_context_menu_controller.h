@@ -7,25 +7,27 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "chrome/browser/ui/views/toolbar/toolbar_action_view.h"
 #include "ui/views/context_menu_controller.h"
 
 class ToolbarActionViewController;
 
 namespace views {
 class Button;
+class MenuItemView;
 class MenuModelAdapter;
 class MenuRunner;
 }  // namespace views
 
 class ExtensionContextMenuController : public views::ContextMenuController {
  public:
-  // TODO(crbug.com/995473): Remove delegate once extensions toolbar menu
-  // launches.
   explicit ExtensionContextMenuController(
-      ToolbarActionView::Delegate* delegate,
       ToolbarActionViewController* controller);
+
+  ExtensionContextMenuController(const ExtensionContextMenuController&) =
+      delete;
+  ExtensionContextMenuController& operator=(
+      const ExtensionContextMenuController&) = delete;
+
   ~ExtensionContextMenuController() override;
 
   // views::ContextMenuController:
@@ -53,16 +55,8 @@ class ExtensionContextMenuController : public views::ContextMenuController {
   // shown. This is used for testing.
   views::MenuItemView* menu_ = nullptr;
 
-  // This delegate_ is set only for ToolbarActionsBar and used to determine if
-  // the extension is triggered from the AppMenu.
-  // TODO(crbug.com/995473): This should be removed when extensions toolbar menu
-  // launches.
-  const ToolbarActionView::Delegate* const delegate_;
-
   // This controller contains the data for the extension's context menu.
   ToolbarActionViewController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionContextMenuController);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_CONTEXT_MENU_CONTROLLER_H_

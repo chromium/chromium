@@ -1,0 +1,21 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module chrome.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+struct DraggableRegion {
+  gfx.mojom.Rect bounds;
+  bool draggable = false;
+};
+
+// Messages sent from a local main frame in the renderer to browser about
+// draggable reggions and their size in the client area. This information
+// will be used by PWAs with windows control overlay so that draggable regions
+// can be enabled.
+interface DraggableRegions {
+  // Notify the browser that the draggable regions have been updated.
+  UpdateDraggableRegions(array<DraggableRegion> draggable_region);
+};

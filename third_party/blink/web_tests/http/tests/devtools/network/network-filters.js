@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests fetch network filters\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   await NetworkTestRunner.clearNetworkCache();
@@ -36,6 +36,10 @@
     '-missing',
     'is:from-cache',
     '-is:from-cache',
+    'http',
+    'http:',
+    'http://',
+    'http://127.0.0.1:8000/',
   ];
 
   for (const filterText of filterChecks) {
@@ -49,23 +53,23 @@
       `fetch('data:;base64,c2VuZGluZyB0aGlzIHV0Zi04IHN0cmluZyBhcyBhIGJpbmFyeSBtZXNzYWdlLi4u')`);
   await TestRunner.evaluateInPageAsync(
       `fetch(URL.createObjectURL(new Blob(new Uint8Array([1, 2, 3, 4]))))`);
-  UI.panels.network._networkLogView._filterChanged(null);
+  UI.panels.network.networkLogView.filterChanged(null);
 
   TestRunner.addResult('hide data URLs unchecked');
   printNetworkLog();
 
-  UI.panels.network._networkLogView._dataURLFilterUI.setChecked(true);
-  UI.panels.network._networkLogView._filterChanged(null);
+  UI.panels.network.networkLogView.dataURLFilterUI.setChecked(true);
+  UI.panels.network.networkLogView.filterChanged(null);
   TestRunner.addResult('hide data URLs checked');
   printNetworkLog();
 
   TestRunner.completeTest();
 
   function printNetworkLog() {
-    const nodes = UI.panels.network._networkLogView.flatNodesList();
+    const nodes = UI.panels.network.networkLogView.flatNodesList();
     let foundNodesCount = 0;
     for (let i = 0; i < nodes.length; i++) {
-      if (!nodes[i][Network.NetworkLogView._isFilteredOutSymbol])
+      if (!Network.NetworkLogView.isRequestFilteredOut(nodes[i]))
         foundNodesCount++;
     }
 
@@ -77,7 +81,7 @@
    * @param {string} value
    */
   function setNetworkLogFilter(value) {
-    UI.panels.network._networkLogView._textFilterUI.setValue(value);
-    UI.panels.network._networkLogView._filterChanged(null);  // event not used in this method, so passing null
+    UI.panels.network.networkLogView.textFilterUI.setValue(value);
+    UI.panels.network.networkLogView.filterChanged(null);  // event not used in this method, so passing null
   }
 })();

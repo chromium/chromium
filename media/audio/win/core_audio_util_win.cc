@@ -4,6 +4,7 @@
 
 #include "media/audio/win/core_audio_util_win.h"
 
+#include <comdef.h>
 #include <devicetopology.h>
 #include <functiondiscoverykeys_devpkey.h>
 #include <objbase.h>
@@ -14,7 +15,6 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -336,7 +336,7 @@ HRESULT GetDeviceFriendlyNameInternal(IMMDevice* device,
   // Retrieve user-friendly name of endpoint device.
   // Example: "Microphone (Realtek High Definition Audio)".
   ComPtr<IPropertyStore> properties;
-  HRESULT hr = device->OpenPropertyStore(STGM_READ, properties.GetAddressOf());
+  HRESULT hr = device->OpenPropertyStore(STGM_READ, &properties);
   if (FAILED(hr))
     return hr;
 
@@ -359,21 +359,15 @@ ComPtr<IMMDeviceEnumerator> CreateDeviceEnumeratorInternal(
     bool allow_reinitialize,
     const UMALogCallback& uma_log_cb) {
   ComPtr<IMMDeviceEnumerator> device_enumerator;
-  HRESULT hr = ::CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
+  HRESULT hr = ::CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr,
                                   CLSCTX_INPROC_SERVER,
                                   IID_PPV_ARGS(&device_enumerator));
   if (hr == CO_E_NOTINITIALIZED && allow_reinitialize) {
     LOG(ERROR) << "CoCreateInstance fails with CO_E_NOTINITIALIZED";
-    // We have seen crashes which indicates that this method can in fact
-    // fail with CO_E_NOTINITIALIZED in combination with certain 3rd party
-    // modules. Calling CoInitializeEx is an attempt to resolve the reported
-    // issues. See http://crbug.com/378465 for details.
-    hr = CoInitializeEx(NULL, COINIT_MULTITHREADED);
-    if (SUCCEEDED(hr)) {
-      hr = ::CoCreateInstance(__uuidof(MMDeviceEnumerator), NULL,
-                              CLSCTX_INPROC_SERVER,
-                              IID_PPV_ARGS(&device_enumerator));
-    }
+    // Buggy third-party DLLs can uninitialize COM out from under us.  Attempt
+    // to re-initialize it.  See http://crbug.com/378465 for more details.
+    CoInitializeEx(nullptr, COINIT_MULTITHREADED | COINIT_DISABLE_OLE1DDE);
+    return CreateDeviceEnumeratorInternal(false, uma_log_cb);
   }
   uma_log_cb.Run(UmaLogStep::CREATE_DEVICE_ENUMERATOR, hr);
   return device_enumerator;
@@ -482,7 +476,7 @@ ComPtr<IMMDevice> CreateDeviceInternal(const std::string& device_id,
     // interface for the *rendering* endpoint device.
     hr = device_enum->GetDefaultAudioEndpoint(eRender, role, &endpoint_device);
   } else {
-    hr = device_enum->GetDevice(base::UTF8ToUTF16(device_id).c_str(),
+    hr = device_enum->GetDevice(base::UTF8ToWide(device_id).c_str(),
                                 &endpoint_device);
   }
   DVLOG_IF(1, FAILED(hr)) << "Create Device failed: " << std::hex << hr;
@@ -684,7 +678,15 @@ bool CoreAudioUtil::IsSupported() {
   return g_is_supported;
 }
 
-// CoreAudioUtil implementation.
+std::string CoreAudioUtil::ErrorToString(HRESULT hresult) {
+  const _com_error error(hresult);
+  // If the HRESULT is within the range 0x80040200 to 0x8004FFFF, the WCode()
+  // method returns the HRESULT minus 0x80040200; otherwise, it returns zero.
+  return base::StringPrintf("HRESULT: 0x%08lX, WCode: %u, message: \"%s\"",
+                            error.Error(), error.WCode(),
+                            base::WideToUTF8(error.ErrorMessage()).c_str());
+}
+
 std::string CoreAudioUtil::WaveFormatToString(const WaveFormatWrapper format) {
   // Start with the WAVEFORMATEX part.
   std::string wave_format = base::StringPrintf(
@@ -715,7 +717,7 @@ std::string CoreAudioUtil::WaveFormatToString(const WaveFormatWrapper format) {
 
 base::TimeDelta CoreAudioUtil::ReferenceTimeToTimeDelta(REFERENCE_TIME time) {
   // Each unit of reference time is 100 nanoseconds <=> 0.1 microsecond.
-  return base::TimeDelta::FromMicroseconds(0.1 * time + 0.5);
+  return base::Microseconds(0.1 * time + 0.5);
 }
 
 uint32_t CoreAudioUtil::GetIAudioClientVersion() {
@@ -749,7 +751,7 @@ int CoreAudioUtil::NumberOfActiveDevices(EDataFlow data_flow) {
   // This method will succeed even if all devices are disabled.
   ComPtr<IMMDeviceCollection> collection;
   HRESULT hr = device_enumerator->EnumAudioEndpoints(
-      data_flow, DEVICE_STATE_ACTIVE, collection.GetAddressOf());
+      data_flow, DEVICE_STATE_ACTIVE, &collection);
   if (FAILED(hr)) {
     LOG(ERROR) << "IMMDeviceCollection::EnumAudioEndpoints: " << std::hex << hr;
     return 0;
@@ -826,7 +828,7 @@ std::string CoreAudioUtil::GetAudioControllerID(IMMDevice* device,
       // For our purposes checking the first connected device should be enough
       // and if there are cases where there are more than one device connected
       // we're not sure how to handle that anyway. So we pass 0.
-      FAILED(topology->GetConnector(0, connector.GetAddressOf())) ||
+      FAILED(topology->GetConnector(0, &connector)) ||
       FAILED(connector->GetDeviceIdConnectedTo(&filter_id))) {
     DLOG(ERROR) << "Failed to get the device identifier of the audio device";
     return std::string();
@@ -838,9 +840,8 @@ std::string CoreAudioUtil::GetAudioControllerID(IMMDevice* device,
   ComPtr<IMMDevice> device_node;
   ComPtr<IPropertyStore> properties;
   base::win::ScopedPropVariant instance_id;
-  if (FAILED(enumerator->GetDevice(filter_id, device_node.GetAddressOf())) ||
-      FAILED(device_node->OpenPropertyStore(STGM_READ,
-                                            properties.GetAddressOf())) ||
+  if (FAILED(enumerator->GetDevice(filter_id, &device_node)) ||
+      FAILED(device_node->OpenPropertyStore(STGM_READ, &properties)) ||
       FAILED(properties->GetValue(PKEY_Device_InstanceId,
                                   instance_id.Receive())) ||
       instance_id.get().vt != VT_LPWSTR) {
@@ -886,8 +887,7 @@ std::string CoreAudioUtil::GetMatchingOutputDeviceID(
   // Now enumerate the available (and active) output devices and see if any of
   // them is associated with the same controller.
   ComPtr<IMMDeviceCollection> collection;
-  enumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE,
-                                 collection.GetAddressOf());
+  enumerator->EnumAudioEndpoints(eRender, DEVICE_STATE_ACTIVE, &collection);
   if (!collection.Get())
     return std::string();
 
@@ -895,7 +895,7 @@ std::string CoreAudioUtil::GetMatchingOutputDeviceID(
   collection->GetCount(&count);
   ComPtr<IMMDevice> output_device;
   for (UINT i = 0; i < count; ++i) {
-    collection->Item(i, output_device.GetAddressOf());
+    collection->Item(i, &output_device);
     std::string output_controller_id(
         GetAudioControllerID(output_device.Get(), enumerator.Get()));
     if (output_controller_id == controller_id)
@@ -923,7 +923,7 @@ std::string CoreAudioUtil::GetFriendlyName(const std::string& device_id,
 
 EDataFlow CoreAudioUtil::GetDataFlow(IMMDevice* device) {
   ComPtr<IMMEndpoint> endpoint;
-  HRESULT hr = device->QueryInterface(endpoint.GetAddressOf());
+  HRESULT hr = device->QueryInterface(IID_PPV_ARGS(&endpoint));
   if (FAILED(hr)) {
     DVLOG(1) << "IMMDevice::QueryInterface: " << std::hex << hr;
     return eAll;

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_TOUCH_SELECTION_TOUCH_HANDLE_ORIENTATION_
-#define UI_TOUCH_SELECTION_TOUCH_HANDLE_ORIENTATION_
+#ifndef UI_TOUCH_SELECTION_TOUCH_HANDLE_ORIENTATION_H_
+#define UI_TOUCH_SELECTION_TOUCH_HANDLE_ORIENTATION_H_
 
 namespace ui {
 
@@ -21,4 +21,4 @@ enum class TouchHandleOrientation {
 
 }  // namespace ui
 
-#endif  // UI_TOUCH_SELECTION_TOUCH_HANDLE_ORIENTATION_
+#endif  // UI_TOUCH_SELECTION_TOUCH_HANDLE_ORIENTATION_H_

@@ -7,11 +7,12 @@
 
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
-#include "third_party/blink/renderer/bindings/core/v8/array_buffer_or_array_buffer_view.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
 
 namespace blink {
 
+class ExceptionState;
 class ScriptPromiseResolver;
 class SerialPort;
 
@@ -20,21 +21,27 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   SerialPortUnderlyingSink(SerialPort*, mojo::ScopedDataPipeProducerHandle);
 
   // UnderlyingSinkBase
-  ScriptPromise start(ScriptState*, WritableStreamDefaultController*) override;
+  ScriptPromise start(ScriptState*,
+                      WritableStreamDefaultController*,
+                      ExceptionState&) override;
   ScriptPromise write(ScriptState*,
                       ScriptValue chunk,
-                      WritableStreamDefaultController*) override;
-  ScriptPromise close(ScriptState*) override;
-  ScriptPromise abort(ScriptState*, ScriptValue reason) override;
+                      WritableStreamDefaultController*,
+                      ExceptionState&) override;
+  ScriptPromise close(ScriptState*, ExceptionState&) override;
+  ScriptPromise abort(ScriptState*,
+                      ScriptValue reason,
+                      ExceptionState&) override;
 
   // After |data_pipe_| has closed calls to write() will return a Promise
   // rejected with this DOMException.
   void SignalErrorOnClose(DOMException*);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
+  void OnFlushOrDrain();
   void WriteData();
   void PipeClosed();
 
@@ -43,9 +50,13 @@ class SerialPortUnderlyingSink final : public UnderlyingSinkBase {
   Member<SerialPort> serial_port_;
   Member<DOMException> pending_exception_;
 
-  ArrayBufferOrArrayBufferView buffer_source_;
-  uint32_t offset_ = 0;
-  Member<ScriptPromiseResolver> pending_write_;
+  Member<V8BufferSource> buffer_source_;
+  size_t offset_ = 0;
+
+  // Only one outstanding call to write(), close() or abort() is allowed at a
+  // time. This holds the ScriptPromiseResolver for the Promise returned by any
+  // of these functions.
+  Member<ScriptPromiseResolver> pending_operation_;
 };
 
 }  // namespace blink

@@ -1,6 +1,0 @@
-specific_include_rules = {
-  # TODO(crbug.com/620438): Remove this exception.
-  "^preload_controller\.mm$": [
-    "+ios/web/web_state/ui/crw_web_controller.h",
-  ],
-}

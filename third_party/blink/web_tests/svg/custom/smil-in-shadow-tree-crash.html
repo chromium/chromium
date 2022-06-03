@@ -7,7 +7,7 @@
         function start() {
             iFrame = document.createElement('iframe');
             document.getElementById('store_div').appendChild(iFrame);
-            shadowRoot = document.getElementById('rootDiv').createShadowRoot();
+            shadowRoot = document.getElementById('rootDiv').attachShadow({mode: 'open'});
             svgRoot = iFrame.contentDocument.createElementNS('http://www.w3.org/2000/svg','set');
             shadowRoot.appendChild(svgRoot);
         }

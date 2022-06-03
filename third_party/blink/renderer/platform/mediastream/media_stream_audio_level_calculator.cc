@@ -7,8 +7,7 @@
 #include <cmath>
 #include <limits>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check.h"
 #include "media/base/audio_bus.h"
 
 namespace blink {

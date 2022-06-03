@@ -8,49 +8,41 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/events/devices/x11/events_devices_x11_export.h"
-#include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_types.h"
+#include "ui/gfx/x/xinput.h"
 
 namespace base {
-template <typename T> struct DefaultSingletonTraits;
+template <typename T>
+struct DefaultSingletonTraits;
 }
 
-typedef struct _XDisplay Display;
-
-template <typename T, void (*D)(T*)>
-struct DeviceList {
-  DeviceList() : count(0) {}
-  T& operator[](int x) { return devices[x]; }
-  const T& operator[](int x) const { return devices[x]; }
-  std::unique_ptr<T[], gfx::XObjectDeleter<T, void, D>> devices;
-  int count;
-};
-
-typedef struct DeviceList<XDeviceInfo, XFreeDeviceList> XDeviceList;
-typedef struct DeviceList<XIDeviceInfo, XIFreeDeviceInfo> XIDeviceList;
+using XDeviceList = std::vector<x11::Input::DeviceInfo>;
+using XIDeviceList = std::vector<x11::Input::XIDeviceInfo>;
 
 namespace ui {
 
 // A class to cache the current XInput device list. This minimized the
 // round-trip time to the X server whenever such a device list is needed. The
-// update function will be called on each incoming XI_HierarchyChanged event.
+// update function will be called on each incoming
+// x11::Input::HierarchyEvent::opcode event.
 class EVENTS_DEVICES_X11_EXPORT DeviceListCacheX11 {
  public:
   static DeviceListCacheX11* GetInstance();
 
-  void UpdateDeviceList(Display* display);
+  DeviceListCacheX11(const DeviceListCacheX11&) = delete;
+  DeviceListCacheX11& operator=(const DeviceListCacheX11&) = delete;
+
+  void UpdateDeviceList(x11::Connection* connection);
 
   // Returns the list of devices associated with |display|. Uses the old X11
   // protocol to get the list of the devices.
-  const XDeviceList& GetXDeviceList(Display* display);
+  const XDeviceList& GetXDeviceList(x11::Connection* connection);
 
   // Returns the list of devices associated with |display|. Uses the newer
   // XINPUT2 protocol to get the list of devices. Before making this call, make
   // sure that XInput2 support is available (e.g. by calling
   // IsXInput2Available()).
-  const XIDeviceList& GetXI2DeviceList(Display* display);
+  const XIDeviceList& GetXI2DeviceList(x11::Connection* connection);
 
  private:
   friend struct base::DefaultSingletonTraits<DeviceListCacheX11>;
@@ -58,13 +50,11 @@ class EVENTS_DEVICES_X11_EXPORT DeviceListCacheX11 {
   DeviceListCacheX11();
   ~DeviceListCacheX11();
 
+  bool updated_ = false;
   XDeviceList x_dev_list_;
   XIDeviceList xi_dev_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceListCacheX11);
 };
 
 }  // namespace ui
 
 #endif  // UI_EVENTS_DEVICES_X11_DEVICE_LIST_CACHE_X11_H_
-

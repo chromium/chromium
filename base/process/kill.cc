@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/process/process_iterator.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -40,10 +41,9 @@ void EnsureProcessTerminated(Process process) {
   if (process.WaitForExitWithTimeout(TimeDelta(), nullptr))
     return;
 
-  PostDelayedTask(
+  ThreadPool::PostDelayedTask(
       FROM_HERE,
-      {ThreadPool(), TaskPriority::BEST_EFFORT,
-       TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+      {TaskPriority::BEST_EFFORT, TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
       BindOnce(
           [](Process process) {
             if (process.WaitForExitWithTimeout(TimeDelta(), nullptr))
@@ -55,7 +55,7 @@ void EnsureProcessTerminated(Process process) {
 #endif
           },
           std::move(process)),
-      TimeDelta::FromSeconds(2));
+      Seconds(2));
 }
 #endif  // defined(OS_WIN) || defined(OS_FUCHSIA)
 

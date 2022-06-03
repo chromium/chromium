@@ -12,80 +12,82 @@
 <script src=/resources/testharness.js></script>
 <script src=/resources/testharnessreport.js></script>
 <script src=/resources/testdriver.js></script>
+<script src=/resources/testdriver-actions.js></script>
 <script src=/resources/testdriver-vendor.js></script>
 
 <script src=resources/event-timing-test-utils.js></script>
-<img src=./resources/slow-image.py>
-<iframe src=resources/crossiframe-childframe.html></iframe>
+<iframe id='iframe' src=resources/crossiframe-childframe.html></iframe>
 <script>
   let clickTimeMin;
-  let processingStartMin;
-  let onloadStart;
+  let clickDone;
 
-  function validateEntries() {
-    const entries = performance.getEntriesByName('mousedown', 'event');
-
-    assert_equals(entries.length, 1,
-      "Observer of main frames should only capture main-frame event-timing entries."
-    );
+  function validateEntries(entries) {
+    assert_equals(entries.length, 1, "Only 1 entry should be received");
     const entry = entries[0];
-    verifyClickEvent(entry, true);
+    verifyClickEvent(entry, 'button', true);
 
-    assert_greater_than(entry.processingStart, processingStartMin,
-        "The entry's processing start should be later than processingStartMin.");
-    assert_greater_than(onloadStart, entry.processingStart,
-        "onload should occur later than the entry's processing start.");
+    assert_less_than(entry.processingStart, clickDone,
+        "The entry's processing start should be before clickDone.");
     assert_greater_than(entry.startTime, clickTimeMin,
         "The entry's start time should be later than clickTimeMin.");
-    assert_greater_than(onloadStart, entry.startTime,
-        "onload should occur later than the entry's start time.");
   }
 
   function validateChildFrameEntries(childFrameData) {
-    assert_equals(childFrameData.bufferedEntries.length, 1,
-      "Event Timing of child frames should only capture child-frame event-timing entries."
-    );
-    const entry = entries[0];
-    verifyClickEvent(entry);
+    if (childFrameData === "failed") {
+      assert_unreached("Did not receive exactly one entry from child as expected");
+    }
+    // |childFrameData| has properties with the same names as its
+    // PerformanceEventTiming counterpart.
+    verifyClickEvent(childFrameData, null);
+    assert_equals(childFrameData.target, 'iframe_div');
 
-    assert_greater_than(entry.processingStart, childFrameData.processingStartMin,
-        "The entry's processing start should be later than the child frame's processingStartMin.");
-    assert_greater_than(childFrameData.onloadStart, entry.processingStart,
-        "Child frame's onload should occur later than the entry's processing \
-        start.");
-    assert_greater_than(entry.startTime, childFrameData.clickTimeMin,
-        "The entry's start time should be later than the child frame's \
-        clickTimeMin.");
-    assert_greater_than(childFrameData.onloadStart, entry.startTime,
-        "Child frame's onload should be later than the entry's start time.");
-
-    assert_array_equals(childFrameData.observedEntries,
-        childFrameData.bufferedEntries,
-        "The child frame's observed entries should be buffered as well.");
+    assert_less_than(childFrameData.processingStart, childFrameData.clickDone,
+        "The entry's processing start should be before than the child frame's clickDone.");
   }
 
-  async_test(function(t) {
-    if (!window.PerformanceEventTiming)
-      assert_unreached("PerformanceEventTiming is not supported");
-
+  promise_test(async t => {
+    assert_implements(window.PerformanceEventTiming, "Event Timing is not supported");
+    // Wait for load event so we can interact with the iframe.
+    await new Promise(resolve => {
+      window.addEventListener('load', resolve);
+    });
     clickTimeMin = performance.now();
-    clickAndBlockMain('button');
-    processingStartMin = performance.now();
-    const childFrameEntriesPromise = new Promise((resolve, reject) => {
+    let observedMouseDown = false;
+    const observerPromise = new Promise(resolve => {
+      new PerformanceObserver(t.step_func(entries => {
+        const mouseDowns = entries.getEntriesByName('mousedown');
+        // Ignore the callback if there were no mousedown entries.
+        if (mouseDowns.length === 0)
+          return;
+
+        assert_false(observedMouseDown,
+            "Observer of main frames should only capture main-frame event-timing entries");
+        validateEntries(mouseDowns);
+        observedMouseDown = true;
+        resolve();
+      })).observe({type: 'event'});
+    });
+    clickAndBlockMain('button').then(() => {
+      clickDone = performance.now();
+    });
+    const childFrameEntriesPromise = new Promise(resolve => {
       window.addEventListener("message", (event) => {
-        resolve(event.data);
+        // testdriver-complete is a webdriver internal event
+        if (event.data.type != "testdriver-complete") {
+          t.step(() => {
+            validateChildFrameEntries(event.data);
+          });
+          resolve();
+        }
       }, false);
     });
-    on_event(window, 'load', e => {
-      onloadStart = performance.now();
-      childFrameEntriesPromise.then((entries) => {
-        t.step(() => {
-          validateChildFrameEntries(entries);
-          validateEntries();
-        });
-        t.done();
-      });
-    });
+    // Tap on the iframe, with an offset of 10 to target the div inside it.
+    const actions = new test_driver.Actions()
+        .pointerMove(10, 10, { origin: document.getElementById("iframe") })
+        .pointerDown()
+        .pointerUp();
+    actions.send();
+    return Promise.all([observerPromise, childFrameEntriesPromise]);
   }, "Event Timing: entries should only be observable by its own frame.");
 
 </script>

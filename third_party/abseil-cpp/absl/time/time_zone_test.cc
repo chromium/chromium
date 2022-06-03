@@ -88,7 +88,7 @@ TEST(TimeZone, Failures) {
   EXPECT_FALSE(LoadTimeZone("Invalid/TimeZone", &tz));
   EXPECT_EQ(absl::UTCTimeZone(), tz);  // guaranteed fallback to UTC
 
-  // Loading an empty std::string timezone should fail.
+  // Loading an empty string timezone should fail.
   tz = absl::time_internal::LoadTimeZone("America/Los_Angeles");
   EXPECT_FALSE(LoadTimeZone("", &tz));
   EXPECT_EQ(absl::UTCTimeZone(), tz);  // guaranteed fallback to UTC

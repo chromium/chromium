@@ -5,8 +5,9 @@
 #ifndef CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_POPUP_MENU_HELPER_MAC_H_
 #define CONTENT_BROWSER_BROWSER_PLUGIN_BROWSER_PLUGIN_POPUP_MENU_HELPER_MAC_H_
 
-#include "base/macros.h"
-#include "content/browser/frame_host/popup_menu_helper_mac.h"
+#include "content/browser/renderer_host/popup_menu_helper_mac.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/blink/public/mojom/choosers/popup_menu.mojom.h"
 
 namespace content {
 
@@ -21,8 +22,14 @@ class BrowserPluginPopupMenuHelper : public PopupMenuHelper,
   // Creates a BrowserPluginPopupMenuHelper that positions popups relative to
   // |embedder_rfh| and will notify |guest_rfh| when a user selects or cancels
   // the popup.
-  BrowserPluginPopupMenuHelper(RenderFrameHostImpl* embedder_rfh,
-                               RenderFrameHost* guest_rfh);
+  BrowserPluginPopupMenuHelper(
+      RenderFrameHostImpl* embedder_rfh,
+      RenderFrameHost* guest_rfh,
+      mojo::PendingRemote<blink::mojom::PopupMenuClient> popup_client);
+
+  BrowserPluginPopupMenuHelper(const BrowserPluginPopupMenuHelper&) = delete;
+  BrowserPluginPopupMenuHelper& operator=(const BrowserPluginPopupMenuHelper&) =
+      delete;
 
  private:
   // PopupMenuHelper:
@@ -32,8 +39,6 @@ class BrowserPluginPopupMenuHelper : public PopupMenuHelper,
   void OnMenuClosed() override;
 
   RenderFrameHostImpl* embedder_rfh_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPluginPopupMenuHelper);
 };
 
 }  // namespace content

@@ -30,4 +30,4 @@ bool VerifyHostPinHash(const std::string& hash,
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_PIN_HASH_
+#endif  // REMOTING_HOST_PIN_HASH_H_

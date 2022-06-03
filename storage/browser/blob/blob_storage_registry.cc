@@ -9,11 +9,9 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "storage/browser/blob/blob_entry.h"
-#include "storage/browser/blob/blob_url_utils.h"
-#include "url/gurl.h"
 
 namespace storage {
 
@@ -54,67 +52,6 @@ BlobEntry* BlobStorageRegistry::GetEntry(const std::string& uuid) {
 
 const BlobEntry* BlobStorageRegistry::GetEntry(const std::string& uuid) const {
   return const_cast<BlobStorageRegistry*>(this)->GetEntry(uuid);
-}
-
-bool BlobStorageRegistry::CreateUrlMapping(
-    const GURL& blob_url,
-    mojo::PendingRemote<blink::mojom::Blob> blob) {
-  DCHECK(!BlobUrlUtils::UrlHasFragment(blob_url));
-  if (IsURLMapped(blob_url))
-    return false;
-  url_to_blob_[blob_url] = mojo::Remote<blink::mojom::Blob>(std::move(blob));
-  return true;
-}
-
-bool BlobStorageRegistry::DeleteURLMapping(const GURL& blob_url) {
-  DCHECK(!BlobUrlUtils::UrlHasFragment(blob_url));
-  auto found = url_to_blob_.find(blob_url);
-  if (found == url_to_blob_.end())
-    return false;
-  url_to_blob_.erase(found);
-  return true;
-}
-
-bool BlobStorageRegistry::IsURLMapped(const GURL& blob_url) const {
-  return url_to_blob_.find(blob_url) != url_to_blob_.end();
-}
-
-mojo::PendingRemote<blink::mojom::Blob> BlobStorageRegistry::GetBlobFromURL(
-    const GURL& url) {
-  auto found = url_to_blob_.find(BlobUrlUtils::ClearUrlFragment(url));
-  if (found == url_to_blob_.end())
-    return mojo::NullRemote();
-  mojo::PendingRemote<blink::mojom::Blob> result;
-  found->second->Clone(result.InitWithNewPipeAndPassReceiver());
-  return result;
-}
-
-void BlobStorageRegistry::AddTokenMapping(
-    const base::UnguessableToken& token,
-    const GURL& url,
-    mojo::PendingRemote<blink::mojom::Blob> blob) {
-  DCHECK(token_to_url_and_blob_.find(token) == token_to_url_and_blob_.end());
-  token_to_url_and_blob_.emplace(
-      token,
-      std::make_pair(url, mojo::Remote<blink::mojom::Blob>(std::move(blob))));
-}
-
-void BlobStorageRegistry::RemoveTokenMapping(
-    const base::UnguessableToken& token) {
-  DCHECK(token_to_url_and_blob_.find(token) != token_to_url_and_blob_.end());
-  token_to_url_and_blob_.erase(token);
-}
-
-bool BlobStorageRegistry::GetTokenMapping(
-    const base::UnguessableToken& token,
-    GURL* url,
-    mojo::PendingRemote<blink::mojom::Blob>* blob) const {
-  auto it = token_to_url_and_blob_.find(token);
-  if (it == token_to_url_and_blob_.end())
-    return false;
-  *url = it->second.first;
-  it->second.second->Clone(blob->InitWithNewPipeAndPassReceiver());
-  return true;
 }
 
 }  // namespace storage

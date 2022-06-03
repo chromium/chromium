@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Ensure that WebUSB is inaccessible from a service worker.
-FAIL Service workers should not have access to the WebUSB API. assert_equals: navigator.usb should not be a USB object expected "undefined" but got "object"
-Harness: the test ran to completion.
-

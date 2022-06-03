@@ -11,7 +11,7 @@
     android:gravity="center" >
 
     <TextView
-        style="@style/TextAppearance.BlackCaption"
+        style="@style/TextAppearance.TextSmall.Secondary"
         android:id="@+id/experimental_explore_sites_title"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

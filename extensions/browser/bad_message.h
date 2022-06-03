@@ -37,6 +37,11 @@ enum BadMessageReason {
   ESWMF_BAD_EVENT_ACK = 11,
   MHVG_INVALID_PLUGIN_FRAME_ID = 12,
   EMF_INVALID_CHANNEL_SOURCE_TYPE = 13,
+  EMF_NO_EXTENSION_ID_FOR_EXTENSION_SOURCE = 14,
+  EMF_INVALID_EXTENSION_ID_FOR_EXTENSION_SOURCE = 15,
+  EMF_INVALID_EXTENSION_ID_FOR_CONTENT_SCRIPT = 16,
+  EMF_INVALID_EXTENSION_ID_FOR_WORKER_CONTEXT = 17,
+  EMF_INVALID_PORT_CONTEXT = 18,
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. ExtensionHost becomes EH) plus a unique description of the
   // reason. After making changes, you MUST update histograms.xml by running:

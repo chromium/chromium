@@ -5,9 +5,12 @@
 #include "ash/system/power/power_button_screenshot_controller.h"
 
 #include "ash/accelerators/accelerator_controller_impl.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/system/power/power_button_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/time/tick_clock.h"
@@ -19,6 +22,11 @@ namespace {
 
 bool IsTabletMode() {
   return Shell::Get()->tablet_mode_controller()->InTabletMode();
+}
+
+bool VolumeKeyMaybeUsedByApp() {
+  aura::Window* active = window_util::GetActiveWindow();
+  return active && active->GetProperty(ash::kCanConsumeSystemKeysKey);
 }
 
 }  // namespace
@@ -70,9 +78,21 @@ void PowerButtonScreenshotController::OnKeyEvent(ui::KeyEvent* event) {
   if (key_code != ui::VKEY_VOLUME_DOWN && key_code != ui::VKEY_VOLUME_UP)
     return;
 
+  bool did_consume_volume_keys =
+      volume_down_key_pressed_ || volume_up_key_pressed_;
+  bool volume_key_maybe_used_by_app = VolumeKeyMaybeUsedByApp();
+  // Even if the app is requesting to consume volume key, do not give it if
+  // 1) power button is already pressed. This should trigger screenshot.
+  // 2) if this is already handling volume key. We need to continue processing
+  // volume eve after power button is released, until volume keys are released.
+  if (volume_key_maybe_used_by_app && !power_button_pressed_ &&
+      !did_consume_volume_keys) {
+    return;
+  }
+
   const bool is_volume_down = key_code == ui::VKEY_VOLUME_DOWN;
   if (event->type() == ui::ET_KEY_PRESSED) {
-    if (!volume_down_key_pressed_ && !volume_up_key_pressed_) {
+    if (!did_consume_volume_keys) {
       if (is_volume_down) {
         volume_down_key_pressed_ = true;
         volume_down_key_pressed_time_ = tick_clock_->NowTicks();
@@ -86,8 +106,12 @@ void PowerButtonScreenshotController::OnKeyEvent(ui::KeyEvent* event) {
       }
     }
 
-    if (consume_volume_down_ || consume_volume_up_)
+    // Do no pass the event to the app if the events are being
+    // processed
+    if (consume_volume_down_ || consume_volume_up_ ||
+        volume_key_maybe_used_by_app) {
       event->StopPropagation();
+    }
   } else {
     is_volume_down ? volume_down_key_pressed_ = false
                    : volume_up_key_pressed_ = false;

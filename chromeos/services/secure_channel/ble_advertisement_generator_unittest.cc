@@ -7,9 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
@@ -46,6 +44,12 @@ std::vector<cryptauth::BeaconSeed> CreateBeaconSeedsForDevice(
 }  // namespace
 
 class SecureChannelBleAdvertisementGeneratorTest : public testing::Test {
+ public:
+  SecureChannelBleAdvertisementGeneratorTest(
+      const SecureChannelBleAdvertisementGeneratorTest&) = delete;
+  SecureChannelBleAdvertisementGeneratorTest& operator=(
+      const SecureChannelBleAdvertisementGeneratorTest&) = delete;
+
  protected:
   SecureChannelBleAdvertisementGeneratorTest()
       : test_remote_device_(
@@ -78,9 +82,6 @@ class SecureChannelBleAdvertisementGeneratorTest : public testing::Test {
   MockForegroundEidGenerator* mock_eid_generator_;
 
   std::unique_ptr<BleAdvertisementGenerator> generator_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelBleAdvertisementGeneratorTest);
 };
 
 TEST_F(SecureChannelBleAdvertisementGeneratorTest, EmptyPublicKey) {

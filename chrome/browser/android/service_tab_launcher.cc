@@ -12,6 +12,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/web_contents.h"
+#include "url/android/gurl_android.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertUTF8ToJavaString;
@@ -52,8 +53,6 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
   }
 
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> url = ConvertUTF8ToJavaString(
-      env, params.url.spec());
   ScopedJavaLocalRef<jstring> referrer_url =
       ConvertUTF8ToJavaString(env, params.referrer.url.spec());
   ScopedJavaLocalRef<jstring> headers = ConvertUTF8ToJavaString(
@@ -67,7 +66,8 @@ void ServiceTabLauncher::LaunchTab(content::BrowserContext* browser_context,
   DCHECK_GE(request_id, 1);
 
   Java_ServiceTabLauncher_launchTab(
-      env, request_id, browser_context->IsOffTheRecord(), url,
+      env, request_id, browser_context->IsOffTheRecord(),
+      url::GURLAndroid::FromNativeGURL(env, params.url),
       static_cast<int>(disposition), referrer_url,
       static_cast<int>(params.referrer.policy), headers, post_data);
 }

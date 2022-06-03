@@ -27,10 +27,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_FOCUS_EVENT_H_
 
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/events/focus_event_init.h"
 #include "third_party/blink/renderer/core/events/ui_event.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
+
+class FocusEventInit;
 
 class FocusEvent final : public UIEvent {
   DEFINE_WRAPPERTYPEINFO();
@@ -72,13 +74,16 @@ class FocusEvent final : public UIEvent {
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<EventTarget> related_target_;
 };
 
-DEFINE_EVENT_TYPE_CASTS(FocusEvent);
+template <>
+struct DowncastTraits<FocusEvent> {
+  static bool AllowFrom(const Event& event) { return event.IsFocusEvent(); }
+};
 
 }  // namespace blink
 

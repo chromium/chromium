@@ -17,11 +17,9 @@
 
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
-  size_t parallel_jobs = base::NumParallelJobs();
+  size_t parallel_jobs = base::NumParallelJobs(/*cores_per_job=*/2);
   if (parallel_jobs == 0U) {
     return 1;
-  } else if (parallel_jobs > 1U) {
-    parallel_jobs /= 2U;
   }
 
 #if defined(OS_WIN)
@@ -31,11 +29,14 @@ int main(int argc, char** argv) {
   // load and pin the module early on in startup before the blocking becomes an
   // issue.
   base::win::PinUser32();
+
+  base::win::EnableHighDPISupport();
 #endif  // defined(OS_WIN)
 
-  // Enable high-DPI for interactive tests where the user is expected to
-  // manually verify results.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+
+  // Adjust switches for interactive tests where the user is expected to
+  // manually verify results.
   if (command_line->HasSwitch(switches::kTestLauncherInteractive)) {
     // Since the test is interactive, the invoker will want to have pixel output
     // to actually see the result.
@@ -46,8 +47,6 @@ int main(int argc, char** argv) {
     // Pass in --disable-gpu to resolve this for now. See
     // http://crbug.com/687387.
     command_line->AppendSwitch(switches::kDisableGpu);
-
-    base::win::EnableHighDPISupport();
 #endif  // defined(OS_WIN)
   }
 

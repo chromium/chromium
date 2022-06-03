@@ -19,7 +19,7 @@ if (!receivedError || receivedError.indexOf(expectedError) < 0)
 </script>
 
 <script id="no_class" type="text/worklet">
-const expectedError = "The callback provided as parameter 2 is not a function";
+const expectedError = "TypeError: Failed to execute 'registerAnimator' on 'AnimationWorkletGlobalScope': parameter 2 is not of type 'Function'."
 let receivedError = undefined;
 try {
   registerAnimator("no_class", "");

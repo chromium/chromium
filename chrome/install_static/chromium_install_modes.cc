@@ -20,11 +20,6 @@ const wchar_t kProductPathName[] = L"Chromium";
 
 const size_t kProductPathNameLength = _countof(kProductPathName) - 1;
 
-// No integration with Google Update, so no app GUID.
-const wchar_t kBinariesAppGuid[] = L"";
-
-const wchar_t kBinariesPathName[] = L"Chromium Binaries";
-
 const char kSafeBrowsingName[] = "chromium";
 
 const InstallConstants kInstallModes[] = {
@@ -63,7 +58,6 @@ const InstallConstants kInstallModes[] = {
         true,   // Supports system-level installs.
         true,   // Supports in-product set as default browser UX.
         false,  // Does not support retention experiments.
-        true,   // Supported multi-install.
         icon_resources::kApplicationIndex,  // App icon resource index.
         IDR_MAINFRAME,                      // App icon resource id.
         L"S-1-15-2-3251537155-1984446955-2931258699-841473695-1938553385-"

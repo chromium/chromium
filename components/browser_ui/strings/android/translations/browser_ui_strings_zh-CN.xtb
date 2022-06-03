@@ -1,0 +1,335 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="zh-CN">
+<translation id="1006017844123154345">在线打开</translation>
+<translation id="1044891598689252897">网站将能够正常运行</translation>
+<translation id="1124090076051167250">此操作会清除网站或其在主屏幕中安装的应用所存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
+<translation id="1178581264944972037">暂停</translation>
+<translation id="1181037720776840403">移除</translation>
+<translation id="1201402288615127009">下一步</translation>
+<translation id="1242008676835033345">嵌入来源：<ph name="WEBSITE_URL" /></translation>
+<translation id="1272079795634619415">停止</translation>
+<translation id="1289742167380433257">为节省您的流量，Google 已优化了此网页中的图片。</translation>
+<translation id="129382876167171263">网站保存的文件会显示在这里</translation>
+<translation id="1317194122196776028">移除此网站</translation>
+<translation id="1364532808393826295"><ph name="APP_NAME" /> - <ph name="NOTIFICATION_MESSAGE" /></translation>
+<translation id="1369915414381695676">网站 <ph name="SITE_NAME" /> 已添加</translation>
+<translation id="1383876407941801731">搜索</translation>
+<translation id="1384959399684842514">已暂停下载</translation>
+<translation id="1415402041810619267">网址被截断了</translation>
+<translation id="1446450296470737166">允许全面控制 MIDI 设备</translation>
+<translation id="1620510694547887537">摄像头</translation>
+<translation id="1644574205037202324">历史记录</translation>
+<translation id="1647582022260550163">确定要重置权限并清除 Cookie 和网站数据吗？</translation>
+<translation id="1660204651932907780">允许网站播放声音（推荐）</translation>
+<translation id="1677097821151855053">系统会使用 Cookie 和其他网站数据来记住您，以便实现某些功能或目的（例如帮您登录或向您展示个性化广告）。如需管理所有网站的 Cookie，请参阅<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />。</translation>
+<translation id="1688867105868176567">要清除网站数据吗？</translation>
+<translation id="169515064810179024">禁止网站使用移动传感器</translation>
+<translation id="1717218214683051432">移动传感器</translation>
+<translation id="1743802530341753419">需先询问，得到许可后才允许网站连接设备（推荐）</translation>
+<translation id="1779089405699405702">图片解码器</translation>
+<translation id="1818308510395330587">若要允许 <ph name="APP_NAME" /> 使用 AR 功能，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
+<translation id="1864927262126810325">来自<ph name="SOURCE_NAME" /></translation>
+<translation id="1887786770086287077">此设备的位置信息使用权已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
+<translation id="1919345977826869612">广告</translation>
+<translation id="1919950603503897840">选择联系人</translation>
+<translation id="1923695749281512248">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，共 <ph name="FILE_SIZE_WITH_UNITS" /></translation>
+<translation id="1984937141057606926">允许（第三方除外）</translation>
+<translation id="1989112275319619282">浏览</translation>
+<translation id="1994173015038366702">网站网址</translation>
+<translation id="2004697686368036666">某些网站上的功能可能无法正常运行</translation>
+<translation id="2025115093177348061">增强现实</translation>
+<translation id="2030769033451695672">点按即可返回到 <ph name="URL_OF_THE_CURRENT_TAB" /></translation>
+<translation id="2079545284768500474">撤消</translation>
+<translation id="2091887806945687916">声音</translation>
+<translation id="2107397443965016585">需先询问，得到许可后才允许网站播放受保护的内容 （推荐）</translation>
+<translation id="2146738493024040262">打开免安装应用</translation>
+<translation id="2148716181193084225">今天</translation>
+<translation id="2182457891543959921">需先询问，得到许可后才允许网站为您的周边环境创建 3D 地图或跟踪摄像头位置（推荐）</translation>
+<translation id="2212565012507486665">允许使用 Cookie</translation>
+<translation id="2228071138934252756">若要允许 <ph name="APP_NAME" /> 使用您的摄像头，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启摄像头。</translation>
+<translation id="2241634353105152135">仅一次</translation>
+<translation id="2289270750774289114">在网站想发现附近的蓝牙设备时询问您（推荐）</translation>
+<translation id="2315043854645842844">操作系统不支持选择客户端证书。</translation>
+<translation id="2359808026110333948">继续</translation>
+<translation id="2379925928934107488">当 Chrome 使用深色主题时，尽可能对网站应用深色主题</translation>
+<translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
+<translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{已授予“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已授予“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
+<translation id="2434158240863470628">下载完成 <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">始终请求访问桌面版网站</translation>
+<translation id="2482878487686419369">通知</translation>
+<translation id="2485422356828889247">卸载</translation>
+<translation id="2490684707762498678">由 <ph name="APP_NAME" /> 管理</translation>
+<translation id="2498359688066513246">帮助和反馈</translation>
+<translation id="2501278716633472235">返回</translation>
+<translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{已拦截 1 个 Cookie}other{已拦截 # 个 Cookie}}</translation>
+<translation id="2570922361219980984">此设备的位置信息使用权也已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
+<translation id="257931822824936280">已展开 - 点击此处即可收起。</translation>
+<translation id="2586657967955657006">剪贴板</translation>
+<translation id="2597457036804169544">不对网站应用深色主题</translation>
+<translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
+<translation id="2653659639078652383">提交</translation>
+<translation id="2677748264148917807">离开</translation>
+<translation id="2687403674020088961">阻止所有 Cookie（不建议）</translation>
+<translation id="2704606927547763573">已复制</translation>
+<translation id="2717722538473713889">电子邮件地址</translation>
+<translation id="2785051990912111074">此选项会清除 <ph name="WEBSITE" /> 的 Cookie</translation>
+<translation id="2822354292072154809">确定要重置<ph name="CHOSEN_OBJECT_NAME" />的所有网站权限吗？</translation>
+<translation id="2870560284913253234">网站</translation>
+<translation id="2874939134665556319">上一首</translation>
+<translation id="2903493209154104877">地址</translation>
+<translation id="2910701580606108292">需先询问，得到许可后才允许网站播放受保护的内容</translation>
+<translation id="2913331724188855103">允许网站保存和读取 Cookie 数据（推荐）</translation>
+<translation id="2932883381142163287">举报滥用行为</translation>
+<translation id="2968755619301702150">证书查看器</translation>
+<translation id="300526633675317032">这会清除全部的网站存储数据 (<ph name="SIZE_IN_KB" />)。</translation>
+<translation id="3008272652534848354">重置权限</translation>
+<translation id="301521992641321250">已被自动禁止</translation>
+<translation id="3114012059975132928">视频播放器</translation>
+<translation id="3115898365077584848">显示信息</translation>
+<translation id="3123473560110926937">已禁止部分网站显示广告</translation>
+<translation id="3198916472715691905">已存储 <ph name="STORAGE_AMOUNT" /> 数据</translation>
+<translation id="321187648315454507">若要允许 <ph name="APP_NAME" /> 向您发送通知，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启通知。</translation>
+<translation id="3227137524299004712">麦克风</translation>
+<translation id="3277252321222022663">允许网站使用传感器（推荐）</translation>
+<translation id="3295602654194328831">隐藏信息</translation>
+<translation id="3328801116991980348">网站信息</translation>
+<translation id="3333961966071413176">所有联系人</translation>
+<translation id="3386292677130313581">需先询问，得到许可后才允许网站获取您的位置信息（推荐）</translation>
+<translation id="3538390592868664640">禁止网站为您的周边环境创建 3D 地图或跟踪摄像头位置</translation>
+<translation id="3551268116566418498">退出无痕模式？</translation>
+<translation id="3586500876634962664">正在使用摄像头和麦克风</translation>
+<translation id="358794129225322306">允许网站自动下载多个文件。</translation>
+<translation id="3594780231884063836">将视频静音</translation>
+<translation id="3596414637720633074">在无痕模式下阻止第三方 Cookie</translation>
+<translation id="3600792891314830896">将播放声音的网站静音</translation>
+<translation id="3744111561329211289">后台同步</translation>
+<translation id="3763247130972274048">在视频左侧或右侧点按两次即可跳过 10 秒</translation>
+<translation id="3797520601150691162">不对特定网站应用深色主题</translation>
+<translation id="381841723434055211">电话号码</translation>
+<translation id="3835233591525155343">您的设备使用情况</translation>
+<translation id="385051799172605136">返回</translation>
+<translation id="3859306556332390985">前进</translation>
+<translation id="3955193568934677022">允许网站播放受保护的内容（推荐）</translation>
+<translation id="3967822245660637423">下载完毕</translation>
+<translation id="3987993985790029246">复制链接</translation>
+<translation id="3991845972263764475">已下载 <ph name="BYTES_DOWNLOADED_WITH_UNITS" />，总大小不明</translation>
+<translation id="4002066346123236978">标题</translation>
+<translation id="4008040567710660924">允许特定网站使用 Cookie。</translation>
+<translation id="4046123991198612571">下一曲</translation>
+<translation id="4165986682804962316">网站设置</translation>
+<translation id="4200726100658658164">打开位置信息设置</translation>
+<translation id="4226663524361240545">收到通知时设备会振动</translation>
+<translation id="4259722352634471385">已屏蔽 <ph name="URL" /></translation>
+<translation id="4278390842282768270">允许</translation>
+<translation id="429312253194641664">某个网站正在播放媒体内容</translation>
+<translation id="42981349822642051">展开</translation>
+<translation id="4336434711095810371">清除所有数据</translation>
+<translation id="4402755511846832236">禁止网站了解您何时在主动使用此设备</translation>
+<translation id="4434045419905280838">弹出式窗口和重定向</translation>
+<translation id="445467742685312942">允许网站播放受保护内容。</translation>
+<translation id="4468959413250150279">将某个特定网站静音。</translation>
+<translation id="4479647676395637221">在允许网站使用您的摄像头前先询问（推荐）</translation>
+<translation id="4505788138578415521">网址已展开</translation>
+<translation id="4534723447064627427">若要允许 <ph name="APP_NAME" /> 使用您的麦克风，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启麦克风。</translation>
+<translation id="4570913071927164677">详情</translation>
+<translation id="4645575059429386691">由您父母管理</translation>
+<translation id="4670064810192446073">虚拟实境</translation>
+<translation id="4751476147751820511">动态传感器或光传感器</translation>
+<translation id="4836046166855586901">在网站想了解您何时在主动使用此设备时询问您</translation>
+<translation id="4883854917563148705">无法重置受管理的设置</translation>
+<translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟实境设备和数据（推荐）</translation>
+<translation id="4962975101802056554">撤消设备的所有权限</translation>
+<translation id="497421865427891073">前进</translation>
+<translation id="4976702386844183910">上次访问日期：<ph name="DATE" /></translation>
+<translation id="4994033804516042629">找不到任何联系人</translation>
+<translation id="4996978546172906250">分享方式</translation>
+<translation id="5014906230196386306">清除 Cookie？</translation>
+<translation id="5039804452771397117">允许</translation>
+<translation id="5048398596102334565">允许网站使用移动传感器（推荐）</translation>
+<translation id="5050380848339752099">该网站即将与某个并非处于无痕模式下的应用共享信息。</translation>
+<translation id="5063480226653192405">空间占用量</translation>
+<translation id="509133520954049755">请求获取桌面版视图</translation>
+<translation id="5100237604440890931">已收起 - 点击此处即可展开。</translation>
+<translation id="5123685120097942451">无痕式标签页</translation>
+<translation id="5134599672855298214">请求获取移动版视图（推荐）</translation>
+<translation id="5186036860380548585">选项位于屏幕顶部附近</translation>
+<translation id="5197729504361054390">系统会将您所选联系人的详细信息分享给 <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />。</translation>
+<translation id="5216942107514965959">上次访问时间：今天</translation>
+<translation id="528192093759286357">从顶部向下拖动并触摸“返回”按钮，即可退出全屏模式。</translation>
+<translation id="5300589172476337783">显示</translation>
+<translation id="5301954838959518834">知道了</translation>
+<translation id="5313967007315987356">添加网站</translation>
+<translation id="5317780077021120954">保存</translation>
+<translation id="5335288049665977812">允许网站运行 JavaScript（推荐）</translation>
+<translation id="534295439873310000">NFC 设备</translation>
+<translation id="5354152178998424783">此操作会清除网站存储的 <ph name="DATASIZE" /> 数据和 Cookie。</translation>
+<translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{（以及另外 1 个）}other{（以及另外 # 个）}}</translation>
+<translation id="5403592356182871684">名称</translation>
+<translation id="5438097262470833822">此选项会重置 <ph name="WEBSITE" /> 的权限</translation>
+<translation id="5489227211564503167">已播时长为 <ph name="ELAPSED_TIME" />，总时长为 <ph name="TOTAL_TIME" />。</translation>
+<translation id="5494752089476963479">禁止会展示侵扰性或误导性广告的网站显示广告</translation>
+<translation id="5502860503640766021">已授予“<ph name="PERMISSION_1" />”权限，已禁用“<ph name="PERMISSION_2" />”权限</translation>
+<translation id="5505264765875738116">网站无法询问能否向您发送通知</translation>
+<translation id="5516455585884385570">打开通知设置</translation>
+<translation id="5527111080432883924">需先询问，得到许可后才允许网站读取剪贴板中的文字和图片（推荐）</translation>
+<translation id="5553374991681107062">最新</translation>
+<translation id="5556459405103347317">重新加载</translation>
+<translation id="5596627076506792578">更多选项</translation>
+<translation id="5649053991847567735">自动下载项</translation>
+<translation id="5677928146339483299">已禁止</translation>
+<translation id="5689516760719285838">位置信息</translation>
+<translation id="5690795753582697420">已在 Android 设置中关闭摄像头</translation>
+<translation id="5710871682236653961">需先询问，得到许可后才允许网站在您触碰 NFC 设备时发送和接收信息（推荐）</translation>
+<translation id="5719847187258001597">此操作会清除 <ph name="ORIGIN" /> 或其在主屏幕中安装的应用所存储的全部数据和 Cookie。</translation>
+<translation id="5771720122942595109">已禁用“<ph name="PERMISSION_1" />”权限</translation>
+<translation id="5804241973901381774">权限</translation>
+<translation id="5860033963881614850">关闭</translation>
+<translation id="5876056640971328065">暂停视频</translation>
+<translation id="5887687176710214216">上次访问时间：昨天</translation>
+<translation id="5916664084637901428">启用</translation>
+<translation id="5922853908706496913">正在共享您的屏幕</translation>
+<translation id="5939518447894949180">重置</translation>
+<translation id="5975083100439434680">缩小</translation>
+<translation id="5976059395673079613"><ph name="PERMISSION" /> - <ph name="WARNING_MESSAGE" /></translation>
+<translation id="6015775454662021376">控制此网站对您的设备的访问权限</translation>
+<translation id="6040143037577758943">关闭</translation>
+<translation id="6042308850641462728">展开</translation>
+<translation id="6064125863973209585">下载已完成</translation>
+<translation id="6165508094623778733">了解详情</translation>
+<translation id="6177111841848151710">不允许当前搜索引擎使用</translation>
+<translation id="6177128806592000436">您与此网站之间建立的连接不安全</translation>
+<translation id="6181444274883918285">添加例外网站</translation>
+<translation id="6192792657125177640">例外</translation>
+<translation id="6196640612572343990">阻止第三方 Cookie</translation>
+<translation id="6216432067784365534"><ph name="NAME_OF_LIST_ITEM" />选项</translation>
+<translation id="6231752747840485235">卸载“<ph name="APP_NAME" />”？</translation>
+<translation id="6262279340360821358">已禁用“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
+<translation id="6270391203985052864">网站可以询问能否向您发送通知</translation>
+<translation id="6295158916970320988">所有网站</translation>
+<translation id="6320088164292336938">振动</translation>
+<translation id="6388207532828177975">清除并重置</translation>
+<translation id="6398765197997659313">退出全屏模式</translation>
+<translation id="6439114592976064011">禁止网站使用您的虚拟实境设备和数据</translation>
+<translation id="6447842834002726250">Cookie</translation>
+<translation id="6527303717912515753">分享</translation>
+<translation id="6545864417968258051">蓝牙扫描</translation>
+<translation id="6552800053856095716">{PERMISSIONS_SUMMARY_BLOCKED,plural, =1{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{已禁用“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
+<translation id="6554732001434021288">上次访问时间：<ph name="NUM_DAYS" /> 天前</translation>
+<translation id="6561560012278703671">改用干扰性更低的提示方式（禁止网站发送通知，以免干扰）</translation>
+<translation id="6593061639179217415">桌面版网站</translation>
+<translation id="6608650720463149374"><ph name="GIGABYTES" /> GB</translation>
+<translation id="6612358246767739896">受保护的内容</translation>
+<translation id="662080504995468778">留下</translation>
+<translation id="6643016212128521049">清除</translation>
+<translation id="6689172468748959065">个人资料照片</translation>
+<translation id="6697925417670533197">正在下载内容</translation>
+<translation id="6746124502594467657">下移</translation>
+<translation id="6749077623962119521">重置权限？</translation>
+<translation id="6766622839693428701">向下滑动即可关闭。</translation>
+<translation id="6790428901817661496">播放</translation>
+<translation id="6818926723028410516">选择内容</translation>
+<translation id="6864395892908308021">此设备无法读取 NFC 数据</translation>
+<translation id="6910211073230771657">已删除</translation>
+<translation id="6912998170423641340">禁止网站读取剪贴板中的文字和图片</translation>
+<translation id="6945221475159498467">选择</translation>
+<translation id="6965382102122355670">确定</translation>
+<translation id="6992289844737586249">在允许网站使用您的麦克风前先询问（推荐）</translation>
+<translation id="7000754031042624318">已在 Android 设置中关闭</translation>
+<translation id="7016516562562142042">允许当前搜索引擎使用</translation>
+<translation id="7053983685419859001">禁止</translation>
+<translation id="7066151586745993502">{NUM_SELECTED,plural, =1{已选择 1 项}other{已选择 # 项}}</translation>
+<translation id="7070090581017165256">关于此网站</translation>
+<translation id="7087918508125750058">已选择 <ph name="ITEM_COUNT" /> 项。选项位于屏幕顶部附近</translation>
+<translation id="7141896414559753902">禁止网站显示弹出式窗口和重定向（推荐）</translation>
+<translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
+<translation id="723171743924126238">选择图片</translation>
+<translation id="7243308994586599757">选项在靠近屏幕底部的位置</translation>
+<translation id="7250468141469952378">已选择 <ph name="ITEM_COUNT" /> 项</translation>
+<translation id="7260727271532453612">已授予“<ph name="PERMISSION_1" />”权限和“<ph name="PERMISSION_2" />”权限</translation>
+<translation id="7302486331832100261">您通常会屏蔽通知。要允许显示通知，请点按“详细信息”。</translation>
+<translation id="7423098979219808738">先询问</translation>
+<translation id="7423538860840206698">已阻止读取剪贴板中的内容</translation>
+<translation id="7425915948813553151">为网站开启深色主题</translation>
+<translation id="7521387064766892559">JavaScript</translation>
+<translation id="7554752735887601236">有一个网站正在使用您的麦克风</translation>
+<translation id="7561196759112975576">永远</translation>
+<translation id="7572498721684305250">禁止网站在您触碰 NFC 设备时发送和接收信息</translation>
+<translation id="757524316907819857">禁止网站播放受保护的内容</translation>
+<translation id="7649070708921625228">帮助</translation>
+<translation id="7658239707568436148">取消</translation>
+<translation id="7781829728241885113">昨天</translation>
+<translation id="7791543448312431591">添加</translation>
+<translation id="780301667611848630">不用了，谢谢</translation>
+<translation id="7804248752222191302">有一个网站正在使用您的摄像头</translation>
+<translation id="7817023149356982970">您将会退出此网站。</translation>
+<translation id="7828557259026017104">Cookie 是由您访问过的网站创建的文件，供网站用来记住您的偏好；第三方 Cookie 是由其他网站创建而成，这些网站是您在所访问网页上看到的部分内容（比如广告或图片）的所有方。</translation>
+<translation id="7835852323729233924">正在播放媒体</translation>
+<translation id="783819812427904514">将视频取消静音</translation>
+<translation id="7846076177841592234">取消选择</translation>
+<translation id="7846621471902887024">您将会自动退出所有网站。</translation>
+<translation id="7882806643839505685">允许特定网站播放声音。</translation>
+<translation id="7940722705963108451">提醒我</translation>
+<translation id="7986741934819883144">选择联系人</translation>
+<translation id="7999064672810608036">确定要清除该网站的所有本地数据（包括 Cookie）并重置该网站的所有权限吗？</translation>
+<translation id="8007176423574883786">已对此设备停用</translation>
+<translation id="802154636333426148">下载失败</translation>
+<translation id="8042586301629853791">排序方式：</translation>
+<translation id="8067883171444229417">播放视频</translation>
+<translation id="8068648041423924542">无法选择证书。</translation>
+<translation id="8087000398470557479">此内容来自 <ph name="DOMAIN_NAME" />（由 Google 提供）。</translation>
+<translation id="8116925261070264013">已静音</translation>
+<translation id="813082847718468539">查看网站信息</translation>
+<translation id="8131740175452115882">确认</translation>
+<translation id="8154912474061769055">很多网站上的功能可能无法正常运行</translation>
+<translation id="8197286292360124385">已授予“<ph name="PERMISSION_1" />”权限</translation>
+<translation id="8200772114523450471">继续</translation>
+<translation id="8206354486702514201">此设置是由您的管理员执行的。</translation>
+<translation id="8211406090763984747">连接是安全的</translation>
+<translation id="8249310407154411074">移至顶部</translation>
+<translation id="8261506727792406068">删除</translation>
+<translation id="8300705686683892304">由应用管理</translation>
+<translation id="8324158725704657629">别再询问</translation>
+<translation id="8372893542064058268">允许特定网站进行后台同步。</translation>
+<translation id="8376384591331888629">包括此网站上的第三方 Cookie</translation>
+<translation id="83792324527827022">有一个网站正在使用您的摄像头和麦克风</translation>
+<translation id="8380167699614421159">此网站会展示侵扰性或误导性广告</translation>
+<translation id="8394832520002899662">点按即可返回到网站</translation>
+<translation id="8425213833346101688">更改</translation>
+<translation id="8441146129660941386">后退</translation>
+<translation id="8444433999583714703">若要允许 <ph name="APP_NAME" /> 获取您的位置信息，您还需在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启位置信息服务。</translation>
+<translation id="8447861592752582886">撤消设备权限</translation>
+<translation id="8451050538944905715">{NUM_SELECTED,plural, =1{正在使用 1 个 Cookie}other{正在使用 # 个 Cookie}}</translation>
+<translation id="8487700953926739672">可离线使用</translation>
+<translation id="848952951823693243">始终请求访问移动网站</translation>
+<translation id="851751545965956758">禁止网站连接到设备</translation>
+<translation id="8525306231823319788">全屏</translation>
+<translation id="857943718398505171">允许（推荐）</translation>
+<translation id="8609465669617005112">上移</translation>
+<translation id="8676374126336081632">清除输入的内容</translation>
+<translation id="868929229000858085">搜索联系人</translation>
+<translation id="8702612070107455751">所有离线数据都会被清除。</translation>
+<translation id="8712637175834984815">知道了</translation>
+<translation id="8719283222052720129">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这项权限。</translation>
+<translation id="8725066075913043281">重试</translation>
+<translation id="8730621377337864115">完成</translation>
+<translation id="8737217482364735741">这会清除 <ph name="ORIGIN" /> 存储的所有数据和 Cookie。</translation>
+<translation id="8751914237388039244">选择图片</translation>
+<translation id="8801436777607969138">禁止特定网站运行 JavaScript。</translation>
+<translation id="8816026460808729765">禁止网站使用传感器</translation>
+<translation id="8847988622838149491">USB</translation>
+<translation id="8903921497873541725">放大</translation>
+<translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
+<translation id="8926666909099850184">此设备的 NFC 功能处于关闭状态。请在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中开启此功能。</translation>
+<translation id="8941729603749328384">www.example.com</translation>
+<translation id="8958424370300090006">阻止特定网站使用 Cookie。</translation>
+<translation id="8959122750345127698">无法访问 <ph name="URL" /></translation>
+<translation id="8986362086234534611">不保存</translation>
+<translation id="9019902583201351841">由您父母管理</translation>
+<translation id="9074739597929991885">蓝牙</translation>
+<translation id="9109747640384633967">{PERMISSIONS_SUMMARY_MIXED,plural, =1{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}other{“<ph name="PERMISSION_1" />”权限、“<ph name="PERMISSION_2" />”权限和另外 <ph name="NUM_MORE" /> 项权限}}</translation>
+<translation id="913657688200966289">在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中为 <ph name="APP_NAME" /> 开启这些权限。</translation>
+<translation id="9162462602695099906">这是一个危险网页</translation>
+<translation id="930525582205581608">移除此网站？</translation>
+<translation id="967624055006145463">已存储的数据</translation>
+</translationbundle>

@@ -8,6 +8,7 @@
 #include "base/callback_forward.h"
 #include "base/macros.h"
 #include "content/public/browser/permission_controller_delegate.h"
+#include "url/gurl.h"
 
 namespace chromecast {
 namespace shell {
@@ -15,16 +16,21 @@ namespace shell {
 class CastPermissionManager : public content::PermissionControllerDelegate {
  public:
   CastPermissionManager();
+
+  CastPermissionManager(const CastPermissionManager&) = delete;
+  CastPermissionManager& operator=(const CastPermissionManager&) = delete;
+
   ~CastPermissionManager() override;
 
   // content::PermissionControllerDelegate implementation:
-  int RequestPermission(content::PermissionType permission,
-                        content::RenderFrameHost* render_frame_host,
-                        const GURL& requesting_origin,
-                        bool user_gesture,
-                        base::OnceCallback<void(blink::mojom::PermissionStatus)>
-                            callback) override;
-  int RequestPermissions(
+  void RequestPermission(
+      content::PermissionType permission,
+      content::RenderFrameHost* render_frame_host,
+      const GURL& requesting_origin,
+      bool user_gesture,
+      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback)
+      override;
+  void RequestPermissions(
       const std::vector<content::PermissionType>& permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
@@ -43,16 +49,14 @@ class CastPermissionManager : public content::PermissionControllerDelegate {
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin) override;
-  int SubscribePermissionStatusChange(
+  SubscriptionId SubscribePermissionStatusChange(
       content::PermissionType permission,
       content::RenderFrameHost* render_frame_host,
       const GURL& requesting_origin,
       base::RepeatingCallback<void(blink::mojom::PermissionStatus)> callback)
       override;
-  void UnsubscribePermissionStatusChange(int subscription_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastPermissionManager);
+  void UnsubscribePermissionStatusChange(
+      SubscriptionId subscription_id) override;
 };
 
 }  // namespace shell

@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
@@ -22,7 +21,7 @@ buildflag_header("buildflags") {
 aggregate_vector_icons("omnibox_vector_icons") {
   icon_directory = "vector_icons"
 
-  icons = [
+  sources = [
     "answer_calculator.icon",
     "answer_currency.icon",
     "answer_default.icon",
@@ -34,9 +33,12 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "blank.icon",
     "bookmark.icon",
     "calculator.icon",
+    "chevron.icon",
     "clear.icon",
     "clock.icon",
+    "dino.icon",
     "drive_docs.icon",
+    "drive_folder.icon",
     "drive_forms.icon",
     "drive_image.icon",
     "drive_logo.icon",
@@ -46,21 +48,35 @@ aggregate_vector_icons("omnibox_vector_icons") {
     "drive_video.icon",
     "extension_app.icon",
     "find_in_page.icon",
+    "google_calendar.icon",
+    "google_keep_note.icon",
+    "google_sites.icon",
+    "google_super_g.icon",
     "http.icon",
-    "https_valid.icon",
     "https_valid_in_chip.icon",
+    "incognito.icon",
+    "install_desktop.icon",
     "keyword_search.icon",
-    "not_secure_warning.icon",
     "offline_pin.icon",
     "page.icon",
     "pedal.icon",
-    "plus.icon",
     "product.icon",
-    "star_active.icon",
+    "send.icon",
+    "share.icon",
     "star.icon",
+    "star_active.icon",
     "switch.icon",
     "tab.icon",
+    "trending_up.icon",
   ]
+
+  if (is_mac) {
+    sources += [ "share_mac.icon" ]
+  }
+
+  if (is_win) {
+    sources += [ "share_win.icon" ]
+  }
 }
 
 static_library("vector_icons") {
@@ -73,17 +89,23 @@ static_library("vector_icons") {
   ]
 }
 
-jumbo_static_library("browser") {
+static_library("browser") {
   sources = [
+    "actions/history_clusters_action.cc",
+    "actions/history_clusters_action.h",
+    "actions/omnibox_action.cc",
+    "actions/omnibox_action.h",
+    "actions/omnibox_pedal.cc",
+    "actions/omnibox_pedal.h",
+    "actions/omnibox_pedal_concepts.h",
+    "actions/omnibox_pedal_provider.cc",
+    "actions/omnibox_pedal_provider.h",
     "answers_cache.cc",
     "answers_cache.h",
     "autocomplete_classifier.cc",
     "autocomplete_classifier.h",
     "autocomplete_controller.cc",
     "autocomplete_controller.h",
-    "autocomplete_controller_delegate.h",
-    "autocomplete_input.cc",
-    "autocomplete_input.h",
     "autocomplete_match.cc",
     "autocomplete_match.h",
     "autocomplete_match_classification.cc",
@@ -98,7 +120,6 @@ jumbo_static_library("browser") {
     "autocomplete_provider_debouncer.h",
     "autocomplete_result.cc",
     "autocomplete_result.h",
-    "autocomplete_scheme_classifier.h",
     "base_search_provider.cc",
     "base_search_provider.h",
     "bookmark_provider.cc",
@@ -125,18 +146,19 @@ jumbo_static_library("browser") {
     "in_memory_url_index.h",
     "in_memory_url_index_types.cc",
     "in_memory_url_index_types.h",
+    "inline_autocompletion_util.cc",
+    "inline_autocompletion_util.h",
+    "intranet_redirector_state.cc",
+    "intranet_redirector_state.h",
     "keyword_extensions_delegate.cc",
     "keyword_extensions_delegate.h",
     "keyword_provider.cc",
     "keyword_provider.h",
     "local_history_zero_suggest_provider.cc",
     "local_history_zero_suggest_provider.h",
-    "location_bar_model.h",
-    "location_bar_model_delegate.cc",
-    "location_bar_model_delegate.h",
-    "location_bar_model_impl.cc",
-    "location_bar_model_impl.h",
     "match_compare.h",
+    "most_visited_sites_provider.cc",
+    "most_visited_sites_provider.h",
     "omnibox_client.cc",
     "omnibox_client.h",
     "omnibox_controller.cc",
@@ -156,18 +178,13 @@ jumbo_static_library("browser") {
     "omnibox_metrics_provider.cc",
     "omnibox_metrics_provider.h",
     "omnibox_navigation_observer.h",
-    "omnibox_pedal.cc",
-    "omnibox_pedal.h",
-    "omnibox_pedal_concepts.h",
-    "omnibox_pedal_implementations.cc",
-    "omnibox_pedal_implementations.h",
-    "omnibox_pedal_provider.cc",
-    "omnibox_pedal_provider.h",
-    "omnibox_popup_model.cc",
-    "omnibox_popup_model.h",
+    "omnibox_popup_selection.cc",
+    "omnibox_popup_selection.h",
     "omnibox_popup_view.h",
-    "omnibox_pref_names.cc",
-    "omnibox_pref_names.h",
+    "omnibox_prefs.cc",
+    "omnibox_prefs.h",
+    "omnibox_triggered_feature_service.cc",
+    "omnibox_triggered_feature_service.h",
     "omnibox_view.cc",
     "omnibox_view.h",
     "on_device_head_model.cc",
@@ -176,6 +193,8 @@ jumbo_static_library("browser") {
     "on_device_head_provider.h",
     "on_device_model_update_listener.cc",
     "on_device_model_update_listener.h",
+    "query_tile_provider.cc",
+    "query_tile_provider.h",
     "remote_suggestions_service.cc",
     "remote_suggestions_service.h",
     "scored_history_match.cc",
@@ -194,6 +213,8 @@ jumbo_static_library("browser") {
     "shortcuts_provider.h",
     "suggestion_answer.cc",
     "suggestion_answer.h",
+    "tab_matcher.cc",
+    "tab_matcher.h",
     "tailored_word_break_iterator.cc",
     "tailored_word_break_iterator.h",
     "titled_url_match_utils.cc",
@@ -204,36 +225,44 @@ jumbo_static_library("browser") {
     "url_prefix.h",
     "verbatim_match.cc",
     "verbatim_match.h",
+    "voice_suggest_provider.cc",
+    "voice_suggest_provider.h",
     "zero_suggest_provider.cc",
     "zero_suggest_provider.h",
+    "zero_suggest_verbatim_match_provider.cc",
+    "zero_suggest_verbatim_match_provider.h",
   ]
 
-  defines = [ "OMNIBOX_BROWSER_IMPLEMENTATION" ]
-
   public_deps = [
+    ":buildflags",
+    ":location_bar",
     "//base",
     "//base:i18n",
     "//components/history/core/browser",
     "//components/omnibox/common",
+    "//components/omnibox/resources:omnibox_pedal_synonyms",
     "//components/omnibox/resources:omnibox_resources",
     "//components/security_state/core",
     "//third_party/metrics_proto",
     "//url",
   ]
   deps = [
-    ":buildflags",
     ":in_memory_url_index_cache_proto",
     "//components/bookmarks/browser",
     "//components/component_updater",
+    "//components/dom_distiller/core:core",
     "//components/favicon/core",
     "//components/favicon_base",
+    "//components/history_clusters/core",
     "//components/keyed_service/core",
     "//components/metrics",
     "//components/navigation_metrics",
+    "//components/ntp_tiles",
     "//components/open_from_clipboard",
     "//components/pref_registry",
     "//components/prefs",
     "//components/query_parser",
+    "//components/query_tiles",
     "//components/resources",
     "//components/search",
     "//components/search_engines",
@@ -246,6 +275,8 @@ jumbo_static_library("browser") {
     "//components/variations/net",
     "//extensions/common:common_constants",
     "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//skia",
     "//sql",
     "//third_party/protobuf:protobuf_lite",
@@ -258,27 +289,133 @@ jumbo_static_library("browser") {
     deps += [ ":vector_icons" ]
   }
 
-  if (is_android) {
-    deps += [ ":jni_headers" ]
-  }
-
   if (!is_ios) {
     deps += [ "//components/keyed_service/content" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "autocomplete_match_android.cc",
+      "autocomplete_result_android.cc",
+    ]
+    deps += [
+      ":jni_headers",
+      "//url:gurl_android",
+    ]
+  }
+}
+
+# A target that contains the minimal amount of code necessary for displaying a
+# smart location bar. This code provides special processing of URLs without
+# bringing in many extra dependencies.
+static_library("location_bar") {
+  sources = [
+    "autocomplete_input.cc",
+    "autocomplete_input.h",
+    "autocomplete_scheme_classifier.h",
+    "location_bar_model.h",
+    "location_bar_model_delegate.cc",
+    "location_bar_model_delegate.h",
+    "location_bar_model_impl.cc",
+    "location_bar_model_impl.h",
+    "location_bar_model_util.cc",
+    "location_bar_model_util.h",
+  ]
+
+  public_deps = [
+    "//base",
+    "//components/omnibox/common",
+    "//components/security_state/core",
+    "//third_party/metrics_proto",
+    "//url",
+  ]
+  deps = [
+    ":buildflags",
+    "//components/dom_distiller/core:core",
+    "//components/search_engines",
+    "//components/strings",
+    "//components/url_formatter",
+    "//net",
+    "//third_party/protobuf:protobuf_lite",
+    "//third_party/re2",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+
+  if ((!is_android || enable_vr) && !is_ios) {
+    deps += [ ":vector_icons" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "autocomplete_scheme_classifier_android.cc",
+      "autocomplete_scheme_classifier_android.h",
+      "omnibox_url_emphasizer.cc",
+    ]
+    deps += [ ":jni_headers" ]
   }
 }
 
 if (is_android) {
+  android_resources("java_resources") {
+    sources = [
+      "android/java/res/drawable-hdpi/omnibox_https_valid.png",
+      "android/java/res/drawable-hdpi/omnibox_https_valid_arrow.png",
+      "android/java/res/drawable-hdpi/omnibox_info.png",
+      "android/java/res/drawable-hdpi/omnibox_not_secure_warning.png",
+      "android/java/res/drawable-mdpi/omnibox_https_valid.png",
+      "android/java/res/drawable-mdpi/omnibox_https_valid_arrow.png",
+      "android/java/res/drawable-mdpi/omnibox_info.png",
+      "android/java/res/drawable-mdpi/omnibox_not_secure_warning.png",
+      "android/java/res/drawable-xhdpi/omnibox_https_valid.png",
+      "android/java/res/drawable-xhdpi/omnibox_https_valid_arrow.png",
+      "android/java/res/drawable-xhdpi/omnibox_info.png",
+      "android/java/res/drawable-xhdpi/omnibox_not_secure_warning.png",
+      "android/java/res/drawable-xxhdpi/omnibox_https_valid.png",
+      "android/java/res/drawable-xxhdpi/omnibox_https_valid_arrow.png",
+      "android/java/res/drawable-xxhdpi/omnibox_info.png",
+      "android/java/res/drawable-xxhdpi/omnibox_not_secure_warning.png",
+      "android/java/res/drawable-xxxhdpi/omnibox_https_valid.png",
+      "android/java/res/drawable-xxxhdpi/omnibox_https_valid_arrow.png",
+      "android/java/res/drawable-xxxhdpi/omnibox_info.png",
+      "android/java/res/drawable-xxxhdpi/omnibox_not_secure_warning.png",
+      "android/java/res/values/colors.xml",
+    ]
+    deps = [
+      "//components/browser_ui/strings/android:browser_ui_strings_grd",
+      "//ui/android:ui_java_resources",
+    ]
+  }
+
   android_library("browser_java") {
-    java_files = [
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
+      "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
+      "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
+      "android/java/src/org/chromium/components/omnibox/SecurityButtonAnimationDelegate.java",
+      "android/java/src/org/chromium/components/omnibox/SecurityStatusIcon.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
     ]
 
+    resources_package = "org.chromium.components.omnibox"
     deps = [
+      ":java_resources",
       "//base:base_java",
-      "//third_party/android_deps:com_android_support_support_compat_java",
+      "//components/browser_ui/widget/android:java",
+      "//components/embedder_support/android:util_java",
+      "//components/query_tiles:query_tile_java",
+      "//components/security_state/core:security_state_enums_java",
+      "//content/public/android:content_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_collection_collection_java",
+      "//third_party/androidx:androidx_core_core_java",
+      "//ui/android:ui_full_java",
+      "//url:gurl_java",
     ]
 
     srcjar_deps = [ ":browser_java_enums_srcjar" ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   java_cpp_enum("browser_java_enums_srcjar") {
@@ -291,18 +428,20 @@ if (is_android) {
 
   generate_jni("jni_headers") {
     sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
+      "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
+      "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
     ]
   }
 }
 
 proto_library("in_memory_url_index_cache_proto") {
-  sources = [
-    "in_memory_url_index_cache.proto",
-  ]
+  sources = [ "in_memory_url_index_cache.proto" ]
 }
 
-jumbo_static_library("test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
     "fake_autocomplete_provider_client.cc",
@@ -342,6 +481,8 @@ jumbo_static_library("test_support") {
     "//components/bookmarks/test",
     "//components/history/core/browser",
     "//components/history/core/test",
+    "//components/prefs:test_support",
+    "//components/query_tiles/test:test_support",
     "//components/resources",
     "//components/search_engines",
     "//components/sessions",
@@ -371,15 +512,15 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/omnibox/in_memory_url_index_test_limited.sql",
     "//components/test/data/omnibox/on_device_head_test_model_index.bin",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "actions/omnibox_pedal_provider_unittest.cc",
+    "actions/omnibox_pedal_unittest.cc",
     "answers_cache_unittest.cc",
     "autocomplete_input_unittest.cc",
     "autocomplete_match_type_unittest.cc",
@@ -398,19 +539,19 @@ source_set("unit_tests") {
     "history_url_provider_unittest.cc",
     "in_memory_url_index_types_unittest.cc",
     "in_memory_url_index_unittest.cc",
+    "inline_autocompletion_util_unittest.cc",
     "keyword_provider_unittest.cc",
     "local_history_zero_suggest_provider_unittest.cc",
     "location_bar_model_impl_unittest.cc",
+    "most_visited_sites_provider_unittest.cc",
     "omnibox_controller_unittest.cc",
     "omnibox_edit_model_unittest.cc",
     "omnibox_field_trial_unittest.cc",
-    "omnibox_pedal_implementations_unittest.cc",
-    "omnibox_pedal_provider_unittest.cc",
-    "omnibox_pedal_unittest.cc",
-    "omnibox_popup_model_unittest.cc",
+    "omnibox_prefs_unittest.cc",
     "omnibox_view_unittest.cc",
     "on_device_head_model_unittest.cc",
     "on_device_head_provider_unittest.cc",
+    "query_tile_provider_unittest.cc",
     "remote_suggestions_service_unittest.cc",
     "scored_history_match_unittest.cc",
     "search_suggestion_parser_unittest.cc",
@@ -421,8 +562,14 @@ source_set("unit_tests") {
     "tailored_word_break_iterator_unittest.cc",
     "titled_url_match_utils_unittest.cc",
     "url_prefix_unittest.cc",
+    "voice_suggest_provider_unittest.cc",
     "zero_suggest_provider_unittest.cc",
+    "zero_suggest_verbatim_match_provider_unittest.cc",
   ]
+
+  if ((!is_android || enable_vr) && !is_ios) {
+    sources += [ "location_bar_model_util_unittest.cc" ]
+  }
 
   deps = [
     ":browser",
@@ -432,8 +579,10 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
+    "//components/dom_distiller/core:core",
     "//components/favicon/core/test:test_support",
     "//components/history/core/test",
+    "//components/omnibox/common",
     "//components/open_from_clipboard:test_support",
     "//components/prefs:test_support",
     "//components/search",
@@ -445,6 +594,7 @@ source_set("unit_tests") {
     "//components/sync_preferences:test_support",
     "//components/url_formatter",
     "//components/variations",
+    "//components/variations:test_support",
     "//components/variations/net:net",
     "//services/network:test_support",
     "//sql",
@@ -455,12 +605,18 @@ source_set("unit_tests") {
     "//ui/gfx:test_support",
     "//url",
   ]
+
+  if ((!is_android || enable_vr) && !is_ios) {
+    deps += [
+      ":buildflags",
+      "//components/omnibox/browser:vector_icons",
+      "//components/vector_icons:vector_icons",
+    ]
+  }
 }
 
 fuzzer_test("autocomplete_input_fuzzer") {
-  sources = [
-    "autocomplete_input_fuzzer.cc",
-  ]
+  sources = [ "autocomplete_input_fuzzer.cc" ]
   deps = [
     ":browser",
     ":test_support",
@@ -471,9 +627,7 @@ fuzzer_test("autocomplete_input_fuzzer") {
 }
 
 fuzzer_test("omnibox_view_fuzzer") {
-  sources = [
-    "omnibox_view_fuzzer.cc",
-  ]
+  sources = [ "omnibox_view_fuzzer.cc" ]
   deps = [
     ":browser",
     "//base",
@@ -481,9 +635,7 @@ fuzzer_test("omnibox_view_fuzzer") {
 }
 
 fuzzer_test("search_suggestion_parser_fuzzer") {
-  sources = [
-    "search_suggestion_parser_fuzzer.cc",
-  ]
+  sources = [ "search_suggestion_parser_fuzzer.cc" ]
   deps = [
     ":browser",
     ":test_support",
@@ -492,4 +644,5 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
     "//third_party/icu:icui18n",
     "//third_party/metrics_proto:metrics_proto",
   ]
+  seed_corpus = "fuzz_corpus_suggest"
 }

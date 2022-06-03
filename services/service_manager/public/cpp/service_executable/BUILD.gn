@@ -13,8 +13,8 @@ source_set("support") {
     "//mojo/core/embedder",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+    "//sandbox/policy",
     "//services/service_manager/public/cpp",
-    "//services/service_manager/sandbox",
   ]
 
   public_deps = [
@@ -22,7 +22,7 @@ source_set("support") {
     "//services/service_manager/public/mojom",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [
       "//sandbox/linux:sandbox",
       "//sandbox/linux:sandbox_services",
@@ -47,17 +47,11 @@ source_set("switches") {
 # Note that GN targets based on the service_executable() template defined in
 # service_executable.gni implicitly link against this.
 source_set("main") {
-  public = [
-    "service_main.h",
-  ]
+  public = [ "service_main.h" ]
 
-  sources = [
-    "main.cc",
-  ]
+  sources = [ "main.cc" ]
 
-  public_deps = [
-    "//services/service_manager/public/mojom",
-  ]
+  public_deps = [ "//services/service_manager/public/mojom" ]
 
   deps = [
     ":support",

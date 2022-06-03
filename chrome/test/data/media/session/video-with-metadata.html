@@ -39,6 +39,14 @@ function setupActionHandlers() {
   navigator.mediaSession.setActionHandler('play', _ => { video.play(); });
   navigator.mediaSession.setActionHandler('pause', _ => { video.pause(); });
 }
+
+function disablePictureInPicture() {
+  video.disablePictureInPicture = true;
+}
+
+function enablePictureInPicture() {
+  video.disablePictureInPicture = false;
+}
 </script>
 </body>
 </html>

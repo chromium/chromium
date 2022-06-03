@@ -7,9 +7,14 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "components/services/quarantine/public/mojom/quarantine.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+
+#if defined(OS_WIN)
+#include "base/win/scoped_com_initializer.h"
+#endif  // OS_WIN
 
 namespace quarantine {
 
@@ -17,6 +22,10 @@ class QuarantineImpl : public mojom::Quarantine {
  public:
   QuarantineImpl();
   explicit QuarantineImpl(mojo::PendingReceiver<mojom::Quarantine> receiver);
+
+  QuarantineImpl(const QuarantineImpl&) = delete;
+  QuarantineImpl& operator=(const QuarantineImpl&) = delete;
+
   ~QuarantineImpl() override;
 
   // mojom::Quarantine:
@@ -30,7 +39,10 @@ class QuarantineImpl : public mojom::Quarantine {
  private:
   mojo::Receiver<mojom::Quarantine> receiver_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(QuarantineImpl);
+#if defined(OS_WIN)
+  base::win::ScopedCOMInitializer com_initializer_{
+      base::win::ScopedCOMInitializer::Uninitialization::kBlockPremature};
+#endif  // OS_WIN
 };
 
 }  // namespace quarantine

@@ -2,11 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/convert_plist.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/mac/base_rules.gni")
+import("//build/timestamp.gni")
 import("//build/toolchain/toolchain.gni")
 import("//components/policy/resources/policy_templates.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
 
@@ -18,10 +21,11 @@ gen_policy_templates_local = false
 # enable these flags (but don't check that in!).
 gen_policy_templates_common = true
 gen_policy_templates_win = is_win
-gen_policy_templates_linux = is_linux
+gen_policy_templates_linux = is_linux || is_chromeos
 gen_policy_templates_android = is_android
 gen_policy_templates_mac = is_mac
-gen_policy_templates_chromeos = is_chromeos
+gen_policy_templates_chromeos = is_chromeos_ash
+gen_policy_templates_ios = is_ios
 
 # The zip file is grabbed from the Windows build right now.
 gen_policy_templates_zip = is_win
@@ -49,6 +53,7 @@ if (is_component_build) {
       "//components/policy/core/common",
     ]
     public_deps = [
+      "//build:branding_buildflags",
       "//components/policy/core/browser:internal",
       "//components/policy/core/common:internal",
     ]
@@ -65,7 +70,7 @@ config("component_implementation") {
 # and compiled.
 cloud_policy_proto_path = "$target_gen_dir/proto/cloud_policy.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 cloud_policy_full_runtime_proto_path =
     "$target_gen_dir/proto/cloud_policy_full_runtime.proto"
@@ -75,7 +80,7 @@ cloud_policy_full_runtime_proto_path =
 policy_common_definitions_proto_abspath =
     "//components/policy/proto/policy_common_definitions.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 policy_common_definitions_full_runtime_proto_path =
     "$target_gen_dir/proto/policy_common_definitions_full_runtime.proto"
@@ -84,7 +89,7 @@ policy_common_definitions_full_runtime_proto_path =
 # policy. It is also the format currently used by the server.
 chrome_settings_proto_path = "$target_gen_dir/proto/chrome_settings.proto"
 
-# This file is used by tools/traffic_annotation/traffic_annotation.proto as it
+# This file is used by chrome/browser/privacy/traffic_annotation.proto as it
 # needs a version without LITE_RUNTIME optimization.
 chrome_settings_full_runtime_proto_path =
     "$target_gen_dir/proto/chrome_settings_full_runtime.proto"
@@ -119,9 +124,9 @@ action("policy_code_generate") {
   args = [
     # Input information
     "--chrome-version-file=" + chrome_version_path,
-    "--target-platform=" + target_os,
     "--policy-templates-file=" +
         rebase_path("resources/policy_templates.json", root_build_dir),
+    "--target-platform=" + target_os,
 
     # Output files to be generated
     "--policy-constants-header=" +
@@ -159,6 +164,7 @@ action("full_runtime_code_generate") {
     "--target-platform=" + target_os,
     "--policy-templates-file=" +
         rebase_path("resources/policy_templates.json", root_build_dir),
+    "--target-platform=" + target_os,
 
     # Output files to be generated
     "--cloud-policy-full-runtime-protobuf=" +
@@ -178,9 +184,7 @@ policy_templates_grd_file = "resources/policy_templates.grd"
 # Translates policy_templates.json into various languages.
 grit("translate_policy_templates") {
   source = policy_templates_grd_file
-  inputs = [
-    "resources/policy_templates.json",
-  ]
+  inputs = [ "resources/policy_templates.json" ]
   output_dir = "$root_gen_dir/chrome"
   outputs = policy_templates_translation_outputs
 }
@@ -190,9 +194,7 @@ action("policy_templates") {
   script = "tools/template_writers/template_formatter.py"
   chrome_version_abspath = "//chrome/VERSION"
   chrome_version_path = rebase_path(chrome_version_abspath, root_build_dir)
-  deps = [
-    ":translate_policy_templates_grit",
-  ]
+  deps = [ ":translate_policy_templates_grit" ]
   inputs = [ chrome_version_abspath ] + policy_templates_translation_outputs
   outputs = []
   args = [
@@ -237,6 +239,8 @@ action("policy_templates") {
       rebase_path(policy_templates_plist_path, root_build_dir),
       "--plist_strings",
       rebase_path(policy_templates_plist_strings_path, root_build_dir),
+      "--jamf",
+      rebase_path(policy_templates_jamf_path, root_build_dir),
       "-D",
       "mac_bundle_id=$chrome_mac_bundle_id",
     ]
@@ -287,20 +291,23 @@ action("policy_templates") {
       ]
     }
   }
+  if (gen_policy_templates_ios) {
+    outputs += policy_templates_ios_outputs
+    args += [
+      "--ios_app_config",
+      rebase_path(policy_templates_ios_app_config_path, root_build_dir),
+    ]
+  }
 }
 
 # Run the proto compiler over the generated file and make it a component.
 component("cloud_policy_proto_generated_compile") {
-  public_deps = [
-    ":cloud_policy_proto_generated_compile_proto",
-  ]
+  public_deps = [ ":cloud_policy_proto_generated_compile_proto" ]
 }
 proto_library("cloud_policy_proto_generated_compile_proto") {
   visibility = [ ":cloud_policy_proto_generated_compile" ]
 
-  sources = [
-    cloud_policy_proto_path,
-  ]
+  sources = [ cloud_policy_proto_path ]
 
   import_dirs = [ "//components/policy/proto" ]
   proto_out_dir = "components/policy/proto"
@@ -317,17 +324,13 @@ proto_library("cloud_policy_proto_generated_compile_proto") {
 # This target builds the "full" protobuf, used for tests only.
 component("chrome_settings_proto_generated_compile") {
   testonly = true
-  public_deps = [
-    ":chrome_settings_proto_generated_compile_proto",
-  ]
+  public_deps = [ ":chrome_settings_proto_generated_compile_proto" ]
 }
 proto_library("chrome_settings_proto_generated_compile_proto") {
   testonly = true
   visibility = [ ":chrome_settings_proto_generated_compile" ]
 
-  sources = [
-    chrome_settings_proto_path,
-  ]
+  sources = [ chrome_settings_proto_path ]
 
   import_dirs = [ "//components/policy/proto" ]
   proto_out_dir = "components/policy/proto"
@@ -351,15 +354,14 @@ static_library("generated") {
   defines = [ "POLICY_COMPONENT_IMPLEMENTATION" ]
   public_deps = [
     ":cloud_policy_proto_generated_compile",
+    ":full_runtime_code_generate",
     ":policy_code_generate",
     "//base",
     "//components/policy/core/common:common_constants",
     "//components/policy/proto:policy_common_definitions_compile_proto",
     "//third_party/protobuf:protobuf_lite",
   ]
-  deps = [
-    "//build:branding_buildflags",
-  ]
+  deps = [ "//build:branding_buildflags" ]
 }
 
 if (gen_policy_templates_android && is_android) {
@@ -368,12 +370,8 @@ if (gen_policy_templates_android && is_android) {
   _generated_resources_dir = "$root_gen_dir/chrome/app/policy/android"
 
   copy("app_restrictions_resources_copy") {
-    sources = [
-      app_restrictions_path,
-    ]
-    outputs = [
-      "$_generated_resources_dir/xml-v21/app_restrictions.xml",
-    ]
+    sources = [ app_restrictions_path ]
+    outputs = [ "$_generated_resources_dir/xml-v21/app_restrictions.xml" ]
     deps = [
       ":policy_code_generate",
       ":policy_templates",
@@ -381,14 +379,8 @@ if (gen_policy_templates_android && is_android) {
   }
 
   android_resources("app_restrictions_resources") {
-    resource_dirs = []
-    generated_resource_dirs = [
-      "$policy_templates_base_dir/android",
-      _generated_resources_dir,
-    ]
-    generated_resource_files =
-        policy_templates_android_outputs +
-        [ "$_generated_resources_dir/xml-v21/app_restrictions.xml" ]
+    sources = policy_templates_android_outputs +
+              [ "$_generated_resources_dir/xml-v21/app_restrictions.xml" ]
     deps = [
       ":app_restrictions_resources_copy",
       ":policy_templates",
@@ -400,19 +392,13 @@ if (gen_policy_templates_android && is_android) {
     output = "$target_gen_dir/$chrome_mac_bundle_id.manifest"
     format = "xml1"
 
-    deps = [
-      ":policy_templates",
-    ]
+    deps = [ ":policy_templates" ]
   }
 
   bundle_data("manifest_bundle_data") {
     sources = get_target_outputs(":convert_mcx_plist")
-    outputs = [
-      "{{bundle_resources_dir}}/{{source_file_part}}",
-    ]
-    public_deps = [
-      ":convert_mcx_plist",
-    ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
+    public_deps = [ ":convert_mcx_plist" ]
   }
 
   # The reason we are not enumerating all the locales is that
@@ -422,12 +408,8 @@ if (gen_policy_templates_android && is_android) {
     sources = [
       "$policy_templates_base_dir/mac/strings/en.lproj/Localizable.strings",
     ]
-    outputs = [
-      "{{bundle_resources_dir}}/en.lproj/{{source_file_part}}",
-    ]
-    public_deps = [
-      ":policy_templates",
-    ]
+    outputs = [ "{{bundle_resources_dir}}/en.lproj/{{source_file_part}}" ]
+    public_deps = [ ":policy_templates" ]
   }
 
   create_bundle("chrome_manifest_bundle") {
@@ -446,12 +428,8 @@ if (gen_policy_templates_zip) {
   version_path = "$policy_templates_base_dir/VERSION"
 
   copy("add_version") {
-    sources = [
-      "//chrome/VERSION",
-    ]
-    outputs = [
-      version_path,
-    ]
+    sources = [ "//chrome/VERSION" ]
+    outputs = [ version_path ]
   }
 
   action("pack_policy_templates") {
@@ -459,12 +437,12 @@ if (gen_policy_templates_zip) {
     script = "tools/make_policy_zip.py"
     inputs = [ version_path ] + policy_templates_win_outputs +
              policy_templates_chromeos_outputs + policy_templates_common_outputs
-    outputs = [
-      output_zip_file,
-    ]
+    outputs = [ output_zip_file ]
     args = [
       "--output",
       rebase_path(output_zip_file, root_build_dir),
+      "--timestamp",
+      build_timestamp,
       "--base_dir",
       rebase_path(policy_templates_base_dir, root_build_dir),
       "--languages",

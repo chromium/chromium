@@ -50,7 +50,7 @@ WebPluginDocument::WebPluginDocument(PluginDocument* elem)
 
 DEFINE_WEB_NODE_TYPE_CASTS(WebPluginDocument,
                            IsDocumentNode() &&
-                               ConstUnwrap<Document>()->IsPluginDocument())
+                               IsA<PluginDocument>(ConstUnwrap<Document>()))
 
 WebPluginDocument& WebPluginDocument::operator=(PluginDocument* elem) {
   private_ = elem;

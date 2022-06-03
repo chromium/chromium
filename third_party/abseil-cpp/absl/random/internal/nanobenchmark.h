@@ -50,7 +50,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "absl/base/config.h"
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal_nanobenchmark {
 
 // Input influencing the function being measured (e.g. number of bytes to copy).
@@ -163,6 +166,7 @@ static inline size_t MeasureClosure(const Closure& closure,
 }
 
 }  // namespace random_internal_nanobenchmark
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_INTERNAL_NANOBENCHMARK_H_

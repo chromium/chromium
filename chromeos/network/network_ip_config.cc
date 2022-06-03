@@ -4,7 +4,7 @@
 
 #include "chromeos/network/network_ip_config.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace chromeos {
 
@@ -21,7 +21,7 @@ std::string IPConfigTypeAsString(IPConfigType type) {
     ENUM_CASE(IPCONFIG_TYPE_DHCP6);
     ENUM_CASE(IPCONFIG_TYPE_PPP);
   }
-  NOTREACHED() << "Unhandled enum value " << type;
+  NOTREACHED();
   return std::string();
 }
 #undef ENUM_CASE

@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/numerics/safe_math.h"
+#include "base/trace_event/trace_event.h"
 #include "cc/base/region.h"
 #include "cc/layers/content_layer_client.h"
 #include "cc/paint/display_item_list.h"
@@ -25,14 +26,7 @@ const int kMaxOpsToAnalyzeForLayer = 10;
 
 namespace cc {
 
-RecordingSource::RecordingSource()
-    : slow_down_raster_scale_factor_for_debug_(0),
-      requires_clear_(false),
-      is_solid_color_(false),
-      solid_color_(SK_ColorTRANSPARENT),
-      background_color_(SK_ColorTRANSPARENT),
-      recording_scale_factor_(1.f) {}
-
+RecordingSource::RecordingSource() = default;
 RecordingSource::~RecordingSource() = default;
 
 void RecordingSource::UpdateInvalidationForNewViewport(
@@ -93,14 +87,16 @@ bool RecordingSource::UpdateAndExpandInvalidation(
 
 void RecordingSource::UpdateDisplayItemList(
     const scoped_refptr<DisplayItemList>& display_list,
-    const size_t& painter_reported_memory_usage,
     float recording_scale_factor) {
   recording_scale_factor_ = recording_scale_factor;
 
-  display_list_ = display_list;
-  painter_reported_memory_usage_ = painter_reported_memory_usage;
-
-  FinishDisplayItemListUpdate();
+  if (display_list_ != display_list) {
+    display_list_ = display_list;
+    // Do the following only if the display list changes. Though we use
+    // recording_scale_factor in DetermineIfSolidColor(), change of it doesn't
+    // affect whether the same display list is solid or not.
+    FinishDisplayItemListUpdate();
+  }
 }
 
 gfx::Size RecordingSource::GetSize() const {
@@ -113,7 +109,6 @@ void RecordingSource::SetEmptyBounds() {
 
   recorded_viewport_ = gfx::Rect();
   display_list_ = nullptr;
-  painter_reported_memory_usage_ = 0;
 }
 
 void RecordingSource::SetSlowdownRasterScaleFactor(int factor) {

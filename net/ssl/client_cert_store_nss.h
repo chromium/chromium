@@ -31,6 +31,10 @@ class NET_EXPORT ClientCertStoreNSS : public ClientCertStore {
 
   explicit ClientCertStoreNSS(
       const PasswordDelegateFactory& password_delegate_factory);
+
+  ClientCertStoreNSS(const ClientCertStoreNSS&) = delete;
+  ClientCertStoreNSS& operator=(const ClientCertStoreNSS&) = delete;
+
   ~ClientCertStoreNSS() override;
 
   // ClientCertStore:
@@ -64,8 +68,6 @@ class NET_EXPORT ClientCertStoreNSS : public ClientCertStore {
   // The factory for creating the delegate for requesting a password to a
   // PKCS#11 token. May be null.
   PasswordDelegateFactory password_delegate_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientCertStoreNSS);
 };
 
 }  // namespace net

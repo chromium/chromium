@@ -26,13 +26,17 @@
 
 #include "third_party/blink/renderer/core/events/touch_event.h"
 
-#include "third_party/blink/public/platform/web_coalesced_input_event.h"
+#include <memory>
+
+#include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_touch_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
 #include "third_party/blink/renderer/core/frame/intervention.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -82,7 +86,7 @@ TouchEvent::TouchEvent(const WebCoalescedInputEvent& event,
       changed_touches_(changed_touches),
       current_touch_action_(current_touch_action) {
   DCHECK(WebInputEvent::IsTouchEventType(event.Event().GetType()));
-  native_event_.reset(new WebCoalescedInputEvent(event));
+  native_event_ = std::make_unique<WebCoalescedInputEvent>(event);
 }
 
 TouchEvent::TouchEvent(const AtomicString& type,
@@ -131,7 +135,7 @@ void TouchEvent::preventDefault() {
         message =
             "Unable to preventDefault inside passive event listener due to "
             "target being treated as passive. See "
-            "https://www.chromestatus.com/features/5093566007214080";
+            "https://www.chromestatus.com/feature/5093566007214080";
       }
       break;
     default:
@@ -172,7 +176,7 @@ bool TouchEvent::IsTouchStartOrFirstTouchMove() const {
   return GetWebTouchEvent(*native_event_)->touch_start_or_first_touch_move;
 }
 
-void TouchEvent::Trace(blink::Visitor* visitor) {
+void TouchEvent::Trace(Visitor* visitor) const {
   visitor->Trace(touches_);
   visitor->Trace(target_touches_);
   visitor->Trace(changed_touches_);
@@ -180,7 +184,8 @@ void TouchEvent::Trace(blink::Visitor* visitor) {
 }
 
 DispatchEventResult TouchEvent::DispatchEvent(EventDispatcher& dispatcher) {
-  GetEventPath().AdjustForTouchEvent(*this);
+  if (isTrusted())
+    GetEventPath().AdjustForTouchEvent(*this);
   return dispatcher.Dispatch();
 }
 

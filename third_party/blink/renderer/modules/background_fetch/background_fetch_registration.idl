@@ -14,14 +14,14 @@
     readonly attribute unsigned long long downloadTotal;
     readonly attribute unsigned long long downloaded;
     readonly attribute BackgroundFetchResult result;
-    readonly attribute BackgroundFetchFailureReason failureReason;
+    [HighEntropy, Measure] readonly attribute BackgroundFetchFailureReason failureReason;
     readonly attribute boolean recordsAvailable;
 
     attribute EventHandler onprogress;
 
     [CallWith=ScriptState, MeasureAs=BackgroundFetchRegistrationAbort] Promise<boolean> abort();
-    [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchRegistrationMatch] Promise<BackgroundFetchRecord> match(RequestInfo request, optional CacheQueryOptions options);
-    [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchRegistrationMatchAll] Promise<sequence<BackgroundFetchRecord>> matchAll(optional RequestInfo request, optional CacheQueryOptions options);
+    [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchRegistrationMatch] Promise<BackgroundFetchRecord> match(RequestInfo request, optional CacheQueryOptions options = {});
+    [CallWith=ScriptState, RaisesException, MeasureAs=BackgroundFetchRegistrationMatchAll] Promise<sequence<BackgroundFetchRecord>> matchAll(optional RequestInfo request, optional CacheQueryOptions options = {});
 };
 
 enum BackgroundFetchResult { "", "success", "failure" };

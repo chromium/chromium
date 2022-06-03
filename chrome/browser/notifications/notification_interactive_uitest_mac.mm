@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #import "ui/base/test/windowed_nsnotification_observer.h"
 #include "ui/message_center/message_center.h"
 
@@ -18,7 +19,7 @@ IN_PROC_BROWSER_TEST_F(NotificationsTest, TestPopupShouldActivateApp) {
   EXPECT_TRUE(embedded_test_server()->Start());
 
   AllowAllOrigins();
-  ui_test_utils::NavigateToURL(browser(), GetTestPageURL());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestPageURL()));
 
   EXPECT_TRUE(ui_test_utils::ShowAndFocusNativeWindow(
       browser()->window()->GetNativeWindow()));

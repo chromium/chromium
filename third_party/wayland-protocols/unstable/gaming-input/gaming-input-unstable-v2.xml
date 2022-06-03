@@ -24,7 +24,7 @@
     DEALINGS IN THE SOFTWARE.
   </copyright>
 
-  <interface name="zcr_gaming_input_v2" version="1">
+  <interface name="zcr_gaming_input_v2" version="2">
     <description summary="extends wl_seat with gaming input devices">
       A global interface to provide gaming input devices for a given seat.
 
@@ -98,7 +98,7 @@
     </event>
   </interface>
 
-  <interface name="zcr_gamepad_v2" version="1">
+  <interface name="zcr_gamepad_v2" version="2">
     <description summary="gamepad input device">
       The zcr_gamepad_v2 interface represents one or more gamepad input devices,
       which are reported as a normalized 'Standard Gamepad' as it is specified
@@ -106,7 +106,10 @@
     </description>
 
     <request name="destroy" type="destructor">
-      <description summary="destroy gamepad object"/>
+      <description summary="destroy gamepad">
+        Destroy gamepad. Instances created from this gamepad are unaffected
+        and should be destroyed separately.
+      </description>
     </request>
 
     <event name="removed">
@@ -191,5 +194,51 @@
         gamepad_added_with_device_info.
       </description>
     </event>
+
+    <!-- added since v2 -->
+    <event name="vibrator_added" since="2">
+      <description summary="a vibrator is added">
+        Adds a vibrator to the gamepad. Only called if server has verified
+        that gamepad has a vibrator. The vibrator(s) for a gamepad are expected
+        to be added before the "activated" event is called.
+      </description>
+      <arg name="vibrator" type="new_id" interface="zcr_gamepad_vibrator_v2" summary="the gamepad vibrator"/>
+    </event>
+  </interface>
+
+  <interface name="zcr_gamepad_vibrator_v2" version="2">
+    <description summary="vibrator interface for a gamepad">
+      An interface that provides access to the vibrator of a gamepad. Requests can be
+      sent to make the gamepad vibrate and to stop an ongoing vibration.
+    </description>
+
+    <request name="vibrate" since="2">
+      <description summary="triggers the vibration event">
+        Triggers the vibration event on the gamepad vibrator. The gamepad is only allowed to
+        vibrate while the window is in focus. The values in the timings array are 64-bit integers
+        and the values in the amplitudes array are unsigned 8-bit integers.
+        The timings array and the amplitudes array are of the same length.
+        For each timing/amplitude pair, the amplitude determines the strength of
+        the vibration and the timing determines the length of the vibration in milliseconds.
+        Amplitude values must be between 0 and 255. An amplitude of 0 implies no vibration
+        and any timing/amplitude pair with a timing value of 0 is ignored.
+        The repeat argument determines the index at which the vibration pattern to repeat begins.
+        A repeat value of -1 disables repetition. If repetition is enabled, the vibration
+        pattern will repeat indefinitely until stopped, or when focus is lost.
+      </description>
+      <arg name="timings" type="array" summary="array of timing values" />
+      <arg name="amplitudes" type="array" summary="array of amplitude values" />
+      <arg name="repeat" type="int" summary="index into the timings array at which to repeat" />
+    </request>
+
+    <request name="cancel_vibration" since="2">
+      <description summary="cancels the existing vibration event">
+        Cancels the currently ongoing vibration event on the gamepad vibrator.
+      </description>
+    </request>
+
+    <request name="destroy" type="destructor" since="2">
+      <description summary="destroy gamepad vibrator"/>
+    </request>
   </interface>
 </protocol>

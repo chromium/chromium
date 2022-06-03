@@ -4,10 +4,9 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/dcheck_always_on.gni")
-import("//build/config/jumbo.gni")
+import("//build/config/ozone.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
-import("//ui/ozone/ozone.gni")
 import("features.gni")
 
 # Generate a buildflag header for compile-time checking of Vulkan support.
@@ -17,14 +16,60 @@ buildflag_header("buildflags") {
 }
 
 if (enable_vulkan) {
-  use_vulkan_xlib = use_x11 || ozone_platform_x11
+  use_vulkan_xcb = ozone_platform_x11
   config("vulkan_config") {
-    if (use_vulkan_xlib) {
-      defines = [ "USE_VULKAN_XLIB" ]
+    defines = [ "VK_NO_PROTOTYPES" ]
+    if (use_vulkan_xcb) {
+      defines += [ "USE_VULKAN_XCB" ]
     }
   }
 
-  jumbo_component("vulkan") {
+  source_set("vulkan_function_pointers") {
+    visibility = [
+      ":vma_wrapper",
+      ":vulkan",
+    ]
+
+    sources = [
+      "vulkan_function_pointers.cc",
+      "vulkan_function_pointers.h",
+    ]
+
+    public_configs = [ ":vulkan_config" ]
+
+    defines = [ "IS_VULKAN_IMPL" ]
+
+    deps = [
+      "//base",
+      "//ui/gfx",
+    ]
+
+    public_deps =
+        [ "//third_party/vulkan-deps/vulkan-headers/src:vulkan_headers" ]
+
+    if (is_fuchsia) {
+      sources += [ "fuchsia/vulkan_fuchsia_ext.h" ]
+    }
+  }
+
+  source_set("vma_wrapper") {
+    visibility = [ ":vulkan" ]
+
+    sources = [
+      "vma_wrapper.cc",
+      "vma_wrapper.h",
+    ]
+
+    defines = [ "IS_VULKAN_IMPL" ]
+
+    deps = [
+      ":vulkan_function_pointers",
+      "//base",
+      "//third_party/vulkan_memory_allocator",
+    ]
+  }
+
+  component("vulkan") {
     output_name = "vulkan_wrapper"
 
     sources = [
@@ -34,13 +79,15 @@ if (enable_vulkan) {
       "vulkan_command_buffer.h",
       "vulkan_command_pool.cc",
       "vulkan_command_pool.h",
+      "vulkan_crash_keys.cc",
+      "vulkan_crash_keys.h",
+      "vulkan_cxx.h",
       "vulkan_device_queue.cc",
       "vulkan_device_queue.h",
-      "vulkan_export.h",
       "vulkan_fence_helper.cc",
       "vulkan_fence_helper.h",
-      "vulkan_function_pointers.cc",
-      "vulkan_function_pointers.h",
+      "vulkan_image.cc",
+      "vulkan_image.h",
       "vulkan_implementation.cc",
       "vulkan_implementation.h",
       "vulkan_instance.cc",
@@ -53,38 +100,51 @@ if (enable_vulkan) {
       "vulkan_util.h",
     ]
 
-    configs += [ "//build/config:precompiled_headers" ]
-    public_configs = [ ":vulkan_config" ]
-
-    defines = [ "VULKAN_IMPLEMENTATION" ]
-    if (is_android) {
-      defines += [ "VK_USE_PLATFORM_ANDROID_KHR" ]
-    }
-
-    all_dependent_configs = [ "//third_party/vulkan:vulkan_config" ]
+    defines = [ "IS_VULKAN_IMPL" ]
 
     deps = [
+      ":buildflags",
       "//base",
+      "//build:chromeos_buildflags",
+      "//components/crash/core/common:crash_key",
+      "//gpu/ipc/common:vulkan_ycbcr_info",
       "//ui/gfx",
+      "//ui/gl",
     ]
+
     public_deps = [
+      ":vma_wrapper",
+      ":vulkan_function_pointers",
       "//gpu/config:vulkan_info",
     ]
+
     data_deps = []
 
     if (is_posix) {
+      sources += [ "vulkan_util_posix.cc" ]
+
+      if (is_linux || is_chromeos) {
+        sources += [ "vulkan_image_linux.cc" ]
+      }
+    }
+
+    if (is_android) {
+      sources += [ "vulkan_image_android.cc" ]
+    }
+
+    if (is_win) {
       sources += [
-        "vulkan_posix_util.cc",
-        "vulkan_posix_util.h",
+        "vulkan_image_win.cc",
+        "vulkan_util_win32.cc",
       ]
     }
 
     if (is_fuchsia) {
-      sources += [ "fuchsia/vulkan_fuchsia_ext.h" ]
+      sources += [ "vulkan_image_fuchsia.cc" ]
 
-      public_deps += [ "//third_party/fuchsia-sdk/sdk:zx" ]
+      public_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/zx" ]
 
-      data_deps += [ "//third_party/fuchsia-sdk:vulkan_base" ]
+      data_deps += [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan" ]
 
       # VulkanInstance enables validation layer in Debug builds and when DCHECKs
       # are enabled in Release builds. In these cases the validation layer
@@ -96,32 +156,54 @@ if (enable_vulkan) {
     }
   }
 
-  jumbo_static_library("test_support") {
+  static_library("test_support") {
     testonly = true
-    sources = [
-      "tests/native_window.h",
-    ]
+    sources = [ "tests/native_window.h" ]
 
     deps = [
+      "//ui/base:features",
       "//ui/gfx",
       "//ui/gfx:native_widget_types",
     ]
-    if (use_x11) {
-      sources += [ "tests/native_window_x11.cc" ]
-      deps += [ "//ui/gfx/x" ]
-      configs += [ "//build/config/linux:x11" ]
+
+    if (use_ozone) {
+      sources += [ "tests/native_window.cc" ]
+      deps += [
+        "//ui/ozone",
+        "//ui/platform_window",
+      ]
+    }
+
+    if (is_win) {
+      sources += [ "tests/native_window_win.cc" ]
+    }
+
+    if (is_android) {
+      sources += [ "tests/native_window_android.cc" ]
+      deps += [
+        "//ui/android:ui_java",
+        "//ui/gl",
+      ]
     }
   }
 
-  # TODO(cblume): These tests should run on each platform -- crbug.com/858614
-  if (use_x11) {
+  # TODO(penghuang): support more platforms
+  # https://crbug.com/1065499
+  if (is_android || is_win || use_ozone) {
     test("vulkan_tests") {
+      use_xvfb = use_xvfb_in_this_config
+
       sources = [
         "tests/basic_vulkan_test.cc",
         "tests/basic_vulkan_test.h",
         "tests/vulkan_test.cc",
         "tests/vulkan_tests_main.cc",
+
+        # TODO(crbug.com/1234132): fix compile problem with the latest vulkan
+        # headers.
+        # "vulkan_cxx_unittest.cc",
         "vulkan_fence_helper_unittest.cc",
+        "vulkan_image_unittest.cc",
       ]
 
       deps = [
@@ -129,13 +211,24 @@ if (enable_vulkan) {
         "//base:base",
         "//base/test:test_support",
         "//components/viz/common:vulkan_context_provider",
+        "//gpu/ipc/service",
         "//gpu/vulkan/init",
         "//testing/gmock",
         "//testing/gtest",
+        "//ui/events/platform",
         "//ui/gfx",
         "//ui/gfx:native_widget_types",
+        "//ui/gfx:test_support",
         "//ui/gfx/geometry",
       ]
+
+      if (is_android) {
+        deps += [ "//ui/android:ui_java_test_support" ]
+      }
+
+      if (use_ozone) {
+        deps += [ "//ui/ozone" ]
+      }
     }
   }
 }

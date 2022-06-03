@@ -11,7 +11,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "chrome/chrome_cleaner/engines/common/sandbox_error_code.h"
 
 namespace chrome_cleaner {

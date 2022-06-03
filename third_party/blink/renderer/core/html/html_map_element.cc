@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
@@ -83,7 +84,7 @@ void HTMLMapElement::ParseAttribute(const AttributeModificationParams& params) {
     if (params.name == html_names::kIdAttr) {
       // Call base class so that hasID bit gets set.
       HTMLElement::ParseAttribute(params);
-      if (GetDocument().IsHTMLDocument())
+      if (IsA<HTMLDocument>(GetDocument()))
         return;
     }
     if (isConnected())

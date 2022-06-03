@@ -1,0 +1,11 @@
+// The extra include header needed in the generated stub file for defining
+// various libwayland types.
+
+extern "C" {
+
+#include <wayland-client.h>
+
+}
+
+// generate_stubs.py has trouble parsing function pointers, so use an alias.
+using wl_proxy_listener_impl = void (**)(void);

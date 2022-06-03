@@ -46,16 +46,15 @@ Status ChromeAndroidImpl::GetWindow(const std::string& target_id,
 
   std::unique_ptr<base::Value> result;
   std::string expression =
-      "[window.screenX, window.screenY, window.outerWidth * "
-      "window.devicePixelRatio, window.outerHeight * window.devicePixelRatio]";
-  status = web_view->EvaluateScript(target_id, expression, &result);
+      "[window.screenX, window.screenY, window.outerWidth, window.outerHeight]";
+  status = web_view->EvaluateScript(target_id, expression, false, &result);
   if (status.IsError())
     return status;
 
-  window->left = result->GetList()[0].GetInt();
-  window->top = result->GetList()[1].GetInt();
-  window->width = result->GetList()[2].GetInt();
-  window->height = result->GetList()[3].GetInt();
+  window->left = static_cast<int>(result->GetList()[0].GetDouble());
+  window->top = static_cast<int>(result->GetList()[1].GetDouble());
+  window->width = static_cast<int>(result->GetList()[2].GetDouble());
+  window->height = static_cast<int>(result->GetList()[3].GetDouble());
   // Android does not use Window.id or have window states
   window->id = 0;
   window->state = "";

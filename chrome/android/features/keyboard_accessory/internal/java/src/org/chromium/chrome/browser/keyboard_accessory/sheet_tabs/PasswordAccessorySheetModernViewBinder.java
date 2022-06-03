@@ -4,20 +4,21 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
-import static org.chromium.chrome.browser.util.UrlUtilities.stripScheme;
+import static org.chromium.components.embedder_support.util.UrlUtilities.stripScheme;
 
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.RecyclerView;
 import android.text.method.PasswordTransformationMethod;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
-import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetViewBinder.FaviconHelper;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.widget.ChipView;
 
@@ -34,6 +35,7 @@ class PasswordAccessorySheetModernViewBinder {
                 return new AccessorySheetTabViewBinder.TitleViewHolder(
                         parent, R.layout.keyboard_accessory_sheet_tab_title);
             case AccessorySheetDataPiece.Type.FOOTER_COMMAND:
+            case AccessorySheetDataPiece.Type.OPTION_TOGGLE:
                 return AccessorySheetTabViewBinder.create(parent, viewType);
         }
         assert false : "Unhandled type of data piece: " + viewType;
@@ -56,13 +58,13 @@ class PasswordAccessorySheetModernViewBinder {
             bindChipView(view.getUsername(), info.getFields().get(0));
             bindChipView(view.getPassword(), info.getFields().get(1));
 
-            view.getTitle().setVisibility(info.isPslMatch() ? View.VISIBLE : View.GONE);
+            view.getTitle().setVisibility(info.isExactMatch() ? View.GONE : View.VISIBLE);
             // Strip the trailing slash (for aesthetic reasons):
             view.getTitle().setText(stripScheme(info.getOrigin()).replaceFirst("/$", ""));
 
             // Set the default icon, then try to get a better one.
             mFaviconRequestOrigin = info.getOrigin(); // Save the origin for returning callback.
-            FaviconHelper faviconHelper = new FaviconHelper(view.getContext());
+            FaviconHelper faviconHelper = FaviconHelper.create(view.getContext());
             view.setIconForBitmap(faviconHelper.getDefaultIcon(info.getOrigin()));
             faviconHelper.fetchFavicon(info.getOrigin(), d -> setIcon(view, info.getOrigin(), d));
         }

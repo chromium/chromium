@@ -34,11 +34,11 @@ enum class MessagePumpType {
   JAVA,
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // This type of pump is backed by a NSRunLoop. This is only for use on
   // OSX and IOS.
   NS_RUNLOOP,
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
 
 #if defined(OS_WIN)
   // This type of pump supports WM_QUIT messages in addition to other native

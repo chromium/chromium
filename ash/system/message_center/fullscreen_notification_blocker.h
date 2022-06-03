@@ -6,7 +6,6 @@
 #define ASH_SYSTEM_MESSAGE_CENTER_FULLSCREEN_NOTIFICATION_BLOCKER_H_
 
 #include "ash/shell_observer.h"
-#include "base/macros.h"
 #include "ui/message_center/notification_blocker.h"
 
 namespace ash {
@@ -18,7 +17,16 @@ class FullscreenNotificationBlocker
  public:
   explicit FullscreenNotificationBlocker(
       message_center::MessageCenter* message_center);
+
+  FullscreenNotificationBlocker(const FullscreenNotificationBlocker&) = delete;
+  FullscreenNotificationBlocker& operator=(
+      const FullscreenNotificationBlocker&) = delete;
+
   ~FullscreenNotificationBlocker() override;
+
+  static bool BlockForMixedFullscreen(
+      const message_center::Notification& notification,
+      bool is_fullscreen);
 
   // message_center::NotificationBlocker:
   bool ShouldShowNotificationAsPopup(
@@ -29,9 +37,8 @@ class FullscreenNotificationBlocker
   void OnFullscreenStateChanged(bool is_fullscreen,
                                 aura::Window* container) override;
 
-  bool should_block_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenNotificationBlocker);
+  // Set to true if all displays have a fullscreen window.
+  bool all_fullscreen_ = false;
 };
 
 }  // namespace ash

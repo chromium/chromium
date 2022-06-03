@@ -1,0 +1,12 @@
+include_rules = [
+  "+base",
+  "+printing/units.h",
+  "+third_party/skia/include",
+  "+ui/gfx",
+]
+
+specific_include_rules = {
+  ".*test\.cc|mock.*\.*": [
+    "+testing",
+  ],
+}

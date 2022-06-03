@@ -1,6 +1,6 @@
 static const uint MaxVolumes=65535;
 
-RecVolumes5::RecVolumes5(bool TestOnly)
+RecVolumes5::RecVolumes5(RAROptions *Cmd,bool TestOnly)
 {
   RealBuf=NULL;
   RealReadBuffer=NULL;
@@ -10,7 +10,14 @@ RecVolumes5::RecVolumes5(bool TestOnly)
   TotalCount=0;
   RecBufferSize=0;
 
-  for (uint I=0;I<ASIZE(ThreadData);I++)
+#ifdef RAR_SMP
+  MaxUserThreads=Cmd->Threads;
+#else
+  MaxUserThreads=1;
+#endif
+
+  ThreadData=new RecRSThreadData[MaxUserThreads];
+  for (uint I=0;I<MaxUserThreads;I++)
   {
     ThreadData[I].RecRSPtr=this;
     ThreadData[I].RS=NULL;
@@ -25,7 +32,7 @@ RecVolumes5::RecVolumes5(bool TestOnly)
   else
   {
 #ifdef RAR_SMP
-    RecThreadPool=CreateThreadPool();
+    RecThreadPool=new ThreadPool(MaxUserThreads);
 #endif
     RealBuf=new byte[TotalBufferSize+SSE_ALIGNMENT];
     Buf=(byte *)ALIGN_VALUE(RealBuf,SSE_ALIGNMENT);
@@ -39,10 +46,11 @@ RecVolumes5::~RecVolumes5()
   delete[] RealReadBuffer;
   for (uint I=0;I<RecItems.Size();I++)
     delete RecItems[I].f;
-  for (uint I=0;I<ASIZE(ThreadData);I++)
+  for (uint I=0;I<MaxUserThreads;I++)
     delete ThreadData[I].RS;
+  delete[] ThreadData;
 #ifdef RAR_SMP
-  DestroyThreadPool(RecThreadPool);
+  delete RecThreadPool;
 #endif
 }
 
@@ -68,11 +76,7 @@ void RecVolumes5::ProcessRS(RAROptions *Cmd,uint DataNum,const byte *Data,uint M
     RS.UpdateECC(DataNum, I, Data, Buf+I*RecBufferSize, MaxRead);
 */
 
-#ifdef RAR_SMP
-  uint ThreadNumber=Cmd->Threads;
-#else
-  uint ThreadNumber=1;
-#endif
+  uint ThreadNumber=MaxUserThreads;
 
   const uint MinThreadBlock=0x1000;
   ThreadNumber=Min(ThreadNumber,MaxRead/MinThreadBlock);
@@ -238,7 +242,7 @@ bool RecVolumes5::Restore(RAROptions *Cmd,const wchar *Name,bool Silent)
       uiMsg(UIMSG_STRING,Item->Name);
 
       uint RevCRC;
-      CalcFileSum(Item->f,&RevCRC,NULL,Cmd->Threads,INT64NDF,CALCFSUM_CURPOS);
+      CalcFileSum(Item->f,&RevCRC,NULL,MaxUserThreads,INT64NDF,CALCFSUM_CURPOS);
       Item->Valid=RevCRC==Item->CRC;
       if (!Item->Valid)
       {

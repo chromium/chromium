@@ -21,21 +21,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_POLY_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_POLY_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_point_list.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
+class SVGAnimatedPointList;
+class SVGPointListTearOff;
+
 class SVGPolyElement : public SVGGeometryElement {
  public:
   SVGAnimatedPointList* Points() const { return points_.Get(); }
 
-  SVGPointListTearOff* pointsFromJavascript() { return points_->baseVal(); }
-  SVGPointListTearOff* animatedPoints() { return points_->animVal(); }
+  SVGPointListTearOff* pointsFromJavascript();
+  SVGPointListTearOff* animatedPoints();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   SVGPolyElement(const QualifiedName&, Document&);
@@ -43,9 +45,8 @@ class SVGPolyElement : public SVGGeometryElement {
   Path AsPathFromPoints() const;
 
  private:
-  void SvgAttributeChanged(const QualifiedName&) final;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) final;
 
- private:
   Member<SVGAnimatedPointList> points_;
 };
 
@@ -67,4 +68,4 @@ struct DowncastTraits<SVGPolyElement> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_POLY_ELEMENT_H_

@@ -23,8 +23,6 @@ namespace blink {
 class WebPepperSocketChannelClientProxy final
     : public GarbageCollected<WebPepperSocketChannelClientProxy>,
       public WebSocketChannelClient {
-  USING_GARBAGE_COLLECTED_MIXIN(WebPepperSocketChannelClientProxy);
-
  public:
   explicit WebPepperSocketChannelClientProxy(WebPepperSocketImpl* impl)
       : impl_(impl) {}
@@ -60,7 +58,7 @@ class WebPepperSocketChannelClientProxy final
     impl->DidClose(status, code, reason);
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     WebSocketChannelClient::Trace(visitor);
   }
 

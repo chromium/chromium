@@ -15,7 +15,9 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
+#include "base/test/scoped_run_loop_timeout.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/component_updater/recovery_improved_component_installer.h"
 #include "components/crx_file/crx_verifier.h"
@@ -131,7 +133,14 @@ TEST_F(RecoveryImprovedActionHandlerTest, Handle) {
               std::move(quit_closure).Run();
             },
             runloop.QuitClosure()));
-    runloop.Run();
+    {
+      // For some reason, the task which runs the wait for the recovery EXE
+      // execution is handled with some delay. This causes the run loop to
+      // fail with a timeout.
+      const base::test::ScopedRunLoopTimeout specific_timeout(
+          FROM_HERE, base::Seconds(60));
+      runloop.Run();
+    }
   }
 }
 #endif  //  OS_WIN

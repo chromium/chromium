@@ -6,7 +6,7 @@
 
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "extensions/browser/api/printer_provider/printer_provider_api.h"
-#include "extensions/browser/api/printer_provider_internal/printer_provider_internal_api.h"
+#include "extensions/browser/api/printer_provider/printer_provider_internal_api.h"
 #include "extensions/browser/extension_registry_factory.h"
 #include "extensions/browser/extensions_browser_client.h"
 

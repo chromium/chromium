@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -97,9 +97,9 @@ def _ProcessManifest(path, arsc_package_name, disable_isolated_processes):
 
   ret = ElementTree.tostring(doc.getroot(), encoding='UTF-8')
   # Disable check for page-aligned native libraries.
-  ret = ret.replace('extractNativeLibs="false"', 'extractNativeLibs="true"')
+  ret = ret.replace(b'extractNativeLibs="false"', b'extractNativeLibs="true"')
   if disable_isolated_processes:
-    ret = ret.replace('isolatedProcess="true"', 'isolatedProcess="false"')
+    ret = ret.replace(b'isolatedProcess="true"', b'isolatedProcess="false"')
   return ret
 
 
@@ -108,6 +108,7 @@ def main(raw_args):
 
   arsc_package, _ = resource_utils.ExtractArscPackage(options.aapt2_path,
                                                       options.in_apk)
+  assert arsc_package is not None, 'The apk does not have a valid package.'
   # Extract version from the compiled manifest since it might have been set
   # via aapt, and not exist in the manifest's text form.
   version_code, version_name, manifest_package = (

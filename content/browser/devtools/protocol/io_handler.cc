@@ -7,6 +7,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
@@ -16,7 +18,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/devtools/devtools_io_context.h"
 #include "content/browser/devtools/devtools_stream_blob.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -29,10 +31,10 @@ IOHandler::IOHandler(DevToolsIOContext* io_context)
       browser_context_(nullptr),
       storage_partition_(nullptr) {}
 
-IOHandler::~IOHandler() {}
+IOHandler::~IOHandler() = default;
 
 void IOHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new IO::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<IO::Frontend>(dispatcher->channel());
   IO::Dispatcher::wire(dispatcher, this);
 }
 
@@ -92,7 +94,7 @@ void IOHandler::ReadComplete(std::unique_ptr<ReadCallback> callback,
                              bool base64_encoded,
                              int status) {
   if (status == DevToolsIOContext::Stream::StatusFailure) {
-    callback->sendFailure(Response::Error("Read failed"));
+    callback->sendFailure(Response::ServerError("Read failed"));
     return;
   }
   bool eof = status == DevToolsIOContext::Stream::StatusEOF;
@@ -100,8 +102,9 @@ void IOHandler::ReadComplete(std::unique_ptr<ReadCallback> callback,
 }
 
 Response IOHandler::Close(const std::string& handle) {
-  return io_context_->Close(handle) ? Response::OK()
-      : Response::InvalidParams("Invalid stream handle");
+  return io_context_->Close(handle)
+             ? Response::Success()
+             : Response::InvalidParams("Invalid stream handle");
 }
 
 }  // namespace protocol

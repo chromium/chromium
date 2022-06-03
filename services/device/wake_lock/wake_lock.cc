@@ -82,8 +82,7 @@ void WakeLock::ChangeType(mojom::WakeLockType type,
 #if defined(OS_ANDROID)
   LOG(ERROR) << "WakeLock::ChangeType() has no effect on Android.";
   std::move(callback).Run(false);
-  return;
-#endif
+#else
   if (receiver_set_.size() > 1) {
     LOG(ERROR) << "WakeLock::ChangeType() is not allowed when the current wake "
                   "lock is shared by more than one clients.";
@@ -100,6 +99,7 @@ void WakeLock::ChangeType(mojom::WakeLockType type,
   }
 
   std::move(callback).Run(true);
+#endif
 }
 
 void WakeLock::HasWakeLockForTests(HasWakeLockForTestsCallback callback) {

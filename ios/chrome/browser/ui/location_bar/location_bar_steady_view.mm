@@ -4,15 +4,17 @@
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_steady_view.h"
 
+#include "base/check.h"
+#include "base/check_op.h"
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/elements/extended_touch_target_button.h"
-#import "ios/chrome/browser/ui/infobars/infobar_feature.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
 #import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -25,15 +27,18 @@ namespace {
 // Length of the trailing button side.
 const CGFloat kButtonSize = 24;
 // Space between the location icon and the location label.
-const CGFloat kLocationImageToLabelSpacing = -4.0;
+const CGFloat kLocationImageToLabelSpacing = -2.0;
 // Minimal horizontal padding between the leading edge of the location bar and
 // the content of the location bar.
-const CGFloat kLocationBarLeadingPadding = 5.0;
+const CGFloat kLocationBarLeadingPadding = 8.0;
 // Trailing space between the trailing button and the trailing edge of the
 // location bar.
-const CGFloat kButtonTrailingSpacing = 10;
+const CGFloat kShareButtonTrailingSpacing = -11;
+const CGFloat kVoiceSearchButtonTrailingSpacing = -7;
 // Duration of display and hide animation of the badge view, in seconds.
 const CGFloat kbadgeViewAnimationDuration = 0.2;
+// Location label vertical offset.
+const CGFloat kLocationLabelVerticalOffset = -1;
 }  // namespace
 
 @interface LocationBarSteadyView ()
@@ -49,6 +54,15 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
 // its left.
 @property(nonatomic, strong)
     NSLayoutConstraint* locationContainerViewLeadingAnchorConstraint;
+
+// The constraint that pins the trailingButton to the trailing edge of the
+// location bar.
+@property(nonatomic, strong)
+    NSLayoutConstraint* trailingButtonTrailingAnchorConstraint;
+
+// The trailing spacing to be used for the trailingButton. This property is
+// based on the type of trailing button in use (i.e. share or voice search).
+@property(nonatomic, readonly) CGFloat trailingButtonTrailingSpacing;
 
 // Constraints to pin the badge view to the right next to the
 // |locationContainerView|.
@@ -82,21 +96,7 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
 
   scheme.fontColor = [UIColor colorNamed:kTextPrimaryColor];
   scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderColor];
-  scheme.trailingButtonColor = [UIColor colorNamed:kToolbarButtonColor];
-
-  return scheme;
-}
-
-+ (instancetype)incognitoScheme {
-  LocationBarSteadyViewColorScheme* scheme =
-      [[LocationBarSteadyViewColorScheme alloc] init];
-
-  // In iOS 12, the overridePreferredInterfaceStyle API is unavailable, so
-  // incognito colors need to be set specifically.
-  // TODO(crbug.com/981889): Clean up after iOS 12 support is dropped.
-  scheme.fontColor = [UIColor colorNamed:kTextPrimaryDarkColor];
-  scheme.placeholderColor = [UIColor colorNamed:kTextfieldPlaceholderDarkColor];
-  scheme.trailingButtonColor = [UIColor colorNamed:kToolbarButtonDarkColor];
+  scheme.trailingButtonColor = [UIColor colorNamed:kGrey500Color];
 
   return scheme;
 }
@@ -110,6 +110,14 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
 @end
 
 @implementation LocationBarSteadyButton
+
+- (instancetype)initWithFrame:(CGRect)frame {
+  self = [super initWithFrame:frame];
+  if (self) {
+    self.pointerInteractionEnabled = YES;
+  }
+  return self;
+}
 
 - (void)layoutSubviews {
   [super layoutSubviews];
@@ -156,6 +164,10 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
     _trailingButton =
         [ExtendedTouchTargetButton buttonWithType:UIButtonTypeSystem];
     _trailingButton.translatesAutoresizingMaskIntoConstraints = NO;
+    _trailingButton.pointerInteractionEnabled = YES;
+    // Make the pointer shape fit the location bar's semi-circle end shape.
+    _trailingButton.pointerStyleProvider =
+        CreateLiftEffectCirclePointerStyleProvider();
 
     // Setup label.
     _locationLabel.lineBreakMode = NSLineBreakByTruncatingHead;
@@ -200,9 +212,6 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
 
     [self addSubview:_locationButton];
 
-    ApplyVisualConstraints(
-        @[ @"V:|[label]|", @"V:|[container]|" ],
-        @{@"label" : _locationLabel, @"container" : _locationContainerView});
 
     AddSameConstraints(self, _locationButton);
 
@@ -216,8 +225,19 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
             constraintGreaterThanOrEqualToAnchor:self.leadingAnchor
                                         constant:kLocationBarLeadingPadding];
 
+    _trailingButtonTrailingAnchorConstraint =
+        [self.trailingButton.trailingAnchor
+            constraintEqualToAnchor:self.trailingAnchor
+                           constant:self.trailingButtonTrailingSpacing];
+
     // Setup and activate constraints.
     [NSLayoutConstraint activateConstraints:@[
+      [_locationLabel.centerYAnchor
+          constraintEqualToAnchor:_locationContainerView.centerYAnchor
+                         constant:kLocationLabelVerticalOffset],
+      [_locationLabel.heightAnchor
+          constraintLessThanOrEqualToAnchor:_locationContainerView.heightAnchor
+                                   constant:2 * kLocationLabelVerticalOffset],
       [_trailingButton.centerYAnchor
           constraintEqualToAnchor:self.centerYAnchor],
       [_locationContainerView.centerYAnchor
@@ -227,9 +247,7 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
                                                    .trailingAnchor],
       [_trailingButton.widthAnchor constraintEqualToConstant:kButtonSize],
       [_trailingButton.heightAnchor constraintEqualToConstant:kButtonSize],
-      [self.trailingButton.trailingAnchor
-          constraintEqualToAnchor:self.trailingAnchor
-                         constant:-kButtonTrailingSpacing],
+      _trailingButtonTrailingAnchorConstraint,
       centerX,
       _locationContainerViewLeadingAnchorConstraint,
     ]];
@@ -254,6 +272,14 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
   [self updateAccessibility];
 
   return self;
+}
+
+- (CGFloat)trailingButtonTrailingSpacing {
+  if (IsSplitToolbarMode(self)) {
+    return kShareButtonTrailingSpacing;
+  } else {
+    return kVoiceSearchButtonTrailingSpacing;
+  }
 }
 
 - (void)setColorScheme:(LocationBarSteadyViewColorScheme*)colorScheme {
@@ -413,6 +439,10 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
       self.traitCollection.preferredContentSizeCategory) {
     self.locationLabel.font = [self locationLabelFont];
   }
+
+  self.trailingButtonTrailingAnchorConstraint.constant =
+      self.trailingButtonTrailingSpacing;
+  [self layoutIfNeeded];
 }
 
 #pragma mark - UIAccessibilityContainer
@@ -457,9 +487,8 @@ const CGFloat kbadgeViewAnimationDuration = 0.2;
 
 // Returns the font size for the location label.
 - (UIFont*)locationLabelFont {
-  return PreferredFontForTextStyleWithMaxCategory(
-      UIFontTextStyleBody, self.traitCollection.preferredContentSizeCategory,
-      UIContentSizeCategoryAccessibilityExtraLarge);
+  return LocationBarSteadyViewFont(
+      self.traitCollection.preferredContentSizeCategory);
 }
 
 @end

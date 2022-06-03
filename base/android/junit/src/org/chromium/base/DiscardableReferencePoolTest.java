@@ -11,7 +11,6 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.DiscardableReferencePool.DiscardableReference;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.base.test.util.RetryOnFailure;
 
 import java.lang.ref.WeakReference;
 
@@ -43,11 +42,9 @@ public class DiscardableReferencePoolTest {
         Assert.assertNull(discardableReference.get());
 
         // The object is not (strongly) reachable anymore, so the weak reference may or may not be
-        // null (it could be if a GC has happened since the pool was drained).
-        // After an explicit GC call it definitely should be null.
-        Runtime.getRuntime().gc();
-
-        Assert.assertNull(weakReference.get());
+        // null (it could be if a GC has happened since the pool was drained). It should be
+        // eligible for garbage collection.
+        Assert.assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(weakReference));
     }
 
     @Test
@@ -72,11 +69,9 @@ public class DiscardableReferencePoolTest {
         Assert.assertNull(discardableReference.get());
 
         // The object is not (strongly) reachable anymore, so the weak reference may or may not be
-        // null (it could be if a GC has happened since the pool was drained).
-        // After an explicit GC call it definitely should be null.
-        Runtime.getRuntime().gc();
-
-        Assert.assertNull(weakReference.get());
+        // null (it could be if a GC has happened since the pool was drained). It should be
+        // eligible for garbage collection.
+        Assert.assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(weakReference));
     }
 
     @Test
@@ -101,11 +96,9 @@ public class DiscardableReferencePoolTest {
         Assert.assertNull(discardableReference.get());
 
         // The object is not (strongly) reachable anymore, so the weak reference may or may not be
-        // null (it could be if a GC has happened since the pool was drained).
-        // After an explicit GC call it definitely should be null.
-        Runtime.getRuntime().gc();
-
-        Assert.assertNull(weakReference.get());
+        // null (it could be if a GC has happened since the pool was drained). It should be
+        // eligible for garbage collection.
+        Assert.assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(weakReference));
     }
 
     /**
@@ -113,7 +106,6 @@ public class DiscardableReferencePoolTest {
      * garbage collected.
      */
     @Test
-    @RetryOnFailure
     public void testReferenceGCd() {
         DiscardableReferencePool pool = new DiscardableReferencePool();
 
@@ -129,10 +121,8 @@ public class DiscardableReferencePoolTest {
         discardableReference = null;
 
         // The object is not (strongly) reachable anymore, so the weak reference may or may not be
-        // null (it could be if a GC has happened since the pool was drained).
-        // After an explicit GC call it definitely should be null.
-        Runtime.getRuntime().gc();
-
-        Assert.assertNull(weakReference.get());
+        // null (it could be if a GC has happened since the pool was drained). It should be
+        // eligible for garbage collection.
+        Assert.assertTrue(GarbageCollectionTestUtils.canBeGarbageCollected(weakReference));
     }
 }

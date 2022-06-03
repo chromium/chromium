@@ -13,6 +13,8 @@ sources for the same object tests.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
+      setup({single_test: true});
+
       let inputChangeEvents = 0;
       function onInputSourcesChange() {
         inputChangeEvents++;

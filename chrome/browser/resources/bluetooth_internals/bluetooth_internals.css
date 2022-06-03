@@ -31,7 +31,7 @@ h1 {
 }
 
 .toggle-status {
-  background-image: url(../../../../ui/webui/resources/images/cancel_red.svg);
+  background-image: url(chrome://resources/images/cancel_red.svg);
   background-repeat: no-repeat;
   min-height: 24px;
   min-width: 24px;
@@ -39,7 +39,7 @@ h1 {
 
 .toggle-status.checked {
   background-image:
-      url(../../../../ui/webui/resources/images/check_circle_green.svg);
+      url(chrome://resources/images/check_circle_green.svg);
 }
 
 /* Expandable List */
@@ -93,7 +93,7 @@ list .spinner {
 }
 
 .empty-message {
-  padding-left: calc(2 * var(--section-padding));
+  padding-inline-start: calc(2 * var(--section-padding));
 }
 
 /* Page container */
@@ -147,7 +147,7 @@ list .spinner {
 
 #menu-btn {
   background-color: transparent;
-  background-image: url(../../../../ui/webui/resources/images/menu.svg);
+  background-image: url(./menu.svg);
   background-position: center;
   background-repeat: no-repeat;
   border: 0;
@@ -184,8 +184,8 @@ list .spinner {
 
 @media screen and (max-width: 600px) {
   #sidebar {
-    width: auto;
     visibility: hidden;
+    width: auto;
   }
 
   #sidebar.open {

@@ -52,7 +52,7 @@ out/Default`) as follows:
 target_os = "android"
 target_cpu = "x86"  # Assuming you chose an x86 emulator
 
-# This package name is whitelisted for debuggable (userdebug) devices, and lets
+# This package name is allowed for debuggable (userdebug) devices, and lets
 # devs install a WebView provider without the usual signature checks. This only
 # works on N+.
 system_webview_package_name = "com.google.android.apps.chrome"
@@ -136,7 +136,7 @@ public OS versions (see [note](#Building-for-preview-Android-releases)).
 
 *** note
 **Note:** we only support local development using the latest revision of the
-master branch. Checking out release branches introduces a lot of complexity, and
+main branch. Checking out release branches introduces a lot of complexity, and
 it might not even be possible to build WebView for your device.
 ***
 
@@ -163,10 +163,10 @@ Otherwise, please [reach out to the team][1].
 
 ### My package isn't in the list
 
-Either your package didn't install (see below) or you chose a package which is
-not in the WebView provider whitelist. Double-check the package name in your GN
-args. If you're on AOSP (any OS level), choose
-`"com.android.webview"`. If you're on L-M, choose
+Either your package didn't install (see below) or you chose a package name which
+is [not eligible as a WebView provider](webview-providers.md#Package-name) for
+this device. Double-check the package name in your GN args. If you're on AOSP
+(any OS level), choose `"com.android.webview"`. If you're on L-M, choose
 `"com.google.android.webview"`. In either case, you'll likely need to [remove
 the preinstalled WebView
 APK](/android_webview/tools/remove_preinstalled_webview.py).

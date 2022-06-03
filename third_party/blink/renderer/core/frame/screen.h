@@ -29,59 +29,57 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_SCREEN_H_
 
-#include "base/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
-#include "ui/display/mojom/display.mojom-blink.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+
+namespace display {
+struct ScreenInfo;
+}
 
 namespace blink {
 
-class LocalFrame;
+class LocalDOMWindow;
 
-class CORE_EXPORT Screen final : public ScriptWrappable,
-                                 public DOMWindowClient,
-                                 public Supplementable<Screen> {
+class CORE_EXPORT Screen : public EventTargetWithInlineData,
+                           public ExecutionContextClient,
+                           public Supplementable<Screen> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(Screen);
 
  public:
-  explicit Screen(LocalFrame*);
+  explicit Screen(LocalDOMWindow*);
 
-  int height() const;
-  int width() const;
-  unsigned colorDepth() const;
-  unsigned pixelDepth() const;
-  int availLeft() const;
-  int availTop() const;
-  int availHeight() const;
-  int availWidth() const;
+  static bool AreWebExposedScreenPropertiesEqual(
+      const display::ScreenInfo& prev,
+      const display::ScreenInfo& current);
 
-  void Trace(blink::Visitor*) override;
+  virtual int height() const;
+  virtual int width() const;
+  virtual unsigned colorDepth() const;
+  virtual unsigned pixelDepth() const;
+  virtual int availLeft() const;
+  virtual int availTop() const;
+  virtual int availHeight() const;
+  virtual int availWidth() const;
 
-  // Proposed extensions to the Screen interface.
-  // https://github.com/spark008/screen-enumeration/blob/master/EXPLAINER.md
-  // TODO(msw): Resolve different info sources, caching, and lifetimes.
-  Screen(display::mojom::blink::DisplayPtr display, bool primary);
-  int left() const;
-  int top() const;
-  bool internal() const;
-  bool primary() const;
-  float scaleFactor() const;
-  const String name() const;
+  void Trace(Visitor*) const override;
 
- private:
-  // A static snapshot of the display's information, provided upon construction.
-  // This member is only valid for Screen objects obtained via the experimental
-  // Screen Enumeration API.
-  const display::mojom::blink::DisplayPtr display_;
-  // True if this is the primary screen of the operating system; it is a static
-  // value provided upon construction. This member is only valid for Screen
-  // objects obtained via the experimental Screen Enumeration API.
-  const base::Optional<bool> primary_;
+  // EventTargetWithInlineData:
+  const WTF::AtomicString& InterfaceName() const override;
+  ExecutionContext* GetExecutionContext() const override;
+
+  // Proposed: https://github.com/webscreens/window-placement
+  // Whether this Screen is part of a multi-screen extended visual workspace.
+  virtual bool isExtended() const;
+  // An event fired when Screen attributes change.
+  DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
+
+  // Not web-exposed; for internal usage only.
+  static constexpr int64_t kInvalidDisplayId = -1;
+  virtual int64_t DisplayId() const;
 };
 
 }  // namespace blink

@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_SSL_SSL_CONFIG_SERVICE_MANAGER_H_
 
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "services/network/public/mojom/ssl_config.mojom.h"
 
 class PrefService;
 class PrefRegistrySimple;

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/loader/static_data_navigation_body_loader.h"
+#include "third_party/blink/public/mojom/loader/code_cache.mojom.h"
 
 namespace blink {
 
@@ -33,21 +34,24 @@ void StaticDataNavigationBodyLoader::Finish() {
   Continue();
 }
 
-void StaticDataNavigationBodyLoader::SetDefersLoading(bool defers) {
-  defers_loading_ = defers;
+void StaticDataNavigationBodyLoader::SetDefersLoading(LoaderFreezeMode mode) {
+  freeze_mode_ = mode;
   Continue();
 }
 
 void StaticDataNavigationBodyLoader::StartLoadingBody(
     WebNavigationBodyLoader::Client* client,
-    bool use_isolated_code_cache) {
+    CodeCacheHost* code_cache_host) {
   DCHECK(!is_in_continue_);
   client_ = client;
   Continue();
 }
 
+void StaticDataNavigationBodyLoader::StartLoadingCodeCache(
+    CodeCacheHost* code_cache_host) {}
+
 void StaticDataNavigationBodyLoader::Continue() {
-  if (defers_loading_ || !client_ || is_in_continue_)
+  if (freeze_mode_ != LoaderFreezeMode::kNone || !client_ || is_in_continue_)
     return;
 
   // We don't want reentrancy in this method -
@@ -72,7 +76,7 @@ void StaticDataNavigationBodyLoader::Continue() {
           return;
       }
 
-      if (defers_loading_) {
+      if (freeze_mode_ != LoaderFreezeMode::kNone) {
         is_in_continue_ = false;
         return;
       }
@@ -88,7 +92,7 @@ void StaticDataNavigationBodyLoader::Continue() {
     client->BodyLoadingFinished(
         base::TimeTicks::Now(), total_encoded_data_length_,
         total_encoded_data_length_, total_encoded_data_length_, false,
-        base::nullopt);
+        absl::nullopt);
     // |this| can be destroyed from BodyLoadingFinished.
     if (!weak_self)
       return;

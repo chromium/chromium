@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -14,67 +14,83 @@ namespace win {
 
 namespace {
 
-static const wchar_t kTestString1[] = L"123";
-static const wchar_t kTestString2[] = L"456789";
-size_t test1_len = size(kTestString1) - 1;
-size_t test2_len = size(kTestString2) - 1;
+constexpr wchar_t kTestString1[] = L"123";
+constexpr wchar_t kTestString2[] = L"456789";
+constexpr size_t test1_len = size(kTestString1) - 1;
+constexpr size_t test2_len = size(kTestString2) - 1;
 
-void DumbBstrTests() {
+}  // namespace
+
+TEST(ScopedBstrTest, Empty) {
   ScopedBstr b;
-  EXPECT_TRUE(b == nullptr);
+  EXPECT_EQ(nullptr, b.Get());
   EXPECT_EQ(0u, b.Length());
   EXPECT_EQ(0u, b.ByteLength());
   b.Reset(nullptr);
-  EXPECT_TRUE(b == nullptr);
-  EXPECT_TRUE(b.Release() == nullptr);
+  EXPECT_EQ(nullptr, b.Get());
+  EXPECT_EQ(nullptr, b.Release());
   ScopedBstr b2;
   b.Swap(b2);
-  EXPECT_TRUE(b2 == nullptr);
+  EXPECT_EQ(nullptr, b.Get());
 }
 
-void GiveMeABstr(BSTR* ret) {
+TEST(ScopedBstrTest, Basic) {
+  ScopedBstr b(kTestString1);
+  EXPECT_EQ(test1_len, b.Length());
+  EXPECT_EQ(test1_len * sizeof(kTestString1[0]), b.ByteLength());
+}
+
+namespace {
+
+void CreateTestString1(BSTR* ret) {
   *ret = SysAllocString(kTestString1);
-}
-
-void BasicBstrTests() {
-  ScopedBstr b1(kTestString1);
-  EXPECT_EQ(test1_len, b1.Length());
-  EXPECT_EQ(test1_len * sizeof(kTestString1[0]), b1.ByteLength());
-
-  ScopedBstr b2;
-  b1.Swap(b2);
-  EXPECT_EQ(test1_len, b2.Length());
-  EXPECT_EQ(0u, b1.Length());
-  EXPECT_STREQ(b2, kTestString1);
-  BSTR tmp = b2.Release();
-  EXPECT_TRUE(tmp != nullptr);
-  EXPECT_STREQ(tmp, kTestString1);
-  EXPECT_TRUE(b2 == nullptr);
-  SysFreeString(tmp);
-
-  GiveMeABstr(b2.Receive());
-  EXPECT_TRUE(b2 != nullptr);
-  b2.Reset();
-  EXPECT_TRUE(b2.AllocateBytes(100) != nullptr);
-  EXPECT_EQ(100u, b2.ByteLength());
-  EXPECT_EQ(100 / sizeof(kTestString1[0]), b2.Length());
-  lstrcpy(static_cast<BSTR>(b2), kTestString1);
-  EXPECT_EQ(test1_len, static_cast<size_t>(lstrlen(b2)));
-  EXPECT_EQ(100 / sizeof(kTestString1[0]), b2.Length());
-  b2.SetByteLen(lstrlen(b2) * sizeof(kTestString2[0]));
-  EXPECT_EQ(b2.Length(), static_cast<size_t>(lstrlen(b2)));
-
-  EXPECT_TRUE(b1.Allocate(kTestString2) != nullptr);
-  EXPECT_EQ(test2_len, b1.Length());
-  b1.SetByteLen((test2_len - 1) * sizeof(kTestString2[0]));
-  EXPECT_EQ(test2_len - 1, b1.Length());
 }
 
 }  // namespace
 
-TEST(ScopedBstrTest, ScopedBstr) {
-  DumbBstrTests();
-  BasicBstrTests();
+TEST(ScopedBstrTest, Swap) {
+  ScopedBstr b1(kTestString1);
+  ScopedBstr b2;
+  b1.Swap(b2);
+  EXPECT_EQ(test1_len, b2.Length());
+  EXPECT_EQ(0u, b1.Length());
+  EXPECT_STREQ(kTestString1, b2.Get());
+
+  BSTR tmp = b2.Release();
+  EXPECT_NE(nullptr, tmp);
+  EXPECT_STREQ(kTestString1, tmp);
+  EXPECT_EQ(nullptr, b2.Get());
+  SysFreeString(tmp);
+}
+
+TEST(ScopedBstrTest, OutParam) {
+  ScopedBstr b;
+  CreateTestString1(b.Receive());
+  EXPECT_STREQ(kTestString1, b.Get());
+}
+
+TEST(ScopedBstrTest, AllocateBytesAndSetByteLen) {
+  constexpr size_t num_bytes = 100;
+  ScopedBstr b;
+  EXPECT_NE(nullptr, b.AllocateBytes(num_bytes));
+  EXPECT_EQ(num_bytes, b.ByteLength());
+  EXPECT_EQ(num_bytes / sizeof(kTestString1[0]), b.Length());
+
+  lstrcpy(b.Get(), kTestString1);
+  EXPECT_EQ(test1_len, static_cast<size_t>(lstrlen(b.Get())));
+  EXPECT_EQ(num_bytes / sizeof(kTestString1[0]), b.Length());
+
+  b.SetByteLen(lstrlen(b.Get()) * sizeof(kTestString2[0]));
+  EXPECT_EQ(b.Length(), static_cast<size_t>(lstrlen(b.Get())));
+}
+
+TEST(ScopedBstrTest, AllocateAndSetByteLen) {
+  ScopedBstr b;
+  EXPECT_NE(nullptr, b.Allocate(kTestString2));
+  EXPECT_EQ(test2_len, b.Length());
+
+  b.SetByteLen((test2_len - 1) * sizeof(kTestString2[0]));
+  EXPECT_EQ(test2_len - 1, b.Length());
 }
 
 }  // namespace win

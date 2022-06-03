@@ -27,6 +27,7 @@ class COMPONENT_EXPORT(EVENTS_OZONE_LAYOUT) NoKeyboardLayoutEngine
               int flags,
               DomKey* dom_key,
               KeyboardCode* key_code) const override;
+  void SetInitCallbackForTest(base::OnceClosure closure) override;
 };
 
 }  // namespace ui

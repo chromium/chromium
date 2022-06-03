@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {addSingletonGetter} from 'chrome://resources/js/cr.m.js';
+
 /**
  * @fileoverview A helper object used by the "Google Play Store" (ARC) section
  * to retrieve information about android apps.
@@ -17,41 +19,34 @@
  * }}
  * @see chrome/browser/ui/webui/settings/chromeos/android_apps_handler.cc
  */
-let AndroidAppsInfo;
+export let AndroidAppsInfo;
 
-cr.define('settings', function() {
-  /** @interface */
-  class AndroidAppsBrowserProxy {
-    requestAndroidAppsInfo() {}
-
-    /**
-     * @param {boolean} keyboardAction True if the app was opened using a
-     *     keyboard action.
-     */
-    showAndroidAppsSettings(keyboardAction) {}
-  }
+/** @interface */
+export class AndroidAppsBrowserProxy {
+  requestAndroidAppsInfo() {}
 
   /**
-   * @implements {settings.AndroidAppsBrowserProxy}
+   * @param {boolean} keyboardAction True if the app was opened using a
+   *     keyboard action.
    */
-  class AndroidAppsBrowserProxyImpl {
-    /** @override */
-    requestAndroidAppsInfo() {
-      chrome.send('requestAndroidAppsInfo');
-    }
+  showAndroidAppsSettings(keyboardAction) {}
+}
 
-    /** @override */
-    showAndroidAppsSettings(keyboardAction) {
-      chrome.send('showAndroidAppsSettings', [keyboardAction]);
-    }
+/**
+ * @implements {AndroidAppsBrowserProxy}
+ */
+export class AndroidAppsBrowserProxyImpl {
+  /** @override */
+  requestAndroidAppsInfo() {
+    chrome.send('requestAndroidAppsInfo');
   }
+
+  /** @override */
+  showAndroidAppsSettings(keyboardAction) {
+    chrome.send('showAndroidAppsSettings', [keyboardAction]);
+  }
+}
 
   // The singleton instance_ can be replaced with a test version of this wrapper
   // during testing.
-  cr.addSingletonGetter(AndroidAppsBrowserProxyImpl);
-
-  return {
-    AndroidAppsBrowserProxy: AndroidAppsBrowserProxy,
-    AndroidAppsBrowserProxyImpl: AndroidAppsBrowserProxyImpl,
-  };
-});
+addSingletonGetter(AndroidAppsBrowserProxyImpl);

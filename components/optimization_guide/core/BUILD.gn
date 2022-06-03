@@ -1,0 +1,300 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+import("//components/optimization_guide/features.gni")
+
+static_library("bloomfilter") {
+  sources = [
+    "bloom_filter.cc",
+    "bloom_filter.h",
+  ]
+  deps = [
+    "//base",
+    "//third_party/smhasher:murmurhash3",
+  ]
+}
+
+static_library("entities") {
+  sources = [
+    "batch_entity_metadata_task.cc",
+    "batch_entity_metadata_task.h",
+    "entity_metadata.cc",
+    "entity_metadata.h",
+    "entity_metadata_provider.h",
+  ]
+  public_deps = [
+    "//base",
+    "//third_party/abseil-cpp:absl",
+  ]
+}
+
+static_library("core") {
+  sources = [
+    "command_line_top_host_provider.cc",
+    "command_line_top_host_provider.h",
+    "decision_tree_prediction_model.cc",
+    "decision_tree_prediction_model.h",
+    "hint_cache.cc",
+    "hint_cache.h",
+    "hints_component_info.h",
+    "hints_component_util.cc",
+    "hints_component_util.h",
+    "hints_fetcher.cc",
+    "hints_fetcher.h",
+    "hints_fetcher_factory.cc",
+    "hints_fetcher_factory.h",
+    "hints_manager.cc",
+    "hints_manager.h",
+    "hints_processing_util.cc",
+    "hints_processing_util.h",
+    "insertion_ordered_set.h",
+    "memory_hint.cc",
+    "memory_hint.h",
+    "model_info.cc",
+    "model_info.h",
+    "noisy_metrics_recorder.cc",
+    "noisy_metrics_recorder.h",
+    "optimization_filter.cc",
+    "optimization_filter.h",
+    "optimization_guide_constants.cc",
+    "optimization_guide_constants.h",
+    "optimization_guide_decision.h",
+    "optimization_guide_enums.h",
+    "optimization_guide_features.cc",
+    "optimization_guide_features.h",
+    "optimization_guide_model_provider.h",
+    "optimization_guide_navigation_data.cc",
+    "optimization_guide_navigation_data.h",
+    "optimization_guide_permissions_util.cc",
+    "optimization_guide_permissions_util.h",
+    "optimization_guide_prefs.cc",
+    "optimization_guide_prefs.h",
+    "optimization_guide_store.cc",
+    "optimization_guide_store.h",
+    "optimization_guide_switches.cc",
+    "optimization_guide_switches.h",
+    "optimization_guide_util.cc",
+    "optimization_guide_util.h",
+    "optimization_hints_component_observer.h",
+    "optimization_hints_component_update_listener.cc",
+    "optimization_hints_component_update_listener.h",
+    "optimization_metadata.cc",
+    "optimization_metadata.h",
+    "optimization_target_model_observer.h",
+    "page_content_annotation_job.cc",
+    "page_content_annotation_job.h",
+    "page_content_annotations_common.cc",
+    "page_content_annotations_common.h",
+    "prediction_model.cc",
+    "prediction_model.h",
+    "prediction_model_fetcher.cc",
+    "prediction_model_fetcher.h",
+    "push_notification_manager.h",
+    "store_update_data.cc",
+    "store_update_data.h",
+    "tab_url_provider.h",
+    "top_host_provider.h",
+    "url_pattern_with_wildcards.cc",
+    "url_pattern_with_wildcards.h",
+  ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "base_model_executor.h",
+      "base_model_executor_helpers.h",
+      "bert_model_executor.cc",
+      "bert_model_executor.h",
+      "bert_model_handler.cc",
+      "bert_model_handler.h",
+      "model_executor.h",
+      "model_handler.h",
+      "model_validator.cc",
+      "model_validator.h",
+      "page_content_annotation_job_executor.cc",
+      "page_content_annotation_job_executor.h",
+      "page_entities_model_executor.h",
+      "page_topics_model_executor.cc",
+      "page_topics_model_executor.h",
+    ]
+  }
+
+  public_deps = [
+    ":entities",
+    "//components/optimization_guide:machine_learning_tflite_buildflags",
+    "//third_party/re2",
+  ]
+  if (build_with_tflite_lib) {
+    public_deps += [
+      "//components/optimization_guide/core:machine_learning",
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
+
+  deps = [
+    ":bloomfilter",
+    "//base",
+    "//components/data_reduction_proxy/core/browser",
+    "//components/leveldb_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+    "//components/unified_consent",
+    "//components/variations",
+    "//components/variations/net",
+    "//google_apis",
+    "//net:net",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
+    "//url:url",
+  ]
+}
+
+if (build_with_tflite_lib) {
+  static_library("machine_learning") {
+    sources = [
+      "tflite_op_resolver.cc",
+      "tflite_op_resolver.h",
+    ]
+    deps = [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+    ]
+  }
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "mock_push_notification_manager.cc",
+    "mock_push_notification_manager.h",
+    "optimization_guide_test_util.cc",
+    "optimization_guide_test_util.h",
+    "proto_database_provider_test_base.cc",
+    "proto_database_provider_test_base.h",
+    "test_hints_component_creator.cc",
+    "test_hints_component_creator.h",
+    "test_model_info_builder.cc",
+    "test_model_info_builder.h",
+    "test_optimization_guide_model_provider.cc",
+    "test_optimization_guide_model_provider.h",
+  ]
+  deps = [
+    ":bloomfilter",
+    ":core",
+    "//base",
+    "//components/leveldb_proto",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+if (is_ios) {
+  source_set("eg_test_support+eg2") {
+    testonly = true
+    sources = [
+      "optimization_guide_constants.cc",
+      "optimization_guide_constants.h",
+      "optimization_guide_enums.h",
+      "optimization_guide_switches.cc",
+      "optimization_guide_switches.h",
+      "optimization_guide_test_util.cc",
+      "optimization_guide_test_util.h",
+    ]
+    deps = [
+      "//base",
+      "//components/optimization_guide/proto:optimization_guide_proto",
+      "//url",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "batch_entity_metadata_task_unittest.cc",
+    "bloom_filter_unittest.cc",
+    "command_line_top_host_provider_unittest.cc",
+    "decision_tree_prediction_model_unittest.cc",
+    "hint_cache_unittest.cc",
+    "hints_component_util_unittest.cc",
+    "hints_fetcher_unittest.cc",
+    "hints_manager_unittest.cc",
+    "hints_processing_util_unittest.cc",
+    "insertion_ordered_set_unittest.cc",
+    "noisy_metrics_recorder_unittest.cc",
+    "optimization_filter_unittest.cc",
+    "optimization_guide_features_unittest.cc",
+    "optimization_guide_navigation_data_unittest.cc",
+    "optimization_guide_permissions_util_unittest.cc",
+    "optimization_guide_store_unittest.cc",
+    "optimization_guide_switches_unittest.cc",
+    "optimization_guide_util_unittest.cc",
+    "optimization_hints_component_update_listener_unittest.cc",
+    "optimization_metadata_unittest.cc",
+    "page_content_annotation_job_unittest.cc",
+    "prediction_model_fetcher_unittest.cc",
+    "prediction_model_unittest.cc",
+    "store_update_data_unittest.cc",
+    "url_pattern_with_wildcards_unittest.cc",
+  ]
+  if (build_with_tflite_lib) {
+    sources += [
+      "bert_model_executor_unittest.cc",
+      "model_executor_unittest.cc",
+      "model_handler_unittest.cc",
+      "model_validator_unittest.cc",
+      "page_content_annotation_job_executor_unittest.cc",
+      "page_topics_model_executor_unittest.cc",
+      "test_model_executor.cc",
+      "test_model_executor.h",
+      "test_model_handler.h",
+    ]
+  }
+
+  deps = [
+    ":bloomfilter",
+    ":core",
+    ":entities",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/data_reduction_proxy/core/browser",
+    "//components/data_reduction_proxy/core/common",
+    "//components/leveldb_proto:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/ukm:test_support",
+    "//components/unified_consent",
+    "//components/variations:test_support",
+    "//net:test_support",
+    "//services/network:network_service",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url:url",
+  ]
+  if (build_with_tflite_lib) {
+    deps += [
+      "//third_party/tflite",
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
+}
+
+if (is_android) {
+  java_cpp_enum("optimization_guide_generated_enums") {
+    sources = [ "optimization_guide_decision.h" ]
+    visibility = [ "//chrome/browser/optimization_guide/android:*" ]
+  }
+}

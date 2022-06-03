@@ -1,19 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_grid.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="synced_device_card.html">
-<link rel="import" href="strings.html">
-
-<dom-module id="history-synced-device-manager">
-  <template>
     <style include="shared-style cr-shared-style">
       :host {
         display: block;
@@ -65,10 +49,16 @@
       #synced-device-list {
         padding-top: var(--first-card-padding-top);
       }
+
+      history-synced-device-card {
+        margin-block-end: var(--card-padding-between);
+      }
     </style>
-    <div id="synced-device-list" hidden="[[!syncedDevices_.length]]">
+    <div id="synced-device-list" class="history-cards"
+        hidden="[[!syncedDevices_.length]]">
       <template is="dom-repeat" items="[[syncedDevices_]]" as="syncedDevice">
-        <history-synced-device-card device="[[syncedDevice.device]]"
+        <history-synced-device-card
+            device="[[syncedDevice.device]]"
             last-update-time="[[syncedDevice.lastUpdateTime]]"
             tabs="[[syncedDevice.tabs]]"
             separator-indexes="[[syncedDevice.separatorIndexes]]"
@@ -84,7 +74,8 @@
       [[noSyncedTabsMessage(fetchingSyncedTabs_, searchTerm)]]
     </div>
     <div id="sign-in-guide"
-        hidden="[[!showSignInGuide(signInState, guestSession_)]]">
+        hidden="[[!showSignInGuide(signInState, guestSession_,
+                                   signInAllowed_)]]">
       <div id="illustration"></div>
       <div id="sign-in-promo">$i18n{signInPromo}</div>
       <div id="sign-in-promo-desc">$i18n{signInPromoDesc}</div>
@@ -108,6 +99,3 @@
         </cr-action-menu>
       </template>
     </cr-lazy-render>
-  </template>
-  <script src="synced_device_manager.js"></script>
-</dom-module>

@@ -9,17 +9,13 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
+#include "base/win/windows_types.h"
 #endif  // defined(OS_WIN)
 
-#include <set>
-#include <vector>
-
 #include "base/callback.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/process/process.h"
 #include "ui/gfx/native_widget_types.h"
@@ -103,11 +99,15 @@ class ProcessSingleton {
   // handled within the current browser instance or false if the remote process
   // should handle it (i.e., because the current process is shutting down).
   using NotificationCallback =
-      base::Callback<bool(const base::CommandLine& command_line,
-                          const base::FilePath& current_directory)>;
+      base::RepeatingCallback<bool(const base::CommandLine& command_line,
+                                   const base::FilePath& current_directory)>;
 
   ProcessSingleton(const base::FilePath& user_data_dir,
                    const NotificationCallback& notification_callback);
+
+  ProcessSingleton(const ProcessSingleton&) = delete;
+  ProcessSingleton& operator=(const ProcessSingleton&) = delete;
+
   ~ProcessSingleton();
 
   // Notify another process, if available. Otherwise sets ourselves as the
@@ -138,7 +138,7 @@ class ProcessSingleton {
 #if defined(OS_WIN)
   // Called to query whether to kill a hung browser process that has visible
   // windows. Return true to allow killing the hung process.
-  using ShouldKillRemoteProcessCallback = base::Callback<bool()>;
+  using ShouldKillRemoteProcessCallback = base::RepeatingCallback<bool()>;
   void OverrideShouldKillRemoteProcessCallbackForTesting(
       const ShouldKillRemoteProcessCallback& display_dialog_callback);
 #endif
@@ -164,7 +164,7 @@ class ProcessSingleton {
       const base::TimeDelta& timeout);
   void OverrideCurrentPidForTesting(base::ProcessId pid);
   void OverrideKillCallbackForTesting(
-      const base::Callback<void(int)>& callback);
+      const base::RepeatingCallback<void(int)>& callback);
 #endif
 
  private:
@@ -204,7 +204,7 @@ class ProcessSingleton {
 
   // Function to call when the other process is hung and needs to be killed.
   // Allows overriding for tests.
-  base::Callback<void(int)> kill_callback_;
+  base::RepeatingCallback<void(int)> kill_callback_;
 
   // Path in file system to the socket.
   base::FilePath socket_path_;
@@ -224,7 +224,7 @@ class ProcessSingleton {
   scoped_refptr<LinuxWatcher> watcher_;
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // macOS 10.13 tries to open a new Chrome instance if a user tries to
   // open an external link after Chrome has updated, but not relaunched.
   // This method extracts any waiting "open URL" AppleEvent and forwards
@@ -235,8 +235,6 @@ class ProcessSingleton {
 #endif
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessSingleton);
 };
 
 #endif  // CHROME_BROWSER_PROCESS_SINGLETON_H_

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/installation_notifier.h"
 
-#include "base/message_loop/message_loop_current.h"
+#include "base/task/current_thread.h"
 
 #include <stdint.h>
 #import <UIKit/UIKit.h>

@@ -125,7 +125,7 @@
   AlertAction* action =
       [AlertAction actionWithTitle:@"OK"
                              style:UIAlertActionStyleDefault
-                           handler:^(AlertAction* action) {
+                           handler:^(AlertAction* theAction) {
                              [weakSelf.presenter dismissAnimated:YES];
                            }];
   [self presentAlertWithTitle:@"chromium.org says"
@@ -135,11 +135,12 @@
 }
 
 - (void)showPrompt {
-  TextFieldConfiguration* fieldConfiguration =
-      [[TextFieldConfiguration alloc] initWithText:nil
-                                       placeholder:@"placehorder"
-                           accessibilityIdentifier:nil
-                                   secureTextEntry:NO];
+  TextFieldConfiguration* fieldConfiguration = [[TextFieldConfiguration alloc]
+                 initWithText:nil
+                  placeholder:@"placehorder"
+      accessibilityIdentifier:nil
+       autocapitalizationType:UITextAutocapitalizationTypeSentences
+              secureTextEntry:NO];
   __weak __typeof__(self) weakSelf = self;
   AlertAction* OKAction =
       [AlertAction actionWithTitle:@"OK"
@@ -180,16 +181,18 @@
 }
 
 - (void)showHTTPAuth {
-  TextFieldConfiguration* usernameOptions =
-      [[TextFieldConfiguration alloc] initWithText:nil
-                                       placeholder:@"Username"
-                           accessibilityIdentifier:nil
-                                   secureTextEntry:NO];
-  TextFieldConfiguration* passwordOptions =
-      [[TextFieldConfiguration alloc] initWithText:nil
-                                       placeholder:@"Password"
-                           accessibilityIdentifier:nil
-                                   secureTextEntry:YES];
+  TextFieldConfiguration* usernameOptions = [[TextFieldConfiguration alloc]
+                 initWithText:nil
+                  placeholder:@"Username"
+      accessibilityIdentifier:nil
+       autocapitalizationType:UITextAutocapitalizationTypeNone
+              secureTextEntry:NO];
+  TextFieldConfiguration* passwordOptions = [[TextFieldConfiguration alloc]
+                 initWithText:nil
+                  placeholder:@"Password"
+      accessibilityIdentifier:nil
+       autocapitalizationType:UITextAutocapitalizationTypeNone
+              secureTextEntry:YES];
 
   __weak __typeof__(self) weakSelf = self;
   AlertAction* OKAction =
@@ -212,16 +215,18 @@
 }
 
 - (void)showLongAlert {
-  TextFieldConfiguration* usernameOptions =
-      [[TextFieldConfiguration alloc] initWithText:nil
-                                       placeholder:@"Username"
-                           accessibilityIdentifier:nil
-                                   secureTextEntry:NO];
-  TextFieldConfiguration* passwordOptions =
-      [[TextFieldConfiguration alloc] initWithText:nil
-                                       placeholder:@"Password"
-                           accessibilityIdentifier:nil
-                                   secureTextEntry:YES];
+  TextFieldConfiguration* usernameOptions = [[TextFieldConfiguration alloc]
+                 initWithText:nil
+                  placeholder:@"Username"
+      accessibilityIdentifier:nil
+       autocapitalizationType:UITextAutocapitalizationTypeNone
+              secureTextEntry:NO];
+  TextFieldConfiguration* passwordOptions = [[TextFieldConfiguration alloc]
+                 initWithText:nil
+                  placeholder:@"Password"
+      accessibilityIdentifier:nil
+       autocapitalizationType:UITextAutocapitalizationTypeNone
+              secureTextEntry:YES];
   __weak __typeof__(self) weakSelf = self;
   AlertAction* OKAction =
       [AlertAction actionWithTitle:@"Sign In"

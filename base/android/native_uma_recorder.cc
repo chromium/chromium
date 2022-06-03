@@ -10,6 +10,7 @@
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/sparse_histogram.h"
+#include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
@@ -24,6 +25,9 @@ namespace {
 class HistogramCache {
  public:
   HistogramCache() {}
+
+  HistogramCache(const HistogramCache&) = delete;
+  HistogramCache& operator=(const HistogramCache&) = delete;
 
   std::string HistogramConstructionParamsToString(HistogramBase* histogram) {
     std::string params_str = histogram->histogram_name();
@@ -145,8 +149,6 @@ class HistogramCache {
   static HistogramBase* HistogramFromHint(jlong j_histogram_hint) {
     return reinterpret_cast<HistogramBase*>(j_histogram_hint);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(HistogramCache);
 };
 
 LazyInstance<HistogramCache>::Leaky g_histograms;
@@ -205,6 +207,15 @@ jlong JNI_NativeUmaRecorder_RecordSparseHistogram(
       env, j_histogram_name, j_histogram_hint);
   histogram->Add(sample);
   return reinterpret_cast<jlong>(histogram);
+}
+
+void JNI_NativeUmaRecorder_RecordUserAction(
+    JNIEnv* env,
+    const JavaParamRef<jstring>& j_user_action_name,
+    jlong j_millis_since_event) {
+  // Time values coming from Java need to be synchronized with TimeTick clock.
+  RecordComputedActionSince(ConvertJavaStringToUTF8(env, j_user_action_name),
+                            Milliseconds(j_millis_since_event));
 }
 
 }  // namespace android

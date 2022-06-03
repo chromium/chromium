@@ -8,15 +8,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,6 +37,11 @@ const char* kExternalPolicyDataOverflowPayload = "External policy data+++++++";
 }  // namespace
 
 class ExternalPolicyDataFetcherTest : public testing::Test {
+ public:
+  ExternalPolicyDataFetcherTest(const ExternalPolicyDataFetcherTest&) = delete;
+  ExternalPolicyDataFetcherTest& operator=(
+      const ExternalPolicyDataFetcherTest&) = delete;
+
  protected:
   ExternalPolicyDataFetcherTest();
   ~ExternalPolicyDataFetcherTest() override;
@@ -63,9 +68,6 @@ class ExternalPolicyDataFetcherTest : public testing::Test {
   int callback_job_index_;
   ExternalPolicyDataFetcher::Result callback_result_;
   std::unique_ptr<std::string> callback_data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExternalPolicyDataFetcherTest);
 };
 
 ExternalPolicyDataFetcherTest::ExternalPolicyDataFetcherTest()
@@ -85,10 +87,9 @@ void ExternalPolicyDataFetcherTest::SetUp() {
 
 void ExternalPolicyDataFetcherTest::StartJob(int index) {
   jobs_[index] = fetcher_->StartJob(
-      GURL(kExternalPolicyDataURLs[index]),
-      kExternalPolicyDataMaxSize,
-      base::Bind(&ExternalPolicyDataFetcherTest::OnJobFinished,
-                 base::Unretained(this), index));
+      GURL(kExternalPolicyDataURLs[index]), kExternalPolicyDataMaxSize,
+      base::BindOnce(&ExternalPolicyDataFetcherTest::OnJobFinished,
+                     base::Unretained(this), index));
   base::RunLoop().RunUntilIdle();
 }
 

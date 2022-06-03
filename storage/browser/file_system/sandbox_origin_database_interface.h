@@ -24,7 +24,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxOriginDatabaseInterface {
     ~OriginRecord();
   };
 
-  virtual ~SandboxOriginDatabaseInterface() {}
+  SandboxOriginDatabaseInterface(const SandboxOriginDatabaseInterface&) =
+      delete;
+  SandboxOriginDatabaseInterface& operator=(
+      const SandboxOriginDatabaseInterface&) = delete;
+  virtual ~SandboxOriginDatabaseInterface() = default;
 
   // Returns true if the origin's path is included in this database.
   virtual bool HasOriginPath(const std::string& origin) = 0;
@@ -50,7 +54,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) SandboxOriginDatabaseInterface {
   virtual void RewriteDatabase() = 0;
 
  protected:
-  SandboxOriginDatabaseInterface() {}
+  SandboxOriginDatabaseInterface() = default;
 };
 
 }  // namespace storage

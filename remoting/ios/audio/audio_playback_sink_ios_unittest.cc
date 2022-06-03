@@ -5,7 +5,7 @@
 #include "remoting/ios/audio/audio_playback_sink_ios.h"
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread.h"
 #include "remoting/client/audio/audio_stream_format.h"
@@ -17,8 +17,7 @@ namespace remoting {
 namespace {
 
 constexpr AudioStreamFormat kStreamFormat = {2, 2, 44100};
-constexpr base::TimeDelta kBufferPlaybackTimeout =
-    base::TimeDelta::FromMilliseconds(500);
+constexpr base::TimeDelta kBufferPlaybackTimeout = base::Milliseconds(500);
 
 }  // namespace
 

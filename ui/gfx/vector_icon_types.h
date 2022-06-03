@@ -5,7 +5,6 @@
 #ifndef UI_GFX_VECTOR_ICON_TYPES_H_
 #define UI_GFX_VECTOR_ICON_TYPES_H_
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkScalar.h"
 #include "ui/gfx/animation/tween.h"
 
@@ -46,7 +45,12 @@ namespace gfx {
   DECLARE_VECTOR_COMMAND(CUBIC_TO)                                             \
   DECLARE_VECTOR_COMMAND(R_CUBIC_TO)                                           \
   DECLARE_VECTOR_COMMAND(CUBIC_TO_SHORTHAND)                                   \
+  DECLARE_VECTOR_COMMAND(QUADRATIC_TO)                                         \
+  DECLARE_VECTOR_COMMAND(R_QUADRATIC_TO)                                       \
+  DECLARE_VECTOR_COMMAND(QUADRATIC_TO_SHORTHAND)                               \
+  DECLARE_VECTOR_COMMAND(R_QUADRATIC_TO_SHORTHAND)                             \
   DECLARE_VECTOR_COMMAND(CIRCLE)                                               \
+  DECLARE_VECTOR_COMMAND(OVAL)                                                 \
   DECLARE_VECTOR_COMMAND(ROUND_RECT)                                           \
   DECLARE_VECTOR_COMMAND(CLOSE)                                                \
   /* Sets the dimensions of the canvas in dip. */                              \
@@ -58,13 +62,7 @@ namespace gfx {
   DECLARE_VECTOR_COMMAND(DISABLE_AA)                                           \
   /* Flips the x-axis in RTL locales. Default is false, this command sets */   \
   /* it to true. */                                                            \
-  DECLARE_VECTOR_COMMAND(FLIPS_IN_RTL)                                         \
-  /* Defines a timed transition for other elements. */                         \
-  DECLARE_VECTOR_COMMAND(TRANSITION_FROM)                                      \
-  DECLARE_VECTOR_COMMAND(TRANSITION_TO)                                        \
-  /* Parameters are delay (ms), duration (ms), and tween type */               \
-  /* (gfx::Tween::Type). */                                                    \
-  DECLARE_VECTOR_COMMAND(TRANSITION_END)
+  DECLARE_VECTOR_COMMAND(FLIPS_IN_RTL)
 
 #define DECLARE_VECTOR_COMMAND(x) x,
 
@@ -89,19 +87,22 @@ struct PathElement {
 struct VectorIconRep {
   VectorIconRep() = default;
 
+  VectorIconRep(const VectorIconRep&) = delete;
+  VectorIconRep& operator=(const VectorIconRep&) = delete;
+
   const PathElement* path = nullptr;
 
   // The length of |path|.
   size_t path_size = 0u;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VectorIconRep);
 };
 
 // A vector icon that stores one or more representations to be used for various
 // scale factors and pixel dimensions.
 struct VectorIcon {
   VectorIcon() = default;
+
+  VectorIcon(const VectorIcon&) = delete;
+  VectorIcon& operator=(const VectorIcon&) = delete;
 
   bool is_empty() const { return !reps; }
 
@@ -114,9 +115,6 @@ struct VectorIcon {
   const char* name = nullptr;
 
   bool operator<(const VectorIcon& other) const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VectorIcon);
 };
 
 }  // namespace gfx

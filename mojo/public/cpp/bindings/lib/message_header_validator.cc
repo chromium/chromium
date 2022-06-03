@@ -90,7 +90,7 @@ bool IsValidMessageHeader(const internal::MessageHeader* header,
     size_t num_ids = header_v2->payload_interface_ids.Get()->size();
     const uint32_t* ids = header_v2->payload_interface_ids.Get()->storage();
     for (size_t i = 0; i < num_ids; ++i) {
-      if (!IsValidInterfaceId(ids[i]) || IsMasterInterfaceId(ids[i])) {
+      if (!IsValidInterfaceId(ids[i]) || IsPrimaryInterfaceId(ids[i])) {
         internal::ReportValidationError(
             validation_context,
             internal::VALIDATION_ERROR_ILLEGAL_INTERFACE_ID);

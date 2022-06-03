@@ -20,10 +20,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_LENGTH_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_LENGTH_CONTEXT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+
+namespace gfx {
+class SizeF;
+class Vector2dF;
+}
 
 namespace blink {
 
@@ -34,7 +40,7 @@ class UnzoomedLength;
 
 enum class SVGLengthMode { kWidth, kHeight, kOther };
 
-class SVGLengthContext {
+class CORE_EXPORT SVGLengthContext {
   STACK_ALLOCATED();
 
  public:
@@ -64,9 +70,9 @@ class SVGLengthContext {
   static float ResolveLength(const SVGElement*,
                              SVGUnitTypes::SVGUnitType,
                              const SVGLength&);
-  FloatPoint ResolveLengthPair(const Length& x_length,
-                               const Length& y_length,
-                               const ComputedStyle&) const;
+  gfx::Vector2dF ResolveLengthPair(const Length& x_length,
+                                   const Length& y_length,
+                                   const ComputedStyle&) const;
 
   float ConvertValueToUserUnits(float,
                                 SVGLengthMode,
@@ -84,7 +90,7 @@ class SVGLengthContext {
                               const ComputedStyle&,
                               float dimension);
 
-  bool DetermineViewport(FloatSize&) const;
+  bool DetermineViewport(gfx::SizeF&) const;
   float ResolveValue(const CSSPrimitiveValue&, SVGLengthMode) const;
 
  private:
@@ -97,7 +103,7 @@ class SVGLengthContext {
   float ConvertValueFromUserUnitsToCHS(float value) const;
   float ConvertValueFromCHSToUserUnits(float value) const;
 
-  Member<const SVGElement> context_;
+  const SVGElement* context_;
 };
 
 }  // namespace blink

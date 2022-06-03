@@ -6,6 +6,7 @@
 
 #include "ash/app_list/views/contents_view.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/views/focus/focus_manager.h"
 
 namespace ash {
 
@@ -22,41 +23,40 @@ void AppListPage::OnHidden() {}
 void AppListPage::OnWillBeHidden() {}
 
 void AppListPage::OnAnimationUpdated(double progress,
-                                     ash::AppListState from_state,
-                                     ash::AppListState to_state) {}
+                                     AppListState from_state,
+                                     AppListState to_state) {}
 
 gfx::Size AppListPage::GetPreferredSearchBoxSize() const {
   return gfx::Size();
 }
 
-base::Optional<int> AppListPage::GetSearchBoxTop(
-    ash::AppListViewState view_state) const {
-  return base::nullopt;
-}
-
-void AppListPage::UpdateOpacityForState(ash::AppListState state) {}
-
-void AppListPage::UpdatePageBoundsForState(ash::AppListState state,
+void AppListPage::UpdatePageBoundsForState(AppListState state,
                                            const gfx::Rect& contents_bounds,
                                            const gfx::Rect& search_box_bounds) {
   SetBoundsRect(
       GetPageBoundsForState(state, contents_bounds, search_box_bounds));
 }
 
-views::View* AppListPage::GetSelectedView() const {
-  return nullptr;
-}
-
 views::View* AppListPage::GetFirstFocusableView() {
-  return nullptr;
+  return GetFocusManager()->GetNextFocusableView(
+      this, GetWidget(), false /* reverse */, false /* dont_loop */);
 }
 
 views::View* AppListPage::GetLastFocusableView() {
-  return nullptr;
+  return GetFocusManager()->GetNextFocusableView(
+      this, GetWidget(), true /* reverse */, false /* dont_loop */);
 }
 
-bool AppListPage::ShouldShowSearchBox() const {
-  return true;
+void AppListPage::AnimateOpacity(float current_progress,
+                                 AppListViewState target_view_state,
+                                 const OpacityAnimator& animator) {
+  animator.Run(this, target_view_state != AppListViewState::kClosed);
+}
+
+void AppListPage::AnimateYPosition(AppListViewState target_view_state,
+                                   const TransformAnimator& animator,
+                                   float default_offset) {
+  animator.Run(default_offset, layer());
 }
 
 gfx::Rect AppListPage::GetAboveContentsOffscreenBounds(

@@ -1,9 +1,0 @@
-Ensures that if layout is dirty, triggering a scroll causes a relayout
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS outer.scrollTop is > 0
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

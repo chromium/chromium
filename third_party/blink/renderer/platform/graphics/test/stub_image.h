@@ -14,16 +14,14 @@ class StubImage : public Image {
   StubImage() = default;
 
   bool CurrentFrameKnownToBeOpaque() override { return false; }
-  IntSize Size() const override { return IntSize(10, 10); }
+  IntSize SizeWithConfig(SizeConfig) const override { return IntSize(10, 10); }
   void DestroyDecodedData() override {}
   PaintImage PaintImageForCurrentFrame() override { return PaintImage(); }
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
             const FloatRect& dst_rect,
             const FloatRect& src_rect,
-            RespectImageOrientationEnum,
-            ImageClampingMode,
-            ImageDecodingMode) override {}
+            const ImageDrawOptions&) override {}
 };
 
 }  // namespace blink

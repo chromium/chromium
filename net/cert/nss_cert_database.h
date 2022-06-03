@@ -15,7 +15,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
@@ -37,6 +37,9 @@ class NET_EXPORT NSSCertDatabase {
  public:
   class NET_EXPORT Observer {
    public:
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
+
     virtual ~Observer() {}
 
     // Will be called when a certificate is added, removed, or trust settings
@@ -45,9 +48,34 @@ class NET_EXPORT NSSCertDatabase {
 
    protected:
     Observer() {}
+  };
 
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Observer);
+  // Holds an NSS certificate along with additional information.
+  struct CertInfo {
+    CertInfo();
+    CertInfo(CertInfo&& other);
+    ~CertInfo();
+    CertInfo& operator=(CertInfo&& other);
+
+    // The certificate itself.
+    ScopedCERTCertificate cert;
+
+    // The certificate is stored on a read-only slot.
+    bool on_read_only_slot = false;
+
+    // The certificate is untrusted.
+    bool untrusted = false;
+
+    // The certificate is trusted for web navigations according to the trust
+    // bits stored in the database.
+    bool web_trust_anchor = false;
+
+    // The certificate is hardware-backed.
+    bool hardware_backed = false;
+
+    // The certificate is device-wide.
+    // Note: can be true only on Chrome OS.
+    bool device_wide = false;
   };
 
   // Stores per-certificate error codes for import failures.
@@ -88,6 +116,11 @@ class NET_EXPORT NSSCertDatabase {
     DISTRUSTED_OBJ_SIGN   = 1 << 5,
   };
 
+  using CertInfoList = std::vector<CertInfo>;
+
+  using ListCertsInfoCallback =
+      base::OnceCallback<void(CertInfoList certs_info)>;
+
   using ListCertsCallback =
       base::OnceCallback<void(ScopedCERTCertificateList certs)>;
 
@@ -104,6 +137,10 @@ class NET_EXPORT NSSCertDatabase {
   // be identical.
   NSSCertDatabase(crypto::ScopedPK11Slot public_slot,
                   crypto::ScopedPK11Slot private_slot);
+
+  NSSCertDatabase(const NSSCertDatabase&) = delete;
+  NSSCertDatabase& operator=(const NSSCertDatabase&) = delete;
+
   virtual ~NSSCertDatabase();
 
   // Asynchronously get a list of unique certificates in the certificate
@@ -112,25 +149,24 @@ class NET_EXPORT NSSCertDatabase {
   virtual void ListCerts(ListCertsCallback callback);
 
   // Get a list of certificates in the certificate database of the given slot.
-  // Note that the callback may be run even after the database is deleted.
-  // Must be called on the IO thread and it calls |callback| on the IO thread.
-  // This does not block by retrieving the certs asynchronously on a worker
-  // thread. Never calls |callback| synchronously.
+  // Note that the callback may be run even after the database is deleted. Must
+  // be called on the IO thread. This does not block by retrieving the certs
+  // asynchronously on a worker thread.
   virtual void ListCertsInSlot(ListCertsCallback callback, PK11SlotInfo* slot);
+
+  // Asynchronously get a list of certificates along with additional
+  // information. Note that the callback may be run even after the database is
+  // deleted.
+  virtual void ListCertsInfo(ListCertsInfoCallback callback);
 
 #if defined(OS_CHROMEOS)
   // Get the slot for system-wide key data. May be NULL if the system token was
-  // not explicitly set.
-  // Note: The System slot is set after the NSSCertDatabase is constructed and
-  // this call returns synchronously. Thus, it is possible to call this function
-  // before SetSystemSlot is called and get a NULL result.
-  // See https://crbug.com/399554 .
+  // not enabled for this database.
   virtual crypto::ScopedPK11Slot GetSystemSlot() const;
 
-  // Check whether the certificate is stored on the system slot (i.e. is a
-  // device certificate).
-  bool IsCertificateOnSystemSlot(CERTCertificate* cert) const;
-#endif
+  // Checks whether |cert| is stored on |slot|.
+  static bool IsCertificateOnSlot(CERTCertificate* cert, PK11SlotInfo* slot);
+#endif  // defined(OS_CHROMEOS)
 
   // Get the default slot for public key data.
   crypto::ScopedPK11Slot GetPublicSlot() const;
@@ -144,6 +180,12 @@ class NET_EXPORT NSSCertDatabase {
   virtual void ListModules(std::vector<crypto::ScopedPK11Slot>* modules,
                            bool need_rw) const;
 
+  // Set trust values for certificate.
+  // Returns true on success or false on failure.
+  virtual bool SetCertTrust(CERTCertificate* cert,
+                            CertType type,
+                            TrustBits trust_bits);
+
   // Import certificates and private keys from PKCS #12 blob into the module.
   // If |is_extractable| is false, mark the private key as being unextractable
   // from the module.
@@ -152,7 +194,7 @@ class NET_EXPORT NSSCertDatabase {
   // of certs that were imported.
   int ImportFromPKCS12(PK11SlotInfo* slot_info,
                        const std::string& data,
-                       const base::string16& password,
+                       const std::u16string& password,
                        bool is_extractable,
                        ScopedCERTCertificateList* imported_certs);
 
@@ -160,7 +202,7 @@ class NET_EXPORT NSSCertDatabase {
   // storing into |output|.
   // Returns the number of certificates successfully exported.
   int ExportToPKCS12(const ScopedCERTCertificateList& certs,
-                     const base::string16& password,
+                     const std::u16string& password,
                      std::string* output) const;
 
   // Uses similar logic to nsNSSCertificateDB::handleCACertDownload to find the
@@ -204,19 +246,6 @@ class NET_EXPORT NSSCertDatabase {
   // Get trust bits for certificate.
   TrustBits GetCertTrust(const CERTCertificate* cert, CertType type) const;
 
-  // IsUntrusted returns true if |cert| is specifically untrusted. These
-  // certificates are stored in the database for the specific purpose of
-  // rejecting them.
-  bool IsUntrusted(const CERTCertificate* cert) const;
-
-  // IsWebTrustAnchor returns true if |cert| is explicitly trusted for web
-  // navigations according to the trust bits stored in the database.
-  bool IsWebTrustAnchor(const CERTCertificate* cert) const;
-
-  // Set trust values for certificate.
-  // Returns true on success or false on failure.
-  bool SetCertTrust(CERTCertificate* cert, CertType type, TrustBits trust_bits);
-
   // Delete certificate and associated private key (if one exists).
   // |cert| is still valid when this function returns. Returns true on
   // success.
@@ -228,17 +257,42 @@ class NET_EXPORT NSSCertDatabase {
   void DeleteCertAndKeyAsync(ScopedCERTCertificate cert,
                              DeleteCertCallback callback);
 
+  // IsUntrusted returns true if |cert| is specifically untrusted. These
+  // certificates are stored in the database for the specific purpose of
+  // rejecting them.
+  static bool IsUntrusted(const CERTCertificate* cert);
+
+  // IsWebTrustAnchor returns true if |cert| is explicitly trusted for web
+  // navigations according to the trust bits stored in the database.
+  static bool IsWebTrustAnchor(const CERTCertificate* cert);
+
   // Check whether cert is stored in a readonly slot.
-  bool IsReadOnly(const CERTCertificate* cert) const;
+  static bool IsReadOnly(const CERTCertificate* cert);
 
   // Check whether cert is stored in a hardware slot.
-  bool IsHardwareBacked(const CERTCertificate* cert) const;
+  // This should only be invoked on a worker thread due to expensive operations
+  // behind it.
+  static bool IsHardwareBacked(const CERTCertificate* cert);
 
  protected:
+  // Returns a list of certificates extracted from |certs_info| list ignoring
+  // additional information.
+  static ScopedCERTCertificateList ExtractCertificates(CertInfoList certs_info);
+
   // Certificate listing implementation used by |ListCerts*|. Static so it may
   // safely be used on the worker thread. If |slot| is nullptr, obtains the
   // certs of all slots, otherwise only of |slot|.
   static ScopedCERTCertificateList ListCertsImpl(crypto::ScopedPK11Slot slot);
+
+  // Implements the logic behind returning a list of certificates along with
+  // additional information about every certificate.
+  // If |add_certs_info| is false, doesn't compute the certificate additional
+  // information, the corresponding CertInfo struct fields will be left on their
+  // default values.
+  // Static so it may safely be used on the worker thread. If |slot| is nullptr,
+  // obtains the certs of all slots, otherwise only of |slot|.
+  static CertInfoList ListCertsInfoImpl(crypto::ScopedPK11Slot slot,
+                                        bool add_certs_info);
 
   // Broadcasts notifications to all registered observers.
   void NotifyObserversCertDBChanged();
@@ -277,8 +331,6 @@ class NET_EXPORT NSSCertDatabase {
   const scoped_refptr<base::ObserverListThreadSafe<Observer>> observer_list_;
 
   base::WeakPtrFactory<NSSCertDatabase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NSSCertDatabase);
 };
 
 }  // namespace net

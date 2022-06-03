@@ -49,7 +49,7 @@ class GarbageCollectedHolderForToV8Test
       GarbageCollectedScriptWrappable* script_wrappable)
       : script_wrappable_(script_wrappable) {}
 
-  void Trace(blink::Visitor* visitor) { visitor->Trace(script_wrappable_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(script_wrappable_); }
 
   // This should be public in order to access a Member<X> object.
   Member<GarbageCollectedScriptWrappable> script_wrappable_;
@@ -316,13 +316,13 @@ TEST(ToV8Test, nullableDouble) {
   v8::Isolate* isolate = scope.GetIsolate();
   {
     v8::Local<v8::Value> actual =
-        ToV8(base::Optional<double>(42.0), global, isolate);
+        ToV8(absl::optional<double>(42.0), global, isolate);
     ASSERT_TRUE(actual->IsNumber());
     EXPECT_EQ(42.0, actual.As<v8::Number>()->Value());
   }
   {
     v8::Local<v8::Value> actual =
-        ToV8(base::Optional<double>(), global, isolate);
+        ToV8(absl::optional<double>(), global, isolate);
     EXPECT_TRUE(actual->IsNull());
   }
 }

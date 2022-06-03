@@ -3,8 +3,9 @@
 // found in the LICENSE file.
 
 #include "content/public/browser/media_keys_listener_manager.h"
+#include "build/chromeos_buildflags.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/feature_list.h"
 #include "media/base/media_switches.h"
 #endif

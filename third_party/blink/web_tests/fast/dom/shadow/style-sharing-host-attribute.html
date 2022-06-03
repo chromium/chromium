@@ -2,7 +2,7 @@
 <script src="../../../resources/js-test.js"></script>
 <template>
     <style>:host([green]) { color: green }</style>
-    <content></content>
+    <slot></slot>
 </template>
 <div>
     <div></div>
@@ -15,7 +15,7 @@ var template = document.querySelector("template");
 
 var roots = document.querySelectorAll("div > div");
 for (var i = 0; i < roots.length; i++)
-    roots[i].createShadowRoot().appendChild(document.importNode(template.content, true));
+    roots[i].attachShadow({mode: 'open'}).appendChild(document.importNode(template.content, true));
 
 shouldBe("getComputedStyle(roots[1]).color", "'rgb(0, 128, 0)'");
 </script>

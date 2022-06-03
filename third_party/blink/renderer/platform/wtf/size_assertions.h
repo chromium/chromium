@@ -5,25 +5,26 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SIZE_ASSERTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SIZE_ASSERTIONS_H_
 
-namespace WTF {
+#include <cstdlib>
 
-// The ASSERT_SIZE macro can be used to check that a given struct is the same
-// size as a class. This is useful to visualize where the space is being used in
-// a class, as well as give a useful compile error message when the size doesn't
-// match the expected value.
-template <class T, class U>
-struct assert_size {
-  template <int ActualSize, int ExpectedSize>
-  struct assertSizeEqual {
-    static_assert(ActualSize == ExpectedSize, "Class should stay small");
-    static const bool kInnerValue = true;
-  };
-  static const bool value = assertSizeEqual<sizeof(T), sizeof(U)>::kInnerValue;
+namespace WTF {
+namespace internal {
+
+template <size_t ActualSize, size_t ExpectedSize>
+struct SizesEqual {
+  static constexpr bool value = ActualSize == ExpectedSize;
 };
 
+}  // namespace internal
 }  // namespace WTF
 
-#define ASSERT_SIZE(className, sameSizeAsClassName) \
-  static_assert(WTF::assert_size<className, sameSizeAsClassName>::value, "")
+// The ASSERT_SIZE macro can be used to check that a given type is the same size
+// as another type. This is useful to visualize where the space is being used in
+// a class, as well as give a useful compile error message when the size doesn't
+// match the expected value.
+#define ASSERT_SIZE(type, same_size_type)                                   \
+  static_assert(::WTF::internal::SizesEqual<sizeof(type),                   \
+                                            sizeof(same_size_type)>::value, \
+                #type " should stay small")
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_SIZE_ASSERTIONS_H_

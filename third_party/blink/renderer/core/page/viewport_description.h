@@ -29,7 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VIEWPORT_DESCRIPTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_VIEWPORT_DESCRIPTION_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/page/display_cutout.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/page_scale_constraints.h"
@@ -65,21 +65,19 @@ struct CORE_EXPORT ViewportDescription {
     kMetaMobileOptimized = 5,
     kXhtmlMobileProfile = 6,
 
-    kTypeCount = 7
+    kMaxValue = kXhtmlMobileProfile,
   };
 
-  enum {
-    kValueAuto = -1,
-    kValueDeviceWidth = -2,
-    kValueDeviceHeight = -3,
-    kValuePortrait = -4,
-    kValueLandscape = -5,
-    kValueDeviceDPI = -6,
-    kValueLowDPI = -7,
-    kValueMediumDPI = -8,
-    kValueHighDPI = -9,
-    kValueExtendToZoom = -10
-  };
+  constexpr static float kValueAuto = -1.;
+  constexpr static float kValueDeviceWidth = -2.;
+  constexpr static float kValueDeviceHeight = -3.;
+  constexpr static float kValuePortrait = -4.;
+  constexpr static float kValueLandscape = -5.;
+  constexpr static float kValueDeviceDPI = -6.;
+  constexpr static float kValueLowDPI = -7.;
+  constexpr static float kValueMediumDPI = -8.;
+  constexpr static float kValueHighDPI = -9.;
+  constexpr static float kValueExtendToZoom = -10.;
 
   ViewportDescription(Type type = kUserAgentStyleSheet)
       : type(type),
@@ -167,7 +165,7 @@ struct CORE_EXPORT ViewportDescription {
   // This is because a Document will have multiple ViewportDescriptions are
   // which one that will be used is dependent on whether any values have been
   // explicitly set.
-  base::Optional<mojom::ViewportFit> viewport_fit_;
+  absl::optional<mojom::ViewportFit> viewport_fit_;
 };
 
 }  // namespace blink

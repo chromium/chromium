@@ -7,13 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/commands/omnibox_commands.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_url_loader.h"
 #import "ios/chrome/browser/ui/omnibox/location_bar_delegate.h"
-#import "ios/chrome/browser/ui/toolbar/public/omnibox_focuser.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
 class WebStateList;
 @class CommandDispatcher;
 @protocol ApplicationCommands;
@@ -23,16 +21,16 @@ class WebStateList;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol ToolbarCoordinatorDelegate;
 
-@protocol LocationBarGenericCoordinator<NSObject,
-                                        LocationBarURLLoader,
-                                        OmniboxFocuser>
+@protocol LocationBarGenericCoordinator <NSObject,
+                                         LocationBarURLLoader,
+                                         OmniboxCommands>
 
 // Command dispatcher.
 @property(nonatomic, strong) CommandDispatcher* commandDispatcher;
 // View containing the omnibox.
 @property(nonatomic, strong, readonly) UIView* view;
 // Weak reference to ChromeBrowserState;
-@property(nonatomic, assign) ios::ChromeBrowserState* browserState;
+@property(nonatomic, assign) ChromeBrowserState* browserState;
 // The dispatcher for this view controller.
 @property(nonatomic, weak) CommandDispatcher* dispatcher;
 // Delegate for this coordinator.

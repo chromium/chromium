@@ -48,18 +48,11 @@ public final class NewTabCallbackProxy {
     }
 
     @CalledByNative
-    public void onNewTab(long nativeTab, @ImplNewTabType int mode) throws RemoteException {
+    public void onNewTab(TabImpl tab, @ImplNewTabType int mode) throws RemoteException {
         // This class should only be created while the tab is attached to a fragment.
         assert mTab.getBrowser() != null;
-        TabImpl tab =
-                new TabImpl(mTab.getProfile(), mTab.getBrowser().getWindowAndroid(), nativeTab);
-        mTab.getBrowser().addTab(tab);
-        mTab.getClient().onNewTab(tab.getId(), mode);
-    }
-
-    @CalledByNative
-    private void onCloseTab() throws RemoteException {
-        mTab.getClient().onCloseTab();
+        assert mTab.getBrowser().equals(tab.getBrowser());
+        mTab.getClient().onNewTab(tab.getId(), implTypeToJavaType(mode));
     }
 
     @NativeMethods

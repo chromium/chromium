@@ -26,8 +26,15 @@ class Connection {
   explicit Connection(std::unique_ptr<IPC::MojoBootstrap> bootstrap,
                       int32_t sender_id)
       : bootstrap_(std::move(bootstrap)) {
-    bootstrap_->Connect(&sender_, &receiver_);
+    mojo::PendingAssociatedRemote<IPC::mojom::Channel> sender;
+    bootstrap_->Connect(&sender, &receiver_);
+    sender_.Bind(std::move(sender));
     sender_->SetPeerPid(sender_id);
+
+    // It's OK to start receiving right away even though `receiver_` isn't
+    // bound, because all of these tests are single-threaded and it will be
+    // bound before any incoming messages can be scheduled for processing.
+    bootstrap_->StartReceiving();
   }
 
   void TakeReceiver(
@@ -53,13 +60,16 @@ class PeerPidReceiver : public IPC::mojom::Channel {
 
   PeerPidReceiver(
       mojo::PendingAssociatedReceiver<IPC::mojom::Channel> receiver,
-      const base::Closure& on_peer_pid_set,
+      base::OnceClosure on_peer_pid_set,
       MessageExpectation message_expectation = MessageExpectation::kNotExpected)
       : receiver_(this, std::move(receiver)),
-        on_peer_pid_set_(on_peer_pid_set),
+        on_peer_pid_set_(std::move(on_peer_pid_set)),
         message_expectation_(message_expectation) {
     receiver_.set_disconnect_handler(disconnect_run_loop_.QuitClosure());
   }
+
+  PeerPidReceiver(const PeerPidReceiver&) = delete;
+  PeerPidReceiver& operator=(const PeerPidReceiver&) = delete;
 
   ~PeerPidReceiver() override {
     bool expected_message =
@@ -70,23 +80,23 @@ class PeerPidReceiver : public IPC::mojom::Channel {
   // mojom::Channel:
   void SetPeerPid(int32_t pid) override {
     peer_pid_ = pid;
-    on_peer_pid_set_.Run();
+    std::move(on_peer_pid_set_).Run();
   }
 
   void Receive(IPC::MessageView message_view) override {
     ASSERT_NE(MessageExpectation::kNotExpected, message_expectation_);
     received_message_ = true;
 
-    IPC::Message message(message_view.data(), message_view.size());
+    IPC::Message message(
+        reinterpret_cast<const char*>(message_view.bytes().data()),
+        message_view.bytes().size());
     bool expected_valid =
         message_expectation_ == MessageExpectation::kExpectedValid;
     EXPECT_EQ(expected_valid, message.IsValid());
   }
 
   void GetAssociatedInterface(
-      const std::string& name,
-      mojo::PendingAssociatedReceiver<IPC::mojom::GenericInterface> receiver)
-      override {}
+      mojo::GenericPendingAssociatedReceiver receiver) override {}
 
   int32_t peer_pid() const { return peer_pid_; }
 
@@ -94,13 +104,11 @@ class PeerPidReceiver : public IPC::mojom::Channel {
 
  private:
   mojo::AssociatedReceiver<IPC::mojom::Channel> receiver_;
-  const base::Closure on_peer_pid_set_;
+  base::OnceClosure on_peer_pid_set_;
   MessageExpectation message_expectation_;
   int32_t peer_pid_ = -1;
   bool received_message_ = false;
   base::RunLoop disconnect_run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(PeerPidReceiver);
 };
 
 class IPCMojoBootstrapTest : public testing::Test {
@@ -196,8 +204,7 @@ MULTIPROCESS_TEST_MAIN_WITH_SETUP(
 
   uint8_t data = 0;
   sender->Receive(
-      IPC::MessageView(mojo_base::BigBufferView(base::make_span(&data, 0)),
-                       base::nullopt /* handles */));
+      IPC::MessageView(base::make_span(&data, 0), absl::nullopt /* handles */));
 
   base::RunLoop run_loop;
   PeerPidReceiver impl(std::move(receiver), run_loop.QuitClosure());

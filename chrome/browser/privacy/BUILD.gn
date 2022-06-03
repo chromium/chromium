@@ -1,0 +1,108 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+
+  android_library("java") {
+    visibility = [
+      ":*",
+      "//chrome/android:chrome_all_java",
+      "//chrome/android:chrome_java",
+      "//chrome/android:chrome_junit_tests__java_binary",
+      "//chrome/android:chrome_test_java",
+      "//chrome/browser/feed/android:*",
+      "//chrome/browser/ui/android/omnibox:java",
+      "//chrome/browser/ui/android/omnibox:junit",
+    ]
+    sources = [
+      "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsBridge.java",
+      "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsProviderPreference.java",
+      "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsSettings.java",
+      "settings/java/src/org/chromium/chrome/browser/privacy/settings/PrivacyPreferencesManager.java",
+    ]
+    deps = [
+      ":java_resources",
+      ":jni_headers",
+      "//base:base_java",
+      "//chrome/browser/android/lifecycle:java",
+      "//chrome/browser/flags:java",
+      "//chrome/browser/net:secure_dns_management_mode_generated_enum",
+      "//chrome/browser/preferences:java",
+      "//chrome/browser/settings:java",
+      "//components/browser_ui/settings/android:java",
+      "//components/browser_ui/widget/android:java",
+      "//components/minidump_uploader:minidump_uploader_java",
+      "//net/dns/public:secure_dns_mode_generated_enum",
+      "//third_party/android_deps:material_design_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_fragment_fragment_java",
+      "//third_party/androidx:androidx_preference_preference_java",
+    ]
+    srcjar_deps = [
+      "//chrome/browser/net:secure_dns_management_mode_generated_enum",
+      "//net/dns/public:secure_dns_mode_generated_enum",
+    ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    resources_package = "org.chromium.chrome.browser.privacy.secure_dns"
+  }
+
+  android_resources("java_resources") {
+    sources = [
+      "java/res/layout/secure_dns_provider_preference.xml",
+      "java/res/layout/secure_dns_provider_spinner_item.xml",
+      "java/res/xml/secure_dns_settings.xml",
+    ]
+    deps = [
+      "//chrome/browser/ui/android/strings:ui_strings_grd",
+      "//components/browser_ui/strings/android:browser_ui_strings_grd",
+      "//components/browser_ui/styles/android:java_resources",
+      "//components/browser_ui/widget/android:java_resources",
+      "//third_party/android_deps:material_design_java",
+    ]
+  }
+
+  generate_jni("jni_headers") {
+    visibility = [
+      ":*",
+      "//chrome/android:jni_headers",
+      "//chrome/browser",
+    ]
+    sources = [ "java/src/org/chromium/chrome/browser/privacy/secure_dns/SecureDnsBridge.java" ]
+  }
+}
+
+if (is_win || is_linux || is_android || is_chromeos) {
+  import("//third_party/protobuf/proto_library.gni")
+
+  # Generate Python bindings for traffic_annotation.proto, for use with
+  # auditor.py. This lets us run auditor.py after simply building the chrome
+  # target.
+  proto_library("chrome_settings_full_runtime") {
+    visibility = [
+      ":traffic_annotation_proto",
+      ":traffic_annotation_proto_gen",
+    ]
+    sources = [
+      "$root_gen_dir" +
+          "/components/policy/proto/cloud_policy_full_runtime.proto",
+      "$root_gen_dir" +
+          "/components/policy/proto/chrome_settings_full_runtime.proto",
+      "$root_gen_dir" + "/components/policy/proto" +
+          "/policy_common_definitions_full_runtime.proto",
+    ]
+    proto_deps = [ "//components/policy:full_runtime_code_generate" ]
+    proto_out_dir = "/chrome/browser/privacy"
+    generate_cc = false
+    generate_library = false
+  }
+
+  proto_library("traffic_annotation_proto") {
+    sources = [ "traffic_annotation.proto" ]
+    proto_deps = [ ":chrome_settings_full_runtime" ]
+    import_dirs = [ "$root_gen_dir" + "/components/policy/proto" ]
+    generate_cc = false
+    generate_library = false
+  }
+}

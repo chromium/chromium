@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace base {
 class DictionaryValue;
@@ -38,6 +37,10 @@ struct OncValueSignature;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) Mapper {
  public:
   Mapper();
+
+  Mapper(const Mapper&) = delete;
+  Mapper& operator=(const Mapper&) = delete;
+
   virtual ~Mapper();
 
  protected:
@@ -55,7 +58,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Mapper {
   // implementation only unknown fields are errors.
   virtual std::unique_ptr<base::DictionaryValue> MapObject(
       const OncValueSignature& signature,
-      const base::DictionaryValue& onc_object,
+      const base::Value& onc_object,
       bool* error);
 
   // Maps primitive values like BinaryValue, StringValue, IntegerValue... (all
@@ -72,7 +75,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Mapper {
   // dictionary contains any unknown fields. Set |nested_error| to true only if
   // nested errors occured.
   virtual void MapFields(const OncValueSignature& object_signature,
-                         const base::DictionaryValue& onc_object,
+                         const base::Value& onc_object,
                          bool* found_unknown_field,
                          bool* nested_error,
                          base::DictionaryValue* result);
@@ -105,9 +108,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Mapper {
       const OncValueSignature& signature,
       const base::Value& onc_value,
       bool* error);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Mapper);
 };
 
 }  // namespace onc

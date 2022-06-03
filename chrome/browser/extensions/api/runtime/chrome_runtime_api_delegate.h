@@ -9,8 +9,7 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "content/public/browser/notification_observer.h"
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/api/runtime/runtime_api.h"
@@ -39,6 +38,10 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
                                  public extensions::ExtensionRegistryObserver {
  public:
   explicit ChromeRuntimeAPIDelegate(content::BrowserContext* context);
+
+  ChromeRuntimeAPIDelegate(const ChromeRuntimeAPIDelegate&) = delete;
+  ChromeRuntimeAPIDelegate& operator=(const ChromeRuntimeAPIDelegate&) = delete;
+
   ~ChromeRuntimeAPIDelegate() override;
 
   // Sets a custom TickClock to use in tests.
@@ -52,7 +55,7 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   void RemoveUpdateObserver(extensions::UpdateObserver* observer) override;
   void ReloadExtension(const std::string& extension_id) override;
   bool CheckForUpdates(const std::string& extension_id,
-                       const UpdateCheckCallback& callback) override;
+                       UpdateCheckCallback callback) override;
   void OpenURL(const GURL& uninstall_url) override;
   bool GetPlatformInfo(extensions::api::runtime::PlatformInfo* info) override;
   bool RestartDevice(std::string* error_message) override;
@@ -90,11 +93,9 @@ class ChromeRuntimeAPIDelegate : public extensions::RuntimeAPIDelegate,
   struct UpdateCheckInfo;
   std::map<std::string, UpdateCheckInfo> update_check_info_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRuntimeAPIDelegate);
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_API_RUNTIME_CHROME_RUNTIME_API_DELEGATE_H_

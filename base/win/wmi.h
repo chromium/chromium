@@ -67,22 +67,19 @@ BASE_EXPORT bool WmiLaunchProcess(const std::wstring& command_line,
 // 'Win32_Bios' WMI classes; see :
 // https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-computersystem
 // https://docs.microsoft.com/en-us/windows/desktop/CIMWin32Prov/win32-systembios
+// Note that while model and manufacturer can be obtained through WMI, it is
+// more efficient to obtain them via SysInfo::GetHardwareInfo() which uses the
+// registry.
 class BASE_EXPORT WmiComputerSystemInfo {
  public:
   static WmiComputerSystemInfo Get();
 
-  const std::wstring& manufacturer() const { return manufacturer_; }
-  const std::wstring& model() const { return model_; }
   const std::wstring& serial_number() const { return serial_number_; }
 
  private:
-  void PopulateModelAndManufacturer(
-      const Microsoft::WRL::ComPtr<IWbemServices>& services);
   void PopulateSerialNumber(
       const Microsoft::WRL::ComPtr<IWbemServices>& services);
 
-  std::wstring manufacturer_;
-  std::wstring model_;
   std::wstring serial_number_;
 };
 

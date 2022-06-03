@@ -1,0 +1,69 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Nearby Share is CrOS only")
+
+source_set("client") {
+  sources = [
+    "nearby_share_api_call_flow.h",
+    "nearby_share_api_call_flow_impl.cc",
+    "nearby_share_api_call_flow_impl.h",
+    "nearby_share_client.h",
+    "nearby_share_client_impl.cc",
+    "nearby_share_client_impl.h",
+    "nearby_share_http_notifier.cc",
+    "nearby_share_http_notifier.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/logging",
+    "//chrome/browser/nearby_sharing/proto",
+    "//components/signin/public/identity_manager",
+    "//net",
+    "//net/traffic_annotation",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//url",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_nearby_share_client.cc",
+    "fake_nearby_share_client.h",
+  ]
+
+  deps = [
+    ":client",
+    "//base",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "nearby_share_api_call_flow_impl_unittest.cc",
+    "nearby_share_client_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":client",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/proto",
+    "//components/signin/public/identity_manager:test_support",
+    "//net",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

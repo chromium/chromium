@@ -14,14 +14,14 @@ extern const char kSharingFCMAppID[];
 // Sender ID for Sharing.
 extern const char kSharingSenderID[];
 
-// Amount of time before a message is considered timeout if no ack is received.
-extern const base::TimeDelta kSendMessageTimeout;
+// Time until we hide devices based on their last active timestamp.
+extern const base::TimeDelta kSharingDeviceExpiration;
 
-// Amount of time before an ack message is expired.
-extern const base::TimeDelta kAckTimeToLive;
+// Default time-to-live for sharing messages.
+extern const base::TimeDelta kSharingMessageTTL;
 
-// Amount of time before FCM registration should happen again.
-extern const base::TimeDelta kRegistrationExpiration;
+// Default time-to-live for sharing ack messages.
+extern const base::TimeDelta kSharingAckMessageTTL;
 
 // Backoff policy for registration retry.
 extern const net::BackoffEntry::Policy kRetryBackoffPolicy;
@@ -40,7 +40,8 @@ enum class SharingFeatureName {
   kUnknown,
   kClickToCall,
   kSharedClipboard,
-  kMaxValue = kSharedClipboard,
+  kSmsRemoteFetcher,
+  kMaxValue = kSmsRemoteFetcher,
 };
 
 // The device platform that the user is sharing from/with.
@@ -52,6 +53,15 @@ enum class SharingDevicePlatform {
   kLinux,
   kMac,
   kWindows,
+  kServer,
+};
+
+enum class SharingChannelType {
+  kUnknown,
+  kFcmVapid,
+  kFcmSenderId,
+  kServer,
+  kWebRtc
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_CONSTANTS_H_

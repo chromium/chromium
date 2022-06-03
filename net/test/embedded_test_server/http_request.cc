@@ -53,7 +53,7 @@ HttpRequestParser::HttpRequestParser()
 HttpRequestParser::~HttpRequestParser() = default;
 
 void HttpRequestParser::ProcessChunk(const base::StringPiece& data) {
-  data.AppendToString(&buffer_);
+  buffer_.append(data.data(), data.size());
   DCHECK_LE(buffer_.size() + data.size(), kRequestSizeLimit) <<
       "The HTTP request is too large.";
 }
@@ -229,7 +229,8 @@ std::unique_ptr<HttpRequest> HttpRequestParser::GetRequest() {
   return result;
 }
 
-HttpMethod HttpRequestParser::GetMethodType(const std::string& token) const {
+// static
+HttpMethod HttpRequestParser::GetMethodType(const std::string& token) {
   if (token == "get") {
     return METHOD_GET;
   } else if (token == "head") {

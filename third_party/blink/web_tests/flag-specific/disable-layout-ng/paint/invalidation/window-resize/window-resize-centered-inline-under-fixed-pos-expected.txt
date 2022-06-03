@@ -1,26 +1,18 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [600, 250],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV class='container'",
-          "rect": [0, 0, 600, 250],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow DIV class='parent'",
-          "rect": [0, 0, 6, 250],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV class='child'",
-          "rect": [0, 125, 6, 30],
-          "reason": "geometry"
-        }
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
+      "bounds": [600, 250],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 600, 250]
       ]
     }
   ]
@@ -28,26 +20,18 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [400, 250],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV class='container'",
-          "rect": [0, 0, 400, 250],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow DIV class='parent'",
-          "rect": [0, 0, 6, 250],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV class='child'",
-          "rect": [0, 125, 6, 30],
-          "reason": "geometry"
-        }
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
+      "bounds": [400, 250],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 400, 250]
       ]
     }
   ]
@@ -55,36 +39,21 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV class='container'",
-          "rect": [0, 0, 400, 600],
-          "reason": "geometry"
-        },
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 250, 400, 350],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutBlockFlow DIV class='parent'",
-          "rect": [0, 0, 6, 600],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV class='child'",
-          "rect": [0, 300, 6, 30],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV class='child'",
-          "rect": [0, 125, 6, 30],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [0, 250, 400, 350]
+      ]
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
+      "bounds": [400, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 400, 600]
       ]
     }
   ]
@@ -92,31 +61,21 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV class='container'",
-          "rect": [0, 0, 800, 600],
-          "reason": "geometry"
-        },
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [400, 0, 400, 600],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutBlockFlow DIV class='parent'",
-          "rect": [0, 0, 6, 600],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV class='child'",
-          "rect": [0, 300, 6, 30],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [400, 0, 400, 600]
+      ]
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='container'",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#D3D3D3",
+      "invalidations": [
+        [0, 0, 800, 600]
       ]
     }
   ]

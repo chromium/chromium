@@ -5,6 +5,7 @@
 #include "ash/wm/lock_state_controller.h"
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -17,12 +18,13 @@
 #include "ash/shell.h"
 #include "ash/shell_delegate.h"
 #include "ash/shutdown_reason.h"
+#include "ash/utility/occlusion_tracker_pauser.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/session_state_animator.h"
 #include "ash/wm/session_state_animator_impl.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -36,10 +38,9 @@
 #include "ui/wm/core/compound_event_filter.h"
 #include "ui/wm/core/cursor_manager.h"
 
-#define UMA_HISTOGRAM_LOCK_TIMES(name, sample)                     \
-  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample,                         \
-                             base::TimeDelta::FromMilliseconds(1), \
-                             base::TimeDelta::FromSeconds(50), 100)
+#define UMA_HISTOGRAM_LOCK_TIMES(name, sample)                    \
+  UMA_HISTOGRAM_CUSTOM_TIMES(name, sample, base::Milliseconds(1), \
+                             base::Seconds(50), 100)
 
 namespace ash {
 
@@ -61,12 +62,11 @@ constexpr int kMaxShutdownSoundDurationMs = 1500;
 
 // Amount of time to wait for our lock requests to be honored before giving up.
 constexpr base::TimeDelta kLockFailTimeout =
-    base::TimeDelta::FromSeconds(8 * kTimeoutMultiplier);
+    base::Seconds(8 * kTimeoutMultiplier);
 
 // Additional time to wait after starting the fast-close shutdown animation
 // before actually requesting shutdown, to give the animation time to finish.
-constexpr base::TimeDelta kShutdownRequestDelay =
-    base::TimeDelta::FromMilliseconds(50);
+constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
 
 }  // namespace
 
@@ -146,9 +146,9 @@ bool LockStateController::ShutdownRequested() {
 void LockStateController::CancelLockAnimation() {
   VLOG(1) << "CancelLockAnimation";
   animating_lock_ = false;
-  Shell::Get()->wallpaper_controller()->RestoreWallpaperPropertyForLockState(
-      saved_property_);
-  base::OnceClosure next_animation_starter =
+  Shell::Get()->wallpaper_controller()->RestoreWallpaperBlurForLockState(
+      saved_blur_);
+  auto next_animation_starter =
       base::BindOnce(&LockStateController::LockAnimationCancelled,
                      weak_ptr_factory_.GetWeakPtr());
   SessionStateAnimator::AnimationSequence* animation_sequence =
@@ -234,6 +234,9 @@ void LockStateController::OnChromeTerminating() {
 }
 
 void LockStateController::OnLockStateChanged(bool locked) {
+  // Unpause if lock animations didn't start and ends in 3 seconds.
+  constexpr base::TimeDelta kPauseTimeout = base::Seconds(3);
+
   DCHECK((lock_fail_timer_.IsRunning() && lock_duration_timer_ != nullptr) ||
          (!lock_fail_timer_.IsRunning() && lock_duration_timer_ == nullptr));
   VLOG(1) << "OnLockStateChanged called with locked: " << locked
@@ -245,6 +248,9 @@ void LockStateController::OnLockStateChanged(bool locked) {
     return;
 
   system_is_locked_ = locked;
+
+  Shell::Get()->occlusion_tracker_pauser()->PauseUntilAnimationsEnd(
+      kPauseTimeout);
 
   if (locked) {
     StartPostLockAnimation();
@@ -299,7 +305,7 @@ void LockStateController::StartRealShutdownTimer(bool with_animation_time) {
   // start real shutdown after a delay of |duration|.
   base::TimeDelta sound_duration =
       std::min(Shell::Get()->accessibility_controller()->PlayShutdownSound(),
-               base::TimeDelta::FromMilliseconds(kMaxShutdownSoundDurationMs));
+               base::Milliseconds(kMaxShutdownSoundDurationMs));
   duration = std::max(duration, sound_duration);
   real_shutdown_timer_.Start(FROM_HERE, duration, this,
                              &LockStateController::OnRealPowerTimeout);
@@ -316,11 +322,12 @@ void LockStateController::OnRealPowerTimeout() {
 void LockStateController::PreLockAnimation(
     SessionStateAnimator::AnimationSpeed speed,
     bool request_lock_on_completion) {
-  saved_property_ = Shell::GetPrimaryRootWindowController()
-                        ->wallpaper_widget_controller()
-                        ->GetWallpaperProperty();
+  VLOG(1) << "PreLockAnimation";
+  saved_blur_ = Shell::GetPrimaryRootWindowController()
+                    ->wallpaper_widget_controller()
+                    ->GetWallpaperBlur();
   Shell::Get()->wallpaper_controller()->UpdateWallpaperBlurForLockState(true);
-  base::OnceClosure next_animation_starter = base::BindOnce(
+  auto next_animation_starter = base::BindOnce(
       &LockStateController::PreLockAnimationFinished,
       weak_ptr_factory_.GetWeakPtr(), request_lock_on_completion);
   SessionStateAnimator::AnimationSequence* animation_sequence =
@@ -343,7 +350,7 @@ void LockStateController::PreLockAnimation(
 
 void LockStateController::StartPostLockAnimation() {
   VLOG(1) << "StartPostLockAnimation";
-  base::OnceClosure next_animation_starter =
+  auto next_animation_starter =
       base::BindOnce(&LockStateController::PostLockAnimationFinished,
                      weak_ptr_factory_.GetWeakPtr());
   SessionStateAnimator::AnimationSequence* animation_sequence =
@@ -368,20 +375,23 @@ void LockStateController::StartPostLockAnimation() {
 void LockStateController::StartUnlockAnimationBeforeUIDestroyed(
     base::OnceClosure callback) {
   VLOG(1) << "StartUnlockAnimationBeforeUIDestroyed";
-  animator_->StartAnimationWithCallback(
-      SessionStateAnimator::LOCK_SCREEN_CONTAINERS,
-      SessionStateAnimator::ANIMATION_LIFT,
-      SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS, std::move(callback));
   // Hide the lock screen shelf. This is a no-op if views-based shelf is
   // disabled, since shelf is in NonLockScreenContainersContainer.
   animator_->StartAnimation(SessionStateAnimator::SHELF,
                             SessionStateAnimator::ANIMATION_FADE_OUT,
                             SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS);
+  animator_->StartAnimationWithCallback(
+      SessionStateAnimator::LOCK_SCREEN_CONTAINERS,
+      SessionStateAnimator::ANIMATION_LIFT,
+      SessionStateAnimator::ANIMATION_SPEED_MOVE_WINDOWS, std::move(callback));
+  animator_->StartAnimation(SessionStateAnimator::NON_LOCK_SCREEN_CONTAINERS,
+                            SessionStateAnimator::ANIMATION_COPY_LAYER,
+                            SessionStateAnimator::ANIMATION_SPEED_IMMEDIATE);
 }
 
 void LockStateController::StartUnlockAnimationAfterUIDestroyed() {
   VLOG(1) << "StartUnlockAnimationAfterUIDestroyed";
-  base::OnceClosure next_animation_starter = base::BindOnce(
+  auto next_animation_starter = base::BindOnce(
       &LockStateController::UnlockAnimationAfterUIDestroyedFinished,
       weak_ptr_factory_.GetWeakPtr());
   SessionStateAnimator::AnimationSequence* animation_sequence =
@@ -399,12 +409,19 @@ void LockStateController::StartUnlockAnimationAfterUIDestroyed() {
   animation_sequence->EndSequence();
 }
 
-void LockStateController::LockAnimationCancelled() {
+void LockStateController::LockAnimationCancelled(bool aborted) {
+  DVLOG(1) << "LockAnimationCancelled: aborted=" << aborted;
   RestoreUnlockedProperties();
 }
 
-void LockStateController::PreLockAnimationFinished(bool request_lock) {
-  VLOG(1) << "PreLockAnimationFinished";
+void LockStateController::PreLockAnimationFinished(bool request_lock,
+                                                   bool aborted) {
+  DVLOG(1) << "PreLockAnimationFinished: aborted=" << aborted;
+  // Aborted in this stage means the locking animation was cancelled by
+  // `CancelLockAnimation()`, triggered by releasing a lock button before
+  // finishing animation.
+  if (aborted)
+    return;
 
   // Don't do anything (including starting the lock-fail timer) if the screen
   // was already locked while the animation was going.
@@ -422,13 +439,13 @@ void LockStateController::PreLockAnimationFinished(bool request_lock) {
   lock_fail_timer_.Start(FROM_HERE, kLockFailTimeout, this,
                          &LockStateController::OnLockFailTimeout);
 
-  lock_duration_timer_.reset(new base::ElapsedTimer());
+  lock_duration_timer_ = std::make_unique<base::ElapsedTimer>();
 }
 
-void LockStateController::PostLockAnimationFinished() {
+void LockStateController::PostLockAnimationFinished(bool aborted) {
+  DVLOG(1) << "PostLockAnimationFinished: aborted=" << aborted;
   animating_lock_ = false;
   post_lock_immediate_animation_ = false;
-  VLOG(1) << "PostLockAnimationFinished";
   OnLockStateEvent(LockStateObserver::EVENT_LOCK_ANIMATION_FINISHED);
   if (!lock_screen_displayed_callback_.is_null())
     std::move(lock_screen_displayed_callback_).Run();
@@ -436,14 +453,16 @@ void LockStateController::PostLockAnimationFinished() {
   CHECK(!views::MenuController::GetActiveInstance());
 }
 
-void LockStateController::UnlockAnimationAfterUIDestroyedFinished() {
+void LockStateController::UnlockAnimationAfterUIDestroyedFinished(
+    bool aborted) {
+  DVLOG(1) << "UnlockAnimationAfterUIDestroyedFinished: aborted=" << aborted;
   Shell::Get()->wallpaper_controller()->UpdateWallpaperBlurForLockState(false);
   RestoreUnlockedProperties();
 }
 
 void LockStateController::StoreUnlockedProperties() {
   if (!unlocked_properties_) {
-    unlocked_properties_.reset(new UnlockedStateProperties());
+    unlocked_properties_ = std::make_unique<UnlockedStateProperties>();
     unlocked_properties_->wallpaper_is_hidden = animator_->IsWallpaperHidden();
   }
   if (unlocked_properties_->wallpaper_is_hidden) {
@@ -489,6 +508,9 @@ void LockStateController::AnimateWallpaperHidingIfNecessary(
 }
 
 void LockStateController::OnLockStateEvent(LockStateObserver::EventType event) {
+  if (shutting_down_)
+    return;
+
   for (auto& observer : observers_)
     observer.OnLockStateEvent(event);
 }

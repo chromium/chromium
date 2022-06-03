@@ -1,14 +1,4 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
-<link rel="import" href="../../html/assert.html">
-<link rel="import" href="../../html/cr.html">
-<link rel="import" href="../../html/event_tracker.html">
-<link rel="import" href="cr_toast.html">
-
-<dom-module id="cr-toast-manager">
-  <template>
-    <style>
+    <style include="cr-hidden-style">
       #content {
         display: flex;
         flex: 1;
@@ -31,8 +21,5 @@
     </style>
     <cr-toast id="toast" duration="[[duration]]">
       <div id="content" class="elided-text"></div>
-      <slot></slot>
+      <slot id="slotted"></slot>
     </cr-toast>
-  </template>
-  <script src="cr_toast_manager.js"></script>
-</dom-module>

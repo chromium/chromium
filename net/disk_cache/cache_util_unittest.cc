@@ -8,7 +8,9 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "net/disk_cache/cache_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -62,7 +64,7 @@ TEST_F(CacheUtilTest, MoveCache) {
   EXPECT_TRUE(base::PathExists(dest_file1_));
   EXPECT_TRUE(base::PathExists(dest_file2_));
   EXPECT_TRUE(base::PathExists(dest_dir1_));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   EXPECT_TRUE(base::PathExists(cache_dir_)); // old cache dir stays
 #else
   EXPECT_FALSE(base::PathExists(cache_dir_)); // old cache is gone
@@ -101,38 +103,62 @@ TEST_F(CacheUtilTest, DeleteCacheFile) {
 TEST_F(CacheUtilTest, PreferredCacheSize) {
   const struct TestCase {
     int64_t available;
-    int expected;
+    int expected_without_trial;
+    int expected_with_200_trial;
+    int expected_with_250_trial;
+    int expected_with_300_trial;
   } kTestCases[] = {
       // Weird negative value for available --- return the "default"
-      {-1000LL, 80 * 1024 * 1024},
-      {-1LL, 80 * 1024 * 1024},
+      {-1000LL, 80 * 1024 * 1024, 160 * 1024 * 1024, 200 * 1024 * 1024,
+       240 * 1024 * 1024},
+      {-1LL, 80 * 1024 * 1024, 160 * 1024 * 1024, 200 * 1024 * 1024,
+       240 * 1024 * 1024},
 
       // 0 produces 0.
-      {0LL, 0},
+      {0LL, 0, 0, 0, 0},
 
       // Cache is 80% of available space, when default cache size is larger than
       // 80% of available space..
-      {50 * 1024 * 1024LL, 40 * 1024 * 1024},
+      {50 * 1024 * 1024LL, 40 * 1024 * 1024, 40 * 1024 * 1024, 40 * 1024 * 1024,
+       40 * 1024 * 1024},
       // Cache is default size, when default size is 10% to 80% of available
       // space.
-      {100 * 1024 * 1024LL, 80 * 1024 * 1024},
-      {200 * 1024 * 1024LL, 80 * 1024 * 1024},
+      {100 * 1024 * 1024LL, 80 * 1024 * 1024, 80 * 1024 * 1024,
+       80 * 1024 * 1024, 80 * 1024 * 1024},
+      {200 * 1024 * 1024LL, 80 * 1024 * 1024, 80 * 1024 * 1024,
+       80 * 1024 * 1024, 80 * 1024 * 1024},
       // Cache is 10% of available space if 2.5 * default size is more than 10%
       // of available space.
-      {1000 * 1024 * 1024LL, 100 * 1024 * 1024},
-      {2000 * 1024 * 1024LL, 200 * 1024 * 1024},
+      {1000 * 1024 * 1024LL, 100 * 1024 * 1024, 200 * 1024 * 1024,
+       200 * 1024 * 1024, 200 * 1024 * 1024},
+      {2000 * 1024 * 1024LL, 200 * 1024 * 1024, 400 * 1024 * 1024,
+       400 * 1024 * 1024, 400 * 1024 * 1024},
       // Cache is 2.5 * kDefaultCacheSize if 2.5 * kDefaultCacheSize uses from
       // 1% to 10% of available space.
-      {10000 * 1024 * 1024LL, 200 * 1024 * 1024},
+      {10000 * 1024 * 1024LL, 200 * 1024 * 1024, 400 * 1024 * 1024,
+       500 * 1024 * 1024, 600 * 1024 * 1024},
       // Otherwise, cache is 1% of available space.
-      {20000 * 1024 * 1024LL, 200 * 1024 * 1024},
+      {20000 * 1024 * 1024LL, 200 * 1024 * 1024, 400 * 1024 * 1024,
+       500 * 1024 * 1024, 600 * 1024 * 1024},
       // Until it runs into the cache size cap.
-      {32000 * 1024 * 1024LL, 320 * 1024 * 1024},
-      {50000 * 1024 * 1024LL, 320 * 1024 * 1024},
+      {32000 * 1024 * 1024LL, 320 * 1024 * 1024, 640 * 1024 * 1024,
+       800 * 1024 * 1024, 960 * 1024 * 1024},
+      {50000 * 1024 * 1024LL, 320 * 1024 * 1024, 640 * 1024 * 1024,
+       800 * 1024 * 1024, 960 * 1024 * 1024},
   };
 
   for (const auto& test_case : kTestCases) {
-    EXPECT_EQ(test_case.expected, PreferredCacheSize(test_case.available))
+    EXPECT_EQ(test_case.expected_without_trial,
+              PreferredCacheSize(test_case.available))
+        << test_case.available;
+
+    // Preferred size for WebUI code cache matches expected_without_trial but
+    // should never be more than 5 MB.
+    int expected_webui_code_cache_size =
+        std::min(5 * 1024 * 1024, test_case.expected_without_trial);
+    EXPECT_EQ(expected_webui_code_cache_size,
+              PreferredCacheSize(test_case.available,
+                                 net::GENERATED_WEBUI_BYTE_CODE_CACHE))
         << test_case.available;
   }
 
@@ -140,6 +166,70 @@ TEST_F(CacheUtilTest, PreferredCacheSize) {
   EXPECT_EQ(((320 * 1024 * 1024) / 2) * 3,
             PreferredCacheSize(50000 * 1024 * 1024LL,
                                net::GENERATED_NATIVE_CODE_CACHE));
+
+  for (int cache_size_exeriment : {100, 200, 250, 300}) {
+    base::test::ScopedFeatureList scoped_feature_list;
+    std::map<std::string, std::string> field_trial_params;
+    field_trial_params["percent_relative_size"] =
+        base::NumberToString(cache_size_exeriment);
+    scoped_feature_list.InitAndEnableFeatureWithParameters(
+        disk_cache::kChangeDiskCacheSizeExperiment, field_trial_params);
+
+    for (const auto& test_case : kTestCases) {
+      int expected = 0;
+      switch (cache_size_exeriment) {
+        case 100:
+          expected = test_case.expected_without_trial;
+          break;
+        case 200:
+          expected = test_case.expected_with_200_trial;
+          break;
+        case 250:
+          expected = test_case.expected_with_250_trial;
+          break;
+        case 300:
+          expected = test_case.expected_with_300_trial;
+          break;
+      }
+
+      EXPECT_EQ(expected, PreferredCacheSize(test_case.available));
+
+      // For caches other than disk cache, the size is not scaled.
+      EXPECT_EQ(test_case.expected_without_trial,
+                PreferredCacheSize(test_case.available,
+                                   net::GENERATED_BYTE_CODE_CACHE));
+
+      // Preferred size for WebUI code cache is not scaled by the trial, and
+      // should never be more than 5 MB.
+      int expected_webui_code_cache_size =
+          std::min(5 * 1024 * 1024, test_case.expected_without_trial);
+      EXPECT_EQ(expected_webui_code_cache_size,
+                PreferredCacheSize(test_case.available,
+                                   net::GENERATED_WEBUI_BYTE_CODE_CACHE))
+          << test_case.available;
+    }
+
+    // Check that the cache size cap is 50% higher for native code caches but is
+    // not scaled for the experiment.
+    EXPECT_EQ(((320 * 1024 * 1024) / 2) * 3,
+              PreferredCacheSize(50000 * 1024 * 1024LL,
+                                 net::GENERATED_NATIVE_CODE_CACHE));
+  }
+
+  // Check no "percent_relative_size" matches default behavior.
+  {
+    base::test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitAndEnableFeature(
+        disk_cache::kChangeDiskCacheSizeExperiment);
+    for (const auto& test_case : kTestCases) {
+      EXPECT_EQ(test_case.expected_without_trial,
+                PreferredCacheSize(test_case.available));
+    }
+    // Check that the cache size cap is 50% higher for native code caches.
+    EXPECT_EQ(((320 * 1024 * 1024) / 2) * 3,
+              PreferredCacheSize(50000 * 1024 * 1024LL,
+                                 net::GENERATED_NATIVE_CODE_CACHE));
+  }
 }
 
 }  // namespace disk_cache

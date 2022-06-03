@@ -6,6 +6,7 @@
 #define CC_LAYERS_SCROLLBAR_LAYER_IMPL_BASE_H_
 
 #include "base/containers/flat_set.h"
+#include "base/gtest_prod_util.h"
 #include "cc/cc_export.h"
 #include "cc/input/scrollbar.h"
 #include "cc/layers/layer.h"
@@ -49,7 +50,6 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   bool CanScrollOrientation() const;
 
   void PushPropertiesTo(LayerImpl* layer) override;
-  ScrollbarLayerImplBase* ToScrollbarLayer() override;
 
   // Thumb quad rect in layer space.
   gfx::Rect ComputeThumbQuadRect() const;
@@ -73,11 +73,18 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   virtual gfx::Rect BackTrackRect() const;
   virtual gfx::Rect ForwardTrackRect() const;
   virtual bool SupportsDragSnapBack() const;
+  virtual bool JumpOnTrackClick() const;
   virtual ScrollbarPart IdentifyScrollbarPart(
       const gfx::PointF position_in_widget) const;
   // Only PaintedOverlayScrollbar(Aura Overlay Scrollbar) need to know
   // tickmarks's state.
   virtual bool HasFindInPageTickmarks() const;
+
+  // Mac overlay scrollbars are faded during paint but the compositor layer is
+  // always fully opaque where as Aura scrollbars fade by animating the layer
+  // opacity. This method will return the user visible opacity of an overlay
+  // scrollbar regardless of the underlying mechanism or platform.
+  virtual float OverlayScrollbarOpacity() const;
 
  protected:
   ScrollbarLayerImplBase(LayerTreeImpl* tree_impl,
@@ -93,6 +100,8 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   virtual bool IsThumbResizable() const = 0;
 
  private:
+  bool IsScrollbarLayer() const final;
+
   gfx::Rect ComputeThumbQuadRectWithThumbThicknessScale(
       float thumb_thickness_scale_factor) const;
 
@@ -113,6 +122,16 @@ class CC_EXPORT ScrollbarLayerImplBase : public LayerImpl {
   FRIEND_TEST_ALL_PREFIXES(ScrollbarLayerTest,
                            ScrollElementIdPushedAcrossCommit);
 };
+
+inline ScrollbarLayerImplBase* ToScrollbarLayer(LayerImpl* layer) {
+  DCHECK(layer->IsScrollbarLayer());
+  return static_cast<ScrollbarLayerImplBase*>(layer);
+}
+
+inline const ScrollbarLayerImplBase* ToScrollbarLayer(const LayerImpl* layer) {
+  DCHECK(layer->IsScrollbarLayer());
+  return static_cast<const ScrollbarLayerImplBase*>(layer);
+}
 
 using ScrollbarSet = base::flat_set<ScrollbarLayerImplBase*>;
 

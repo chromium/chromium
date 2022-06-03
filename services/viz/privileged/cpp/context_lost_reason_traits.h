@@ -6,7 +6,7 @@
 #define SERVICES_VIZ_PRIVILEGED_CPP_CONTEXT_LOST_REASON_TRAITS_H_
 
 #include "gpu/command_buffer/common/constants.h"
-#include "services/viz/privileged/mojom/gl/context_lost_reason.mojom.h"
+#include "services/viz/privileged/mojom/gl/context_lost_reason.mojom-shared.h"
 
 namespace mojo {
 

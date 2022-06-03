@@ -4,10 +4,12 @@
 
 package org.chromium.chrome.browser.preferences;
 
-import android.util.SparseArray;
+import android.util.ArrayMap;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+
+import java.util.Map;
 
 /**
  * This class is the Java implementation of native PrefChangeRegistrar. It receives notification for
@@ -21,8 +23,8 @@ public class PrefChangeRegistrar {
      */
     public interface PrefObserver { void onPreferenceChange(); }
 
-    /** Mapping preference index and corresponding observer. **/
-    private final SparseArray<PrefObserver> mObservers = new SparseArray<>();
+    /** Mapping preference key and corresponding observer. **/
+    private final Map<String, PrefObserver> mObservers = new ArrayMap<>();
 
     /** Native pointer for PrefChangeRegistrarAndroid. **/
     private long mNativeRegistrar;
@@ -39,7 +41,7 @@ public class PrefChangeRegistrar {
      * @param preference The preference to be observed.
      * @param observer The observer to be notified.
      */
-    public void addObserver(@Pref int preference, PrefObserver observer) {
+    public void addObserver(String preference, PrefObserver observer) {
         assert mObservers.get(preference)
                 == null : "Only one observer should be added to each preference.";
         mObservers.put(preference, observer);
@@ -50,7 +52,7 @@ public class PrefChangeRegistrar {
      * Remove an observer for the specified preference if it has previously been added.
      * @param preference The specified preference.
      */
-    public void removeObserver(@Pref int preference) {
+    public void removeObserver(String preference) {
         PrefObserver observer = mObservers.get(preference);
         if (observer == null) return;
         mObservers.remove(preference);
@@ -68,7 +70,7 @@ public class PrefChangeRegistrar {
     }
 
     @CalledByNative
-    private void onPreferenceChange(int preference) {
+    private void onPreferenceChange(String preference) {
         assert mObservers.get(preference)
                 != null : "Notification from unregistered preference changes.";
         mObservers.get(preference).onPreferenceChange();
@@ -77,9 +79,10 @@ public class PrefChangeRegistrar {
     @NativeMethods
     interface Natives {
         long init(PrefChangeRegistrar caller);
-        void add(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller, int preference);
-        void remove(
-                long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller, int preference);
+        void add(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller,
+                String preference);
+        void remove(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller,
+                String preference);
         void destroy(long nativePrefChangeRegistrarAndroid, PrefChangeRegistrar caller);
     }
 }

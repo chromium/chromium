@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that overriding shorthands within rule are visible.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -25,8 +25,8 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('main', step1);
 
-  function step1() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+  async function step1() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     TestRunner.completeTest();
   }
 })();

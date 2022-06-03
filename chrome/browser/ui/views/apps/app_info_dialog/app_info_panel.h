@@ -7,7 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 class Profile;
@@ -23,8 +24,10 @@ class Label;
 // profile and app. Panels in the App Info dialog extend this class.
 class AppInfoPanel : public views::View {
  public:
+  METADATA_HEADER(AppInfoPanel);
   AppInfoPanel(Profile* profile, const extensions::Extension* app);
-
+  AppInfoPanel(const AppInfoPanel&) = delete;
+  AppInfoPanel& operator=(const AppInfoPanel&) = delete;
   ~AppInfoPanel() override;
 
  protected:
@@ -35,7 +38,7 @@ class AppInfoPanel : public views::View {
   void OpenLink(const GURL& url);
 
   // Create a heading label with the given text.
-  std::unique_ptr<views::Label> CreateHeading(const base::string16& text) const;
+  std::unique_ptr<views::Label> CreateHeading(const std::u16string& text) const;
 
   // Create a view with a vertically-stacked box layout, which can have child
   // views appended to it. |child_spacing| defaults to
@@ -55,11 +58,13 @@ class AppInfoPanel : public views::View {
       std::unique_ptr<views::View> key,
       std::unique_ptr<views::View> value) const;
 
-  Profile* profile_;
-  const extensions::Extension* app_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppInfoPanel);
+  Profile* const profile_;
+  const extensions::Extension* const app_;
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, AppInfoPanel, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, AppInfoPanel)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_PANEL_H_

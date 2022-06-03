@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/network/pending_callback_chain.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace network {

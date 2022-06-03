@@ -6,22 +6,29 @@
 #define UI_BASE_EMOJI_EMOJI_PANEL_HELPER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
+#include "build/chromeos_buildflags.h"
 
 namespace ui {
 
 // Returns whether showing the Emoji Panel is supported on this version of
 // the operating system.
-UI_BASE_EXPORT bool IsEmojiPanelSupported();
+COMPONENT_EXPORT(UI_BASE) bool IsEmojiPanelSupported();
 
 // Invokes the commands to show the Emoji Panel.
-UI_BASE_EXPORT void ShowEmojiPanel();
+COMPONENT_EXPORT(UI_BASE) void ShowEmojiPanel();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Invokes the commands to show the Emoji Panel in tablet mode (ChromeOS only).
+COMPONENT_EXPORT(UI_BASE) void ShowTabletModeEmojiPanel();
+
 // Sets a callback to show the emoji panel (ChromeOS only).
-UI_BASE_EXPORT void SetShowEmojiKeyboardCallback(
-    base::RepeatingClosure callback);
+COMPONENT_EXPORT(UI_BASE)
+void SetShowEmojiKeyboardCallback(base::RepeatingClosure callback);
+
+// Sets a callback to show the emoji panel in tablet mode (ChromeOS only).
+COMPONENT_EXPORT(UI_BASE)
+void SetTabletModeShowEmojiKeyboardCallback(base::RepeatingClosure callback);
 #endif
 
 }  // namespace ui

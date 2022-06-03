@@ -21,7 +21,7 @@
 #if defined(OS_IOS)
 #include "base/mac/scoped_cftyperef.h"
 #include "skia/ext/skia_utils_ios.h"
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #include "skia/ext/skia_utils_mac.h"
 #endif
@@ -148,15 +148,12 @@ bool AreBitmapsClose(const SkBitmap& bmp1,
   return true;
 }
 
-bool ArePNGBytesCloseToBitmap(
-    const scoped_refptr<base::RefCountedMemory>& bytes,
-    const SkBitmap& bitmap,
-    int max_deviation) {
+bool ArePNGBytesCloseToBitmap(base::span<const uint8_t> bytes,
+                              const SkBitmap& bitmap,
+                              int max_deviation) {
   SkBitmap decoded;
-  if (!bytes.get() ||
-      !PNGCodec::Decode(bytes->front(), bytes->size(), &decoded)) {
+  if (!PNGCodec::Decode(bytes.data(), bytes.size(), &decoded))
     return bitmap.isNull();
-  }
 
   return AreBitmapsClose(bitmap, decoded, max_deviation);
 }
@@ -221,7 +218,7 @@ PlatformImage CreatePlatformImage() {
   UIImage* image =
       skia::SkBitmapToUIImageWithColorSpace(bitmap, scale, color_space);
   return image;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   NSImage* image = skia::SkBitmapToNSImageWithColorSpace(
       bitmap, base::mac::GetGenericRGBColorSpace());
   return image;
@@ -233,7 +230,7 @@ PlatformImage CreatePlatformImage() {
 gfx::Image::RepresentationType GetPlatformRepresentationType() {
 #if defined(OS_IOS)
   return gfx::Image::kImageRepCocoaTouch;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   return gfx::Image::kImageRepCocoa;
 #else
   return gfx::Image::kImageRepSkia;
@@ -243,7 +240,7 @@ gfx::Image::RepresentationType GetPlatformRepresentationType() {
 PlatformImage ToPlatformType(const gfx::Image& image) {
 #if defined(OS_IOS)
   return image.ToUIImage();
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   return image.ToNSImage();
 #else
   return image.AsImageSkia();
@@ -253,14 +250,14 @@ PlatformImage ToPlatformType(const gfx::Image& image) {
 gfx::Image CopyViaPlatformType(const gfx::Image& image) {
 #if defined(OS_IOS)
   return gfx::Image(image.ToUIImage());
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   return gfx::Image(image.ToNSImage());
 #else
   return gfx::Image(image.AsImageSkia());
 #endif
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 // Defined in image_unittest_util_mac.mm.
 #else
 SkColor GetPlatformImageColor(PlatformImage image, int x, int y) {
@@ -277,7 +274,7 @@ void CheckIsTransparent(SkColor color) {
 }
 
 bool IsPlatformImageValid(PlatformImage image) {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   return image != NULL;
 #else
   return !image.isNull();
@@ -285,7 +282,7 @@ bool IsPlatformImageValid(PlatformImage image) {
 }
 
 bool PlatformImagesEqual(PlatformImage image1, PlatformImage image2) {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   return image1 == image2;
 #else
   return image1.BackedBySameObjectAs(image2);

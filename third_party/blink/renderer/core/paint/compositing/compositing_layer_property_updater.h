@@ -20,4 +20,4 @@ class CompositingLayerPropertyUpdater {
 
 }  // namespace blink
 
-#endif  // PaintPropertyTreeBuilder_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_COMPOSITING_LAYER_PROPERTY_UPDATER_H_

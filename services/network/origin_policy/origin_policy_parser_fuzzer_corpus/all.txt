@@ -1,0 +1,17 @@
+{
+  "ids": ["my-policy", "!"],
+  "features": {
+    "policy": "does not matter",
+    "policy_report_only": "does not matter"
+  },
+  "content_security": {
+    "policies": ["does not matter", "does not matter"],
+    "policies_report_only": ["does not matter", "does not matter"]
+  },
+  "isolation": {
+    "prefer_isolated_event_loop": true,
+    "prefer_isolated_memory": false,
+    "for_side_channel_protection": true,
+    "for_memory_measurement": false
+  }
+}

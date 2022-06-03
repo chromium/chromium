@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/macros.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
@@ -17,6 +18,12 @@ class Value;
 }
 
 namespace web {
+
+class BrowserState;
+class WebFrameInternal;
+
+// Default timeout in milliseconds for |CallJavaScriptFunction|.
+extern const double kJavaScriptFunctionCallDefaultTimeout;
 
 class WebFrame : public base::SupportsUserData {
  public:
@@ -30,6 +37,9 @@ class WebFrame : public base::SupportsUserData {
   // Whether or not the receiver represents a frame which supports calling
   // JavaScript functions using |CallJavaScriptFunction()|.
   virtual bool CanCallJavaScriptFunction() const = 0;
+
+  // Returns the BrowserState associated with this WebFrame.
+  virtual BrowserState* GetBrowserState() = 0;
 
   // Calls the JavaScript function |name| in the frame context. For example, to
   // call __gCrWeb.formHandlers.trackFormMutations(delay), pass
@@ -61,12 +71,16 @@ class WebFrame : public base::SupportsUserData {
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) = 0;
 
+  // Returns the WebFrameInternal instance for this object.
+  virtual WebFrameInternal* GetWebFrameInternal() = 0;
+
+  WebFrame(const WebFrame&) = delete;
+  WebFrame& operator=(const WebFrame&) = delete;
+
   ~WebFrame() override {}
 
  protected:
   WebFrame() {}
-
-  DISALLOW_COPY_AND_ASSIGN(WebFrame);
 };
 
 }  // namespace web

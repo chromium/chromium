@@ -1,9 +1,0 @@
-This is a testharness.js-based test.
-PASS name property value for DedicatedWorkerGlobalScope
-PASS name property is replaceable for DedicatedWorkerGlobalScope
-PASS Declaring name as an accidental global must not cause a harness error for DedicatedWorkerGlobalScope
-FAIL name property value for SharedWorkerGlobalScope assert_equals: expected "my name" but got "[object Object]"
-PASS name property is replaceable for SharedWorkerGlobalScope
-PASS Declaring name as an accidental global must not cause a harness error for SharedWorkerGlobalScope
-Harness: the test ran to completion.
-

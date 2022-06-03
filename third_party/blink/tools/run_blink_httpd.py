@@ -26,7 +26,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Runs an Apache HTTP server to manually run web tests locally.
 
 After running this script, you can locally navigate to URLs where
@@ -47,8 +46,11 @@ Note that some tests will only work if "127.0.0.1" for the host part of the
 URL, rather than "localhost".
 """
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.web_tests.servers import cli_wrapper
 from blinkpy.web_tests.servers import apache_http
 
-cli_wrapper.main(apache_http.ApacheHTTP, additional_dirs={}, number_of_servers=4, description=__doc__)
+cli_wrapper.main(
+    apache_http.ApacheHTTP,
+    additional_dirs={},
+    number_of_servers=4,
+    description=__doc__)

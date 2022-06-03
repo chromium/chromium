@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -14,10 +14,14 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppSpeed;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
@@ -44,19 +48,19 @@ public class PaymentRequestShowPromiseSingleOptionShippingTest
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper autofillTestHelper = new AutofillTestHelper();
         autofillTestHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jon Doe", "Google", "340 Main St", "California", "Los Angeles", "", "90291", "",
-                "US", "555-222-2222", "", "en-US"));
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "California",
+                "Los Angeles", "", "90291", "", "US", "555-222-2222", "", "en-US"));
         autofillTestHelper.setProfile(new AutofillProfile("", "https://example.com", true,
-                "Jane Smith", "Google", "340 Main St", "California", "Los Angeles", "", "90291", "",
-                "US", "555-111-1111", "", "en-US"));
+                "" /* honorific prefix */, "Jane Smith", "Google", "340 Main St", "California",
+                "Los Angeles", "", "90291", "", "US", "555-111-1111", "", "en-US"));
     }
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testFastApp() throws TimeoutException {
-        mRule.installPaymentApp("basic-card", PaymentRequestTestRule.HAVE_INSTRUMENTS,
-                PaymentRequestTestRule.IMMEDIATE_RESPONSE);
+        mRule.addPaymentAppFactory("basic-card", AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
         mRule.triggerUIAndWait(mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());
@@ -68,10 +72,11 @@ public class PaymentRequestShowPromiseSingleOptionShippingTest
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSlowApp() throws TimeoutException {
-        mRule.installPaymentApp("basic-card", PaymentRequestTestRule.HAVE_INSTRUMENTS,
-                PaymentRequestTestRule.DELAYED_RESPONSE, PaymentRequestTestRule.DELAYED_CREATION);
+        mRule.addPaymentAppFactory(
+                "basic-card", AppPresence.HAVE_APPS, FactorySpeed.SLOW_FACTORY, AppSpeed.SLOW_APP);
         mRule.triggerUIAndWait(mRule.getReadyToPay());
         Assert.assertEquals("USD $1.00", mRule.getOrderSummaryTotal());
         Assert.assertEquals("$0.00", mRule.getShippingOptionCostSummaryOnBottomSheet());

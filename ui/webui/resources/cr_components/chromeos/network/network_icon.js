@@ -74,7 +74,7 @@ Polymer({
    * @return {string} The name of the svg icon image to show.
    * @private
    */
-  getIconClass_: function() {
+  getIconClass_() {
     // NOTE: computeAriaLabel_() follows a very similar logic structure and both
     // functions should be updated together.
 
@@ -83,30 +83,36 @@ Polymer({
     }
     const mojom = chromeos.networkConfig.mojom;
     const type = this.networkState.type;
-    if (type == mojom.NetworkType.kEthernet) {
+    if (type === mojom.NetworkType.kEthernet) {
       return 'ethernet';
     }
-    if (type == mojom.NetworkType.kVPN) {
+    if (type === mojom.NetworkType.kVPN) {
       return 'vpn';
     }
 
     const prefix = OncMojo.networkTypeIsMobile(type) ? 'cellular-' : 'wifi-';
+
+    if (this.networkState.type === mojom.NetworkType.kCellular &&
+        this.networkState.typeState.cellular.simLocked) {
+      return prefix + 'locked';
+    }
+
     if (!this.isListItem && !this.networkState.guid) {
       const device = this.deviceState;
-      if (!device || device.deviceState == mojom.DeviceStateType.kEnabled ||
-          device.deviceState == mojom.DeviceStateType.kEnabling) {
+      if (!device || device.deviceState === mojom.DeviceStateType.kEnabled ||
+          device.deviceState === mojom.DeviceStateType.kEnabling) {
         return prefix + 'no-network';
       }
       return prefix + 'off';
     }
 
     const connectionState = this.networkState.connectionState;
-    if (connectionState == mojom.ConnectionStateType.kConnecting) {
+    if (connectionState === mojom.ConnectionStateType.kConnecting) {
       return prefix + 'connecting';
     }
 
     if (!this.isListItem &&
-        connectionState == mojom.ConnectionStateType.kNotConnected) {
+        connectionState === mojom.ConnectionStateType.kNotConnected) {
       return prefix + 'not-connected';
     }
 
@@ -122,7 +128,7 @@ Polymer({
    * @return {string} A localized accessibility label for the icon.
    * @private
    */
-  computeAriaLabel_: function(locale, networkState) {
+  computeAriaLabel_(locale, networkState) {
     // NOTE: getIconClass_() follows a very similar logic structure and both
     // functions should be updated together.
 
@@ -154,9 +160,9 @@ Polymer({
       networkTypeString = this.i18nDynamic(locale, 'OncTypeWiFi');
     }
 
-    // When isListItem == true, we want to describe the network and signal
+    // When isListItem === true, we want to describe the network and signal
     // strength regardless of connection state (i.e. when picking a Wi-Fi
-    // network to connect to. If isListItem == false we try to describe the
+    // network to connect to. If isListItem === false we try to describe the
     // current connection state and describe signal strength only if connected.
 
     if (!this.isListItem && !this.networkState.guid) {
@@ -197,7 +203,7 @@ Polymer({
    * corresponding to |strength|.
    * @private
    */
-  strengthToIndex_: function(strength) {
+  strengthToIndex_(strength) {
     if (strength <= 0) {
       return 0;
     }
@@ -215,23 +221,28 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  showTechnology_: function() {
-    return this.getTechnology_() != '' && this.showTechnologyBadge;
+  showTechnology_() {
+    if (!this.networkState) {
+      return false;
+    }
+    return !this.showRoaming_() &&
+        OncMojo.connectionStateIsConnected(this.networkState.connectionState) &&
+        this.getTechnology_() !== '' && this.showTechnologyBadge;
   },
 
   /**
    * @return {string}
    * @private
    */
-  getTechnology_: function() {
+  getTechnology_() {
     if (!this.networkState) {
       return '';
     }
-    if (this.networkState.type ==
+    if (this.networkState.type ===
         chromeos.networkConfig.mojom.NetworkType.kCellular) {
       const technology = this.getTechnologyId_(
           this.networkState.typeState.cellular.networkTechnology);
-      if (technology != '') {
+      if (technology !== '') {
         return 'network:' + technology;
       }
     }
@@ -243,7 +254,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getTechnologyId_: function(networkTechnology) {
+  getTechnologyId_(networkTechnology) {
     switch (networkTechnology) {
       case 'CDMA1XRTT':
         return 'badge-1x';
@@ -272,17 +283,39 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  showSecure_: function() {
+  showSecure_() {
     if (!this.networkState) {
       return false;
     }
     const mojom = chromeos.networkConfig.mojom;
     if (!this.isListItem &&
-        this.networkState.connectionState ==
+        this.networkState.connectionState ===
             mojom.ConnectionStateType.kNotConnected) {
       return false;
     }
-    return this.networkState.type == mojom.NetworkType.kWiFi &&
-        this.networkState.typeState.wifi.security != mojom.SecurityType.kNone;
+    return this.networkState.type === mojom.NetworkType.kWiFi &&
+        this.networkState.typeState.wifi.security !== mojom.SecurityType.kNone;
   },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showRoaming_() {
+    if (!this.networkState) {
+      return false;
+    }
+    const mojom = chromeos.networkConfig.mojom;
+    return this.networkState.type === mojom.NetworkType.kCellular &&
+        this.networkState.typeState.cellular.roaming;
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showIcon_() {
+    return !!this.networkState;
+  },
+
 });

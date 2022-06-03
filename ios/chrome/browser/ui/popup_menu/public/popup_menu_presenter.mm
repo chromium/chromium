@@ -4,13 +4,13 @@
 
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_presenter_delegate.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_view_controller.h"
 #import "ios/chrome/browser/ui/popup_menu/public/popup_menu_view_controller_delegate.h"
 #import "ios/chrome/browser/ui/util/named_guide.h"
 #import "ios/chrome/common/material_timing.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -33,6 +33,11 @@ const CGFloat kDamping = 0.85;
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* initialConstraints;
 // Constraints used for the positioning of the popup when presented.
 @property(nonatomic, strong) NSArray<NSLayoutConstraint*>* presentedConstraints;
+
+@property(nonatomic, strong)
+    NSLayoutConstraint* presentedViewControllerHeightConstraint;
+@property(nonatomic, strong)
+    NSLayoutConstraint* presentedViewControllerWidthConstraint;
 @end
 
 @implementation PopupMenuPresenter
@@ -67,35 +72,30 @@ const CGFloat kDamping = 0.85;
   // itself.
   [self.presentedViewController.view setNeedsLayout];
   [self.presentedViewController.view layoutIfNeeded];
-  CGSize fittingSize = [self.presentedViewController.view
-      sizeThatFits:CGSizeMake(kMaxWidth, kMaxHeight)];
-  // Use preferredSize if it is set.
-  CGSize preferredSize = self.presentedViewController.preferredContentSize;
-  CGFloat width = fittingSize.width;
-  CGFloat height = fittingSize.height;
-  if (!CGSizeEqualToSize(preferredSize, CGSizeZero)) {
-    width = preferredSize.width;
-    height = preferredSize.height;
-  }
 
   // Set the sizing constraints, in case the UIViewController is using a
   // UIScrollView. The priority needs to be non-required to allow downsizing if
   // needed, and more than UILayoutPriorityDefaultHigh to take precedence on
   // compression resistance.
-  NSLayoutConstraint* widthConstraint =
+  self.presentedViewControllerWidthConstraint =
       [self.presentedViewController.view.widthAnchor
-          constraintEqualToConstant:width];
-  widthConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+          constraintEqualToConstant:0];
+  self.presentedViewControllerWidthConstraint.priority =
+      UILayoutPriorityDefaultHigh + 1;
 
-  NSLayoutConstraint* heightConstraint =
+  self.presentedViewControllerHeightConstraint =
       [self.presentedViewController.view.heightAnchor
-          constraintEqualToConstant:height];
-  heightConstraint.priority = UILayoutPriorityDefaultHigh + 1;
+          constraintEqualToConstant:0];
+  self.presentedViewControllerHeightConstraint.priority =
+      UILayoutPriorityDefaultHigh + 1;
+
+  // Set the constraint constants to their correct intial values.
+  [self setPresentedViewControllerConstraintConstants];
 
   UIView* popup = self.popupViewController.contentContainer;
   [NSLayoutConstraint activateConstraints:@[
-    widthConstraint,
-    heightConstraint,
+    self.presentedViewControllerWidthConstraint,
+    self.presentedViewControllerHeightConstraint,
     [popup.heightAnchor constraintLessThanOrEqualToConstant:kMaxHeight],
     [popup.widthAnchor constraintLessThanOrEqualToConstant:kMaxWidth],
     [popup.widthAnchor constraintGreaterThanOrEqualToConstant:kMinWidth],
@@ -141,19 +141,29 @@ const CGFloat kDamping = 0.85;
             CGAffineTransformIdentity;
       }
       withCompletion:^(BOOL finished) {
-        [self.delegate containedPresenterDidPresent:self];
+        if ([self.delegate
+                respondsToSelector:@selector(containedPresenterDidPresent:)]) {
+          [self.delegate containedPresenterDidPresent:self];
+        }
       }];
 }
 
 - (void)dismissAnimated:(BOOL)animated {
   [self.popupViewController willMoveToParentViewController:nil];
+  // Notify the presented view controller that it will be removed to prevent it
+  // from triggering unnecessary layout passes, which might lead to a hang. See
+  // crbug.com/1126618.
+  [self.presentedViewController willMoveToParentViewController:nil];
   [NSLayoutConstraint deactivateConstraints:self.presentedConstraints];
   [NSLayoutConstraint activateConstraints:self.initialConstraints];
   auto completion = ^(BOOL finished) {
     [self.popupViewController.view removeFromSuperview];
     [self.popupViewController removeFromParentViewController];
     self.popupViewController = nil;
-    [self.delegate containedPresenterDidDismiss:self];
+    if ([self.delegate
+            respondsToSelector:@selector(containedPresenterDidDismiss:)]) {
+      [self.delegate containedPresenterDidDismiss:self];
+    }
   };
   if (animated) {
     [self
@@ -232,11 +242,43 @@ const CGFloat kDamping = 0.85;
   ];
 }
 
+// Updates the constants for the constraints constraining the presented view
+// controller's height and width.
+- (void)setPresentedViewControllerConstraintConstants {
+  CGSize fittingSize = [self.presentedViewController.view
+      sizeThatFits:CGSizeMake(kMaxWidth, kMaxHeight)];
+  // Use preferredSize if it is set.
+  CGSize preferredSize = self.presentedViewController.preferredContentSize;
+  CGFloat width = fittingSize.width;
+  CGFloat height = fittingSize.height;
+  if (!CGSizeEqualToSize(preferredSize, CGSizeZero)) {
+    width = preferredSize.width;
+    height = preferredSize.height;
+  }
+  self.presentedViewControllerHeightConstraint.constant = height;
+  self.presentedViewControllerWidthConstraint.constant = width;
+}
+
 #pragma mark - PopupMenuViewControllerDelegate
 
 - (void)popupMenuViewControllerWillDismiss:
     (PopupMenuViewController*)viewController {
   [self.delegate popupMenuPresenterWillDismiss:self];
+}
+
+- (void)containedViewControllerContentSizeChangedForPopupMenuViewController:
+    (PopupMenuViewController*)viewController {
+  // Set the frame of the table view to the maximum width to have the label
+  // resizing correctly.
+  CGRect frame = self.presentedViewController.view.frame;
+  frame.size.width = kMaxWidth;
+  self.presentedViewController.view.frame = frame;
+  // It is necessary to do a first layout pass so the table view can size
+  // itself.
+  [self.presentedViewController.view setNeedsLayout];
+  [self.presentedViewController.view layoutIfNeeded];
+
+  [self setPresentedViewControllerConstraintConstants];
 }
 
 @end

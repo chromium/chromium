@@ -21,7 +21,7 @@
 namespace policy {
 namespace weekly_time_utils {
 namespace {
-constexpr base::TimeDelta kWeek = base::TimeDelta::FromDays(7);
+constexpr base::TimeDelta kWeek = base::Days(7);
 const char kFormatWeekdayHourMinute[] = "EEEE jj:mm a";
 }  // namespace
 
@@ -74,7 +74,7 @@ bool GetOffsetFromTimezoneToGmt(const icu::TimeZone& timezone,
   return true;
 }
 
-base::string16 WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
+std::u16string WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
                                            base::Clock* clock) {
   WeeklyTime result = weekly_time;
   if (!weekly_time.timezone_offset()) {
@@ -83,16 +83,17 @@ base::string16 WeeklyTimeToLocalizedString(const WeeklyTime& weekly_time,
     auto local_time_zone = base::WrapUnique(icu::TimeZone::createDefault());
     if (!GetOffsetFromTimezoneToGmt(*local_time_zone, clock, &offset)) {
       LOG(ERROR) << "Unable to obtain offset for time agnostic timezone";
-      return base::string16();
+      return std::u16string();
     }
     result = weekly_time.ConvertToCustomTimezone(-offset);
   }
   // Clock with the current time.
-  WeeklyTime now_weekly_time = WeeklyTime::GetCurrentGmtWeeklyTime(clock);
+  const auto now = clock->Now();
+  WeeklyTime now_weekly_time = WeeklyTime::GetGmtWeeklyTime(now);
   // Offset the current time so that its day of the week and time match
   // |day_of_week| and |milliseconds_|.
   base::Time offset_time =
-      clock->Now() + now_weekly_time.GetDurationTo(result.ConvertToTimezone(0));
+      now + now_weekly_time.GetDurationTo(result.ConvertToTimezone(0));
   return base::TimeFormatWithPattern(offset_time, kFormatWeekdayHourMinute);
 }
 
@@ -107,29 +108,51 @@ std::vector<WeeklyTimeInterval> ConvertIntervalsToGmt(
   return gmt_intervals;
 }
 
-base::TimeDelta GetDeltaTillNextTimeInterval(
-    const WeeklyTime& current_time,
-    const std::vector<WeeklyTimeInterval>& weekly_time_intervals) {
-  // Weekly intervals repeat every week, therefore the maximum duration till
-  // next weekly interval is one week.
-  base::TimeDelta till_next_interval = kWeek;
-  for (const auto& interval : weekly_time_intervals) {
-    till_next_interval = std::min(till_next_interval,
-                                  current_time.GetDurationTo(interval.start()));
+bool Contains(const base::Time& time,
+              const std::vector<WeeklyTimeInterval>& intervals) {
+  WeeklyTime weekly_time = WeeklyTime::GetGmtWeeklyTime(time);
+  for (const auto& interval : intervals) {
+    DCHECK(interval.start().timezone_offset().has_value());
+    if (interval.Contains(weekly_time))
+      return true;
   }
-  return till_next_interval;
+  return false;
 }
 
-base::Optional<WeeklyTimeInterval> GetIntervalForCurrentTime(
-    const std::vector<WeeklyTimeInterval>& intervals,
-    base::Clock* clock) {
-  WeeklyTime weekly_time_now = WeeklyTime::GetCurrentGmtWeeklyTime(clock);
-  for (const auto& interval : intervals) {
-    if (interval.Contains(weekly_time_now)) {
-      return interval;
-    }
+absl::optional<base::Time> GetNextEventTime(
+    const base::Time& current_time,
+    const std::vector<WeeklyTimeInterval>& weekly_time_intervals) {
+  if (weekly_time_intervals.empty())
+    return absl::nullopt;
+
+  base::Time::Exploded exploded;
+  current_time.UTCExplode(&exploded);
+  const auto weekly_time = GetWeeklyTimeFromExploded(exploded, 0);
+
+  // Weekly intervals repeat every week, therefore the maximum duration till
+  // next weekly interval is one week.
+  base::TimeDelta till_next_event = kWeek;
+  for (const auto& interval : weekly_time_intervals) {
+    if (weekly_time != interval.start())
+      till_next_event = std::min(till_next_event,
+                                 weekly_time.GetDurationTo(interval.start()));
+    if (weekly_time != interval.end())
+      till_next_event =
+          std::min(till_next_event, weekly_time.GetDurationTo(interval.end()));
   }
-  return base::nullopt;
+
+  // base::Time has microseconds precision.
+  // base::Time::Exploded and WeeklyTime have milliseconds precision.
+  // By constructing |rounded_time| from |exploded|, we are adjusting the
+  // precision to return the exact time.
+  base::Time rounded_time;
+  if (base::Time::FromUTCExploded(exploded, &rounded_time)) {
+    return rounded_time + till_next_event;
+  }
+
+  // This is possible if FromUTCExploded fails during daylight saving time
+  // switches, see base::Time::Midnight implementation.
+  return current_time + till_next_event;
 }
 
 }  // namespace weekly_time_utils

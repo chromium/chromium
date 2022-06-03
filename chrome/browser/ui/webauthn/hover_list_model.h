@@ -7,12 +7,10 @@
 
 #include <stddef.h>
 
+#include <string>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
+#include "base/check.h"
 #include "ui/gfx/vector_icon_types.h"
 
 // List model that controls which item is added to WebAuthN UI views.
@@ -34,17 +32,22 @@ class HoverListModel {
   };
 
   HoverListModel() = default;
+
+  HoverListModel(const HoverListModel&) = delete;
+  HoverListModel& operator=(const HoverListModel&) = delete;
+
   virtual ~HoverListModel() = default;
 
   virtual bool ShouldShowPlaceholderForEmptyList() const = 0;
-  virtual base::string16 GetPlaceholderText() const = 0;
+  virtual std::u16string GetPlaceholderText() const = 0;
   // GetPlaceholderIcon may return nullptr to indicate that no icon should be
   // added. This is distinct from using an empty icon as the latter will still
   // take up as much space as any other icon.
   virtual const gfx::VectorIcon* GetPlaceholderIcon() const = 0;
-  virtual std::vector<int> GetItemTags() const = 0;
-  virtual base::string16 GetItemText(int item_tag) const = 0;
-  virtual base::string16 GetDescriptionText(int item_tag) const = 0;
+  virtual std::vector<int> GetThrobberTags() const = 0;
+  virtual std::vector<int> GetButtonTags() const = 0;
+  virtual std::u16string GetItemText(int item_tag) const = 0;
+  virtual std::u16string GetDescriptionText(int item_tag) const = 0;
   // GetItemIcon may return nullptr to indicate that no icon should be added.
   // This is distinct from using an empty icon as the latter will still take up
   // as much space as any other icon.
@@ -70,8 +73,6 @@ class HoverListModel {
 
  private:
   Observer* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(HoverListModel);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_HOVER_LIST_MODEL_H_

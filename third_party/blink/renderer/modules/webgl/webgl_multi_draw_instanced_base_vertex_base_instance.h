@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_MULTI_DRAW_INSTANCED_BASE_VERTEX_BASE_INSTANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL_MULTI_DRAW_INSTANCED_BASE_VERTEX_BASE_INSTANCE_H_
 
-#include "third_party/blink/renderer/bindings/modules/v8/int32_array_or_long_sequence.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_multi_draw_common.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
 class WebGLMultiDrawInstancedBaseVertexBaseInstance final
     : public WebGLExtension,
       public WebGLMultiDrawCommon {
@@ -26,13 +26,14 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
 
   void multiDrawArraysInstancedBaseInstanceWEBGL(
       GLenum mode,
-      Int32ArrayOrLongSequence firsts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* firsts_list,
       GLuint firsts_offset,
-      Int32ArrayOrLongSequence counts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* counts_list,
       GLuint counts_offset,
-      Int32ArrayOrLongSequence instance_counts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* instance_counts_list,
       GLuint instance_counts_offset,
-      Int32ArrayOrLongSequence baseinstances_list,
+      const V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence*
+          baseinstances_list,
       GLuint baseinstances_offset,
       GLsizei drawcount) {
     multiDrawArraysInstancedBaseInstanceImpl(
@@ -43,16 +44,17 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
 
   void multiDrawElementsInstancedBaseVertexBaseInstanceWEBGL(
       GLenum mode,
-      Int32ArrayOrLongSequence counts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* counts_list,
       GLuint counts_offset,
       GLenum type,
-      Int32ArrayOrLongSequence offsets_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* offsets_list,
       GLuint offsets_offset,
-      Int32ArrayOrLongSequence instance_counts_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* instance_counts_list,
       GLuint instance_counts_offset,
-      Int32ArrayOrLongSequence basevertices_list,
+      const V8UnionInt32ArrayAllowSharedOrLongSequence* basevertices_list,
       GLuint basevertices_offset,
-      Int32ArrayOrLongSequence baseinstances_list,
+      const V8UnionUint32ArrayAllowSharedOrUnsignedLongSequence*
+          baseinstances_list,
       GLuint baseinstances_offset,
       GLsizei drawcount) {
     multiDrawElementsInstancedBaseVertexBaseInstanceImpl(
@@ -72,7 +74,7 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
       GLuint counts_offset,
       const base::span<const int32_t> instance_counts,
       GLuint instance_counts_offset,
-      const base::span<const int32_t> baseinstances,
+      const base::span<const uint32_t> baseinstances,
       GLuint baseinstances_offset,
       GLsizei drawcount);
 
@@ -87,7 +89,7 @@ class WebGLMultiDrawInstancedBaseVertexBaseInstance final
       GLuint instance_counts_offset,
       const base::span<const int32_t> basevertices,
       GLuint basevertices_offset,
-      const base::span<const int32_t> baseinstances,
+      const base::span<const uint32_t> baseinstances,
       GLuint baseinstances_offset,
       GLsizei drawcount);
 };

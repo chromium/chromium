@@ -36,11 +36,9 @@ class ExceptionState;
 class XPathExpression;
 class XPathResult;
 
-class DocumentXPathEvaluator final
+class CORE_EXPORT DocumentXPathEvaluator final
     : public GarbageCollected<DocumentXPathEvaluator>,
       public Supplement<Document> {
-  USING_GARBAGE_COLLECTED_MIXIN(DocumentXPathEvaluator);
-
  public:
   static const char kSupplementName[];
 
@@ -60,7 +58,7 @@ class DocumentXPathEvaluator final
                                ExceptionState&);
 
   explicit DocumentXPathEvaluator(Document&);
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<XPathEvaluator> xpath_evaluator_;

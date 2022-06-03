@@ -6,7 +6,6 @@
 #define SKIA_EXT_SKIA_UTILS_MAC_H_
 
 #include <ApplicationServices/ApplicationServices.h>
-#include <vector>
 
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -40,6 +39,17 @@ SK_API SkRect CGRectToSkRect(const CGRect& rect);
 // Converts a Skia rect to a CoreGraphics CGRect.
 CGRect SkIRectToCGRect(const SkIRect& rect);
 CGRect SkRectToCGRect(const SkRect& rect);
+
+// Converts NSColor to an SKColor.
+// NSColor has a number of methods that return system colors (i.e. controlled by
+// user preferences). This function converts the color given by an NSColor class
+// method to an SkColor. Official documentation suggests developers only rely on
+// +[NSColor selectedTextBackgroundColor] and +[NSColor selectedControlColor],
+// but other colors give a good baseline. For many, a gradient is involved; the
+// palette chosen based on the enum value given by +[NSColor currentColorTint].
+// Apple's documentation also suggests to use NSColorList, but the system color
+// list is just populated with class methods on NSColor.
+SK_API SkColor NSSystemColorToSkColor(NSColor* color);
 
 // Converts CGColorRef to the ARGB layout Skia expects. The given CGColorRef
 // should be in the sRGB color space and include alpha.

@@ -7,13 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
+#include "build/chromeos_buildflags.h"
 #include "components/onc/onc_constants.h"
 #include "extensions/browser/api/extensions_api_client.h"
-#include "extensions/browser/api/networking_private/networking_cast_private_delegate.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -29,12 +29,12 @@ const int kDefaultNetworkListLimit = 1000;
 
 const char kPrivateOnlyError[] = "Requires networkingPrivate API access.";
 
-const char* const kPrivatePropertiesForSet[] = {
+const char* const kPrivatePropertyPathsForSet[] = {
     "Cellular.APN", "ProxySettings", "StaticIPConfig", "VPN.Host",
     "VPN.IPsec",    "VPN.L2TP",      "VPN.OpenVPN",    "VPN.ThirdPartyVPN",
 };
 
-const char* const kPrivatePropertiesForGet[] = {
+const char* const kPrivatePropertyPathsForGet[] = {
     "Cellular.APN",  "Cellular.APNList", "Cellular.LastGoodAPN",
     "Cellular.ESN",  "Cellular.ICCID",   "Cellular.IMEI",
     "Cellular.IMSI", "Cellular.MDN",     "Cellular.MEID",
@@ -66,7 +66,7 @@ enum class PropertiesType { GET, SET };
 // Filters out all properties that are not allowed for the extension in the
 // provided context.
 // Returns list of removed keys.
-std::vector<std::string> FilterProperties(base::DictionaryValue* properties,
+std::vector<std::string> FilterProperties(base::Value* properties,
                                           PropertiesType type,
                                           const Extension* extension,
                                           Feature::Context context,
@@ -77,17 +77,18 @@ std::vector<std::string> FilterProperties(base::DictionaryValue* properties,
   const char* const* filter = nullptr;
   size_t filter_size = 0;
   if (type == PropertiesType::GET) {
-    filter = kPrivatePropertiesForGet;
-    filter_size = base::size(kPrivatePropertiesForGet);
+    filter = kPrivatePropertyPathsForGet;
+    filter_size = base::size(kPrivatePropertyPathsForGet);
   } else {
-    filter = kPrivatePropertiesForSet;
-    filter_size = base::size(kPrivatePropertiesForSet);
+    filter = kPrivatePropertyPathsForSet;
+    filter_size = base::size(kPrivatePropertyPathsForSet);
   }
 
   std::vector<std::string> removed_properties;
   for (size_t i = 0; i < filter_size; ++i) {
-    base::Value property;
-    if (properties->Remove(filter[i], nullptr)) {
+    // networkingPrivate uses sub dictionaries for Shill properties with a
+    // '.' separator, so we use RemovePath here, not RemoveKey.
+    if (properties->RemovePath(filter[i])) {
       removed_properties.push_back(filter[i]);
     }
   }
@@ -96,22 +97,11 @@ std::vector<std::string> FilterProperties(base::DictionaryValue* properties,
 
 bool CanChangeSharedConfig(const Extension* extension,
                            Feature::Context context) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   return context == Feature::WEBUI_CONTEXT;
 #else
   return true;
 #endif
-}
-
-std::unique_ptr<NetworkingCastPrivateDelegate::Credentials> AsCastCredentials(
-    api::networking_private::VerificationProperties& properties) {
-  return std::make_unique<NetworkingCastPrivateDelegate::Credentials>(
-      properties.certificate,
-      properties.intermediate_certificates
-          ? *properties.intermediate_certificates
-          : std::vector<std::string>(),
-      properties.signed_data, properties.device_ssid, properties.device_serial,
-      properties.device_bssid, properties.public_key, properties.nonce);
 }
 
 std::string InvalidPropertiesError(const std::vector<std::string>& properties) {
@@ -132,7 +122,6 @@ const char kErrorInvalidArguments[] = "Error.InvalidArguments";
 const char kErrorInvalidNetworkGuid[] = "Error.InvalidNetworkGuid";
 const char kErrorInvalidNetworkOperation[] = "Error.InvalidNetworkOperation";
 const char kErrorNetworkUnavailable[] = "Error.NetworkUnavailable";
-const char kErrorNotReady[] = "Error.NotReady";
 const char kErrorNotSupported[] = "Error.NotSupported";
 const char kErrorPolicyControlled[] = "Error.PolicyControlled";
 const char kErrorSimLocked[] = "Error.SimLocked";
@@ -150,29 +139,30 @@ NetworkingPrivateGetPropertiesFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetPropertiesFunction::Run() {
   std::unique_ptr<private_api::GetProperties::Params> params =
-      private_api::GetProperties::Params::Create(*args_);
+      private_api::GetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->GetProperties(
           params->network_guid,
-          base::Bind(&NetworkingPrivateGetPropertiesFunction::Success, this),
-          base::Bind(&NetworkingPrivateGetPropertiesFunction::Failure, this));
+          base::BindOnce(&NetworkingPrivateGetPropertiesFunction::Result,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void NetworkingPrivateGetPropertiesFunction::Success(
-    std::unique_ptr<base::DictionaryValue> result) {
-  FilterProperties(result.get(), PropertiesType::GET, extension(),
+void NetworkingPrivateGetPropertiesFunction::Result(
+    absl::optional<base::Value> result,
+    absl::optional<std::string> error) {
+  if (!result) {
+    Respond(Error(error.value_or("Failed")));
+    return;
+  }
+  FilterProperties(&result.value(), PropertiesType::GET, extension(),
                    source_context_type(), source_url());
-  Respond(OneArgument(std::move(result)));
-}
-
-void NetworkingPrivateGetPropertiesFunction::Failure(const std::string& error) {
-  Respond(Error(error));
+  Respond(OneArgument(std::move(*result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -185,32 +175,30 @@ NetworkingPrivateGetManagedPropertiesFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetManagedPropertiesFunction::Run() {
   std::unique_ptr<private_api::GetManagedProperties::Params> params =
-      private_api::GetManagedProperties::Params::Create(*args_);
+      private_api::GetManagedProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->GetManagedProperties(
           params->network_guid,
-          base::Bind(&NetworkingPrivateGetManagedPropertiesFunction::Success,
-                     this),
-          base::Bind(&NetworkingPrivateGetManagedPropertiesFunction::Failure,
-                     this));
+          base::BindOnce(&NetworkingPrivateGetManagedPropertiesFunction::Result,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
   return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
-void NetworkingPrivateGetManagedPropertiesFunction::Success(
-    std::unique_ptr<base::DictionaryValue> result) {
-  FilterProperties(result.get(), PropertiesType::GET, extension(),
+void NetworkingPrivateGetManagedPropertiesFunction::Result(
+    absl::optional<base::Value> result,
+    absl::optional<std::string> error) {
+  if (!result) {
+    Respond(Error(error.value_or("Failed")));
+    return;
+  }
+  FilterProperties(&result.value(), PropertiesType::GET, extension(),
                    source_context_type(), source_url());
-  Respond(OneArgument(std::move(result)));
-}
-
-void NetworkingPrivateGetManagedPropertiesFunction::Failure(
-    const std::string& error) {
-  Respond(Error(error));
+  Respond(OneArgument(std::move(*result)));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -221,13 +209,14 @@ NetworkingPrivateGetStateFunction::~NetworkingPrivateGetStateFunction() {
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetStateFunction::Run() {
   std::unique_ptr<private_api::GetState::Params> params =
-      private_api::GetState::Params::Create(*args_);
+      private_api::GetState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
-      ->GetState(params->network_guid,
-                 base::Bind(&NetworkingPrivateGetStateFunction::Success, this),
-                 base::Bind(&NetworkingPrivateGetStateFunction::Failure, this));
+      ->GetState(
+          params->network_guid,
+          base::BindOnce(&NetworkingPrivateGetStateFunction::Success, this),
+          base::BindOnce(&NetworkingPrivateGetStateFunction::Failure, this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -238,7 +227,7 @@ void NetworkingPrivateGetStateFunction::Success(
     std::unique_ptr<base::DictionaryValue> result) {
   FilterProperties(result.get(), PropertiesType::GET, extension(),
                    source_context_type(), source_url());
-  Respond(OneArgument(std::move(result)));
+  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
 }
 
 void NetworkingPrivateGetStateFunction::Failure(const std::string& error) {
@@ -255,7 +244,7 @@ NetworkingPrivateSetPropertiesFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateSetPropertiesFunction::Run() {
   std::unique_ptr<private_api::SetProperties::Params> params =
-      private_api::SetProperties::Params::Create(*args_);
+      private_api::SetProperties::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::unique_ptr<base::DictionaryValue> properties_dict(
@@ -271,8 +260,10 @@ NetworkingPrivateSetPropertiesFunction::Run() {
       ->SetProperties(
           params->network_guid, std::move(properties_dict),
           CanChangeSharedConfig(extension(), source_context_type()),
-          base::Bind(&NetworkingPrivateSetPropertiesFunction::Success, this),
-          base::Bind(&NetworkingPrivateSetPropertiesFunction::Failure, this));
+          base::BindOnce(&NetworkingPrivateSetPropertiesFunction::Success,
+                         this),
+          base::BindOnce(&NetworkingPrivateSetPropertiesFunction::Failure,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -297,7 +288,7 @@ NetworkingPrivateCreateNetworkFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateCreateNetworkFunction::Run() {
   std::unique_ptr<private_api::CreateNetwork::Params> params =
-      private_api::CreateNetwork::Params::Create(*args_);
+      private_api::CreateNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (params->shared &&
@@ -317,8 +308,10 @@ NetworkingPrivateCreateNetworkFunction::Run() {
   GetDelegate(browser_context())
       ->CreateNetwork(
           params->shared, std::move(properties_dict),
-          base::Bind(&NetworkingPrivateCreateNetworkFunction::Success, this),
-          base::Bind(&NetworkingPrivateCreateNetworkFunction::Failure, this));
+          base::BindOnce(&NetworkingPrivateCreateNetworkFunction::Success,
+                         this),
+          base::BindOnce(&NetworkingPrivateCreateNetworkFunction::Failure,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -343,15 +336,17 @@ NetworkingPrivateForgetNetworkFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateForgetNetworkFunction::Run() {
   std::unique_ptr<private_api::ForgetNetwork::Params> params =
-      private_api::ForgetNetwork::Params::Create(*args_);
+      private_api::ForgetNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->ForgetNetwork(
           params->network_guid,
           CanChangeSharedConfig(extension(), source_context_type()),
-          base::Bind(&NetworkingPrivateForgetNetworkFunction::Success, this),
-          base::Bind(&NetworkingPrivateForgetNetworkFunction::Failure, this));
+          base::BindOnce(&NetworkingPrivateForgetNetworkFunction::Success,
+                         this),
+          base::BindOnce(&NetworkingPrivateForgetNetworkFunction::Failure,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -374,7 +369,7 @@ NetworkingPrivateGetNetworksFunction::~NetworkingPrivateGetNetworksFunction() {
 
 ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
   std::unique_ptr<private_api::GetNetworks::Params> params =
-      private_api::GetNetworks::Params::Create(*args_);
+      private_api::GetNetworks::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   std::string network_type = private_api::ToString(params->filter.network_type);
@@ -388,8 +383,8 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
   GetDelegate(browser_context())
       ->GetNetworks(
           network_type, configured_only, visible_only, limit,
-          base::Bind(&NetworkingPrivateGetNetworksFunction::Success, this),
-          base::Bind(&NetworkingPrivateGetNetworksFunction::Failure, this));
+          base::BindOnce(&NetworkingPrivateGetNetworksFunction::Success, this),
+          base::BindOnce(&NetworkingPrivateGetNetworksFunction::Failure, this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -398,7 +393,8 @@ ExtensionFunction::ResponseAction NetworkingPrivateGetNetworksFunction::Run() {
 
 void NetworkingPrivateGetNetworksFunction::Success(
     std::unique_ptr<base::ListValue> network_list) {
-  return Respond(OneArgument(std::move(network_list)));
+  return Respond(
+      OneArgument(base::Value::FromUniquePtrValue(std::move(network_list))));
 }
 
 void NetworkingPrivateGetNetworksFunction::Failure(const std::string& error) {
@@ -415,7 +411,7 @@ NetworkingPrivateGetVisibleNetworksFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetVisibleNetworksFunction::Run() {
   std::unique_ptr<private_api::GetVisibleNetworks::Params> params =
-      private_api::GetVisibleNetworks::Params::Create(*args_);
+      private_api::GetVisibleNetworks::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   // getVisibleNetworks is deprecated - allow it only for apps with
@@ -433,10 +429,10 @@ NetworkingPrivateGetVisibleNetworksFunction::Run() {
   GetDelegate(browser_context())
       ->GetNetworks(
           network_type, configured_only, visible_only, kDefaultNetworkListLimit,
-          base::Bind(&NetworkingPrivateGetVisibleNetworksFunction::Success,
-                     this),
-          base::Bind(&NetworkingPrivateGetVisibleNetworksFunction::Failure,
-                     this));
+          base::BindOnce(&NetworkingPrivateGetVisibleNetworksFunction::Success,
+                         this),
+          base::BindOnce(&NetworkingPrivateGetVisibleNetworksFunction::Failure,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -445,7 +441,8 @@ NetworkingPrivateGetVisibleNetworksFunction::Run() {
 
 void NetworkingPrivateGetVisibleNetworksFunction::Success(
     std::unique_ptr<base::ListValue> network_properties_list) {
-  Respond(OneArgument(std::move(network_properties_list)));
+  Respond(OneArgument(
+      base::Value::FromUniquePtrValue(std::move(network_properties_list))));
 }
 
 void NetworkingPrivateGetVisibleNetworksFunction::Failure(
@@ -470,24 +467,21 @@ NetworkingPrivateGetEnabledNetworkTypesFunction::Run() {
     return RespondNow(Error(kPrivateOnlyError));
   }
 
-  std::unique_ptr<base::ListValue> enabled_networks_onc_types(
+  base::Value enabled_networks_onc_types(
       GetDelegate(browser_context())->GetEnabledNetworkTypes());
-  if (!enabled_networks_onc_types)
+  if (enabled_networks_onc_types.GetList().empty())
     return RespondNow(Error(networking_private::kErrorNotSupported));
-  std::unique_ptr<base::ListValue> enabled_networks_list(new base::ListValue);
-  for (auto iter = enabled_networks_onc_types->begin();
-       iter != enabled_networks_onc_types->end(); ++iter) {
-    std::string type;
-    if (!iter->GetAsString(&type))
-      NOTREACHED();
+  base::Value enabled_networks_list(base::Value::Type::LIST);
+  for (const auto& entry : enabled_networks_onc_types.GetList()) {
+    const std::string& type = entry.GetString();
     if (type == ::onc::network_type::kEthernet) {
-      enabled_networks_list->AppendString(
+      enabled_networks_list.Append(
           private_api::ToString(private_api::NETWORK_TYPE_ETHERNET));
     } else if (type == ::onc::network_type::kWiFi) {
-      enabled_networks_list->AppendString(
+      enabled_networks_list.Append(
           private_api::ToString(private_api::NETWORK_TYPE_WIFI));
     } else if (type == ::onc::network_type::kCellular) {
-      enabled_networks_list->AppendString(
+      enabled_networks_list.Append(
           private_api::ToString(private_api::NETWORK_TYPE_CELLULAR));
     } else {
       LOG(ERROR) << "networkingPrivate: Unexpected type: " << type;
@@ -513,7 +507,8 @@ NetworkingPrivateGetDeviceStatesFunction::Run() {
   std::unique_ptr<base::ListValue> device_state_list(new base::ListValue);
   for (const auto& properties : *device_states)
     device_state_list->Append(properties->ToValue());
-  return RespondNow(OneArgument(std::move(device_state_list)));
+  return RespondNow(OneArgument(
+      base::Value::FromUniquePtrValue(std::move(device_state_list))));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -526,7 +521,7 @@ NetworkingPrivateEnableNetworkTypeFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateEnableNetworkTypeFunction::Run() {
   std::unique_ptr<private_api::EnableNetworkType::Params> params =
-      private_api::EnableNetworkType::Params::Create(*args_);
+      private_api::EnableNetworkType::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   if (!GetDelegate(browser_context())
@@ -546,7 +541,7 @@ NetworkingPrivateDisableNetworkTypeFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateDisableNetworkTypeFunction::Run() {
   std::unique_ptr<private_api::DisableNetworkType::Params> params =
-      private_api::DisableNetworkType::Params::Create(*args_);
+      private_api::DisableNetworkType::Params::Create(args());
 
   if (!GetDelegate(browser_context())
            ->DisableNetworkType(private_api::ToString(params->network_type))) {
@@ -565,7 +560,7 @@ NetworkingPrivateRequestNetworkScanFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateRequestNetworkScanFunction::Run() {
   std::unique_ptr<private_api::RequestNetworkScan::Params> params =
-      private_api::RequestNetworkScan::Params::Create(*args_);
+      private_api::RequestNetworkScan::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
   std::string network_type = private_api::ToString(params->network_type);
   if (!GetDelegate(browser_context())->RequestScan(network_type))
@@ -582,15 +577,15 @@ NetworkingPrivateStartConnectFunction::
 
 ExtensionFunction::ResponseAction NetworkingPrivateStartConnectFunction::Run() {
   std::unique_ptr<private_api::StartConnect::Params> params =
-      private_api::StartConnect::Params::Create(*args_);
+      private_api::StartConnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->StartConnect(
           params->network_guid,
-          base::Bind(&NetworkingPrivateStartConnectFunction::Success, this),
-          base::Bind(&NetworkingPrivateStartConnectFunction::Failure, this,
-                     params->network_guid));
+          base::BindOnce(&NetworkingPrivateStartConnectFunction::Success, this),
+          base::BindOnce(&NetworkingPrivateStartConnectFunction::Failure, this,
+                         params->network_guid));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -616,14 +611,16 @@ NetworkingPrivateStartDisconnectFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateStartDisconnectFunction::Run() {
   std::unique_ptr<private_api::StartDisconnect::Params> params =
-      private_api::StartDisconnect::Params::Create(*args_);
+      private_api::StartDisconnect::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->StartDisconnect(
           params->network_guid,
-          base::Bind(&NetworkingPrivateStartDisconnectFunction::Success, this),
-          base::Bind(&NetworkingPrivateStartDisconnectFunction::Failure, this));
+          base::BindOnce(&NetworkingPrivateStartDisconnectFunction::Success,
+                         this),
+          base::BindOnce(&NetworkingPrivateStartDisconnectFunction::Failure,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -654,14 +651,16 @@ NetworkingPrivateStartActivateFunction::Run() {
   }
 
   std::unique_ptr<private_api::StartActivate::Params> params =
-      private_api::StartActivate::Params::Create(*args_);
+      private_api::StartActivate::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->StartActivate(
           params->network_guid, params->carrier ? *params->carrier : "",
-          base::Bind(&NetworkingPrivateStartActivateFunction::Success, this),
-          base::Bind(&NetworkingPrivateStartActivateFunction::Failure, this));
+          base::BindOnce(&NetworkingPrivateStartActivateFunction::Success,
+                         this),
+          base::BindOnce(&NetworkingPrivateStartActivateFunction::Failure,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -677,191 +676,6 @@ void NetworkingPrivateStartActivateFunction::Failure(const std::string& error) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// NetworkingPrivateVerifyDestinationFunction
-
-NetworkingPrivateVerifyDestinationFunction::
-    ~NetworkingPrivateVerifyDestinationFunction() {
-}
-
-ExtensionFunction::ResponseAction
-NetworkingPrivateVerifyDestinationFunction::Run() {
-  // This method is private - as such, it should not be exposed through public
-  // networking.onc API.
-  // TODO(tbarzic): Consider exposing this via separate API.
-  // http://crbug.com/678737
-  if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
-    return RespondNow(Error(kPrivateOnlyError));
-  }
-
-  std::unique_ptr<private_api::VerifyDestination::Params> params =
-      private_api::VerifyDestination::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  NetworkingCastPrivateDelegate* delegate =
-      ExtensionsAPIClient::Get()->GetNetworkingCastPrivateDelegate();
-  if (!delegate)
-    return RespondNow(Error("Not supported."));
-
-  delegate->VerifyDestination(
-      AsCastCredentials(params->properties),
-      base::Bind(&NetworkingPrivateVerifyDestinationFunction::Success, this),
-      base::Bind(&NetworkingPrivateVerifyDestinationFunction::Failure, this));
-  // Success() or Failure() might have been called synchronously at this point.
-  // In that case this function has already called Respond(). Return
-  // AlreadyResponded() in that case.
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void NetworkingPrivateVerifyDestinationFunction::Success(bool result) {
-  Respond(
-      ArgumentList(private_api::VerifyDestination::Results::Create(result)));
-}
-
-void NetworkingPrivateVerifyDestinationFunction::Failure(
-    const std::string& error) {
-  Respond(Error(error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// NetworkingPrivateVerifyAndEncryptDataFunction
-
-NetworkingPrivateVerifyAndEncryptDataFunction::
-    ~NetworkingPrivateVerifyAndEncryptDataFunction() {
-}
-
-ExtensionFunction::ResponseAction
-NetworkingPrivateVerifyAndEncryptDataFunction::Run() {
-  // This method is private - as such, it should not be exposed through public
-  // networking.onc API.
-  // TODO(tbarzic): Consider exposing this via separate API.
-  // http://crbug.com/678737
-  if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
-    return RespondNow(Error(kPrivateOnlyError));
-  }
-  std::unique_ptr<private_api::VerifyAndEncryptData::Params> params =
-      private_api::VerifyAndEncryptData::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  NetworkingCastPrivateDelegate* delegate =
-      ExtensionsAPIClient::Get()->GetNetworkingCastPrivateDelegate();
-  if (!delegate)
-    return RespondNow(Error("Not supported."));
-
-  delegate->VerifyAndEncryptData(
-      params->data, AsCastCredentials(params->properties),
-      base::Bind(&NetworkingPrivateVerifyAndEncryptDataFunction::Success, this),
-      base::Bind(&NetworkingPrivateVerifyAndEncryptDataFunction::Failure,
-                 this));
-  // Success() or Failure() might have been called synchronously at this point.
-  // In that case this function has already called Respond(). Return
-  // AlreadyResponded() in that case.
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void NetworkingPrivateVerifyAndEncryptDataFunction::Success(
-    const std::string& result) {
-  Respond(
-      ArgumentList(private_api::VerifyAndEncryptData::Results::Create(result)));
-}
-
-void NetworkingPrivateVerifyAndEncryptDataFunction::Failure(
-    const std::string& error) {
-  Respond(Error(error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// NetworkingPrivateSetWifiTDLSEnabledStateFunction
-
-NetworkingPrivateSetWifiTDLSEnabledStateFunction::
-    ~NetworkingPrivateSetWifiTDLSEnabledStateFunction() {
-}
-
-ExtensionFunction::ResponseAction
-NetworkingPrivateSetWifiTDLSEnabledStateFunction::Run() {
-  // This method is private - as such, it should not be exposed through public
-  // networking.onc API.
-  // TODO(tbarzic): Consider exposing this via separate API.
-  // http://crbug.com/678737
-  if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
-    return RespondNow(Error(kPrivateOnlyError));
-  }
-  std::unique_ptr<private_api::SetWifiTDLSEnabledState::Params> params =
-      private_api::SetWifiTDLSEnabledState::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  GetDelegate(browser_context())
-      ->SetWifiTDLSEnabledState(
-          params->ip_or_mac_address, params->enabled,
-          base::Bind(&NetworkingPrivateSetWifiTDLSEnabledStateFunction::Success,
-                     this),
-          base::Bind(&NetworkingPrivateSetWifiTDLSEnabledStateFunction::Failure,
-                     this));
-  // Success() or Failure() might have been called synchronously at this point.
-  // In that case this function has already called Respond(). Return
-  // AlreadyResponded() in that case.
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void NetworkingPrivateSetWifiTDLSEnabledStateFunction::Success(
-    const std::string& result) {
-  Respond(ArgumentList(
-      private_api::SetWifiTDLSEnabledState::Results::Create(result)));
-}
-
-void NetworkingPrivateSetWifiTDLSEnabledStateFunction::Failure(
-    const std::string& error) {
-  Respond(Error(error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// NetworkingPrivateGetWifiTDLSStatusFunction
-
-NetworkingPrivateGetWifiTDLSStatusFunction::
-    ~NetworkingPrivateGetWifiTDLSStatusFunction() {
-}
-
-ExtensionFunction::ResponseAction
-NetworkingPrivateGetWifiTDLSStatusFunction::Run() {
-  // This method is private - as such, it should not be exposed through public
-  // networking.onc API.
-  // TODO(tbarzic): Consider exposing this via separate API.
-  // http://crbug.com/678737
-  if (!HasPrivateNetworkingAccess(extension(), source_context_type(),
-                                  source_url())) {
-    return RespondNow(Error(kPrivateOnlyError));
-  }
-  std::unique_ptr<private_api::GetWifiTDLSStatus::Params> params =
-      private_api::GetWifiTDLSStatus::Params::Create(*args_);
-  EXTENSION_FUNCTION_VALIDATE(params);
-
-  GetDelegate(browser_context())
-      ->GetWifiTDLSStatus(
-          params->ip_or_mac_address,
-          base::Bind(&NetworkingPrivateGetWifiTDLSStatusFunction::Success,
-                     this),
-          base::Bind(&NetworkingPrivateGetWifiTDLSStatusFunction::Failure,
-                     this));
-  // Success() or Failure() might have been called synchronously at this point.
-  // In that case this function has already called Respond(). Return
-  // AlreadyResponded() in that case.
-  return did_respond() ? AlreadyResponded() : RespondLater();
-}
-
-void NetworkingPrivateGetWifiTDLSStatusFunction::Success(
-    const std::string& result) {
-  Respond(
-      ArgumentList(private_api::GetWifiTDLSStatus::Results::Create(result)));
-}
-
-void NetworkingPrivateGetWifiTDLSStatusFunction::Failure(
-    const std::string& error) {
-  Respond(Error(error));
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // NetworkingPrivateGetCaptivePortalStatusFunction
 
 NetworkingPrivateGetCaptivePortalStatusFunction::
@@ -871,16 +685,16 @@ NetworkingPrivateGetCaptivePortalStatusFunction::
 ExtensionFunction::ResponseAction
 NetworkingPrivateGetCaptivePortalStatusFunction::Run() {
   std::unique_ptr<private_api::GetCaptivePortalStatus::Params> params =
-      private_api::GetCaptivePortalStatus::Params::Create(*args_);
+      private_api::GetCaptivePortalStatus::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->GetCaptivePortalStatus(
           params->network_guid,
-          base::Bind(&NetworkingPrivateGetCaptivePortalStatusFunction::Success,
-                     this),
-          base::Bind(&NetworkingPrivateGetCaptivePortalStatusFunction::Failure,
-                     this));
+          base::BindOnce(
+              &NetworkingPrivateGetCaptivePortalStatusFunction::Success, this),
+          base::BindOnce(
+              &NetworkingPrivateGetCaptivePortalStatusFunction::Failure, this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -912,16 +726,16 @@ NetworkingPrivateUnlockCellularSimFunction::Run() {
   }
 
   std::unique_ptr<private_api::UnlockCellularSim::Params> params =
-      private_api::UnlockCellularSim::Params::Create(*args_);
+      private_api::UnlockCellularSim::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->UnlockCellularSim(
           params->network_guid, params->pin, params->puk ? *params->puk : "",
-          base::Bind(&NetworkingPrivateUnlockCellularSimFunction::Success,
-                     this),
-          base::Bind(&NetworkingPrivateUnlockCellularSimFunction::Failure,
-                     this));
+          base::BindOnce(&NetworkingPrivateUnlockCellularSimFunction::Success,
+                         this),
+          base::BindOnce(&NetworkingPrivateUnlockCellularSimFunction::Failure,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -951,7 +765,7 @@ NetworkingPrivateSetCellularSimStateFunction::Run() {
   }
 
   std::unique_ptr<private_api::SetCellularSimState::Params> params =
-      private_api::SetCellularSimState::Params::Create(*args_);
+      private_api::SetCellularSimState::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
@@ -959,10 +773,10 @@ NetworkingPrivateSetCellularSimStateFunction::Run() {
           params->network_guid, params->sim_state.require_pin,
           params->sim_state.current_pin,
           params->sim_state.new_pin ? *params->sim_state.new_pin : "",
-          base::Bind(&NetworkingPrivateSetCellularSimStateFunction::Success,
-                     this),
-          base::Bind(&NetworkingPrivateSetCellularSimStateFunction::Failure,
-                     this));
+          base::BindOnce(&NetworkingPrivateSetCellularSimStateFunction::Success,
+                         this),
+          base::BindOnce(&NetworkingPrivateSetCellularSimStateFunction::Failure,
+                         this));
   // Success() or Failure() might have been called synchronously at this point.
   // In that case this function has already called Respond(). Return
   // AlreadyResponded() in that case.
@@ -992,16 +806,16 @@ NetworkingPrivateSelectCellularMobileNetworkFunction::Run() {
   }
 
   std::unique_ptr<private_api::SelectCellularMobileNetwork::Params> params =
-      private_api::SelectCellularMobileNetwork::Params::Create(*args_);
+      private_api::SelectCellularMobileNetwork::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   GetDelegate(browser_context())
       ->SelectCellularMobileNetwork(
           params->network_guid, params->network_id,
-          base::Bind(
+          base::BindOnce(
               &NetworkingPrivateSelectCellularMobileNetworkFunction::Success,
               this),
-          base::Bind(
+          base::BindOnce(
               &NetworkingPrivateSelectCellularMobileNetworkFunction::Failure,
               this));
   // Success() or Failure() might have been called synchronously at this point.
@@ -1055,7 +869,8 @@ NetworkingPrivateGetCertificateListsFunction::Run() {
   std::unique_ptr<base::DictionaryValue> certificate_lists(
       GetDelegate(browser_context())->GetCertificateLists());
   DCHECK(certificate_lists);
-  return RespondNow(OneArgument(std::move(certificate_lists)));
+  return RespondNow(OneArgument(
+      base::Value::FromUniquePtrValue(std::move(certificate_lists))));
 }
 
 }  // namespace extensions

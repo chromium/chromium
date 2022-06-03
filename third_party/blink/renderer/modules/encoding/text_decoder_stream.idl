@@ -4,10 +4,9 @@
 
 // https://encoding.spec.whatwg.org/#interface-textdecoderstream
 [
-    Exposed=(Window,Worker),
-    MeasureAs=TextDecoderStreamConstructor
+    Exposed=(Window,Worker)
 ] interface TextDecoderStream {
-    [CallWith=ScriptState, RaisesException] constructor(optional DOMString label = "utf-8", optional TextDecoderOptions options);
+    [CallWith=ScriptState, RaisesException, MeasureAs=TextDecoderStreamConstructor] constructor(optional DOMString label = "utf-8", optional TextDecoderOptions options = {});
     readonly attribute DOMString encoding;
     readonly attribute boolean fatal;
     readonly attribute boolean ignoreBOM;

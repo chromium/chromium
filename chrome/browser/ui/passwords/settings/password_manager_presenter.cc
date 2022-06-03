@@ -9,35 +9,40 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/stl_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "chrome/browser/password_manager/account_storage/account_password_store_factory.h"
+#include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/password_manager/password_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/settings/password_ui_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/password_manager/core/browser/move_password_to_account_store_helper.h"
+#include "components/password_manager/core/browser/password_feature_manager.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_list_sorter.h"
+#include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
+#include "components/password_manager/core/browser/ui/plaintext_reason.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/driver/sync_service.h"
@@ -49,16 +54,16 @@
 #endif
 
 using base::StringPiece;
-using password_manager::PasswordStore;
+using password_manager::PasswordStoreInterface;
 
 namespace {
 
 // Convenience typedef for the commonly used vector of PasswordForm pointers.
-using FormVector = std::vector<std::unique_ptr<autofill::PasswordForm>>;
+using FormVector = std::vector<std::unique_ptr<password_manager::PasswordForm>>;
 
-base::span<const std::unique_ptr<autofill::PasswordForm>> TryGetPasswordForms(
-    const std::map<std::string, FormVector>& password_form_map,
-    size_t index) {
+base::span<const std::unique_ptr<password_manager::PasswordForm>>
+TryGetPasswordForms(const std::map<std::string, FormVector>& password_form_map,
+                    size_t index) {
   // |index| out of bounds might come from a compromised renderer
   // (http://crbug.com/362054), or the user removed a password while a request
   // to the store is in progress (i.e. |forms| is empty). Don't let it crash
@@ -74,7 +79,7 @@ base::span<const std::unique_ptr<autofill::PasswordForm>> TryGetPasswordForms(
   return base::make_span(forms);
 }
 
-const autofill::PasswordForm* TryGetPasswordForm(
+const password_manager::PasswordForm* TryGetPasswordForm(
     const std::map<std::string, FormVector>& password_form_map,
     size_t index) {
   // |index| out of bounds might come from a compromised renderer
@@ -94,16 +99,35 @@ FormVector GetEntryList(const std::map<std::string, FormVector>& map) {
   result.reserve(map.size());
   for (const auto& pair : map) {
     DCHECK(!pair.second.empty());
-    result.push_back(std::make_unique<autofill::PasswordForm>(*pair.second[0]));
+    result.push_back(
+        std::make_unique<password_manager::PasswordForm>(*pair.second[0]));
   }
 
   return result;
 }
 
+#if !defined(OS_ANDROID)
+password_manager::metrics_util::AccessPasswordInSettingsEvent
+ConvertPlaintextReason(password_manager::PlaintextReason reason) {
+  switch (reason) {
+    case password_manager::PlaintextReason::kCopy:
+      return password_manager::metrics_util::ACCESS_PASSWORD_COPIED;
+    case password_manager::PlaintextReason::kView:
+      return password_manager::metrics_util::ACCESS_PASSWORD_VIEWED;
+    case password_manager::PlaintextReason::kEdit:
+      return password_manager::metrics_util::ACCESS_PASSWORD_EDITED;
+  }
+}
+#endif
+
 class RemovePasswordOperation : public UndoOperation {
  public:
   RemovePasswordOperation(PasswordManagerPresenter* page,
-                          const autofill::PasswordForm& form);
+                          const password_manager::PasswordForm& form);
+
+  RemovePasswordOperation(const RemovePasswordOperation&) = delete;
+  RemovePasswordOperation& operator=(const RemovePasswordOperation&) = delete;
+
   ~RemovePasswordOperation() override;
 
   // UndoOperation:
@@ -113,14 +137,12 @@ class RemovePasswordOperation : public UndoOperation {
 
  private:
   PasswordManagerPresenter* page_;
-  autofill::PasswordForm form_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemovePasswordOperation);
+  password_manager::PasswordForm form_;
 };
 
 RemovePasswordOperation::RemovePasswordOperation(
     PasswordManagerPresenter* page,
-    const autofill::PasswordForm& form)
+    const password_manager::PasswordForm& form)
     : page_(page), form_(form) {}
 
 RemovePasswordOperation::~RemovePasswordOperation() = default;
@@ -140,7 +162,11 @@ int RemovePasswordOperation::GetRedoLabelId() const {
 class AddPasswordOperation : public UndoOperation {
  public:
   AddPasswordOperation(PasswordManagerPresenter* page,
-                       const autofill::PasswordForm& password_form);
+                       const password_manager::PasswordForm& password_form);
+
+  AddPasswordOperation(const AddPasswordOperation&) = delete;
+  AddPasswordOperation& operator=(const AddPasswordOperation&) = delete;
+
   ~AddPasswordOperation() override;
 
   // UndoOperation:
@@ -150,13 +176,12 @@ class AddPasswordOperation : public UndoOperation {
 
  private:
   PasswordManagerPresenter* page_;
-  autofill::PasswordForm form_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddPasswordOperation);
+  password_manager::PasswordForm form_;
 };
 
-AddPasswordOperation::AddPasswordOperation(PasswordManagerPresenter* page,
-                                           const autofill::PasswordForm& form)
+AddPasswordOperation::AddPasswordOperation(
+    PasswordManagerPresenter* page,
+    const password_manager::PasswordForm& form)
     : page_(page), form_(form) {}
 
 AddPasswordOperation::~AddPasswordOperation() = default;
@@ -183,8 +208,8 @@ PasswordManagerPresenter::PasswordManagerPresenter(
 
 PasswordManagerPresenter::~PasswordManagerPresenter() {
   for (bool use_account_store : {false, true}) {
-    PasswordStore* store =
-        GetPasswordStore(password_view_->GetProfile(), use_account_store).get();
+    PasswordStoreInterface* store =
+        GetPasswordStore(password_view_->GetProfile(), use_account_store);
     if (store) {
       store->RemoveObserver(this);
     }
@@ -193,8 +218,8 @@ PasswordManagerPresenter::~PasswordManagerPresenter() {
 
 void PasswordManagerPresenter::Initialize() {
   for (bool use_account_store : {false, true}) {
-    PasswordStore* store =
-        GetPasswordStore(password_view_->GetProfile(), use_account_store).get();
+    PasswordStoreInterface* store =
+        GetPasswordStore(password_view_->GetProfile(), use_account_store);
     if (store) {
       store->AddObserver(this);
     }
@@ -202,7 +227,15 @@ void PasswordManagerPresenter::Initialize() {
 }
 
 void PasswordManagerPresenter::OnLoginsChanged(
-    const password_manager::PasswordStoreChangeList& changes) {
+    password_manager::PasswordStoreInterface* /*store*/,
+    const password_manager::PasswordStoreChangeList& /*changes*/) {
+  // Entire maps are updated for convenience.
+  UpdatePasswordLists();
+}
+
+void PasswordManagerPresenter::OnLoginsRetained(
+    password_manager::PasswordStoreInterface* /*store*/,
+    const std::vector<password_manager::PasswordForm>& /*retained_passwords*/) {
   // Entire maps are updated for convenience.
   UpdatePasswordLists();
 }
@@ -217,30 +250,39 @@ void PasswordManagerPresenter::UpdatePasswordLists() {
   // Request an update from both stores (if they exist). This will send out two
   // updates to |password_view_| as the two result sets come in.
   for (bool use_account_store : {false, true}) {
-    PasswordStore* store =
-        GetPasswordStore(password_view_->GetProfile(), use_account_store).get();
+    PasswordStoreInterface* store =
+        GetPasswordStore(password_view_->GetProfile(), use_account_store);
     if (store) {
       store->GetAllLoginsWithAffiliationAndBrandingInformation(this);
     }
   }
 }
 
-const autofill::PasswordForm* PasswordManagerPresenter::GetPassword(
+const password_manager::PasswordForm* PasswordManagerPresenter::GetPassword(
     size_t index) const {
   return TryGetPasswordForm(password_map_, index);
 }
 
-base::span<const std::unique_ptr<autofill::PasswordForm>>
+base::span<const std::unique_ptr<password_manager::PasswordForm>>
 PasswordManagerPresenter::GetPasswords(size_t index) const {
   return TryGetPasswordForms(password_map_, index);
 }
 
-std::vector<base::string16> PasswordManagerPresenter::GetUsernamesForRealm(
+base::span<const std::unique_ptr<password_manager::PasswordForm>>
+PasswordManagerPresenter::GetPasswordsForKey(
+    const std::string& sort_key) const {
+  auto it = password_map_.find(sort_key);
+  if (it != password_map_.end())
+    return it->second;
+  return {};
+}
+
+std::vector<std::u16string> PasswordManagerPresenter::GetUsernamesForRealm(
     size_t index) {
-  const autofill::PasswordForm* current_form =
+  const password_manager::PasswordForm* current_form =
       TryGetPasswordForm(password_map_, index);
   FormVector password_forms = GetAllPasswords();
-  std::vector<base::string16> usernames;
+  std::vector<std::u16string> usernames;
   for (auto& password_form : password_forms) {
     if (current_form->signon_realm == password_form->signon_realm)
       usernames.push_back(password_form->username_value);
@@ -252,60 +294,17 @@ FormVector PasswordManagerPresenter::GetAllPasswords() {
   FormVector ret_val;
   for (const auto& pair : password_map_) {
     for (const auto& form : pair.second) {
-      ret_val.push_back(std::make_unique<autofill::PasswordForm>(*form));
+      ret_val.push_back(
+          std::make_unique<password_manager::PasswordForm>(*form));
     }
   }
 
   return ret_val;
 }
 
-const autofill::PasswordForm* PasswordManagerPresenter::GetPasswordException(
-    size_t index) const {
+const password_manager::PasswordForm*
+PasswordManagerPresenter::GetPasswordException(size_t index) const {
   return TryGetPasswordForm(exception_map_, index);
-}
-
-void PasswordManagerPresenter::ChangeSavedPassword(
-    const std::string& sort_key,
-    const base::string16& new_username,
-    const base::Optional<base::string16>& new_password) {
-  // Find the equivalence class that needs to be updated.
-  auto it = password_map_.find(sort_key);
-  if (it == password_map_.end())
-    return;
-
-  const FormVector& old_forms = it->second;
-
-  // If a password was provided, make sure it is not empty.
-  if (new_password && new_password->empty()) {
-    DLOG(ERROR) << "The password is empty.";
-    return;
-  }
-
-  const std::string& signon_realm = old_forms[0]->signon_realm;
-  const base::string16& old_username = old_forms[0]->username_value;
-
-  // TODO(crbug.com/377410): Clean up this check for duplicates because a
-  // very similar one is in password_store_utils in EditSavedPasswords already.
-
-  // In case the username
-  // changed, make sure that there exists no other credential with the same
-  // signon_realm and username.
-  const bool username_changed = old_username != new_username;
-  if (username_changed) {
-    for (const auto& sort_key_passwords_pair : password_map_) {
-      for (const auto& password : sort_key_passwords_pair.second) {
-        if (password->signon_realm == signon_realm &&
-            password->username_value == new_username) {
-          DLOG(ERROR) << "A credential with the same signon_realm and username "
-                         "already exists.";
-          return;
-        }
-      }
-    }
-  }
-
-  EditSavedPasswords(password_view_->GetProfile(), old_forms, new_username,
-                     new_password);
 }
 
 void PasswordManagerPresenter::RemoveSavedPassword(size_t index) {
@@ -315,12 +314,16 @@ void PasswordManagerPresenter::RemoveSavedPassword(size_t index) {
   }
 }
 
-void PasswordManagerPresenter::RemoveSavedPassword(
-    const std::string& sort_key) {
-  if (TryRemovePasswordEntries(&password_map_, sort_key)) {
-    base::RecordAction(
-        base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
+void PasswordManagerPresenter::RemoveSavedPasswords(
+    const std::vector<std::string>& sort_keys) {
+  undo_manager_.StartGroupingActions();
+  for (const std::string& sort_key : sort_keys) {
+    if (TryRemovePasswordEntries(&password_map_, sort_key)) {
+      base::RecordAction(
+          base::UserMetricsAction("PasswordManager_RemoveSavedPassword"));
+    }
   }
+  undo_manager_.EndGroupingActions();
 }
 
 void PasswordManagerPresenter::RemovePasswordException(size_t index) {
@@ -330,34 +333,78 @@ void PasswordManagerPresenter::RemovePasswordException(size_t index) {
   }
 }
 
-void PasswordManagerPresenter::RemovePasswordException(
-    const std::string& sort_key) {
-  if (TryRemovePasswordEntries(&exception_map_, sort_key)) {
-    base::RecordAction(
-        base::UserMetricsAction("PasswordManager_RemovePasswordException"));
+void PasswordManagerPresenter::RemovePasswordExceptions(
+    const std::vector<std::string>& sort_keys) {
+  undo_manager_.StartGroupingActions();
+  for (const std::string& sort_key : sort_keys) {
+    if (TryRemovePasswordEntries(&exception_map_, sort_key)) {
+      base::RecordAction(
+          base::UserMetricsAction("PasswordManager_RemovePasswordException"));
+    }
   }
+  undo_manager_.EndGroupingActions();
 }
 
 void PasswordManagerPresenter::UndoRemoveSavedPasswordOrException() {
   undo_manager_.Undo();
 }
 
+void PasswordManagerPresenter::MovePasswordsToAccountStore(
+    const std::vector<std::string>& sort_keys,
+    password_manager::PasswordManagerClient* client) {
+  if (!client->GetPasswordFeatureManager()->IsOptedInForAccountStorage() ||
+      SyncServiceFactory::GetForProfile(password_view_->GetProfile())
+          ->IsSyncFeatureEnabled()) {
+    return;
+  }
+
+  for (const std::string& sort_key : sort_keys) {
+    auto it = password_map_.find(sort_key);
+    if (it == password_map_.end())
+      continue;
+
+    // MovePasswordToAccountStoreHelper takes care of moving the entire
+    // equivalence class, so passing the first element is fine.
+    const password_manager::PasswordForm& form = *(it->second[0]);
+
+    // Insert nullptr first to obtain the iterator passed to the callback.
+    MovePasswordToAccountStoreHelperList::iterator helper_it =
+        move_to_account_helpers_.insert(move_to_account_helpers_.begin(),
+                                        nullptr);
+    // The presenter outlives the helper so it's safe to use base::Unretained.
+    *helper_it =
+        std::make_unique<password_manager::MovePasswordToAccountStoreHelper>(
+            form, client,
+            password_manager::metrics_util::MoveToAccountStoreTrigger::
+                kExplicitlyTriggeredInSettings,
+            base::BindOnce(
+                &PasswordManagerPresenter::OnMovePasswordToAccountCompleted,
+                base::Unretained(this), helper_it));
+  }
+}
+
+void PasswordManagerPresenter::OnMovePasswordToAccountCompleted(
+    MovePasswordToAccountStoreHelperList::iterator done_helper_it) {
+  move_to_account_helpers_.erase(done_helper_it);
+}
+
 #if !defined(OS_ANDROID)  // This is never called on Android.
-void PasswordManagerPresenter::RequestShowPassword(
+void PasswordManagerPresenter::RequestPlaintextPassword(
     const std::string& sort_key,
-    base::OnceCallback<void(base::Optional<base::string16>)> callback) const {
+    password_manager::PlaintextReason reason,
+    base::OnceCallback<void(absl::optional<std::u16string>)> callback) const {
   auto it = password_map_.find(sort_key);
   if (it == password_map_.end()) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   DCHECK(!it->second.empty());
   const auto& form = *it->second[0];
   syncer::SyncService* sync_service = nullptr;
-  if (ProfileSyncServiceFactory::HasSyncService(password_view_->GetProfile())) {
+  if (SyncServiceFactory::HasSyncService(password_view_->GetProfile())) {
     sync_service =
-        ProfileSyncServiceFactory::GetForProfile(password_view_->GetProfile());
+        SyncServiceFactory::GetForProfile(password_view_->GetProfile());
   }
   if (password_manager::sync_util::IsSyncAccountCredential(
           form, sync_service,
@@ -371,15 +418,15 @@ void PasswordManagerPresenter::RequestShowPassword(
   std::move(callback).Run(form.password_value);
   UMA_HISTOGRAM_ENUMERATION(
       "PasswordManager.AccessPasswordInSettings",
-      password_manager::metrics_util::ACCESS_PASSWORD_VIEWED,
+      ConvertPlaintextReason(reason),
       password_manager::metrics_util::ACCESS_PASSWORD_COUNT);
 }
 #endif
 
-void PasswordManagerPresenter::AddLogin(const autofill::PasswordForm& form) {
-  PasswordStore* store =
-      GetPasswordStore(password_view_->GetProfile(), form.IsUsingAccountStore())
-          .get();
+void PasswordManagerPresenter::AddLogin(
+    const password_manager::PasswordForm& form) {
+  PasswordStoreInterface* store = GetPasswordStore(password_view_->GetProfile(),
+                                                   form.IsUsingAccountStore());
   if (!store)
     return;
 
@@ -388,10 +435,10 @@ void PasswordManagerPresenter::AddLogin(const autofill::PasswordForm& form) {
   store->AddLogin(form);
 }
 
-void PasswordManagerPresenter::RemoveLogin(const autofill::PasswordForm& form) {
-  PasswordStore* store =
-      GetPasswordStore(password_view_->GetProfile(), form.IsUsingAccountStore())
-          .get();
+void PasswordManagerPresenter::RemoveLogin(
+    const password_manager::PasswordForm& form) {
+  PasswordStoreInterface* store = GetPasswordStore(password_view_->GetProfile(),
+                                                   form.IsUsingAccountStore());
   if (!store)
     return;
 
@@ -430,8 +477,8 @@ bool PasswordManagerPresenter::TryRemovePasswordEntries(
   DCHECK(!forms.empty());
 
   bool use_account_store = forms[0]->IsUsingAccountStore();
-  PasswordStore* store =
-      GetPasswordStore(password_view_->GetProfile(), use_account_store).get();
+  PasswordStoreInterface* store =
+      GetPasswordStore(password_view_->GetProfile(), use_account_store);
   if (!store)
     return false;
 
@@ -459,7 +506,7 @@ bool PasswordManagerPresenter::TryRemovePasswordEntries(
 
 void PasswordManagerPresenter::OnGetPasswordStoreResults(FormVector results) {
   for (auto& form : results) {
-    auto& form_map = form->blacklisted_by_user ? exception_map_ : password_map_;
+    auto& form_map = form->blocked_by_user ? exception_map_ : password_map_;
     form_map[password_manager::CreateSortKey(*form)].push_back(std::move(form));
   }
 

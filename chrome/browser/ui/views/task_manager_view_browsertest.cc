@@ -4,19 +4,18 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
 #include "chrome/browser/task_manager/task_manager_tester.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_contents/tab_contents_iterator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/task_manager/task_manager_columns.h"
@@ -28,8 +27,10 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_utils.h"
@@ -37,6 +38,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/test/widget_test.h"
 
@@ -47,10 +49,14 @@ using browsertest_util::WaitForTaskManagerRows;
 class TaskManagerViewTest : public InProcessBrowserTest {
  public:
   TaskManagerViewTest() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     feature_list_.InitAndEnableFeature(features::kViewsTaskManager);
 #endif
   }
+
+  TaskManagerViewTest(const TaskManagerViewTest&) = delete;
+  TaskManagerViewTest& operator=(const TaskManagerViewTest&) = delete;
+
   ~TaskManagerViewTest() override {}
 
   void SetUpOnMainThread() override {
@@ -94,7 +100,7 @@ class TaskManagerViewTest : public InProcessBrowserTest {
   content::WebContents* FindWebContentsByTabId(SessionID tab_id) {
     auto& all_tabs = AllTabContentses();
     auto tab_id_matches = [tab_id](content::WebContents* web_contents) {
-      return SessionTabHelper::IdForTab(web_contents) == tab_id;
+      return sessions::SessionTabHelper::IdForTab(web_contents) == tab_id;
     };
     auto it = std::find_if(all_tabs.begin(), all_tabs.end(), tab_id_matches);
 
@@ -104,9 +110,9 @@ class TaskManagerViewTest : public InProcessBrowserTest {
   // Returns the current TaskManagerTableModel index for a particular tab. Don't
   // cache this value, since it can change whenever the message loop runs.
   int FindRowForTab(content::WebContents* tab) {
-    SessionID tab_id = SessionTabHelper::IdForTab(tab);
+    SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
     std::unique_ptr<TaskManagerTester> tester =
-        TaskManagerTester::Create(base::Closure());
+        TaskManagerTester::Create(base::RepeatingClosure());
     for (int i = 0; i < tester->GetRowCount(); ++i) {
       if (tester->GetTabId(i) == tab_id)
         return i;
@@ -122,8 +128,6 @@ class TaskManagerViewTest : public InProcessBrowserTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskManagerViewTest);
 };
 
 // Tests that all defined columns have a corresponding string IDs for keying
@@ -214,13 +218,13 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, ColumnsSettingsAreRestored) {
 
 IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, InitialSelection) {
   // Navigate the first tab.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.com", "/title3.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // When the task manager is initially shown, the row for the active tab should
   // be selected.
@@ -253,16 +257,16 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, DISABLED_SelectionConsistency) {
   chrome::ShowTaskManager(browser());
 
   // Set up a total of three tabs in different processes.
-  ui_test_utils::NavigateToURL(
-      browser(), embedded_test_server()->GetURL("a.com", "/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("a.com", "/title2.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("b.com", "/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), embedded_test_server()->GetURL("c.com", "/title2.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   // Wait for their titles to appear in the TaskManager. There should be three
   // rows.
@@ -273,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, DISABLED_SelectionConsistency) {
   // Find the three tabs we set up, in TaskManager model order. Because we have
   // not sorted the table yet, this should also be their UI display order.
   std::unique_ptr<TaskManagerTester> tester =
-      TaskManagerTester::Create(base::Closure());
+      TaskManagerTester::Create(base::RepeatingClosure());
   std::vector<content::WebContents*> tabs;
   for (int i = 0; i < tester->GetRowCount(); ++i) {
     // Filter based on our title.
@@ -380,4 +384,14 @@ IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, RestoreBounds) {
   EXPECT_TRUE(display.bounds().Contains(restored_bounds));
 }
 
+IN_PROC_BROWSER_TEST_F(TaskManagerViewTest, CloseByAccelerator) {
+  chrome::ShowTaskManager(browser());
+
+  EXPECT_FALSE(GetView()->GetWidget()->IsClosed());
+
+  GetView()->AcceleratorPressed(
+      ui::Accelerator(ui::VKEY_W, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN));
+
+  EXPECT_TRUE(GetView()->GetWidget()->IsClosed());
+}
 }  // namespace task_manager

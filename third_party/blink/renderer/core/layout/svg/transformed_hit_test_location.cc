@@ -13,7 +13,7 @@ namespace {
 const HitTestLocation* InverseTransformLocationIfNeeded(
     const HitTestLocation& location,
     const AffineTransform& transform,
-    base::Optional<HitTestLocation>& storage) {
+    absl::optional<HitTestLocation>& storage) {
   if (transform.IsIdentity())
     return &location;
   if (!transform.IsInvertible())
@@ -24,7 +24,12 @@ const HitTestLocation* InverseTransformLocationIfNeeded(
     storage.emplace(transformed_point,
                     inverse.MapQuad(location.TransformedRect()));
   } else {
-    storage.emplace(transformed_point);
+    // Specify |bounding_box| argument even if |location| is not rect-based.
+    // Without it, HitTestLocation would have 1x1 bounding box, and it would
+    // be mapped to NxN screen pixels if scaling factor is N.
+    storage.emplace(transformed_point,
+                    PhysicalRect::EnclosingRect(
+                        inverse.MapRect(FloatRect(location.BoundingBox()))));
   }
   return &*storage;
 }

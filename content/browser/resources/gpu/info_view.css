@@ -67,6 +67,10 @@
   color: rgb(128, 128, 128);
 }
 
+#info-view .bg-yellow {
+  background-color: yellow;
+}
+
 #vulkan-info-value {
   white-space: pre;
 }

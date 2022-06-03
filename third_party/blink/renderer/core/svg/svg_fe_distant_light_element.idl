@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEDistantLightElement
 
-interface SVGFEDistantLightElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFEDistantLightElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber azimuth;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber elevation;
 };

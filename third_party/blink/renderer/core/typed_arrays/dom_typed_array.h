@@ -6,122 +6,151 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TYPED_ARRAYS_DOM_TYPED_ARRAY_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer/typed_array.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer_view.h"
-#include "third_party/blink/renderer/core/typed_arrays/dom_shared_array_buffer.h"
-#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "v8/include/v8.h"
 
 namespace blink {
 
-template <typename TypedArray, typename V8TypedArray>
+template <typename T, typename V8TypedArray, bool clamped = false>
 class DOMTypedArray final : public DOMArrayBufferView {
-  typedef DOMTypedArray<TypedArray, V8TypedArray> ThisType;
-  DECLARE_WRAPPERTYPEINFO();
+  typedef DOMTypedArray<T, V8TypedArray, clamped> ThisType;
+  DEFINE_WRAPPERTYPEINFO();
+  static const WrapperTypeInfo wrapper_type_info_body_;
 
  public:
-  typedef typename TypedArray::ValueType ValueType;
+  typedef T ValueType;
 
-  static ThisType* Create(scoped_refptr<TypedArray> buffer_view) {
-    return MakeGarbageCollected<ThisType>(std::move(buffer_view));
-  }
-  static ThisType* Create(size_t length) {
-    return Create(TypedArray::Create(length));
-  }
-  static ThisType* Create(const ValueType* array, size_t length) {
-    return Create(TypedArray::Create(array, length));
-  }
-  static ThisType* Create(scoped_refptr<ArrayBuffer> buffer,
-                          size_t byte_offset,
-                          size_t length) {
-    return Create(TypedArray::Create(std::move(buffer), byte_offset, length));
-  }
   static ThisType* Create(DOMArrayBufferBase* buffer,
                           size_t byte_offset,
                           size_t length) {
-    scoped_refptr<TypedArray> buffer_view =
-        TypedArray::Create(buffer->Buffer(), byte_offset, length);
-    return MakeGarbageCollected<ThisType>(std::move(buffer_view), buffer);
+    CHECK(VerifySubRange(buffer, byte_offset, length));
+    return MakeGarbageCollected<ThisType>(buffer, byte_offset, length);
+  }
+
+  static ThisType* Create(size_t length) {
+    DOMArrayBuffer* buffer = DOMArrayBuffer::Create(length, sizeof(ValueType));
+    return Create(buffer, 0, length);
+  }
+
+  static ThisType* Create(const ValueType* array, size_t length) {
+    DOMArrayBuffer* buffer =
+        DOMArrayBuffer::Create(array, length * sizeof(ValueType));
+    return Create(buffer, 0, length);
   }
 
   static ThisType* CreateOrNull(size_t length) {
-    scoped_refptr<ArrayBuffer> buffer =
-        ArrayBuffer::CreateOrNull(length, sizeof(ValueType));
-    return buffer ? Create(std::move(buffer), 0, length) : nullptr;
+    DOMArrayBuffer* buffer =
+        DOMArrayBuffer::CreateOrNull(length, sizeof(ValueType));
+    return buffer ? Create(buffer, 0, length) : nullptr;
+  }
+
+  static ThisType* CreateOrNull(const ValueType* array, size_t length) {
+    DOMArrayBuffer* buffer =
+        DOMArrayBuffer::CreateOrNull(array, length * sizeof(ValueType));
+    return buffer ? Create(buffer, 0, length) : nullptr;
   }
 
   static ThisType* CreateUninitializedOrNull(size_t length) {
-    scoped_refptr<ArrayBuffer> buffer =
-        ArrayBuffer::CreateOrNull(length, sizeof(ValueType));
-    return buffer ? Create(std::move(buffer), 0, length) : nullptr;
+    DOMArrayBuffer* buffer =
+        DOMArrayBuffer::CreateUninitializedOrNull(length, sizeof(ValueType));
+    return buffer ? Create(buffer, 0, length) : nullptr;
   }
 
-  explicit DOMTypedArray(scoped_refptr<TypedArray> buffer_view)
-      : DOMArrayBufferView(std::move(buffer_view)) {}
-  DOMTypedArray(scoped_refptr<TypedArray> buffer_view,
-                DOMArrayBufferBase* dom_array_buffer)
-      : DOMArrayBufferView(std::move(buffer_view), dom_array_buffer) {}
+  DOMTypedArray(DOMArrayBufferBase* dom_array_buffer,
+                size_t byte_offset,
+                size_t length)
+      : DOMArrayBufferView(dom_array_buffer, byte_offset),
+        raw_length_(length) {}
 
-  const TypedArray* View() const {
-    return static_cast<const TypedArray*>(DOMArrayBufferView::View());
-  }
-  TypedArray* View() {
-    return static_cast<TypedArray*>(DOMArrayBufferView::View());
+  ValueType* Data() const { return static_cast<ValueType*>(BaseAddress()); }
+
+  ValueType* DataMaybeShared() const {
+    return reinterpret_cast<ValueType*>(BaseAddressMaybeShared());
   }
 
-  ValueType* Data() const { return View()->Data(); }
-  ValueType* DataMaybeShared() const { return View()->DataMaybeShared(); }
-  size_t lengthAsSizeT() const { return View()->length(); }
-  // This function is deprecated and should not be used. Use {lengthAsSizeT}
-  // instead.
-  unsigned deprecatedLengthAsUnsigned() const {
-    return base::checked_cast<unsigned>(View()->length());
-  }
+  size_t length() const { return !IsDetached() ? raw_length_ : 0; }
+
+  size_t byteLength() const final { return length() * sizeof(ValueType); }
+
+  unsigned TypeSize() const final { return sizeof(ValueType); }
+
+  DOMArrayBufferView::ViewType GetType() const override;
+
   // Invoked by the indexed getter. Does not perform range checks; caller
   // is responsible for doing so and returning undefined as necessary.
-  ValueType Item(size_t index) const { return View()->Item(index); }
+  ValueType Item(size_t index) const {
+    SECURITY_DCHECK(index < length());
+    return Data()[index];
+  }
 
-  v8::Local<v8::Object> Wrap(v8::Isolate*,
-                             v8::Local<v8::Object> creation_context) override;
+  v8::MaybeLocal<v8::Value> Wrap(ScriptState*) override;
+
+ private:
+  // Helper to verify that a given sub-range of an ArrayBuffer is within range.
+  static bool VerifySubRange(const DOMArrayBufferBase* buffer,
+                             size_t byte_offset,
+                             size_t num_elements) {
+    if (!buffer)
+      return false;
+    if (sizeof(T) > 1 && byte_offset % sizeof(T))
+      return false;
+    if (byte_offset > buffer->ByteLength())
+      return false;
+    size_t remaining_elements =
+        (buffer->ByteLength() - byte_offset) / sizeof(T);
+    if (num_elements > remaining_elements)
+      return false;
+    return true;
+  }
+
+  // It may be stale after Detach. Use length() instead.
+  size_t raw_length_;
 };
 
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<int8_t>, v8::Int8Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<int16_t>, v8::Int16Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<int32_t>, v8::Int32Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<uint8_t>, v8::Uint8Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<uint8_t, /*clamped=*/true>, v8::Uint8ClampedArray>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<uint16_t>, v8::Uint16Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<uint32_t>, v8::Uint32Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<int64_t>, v8::BigInt64Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<uint64_t>, v8::BigUint64Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<float>, v8::Float32Array>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    DOMTypedArray<TypedArray<double>, v8::Float64Array>;
+#define DOMTYPEDARRAY_FOREACH_VIEW_TYPE(V) \
+  V(int8_t, Int8, false)                   \
+  V(int16_t, Int16, false)                 \
+  V(int32_t, Int32, false)                 \
+  V(uint8_t, Uint8, false)                 \
+  V(uint8_t, Uint8Clamped, true)           \
+  V(uint16_t, Uint16, false)               \
+  V(uint32_t, Uint32, false)               \
+  V(float, Float32, false)                 \
+  V(double, Float64, false)                \
+  V(int64_t, BigInt64, false)              \
+  V(uint64_t, BigUint64, false)
 
-typedef DOMTypedArray<TypedArray<int8_t>, v8::Int8Array> DOMInt8Array;
-typedef DOMTypedArray<TypedArray<int16_t>, v8::Int16Array> DOMInt16Array;
-typedef DOMTypedArray<TypedArray<int32_t>, v8::Int32Array> DOMInt32Array;
-typedef DOMTypedArray<TypedArray<uint8_t>, v8::Uint8Array> DOMUint8Array;
-typedef DOMTypedArray<TypedArray<uint8_t, /*clamped=*/true>,
-                      v8::Uint8ClampedArray>
-    DOMUint8ClampedArray;
-typedef DOMTypedArray<TypedArray<uint16_t>, v8::Uint16Array> DOMUint16Array;
-typedef DOMTypedArray<TypedArray<uint32_t>, v8::Uint32Array> DOMUint32Array;
-typedef DOMTypedArray<TypedArray<int64_t>, v8::BigInt64Array> DOMBigInt64Array;
-typedef DOMTypedArray<TypedArray<uint64_t>, v8::BigUint64Array>
-    DOMBigUint64Array;
-typedef DOMTypedArray<TypedArray<float>, v8::Float32Array> DOMFloat32Array;
-typedef DOMTypedArray<TypedArray<double>, v8::Float64Array> DOMFloat64Array;
+#define DOMTYPEDARRAY_DECLARE_WRAPPERTYPEINFO(val_t, Type, clamped)            \
+  template <>                                                                  \
+  const WrapperTypeInfo                                                        \
+      DOMTypedArray<val_t, v8::Type##Array, clamped>::wrapper_type_info_body_; \
+  template <>                                                                  \
+  const WrapperTypeInfo&                                                       \
+      DOMTypedArray<val_t, v8::Type##Array, clamped>::wrapper_type_info_;
+DOMTYPEDARRAY_FOREACH_VIEW_TYPE(DOMTYPEDARRAY_DECLARE_WRAPPERTYPEINFO)
+#undef DOMTYPEDARRAY_DECLARE_WRAPPERTYPEINFO
+
+#define DOMTYPEDARRAY_DEFINE_GETTYPE(val_t, Type, clamped)          \
+  template <>                                                       \
+  inline DOMArrayBufferView::ViewType                               \
+  DOMTypedArray<val_t, v8::Type##Array, clamped>::GetType() const { \
+    return DOMArrayBufferView::kType##Type;                         \
+  }
+DOMTYPEDARRAY_FOREACH_VIEW_TYPE(DOMTYPEDARRAY_DEFINE_GETTYPE)
+#undef DOMTYPEDARRAY_DEFINE_GETTYPE
+
+#define DOMTYPEDARRAY_DECLARE_EXTERN_TEMPLATE(val_t, Type, clamped) \
+  extern template class CORE_EXTERN_TEMPLATE_EXPORT                 \
+      DOMTypedArray<val_t, v8::Type##Array, clamped>;
+DOMTYPEDARRAY_FOREACH_VIEW_TYPE(DOMTYPEDARRAY_DECLARE_EXTERN_TEMPLATE)
+#undef DOMTYPEDARRAY_DECLARE_EXTERN_TEMPLATE
+
+#define DOMTYPEDARRAY_DEFINE_TYPEDEFNAME(val_t, Type, clamped) \
+  using DOM##Type##Array = DOMTypedArray<val_t, v8::Type##Array, clamped>;
+DOMTYPEDARRAY_FOREACH_VIEW_TYPE(DOMTYPEDARRAY_DEFINE_TYPEDEFNAME)
+#undef DOMTYPEDARRAY_DEFINE_TYPEDEFNAME
+
+#undef DOMTYPEDARRAY_FOREACH_VIEW_TYPE
 
 }  // namespace blink
 

@@ -1,41 +1,17 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'This is some text'",
-          "rect": [246, 88, 122, 44],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'This is some text'",
-          "rect": [203, 334, 121, 44],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutSVGRect rect id='rect'",
-          "rect": [108, 82, 105, 102],
-          "reason": "full"
-        },
-        {
-          "object": "LayoutSVGRect rect id='rect'",
-          "rect": [355, 123, 104, 104],
-          "reason": "full"
-        },
-        {
-          "object": "LayoutSVGImage image id='image'",
-          "rect": [352, 396, 99, 98],
-          "reason": "full"
-        },
-        {
-          "object": "LayoutSVGImage image id='image'",
-          "rect": [90, 205, 98, 99],
-          "reason": "full"
-        }
+      "invalidations": [
+        [246, 88, 122, 44],
+        [203, 334, 121, 44],
+        [108, 82, 105, 102],
+        [355, 123, 104, 104],
+        [352, 396, 99, 98],
+        [90, 205, 98, 99]
       ]
     }
   ]

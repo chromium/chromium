@@ -1,21 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 2016],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableCell TD id='moveMe'",
-          "rect": [100, 100, 100, 100],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutBlockFlow (relative positioned) DIV class='green'",
-          "rect": [0, 100, 100, 100],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [100, 100, 100, 100],
+        [0, 100, 100, 100]
       ],
       "transform": 1
     },
@@ -23,21 +15,17 @@
       "name": "LayoutBlockFlow (positioned) TD id='moveMe' class='fixed'",
       "position": [-100, 0],
       "bounds": [200, 100],
+      "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) TD id='moveMe' class='fixed'",
-          "rect": [0, 0, 200, 100],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 200, 100]
       ],
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

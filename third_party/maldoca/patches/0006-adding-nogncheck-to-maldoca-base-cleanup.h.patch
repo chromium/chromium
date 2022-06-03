@@ -1,0 +1,25 @@
+From 7ac884c2eec0d6c8b6b39236e4d44c115fd3bd1b Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Thu, 26 Aug 2021 00:05:28 +0000
+Subject: [PATCH] adding nogncheck to maldoca/base/cleanup.h
+
+---
+ third_party/maldoca/src/maldoca/base/cleanup.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/third_party/maldoca/src/maldoca/base/cleanup.h b/third_party/maldoca/src/maldoca/base/cleanup.h
+index 22684b581e86..4b774c238b71 100644
+--- a/third_party/maldoca/src/maldoca/base/cleanup.h
++++ b/third_party/maldoca/src/maldoca/base/cleanup.h
+@@ -15,7 +15,7 @@
+ #ifndef MALDOCA_BASE_CLEANUP_H_
+ #define MALDOCA_BASE_CLEANUP_H_
+ 
+-#include "absl/cleanup/cleanup.h"
++#include "absl/cleanup/cleanup.h"  // nogncheck
+ 
+ namespace maldoca {
+ 
+-- 
+2.33.0.rc2.250.ged5fa647cd-goog
+

@@ -1,0 +1,5 @@
+Verifies that Network.emulateNetworkConditions stops requests when offline is enabled for service workers.
+response.error: undefined
+loadingFailed.params.errorText: net::ERR_INTERNET_DISCONNECTED
+navigator.onLine: false
+

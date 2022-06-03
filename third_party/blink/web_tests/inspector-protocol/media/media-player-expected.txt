@@ -1,0 +1,10 @@
+Test video element logging protocol.
+Creating player
+enabling media logging
+Received creation event for 1 player
+All IDs match
+events length: 2
+messages length: 0
+properties length: 3
+errors length: 0
+

@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<title>captureStream() throws Exception with invalid frame size</title>
+<link rel="help" href="https://crbug.com/1178292">
+<script src=../../resources/testharness.js></script>
+<script src=../../resources/testharnessreport.js></script>
+<script>
+'use strict';
+
+test(function() {
+  var canvas = document.createElement('canvas');
+  canvas.width = 32768;
+  canvas.height = 1;
+  assert_throws_dom("NotSupportedError", function() { canvas.captureStream() },
+                    "video frame width too large");
+  canvas.width = 1;
+  canvas.height = 32768;
+  assert_throws_dom("NotSupportedError", function() { canvas.captureStream() },
+                    "video frame height too large");
+  canvas.width = 16385;
+  canvas.height = 16384;
+  assert_throws_dom("NotSupportedError", function() { canvas.captureStream() },
+                    "video frame area too large");
+});
+</script>

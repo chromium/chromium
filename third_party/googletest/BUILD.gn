@@ -4,13 +4,14 @@
 
 import("//build_overrides/build.gni")
 
-declare_args() {
-  # If true, it assumes that //third_party/abseil-cpp is an available dependency.
-  gtest_enable_absl_printers = false
-}
-
 config("gtest_config") {
-  visibility = [ ":*" ]  # gmock also shares this config.
+  # webrtc wants to push this config without a public_dep chain
+  # TODO(crbug.com/1249254): figure out what to do with this
+  visibility = [
+    ":*",  # gmock also shares this config.
+    "//test:*",  # webrts standalone setup
+    "//third_party/webrtc/test:*",
+  ]
 
   defines = [
     # Chromium always links googletest statically, so no API qualifier is
@@ -39,7 +40,8 @@ config("gtest_config") {
     cflags = [ "/wd4800" ]  # Unused variable warning.
   }
 
-  if (!build_with_chromium && gtest_enable_absl_printers) {
+  if (gtest_enable_absl_printers) {
+    configs = [ "//third_party/abseil-cpp:absl_include_config" ]
     defines += [ "GTEST_HAS_ABSL=1" ]
   }
 }
@@ -67,8 +69,10 @@ source_set("gtest") {
     "custom/gtest/internal/custom/stack_trace_getter.cc",
     "custom/gtest/internal/custom/stack_trace_getter.h",
 
-    # TODO(crbug.com/1009553): Remove this wrapper after plumbing a workable
-    #                          temporary path into googletest on Android.
+    # TODO(crbug.com/1009553): Remove this wrapper and custom temp dir
+    # after plumbing a workable temporary path into googletest on Android.
+    "custom/gtest/internal/custom/chrome_custom_temp_dir.cc",
+    "custom/gtest/internal/custom/chrome_custom_temp_dir.h",
     "custom/gtest/internal/custom/gtest_port_wrapper.cc",
     "src/googletest/include/gtest/gtest-death-test.h",
     "src/googletest/include/gtest/gtest-matchers.h",
@@ -113,7 +117,7 @@ source_set("gtest") {
   # Some files include "src/gtest-internal-inl.h".
   include_dirs = [ "src/googletest" ]
 
-  all_dependent_configs = [ ":gtest_config" ]
+  public_configs = [ ":gtest_config" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
@@ -127,25 +131,19 @@ source_set("gtest") {
       "custom/gtest/internal/custom/stack_trace_getter.cc",
       "custom/gtest/internal/custom/stack_trace_getter.h",
     ]
-    if (gtest_enable_absl_printers) {
-      public_deps += [
-        "//third_party/abseil-cpp/absl/debugging:failure_signal_handler",
-        "//third_party/abseil-cpp/absl/debugging:stacktrace",
-        "//third_party/abseil-cpp/absl/debugging:symbolize",
-        "//third_party/abseil-cpp/absl/strings",
-        "//third_party/abseil-cpp/absl/types:optional",
-        "//third_party/abseil-cpp/absl/types:variant",
-      ]
-    }
   } else {
     deps += [ "//base" ]
   }
 
   if (is_fuchsia) {
     deps += [
-      "//third_party/fuchsia-sdk/sdk:fdio",
-      "//third_party/fuchsia-sdk/sdk:zx",
+      "//third_party/fuchsia-sdk/sdk/pkg/fdio",
+      "//third_party/fuchsia-sdk/sdk/pkg/zx",
     ]
+  }
+
+  if (gtest_enable_absl_printers) {
+    deps += [ "//third_party/abseil-cpp:absl" ]
   }
 }
 
@@ -153,12 +151,8 @@ source_set("gtest") {
 # See README.chromium for details.
 source_set("gtest_main") {
   testonly = true
-  sources = [
-    "src/googletest/src/gtest_main.cc",
-  ]
-  deps = [
-    ":gtest",
-  ]
+  sources = [ "src/googletest/src/gtest_main.cc" ]
+  deps = [ ":gtest" ]
 }
 
 # Do NOT depend on this directly. Use //testing/gmock:gmock_main instead.
@@ -169,11 +163,7 @@ source_set("gmock") {
     "src/googlemock/include/gmock/gmock-actions.h",
     "src/googlemock/include/gmock/gmock-cardinalities.h",
     "src/googlemock/include/gmock/gmock-function-mocker.h",
-    "src/googlemock/include/gmock/gmock-generated-actions.h",
-    "src/googlemock/include/gmock/gmock-generated-function-mockers.h",
-    "src/googlemock/include/gmock/gmock-generated-matchers.h",
     "src/googlemock/include/gmock/gmock-matchers.h",
-    "src/googlemock/include/gmock/gmock-more-actions.h",
     "src/googlemock/include/gmock/gmock-more-matchers.h",
     "src/googlemock/include/gmock/gmock-nice-strict.h",
     "src/googlemock/include/gmock/gmock-spec-builders.h",
@@ -186,9 +176,6 @@ source_set("gmock") {
     "src/googlemock/include/gmock/internal/gmock-port.h",
     "src/googlemock/include/gmock/internal/gmock-pp.h",
 
-    # gmock helpers.
-    "custom/gmock/internal/custom/gmock-port.h",
-
     #"src/googlemock/src/gmock-all.cc",  # Not needed by our build.
     "src/googlemock/src/gmock-cardinalities.cc",
     "src/googlemock/src/gmock-internal-utils.cc",
@@ -197,9 +184,7 @@ source_set("gmock") {
     "src/googlemock/src/gmock.cc",
   ]
 
-  public_deps = [
-    ":gtest",
-  ]
+  public_deps = [ ":gtest" ]
 
   public_configs = [ ":gmock_config" ]
 }
@@ -208,10 +193,6 @@ source_set("gmock") {
 # See README.chromium for details.
 static_library("gmock_main") {
   testonly = true
-  sources = [
-    "src/googlemock/src/gmock_main.cc",
-  ]
-  deps = [
-    ":gmock",
-  ]
+  sources = [ "src/googlemock/src/gmock_main.cc" ]
+  deps = [ ":gmock" ]
 }

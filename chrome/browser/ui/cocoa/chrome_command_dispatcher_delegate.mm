@@ -4,7 +4,8 @@
 
 #import "chrome/browser/ui/cocoa/chrome_command_dispatcher_delegate.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "components/remote_cocoa/common/native_widget_ns_window_host.mojom.h"
@@ -25,14 +26,11 @@
 
   // Logic for handling Views windows.
   //
-  // There are 3 ways for extensions to register accelerators in Views:
+  // There are 2 ways for extensions to register accelerators in Views:
   //  1) As regular extension commands, see ExtensionKeybindingRegistryViews.
   //     This always has high priority.
   //  2) As page/browser popup actions, see
   //     ExtensionActionPlatformDelegateViews. This always has high priority.
-  //  3) As a bookmark override. This always has regular priority, and is
-  //     actually handled as a special case of the IDC_BOOKMARK_THIS_TAB browser
-  //     command. See BookmarkCurrentTabAllowingExtensionOverrides.
   //
   // The only reasonable way to access the registered accelerators for (1) and
   // (2) is to use the FocusManager. That is what we do here. But that will also
@@ -66,10 +64,8 @@
   // https://crbug.com/846893.
 
   NSResponder* responder = [window firstResponder];
-  if ([responder conformsToProtocol:@protocol(CommandDispatcherTarget)]) {
-    NSObject<CommandDispatcherTarget>* target =
-        static_cast<NSObject<CommandDispatcherTarget>*>(responder);
-    if ([target isKeyLocked:event]) {
+  if ([responder respondsToSelector:@selector(isKeyLocked:)]) {
+    if ([(id)responder isKeyLocked:event]) {
       return ui::PerformKeyEquivalentResult::kUnhandled;
     }
   }
@@ -94,6 +90,14 @@
   // By not passing the event to AppKit, we do lose out on the brief
   // highlighting of the NSMenu.
   CommandForKeyEventResult result = CommandForKeyEvent(event);
+  // Ignore new tab/window events if |event| is a key repeat to prevent
+  // users from accidentally opening too many empty tabs or windows.
+  if (event.isARepeat && (result.chrome_command == IDC_NEW_TAB ||
+                          result.chrome_command == IDC_NEW_WINDOW ||
+                          result.chrome_command == IDC_NEW_INCOGNITO_WINDOW)) {
+    return ui::PerformKeyEquivalentResult::kDrop;
+  }
+
   if (result.found()) {
     auto* bridge =
         remote_cocoa::NativeWidgetNSWindowBridge::GetFromNativeWindow(window);

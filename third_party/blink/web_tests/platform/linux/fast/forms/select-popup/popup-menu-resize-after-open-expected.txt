@@ -1,8 +1,0 @@
-PASS popupWindow.innerWidth is 100
-PASS popupWindow.innerWidth is 150
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-o1
-o2

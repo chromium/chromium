@@ -3,8 +3,9 @@ zmo@chromium.org
 backer@chromium.org
 
 # For security review.
-per-file gpu_process_host_receiver_bindings.cc=set noparent
-per-file gpu_process_host_receiver_bindings.cc=file://ipc/SECURITY_OWNERS
+per-file gpu_process_host_receiver_bindings.*=set noparent
+per-file gpu_process_host_receiver_bindings.*=file://ipc/SECURITY_OWNERS
 
-# COMPONENT: Internals>GPU>Internals
-# TEAM: graphics-dev@chromium.org
+# For gpu data review.
+per-file gpu_data_manager*=magchen@chromium.org
+per-file gpu_internals_ui*=magchen@chromium.org

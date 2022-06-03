@@ -1,6 +1,7 @@
 include_rules = [
   "+components/url_formatter",
   "+components/leveldb_proto/public",
+  "+components/shared_highlighting/core/common",
   "+crypto",
   "+ios/net",
   "+ios/web",
@@ -13,8 +14,11 @@ include_rules = [
   "+ui",
 
   # For tests.
+  "+components/crash/core/common/objc_zombie.h",
+  "+components/ukm/test_ukm_recorder.h",
   "+ios/testing",
-  "+ios/third_party/earl_grey/src",
+
+  # TODO(crbug.com/1101077): Disallow direct import of eg2 headers.
   "+ios/third_party/earl_grey2/src/CommonLib",
   "+ios/third_party/earl_grey2/src/TestLib",
   "+mojo/core/embedder/embedder.h",

@@ -26,8 +26,8 @@ class HitTestDebugKeyEventObserver
   ~HitTestDebugKeyEventObserver() override;
 
   // RenderWidgetHost::InputEventObserver:
-  void OnInputEventAck(InputEventAckSource source,
-                       InputEventAckState state,
+  void OnInputEventAck(blink::mojom::InputEventResultSource source,
+                       blink::mojom::InputEventResultState state,
                        const blink::WebInputEvent&) override;
 
  private:

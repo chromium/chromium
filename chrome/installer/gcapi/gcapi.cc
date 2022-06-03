@@ -10,12 +10,16 @@
 
 #include "chrome/installer/gcapi/gcapi.h"
 
+#include <windows.h>
+
+// Must be after windows.h.
+#include <versionhelpers.h>
+
 #include <sddl.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
 #define STRSAFE_NO_DEPRECATE
-#include <windows.h>
 #include <objbase.h>
 #include <strsafe.h>
 #include <tlhelp32.h>
@@ -28,10 +32,9 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
@@ -47,12 +50,11 @@
 #include "chrome/installer/util/util_constants.h"
 #include "google_update/google_update_idl.h"
 
-using Microsoft::WRL::ComPtr;
 using base::Time;
-using base::TimeDelta;
 using base::win::RegKey;
 using base::win::ScopedCOMInitializer;
 using base::win::ScopedHandle;
+using Microsoft::WRL::ComPtr;
 
 namespace {
 
@@ -62,8 +64,7 @@ const wchar_t kChromeRegVersion[] = L"pv";
 const wchar_t kNoChromeOfferUntil[] =
     L"SOFTWARE\\Google\\No Chrome Offer Until";
 
-const wchar_t kC1FPendingKey[] =
-    L"Software\\Google\\Common\\Rlz\\Events\\C";
+const wchar_t kC1FPendingKey[] = L"Software\\Google\\Common\\Rlz\\Events\\C";
 const wchar_t kC1FSentKey[] =
     L"Software\\Google\\Common\\Rlz\\StatefulEvents\\C";
 const wchar_t kC1FKey[] = L"C1F";
@@ -91,11 +92,12 @@ bool GetCompanyName(const wchar_t* filename, wchar_t* buffer, DWORD out_len) {
     return false;
 
   DWORD data_len = 0;
-  LPVOID data = NULL;
+  LPVOID data = nullptr;
   // Retrieve the language and codepage code if exists.
   buffer_size = 0;
   if (!::VerQueryValue(file_version_info, TEXT("\\VarFileInfo\\Translation"),
-      reinterpret_cast<LPVOID *>(&data), reinterpret_cast<UINT *>(&data_len)))
+                       reinterpret_cast<LPVOID*>(&data),
+                       reinterpret_cast<UINT*>(&data_len)))
     return false;
   if (data_len != 4)
     return false;
@@ -106,22 +108,21 @@ bool GetCompanyName(const wchar_t* filename, wchar_t* buffer, DWORD out_len) {
   // language codepage.
   memcpy(&lang, data, 4);
   ::StringCchPrintf(info_name, _countof(info_name),
-      L"\\StringFileInfo\\%02X%02X%02X%02X\\CompanyName",
-      (lang & 0xff00)>>8, (lang & 0xff), (lang & 0xff000000)>>24,
-      (lang & 0xff0000)>>16);
+                    L"\\StringFileInfo\\%02X%02X%02X%02X\\CompanyName",
+                    (lang & 0xff00) >> 8, (lang & 0xff),
+                    (lang & 0xff000000) >> 24, (lang & 0xff0000) >> 16);
 
   data_len = 0;
   if (!::VerQueryValue(file_version_info, info_name,
-      reinterpret_cast<LPVOID *>(&data), reinterpret_cast<UINT *>(&data_len)))
+                       reinterpret_cast<LPVOID*>(&data),
+                       reinterpret_cast<UINT*>(&data_len)))
     return false;
   if (data_len <= 0 || data_len >= (out_len / sizeof(wchar_t)))
     return false;
 
   memset(buffer, 0, out_len);
-  ::StringCchCopyN(buffer,
-                   (out_len / sizeof(wchar_t)),
-                   reinterpret_cast<const wchar_t*>(data),
-                   data_len);
+  ::StringCchCopyN(buffer, (out_len / sizeof(wchar_t)),
+                   reinterpret_cast<const wchar_t*>(data), data_len);
   return true;
 }
 
@@ -144,23 +145,23 @@ DWORD FormatDateOffsetByMonths(int months) {
 // Return true if we can re-offer Chrome; false, otherwise.
 // Each partner can only offer Chrome once every six months.
 bool CanReOfferChrome(BOOL set_flag) {
-  wchar_t filename[MAX_PATH+1];
+  wchar_t filename[MAX_PATH + 1];
   wchar_t company[MAX_PATH];
 
   // If we cannot retrieve the version info of the executable or company
   // name, we allow the Chrome to be offered because there is no past
   // history to be found.
-  if (::GetModuleFileName(NULL, filename, MAX_PATH) == 0)
+  if (::GetModuleFileName(nullptr, filename, MAX_PATH) == 0)
     return true;
   if (!GetCompanyName(filename, company, sizeof(company)))
     return true;
 
   bool can_re_offer = true;
   DWORD disposition = 0;
-  HKEY key = NULL;
-  if (::RegCreateKeyEx(HKEY_LOCAL_MACHINE, kNoChromeOfferUntil,
-      0, NULL, REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE,
-      NULL, &key, &disposition) == ERROR_SUCCESS) {
+  HKEY key = nullptr;
+  if (::RegCreateKeyEx(HKEY_LOCAL_MACHINE, kNoChromeOfferUntil, 0, nullptr,
+                       REG_OPTION_NON_VOLATILE, KEY_READ | KEY_WRITE, nullptr,
+                       &key, &disposition) == ERROR_SUCCESS) {
     // Get today's date, and format it as YYYYMMDD numeric value.
     DWORD today = FormatDateOffsetByMonths(0);
 
@@ -171,8 +172,7 @@ bool CanReOfferChrome(BOOL set_flag) {
     if (::RegQueryValueEx(key, company, 0, &value_type,
                           reinterpret_cast<LPBYTE>(&value_data),
                           &value_length) == ERROR_SUCCESS &&
-        REG_DWORD == value_type &&
-        value_data > today) {
+        REG_DWORD == value_type && value_data > today) {
       // The time has not expired, we cannot offer Chrome.
       can_re_offer = false;
     } else {
@@ -205,8 +205,8 @@ bool RegKeyHasC1F(HKEY root, const wchar_t* subkey) {
   RegKey key;
   DWORD value;
   return key.Open(root, subkey, KEY_READ | KEY_WOW64_32KEY) == ERROR_SUCCESS &&
-      key.ReadValueDW(kC1FKey, &value) == ERROR_SUCCESS &&
-      value == static_cast<DWORD>(1);
+         key.ReadValueDW(kC1FKey, &value) == ERROR_SUCCESS &&
+         value == static_cast<DWORD>(1);
 }
 
 bool IsC1FSent() {
@@ -215,21 +215,13 @@ bool IsC1FSent() {
   // in sent or pending state. Return true if there is a match for any of these
   // 4 states.
   return RegKeyHasC1F(HKEY_CURRENT_USER, kC1FSentKey) ||
-      RegKeyHasC1F(HKEY_CURRENT_USER, kC1FPendingKey) ||
-      RegKeyHasC1F(HKEY_LOCAL_MACHINE, kC1FSentKey) ||
-      RegKeyHasC1F(HKEY_LOCAL_MACHINE, kC1FPendingKey);
+         RegKeyHasC1F(HKEY_CURRENT_USER, kC1FPendingKey) ||
+         RegKeyHasC1F(HKEY_LOCAL_MACHINE, kC1FSentKey) ||
+         RegKeyHasC1F(HKEY_LOCAL_MACHINE, kC1FPendingKey);
 }
 
 bool IsWindowsVersionSupported() {
-  OSVERSIONINFOEX version_info = { sizeof version_info };
-  GetVersionEx(reinterpret_cast<OSVERSIONINFO*>(&version_info));
-
-  // Windows 7 is version 6.1.
-  if (version_info.dwMajorVersion > 6 ||
-      (version_info.dwMajorVersion == 6 && version_info.dwMinorVersion > 0))
-    return true;
-
-  return false;
+  return IsWindows7OrGreater();
 }
 
 // Note this function should not be called on old Windows versions where these
@@ -238,13 +230,11 @@ bool IsWindowsVersionSupported() {
 bool VerifyAdminGroup() {
   SID_IDENTIFIER_AUTHORITY NtAuthority = {SECURITY_NT_AUTHORITY};
   PSID Group;
-  BOOL check = ::AllocateAndInitializeSid(&NtAuthority, 2,
-                                          SECURITY_BUILTIN_DOMAIN_RID,
-                                          DOMAIN_ALIAS_RID_ADMINS, 0, 0, 0,
-                                          0, 0, 0,
-                                          &Group);
+  BOOL check = ::AllocateAndInitializeSid(
+      &NtAuthority, 2, SECURITY_BUILTIN_DOMAIN_RID, DOMAIN_ALIAS_RID_ADMINS, 0,
+      0, 0, 0, 0, 0, &Group);
   if (check) {
-    if (!::CheckTokenMembership(NULL, Group, &check))
+    if (!::CheckTokenMembership(nullptr, Group, &check))
       check = FALSE;
   }
   ::FreeSid(Group);
@@ -255,14 +245,14 @@ bool VerifyHKLMAccess() {
   wchar_t str[] = L"test";
   bool result = false;
   DWORD disposition = 0;
-  HKEY key = NULL;
+  HKEY key = nullptr;
 
-  if (::RegCreateKeyEx(HKEY_LOCAL_MACHINE, kGCAPITempKey, 0, NULL,
+  if (::RegCreateKeyEx(HKEY_LOCAL_MACHINE, kGCAPITempKey, 0, nullptr,
                        REG_OPTION_NON_VOLATILE,
-                       KEY_READ | KEY_WRITE | KEY_WOW64_32KEY, NULL,
-                       &key, &disposition) == ERROR_SUCCESS) {
+                       KEY_READ | KEY_WRITE | KEY_WOW64_32KEY, nullptr, &key,
+                       &disposition) == ERROR_SUCCESS) {
     if (::RegSetValueEx(key, str, 0, REG_SZ, (LPBYTE)str,
-        (DWORD)lstrlen(str)) == ERROR_SUCCESS) {
+                        (DWORD)lstrlen(str)) == ERROR_SUCCESS) {
       result = true;
       RegDeleteValue(key, str);
     }
@@ -288,9 +278,8 @@ bool IsRunningElevated() {
 
   TOKEN_ELEVATION_TYPE elevation_type = TokenElevationTypeDefault;
   DWORD size_returned = 0;
-  if (!::GetTokenInformation(process_token, TokenElevationType,
-                             &elevation_type, sizeof(elevation_type),
-                             &size_returned)) {
+  if (!::GetTokenInformation(process_token, TokenElevationType, &elevation_type,
+                             sizeof(elevation_type), &size_returned)) {
     ::CloseHandle(process_token);
     return false;
   }
@@ -302,20 +291,20 @@ bool IsRunningElevated() {
 bool GetUserIdForProcess(size_t pid, wchar_t** user_sid) {
   HANDLE process_handle =
       ::OpenProcess(PROCESS_QUERY_INFORMATION, TRUE, static_cast<DWORD>(pid));
-  if (process_handle == NULL)
+  if (process_handle == nullptr)
     return false;
 
   HANDLE process_token;
   bool result = false;
   if (::OpenProcessToken(process_handle, TOKEN_QUERY, &process_token)) {
     DWORD size = 0;
-    ::GetTokenInformation(process_token, TokenUser, NULL, 0, &size);
+    ::GetTokenInformation(process_token, TokenUser, nullptr, 0, &size);
     if (::GetLastError() == ERROR_INSUFFICIENT_BUFFER ||
         ::GetLastError() == ERROR_SUCCESS) {
       DWORD actual_size = 0;
       BYTE* token_user = new BYTE[size];
       if ((::GetTokenInformation(process_token, TokenUser, token_user, size,
-                                &actual_size)) &&
+                                 &actual_size)) &&
           (actual_size <= size)) {
         PSID sid = reinterpret_cast<TOKEN_USER*>(token_user)->User.Sid;
         if (::ConvertSidToStringSid(sid, user_sid))
@@ -402,7 +391,7 @@ BOOL __stdcall GoogleChromeCompatibilityCheck(BOOL set_flag,
     // Only check that we have HKLM write permissions if we specify that
     // GCAPI is being invoked from an elevated shell, or in admin mode
     if (!VerifyHKLMAccess()) {
-    local_reasons |= GCCC_ERROR_ACCESSDENIED;
+      local_reasons |= GCCC_ERROR_ACCESSDENIED;
     } else if (is_windows_version_supported && !VerifyAdminGroup()) {
       // For Vista or later check for elevation since even for admin user we
       // could be running in non-elevated mode. We require integrity level High.
@@ -415,7 +404,7 @@ BOOL __stdcall GoogleChromeCompatibilityCheck(BOOL set_flag,
     local_reasons |= GCCC_ERROR_ALREADYOFFERED;
 
   // Done. Copy/return results.
-  if (reasons != NULL)
+  if (reasons != nullptr)
     *reasons = local_reasons;
 
   return (local_reasons == 0);
@@ -427,10 +416,10 @@ BOOL __stdcall LaunchGoogleChrome() {
     return false;
 
   ScopedCOMInitializer com_initializer;
-  if (::CoInitializeSecurity(NULL, -1, NULL, NULL,
+  if (::CoInitializeSecurity(nullptr, -1, nullptr, nullptr,
                              RPC_C_AUTHN_LEVEL_PKT_PRIVACY,
-                             RPC_C_IMP_LEVEL_IDENTIFY, NULL,
-                             EOAC_DYNAMIC_CLOAKING, NULL) != S_OK) {
+                             RPC_C_IMP_LEVEL_IDENTIFY, nullptr,
+                             EOAC_DYNAMIC_CLOAKING, nullptr) != S_OK) {
     return false;
   }
 
@@ -451,21 +440,19 @@ BOOL __stdcall LaunchGoogleChrome() {
     wchar_t* exp_proc_sid;
     if (GetUserIdForProcess(pid, &exp_proc_sid)) {
       if (_wcsicmp(curr_proc_sid, exp_proc_sid) == 0) {
-        ScopedHandle process_handle(
-            ::OpenProcess(PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION,
-                          TRUE,
-                          pid));
+        ScopedHandle process_handle(::OpenProcess(
+            PROCESS_DUP_HANDLE | PROCESS_QUERY_INFORMATION, TRUE, pid));
         if (process_handle.IsValid()) {
-          HANDLE process_token = NULL;
-          HANDLE user_token = NULL;
+          HANDLE process_token = nullptr;
+          HANDLE user_token = nullptr;
           if (::OpenProcessToken(process_handle.Get(),
                                  TOKEN_DUPLICATE | TOKEN_QUERY,
                                  &process_token) &&
               ::DuplicateTokenEx(process_token,
                                  TOKEN_IMPERSONATE | TOKEN_QUERY |
                                      TOKEN_ASSIGN_PRIMARY | TOKEN_DUPLICATE,
-                                 NULL, SecurityImpersonation,
-                                 TokenPrimary, &user_token) &&
+                                 nullptr, SecurityImpersonation, TokenPrimary,
+                                 &user_token) &&
               (::ImpersonateLoggedOnUser(user_token) != 0)) {
             impersonation_success = true;
           }
@@ -488,17 +475,18 @@ BOOL __stdcall LaunchGoogleChrome() {
 
   bool ret = false;
   ComPtr<IProcessLauncher> ipl;
-  if (SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass), NULL,
+  if (SUCCEEDED(::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
                                    CLSCTX_LOCAL_SERVER, IID_PPV_ARGS(&ipl)))) {
-    if (SUCCEEDED(ipl->LaunchCmdLine(
-            chrome_command.GetCommandLineString().c_str())))
+    if (SUCCEEDED(
+            ipl->LaunchCmdLine(chrome_command.GetCommandLineString().c_str())))
       ret = true;
     ipl.Reset();
   } else {
     // Couldn't get Omaha's process launcher, Omaha may not be installed at
     // system level. Try just running Chrome instead.
     ret = base::LaunchProcess(chrome_command.GetCommandLineString(),
-                              base::LaunchOptions()).IsValid();
+                              base::LaunchOptions())
+              .IsValid();
   }
 
   if (impersonation_success)
@@ -523,7 +511,7 @@ BOOL __stdcall LaunchGoogleChromeWithDimensions(int x,
 
     ScopedCOMInitializer com_initializer;
     if (!base::win::WmiLaunchProcess(chrome_command.GetCommandLineString(),
-                                     NULL)) {
+                                     nullptr)) {
       // For some reason WMI failed. Try and launch the old fashioned way,
       // knowing that visual glitches will occur when the window pops up.
       if (!LaunchGoogleChrome())
@@ -535,7 +523,7 @@ BOOL __stdcall LaunchGoogleChromeWithDimensions(int x,
       return false;
   }
 
-  HWND hwnd_insert_after = in_background ? HWND_BOTTOM : NULL;
+  HWND hwnd_insert_after = in_background ? HWND_BOTTOM : nullptr;
   DWORD set_window_flags = in_background ? SWP_NOACTIVATE : SWP_NOZORDER;
 
   if (x == -1 && y == -1)
@@ -544,8 +532,8 @@ BOOL __stdcall LaunchGoogleChromeWithDimensions(int x,
   if (width == -1 && height == -1)
     set_window_flags |= SWP_NOSIZE;
 
-  SetWindowPosParams enum_params = { x, y, width, height, set_window_flags,
-                                     hwnd_insert_after, false };
+  SetWindowPosParams enum_params = {
+      x, y, width, height, set_window_flags, hwnd_insert_after, false};
 
   // Chrome may have been launched, but the window may not have appeared
   // yet. Wait for it to appear for 10 seconds, but exit if it takes longer
@@ -584,16 +572,16 @@ int __stdcall GoogleChromeDaysSinceLastRun() {
                         gcapi_internals::kChromeRegClientStateKey,
                         KEY_QUERY_VALUE | KEY_WOW64_32KEY);
     if (client_state.Valid()) {
-      base::string16 last_run;
+      std::wstring last_run;
       int64_t last_run_value = 0;
       if (client_state.ReadValue(google_update::kRegLastRunTimeField,
                                  &last_run) == ERROR_SUCCESS &&
           base::StringToInt64(last_run, &last_run_value)) {
         Time last_run_time = Time::FromInternalValue(last_run_value);
-        TimeDelta difference = Time::NowFromSystemTime() - last_run_time;
+        base::TimeDelta difference = Time::NowFromSystemTime() - last_run_time;
 
         // We can end up with negative numbers here, given changes in system
-        // clock time or due to TimeDelta's int64_t -> int truncation.
+        // clock time or due to base::TimeDelta's int64_t -> int truncation.
         int new_days_since_last_run = difference.InDays();
         if (new_days_since_last_run >= 0 &&
             new_days_since_last_run < days_since_last_run) {
@@ -655,9 +643,7 @@ BOOL __stdcall ReactivateChrome(const wchar_t* brand_code,
                                 int shell_mode,
                                 DWORD* error_code) {
   BOOL result = FALSE;
-  if (CanOfferReactivation(brand_code,
-                           shell_mode,
-                           error_code)) {
+  if (CanOfferReactivation(brand_code, shell_mode, error_code)) {
     if (SetReactivationBrandCode(brand_code, shell_mode)) {
       // Currently set this as a best-effort thing. We return TRUE if
       // reactivation succeeded regardless of the experiment label result.
@@ -689,7 +675,7 @@ BOOL __stdcall CanOfferRelaunch(const wchar_t** partner_brandcode_list,
   // a) Chrome should be installed;
   if (!IsChromeInstalled(HKEY_LOCAL_MACHINE) &&
       (shell_mode != GCAPI_INVOKED_STANDARD_SHELL ||
-          !IsChromeInstalled(HKEY_CURRENT_USER))) {
+       !IsChromeInstalled(HKEY_CURRENT_USER))) {
     if (error_code)
       *error_code = RELAUNCH_ERROR_NOTINSTALLED;
     return FALSE;
@@ -697,7 +683,7 @@ BOOL __stdcall CanOfferRelaunch(const wchar_t** partner_brandcode_list,
 
   // b) the installed brandcode should belong to that partner (in
   // brandcode_list);
-  base::string16 installed_brandcode;
+  std::wstring installed_brandcode;
   bool valid_brandcode = false;
   if (gcapi_internals::GetBrand(&installed_brandcode)) {
     for (int i = 0; i < partner_brandcode_list_length; ++i) {

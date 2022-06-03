@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/dbus/services/cros_dbus_service.h"
 #include "dbus/exported_object.h"
@@ -21,6 +20,10 @@ class DisplayServiceProvider
  public:
   // The caller must ensure that |delegate| outlives this object.
   DisplayServiceProvider();
+
+  DisplayServiceProvider(const DisplayServiceProvider&) = delete;
+  DisplayServiceProvider& operator=(const DisplayServiceProvider&) = delete;
+
   ~DisplayServiceProvider() override;
 
   // CrosDBusService::ServiceProviderInterface overrides:
@@ -56,8 +59,6 @@ class DisplayServiceProvider
 
   std::unique_ptr<Impl> impl_;
   base::WeakPtrFactory<DisplayServiceProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayServiceProvider);
 };
 
 }  // namespace ash

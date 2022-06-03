@@ -5,11 +5,12 @@
 (async function() {
   TestRunner.addResult(`Test that link to snippet works.\n`);
 
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
-  TestRunner.addSniffer(Workspace.UISourceCode.prototype, 'addLineMessage', dumpLineMessage, true);
+  TestRunner.addSniffer(
+      Workspace.UISourceCode.prototype, 'addMessage', dumpLineMessage, true);
 
   TestRunner.runTestSuite([
     function testConsoleLogAndReturnMessageLocation(next) {
@@ -72,11 +73,13 @@ console.error(null)`)
     return Common.Revealer.reveal(uiSourceCode).then(() => uiSourceCode);
   }
 
-  function dumpLineMessage(level, text, lineNumber, columnNumber) {
-    TestRunner.addResult(`Line Message was added: ${this.url()} ${level} '${text}':${lineNumber}:${columnNumber}`);
+  function dumpLineMessage(message) {
+    TestRunner.addResult(`Line Message was added: ${this.url()} ${
+        message.level()} '${message.text()}':${message.lineNumber()}:${
+        message.columnNumber()}`);
   }
 
   function runSelectedSnippet() {
-    Sources.SourcesPanel.instance()._runSnippet();
+    Sources.SourcesPanel.instance().runSnippet();
   }
 })();

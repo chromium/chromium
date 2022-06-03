@@ -108,6 +108,46 @@ void InitializeCPUContextX86_64(CPUContextX86_64* context,
                                 const x86_float_state64_t* x86_float_state64,
                                 const x86_debug_state64_t* x86_debug_state64);
 
+#elif defined(ARCH_CPU_ARM64) || DOXYGEN
+//! \brief Initializes a CPUContextARM64 structure from native context
+//!     structures on macOS or iOS.
+//!
+//! \a flavor, \a state, and \a state_count may be supplied by exception
+//! handlers in order for the \a context parameter to be initialized by the
+//! thread state received by the exception handler to the extent possible. In
+//! that case, whatever thread state specified by these three parameters will
+//! supersede \a arm_thread_state64 or \a arm_neon_state64. If thread state in
+//! this format is not available, \a flavor may be set to `THREAD_STATE_NONE`,
+//! and all of \a arm_thread_state64 abd \a arm_neon_state64 will be honored.
+//!
+//! If \a flavor, \a state, and \a state_count are provided but do not contain
+//! valid values, a message will be logged and their values will be ignored as
+//! though \a flavor were specified as `THREAD_STATE_NONE`.
+//!
+//! \param[out] context The CPUContextARM64 structure to initialize.
+//! \param[in] flavor The native thread state flavor of \a state. This may be
+//!     `ARM_THREAD_STATE64`, `ARM_THREAD_STATE` or `ARM_NEON_STATE64`. It may
+//!     also be `THREAD_STATE_NONE` if \a state is not supplied (and is
+//!     `nullptr`).
+//! \param[in] state The native thread state, which may be a casted pointer to
+//!     `arm_thread_state64_t`, `arm_unified_thread_state` or
+//!     `arm_neon_state64_t`. This parameter may be `nullptr` to not supply this
+//!     data, in which case \a flavor must be `THREAD_STATE_NONE`. If a
+//!     “universal” structure is used, it must carry 64-bit state data of the
+//!     correct type.
+//! \param[in] state_count The number of `int`-sized units in \a state. This
+//!     may be 0 if \a state is `nullptr`.
+//! \param[in] arm_thread_state64 The state of the thread’s integer registers.
+//! \param[in] arm_neon_state64 The state of the thread’s floating-point
+//!     registers.
+//! \param[in] arm_debug_state64 The state of the thread’s debug registers.
+void InitializeCPUContextARM64(CPUContextARM64* context,
+                               thread_state_flavor_t flavor,
+                               ConstThreadState state,
+                               mach_msg_type_number_t state_count,
+                               const arm_thread_state64_t* arm_thread_state64,
+                               const arm_neon_state64_t* arm_neon_state64,
+                               const arm_debug_state64_t* arm_debug_state64);
 #endif
 
 }  // namespace internal

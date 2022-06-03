@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<!-- Measures the delay between two successive short-delay timeouts. 
+<!-- Measures the delay between two successive short-delay timeouts.
   Note that scheduler allows a small number of quick tasks to run without
   throttling, so the delay is 20ms to avoid this.
 -->
@@ -12,6 +12,6 @@ addEventListener('message', (e) => {
       let end = performance.now();
       e.source.postMessage(end - start, e.origin);
     }, 20);
-  }, 0);
+  }, 20);
 });
 </script>

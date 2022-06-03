@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<style>
+.c18 {
+  width: 640px;
+}
+.c18:after {
+  content: attr(class);
+  width: 100%;
+  padding-right: 100%;
+}
+
+.c19 {
+  width: 400px;
+}
+
+.c19:after {
+  content: 'a';
+  margin-left: 2000000000%;
+}
+
+.c20 {
+  width: 640px;
+}
+.c20:after {
+  content: 'c20';
+  display: inline-block;
+  margin-right: 100%;
+  margin-left: -100000000%;
+  padding-right: 2000000000%;
+}
+</style>
+<input type="file">
+<script>
+test(() => {
+  const fileInput = document.querySelector('input');
+  fileInput.classList.add('c18');
+  fileInput.offsetWidth;
+  // Ok if no crash.
+}, ':after with large padding should not cause a crash.');
+
+test(() => {
+  const fileInput = document.querySelector('input');
+  fileInput.classList.add('c19');
+  fileInput.offsetWidth;
+  // Ok if no crash.
+}, ':after with huge margin should not cause a crash.');
+
+// crbug.com/1162727
+test(() => {
+  const fileInput = document.querySelector('input');
+  fileInput.classList.add('c20');
+  fileInput.offsetWidth;
+  // Ok if no crash.
+}, ':after with huge negative margin should not cause a crash.');
+</script>

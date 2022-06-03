@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_RECT_H_
 
-#include "third_party/blink/renderer/bindings/core/v8/dictionary.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
@@ -34,6 +33,13 @@ class CORE_EXPORT DOMRect final : public DOMRectReadOnly {
   void setHeight(double height) { height_ = height; }
 };
 
+inline bool operator==(const DOMRect& lhs, const DOMRect& rhs) {
+  return lhs.x() == rhs.x() && lhs.y() == rhs.y() &&
+         lhs.width() == rhs.width() && lhs.height() == rhs.height();
+}
+inline bool operator!=(const DOMRect& lhs, const DOMRect& rhs) {
+  return !(lhs == rhs);
+}
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOMETRY_DOM_RECT_H_

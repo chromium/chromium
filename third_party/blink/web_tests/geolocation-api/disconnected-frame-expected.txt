@@ -1,9 +1,0 @@
-Tests that when a request is made on a Geolocation object and its Frame is disconnected before a callback is made, no callbacks are made.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS No callbacks invoked
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

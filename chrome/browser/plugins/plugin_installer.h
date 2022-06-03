@@ -6,9 +6,7 @@
 #define CHROME_BROWSER_PLUGINS_PLUGIN_INSTALLER_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "base/version.h"
 #include "chrome/browser/plugins/plugin_metadata.h"
 #include "url/gurl.h"
@@ -23,6 +21,10 @@ class WebContents;
 class PluginInstaller {
  public:
   PluginInstaller();
+
+  PluginInstaller(const PluginInstaller&) = delete;
+  PluginInstaller& operator=(const PluginInstaller&) = delete;
+
   ~PluginInstaller();
 
   void AddObserver(PluginInstallerObserver* observer);
@@ -44,7 +46,6 @@ class PluginInstaller {
   base::ObserverList<PluginInstallerObserver>::Unchecked observers_;
   int strong_observer_count_;
   base::ObserverList<WeakPluginInstallerObserver>::Unchecked weak_observers_;
-  DISALLOW_COPY_AND_ASSIGN(PluginInstaller);
 };
 
 #endif  // CHROME_BROWSER_PLUGINS_PLUGIN_INSTALLER_H_

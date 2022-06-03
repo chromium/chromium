@@ -31,8 +31,11 @@ class FakeCommandBuffer : public CommandBuffer {
     return State();
   }
   void SetGetBuffer(int32_t transfer_buffer_id) override { NOTREACHED(); }
-  scoped_refptr<gpu::Buffer> CreateTransferBuffer(uint32_t size,
-                                                  int32_t* id) override {
+  scoped_refptr<gpu::Buffer> CreateTransferBuffer(
+      uint32_t size,
+      int32_t* id,
+      TransferBufferAllocationOption option =
+          TransferBufferAllocationOption::kLoseContextOnOOM) override {
     *id = next_id_++;
     active_ids_.insert(*id);
     return MakeMemoryBuffer(size);

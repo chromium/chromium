@@ -194,12 +194,15 @@ bool AddQuarantineMetadataToFile(const base::FilePath& file,
 
 }  // namespace
 
-QuarantineFileResult QuarantineFile(const base::FilePath& file,
-                                    const GURL& source_url_unsafe,
-                                    const GURL& referrer_url_unsafe,
-                                    const std::string& client_guid) {
-  if (!base::PathExists(file))
-    return QuarantineFileResult::FILE_MISSING;
+void QuarantineFile(const base::FilePath& file,
+                    const GURL& source_url_unsafe,
+                    const GURL& referrer_url_unsafe,
+                    const std::string& client_guid,
+                    mojom::Quarantine::QuarantineFileCallback callback) {
+  if (!base::PathExists(file)) {
+    std::move(callback).Run(QuarantineFileResult::FILE_MISSING);
+    return;
+  }
 
   GURL source_url = SanitizeUrlForQuarantine(source_url_unsafe);
   GURL referrer_url = SanitizeUrlForQuarantine(referrer_url_unsafe);
@@ -208,8 +211,9 @@ QuarantineFileResult QuarantineFile(const base::FilePath& file,
   AddOriginMetadataToFile(file, source_url, referrer_url);
   bool quarantine_succeeded =
       AddQuarantineMetadataToFile(file, source_url, referrer_url);
-  return quarantine_succeeded ? QuarantineFileResult::OK
-                              : QuarantineFileResult::ANNOTATION_FAILED;
+  std::move(callback).Run(quarantine_succeeded
+                              ? QuarantineFileResult::OK
+                              : QuarantineFileResult::ANNOTATION_FAILED);
 }
 
 }  // namespace quarantine

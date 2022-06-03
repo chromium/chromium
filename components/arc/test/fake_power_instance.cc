@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace arc {
 
@@ -19,13 +19,15 @@ FakePowerInstance::SuspendCallback FakePowerInstance::GetSuspendCallback() {
   return std::move(suspend_callback_);
 }
 
-void FakePowerInstance::InitDeprecated(mojom::PowerHostPtr host_ptr) {
-  Init(std::move(host_ptr), base::DoNothing());
+void FakePowerInstance::InitDeprecated(
+    mojo::PendingRemote<mojom::PowerHost> host_remote) {
+  Init(std::move(host_remote), base::DoNothing());
 }
 
-void FakePowerInstance::Init(mojom::PowerHostPtr host_ptr,
+void FakePowerInstance::Init(mojo::PendingRemote<mojom::PowerHost> host_remote,
                              InitCallback callback) {
-  host_ptr_ = std::move(host_ptr);
+  host_remote_.reset();
+  host_remote_.Bind(std::move(host_remote));
   std::move(callback).Run();
 }
 
@@ -48,6 +50,17 @@ void FakePowerInstance::UpdateScreenBrightnessSettings(double percent) {
 
 void FakePowerInstance::PowerSupplyInfoChanged() {
   num_power_supply_info_++;
+}
+
+void FakePowerInstance::GetWakefulnessMode(
+    GetWakefulnessModeCallback callback) {
+  std::move(callback).Run(mojom::WakefulnessMode::AWAKE);
+}
+
+void FakePowerInstance::OnCpuRestrictionChanged(
+    mojom::CpuRestrictionState cpu_restriction_state) {
+  last_cpu_restriction_state_ = cpu_restriction_state;
+  ++cpu_restriction_state_count_;
 }
 
 }  // namespace arc

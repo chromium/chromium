@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_JS_MESSAGING_WEB_FRAME_USER_DATA_H_
 #define IOS_WEB_PUBLIC_JS_MESSAGING_WEB_FRAME_USER_DATA_H_
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #include "ios/web/public/js_messaging/web_frame.h"

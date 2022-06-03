@@ -7,16 +7,16 @@
 
 #include <memory>
 
-#include "ui/base/dragdrop/os_exchange_data.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
+#include "ui/base/dragdrop/os_exchange_data_provider.h"
 
 namespace ui {
 
 // Builds platform specific OSExchangeDataProviders.
-class UI_BASE_EXPORT OSExchangeDataProviderFactory {
+class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderFactory {
  public:
   // Creates a Provider based on the current platform.
-  static std::unique_ptr<OSExchangeData::Provider> CreateProvider();
+  static std::unique_ptr<OSExchangeDataProvider> CreateProvider();
 };
 
 }  // namespace ui

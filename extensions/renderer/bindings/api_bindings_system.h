@@ -45,15 +45,21 @@ class APIBindingsSystem {
       APITypeReferenceMap* type_refs,
       const BindingAccessChecker* access_checker)>;
 
-  APIBindingsSystem(GetAPISchemaMethod get_api_schema,
-                    BindingAccessChecker::AvailabilityCallback is_available,
-                    APIRequestHandler::SendRequestMethod send_request,
-                    std::unique_ptr<InteractionProvider> interaction_provider,
-                    APIEventListeners::ListenersUpdated event_listeners_changed,
-                    APIEventHandler::ContextOwnerIdGetter context_owner_getter,
-                    APIBinding::OnSilentRequest on_silent_request,
-                    binding::AddConsoleError add_console_error,
-                    APILastError last_error);
+  APIBindingsSystem(
+      GetAPISchemaMethod get_api_schema,
+      BindingAccessChecker::APIAvailabilityCallback api_available,
+      BindingAccessChecker::PromiseAvailabilityCallback promises_available,
+      APIRequestHandler::SendRequestMethod send_request,
+      std::unique_ptr<InteractionProvider> interaction_provider,
+      APIEventListeners::ListenersUpdated event_listeners_changed,
+      APIEventHandler::ContextOwnerIdGetter context_owner_getter,
+      APIBinding::OnSilentRequest on_silent_request,
+      binding::AddConsoleError add_console_error,
+      APILastError last_error);
+
+  APIBindingsSystem(const APIBindingsSystem&) = delete;
+  APIBindingsSystem& operator=(const APIBindingsSystem&) = delete;
+
   ~APIBindingsSystem();
 
   // Returns a new v8::Object representing the api specified by |api_name|.
@@ -152,8 +158,6 @@ class APIBindingsSystem {
   // The method to call when the system silently handles an API request without
   // notifying the browser.
   APIBinding::OnSilentRequest on_silent_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingsSystem);
 };
 
 }  // namespace

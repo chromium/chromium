@@ -20,6 +20,7 @@
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
+#include "net/log/net_log_with_source.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
 #include "net/test/test_data_directory.h"
@@ -112,7 +113,7 @@ TEST(CertVerifyProcMacTest, MacCRLIntermediate) {
   int error = verify_proc->Verify(
       cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, crl_set.get(), CertificateList(),
-      &verify_result);
+      &verify_result, NetLogWithSource());
 
   ASSERT_EQ(OK, error);
   ASSERT_EQ(0U, verify_result.cert_status);
@@ -172,7 +173,7 @@ TEST(CertVerifyProcMacTest, DISABLED_MacKeychainReordering) {
   int error = verify_proc->Verify(
       cert.get(), "gms.hongleong.com.my", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
-      CertificateList(), &verify_result);
+      CertificateList(), &verify_result, NetLogWithSource());
 
   ASSERT_EQ(OK, error);
   EXPECT_FALSE(verify_result.has_sha1);
@@ -221,7 +222,7 @@ TEST(CertVerifyProcMacTest, LargeKey) {
   int error = verify_proc->Verify(
       cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
-      CertificateList(), &verify_result);
+      CertificateList(), &verify_result, NetLogWithSource());
   EXPECT_THAT(error, IsError(ERR_CERT_INVALID));
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_INVALID);
 }
@@ -244,7 +245,7 @@ TEST(CertVerifyProcMacTest, CertValidityTooLong) {
   int error = verify_proc->Verify(
       cert.get(), "127.0.0.1", /*ocsp_response=*/std::string(),
       /*sct_list=*/std::string(), flags, CRLSet::BuiltinCRLSet().get(),
-      CertificateList(), &verify_result);
+      CertificateList(), &verify_result, NetLogWithSource());
 
   if (base::mac::IsAtLeastOS10_15()) {
     EXPECT_THAT(error, IsError(ERR_CERT_VALIDITY_TOO_LONG));

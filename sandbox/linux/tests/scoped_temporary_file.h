@@ -14,6 +14,10 @@ namespace sandbox {
 class ScopedTemporaryFile {
  public:
   ScopedTemporaryFile();
+
+  ScopedTemporaryFile(const ScopedTemporaryFile&) = delete;
+  ScopedTemporaryFile& operator=(const ScopedTemporaryFile&) = delete;
+
   ~ScopedTemporaryFile();
 
   int fd() const { return fd_; }
@@ -22,7 +26,6 @@ class ScopedTemporaryFile {
  private:
   int fd_;
   char full_file_name_[128];
-  DISALLOW_COPY_AND_ASSIGN(ScopedTemporaryFile);
 };
 
 }  // namespace sandbox

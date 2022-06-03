@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
@@ -16,16 +16,19 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
-#include "services/service_manager/public/mojom/interface_provider.mojom.h"
 
 namespace media {
 
 class MojoMediaClient;
 
-class MEDIA_MOJO_EXPORT MediaService : public mojom::MediaService {
+class MEDIA_MOJO_EXPORT MediaService final : public mojom::MediaService {
  public:
   MediaService(std::unique_ptr<MojoMediaClient> mojo_media_client,
                mojo::PendingReceiver<mojom::MediaService> receiver);
+
+  MediaService(const MediaService&) = delete;
+  MediaService& operator=(const MediaService&) = delete;
+
   ~MediaService() final;
 
  private:
@@ -34,8 +37,7 @@ class MEDIA_MOJO_EXPORT MediaService : public mojom::MediaService {
   // mojom::MediaService implementation:
   void CreateInterfaceFactory(
       mojo::PendingReceiver<mojom::InterfaceFactory> receiver,
-      mojo::PendingRemote<service_manager::mojom::InterfaceProvider>
-          host_interfaces) final;
+      mojo::PendingRemote<mojom::FrameInterfaceFactory> frame_interfaces) final;
 
   mojo::Receiver<mojom::MediaService> receiver_;
 
@@ -48,8 +50,6 @@ class MEDIA_MOJO_EXPORT MediaService : public mojom::MediaService {
   std::unique_ptr<MojoMediaClient> mojo_media_client_;
 
   mojo::UniqueReceiverSet<mojom::InterfaceFactory> interface_factory_receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaService);
 };
 
 }  // namespace media

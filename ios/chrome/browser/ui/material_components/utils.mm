@@ -6,14 +6,15 @@
 
 #import <UIKit/UIKit.h>
 
+#import <MaterialComponents/MDCAppBarContainerViewController.h>
+#import <MaterialComponents/MaterialAppBar.h>
+#import <MaterialComponents/MaterialCollections.h>
+#import <MaterialComponents/MaterialFlexibleHeader.h>
+#import <MaterialComponents/MaterialPalettes.h>
+#import <MaterialComponents/MaterialShadowLayer.h>
+
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/third_party/material_components_ios/src/components/AppBar/src/MDCAppBarContainerViewController.h"
-#import "ios/third_party/material_components_ios/src/components/AppBar/src/MaterialAppBar.h"
-#import "ios/third_party/material_components_ios/src/components/FlexibleHeader/src/MaterialFlexibleHeader.h"
-#import "ios/third_party/material_components_ios/src/components/NavigationBar/src/MaterialNavigationBar.h"
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
-#import "ios/third_party/material_components_ios/src/components/ShadowLayer/src/MaterialShadowLayer.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,8 +44,9 @@ void ConfigureAppBarViewControllerWithCardStyle(
   viewController.headerView.shiftBehavior =
       MDCFlexibleHeaderShiftBehaviorDisabled;
   viewController.headerView.backgroundColor =
-      UIColor.cr_secondarySystemBackgroundColor;
-  viewController.navigationBar.tintColor = UIColor.cr_labelColor;
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  viewController.navigationBar.tintColor =
+      [UIColor colorNamed:kTextPrimaryColor];
   viewController.navigationBar.titleAlignment =
       MDCNavigationBarTitleAlignmentLeading;
 

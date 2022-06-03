@@ -5,8 +5,11 @@
 #ifndef CONTENT_PUBLIC_BROWSER_MHTML_GENERATION_RESULT_H_
 #define CONTENT_PUBLIC_BROWSER_MHTML_GENERATION_RESULT_H_
 
-#include "base/optional.h"
+#include <string>
+
+#include "base/callback_forward.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -28,8 +31,8 @@ struct CONTENT_EXPORT MHTMLGenerationResult {
 
   // The SHA-256 digest of the generated file. On success, |file_digest|
   // contains the digest of the generated file, otherwise |file_digest| is
-  // base::nullopt.
-  base::Optional<std::string> file_digest;
+  // absl::nullopt.
+  absl::optional<std::string> file_digest;
 };
 
 }  // namespace content

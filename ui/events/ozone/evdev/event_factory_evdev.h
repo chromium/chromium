@@ -8,10 +8,8 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "ui/events/event_modifiers.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
@@ -54,6 +52,10 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   EventFactoryEvdev(CursorDelegateEvdev* cursor,
                     DeviceManager* device_manager,
                     KeyboardLayoutEngine* keyboard_layout_engine);
+
+  EventFactoryEvdev(const EventFactoryEvdev&) = delete;
+  EventFactoryEvdev& operator=(const EventFactoryEvdev&) = delete;
+
   ~EventFactoryEvdev() override;
 
   // Initialize. Must be called with a valid message loop.
@@ -79,12 +81,15 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchKeyboardDevicesUpdated(const std::vector<InputDevice>& devices);
   void DispatchTouchscreenDevicesUpdated(
       const std::vector<TouchscreenDevice>& devices);
-  void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices);
+  void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
+                                   bool has_mouse,
+                                   bool has_pointing_stick);
   void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices);
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices);
   void DispatchDeviceListsComplete();
   void DispatchStylusStateChanged(StylusState stylus_state);
+  void DispatchMicrophoneMuteSwitchValueChanged(bool muted);
 
   // Gamepad event and gamepad device event. These events are dispatched to
   // GamepadObserver through GamepadProviderOzone.
@@ -111,6 +116,8 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void OnThreadStarted(
       std::unique_ptr<InputDeviceFactoryEvdevProxy> input_device_factory);
 
+  void NotifyMiceAndPointingSticksUpdated();
+
   // Used to uniquely identify input devices.
   int last_device_id_ = 0;
 
@@ -128,7 +135,10 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   EventModifiers modifiers_;
 
   // Mouse button map.
-  MouseButtonMapEvdev button_map_;
+  MouseButtonMapEvdev mouse_button_map_;
+
+  // Pointing stick (a.k.a. TrackPoint) button map.
+  MouseButtonMapEvdev pointing_stick_button_map_;
 
   // Keyboard state.
   KeyboardEvdev keyboard_;
@@ -150,8 +160,6 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
 
   // Support weak pointers for attach & detach callbacks.
   base::WeakPtrFactory<EventFactoryEvdev> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EventFactoryEvdev);
 };
 
 }  // namespace ui

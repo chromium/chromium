@@ -50,10 +50,11 @@
         var drt = internals.elementLayoutTreeAsText(divContainer);
         divContainer.removeChild(svgContainer);
 
-        // Skip 4 lines to get to the child tag subtree (layer, div, svg and parent).
-        var skip = 0;
-        for (var i = 0; i < 4; i++)
-          skip = drt.indexOf('\n', skip) + 1;
+        // Skip to the line after the LayoutSVGRoot.
+        var skip = drt.indexOf('LayoutSVGRoot');
+        skip = drt.indexOf('\n', skip) + 1;
+        // Skip the line with the parent tag.
+        skip = drt.indexOf('\n', skip) + 1;
 
         return drt.substr(skip).search(new RegExp('\\{' + childTag + '\\}|\\[' + childTag + '[\\] ]')) > 0;
       }

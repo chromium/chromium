@@ -13,13 +13,19 @@
 namespace blink {
 
 class HTMLVideoElement;
-class IntSize;
 class TimerBase;
 
+// This class tracks the state and size of HTMLVideoElement and reports to it
+// two signals
+// 1. If a given video occupies a large part of the viewport (85%),
+//    it is reported via HTMLVideoElement::SetIsDominantVisibleContent.
+// 2. If a given video occupies a large part of the viewport (85%) and
+//    any of the video's parent elements are in fullscreen mode, it is reported
+//    via SetIsEffectivelyFullscreen.
 class CORE_EXPORT MediaCustomControlsFullscreenDetector final
     : public NativeEventListener {
  public:
-  explicit MediaCustomControlsFullscreenDetector(HTMLVideoElement&);
+  explicit MediaCustomControlsFullscreenDetector(HTMLVideoElement& video);
 
   void Attach();
   void Detach();
@@ -28,7 +34,8 @@ class CORE_EXPORT MediaCustomControlsFullscreenDetector final
   // EventListener implementation.
   void Invoke(ExecutionContext*, Event*) override;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
+  void TriggerObservation();
 
  private:
   friend class MediaCustomControlsFullscreenDetectorTest;
@@ -39,18 +46,16 @@ class CORE_EXPORT MediaCustomControlsFullscreenDetector final
   void OnCheckViewportIntersectionTimerFired(TimerBase*);
   void OnIntersectionChanged(
       const HeapVector<Member<IntersectionObserverEntry>>&);
-
   bool IsVideoOrParentFullscreen();
-
-  static bool ComputeIsDominantVideoForTests(const IntSize& target_size,
-                                             const IntSize& root_size,
-                                             const IntSize& intersection_size);
+  void ReportEffectivelyFullscreen(bool);
+  static bool IsFullscreenVideoOfDifferentRatioForTesting(
+      const IntSize& video_size,
+      const IntSize& viewport_size,
+      const IntSize& intersection_size);
 
   // `video_element_` owns |this|.
   Member<HTMLVideoElement> video_element_;
   Member<IntersectionObserver> viewport_intersection_observer_;
-  TaskRunnerTimer<MediaCustomControlsFullscreenDetector>
-      check_viewport_intersection_timer_;
 };
 
 }  // namespace blink

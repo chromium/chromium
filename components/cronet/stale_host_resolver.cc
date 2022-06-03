@@ -4,15 +4,15 @@
 
 #include "components/cronet/stale_host_resolver.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "net/base/host_port_pair.h"
@@ -20,70 +20,14 @@
 #include "net/base/network_isolation_key.h"
 #include "net/dns/context_host_resolver.h"
 #include "net/dns/dns_util.h"
-#include "net/dns/host_resolver_source.h"
+#include "net/dns/host_resolver.h"
+#include "net/dns/public/host_resolver_source.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/log/net_log_with_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/scheme_host_port.h"
 
 namespace cronet {
-
-namespace {
-
-// Used in histograms; do not modify existing values.
-enum RequestOutcome {
-  // Served from (valid) cache, hosts file, IP literal, etc.
-  SYNCHRONOUS = 0,
-
-  // Network responded; there was no usable stale data.
-  NETWORK_WITHOUT_STALE = 1,
-
-  // Network responded before stale delay; there was usable stale data.
-  NETWORK_WITH_STALE = 2,
-
-  // Stale data returned; network didn't respond before the stale delay.
-  STALE_BEFORE_NETWORK = 3,
-
-  // Request canceled; there was no usable stale data.
-  CANCELED_WITHOUT_STALE = 4,
-
-  // Request canceled; there was usable stale data.
-  CANCELED_WITH_STALE = 5,
-
-  // Stale data returned; network got ERR_NAME_NOT_RESOLVED.
-  STALE_INSTEAD_OF_NETWORK_NAME_NOT_RESOLVED = 6,
-
-  // Stale data is explicitly requested and returned immediately.
-  STALE_SYNCHRONOUS = 7,
-
-  MAX_REQUEST_OUTCOME
-};
-
-void RecordRequestOutcome(RequestOutcome outcome) {
-  UMA_HISTOGRAM_ENUMERATION("DNS.StaleHostResolver.RequestOutcome", outcome,
-                            MAX_REQUEST_OUTCOME);
-}
-
-void RecordCacheSizes(size_t restored, size_t current) {
-  UMA_HISTOGRAM_COUNTS_1000("DNS.StaleHostResolver.RestoreSizeOnCacheMiss",
-                            restored);
-  UMA_HISTOGRAM_COUNTS_1000("DNS.StaleHostResolver.SizeOnCacheMiss", current);
-}
-
-void RecordAddressListDelta(net::AddressListDeltaType delta) {
-  UMA_HISTOGRAM_ENUMERATION("DNS.StaleHostResolver.StaleAddressListDelta",
-                            delta, net::MAX_DELTA_TYPE);
-}
-
-void RecordTimeDelta(base::TimeTicks network_time, base::TimeTicks stale_time) {
-  if (network_time <= stale_time) {
-    UMA_HISTOGRAM_LONG_TIMES_100("DNS.StaleHostResolver.NetworkEarly",
-                                 stale_time - network_time);
-  } else {
-    UMA_HISTOGRAM_LONG_TIMES_100("DNS.StaleHostResolver.NetworkLate",
-                                 network_time - stale_time);
-  }
-}
-
-}  // namespace
 
 // A request made by the StaleHostResolver. May return fresh cached data,
 // network data, or stale cached data.
@@ -97,18 +41,19 @@ class StaleHostResolver::RequestImpl
               const net::NetLogWithSource& net_log,
               const ResolveHostParameters& input_parameters,
               const base::TickClock* tick_clock);
-  ~RequestImpl() override;
+  ~RequestImpl() override = default;
 
   // net::HostResolver::ResolveHostRequest implementation:
   int Start(net::CompletionOnceCallback result_callback) override;
-  const base::Optional<net::AddressList>& GetAddressResults() const override;
-  const base::Optional<std::vector<std::string>>& GetTextResults()
+  const absl::optional<net::AddressList>& GetAddressResults() const override;
+  const absl::optional<std::vector<std::string>>& GetTextResults()
       const override;
-  const base::Optional<std::vector<net::HostPortPair>>& GetHostnameResults()
+  const absl::optional<std::vector<net::HostPortPair>>& GetHostnameResults()
       const override;
-  const base::Optional<net::EsniContent>& GetEsniResults() const override;
+  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
+      const override;
   net::ResolveErrorInfo GetResolveErrorInfo() const override;
-  const base::Optional<net::HostCache::EntryStaleness>& GetStaleInfo()
+  const absl::optional<net::HostCache::EntryStaleness>& GetStaleInfo()
       const override;
   void ChangeRequestPriority(net::RequestPriority priority) override;
 
@@ -129,20 +74,6 @@ class StaleHostResolver::RequestImpl
 
   // Callback for |stale_timer_| that returns stale results.
   void OnStaleDelayElapsed();
-
-  // Logging for when the underlying resolve completes synchronously.
-  void RecordSynchronousRequest();
-  // Logging for when the overall result is determined on completion of
-  // |network_request_|.
-  void RecordNetworkRequest(
-      int error,
-      bool returned_stale_data_instead_of_network_name_not_resolved);
-  // Logging for when |stale_timer_| fires and |stale_request_| is to be used as
-  // the overall result.
-  void RecordLateRequest();
-  // Logging for when the request is cancelled after Start() is called and
-  // before a result is returned.
-  void RecordCanceledRequest();
 
   base::WeakPtr<StaleHostResolver> resolver_;
 
@@ -168,13 +99,6 @@ class StaleHostResolver::RequestImpl
   // the overall result.
   std::unique_ptr<ResolveHostRequest> network_request_;
 
-  // Statistics used in histograms:
-  // Number of HostCache entries that were restored from prefs, recorded at the
-  // time the cache was checked.
-  size_t restore_size_;
-  // Current HostCache size at the time the cache was checked.
-  size_t current_size_;
-
   base::WeakPtrFactory<RequestImpl> weak_ptr_factory_{this};
 };
 
@@ -191,15 +115,8 @@ StaleHostResolver::RequestImpl::RequestImpl(
       net_log_(net_log),
       input_parameters_(input_parameters),
       cache_error_(net::ERR_DNS_CACHE_MISS),
-      stale_timer_(tick_clock),
-      restore_size_(0),
-      current_size_(0) {
+      stale_timer_(tick_clock) {
   DCHECK(resolver_);
-}
-
-StaleHostResolver::RequestImpl::~RequestImpl() {
-  if (!have_returned())
-    RecordCanceledRequest();
 }
 
 int StaleHostResolver::RequestImpl::Start(
@@ -207,30 +124,27 @@ int StaleHostResolver::RequestImpl::Start(
   DCHECK(resolver_);
   DCHECK(!result_callback.is_null());
 
-  restore_size_ = resolver_->inner_resolver_->LastRestoredCacheSize();
-  current_size_ = resolver_->inner_resolver_->CacheSize();
-
   net::HostResolver::ResolveHostParameters cache_parameters = input_parameters_;
   cache_parameters.cache_usage =
       net::HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED;
   cache_parameters.source = net::HostResolverSource::LOCAL_ONLY;
   cache_request_ = resolver_->inner_resolver_->CreateRequest(
       host_, network_isolation_key_, net_log_, cache_parameters);
-  cache_error_ =
+  int error =
       cache_request_->Start(base::BindOnce([](int error) { NOTREACHED(); }));
+  DCHECK_NE(net::ERR_IO_PENDING, error);
+  cache_error_ = cache_request_->GetResolveErrorInfo().error;
   DCHECK_NE(net::ERR_IO_PENDING, cache_error_);
   // If it's a fresh cache hit (or literal), return it synchronously.
   if (cache_error_ != net::ERR_DNS_CACHE_MISS &&
       (!cache_request_->GetStaleInfo() ||
        !cache_request_->GetStaleInfo().value().is_stale())) {
-    RecordSynchronousRequest();
     return cache_error_;
   }
 
   if (cache_error_ != net::ERR_DNS_CACHE_MISS &&
       input_parameters_.cache_usage ==
           net::HostResolver::ResolveHostParameters::CacheUsage::STALE_ALLOWED) {
-    RecordRequestOutcome(STALE_SYNCHRONOUS);
     return cache_error_;
   }
 
@@ -239,10 +153,10 @@ int StaleHostResolver::RequestImpl::Start(
   if (CacheDataIsUsable()) {
     // |stale_timer_| is deleted when the Request is deleted, so it's safe to
     // use Unretained here.
-    base::Callback<void()> stale_callback =
-        base::Bind(&StaleHostResolver::RequestImpl::OnStaleDelayElapsed,
-                   base::Unretained(this));
-    stale_timer_.Start(FROM_HERE, resolver_->options_.delay, stale_callback);
+    stale_timer_.Start(
+        FROM_HERE, resolver_->options_.delay,
+        base::BindOnce(&StaleHostResolver::RequestImpl::OnStaleDelayElapsed,
+                       base::Unretained(this)));
   } else {
     cache_error_ = net::ERR_DNS_CACHE_MISS;
     cache_request_.reset();
@@ -263,12 +177,11 @@ int StaleHostResolver::RequestImpl::Start(
   // /etc/hosts).
   if (network_rv != net::ERR_IO_PENDING) {
     stale_timer_.Stop();
-    RecordSynchronousRequest();
   }
   return network_rv;
 }
 
-const base::Optional<net::AddressList>&
+const absl::optional<net::AddressList>&
 StaleHostResolver::RequestImpl::GetAddressResults() const {
   if (network_request_)
     return network_request_->GetAddressResults();
@@ -277,7 +190,7 @@ StaleHostResolver::RequestImpl::GetAddressResults() const {
   return cache_request_->GetAddressResults();
 }
 
-const base::Optional<std::vector<std::string>>&
+const absl::optional<std::vector<std::string>>&
 StaleHostResolver::RequestImpl::GetTextResults() const {
   if (network_request_)
     return network_request_->GetTextResults();
@@ -286,7 +199,7 @@ StaleHostResolver::RequestImpl::GetTextResults() const {
   return cache_request_->GetTextResults();
 }
 
-const base::Optional<std::vector<net::HostPortPair>>&
+const absl::optional<std::vector<net::HostPortPair>>&
 StaleHostResolver::RequestImpl::GetHostnameResults() const {
   if (network_request_)
     return network_request_->GetHostnameResults();
@@ -295,13 +208,13 @@ StaleHostResolver::RequestImpl::GetHostnameResults() const {
   return cache_request_->GetHostnameResults();
 }
 
-const base::Optional<net::EsniContent>&
-StaleHostResolver::RequestImpl::GetEsniResults() const {
+const absl::optional<std::vector<std::string>>&
+StaleHostResolver::RequestImpl::GetDnsAliasResults() const {
   if (network_request_)
-    return network_request_->GetEsniResults();
+    return network_request_->GetDnsAliasResults();
 
   DCHECK(cache_request_);
-  return cache_request_->GetEsniResults();
+  return cache_request_->GetDnsAliasResults();
 }
 
 net::ResolveErrorInfo StaleHostResolver::RequestImpl::GetResolveErrorInfo()
@@ -312,7 +225,7 @@ net::ResolveErrorInfo StaleHostResolver::RequestImpl::GetResolveErrorInfo()
   return cache_request_->GetResolveErrorInfo();
 }
 
-const base::Optional<net::HostCache::EntryStaleness>&
+const absl::optional<net::HostCache::EntryStaleness>&
 StaleHostResolver::RequestImpl::GetStaleInfo() const {
   if (network_request_)
     return network_request_->GetStaleInfo();
@@ -339,9 +252,6 @@ void StaleHostResolver::RequestImpl::OnNetworkRequestComplete(int error) {
   bool return_stale_data_instead_of_network_name_not_resolved =
       resolver_->options_.use_stale_on_name_not_resolved &&
       error == net::ERR_NAME_NOT_RESOLVED && have_cache_data();
-
-  RecordNetworkRequest(error,
-                       return_stale_data_instead_of_network_name_not_resolved);
 
   stale_timer_.Stop();
 
@@ -398,57 +308,7 @@ void StaleHostResolver::RequestImpl::OnStaleDelayElapsed() {
   // even if |this| is destroyed.
   resolver_->DetachRequest(std::move(network_request_));
 
-  RecordLateRequest();
   std::move(result_callback_).Run(cache_error_);
-}
-
-void StaleHostResolver::RequestImpl::RecordSynchronousRequest() {
-  RecordRequestOutcome(SYNCHRONOUS);
-}
-
-void StaleHostResolver::RequestImpl::RecordNetworkRequest(
-    int error,
-    bool returned_stale_data_instead_of_network_name_not_resolved) {
-  DCHECK(resolver_);
-
-  if (have_cache_data()) {
-    RecordTimeDelta(resolver_->tick_clock_->NowTicks(),
-                    stale_timer_.desired_run_time());
-
-    if (cache_request_->GetAddressResults() && error == net::OK &&
-        network_request_->GetAddressResults()) {
-      RecordAddressListDelta(FindAddressListDeltaType(
-          cache_request_->GetAddressResults().value(),
-          network_request_->GetAddressResults().value()));
-    }
-
-    if (returned_stale_data_instead_of_network_name_not_resolved) {
-      RecordRequestOutcome(STALE_INSTEAD_OF_NETWORK_NAME_NOT_RESOLVED);
-    } else {
-      RecordRequestOutcome(NETWORK_WITH_STALE);
-      RecordCacheSizes(restore_size_, current_size_);
-    }
-  } else {
-    RecordRequestOutcome(NETWORK_WITHOUT_STALE);
-  }
-}
-
-void StaleHostResolver::RequestImpl::RecordLateRequest() {
-  DCHECK(resolver_);
-  DCHECK(have_cache_data());
-
-  RecordTimeDelta(resolver_->tick_clock_->NowTicks(),
-                  stale_timer_.desired_run_time());
-  RecordRequestOutcome(STALE_BEFORE_NETWORK);
-}
-
-void StaleHostResolver::RequestImpl::RecordCanceledRequest() {
-  DCHECK(!have_returned());
-
-  if (have_cache_data())
-    RecordRequestOutcome(CANCELED_WITH_STALE);
-  else
-    RecordRequestOutcome(CANCELED_WITHOUT_STALE);
 }
 
 StaleHostResolver::StaleOptions::StaleOptions()
@@ -472,10 +332,21 @@ void StaleHostResolver::OnShutdown() {
 
 std::unique_ptr<net::HostResolver::ResolveHostRequest>
 StaleHostResolver::CreateRequest(
+    url::SchemeHostPort host,
+    net::NetworkIsolationKey network_isolation_key,
+    net::NetLogWithSource net_log,
+    absl::optional<ResolveHostParameters> optional_parameters) {
+  // TODO(crbug.com/1206799): Propagate scheme.
+  return CreateRequest(net::HostPortPair::FromSchemeHostPort(host),
+                       network_isolation_key, net_log, optional_parameters);
+}
+
+std::unique_ptr<net::HostResolver::ResolveHostRequest>
+StaleHostResolver::CreateRequest(
     const net::HostPortPair& host,
     const net::NetworkIsolationKey& network_isolation_key,
     const net::NetLogWithSource& net_log,
-    const base::Optional<ResolveHostParameters>& optional_parameters) {
+    const absl::optional<ResolveHostParameters>& optional_parameters) {
   DCHECK(tick_clock_);
   return std::make_unique<RequestImpl>(
       weak_ptr_factory_.GetWeakPtr(), host, network_isolation_key, net_log,
@@ -486,7 +357,7 @@ net::HostCache* StaleHostResolver::GetHostCache() {
   return inner_resolver_->GetHostCache();
 }
 
-std::unique_ptr<base::Value> StaleHostResolver::GetDnsConfigAsValue() const {
+base::Value StaleHostResolver::GetDnsConfigAsValue() const {
   return inner_resolver_->GetDnsConfigAsValue();
 }
 

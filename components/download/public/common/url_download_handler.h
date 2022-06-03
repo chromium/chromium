@@ -39,18 +39,11 @@ class COMPONENTS_DOWNLOAD_EXPORT UrlDownloadHandler {
   };
 
   UrlDownloadHandler() = default;
+
+  UrlDownloadHandler(const UrlDownloadHandler&) = delete;
+  UrlDownloadHandler& operator=(const UrlDownloadHandler&) = delete;
+
   virtual ~UrlDownloadHandler() = default;
-
-  // Called on the io thread to pause the url request.
-  virtual void PauseRequest() {}
-
-  // Called on the io thread to resume the url request.
-  virtual void ResumeRequest() {}
-
-  // Called on the io thread to cancel the url request.
-  virtual void CancelRequest() {}
-
-  DISALLOW_COPY_AND_ASSIGN(UrlDownloadHandler);
 };
 
 }  // namespace download

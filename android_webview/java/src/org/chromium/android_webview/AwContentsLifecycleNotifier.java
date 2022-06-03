@@ -28,7 +28,7 @@ public class AwContentsLifecycleNotifier {
 
     private static final ObserverList<Observer> sLifecycleObservers =
             new ObserverList<Observer>();
-    private static int sNumWebViews;
+    private static boolean sHasWebViewInstances;
 
     private AwContentsLifecycleNotifier() {}
 
@@ -41,34 +41,28 @@ public class AwContentsLifecycleNotifier {
     }
 
     public static boolean hasWebViewInstances() {
-        return sNumWebViews > 0;
+        return sHasWebViewInstances;
     }
 
     // Called on UI thread.
     @CalledByNative
-    private static void onWebViewCreated() {
+    private static void onFirstWebViewCreated() {
         ThreadUtils.assertOnUiThread();
-        assert sNumWebViews >= 0;
-        sNumWebViews++;
-        if (sNumWebViews == 1) {
-            // first webview created, notify observers.
-            for (Observer observer : sLifecycleObservers) {
-                observer.onFirstWebViewCreated();
-            }
+        sHasWebViewInstances = true;
+        // first webview created, notify observers.
+        for (Observer observer : sLifecycleObservers) {
+            observer.onFirstWebViewCreated();
         }
     }
 
     // Called on UI thread.
     @CalledByNative
-    private static void onWebViewDestroyed() {
+    private static void onLastWebViewDestroyed() {
         ThreadUtils.assertOnUiThread();
-        assert sNumWebViews > 0;
-        sNumWebViews--;
-        if (sNumWebViews == 0) {
-            // last webview destroyed, notify observers.
-            for (Observer observer : sLifecycleObservers) {
-                observer.onLastWebViewDestroyed();
-            }
+        sHasWebViewInstances = false;
+        // last webview destroyed, notify observers.
+        for (Observer observer : sLifecycleObservers) {
+            observer.onLastWebViewDestroyed();
         }
     }
 }

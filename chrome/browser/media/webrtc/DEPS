@@ -6,7 +6,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # TODO(mash): Fix these. https://crbug.com/723880
   "desktop_capture_access_handler\.cc": [
     "+ash/shell.h",
   ],
@@ -14,11 +13,9 @@ specific_include_rules = {
     "+ash/shell.h",
     "+ash/wm/desks/desks_util.h",
   ],
-  # TODO(mash): Fix. https://crbug.com/855147
-  "media_capture_devices_dispatcher\.cc": [
-    "+ash/shell.h",
+  "media_stream_focus_delegate.cc": [
+    "+modules/desktop_capture/desktop_capture_options.h",
   ],
-  # TODO(mash): Remove. https://crbug.com/723880
   ".*_unittest\.cc": [
     "+ash/test/ash_test_base.h",
   ]

@@ -10,9 +10,9 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "remoting/codec/audio_encoder.h"
 #include "remoting/proto/audio.pb.h"
@@ -42,6 +42,10 @@ std::unique_ptr<AudioPacket> MakeAudioPacket(int channel_count = 2) {
 class FakeAudioEncoder : public AudioEncoder {
  public:
   FakeAudioEncoder() = default;
+
+  FakeAudioEncoder(const FakeAudioEncoder&) = delete;
+  FakeAudioEncoder& operator=(const FakeAudioEncoder&) = delete;
+
   ~FakeAudioEncoder() override = default;
 
   std::unique_ptr<AudioPacket> Encode(
@@ -54,14 +58,14 @@ class FakeAudioEncoder : public AudioEncoder {
     return packet;
   }
   int GetBitrate() override { return 160000; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioEncoder);
 };
 
 class AudioPumpTest : public testing::Test, public protocol::AudioStub {
  public:
   AudioPumpTest() = default;
+
+  AudioPumpTest(const AudioPumpTest&) = delete;
+  AudioPumpTest& operator=(const AudioPumpTest&) = delete;
 
   void SetUp() override;
   void TearDown() override;
@@ -81,17 +85,14 @@ class AudioPumpTest : public testing::Test, public protocol::AudioStub {
 
   std::vector<std::unique_ptr<AudioPacket>> sent_packets_;
   std::vector<base::OnceClosure> done_closures_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AudioPumpTest);
 };
 
 void AudioPumpTest::SetUp() {
   source_ = new FakeAudioSource();
   encoder_ = new FakeAudioEncoder();
-  pump_.reset(new AudioPump(task_environment_.GetMainThreadTaskRunner(),
-                            base::WrapUnique(source_),
-                            base::WrapUnique(encoder_), this));
+  pump_ = std::make_unique<AudioPump>(
+      task_environment_.GetMainThreadTaskRunner(), base::WrapUnique(source_),
+      base::WrapUnique(encoder_), this);
 }
 
 void AudioPumpTest::TearDown() {

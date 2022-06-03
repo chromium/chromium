@@ -34,23 +34,25 @@
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image_for_container.h"
-#include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/placeholder_image.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-StyleFetchedImage::StyleFetchedImage(const Document& document,
-                                     FetchParameters& params,
-                                     bool is_lazyload_possibly_deferred)
-    : document_(&document),
-      url_(params.Url()),
-      origin_clean_(!params.IsFromOriginDirtyStyleSheet()) {
+StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
+                                     const Document& document,
+                                     bool is_lazyload_possibly_deferred,
+                                     bool origin_clean,
+                                     bool is_ad_related,
+                                     const KURL& url)
+    : document_(document),
+      url_(url),
+      origin_clean_(origin_clean),
+      is_ad_related_(is_ad_related) {
   is_image_resource_ = true;
   is_lazyload_possibly_deferred_ = is_lazyload_possibly_deferred;
 
-  image_ = ImageResourceContent::Fetch(params, document_->Fetcher());
+  image_ = image;
   image_->AddObserver(this);
   // ResourceFetcher is not determined from StyleFetchedImage and it is
   // impossible to send a request for refetching.
@@ -58,11 +60,6 @@ StyleFetchedImage::StyleFetchedImage(const Document& document,
 }
 
 StyleFetchedImage::~StyleFetchedImage() = default;
-
-void StyleFetchedImage::Dispose() {
-  image_->RemoveObserver(this);
-  image_ = nullptr;
-}
 
 bool StyleFetchedImage::IsEqual(const StyleImage& other) const {
   if (!other.IsImageResource())
@@ -84,7 +81,7 @@ ImageResourceContent* StyleFetchedImage::CachedImage() const {
 CSSValue* StyleFetchedImage::CssValue() const {
   return MakeGarbageCollected<CSSImageValue>(
       AtomicString(url_.GetString()), url_, Referrer(),
-      origin_clean_ ? OriginClean::kTrue : OriginClean::kFalse,
+      origin_clean_ ? OriginClean::kTrue : OriginClean::kFalse, is_ad_related_,
       const_cast<StyleFetchedImage*>(this));
 }
 
@@ -105,23 +102,27 @@ bool StyleFetchedImage::ErrorOccurred() const {
   return image_->ErrorOccurred();
 }
 
+bool StyleFetchedImage::IsAccessAllowed(String& failing_url) const {
+  DCHECK(image_->IsLoaded());
+  if (image_->IsAccessAllowed())
+    return true;
+  failing_url = image_->Url().ElidedString();
+  return false;
+}
+
 FloatSize StyleFetchedImage::ImageSize(
-    const Document&,
     float multiplier,
-    const LayoutSize& default_object_size,
+    const FloatSize& default_object_size,
     RespectImageOrientationEnum respect_orientation) const {
   Image* image = image_->GetImage();
   if (image_->HasDevicePixelRatioHeaderValue()) {
     multiplier /= image_->DevicePixelRatioHeaderValue();
   }
-  if (image->IsSVGImage()) {
-    return ImageSizeForSVGImage(ToSVGImage(image), multiplier,
-                                default_object_size);
+  if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+    return ImageSizeForSVGImage(svg_image, multiplier, default_object_size);
   }
-
-  FloatSize size(respect_orientation && image->IsBitmapImage()
-                     ? ToBitmapImage(image)->SizeRespectingOrientation()
-                     : image->Size());
+  respect_orientation = ForceOrientationIfNecessary(respect_orientation);
+  FloatSize size(image->Size(respect_orientation));
   return ApplyZoom(size, multiplier);
 }
 
@@ -138,17 +139,26 @@ void StyleFetchedImage::RemoveClient(ImageResourceObserver* observer) {
 }
 
 void StyleFetchedImage::ImageNotifyFinished(ImageResourceContent*) {
+  if (!document_)
+    return;
+
   if (image_ && image_->HasImage()) {
     Image& image = *image_->GetImage();
 
-    if (document_ && image.IsSVGImage())
-      ToSVGImage(image).UpdateUseCounters(*document_);
+    if (auto* svg_image = DynamicTo<SVGImage>(image)) {
+      // SVG's document should be completely loaded before access control
+      // checks, which can occur anytime after ImageNotifyFinished()
+      // (See SVGImage::CurrentFrameHasSingleSecurityOrigin()).
+      // We check the document is loaded here to catch violation of the
+      // assumption reliably.
+      svg_image->CheckLoaded();
+      svg_image->UpdateUseCounters(*document_);
+    }
+    image_->RecordDecodedImageType(document_->GetExecutionContext());
   }
 
-  if (document_) {
-    if (LocalDOMWindow* window = document_->domWindow())
-      ImageElementTiming::From(*window).NotifyBackgroundImageFinished(this);
-  }
+  if (LocalDOMWindow* window = document_->domWindow())
+    ImageElementTiming::From(*window).NotifyBackgroundImageFinished(this);
 
   // Oilpan: do not prolong the Document's lifetime.
   document_.Clear();
@@ -165,9 +175,10 @@ scoped_refptr<Image> StyleFetchedImage::GetImage(
         style.EffectiveZoom());
   }
 
-  if (!image->IsSVGImage())
+  auto* svg_image = DynamicTo<SVGImage>(image);
+  if (!svg_image)
     return image;
-  return SVGImageForContainer::Create(ToSVGImage(image), target_size,
+  return SVGImageForContainer::Create(svg_image, target_size,
                                       style.EffectiveZoom(), url_);
 }
 
@@ -187,7 +198,21 @@ void StyleFetchedImage::LoadDeferredImage(const Document& document) {
   image_->LoadDeferredImage(document_->Fetcher());
 }
 
-bool StyleFetchedImage::GetImageAnimationPolicy(ImageAnimationPolicy& policy) {
+RespectImageOrientationEnum StyleFetchedImage::ForceOrientationIfNecessary(
+    RespectImageOrientationEnum default_orientation) const {
+  // SVG Images don't have orientation and assert on loading when
+  // IsAccessAllowed is called.
+  if (image_->GetImage()->IsSVGImage())
+    return default_orientation;
+  // Cross-origin images must always respect orientation to prevent
+  // potentially private data leakage.
+  if (!image_->IsAccessAllowed())
+    return kRespectImageOrientation;
+  return default_orientation;
+}
+
+bool StyleFetchedImage::GetImageAnimationPolicy(
+    mojom::blink::ImageAnimationPolicy& policy) {
   if (!document_ || !document_->GetSettings()) {
     return false;
   }
@@ -195,10 +220,11 @@ bool StyleFetchedImage::GetImageAnimationPolicy(ImageAnimationPolicy& policy) {
   return true;
 }
 
-void StyleFetchedImage::Trace(blink::Visitor* visitor) {
+void StyleFetchedImage::Trace(Visitor* visitor) const {
   visitor->Trace(image_);
   visitor->Trace(document_);
   StyleImage::Trace(visitor);
+  ImageResourceObserver::Trace(visitor);
 }
 
 }  // namespace blink

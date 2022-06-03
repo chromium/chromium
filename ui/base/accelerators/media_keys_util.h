@@ -5,7 +5,7 @@
 #ifndef UI_BASE_ACCELERATORS_MEDIA_KEYS_UTIL_H_
 #define UI_BASE_ACCELERATORS_MEDIA_KEYS_UTIL_H_
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
@@ -18,16 +18,19 @@ enum class MediaHardwareKeyAction {
   kNextTrack,
   kPreviousTrack,
   kPlayPause,
-  kMaxValue = kPlayPause
+  kSeekForward,
+  kSeekBackward,
+  kMaxValue = kSeekBackward
 };
 
 // The name of the histogram that records |MediaHardwareKeyAction|.
-UI_BASE_EXPORT extern const char kMediaHardwareKeyActionHistogramName[];
+COMPONENT_EXPORT(UI_BASE)
+extern const char kMediaHardwareKeyActionHistogramName[];
 
 // Records a media hardware key action to the
 // |kMediaHardwareKeyActionHistogramName| histogram.
-UI_BASE_EXPORT void RecordMediaHardwareKeyAction(
-    ui::MediaHardwareKeyAction action);
+COMPONENT_EXPORT(UI_BASE)
+void RecordMediaHardwareKeyAction(ui::MediaHardwareKeyAction action);
 
 }  // namespace ui
 

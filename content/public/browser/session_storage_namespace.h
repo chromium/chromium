@@ -11,6 +11,8 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
+#include "content/common/content_export.h"
+#include "content/public/browser/storage_partition_config.h"
 
 namespace content {
 
@@ -35,8 +37,15 @@ class SessionStorageNamespace
 };
 
 // Used to store mappings of StoragePartition id to SessionStorageNamespace.
-typedef std::map<std::string, scoped_refptr<SessionStorageNamespace> >
+typedef std::map<StoragePartitionId, scoped_refptr<SessionStorageNamespace>>
     SessionStorageNamespaceMap;
+
+// Helper function that creates a SessionStorageNamespaceMap and assigns
+// `session_storage_namespace` to the default StoragePartitionId.
+CONTENT_EXPORT SessionStorageNamespaceMap
+CreateMapWithDefaultSessionStorageNamespace(
+    BrowserContext* browser_context,
+    scoped_refptr<SessionStorageNamespace> session_storage_namespace);
 
 }  // namespace content
 

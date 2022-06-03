@@ -12,24 +12,28 @@ import static org.chromium.chrome.browser.notifications.NotificationConstants.DE
 
 import android.app.Notification;
 import android.content.Context;
-import android.os.Looper;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
-import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions;
+import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Test for DownloadForegroundServiceManager.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public final class DownloadForegroundServiceManagerTest {
     private static final int FAKE_DOWNLOAD_1 = 111;
     private static final int FAKE_DOWNLOAD_2 = 222;
@@ -71,16 +75,16 @@ public final class DownloadForegroundServiceManagerTest {
         }
 
         @Override
-        void stopAndUnbindServiceInternal(@DownloadForegroundService.StopForegroundNotification
+        void stopAndUnbindServiceInternal(@DownloadForegroundServiceImpl.StopForegroundNotification
                                           int stopForegroundNotification,
                 int pinnedNotificationId, Notification pinnedNotification) {
             mStopForegroundNotificationFlag = stopForegroundNotification;
         }
 
         @Override
-        void startOrUpdateForegroundService(int notificationId, Notification notification) {
-            mUpdatedNotificationId = notificationId;
-            super.startOrUpdateForegroundService(notificationId, notification);
+        void startOrUpdateForegroundService(DownloadUpdate downloadUpdate) {
+            mUpdatedNotificationId = downloadUpdate.mNotificationId;
+            super.startOrUpdateForegroundService(downloadUpdate);
         }
 
         // Skip waiting for delayed runnable in tests.
@@ -101,7 +105,7 @@ public final class DownloadForegroundServiceManagerTest {
      * Implementation of DownloadForegroundService for testing.
      * Does not implement startOrUpdateForegroundService to avoid test service lifecycle.
      */
-    public static class MockDownloadForegroundService extends DownloadForegroundService {
+    public static class MockDownloadForegroundService extends DownloadForegroundServiceImpl {
         @Override
         public void startOrUpdateForegroundService(int newNotificationId,
                 Notification newNotification, int oldNotificationId, Notification oldNotification,
@@ -110,23 +114,25 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Before
     public void setUp() {
-        Looper.prepare();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
+            mDownloadServiceManager = new MockDownloadForegroundServiceManager();
 
-        mContext = new AdvancedMockContext(InstrumentationRegistry.getTargetContext());
-        mDownloadServiceManager = new MockDownloadForegroundServiceManager();
-
-        mNotification =
-                NotificationBuilderFactory
-                        .createChromeNotificationBuilder(
-                                true /* preferCompat */, ChannelDefinitions.ChannelId.DOWNLOADS)
-                        .setSmallIcon(org.chromium.chrome.R.drawable.ic_file_download_white_24dp)
-                        .setContentTitle(FAKE_NOTIFICATION_CHANNEL)
-                        .setContentText(FAKE_NOTIFICATION_CHANNEL)
-                        .build();
+            mNotification =
+                    NotificationWrapperBuilderFactory
+                            .createNotificationWrapperBuilder(
+                                    ChromeChannelDefinitions.ChannelId.DOWNLOADS)
+                            .setSmallIcon(
+                                    org.chromium.chrome.R.drawable.ic_file_download_white_24dp)
+                            .setContentTitle(FAKE_NOTIFICATION_CHANNEL)
+                            .setContentText(FAKE_NOTIFICATION_CHANNEL)
+                            .build();
+        });
     }
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testBasicStartAndStop() {
         // Service starts and stops with addition and removal of one active download.
@@ -169,6 +175,7 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testDelayedStartStop() {
         // Calls to start and stop service.
@@ -189,6 +196,7 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testDelayedStartStopStart() {
         // Calls to start and stop and start service.
@@ -218,6 +226,7 @@ public final class DownloadForegroundServiceManagerTest {
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testIsNotificationKilledOrDetached() {
         // Service starts and is paused, not complete, so notification not killed but is detached.
@@ -230,7 +239,7 @@ public final class DownloadForegroundServiceManagerTest {
         mDownloadServiceManager.updateDownloadStatus(mContext,
                 DownloadNotificationService.DownloadStatus.PAUSED, FAKE_DOWNLOAD_1, mNotification);
         assertFalse(mDownloadServiceManager.mIsServiceBound);
-        assertEquals(DownloadForegroundService.StopForegroundNotification.DETACH,
+        assertEquals(DownloadForegroundServiceImpl.StopForegroundNotification.DETACH,
                 mDownloadServiceManager.mStopForegroundNotificationFlag);
 
         // Service restarts and then is cancelled, so notification is killed.
@@ -244,7 +253,7 @@ public final class DownloadForegroundServiceManagerTest {
                 DownloadNotificationService.DownloadStatus.CANCELLED, FAKE_DOWNLOAD_1,
                 mNotification);
         assertFalse(mDownloadServiceManager.mIsServiceBound);
-        assertEquals(DownloadForegroundService.StopForegroundNotification.KILL,
+        assertEquals(DownloadForegroundServiceImpl.StopForegroundNotification.KILL,
                 mDownloadServiceManager.mStopForegroundNotificationFlag);
 
         // Download starts and completes, notification is either detached or killed.
@@ -258,12 +267,13 @@ public final class DownloadForegroundServiceManagerTest {
                 DownloadNotificationService.DownloadStatus.COMPLETED, FAKE_DOWNLOAD_2,
                 mNotification);
         assertFalse(mDownloadServiceManager.mIsServiceBound);
-        assertEquals(DownloadForegroundService.StopForegroundNotification.DETACH,
+        assertEquals(DownloadForegroundServiceImpl.StopForegroundNotification.DETACH,
                 mDownloadServiceManager.mStopForegroundNotificationFlag);
     }
 
     @Test
     @SmallTest
+    @UiThreadTest
     @Feature({"Download"})
     public void testStopInitiallyAndCleanQueue() {
         // First call is a download being cancelled.

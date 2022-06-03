@@ -12,6 +12,15 @@ import string
 import sys
 
 
+def strip_js_imports(js_contents):
+  """The input JS may use imports for Closure compilation. These must be
+  stripped from the output since the resulting data: URL cannot use imports
+  within its webview."""
+  def not_an_import(line):
+    return not line.startswith('import ')
+  return '\n'.join(filter(not_an_import, js_contents.splitlines()))
+
+
 def main():
   argument_parser = argparse.ArgumentParser()
   argument_parser.add_argument('output_file', help='The file to write to')
@@ -27,7 +36,8 @@ def main():
   output_template = string.Template(open(args.output_template, 'r').read());
 
   # Stamp the javacript contents into the HTML template.
-  html_doc = html_template.substitute({'javascript_file': js_file_contents});
+  html_doc = html_template.substitute(
+      {'javascript_file': strip_js_imports(js_file_contents)})
 
   # Construct the data: URL that contains the combined doc.
   data_url = "data:text/html;base64,%s" % base64.b64encode(

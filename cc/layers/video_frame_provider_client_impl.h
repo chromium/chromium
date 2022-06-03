@@ -11,14 +11,14 @@
 #include "cc/cc_export.h"
 #include "cc/layers/video_frame_provider.h"
 #include "cc/scheduler/video_frame_controller.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace media { class VideoFrame; }
 
 namespace cc {
 class VideoLayerImpl;
 
-// VideoFrameProviderClientImpl liasons with the VideoFrameProvider and the
+// VideoFrameProviderClientImpl liaisons with the VideoFrameProvider and the
 // VideoLayer. It receives updates from the provider and updates the layer as a
 // result. It also allows the layer to access the video frame that the provider
 // has.
@@ -43,9 +43,13 @@ class CC_EXPORT VideoFrameProviderClientImpl
   // Must be called on the impl thread while the main thread is blocked.
   void Stop();
 
-  scoped_refptr<media::VideoFrame> AcquireLockAndCurrentFrame();
-  void PutCurrentFrame();
-  void ReleaseLock();
+  scoped_refptr<media::VideoFrame> AcquireLockAndCurrentFrame()
+      EXCLUSIVE_LOCK_FUNCTION(provider_lock_);
+  void PutCurrentFrame() EXCLUSIVE_LOCKS_REQUIRED(provider_lock_);
+  void ReleaseLock() UNLOCK_FUNCTION(provider_lock_);
+  void AssertLocked() const ASSERT_EXCLUSIVE_LOCK(provider_lock_) {
+    provider_lock_.AssertAcquired();
+  }
   bool HasCurrentFrame();
 
   // VideoFrameController implementation.

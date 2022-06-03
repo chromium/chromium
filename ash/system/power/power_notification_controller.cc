@@ -4,13 +4,18 @@
 
 #include "ash/system/power/power_notification_controller.h"
 
-#include "ash/public/cpp/ash_switches.h"
+#include <memory>
+
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/power/battery_notification.h"
 #include "ash/system/power/dual_role_notification.h"
 #include "base/command_line.h"
+#include "base/i18n/number_formatting.h"
+#include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
 #include "ui/message_center/message_center.h"
@@ -32,6 +37,9 @@ class UsbNotificationDelegate : public message_center::NotificationDelegate {
   explicit UsbNotificationDelegate(PowerNotificationController* controller)
       : controller_(controller) {}
 
+  UsbNotificationDelegate(const UsbNotificationDelegate&) = delete;
+  UsbNotificationDelegate& operator=(const UsbNotificationDelegate&) = delete;
+
   // Overridden from message_center::NotificationDelegate.
   void Close(bool by_user) override {
     if (by_user)
@@ -42,8 +50,6 @@ class UsbNotificationDelegate : public message_center::NotificationDelegate {
   ~UsbNotificationDelegate() override = default;
 
   PowerNotificationController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbNotificationDelegate);
 };
 
 std::string GetNotificationStateString(
@@ -96,7 +102,7 @@ void PowerNotificationController::OnPowerStatusChanged() {
 
   // Factory testing may place the battery into unusual states.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ash::switches::kAshHideNotificationsForFactory)) {
+          switches::kAshHideNotificationsForFactory)) {
     return;
   }
 
@@ -108,8 +114,8 @@ void PowerNotificationController::OnPowerStatusChanged() {
     // one. Otherwise we might update a "low battery" notification to "critical"
     // without it being shown again.
     battery_notification_.reset();
-    battery_notification_.reset(
-        new BatteryNotification(message_center_, notification_state_));
+    battery_notification_ = std::make_unique<BatteryNotification>(
+        message_center_, notification_state_);
   } else if (notification_state_ == NOTIFICATION_NONE) {
     battery_notification_.reset();
   } else if (battery_notification_.get()) {
@@ -131,18 +137,28 @@ bool PowerNotificationController::MaybeShowUsbChargerNotification() {
 
   // Check if the notification needs to be created.
   if (show && !usb_charger_was_connected_ && !usb_notification_dismissed_) {
-    std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+    bool on_battery = PowerStatus::Get()->IsBatteryPresent();
+    std::unique_ptr<Notification> notification = CreateSystemNotification(
         message_center::NOTIFICATION_TYPE_SIMPLE, kUsbNotificationId,
-        l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE),
-        ui::SubstituteChromeOSDeviceType(
-            IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_MESSAGE_SHORT),
-        base::string16(), GURL(),
+        l10n_util::GetStringUTF16(
+            on_battery ? IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_TITLE
+                       : IDS_ASH_STATUS_TRAY_LOW_POWER_ADAPTER_TITLE),
+        on_battery
+            ? ui::SubstituteChromeOSDeviceType(
+                  IDS_ASH_STATUS_TRAY_LOW_POWER_CHARGER_MESSAGE_SHORT)
+            : l10n_util::GetStringFUTF16(
+                  IDS_ASH_STATUS_TRAY_LOW_POWER_ADAPTER_MESSAGE_SHORT,
+                  ui::GetChromeOSDeviceName(),
+                  base::FormatDouble(
+                      PowerStatus::Get()->GetPreferredMinimumPower(), 0)),
+        std::u16string(), GURL(),
         message_center::NotifierId(
             message_center::NotifierType::SYSTEM_COMPONENT, kNotifierPower),
         message_center::RichNotificationData(),
         new UsbNotificationDelegate(this), kNotificationLowPowerChargerIcon,
         message_center::SystemNotificationWarningLevel::WARNING);
-    notification->set_priority(message_center::SYSTEM_PRIORITY);
+    notification->set_pinned(on_battery);
+    notification->set_never_timeout(!on_battery);
     message_center_->AddNotification(std::move(notification));
     return true;
   }
@@ -167,7 +183,8 @@ void PowerNotificationController::MaybeShowDualRoleNotification() {
   }
 
   if (!dual_role_notification_)
-    dual_role_notification_.reset(new DualRoleNotification(message_center_));
+    dual_role_notification_ =
+        std::make_unique<DualRoleNotification>(message_center_);
   dual_role_notification_->Update();
 }
 
@@ -185,7 +202,7 @@ bool PowerNotificationController::UpdateNotificationState() {
 }
 
 bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
-  const base::Optional<base::TimeDelta> remaining_time =
+  const absl::optional<base::TimeDelta> remaining_time =
       PowerStatus::Get()->GetBatteryTimeToEmpty();
 
   // Check that powerd actually provided an estimate. It doesn't if the battery
@@ -198,7 +215,7 @@ bool PowerNotificationController::UpdateNotificationStateForRemainingTime() {
   // The notification includes a rounded minutes value, so round the estimate
   // received from the power manager to match.
   const int remaining_minutes =
-      static_cast<int>(remaining_time->InSecondsF() / 60.0 + 0.5);
+      base::ClampRound(*remaining_time / base::Minutes(1));
 
   if (remaining_minutes >= kNoWarningMinutes ||
       PowerStatus::Get()->IsBatteryFull()) {

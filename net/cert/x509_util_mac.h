@@ -47,15 +47,15 @@ CreateSecCertificateFromX509Certificate(const X509Certificate* cert);
 // |sec_chain|.
 NET_EXPORT scoped_refptr<X509Certificate>
 CreateX509CertificateFromSecCertificate(
-    SecCertificateRef sec_cert,
-    const std::vector<SecCertificateRef>& sec_chain);
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain);
 
 // Creates an X509Certificate with non-standard parsing options.
 // Do not use without consulting //net owners.
 NET_EXPORT scoped_refptr<X509Certificate>
 CreateX509CertificateFromSecCertificate(
-    SecCertificateRef sec_cert,
-    const std::vector<SecCertificateRef>& sec_chain,
+    base::ScopedCFTypeRef<SecCertificateRef> sec_cert,
+    const std::vector<base::ScopedCFTypeRef<SecCertificateRef>>& sec_chain,
     X509Certificate::UnsafeCreateOptions options);
 
 // Calculates the SHA-256 fingerprint of the certificate.  Returns an empty
@@ -109,6 +109,10 @@ class CSSMFieldValue {
   CSSMFieldValue(CSSM_CL_HANDLE cl_handle,
                  const CSSM_OID* oid,
                  CSSM_DATA_PTR field);
+
+  CSSMFieldValue(const CSSMFieldValue&) = delete;
+  CSSMFieldValue& operator=(const CSSMFieldValue&) = delete;
+
   ~CSSMFieldValue();
 
   CSSM_OID_PTR oid() const { return oid_; }
@@ -133,8 +137,6 @@ class CSSMFieldValue {
   CSSM_CL_HANDLE cl_handle_;
   CSSM_OID_PTR oid_;
   CSSM_DATA_PTR field_;
-
-  DISALLOW_COPY_AND_ASSIGN(CSSMFieldValue);
 };
 
 // CSSMCachedCertificate is a container class that is used to wrap the

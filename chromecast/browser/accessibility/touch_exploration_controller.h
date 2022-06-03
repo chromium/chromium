@@ -15,7 +15,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
-#include "base/values.h"
 #include "chromecast/browser/accessibility/accessibility_sound_player.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/events/event.h"
@@ -46,11 +45,13 @@ class TouchExplorationControllerDelegate {
 
   // Called when the user performed an accessibility gesture while in touch
   // accessibility mode, that should be forwarded to ChromeVox.
-  virtual void HandleAccessibilityGesture(ax::mojom::Gesture gesture) = 0;
+  virtual void HandleAccessibilityGesture(
+      const ax::mojom::Gesture gesture,
+      const gfx::PointF& location = gfx::PointF()) = 0;
 
   // Called when the user has performed a single tap, if it is not within
   // lift activation bounds.
-  virtual void HandleTap(const gfx::Point touch_location) = 0;
+  virtual void HandleTap(const gfx::Point& touch_location) = 0;
 };
 
 // TouchExplorationController is used in tandem with "Spoken Feedback" to
@@ -173,6 +174,11 @@ class TouchExplorationController : public ui::EventRewriter,
       aura::Window* root_window,
       TouchExplorationControllerDelegate* delegate,
       AccessibilitySoundPlayer* accessibility_sound_player);
+
+  TouchExplorationController(const TouchExplorationController&) = delete;
+  TouchExplorationController& operator=(const TouchExplorationController&) =
+      delete;
+
   ~TouchExplorationController() override;
 
   // Make synthesized touch events are anchored at this point. This is
@@ -183,6 +189,10 @@ class TouchExplorationController : public ui::EventRewriter,
   // Events within the exclude bounds will not be rewritten.
   // |bounds| are in root window coordinates.
   void SetExcludeBounds(const gfx::Rect& bounds);
+
+  // Updates |lift_activation_bounds_|. See |lift_activation_bounds_| for more
+  // information.
+  void SetLiftActivationBounds(const gfx::Rect& bounds);
 
   // Overridden from ui::EventRewriter
   ui::EventDispatchDetails RewriteEvent(
@@ -265,9 +275,8 @@ class TouchExplorationController : public ui::EventRewriter,
 
   void PlaySoundForTimer();
 
-  // Sends a simulated click, if an anchor point was set explicitly. Otherwise,
-  // sends a simulated tap at anchor point.
-  void SendSimulatedClickOrTap(const Continuation continuation);
+  // Sends a simulated click.
+  void SendSimulatedClick(const Continuation continuation);
 
   // Sends a simulated tap at anchor point.
   void SendSimulatedTap(const Continuation continuation);
@@ -505,8 +514,6 @@ class TouchExplorationController : public ui::EventRewriter,
   // Whether or not to trigger pass through mode when touch events come
   // in from the edges.
   bool side_gesture_pass_through_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchExplorationController);
 };
 
 }  // namespace shell

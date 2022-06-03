@@ -9,7 +9,6 @@
 #include "ash/shell.h"
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/account_id/account_id.h"
 #include "ui/message_center/message_center.h"
@@ -28,6 +27,12 @@ class InactiveUserNotificationBlockerTest
       public message_center::NotificationBlocker::Observer {
  public:
   InactiveUserNotificationBlockerTest() = default;
+
+  InactiveUserNotificationBlockerTest(
+      const InactiveUserNotificationBlockerTest&) = delete;
+  InactiveUserNotificationBlockerTest& operator=(
+      const InactiveUserNotificationBlockerTest&) = delete;
+
   ~InactiveUserNotificationBlockerTest() override = default;
 
   // AshTestBase overrides:
@@ -75,10 +80,9 @@ class InactiveUserNotificationBlockerTest
     id_with_profile.profile_id = profile_id;
 
     message_center::Notification notification(
-        message_center::NOTIFICATION_TYPE_SIMPLE, "popup-id",
-        UTF8ToUTF16("popup-title"), UTF8ToUTF16("popup-message"), gfx::Image(),
-        UTF8ToUTF16("popup-source"), GURL(), id_with_profile,
-        message_center::RichNotificationData(), nullptr);
+        message_center::NOTIFICATION_TYPE_SIMPLE, "popup-id", u"popup-title",
+        u"popup-message", gfx::Image(), u"popup-source", GURL(),
+        id_with_profile, message_center::RichNotificationData(), nullptr);
 
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -93,9 +97,9 @@ class InactiveUserNotificationBlockerTest
 
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, "notification-id",
-        UTF8ToUTF16("notification-title"), UTF8ToUTF16("notification-message"),
-        gfx::Image(), UTF8ToUTF16("notification-source"), GURL(),
-        id_with_profile, message_center::RichNotificationData(), nullptr);
+        u"notification-title", u"notification-message", gfx::Image(),
+        u"notification-source", GURL(), id_with_profile,
+        message_center::RichNotificationData(), nullptr);
 
     if (notifier_id.id == kNotifierSystemPriority)
       notification.set_priority(message_center::SYSTEM_PRIORITY);
@@ -106,8 +110,6 @@ class InactiveUserNotificationBlockerTest
  private:
   int state_changed_count_ = 0;
   InactiveUserNotificationBlocker* blocker_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(InactiveUserNotificationBlockerTest);
 };
 
 TEST_F(InactiveUserNotificationBlockerTest, Basic) {

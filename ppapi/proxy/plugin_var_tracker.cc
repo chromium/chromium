@@ -6,6 +6,8 @@
 
 #include <stddef.h>
 
+#include <limits>
+
 #include "base/memory/ref_counted.h"
 #include "base/memory/singleton.h"
 #include "ipc/ipc_message.h"
@@ -79,6 +81,7 @@ PP_Var PluginVarTracker::ReceiveObjectPassRef(const PP_Var& host_var,
     SendReleaseObjectMsg(*object.get());
   }
   info.ref_count++;
+  CHECK(info.ref_count != std::numeric_limits<decltype(info.ref_count)>::max());
   return ret;
 }
 

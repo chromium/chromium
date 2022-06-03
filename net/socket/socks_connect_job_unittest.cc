@@ -16,6 +16,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
@@ -37,7 +38,7 @@ namespace {
 const char kProxyHostName[] = "proxy.test";
 const int kProxyPort = 4321;
 
-constexpr base::TimeDelta kTinyTime = base::TimeDelta::FromMicroseconds(1);
+constexpr base::TimeDelta kTinyTime = base::Microseconds(1);
 
 class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
  public:
@@ -68,11 +69,11 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
 
   static scoped_refptr<SOCKSSocketParams> CreateSOCKSParams(
       SOCKSVersion socks_version,
-      bool disable_secure_dns = false) {
+      SecureDnsPolicy secure_dns_policy = SecureDnsPolicy::kAllow) {
     return base::MakeRefCounted<SOCKSSocketParams>(
         base::MakeRefCounted<TransportSocketParams>(
             HostPortPair(kProxyHostName, kProxyPort), NetworkIsolationKey(),
-            disable_secure_dns, OnHostResolutionCallback()),
+            secure_dns_policy, OnHostResolutionCallback()),
         socks_version == SOCKSVersion::V5,
         socks_version == SOCKSVersion::V4
             ? HostPortPair(kSOCKS4TestHost, kSOCKS4TestPort)
@@ -81,7 +82,8 @@ class SOCKSConnectJobTest : public testing::Test, public WithTaskEnvironment {
   }
 
  protected:
-  MockHostResolver host_resolver_;
+  MockHostResolver host_resolver_{/*default_result=*/MockHostResolverBase::
+                                      RuleResolver::GetLocalhostResult()};
   MockTaggingClientSocketFactory client_socket_factory_;
   const CommonConnectJobParams common_connect_job_params_;
 };
@@ -119,7 +121,7 @@ TEST_F(SOCKSConnectJobTest, HostResolutionFailureSOCKS4Endpoint) {
         base::MakeRefCounted<SOCKSSocketParams>(
             base::MakeRefCounted<TransportSocketParams>(
                 HostPortPair(kProxyHostName, kProxyPort), NetworkIsolationKey(),
-                false /* disable_secure_dns */, OnHostResolutionCallback()),
+                SecureDnsPolicy::kAllow, OnHostResolutionCallback()),
             false /* socks_v5 */, HostPortPair(hostname, kSOCKS4TestPort),
             NetworkIsolationKey(), TRAFFIC_ANNOTATION_FOR_TESTS);
 
@@ -195,6 +197,9 @@ TEST_F(SOCKSConnectJobTest, SOCKS4) {
       test_delegate.StartJobExpectingResult(
           &socks_connect_job, OK,
           host_resolution_synchronous && read_and_writes_synchronous);
+
+      // Proxies should not set any DNS aliases.
+      EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
     }
   }
 }
@@ -232,6 +237,9 @@ TEST_F(SOCKSConnectJobTest, SOCKS5) {
       test_delegate.StartJobExpectingResult(
           &socks_connect_job, OK,
           host_resolution_synchronous && read_and_writes_synchronous);
+
+      // Proxies should not set any DNS aliases.
+      EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
     }
   }
 }
@@ -381,20 +389,16 @@ TEST_F(SOCKSConnectJobTest, Priority) {
   }
 }
 
-TEST_F(SOCKSConnectJobTest, DisableSecureDns) {
-  for (bool disable_secure_dns : {false, true}) {
+TEST_F(SOCKSConnectJobTest, SecureDnsPolicy) {
+  for (auto secure_dns_policy :
+       {SecureDnsPolicy::kAllow, SecureDnsPolicy::kDisable}) {
     TestConnectJobDelegate test_delegate;
     SOCKSConnectJob socks_connect_job(
         DEFAULT_PRIORITY, SocketTag(), &common_connect_job_params_,
-        CreateSOCKSParams(SOCKSVersion::V4, disable_secure_dns), &test_delegate,
+        CreateSOCKSParams(SOCKSVersion::V4, secure_dns_policy), &test_delegate,
         nullptr /* net_log */);
     ASSERT_THAT(socks_connect_job.Connect(), test::IsError(ERR_IO_PENDING));
-    EXPECT_EQ(disable_secure_dns,
-              host_resolver_.last_secure_dns_mode_override().has_value());
-    if (disable_secure_dns) {
-      EXPECT_EQ(net::DnsConfig::SecureDnsMode::OFF,
-                host_resolver_.last_secure_dns_mode_override().value());
-    }
+    EXPECT_EQ(secure_dns_policy, host_resolver_.last_secure_dns_policy());
   }
 }
 

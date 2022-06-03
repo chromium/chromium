@@ -5,8 +5,6 @@
 #ifndef CONTENT_PUBLIC_BROWSER_DOWNLOAD_REQUEST_UTILS_H_
 #define CONTENT_PUBLIC_BROWSER_DOWNLOAD_REQUEST_UTILS_H_
 
-#include <string>
-
 #include "components/download/public/common/download_url_parameters.h"
 #include "content/common/content_export.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"

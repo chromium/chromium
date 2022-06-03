@@ -50,7 +50,7 @@ bool GetSwitch(const char* switch_name, std::string* value) {
   switch_name_with_equals += "=";
   for (int i = 1; i < num_args; ++i) {
     const wchar_t* arg = args[i];
-    std::string arg_as_utf8 = base::UTF16ToUTF8(arg);
+    std::string arg_as_utf8 = base::WideToUTF8(arg);
     if (arg_as_utf8.compare(
             0, switch_name_with_equals.size(), switch_name_with_equals) == 0) {
       if (value)
@@ -189,7 +189,7 @@ std::unique_ptr<WinChildProcess::Handles> WinChildProcess::Launch() {
       ::testing::UnitTest::GetInstance()->current_test_info();
   std::wstring command_line =
       TestPaths::Executable().value() +
-      base::UTF8ToUTF16(base::StringPrintf(
+      base::UTF8ToWide(base::StringPrintf(
           " --gtest_filter=%s.%s %s=0x%x|0x%x --gtest_also_run_disabled_tests",
           test_info->test_case_name(),
           test_info->name(),

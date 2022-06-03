@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
 
+#include "base/notreached.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
 
 namespace blink {

@@ -1,0 +1,32 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("previous_session_info") {
+  assert(is_ios)
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "previous_session_info.h",
+    "previous_session_info.mm",
+    "previous_session_info_private.h",
+  ]
+  deps = [
+    "//base",
+    "//components/version_info",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "previous_session_info_unittest.mm" ]
+  deps = [
+    ":previous_session_info",
+    "//base",
+    "//base/test:test_support",
+    "//components/version_info",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}

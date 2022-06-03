@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -28,6 +27,12 @@ class TestNavigationThrottleInserter : public WebContentsObserver {
  public:
   TestNavigationThrottleInserter(WebContents* web_contents,
                                  ThrottleInsertionCallback callback);
+
+  TestNavigationThrottleInserter(const TestNavigationThrottleInserter&) =
+      delete;
+  TestNavigationThrottleInserter& operator=(
+      const TestNavigationThrottleInserter&) = delete;
+
   ~TestNavigationThrottleInserter() override;
 
   // WebContentsObserver:
@@ -35,8 +40,6 @@ class TestNavigationThrottleInserter : public WebContentsObserver {
 
  private:
   ThrottleInsertionCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationThrottleInserter);
 };
 
 }  // namespace content

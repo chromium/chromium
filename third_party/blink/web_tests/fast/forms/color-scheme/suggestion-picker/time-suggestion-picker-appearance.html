@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="color-scheme" content="light dark">
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../../resources/picker-common.js"></script>
+</head>
+<body style="background-color: #eeffff;">
+<input type=time id=time value="12:31" list="suggestions" style="width: 200px;" step="0.001">
+<datalist id=suggestions>
+    <option>111:23</option> <!--invalid-->
+    <option>13:60</option> <!--invalid-->
+    <option>foo</option> <!--invalid-->
+    <option label="Now">01:01</option>
+    <option>14:23</option>
+    <option>12:34:56</option>
+    <option>01:23:45.678</option>
+    <option>01:05</option>
+    <option>01:06</option>
+    <option>01:07</option>
+    <option>01:08</option>
+    <option>01:09</option>
+</datalist>
+
+<script>
+openPickerAppearanceOnly(document.getElementById('time'), finishTest);
+
+function finishTest() {
+  popupWindow.focus();
+  eventSender.keyDown('ArrowDown');
+  testRunner.notifyDone()
+}
+</script>
+</body>
+</html>

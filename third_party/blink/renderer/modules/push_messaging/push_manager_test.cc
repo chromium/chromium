@@ -5,9 +5,11 @@
 #include "third_party/blink/renderer/modules/push_messaging/push_manager.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_arraybuffer_arraybufferview_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_push_subscription_options_init.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
-#include "third_party/blink/renderer/modules/push_messaging/push_subscription_options_init.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -35,13 +37,12 @@ void IsApplicationServerKeyValid(PushSubscriptionOptions* output) {
     sender_key[i] = kApplicationServerKey[i];
   sender_key[kApplicationServerKeyLength] = 0x0;
 
-  ASSERT_EQ(output->applicationServerKey()->ByteLengthAsSizeT(),
+  ASSERT_EQ(output->applicationServerKey()->ByteLength(),
             kApplicationServerKeyLength);
 
   String application_server_key(
       reinterpret_cast<const char*>(output->applicationServerKey()->Data()),
-      static_cast<unsigned>(
-          output->applicationServerKey()->ByteLengthAsSizeT()));
+      static_cast<unsigned>(output->applicationServerKey()->ByteLength()));
 
   ASSERT_EQ(reinterpret_cast<const char*>(sender_key),
             application_server_key.Latin1());
@@ -50,7 +51,7 @@ void IsApplicationServerKeyValid(PushSubscriptionOptions* output) {
 TEST(PushManagerTest, ValidSenderKey) {
   PushSubscriptionOptionsInit* options = PushSubscriptionOptionsInit::Create();
   options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromArrayBuffer(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           DOMArrayBuffer::Create(kApplicationServerKey,
                                  kApplicationServerKeyLength)));
 
@@ -76,7 +77,8 @@ TEST(PushManagerTest, ValidBase64URLWithoutPaddingSenderKey) {
                            kApplicationServerKeyLength);
   base64_url = base64_url.RemoveCharacters(RemovePad);
   options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromString(base64_url));
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
+          base64_url));
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =
@@ -91,7 +93,7 @@ TEST(PushManagerTest, InvalidSenderKeyLength) {
   memset(sender_key, 0, sizeof(sender_key));
   PushSubscriptionOptionsInit* options = PushSubscriptionOptionsInit::Create();
   options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromArrayBuffer(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           DOMArrayBuffer::Create(sender_key, kMaxKeyLength + 1)));
 
   DummyExceptionStateForTesting exception_state;
@@ -107,7 +109,7 @@ TEST(PushManagerTest, InvalidBase64SenderKey) {
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
   options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromString(
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
           Base64Encode(kApplicationServerKey)));
 
   DummyExceptionStateForTesting exception_state;
@@ -124,9 +126,10 @@ TEST(PushManagerTest, InvalidBase64URLWithPaddingSenderKey) {
   PushSubscriptionOptionsInit* options =
       MakeGarbageCollected<PushSubscriptionOptionsInit>();
   options->setApplicationServerKey(
-      ArrayBufferOrArrayBufferViewOrString::FromString(WTF::Base64URLEncode(
-          reinterpret_cast<const char*>(kApplicationServerKey),
-          kApplicationServerKeyLength)));
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
+          WTF::Base64URLEncode(
+              reinterpret_cast<const char*>(kApplicationServerKey),
+              kApplicationServerKeyLength)));
 
   DummyExceptionStateForTesting exception_state;
   PushSubscriptionOptions* output =

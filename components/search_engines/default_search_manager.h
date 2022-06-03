@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace base {
@@ -61,6 +60,8 @@ class DefaultSearchManager {
   static const char kCreatedByPolicy[];
   static const char kDisabledByPolicy[];
   static const char kCreatedFromPlayAPI[];
+  static const char kPreconnectToSearchUrl[];
+  static const char kIsActive[];
 
   enum Source {
     // Default search engine chosen either from prepopulated engines set for
@@ -75,10 +76,14 @@ class DefaultSearchManager {
     FROM_POLICY,
   };
 
-  typedef base::Callback<void(const TemplateURLData*, Source)> ObserverCallback;
+  using ObserverCallback =
+      base::RepeatingCallback<void(const TemplateURLData*, Source)>;
 
   DefaultSearchManager(PrefService* pref_service,
                        const ObserverCallback& change_observer);
+
+  DefaultSearchManager(const DefaultSearchManager&) = delete;
+  DefaultSearchManager& operator=(const DefaultSearchManager&) = delete;
 
   ~DefaultSearchManager();
 
@@ -98,6 +103,11 @@ class DefaultSearchManager {
   // that Default Search is explicitly disabled. |source|, if not NULL, will be
   // filled in with the source of the result.
   const TemplateURLData* GetDefaultSearchEngine(Source* source) const;
+
+  // Returns a pointer to the highest-ranking search provider while ignoring
+  // any extension-provided search engines.
+  std::unique_ptr<TemplateURLData> GetDefaultSearchEngineIgnoringExtensions()
+      const;
 
   // Gets the source of the current Default Search Engine value.
   Source GetDefaultSearchEngineSource() const;
@@ -161,8 +171,6 @@ class DefaultSearchManager {
 
   // True if the default search is currently enforced by policy.
   bool default_search_controlled_by_policy_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultSearchManager);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_DEFAULT_SEARCH_MANAGER_H_

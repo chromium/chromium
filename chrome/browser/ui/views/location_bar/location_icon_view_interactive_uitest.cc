@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
 namespace {
@@ -19,10 +20,11 @@ namespace {
 class LocationIconViewTest : public InProcessBrowserTest {
  public:
   LocationIconViewTest() = default;
-  ~LocationIconViewTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(LocationIconViewTest);
+  LocationIconViewTest(const LocationIconViewTest&) = delete;
+  LocationIconViewTest& operator=(const LocationIconViewTest&) = delete;
+
+  ~LocationIconViewTest() override = default;
 };
 
 // Verify that clicking the location icon a second time hides the bubble.
@@ -55,7 +57,7 @@ IN_PROC_BROWSER_TEST_F(LocationIconViewTest, HideOnSecondClick) {
             PageInfoBubbleView::GetShownBubbleType());
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // TODO(jongkwon.lee): https://crbug.com/825834 NativeWidgetMac::Deactivate is
 // not implemented on Mac.
 #define MAYBE_ActivateFirstInactiveBubbleForAccessibility \

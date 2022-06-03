@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS tlsVersion is acceptable on data-only
+PASS tlsVersion is acceptable on video-only
+PASS dtlsCipher is acceptable on data-only
+PASS dtlsCipher is acceptable on video-only
+PASS srtpCipher is acceptable on data-only
+PASS srtpCipher is acceptable on video-only
+FAIL tlsGroup is acceptable on data-only assert_true: Value present: expected true got false
+FAIL tlsGroup is acceptable on video-only assert_true: Value present: expected true got false
+Harness: the test ran to completion.
+

@@ -21,7 +21,7 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
     // Convenience function for processing webkitGetUserMedia() error objects to
     // provide runtime.lastError messages for the tab capture API.
     function getErrorMessage(error, fallbackMessage) {
-      if (!error || (typeof error.message != 'string'))
+      if (!error || (typeof error.message !== 'string'))
         return fallbackMessage;
       return error.message.replace(/(navigator\.)?(webkit)?GetUserMedia/gi,
                                    name);
@@ -51,5 +51,4 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
   }
 
   apiFunctions.setCustomCallback('capture', proxyToGetUserMedia);
-  apiFunctions.setCustomCallback('captureOffscreenTab', proxyToGetUserMedia);
 });

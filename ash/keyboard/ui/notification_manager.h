@@ -18,12 +18,11 @@ namespace keyboard {
 template <typename T>
 class ValueNotificationConsolidator {
  public:
-  ValueNotificationConsolidator() {}
+  explicit ValueNotificationConsolidator(const T& initial_value);
 
-  bool ShouldSendNotification(const T new_value);
+  bool ShouldSendNotification(const T& new_value);
 
  private:
-  bool never_sent_ = true;
   T value_;
 };
 

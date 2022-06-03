@@ -1,10 +1,11 @@
 include_rules = [
-  "+chromeos/constants",
+  "+ash/constants",
   "+components/autofill/core",
   "+components/bookmarks/browser",
   "+components/bookmarks/managed",
   "+components/bookmarks/test",
   "+components/history/core/browser",
+  "+components/history/core/common",
   "+components/keyed_service/core",
   "+components/password_manager/core/browser",
   "+components/prefs",

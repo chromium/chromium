@@ -11,10 +11,11 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/reading_list/core/reading_list_model.h"
@@ -132,9 +133,8 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   if (self) {
     _readingListModel = readingListModel;
     _bookmarkModel = bookmarkModel;
-    _taskRunner =
-        base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                         base::TaskPriority::BEST_EFFORT});
+    _taskRunner = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
     [[NSNotificationCenter defaultCenter]
         addObserver:self
@@ -232,10 +232,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     return YES;
   }
 
-  GURL entryURL =
-      net::GURLWithNSURL([entry objectForKey:app_group::kShareItemURL]);
-  std::string entryTitle =
-      base::SysNSStringToUTF8([entry objectForKey:app_group::kShareItemTitle]);
+  NSURL* entryURL = [entry objectForKey:app_group::kShareItemURL];
+  GURL entryGURL = net::GURLWithNSURL(entryURL);
+  NSString* entryTitle = [entry objectForKey:app_group::kShareItemTitle];
   NSDate* entryDate = base::mac::ObjCCast<NSDate>(
       [entry objectForKey:app_group::kShareItemDate]);
   NSNumber* entryType = base::mac::ObjCCast<NSNumber>(
@@ -243,62 +242,72 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
   NSString* entrySource = base::mac::ObjCCast<NSString>(
       [entry objectForKey:app_group::kShareItemSource]);
 
-  if (!entryURL.is_valid() || !entrySource || !entryDate || !entryType ||
-      !entryURL.SchemeIsHTTPOrHTTPS()) {
+  if (!entryGURL.is_valid() || !entrySource || !entryDate || !entryType ||
+      !entryGURL.SchemeIsHTTPOrHTTPS()) {
     if (completion) {
       completion();
     }
     return NO;
   }
 
-  UMA_HISTOGRAM_TIMES("IOS.ShareExtension.ReceivedEntryDelay",
-                      base::TimeDelta::FromSecondsD(
-                          [[NSDate date] timeIntervalSinceDate:entryDate]));
+  UMA_HISTOGRAM_TIMES(
+      "IOS.ShareExtension.ReceivedEntryDelay",
+      base::Seconds([[NSDate date] timeIntervalSinceDate:entryDate]));
 
   UMA_HISTOGRAM_ENUMERATION("IOS.ShareExtension.Source",
                             SourceIDFromSource(entrySource),
                             SHARE_EXTENSION_SOURCE_COUNT);
 
-  // Entry is valid. Add it to the reading list model.
-  ProceduralBlock processEntryBlock = ^{
-    if (!_readingListModel || !_bookmarkModel) {
-      // Models may have been deleted after the file
-      // processing started.
-      return;
-    }
-    app_group::ShareExtensionItemType type =
-        static_cast<app_group::ShareExtensionItemType>(
-            [entryType integerValue]);
-    switch (type) {
-      case app_group::READING_LIST_ITEM: {
-        LogHistogramReceivedItem(READINGLIST_ENTRY);
-        _readingListModel->AddEntry(entryURL, entryTitle,
-                                    reading_list::ADDED_VIA_EXTENSION);
-        break;
-      }
-      case app_group::BOOKMARK_ITEM: {
-        LogHistogramReceivedItem(BOOKMARK_ENTRY);
-        _bookmarkModel->AddURL(_bookmarkModel->mobile_node(), 0,
-                               base::UTF8ToUTF16(entryTitle), entryURL);
-        break;
-      }
-      case app_group::OPEN_IN_CHROME_ITEM: {
-        LogHistogramReceivedItem(OPEN_IN_CHROME_ENTRY);
-        // Open URL command is sent directly by the extension. No processing is
-        // needed here.
-        break;
-      }
-    }
-
-    if (completion && _taskRunner) {
-      _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
-                              completion();
-                            }));
-    }
-  };
-  base::PostTask(FROM_HERE, {web::WebThread::UI},
-                 base::BindOnce(processEntryBlock));
+  __weak ShareExtensionItemReceiver* weakSelf = self;
+  base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
+                   [weakSelf processEntryWithType:entryType
+                                            title:entryTitle
+                                              URL:entryURL
+                                       completion:completion];
+                 }));
   return YES;
+}
+
+- (void)processEntryWithType:(NSNumber*)entryType
+                       title:(NSString*)entryNSTitle
+                         URL:(NSURL*)entryNSURL
+                  completion:(ProceduralBlock)completion {
+  if (!_readingListModel || !_bookmarkModel) {
+    // Models may have been deleted after the file
+    // processing started.
+    return;
+  }
+  std::string entryTitle = base::SysNSStringToUTF8(entryNSTitle);
+  GURL entryURL = net::GURLWithNSURL(entryNSURL);
+
+  app_group::ShareExtensionItemType type =
+      static_cast<app_group::ShareExtensionItemType>([entryType integerValue]);
+  switch (type) {
+    case app_group::READING_LIST_ITEM: {
+      LogHistogramReceivedItem(READINGLIST_ENTRY);
+      _readingListModel->AddEntry(entryURL, entryTitle,
+                                  reading_list::ADDED_VIA_EXTENSION);
+      break;
+    }
+    case app_group::BOOKMARK_ITEM: {
+      LogHistogramReceivedItem(BOOKMARK_ENTRY);
+      _bookmarkModel->AddURL(_bookmarkModel->mobile_node(), 0,
+                             base::UTF8ToUTF16(entryTitle), entryURL);
+      break;
+    }
+    case app_group::OPEN_IN_CHROME_ITEM: {
+      LogHistogramReceivedItem(OPEN_IN_CHROME_ENTRY);
+      // Open URL command is sent directly by the extension. No processing is
+      // needed here.
+      break;
+    }
+  }
+
+  if (completion && _taskRunner) {
+    _taskRunner->PostTask(FROM_HERE, base::BindOnce(^{
+                            completion();
+                          }));
+  }
 }
 
 - (void)handleFileAtURL:(NSURL*)url withCompletion:(ProceduralBlock)completion {
@@ -314,6 +323,9 @@ void LogHistogramReceivedItem(ShareExtensionItemReceived type) {
     [weakSelf deleteFileAtURL:url withCompletion:completion];
   };
   void (^readingAccessor)(NSURL*) = ^(NSURL* newURL) {
+    if (!weakSelf) {
+      return;
+    }
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::WILL_BLOCK);
     NSFileManager* manager = [NSFileManager defaultManager];

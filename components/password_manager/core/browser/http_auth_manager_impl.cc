@@ -6,15 +6,13 @@
 
 #include <utility>
 
-#include "components/autofill/core/common/password_form.h"
 #include "components/autofill/core/common/save_password_progress_logger.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
-
-using autofill::PasswordForm;
 
 namespace password_manager {
 
@@ -60,9 +58,8 @@ void HttpAuthManagerImpl::SetObserverAndDeliverCredentials(
   observer_ = observer;
   // Initialize the form manager.
   form_manager_ = std::make_unique<PasswordFormManager>(
-      client_, PasswordStore::FormDigest(observed_form),
-      nullptr /* form_fetcher */,
-      PasswordSaveManagerImpl::CreatePasswordSaveManagerImpl(client_));
+      client_, PasswordFormDigest(observed_form), nullptr /* form_fetcher */,
+      std::make_unique<PasswordSaveManagerImpl>(client_));
 }
 
 void HttpAuthManagerImpl::ProvisionallySaveForm(
@@ -76,7 +73,7 @@ void HttpAuthManagerImpl::Autofill(
     const PasswordFormManagerForUI* form_manager) const {
   DCHECK_NE(PasswordForm::Scheme::kHtml, preferred_match.scheme);
   if (observer_ && (form_manager_.get() == form_manager) &&
-      client_->IsFillingEnabled(form_manager_->GetOrigin())) {
+      client_->IsFillingEnabled(form_manager_->GetURL())) {
     observer_->OnAutofillDataAvailable(preferred_match.username_value,
                                        preferred_match.password_value);
   }
@@ -84,8 +81,10 @@ void HttpAuthManagerImpl::Autofill(
 
 void HttpAuthManagerImpl::OnPasswordFormSubmitted(
     const PasswordForm& password_form) {
-  if (client_->IsSavingAndFillingEnabled(password_form.origin))
+  if (client_->IsSavingAndFillingEnabled(password_form.url) &&
+      !password_form.password_value.empty()) {
     ProvisionallySaveForm(password_form);
+  }
 }
 
 void HttpAuthManagerImpl::OnPasswordFormDismissed() {
@@ -119,7 +118,7 @@ void HttpAuthManagerImpl::OnDidFinishMainFrameNavigation() {
 void HttpAuthManagerImpl::OnLoginSuccesfull() {
   LogMessage(Logger::STRING_HTTPAUTH_ON_ASK_USER_OR_SAVE_PASSWORD);
   if (!form_manager_ ||
-      !client_->IsSavingAndFillingEnabled(form_manager_->GetOrigin())) {
+      !client_->IsSavingAndFillingEnabled(form_manager_->GetURL())) {
     return;
   }
 

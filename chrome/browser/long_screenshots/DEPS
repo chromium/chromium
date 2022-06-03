@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/paint_preview/common",
+  "+components/paint_preview/common/proto",
+  "+components/paint_preview/public",
+  "+components/services/paint_preview_compositor/public/mojom",
+  "+chrome/browser/profiles",
+  "+chrome/browser/share/android/jni_headers/LongScreenshotsTabService_jni.h"
+]

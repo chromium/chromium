@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>TextEncoding"
+}
+team_email: "text-encoding-dev@chromium.org"
+

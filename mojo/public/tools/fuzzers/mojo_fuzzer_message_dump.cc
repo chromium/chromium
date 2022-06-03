@@ -111,6 +111,13 @@ auto GetComplexFuzzUnion(fuzz::mojom::FuzzUnionPtr in) {
 }
 
 /* Returns a populated value for FuzzStruct->fuzz_primitive_array. */
+auto GetFuzzStructBoolArrayValue() {
+  decltype(fuzz::mojom::FuzzStruct::fuzz_bool_array) bool_array;
+  bool_array = {true, true, false, false, true, true, false, true, false};
+  return bool_array;
+}
+
+/* Returns a populated value for FuzzStruct->fuzz_primitive_array. */
 auto GetFuzzStructPrimitiveArrayValue() {
   decltype(fuzz::mojom::FuzzStruct::fuzz_primitive_array) primitive_array;
   primitive_array = {'f', 'u', 'z', 'z'};
@@ -187,6 +194,7 @@ fuzz::mojom::FuzzStructPtr GetPopulatedFuzzStruct() {
   auto union_complex = GetComplexFuzzUnion(std::move(union_bool));
 
   /* Prepare the nontrivial fields for the struct. */
+  auto fuzz_bool_array = GetFuzzStructBoolArrayValue();
   auto fuzz_primitive_array = GetFuzzStructPrimitiveArrayValue();
   auto fuzz_primitive_map = GetFuzzStructPrimitiveMapValue();
   auto fuzz_array_map = GetFuzzStructArrayMapValue();
@@ -212,6 +220,7 @@ fuzz::mojom::FuzzStructPtr GetPopulatedFuzzStruct() {
       1.0,                             /* fuzz_float */
       1.0,                             /* fuzz_double */
       "fuzz",                          /* fuzz_string */
+      std::move(fuzz_bool_array),      /* fuzz_bool_array */
       std::move(fuzz_primitive_array), /* fuzz_primitive_array */
       std::move(fuzz_primitive_map),   /* fuzz_primitive_map */
       std::move(fuzz_array_map),       /* fuzz_array_map */

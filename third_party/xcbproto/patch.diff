@@ -1,0 +1,758 @@
+diff -ru xcbproto/src/glx.xml src/src/glx.xml
+--- xcbproto/src/glx.xml	2021-02-10 12:51:13.785903766 -0800
++++ src/src/glx.xml	2021-02-04 15:13:24.836890047 -0800
+@@ -62,8 +62,6 @@
+             <type>glx:WINDOW</type>
+         </xidunion>
+ 
+-	<typedef oldname="float" newname="FLOAT32" />
+-	<typedef oldname="double" newname="FLOAT64" />
+         <typedef oldname="CARD32" newname="BOOL32" />
+         <typedef oldname="CARD32" newname="CONTEXT_TAG" />
+ 	    
+@@ -214,27 +212,27 @@
+ 
+ 	<!-- Enum for CopyContext: mask -->
+ 	<enum name="GC">
+-		<item name="GL_CURRENT_BIT"><bit>0</bit></item>
+-		<item name="GL_POINT_BIT"><bit>1</bit></item>
+-		<item name="GL_LINE_BIT"><bit>2</bit></item>
+-		<item name="GL_POLYGON_BIT"><bit>3</bit></item>
+-		<item name="GL_POLYGON_STIPPLE_BIT"><bit>4</bit></item>
+-		<item name="GL_PIXEL_MODE_BIT"><bit>5</bit></item>
+-		<item name="GL_LIGHTING_BIT"><bit>6</bit></item>
+-		<item name="GL_FOG_BIT"><bit>7</bit></item>
+-		<item name="GL_DEPTH_BUFFER_BIT"><bit>8</bit></item>
+-		<item name="GL_ACCUM_BUFFER_BIT"><bit>9</bit></item>
+-		<item name="GL_STENCIL_BUFFER_BIT"><bit>10</bit></item>
+-		<item name="GL_VIEWPORT_BIT"><bit>11</bit></item>
+-		<item name="GL_TRANSFORM_BIT"><bit>12</bit></item>
+-		<item name="GL_ENABLE_BIT"><bit>13</bit></item>
+-		<item name="GL_COLOR_BUFFER_BIT"><bit>14</bit></item>
+-		<item name="GL_HINT_BIT"><bit>15</bit></item>
+-		<item name="GL_EVAL_BIT"><bit>16</bit></item>
+-		<item name="GL_LIST_BIT"><bit>17</bit></item>
+-		<item name="GL_TEXTURE_BIT"><bit>18</bit></item>
+-		<item name="GL_SCISSOR_BIT"><bit>19</bit></item>
+-		<item name="GL_ALL_ATTRIB_BITS"><value>16777215<!--0x000ffffff--></value></item>
++		<item name="XPROTO_GL_CURRENT_BIT"><bit>0</bit></item>
++		<item name="XPROTO_GL_POINT_BIT"><bit>1</bit></item>
++		<item name="XPROTO_GL_LINE_BIT"><bit>2</bit></item>
++		<item name="XPROTO_GL_POLYGON_BIT"><bit>3</bit></item>
++		<item name="XPROTO_GL_POLYGON_STIPPLE_BIT"><bit>4</bit></item>
++		<item name="XPROTO_GL_PIXEL_MODE_BIT"><bit>5</bit></item>
++		<item name="XPROTO_GL_LIGHTING_BIT"><bit>6</bit></item>
++		<item name="XPROTO_GL_FOG_BIT"><bit>7</bit></item>
++		<item name="XPROTO_GL_DEPTH_BUFFER_BIT"><bit>8</bit></item>
++		<item name="XPROTO_GL_ACCUM_BUFFER_BIT"><bit>9</bit></item>
++		<item name="XPROTO_GL_STENCIL_BUFFER_BIT"><bit>10</bit></item>
++		<item name="XPROTO_GL_VIEWPORT_BIT"><bit>11</bit></item>
++		<item name="XPROTO_GL_TRANSFORM_BIT"><bit>12</bit></item>
++		<item name="XPROTO_GL_ENABLE_BIT"><bit>13</bit></item>
++		<item name="XPROTO_GL_COLOR_BUFFER_BIT"><bit>14</bit></item>
++		<item name="XPROTO_GL_HINT_BIT"><bit>15</bit></item>
++		<item name="XPROTO_GL_EVAL_BIT"><bit>16</bit></item>
++		<item name="XPROTO_GL_LIST_BIT"><bit>17</bit></item>
++		<item name="XPROTO_GL_TEXTURE_BIT"><bit>18</bit></item>
++		<item name="XPROTO_GL_SCISSOR_BIT"><bit>19</bit></item>
++		<item name="XPROTO_GL_ALL_ATTRIB_BITS"><value>16777215<!--0x000ffffff--></value></item>
+ 	</enum>
+ 
+ 	<request name="SwapBuffers" opcode="11">
+@@ -578,7 +576,7 @@
+ 		<field type="CARD32" name="mode" />
+ 		<!--
+ 		This reply is only if RM was previously feedback/selection.
+-		If it was in feedback mode then data is FLOAT32.
++		If it was in feedback mode then data is float.
+ 		If previously in render mode there is no reply.
+ 		-->
+ 		<reply>
+@@ -594,9 +592,9 @@
+ 	</request>
+ 
+ 	<enum name="RM">
+-		<item name="GL_RENDER"><value>7168</value></item>
+-		<item name="GL_FEEDBACK"><value>7169</value></item>
+-		<item name="GL_SELECT"><value>7170</value></item>
++		<item name="XPROTO_GL_RENDER"><value>7168</value></item>
++		<item name="XPROTO_GL_FEEDBACK"><value>7169</value></item>
++		<item name="XPROTO_GL_SELECT"><value>7170</value></item>
+ 	</enum>
+ 
+ 	<request name="Finish" opcode="108">
+@@ -609,7 +607,7 @@
+ 	<request name="PixelStoref" opcode="109">
+ 		<field type="CONTEXT_TAG" name="context_tag" />
+ 		<field type="CARD32" name="pname" />
+-		<field type="FLOAT32" name="datum" />
++		<field type="float" name="datum" />
+ 	</request>
+ 
+ 	<request name="PixelStorei" opcode="110">
+@@ -668,7 +666,7 @@
+ 			<required_start_align align="8" />
+ 			<pad bytes="1" />
+ 			<pad bytes="24" />
+-			<list type="FLOAT64" name="data">
++			<list type="double" name="data">
+ 				<op op="/">
+ 					<fieldref>length</fieldref>
+ 					<value>2</value>
+@@ -685,9 +683,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT64" name="datum" />
++			<field type="double" name="datum" />
+ 			<pad bytes="8" />
+-			<list type="FLOAT64" name="data">
++			<list type="double" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -708,9 +706,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -739,9 +737,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -772,9 +770,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT64" name="datum" />
++			<field type="double" name="datum" />
+ 			<pad bytes="8" />
+-			<list type="FLOAT64" name="data">
++			<list type="double" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -788,9 +786,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -820,9 +818,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -851,9 +849,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -927,9 +925,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -960,9 +958,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT64" name="datum" />
++			<field type="double" name="datum" />
+ 			<pad bytes="8" />
+-			<list type="FLOAT64" name="data">
++			<list type="double" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -976,9 +974,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -1032,9 +1030,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -1065,9 +1063,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -1188,9 +1186,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -1242,9 +1240,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -1317,9 +1315,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+@@ -1368,9 +1366,9 @@
+ 			<pad bytes="1" />
+ 			<pad bytes="4" />
+ 			<field type="CARD32" name="n" />
+-			<field type="FLOAT32" name="datum" />
++			<field type="float" name="datum" />
+ 			<pad bytes="12" />
+-			<list type="FLOAT32" name="data">
++			<list type="float" name="data">
+ 				<fieldref>n</fieldref>
+ 			</list>
+ 		</reply>
+diff -ru xcbproto/src/present.xml src/src/present.xml
+--- xcbproto/src/present.xml	2021-02-10 12:51:13.785903766 -0800
++++ src/src/present.xml	2021-02-10 12:51:07.933863954 -0800
+@@ -89,7 +89,7 @@
+     </reply>
+   </request>
+ 
+-  <request name="Pixmap" opcode="1">
++  <request name="PresentPixmap" opcode="1">
+     <required_start_align align="8" />
+     <field type="WINDOW" name="window" />
+     <field type="PIXMAP" name="pixmap" />
+diff -ru xcbproto/src/randr.xml src/src/randr.xml
+--- xcbproto/src/randr.xml	2021-02-10 12:51:13.785903766 -0800
++++ src/src/randr.xml	2021-02-04 11:51:16.530051106 -0800
+@@ -803,64 +803,6 @@
+ 		<item name="Lease">           <value>6</value></item>
+ 	</enum>
+ 
+-	<struct name="CrtcChange">
+-		<field type="TIMESTAMP" name="timestamp" />
+-		<field type="WINDOW" name="window" />
+-		<field type="CRTC" name="crtc" />
+-		<field type="MODE" name="mode" />
+-		<field type="CARD16" name="rotation" mask="Rotation" />
+-		<pad bytes="2" />
+-		<field type="INT16" name="x" />
+-		<field type="INT16" name="y" />
+-		<field type="CARD16" name="width" />
+-		<field type="CARD16" name="height" />
+-	</struct>
+-
+-	<struct name="OutputChange">
+-		<field type="TIMESTAMP" name="timestamp" />
+-		<field type="TIMESTAMP" name="config_timestamp" />
+-		<field type="WINDOW" name="window" />
+-		<field type="OUTPUT" name="output" />
+-		<field type="CRTC" name="crtc" />
+-		<field type="MODE" name="mode" />
+-		<field type="CARD16" name="rotation" mask="Rotation" />
+-		<field type="CARD8" name="connection" enum="Connection" />
+-		<field type="CARD8" name="subpixel_order" enum="SubPixel" />
+-	</struct>
+-
+-	<struct name="OutputProperty">
+-		<field type="WINDOW" name="window" />
+-		<field type="OUTPUT" name="output" />
+-		<field type="ATOM" name="atom" />
+-		<field type="TIMESTAMP" name="timestamp" />
+-		<field type="CARD8" name="status" enum="Property" />
+-		<pad bytes="11" />
+-	</struct>
+-
+-	<!-- New in version 1.4 -->
+-
+-	<struct name="ProviderChange">
+-		<field type="TIMESTAMP" name="timestamp" />
+-		<field type="WINDOW" name="window" />
+-		<field type="PROVIDER" name="provider" />
+-		<pad bytes="16" />
+-	</struct>
+-
+-	<struct name="ProviderProperty">
+-		<field type="WINDOW" name="window" />
+-		<field type="PROVIDER" name="provider" />
+-		<field type="ATOM" name="atom" />
+-		<field type="TIMESTAMP" name="timestamp" />
+-		<field type="CARD8" name="state" />
+-		<pad bytes="11" />
+-	</struct>
+-
+-	<struct name="ResourceChange">
+-		<field type="TIMESTAMP" name="timestamp" />
+-		<field type="WINDOW" name="window" />
+-		<pad bytes="20" />
+-	</struct>
+-
+ 	<!-- New in version 1.5 -->
+ 
+ 	<struct name="MonitorInfo">
+@@ -929,26 +871,87 @@
+ 	  <field type="BYTE" name="terminate" />
+ 	</request>
+ 
+-	<struct name="LeaseNotify">
+-		<field type="TIMESTAMP" name="timestamp" />
+-		<field type="WINDOW" name="window" />
+-		<field type="LEASE" name="lease" />
+-		<field type="CARD8" name="created" />
+-		<pad bytes="15" />
+-	</struct>
+-
+-	<union name="NotifyData">
+-		<field type="CrtcChange"       name="cc" />
+-		<field type="OutputChange"     name="oc" />
+-		<field type="OutputProperty"   name="op" />
+-		<field type="ProviderChange"   name="pc" />
+-		<field type="ProviderProperty" name="pp" />
+-		<field type="ResourceChange"   name="rc" />
+-		<field type="LeaseNotify"      name="lc" />
+-	</union>
+-
+ 	<event name="Notify" number="1">
+ 		<field type="CARD8" name="subCode" enum="Notify" />
+-		<field type="NotifyData" name="u" />
++		<switch name="data">
++			<fieldref>subCode</fieldref>
++
++			<!-- New in version 1.2 -->
++
++			<case name="cc">
++				<enumref ref="Notify">CrtcChange</enumref>
++				<field type="TIMESTAMP" name="timestamp" />
++				<field type="WINDOW" name="window" />
++				<field type="CRTC" name="crtc" />
++				<field type="MODE" name="mode" />
++				<field type="CARD16" name="rotation" mask="Rotation" />
++				<pad bytes="2" />
++				<field type="INT16" name="x" />
++				<field type="INT16" name="y" />
++				<field type="CARD16" name="width" />
++				<field type="CARD16" name="height" />
++			</case>
++
++			<case name="oc">
++				<enumref ref="Notify">OutputChange</enumref>
++				<field type="TIMESTAMP" name="timestamp" />
++				<field type="TIMESTAMP" name="config_timestamp" />
++				<field type="WINDOW" name="window" />
++				<field type="OUTPUT" name="output" />
++				<field type="CRTC" name="crtc" />
++				<field type="MODE" name="mode" />
++				<field type="CARD16" name="rotation" mask="Rotation" />
++				<field type="CARD8" name="connection" enum="Connection" />
++				<field type="CARD8" name="subpixel_order" enum="SubPixel" />
++			</case>
++
++			<case name="op">
++				<enumref ref="Notify">OutputProperty</enumref>
++				<field type="WINDOW" name="window" />
++				<field type="OUTPUT" name="output" />
++				<field type="ATOM" name="atom" />
++				<field type="TIMESTAMP" name="timestamp" />
++				<field type="CARD8" name="status" enum="Property" />
++				<pad bytes="11" />
++			</case>
++
++			<!-- New in version 1.4 -->
++
++			<case name="pc">
++				<enumref ref="Notify">ProviderChange</enumref>
++				<field type="TIMESTAMP" name="timestamp" />
++				<field type="WINDOW" name="window" />
++				<field type="PROVIDER" name="provider" />
++				<pad bytes="16" />
++			</case>
++
++			<case name="pp">
++				<enumref ref="Notify">ProviderProperty</enumref>
++				<field type="WINDOW" name="window" />
++				<field type="PROVIDER" name="provider" />
++				<field type="ATOM" name="atom" />
++				<field type="TIMESTAMP" name="timestamp" />
++				<field type="CARD8" name="state" />
++				<pad bytes="11" />
++			</case>
++
++			<case name="rc">
++				<enumref ref="Notify">ResourceChange</enumref>
++				<field type="TIMESTAMP" name="timestamp" />
++				<field type="WINDOW" name="window" />
++				<pad bytes="20" />
++			</case>
++
++			<!-- new in 1.6 -->
++
++			<case name="lc">
++				<enumref ref="Notify">Lease</enumref>
++				<field type="TIMESTAMP" name="timestamp" />
++				<field type="WINDOW" name="window" />
++				<field type="LEASE" name="lease" />
++				<field type="CARD8" name="created" />
++				<pad bytes="15" />
++			</case>
++		</switch>
+ 	</event>
+ </xcb>
+diff -ru xcbproto/src/shm.xml src/src/shm.xml
+--- xcbproto/src/shm.xml	2021-02-10 12:51:13.789903793 -0800
++++ src/src/shm.xml	2021-02-04 11:51:16.530051106 -0800
+@@ -78,7 +78,7 @@
+     <field type="INT16" name="dst_x" />
+     <field type="INT16" name="dst_y" />
+     <field type="CARD8" name="depth" />
+-    <field type="CARD8" name="format" />
++    <field type="CARD8" name="format" enum="ImageFormat" />
+     <field type="BOOL" name="send_event" />
+     <pad bytes="1" />
+     <field type="SEG" name="shmseg" />
+diff -ru xcbproto/src/xinput.xml src/src/xinput.xml
+--- xcbproto/src/xinput.xml	2021-02-10 12:51:13.789903793 -0800
++++ src/src/xinput.xml	2021-02-08 17:31:46.995137506 -0800
+@@ -200,7 +200,12 @@
+             <list type="STR" name="names">
+                 <fieldref>devices_len</fieldref>
+             </list>
+-            <pad align="4" />
++            <!-- Chromium patch: xcbproto had this as 4 bytes of padding, but
++                 replies are always padded to 4 bytes.  At least on x.org,
++                 the padding is always at least one byte, so we add a byte of
++                 padding and (implicitly) align to 4 bytes.
++            -->
++            <pad bytes="1" />
+         </reply>
+     </request>
+ 
+@@ -1347,7 +1352,8 @@
+ 
+     <!-- XIQueryPointer -->
+ 
+-    <enum name="Device">
++    <!-- Chromium patch: Rename so that this will get merged with DeviceId -->
++    <enum name="DEVICE_ID">
+         <item name="All">       <value>0</value> </item>
+         <item name="AllMaster"> <value>1</value> </item>
+     </enum>
+@@ -2278,43 +2284,9 @@
+         <item name="PointerEmulated"> <bit>16</bit> </item>
+     </enum>
+ 
+-    <event name="ButtonPress" number="4" xge="true">
+-        <field type="DeviceId"  name="deviceid" altenum="Device" />
+-        <field type="TIMESTAMP" name="time" altenum="Time" />
+-        <!-- event specific fields -->
+-        <field type="CARD32"    name="detail" />
+-        <field type="WINDOW"    name="root" />
+-        <field type="WINDOW"    name="event" />
+-        <field type="WINDOW"    name="child" />
+-        <!-- 32 byte boundary -->
+-        <field type="FP1616"    name="root_x" />
+-        <field type="FP1616"    name="root_y" />
+-        <field type="FP1616"    name="event_x" />
+-        <field type="FP1616"    name="event_y" />
+-        <field type="CARD16"    name="buttons_len" />
+-        <field type="CARD16"    name="valuators_len" />
+-        <field type="DeviceId"  name="sourceid" altenum="Device" />
+-        <pad bytes="2" />
+-        <field type="CARD32"       name="flags" mask="PointerEventFlags" />
+-        <field type="ModifierInfo" name="mods" />
+-        <field type="GroupInfo"    name="group" />
+-        <list type="CARD32" name="button_mask">
+-            <fieldref>buttons_len</fieldref>
+-        </list>
+-        <list type="CARD32" name="valuator_mask">
+-            <fieldref>valuators_len</fieldref>
+-        </list>
+-        <list type="FP3232" name="axisvalues">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-    </event>
+-
+-    <eventcopy name="ButtonRelease" number="5" ref="ButtonPress" />
+-    <eventcopy name="Motion"        number="6" ref="ButtonPress" />
++    <eventcopy name="ButtonPress"   number="4" ref="KeyPress" />
++    <eventcopy name="ButtonRelease" number="5" ref="KeyPress" />
++    <eventcopy name="Motion"        number="6" ref="KeyPress" />
+ 
+     <enum name="NotifyMode">
+         <item name="Normal">        <value>0</value> </item>
+@@ -2445,39 +2417,10 @@
+         </list>
+     </event>
+ 
+-    <eventcopy name="RawKeyRelease" number="14" ref="RawKeyPress" />
+-
+-    <event name="RawButtonPress" number="15" xge="true">
+-        <field type="DeviceId"  name="deviceid" altenum="Device" />
+-        <field type="TIMESTAMP" name="time" altenum="Time" />
+-        <!-- event specific fields -->
+-        <field type="CARD32"    name="detail" />
+-        <field type="DeviceId"  name="sourceid" />
+-        <field type="CARD16"    name="valuators_len" />
+-        <field type="CARD32"    name="flags" mask="PointerEventFlags"/>
+-        <pad bytes="4" />
+-        <!-- 32 byte boundary -->
+-        <list type="CARD32" name="valuator_mask">
+-            <fieldref>valuators_len</fieldref>
+-        </list>
+-        <list type="FP3232" name="axisvalues">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-        <list type="FP3232" name="axisvalues_raw">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-    </event>
+-
+-    <eventcopy name="RawButtonRelease" number="16" ref="RawButtonPress" />
+-    <eventcopy name="RawMotion"        number="17" ref="RawButtonPress" />
++    <eventcopy name="RawKeyRelease"    number="14" ref="RawKeyPress" />
++    <eventcopy name="RawButtonPress"   number="15" ref="RawKeyPress" />
++    <eventcopy name="RawButtonRelease" number="16" ref="RawKeyPress" />
++    <eventcopy name="RawMotion"        number="17" ref="RawKeyPress" />
+ 
+     <!-- ⋅⋅⋅ Events (v2.2) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
+ 
+@@ -2486,41 +2429,7 @@
+         <item name="TouchEmulatingPointer"> <bit>17</bit> </item>
+     </enum>
+ 
+-    <event name="TouchBegin" number="18" xge="true">
+-        <field type="DeviceId"  name="deviceid" altenum="Device" />
+-        <field type="TIMESTAMP" name="time" altenum="Time" />
+-        <!-- event specific fields -->
+-        <field type="CARD32"    name="detail" />
+-        <field type="WINDOW"    name="root" />
+-        <field type="WINDOW"    name="event" />
+-        <field type="WINDOW"    name="child" />
+-        <!-- 32 byte boundary -->
+-        <field type="FP1616"    name="root_x" />
+-        <field type="FP1616"    name="root_y" />
+-        <field type="FP1616"    name="event_x" />
+-        <field type="FP1616"    name="event_y" />
+-        <field type="CARD16"    name="buttons_len" />
+-        <field type="CARD16"    name="valuators_len" />
+-        <field type="DeviceId"  name="sourceid" altenum="Device" />
+-        <pad bytes="2" />
+-        <field type="CARD32"       name="flags" mask="TouchEventFlags" />
+-        <field type="ModifierInfo" name="mods" />
+-        <field type="GroupInfo"    name="group" />
+-        <list type="CARD32" name="button_mask">
+-            <fieldref>buttons_len</fieldref>
+-        </list>
+-        <list type="CARD32" name="valuator_mask">
+-            <fieldref>valuators_len</fieldref>
+-        </list>
+-        <list type="FP3232" name="axisvalues">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-    </event>
+-
++    <eventcopy name="TouchBegin"  number="18" ref="KeyPress" />
+     <eventcopy name="TouchUpdate" number="19" ref="TouchBegin" />
+     <eventcopy name="TouchEnd"    number="20" ref="TouchBegin" />
+ 
+@@ -2544,37 +2453,9 @@
+         <pad bytes="8" />
+     </event>
+ 
+-    <event name="RawTouchBegin" number="22" xge="true">
+-        <field type="DeviceId"  name="deviceid" altenum="Device" />
+-        <field type="TIMESTAMP" name="time" altenum="Time" />
+-        <!-- event specific fields -->
+-        <field type="CARD32"    name="detail" />
+-        <field type="DeviceId"  name="sourceid" />
+-        <field type="CARD16"    name="valuators_len" />
+-        <field type="CARD32"    name="flags" mask="TouchEventFlags"/>
+-        <pad bytes="4" />
+-        <!-- 32 byte boundary -->
+-        <list type="CARD32" name="valuator_mask">
+-            <fieldref>valuators_len</fieldref>
+-        </list>
+-        <list type="FP3232" name="axisvalues">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-        <list type="FP3232" name="axisvalues_raw">
+-            <sumof ref="valuator_mask">
+-                <popcount>
+-                    <listelement-ref/>
+-                </popcount>
+-            </sumof>
+-        </list>
+-    </event>
+-
+-    <eventcopy name="RawTouchUpdate" number="23" ref="RawTouchBegin" />
+-    <eventcopy name="RawTouchEnd"    number="24" ref="RawTouchBegin" />
++    <eventcopy name="RawTouchBegin"  number="22" ref="RawKeyPress" />
++    <eventcopy name="RawTouchUpdate" number="23" ref="RawKeyPress" />
++    <eventcopy name="RawTouchEnd"    number="24" ref="RawKeyPress" />
+ 
+     <!-- ⋅⋅⋅ Events (v2.3) ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅ -->
+ 
+diff -ru xcbproto/src/xproto.xml src/src/xproto.xml
+--- xcbproto/src/xproto.xml	2021-02-10 12:51:13.789903793 -0800
++++ src/src/xproto.xml	2021-02-04 15:13:24.840890072 -0800
+@@ -963,6 +963,7 @@
+     <item name="CAP_HEIGHT">           <value>66</value> </item>
+     <item name="WM_CLASS">             <value>67</value> </item>
+     <item name="WM_TRANSIENT_FOR">     <value>68</value> </item>
++    <item name="kLastPredefinedAtom">  <value>68</value> </item>
+   </enum>
+ 
+   <event name="SelectionRequest" number="30">
+@@ -4686,7 +4687,7 @@
+     <field type="CARD8" name="left_pad" />
+     <field type="CARD8" name="depth" />
+     <pad bytes="2" />
+-    <list type="BYTE" name="data" />
++    <list type="void" name="data" />
+   </request>
+ 
+   <!-- FIXME: data array in reply will include padding, but ought not to. -->
+@@ -4702,7 +4703,7 @@
+       <field type="CARD8" name="depth" />
+       <field type="VISUALID" name="visual" />
+       <pad bytes="20" />
+-      <list type="BYTE" name="data">
++      <list type="void" name="data">
+         <op op="*">
+           <fieldref>length</fieldref>
+           <value>4</value>
+@@ -5537,13 +5538,13 @@
+     </list>
+   </request>
+ 
+-  <enum name="ScreenSaver">
++  <enum name="ScreenSaverMode">
+     <item name="Reset"> <value>0</value></item>
+     <item name="Active"><value>1</value></item>
+   </enum>
+ 
+   <request name="ForceScreenSaver" opcode="115">
+-    <field type="CARD8" name="mode" enum="ScreenSaver" />
++    <field type="CARD8" name="mode" enum="ScreenSaverMode" />
+   </request>
+ 
+   <!-- Reply from SetPointerMapping or SetModifierMapping -->
+Only in src/xcbgen: align.pyc
+Only in src/xcbgen: error.pyc
+Only in src/xcbgen: expr.pyc
+Only in src/xcbgen: __init__.pyc
+Only in src/xcbgen: matcher.pyc
+Only in src/xcbgen: state.pyc
+diff -ru xcbproto/xcbgen/xtypes.py src/xcbgen/xtypes.py
+--- xcbproto/xcbgen/xtypes.py	2021-02-10 12:51:13.789903793 -0800
++++ src/xcbgen/xtypes.py	2021-02-04 15:13:24.840890072 -0800
+@@ -226,7 +226,7 @@
+     Derived class which represents a file descriptor.
+     '''
+     def __init__(self):
+-        SimpleType.__init__(self, ('int'), 4, 'fd')
++        SimpleType.__init__(self, ('int', ), 4, 'fd')
+         self.is_fd = True
+ 
+     def fixed_size(self):
+Only in src/xcbgen: xtypes.pyc

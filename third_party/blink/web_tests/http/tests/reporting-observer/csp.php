@@ -18,14 +18,14 @@ async_test(function(test) {
       assert_true(reports[0].url.endsWith("reporting-observer/csp.php"));
       assert_true(reports[0].body.documentURL.endsWith(
           "reporting-observer/csp.php"));
-      assert_equals(reports[0].body.referrer, null);
+      assert_equals(reports[0].body.referrer, "");
       assert_true(reports[0].body.blockedURL.endsWith(
           "reporting-observer/fail.png"));
       assert_equals(reports[0].body.effectiveDirective, "img-src");
       assert_equals(reports[0].body.originalPolicy,
                     "img-src 'none';");
       assert_equals(reports[0].body.sourceFile, null);
-      assert_equals(reports[0].body.sample, null);
+      assert_equals(reports[0].body.sample, "");
       assert_equals(reports[0].body.disposition, "enforce");
       assert_equals(reports[0].body.statusCode, 200);
       assert_equals(reports[0].body.lineNumber, null);

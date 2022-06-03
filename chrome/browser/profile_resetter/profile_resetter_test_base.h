@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/test/test_utils.h"
@@ -24,12 +23,17 @@ class BrowserContext;
 // ProfileResetterMockObject mock_object;
 // resetter_->Reset(ProfileResetter::ALL,
 //                  pointer,
-//                  base::Bind(&ProfileResetterMockObject::StopLoop,
+//                  base::BindOnce(&ProfileResetterMockObject::StopLoop,
 //                             base::Unretained(&mock_object)));
 // mock_object.RunLoop();
 class ProfileResetterMockObject {
  public:
   ProfileResetterMockObject();
+
+  ProfileResetterMockObject(const ProfileResetterMockObject&) = delete;
+  ProfileResetterMockObject& operator=(const ProfileResetterMockObject&) =
+      delete;
+
   ~ProfileResetterMockObject();
 
   void RunLoop();
@@ -39,14 +43,16 @@ class ProfileResetterMockObject {
   MOCK_METHOD0(Callback, void(void));
 
   scoped_refptr<content::MessageLoopRunner> runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileResetterMockObject);
 };
 
 // Base class for all ProfileResetter unit tests.
 class ProfileResetterTestBase {
  public:
   ProfileResetterTestBase();
+
+  ProfileResetterTestBase(const ProfileResetterTestBase&) = delete;
+  ProfileResetterTestBase& operator=(const ProfileResetterTestBase&) = delete;
+
   ~ProfileResetterTestBase();
 
   void ResetAndWait(ProfileResetter::ResettableFlags resettable_flags);
@@ -55,9 +61,6 @@ class ProfileResetterTestBase {
  protected:
   testing::StrictMock<ProfileResetterMockObject> mock_object_;
   std::unique_ptr<ProfileResetter> resetter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileResetterTestBase);
 };
 
 std::unique_ptr<KeyedService> CreateTemplateURLServiceForTesting(

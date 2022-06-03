@@ -1,0 +1,57 @@
+<style include="settings-shared">
+
+  #radioSection {
+    padding: 0 var(--cr-section-padding);
+  }
+
+  #radioGroupSubLabel {
+    padding-bottom: 10px;
+  }
+
+  settings-collapse-radio-button {
+    --settings-collapse-toggle-min-height: var(--settings-row-min-height);
+  }
+
+  settings-collapse-radio-button.two-line {
+    --settings-collapse-toggle-min-height:
+        var(--settings-row-two-line-min-height);
+  }
+
+  settings-collapse-radio-button:not(:first-of-type) {
+    --settings-collapse-separator-line: var(--cr-separator-line);
+  }
+</style>
+<div id="radioSection">
+  <h2>[[header]]</h2>
+  <div id="radioGroupSubLabel" class="secondary">
+    [[description]]
+  </div>
+  <settings-radio-group
+      id="settingsCategoryDefaultRadioGroup"
+      pref="{{pref_}}"
+      selectable-elements="settings-collapse-radio-button"
+      on-change="onSelectedChanged_">
+    <settings-collapse-radio-button
+        id="enabledRadioOption"
+        class$="[[getEnabledButtonClass_(allowOptionSubLabel)]]"
+        name="[[siteContentRadioSettingEnum_.ENABLED]]"
+        pref="[[pref_]]"
+        label="[[allowOptionLabel]]"
+        sub-label="[[allowOptionSubLabel]]"
+        disabled$="[[isRadioGroupDisabled_(category)]]"
+        icon="[[allowOptionIcon]]"
+        no-collapse>
+    </settings-collapse-radio-button>
+    <settings-collapse-radio-button
+        id="disabledRadioOption"
+        class$="[[getDisabledButtonClass_(blockOptionSubLabel)]]"
+        name="[[siteContentRadioSettingEnum_.DISABLED]]"
+        pref="[[pref_]]"
+        label="[[blockOptionLabel]]"
+        sub-label="[[blockOptionSubLabel]]"
+        disabled$="[[isRadioGroupDisabled_(category)]]"
+        icon="[[blockOptionIcon]]"
+        no-collapse>
+    </settings-collapse-radio-button>
+  </settings-radio-group>
+</div>

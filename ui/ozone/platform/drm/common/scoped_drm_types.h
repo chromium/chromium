@@ -20,6 +20,7 @@ typedef struct _drmModeProperty drmModePropertyRes;
 typedef struct _drmModeAtomicReq drmModeAtomicReq;
 typedef struct _drmModePropertyBlob drmModePropertyBlobRes;
 typedef struct _drmModeRes drmModeRes;
+typedef struct _drmVersion drmVersion;
 typedef struct drm_color_lut drm_color_lut;
 typedef struct drm_color_ctm drm_color_ctm;
 
@@ -58,6 +59,9 @@ struct DrmPropertyBlobDeleter {
 struct DrmFramebufferDeleter {
   void operator()(drmModeFB* framebuffer) const;
 };
+struct DrmVersionDeleter {
+  void operator()(drmVersion* version) const;
+};
 
 typedef std::unique_ptr<drmModeRes, DrmResourcesDeleter> ScopedDrmResourcesPtr;
 typedef std::unique_ptr<drmModeConnector, DrmConnectorDeleter>
@@ -77,6 +81,7 @@ typedef std::unique_ptr<drmModePropertyBlobRes, DrmPropertyBlobDeleter>
     ScopedDrmPropertyBlobPtr;
 typedef std::unique_ptr<drmModeFB, DrmFramebufferDeleter>
     ScopedDrmFramebufferPtr;
+typedef std::unique_ptr<drmVersion, DrmVersionDeleter> ScopedDrmVersionPtr;
 
 typedef std::unique_ptr<drm_color_lut, base::FreeDeleter> ScopedDrmColorLutPtr;
 typedef std::unique_ptr<drm_color_ctm, base::FreeDeleter> ScopedDrmColorCtmPtr;

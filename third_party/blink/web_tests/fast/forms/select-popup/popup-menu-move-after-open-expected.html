@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<script src='../resources/picker-common.js'></script>
+
+<select id="menu">
+    <option value="one">One</option>
+    <option value="two">Two</option>
+</select>
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+    openPicker(menu, () => { testRunner.notifyDone(); });
+  }
+</script>

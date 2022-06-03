@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests that debugger will stop on "debugger" statement in a function that was added to the inspected page via evaluation in Web Inspector console.`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   var scriptToEvaluate = 'function testFunction() {\n' +
       '    debugger;\n' +
@@ -20,8 +20,8 @@
     SourcesTestRunner.waitUntilPaused(step2);
   }
 
-  function step2(callFrames) {
-    SourcesTestRunner.captureStackTrace(callFrames);
+  async function step2(callFrames) {
+    await SourcesTestRunner.captureStackTrace(callFrames);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

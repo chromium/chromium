@@ -1,3 +1,0 @@
-Check that calling WebAuthn.enable starts the WebAuthn virtual authenticator environment.
-OK
-

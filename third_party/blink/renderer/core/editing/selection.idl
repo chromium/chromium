@@ -54,7 +54,7 @@
     [MeasureAs=SelectionSetBaseAndExtent, RaisesException] void setBaseAndExtent(Node? baseNode, unsigned long baseOffset,
                                                                                  Node? extentNode, unsigned long extentOffset);
     [MeasureAs=SelectionSelectAllChildren, RaisesException] void selectAllChildren(Node node);
-    [MeasureAs=SelectionDeleteDromDocument, CEReactions, CustomElementCallbacks] void deleteFromDocument();
+    [MeasureAs=SelectionDeleteDromDocument, CEReactions] void deleteFromDocument();
     [MeasureAs=SelectionContainsNode] boolean containsNode(Node node, optional boolean allowPartialContainment = false);
     [MeasureAs=SelectionDOMString] stringifier;
 
@@ -67,7 +67,7 @@
     [MeasureAs=SelectionExtentOffset] readonly attribute unsigned long extentOffset;
 
     // https://github.com/w3c/selection-api/issues/37
-    [MeasureAs=SelectionModify] void modify([DefaultValue=Undefined] optional DOMString alter,
-                                            [DefaultValue=Undefined] optional DOMString direction,
-                                            [DefaultValue=Undefined] optional DOMString granularity);
+    [MeasureAs=SelectionModify] void modify(optional DOMString alter = "",
+                                            optional DOMString direction = "",
+                                            optional DOMString granularity = "");
 };

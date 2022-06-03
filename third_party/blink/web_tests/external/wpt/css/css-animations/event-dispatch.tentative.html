@@ -18,11 +18,14 @@
 
 const setupAnimation = (t, animationStyle) => {
   const div = addDiv(t, { style: 'animation: ' + animationStyle });
+  const animation = div.getAnimations()[0];
+  const timeoutPromise = armTimeoutWhenReady(animation, fastEventsTimeout);
+
   const watcher = new EventWatcher(t, div, [ 'animationstart',
                                              'animationiteration',
                                              'animationend',
-                                             'animationcancel' ]);
-  const animation = div.getAnimations()[0];
+                                             'animationcancel' ],
+                                   timeoutPromise);
 
   return { animation, watcher, div };
 };
@@ -87,6 +90,19 @@ promise_test(async t => {
   const evt = await watcher.wait_for('animationcancel');
   assert_equals(evt.elapsedTime, 0.0);
 }, 'Active -> Idle, display: none');
+
+promise_test(async t => {
+  const { animation, watcher, div } = setupAnimation(t, 'anim 100s paused');
+
+  // Seek to After phase.
+  animation.finish();
+  await watcher.wait_for(['animationstart', 'animationend']);
+
+  div.style.display = 'none';
+
+  // Wait a couple of frames and check that no event was dispatched.
+  await waitForAnimationFrames(2);
+}, 'After -> Idle, display: none');
 
 promise_test(async t => {
   const { animation, watcher } = setupAnimation(t, 'anim 100s');

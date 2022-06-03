@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 package org.chromium.chrome.browser.download;
 
-import android.content.SharedPreferences;
-
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -20,7 +19,6 @@ import java.util.Set;
  */
 public final class DownloadForegroundServiceObservers {
     private static final String TAG = "DownloadFgServiceObs";
-    private static final String KEY_FOREGROUND_SERVICE_OBSERVERS = "ForegroundServiceObservers";
 
     /**
      * An Observer interfaces that allows other classes to know when this service is shutting down.
@@ -64,8 +62,8 @@ public final class DownloadForegroundServiceObservers {
         observers = new HashSet<>(observers);
         observers.add(observerClassName);
 
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        prefs.edit().putStringSet(KEY_FOREGROUND_SERVICE_OBSERVERS, observers).apply();
+        SharedPreferencesManager.getInstance().writeStringSet(
+                ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS, observers);
     }
 
     /**
@@ -89,8 +87,8 @@ public final class DownloadForegroundServiceObservers {
             return;
         }
 
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        prefs.edit().putStringSet(KEY_FOREGROUND_SERVICE_OBSERVERS, observers).apply();
+        SharedPreferencesManager.getInstance().writeStringSet(
+                ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS, observers);
     }
 
     static void alertObserversServiceRestarted(int pinnedNotificationId) {
@@ -124,15 +122,13 @@ public final class DownloadForegroundServiceObservers {
     }
 
     private static Set<String> getAllObservers() {
-        SharedPreferences prefs = ContextUtils.getAppSharedPreferences();
-        return prefs.getStringSet(KEY_FOREGROUND_SERVICE_OBSERVERS, new HashSet<String>(1));
+        return SharedPreferencesManager.getInstance().readStringSet(
+                ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
     }
 
     private static void removeAllObservers() {
-        ContextUtils.getAppSharedPreferences()
-                .edit()
-                .remove(KEY_FOREGROUND_SERVICE_OBSERVERS)
-                .apply();
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.DOWNLOAD_FOREGROUND_SERVICE_OBSERVERS);
     }
 
     @Nullable

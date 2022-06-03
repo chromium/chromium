@@ -6,14 +6,12 @@
 
 [
     Exposed=(Window,Worker),
-    Transferable,
-    MeasureAs=OffscreenCanvas,
-    RuntimeEnabled=SurfaceEmbeddingFeatures
+    Transferable    
 ] interface OffscreenCanvas : EventTarget {
-    [CallWith=ExecutionContext] constructor([EnforceRange] unsigned long width, [EnforceRange] unsigned long height);
+    [CallWith=ExecutionContext, MeasureAs=OffscreenCanvas] constructor([EnforceRange] unsigned long width, [EnforceRange] unsigned long height);
     attribute [EnforceRange] unsigned long width;
     attribute [EnforceRange] unsigned long height;
 
     [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasTransferToImageBitmap, RaisesException] ImageBitmap transferToImageBitmap();
-    [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasConvertToBlob, RaisesException] Promise<Blob> convertToBlob(optional ImageEncodeOptions options);
+    [CallWith=ScriptState, HighEntropy, MeasureAs=OffscreenCanvasConvertToBlob, RaisesException] Promise<Blob> convertToBlob(optional ImageEncodeOptions options = {});
 };

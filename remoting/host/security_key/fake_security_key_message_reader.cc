@@ -21,9 +21,9 @@ FakeSecurityKeyMessageReader::AsWeakPtr() {
 
 void FakeSecurityKeyMessageReader::Start(
     const SecurityKeyMessageCallback& message_callback,
-    const base::Closure& error_callback) {
+    base::OnceClosure error_callback) {
   message_callback_ = message_callback;
-  error_callback_ = error_callback;
+  error_callback_ = std::move(error_callback);
 }
 
 }  // namespace remoting

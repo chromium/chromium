@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_INSTALLER_UTIL_SET_REG_VALUE_WORK_ITEM_H__
-#define CHROME_INSTALLER_UTIL_SET_REG_VALUE_WORK_ITEM_H__
+#ifndef CHROME_INSTALLER_UTIL_SET_REG_VALUE_WORK_ITEM_H_
+#define CHROME_INSTALLER_UTIL_SET_REG_VALUE_WORK_ITEM_H_
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include <string>
@@ -45,7 +46,7 @@ class SetRegValueWorkItem : public WorkItem {
                       const std::wstring& key_path,
                       REGSAM wow64_access,
                       const std::wstring& value_name,
-                      const GetValueFromExistingCallback& get_value_callback);
+                      GetValueFromExistingCallback get_value_callback);
 
   ~SetRegValueWorkItem() override;
 
@@ -82,7 +83,7 @@ class SetRegValueWorkItem : public WorkItem {
 
   // If this is set, it will be used to get the desired value to be set based on
   // the existing value in the registry.
-  const GetValueFromExistingCallback get_value_callback_;
+  GetValueFromExistingCallback get_value_callback_;
 
   // Whether to overwrite the existing value under the target key.
   bool overwrite_;
@@ -99,4 +100,4 @@ class SetRegValueWorkItem : public WorkItem {
   SettingStatus status_;
 };
 
-#endif  // CHROME_INSTALLER_UTIL_SET_REG_VALUE_WORK_ITEM_H__
+#endif  // CHROME_INSTALLER_UTIL_SET_REG_VALUE_WORK_ITEM_H_

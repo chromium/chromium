@@ -23,27 +23,27 @@ JSONFeatureProviderSource::~JSONFeatureProviderSource() {
 void JSONFeatureProviderSource::LoadJSON(int resource_id) {
   const base::StringPiece features_file =
       ui::ResourceBundle::GetSharedInstance().GetRawDataResource(resource_id);
-  int error_code = 0;
-  std::string error_message;
-  std::unique_ptr<base::Value> value(
-      base::JSONReader::ReadAndReturnErrorDeprecated(
-          features_file, base::JSON_PARSE_RFC, &error_code, &error_message));
-  DCHECK(value) << "Could not load features: " << name_ << " " << error_message;
+  base::JSONReader::ValueWithError result =
+      base::JSONReader::ReadAndReturnValueWithError(features_file);
+
+  DCHECK(result.value) << "Could not load features: " << name_ << " "
+                       << result.error_message;
 
   std::unique_ptr<base::DictionaryValue> value_as_dict;
-  if (value) {
-    CHECK(value->is_dict()) << name_;
-    value_as_dict = base::DictionaryValue::From(std::move(value));
+  if (result.value) {
+    CHECK(result.value->is_dict()) << name_;
+    value_as_dict = base::DictionaryValue::From(
+        base::Value::ToUniquePtrValue(std::move(*result.value)));
   } else {
     // There was some error loading the features file.
     // http://crbug.com/176381
-    value_as_dict.reset(new base::DictionaryValue());
+    value_as_dict = std::make_unique<base::DictionaryValue>();
   }
 
   // Ensure there are no key collisions.
   for (base::DictionaryValue::Iterator iter(*value_as_dict); !iter.IsAtEnd();
        iter.Advance()) {
-    if (dictionary_.GetWithoutPathExpansion(iter.key(), NULL))
+    if (dictionary_.FindKey(iter.key()))
       LOG(FATAL) << "Key " << iter.key() << " is defined in " << name_
                  << " JSON feature files more than once.";
   }

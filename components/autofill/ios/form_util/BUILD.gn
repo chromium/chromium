@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//ios/web/js_compile.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 source_set("form_util") {
@@ -15,27 +16,83 @@ source_set("form_util") {
     "form_activity_params.h",
     "form_activity_tab_helper.h",
     "form_activity_tab_helper.mm",
+    "unique_id_data_tab_helper.h",
+    "unique_id_data_tab_helper.mm",
   ]
   deps = [
     "//base",
+    "//components/autofill/core/common",
+    "//components/autofill/ios/browser:util",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
+}
+
+source_set("form_util_feature") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "form_util_java_script_feature.h",
+    "form_util_java_script_feature.mm",
+  ]
+  deps = [
+    ":fill_js",
+    ":form_js",
+    "//base",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+source_set("form_handler_feature") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "form_handlers_java_script_feature.h",
+    "form_handlers_java_script_feature.mm",
+  ]
+  deps = [
+    ":form_handlers_js",
+    ":form_util",
+    ":form_util_feature",
+    "//base",
+    "//components/password_manager/ios:password_manager_feature",
+    "//ios/web/public/js_messaging",
+  ]
+}
+
+js_compile_bundle("fill_js") {
+  closure_entry_point = "__crWeb.fill"
+  sources = [ "resources/fill.js" ]
+}
+
+js_compile_bundle("form_js") {
+  closure_entry_point = "__crWeb.form"
+  sources = [ "resources/form.js" ]
+}
+
+js_compile_bundle("form_handlers_js") {
+  closure_entry_point = "__crWeb.formHandlers"
+  sources = [ "resources/form_handlers.js" ]
 }
 
 source_set("test_support") {
   testonly = true
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
+    "autofill_test_with_web_state.h",
+    "autofill_test_with_web_state.mm",
     "test_form_activity_observer.h",
     "test_form_activity_observer.mm",
     "test_form_activity_tab_helper.h",
     "test_form_activity_tab_helper.mm",
   ]
   deps = [
+    ":form_handler_feature",
     ":form_util",
+    ":form_util_feature",
     "//base",
+    "//base/test:test_support",
     "//ios/web/public",
+    "//ios/web/public/js_messaging",
+    "//ios/web/public/test",
     "//testing/gtest",
   ]
 }
@@ -48,13 +105,15 @@ source_set("unit_tests") {
     "form_activity_observer_bridge_unittest.mm",
     "form_activity_tab_helper_unittest.mm",
     "form_unittest.mm",
+    "unique_id_data_tab_helper_unittest.mm",
   ]
   deps = [
     ":form_util",
-    ":form_util_js",
+    ":form_util_feature",
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/ios/form_util:form_handler_feature",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
@@ -62,16 +121,20 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 }
-
-js_compile_bundle("form_util_js") {
-  visibility = [ ":unit_tests" ]
-  testonly = true
-
-  # Form_handlers depends on form and fill.
-  closure_entry_point = "__crWeb.formHandlers"
-  sources = [
-    "resources/fill.js",
-    "resources/form.js",
-    "resources/form_handlers.js",
-  ]
+if (is_ios) {
+  fuzzer_test("form_activity_tab_helper_fuzzer") {
+    additional_configs = [ "//build/config/compiler:enable_arc" ]
+    sources = [ "form_activity_tab_helper_fuzzer.mm" ]
+    deps = [
+      ":form_util",
+      "//base/test:test_support",
+      "//ios/web/public",
+      "//ios/web/public/js_messaging",
+      "//ios/web/public/js_messaging/fuzzer_support",
+      "//ios/web/public/js_messaging/fuzzer_support:js_message_proto",
+      "//ios/web/public/test",
+      "//ios/web/public/test:fuzzer_support",
+      "//third_party/libprotobuf-mutator",
+    ]
+  }
 }

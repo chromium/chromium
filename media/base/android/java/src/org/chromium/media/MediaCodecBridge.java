@@ -32,6 +32,7 @@ import java.util.Queue;
  * A MediaCodec wrapper for adapting the API and catching exceptions.
  */
 @JNINamespace("media")
+@MainDex
 class MediaCodecBridge {
     private static final String TAG = "MediaCodecBridge";
 
@@ -55,11 +56,10 @@ class MediaCodecBridge {
     private static final String KEY_CROP_TOP = "crop-top";
 
     protected MediaCodec mMediaCodec;
-
-    private ByteBuffer[] mInputBuffers;
-    private ByteBuffer[] mOutputBuffers;
-
     private @BitrateAdjuster.Type int mBitrateAdjuster;
+
+    // The maximum input size this codec was configured with.
+    private int mMaxInputSize;
 
     // To support both the synchronous and asynchronous version of MediaCodec
     // (since we need to work on <M devices), we implement async support as a
@@ -84,7 +84,6 @@ class MediaCodecBridge {
     private static HandlerThread sCallbackHandlerThread;
     private static Handler sCallbackHandler;
 
-    @MainDex
     private static class DequeueInputResult {
         private final int mStatus;
         private final int mIndex;
@@ -105,7 +104,6 @@ class MediaCodecBridge {
         }
     }
 
-    @MainDex
     private static class DequeueOutputResult {
         private final int mStatus;
         private final int mIndex;
@@ -156,7 +154,6 @@ class MediaCodecBridge {
     }
 
     /** A wrapper around a MediaFormat. */
-    @MainDex
     private static class GetOutputFormatResult {
         private final int mStatus;
         // May be null if mStatus is not MediaCodecStatus.OK.
@@ -200,12 +197,29 @@ class MediaCodecBridge {
         private int channelCount() {
             return mFormat.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
         }
+
+        @CalledByNative("GetOutputFormatResult")
+        private int colorStandard() {
+            if (!mFormat.containsKey(MediaFormat.KEY_COLOR_STANDARD)) return -1;
+            return mFormat.getInteger(MediaFormat.KEY_COLOR_STANDARD);
+        }
+
+        @CalledByNative("GetOutputFormatResult")
+        private int colorRange() {
+            if (!mFormat.containsKey(MediaFormat.KEY_COLOR_RANGE)) return -1;
+            return mFormat.getInteger(MediaFormat.KEY_COLOR_RANGE);
+        }
+
+        @CalledByNative("GetOutputFormatResult")
+        private int colorTransfer() {
+            if (!mFormat.containsKey(MediaFormat.KEY_COLOR_TRANSFER)) return -1;
+            return mFormat.getInteger(MediaFormat.KEY_COLOR_TRANSFER);
+        }
     }
 
     // Warning: This class may execute on an arbitrary thread for the lifetime
     // of the MediaCodec. The MediaCodecBridge methods it calls are synchronized
     // to avoid race conditions.
-    @MainDex
     @TargetApi(Build.VERSION_CODES.M)
     class MediaCodecCallback extends MediaCodec.Callback {
         private MediaCodecBridge mMediaCodecBridge;
@@ -216,7 +230,7 @@ class MediaCodecBridge {
         @Override
         public void onError(MediaCodec codec, MediaCodec.CodecException e) {
             // TODO(dalecurtis): We may want to drop transient errors here.
-            Log.e(TAG, "MediaCodec.onError: " + e.getDiagnosticInfo());
+            Log.e(TAG, "MediaCodec.onError: %s", e.getDiagnosticInfo());
             mMediaCodecBridge.onError(e);
         }
 
@@ -341,7 +355,7 @@ class MediaCodecBridge {
         try {
             String codecName = mMediaCodec.getName();
             // This logging is to help us identify hung MediaCodecs in crash reports.
-            Log.w(TAG, "Releasing: " + codecName);
+            Log.w(TAG, "Releasing: %s", codecName);
             mMediaCodec.release();
             Log.w(TAG, "Codec released");
         } catch (IllegalStateException e) {
@@ -382,10 +396,6 @@ class MediaCodecBridge {
             }
 
             mMediaCodec.start();
-            if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
-                mInputBuffers = mMediaCodec.getInputBuffers();
-                mOutputBuffers = mMediaCodec.getOutputBuffers();
-            }
         } catch (IllegalStateException e) {
             Log.e(TAG, "Cannot start the media codec", e);
             return false;
@@ -418,7 +428,7 @@ class MediaCodecBridge {
             } else if (indexOrStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 status = MediaCodecStatus.TRY_AGAIN_LATER;
             } else {
-                Log.e(TAG, "Unexpected index_or_status: " + indexOrStatus);
+                Log.e(TAG, "Unexpected index_or_status: %d", indexOrStatus);
                 assert false;
             }
         } catch (Exception e) {
@@ -460,7 +470,6 @@ class MediaCodecBridge {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @CalledByNative
     private String getName() {
         String codecName = "unknown";
@@ -488,33 +497,30 @@ class MediaCodecBridge {
     }
 
     /** Returns null if MediaCodec throws IllegalStateException. */
-    @SuppressLint("NewApi")
     @CalledByNative
     private ByteBuffer getInputBuffer(int index) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            try {
-                return mMediaCodec.getInputBuffer(index);
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "Failed to get input buffer", e);
-                return null;
+        if (mUseAsyncApi) {
+            synchronized (this) {
+                if (mPendingError) return null;
             }
         }
-        return mInputBuffers[index];
+        try {
+            return mMediaCodec.getInputBuffer(index);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to get input buffer", e);
+            return null;
+        }
     }
 
     /** Returns null if MediaCodec throws IllegalStateException. */
-    @SuppressLint("NewApi")
     @CalledByNative
     protected ByteBuffer getOutputBuffer(int index) {
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            try {
-                return mMediaCodec.getOutputBuffer(index);
-            } catch (IllegalStateException e) {
-                Log.e(TAG, "Failed to get output buffer", e);
-                return null;
-            }
+        try {
+            return mMediaCodec.getOutputBuffer(index);
+        } catch (IllegalStateException e) {
+            Log.e(TAG, "Failed to get output buffer", e);
+            return null;
         }
-        return mOutputBuffers[index];
     }
 
     @CalledByNative
@@ -529,7 +535,6 @@ class MediaCodecBridge {
         return MediaCodecStatus.OK;
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @CalledByNative
     private void setVideoBitrate(int bps, int frameRate) {
         int targetBps = BitrateAdjuster.getTargetBitrate(mBitrateAdjuster, bps, frameRate);
@@ -540,11 +545,9 @@ class MediaCodecBridge {
         } catch (IllegalStateException e) {
             Log.e(TAG, "Failed to set MediaCodec parameters", e);
         }
-        Log.v(TAG,
-                "setVideoBitrate: input " + bps + "bps@" + frameRate + ", targetBps " + targetBps);
+        Log.v(TAG, "setVideoBitrate: input %dbps@%d, targetBps %d", bps, frameRate, targetBps);
     }
 
-    @TargetApi(Build.VERSION_CODES.KITKAT)
     @CalledByNative
     private void requestKeyFrameSoon() {
         Bundle b = new Bundle();
@@ -568,7 +571,7 @@ class MediaCodecBridge {
             case EncryptionScheme.CBCS:
                 return MediaCodec.CRYPTO_MODE_AES_CBC;
             default:
-                Log.e(TAG, "Unsupported cipher mode: " + nativeValue);
+                Log.e(TAG, "Unsupported cipher mode: %d", nativeValue);
                 return MEDIA_CODEC_UNKNOWN_CIPHER_MODE;
         }
     }
@@ -606,17 +609,15 @@ class MediaCodecBridge {
                 Log.d(TAG, "Failed to queue secure input buffer: CryptoException.ERROR_NO_KEY");
                 return MediaCodecStatus.NO_KEY;
             }
-            Log.e(TAG,
-                    "Failed to queue secure input buffer, CryptoException with error code "
-                            + e.getErrorCode());
+            Log.e(TAG, "Failed to queue secure input buffer. Error code %d", e.getErrorCode(), e);
             return MediaCodecStatus.ERROR;
         } catch (IllegalArgumentException e) {
             // IllegalArgumentException can occur when release() is called on the MediaCrypto
             // object, but the MediaCodecBridge is unaware of the change.
-            Log.e(TAG, "Failed to queue secure input buffer, IllegalArgumentException " + e);
+            Log.e(TAG, "Failed to queue secure input buffer.", e);
             return MediaCodecStatus.ERROR;
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Failed to queue secure input buffer, IllegalStateException " + e);
+            Log.e(TAG, "Failed to queue secure input buffer.", e);
             return MediaCodecStatus.ERROR;
         }
         return MediaCodecStatus.OK;
@@ -663,7 +664,6 @@ class MediaCodecBridge {
                 status = MediaCodecStatus.OK;
                 index = indexOrStatus;
             } else if (indexOrStatus == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                mOutputBuffers = mMediaCodec.getOutputBuffers();
                 status = MediaCodecStatus.OUTPUT_BUFFERS_CHANGED;
             } else if (indexOrStatus == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 status = MediaCodecStatus.OUTPUT_FORMAT_CHANGED;
@@ -671,7 +671,7 @@ class MediaCodecBridge {
             } else if (indexOrStatus == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 status = MediaCodecStatus.TRY_AGAIN_LATER;
             } else {
-                Log.e(TAG, "Unexpected index_or_status: " + indexOrStatus);
+                Log.e(TAG, "Unexpected index_or_status: %d", indexOrStatus);
                 assert false;
             }
         } catch (IllegalStateException e) {
@@ -691,7 +691,10 @@ class MediaCodecBridge {
     boolean configureVideo(MediaFormat format, Surface surface, MediaCrypto crypto, int flags) {
         try {
             mMediaCodec.configure(format, surface, crypto, flags);
-            return true;
+            if (format.containsKey(MediaFormat.KEY_MAX_INPUT_SIZE)) {
+                mMaxInputSize = format.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE);
+                return true;
+            }
         } catch (IllegalArgumentException e) {
             Log.e(TAG, "Cannot configure the video codec, wrong format or surface", e);
         } catch (IllegalStateException e) {
@@ -753,6 +756,11 @@ class MediaCodecBridge {
             default:
                 return AudioFormat.CHANNEL_OUT_DEFAULT;
         }
+    }
+
+    @CalledByNative
+    private int getMaxInputSize() {
+        return mMaxInputSize;
     }
 
     @CalledByNative

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copyright 2015 Google Inc. All Rights Reserved.
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+         http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<resources>
+    <string name="app_name">Chrome Custom Tabs Example</string>
+    <string name="url_hint">Please type the url here.</string>
+    <string name="warmup_button_text">Warmup Chrome</string>
+    <string name="may_launch_button_text">May Launch URL</string>
+    <string name="launch_button_text">Launch URL in a Chrome Custom Tab</string>
+    <string name="launch_incognito_button_text">Launch URL in an incognito Chrome Custom Tab</string>
+    <string name="connect_button_text">Connect to the service</string>
+    <string name="launch_browser_actions_button_text">Launch URL in Browser Actions Context Menu</string>
+    <string name="register_twa_service">Register TrustedWebActivityService</string>
+    <string name="default_url">https://www.google.com</string>
+    <string name="package_label">Package:</string>
+    <string name="amazing_grace">Amazing Grace 2011</string>
+    <string name="artist">Kevin MacLeod</string>
+</resources>

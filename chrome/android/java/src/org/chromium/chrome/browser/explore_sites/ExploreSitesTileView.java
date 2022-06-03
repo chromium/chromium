@@ -9,19 +9,20 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawable;
-import android.support.v4.graphics.drawable.RoundedBitmapDrawableFactory;
 import android.util.AttributeSet;
 import android.view.View;
 
+import androidx.core.graphics.drawable.RoundedBitmapDrawable;
+import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
+
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
-import org.chromium.chrome.browser.widget.tile.TileWithTextView;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.browser_ui.widget.tile.TileView;
 
 /**
  * View for a category name and site tiles.
  */
-public class ExploreSitesTileView extends TileWithTextView {
+public class ExploreSitesTileView extends TileView {
     private static final int TITLE_LINES = 2;
     private final int mIconCornerRadius;
 
@@ -58,7 +59,7 @@ public class ExploreSitesTileView extends TileWithTextView {
         // expects the radius to be scaled to the image being passed in, not the final view. This is
         // why we cannot use ViewUtils.createRoundedBitmapDrawable.
         float scaledIconCornerRadius;
-        float iconSize = View.MeasureSpec.getSize(mIconView.getLayoutParams().width);
+        float iconSize = View.MeasureSpec.getSize(getIconView().getLayoutParams().width);
         if (iconSize == 0) {
             scaledIconCornerRadius = mIconCornerRadius;
         } else {

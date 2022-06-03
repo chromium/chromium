@@ -13,7 +13,10 @@ namespace ash {
 enum class DesksCreationRemovalSource {
   kButton = 0,
   kKeyboard = 1,
-  kMaxValue = kKeyboard,
+  kDesksRestore = 2,
+  kLaunchTemplate = 3,
+  kDragToNewDeskButton = 4,
+  kMaxValue = kDragToNewDeskButton,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and
@@ -23,7 +26,9 @@ enum class DesksCreationRemovalSource {
 enum class DesksMoveWindowFromActiveDeskSource {
   kDragAndDrop = 0,
   kShortcut = 1,
-  kMaxValue = kShortcut,
+  kSendToDesk = 2,
+  kVisibleOnAllDesks = 3,
+  kMaxValue = kVisibleOnAllDesks,
 };
 
 // These values are logged to UMA. Entries should not be renumbered and
@@ -37,7 +42,10 @@ enum class DesksSwitchSource {
   kWindowActivated = 4,
   kDeskSwitchTouchpad = 5,
   kUserSwitch = 6,
-  kMaxValue = kUserSwitch,
+  kPersistentDesksBar = 7,
+  kLaunchTemplate = 8,
+  kIndexedDeskSwitchShortcut = 9,
+  kMaxValue = kIndexedDeskSwitchShortcut,
 };
 
 }  // namespace ash

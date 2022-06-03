@@ -7,7 +7,6 @@
 #import <UIKit/UIKit.h>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -78,8 +77,8 @@ TEST_F(IOSImageDecoderImplTest, JPGImage) {
       std::string(reinterpret_cast<char*>(kJPGImage), sizeof(kJPGImage));
   ios_image_decoder_impl_->DecodeImage(
       image_data, gfx::Size(),
-      base::Bind(&IOSImageDecoderImplTest::OnImageDecoded,
-                 base::Unretained(this)));
+      base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
+                     base::Unretained(this)));
 
   scoped_task_evironment_.RunUntilIdle();
 
@@ -93,8 +92,8 @@ TEST_F(IOSImageDecoderImplTest, WebpImage) {
       std::string(reinterpret_cast<char*>(kWEBPImage), sizeof(kWEBPImage));
   ios_image_decoder_impl_->DecodeImage(
       image_data, gfx::Size(),
-      base::Bind(&IOSImageDecoderImplTest::OnImageDecoded,
-                 base::Unretained(this)));
+      base::BindOnce(&IOSImageDecoderImplTest::OnImageDecoded,
+                     base::Unretained(this)));
 
   scoped_task_evironment_.RunUntilIdle();
 

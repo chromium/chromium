@@ -12,9 +12,8 @@
 namespace {
 
 ui::TouchEvent TouchWithType(ui::EventType type, int id) {
-  return ui::TouchEvent(
-      type, gfx::Point(0, 0), base::TimeTicks(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, id));
+  return ui::TouchEvent(type, gfx::Point(0, 0), base::TimeTicks(),
+                        ui::PointerDetails(ui::EventPointerType::kTouch, id));
 }
 
 ui::TouchEvent TouchWithPosition(ui::EventType type,
@@ -23,9 +22,8 @@ ui::TouchEvent TouchWithPosition(ui::EventType type,
                                  float y,
                                  float raw_x,
                                  float raw_y) {
-  ui::TouchEvent event(
-      type, gfx::Point(), base::TimeTicks(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, id));
+  ui::TouchEvent event(type, gfx::Point(), base::TimeTicks(),
+                       ui::PointerDetails(ui::EventPointerType::kTouch, id));
   event.set_location_f(gfx::PointF(x, y));
   event.set_root_location_f(gfx::PointF(raw_x, raw_y));
   return event;
@@ -39,20 +37,19 @@ ui::TouchEvent TouchWithTapParams(ui::EventType type,
                                  float pressure) {
   ui::TouchEvent event(
       type, gfx::Point(1, 1), base::TimeTicks(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, id, radius_x,
-                         radius_y, pressure, rotation_angle),
+      ui::PointerDetails(ui::EventPointerType::kTouch, id, radius_x, radius_y,
+                         pressure, rotation_angle),
       0);
   return event;
 }
 
 base::TimeTicks MsToTicks(int ms) {
-  return base::TimeTicks() + base::TimeDelta::FromMilliseconds(ms);
+  return base::TimeTicks() + base::Milliseconds(ms);
 }
 
 ui::TouchEvent TouchWithTime(ui::EventType type, int id, int ms) {
-  return ui::TouchEvent(
-      type, gfx::Point(0, 0), MsToTicks(ms),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, id));
+  return ui::TouchEvent(type, gfx::Point(0, 0), MsToTicks(ms),
+                        ui::PointerDetails(ui::EventPointerType::kTouch, id));
 }
 
 }  // namespace
@@ -434,7 +431,7 @@ TEST(MotionEventAuraTest, ToolType) {
   EXPECT_EQ(MotionEvent::ToolType::FINGER, event.GetToolType(0));
 
   touch_event = TouchWithType(ET_TOUCH_RELEASED, 7);
-  PointerDetails pointer_details(EventPointerType::POINTER_TYPE_PEN,
+  PointerDetails pointer_details(EventPointerType::kPen,
                                  /* pointer_id*/ 7,
                                  /* radius_x */ 5.0f,
                                  /* radius_y */ 5.0f,
@@ -539,9 +536,9 @@ TEST(MotionEventAuraTest, IgnoresTouchesOverCapacity) {
 
 TEST(MotionEventAuraTest, PenRadiusDefault) {
   MotionEventAura event;
-  TouchEvent touch_event = ui::TouchEvent(
-      ET_TOUCH_PRESSED, gfx::Point(0, 0), base::TimeTicks(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_PEN, 7));
+  TouchEvent touch_event =
+      ui::TouchEvent(ET_TOUCH_PRESSED, gfx::Point(0, 0), base::TimeTicks(),
+                     ui::PointerDetails(ui::EventPointerType::kPen, 7));
   EXPECT_TRUE(event.OnTouch(touch_event));
   EXPECT_EQ(MotionEvent::ToolType::STYLUS, event.GetToolType(0));
   EXPECT_EQ(1u, event.GetTouchMajor(0));

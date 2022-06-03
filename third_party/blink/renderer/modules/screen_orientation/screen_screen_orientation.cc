@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/screen_orientation/screen_screen_orientation.h"
 
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -24,11 +25,12 @@ ScreenScreenOrientation& ScreenScreenOrientation::From(Screen& screen) {
 // static
 ScreenOrientation* ScreenScreenOrientation::orientation(Screen& screen) {
   ScreenScreenOrientation& self = ScreenScreenOrientation::From(screen);
-  if (!screen.GetFrame())
+  auto* window = To<LocalDOMWindow>(screen.GetExecutionContext());
+  if (!window)
     return nullptr;
 
   if (!self.orientation_)
-    self.orientation_ = ScreenOrientation::Create(screen.GetFrame());
+    self.orientation_ = ScreenOrientation::Create(window);
 
   return self.orientation_;
 }
@@ -36,7 +38,9 @@ ScreenOrientation* ScreenScreenOrientation::orientation(Screen& screen) {
 const char ScreenScreenOrientation::kSupplementName[] =
     "ScreenScreenOrientation";
 
-void ScreenScreenOrientation::Trace(blink::Visitor* visitor) {
+ScreenScreenOrientation::ScreenScreenOrientation() : Supplement(nullptr) {}
+
+void ScreenScreenOrientation::Trace(Visitor* visitor) const {
   visitor->Trace(orientation_);
   Supplement<Screen>::Trace(visitor);
 }

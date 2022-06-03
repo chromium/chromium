@@ -1,0 +1,5 @@
+error: explicit ABI on extern function is not supported
+ --> $DIR/extern_fn_abi.rs:4:9
+  |
+4 |         extern "Java" fn f();
+  |         ^^^^^^^^^^^^^

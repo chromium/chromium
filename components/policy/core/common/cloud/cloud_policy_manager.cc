@@ -4,23 +4,23 @@
 
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/command_line.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "components/policy/core/common/cloud/cloud_policy_service.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_map.h"
-#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/core/common/schema_registry.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
 #include "components/policy/core/common/cloud/resource_cache.h"
@@ -42,6 +42,10 @@ CloudPolicyManager::CloudPolicyManager(
       waiting_for_policy_refresh_(false) {}
 
 CloudPolicyManager::~CloudPolicyManager() {}
+
+bool CloudPolicyManager::IsClientRegistered() const {
+  return client() && client()->is_registered();
+}
 
 void CloudPolicyManager::Init(SchemaRegistry* registry) {
   ConfigurationPolicyProvider::Init(registry);
@@ -72,6 +76,10 @@ bool CloudPolicyManager::IsInitializationComplete(PolicyDomain domain) const {
     return component_policy_service_->is_initialized();
   }
   return true;
+}
+
+bool CloudPolicyManager::IsFirstPolicyLoadComplete(PolicyDomain domain) const {
+  return store()->first_policies_loaded();
 }
 
 void CloudPolicyManager::RefreshPolicies() {
@@ -114,13 +122,12 @@ void CloudPolicyManager::CheckAndPublishPolicy() {
 }
 
 void CloudPolicyManager::GetChromePolicy(PolicyMap* policy_map) {
-  policy_map->CopyFrom(store()->policy_map());
+  *policy_map = store()->policy_map().Clone();
 }
 
 void CloudPolicyManager::CreateComponentCloudPolicyService(
     const std::string& policy_type,
     const base::FilePath& policy_cache_path,
-    PolicySource policy_source,
     CloudPolicyClient* client,
     SchemaRegistry* schema_registry) {
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
@@ -132,11 +139,8 @@ void CloudPolicyManager::CreateComponentCloudPolicyService(
   // See the comments on ComponentCloudPolicyService for the details.
   CHECK(!core()->client());
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDisableComponentCloudPolicy) ||
-      policy_cache_path.empty()) {
+  if (policy_cache_path.empty())
     return;
-  }
 
   // TODO(emaxx, 729082): Make ComponentCloudPolicyStore (and other
   // implementation details of it) not use the blocking task runner whenever
@@ -145,12 +149,12 @@ void CloudPolicyManager::CreateComponentCloudPolicyService(
   // ComponentCloudPolicyService's |backend_task_runner| and |cache| must live
   // on the same task runner.
   const auto task_runner =
-      base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock()});
+      base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
   std::unique_ptr<ResourceCache> resource_cache(new ResourceCache(
-      policy_cache_path, task_runner, /* max_cache_size */ base::nullopt));
-  component_policy_service_.reset(new ComponentCloudPolicyService(
-      policy_type, policy_source, this, schema_registry, core(), client,
-      std::move(resource_cache), task_runner));
+      policy_cache_path, task_runner, /* max_cache_size */ absl::nullopt));
+  component_policy_service_ = std::make_unique<ComponentCloudPolicyService>(
+      policy_type, this, schema_registry, core(), client,
+      std::move(resource_cache), task_runner);
 #endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 }
 

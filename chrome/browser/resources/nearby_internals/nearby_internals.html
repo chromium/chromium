@@ -1,0 +1,39 @@
+<style>
+  :host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  app-header {
+    background-color: rgb(0, 134, 179);
+    color: white;
+    font-size: 200%;
+    padding: 8px;
+    text-align: center;
+  }
+
+  iron-pages {
+    flex: 1;
+    overflow: hidden;
+  }
+
+  iron-pages > * {
+    display: block;
+    height: 100%;
+    overflow: auto;
+  }
+</style>
+<app-header>
+  <app-toolbar>Nearby Share Internals</app-toolbar>
+</app-header>
+<iron-location path="{{path_}}"></iron-location>
+<cr-tabs selected="{{selectedTabIndex_}}" tab-names="[[tabNames_]]"></cr-tabs>
+<iron-pages selected="[[selectedTabIndex_]]">
+  <logging-tab feature="nearby-share"></logging-tab>
+  <http-tab></http-tab>
+  <contact-tab></contact-tab>
+  <ui-trigger-tab></ui-trigger-tab>
+  <logging-tab feature="quick-pair"></logging-tab>
+</iron-pages>

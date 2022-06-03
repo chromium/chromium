@@ -6,6 +6,8 @@
 
 #include <memory>
 #include "base/strings/stringprintf.h"
+#include "chrome/browser/extensions/extension_service.h"
+#include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/browser/content_browser_client.h"
@@ -18,8 +20,13 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
+#include "extensions/common/identifiability_metrics.h"
 #include "extensions/common/value_builder.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/scoped_identifiability_test_sample_collector.h"
 #include "url/gurl.h"
 
 using content::NavigationThrottle;
@@ -54,10 +61,38 @@ class ExtensionNavigationThrottleUnitTest
     : public ChromeRenderViewHostTestHarness {
  public:
   ExtensionNavigationThrottleUnitTest() {}
+
+  ExtensionNavigationThrottleUnitTest(
+      const ExtensionNavigationThrottleUnitTest&) = delete;
+  ExtensionNavigationThrottleUnitTest& operator=(
+      const ExtensionNavigationThrottleUnitTest&) = delete;
+
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     original_client_ = content::SetBrowserClientForTesting(&client_);
-    AddExtension();
+
+    // Constructs an extension with accessible.html and accessible_dir/* as
+    // accessible resources.
+    DictionaryBuilder manifest;
+    manifest.Set("name", "ext")
+        .Set("description", "something")
+        .Set("version", "0.1")
+        .Set("manifest_version", 2)
+        .Set("web_accessible_resources",
+             ListBuilder().Append(kAccessible).Append(kAccessibleDir).Build());
+    extension_ = ExtensionBuilder()
+                     .SetManifest(manifest.Build())
+                     .SetID(crx_file::id_util::GenerateId("foo"))
+                     .Build();
+    ASSERT_TRUE(extension_);
+
+    // Simulate installing/adding the extension.
+    TestExtensionSystem* extension_system =
+        static_cast<TestExtensionSystem*>(ExtensionSystem::Get(profile()));
+    ExtensionService* extension_service =
+        extension_system->CreateExtensionService(
+            base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
+    extension_service->AddExtension(extension_.get());
   }
 
   void TearDown() override {
@@ -72,27 +107,45 @@ class ExtensionNavigationThrottleUnitTest
       content::RenderFrameHost* host,
       const GURL& extension_url,
       NavigationThrottle::ThrottleAction expected_will_start_result) {
+    // First subtest: direct navigation to |extension_url|.
     content::MockNavigationHandle test_handle(extension_url, host);
     test_handle.set_initiator_origin(host->GetLastCommittedOrigin());
     test_handle.set_starting_site_instance(host->GetSiteInstance());
     auto throttle = std::make_unique<ExtensionNavigationThrottle>(&test_handle);
 
-    // First subtest: direct navigation to |extension_url|.
-    EXPECT_EQ(expected_will_start_result, throttle->WillStartRequest().action())
-        << extension_url;
+    {
+      blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
+
+      EXPECT_EQ(expected_will_start_result,
+                throttle->WillStartRequest().action())
+          << extension_url;
+
+      ExpectExtensionAccessResult(expected_will_start_result, extension_url,
+                                  test_handle.GetNavigationId(),
+                                  metrics.entries());
+    }
 
     // Second subtest: server redirect to
     // |extension_url|.
-    GURL http_url("https://example.com");
-    test_handle.set_url(http_url);
+    {
+      blink::test::ScopedIdentifiabilityTestSampleCollector metrics;
 
-    EXPECT_EQ(NavigationThrottle::PROCEED,
-              throttle->WillStartRequest().action())
-        << http_url;
-    test_handle.set_url(extension_url);
-    EXPECT_EQ(expected_will_start_result,
-              throttle->WillRedirectRequest().action())
-        << extension_url;
+      GURL http_url("https://example.com");
+      test_handle.set_url(http_url);
+
+      EXPECT_EQ(NavigationThrottle::PROCEED,
+                throttle->WillStartRequest().action())
+          << http_url;
+      EXPECT_EQ(0u, metrics.entries().size());
+
+      test_handle.set_url(extension_url);
+      EXPECT_EQ(expected_will_start_result,
+                throttle->WillRedirectRequest().action())
+          << extension_url;
+      ExpectExtensionAccessResult(expected_will_start_result, extension_url,
+                                  test_handle.GetNavigationId(),
+                                  metrics.entries());
+    }
   }
 
   const Extension* extension() { return extension_.get(); }
@@ -104,30 +157,48 @@ class ExtensionNavigationThrottleUnitTest
     return content::RenderFrameHostTester::For(host);
   }
 
- private:
-  // Constructs an extension with accessible.html and accessible_dir/* as
-  // accessible resources.
-  void AddExtension() {
-    DictionaryBuilder manifest;
-    manifest.Set("name", "ext")
-        .Set("description", "something")
-        .Set("version", "0.1")
-        .Set("manifest_version", 2)
-        .Set("web_accessible_resources",
-             ListBuilder().Append(kAccessible).Append(kAccessibleDir).Build());
-    extension_ = ExtensionBuilder()
-                     .SetManifest(manifest.Build())
-                     .SetID(crx_file::id_util::GenerateId("foo"))
-                     .Build();
-    ASSERT_TRUE(extension_);
-    ExtensionRegistry::Get(browser_context())->AddEnabled(extension_.get());
+  void ExpectExtensionAccessResult(
+      NavigationThrottle::ThrottleAction expected_action,
+      const GURL& extension_url,
+      int64_t navigation_id,
+      const std::vector<
+          blink::test::ScopedIdentifiabilityTestSampleCollector::Entry>&
+          entries) {
+    // If throttle doesn't intervene, recording will be done by
+    // ExtensionURLLoaderFactory, not the throttle.
+    if (expected_action == NavigationThrottle::PROCEED) {
+      EXPECT_EQ(0u, entries.size());
+      return;
+    }
+
+    ExtensionResourceAccessResult expected;
+    if (expected_action == NavigationThrottle::BLOCK_REQUEST) {
+      expected = ExtensionResourceAccessResult::kFailure;
+    } else if (expected_action == NavigationThrottle::CANCEL) {
+      expected = ExtensionResourceAccessResult::kCancel;
+    } else {
+      ADD_FAILURE() << "Unhandled action:" << expected_action;
+      return;
+    }
+
+    ukm::SourceId source_id = ukm::ConvertToSourceId(
+        navigation_id, ukm::SourceIdObj::Type::NAVIGATION_ID);
+
+    ASSERT_EQ(1u, entries.size());
+    EXPECT_EQ(source_id, entries[0].source);
+    ASSERT_EQ(1u, entries[0].metrics.size());
+    EXPECT_EQ(blink::IdentifiableSurface::FromTypeAndToken(
+                  blink::IdentifiableSurface::Type::kExtensionFileAccess,
+                  base::as_bytes(base::make_span(
+                      ExtensionSet::GetExtensionIdByURL(extension_url)))),
+              entries[0].metrics[0].surface);
+    EXPECT_EQ(blink::IdentifiableToken(expected), entries[0].metrics[0].value);
   }
 
+ private:
   scoped_refptr<const Extension> extension_;
   MockBrowserClient client_;
-  content::ContentBrowserClient* original_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionNavigationThrottleUnitTest);
+  content::ContentBrowserClient* original_client_ = nullptr;
 };
 
 // Tests the basic case of an external web page embedding an extension resource.
@@ -143,6 +214,15 @@ TEST_F(ExtensionNavigationThrottleUnitTest, ExternalWebPage) {
                 NavigationThrottle::PROCEED);
   CheckTestCase(child, extension()->GetResourceURL(kAccessibleDirResource),
                 NavigationThrottle::PROCEED);
+}
+
+TEST_F(ExtensionNavigationThrottleUnitTest, CrossSiteFileSystemUrl) {
+  web_contents_tester()->NavigateAndCommit(GURL("http://example.com"));
+
+  GURL access_filesystem(base::StringPrintf(
+      "filesystem:%s/",
+      extension()->GetResourceURL(kAccessible).spec().c_str()));
+  CheckTestCase(main_rfh(), access_filesystem, NavigationThrottle::CANCEL);
 }
 
 // Tests that the owning extension can access any of its resources.

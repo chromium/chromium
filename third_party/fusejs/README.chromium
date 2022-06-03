@@ -1,0 +1,11 @@
+Name: Fuse.js
+URL: https://fusejs.io
+Version: 6.4.1
+License: Apache License, Version 2.0
+License File: LICENSE
+License Android Compatible: yes
+Security Critical: yes
+Description:
+Fuzzy search js library used by WebUI
+Local Modifications:
+Added the file README.chromium (this file)

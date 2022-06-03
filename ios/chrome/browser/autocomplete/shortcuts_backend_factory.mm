@@ -17,7 +17,6 @@
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/search_engines/ui_thread_search_terms_data.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -27,7 +26,7 @@ namespace ios {
 namespace {
 
 scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(
-    ios::ChromeBrowserState* browser_state,
+    ChromeBrowserState* browser_state,
     bool suppress_db) {
   scoped_refptr<ShortcutsBackend> shortcuts_backend(new ShortcutsBackend(
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),
@@ -43,7 +42,7 @@ scoped_refptr<ShortcutsBackend> CreateShortcutsBackend(
 
 // static
 scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return base::WrapRefCounted(static_cast<ShortcutsBackend*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true).get()));
 }
@@ -51,7 +50,7 @@ scoped_refptr<ShortcutsBackend> ShortcutsBackendFactory::GetForBrowserState(
 // static
 scoped_refptr<ShortcutsBackend>
 ShortcutsBackendFactory::GetForBrowserStateIfExists(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return base::WrapRefCounted(static_cast<ShortcutsBackend*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false).get()));
 }
@@ -75,8 +74,8 @@ ShortcutsBackendFactory::~ShortcutsBackendFactory() {}
 scoped_refptr<RefcountedKeyedService>
 ShortcutsBackendFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return CreateShortcutsBackend(browser_state, false /* suppress_db */);
 }
 

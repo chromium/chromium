@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
@@ -23,6 +24,7 @@
 #include "ios/web/public/test/web_task_environment.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
+#include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_transaction_factory.h"
@@ -43,7 +45,7 @@ class CacheCounterTest : public PlatformTest {
 
   ~CacheCounterTest() override {}
 
-  ios::ChromeBrowserState* browser_state() { return browser_state_.get(); }
+  ChromeBrowserState* browser_state() { return browser_state_.get(); }
 
   PrefService* prefs() { return browser_state_->GetPrefs(); }
 
@@ -225,7 +227,7 @@ class CacheCounterTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> run_loop_;
-  std::unique_ptr<ios::ChromeBrowserState> browser_state_;
+  std::unique_ptr<ChromeBrowserState> browser_state_;
 
   CacheOperation current_operation_;
   CacheEntryCreationStep next_step_;

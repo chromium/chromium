@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests moust hover/select events handling in the Layers panel\n`);
-  await TestRunner.loadModule('layers_test_runner');
+  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
       <style>
       .layer {
@@ -29,7 +29,7 @@
   await TestRunner.showPanel('layers');
   await LayersTestRunner.requestLayers();
 
-  UI.panels.layers._update();
+  UI.panels.layers.update();
   var layerB1 = LayersTestRunner.findLayerByNodeIdAttribute('b1');
   var treeElementB1 = LayersTestRunner.findLayerTreeElement(layerB1);
 
@@ -37,7 +37,7 @@
   var treeElementB3 = LayersTestRunner.findLayerTreeElement(layerB3);
 
   function dumpElementSelectionState() {
-    UI.panels.layers._update();
+    UI.panels.layers.update();
     LayersTestRunner.dumpSelectedStyles('Layer b1 in tree', treeElementB1);
     LayersTestRunner.dumpSelectedStyles('Layer b3 in tree', treeElementB3);
   }

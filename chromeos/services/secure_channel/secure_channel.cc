@@ -7,9 +7,12 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "chromeos/services/secure_channel/wire_message.h"
 
 namespace chromeos {
@@ -20,22 +23,17 @@ namespace secure_channel {
 SecureChannel::Factory* SecureChannel::Factory::factory_instance_ = nullptr;
 
 // static
-std::unique_ptr<SecureChannel> SecureChannel::Factory::NewInstance(
+std::unique_ptr<SecureChannel> SecureChannel::Factory::Create(
     std::unique_ptr<Connection> connection) {
-  if (!factory_instance_) {
-    factory_instance_ = new Factory();
-  }
-  return factory_instance_->BuildInstance(std::move(connection));
+  if (factory_instance_)
+    return factory_instance_->CreateInstance(std::move(connection));
+
+  return base::WrapUnique(new SecureChannel(std::move(connection)));
 }
 
 // static
-void SecureChannel::Factory::SetInstanceForTesting(Factory* factory) {
+void SecureChannel::Factory::SetFactoryForTesting(Factory* factory) {
   factory_instance_ = factory;
-}
-
-std::unique_ptr<SecureChannel> SecureChannel::Factory::BuildInstance(
-    std::unique_ptr<Connection> connection) {
-  return base::WrapUnique(new SecureChannel(std::move(connection)));
 }
 
 // static
@@ -94,6 +92,17 @@ int SecureChannel::SendMessage(const std::string& feature,
   return sequence_number;
 }
 
+void SecureChannel::RegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    FileTransferUpdateCallback file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  DCHECK(status_ == Status::AUTHENTICATED);
+  connection_->RegisterPayloadFile(payload_id, std::move(payload_files),
+                                   std::move(file_transfer_update_callback),
+                                   std::move(registration_result_callback));
+}
+
 void SecureChannel::Disconnect() {
   if (connection_->IsConnected()) {
     TransitionToStatus(Status::DISCONNECTING);
@@ -117,20 +126,20 @@ void SecureChannel::RemoveObserver(Observer* observer) {
 }
 
 void SecureChannel::GetConnectionRssi(
-    base::OnceCallback<void(base::Optional<int32_t>)> callback) {
+    base::OnceCallback<void(absl::optional<int32_t>)> callback) {
   if (!connection_) {
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
   connection_->GetConnectionRssi(std::move(callback));
 }
 
-base::Optional<std::string> SecureChannel::GetChannelBindingData() {
+absl::optional<std::string> SecureChannel::GetChannelBindingData() {
   if (secure_context_)
     return secure_context_->GetChannelBindingData();
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void SecureChannel::OnConnectionStatusChanged(Connection* connection,
@@ -166,14 +175,15 @@ void SecureChannel::OnMessageReceived(const Connection& connection,
   if (!secure_context_) {
     PA_LOG(WARNING) << "Received unexpected message before authentication "
                     << "was complete. Feature: " << wire_message.feature()
-                    << ", Payload: " << wire_message.payload();
+                    << ", Payload size: " << wire_message.payload().size()
+                    << " byte(s)";
     return;
   }
 
   secure_context_->Decode(
       wire_message.payload(),
-      base::Bind(&SecureChannel::OnMessageDecoded,
-                 weak_ptr_factory_.GetWeakPtr(), wire_message.feature()));
+      base::BindOnce(&SecureChannel::OnMessageDecoded,
+                     weak_ptr_factory_.GetWeakPtr(), wire_message.feature()));
 }
 
 void SecureChannel::OnSendCompleted(const Connection& connection,
@@ -217,8 +227,8 @@ void SecureChannel::OnSendCompleted(const Connection& connection,
   }
 
   PA_LOG(ERROR) << "Could not send message: {"
-                << "payload: \"" << pending_message_->payload << "\", "
-                << "feature: \"" << pending_message_->feature << "\""
+                << "payload size: " << pending_message_->payload.size()
+                << " byte(s), feature: \"" << pending_message_->feature << "\""
                 << "}";
   pending_message_.reset();
 
@@ -245,10 +255,10 @@ void SecureChannel::Authenticate() {
   DCHECK(status_ == Status::CONNECTED);
   DCHECK(!authenticator_);
 
-  authenticator_ = DeviceToDeviceAuthenticator::Factory::NewInstance(
+  authenticator_ = DeviceToDeviceAuthenticator::Factory::Create(
       connection_.get(),
-      multidevice::SecureMessageDelegateImpl::Factory::NewInstance());
-  authenticator_->Authenticate(base::Bind(
+      multidevice::SecureMessageDelegateImpl::Factory::Create());
+  authenticator_->Authenticate(base::BindOnce(
       &SecureChannel::OnAuthenticationResult, weak_ptr_factory_.GetWeakPtr()));
 
   TransitionToStatus(Status::AUTHENTICATING);
@@ -267,14 +277,15 @@ void SecureChannel::ProcessMessageQueue() {
   PA_LOG(INFO) << "Sending message to " << connection_->GetDeviceAddress()
                << ": {"
                << "feature: \"" << pending_message_->feature << "\", "
-               << "payload: \"" << pending_message_->payload << "\""
+               << "payload size: " << pending_message_->payload.size()
+               << " byte(s)"
                << "}";
 
   secure_context_->Encode(
       pending_message_->payload,
-      base::Bind(&SecureChannel::OnMessageEncoded,
-                 weak_ptr_factory_.GetWeakPtr(), pending_message_->feature,
-                 pending_message_->sequence_number));
+      base::BindOnce(&SecureChannel::OnMessageEncoded,
+                     weak_ptr_factory_.GetWeakPtr(), pending_message_->feature,
+                     pending_message_->sequence_number));
 }
 
 void SecureChannel::OnMessageEncoded(const std::string& feature,
@@ -289,7 +300,7 @@ void SecureChannel::OnMessageDecoded(const std::string& feature,
   PA_LOG(VERBOSE) << "Received message from " << connection_->GetDeviceAddress()
                   << ": {"
                   << "feature: \"" << feature << "\", "
-                  << "payload: \"" << decoded_message << "\""
+                  << "payload size: " << decoded_message.size() << " byte(s)"
                   << "}";
 
   for (auto& observer : observer_list_)

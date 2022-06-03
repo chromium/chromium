@@ -1,0 +1,72 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//components/vector_icons/vector_icons.gni")
+
+# The icons in this target, unlike those in //ash/resources/vector_icons,
+# are ok to use from outside of ash/, eg lacros builds.
+aggregate_vector_icons("chromeos_ui_vector_icons") {
+  icon_directory = "."
+
+  sources = [
+    "assistant.icon",
+    "calculate.icon",
+    "conversion_path.icon",
+    "enterprise.icon",
+    "filetype_archive.icon",
+    "filetype_audio.icon",
+    "filetype_chart.icon",
+    "filetype_chip_background.icon",
+    "filetype_excel.icon",
+    "filetype_folder.icon",
+    "filetype_gdoc.icon",
+    "filetype_gdraw.icon",
+    "filetype_generic.icon",
+    "filetype_gform.icon",
+    "filetype_gmap.icon",
+    "filetype_gsheet.icon",
+    "filetype_gsite.icon",
+    "filetype_gslides.icon",
+    "filetype_gtable.icon",
+    "filetype_image.icon",
+    "filetype_linux.icon",
+    "filetype_pdf.icon",
+    "filetype_ppt.icon",
+    "filetype_script.icon",
+    "filetype_shared.icon",
+    "filetype_sites.icon",
+    "filetype_team_drive.icon",
+    "filetype_tini.icon",
+    "filetype_video.icon",
+    "filetype_word.icon",
+    "notification_assistant.icon",
+    "notification_supervised_user.icon",
+    "notification_warning.icon",
+    "person_pin_circle.icon",
+    "screenshot.icon",
+    "sentiment_very_satisfied.icon",
+    "straighten.icon",
+    "timer.icon",
+    "translate.icon",
+    "window_control_back.icon",
+    "window_control_bottom_snapped.icon",
+    "window_control_dezoom.icon",
+    "window_control_left_snapped.icon",
+    "window_control_menu.icon",
+    "window_control_right_snapped.icon",
+    "window_control_top_snapped.icon",
+    "window_control_zoom.icon",
+  ]
+}
+
+source_set("vector_icons") {
+  sources = get_target_outputs(":chromeos_ui_vector_icons")
+
+  deps = [
+    ":chromeos_ui_vector_icons",
+    "//base",
+    "//skia",
+    "//ui/gfx",
+  ]
+}

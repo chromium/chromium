@@ -10,7 +10,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/display/window_tree_host_manager.h"
-#include "base/macros.h"
 
 namespace aura {
 class Window;
@@ -31,9 +30,14 @@ class WindowUserData;
 // https://developer.android.com/about/versions/android-5.0.html#ScreenPinning
 // See also ArcKioskAppLauncher::CheckAndPinWindow().
 class ASH_EXPORT ScreenPinningController
-    : public WindowTreeHostManager::Observer {
+    : public WindowTreeHostManager::Observer,
+      aura::WindowObserver {
  public:
   ScreenPinningController();
+
+  ScreenPinningController(const ScreenPinningController&) = delete;
+  ScreenPinningController& operator=(const ScreenPinningController&) = delete;
+
   ~ScreenPinningController() override;
 
   // Sets a pinned window. It is not allowed to call this when there already
@@ -83,8 +87,15 @@ class ASH_EXPORT ScreenPinningController
   // Returns the window from WindowDimmer.
   aura::Window* CreateWindowDimmer(aura::Window* container);
 
+  // Resets internal states when |pinned_window_| exits pinning state, or
+  // disappears.
+  void ResetWindowPinningState();
+
   // WindowTreeHostManager::Observer:
   void OnDisplayConfigurationChanged() override;
+
+  // aura::WindowObserver:
+  void OnWindowDestroying(aura::Window* window) override;
 
   // Pinned window should be on top in the parent window.
   aura::Window* pinned_window_ = nullptr;
@@ -106,8 +117,6 @@ class ASH_EXPORT ScreenPinningController
       system_modal_container_window_observer_;
   std::unique_ptr<SystemModalContainerChildWindowObserver>
       system_modal_container_child_window_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScreenPinningController);
 };
 
 }  // namespace ash

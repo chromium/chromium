@@ -12,8 +12,9 @@ Polymer({
 
   properties: {
     /**
-     * If true, the button is in the expanded state and will show the
-     * 'expand-less' icon. If false, the button shows the 'expand-more' icon.
+     * If true, the button is in the expanded state and will show the icon
+     * specified in the `collapseIcon` property. If false, the button shows the
+     * icon specified in the `expandIcon` property.
      */
     expanded: {
       type: Boolean,
@@ -32,14 +33,26 @@ Polymer({
     },
 
     /** A11y text descriptor for this control. */
-    alt: {
+    ariaLabel: {
       type: String,
-      observer: 'onAltChange_',
+      observer: 'onAriaLabelChange_',
     },
 
     tabIndex: {
       type: Number,
       value: 0,
+    },
+
+    expandIcon: {
+      type: String,
+      value: 'cr:expand-more',
+      observer: 'onIconChange_',
+    },
+
+    collapseIcon: {
+      type: String,
+      value: 'cr:expand-less',
+      observer: 'onIconChange_',
     },
   },
 
@@ -61,15 +74,15 @@ Polymer({
     this.$.icon.noink = value;
   },
 
-  focus: function() {
+  focus() {
     this.$.icon.focus();
   },
 
   /** @private */
-  onAltChange_: function() {
-    if (this.alt) {
+  onAriaLabelChange_() {
+    if (this.ariaLabel) {
       this.$.icon.removeAttribute('aria-labelledby');
-      this.$.icon.setAttribute('aria-label', this.alt);
+      this.$.icon.setAttribute('aria-label', this.ariaLabel);
     } else {
       this.$.icon.removeAttribute('aria-label');
       this.$.icon.setAttribute('aria-labelledby', 'label');
@@ -77,15 +90,25 @@ Polymer({
   },
 
   /** @private */
-  onExpandedChange_: function() {
-    this.$.icon.ironIcon = this.expanded ? 'cr:expand-less' : 'cr:expand-more';
+  onExpandedChange_() {
+    this.updateIcon_();
+  },
+
+  /** @private */
+  onIconChange_() {
+    this.updateIcon_();
+  },
+
+  /** @private */
+  updateIcon_() {
+    this.$.icon.ironIcon = this.expanded ? this.collapseIcon : this.expandIcon;
   },
 
   /**
    * @param {!Event} event
    * @private
    */
-  toggleExpand_: function(event) {
+  toggleExpand_(event) {
     // Prevent |click| event from bubbling. It can cause parents of this
     // elements to erroneously re-toggle this control.
     event.stopPropagation();
@@ -97,7 +120,7 @@ Polymer({
   },
 
   /** @private */
-  updateAriaExpanded_: function() {
+  updateAriaExpanded_() {
     if (this.disabled) {
       this.$.icon.removeAttribute('aria-expanded');
     } else {
@@ -105,3 +128,4 @@ Polymer({
     }
   },
 });
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

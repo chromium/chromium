@@ -4,7 +4,6 @@
 
 // https://github.com/dtapuska/useractivation
 [
-    RuntimeEnabled=UserActivationAPI,
     Exposed=(Window,Worker,AudioWorklet)
 ] interface UserActivation {
   [Measure] readonly attribute boolean hasBeenActive;

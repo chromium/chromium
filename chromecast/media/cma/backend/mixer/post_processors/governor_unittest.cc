@@ -43,6 +43,10 @@ void ScaleData(float* data, int frames, float scale) {
 }  // namespace
 
 class GovernorTest : public ::testing::TestWithParam<float> {
+ public:
+  GovernorTest(const GovernorTest&) = delete;
+  GovernorTest& operator=(const GovernorTest&) = delete;
+
  protected:
   GovernorTest()
       : clamp_(kDefaultClamp),
@@ -62,7 +66,8 @@ class GovernorTest : public ::testing::TestWithParam<float> {
   }
 
   void ProcessFrames(float volume) {
-    governor_->ProcessFrames(data_.data(), kNumFrames, volume, 0);
+    AudioPostProcessor2::Metadata metadata = {0, 0, volume};
+    governor_->ProcessFrames(data_.data(), kNumFrames, &metadata);
   }
 
   void CompareBuffers() {
@@ -74,9 +79,6 @@ class GovernorTest : public ::testing::TestWithParam<float> {
   std::unique_ptr<Governor> governor_;
   AlignedBuffer<float> data_;
   AlignedBuffer<float> expected_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GovernorTest);
 };
 
 TEST_P(GovernorTest, ZeroVolume) {

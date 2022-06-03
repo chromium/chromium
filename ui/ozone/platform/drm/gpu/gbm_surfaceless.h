@@ -8,14 +8,18 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_surface_overlay.h"
 #include "ui/gl/scoped_binders.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
+
+namespace gfx {
+class GpuFence;
+}  // namespace gfx
 
 namespace ui {
 
@@ -32,18 +36,22 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
                  std::unique_ptr<DrmWindowProxy> window,
                  gfx::AcceleratedWidget widget);
 
+  GbmSurfaceless(const GbmSurfaceless&) = delete;
+  GbmSurfaceless& operator=(const GbmSurfaceless&) = delete;
+
   void QueueOverlayPlane(DrmOverlayPlane plane);
 
   // gl::GLSurface:
   bool Initialize(gl::GLSurfaceFormat format) override;
   gfx::SwapResult SwapBuffers(PresentationCallback callback) override;
-  bool ScheduleOverlayPlane(int z_order,
-                            gfx::OverlayTransform transform,
-                            gl::GLImage* image,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
+  bool ScheduleOverlayPlane(
+      gl::GLImage* image,
+      std::unique_ptr<gfx::GpuFence> gpu_fence,
+      const gfx::OverlayPlaneData& overlay_plane_data) override;
+  bool Resize(const gfx::Size& size,
+              float scale_factor,
+              const gfx::ColorSpace& color_space,
+              bool has_alpha) override;
   bool IsOffscreen() override;
   bool SupportsAsyncSwap() override;
   bool SupportsPostSubBuffer() override;
@@ -64,6 +72,7 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
   EGLConfig GetConfig() override;
   void SetRelyOnImplicitSync() override;
   void SetForceGlFlushOnSwapBuffers() override;
+  gfx::SurfaceOrigin GetOrigin() const override;
 
  protected:
   ~GbmSurfaceless() override;
@@ -91,8 +100,7 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
   EGLSyncKHR InsertFence(bool implicit);
   void FenceRetired(PendingFrame* frame);
 
-  void OnSubmission(gfx::SwapResult result,
-                    std::unique_ptr<gfx::GpuFence> out_fence);
+  void OnSubmission(gfx::SwapResult result, gfx::GpuFenceHandle release_fence);
   void OnPresentation(const gfx::PresentationFeedback& feedback);
 
   GbmSurfaceFactory* const surface_factory_;
@@ -104,6 +112,7 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
   std::unique_ptr<gfx::VSyncProvider> vsync_provider_;
   std::vector<std::unique_ptr<PendingFrame>> unsubmitted_frames_;
   std::unique_ptr<PendingFrame> submitted_frame_;
+  std::unique_ptr<gfx::GpuFence> submitted_frame_gpu_fence_;
   const bool has_implicit_external_sync_;
   const bool has_image_flush_external_;
   bool last_swap_buffers_result_ = true;
@@ -116,8 +125,6 @@ class GbmSurfaceless : public gl::SurfacelessEGL {
   bool requires_gl_flush_on_swap_buffers_ = false;
 
   base::WeakPtrFactory<GbmSurfaceless> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GbmSurfaceless);
 };
 
 }  // namespace ui

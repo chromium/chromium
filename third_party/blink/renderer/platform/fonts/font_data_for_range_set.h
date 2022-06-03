@@ -58,6 +58,16 @@ class PLATFORM_EXPORT FontDataForRangeSet
   bool HasFontData() const { return font_data_.get(); }
   const SimpleFontData* FontData() const { return font_data_.get(); }
 
+  // TODO(xiaochengh): |FontData::IsLoadingFallback()| returns true if the
+  // FontData is a pending custom font. We should rename it for better clarity.
+  bool IsPendingCustomFont() const {
+    return font_data_ && font_data_->IsLoadingFallback();
+  }
+
+  bool IsPendingDataUrlCustomFont() const {
+    return font_data_ && font_data_->IsPendingDataUrlCustomFont();
+  }
+
  protected:
   scoped_refptr<SimpleFontData> font_data_;
   scoped_refptr<UnicodeRangeSet> range_set_;
@@ -75,4 +85,4 @@ class PLATFORM_EXPORT FontDataForRangeSetFromCache
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_FOR_RANGE_SET_H_

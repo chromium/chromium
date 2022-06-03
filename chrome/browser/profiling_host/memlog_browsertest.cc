@@ -6,9 +6,10 @@
 #include "build/build_config.h"
 #include "chrome/browser/profiling_host/profiling_process_host.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/heap_profiling/test_driver.h"
+#include "components/heap_profiling/multi_process/test_driver.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/services/heap_profiling/public/cpp/switches.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_ANDROID)
@@ -55,9 +56,10 @@ class MemlogBrowserTest : public PlatformBrowserTest,
   }
 };
 
+// TODO(crbug.com/1223739) Disabled due to flakiness.
 // Ensure invocations via TracingController can generate a valid JSON file with
 // expected data.
-IN_PROC_BROWSER_TEST_P(MemlogBrowserTest, EndToEnd) {
+IN_PROC_BROWSER_TEST_P(MemlogBrowserTest, DISABLED_EndToEnd) {
   LOG(INFO) << "Memlog mode: " << static_cast<int>(GetParam().mode);
   LOG(INFO) << "Memlog stack mode: " << static_cast<int>(GetParam().stack_mode);
   LOG(INFO) << "Started via command line flag: "
@@ -78,7 +80,7 @@ std::vector<TestParam> GetParams() {
   std::vector<TestParam> params;
 
   // Test that if we don't start profiling, nothing happens.
-  params.push_back({Mode::kNone, mojom::StackMode::MIXED,
+  params.push_back({Mode::kNone, mojom::StackMode::NATIVE_WITH_THREAD_NAMES,
                     false /* start_profiling_with_command_line_flag */});
 
   // Test that we can start profiling with command line flag.

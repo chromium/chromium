@@ -24,7 +24,7 @@ if (window.testRunner) {
 }
 
 var sizes = [[800, 600], [900, 600], [900, 640], [500, 640], [800, 600]]
-var root = host.createShadowRoot();
+var root = host.attachShadow({mode: 'open'});
 testshadow = document.createElement("div");
 testshadow.id = "testshadow";
 root.innerHTML = "<style> #testshadow { border: 10vmax solid green; } </style>";

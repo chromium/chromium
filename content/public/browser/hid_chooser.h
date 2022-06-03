@@ -5,8 +5,9 @@
 #ifndef CONTENT_PUBLIC_BROWSER_HID_CHOOSER_H_
 #define CONTENT_PUBLIC_BROWSER_HID_CHOOSER_H_
 
+#include <vector>
+
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
 
@@ -16,15 +17,17 @@ namespace content {
 // object should cancel the prompt.
 class CONTENT_EXPORT HidChooser {
  public:
-  // Callback type used to report the user action. Passed |nullptr| if no device
-  // was selected.
-  using Callback = base::OnceCallback<void(device::mojom::HidDeviceInfoPtr)>;
+  // Callback type used to report the user action. An empty vector is passed if
+  // no device was selected.
+  using Callback =
+      base::OnceCallback<void(std::vector<device::mojom::HidDeviceInfoPtr>)>;
 
   HidChooser() = default;
-  virtual ~HidChooser() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(HidChooser);
+  HidChooser(const HidChooser&) = delete;
+  HidChooser& operator=(const HidChooser&) = delete;
+
+  virtual ~HidChooser() = default;
 };
 
 }  // namespace content

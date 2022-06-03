@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "components/media_control/browser/media_blocker.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 
@@ -24,22 +24,23 @@ class CastMediaBlockerTest;
 
 // This class implements a blocking mode for web applications and is used in
 // Chromecast internal code. Media is unblocked by default.
-class CastMediaBlocker : public content::WebContentsObserver,
+class CastMediaBlocker : public media_control::MediaBlocker,
                          public media_session::mojom::MediaSessionObserver {
  public:
-  // Observes WebContents and MediaSession.
+  // Observes WebContents and the associated MediaSession.
   explicit CastMediaBlocker(content::WebContents* web_contents);
-
-  // Observes only the MediaSession.
-  explicit CastMediaBlocker(content::MediaSession* media_session);
 
   ~CastMediaBlocker() override;
 
-  // Sets if the web contents is allowed to load and play media or not.
+  CastMediaBlocker(const CastMediaBlocker&) = delete;
+  CastMediaBlocker& operator=(const CastMediaBlocker&) = delete;
+
+  // Called when there's a change in whether or not web contents is allowed to
+  // load and play media.
   // If media is unblocked, previously suspended elements should begin playing
   // again. Media is unblocked when both MediaLoading and MediaStarting blocks
   // are off.
-  void BlockMediaLoading(bool blocked);
+  void OnBlockMediaLoadingChanged() override;
   // Sets if the web contents is allowed to play media or not. If media is
   // unblocked, previously suspended elements should begin playing again.  Media
   // is unblocked when both MediaLoading and MediaStarting blocks are off.
@@ -52,7 +53,7 @@ class CastMediaBlocker : public content::WebContentsObserver,
   void MediaSessionInfoChanged(
       media_session::mojom::MediaSessionInfoPtr session_info) override;
   void MediaSessionMetadataChanged(
-      const base::Optional<media_session::MediaMetadata>& metadata) override {}
+      const absl::optional<media_session::MediaMetadata>& metadata) override {}
   void MediaSessionActionsChanged(
       const std::vector<media_session::mojom::MediaSessionAction>& action)
       override {}
@@ -61,23 +62,17 @@ class CastMediaBlocker : public content::WebContentsObserver,
                            std::vector<media_session::MediaImage>>& images)
       override {}
   void MediaSessionPositionChanged(
-      const base::Optional<media_session::MediaPosition>& position) override {}
+      const absl::optional<media_session::MediaPosition>& position) override {}
 
  private:
   friend shell::CastMediaBlockerTest;
-  // content::WebContentsObserver implementation:
-  void RenderFrameCreated(content::RenderFrameHost* render_frame_host) override;
-  void RenderViewReady() override;
+  // components::media_control::MediaBlocker implementation:
+  void OnRenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override;
 
   // Suspends or resumes the media session for the web contents.
   void Suspend();
   void Resume();
-
-  // Blocks or unblocks the render process from loading new media
-  // according to |blocked_|.
-  void UpdateMediaLoadingBlockedState();
-  void UpdateRenderFrameMediaLoadingBlockedState(
-      content::RenderFrameHost* render_frame_host);
 
   void UpdatePlayingState();
 
@@ -92,33 +87,27 @@ class CastMediaBlocker : public content::WebContentsObserver,
   // mockable MediaSessions for testing.
   void SetMediaSessionForTesting(content::MediaSession* media_session);
 
-  // Whether or not media loading should be blocked. This value cache's the last
-  // call to BlockMediaLoading. Is false by default.
-  bool media_loading_blocked_;
-
-  // Whether or not media starting should be blocked. This value cache's the
-  // last call to BlockMediaStarting. Is false by default.
-  bool media_starting_blocked_;
+  // Whether or not media starting should be blocked. This value caches the last
+  // call to BlockMediaStarting.
+  bool media_starting_blocked_ = false;
 
   // Whether or not the user paused media on the page.
-  bool paused_by_user_;
+  bool paused_by_user_ = true;
 
   // Whether or not media in the app can be controlled and if media is currently
-  // suspended. These variables cache arguments from MediaSessionStateChanged().
-  bool suspended_;
-  bool controllable_;
+  // suspended. These variables cache arguments from MediaSessionInfoChanged().
+  bool suspended_ = true;
+  bool controllable_ = false;
 
   // Setting for whether or not the WebContents should suspend video when the
   // content is put into the background. For most content, this setting should
   // be disabled.
-  bool background_video_playback_enabled_;
+  bool background_video_playback_enabled_ = false;
 
   content::MediaSession* media_session_;
 
   mojo::Receiver<media_session::mojom::MediaSessionObserver> observer_receiver_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaBlocker);
 };
 
 }  // namespace chromecast

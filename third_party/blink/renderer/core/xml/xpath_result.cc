@@ -57,7 +57,7 @@ XPathResult::XPathResult(xpath::EvaluationContext& context,
   NOTREACHED();
 }
 
-void XPathResult::Trace(blink::Visitor* visitor) {
+void XPathResult::Trace(Visitor* visitor) const {
   visitor->Trace(value_);
   visitor->Trace(node_set_);
   visitor->Trace(document_);

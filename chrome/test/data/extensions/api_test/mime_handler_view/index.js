@@ -144,14 +144,6 @@ var tests = [
         .then(chrome.test.succeed);
   },
 
-  function testDataUrl() {
-    // TODO(raymes): have separate checks for embedded/unembedded data URLs.
-    checkStreamDetailsNoFile();
-    fetchUrl(streamDetails.streamUrl)
-        .then(expectSuccessfulRead)
-        .then(chrome.test.succeed);
-  },
-
   function testDataUrlLong() {
     checkStreamDetailsNoFile();
     fetchUrl(streamDetails.streamUrl)
@@ -328,10 +320,6 @@ chrome.mimeHandlerPrivate.getStreamInfo(function(streamInfo) {
   // Run the test for data URLs.
   if (streamInfo.originalUrl.startsWith("data:")) {
     window.removeEventListener('message', queueMessage);
-    // Long data URLs get truncated.
-    if (streamInfo.originalUrl == "data:")
-      chrome.test.runTests([testsByName['testDataUrlLong']]);
-    else
-      chrome.test.runTests([testsByName['testDataUrl']]);
+    chrome.test.runTests([testsByName['testDataUrlLong']]);
   }
 });

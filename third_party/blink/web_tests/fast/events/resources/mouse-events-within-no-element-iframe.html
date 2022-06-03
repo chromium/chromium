@@ -28,13 +28,16 @@
 <p id="description"></p>
 <div id="console"></div>
 <script>
-    var div = document.getElementById("test");
-    var x = div.offsetLeft + 100;
-    var y = div.offsetTop - window.pageYOffset + 1;
     var events = [];
     var targets = [];
 
     window.scrollTo(0, 200);
+
+    // A position over to the right of <button> and #test.
+    var button = document.getElementById("test").children[0];
+    var x = button.getBoundingClientRect().right + 1;
+    var y = button.getBoundingClientRect().top;
+
     if (window.eventSender) {
         function appendEventLog(e) {
             events.push(e.type);

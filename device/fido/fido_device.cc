@@ -7,9 +7,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "components/device_event_log/device_event_log.h"
-#include "device/fido/ctap_empty_authenticator_request.h"
 #include "device/fido/device_response_converter.h"
 #include "device/fido/fido_constants.h"
 
@@ -22,9 +21,8 @@ void FidoDevice::TryWink(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-base::string16 FidoDevice::GetDisplayName() const {
-  const auto id = GetId();
-  return base::string16(id.begin(), id.end());
+std::string FidoDevice::GetDisplayName() const {
+  return GetId();
 }
 
 bool FidoDevice::IsInPairingMode() const {
@@ -50,9 +48,10 @@ void FidoDevice::DiscoverSupportedProtocolAndDeviceInfo(
   supported_protocol_ = ProtocolVersion::kCtap2;
   FIDO_LOG(DEBUG)
       << "Sending CTAP2 AuthenticatorGetInfo request to authenticator.";
-  DeviceTransact(AuthenticatorGetInfoRequest().Serialize(),
-                 base::BindOnce(&FidoDevice::OnDeviceInfoReceived, GetWeakPtr(),
-                                std::move(done)));
+  DeviceTransact(
+      {static_cast<uint8_t>(CtapRequestCommand::kAuthenticatorGetInfo)},
+      base::BindOnce(&FidoDevice::OnDeviceInfoReceived, GetWeakPtr(),
+                     std::move(done)));
 }
 
 bool FidoDevice::SupportedProtocolIsInitialized() {
@@ -62,14 +61,14 @@ bool FidoDevice::SupportedProtocolIsInitialized() {
 
 void FidoDevice::OnDeviceInfoReceived(
     base::OnceClosure done,
-    base::Optional<std::vector<uint8_t>> response) {
+    absl::optional<std::vector<uint8_t>> response) {
   // TODO(hongjunchoi): Add tests that verify this behavior.
   if (state_ == FidoDevice::State::kDeviceError)
     return;
 
   state_ = FidoDevice::State::kReady;
-  base::Optional<AuthenticatorGetInfoResponse> get_info_response =
-      response ? ReadCTAPGetInfoResponse(*response) : base::nullopt;
+  absl::optional<AuthenticatorGetInfoResponse> get_info_response =
+      response ? ReadCTAPGetInfoResponse(*response) : absl::nullopt;
   if (!get_info_response ||
       !base::Contains(get_info_response->versions, ProtocolVersion::kCtap2)) {
     supported_protocol_ = ProtocolVersion::kU2f;
@@ -85,6 +84,22 @@ void FidoDevice::OnDeviceInfoReceived(
 
 void FidoDevice::SetDeviceInfo(AuthenticatorGetInfoResponse device_info) {
   device_info_ = std::move(device_info);
+}
+
+bool FidoDevice::NoSilentRequests() const {
+  // caBLE devices do not support silent requests.
+  const auto transport = DeviceTransport();
+  return transport == FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy ||
+         transport == FidoTransportProtocol::kAndroidAccessory;
+}
+
+// static
+bool FidoDevice::IsStatusForUnrecognisedCredentialID(
+    CtapDeviceResponseCode status) {
+  return status == CtapDeviceResponseCode::kCtap2ErrInvalidCredential ||
+         status == CtapDeviceResponseCode::kCtap2ErrNoCredentials ||
+         status == CtapDeviceResponseCode::kCtap2ErrLimitExceeded ||
+         status == CtapDeviceResponseCode::kCtap2ErrRequestTooLarge;
 }
 
 }  // namespace device

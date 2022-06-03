@@ -15,10 +15,8 @@ std::string NotificationMethodToString(
   switch (notification_method) {
     case NOTIFICATION_P2P:
       return "NOTIFICATION_P2P";
-      break;
     case NOTIFICATION_SERVER:
       return "NOTIFICATION_SERVER";
-      break;
     default:
       LOG(WARNING) << "Unknown value for notification method: "
                    << notification_method;

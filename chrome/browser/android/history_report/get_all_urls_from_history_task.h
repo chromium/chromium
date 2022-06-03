@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "components/history/core/browser/history_db_task.h"
 #include "components/history/core/browser/history_service.h"
@@ -21,6 +20,10 @@ class GetAllUrlsFromHistoryTask : public history::HistoryDBTask {
   GetAllUrlsFromHistoryTask(base::WaitableEvent* wait_event,
                             std::vector<std::string>* urls);
 
+  GetAllUrlsFromHistoryTask(const GetAllUrlsFromHistoryTask&) = delete;
+  GetAllUrlsFromHistoryTask& operator=(const GetAllUrlsFromHistoryTask&) =
+      delete;
+
   bool RunOnDBThread(history::HistoryBackend* backend,
                      history::HistoryDatabase* db) override;
   void DoneRunOnMainThread() override {}
@@ -31,8 +34,6 @@ class GetAllUrlsFromHistoryTask : public history::HistoryDBTask {
  private:
   std::vector<std::string>* urls_;
   base::WaitableEvent* wait_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(GetAllUrlsFromHistoryTask);
 };
 
 }  // namespace history_report

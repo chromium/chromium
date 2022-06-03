@@ -1,0 +1,19 @@
+Verifies that mixed content issue is created from mixed content form.
+
+Inspector issue: {
+    issue : {
+        code : MixedContentIssue
+        details : {
+            mixedContentIssueDetails : {
+                frame : {
+                    frameId : <string>
+                }
+                insecureURL : http://devtools.test:8000/NonSecureFormSubmission
+                mainResourceURL : https://devtools.test:8443/inspector-protocol/resources/mixed-content-form.html
+                resolutionStatus : MixedContentWarning
+                resourceType : Form
+            }
+        }
+    }
+}
+

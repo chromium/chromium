@@ -163,7 +163,10 @@ _LANGUAGE_CHARSET_PAIR = {
   'gl'          : '045604e4',
   # No codepage for Zulu, use unicode(1200).
   'zu'          : '043504b0',
-  'fake-bidi'   : '040d04e7',
+
+  # Pseudolocales
+  'ar-XB'       : '040d04e7',
+  'en-XA'       : '040904b0',
 }
 
 # Language ID resource: http://msdn.microsoft.com/en-us/library/ms776294.aspx
@@ -250,7 +253,10 @@ _LANGUAGE_DIRECTIVE_PAIR = {
   'si'          : 'LANG_SINHALESE, SUBLANG_SINHALESE_SRI_LANKA',
   'ne'          : 'LANG_NEPALI, SUBLANG_NEPALI_NEPAL',
   'ti'          : 'LANG_TIGRIGNA, SUBLANG_TIGRIGNA_ERITREA',
-  'fake-bidi'   : 'LANG_HEBREW, SUBLANG_DEFAULT',
+
+  # Pseudolocales
+  'ar-XB'       : 'LANG_HEBREW, SUBLANG_DEFAULT',
+  'en-XA'       : 'LANG_ENGLISH, SUBLANG_ENGLISH_US',
 }
 
 # A note on 'no-specific-language' in the following few functions:

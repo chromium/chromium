@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "url/gurl.h"
@@ -50,11 +50,15 @@ PendingURLLoaderFactoryBundle::PendingURLLoaderFactoryBundle(
 
 PendingURLLoaderFactoryBundle::~PendingURLLoaderFactoryBundle() = default;
 
+bool PendingURLLoaderFactoryBundle::
+    IsTrackedChildPendingURLLoaderFactoryBundle() const {
+  return false;
+}
+
 scoped_refptr<network::SharedURLLoaderFactory>
 PendingURLLoaderFactoryBundle::CreateFactory() {
   auto other = std::make_unique<PendingURLLoaderFactoryBundle>();
   other->pending_default_factory_ = std::move(pending_default_factory_);
-  other->pending_appcache_factory_ = std::move(pending_appcache_factory_);
   other->pending_scheme_specific_factories_ =
       std::move(pending_scheme_specific_factories_);
   other->pending_isolated_world_factories_ =
@@ -88,24 +92,23 @@ network::mojom::URLLoaderFactory* URLLoaderFactoryBundle::GetFactory(
       return it2->second.get();
   }
 
-  // AppCache factory must be used if it's given.
-  if (appcache_factory_)
-    return appcache_factory_.get();
-
-  return default_factory_.is_bound() ? default_factory_.get() : nullptr;
+  // Hitting the DCHECK below means that a subresource load has unexpectedly
+  // happened in a speculative frame (or in a test frame created via
+  // RenderViewTest).  This most likely indicates a bug somewhere else.
+  DCHECK(default_factory_.is_bound());
+  return default_factory_.get();
 }
 
 void URLLoaderFactoryBundle::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation) {
   network::mojom::URLLoaderFactory* factory_ptr = GetFactory(request);
-  factory_ptr->CreateLoaderAndStart(std::move(loader), routing_id, request_id,
-                                    options, request, std::move(client),
+  factory_ptr->CreateLoaderAndStart(std::move(loader), request_id, options,
+                                    request, std::move(client),
                                     traffic_annotation);
 }
 
@@ -129,11 +132,6 @@ URLLoaderFactoryBundle::Clone() {
           CloneRemoteMapToPendingRemoteMap(isolated_world_factories_),
           bypass_redirect_checks_);
 
-  if (appcache_factory_) {
-    appcache_factory_->Clone(pending_factories->pending_appcache_factory()
-                                 .InitWithNewPipeAndPassReceiver());
-  }
-
   return pending_factories;
 }
 
@@ -147,11 +145,6 @@ void URLLoaderFactoryBundle::Update(
     default_factory_.reset();
     default_factory_.Bind(
         std::move(pending_factories->pending_default_factory()));
-  }
-  if (pending_factories->pending_appcache_factory()) {
-    appcache_factory_.reset();
-    appcache_factory_.Bind(
-        std::move(pending_factories->pending_appcache_factory()));
   }
   BindPendingRemoteMapToRemoteMap(
       &scheme_specific_factories_,

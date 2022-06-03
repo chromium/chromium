@@ -4,10 +4,14 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_table_view_controller.h"
 
+#import "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#import "components/autofill/core/common/autofill_features.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/ui/autofill/cells/target_account_item.h"
+#import "ios/chrome/browser/ui/autofill/save_card_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_save_card_modal_delegate.h"
@@ -16,7 +20,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -41,6 +46,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeCardExpireYear,
   ItemTypeCardLegalMessage,
   ItemTypeCardSave,
+  ItemTypeTargetAccount,
 };
 
 @interface InfobarSaveCardTableViewController () <TableViewTextLinkCellDelegate,
@@ -51,10 +57,32 @@ typedef NS_ENUM(NSInteger, ItemType) {
     saveCardModalDelegate;
 // Used to build and record metrics.
 @property(nonatomic, strong) InfobarMetricsRecorder* metricsRecorder;
-// Starting index in the SectionIdentifierContent for the legalMessages. Used to
-// query the corresponding SaveCardMessageWithLinks from legalMessages when
-// configuring the cell.
-@property(nonatomic, assign) int legalMessagesStartingIndex;
+
+// Prefs updated by InfobarSaveCardModalConsumer.
+// Cardholder name to be displayed.
+@property(nonatomic, copy) NSString* cardholderName;
+// Card Issuer icon image to be displayed.
+@property(nonatomic, strong) UIImage* cardIssuerIcon;
+// Card Number to be displayed.
+@property(nonatomic, copy) NSString* cardNumber;
+// Card Expiration Month to be displayed
+@property(nonatomic, copy) NSString* expirationMonth;
+// Card Expiration Year to be displayed.
+@property(nonatomic, copy) NSString* expirationYear;
+// Card related Legal Messages to be displayed.
+@property(nonatomic, copy)
+    NSMutableArray<SaveCardMessageWithLinks*>* legalMessages;
+// YES if the Card being displayed has been saved.
+@property(nonatomic, assign) BOOL currentCardSaved;
+// Set to YES if the Modal should support editing.
+@property(nonatomic, assign) BOOL supportsEditing;
+// The email to identify the account where the card will be saved. Empty if none
+// should be shown, e.g. if the card won't be saved to any account.
+@property(nonatomic, copy) NSString* displayedTargetAccountEmail;
+// The avatar to identify the account where the card will be saved. Null if none
+// should be shown, e.g. if the card won't be saved to any account.
+@property(nonatomic, strong) UIImage* displayedTargetAccountAvatar;
+
 // Item for displaying and editing the cardholder name.
 @property(nonatomic, strong) TableViewTextEditItem* cardholderNameItem;
 // Item for displaying and editing the expiration month.
@@ -70,8 +98,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)initWithModalDelegate:
     (id<InfobarSaveCardModalDelegate>)modalDelegate {
-  self = [super initWithTableViewStyle:UITableViewStylePlain
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+  self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
     _saveCardModalDelegate = modalDelegate;
     _metricsRecorder = [[InfobarMetricsRecorder alloc]
@@ -94,7 +121,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
-                           action:@selector(dismissInfobarModal:)];
+                           action:@selector(dismissInfobarModal)];
   cancelButton.accessibilityIdentifier = kInfobarModalCancelButton;
   self.navigationItem.leftBarButtonItem = cancelButton;
   self.navigationController.navigationBar.prefersLargeTitles = NO;
@@ -128,7 +155,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addSectionWithIdentifier:SectionIdentifierContent];
 
   TableViewTextEditItem* cardLastDigitsItem = [self
-      textEditItemWithType:ItemTypeCardExpireYear
+      textEditItemWithType:ItemTypeCardLastDigits
              textFieldName:l10n_util::GetNSString(IDS_IOS_AUTOFILL_CARD_NUMBER)
             textFieldValue:self.cardNumber
           textFieldEnabled:NO];
@@ -137,7 +164,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierContent];
 
   self.cardholderNameItem =
-      [self textEditItemWithType:ItemTypeCardExpireYear
+      [self textEditItemWithType:ItemTypeCardHolderName
                    textFieldName:l10n_util::GetNSString(
                                      IDS_IOS_AUTOFILL_CARDHOLDER_NAME)
                   textFieldValue:self.cardholderName
@@ -146,7 +173,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierContent];
 
   self.expirationMonthItem = [self
-      textEditItemWithType:ItemTypeCardExpireYear
+      textEditItemWithType:ItemTypeCardExpireMonth
              textFieldName:l10n_util::GetNSString(IDS_IOS_AUTOFILL_EXP_MONTH)
             textFieldValue:self.expirationMonth
           textFieldEnabled:self.supportsEditing];
@@ -161,16 +188,42 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:self.expirationYearItem
       toSectionWithIdentifier:SectionIdentifierContent];
 
-  // Set legalMessagesStartingIndex right before adding any
-  // SaveCardMessageWithLinks TableViewTextLinkItems to the model.
-  self.legalMessagesStartingIndex =
-      [model numberOfItemsInSection:
-                 [model sectionForSectionIdentifier:SectionIdentifierContent]];
+  // The extra legal line and account info should only be shown together.
+  bool shouldShowExtraLegalLineAndAccountInfo =
+      [self.displayedTargetAccountEmail length] > 0 &&
+      self.displayedTargetAccountAvatar != nil;
+
+  // Concatenate legal lines and maybe add the extra one.
+  // TODO(crbug.com/1224680): In reality the server sends a single legal line.
+  // The extra text should be added directly to the server string instead of
+  // here (see b/192290070).
+  NSMutableString* joinedMessage = [[NSMutableString alloc] init];
+  BOOL shouldAddSpace = NO;
   for (SaveCardMessageWithLinks* message in self.legalMessages) {
-    TableViewTextLinkItem* legalMessageItem =
-        [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
-    legalMessageItem.text = message.messageText;
-    [model addItem:legalMessageItem
+    if (shouldAddSpace)
+      [joinedMessage appendString:@" "];
+    [joinedMessage appendString:message.messageText];
+    shouldAddSpace = YES;
+  }
+  if (shouldShowExtraLegalLineAndAccountInfo) {
+    if (shouldAddSpace)
+      [joinedMessage appendString:@" "];
+    [joinedMessage appendString:l10n_util::GetNSString(
+                                    IDS_IOS_CARD_WILL_BE_SAVED_TO_ACCOUNT)];
+  }
+
+  TableViewTextLinkItem* legalMessageItem =
+      [[TableViewTextLinkItem alloc] initWithType:ItemTypeCardLegalMessage];
+  legalMessageItem.text = joinedMessage;
+  [model addItem:legalMessageItem
+      toSectionWithIdentifier:SectionIdentifierContent];
+
+  if (shouldShowExtraLegalLineAndAccountInfo) {
+    TargetAccountItem* targetTargetAccountItem =
+        [[TargetAccountItem alloc] initWithType:ItemTypeTargetAccount];
+    targetTargetAccountItem.email = self.displayedTargetAccountEmail;
+    targetTargetAccountItem.avatar = self.displayedTargetAccountAvatar;
+    [model addItem:targetTargetAccountItem
         toSectionWithIdentifier:SectionIdentifierContent];
   }
 
@@ -179,10 +232,40 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.saveCardButtonItem.textAlignment = NSTextAlignmentNatural;
   self.saveCardButtonItem.buttonText =
       l10n_util::GetNSString(IDS_IOS_AUTOFILL_SAVE_CARD);
-  self.saveCardButtonItem.enabled = self.currentCardSaved;
+  self.saveCardButtonItem.enabled = !self.currentCardSaved;
   self.saveCardButtonItem.disableButtonIntrinsicWidth = YES;
   [model addItem:self.saveCardButtonItem
       toSectionWithIdentifier:SectionIdentifierContent];
+
+  if (self.supportsEditing) {
+    [self.cardholderNameItem
+        setHasValidText:[self isCardholderNameValid:self.cardholderName]];
+    [self.expirationMonthItem
+        setHasValidText:[self isExpirationMonthValid:self.expirationMonth
+                                             forYear:self.expirationYear]];
+    [self.expirationYearItem
+        setHasValidText:[self isExpirationYearValid:self.expirationYear]];
+    [self updateSaveCardButtonState];
+  }
+}
+
+#pragma mark - InfobarSaveCardModalConsumer
+
+- (void)setupModalViewControllerWithPrefs:(NSDictionary*)prefs {
+  self.cardholderName = prefs[kCardholderNamePrefKey];
+  self.cardIssuerIcon = prefs[kCardIssuerIconNamePrefKey];
+  self.cardNumber = prefs[kCardNumberPrefKey];
+  self.expirationMonth = prefs[kExpirationMonthPrefKey];
+  self.expirationYear = prefs[kExpirationYearPrefKey];
+  self.legalMessages = prefs[kLegalMessagesPrefKey];
+  self.currentCardSaved = [prefs[kCurrentCardSavedPrefKey] boolValue];
+  self.supportsEditing = [prefs[kSupportsEditingPrefKey] boolValue];
+  self.displayedTargetAccountEmail = prefs[kDisplayedTargetAccountEmailPrefKey];
+  self.displayedTargetAccountAvatar =
+      prefs[kDisplayedTargetAccountAvatarPrefKey] == [NSNull null]
+          ? nil
+          : prefs[kDisplayedTargetAccountAvatarPrefKey];
+  [self.tableView reloadData];
 }
 
 #pragma mark - UITableViewDataSource
@@ -206,8 +289,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              action:@selector(nameEditDidBegin)
                    forControlEvents:UIControlEventEditingDidBegin];
       [editCell.textField addTarget:self
-                             action:@selector(updateSaveCardButtonState)
-                   forControlEvents:UIControlEventEditingChanged];
+                             action:@selector(nameDidChange:)
+                   forControlEvents:UIControlEventEditingChanged |
+                                    UIControlEventEditingDidEnd];
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
       editCell.textField.delegate = self;
       break;
@@ -219,8 +303,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              action:@selector(monthEditDidBegin)
                    forControlEvents:UIControlEventEditingDidBegin];
       [editCell.textField addTarget:self
-                             action:@selector(updateSaveCardButtonState)
-                   forControlEvents:UIControlEventEditingChanged];
+                             action:@selector(expireMonthDidChange:)
+                   forControlEvents:UIControlEventEditingChanged |
+                                    UIControlEventEditingDidEnd];
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
       editCell.textField.delegate = self;
       break;
@@ -232,25 +317,23 @@ typedef NS_ENUM(NSInteger, ItemType) {
                              action:@selector(yearEditDidBegin)
                    forControlEvents:UIControlEventEditingDidBegin];
       [editCell.textField addTarget:self
-                             action:@selector(updateSaveCardButtonState)
-                   forControlEvents:UIControlEventEditingChanged];
+                             action:@selector(expireYearDidChange:)
+                   forControlEvents:UIControlEventEditingChanged |
+                                    UIControlEventEditingDidEnd];
       editCell.selectionStyle = UITableViewCellSelectionStyleNone;
       editCell.textField.delegate = self;
       break;
     }
     case ItemTypeCardLegalMessage: {
-      NSUInteger legalMessageIndex =
-          indexPath.row - self.legalMessagesStartingIndex;
-      DCHECK(legalMessageIndex >= 0);
-      DCHECK(legalMessageIndex < self.legalMessages.count);
       TableViewTextLinkCell* linkCell =
           base::mac::ObjCCast<TableViewTextLinkCell>(cell);
-      SaveCardMessageWithLinks* message = self.legalMessages[legalMessageIndex];
-      [message.linkRanges enumerateObjectsUsingBlock:^(
-                              NSValue* rangeValue, NSUInteger i, BOOL* stop) {
-        [linkCell setLinkURL:message.linkURLs[i]
-                    forRange:rangeValue.rangeValue];
-      }];
+      for (SaveCardMessageWithLinks* message in self.legalMessages) {
+        [message.linkRanges enumerateObjectsUsingBlock:^(
+                                NSValue* rangeValue, NSUInteger i, BOOL* stop) {
+          [linkCell setLinkURL:message.linkURLs[i]
+                      forRange:rangeValue.rangeValue];
+        }];
+      }
       linkCell.delegate = self;
       linkCell.separatorInset =
           UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
@@ -265,6 +348,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
           forControlEvents:UIControlEventTouchUpInside];
       break;
     }
+    case ItemTypeTargetAccount:
+      cell.separatorInset =
+          UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
+      break;
   }
 
   return cell;
@@ -314,27 +401,64 @@ typedef NS_ENUM(NSInteger, ItemType) {
 }
 
 - (void)nameEditDidBegin {
-  // TODO(crbug.com/1014652): Implement, should only be needed to record
-  // SaveCard specific editing metrics.
+  [SaveCardInfobarMetricsRecorder
+      recordModalEvent:MobileMessagesSaveCardModalEvent::EditedCardHolderName];
 }
 
 - (void)monthEditDidBegin {
-  // TODO(crbug.com/1014652): Implement, should only be needed to record
-  // SaveCard specific editing metrics.
+  [SaveCardInfobarMetricsRecorder
+      recordModalEvent:MobileMessagesSaveCardModalEvent::EditedExpirationMonth];
 }
 
 - (void)yearEditDidBegin {
-  // TODO(crbug.com/1014652): Implement, should only be needed to record
-  // SaveCard specific editing metrics.
+  [SaveCardInfobarMetricsRecorder
+      recordModalEvent:MobileMessagesSaveCardModalEvent::EditedExpirationYear];
 }
 
-- (void)dismissInfobarModal:(UIButton*)sender {
+- (void)nameDidChange:(UITextField*)textField {
+  BOOL isNameValid = [self isCardholderNameValid:textField.text];
+
+  self.cardholderNameItem.textFieldValue = textField.text;
+  [self.cardholderNameItem setHasValidText:isNameValid];
+  [self reconfigureCellsForItems:@[ self.cardholderNameItem ]];
+
+  [self updateSaveCardButtonState];
+}
+
+- (void)expireMonthDidChange:(UITextField*)textField {
+  BOOL isMonthValid =
+      [self isExpirationMonthValid:textField.text
+                           forYear:self.expirationYearItem.textFieldValue];
+
+  self.expirationMonthItem.textFieldValue = textField.text;
+  [self.expirationMonthItem setHasValidText:isMonthValid];
+  [self reconfigureCellsForItems:@[ self.expirationMonthItem ]];
+
+  [self updateSaveCardButtonState];
+}
+
+- (void)expireYearDidChange:(UITextField*)textField {
+  BOOL isYearValid = [self isExpirationYearValid:textField.text];
+  // Check if the card month is valid for the newly entered year.
+  BOOL isMonthValid =
+      [self isExpirationMonthValid:self.expirationMonthItem.textFieldValue
+                           forYear:textField.text];
+
+  self.expirationYearItem.textFieldValue = textField.text;
+  [self.expirationYearItem setHasValidText:isYearValid];
+  [self.expirationMonthItem setHasValidText:isMonthValid];
+  [self reconfigureCellsForItems:@[
+    self.expirationYearItem, self.expirationMonthItem
+  ]];
+
+  [self updateSaveCardButtonState];
+}
+
+- (void)dismissInfobarModal {
   base::RecordAction(
       base::UserMetricsAction("MobileMessagesModalCancelledTapped"));
   [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
-  [self.saveCardModalDelegate dismissInfobarModal:sender
-                                         animated:YES
-                                       completion:nil];
+  [self.saveCardModalDelegate dismissInfobarModal:self];
 }
 
 #pragma mark - Helpers

@@ -10,13 +10,12 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_getter.h"
 #include "chromeos/services/device_sync/cryptauth_feature_status_getter_impl.h"
 #include "chromeos/services/device_sync/proto/cryptauth_devicesync.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -27,17 +26,23 @@ class CryptAuthClientFactory;
 class FakeCryptAuthFeatureStatusGetter : public CryptAuthFeatureStatusGetter {
  public:
   FakeCryptAuthFeatureStatusGetter();
+
+  FakeCryptAuthFeatureStatusGetter(const FakeCryptAuthFeatureStatusGetter&) =
+      delete;
+  FakeCryptAuthFeatureStatusGetter& operator=(
+      const FakeCryptAuthFeatureStatusGetter&) = delete;
+
   ~FakeCryptAuthFeatureStatusGetter() override;
 
   // The RequestContext passed to GetFeatureStatuses(). Returns null if
   // GetFeatureStatuses() has not been called yet.
-  const base::Optional<cryptauthv2::RequestContext>& request_context() const {
+  const absl::optional<cryptauthv2::RequestContext>& request_context() const {
     return request_context_;
   }
 
   // The device IDs passed to GetFeatureStatuses(). Returns null if
   // GetFeatureStatuses() has not been called yet.
-  const base::Optional<base::flat_set<std::string>>& device_ids() const {
+  const absl::optional<base::flat_set<std::string>>& device_ids() const {
     return device_ids_;
   }
 
@@ -52,39 +57,41 @@ class FakeCryptAuthFeatureStatusGetter : public CryptAuthFeatureStatusGetter {
   void OnAttemptStarted(const cryptauthv2::RequestContext& request_context,
                         const base::flat_set<std::string>& device_ids) override;
 
-  base::Optional<cryptauthv2::RequestContext> request_context_;
-  base::Optional<base::flat_set<std::string>> device_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusGetter);
+  absl::optional<cryptauthv2::RequestContext> request_context_;
+  absl::optional<base::flat_set<std::string>> device_ids_;
 };
 
 class FakeCryptAuthFeatureStatusGetterFactory
     : public CryptAuthFeatureStatusGetterImpl::Factory {
  public:
   FakeCryptAuthFeatureStatusGetterFactory();
+
+  FakeCryptAuthFeatureStatusGetterFactory(
+      const FakeCryptAuthFeatureStatusGetterFactory&) = delete;
+  FakeCryptAuthFeatureStatusGetterFactory& operator=(
+      const FakeCryptAuthFeatureStatusGetterFactory&) = delete;
+
   ~FakeCryptAuthFeatureStatusGetterFactory() override;
 
   // Returns a vector of all FakeCryptAuthFeatureStatusGetter instances created
-  // by BuildInstance().
+  // by CreateInstance().
   const std::vector<FakeCryptAuthFeatureStatusGetter*>& instances() const {
     return instances_;
   }
 
-  // Returns the most recent CryptAuthClientFactory input into BuildInstance().
+  // Returns the most recent CryptAuthClientFactory input into CreateInstance().
   const CryptAuthClientFactory* last_client_factory() const {
     return last_client_factory_;
   }
 
  private:
   // CryptAuthFeatureStatusGetterImpl::Factory:
-  std::unique_ptr<CryptAuthFeatureStatusGetter> BuildInstance(
+  std::unique_ptr<CryptAuthFeatureStatusGetter> CreateInstance(
       CryptAuthClientFactory* client_factory,
-      std::unique_ptr<base::OneShotTimer> timer = nullptr) override;
+      std::unique_ptr<base::OneShotTimer> timer) override;
 
   std::vector<FakeCryptAuthFeatureStatusGetter*> instances_;
   CryptAuthClientFactory* last_client_factory_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeCryptAuthFeatureStatusGetterFactory);
 };
 
 }  // namespace device_sync

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tags_manager.h"
@@ -10,6 +9,9 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/browser/back_forward_cache.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace task_manager {
@@ -32,11 +34,13 @@ class DevToolsTagTest : public InProcessBrowserTest {
     CHECK(embedded_test_server()->Start());
   }
 
+  DevToolsTagTest(const DevToolsTagTest&) = delete;
+  DevToolsTagTest& operator=(const DevToolsTagTest&) = delete;
   ~DevToolsTagTest() override {}
 
   void LoadTestPage(const std::string& test_page) {
     GURL url = embedded_test_server()->GetURL(test_page);
-    ui_test_utils::NavigateToURL(browser(), url);
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   }
 
   void OpenDevToolsWindow(bool is_docked) {
@@ -54,8 +58,6 @@ class DevToolsTagTest : public InProcessBrowserTest {
 
  private:
   DevToolsWindow* devtools_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsTagTest);
 };
 
 // Tests that opening a DevToolsWindow will result in tagging its main
@@ -110,14 +112,38 @@ IN_PROC_BROWSER_TEST_F(DevToolsTagTest, DevToolsTaskIsProvided) {
   const int64_t task_id = task->task_id();
   LoadTestPage(kTestPage2);
   EXPECT_EQ(2U, tags_manager()->tracked_tags().size());
-  EXPECT_EQ(task_id, task_manager.tasks().back()->task_id());
-  EXPECT_EQ(task, task_manager.tasks().back());
+  if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+    // When ProactivelySwapBrowsingInstance or RenderDocument is enabled on
+    // same-site main frame navigations, the navigation above will result in a
+    // new RenderFrameHost, so the DevTools task will move (but still exist
+    // in the tasks list).
+    EXPECT_NE(task_id, task_manager.tasks().back()->task_id());
+    EXPECT_NE(task, task_manager.tasks().back());
+    EXPECT_EQ(task_id, task_manager.tasks()[0]->task_id());
+    EXPECT_EQ(task, task_manager.tasks()[0]);
+  } else {
+    EXPECT_EQ(task_id, task_manager.tasks().back()->task_id());
+    EXPECT_EQ(task, task_manager.tasks().back());
+  }
   EXPECT_NE(task_manager.tasks()[0]->title(),
             task_manager.tasks()[1]->title());
+  // If same-site back-forward cache is enabled, the task for the previous page
+  // will still be around.
+  EXPECT_EQ(
+      content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
+          ? 3U
+          : 2U,
+      task_manager.tasks().size());
 
+  // Close the DevTools window.
   CloseDevToolsWindow();
   EXPECT_EQ(1U, tags_manager()->tracked_tags().size());
-  EXPECT_EQ(1U, task_manager.tasks().size());
+
+  EXPECT_EQ(
+      content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
+          ? 2U
+          : 1U,
+      task_manager.tasks().size());
 }
 
 }  // namespace task_manager

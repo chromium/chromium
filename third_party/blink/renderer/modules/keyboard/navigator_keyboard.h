@@ -18,20 +18,19 @@ class Keyboard;
 // Navigator supplement which exposes keyboard related functionality.
 class NavigatorKeyboard final : public GarbageCollected<NavigatorKeyboard>,
                                 public Supplement<Navigator> {
-  USING_GARBAGE_COLLECTED_MIXIN(NavigatorKeyboard);
-
  public:
   static const char kSupplementName[];
   static Keyboard* keyboard(Navigator&);
 
   explicit NavigatorKeyboard(Navigator&);
 
-  void Trace(blink::Visitor*) override;
+  NavigatorKeyboard(const NavigatorKeyboard&) = delete;
+  NavigatorKeyboard& operator=(const NavigatorKeyboard&) = delete;
+
+  void Trace(Visitor*) const override;
 
  private:
   Member<Keyboard> keyboard_;
-
-  DISALLOW_COPY_AND_ASSIGN(NavigatorKeyboard);
 };
 
 }  // namespace blink

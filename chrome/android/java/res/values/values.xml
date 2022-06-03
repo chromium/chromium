@@ -25,49 +25,6 @@
     <!-- Compositor Tab Title Text -->
     <bool name="compositor_tab_title_fake_bold_text">true</bool>
 
-    <!-- TabSwitcher - Maximum amount to tilt tabs in over scroll in degrees. -->
-    <integer name="over_scroll_angle">15</integer>
-
-    <!-- Toolbar/AppMenu - Drawable level on reload image button -->
-    <integer name="reload_button_level_reload">0</integer>
-    <integer name="reload_button_level_stop">1</integer>
-
-    <!-- Help and Feedback
-         These constants should be in sync with the context names on go/mobilehelprecs.
-         If the context ID cannot be found, the default help page will be shown to the user.-->
-    <string name="help_context_autofill">android_autofill_ota</string>
-    <string name="help_context_new_tab">mobile_new_tab</string>
-    <string name="help_context_search_results">mobile_search_results</string>
-    <string name="help_context_webpage">mobile_webpage</string>
-    <string name="help_context_settings">mobile_settings</string>
-    <string name="help_context_incognito">mobile_incognito</string>
-    <string name="help_context_bookmarks">mobile_bookmarks</string>
-    <string name="help_context_history">mobile_history</string>
-    <string name="help_context_privacy">mobile_privacy</string>
-    <string name="help_context_general">mobile_general</string>
-    <string name="help_context_protected_content">protected_content</string>
-    <string name="help_context_data_reduction">reduce_data_usage</string>
-    <string name="help_context_incognito_learn_more">chrome_incognito</string>
-    <string name="help_context_sad_tab">mobile_awsnap</string>
-    <string name="help_context_clear_browsing_data">clear_browsing_data</string>
-    <string name="help_context_change_sync_passphrase">change_sync_passphrase</string>
-    <string name="help_context_sync_and_services">syncgoogleservices</string>
-    <string name="help_context_passwords">passwords</string>
-    <string name="help_context_password_leak_detection">leak_detection_android</string>
-    <!-- TODO(peconn): Add help section. -->
-    <!-- <string name="help_context_suggestions">mobile_content_suggestions</string> -->
-
-    <!-- Our manage space activity. Default pre-KitKat to be nothing. -->
-    <string name="manage_space_activity"></string>
-
-    <!-- Value for scaleX to mirror drawables correctly for LTR / RTL layouts. -->
-    <integer name="automirror_scale_x_reverse">-1</integer>
-
-    <!-- Modern List Item -->
-    <integer name="list_item_level_default">0</integer>
-    <integer name="list_item_level_selected">1</integer>
-    <integer name="list_item_level_incognito">2</integer>
-
     <!-- Download InfoBar animation. -->
     <integer name="download_infobar_sweep_up_delay">500</integer>
     <integer name="download_infobar_sweep_down_delay">800</integer>
@@ -77,9 +34,13 @@
     <integer name="download_infobar_bar_fill_in_delay">400</integer>
     <integer name="download_infobar_bar_fill_out_delay">200</integer>
 
-    <!-- Bottom navigation bar styling. -->
-    <bool name="window_light_navigation_bar">true</bool>
+    <!-- Contextual Search -->
+    <item name="contextual_search_sheet_full_height_fraction" format="float" type="dimen">0.95</item>
 
-    <!-- Status bar icon styling. -->
-    <bool name="window_light_status_bar">true</bool>
+    <!-- Tablet tab strip -->
+    <item name="compositor_background_tab_outline_alpha" format="float" type="dimen">0.2</item>
+    <item name="compositor_background_tab_overlay_alpha" format="float" type="dimen">0</item>
+
+    <!-- Revamped Incognito NTP -->
+    <integer name="descriptions_weight">1</integer>
 </resources>

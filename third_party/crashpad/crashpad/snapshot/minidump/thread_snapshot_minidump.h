@@ -32,6 +32,10 @@ namespace internal {
 class ThreadSnapshotMinidump : public ThreadSnapshot {
  public:
   ThreadSnapshotMinidump();
+
+  ThreadSnapshotMinidump(const ThreadSnapshotMinidump&) = delete;
+  ThreadSnapshotMinidump& operator=(const ThreadSnapshotMinidump&) = delete;
+
   ~ThreadSnapshotMinidump() override;
 
   //! \brief Initializes the object.
@@ -70,8 +74,6 @@ class ThreadSnapshotMinidump : public ThreadSnapshot {
   MinidumpContextConverter context_;
   MemorySnapshotMinidump stack_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadSnapshotMinidump);
 };
 
 }  // namespace internal

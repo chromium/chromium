@@ -1,7 +1,4 @@
 Tests that logging custom elements uses proper formatting.
 
-console-log-custom-elements.js:24 [Deprecation] document.registerElement is deprecated and will be removed in M80, around February 2020. Please use window.customElements.define instead. See https://www.chromestatus.com/features/4642138092470272 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-registerNonElement @ console-log-custom-elements.js:24
-(anonymous) @ console-log-custom-elements.js:40
-console-log-custom-elements.js:20 foo-bar
+console-log-custom-elements.js:19 foo-bar
 

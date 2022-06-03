@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/bits.h"
 #include "base/callback.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
@@ -18,6 +18,7 @@
 #include "media/base/decoder_buffer.h"
 #include "media/base/limits.h"
 #include "media/base/media_log.h"
+#include "media/base/video_aspect_ratio.h"
 #include "media/base/video_util.h"
 
 extern "C" {
@@ -52,6 +53,9 @@ static void GetDecoderThreadCounts(const int coded_height,
 static VideoPixelFormat Dav1dImgFmtToVideoPixelFormat(
     const Dav1dPictureParameters* pic) {
   switch (pic->layout) {
+    // Single plane monochrome images will be converted to standard 3 plane ones
+    // since Chromium doesn't support single Y plane images.
+    case DAV1D_PIXEL_LAYOUT_I400:
     case DAV1D_PIXEL_LAYOUT_I420:
       switch (pic->bpc) {
         case 8:
@@ -88,9 +92,6 @@ static VideoPixelFormat Dav1dImgFmtToVideoPixelFormat(
           DLOG(ERROR) << "Unsupported bit depth: " << pic->bpc;
           return PIXEL_FORMAT_UNKNOWN;
       }
-    default:
-      DLOG(ERROR) << "Unsupported pixel format: " << pic->layout;
-      return PIXEL_FORMAT_UNKNOWN;
   }
 }
 
@@ -128,6 +129,16 @@ struct ScopedDav1dPictureFree {
   }
 };
 
+// static
+SupportedVideoDecoderConfigs Dav1dVideoDecoder::SupportedConfigs() {
+  return {{/*profile_min=*/AV1PROFILE_PROFILE_MAIN,
+           /*profile_max=*/AV1PROFILE_PROFILE_HIGH,
+           /*coded_size_min=*/kDefaultSwDecodeSizeMin,
+           /*coded_size_max=*/kDefaultSwDecodeSizeMax,
+           /*allow_encrypted=*/false,
+           /*require_encrypted=*/false}};
+}
+
 Dav1dVideoDecoder::Dav1dVideoDecoder(MediaLog* media_log,
                                      OffloadState offload_state)
     : media_log_(media_log),
@@ -140,8 +151,8 @@ Dav1dVideoDecoder::~Dav1dVideoDecoder() {
   CloseDecoder();
 }
 
-std::string Dav1dVideoDecoder::GetDisplayName() const {
-  return "Dav1dVideoDecoder";
+VideoDecoderType Dav1dVideoDecoder::GetDecoderType() const {
+  return VideoDecoderType::kDav1d;
 }
 
 void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
@@ -155,8 +166,15 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
                                          : std::move(init_cb);
-  if (config.is_encrypted() || config.codec() != kCodecAV1) {
-    std::move(bound_init_cb).Run(false);
+  if (config.is_encrypted()) {
+    std::move(bound_init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    return;
+  }
+
+  if (config.codec() != VideoCodec::kAV1) {
+    std::move(bound_init_cb)
+        .Run(Status(StatusCode::kDecoderUnsupportedCodec)
+                 .WithData("codec", config.codec()));
     return;
   }
 
@@ -202,7 +220,7 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // |n_frame_threads|=1 (https://crbug.com/957511) the minimum total number of
   // threads is 6 (two tile and two frame) regardless of core count. The maximum
   // is min(2 * base::SysInfo::NumberOfProcessors(), limits::kMaxVideoThreads).
-  if (low_delay)
+  if (low_delay || config.is_rtc())
     s.n_frame_threads = 1;
   else if (s.n_frame_threads * (s.n_tile_threads + 1) > max_threads)
     s.n_frame_threads = std::max(2, max_threads / (s.n_tile_threads + 1));
@@ -213,15 +231,16 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   // Set a maximum frame size limit to avoid OOM'ing fuzzers.
   s.frame_size_limit = limits::kMaxCanvas;
 
+  // TODO(tmathmeyer) write the dav1d error into the data for the media error.
   if (dav1d_open(&dav1d_decoder_, &s) < 0) {
-    std::move(bound_init_cb).Run(false);
+    std::move(bound_init_cb).Run(StatusCode::kDecoderFailedInitialization);
     return;
   }
 
   config_ = config;
   state_ = DecoderState::kNormal;
   output_cb_ = output_cb;
-  std::move(bound_init_cb).Run(true);
+  std::move(bound_init_cb).Run(OkStatus());
 }
 
 void Dav1dVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -340,7 +359,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
       continue;
     }
 
-    auto frame = CopyImageToVideoFrame(p.get());
+    auto frame = BindImageToVideoFrame(p.get());
     if (!frame) {
       MEDIA_LOG(DEBUG, media_log_)
           << "Failed to produce video frame from Dav1dPicture.";
@@ -349,7 +368,7 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
 
     // AV1 color space defines match ISO 23001-8:2016 via ISO/IEC 23091-4/ITU-T
     // H.273. https://aomediacodec.github.io/av1-spec/#color-config-semantics
-    media::VideoColorSpace color_space(
+    VideoColorSpace color_space(
         p->seq_hdr->pri, p->seq_hdr->trc, p->seq_hdr->mtrx,
         p->seq_hdr->color_range ? gfx::ColorSpace::RangeID::FULL
                                 : gfx::ColorSpace::RangeID::LIMITED);
@@ -359,10 +378,13 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
       color_space = config_.color_space_info();
 
     frame->set_color_space(color_space.ToGfxColorSpace());
-    frame->metadata()->SetBoolean(VideoFrameMetadata::POWER_EFFICIENT, false);
-    frame->AddDestructionObserver(base::BindOnce(
-        base::DoNothing::Once<ScopedPtrDav1dPicture>(), std::move(p)));
+    frame->metadata().power_efficient = false;
+    frame->set_hdr_metadata(config_.hdr_metadata());
 
+    // When we use bind mode, our image data is dependent on the Dav1dPicture,
+    // so we must ensure it stays alive along enough.
+    frame->AddDestructionObserver(
+        base::BindOnce([](ScopedPtrDav1dPicture) {}, std::move(p)));
     output_cb_.Run(std::move(frame));
   }
 
@@ -370,22 +392,65 @@ bool Dav1dVideoDecoder::DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
   return true;
 }
 
-scoped_refptr<VideoFrame> Dav1dVideoDecoder::CopyImageToVideoFrame(
+scoped_refptr<VideoFrame> Dav1dVideoDecoder::BindImageToVideoFrame(
     const Dav1dPicture* pic) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const gfx::Size visible_size(pic->p.w, pic->p.h);
 
   VideoPixelFormat pixel_format = Dav1dImgFmtToVideoPixelFormat(&pic->p);
   if (pixel_format == PIXEL_FORMAT_UNKNOWN)
     return nullptr;
 
-  // Since we're making a copy, only copy the visible area.
-  const gfx::Size visible_size(pic->p.w, pic->p.h);
-  return VideoFrame::WrapExternalYuvData(
+  auto uv_plane_stride = pic->stride[1];
+  auto* u_plane = static_cast<uint8_t*>(pic->data[1]);
+  auto* v_plane = static_cast<uint8_t*>(pic->data[2]);
+
+  const bool needs_fake_uv_planes = pic->p.layout == DAV1D_PIXEL_LAYOUT_I400;
+  if (needs_fake_uv_planes) {
+    // UV planes are half the size of the Y plane.
+    uv_plane_stride = base::bits::AlignUp(pic->stride[0] / 2, 2);
+    const auto uv_plane_height = (pic->p.h + 1) / 2;
+    const size_t size_needed = uv_plane_stride * uv_plane_height;
+
+    if (!fake_uv_data_ || fake_uv_data_->size() != size_needed) {
+      if (pic->p.bpc == 8) {
+        // Avoid having base::RefCountedBytes zero initialize the memory just to
+        // fill it with a different value.
+        constexpr uint8_t kBlankUV = 256 / 2;
+        std::vector<unsigned char> empty_data(size_needed, kBlankUV);
+
+        // When we resize, existing frames will keep their refs on the old data.
+        fake_uv_data_ = base::RefCountedBytes::TakeVector(&empty_data);
+      } else {
+        DCHECK(pic->p.bpc == 10 || pic->p.bpc == 12);
+        const uint16_t kBlankUV = (1 << pic->p.bpc) / 2;
+        fake_uv_data_ =
+            base::MakeRefCounted<base::RefCountedBytes>(size_needed);
+
+        uint16_t* data = fake_uv_data_->front_as<uint16_t>();
+        std::fill(data, data + size_needed / 2, kBlankUV);
+      }
+    }
+
+    u_plane = v_plane = fake_uv_data_->front_as<uint8_t>();
+  }
+
+  auto frame = VideoFrame::WrapExternalYuvData(
       pixel_format, visible_size, gfx::Rect(visible_size),
-      config_.natural_size(), pic->stride[0], pic->stride[1], pic->stride[1],
-      static_cast<uint8_t*>(pic->data[0]), static_cast<uint8_t*>(pic->data[1]),
-      static_cast<uint8_t*>(pic->data[2]),
-      base::TimeDelta::FromMicroseconds(pic->m.timestamp));
+      config_.aspect_ratio().GetNaturalSize(gfx::Rect(visible_size)),
+      pic->stride[0], uv_plane_stride, uv_plane_stride,
+      static_cast<uint8_t*>(pic->data[0]), u_plane, v_plane,
+      base::Microseconds(pic->m.timestamp));
+  if (!frame)
+    return nullptr;
+
+  // Each frame needs a ref on the fake UV data to keep it alive until done.
+  if (needs_fake_uv_planes) {
+    frame->AddDestructionObserver(base::BindOnce(
+        [](scoped_refptr<base::RefCountedBytes>) {}, fake_uv_data_));
+  }
+
+  return frame;
 }
 
 }  // namespace media

@@ -1,0 +1,13 @@
+Document
+++DataGrid Grid.ColumnCount=2 Grid.RowCount=2 Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Table.RowOrColumnMajor='RowMajor'
+++++DataItem
+++++++DataItem Name='Browser' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='Browser' IsControlElement=false
+++++++DataItem Name='Rendering Engine' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='Rendering Engine' IsControlElement=false
+++++DataItem
+++++++DataItem Name='Chrome' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='Chrome' IsControlElement=false
+++++++DataItem Name='Blink' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='Blink' IsControlElement=false
+++Text Name='Done'

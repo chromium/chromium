@@ -5,22 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV",
-          "rect": [0, 50, 106, 106],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [0, 50, 106, 106],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "VerticalScrollbar",
-          "rect": [88, 53, 15, 100],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [0, 50, 106, 106]
       ]
     }
   ]

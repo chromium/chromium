@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Beklager. Forsøket på å opprette tilfeldig RSA-privatnøkkel mislyktes.</translation>
 <translation id="1445572445564823378">Denne utvidelsen gjør <ph name="PRODUCT_NAME" /> tregere. Du bør deaktivere den for å gjenopprette ytelsen til <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL støttes ikke.</translation>
-<translation id="149347756975725155">Kan ikke laste inn utvidelsesikonet «<ph name="ICON" />».</translation>
 <translation id="1803557475693955505">Kan ikke laste inn bakgrunnssiden <ph name="BACKGROUND_PAGE" />.</translation>
 <translation id="2159915644201199628">Kunne ikke dekode bilde: «<ph name="IMAGE_NAME" />»</translation>
 <translation id="2350172092385603347">Lokaliseringen er brukt, men default_locale var ikke spesifisert i manifestet.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Kan ikke lese privatnøkkelen.</translation>
 <translation id="6391538222494443604">Inndatakatalogen må eksistere.</translation>
 <translation id="641087317769093025">Kunne ikke pakke ut utvidelsen</translation>
-<translation id="6413453408918378296">Ikonet «<ph name="ICON" />» er ikke synlig nok.</translation>
 <translation id="6542618148162044354">«<ph name="APP_NAME" />» ber om tilgang til én eller flere av enhetene dine:</translation>
 <translation id="657064425229075395">Kunne ikke laste inn bakgrunnsskriptet «<ph name="BACKGROUND_SCRIPT" />».</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> fra <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>

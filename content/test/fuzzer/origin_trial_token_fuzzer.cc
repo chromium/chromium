@@ -24,7 +24,9 @@ TestCase* test_case = new TestCase();
 
 // Entry point for LibFuzzer.
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
-  blink::TrialToken::Parse(
-      std::string(reinterpret_cast<const char*>(data), size));
+  std::string str = std::string(reinterpret_cast<const char*>(data), size);
+  // Generates version 0,1,2,3 or 255.
+  uint8_t version = (std::hash<std::string>()(str) % 5) - 1;
+  blink::TrialToken::Parse(str, version);
   return 0;
 }

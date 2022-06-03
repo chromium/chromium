@@ -8,7 +8,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
-import org.chromium.base.BuildConfig;
+import org.chromium.base.BundleUtils;
 
 /**
  * Ensures that BundleUtils#isBundle returns true for the duration of the test.
@@ -19,12 +19,12 @@ public class BundleTestRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                boolean oldValue = BuildConfig.IS_BUNDLE;
+                boolean oldValue = BundleUtils.isBundle();
                 try {
-                    BuildConfig.IS_BUNDLE = true;
+                    BundleUtils.setIsBundle(true);
                     base.evaluate();
                 } finally {
-                    BuildConfig.IS_BUNDLE = oldValue;
+                    BundleUtils.setIsBundle(oldValue);
                 }
             }
         };

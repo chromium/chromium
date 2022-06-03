@@ -11,23 +11,9 @@ namespace blink {
 
 typedef double DOMHighResTimeStamp;
 
-inline DOMHighResTimeStamp ConvertSecondsToDOMHighResTimeStamp(double seconds) {
-  return static_cast<DOMHighResTimeStamp>(seconds * 1000.0);
-}
-
 inline double ConvertDOMHighResTimeStampToSeconds(
     DOMHighResTimeStamp milliseconds) {
-  return milliseconds / 1000.0;
-}
-
-inline DOMHighResTimeStamp ConvertTimeTicksToDOMHighResTimeStamp(
-    base::TimeTicks time) {
-  return (time - base::TimeTicks()).InMillisecondsF();
-}
-
-inline DOMHighResTimeStamp ConvertTimeDeltaToDOMHighResTimeStamp(
-    base::TimeDelta delta) {
-  return delta.InMillisecondsF();
+  return milliseconds / base::Time::kMillisecondsPerSecond;
 }
 
 }  // namespace blink

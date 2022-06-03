@@ -20,8 +20,8 @@ source_set("external_files") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/sessions",
-    "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/web_state_list",
   ]
 }

@@ -5,6 +5,7 @@
 #include "chrome/installer/test/resource_updater.h"
 
 #include <windows.h>
+
 #include <stdint.h>
 
 #include "base/files/file_path.h"
@@ -13,11 +14,10 @@
 
 namespace upgrade_test {
 
-ResourceUpdater::ResourceUpdater() : handle_(NULL) {
-}
+ResourceUpdater::ResourceUpdater() : handle_(nullptr) {}
 
 ResourceUpdater::~ResourceUpdater() {
-  if (handle_ != NULL) {
+  if (handle_ != nullptr) {
     // An update wasn't committed, so discard it.
     BOOL result = EndUpdateResource(handle_, TRUE);
     DPCHECK(result != FALSE) << "EndUpdateResource failed";
@@ -25,11 +25,11 @@ ResourceUpdater::~ResourceUpdater() {
 }
 
 bool ResourceUpdater::Initialize(const base::FilePath& pe_image_path) {
-  DCHECK(handle_ == NULL);
+  DCHECK_EQ(handle_, nullptr);
   handle_ = BeginUpdateResource(pe_image_path.value().c_str(), FALSE);
-  if (handle_ == NULL) {
-    PLOG(DFATAL)
-      << "BeginUpdateResource failed on \"" << pe_image_path.value() << "\"";
+  if (handle_ == nullptr) {
+    PLOG(DFATAL) << "BeginUpdateResource failed on \"" << pe_image_path.value()
+                 << "\"";
     return false;
   }
   return true;
@@ -39,7 +39,7 @@ bool ResourceUpdater::Update(const std::wstring& name,
                              const std::wstring& type,
                              WORD language_id,
                              const base::FilePath& input_file) {
-  DCHECK(handle_ != NULL);
+  DCHECK_NE(handle_, nullptr);
   base::MemoryMappedFile input;
 
   if (input.Initialize(input_file)) {
@@ -57,13 +57,13 @@ bool ResourceUpdater::Update(const std::wstring& name,
 }
 
 bool ResourceUpdater::Commit() {
-  DCHECK(handle_ != NULL);
+  DCHECK_NE(handle_, nullptr);
   bool result = true;
   if (EndUpdateResource(handle_, FALSE) == FALSE) {
     PLOG(DFATAL) << "EndUpdateResource failed";
     result = false;
   }
-  handle_ = NULL;
+  handle_ = nullptr;
   return result;
 }
 

@@ -22,9 +22,9 @@
 <script src='../../resources/js-test.js'></script>
 
 <script>
-var root = document.getElementById('host').createShadowRoot();
+var root = document.getElementById('host').attachShadow({mode: 'open'});
 root.innerHTML =
-  '<style> div {background-color: #00ff00;}div:active {background-color: #ff0000;}</style><div id=shadowdom style="width: 100px; height: 100px"><content></content></div>'
+  '<style> div {background-color: #00ff00;}div:active {background-color: #ff0000;}</style><div id=shadowdom style="width: 100px; height: 100px"><slot></slot></div>'
 
 function shouldHaveBackground(element, bg) {
   background = getComputedStyle(element, null).getPropertyValue('background-color');

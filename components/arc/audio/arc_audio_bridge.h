@@ -5,10 +5,7 @@
 #ifndef COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 #define COMPONENTS_ARC_AUDIO_ARC_AUDIO_BRIDGE_H_
 
-#include <string>
-
-#include "base/macros.h"
-#include "chromeos/audio/cras_audio_handler.h"
+#include "ash/components/audio/cras_audio_handler.h"
 #include "components/arc/mojom/audio.mojom.h"
 #include "components/arc/session/connection_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -24,14 +21,20 @@ class ArcBridgeService;
 class ArcAudioBridge : public KeyedService,
                        public ConnectionObserver<mojom::AudioInstance>,
                        public mojom::AudioHost,
-                       public chromeos::CrasAudioHandler::AudioObserver {
+                       public ash::CrasAudioHandler::AudioObserver {
  public:
   // Returns singleton instance for the given BrowserContext,
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcAudioBridge* GetForBrowserContext(content::BrowserContext* context);
+  static ArcAudioBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcAudioBridge(content::BrowserContext* context,
                  ArcBridgeService* bridge_service);
+
+  ArcAudioBridge(const ArcAudioBridge&) = delete;
+  ArcAudioBridge& operator=(const ArcAudioBridge&) = delete;
+
   ~ArcAudioBridge() override;
 
   // ConnectionObserver<mojom::AudioInstance> overrides.
@@ -43,7 +46,7 @@ class ArcAudioBridge : public KeyedService,
   void OnSystemVolumeUpdateRequest(int32_t percent) override;
 
  private:
-  // chromeos::CrasAudioHandler::AudioObserver overrides.
+  // ash::CrasAudioHandler::AudioObserver overrides.
   void OnAudioNodesChanged() override;
   void OnOutputNodeVolumeChanged(uint64_t node_id, int volume) override;
   void OnOutputMuteChanged(bool mute_on) override;
@@ -53,7 +56,7 @@ class ArcAudioBridge : public KeyedService,
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
 
-  chromeos::CrasAudioHandler* cras_audio_handler_;
+  ash::CrasAudioHandler* cras_audio_handler_;
 
   int volume_ = 0;  // Volume range: 0-100.
   bool muted_ = false;
@@ -61,8 +64,6 @@ class ArcAudioBridge : public KeyedService,
   // Avoids sending requests when the instance is unavailable.
   // TODO(crbug.com/549195): Remove once the root cause is fixed.
   bool available_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAudioBridge);
 };
 
 }  // namespace arc

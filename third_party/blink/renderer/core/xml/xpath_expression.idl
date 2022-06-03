@@ -18,8 +18,10 @@
  * Boston, MA 02110-1301, USA.
  */
 
-// http://www.w3.org/TR/DOM-Level-3-XPath/xpath.html#XPathExpression
+// https://dom.spec.whatwg.org/#interface-xpathexpression
 
-interface XPathExpression {
+[
+    Exposed=Window
+] interface XPathExpression {
      [RaisesException] XPathResult evaluate(Node contextNode, optional unsigned short type = 0, optional object? inResult = null);
 };

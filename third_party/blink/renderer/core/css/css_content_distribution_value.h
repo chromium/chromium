@@ -30,7 +30,7 @@ class CSSContentDistributionValue : public CSSValue {
 
   bool Equals(const CSSContentDistributionValue&) const;
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);
   }
 

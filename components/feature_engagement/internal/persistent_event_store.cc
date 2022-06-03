@@ -28,11 +28,12 @@ PersistentEventStore::PersistentEventStore(
 
 PersistentEventStore::~PersistentEventStore() = default;
 
-void PersistentEventStore::Load(const OnLoadedCallback& callback) {
+void PersistentEventStore::Load(OnLoadedCallback callback) {
   DCHECK(!ready_);
 
   db_->Init(base::BindOnce(&PersistentEventStore::OnInitComplete,
-                           weak_ptr_factory_.GetWeakPtr(), callback));
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
 }
 
 bool PersistentEventStore::IsReady() const {
@@ -60,27 +61,28 @@ void PersistentEventStore::DeleteEvent(const std::string& event_name) {
 }
 
 void PersistentEventStore::OnInitComplete(
-    const OnLoadedCallback& callback,
+    OnLoadedCallback callback,
     leveldb_proto::Enums::InitStatus status) {
   bool success = status == leveldb_proto::Enums::InitStatus::kOK;
   stats::RecordDbInitEvent(success, stats::StoreType::EVENTS_STORE);
 
   if (!success) {
-    callback.Run(false, std::make_unique<std::vector<Event>>());
+    std::move(callback).Run(false, std::make_unique<std::vector<Event>>());
     return;
   }
 
   db_->LoadEntries(base::BindOnce(&PersistentEventStore::OnLoadComplete,
-                                  weak_ptr_factory_.GetWeakPtr(), callback));
+                                  weak_ptr_factory_.GetWeakPtr(),
+                                  std::move(callback)));
 }
 
 void PersistentEventStore::OnLoadComplete(
-    const OnLoadedCallback& callback,
+    OnLoadedCallback callback,
     bool success,
     std::unique_ptr<std::vector<Event>> entries) {
   stats::RecordEventDbLoadEvent(success, *entries);
   ready_ = success;
-  callback.Run(success, std::move(entries));
+  std::move(callback).Run(success, std::move(entries));
 }
 
 }  // namespace feature_engagement

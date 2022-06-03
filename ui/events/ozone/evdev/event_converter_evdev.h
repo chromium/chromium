@@ -13,10 +13,10 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/task/current_thread.h"
 #include "ui/events/devices/gamepad_device.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/ozone/evdev/event_dispatch_callback.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -24,6 +24,7 @@ struct input_event;
 
 namespace ui {
 enum class DomCode;
+struct InputDeviceSettingsEvdev;
 
 class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
     : public base::MessagePumpForUI::FdWatcher {
@@ -37,6 +38,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
                       uint16_t vendor_id,
                       uint16_t product_id,
                       uint16_t version);
+
+  EventConverterEvdev(const EventConverterEvdev&) = delete;
+  EventConverterEvdev& operator=(const EventConverterEvdev&) = delete;
+
   ~EventConverterEvdev() override;
 
   int id() const { return input_device_.id; }
@@ -46,6 +51,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   InputDeviceType type() const { return input_device_.type; }
 
   const InputDevice& input_device() const { return input_device_; }
+
+  // Update device settings. The default implementation doesn't do
+  // anything
+  virtual void ApplyDeviceSettings(const InputDeviceSettingsEvdev& settings);
 
   // Start reading events.
   void Start();
@@ -74,8 +83,13 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Returns true if the converter is used for a keyboard device.
   virtual bool HasKeyboard() const;
 
-  // Returns true if the converter is used for a mouse device;
+  // Returns true if the converter is used for a mouse device (that isn't a
+  // pointing stick);
   virtual bool HasMouse() const;
+
+  // Returns true if the converter is used for a pointing stick device (such as
+  // a TrackPoint);
+  virtual bool HasPointingStick() const;
 
   // Returns true if the converter is used for a touchpad device.
   virtual bool HasTouchpad() const;
@@ -92,6 +106,15 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
   // Returns true if the converter is used for a device with a caps lock LED.
   virtual bool HasCapsLockLed() const;
 
+  // Returns true if the converter is used for a device with a stylus switch
+  // (also known as garage or dock sensor, not buttons on a stylus).
+  virtual bool HasStylusSwitch() const;
+
+  // Returns the current state of the stylus garage switch, indicating whether a
+  // stylus is inserted in (or attached) to a stylus dock or garage, or has been
+  // removed.
+  virtual ui::StylusState GetStylusSwitchState();
+
   // Returns the size of the touchscreen device if the converter is used for a
   // touchscreen device.
   virtual gfx::Size GetTouchscreenSize() const;
@@ -102,7 +125,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
 
   // Returns information for all axes if the converter is used for a gamepad
   // device.
-  virtual std::vector<ui::GamepadDevice::Axis> GetGamepadAxes() const;
+  virtual std::vector<GamepadDevice::Axis> GetGamepadAxes() const;
+
+  // Returns whether the gamepad device supports rumble type force feedback.
+  virtual bool GetGamepadRumbleCapability() const;
 
   // Sets which keyboard keys should be processed. If |enable_filter| is
   // false, all keys are allowed and |allowed_keys| is ignored.
@@ -121,6 +147,10 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
 
   // Helper to generate a base::TimeTicks from an input_event's time
   static base::TimeTicks TimeTicksFromInputEvent(const input_event& event);
+
+  // Handle gamepad force feedback effects.
+  virtual void PlayVibrationEffect(uint8_t amplitude, uint16_t duration_millis);
+  virtual void StopVibration();
 
  protected:
   // base::MessagePumpForUI::FdWatcher:
@@ -141,9 +171,6 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
 
   // Controller for watching the input fd.
   base::MessagePumpForUI::FdWatchController controller_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EventConverterEvdev);
 };
 
 }  // namespace ui

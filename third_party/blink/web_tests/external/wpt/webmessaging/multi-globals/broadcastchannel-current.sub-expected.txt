@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL The current page being cross-origin must prevent the BroadcastChannel message from being seen promise_test: Unhandled rejection with value: object "SecurityError: Blocked a frame with origin "http://web-platform.test:8001" from accessing a cross-origin frame."
+Harness: the test ran to completion.
+

@@ -9,7 +9,7 @@ span {
 <script>
 function testChildTextOfShadowRoot() {
     var host = document.getElementById("host");
-    var shadowRoot = host.createShadowRoot();
+    var shadowRoot = host.attachShadow({mode: 'open'});
     var span = document.createElement('span')
     span.textContent = "foo";
     shadowRoot.appendChild(span);
@@ -20,8 +20,8 @@ function testChildTextOfShadowRoot() {
 
 function testDistributedText() {
     var host = document.getElementById("hostWithDistribution");
-    var shadowRoot = host.createShadowRoot();
-    shadowRoot.innerHTML = "<span id='span1'><content></content></span>"
+    var shadowRoot = host.attachShadow({mode: 'open'});
+    shadowRoot.innerHTML = "<span id='span1'><slot></slot></span>"
     document.body.offsetLeft;
     shadowRoot.getElementById("span1").style.fontSize = '5em';
 }

@@ -16,6 +16,8 @@
 #if defined(OS_POSIX) && !defined(OS_ANDROID)
 #include <net/if.h>
 #elif defined(OS_WIN)
+#include <windows.h>
+
 #include <iphlpapi.h>
 #include <objbase.h>
 #include "base/strings/string_util.h"
@@ -50,8 +52,8 @@ TEST(NetworkInterfacesTest, GetNetworkList) {
     GUID guid;
     EXPECT_EQ(static_cast<DWORD>(NO_ERROR),
               ConvertInterfaceLuidToGuid(&luid, &guid));
-    auto name = base::win::String16FromGUID(guid);
-    EXPECT_EQ(base::as_u16cstr(base::UTF8ToWide(it->name)), name);
+    auto name = base::win::WStringFromGUID(guid);
+    EXPECT_EQ(base::UTF8ToWide(it->name), name);
 
     if (it->type == NetworkChangeNotifier::CONNECTION_WIFI) {
       EXPECT_NE(WIFI_PHY_LAYER_PROTOCOL_NONE, GetWifiPHYLayerProtocol());

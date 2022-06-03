@@ -25,6 +25,7 @@ struct PaymentAddress {
 // The currency amount that the renderer provides to the browser process. The
 // browser shows the amount in UI and forwards it on to the payment app, if it
 // requires the amount.
+[Stable]
 struct PaymentCurrencyAmount {
   // The most common identifiers are three-letter alphabetic codes as defined
   // by [ISO4217] (for example, "USD" for US Dollars), however any string of at

@@ -10,13 +10,33 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/extension.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
 namespace extensions {
 
-IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18N) {
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class ExtensionI18nTest : public ExtensionApiTest,
+                          public testing::WithParamInterface<ContextType> {
+ public:
+  ExtensionI18nTest() : ExtensionApiTest(GetParam()) {}
+  ~ExtensionI18nTest() override = default;
+  ExtensionI18nTest(const ExtensionI18nTest& other) = delete;
+  ExtensionI18nTest& operator=(const ExtensionI18nTest& other) = delete;
+};
+
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         ExtensionI18nTest,
+                         ::testing::Values(ContextType::kPersistentBackground));
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         ExtensionI18nTest,
+                         ::testing::Values(ContextType::kServiceWorker));
+
+IN_PROC_BROWSER_TEST_P(ExtensionI18nTest, Basic) {
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(RunExtensionTest("i18n")) << message_;
 }
@@ -42,12 +62,11 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
   ResultCatcher catcher;
 
   // Test that the messages.json file is loaded and the i18n message is loaded.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
   EXPECT_TRUE(catcher.GetNextResult());
 
-  base::string16 title;
+  std::u16string title;
   ui_test_utils::GetCurrentTabTitle(browser(), &title);
   EXPECT_EQ(std::string("FIRSTMESSAGE"), base::UTF16ToUTF8(title));
 
@@ -58,9 +77,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionApiTest, I18NUpdate) {
   ReloadExtension(extension->id());
 
   // Check that the i18n message is also changed.
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/extensions/test_file.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/extensions/test_file.html")));
   EXPECT_TRUE(catcher.GetNextResult());
 
   ui_test_utils::GetCurrentTabTitle(browser(), &title);

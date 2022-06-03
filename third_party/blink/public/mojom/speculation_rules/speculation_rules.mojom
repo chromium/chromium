@@ -1,0 +1,50 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/loader/referrer.mojom";
+import "url/mojom/url.mojom";
+
+// See also third_party/blink/renderer/core/speculation_rules/README.md.
+
+// Browser process interface for receiving information about proposed
+// speculation from the renderer process.
+//
+// At the moment these updates are not incremental -- the renderer updates the
+// entire set of speculation candidates at once. This is probably fine as long
+// as it's occasional (i.e., the renderer buffers these updates somewhat) and
+// the set of candidates is not unmanageably large. If so we may need to
+// re-evaluate.
+interface SpeculationHost {
+  // Pushes a new set of speculation candidates, which replaces any previously
+  // sent.
+  UpdateSpeculationCandidates(
+      array<SpeculationCandidate> candidates);
+};
+
+// The action that is proposed.
+enum SpeculationAction {
+  kPrefetch,
+  kPrefetchWithSubresources,
+  kPrerender,
+};
+
+// A single candidate: a URL, an action, a referrer, and any associated
+// metadata that might be needed to make a decision.
+struct SpeculationCandidate {
+  // The URL which is eligible for some action.
+  url.mojom.Url url;
+
+  // The action which is proposed for that URL.
+  SpeculationAction action = kPrefetch;
+
+  // The referrer to be used when fetching this candidate.
+  Referrer referrer;
+
+  // If true, cross-origin requests associated with this speculation must be
+  // made in a manner which anonymizes the client IP. If this is not possible,
+  // this candidate must be discarded.
+  bool requires_anonymous_client_ip_when_cross_origin = false;
+};

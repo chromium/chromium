@@ -27,10 +27,12 @@
 
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
 #include "third_party/blink/renderer/core/editing/commands/clipboard_commands.h"
@@ -51,6 +53,7 @@
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
+#include "third_party/blink/renderer/core/editing/ime/edit_context.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"
 #include "third_party/blink/renderer/core/editing/kill_ring.h"
 #include "third_party/blink/renderer/core/editing/selection_modifier.h"
@@ -58,6 +61,7 @@
 #include "third_party/blink/renderer/core/editing/set_selection_options.h"
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -69,7 +73,6 @@
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -195,7 +198,7 @@ StaticRangeVector* RangesFromCurrentSelectionOrExtendCaret(
     const LocalFrame& frame,
     SelectionModifyDirection direction,
     TextGranularity granularity) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   SelectionModifier selection_modifier(
       frame, frame.Selection().GetSelectionInDOMTree());
   selection_modifier.SetSelectionIsDirectional(
@@ -258,7 +261,7 @@ static bool ExecuteApplyParagraphStyle(LocalFrame& frame,
   auto* style =
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   style->SetProperty(property_id, property_value, /* important */ false,
-                     frame.GetDocument()->GetSecureContextMode());
+                     frame.DomWindow()->GetSecureContextMode());
   // FIXME: We don't call shouldApplyStyle when the source is DOM; is there a
   // good reason for that?
   switch (source) {
@@ -275,14 +278,10 @@ static bool ExecuteApplyParagraphStyle(LocalFrame& frame,
 
 bool ExpandSelectionToGranularity(LocalFrame& frame,
                                   TextGranularity granularity) {
-  const VisibleSelection& selection = CreateVisibleSelectionWithGranularity(
-      SelectionInDOMTree::Builder()
-          .SetBaseAndExtent(
-              frame.Selection().ComputeVisibleSelectionInDOMTree().Base(),
-              frame.Selection().ComputeVisibleSelectionInDOMTree().Extent())
-          .Build(),
+  const SelectionInDOMTree& selection = ExpandWithGranularity(
+      frame.Selection().ComputeVisibleSelectionInDOMTree().AsSelection(),
       granularity);
-  const EphemeralRange new_range = selection.ToNormalizedEphemeralRange();
+  const EphemeralRange& new_range = NormalizeRange(selection);
   if (new_range.IsNull())
     return false;
   if (new_range.IsCollapsed())
@@ -361,12 +360,12 @@ static bool ExecuteDefaultParagraphSeparator(LocalFrame& frame,
                                              Event*,
                                              EditorCommandSource,
                                              const String& value) {
-  if (DeprecatedEqualIgnoringCase(value, "div")) {
+  if (EqualIgnoringASCIICase(value, "div")) {
     frame.GetEditor().SetDefaultParagraphSeparator(
         EditorParagraphSeparator::kIsDiv);
     return true;
   }
-  if (DeprecatedEqualIgnoringCase(value, "p")) {
+  if (EqualIgnoringASCIICase(value, "p")) {
     frame.GetEditor().SetDefaultParagraphSeparator(
         EditorParagraphSeparator::kIsP);
   }
@@ -380,7 +379,7 @@ static void PerformDelete(LocalFrame& frame) {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
   // |SelectedRange| requires clean layout for visible selection normalization.
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   frame.GetEditor().AddToKillRing(frame.GetEditor().SelectedRange());
   // TODO(editing-dev): |Editor::performDelete()| has no direction.
@@ -571,7 +570,7 @@ static bool ExecuteDeleteToMark(LocalFrame& frame,
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   frame.GetEditor().SetMark();
   return true;
 }
@@ -717,8 +716,9 @@ static bool ExecuteToggleOverwrite(LocalFrame& frame,
                                    Event*,
                                    EditorCommandSource,
                                    const String&) {
-  frame.GetEditor().ToggleOverwriteModeEnabled();
-  return true;
+  // Overwrite mode is not supported. See https://crbug.com/1030231.
+  // We return false to match the expectation of the ExecCommand.
+  return false;
 }
 
 static bool ExecutePrint(LocalFrame& frame,
@@ -754,7 +754,8 @@ static bool ExecuteScrollPageBackward(LocalFrame& frame,
                                       EditorCommandSource,
                                       const String&) {
   return frame.GetEventHandler().BubblingScroll(
-      kScrollBlockDirectionBackward, ScrollGranularity::kScrollByPage);
+      mojom::blink::ScrollDirection::kScrollBlockDirectionBackward,
+      ScrollGranularity::kScrollByPage);
 }
 
 static bool ExecuteScrollPageForward(LocalFrame& frame,
@@ -762,7 +763,8 @@ static bool ExecuteScrollPageForward(LocalFrame& frame,
                                      EditorCommandSource,
                                      const String&) {
   return frame.GetEventHandler().BubblingScroll(
-      kScrollBlockDirectionForward, ScrollGranularity::kScrollByPage);
+      mojom::blink::ScrollDirection::kScrollBlockDirectionForward,
+      ScrollGranularity::kScrollByPage);
 }
 
 static bool ExecuteScrollLineUp(LocalFrame& frame,
@@ -770,7 +772,8 @@ static bool ExecuteScrollLineUp(LocalFrame& frame,
                                 EditorCommandSource,
                                 const String&) {
   return frame.GetEventHandler().BubblingScroll(
-      kScrollUpIgnoringWritingMode, ScrollGranularity::kScrollByLine);
+      mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode,
+      ScrollGranularity::kScrollByLine);
 }
 
 static bool ExecuteScrollLineDown(LocalFrame& frame,
@@ -778,7 +781,8 @@ static bool ExecuteScrollLineDown(LocalFrame& frame,
                                   EditorCommandSource,
                                   const String&) {
   return frame.GetEventHandler().BubblingScroll(
-      kScrollDownIgnoringWritingMode, ScrollGranularity::kScrollByLine);
+      mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode,
+      ScrollGranularity::kScrollByLine);
 }
 
 static bool ExecuteScrollToBeginningOfDocument(LocalFrame& frame,
@@ -786,7 +790,8 @@ static bool ExecuteScrollToBeginningOfDocument(LocalFrame& frame,
                                                EditorCommandSource,
                                                const String&) {
   return frame.GetEventHandler().BubblingScroll(
-      kScrollBlockDirectionBackward, ScrollGranularity::kScrollByDocument);
+      mojom::blink::ScrollDirection::kScrollBlockDirectionBackward,
+      ScrollGranularity::kScrollByDocument);
 }
 
 static bool ExecuteScrollToEndOfDocument(LocalFrame& frame,
@@ -794,7 +799,8 @@ static bool ExecuteScrollToEndOfDocument(LocalFrame& frame,
                                          EditorCommandSource,
                                          const String&) {
   return frame.GetEventHandler().BubblingScroll(
-      kScrollBlockDirectionForward, ScrollGranularity::kScrollByDocument);
+      mojom::blink::ScrollDirection::kScrollBlockDirectionForward,
+      ScrollGranularity::kScrollByDocument);
 }
 
 static bool ExecuteSelectAll(LocalFrame& frame,
@@ -893,7 +899,7 @@ static bool ExecuteTranspose(LocalFrame& frame,
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  document->UpdateStyleAndLayout();
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   const EphemeralRange& range = ComputeRangeForTranspose(frame);
   if (range.IsNull())
@@ -919,7 +925,7 @@ static bool ExecuteTranspose(LocalFrame& frame,
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  document->UpdateStyleAndLayout();
+  document->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   // 'beforeinput' event handler may change selection, we need to re-calculate
   // range.
@@ -987,7 +993,7 @@ static bool ExecuteYank(LocalFrame& frame,
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   frame.GetEditor().InsertTextWithoutSendingTextEvent(
       yank_string, false, nullptr, InputEvent::InputType::kInsertFromYank);
@@ -1012,7 +1018,7 @@ static bool ExecuteYankAndSelect(LocalFrame& frame,
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited. see http://crbug.com/590369 for more details.
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   frame.GetEditor().InsertTextWithoutSendingTextEvent(
       frame.GetEditor().GetKillRing().Yank(), true, nullptr,
@@ -1040,7 +1046,7 @@ static bool Enabled(LocalFrame&, Event*, EditorCommandSource) {
 static bool EnabledVisibleSelection(LocalFrame& frame,
                                     Event* event,
                                     EditorCommandSource source) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
       !frame.Selection().SelectionHasFocus())
@@ -1058,7 +1064,7 @@ static bool EnabledVisibleSelection(LocalFrame& frame,
 static bool EnabledVisibleSelectionAndMark(LocalFrame& frame,
                                            Event* event,
                                            EditorCommandSource source) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
       !frame.Selection().SelectionHasFocus())
@@ -1075,7 +1081,7 @@ static bool EnabledVisibleSelectionAndMark(LocalFrame& frame,
 static bool EnableCaretInEditableText(LocalFrame& frame,
                                       Event* event,
                                       EditorCommandSource source) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
       !frame.Selection().SelectionHasFocus())
@@ -1088,7 +1094,7 @@ static bool EnableCaretInEditableText(LocalFrame& frame,
 static bool EnabledInEditableText(LocalFrame& frame,
                                   Event* event,
                                   EditorCommandSource source) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
       !frame.Selection().SelectionHasFocus())
     return false;
@@ -1124,7 +1130,7 @@ static bool EnabledDelete(LocalFrame& frame,
 static bool EnabledInRichlyEditableText(LocalFrame& frame,
                                         Event*,
                                         EditorCommandSource source) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
       !frame.Selection().SelectionHasFocus())
     return false;
@@ -1137,7 +1143,7 @@ static bool EnabledInRichlyEditableText(LocalFrame& frame,
 static bool EnabledRangeInEditableText(LocalFrame& frame,
                                        Event*,
                                        EditorCommandSource source) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
       !frame.Selection().SelectionHasFocus())
     return false;
@@ -1152,7 +1158,7 @@ static bool EnabledRangeInEditableText(LocalFrame& frame,
 static bool EnabledRangeInRichlyEditableText(LocalFrame& frame,
                                              Event*,
                                              EditorCommandSource source) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   if (source == EditorCommandSource::kMenuOrKeyBinding &&
       !frame.Selection().SelectionHasFocus())
     return false;
@@ -1172,7 +1178,7 @@ static bool EnabledUndo(LocalFrame& frame, Event*, EditorCommandSource) {
 static bool EnabledUnselect(LocalFrame& frame,
                             Event* event,
                             EditorCommandSource) {
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   // The term "visible" here includes a caret in editable text or a range in any
   // text.
@@ -1187,7 +1193,7 @@ static bool EnabledSelectAll(LocalFrame& frame,
                              EditorCommandSource source) {
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  frame.GetDocument()->UpdateStyleAndLayout();
+  frame.GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   const VisibleSelection& selection =
       frame.Selection().ComputeVisibleSelectionInDOMTree();
   if (selection.IsNone())
@@ -1853,7 +1859,8 @@ bool Editor::ExecuteCommand(const String& command_name) {
   if (command_name == "AdvanceToNextMisspelling") {
     // TODO(editing-dev): Use of UpdateStyleAndLayout
     // needs to be audited. see http://crbug.com/590369 for more details.
-    GetFrame().GetDocument()->UpdateStyleAndLayout();
+    GetFrame().GetDocument()->UpdateStyleAndLayout(
+        DocumentUpdateReason::kEditing);
 
     // We need to pass false here or else the currently selected word will never
     // be skipped.
@@ -1864,7 +1871,8 @@ bool Editor::ExecuteCommand(const String& command_name) {
     // TODO(editing-dev): Use of UpdateStyleAndLayout
     // needs to be audited.
     // see http://crbug.com/590369 for more details.
-    GetFrame().GetDocument()->UpdateStyleAndLayout();
+    GetFrame().GetDocument()->UpdateStyleAndLayout(
+        DocumentUpdateReason::kEditing);
 
     GetSpellChecker().ShowSpellingGuessPanel();
     return true;
@@ -1878,18 +1886,21 @@ bool Editor::ExecuteCommand(const String& command_name, const String& value) {
   DCHECK(GetFrame().GetDocument()->IsActive());
   if (!CanEdit() && command_name == "moveToBeginningOfDocument") {
     return GetFrame().GetEventHandler().BubblingScroll(
-        kScrollUpIgnoringWritingMode, ScrollGranularity::kScrollByDocument);
+        mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode,
+        ScrollGranularity::kScrollByDocument);
   }
 
   if (!CanEdit() && command_name == "moveToEndOfDocument") {
     return GetFrame().GetEventHandler().BubblingScroll(
-        kScrollDownIgnoringWritingMode, ScrollGranularity::kScrollByDocument);
+        mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode,
+        ScrollGranularity::kScrollByDocument);
   }
 
   if (command_name == "ToggleSpellPanel") {
     // TODO(editing-dev): Use of UpdateStyleAndLayout
     // needs to be audited. see http://crbug.com/590369 for more details.
-    GetFrame().GetDocument()->UpdateStyleAndLayout();
+    GetFrame().GetDocument()->UpdateStyleAndLayout(
+        DocumentUpdateReason::kEditing);
 
     GetSpellChecker().ShowSpellingGuessPanel();
     return true;
@@ -1903,7 +1914,9 @@ bool Editor::IsCommandEnabled(const String& command_name) const {
 }
 
 EditorCommand::EditorCommand()
-    : command_(nullptr), source_(EditorCommandSource::kMenuOrKeyBinding) {}
+    : command_(nullptr),
+      source_(EditorCommandSource::kMenuOrKeyBinding),
+      frame_(nullptr) {}
 
 EditorCommand::EditorCommand(const EditorInternalCommand* command,
                              EditorCommandSource source,
@@ -1938,12 +1951,59 @@ bool EditorCommand::Execute(const String& parameter,
       if (frame_->GetDocument()->GetFrame() != frame_)
         return false;
     }
+
+    // If EditContext is active, we may return early and not execute the
+    // command.
+    if (auto* edit_context =
+            frame_->GetInputMethodController().GetActiveEditContext()) {
+      // From EditContext's point of view, there are 3 kinds of commands:
+      switch (command_->command_type) {
+        case EditingCommandType::kToggleBold:
+        case EditingCommandType::kToggleItalic:
+        case EditingCommandType::kToggleUnderline:
+        case EditingCommandType::kInsertTab:
+        case EditingCommandType::kInsertBacktab:
+        case EditingCommandType::kInsertNewline:
+        case EditingCommandType::kInsertLineBreak:
+          // 1) BeforeInput event only, ex ctrl+B or <enter>.
+          return true;
+        case EditingCommandType::kDeleteBackward:
+          // 2) BeforeInput event + EditContext behavior, ex. backspace/delete.
+          edit_context->DeleteBackward();
+          return true;
+        case EditingCommandType::kDeleteForward:
+          edit_context->DeleteForward();
+          return true;
+        case EditingCommandType::kDeleteWordBackward:
+          edit_context->DeleteWordBackward();
+          return true;
+        case EditingCommandType::kDeleteWordForward:
+          edit_context->DeleteWordForward();
+          return true;
+        default:
+          // 3) BeforeInput event + default DOM behavior, ex. caret navigation.
+          // In this case, it's no-op for EditContext.
+          break;
+      }
+    }
   }
 
-  GetFrame().GetDocument()->UpdateStyleAndLayout();
-  DEFINE_STATIC_LOCAL(SparseHistogram, command_histogram,
-                      ("WebCore.Editing.Commands"));
-  command_histogram.Sample(static_cast<int>(command_->command_type));
+  // We need to force unlock activatable DisplayLocks for Editor::FindString
+  // before the following call to UpdateStyleAndLayout. Otherwise,
+  // ExecuteFindString/Editor::FindString will hit bad style/layout data.
+  absl::optional<DisplayLockDocumentState::ScopedForceActivatableDisplayLocks>
+      forced_locks;
+  if (command_->command_type == EditingCommandType::kFindString) {
+    forced_locks = GetFrame()
+                       .GetDocument()
+                       ->GetDisplayLockDocumentState()
+                       .GetScopedForceActivatableLocks();
+  }
+
+  GetFrame().GetDocument()->UpdateStyleAndLayout(
+      DocumentUpdateReason::kEditing);
+  base::UmaHistogramSparse("WebCore.Editing.Commands",
+                           static_cast<int>(command_->command_type));
   return command_->execute(*frame_, triggering_event, source_, parameter);
 }
 
@@ -1964,7 +2024,7 @@ bool EditorCommand::IsSupported() const {
     case EditorCommandSource::kMenuOrKeyBinding:
       return true;
     case EditorCommandSource::kDOM:
-      return command_->is_supported_from_dom(frame_.Get());
+      return command_->is_supported_from_dom(frame_);
   }
   NOTREACHED();
   return false;
@@ -2013,7 +2073,8 @@ const StaticRangeVector* EditorCommand::GetTargetRanges() const {
           TextGranularity::kCharacter);
     case EditingCommandType::kDeleteToBeginningOfLine:
       return RangesFromCurrentSelectionOrExtendCaret(
-          *frame_, SelectionModifyDirection::kBackward, TextGranularity::kLine);
+          *frame_, SelectionModifyDirection::kBackward,
+          TextGranularity::kLineBoundary);
     case EditingCommandType::kDeleteToBeginningOfParagraph:
       return RangesFromCurrentSelectionOrExtendCaret(
           *frame_, SelectionModifyDirection::kBackward,

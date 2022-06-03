@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<head><title>Subresource Web Bundles Third Party Origin Trial</title></head>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+promise_test(async (t) => {
+  assert_false(
+    document.createElement('link').relList.supports('webbundle'),
+    'Subresource Web Bundles should not be supported by default.');
+
+  let resolve_third_party_script_loaded;
+  const third_party_script_loaded = new Promise((resolve) => {
+      resolve_third_party_script_loaded = resolve;
+    });
+  const third_party_script = document.createElement('script');
+  third_party_script.src = 'https://localhost:8443/loading/wbn/resources/wbn-subresource-third-party-origin-trial-script.js';
+  third_party_script.addEventListener('load', () => {
+      resolve_third_party_script_loaded();
+    });
+  document.body.appendChild(third_party_script);
+  await third_party_script_loaded;
+
+  assert_true(
+    document.createElement('link').relList.supports('webbundle'),
+    'Subresource Web Bundles should be supported.');
+
+  const wbn_url = 'https://localhost:8443/loading/wbn/resources/wbn/wbn-subresource-third-party-origin-trial.wbn';
+  const script_url = 'https://localhost:8443/loading/wbn/resources/wbn/server/wbn-subresource-third-party-origin-trial/script.js';
+
+  const SubresourceWebBundles = 3446;  // From web_feature.mojom
+  assert_false(window.internals.isUseCounted(document, SubresourceWebBundles));
+
+  const link = document.createElement('link');
+  link.rel = 'webbundle';
+  link.href = wbn_url;
+  link.resources.add(script_url);
+  document.body.appendChild(link);
+
+  assert_true(window.internals.isUseCounted(document, SubresourceWebBundles));
+
+  const result_promise = new Promise((resolve) => {
+      // This function will be called from script.js
+      window.report_result = resolve;
+    });
+
+  const script = document.createElement('script');
+  script.src = script_url;
+  document.body.appendChild(script);
+
+  assert_equals(
+    await result_promise,
+    'from web bundle',
+    'Script should be loaded from the web bundle.');
+}, 'Subresource Web Bundles Third Party Origin Trial');
+</script>
+</body>

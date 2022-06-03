@@ -1,0 +1,22 @@
+// Copyright 2020 Google LLC.
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto2";
+
+package perfetto.protos;
+
+import "protos/perfetto/metrics/metrics.proto";
+import "protos/perfetto/metrics/custom_options.proto";
+
+message AccessibilityMetric {
+  repeated double browser_accessibility_events = 1
+      [(unit) = "ms_smallerIsBetter"];
+  repeated double render_accessibility_events = 2
+      [(unit) = "ms_smallerIsBetter"];
+  repeated double render_accessibility_locations = 3
+      [(unit) = "ms_smallerIsBetter"];
+}
+
+extend TraceMetrics {
+  optional AccessibilityMetric accessibility_metric = 461;
+}

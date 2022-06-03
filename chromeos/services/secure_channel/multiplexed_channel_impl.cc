@@ -4,11 +4,14 @@
 
 #include "chromeos/services/secure_channel/multiplexed_channel_impl.h"
 
+#include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
-#include "base/stl_util.h"
+#include "base/memory/ptr_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/secure_channel/single_client_message_proxy_impl.h"
+#include "chromeos/services/secure_channel/file_transfer_update_callback.h"
+#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "chromeos/services/secure_channel/single_client_proxy_impl.h"
 
 namespace chromeos {
 
@@ -19,24 +22,7 @@ MultiplexedChannelImpl::Factory*
     MultiplexedChannelImpl::Factory::test_factory_ = nullptr;
 
 // static
-MultiplexedChannelImpl::Factory* MultiplexedChannelImpl::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
-
-  static base::NoDestructor<MultiplexedChannelImpl::Factory> factory;
-  return factory.get();
-}
-
-// static
-void MultiplexedChannelImpl::Factory::SetFactoryForTesting(
-    Factory* test_factory) {
-  test_factory_ = test_factory;
-}
-
-MultiplexedChannelImpl::Factory::~Factory() = default;
-
-std::unique_ptr<MultiplexedChannel>
-MultiplexedChannelImpl::Factory::BuildInstance(
+std::unique_ptr<MultiplexedChannel> MultiplexedChannelImpl::Factory::Create(
     std::unique_ptr<AuthenticatedChannel> authenticated_channel,
     MultiplexedChannel::Delegate* delegate,
     ConnectionDetails connection_details,
@@ -47,13 +33,19 @@ MultiplexedChannelImpl::Factory::BuildInstance(
   DCHECK(initial_clients);
   DCHECK(!initial_clients->empty());
 
+  if (test_factory_) {
+    return test_factory_->CreateInstance(std::move(authenticated_channel),
+                                         delegate, connection_details,
+                                         initial_clients);
+  }
+
   auto channel = base::WrapUnique(new MultiplexedChannelImpl(
       std::move(authenticated_channel), delegate, connection_details));
   for (auto& client_connection_parameters : *initial_clients) {
     bool success =
         channel->AddClientToChannel(std::move(client_connection_parameters));
     if (!success) {
-      PA_LOG(ERROR) << "MultiplexedChannelImpl::Factory::BuildInstance(): "
+      PA_LOG(ERROR) << "MultiplexedChannelImpl::Factory::Create(): "
                     << "Failed to add initial client.";
       NOTREACHED();
     }
@@ -61,6 +53,14 @@ MultiplexedChannelImpl::Factory::BuildInstance(
 
   return channel;
 }
+
+// static
+void MultiplexedChannelImpl::Factory::SetFactoryForTesting(
+    Factory* test_factory) {
+  test_factory_ = test_factory;
+}
+
+MultiplexedChannelImpl::Factory::~Factory() = default;
 
 MultiplexedChannelImpl::MultiplexedChannelImpl(
     std::unique_ptr<AuthenticatedChannel> authenticated_channel,
@@ -87,7 +87,7 @@ void MultiplexedChannelImpl::PerformAddClientToChannel(
     std::unique_ptr<ClientConnectionParameters> client_connection_parameters) {
   DCHECK(client_connection_parameters->IsClientWaitingForResponse());
 
-  auto proxy = SingleClientMessageProxyImpl::Factory::Get()->BuildInstance(
+  auto proxy = SingleClientProxyImpl::Factory::Create(
       this /* delegate */, std::move(client_connection_parameters));
   DCHECK(!base::Contains(id_to_proxy_map_, proxy->GetProxyId()));
   id_to_proxy_map_[proxy->GetProxyId()] = std::move(proxy);
@@ -115,6 +115,17 @@ void MultiplexedChannelImpl::OnSendMessageRequested(
     base::OnceClosure on_sent_callback) {
   authenticated_channel_->SendMessage(message_feaure, message_payload,
                                       std::move(on_sent_callback));
+}
+
+void MultiplexedChannelImpl::RegisterPayloadFile(
+    int64_t payload_id,
+    mojom::PayloadFilesPtr payload_files,
+    FileTransferUpdateCallback file_transfer_update_callback,
+    base::OnceCallback<void(bool)> registration_result_callback) {
+  authenticated_channel_->RegisterPayloadFile(
+      payload_id, std::move(payload_files),
+      std::move(file_transfer_update_callback),
+      std::move(registration_result_callback));
 }
 
 void MultiplexedChannelImpl::GetConnectionMetadata(

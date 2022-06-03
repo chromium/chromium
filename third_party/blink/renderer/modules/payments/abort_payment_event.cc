@@ -6,8 +6,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_extendable_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/modules/service_worker/extendable_event_init.h"
 #include "third_party/blink/renderer/modules/service_worker/respond_with_observer.h"
 #include "third_party/blink/renderer/modules/service_worker/wait_until_observer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -47,7 +47,7 @@ void AbortPaymentEvent::respondWith(ScriptState* script_state,
   }
 }
 
-void AbortPaymentEvent::Trace(blink::Visitor* visitor) {
+void AbortPaymentEvent::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   ExtendableEvent::Trace(visitor);
 }

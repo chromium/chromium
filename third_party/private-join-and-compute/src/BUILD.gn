@@ -21,7 +21,6 @@ source_set("ec_commutative_cipher") {
     "util/status.cc",
     "util/status.h",
     "util/status.inc",
-    "util/status_builder.h",
     "util/status_macros.h",
     "util/statusor.cc",
     "util/statusor.h",

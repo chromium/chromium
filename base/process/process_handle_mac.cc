@@ -9,6 +9,7 @@
 #include <sys/sysctl.h>
 #include <sys/types.h>
 
+#include "base/files/file_path.h"
 #include "base/logging.h"
 
 namespace base {

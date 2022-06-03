@@ -3,27 +3,41 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//testing/test.gni")
 import("//ui/base/ui_features.gni")
 
-buildflag_header("color_buildflags") {
-  header = "color_buildflags.h"
-
-  flags = [ "USE_COLOR_PIPELINE=$use_color_pipeline" ]
-}
-
-jumbo_component("color") {
+source_set("color_headers") {
   sources = [
     "color_id.h",
-    "color_mixer.cc",
+    "color_id_macros.inc",
+    "color_id_map_macros.inc",
     "color_mixer.h",
-    "color_provider.cc",
     "color_provider.h",
+    "color_provider_manager.h",
+    "color_provider_utils.h",
+    "color_set.h",
+  ]
+
+  public_deps = [
+    "//base:base",
+    "//skia:skia",
+  ]
+}
+
+component("color") {
+  sources = [
+    "color_mixer.cc",
+    "color_provider.cc",
+    "color_provider_source.cc",
+    "color_provider_source.h",
+    "color_provider_source_observer.cc",
+    "color_provider_source_observer.h",
+    "color_provider_utils.cc",
+    "color_provider_utils.h",
     "color_recipe.cc",
     "color_recipe.h",
     "color_set.cc",
-    "color_set.h",
     "color_transform.cc",
     "color_transform.h",
   ]
@@ -31,11 +45,28 @@ jumbo_component("color") {
   defines = [ "IS_COLOR_IMPL" ]
 
   public_deps = [
-    ":color_buildflags",
-    "//base",
-    "//skia",
+    ":color_headers",
+    "//base:base",
+    "//skia:skia",
     "//ui/gfx:color_utils",
   ]
+
+  if (is_mac) {
+    frameworks = [ "AppKit.framework" ]
+    sources += [
+      "mac/native_color_transform.mm",
+      "mac/system_color_utils.h",
+      "mac/system_color_utils.mm",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [ "color_test_ids.h" ]
+
+  deps = [ ":color_headers" ]
 }
 
 test("color_unittests") {
@@ -43,46 +74,57 @@ test("color_unittests") {
 
   sources = [
     "color_mixer_unittest.cc",
+    "color_provider_manager_unittest.cc",
+    "color_provider_source_observer_unittest.cc",
     "color_provider_unittest.cc",
+    "color_provider_utils_unittest.cc",
     "color_recipe_unittest.cc",
-    "color_test_ids.h",
     "color_transform_unittest.cc",
     "run_all_unittests.cc",
   ]
 
   deps = [
     ":color",
+    ":mixers",
+    ":test_support",
     "//base/test:test_support",
     "//testing/gtest",
   ]
 }
 
-jumbo_component("mixers") {
+component("mixers") {
   sources = [
+    "color_mixers.cc",
     "color_mixers.h",
+    "color_provider_manager.cc",
+    "color_provider_manager.h",
     "core_default_color_mixer.cc",
+    "core_default_color_mixer.h",
+    "native_color_mixers.cc",
+    "native_color_mixers.h",
     "ui_color_mixer.cc",
+    "ui_color_mixer.h",
   ]
 
   defines = [ "IS_COLOR_IMPL" ]
 
   deps = [
     ":color",
+    ":color_headers",
     "//skia",
     "//ui/gfx:color_utils",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 
-  if (is_chromeos) {
-    sources += [ "cros/native_color_mixer.cc" ]
-  } else if (is_linux) {
-    sources += [ "linux/native_color_mixer.cc" ]
-  } else if (is_mac) {
-    sources += [ "mac/native_color_mixer.cc" ]
+  if (is_mac) {
+    frameworks = [ "AppKit.framework" ]
+    sources += [
+      "mac/native_color_mixers_mac.mm",
+      "mac/scoped_current_nsappearance.h",
+      "mac/scoped_current_nsappearance.mm",
+    ]
   } else if (is_win) {
-    sources += [ "win/native_color_mixer.cc" ]
+    sources += [ "win/native_color_mixers_win.cc" ]
   }
 }

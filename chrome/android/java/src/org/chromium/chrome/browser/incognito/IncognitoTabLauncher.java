@@ -10,20 +10,24 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.browser.customtabs.CustomTabsSessionToken;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeVersionInfo;
+import org.chromium.chrome.browser.ChromeApplicationImpl;
 import org.chromium.chrome.browser.IntentHandler;
-import org.chromium.chrome.browser.util.IntentUtils;
+import org.chromium.chrome.browser.customtabs.CustomTabsConnection;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 
 /**
  * An exposed Activity that allows launching an Incognito Tab.
@@ -44,6 +48,14 @@ public class IncognitoTabLauncher extends Activity {
     private static final String ACTION_DEBUG =
             "org.chromium.chrome.browser.incognito.IncognitoTabLauncher.DISABLE";
 
+    /**
+     * A string to indicate the package name of the original intent sender
+     * that invoked the IncognitoTabLauncher activity. This is used to verify
+     * 1P from 3P apps.
+     */
+    public static final String EXTRA_SENDERS_PACKAGE_NAME =
+            "org.chromium.chrome.browser.senders_package_name";
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +67,23 @@ public class IncognitoTabLauncher extends Activity {
         }
 
         Intent chromeLauncherIntent = IntentHandler.createTrustedOpenNewTabIntent(this, true);
+
+        /**
+         * The method IntentHandler.createTrustedOpenNewTabIntent creates a new intent and the
+         * SESSION_TOKEN information about the original intent via getIntent() is lost in that
+         * process. We extract the package name from the SESSION_TOKEN and store the value in new
+         * intent.
+         */
+        CustomTabsSessionToken sessionToken =
+                CustomTabsSessionToken.getSessionTokenFromIntent(getIntent());
+        String sendersPackageName =
+                CustomTabsConnection.getInstance().getClientPackageNameForSession(sessionToken);
+
+        // Since, we are using createTrustedOpenNewTabIntent, we know this intent can only be sent
+        // by chrome and cannot be spoofed by another application. That means that we can trust the
+        // package name the Intent contains.
+        chromeLauncherIntent.putExtra(
+                IncognitoTabLauncher.EXTRA_SENDERS_PACKAGE_NAME, sendersPackageName);
         chromeLauncherIntent.putExtra(
                 IntentHandler.EXTRA_INVOKED_FROM_LAUNCH_NEW_INCOGNITO_TAB, true);
 
@@ -77,9 +106,22 @@ public class IncognitoTabLauncher extends Activity {
     /**
      * Returns whether the omnibox should be focused after launching the incognito tab.
      */
-    public static boolean shouldFocusOmnibox() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS);
+    public static boolean shouldFocusOmnibox(Intent intent) {
+        assert didCreateIntent(intent);
+        return isVerifiedFirstPartyIntent(intent)
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.FOCUS_OMNIBOX_IN_INCOGNITO_TAB_INTENTS);
+    }
+
+    /**
+     * Returns if the intent is from a verified first party app.
+     */
+    private static boolean isVerifiedFirstPartyIntent(Intent intent) {
+        String sendersPackageName =
+                intent.getStringExtra(IncognitoTabLauncher.EXTRA_SENDERS_PACKAGE_NAME);
+        return !TextUtils.isEmpty(sendersPackageName)
+                && ChromeApplicationImpl.getComponent().resolveExternalAuthUtils().isGoogleSigned(
+                        sendersPackageName);
     }
 
     /**

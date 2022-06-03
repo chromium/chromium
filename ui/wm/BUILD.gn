@@ -2,11 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-jumbo_component("wm") {
+component("wm") {
   sources = [
     "core/accelerator_delegate.h",
     "core/accelerator_filter.cc",
@@ -66,9 +66,12 @@ jumbo_component("wm") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//skia",
     "//ui/aura",
     "//ui/base",
+    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
     "//ui/compositor",
     "//ui/compositor_extra",
@@ -84,12 +87,7 @@ jumbo_component("wm") {
     "//ui/wm/public",
   ]
 
-  if (use_x11) {
-    configs += [ "//build/config/linux:x11" ]
-    deps += [ "//ui/events/devices/x11" ]
-  }
-
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "core/ime_util_chromeos.cc",
       "core/ime_util_chromeos.h",
@@ -97,7 +95,7 @@ jumbo_component("wm") {
   }
 }
 
-jumbo_static_library("test_support") {
+static_library("test_support") {
   testonly = true
   sources = [
     "test/testing_cursor_client_observer.cc",
@@ -105,6 +103,8 @@ jumbo_static_library("test_support") {
     "test/wm_test_helper.cc",
     "test/wm_test_helper.h",
   ]
+
+  public_deps = [ "//ui/base/cursor:cursor_base" ]
 
   deps = [
     ":wm",
@@ -120,6 +120,8 @@ jumbo_static_library("test_support") {
 }
 
 test("wm_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   sources = [
     "core/capture_controller_unittest.cc",
     "core/compound_event_filter_unittest.cc",
@@ -140,11 +142,14 @@ test("wm_unittests") {
     ":wm",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
     "//ui/aura:test_support",
     "//ui/base:test_support",
+    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime",
     "//ui/compositor:test_support",
     "//ui/compositor_extra",
@@ -159,11 +164,14 @@ test("wm_unittests") {
     "//ui/wm/public",
   ]
 
-  data_deps = [
-    "//ui/resources:ui_test_pak_data",
-  ]
+  data_deps = [ "//ui/resources:ui_test_pak_data" ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "core/ime_util_chromeos_unittest.cc" ]
+  }
+
+  if (is_fuchsia) {
+    additional_manifest_fragments =
+        [ "//build/config/fuchsia/test/present_view_capabilities.test-cmx" ]
   }
 }

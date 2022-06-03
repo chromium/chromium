@@ -1,0 +1,3 @@
+AXWebArea
+++AXGroup AXDescription='modal level 2'
+++++AXButton AXTitle='Button 2'

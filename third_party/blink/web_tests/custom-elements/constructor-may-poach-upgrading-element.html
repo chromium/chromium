@@ -61,9 +61,7 @@ test_with_window((w) => {
                 'the recursive "new" should steal the upgrade candidate');
   assert_equals(poacher, invocations[0],
                 'the recursize "new" should happen first');
-  assert_true(invocations[1] instanceof w.DOMException,
-              'the super call should have thrown a DOMException');
-  assert_equals(invocations[1].name, 'InvalidStateError',
-                'the exception should be an InvalidStateError');
+  assert_true(invocations[1] instanceof w.TypeError,
+              'the super call should have thrown a TypeError');
 }, 'HTMLElement constructor: poach upgrade candidate');
 </script>

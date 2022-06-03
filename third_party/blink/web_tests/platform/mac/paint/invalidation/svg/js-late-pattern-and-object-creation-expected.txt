@@ -1,16 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRoot svg id='svg-root'",
-          "rect": [0, 13, 679, 367],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [0, 13, 679, 367]
       ]
     }
   ]

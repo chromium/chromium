@@ -21,7 +21,8 @@
 
 namespace crashpad {
 
-//! \brief Enumerates the thread IDs of a process by reading /proc/<pid>/task.
+//! \brief Enumerates the thread IDs of a process by reading
+//!     <code>/proc/<i>pid</i>/task</code>.
 //!
 //! \param[in] pid The process ID for which to read thread IDs.
 //! \param[out] tids The read thread IDs.

@@ -1,0 +1,118 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("safety_check_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "safety_check_consumer.h",
+    "safety_check_navigation_commands.h",
+    "safety_check_service_delegate.h",
+    "safety_check_table_view_controller.h",
+    "safety_check_table_view_controller.mm",
+  ]
+  deps = [
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/cells:public",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/ui/table_view",
+    "//ui/base",
+  ]
+}
+
+source_set("safety_check") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "safety_check_constants.h",
+    "safety_check_constants.mm",
+    "safety_check_coordinator.h",
+    "safety_check_coordinator.mm",
+    "safety_check_mediator.h",
+    "safety_check_mediator.mm",
+    "safety_check_utils.h",
+    "safety_check_utils.mm",
+  ]
+  deps = [
+    ":safety_check_ui",
+    "//components/password_manager/core/browser",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/version_info",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/omaha",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/cells:public",
+    "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
+    "//ios/chrome/browser/ui/settings/google_services",
+    "//ios/chrome/browser/ui/settings/password",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade:public",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/web/common",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "safety_check_mediator_unittest.mm" ]
+  deps = [
+    ":safety_check",
+    ":safety_check_ui",
+    "//base/test:test_support",
+    "//components/password_manager/core/browser:test_support",
+    "//components/password_manager/core/common",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/strings",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/passwords",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/signin:test_support",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/sync:test_support",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade:public",
+    "//ios/chrome/common",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

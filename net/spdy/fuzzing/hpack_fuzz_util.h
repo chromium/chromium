@@ -13,8 +13,6 @@
 
 #include "net/third_party/quiche/src/spdy/core/hpack/hpack_decoder_adapter.h"
 #include "net/third_party/quiche/src/spdy/core/hpack/hpack_encoder.h"
-#include "net/third_party/quiche/src/spdy/platform/api/spdy_export.h"
-#include "net/third_party/quiche/src/spdy/platform/api/spdy_string_piece.h"
 
 namespace spdy {
 
@@ -33,7 +31,7 @@ class HpackFuzzUtil {
   static void InitializeGeneratorContext(GeneratorContext* context);
 
   // Generates a header set from the generator context.
-  static SpdyHeaderBlock NextGeneratedHeaderSet(GeneratorContext* context);
+  static Http2HeaderBlock NextGeneratedHeaderSet(GeneratorContext* context);
 
   // Samples a size from the exponential distribution with mean |mean|,
   // upper-bounded by |sanity_bound|.
@@ -53,7 +51,7 @@ class HpackFuzzUtil {
 
   // Returns true if the next header block was set at |out|. Returns
   // false if no input header blocks remain.
-  static bool NextHeaderBlock(Input* input, SpdyStringPiece* out);
+  static bool NextHeaderBlock(Input* input, absl::string_view* out);
 
   // Returns the serialized header block length prefix for a block of
   // |block_size| bytes.
@@ -75,7 +73,7 @@ class HpackFuzzUtil {
   // |second_stage| and |third_stage| as well. Returns whether all stages
   // processed the input without error.
   static bool RunHeaderBlockThroughFuzzerStages(FuzzerContext* context,
-                                                SpdyStringPiece input_block);
+                                                absl::string_view input_block);
 
   // Flips random bits within |buffer|. The total number of flips is
   // |flip_per_thousand| bits for every 1,024 bytes of |buffer_length|,

@@ -24,7 +24,6 @@ extern const wchar_t kCmdPreviousVersion[];
 
 extern const wchar_t kTempPrefix[];
 extern const wchar_t kFullInstallerSuffix[];
-extern const wchar_t kMultiInstallTag[];
 
 // The resource types that would be unpacked from the mini installer.
 extern const wchar_t kBinResourceType[];

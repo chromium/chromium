@@ -13,8 +13,7 @@
 #include "components/download/internal/common/save_package_download_job.h"
 #include "components/download/public/common/download_features.h"
 #include "components/download/public/common/download_item.h"
-#include "components/download/public/common/download_stats.h"
-#include "net/url_request/url_request_context_getter.h"
+#include "net/http/http_response_info.h"
 
 namespace download {
 
@@ -75,55 +74,21 @@ bool IsParallelizableDownload(const DownloadCreateInfo& create_info,
        base::FeatureList::IsEnabled(features::kUseParallelRequestsForQUIC));
   bool http_get_method =
       create_info.method == "GET" && create_info.url().SchemeIsHTTPOrHTTPS();
-  bool partial_response_success =
-      download_item->GetReceivedSlices().empty() || create_info.offset != 0;
+  // If the file is empty, we always assume parallel download is supported.
+  // Otherwise, check if the download already has multiple slices and whether
+  // the http response offset is non-zero.
+  bool can_support_parallel_requests =
+      download_item->GetReceivedBytes() <= 0 ||
+      (download_item->GetReceivedSlices().size() > 0 &&
+       create_info.offset != 0);
+
   bool range_support_allowed =
       create_info.accept_range == RangeRequestSupportType::kSupport ||
-      (base::FeatureList::IsEnabled(
-           features::kUseParallelRequestsForUnknwonRangeSupport) &&
-       create_info.accept_range == RangeRequestSupportType::kUnknown);
+      create_info.accept_range == RangeRequestSupportType::kUnknown;
   bool is_parallelizable = has_strong_validator && range_support_allowed &&
                            has_content_length && satisfy_min_file_size &&
                            satisfy_connection_type && http_get_method &&
-                           partial_response_success;
-  RecordDownloadConnectionInfo(create_info.connection_info);
-
-  if (!IsParallelDownloadEnabled())
-    return is_parallelizable;
-
-  RecordParallelDownloadCreationEvent(
-      is_parallelizable
-          ? ParallelDownloadCreationEvent::STARTED_PARALLEL_DOWNLOAD
-          : ParallelDownloadCreationEvent::FELL_BACK_TO_NORMAL_DOWNLOAD);
-  if (!has_strong_validator) {
-    RecordParallelDownloadCreationEvent(
-        ParallelDownloadCreationEvent::FALLBACK_REASON_STRONG_VALIDATORS);
-  }
-  if (!range_support_allowed) {
-    RecordParallelDownloadCreationEvent(
-        ParallelDownloadCreationEvent::FALLBACK_REASON_ACCEPT_RANGE_HEADER);
-    if (create_info.accept_range == RangeRequestSupportType::kUnknown) {
-      RecordParallelDownloadCreationEvent(
-          ParallelDownloadCreationEvent::FALLBACK_REASON_UNKNOWN_RANGE_SUPPORT);
-    }
-  }
-  if (!has_content_length) {
-    RecordParallelDownloadCreationEvent(
-        ParallelDownloadCreationEvent::FALLBACK_REASON_CONTENT_LENGTH_HEADER);
-  }
-  if (!satisfy_min_file_size) {
-    RecordParallelDownloadCreationEvent(
-        ParallelDownloadCreationEvent::FALLBACK_REASON_FILE_SIZE);
-  }
-  if (!satisfy_connection_type) {
-    RecordParallelDownloadCreationEvent(
-        ParallelDownloadCreationEvent::FALLBACK_REASON_CONNECTION_TYPE);
-  }
-  if (!http_get_method) {
-    RecordParallelDownloadCreationEvent(
-        ParallelDownloadCreationEvent::FALLBACK_REASON_HTTP_METHOD);
-  }
-
+                           can_support_parallel_requests;
   return is_parallelizable;
 }
 

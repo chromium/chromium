@@ -8,8 +8,7 @@
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/bind_helpers.h"
-#include "base/command_line.h"
+#include "base/callback_helpers.h"
 #include "ui/aura/test/test_window_delegate.h"
 #include "ui/events/test/event_generator.h"
 
@@ -18,22 +17,21 @@ namespace ash {
 class VirtualKeyboardTest : public AshTestBase {
  public:
   VirtualKeyboardTest() = default;
+
+  VirtualKeyboardTest(const VirtualKeyboardTest&) = delete;
+  VirtualKeyboardTest& operator=(const VirtualKeyboardTest&) = delete;
+
   ~VirtualKeyboardTest() override = default;
 
   void SetUp() override {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        keyboard::switches::kEnableVirtualKeyboard);
     AshTestBase::SetUp();
-    keyboard::SetTouchKeyboardEnabled(true);
+    SetVirtualKeyboardEnabled(true);
   }
 
   void TearDown() override {
-    keyboard::SetTouchKeyboardEnabled(false);
+    SetVirtualKeyboardEnabled(false);
     AshTestBase::TearDown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VirtualKeyboardTest);
 };
 
 TEST_F(VirtualKeyboardTest, EventsAreHandledBasedOnHitTestBounds) {
@@ -113,7 +111,8 @@ TEST_F(VirtualKeyboardTest, HitTestBoundsAreResetWhenContainerTypeChanges) {
   // the whole keyboard window.
   keyboard_controller->HideKeyboardExplicitlyBySystem();
   keyboard_controller->SetContainerType(keyboard::ContainerType::kFloating,
-                                        base::nullopt, base::DoNothing());
+                                        gfx::Rect(0, 0, 400, 200),
+                                        base::DoNothing());
   keyboard_controller->ShowKeyboard(false);
 
   // (0, 0) should no longer pass through the keyboard window.

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/extension_install_error_menu_item_id_provider.h"
 
 #include <bitset>
+#include <ostream>
 
 #include "base/lazy_instance.h"
 #include "chrome/app/chrome_command_ids.h"

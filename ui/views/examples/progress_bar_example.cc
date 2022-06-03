@@ -5,61 +5,69 @@
 #include "ui/views/examples/progress_bar_example.h"
 
 #include <algorithm>
+#include <memory>
+#include <utility>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/progress_bar.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/examples/grit/views_examples_resources.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/view.h"
+
+using l10n_util::GetStringUTF16;
+using l10n_util::GetStringUTF8;
 
 namespace views {
 namespace examples {
 
-ProgressBarExample::ProgressBarExample() : ExampleBase("Progress Bar") {}
+ProgressBarExample::ProgressBarExample()
+    : ExampleBase(GetStringUTF8(IDS_PROGRESS_SELECT_LABEL).c_str()) {}
 
 ProgressBarExample::~ProgressBarExample() = default;
 
 void ProgressBarExample::CreateExampleView(View* container) {
-  GridLayout* layout =
-      container->SetLayoutManager(std::make_unique<views::GridLayout>());
+  container->SetLayoutManager(std::make_unique<views::TableLayout>())
+      ->AddColumn(LayoutAlignment::kEnd, LayoutAlignment::kCenter,
+                  TableLayout::kFixedSize,
+                  TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddPaddingColumn(0, 8)
+      .AddColumn(LayoutAlignment::kStretch, LayoutAlignment::kCenter, 1.0f,
+                 TableLayout::ColumnSize::kFixed, 200, 0)
+      .AddPaddingColumn(0, 8)
+      .AddColumn(LayoutAlignment::kStart, LayoutAlignment::kCenter,
+                 TableLayout::kFixedSize,
+                 TableLayout::ColumnSize::kUsePreferred, 0, 0)
+      .AddRows(1, TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, 10)
+      .AddRows(1, TableLayout::kFixedSize)
+      .AddPaddingRow(TableLayout::kFixedSize, 10)
+      .AddRows(1, TableLayout::kFixedSize);
 
-  ColumnSet* column_set = layout->AddColumnSet(0);
-  column_set->AddColumn(GridLayout::TRAILING, GridLayout::CENTER, 0,
-                        GridLayout::USE_PREF, 0, 0);
-  column_set->AddPaddingColumn(0, 8);
-  column_set->AddColumn(GridLayout::FILL, GridLayout::CENTER, 1,
-                        GridLayout::FIXED, 200, 0);
-  column_set->AddPaddingColumn(0, 8);
-  column_set->AddColumn(GridLayout::LEADING, GridLayout::CENTER, 0,
-                        GridLayout::USE_PREF, 0, 0);
+  container->AddChildView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&ProgressBarExample::ButtonPressed,
+                          base::Unretained(this), -0.1),
+      u"-"));
+  progress_bar_ = container->AddChildView(std::make_unique<ProgressBar>());
+  container->AddChildView(std::make_unique<views::MdTextButton>(
+      base::BindRepeating(&ProgressBarExample::ButtonPressed,
+                          base::Unretained(this), 0.1),
+      u"+"));
 
-  layout->StartRow(0, 0);
-  minus_button_ =
-      layout->AddView(MdTextButton::Create(this, base::ASCIIToUTF16("-")));
-  progress_bar_ = layout->AddView(std::make_unique<ProgressBar>());
-  plus_button_ =
-      layout->AddView(MdTextButton::Create(this, base::ASCIIToUTF16("+")));
+  container->AddChildView(
+      std::make_unique<Label>(GetStringUTF16(IDS_PROGRESS_LOADER_LABEL)));
+  container->AddChildView(std::make_unique<ProgressBar>())->SetValue(-1);
+  container->AddChildView(std::make_unique<View>());
 
-  layout->StartRowWithPadding(0, 0, 0, 10);
-  layout->AddView(
-      std::make_unique<Label>(base::ASCIIToUTF16("Infinite loader:")));
-  auto infinite_bar = std::make_unique<ProgressBar>();
-  infinite_bar->SetValue(-1);
-  layout->AddView(std::move(infinite_bar));
-
-  layout->StartRowWithPadding(0, 0, 0, 10);
-  layout->AddView(std::make_unique<Label>(
-      base::ASCIIToUTF16("Infinite loader (very short):")));
-  auto shorter_bar = std::make_unique<ProgressBar>(2);
-  shorter_bar->SetValue(-1);
-  layout->AddView(std::move(shorter_bar));
+  container->AddChildView(
+      std::make_unique<Label>(GetStringUTF16(IDS_PROGRESS_LOADER_SHORT_LABEL)));
+  container->AddChildView(std::make_unique<ProgressBar>(2))->SetValue(-1);
 }
 
-void ProgressBarExample::ButtonPressed(Button* sender, const ui::Event& event) {
-  constexpr double kStepSize = 0.1;
-  const double step = (sender == minus_button_) ? -kStepSize : kStepSize;
-  current_percent_ = base::ClampToRange(current_percent_ + step, 0.0, 1.0);
+void ProgressBarExample::ButtonPressed(double step) {
+  current_percent_ = base::clamp(current_percent_ + step, 0.0, 1.0);
   progress_bar_->SetValue(current_percent_);
 }
 

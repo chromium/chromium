@@ -4,8 +4,7 @@
 
 // https://github.com/dtapuska/useractivation
 [
-    ImplementedAs=NavigatorUserActivation,
-    RuntimeEnabled=UserActivationAPI
+    ImplementedAs=NavigatorUserActivation
 ] partial interface Navigator {
   // User activation
   readonly attribute UserActivation userActivation;

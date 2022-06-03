@@ -15,8 +15,7 @@ namespace device {
 // static
 const size_t PositionCacheImpl::kMaximumSize = 10;
 // static
-const base::TimeDelta PositionCacheImpl::kMaximumLifetime =
-    base::TimeDelta::FromDays(1);
+const base::TimeDelta PositionCacheImpl::kMaximumLifetime = base::Days(1);
 
 PositionCacheImpl::CacheEntry::CacheEntry(
     const Hash& hash,
@@ -33,10 +32,10 @@ PositionCacheImpl::CacheEntry& PositionCacheImpl::CacheEntry::operator=(
 // static
 PositionCacheImpl::Hash PositionCacheImpl::MakeKey(const WifiData& wifi_data) {
   // Currently we use only WiFi data and base the key only on the MAC addresses.
-  base::string16 key;
+  std::u16string key;
   const size_t kCharsPerMacAddress = 6 * 3 + 1;  // e.g. "11:22:33:44:55:66|"
   key.reserve(wifi_data.access_point_data.size() * kCharsPerMacAddress);
-  const base::string16 separator(base::ASCIIToUTF16("|"));
+  const std::u16string separator(u"|");
   for (const auto& access_point_data : wifi_data.access_point_data) {
     key += separator;
     key += access_point_data.mac_address;

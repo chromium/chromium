@@ -12,10 +12,11 @@ android_apk("audio_focus_grabber_apk") {
   deps = [
     ":audio_focus_grabber_apk_resources",
     "//base:base_java",
-    "//third_party/android_deps:com_android_support_support_compat_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
   ]
 
-  java_files = [
+  sources = [
     "java/src/org/chromium/tools/audio_focus_grabber/AudioFocusGrabberActivity.java",
     "java/src/org/chromium/tools/audio_focus_grabber/AudioFocusGrabberListenerService.java",
   ]
@@ -23,6 +24,16 @@ android_apk("audio_focus_grabber_apk") {
 
 android_resources("audio_focus_grabber_apk_resources") {
   testonly = true
-  resource_dirs = [ "java/res" ]
+  sources = [
+    "java/res/drawable-hdpi/notification_icon.png",
+    "java/res/drawable-mdpi/notification_icon.png",
+    "java/res/drawable-xhdpi/notification_icon.png",
+    "java/res/drawable-xxhdpi/notification_icon.png",
+    "java/res/drawable-xxxhdpi/notification_icon.png",
+    "java/res/layout/audio_focus_grabber_activity.xml",
+    "java/res/layout/audio_focus_grabber_notification_bar.xml",
+    "java/res/raw/ping.mp3",
+    "java/res/values/strings.xml",
+  ]
   android_manifest = "java/AndroidManifest.xml"
 }

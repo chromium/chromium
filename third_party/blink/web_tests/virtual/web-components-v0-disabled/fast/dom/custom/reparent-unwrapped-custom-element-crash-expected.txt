@@ -1,6 +1,0 @@
-CONSOLE ERROR: line 4: Uncaught TypeError: document.registerElement is not a function
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
-If this doesn't crash, it passed.

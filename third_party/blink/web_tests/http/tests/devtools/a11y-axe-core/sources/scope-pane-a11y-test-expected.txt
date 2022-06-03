@@ -1,0 +1,14 @@
+Testing accessibility in the scope pane.
+
+Script execution paused.
+Scope pane content: Localthis: WindowClosure (makeClosure)WindowGlobal
+Running the axe-core linter on the scope pane.
+aXe violations: []
+
+Expanding the makeClosure closure.
+Scope pane content: Localthis: WindowClosure (makeClosure)x: 5WindowGlobal
+Running the axe-core linter on the scope pane.
+aXe violations: []
+
+Script execution resumed.
+

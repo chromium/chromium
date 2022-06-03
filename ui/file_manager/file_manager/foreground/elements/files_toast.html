@@ -2,50 +2,40 @@
   -- Use of this source code is governed by a BSD-style license that can be
   -- found in the LICENSE file.
   -->
+<style>
+  .container {
+    --cr-toast-background: var(--google-grey-900-white-4-percent);
+    justify-content: space-between;
+    max-width: 336px;
+    min-height: 48px;
+    min-width: 256px;
+    padding: 0;
+  }
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+  :host-context(:root[dir=ltr]) .container {
+    left: unset;
+    right: 0;
+  }
 
-<dom-module id="files-toast">
-  <template>
-    <style>
-      .container {
-        background: rgb(50, 50, 50);
-        bottom: 16px;
-        display: flex;
-        min-width: 360px;
-        padding: 20px 24px;
-        position: absolute;
-      }
+  :host-context(:root[dir=rtl]) .container {
+    left: 0;
+    right: unset;
+  }
 
-      .container[hidden] {
-        display: none;
-      }
+  .text {
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    display: -webkit-box;
+    line-height: 20px;
+    margin: 14px 16px;
+    overflow: hidden;
+  }
 
-      :host-context(html[dir='ltr']) .container {
-        right: 16px;
-      }
-
-      :host-context(html[dir='rtl']) .container {
-        left: 16px;
-      }
-
-      .text {
-        color: white;
-        flex-grow: 1;
-      }
-
-      .action {
-        -webkit-margin-start: 8px;
-        color: rgb(97, 203, 255);
-        cursor: pointer;
-        font-weight: bold;
-      }
-    </style>
-    <div class="container" id="container" hidden>
-      <div class="text" id="text"></div>
-      <div class="action" id="action" on-tap="onActionTapped_"></div>
-    </div>
-  </template>
-</dom-module>
-
-<script src="files_toast.js"></script>
+  .action {
+    margin: 0 8px !important;
+  }
+</style>
+<cr-toast class="container" id="container" duration="5000">
+  <div class="text" id="text"></div>
+  <cr-button class="action" id="action" on-tap="onActionTapped_"></cr-button>
+</cr-toast>

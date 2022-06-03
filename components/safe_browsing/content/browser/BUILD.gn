@@ -1,0 +1,228 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+import("//components/safe_browsing/buildflags.gni")
+
+# NOTE: This target is separated from :browser as
+# //components/safe_browsing/content/browser/web_ui, which :browser depends on, depends
+# on this.
+# TODO(crbug.com/1216341): Consider folding all of three these together into
+# :browser, along with the other browser process code in
+# //components/safe_browsing/content.
+source_set("safe_browsing_service") {
+  sources = [
+    "safe_browsing_service_interface.cc",
+    "safe_browsing_service_interface.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//content/public/browser",
+  ]
+}
+
+# NOTE: This target is separated from :browser as
+# //components/safe_browsing/content/browser/triggers, which this depends on, depends
+# on :browser.
+# TODO(crbug.com/1216341): Consider folding all of three these together into
+# :browser, along with the other browser process code in
+# //components/safe_browsing/content.
+if (safe_browsing_mode > 0) {
+  source_set("safe_browsing_blocking_page") {
+    sources = [
+      "safe_browsing_blocking_page.cc",
+      "safe_browsing_blocking_page.h",
+      "safe_browsing_blocking_page_factory.h",
+      "safe_browsing_navigation_throttle.cc",
+      "safe_browsing_navigation_throttle.h",
+      "ui_manager.cc",
+      "ui_manager.h",
+    ]
+
+    deps = [
+      ":browser",
+      "//base",
+      "//components/no_state_prefetch/browser",
+      "//components/prefs",
+      "//components/safe_browsing/content/browser/triggers",
+      "//components/safe_browsing/core/browser",
+      "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
+      "//components/safe_browsing/core/common",
+      "//components/safe_browsing/core/common:safe_browsing_prefs",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/security_interstitials/core",
+      "//components/security_interstitials/core:unsafe_resource",
+      "//content/public/browser",
+    ]
+  }
+}
+
+source_set("browser") {
+  sources = [
+    "base_blocking_page.cc",
+    "base_blocking_page.h",
+    "base_ui_manager.cc",
+    "base_ui_manager.h",
+    "browser_url_loader_throttle.cc",
+    "browser_url_loader_throttle.h",
+    "mojo_safe_browsing_impl.cc",
+    "mojo_safe_browsing_impl.h",
+    "safe_browsing_controller_client.cc",
+    "safe_browsing_controller_client.h",
+    "safe_browsing_network_context.cc",
+    "safe_browsing_network_context.h",
+    "threat_details.cc",
+    "threat_details.h",
+    "threat_details_cache.cc",
+    "threat_details_cache.h",
+    "threat_details_history.cc",
+    "threat_details_history.h",
+    "web_api_handshake_checker.cc",
+    "web_api_handshake_checker.h",
+  ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/back_forward_cache",
+    "//components/history/core/browser",
+    "//components/prefs",
+    "//components/safe_browsing/content/browser/web_ui:web_ui",
+    "//components/safe_browsing/content/common:interfaces",
+    "//components/safe_browsing/core/browser",
+    "//components/safe_browsing/core/browser:referrer_chain_provider",
+    "//components/safe_browsing/core/browser:verdict_cache_manager",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/realtime:policy_engine",
+    "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
+    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/security_interstitials/core",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//components/signin/public/identity_manager",
+    "//components/unified_consent",
+    "//components/version_info",
+    "//content/public/browser:browser",
+    "//content/public/common",
+    "//net",
+    "//net:extras",
+    "//services/network/public/mojom",
+  ]
+  if (safe_browsing_mode > 0) {
+    sources += [
+      "safe_browsing_navigation_observer.cc",
+      "safe_browsing_navigation_observer.h",
+      "safe_browsing_navigation_observer_manager.cc",
+      "safe_browsing_navigation_observer_manager.h",
+      "safe_browsing_navigation_observer_manager_util.cc",
+      "safe_browsing_navigation_observer_manager_util.h",
+    ]
+
+    deps += [
+      ":safe_browsing_service",
+      "//components/content_settings/core/browser",
+      "//components/page_info",
+      "//components/sessions",
+    ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "client_side_phishing_model_unittest.cc",
+    "web_api_handshake_checker_unittest.cc",
+  ]
+
+  deps = [
+    ":client_side_detection",
+    "//base:base",
+    "//base/test:test_support",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/browser:browser",
+    "//components/safe_browsing/core/browser:browser",
+    "//components/safe_browsing/core/browser/db:test_database_manager",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/fbs:client_model",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//components/unified_consent",
+    "//components/variations",
+    "//components/version_info",
+    "//content/test:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+
+  if (safe_browsing_mode > 0) {
+    sources += [ "ui_manager_unittest.cc" ]
+    deps += [
+      "//components/prefs",
+      "//components/prefs:test_support",
+      "//components/safe_browsing/content/browser:safe_browsing_blocking_page",
+      "//components/security_interstitials/content:security_interstitial_page",
+      "//components/security_interstitials/core",
+    ]
+  }
+
+  # TODO(sgurun): enable tests for safe_browsing==2.
+  if (safe_browsing_mode == 1) {
+    sources += [
+      "safe_browsing_navigation_observer_manager_util_unittest.cc",
+      "safe_browsing_navigation_observer_unittest.cc",
+    ]
+  }
+
+  deps += [
+    "//components/content_settings/core/browser",
+    "//components/sessions",
+    "//components/sync_preferences:test_support",
+  ]
+}
+
+source_set("client_side_detection") {
+  sources = [
+    "client_side_detection_host.cc",
+    "client_side_detection_host.h",
+    "client_side_detection_service.cc",
+    "client_side_detection_service.h",
+    "client_side_phishing_model.cc",
+    "client_side_phishing_model.h",
+    "safe_browsing_tab_observer.cc",
+    "safe_browsing_tab_observer.h",
+  ]
+  deps = [
+    "//base:base",
+    "//components/prefs",
+    "//components/safe_browsing:buildflags",
+    "//components/safe_browsing/content/browser",
+    "//components/safe_browsing/content/browser/web_ui:web_ui",
+    "//components/safe_browsing/content/common:interfaces",
+    "//components/safe_browsing/core/browser:token_fetcher",
+    "//components/safe_browsing/core/browser/db:allowlist_checker_client",
+    "//components/safe_browsing/core/browser/db:database_manager",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/core/browser/sync:sync",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/safe_browsing/core/common/fbs:client_model",
+    "//components/safe_browsing/core/common/proto:client_model_proto",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/security_interstitials/content:security_interstitial_page",
+    "//components/variations",
+    "//content/public/browser",
+    "//google_apis:google_apis",
+    "//net:net",
+    "//net/traffic_annotation:traffic_annotation",
+    "//services/network/public/cpp",
+    "//url:url",
+  ]
+}

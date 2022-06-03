@@ -5,26 +5,28 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_BOX_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_INLINE_BOX_STATE_H_
 
-#include "third_party/blink/renderer/core/layout/geometry/logical_size.h"
+#include "base/dcheck_is_on.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/layout/geometry/logical_rect.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_line_box_fragment_builder.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_line_height_metrics.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
-#include "third_party/blink/renderer/platform/fonts/font_baseline.h"
+#include "third_party/blink/renderer/platform/fonts/font_height.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class NGInlineItem;
-struct NGInlineItemResult;
+class NGLogicalLineItems;
 class ShapeResultView;
+struct NGInlineItemResult;
 
 // Fragments that require the layout position/size of ancestor are packed in
 // this struct.
 struct NGPendingPositions {
   unsigned fragment_start;
   unsigned fragment_end;
-  NGLineHeightMetrics metrics;
+  FontHeight metrics;
   EVerticalAlign vertical_align;
 };
 
@@ -40,14 +42,24 @@ struct NGInlineBoxState {
   const NGInlineItem* item = nullptr;
   const ComputedStyle* style = nullptr;
 
+  // Points to style->GetFont(), or |scaled_font| in an SVG <text>.
+  const Font* font;
+  // A storage of SVG scaled font. Do not touch this outside of
+  // InitializeFont().
+  absl::optional<Font> scaled_font;
+
+  // SVG scaling factor for this box. We use a font of which size is
+  // css-specified-size * scaling_factor.
+  float scaling_factor;
+
   // The united metrics for the current box. This includes all objects in this
   // box, including descendants, and adjusted by placement properties such as
   // 'vertical-align'.
-  NGLineHeightMetrics metrics;
+  FontHeight metrics = FontHeight::Empty();
 
   // The metrics of the font for this box. This includes leadings as specified
   // by the 'line-height' property.
-  NGLineHeightMetrics text_metrics;
+  FontHeight text_metrics = FontHeight::Empty();
 
   // The distance between the text-top and the baseline for this box. The
   // text-top does not include leadings.
@@ -55,6 +67,9 @@ struct NGInlineBoxState {
 
   // The height of the text fragments.
   LayoutUnit text_height;
+
+  // SVG alignment-baseline presentation property resolved to a FontBaseline.
+  FontBaseline alignment_type = FontBaseline::kAlphabeticBaseline;
 
   // These values are to create a box fragment. Set only when needs_box_fragment
   // is set.
@@ -67,7 +82,23 @@ struct NGInlineBoxState {
 
   Vector<NGPendingPositions> pending_descendants;
   bool include_used_fonts = false;
+  bool has_box_placeholder = false;
   bool needs_box_fragment = false;
+  bool is_svg_text = false;
+
+  // If you add new data members, update the move constructor.
+
+  NGInlineBoxState() = default;
+  // Needs the move constructor for Vector<NGInlineBoxState>.
+  NGInlineBoxState(const NGInlineBoxState&& state);
+  NGInlineBoxState(const NGInlineBoxState&) = delete;
+  NGInlineBoxState& operator=(const NGInlineBoxState&) = delete;
+
+  // Reset |style|, |is_svg_text|, |font|, |scaled_font|, |scaling_factor|, and
+  // |alignment_type|.
+  void ResetStyle(const ComputedStyle& style_ref,
+                  bool is_svg,
+                  const LayoutObject& layout_object);
 
   // True if this box has a metrics, including pending ones. Pending metrics
   // will be activated in |EndBoxState()|.
@@ -78,18 +109,18 @@ struct NGInlineBoxState {
   // Compute text metrics for a box. All text in a box share the same
   // metrics.
   // The computed metrics is included into the line height of the current box.
-  void ComputeTextMetrics(const ComputedStyle& style,
-                          FontBaseline baseline_type);
-  void EnsureTextMetrics(const ComputedStyle&, FontBaseline);
+  void ComputeTextMetrics(const ComputedStyle&,
+                          const Font& fontref,
+                          FontBaseline ifc_baseline);
+  void EnsureTextMetrics(const ComputedStyle&,
+                         const Font& fontref,
+                         FontBaseline ifc_baseline);
   void ResetTextMetrics();
 
-  void AccumulateUsedFonts(const ShapeResultView*, FontBaseline);
+  void AccumulateUsedFonts(const ShapeResultView*);
 
   // 'text-top' offset for 'vertical-align'.
   LayoutUnit TextTop(FontBaseline baseline_type) const;
-
-  // Create a box fragment for this box.
-  void SetNeedsBoxFragment();
 
   // Returns if the text style can be added without open-tag.
   // Text with different font or vertical-align needs to be wrapped with an
@@ -116,23 +147,36 @@ class CORE_EXPORT NGInlineLayoutStateStack {
 
   // Initialize the box state stack for a new line.
   // @return The initial box state for the line.
-  NGInlineBoxState* OnBeginPlaceItems(const ComputedStyle&, FontBaseline, bool);
+  NGInlineBoxState* OnBeginPlaceItems(const NGInlineNode node,
+                                      const ComputedStyle&,
+                                      FontBaseline,
+                                      bool line_height_quirk,
+                                      NGLogicalLineItems* line_box);
 
   // Push a box state stack.
   NGInlineBoxState* OnOpenTag(const NGInlineItem&,
                               const NGInlineItemResult&,
-                              const NGLineBoxFragmentBuilder::ChildList&);
-  NGInlineBoxState* OnOpenTag(const ComputedStyle&,
-                              const NGLineBoxFragmentBuilder::ChildList&);
+                              FontBaseline baseline_type,
+                              const NGLogicalLineItems&);
+  // This variation adds a box placeholder to |line_box|.
+  NGInlineBoxState* OnOpenTag(const NGInlineItem&,
+                              const NGInlineItemResult&,
+                              FontBaseline baseline_type,
+                              NGLogicalLineItems* line_box);
 
   // Pop a box state stack.
-  NGInlineBoxState* OnCloseTag(NGLineBoxFragmentBuilder::ChildList*,
+  NGInlineBoxState* OnCloseTag(const NGConstraintSpace& space,
+                               NGLogicalLineItems*,
                                NGInlineBoxState*,
                                FontBaseline,
                                bool has_end_edge = true);
 
   // Compute all the pending positioning at the end of a line.
-  void OnEndPlaceItems(NGLineBoxFragmentBuilder::ChildList*, FontBaseline);
+  void OnEndPlaceItems(const NGConstraintSpace& space,
+                       NGLogicalLineItems*,
+                       FontBaseline);
+
+  void OnBlockInInline(const FontHeight& metrics, NGLogicalLineItems* line_box);
 
   bool HasBoxFragments() const { return !box_data_list_.IsEmpty(); }
 
@@ -142,31 +186,24 @@ class CORE_EXPORT NGInlineLayoutStateStack {
   // This class keeps indexes to fragments in the line box, and that only
   // appending is allowed. Call this function to move all such data to the line
   // box, so that outside of this class can reorder fragments in the line box.
-  void PrepareForReorder(NGLineBoxFragmentBuilder::ChildList*);
+  void PrepareForReorder(NGLogicalLineItems*);
 
   // When reordering was complete, call this function to re-construct the box
   // data from the line box. Callers must call |PrepareForReorder()| before
   // reordering.
-  void UpdateAfterReorder(NGLineBoxFragmentBuilder::ChildList*);
-
-  // Update start/end of the first BoxData found at |index|.
-  //
-  // If inline fragmentation is found, a new BoxData is added.
-  //
-  // Returns the index to process next. It should be given to the next call to
-  // this function.
-  unsigned UpdateBoxDataFragmentRange(NGLineBoxFragmentBuilder::ChildList*,
-                                      unsigned index);
-
-  // Update edges of inline fragmented boxes.
-  void UpdateFragmentedBoxDataEdges();
+  void UpdateAfterReorder(NGLogicalLineItems*);
 
   // Compute inline positions of fragments and boxes.
-  LayoutUnit ComputeInlinePositions(NGLineBoxFragmentBuilder::ChildList*);
+  LayoutUnit ComputeInlinePositions(NGLogicalLineItems*,
+                                    LayoutUnit position,
+                                    bool ignore_box_margin_border_padding);
 
+  void ApplyRelativePositioning(const NGConstraintSpace&, NGLogicalLineItems*);
   // Create box fragments. This function turns a flat list of children into
   // a box tree.
-  void CreateBoxFragments(NGLineBoxFragmentBuilder::ChildList*);
+  void CreateBoxFragments(const NGConstraintSpace&,
+                          NGLogicalLineItems*,
+                          bool is_opaque);
 
 #if DCHECK_IS_ON()
   void CheckSame(const NGInlineLayoutStateStack&) const;
@@ -175,13 +212,17 @@ class CORE_EXPORT NGInlineLayoutStateStack {
  private:
   // End of a box state, either explicitly by close tag, or implicitly at the
   // end of a line.
-  void EndBoxState(NGInlineBoxState*,
-                   NGLineBoxFragmentBuilder::ChildList*,
+  void EndBoxState(const NGConstraintSpace&,
+                   NGInlineBoxState*,
+                   NGLogicalLineItems*,
                    FontBaseline);
 
   void AddBoxFragmentPlaceholder(NGInlineBoxState*,
-                                 NGLineBoxFragmentBuilder::ChildList*,
+                                 NGLogicalLineItems*,
                                  FontBaseline);
+  void AddBoxData(const NGConstraintSpace&,
+                  NGInlineBoxState*,
+                  NGLogicalLineItems*);
 
   enum PositionPending { kPositionNotPending, kPositionPending };
 
@@ -192,14 +233,18 @@ class CORE_EXPORT NGInlineLayoutStateStack {
   // https://www.w3.org/TR/CSS22/visudet.html#propdef-vertical-align
   // https://www.w3.org/TR/css-inline-3/#propdef-vertical-align
   PositionPending ApplyBaselineShift(NGInlineBoxState*,
-                                     NGLineBoxFragmentBuilder::ChildList*,
+                                     NGLogicalLineItems*,
                                      FontBaseline);
+
+  // Computes an offset that will align the |box| with its 'alignment-baseline'
+  // relative to the baseline of the line box. This takes into account both the
+  // 'dominant-baseline' and 'alignment-baseline' of |box| and its parent.
+  LayoutUnit ComputeAlignmentBaselineShift(const NGInlineBoxState* box);
 
   // Compute the metrics for when 'vertical-align' is 'top' and 'bottom' from
   // |pending_descendants|.
-  NGLineHeightMetrics MetricsForTopAndBottomAlign(
-      const NGInlineBoxState&,
-      const NGLineBoxFragmentBuilder::ChildList&) const;
+  FontHeight MetricsForTopAndBottomAlign(const NGInlineBoxState&,
+                                         const NGLogicalLineItems&) const;
 
   // Data for a box fragment. See AddBoxFragmentPlaceholder().
   // This is a transient object only while building a line box.
@@ -208,14 +253,16 @@ class CORE_EXPORT NGInlineLayoutStateStack {
             unsigned end,
             const NGInlineItem* item,
             LogicalSize size)
-        : fragment_start(start), fragment_end(end), item(item), size(size) {}
+        : fragment_start(start),
+          fragment_end(end),
+          item(item),
+          rect(LogicalOffset(), size) {}
 
     BoxData(const BoxData& other, unsigned start, unsigned end)
         : fragment_start(start),
           fragment_end(end),
           item(other.item),
-          size(other.size),
-          offset(other.offset) {}
+          rect(other.rect) {}
 
     void SetFragmentRange(unsigned start_index, unsigned end_index) {
       fragment_start = start_index;
@@ -227,7 +274,7 @@ class CORE_EXPORT NGInlineLayoutStateStack {
     unsigned fragment_end;
 
     const NGInlineItem* item;
-    LogicalSize size;
+    LogicalRect rect;
 
     bool has_line_left_edge = false;
     bool has_line_right_edge = false;
@@ -238,20 +285,35 @@ class CORE_EXPORT NGInlineLayoutStateStack {
     LayoutUnit margin_border_padding_line_left;
     LayoutUnit margin_border_padding_line_right;
 
-    LogicalOffset offset;
     unsigned parent_box_data_index = 0;
     unsigned fragmented_box_data_index = 0;
 
     void UpdateFragmentEdges(Vector<BoxData, 4>& list);
 
     scoped_refptr<const NGLayoutResult> CreateBoxFragment(
-        NGLineBoxFragmentBuilder::ChildList*);
+        const NGConstraintSpace&,
+        NGLogicalLineItems*,
+        bool is_opaque = false);
   };
+
+  // Update start/end of the first BoxData found at |index|.
+  //
+  // If inline fragmentation is found, a new BoxData is added.
+  //
+  // Returns the index to process next. It should be given to the next call to
+  // this function.
+  unsigned UpdateBoxDataFragmentRange(NGLogicalLineItems*,
+                                      unsigned index,
+                                      Vector<BoxData>* fragmented_boxes);
+
+  // Update edges of inline fragmented boxes.
+  void UpdateFragmentedBoxDataEdges(Vector<BoxData>* fragmented_boxes);
 
   Vector<NGInlineBoxState, 4> stack_;
   Vector<BoxData, 4> box_data_list_;
 
   bool is_empty_line_ = false;
+  bool is_svg_text_ = false;
 };
 
 }  // namespace blink

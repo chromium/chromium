@@ -1,0 +1,19 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+# The output jar for this target is copied and checked-in to minimize the number
+# of edges in the build graph. This is a class that rarely changes.
+java_library("custom_d8_java") {
+  sources = [ "java/src/org/chromium/build/CustomD8.java" ]
+
+  # Avoid using java_prebuilt() to ensure all uses go through the checked-in
+  # version.
+  input_jars_paths = [ "//third_party/r8/lib/r8.jar" ]
+}
+
+java_prebuilt("r8_java") {
+  jar_path = "//third_party/r8/lib/r8.jar"
+}

@@ -43,10 +43,10 @@ void AntiVirusMetricsProvider::ProvideSystemProfileMetrics(
   }
 }
 
-void AntiVirusMetricsProvider::AsyncInit(const base::Closure& done_callback) {
+void AntiVirusMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
   if (!remote_util_win_) {
     remote_util_win_ = LaunchUtilWinServiceInstance();
-    remote_util_win_.reset_on_idle_timeout(base::TimeDelta::FromSeconds(5));
+    remote_util_win_.reset_on_idle_timeout(base::Seconds(5));
   }
 
   // Intentionally don't handle connection errors as not reporting this metric
@@ -56,14 +56,14 @@ void AntiVirusMetricsProvider::AsyncInit(const base::Closure& done_callback) {
   remote_util_win_->GetAntiVirusProducts(
       ShouldReportFullNames(),
       base::BindOnce(&AntiVirusMetricsProvider::GotAntiVirusProducts,
-                     base::Unretained(this), done_callback));
+                     base::Unretained(this), std::move(done_callback)));
 }
 
 void AntiVirusMetricsProvider::GotAntiVirusProducts(
-    const base::Closure& done_callback,
+    base::OnceClosure done_callback,
     const std::vector<metrics::SystemProfileProto::AntiVirusProduct>& result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   remote_util_win_.reset();
   av_products_ = result;
-  done_callback.Run();
+  std::move(done_callback).Run();
 }

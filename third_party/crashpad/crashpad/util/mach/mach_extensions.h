@@ -17,10 +17,6 @@
 
 #include <mach/mach.h>
 
-#include <string>
-
-#include "base/mac/scoped_mach_port.h"
-
 namespace crashpad {
 
 //! \brief `MACH_PORT_NULL` with the correct type for a Mach port,
@@ -50,6 +46,9 @@ constexpr exception_behavior_t kMachExceptionCodes = MACH_EXCEPTION_CODES;
 
 //! \brief An exception type to use for simulated exceptions.
 constexpr exception_type_t kMachExceptionSimulated = 'CPsx';
+
+//! \brief An exception type to use for uncaught NSExceptions.
+constexpr exception_type_t kMachExceptionFromNSException = 'CPnx';
 
 //! \brief A const version of `thread_state_t`.
 //!
@@ -118,43 +117,6 @@ exception_mask_t ExcMaskAll();
 //! be updated to include their bits in the returned mask value when run time
 //! support is present.
 exception_mask_t ExcMaskValid();
-
-//! \brief Makes a `boostrap_check_in()` call to the process’ bootstrap server.
-//!
-//! This function is provided to make it easier to call `bootstrap_check_in()`
-//! while avoiding accidental leaks of the returned receive right.
-//!
-//! \param[in] service_name The service name to check in.
-//!
-//! \return On success, a receive right to the service port. On failure,
-//!     `MACH_PORT_NULL` with a message logged.
-base::mac::ScopedMachReceiveRight BootstrapCheckIn(
-    const std::string& service_name);
-
-//! \brief Makes a `boostrap_look_up()` call to the process’ bootstrap server.
-//!
-//! This function is provided to make it easier to call `bootstrap_look_up()`
-//! while avoiding accidental leaks of the returned send right.
-//!
-//! \param[in] service_name The service name to look up.
-//!
-//! \return On success, a send right to the service port. On failure,
-//!     `MACH_PORT_NULL` with a message logged.
-base::mac::ScopedMachSendRight BootstrapLookUp(const std::string& service_name);
-
-//! \brief Obtains the system’s default Mach exception handler for crash-type
-//!     exceptions.
-//!
-//! This is obtained by looking up `"com.apple.ReportCrash"` with the bootstrap
-//! server. The service name comes from the first launch agent loaded by
-//! `launchd` with a `MachServices` entry having `ExceptionServer` set. This
-//! launch agent is normally loaded from
-//! `/System/Library/LaunchAgents/com.apple.ReportCrash.plist`.
-//!
-//! \return On success, a send right to an `exception_handler_t` corresponding
-//!     to the system’s default crash reporter. On failure, `MACH_PORT_NULL`,
-//!     with a message logged.
-base::mac::ScopedMachSendRight SystemCrashReporterHandler();
 
 }  // namespace crashpad
 

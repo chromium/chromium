@@ -6,11 +6,9 @@
 #define MEDIA_GPU_TEST_IMAGE_PROCESSOR_IMAGE_PROCESSOR_CLIENT_H_
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/atomicops.h"
-#include "base/macros.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
@@ -50,7 +48,11 @@ class ImageProcessorClient {
       const ImageProcessor::PortConfig& input_config,
       const ImageProcessor::PortConfig& output_config,
       size_t num_buffers,
+      VideoRotation relative_rotation,
       std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors);
+
+  ImageProcessorClient(const ImageProcessorClient&) = delete;
+  ImageProcessorClient& operator=(const ImageProcessorClient&) = delete;
 
   // Destruct |image_processor_| if it is created.
   ~ImageProcessorClient();
@@ -64,9 +66,8 @@ class ImageProcessorClient {
 
   // Wait until |num_processed| frames are processed. Returns false if
   // |max_wait| is exceeded.
-  bool WaitUntilNumImageProcessed(
-      size_t num_processed,
-      base::TimeDelta max_wait = base::TimeDelta::FromSeconds(5));
+  bool WaitUntilNumImageProcessed(size_t num_processed,
+                                  base::TimeDelta max_wait = base::Seconds(5));
 
   // Get the number of processed VideoFrames.
   size_t GetNumOfProcessedImages() const;
@@ -86,12 +87,14 @@ class ImageProcessorClient {
   // |num_buffers|.
   bool CreateImageProcessor(const ImageProcessor::PortConfig& input_config,
                             const ImageProcessor::PortConfig& output_config,
-                            size_t num_buffers);
+                            size_t num_buffers,
+                            VideoRotation relative_rotation);
 
   // Create |image_processor_| on |my_thread_|.
   void CreateImageProcessorTask(const ImageProcessor::PortConfig& input_config,
                                 const ImageProcessor::PortConfig& output_config,
                                 size_t num_buffers,
+                                VideoRotation relative_rotation,
                                 base::WaitableEvent* done);
 
   // Call ImageProcessor::Process() on |my_thread_|.
@@ -136,7 +139,6 @@ class ImageProcessorClient {
 
   THREAD_CHECKER(image_processor_client_thread_checker_);
   THREAD_CHECKER(test_main_thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(ImageProcessorClient);
 };
 
 }  // namespace test

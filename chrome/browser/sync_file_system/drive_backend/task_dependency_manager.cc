@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace sync_file_system {
 namespace drive_backend {

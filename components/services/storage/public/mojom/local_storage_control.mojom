@@ -4,30 +4,11 @@
 
 module storage.mojom;
 
+import "components/services/storage/public/mojom/storage_policy_update.mojom";
+import "components/services/storage/public/mojom/storage_usage_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "third_party/blink/public/mojom/dom_storage/storage_area.mojom";
-import "url/mojom/origin.mojom";
-
-// Conveys basic information about a single origin's data in Local Storage.
-struct LocalStorageUsageInfo {
-  // The origin whose metadata is represented by this structure.
-  url.mojom.Origin origin;
-
-  // The total size in bytes occupied by this origin within Local Storage.
-  uint64 size_in_bytes;
-
-  // The last time any Local Storage data was modified for this origin.
-  mojo_base.mojom.Time last_modified_time;
-};
-
-// Indicates a policy update for a specific origin.
-struct LocalStoragePolicyUpdate {
-  // The origin to which this policy applies.
-  url.mojom.Origin origin;
-
-  // Indicates whether data for this origin should be purged on shutdown.
-  bool purge_on_shutdown;
-};
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
 
 // Controls the state of Local Storage within a partition. This is a privileged
 // interface and must not be brokered to untrusted clients.
@@ -36,35 +17,36 @@ struct LocalStoragePolicyUpdate {
 // implementation will eventually live in the storage service which may run
 // out-of-process.
 interface LocalStorageControl {
-  // Binds a blink.mojom.StorageArea receiver for a specific origin.
-  BindStorageArea(url.mojom.Origin origin,
+  // Binds a blink.mojom.StorageArea `receiver` for a specific `storage_key`.
+  BindStorageArea(blink.mojom.StorageKey storage_key,
                   pending_receiver<blink.mojom.StorageArea> receiver);
 
   // Retrieves some basic usage information about the Local Storage state.
-  GetUsage() => (array<LocalStorageUsageInfo> info);
+  GetUsage() => (array<StorageUsageInfo> info);
 
-  // Deletes all Local State state for the given origin. Responds when the
-  // deletion is complete.
-  DeleteStorage(url.mojom.Origin origin) => ();
+  // Deletes all Local State state for the given `storage_key`. Responds when
+  // the deletion is complete.
+  DeleteStorage(blink.mojom.StorageKey storage_key) => ();
 
   // Ensures that no traces of deleted Local Storage data are left in the
-  // backing storage for this origin. Responds when the cleanup is complete.
+  // backing storage for this `storage_key`. Responds when the cleanup is
+  // complete.
   CleanUpStorage() => ();
 
   // Tells the service to immediately commit any pending operations to disk.
   Flush() => ();
 
-  // Purges any in-memory caches to free up as much memory as possible. The next
-  // access to the StorageArea will reload data from the backing database.
+  // Purges any in-memory caches to free up as much memory as possible. The
+  // next access to the StorageArea will reload data from the backing database.
   PurgeMemory();
 
   // Applies changes to data retention policy which are relevant at shutdown.
-  // See LocalStoragePolicyUpdate.
-  ApplyPolicyUpdates(array<LocalStoragePolicyUpdate> policy_updates);
+  // See StoragePolicyUpdate.
+  ApplyPolicyUpdates(array<StoragePolicyUpdate> policy_updates);
 
-  // Some origins may be configured to be purged at the end of a session rather
-  // than persisted as in the default Local Storage behavior. If this is called,
-  // that behavior is overridden and Local Storage data is persisted for all
-  // origins.
+  // Some StorageKeys may be configured to be purged at the end of a session
+  // rather than persisted as in the default Local Storage behavior. If this is
+  // called, that behavior is overridden and Local Storage data is persisted
+  // for all StorageKeys.
   ForceKeepSessionState();
 };

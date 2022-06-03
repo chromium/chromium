@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_GRAPH_GRAPH_IMPL_OPERATIONS_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_GRAPH_GRAPH_IMPL_OPERATIONS_H_
 
-#include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "components/performance_manager/graph/frame_node_impl.h"
 #include "components/performance_manager/graph/page_node_impl.h"
@@ -37,12 +36,13 @@ struct GraphImplOperations {
   // Traverse the frame tree of a |page| in the given order, invoking the
   // provided |callable| for each frame node in the tree. The |callable| has to
   // provide a "bool operator()(FrameNodeImpl*)". If the visitor returns false
-  // then the iteration is halted.
+  // then the iteration is halted. Returns true if all calls to the visitor
+  // returned true, false otherwise.
   template <typename Callable>
-  static void VisitFrameTreePreOrder(const PageNodeImpl* page,
+  static bool VisitFrameTreePreOrder(const PageNodeImpl* page,
                                      Callable callable);
   template <typename Callable>
-  static void VisitFrameTreePostOrder(const PageNodeImpl* page,
+  static bool VisitFrameTreePostOrder(const PageNodeImpl* page,
                                       Callable callable);
 
   // Returns true if the given |frame| is in the frame tree associated with the
@@ -69,29 +69,30 @@ bool VisitFrameAndChildren(FrameNodeImpl* frame,
 }
 
 template <typename Callable>
-void VisitFrameTree(const PageNodeImpl* page,
+bool VisitFrameTree(const PageNodeImpl* page,
                     Callable callable,
                     bool pre_order) {
   for (auto* main_frame_node : page->main_frame_nodes()) {
     if (!VisitFrameAndChildren(main_frame_node, callable, pre_order))
-      return;
+      return false;
   }
+  return true;
 }
 
 }  // namespace internal
 
 // static
 template <typename Callable>
-void GraphImplOperations::VisitFrameTreePreOrder(const PageNodeImpl* page,
+bool GraphImplOperations::VisitFrameTreePreOrder(const PageNodeImpl* page,
                                                  Callable callable) {
-  internal::VisitFrameTree(page, callable, true);
+  return internal::VisitFrameTree(page, callable, true);
 }
 
 // static
 template <typename Callable>
-void GraphImplOperations::VisitFrameTreePostOrder(const PageNodeImpl* page,
+bool GraphImplOperations::VisitFrameTreePostOrder(const PageNodeImpl* page,
                                                   Callable callable) {
-  internal::VisitFrameTree(page, callable, false);
+  return internal::VisitFrameTree(page, callable, false);
 }
 
 }  // namespace performance_manager

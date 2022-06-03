@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_MOUSE_WHEEL_EVENT_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INPUT_MOUSE_WHEEL_EVENT_MANAGER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
+#include "third_party/blink/renderer/core/input/scroll_manager.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
@@ -21,8 +21,10 @@ class WebMouseWheelEvent;
 class MouseWheelEventManager final
     : public GarbageCollected<MouseWheelEventManager> {
  public:
-  explicit MouseWheelEventManager(LocalFrame&);
-  void Trace(blink::Visitor*);
+  explicit MouseWheelEventManager(LocalFrame&, ScrollManager&);
+  MouseWheelEventManager(const MouseWheelEventManager&) = delete;
+  MouseWheelEventManager& operator=(const MouseWheelEventManager&) = delete;
+  void Trace(Visitor*) const;
 
   void Clear();
 
@@ -37,8 +39,7 @@ class MouseWheelEventManager final
 
   const Member<LocalFrame> frame_;
   Member<Node> wheel_target_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseWheelEventManager);
+  Member<ScrollManager> scroll_manager_;
 };
 
 }  // namespace blink

@@ -14,12 +14,12 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/memory/ptr_util.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
@@ -118,6 +118,11 @@ class MockTabletEventConverterEvdev : public TabletEventConverterEvdev {
                                 CursorDelegateEvdev* cursor,
                                 const EventDeviceInfo& devinfo,
                                 DeviceEventDispatcherEvdev* dispatcher);
+
+  MockTabletEventConverterEvdev(const MockTabletEventConverterEvdev&) = delete;
+  MockTabletEventConverterEvdev& operator=(
+      const MockTabletEventConverterEvdev&) = delete;
+
   ~MockTabletEventConverterEvdev() override {}
 
   void ConfigureReadMock(struct input_event* queue,
@@ -135,13 +140,15 @@ class MockTabletEventConverterEvdev : public TabletEventConverterEvdev {
   int write_pipe_;
 
   std::vector<std::unique_ptr<Event>> dispatched_events_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockTabletEventConverterEvdev);
 };
 
 class MockTabletCursorEvdev : public CursorDelegateEvdev {
  public:
   MockTabletCursorEvdev() { cursor_confined_bounds_ = gfx::Rect(1024, 768); }
+
+  MockTabletCursorEvdev(const MockTabletCursorEvdev&) = delete;
+  MockTabletCursorEvdev& operator=(const MockTabletCursorEvdev&) = delete;
+
   ~MockTabletCursorEvdev() override {}
 
   // CursorDelegateEvdev:
@@ -162,7 +169,6 @@ class MockTabletCursorEvdev : public CursorDelegateEvdev {
  private:
   gfx::PointF cursor_location_;
   gfx::Rect cursor_confined_bounds_;
-  DISALLOW_COPY_AND_ASSIGN(MockTabletCursorEvdev);
 };
 
 MockTabletEventConverterEvdev::MockTabletEventConverterEvdev(
@@ -205,6 +211,10 @@ void MockTabletEventConverterEvdev::ConfigureReadMock(struct input_event* queue,
 class TabletEventConverterEvdevTest : public testing::Test {
  public:
   TabletEventConverterEvdevTest() {}
+
+  TabletEventConverterEvdevTest(const TabletEventConverterEvdevTest&) = delete;
+  TabletEventConverterEvdevTest& operator=(
+      const TabletEventConverterEvdevTest&) = delete;
 
   // Overridden from testing::Test:
   void SetUp() override {
@@ -268,8 +278,6 @@ class TabletEventConverterEvdevTest : public testing::Test {
   std::vector<std::unique_ptr<ui::Event>> dispatched_events_;
 
   base::ScopedFD events_out_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletEventConverterEvdevTest);
 };
 
 #define EPSILON 20
@@ -458,19 +466,16 @@ TEST_F(TabletEventConverterEvdevTest, Tap) {
 
   ui::MouseEvent* event = dispatched_event(0);
   EXPECT_EQ(ui::ET_MOUSE_MOVED, event->type());
-  EXPECT_EQ(ui::EventPointerType::POINTER_TYPE_PEN,
-            event->pointer_details().pointer_type);
+  EXPECT_EQ(ui::EventPointerType::kPen, event->pointer_details().pointer_type);
   EXPECT_FLOAT_EQ(5.625f, event->pointer_details().tilt_x);
   EXPECT_FLOAT_EQ(0.f, event->pointer_details().tilt_y);
   event = dispatched_event(1);
   EXPECT_EQ(ui::ET_MOUSE_PRESSED, event->type());
-  EXPECT_EQ(ui::EventPointerType::POINTER_TYPE_PEN,
-            event->pointer_details().pointer_type);
+  EXPECT_EQ(ui::EventPointerType::kPen, event->pointer_details().pointer_type);
   EXPECT_FLOAT_EQ((float)992 / 2047, event->pointer_details().force);
   EXPECT_EQ(true, event->IsLeftMouseButton());
   event = dispatched_event(2);
-  EXPECT_EQ(ui::EventPointerType::POINTER_TYPE_PEN,
-            event->pointer_details().pointer_type);
+  EXPECT_EQ(ui::EventPointerType::kPen, event->pointer_details().pointer_type);
   EXPECT_EQ(ui::ET_MOUSE_RELEASED, event->type());
   EXPECT_FLOAT_EQ(0.0f, event->pointer_details().force);
   EXPECT_EQ(true, event->IsLeftMouseButton());

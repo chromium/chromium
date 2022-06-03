@@ -8,10 +8,12 @@
 #include <set>
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #include "base/callback.h"
 #import "ios/web/public/web_state.h"
 
+@protocol CRWResponderInputView;
 @class UIViewController;
 
 namespace web {
@@ -41,8 +43,8 @@ class WebStateDelegate {
 
   // Returns the WebState the URL is opened in, or nullptr if the URL wasn't
   // opened immediately.
-  virtual WebState* OpenURLFromWebState(WebState*,
-                                        const WebState::OpenURLParams&);
+  virtual WebState* OpenURLFromWebState(WebState* source,
+                                        const WebState::OpenURLParams& params);
 
   // Notifies the delegate that the user triggered the context menu with the
   // given |ContextMenuParams|. If the delegate does not implement this method,
@@ -67,27 +69,32 @@ class WebStateDelegate {
   // |protection_space|, and is unable to respond using cached credentials.
   // Clients must call |callback| even if they want to cancel authentication
   // (in which case |username| or |password| should be nil).
-  typedef base::Callback<void(NSString* username, NSString* password)>
+  typedef base::OnceCallback<void(NSString* username, NSString* password)>
       AuthCallback;
   virtual void OnAuthRequired(WebState* source,
                               NSURLProtectionSpace* protection_space,
                               NSURLCredential* proposed_credential,
-                              const AuthCallback& callback) = 0;
+                              AuthCallback callback) = 0;
 
-  // Determines whether the given link with |link_url| should show a preview on
-  // force touch.
-  virtual bool ShouldPreviewLink(WebState* source, const GURL& link_url);
-  // Called when the user performs a peek action on a link with |link_url| with
-  // force touch. Returns a view controller shown as a pop-up. Uses Webkit's
-  // default preview behavior when it returns nil.
-  virtual UIViewController* GetPreviewingViewController(WebState* source,
-                                                        const GURL& link_url);
-  // Called when the user performs a pop action on the preview on force touch.
-  // |previewing_view_controller| is the view controller that is popped.
-  // It should display |previewing_view_controller| inside the app.
-  virtual void CommitPreviewingViewController(
+  // Returns the UIView used to contain the WebView for sizing purposes. Can be
+  // nil.
+  virtual UIView* GetWebViewContainer(WebState* source);
+
+  // Called when the context menu is triggered and now it is required to
+  // provide a UIContextMenuConfiguration to |completion_handler| to generate
+  // the context menu.
+  virtual void ContextMenuConfiguration(
       WebState* source,
-      UIViewController* previewing_view_controller);
+      const ContextMenuParams& params,
+      void (^completion_handler)(UIContextMenuConfiguration*));
+  // Called when the context menu will commit with animator.
+  virtual void ContextMenuWillCommitWithAnimator(
+      WebState* source,
+      id<UIContextMenuInteractionCommitAnimating> animator);
+
+  // UIResponder Form Input APIs, consult Apple's UIResponder documentation for
+  // more info.
+  virtual id<CRWResponderInputView> GetResponderInputView(WebState* source);
 
  protected:
   virtual ~WebStateDelegate();

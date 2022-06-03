@@ -5,12 +5,16 @@
 #ifndef DEVICE_FIDO_MAC_MAKE_CREDENTIAL_OPERATION_H_
 #define DEVICE_FIDO_MAC_MAKE_CREDENTIAL_OPERATION_H_
 
+#include <os/availability.h>
+
+#include "base/callback.h"
 #include "base/component_export.h"
-#include "base/mac/availability.h"
 #include "base/macros.h"
 #include "device/fido/authenticator_make_credential_response.h"
 #include "device/fido/ctap_make_credential_request.h"
-#include "device/fido/mac/operation_base.h"
+#include "device/fido/mac/credential_store.h"
+#include "device/fido/mac/operation.h"
+#include "device/fido/mac/touch_id_context.h"
 
 namespace device {
 namespace fido {
@@ -43,26 +47,33 @@ namespace mac {
 //  separate from any other data that Chrome may store in the keychain in
 //  the future.
 class API_AVAILABLE(macosx(10.12.2))
-    COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation
-    : public OperationBase<CtapMakeCredentialRequest,
-                           AuthenticatorMakeCredentialResponse> {
+    COMPONENT_EXPORT(DEVICE_FIDO) MakeCredentialOperation : public Operation {
  public:
+  using Callback = base::OnceCallback<void(
+      CtapDeviceResponseCode,
+      absl::optional<AuthenticatorMakeCredentialResponse>)>;
+
   MakeCredentialOperation(CtapMakeCredentialRequest request,
-                          std::string profile_id,
-                          std::string keychain_access_group,
+                          TouchIdCredentialStore* credential_store,
                           Callback callback);
+
+  MakeCredentialOperation(const MakeCredentialOperation&) = delete;
+  MakeCredentialOperation& operator=(const MakeCredentialOperation&) = delete;
+
   ~MakeCredentialOperation() override;
 
+  // Operation:
   void Run() override;
 
  private:
-  // OperationBase:
-  const std::string& RpId() const override;
-  void PromptTouchIdDone(bool success) override;
+  void PromptTouchIdDone(bool success);
 
-  // Generates a credential ID by invoking SealCredentialId() with parameters
-  // for the request. Note that results are non-deterministic.
-  base::Optional<std::vector<uint8_t>> GenerateCredentialIdForRequest() const;
+  const std::unique_ptr<TouchIdContext> touch_id_context_ =
+      TouchIdContext::Create();
+
+  const CtapMakeCredentialRequest request_;
+  TouchIdCredentialStore* const credential_store_;
+  Callback callback_;
 };
 
 }  // namespace mac

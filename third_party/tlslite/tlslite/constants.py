@@ -52,8 +52,9 @@ class CertificateStatusType:
 class ExtensionType:    # RFC 6066 / 4366
     server_name = 0     # RFC 6066 / 4366
     status_request = 5  # RFC 6066 / 4366
-    srp = 12            # RFC 5054  
+    srp = 12            # RFC 5054
     cert_type = 9       # RFC 6091
+    signature_algorithms = 13 # RFC 5246
     alpn = 16           # RFC 7301
     signed_cert_timestamps = 18  # RFC 6962
     extended_master_secret = 23  # RFC 7627

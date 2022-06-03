@@ -52,7 +52,7 @@ bool BluetoothGattConnectionBlueZ::IsConnected() {
 
 void BluetoothGattConnectionBlueZ::Disconnect() {
   if (!connected_) {
-    VLOG(1) << "Connection already inactive.";
+    DVLOG(1) << "Connection already inactive.";
     return;
   }
 

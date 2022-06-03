@@ -9,6 +9,7 @@
 #ifndef UI_GL_GL_MOCK_H_
 #define UI_GL_GL_MOCK_H_
 
+#include "base/notreached.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gl/gl_bindings.h"
 

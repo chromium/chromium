@@ -88,7 +88,7 @@ SYNC_TEST_F('ChromeVoxUserCommandsUnitTest', 'FindNextMap', function() {
  * @export
  */
 SYNC_TEST_F('ChromeVoxUserCommandsUnitTest', 'CommandsMap', function() {
-  var cmdMap = cvox.ChromeVoxUserCommands.CMD_WHITELIST_;
+  var cmdMap = cvox.ChromeVoxUserCommands.CMD_ALLOWLIST_;
   var findMap = cvox.ChromeVoxUserCommands.FIND_NEXT_MAP_;
   for (var cmd in cmdMap) {
     assertTrue(
@@ -106,9 +106,9 @@ SYNC_TEST_F('ChromeVoxUserCommandsUnitTest', 'CommandsMap', function() {
           j == 'nodeList' ||
           j == 'platformFilter' ||
           j == 'skipInput' ||
-          j == 'disallowOOBE' ||
+          j == 'denyOOBE' ||
           j == 'allowEvents' ||
-          j == 'disallowContinuation');
+          j == 'denyContinuation');
     }
     if (cmd.findNext) {
       assertTrue(

@@ -5,18 +5,19 @@
 #ifndef UI_BASE_IME_INFOLIST_ENTRY_H_
 #define UI_BASE_IME_INFOLIST_ENTRY_H_
 
+#include <string>
+
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 
 namespace ui {
 
 // The data model of infolist window.
 struct COMPONENT_EXPORT(UI_BASE_IME_TYPES) InfolistEntry {
-  base::string16 title;
-  base::string16 body;
+  std::u16string title;
+  std::u16string body;
   bool highlighted;
 
-  InfolistEntry(const base::string16& title, const base::string16& body);
+  InfolistEntry(const std::u16string& title, const std::u16string& body);
   bool operator==(const InfolistEntry& entry) const;
   bool operator!=(const InfolistEntry& entry) const;
 };

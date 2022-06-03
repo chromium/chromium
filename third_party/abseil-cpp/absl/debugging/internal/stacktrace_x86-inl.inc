@@ -27,6 +27,7 @@
 
 #include <cassert>
 #include <cstdint>
+#include <limits>
 
 #include "absl/base/macros.h"
 #include "absl/base/port.h"
@@ -35,6 +36,8 @@
 #include "absl/debugging/stacktrace.h"
 
 #include "absl/base/internal/raw_logging.h"
+
+using absl::debugging_internal::AddressIsReadable;
 
 #if defined(__linux__) && defined(__i386__)
 // Count "push %reg" instructions in VDSO __kernel_vsyscall(),
@@ -81,7 +84,7 @@ static int CountPushInstructions(const unsigned char *const addr) {
       // "mov reg,reg"
       if (addr[i + 1] == 0xE5) {
         // Found "mov %esp,%ebp".
-        return 0;  
+        return 0;
       }
       ++i;  // Skip register encoding byte.
     } else if (addr[i] == 0x0F &&
@@ -130,9 +133,8 @@ static uintptr_t GetFP(const void *vuc) {
     const uintptr_t bp = 0;
     const uintptr_t sp = 0;
 #endif
-    // Sanity-check that the base pointer is valid.  It should be as long as
-    // SHRINK_WRAP_FRAME_POINTER is not set, but it's possible that some code in
-    // the process is compiled with --copt=-fomit-frame-pointer or
+    // Sanity-check that the base pointer is valid. It's possible that some
+    // code in the process is compiled with --copt=-fomit-frame-pointer or
     // --copt=-momit-leaf-frame-pointer.
     //
     // TODO(bcmills): -momit-leaf-frame-pointer is currently the default
@@ -157,7 +159,8 @@ static uintptr_t GetFP(const void *vuc) {
 template <bool STRICT_UNWINDING, bool WITH_CONTEXT>
 ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS  // May read random elements from stack.
 ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY   // May read random elements from stack.
-static void **NextStackFrame(void **old_fp, const void *uc) {
+static void **NextStackFrame(void **old_fp, const void *uc,
+                             size_t stack_low, size_t stack_high) {
   void **new_fp = (void **)*old_fp;
 
 #if defined(__linux__) && defined(__i386__)
@@ -171,6 +174,7 @@ static void **NextStackFrame(void **old_fp, const void *uc) {
     static const unsigned char *kernel_rt_sigreturn_address = nullptr;
     static const unsigned char *kernel_vsyscall_address = nullptr;
     if (num_push_instructions == -1) {
+#ifdef ABSL_HAVE_VDSO_SUPPORT
       absl::debugging_internal::VDSOSupport vdso;
       if (vdso.IsPresent()) {
         absl::debugging_internal::VDSOSupport::SymbolInfo
@@ -199,6 +203,9 @@ static void **NextStackFrame(void **old_fp, const void *uc) {
       } else {
         num_push_instructions = 0;
       }
+#else  // ABSL_HAVE_VDSO_SUPPORT
+      num_push_instructions = 0;
+#endif  // ABSL_HAVE_VDSO_SUPPORT
     }
     if (num_push_instructions != 0 && kernel_rt_sigreturn_address != nullptr &&
         old_fp[1] == kernel_rt_sigreturn_address) {
@@ -222,7 +229,7 @@ static void **NextStackFrame(void **old_fp, const void *uc) {
           // "double fault" in case we hit the first fault due to e.g. stack
           // corruption.
           void *const reg_esp2 = reg_esp[num_push_instructions - 1];
-          if (absl::debugging_internal::AddressIsReadable(reg_esp2)) {
+          if (AddressIsReadable(reg_esp2)) {
             // Alleged %esp is readable, use it for further unwinding.
             new_fp = reinterpret_cast<void **>(reg_esp2);
           }
@@ -241,7 +248,7 @@ static void **NextStackFrame(void **old_fp, const void *uc) {
   // using an alternate signal stack.
   //
   // TODO(bcmills): The GetFP call should be completely unnecessary when
-  // SHRINK_WRAP_FRAME_POINTER is set (because we should be back in the thread's
+  // ENABLE_COMBINED_UNWINDER is set (because we should be back in the thread's
   // stack by this point), but it is empirically still needed (e.g. when the
   // stack includes a call to abort).  unw_get_reg returns UNW_EBADREG for some
   // frames.  Figure out why GetValidFrameAddr and/or libunwind isn't doing what
@@ -252,6 +259,18 @@ static void **NextStackFrame(void **old_fp, const void *uc) {
     // at a greater address that the current one.
     if (new_fp_u <= old_fp_u) return nullptr;
     if (new_fp_u - old_fp_u > kMaxFrameBytes) return nullptr;
+
+    if (stack_low < old_fp_u && old_fp_u <= stack_high) {
+      // Old BP was in the expected stack region...
+      if (!(stack_low < new_fp_u && new_fp_u <= stack_high)) {
+        // ... but new BP is outside of expected stack region.
+        // It is most likely bogus.
+        return nullptr;
+      }
+    } else {
+      // We may be here if we are executing in a co-routine with a
+      // separate stack. We can't do safety checks in this case.
+    }
   } else {
     if (new_fp == nullptr) return nullptr;  // skip AddressIsReadable() below
     // In the non-strict mode, allow discontiguous stack frames.
@@ -274,7 +293,7 @@ static void **NextStackFrame(void **old_fp, const void *uc) {
     // Note: NextStackFrame<false>() is only called while the program
     //       is already on its last leg, so it's ok to be slow here.
 
-    if (!absl::debugging_internal::AddressIsReadable(new_fp)) {
+    if (!AddressIsReadable(new_fp)) {
       return nullptr;
     }
   }
@@ -291,13 +310,17 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
   int n = 0;
   void **fp = reinterpret_cast<void **>(__builtin_frame_address(0));
 
+  size_t stack_low = getpagesize();  // Assume that the first page is not stack.
+  size_t stack_high = std::numeric_limits<size_t>::max() - sizeof(void *);
+
   while (fp && n < max_depth) {
     if (*(fp + 1) == reinterpret_cast<void *>(0)) {
       // In 64-bit code, we often see a frame that
       // points to itself and has a return address of 0.
       break;
     }
-    void **next_fp = NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(fp, ucp);
+    void **next_fp = NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(
+        fp, ucp, stack_low, stack_high);
     if (skip_count > 0) {
       skip_count--;
     } else {
@@ -320,7 +343,8 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
     const int kMaxUnwind = 1000;
     int j = 0;
     for (; fp != nullptr && j < kMaxUnwind; j++) {
-      fp = NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(fp, ucp);
+      fp = NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(fp, ucp, stack_low,
+                                                             stack_high);
     }
     *min_dropped_frames = j;
   }
@@ -328,11 +352,13 @@ static int UnwindImpl(void **result, int *sizes, int max_depth, int skip_count,
 }
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace debugging_internal {
 bool StackTraceWorksForTest() {
   return true;
 }
 }  // namespace debugging_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_DEBUGGING_INTERNAL_STACKTRACE_X86_INL_INC_

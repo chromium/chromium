@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that selector line is computed correctly regardless of its start column. Bug 110732.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -36,8 +36,8 @@
     }
   }
 
-  function step2() {
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+  async function step2() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

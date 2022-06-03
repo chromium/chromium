@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/events/wheel_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_wheel_event_init.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/event_interface_names.h"
@@ -37,21 +38,12 @@ namespace {
 
 unsigned ConvertDeltaMode(const WebMouseWheelEvent& event) {
   // WebMouseWheelEvent only supports these units for the delta.
-  DCHECK(
-      event.delta_units == ui::input_types::ScrollGranularity::kScrollByPage ||
-      event.delta_units == ui::input_types::ScrollGranularity::kScrollByPixel ||
-      event.delta_units ==
-          ui::input_types::ScrollGranularity::kScrollByPrecisePixel);
-  return event.delta_units == ui::input_types::ScrollGranularity::kScrollByPage
+  DCHECK(event.delta_units == ui::ScrollGranularity::kScrollByPage ||
+         event.delta_units == ui::ScrollGranularity::kScrollByPixel ||
+         event.delta_units == ui::ScrollGranularity::kScrollByPrecisePixel);
+  return event.delta_units == ui::ScrollGranularity::kScrollByPage
              ? WheelEvent::kDomDeltaPage
              : WheelEvent::kDomDeltaPixel;
-}
-
-// Negate a long value without integer overflow.
-int32_t NegateIfPossible(int32_t value) {
-  if (value == std::numeric_limits<int32_t>::min())
-    return value;
-  return -value;
 }
 
 MouseEventInit* GetMouseEventInitForWheel(const WebMouseWheelEvent& event,
@@ -85,24 +77,30 @@ WheelEvent* WheelEvent::Create(const WebMouseWheelEvent& event,
   return MakeGarbageCollected<WheelEvent>(event, view);
 }
 
+WheelEvent* WheelEvent::Create(const WebMouseWheelEvent& event,
+                               const gfx::Vector2dF& delta_in_pixels,
+                               AbstractView* view) {
+  return MakeGarbageCollected<WheelEvent>(event, delta_in_pixels, view);
+}
+
 WheelEvent::WheelEvent()
     : delta_x_(0), delta_y_(0), delta_z_(0), delta_mode_(kDomDeltaPixel) {}
 
+// crbug.com/1173525: tweak the initialization behavior.
 WheelEvent::WheelEvent(const AtomicString& type,
                        const WheelEventInit* initializer)
     : MouseEvent(type, initializer),
-      wheel_delta_(initializer->wheelDeltaX()
-                       ? initializer->wheelDeltaX()
-                       : NegateIfPossible(-initializer->deltaX()),
-                   initializer->wheelDeltaY()
-                       ? initializer->wheelDeltaY()
-                       : NegateIfPossible(-initializer->deltaY())),
-      delta_x_(initializer->deltaX()
-                   ? initializer->deltaX()
-                   : NegateIfPossible(initializer->wheelDeltaX())),
-      delta_y_(initializer->deltaY()
-                   ? initializer->deltaY()
-                   : NegateIfPossible(initializer->wheelDeltaY())),
+      wheel_delta_(
+          initializer->wheelDeltaX() ? initializer->wheelDeltaX()
+                                     : ClampTo<int32_t>(initializer->deltaX()),
+          initializer->wheelDeltaY() ? initializer->wheelDeltaY()
+                                     : ClampTo<int32_t>(initializer->deltaY())),
+      delta_x_(initializer->deltaX() ? initializer->deltaX()
+                                     : ClampTo<int32_t>(-static_cast<double>(
+                                           initializer->wheelDeltaX()))),
+      delta_y_(initializer->deltaY() ? initializer->deltaY()
+                                     : ClampTo<int32_t>(-static_cast<double>(
+                                           initializer->wheelDeltaY()))),
       delta_z_(initializer->deltaZ()),
       delta_mode_(initializer->deltaMode()) {}
 
@@ -116,6 +114,20 @@ WheelEvent::WheelEvent(const WebMouseWheelEvent& event, AbstractView* view)
       delta_y_(-event.DeltaYInRootFrame()),
       delta_z_(0),
       delta_mode_(ConvertDeltaMode(event)),
+      native_event_(event) {}
+
+WheelEvent::WheelEvent(const WebMouseWheelEvent& event,
+                       const gfx::Vector2dF& delta_in_pixels,
+                       AbstractView* view)
+    : MouseEvent(event_type_names::kWheel,
+                 GetMouseEventInitForWheel(event, view),
+                 event.TimeStamp()),
+      wheel_delta_(event.wheel_ticks_x * kTickMultiplier,
+                   event.wheel_ticks_y * kTickMultiplier),
+      delta_x_(delta_in_pixels.x()),
+      delta_y_(delta_in_pixels.y()),
+      delta_z_(0),
+      delta_mode_(WheelEvent::kDomDeltaPixel),
       native_event_(event) {}
 
 const AtomicString& WheelEvent::InterfaceName() const {
@@ -139,7 +151,7 @@ void WheelEvent::preventDefault() {
     String message =
         "Unable to preventDefault inside passive event listener due to "
         "target being treated as passive. See "
-        "https://www.chromestatus.com/features/6662647093133312";
+        "https://www.chromestatus.com/feature/6662647093133312";
     auto* local_dom_window = DynamicTo<LocalDOMWindow>(view());
     if (local_dom_window && local_dom_window->GetFrame()) {
       Intervention::GenerateReport(local_dom_window->GetFrame(), id, message);
@@ -163,7 +175,7 @@ DispatchEventResult WheelEvent::DispatchEvent(EventDispatcher& dispatcher) {
   return dispatcher.Dispatch();
 }
 
-void WheelEvent::Trace(blink::Visitor* visitor) {
+void WheelEvent::Trace(Visitor* visitor) const {
   MouseEvent::Trace(visitor);
 }
 

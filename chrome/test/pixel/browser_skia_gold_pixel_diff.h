@@ -20,11 +20,22 @@ class Rect;
 class Image;
 }  // namespace gfx
 
+namespace ui {
+namespace test {
+class SkiaGoldMatchingAlgorithm;
+class SkiaGoldPixelDiff;
+}  // namespace test
+}  // namespace ui
+
 // This is the utility class for Skia Gold pixeltest.
 // For an example on how to write pixeltests, please refer to the demo.
-class BrowserSkiaGoldPixelDiff : public SkiaGoldPixelDiff {
+class BrowserSkiaGoldPixelDiff : public ui::test::SkiaGoldPixelDiff {
  public:
   BrowserSkiaGoldPixelDiff();
+
+  BrowserSkiaGoldPixelDiff(const BrowserSkiaGoldPixelDiff&) = delete;
+  BrowserSkiaGoldPixelDiff& operator=(const BrowserSkiaGoldPixelDiff&) = delete;
+
   ~BrowserSkiaGoldPixelDiff() override;
   // Call Init method before using this class.
   // Args:
@@ -36,7 +47,12 @@ class BrowserSkiaGoldPixelDiff : public SkiaGoldPixelDiff {
   //   test class name as the prefix. The name will be
   //   |screenshot_prefix| + "_" + |screenshot_name|.'
   //   E.g. 'ToolbarTest_BackButtonHover'.
-  void Init(views::Widget* widget, const std::string& screenshot_prefix);
+  // corpus The corpus (i.e. result group) that will be used to store the
+  //   result in Gold. If omitted, will default to the generic corpus for
+  //   results from gtest-based tests.
+  void Init(views::Widget* widget,
+            const std::string& screenshot_prefix,
+            const std::string& corpus = std::string());
 
   // Take a screenshot, upload to Skia Gold and compare with the remote
   // golden image. Returns true if the screenshot is the same as the golden
@@ -46,8 +62,10 @@ class BrowserSkiaGoldPixelDiff : public SkiaGoldPixelDiff {
   //                 is unique.
   // view The view you want to take screenshot. If the screen is not what
   //      you want, you can use the other method.
-  bool CompareScreenshot(const std::string& screenshot_name,
-                         const views::View* view) const;
+  bool CompareScreenshot(
+      const std::string& screenshot_name,
+      const views::View* view,
+      const ui::test::SkiaGoldMatchingAlgorithm* algorithm = nullptr) const;
 
  protected:
   virtual bool GrabWindowSnapshotInternal(gfx::NativeWindow window,
@@ -56,8 +74,6 @@ class BrowserSkiaGoldPixelDiff : public SkiaGoldPixelDiff {
 
  private:
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserSkiaGoldPixelDiff);
 };
 
 #endif  // CHROME_TEST_PIXEL_BROWSER_SKIA_GOLD_PIXEL_DIFF_H_

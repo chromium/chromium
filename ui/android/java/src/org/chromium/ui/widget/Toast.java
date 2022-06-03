@@ -13,11 +13,14 @@ import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.os.Build;
 import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
+import android.widget.TextView;
 
 import org.chromium.base.SysUtils;
+import org.chromium.ui.R;
 
 /**
  * Toast wrapper, makes sure toasts are not HW accelerated on low-end devices and presented
@@ -35,14 +38,8 @@ public class Toast {
     private android.widget.Toast mToast;
     private ViewGroup mSWLayout;
 
-    public Toast(Context context) {
-        this(context, UiWidgetFactory.getInstance().createToast(context));
-    }
-
-    private Toast(Context context, android.widget.Toast toast) {
-        mToast = toast;
-
-        if (SysUtils.isLowEndDevice() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+    public Toast(Context context, View toastView) {
+        if (SysUtils.isLowEndDevice()) {
             // Don't HW accelerate Toasts. Unfortunately the only way to do that is to make
             // toast.getView().getContext().getApplicationInfo() return lies to prevent
             // WindowManagerGlobal.addView() from adding LayoutParams.FLAG_HARDWARE_ACCELERATED.
@@ -61,15 +58,12 @@ public class Toast {
                     return info;
                 }
             });
-
-            setView(toast.getView());
         }
+
+        mToast = UiWidgetFactory.getInstance().createToast(context);
+        setView(toastView);
         mToast.setGravity(
                 mToast.getGravity(), mToast.getXOffset(), mToast.getYOffset() + sExtraYOffset);
-    }
-
-    public android.widget.Toast getAndroidToast() {
-        return mToast;
     }
 
     public void show() {
@@ -143,17 +137,17 @@ public class Toast {
         return mToast.getYOffset();
     }
 
-    public void setText(int resId) {
-        mToast.setText(resId);
-    }
-
-    public void setText(CharSequence s) {
-        mToast.setText(s);
-    }
-
     @SuppressLint("ShowToast")
     public static Toast makeText(Context context, CharSequence text, int duration) {
-        return new Toast(context, UiWidgetFactory.getInstance().makeToast(context, text, duration));
+        LayoutInflater inflater = LayoutInflater.from(context);
+        TextView textView = (TextView) inflater.inflate(R.layout.custom_toast_layout, null);
+        textView.setText(text);
+        textView.announceForAccessibility(text);
+
+        Toast toast = new Toast(context, textView);
+        toast.setDuration(duration);
+
+        return toast;
     }
 
     public static Toast makeText(Context context, int resId, int duration)

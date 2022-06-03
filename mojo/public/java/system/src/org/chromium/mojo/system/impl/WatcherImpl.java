@@ -6,6 +6,7 @@ package org.chromium.mojo.system.impl;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.mojo.system.Core;
 import org.chromium.mojo.system.Handle;
@@ -13,6 +14,7 @@ import org.chromium.mojo.system.MojoResult;
 import org.chromium.mojo.system.Watcher;
 
 @JNINamespace("mojo::android")
+@MainDex
 class WatcherImpl implements Watcher {
     private long mImplPtr = WatcherImplJni.get().createWatcher(WatcherImpl.this);
     private Callback mCallback;

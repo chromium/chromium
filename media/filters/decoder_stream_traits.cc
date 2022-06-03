@@ -5,6 +5,7 @@
 #include "media/filters/decoder_stream_traits.h"
 
 #include <limits>
+#include <memory>
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
@@ -37,18 +38,25 @@ DecoderStreamTraits<DemuxerStream::AUDIO>::CreateEOSOutput() {
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::SetIsPlatformDecoder(
     bool is_platform_decoder) {
-  stats_.audio_decoder_info.is_platform_decoder = is_platform_decoder;
+  stats_.audio_pipeline_info.is_platform_decoder = is_platform_decoder;
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::SetIsDecryptingDemuxerStream(
     bool is_dds) {
-  stats_.audio_decoder_info.has_decrypting_demuxer_stream = is_dds;
+  stats_.audio_pipeline_info.has_decrypting_demuxer_stream = is_dds;
+}
+
+void DecoderStreamTraits<DemuxerStream::AUDIO>::SetEncryptionType(
+    EncryptionType encryption_type) {
+  stats_.audio_pipeline_info.encryption_type = encryption_type;
 }
 
 DecoderStreamTraits<DemuxerStream::AUDIO>::DecoderStreamTraits(
     MediaLog* media_log,
     ChannelLayout initial_hw_layout)
-    : media_log_(media_log), initial_hw_layout_(initial_hw_layout) {}
+    : media_log_(media_log), initial_hw_layout_(initial_hw_layout) {
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
 
 DecoderStreamTraits<DemuxerStream::AUDIO>::DecoderConfigType
 DecoderStreamTraits<DemuxerStream::AUDIO>::GetDecoderConfig(
@@ -80,9 +88,24 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::InitializeDecoder(
     OnConfigChanged(config);
   config_ = config;
 
-  stats_.audio_decoder_info.decoder_name = decoder->GetDisplayName();
-  decoder->Initialize(config, cdm_context, std::move(init_cb), output_cb,
-                      waiting_cb);
+  stats_.audio_pipeline_info.decoder_type = AudioDecoderType::kUnknown;
+  // Both |this| and |decoder| are owned by a DecoderSelector and will stay
+  // alive at least until |init_cb| is finished executing.
+  decoder->Initialize(
+      config, cdm_context,
+      base::BindOnce(
+          &DecoderStreamTraits<DemuxerStream::AUDIO>::OnDecoderInitialized,
+          weak_this_, base::Unretained(decoder), std::move(init_cb)),
+      output_cb, waiting_cb);
+}
+
+void DecoderStreamTraits<DemuxerStream::AUDIO>::OnDecoderInitialized(
+    DecoderType* decoder,
+    InitCB cb,
+    Status result) {
+  if (result.is_ok())
+    stats_.audio_pipeline_info.decoder_type = decoder->GetDecoderType();
+  std::move(cb).Run(result);
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnStreamReset(
@@ -90,8 +113,8 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::OnStreamReset(
   DCHECK(stream);
   // Stream is likely being seeked to a new timestamp, so make new validator to
   // build new timestamp expectations.
-  audio_ts_validator_.reset(
-      new AudioTimestampValidator(stream->audio_decoder_config(), media_log_));
+  audio_ts_validator_ = std::make_unique<AudioTimestampValidator>(
+      stream->audio_decoder_config(), media_log_);
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnDecode(
@@ -109,7 +132,8 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::OnConfigChanged(
     const DecoderConfigType& config) {
   // Reset validator with the latest config. Also ensures that we do not attempt
   // to match timestamps across config boundaries.
-  audio_ts_validator_.reset(new AudioTimestampValidator(config, media_log_));
+  audio_ts_validator_ =
+      std::make_unique<AudioTimestampValidator>(config, media_log_);
 }
 
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnOutputReady(
@@ -136,18 +160,25 @@ DecoderStreamTraits<DemuxerStream::VIDEO>::CreateEOSOutput() {
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::SetIsPlatformDecoder(
     bool is_platform_decoder) {
-  stats_.video_decoder_info.is_platform_decoder = is_platform_decoder;
+  stats_.video_pipeline_info.is_platform_decoder = is_platform_decoder;
 }
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::SetIsDecryptingDemuxerStream(
     bool is_dds) {
-  stats_.video_decoder_info.has_decrypting_demuxer_stream = is_dds;
+  stats_.video_pipeline_info.has_decrypting_demuxer_stream = is_dds;
+}
+
+void DecoderStreamTraits<DemuxerStream::VIDEO>::SetEncryptionType(
+    EncryptionType encryption_type) {
+  stats_.video_pipeline_info.encryption_type = encryption_type;
 }
 
 DecoderStreamTraits<DemuxerStream::VIDEO>::DecoderStreamTraits(
     MediaLog* media_log)
     // Randomly selected number of samples to keep.
-    : keyframe_distance_average_(16) {}
+    : keyframe_distance_average_(16) {
+  weak_this_ = weak_factory_.GetWeakPtr();
+}
 
 DecoderStreamTraits<DemuxerStream::VIDEO>::DecoderConfigType
 DecoderStreamTraits<DemuxerStream::VIDEO>::GetDecoderConfig(
@@ -181,10 +212,29 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::InitializeDecoder(
     const OutputCB& output_cb,
     const WaitingCB& waiting_cb) {
   DCHECK(config.IsValidConfig());
-  stats_.video_decoder_info.decoder_name = decoder->GetDisplayName();
-  DVLOG(2) << stats_.video_decoder_info.decoder_name;
-  decoder->Initialize(config, low_delay, cdm_context, std::move(init_cb),
-                      output_cb, waiting_cb);
+  stats_.video_pipeline_info.decoder_type = VideoDecoderType::kUnknown;
+  transform_ = config.video_transformation();
+  // |decoder| is owned by a DecoderSelector and will stay
+  // alive at least until |init_cb| is finished executing.
+  decoder->Initialize(
+      config, low_delay, cdm_context,
+      base::BindOnce(
+          &DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecoderInitialized,
+          weak_this_, base::Unretained(decoder), std::move(init_cb)),
+      output_cb, waiting_cb);
+}
+
+void DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecoderInitialized(
+    DecoderType* decoder,
+    InitCB cb,
+    Status result) {
+  if (result.is_ok()) {
+    stats_.video_pipeline_info.decoder_type = decoder->GetDecoderType();
+    DVLOG(2) << stats_.video_pipeline_info.decoder_type;
+  } else {
+    DVLOG(2) << "Decoder initialization failed.";
+  }
+  std::move(cb).Run(result);
 }
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::OnStreamReset(
@@ -234,20 +284,16 @@ PostDecodeAction DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecodeDone(
     return PostDecodeAction::DELIVER;
 
   // Add a timestamp here to enable buffering delay measurements down the line.
-  buffer->metadata()->SetTimeTicks(VideoFrameMetadata::DECODE_BEGIN_TIME,
-                                   it->second.decode_begin_time);
-  buffer->metadata()->SetTimeTicks(VideoFrameMetadata::DECODE_END_TIME,
-                                   base::TimeTicks::Now());
+  buffer->metadata().decode_begin_time = it->second.decode_begin_time;
+  buffer->metadata().decode_end_time = base::TimeTicks::Now();
 
   auto action = it->second.should_drop ? PostDecodeAction::DROP
                                        : PostDecodeAction::DELIVER;
 
   // Provide duration information to help the rendering algorithm on the very
   // first and very last frames.
-  if (it->second.duration != kNoTimestamp) {
-    buffer->metadata()->SetTimeDelta(VideoFrameMetadata::FRAME_DURATION,
-                                     it->second.duration);
-  }
+  if (it->second.duration != kNoTimestamp)
+    buffer->metadata().frame_duration = it->second.duration;
 
   // We erase from the beginning onward to our target frame since frames should
   // be returned in presentation order. It's possible to accumulate entries in
@@ -259,14 +305,24 @@ PostDecodeAction DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecodeDone(
 
 void DecoderStreamTraits<DemuxerStream::VIDEO>::OnOutputReady(
     OutputType* buffer) {
-  base::TimeTicks decode_begin_time;
-  if (!buffer->metadata()->GetTimeTicks(VideoFrameMetadata::DECODE_BEGIN_TIME,
-                                        &decode_begin_time)) {
+  buffer->metadata().transformation = transform_;
+
+  if (!buffer->metadata().decode_begin_time.has_value())
     return;
-  }
+
   // Tag buffer with elapsed time since creation.
-  buffer->metadata()->SetTimeDelta(VideoFrameMetadata::PROCESSING_TIME,
-                                   base::TimeTicks::Now() - decode_begin_time);
+  buffer->metadata().processing_time =
+      base::TimeTicks::Now() - *buffer->metadata().decode_begin_time;
+}
+
+void DecoderStreamTraits<DemuxerStream::VIDEO>::SetPreferNonPlatformDecoders(
+    bool prefer) {
+  prefer_non_platform_decoders_ = prefer;
+}
+
+bool DecoderStreamTraits<DemuxerStream::VIDEO>::GetPreferNonPlatformDecoders()
+    const {
+  return prefer_non_platform_decoders_;
 }
 
 }  // namespace media

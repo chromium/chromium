@@ -12,8 +12,12 @@ source_set("autocomplete") {
     "autocomplete_scheme_classifier_impl.mm",
     "in_memory_url_index_factory.cc",
     "in_memory_url_index_factory.h",
+    "remote_suggestions_service_factory.h",
+    "remote_suggestions_service_factory.mm",
     "shortcuts_backend_factory.h",
     "shortcuts_backend_factory.mm",
+    "tab_matcher_impl.h",
+    "tab_matcher_impl.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
@@ -34,11 +38,12 @@ source_set("autocomplete") {
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/web_state_list",
+    "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
     "//ios/web",
     "//url",

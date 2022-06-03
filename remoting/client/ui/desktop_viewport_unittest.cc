@@ -40,8 +40,8 @@ class DesktopViewportTest : public testing::Test {
 
 void DesktopViewportTest::SetUp() {
   viewport_.RegisterOnTransformationChangedCallback(
-      base::Bind(&DesktopViewportTest::OnTransformationChanged,
-                 base::Unretained(this)),
+      base::BindRepeating(&DesktopViewportTest::OnTransformationChanged,
+                          base::Unretained(this)),
       true);
 }
 

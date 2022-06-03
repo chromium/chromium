@@ -10,9 +10,6 @@ interface ServiceProcess {
   // A message for ensuring the connection is established.
   Hello() => ();
 
-  // Gets serialized UMA histograms.
-  GetHistograms() => (array<string> histograms);
-
   // Tell the service process that an update is available.
   UpdateAvailable();
 

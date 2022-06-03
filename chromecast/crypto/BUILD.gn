@@ -11,17 +11,13 @@ cast_source_set("crypto") {
     "signature_cache.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 # Note: this doesn't correspond to a GYP unit test and should be merged with
 # others. (b/22952424)
 test("cast_crypto_unittests") {
-  sources = [
-    "signature_cache_unittest.cc",
-  ]
+  sources = [ "signature_cache_unittest.cc" ]
 
   deps = [
     ":crypto",

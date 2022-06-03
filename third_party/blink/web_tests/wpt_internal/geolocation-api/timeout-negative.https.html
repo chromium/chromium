@@ -1,0 +1,33 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that when timeout is negative (and maximumAge is too), the error callback is called immediately with code TIMEOUT.");
+
+let error;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationTimeoutError(true);
+
+navigator.geolocation.getCurrentPosition(function(p) {
+    testFailed('Success callback invoked unexpectedly');
+    finishJSTest();
+}, function(e) {
+    error = e;
+    assert_equals(error.code, error.TIMEOUT);
+    assert_equals(error.message, "Timeout expired");
+    finishJSTest();
+}, {
+    timeout: -1000
+});
+</script>
+</body>
+</html>

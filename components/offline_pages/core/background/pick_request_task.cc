@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/time.h"
 #include "components/offline_pages/core/background/device_conditions.h"
 #include "components/offline_pages/core/background/offliner_policy.h"
@@ -36,8 +36,7 @@ bool kNonUserRequestsFound = true;
 
 namespace offline_pages {
 
-const base::TimeDelta PickRequestTask::kDeferInterval =
-    base::TimeDelta::FromMinutes(1);
+const base::TimeDelta PickRequestTask::kDeferInterval = base::Minutes(1);
 
 PickRequestTask::PickRequestTask(
     RequestQueueStore* store,

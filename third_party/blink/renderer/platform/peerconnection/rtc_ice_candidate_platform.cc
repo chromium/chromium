@@ -40,30 +40,10 @@ String CandidateTypeToString(const std::string& type) {
 
 }  // namespace
 
-// static
-RTCIceCandidatePlatform* RTCIceCandidatePlatform::Create(
-    String candidate,
-    String sdp_mid,
-    base::Optional<uint16_t> sdp_m_line_index,
-    String username_fragment) {
-  return MakeGarbageCollected<RTCIceCandidatePlatform>(
-      std::move(candidate), std::move(sdp_mid), std::move(sdp_m_line_index),
-      std::move(username_fragment));
-}
-
-RTCIceCandidatePlatform* RTCIceCandidatePlatform::Create(String candidate,
-                                                         String sdp_mid,
-                                                         int sdp_m_line_index) {
-  return MakeGarbageCollected<RTCIceCandidatePlatform>(
-      std::move(candidate), std::move(sdp_mid),
-      sdp_m_line_index < 0 ? base::Optional<uint16_t>()
-                           : base::Optional<uint16_t>(sdp_m_line_index));
-}
-
 RTCIceCandidatePlatform::RTCIceCandidatePlatform(
     String candidate,
     String sdp_mid,
-    base::Optional<uint16_t> sdp_m_line_index,
+    absl::optional<uint16_t> sdp_m_line_index,
     String username_fragment)
     : candidate_(std::move(candidate)),
       sdp_mid_(std::move(sdp_mid)),
@@ -75,7 +55,7 @@ RTCIceCandidatePlatform::RTCIceCandidatePlatform(
 RTCIceCandidatePlatform::RTCIceCandidatePlatform(
     String candidate,
     String sdp_mid,
-    base::Optional<uint16_t> sdp_m_line_index)
+    absl::optional<uint16_t> sdp_m_line_index)
     : candidate_(std::move(candidate)),
       sdp_mid_(std::move(sdp_mid)),
       sdp_m_line_index_(std::move(sdp_m_line_index)) {
@@ -96,7 +76,9 @@ void RTCIceCandidatePlatform::PopulateFields(bool use_username_from_candidate) {
     port_ = c.address().port();
   }
   type_ = CandidateTypeToString(c.type());
-  tcp_type_ = String::FromUTF8(c.tcptype().data());
+  if (!c.tcptype().empty()) {
+    tcp_type_ = String::FromUTF8(c.tcptype().data());
+  }
   if (!c.related_address().IsNil()) {
     related_address_ =
         String::FromUTF8(c.related_address().HostAsURIString().data());

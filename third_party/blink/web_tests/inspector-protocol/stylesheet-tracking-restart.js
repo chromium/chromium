@@ -36,7 +36,7 @@
     session.protocol.DOM.enable();
     await session.protocol.CSS.enable();
     var headers = {};
-    headersAdded.sort((a, b) => a.styleSheetId - b.styleSheetId);
+    headersAdded.sort((a, b) => a.sourceURL.localeCompare(b.sourceURL));
     for (var header of headersAdded) {
       headers[header.styleSheetId] = header.sourceURL;
       testRunner.log(' - style sheet added: ' + header.sourceURL);

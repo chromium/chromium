@@ -1,0 +1,20 @@
+This test verifies the hit test regions given to the compositor specifically around composited overflow scroll elements.
+
+scrollContent: layer(410x113) has hit test rect (0,19 410x18)
+
+scrollContent5: layer(410x127) has hit test rect (0,20 410x18)
+
+scrollContent6: layer(410x18) has hit test rect (0,0 410x18)
+
+nestedContent: layer(385x108) has hit test rect (0,45 385x18)
+
+overflowwithhandler: layer(385x174) has hit test rect (0,0 385x174)
+overflowwithhandler: layer(410x78) has hit test rect (0,0 410x78)
+
+overflowwithborder: layer(435x105) has hit test rect (0,0 435x105)
+overflowwithborder: layer(395x186) has hit test rect (6,6 383x174)
+
+withTransform: layer(407x18) has hit test rect (0,0 407x18)
+withTransform: layer(423x116) has hit test rect (0,19 410x21)
+
+

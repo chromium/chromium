@@ -7,18 +7,19 @@
 #include <memory>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_folder_editor_view_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_model_bridge_observer.h"
-#import "ios/chrome/browser/ui/bookmarks/bookmark_navigation_controller.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_ui_constants.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 #import "ios/chrome/browser/ui/bookmarks/cells/bookmark_folder_item.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
@@ -79,8 +80,8 @@ using bookmarks::BookmarkNode;
 @property(nonatomic, assign, readonly)
     const std::vector<const BookmarkNode*>& folders;
 
-// The dispatcher for this ViewController.
-@property(nonatomic, readonly, weak) id<BrowserCommands> dispatcher;
+// The browser for this ViewController.
+@property(nonatomic, readonly) Browser* browser;
 
 // Reloads the model and the updates |self.tableView| to reflect any model
 // changes.
@@ -115,19 +116,21 @@ using bookmarks::BookmarkNode;
                               (const std::set<const BookmarkNode*>&)nodes
                          allowsCancel:(BOOL)allowsCancel
                        selectedFolder:(const BookmarkNode*)selectedFolder
-                           dispatcher:(id<BrowserCommands>)dispatcher {
+                              browser:(Browser*)browser {
   DCHECK(bookmarkModel);
   DCHECK(bookmarkModel->loaded());
+  DCHECK(browser);
   DCHECK(selectedFolder == NULL || selectedFolder->is_folder());
-  self = [super initWithTableViewStyle:UITableViewStylePlain
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+
+  UITableViewStyle style = ChromeTableViewStyle();
+  self = [super initWithStyle:style];
   if (self) {
+    _browser = browser;
     _allowsCancel = allowsCancel;
     _allowsNewFolders = allowsNewFolders;
     _bookmarkModel = bookmarkModel;
     _editedNodes = nodes;
     _selectedFolder = selectedFolder;
-    _dispatcher = dispatcher;
 
     // Set up the bookmark model oberver.
     _modelBridge.reset(
@@ -164,23 +167,10 @@ using bookmarks::BookmarkNode;
                              action:@selector(cancel:)];
     cancelItem.accessibilityIdentifier = @"Cancel";
     self.navigationItem.leftBarButtonItem = cancelItem;
-  } else {
-    UIBarButtonItem* backItem =
-        [ChromeIcon templateBarButtonItemWithImage:[ChromeIcon backIcon]
-                                            target:self
-                                            action:@selector(back:)];
-    backItem.accessibilityLabel =
-        l10n_util::GetNSString(IDS_IOS_BOOKMARK_NEW_BACK_LABEL);
-    backItem.accessibilityIdentifier = @"Back";
-    self.navigationItem.leftBarButtonItem = backItem;
   }
-
   // Configure the table view.
   self.tableView.autoresizingMask =
       UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  // Add a tableFooterView in order to disable separators at the bottom of the
-  // tableView.
-  self.tableView.tableFooterView = [[UIView alloc] init];
 
   self.tableView.estimatedRowHeight = kEstimatedFolderCellHeight;
   self.tableView.rowHeight = UITableViewAutomaticDimension;
@@ -231,7 +221,7 @@ using bookmarks::BookmarkNode;
     UIView* separator = [[UIView alloc] initWithFrame:separatorFrame];
     separator.autoresizingMask = UIViewAutoresizingFlexibleBottomMargin |
                                  UIViewAutoresizingFlexibleWidth;
-    separator.backgroundColor = UIColor.cr_opaqueSeparatorColor;
+    separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
     [headerView addSubview:separator];
   }
   return headerView;
@@ -380,10 +370,6 @@ using bookmarks::BookmarkNode;
   [self.delegate folderPickerDidCancel:self];
 }
 
-- (void)back:(id)sender {
-  [self.delegate folderPickerDidCancel:self];
-}
-
 #pragma mark - Private
 
 - (BOOL)shouldShowDefaultSection {
@@ -453,7 +439,7 @@ using bookmarks::BookmarkNode;
       [BookmarkFolderEditorViewController
           folderCreatorWithBookmarkModel:self.bookmarkModel
                             parentFolder:self.selectedFolder
-                              dispatcher:self.dispatcher];
+                                 browser:self.browser];
   folderCreator.delegate = self;
   [self.navigationController pushViewController:folderCreator animated:YES];
   self.folderAddController = folderCreator;

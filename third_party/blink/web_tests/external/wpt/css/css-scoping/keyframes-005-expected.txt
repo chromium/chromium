@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL @keyframes should not leak out of the shadow tree. assert_equals: expected 0 but got 1
+Harness: the test ran to completion.
+

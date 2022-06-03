@@ -1,5 +1,0 @@
-Test that scrollbar width is added to the width of the grid container.
-PASS
-PASS
-PASS
-PASS

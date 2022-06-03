@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_DOM_WINDOW_PERFORMANCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_DOM_WINDOW_PERFORMANCE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -18,8 +17,6 @@ class LocalDOMWindow;
 class CORE_EXPORT DOMWindowPerformance final
     : public GarbageCollected<DOMWindowPerformance>,
       public Supplement<LocalDOMWindow> {
-  USING_GARBAGE_COLLECTED_MIXIN(DOMWindowPerformance);
-
  public:
   static const char kSupplementName[];
 
@@ -27,14 +24,15 @@ class CORE_EXPORT DOMWindowPerformance final
   static WindowPerformance* performance(LocalDOMWindow&);
 
   explicit DOMWindowPerformance(LocalDOMWindow&);
+  DOMWindowPerformance(const DOMWindowPerformance&) = delete;
+  DOMWindowPerformance& operator=(const DOMWindowPerformance&) = delete;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   WindowPerformance* performance();
 
   Member<WindowPerformance> performance_;
-  DISALLOW_COPY_AND_ASSIGN(DOMWindowPerformance);
 };
 
 }  // namespace blink

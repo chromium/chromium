@@ -10,10 +10,10 @@
 
 test(() => {
   var sheet1 = document.styleSheets[0];
-  assert_throws("SecurityError", () => {
+  assert_throws_dom("SecurityError", () => {
     sheet1.cssRules;
   });
-  assert_throws("SecurityError", () => {
+  assert_throws_dom("SecurityError", () => {
     sheet1.rules;
   });
 }, "Can't access Cross-Origin sheets");

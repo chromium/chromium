@@ -21,4 +21,7 @@ aura::Window* TestKeyboardLayoutDelegate::GetContainerForDisplay(
   return root_window_;
 }
 
+void TestKeyboardLayoutDelegate::TransferGestureEventToShelf(
+    const ui::GestureEvent& e) {}
+
 }  // namespace keyboard

@@ -16,20 +16,19 @@ namespace blink {
 class CSSCustomPropertyDeclaration;
 class CSSParserContext;
 class CSSVariableReferenceValue;
+struct CSSTokenizedValue;
 
 class CORE_EXPORT CSSVariableParser {
  public:
   static bool ContainsValidVariableReferences(CSSParserTokenRange);
 
   static CSSCustomPropertyDeclaration* ParseDeclarationValue(
-      const AtomicString&,
-      CSSParserTokenRange,
+      const CSSTokenizedValue&,
       bool is_animation_tainted,
       const CSSParserContext&);
-  static CSSVariableReferenceValue* ParseRegisteredPropertyValue(
+  static CSSVariableReferenceValue* ParseVariableReferenceValue(
       CSSParserTokenRange,
       const CSSParserContext&,
-      bool require_var_reference,
       bool is_animation_tainted);
 
   static bool IsValidVariableName(const CSSParserToken&);

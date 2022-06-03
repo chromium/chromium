@@ -26,6 +26,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_SCALE_TRANSFORM_OPERATION_H_
 
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -52,8 +53,6 @@ class PLATFORM_EXPORT ScaleTransformOperation final
   double X() const { return x_; }
   double Y() const { return y_; }
   double Z() const { return z_; }
-
-  bool CanBlendWith(const TransformOperation& other) const override;
 
   void Apply(TransformationMatrix& transform, const FloatSize&) const override {
     transform.Scale3d(x_, y_, z_);
@@ -84,9 +83,16 @@ class PLATFORM_EXPORT ScaleTransformOperation final
 
   bool HasNonTrivial3DComponent() const override { return z_ != 1.0; }
 
+  void CommonPrimitiveForInterpolation(
+      const TransformOperation* from,
+      TransformOperation::OperationType& common_type) const;
+
   scoped_refptr<TransformOperation> Zoom(double factor) final { return this; }
 
   bool PreservesAxisAlignment() const final { return true; }
+  bool IsIdentityOrTranslation() const final {
+    return x_ == 1.0 && y_ == 1.0 && z_ == 1.0;
+  }
 
   ScaleTransformOperation(double sx, double sy, double sz, OperationType type)
       : x_(sx), y_(sy), z_(sz), type_(type) {
@@ -99,7 +105,13 @@ class PLATFORM_EXPORT ScaleTransformOperation final
   OperationType type_;
 };
 
-DEFINE_TRANSFORM_TYPE_CASTS(ScaleTransformOperation);
+template <>
+struct DowncastTraits<ScaleTransformOperation> {
+  static bool AllowFrom(const TransformOperation& transform) {
+    return ScaleTransformOperation::IsMatchingOperationType(
+        transform.GetType());
+  }
+};
 
 }  // namespace blink
 

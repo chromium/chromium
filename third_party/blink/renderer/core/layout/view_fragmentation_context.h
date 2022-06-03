@@ -11,15 +11,18 @@ namespace blink {
 
 class LayoutView;
 
-class ViewFragmentationContext final : public FragmentationContext {
+class ViewFragmentationContext final
+    : public GarbageCollected<ViewFragmentationContext>,
+      public FragmentationContext {
  public:
-  ViewFragmentationContext(LayoutView& view) : view_(view) {}
+  explicit ViewFragmentationContext(LayoutView& view) : view_(&view) {}
   bool IsFragmentainerLogicalHeightKnown() final;
   LayoutUnit FragmentainerLogicalHeightAt(LayoutUnit block_offset) final;
   LayoutUnit RemainingLogicalHeightAt(LayoutUnit block_offset) final;
+  void Trace(Visitor*) const override;
 
  private:
-  LayoutView& view_;
+  Member<LayoutView> view_;
 };
 
 }  // namespace blink

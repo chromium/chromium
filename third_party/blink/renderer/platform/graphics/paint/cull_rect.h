@@ -5,19 +5,24 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_CULL_RECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_CULL_RECT_H_
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
+#include <limits>
+
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect.h"
 
-#include <limits>
+namespace gfx {
+class RectF;
+}
 
 namespace blink {
 
 class AffineTransform;
-class FloatRect;
 class LayoutRect;
 class LayoutUnit;
+class PropertyTreeState;
 class TransformPaintPropertyNode;
 
 class PLATFORM_EXPORT CullRect {
@@ -25,49 +30,41 @@ class PLATFORM_EXPORT CullRect {
 
  public:
   CullRect() = default;
-  explicit CullRect(const IntRect& rect) : rect_(rect) {}
+  explicit CullRect(const gfx::Rect& rect) : rect_(rect) {}
 
-  static CullRect Infinite() { return CullRect(LayoutRect::InfiniteIntRect()); }
+  static CullRect Infinite() {
+    return CullRect(ToGfxRect(LayoutRect::InfiniteIntRect()));
+  }
 
-  bool IsInfinite() const { return rect_ == LayoutRect::InfiniteIntRect(); }
+  bool IsInfinite() const {
+    return rect_ == ToGfxRect(LayoutRect::InfiniteIntRect());
+  }
 
-  bool Intersects(const IntRect&) const;
-  bool Intersects(const LayoutRect&) const;
-  bool Intersects(const LayoutRect&, const LayoutPoint& offset) const;
-  bool IntersectsTransformed(const AffineTransform&, const FloatRect&) const;
+  bool Intersects(const gfx::Rect&) const;
+  bool IntersectsTransformed(const AffineTransform&, const gfx::RectF&) const;
   bool IntersectsHorizontalRange(LayoutUnit lo, LayoutUnit hi) const;
   bool IntersectsVerticalRange(LayoutUnit lo, LayoutUnit hi) const;
 
-  void MoveBy(const IntPoint& offset);
-  void Move(const IntSize& offset);
+  void Move(const gfx::Vector2d& offset);
 
   // Applies one transform to the cull rect. Before this function is called,
   // the cull rect is in the space of the parent the transform node.
-  // For CompositeAfterPaint, when the transform is a scroll translation, the
-  // cull rect is converted in the following steps:
-  // 1. it's clipped by the container rect if |clip_to_scroll_container| is
-  //    true,
-  // 2. transformed by inverse of the scroll translation,
-  // 3. expanded by thousands of pixels for composited scrolling.
-  void ApplyTransform(const TransformPaintPropertyNode& transform) {
-    ApplyTransformInternal(transform);
-  }
+  void ApplyTransform(const TransformPaintPropertyNode&);
 
-  // For CompositeAfterPaint only. Applies transforms from |source| (not
-  // included) to |destination| (included). For each scroll translation, the
-  // cull rect is converted as described in ApplyTransform(). If |old_cull_rect|
-  // is provided, and the cull rect converted by the last scroll translation
-  // doesn't cover the whole scrolling contents, and the new cull rect doesn't
-  // change enough (by hundreds of pixels) from |old_cull_rect|, the cull rect
-  // will be set to |old_cull_rect| to avoid repaint on each composited scroll.
-  void ApplyTransforms(const TransformPaintPropertyNode& source,
-                       const TransformPaintPropertyNode& destination,
-                       const base::Optional<CullRect>& old_cull_rect,
-                       bool clip_to_scroll_container = true);
+  // For CullRectUpdate only. Similar to the above but also applies clips and
+  // expands for all directly composited transforms (including scrolling and
+  // non-scrolling ones). |root| is used to calculate the expansion distance in
+  // the local space, to make the expansion distance approximately the same in
+  // the root space.
+  // Returns whether the cull rect has been expanded.
+  bool ApplyPaintProperties(const PropertyTreeState& root,
+                            const PropertyTreeState& source,
+                            const PropertyTreeState& destination,
+                            const absl::optional<CullRect>& old_cull_rect);
 
-  const IntRect& Rect() const { return rect_; }
+  const gfx::Rect& Rect() const { return rect_; }
 
-  String ToString() const { return rect_.ToString(); }
+  String ToString() const { return String(rect_.ToString()); }
 
  private:
   friend class CullRectTest;
@@ -85,13 +82,21 @@ class PLATFORM_EXPORT CullRect {
     // doesn't cover the whole scrolling contents.
     kExpandedForPartialScrollingContents,
   };
-  ApplyTransformResult ApplyTransformInternal(
-      const TransformPaintPropertyNode&,
-      bool clip_to_scroll_container = true);
+  ApplyTransformResult ApplyScrollTranslation(
+      const TransformPaintPropertyNode& root_transform,
+      const TransformPaintPropertyNode& scroll_translation);
 
-  bool ChangedEnough(const CullRect& old_cull_rect) const;
+  // Returns false if the rect is clipped to be invisible. Otherwise returns
+  // true, even if the cull rect is empty due to a special 3d transform in case
+  // later 3d transforms make the cull rect visible again.
+  bool ApplyPaintPropertiesWithoutExpansion(
+      const PropertyTreeState& source,
+      const PropertyTreeState& destination);
 
-  IntRect rect_;
+  bool ChangedEnough(const CullRect& old_cull_rect,
+                     const absl::optional<gfx::Rect>& expansion_bounds) const;
+
+  gfx::Rect rect_;
 };
 
 inline bool operator==(const CullRect& a, const CullRect& b) {
@@ -102,7 +107,7 @@ inline bool operator!=(const CullRect& a, const CullRect& b) {
 }
 
 inline std::ostream& operator<<(std::ostream& os, const CullRect& cull_rect) {
-  return os << cull_rect.Rect();
+  return os << cull_rect.ToString();
 }
 
 }  // namespace blink

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_NODE_INVALIDATION_SETS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INVALIDATION_NODE_INVALIDATION_SETS_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/invalidation/invalidation_set.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 
@@ -16,6 +15,8 @@ class CORE_EXPORT NodeInvalidationSets final {
   NodeInvalidationSets() = default;
   NodeInvalidationSets(NodeInvalidationSets&&) = default;
   NodeInvalidationSets& operator=(NodeInvalidationSets&&) = default;
+  NodeInvalidationSets(const NodeInvalidationSets&) = delete;
+  NodeInvalidationSets& operator=(const NodeInvalidationSets&) = delete;
 
   InvalidationSetVector& Descendants() { return descendants_; }
   const InvalidationSetVector& Descendants() const { return descendants_; }
@@ -25,7 +26,6 @@ class CORE_EXPORT NodeInvalidationSets final {
  private:
   InvalidationSetVector descendants_;
   InvalidationSetVector siblings_;
-  DISALLOW_COPY_AND_ASSIGN(NodeInvalidationSets);
 };
 
 }  // namespace blink

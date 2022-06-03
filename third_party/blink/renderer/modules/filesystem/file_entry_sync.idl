@@ -30,7 +30,7 @@
 
 // https://www.w3.org/TR/2012/WD-file-system-api-20120417/#idl-def-FileEntrySync
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface FileEntrySync : EntrySync {
     [RaisesException] File file();
     [RaisesException] FileWriterSync createWriter();

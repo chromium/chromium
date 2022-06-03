@@ -9,15 +9,15 @@ import "mojo/public/mojom/base/time.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "url/mojom/url.mojom";
 
-// Next MinVersion: 7
+// Next MinVersion: 14
 
-[Extensible]
+[Stable, Extensible]
 enum MediaPlaybackState {
   kPaused,
   kPlaying,
 };
 
-[Extensible]
+[Stable, Extensible]
 enum MediaSessionAction {
   kPlay,
   kPause,
@@ -29,9 +29,17 @@ enum MediaSessionAction {
   kStop,
   kSeekTo,
   kScrubTo,
+  kEnterPictureInPicture,
+  kExitPictureInPicture,
+  kSwitchAudioDevice,
+  [MinVersion=11] kToggleMicrophone,
+  [MinVersion=11] kToggleCamera,
+  [MinVersion=11] kHangUp,
+  [MinVersion=12] kRaise,
+  [MinVersion=13] kSetMute,
 };
 
-[Extensible]
+[Stable, Extensible]
 enum MediaSessionImageType {
   // The artwork associated with the media session (e.g album art).
   kArtwork,
@@ -40,8 +48,25 @@ enum MediaSessionImageType {
   kSourceIcon,
 };
 
+[Stable, Extensible]
+enum MediaPictureInPictureState {
+  kNotInPictureInPicture,
+  kInPictureInPicture,
+};
+
+[Stable, Extensible]
+enum MediaAudioVideoState {
+  // Unused as of version 10, see |audio_video_states|.
+  kDeprecatedUnknown,
+
+  kAudioOnly,
+  kAudioVideo,
+  [MinVersion=10] kVideoOnly,
+};
+
 // Album art in MediaMetadata
 // Spec: https://wicg.github.io/mediasession/
+[Stable]
 struct MediaImage {
   url.mojom.Url src;
   mojo_base.mojom.String16 type;
@@ -49,6 +74,7 @@ struct MediaImage {
 };
 
 // MediaMetadata
+[Stable]
 struct MediaMetadata {
   // These are defined in the spec: https://wicg.github.io/mediasession/
   mojo_base.mojom.String16 title;
@@ -62,7 +88,7 @@ struct MediaMetadata {
 };
 
 // The color type of the bitmap.
-[Extensible]
+[Stable, Extensible]
 enum MediaImageBitmapColorType {
   kRGBA_8888,  // On Android, this is Bitmap.Config.ARGB_8888
   kBGRA_8888,
@@ -71,6 +97,7 @@ enum MediaImageBitmapColorType {
 // A bitmap image. We use this instead of SkImage or skia.image.Bitmap so we can
 // use it in ARC and we do not use ArcBitmap because we need to use it in the
 // service.
+[Stable]
 struct MediaImageBitmap {
   int32 width;
   int32 height;
@@ -78,16 +105,33 @@ struct MediaImageBitmap {
   [MinVersion=5] MediaImageBitmapColorType color_type;
 };
 
+[Stable]
 struct MediaPosition {
   double playback_rate;
   mojo_base.mojom.TimeDelta duration;
   mojo_base.mojom.TimeDelta position;
   mojo_base.mojom.TimeTicks last_updated_time;
+  [MinVersion=13] bool end_of_media;
+};
+
+[Stable, Extensible]
+enum MicrophoneState {
+  kUnknown,
+  kMuted,
+  kUnmuted,
+};
+
+[Stable, Extensible]
+enum CameraState {
+  kUnknown,
+  kTurnedOn,
+  kTurnedOff,
 };
 
 // Contains state information about a MediaSession.
+[Stable]
 struct MediaSessionInfo {
-  [Extensible]
+  [Stable, Extensible]
   enum SessionState {
     // The MediaSession is currently playing media.
     kActive,
@@ -124,10 +168,36 @@ struct MediaSessionInfo {
   // off the record profile). This may result in it being hidden from certain
   // UIs (e.g. lock screen media controls).
   [MinVersion=6] bool is_sensitive;
+
+  // The picture-in-picture state tells the client whether the media is
+  // currently in a picture-in-picture window.
+  [MinVersion=7] MediaPictureInPictureState picture_in_picture_state;
+
+  // The audio/video state of the Media Session (if known).
+  // DEPRECATED, use |audio_video_states| instead.
+  [MinVersion=8] MediaAudioVideoState deprecated_audio_video_state;
+
+  // The audio_sink_id tells the client the device_id of the audio output device
+  // being used for this media session. A null audio_sink_id implies that the
+  // default device is being used.
+  [MinVersion=9] string? audio_sink_id;
+
+  // The audio/video states of all the players in the Media Session (if known).
+  [MinVersion=10] array<MediaAudioVideoState>? audio_video_states;
+
+  // Tracks whether the microphone is muted in WebRTC sessions.
+  [MinVersion=11] MicrophoneState microphone_state;
+
+  // Tracks whether the camera is turned on in WebRTC sessions.
+  [MinVersion=11] CameraState camera_state;
+
+  // Tracks whether the media player is muted.
+  [MinVersion=12] bool muted;
 };
 
 // Contains debugging information about a MediaSession. This will be displayed
 // on the Media Internals WebUI.
+[Stable]
 struct MediaSessionDebugInfo {
   // A unique name for the MediaSession.
   string name;
@@ -141,6 +211,7 @@ struct MediaSessionDebugInfo {
 
 // The observer for observing media session events.
 // Next Method ID: 5
+[Stable]
 interface MediaSessionObserver {
   // Call when the info associated with the session changed.
   MediaSessionInfoChanged@0(MediaSessionInfo info);
@@ -164,11 +235,10 @@ interface MediaSessionObserver {
 
 // A MediaSession manages the media session and audio focus for a given
 // WebContents or ARC app.
-// TODO(https://crbug.com/875004): migrate media session from content/public
-// to mojo.
-// Next Method ID: 15
+// Next Method ID: 22
+[Stable]
 interface MediaSession {
-  [Extensible]
+  [Stable, Extensible]
   enum SuspendType {
     // Suspended by the system because a transient sound needs to be played.
     kSystem,
@@ -242,4 +312,30 @@ interface MediaSession {
   // this will be a no-op. The client should call |SeekTo| to finish the
   // scrubbing operation.
   ScrubTo@14(mojo_base.mojom.TimeDelta seek_time);
+
+  // Enter picture-in-picture.
+  EnterPictureInPicture@15();
+
+  // Exit picture-in-picture.
+  ExitPictureInPicture@16();
+
+  // Routes the audio from this Media Session to the given output device. If
+  // |id| is null, we will route to the default output device.
+  SetAudioSinkId@17(string? id);
+
+  // Mute or unmute the microphone for a WebRTC session.
+  [MinVersion=11] ToggleMicrophone@18();
+
+  // Turn on or off the camera for a WebRTC session.
+  [MinVersion=11] ToggleCamera@19();
+
+  // Hang up a WebRTC session.
+  [MinVersion=11] HangUp@20();
+
+  // Display the source of the MediaSession (e.g. show the tab or the
+  // application).
+  [MinVersion=12] Raise@21();
+
+  // Mute or unmute the media player.
+  [MinVersion=13] SetMute@22(bool mute);
 };

@@ -5,15 +5,28 @@
 package org.chromium.ui.test.util;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
+import android.view.MotionEvent;
 
-import androidx.annotation.IdRes;
 import androidx.annotation.LayoutRes;
+import androidx.annotation.StyleRes;
+import androidx.appcompat.app.AppCompatActivity;
+
+import org.chromium.base.Callback;
+import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
+import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
 
 /** Dummy activity to test UI components without Chrome browser initialization and natives. */
-public class DummyUiActivity extends AppCompatActivity {
+public class DummyUiActivity extends AppCompatActivity implements ModalDialogManagerHolder {
     private static int sTestTheme;
     private static int sTestLayout;
+
+    private Callback<MotionEvent> mMotionEventCallback;
+    private Callback<KeyEvent> mKeyEventCallback;
+    private ModalDialogManager mModalDialogManager =
+            new ModalDialogManager(new AppModalPresenter(this), ModalDialogType.APP);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -32,7 +45,7 @@ public class DummyUiActivity extends AppCompatActivity {
      * in test code later if you want to set theme after activity launched.
      * @param resid The style resource describing the theme.
      */
-    public static void setTestTheme(@IdRes int resid) {
+    public static void setTestTheme(@StyleRes int resid) {
         sTestTheme = resid;
     }
 
@@ -44,5 +57,39 @@ public class DummyUiActivity extends AppCompatActivity {
      */
     public static void setTestLayout(@LayoutRes int layoutResID) {
         sTestLayout = layoutResID;
+    }
+
+    // Implementation of ModalDialogManagerHolder
+    @Override
+    public ModalDialogManager getModalDialogManager() {
+        return mModalDialogManager;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        if (mMotionEventCallback != null) mMotionEventCallback.onResult(event);
+        return super.dispatchTouchEvent(event);
+    }
+
+    @Override
+    public boolean dispatchKeyEvent(KeyEvent event) {
+        if (mKeyEventCallback != null) mKeyEventCallback.onResult(event);
+        return super.dispatchKeyEvent(event);
+    }
+
+    /**
+     * Registers a callback for getting a stream of touch events prior to being dispatched to the
+     * view tree.
+     */
+    public void setTouchEventCallback(Callback<MotionEvent> callback) {
+        mMotionEventCallback = callback;
+    }
+
+    /**
+     * Registers a callback for getting a stream of key events prior to being dispatched to the
+     * view tree.
+     */
+    public void setKeyEventCallback(Callback<KeyEvent> callback) {
+        mKeyEventCallback = callback;
     }
 }

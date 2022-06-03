@@ -1,14 +1,14 @@
-document
-++form
-++++textbox
-++++button Name='First submit in a form is a valid default button'
-++++button Name='Second submit in a form not a valid default button'
-++form
-++++textbox
-++++button Name='First image button in a form is a valid default button'
-++++++img
-++++++description Name='First image button in a form is a valid default button' IsControlElement=false
-++++button Name='Second image button in a form not a valid default button'
-++++++img
-++++++description Name='Second image button in a form not a valid default button' IsControlElement=false
-++button Name='Submit outside of form not a valid default button'
+Document
+++Group
+++++Edit
+++++Button Name='First submit in a form is a valid default button'
+++++Button Name='Second submit in a form not a valid default button'
+++Group
+++++Edit
+++++Button Name='First image button in a form is a valid default button'
+++++++Image Name='To get missing image descriptions, open the context menu.'
+++++++Text Name='First image button in a form is a valid default button' IsControlElement=false
+++++Button Name='Second image button in a form not a valid default button'
+++++++Image
+++++++Text Name='Second image button in a form not a valid default button' IsControlElement=false
+++Button Name='Submit outside of form not a valid default button'

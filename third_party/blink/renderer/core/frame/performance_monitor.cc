@@ -7,17 +7,17 @@
 #include "base/format_macros.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/parser/html_document_parser.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
+#include "v8/include/v8-metrics.h"
 
 namespace blink {
 
@@ -53,10 +53,10 @@ void PerformanceMonitor::ReportGenericViolation(
 // static
 PerformanceMonitor* PerformanceMonitor::Monitor(
     const ExecutionContext* context) {
-  const auto* document = DynamicTo<Document>(context);
-  if (!document)
+  const auto* window = DynamicTo<LocalDOMWindow>(context);
+  if (!window)
     return nullptr;
-  LocalFrame* frame = document->GetFrame();
+  LocalFrame* frame = window->GetFrame();
   if (!frame)
     return nullptr;
   return frame->GetPerformanceMonitor();
@@ -69,8 +69,9 @@ PerformanceMonitor* PerformanceMonitor::InstrumentingMonitorExcludingLongTasks(
   return monitor && monitor->enabled_ ? monitor : nullptr;
 }
 
-PerformanceMonitor::PerformanceMonitor(LocalFrame* local_root)
-    : local_root_(local_root) {
+PerformanceMonitor::PerformanceMonitor(LocalFrame* local_root,
+                                       v8::Isolate* isolate)
+    : local_root_(local_root), isolate_(isolate) {
   std::fill(std::begin(thresholds_), std::end(thresholds_), base::TimeDelta());
   Thread::Current()->AddTaskTimeObserver(this);
   local_root_->GetProbeSink()->AddPerformanceMonitor(this);
@@ -84,11 +85,16 @@ void PerformanceMonitor::Subscribe(Violation violation,
                                    base::TimeDelta threshold,
                                    Client* client) {
   DCHECK(violation < kAfterLast);
-  ClientThresholds* client_thresholds = subscriptions_.at(violation);
-  if (!client_thresholds) {
+  ClientThresholds* client_thresholds = nullptr;
+
+  auto it = subscriptions_.find(violation);
+  if (it == subscriptions_.end()) {
     client_thresholds = MakeGarbageCollected<ClientThresholds>();
     subscriptions_.Set(violation, client_thresholds);
+  } else {
+    client_thresholds = it->value;
   }
+
   client_thresholds->Set(client, threshold);
   UpdateInstrumentation();
 }
@@ -148,12 +154,12 @@ void PerformanceMonitor::DidExecuteScript() {
 }
 
 void PerformanceMonitor::UpdateTaskAttribution(ExecutionContext* context) {
-  // If |context| is not a document, unable to attribute a frame context.
-  auto* document = DynamicTo<Document>(context);
-  if (!document)
+  // If |context| is not a window, unable to attribute a frame context.
+  auto* window = DynamicTo<LocalDOMWindow>(context);
+  if (!window)
     return;
 
-  UpdateTaskShouldBeReported(document->GetFrame());
+  UpdateTaskShouldBeReported(window->GetFrame());
   if (!task_execution_context_)
     task_execution_context_ = context;
   else if (task_execution_context_ != context)
@@ -264,8 +270,8 @@ void PerformanceMonitor::DocumentWriteFetchScript(Document* document) {
   if (!enabled_)
     return;
   String text = "Parser was blocked due to document.write(<script>)";
-  InnerReportGenericViolation(document, kBlockedParser, text, base::TimeDelta(),
-                              nullptr);
+  InnerReportGenericViolation(document->GetExecutionContext(), kBlockedParser,
+                              text, base::TimeDelta(), nullptr);
 }
 
 void PerformanceMonitor::WillProcessTask(base::TimeTicks start_time) {
@@ -276,6 +282,7 @@ void PerformanceMonitor::WillProcessTask(base::TimeTicks start_time) {
   task_execution_context_ = nullptr;
   task_has_multiple_contexts_ = false;
   task_should_be_reported_ = false;
+  v8::metrics::LongTaskStats::Reset(isolate_);
 
   if (!enabled_)
     return;
@@ -298,13 +305,18 @@ void PerformanceMonitor::DidProcessTask(base::TimeTicks start_time,
   if (!thresholds_[kLongTask].is_zero()) {
     base::TimeDelta task_time = end_time - start_time;
     if (task_time > thresholds_[kLongTask]) {
-      ClientThresholds* client_thresholds = subscriptions_.at(kLongTask);
-      for (const auto& it : *client_thresholds) {
-        if (it.value < task_time) {
-          it.key->ReportLongTask(
-              start_time, end_time,
-              task_has_multiple_contexts_ ? nullptr : task_execution_context_,
-              task_has_multiple_contexts_);
+      auto subscriptions_it = subscriptions_.find(kLongTask);
+      if (subscriptions_it != subscriptions_.end()) {
+        ClientThresholds* client_thresholds = subscriptions_it->value;
+        DCHECK(client_thresholds);
+
+        for (const auto& it : *client_thresholds) {
+          if (it.value < task_time) {
+            it.key->ReportLongTask(
+                start_time, end_time,
+                task_has_multiple_contexts_ ? nullptr : task_execution_context_,
+                task_has_multiple_contexts_);
+          }
         }
       }
     }
@@ -331,18 +343,21 @@ void PerformanceMonitor::InnerReportGenericViolation(
     const String& text,
     base::TimeDelta time,
     std::unique_ptr<SourceLocation> location) {
-  ClientThresholds* client_thresholds = subscriptions_.at(violation);
-  if (!client_thresholds)
+  auto subscriptions_it = subscriptions_.find(violation);
+  if (subscriptions_it == subscriptions_.end())
     return;
+
   if (!location)
     location = SourceLocation::Capture(context);
+
+  ClientThresholds* client_thresholds = subscriptions_it->value;
   for (const auto& it : *client_thresholds) {
     if (it.value < time)
       it.key->ReportGenericViolation(violation, text, time, location.get());
   }
 }
 
-void PerformanceMonitor::Trace(blink::Visitor* visitor) {
+void PerformanceMonitor::Trace(Visitor* visitor) const {
   visitor->Trace(local_root_);
   visitor->Trace(task_execution_context_);
   visitor->Trace(subscriptions_);

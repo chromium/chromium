@@ -1,15 +1,17 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="site_list.html">
-<link rel="import" href="site_settings_prefs_browser_proxy.html">
-
-<dom-module id="category-setting-exceptions">
-  <template>
+    <style include="settings-shared">
+      #exceptionHeader {
+        padding: 0 var(--cr-section-padding);
+      }
+    </style>
+    <div id="exceptionHeader">
+      <h2>$i18n{siteSettingsCustomizedBehaviors}</h2>
+      <div id="exceptionHeaderSubLabel" class="secondary">
+        [[description]]
+      </div>
+    </div>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.BLOCK]]"
+        category-subtype="[[contentSettingEnum_.BLOCK]]"
         category-header="[[blockHeader]]"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]"
@@ -17,19 +19,16 @@
     </site-list>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.SESSION_ONLY]]"
+        category-subtype="[[contentSettingEnum_.SESSION_ONLY]]"
         category-header="$i18n{siteSettingsSessionOnly}"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]">
     </site-list>
     <site-list
         category="[[category]]"
-        category-subtype="[[ContentSetting.ALLOW]]"
-        category-header="$i18n{siteSettingsAllow}"
+        category-subtype="[[contentSettingEnum_.ALLOW]]"
+        category-header="[[allowHeader]]"
         read-only-list="[[getReadOnlyList_(readOnlyList, defaultManaged_)]]"
         search-filter="[[searchFilter]]"
         hidden$="[[!showAllowSiteList_]]">
     </site-list>
-  </template>
-  <script src="category_setting_exceptions.js"></script>
-</dom-module>

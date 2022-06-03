@@ -24,8 +24,8 @@
 #include <vector>
 
 #include <mutex>
+#include "base/check_op.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "s2/r1interval.h"
 #include "s2/s2latlng.h"

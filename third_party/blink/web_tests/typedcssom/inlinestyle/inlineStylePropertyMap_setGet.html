@@ -29,24 +29,24 @@ test(function() {
 }, "Changes to element.styleMap are reflected in element.style");
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.set('width', new CSSUnitValue(4, 'number'));
   });
 }, "Attempting to set an invalid type for a property throws");
 
 test(function() {
   testElement.attributeStyleMap.set('width', new CSSUnitValue(2, 'px'));
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.set('width', new CSSUnitValue(4, 'number'));
   });
   assert_equals(testElement.attributeStyleMap.get('width').toString(), '2px');
 }, "Attempting to set an invalid type for a property does not change the value");
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.set('lemons', new CSSUnitValue(4, 'number'));
   });
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.set('lemons', null);
   });
 }, "Attempting to set an invalid property throws");
@@ -56,13 +56,13 @@ test(function() {
 }, "Getting a property that isn't set returns null");
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.get('lemons');
   });
 }, "Getting a property that doesn't exist throws");
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.set('width', null);
   });
   // Force a style recalc.

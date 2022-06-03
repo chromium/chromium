@@ -1,0 +1,168 @@
+CONSOLE MESSAGE: Wrong node selected.
+CONSOLE MESSAGE: Wrong anchor offset: 8 instead of 0
+CONSOLE MESSAGE: Wrong end node type: [object HTMLBRElement]
+CONSOLE MESSAGE: Wrong node selected.
+| <html>
+|   <head>
+|   <body>
+|     <p>
+|       "This test tries to indent lines within pre tags.  This test passes if it
+does not crash."
+|     "
+"
+|     <div>
+|       contenteditable=""
+|       "
+"
+|       <blockquote>
+|         style="margin: 0 0 0 40px; border: none; padding: 0px;"
+|         <pre>
+|           id="pre-basic"
+|           "line one"
+|       <pre>
+|         id="pre-basic"
+|         "line two
+"
+|       <blockquote>
+|         style="margin: 0 0 0 40px; border: none; padding: 0px;"
+|         <pre>
+|           "line three"
+|         <pre>
+|           "line four"
+|       "
+
+"
+|       <ul>
+|         <li>
+|           <pre>
+|             id="pre-list"
+|             "list one
+"
+|             <blockquote>
+|               style="margin: 0 0 0 40px; border: none; padding: 0px;"
+|               "list two"
+|               <br>
+|               "list three"
+|             "list four
+"
+|       "
+
+"
+|       <table>
+|         "
+"
+|         <tbody>
+|           <tr>
+|             <td>
+|               <pre>
+|                 id="pre-table"
+|                 "table one<#selection-anchor>
+"
+|               <blockquote>
+|                 style="margin: 0 0 0 40px; border: none; padding: 0px;"
+|                 <pre>
+|                   "table two"
+|                 <pre>
+|                   "table three<#selection-focus>"
+|             <td>
+|               "right cell"
+|       "
+
+"
+|       <div>
+|         id="results"
+|         "PASSED (did not crash)"
+|       "
+"
+|     "
+
+"
+|     <a>
+|       href="javascript:document.execCommand('indent')"
+|       "indent"
+|     "
+"
+|     <a>
+|       href="javascript:document.execCommand('outdent')"
+|       "outdent"
+|     "
+"
+|     <script>
+|       src="../../resources/dump-as-markup.js"
+|     "
+"
+|     <script>
+|       src="../editing.js"
+|     "
+"
+|     <script>
+|       "
+function setSelection(node)
+{
+    var textNode = node.firstChild;
+    if (textNode.nodeType != Node.TEXT_NODE)
+        throw "Wrong node type: " + textNode;
+    execSetSelectionCommand(textNode, 0, textNode, 0);
+}
+
+function verifyTextSelection(startNode, startOffset, endNode, endOffset)
+{
+    if (startNode.nodeType != Node.TEXT_NODE)
+        console.log("Wrong start node type: " + startNode);
+    if (endNode.nodeType != Node.TEXT_NODE)
+        console.log("Wrong end node type: " + endNode);
+    var sel = window.getSelection();
+    if (sel.anchorNode != startNode || sel.focusNode != endNode)
+        console.log("Wrong node selected.");
+    if (sel.anchorOffset != startOffset)
+        console.log("Wrong anchor offset: " + sel.anchorOffset + " instead of " + startOffset);
+    if (sel.focusOffset != endOffset)
+        console.log("Wrong focus offset: " + sel.focusOffset + " instead of " + endOffset);
+}
+
+// Indent a single line in a pre and make sure the selection is correctly preserved.
+var pre = document.getElementById("pre-basic");
+setSelection(pre);
+execMoveSelectionForwardByCharacterCommand();
+execExtendSelectionForwardByWordCommand();
+document.execCommand("indent");
+verifyTextSelection(document.getElementsByTagName("pre")[0].firstChild, 1,
+                    document.getElementsByTagName("pre")[0].firstChild, 4);
+
+// Indent 2 lines.
+setSelection(pre);
+execMoveSelectionForwardByLineCommand();
+execExtendSelectionForwardByLineCommand();
+execExtendSelectionForwardByWordCommand();
+document.execCommand("indent");
+if (document.getElementsByTagName("pre").length > 3) {
+    // FIXME: The selection for the anchorNode is wrong.  It should stay at
+    // the beginning of "line three", but it moves to the end of "line 2".
+    verifyTextSelection(document.getElementsByTagName("pre")[2].firstChild, 0,
+                        document.getElementsByTagName("pre")[3].firstChild, 4);
+} else {
+    console.log("Wrong number of pre nodes.");
+}
+
+// Indent <pre> lines in a list.
+pre = document.getElementById("pre-list");
+setSelection(pre);
+execMoveSelectionForwardByLineCommand();
+execExtendSelectionForwardByLineCommand();
+execExtendSelectionForwardByLineCommand();
+document.execCommand("indent");
+verifyTextSelection(document.getElementsByTagName("blockquote")[2].firstChild, 0,
+                    document.getElementsByTagName("blockquote")[2].firstChild.nextSibling, 10);
+// Indenting <pre> lines in a table.
+pre = document.getElementById("pre-table");
+setSelection(pre);
+execMoveSelectionForwardByLineCommand();
+execExtendSelectionForwardByLineCommand();
+execExtendSelectionForwardByLineCommand();
+// FIXME: This is wrong.  The pre tags get copied when they shouldn't be.
+// See https://bugs.webkit.org/show_bug.cgi?id=42009
+document.execCommand("indent");
+document.getElementById("results").innerText = "PASSED (did not crash)";
+"
+|     "
+"

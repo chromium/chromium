@@ -31,51 +31,60 @@ TEST(RedirectUtilTest, UpdateHttpRequest) {
     const char* original_method;
     const char* new_method;
     const char* new_url;
-    const char* modified_headers;
+    const struct {
+      const char* name;
+      const char* value;
+    } modified_headers[2];
     bool expected_should_clear_upload;
     // nullptr if the origin header should not exist
     const char* expected_origin_header;
   };
   const TestCase kTests[] = {
       {
-          "POST" /* original_method */, "POST" /* new_method */,
+          "POST" /* original_method */,
+          "POST" /* new_method */,
           "https://www.example.com/redirected.php" /* new_url */,
-          "Header1: Value1\r\nHeader2: Value2" /* modified_headers */,
+          {{"Header1", "Value1"}, {"Header2", "Value2"}} /* modified_headers */,
           false /* expected_should_clear_upload */,
           "https://origin.example.com" /* expected_origin_header */
       },
       {
-          "POST" /* original_method */, "GET" /* new_method */,
+          "POST" /* original_method */,
+          "GET" /* new_method */,
           "https://www.example.com/redirected.php" /* new_url */,
-          "Header1: Value1\r\nHeader2: Value2" /* modified_headers */,
+          {{"Header1", "Value1"}, {"Header2", "Value2"}} /* modified_headers */,
           true /* expected_should_clear_upload */,
           nullptr /* expected_origin_header */
       },
       {
-          "POST" /* original_method */, "POST" /* new_method */,
+          "POST" /* original_method */,
+          "POST" /* new_method */,
           "https://other.example.com/redirected.php" /* new_url */,
-          "Header1: Value1\r\nHeader2: Value2" /* modified_headers */,
+          {{"Header1", "Value1"}, {"Header2", "Value2"}} /* modified_headers */,
           false /* expected_should_clear_upload */,
           "null" /* expected_origin_header */
       },
       {
-          "POST" /* original_method */, "GET" /* new_method */,
+          "POST" /* original_method */,
+          "GET" /* new_method */,
           "https://other.example.com/redirected.php" /* new_url */,
-          "Header1: Value1\r\nHeader2: Value2" /* modified_headers */,
+          {{"Header1", "Value1"}, {"Header2", "Value2"}} /* modified_headers */,
           true /* expected_should_clear_upload */,
           nullptr /* expected_origin_header */
       },
       {
-          "PUT" /* original_method */, "GET" /* new_method */,
+          "PUT" /* original_method */,
+          "GET" /* new_method */,
           "https://www.example.com/redirected.php" /* new_url */,
-          "Header1: Value1\r\nHeader2: Value2" /* modified_headers */,
+          {{"Header1", "Value1"}, {"Header2", "Value2"}} /* modified_headers */,
           true /* expected_should_clear_upload */,
           nullptr /* expected_origin_header */
       },
       {
-          "FOOT" /* original_method */, "GET" /* new_method */,
+          "FOOT" /* original_method */,
+          "GET" /* new_method */,
           "https://www.example.com/redirected.php" /* new_url */,
-          "Header1: Value1\r\nHeader2: Value2" /* modified_headers */,
+          {{"Header1", "Value1"}, {"Header2", "Value2"}} /* modified_headers */,
           true /* expected_should_clear_upload */,
           nullptr /* expected_origin_header */
       },
@@ -91,7 +100,10 @@ TEST(RedirectUtilTest, UpdateHttpRequest) {
     redirect_info.new_url = GURL(test.new_url);
 
     net::HttpRequestHeaders modified_headers;
-    modified_headers.AddHeadersFromString(test.modified_headers);
+    for (const auto& headers : test.modified_headers) {
+      ASSERT_TRUE(!!headers.name);  // Currently all test case has this.
+      modified_headers.SetHeader(headers.name, headers.value);
+    }
     std::string expected_modified_header1, expected_modified_header2;
     modified_headers.GetHeader("Header1", &expected_modified_header1);
     modified_headers.GetHeader("Header2", &expected_modified_header2);
@@ -113,7 +125,7 @@ TEST(RedirectUtilTest, UpdateHttpRequest) {
 
     RedirectUtil::UpdateHttpRequest(
         original_url, test.original_method, redirect_info,
-        base::nullopt /* removed_headers */, modified_headers, &request_headers,
+        absl::nullopt /* removed_headers */, modified_headers, &request_headers,
         &should_clear_upload);
     EXPECT_EQ(test.expected_should_clear_upload, should_clear_upload);
 
@@ -246,13 +258,13 @@ TEST(RedirectUtilTest, RemovedHeaders) {
   }
 }
 
-// Test with removed_headers = base::nullopt.
+// Test with removed_headers = absl::nullopt.
 TEST(RedirectUtilTest, RemovedHeadersNullOpt) {
   HttpRequestHeaders initial_headers, final_headers;
   initial_headers.SetHeader("A", "0");
   final_headers.SetHeader("A", "0");
-  base::Optional<std::vector<std::string>> removed_headers(base::nullopt);
-  base::Optional<HttpRequestHeaders> modified_headers(base::in_place);
+  absl::optional<std::vector<std::string>> removed_headers(absl::nullopt);
+  absl::optional<HttpRequestHeaders> modified_headers(absl::in_place);
   bool should_clear_upload(false);  // unused.
 
   RedirectUtil::UpdateHttpRequest(GURL(),         // original_url
@@ -266,13 +278,13 @@ TEST(RedirectUtilTest, RemovedHeadersNullOpt) {
   EXPECT_EQ(initial_headers.ToString(), final_headers.ToString());
 }
 
-// Test with modified_headers = base::nullopt.
+// Test with modified_headers = absl::nullopt.
 TEST(RedirectUtilTest, ModifyHeadersNullopt) {
   HttpRequestHeaders initial_headers, final_headers;
   initial_headers.SetHeader("A", "0");
   final_headers.SetHeader("A", "0");
-  base::Optional<std::vector<std::string>> removed_headers(base::in_place);
-  base::Optional<HttpRequestHeaders> modified_headers(base::nullopt);
+  absl::optional<std::vector<std::string>> removed_headers(absl::in_place);
+  absl::optional<HttpRequestHeaders> modified_headers(absl::nullopt);
   bool should_clear_upload(false);  // unused.
 
   RedirectUtil::UpdateHttpRequest(GURL(),         // original_url

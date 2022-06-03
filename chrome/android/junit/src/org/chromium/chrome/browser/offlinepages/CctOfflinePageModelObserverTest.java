@@ -71,9 +71,9 @@ public class CctOfflinePageModelObserverTest {
 
         when(mContext.getPackageManager()).thenReturn(mPackageManager);
 
-        List<String> whitelist = new ArrayList<>();
-        whitelist.add(APP_NAME);
-        when(mAppHooks.getOfflinePagesCctWhitelist()).thenReturn(whitelist);
+        List<String> allowlist = new ArrayList<>();
+        allowlist.add(APP_NAME);
+        when(mAppHooks.getOfflinePagesCctAllowlist()).thenReturn(allowlist);
 
         ContextUtils.initApplicationContextForTests(mContext);
         AppHooks.setInstanceForTesting(mAppHooks);
@@ -85,7 +85,7 @@ public class CctOfflinePageModelObserverTest {
     }
 
     @Test
-    public void testSendBroadcastForAppNameInWhitelist_addedPage() {
+    public void testSendBroadcastForAppNameInAllowlist_addedPage() {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         CctOfflinePageModelObserver.onPageChanged(ORIGIN_STRING, true, URL);
 
@@ -102,7 +102,7 @@ public class CctOfflinePageModelObserverTest {
     }
 
     @Test
-    public void testSendBroadcastForAppNameInWhitelist_deletedPage() {
+    public void testSendBroadcastForAppNameInAllowlist_deletedPage() {
         ArgumentCaptor<Intent> intentCaptor = ArgumentCaptor.forClass(Intent.class);
         CctOfflinePageModelObserver.onPageChanged(ORIGIN_STRING, false, URL);
 
@@ -119,7 +119,7 @@ public class CctOfflinePageModelObserverTest {
     }
 
     @Test
-    public void testDoesNotSendBroadcastForAppNameNotInWhitelist() {
+    public void testDoesNotSendBroadcastForAppNameNotInAllowlist() {
         String originString = "[xyz.abc,[]]";
         CctOfflinePageModelObserver.onPageChanged(originString, true, URL);
 

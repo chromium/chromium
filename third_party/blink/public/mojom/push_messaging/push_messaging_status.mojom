@@ -4,30 +4,35 @@
 
 module blink.mojom;
 
-// Push message event success/error codes for internal use & reporting in UMA.
+// `push` and `pushsubscriptionchange` event success/error codes for internal
+// use & reporting in UMA.
 // Enum values can be added, but must never be renumbered or deleted and reused.
-enum PushDeliveryStatus {
-  // The message was successfully delivered.
+enum PushEventStatus {
+  // The event was successfully delivered.
   SUCCESS = 0,
 
-  // The message could not be delivered because the app id was unknown.
+  // The event could not be delivered because the app id was unknown.
   UNKNOWN_APP_ID = 2,
 
-  // The message could not be delivered because origin no longer has permission.
+  // The event could not be delivered because origin no longer has permission.
   PERMISSION_DENIED = 3,
 
-  // The message could not be delivered because no service worker was found.
+  // The event could not be delivered because no service worker was found.
   NO_SERVICE_WORKER = 4,
 
-  // The message could not be delivered because of a service worker error.
+  // The event could not be delivered because of a service worker error.
   SERVICE_WORKER_ERROR = 5,
 
-  // The message was delivered, but the Service Worker passed a Promise to
+  // The event was delivered, but the Service Worker passed a Promise to
   // event.waitUntil that got rejected.
   EVENT_WAITUNTIL_REJECTED = 6,
 
-  // The message was delivered, but the Service Worker timed out processing it.
+  // The event was delivered, but the Service Worker timed out processing it.
   TIMEOUT = 7,
+
+  // The event could not be delivered because permission was auto-revoked due
+  // to origin marked as abusive.
+  PERMISSION_REVOKED_ABUSIVE = 8,
 
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list
@@ -136,6 +141,9 @@ enum PushRegistrationStatus {
   // happen when a subscription is invalidated by the push service.
   SUCCESS_NEW_SUBSCRIPTION_FROM_PUSH_SERVICE = 16,
 
+  // Registration failed because a GCM Sender ID was used.
+  UNSUPPORTED_GCM_SENDER_ID = 17,
+
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list
   // in tools/metrics/histograms/histograms.xml to keep it in sync.
@@ -177,6 +185,17 @@ enum PushUnregistrationReason {
 
   // The Service Worker database got wiped, most likely due to corruption.
   SERVICE_WORKER_DATABASE_WIPED = 10,
+
+  // The subscription has expired, delete local subscription automatically.
+  // Only happens if features::kPushSubscriptionWithExpirationTime is enabled.
+  SUBSCRIPTION_EXPIRED = 11,
+
+  // The subscription was successfully refreshed, which is why we want to remove
+  // the old subscription
+  REFRESH_FINISHED = 12,
+
+  // Unregistering because permissions was auto-revoked due to abuse.
+  PERMISSION_REVOKED_ABUSIVE = 13,
 
   // NOTE: Do not renumber or delete these as that would confuse interpretation
   // of previously logged data. When making changes, also update the enum list

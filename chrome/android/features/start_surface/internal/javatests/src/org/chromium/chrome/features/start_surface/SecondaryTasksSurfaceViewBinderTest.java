@@ -6,22 +6,25 @@ package org.chromium.chrome.features.start_surface;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SECONDARY_SURFACE_VISIBLE;
-import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.IS_SHOWING_OVERVIEW;
-import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_BAR_HEIGHT;
+import static org.chromium.chrome.features.start_surface.StartSurfaceProperties.TOP_MARGIN;
 
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.SmallTest;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.widget.FrameLayout;
 
+import androidx.test.filters.SmallTest;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -33,7 +36,9 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase {
     private ViewGroup mParentView;
     private View mTasksSurfaceView;
+    private View mTopToolbarPlaceholderView;
     private PropertyModel mPropertyModel;
+    @SuppressWarnings({"FieldCanBeLocal", "unused"})
     private PropertyModelChangeProcessor mPropertyModelChangeProcessor;
 
     @Override
@@ -45,90 +50,71 @@ public class SecondaryTasksSurfaceViewBinderTest extends DummyUiActivityTestCase
             // for the SecondaryTasksSurfaceViewBinderTest.
             mParentView = new FrameLayout(getActivity());
             mTasksSurfaceView = new View(getActivity());
+            mTasksSurfaceView.setBackground(new ColorDrawable(Color.WHITE));
+            mTopToolbarPlaceholderView = new View(getActivity());
             getActivity().setContentView(mParentView);
+
+            mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
+            mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
+                    new TasksSurfaceViewBinder.ViewHolder(
+                            mParentView, mTasksSurfaceView, mTopToolbarPlaceholderView),
+                    SecondaryTasksSurfaceViewBinder::bind);
         });
-
-        mPropertyModel = new PropertyModel(StartSurfaceProperties.ALL_KEYS);
-        mPropertyModelChangeProcessor = PropertyModelChangeProcessor.create(mPropertyModel,
-                new TasksSurfaceViewBinder.ViewHolder(mParentView, mTasksSurfaceView),
-                SecondaryTasksSurfaceViewBinder::bind);
     }
 
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetVisibilityAfterShowingOverview() {
-        assertFalse(mPropertyModel.get(IS_SHOWING_OVERVIEW));
+    public void testSetVisibility() {
         assertFalse(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE));
-        assertEquals(mTasksSurfaceView.getParent(), null);
-
-        mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
-        assertEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
+        assertNull(mTasksSurfaceView.getParent());
 
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, true);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.VISIBLE);
+        assertNotNull(mTasksSurfaceView.getParent());
+        assertEquals(View.VISIBLE, mTasksSurfaceView.getVisibility());
 
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, false);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
-
-        mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
+        assertNotNull(mTasksSurfaceView.getParent());
+        assertEquals(View.GONE, mTasksSurfaceView.getVisibility());
     }
 
     @Test
     @UiThreadTest
     @SmallTest
-    public void testSetVisibilityBeforeShowingOverview() {
-        assertFalse(mPropertyModel.get(IS_SHOWING_OVERVIEW));
+    public void testSetVisibilityWithTopMargin() {
         assertFalse(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE));
-        assertEquals(mTasksSurfaceView.getParent(), null);
+        assertNull(mTasksSurfaceView.getParent());
+        mPropertyModel.set(TOP_MARGIN, 20);
 
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, true);
-        assertEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
-
-        mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.VISIBLE);
-
-        mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
-
-        mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, false);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
-    }
-
-    @Test
-    @UiThreadTest
-    @SmallTest
-    public void testSetVisibilityWithTopBar() {
-        assertFalse(mPropertyModel.get(IS_SHOWING_OVERVIEW));
-        assertFalse(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE));
-        assertEquals(mTasksSurfaceView.getParent(), null);
-        mPropertyModel.set(TOP_BAR_HEIGHT, 20);
-
-        mPropertyModel.set(IS_SHOWING_OVERVIEW, true);
-        assertEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
-
-        mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, true);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.VISIBLE);
+        assertNotNull(mTasksSurfaceView.getParent());
+        assertEquals(View.VISIBLE, mTasksSurfaceView.getVisibility());
+        assertEquals(View.GONE, mTopToolbarPlaceholderView.getVisibility());
         MarginLayoutParams layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
         assertEquals(20, layoutParams.topMargin);
 
         mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, false);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
+        assertNotNull(mTasksSurfaceView.getParent());
+        assertEquals(View.GONE, mTasksSurfaceView.getVisibility());
+    }
 
-        mPropertyModel.set(IS_SHOWING_OVERVIEW, false);
-        assertNotEquals(mTasksSurfaceView.getParent(), null);
-        assertEquals(mTasksSurfaceView.getVisibility(), View.GONE);
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetTopMargin() {
+        assertFalse(mPropertyModel.get(IS_SECONDARY_SURFACE_VISIBLE));
+        assertNull(mTasksSurfaceView.getParent());
+
+        // Setting the top margin shouldn't cause a NullPointerException when the layout params are
+        // null, since this should be handled in the *ViewBinder.
+        mPropertyModel.set(TOP_MARGIN, 20);
+        mPropertyModel.set(IS_SECONDARY_SURFACE_VISIBLE, true);
+
+        MarginLayoutParams layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
+        assertEquals("Top margin isn't initialized correctly.", 20, layoutParams.topMargin);
+
+        layoutParams = (MarginLayoutParams) mTasksSurfaceView.getLayoutParams();
+        mPropertyModel.set(TOP_MARGIN, 40);
+        assertEquals("Wrong top margin.", 40, layoutParams.topMargin);
     }
 }

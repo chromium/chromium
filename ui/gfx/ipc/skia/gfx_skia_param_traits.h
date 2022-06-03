@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_GFX_IPC_GFX_SKIA_PARAM_TRAITS_H_
-#define UI_GFX_IPC_GFX_SKIA_PARAM_TRAITS_H_
+#ifndef UI_GFX_IPC_SKIA_GFX_SKIA_PARAM_TRAITS_H_
+#define UI_GFX_IPC_SKIA_GFX_SKIA_PARAM_TRAITS_H_
 
 #include <string>
 
 #include "ipc/ipc_message_utils.h"
 #include "ipc/ipc_param_traits.h"
 #include "ui/gfx/ipc/skia/gfx_skia_ipc_export.h"
+#include "ui/gfx/ipc/skia/gfx_skia_param_traits_macros.h"
 
 class SkBitmap;
 struct SkImageInfo;
@@ -57,4 +58,4 @@ struct GFX_SKIA_IPC_EXPORT ParamTraits<gfx::Transform> {
 
 }  // namespace IPC
 
-#endif  // UI_GFX_IPC_GFX_SKIA_PARAM_TRAITS_H_
+#endif  // UI_GFX_IPC_SKIA_GFX_SKIA_PARAM_TRAITS_H_

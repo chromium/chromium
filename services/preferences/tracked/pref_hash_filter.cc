@@ -5,13 +5,16 @@
 #include "services/preferences/tracked/pref_hash_filter.h"
 
 #include <stdint.h>
+
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -32,13 +35,12 @@ void CleanupDeprecatedTrackedPreferences(
   // Add deprecated previously tracked preferences below for them to be cleaned
   // up from both the pref files and the hash store.
   static const char* const kDeprecatedTrackedPreferences[] = {
-      // TODO(a-v-y): Remove in M60+,
-      "default_search_provider.search_url", "default_search_provider.name",
-      "default_search_provider.keyword"};
+      // TODO(pmonette): Remove in 2022+.
+      "module_blacklist_cache_md5_digest"};
 
   for (size_t i = 0; i < base::size(kDeprecatedTrackedPreferences); ++i) {
     const char* key = kDeprecatedTrackedPreferences[i];
-    pref_store_contents->Remove(key, NULL);
+    pref_store_contents->RemovePath(key);
     hash_store_transaction->ClearHash(key);
   }
 }
@@ -55,15 +57,18 @@ PrefHashFilter::PrefHashFilter(
         tracked_preferences,
     mojo::PendingRemote<prefs::mojom::ResetOnLoadObserver>
         reset_on_load_observer,
-    prefs::mojom::TrackedPreferenceValidationDelegate* delegate,
+    scoped_refptr<base::RefCountedData<
+        mojo::Remote<prefs::mojom::TrackedPreferenceValidationDelegate>>>
+        delegate,
     size_t reporting_ids_count)
     : pref_hash_store_(std::move(pref_hash_store)),
       external_validation_hash_store_pair_(
           external_validation_hash_store_pair.first
-              ? base::make_optional(
+              ? absl::make_optional(
                     std::move(external_validation_hash_store_pair))
-              : base::nullopt),
-      reset_on_load_observer_(std::move(reset_on_load_observer)) {
+              : absl::nullopt),
+      reset_on_load_observer_(std::move(reset_on_load_observer)),
+      delegate_(std::move(delegate)) {
   DCHECK(pref_hash_store_);
   DCHECK_GE(reporting_ids_count, tracked_preferences.size());
   // Verify that, if |external_validation_hash_store_pair_| is present, both its
@@ -72,6 +77,8 @@ PrefHashFilter::PrefHashFilter(
          (external_validation_hash_store_pair_->first &&
           external_validation_hash_store_pair_->second));
 
+  prefs::mojom::TrackedPreferenceValidationDelegate* delegate_ptr =
+      (delegate_ ? delegate_->data.get() : nullptr);
   for (size_t i = 0; i < tracked_preferences.size(); ++i) {
     const prefs::mojom::TrackedPreferenceMetadata& metadata =
         *tracked_preferences[i];
@@ -79,14 +86,14 @@ PrefHashFilter::PrefHashFilter(
     std::unique_ptr<TrackedPreference> tracked_preference;
     switch (metadata.strategy) {
       case PrefTrackingStrategy::ATOMIC:
-        tracked_preference.reset(new TrackedAtomicPreference(
+        tracked_preference = std::make_unique<TrackedAtomicPreference>(
             metadata.name, metadata.reporting_id, reporting_ids_count,
-            metadata.enforcement_level, metadata.value_type, delegate));
+            metadata.enforcement_level, metadata.value_type, delegate_ptr);
         break;
       case PrefTrackingStrategy::SPLIT:
-        tracked_preference.reset(new TrackedSplitPreference(
+        tracked_preference = std::make_unique<TrackedSplitPreference>(
             metadata.name, metadata.reporting_id, reporting_ids_count,
-            metadata.enforcement_level, metadata.value_type, delegate));
+            metadata.enforcement_level, metadata.value_type, delegate_ptr);
         break;
     }
     DCHECK(tracked_preference);
@@ -267,7 +274,7 @@ void PrefHashFilter::FinalizeFilterOnLoad(
 void PrefHashFilter::ClearFromExternalStore(
     HashStoreContents* external_validation_hash_store_contents,
     const base::DictionaryValue* changed_paths_and_macs) {
-  DCHECK(!changed_paths_and_macs->empty());
+  DCHECK(!changed_paths_and_macs->DictEmpty());
 
   for (base::DictionaryValue::Iterator it(*changed_paths_and_macs);
        !it.IsAtEnd(); it.Advance()) {
@@ -280,7 +287,7 @@ void PrefHashFilter::FlushToExternalStore(
     std::unique_ptr<HashStoreContents> external_validation_hash_store_contents,
     std::unique_ptr<base::DictionaryValue> changed_paths_and_macs,
     bool write_success) {
-  DCHECK(!changed_paths_and_macs->empty());
+  DCHECK(!changed_paths_and_macs->DictEmpty());
   DCHECK(external_validation_hash_store_contents);
   if (!write_success)
     return;
@@ -293,20 +300,17 @@ void PrefHashFilter::FlushToExternalStore(
     if (it.value().GetAsDictionary(&split_values)) {
       for (base::DictionaryValue::Iterator inner_it(*split_values);
            !inner_it.IsAtEnd(); inner_it.Advance()) {
-        std::string mac;
-        bool is_string = inner_it.value().GetAsString(&mac);
+        const std::string* mac = inner_it.value().GetIfString();
+        bool is_string = !!mac;
         DCHECK(is_string);
 
         external_validation_hash_store_contents->SetSplitMac(
-            changed_path, inner_it.key(), mac);
+            changed_path, inner_it.key(), *mac);
       }
     } else {
-      const base::Value* value_as_string;
-      bool is_string = it.value().GetAsString(&value_as_string);
-      DCHECK(is_string);
-
-      external_validation_hash_store_contents->SetMac(
-          changed_path, value_as_string->GetString());
+      DCHECK(it.value().is_string());
+      external_validation_hash_store_contents->SetMac(changed_path,
+                                                      it.value().GetString());
     }
   }
 }
@@ -339,10 +343,11 @@ PrefFilter::OnWriteCallbackPair PrefHashFilter::GetOnWriteSynchronousCallbacks(
       case TrackedPreferenceType::SPLIT: {
         const base::DictionaryValue* dict_value = nullptr;
         pref_store_contents->GetDictionary(changed_path, &dict_value);
-        changed_paths_macs->SetWithoutPathExpansion(
+        changed_paths_macs->SetKey(
             changed_path,
-            external_validation_hash_store_pair_->first->ComputeSplitMacs(
-                changed_path, dict_value));
+            base::Value::FromUniquePtrValue(
+                external_validation_hash_store_pair_->first->ComputeSplitMacs(
+                    changed_path, dict_value)));
         break;
       }
     }

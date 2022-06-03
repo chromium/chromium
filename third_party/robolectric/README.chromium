@@ -1,27 +1,17 @@
 Name: Robolectric
 URL: http://robolectric.org
-Version: 4.0.1
+Version: 11-robolectric-6757853
 License: Apache 2.0
 License File: NOT_SHIPPED
 Security Critical: no
 License Android Compatible: yes
 Description: Robolectric is a unit test framework for Android.
 Local Modifications:
-- Hardcoded version number in robolectric-version.properties.
-- Hardcoded ShadowProvider service config files. These files are normally
-  generated at compile time but it is difficult to use the generated file
-  with GN.
-- Provided stub implementation of MavenDependencyResolver.java to avoid
-  needing maven third_party libraries.
 - Added custom_asynctask folder to have workable copies of shadows required
-  for our own implementation of AsyncTask
+  for our own implementation of AsyncTask.
 How To Update:
-- Visit the migration guide to see which APIs changed and need updating.
-  http://robolectric.org/migrating/
-- Read through the build.gradle files and make sure all of the depenencies
-  in our BUILD.gn file are correct.
-- Update file names in our BUILD.gn file.
-- Update DEPS to new Robolectric revision.
-- Update local/robolectric/src/main/resources/robolectric-version.properties
-  to the new Robolectric version.
-- Update CIPD package to include new Robolectric Android libraries.
+- Add new version and URL to 3pp/fetch.py for the android_all jar. Keep the old
+  versions for backwards compatibility.
+- Add new version as a prebuilt target to third_party/robolectric BUILD.gn
+- Add that new target to the robolectric_all_java group in the
+  third_party/android_deps/BUILD.gn file.

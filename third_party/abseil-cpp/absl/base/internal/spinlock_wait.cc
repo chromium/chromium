@@ -32,6 +32,7 @@
 #endif
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace base_internal {
 
 // See spinlock_wait.h for spec.
@@ -76,4 +77,5 @@ int SpinLockSuggestedDelayNS(int loop) {
 }
 
 }  // namespace base_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

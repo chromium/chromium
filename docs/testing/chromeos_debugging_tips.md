@@ -18,24 +18,93 @@ instrumental to the Chrome OS system, it's equally important that we run some
 of these integration tests on Chrome's waterfalls. If you find one of these
 tests failing (likely in the `chrome_all_tast_tests` step), you can:
 
-- **Inspect the failed test's log snippet**: There should be a log link for
-each failed test with failure information. eg: For this [failed build], opening
-the [platform.Histograms] log link contains stack traces and error messages.
+- **Inspect the failed test's log snippet**: There should be a log snippet for
+each failed test in the `Test Results` tab in the build UI. eg: For this
+[failed build], clicking on the `policy.IncognitoModeAvailability` expands to
+include stack traces and error messages.
 
 - **View browser & system logs**: A common cause of failure on Chrome's builders
 are browser crashes. When this happens, each test's log snippets will simply
 contain warnings like "[Chrome probably crashed]". To debug these crashes,
-navigate to the test's Isolated output, most likely listed in the build under
-the test step's [shard #0 isolated out] link. From there, view the various
-`log/chrome/...` or `log/ui/...` text files and you should find some with
-browser [crashes and stack traces].
+expand the list of attached artifacts for the test by clicking the `Artifacts`
+link under the failed test in the `Test Results` tab. There you'll find an
+extended log for the test under `log.txt`. Additionally, you can find system
+logs included in that list. To find a system log for a particular test, match
+the timestamps printed in the test's log with the timestamps present in the
+system log filename. For instance, the previous `example.ChromeFixture` failure
+matches the [chrome/chrome_20210920-051805] browser log, which contains the
+culprit Chrome crash and backtrace.
 
-To disable a test on Chrome's builders, the preferred method is to add the
-`informational` attribute to the test's definition (see [Tast attributes] for
-more info). Note that this requires a full Chrome OS checkout. If that's not an
-option, or if it needs to be disabled ASAP, you can add it to the list of
+- **Symbolizing a browser crash dump**: See [below](#symbolizing-a-crash-dump).
+
+### Disabling a test
+
+There a couple ways to disable a test on Chrome's builders:
+- **With a full CrOS checkout**: If you have a full CrOS checkout, you can add
+the `informational` [attribute] to the test's definition. (You may be able to
+bypass the need for a full CrOS checkout by using the `Edit code` button in
+codesearch UI, but this flow is unverified.) This can take time (ie: many hours)
+to land and propagate onto Chrome's builders. So if you need the test disabled
+ASAP, consult the next option.
+- **With only a Chromium checkout**: You can also add the test to the list of
 disabled tests for the step's GN target. For example, to disable a test in the
-`chrome_all_tast_tests` step, add it to [this list].
+`chrome_all_tast_tests` step, add it to [this list]. **Note**: If the test is
+failing consistently, and you only disable it here, it will likely start to fail
+in the next [Chrome uprev] on CrOS's builders, which can lead to further
+problems down the road. So please make sure you pursue the first option as well
+in that case.
+
+In both cases, please make sure a bug is filed for the test, and route it to
+the appropriate owners.
+
+### Symbolizing a crash dump
+
+If a test fails due to a browser crash, there should be a Minidump crash report
+present in the test's isolated out under the prefix `crashes/chrome...`. These
+reports aren't very useful by themselves, but with a few commands you can
+symbolize the report locally to get insight into what conditions caused Chrome
+to crash.
+
+To do so, first download both the task's input isolate (this provides the
+symbols and the symbolizing tools) as well as the task's output isolate (this
+provides the crash reports). See the commands listed under the *Reproducing the
+task locally* section on the task page. For example, to download them for
+[this task](https://chrome-swarming.appspot.com/task?id=506a01dd12c8a610), `cd`
+into a tmp directory and run:
+```
+$CHROME_DIR/tools/luci-go/isolated download -I https://chrome-isolated.appspot.com --namespace default-gzip -isolated 64919fee8b02d826df2401544a9dc0f7dfa2172d -output-dir input
+$CHROME_DIR/tools/luci-go/swarming collect -S chrome-swarming.appspot.com -output-dir output 506a01dd12c8a610
+```
+
+Once both isolates have been fetched you must then generate the breakpad
+symbols by pointing the `generate_breakpad_symbols.py` script to the input's
+build dir:
+```
+vpython input/components/crash/content/tools/generate_breakpad_symbols.py --symbols-dir symbols --build-dir input/out/Release/ --binary input/out/Release/chrome
+```
+
+That will generate the symbols in the `symbols/` dir. Then to symbolize a Chrome
+crash report present in the task's output (such as
+`chrome.20201211.041043.31022.5747.dmp`):
+```
+./input/out/Release/minidump_stackwalk output/55e4ed786757bf11/crashes/chrome.20201211.041043.31022.5747.dmp symbols/
+```
+
+
+### Running a test locally
+
+To run a Tast test the same way it's ran on Chrome's builders:
+
+- Decide which Chrome OS device type or VM to test on.
+
+- Build Chrome via the [Simple Chrome] workflow for that board.
+
+- Deploy your Chrome to the device via the [deploy_chrome.py] tool.
+
+- Finally, run the Tast test on the device via the `cros_run_test` tool under
+  `//third_party/chromite/bin/`. eg:
+  `cros_run_test --device $DEVICE_IP --tast login.Chrome`. See [here] for more
+  info on cros_run_test.
 
 ## Telemetry
 
@@ -50,12 +119,14 @@ disabled tests for the step's GN target. For example, to disable a test in the
 >TODO: Add instructions for rerunning these tests locally.
 
 
-[linux-chromeos]: https://chromium.googlesource.com/chromium/src/+/master/docs/chromeos_build_instructions.md
+[linux-chromeos]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/chromeos_build_instructions.md
 [Tast]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/README.md
-[failed build]: https://ci.chromium.org/p/chromium/builders/ci/chromeos-kevin-rel/14102
-[platform.Histograms]: https://logs.chromium.org/logs/chromium/buildbucket/cr-buildbucket.appspot.com/8904949911599004400/+/steps/chrome_all_tast_tests_on_ChromeOS/0/logs/Deterministic_failure:_platform.Histograms__status_FAILURE_/0
-[Chrome probably crashed]: https://logs.chromium.org/logs/chromium/buildbucket/cr-buildbucket.appspot.com/8905974915785988832/+/steps/chrome_all_tast_tests__retry_shards_with_patch__on_ChromeOS/0/logs/Deterministic_failure:_ui.ChromeLogin__status_FAILURE_/0
-[shard #0 isolated out]: https://isolateserver.appspot.com/browse?namespace=default-gzip&hash=fd1f6d76b076f07cc98fa7b2e0c0097f35c51cd0
-[crashes and stack traces]: https://isolateserver.appspot.com/browse?namespace=default-gzip&digest=993d58ff48bb08071d951bd8e103fa5a3c03efb1&as=chrome_20190805-044653
-[Tast attributes]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
-[this list]: https://codesearch.chromium.org/chromium/src/chromeos/BUILD.gn?rcl=7b0393a9091fd02edc9ae773739124f7be5a0782&l=242
+[failed build]: https://ci.chromium.org/ui/p/chromium/builders/ci/chromeos-kevin-rel/37300/test-results
+[Chrome probably crashed]: https://luci-milo.appspot.com/ui/inv/build-8835572137562508161/test-results?q=example.ChromeFixture
+[chrome/chrome_20210920-051805]: https://luci-milo.appspot.com/ui/artifact/raw/invocations/task-chromium-swarm.appspot.com-561bed66572a9411/artifacts/chrome%2Fchrome_20210920-051805
+[attribute]: https://chromium.googlesource.com/chromiumos/platform/tast/+/HEAD/docs/test_attributes.md
+[this list]: https://codesearch.chromium.org/chromium/src/chromeos/tast_control.gni
+[Chrome uprev]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/chrome_commit_pipeline.md#the-chrome-os-commit-pipeline-for-chrome-changes
+[Simple Chrome]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md
+[deploy_chrome.py]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/simple_chrome_workflow.md#Deploying-Chrome-to-the-device
+[here]: https://chromium.googlesource.com/chromiumos/docs/+/HEAD/cros_vm.md#in-simple-chrome

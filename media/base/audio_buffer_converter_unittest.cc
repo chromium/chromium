@@ -28,7 +28,7 @@ static scoped_refptr<AudioBuffer> MakeTestBuffer(int sample_rate,
                                                  int frames) {
   return MakeAudioBuffer<uint8_t>(kSampleFormatU8, channel_layout,
                                   channel_count, sample_rate, 0, 1, frames,
-                                  base::TimeDelta::FromSeconds(0));
+                                  base::Seconds(0));
 }
 
 class AudioBufferConverterTest : public ::testing::Test {
@@ -41,7 +41,8 @@ class AudioBufferConverterTest : public ::testing::Test {
                        kOutChannelLayout,
                        kOutSampleRate,
                        kOutFrameSize) {
-    audio_buffer_converter_.reset(new AudioBufferConverter(output_params_));
+    audio_buffer_converter_ =
+        std::make_unique<AudioBufferConverter>(output_params_);
   }
 
   void Reset() {
@@ -209,7 +210,8 @@ TEST_F(AudioBufferConverterTest, DiscreteChannelLayout) {
       AudioParameters(AudioParameters::AUDIO_PCM_LOW_LATENCY,
                       CHANNEL_LAYOUT_DISCRETE, kOutSampleRate, 512);
   output_params_.set_channels_for_discrete(2);
-  audio_buffer_converter_.reset(new AudioBufferConverter(output_params_));
+  audio_buffer_converter_ =
+      std::make_unique<AudioBufferConverter>(output_params_);
   AddInput(MakeTestBuffer(kOutSampleRate, CHANNEL_LAYOUT_STEREO, 2, 512));
   ConsumeAllOutput();
 }
@@ -220,7 +222,8 @@ TEST_F(AudioBufferConverterTest, LargeBuffersResampling) {
                                    kOutSampleRate,
                                    2048);
 
-  audio_buffer_converter_.reset(new AudioBufferConverter(output_params_));
+  audio_buffer_converter_ =
+      std::make_unique<AudioBufferConverter>(output_params_);
   const int kInputSampleRate = 48000;
   const int kInputFrameSize = 8192;
   ASSERT_NE(kInputSampleRate, kOutSampleRate);

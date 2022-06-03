@@ -8,8 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/wifi/network_properties.h"
 #include "components/wifi/wifi_service.h"
 
@@ -20,6 +19,10 @@ namespace wifi {
 class FakeWiFiService : public WiFiService {
  public:
   FakeWiFiService();
+
+  FakeWiFiService(const FakeWiFiService&) = delete;
+  FakeWiFiService& operator=(const FakeWiFiService&) = delete;
+
   ~FakeWiFiService() override;
 
   void Initialize(
@@ -75,8 +78,6 @@ class FakeWiFiService : public WiFiService {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   NetworkGuidListCallback networks_changed_observer_;
   NetworkGuidListCallback network_list_changed_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeWiFiService);
 };
 
 }  // namespace wifi

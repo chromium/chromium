@@ -25,8 +25,9 @@ void WorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
   blink::WorkerReportingProxy& worker_reporting_proxy =
       worker_global_scope->ReportingProxy();
 
-  // Step 12. "If the algorithm asynchronously completes with null, then:"
-  if (!module_script) {
+  // Step 12. "If the algorithm asynchronously completes with null or with
+  // script whose error to rethrow is non-null, then:"
+  if (!module_script || module_script->HasErrorToRethrow()) {
     // Step 12.1. "Queue a task to fire an event named error at worker."
     // DidFailToFetchModuleScript() will asynchronously fire the event.
     worker_reporting_proxy.DidFailToFetchModuleScript();
@@ -47,10 +48,10 @@ void WorkerModuleTreeClient::NotifyModuleTreeLoadFinished(
   // asynchronous completion, with script being the asynchronous completion
   // value."
   worker_global_scope->WorkerScriptFetchFinished(
-      *module_script, base::nullopt /* v8_inspector::V8StackTraceId */);
+      *module_script, absl::nullopt /* v8_inspector::V8StackTraceId */);
 }
 
-void WorkerModuleTreeClient::Trace(blink::Visitor* visitor) {
+void WorkerModuleTreeClient::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   ModuleTreeClient::Trace(visitor);
 }

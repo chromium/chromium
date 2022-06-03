@@ -14,13 +14,12 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -29,15 +28,12 @@
 #include "components/dom_distiller/core/fake_distiller_page.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "third_party/dom_distiller_js/dom_distiller_json_converter.h"
 
-using std::string;
-using std::vector;
 using ::testing::_;
 using ::testing::Invoke;
 using ::testing::Return;
@@ -51,6 +47,7 @@ namespace {
 const char kTitle[] = "Title";
 const char kContent[] = "Content";
 const char kURL[] = "http://a.com/";
+const char kOtherURL[] = "http://b.com/";
 const size_t kTotalGoodImages = 2;
 const size_t kTotalImages = 3;
 // Good images need to be in the front.
@@ -59,25 +56,25 @@ const char* kImageURLs[kTotalImages] = {
 const char* kImageData[kTotalImages] = {"abcde", "12345", "VWXYZ"};
 const char kDebugLog[] = "Debug Log";
 
-const string GetImageName(int page_num, int image_num) {
+const std::string GetImageName(int page_num, int image_num) {
   return base::NumberToString(page_num) + "_" + base::NumberToString(image_num);
 }
 
-std::unique_ptr<base::Value> CreateDistilledValueReturnedFromJS(
-    const string& title,
-    const string& content,
-    const vector<int>& image_indices,
-    const string& next_page_url,
-    const string& prev_page_url = "") {
+base::Value CreateDistilledValueReturnedFromJS(
+    const std::string& title,
+    const std::string& content,
+    const std::vector<int>& image_indices,
+    const std::string& next_page_url,
+    const std::string& prev_page_url = "") {
   DomDistillerResult result;
   result.set_title(title);
   result.mutable_distilled_content()->set_html(content);
   result.mutable_pagination_info()->set_next_page(next_page_url);
   result.mutable_pagination_info()->set_prev_page(prev_page_url);
 
-  for (size_t i = 0; i < image_indices.size(); ++i) {
+  for (int image_indice : image_indices) {
     DomDistillerResult_ContentImage* curr_image = result.add_content_images();
-    curr_image->set_url(kImageURLs[image_indices[i]]);
+    curr_image->set_url(kImageURLs[image_indice]);
   }
 
   return dom_distiller::proto::json::DomDistillerResult::WriteToValue(result);
@@ -85,10 +82,10 @@ std::unique_ptr<base::Value> CreateDistilledValueReturnedFromJS(
 
 // Return the sequence in which Distiller will distill pages.
 // Note: ignores any delays due to fetching images etc.
-vector<int> GetPagesInSequence(int start_page_num, int num_pages) {
+std::vector<int> GetPagesInSequence(int start_page_num, int num_pages) {
   // Distiller prefers distilling past pages first. E.g. when distillation
   // starts on page 2 then pages are distilled in the order: 2, 1, 0, 3, 4.
-  vector<int> page_nums;
+  std::vector<int> page_nums;
   for (int page = start_page_num; page >= 0; --page)
     page_nums.push_back(page);
   for (int page = start_page_num + 1; page < num_pages; ++page)
@@ -97,25 +94,25 @@ vector<int> GetPagesInSequence(int start_page_num, int num_pages) {
 }
 
 struct MultipageDistillerData {
- public:
-  MultipageDistillerData() {}
-  ~MultipageDistillerData() {}
-  vector<string> page_urls;
-  vector<string> content;
-  vector<vector<int>> image_ids;
+  MultipageDistillerData() = default;
+  ~MultipageDistillerData() = default;
+  std::vector<std::string> page_urls;
+  std::vector<std::string> content;
+  std::vector<std::vector<int>> image_ids;
   // The Javascript values returned by mock distiller.
   std::vector<std::unique_ptr<base::Value>> distilled_values;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MultipageDistillerData);
+  MultipageDistillerData(const MultipageDistillerData&) = delete;
+  MultipageDistillerData& operator=(const MultipageDistillerData&) = delete;
 };
 
 void VerifyIncrementalUpdatesMatch(
     const MultipageDistillerData* distiller_data,
     int num_pages_in_article,
-    const vector<dom_distiller::ArticleDistillationUpdate>& incremental_updates,
+    const std::vector<dom_distiller::ArticleDistillationUpdate>&
+        incremental_updates,
     int start_page_num) {
-  vector<int> page_seq =
+  std::vector<int> page_seq =
       GetPagesInSequence(start_page_num, num_pages_in_article);
   // Updates should contain a list of pages. Pages in an update should be in
   // the correct ascending page order regardless of |start_page_num|.
@@ -130,7 +127,7 @@ void VerifyIncrementalUpdatesMatch(
         incremental_updates[update_count];
     EXPECT_EQ(update_count + 1, update.GetPagesSize());
 
-    vector<int> expected_page_nums_in_update(
+    std::vector<int> expected_page_nums_in_update(
         page_seq.begin(), page_seq.begin() + update.GetPagesSize());
     std::sort(expected_page_nums_in_update.begin(),
               expected_page_nums_in_update.end());
@@ -152,36 +149,37 @@ void VerifyIncrementalUpdatesMatch(
   }
 }
 
-string GenerateNextPageUrl(const std::string& url_prefix,
-                           size_t page_num,
-                           size_t pages_size) {
+std::string GenerateNextPageUrl(const std::string& url_prefix,
+                                size_t page_num,
+                                size_t pages_size) {
   return page_num + 1 < pages_size
              ? url_prefix + base::NumberToString(page_num + 1)
              : "";
 }
 
-string GeneratePrevPageUrl(const std::string& url_prefix, size_t page_num) {
+std::string GeneratePrevPageUrl(const std::string& url_prefix,
+                                size_t page_num) {
   return page_num > 0 ? url_prefix + base::NumberToString(page_num - 1) : "";
 }
 
 std::unique_ptr<MultipageDistillerData> CreateMultipageDistillerDataWithImages(
-    const vector<vector<int>>& image_ids) {
+    const std::vector<std::vector<int>>& image_ids) {
   size_t pages_size = image_ids.size();
   std::unique_ptr<MultipageDistillerData> result(new MultipageDistillerData());
-  string url_prefix = kURL;
+  std::string url_prefix = kURL;
   result->image_ids = image_ids;
   for (size_t page_num = 0; page_num < pages_size; ++page_num) {
     result->page_urls.push_back(url_prefix + base::NumberToString(page_num));
     result->content.push_back("Content for page:" +
                               base::NumberToString(page_num));
-    string next_page_url =
+    std::string next_page_url =
         GenerateNextPageUrl(url_prefix, page_num, pages_size);
-    string prev_page_url = GeneratePrevPageUrl(url_prefix, page_num);
-    std::unique_ptr<base::Value> distilled_value =
-        CreateDistilledValueReturnedFromJS(kTitle, result->content[page_num],
-                                           image_ids[page_num], next_page_url,
-                                           prev_page_url);
-    result->distilled_values.push_back(std::move(distilled_value));
+    std::string prev_page_url = GeneratePrevPageUrl(url_prefix, page_num);
+    base::Value distilled_value = CreateDistilledValueReturnedFromJS(
+        kTitle, result->content[page_num], image_ids[page_num], next_page_url,
+        prev_page_url);
+    result->distilled_values.push_back(
+        std::make_unique<base::Value>(std::move(distilled_value)));
   }
   return result;
 }
@@ -189,26 +187,29 @@ std::unique_ptr<MultipageDistillerData> CreateMultipageDistillerDataWithImages(
 std::unique_ptr<MultipageDistillerData>
 CreateMultipageDistillerDataWithoutImages(size_t pages_size) {
   return CreateMultipageDistillerDataWithImages(
-      vector<vector<int>>(pages_size));
+      std::vector<std::vector<int>>(pages_size));
 }
 
 void VerifyArticleProtoMatchesMultipageData(
     const dom_distiller::DistilledArticleProto* article_proto,
     const MultipageDistillerData* distiller_data,
     size_t distilled_pages_size,
-    size_t total_pages_size) {
+    size_t total_pages_size,
+    size_t start_page_offset = 0) {
   ASSERT_EQ(distilled_pages_size,
             static_cast<size_t>(article_proto->pages_size()));
   EXPECT_EQ(kTitle, article_proto->title());
   std::string url_prefix = kURL;
-  for (size_t page_num = 0; page_num < distilled_pages_size; ++page_num) {
+  for (size_t page_num = start_page_offset; page_num < distilled_pages_size;
+       ++page_num) {
     const dom_distiller::DistilledPageProto& page =
-        article_proto->pages(page_num);
+        article_proto->pages(page_num - start_page_offset);
     EXPECT_EQ(distiller_data->content[page_num], page.html());
     EXPECT_EQ(distiller_data->page_urls[page_num], page.url());
     EXPECT_EQ(distiller_data->image_ids[page_num].size(),
               static_cast<size_t>(page.image_size()));
-    const vector<int>& image_ids_for_page = distiller_data->image_ids[page_num];
+    const std::vector<int>& image_ids_for_page =
+        distiller_data->image_ids[page_num];
     for (size_t img_num = 0; img_num < image_ids_for_page.size(); ++img_num) {
       if (dom_distiller::DistillerImpl::DoesFetchImages()) {
         EXPECT_EQ(kImageData[image_ids_for_page[img_num]],
@@ -219,10 +220,16 @@ void VerifyArticleProtoMatchesMultipageData(
       EXPECT_EQ(GetImageName(page_num + 1, img_num),
                 page.image(img_num).name());
     }
+
     std::string expected_next_page_url =
         GenerateNextPageUrl(url_prefix, page_num, total_pages_size);
-    std::string expected_prev_page_url =
-        GeneratePrevPageUrl(url_prefix, page_num);
+
+    std::string expected_prev_page_url;
+
+    if (page_num > start_page_offset) {
+      expected_prev_page_url = GeneratePrevPageUrl(url_prefix, page_num);
+    }
+
     EXPECT_EQ(expected_next_page_url, page.pagination_info().next_page());
     EXPECT_EQ(expected_prev_page_url, page.pagination_info().prev_page());
     EXPECT_FALSE(page.pagination_info().has_canonical_page());
@@ -240,30 +247,29 @@ class TestDistillerURLFetcher : public DistillerURLFetcher {
  public:
   explicit TestDistillerURLFetcher(bool delay_fetch)
       : DistillerURLFetcher(nullptr), delay_fetch_(delay_fetch) {
-    responses_[kImageURLs[0]] = string(kImageData[0]);
-    responses_[kImageURLs[1]] = string(kImageData[1]);
+    responses_[kImageURLs[0]] = std::string(kImageData[0]);
+    responses_[kImageURLs[1]] = std::string(kImageData[1]);
   }
 
-  void FetchURL(const string& url,
-                const URLFetcherCallback& callback) override {
+  void FetchURL(const std::string& url, URLFetcherCallback callback) override {
     ASSERT_FALSE(callback.is_null());
     url_ = url;
-    callback_ = callback;
+    callback_ = std::move(callback);
     if (!delay_fetch_) {
       PostCallbackTask();
     }
   }
 
   void PostCallbackTask() {
-    ASSERT_TRUE(base::MessageLoopCurrent::Get());
+    ASSERT_TRUE(base::CurrentThread::Get());
     ASSERT_FALSE(callback_.is_null());
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback_, responses_[url_]));
+        FROM_HERE, base::BindOnce(std::move(callback_), responses_[url_]));
   }
 
  private:
-  std::map<string, string> responses_;
-  string url_;
+  std::map<std::string, std::string> responses_;
+  std::string url_;
   URLFetcherCallback callback_;
   bool delay_fetch_;
 };
@@ -272,7 +278,7 @@ class TestDistillerURLFetcherFactory : public DistillerURLFetcherFactory {
  public:
   TestDistillerURLFetcherFactory() : DistillerURLFetcherFactory(nullptr) {}
 
-  ~TestDistillerURLFetcherFactory() override {}
+  ~TestDistillerURLFetcherFactory() override = default;
   DistillerURLFetcher* CreateDistillerURLFetcher() const override {
     return new TestDistillerURLFetcher(false);
   }
@@ -281,14 +287,14 @@ class TestDistillerURLFetcherFactory : public DistillerURLFetcherFactory {
 class MockDistillerURLFetcherFactory : public DistillerURLFetcherFactory {
  public:
   MockDistillerURLFetcherFactory() : DistillerURLFetcherFactory(nullptr) {}
-  ~MockDistillerURLFetcherFactory() override {}
+  ~MockDistillerURLFetcherFactory() override = default;
 
   MOCK_CONST_METHOD0(CreateDistillerURLFetcher, DistillerURLFetcher*());
 };
 
 class DistillerTest : public testing::Test {
  public:
-  ~DistillerTest() override {}
+  ~DistillerTest() override = default;
 
   void OnDistillArticleDone(std::unique_ptr<DistilledArticleProto> proto) {
     article_proto_ = std::move(proto);
@@ -300,11 +306,12 @@ class DistillerTest : public testing::Test {
 
   void DistillPage(const std::string& url,
                    std::unique_ptr<DistillerPage> distiller_page) {
-    distiller_->DistillPage(GURL(url), std::move(distiller_page),
-                            base::Bind(&DistillerTest::OnDistillArticleDone,
-                                       base::Unretained(this)),
-                            base::Bind(&DistillerTest::OnDistillArticleUpdate,
-                                       base::Unretained(this)));
+    distiller_->DistillPage(
+        GURL(url), std::move(distiller_page),
+        base::BindOnce(&DistillerTest::OnDistillArticleDone,
+                       base::Unretained(this)),
+        base::BindRepeating(&DistillerTest::OnDistillArticleUpdate,
+                            base::Unretained(this)));
   }
 
  protected:
@@ -339,16 +346,13 @@ std::unique_ptr<DistillerPage> CreateMockDistillerPageWithPendingJSCallback(
   return std::unique_ptr<DistillerPage>(distiller_page);
 }
 
-std::unique_ptr<DistillerPage> CreateMockDistillerPages(
+std::unique_ptr<DistillerPage> CreateMockDistillerPagesWithSequence(
     MultipageDistillerData* distiller_data,
-    size_t pages_size,
-    int start_page_num) {
+    const std::vector<int>& page_num_sequence) {
   MockDistillerPage* distiller_page = new MockDistillerPage();
   {
     testing::InSequence s;
-    vector<int> page_nums = GetPagesInSequence(start_page_num, pages_size);
-    for (size_t page_num = 0; page_num < pages_size; ++page_num) {
-      int page = page_nums[page_num];
+    for (int page : page_num_sequence) {
       GURL url = GURL(distiller_data->page_urls[page]);
       EXPECT_CALL(*distiller_page, DistillPageImpl(url, _))
           .WillOnce(DistillerPageOnDistillationDone(
@@ -359,12 +363,20 @@ std::unique_ptr<DistillerPage> CreateMockDistillerPages(
   return std::unique_ptr<DistillerPage>(distiller_page);
 }
 
+std::unique_ptr<DistillerPage> CreateMockDistillerPages(
+    MultipageDistillerData* distiller_data,
+    size_t pages_size,
+    int start_page_num) {
+  std::vector<int> page_nums = GetPagesInSequence(start_page_num, pages_size);
+  return CreateMockDistillerPagesWithSequence(distiller_data, page_nums);
+}
+
 TEST_F(DistillerTest, DistillPage) {
-  std::unique_ptr<base::Value> result =
-      CreateDistilledValueReturnedFromJS(kTitle, kContent, vector<int>(), "");
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
-  DistillPage(kURL, CreateMockDistillerPage(result.get(), GURL(kURL)));
+  base::Value result = CreateDistilledValueReturnedFromJS(
+      kTitle, kContent, std::vector<int>(), "");
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
+  DistillPage(kURL, CreateMockDistillerPage(&result, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kTitle, article_proto_->title());
   ASSERT_EQ(article_proto_->pages_size(), 1);
@@ -376,11 +388,11 @@ TEST_F(DistillerTest, DistillPage) {
 TEST_F(DistillerTest, DistillPageWithDebugInfo) {
   DomDistillerResult dd_result;
   dd_result.mutable_debug_info()->set_log(kDebugLog);
-  std::unique_ptr<base::Value> result =
+  base::Value result =
       dom_distiller::proto::json::DomDistillerResult::WriteToValue(dd_result);
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
-  DistillPage(kURL, CreateMockDistillerPage(result.get(), GURL(kURL)));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
+  DistillPage(kURL, CreateMockDistillerPage(&result, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
   const DistilledPageProto& first_page = article_proto_->pages(0);
   EXPECT_EQ(kDebugLog, first_page.debug_info().log());
@@ -402,11 +414,11 @@ TEST_F(DistillerTest, DistillPageWithTimingInfo) {
                  6.0);
   SetTimingEntry(dd_result.mutable_timing_info()->add_other_times(), "time1",
                  7.0);
-  std::unique_ptr<base::Value> result =
+  base::Value result =
       dom_distiller::proto::json::DomDistillerResult::WriteToValue(dd_result);
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
-  DistillPage(kURL, CreateMockDistillerPage(result.get(), GURL(kURL)));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
+  DistillPage(kURL, CreateMockDistillerPage(&result, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
   const DistilledPageProto& first_page = article_proto_->pages(0);
   std::map<std::string, double> timings;
@@ -425,15 +437,15 @@ TEST_F(DistillerTest, DistillPageWithTimingInfo) {
 }
 
 TEST_F(DistillerTest, DistillPageWithImages) {
-  vector<int> image_indices;
+  std::vector<int> image_indices;
   image_indices.push_back(0);
   image_indices.push_back(1);
   image_indices.push_back(2);
-  std::unique_ptr<base::Value> result =
+  base::Value result =
       CreateDistilledValueReturnedFromJS(kTitle, kContent, image_indices, "");
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
-  DistillPage(kURL, CreateMockDistillerPage(result.get(), GURL(kURL)));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
+  DistillPage(kURL, CreateMockDistillerPage(&result, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kTitle, article_proto_->title());
   ASSERT_EQ(article_proto_->pages_size(), 1);
@@ -463,12 +475,12 @@ TEST_F(DistillerTest, DistillMultiplePages) {
   const size_t kNumPages = 8;
 
   // Add images.
-  vector<vector<int>> image_ids;
+  std::vector<std::vector<int>> image_ids;
   int next_image_number = 0;
   for (size_t page_num = 0; page_num < kNumPages; ++page_num) {
     // Each page has different number of images.
     size_t tot_images = (page_num + kTotalImages) % (kTotalImages + 1);
-    vector<int> image_indices;
+    std::vector<int> image_indices;
     for (size_t img_num = 0; img_num < tot_images; img_num++) {
       image_indices.push_back(next_image_number);
       next_image_number = (next_image_number + 1) % kTotalGoodImages;
@@ -479,8 +491,8 @@ TEST_F(DistillerTest, DistillMultiplePages) {
   std::unique_ptr<MultipageDistillerData> distiller_data =
       CreateMultipageDistillerDataWithImages(image_ids);
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(distiller_data->page_urls[0],
               CreateMockDistillerPages(distiller_data.get(), kNumPages, 0));
   base::RunLoop().RunUntilIdle();
@@ -491,11 +503,11 @@ TEST_F(DistillerTest, DistillMultiplePages) {
 TEST_F(DistillerTest, DistillLinkLoop) {
   // Create a loop, the next page is same as the current page. This could
   // happen if javascript misparses a next page link.
-  std::unique_ptr<base::Value> result =
-      CreateDistilledValueReturnedFromJS(kTitle, kContent, vector<int>(), kURL);
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
-  DistillPage(kURL, CreateMockDistillerPage(result.get(), GURL(kURL)));
+  base::Value result = CreateDistilledValueReturnedFromJS(
+      kTitle, kContent, std::vector<int>(), kURL);
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
+  DistillPage(kURL, CreateMockDistillerPage(&result, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(kTitle, article_proto_->title());
   EXPECT_EQ(article_proto_->pages_size(), 1);
@@ -509,16 +521,16 @@ TEST_F(DistillerTest, CheckMaxPageLimitExtraPage) {
   // Note: Next page url of the last page of article is set. So distiller will
   // try to do kMaxPagesInArticle + 1 calls if the max article limit does not
   // work.
-  std::unique_ptr<base::Value> last_page_data =
-      CreateDistilledValueReturnedFromJS(
-          kTitle, distiller_data->content[kMaxPagesInArticle - 1],
-          vector<int>(), "", distiller_data->page_urls[kMaxPagesInArticle - 2]);
+  base::Value last_page_data = CreateDistilledValueReturnedFromJS(
+      kTitle, distiller_data->content[kMaxPagesInArticle - 1],
+      std::vector<int>(), "",
+      distiller_data->page_urls[kMaxPagesInArticle - 2]);
 
-  distiller_data->distilled_values.pop_back();
-  distiller_data->distilled_values.push_back(std::move(last_page_data));
+  distiller_data->distilled_values.back() =
+      std::make_unique<base::Value>(std::move(last_page_data));
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
 
   distiller_->SetMaxNumPagesInArticle(kMaxPagesInArticle);
 
@@ -536,8 +548,8 @@ TEST_F(DistillerTest, CheckMaxPageLimitExactLimit) {
   std::unique_ptr<MultipageDistillerData> distiller_data =
       CreateMultipageDistillerDataWithoutImages(kMaxPagesInArticle);
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
 
   // Check if distilling an article with exactly the page limit works.
   distiller_->SetMaxNumPagesInArticle(kMaxPagesInArticle);
@@ -553,10 +565,10 @@ TEST_F(DistillerTest, CheckMaxPageLimitExactLimit) {
 
 TEST_F(DistillerTest, SinglePageDistillationFailure) {
   // To simulate failure return a null value.
-  auto null_value = std::make_unique<base::Value>();
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
-  DistillPage(kURL, CreateMockDistillerPage(null_value.get(), GURL(kURL)));
+  base::Value null_value;
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
+  DistillPage(kURL, CreateMockDistillerPage(&null_value, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ("", article_proto_->title());
   EXPECT_EQ(0, article_proto_->pages_size());
@@ -570,14 +582,11 @@ TEST_F(DistillerTest, MultiplePagesDistillationFailure) {
   // The page number of the failed page.
   size_t failed_page_num = 3;
   // reset distilled data of the failed page.
-  distiller_data->distilled_values.erase(
-      distiller_data->distilled_values.begin() + failed_page_num);
-  distiller_data->distilled_values.insert(
-      distiller_data->distilled_values.begin() + failed_page_num,
-      std::make_unique<base::Value>());
+  distiller_data->distilled_values[failed_page_num] =
+      std::make_unique<base::Value>();
   // Expect only calls till the failed page number.
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(
       distiller_data->page_urls[0],
       CreateMockDistillerPages(distiller_data.get(), failed_page_num + 1, 0));
@@ -595,20 +604,16 @@ TEST_F(DistillerTest, DistillMultiplePagesFirstEmpty) {
   // The first page has no content.
   const size_t empty_page_num = 0;
   distiller_data->content[empty_page_num] = "";
-  std::unique_ptr<base::Value> distilled_value =
-      CreateDistilledValueReturnedFromJS(
-          kTitle, "", vector<int>(),
-          GenerateNextPageUrl(kURL, empty_page_num, kNumPages),
-          GeneratePrevPageUrl(kURL, empty_page_num));
+  base::Value distilled_value = CreateDistilledValueReturnedFromJS(
+      kTitle, "", std::vector<int>(),
+      GenerateNextPageUrl(kURL, empty_page_num, kNumPages),
+      GeneratePrevPageUrl(kURL, empty_page_num));
   // Reset distilled data of the first page.
-  distiller_data->distilled_values.erase(
-      distiller_data->distilled_values.begin() + empty_page_num);
-  distiller_data->distilled_values.insert(
-      distiller_data->distilled_values.begin() + empty_page_num,
-      std::move(distilled_value));
+  distiller_data->distilled_values[empty_page_num] =
+      std::make_unique<base::Value>(std::move(distilled_value));
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(distiller_data->page_urls[0],
               CreateMockDistillerPages(distiller_data.get(), 1, 0));
   base::RunLoop().RunUntilIdle();
@@ -626,26 +631,82 @@ TEST_F(DistillerTest, DistillMultiplePagesSecondEmpty) {
   // The second page has no content.
   const size_t empty_page_num = 1;
   distiller_data->content[empty_page_num] = "";
-  std::unique_ptr<base::Value> distilled_value =
-      CreateDistilledValueReturnedFromJS(
-          kTitle, "", vector<int>(),
-          GenerateNextPageUrl(kURL, empty_page_num, kNumPages),
-          GeneratePrevPageUrl(kURL, empty_page_num));
+  base::Value distilled_value = CreateDistilledValueReturnedFromJS(
+      kTitle, "", std::vector<int>(),
+      GenerateNextPageUrl(kURL, empty_page_num, kNumPages),
+      GeneratePrevPageUrl(kURL, empty_page_num));
   // Reset distilled data of the second page.
-  distiller_data->distilled_values.erase(
-      distiller_data->distilled_values.begin() + empty_page_num);
-  distiller_data->distilled_values.insert(
-      distiller_data->distilled_values.begin() + empty_page_num,
-      std::move(distilled_value));
+  distiller_data->distilled_values[empty_page_num] =
+      std::make_unique<base::Value>(std::move(distilled_value));
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(distiller_data->page_urls[0],
               CreateMockDistillerPages(distiller_data.get(), kNumPages, 0));
   base::RunLoop().RunUntilIdle();
 
   VerifyArticleProtoMatchesMultipageData(
       article_proto_.get(), distiller_data.get(), kNumPages, kNumPages);
+}
+
+TEST_F(DistillerTest, DistillMultiplePagesNextDifferingOrigin) {
+  const size_t kNumPages = 8;
+  const size_t kActualPages = 4;
+  std::unique_ptr<MultipageDistillerData> distiller_data =
+      CreateMultipageDistillerDataWithoutImages(kNumPages);
+
+  // The next page came from a different origin. All pages after
+  // it will be dropped as well.
+  const size_t target_page_num = 3;
+  distiller_data->content[target_page_num] = kContent;
+  base::Value distilled_value = CreateDistilledValueReturnedFromJS(
+      kTitle, kContent, std::vector<int>(),
+      GenerateNextPageUrl(kOtherURL, target_page_num, kNumPages),
+      GeneratePrevPageUrl(kURL, target_page_num));
+  // Reset distilled data of the second page.
+  distiller_data->distilled_values[target_page_num] =
+      std::make_unique<base::Value>(std::move(distilled_value));
+
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
+
+  DistillPage(distiller_data->page_urls[0],
+              CreateMockDistillerPages(distiller_data.get(), kActualPages, 0));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyArticleProtoMatchesMultipageData(
+      article_proto_.get(), distiller_data.get(), kActualPages, kActualPages);
+}
+
+TEST_F(DistillerTest, DistillMultiplePagesPrevDifferingOrigin) {
+  const size_t kNumPages = 8;
+  const size_t kActualPages = 6;
+  std::vector<int> page_num_seq{3, 2, 4, 5, 6, 7};
+  std::unique_ptr<MultipageDistillerData> distiller_data =
+      CreateMultipageDistillerDataWithoutImages(kNumPages);
+
+  // The prev page came from a different origin. All pages before
+  // it will be dropped.
+  const size_t target_page_num = 2;
+  distiller_data->content[target_page_num] = kContent;
+  base::Value distilled_value = CreateDistilledValueReturnedFromJS(
+      kTitle, kContent, std::vector<int>(),
+      GenerateNextPageUrl(kURL, target_page_num, kNumPages),
+      GeneratePrevPageUrl(kOtherURL, target_page_num));
+  // Reset distilled data of the second page.
+  distiller_data->distilled_values[target_page_num] =
+      std::make_unique<base::Value>(std::move(distilled_value));
+
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
+  DistillPage(
+      distiller_data->page_urls[target_page_num + 1],
+      CreateMockDistillerPagesWithSequence(distiller_data.get(), page_num_seq));
+  base::RunLoop().RunUntilIdle();
+
+  VerifyArticleProtoMatchesMultipageData(article_proto_.get(),
+                                         distiller_data.get(), kActualPages,
+                                         kNumPages, target_page_num);
 }
 
 TEST_F(DistillerTest, DistillPreviousPage) {
@@ -656,8 +717,8 @@ TEST_F(DistillerTest, DistillPreviousPage) {
   std::unique_ptr<MultipageDistillerData> distiller_data =
       CreateMultipageDistillerDataWithoutImages(kNumPages);
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(distiller_data->page_urls[start_page_num],
               CreateMockDistillerPages(distiller_data.get(), kNumPages,
                                        start_page_num));
@@ -674,8 +735,8 @@ TEST_F(DistillerTest, IncrementalUpdates) {
   std::unique_ptr<MultipageDistillerData> distiller_data =
       CreateMultipageDistillerDataWithoutImages(kNumPages);
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(distiller_data->page_urls[start_page_num],
               CreateMockDistillerPages(distiller_data.get(), kNumPages,
                                        start_page_num));
@@ -694,8 +755,8 @@ TEST_F(DistillerTest, IncrementalUpdatesDoNotDeleteFinalArticle) {
   std::unique_ptr<MultipageDistillerData> distiller_data =
       CreateMultipageDistillerDataWithoutImages(kNumPages);
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(distiller_data->page_urls[start_page_num],
               CreateMockDistillerPages(distiller_data.get(), kNumPages,
                                        start_page_num));
@@ -716,8 +777,8 @@ TEST_F(DistillerTest, DeletingArticleDoesNotInterfereWithUpdates) {
   // The page number of the article on which distillation starts.
   int start_page_num = 3;
 
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(distiller_data->page_urls[start_page_num],
               CreateMockDistillerPages(distiller_data.get(), kNumPages,
                                        start_page_num));
@@ -736,17 +797,17 @@ TEST_F(DistillerTest, CancelWithDelayedImageFetchCallback) {
   if (!DistillerImpl::DoesFetchImages())
     return;
 
-  vector<int> image_indices;
+  std::vector<int> image_indices;
   image_indices.push_back(0);
-  std::unique_ptr<base::Value> distilled_value =
+  base::Value distilled_value =
       CreateDistilledValueReturnedFromJS(kTitle, kContent, image_indices, "");
   TestDistillerURLFetcher* delayed_fetcher = new TestDistillerURLFetcher(true);
   MockDistillerURLFetcherFactory mock_url_fetcher_factory;
   EXPECT_CALL(mock_url_fetcher_factory, CreateDistillerURLFetcher())
       .WillOnce(Return(delayed_fetcher));
-  distiller_.reset(
-      new DistillerImpl(mock_url_fetcher_factory, DomDistillerOptions()));
-  DistillPage(kURL, CreateMockDistillerPage(distilled_value.get(), GURL(kURL)));
+  distiller_ = std::make_unique<DistillerImpl>(mock_url_fetcher_factory,
+                                               DomDistillerOptions());
+  DistillPage(kURL, CreateMockDistillerPage(&distilled_value, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
 
   // Post callback from the url fetcher and then delete the distiller.
@@ -757,18 +818,18 @@ TEST_F(DistillerTest, CancelWithDelayedImageFetchCallback) {
 }
 
 TEST_F(DistillerTest, CancelWithDelayedJSCallback) {
-  std::unique_ptr<base::Value> distilled_value =
-      CreateDistilledValueReturnedFromJS(kTitle, kContent, vector<int>(), "");
+  base::Value distilled_value = CreateDistilledValueReturnedFromJS(
+      kTitle, kContent, std::vector<int>(), "");
   MockDistillerPage* distiller_page = nullptr;
-  distiller_.reset(
-      new DistillerImpl(url_fetcher_factory_, DomDistillerOptions()));
+  distiller_ = std::make_unique<DistillerImpl>(url_fetcher_factory_,
+                                               DomDistillerOptions());
   DistillPage(kURL, CreateMockDistillerPageWithPendingJSCallback(
                         &distiller_page, GURL(kURL)));
   base::RunLoop().RunUntilIdle();
 
   ASSERT_TRUE(distiller_page);
   // Post the task to execute javascript and then delete the distiller.
-  distiller_page->OnDistillationDone(GURL(kURL), distilled_value.get());
+  distiller_page->OnDistillationDone(GURL(kURL), &distilled_value);
   distiller_.reset();
 
   base::RunLoop().RunUntilIdle();

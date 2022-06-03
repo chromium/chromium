@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_AURA_SCREEN_POSITION_CLIENT_H_
-#define UI_AURA_SCREEN_POSITION_CLIENT_H_
+#ifndef UI_AURA_CLIENT_SCREEN_POSITION_CLIENT_H_
+#define UI_AURA_CLIENT_SCREEN_POSITION_CLIENT_H_
 
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window.h"
@@ -45,6 +45,18 @@ class AURA_EXPORT ScreenPositionClient {
   virtual void SetBounds(Window* window,
                          const gfx::Rect& bounds,
                          const display::Display& display) = 0;
+  // Converts |point| from |window|'s coordinate space into screen coordinate
+  // space. Ignores any transforms that may be applied on |window| or its window
+  // hieraichy.
+  void ConvertPointToScreenIgnoringTransforms(const Window* window,
+                                              gfx::Point* point);
+  void ConvertPointToRootWindowIgnoringTransforms(const Window* window,
+                                                  gfx::Point* point);
+
+ protected:
+  // Returns the origin of the host platform-window in system DIP coordinates.
+  virtual gfx::Point GetRootWindowOriginInScreen(
+      const aura::Window* root_window) = 0;
 };
 
 // Sets/Gets the activation client on the Window.
@@ -56,4 +68,4 @@ AURA_EXPORT ScreenPositionClient* GetScreenPositionClient(
 }  // namespace client
 }  // namespace aura
 
-#endif  // UI_AURA_SCREEN_POSITION_CLIENT_H_
+#endif  // UI_AURA_CLIENT_SCREEN_POSITION_CLIENT_H_

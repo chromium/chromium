@@ -8,7 +8,7 @@
 
 #include "chrome/browser/lifetime/application_lifetime.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "chrome/browser/chrome_browser_application_mac.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "ui/views/widget/widget.h"

@@ -4,7 +4,7 @@
 
 #include "device/vr/android/gvr/gvr_delegate_provider_factory.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace device {
 

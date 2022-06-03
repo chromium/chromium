@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_ANIMATION_PLAYBACK_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_ANIMATION_PLAYBACK_EVENT_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/animation_playback_event_init.h"
 
 namespace blink {
+
+class AnimationPlaybackEventInit;
 
 class AnimationPlaybackEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -22,22 +25,22 @@ class AnimationPlaybackEvent final : public Event {
   }
 
   AnimationPlaybackEvent(const AtomicString& type,
-                         double current_time,
-                         double timeline_time);
+                         V8CSSNumberish* current_time,
+                         V8CSSNumberish* timeline_time);
   AnimationPlaybackEvent(const AtomicString&,
                          const AnimationPlaybackEventInit*);
   ~AnimationPlaybackEvent() override;
 
-  double currentTime(bool& is_null) const;
-  double timelineTime(bool& is_null) const;
+  V8CSSNumberish* currentTime() const { return current_time_; }
+  V8CSSNumberish* timelineTime() const { return timeline_time_; }
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  base::Optional<double> current_time_;
-  base::Optional<double> timeline_time_;
+  Member<V8CSSNumberish> current_time_;
+  Member<V8CSSNumberish> timeline_time_;
 };
 
 }  // namespace blink

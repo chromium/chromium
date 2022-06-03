@@ -1,0 +1,70 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("browser_agent") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  public = [ "infobar_overlay_browser_agent.h" ]
+  sources = [ "infobar_overlay_browser_agent.mm" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/overlays",
+    "//ios/chrome/browser/infobars/overlays:util",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/ui/badges:public",
+    "//ios/chrome/browser/ui/badges:util",
+  ]
+}
+
+source_set("browser_agent_util") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "infobar_overlay_browser_agent_util.h",
+    "infobar_overlay_browser_agent_util.mm",
+  ]
+  deps = [
+    ":browser_agent",
+    "//base",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/autofill_address_profile",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/confirm",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/passwords",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/reading_list",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/save_card",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/translate",
+    "//ios/chrome/browser/main:public",
+  ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "infobar_overlay_browser_agent_unittest.mm" ]
+  deps = [
+    ":browser_agent",
+    "//base/test:test_support",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/infobars",
+    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/overlays:overlay_type",
+    "//ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test",
+    "//ios/chrome/browser/infobars/test",
+    "//ios/chrome/browser/main",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/infobars",
+    "//ios/chrome/browser/overlays/public/infobar_banner",
+    "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/web_state_list:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

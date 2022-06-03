@@ -5,15 +5,16 @@
 #include "chrome/browser/android/webapk/webapk_metrics.h"
 
 #include "base/metrics/histogram_macros.h"
-#include "base/time/time.h"
+#include "base/strings/string_util.h"
 
 namespace webapk {
 
 const char kInstallDurationHistogram[] = "WebApk.Install.InstallDuration";
 const char kInstallEventHistogram[] = "WebApk.Install.InstallEvent";
 
-void TrackRequestTokenDuration(base::TimeDelta delta) {
-  UMA_HISTOGRAM_TIMES("WebApk.Install.RequestTokenDuration", delta);
+void TrackRequestTokenDuration(base::TimeDelta delta,
+                               const std::string& webapk_package) {
+  UMA_HISTOGRAM_MEDIUM_TIMES("WebApk.Install.RequestTokenDurationV2", delta);
 }
 
 void TrackInstallDuration(base::TimeDelta delta) {

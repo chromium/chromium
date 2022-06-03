@@ -1,0 +1,45 @@
+{
+  "name": "Manifest test app",
+  "icons": [
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "shortcuts": [
+    {
+      "name": "name0",
+      "short_name": "short_name",
+      "url": "launch_url",
+      "icons": [{"src": "icon_url"}]
+    },
+    {
+      "name": "name1",
+      "short_name": "short_name",
+      "url": "launch_url",
+      "icons": [{"src": "icon_url"}]
+    },
+    {
+      "name": "name2",
+      "short_name": "short_name",
+      "url": "launch_url",
+      "icons": [{"src": "icon_url"}]
+    },
+    {
+      "name": "name3",
+      "short_name": "short_name",
+      "url": "launch_url",
+      "icons": [{"src": "icon_url"}]
+    },
+    {
+      "name": "name4",
+      "short_name": "short_name",
+      "url": "launch_url",
+      "icons": [{"src": "icon_url"}]
+    }
+  ]
+}

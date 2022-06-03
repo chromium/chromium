@@ -86,14 +86,14 @@ Utils.createKeyIdsInitializationData = function(keyId) {
   return Utils.convertToUint8Array(initData);
 };
 
+function convertToString(data) {
+  return String.fromCharCode.apply(null, Utils.convertToUint8Array(data));
+}
+
 Utils.extractFirstLicenseKeyId = function(message) {
   // Decodes data (Uint8Array) from base64url string.
   function base64urlDecode(data) {
     return atob(data.replace(/\-/g, "+").replace(/\_/g, "/"));
-  }
-
-  function convertToString(data) {
-    return String.fromCharCode.apply(null, Utils.convertToUint8Array(data));
   }
 
   try {
@@ -106,7 +106,37 @@ Utils.extractFirstLicenseKeyId = function(message) {
   }
 };
 
-Utils.documentLog = function(log, success, time) {
+Utils.verifyUsageRecord =
+    function(message, expectNullTime) {
+  try {
+    var json = JSON.parse(convertToString(message));
+    if (expectNullTime && (json.firstTime != null || json.latestTime != null)) {
+      Utils.failTest(
+          'Expecting null time for usage record but got firstTime=' +
+          json.firstTime + ', latestTime=' + json.latestTime);
+    } else if (!expectNullTime) {
+      var first_decrypt_time = new Date(json.firstTime);
+      var last_decrypt_time = new Date(json.latestTime);
+      Utils.timeLog('First decrypt time: ' + first_decrypt_time.toISOString());
+      Utils.timeLog('Last decrypt time: ' + last_decrypt_time.toISOString());
+
+      var delta = json.latestTime - json.firstTime;
+      // The video used for the tests is roughly 2.5 seconds.
+      if (delta < 2000 || delta > 3000) {
+        Utils.failTest(
+            'The usage record reported by the CDM was not in the ' +
+            'expected range')
+      }
+    }
+
+  } catch (error) {
+    Utils.failTest(
+        'Fail to extract first decrypt time from license-release' +
+        'message');
+  }
+}
+
+    Utils.documentLog = function(log, success, time) {
   if (!docLogs)
     return;
   time = time || Utils.getCurrentTimeString();

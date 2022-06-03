@@ -17,6 +17,9 @@ class BluetoothAdapterMac;
 
 class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceMac : public BluetoothDevice {
  public:
+  BluetoothDeviceMac(const BluetoothDeviceMac&) = delete;
+  BluetoothDeviceMac& operator=(const BluetoothDeviceMac&) = delete;
+
   ~BluetoothDeviceMac() override;
 
   // Converts between ConnectErrorCode and NSError.
@@ -31,8 +34,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceMac : public BluetoothDevice {
 
  protected:
   BluetoothDeviceMac(BluetoothAdapterMac* adapter);
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDeviceMac);
 };
 
 }  // namespace device

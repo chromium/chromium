@@ -22,6 +22,10 @@ struct ContextState;
 class GPUStateTracer {
  public:
   static std::unique_ptr<GPUStateTracer> Create(const ContextState* state);
+
+  GPUStateTracer(const GPUStateTracer&) = delete;
+  GPUStateTracer& operator=(const GPUStateTracer&) = delete;
+
   ~GPUStateTracer();
 
   // Take a state snapshot with a screenshot of the currently bound framebuffer.
@@ -31,7 +35,6 @@ class GPUStateTracer {
   explicit GPUStateTracer(const ContextState* state);
 
   const ContextState* state_;
-  DISALLOW_COPY_AND_ASSIGN(GPUStateTracer);
 };
 
 }  // namespace gles2

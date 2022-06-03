@@ -54,7 +54,7 @@
 * ***** END LICENSE BLOCK ***** */
 
 // static
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 const base::FilePath::CharType FirefoxProfileLock::kLockFileName[] =
     FILE_PATH_LITERAL(".parentlock");
 const base::FilePath::CharType FirefoxProfileLock::kOldLockFileName[] =

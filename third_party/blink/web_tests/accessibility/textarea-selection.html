@@ -18,7 +18,7 @@ Line 3
 
         if (window.accessibilityController) {
 
-            let textarea = document.getElementById('textarea');
+            const textarea = document.getElementById('textarea');
             textarea.focus();
             window.textareaAccessible =
                 accessibilityController.accessibleElementById('textarea');
@@ -47,14 +47,14 @@ Line 3
                                                direction);
                     shouldBe("textareaAccessible", "textareaAccessible.selectionAnchorObject");
                     shouldBeEqualToNumber("textareaAccessible.selectionAnchorOffset",
-                        selectionAnchorOffset);
+                        directionIndex ? selectionFocusOffset : selectionAnchorOffset);
                     shouldBe("textareaAccessible", "textareaAccessible.selectionFocusObject");
                     shouldBeEqualToNumber("textareaAccessible.selectionFocusOffset",
-                        selectionFocusOffset);
+                        directionIndex ? selectionAnchorOffset : selectionFocusOffset);
                 }
             }
 
-            let emptyTextarea = document.getElementById('textarea-empty');
+            const emptyTextarea = document.getElementById('textarea-empty');
             emptyTextarea.focus();            
             // Each textarea remembers its own independent selection but
             // textareas that are not focused don't expose their selection
@@ -66,9 +66,9 @@ Line 3
 
             textarea.focus();
             shouldBe("textareaAccessible", "textareaAccessible.selectionAnchorObject");
-            shouldBeEqualToNumber("textareaAccessible.selectionAnchorOffset", 14);
+            shouldBeEqualToNumber("textareaAccessible.selectionAnchorOffset", 21);
             shouldBe("textareaAccessible", "textareaAccessible.selectionFocusObject");
-            shouldBeEqualToNumber("textareaAccessible.selectionFocusOffset", 21);
+            shouldBeEqualToNumber("textareaAccessible.selectionFocusOffset", 14);
 
             emptyTextarea.focus();
             shouldBe("emptyTextareaAccessible", "emptyTextareaAccessible.selectionAnchorObject");

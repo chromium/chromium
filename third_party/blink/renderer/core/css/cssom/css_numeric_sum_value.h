@@ -36,4 +36,4 @@ struct CSSNumericSumValue {
 
 }  // namespace blink
 
-#endif  // CSSSumValue_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_NUMERIC_SUM_VALUE_H_

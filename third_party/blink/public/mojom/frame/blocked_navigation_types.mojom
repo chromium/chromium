@@ -1,0 +1,14 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// The reason the navigation was blocked.
+enum NavigationBlockedReason {
+  // Frame attempted to navigate the top window without user activation.
+  kRedirectWithNoUserGesture,
+  // Frame attempted to navigate the top window without user activation and is
+  // sandboxed.
+  kRedirectWithNoUserGestureSandbox
+};

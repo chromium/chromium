@@ -21,7 +21,5 @@ source_set("test_support") {
     "//services/service_manager/public/mojom",
   ]
 
-  deps = [
-    "//mojo/public/cpp/bindings",
-  ]
+  deps = [ "//mojo/public/cpp/bindings" ]
 }

@@ -19,10 +19,12 @@ class PlatformEventController;
 class MODULES_EXPORT DeviceMotionEventPump
     : public GarbageCollected<DeviceMotionEventPump>,
       public DeviceSensorEventPump {
-  USING_GARBAGE_COLLECTED_MIXIN(DeviceMotionEventPump);
-
  public:
-  explicit DeviceMotionEventPump(scoped_refptr<base::SingleThreadTaskRunner>);
+  explicit DeviceMotionEventPump(LocalFrame&);
+
+  DeviceMotionEventPump(const DeviceMotionEventPump&) = delete;
+  DeviceMotionEventPump& operator=(const DeviceMotionEventPump&) = delete;
+
   ~DeviceMotionEventPump() override;
 
   void SetController(PlatformEventController*);
@@ -31,10 +33,10 @@ class MODULES_EXPORT DeviceMotionEventPump
   // Note that the returned object is owned by this class.
   DeviceMotionData* LatestDeviceMotionData();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // DeviceSensorEventPump:
-  void SendStartMessage(LocalFrame* frame) override;
+  void SendStartMessage(LocalFrame& frame) override;
   void SendStopMessage() override;
 
  protected:
@@ -48,7 +50,7 @@ class MODULES_EXPORT DeviceMotionEventPump
  private:
   friend class DeviceMotionEventPumpTest;
 
-  void StartListening(LocalFrame*);
+  void StartListening(LocalFrame&);
   void StopListening();
   void NotifyController();
 
@@ -59,8 +61,6 @@ class MODULES_EXPORT DeviceMotionEventPump
 
   Member<DeviceMotionData> data_;
   Member<PlatformEventController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceMotionEventPump);
 };
 
 }  // namespace blink

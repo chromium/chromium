@@ -14,16 +14,15 @@
 #include <security.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task_runner_util.h"
+#include "base/scoped_generic.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/wincrypt_shim.h"
-#include "crypto/scoped_capi_types.h"
 #include "net/cert/x509_util.h"
 #include "net/cert/x509_util_win.h"
 #include "net/ssl/ssl_platform_key_util.h"
@@ -35,17 +34,17 @@ namespace net {
 
 namespace {
 
-using ScopedHCERTSTORE = crypto::ScopedCAPIHandle<
+using ScopedHCERTSTOREWithChecks = base::ScopedGeneric<
     HCERTSTORE,
-    crypto::CAPIDestroyerWithFlags<HCERTSTORE,
-                                   CertCloseStore,
-                                   CERT_CLOSE_STORE_CHECK_FLAG>>;
+    crypto::CAPITraitsWithFlags<HCERTSTORE,
+                                CertCloseStore,
+                                CERT_CLOSE_STORE_CHECK_FLAG>>;
 
 class ClientCertIdentityWin : public ClientCertIdentity {
  public:
   ClientCertIdentityWin(
       scoped_refptr<net::X509Certificate> cert,
-      ScopedPCCERT_CONTEXT cert_context,
+      crypto::ScopedPCCERT_CONTEXT cert_context,
       scoped_refptr<base::SingleThreadTaskRunner> key_task_runner)
       : ClientCertIdentity(std::move(cert)),
         cert_context_(std::move(cert_context)),
@@ -61,7 +60,7 @@ class ClientCertIdentityWin : public ClientCertIdentity {
   }
 
  private:
-  ScopedPCCERT_CONTEXT cert_context_;
+  crypto::ScopedPCCERT_CONTEXT cert_context_;
   scoped_refptr<base::SingleThreadTaskRunner> key_task_runner_;
 };
 
@@ -154,7 +153,7 @@ ClientCertIdentityList GetClientCertsImpl(HCERTSTORE cert_store,
     PCCERT_CONTEXT cert_context =
         chain_context->rgpChain[0]->rgpElement[0]->pCertContext;
     // Copy the certificate, so that it is valid after |cert_store| is closed.
-    ScopedPCCERT_CONTEXT cert_context2;
+    crypto::ScopedPCCERT_CONTEXT cert_context2;
     PCCERT_CONTEXT raw = nullptr;
     BOOL ok = CertAddCertificateContextToStore(
         nullptr, cert_context, CERT_STORE_ADD_USE_EXISTING, &raw);
@@ -165,7 +164,7 @@ ClientCertIdentityList GetClientCertsImpl(HCERTSTORE cert_store,
     cert_context2.reset(raw);
 
     // Grab the intermediates, if any.
-    std::vector<ScopedPCCERT_CONTEXT> intermediates_storage;
+    std::vector<crypto::ScopedPCCERT_CONTEXT> intermediates_storage;
     std::vector<PCCERT_CONTEXT> intermediates;
     for (DWORD i = 1; i < chain_context->rgpChain[0]->cElement; ++i) {
       PCCERT_CONTEXT chain_intermediate =
@@ -216,15 +215,15 @@ ClientCertIdentityList GetClientCertsImpl(HCERTSTORE cert_store,
 
 }  // namespace
 
-ClientCertStoreWin::ClientCertStoreWin() {}
+ClientCertStoreWin::ClientCertStoreWin() = default;
 
 ClientCertStoreWin::ClientCertStoreWin(
-    base::RepeatingCallback<HCERTSTORE()> cert_store_callback)
+    base::RepeatingCallback<crypto::ScopedHCERTSTORE()> cert_store_callback)
     : cert_store_callback_(std::move(cert_store_callback)) {
   DCHECK(!cert_store_callback_.is_null());
 }
 
-ClientCertStoreWin::~ClientCertStoreWin() {}
+ClientCertStoreWin::~ClientCertStoreWin() = default;
 
 void ClientCertStoreWin::GetClientCerts(const SSLCertRequestInfo& request,
                                         ClientCertListCallback callback) {
@@ -240,31 +239,34 @@ void ClientCertStoreWin::GetClientCerts(const SSLCertRequestInfo& request,
 // static
 ClientCertIdentityList ClientCertStoreWin::GetClientCertsWithCertStore(
     const SSLCertRequestInfo& request,
-    const base::RepeatingCallback<HCERTSTORE()>& cert_store_callback) {
-  ScopedHCERTSTORE cert_store;
+    const base::RepeatingCallback<crypto::ScopedHCERTSTORE()>&
+        cert_store_callback) {
+  ScopedHCERTSTOREWithChecks cert_store;
   if (cert_store_callback.is_null()) {
     // Always open a new instance of the "MY" store, to ensure that there
     // are no previously cached certificates being reused after they're
     // no longer available (some smartcard providers fail to update the "MY"
-    // store handles and instead interpose CertOpenSystemStore).
+    // store handles and instead interpose CertOpenSystemStore). To help confirm
+    // this, use `ScopedHCERTSTOREWithChecks` and `CERT_CLOSE_STORE_CHECK_FLAG`
+    // to DCHECK that `cert_store` is not inadvertently ref-counted.
     cert_store.reset(CertOpenSystemStore(NULL, L"MY"));
   } else {
-    cert_store.reset(cert_store_callback.Run());
+    cert_store.reset(cert_store_callback.Run().release());
   }
-  if (!cert_store) {
+  if (!cert_store.is_valid()) {
     PLOG(ERROR) << "Could not open certificate store: ";
     return ClientCertIdentityList();
   }
-  return GetClientCertsImpl(cert_store, request);
+  return GetClientCertsImpl(cert_store.get(), request);
 }
 
 bool ClientCertStoreWin::SelectClientCertsForTesting(
     const CertificateList& input_certs,
     const SSLCertRequestInfo& request,
     ClientCertIdentityList* selected_identities) {
-  ScopedHCERTSTORE test_store(
+  ScopedHCERTSTOREWithChecks test_store(
       CertOpenStore(CERT_STORE_PROV_MEMORY, 0, NULL, 0, nullptr));
-  if (!test_store)
+  if (!test_store.is_valid())
     return false;
 
   // Add available certificates to the test store.
@@ -272,7 +274,7 @@ bool ClientCertStoreWin::SelectClientCertsForTesting(
     // Add the certificate to the test store.
     PCCERT_CONTEXT cert = nullptr;
     if (!CertAddEncodedCertificateToStore(
-            test_store, X509_ASN_ENCODING,
+            test_store.get(), X509_ASN_ENCODING,
             reinterpret_cast<const BYTE*>(
                 CRYPTO_BUFFER_data(input_cert->cert_buffer())),
             base::checked_cast<DWORD>(
@@ -281,7 +283,7 @@ bool ClientCertStoreWin::SelectClientCertsForTesting(
       return false;
     }
     // Hold the reference to the certificate (since we requested a copy).
-    ScopedPCCERT_CONTEXT scoped_cert(cert);
+    crypto::ScopedPCCERT_CONTEXT scoped_cert(cert);
 
     // Add dummy private key data to the certificate - otherwise the certificate
     // would be discarded by the filtering routines.

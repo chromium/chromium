@@ -4,7 +4,7 @@
 
 #import "ios/web/net/cookies/crw_wk_http_cookie_store.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ios/web/public/thread/web_thread.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -82,7 +82,6 @@ void PrioritizeWKHTTPCookieStoreCallbacks() {
 #pragma mark WKHTTPCookieStoreObserver method
 
 - (void)cookiesDidChangeInCookieStore:(WKHTTPCookieStore*)cookieStore {
-  DCHECK(_HTTPCookieStore == cookieStore);
   _cachedCookies = nil;
 }
 

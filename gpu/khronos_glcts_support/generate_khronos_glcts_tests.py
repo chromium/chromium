@@ -37,9 +37,8 @@ def ReadFileAsLines(filename):
     Reads a file, yielding each non-blank line
     and lines that don't begin with #
   """
-  file = open(filename, "r")
-  lines = file.readlines()
-  file.close()
+  with open(filename, "r") as in_file:
+    lines = in_file.readlines()
   for line in lines:
     line = line.strip()
     if len(line) > 0 and not line.startswith("#"):

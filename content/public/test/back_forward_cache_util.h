@@ -5,16 +5,13 @@
 #ifndef CONTENT_PUBLIC_TEST_BACK_FORWARD_CACHE_UTIL_H_
 #define CONTENT_PUBLIC_TEST_BACK_FORWARD_CACHE_UTIL_H_
 
+#include <memory>
+
 #include "base/strings/string_piece.h"
+#include "content/public/browser/back_forward_cache.h"
 
 namespace content {
-class BackForwardCacheImpl;
-class RenderFrameHost;
-
-// Returns true if |render_frame_host| is currently stored in the
-// BackForwardCache.
-bool IsInBackForwardCache(RenderFrameHost* render_frame_host)
-    WARN_UNUSED_RESULT;
+class WebContents;
 
 // This is a helper class to check in the tests that back-forward cache
 // was disabled for a particular reason.
@@ -37,7 +34,7 @@ class BackForwardCacheDisabledTester {
 
   bool IsDisabledForFrameWithReason(int process_id,
                                     int frame_routing_id,
-                                    base::StringPiece reason);
+                                    BackForwardCache::DisabledReason reason);
 
  private:
   // Impl has to inherit from BackForwardCacheImpl, which is
@@ -46,6 +43,19 @@ class BackForwardCacheDisabledTester {
   class Impl;
   std::unique_ptr<Impl> impl_;
 };
+
+// Helper function to be used when the tests are interested in covering the
+// scenarios when back-forward cache is not used. This is similar to method
+// BackForwardCache::DisableForTesting(), but it takes a WebContents instead of
+// a BackForwardCache. This method disables BackForwardCache for a given
+// WebContents with the reason specified.
+//
+// Note that it is preferred to make the test work with BackForwardCache when
+// feasible, or have a standalone test with BackForwardCache enabled to test
+// the functionality when necessary.
+void DisableBackForwardCacheForTesting(
+    WebContents* web_contents,
+    BackForwardCache::DisableForTestingReason reason);
 
 }  // namespace content
 

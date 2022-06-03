@@ -32,6 +32,11 @@ const char kAppIdForTest[] = "com.google.test.PrefetchInstanceIDProxyTest";
 class PrefetchInstanceIDProxyTest : public testing::Test {
  public:
   PrefetchInstanceIDProxyTest() = default;
+
+  PrefetchInstanceIDProxyTest(const PrefetchInstanceIDProxyTest&) = delete;
+  PrefetchInstanceIDProxyTest& operator=(const PrefetchInstanceIDProxyTest&) =
+      delete;
+
   ~PrefetchInstanceIDProxyTest() override = default;
 
   // testing::Test:
@@ -60,10 +65,8 @@ class PrefetchInstanceIDProxyTest : public testing::Test {
   InstanceID::Result result_ = InstanceID::UNKNOWN_ERROR;
 
   bool async_operation_completed_ = false;
-  base::Closure async_operation_completed_callback_;
+  base::OnceClosure async_operation_completed_callback_;
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchInstanceIDProxyTest);
 };
 
 void PrefetchInstanceIDProxyTest::SetUp() {
@@ -92,8 +95,8 @@ std::string PrefetchInstanceIDProxyTest::GetToken() {
   result_ = InstanceID::UNKNOWN_ERROR;
 
   GetGCMToken(&profile_, kAppIdForTest,
-              base::Bind(&PrefetchInstanceIDProxyTest::GetTokenCompleted,
-                         base::Unretained(this)));
+              base::BindOnce(&PrefetchInstanceIDProxyTest::GetTokenCompleted,
+                             base::Unretained(this)));
   WaitForAsyncOperation();
   return token_;
 }
@@ -105,7 +108,7 @@ void PrefetchInstanceIDProxyTest::GetTokenCompleted(const std::string& token,
   token_ = token;
   result_ = result;
   if (!async_operation_completed_callback_.is_null())
-    async_operation_completed_callback_.Run();
+    std::move(async_operation_completed_callback_).Run();
 }
 
 TEST_F(PrefetchInstanceIDProxyTest, GetToken) {

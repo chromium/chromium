@@ -14,15 +14,16 @@ namespace {
 class DefaultFocusManagerFactory : public FocusManagerFactory {
  public:
   DefaultFocusManagerFactory() = default;
+
+  DefaultFocusManagerFactory(const DefaultFocusManagerFactory&) = delete;
+  DefaultFocusManagerFactory& operator=(const DefaultFocusManagerFactory&) =
+      delete;
   ~DefaultFocusManagerFactory() override = default;
 
  protected:
   std::unique_ptr<FocusManager> CreateFocusManager(Widget* widget) override {
     return std::make_unique<FocusManager>(widget, nullptr /* delegate */);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultFocusManagerFactory);
 };
 
 FocusManagerFactory* g_focus_manager_factory = nullptr;

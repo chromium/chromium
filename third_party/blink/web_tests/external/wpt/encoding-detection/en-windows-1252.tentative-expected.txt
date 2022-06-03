@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Check detection result assert_equals: Expected windows-1252 expected "windows-1252" but got "Shift_JIS"
+Harness: the test ran to completion.
+

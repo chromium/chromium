@@ -10,8 +10,8 @@
 #include "base/bind.h"
 #include "base/debug/leak_annotations.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/gtest_util.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
@@ -796,6 +796,28 @@ TEST(WeakPtrDeathTest, NonOwnerThreadReferencesObjectAfterDeletion) {
 
   // Main thread attempts to dereference the target, violating thread binding.
   ASSERT_DCHECK_DEATH(arrow.target.get());
+}
+
+TEST(WeakPtrDeathTest, ArrowOperatorChecksOnBadDereference) {
+  // The default style "fast" does not support multi-threaded tests
+  // (introduces deadlock on Linux).
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+
+  auto target = std::make_unique<Target>();
+  WeakPtr<Target> weak = target->AsWeakPtr();
+  target.reset();
+  EXPECT_CHECK_DEATH(weak->AsWeakPtr());
+}
+
+TEST(WeakPtrDeathTest, StarOperatorChecksOnBadDereference) {
+  // The default style "fast" does not support multi-threaded tests
+  // (introduces deadlock on Linux).
+  ::testing::FLAGS_gtest_death_test_style = "threadsafe";
+
+  auto target = std::make_unique<Target>();
+  WeakPtr<Target> weak = target->AsWeakPtr();
+  target.reset();
+  EXPECT_CHECK_DEATH((*weak).AsWeakPtr());
 }
 
 }  // namespace base

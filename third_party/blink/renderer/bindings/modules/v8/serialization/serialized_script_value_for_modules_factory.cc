@@ -10,6 +10,16 @@
 
 namespace blink {
 
+bool SerializedScriptValueForModulesFactory::ExtractTransferable(
+    v8::Isolate* isolate,
+    v8::Local<v8::Value> object,
+    wtf_size_t object_index,
+    Transferables& transferables,
+    ExceptionState& exception_state) {
+  return V8ScriptValueSerializerForModules::ExtractTransferable(
+      isolate, object, object_index, transferables, exception_state);
+}
+
 scoped_refptr<SerializedScriptValue>
 SerializedScriptValueForModulesFactory::Create(
     v8::Isolate* isolate,

@@ -66,11 +66,10 @@
 // Constraint for the bottom of the location bar.
 @property(nonatomic, strong, readwrite)
     NSLayoutConstraint* locationBarBottomConstraint;
-// Constraint for extra padding on the bottom of the location bar. This padding
-// is considered as "extra" as it is added to the one defined in
-// |locationBarBottomConstraint|. See comment for -[PrimaryToolbarViewController
-// verticalMarginForLocationBarForFullscreenProgress:] for more explanations.
-@property(nonatomic, strong) NSLayoutConstraint* locationBarExtraBottomPadding;
+
+// Whether the top-left and top-right corners of the toolbar are rounded or
+// square.
+@property(nonatomic, assign) BOOL topCornersRounded;
 
 // Sets all the subviews and constraints of the view. The |topSafeAnchor| needs
 // to be set before calling this.

@@ -49,13 +49,12 @@ TEST_F(UsbServiceTest, GetDevices) {
   // The USB service is not available on all platforms.
   if (usb_service_) {
     base::RunLoop loop;
-    usb_service_->GetDevices(
-        base::BindRepeating(&OnGetDevices, loop.QuitClosure()));
+    usb_service_->GetDevices(base::BindOnce(&OnGetDevices, loop.QuitClosure()));
     loop.Run();
   }
 }
 
-#if defined(OS_WIN)
+#if defined(OS_MAC)
 TEST_F(UsbServiceTest, GetDevicesNewBackend) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(device::kNewUsbBackend);
@@ -63,12 +62,11 @@ TEST_F(UsbServiceTest, GetDevicesNewBackend) {
   // The USB service is not available on all platforms.
   if (usb_service_) {
     base::RunLoop loop;
-    usb_service_->GetDevices(
-        base::BindRepeating(&OnGetDevices, loop.QuitClosure()));
+    usb_service_->GetDevices(base::BindOnce(&OnGetDevices, loop.QuitClosure()));
     loop.Run();
   }
 }
-#endif  // defined(OS_WIN)
+#endif  // defined(OS_MAC)
 
 TEST_F(UsbServiceTest, ClaimGadget) {
   if (!UsbTestGadget::IsTestEnabled() || !usb_service_)

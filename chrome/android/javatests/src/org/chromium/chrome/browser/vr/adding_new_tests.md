@@ -27,7 +27,7 @@ For a concrete example, take a look at
 
 The general flow in tests will be:
 
-1. Load the HTML file with loadUrlAndAwaitInitialization - this ensures that any
+1. Load the HTML file with loadFileAndAwaitInitialization - this ensures that any
    pre-test setup in JavaScript is completed.
 2. Run some code on Java's side.
 3. Trigger some JavaScript code and wait for it to signal that it is finished.
@@ -81,14 +81,6 @@ You can add or remove command line flags that are set before the test runs using
 override a flag set by the test class on a per-test basis, you must remove and
 re-add it.
 
-#### @VrSettingsFile
-
-You can have the test apply non-standard VrCore settings such as enabling the
-DON flow by using `@VrSettingsFile` and the pre-defined files in
-[`util/VrSettingsServiceUtils.java`][vr_settings_service_utils] (or create your
-own settings file). This should be used alongside an `@Restriction` containing
-`RESTRICTION_TYPE_VR_SETTINGS_SERVICE`.
-
 ### Test Body
 
 #### HTML Test File
@@ -98,9 +90,9 @@ placed in `//chrome/test/data/xr/e2e_test_files/html`. The exact contents of
 your file will depend on your test, but you will likely be importing some or all
 of the following scripts from `//chrome/test/data/xr/e2e_test_files/resources`:
 
-* `webxr_e2e.js`/`webvr_e2e.js` - Sets up the necessary code to communicate back
+* `webxr_e2e.js` - Sets up the necessary code to communicate back
   and forth between Java and JavaScript
-* `webxr_boilerplate.js`/`webvr_boilerplate.js` - Handles the WebXR and WebVR
+* `webxr_boilerplate.js` - Handles the WebXR and WebVR
   boilerplate code, such as getting an XRDevice and setting up a canvas.
 
 Additionally, in order to use asserts in JavaScript, you must import
@@ -127,24 +119,7 @@ need to add before being able to write your test.
 ### Test Parameterization
 
 Test parameterization is how running a test multiple times in different
-activities is handled. However, it adds some amount of overhead to test runtime,
-so it's only enabled where it makes sense. If your new test class will only have
-VR Browser-related tests, you can skip parameterization. Otherwise, you'll want
-to enable it.
-
-#### Non-Parameterized
-
-See [`VrBrowserTransitionTest`][vr_browser_transition_test] for an example of a
-non-parameterized class. The general things you will need to do are:
-
-* Set the class' `@RunWith` to `ChromeJUnit4ClassRunner.class`.
-* Declare `mTestRule` as a `ChromeTabbedActivityVrTestRule`, annotate it with
-  `@Rule`, and initialize it where it's declared.
-* Declare `mVrBrowserTestFramework` as a `VrBrowserTestFramework` and initialize
-  it using `mTestRule` in a setup method annotated with `@Before`. You can do
-  the same with other types of test frameworks as necessary.
-
-#### Parameterized
+activities is handled. However, it adds some amount of overhead to test runtime.
 
 See [`WebXrVrTransitionTest`][webxr_vr_transition_test] for an example of a
 parameterized class. The general things you will need to are:
@@ -169,15 +144,26 @@ parameterized class. The general things you will need to are:
 ### Add The New File
 
 Add the new test class to [`//chrome/android/BUILD.gn`][build_gn]. If it is a VR
-test class, it should be added to the `java_files` list of the
+test class, it should be added to the `sources` list of the
 `chrome_test_vr_java` `android_library` target. If it is an AR test class, it
-should be added to the `java_files` list of the `chrome_test_ar_java`
+should be added to the `sources` list of the `chrome_test_ar_java`
 `android_library` target.
 
+## AR Playback Datasets
 
-[xr_instrumentation_deep_dive]: https://chromium.googlesource.com/chromium/src/+/master/chrome/android/javatests/src/org/chromium/chrome/browser/vr/xr_instrumentation_deep_dive.md
-[webxr_vr_transition_test]: https://chromium.googlesource.com/chromium/src/+/master/chrome/android/javatests/src/org/chromium/chrome/browser/vr/WebXrVrTransitionTest.java
-[webxr_vr_transition_test_html]: https://chromium.googlesource.com/chromium/src/+/master/chrome/test/data/xr/e2e_test_files/html/test_non_immersive_stops_during_immersive.html
-[vr_settings_service_utils]: https://chromium.googlesource.com/chromium/src/+/master/chrome/android/javatests/src/org/chromium/chrome/browser/vr/util/VrSettingsServiceUtils.java
-[vr_browser_transition_test]: https://chromium.googlesource.com/chromium/src/+/master/chrome/android/javatests/src/org/chromium/chrome/browser/vr/VrBrowserTransitionTest.java
-[build_gn]: https://chromium.googlesource.com/chromium/src/+/master/chrome/android/BUILD.gn
+If you are adding an AR test and none of the existing datasets work for it, you
+can create and upload a new dataset that fits your needs. Dataset creation
+requires some internal tools, see go/arcore-chrome-collect-recordings (internal
+link) or contact either bsheedy@ or bialpio@ for instructions.
+
+Once you have your playback dataset (.mp4 file), simply place it in
+`//chrome/test/data/xr/ar_playback_datasets/` and upload it using
+`upload_to_google_storage.py` to the `chromium-ar-test-apks/playback_datasets`
+bucket.
+
+
+[xr_instrumentation_deep_dive]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/xr_instrumentation_deep_dive.md
+[webxr_vr_transition_test]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/WebXrVrTransitionTest.java
+[webxr_vr_transition_test_html]: https://chromium.googlesource.com/chromium/src/+/main/chrome/test/data/xr/e2e_test_files/html/test_non_immersive_stops_during_immersive.html
+[vr_browser_transition_test]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/javatests/src/org/chromium/chrome/browser/vr/VrBrowserTransitionTest.java
+[build_gn]: https://chromium.googlesource.com/chromium/src/+/main/chrome/android/BUILD.gn

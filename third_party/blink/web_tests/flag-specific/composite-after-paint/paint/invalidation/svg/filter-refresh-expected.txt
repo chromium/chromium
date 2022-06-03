@@ -5,62 +5,22 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [10, 170, 132, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [10, 130, 132, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='separate2'",
-          "rect": [140, 140, 36, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGRect rect id='filtered'",
-          "rect": [140, 100, 36, 36],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [140, 60, 36, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [90, 90, 36, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [90, 50, 36, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [50, 90, 36, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [50, 50, 36, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [10, 90, 36, 36],
-          "reason": "SVG resource change"
-        },
-        {
-          "object": "LayoutSVGContainer g",
-          "rect": [10, 50, 36, 36],
-          "reason": "SVG resource change"
-        }
+      "invalidations": [
+        [140, 140, 30, 30],
+        [140, 100, 30, 30],
+        [140, 60, 30, 30],
+        [90, 170, 30, 30],
+        [90, 130, 30, 30],
+        [90, 90, 30, 30],
+        [90, 50, 30, 30],
+        [50, 170, 30, 30],
+        [50, 130, 30, 30],
+        [50, 90, 30, 30],
+        [50, 50, 30, 30],
+        [10, 170, 30, 30],
+        [10, 130, 30, 30],
+        [10, 90, 30, 30],
+        [10, 50, 30, 30]
       ]
     }
   ]

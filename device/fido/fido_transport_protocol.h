@@ -5,12 +5,9 @@
 #ifndef DEVICE_FIDO_FIDO_TRANSPORT_PROTOCOL_H_
 #define DEVICE_FIDO_FIDO_TRANSPORT_PROTOCOL_H_
 
-#include <string>
-
 #include "base/component_export.h"
-#include "base/containers/flat_set.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -25,7 +22,8 @@ enum class FidoTransportProtocol : uint8_t {
   kBluetoothLowEnergy = 2,
   kCloudAssistedBluetoothLowEnergy = 3,
   kInternal = 4,
-  kMaxValue = kInternal,
+  kAndroidAccessory = 5,
+  kMaxValue = kAndroidAccessory,
 };
 
 // String representation of above FidoTransportProtocol enum.
@@ -36,14 +34,11 @@ extern const char kCloudAssistedBluetoothLowEnergy[];
 extern const char kInternal[];
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::flat_set<FidoTransportProtocol> GetAllTransportProtocols();
-
-COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
+absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
     base::StringPiece protocol);
 
 COMPONENT_EXPORT(DEVICE_FIDO)
-std::string ToString(FidoTransportProtocol protocol);
+base::StringPiece ToString(FidoTransportProtocol protocol);
 
 }  // namespace device
 

@@ -1,0 +1,100 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("grid_ui_constants") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "grid_constants.h",
+    "grid_constants.mm",
+  ]
+}
+
+source_set("grid_ui") {
+  sources = [
+    "flow_layout.h",
+    "flow_layout.mm",
+    "grid_cell.h",
+    "grid_cell.mm",
+    "grid_commands.h",
+    "grid_consumer.h",
+    "grid_context_menu_helper.h",
+    "grid_context_menu_helper.mm",
+    "grid_context_menu_provider.h",
+    "grid_drag_drop_handler.h",
+    "grid_empty_view.h",
+    "grid_image_data_source.h",
+    "grid_item.h",
+    "grid_item.mm",
+    "grid_layout.h",
+    "grid_layout.mm",
+    "grid_menu_actions_data_source.h",
+    "grid_shareable_items_provider.h",
+    "grid_theme.h",
+    "grid_view_controller.h",
+    "grid_view_controller.mm",
+    "horizontal_layout.h",
+    "horizontal_layout.mm",
+    "plus_sign_cell.h",
+    "plus_sign_cell.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":grid_ui_constants",
+    "resources:grid_cell_close_button",
+    "resources:grid_cell_plus_sign",
+    "resources:grid_theme_dark_selection_tint_color",
+    "resources:grid_theme_selection_tint_color",
+    "resources:plus_sign_grid_cell_background_color",
+    "//base",
+    "//components/bookmarks/common",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/commerce:commerce",
+    "//ios/chrome/browser/drag_and_drop",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/commerce:price_card",
+    "//ios/chrome/browser/ui/elements",
+    "//ios/chrome/browser/ui/gestures",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_commands",
+    "//ios/chrome/browser/ui/incognito_reauth:incognito_reauth_ui",
+    "//ios/chrome/browser/ui/menu",
+    "//ios/chrome/browser/ui/menu:context_menu_delegate",
+    "//ios/chrome/browser/ui/ntp:util",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/transitions",
+    "//ios/chrome/browser/ui/thumb_strip",
+    "//ios/chrome/browser/ui/thumb_strip:feature_flags",
+    "//ios/chrome/browser/ui/thumb_strip:public",
+    "//ios/chrome/browser/ui/util",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/modals:modals_api",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "grid_view_controller_unittest.mm" ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":grid_ui",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/test:test_support",
+    "//testing/gtest",
+  ]
+}

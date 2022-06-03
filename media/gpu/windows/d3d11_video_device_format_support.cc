@@ -8,7 +8,6 @@ namespace media {
 
 FormatSupportChecker::FormatSupportChecker(ComD3D11Device device)
     : device_(std::move(device)) {
-  DCHECK(device_);
 }
 
 FormatSupportChecker::~FormatSupportChecker() {
@@ -19,6 +18,9 @@ FormatSupportChecker::~FormatSupportChecker() {
 
 bool FormatSupportChecker::Initialize() {
   ComD3D11VideoDevice v_device;
+  if (!device_)
+    return false;
+
   if (!SUCCEEDED(device_.As(&v_device)))
     return false;
 
@@ -39,6 +41,10 @@ bool FormatSupportChecker::Initialize() {
   if (!SUCCEEDED(v_device->CreateVideoProcessorEnumerator(&desc, &enumerator_)))
     return false;
 
+  // For tests, which don't provide one (successfully).
+  if (!enumerator_)
+    return false;
+
   // Check that the |CheckFormatSupport| and |CheckVideoProcessorFormat| calls
   // won't be failing
   UINT unneeded = 0;
@@ -53,8 +59,12 @@ bool FormatSupportChecker::Initialize() {
   return true;
 }
 
-bool FormatSupportChecker::CheckOutputFormatSupport(DXGI_FORMAT format) {
+bool FormatSupportChecker::CheckOutputFormatSupport(DXGI_FORMAT format) const {
+  if (!device_ || !enumerator_)
+    return false;
+
   DCHECK(initialized_);
+
   UINT device = 0, enumerator = 0;
   if (!SUCCEEDED(device_->CheckFormatSupport(format, &device)))
     return false;

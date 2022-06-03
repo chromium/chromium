@@ -28,19 +28,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EVALUATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EVALUATOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+
 class LocalFrame;
 class MediaQuery;
 class MediaQueryExp;
+class MediaQueryExpNode;
 class MediaQueryResult;
 class MediaQuerySet;
+class MediaQuerySetResult;
 class MediaValues;
-class MediaValuesInitialViewport;
 
 using MediaQueryResultList = Vector<MediaQueryResult>;
 
@@ -60,49 +61,69 @@ class CORE_EXPORT MediaQueryEvaluator final
  public:
   static void Init();
 
-  // Creates evaluator which evaluates to true for all media queries.
-  MediaQueryEvaluator() = default;
+  MediaQueryEvaluator() = delete;
 
-  // Creates evaluator which evaluates only simple media queries
-  // Evaluator returns true for acceptedMediaType and returns true for any media
-  // features.
-  MediaQueryEvaluator(const char* accepted_media_type);
+  // Creates evaluator to evaluate media types only. Evaluator returns true for
+  // accepted_media_type and triggers a NOTREACHED returning false for any media
+  // features. Should only be used for UA stylesheets.
+  explicit MediaQueryEvaluator(const char* accepted_media_type);
 
   // Creates evaluator which evaluates full media queries.
   explicit MediaQueryEvaluator(LocalFrame*);
 
-  // Creates evaluator which evaluates in a thread-safe manner a subset of media
-  // values.
-  explicit MediaQueryEvaluator(const MediaValues&);
+  // Create an evaluator for container queries and preload scanning.
+  explicit MediaQueryEvaluator(const MediaValues*);
 
-  explicit MediaQueryEvaluator(MediaValuesInitialViewport*);
+  MediaQueryEvaluator(const MediaQueryEvaluator&) = delete;
+  MediaQueryEvaluator& operator=(const MediaQueryEvaluator&) = delete;
 
   ~MediaQueryEvaluator();
 
   bool MediaTypeMatch(const String& media_type_to_match) const;
 
+  // Output from Eval functions:
+  struct Results {
+    MediaQueryResultList* viewport_dependent = nullptr;
+    MediaQueryResultList* device_dependent = nullptr;
+    // Or'ed MediaQueryExpValue::UnitFlags.
+    unsigned* unit_flags = nullptr;
+  };
+
   // Evaluates a list of media queries.
-  bool Eval(const MediaQuerySet&,
-            MediaQueryResultList* viewport_dependent = nullptr,
-            MediaQueryResultList* device_dependent = nullptr) const;
+  bool Eval(const MediaQuerySet&) const;
+  bool Eval(const MediaQuerySet&, Results) const;
 
   // Evaluates media query.
-  bool Eval(const MediaQuery&,
-            MediaQueryResultList* viewport_dependent = nullptr,
-            MediaQueryResultList* device_dependent = nullptr) const;
+  bool Eval(const MediaQuery&) const;
+  bool Eval(const MediaQuery&, Results) const;
+
+  bool Eval(const MediaQueryExpNode&) const;
+  bool Eval(const MediaQueryExpNode&, Results) const;
 
   // Evaluates media query subexpression, ie "and (media-feature: value)" part.
   bool Eval(const MediaQueryExp&) const;
+  bool Eval(const MediaQueryExp&, Results) const;
 
-  void Trace(blink::Visitor*);
+  // Returns true if any of the expressions in the results lists changed its
+  // evaluation.
+  bool DidResultsChange(const MediaQueryResultList& results) const;
+
+  // Returns true if any of the media queries in the results lists changed its
+  // evaluation.
+  bool DidResultsChange(const Vector<MediaQuerySetResult>& results) const;
+
+  void Trace(Visitor*) const;
 
  private:
   const String MediaType() const;
 
   String media_type_;
-  Member<MediaValues> media_values_;
-  DISALLOW_COPY_AND_ASSIGN(MediaQueryEvaluator);
+  Member<const MediaValues> media_values_;
+
+  // Even if UKM reporting is enabled, do not report any media query evaluation
+  // results if this is set to true.
+  mutable bool skip_ukm_reporting_{false};
 };
 
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_QUERY_EVALUATOR_H_

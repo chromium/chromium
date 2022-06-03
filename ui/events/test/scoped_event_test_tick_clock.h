@@ -6,6 +6,7 @@
 #define UI_EVENTS_TEST_SCOPED_EVENT_TEST_TICK_CLOCK_H_
 
 #include "base/test/simple_test_tick_clock.h"
+#include "base/time/time.h"
 #include "ui/events/base_event_utils.h"
 
 namespace ui {
@@ -23,19 +24,22 @@ namespace test {
 class ScopedEventTestTickClock {
  public:
   ScopedEventTestTickClock() { ui::SetEventTickClockForTesting(&test_clock_); }
+
+  ScopedEventTestTickClock(const ScopedEventTestTickClock&) = delete;
+  ScopedEventTestTickClock& operator=(const ScopedEventTestTickClock&) = delete;
+
   ~ScopedEventTestTickClock() { ui::SetEventTickClockForTesting(nullptr); }
 
   void SetNowSeconds(int64_t seconds) {
-    test_clock_.SetNowTicks(base::TimeTicks() +
-                            base::TimeDelta::FromSeconds(seconds));
+    test_clock_.SetNowTicks(base::TimeTicks() + base::Seconds(seconds));
   }
 
   void SetNowTicks(base::TimeTicks ticks) { test_clock_.SetNowTicks(ticks); }
 
+  void Advance(base::TimeDelta delta) { test_clock_.Advance(delta); }
+
  private:
   base::SimpleTestTickClock test_clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedEventTestTickClock);
 };
 
 }  // namespace test

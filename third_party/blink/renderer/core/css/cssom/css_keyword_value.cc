@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_inherited_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
+#include "third_party/blink/renderer/core/css/css_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_property_parser.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -37,6 +38,14 @@ CSSKeywordValue* CSSKeywordValue::FromCSSValue(const CSSValue& value) {
   if (value.IsUnsetValue()) {
     return MakeGarbageCollected<CSSKeywordValue>(
         getValueName(CSSValueID::kUnset));
+  }
+  if (value.IsRevertValue()) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        getValueName(CSSValueID::kRevert));
+  }
+  if (value.IsRevertLayerValue()) {
+    return MakeGarbageCollected<CSSKeywordValue>(
+        getValueName(CSSValueID::kRevertLayer));
   }
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     return MakeGarbageCollected<CSSKeywordValue>(
@@ -86,6 +95,8 @@ const CSSValue* CSSKeywordValue::ToCSSValue() const {
       return CSSInitialValue::Create();
     case (CSSValueID::kUnset):
       return cssvalue::CSSUnsetValue::Create();
+    case (CSSValueID::kRevert):
+      return cssvalue::CSSRevertValue::Create();
     case (CSSValueID::kInvalid):
       return MakeGarbageCollected<CSSCustomIdentValue>(
           AtomicString(keyword_value_));

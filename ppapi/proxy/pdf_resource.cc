@@ -65,17 +65,13 @@ void PDFResource::SearchString(const unsigned short* input_string,
   if (locale_.empty())
     locale_ = GetLocale() + "@collation=search";
 
-  const base::char16* string =
-      reinterpret_cast<const base::char16*>(input_string);
-  const base::char16* term =
-      reinterpret_cast<const base::char16*>(input_term);
+  const UChar* string = reinterpret_cast<const UChar*>(input_string);
+  const UChar* term = reinterpret_cast<const UChar*>(input_term);
 
   UErrorCode status = U_ZERO_ERROR;
   UStringSearch* searcher =
       usearch_open(term, -1, string, -1, locale_.c_str(), nullptr, &status);
-  DCHECK(status == U_ZERO_ERROR || status == U_USING_FALLBACK_WARNING ||
-         status == U_USING_DEFAULT_WARNING)
-      << status;
+  DCHECK(U_SUCCESS(status)) << status;
   UCollationStrength strength = case_sensitive ? UCOL_TERTIARY : UCOL_PRIMARY;
 
   UCollator* collator = usearch_getCollator(searcher);
@@ -86,7 +82,7 @@ void PDFResource::SearchString(const unsigned short* input_string,
 
   status = U_ZERO_ERROR;
   int match_start = usearch_first(searcher, &status);
-  DCHECK_EQ(U_ZERO_ERROR, status);
+  DCHECK(U_SUCCESS(status));
 
   std::vector<PP_PrivateFindResult> pp_results;
   while (match_start != USEARCH_DONE) {
@@ -96,7 +92,7 @@ void PDFResource::SearchString(const unsigned short* input_string,
     result.length = matched_length;
     pp_results.push_back(result);
     match_start = usearch_next(searcher, &status);
-    DCHECK_EQ(U_ZERO_ERROR, status);
+    DCHECK(U_SUCCESS(status));
   }
 
   if (pp_results.empty() ||
@@ -226,26 +222,7 @@ void PDFResource::SetAccessibilityPageInfo(
   text_run_vector.reserve(page_info->text_run_count);
   for (size_t i = 0; i < page_info->text_run_count; i++)
     text_run_vector.emplace_back(text_runs[i]);
-  std::vector<ppapi::PdfAccessibilityLinkInfo> link_vector;
-  link_vector.reserve(page_objects->link_count);
-  for (size_t i = 0; i < page_objects->link_count; i++) {
-    link_vector.emplace_back(page_objects->links[i]);
-  }
-  std::vector<ppapi::PdfAccessibilityImageInfo> image_vector;
-  image_vector.reserve(page_objects->image_count);
-  for (size_t i = 0; i < page_objects->image_count; i++) {
-    image_vector.emplace_back(page_objects->images[i]);
-  }
-  std::vector<ppapi::PdfAccessibilityHighlightInfo> highlight_vector;
-  highlight_vector.reserve(page_objects->highlight_count);
-  for (size_t i = 0; i < page_objects->highlight_count; i++) {
-    highlight_vector.emplace_back(page_objects->highlights[i]);
-  }
-
-  ppapi::PdfAccessibilityPageObjects ppapi_page_objects;
-  ppapi_page_objects.links = std::move(link_vector);
-  ppapi_page_objects.images = std::move(image_vector);
-  ppapi_page_objects.highlights = std::move(highlight_vector);
+  ppapi::PdfAccessibilityPageObjects ppapi_page_objects(*page_objects);
 
   Post(RENDERER,
        PpapiHostMsg_PDF_SetAccessibilityPageInfo(

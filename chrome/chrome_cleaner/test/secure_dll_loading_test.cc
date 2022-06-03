@@ -8,16 +8,17 @@
 
 #include <memory>
 #include <set>
+#include <string>
 #include <vector>
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -33,7 +34,7 @@
 #include "components/chrome_cleaner/test/test_name_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-class SecureDLLLoadingTest : public testing::TestWithParam<base::string16> {
+class SecureDLLLoadingTest : public testing::TestWithParam<std::wstring> {
  protected:
   void SetUp() override {
     ASSERT_TRUE(child_process_logger_.Initialize());
@@ -41,6 +42,8 @@ class SecureDLLLoadingTest : public testing::TestWithParam<base::string16> {
     ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &out_dir));
     exe_path_ = out_dir.Append(GetParam() + L".exe");
     empty_dll_path_ = out_dir.Append(chrome_cleaner::kEmptyDll);
+
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
   }
 
   base::Process LaunchProcess(bool disable_secure_dll_loading) {
@@ -52,7 +55,7 @@ class SecureDLLLoadingTest : public testing::TestWithParam<base::string16> {
     base::CommandLine command_line(exe_path_);
     command_line.AppendSwitchNative(
         chrome_cleaner::kInitDoneNotifierSwitch,
-        base::NumberToString16(
+        base::NumberToWString(
             base::win::HandleToUint32(init_done_notifier->handle())));
     command_line.AppendSwitch(chrome_cleaner::kLoadEmptyDLLSwitch);
 
@@ -67,6 +70,8 @@ class SecureDLLLoadingTest : public testing::TestWithParam<base::string16> {
         chrome_cleaner::kExecutionModeSwitch,
         base::NumberToString(
             static_cast<int>(chrome_cleaner::ExecutionMode::kCleanup)));
+
+    chrome_cleaner::AppendTestSwitches(temp_dir_, &command_line);
 
     base::LaunchOptions options;
     options.handles_to_inherit.push_back(init_done_notifier->handle());
@@ -99,7 +104,7 @@ class SecureDLLLoadingTest : public testing::TestWithParam<base::string16> {
   }
 
   bool EmptyDLLLoaded(const base::Process& process) {
-    std::set<base::string16> module_paths;
+    std::set<std::wstring> module_paths;
     chrome_cleaner::GetLoadedModuleFileNames(process.Handle(), &module_paths);
 
     for (const auto& module_path : module_paths) {
@@ -114,6 +119,9 @@ class SecureDLLLoadingTest : public testing::TestWithParam<base::string16> {
   chrome_cleaner::ChildProcessLogger child_process_logger_;
   base::FilePath exe_path_;
   base::FilePath empty_dll_path_;
+
+  // Temp directory for child process log files.
+  base::ScopedTempDir temp_dir_;
 };
 
 INSTANTIATE_TEST_SUITE_P(SecureDLLLoading,

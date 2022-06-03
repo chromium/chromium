@@ -17,59 +17,50 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
-
-std::unique_ptr<views::View> CreateExtraView(views::ButtonListener* listener) {
-  auto help_button = CreateVectorImageButton(listener);
-  help_button->SetFocusForPlatform();
-  help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
-  SetImageFromVectorIcon(help_button.get(), vector_icons::kHelpOutlineIcon);
-  return help_button;
-}
-
-}  // namespace
-
 ConfirmBubbleViews::ConfirmBubbleViews(
     std::unique_ptr<ConfirmBubbleModel> model)
-    : model_(std::move(model)), help_button_(nullptr) {
-  DialogDelegate::set_button_label(
-      ui::DIALOG_BUTTON_OK,
-      model_->GetButtonLabel(ConfirmBubbleModel::BUTTON_OK));
-  DialogDelegate::set_button_label(
-      ui::DIALOG_BUTTON_CANCEL,
-      model_->GetButtonLabel(ConfirmBubbleModel::BUTTON_CANCEL));
-  help_button_ = DialogDelegate::SetExtraView(::CreateExtraView(this));
+    : model_(std::move(model)) {
+  SetModalType(ui::MODAL_TYPE_WINDOW);
+  SetButtonLabel(ui::DIALOG_BUTTON_OK,
+                 model_->GetButtonLabel(ui::DIALOG_BUTTON_OK));
+  SetButtonLabel(ui::DIALOG_BUTTON_CANCEL,
+                 model_->GetButtonLabel(ui::DIALOG_BUTTON_CANCEL));
+  SetAcceptCallback(base::BindOnce(&ConfirmBubbleModel::Accept,
+                                   base::Unretained(model_.get())));
+  SetCancelCallback(base::BindOnce(&ConfirmBubbleModel::Cancel,
+                                   base::Unretained(model_.get())));
+  views::ImageButton* help_button =
+      SetExtraView(views::CreateVectorImageButtonWithNativeTheme(
+          base::BindRepeating(
+              [](ConfirmBubbleViews* bubble) {
+                bubble->model_->OpenHelpPage();
+                bubble->GetWidget()->Close();
+              },
+              base::Unretained(this)),
+          vector_icons::kHelpOutlineIcon));
+  help_button->SetTooltipText(l10n_util::GetStringUTF16(IDS_LEARN_MORE));
 
   set_margins(ChromeLayoutProvider::Get()->GetDialogInsetsForContentType(
-      views::TEXT, views::TEXT));
-  views::GridLayout* layout =
-      SetLayoutManager(std::make_unique<views::GridLayout>());
+      views::DialogContentType::kText, views::DialogContentType::kText));
+  SetLayoutManager(std::make_unique<views::BoxLayout>());
 
+  label_ = AddChildView(std::make_unique<views::Label>(
+      model_->GetMessageText(), views::style::CONTEXT_DIALOG_BODY_TEXT,
+      views::style::STYLE_SECONDARY));
+  DCHECK(!label_->GetText().empty());
+  label_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label_->SetMultiLine(true);
   // Use a fixed maximum message width, so longer messages will wrap.
-  const int kMaxMessageWidth = 400;
-  views::ColumnSet* cs = layout->AddColumnSet(0);
-  cs->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                views::GridLayout::kFixedSize, views::GridLayout::FIXED,
-                kMaxMessageWidth, false);
-
-  // Add the message label.
-  auto label = std::make_unique<views::Label>(
-      model_->GetMessageText(), views::style::CONTEXT_MESSAGE_BOX_BODY_TEXT,
-      views::style::STYLE_SECONDARY);
-  DCHECK(!label->GetText().empty());
-  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  label->SetMultiLine(true);
-  label->SizeToFit(kMaxMessageWidth);
-  layout->StartRow(views::GridLayout::kFixedSize, 0);
-  label_ = layout->AddView(std::move(label));
+  label_->SetMaximumWidth(400);
 
   chrome::RecordDialogCreation(chrome::DialogIdentifier::CONFIRM_BUBBLE);
 }
@@ -77,33 +68,7 @@ ConfirmBubbleViews::ConfirmBubbleViews(
 ConfirmBubbleViews::~ConfirmBubbleViews() {
 }
 
-bool ConfirmBubbleViews::IsDialogButtonEnabled(ui::DialogButton button) const {
-  switch (button) {
-    case ui::DIALOG_BUTTON_OK:
-      return !!(model_->GetButtons() & ConfirmBubbleModel::BUTTON_OK);
-    case ui::DIALOG_BUTTON_CANCEL:
-      return !!(model_->GetButtons() & ConfirmBubbleModel::BUTTON_CANCEL);
-    default:
-      NOTREACHED();
-      return false;
-  }
-}
-
-bool ConfirmBubbleViews::Cancel() {
-  model_->Cancel();
-  return true;
-}
-
-bool ConfirmBubbleViews::Accept() {
-  model_->Accept();
-  return true;
-}
-
-ui::ModalType ConfirmBubbleViews::GetModalType() const {
-  return ui::MODAL_TYPE_WINDOW;
-}
-
-base::string16 ConfirmBubbleViews::GetWindowTitle() const {
+std::u16string ConfirmBubbleViews::GetWindowTitle() const {
   return model_->GetTitle();
 }
 
@@ -111,22 +76,13 @@ bool ConfirmBubbleViews::ShouldShowCloseButton() const {
   return false;
 }
 
-void ConfirmBubbleViews::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  if (sender == help_button_) {
-    model_->OpenHelpPage();
-    GetWidget()->Close();
-  }
+void ConfirmBubbleViews::OnWidgetInitialized() {
+  GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescribedBy(
+      label_);
 }
 
-void ConfirmBubbleViews::ViewHierarchyChanged(
-    const views::ViewHierarchyChangedDetails& details) {
-  if (details.is_add && details.child == this && GetWidget()) {
-    GetWidget()->GetRootView()->GetViewAccessibility().OverrideDescribedBy(
-        label_);
-  }
-  DialogDelegateView::ViewHierarchyChanged(details);
-}
+BEGIN_METADATA(ConfirmBubbleViews, views::DialogDelegateView)
+END_METADATA
 
 namespace chrome {
 

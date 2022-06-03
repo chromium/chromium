@@ -6,14 +6,13 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_delegate.h"
 #include "extensions/browser/api/virtual_keyboard_private/virtual_keyboard_private_api.h"
 #include "extensions/common/api/virtual_keyboard.h"
 
-#if defined(OS_CHROMEOS)
-#include "ui/base/ime/chromeos/input_method_manager.h"
-
-using chromeos::input_method::InputMethodManager;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/base/ime/ash/input_method_manager.h"
 #endif
 
 namespace extensions {
@@ -24,9 +23,10 @@ VirtualKeyboardRestrictFeaturesFunction::
 ExtensionFunction::ResponseAction
 VirtualKeyboardRestrictFeaturesFunction::Run() {
   std::unique_ptr<api::virtual_keyboard::RestrictFeatures::Params> params =
-      api::virtual_keyboard::RestrictFeatures::Params::Create(*args_);
+      api::virtual_keyboard::RestrictFeatures::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  using ::ash::input_method::InputMethodManager;
   InputMethodManager* input_method_manager = InputMethodManager::Get();
   if (input_method_manager) {
     if (params->restrictions.handwriting_enabled) {
@@ -47,7 +47,8 @@ VirtualKeyboardRestrictFeaturesFunction::Run() {
   api::virtual_keyboard::FeatureRestrictions update =
       api->delegate()->RestrictFeatures(*params);
 
-  return RespondNow(OneArgument(update.ToValue()));
+  return RespondNow(
+      OneArgument(base::Value::FromUniquePtrValue(update.ToValue())));
 }
 
 }  // namespace extensions

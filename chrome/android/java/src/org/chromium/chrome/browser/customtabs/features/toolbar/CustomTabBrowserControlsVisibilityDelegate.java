@@ -4,12 +4,12 @@
 
 package org.chromium.chrome.browser.customtabs.features.toolbar;
 
+import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsVisibilityManager;
+import org.chromium.chrome.browser.browser_controls.BrowserStateBrowserControlsVisibilityDelegate;
 import org.chromium.chrome.browser.dependency_injection.ActivityScope;
-import org.chromium.chrome.browser.fullscreen.BrowserStateBrowserControlsVisibilityDelegate;
-import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
-import org.chromium.chrome.browser.tab.BrowserControlsVisibilityDelegate;
-import org.chromium.content_public.common.BrowserControlsState;
+import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 
 import javax.inject.Inject;
 
@@ -20,15 +20,16 @@ import dagger.Lazy;
  */
 @ActivityScope
 public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsVisibilityDelegate {
-    private final Lazy<ChromeFullscreenManager> mFullscreenManagerDelegate;
+    private final Lazy<BrowserControlsVisibilityManager> mBrowserControlsVisibilityManager;
     private final ActivityTabProvider mTabProvider;
     private @BrowserControlsState int mBrowserControlsState = BrowserControlsState.BOTH;
 
     @Inject
     public CustomTabBrowserControlsVisibilityDelegate(
-            Lazy<ChromeFullscreenManager> fullscreenManager, ActivityTabProvider tabProvider) {
+            Lazy<BrowserControlsVisibilityManager> controlsVisibilityManager,
+            ActivityTabProvider tabProvider) {
         super(BrowserControlsState.BOTH);
-        mFullscreenManagerDelegate = fullscreenManager;
+        mBrowserControlsVisibilityManager = controlsVisibilityManager;
         mTabProvider = tabProvider;
         getDefaultVisibilityDelegate().addObserver((constraints) -> updateVisibilityConstraints());
         updateVisibilityConstraints();
@@ -62,6 +63,6 @@ public class CustomTabBrowserControlsVisibilityDelegate extends BrowserControlsV
     }
 
     private BrowserStateBrowserControlsVisibilityDelegate getDefaultVisibilityDelegate() {
-        return mFullscreenManagerDelegate.get().getBrowserVisibilityDelegate();
+        return mBrowserControlsVisibilityManager.get().getBrowserVisibilityDelegate();
     }
 }

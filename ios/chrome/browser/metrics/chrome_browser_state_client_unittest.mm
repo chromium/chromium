@@ -39,8 +39,8 @@ class ChromeBrowserStateClientTest : public PlatformTest {
 
 TEST_F(ChromeBrowserStateClientTest, GetNetworkTime) {
   // Set initial time of the network clock.
-  base::TimeDelta resolution = base::TimeDelta::FromMilliseconds(17);
-  base::TimeDelta latency = base::TimeDelta::FromMilliseconds(50);
+  base::TimeDelta resolution = base::Milliseconds(17);
+  base::TimeDelta latency = base::Milliseconds(50);
   base::DefaultClock clock;
   base::DefaultTickClock tick_clock;
   GetApplicationContext()->GetNetworkTimeTracker()->UpdateNetworkTime(
@@ -60,6 +60,9 @@ TEST_F(ChromeBrowserStateClientTest, GetSyncService) {
 
 TEST_F(ChromeBrowserStateClientTest, GetNumberOfProfilesOnDisk) {
   ChromeBrowserStateClient profile_client;
+  // On ChromeBrowserState was created and registered with the
+  // ChromeBrowserStateManager, check the client returns the correct
+  // value.
   EXPECT_EQ(1, profile_client.GetNumberOfProfilesOnDisk());
 }
 

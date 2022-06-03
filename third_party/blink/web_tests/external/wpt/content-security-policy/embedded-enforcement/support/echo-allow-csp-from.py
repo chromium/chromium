@@ -1,10 +1,10 @@
 import json
 def main(request, response):
-    headers = [("Content-Type", "text/html")]
-    if "allow_csp_from" in request.GET:
-        headers.append(("Allow-CSP-From", request.GET["allow_csp_from"]))
-    message = request.GET["id"]
-    return headers, '''
+    headers = [(b"Content-Type", b"text/html")]
+    if b"allow_csp_from" in request.GET:
+        headers.append((b"Allow-CSP-From", request.GET[b"allow_csp_from"]))
+    message = request.GET[b"id"]
+    return headers, b'''
 <!DOCTYPE html>
 <html>
 <head>
@@ -21,12 +21,18 @@ def main(request, response):
     </script>
 </head>
 <body>
+    <script nonce="123">
+        let img = document.createElement('img');
+        img.src = "../../support/pass.png";
+        img.onload = function() { window.top.postMessage("img loaded", '*'); }
+        document.body.appendChild(img);
+    </script>
     <style>
         body {
             background-color: maroon;
         }
     </style>
-    <script nonce="abc"> 
+    <script nonce="abc">
         var response = {};
         response["id"] = "%s";
         response["loaded"] = true;

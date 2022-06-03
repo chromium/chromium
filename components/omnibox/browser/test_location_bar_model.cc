@@ -20,14 +20,14 @@ TestLocationBarModel::TestLocationBarModel()
 
 TestLocationBarModel::~TestLocationBarModel() {}
 
-base::string16 TestLocationBarModel::GetFormattedFullURL() const {
+std::u16string TestLocationBarModel::GetFormattedFullURL() const {
   if (!formatted_full_url_)
     return base::UTF8ToUTF16(url_.spec());
 
   return *formatted_full_url_;
 }
 
-base::string16 TestLocationBarModel::GetURLForDisplay() const {
+std::u16string TestLocationBarModel::GetURLForDisplay() const {
   if (!url_for_display_)
     return base::UTF8ToUTF16(url_.spec());
 
@@ -42,14 +42,8 @@ security_state::SecurityLevel TestLocationBarModel::GetSecurityLevel() const {
   return security_level_;
 }
 
-bool TestLocationBarModel::GetDisplaySearchTerms(base::string16* search_terms) {
-  if (display_search_terms_.empty())
-    return false;
-
-  if (search_terms)
-    *search_terms = display_search_terms_;
-
-  return true;
+net::CertStatus TestLocationBarModel::GetCertStatus() const {
+  return cert_status_;
 }
 
 metrics::OmniboxEventProto::PageClassification
@@ -61,12 +55,12 @@ const gfx::VectorIcon& TestLocationBarModel::GetVectorIcon() const {
   return *icon_;
 }
 
-base::string16 TestLocationBarModel::GetSecureDisplayText() const {
+std::u16string TestLocationBarModel::GetSecureDisplayText() const {
   return secure_display_text_;
 }
 
-base::string16 TestLocationBarModel::GetSecureAccessibilityText() const {
-  return base::string16();
+std::u16string TestLocationBarModel::GetSecureAccessibilityText() const {
+  return std::u16string();
 }
 
 bool TestLocationBarModel::ShouldDisplayURL() const {
@@ -75,4 +69,13 @@ bool TestLocationBarModel::ShouldDisplayURL() const {
 
 bool TestLocationBarModel::IsOfflinePage() const {
   return offline_page_;
+}
+
+bool TestLocationBarModel::ShouldPreventElision() const {
+  return should_prevent_elision_;
+}
+
+bool TestLocationBarModel::ShouldUseUpdatedConnectionSecurityIndicators()
+    const {
+  return false;
 }

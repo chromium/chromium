@@ -6,15 +6,14 @@
 
   importScripts('/js-test-resources/global-interface-listing.js');
 
-  var globals = [];
-
-  globalInterfaceListing(global_object,
-                         global_property_names,
-                         false,
-                         string => globals.push(string));
-
   self.addEventListener('message', function(event) {
-    event.ports[0].postMessage({ result: globals });
+    var globals = [];
+
+    globalInterfaceListing(
+        global_object, global_property_names, event.data.platformSpecific,
+        string => globals.push(string));
+
+    event.ports[0].postMessage({result: globals});
   });
 
 })(this);

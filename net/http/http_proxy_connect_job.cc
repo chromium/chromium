@@ -4,21 +4,21 @@
 
 #include "net/http/http_proxy_connect_job.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
-#include "base/numerics/ranges.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "net/base/host_port_pair.h"
 #include "net/base/http_user_agent_settings.h"
 #include "net/base/net_errors.h"
 #include "net/log/net_log_source_type.h"
@@ -38,7 +38,10 @@
 #include "net/spdy/spdy_session_pool.h"
 #include "net/spdy/spdy_stream.h"
 #include "net/ssl/ssl_cert_request_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -47,11 +50,9 @@ namespace {
 // HttpProxyConnectJobs will time out after this many seconds.  Note this is in
 // addition to the timeout for the transport socket.
 #if defined(OS_ANDROID) || defined(OS_IOS)
-constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout =
-    base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout = base::Seconds(10);
 #else
-constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout =
-    base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout = base::Seconds(30);
 #endif
 
 class HttpProxyTimeoutExperiments {
@@ -61,17 +62,10 @@ class HttpProxyTimeoutExperiments {
   ~HttpProxyTimeoutExperiments() = default;
 
   void Init() {
-#if defined(OS_ANDROID) || defined(OS_IOS)
-    min_proxy_connection_timeout_ = base::TimeDelta::FromSeconds(
-        GetInt32Param("min_proxy_connection_timeout_seconds", 8));
-    max_proxy_connection_timeout_ = base::TimeDelta::FromSeconds(
+    min_proxy_connection_timeout_ =
+        base::Seconds(GetInt32Param("min_proxy_connection_timeout_seconds", 8));
+    max_proxy_connection_timeout_ = base::Seconds(
         GetInt32Param("max_proxy_connection_timeout_seconds", 30));
-#else
-    min_proxy_connection_timeout_ = base::TimeDelta::FromSeconds(
-        GetInt32Param("min_proxy_connection_timeout_seconds", 30));
-    max_proxy_connection_timeout_ = base::TimeDelta::FromSeconds(
-        GetInt32Param("max_proxy_connection_timeout_seconds", 60));
-#endif
     ssl_http_rtt_multiplier_ = GetInt32Param("ssl_http_rtt_multiplier", 10);
     non_ssl_http_rtt_multiplier_ =
         GetInt32Param("non_ssl_http_rtt_multiplier", 5);
@@ -122,9 +116,8 @@ class HttpProxyTimeoutExperiments {
 };
 
 HttpProxyTimeoutExperiments* GetProxyTimeoutExperiments() {
-  static base::NoDestructor<HttpProxyTimeoutExperiments>
-      proxy_timeout_experiments;
-  return proxy_timeout_experiments.get();
+  static HttpProxyTimeoutExperiments proxy_timeout_experiments;
+  return &proxy_timeout_experiments;
 }
 
 }  // namespace
@@ -134,7 +127,6 @@ HttpProxySocketParams::HttpProxySocketParams(
     scoped_refptr<SSLSocketParams> ssl_params,
     bool is_quic,
     const HostPortPair& endpoint,
-    bool is_trusted_proxy,
     bool tunnel,
     const NetworkTrafficAnnotationTag traffic_annotation,
     const NetworkIsolationKey& network_isolation_key)
@@ -142,7 +134,6 @@ HttpProxySocketParams::HttpProxySocketParams(
       ssl_params_(std::move(ssl_params)),
       is_quic_(is_quic),
       endpoint_(endpoint),
-      is_trusted_proxy_(is_trusted_proxy),
       tunnel_(tunnel),
       network_isolation_key_(network_isolation_key),
       traffic_annotation_(traffic_annotation) {
@@ -154,9 +145,31 @@ HttpProxySocketParams::HttpProxySocketParams(
   // implies |transport_params_| is null, per the above DCHECKs.
   if (is_quic_)
     DCHECK(ssl_params_);
+
+  // Only supports proxy endpoints without scheme for now.
+  // TODO(crbug.com/1206799): Handle scheme.
+  if (transport_params_) {
+    DCHECK(absl::holds_alternative<HostPortPair>(
+        transport_params_->destination()));
+  } else {
+    DCHECK(absl::holds_alternative<HostPortPair>(
+        ssl_params_->GetDirectConnectionParams()->destination()));
+  }
 }
 
 HttpProxySocketParams::~HttpProxySocketParams() = default;
+
+std::unique_ptr<HttpProxyConnectJob> HttpProxyConnectJob::Factory::Create(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    scoped_refptr<HttpProxySocketParams> params,
+    ConnectJob::Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  return std::make_unique<HttpProxyConnectJob>(
+      priority, socket_tag, common_connect_job_params, std::move(params),
+      delegate, net_log);
+}
 
 HttpProxyConnectJob::HttpProxyConnectJob(
     RequestPriority priority,
@@ -286,7 +299,7 @@ base::TimeDelta HttpProxyConnectJob::AlternateNestedConnectionTimeout(
   if (!network_quality_estimator)
     return default_alternate_timeout;
 
-  base::Optional<base::TimeDelta> http_rtt_estimate =
+  absl::optional<base::TimeDelta> http_rtt_estimate =
       network_quality_estimator->GetHttpRTT();
   if (!http_rtt_estimate)
     return default_alternate_timeout;
@@ -297,7 +310,7 @@ base::TimeDelta HttpProxyConnectJob::AlternateNestedConnectionTimeout(
   base::TimeDelta timeout = multiplier * http_rtt_estimate.value();
   // Ensure that connection timeout is between
   // |min_proxy_connection_timeout_| and |max_proxy_connection_timeout_|.
-  return base::ClampToRange(
+  return base::clamp(
       timeout, GetProxyTimeoutExperiments()->min_proxy_connection_timeout(),
       GetProxyTimeoutExperiments()->max_proxy_connection_timeout());
 }
@@ -603,8 +616,7 @@ int HttpProxyConnectJob::DoSpdyProxyCreateStream() {
     // Create a session direct to the proxy itself
     spdy_session = common_connect_job_params()
                        ->spdy_session_pool->CreateAvailableSessionFromSocket(
-                           key, params_->is_trusted_proxy(),
-                           nested_connect_job_->PassSocket(),
+                           key, nested_connect_job_->PassSocket(),
                            nested_connect_job_->connect_timing(), net_log());
     DCHECK(spdy_session);
     nested_connect_job_.reset();
@@ -641,8 +653,9 @@ int HttpProxyConnectJob::DoSpdyProxyCreateStreamComplete(int result) {
   DCHECK(stream.get());
   // |transport_socket_| will set itself as |stream|'s delegate.
   transport_socket_ = std::make_unique<SpdyProxyClientSocket>(
-      stream, GetUserAgent(), params_->endpoint(), net_log(),
-      http_auth_controller_.get());
+      stream, ProxyServer(GetProxyServerScheme(), GetDestination()),
+      GetUserAgent(), params_->endpoint(), net_log(),
+      http_auth_controller_.get(), common_connect_job_params()->proxy_delegate);
   return transport_socket_->Connect(base::BindOnce(
       &HttpProxyConnectJob::OnIOComplete, base::Unretained(this)));
 }
@@ -659,8 +672,7 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   ResetTimer(kHttpProxyConnectJobTunnelTimeout);
 
   next_state_ = STATE_QUIC_PROXY_CREATE_STREAM;
-  const HostPortPair& proxy_server =
-      ssl_params->GetDirectConnectionParams()->destination();
+  const HostPortPair& proxy_server = GetDestination();
   quic_stream_request_ = std::make_unique<QuicStreamRequest>(
       common_connect_job_params()->quic_stream_factory);
 
@@ -668,10 +680,14 @@ int HttpProxyConnectJob::DoQuicProxyCreateSession() {
   quic::ParsedQuicVersion quic_version =
       common_connect_job_params()->quic_supported_versions->front();
   return quic_stream_request_->Request(
-      proxy_server, quic_version, ssl_params->privacy_mode(),
-      kH2QuicTunnelPriority, socket_tag(), params_->network_isolation_key(),
-      ssl_params->GetDirectConnectionParams()->disable_secure_dns(),
-      ssl_params->ssl_config().GetCertVerifyFlags(),
+      // TODO(crbug.com/1206799) Pass the destination directly once it's
+      // converted to contain scheme.
+      url::SchemeHostPort(url::kHttpsScheme, proxy_server.host(),
+                          proxy_server.port()),
+      quic_version, ssl_params->privacy_mode(), kH2QuicTunnelPriority,
+      socket_tag(), params_->network_isolation_key(),
+      ssl_params->GetDirectConnectionParams()->secure_dns_policy(),
+      /*use_dns_aliases=*/false, ssl_params->ssl_config().GetCertVerifyFlags(),
       GURL("https://" + proxy_server.ToString()), net_log(),
       &quic_net_error_details_,
       /*failed_on_default_network_callback=*/CompletionOnceCallback(),
@@ -710,8 +726,10 @@ int HttpProxyConnectJob::DoQuicProxyCreateStreamComplete(int result) {
   quic_stream->SetPriority(precedence);
 
   transport_socket_ = std::make_unique<QuicProxyClientSocket>(
-      std::move(quic_stream), std::move(quic_session_), GetUserAgent(),
-      params_->endpoint(), net_log(), http_auth_controller_.get());
+      std::move(quic_stream), std::move(quic_session_),
+      ProxyServer(GetProxyServerScheme(), GetDestination()), GetUserAgent(),
+      params_->endpoint(), net_log(), http_auth_controller_.get(),
+      common_connect_job_params()->proxy_delegate);
   return transport_socket_->Connect(base::BindOnce(
       &HttpProxyConnectJob::OnIOComplete, base::Unretained(this)));
 }
@@ -794,7 +812,7 @@ void HttpProxyConnectJob::OnTimedOutInternal() {
 
 int HttpProxyConnectJob::HandleConnectResult(int result) {
   if (result == OK)
-    SetSocket(std::move(transport_socket_));
+    SetSocket(std::move(transport_socket_), absl::nullopt /* dns_aliases */);
   return result;
 }
 
@@ -809,12 +827,18 @@ void HttpProxyConnectJob::OnAuthChallenge() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-const HostPortPair& HttpProxyConnectJob::GetDestination() {
+const HostPortPair& HttpProxyConnectJob::GetDestination() const {
+  const TransportSocketParams* transport_params;
   if (params_->transport_params()) {
-    return params_->transport_params()->destination();
+    transport_params = params_->transport_params().get();
   } else {
-    return params_->ssl_params()->GetDirectConnectionParams()->destination();
+    transport_params = params_->ssl_params()->GetDirectConnectionParams().get();
   }
+
+  // TODO(crbug.com/1206799): Handle proxy destination with scheme.
+  DCHECK(
+      absl::holds_alternative<HostPortPair>(transport_params->destination()));
+  return absl::get<HostPortPair>(transport_params->destination());
 }
 
 std::string HttpProxyConnectJob::GetUserAgent() const {
@@ -825,11 +849,10 @@ std::string HttpProxyConnectJob::GetUserAgent() const {
 
 SpdySessionKey HttpProxyConnectJob::CreateSpdySessionKey() const {
   return SpdySessionKey(
-      params_->ssl_params()->GetDirectConnectionParams()->destination(),
-      ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
+      GetDestination(), ProxyServer::Direct(), PRIVACY_MODE_DISABLED,
       SpdySessionKey::IsProxySession::kTrue, socket_tag(),
       params_->network_isolation_key(),
-      params_->ssl_params()->GetDirectConnectionParams()->disable_secure_dns());
+      params_->ssl_params()->GetDirectConnectionParams()->secure_dns_policy());
 }
 
 }  // namespace net

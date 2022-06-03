@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_REQUEST_FILE_SYSTEM_NOTIFICATION_H_
 #define CHROME_BROWSER_EXTENSIONS_API_FILE_SYSTEM_REQUEST_FILE_SYSTEM_NOTIFICATION_H_
 
-#include <memory>
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 
 class Profile;

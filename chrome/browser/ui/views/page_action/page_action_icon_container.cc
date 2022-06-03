@@ -6,37 +6,30 @@
 
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/layout/box_layout.h"
-
-// static
-const char
-    PageActionIconContainerView::kPageActionIconContainerViewClassName[] =
-        "PageActionIconContainerView";
 
 PageActionIconContainerView::PageActionIconContainerView(
     const PageActionIconParams& params)
     : controller_(std::make_unique<PageActionIconController>()) {
-  views::BoxLayout* layout =
-      SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
-          params.between_icon_spacing));
+  SetBetweenChildSpacing(params.between_icon_spacing);
   // Right align to clip the leftmost items first when not enough space.
-  layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kEnd);
+  SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kEnd);
 
   controller_->Init(params, this);
 }
 
 PageActionIconContainerView::~PageActionIconContainerView() = default;
 
-const char* PageActionIconContainerView::GetClassName() const {
-  return kPageActionIconContainerViewClassName;
-}
-
 void PageActionIconContainerView::ChildPreferredSizeChanged(
     views::View* child) {
   PreferredSizeChanged();
 }
 
-void PageActionIconContainerView::AddPageActionIcon(views::View* icon) {
-  AddChildView(icon);
+void PageActionIconContainerView::AddPageActionIcon(
+    std::unique_ptr<views::View> icon) {
+  AddChildView(std::move(icon));
 }
+
+BEGIN_METADATA(PageActionIconContainerView, views::View)
+END_METADATA

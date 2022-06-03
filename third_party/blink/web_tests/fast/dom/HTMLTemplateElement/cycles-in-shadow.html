@@ -9,7 +9,7 @@ description('Test that cycle detection traverses over both templates and shadow 
 var outerDiv = document.getElementById('container');
 var template = document.querySelector('template');
 var div = template.content.firstChild;
-var shadowRoot = div.createShadowRoot();
+var shadowRoot = div.attachShadow({mode: 'open'});
 var shadowDiv = shadowRoot.appendChild(document.createElement('div'));
 shouldThrow('shadowDiv.appendChild(outerDiv)');
 </script>

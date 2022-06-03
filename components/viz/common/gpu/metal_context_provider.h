@@ -8,8 +8,9 @@
 #include <memory>
 #include "components/metal_util/types.h"
 #include "components/viz/common/viz_metal_context_provider_export.h"
+#include "third_party/skia/include/gpu/GrContextOptions.h"
 
-class GrContext;
+class GrDirectContext;
 
 namespace gl {
 class ProgressReporter;
@@ -22,10 +23,11 @@ class VIZ_METAL_CONTEXT_PROVIDER_EXPORT MetalContextProvider {
  public:
   // Create and return a MetalContextProvider if possible. May return nullptr
   // if no Metal devices exist.
-  static std::unique_ptr<MetalContextProvider> Create();
+  static std::unique_ptr<MetalContextProvider> Create(
+      const GrContextOptions& context_options = GrContextOptions());
   virtual ~MetalContextProvider() {}
 
-  virtual GrContext* GetGrContext() = 0;
+  virtual GrDirectContext* GetGrContext() = 0;
   virtual metal::MTLDevicePtr GetMTLDevice() = 0;
 
   // Set the progress reported used to prevent watchdog timeouts during longer

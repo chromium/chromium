@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "media/base/user_input_monitor.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace audio {
@@ -23,14 +22,12 @@ TEST(AudioServiceUserInputMonitorTest, CreateWithValidHandle) {
           base::ReadOnlySharedMemoryRegion::Create(sizeof(uint32_t)));
   ASSERT_TRUE(shmem->IsValid());
 
-  mojo::ScopedSharedBufferHandle handle =
-      mojo::WrapReadOnlySharedMemoryRegion(shmem->region.Duplicate());
-  EXPECT_TRUE(UserInputMonitor::Create(std::move(handle)));
+  EXPECT_TRUE(UserInputMonitor::Create(shmem->region.Duplicate()));
 }
 
 TEST(AudioServiceUserInputMonitorTest, CreateWithInvalidHandle_ReturnsNullptr) {
   EXPECT_EQ(nullptr,
-            UserInputMonitor::Create(mojo::ScopedSharedBufferHandle()));
+            UserInputMonitor::Create(base::ReadOnlySharedMemoryRegion()));
 }
 
 TEST(AudioServiceUserInputMonitorTest, GetKeyPressCount) {
@@ -39,10 +36,8 @@ TEST(AudioServiceUserInputMonitorTest, GetKeyPressCount) {
           base::ReadOnlySharedMemoryRegion::Create(sizeof(uint32_t)));
   ASSERT_TRUE(shmem->IsValid());
 
-  mojo::ScopedSharedBufferHandle handle =
-      mojo::WrapReadOnlySharedMemoryRegion(shmem->region.Duplicate());
   std::unique_ptr<UserInputMonitor> monitor =
-      UserInputMonitor::Create(std::move(handle));
+      UserInputMonitor::Create(shmem->region.Duplicate());
   EXPECT_TRUE(monitor);
 
   media::WriteKeyPressMonitorCount(shmem->mapping, kKeyPressCount);
@@ -55,10 +50,8 @@ TEST(AudioServiceUserInputMonitorTest, GetKeyPressCountAfterMemoryUnmap) {
           base::ReadOnlySharedMemoryRegion::Create(sizeof(uint32_t)));
   ASSERT_TRUE(shmem->IsValid());
 
-  mojo::ScopedSharedBufferHandle handle =
-      mojo::WrapReadOnlySharedMemoryRegion(shmem->region.Duplicate());
   std::unique_ptr<UserInputMonitor> monitor =
-      UserInputMonitor::Create(std::move(handle));
+      UserInputMonitor::Create(shmem->region.Duplicate());
   EXPECT_TRUE(monitor);
 
   media::WriteKeyPressMonitorCount(shmem->mapping, kKeyPressCount);

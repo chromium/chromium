@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -34,10 +33,11 @@ class SharedURLLoaderFactory;
 // family members and their properties.
 class FamilyInfoFetcher {
  public:
-  enum ErrorCode {
-    TOKEN_ERROR,    // Failed to get OAuth2 token.
-    NETWORK_ERROR,  // Network failure.
-    SERVICE_ERROR,  // Service returned an error or malformed reply.
+  enum class ErrorCode : int {
+    kSuccess = 0,
+    kTokenError,    // Failed to get OAuth2 token.
+    kNetworkError,  // Network failure.
+    kServiceError   // Service returned an error or malformed reply.
   };
   // Note: If you add or update an entry, also update |kFamilyMemberRoleStrings|
   // in the .cc file.
@@ -87,6 +87,10 @@ class FamilyInfoFetcher {
       Consumer* consumer,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  FamilyInfoFetcher(const FamilyInfoFetcher&) = delete;
+  FamilyInfoFetcher& operator=(const FamilyInfoFetcher&) = delete;
+
   ~FamilyInfoFetcher();
 
   // Public so tests can use them.
@@ -132,8 +136,6 @@ class FamilyInfoFetcher {
   std::string access_token_;
   bool access_token_expired_;
   std::unique_ptr<network::SimpleURLLoader> simple_url_loader_;
-
-  DISALLOW_COPY_AND_ASSIGN(FamilyInfoFetcher);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_CHILD_ACCOUNTS_FAMILY_INFO_FETCHER_H_

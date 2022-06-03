@@ -7,7 +7,7 @@
 
 [
     Exposed=(Worker),
-    ImplementedAs=WorkerNavigatorPermissions,
+    ImplementedAs=Permissions,
     RuntimeEnabled=Permissions
 ] partial interface WorkerNavigator {
     readonly attribute Permissions permissions;

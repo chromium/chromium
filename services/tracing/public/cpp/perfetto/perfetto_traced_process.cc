@@ -4,18 +4,27 @@
 
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 
-#include "base/feature_list.h"
+#include "base/callback_helpers.h"
+#include "base/command_line.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/trace_event/trace_config.h"
+#include "base/trace_event/trace_log.h"
+#include "base/tracing/perfetto_platform.h"
 #include "build/build_config.h"
 #include "services/tracing/public/cpp/perfetto/dummy_producer.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_tracing_backend.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
+#include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
+#include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "services/tracing/public/mojom/tracing_service.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
-#if defined(OS_ANDROID)
+#if defined(OS_POSIX)
 // As per 'gn help check':
 /*
   If you have conditional includes, make sure the build conditions and the
@@ -24,48 +33,109 @@
 */
 // We add the nogncheck to ensure this doesn't trigger incorrect errors on
 // non-android builds.
-#include "services/tracing/public/cpp/perfetto/android_system_producer.h"  // nogncheck
+#include "services/tracing/public/cpp/perfetto/posix_system_producer.h"  // nogncheck
 #include "third_party/perfetto/include/perfetto/ext/tracing/ipc/default_socket.h"  // nogncheck
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_POSIX)
 
 namespace tracing {
 namespace {
-std::unique_ptr<SystemProducer> NewSystemProducer(PerfettoTaskRunner* runner,
-                                                  const char* socket_name) {
-#if defined(OS_ANDROID)
-  if (ShouldSetupSystemTracing()) {
-    DCHECK(socket_name);
-    return std::make_unique<AndroidSystemProducer>(socket_name, runner);
-  }
-#endif  // defined(OS_ANDROID)
+#if defined(OS_POSIX)
+// Set to use the dummy producer for Chrome OS browser_tests and
+// content_browsertests to keep the system producer from causing flakes.
+static bool g_system_producer_enabled = true;
+#endif
+
+std::unique_ptr<SystemProducer> NewSystemProducer(
+    base::tracing::PerfettoTaskRunner* runner,
+    const char* socket_name) {
+#if defined(OS_POSIX)
+  DCHECK(socket_name);
+  if (g_system_producer_enabled)
+    return std::make_unique<PosixSystemProducer>(socket_name, runner);
+#endif  // defined(OS_POSIX)
   return std::make_unique<DummyProducer>(runner);
 }
 
 const char* MaybeSocket() {
-#if defined(OS_ANDROID)
+#if defined(OS_POSIX)
   return perfetto::GetProducerSocket();
 #else
   return nullptr;
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_POSIX)
+}
+
+void OnPerfettoLogMessage(perfetto::base::LogMessageCallbackArgs args) {
+  // Perfetto levels start at 0, base's at -1.
+  int severity = static_cast<int>(args.level) - 1;
+  ::logging::LogMessage(args.filename, args.line, severity).stream()
+      << args.message;
 }
 }  // namespace
 
 PerfettoTracedProcess::DataSourceBase::DataSourceBase(const std::string& name)
     : name_(name) {
   DCHECK(!name.empty());
+  DETACH_FROM_SEQUENCE(perfetto_sequence_checker_);
 }
 
 PerfettoTracedProcess::DataSourceBase::~DataSourceBase() = default;
 
-void PerfettoTracedProcess::DataSourceBase::StartTracingWithID(
+void PerfettoTracedProcess::DataSourceBase::StartTracing(
     uint64_t data_source_id,
     PerfettoProducer* producer,
     const perfetto::DataSourceConfig& data_source_config) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+
   data_source_id_ = data_source_id;
-  DCHECK(!producer_) << name_;
+  // Producer may already be set if startup tracing in TraceEventDataSource.
+  DCHECK(!producer_ || producer_ == producer) << name_;
   producer_ = producer;
-  StartTracing(producer_, data_source_config);
+  StartTracingImpl(producer_, data_source_config);
 }
+
+void PerfettoTracedProcess::DataSourceBase::StopTracing(
+    base::OnceClosure stop_complete_callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(perfetto_sequence_checker_);
+
+  StopTracingImpl(base::BindOnce(
+      [](DataSourceBase* self, base::OnceClosure original_callback) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(self->perfetto_sequence_checker_);
+        self->producer_ = nullptr;
+        if (original_callback)
+          std::move(original_callback).Run();
+      },
+      this,  // OK to capture |this| because the callback is called by |this|.
+      std::move(stop_complete_callback)));
+}
+
+void PerfettoTracedProcess::DataSourceBase::StartTracingImpl(
+    PerfettoProducer* producer,
+    const perfetto::DataSourceConfig& data_source_config) {}
+
+void PerfettoTracedProcess::DataSourceBase::StopTracingImpl(
+    base::OnceClosure stop_complete_callback) {
+  if (stop_complete_callback)
+    std::move(stop_complete_callback).Run();
+}
+
+void PerfettoTracedProcess::DataSourceBase::Flush(
+    base::RepeatingClosure flush_complete_callback) {
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  perfetto::TrackEvent::Flush();
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  if (flush_complete_callback)
+    std::move(flush_complete_callback).Run();
+}
+
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+base::SequencedTaskRunner*
+PerfettoTracedProcess::DataSourceBase::GetTaskRunner() {
+  return PerfettoTracedProcess::Get()
+      ->GetTaskRunner()
+      ->GetOrCreateTaskRunner()
+      .get();
+}
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 
 // static
 PerfettoTracedProcess* PerfettoTracedProcess::Get() {
@@ -74,42 +144,41 @@ PerfettoTracedProcess* PerfettoTracedProcess::Get() {
 }
 
 PerfettoTracedProcess::PerfettoTracedProcess()
-    : PerfettoTracedProcess(MaybeSocket()) {}
-
-PerfettoTracedProcess::PerfettoTracedProcess(const char* system_socket)
-    : producer_client_(std::make_unique<ProducerClient>(GetTaskRunner())) {
-  CHECK(IsTracingInitialized());
+    : producer_client_(std::make_unique<ProducerClient>(GetTaskRunner())),
+      platform_(std::make_unique<base::tracing::PerfettoPlatform>()),
+      tracing_backend_(std::make_unique<PerfettoTracingBackend>(*this)) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  // All communication with the system Perfetto service should occur on a single
-  // sequence. To ensure we set up the socket correctly we construct the
-  // |system_producer_endpoint_| on the task runner it will use.
-  GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](PerfettoTracedProcess* ptr, const char* socket) {
-                       ptr->system_producer_endpoint_ =
-                           NewSystemProducer(GetTaskRunner(), socket);
-                     },
-                     base::Unretained(this), system_socket));
 }
 
 PerfettoTracedProcess::~PerfettoTracedProcess() {}
 
+void PerfettoTracedProcess::SetConsumerConnectionFactory(
+    ConsumerConnectionFactory factory,
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  consumer_connection_factory_ = factory;
+  consumer_connection_task_runner_ = task_runner;
+}
+
+void PerfettoTracedProcess::ConnectProducer(
+    mojo::PendingRemote<mojom::PerfettoService> perfetto_service) {
+  if (base::FeatureList::IsEnabled(
+          features::kEnablePerfettoClientApiProducer)) {
+    DCHECK(pending_producer_callback_);
+    std::move(pending_producer_callback_).Run(std::move(perfetto_service));
+  } else {
+    producer_client_->Connect(std::move(perfetto_service));
+  }
+}
+
 void PerfettoTracedProcess::ClearDataSourcesForTesting() {
-  base::RunLoop source_cleared;
-  GetTaskRunner()->GetOrCreateTaskRunner()->PostTaskAndReply(
-      FROM_HERE,
-      base::BindOnce(
-          [](PerfettoTracedProcess* traced_process) {
-            traced_process->data_sources_.clear();
-          },
-          base::Unretained(this)),
-      source_cleared.QuitClosure());
-  source_cleared.Run();
+  base::AutoLock lock(data_sources_lock_);
+  data_sources_.clear();
 }
 
 std::unique_ptr<ProducerClient>
 PerfettoTracedProcess::SetProducerClientForTesting(
     std::unique_ptr<ProducerClient> client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto old_producer_client_for_testing = std::move(producer_client_);
   producer_client_ = std::move(client);
   return old_producer_client_for_testing;
@@ -118,106 +187,302 @@ PerfettoTracedProcess::SetProducerClientForTesting(
 std::unique_ptr<SystemProducer>
 PerfettoTracedProcess::SetSystemProducerForTesting(
     std::unique_ptr<SystemProducer> producer) {
-  auto old_for_testing = std::move(system_producer_endpoint_);
-  system_producer_endpoint_ = std::move(producer);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto old_for_testing = std::move(system_producer_);
+  system_producer_ = std::move(producer);
   return old_for_testing;
 }
 
-// static
-void PerfettoTracedProcess::DeleteSoonForTesting(
-    std::unique_ptr<PerfettoTracedProcess> perfetto_traced_process) {
-  GetTaskRunner()->GetOrCreateTaskRunner()->DeleteSoon(
-      FROM_HERE, std::move(perfetto_traced_process));
+void PerfettoTracedProcess::CreateProducerConnection(
+    base::OnceCallback<void(mojo::PendingRemote<mojom::PerfettoService>)>
+        callback) {
+  // This is called on Perfetto's internal TracingMuxerImpl thread, so we need
+  // to hop over to the tracing sequence.
+  GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceCallback<void(
+                 mojo::PendingRemote<mojom::PerfettoService>)> callback) {
+            DCHECK_CALLED_ON_VALID_SEQUENCE(
+                PerfettoTracedProcess::Get()->sequence_checker_);
+            // Perfetto will attempt to create the producer connection as soon
+            // as the client library is initialized, which is before we have a a
+            // connection to the tracing service. Store the connection callback
+            // until ConnectProducer() is called.
+            // DCHECK(!pending_producer_callback_);
+            PerfettoTracedProcess::Get()->pending_producer_callback_ =
+                std::move(callback);
+          },
+          std::move(callback)));
+}
+
+void PerfettoTracedProcess::CreateConsumerConnection(
+    base::OnceCallback<void(mojo::PendingRemote<mojom::ConsumerHost>)>
+        callback) {
+  // This is called on Perfetto's internal TracingMuxerImpl thread, so we need
+  // to hop over to the tracing sequence.
+  GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](base::OnceCallback<void(mojo::PendingRemote<mojom::ConsumerHost>)>
+                 callback) {
+            auto* self = PerfettoTracedProcess::Get();
+            DCHECK_CALLED_ON_VALID_SEQUENCE(self->sequence_checker_);
+            self->consumer_connection_task_runner_->PostTask(
+                FROM_HERE,
+                base::BindOnce(
+                    [](ConsumerConnectionFactory factory,
+                       base::OnceCallback<void(
+                           mojo::PendingRemote<mojom::ConsumerHost>)>
+                           callback) {
+                      auto& tracing_service = factory();
+                      mojo::PendingRemote<mojom::ConsumerHost>
+                          consumer_host_remote;
+                      tracing_service.BindConsumerHost(
+                          consumer_host_remote
+                              .InitWithNewPipeAndPassReceiver());
+                      std::move(callback).Run(std::move(consumer_host_remote));
+                    },
+                    self->consumer_connection_factory_, std::move(callback)));
+          },
+          std::move(callback)));
 }
 
 // We never destroy the taskrunner as we may need it for cleanup
 // of TraceWriters in TLS, which could happen after the PerfettoTracedProcess
 // is deleted.
 // static
-PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
-  static base::NoDestructor<PerfettoTaskRunner> task_runner(nullptr);
+base::tracing::PerfettoTaskRunner* PerfettoTracedProcess::GetTaskRunner() {
+  static base::NoDestructor<base::tracing::PerfettoTaskRunner> task_runner(
+      nullptr);
   return task_runner.get();
 }
 
 // static
-void PerfettoTracedProcess::ResetTaskRunnerForTesting(
+std::unique_ptr<PerfettoTracedProcess::TestHandle>
+PerfettoTracedProcess::SetupForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  // Make sure Perfetto was properly torn down in any prior tests.
+  DCHECK(!perfetto::Tracing::IsInitialized());
   GetTaskRunner()->ResetTaskRunnerForTesting(task_runner);
+  Get()->ClearDataSourcesForTesting();  // IN-TEST
+  // On the first call within the process's lifetime, this will call
+  // PerfettoTracedProcess::Get(), ensuring PerfettoTracedProcess is created.
   InitTracingPostThreadPoolStartAndFeatureList();
-  // Detaching the sequence_checker_ must happen after we reset the task runner.
-  // This is because the Get() could call the constructor (if this is the first
-  // call to Get()) which would then PostTask which would create races if we
-  // reset the task runner right afterwards.
+  // Disassociate the PerfettoTracedProcess from any prior task runner.
   DETACH_FROM_SEQUENCE(PerfettoTracedProcess::Get()->sequence_checker_);
-  // Call Get() explicitly. This ensures that we constructed the
-  // PerfettoTracedProcess. On some tests (like cast linux) the DETACH macro is
-  // compiled to nothing, which woud cause this PostTask to access a nullptr the
-  // producer requires a PostTask from inside the constructor.
-  PerfettoTracedProcess::Get();
   PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce([]() {
-        auto* producer =
-            PerfettoTracedProcess::Get()->SystemProducerForTesting();
-        CHECK(producer);
-        producer->ResetSequenceForTesting();
+        // Lock the sequence checker onto the new task runner.
+        DCHECK_CALLED_ON_VALID_SEQUENCE(
+            PerfettoTracedProcess::Get()->sequence_checker_);
+        PerfettoTracedProcess::Get()
+            ->producer_client()
+            ->ResetSequenceForTesting();
+        if (PerfettoTracedProcess::Get()->system_producer()) {
+          PerfettoTracedProcess::Get()
+              ->system_producer()
+              ->ResetSequenceForTesting();
+        }
       }));
-}
-
-// static
-void PerfettoTracedProcess::ReconstructForTesting(const char* socket_name) {
-  base::RunLoop finished_reconstruction_runloop;
-  // The Get() call ensures that the construct has run and any required tasks
-  // have been completed before this lambda below is executed.
-  Get()->GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          [](base::OnceClosure on_finish, const char* socket_name) {
-            PerfettoTracedProcess::Get()->~PerfettoTracedProcess();
-            new (PerfettoTracedProcess::Get())
-                PerfettoTracedProcess(socket_name);
-            // The constructor and destructor needs to be run on the proper
-            // sequence, but the constructor also calls PostTask so we need to
-            // place a task afterwards to block until everything is initialized.
-            GetTaskRunner()->GetOrCreateTaskRunner()->PostTaskAndReply(
-                FROM_HERE, base::DoNothing(), std::move(on_finish));
-          },
-          finished_reconstruction_runloop.QuitClosure(), socket_name));
-  finished_reconstruction_runloop.Run();
+  return std::make_unique<TestHandle>();
 }
 
 void PerfettoTracedProcess::AddDataSource(DataSourceBase* data_source) {
-  GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&PerfettoTracedProcess::AddDataSourceOnSequence,
-                                base::Unretained(this), data_source));
+  bool inserted;
+  {
+    base::AutoLock lock(data_sources_lock_);
+    inserted = data_sources_.insert(data_source).second;
+  }
+
+  // Before the thread pool is up, the producers are not yet connected to the
+  // service, so don't need to be notified about new data source registrations.
+  if (inserted && GetTaskRunner()->HasTaskRunner()) {
+    GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](DataSourceBase* data_source) {
+                         PerfettoTracedProcess* traced_process =
+                             PerfettoTracedProcess::Get();
+                         traced_process->producer_client()->NewDataSourceAdded(
+                             data_source);
+                         if (traced_process->system_producer()) {
+                           traced_process->system_producer()
+                               ->NewDataSourceAdded(data_source);
+                         }
+                       },
+                       base::Unretained(data_source)));
+  }
 }
 
-const std::set<PerfettoTracedProcess::DataSourceBase*>&
+std::set<PerfettoTracedProcess::DataSourceBase*>
 PerfettoTracedProcess::data_sources() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AutoLock lock(data_sources_lock_);
   return data_sources_;
+}
+
+bool PerfettoTracedProcess::SetupStartupTracing(
+    PerfettoProducer* producer,
+    const base::trace_event::TraceConfig& trace_config,
+    bool privacy_filtering_enabled) {
+  if (producer_client_->IsTracingActive() ||
+      (system_producer_ && system_producer_->IsTracingActive())) {
+    LOG(WARNING) << "Cannot setup startup tracing - tracing is already active";
+    return false;
+  }
+
+  if (!producer->SetupStartupTracing(trace_config, privacy_filtering_enabled)) {
+    LOG(ERROR) << "Failed to setup startup tracing for this process";
+    return false;
+  }
+
+  return true;
+}
+
+void PerfettoTracedProcess::SetupClientLibrary() {
+  perfetto::TracingInitArgs init_args;
+  init_args.platform = platform_.get();
+  init_args.custom_backend = tracing_backend_.get();
+  init_args.backends |= perfetto::kCustomBackend;
+// TODO(eseckler): Not yet supported on Android to avoid binary size regression
+// of the consumer IPC messages. We'll need a way to exclude them.
+#if defined(OS_POSIX) && !defined(OS_ANDROID)
+  if (ShouldSetupSystemTracing()) {
+    init_args.backends |= perfetto::kSystemBackend;
+    init_args.tracing_policy = this;
+  }
+#endif
+  // Proxy perfetto log messages into Chrome logs, so they are retained on all
+  // platforms. In particular, on Windows, Perfetto's stderr log messages are
+  // not reliabe.
+  init_args.log_message_callback = &OnPerfettoLogMessage;
+  perfetto::Tracing::Initialize(init_args);
+}
+
+void PerfettoTracedProcess::OnThreadPoolAvailable() {
+  SetupClientLibrary();
+
+  // Create our task runner now, so that ProducerClient/SystemProducer are
+  // notified about future data source registrations and schedule any necessary
+  // startup tracing timeouts.
+  GetTaskRunner()->GetOrCreateTaskRunner();
+
+  producer_client_->OnThreadPoolAvailable();
+  if (system_producer_)
+    system_producer_->OnThreadPoolAvailable();
+  if (!platform_->did_start_task_runner())
+    platform_->StartTaskRunner(GetTaskRunner()->GetOrCreateTaskRunner());
+}
+
+void PerfettoTracedProcess::SetAllowSystemTracingConsumerCallback(
+    base::RepeatingCallback<bool()> callback) {
+  base::AutoLock lock(allow_system_consumer_lock_);
+  DCHECK(!allow_system_consumer_callback_ || !callback);
+  allow_system_consumer_callback_ = std::move(callback);
+  allow_system_consumer_callback_runner_ =
+      base::SequencedTaskRunnerHandle::Get();
+}
+
+void PerfettoTracedProcess::SetAllowSystemTracingConsumerForTesting(
+    bool enabled) {
+  base::AutoLock lock(allow_system_consumer_lock_);
+  system_consumer_enabled_for_testing_ = enabled;
+}
+
+void PerfettoTracedProcess::ShouldAllowConsumerSession(
+    const perfetto::TracingPolicy::ShouldAllowConsumerSessionArgs& args) {
+  // Consumer connections should only be attempted in the browser process.
+  CHECK(base::CommandLine::ForCurrentProcess()
+            ->GetSwitchValueASCII("type")
+            .empty());
+
+  // Integrated tracing backends are always allowed.
+  if (args.backend_type != perfetto::BackendType::kSystemBackend) {
+    args.result_callback(true);
+    return;
+  }
+
+  // System backend is only allowed in tests or if the embedder provided a
+  // callback that allows it.
+  ShouldAllowSystemConsumerSession(args.result_callback);
+}
+
+void PerfettoTracedProcess::ShouldAllowSystemConsumerSession(
+    std::function<void(bool)> result_callback) {
+  base::AutoLock lock(allow_system_consumer_lock_);
+
+  if (system_consumer_enabled_for_testing_) {
+    result_callback(true);
+    return;
+  }
+  if (!allow_system_consumer_callback_) {
+    result_callback(false);
+    return;
+  }
+
+  if (!allow_system_consumer_callback_runner_->RunsTasksInCurrentSequence()) {
+    allow_system_consumer_callback_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&PerfettoTracedProcess::ShouldAllowSystemConsumerSession,
+                       base::Unretained(this), result_callback));
+    return;
+  }
+
+  bool result = allow_system_consumer_callback_.Run();
+  result_callback(result);
+}
+
+void PerfettoTracedProcess::SetSystemProducerEnabledForTesting(bool enabled) {
+#if defined(OS_POSIX)
+  // If set to disabled, use the dummy implementation to prevent the real system
+  // producer from interfering with browser tests.
+  g_system_producer_enabled = enabled;
+#endif
+}
+
+void PerfettoTracedProcess::SetupSystemTracing(
+    absl::optional<const char*> system_socket) {
+  // Note: Not checking for a valid sequence here so that we don't inadvertently
+  // bind this object on the wrong sequence during early initialization.
+  DCHECK(!system_producer_);
+  system_producer_ = NewSystemProducer(
+      GetTaskRunner(), system_socket ? *system_socket : MaybeSocket());
+  // If the thread pool is available, register all the known data sources with
+  // the system producer too.
+  if (!GetTaskRunner()->HasTaskRunner())
+    return;
+  system_producer_->OnThreadPoolAvailable();
+  GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
+      FROM_HERE, base::BindOnce([]() {
+        PerfettoTracedProcess* traced_process = PerfettoTracedProcess::Get();
+        base::AutoLock lock(traced_process->data_sources_lock_);
+        for (auto* data_source : traced_process->data_sources_) {
+          traced_process->system_producer()->NewDataSourceAdded(data_source);
+        }
+      }));
 }
 
 bool PerfettoTracedProcess::CanStartTracing(
     PerfettoProducer* producer,
     base::OnceCallback<void()> start_tracing) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(producer);
   // If the |producer| asking is the local producer_client_ it has priority so
   // even if the other endpoint is tracing shut down the other endpoint and let
   // the |producer_client_| go. The system Producer will periodically attempt to
   // reconnect if we call DisconnectWithReply().
   if (producer == producer_client_.get()) {
-    if (system_producer_endpoint_->IsTracingActive()) {
-      system_producer_endpoint_->DisconnectWithReply(std::move(start_tracing));
+    if (system_producer_ && system_producer_->IsTracingActive()) {
+      system_producer_->DisconnectWithReply(std::move(start_tracing));
       return true;
     }
-  } else if (producer == system_producer_endpoint_.get()) {
+  } else if (producer == system_producer_.get()) {
     if (producer_client_->IsTracingActive()) {
-      system_producer_endpoint_->DisconnectWithReply(base::DoNothing().Once());
+      system_producer_->DisconnectWithReply(base::DoNothing());
       return false;
     }
   } else {
     // In tests this is possible due to the periodic polling of CanStartTracing
-    // by the AndroidSystemProducer, when we swap it out for a
+    // by the PosixSystemProducer, when we swap it out for a
     // MockSystemProducer there can be three PerfettoProducers calling this
     // function. In production nothing ever calls the
     // |Set.*ProducerForTesting()| functions so this should never be reached.
@@ -231,7 +496,6 @@ bool PerfettoTracedProcess::CanStartTracing(
 
 void PerfettoTracedProcess::ActivateSystemTriggers(
     const std::vector<std::string>& triggers) {
-  DCHECK(system_producer_endpoint_.get());
   if (!GetTaskRunner()->GetOrCreateTaskRunner()->RunsTasksInCurrentSequence()) {
     GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
         FROM_HERE,
@@ -239,26 +503,21 @@ void PerfettoTracedProcess::ActivateSystemTriggers(
                        base::Unretained(this), triggers));
     return;
   }
-  system_producer_endpoint_->ActivateTriggers(triggers);
+  system_producer_->ActivateTriggers(triggers);
 }
 
-ProducerClient* PerfettoTracedProcess::producer_client() {
+ProducerClient* PerfettoTracedProcess::producer_client() const {
   return producer_client_.get();
 }
 
-SystemProducer* PerfettoTracedProcess::SystemProducerForTesting() {
-  return system_producer_endpoint_.get();
+SystemProducer* PerfettoTracedProcess::system_producer() const {
+  return system_producer_.get();
 }
 
-void PerfettoTracedProcess::AddDataSourceOnSequence(
-    DataSourceBase* data_source) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (data_sources_.insert(data_source).second) {
-    DCHECK(producer_client_);
-    DCHECK(system_producer_endpoint_);
-    producer_client_->NewDataSourceAdded(data_source);
-    system_producer_endpoint_->NewDataSourceAdded(data_source);
-  }
+PerfettoTracedProcess::TestHandle::~TestHandle() {
+  // TODO(skyostil): We only uninitialize Perfetto for now, but there may also
+  // be other tracing-related state which should not leak between tests.
+  perfetto::Tracing::ResetForTesting();
 }
+
 }  // namespace tracing

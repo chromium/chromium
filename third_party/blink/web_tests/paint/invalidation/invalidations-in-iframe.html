@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<style>
+  iframe {
+    display: block;
+    border: 0;
+  }
+</style>
+<script src="resources/text-based-repaint.js"></script>
+<script>
+// Tests that invalidations are generated for composited sub-frames.
+function repaintTest() {
+  document.querySelector("iframe").contentDocument.querySelector("div").style.backgroundColor = "#88f";
+  document.querySelector("div").style.backgroundColor = "#8f8";
+}
+window.addEventListener("load", runRepaintTest);
+</script>
+<iframe srcdoc="&lt;div style='will-change:transform;width:100px;height:100px;'&gt;&lt;/div&gt;"></iframe>
+<div style="width:200px; height:200px"></div>

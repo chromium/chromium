@@ -47,18 +47,13 @@ SVGStaticStringList::SVGStaticStringList(SVGElement* context_element,
 
 SVGStaticStringList::~SVGStaticStringList() = default;
 
-void SVGStaticStringList::Trace(blink::Visitor* visitor) {
+void SVGStaticStringList::Trace(Visitor* visitor) const {
   visitor->Trace(value_);
   visitor->Trace(tear_off_);
   SVGAnimatedPropertyBase::Trace(visitor);
 }
 
-SVGPropertyBase* SVGStaticStringList::CurrentValueBase() {
-  return value_.Get();
-}
-
 const SVGPropertyBase& SVGStaticStringList::BaseValueBase() const {
-  NOTREACHED();
   return *value_;
 }
 
@@ -80,10 +75,8 @@ void SVGStaticStringList::AnimationEnded() {
 }
 
 SVGStringListTearOff* SVGStaticStringList::TearOff() {
-  if (!tear_off_) {
-    tear_off_ = MakeGarbageCollected<SVGStringListTearOff>(
-        value_, this, kPropertyIsNotAnimVal);
-  }
+  if (!tear_off_)
+    tear_off_ = MakeGarbageCollected<SVGStringListTearOff>(value_, this);
   return tear_off_.Get();
 }
 

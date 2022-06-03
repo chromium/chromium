@@ -2,129 +2,127 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//build/config/crypto.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
+assert(use_nss_certs)
+
+preprocess_folder_tmp = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/certificate_manager_tmp"
+preprocess_folder = "$root_gen_dir/ui/webui/resources/preprocessed/cr_components/certificate_manager"
+
+ts_library("build_ts") {
+  root_dir = preprocess_folder_tmp
+  out_dir = preprocess_folder
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "certificate_list.ts",
+    "certificate_password_decryption_dialog.ts",
+    "certificate_delete_confirmation_dialog.ts",
+    "certificate_entry.ts",
+    "certificates_browser_proxy.ts",
+    "certificate_password_encryption_dialog.ts",
+    "certificate_manager_types.ts",
+    "ca_trust_edit_dialog.ts",
+    "certificate_shared_css.ts",
+    "certificate_subentry.ts",
+    "certificate_manager.ts",
+    "certificates_error_dialog.ts",
+  ]
+
+  if (is_chromeos_ash) {
+    in_files += [
+      "certificate_provisioning_browser_proxy.ts",
+      "certificate_provisioning_details_dialog.ts",
+      "certificate_provisioning_entry.ts",
+      "certificate_provisioning_list.ts",
+    ]
+  }
+
+  definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
+
   deps = [
-    ":ca_trust_edit_dialog",
-    ":certificate_delete_confirmation_dialog",
-    ":certificate_entry",
-    ":certificate_list",
-    ":certificate_manager",
-    ":certificate_manager_types",
-    ":certificate_password_decryption_dialog",
-    ":certificate_password_encryption_dialog",
-    ":certificate_subentry",
-    ":certificates_browser_proxy",
-    ":certificates_error_dialog",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+  ]
+  extra_deps = [
+    ":preprocess_generated",
+    ":preprocess_src",
   ]
 }
 
-js_library("ca_trust_edit_dialog") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
+html_to_js("web_components") {
+  visibility = [ ":preprocess_generated" ]
+  js_files = [
+    "ca_trust_edit_dialog.ts",
+    "certificate_delete_confirmation_dialog.ts",
+    "certificate_entry.ts",
+    "certificate_list.ts",
+    "certificate_manager.ts",
+    "certificate_password_decryption_dialog.ts",
+    "certificate_password_encryption_dialog.ts",
+    "certificate_shared_css.ts",
+    "certificate_subentry.ts",
+    "certificates_error_dialog.ts",
   ]
+
+  if (is_chromeos_ash) {
+    js_files += [
+      "certificate_provisioning_details_dialog.ts",
+      "certificate_provisioning_entry.ts",
+      "certificate_provisioning_list.ts",
+    ]
+  }
 }
 
-js_library("certificate_delete_confirmation_dialog") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
+preprocess_if_expr("preprocess_src") {
+  visibility = [ ":build_ts" ]
+  in_folder = "./"
+  out_folder = preprocess_folder_tmp
+  in_files = [
+    "certificate_manager_types.ts",
+    "certificates_browser_proxy.ts",
   ]
+
+  if (is_chromeos_ash) {
+    in_files += [ "certificate_provisioning_browser_proxy.ts" ]
+  }
 }
 
-js_library("certificate_entry") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
+preprocess_if_expr("preprocess_generated") {
+  visibility = [ ":build_ts" ]
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = preprocess_folder_tmp
+  in_files = [
+    "ca_trust_edit_dialog.ts",
+    "certificate_delete_confirmation_dialog.ts",
+    "certificate_entry.ts",
+    "certificate_list.ts",
+    "certificate_manager.ts",
+    "certificate_password_decryption_dialog.ts",
+    "certificate_password_encryption_dialog.ts",
+    "certificates_error_dialog.ts",
+    "certificate_shared_css.ts",
+    "certificate_subentry.ts",
   ]
+
+  if (is_chromeos_ash) {
+    in_files += [
+      "certificate_provisioning_details_dialog.ts",
+      "certificate_provisioning_entry.ts",
+      "certificate_provisioning_list.ts",
+    ]
+  }
 }
 
-js_library("certificate_list") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificate_subentry",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("certificate_manager") {
-  deps = [
-    ":certificate_list",
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-}
-
-js_library("certificate_manager_types") {
-  deps = [
-    ":certificates_browser_proxy",
-  ]
-}
-
-js_library("certificate_password_decryption_dialog") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("certificate_password_encryption_dialog") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("certificate_subentry") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_action_menu:cr_action_menu",
-    "//ui/webui/resources/cr_elements/cr_lazy_render:cr_lazy_render",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-  ]
-}
-
-js_library("certificates_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("certificates_error_dialog") {
-  deps = [
-    ":certificate_manager_types",
-    ":certificates_browser_proxy",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:load_time_data",
-  ]
+generate_grd("build_grdp") {
+  grd_prefix = "cr_components_certificate_manager"
+  out_grd = "$target_gen_dir/resources.grdp"
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "cr_components/certificate_manager"
 }

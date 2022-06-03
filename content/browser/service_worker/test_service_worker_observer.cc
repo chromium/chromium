@@ -52,6 +52,7 @@ void TestServiceWorkerObserver::RunUntilActivated(
 void TestServiceWorkerObserver::OnVersionStateChanged(
     int64_t version_id,
     const GURL& scope,
+    const blink::StorageKey& key,
     ServiceWorkerVersion::Status status) {
   if (version_id == version_id_for_status_change_ &&
       status == status_for_status_change_ && quit_closure_for_status_change_) {

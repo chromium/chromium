@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojom.user_education_internals;
+
+// Provides access to browser-side user education data (including IPH) for
+// chrome://internals/user-education
+interface UserEducationInternalsPageHandler {
+  // Get the list of all available tutorials. Only needs to be called once
+  // since the browser-side list is static and does not change.
+  GetTutorials() => (array<string> tutorial_ids);
+
+  // Start a tutorial listed in the `GetTutorials` result.
+  StartTutorial(string tutorial_id);
+};

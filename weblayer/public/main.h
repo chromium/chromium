@@ -20,6 +20,7 @@ namespace weblayer {
 class MainDelegate {
  public:
   virtual void PreMainMessageLoopRun() = 0;
+  virtual void PostMainMessageLoopRun() = 0;
   virtual void SetMainMessageLoopQuitClosure(
       base::OnceClosure quit_closure) = 0;
 };

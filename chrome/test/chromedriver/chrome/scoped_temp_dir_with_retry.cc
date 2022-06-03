@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/test/chromedriver/chrome/scoped_temp_dir_with_retry.h"
+#include "base/logging.h"
 #include "base/threading/platform_thread.h"
 
 ScopedTempDirWithRetry::~ScopedTempDirWithRetry() {
@@ -15,7 +16,7 @@ ScopedTempDirWithRetry::~ScopedTempDirWithRetry() {
         DLOG(WARNING) << "Could not delete temp dir after retries.";
         break;
       }
-      base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(10));
+      base::PlatformThread::Sleep(base::Milliseconds(10));
     }
   }
 }

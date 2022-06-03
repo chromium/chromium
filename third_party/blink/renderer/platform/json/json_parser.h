@@ -35,15 +35,18 @@ struct PLATFORM_EXPORT JSONParseError {
 // In case of parsing failure, returns nullptr.
 // Optional error struct may be passed in, which will contain
 // error details or |kNoError| if parsing succeeded.
+// Optional boolean |opt_has_comments| may be passed in, which will contain
+// whether |json| string contains comments.
 PLATFORM_EXPORT std::unique_ptr<JSONValue> ParseJSON(
     const String& json,
-    JSONParseError* opt_error = nullptr);
+    JSONParseError* opt_error = nullptr,
+    bool* opt_has_comments = nullptr);
 
 PLATFORM_EXPORT std::unique_ptr<JSONValue> ParseJSON(
     const String& json,
     int max_depth,
-    JSONParseError* opt_error = nullptr);
-
+    JSONParseError* opt_error = nullptr,
+    bool* opt_has_comments = nullptr);
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_JSON_JSON_PARSER_H_

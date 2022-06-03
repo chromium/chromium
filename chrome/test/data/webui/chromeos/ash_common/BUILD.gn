@@ -1,0 +1,73 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://resources/ash/common/=../../ash/webui/common/resources/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+  deps = [
+    ":ash_common_unified_test",
+    ":fake_method_resolver_test",
+    ":fake_observables_test",
+    ":navigation_selector_test",
+    ":navigation_view_panel_test",
+    ":page_toolbar_test",
+  ]
+}
+
+js_library("ash_common_unified_test") {
+  deps = []
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("fake_observables_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/common/resources:fake_observables",
+  ]
+}
+
+js_library("fake_method_resolver_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/common/resources:fake_method_resolver",
+  ]
+}
+
+js_library("keyboard_diagram_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/common/resources:keyboard_diagram",
+  ]
+}
+
+js_library("navigation_selector_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/common/resources:navigation_selector",
+    "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",
+  ]
+}
+
+js_library("navigation_view_panel_test") {
+  deps = [
+    "../..:chai_assert",
+    "//ash/webui/common/resources:navigation_selector",
+    "//ash/webui/common/resources:navigation_view_panel",
+    "//ui/webui/resources/cr_elements/cr_drawer:cr_drawer",
+  ]
+}
+
+js_library("page_toolbar_test") {
+  deps = [
+    "../..:chai_assert",
+    "../..:test_util",
+    "//ash/webui/common/resources:page_toolbar",
+  ]
+}

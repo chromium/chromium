@@ -5,6 +5,8 @@
 #include "storage/browser/file_system/recursive_operation_delegate.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
@@ -14,7 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "storage/browser/file_system/file_system_file_util.h"
@@ -23,14 +25,11 @@
 #include "storage/browser/test/sandbox_file_system_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using storage::FileSystemContext;
-using storage::FileSystemOperationContext;
-using storage::FileSystemURL;
+namespace storage {
 
-namespace content {
 namespace {
 
-class LoggingRecursiveOperation : public storage::RecursiveOperationDelegate {
+class LoggingRecursiveOperation : public RecursiveOperationDelegate {
  public:
   struct LogEntry {
     enum Type { PROCESS_FILE, PROCESS_DIRECTORY, POST_PROCESS_DIRECTORY };
@@ -41,9 +40,14 @@ class LoggingRecursiveOperation : public storage::RecursiveOperationDelegate {
   LoggingRecursiveOperation(FileSystemContext* file_system_context,
                             const FileSystemURL& root,
                             StatusCallback callback)
-      : storage::RecursiveOperationDelegate(file_system_context),
+      : RecursiveOperationDelegate(file_system_context),
         root_(root),
         callback_(std::move(callback)) {}
+
+  LoggingRecursiveOperation(const LoggingRecursiveOperation&) = delete;
+  LoggingRecursiveOperation& operator=(const LoggingRecursiveOperation&) =
+      delete;
+
   ~LoggingRecursiveOperation() override = default;
 
   const std::vector<LogEntry>& log_entries() const { return log_entries_; }
@@ -52,14 +56,12 @@ class LoggingRecursiveOperation : public storage::RecursiveOperationDelegate {
   void Run() override { NOTREACHED(); }
 
   void RunRecursively() override {
-    StartRecursiveOperation(root_,
-                            storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT,
+    StartRecursiveOperation(root_, FileSystemOperation::ERROR_BEHAVIOR_ABORT,
                             std::move(callback_));
   }
 
   void RunRecursivelyWithIgnoringError() {
-    StartRecursiveOperation(root_,
-                            storage::FileSystemOperation::ERROR_BEHAVIOR_SKIP,
+    StartRecursiveOperation(root_, FileSystemOperation::ERROR_BEHAVIOR_SKIP,
                             std::move(callback_));
   }
 
@@ -72,7 +74,7 @@ class LoggingRecursiveOperation : public storage::RecursiveOperationDelegate {
     }
 
     operation_runner()->GetMetadata(
-        url, storage::FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
+        url, FileSystemOperation::GET_METADATA_FIELD_IS_DIRECTORY,
         base::BindOnce(&LoggingRecursiveOperation::DidGetMetadata,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
@@ -118,7 +120,6 @@ class LoggingRecursiveOperation : public storage::RecursiveOperationDelegate {
   FileSystemURL error_url_;
 
   base::WeakPtrFactory<LoggingRecursiveOperation> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(LoggingRecursiveOperation);
 };
 
 void ReportStatus(base::File::Error* out_error, base::File::Error error) {
@@ -128,8 +129,7 @@ void ReportStatus(base::File::Error* out_error, base::File::Error error) {
 
 // To test the Cancel() during operation, calls Cancel() of |operation|
 // after |counter| times message posting.
-void CallCancelLater(storage::RecursiveOperationDelegate* operation,
-                     int counter) {
+void CallCancelLater(RecursiveOperationDelegate* operation, int counter) {
   if (counter > 0) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(&CallCancelLater, base::Unretained(operation),
@@ -152,16 +152,13 @@ class RecursiveOperationDelegateTest : public testing::Test {
   void TearDown() override { sandbox_file_system_.TearDown(); }
 
   std::unique_ptr<FileSystemOperationContext> NewContext() {
-    FileSystemOperationContext* context =
-        sandbox_file_system_.NewOperationContext();
+    auto context = sandbox_file_system_.NewOperationContext();
     // Grant enough quota for all test cases.
     context->set_allowed_bytes_growth(1000000);
-    return base::WrapUnique(context);
+    return context;
   }
 
-  storage::FileSystemFileUtil* file_util() {
-    return sandbox_file_system_.file_util();
-  }
+  FileSystemFileUtil* file_util() { return sandbox_file_system_.file_util(); }
 
   FileSystemURL URLForPath(const std::string& path) const {
     return sandbox_file_system_.CreateURLFromUTF8(path);
@@ -379,4 +376,4 @@ TEST_F(RecursiveOperationDelegateTest, ContinueWithError) {
   EXPECT_EQ(src_root, log_entries[7].url);
 }
 
-}  // namespace content
+}  // namespace storage

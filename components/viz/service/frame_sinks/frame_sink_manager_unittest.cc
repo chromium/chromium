@@ -8,6 +8,7 @@
 
 #include <tuple>
 
+#include "base/containers/contains.h"
 #include "base/run_loop.h"
 #include "components/viz/common/constants.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
@@ -31,6 +32,7 @@ constexpr FrameSinkId kFrameSinkIdRoot(1, 1);
 constexpr FrameSinkId kFrameSinkIdA(2, 1);
 constexpr FrameSinkId kFrameSinkIdB(3, 1);
 constexpr FrameSinkId kFrameSinkIdC(4, 1);
+constexpr FrameSinkId kFrameSinkIdD(5, 1);
 
 // Holds the four interface objects needed to create a RootCompositorFrameSink.
 struct RootCompositorFrameSinkData {
@@ -59,8 +61,14 @@ struct RootCompositorFrameSinkData {
 class FrameSinkManagerTest : public testing::Test {
  public:
   FrameSinkManagerTest()
-      : manager_(&shared_bitmap_manager_, &output_surface_provider_) {}
+      : manager_(FrameSinkManagerImpl::InitParams(&shared_bitmap_manager_,
+                                                  &output_surface_provider_)) {}
   ~FrameSinkManagerTest() override = default;
+
+  RootCompositorFrameSinkImpl* GetRootCompositorFrameSinkImpl() {
+    auto it = manager_.root_sink_map_.find(kFrameSinkIdRoot);
+    return it == manager_.root_sink_map_.end() ? nullptr : it->second.get();
+  }
 
   std::unique_ptr<CompositorFrameSinkSupport> CreateCompositorFrameSinkSupport(
       const FrameSinkId& frame_sink_id) {
@@ -85,6 +93,19 @@ class FrameSinkManagerTest : public testing::Test {
            base::Contains(manager_.root_sink_map_, frame_sink_id);
   }
 
+  CapturableFrameSink* FindCapturableFrameSink(const FrameSinkId& id) {
+    return manager_.FindCapturableFrameSink(id);
+  }
+
+  // Verifies the frame sinks with provided id in |ids| are throttled at
+  // |interval|.
+  void VerifyThrottling(base::TimeDelta interval,
+                        const std::vector<FrameSinkId>& ids) {
+    for (auto& id : ids) {
+      EXPECT_EQ(interval, manager_.support_map_[id]->begin_frame_interval_);
+    }
+  }
+
   // testing::Test implementation.
   void TearDown() override {
     // Make sure that all FrameSinkSourceMappings have been deleted.
@@ -98,6 +119,7 @@ class FrameSinkManagerTest : public testing::Test {
   }
 
  protected:
+  DebugRendererSettings debug_settings_;
   ServerSharedBitmapManager shared_bitmap_manager_;
   TestOutputSurfaceProvider output_surface_provider_;
   FrameSinkManagerImpl manager_;
@@ -124,7 +146,8 @@ TEST_F(FrameSinkManagerTest, CreateCompositorFrameSink) {
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      kFrameSinkIdA, /*bundle_id=*/absl::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
@@ -140,7 +163,8 @@ TEST_F(FrameSinkManagerTest, CompositorFrameSinkConnectionLost) {
   MockCompositorFrameSinkClient compositor_frame_sink_client;
   mojo::Remote<mojom::CompositorFrameSink> compositor_frame_sink;
   manager_.CreateCompositorFrameSink(
-      kFrameSinkIdA, compositor_frame_sink.BindNewPipeAndPassReceiver(),
+      kFrameSinkIdA, /*bundle_id=*/absl::nullopt,
+      compositor_frame_sink.BindNewPipeAndPassReceiver(),
       compositor_frame_sink_client.BindInterfaceRemote());
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
@@ -357,11 +381,9 @@ TEST_F(FrameSinkManagerTest, EvictSurfaces) {
   ParentLocalSurfaceIdAllocator allocator1;
   ParentLocalSurfaceIdAllocator allocator2;
   allocator1.GenerateId();
-  LocalSurfaceId local_surface_id1 =
-      allocator1.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId local_surface_id1 = allocator1.GetCurrentLocalSurfaceId();
   allocator2.GenerateId();
-  LocalSurfaceId local_surface_id2 =
-      allocator2.GetCurrentLocalSurfaceIdAllocation().local_surface_id();
+  LocalSurfaceId local_surface_id2 = allocator2.GetCurrentLocalSurfaceId();
   SurfaceId surface_id1(kFrameSinkIdA, local_surface_id1);
   SurfaceId surface_id2(kFrameSinkIdB, local_surface_id2);
 
@@ -395,6 +417,239 @@ TEST_F(FrameSinkManagerTest, DebugLabel) {
 
   manager_.InvalidateFrameSinkId(kFrameSinkIdA);
   EXPECT_EQ("", manager_.GetFrameSinkDebugLabel(kFrameSinkIdA));
+}
+
+// Verifies the the begin frames are throttled properly for the requested frame
+// sinks and their children.
+TEST_F(FrameSinkManagerTest, Throttle) {
+  // root -> A -> B
+  //      -> C -> D
+  auto root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  auto client_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+  auto client_c = CreateCompositorFrameSinkSupport(kFrameSinkIdC);
+  auto client_d = CreateCompositorFrameSinkSupport(kFrameSinkIdD);
+
+  // Set up the hierarchy.
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_a->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                      client_b->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_c->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_c->frame_sink_id(),
+                                      client_d->frame_sink_id());
+
+  constexpr base::TimeDelta interval = base::Hertz(20);
+
+  std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
+                               kFrameSinkIdC, kFrameSinkIdD};
+
+  // By default, a CompositorFrameSinkSupport shouldn't have its
+  // |begin_frame_interval| set.
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  manager_.Throttle({kFrameSinkIdRoot}, interval);
+  VerifyThrottling(interval, ids);
+
+  manager_.Throttle({}, base::TimeDelta());
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  manager_.Throttle({kFrameSinkIdB, kFrameSinkIdC}, interval);
+  VerifyThrottling(interval, {kFrameSinkIdB, kFrameSinkIdC, kFrameSinkIdD});
+  VerifyThrottling(base::TimeDelta(), {kFrameSinkIdA, kFrameSinkIdRoot});
+
+  manager_.Throttle({}, base::TimeDelta());
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_a->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                        client_b->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_c->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_c->frame_sink_id(),
+                                        client_d->frame_sink_id());
+}
+
+// Verifies if a frame sink is being captured, it should not be throttled.
+TEST_F(FrameSinkManagerTest, NoThrottleOnFrameSinksBeingCaptured) {
+  // root -> A -> B -> C
+  auto root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  auto client_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+  auto client_c = CreateCompositorFrameSinkSupport(kFrameSinkIdC);
+
+  // Set up the hierarchy.
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_a->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                      client_b->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_b->frame_sink_id(),
+                                      client_c->frame_sink_id());
+
+  constexpr base::TimeDelta interval = base::Hertz(20);
+
+  std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB,
+                               kFrameSinkIdC};
+
+  // By default, a CompositorFrameSinkSupport shouldn't have its
+  // |begin_frame_interval| set.
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  // Throttle all frame sinks.
+  manager_.Throttle({kFrameSinkIdRoot}, interval);
+  VerifyThrottling(interval, ids);
+
+  // Start capturing frame sink B.
+  CapturableFrameSink* capturable_frame_sink =
+      FindCapturableFrameSink(kFrameSinkIdB);
+  capturable_frame_sink->OnClientCaptureStarted();
+
+  // Throttling should be stopped on frame sink B and its child C, but not
+  // affected on root frame sink and frame sink A.
+  VerifyThrottling(interval, {kFrameSinkIdRoot, kFrameSinkIdA});
+  VerifyThrottling(base::TimeDelta(), {kFrameSinkIdB, kFrameSinkIdC});
+
+  // Explicitly request to throttle all frame sinks. This would not affect B or
+  // C while B is still being captured.
+  manager_.Throttle(ids, interval);
+  VerifyThrottling(interval, {kFrameSinkIdRoot, kFrameSinkIdA});
+  VerifyThrottling(base::TimeDelta(), {kFrameSinkIdB, kFrameSinkIdC});
+
+  // Stop capturing.
+  capturable_frame_sink->OnClientCaptureStopped();
+  // Now the throttling state should be the same as before capturing started,
+  // i.e. all frame sinks will now be throttled.
+  VerifyThrottling(interval, ids);
+
+  manager_.Throttle({}, base::TimeDelta());
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_a->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                        client_b->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_b->frame_sink_id(),
+                                        client_c->frame_sink_id());
+}
+
+// Verifies if throttling on frame sinks is updated properly when hierarchy
+// changes.
+TEST_F(FrameSinkManagerTest, ThrottleUponHierarchyChange) {
+  // root -> A -> B
+  auto root = CreateCompositorFrameSinkSupport(kFrameSinkIdRoot);
+  auto client_a = CreateCompositorFrameSinkSupport(kFrameSinkIdA);
+  auto client_b = CreateCompositorFrameSinkSupport(kFrameSinkIdB);
+
+  // Set up the hierarchy.
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_a->frame_sink_id());
+  manager_.RegisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                      client_b->frame_sink_id());
+
+  constexpr base::TimeDelta interval = base::Hertz(20);
+
+  std::vector<FrameSinkId> ids{kFrameSinkIdRoot, kFrameSinkIdA, kFrameSinkIdB};
+
+  // Throttle the root frame sink.
+  manager_.Throttle({kFrameSinkIdRoot}, interval);
+  // All frame sinks should now be throttled.
+  VerifyThrottling(interval, ids);
+
+  // Unparent A from root. Root should remain throttled while A and B should be
+  // unthrottled.
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_a->frame_sink_id());
+  VerifyThrottling(interval, {kFrameSinkIdRoot});
+  VerifyThrottling(base::TimeDelta(), {kFrameSinkIdA, kFrameSinkIdB});
+
+  // Reparent A to root. Both A and B should now be throttled along with root.
+  manager_.RegisterFrameSinkHierarchy(root->frame_sink_id(),
+                                      client_a->frame_sink_id());
+  VerifyThrottling(interval, ids);
+
+  // Unthrottle all frame sinks.
+  manager_.Throttle({}, base::TimeDelta());
+  VerifyThrottling(base::TimeDelta(), ids);
+
+  manager_.UnregisterFrameSinkHierarchy(root->frame_sink_id(),
+                                        client_a->frame_sink_id());
+  manager_.UnregisterFrameSinkHierarchy(client_a->frame_sink_id(),
+                                        client_b->frame_sink_id());
+}
+
+TEST_F(FrameSinkManagerTest, EvictRootSurfaceId) {
+  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
+
+  // Create a RootCompositorFrameSinkImpl.
+  RootCompositorFrameSinkData root_data;
+  manager_.CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+  manager_.EvictSurfaces({surface_id});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+}
+
+TEST_F(FrameSinkManagerTest, EvictNewerRootSurfaceId) {
+  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
+
+  // Create a RootCompositorFrameSinkImpl.
+  RootCompositorFrameSinkData root_data;
+  manager_.CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+  allocator.GenerateId();
+  const LocalSurfaceId next_local_surface_id =
+      allocator.GetCurrentLocalSurfaceId();
+  manager_.EvictSurfaces({{kFrameSinkIdRoot, next_local_surface_id}});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
+}
+
+TEST_F(FrameSinkManagerTest, SubmitCompositorFrameWithEvictedSurfaceId) {
+  manager_.RegisterFrameSinkId(kFrameSinkIdRoot, true /* report_activation */);
+
+  // Create a RootCompositorFrameSinkImpl.
+  RootCompositorFrameSinkData root_data;
+  manager_.CreateRootCompositorFrameSink(
+      root_data.BuildParams(kFrameSinkIdRoot));
+
+  ParentLocalSurfaceIdAllocator allocator;
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id(kFrameSinkIdRoot, local_surface_id);
+  allocator.GenerateId();
+  const LocalSurfaceId local_surface_id2 = allocator.GetCurrentLocalSurfaceId();
+  const SurfaceId surface_id2(kFrameSinkIdRoot, local_surface_id2);
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+  EXPECT_EQ(surface_id, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+  manager_.EvictSurfaces({surface_id, surface_id2});
+  EXPECT_FALSE(GetRootCompositorFrameSinkImpl()->CurrentSurfaceId().is_valid());
+  GetRootCompositorFrameSinkImpl()->SubmitCompositorFrame(
+      local_surface_id2, MakeDefaultCompositorFrame(), absl::nullopt, 0);
+
+  // Even though `surface_id2` was just submitted, Display should not reference
+  // it because it was evicted.
+  EXPECT_NE(surface_id2, GetRootCompositorFrameSinkImpl()->CurrentSurfaceId());
+
+  manager_.InvalidateFrameSinkId(kFrameSinkIdRoot);
 }
 
 namespace {

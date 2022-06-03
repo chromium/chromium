@@ -26,9 +26,12 @@
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "third_party/blink/renderer/platform/audio/dynamics_compressor.h"
+
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
-#include "third_party/blink/renderer/platform/audio/dynamics_compressor.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 
 namespace blink {
@@ -140,7 +143,7 @@ void DynamicsCompressor::Process(const AudioBus* source_bus,
   float release_time = ParameterValue(kParamRelease);
   float pre_delay_time = ParameterValue(kParamPreDelay);
 
-  // This is effectively a master volume on the compressed signal
+  // This is effectively a make-up gain on the compressed signal
   // (pre-blending).
   float db_post_gain = ParameterValue(kParamPostGain);
 

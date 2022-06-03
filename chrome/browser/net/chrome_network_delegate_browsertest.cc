@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 #include "base/base_paths.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/path_service.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/net/chrome_network_delegate.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -13,15 +14,22 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/filename_util.h"
 #include "net/base/network_delegate.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 class ChromeNetworkDelegateBrowserTest : public InProcessBrowserTest {
+ public:
+  ChromeNetworkDelegateBrowserTest(const ChromeNetworkDelegateBrowserTest&) =
+      delete;
+  ChromeNetworkDelegateBrowserTest& operator=(
+      const ChromeNetworkDelegateBrowserTest&) = delete;
+
  protected:
   ChromeNetworkDelegateBrowserTest() {}
 
@@ -38,9 +46,6 @@ class ChromeNetworkDelegateBrowserTest : public InProcessBrowserTest {
   }
 
   base::ScopedTempDir scoped_temp_dir_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeNetworkDelegateBrowserTest);
 };
 
 // Ensure that access to a test file, that is not in an accessible location,
@@ -57,7 +62,7 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkDelegateBrowserTest, AccessToFile) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(net::ERR_ACCESS_DENIED, observer.last_net_error_code());
 }
 
@@ -83,8 +88,8 @@ IN_PROC_BROWSER_TEST_F(ChromeNetworkDelegateBrowserTest, AccessToSymlink) {
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   content::TestNavigationObserver observer(web_contents);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   EXPECT_EQ(net::ERR_ACCESS_DENIED, observer.last_net_error_code());
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

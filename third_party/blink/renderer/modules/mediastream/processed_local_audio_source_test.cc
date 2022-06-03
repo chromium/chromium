@@ -6,21 +6,23 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/modules/mediastream/media_stream_audio_track.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
-#include "third_party/blink/public/platform/web_media_constraints.h"
 #include "third_party/blink/public/web/web_heap.h"
+#include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/testing_platform_support_with_mock_audio_capture_source.h"
 #include "third_party/blink/renderer/modules/webrtc/webrtc_audio_device_impl.h"
+#include "third_party/blink/renderer/platform/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_processor_options.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_audio_track.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
+#include "third_party/blink/renderer/platform/mediastream/media_stream_source.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -49,10 +51,10 @@ constexpr int kExpectedSourceBufferSize = kRequestedBufferSize;
 // output end of its FIFO.
 constexpr int kExpectedOutputBufferSize = kSampleRate / 100;
 
-class MockMediaStreamAudioSink : public WebMediaStreamAudioSink {
+class FormatCheckingMockAudioSink : public WebMediaStreamAudioSink {
  public:
-  MockMediaStreamAudioSink() {}
-  ~MockMediaStreamAudioSink() override {}
+  FormatCheckingMockAudioSink() = default;
+  ~FormatCheckingMockAudioSink() override = default;
 
   void OnData(const media::AudioBus& audio_bus,
               base::TimeTicks estimated_capture_time) override {
@@ -75,41 +77,43 @@ class MockMediaStreamAudioSink : public WebMediaStreamAudioSink {
 
 }  // namespace
 
-class ProcessedLocalAudioSourceTest : public testing::Test {
+class ProcessedLocalAudioSourceTest : public SimTest {
  protected:
-  ProcessedLocalAudioSourceTest() {}
+  ProcessedLocalAudioSourceTest() = default;
 
-  ~ProcessedLocalAudioSourceTest() override {}
+  ~ProcessedLocalAudioSourceTest() override = default;
 
   void SetUp() override {
-    blink_audio_source_.Initialize(blink::WebString::FromUTF8("audio_label"),
-                                   WebMediaStreamSource::kTypeAudio,
-                                   WebString::FromUTF8("audio_track"),
-                                   false /* remote */);
-    blink_audio_track_.Initialize(blink_audio_source_.Id(),
-                                  blink_audio_source_);
+    SimTest::SetUp();
+    audio_source_ = MakeGarbageCollected<MediaStreamSource>(
+        String::FromUTF8("audio_label"), MediaStreamSource::kTypeAudio,
+        String::FromUTF8("audio_track"), false /* remote */);
+    audio_component_ = MakeGarbageCollected<MediaStreamComponent>(
+        audio_source_->Id(), audio_source_);
   }
 
   void TearDown() override {
-    blink_audio_track_.Reset();
-    blink_audio_source_.Reset();
+    SimTest::TearDown();
+    audio_source_ = nullptr;
+    audio_component_ = nullptr;
     WebHeap::CollectAllGarbageForTesting();
   }
 
   void CreateProcessedLocalAudioSource(
-      const AudioProcessingProperties& properties) {
+      const AudioProcessingProperties& properties,
+      int num_requested_channels) {
     std::unique_ptr<blink::ProcessedLocalAudioSource> source =
         std::make_unique<blink::ProcessedLocalAudioSource>(
-            nullptr /* consumer_web_frame is N/A for non-browser tests */,
+            *MainFrame().GetFrame(),
             MediaStreamDevice(mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
                               "mock_audio_device_id", "Mock audio device",
                               kSampleRate, kChannelLayout,
                               kRequestedBufferSize),
-            false /* disable_local_echo */, properties, base::DoNothing(),
+            false /* disable_local_echo */, properties, num_requested_channels,
+            base::DoNothing(),
             scheduler::GetSingleThreadTaskRunnerForTesting());
     source->SetAllowInvalidRenderFrameIdForTesting(true);
-    blink_audio_source_.SetPlatformSource(
-        std::move(source));  // Takes ownership.
+    audio_source_->SetPlatformSource(std::move(source));
   }
 
   void CheckSourceFormatMatches(const media::AudioParameters& params) {
@@ -130,10 +134,10 @@ class ProcessedLocalAudioSourceTest : public testing::Test {
   }
 
   MediaStreamAudioSource* audio_source() const {
-    return MediaStreamAudioSource::From(blink_audio_source_);
+    return MediaStreamAudioSource::From(audio_source_.Get());
   }
 
-  const WebMediaStreamTrack& blink_audio_track() { return blink_audio_track_; }
+  MediaStreamComponent* audio_track() { return audio_component_; }
 
   MockAudioCapturerSource* mock_audio_capturer_source() {
     return webrtc_audio_device_platform_support_->mock_audio_capturer_source();
@@ -142,8 +146,8 @@ class ProcessedLocalAudioSourceTest : public testing::Test {
  private:
   ScopedTestingPlatformSupport<AudioCapturerSourceTestingPlatformSupport>
       webrtc_audio_device_platform_support_;
-  WebMediaStreamSource blink_audio_source_;
-  WebMediaStreamTrack blink_audio_track_;
+  Persistent<MediaStreamSource> audio_source_;
+  Persistent<MediaStreamComponent> audio_component_;
 };
 
 // Tests a basic end-to-end start-up, track+sink connections, audio flow, and
@@ -158,7 +162,7 @@ TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   // the native buffer size.
   AudioProcessingProperties properties;
   properties.DisableDefaultProperties();
-  CreateProcessedLocalAudioSource(properties);
+  CreateProcessedLocalAudioSource(properties, 1 /* num_requested_channels */);
 
   // Connect the track, and expect the MockAudioCapturerSource to be initialized
   // and started by ProcessedLocalAudioSource.
@@ -170,15 +174,14 @@ TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
       .WillOnce(Invoke(
           capture_source_callback(),
           &media::AudioCapturerSource::CaptureCallback::OnCaptureStarted));
-  ASSERT_TRUE(audio_source()->ConnectToTrack(blink_audio_track()));
+  ASSERT_TRUE(audio_source()->ConnectToTrack(audio_track()));
   CheckOutputFormatMatches(audio_source()->GetAudioParameters());
 
   // Connect a sink to the track.
-  std::unique_ptr<MockMediaStreamAudioSink> sink(
-      new MockMediaStreamAudioSink());
+  auto sink = std::make_unique<FormatCheckingMockAudioSink>();
   EXPECT_CALL(*sink, FormatIsSet(_))
       .WillOnce(Invoke(this, &ThisTest::CheckOutputFormatMatches));
-  MediaStreamAudioTrack::From(blink_audio_track())->AddSink(sink.get());
+  MediaStreamAudioTrack::From(audio_track())->AddSink(sink.get());
 
   // Feed audio data into the ProcessedLocalAudioSource and expect it to reach
   // the sink.
@@ -186,7 +189,7 @@ TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   bool key_pressed = true;
   double volume = 0.9;
   const base::TimeTicks capture_time =
-      base::TimeTicks::Now() + base::TimeDelta::FromMilliseconds(delay_ms);
+      base::TimeTicks::Now() + base::Milliseconds(delay_ms);
   std::unique_ptr<media::AudioBus> audio_bus =
       media::AudioBus::Create(2, kExpectedSourceBufferSize);
   audio_bus->Zero();
@@ -197,7 +200,7 @@ TEST_F(ProcessedLocalAudioSourceTest, VerifyAudioFlowWithoutAudioProcessing) {
   // Expect the ProcessedLocalAudioSource to auto-stop the MockCapturerSource
   // when the track is stopped.
   EXPECT_CALL(*mock_audio_capturer_source(), Stop());
-  MediaStreamAudioTrack::From(blink_audio_track())->Stop();
+  MediaStreamAudioTrack::From(audio_track())->Stop();
 }
 
 }  // namespace blink

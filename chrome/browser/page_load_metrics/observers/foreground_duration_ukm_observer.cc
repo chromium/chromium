@@ -13,7 +13,8 @@
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_source.h"
 
-ForegroundDurationUKMObserver::ForegroundDurationUKMObserver() {}
+ForegroundDurationUKMObserver::ForegroundDurationUKMObserver()
+    : last_page_input_timing_(page_load_metrics::mojom::InputTiming::New()) {}
 
 ForegroundDurationUKMObserver::~ForegroundDurationUKMObserver() {}
 
@@ -65,10 +66,10 @@ void ForegroundDurationUKMObserver::OnComplete(
   // current time. Note that we expect page_end_time.has_value() to always be
   // true in OnComplete (the PageLoadTracker destructor is supposed to guarantee
   // it), but we use Now() as a graceful fallback just in case.
-  base::TimeTicks end_time = GetDelegate().GetPageEndTime().has_value()
-                                 ? GetDelegate().GetNavigationStart() +
-                                       GetDelegate().GetPageEndTime().value()
-                                 : base::TimeTicks::Now();
+  base::TimeTicks end_time =
+      GetDelegate().GetPageEndReason() != page_load_metrics::END_NONE
+          ? GetDelegate().GetPageEndTime()
+          : base::TimeTicks::Now();
   RecordUkmIfInForeground(end_time);
 }
 
@@ -77,9 +78,31 @@ void ForegroundDurationUKMObserver::RecordUkmIfInForeground(
   if (!currently_in_foreground_)
     return;
   base::TimeDelta foreground_duration = end_time - last_time_shown_;
+  ukm::builders::PageForegroundSession ukm_builder(source_id_);
   ukm::UkmRecorder* ukm_recorder = ukm::UkmRecorder::Get();
-  ukm::builders::PageForegroundSession(source_id_)
-      .SetForegroundDuration(foreground_duration.InMilliseconds())
-      .Record(ukm_recorder);
+  ukm_builder.SetForegroundDuration(foreground_duration.InMilliseconds());
+  RecordInputTimingMetrics(&ukm_builder);
+  ukm_builder.Record(ukm_recorder);
   currently_in_foreground_ = false;
+}
+
+void ForegroundDurationUKMObserver::RecordInputTimingMetrics(
+    ukm::builders::PageForegroundSession* ukm_builder) {
+  // TODO(hbsong): crbug.com/1105665
+  if (GetDelegate().GetPageInputTiming().total_input_delay.InMilliseconds() < 0)
+    return;
+
+  ukm_builder
+      ->SetForegroundNumInputEvents(
+          GetDelegate().GetPageInputTiming().num_input_events -
+          last_page_input_timing_->num_input_events)
+      .SetForegroundTotalInputDelay(
+          (GetDelegate().GetPageInputTiming().total_input_delay -
+           last_page_input_timing_->total_input_delay)
+              .InMilliseconds())
+      .SetForegroundTotalAdjustedInputDelay(
+          (GetDelegate().GetPageInputTiming().total_adjusted_input_delay -
+           last_page_input_timing_->total_adjusted_input_delay)
+              .InMilliseconds());
+  last_page_input_timing_ = GetDelegate().GetPageInputTiming().Clone();
 }

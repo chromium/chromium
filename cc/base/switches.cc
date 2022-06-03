@@ -48,13 +48,23 @@ const char kCheckDamageEarly[] = "check-damage-early";
 // Enables the GPU benchmarking extension
 const char kEnableGpuBenchmarking[] = "enable-gpu-benchmarking";
 
+// Disables LayerTreeHost::OnMemoryPressure
+const char kDisableLayerTreeHostMemoryPressure[] =
+    "disable-layer-tree-host-memory-pressure";
+
 // Renders a border around compositor layers to help debug and study
 // layer compositing.
 const char kShowCompositedLayerBorders[] = "show-composited-layer-borders";
 const char kUIShowCompositedLayerBorders[] = "ui-show-composited-layer-borders";
+// Parameters for kUIShowCompositedLayerBorders.
 const char kCompositedRenderPassBorders[] = "renderpass";
 const char kCompositedSurfaceBorders[] = "surface";
 const char kCompositedLayerBorders[] = "layer";
+
+#if DCHECK_IS_ON()
+// Checks and logs double background blur as an error if any.
+const char kLogOnUIDoubleBackgroundBlur[] = "log-on-ui-double-background-blur";
+#endif
 
 // Draws a heads-up-display showing Frames Per Second as well as GPU memory
 // usage. If you also use --enable-logging=stderr --vmodule="head*=1" then FPS
@@ -80,17 +90,27 @@ const char kUIShowSurfaceDamageRects[] = "ui-show-surface-damage-rects";
 const char kShowScreenSpaceRects[] = "show-screenspace-rects";
 const char kUIShowScreenSpaceRects[] = "ui-show-screenspace-rects";
 
+// Highlights layers that can't use lcd text. Layers containing no text won't
+// be highlighted. See DebugColors::NonLCDTextHighlightColor() for the colors.
+const char kHighlightNonLCDTextLayers[] = "highlight-non-lcd-text-layers";
+
 // Switches the ui compositor to use layer lists instead of layer trees.
 const char kUIEnableLayerLists[] = "ui-enable-layer-lists";
+
+// Enables the resume method on animated images.
+const char kAnimatedImageResume[] = "animated-image-resume";
+
+// Allows scaling clipped images in GpuImageDecodeCache. Note that this may
+// cause color-bleeding.
+// TODO(crbug.com/1157548): Remove this workaround flag once the underlying
+// cache problems are solved.
+const char kEnableClippedImageScaling[] = "enable-scaling-clipped-images";
 
 // Prevents the layer tree unit tests from timing out.
 const char kCCLayerTreeTestNoTimeout[] = "cc-layer-tree-test-no-timeout";
 
 // Increases timeout for memory checkers.
 const char kCCLayerTreeTestLongTimeout[] = "cc-layer-tree-test-long-timeout";
-
-// Makes pixel tests write their output instead of read it.
-const char kCCRebaselinePixeltests[] = "cc-rebaseline-pixeltests";
 
 // Controls the duration of the scroll animation curve.
 const char kCCScrollAnimationDurationForTesting[] =

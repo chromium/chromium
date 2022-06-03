@@ -26,7 +26,7 @@ function renderTemplate(componentsData) {
   // This is the javascript code that processes the template:
   const input = new JsEvalContext(componentsData);
   const output = $('component-template').cloneNode(true);
-  $('component-placeholder').innerHTML = '';
+  $('component-placeholder').innerHTML = trustedTypes.emptyHTML;
   $('component-placeholder').appendChild(output);
   jstProcess(input, output);
   output.removeAttribute('hidden');
@@ -110,6 +110,13 @@ function onComponentEvent(eventArgs) {
   const filteredComponents = currentComponentsData.filter(function(entry) {
     return entry.id === id;
   });
+
+  // A component may be added from another page so the status and version
+  // should only be updated if the component is listed on this page.
+  if (filteredComponents.length === 0) {
+    return;
+  }
+
   const component = filteredComponents[0];
 
   const status = eventArgs['event'];

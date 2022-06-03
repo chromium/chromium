@@ -14,6 +14,9 @@ namespace remoting {
 
 class ContinueWindow : public HostWindow {
  public:
+  ContinueWindow(const ContinueWindow&) = delete;
+  ContinueWindow& operator=(const ContinueWindow&) = delete;
+
   ~ContinueWindow() override;
 
   // HostWindow override.
@@ -46,8 +49,6 @@ class ContinueWindow : public HostWindow {
 
   // Used to ask the local user whether the session should be continued.
   base::OneShotTimer session_expired_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindow);
 };
 
 }  // namespace remoting

@@ -10,10 +10,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/test/views_test_base.h"
@@ -32,6 +33,12 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
                                        public NotificationMenuView::Delegate {
  public:
   MockNotificationMenuController() = default;
+
+  MockNotificationMenuController(const MockNotificationMenuController&) =
+      delete;
+  MockNotificationMenuController& operator=(
+      const MockNotificationMenuController&) = delete;
+
   ~MockNotificationMenuController() override = default;
 
   void ActivateNotificationAndClose(
@@ -62,8 +69,6 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
 
   // Owned by NotificationMenuViewTest.
   NotificationMenuView* notification_menu_view_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MockNotificationMenuController);
 };
 
 }  // namespace
@@ -71,6 +76,10 @@ class MockNotificationMenuController : public views::SlideOutControllerDelegate,
 class NotificationMenuViewTest : public views::ViewsTestBase {
  public:
   NotificationMenuViewTest() {}
+
+  NotificationMenuViewTest(const NotificationMenuViewTest&) = delete;
+  NotificationMenuViewTest& operator=(const NotificationMenuViewTest&) = delete;
+
   ~NotificationMenuViewTest() override = default;
 
   // views::ViewsTestBase:
@@ -84,29 +93,29 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
     mock_notification_menu_controller_ =
         std::make_unique<MockNotificationMenuController>();
 
-    notification_menu_view_ = std::make_unique<NotificationMenuView>(
+    auto notification_menu_view = std::make_unique<NotificationMenuView>(
         mock_notification_menu_controller_.get(),
         mock_notification_menu_controller_.get(), kTestAppId);
-    notification_menu_view_->set_owned_by_client();
 
     // Set the NotificationMenuView so |mock_notification_menu_controller_|
     // can get the slide out layer. In production NotificationMenuController is
     // the NotificationItemViewDelegate, and it gets a reference to
     // NotificationMenuView when it is created.
     mock_notification_menu_controller_->set_notification_menu_view(
-        notification_menu_view());
+        notification_menu_view.get());
 
     test_api_ = std::make_unique<NotificationMenuViewTestAPI>(
-        notification_menu_view_.get());
+        notification_menu_view.get());
 
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams init_params(
         CreateParams(views::Widget::InitParams::TYPE_POPUP));
     init_params.ownership =
         views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    init_params.activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+    init_params.activatable = views::Widget::InitParams::Activatable::kYes;
     widget_->Init(std::move(init_params));
-    widget_->SetContentsView(notification_menu_view_.get());
+    notification_menu_view_ =
+        widget_->SetContentsView(std::move(notification_menu_view));
     widget_->SetSize(notification_menu_view_->GetPreferredSize());
     widget_->Show();
     widget_->Activate();
@@ -119,15 +128,14 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
 
   message_center::Notification AddNotification(
       const std::string& notification_id,
-      const base::string16& title,
-      const base::string16& message) {
+      const std::u16string& title,
+      const std::u16string& message) {
     const message_center::NotifierId notifier_id(
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-        message, gfx::Image(), base::ASCIIToUTF16("www.test.org"), GURL(),
-        notifier_id, message_center::RichNotificationData(),
-        nullptr /* delegate */);
+        message, gfx::Image(), u"www.test.org", GURL(), notifier_id,
+        message_center::RichNotificationData(), nullptr /* delegate */);
     notification_menu_view_->AddNotificationItemView(notification);
     notification_menu_view_->Layout();
     return notification;
@@ -135,15 +143,14 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
 
   message_center::Notification UpdateNotification(
       const std::string& notification_id,
-      const base::string16& title,
-      const base::string16& message) {
+      const std::u16string& title,
+      const std::u16string& message) {
     const message_center::NotifierId notifier_id(
         message_center::NotifierType::APPLICATION, kTestAppId);
     message_center::Notification notification(
         message_center::NOTIFICATION_TYPE_SIMPLE, notification_id, title,
-        message, gfx::Image(), base::ASCIIToUTF16("www.test.org"), GURL(),
-        notifier_id, message_center::RichNotificationData(),
-        nullptr /* delegate */);
+        message, gfx::Image(), u"www.test.org", GURL(), notifier_id,
+        message_center::RichNotificationData(), nullptr /* delegate */);
     notification_menu_view_->UpdateNotificationItemView(notification);
     return notification;
   }
@@ -191,7 +198,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
   }
 
   NotificationMenuView* notification_menu_view() {
-    return notification_menu_view_.get();
+    return notification_menu_view_;
   }
 
   NotificationMenuViewTestAPI* test_api() { return test_api_.get(); }
@@ -203,12 +210,10 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
  private:
   std::unique_ptr<MockNotificationMenuController>
       mock_notification_menu_controller_;
-  std::unique_ptr<NotificationMenuView> notification_menu_view_;
+  NotificationMenuView* notification_menu_view_;
   std::unique_ptr<NotificationMenuViewTestAPI> test_api_;
   std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_scope_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationMenuViewTest);
 };
 
 // Tests that the correct NotificationItemView is shown when notifications come
@@ -216,8 +221,7 @@ class NotificationMenuViewTest : public views::ViewsTestBase {
 TEST_F(NotificationMenuViewTest, Basic) {
   // Add a notification to the view.
   const message_center::Notification notification_0 =
-      AddNotification("notification_id_0", base::ASCIIToUTF16("title_0"),
-                      base::ASCIIToUTF16("message_0"));
+      AddNotification("notification_id_0", u"title_0", u"message_0");
 
   // The counter should update to 1, and the displayed NotificationItemView
   // should match the notification.
@@ -228,8 +232,7 @@ TEST_F(NotificationMenuViewTest, Basic) {
   // Add a second notification to the view, the counter view and displayed
   // NotificationItemView should change.
   const message_center::Notification notification_1 =
-      AddNotification("notification_id_1", base::ASCIIToUTF16("title_1"),
-                      base::ASCIIToUTF16("message_1"));
+      AddNotification("notification_id_1", u"title_1", u"message_1");
   EXPECT_EQ(base::NumberToString16(2), test_api()->GetCounterViewContents());
   EXPECT_EQ(2, test_api()->GetItemViewCount());
   CheckDisplayedNotification(notification_1);
@@ -244,8 +247,7 @@ TEST_F(NotificationMenuViewTest, Basic) {
 TEST_F(NotificationMenuViewTest, MultipleNotificationsBasic) {
   // Add multiple notifications to the view.
   const message_center::Notification notification_0 =
-      AddNotification("notification_id_0", base::ASCIIToUTF16("title_0"),
-                      base::ASCIIToUTF16("message_0"));
+      AddNotification("notification_id_0", u"title_0", u"message_0");
 
   // Overflow should not be created until there are two notifications.
   EXPECT_FALSE(test_api()->GetOverflowView());
@@ -254,8 +256,7 @@ TEST_F(NotificationMenuViewTest, MultipleNotificationsBasic) {
 
   // Add a second notification, this will push |notification_0| into overflow.
   const message_center::Notification notification_1 =
-      AddNotification("notification_id_1", base::ASCIIToUTF16("title_1"),
-                      base::ASCIIToUTF16("message_1"));
+      AddNotification("notification_id_1", u"title_1", u"message_1");
 
   CheckDisplayedNotification(notification_1);
   EXPECT_TRUE(test_api()->GetOverflowView());
@@ -276,13 +277,11 @@ TEST_F(NotificationMenuViewTest, MultipleNotificationsBasic) {
 TEST_F(NotificationMenuViewTest, ShowNotificationFromOverflow) {
   // Add multiple notifications to the view.
   const message_center::Notification notification_0 =
-      AddNotification("notification_id_0", base::ASCIIToUTF16("title_0"),
-                      base::ASCIIToUTF16("message_0"));
+      AddNotification("notification_id_0", u"title_0", u"message_0");
 
   EXPECT_FALSE(test_api()->GetOverflowView());
   const message_center::Notification notification_1 =
-      AddNotification("notification_id_1", base::ASCIIToUTF16("title_1"),
-                      base::ASCIIToUTF16("message_1"));
+      AddNotification("notification_id_1", u"title_1", u"message_1");
 
   // |notification_1| should be the displayed NotificationItemView.
   CheckDisplayedNotification(notification_1);
@@ -301,11 +300,9 @@ TEST_F(NotificationMenuViewTest, ShowNotificationFromOverflow) {
 TEST_F(NotificationMenuViewTest, RemoveOlderNotification) {
   // Add two notifications.
   const message_center::Notification notification_0 =
-      AddNotification("notification_id_0", base::ASCIIToUTF16("title_0"),
-                      base::ASCIIToUTF16("message_0"));
+      AddNotification("notification_id_0", u"title_0", u"message_0");
   const message_center::Notification notification_1 =
-      AddNotification("notification_id_1", base::ASCIIToUTF16("title_1"),
-                      base::ASCIIToUTF16("message_1"));
+      AddNotification("notification_id_1", u"title_1", u"message_1");
 
   // The latest notification should be shown.
   EXPECT_EQ(base::NumberToString16(2), test_api()->GetCounterViewContents());
@@ -324,8 +321,7 @@ TEST_F(NotificationMenuViewTest, RemoveOlderNotification) {
 // Tests that the displayed NotificationItemView is only dismissed when dragged
 // beyond the threshold.
 TEST_F(NotificationMenuViewTest, SlideOut) {
-  AddNotification("notification_id", base::ASCIIToUTF16("title"),
-                  base::ASCIIToUTF16("message"));
+  AddNotification("notification_id", u"title", u"message");
 
   EXPECT_EQ(0, mock_notification_menu_controller()->slide_out_count_);
 
@@ -354,8 +350,7 @@ TEST_F(NotificationMenuViewTest, SlideOut) {
 
 // Tests that tapping a notification activates it.
 TEST_F(NotificationMenuViewTest, TapNotification) {
-  AddNotification("notification_id", base::ASCIIToUTF16("title"),
-                  base::ASCIIToUTF16("message"));
+  AddNotification("notification_id", u"title", u"message");
   EXPECT_EQ(0, mock_notification_menu_controller()->activation_count_);
   DispatchGesture(ui::GestureEventDetails(ui::ET_GESTURE_TAP));
 
@@ -364,8 +359,7 @@ TEST_F(NotificationMenuViewTest, TapNotification) {
 
 // Tests that an in bounds mouse release activates a notification.
 TEST_F(NotificationMenuViewTest, ClickNotification) {
-  AddNotification("notification_id", base::ASCIIToUTF16("title"),
-                  base::ASCIIToUTF16("message"));
+  AddNotification("notification_id", u"title", u"message");
   EXPECT_EQ(0, mock_notification_menu_controller()->activation_count_);
 
   const auto* item =
@@ -386,8 +380,7 @@ TEST_F(NotificationMenuViewTest, ClickNotification) {
 
 // Tests that an out of bounds mouse release does not activate a notification.
 TEST_F(NotificationMenuViewTest, OutOfBoundsClick) {
-  AddNotification("notification_id", base::ASCIIToUTF16("title"),
-                  base::ASCIIToUTF16("message"));
+  AddNotification("notification_id", u"title", u"message");
   EXPECT_EQ(0, mock_notification_menu_controller()->activation_count_);
 
   const auto* item =
@@ -412,12 +405,10 @@ TEST_F(NotificationMenuViewTest, OutOfBoundsClick) {
 TEST_F(NotificationMenuViewTest, UpdateNotification) {
   // Add a notification.
   const std::string notification_id = "notification_id";
-  AddNotification(notification_id, base::ASCIIToUTF16("title"),
-                  base::ASCIIToUTF16("message"));
+  AddNotification(notification_id, u"title", u"message");
   // Send an updated notification with a matching |notification_id|.
   const message_center::Notification updated_notification =
-      UpdateNotification(notification_id, base::ASCIIToUTF16("new_title"),
-                         base::ASCIIToUTF16("new_message"));
+      UpdateNotification(notification_id, u"new_title", u"new_message");
 
   // The displayed notification's contents should have changed to match the
   // updated notification.
@@ -426,8 +417,7 @@ TEST_F(NotificationMenuViewTest, UpdateNotification) {
   CheckDisplayedNotification(updated_notification);
 
   // Send an updated notification for a notification which doesn't yet exist.
-  UpdateNotification("Bad notification", base::ASCIIToUTF16("Bad Title"),
-                     base::ASCIIToUTF16("Bad Message"));
+  UpdateNotification("Bad notification", u"Bad Title", u"Bad Message");
 
   // Test that the displayed notification has not been changed.
   EXPECT_EQ(base::NumberToString16(1), test_api()->GetCounterViewContents());

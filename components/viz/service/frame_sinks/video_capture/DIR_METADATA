@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>Media>SurfaceCapture"
+}
+team_email: "media-capture-dev@chromium.org"

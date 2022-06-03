@@ -1,0 +1,28 @@
+Verifies that Overlay.setShowGridOverlays works together with Emulation.setDeviceMetricsOverride.
+Expected 3 track size labels; actual: 3
+Positions: 
+{
+    bottom : 26.86458396911621
+    height : 17.33333396911621
+    left : 373
+    right : 427
+    top : 9.53125
+    width : 54
+}
+{
+    bottom : 22.531250953674316
+    height : 17.33333396911621
+    left : 9.53125
+    right : 39.53125
+    top : 5.1979169845581055
+    width : 30
+}
+{
+    bottom : 37.22916793823242
+    height : 17.33333396911621
+    left : 9.53125
+    right : 39.53125
+    top : 19.89583396911621
+    width : 30
+}
+

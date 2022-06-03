@@ -16,7 +16,8 @@ void LayerDelegate::OnLayerOpacityChanged(PropertyChangeReason reason) {}
 
 void LayerDelegate::OnLayerAlphaShapeChanged() {}
 
-void LayerDelegate::OnLayerFillsBoundsOpaquelyChanged() {}
+void LayerDelegate::OnLayerFillsBoundsOpaquelyChanged(
+    PropertyChangeReason reason) {}
 
 void LayerDelegate::UpdateVisualState() {}
 

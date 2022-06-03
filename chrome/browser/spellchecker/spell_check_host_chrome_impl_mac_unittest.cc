@@ -20,8 +20,8 @@ class SpellCheckHostChromeImplMacTest : public ::testing::Test {
 TEST_F(SpellCheckHostChromeImplMacTest, CombineResults) {
   std::vector<SpellCheckResult> local_results;
   std::vector<SpellCheckResult> remote_results;
-  base::string16 remote_suggestion = base::ASCIIToUTF16("remote");
-  base::string16 local_suggestion = base::ASCIIToUTF16("local");
+  std::u16string remote_suggestion = u"remote";
+  std::u16string local_suggestion = u"local";
 
   // Remote-only result - must be flagged as GRAMMAR after combine
   remote_results.push_back(SpellCheckResult(SpellCheckResult::SPELLING, 0, 5));

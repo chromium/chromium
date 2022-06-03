@@ -40,7 +40,7 @@ function resource_load_priority_test(windowURL, expected_priority,
 
 function observeAndReportResourceLoadPriority(url, optionalDoc, message) {
   const documentToUse = optionalDoc ? optionalDoc : document;
-  return internals.getResourcePriority(url, documentToUse)
+  return internals.getInitialResourcePriority(url, documentToUse)
     .then(reportPriority)
 }
 

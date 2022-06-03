@@ -1,0 +1,107 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// These interfaces support a trial comparing two different implementations of
+// certificate verification, where the certificate verification may occur in
+// one process and the configuration and reporting in another. They will be
+// removed when the trial is completed.
+// See https://crbug.com/649026
+
+module cert_verifier.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/network_param.mojom";
+
+// Receives cert verifier trial configuration updates.
+interface TrialComparisonCertVerifierConfigClient {
+  OnTrialConfigUpdated(bool allowed);
+};
+
+[EnableIf=is_mac]
+struct MacCertEvidenceInfo {
+  // A bitfield indicating various status of the cert, defined in cssmapple.h
+  uint32 status_bits;
+
+  // CSSM_RETURN status codes for the cert, defined in cssmtype.h, values in
+  // cssmerr.h and cssmErrorStrings.h.
+  array<int32> status_codes;
+};
+
+[EnableIf=is_mac]
+struct MacPlatformVerifierDebugInfo {
+  // The SecTrustResultType result from SecTrustEvaluate.
+  uint32 trust_result;
+
+  // The OSStatus resultCode from SecTrustGetCssmResultCode.
+  int32 result_code;
+
+  // The CSSM_TP_APPLE_EVIDENCE_INFO statusChain from SecTrustGetResult. Each
+  // entry corresponds to one of the certs in the verified chain (leaf first).
+  array<MacCertEvidenceInfo> status_chain;
+};
+
+[EnableIf=is_win]
+struct WinPlatformVerifierDebugInfo {
+  // The ThisUpdate date for AuthRoot, as reflected in the registry.
+  mojo_base.mojom.Time authroot_this_update;
+
+  // The sequence number for AuthRoot, as reflected in the registry.
+  array<uint8> authroot_sequence_number;
+};
+
+// Contains additional debugging data about the verification. This information
+// does not change the meaning of the results.
+struct CertVerifierDebugInfo {
+  // A bitfield of net::TrustStoreMac::TrustDebugInfo flags, containing the
+  // union of flags from all the GetTrust calls done during verification.
+  [EnableIf=is_mac]
+  int32 mac_combined_trust_debug_info;
+
+  // A TrustStoreMac::TrustImplType value representing which implementation was
+  // used for the verification
+  [EnableIf=is_mac]
+  enum MacTrustImplType {
+    kUnknown = 0,
+    kDomainCache = 1,
+    kSimple = 2,
+    kLruCache = 3,
+  };
+  [EnableIf=is_mac]
+  MacTrustImplType mac_trust_impl;
+
+  [EnableIf=is_mac]
+  MacPlatformVerifierDebugInfo? mac_platform_debug_info;
+
+  [EnableIf=is_win]
+  WinPlatformVerifierDebugInfo? win_platform_debug_info;
+
+  // The time as seen by CertVerifyProcBuiltin, in raw timestamp and in
+  // exploded & encoded GeneralizedTime string.
+  mojo_base.mojom.Time trial_verification_time;
+  string trial_der_verification_time;
+};
+
+// Sends reports of differences found in the cert verifier trial.
+interface TrialComparisonCertVerifierReportClient {
+  SendTrialReport(
+      string hostname, network.mojom.X509Certificate cert,
+      bool enable_rev_checking, bool require_rev_checking_local_anchors,
+      bool enable_sha1_local_anchors, bool disable_symantec_enforcement,
+      array<uint8> stapled_ocsp, array<uint8> sct_list,
+      network.mojom.CertVerifyResult primary_result,
+      network.mojom.CertVerifyResult trial_result,
+      CertVerifierDebugInfo debug_info);
+};
+
+// Parameters for initializing the cert verification trial.
+// |initial_allowed| is the initial setting for whether the trial is allowed.
+// |config_client_receiver| is the Mojo pipe over which trial configuration
+// updates are received.
+// |report_client| is the Mojo pipe used to send trial reports.
+struct TrialComparisonCertVerifierParams {
+  bool initial_allowed = false;
+  pending_receiver<TrialComparisonCertVerifierConfigClient>?
+      config_client_receiver;
+  pending_remote<TrialComparisonCertVerifierReportClient>? report_client;
+};

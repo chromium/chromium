@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Copyright (C) 2009 Google Inc. All rights reserved.
 #
@@ -82,8 +82,8 @@ def main():
     original_output_h = os.path.join(output_dir,
                                      output_basename + BISON_HEADER_EXT)
 
-    return_code = subprocess.call([bison_exe, '-d', input_file,
-                                   '-o', output_cc])
+    return_code = subprocess.call(
+        [bison_exe, '-d', input_file, '-o', output_cc])
     assert return_code == 0
     # If the file doesn't exist, this raise an OSError.
     os.stat(original_output_h)
@@ -97,16 +97,18 @@ def main():
     CLANG_FORMAT_DISABLE_LINE = "// clang-format off"
     output_h = os.path.join(output_dir, output_basename + '.h')
     header_guard = NameStyleConverter(output_h).to_header_guard()
-    modify_file(original_output_h,
-                [CLANG_FORMAT_DISABLE_LINE,
-                 '#ifndef %s' % header_guard,
-                 '#define %s' % header_guard],
-                ['#endif  // %s' % header_guard],
-                replace_list=common_replace_list)
+    modify_file(
+        original_output_h, [
+            CLANG_FORMAT_DISABLE_LINE,
+            '#ifndef %s' % header_guard,
+            '#define %s' % header_guard
+        ], ['#endif  // %s' % header_guard],
+        replace_list=common_replace_list)
     os.rename(original_output_h, output_h)
 
-    modify_file(output_cc, [CLANG_FORMAT_DISABLE_LINE], [],
-                replace_list=common_replace_list)
+    modify_file(
+        output_cc, [CLANG_FORMAT_DISABLE_LINE], [],
+        replace_list=common_replace_list)
 
 
 if __name__ == '__main__':

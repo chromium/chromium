@@ -28,10 +28,10 @@ void SpokenFeedbackToggler::SetEnabled(bool enabled) {
 
 // static
 std::unique_ptr<ui::EventHandler> SpokenFeedbackToggler::CreateHandler() {
+  // Uses `new` due to private constructor.
   std::unique_ptr<KeyHoldDetector::Delegate> delegate(
       new SpokenFeedbackToggler());
-  return std::unique_ptr<ui::EventHandler>(
-      new KeyHoldDetector(std::move(delegate)));
+  return std::make_unique<KeyHoldDetector>(std::move(delegate));
 }
 
 bool SpokenFeedbackToggler::ShouldProcessEvent(
@@ -54,8 +54,8 @@ void SpokenFeedbackToggler::OnKeyHold(const ui::KeyEvent* event) {
     toggled_ = true;
     AccessibilityControllerImpl* controller =
         Shell::Get()->accessibility_controller();
-    controller->SetSpokenFeedbackEnabled(!controller->spoken_feedback_enabled(),
-                                         A11Y_NOTIFICATION_SHOW);
+    controller->SetSpokenFeedbackEnabled(
+        !controller->spoken_feedback().enabled(), A11Y_NOTIFICATION_SHOW);
   }
 }
 

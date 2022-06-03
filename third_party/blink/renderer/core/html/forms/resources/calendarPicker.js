@@ -58,7 +58,7 @@ var global = {
       'Nov', 'Dec'
     ],
     isLocaleRTL: false,
-    isFormControlsRefreshEnabled: false,
+    isBorderTransparent: false,
     mode: 'date',
     isAMPMFirst: false,
     hasAMPM: false,
@@ -301,6 +301,59 @@ Day.prototype.next = function(offset) {
   if (typeof offset === 'undefined')
     offset = 1;
   return new Day(this.year, this.month, this.date + offset);
+};
+
+/**
+ * @return {!Day}
+ */
+Day.prototype.nextHome = function() {
+  if (this.date !== 1)
+    return new Day(this.year, this.month, 1);
+  return new Day(this.year, this.month - 1, 1);
+};
+
+/**
+ * @return {!Day}
+ */
+Day.prototype.nextEnd = function() {
+  let tomorrow = this.next();
+  if (tomorrow.month === this.month)
+    return new Day(this.year, this.month + 1, 1).previous();
+  return new Day(tomorrow.year, tomorrow.month + 1, 1).previous();
+};
+
+/**
+ * Given that 'this' is the Nth day of the month, returns the Nth
+ * day of the month that is specified by the parameter.
+ * Clips the date if necessary, e.g. if 'this' Day is October 31st and
+ * the parameter is a November, returns November 30th.
+ * @param {!Month} month
+ * @return {!Day}
+ */
+Day.prototype.thisRangeInMonth = function(month) {
+  var newDate = month.startDate();
+  var originalMonthInt = newDate.getUTCMonth();
+  newDate.setUTCDate(this.date);
+  if (newDate.getUTCMonth() != originalMonthInt) {
+    newDate.setUTCDate(0);
+  }
+  return Day.createFromDate(newDate);
+};
+
+/**
+ * @param {!Month} month
+ * @return {!boolean}
+ */
+Day.prototype.overlapsMonth = function(month) {
+  return (month.firstDay() <= this && month.lastDay() >= this);
+};
+
+/**
+ * @param {!Month} month
+ * @return {!boolean}
+ */
+Day.prototype.isFullyContainedInMonth = function(month) {
+  return (month.firstDay() <= this && month.lastDay() >= this);
 };
 
 /**
@@ -569,6 +622,89 @@ Week.prototype.next = function(offset) {
 };
 
 /**
+ * @return {!Week}
+ */
+Week.prototype.nextHome = function() {
+  // Go back weeks until we find the one that is the first week of a month. Do
+  // that by finding the first day in the current week, then go back a day. We
+  // want the first week of the month for that day.
+  var desiredDay = this.firstDay().previous();
+  desiredDay.date = 1;
+  return Week.createFromDay(desiredDay);
+};
+
+/**
+ * @return {!Week}
+ */
+Week.prototype.nextEnd = function() {
+  // Go forward weeks until we find the one that is the last week of a month. Do
+  // that by finding the week containing the last day of the month for the day
+  // following the last day included in the current week.
+  var desiredDay = this.lastDay().next();
+  desiredDay = new Day(desiredDay.year, desiredDay.month + 1, 1).previous();
+  return Week.createFromDay(desiredDay);
+};
+
+/**
+ * Given that 'this' is the Nth week of the month, returns
+ * the Week that is the Nth week in the month specified
+ * by the parameter.
+ * Clips the date if necessary, e.g. if 'this' is the 5th week
+ * of a month that has 5 weeks and the parameter month only has
+ * 4 weeks, returns the 4th week of that month.
+ * @param {!Month} month
+ * @return {!Week}
+ */
+Week.prototype.thisRangeInMonth = function(month) {
+  var firstDateInCurrentMonth = this.startDate();
+  firstDateInCurrentMonth.setUTCDate(1);
+
+  var offsetInOriginalMonth =
+      Week._numberOfWeeksSinceDate(firstDateInCurrentMonth, this.startDate());
+
+  // Determine the first Monday in the new month (the week control shows weeks
+  // starting on Monday).
+  var firstWeekStartInNewMonth = month.startDate();
+  firstWeekStartInNewMonth.setUTCDate(
+      1 +
+      ((DaysPerWeek + 1 - firstWeekStartInNewMonth.getUTCDay()) % DaysPerWeek));
+
+
+  // Find the Nth Monday in the month where N == offsetInOriginalMonth.
+  firstWeekStartInNewMonth.setUTCDate(
+      firstWeekStartInNewMonth.getUTCDate() +
+      (DaysPerWeek * offsetInOriginalMonth));
+
+  if (firstWeekStartInNewMonth.getUTCMonth() != month.month) {
+    // If we overshot into the next month (can happen if we were
+    // on the 5th week of the old month), go back to the last week
+    // of the target month.
+    firstWeekStartInNewMonth.setUTCDate(
+        firstWeekStartInNewMonth.getUTCDate() - DaysPerWeek);
+  }
+
+  return Week.createFromDate(firstWeekStartInNewMonth);
+};
+
+/**
+ * @param {!Month} month
+ * @return {!boolean}
+ */
+Week.prototype.overlapsMonth = function(month) {
+  return (
+      month.firstDay() <= this.lastDay() && month.lastDay() >= this.firstDay());
+};
+
+/**
+ * @param {!Month} month
+ * @return {!boolean}
+ */
+Week.prototype.isFullyContainedInMonth = function(month) {
+  return (
+      month.firstDay() <= this.firstDay() && month.lastDay() >= this.lastDay());
+};
+
+/**
  * @return {!Date}
  */
 Week.prototype.startDate = function() {
@@ -706,13 +842,6 @@ Month.createFromToday = function() {
 };
 
 /**
- * @return {!boolean}
- */
-Month.prototype.containsDay = function(day) {
-  return this.year === day.year && this.month === day.month;
-};
-
-/**
  * @param {!Month} other
  * @return {!boolean}
  */
@@ -742,6 +871,24 @@ Month.prototype.next = function(offset) {
 };
 
 /**
+ * @return {!Month}
+ */
+Month.prototype.nextHome = function() {
+  if (this.month !== 0)
+    return new Month(this.year, 0);
+  return new Month(this.year - 1, 0);
+};
+
+/**
+ * @return {!Month}
+ */
+Month.prototype.nextEnd = function() {
+  if (this.month !== MonthsPerYear - 1)
+    return new Month(this.year, MonthsPerYear - 1);
+  return new Month(this.year + 1, MonthsPerYear - 1);
+};
+
+/**
  * @return {!Date}
  */
 Month.prototype.startDate = function() {
@@ -768,7 +915,7 @@ Month.prototype.firstDay = function() {
  * @return {!Day}
  */
 Month.prototype.middleDay = function() {
-  return new Day(this.year, this.month, this.month === 2 ? 14 : 15);
+  return new Day(this.year, this.month, this.month === 1 ? 14 : 15);
 };
 
 /**
@@ -863,22 +1010,17 @@ function closePicker() {
 
 function openSuggestionPicker() {
   closePicker();
-  if (global.params.isFormControlsRefreshEnabled) {
-    document.body.classList.add('controls-refresh');
-  }
   global.picker = new SuggestionPicker($('main'), global.params);
 };
 
 function openCalendarPicker() {
   closePicker();
-  if (global.params.isFormControlsRefreshEnabled) {
-    if (global.params.mode == 'month') {
-      return initializeMonthPicker(global.params);
-    } else if (global.params.mode == 'time') {
-      return initializeTimePicker(global.params);
-    } else if (global.params.mode == 'datetime-local') {
-      return initializeDateTimeLocalPicker(global.params);
-    }
+  if (global.params.mode == 'month') {
+    return initializeMonthPicker(global.params);
+  } else if (global.params.mode == 'time') {
+    return initializeTimePicker(global.params);
+  } else if (global.params.mode == 'datetime-local') {
+    return initializeDateTimeLocalPicker(global.params);
   }
 
   global.picker = new CalendarPicker(global.params.mode, global.params);
@@ -1666,10 +1808,13 @@ ListCell.prototype.setSelected = function(selected) {
   if (this._selected === selected)
     return;
   this._selected = selected;
-  if (this._selected)
+  if (this._selected) {
     this.element.classList.add('selected');
-  else
+    this.element.setAttribute('aria-selected', true);
+  } else {
     this.element.classList.remove('selected');
+    this.element.setAttribute('aria-selected', false);
+  }
 };
 
 /**
@@ -1782,7 +1927,18 @@ ListView.prototype.addCellIfNecessary = function(row) {
   if (cell)
     return cell;
   cell = this.prepareNewCell(row);
-  cell.attachTo(this.scrollView.contentElement);
+
+  // Ensure that the DOM tree positions of the rows are in increasing
+  // chronological order.  This is needed for correct application of
+  // the :hover selector for the week control, which spans across multiple
+  // calendar rows.
+  var rowIndices = Object.keys(this._cells);
+  var shouldPrepend = (rowIndices.length) > 0 && (row < rowIndices[0]);
+  cell.attachTo(
+      this.scrollView.contentElement,
+      shouldPrepend ? this.scrollView.contentElement.firstElementChild :
+                      undefined);
+
   cell.setWidth(this._width);
   cell.setPosition(this.scrollView.contentPositionForContentOffset(
       this.scrollOffsetForRow(row)));
@@ -2160,6 +2316,133 @@ ScrubbyScrollBar.prototype.onScrollTimer = function() {
   this.scrollView.scrollBy(scrollAmount, false);
 };
 
+// Mixin containing utilities for identifying and navigating between
+// valid day/week/month ranges.
+var DateRangeManager = {
+  _setValidDateConfig(config) {
+    this.config = {};
+
+    this.config.minimum = (typeof config.min !== 'undefined' && config.min) ?
+        parseDateString(config.min) :
+        this._dateTypeConstructor.Minimum;
+    this.config.maximum = (typeof config.max !== 'undefined' && config.max) ?
+        parseDateString(config.max) :
+        this._dateTypeConstructor.Maximum;
+    this.config.minimumValue = this.config.minimum.valueOf();
+    this.config.maximumValue = this.config.maximum.valueOf();
+    this.config.step = (typeof config.step !== 'undefined') ?
+        Number(config.step) :
+        this._dateTypeConstructor.DefaultStep;
+    this.config.stepBase = (typeof config.stepBase !== 'undefined') ?
+        Number(config.stepBase) :
+        this._dateTypeConstructor.DefaultStepBase;
+  },
+
+  _isValidForStep(value) {
+    // nextAllowedValue is the time closest (looking forward) to value that is
+    // within the interval specified by the step and the stepBase.  This may
+    // be equal to value.
+    var nextAllowedValue =
+        (Math.ceil((value - this.config.stepBase) / this.config.step) *
+         this.config.step) +
+        this.config.stepBase;
+    // If the nextAllowedValue is between value and the next nearest possible time
+    // for this control type (determined by adding the smallest time interval, given
+    // by DefaultStep, to value) then we consider it to be valid.
+    return nextAllowedValue < (value + this._dateTypeConstructor.DefaultStep);
+  },
+
+  /**
+   * @param {!number} value
+   * @return {!boolean}
+   */
+  _outOfRange(value) {
+    return value < this.config.minimumValue || value > this.config.maximumValue;
+  },
+
+  /**
+   * @param {!DateType} dayOrWeekOrMonth
+   * @return {!boolean}
+   */
+  isValid(dayOrWeekOrMonth) {
+    var value = dayOrWeekOrMonth.valueOf();
+    return dayOrWeekOrMonth instanceof this._dateTypeConstructor &&
+        !this._outOfRange(value) && this._isValidForStep(value);
+  },
+
+  /**
+   * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
+   * @return {?DayOrWeekOrMonth}
+   */
+  getNearestValidRangeLookingForward(dayOrWeekOrMonth) {
+    if (dayOrWeekOrMonth < this.config.minimumValue) {
+      // Performance optimization: avoid wasting lots of time in the below
+      // loop if dayOrWeekOrMonth is significantly less than the min.
+      dayOrWeekOrMonth =
+          this._dateTypeConstructor.createFromValue(this.config.minimumValue);
+    }
+
+    while (!this.isValid(dayOrWeekOrMonth) &&
+           dayOrWeekOrMonth < this.config.maximumValue) {
+      dayOrWeekOrMonth = dayOrWeekOrMonth.next();
+    }
+
+    return this.isValid(dayOrWeekOrMonth) ? dayOrWeekOrMonth : null;
+  },
+
+  /**
+  * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
+  * @return {?DayOrWeekOrMonth}
+  */
+  getNearestValidRangeLookingBackward(dayOrWeekOrMonth) {
+    if (dayOrWeekOrMonth > this.config.maximumValue) {
+      // Performance optimization: avoid wasting lots of time in the below
+      // loop if dayOrWeekOrMonth is significantly greater than the max.
+      dayOrWeekOrMonth =
+          this._dateTypeConstructor.createFromValue(this.config.maximumValue);
+    }
+
+    while (!this.isValid(dayOrWeekOrMonth) &&
+           dayOrWeekOrMonth > this.config.minimumValue) {
+      dayOrWeekOrMonth = dayOrWeekOrMonth.previous();
+    }
+
+    return this.isValid(dayOrWeekOrMonth) ? dayOrWeekOrMonth : null;
+  },
+
+  /**
+  * @param {!DayOrWeekOrMonth} dayOrWeekOrMonth
+  * @param {!boolean} lookForwardFirst
+  * @return {?DayOrWeekOrMonth}
+  */
+  getNearestValidRange(dayOrWeekOrMonth, lookForwardFirst) {
+    var result = null;
+    if (lookForwardFirst) {
+      if (!(result =
+                this.getNearestValidRangeLookingForward(dayOrWeekOrMonth))) {
+        result = this.getNearestValidRangeLookingBackward(dayOrWeekOrMonth);
+      }
+    } else {
+      if (!(result =
+                this.getNearestValidRangeLookingBackward(dayOrWeekOrMonth))) {
+        result = this.getNearestValidRangeLookingForward(dayOrWeekOrMonth);
+      }
+    }
+
+    return result;
+  },
+
+  /**
+  * @param {!Day} day
+  * @param {!boolean} lookForwardFirst
+  * @return {?DayOrWeekOrMonth}
+  */
+  getValidRangeNearestToDay(day, lookForwardFirst) {
+    var dayOrWeekOrMonth = this._dateTypeConstructor.createFromDay(day);
+    return this.getNearestValidRange(dayOrWeekOrMonth, lookForwardFirst);
+  }
+};
+
 /**
  * @constructor
  * @extends ListCell
@@ -2220,22 +2503,15 @@ function YearListCell(shortMonthLabels) {
 YearListCell.prototype = Object.create(ListCell.prototype);
 
 YearListCell._Height = hasInaccuratePointingDevice() ? 31 : 25;
-YearListCell._HeightRefresh = 25;
+YearListCell._Height = 25;
 YearListCell.GetHeight = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return YearListCell._HeightRefresh;
-  }
   return YearListCell._Height;
 };
 YearListCell.BorderBottomWidth = 1;
 YearListCell.ButtonRows = 3;
 YearListCell.ButtonColumns = 4;
-YearListCell._SelectedHeight = hasInaccuratePointingDevice() ? 127 : 121;
-YearListCell._SelectedHeightRefresh = 128;
+YearListCell._SelectedHeight = 128;
 YearListCell.GetSelectedHeight = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return YearListCell._SelectedHeightRefresh;
-  }
   return YearListCell._SelectedHeight;
 };
 YearListCell.ClassNameYearListCell = 'year-list-cell';
@@ -2294,14 +2570,10 @@ YearListCell.prototype.setHeight = function(height) {
  * @param {!Month} minimumMonth
  * @param {!Month} maximumMonth
  */
-function YearListView(minimumMonth, maximumMonth) {
+function YearListView(minimumMonth, maximumMonth, config) {
   ListView.call(this);
   this.element.classList.add('year-list-view');
 
-  /**
-   * @type {?Month}
-   */
-  this.highlightedMonth = null;
   /**
    * @type {?Month}
    */
@@ -2350,71 +2622,53 @@ function YearListView(minimumMonth, maximumMonth) {
   this.scrubbyScrollBar = new ScrubbyScrollBar(this.scrollView);
   this.scrubbyScrollBar.attachTo(this);
 
-  this.element.addEventListener('mouseover', this.onMouseOver, false);
-  this.element.addEventListener('mouseout', this.onMouseOut, false);
   this.element.addEventListener('keydown', this.onKeyDown, false);
-  this.element.addEventListener('touchstart', this.onTouchStart, false);
+
+  if (config && config.mode == 'month') {
+    this.type = 'month';
+    this._dateTypeConstructor = Month;
+
+    this._setValidDateConfig(config);
+
+    this._hadValidValueWhenOpened = false;
+    var initialSelection = parseDateString(config.currentValue);
+    if (initialSelection) {
+      this._hadValidValueWhenOpened = this.isValid(initialSelection);
+      this._selectedMonth = this.getNearestValidRange(
+          initialSelection, /*lookForwardFirst*/ true);
+    } else {
+      // Ensure that the next month closest to today is selected to start with so that
+      // the user can simply submit the popup to choose it.
+      this._selectedMonth = this.getValidRangeNearestToDay(
+          this._dateTypeConstructor.createFromToday(),
+          /*lookForwardFirst*/ true);
+    }
+
+    this._initialSelectedMonth = this._selectedMonth;
+  } else {
+    // This is a month switcher menu embedded in another calendar control.
+    // Set up our config so that getNearestValidRangeLookingForward(Backward)
+    // when called on this YearListView will navigate by month.
+    this.config = {};
+    this.config.minimumValue = minimumMonth;
+    this.config.maximumValue = maximumMonth;
+    this.config.step = Month.DefaultStep;
+    this.config.stepBase = Month.DefaultStepBase;
+    this._dateTypeConstructor = Month;
+  }
 }
 
 YearListView.prototype = Object.create(ListView.prototype);
+Object.assign(YearListView.prototype, DateRangeManager);
 
-YearListView._Height = YearListCell._SelectedHeight - 1;
-YearListView._VisibleYearsRefresh = 4;
-YearListView._HeightRefresh = YearListCell._SelectedHeightRefresh - 1 +
-    YearListView._VisibleYearsRefresh * YearListCell._HeightRefresh;
+YearListView._VisibleYears = 4;
+YearListView._Height = YearListCell._SelectedHeight - 1 +
+    YearListView._VisibleYears * YearListCell._Height;
 YearListView.GetHeight = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return YearListView._HeightRefresh;
-  }
   return YearListView._Height;
 };
 YearListView.EventTypeYearListViewDidHide = 'yearListViewDidHide';
 YearListView.EventTypeYearListViewDidSelectMonth = 'yearListViewDidSelectMonth';
-
-/**
- * @param {?Event} event
- */
-YearListView.prototype.onTouchStart = function(event) {
-  var touch = event.touches[0];
-  var monthButtonElement = enclosingNodeOrSelfWithClass(
-      touch.target, YearListCell.ClassNameMonthButton);
-  if (!monthButtonElement)
-    return;
-  var cellElement = enclosingNodeOrSelfWithClass(
-      monthButtonElement, YearListCell.ClassNameYearListCell);
-  var cell = cellElement.$view;
-  this.highlightMonth(
-      new Month(cell.row + 1, parseInt(monthButtonElement.dataset.month, 10)));
-};
-
-/**
- * @param {?Event} event
- */
-YearListView.prototype.onMouseOver = function(event) {
-  var monthButtonElement = enclosingNodeOrSelfWithClass(
-      event.target, YearListCell.ClassNameMonthButton);
-  if (!monthButtonElement)
-    return;
-  var cellElement = enclosingNodeOrSelfWithClass(
-      monthButtonElement, YearListCell.ClassNameYearListCell);
-  var cell = cellElement.$view;
-  this.highlightMonth(
-      new Month(cell.row + 1, parseInt(monthButtonElement.dataset.month, 10)));
-  this._ignoreMouseOutUntillNextMouseOver = false;
-};
-
-/**
- * @param {?Event} event
- */
-YearListView.prototype.onMouseOut = function(event) {
-  if (this._ignoreMouseOutUntillNextMouseOver)
-    return;
-  var monthButtonElement = enclosingNodeOrSelfWithClass(
-      event.target, YearListCell.ClassNameMonthButton);
-  if (!monthButtonElement) {
-    this.dehighlightMonth();
-  }
-};
 
 /**
  * @param {!number} width Width in pixels.
@@ -2504,9 +2758,6 @@ YearListView.prototype.onClick = function(event) {
   if (this.selectedRow !== oldSelectedRow) {
     // Always start with first month when changing the year.
     const month = new Month(year, 0);
-    this.highlightMonth(month);
-    this.dispatchEvent(
-        YearListView.EventTypeYearListViewDidSelectMonth, this, month);
     this.scrollView.scrollTo(this.selectedRow * YearListCell.GetHeight(), true);
   } else {
     var monthButton = enclosingNodeOrSelfWithClass(
@@ -2517,7 +2768,6 @@ YearListView.prototype.onClick = function(event) {
     this.dispatchEvent(
         YearListView.EventTypeYearListViewDidSelectMonth, this,
         new Month(year, month));
-    this.hide();
   }
 };
 
@@ -2588,25 +2838,23 @@ YearListView.prototype.prepareNewCell = function(row) {
   for (var i = 0; i < cell.monthButtons.length; ++i) {
     var month = new Month(row + 1, i);
     cell.monthButtons[i].id = month.toString();
-    cell.monthButtons[i].setAttribute(
-        'aria-disabled',
-        this._minimumMonth > month || this._maximumMonth < month ? 'true' :
-                                                                   'false');
+    if (this.type === 'month') {
+      cell.monthButtons[i].setAttribute(
+          'aria-disabled', this.isValid(month) ? 'false' : 'true');
+    } else {
+      cell.monthButtons[i].setAttribute(
+          'aria-disabled',
+          this._minimumMonth > month || this._maximumMonth < month ? 'true' :
+                                                                     'false');
+    }
     cell.monthButtons[i].setAttribute('aria-label', month.toLocaleString());
-  }
-  if (this.highlightedMonth && row === this.highlightedMonth.year - 1) {
-    var monthButton = cell.monthButtons[this.highlightedMonth.month];
-    monthButton.classList.add(YearListCell.ClassNameHighlighted);
-    // aria-activedescendant assumes both elements have layoutObjects, and
-    // |monthButton| might have no layoutObject yet.
-    var element = this.element;
-    setTimeout(function() {
-      element.setAttribute('aria-activedescendant', monthButton.id);
-    }, 0);
+    cell.monthButtons[i].setAttribute('aria-selected', false);
   }
   if (this._selectedMonth && (this._selectedMonth.year - 1) === row) {
     var monthButton = cell.monthButtons[this._selectedMonth.month];
     monthButton.classList.add(YearListCell.ClassNameSelected);
+    this.element.setAttribute('aria-activedescendant', monthButton.id);
+    monthButton.setAttribute('aria-selected', true);
   }
   const todayMonth = Month.createFromToday();
   if ((todayMonth.year - 1) === row) {
@@ -2691,8 +2939,6 @@ YearListView.prototype.select = function(row) {
         this.selectedRow, YearListView.RowAnimationDirection.Opening);
     if (selectedCell)
       selectedCell.setSelected(true);
-    var month = this.highlightedMonth ? this.highlightedMonth.month : 0;
-    this.highlightMonth(new Month(this.selectedRow + 1, month));
   }
   this.setNeedsUpdateCells(true);
 };
@@ -2713,8 +2959,6 @@ YearListView.prototype.selectWithoutAnimating = function(row) {
       selectedCell.setSelected(true);
       selectedCell.setHeight(YearListCell.GetSelectedHeight());
     }
-    var month = this.highlightedMonth ? this.highlightedMonth.month : 0;
-    this.highlightMonth(new Month(this.selectedRow + 1, month));
   }
   this.setNeedsUpdateCells(true);
 };
@@ -2762,7 +3006,29 @@ YearListView.prototype.highlightMonth = function(month) {
 };
 
 YearListView.prototype.setSelectedMonth = function(month) {
+
+  var oldMonthButton = this.buttonForMonth(this._selectedMonth);
+  if (oldMonthButton) {
+    oldMonthButton.classList.remove(YearListCell.ClassNameSelected);
+    oldMonthButton.setAttribute('aria-selected', false);
+  }
+
   this._selectedMonth = month;
+
+  var newMonthButton = this.buttonForMonth(this._selectedMonth);
+  if (newMonthButton) {
+    newMonthButton.classList.add(YearListCell.ClassNameSelected);
+    this.element.setAttribute('aria-activedescendant', newMonthButton.id);
+    newMonthButton.setAttribute('aria-selected', true);
+  }
+};
+
+YearListView.prototype.setSelectedMonthAndUpdateView = function(month) {
+  this.setSelectedMonth(month);
+
+  this.select(this._selectedMonth.year - 1);
+
+  this.scrollView.scrollTo(this.selectedRow * YearListCell.GetHeight(), true);
 };
 
 YearListView.prototype.showSelectedMonth = function() {
@@ -2780,7 +3046,6 @@ YearListView.prototype.show = function(month) {
 
   this.scrollToRow(month.year - 1, false);
   this.selectWithoutAnimating(month.year - 1);
-  this.highlightMonth(month);
   this.showSelectedMonth();
 };
 
@@ -2794,9 +3059,6 @@ YearListView.prototype.hide = function() {
 YearListView.prototype._moveHighlightTo = function(month) {
   this.highlightMonth(month);
   this.select(this.highlightedMonth.year - 1);
-
-  this.dispatchEvent(
-      YearListView.EventTypeYearListViewDidSelectMonth, this, month);
   this.scrollView.scrollTo(this.selectedRow * YearListCell.GetHeight(), true);
   return true;
 };
@@ -2807,32 +3069,70 @@ YearListView.prototype._moveHighlightTo = function(month) {
 YearListView.prototype.onKeyDown = function(event) {
   var key = event.key;
   var eventHandled = false;
-  if (key == 't')
-    eventHandled = this._moveHighlightTo(Month.createFromToday());
-  else if (this.highlightedMonth) {
-    if (global.params.isLocaleRTL ? key == 'ArrowRight' : key == 'ArrowLeft')
-      eventHandled = this._moveHighlightTo(this.highlightedMonth.previous());
-    else if (key == 'ArrowUp')
-      eventHandled = this._moveHighlightTo(
-          this.highlightedMonth.previous(YearListCell.ButtonColumns));
-    else if (
-        global.params.isLocaleRTL ? key == 'ArrowLeft' : key == 'ArrowRight')
-      eventHandled = this._moveHighlightTo(this.highlightedMonth.next());
-    else if (key == 'ArrowDown')
-      eventHandled = this._moveHighlightTo(
-          this.highlightedMonth.next(YearListCell.ButtonColumns));
-    else if (key == 'PageUp')
-      eventHandled =
-          this._moveHighlightTo(this.highlightedMonth.previous(MonthsPerYear));
-    else if (key == 'PageDown')
-      eventHandled =
-          this._moveHighlightTo(this.highlightedMonth.next(MonthsPerYear));
-    else if (key == 'Enter') {
-      this.dispatchEvent(
-          YearListView.EventTypeYearListViewDidSelectMonth, this,
-          this.highlightedMonth);
-      this.hide();
-      eventHandled = true;
+  if (this._selectedMonth) {
+    if (global.params.isLocaleRTL ? key == 'ArrowRight' : key == 'ArrowLeft') {
+      var newSelection = this.getNearestValidRangeLookingBackward(
+          this._selectedMonth.previous());
+      if (newSelection) {
+        this.setSelectedMonthAndUpdateView(newSelection);
+      }
+    } else if (key == 'ArrowUp') {
+      var newSelection = this.getNearestValidRangeLookingBackward(
+          this._selectedMonth.previous(YearListCell.ButtonColumns));
+      if (newSelection) {
+        this.setSelectedMonthAndUpdateView(newSelection);
+      }
+    } else if (
+        global.params.isLocaleRTL ? key == 'ArrowLeft' : key == 'ArrowRight') {
+      var newSelection =
+          this.getNearestValidRangeLookingForward(this._selectedMonth.next());
+      if (newSelection) {
+        this.setSelectedMonthAndUpdateView(newSelection);
+      }
+    } else if (key == 'ArrowDown') {
+      var newSelection = this.getNearestValidRangeLookingForward(
+          this._selectedMonth.next(YearListCell.ButtonColumns));
+      if (newSelection) {
+        this.setSelectedMonthAndUpdateView(newSelection);
+      }
+    } else if (key == 'PageUp') {
+      var newSelection = this.getNearestValidRangeLookingBackward(
+          this._selectedMonth.previous(MonthsPerYear));
+      if (newSelection) {
+        this.setSelectedMonthAndUpdateView(newSelection);
+      }
+    } else if (key == 'PageDown') {
+      var newSelection = this.getNearestValidRangeLookingForward(
+          this._selectedMonth.next(MonthsPerYear));
+      if (newSelection) {
+        this.setSelectedMonthAndUpdateView(newSelection);
+      }
+    } else if (key == 'Home') {
+      var newMonth = this._selectedMonth.month === 0 ?
+          new Month(this._selectedMonth.year - 1, 0) :
+          new Month(this._selectedMonth.year, 0);
+      var newSelection = this.getNearestValidRangeLookingBackward(newMonth);
+      if (newSelection) {
+        this.setSelectedMonthAndUpdateView(newSelection);
+      }
+    } else if (key == 'End') {
+      var lastMonthNum = MonthsPerYear - 1;
+      var newMonth = this._selectedMonth.month === lastMonthNum ?
+          new Month(this._selectedMonth.year + 1, lastMonthNum) :
+          new Month(this._selectedMonth.year, lastMonthNum);
+      var newSelection = this.getNearestValidRangeLookingForward(newMonth);
+      if (newSelection) {
+        this.setSelectedMonthAndUpdateView(newSelection);
+      }
+    } else if (this.type !== 'month') {
+      if (key == 'Enter') {
+        this.dispatchEvent(
+            YearListView.EventTypeYearListViewDidSelectMonth, this,
+            this._selectedMonth);
+      } else if (key == 'Escape') {
+        this.hide();
+        eventHandled = true;
+      }
     }
   } else if (key == 'ArrowUp') {
     this.scrollView.scrollBy(-YearListCell.GetHeight(), true);
@@ -2884,7 +3184,14 @@ MonthPopupView.ClassNameMonthPopupView = 'month-popup-view';
 
 MonthPopupView.prototype.show = function(initialMonth, calendarTableRect) {
   this.isVisible = true;
-  document.body.appendChild(this.element);
+  if (global.params.mode == 'datetime-local') {
+    // Place the month popup under the datetimelocal-picker element so that the
+    // datetimelocal-picker element receives its keyboard and click events.
+    // For other calendar control types, these events are handled via the body element.
+    document.querySelector('datetimelocal-picker').appendChild(this.element);
+  } else {
+    document.body.appendChild(this.element);
+  }
   this.yearListView.setWidth(calendarTableRect.width - 2);
   this.yearListView.setHeight(YearListView.GetHeight());
   if (global.params.isLocaleRTL)
@@ -2996,6 +3303,27 @@ MonthPopupButton.prototype.onClick = function(event) {
  * @constructor
  * @extends View
  */
+function ClearButton() {
+  View.call(this, createElement('button', ClearButton.ClassNameClearButton));
+  this.element.addEventListener('click', this.onClick, false);
+};
+
+ClearButton.prototype = Object.create(View.prototype);
+
+ClearButton.ClassNameClearButton = 'clear-button';
+ClearButton.EventTypeButtonClick = 'buttonClick';
+
+/**
+ * @param {?Event} event
+ */
+ClearButton.prototype.onClick = function(event) {
+  this.dispatchEvent(ClearButton.EventTypeButtonClick, this);
+};
+
+/**
+ * @constructor
+ * @extends View
+ */
 function CalendarNavigationButton() {
   View.call(
       this,
@@ -3101,6 +3429,26 @@ CalendarNavigationButton.prototype.onRepeatingClick = function(event) {
 };
 
 /**
+ * @param {!Day} day
+ * @param {!Day} minDay
+ * @param {!Day} maxDay
+ * @return {boolean}
+ */
+function isDayOutsideOfRange(day, minDay, maxDay) {
+  return day < minDay || maxDay < day;
+}
+
+/**
+ * @param {!Week} week
+ * @param {!Week} minWeek
+ * @param {!Week} maxWeek
+ * @return {boolean}
+ */
+function isWeekOutsideOfRange(week, minWeek, maxWeek) {
+  return week < minWeek || maxWeek < week;
+}
+
+/**
  * @constructor
  * @extends View
  * @param {!CalendarPicker} calendarPicker
@@ -3142,26 +3490,6 @@ function CalendarHeaderView(calendarPicker) {
   this._previousMonthButton.element.setAttribute(
       'aria-label', global.params.axShowPreviousMonth);
 
-  if (!global.params.isFormControlsRefreshEnabled) {
-    /**
-     * @type {!CalendarNavigationButton}
-     * @const
-     */
-    this._todayButton = new CalendarNavigationButton();
-    this._todayButton.attachTo(this);
-    this._todayButton.on(
-        CalendarNavigationButton.EventTypeButtonClick,
-        this.onNavigationButtonClick);
-    this._todayButton.element.classList.add(
-        CalendarHeaderView.GetClassNameTodayButton());
-    var monthContainingToday = Month.createFromToday();
-    this._todayButton.setDisabled(
-        monthContainingToday < this.calendarPicker.minimumMonth ||
-        monthContainingToday > this.calendarPicker.maximumMonth);
-    this._todayButton.element.setAttribute(
-        'aria-label', global.params.todayLabel);
-  }
-
   /**
    * @type {!CalendarNavigationButton}
    * @const
@@ -3194,38 +3522,32 @@ CalendarHeaderView.prototype = Object.create(View.prototype);
 
 CalendarHeaderView.Height = 24;
 CalendarHeaderView.BottomMargin = 10;
-CalendarHeaderView._ForwardTriangle =
-    '<svg width=\'4\' height=\'7\'><polygon points=\'0,7 0,0, 4,3.5\' style=\'fill:#6e6e6e;\' /></svg>';
-CalendarHeaderView._ForwardTriangleRefresh =
-    '<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\
-    <path d=\"M15.3516 8.60156L8 15.9531L0.648438 8.60156L1.35156 7.89844L7.5 14.0469V0H8.5V14.0469L14.6484 7.89844L15.3516 8.60156Z\" fill=\"#101010\"/>\
-    </svg>'
+CalendarHeaderView.ClassNameCalendarNavigationButtonIcon =
+    'navigation-button-icon';
+CalendarHeaderView._ForwardTriangle = `<svg class="${
+    CalendarHeaderView
+        .ClassNameCalendarNavigationButtonIcon}" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path class="${
+    CalendarHeaderView
+        .ClassNameCalendarNavigationButtonIcon}" d="M15.3516 8.60156L8 15.9531L0.648438 8.60156L1.35156 7.89844L7.5 14.0469V0H8.5V14.0469L14.6484 7.89844L15.3516 8.60156Z" fill="#101010"/>
+    </svg>`;
 CalendarHeaderView.GetForwardTriangle = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return CalendarHeaderView._ForwardTriangleRefresh;
-  }
   return CalendarHeaderView._ForwardTriangle;
 };
-CalendarHeaderView._BackwardTriangle =
-    '<svg width=\'4\' height=\'7\'><polygon points=\'0,3.5 4,7 4,0\' style=\'fill:#6e6e6e;\' /></svg>';
-CalendarHeaderView._BackwardTriangleRefresh =
-    '<svg width=\"16\" height=\"16\" viewBox=\"0 0 16 16\" fill=\"none\" xmlns=\"http://www.w3.org/2000/svg\">\
-    <path d=\"M14.6484 8.10156L8.5 1.95312V16H7.5V1.95312L1.35156 8.10156L0.648438 7.39844L8 0.046875L15.3516 7.39844L14.6484 8.10156Z\" fill=\"#101010\"/>\
-    </svg>'
+CalendarHeaderView._BackwardTriangle = `<svg class="${
+    CalendarHeaderView
+        .ClassNameCalendarNavigationButtonIcon}" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path class="${
+    CalendarHeaderView
+        .ClassNameCalendarNavigationButtonIcon}" d="M14.6484 8.10156L8.5 1.95312V16H7.5V1.95312L1.35156 8.10156L0.648438 7.39844L8 0.046875L15.3516 7.39844L14.6484 8.10156Z" fill="#101010"/>
+    </svg>`;
 CalendarHeaderView.GetBackwardTriangle = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return CalendarHeaderView._BackwardTriangleRefresh;
-  }
   return CalendarHeaderView._BackwardTriangle;
 };
 CalendarHeaderView.ClassNameCalendarHeaderView = 'calendar-header-view';
 CalendarHeaderView.ClassNameCalendarTitle = 'calendar-title';
 CalendarHeaderView.ClassNameTodayButton = 'today-button';
-CalendarHeaderView.ClassNameTodayButtonRefresh = 'today-button-refresh';
 CalendarHeaderView.GetClassNameTodayButton = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return CalendarHeaderView.ClassNameTodayButtonRefresh;
-  }
   return CalendarHeaderView.ClassNameTodayButton;
 };
 
@@ -3240,15 +3562,17 @@ CalendarHeaderView.prototype.onCurrentMonthChanged = function() {
 };
 
 CalendarHeaderView.prototype.onNavigationButtonClick = function(sender) {
-  if (sender === this._previousMonthButton)
+  if (sender === this._previousMonthButton) {
     this.calendarPicker.setCurrentMonth(
         this.calendarPicker.currentMonth().previous(),
         CalendarPicker.NavigationBehavior.WithAnimation);
-  else if (sender === this._nextMonthButton)
+    this.calendarPicker.ensureSelectionIsWithinCurrentMonth();
+  } else if (sender === this._nextMonthButton) {
     this.calendarPicker.setCurrentMonth(
         this.calendarPicker.currentMonth().next(),
         CalendarPicker.NavigationBehavior.WithAnimation);
-  else
+    this.calendarPicker.ensureSelectionIsWithinCurrentMonth();
+  } else
     this.calendarPicker.selectRangeContainingDay(Day.createFromToday());
 };
 
@@ -3257,13 +3581,10 @@ CalendarHeaderView.prototype.onNavigationButtonClick = function(sender) {
  */
 CalendarHeaderView.prototype.setDisabled = function(disabled) {
   this.disabled = disabled;
-  if (global.params.isFormControlsRefreshEnabled) {
-    this._previousMonthButton.element.style.visibility =
-        this.disabled ? 'hidden' : 'visible';
-    this._nextMonthButton.element.style.visibility =
-        this.disabled ? 'hidden' : 'visible';
-  }
-
+  this._previousMonthButton.element.style.visibility =
+      this.disabled ? 'hidden' : 'visible';
+  this._nextMonthButton.element.style.visibility =
+      this.disabled ? 'hidden' : 'visible';
   this.monthPopupButton.element.disabled = this.disabled;
   this._previousMonthButton.setDisabled(
       this.disabled ||
@@ -3272,11 +3593,17 @@ CalendarHeaderView.prototype.setDisabled = function(disabled) {
       this.disabled ||
       this.calendarPicker.currentMonth() >= this.calendarPicker.maximumMonth);
   if (this._todayButton) {
-    var monthContainingToday = Month.createFromToday();
-    this._todayButton.setDisabled(
-        this.disabled ||
-        monthContainingToday < this.calendarPicker.minimumMonth ||
-        monthContainingToday > this.calendarPicker.maximumMonth);
+    if (this.disabled) {
+      this._todayButton.setDisabled(true);
+    } else if (this.calendarPicker.type === 'week') {
+      this._todayButton.setDisabled(isWeekOutsideOfRange(
+          Week.createFromToday(), this.calendarPicker.config.minimum,
+          this.calendarPicker.config.maximum));
+    } else {
+      this._todayButton.setDisabled(isDayOutsideOfRange(
+          Day.createFromToday(), this.calendarPicker.config.minimum,
+          this.calendarPicker.config.maximum));
+    }
   }
 };
 
@@ -3300,20 +3627,12 @@ function DayCell() {
 
 DayCell.prototype = Object.create(ListCell.prototype);
 
-DayCell._Width = 34;
-DayCell._WidthRefresh = 28;
+DayCell._Width = 28;
 DayCell.GetWidth = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return DayCell._WidthRefresh;
-  }
   return DayCell._Width;
 };
-DayCell._Height = hasInaccuratePointingDevice() ? 34 : 20;
-DayCell._HeightRefresh = 28;
+DayCell._Height = 28;
 DayCell.GetHeight = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return DayCell._HeightRefresh;
-  }
   return DayCell._Height;
 };
 DayCell.PaddingSize = 1;
@@ -3421,11 +3740,7 @@ WeekNumberCell.prototype = Object.create(ListCell.prototype);
 
 WeekNumberCell.Width = 48;
 WeekNumberCell._Height = DayCell._Height;
-WeekNumberCell._HeightRefresh = DayCell._HeightRefresh;
 WeekNumberCell.GetHeight = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return WeekNumberCell._HeightRefresh;
-  }
   return WeekNumberCell._Height;
 };
 WeekNumberCell.SeparatorWidth = 1;
@@ -3521,12 +3836,8 @@ function CalendarTableHeaderView(hasWeekNumberColumn) {
 
 CalendarTableHeaderView.prototype = Object.create(View.prototype);
 
-CalendarTableHeaderView._Height = 25;
-CalendarTableHeaderView._HeightRefresh = 29;
+CalendarTableHeaderView._Height = 29;
 CalendarTableHeaderView.GetHeight = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return CalendarTableHeaderView._HeightRefresh;
-  }
   return CalendarTableHeaderView._Height;
 };
 
@@ -3536,7 +3847,11 @@ CalendarTableHeaderView.GetHeight = function() {
  */
 function CalendarRowCell() {
   ListCell.call(this);
+
   this.element.classList.add(CalendarRowCell.ClassNameCalendarRowCell);
+  if (global.params.weekStartDay === WeekDay.Sunday) {
+    this.element.classList.add(CalendarRowCell.ClassNameWeekStartsOnSunday);
+  }
   this.element.style.height = CalendarRowCell.GetHeight() + 'px';
   this.element.setAttribute('role', 'row');
 
@@ -3558,14 +3873,11 @@ function CalendarRowCell() {
 CalendarRowCell.prototype = Object.create(ListCell.prototype);
 
 CalendarRowCell._Height = DayCell._Height;
-CalendarRowCell._HeightRefresh = DayCell._HeightRefresh;
 CalendarRowCell.GetHeight = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return CalendarRowCell._HeightRefresh;
-  }
   return CalendarRowCell._Height;
 };
 CalendarRowCell.ClassNameCalendarRowCell = 'calendar-row-cell';
+CalendarRowCell.ClassNameWeekStartsOnSunday = 'week-starts-on-sunday';
 
 CalendarRowCell._recycleBin = [];
 
@@ -3640,25 +3952,37 @@ function CalendarTableView(calendarPicker) {
   var headerView = new CalendarTableHeaderView(this.hasWeekNumberColumn);
   headerView.attachTo(this, this.scrollView);
 
-  if (global.params.isFormControlsRefreshEnabled) {
-    /**
-     * @type {!CalendarNavigationButton}
-     * @const
-     */
-    var todayButton = new CalendarNavigationButton();
-    todayButton.attachTo(this);
-    todayButton.on(
-        CalendarNavigationButton.EventTypeButtonClick, this.onTodayButtonClick);
-    todayButton.element.textContent = global.params.todayLabel;
-    todayButton.element.classList.add(
-        CalendarHeaderView.GetClassNameTodayButton());
-    var monthContainingToday = Month.createFromToday();
-    todayButton.setDisabled(
-        monthContainingToday < this.calendarPicker.minimumMonth ||
-        monthContainingToday > this.calendarPicker.maximumMonth);
-    todayButton.element.setAttribute('aria-label', global.params.todayLabel);
-  }
+  /**
+   * @type {!ClearButton}
+   * @const
+   */
+  var clearButton = new ClearButton();
+  clearButton.attachTo(this);
+  clearButton.on(ClearButton.EventTypeButtonClick, this.onClearButtonClick);
+  clearButton.element.textContent = global.params.clearLabel;
+  clearButton.element.setAttribute('aria-label', global.params.clearLabel);
 
+  /**
+   * @type {!CalendarNavigationButton}
+   * @const
+   */
+  var todayButton = new CalendarNavigationButton();
+  todayButton.attachTo(this);
+  todayButton.on(
+      CalendarNavigationButton.EventTypeButtonClick, this.onTodayButtonClick);
+  todayButton.element.textContent = global.params.todayLabel;
+  todayButton.element.classList.add(
+      CalendarHeaderView.GetClassNameTodayButton());
+  if (this.calendarPicker.type === 'week') {
+    todayButton.setDisabled(isWeekOutsideOfRange(
+        Week.createFromToday(), this.calendarPicker.config.minimum,
+        this.calendarPicker.config.maximum));
+  } else {
+    todayButton.setDisabled(isDayOutsideOfRange(
+        Day.createFromToday(), this.calendarPicker.config.minimum,
+        this.calendarPicker.config.maximum));
+  }
+  todayButton.element.setAttribute('aria-label', global.params.todayLabel);
 
   if (this.hasWeekNumberColumn) {
     this.setWidth(DayCell.GetWidth() * DaysPerWeek + WeekNumberCell.Width);
@@ -3678,8 +4002,6 @@ function CalendarTableView(calendarPicker) {
   this._ignoreMouseOutUntillNextMouseOver = false;
 
   this.element.addEventListener('click', this.onClick, false);
-  this.element.addEventListener('mouseover', this.onMouseOver, false);
-  this.element.addEventListener('mouseout', this.onMouseOut, false);
 
   // You shouldn't be able to use the mouse wheel to scroll.
   this.scrollView.element.removeEventListener(
@@ -3691,20 +4013,12 @@ function CalendarTableView(calendarPicker) {
 
 CalendarTableView.prototype = Object.create(ListView.prototype);
 
-CalendarTableView._BorderWidth = 1;
-CalendarTableView._BorderWidthRefresh = 0;
+CalendarTableView._BorderWidth = 0;
 CalendarTableView.GetBorderWidth = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return CalendarTableView._BorderWidthRefresh;
-  }
   return CalendarTableView._BorderWidth;
 };
-CalendarTableView._TodayButtonHeight = 0;
-CalendarTableView._TodayButtonHeightRefresh = 28;
+CalendarTableView._TodayButtonHeight = 28;
 CalendarTableView.GetTodayButtonHeight = function() {
-  if (global.params.isFormControlsRefreshEnabled) {
-    return CalendarTableView._TodayButtonHeightRefresh;
-  }
   return CalendarTableView._TodayButtonHeight;
 };
 CalendarTableView.ClassNameCalendarTableView = 'calendar-table-view';
@@ -3747,45 +4061,12 @@ CalendarTableView.prototype.onClick = function(event) {
   this.calendarPicker.selectRangeContainingDay(dayCell.day);
 };
 
+CalendarTableView.prototype.onClearButtonClick = function() {
+  window.pagePopupController.setValueAndClosePopup(0, '');
+};
+
 CalendarTableView.prototype.onTodayButtonClick = function(sender) {
   this.calendarPicker.selectRangeContainingDay(Day.createFromToday());
-};
-
-/**
- * @param {?Event} event
- */
-CalendarTableView.prototype.onMouseOver = function(event) {
-  if (this.hasWeekNumberColumn) {
-    var weekNumberCellElement = enclosingNodeOrSelfWithClass(
-        event.target, WeekNumberCell.ClassNameWeekNumberCell);
-    if (weekNumberCellElement) {
-      var weekNumberCell = weekNumberCellElement.$view;
-      this.calendarPicker.highlightRangeContainingDay(
-          weekNumberCell.week.firstDay());
-      this._ignoreMouseOutUntillNextMouseOver = false;
-      return;
-    }
-  }
-  var dayCellElement =
-      enclosingNodeOrSelfWithClass(event.target, DayCell.ClassNameDayCell);
-  if (!dayCellElement)
-    return;
-  var dayCell = dayCellElement.$view;
-  this.calendarPicker.highlightRangeContainingDay(dayCell.day);
-  this._ignoreMouseOutUntillNextMouseOver = false;
-};
-
-/**
- * @param {?Event} event
- */
-CalendarTableView.prototype.onMouseOut = function(event) {
-  if (this._ignoreMouseOutUntillNextMouseOver)
-    return;
-  var dayCellElement =
-      enclosingNodeOrSelfWithClass(event.target, DayCell.ClassNameDayCell);
-  if (!dayCellElement) {
-    this.calendarPicker.highlightRangeContainingDay(null);
-  }
 };
 
 /**
@@ -3815,9 +4096,7 @@ CalendarTableView.prototype.setHeight = function(height) {
       height - CalendarTableHeaderView.GetHeight() -
       CalendarTableView.GetBorderWidth() * 2 -
       CalendarTableView.GetTodayButtonHeight());
-  if (global.params.isFormControlsRefreshEnabled) {
-    this.element.style.height = height + 'px';
-  }
+  this.element.style.height = height + 'px';
 };
 
 /**
@@ -3891,16 +4170,10 @@ CalendarTableView.prototype.updateCells = function() {
     var dayCell = this._dayCells[dayString];
     var day = dayCell.day;
     dayCell.setIsToday(Day.createFromToday().equals(day));
-    dayCell.setSelected(
-        day >= firstDayInSelection && day <= lastDayInSelection);
-    var isHighlighted = day >= firstDayInHighlight && day <= lastDayInHighlight;
-    dayCell.setHighlighted(isHighlighted);
-    if (isHighlighted) {
-      if (firstDayInHighlight == lastDayInHighlight)
-        activeCell = dayCell;
-      else if (
-          this.calendarPicker.type == 'month' && day == firstDayInHighlight)
-        activeCell = dayCell;
+    var isSelected = (day >= firstDayInSelection && day <= lastDayInSelection);
+    dayCell.setSelected(isSelected);
+    if (isSelected && firstDayInSelection == lastDayInSelection) {
+      activeCell = dayCell;
     }
     dayCell.setIsInCurrentMonth(
         day >= firstDayInCurrentMonth && day <= lastDayInCurrentMonth);
@@ -3910,11 +4183,11 @@ CalendarTableView.prototype.updateCells = function() {
     for (var weekString in this._weekNumberCells) {
       var weekNumberCell = this._weekNumberCells[weekString];
       var week = weekNumberCell.week;
-      var isWeekHighlighted = highlight && highlight.equals(week);
-      weekNumberCell.setSelected(selection && selection.equals(week));
-      weekNumberCell.setHighlighted(isWeekHighlighted);
-      if (isWeekHighlighted)
+      var isSelected = (selection && selection.equals(week));
+      weekNumberCell.setSelected(isSelected);
+      if (isSelected) {
         activeCell = weekNumberCell;
+      }
       weekNumberCell.setDisabled(!this.calendarPicker.isValid(week));
     }
   }
@@ -3976,7 +4249,9 @@ CalendarTableView.prototype.throwAwayWeekNumberCell = function(weekNumberCell) {
 function CalendarPicker(type, config) {
   View.call(this, createElement('div', CalendarPicker.ClassNameCalendarPicker));
   this.element.classList.add(CalendarPicker.ClassNamePreparing);
-
+  if (global.params.isBorderTransparent) {
+    this.element.style.borderColor = 'transparent';
+  }
   /**
    * @type {!string}
    * @const
@@ -3988,12 +4263,13 @@ function CalendarPicker(type, config) {
     this._dateTypeConstructor = Month;
   else
     this._dateTypeConstructor = Day;
-  /**
-   * @type {!Object}
-   * @const
-   */
-  this.config = {};
-  this._setConfig(config);
+
+  this._setValidDateConfig(config);
+
+  if (this.type === 'week') {
+    this.element.classList.add(CalendarPicker.ClassNameWeekPicker);
+  }
+
   /**
    * @type {!Month}
    * @const
@@ -4042,14 +4318,13 @@ function CalendarPicker(type, config) {
    * @protected
    */
   this._selection = null;
-  /**
-   * @type {?DateType}
-   * @protected
-   */
-  this._highlight = null;
+
   this.calendarTableView.element.addEventListener(
       'keydown', this.onCalendarTableKeyDown, false);
+
+  document.body.addEventListener('click', this.onBodyClick, false);
   document.body.addEventListener('keydown', this.onBodyKeyDown, false);
+
 
   window.addEventListener('resize', this.onWindowResize, false);
 
@@ -4059,26 +4334,46 @@ function CalendarPicker(type, config) {
    */
   this._height = -1;
 
+  this._hadValidValueWhenOpened = false;
+
   var initialSelection = parseDateString(config.currentValue);
   if (initialSelection) {
     this.setCurrentMonth(
         Month.createFromDay(initialSelection.middleDay()),
         CalendarPicker.NavigationBehavior.None);
-    this.setSelection(initialSelection);
-  } else
+
+    this._hadValidValueWhenOpened = this.isValid(initialSelection);
+    this.setSelection(
+        this.getNearestValidRange(initialSelection, /*lookForwardFirst*/ true));
+  } else {
     this.setCurrentMonth(
         Month.createFromToday(), CalendarPicker.NavigationBehavior.None);
+
+    // Ensure that the next date closest to today is selected to start with so that
+    // the user can simply submit the popup to choose it.
+    this.setSelection(this.getValidRangeNearestToDay(
+        this._dateTypeConstructor.createFromToday(),
+        /*lookForwardFirst*/ true));
+  }
+
+  /**
+   * @type {?DateType}
+   * @protected
+   */
+  this._initialSelection = this._selection;
 }
 
 CalendarPicker.prototype = Object.create(View.prototype);
+Object.assign(CalendarPicker.prototype, DateRangeManager);
 
 CalendarPicker.Padding = 10;
 CalendarPicker.BorderWidth = 1;
 CalendarPicker.ClassNameCalendarPicker = 'calendar-picker';
+CalendarPicker.ClassNameWeekPicker = 'week-picker';
 CalendarPicker.ClassNamePreparing = 'preparing';
 CalendarPicker.EventTypeCurrentMonthChanged = 'currentMonthChanged';
 CalendarPicker.commitDelayMs = 100;
-CalendarPicker.VisibleRowsRefresh = 6;
+CalendarPicker.VisibleRows = 6;
 
 /**
  * @param {!Event} event
@@ -4088,17 +4383,18 @@ CalendarPicker.prototype.onWindowResize = function(event) {
   window.removeEventListener('resize', this.onWindowResize, false);
 };
 
+CalendarPicker.prototype.resetToInitialValue = function() {
+  this.setSelection(this._initialSelection);
+};
+
 /**
  * @param {!YearListView} sender
  */
 CalendarPicker.prototype.onYearListViewDidHide = function(sender) {
   this.monthPopupView.hide();
   this.calendarHeaderView.setDisabled(false);
-  if (global.params.isFormControlsRefreshEnabled) {
-    this.calendarTableView.element.style.visibility = 'visible';
-  } else {
-    this.adjustHeight();
-  }
+  this.calendarTableView.element.style.visibility = 'visible';
+  this.calendarTableView.element.focus();
 };
 
 /**
@@ -4108,6 +4404,9 @@ CalendarPicker.prototype.onYearListViewDidHide = function(sender) {
 CalendarPicker.prototype.onYearListViewDidSelectMonth = function(
     sender, month) {
   this.setCurrentMonth(month, CalendarPicker.NavigationBehavior.None);
+
+  this.ensureSelectionIsWithinCurrentMonth();
+  this.onYearListViewDidHide();
 };
 
 /**
@@ -4139,28 +4438,7 @@ CalendarPicker.prototype.onMonthPopupButtonClick = function(sender) {
       clientRect.height);
   this.monthPopupView.show(this.currentMonth(), calendarTableRect);
   this.calendarHeaderView.setDisabled(true);
-  if (global.params.isFormControlsRefreshEnabled) {
-    this.calendarTableView.element.style.visibility = 'hidden';
-  } else {
-    this.adjustHeight();
-  }
-};
-
-CalendarPicker.prototype._setConfig = function(config) {
-  this.config.minimum = (typeof config.min !== 'undefined' && config.min) ?
-      parseDateString(config.min) :
-      this._dateTypeConstructor.Minimum;
-  this.config.maximum = (typeof config.max !== 'undefined' && config.max) ?
-      parseDateString(config.max) :
-      this._dateTypeConstructor.Maximum;
-  this.config.minimumValue = this.config.minimum.valueOf();
-  this.config.maximumValue = this.config.maximum.valueOf();
-  this.config.step = (typeof config.step !== undefined) ?
-      Number(config.step) :
-      this._dateTypeConstructor.DefaultStep;
-  this.config.stepBase = (typeof config.stepBase !== 'undefined') ?
-      Number(config.stepBase) :
-      this._dateTypeConstructor.DefaultStepBase;
+  this.calendarTableView.element.style.visibility = 'hidden';
 };
 
 /**
@@ -4206,19 +4484,14 @@ CalendarPicker.prototype.adjustHeight = function() {
   var rowForLastDayInMonth =
       this.calendarTableView.columnAndRowForDay(this._currentMonth.lastDay())
           .row;
-  var numberOfRows = global.params.isFormControlsRefreshEnabled ?
-      CalendarPicker.VisibleRowsRefresh :
-      rowForLastDayInMonth - rowForFirstDayInMonth + 1;
+  var numberOfRows = CalendarPicker.VisibleRows;
   var calendarTableViewHeight = CalendarTableHeaderView.GetHeight() +
       numberOfRows * DayCell.GetHeight() +
       CalendarTableView.GetBorderWidth() * 2 +
       CalendarTableView.GetTodayButtonHeight();
-  var height = (this.monthPopupView.isVisible &&
-                        !global.params.isFormControlsRefreshEnabled ?
-                    YearListView.GetHeight() :
-                    calendarTableViewHeight) +
-      CalendarHeaderView.Height + CalendarHeaderView.BottomMargin +
-      CalendarPicker.Padding * 2 + CalendarPicker.BorderWidth * 2;
+  var height = calendarTableViewHeight + CalendarHeaderView.Height +
+      CalendarHeaderView.BottomMargin + CalendarPicker.Padding * 2 +
+      CalendarPicker.BorderWidth * 2;
   this.setHeight(height);
 };
 
@@ -4251,12 +4524,10 @@ CalendarPicker.prototype.lastVisibleDay = function() {
   var lastVisibleRow =
       this.calendarTableView.columnAndRowForDay(this.currentMonth().lastDay())
           .row;
-  if (global.params.isFormControlsRefreshEnabled) {
-    lastVisibleRow = this.calendarTableView
-                         .columnAndRowForDay(this.currentMonth().firstDay())
-                         .row +
-        CalendarPicker.VisibleRowsRefresh - 1;
-  }
+  lastVisibleRow =
+      this.calendarTableView.columnAndRowForDay(this.currentMonth().firstDay())
+          .row +
+      CalendarPicker.VisibleRows - 1;
   var lastVisibleDay =
       this.calendarTableView.dayAtColumnAndRow(DaysPerWeek - 1, lastVisibleRow);
   if (!lastVisibleDay)
@@ -4289,6 +4560,10 @@ CalendarPicker.prototype.setSelection = function(dayOrWeekOrMonth) {
     return;
   if (this._selection && this._selection.equals(dayOrWeekOrMonth))
     return;
+  if (this._selection && !dayOrWeekOrMonth) {
+    this._selection = null;
+    return;
+  }
   var firstDayInSelection = dayOrWeekOrMonth.firstDay();
   var lastDayInSelection = dayOrWeekOrMonth.lastDay();
   var candidateCurrentMonth = Month.createFromDay(firstDayInSelection);
@@ -4320,7 +4595,6 @@ CalendarPicker.prototype.setSelection = function(dayOrWeekOrMonth) {
           candidateCurrentMonth,
           CalendarPicker.NavigationBehavior.WithAnimation);
   }
-  this._setHighlight(dayOrWeekOrMonth);
   if (!this.isValid(dayOrWeekOrMonth))
     return;
   this._selection = dayOrWeekOrMonth;
@@ -4344,8 +4618,7 @@ CalendarPicker.prototype.setSelectionAndCommit = function(dayOrWeekOrMonth) {
   this.element.offsetLeft;
 
   // CalendarPicker doesn't handle the submission when used for datetime-local.
-  if (global.params.isFormControlsRefreshEnabled &&
-      this.type == 'datetime-local')
+  if (this.type == 'datetime-local')
     return;
 
   var value = this._selection.toString();
@@ -4377,41 +4650,84 @@ CalendarPicker.prototype._setHighlight = function(dayOrWeekOrMonth) {
 };
 
 /**
- * @param {!number} value
- * @return {!boolean}
- */
-CalendarPicker.prototype._stepMismatch = function(value) {
-  var nextAllowedValue =
-      Math.ceil((value - this.config.stepBase) / this.config.step) *
-          this.config.step +
-      this.config.stepBase;
-  return nextAllowedValue >= value + this._dateTypeConstructor.DefaultStep;
-};
-
-/**
- * @param {!number} value
- * @return {!boolean}
- */
-CalendarPicker.prototype._outOfRange = function(value) {
-  return value < this.config.minimumValue || value > this.config.maximumValue;
-};
-
-/**
- * @param {!DateType} dayOrWeekOrMonth
- * @return {!boolean}
- */
-CalendarPicker.prototype.isValid = function(dayOrWeekOrMonth) {
-  var value = dayOrWeekOrMonth.valueOf();
-  return dayOrWeekOrMonth instanceof this._dateTypeConstructor &&
-      !this._outOfRange(value) && !this._stepMismatch(value);
-};
-
-/**
  * @param {!Day} day
  * @return {!boolean}
  */
 CalendarPicker.prototype.isValidDay = function(day) {
   return this.isValid(this._dateTypeConstructor.createFromDay(day));
+};
+
+/**
+ * If the selection is not inside the month currently shown in the control,
+ * adjust the selection so that it is within the current month.
+ * The new selection value is determined in the following manner:
+ * 1) If the old selection is on the Nth day of the month, try to place it
+ * on the Nth day of the new month.
+ * 2) If the Nth day of the new month is not valid, choose the closest
+ * valid date that is within the new month.
+ * 3) If the next and previous valid date are equidistant and both within
+ * the new month, arbitrarily choose the older date.
+ */
+CalendarPicker.prototype.ensureSelectionIsWithinCurrentMonth = function() {
+  if (!this._selection)
+    return;
+  if (this._selection.isFullyContainedInMonth(this.currentMonth()))
+    return;
+
+  var newSelection = null;
+  var currentRangeInNewMonth =
+      this._selection.thisRangeInMonth(this.currentMonth());
+
+  if (this.isValid(currentRangeInNewMonth)) {
+    newSelection = currentRangeInNewMonth;
+  } else {
+    var validRangeLookingBackward =
+        this.getNearestValidRangeLookingBackward(currentRangeInNewMonth);
+    var validRangeLookingForward =
+        this.getNearestValidRangeLookingForward(currentRangeInNewMonth);
+    if (validRangeLookingBackward && validRangeLookingForward) {
+      var newMonthIsForwardOfSelection =
+          (currentRangeInNewMonth.firstDay() > this._selection.firstDay());
+      var [validRangeInDirectionOfAdvancement, validRangeAgainstDirectionOfAdvancement] =
+          newMonthIsForwardOfSelection ?
+          [validRangeLookingForward, validRangeLookingBackward] :
+          [validRangeLookingBackward, validRangeLookingForward];
+
+      if (!validRangeAgainstDirectionOfAdvancement.overlapsMonth(
+              this.currentMonth())) {
+        // If the range going against our direction of movement is not
+        // entirely within the new month, go with the range in the
+        // other direction to ensure we that we don't backtrack.
+        newSelection = validRangeInDirectionOfAdvancement;
+      } else if (!validRangeInDirectionOfAdvancement.overlapsMonth(
+                     this.currentMonth())) {
+        newSelection = validRangeAgainstDirectionOfAdvancement;
+      } else {
+        // If both of the ranges are in the new month, select the closest one
+        // to the target date in the new month.
+        var diffFromForwardRange = Math.abs(
+            currentRangeInNewMonth.valueOf() -
+            validRangeLookingForward.valueOf());
+        var diffFromBackwardRange = Math.abs(
+            currentRangeInNewMonth.valueOf() -
+            validRangeLookingBackward.valueOf());
+        if (diffFromForwardRange < diffFromBackwardRange) {
+          newSelection = validRangeLookingForward;
+        } else {  // In a tie, arbitrarily choose older date
+          newSelection = validRangeLookingBackward;
+        }
+      }
+    } else if (!validRangeLookingForward) {
+      newSelection = validRangeLookingBackward;
+    } else {  // !validRangeLookingBackward
+      newSelection = validRangeLookingForward;
+    }  // No additional clause because they can't both be null; we have a
+       // selection so there's at least one valid date.
+  }
+
+  if (newSelection) {
+    this.setSelection(newSelection);
+  }
 };
 
 /**
@@ -4437,53 +4753,83 @@ CalendarPicker.prototype._moveHighlight = function(dateRange) {
  */
 CalendarPicker.prototype.onCalendarTableKeyDown = function(event) {
   var key = event.key;
-  var eventHandled = false;
-  if (key == 't') {
-    this.selectRangeContainingDay(Day.createFromToday());
-    eventHandled = true;
-  } else if (key == 'PageUp') {
-    var previousMonth = this.currentMonth().previous();
-    if (previousMonth && previousMonth >= this.config.minimumValue) {
-      this.setCurrentMonth(
-          previousMonth, CalendarPicker.NavigationBehavior.WithAnimation);
-      eventHandled = true;
-    }
-  } else if (key == 'PageDown') {
-    var nextMonth = this.currentMonth().next();
-    if (nextMonth && nextMonth >= this.config.minimumValue) {
-      this.setCurrentMonth(
-          nextMonth, CalendarPicker.NavigationBehavior.WithAnimation);
-      eventHandled = true;
-    }
-  } else if (this._highlight) {
-    if (global.params.isLocaleRTL ? key == 'ArrowRight' : key == 'ArrowLeft') {
-      eventHandled = this._moveHighlight(this._highlight.previous());
-    } else if (key == 'ArrowUp') {
-      eventHandled = this._moveHighlight(this._highlight.previous(
-          this.type === 'date' || this.type === 'datetime-local' ? DaysPerWeek :
-                                                                   1));
-    } else if (
-        global.params.isLocaleRTL ? key == 'ArrowLeft' : key == 'ArrowRight') {
-      eventHandled = this._moveHighlight(this._highlight.next());
-    } else if (key == 'ArrowDown') {
-      eventHandled = this._moveHighlight(this._highlight.next(
-          this.type === 'date' || this.type === 'datetime-local' ? DaysPerWeek :
-                                                                   1));
-    } else if (key == 'Enter') {
-      this.setSelectionAndCommit(this._highlight);
-    }
-  } else if (
-      key == 'ArrowLeft' || key == 'ArrowUp' || key == 'ArrowRight' ||
-      key == 'ArrowDown') {
-    // Highlight range near the middle.
-    this.highlightRangeContainingDay(this.currentMonth().middleDay());
-    eventHandled = true;
-  }
+  var offset = 0;
 
-  if (eventHandled) {
-    event.stopPropagation();
-    event.preventDefault();
+  if (!event.target.matches('.today-button, .clear-button') &&
+      this._selection) {
+    switch (key) {
+      case 'PageUp':
+        var previousMonth = this.currentMonth().previous();
+        if (previousMonth && previousMonth >= this.config.minimumValue) {
+          this.setCurrentMonth(
+              previousMonth, CalendarPicker.NavigationBehavior.WithAnimation);
+          this.ensureSelectionIsWithinCurrentMonth();
+        }
+        break;
+      case 'PageDown':
+        var nextMonth = this.currentMonth().next();
+        if (nextMonth && nextMonth >= this.config.minimumValue) {
+          this.setCurrentMonth(
+              nextMonth, CalendarPicker.NavigationBehavior.WithAnimation);
+          this.ensureSelectionIsWithinCurrentMonth();
+        }
+        break;
+      case 'ArrowUp':
+      case 'ArrowDown':
+      case 'ArrowLeft':
+      case 'ArrowRight':
+        var upOrDownArrowStepSize =
+            this.type === 'date' || this.type === 'datetime-local' ?
+            DaysPerWeek :
+            1;
+        if (global.params.isLocaleRTL ? key == 'ArrowRight' :
+                                        key == 'ArrowLeft') {
+          var newSelection = this.getNearestValidRangeLookingBackward(
+              this._selection.previous());
+          if (newSelection) {
+            this.setSelection(newSelection);
+          }
+        } else if (key == 'ArrowUp') {
+          var newSelection = this.getNearestValidRangeLookingBackward(
+              this._selection.previous(upOrDownArrowStepSize));
+          if (newSelection) {
+            this.setSelection(newSelection);
+          }
+        } else if (
+            global.params.isLocaleRTL ? key == 'ArrowLeft' :
+                                        key == 'ArrowRight') {
+          var newSelection =
+              this.getNearestValidRangeLookingForward(this._selection.next());
+          if (newSelection) {
+            this.setSelection(newSelection);
+          }
+        } else if (key == 'ArrowDown') {
+          var newSelection = this.getNearestValidRangeLookingForward(
+              this._selection.next(upOrDownArrowStepSize));
+          if (newSelection) {
+            this.setSelection(newSelection);
+          }
+        }
+        break;
+      case 'Home':
+        var newSelection = this.getNearestValidRangeLookingBackward(
+            this._selection.nextHome());
+        if (newSelection) {
+          this.setSelection(newSelection);
+        }
+        break;
+      case 'End':
+        var newSelection =
+            this.getNearestValidRangeLookingForward(this._selection.nextEnd());
+        if (newSelection) {
+          this.setSelection(newSelection);
+        }
+        break;
+    };
   }
+  // else if there is no selection it must be the case that there are no
+  // valid values (because min >= max).  Otherwise we would have set the selection
+  // during initialization.  In this case there's nothing to do.
 };
 
 /**
@@ -4520,42 +4866,76 @@ CalendarPicker.prototype.setHeight = function(height) {
 /**
  * @param {?Event} event
  */
+CalendarPicker.prototype.onBodyClick = function(event) {
+  if (this.type !== 'datetime-local') {
+    if (event.target.matches(
+            '.calendar-navigation-button, .navigation-button-icon, .month-button')) {
+      window.pagePopupController.setValue(this.getSelectedValue());
+    }
+  }
+};
+
+/**
+ * @param {?Event} event
+ */
 CalendarPicker.prototype.onBodyKeyDown = function(event) {
   var key = event.key;
   var eventHandled = false;
-  var offset = 0;
   switch (key) {
     case 'Escape':
-      window.pagePopupController.closePopup();
-      eventHandled = true;
-      break;
-    case 'm':
-    case 'M':
-      offset = offset || 1;  // Fall-through.
-    case 'y':
-    case 'Y':
-      offset = offset || MonthsPerYear;  // Fall-through.
-    case 'd':
-    case 'D':
-      offset = offset || MonthsPerYear * 10;
-      var oldFirstVisibleRow =
-          this.calendarTableView
-              .columnAndRowForDay(this.currentMonth().firstDay())
-              .row;
-      this.setCurrentMonth(
-          event.shiftKey ? this.currentMonth().previous(offset) :
-                           this.currentMonth().next(offset),
-          CalendarPicker.NavigationBehavior.WithAnimation);
-      var newFirstVisibleRow =
-          this.calendarTableView
-              .columnAndRowForDay(this.currentMonth().firstDay())
-              .row;
-      if (this._highlight) {
-        var highlightMiddleDay = this._highlight.middleDay();
-        this.highlightRangeContainingDay(highlightMiddleDay.next(
-            (newFirstVisibleRow - oldFirstVisibleRow) * DaysPerWeek));
+      // The datetime-local control handles submission/cancellation at
+      // the top level, so if we're in a datetime-local let event bubble
+      // up instead of handling it here.
+      if (this.type !== 'datetime-local') {
+        if (!this._selection ||
+            (this._selection.equals(this._initialSelection))) {
+          window.pagePopupController.closePopup();
+        } else {
+          this.resetToInitialValue();
+          window.pagePopupController.setValue(
+              this._hadValidValueWhenOpened ?
+                  this._initialSelection.toString() :
+                  '');
+        }
       }
-      eventHandled = true;
+      break;
+    case 'ArrowUp':
+    case 'ArrowDown':
+    case 'ArrowLeft':
+    case 'ArrowRight':
+    case 'PageUp':
+    case 'PageDown':
+    case 'Home':
+    case 'End':
+      if (this.type !== 'datetime-local' &&
+          event.target.matches('.calendar-table-view') && this._selection) {
+        window.pagePopupController.setValue(this.getSelectedValue());
+      }
+      break;
+    case 'Enter':
+      // Submit the popup for an Enter keypress except when the user is
+      // hitting Enter to activate the month switcher button, Clear button,
+      // Today button, or previous/next month arrows.
+      if (this.type !== 'datetime-local') {
+        if (!event.target.matches(
+                '.calendar-navigation-button, .clear-button, .month-popup-button, .year-list-view')) {
+          if (this._selection) {
+            window.pagePopupController.setValueAndClosePopup(
+                0, this.getSelectedValue());
+          } else {
+            // If there is no selection it must be the case that there are no
+            // valid values (because min >= max).  There's nothing useful to do
+            // with the popup in this case so just close on Enter.
+            window.pagePopupController.closePopup();
+          }
+        } else if (event.target.matches(
+                       '.calendar-navigation-button, .year-list-view')) {
+          // Navigating with the previous/next arrows may change selection,
+          // so push this change to the in-page control but don't
+          // close the popup.
+          window.pagePopupController.setValue(this.getSelectedValue());
+        }
+      }
       break;
   }
   if (eventHandled) {

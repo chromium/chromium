@@ -9,5 +9,6 @@ static_library("security_interstitial_page_controller") {
     "//content/public/renderer",
     "//gin",
     "//third_party/blink/public:blink",
+    "//third_party/blink/public/common",
   ]
 }

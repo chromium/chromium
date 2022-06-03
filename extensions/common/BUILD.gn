@@ -2,8 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
 import("//components/nacl/features.gni")
 import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
@@ -15,21 +15,18 @@ source_set("common_constants") {
   sources = [
     "constants.cc",
     "constants.h",
+    "logging_constants.h",
   ]
 
-  deps = [
+  public_deps = [
     "//base",
-    "//build:chromecast_buildflags",
+    "//build:chromeos_buildflags",
     "//components/services/app_service/public/mojom",
-    "//components/version_info:channel",
-    "//ui/base",
   ]
 
-  configs += [
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
-    "//build/config/compiler:wexit_time_destructors",
-  ]
+  deps = [ "//build:chromecast_buildflags" ]
+
+  configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 
 if (enable_extensions) {
@@ -38,14 +35,28 @@ if (enable_extensions) {
     disable_variants = true
 
     sources = [
+      "mojom/activation_sequence.mojom",
+      "mojom/api_permission_id.mojom",
       "mojom/app_window.mojom",
+      "mojom/channel.mojom",
+      "mojom/code_injection.mojom",
+      "mojom/css_origin.mojom",
+      "mojom/event_dispatcher.mojom",
+      "mojom/event_router.mojom",
+      "mojom/execution_world.mojom",
+      "mojom/feature_session_type.mojom",
+      "mojom/frame.mojom",
       "mojom/guest_view.mojom",
+      "mojom/host_id.mojom",
+      "mojom/injection_type.mojom",
       "mojom/keep_alive.mojom",
+      "mojom/manifest.mojom",
+      "mojom/permission_set.mojom",
+      "mojom/renderer.mojom",
+      "mojom/run_location.mojom",
+      "mojom/url_pattern_set.mojom",
+      "mojom/view_type.mojom",
     ]
-
-    if (proprietary_codecs && enable_wifi_display) {
-      sources += [ "mojo/wifi_display_session_service.mojom" ]
-    }
 
     public_deps = [
       "//content/public/common:interfaces",
@@ -55,6 +66,92 @@ if (enable_extensions) {
       "//url/mojom:url_mojom_gurl",
     ]
 
+    cpp_typemaps = [
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.Channel"
+            cpp = "version_info::Channel"
+          },
+        ]
+        traits_headers = [ "//extensions/common/mojom/channel_mojom_traits.h" ]
+        traits_public_deps = [ "//components/version_info:channel" ]
+      },
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.APIPermission"
+            cpp = "::std::unique_ptr<::extensions::APIPermission>"
+            move_only = true
+          },
+          {
+            mojom = "extensions.mojom.APIPermissionSet"
+            cpp = "::extensions::APIPermissionSet"
+            move_only = true
+          },
+          {
+            mojom = "extensions.mojom.ManifestPermission"
+            cpp = "::std::unique_ptr<::extensions::ManifestPermission>"
+            move_only = true
+          },
+          {
+            mojom = "extensions.mojom.ManifestPermissionSet"
+            cpp = "::extensions::ManifestPermissionSet"
+            move_only = true
+          },
+          {
+            mojom = "extensions.mojom.PermissionSet"
+            cpp = "::extensions::PermissionSet"
+            move_only = true
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/permission_set_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/permission_set_mojom_traits.cc" ]
+      },
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.URLPattern"
+            cpp = "::URLPattern"
+          },
+          {
+            mojom = "extensions.mojom.URLPatternSet"
+            cpp = "::extensions::URLPatternSet"
+            move_only = true
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/url_pattern_set_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/url_pattern_set_mojom_traits.cc" ]
+      },
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.ActivationSequence"
+            cpp = "::extensions::ActivationSequence"
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/activation_sequence_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/activation_sequence_mojom_traits.cc" ]
+      },
+      {
+        types = [
+          {
+            mojom = "extensions.mojom.EventFilteringInfo"
+            cpp = "::extensions::EventFilteringInfo"
+          },
+        ]
+        traits_headers =
+            [ "//extensions/common/mojom/event_dispatcher_mojom_traits.h" ]
+        traits_sources =
+            [ "//extensions/common/mojom/event_dispatcher_mojom_traits.cc" ]
+      },
+    ]
     overridden_deps = [ "//content/public/common:interfaces" ]
 
     component_deps = [ "//content/public/common" ]
@@ -63,8 +160,9 @@ if (enable_extensions) {
   # This must be a static library because extensions common depends on
   # GetTrustedICAPublicKey in extensions/browser which isn't always linked
   # in. TODO(brettw): This reverse dependency should be fixed.
-  jumbo_static_library("common") {
+  static_library("common") {
     sources = [
+      "activation_sequence.h",
       "alias.h",
       "api/bluetooth/bluetooth_manifest_data.cc",
       "api/bluetooth/bluetooth_manifest_data.h",
@@ -84,8 +182,8 @@ if (enable_extensions) {
       "api/declarative_net_request/dnr_manifest_data.h",
       "api/declarative_net_request/dnr_manifest_handler.cc",
       "api/declarative_net_request/dnr_manifest_handler.h",
-      "api/declarative_net_request/utils.cc",
-      "api/declarative_net_request/utils.h",
+      "api/extension_action/action_info.cc",
+      "api/extension_action/action_info.h",
       "api/messaging/message.h",
       "api/messaging/messaging_endpoint.cc",
       "api/messaging/messaging_endpoint.h",
@@ -106,6 +204,8 @@ if (enable_extensions) {
       "common_manifest_handlers.cc",
       "common_manifest_handlers.h",
       "common_param_traits.h",
+      "content_script_injection_url_getter.cc",
+      "content_script_injection_url_getter.h",
       "cors_util.cc",
       "cors_util.h",
       "csp_validator.cc",
@@ -134,7 +234,6 @@ if (enable_extensions) {
       "extension_l10n_util.h",
       "extension_message_generator.cc",
       "extension_message_generator.h",
-      "extension_messages.cc",
       "extension_messages.h",
       "extension_paths.cc",
       "extension_paths.h",
@@ -160,6 +259,8 @@ if (enable_extensions) {
       "features/feature.h",
       "features/feature_channel.cc",
       "features/feature_channel.h",
+      "features/feature_flags.cc",
+      "features/feature_flags.h",
       "features/feature_provider.cc",
       "features/feature_provider.h",
       "features/feature_session_type.cc",
@@ -174,13 +275,10 @@ if (enable_extensions) {
       "features/simple_feature.h",
       "file_util.cc",
       "file_util.h",
-      "guest_view/extensions_guest_view_messages.h",
-      "guest_view/mime_handler_view_uma_types.cc",
-      "guest_view/mime_handler_view_uma_types.h",
       "hashed_extension_id.cc",
       "hashed_extension_id.h",
-      "host_id.cc",
-      "host_id.h",
+      "identifiability_metrics.cc",
+      "identifiability_metrics.h",
       "image_util.cc",
       "image_util.h",
       "install_warning.cc",
@@ -203,10 +301,14 @@ if (enable_extensions) {
       "manifest_handlers/content_capabilities_handler.h",
       "manifest_handlers/content_scripts_handler.cc",
       "manifest_handlers/content_scripts_handler.h",
+      "manifest_handlers/cross_origin_isolation_info.cc",
+      "manifest_handlers/cross_origin_isolation_info.h",
       "manifest_handlers/csp_info.cc",
       "manifest_handlers/csp_info.h",
       "manifest_handlers/default_locale_handler.cc",
       "manifest_handlers/default_locale_handler.h",
+      "manifest_handlers/extension_action_handler.cc",
+      "manifest_handlers/extension_action_handler.h",
       "manifest_handlers/externally_connectable.cc",
       "manifest_handlers/externally_connectable.h",
       "manifest_handlers/file_handler_info.cc",
@@ -279,31 +381,35 @@ if (enable_extensions) {
       "permissions/usb_device_permission.h",
       "permissions/usb_device_permission_data.cc",
       "permissions/usb_device_permission_data.h",
+      "script_constants.h",
       "stack_frame.cc",
       "stack_frame.h",
       "switches.cc",
       "switches.h",
+      "trace_util.cc",
+      "trace_util.h",
       "url_pattern.cc",
       "url_pattern.h",
       "url_pattern_set.cc",
       "url_pattern_set.h",
       "user_script.cc",
       "user_script.h",
+      "utils/base_string.cc",
+      "utils/base_string.h",
+      "utils/content_script_utils.cc",
+      "utils/content_script_utils.h",
       "value_builder.cc",
       "value_builder.h",
       "value_counter.cc",
       "value_counter.h",
       "verifier_formats.cc",
       "verifier_formats.h",
-      "view_type.cc",
-      "view_type.h",
+      "view_type_util.cc",
+      "view_type_util.h",
     ]
 
     configs += [
       "//build/config:precompiled_headers",
-
-      # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-      "//build/config/compiler:no_size_t_to_int_warning",
       "//build/config/compiler:wexit_time_destructors",
     ]
 
@@ -316,9 +422,14 @@ if (enable_extensions) {
       "//skia",
     ]
 
+    # Allows including manifest_handler.h and permissions/permissions_info.h
+    # from mojom/permission_set_mojom_traits.cc.
+    allow_circular_includes_from = [ ":mojom" ]
+
     deps = [
       "//base",
       "//build:branding_buildflags",
+      "//build:chromeos_buildflags",
       "//components/crx_file",
       "//components/nacl/common:buildflags",
       "//components/url_formatter",
@@ -328,6 +439,7 @@ if (enable_extensions) {
       "//device/bluetooth",
       "//device/bluetooth/public/cpp",
       "//extensions:extensions_resources",
+      "//extensions/common:mojom",
       "//extensions/common/api",
       "//extensions/strings",
       "//net",
@@ -338,6 +450,7 @@ if (enable_extensions) {
       "//third_party/icu",
       "//third_party/re2",
       "//third_party/zlib/google:compression_utils",
+      "//tools/json_schema_compiler:generated_api_util",
       "//ui/base",
       "//ui/gfx/geometry",
       "//ui/gfx/ipc",
@@ -353,7 +466,7 @@ if (enable_extensions) {
       ]
     }
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [
         "manifest_handlers/action_handlers_handler.cc",
         "manifest_handlers/action_handlers_handler.h",
@@ -385,15 +498,17 @@ if (enable_extensions) {
     sources = [
       "api/declarative_net_request/test_utils.cc",
       "api/declarative_net_request/test_utils.h",
+      "api/extension_action/action_info_test_util.cc",
+      "api/extension_action/action_info_test_util.h",
       "file_test_util.cc",
       "file_test_util.h",
-      "scoped_worker_based_extensions_channel.cc",
-      "scoped_worker_based_extensions_channel.h",
     ]
 
     deps = [
       ":common",
       "//base",
+      "//components/version_info:channel",
+      "//extensions/common/api",
     ]
   }
 
@@ -411,11 +526,11 @@ if (enable_extensions) {
       "extension_builder_unittest.cc",
       "extension_icon_set_unittest.cc",
       "extension_l10n_util_unittest.cc",
-      "extension_messages_unittest.cc",
       "extension_resource_path_normalizer_unittest.cc",
       "extension_resource_unittest.cc",
       "extension_set_unittest.cc",
       "extension_unittest.cc",
+      "feature_switch_unittest.cc",
       "features/complex_feature_unittest.cc",
       "features/feature_provider_unittest.cc",
       "features/simple_feature_unittest.cc",
@@ -427,16 +542,20 @@ if (enable_extensions) {
       "manifest_handlers/content_capabilities_manifest_unittest.cc",
       "manifest_handlers/csp_info_unittest.cc",
       "manifest_handlers/default_locale_manifest_unittest.cc",
+      "manifest_handlers/extension_action_handler_unittest.cc",
       "manifest_handlers/externally_connectable_unittest.cc",
       "manifest_handlers/file_handler_manifest_unittest.cc",
       "manifest_handlers/icons_handler_unittest.cc",
       "manifest_handlers/incognito_manifest_unittest.cc",
       "manifest_handlers/kiosk_mode_info_unittest.cc",
+      "manifest_handlers/manifest_v3_permissions_unittest.cc",
       "manifest_handlers/oauth2_manifest_unittest.cc",
       "manifest_handlers/replacement_apps_unittest.cc",
       "manifest_handlers/shared_module_manifest_unittest.cc",
       "manifest_unittest.cc",
       "message_bundle_unittest.cc",
+      "mojom/permission_set_mojom_traits_unittest.cc",
+      "mojom/url_pattern_set_mojom_traits_unittest.cc",
       "permissions/api_permission_set_unittest.cc",
       "permissions/api_permission_unittest.cc",
       "permissions/base_set_operators_unittest.cc",
@@ -461,6 +580,10 @@ if (enable_extensions) {
       "//components/version_info:version_info",
       "//content/test:test_support",
       "//extensions:extensions_resources",
+      "//extensions/common:mojom",
+      "//extensions/common/api",
+      "//mojo/public/cpp/test_support:test_utils",
+      "//tools/json_schema_compiler:generated_api_util",
 
       # TODO(brettw) these tests should not be including headers from browser.
       "//extensions:test_support",
@@ -476,20 +599,26 @@ if (enable_extensions) {
       "//url",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       sources += [ "manifest_handlers/action_handlers_handler_unittest.cc" ]
     }
 
     data = [
-      "//extensions/common/permissions/api_permission.h",
+      "//extensions/common/mojom/api_permission_id.mojom",
       "//tools/metrics/histograms/enums.xml",
     ]
   }
 
   fuzzer_test("extension_fuzzer") {
-    sources = [
-      "extension_fuzzer.cc",
+    sources = [ "extension_fuzzer.cc" ]
+    deps = [
+      ":common",
+      "//base",
     ]
+  }
+
+  fuzzer_test("extension_manifest_fuzzer") {
+    sources = [ "manifest_fuzzer.cc" ]
     deps = [
       ":common",
       "//base",

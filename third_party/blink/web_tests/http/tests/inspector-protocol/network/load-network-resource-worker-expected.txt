@@ -1,0 +1,17 @@
+Verifies that we can retrieve a request body consisting of blob in service worker.
+OK
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Response for fetch with existing resource: {
+    error : {
+        code : -32000
+        message : Target not supported
+    }
+    id : <number>
+    sessionId : <string>
+}
+

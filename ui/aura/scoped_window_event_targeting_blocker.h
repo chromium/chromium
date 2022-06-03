@@ -5,7 +5,6 @@
 #ifndef UI_AURA_SCOPED_WINDOW_EVENT_TARGETING_BLOCKER_H_
 #define UI_AURA_SCOPED_WINDOW_EVENT_TARGETING_BLOCKER_H_
 
-#include "base/macros.h"
 #include "ui/aura/aura_export.h"
 #include "ui/aura/window_observer.h"
 
@@ -19,6 +18,12 @@ class Window;
 class AURA_EXPORT ScopedWindowEventTargetingBlocker : public WindowObserver {
  public:
   explicit ScopedWindowEventTargetingBlocker(Window* window);
+
+  ScopedWindowEventTargetingBlocker(const ScopedWindowEventTargetingBlocker&) =
+      delete;
+  ScopedWindowEventTargetingBlocker& operator=(
+      const ScopedWindowEventTargetingBlocker&) = delete;
+
   ~ScopedWindowEventTargetingBlocker() override;
 
   // WindowObserver:
@@ -26,7 +31,6 @@ class AURA_EXPORT ScopedWindowEventTargetingBlocker : public WindowObserver {
 
  private:
   Window* window_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedWindowEventTargetingBlocker);
 };
 
 }  // namespace aura

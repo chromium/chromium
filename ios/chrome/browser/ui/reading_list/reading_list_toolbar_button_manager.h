@@ -9,6 +9,7 @@
 
 @class ActionSheetCoordinator;
 @protocol ReadingListToolbarButtonCommands;
+class Browser;
 
 // Enum type describing the items that are currently selected.
 enum class ReadingListSelectionState {
@@ -47,8 +48,10 @@ enum class ReadingListSelectionState {
 
 // Returns an empty ActionSheetCoordinator anchored to the mark button with no
 // message and no title.
-- (ActionSheetCoordinator*)markButtonConfirmationWithBaseViewController:
-    (UIViewController*)viewController;
+- (ActionSheetCoordinator*)
+    markButtonConfirmationWithBaseViewController:
+        (UIViewController*)viewController
+                                         browser:(Browser*)browser;
 
 @end
 

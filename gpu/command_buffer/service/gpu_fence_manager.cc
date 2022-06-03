@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gl/gl_fence.h"
 
@@ -40,9 +40,8 @@ bool GpuFenceManager::CreateGpuFence(uint32_t client_id) {
   return true;
 }
 
-bool GpuFenceManager::CreateGpuFenceFromHandle(
-    uint32_t client_id,
-    const gfx::GpuFenceHandle& handle) {
+bool GpuFenceManager::CreateGpuFenceFromHandle(uint32_t client_id,
+                                               gfx::GpuFenceHandle handle) {
   // The handle must be valid. The fallback kEmpty type cannot be duplicated.
   if (handle.is_null())
     return false;
@@ -52,11 +51,8 @@ bool GpuFenceManager::CreateGpuFenceFromHandle(
   if (it != gpu_fence_entries_.end())
     return false;
 
-  gfx::GpuFence gpu_fence(handle);
   auto entry = std::make_unique<GpuFenceEntry>();
-  entry->gl_fence_ = gl::GLFence::CreateFromGpuFence(gpu_fence);
-  if (!entry->gl_fence_)
-    return false;
+  entry->fence_handle_ = std::move(handle);
 
   std::pair<GpuFenceEntryMap::iterator, bool> result =
       gpu_fence_entries_.emplace(client_id, std::move(entry));
@@ -76,7 +72,11 @@ std::unique_ptr<gfx::GpuFence> GpuFenceManager::GetGpuFence(
     return nullptr;
 
   GpuFenceEntry* entry = it->second.get();
-  DCHECK(entry->gl_fence_);
+  DCHECK(entry->gl_fence_ || !entry->fence_handle_.is_null());
+  DCHECK(!entry->gl_fence_ || entry->fence_handle_.is_null());
+
+  if (!entry->fence_handle_.is_null())
+    return std::make_unique<gfx::GpuFence>(entry->fence_handle_.Clone());
   return entry->gl_fence_->GetGpuFence();
 }
 
@@ -86,7 +86,17 @@ bool GpuFenceManager::GpuFenceServerWait(uint32_t client_id) {
     return false;
 
   GpuFenceEntry* entry = it->second.get();
-  DCHECK(entry->gl_fence_);
+  DCHECK(entry->gl_fence_ || !entry->fence_handle_.is_null());
+  DCHECK(!entry->gl_fence_ || entry->fence_handle_.is_null());
+
+  if (!entry->fence_handle_.is_null()) {
+    gfx::GpuFence gpu_fence(entry->fence_handle_.Clone());
+    auto gl_fence = gl::GLFence::CreateFromGpuFence(gpu_fence);
+    if (!gl_fence)
+      return false;
+    gl_fence->ServerWait();
+    return true;
+  }
 
   entry->gl_fence_->ServerWait();
   return true;

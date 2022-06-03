@@ -8,6 +8,16 @@ var assertTrue = chrome.test.assertTrue;
 
 var rootNode = null;
 
+function createTabAndWaitUntilLoaded(url, callback) {
+  chrome.tabs.create({"url": url}, function(tab) {
+    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+      if (tabId == tab.id && changeInfo.status == 'complete') {
+        callback(tab);
+      }
+    });
+  });
+}
+
 function setUpAndRunTests(allTests) {
   chrome.test.getConfig(function(config) {
     assertTrue('testServer' in config, 'Expected testServer in config');
@@ -24,9 +34,8 @@ function setUpAndRunTests(allTests) {
         chrome.test.runTests(allTests);
       });
     }
-    chrome.tabs.create({ 'url': url }, function() {
+    createTabAndWaitUntilLoaded(url, function(unused_tab) {
       chrome.automation.getTree(gotTree);
     });
   });
 }
-

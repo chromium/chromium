@@ -8,11 +8,10 @@
 #include <set>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/thread_checker.h"
 
 namespace {
@@ -56,6 +55,10 @@ class DeviceMonitorMacImpl {
     // devices were added nor removed and not notifying the |monitor_|.
     cached_devices_.push_back(DeviceInfo("invalid", DeviceInfo::kInvalid));
   }
+
+  DeviceMonitorMacImpl(const DeviceMonitorMacImpl&) = delete;
+  DeviceMonitorMacImpl& operator=(const DeviceMonitorMacImpl&) = delete;
+
   virtual ~DeviceMonitorMacImpl() {}
 
   virtual void OnDeviceChanged() = 0;
@@ -74,9 +77,6 @@ class DeviceMonitorMacImpl {
   // Handles to NSNotificationCenter block observers.
   id device_arrival_;
   id device_removal_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DeviceMonitorMacImpl);
 };
 
 void DeviceMonitorMacImpl::ConsolidateDevicesListAndNotify(
@@ -125,7 +125,7 @@ class SuspendObserverDelegate;
 @interface CrAVFoundationDeviceObserver : NSObject {
  @private
   // Callback for device changed, has to run on Device Thread.
-  base::Closure _onDeviceChangedCallback;
+  base::RepeatingClosure _onDeviceChangedCallback;
 
   // Member to keep track of the devices we are already monitoring.
   std::set<base::scoped_nsobject<AVCaptureDevice>> _monitoredDevices;
@@ -134,7 +134,8 @@ class SuspendObserverDelegate;
   base::ThreadChecker _mainThreadChecker;
 }
 
-- (id)initWithOnChangedCallback:(const base::Closure&)callback;
+- (instancetype)initWithOnChangedCallback:
+    (const base::RepeatingClosure&)callback;
 - (void)startObserving:(base::scoped_nsobject<AVCaptureDevice>)device;
 - (void)stopObserving:(AVCaptureDevice*)device;
 - (void)clearOnDeviceChangedCallback;
@@ -196,7 +197,7 @@ void SuspendObserverDelegate::StartObserver(
     const scoped_refptr<base::SingleThreadTaskRunner>& device_thread) {
   DCHECK(main_thread_checker_.CalledOnValidThread());
 
-  base::Closure on_device_changed_callback = base::Bind(
+  base::RepeatingClosure on_device_changed_callback = base::BindRepeating(
       &SuspendObserverDelegate::OnDeviceChanged, this, device_thread);
   suspend_observer_.reset([[CrAVFoundationDeviceObserver alloc]
       initWithOnChangedCallback:on_device_changed_callback]);
@@ -289,6 +290,10 @@ class AVFoundationMonitorImpl : public DeviceMonitorMacImpl {
   AVFoundationMonitorImpl(
       media::DeviceMonitorMac* monitor,
       const scoped_refptr<base::SingleThreadTaskRunner>& device_task_runner);
+
+  AVFoundationMonitorImpl(const AVFoundationMonitorImpl&) = delete;
+  AVFoundationMonitorImpl& operator=(const AVFoundationMonitorImpl&) = delete;
+
   ~AVFoundationMonitorImpl() override;
 
   void OnDeviceChanged() override;
@@ -302,8 +307,6 @@ class AVFoundationMonitorImpl : public DeviceMonitorMacImpl {
   base::ThreadChecker main_thread_checker_;
 
   scoped_refptr<SuspendObserverDelegate> suspend_observer_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(AVFoundationMonitorImpl);
 };
 
 AVFoundationMonitorImpl::AVFoundationMonitorImpl(
@@ -348,7 +351,8 @@ void AVFoundationMonitorImpl::OnDeviceChanged() {
 
 @implementation CrAVFoundationDeviceObserver
 
-- (id)initWithOnChangedCallback:(const base::Closure&)callback {
+- (instancetype)initWithOnChangedCallback:
+    (const base::RepeatingClosure&)callback {
   DCHECK(_mainThreadChecker.CalledOnValidThread());
   if ((self = [super init])) {
     DCHECK(!callback.is_null());

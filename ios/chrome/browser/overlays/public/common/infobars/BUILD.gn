@@ -4,22 +4,20 @@
 
 source_set("infobars") {
   sources = [
-    "infobar_banner_overlay_request_config.h",
-    "infobar_banner_overlay_request_config.mm",
     "infobar_overlay_request_config.h",
     "infobar_overlay_request_config.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
+  public_deps = [ "//base" ]
+
   deps = [
-    "//base",
     "//components/infobars/core",
     "//ios/chrome/browser/infobars",
-    "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/infobars:public",
-    "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/infobars/overlays:overlay_type",
     "//ios/chrome/browser/overlays",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
+    "//ios/chrome/browser/ui/badges:util",
   ]
 }

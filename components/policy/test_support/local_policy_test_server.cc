@@ -14,10 +14,13 @@
 
 #include "base/base_paths.h"
 #include "base/files/file_util.h"
+#include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -66,6 +69,10 @@ bool IsUnsafeCharacter(char c) {
 LocalPolicyTestServer::LocalPolicyTestServer()
     : LocalPolicyTestServer(base::FilePath()) {
   config_file_ = server_data_dir_.GetPath().Append(kPolicyFileName);
+
+  if (!PathExists(config_file_)) {
+    SetEmptyConfig();
+  }
 }
 
 LocalPolicyTestServer::LocalPolicyTestServer(const base::FilePath& config_file)
@@ -74,6 +81,10 @@ LocalPolicyTestServer::LocalPolicyTestServer(const base::FilePath& config_file)
   base::ScopedAllowBlockingForTesting allow_blocking;
   CHECK(server_data_dir_.CreateUniqueTempDir());
   client_state_file_ = server_data_dir_.GetPath().Append(kClientStateFileName);
+
+  if (!config_file_.empty() && !PathExists(config_file_)) {
+    SetEmptyConfig();
+  }
 }
 
 LocalPolicyTestServer::LocalPolicyTestServer(
@@ -81,9 +92,8 @@ LocalPolicyTestServer::LocalPolicyTestServer(
     : net::LocalTestServer(net::BaseTestServer::TYPE_HTTP, base::FilePath()) {
   // Read configuration from a file under |source_root|.
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::FilePath source_root;
-  CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_root));
-  config_file_ = source_root.AppendASCII(source_root_relative_config_file);
+  config_file_ = base::PathService::CheckedGet(base::DIR_SOURCE_ROOT)
+                     .AppendASCII(source_root_relative_config_file);
 }
 
 LocalPolicyTestServer::~LocalPolicyTestServer() {}
@@ -198,19 +208,19 @@ GURL LocalPolicyTestServer::GetServiceURL() const {
   return GetURL("device_management");
 }
 
-base::Optional<std::vector<base::FilePath>>
+absl::optional<std::vector<base::FilePath>>
 LocalPolicyTestServer::GetPythonPath() const {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::Optional<std::vector<base::FilePath>> ret =
+  absl::optional<std::vector<base::FilePath>> ret =
       net::LocalTestServer::GetPythonPath();
   if (!ret)
-    return base::nullopt;
+    return absl::nullopt;
 
   // Add the net/tools/testserver directory to the path.
   base::FilePath net_testserver_path;
   if (!LocalTestServer::GetTestServerPath(&net_testserver_path)) {
     LOG(ERROR) << "Failed to get net testserver path.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   ret->push_back(net_testserver_path.DirName());
 
@@ -218,7 +228,7 @@ LocalPolicyTestServer::GetPythonPath() const {
   base::FilePath third_party_dir;
   if (!base::PathService::Get(base::DIR_SOURCE_ROOT, &third_party_dir)) {
     LOG(ERROR) << "Failed to get DIR_SOURCE_ROOT";
-    return base::nullopt;
+    return absl::nullopt;
   }
   ret->push_back(third_party_dir.AppendASCII("third_party")
                      .AppendASCII("protobuf")
@@ -228,12 +238,19 @@ LocalPolicyTestServer::GetPythonPath() const {
   base::FilePath pyproto_dir;
   if (!GetPyProtoPath(&pyproto_dir)) {
     LOG(ERROR) << "Cannot find pyproto dir for generated code.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ret->push_back(pyproto_dir.AppendASCII("components")
                      .AppendASCII("policy")
                      .AppendASCII("proto"));
+
+  ret->push_back(pyproto_dir.AppendASCII("third_party")
+                     .AppendASCII("shell-encryption")
+                     .AppendASCII("src"));
+  ret->push_back(pyproto_dir.AppendASCII("third_party")
+                     .AppendASCII("private_membership")
+                     .AppendASCII("src"));
 
   return ret;
 }
@@ -284,6 +301,12 @@ std::string LocalPolicyTestServer::GetSelector(const std::string& type,
     selector = base::StringPrintf("%s/%s", type.c_str(), entity_id.c_str());
   std::replace_if(selector.begin(), selector.end(), IsUnsafeCharacter, '_');
   return selector;
+}
+
+void LocalPolicyTestServer::SetEmptyConfig() {
+  if (!SetConfig(base::Value(base::Value::Type::DICTIONARY))) {
+    LOG(ERROR) << "Failed to write empty config " << config_file_.value();
+  }
 }
 
 }  // namespace policy

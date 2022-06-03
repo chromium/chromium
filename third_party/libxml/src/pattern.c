@@ -1,5 +1,5 @@
 /*
- * pattern.c: Implemetation of selectors for nodes
+ * pattern.c: Implementation of selectors for nodes
  *
  * Reference:
  *   http://www.w3.org/TR/2001/REC-xmlschema-1-20010502/
@@ -55,7 +55,7 @@
 /*
 * NOTE: Those private flags (XML_STREAM_xxx) are used
 *   in _xmlStreamCtxt->flag. They extend the public
-*   xmlPatternFlags, so be carefull not to interfere with the
+*   xmlPatternFlags, so be careful not to interfere with the
 *   reserved values for xmlPatternFlags.
 */
 #define XML_STREAM_FINAL_IS_ANY_NODE 1<<14
@@ -229,13 +229,16 @@ xmlNewPattern(void) {
  */
 void
 xmlFreePattern(xmlPatternPtr comp) {
+    xmlFreePatternList(comp);
+}
+
+static void
+xmlFreePatternInternal(xmlPatternPtr comp) {
     xmlStepOpPtr op;
     int i;
 
     if (comp == NULL)
 	return;
-    if (comp->next != NULL)
-        xmlFreePattern(comp->next);
     if (comp->stream != NULL)
         xmlFreeStreamComp(comp->stream);
     if (comp->pattern != NULL)
@@ -273,7 +276,7 @@ xmlFreePatternList(xmlPatternPtr comp) {
 	cur = comp;
 	comp = comp->next;
 	cur->next = NULL;
-	xmlFreePattern(cur);
+	xmlFreePatternInternal(cur);
     }
 }
 
@@ -742,7 +745,7 @@ rollback:
  * xmlPatScanLiteral:
  * @ctxt:  the XPath Parser context
  *
- * Parse an XPath Litteral:
+ * Parse an XPath Literal:
  *
  * [29] Literal ::= '"' [^"]* '"'
  *                | "'" [^']* "'"
@@ -1973,7 +1976,7 @@ xmlStreamPushInternal(xmlStreamCtxtPtr stream,
 	    } else {
 		/*
 		* If there are "//", then we need to process every "//"
-		* occuring in the states, plus any other state for this
+		* occurring in the states, plus any other state for this
 		* level.
 		*/
 		stepNr = stream->states[2 * i];

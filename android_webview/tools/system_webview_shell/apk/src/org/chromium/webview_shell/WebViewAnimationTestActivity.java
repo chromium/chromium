@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
@@ -66,7 +65,7 @@ public class WebViewAnimationTestActivity extends Activity {
             + "  </body>"
             + "</html>";
 
-    private WebView mWebView;
+    private WebViewWithClipPath mWebView;
     private boolean mIsWindowHardwareAccelerated;
 
     /** Called when the activity is first created. */
@@ -74,7 +73,7 @@ public class WebViewAnimationTestActivity extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_webview_animation_test);
-        mWebView = (WebView) findViewById(R.id.webview);
+        mWebView = (WebViewWithClipPath) findViewById(R.id.webview);
 
         mIsWindowHardwareAccelerated =
                 (getWindow().getAttributes().flags
@@ -83,16 +82,13 @@ public class WebViewAnimationTestActivity extends Activity {
         mWebView.setBackgroundColor(0);
         mWebView.loadDataWithBaseURL("http://foo.bar", HTML, "text/html", null, "http://foo.bar");
         OnClickListener onClickListner = (View v) -> {
-            switch (v.getId()) {
-                case R.id.translate:
-                    runTranslate();
-                    break;
-                case R.id.scale:
-                    runScale();
-                    break;
-                case R.id.rotate:
-                    runRotate();
-                    break;
+            int viewId = v.getId();
+            if (viewId == R.id.translate) {
+                runTranslate();
+            } else if (viewId == R.id.scale) {
+                runScale();
+            } else if (viewId == R.id.rotate) {
+                runRotate();
             }
         };
         findViewById(R.id.scale).setOnClickListener(onClickListner);
@@ -102,10 +98,8 @@ public class WebViewAnimationTestActivity extends Activity {
                 .setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
                     @Override
                     public void onProgressChanged(SeekBar view, int progress, boolean fromUser) {
-                        switch (view.getId()) {
-                            case R.id.view_alpha:
-                                mWebView.setAlpha(progress / 100f);
-                                break;
+                        if (view.getId() == R.id.view_alpha) {
+                            mWebView.setAlpha(progress / 100f);
                         }
                     }
 
@@ -115,10 +109,15 @@ public class WebViewAnimationTestActivity extends Activity {
                     @Override
                     public void onStopTrackingTouch(SeekBar seekBar) {}
                 });
-        CheckBox checkBox = ((CheckBox) findViewById(R.id.use_layer));
-        checkBox.setOnCheckedChangeListener(
+        CheckBox layerCheckBox = ((CheckBox) findViewById(R.id.use_layer));
+        layerCheckBox.setOnCheckedChangeListener(
                 (CompoundButton arg0, boolean checked) -> { setWebViewLayer(checked); });
-        setWebViewLayer(checkBox.isChecked());
+        setWebViewLayer(layerCheckBox.isChecked());
+
+        CheckBox stencilCheckBox = ((CheckBox) findViewById(R.id.use_stencil));
+        stencilCheckBox.setOnCheckedChangeListener(
+                (CompoundButton arg0, boolean checked) -> { setUseExternalStencil(checked); });
+        setUseExternalStencil(stencilCheckBox.isChecked());
     }
 
     private void runTranslate() {
@@ -153,5 +152,9 @@ public class WebViewAnimationTestActivity extends Activity {
         } else {
             mWebView.setLayerType(View.LAYER_TYPE_NONE, null);
         }
+    }
+
+    private void setUseExternalStencil(boolean useStecil) {
+        mWebView.setEnableClipPath(useStecil);
     }
 }

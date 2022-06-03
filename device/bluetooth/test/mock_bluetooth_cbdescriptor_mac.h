@@ -5,7 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_CBDESCRIPTOR_MAC_H_
 #define DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_CBDESCRIPTOR_MAC_H_
 
-#include "base/mac/sdk_forward_declarations.h"
 #include "build/build_config.h"
 
 #import <CoreBluetooth/CoreBluetooth.h>

@@ -1,4 +1,0 @@
-Tests the Timeline API instrumentation of a DOM GC event
-
-SUCCESS: Found expected Blink GC event record
-

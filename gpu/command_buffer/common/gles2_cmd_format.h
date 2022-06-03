@@ -12,11 +12,10 @@
 #include <string.h>
 
 #include "base/atomicops.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
 #include "base/rand_util.h"
 #include "base/trace_event/trace_event.h"
-#include "gpu/command_buffer/common/bitfield_helpers.h"
 #include "gpu/command_buffer/common/cmd_buffer_common.h"
 #include "gpu/command_buffer/common/common_cmd_format.h"
 #include "gpu/command_buffer/common/constants.h"
@@ -55,7 +54,7 @@ enum class IdNamespaces {
   kNumIdNamespaces
 };
 
-enum RangeIdNamespaces { kPaths, kNumRangeIdNamespaces };
+enum RangeIdNamespaces { kNumRangeIdNamespaces = 1 };
 
 // These numbers must not change
 static_assert(static_cast<int>(SharedIdNamespaces::kBuffers) == 0,
@@ -80,7 +79,8 @@ static_assert(static_cast<int>(IdNamespaces::kTransformFeedbacks) == 3,
               "kTransformFeedbacks should equal 3");
 static_assert(static_cast<int>(IdNamespaces::kGpuFences) == 4,
               "kGpuFences should equal 4");
-static_assert(kPaths == 0, "kPaths should equal 0");
+static_assert(kNumRangeIdNamespaces == 1,
+              "kNumRangeIdNamespaces should equal 1");
 
 }  // namespace id_namespaces
 
@@ -225,9 +225,39 @@ static_assert(sizeof(UniformBlocksHeader) == 4,
 static_assert(offsetof(UniformBlocksHeader, num_uniform_blocks) == 0,
               "offset of UniformBlocksHeader.num_uniform_blocks should be 0");
 
+enum class GLES2ReturnDataType : uint32_t {
+  kES2ProgramInfo,
+  kES3UniformBlocks,
+  kES3TransformFeedbackVaryings,
+  kES3Uniforms
+};
+
 namespace cmds {
 
 #include "gpu/command_buffer/common/gles2_cmd_format_autogen.h"
+
+struct GLES2ReturnDataHeader {
+  GLES2ReturnDataType return_data_type;
+};
+static_assert(sizeof(GLES2ReturnDataHeader) == 4,
+              "size of GLES2ReturnDataHeader should be 4");
+static_assert(offsetof(GLES2ReturnDataHeader, return_data_type) == 0,
+              "The offset of return_data_type should be 0");
+
+struct GLES2ReturnProgramInfo {
+  GLES2ReturnDataHeader return_data_header = {
+      GLES2ReturnDataType::kES2ProgramInfo};
+  uint32_t program_client_id = 0;
+  char deserialized_buffer[];
+};
+static_assert(sizeof(GLES2ReturnProgramInfo) == 8,
+              "size of GLES2ReturnProgramInfo should be 8");
+static_assert(offsetof(GLES2ReturnProgramInfo, return_data_header) == 0,
+              "The offset of return_data_header should be 0");
+static_assert(offsetof(GLES2ReturnProgramInfo, program_client_id) == 4,
+              "The offset of program_client_id should be 4");
+static_assert(offsetof(GLES2ReturnProgramInfo, deserialized_buffer) == 8,
+              "The offset of deserialized_buffer should be 8");
 
 #pragma pack(pop)
 

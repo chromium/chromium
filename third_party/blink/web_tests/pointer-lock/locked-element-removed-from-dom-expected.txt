@@ -11,8 +11,8 @@ PASS targetDiv1.parentElement.parentElement is targetIframe1.contentDocument.bod
      Remove targetDiv1's parent from iframe & immediately lock target2. (iframe handler)
 PASS document.pointerLockElement is null
 PASS targetDiv1.parentElement.parentElement is null
-PASS onpointerlockerror received after: Remove targetDiv1's parent from iframe & immediately lock target2. (main document handler)
 PASS onpointerlockchange received after: Remove targetDiv1's parent from iframe & immediately lock target2. (iframe handler)
+PASS onpointerlockchange received after: Remove targetDiv1's parent from iframe & immediately lock target2. (main document handler)
 PASS successfullyParsed is true
 
 TEST COMPLETE

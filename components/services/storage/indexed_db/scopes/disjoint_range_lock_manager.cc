@@ -4,6 +4,8 @@
 
 #include "components/services/storage/indexed_db/scopes/disjoint_range_lock_manager.h"
 
+#include <utility>
+
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -59,7 +61,7 @@ int64_t DisjointRangeLockManager::RequestsWaitingForTesting() const {
 bool DisjointRangeLockManager::AcquireLocks(
     base::flat_set<ScopeLockRequest> lock_requests,
     base::WeakPtr<ScopesLocksHolder> locks_holder,
-    LocksAquiredCallback callback) {
+    LocksAcquiredCallback callback) {
   if (!locks_holder)
     return false;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -79,7 +81,7 @@ bool DisjointRangeLockManager::AcquireLocks(
           [](scoped_refptr<base::SequencedTaskRunner> runner,
              scoped_refptr<base::RefCountedData<bool>> run_synchronously,
              base::WeakPtr<ScopesLocksHolder> holder,
-             LocksAquiredCallback callback) {
+             LocksAcquiredCallback callback) {
             // All locks have been acquired.
             if (!holder || callback.IsCancelled() || callback.is_null())
               return;
@@ -191,7 +193,7 @@ void DisjointRangeLockManager::LockReleased(int level, ScopeLockRange range) {
       auto released_callback = base::BindOnce(
           &DisjointRangeLockManager::LockReleased, weak_factory_.GetWeakPtr());
       // Grant the lock.
-      requester.locks_holder->locks.emplace_back(std::move(range), level,
+      requester.locks_holder->locks.emplace_back(range, level,
                                                  std::move(released_callback));
       std::move(requester.acquired_callback).Run();
       // This can only happen if acquired_count was 0.

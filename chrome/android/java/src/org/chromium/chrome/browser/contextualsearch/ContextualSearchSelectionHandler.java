@@ -8,7 +8,7 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchSelectionCon
 
 /**
  * Defines the interface between a {@link ContextualSearchSelectionController} and the code that
- * handles callbacks.
+ * handles callbacks in {@link ContextualSearchManager}.
  */
 interface ContextualSearchSelectionHandler {
     /**
@@ -28,8 +28,10 @@ interface ContextualSearchSelectionHandler {
 
     /**
      * Handle a valid tap gesture on the base page.
+     * @param x The x-coordinate of the tap in pixels.
+     * @param y The y-coordinate of the tap in pixels.
      */
-    public void handleValidTap();
+    public void handleValidTap(int x, int y);
 
     /**
      * Handle an invalid tap gesture on the base page.

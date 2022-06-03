@@ -5,6 +5,7 @@
 #include "ash/public/cpp/pagination/pagination_controller.h"
 
 #include "ash/public/cpp/pagination/pagination_model.h"
+#include "base/check.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
 
@@ -13,7 +14,7 @@ namespace ash {
 namespace {
 
 // Constants for dealing with scroll events.
-const int kMinScrollToSwitchPage = 20;
+const int kMinScrollToSwitchPage = 10;
 const int kMinHorizVelocityToSwitchPage = 800;
 
 const double kFinishTransitionThreshold = 0.33;
@@ -28,14 +29,15 @@ PaginationController::PaginationController(PaginationModel* model,
       scroll_axis_(scroll_axis),
       record_metrics_(record_metrics),
       is_tablet_mode_(is_tablet_mode) {
+  DCHECK(pagination_model_);
   DCHECK(record_metrics_);
 }
 
 PaginationController::~PaginationController() = default;
 
-bool PaginationController::OnScroll(const gfx::Vector2d& offset,
+bool PaginationController::OnScroll(const gfx::Vector2dF& offset,
                                     ui::EventType type) {
-  int offset_magnitude;
+  float offset_magnitude;
   if (scroll_axis_ == SCROLL_AXIS_HORIZONTAL) {
     // If the view scrolls horizontally, both horizontal and vertical scroll
     // events are valid (since most mouse wheels only have vertical scrolling).
@@ -95,13 +97,13 @@ bool PaginationController::OnGestureEvent(const ui::GestureEvent& event,
   }
 }
 
-void PaginationController::StartMouseDrag(const gfx::Vector2d& offset) {
+void PaginationController::StartMouseDrag(const gfx::Vector2dF& offset) {
   float scroll =
       scroll_axis_ == SCROLL_AXIS_HORIZONTAL ? offset.x() : offset.y();
   StartDrag(scroll);
 }
 
-void PaginationController::UpdateMouseDrag(const gfx::Vector2d& offset,
+void PaginationController::UpdateMouseDrag(const gfx::Vector2dF& offset,
                                            const gfx::Rect& bounds) {
   float scroll =
       scroll_axis_ == SCROLL_AXIS_HORIZONTAL ? offset.x() : offset.y();

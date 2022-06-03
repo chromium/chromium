@@ -1,0 +1,19 @@
+{
+  "name": "generate_closure_unit_tests",
+  "version": "1.0.0",
+  "description": "Generates *_test.html unit test files given *_test.js and *_test_dom.html files.",
+  "main": "generate_closure_unit_tests.js",
+  "bin": {
+    "generate_closure_unit_tests": "./generate_closure_unit_tests.js"
+  },
+  "author": "johnplaisted@google.com",
+  "licenses": [
+    {
+      "type": "Apache-2.0",
+      "url": "https://raw.githubusercontent.com/google/closure-library/master/LICENSE"
+    }
+  ],
+  "dependencies": {
+    "parse5": "^4.0.0"
+  }
+}

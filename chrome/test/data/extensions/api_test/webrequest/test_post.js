@@ -99,7 +99,7 @@ function sendPost(formFile, parseableForm) {
             requestBody: parseableForm ? {
               formData: formData
             } : {
-              raw: [{bytes: {}}] // ArrayBuffer
+              raw: [{bytes: new ArrayBuffer}] // wildcard: matches any buffer
             },
             initiator: getDomain(initiators.WEB_INITIATED)
           }

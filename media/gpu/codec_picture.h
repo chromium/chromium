@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/decrypt_config.h"
 #include "media/base/video_color_space.h"
@@ -27,6 +26,9 @@ class MEDIA_GPU_EXPORT CodecPicture
  public:
   CodecPicture();
 
+  CodecPicture(const CodecPicture&) = delete;
+  CodecPicture& operator=(const CodecPicture&) = delete;
+
   int32_t bitstream_id() const { return bitstream_id_; }
   void set_bitstream_id(int32_t bitstream_id) { bitstream_id_ = bitstream_id; }
 
@@ -42,8 +44,10 @@ class MEDIA_GPU_EXPORT CodecPicture
   }
 
   // Populate with an unspecified colorspace by default.
-  VideoColorSpace get_colorspace() const { return colorspace_; }
-  void set_colorspace(VideoColorSpace colorspace) { colorspace_ = colorspace; }
+  const VideoColorSpace& get_colorspace() const { return colorspace_; }
+  void set_colorspace(const VideoColorSpace& colorspace) {
+    colorspace_ = colorspace;
+  }
 
  protected:
   friend class base::RefCountedThreadSafe<CodecPicture>;
@@ -54,8 +58,6 @@ class MEDIA_GPU_EXPORT CodecPicture
   gfx::Rect visible_rect_;
   std::unique_ptr<DecryptConfig> decrypt_config_;
   VideoColorSpace colorspace_;
-
-  DISALLOW_COPY_AND_ASSIGN(CodecPicture);
 };
 
 }  // namespace media

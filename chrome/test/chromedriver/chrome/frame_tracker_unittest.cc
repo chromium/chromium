@@ -18,7 +18,8 @@ TEST(FrameTracker, GetContextIdForFrame) {
   ASSERT_TRUE(tracker.GetContextIdForFrame("f", &context_id).IsError());
   ASSERT_EQ(-1, context_id);
 
-  const char context[] = "{\"id\":100,\"frameId\":\"f\"}";
+  const char context[] =
+      "{\"id\":100,\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
   base::DictionaryValue params;
   params.Set("context", base::JSONReader::ReadDeprecated(context));
   ASSERT_EQ(kOk,
@@ -68,7 +69,8 @@ TEST(FrameTracker, CanUpdateFrameContextId) {
   StubDevToolsClient client;
   FrameTracker tracker(&client);
 
-  const char context[] = "{\"id\":1,\"frameId\":\"f\"}";
+  const char context[] =
+      "{\"id\":1,\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
   base::DictionaryValue params;
   params.Set("context", base::JSONReader::ReadDeprecated(context));
   ASSERT_EQ(kOk,
@@ -90,7 +92,8 @@ TEST(FrameTracker, DontTrackContentScriptContexts) {
   StubDevToolsClient client;
   FrameTracker tracker(&client);
 
-  const char context[] = "{\"id\":1,\"frameId\":\"f\"}";
+  const char context[] =
+      "{\"id\":1,\"auxData\":{\"frameId\":\"f\",\"isDefault\":true}}";
   base::DictionaryValue params;
   params.Set("context", base::JSONReader::ReadDeprecated(context));
   ASSERT_EQ(kOk,
@@ -101,7 +104,7 @@ TEST(FrameTracker, DontTrackContentScriptContexts) {
   ASSERT_EQ(1, context_id);
 
   params.SetInteger("context.id", 2);
-  params.SetString("context.type", "Extension");
+  params.SetBoolean("context.auxData.isDefault", false);
   ASSERT_EQ(kOk,
             tracker.OnEvent(&client, "Runtime.executionContextCreated", params)
                 .code());

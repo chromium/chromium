@@ -20,15 +20,23 @@ class PrivilegedHostDeviceSetterImpl : public PrivilegedHostDeviceSetterBase {
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<PrivilegedHostDeviceSetterBase> BuildInstance(
+    static std::unique_ptr<PrivilegedHostDeviceSetterBase> Create(
         MultiDeviceSetupBase* multidevice_setup);
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<PrivilegedHostDeviceSetterBase> CreateInstance(
+        MultiDeviceSetupBase* multidevice_setup) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  PrivilegedHostDeviceSetterImpl(const PrivilegedHostDeviceSetterImpl&) =
+      delete;
+  PrivilegedHostDeviceSetterImpl& operator=(
+      const PrivilegedHostDeviceSetterImpl&) = delete;
 
   ~PrivilegedHostDeviceSetterImpl() override;
 
@@ -37,12 +45,10 @@ class PrivilegedHostDeviceSetterImpl : public PrivilegedHostDeviceSetterBase {
       MultiDeviceSetupBase* multidevice_setup);
 
   // mojom::PrivilegedHostDeviceSetter:
-  void SetHostDevice(const std::string& host_device_id,
+  void SetHostDevice(const std::string& host_instance_id_or_legacy_device_id,
                      SetHostDeviceCallback callback) override;
 
   MultiDeviceSetupBase* multidevice_setup_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrivilegedHostDeviceSetterImpl);
 };
 
 }  // namespace multidevice_setup

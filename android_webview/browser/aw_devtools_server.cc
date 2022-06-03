@@ -6,23 +6,18 @@
 
 #include <utility>
 
-#include "android_webview/browser/aw_contents.h"
-#include "android_webview/browser/gfx/browser_view_renderer.h"
 #include "android_webview/browser_jni_headers/AwDevToolsServer_jni.h"
-#include "android_webview/common/aw_content_client.h"
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/files/file_path.h"
-#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "content/public/browser/android/devtools_auth.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
-#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
-#include "content/public/common/user_agent.h"
 #include "net/base/net_errors.h"
 #include "net/socket/tcp_server_socket.h"
 #include "net/socket/unix_domain_server_socket_posix.h"
@@ -42,6 +37,10 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   explicit UnixDomainServerSocketFactory(const std::string& socket_name)
       : socket_name_(socket_name), last_tethering_socket_(0) {}
+
+  UnixDomainServerSocketFactory(const UnixDomainServerSocketFactory&) = delete;
+  UnixDomainServerSocketFactory& operator=(
+      const UnixDomainServerSocketFactory&) = delete;
 
  private:
   // content::DevToolsAgentHost::ServerSocketFactory.
@@ -72,14 +71,15 @@ class UnixDomainServerSocketFactory : public content::DevToolsSocketFactory {
 
   std::string socket_name_;
   int last_tethering_socket_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnixDomainServerSocketFactory);
 };
 
 class TCPServerSocketFactory : public content::DevToolsSocketFactory {
  public:
   TCPServerSocketFactory(const std::string& address, uint16_t port)
       : address_(address), port_(port) {}
+
+  TCPServerSocketFactory(const TCPServerSocketFactory&) = delete;
+  TCPServerSocketFactory& operator=(const TCPServerSocketFactory&) = delete;
 
  private:
   // content::DevToolsSocketFactory.
@@ -100,8 +100,6 @@ class TCPServerSocketFactory : public content::DevToolsSocketFactory {
 
   std::string address_;
   uint16_t port_;
-
-  DISALLOW_COPY_AND_ASSIGN(TCPServerSocketFactory);
 };
 
 std::unique_ptr<content::DevToolsSocketFactory> CreateSocketFactory() {

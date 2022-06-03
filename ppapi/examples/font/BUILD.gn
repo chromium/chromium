@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("font") {
   output_name = "ppapi_example_simple_font"
-  sources = [
-    "simple_font.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "simple_font.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

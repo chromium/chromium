@@ -5,7 +5,7 @@
 #ifndef GPU_CONFIG_VULKAN_INFO_H_
 #define GPU_CONFIG_VULKAN_INFO_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <vector>
 
 #include "base/macros.h"
@@ -26,7 +26,8 @@ class GPU_EXPORT VulkanPhysicalDeviceInfo {
   VkPhysicalDevice device = VK_NULL_HANDLE;
 
   VkPhysicalDeviceProperties properties = {};
-  std::vector<VkLayerProperties> layers;
+  VkPhysicalDeviceDriverProperties driver_properties = {};
+  std::vector<VkExtensionProperties> extensions;
 
   VkPhysicalDeviceFeatures features = {};
   // Extended physical device features:

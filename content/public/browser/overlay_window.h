@@ -38,6 +38,10 @@ class OverlayWindow {
   };
 
   OverlayWindow() = default;
+
+  OverlayWindow(const OverlayWindow&) = delete;
+  OverlayWindow& operator=(const OverlayWindow&) = delete;
+
   virtual ~OverlayWindow() = default;
 
   // Returns a created OverlayWindow. This is defined in the platform-specific
@@ -55,15 +59,17 @@ class OverlayWindow {
   virtual gfx::Rect GetBounds() = 0;
   virtual void UpdateVideoSize(const gfx::Size& natural_size) = 0;
   virtual void SetPlaybackState(PlaybackState playback_state) = 0;
-  virtual void SetAlwaysHidePlayPauseButton(bool is_visible) = 0;
+  virtual void SetPlayPauseButtonVisibility(bool is_visible) = 0;
   virtual void SetSkipAdButtonVisibility(bool is_visible) = 0;
   virtual void SetNextTrackButtonVisibility(bool is_visible) = 0;
   virtual void SetPreviousTrackButtonVisibility(bool is_visible) = 0;
+  virtual void SetMicrophoneMuted(bool muted) = 0;
+  virtual void SetCameraState(bool turned_on) = 0;
+  virtual void SetToggleMicrophoneButtonVisibility(bool is_visible) = 0;
+  virtual void SetToggleCameraButtonVisibility(bool is_visible) = 0;
+  virtual void SetHangUpButtonVisibility(bool is_visible) = 0;
   virtual void SetSurfaceId(const viz::SurfaceId& surface_id) = 0;
   virtual cc::Layer* GetLayerForTesting() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverlayWindow);
 };
 
 }  // namespace content

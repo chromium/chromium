@@ -10,7 +10,7 @@
 
   // try to set the cookie from a different domain than the one it specifies, see that it is blocked
   const {requestExtraInfo, responseExtraInfo} = await helper.navigateWithExtraInfo(setCookieUrlBadDomain);
-  testRunner.log(`Bad domain attribute blocked set-cookies: ${JSON.stringify(responseExtraInfo.params.blockedCookies, null, 2)}`);
+  testRunner.log(responseExtraInfo.params.blockedCookies, 'Bad domain attribute blocked set-cookies:');
 
   testRunner.completeTest();
 })

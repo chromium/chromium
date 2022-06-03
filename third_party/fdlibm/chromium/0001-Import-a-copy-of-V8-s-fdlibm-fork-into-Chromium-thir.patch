@@ -1,0 +1,425 @@
+From 715afeb52a0c6aca1c7fcbe8c7302f20a1a2ed1a Mon Sep 17 00:00:00 2001
+From: Caleb Raitto <caraitto@chromium.org>
+Date: Wed, 9 Dec 2020 15:37:30 -0500
+Subject: [PATCH] Import a copy of V8's fdlibm fork into Chromium
+ //third_party.
+
+Import a copy of v8/src/base/ieee754.[h/cc] from V8 into
+Chromium.
+
+This will be used to mitigate Web Audio fingerprinting by using the same
+math library across OS versions and platforms.
+
+We use a copy of the V8 math library rather than trying to share this
+library.  This adds ~8-9kb to the Android apk, according to the Android
+binary size trybot on the CL that switches Web Audio to use this fdlibm
+fork.
+
+This avoids complicating the build, and the V8 team also prefers not
+sharing these internal details. If further similar logic needs to be
+copied in the future, we could consider refactoring that into a common
+library that both V8 and Chromium pull in via DEPS.
+
+The V8 math library also hasn't seen much churn, but we will need to
+keep both copies up-to-date. crrev.com/c/2593649 has added a WATCHLISTS
+entry in V8 to help with this.
+
+Due to presubmit requirements, this is *not* a pristine import --
+changes made from upstream to add build support and functionality
+necessary for Web Audio are present in the commit patch in the chromium/
+subdirectory. A summary of these changes is also present in
+README.chromium.
+
+Bug:1145192
+---
+ third_party/fdlibm/BUILD.gn           | 12 +++++
+ third_party/fdlibm/DEPS               |  6 +++
+ third_party/fdlibm/README.chromium    | 10 ++++
+ third_party/fdlibm/ieee754.cc         | 69 +++++++++++++++----------
+ third_party/fdlibm/ieee754.h          | 73 +++++++++++++++------------
+ third_party/fdlibm/overflowing-math.h | 16 +++---
+ 6 files changed, 118 insertions(+), 68 deletions(-)
+ create mode 100644 third_party/fdlibm/BUILD.gn
+ create mode 100644 third_party/fdlibm/DEPS
+
+diff --git a/third_party/fdlibm/BUILD.gn b/third_party/fdlibm/BUILD.gn
+new file mode 100644
+index 000000000000..9c70cbdb062c
+--- /dev/null
++++ b/third_party/fdlibm/BUILD.gn
+@@ -0,0 +1,12 @@
++# Copyright 2020 The Chromium Authors. All rights reserved.
++# Use of this source code is governed by a BSD-style license that can be
++# found in the LICENSE file.
++
++source_set("fdlibm") {
++  sources = [
++    "ieee754.cc",
++    "ieee754.h",
++    "overflowing-math.h",
++  ]
++  deps = [ "//base" ]
++}
+diff --git a/third_party/fdlibm/DEPS b/third_party/fdlibm/DEPS
+new file mode 100644
+index 000000000000..a94f56d77fbf
+--- /dev/null
++++ b/third_party/fdlibm/DEPS
+@@ -0,0 +1,6 @@
++include_rules = [
++    "+base/bit_cast.h",
++    "+base/compiler_specific.h",
++    "+base/macros.h",
++    "+build/build_config.h",
++]
+diff --git a/third_party/fdlibm/README.chromium b/third_party/fdlibm/README.chromium
+index eb45e2ab9438..48b3ab4bc6cc 100644
+--- a/third_party/fdlibm/README.chromium
++++ b/third_party/fdlibm/README.chromium
+@@ -13,3 +13,13 @@ This library is a copy of that V8 library intended for use in Chromium.
+ 
+ This library may be useful when mathematical consistency across OS platforms is
+ desired.
++
++The initial commit is not a pristine import -- the patch in the chromium/
++subdirectory documents the changes made to the original sources.
++
++Changes from V8 upstream:
++- Changed namespace to fdlibm.
++- Alter //v8/src/base usage to use Chromium //base equivalents.
++- Implement 32-bit float functions (sinf(), etc.) by calling the 64-bit
++  versions.
++- Format the code.
+diff --git a/third_party/fdlibm/ieee754.cc b/third_party/fdlibm/ieee754.cc
+index 1706b56dfd90..4825b22fc6f5 100644
+--- a/third_party/fdlibm/ieee754.cc
++++ b/third_party/fdlibm/ieee754.cc
+@@ -1,3 +1,4 @@
++
+ // The following is adapted from fdlibm (http://www.netlib.org/fdlibm).
+ //
+ // ====================================================
+@@ -12,30 +13,23 @@
+ // The original source code covered by the above license above has been
+ // modified significantly by Google Inc.
+ // Copyright 2016 the V8 project authors. All rights reserved.
++// Copyright 2020 The Chromium Authors. All rights reserved.
+ 
+-#include "src/base/ieee754.h"
++#include "third_party/fdlibm/ieee754.h"
+ 
+ #include <cmath>
+ #include <limits>
+ 
+-#include "src/base/build_config.h"
+-#include "src/base/macros.h"
+-#include "src/base/overflowing-math.h"
++#include "base/bit_cast.h"
++#include "base/compiler_specific.h"
++#include "base/macros.h"
++#include "build/build_config.h"
++#include "third_party/fdlibm/overflowing-math.h"
+ 
+-namespace v8 {
+-namespace base {
+-namespace ieee754 {
++namespace fdlibm {
+ 
+ namespace {
+ 
+-/* Disable "potential divide by 0" warning in Visual Studio compiler. */
+-
+-#if V8_CC_MSVC
+-
+-#pragma warning(disable : 4723)
+-
+-#endif
+-
+ /*
+  * The original fdlibm code used statements like:
+  *  n0 = ((*(int*)&one)>>29)^1;   * index of high word *
+@@ -104,11 +98,11 @@ namespace {
+     (d) = bit_cast<double>(bits);          \
+   } while (false)
+ 
+-int32_t __ieee754_rem_pio2(double x, double* y) V8_WARN_UNUSED_RESULT;
+-double __kernel_cos(double x, double y) V8_WARN_UNUSED_RESULT;
++int32_t __ieee754_rem_pio2(double x, double* y) WARN_UNUSED_RESULT;
++double __kernel_cos(double x, double y) WARN_UNUSED_RESULT;
+ int __kernel_rem_pio2(double* x, double* y, int e0, int nx, int prec,
+-                      const int32_t* ipio2) V8_WARN_UNUSED_RESULT;
+-double __kernel_sin(double x, double y, int iy) V8_WARN_UNUSED_RESULT;
++                      const int32_t* ipio2) WARN_UNUSED_RESULT;
++double __kernel_sin(double x, double y, int iy) WARN_UNUSED_RESULT;
+ 
+ /* __ieee754_rem_pio2(x,y)
+  *
+@@ -302,7 +296,7 @@ int32_t __ieee754_rem_pio2(double x, double *y) {
+  *         magnitude of the latter is at least a quarter of x*x/2,
+  *         thus, reducing the rounding error in the subtraction.
+  */
+-V8_INLINE double __kernel_cos(double x, double y) {
++ALWAYS_INLINE double __kernel_cos(double x, double y) {
+   static const double
+       one = 1.00000000000000000000e+00, /* 0x3FF00000, 0x00000000 */
+       C1 = 4.16666666666666019037e-02,  /* 0x3FA55555, 0x5555554C */
+@@ -670,7 +664,7 @@ recompute:
+  *         then                   3    2
+  *              sin(x) = x + (S1*x + (x *(r-y/2)+y))
+  */
+-V8_INLINE double __kernel_sin(double x, double y, int iy) {
++ALWAYS_INLINE double __kernel_sin(double x, double y, int iy) {
+   static const double
+       half = 5.00000000000000000000e-01, /* 0x3FE00000, 0x00000000 */
+       S1 = -1.66666666666666324348e-01,  /* 0xBFC55555, 0x55555549 */
+@@ -2721,7 +2715,7 @@ double pow(double x, double y) {
+     }
+     if (iy == 0x3ff00000) { /* y is  +-1 */
+       if (hy < 0) {
+-        return base::Divide(one, x);
++        return Divide(one, x);
+       } else {
+         return x;
+       }
+@@ -2739,7 +2733,7 @@ double pow(double x, double y) {
+   if (lx == 0) {
+     if (ix == 0x7ff00000 || ix == 0 || ix == 0x3ff00000) {
+       z = ax;                         /*x is +-0,+-inf,+-1*/
+-      if (hy < 0) z = base::Divide(one, z); /* z = (1/|x|) */
++      if (hy < 0) z = Divide(one, z); /* z = (1/|x|) */
+       if (hx < 0) {
+         if (((ix - 0x3ff00000) | yisint) == 0) {
+           /* (-1)**non-int is NaN */
+@@ -2806,7 +2800,7 @@ double pow(double x, double y) {
+ 
+     /* compute ss = s_h+s_l = (x-1)/(x+1) or (x-1.5)/(x+1.5) */
+     u = ax - bp[k]; /* bp[0]=1.0, bp[1]=1.5 */
+-    v = base::Divide(one, ax + bp[k]);
++    v = Divide(one, ax + bp[k]);
+     ss = u * v;
+     s_h = ss;
+     SET_LOW_WORD(s_h, 0);
+@@ -2883,7 +2877,7 @@ double pow(double x, double y) {
+   w = v - (z - u);
+   t = z * z;
+   t1 = z - t * (P1 + t * (P2 + t * (P3 + t * (P4 + t * P5))));
+-  r = base::Divide(z * t1, (t1 - two) - (w + z * w));
++  r = Divide(z * t1, (t1 - two) - (w + z * w));
+   z = one - (r - z);
+   GET_HIGH_WORD(j, z);
+   j += static_cast<int>(static_cast<uint32_t>(n) << 20);
+@@ -3008,6 +3002,26 @@ double tanh(double x) {
+   return (jx >= 0) ? z : -z;
+ }
+ 
++float powf(float x, float y) {
++  return pow(x, y);
++}
++
++float expf(float x) {
++  return exp(x);
++}
++
++float log10f(float x) {
++  return log10(x);
++}
++
++float sinf(double x) {
++  return sin(x);
++}
++
++float asinf(double x) {
++  return asin(x);
++}
++
+ #undef EXTRACT_WORDS
+ #undef GET_HIGH_WORD
+ #undef GET_LOW_WORD
+@@ -3015,6 +3029,5 @@ double tanh(double x) {
+ #undef SET_HIGH_WORD
+ #undef SET_LOW_WORD
+ 
+-}  // namespace ieee754
+-}  // namespace base
+-}  // namespace v8
++}  // namespace fdlibm
++
+diff --git a/third_party/fdlibm/ieee754.h b/third_party/fdlibm/ieee754.h
+index f2b3a3eb5808..27b5013818a2 100644
+--- a/third_party/fdlibm/ieee754.h
++++ b/third_party/fdlibm/ieee754.h
+@@ -1,64 +1,61 @@
+ // Copyright 2016 the V8 project authors. All rights reserved.
++// Copyright 2020 The Chromium Authors. All rights reserved.
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+-#ifndef V8_BASE_IEEE754_H_
+-#define V8_BASE_IEEE754_H_
++#ifndef THIRD_PARTY_FDLIBM_IEEE754_H_
++#define THIRD_PARTY_FDLIBM_IEEE754_H_
+ 
+-#include "src/base/base-export.h"
+-
+-namespace v8 {
+-namespace base {
+-namespace ieee754 {
++namespace fdlibm {
+ 
+ // Returns the arc cosine of |x|; that is the value whose cosine is |x|.
+-V8_BASE_EXPORT double acos(double x);
++double acos(double x);
+ 
+ // Returns the inverse hyperbolic cosine of |x|; that is the value whose
+ // hyperbolic cosine is |x|.
+-V8_BASE_EXPORT double acosh(double x);
++double acosh(double x);
+ 
+ // Returns the arc sine of |x|; that is the value whose sine is |x|.
+-V8_BASE_EXPORT double asin(double x);
++double asin(double x);
+ 
+ // Returns the inverse hyperbolic sine of |x|; that is the value whose
+ // hyperbolic sine is |x|.
+-V8_BASE_EXPORT double asinh(double x);
++double asinh(double x);
+ 
+ // Returns the principal value of the arc tangent of |x|; that is the value
+ // whose tangent is |x|.
+-V8_BASE_EXPORT double atan(double x);
++double atan(double x);
+ 
+ // Returns the principal value of the arc tangent of |y/x|, using the signs of
+ // the two arguments to determine the quadrant of the result.
+-V8_BASE_EXPORT double atan2(double y, double x);
++double atan2(double y, double x);
+ 
+ // Returns the cosine of |x|, where |x| is given in radians.
+-V8_BASE_EXPORT double cos(double x);
++double cos(double x);
+ 
+ // Returns the base-e exponential of |x|.
+-V8_BASE_EXPORT double exp(double x);
++double exp(double x);
+ 
+-V8_BASE_EXPORT double atanh(double x);
++double atanh(double x);
+ 
+ // Returns the natural logarithm of |x|.
+-V8_BASE_EXPORT double log(double x);
++double log(double x);
+ 
+ // Returns a value equivalent to |log(1+x)|, but computed in a way that is
+ // accurate even if the value of |x| is near zero.
+-V8_BASE_EXPORT double log1p(double x);
++double log1p(double x);
+ 
+ // Returns the base 2 logarithm of |x|.
+-V8_BASE_EXPORT double log2(double x);
++double log2(double x);
+ 
+ // Returns the base 10 logarithm of |x|.
+-V8_BASE_EXPORT double log10(double x);
++double log10(double x);
+ 
+ // Returns the cube root of |x|.
+-V8_BASE_EXPORT double cbrt(double x);
++double cbrt(double x);
+ 
+ // Returns exp(x)-1, the exponential of |x| minus 1.
+-V8_BASE_EXPORT double expm1(double x);
++double expm1(double x);
+ 
+ // Returns |x| to the power of |y|.
+ // The result of base ** exponent when base is 1 or -1 and exponent is
+@@ -66,25 +63,37 @@ V8_BASE_EXPORT double expm1(double x);
+ // of ECMAScript specified a result of NaN for this operation, whereas
+ // later versions of IEEE 754-2008 specified 1. The historical ECMAScript
+ // behaviour is preserved for compatibility reasons.
+-V8_BASE_EXPORT double pow(double x, double y);
++double pow(double x, double y);
+ 
+ // Returns the sine of |x|, where |x| is given in radians.
+-V8_BASE_EXPORT double sin(double x);
++double sin(double x);
+ 
+ // Returns the tangent of |x|, where |x| is given in radians.
+-V8_BASE_EXPORT double tan(double x);
++double tan(double x);
+ 
+ // Returns the hyperbolic cosine of |x|, where |x| is given radians.
+-V8_BASE_EXPORT double cosh(double x);
++double cosh(double x);
+ 
+ // Returns the hyperbolic sine of |x|, where |x| is given radians.
+-V8_BASE_EXPORT double sinh(double x);
++double sinh(double x);
+ 
+ // Returns the hyperbolic tangent of |x|, where |x| is given radians.
+-V8_BASE_EXPORT double tanh(double x);
++double tanh(double x);
++
++// NOTE(caraitto): These functions are not present in the V8 math library --
++// they are defined in terms of other functions.
++
++float powf(float x, float y);
++
++float expf(float x);
++
++float log10f(float x);
++
++float sinf(double x);
++
++float asinf(double x);
++
++}  // namespace fdlibm
+ 
+-}  // namespace ieee754
+-}  // namespace base
+-}  // namespace v8
++#endif  // THIRD_PARTY_FDLIBM_IEEE754_H_
+ 
+-#endif  // V8_BASE_IEEE754_H_
+diff --git a/third_party/fdlibm/overflowing-math.h b/third_party/fdlibm/overflowing-math.h
+index 14dcfb10de1a..815fa624ce11 100644
+--- a/third_party/fdlibm/overflowing-math.h
++++ b/third_party/fdlibm/overflowing-math.h
+@@ -1,19 +1,19 @@
+ // Copyright 2019 the V8 project authors. All rights reserved.
++// Copyright 2020 The Chromium Authors. All rights reserved.
+ // Use of this source code is governed by a BSD-style license that can be
+ // found in the LICENSE file.
+ 
+-#ifndef V8_BASE_OVERFLOWING_MATH_H_
+-#define V8_BASE_OVERFLOWING_MATH_H_
++#ifndef THIRD_PARTY_FDLIBM_OVERFLOWING_MATH_H_
++#define THIRD_PARTY_FDLIBM_OVERFLOWING_MATH_H_
+ 
+ #include <stdint.h>
+ 
+ #include <cmath>
+ #include <type_traits>
+ 
+-#include "src/base/macros.h"
++#include "base/macros.h"
+ 
+-namespace v8 {
+-namespace base {
++namespace fdlibm {
+ 
+ // Helpers for performing overflowing arithmetic operations without relying
+ // on C++ undefined behavior.
+@@ -90,7 +90,7 @@ inline T RoundingAverageUnsigned(T a, T b) {
+   return (static_cast<uint64_t>(a) + static_cast<uint64_t>(b) + 1) >> 1;
+ }
+ 
+-}  // namespace base
+-}  // namespace v8
++}  // namespace fdlibm
++
++#endif  // THIRD_PARTY_FDLIBM_OVERFLOWING_MATH_H_
+ 
+-#endif  // V8_BASE_OVERFLOWING_MATH_H_
+-- 
+2.30.0.365.g02bc693789-goog
+

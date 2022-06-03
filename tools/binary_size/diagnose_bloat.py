@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -10,8 +10,6 @@ See //tools/binary_size/README.md for example usage.
 Note: this tool will perform gclient sync/git checkout on your local repo.
 """
 
-from __future__ import print_function
-
 import atexit
 import argparse
 import collections
@@ -19,7 +17,6 @@ from contextlib import contextmanager
 import distutils.spawn
 import json
 import logging
-import multiprocessing
 import os
 import re
 import shutil
@@ -42,13 +39,12 @@ _LLVM_TOOLS_DIR = os.path.join(
 _CLANG_UPDATE_PATH = os.path.join(_SRC_ROOT, 'tools', 'clang', 'scripts',
                                   'update.py')
 _GN_PATH = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'gn')
-_NINJA_PATH = os.path.join(_SRC_ROOT, 'third_party', 'depot_tools', 'ninja')
 
 
 _DiffResult = collections.namedtuple('DiffResult', ['name', 'value', 'units'])
 
 
-class BaseDiff(object):
+class BaseDiff:
   """Base class capturing binary size diffs."""
   def __init__(self, name):
     self.name = name
@@ -100,7 +96,7 @@ class NativeDiff(BaseDiff):
     self._size_name = size_name
     self._supersize_path = supersize_path
     self._diff = []
-    super(NativeDiff, self).__init__('Native Diff')
+    super().__init__('Native Diff')
 
   @property
   def summary_stat(self):
@@ -131,20 +127,33 @@ class ResourceSizesDiff(BaseDiff):
   _AGGREGATE_SECTIONS = (
       'InstallBreakdown', 'Breakdown', 'MainLibInfo', 'Uncompressed')
 
-  def __init__(self, apk_name, filename='results-chart.json'):
-    self._apk_name = apk_name
+  def __init__(self, filename='results-chart.json', include_sections=None):
     self._diff = None  # Set by |ProduceDiff()|
     self._filename = filename
-    super(ResourceSizesDiff, self).__init__('Resource Sizes Diff')
+    self._include_sections = include_sections
+    super().__init__('Resource Sizes Diff')
 
   @property
   def summary_stat(self):
-    for section_name, results in self._diff.iteritems():
+    items = []
+    for section_name, results in self._diff.items():
       for subsection_name, value, units in results:
         if 'normalized' in subsection_name:
-          full_name = '{} {}'.format(section_name, subsection_name)
-          return _DiffResult(full_name, value, units)
-    raise Exception('Could not find "normalized" in: ' + repr(self._diff))
+          items.append([section_name, subsection_name, value, units])
+    if len(items) > 1:  # Handle Trichrome.
+      items = [item for item in items if 'Combined_normalized' in item[1]]
+    if len(items) == 1:
+      [section_name, subsection_name, value, units] = items[0]
+      full_name = '{} {}'.format(section_name, subsection_name)
+      return _DiffResult(full_name, value, units)
+    raise Exception('Could not find canonical "normalized" in: %r' % self._diff)
+
+  def CombinedSizeChangeForSection(self, section):
+    for subsection_name, value, _ in self._diff[section]:
+      if 'Combined' in subsection_name:
+        return value
+    raise Exception('Could not find "Combined" in: ' +
+                    repr(self._diff[section]))
 
   def DetailedResults(self):
     return self._ResultLines()
@@ -153,7 +162,7 @@ class ResourceSizesDiff(BaseDiff):
     footer_lines = [
         '',
         'For an explanation of these metrics, see:',
-        ('https://chromium.googlesource.com/chromium/src/+/master/docs/speed/'
+        ('https://chromium.googlesource.com/chromium/src/+/main/docs/speed/'
          'binary_size/metrics.md#Metrics-for-Android')]
     return self._ResultLines(
         include_sections=ResourceSizesDiff._SUMMARY_SECTIONS) + footer_lines
@@ -162,8 +171,10 @@ class ResourceSizesDiff(BaseDiff):
     before = self._LoadResults(before_dir)
     after = self._LoadResults(after_dir)
     self._diff = collections.defaultdict(list)
-    for section, section_dict in after.iteritems():
-      for subsection, v in section_dict.iteritems():
+    for section, section_dict in after.items():
+      if self._include_sections and section not in self._include_sections:
+        continue
+      for subsection, v in section_dict.items():
         # Ignore entries when resource_sizes.py chartjson format has changed.
         if (section not in before or
             subsection not in before[section] or
@@ -180,7 +191,7 @@ class ResourceSizesDiff(BaseDiff):
   def _ResultLines(self, include_sections=None):
     """Generates diff lines for the specified sections (defaults to all)."""
     section_lines = collections.defaultdict(list)
-    for section_name, section_results in self._diff.iteritems():
+    for section_name, section_results in self._diff.items():
       if not include_sections or section_name in include_sections:
         subsection_lines = []
         section_sum = 0
@@ -213,21 +224,19 @@ class ResourceSizesDiff(BaseDiff):
     charts = chartjson['charts']
     # Older versions of resource_sizes.py prefixed the apk onto section names.
     ret = {}
-    for section, section_dict in charts.iteritems():
+    for section, section_dict in charts.items():
       section_no_target = re.sub(r'^.*_', '', section)
       ret[section_no_target] = section_dict
     return ret
 
 
-class _BuildHelper(object):
+class _BuildHelper:
   """Helper class for generating and building targets."""
   def __init__(self, args):
     self.clean = args.clean
     self.enable_chrome_android_internal = args.enable_chrome_android_internal
     self.extra_gn_args_str = args.gn_args
     self.apply_patch = args.extra_rev
-    self.max_jobs = args.max_jobs
-    self.max_load_average = args.max_load_average
     self.output_directory = args.output_directory
     self.target = args.target
     self.target_os = args.target_os
@@ -235,33 +244,49 @@ class _BuildHelper(object):
     self._SetDefaults()
     self.is_bundle = 'minimal' in self.target
 
-  @property
-  def abs_apk_path(self):
-    return os.path.join(self.output_directory, self.apk_path)
+  def _MaybeAddGoogleSuffix(self, path):
+    if self.IsTrichrome() and '_google' in self.target:
+      return path.replace('.', 'Google.', 1)
+    return path
 
   @property
-  def abs_mapping_path(self):
-    return os.path.join(self.output_directory, self.mapping_path)
+  def abs_apk_paths(self):
+    return [os.path.join(self.output_directory, x) for x in self.apk_paths]
+
+  @property
+  def abs_mapping_paths(self):
+    def to_mapping_path(p):
+      return p.replace('.minimal.apks', '.aab') + '.mapping'
+
+    return [to_mapping_path(x) for x in self.abs_apk_paths]
 
   @property
   def apk_name(self):
     # my_great_apk -> MyGreat.apk
     apk_name = ''.join(s.title() for s in self.target.split('_')[:-1]) + '.apk'
     if self.is_bundle:
-      # my_great_minimal_apks -> MyGreatMinimal.apk -> MyGreat.minimal.apks
+      # trichrome_minimal_apks->TrichromeMinimal.apk->Trichrome.minimal.apks
       apk_name = apk_name.replace('Minimal.apk', '.minimal.apks')
     return apk_name.replace('Webview', 'WebView')
 
   @property
-  def apk_path(self):
-    return os.path.join('apks', self.apk_name)
+  def supersize_input(self):
+    if self.IsTrichrome():
+      return self._MaybeAddGoogleSuffix(
+          os.path.join(self.output_directory, 'apks', 'Trichrome.ssargs'))
+    return self.abs_apk_paths[0]
 
   @property
-  def mapping_path(self):
-    if self.is_bundle:
-      return self.apk_path.replace('.minimal.apks', '.aab') + '.mapping'
-    else:
-      return self.apk_path + '.mapping'
+  def apk_paths(self):
+    if self.IsTrichrome():
+      ret = [
+          os.path.join('apks', 'TrichromeChrome.minimal.apks'),
+          os.path.join('apks', 'TrichromeWebView.minimal.apks'),
+          os.path.join('apks', 'TrichromeLibrary.apk'),
+      ]
+      return [self._MaybeAddGoogleSuffix(x) for x in ret]
+
+    return [os.path.join('apks', self.apk_name)]
 
   @property
   def main_lib_path(self):
@@ -291,10 +316,18 @@ class _BuildHelper(object):
     return self.apk_name + '.size'
 
   def _SetDefaults(self):
-    has_goma_dir = os.path.exists(os.path.join(os.path.expanduser('~'), 'goma'))
-    self.use_goma = self.use_goma and has_goma_dir
-    self.max_load_average = (self.max_load_average or
-                             str(multiprocessing.cpu_count()))
+    if self.use_goma:
+      try:
+        goma_is_running = not subprocess.call(['goma_ctl', 'status'],
+                                              stdout=subprocess.DEVNULL,
+                                              stderr=subprocess.DEVNULL)
+        self.use_goma = self.use_goma and goma_is_running
+      except Exception:
+        # goma_ctl not in PATH.
+        self.use_goma = False
+
+      if not self.use_goma:
+        logging.warning('GOMA not running. Setting use_goma=false.')
 
     has_internal = os.path.exists(
         os.path.join(os.path.dirname(_SRC_ROOT), 'src-internal'))
@@ -310,21 +343,13 @@ class _BuildHelper(object):
           'is_cfi=false generate_linker_map=true ' + self.extra_gn_args_str)
     self.extra_gn_args_str = ' ' + self.extra_gn_args_str.strip()
 
-    if not self.max_jobs:
-      if self.use_goma:
-        self.max_jobs = '10000'
-      elif has_internal:
-        self.max_jobs = '500'
-      else:
-        self.max_jobs = '50'
-
     if not self.target:
       if self.IsLinux():
         self.target = 'chrome'
       elif self.enable_chrome_android_internal:
-        self.target = 'monochrome_minimal_apks'
+        self.target = 'trichrome_google_minimal_apks'
       else:
-        self.target = 'monochrome_public_minimal_apks'
+        self.target = 'trichrome_minimal_apks'
 
   def _GenGnCmd(self):
     gn_args = 'is_official_build=true'
@@ -334,6 +359,9 @@ class _BuildHelper(object):
     gn_args += ' treat_warnings_as_errors=false'
     # Speed things up a bit by skipping lint & errorprone.
     gn_args += ' disable_android_lint=true'
+    # Down from default of 2 to speed up compile and use less disk.
+    # Compiles need at least symbol_level=1 for pak allowlist to work.
+    gn_args += ' symbol_level=1'
     gn_args += ' use_errorprone_java_compiler=false'
     gn_args += ' use_goma=%s' % str(self.use_goma).lower()
     gn_args += ' target_os="%s"' % self.target_os
@@ -344,9 +372,7 @@ class _BuildHelper(object):
     return [_GN_PATH, 'gen', self.output_directory, '--args=%s' % gn_args]
 
   def _GenNinjaCmd(self):
-    cmd = [_NINJA_PATH, '-C', self.output_directory]
-    cmd += ['-j', self.max_jobs] if self.max_jobs else []
-    cmd += ['-l', self.max_load_average] if self.max_load_average else []
+    cmd = ['autoninja', '-C', self.output_directory]
     cmd += [self.target]
     return cmd
 
@@ -355,9 +381,11 @@ class _BuildHelper(object):
     logging.info('Building %s within %s (this might take a while).',
                  self.target, os.path.relpath(self.output_directory))
     if self.clean:
-      _RunCmd([_GN_PATH, 'clean', self.output_directory])
-    retcode = _RunCmd(
-        self._GenGnCmd(), verbose=True, exit_on_failure=False)[1]
+      _RunCmd([_GN_PATH, 'clean', self.output_directory], cwd=_SRC_ROOT)
+    retcode = _RunCmd(self._GenGnCmd(),
+                      cwd=_SRC_ROOT,
+                      verbose=True,
+                      exit_on_failure=False)[1]
     if retcode:
       return retcode
     return _RunCmd(
@@ -366,20 +394,22 @@ class _BuildHelper(object):
   def IsAndroid(self):
     return self.target_os == 'android'
 
+  def IsTrichrome(self):
+    return 'trichrome' in self.target
+
   def IsLinux(self):
     return self.target_os == 'linux'
 
 
-class _BuildArchive(object):
+class _BuildArchive:
   """Class for managing a directory with build results and build metadata."""
-  def __init__(self, rev, base_archive_dir, build, subrepo, slow_options,
-               save_unstripped):
+
+  def __init__(self, rev, base_archive_dir, build, subrepo, save_unstripped):
     self.build = build
     self.dir = os.path.join(base_archive_dir, rev)
     metadata_path = os.path.join(self.dir, 'metadata.txt')
     self.rev = rev
     self.metadata = _Metadata([self], build, metadata_path, subrepo)
-    self._slow_options = slow_options
     self._save_unstripped = save_unstripped
 
   def ArchiveBuildResults(self, supersize_path, tool_prefix=None):
@@ -387,8 +417,10 @@ class _BuildArchive(object):
     logging.info('Saving build results to: %s', self.dir)
     _EnsureDirsExist(self.dir)
     if self.build.IsAndroid():
-      self._ArchiveFile(self.build.abs_apk_path)
-      self._ArchiveFile(self.build.abs_mapping_path)
+      for path in self.build.abs_apk_paths:
+        self._ArchiveFile(path)
+      for path in self.build.abs_mapping_paths:
+        self._ArchiveFile(path)
       self._ArchiveResourceSizes()
     self._ArchiveSizeFile(supersize_path, tool_prefix)
     if self._save_unstripped:
@@ -412,11 +444,17 @@ class _BuildArchive(object):
 
   def _ArchiveResourceSizes(self):
     cmd = [
-        _RESOURCE_SIZES_PATH, self.build.abs_apk_path, '--output-dir', self.dir,
-        '--chartjson', '--chromium-output-dir', self.build.output_directory
+        _RESOURCE_SIZES_PATH, '--output-dir', self.dir, '--chartjson',
+        '--chromium-output-dir', self.build.output_directory
     ]
-    if self._slow_options:
-      cmd += ['--estimate-patch-size', '--dump-static-initializers']
+    if self.build.IsTrichrome():
+      get_apk = lambda t: next(x for x in self.build.abs_apk_paths if t in x)
+      cmd += ['--trichrome-chrome', get_apk('Chrome')]
+      cmd += ['--trichrome-webview', get_apk('WebView')]
+      cmd += ['--trichrome-library', get_apk('Library')]
+      cmd += [self.build.apk_name]
+    else:
+      cmd += [self.build.abs_apk_paths[0]]
     _RunCmd(cmd)
 
   def _ArchiveFile(self, filename):
@@ -425,33 +463,29 @@ class _BuildArchive(object):
     shutil.copy(filename, self.dir)
 
   def _ArchiveSizeFile(self, supersize_path, tool_prefix):
-    existing_size_file = self.build.abs_apk_path + '.size'
-    if os.path.exists(existing_size_file):
-      logging.info('Found existing .size file')
-      shutil.copy(existing_size_file, self.archived_size_path)
-    else:
-      supersize_cmd = [
-          supersize_path, 'archive', self.archived_size_path, '--elf-file',
-          self.build.abs_main_lib_path, '--output-directory',
-          self.build.output_directory
+    supersize_cmd = [supersize_path, 'archive', self.archived_size_path]
+    if self.build.IsAndroid():
+      supersize_cmd += [
+          '-f', self.build.supersize_input, '--aux-elf-file',
+          self.build.abs_main_lib_path
       ]
-      if tool_prefix:
-        supersize_cmd += ['--tool-prefix', tool_prefix]
-      if self.build.IsAndroid():
-        supersize_cmd += ['-f', self.build.abs_apk_path]
-      logging.info('Creating .size file')
-      _RunCmd(supersize_cmd)
+    else:
+      supersize_cmd += ['--elf-file', self.build.abs_main_lib_path]
+    supersize_cmd += ['--output-directory', self.build.output_directory]
+    if tool_prefix:
+      supersize_cmd += ['--tool-prefix', tool_prefix]
+    logging.info('Creating .size file')
+    _RunCmd(supersize_cmd)
 
 
-class _DiffArchiveManager(object):
+class _DiffArchiveManager:
   """Class for maintaining BuildArchives and their related diff artifacts."""
-  def __init__(self, revs, archive_dir, diffs, build, subrepo, slow_options,
-               save_unstripped):
+
+  def __init__(self, revs, archive_dir, diffs, build, subrepo, save_unstripped):
     self.archive_dir = archive_dir
     self.build = build
     self.build_archives = [
-        _BuildArchive(rev, archive_dir, build, subrepo, slow_options,
-                      save_unstripped)
+        _BuildArchive(rev, archive_dir, build, subrepo, save_unstripped)
         for rev in revs
     ]
     self.diffs = diffs
@@ -487,7 +521,7 @@ class _DiffArchiveManager(object):
     logging.info('See detailed diff results here: %s',
                  os.path.relpath(diff_path))
 
-  def GenerateHtmlReport(self, before_id, after_id):
+  def GenerateHtmlReport(self, before_id, after_id, is_internal=False):
     """Generate HTML report given two build archives."""
     before = self.build_archives[before_id]
     after = self.build_archives[after_id]
@@ -499,21 +533,38 @@ class _DiffArchiveManager(object):
       return
 
     supersize_path = os.path.join(_BINARY_SIZE_DIR, 'supersize')
+    report_path = os.path.join(diff_path, 'diff.sizediff')
 
-    report_path = os.path.join(diff_path, 'diff.ndjson')
+    supersize_cmd = [
+        supersize_path, 'save_diff', before.archived_size_path,
+        after.archived_size_path, report_path
+    ]
 
-    supersize_cmd = [supersize_path, 'html_report', '--diff-with',
-      before.archived_size_path,
-      after.archived_size_path,
-      report_path]
-
-    logging.info('Creating HTML report')
-
+    logging.info('Creating .sizediff')
     _RunCmd(supersize_cmd)
+    oneoffs_dir = 'oneoffs'
+    visibility = '-a public-read '
+    if is_internal:
+      oneoffs_dir = 'private-oneoffs'
+      visibility = ''
 
-    logging.info('View using a local server via: %s start_server %s',
-      os.path.relpath(supersize_path),
-      os.path.relpath(report_path))
+    unique_name = '{}_{}.sizediff'.format(before.rev, after.rev)
+    msg = (
+        '\n=====================\n'
+        'Saved locally to {local}. To view, upload to '
+        'https://chrome-supersize.firebaseapp.com/viewer.html.\n'
+        'To share, run:\n'
+        '> gsutil.py cp {visibility}{local} '
+        'gs://chrome-supersize/{oneoffs_dir}/{unique_name}\n\n'
+        'Then view it at https://chrome-supersize.firebaseapp.com/viewer.html'
+        '?load_url=https://storage.googleapis.com/chrome-supersize/'
+        '{oneoffs_dir}/{unique_name}'
+        '\n=====================\n')
+    msg = msg.format(local=os.path.relpath(report_path),
+                     unique_name=unique_name,
+                     visibility=visibility,
+                     oneoffs_dir=oneoffs_dir)
+    logging.info(msg)
 
   def Summarize(self):
     path = os.path.join(self.archive_dir, 'last_diff_summary.txt')
@@ -571,7 +622,7 @@ class _DiffArchiveManager(object):
     return diff_path
 
 
-class _Metadata(object):
+class _Metadata:
 
   def __init__(self, archives, build, path, subrepo):
     self.data = {
@@ -605,7 +656,7 @@ def _EnsureDirsExist(path):
     os.makedirs(path)
 
 
-def _RunCmd(cmd, verbose=False, exit_on_failure=True):
+def _RunCmd(cmd, cwd=None, verbose=False, exit_on_failure=True):
   """Convenience function for running commands.
 
   Args:
@@ -624,7 +675,12 @@ def _RunCmd(cmd, verbose=False, exit_on_failure=True):
   if verbose:
     proc_stdout, proc_stderr = sys.stdout, subprocess.STDOUT
 
-  proc = subprocess.Popen(cmd, stdout=proc_stdout, stderr=proc_stderr)
+  # pylint: disable=unexpected-keyword-arg
+  proc = subprocess.Popen(cmd,
+                          cwd=cwd,
+                          stdout=proc_stdout,
+                          stderr=proc_stderr,
+                          encoding='utf-8')
   stdout, stderr = proc.communicate()
 
   if proc.returncode and exit_on_failure:
@@ -725,7 +781,7 @@ def _ValidateRevs(rev, reference_rev, subrepo, extra_rev):
 
 def _VerifyUserAccepts(message):
   print(message + ' Do you want to proceed? [y/n]')
-  if raw_input('> ').lower() != 'y':
+  if input('> ').lower() != 'y':
     sys.exit()
 
 
@@ -744,7 +800,7 @@ def _Die(s, *args):
 
 
 def _WriteToFile(logfile, s, *args, **kwargs):
-  if isinstance(s, basestring):
+  if isinstance(s, str):
     data = s.format(*args, **kwargs) + '\n'
   else:
     data = '\n'.join(s) + '\n'
@@ -812,11 +868,6 @@ def main():
                       action='store_true',
                       help='Build/download all revs from --reference-rev to '
                            'rev and diff the contiguous revisions.')
-  parser.add_argument('--include-slow-options',
-                      action='store_true',
-                      help='Run some extra steps that take longer to complete. '
-                           'This includes apk-patch-size estimation and '
-                           'static-initializer counting.')
   parser.add_argument('--single',
                       action='store_true',
                       help='Sets --reference-rev=rev.')
@@ -845,13 +896,6 @@ def main():
                            ', and Ninja/GN output.')
 
   build_group = parser.add_argument_group('build arguments')
-  build_group.add_argument('-j',
-                           dest='max_jobs',
-                           help='Run N jobs in parallel.')
-  build_group.add_argument('-l',
-                           dest='max_load_average',
-                           help='Do not start new jobs if the load average is '
-                           'greater than N.')
   build_group.add_argument('--no-goma',
                            action='store_false',
                            dest='use_goma',
@@ -876,8 +920,8 @@ def main():
                            help='Allow downstream targets to be built.')
   build_group.add_argument('--target',
                            help='GN target to build. Linux default: chrome. '
-                           'Android default: monochrome_public_minimal_apks or '
-                           'monochrome_minimal_apks (depending on '
+                           'Android default: trichrome_minimal_apks or '
+                           'trichrome_google_minimal_apks (depending on '
                            '--enable-chrome-android-internal).')
   if len(sys.argv) == 1:
     parser.print_help()
@@ -905,12 +949,9 @@ def main():
     supersize_path, tool_prefix = paths
     diffs = [NativeDiff(build.size_name, supersize_path)]
     if build.IsAndroid():
-      diffs +=  [
-          ResourceSizesDiff(build.apk_name)
-      ]
+      diffs += [ResourceSizesDiff()]
     diff_mngr = _DiffArchiveManager(revs, args.archive_directory, diffs, build,
-                                    subrepo, args.include_slow_options,
-                                    args.unstripped)
+                                    subrepo, args.unstripped)
     consecutive_failures = 0
     i = 0
     for i, archive in enumerate(diff_mngr.build_archives):
@@ -937,8 +978,11 @@ def main():
       if i != 0:
         diff_mngr.MaybeDiff(i - 1, i)
 
-    diff_mngr.GenerateHtmlReport(0, i)
+    diff_mngr.GenerateHtmlReport(
+        0, i, is_internal=args.enable_chrome_android_internal)
     diff_mngr.Summarize()
+
+  return 0
 
 
 if __name__ == '__main__':

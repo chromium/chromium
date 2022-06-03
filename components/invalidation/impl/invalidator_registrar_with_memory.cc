@@ -8,15 +8,17 @@
 #include <iterator>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/logging.h"
+#include "base/stl_util.h"
 #include "base/values.h"
-#include "components/invalidation/public/object_id_invalidation_map.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -30,7 +32,7 @@ constexpr char kIsPublic[] = "is_public";
 // Added in M76.
 void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
   auto* old_prefs = prefs->GetDictionary(kTopicsToHandlerDeprecated);
-  if (old_prefs->empty()) {
+  if (old_prefs->DictEmpty()) {
     return;
   }
   {
@@ -38,6 +40,17 @@ void MigratePrefs(PrefService* prefs, const std::string& sender_id) {
     update->SetKey(sender_id, old_prefs->Clone());
   }
   prefs->ClearPref(kTopicsToHandlerDeprecated);
+}
+
+absl::optional<TopicData> FindAnyDuplicatedTopic(
+    const std::set<TopicData>& lhs,
+    const std::set<TopicData>& rhs) {
+  auto intersection =
+      base::STLSetIntersection<std::vector<TopicData>>(lhs, rhs);
+  if (!intersection.empty()) {
+    return intersection[0];
+  }
+  return absl::nullopt;
 }
 
 }  // namespace
@@ -74,21 +87,19 @@ InvalidatorRegistrarWithMemory::InvalidatorRegistrarWithMemory(
     return;
   }
   // Restore |handler_name_to_subscribed_topics_map_| from prefs.
-  for (const auto& it : pref_data->DictItems()) {
-    Topic topic = it.first;
+  for (auto it : pref_data->DictItems()) {
+    const std::string& topic_name = it.first;
     if (it.second.is_dict()) {
       const base::Value* handler = it.second.FindDictKey(kHandler);
       const base::Value* is_public = it.second.FindDictKey(kIsPublic);
       if (!handler || !is_public) {
         continue;
       }
-      handler_name_to_subscribed_topics_map_[handler->GetString()].emplace(
-          topic, TopicMetadata{is_public->GetBool()});
+      handler_name_to_subscribed_topics_map_[handler->GetString()].insert(
+          TopicData(topic_name, is_public->GetBool()));
     } else if (it.second.is_string()) {
-      std::string handler_name;
-      it.second.GetAsString(&handler_name);
-      handler_name_to_subscribed_topics_map_[handler_name].emplace(
-          topic, TopicMetadata{false});
+      handler_name_to_subscribed_topics_map_[it.second.GetString()].insert(
+          TopicData(topic_name, false));
     }
   }
 }
@@ -121,34 +132,33 @@ void InvalidatorRegistrarWithMemory::UnregisterHandler(
 
 bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
     InvalidationHandler* handler,
-    const Topics& topics) {
+    const std::set<TopicData>& topics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(handler);
   CHECK(handlers_.HasObserver(handler));
 
-  Topics old_topics = GetRegisteredTopics(handler);
-
-  bool success = !HasDuplicateTopicRegistration(handler, topics);
-
-  if (success) {
-    if (topics.empty()) {
-      registered_handler_to_topics_map_.erase(handler);
-    } else {
-      registered_handler_to_topics_map_[handler] = topics;
-    }
+  if (HasDuplicateTopicRegistration(handler, topics)) {
+    return false;
   }
 
-  // TODO(crbug.com/1020117): This seems inconsistent - if there's a duplicate,
-  // we don't update |registered_handler_to_topics_map_| but we *do* still
-  // update |handler_name_to_subscribed_topics_map_| and the prefs?!
+  std::set<TopicData> old_topics = registered_handler_to_topics_map_[handler];
+  if (topics.empty()) {
+    registered_handler_to_topics_map_.erase(handler);
+  } else {
+    registered_handler_to_topics_map_[handler] = topics;
+  }
 
   DictionaryPrefUpdate update(prefs_, kTopicsToHandler);
   base::Value* pref_data = update->FindDictKey(sender_id_);
-  // TODO(crbug.com/1020117): This does currently *not* remove subscribed topics
-  // which are not registered, but it almost certainly should.
-  auto to_unregister = FindRemovedTopics(old_topics, topics);
+  // TODO(crbug.com/1020117): This does currently *not* remove subscribed
+  // topics which are not registered, but it almost certainly should. It
+  // requires GetOwnerName() to return unique value for each handler, which is
+  // currently not the case for CloudPolicyInvalidator (see crbug.com/1049591).
+  auto to_unregister =
+      base::STLSetDifference<std::set<TopicData>>(old_topics, topics);
+  ;
   for (const auto& topic : to_unregister) {
-    pref_data->RemoveKey(topic);
+    pref_data->RemoveKey(topic.name);
     handler_name_to_subscribed_topics_map_[handler->GetOwnerName()].erase(
         topic);
   }
@@ -158,46 +168,45 @@ bool InvalidatorRegistrarWithMemory::UpdateRegisteredTopics(
         topic);
     base::DictionaryValue handler_pref;
     handler_pref.SetStringKey(kHandler, handler->GetOwnerName());
-    handler_pref.SetBoolKey(kIsPublic, topic.second.is_public);
-    pref_data->SetKey(topic.first, std::move(handler_pref));
+    handler_pref.SetBoolKey(kIsPublic, topic.is_public);
+    pref_data->SetKey(topic.name, std::move(handler_pref));
   }
-  return success;
+  return true;
 }
 
 Topics InvalidatorRegistrarWithMemory::GetRegisteredTopics(
     InvalidationHandler* handler) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lookup = registered_handler_to_topics_map_.find(handler);
-  return lookup != registered_handler_to_topics_map_.end() ? lookup->second
-                                                           : Topics();
+  return lookup != registered_handler_to_topics_map_.end()
+             ? ConvertTopicSetToLegacyTopicMap(lookup->second)
+             : Topics();
 }
 
 Topics InvalidatorRegistrarWithMemory::GetAllSubscribedTopics() const {
-  Topics subscribed_topics;
+  std::set<TopicData> subscribed_topics;
   for (const auto& handler_to_topic : handler_name_to_subscribed_topics_map_) {
     subscribed_topics.insert(handler_to_topic.second.begin(),
                              handler_to_topic.second.end());
   }
-  return subscribed_topics;
+  return ConvertTopicSetToLegacyTopicMap(subscribed_topics);
 }
 
 void InvalidatorRegistrarWithMemory::DispatchInvalidationsToHandlers(
     const TopicInvalidationMap& invalidation_map) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // If we have no handlers, there's nothing to do.
-  if (!handlers_.might_have_observers()) {
+  if (handlers_.empty()) {
     return;
   }
 
   for (const auto& handler_and_topics : registered_handler_to_topics_map_) {
-    TopicInvalidationMap topics_to_emit =
-        invalidation_map.GetSubsetWithTopics(handler_and_topics.second);
+    TopicInvalidationMap topics_to_emit = invalidation_map.GetSubsetWithTopics(
+        ConvertTopicSetToLegacyTopicMap(handler_and_topics.second));
     if (topics_to_emit.Empty()) {
       continue;
     }
-    ObjectIdInvalidationMap object_ids_to_emit =
-        ConvertTopicInvalidationMapToObjectIdInvalidationMap(topics_to_emit);
-    handler_and_topics.first->OnIncomingInvalidation(object_ids_to_emit);
+    handler_and_topics.first->OnIncomingInvalidation(topics_to_emit);
   }
 }
 
@@ -228,7 +237,7 @@ InvalidatorRegistrarWithMemory::GetHandlerNameToTopicsMap() {
   std::map<std::string, Topics> names_to_topics;
   for (const auto& handler_and_topics : registered_handler_to_topics_map_) {
     names_to_topics[handler_and_topics.first->GetOwnerName()] =
-        handler_and_topics.second;
+        ConvertTopicSetToLegacyTopicMap(handler_and_topics.second);
   }
   return names_to_topics;
 }
@@ -241,16 +250,17 @@ void InvalidatorRegistrarWithMemory::RequestDetailedStatus(
 
 bool InvalidatorRegistrarWithMemory::HasDuplicateTopicRegistration(
     InvalidationHandler* handler,
-    const Topics& topics) const {
+    const std::set<TopicData>& topics) const {
   for (const auto& handler_and_topics : registered_handler_to_topics_map_) {
     if (handler_and_topics.first == handler) {
       continue;
     }
 
-    if (auto* duplicate =
-            FindMatchingTopic(topics, handler_and_topics.second)) {
-      DVLOG(1) << "Duplicate registration: trying to register " << *duplicate
-               << " for " << handler << " when it's already registered for "
+    if (absl::optional<TopicData> duplicate =
+            FindAnyDuplicatedTopic(topics, handler_and_topics.second)) {
+      DVLOG(1) << "Duplicate registration: trying to register "
+               << duplicate->name << " for " << handler
+               << " when it's already registered for "
                << handler_and_topics.first;
       return true;
     }
@@ -265,11 +275,11 @@ base::DictionaryValue InvalidatorRegistrarWithMemory::CollectDebugData() const {
   for (const auto& handler_to_topics : handler_name_to_subscribed_topics_map_) {
     const std::string& handler = handler_to_topics.first;
     for (const auto& topic : handler_to_topics.second) {
-      return_value.SetString("InvalidatorRegistrarWithMemory." + topic.first,
+      return_value.SetString("InvalidatorRegistrarWithMemory." + topic.name,
                              handler);
     }
   }
   return return_value;
 }
 
-}  // namespace syncer
+}  // namespace invalidation

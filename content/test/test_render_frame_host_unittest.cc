@@ -39,11 +39,13 @@ class TestRenderFrameHostTest : public RenderViewHostImplTestHarness,
 
   void DidStopLoading() override { events_.push_back("DidStopLoading"); }
 
-  void DocumentAvailableInMainFrame() override {
+  void DocumentAvailableInMainFrame(
+      RenderFrameHost* render_frame_host) override {
     events_.push_back("DocumentAvailableInMainFrame");
   }
 
-  void DocumentOnLoadCompletedInMainFrame() override {
+  void DocumentOnLoadCompletedInMainFrame(
+      RenderFrameHost* render_frame_host) override {
     events_.push_back("DocumentOnLoadCompletedInMainFrame");
   }
 
@@ -58,8 +60,7 @@ class TestRenderFrameHostTest : public RenderViewHostImplTestHarness,
 
   void DidFailLoad(RenderFrameHost* render_frame_host,
                    const GURL& url,
-                   int error_code,
-                   const base::string16& error_description) override {
+                   int error_code) override {
     events_.push_back("DidFailLoad");
   }
 

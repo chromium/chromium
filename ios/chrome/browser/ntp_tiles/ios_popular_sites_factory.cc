@@ -15,8 +15,7 @@
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 
 std::unique_ptr<ntp_tiles::PopularSites>
-IOSPopularSitesFactory::NewForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+IOSPopularSitesFactory::NewForBrowserState(ChromeBrowserState* browser_state) {
   return std::make_unique<ntp_tiles::PopularSitesImpl>(
       browser_state->GetPrefs(),
       ios::TemplateURLServiceFactory::GetForBrowserState(browser_state),

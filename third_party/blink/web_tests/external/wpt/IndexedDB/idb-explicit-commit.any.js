@@ -1,12 +1,5 @@
 // META: script=support-promises.js
 
-/**
- * This file contains the webplatform tests for the explicit commit() method
- * of the IndexedDB transaction API.
- *
- * @author andreasbutler@google.com
- */
-
 promise_test(async testCase => {
   const db = await createDatabase(testCase, db => {
     createBooksStore(testCase, db);
@@ -61,7 +54,7 @@ promise_test(async testCase => {
   const txn = db.transaction(['books'], 'readwrite');
   const objectStore = txn.objectStore('books');
   txn.commit();
-  assert_throws('TransactionInactiveError',
+  assert_throws_dom('TransactionInactiveError',
       () => { objectStore.put({isbn: 'one', title: 'title1'}); },
       'After commit is called, the transaction should be inactive.');
   db.close();
@@ -76,7 +69,7 @@ promise_test(async testCase => {
   const objectStore = txn.objectStore('books');
   const putRequest = objectStore.put({isbn: 'one', title: 'title1'});
   putRequest.onsuccess = testCase.step_func(() => {
-    assert_throws('TransactionInactiveError',
+    assert_throws_dom('TransactionInactiveError',
       () => { objectStore.put({isbn:'two', title:'title2'}); },
       'The transaction should not be active in the callback of a request after '
       + 'commit() is called.');
@@ -95,7 +88,7 @@ promise_test(async testCase => {
   const objectStore = txn.objectStore('books');
   txn.commit();
 
-  assert_throws('TransactionInactiveError',
+  assert_throws_dom('TransactionInactiveError',
       () => { objectStore.put({isbn:'one', title:'title1'}); },
       'After commit is called, the transaction should be inactive.');
 
@@ -116,7 +109,7 @@ promise_test(async testCase => {
   const txn = db.transaction(['books'], 'readwrite');
   const objectStore = txn.objectStore('books');
   txn.abort();
-  assert_throws('InvalidStateError',
+  assert_throws_dom('InvalidStateError',
       () => { txn.commit(); },
       'The transaction should have been aborted.');
   db.close();
@@ -130,7 +123,7 @@ promise_test(async testCase => {
   const txn = db.transaction(['books'], 'readwrite');
   const objectStore = txn.objectStore('books');
   txn.commit();
-  assert_throws('InvalidStateError',
+  assert_throws_dom('InvalidStateError',
       () => { txn.commit(); },
       'The transaction should have already committed.');
   db.close();
@@ -145,7 +138,7 @@ promise_test(async testCase => {
   const objectStore = txn.objectStore('books');
   const putRequest = objectStore.put({isbn:'one', title:'title1'});
   txn.commit();
-  assert_throws('InvalidStateError',
+  assert_throws_dom('InvalidStateError',
       () => { txn.abort(); },
       'The transaction should already have committed.');
   const txn2 = db.transaction(['books'], 'readwrite');
@@ -173,7 +166,7 @@ promise_test(async testCase => {
   // state.
   await timeoutPromise(0);
 
-  assert_throws('InvalidStateError',
+  assert_throws_dom('InvalidStateError',
       () => { txn.commit(); },
       'The transaction should be inactive so calling commit should throw.');
   releaseTxnFunction();
@@ -196,9 +189,12 @@ promise_test(async testCase => {
   txn2.commit();
 
   // Exercise the IndexedDB transaction ordering by executing one with a
-  // different scope.
-  const txn3 = db.transaction(['not_books'], 'readwrite');
-  txn3.objectStore('not_books').put({'title': 'not_title'}, 'key');
+  // different scope. A readonly transaction is used here because
+  // implementations are not required to run non-overlapping readwrite
+  // transactions in parallel, and some implementations (ex: Firefox)
+  // will not.
+  const txn3 = db.transaction(['not_books'], 'readonly');
+  txn3.objectStore('not_books').getAllKeys();
   txn3.oncomplete = function() {
     releaseTxnFunction();
   }

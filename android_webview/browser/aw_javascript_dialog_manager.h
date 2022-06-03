@@ -13,14 +13,19 @@ namespace android_webview {
 class AwJavaScriptDialogManager : public content::JavaScriptDialogManager {
  public:
   AwJavaScriptDialogManager();
+
+  AwJavaScriptDialogManager(const AwJavaScriptDialogManager&) = delete;
+  AwJavaScriptDialogManager& operator=(const AwJavaScriptDialogManager&) =
+      delete;
+
   ~AwJavaScriptDialogManager() override;
 
   // Overridden from content::JavaScriptDialogManager:
   void RunJavaScriptDialog(content::WebContents* web_contents,
                            content::RenderFrameHost* render_frame_host,
                            content::JavaScriptDialogType dialog_type,
-                           const base::string16& message_text,
-                           const base::string16& default_prompt_text,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
                            DialogClosedCallback callback,
                            bool* did_suppress_message) override;
   void RunBeforeUnloadDialog(content::WebContents* web_contents,
@@ -29,9 +34,6 @@ class AwJavaScriptDialogManager : public content::JavaScriptDialogManager {
                              DialogClosedCallback callback) override;
   void CancelDialogs(content::WebContents* web_contents,
                      bool reset_state) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AwJavaScriptDialogManager);
 };
 
 }  // namespace android_webview

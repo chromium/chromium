@@ -16,10 +16,6 @@
   <suppress id="AlertDialogCheck"
             files="src/(android_webview|base|build|chromecast|components|content|device|media|mojo|net|printing|services|testing|third_party|tools|ui|url)/"/>
   <suppress id="StringBufferCheck" files="src/chrome/android/webapk/"/>
-  <!-- Robolectric shadows can overwrite constructor by implementing
-       __constructor__() method. -->
-  <suppress id="MethodNameCheck" files="FirstRunIntegrationUnitTest.java"/>
-  <suppress id="MethodNameCheck" files="SplashActivityTest.java"/>
   <!-- Third-party libraries, test infrastructure, build, and tooling can use
        System#exit freely. Feel free to add other test directories here. -->
   <suppress id="SystemExitCheck" files="src/(build|testing|third_party|tools|base/test)/"/>

@@ -12,8 +12,8 @@
 #include "chrome/common/extensions/api/tabs.h"
 #include "chrome/common/extensions/api/webrtc_desktop_capture_private.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/origin_util.h"
 #include "net/base/url_util.h"
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 
 namespace extensions {
 
@@ -33,19 +33,21 @@ WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::
     ~WebrtcDesktopCapturePrivateChooseDesktopMediaFunction() {
 }
 
-bool WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::RunAsync() {
+ExtensionFunction::ResponseAction
+WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::Run() {
   using Params =
       extensions::api::webrtc_desktop_capture_private::ChooseDesktopMedia
           ::Params;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetSize() > 0);
-
-  EXTENSION_FUNCTION_VALIDATE(args_->GetInteger(0, &request_id_));
+  EXTENSION_FUNCTION_VALIDATE(args().size() > 0);
+  const auto& request_id_value = args()[0];
+  EXTENSION_FUNCTION_VALIDATE(request_id_value.is_int());
+  request_id_ = request_id_value.GetInt();
   DesktopCaptureRequestsRegistry::GetInstance()->AddRequest(source_process_id(),
                                                             request_id_, this);
 
-  args_->Remove(0, NULL);
+  mutable_args().erase(args().begin());
 
-  std::unique_ptr<Params> params = Params::Create(*args_);
+  std::unique_ptr<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
@@ -53,26 +55,24 @@ bool WebrtcDesktopCapturePrivateChooseDesktopMediaFunction::RunAsync() {
       params->request.guest_render_frame_id);
 
   if (!rfh) {
-    error_ = kTargetNotFoundError;
-    return false;
+    return RespondNow(Error(kTargetNotFoundError));
   }
 
-  GURL origin = rfh->GetLastCommittedURL().GetOrigin();
+  GURL origin = rfh->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           ::switches::kAllowHttpScreenCapture) &&
-      !content::IsOriginSecure(origin)) {
-    error_ = kUrlNotSecure;
-    return false;
+      !network::IsUrlPotentiallyTrustworthy(origin)) {
+    return RespondNow(Error(kUrlNotSecure));
   }
-  base::string16 target_name = base::UTF8ToUTF16(
-      content::IsOriginSecure(origin) ? net::GetHostAndOptionalPort(origin)
-                                      : origin.spec());
+  std::u16string target_name =
+      base::UTF8ToUTF16(network::IsUrlPotentiallyTrustworthy(origin)
+                            ? net::GetHostAndOptionalPort(origin)
+                            : origin.spec());
 
   content::WebContents* web_contents =
       content::WebContents::FromRenderFrameHost(rfh);
   if (!web_contents) {
-    error_ = kTargetNotFoundError;
-    return false;
+    return RespondNow(Error(kTargetNotFoundError));
   }
 
   using Sources = std::vector<api::desktop_capture::DesktopCaptureSourceType>;

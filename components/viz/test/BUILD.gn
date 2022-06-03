@@ -2,8 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/ui.gni")
 import("//components/viz/viz.gni")
-import("//gpu/vulkan/features.gni")
+
+# Generate a buildflag header to determine which tests should be enabled.
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+
+  flags = [
+    "ENABLE_GL_RENDERER_TESTS=$enable_gl_renderer_tests",
+    "ENABLE_GL_BACKEND_TESTS=$enable_gl_backend_tests",
+    "ENABLE_VULKAN_BACKEND_TESTS=$enable_vulkan_backend_tests",
+    "ENABLE_DAWN_BACKEND_TESTS=$enable_dawn_backend_tests",
+  ]
+}
 
 viz_static_library("test_support") {
   testonly = true
@@ -14,6 +27,8 @@ viz_static_library("test_support") {
     "begin_frame_source_test.h",
     "compositor_frame_helpers.cc",
     "compositor_frame_helpers.h",
+    "delegated_ink_point_renderer_skia_for_test.cc",
+    "delegated_ink_point_renderer_skia_for_test.h",
     "fake_compositor_frame_sink_client.cc",
     "fake_compositor_frame_sink_client.h",
     "fake_delay_based_time_source.cc",
@@ -30,6 +45,8 @@ viz_static_library("test_support") {
     "fake_skia_output_surface.h",
     "fake_surface_observer.cc",
     "fake_surface_observer.h",
+    "gl_scaler_test_util.cc",
+    "gl_scaler_test_util.h",
     "gpu_host_impl_test_api.cc",
     "gpu_host_impl_test_api.h",
     "host_frame_sink_manager_test_api.cc",
@@ -67,10 +84,15 @@ viz_static_library("test_support") {
     "test_output_surface_provider.h",
     "test_shared_bitmap_manager.cc",
     "test_shared_bitmap_manager.h",
+    "test_surface_id_allocator.cc",
+    "test_surface_id_allocator.h",
+    "test_types.cc",
+    "test_types.h",
   ]
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/viz/host",
     "//components/viz/service",
     "//gpu:raster",
@@ -84,6 +106,8 @@ viz_static_library("test_support") {
     "//ui/gl",
     "//ui/latency:test_support",
   ]
+
+  public_deps = [ ":buildflags" ]
 
   if (enable_vulkan) {
     deps += [ "//gpu/vulkan/init" ]
@@ -100,6 +124,7 @@ viz_source_set("test_suite") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//ui/events/platform",
     "//ui/gl:test_support",
   ]
 }

@@ -40,45 +40,19 @@ target(link_target_type, "child") {
     "blink_platform_impl.h",
     "browser_exposed_child_interfaces.cc",
     "browser_exposed_child_interfaces.h",
-    "browser_font_resource_trusted.cc",
-    "browser_font_resource_trusted.h",
     "child_histogram_fetcher_impl.cc",
     "child_histogram_fetcher_impl.h",
     "child_process.cc",
     "child_process.h",
-    "child_process_sandbox_support_impl_linux.cc",
-    "child_process_sandbox_support_impl_linux.h",
-    "child_process_sandbox_support_impl_mac.cc",
-    "child_process_sandbox_support_impl_mac.h",
     "child_thread_impl.cc",
     "child_thread_impl.h",
-    "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.cc",
-    "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h",
-    "dwrite_font_proxy/dwrite_font_proxy_win.cc",
-    "dwrite_font_proxy/dwrite_font_proxy_win.h",
-    "dwrite_font_proxy/dwrite_localized_strings_win.cc",
-    "dwrite_font_proxy/dwrite_localized_strings_win.h",
-    "dwrite_font_proxy/font_fallback_win.cc",
-    "dwrite_font_proxy/font_fallback_win.h",
     "field_trial.cc",
     "field_trial.h",
-    "font_warmup_win.cc",
-    "font_warmup_win.h",
     "image_decoder_utils.cc",
     "runtime_features.cc",
     "runtime_features.h",
     "scoped_child_process_reference.cc",
     "scoped_child_process_reference.h",
-    "thread_safe_sender.cc",
-    "thread_safe_sender.h",
-    "webthemeengine_impl_android.cc",
-    "webthemeengine_impl_android.h",
-    "webthemeengine_impl_conversions.cc",
-    "webthemeengine_impl_conversions.h",
-    "webthemeengine_impl_default.cc",
-    "webthemeengine_impl_default.h",
-    "webthemeengine_impl_mac.cc",
-    "webthemeengine_impl_mac.h",
   ]
 
   configs += [ "//build/config:precompiled_headers" ]
@@ -91,30 +65,35 @@ target(link_target_type, "child") {
 
   deps = [
     "//base",
+    "//build/config/compiler:compiler_buildflags",
     "//cc/paint",
+    "//components/autofill/core/common:features",
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
-    "//components/tracing",
+    "//components/power_scheduler",
     "//components/tracing:startup_tracing",
-    "//components/tracing/common:interfaces",
     "//components/variations",
     "//components/webcrypto",
     "//content/app/resources",
     "//content/common",
+    "//content/common:mojo_bindings",
     "//content/public/common:common_sources",
     "//crypto:platform",
+    "//device/base",
+    "//device/gamepad/public/cpp:switches",
     "//gpu/command_buffer/client",
     "//media",
-    "//media/blink",
     "//mojo/core/embedder",
     "//net",
     "//services/device/public/cpp:device_features",
     "//services/device/public/cpp/power_monitor",
+    "//services/network/public/cpp",
     "//services/resource_coordinator/public/cpp/memory_instrumentation",
     "//services/service_manager/public/cpp",
     "//services/service_manager/public/mojom",
     "//services/tracing/public/cpp",
     "//services/tracing/public/cpp:traced_process",
+    "//services/tracing/public/cpp/background_tracing:background_tracing",
     "//skia",
     "//storage/common",
     "//third_party/blink/public:blink_headers",
@@ -136,24 +115,38 @@ target(link_target_type, "child") {
     "//v8",
   ]
 
-  if (is_android) {
-    deps += [ "//third_party/android_ndk:cpu_features" ]
-    sources -= [
-      "webthemeengine_impl_default.cc",
-      "webthemeengine_impl_default.h",
+  if (is_linux || is_chromeos) {
+    sources += [
+      "child_process_sandbox_support_impl_linux.cc",
+      "child_process_sandbox_support_impl_linux.h",
     ]
-  }
-
-  if (is_linux) {
     deps += [
       "//components/services/font/public/cpp",
       "//components/services/font/public/mojom",
-      "//services/service_manager/zygote",
     ]
   }
 
   if (is_win) {
+    sources += [
+      "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.cc",
+      "dwrite_font_proxy/dwrite_font_proxy_init_impl_win.h",
+      "dwrite_font_proxy/dwrite_font_proxy_win.cc",
+      "dwrite_font_proxy/dwrite_font_proxy_win.h",
+      "dwrite_font_proxy/dwrite_localized_strings_win.cc",
+      "dwrite_font_proxy/dwrite_localized_strings_win.h",
+      "dwrite_font_proxy/font_fallback_win.cc",
+      "dwrite_font_proxy/font_fallback_win.h",
+      "font_warmup_win.cc",
+      "font_warmup_win.h",
+    ]
     libs = [ "dwrite.lib" ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "child_process_sandbox_support_impl_mac.cc",
+      "child_process_sandbox_support_impl_mac.h",
+    ]
   }
 
   if (enable_plugins) {
@@ -161,8 +154,7 @@ target(link_target_type, "child") {
       "//ppapi/proxy",
       "//ppapi/shared_impl",
     ]
-  } else {
-    sources -= [
+    sources += [
       "browser_font_resource_trusted.cc",
       "browser_font_resource_trusted.h",
     ]
@@ -170,7 +162,6 @@ target(link_target_type, "child") {
 
   configs += [
     "//content:content_implementation",
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 }
 
@@ -178,8 +169,6 @@ target(link_target_type, "child") {
 group("for_content_tests") {
   visibility = [ "//content/test/*" ]
   if (!is_component_build) {
-    public_deps = [
-      ":child",
-    ]
+    public_deps = [ ":child" ]
   }
 }

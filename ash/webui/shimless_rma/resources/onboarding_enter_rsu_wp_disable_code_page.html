@@ -1,0 +1,30 @@
+<style include="cr-shared-style shimless-rma-shared">
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <h1>[[i18n('rsuCodePageTitleText')]]</h1>
+    <div>[[i18n('rsuCodeInstructionsText')]]</div>
+    <div>[[i18n('rsuChallengeLabelText')]]</div>
+    <div id="rsuChallenge">
+      <template id="rsuChallengeParts" is="dom-repeat" items="[[rsuChallenge_]]" as="row">
+        <template id="rsuChallengePart" is="dom-repeat" items="[[row]]" as="segment">
+          <span>[[segment]]&nbsp;</span>
+        </template>
+        <br/>
+      </template>
+    </div>
+    <div id="rsuHwid">[[i18n('rsuHardwareIdText', rsuHwid_)]]</div>
+    <cr-input
+        on-change="onRsuCodeChanged_"
+        label="[[i18n('rsuCodeLabelText')]]"
+        placeholder="[[i18n('rsuCodePlaceHolderText')]]"
+        id="rsuCode"
+        value="{{rsuCode_}}">
+    </cr-input>
+  </div>
+  <div slot="body">
+    <canvas id="qrCodeCanvas" width="[[canvasSize_]]" height="[[canvasSize_]]">
+    </canvas>
+  </div>
+</base-page>

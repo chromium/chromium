@@ -18,18 +18,16 @@ row header and column header (4)
 row head	col head
 row head
 
-End of test
-
 This tests that AXRoles for header cells are assigned.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-AXRole: AXWebArea
-    AXRole: AXGenericContainer
-        AXRole: AXTable "scope test"
-            AXRole: AXCaption
-                AXRole: AXStaticText "scope test"
-                    AXRole: AXInlineTextBox "scope test"
+AXRole: AXGenericContainer
+    AXRole: AXTable "scope test"
+        AXRole: AXCaption
+            AXRole: AXStaticText "scope test"
+                AXRole: AXInlineTextBox "scope test"
+        AXRole: AXRowGroup
             AXRole: AXRow
                 AXRole: AXColumnHeader "col head"
                     AXRole: AXStaticText "col head"
@@ -60,10 +58,11 @@ AXRole: AXWebArea
                 AXRole: AXColumnHeader "col head"
                     AXRole: AXStaticText "col head"
                         AXRole: AXInlineTextBox "col head"
-        AXRole: AXTable "row header and column header (1)"
-            AXRole: AXCaption
-                AXRole: AXStaticText "row header and column header (1)"
-                    AXRole: AXInlineTextBox "row header and column header (1)"
+    AXRole: AXTable "row header and column header (1)"
+        AXRole: AXCaption
+            AXRole: AXStaticText "row header and column header (1)"
+                AXRole: AXInlineTextBox "row header and column header (1)"
+        AXRole: AXRowGroup
             AXRole: AXRow
                 AXRole: AXCell "data"
                     AXRole: AXStaticText "data"
@@ -94,10 +93,11 @@ AXRole: AXWebArea
                 AXRole: AXRowHeader "row head"
                     AXRole: AXStaticText "row head"
                         AXRole: AXInlineTextBox "row head"
-        AXRole: AXTable "row header and column header (2)"
-            AXRole: AXCaption
-                AXRole: AXStaticText "row header and column header (2)"
-                    AXRole: AXInlineTextBox "row header and column header (2)"
+    AXRole: AXTable "row header and column header (2)"
+        AXRole: AXCaption
+            AXRole: AXStaticText "row header and column header (2)"
+                AXRole: AXInlineTextBox "row header and column header (2)"
+        AXRole: AXRowGroup
             AXRole: AXRow
                 AXRole: AXRowHeader "row head"
                     AXRole: AXStaticText "row head"
@@ -128,10 +128,11 @@ AXRole: AXWebArea
                 AXRole: AXCell "data"
                     AXRole: AXStaticText "data"
                         AXRole: AXInlineTextBox "data"
-        AXRole: AXTable "row header and column header (3)"
-            AXRole: AXCaption
-                AXRole: AXStaticText "row header and column header (3)"
-                    AXRole: AXInlineTextBox "row header and column header (3)"
+    AXRole: AXTable "row header and column header (3)"
+        AXRole: AXCaption
+            AXRole: AXStaticText "row header and column header (3)"
+                AXRole: AXInlineTextBox "row header and column header (3)"
+        AXRole: AXRowGroup
             AXRole: AXRow
                 AXRole: AXCell
                 AXRole: AXColumnHeader "col head"
@@ -154,10 +155,11 @@ AXRole: AXWebArea
                 AXRole: AXCell "data"
                     AXRole: AXStaticText "data"
                         AXRole: AXInlineTextBox "data"
-        AXRole: AXTable "row header and column header (4)"
-            AXRole: AXCaption
-                AXRole: AXStaticText "row header and column header (4)"
-                    AXRole: AXInlineTextBox "row header and column header (4)"
+    AXRole: AXTable "row header and column header (4)"
+        AXRole: AXCaption
+            AXRole: AXStaticText "row header and column header (4)"
+                AXRole: AXInlineTextBox "row header and column header (4)"
+        AXRole: AXRowGroup
             AXRole: AXRow
                 AXRole: AXRowHeader "row head"
                     AXRole: AXStaticText "row head"
@@ -169,8 +171,6 @@ AXRole: AXWebArea
                 AXRole: AXRowHeader "row head"
                     AXRole: AXStaticText "row head"
                         AXRole: AXInlineTextBox "row head"
-        AXRole: AXParagraph
-            AXRole: AXStaticText "End of test"
 
 PASS successfullyParsed is true
 

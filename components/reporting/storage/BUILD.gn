@@ -1,0 +1,197 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+static_library("storage_configuration") {
+  sources = [
+    "storage_configuration.cc",
+    "storage_configuration.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
+static_library("storage_uploader_interface") {
+  sources = [
+    "storage_uploader_interface.cc",
+    "storage_uploader_interface.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_proto",
+  ]
+}
+
+static_library("storage_queue") {
+  sources = [
+    "storage_queue.cc",
+    "storage_queue.h",
+  ]
+
+  deps = [
+    ":storage_configuration",
+    ":storage_uploader_interface",
+    "//base",
+    "//components/reporting/compression:compression_module",
+    "//components/reporting/encryption:encryption_module_interface",
+    "//components/reporting/encryption:verification",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/resources:resource_interface",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+    "//components/reporting/util:task_runner_context",
+    "//crypto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+static_library("storage") {
+  sources = [
+    "storage.cc",
+    "storage.h",
+  ]
+
+  public_deps = [ ":storage_configuration" ]
+
+  deps = [
+    ":storage_queue",
+    ":storage_uploader_interface",
+    "//base",
+    "//components/reporting/compression:compression_module",
+    "//components/reporting/encryption:encryption_module",
+    "//components/reporting/encryption:encryption_module_interface",
+    "//components/reporting/encryption:primitives",
+    "//components/reporting/encryption:verification",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+    "//components/reporting/util:task_runner_context",
+    "//crypto",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+static_library("storage_module_interface") {
+  sources = [
+    "storage_module_interface.cc",
+    "storage_module_interface.h",
+  ]
+  deps = [
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+  ]
+}
+
+static_library("storage_module") {
+  sources = [
+    "storage_module.cc",
+    "storage_module.h",
+  ]
+
+  public_deps = [ ":storage_configuration" ]
+
+  deps = [
+    ":storage",
+    ":storage_module_interface",
+    ":storage_uploader_interface",
+    "//base",
+    "//components/reporting/compression:compression_module",
+    "//components/reporting/encryption:encryption_module",
+    "//components/reporting/encryption:encryption_module_interface",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+  ]
+}
+
+static_library("missive_storage_module") {
+  sources = [
+    "missive_storage_module.cc",
+    "missive_storage_module.h",
+    "missive_storage_module_delegate_impl.cc",
+    "missive_storage_module_delegate_impl.h",
+  ]
+
+  public_deps = [ ":storage_configuration" ]
+
+  deps = [
+    ":storage",
+    ":storage_module_interface",
+    ":storage_uploader_interface",
+    "//base",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/util:status",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+  sources = [
+    "test_storage_module.cc",
+    "test_storage_module.h",
+  ]
+  public_deps = [
+    ":storage",
+    ":storage_configuration",
+    ":storage_module",
+    ":storage_queue",
+    "//components/reporting/proto:record_constants",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/storage:storage_module_interface",
+    "//components/reporting/util:status",
+  ]
+  deps = [
+    "//base",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+# All unit tests are built as part of the //components:components_unittests
+# target and must be one targets named "unit_tests".
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "storage_queue_stress_test.cc",
+    "storage_queue_unittest.cc",
+    "storage_unittest.cc",
+  ]
+  deps = [
+    ":storage",
+    ":storage_configuration",
+    ":storage_module",
+    ":storage_queue",
+    ":storage_uploader_interface",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/reporting/compression:compression_module",
+    "//components/reporting/compression:test_support",
+    "//components/reporting/encryption:decryption",
+    "//components/reporting/encryption:encryption",
+    "//components/reporting/encryption:encryption_module",
+    "//components/reporting/encryption:encryption_module_interface",
+    "//components/reporting/encryption:test_support",
+    "//components/reporting/encryption:testing_primitives",
+    "//components/reporting/proto:record_proto",
+    "//components/reporting/resources:resource_interface",
+    "//components/reporting/util:status",
+    "//components/reporting/util:status_macros",
+    "//components/reporting/util:test_callbacks_support",
+    "//crypto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

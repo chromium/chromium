@@ -1,0 +1,2624 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Enterprise histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="CleanupHandler">
+  <variant name="BrowsingData" summary="Handler for browsing data"/>
+  <variant name="Clipboard" summary="Handler for clipboard"/>
+  <variant name="Extension" summary="Handler for extensions"/>
+  <variant name="Files" summary="Handler for files"/>
+  <variant name="OpenWindows" summary="Handler for open browser windows"/>
+  <variant name="PrintJobs" summary="Handler for print jobs"/>
+</variants>
+
+<variants name="Enterprise_RemoteCommandType">
+  <variant name=".BrowserClearBrowsingData" summary="Clear Browsing Data"/>
+  <variant name=".CommandEchoTest" summary="Command echo test"/>
+  <variant name=".DeviceFetchStatus" summary="Fetch status"/>
+  <variant name=".DeviceGetAvailableDiagnosticRoutines"
+      summary="Get available diagnostic routines"/>
+  <variant name=".DeviceGetDiagnosticRoutineUpdate"
+      summary="Get diagnostic routine update"/>
+  <variant name=".DeviceReboot" summary="Reboot"/>
+  <variant name=".DeviceRefreshEnterpriseMachineCertificate"
+      summary="Refresh enterprise machine certificate"/>
+  <variant name=".DeviceRemotePowerwash" summary="Powerwash"/>
+  <variant name=".DeviceResetEuicc" summary="Reset EUICC"/>
+  <variant name=".DeviceRunDiagnosticRoutine" summary="Run diagnostic routine"/>
+  <variant name=".DeviceScreenshot" summary="Screenshot"/>
+  <variant name=".DeviceSetVolume" summary="Set volume"/>
+  <variant name=".DeviceStartCrdSession" summary="Device start CRD session"/>
+  <variant name=".DeviceWipeUsers" summary="Wipe users"/>
+  <variant name=".UserArcCommand" summary="ARC command"/>
+</variants>
+
+<variants name="EnterpriseAutoEnrollmentType">
+  <variant name=".ForcedReenrollment" summary="Forced Re-Enrollment"/>
+  <variant name=".InitialEnrollment" summary="Initial Enrollment Exchange"/>
+</variants>
+
+<variants name="PolicyLevel">
+  <variant name="Mandatory" summary="Mandatory Policy"/>
+  <variant name="Recommended" summary="Recommended Policy"/>
+</variants>
+
+<histogram name="Enterprise.AccountStatusCheckResult"
+    enum="EnterpriseAccountStatus" expires_after="2022-05-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Recorded when user enters their account on license packged device during
+    enrollment process.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ActiveDirectoryJoin"
+    enum="ActiveDirectoryDomainJoinType" expires_after="M104">
+  <owner>fsandrade@chromium.org</owner>
+  <owner>tomdobro@chromium.org</owner>
+  <summary>
+    The way device is joined to the Active Directory domain. This will be
+    recorded during successful enterprise enrollment and domain join.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.AppRestrictionLoadTime2" units="ms"
+    expires_after="2021-04-04">
+  <owner>twellington@google.com</owner>
+  <owner>tedchcoc@chromium.org</owner>
+  <summary>
+    Records the time it takes to retrieve applicaton restrictions from the
+    system. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.AppRestrictionLoadTime2.EmptyBundle" units="ms"
+    expires_after="2021-08-09">
+  <owner>twellington@google.com</owner>
+  <owner>tedchcoc@chromium.org</owner>
+  <summary>
+    Records the time it takes to retrieve applicaton restrictions from the
+    system when the retrieved Bundle is empty. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.AppRestrictionLoadTime2.NonEmptyBundle" units="ms"
+    expires_after="2021-08-09">
+  <owner>twellington@google.com</owner>
+  <owner>tedchcoc@chromium.org</owner>
+  <summary>
+    Records the time it takes to retrieve applicaton restrictions from the
+    system when the retrieved Bundle is not empty. Android only.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.AttributesTPMConsistency"
+    enum="EnterpriseAttributesTPMConsistencyType" expires_after="never">
+<!-- expires-never: Needed for health check. -->
+
+  <owner>igorcov@chromium.org</owner>
+  <owner>vsavu@chromium.org</owner>
+  <summary>
+    Consistency between TPM lock state and absence/presence of install
+    attributes at boot.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentBucketDownloadTime{EnterpriseAutoEnrollmentType}"
+    units="ms" expires_after="2021-12-26">
+  <owner>pmarko@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Duration of the bucket download part of the auto-enrollment protocol.
+    {EnterpriseAutoEnrollmentType}
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentExtraTime{EnterpriseAutoEnrollmentType}"
+    units="ms" expires_after="2021-03-01">
+  <owner>pmarko@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Time since the user logged in until the auto-enrollment protocol completed.
+    0 is sampled when the protocol is done by the time the user logs in.
+    {EnterpriseAutoEnrollmentType}
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentHashDanceSuccessTime{EnterpriseAutoEnrollmentType}"
+    units="ms" expires_after="2022-01-09">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Duration of the hash dance to determine enrollment state of the device. Only
+    recorded if the hash dance finished successfully.
+    {EnterpriseAutoEnrollmentType}
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentPrivateSetMembershipHashDanceComparison"
+    enum="PrivateSetMembershipHashDanceComparison" expires_after="2022-01-02">
+  <obsolete>
+    Removed in Aug 2021 since the data is no longer required after PSM became
+    the source of truth for initial enrollment in M94.
+  </obsolete>
+  <owner>amraboelkher@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <summary>
+    Comparison of hash dance and private set membership results used to
+    determine the initial enrollment state of the device.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipRequestStatus"
+    enum="PrivateSetMembershipStatus" expires_after="2021-10-31">
+  <obsolete>
+    Deprecated since June 2021 and replaced with
+    Enterprise.AutoEnrollmentPsmResult.
+  </obsolete>
+  <owner>amraboelkher@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <summary>
+    The status of a private set membership request. This request is used to
+    determine the initial enrollment state of the device.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.AutoEnrollmentPrivateSetMembershipSuccessTime"
+    units="ms" expires_after="2022-04-10">
+  <owner>amraboelkher@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <summary>
+    Duration of the private set membership request to determine enrollment state
+    of the device. Only recorded if it finished successfully.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentProtocolTime{EnterpriseAutoEnrollmentType}"
+    units="ms" expires_after="2022-01-09">
+  <owner>pmarko@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Total duration time of the auto-enrollment protocol.
+    {EnterpriseAutoEnrollmentType}
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentPsmDmServerRequestStatus{EnterpriseAutoEnrollmentType}"
+    enum="EnterpriseDeviceManagementStatus" expires_after="2022-10-31">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Device management server request status for auto-enrollment PSM requests.
+    {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2021-10-31 until
+    2021-11-09.
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentPsmHashDanceDifferentResultsComparison"
+    enum="PsmHashDanceDifferentResultsComparison" expires_after="2022-03-01">
+  <obsolete>
+    Removed in Aug 2021 since the data is no longer required after PSM became
+    the source of truth for initial enrollment in M94.
+  </obsolete>
+  <owner>amraboelkher@google.com</owner>
+  <owner>mpolzer@google.com</owner>
+  <summary>
+    Comparison of hash dance and private set membership results used to
+    determine the initial enrollment state of the device. Only recorded after
+    both protocols have been executed successfully with different results.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentPsmRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
+    enum="NetErrorCodes" expires_after="2022-10-31">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Network error code (if applicable) for auto-enrollment PSM requests.
+    {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2021-10-31 until
+    2021-11-09.
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentPsmResult{EnterpriseAutoEnrollmentType}"
+    enum="PsmResult" expires_after="2022-10-31">
+  <owner>amraboelkher@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    All possible PSM protocol results after it has executed succcessfully or
+    terminated due to an error or timeout. This request is used to determine the
+    initial enrollment state of the device. {EnterpriseAutoEnrollmentType}
+
+    The histogram was expired (not recording data) from 2021-10-31 until
+    2021-11-09.
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentRequestNetworkErrorCode{EnterpriseAutoEnrollmentType}"
+    enum="NetErrorCodes" expires_after="2021-12-19">
+  <owner>pmarko@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Network error code (if applicable) for auto-enrollment requests.
+    {EnterpriseAutoEnrollmentType}
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.AutoEnrollmentRequestStatus{EnterpriseAutoEnrollmentType}"
+    enum="EnterpriseDeviceManagementStatus" expires_after="2021-12-12">
+  <owner>pmarko@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    URL fetcher status for auto-enrollment requests.
+    {EnterpriseAutoEnrollmentType}
+  </summary>
+  <token key="EnterpriseAutoEnrollmentType"
+      variants="EnterpriseAutoEnrollmentType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram base="true" name="Enterprise.BrowserSigninIOS.SignedOutByPolicy"
+    enum="BooleanHit" expires_after="2021-06-30">
+  <owner>gujen@google.com</owner>
+  <owner>goanuj@google.com</owner>
+  <summary>
+    Recorded when a signed-in user is automatically signed out of the browser
+    due to the BrowserSignin policy being set to 0 (sign-in disabled) by their
+    organization. The sample is always recorded as true.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Enterprise.BrowserSigninIOS.SignInInterruptedByPolicy"
+    enum="BooleanHit" expires_after="2021-06-30">
+  <owner>gujen@google.com</owner>
+  <owner>goanuj@google.com</owner>
+  <summary>
+    Recorded when a user is in the process of signing in to the browser, but is
+    interrupted due to the BrowserSignin policy being set to 0 (sign-in
+    disabled) by their organization. The sample is always recorded as true.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Enterprise.CachedDevicePolicyDeviceIdValidity"
+    enum="EnterprisePolicyDeviceIdValidity" expires_after="M95">
+  <owner>emaxx@chromium.org</owner>
+  <owner>rodmartin@chromium.org</owner>
+  <summary>
+    Result of the device ID validation in the device policy blob for those which
+    were loaded from disk. This validation happens on enrolled devices on
+    startup, on scheduled policy reloads that happen every few hours, and on
+    forced policy reloads.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMPolicyInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-01-01">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Events for counting CBCM policy invalidations received with and without
+    payloads. Invalidations indicate that a policy has been updated and should
+    be refreshed. Payloads provide context about the policy update, but may be
+    absent if dropped by the invalidation service.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMPolicyRefresh" enum="EnterprisePolicyRefresh"
+    expires_after="2022-04-24">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing CBCM policy when invalidations
+    are received from a service. For each refresh, indicates whether the policy
+    changed, and whether the policy was invalidated at the time of the refresh.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRealTimeReportEnqueue"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
+  <summary>
+    Recorded when real time report enter the queue. It indicates whether the
+    report is pushed to the queue successfully or not.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRealTimeReportQueueConfigurationCreation"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
+  <summary>
+    Recorded when real time report queue is created. It indicates whether the
+    configuration is created successfully or not.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRealTimeReportQueueCreation"
+    enum="EnterpriseCloudReportingStatusCode" expires_after="2022-10-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
+  <summary>
+    Recorded when real time report queue is created. It indicates whether the
+    queue is created successfully or not.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRemoteCommand.Executed"
+    enum="RemoteCommandExecutionStatus" expires_after="2022-01-01">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Events for counting status of executed CBCM remote commands. The metric
+    includes only signed CBCM remote commands. Reports a final status of
+    finished remote command (e.g. success, failure or termination).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRemoteCommand.Executed.Unsigned"
+    enum="RemoteCommandExecutionStatus" expires_after="2022-01-01">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Events for counting status of executed CBCM remote commands. The metric
+    includes only unsigned CBCM remote commands. Reports a final status of
+    finished remote command (e.g. success, failure or termination).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRemoteCommand.Received"
+    enum="RemoteCommandReceivedStatus" expires_after="2022-01-01">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Events for counting received CBCM remote commands. The metric includes
+    signed CBCM remote commands, both valid and invalid. Valid remote command is
+    counted by its type. Invalid remote command is counted by a reason why it is
+    considered invalid (e.g. unknown type or duplication).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRemoteCommand.Received.Unsigned"
+    enum="RemoteCommandReceivedStatus" expires_after="2022-01-01">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Events for counting received CBCM remote commands. The metric includes
+    unsigned CBCM remote commands, both valid and invalid. Valid remote command
+    is counted by its type. Invalid remote command is counted by a reason why it
+    is considered invalid (e.g. unknown type or duplication).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CBCMRemoteCommandInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-01-01">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>cbe-eng@google.com</owner>
+  <summary>
+    Events for counting CBCM remote commands invalidations received with and
+    without payloads. Invalidations indicate that there is a remote command to
+    execute. Payloads provide context about the remote commands update, but may
+    be absent if dropped by the invalidation service.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CloudExtensionRequestUpdated"
+    enum="EnterpriseCloudExtensionRequestListUpdate" expires_after="2022-10-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
+  <summary>
+    Recorded when cloud extension request pending list is updated. Note that
+    when multiple requests are added or removed together, there will be only one
+    event recorded.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CloudReportingBasicRequestSize" units="KB"
+    expires_after="2022-04-17">
+  <owner>zmin@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    The proto size of the basic Chrome browser cloud management reporting
+    request. When a report is separated into multiple requests, all of them
+    contain the basic request.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CloudReportingRequestCount" units="requests"
+    expires_after="2022-04-24">
+  <owner>zmin@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    The number of request for one Chrome browser cloud management report. A
+    report is separated into multiple requests when it's too large.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CloudReportingRequestSize" units="KB"
+    expires_after="2022-04-24">
+  <owner>zmin@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    The proto size of each Chrome browser cloud management reporting request. It
+    includes the requests which are more than 5MB and discarded.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CloudReportingResponse"
+    enum="EnterpriseCloudReportingResponse" expires_after="2022-04-17">
+  <owner>zmin@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    The upload result for each cloud reporting request. Note that there may be
+    multiple requests per report. Also, one request may creates multiple data
+    point due to retry.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.CloudReportingUploadTrigger"
+    enum="ReportSchedulerReportTrigger" expires_after="never">
+<!-- expires-never: this provides a generally useful signal regarding enterprise report uploads. -->
+
+  <owner>grt@chromium.org</owner>
+  <owner>src/chrome/browser/enterprise/reporting/OWNERS</owner>
+  <summary>
+    The trigger detected by the ReportScheduler responsible that led to an
+    attempt to upload an enterprise report.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceLocalAccountPolicyInvalidations2"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting device local account policy invalidations received with
+    and without payloads. Invalidations indicate that a policy has been updated
+    and should be refreshed. Payloads provide context about the policy update,
+    but may be absent if dropped by the invalidation service.
+
+    As opposed to current histogram, Enterprise.DevicePolicyInvalidations2
+    counts only events of device policy invalidations.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceLocalAccountPolicyRefresh3"
+    enum="EnterprisePolicyRefresh" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing device local account policy
+    when invalidations are received from a service. For each refresh, indicates
+    whether the policy changed, and whether the policy was invalidated at the
+    time of the refresh.
+
+    As opposed to current histogram, Enterprise.DevicePolicyRefresh3 counts only
+    events of refreshing device policies.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.DevicePolicyDeviceIdValidity{EnterpriseDevicePolicyDeviceIdValidity}"
+    enum="EnterprisePolicyDeviceIdValidity" expires_after="M85">
+  <obsolete>
+    Removed in M91 since the data is no longer required.
+  </obsolete>
+  <owner>emaxx@chromium.org</owner>
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Result of the device ID validation in the device policy blob.
+    {EnterpriseDevicePolicyDeviceIdValidity}
+  </summary>
+  <token key="EnterpriseDevicePolicyDeviceIdValidity">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".InitialStore"
+        summary="the initial device policy stored during enrollment">
+      <obsolete>
+        Removed in M91 since the data is no longer required.
+      </obsolete>
+    </variant>
+    <variant name=".Update"
+        summary="the updated device policy that overwrites the previous one">
+      <obsolete>
+        Removed in M91 since the data is no longer required.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DevicePolicyInvalidations2"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting device policy invalidations received with and without
+    payloads. Invalidations indicate that a policy has been updated and should
+    be refreshed. Payloads provide context about the policy update, but may be
+    absent if dropped by the invalidation service.
+
+    As opposed to current histogram,
+    Enterprise.DeviceLocalAccountPolicyInvalidations2 counts only events of
+    device local account policy invalidations.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DevicePolicyRefresh3"
+    enum="EnterprisePolicyRefresh" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing device policy when
+    invalidations are received from a service. For each refresh, indicates
+    whether the policy changed, and whether the policy was invalidated at the
+    time of the refresh.
+
+    As opposed to current histogram, Enterprise.DeviceLocalAccountPolicyRefresh3
+    counts only events of refreshing device local account policies.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.DeviceRemoteCommand.Executed.Unsigned{Enterprise_RemoteCommandType}"
+    enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting status of executed device remote commands. The metric
+    includes only unsigned device remote commands. Reports a final status of
+    finished remote command (e.g. success, failure or termination).
+    {Enterprise_RemoteCommandType}
+  </summary>
+  <token key="Enterprise_RemoteCommandType"
+      variants="Enterprise_RemoteCommandType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.DeviceRemoteCommand.Executed{Enterprise_RemoteCommandType}"
+    enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting status of executed device remote commands. The metric
+    includes only signed device remote commands. Reports a final status of
+    finished remote command (e.g. success, failure or termination).
+    {Enterprise_RemoteCommandType}
+  </summary>
+  <token key="Enterprise_RemoteCommandType"
+      variants="Enterprise_RemoteCommandType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.DeviceRemoteCommand.Received"
+    enum="RemoteCommandReceivedStatus" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting received device remote commands. The metric includes
+    signed device remote commands, both valid and invalid. Valid remote command
+    is counted by its type. Invalid remote command is counted by a reason why it
+    is considered invalid (e.g. unknown type or duplication).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceRemoteCommand.Received.Unsigned"
+    enum="RemoteCommandReceivedStatus" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting received device remote commands. The metric includes
+    unsigned device remote commands, both valid and invalid. Valid remote
+    command is counted by its type. Invalid remote command is counted by a
+    reason why it is considered invalid (e.g. unknown type or duplication).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceRemoteCommandInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting device remote commands invalidations received with and
+    without payloads. Invalidations indicate that there is a remote command to
+    execute. Payloads provide context about the remote commands update, but may
+    be absent if dropped by the invalidation service.
+
+    Metric is similar to Enterprise.DevicePolicyInvalidations2. Device local
+    account scope does not exist for remote commands so there is no metric for
+    remote commands similar to
+    Enterprise.DeviceLocalAccountPolicyInvalidations2.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceSettings.MissingPolicyMitigated"
+    units="BooleanSuccess" expires_after="2022-10-04">
+  <owner>poromov@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Recorded every time policy file is missing or corrupted on Chrome OS. Should
+    be compared to Enterprise.DeviceSettings.UpdatedStatus as happens only if
+    status is STORE_NO_POLICY and device being not managed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceSettings.UpdatedStatus"
+    enum="DeviceSettingsStatus" expires_after="2022-10-04">
+  <owner>poromov@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Recorded every time as DeviceSettingsProvider updates its current state.
+    Used to compare rate of Enterprise.DeviceSettings.MissingPolicyMitigated
+    event.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.RotateSigningKey.Tries" units="tries"
+    expires_after="2022-07-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Recorded when a device attempts to rotate its device trust signing key.
+    Chrome will retry a fixed number of times until the operation either
+    succeeds or fails. A value of 1 means the rotation worked on the first try.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DeviceTrust.RotateSigningKey.{Nonce}.Status"
+    enum="DeviceTrustKeyRotationStatus" expires_after="2022-07-01">
+  <owner>hmare@google.com</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>seblalancette@chromium.org</owner>
+  <summary>
+    Recorded when a device attempts to rotate its device trust signing key.
+    {Nonce}
+  </summary>
+  <token key="Nonce">
+    <variant name="NoNonce"
+        summary="This occurs right after the device is enrolled with CBCM."/>
+    <variant name="WithNonce"
+        summary="This occurs when a device receives a command from the admin
+                 console."/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.Dlp.CaptureModeInitBlocked" enum="BooleanBlocked"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when capture mode initialization was blocked by Data Leak
+    Prevention.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ClipboardReadBlocked" enum="BooleanBlocked"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for a data read from the
+    clipboard.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.DataTransferControllerStarted" enum="Boolean"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when DataTransferController is initialized, meaning that all
+    clipboard and drag-n-drop operations will be affected by Data Leak
+    Prevention checks.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.DataTransferReportingTimeDiff" units="ms"
+    expires_after="2022-05-01">
+  <owner>jkopanski@google.com</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Time difference between current and the latest sent Data Leak Prevention
+    reporting events for data transfers for which sources and destinations are
+    the same.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.DlpPolicyPresent" enum="Boolean"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when non-empty Data Leak Prevention policy is present and due to
+    that Data Leak Prevention infrastructure is initialized on the client.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.DragDropBlocked" enum="BooleanBlocked"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for a drag-n-drop operation.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.FilesDaemonStarted" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention policy contains Files restrictions and
+    DLP Files daemon is started because of that.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.PrintingBlocked" enum="BooleanBlocked"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>Result of Data Leak Prevention evaluation for printing.</summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.PrivacyScreenEnforced" enum="BooleanForced"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when privacy screen was enforced by Data Leak Prevention.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ReportedBlockLevelRestriction"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention event with &quot;block&quot; level was
+    reported. Identifies which restriction was blocked and reported.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ReportedEventStatus" enum="GoogleRpcCode"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of enqueueing Data Leak Prevention event to the reporting queue.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ReportedReportLevelRestriction"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention event with &quot;report&quot; level was
+    reported. Identifies which restriction was reported.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ReportedWarnLevelRestriction"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-05-01">
+  <owner>jkopanski@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention event with &quot;warn&quot; level was
+    reported. Identifies which restriction was reported.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ReportedWarnProceedLevelRestriction"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-05-01">
+  <owner>jkopanski@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when Data Leak Prevention event with &quot;warn&quot; level was
+    reported after a user proceeded with a restricted action. Identifies which
+    restriction was reported.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.RestrictionConfigured"
+    enum="EnterpriseDlpPolicyRestriction" expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Records which types of restrictions are present in Data Leak Prevention
+    policy.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenShareBlocked" enum="BooleanBlocked"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for a screen share.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenSharePausedOrResumed" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when screen share was paused (True) or resumed (False) by Data Leak
+    Prevention.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.ScreenshotBlocked" enum="BooleanBlocked"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for taking a screenshot.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.VideoCaptureBlocked" enum="BooleanBlocked"
+    expires_after="2022-05-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Result of Data Leak Prevention evaluation for a taking a video capture.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Dlp.VideoCaptureInterrupted" enum="Boolean"
+    expires_after="2022-03-01">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-dlp@google.com</owner>
+  <summary>
+    Recorded when video capture was interrupted by Data Leak Prevention.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.DMServerRequestSuccess{EnterpriseDMServerRequest}"
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2021-12-12">
+  <owner>poromov@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Number of retries the client did to execute a DeviceManagementServer
+    request. It's recorded after the request has been completed, either
+    successfully after 0 or more retries, with a failure (too many retries or
+    non-retriable error) or with a server error. {EnterpriseDMServerRequest}
+  </summary>
+  <token key="EnterpriseDMServerRequest">
+    <variant name=""/>
+    <variant name=".ActiveDirectoryEnrollPlayUser"
+        summary="Active Directory Enroll Play User.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".ActiveDirectoryPlayActivity"
+        summary="Active Directory Play Activity.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".AndroidManagementCheck" summary="Android Management Check.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".ApiAuthCodeFetch" summary="Api Auth Code Fetch.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".AttributeUpdate" summary="Attribute Update.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".AttributeUpdatePermission"
+        summary="Attribute Update Permission.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".AutoEnrollment" summary="Auto Enrollment.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".CertBasedRegistration" summary="Cert Based Registration.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".ChromeDesktopReport" summary="Chrome Desktop Report.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".DeviceStateRetrieval" summary="Device State Retrieval.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".GcmIdUpdate" summary="Gcm Id Update.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".InitialEnrollmentStateRetrieval"
+        summary="Initial Enrollment State Retrieval.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".Invalid" summary="Invalid.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".PolicyFetch" summary="Policy Fetch.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".Registration" summary="Registration.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".RemoteCommands" summary="Remote Commands.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".RequestLicenseTypes" summary="Request License Types.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".TokenEnrollment" summary="Token Enrollment.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".Unregistration" summary="Unregistration.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadAppInstallReport"
+        summary="Upload App Install Report.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadCertificate" summary="Upload Certificate.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadPolicyValidationReport"
+        summary="Upload Policy Validation Report.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadrealtimeReport"
+        summary="Upload of real-time reports.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+    <variant name=".UploadStatus" summary="Upload Status.">
+      <owner>poromov@chromium.org</owner>
+      <owner>zmin@chromium.org</owner>
+    </variant>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.EncryptedRealtimeReportingCompressionThresholdCount"
+    enum="CompressedRecordThresholdMetricEvent" expires_after="2022-02-01">
+  <owner>gbj@google.com</owner>
+  <owner>src/components/enterprise/OWNERS</owner>
+  <summary>
+    Enumeration that is recorded when compression is enabled and when the report
+    enters the report queue and before the record is encrypted. The enumeration
+    keeps track of how many records are under the compression threshold and are
+    not compressed.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.EncryptedRealtimeReportingSnappyCompressedRecordSize"
+    units="KB" expires_after="2022-02-01">
+  <owner>gbj@google.com</owner>
+  <owner>src/components/enterprise/OWNERS</owner>
+  <summary>
+    The size of a WrappedRecord after it is compressed with snappy. This metric
+    is recorded when the report enters the report queue and before the record is
+    encrypted.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.EncryptedRealtimeReportingSnappyUncompressedRecordSize"
+    units="KB" expires_after="2022-02-01">
+  <owner>gbj@google.com</owner>
+  <owner>src/components/enterprise/OWNERS</owner>
+  <summary>
+    The size of a WrappedRecord before it is compressed with snappy. This metric
+    is recorded when the report enters the report queue and before the record is
+    encrypted.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrolledPolicyHasDMToken" enum="Boolean"
+    expires_after="never">
+<!-- expires-never: Used for monitoring the health of device policy. -->
+
+  <owner>igorcov@chromium.org</owner>
+  <owner>vsavu@chromium.org</owner>
+  <summary>
+    Whether loading of device policy from file on an enterprise-enrolled
+    (checked against install_attributes.pb) Chrome OS device yields an
+    enterprise policy with a DM token. Filled once during session startup, after
+    first successful device policy read.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Enrollment" enum="EnterpriseEnrollmentType"
+    expires_after="2022-04-03">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to device enrollment on new installs of Chrome OS devices.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentAttestationBased"
+    enum="EnterpriseEnrollmentType" expires_after="2021-12-05">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to attestation-based enrollment (Zero-Touch) of Chrome OS
+    devices.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentConfiguration"
+    enum="EnterpriseEnrollmentType" expires_after="2021-10-01">
+  <obsolete>
+    Removed 2021/07.
+  </obsolete>
+  <owner>antrim@chromium.org</owner>
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to Chrome OS enterprise enrollment automated by OOBE
+    configuration.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentForced" enum="EnterpriseEnrollmentType"
+    expires_after="2022-05-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to forced re-enrollment (FRE) of Chrome OS devices.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentForcedAttestationBased"
+    enum="EnterpriseEnrollmentType" expires_after="2022-05-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to attestation-based re-enrollment (Auto RE) of Chrome OS
+    devices.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentForcedInitial"
+    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to forced initial enrollment of Chrome OS devices during the
+    first startup of a device.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentForcedInitialAttestationBased"
+    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to attestation-based initial enrollment (Zero-Touch) of
+    Chrome OS devices during the first startup of a device.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentForcedInitialManualFallback"
+    enum="EnterpriseEnrollmentType" expires_after="2022-02-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>pmarko@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to manual fallback from attestation-based initial enrollment
+    (Zero-Touch) of Chrome OS devices during the first startup of a device.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentForcedManualFallback"
+    enum="EnterpriseEnrollmentType" expires_after="2021-12-05">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to manual fallback from attestation-based re-enrollment (Auto
+    RE) of Chrome OS devices.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentRecovery" enum="EnterpriseEnrollmentType"
+    expires_after="2022-02-01">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Events related to Chrome OS enterprise enrollment recovery. Note that this
+    only covers cases in which prior to recovery, the &quot;private owner&quot;
+    of the device had UMA stats enabled.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentTime.Cancel" units="ms"
+    expires_after="2022-04-24">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Elapsed time from *after* GAIA login until enrollment was cancelled.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentTime.Failure" units="ms"
+    expires_after="2022-04-17">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Elapsed time from *after* GAIA login until enrollment failed.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnrollmentTime.Success" units="ms"
+    expires_after="2022-04-10">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Elapsed time from *after* GAIA login until enrollment succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnterCriticalPolicySectionDelay.Total" units="ms"
+    expires_after="2022-04-10">
+  <owner>grt@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Elapsed time taken to acquire each lock to access policies in the Windows
+    registry (at user scope and then at machine scope). This metric is recorded
+    shortly after browser startup once with the combined wait time for both
+    locks regardless of success or failure.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.EnterCriticalPolicySectionDelay.{Scope}.{Result}"
+    units="ms" expires_after="2021-12-31">
+  <owner>grt@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Elapsed time taken to acquire the lock to access policies in the Windows
+    registry. The success or failure variant of this metric is recorded once for
+    user scope and then once for machine scope shortly after browser startup.
+  </summary>
+  <token key="Scope">
+    <variant name="Machine"/>
+    <variant name="User"/>
+  </token>
+  <token key="Result">
+    <variant name="Failed"/>
+    <variant name="Succeeded"/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.EnterCriticalPolicySectionError"
+    enum="WinGetLastError" expires_after="2022-04-10">
+  <owner>grt@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Windows error code following a failure to acquire the lock to access
+    policies in the Windows registry shortly after browser startup.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ExistingInstallAttributesLock"
+    enum="EnterpriseExistingInstallAttributesLockType"
+    expires_after="2020-07-01">
+  <obsolete>
+    Removed 2020/11.
+  </obsolete>
+  <owner>emaxx@chromium.org</owner>
+  <owner>poromov@chromium.org</owner>
+  <owner>rsorokin@chromium.org</owner>
+  <summary>
+    Chrome OS only. Whether the successful locking of install attributes reused
+    the previously existing locked attributes, or a fresh lock has being held.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FCMInvalidationService.CBCMPolicyInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-05-01">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-enterprise-team-core@google.com</owner>
+  <summary>
+    Events for counting CBCM policy invalidations received with and without
+    payloads. Invalidations indicate that a policy has been updated and should
+    be refreshed. Payloads provide context about the policy update, but may be
+    absent if dropped by the invalidation service. Subset of
+    &quot;Enterprise.CBCMPolicyInvalidations&quot;. Gets recorded only when
+    FCMInvalidationService is used as InvalidationService.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FCMInvalidationService.CBCMPolicyRefresh"
+    enum="EnterprisePolicyRefresh" expires_after="2022-01-01">
+  <owner>anthonyvd@chromium.org</owner>
+  <owner>chrome-enterprise-team-core@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing CBCM policy when invalidations
+    are received from a service. For each refresh, indicates whether the policy
+    changed, and whether the policy was invalidated at the time of the refresh.
+    Subset of &quot;Enterprise.CBCMPolicyRefresh&quot;. Gets recorded only when
+    FCMInvalidationService is used as InvalidationService.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyInvalidations2"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting device local account policy invalidations received with
+    and without payloads. Invalidations indicate that a policy has been updated
+    and should be refreshed. Payloads provide context about the policy update,
+    but may be absent if dropped by the invalidation service. Subset of
+    &quot;Enterprise.DeviceLocalAccountPolicyInvalidations2&quot;. Gets recorded
+    only when FCMInvalidationService is used as InvalidationService.
+
+    As opposed to current histogram,
+    Enterprise.FCMInvalidationService.DevicePolicyInvalidations2 counts only
+    events of device policy invalidations.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyRefresh3"
+    enum="EnterprisePolicyRefresh" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing device local account policy
+    when invalidations are received from a service. For each refresh, indicates
+    whether the policy changed, and whether the policy was invalidated at the
+    time of the refresh. Subset of
+    &quot;Enterprise.DeviceLocalAccountPolicyRefresh3&quot;. Gets recorded only
+    when FCMInvalidationService is used as InvalidationService.
+
+    As opposed to current histogram,
+    Enterprise.FCMInvalidationService.DevicePolicyRefresh3 counts only events of
+    refreshing device policies.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FCMInvalidationService.DevicePolicyInvalidations2"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting device policy invalidations received with and without
+    payloads. Invalidations indicate that a policy has been updated and should
+    be refreshed. Payloads provide context about the policy update, but may be
+    absent if dropped by the invalidation service. Subset of
+    &quot;Enterprise.DevicePolicyInvalidations2&quot;. Gets recorded only when
+    FCMInvalidationService is used as InvalidationService.
+
+    As opposed to current histogram,
+    Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyInvalidations2
+    counts only events of device local account policy invalidations.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FCMInvalidationService.DevicePolicyRefresh3"
+    enum="EnterprisePolicyRefresh" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing device policy when
+    invalidations are received from a service. For each refresh, indicates
+    whether the policy changed, and whether the policy was invalidated at the
+    time of the refresh. Subset of &quot;Enterprise.DevicePolicyRefresh3&quot;.
+    Gets recorded only when FCMInvalidationService is used as
+    InvalidationService.
+
+    As opposed to current histogram,
+    Enterprise.FCMInvalidationService.DeviceLocalAccountPolicyRefresh3 counts
+    only events of refreshing device local account policies.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FCMInvalidationService.PolicyInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting user policy invalidations received with and without
+    payloads. Invalidations indicate that a policy has been updated and should
+    be refreshed. Payloads provide context about the policy update, but may be
+    absent if dropped by the invalidation service. Subset of
+    &quot;Enterprise.PolicyInvalidations&quot;. Gets recorded only when
+    FCMInvalidationService is used as InvalidationService.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.FCMInvalidationService.PolicyInvalidationsRegistrationResult"
+    enum="BooleanSuccess" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Tracks the result of registration for policy invalidations. It will fail
+    when duplicate invalidation names are used for different policies due to
+    http://b/119860379. Subset of
+    &quot;Enterprise.PolicyInvalidationsRegistrationResult&quot;. Gets recorded
+    only when FCMInvalidationService is used as InvalidationService.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FCMInvalidationService.PolicyRefresh2"
+    enum="EnterprisePolicyRefresh" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing user policy when invalidations
+    are received from a service. For each refresh, indicates whether the policy
+    changed, and whether the policy was invalidated at the time of the refresh.
+    Subset of &quot;Enterprise.PolicyRefresh2&quot;. Gets recorded only when
+    FCMInvalidationService is used as InvalidationService.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FileSystem.DownloadsRouting"
+    enum="EnterpriseFileSystemDownloadsRoutingDestination"
+    expires_after="2022-01-30">
+  <owner>alicego@google.com</owner>
+  <owner>rogerta@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <summary>
+    The intended routing destination of each downloaded item when the Enterprise
+    Filesystem connector is enabled. Each file is either not routed to any cloud
+    provider, or routed to Box. Gets recorded every time a file is downloaded
+    with the filesystem connector enabled, whether or not the file is eventually
+    uploaded to the cloud.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FileSystem.DownloadsRouting.Box"
+    enum="EnterpriseFileSystemDownloadsRoutingStatus"
+    expires_after="2022-01-30">
+  <owner>alicego@google.com</owner>
+  <owner>rogerta@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <summary>
+    The final result of a file routed to Box by the filesystem connector. The
+    file routing may a) succeed b) be canceled by the user c) fail due to a Box
+    error d) fail due to a browser error, e) fail due to a file error OR f) fail
+    due to a network error. Gets recorded every time a file is downloaded with
+    the filesystem connector enabled, whether or not the file is eventually
+    uploaded to the cloud.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FileSystem.Uniquifier"
+    enum="EnterpriseFilesystemUploadAttemptCount" expires_after="2022-01-30">
+  <owner>alicego@google.com</owner>
+  <owner>mad@google.com</owner>
+  <owner>rogerta@google.com</owner>
+  <owner>xanth@google.com</owner>
+  <summary>
+    The number of alternate filenames tried to avoid a filename collision when
+    uploading to the cloud storage provider. If there is a collision filenames
+    of the form &quot;filename (%d).ext&quot; are used for
+    &quot;filename.ext&quot;, and after 10 retries we fallback to a timestamp
+    based name &quot;filename - YYYY-MM-ddTHHMMss.SSS UTC+HHmm.ext&quot;, and
+    abandon if that fails.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FirstRun.AppRestrictionLoadTime" units="ms"
+    expires_after="2022-01-09">
+  <owner>wenyufu@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <summary>
+    Records the time it takes to retrieve applicaton restrictions from the
+    system using an AsyncTask. Recording during first run experience on Android
+    only.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.FirstRun.AppRestrictionLoadTime.Medium" units="ms"
+    expires_after="2022-04-24">
+  <owner>skym@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>wenyufu@chromium.org</owner>
+  <summary>
+    Records the time it takes to retrieve applicaton restrictions from the
+    system using an AsyncTask. Recording during first run experience on Android
+    only. Has a bigger range (0-3 minutes) than the non-Medium version.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.HeartbeatSignalSuccess" enum="BooleanSuccess"
+    expires_after="2020-08-01">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>igorcov@chromium.org</owner>
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Result of a single attempt to signal a device heartbeat, which is used for
+    monitoring the device connectivity. By default heartbeats per a single
+    device are sent every 2 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.InitialEnrollmentRequirement"
+    enum="EnterpriseInitialEnrollmentRequirement" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>pmarko@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Chrome OS only. Encodes if initial enrollment should be done, and if not,
+    why. This histogram is recorded when the Auto Enrollment Check screen is
+    reached in the Chrome OS Out Of The Box Experience (OOBE) sequence and the
+    device has not been enrolled or in consumer mode before, i.e. when the
+    'check_enrollment' and 'ActivateDate' VPD keys are not present.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.InvalidDevicePolicyFilesStatus"
+    enum="InvalidDevicePolicyFilesStatus" expires_after="2022-04-17">
+  <owner>emaxx@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <owner>vsavu@google.com</owner>
+  <summary>
+    Chrome OS only. Result of checking if device policy files are valid when
+    reading the device policy data.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.IOSPolicies" units="units" expires_after="M85">
+  <owner>mnissler@chromium.org</owner>
+  <summary>
+    Number of policies loaded at startup on iOS, and when a change is detected
+    at runtime.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.LockToSingleUserResult"
+    enum="LockToSingleUserResult" expires_after="M86">
+  <obsolete>
+    Removed in M91, enough data has been gathered.
+  </obsolete>
+  <owner>emaxx@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Chrome OS only. The result of D-Bus call to lock device to single user.
+    Estimated that till version M86 we should get enough stats to understand if
+    there are big problems with the D-Bus call.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Success"
+    enum="BooleanSuccess" expires_after="2022-12-31">
+  <owner>jityao@google.com</owner>
+  <owner>hendrich@chromium.org</owner>
+  <summary>ChromeOS only. Records if cleanup handler succeeded.</summary>
+  <token key="CleanupHandler" variants="CleanupHandler"/>
+</histogram>
+
+<histogram name="Enterprise.LoginApiCleanup.{CleanupHandler}.Timing" units="ms"
+    expires_after="2022-12-31">
+  <owner>jityao@google.com</owner>
+  <owner>hendrich@chromium.org</owner>
+  <summary>
+    ChromeOS only. Records the duration the cleanup handler took.
+  </summary>
+  <token key="CleanupHandler" variants="CleanupHandler"/>
+</histogram>
+
+<histogram
+    name="Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestFailureTime"
+    units="ms" expires_after="2022-06-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Time since the enrollment request was made until an error is returned from
+    the server.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestSuccessTime"
+    units="ms" expires_after="2022-06-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Time since the enrollment request was made until a successful enrollment
+    response is returned from the server.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.MachineLevelUserCloudPolicyEnrollment.Result"
+    enum="MachineLevelUserCloudPolicyEnrollmentResult"
+    expires_after="2022-06-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>The result of machine level user cloud policy enrollment.</summary>
+</histogram>
+
+<histogram
+    name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialog"
+    enum="MachineLevelUserCloudPolicyEnrollmentStartupDialog"
+    expires_after="2022-06-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Records whether the machine level user cloud policy enrollment dialog is
+    shown to the user and the action they took.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialogTime"
+    units="ms" expires_after="2022-06-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    The length of time the machine level user cloud policy enrollment dialog was
+    visible to the user.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess"
+    enum="BooleanSuccess" expires_after="2022-06-01">
+  <owner>domfc@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Records whether a browser unenrollment was completed succcessfully by
+    writing an invalid DM token to storage or not.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.MultipartDataPipe.WriteDuration" units="ms"
+    expires_after="2022-06-17">
+  <owner>domfc@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <summary>
+    This metric is recorded every time a file is uploaded for deep scanning. It
+    measures the total duration for a complete writing of the file from the
+    browser process to the network service.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.MultipartDataPipe.WriteRate"
+    units="kilobytes per second" expires_after="2022-06-17">
+  <owner>domfc@chromium.org</owner>
+  <owner>anthonyvd@chromium.org</owner>
+  <summary>
+    This metric is recorded every time a file is uploaded for deep scanning. It
+    measures the writing rate of that file's contents from the browser process
+    to the network service.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.OnBulkDataEntry.DataSize" units="bytes"
+    expires_after="2022-04-24">
+  <owner>domfc@chromium.org</owner>
+  <owner>webprotect-team@google.com</owner>
+  <summary>
+    Records the size (in bytes) of data that might have been scanned by the
+    OnBulkDataEntry Enterprise Connector. Is is logged once per user action that
+    would trigger this Connector.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.ONC.PolicyValidation" enum="BooleanSuccess"
+    expires_after="M85">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Result of the OpenNetworkConfiguration policy validation.</summary>
+</histogram>
+
+<histogram name="Enterprise.Policies" enum="EnterprisePolicies"
+    expires_after="2022-04-24">
+  <owner>mnissler@chromium.org</owner>
+  <summary>
+    A set of enterprise policy rules that are in use. This is recorded every 24
+    hours and at startup, if the last recording was earlier than a day before.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Policies.IgnoredByPolicyGroup"
+    enum="EnterprisePolicies" expires_after="2022-04-24">
+  <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    A set of enterprise policy rules that are ignored because they do not share
+    the highest priority from their policy atomic group. This is recorded at
+    startup, then every 24 hours. If chrome is not running at the 24 hours mark,
+    this will be recorded at the next startup.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Policies.SourceConflicts" enum="PolicyAtomicGroups"
+    expires_after="2021-11-01">
+  <obsolete>
+    Removed in Oct 2021.
+  </obsolete>
+  <owner>ydago@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    A set of policy atomic groups that have at least one policy disabled because
+    of its source. This is recorded at startup, then every 24 hours. If chrome
+    is not running at the 24 hours mark, this will be recorded at the next
+    startup.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.Policies.{PolicyLevel}" enum="EnterprisePolicies"
+    expires_after="2022-03-15">
+  <owner>qiutanw@google.com</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    A set of {PolicyLevel} enterprise policy rules that are in use. This is
+    recorded for each {PolicyLevel} policy every 24 hours and at startup, if the
+    last recording was earlier than a day before.
+  </summary>
+  <token key="PolicyLevel" variants="PolicyLevel"/>
+</histogram>
+
+<histogram name="Enterprise.PolicyHasVerifiedCachedKey"
+    enum="BooleanValidKeyExists" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored
+  </obsolete>
+  <owner>atwilson@chromium.org</owner>
+  <summary>
+    Boolean tracking whether there is a valid policy signing key on disk.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting user policy invalidations received with and without
+    payloads. Invalidations indicate that a policy has been updated and should
+    be refreshed. Payloads provide context about the policy update, but may be
+    absent if dropped by the invalidation service.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyInvalidationsRegistrationResult"
+    enum="BooleanSuccess" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Tracks the result of registration for policy invalidations. It will fail
+    when duplicate invalidation names are used for different policies due to
+    http://b/119860379.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyInvalidationsStartupTime" units="ms"
+    expires_after="M77">
+  <owner>mnissler@chromium.org</owner>
+  <summary>
+    Time since startup of the cloud policy code until the policy invalidation
+    service first reported its online status.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyKeyVerification"
+    enum="EnterprisePolicyKeyVerification" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored
+  </obsolete>
+  <owner>atwilson@chromium.org</owner>
+  <summary>Tracking the results of policy key verification.</summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyLoadStatus" enum="EnterprisePolicyLoadStatus"
+    expires_after="M82">
+  <owner>mnissler@chromium.org</owner>
+  <summary>
+    Load status from the policy loaders which pull policy settings from the
+    underlying platform, such as Windows Group Policy.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyRefresh2" enum="EnterprisePolicyRefresh"
+    expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing user policy when invalidations
+    are received from a service. For each refresh, indicates whether the policy
+    changed, and whether the policy was invalidated at the time of the refresh.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyUpdatePeriod.Device" units="days"
+    expires_after="2022-10-01">
+  <owner>rbock@google.com</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Time since last device policy fetch. Emitted when policies are loaded.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyUpdatePeriod.MachineLevelUser" units="days"
+    expires_after="2022-10-01">
+  <owner>zmin@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    Time since last machine level user policy fetch.. Emitted when policies are
+    loaded.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyUpdatePeriod.User" units="days"
+    expires_after="2022-10-01">
+  <owner>rbock@google.com</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    Time since last user policy fetch. Emitted when policies are loaded.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PolicyUserVerification"
+    enum="EnterprisePolicyUserVerification" expires_after="2022-04-17">
+  <owner>poromov@chromium.org</owner>
+  <owner>chromeos-commercial-stability@google.com</owner>
+  <summary>Tracking the results of policy user verification.</summary>
+</histogram>
+
+<histogram name="Enterprise.PublicSession.ExtensionPermissions"
+    enum="ExtensionPermission3" expires_after="2022-03-01">
+  <owner>anqing@chromium.org</owner>
+  <owner>apotapchuk@chromium.org</owner>
+  <summary>
+    Extensions (and apps) are quite restricted in public sessions for security
+    and privacy concerns - some permissions are blocked which means the
+    extension itself is blocked (prevented from loading). This histogram counts
+    requested permissions on extension installation in public sessions (both
+    installed and blocked extensions).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.PublicSession.SessionLength" units="minutes"
+    expires_after="2021-10-04">
+  <owner>marcgrimme@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    A public session starts when a user signs in using the policy configured
+    public account. It stops when the user signs out. Session length is the
+    duration between the start and stop events. It is recorded during signing
+    out and reported on the next chrome run. This metric tracks the recorded
+    session length rounded down to the nearest 10-minute bucket and capped at 24
+    hours.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.RealtimeReportingSuccess"
+    enum="EnterpriseDMServerRequestSuccess" expires_after="2020-07-01">
+  <owner>rogerta@chromium.org</owner>
+  <summary>
+    Number of retries the client did to execute a real-time reporting upload
+    request. It's recorded after the request has been completed, either
+    successfully after 0 or more retries, with a failure (too many retries or
+    non-retriable error) or with a server error.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.RegularUserSession.SessionLength" units="minutes"
+    expires_after="2021-08-09">
+  <owner>marcgrimme@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    A regular user session starts when a user signs in using his/her user
+    account. It stops when the user signs out. Session length is the duration
+    between the start and stop events. It is recorded during signing out and
+    reported on the next chrome run. This metric tracks the recorded session
+    length on an enrolled device rouned down to the nearest 10-minute bucket and
+    capped at 24 hours.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.RemoteCommand.RemoteSession.DeviceIsIdle"
+    enum="Boolean" expires_after="2020-03-01">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>antrim@chromium.org</owner>
+  <summary>
+    When an enterprise admin attempts to establish a remote session to a device
+    running in kiosk mode, the command will fail if device is not considered
+    idle. This histogram is emitted when that happens.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.RemoteCommand.RemoteSession.IdlenessOverride"
+    enum="Boolean" expires_after="2020-03-01">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>antrim@chromium.org</owner>
+  <summary>
+    When an enterprise admin attempts to establish a remote session to a device
+    running in kiosk mode, it is possible to override usual idleness check and
+    connect anyway.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.RemoteCommandInvalidationsRegistrationResult"
+    enum="BooleanSuccess" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Tracks whether remote commands invalidator registered for corresponding
+    invalidations. In case of success the invalidator is able to receive
+    incoming invalidations.
+
+    Metric is similar to Enterprise.PolicyInvalidationsRegistrationResult.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.RetrievePolicyResponse{EnterpriseRetrievePolicyResponse}"
+    enum="EnterpriseRetrievePolicyResponseType" expires_after="2020-02-16">
+  <obsolete>
+    Removed in M91 since the data is no longer monitored.
+  </obsolete>
+  <owner>emaxx@chromium.org</owner>
+  <owner>igorcov@chromium.org</owner>
+  <summary>
+    On Chrome OS, the response obtained to retrieve policy request.
+    {EnterpriseRetrievePolicyResponse}
+  </summary>
+  <token key="EnterpriseRetrievePolicyResponse">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".Device" summary="Device policy fetch response.">
+      <obsolete>
+        Removed in M91 since the data is no longer monitored.
+      </obsolete>
+      <owner>emaxx@chromium.org</owner>
+      <owner>igorcov@chromium.org</owner>
+    </variant>
+    <variant name=".DeviceLocalAccount"
+        summary="DeviceLocalAccount policy fetch response.">
+      <obsolete>
+        Removed in M91 since the data is no longer monitored.
+      </obsolete>
+      <owner>emaxx@chromium.org</owner>
+      <owner>igorcov@chromium.org</owner>
+    </variant>
+    <variant name=".User" summary="User policy fetch response.">
+      <obsolete>
+        Removed in M91 since the data is no longer monitored.
+      </obsolete>
+      <owner>emaxx@chromium.org</owner>
+      <owner>igorcov@chromium.org</owner>
+    </variant>
+    <variant name=".UserDuringLogin"
+        summary="User policy fetch response during login.">
+      <obsolete>
+        Removed in M91 since the data is no longer monitored.
+      </obsolete>
+      <owner>emaxx@chromium.org</owner>
+      <owner>igorcov@chromium.org</owner>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.StorePolicy.Duration" units="ms"
+    expires_after="2021-10-10">
+  <obsolete>
+    Removed in M93.
+  </obsolete>
+  <owner>mpolzer@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Duration of a call to StorePolicyEx. This histogram is used to find a
+    reasonable timeout for StorePolicyEx calls. (See crbug/1155533.)
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SystemFeaturesDisableList" enum="SystemFeature"
+    expires_after="2023-06-01">
+  <owner>ayaelattar@chromium.org</owner>
+  <owner>poromov@chromium.org</owner>
+  <summary>
+    Shows which system features are set to be disabled by
+    SystemFeaturesDisableList policy. Recorded when the policy preference is
+    updated with a new system feature. No-op updates aren't counted.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.SystemLogUploadResult"
+    enum="EnterpriseSystemLogUploadResult" expires_after="2022-05-01">
+  <owner>bmalcolm@chromium.org</owner>
+  <owner>cros-client-wa@google.com</owner>
+  <summary>Result of a single attempt to upload system logs.</summary>
+</histogram>
+
+<histogram name="Enterprise.TiclInvalidationService.DevicePolicyInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2021-03-01">
+  <obsolete>
+    Removed 2021/01.
+  </obsolete>
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting device policy invalidations received with and without
+    payloads. Invalidations indicate that a policy has been updated and should
+    be refreshed. Payloads provide context about the policy update, but may be
+    absent if dropped by the invalidation service. Subset of
+    &quot;Enterprise.DevicePolicyInvalidations&quot;. Gets recorded only when
+    TiclInvalidationService is used as InvalidationService;
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.TiclInvalidationService.DevicePolicyRefresh2"
+    enum="EnterprisePolicyRefresh" expires_after="2021-03-01">
+  <obsolete>
+    Removed 2021/01.
+  </obsolete>
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing device policy when
+    invalidations are received from a service. For each refresh, indicates
+    whether the policy changed, and whether the policy was invalidated at the
+    time of the refresh. Subset of &quot;Enterprise.DevicePolicyRefresh2&quot;.
+    Gets recorded only when TiclInvalidationService is used as
+    InvalidationService.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.TiclInvalidationService.PolicyInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2021-03-01">
+  <obsolete>
+    Removed 2021/01.
+  </obsolete>
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting user policy invalidations received with and without
+    payloads. Invalidations indicate that a policy has been updated and should
+    be refreshed. Payloads provide context about the policy update, but may be
+    absent if dropped by the invalidation service. Subset of
+    &quot;Enterprise.PolicyInvalidations&quot;. Recorded only when
+    TiclInvalidationService was used as InvalidationService.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.TiclInvalidationService.PolicyInvalidationsRegistrationResult"
+    enum="BooleanSuccess" expires_after="2021-03-01">
+  <obsolete>
+    Removed 2021/01.
+  </obsolete>
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Tracks the result of registration for policy invalidations. It will fail
+    when duplicate invalidation names are used for different policies due to
+    http://b/119860379. Subset of
+    &quot;Enterprise.PolicyInvalidationsRegistrationResult&quot;. Gets recorded
+    only when TiclInvalidationService is used as InvalidationService.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.TiclInvalidationService.PolicyRefresh2"
+    enum="EnterprisePolicyRefresh" expires_after="2021-03-01">
+  <obsolete>
+    Removed 2021/01.
+  </obsolete>
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events measuring effectiveness of refreshing user policy when invalidations
+    are received from a service. For each refresh, indicates whether the policy
+    changed, and whether the policy was invalidated at the time of the refresh.
+    Subset of &quot;Enterprise.PolicyRefresh2&quot;. Recorded only when
+    TiclInvalidationService was used as InvalidationService.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UploadJobSuccess" enum="EnterpriseUploadJobSuccess"
+    expires_after="M87">
+  <owner>bmalcolm@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>
+    Number of retries the client did to execute an UploadJob. It's recorded
+    after the request has been completed, either successfully after 0 or more
+    retries, with a failure because of too many retries or if the UploadJob is
+    interrupted (destroyed before it could succeed or fail).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserCloudPolicyStore.LoadStatus"
+    enum="PolicyLoadStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>atwilson@chromium.org</owner>
+  <summary>
+    Result of the attempted policy load during profile initialization.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserCloudPolicyStore.LoadValidationStatus"
+    enum="PolicyValidationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>atwilson@chromium.org</owner>
+  <summary>
+    Result of validating the policy that has just been loaded from disk.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserCloudPolicyStore.StoreValidationStatus"
+    enum="PolicyValidationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>atwilson@chromium.org</owner>
+  <summary>
+    Result of validating the policy sent down from the server, before writing to
+    disk.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.ChildUser.OAuthTokenError"
+    enum="GoogleServiceAuthError" expires_after="2022-04-24">
+  <owner>agawronska@chromium.org</owner>
+  <owner>michaelpg@chromium.org</owner>
+  <summary>Failure reason for OAuth token fetch for child user.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.DelayInitialization" units="ms"
+    expires_after="M82">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Initialization delay due to loading the user policy cache.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.ClientError"
+    enum="EnterpriseDeviceManagementStatus" expires_after="M82">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Policy client error during initial policy fetch.</summary>
+</histogram>
+
+<histogram
+    name="Enterprise.UserPolicyChromeOS.InitialFetch.DelayClientRegister"
+    units="ms" expires_after="M78">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Delay for registering the client with the policy server.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.DelayOAuth2Token"
+    units="ms" expires_after="M77">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Delay for minting an OAuth2 acccess token.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.DelayPolicyFetch"
+    units="ms" expires_after="M82">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Delay for fetching policy from the policy server.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.DelayTotal"
+    units="ms" expires_after="M77">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Total delay for the initial policy fetch.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.OAuth2Error"
+    enum="GoogleServiceAuthError" expires_after="2021-12-26">
+  <owner>igorcov@chromium.org</owner>
+  <owner>asumaneev@google.com</owner>
+  <summary>Service error during OAuth2 access token fetch.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.OAuth2NetworkError"
+    enum="NetErrorCodes" expires_after="M81">
+  <owner>mnissler@chromium.org</owner>
+  <summary>Network error during OAuth2 access token fetch.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.ReregistrationResult"
+    enum="EnterpriseUserPolicyChromeOSReregistrationResult"
+    expires_after="2022-01-31">
+  <owner>hendrich@chromium.org</owner>
+  <owner>managed-devices@google.com</owner>
+  <summary>Re-registration results after failed policy fetch.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyChromeOS.SessionAbort"
+    enum="EnterpriseUserPolicyChromeOSSessionAbortType"
+    expires_after="2020-02-23">
+  <obsolete>
+    Removed 2020/11.
+  </obsolete>
+  <owner>emaxx@chromium.org</owner>
+  <summary>
+    Session abort due to a fatal error of Chrome OS user policy initialization.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyValidationFailure"
+    enum="ValidationFailures" expires_after="M85">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>mnissler@chromium.org</owner>
+  <summary>Source of policy validation errors on Chrome OS.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyValidationLoadStatus"
+    enum="PolicyValidationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>mnissler@chromium.org</owner>
+  <summary>
+    Validation result when loading user policy from the policy store.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserPolicyValidationStoreStatus"
+    enum="PolicyValidationStatus" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>mnissler@chromium.org</owner>
+  <summary>
+    Validation result when writing user policy to the policy store.
+  </summary>
+</histogram>
+
+<histogram
+    name="Enterprise.UserRemoteCommand.Executed.Unsigned{Enterprise_RemoteCommandType}"
+    enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting status of executed user remote commands. The metric
+    includes only unsigned user remote commands. Reports a final status of
+    finished remote command (e.g. success, failure or termination).
+    {Enterprise_RemoteCommandType}
+  </summary>
+  <token key="Enterprise_RemoteCommandType"
+      variants="Enterprise_RemoteCommandType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram
+    name="Enterprise.UserRemoteCommand.Executed{Enterprise_RemoteCommandType}"
+    enum="RemoteCommandExecutionStatus" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting status of executed user remote commands. The metric
+    includes only signed user remote commands. Reports a final status of
+    finished remote command (e.g. success, failure or termination).
+    {Enterprise_RemoteCommandType}
+  </summary>
+  <token key="Enterprise_RemoteCommandType"
+      variants="Enterprise_RemoteCommandType">
+    <variant name=""/>
+  </token>
+</histogram>
+
+<histogram name="Enterprise.UserRemoteCommand.Received"
+    enum="RemoteCommandReceivedStatus" expires_after="2022-03-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting received user remote commands. The metric includes
+    signed user remote commands, both valid and invalid. Valid remote command is
+    counted by its type. Invalid remote command is counted by a reason why it is
+    considered invalid (e.g. unknown type or duplication).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserRemoteCommand.Received.Unsigned"
+    enum="RemoteCommandReceivedStatus" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting received user remote commands. The metric includes
+    unsigned user remote commands, both valid and invalid. Valid remote command
+    is counted by its type. Invalid remote command is counted by a reason why it
+    is considered invalid (e.g. unknown type or duplication).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserRemoteCommandInvalidations"
+    enum="EnterprisePolicyInvalidations" expires_after="2022-05-01">
+  <owner>asumaneev@google.com</owner>
+  <owner>managed-platforms@google.com</owner>
+  <summary>
+    Events for counting user remote commands invalidations received with and
+    without payloads. Invalidations indicate that there is a remote command to
+    execute. Payloads provide context about the remote commands update, but may
+    be absent if dropped by the invalidation service.
+
+    Metric is similar to Enterprise.PolicyInvalidations.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.UserSession.Logins"
+    enum="EnterpriseUserSessionLogins" expires_after="2022-04-24">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>sduraisamy@chromium.org</owner>
+  <summary>Tracks the sign-in events on an enrolled device.</summary>
+</histogram>
+
+<histogram name="Enterprise.UserSigninChoice" enum="SigninChoice"
+    expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>atwilson@chromium.org</owner>
+  <summary>
+    Choice the user made when presented with enterprise signin dialog.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.VpdCheck" units="units" expires_after="2020-07-05">
+  <owner>igorcov@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
+  <summary>
+    The status code (exit code or signal) from sanity check of RW_VPD read and
+    matching the contents with data from dump_vpd_log (Chrome OS).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.VpdUpdateStatus" units="units"
+    expires_after="2022-03-13">
+  <owner>igorcov@chromium.org</owner>
+  <owner>tnagel@chromium.org</owner>
+  <summary>
+    The status code (exit code or signal) from VPD update operation (Chrome OS).
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.WildcardLoginCheck.DelayPolicyTokenFetch"
+    units="ms" expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>mnissler@chromium.org</owner>
+  <summary>
+    Delay incurred by the token fetching step of the wildcard login check.
+  </summary>
+</histogram>
+
+<histogram name="Enterprise.WildcardLoginCheck.DelayTotal" units="ms"
+    expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>mnissler@chromium.org</owner>
+  <summary>Total delay incurred by the wildcard login check.</summary>
+</histogram>
+
+<histogram name="Enterprise.WildcardLoginCheck.DelayUserInfoFetch" units="ms"
+    expires_after="M77">
+  <obsolete>
+    Removed in M91 since the data is not monitored.
+  </obsolete>
+  <owner>mnissler@chromium.org</owner>
+  <summary>
+    Delay incurred by the user info fetching step of the wildcard login check.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.InDomain" enum="BooleanEnabled"
+    expires_after="2022-04-30">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <summary>
+    Whether the machine is part of an AD domain. This check is performed once at
+    start-up on Windows.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.InvalidJsonPolicies" enum="EnterprisePolicies"
+    expires_after="2021-07-01">
+  <owner>olsen@chromium.org</owner>
+  <owner>chromeos-commercial-stability@google.com</owner>
+  <summary>
+    A set of policy rules that failed validation due to unparsable JSON, or JSON
+    that did not match the schema. This validation happens on start-up and when
+    the policy has changed.
+
+    The histogram was expired (not recording data) from 2020-06-18 until
+    2021-03-15.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.InvalidPolicies" enum="EnterprisePolicies"
+    expires_after="2022-08-08">
+  <owner>pastarmovj@chromium.org</owner>
+  <summary>
+    A set of policy rules that were ignored due to integrity violations while
+    parsing the policy data which happens on start-up and when the policy has
+    changed.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.InvalidPoliciesDetected"
+    units="disabled policies" expires_after="2022-08-08">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chomium.org</owner>
+  <summary>
+    The number of disabled policy entries on Windows due to integrity violations
+    while parsing the policy data which happens on start-up and when the policy
+    has changed.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsDomainJoined" enum="BooleanEnabled"
+    expires_after="2022-04-17">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the machine is joined to an AD domain. This check is performed once
+    at start-up on Windows.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsEnterpriseUser" enum="BooleanEnabled"
+    expires_after="2022-04-17">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the machine is considered an enterprise user. An enterprise user is
+    either in a domain or is managed via MDM. This check is performed once at
+    start-up on Windows.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsFullyManaged2" enum="IsFullyManagedBoolean"
+    expires_after="2022-04-17">
+  <owner>twellington@google.com</owner>
+  <owner>tedchcoc@chromium.org</owner>
+  <summary>
+    On Android (OS version Lollipop+): Whether the device has a &quot;device
+    owner&quot; app installed. This check is performed once on application
+    start-up.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsLocalMachine" enum="Boolean"
+    expires_after="2022-10-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the full machine name is the same as the short one, identifying a
+    local machine. This check is performed once at start-up on Windows.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsLocalUser" enum="Boolean"
+    expires_after="2022-10-01">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    Whether the currently logged in user is a local user or not, based on its
+    SAM compatible user name and machine name. This check is performed once at
+    start-up on Windows.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsManaged2" enum="BooleanEnabled"
+    expires_after="2022-10-01">
+  <owner>rogerta@chromium.org</owner>
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    On Windows: Whether the machine is managed via MDM. On macOS: Whether Chrome
+    found a file of managed policies to follow. On Android (OS version
+    Lollipop+): Whether the device has a profile owner app. This check is
+    performed once on application start-up.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.IsRunningOnManagedProfileDuration" units="ms"
+    expires_after="2021-04-04">
+  <owner>twellington@google.com</owner>
+  <owner>tedchcoc@chromium.org</owner>
+  <summary>
+    Records the time it takes to calculate whether there is a profile owner app
+    on the device. Android only.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.Mac.IsCurrentUserDomainUser" enum="Boolean"
+    expires_after="2022-12-31">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    On the Mac: Whether the current user has an enterprise identity in Open
+    Directory. This check is performed once at start-up.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.Mac.IsDeviceDomainJoined" enum="Boolean"
+    expires_after="2022-12-31">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    On the Mac: Whether the machine is joined to a domain. This check is
+    performed once at start-up.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.Mac.IsDeviceMDMEnrolledNew"
+    enum="EnterpriseMacMDMStatusNew" expires_after="2022-12-31">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    On the Mac: Whether the machine is managed via MDM, with data obtained via a
+    new method (profiles) that is only available in 10.13.4 or later. This check
+    is performed once at start-up.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.Mac.IsDeviceMDMEnrolledOld"
+    enum="EnterpriseMacMDMStatusOld" expires_after="2022-12-31">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>zmin@chromium.org</owner>
+  <summary>
+    On the Mac: Whether the machine is managed via MDM, with data obtained via
+    an old method (system_profiler). This check is performed once at start-up.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.NetGetJoinInformationAddress"
+    enum="BooleanEnabled" expires_after="2020-06-18">
+  <owner>rogerta@chromium.org</owner>
+  <summary>
+    Whether we could obtain the address of the NetGetJoinInformation function.
+    This check is performed once at start-up on Windows.
+  </summary>
+</histogram>
+
+<histogram name="EnterpriseCheck.OSType" enum="OsSuite"
+    expires_after="2022-08-23">
+  <owner>pastarmovj@chromium.org</owner>
+  <owner>rogerta@chomium.org</owner>
+  <summary>
+    The rough Windows suite we are running on. This check is performed once at
+    start-up on Windows.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

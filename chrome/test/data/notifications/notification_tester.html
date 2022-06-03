@@ -9,6 +9,8 @@ Also can be used to request permission for notifications.
 var g_notifications = [];
 // Whether the site has requested and been granted permission.
 var g_permissionGranted = false;
+// Currently active media stream.
+var g_mediaStream = null;
 
 // Creates a notification with a iconUrl, title, text, and tag.
 // Returns an id for the notification, which can be used to cancel it with
@@ -75,6 +77,28 @@ function permissionCallbackNoResponse() {
   g_permissionGranted = true;
 }
 
+// Starts a screen capture session and reports success to the test driver.
+function startScreenCapture() {
+  navigator.mediaDevices.getDisplayMedia({video: true}).then((stream) => {
+    g_mediaStream = stream;
+    sendResultToTest('success');
+  }).catch(() => {
+    sendResultToTest('error');
+  });
+}
+
+// Stops a screen capture session and reports success to the test driver.
+function stopScreenCapture() {
+  if (!g_mediaStream) {
+    sendResultToTest('error');
+    return;
+  }
+  for (const track of g_mediaStream.getTracks())
+    track.stop();
+  g_mediaStream = null;
+  sendResultToTest('success');
+}
+
 // Helper function that adds a notification to |g_notifications| and shows
 // it. The index of the notification is sent back to the test, or -1 is sent
 // back on error. If |waitForDisplay| is true, the response will not be sent
@@ -98,6 +122,7 @@ function createNotificationHelper(note, waitForDisplay) {
 function sendResultToTest(result) {
   // Convert the result to a string.
   var stringResult = "" + result;
+  window.document.title = stringResult;
   if (typeof stringResult != "string")
     stringResult = JSON.stringify(result);
   window.domAutomationController.send(stringResult);

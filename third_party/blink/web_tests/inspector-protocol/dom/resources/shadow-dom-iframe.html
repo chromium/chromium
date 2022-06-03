@@ -8,7 +8,7 @@
 <div id="element_in_an_iframe"></div>
 <script>
 function addShadowDOM() {
-    var host = document.getElementById("element_in_an_iframe").createShadowRoot();
+    var host = document.getElementById("element_in_an_iframe").attachShadow({mode: 'open'});
     var template = document.querySelector("#shadow-template");
     host.appendChild(template.content);
     template.remove();

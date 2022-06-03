@@ -9,15 +9,14 @@
 // in text height.
 setPrintTestResultsLazily();
 description('This test ensures that a plugin which wants to receive wheel ' +
-            'events is included in the non-fast scrollable region.');
+            'events is not included in the non-fast scrollable region.');
 window.jsTestIsAsync = true;
 
 onload = function() {
   runAfterLayoutAndPaint(function() {
     nonFastScrollableRects = internals.nonFastScrollableRects(document);
     if (window.internals) {
-      shouldBe('nonFastScrollableRects.length', '1');
-      shouldBeEqualToString('rectToString(nonFastScrollableRects[0])', '[8, 8, 300, 150]');
+      shouldBe('nonFastScrollableRects.length', '0');
     } else {
       debug('This test requires access to internals.nonFastScrollableRects.');
     }

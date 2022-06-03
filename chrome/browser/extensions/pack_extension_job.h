@@ -8,9 +8,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
+#include "base/task/sequenced_task_runner.h"
 #include "extensions/browser/extension_creator.h"
 
 namespace extensions {
@@ -39,14 +37,18 @@ class PackExtensionJob {
                    const base::FilePath& root_directory,
                    const base::FilePath& key_file,
                    int run_flags);
+
+  PackExtensionJob(const PackExtensionJob&) = delete;
+  PackExtensionJob& operator=(const PackExtensionJob&) = delete;
+
   ~PackExtensionJob();
 
   // Starts the packing job.
   void Start();
 
   // The standard packing success message.
-  static base::string16 StandardSuccessMessage(const base::FilePath& crx_file,
-                                         const base::FilePath& key_file);
+  static std::u16string StandardSuccessMessage(const base::FilePath& crx_file,
+                                               const base::FilePath& key_file);
 
   void set_synchronous() { run_mode_ = RunMode::SYNCHRONOUS; }
 
@@ -70,8 +72,6 @@ class PackExtensionJob {
 
   // Used to check methods that run on |client_|'s sequence.
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PackExtensionJob);
 };
 
 }  // namespace extensions

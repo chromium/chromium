@@ -8,7 +8,11 @@
 #include "chrome/browser/ui/views/status_bubble_views.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/views/background.h"
 
@@ -30,6 +34,17 @@ void ContentsWebView::SetStatusBubble(StatusBubbleViews* status_bubble) {
   DCHECK(!status_bubble_ || status_bubble_->base_view() == this);
   if (status_bubble_)
     status_bubble_->Reposition();
+  OnPropertyChanged(&status_bubble_, views::kPropertyEffectsNone);
+}
+
+StatusBubbleViews* ContentsWebView::GetStatusBubble() const {
+  return status_bubble_;
+}
+
+void ContentsWebView::SetBackgroundColorOverride(
+    absl::optional<SkColor> background_color) {
+  background_color_override_ = background_color;
+  UpdateBackgroundColor();
 }
 
 bool ContentsWebView::GetNeedsNotificationWhenVisibleBoundsChange() const {
@@ -49,6 +64,7 @@ void ContentsWebView::ViewHierarchyChanged(
 }
 
 void ContentsWebView::OnThemeChanged() {
+  views::WebView::OnThemeChanged();
   UpdateBackgroundColor();
 }
 
@@ -56,13 +72,24 @@ void ContentsWebView::OnLetterboxingChanged() {
   UpdateBackgroundColor();
 }
 
-void ContentsWebView::UpdateBackgroundColor() {
+absl::optional<SkColor> ContentsWebView::GetBackgroundColor() {
+  if (background_color_override_.has_value())
+    return background_color_override_;
+
   const ui::ThemeProvider* const theme = GetThemeProvider();
   if (!theme)
+    return absl::nullopt;
+
+  return color_utils::GetResultingPaintColor(
+      theme->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND), SK_ColorWHITE);
+}
+
+void ContentsWebView::UpdateBackgroundColor() {
+  const absl::optional<SkColor> background_color = GetBackgroundColor();
+  if (!background_color.has_value())
     return;
 
-  const SkColor ntp_background = color_utils::GetResultingPaintColor(
-      theme->GetColor(ThemeProperties::COLOR_NTP_BACKGROUND), SK_ColorWHITE);
+  const SkColor ntp_background = background_color.value();
   if (is_letterboxing()) {
     // Set the background color to a dark tint of the new tab page's background
     // color.  This is the color filled within the WebView's bounds when its
@@ -129,7 +156,8 @@ void ContentsWebView::CloneWebContentsLayer() {
   // is now the new parent of the cloned layer). Convert coordinates so that the
   // cloned layer appears at the right location.
   gfx::PointF origin;
-  ui::Layer::ConvertPointToLayer(cloned_layer_tree_->root(), layer(), &origin);
+  ui::Layer::ConvertPointToLayer(cloned_layer_tree_->root(), layer(),
+                                 /*use_target_transform=*/true, &origin);
   cloned_layer_tree_->root()->SetBounds(
       gfx::Rect(gfx::ToFlooredPoint(origin),
                 cloned_layer_tree_->root()->bounds().size()));
@@ -146,3 +174,7 @@ void ContentsWebView::RenderViewReady() {
   UpdateBackgroundColor();
   WebView::RenderViewReady();
 }
+
+BEGIN_METADATA(ContentsWebView, views::WebView)
+ADD_PROPERTY_METADATA(StatusBubbleViews*, StatusBubble)
+END_METADATA

@@ -1,54 +1,137 @@
-<!DOCTYPE HTML>
-<html>
-<head>
-<script src="../resources/accessibility-helper.js"></script>
+<!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
-</head>
-<body>
+<script src="../resources/run-after-layout-and-paint.js"></script>
 
-<div id="textbox" contentEditable="true">First<p>Second</p></div>
+<div id="textbox" contenteditable="true">
+  First<p>Second</p>
+</div>
 
 <script>
+'use strict';
+
 async_test((t) => {
-    // TODO(aboxhall): No longer necessary when updates are processed after layout.
-    // Ensure entire a11y tree has already been seen.
-    traverseAccessibilityTree(accessibilityController.rootElement);
+  const textbox = document.getElementById('textbox');
+  const axTextBox = accessibilityController.accessibleElementById('textbox');
+  let valueChangedCount = 0;
+  let selectedTextChangedCount = 0;
+  const expectedValueChangedIntents = [];
+  const expectedSelectedTextChangedIntents = [];
 
-    // Focus the contenteditable text box and move the cursor to the end.
-    var textbox = document.getElementById("textbox");
-    textbox.focus();
-    eventSender.keyDown("ArrowDown", []);
-    eventSender.keyDown("ArrowDown", []);
+  axTextBox.setNotificationListener(t.step_func((notification, intents) => {
+    if (notification == 'ValueChanged') {
+      assert_array_equals(intents,
+                          expectedValueChangedIntents[valueChangedCount],
+                          'ValueChanged at ' + valueChangedCount);
+      ++valueChangedCount;
+    } else if (notification == 'SelectedTextChanged') {
+      assert_array_equals(intents,
+                          expectedSelectedTextChangedIntents[selectedTextChangedCount],
+                          'SelectedTextChanged at ' + selectedTextChangedCount);
+      ++selectedTextChangedCount;
+    }
 
-    var axTextBox = accessibilityController.focusedElement;
+    if (valueChangedCount >= 6 && selectedTextChangedCount >= 11) {
+      t.done();
+    }
+  }));
 
-    var valueChangedCount = 0;
-    var selectedTextChangedCount = 0;
+  // SelectedTextChanged at 0.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(setSelection,none,character,forward)'
+  ]);
+  textbox.focus();
 
-    // Defer the main part of the test so that the notification listener
-    // doesn't catch any notifications still in the queue from loading the
-    // page and initially setting focus.
-    axTextBox.addNotificationListener(t.step_func((notification) => {
-        if (notification == "ValueChanged")
-            valueChangedCount++;
-        else if (notification == "SelectedTextChanged")
-            selectedTextChangedCount++;
+  // SelectedTextChanged at 1.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,none,lineStart,forward)'
+  ]);
+  eventSender.keyDown('ArrowDown', []);
 
-        if (valueChangedCount >= 8 && selectedTextChangedCount >= 4) {
-            t.done();
-        }
-    }));
+  // ValueChanged at 0.
+  expectedValueChangedIntents.push([
+    'AXEventIntent(insert,insertText,none,none)'
+  ]);
+  // SelectedTextChanged at 2.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(insert,insertText,none,none)',
+    'AXEventIntent(setSelection,none,character,forward)'
+  ]);
+  eventSender.keyDown('w', []);
 
-    eventSender.keyDown("ArrowLeft", []);
-    eventSender.keyDown("ArrowLeft", []);
-    eventSender.keyDown("w", []);
-    eventSender.keyDown("x", []);
-    eventSender.keyDown("y", []);
-    eventSender.keyDown("z", []);
-}, "This test ensures that moving the cursor in a contentEditable sends a selected text change notification, and typing in a contentEditable sends both a value changed and selected text changed notification - both on the root element that's marked as contentEditable.");
+  // SelectedTextChanged at 3.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,none,lineStart,forward)'
+  ]);
+  eventSender.keyDown('ArrowDown', []);
+
+  // ValueChanged at 1.
+  expectedValueChangedIntents.push([
+    'AXEventIntent(insert,insertText,none,none)'
+  ]);
+  // SelectedTextChanged at 4.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(setSelection,none,character,forward)',
+    'AXEventIntent(insert,insertText,none,none)'
+  ]);
+  eventSender.keyDown('x', []);
+
+  // SelectedTextChanged at 5.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,none,character,backward)'
+  ]);
+  eventSender.keyDown('ArrowLeft', []);
+
+  // ValueChanged at 2.
+  expectedValueChangedIntents.push([
+    'AXEventIntent(delete,deleteContentForward,none,none)'
+  ]);
+  eventSender.keyDown('Delete', []);
+
+  // SelectedTextChanged at 6.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,none,character,backward)'
+  ]);
+  eventSender.keyDown('ArrowLeft', []);
+
+  // ValueChanged at 3.
+  expectedValueChangedIntents.push([
+    'AXEventIntent(insert,insertText,none,none)'
+  ]);
+  // SelectedTextChanged at 7.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(setSelection,none,character,forward)',
+    'AXEventIntent(insert,insertText,none,none)'
+  ]);
+  eventSender.keyDown('y', []);
+
+  // SelectedTextChanged at 8.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(moveSelection,none,lineStart,backward)'
+  ]);
+  eventSender.keyDown('ArrowUp', []);
+
+  // ValueChanged at 4.
+  expectedValueChangedIntents.push([
+    'AXEventIntent(insert,insertParagraph,none,none)'
+  ]);
+  // SelectedTextChanged at 9.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(insert,insertParagraph,none,none)',
+    'AXEventIntent(setSelection,none,character,forward)'
+  ]);
+  eventSender.keyDown('Enter', []);
+
+  // ValueChanged at 5.
+  expectedValueChangedIntents.push([
+    'AXEventIntent(delete,deleteContentBackward,none,none)',
+  ]);
+  // SelectedTextChanged at 10.
+  expectedSelectedTextChangedIntents.push([
+    'AXEventIntent(setSelection,none,character,forward)',
+    'AXEventIntent(delete,deleteContentBackward,none,none)',
+  ]);
+  eventSender.keyDown('Backspace', []);
+}, 'Ensures that moving the cursor in a contentEditable sends a selected text change notification, and typing in a contentEditable sends both a value changed and selected text changed notification.');
 
 </script>
-
-</body>
-</html>

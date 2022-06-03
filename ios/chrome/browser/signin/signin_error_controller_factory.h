@@ -11,19 +11,21 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
 class SigninErrorController;
 
 namespace ios {
-
-class ChromeBrowserState;
-
 // Singleton that owns all SigninErrorControllers and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class SigninErrorControllerFactory : public BrowserStateKeyedServiceFactory {
  public:
   static SigninErrorController* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
   static SigninErrorControllerFactory* GetInstance();
+
+  SigninErrorControllerFactory(const SigninErrorControllerFactory&) = delete;
+  SigninErrorControllerFactory& operator=(const SigninErrorControllerFactory&) =
+      delete;
 
  private:
   friend class base::NoDestructor<SigninErrorControllerFactory>;
@@ -34,8 +36,6 @@ class SigninErrorControllerFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SigninErrorControllerFactory);
 };
 
 }  // namespace ios

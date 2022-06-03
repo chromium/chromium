@@ -47,8 +47,8 @@ class AutoplayUmaHelperTest : public PageTestBase {
  private:
   void SetUp() override {
     PageTestBase::SetUp();
-    GetDocument().documentElement()->SetInnerHTMLFromString(
-        "<video id=video></video>", ASSERT_NO_EXCEPTION);
+    GetDocument().documentElement()->setInnerHTML("<video id=video></video>",
+                                                  ASSERT_NO_EXCEPTION);
     HTMLMediaElement& element = MediaElement();
     uma_helper_ = MakeGarbageCollected<MockAutoplayUmaHelper>(&element);
     element.autoplay_policy_->autoplay_uma_helper_ = uma_helper_;

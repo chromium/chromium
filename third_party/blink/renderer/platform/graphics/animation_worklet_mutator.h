@@ -19,7 +19,7 @@ class PLATFORM_EXPORT AnimationWorkletMutator : public GarbageCollectedMixin {
   // Runs the animation frame callback.
   virtual std::unique_ptr<AnimationWorkletOutput> Mutate(
       std::unique_ptr<AnimationWorkletInput>) = 0;
-  void Trace(blink::Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 };
 
 }  // namespace blink

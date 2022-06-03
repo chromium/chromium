@@ -7,41 +7,30 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/bind.h"
-#include "ui/base/test/scoped_fake_full_keyboard_access.h"
 #include "ui/base/test/scoped_fake_nswindow_focus.h"
 #include "ui/base/test/scoped_fake_nswindow_fullscreen.h"
 #include "ui/base/test/ui_controls.h"
-#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/event_generator_delegate_mac.h"
+#include "ui/views/test/test_views_delegate.h"
 #include "ui/views/widget/widget.h"
 
 namespace views {
 
 // static
-ViewsTestHelper* ViewsTestHelper::Create(
-    ui::ContextFactory* context_factory,
-    ui::ContextFactoryPrivate* context_factory_private) {
-  return new ViewsTestHelperMac;
+std::unique_ptr<ViewsTestHelper> ViewsTestHelper::Create() {
+  return std::make_unique<ViewsTestHelperMac>();
 }
 
-ViewsTestHelperMac::ViewsTestHelperMac()
-    : zero_duration_mode_(new ui::ScopedAnimationDurationScaleMode(
-          ui::ScopedAnimationDurationScaleMode::ZERO_DURATION)) {
+ViewsTestHelperMac::ViewsTestHelperMac() {
   // Unbundled applications (those without Info.plist) default to
   // NSApplicationActivationPolicyProhibited, which prohibits the application
   // obtaining key status or activating windows without user interaction.
   [NSApp setActivationPolicy:NSApplicationActivationPolicyRegular];
-}
 
-ViewsTestHelperMac::~ViewsTestHelperMac() {
-}
-
-void ViewsTestHelperMac::SetUp() {
   ui::test::EventGeneratorDelegate::SetFactoryFunction(
       base::BindRepeating(&test::CreateEventGeneratorDelegateMac));
 
-  ViewsTestHelper::SetUp();
   // Assume that if the methods in the ui_controls.h test header are enabled
   // then the test runner is in a non-sharded mode, and will use "real"
   // activations and fullscreen mode. This allows interactive_ui_tests to test
@@ -51,11 +40,9 @@ void ViewsTestHelperMac::SetUp() {
     faked_fullscreen_ =
         std::make_unique<ui::test::ScopedFakeNSWindowFullscreen>();
   }
-  faked_full_keyboard_access_ =
-      std::make_unique<ui::test::ScopedFakeFullKeyboardAccess>();
 }
 
-void ViewsTestHelperMac::TearDown() {
+ViewsTestHelperMac::~ViewsTestHelperMac() {
   // Ensure all Widgets are closed explicitly in tests. The Widget may be
   // hosting a Compositor. If that's torn down after the test ContextFactory
   // then a lot of confusing use-after-free errors result. In browser tests,
@@ -70,6 +57,13 @@ void ViewsTestHelperMac::TearDown() {
     ui::test::EventGeneratorDelegate::SetFactoryFunction(
         ui::test::EventGeneratorDelegate::FactoryFunction());
   }
+}
+
+void ViewsTestHelperMac::SetUpTestViewsDelegate(
+    TestViewsDelegate* delegate,
+    absl::optional<ViewsDelegate::NativeWidgetFactory> factory) {
+  ViewsTestHelper::SetUpTestViewsDelegate(delegate, std::move(factory));
+  delegate->set_context_factory(context_factories_.GetContextFactory());
 }
 
 }  // namespace views

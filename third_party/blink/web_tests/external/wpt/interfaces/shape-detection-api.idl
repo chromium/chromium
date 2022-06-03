@@ -1,6 +1,6 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: Accelerated Shape Detection in Images (https://wicg.github.io/shape-detection-api/)
 
 [Exposed=(Window,Worker),
@@ -15,12 +15,9 @@ dictionary FaceDetectorOptions {
   boolean fastMode;
 };
 
-[Exposed=(Window,Worker),
- SecureContext,
- Serializable]
-interface DetectedFace {
-  [SameObject] readonly attribute DOMRectReadOnly boundingBox;
-  [SameObject] readonly attribute FrozenArray<Landmark>? landmarks;
+dictionary DetectedFace {
+  required DOMRectReadOnly boundingBox;
+  required FrozenArray<Landmark>? landmarks;
 };
 
 dictionary Landmark {
@@ -47,14 +44,11 @@ dictionary BarcodeDetectorOptions {
   sequence<BarcodeFormat> formats;
 };
 
-[Exposed=(Window,Worker),
- SecureContext,
- Serializable]
-interface DetectedBarcode {
-  [SameObject] readonly attribute DOMRectReadOnly boundingBox;
-  [SameObject] readonly attribute DOMString rawValue;
-  [SameObject] readonly attribute BarcodeFormat format;
-  [SameObject] readonly attribute FrozenArray<Point2D> cornerPoints;
+dictionary DetectedBarcode {
+  required DOMRectReadOnly boundingBox;
+  required DOMString rawValue;
+  required BarcodeFormat format;
+  required FrozenArray<Point2D> cornerPoints;
 };
 
 enum BarcodeFormat {

@@ -8,14 +8,15 @@
 #include <stdint.h>
 
 #include <set>
+#include <string>
 
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/base/network_delegate.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/same_party_context.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -28,26 +29,24 @@ namespace net {
 class CookieOptions;
 class HttpRequestHeaders;
 class HttpResponseHeaders;
-class ProxyInfo;
 class URLRequest;
 
 class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
  public:
-  ~NetworkDelegateImpl() override {}
+  NetworkDelegateImpl() = default;
+  NetworkDelegateImpl(const NetworkDelegateImpl&) = delete;
+  NetworkDelegateImpl& operator=(const NetworkDelegateImpl&) = delete;
+  ~NetworkDelegateImpl() override = default;
 
  private:
   int OnBeforeURLRequest(URLRequest* request,
                          CompletionOnceCallback callback,
                          GURL* new_url) override;
 
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override;
-
-  void OnBeforeSendHeaders(URLRequest* request,
-                           const ProxyInfo& proxy_info,
-                           const ProxyRetryInfoMap& proxy_retry_info,
-                           HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override;
 
   int OnHeadersReceived(
       URLRequest* request,
@@ -55,7 +54,7 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override;
 
   void OnBeforeRedirect(URLRequest* request, const GURL& new_location) override;
 
@@ -65,11 +64,13 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
 
   void OnURLRequestDestroyed(URLRequest* request) override;
 
-  void OnPACScriptError(int line_number, const base::string16& error) override;
+  void OnPACScriptError(int line_number, const std::u16string& error) override;
 
-  bool OnCanGetCookies(const URLRequest& request,
-                       const CookieList& cookie_list,
-                       bool allowed_from_caller) override;
+  bool OnAnnotateAndMoveUserBlockedCookies(
+      const URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) override;
 
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
@@ -79,7 +80,8 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
   bool OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
-      const base::Optional<url::Origin>& top_frame_origin) const override;
+      const absl::optional<url::Origin>& top_frame_origin,
+      SamePartyContext::Type same_party_context_type) const override;
 
   bool OnCancelURLRequestWithPolicyViolatingReferrerHeader(
       const URLRequest& request,

@@ -11,13 +11,13 @@ namespace blink {
 
 class X : public GarbageCollected<X> {
  public:
-  virtual void Trace(Visitor*) {}
+  virtual void Trace(Visitor*) const {}
 };
 
 class TraceImplInlinedWithUntracedMember
     : public GarbageCollected<TraceImplInlinedWithUntracedMember> {
  public:
-  void Trace(Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     // Empty; should get complaints from the plugin for untraced x_.
   }
 
@@ -28,7 +28,7 @@ class TraceImplInlinedWithUntracedMember
 class TraceImplExternWithUntracedMember
     : public GarbageCollected<TraceImplExternWithUntracedMember> {
  public:
-  void Trace(Visitor* visitor);
+  void Trace(Visitor* visitor) const;
 
  private:
   Member<X> x_;
@@ -36,19 +36,19 @@ class TraceImplExternWithUntracedMember
 
 class Base : public GarbageCollected<Base> {
  public:
-  virtual void Trace(Visitor*) {}
+  virtual void Trace(Visitor*) const {}
 };
 
 class TraceImplInlineWithUntracedBase : public Base {
  public:
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     // Empty; should get complaints from the plugin for untraced Base.
   }
 };
 
 class TraceImplExternWithUntracedBase : public Base {
  public:
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 };
 
 }

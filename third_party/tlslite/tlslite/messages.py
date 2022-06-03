@@ -9,6 +9,8 @@
 
 """Classes representing TLS messages."""
 
+from __future__ import division
+
 from .utils.compat import *
 from .utils.cryptomath import *
 from .errors import *
@@ -142,6 +144,7 @@ class ClientHello(HandshakeMsg):
         self.status_request = False
         self.has_supported_versions = False
         self.ri = False
+        self.signature_algorithms = []
 
     def create(self, version, random, session_id, cipher_suites,
                certificate_types=None, srpUsername=None,
@@ -257,6 +260,14 @@ class ClientHello(HandshakeMsg):
                         # intolerance simulation.
                         self.has_supported_versions = True
                         _ = p.getFixBytes(extLength)
+                    elif extType == ExtensionType.signature_algorithms:
+                        numBytes = p.get(2)
+                        if numBytes + 2 != extLength or numBytes % 2 != 0:
+                            raise SyntaxError()
+                        for _ in range(numBytes // 2):
+                            hashAlg = p.get(1)
+                            sigAlg = p.get(1)
+                            self.signature_algorithms.append((hashAlg, sigAlg))
                     else:
                         _ = p.getFixBytes(extLength)
                     index2 = p.index
@@ -605,6 +616,7 @@ class ServerKeyExchange(HandshakeMsg):
         self.ecdhCurve = 0
         self.ecdhPublic = bytearray(0)
         self.signature = bytearray(0)
+        self.signature_algorithm = None
 
     def createSRP(self, srp_N, srp_g, srp_s, srp_B):
         self.srp_N = srp_N
@@ -664,18 +676,13 @@ class ServerKeyExchange(HandshakeMsg):
         w.bytes += self.write_params()
         if self.cipherSuite in CipherSuite.certAllSuites:
             if self.version >= (3,3):
-                # TODO: Signature algorithm negotiation not supported.
-                w.add(HashAlgorithm.sha1, 1)
-                w.add(SignatureAlgorithm.rsa, 1)
+                w.add(self.signature_algorithm[0], 1)
+                w.add(self.signature_algorithm[1], 1)
             w.addVarSeq(self.signature, 1, 2)
         return self.postWrite(w)
 
-    def hash(self, clientRandom, serverRandom):
-        bytes = clientRandom + serverRandom + self.write_params()
-        if self.version >= (3,3):
-            # TODO: Signature algorithm negotiation not supported.
-            return SHA1(bytes)
-        return MD5(bytes) + SHA1(bytes)
+    def signingPayload(self, clientRandom, serverRandom):
+        return clientRandom + serverRandom + self.write_params()
 
 class ServerHelloDone(HandshakeMsg):
     def __init__(self):

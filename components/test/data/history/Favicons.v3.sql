@@ -1,4 +1,4 @@
--- unit_tests --gtest_filter=ThumbnailDatabaseTest.Version3
+-- unit_tests --gtest_filter=FaviconDatabaseTest.Version3
 --
 -- .dump of a version 3 Favicons database.  Version 3 contained a
 -- table [thumbnails] which was migrated to [Top Sites] database, and

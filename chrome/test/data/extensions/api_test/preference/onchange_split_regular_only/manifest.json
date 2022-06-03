@@ -6,7 +6,7 @@
   "permissions": [ "privacy", "tabs" ],
   "background": {
     "scripts": [ "test.js" ],
-    "persitent": false
+    "persistent": false
   },
   "incognito": "split"
 }

@@ -31,7 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GRID_AREA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_GRID_AREA_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/style/grid_positions_resolver.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -40,12 +42,13 @@
 
 namespace blink {
 
-// Recommended maximum size for both explicit and implicit grids. Note that this
-// actually allows a [-9999,9999] range. The limit is low on purpouse because
-// higher values easly trigger OOM situations. That will definitely improve once
-// we switch from a vector of vectors based grid representation to a more
-// efficient one memory-wise.
-const int kGridMaxTracks = 1000;
+// Legacy grid expands out auto-repeaters, so it has a lower cap than GridNG.
+// Note that this actually allows a [-999,999] range.
+const int kLegacyGridMaxTracks = 1000;
+// GridNG's cap can be higher than 100k tracks. What would prevent us from
+// having an extremely large cap (say, INT_MAX - 1) is rendering tracks but
+// being unable to query their computed style.
+const int kGridMaxTracks = 100000;
 
 // A span in a single direction (either rows or columns). Note that |start_line|
 // and |end_line| are grid lines' indexes.
@@ -58,22 +61,42 @@ struct GridSpan {
     return GridSpan(start_line, end_line, kUntranslatedDefinite);
   }
 
-  static GridSpan TranslatedDefiniteGridSpan(size_t start_line,
-                                             size_t end_line) {
+  static GridSpan TranslatedDefiniteGridSpan(wtf_size_t start_line,
+                                             wtf_size_t end_line) {
     return GridSpan(start_line, end_line, kTranslatedDefinite);
   }
 
-  static GridSpan IndefiniteGridSpan() { return GridSpan(0, 1, kIndefinite); }
+  static GridSpan IndefiniteGridSpan(wtf_size_t span_size = 1) {
+    return GridSpan(wtf_size_t{0}, span_size, kIndefinite);
+  }
 
   bool operator==(const GridSpan& o) const {
     return type_ == o.type_ && start_line_ == o.start_line_ &&
            end_line_ == o.end_line_;
   }
 
-  size_t IntegerSpan() const {
+  bool operator<(const GridSpan& o) const {
+    DCHECK(IsTranslatedDefinite());
+    return start_line_ < o.start_line_ ||
+           (start_line_ == o.start_line_ && end_line_ < o.end_line_);
+  }
+
+  bool operator<=(const GridSpan& o) const {
+    DCHECK(IsTranslatedDefinite());
+    return *this < o || *this == o;
+  }
+
+  wtf_size_t IntegerSpan() const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GT(end_line_, start_line_);
     return end_line_ - start_line_;
+  }
+
+  wtf_size_t IndefiniteSpanSize() const {
+    DCHECK(IsIndefinite());
+    DCHECK_EQ(start_line_, 0);
+    DCHECK_GT(end_line_, 0);
+    return end_line_;
   }
 
   int UntranslatedStartLine() const {
@@ -86,28 +109,28 @@ struct GridSpan {
     return end_line_;
   }
 
-  size_t StartLine() const {
+  wtf_size_t StartLine() const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GE(start_line_, 0);
     return start_line_;
   }
 
-  size_t EndLine() const {
+  wtf_size_t EndLine() const {
     DCHECK(IsTranslatedDefinite());
     DCHECK_GT(end_line_, 0);
     return end_line_;
   }
 
   struct GridSpanIterator {
-    GridSpanIterator(size_t v) : value(v) {}
+    GridSpanIterator(wtf_size_t v) : value(v) {}
 
-    size_t operator*() const { return value; }
-    size_t operator++() { return value++; }
+    wtf_size_t operator*() const { return value; }
+    wtf_size_t operator++() { return value++; }
     bool operator!=(GridSpanIterator other) const {
       return value != other.value;
     }
 
-    size_t value;
+    wtf_size_t value;
   };
 
   GridSpanIterator begin() const {
@@ -120,11 +143,11 @@ struct GridSpan {
     return end_line_;
   }
 
+  bool IsUntranslatedDefinite() const { return type_ == kUntranslatedDefinite; }
   bool IsTranslatedDefinite() const { return type_ == kTranslatedDefinite; }
-
   bool IsIndefinite() const { return type_ == kIndefinite; }
 
-  void Translate(size_t offset) {
+  void Translate(wtf_size_t offset) {
     DCHECK_EQ(type_, kUntranslatedDefinite);
 
     type_ = kTranslatedDefinite;
@@ -148,8 +171,13 @@ struct GridSpan {
     }
 #endif
 
-    start_line_ = clampTo<int>(start_line, -kGridMaxTracks, kGridMaxTracks - 1);
-    end_line_ = clampTo<int>(end_line, -kGridMaxTracks + 1, kGridMaxTracks);
+    const int grid_max_tracks = RuntimeEnabledFeatures::LayoutNGGridEnabled()
+                                    ? kGridMaxTracks
+                                    : kLegacyGridMaxTracks;
+
+    start_line_ =
+        ClampTo<int>(start_line, -grid_max_tracks, grid_max_tracks - 1);
+    end_line_ = ClampTo<int>(end_line, -grid_max_tracks + 1, grid_max_tracks);
   }
 
   int start_line_;
@@ -168,6 +196,29 @@ struct GridArea {
         rows(GridSpan::IndefiniteGridSpan()) {}
 
   GridArea(const GridSpan& r, const GridSpan& c) : columns(c), rows(r) {}
+
+  const GridSpan& Span(GridTrackSizingDirection track_direction) const {
+    return (track_direction == kForColumns) ? columns : rows;
+  }
+
+  void SetSpan(const GridSpan& span, GridTrackSizingDirection track_direction) {
+    if (track_direction == kForColumns)
+      columns = span;
+    else
+      rows = span;
+  }
+
+  wtf_size_t StartLine(GridTrackSizingDirection track_direction) const {
+    return Span(track_direction).StartLine();
+  }
+
+  wtf_size_t EndLine(GridTrackSizingDirection track_direction) const {
+    return Span(track_direction).EndLine();
+  }
+
+  wtf_size_t SpanSize(GridTrackSizingDirection track_direction) const {
+    return Span(track_direction).IntegerSpan();
+  }
 
   bool operator==(const GridArea& o) const {
     return columns == o.columns && rows == o.rows;

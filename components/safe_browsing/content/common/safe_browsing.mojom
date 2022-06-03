@@ -1,0 +1,149 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module safe_browsing.mojom;
+
+
+import "components/safe_browsing/core/common/safe_browsing_url_checker.mojom";
+import "mojo/public/mojom/base/read_only_file.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "services/network/public/mojom/http_request_headers.mojom";
+import "services/network/public/mojom/fetch_api.mojom";
+import "url/mojom/url.mojom";
+
+// Provided by the browser and used by renderers to perform SafeBrowsing URL
+// checks.
+interface SafeBrowsing {
+  // Queries SafeBrowsing whether |url| is safe to load, and creates a
+  // SafeBrowsingUrlChecker interface.
+  //
+  // The check and (subsequent checks performed using SafeBrowsingUrlChecker)
+  // checks against SafeBrowsing's Malware, Phishing, and UwS blocklists.
+  //
+  // The SafeBrowsingUrlChecker interface should be used (and only used) for
+  // subsequent checks of redirects, so that the server side could keep track of
+  // the redirect chain. Disconnecting the checker interface cancels on-going
+  // URL checks. Please note that in that case if the check started by this
+  // method hasn't completed yet, it will also be canceled and the callback is
+  // ran with |proceed == true| and |showed_interstitial == false| as if the URL
+  // is safe.
+  //
+  // If |slow_check_notifier| is a valid interface receiver, it indicates that
+  // the URL may be unsafe and a more time-consuming process is required to get
+  // the final result. In that case, the rest of the callback arguments should
+  // be ignored. The result will be reported using the UrlCheckNotifier
+  // interface. Receiving a valid |slow_check_notifier| could be considered as
+  // a singal that the resource should be handled with more caution until the
+  // final result is obtained. For example, the network service may want to
+  // pause reading the response body for MIME sniffing.
+  //
+  // |proceed| indicates whether it is okay to proceed with loading the URL.
+  // |showed_interstitial| indicates whether the SafeBrowsing interstitial page
+  // has been shown to the user.
+  CreateCheckerAndCheck(
+      int32 render_frame_id,
+      pending_receiver<SafeBrowsingUrlChecker> receiver,
+      url.mojom.Url url,
+      string method,
+      network.mojom.HttpRequestHeaders headers,
+      int32 load_flags,
+      network.mojom.RequestDestination request_destination,
+      bool has_user_gesture,
+      bool originated_from_service_worker)
+          => (pending_receiver<UrlCheckNotifier>? slow_check_notifier,
+              bool proceed,
+              bool showed_interstitial);
+
+  // Bind an additional pipe to this instance of the SafeBrowsing interface.
+  Clone(pending_receiver<SafeBrowsing> receiver);
+};
+
+// Used to store the name and value of an HTML Element's attribute.
+struct AttributeNameValue {
+  string name;
+  string value;
+};
+
+// A node is essentially a frame.
+struct ThreatDOMDetailsNode {
+  // A unique ID for this node, unique to the current Render Frame.
+  int32 node_id;
+  // URL of this resource. Can be empty.
+  url.mojom.Url url;
+  // If this resource was in the "src" attribute of a tag, this is the tagname
+  // (eg "IFRAME"). Can be empty.
+  string tag_name;
+  // URL of the parent node. Can be empty.
+  url.mojom.Url parent;
+  // The unique ID of the parent node. Can be 0 if this is the top node.
+  int32 parent_node_id;
+  // Children of this node. Can be empty.
+  array<url.mojom.Url> children;
+  // The unique IDs of the child nodes. Can be empty if there are no children.
+  array<int32> child_node_ids;
+  // The node's attributes as a collection of name-value pairs.
+  array<AttributeNameValue> attributes;
+  // If this node represents a frame or iframe, then this field is set to the
+  // routing ID of the local or remote frame in this renderer process that is
+  // responsible for rendering the contents of this frame (to handle OOPIFs).
+  int32 child_frame_routing_id;
+  // This field holds inline JavaScript content and remotely hosted scripts.
+  string inner_html;
+};
+
+interface ThreatReporter {
+  // Client-side detection message sent from the browser to the renderer.
+  // Request a DOM tree when a safe browsing interstitial is shown.
+  // Renderer returns part of the DOM to be used in a threat report.
+  GetThreatDOMDetails() => (array<ThreatDOMDetailsNode> nodes);
+};
+
+// Enum representing possible outcomes of the renderer-side classification.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum PhishingDetectorResult {
+  // The feature collection succeeded.
+  SUCCESS = 0,
+
+  // The classifier either did not exist, or was not ready.
+  CLASSIFIER_NOT_READY = 1,
+
+  // Another classification was requesting, cancelling this one.
+  CANCELLED = 2,
+
+  // The last recorded transition was a forward/back in history. Since the
+  // classifier previously ran on this URL, it did not run again.
+  FORWARD_BACK_TRANSITION = 3,
+
+  // The classifier returned an invalid score.
+  INVALID_SCORE = 4,
+};
+
+[EnableIf=full_safe_browsing]
+// Interface for setting the CSD model and to start phishing classification.
+interface PhishingDetector {
+  // A classification model for client-side phishing detection.
+  // The string is an encoded safe_browsing::ClientSideModel protocol buffer, or
+  // empty to disable client-side phishing detection for this renderer. The
+  // |tflite_model| is a file handle with contents a TfLite model, which is used
+  // to classify the appearance of pages.
+  SetPhishingModel(string model, mojo_base.mojom.ReadOnlyFile? tflite_model);
+
+  // A classification model for client-side phishing detection. This call sends
+  // the model from the browser process to the renderer process. The model is
+  // sent as a safe_browsing::ClientSideModel flatbuffer string in a
+  // ReadOnlySharedMemoryRegion to client-side phishing detection on the
+  // renderer process. An invalid region is used to disable classification. The
+  // |tflite_model| is a file handle with contents a TfLite model, which is used
+  // to classify the appearance of pages.
+  SetPhishingFlatBufferModel(mojo_base.mojom.ReadOnlySharedMemoryRegion region,
+                             mojo_base.mojom.ReadOnlyFile? tflite_model);
+
+  // Tells the renderer to begin phishing detection for the given toplevel URL
+  // which it has started loading. Returns the serialized request proto and a
+  // |result| enum to indicate failure. If the URL is phishing the request proto
+  // will have |is_phishing()| set to true.
+  StartPhishingDetection(url.mojom.Url url)
+    => (PhishingDetectorResult result, string request_proto);
+};

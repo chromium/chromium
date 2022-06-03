@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
 
-#include "third_party/blink/renderer/core/geometry/dom_point_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
 
 namespace blink {
 

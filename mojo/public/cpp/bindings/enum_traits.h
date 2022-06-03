@@ -28,6 +28,17 @@ struct EnumTraits {
                 "forget to include the corresponding header file?");
 };
 
+// No special mapping or validation required if the input and output type are
+// identical.
+template <typename T>
+struct EnumTraits<T, T> {
+  static T ToMojom(T input) { return input; }
+  static bool FromMojom(T input, T* output) {
+    *output = input;
+    return true;
+  }
+};
+
 }  // namespace mojo
 
 #endif  // MOJO_PUBLIC_CPP_BINDINGS_ENUM_TRAITS_H_

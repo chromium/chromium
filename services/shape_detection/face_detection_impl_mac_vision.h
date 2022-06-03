@@ -5,11 +5,11 @@
 #ifndef SERVICES_SHAPE_DETECTION_FACE_DETECTION_IMPL_MAC_VISION_H_
 #define SERVICES_SHAPE_DETECTION_FACE_DETECTION_IMPL_MAC_VISION_H_
 
+#include <os/availability.h>
+
 #include <memory>
 #include <utility>
 
-#include "base/mac/availability.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -26,6 +26,11 @@ class API_AVAILABLE(macos(10.13)) FaceDetectionImplMacVision
     : public mojom::FaceDetection {
  public:
   FaceDetectionImplMacVision();
+
+  FaceDetectionImplMacVision(const FaceDetectionImplMacVision&) = delete;
+  FaceDetectionImplMacVision& operator=(const FaceDetectionImplMacVision&) =
+      delete;
+
   ~FaceDetectionImplMacVision() override;
 
   void Detect(const SkBitmap& bitmap,
@@ -43,8 +48,6 @@ class API_AVAILABLE(macos(10.13)) FaceDetectionImplMacVision
   DetectCallback detected_callback_;
   mojo::SelfOwnedReceiverRef<mojom::FaceDetection> receiver_;
   base::WeakPtrFactory<FaceDetectionImplMacVision> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaceDetectionImplMacVision);
 };
 
 }  // namespace shape_detection

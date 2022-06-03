@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>
+    Test CPU performance of the GPURenderPassEncoder.draw binding
+  </title>
+  <script src="../resources/runner.js"></script>
+  <script src="./resources/webgpu-perf-utils.js"></script>
+</head>
+
+<body>
+  <canvas id="canvas" width=400 height=400></canvas>
+  <script>
+    (async () => {
+      const adapter = navigator.gpu && await navigator.gpu.requestAdapter();
+      if (!adapter) {
+        return skipTest('WebGPU not supported');
+      }
+
+      const device = await adapter.requestDevice();
+      const canvas = document.getElementById('canvas');
+      const context = canvas.getContext('webgpu');
+      const contextFormat = context.getPreferredFormat(adapter);
+
+      context.configure({
+        device,
+        format: contextFormat,
+      });
+
+      const pipeline = device.createRenderPipeline({
+        vertex: {
+          module: device.createShaderModule({
+            code: `
+              var pos : array<vec2<f32>, 3> = array<vec2<f32>, 3>(
+                  vec2<f32>(0.0, 0.5),
+                  vec2<f32>(-0.5, -0.5),
+                  vec2<f32>(0.5, -0.5));
+
+              [[stage(vertex)]]
+              fn main([[builtin(vertex_index)]] VertexIndex : u32) -> [[builtin(position)]] vec4<f32> {
+                return vec4<f32>(pos[VertexIndex], 0.0, 1.0);
+              }`
+          }),
+          entryPoint: 'main',
+        },
+        fragment: {
+          module: device.createShaderModule({
+            code: `
+              [[stage(fragment)]]
+              fn main() -> [[location(0)]] vec4<f32> {
+                return vec4<f32>(0.0, 1.0, 0.0, 1.0);
+              }`
+          }),
+          entryPoint: 'main',
+          targets: [{
+            format: contextFormat,
+          }],
+        },
+        primitive: {
+          topology: 'triangle-list',
+        },
+      });
+
+      const renderPassDescriptor = {
+        colorAttachments: [{
+            view: undefined,
+            loadValue: { r: 0.0, g: 0.0, b: 0.0, a: 1.0 },
+        }],
+      };
+
+      const iterations = 10000;
+      PerfTestRunner.measureInnerRAFTime({
+        description: `CPU time for ${iterations} calls to GPURenderPassEncoder.draw`,
+        warmUpCount: 10,
+        run() {
+          const commandEncoder = device.createCommandEncoder();
+          renderPassDescriptor.colorAttachments[0].view = context.getCurrentTexture().createView();
+
+          const passEncoder = commandEncoder.beginRenderPass(renderPassDescriptor);
+          passEncoder.setPipeline(pipeline);
+          for (let i = 0; i < iterations; ++i) {
+            passEncoder.draw(3, 1, 0, 0);
+          }
+          passEncoder.endPass();
+
+          device.queue.submit([commandEncoder.finish()]);
+        }
+      });
+    })();
+  </script>
+</body>
+
+</html>

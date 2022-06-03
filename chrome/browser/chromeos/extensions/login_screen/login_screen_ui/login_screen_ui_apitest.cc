@@ -5,12 +5,13 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/dialog_delegate.h"
+#include "chrome/browser/ash/login/ui/login_screen_extension_ui/window.h"
+#include "chrome/browser/ash/policy/login/signin_profile_extensions_policy_test_base.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_ui/ui_handler.h"
-#include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/dialog_delegate.h"
-#include "chrome/browser/chromeos/login/ui/login_screen_extension_ui/window.h"
-#include "chrome/browser/chromeos/policy/signin_profile_extensions_policy_test_base.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
 
@@ -34,17 +35,20 @@ class LoginScreenUiApitest : public LoginScreenApitestBase {
  public:
   LoginScreenUiApitest() : LoginScreenApitestBase(version_info::Channel::DEV) {}
 
+  LoginScreenUiApitest(const LoginScreenUiApitest&) = delete;
+  LoginScreenUiApitest& operator=(const LoginScreenUiApitest&) = delete;
+
   ~LoginScreenUiApitest() override = default;
 
   bool HasOpenWindow() const {
     return UiHandler::Get(false)->HasOpenWindow(extension_id_);
   }
 
-  bool CanCloseDialog() const {
+  bool OnDialogCloseRequested() const {
     return UiHandler::Get(false)
         ->GetWindowForTesting(extension_id_)
         ->GetDialogDelegateForTesting()
-        ->CanCloseDialog();
+        ->OnDialogCloseRequested();
   }
 
   bool ShouldShowCloseButton() const {
@@ -61,49 +65,46 @@ class LoginScreenUiApitest : public LoginScreenApitestBase {
         ->GetDialogWidgetForTesting()
         ->movement_disabled();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginScreenUiApitest);
 };
 
 IN_PROC_BROWSER_TEST_F(LoginScreenUiApitest, ExtensionCanOpenWindow) {
-  SetUpExtensionAndRunTest(kCanOpenWindow);
+  SetUpLoginScreenExtensionAndRunTest(kCanOpenWindow);
   ASSERT_TRUE(HasOpenWindow());
   // userCanClose defaults to false
   EXPECT_TRUE(IsMovementDisabled());
-  EXPECT_FALSE(CanCloseDialog());
+  EXPECT_FALSE(OnDialogCloseRequested());
   EXPECT_FALSE(ShouldShowCloseButton());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenUiApitest,
                        ExtensionCannotOpenMultipleWindows) {
-  SetUpExtensionAndRunTest(kCannotOpenMultipleWindows);
+  SetUpLoginScreenExtensionAndRunTest(kCannotOpenMultipleWindows);
   EXPECT_TRUE(HasOpenWindow());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenUiApitest, ExtensionCanOpenAndCloseWindow) {
-  SetUpExtensionAndRunTest(kCanOpenAndCloseWindow);
+  SetUpLoginScreenExtensionAndRunTest(kCanOpenAndCloseWindow);
   EXPECT_FALSE(HasOpenWindow());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenUiApitest, ExtensionCannotCloseNoWindow) {
-  SetUpExtensionAndRunTest(kCannotCloseNoWindow);
+  SetUpLoginScreenExtensionAndRunTest(kCannotCloseNoWindow);
   EXPECT_FALSE(HasOpenWindow());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenUiApitest, UserCanCloseWindow) {
-  SetUpExtensionAndRunTest(kUserCanCloseWindow);
+  SetUpLoginScreenExtensionAndRunTest(kUserCanCloseWindow);
   ASSERT_TRUE(HasOpenWindow());
   EXPECT_TRUE(IsMovementDisabled());
-  EXPECT_TRUE(CanCloseDialog());
+  EXPECT_TRUE(OnDialogCloseRequested());
   EXPECT_TRUE(ShouldShowCloseButton());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginScreenUiApitest, UserCannotCloseWindow) {
-  SetUpExtensionAndRunTest(kUserCannotCloseWindow);
+  SetUpLoginScreenExtensionAndRunTest(kUserCannotCloseWindow);
   ASSERT_TRUE(HasOpenWindow());
   EXPECT_TRUE(IsMovementDisabled());
-  EXPECT_FALSE(CanCloseDialog());
+  EXPECT_FALSE(OnDialogCloseRequested());
   EXPECT_FALSE(ShouldShowCloseButton());
 }
 

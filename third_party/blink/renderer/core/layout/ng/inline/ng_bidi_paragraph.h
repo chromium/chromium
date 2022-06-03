@@ -5,6 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_BIDI_PARAGRAPH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_INLINE_NG_BIDI_PARAGRAPH_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -23,7 +25,7 @@ class ComputedStyle;
 // UAX#9 and create logical runs.
 // http://unicode.org/reports/tr9/
 // It can also create visual runs once lines breaks are determined.
-class NGBidiParagraph {
+class CORE_EXPORT NGBidiParagraph {
   STACK_ALLOCATED();
 
  public:
@@ -35,6 +37,8 @@ class NGBidiParagraph {
   // Returns false on failure. Nothing other than the destructor should be
   // called.
   bool SetParagraph(const String&, const ComputedStyle&);
+  bool SetParagraph(const String&,
+                    absl::optional<TextDirection> base_direction);
 
   // @return the entire text is unidirectional.
   bool IsUnidirectional() const {
@@ -51,6 +55,30 @@ class NGBidiParagraph {
   // This is generally determined by the first strong character.
   // http://unicode.org/reports/tr9/#The_Paragraph_Level
   static TextDirection BaseDirectionForString(const StringView&);
+
+  struct Run {
+    Run(unsigned start, unsigned end, UBiDiLevel level)
+        : start(start), end(end), level(level) {
+      DCHECK_GT(end, start);
+    }
+
+    unsigned Length() const { return end - start; }
+    TextDirection Direction() const { return DirectionFromLevel(level); }
+
+    bool operator==(const Run& other) const {
+      return start == other.start && end == other.end && level == other.level;
+    }
+
+    unsigned start;
+    unsigned end;
+    UBiDiLevel level;
+  };
+  using Runs = Vector<Run, 32>;
+
+  // Get a list of |Run| in the logical order (before bidi reorder.)
+  // |text| must be the same one as |SetParagraph|.
+  // This is higher-level API for |GetLogicalRun|.
+  void GetLogicalRuns(const String& text, Runs* runs) const;
 
   // Returns the end offset of a logical run that starts from the |start|
   // offset.

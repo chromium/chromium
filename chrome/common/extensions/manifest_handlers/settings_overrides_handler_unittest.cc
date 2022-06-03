@@ -7,14 +7,15 @@
 #include <memory>
 
 #include "base/json/json_string_value_serializer.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/version_info/version_info.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/features/feature_channel.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_url_handlers.h"
+#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -53,52 +54,108 @@ const char kPrepopulatedManifest[] =
     "  }"
     "}";
 
-const char kBrokenManifest[] =
-    "{"
-    " \"version\" : \"1.0.0.0\","
-    " \"manifest_version\" : 2,"
-    " \"name\" : \"Test\","
-    " \"chrome_settings_overrides\" : {"
-    "   \"homepage\" : \"{invalid}\","
-    "   \"search_provider\" : {"
-    "        \"name\" : \"first\","
-    "        \"keyword\" : \"firstkey\","
-    "        \"search_url\" : \"{invalid}/s?q={searchTerms}\","
-    "        \"favicon_url\" : \"{invalid}/favicon.ico\","
-    "        \"encoding\" : \"UTF-8\","
-    "        \"is_default\" : true"
-    "    },"
-    "   \"startup_pages\" : [\"{invalid}\"]"
-    "  }"
-    "}";
+const char kBrokenManifestEmpty[] = R"(
+{
+  "version" : "1.0.0.0",
+  "manifest_version" : 2,
+  "name" : "Test",
+  "chrome_settings_overrides" : {}
+})";
 
-using extensions::api::manifest_types::ChromeSettingsOverrides;
+const char kBrokenManifestHomepage[] = R"(
+{
+  "version" : "1.0.0.0",
+  "manifest_version" : 2,
+  "name" : "Test",
+  "chrome_settings_overrides" : {
+    "homepage" : "{invalid}"
+  }
+})";
+
+const char kBrokenManifestStartupPages[] = R"(
+{
+  "version" : "1.0.0.0",
+  "manifest_version" : 2,
+  "name" : "Test",
+  "chrome_settings_overrides" : {
+    "startup_pages" : ["{invalid}"]
+  }
+})";
+
+const char kManifestBrokenHomepageButCorrectStartupPages[] = R"(
+{
+  "version" : "1.0.0.0",
+  "manifest_version" : 2,
+  "name" : "Test",
+  "chrome_settings_overrides" : {
+    "homepage" : "{invalid}",
+    "startup_pages" : ["http://www.startup.com"]
+  }
+})";
+
+const char kManifestBrokenStartupPagesButCorrectHomepage[] = R"(
+{
+  "version" : "1.0.0.0",
+  "manifest_version" : 2,
+  "name" : "Test",
+  "chrome_settings_overrides" : {
+    "homepage": "http://www.homepage.com",
+    "startup_pages" : ["{invalid}"]
+  }
+})";
+
+using extensions::DictionaryBuilder;
 using extensions::Extension;
 using extensions::Manifest;
 using extensions::SettingsOverrides;
+using extensions::api::manifest_types::ChromeSettingsOverrides;
 namespace manifest_keys = extensions::manifest_keys;
 
-TEST(OverrideSettingsTest, ParseManifest) {
-#if defined(OS_MACOSX)
-  // On Mac, this API is limited to trunk.
-  extensions::ScopedCurrentChannel scoped_channel(
-      version_info::Channel::UNKNOWN);
-#endif  // OS_MACOSX
+scoped_refptr<Extension> CreateExtension(const base::DictionaryValue& manifest,
+                                         std::string* error) {
+  scoped_refptr<Extension> extension =
+      Extension::Create(base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
+                        extensions::mojom::ManifestLocation::kInvalidLocation,
+                        manifest, Extension::NO_FLAGS, error);
+  return extension;
+}
 
-  std::string manifest(kManifest);
+scoped_refptr<Extension> CreateExtension(base::StringPiece manifest,
+                                         std::string* error) {
   JSONStringValueDeserializer json(manifest);
+  std::unique_ptr<base::Value> root(json.Deserialize(nullptr, error));
+  if (!root) {
+    ADD_FAILURE() << "Could not deserialize manifest";
+    return nullptr;
+  }
+  if (!root->is_dict()) {
+    ADD_FAILURE() << "Manifest isn't a Dictionary";
+    return nullptr;
+  }
+  return CreateExtension(*static_cast<base::DictionaryValue*>(root.get()),
+                         error);
+}
+
+scoped_refptr<Extension> CreateExtensionWithSearchProvider(
+    std::unique_ptr<base::DictionaryValue> search_provider,
+    std::string* error) {
+  DictionaryBuilder manifest;
+  manifest.Set("name", "name")
+      .Set("manifest_version", 2)
+      .Set("version", "0.1")
+      .Set("description", "desc")
+      .Set("chrome_settings_overrides",
+           DictionaryBuilder()
+               .Set("search_provider", std::move(search_provider))
+               .Build());
+  return CreateExtension(*manifest.Build(), error);
+}
+
+TEST(OverrideSettingsTest, ParseManifest) {
   std::string error;
-  std::unique_ptr<base::Value> root(json.Deserialize(NULL, &error));
-  ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_dict());
-  scoped_refptr<Extension> extension = Extension::Create(
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      Manifest::INVALID_LOCATION,
-      *static_cast<base::DictionaryValue*>(root.get()),
-      Extension::NO_FLAGS,
-      &error);
+  scoped_refptr<Extension> extension = CreateExtension(kManifest, &error);
   ASSERT_TRUE(extension.get());
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
   ASSERT_TRUE(extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
 
   SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
@@ -106,7 +163,7 @@ TEST(OverrideSettingsTest, ParseManifest) {
   ASSERT_TRUE(settings_override);
   ASSERT_TRUE(settings_override->search_engine);
   EXPECT_TRUE(settings_override->search_engine->is_default);
-  const ChromeSettingsOverrides::Search_provider* search_engine =
+  const ChromeSettingsOverrides::SearchProvider* search_engine =
       settings_override->search_engine.get();
   EXPECT_EQ("first", *search_engine->name);
   EXPECT_EQ("firstkey", *search_engine->keyword);
@@ -128,26 +185,11 @@ TEST(OverrideSettingsTest, ParseManifest) {
 }
 
 TEST(OverrideSettingsTest, ParsePrepopulatedId) {
-#if defined(OS_MACOSX)
-  // On Mac, this API is limited to trunk.
-  extensions::ScopedCurrentChannel scoped_channel(
-      version_info::Channel::UNKNOWN);
-#endif  // OS_MACOSX
-
-  std::string manifest(kPrepopulatedManifest);
-  JSONStringValueDeserializer json(manifest);
   std::string error;
-  std::unique_ptr<base::Value> root(json.Deserialize(NULL, &error));
-  ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_dict());
   scoped_refptr<Extension> extension =
-      Extension::Create(base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-                        Manifest::INVALID_LOCATION,
-                        *static_cast<base::DictionaryValue*>(root.get()),
-                        Extension::NO_FLAGS,
-                        &error);
+      CreateExtension(kPrepopulatedManifest, &error);
   ASSERT_TRUE(extension.get());
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
   ASSERT_TRUE(extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
 
   SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
@@ -155,7 +197,7 @@ TEST(OverrideSettingsTest, ParsePrepopulatedId) {
   ASSERT_TRUE(settings_override);
   ASSERT_TRUE(settings_override->search_engine);
   EXPECT_TRUE(settings_override->search_engine->is_default);
-  const ChromeSettingsOverrides::Search_provider* search_engine =
+  const ChromeSettingsOverrides::SearchProvider* search_engine =
       settings_override->search_engine.get();
   ASSERT_TRUE(search_engine->prepopulated_id);
   EXPECT_EQ("http://www.foo.com/s?q={searchTerms}", search_engine->search_url);
@@ -166,26 +208,48 @@ TEST(OverrideSettingsTest, ParsePrepopulatedId) {
 #endif
 }
 
-TEST(OverrideSettingsTest, ParseBrokenManifest) {
-#if defined(OS_MACOSX)
-  // On Mac, this API is limited to trunk.
-  extensions::ScopedCurrentChannel scoped_channel(
-      version_info::Channel::UNKNOWN);
-#endif  // OS_MACOSX
-
-  std::string manifest(kBrokenManifest);
-  JSONStringValueDeserializer json(manifest);
+TEST(OverrideSettingsTest, ParseManifestBrokenHomepageButCorrectStartupPages) {
   std::string error;
-  std::unique_ptr<base::Value> root(json.Deserialize(NULL, &error));
-  ASSERT_TRUE(root);
-  ASSERT_TRUE(root->is_dict());
-  scoped_refptr<Extension> extension = Extension::Create(
-      base::FilePath(FILE_PATH_LITERAL("//nonexistent")),
-      Manifest::INVALID_LOCATION,
-      *static_cast<base::DictionaryValue*>(root.get()),
-      Extension::NO_FLAGS,
-      &error);
-#if defined(OS_WIN) || defined(OS_MACOSX)
+  scoped_refptr<Extension> extension =
+      CreateExtension(kManifestBrokenHomepageButCorrectStartupPages, &error);
+  ASSERT_TRUE(extension.get());
+#if defined(OS_WIN) || defined(OS_MAC)
+  ASSERT_TRUE(extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+
+  SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
+      extension->GetManifestData(manifest_keys::kSettingsOverride));
+  ASSERT_TRUE(settings_override);
+  EXPECT_EQ(std::vector<GURL>(1, GURL("http://www.startup.com")),
+            settings_override->startup_pages);
+#else
+  EXPECT_FALSE(
+      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+#endif
+}
+
+TEST(OverrideSettingsTest, ParseManifestBrokenStartupPagesButCorrectHomepage) {
+  std::string error;
+  scoped_refptr<Extension> extension =
+      CreateExtension(kManifestBrokenStartupPagesButCorrectHomepage, &error);
+  ASSERT_TRUE(extension.get());
+#if defined(OS_WIN) || defined(OS_MAC)
+  ASSERT_TRUE(extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+  SettingsOverrides* settings_override = static_cast<SettingsOverrides*>(
+      extension->GetManifestData(manifest_keys::kSettingsOverride));
+  ASSERT_TRUE(settings_override);
+  EXPECT_TRUE(settings_override->startup_pages.empty());
+  EXPECT_EQ(GURL("http://www.homepage.com"), *settings_override->homepage);
+#else
+  EXPECT_FALSE(
+      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+#endif
+}
+
+TEST(OverrideSettingsTest, ParseBrokenManifestEmptySettingsOverride) {
+  std::string error;
+  scoped_refptr<Extension> extension =
+      CreateExtension(kBrokenManifestEmpty, &error);
+#if defined(OS_WIN) || defined(OS_MAC)
   EXPECT_FALSE(extension.get());
   EXPECT_EQ(
       extensions::ErrorUtils::FormatErrorMessage(
@@ -193,10 +257,90 @@ TEST(OverrideSettingsTest, ParseBrokenManifest) {
           extensions::manifest_keys::kSettingsOverride),
       error);
 #else
-  EXPECT_TRUE(extension.get());
+  ASSERT_TRUE(extension.get());
   EXPECT_FALSE(
       extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
 #endif
+}
+
+TEST(OverrideSettingsTest, ParseBrokenManifestHomepage) {
+  std::string error;
+  scoped_refptr<Extension> extension =
+      CreateExtension(kBrokenManifestHomepage, &error);
+#if defined(OS_WIN) || defined(OS_MAC)
+  EXPECT_FALSE(extension.get());
+  EXPECT_EQ(extensions::ErrorUtils::FormatErrorMessage(
+                extensions::manifest_errors::kInvalidHomepageOverrideURL,
+                "{invalid}"),
+            error);
+#else
+  ASSERT_TRUE(extension.get());
+  EXPECT_FALSE(
+      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+#endif
+}
+
+TEST(OverrideSettingsTest, ParseBrokenManifestStartupPages) {
+  std::string error;
+  scoped_refptr<Extension> extension =
+      CreateExtension(kBrokenManifestStartupPages, &error);
+#if defined(OS_WIN) || defined(OS_MAC)
+  EXPECT_FALSE(extension.get());
+  EXPECT_EQ(
+      extensions::ErrorUtils::FormatErrorMessage(
+          extensions::manifest_errors::kInvalidStartupOverrideURL, "{invalid}"),
+      error);
+#else
+  ASSERT_TRUE(extension.get());
+  EXPECT_FALSE(
+      extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+#endif
+}
+
+TEST(OverrideSettingsTest, SearchProviderMissingKeys) {
+  struct KeyValue {
+    const char* key;
+    const char* value;
+  } kMandatorySearchProviderKeyValues[] = {
+      {"name", "first"},
+      {"keyword", "firstkey"},
+      {"encoding", "UTF-8"},
+      {"favicon_url", "http://www.foo.com/favicon.ico"},
+  };
+
+  DictionaryBuilder search_provider;
+  search_provider.Set("search_url", "http://www.foo.com/s?q={searchTerms}")
+      .Set("is_default", true);
+  for (const KeyValue& kv : kMandatorySearchProviderKeyValues)
+    search_provider.Set(kv.key, kv.value);
+  std::unique_ptr<base::DictionaryValue> search_provider_with_all_keys_dict =
+      search_provider.Build();
+
+  // Missing all keys from |kMandatorySearchProviderValues|.
+  for (const KeyValue& kv : kMandatorySearchProviderKeyValues) {
+    SCOPED_TRACE(testing::Message()
+                 << "key = " << kv.key << " value = " << kv.value);
+    // Build a search provider entry with |kv.key| missing:
+    std::unique_ptr<base::DictionaryValue> provider_with_missing_key =
+        base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+            search_provider_with_all_keys_dict->Clone()));
+    ASSERT_TRUE(provider_with_missing_key->RemovePath(kv.key));
+
+    std::string error;
+    scoped_refptr<Extension> extension = CreateExtensionWithSearchProvider(
+        std::move(provider_with_missing_key), &error);
+#if defined(OS_WIN) || defined(OS_MAC)
+    EXPECT_FALSE(extension.get());
+    EXPECT_EQ(extensions::ErrorUtils::FormatErrorMessage(
+                  extensions::manifest_errors::kInvalidSearchEngineMissingKeys,
+                  kv.key),
+              error);
+#else
+    ASSERT_TRUE(extension.get());
+    EXPECT_FALSE(
+        extension->manifest()->HasPath(manifest_keys::kSettingsOverride));
+#endif
+  }
 }
 
 }  // namespace

@@ -24,14 +24,15 @@ public class ContentMain {
     /**
      * Start the ContentMainRunner in native side.
      *
-     * @param startServiceManagerOnly Whether to start only the ServiceManager.
+     * @param startMinimalBrowser Whether to start only a minimal browser
+     *     process environment.
      **/
-    public static int start(boolean startServiceManagerOnly) {
-        return ContentMainJni.get().start(startServiceManagerOnly);
+    public static int start(boolean startMinimalBrowser) {
+        return ContentMainJni.get().start(startMinimalBrowser);
     }
 
     @NativeMethods
     interface Natives {
-        int start(boolean startServiceManagerOnly);
+        int start(boolean startMinimalBrowser);
     }
 }

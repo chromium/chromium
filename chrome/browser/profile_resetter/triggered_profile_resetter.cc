@@ -4,7 +4,7 @@
 
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 TriggeredProfileResetter::TriggeredProfileResetter(Profile* profile)
 #if defined(OS_WIN)
@@ -24,6 +24,6 @@ void TriggeredProfileResetter::ClearResetTrigger() {
   has_reset_trigger_ = false;
 }
 
-base::string16 TriggeredProfileResetter::GetResetToolName() {
+std::u16string TriggeredProfileResetter::GetResetToolName() {
   return tool_name_;
 }

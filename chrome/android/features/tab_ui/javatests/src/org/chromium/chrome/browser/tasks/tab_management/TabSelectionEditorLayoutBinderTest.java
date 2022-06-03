@@ -4,29 +4,30 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
-import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertFalse;
+import static junit.framework.Assert.assertNotNull;
 import static junit.framework.Assert.assertTrue;
 
-import android.graphics.Rect;
-import android.support.annotation.NonNull;
-import android.support.test.annotation.UiThreadTest;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
-import android.support.v7.widget.RecyclerView;
+import static org.junit.Assert.assertNull;
+
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
+import org.chromium.base.test.UiThreadTest;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -39,12 +40,13 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * Tests for {@link TabSelectionEditorLayoutBinder}.
  */
+@SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 @RunWith(ChromeJUnit4ClassRunner.class)
 public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase {
     private TabSelectionEditorLayout mEditorLayoutView;
-    private PropertyModel mModel = new PropertyModel(TabSelectionEditorProperties.ALL_KEYS);
+    private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;
-    private SelectionDelegate<Integer> mSelectionDelegate = new SelectionDelegate<>();
+    private SelectionDelegate<Integer> mSelectionDelegate;
     private ViewGroup mParentView;
 
     @Override
@@ -54,11 +56,14 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase 
         mParentView = new LinearLayout(getActivity());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mModel = new PropertyModel(TabSelectionEditorProperties.ALL_KEYS);
+            mSelectionDelegate = new SelectionDelegate<>();
             getActivity().setContentView(mParentView);
             mEditorLayoutView =
                     (TabSelectionEditorLayout) getActivity().getLayoutInflater().inflate(
                             R.layout.tab_selection_editor_layout, null);
             mEditorLayoutView.initialize(mParentView, null, new RecyclerView.Adapter() {
+                @SuppressWarnings("ConstantConditions")
                 @NonNull
                 @Override
                 public RecyclerView.ViewHolder onCreateViewHolder(
@@ -74,14 +79,15 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase 
                     return 0;
                 }
             }, mSelectionDelegate);
+
+            mMCP = PropertyModelChangeProcessor.create(
+                    mModel, mEditorLayoutView, TabSelectionEditorLayoutBinder::bind);
         });
-        mMCP = PropertyModelChangeProcessor.create(
-                mModel, mEditorLayoutView, TabSelectionEditorLayoutBinder::bind);
     }
 
     @Override
     public void tearDownTest() throws Exception {
-        mMCP.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(mMCP::destroy);
         super.tearDownTest();
     }
 
@@ -103,7 +109,7 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase 
     public void testBindActionButtonClickListener() {
         AtomicBoolean actionButtonClicked = new AtomicBoolean(false);
         mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_LISTENER,
-                v -> { actionButtonClicked.set(true); });
+                v -> actionButtonClicked.set(true));
         mEditorLayoutView.findViewById(R.id.action_button).performClick();
         assertTrue(actionButtonClicked.get());
     }
@@ -128,26 +134,20 @@ public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase 
     @Test
     @SmallTest
     @UiThreadTest
-    public void testSetPositionRect() {
-        Assert.assertNull(mEditorLayoutView.getPositionRectForTesting());
+    public void testActionButtonContentDescriptionBinding() {
+        // Set up action button.
+        Button button = mEditorLayoutView.findViewById(R.id.action_button);
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_ENABLING_THRESHOLD, 1);
 
-        Rect rect = new Rect();
-        mModel.set(TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT, rect);
+        int expectedResourceId = R.plurals.accessibility_tab_selection_editor_group_button;
+        mModel.set(TabSelectionEditorProperties.TOOLBAR_ACTION_BUTTON_DESCRIPTION_RESOURCE_ID,
+                expectedResourceId);
+        assertNull(button.getContentDescription());
 
-        assertEquals(rect, mModel.get(TabSelectionEditorProperties.SELECTION_EDITOR_POSITION_RECT));
-    }
+        // Simulate selection.
+        HashSet<Integer> selectedItem = new HashSet<>(Arrays.asList(1));
+        mSelectionDelegate.setSelectedItems(selectedItem);
 
-    @Test
-    @SmallTest
-    @UiThreadTest
-    public void testRegisterGlobalLayoutListener() {
-        AtomicBoolean globalLayoutChanged = new AtomicBoolean();
-        globalLayoutChanged.set(false);
-
-        ViewTreeObserver.OnGlobalLayoutListener listener = () -> globalLayoutChanged.set(true);
-        mModel.set(TabSelectionEditorProperties.SELECTION_EDITOR_GLOBAL_LAYOUT_LISTENER, listener);
-        mParentView.getViewTreeObserver().dispatchOnGlobalLayout();
-
-        assertTrue(globalLayoutChanged.get());
+        assertNotNull(button.getContentDescription());
     }
 }

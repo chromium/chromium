@@ -4,14 +4,12 @@
 
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/color_palette.h"
-#include "ui/gfx/color_utils.h"
-#include "ui/native_theme/native_theme.h"
 
 using TP = ThemeProperties;
 
@@ -22,8 +20,8 @@ int GetThemePropertyId(OmniboxPart part, OmniboxPartState state) {
   switch (part) {
     case OmniboxPart::LOCATION_BAR_BACKGROUND:
       return state == OmniboxPartState::HOVERED
-                 ? TP::COLOR_OMNIBOX_BACKGROUND_HOVERED
-                 : TP::COLOR_OMNIBOX_BACKGROUND;
+                 ? static_cast<int>(TP::COLOR_OMNIBOX_BACKGROUND_HOVERED)
+                 : static_cast<int>(TP::COLOR_OMNIBOX_BACKGROUND);
     case OmniboxPart::LOCATION_BAR_SELECTED_KEYWORD:
       return TP::COLOR_OMNIBOX_SELECTED_KEYWORD;
     case OmniboxPart::RESULTS_BACKGROUND:
@@ -42,8 +40,9 @@ int GetThemePropertyId(OmniboxPart part, OmniboxPartState state) {
     case OmniboxPart::LOCATION_BAR_TEXT_DEFAULT:
       return TP::COLOR_OMNIBOX_TEXT;
     case OmniboxPart::RESULTS_TEXT_DEFAULT:
-      return selected ? TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED
-                      : TP::COLOR_OMNIBOX_TEXT;
+      return selected
+                 ? static_cast<int>(TP::COLOR_OMNIBOX_RESULTS_TEXT_SELECTED)
+                 : static_cast<int>(TP::COLOR_OMNIBOX_TEXT);
     case OmniboxPart::LOCATION_BAR_TEXT_DIMMED:
       return TP::COLOR_OMNIBOX_TEXT_DIMMED;
     case OmniboxPart::RESULTS_TEXT_DIMMED:
@@ -59,6 +58,8 @@ int GetThemePropertyId(OmniboxPart part, OmniboxPartState state) {
       return OmniboxFieldTrial::IsExperimentalKeywordModeEnabled()
                  ? TP::COLOR_OMNIBOX_BUBBLE_OUTLINE_EXPERIMENTAL_KEYWORD_MODE
                  : TP::COLOR_OMNIBOX_BUBBLE_OUTLINE;
+    case OmniboxPart::RESULTS_BUTTON_BORDER:
+      return TP::COLOR_OMNIBOX_RESULTS_BUTTON_BORDER;
     default:
       NOTREACHED();
       return -1;
@@ -81,8 +82,7 @@ SkColor GetOmniboxSecurityChipColor(
                            OmniboxPart::LOCATION_BAR_TEXT_DIMMED);
   }
 
-  if (security_level == security_state::EV_SECURE ||
-      security_level == security_state::SECURE) {
+  if (security_level == security_state::SECURE) {
     return theme_provider->GetColor(TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE);
   }
   if (security_level == security_state::DANGEROUS)

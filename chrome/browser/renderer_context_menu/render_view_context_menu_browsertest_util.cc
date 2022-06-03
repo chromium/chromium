@@ -7,7 +7,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
@@ -64,8 +64,18 @@ content::ContextMenuParams& ContextMenuWaiter::params() {
   return params_;
 }
 
+const std::vector<int>& ContextMenuWaiter::GetCapturedCommandIds() const {
+  return captured_command_ids_;
+}
+
 void ContextMenuWaiter::Cancel(RenderViewContextMenu* context_menu) {
   params_ = context_menu->params();
+
+  const ui::SimpleMenuModel& menu_model = context_menu->menu_model();
+  captured_command_ids_.reserve(menu_model.GetItemCount());
+  for (int i = 0; i < menu_model.GetItemCount(); ++i)
+    captured_command_ids_.push_back(menu_model.GetCommandIdAt(i));
+
   if (maybe_command_to_execute_)
     context_menu->ExecuteCommand(*maybe_command_to_execute_, 0);
   context_menu->Cancel();

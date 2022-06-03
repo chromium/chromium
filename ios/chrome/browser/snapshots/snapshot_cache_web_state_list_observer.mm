@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/snapshots/snapshot_cache_web_state_list_observer.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -27,8 +27,8 @@ void SnapshotCacheWebStateListObserver::WebStateActivatedAt(
     web::WebState* old_web_state,
     web::WebState* new_web_state,
     int active_index,
-    int reason) {
-  if (!(reason & WebStateListObserver::CHANGE_REASON_USER_ACTION))
+    ActiveWebStateChangeReason reason) {
+  if (reason == ActiveWebStateChangeReason::Replaced)
     return;
 
   NSMutableSet<NSString*>* set = [NSMutableSet set];

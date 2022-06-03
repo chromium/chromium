@@ -4,8 +4,6 @@
 
 #import "components/remote_cocoa/app_shim/views_scrollbar_bridge.h"
 
-#import "base/mac/sdk_forward_declarations.h"
-
 @interface ViewsScrollbarBridge ()
 
 // Called when we receive a NSPreferredScrollerStyleDidChangeNotification.

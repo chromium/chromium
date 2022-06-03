@@ -8,32 +8,32 @@
 #include <windows.h>
 
 // Error conditions for GoogleChromeCompatibilityCheck().
-#define GCCC_ERROR_USERLEVELALREADYPRESENT       (1 << 0)
-#define GCCC_ERROR_SYSTEMLEVELALREADYPRESENT     (1 << 1)
-#define GCCC_ERROR_ACCESSDENIED                  (1 << 2)
-#define GCCC_ERROR_OSNOTSUPPORTED                (1 << 3)
-#define GCCC_ERROR_ALREADYOFFERED                (1 << 4)
-#define GCCC_ERROR_INTEGRITYLEVEL                (1 << 5)
+#define GCCC_ERROR_USERLEVELALREADYPRESENT (1 << 0)
+#define GCCC_ERROR_SYSTEMLEVELALREADYPRESENT (1 << 1)
+#define GCCC_ERROR_ACCESSDENIED (1 << 2)
+#define GCCC_ERROR_OSNOTSUPPORTED (1 << 3)
+#define GCCC_ERROR_ALREADYOFFERED (1 << 4)
+#define GCCC_ERROR_INTEGRITYLEVEL (1 << 5)
 
 // Error conditions for CanReactivateChrome().
-#define REACTIVATE_ERROR_NOTINSTALLED            (1 << 0)
-#define REACTIVATE_ERROR_NOTDORMANT              (1 << 1)
-#define REACTIVATE_ERROR_ALREADY_REACTIVATED     (1 << 2)
-#define REACTIVATE_ERROR_INVALID_INPUT           (1 << 3)
-#define REACTIVATE_ERROR_REACTIVATION_FAILED     (1 << 4)
+#define REACTIVATE_ERROR_NOTINSTALLED (1 << 0)
+#define REACTIVATE_ERROR_NOTDORMANT (1 << 1)
+#define REACTIVATE_ERROR_ALREADY_REACTIVATED (1 << 2)
+#define REACTIVATE_ERROR_INVALID_INPUT (1 << 3)
+#define REACTIVATE_ERROR_REACTIVATION_FAILED (1 << 4)
 
 // Error conditions for CanOfferRelaunch().
-#define RELAUNCH_ERROR_NOTINSTALLED              (1 << 0)
-#define RELAUNCH_ERROR_INVALID_PARTNER           (1 << 1)
-#define RELAUNCH_ERROR_PINGS_SENT                (1 << 2)
-#define RELAUNCH_ERROR_NOTDORMANT                (1 << 3)
-#define RELAUNCH_ERROR_ALREADY_RELAUNCHED        (1 << 4)
-#define RELAUNCH_ERROR_INVALID_INPUT             (1 << 5)
-#define RELAUNCH_ERROR_RELAUNCH_FAILED           (1 << 6)
+#define RELAUNCH_ERROR_NOTINSTALLED (1 << 0)
+#define RELAUNCH_ERROR_INVALID_PARTNER (1 << 1)
+#define RELAUNCH_ERROR_PINGS_SENT (1 << 2)
+#define RELAUNCH_ERROR_NOTDORMANT (1 << 3)
+#define RELAUNCH_ERROR_ALREADY_RELAUNCHED (1 << 4)
+#define RELAUNCH_ERROR_INVALID_INPUT (1 << 5)
+#define RELAUNCH_ERROR_RELAUNCH_FAILED (1 << 6)
 
 // Flags to indicate how GCAPI is invoked
-#define GCAPI_INVOKED_STANDARD_SHELL             (1 << 0)
-#define GCAPI_INVOKED_UAC_ELEVATION              (1 << 1)
+#define GCAPI_INVOKED_STANDARD_SHELL (1 << 0)
+#define GCAPI_INVOKED_UAC_ELEVATION (1 << 1)
 
 #ifdef __cplusplus
 extern "C" {
@@ -49,7 +49,7 @@ const int kRelaunchMinDaysDormant = 30;
 
 // This function returns TRUE if Google Chrome should be offered.
 // If the return is FALSE, the |reasons| DWORD explains why.  If you don't care
-// for the reason, you can pass NULL for |reasons|.
+// for the reason, you can pass nullptr for |reasons|.
 // |set_flag| indicates whether a flag should be set indicating that Chrome was
 // offered within the last six months; if passed FALSE, this method will not
 // set the flag even if Chrome can be offered.  If passed TRUE, this method
@@ -145,26 +145,22 @@ BOOL __stdcall SetRelaunchOffered(const wchar_t** partner_brandcode_list,
                                   DWORD* error_code);
 
 // Function pointer type declarations to use with GetProcAddress.
-typedef BOOL (__stdcall *GCCC_CompatibilityCheck)(BOOL, int, DWORD *);
-typedef BOOL (__stdcall *GCCC_LaunchGC)();
-typedef BOOL (__stdcall *GCCC_LaunchGoogleChromeInBackground)();
-typedef BOOL (__stdcall *GCCC_LaunchGCWithDimensions)(int, int, int, int, bool);
-typedef int (__stdcall *GCCC_GoogleChromeDaysSinceLastRun)();
-typedef BOOL (__stdcall *GCCC_CanOfferReactivation)(const wchar_t*,
-                                                    int,
-                                                    DWORD*);
-typedef BOOL (__stdcall *GCCC_ReactivateChrome)(const wchar_t*,
-                                                int,
-                                                DWORD*);
-typedef BOOL (__stdcall *GCCC_CanOfferRelaunch)(const wchar_t**,
-                                                int,
-                                                int,
-                                                DWORD*);
-typedef BOOL (__stdcall *GCCC_SetRelaunchOffered)(const wchar_t**,
-                                                  int,
-                                                  const wchar_t*,
-                                                  int,
-                                                  DWORD*);
+typedef BOOL(__stdcall* GCCC_CompatibilityCheck)(BOOL, int, DWORD*);
+typedef BOOL(__stdcall* GCCC_LaunchGC)();
+typedef BOOL(__stdcall* GCCC_LaunchGoogleChromeInBackground)();
+typedef BOOL(__stdcall* GCCC_LaunchGCWithDimensions)(int, int, int, int, bool);
+typedef int(__stdcall* GCCC_GoogleChromeDaysSinceLastRun)();
+typedef BOOL(__stdcall* GCCC_CanOfferReactivation)(const wchar_t*, int, DWORD*);
+typedef BOOL(__stdcall* GCCC_ReactivateChrome)(const wchar_t*, int, DWORD*);
+typedef BOOL(__stdcall* GCCC_CanOfferRelaunch)(const wchar_t**,
+                                               int,
+                                               int,
+                                               DWORD*);
+typedef BOOL(__stdcall* GCCC_SetRelaunchOffered)(const wchar_t**,
+                                                 int,
+                                                 const wchar_t*,
+                                                 int,
+                                                 DWORD*);
 
 #ifdef __cplusplus
 }  // extern "C"

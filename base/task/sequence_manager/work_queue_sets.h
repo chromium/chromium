@@ -6,16 +6,16 @@
 #define BASE_TASK_SEQUENCE_MANAGER_WORK_QUEUE_SETS_H_
 
 #include <array>
+#include <functional>
 #include <map>
+#include <vector>
 
 #include "base/base_export.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/task/common/intrusive_heap.h"
+#include "base/check_op.h"
+#include "base/containers/intrusive_heap.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 #include "base/task/sequence_manager/task_queue_impl.h"
 #include "base/task/sequence_manager/work_queue.h"
-#include "base/trace_event/traced_value.h"
 
 namespace base {
 namespace sequence_manager {
@@ -41,6 +41,8 @@ class BASE_EXPORT WorkQueueSets {
   WorkQueueSets(const char* name,
                 Observer* observer,
                 const SequenceManager::Settings& settings);
+  WorkQueueSets(const WorkQueueSets&) = delete;
+  WorkQueueSets& operator=(const WorkQueueSets&) = delete;
   ~WorkQueueSets();
 
   // O(log num queues)
@@ -106,17 +108,14 @@ class BASE_EXPORT WorkQueueSets {
     EnqueueOrder key;
     WorkQueue* value;
 
-    bool operator<=(const OldestTaskEnqueueOrder& other) const {
-      return key <= other.key;
+    // Used for a min-heap.
+    bool operator>(const OldestTaskEnqueueOrder& other) const {
+      return key > other.key;
     }
 
-    void SetHeapHandle(base::internal::HeapHandle handle) {
-      value->set_heap_handle(handle);
-    }
+    void SetHeapHandle(HeapHandle handle) { value->set_heap_handle(handle); }
 
-    void ClearHeapHandle() {
-      value->set_heap_handle(base::internal::HeapHandle());
-    }
+    void ClearHeapHandle() { value->set_heap_handle(HeapHandle()); }
 
     HeapHandle GetHeapHandle() const { return value->heap_handle(); }
   };
@@ -125,7 +124,7 @@ class BASE_EXPORT WorkQueueSets {
 
   // For each set |work_queue_heaps_| has a queue of WorkQueue ordered by the
   // oldest task in each WorkQueue.
-  std::array<base::internal::IntrusiveHeap<OldestTaskEnqueueOrder>,
+  std::array<IntrusiveHeap<OldestTaskEnqueueOrder, std::greater<>>,
              TaskQueue::kQueuePriorityCount>
       work_queue_heaps_;
 
@@ -151,8 +150,6 @@ class BASE_EXPORT WorkQueueSets {
 #endif
 
   Observer* const observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkQueueSets);
 };
 
 }  // namespace internal

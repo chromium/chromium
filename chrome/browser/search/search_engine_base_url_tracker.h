@@ -8,12 +8,11 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/search_engines/template_url_data.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/search_engines/template_url_service_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class SearchTermsData;
@@ -29,12 +28,17 @@ class SearchEngineBaseURLTracker : public TemplateURLServiceObserver {
     GOOGLE_BASE_URL,
   };
 
-  using BaseURLChangedCallback = base::Callback<void(ChangeReason)>;
+  using BaseURLChangedCallback = base::RepeatingCallback<void(ChangeReason)>;
 
   SearchEngineBaseURLTracker(
       TemplateURLService* template_url_service,
       std::unique_ptr<SearchTermsData> search_terms_data,
       const BaseURLChangedCallback& base_url_changed_callback);
+
+  SearchEngineBaseURLTracker(const SearchEngineBaseURLTracker&) = delete;
+  SearchEngineBaseURLTracker& operator=(const SearchEngineBaseURLTracker&) =
+      delete;
+
   ~SearchEngineBaseURLTracker() override;
 
  private:
@@ -48,15 +52,13 @@ class SearchEngineBaseURLTracker : public TemplateURLServiceObserver {
   std::unique_ptr<SearchTermsData> search_terms_data_;
   BaseURLChangedCallback base_url_changed_callback_;
 
-  ScopedObserver<TemplateURLService, TemplateURLServiceObserver> observer_{
-      this};
+  base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
+      observation_{this};
 
   // Used to check whether notifications from TemplateURLService indicate a
   // change that affects the default search provider.
   GURL previous_google_base_url_;
-  base::Optional<TemplateURLData> previous_default_search_provider_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchEngineBaseURLTracker);
+  absl::optional<TemplateURLData> previous_default_search_provider_data_;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_SEARCH_ENGINE_BASE_URL_TRACKER_H_

@@ -17,9 +17,7 @@ source_set("util") {
 }
 
 js_type_check("closure_compile") {
-  deps = [
-    ":ukm_internals",
-  ]
+  deps = [ ":ukm_internals" ]
 }
 
 js_library("ukm_internals") {

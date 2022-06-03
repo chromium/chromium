@@ -5,9 +5,8 @@
 #ifndef NET_TOOLS_GSSAPI_GSS_TYPES_H_
 #define NET_TOOLS_GSSAPI_GSS_TYPES_H_
 
+#include <cstddef>
 #include <cstdint>
-#include <string>
-#include <vector>
 
 // Define a minimal subset of the definitions needed to build a loadable fake
 // GSSAPI library. The bindings follow RFC 2744. The code follows the RFC

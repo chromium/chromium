@@ -49,14 +49,10 @@ static_library("core") {
 
 if (is_android) {
   java_cpp_enum("browsing_data_utils_java") {
-    sources = [
-      "browsing_data_utils.h",
-    ]
+    sources = [ "browsing_data_utils.h" ]
   }
   java_cpp_enum("clear_browsing_data_tab_java") {
-    sources = [
-      "clear_browsing_data_tab.h",
-    ]
+    sources = [ "clear_browsing_data_tab.h" ]
   }
 }
 

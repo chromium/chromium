@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "components/assist_ranker/predictor_config.h"
 #include "components/assist_ranker/ranker_model_loader.h"
@@ -41,6 +40,10 @@ class RankerModel;
 class BasePredictor : public base::SupportsWeakPtr<BasePredictor> {
  public:
   BasePredictor(const PredictorConfig& config);
+
+  BasePredictor(const BasePredictor&) = delete;
+  BasePredictor& operator=(const BasePredictor&) = delete;
+
   virtual ~BasePredictor();
 
   // Returns true if the predictor is ready to make predictions.
@@ -84,8 +87,6 @@ class BasePredictor : public base::SupportsWeakPtr<BasePredictor> {
   bool is_ready_ = false;
   bool is_query_enabled_ = false;
   PredictorConfig config_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasePredictor);
 };
 
 }  // namespace assist_ranker

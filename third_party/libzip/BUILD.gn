@@ -1,0 +1,158 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/sanitizers/sanitizers.gni")
+
+config("libzip_config") {
+  include_dirs = [ "src" ]
+
+  cflags = [ "-Wno-implicit-function-declaration" ]
+}
+
+source_set("libzip_public_headers") {
+  public = [
+    "src/lib/zip.h",
+    "src/lib/zipint.h",
+    "src/zip_err_str.c",
+    "src/zipconf.h",
+  ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  public_configs = [ ":libzip_config" ]
+}
+
+static_library("libzip") {
+  sources = [
+    "src/config.h",
+    "src/lib/zip.h",
+    "src/lib/zip_add.c",
+    "src/lib/zip_add_dir.c",
+    "src/lib/zip_add_entry.c",
+    "src/lib/zip_algorithm_deflate.c",
+    "src/lib/zip_buffer.c",
+    "src/lib/zip_close.c",
+    "src/lib/zip_delete.c",
+    "src/lib/zip_dir_add.c",
+    "src/lib/zip_dirent.c",
+    "src/lib/zip_discard.c",
+    "src/lib/zip_entry.c",
+    "src/lib/zip_error.c",
+    "src/lib/zip_error_clear.c",
+    "src/lib/zip_error_get.c",
+    "src/lib/zip_error_get_sys_type.c",
+    "src/lib/zip_error_strerror.c",
+    "src/lib/zip_error_to_str.c",
+    "src/lib/zip_extra_field.c",
+    "src/lib/zip_extra_field_api.c",
+    "src/lib/zip_fclose.c",
+    "src/lib/zip_fdopen.c",
+    "src/lib/zip_file_add.c",
+    "src/lib/zip_file_error_clear.c",
+    "src/lib/zip_file_error_get.c",
+    "src/lib/zip_file_get_comment.c",
+    "src/lib/zip_file_get_external_attributes.c",
+    "src/lib/zip_file_get_offset.c",
+    "src/lib/zip_file_rename.c",
+    "src/lib/zip_file_replace.c",
+    "src/lib/zip_file_set_comment.c",
+    "src/lib/zip_file_set_encryption.c",
+    "src/lib/zip_file_set_external_attributes.c",
+    "src/lib/zip_file_set_mtime.c",
+    "src/lib/zip_file_strerror.c",
+    "src/lib/zip_fopen.c",
+    "src/lib/zip_fopen_encrypted.c",
+    "src/lib/zip_fopen_index.c",
+    "src/lib/zip_fopen_index_encrypted.c",
+    "src/lib/zip_fread.c",
+    "src/lib/zip_fseek.c",
+    "src/lib/zip_ftell.c",
+    "src/lib/zip_get_archive_comment.c",
+    "src/lib/zip_get_archive_flag.c",
+    "src/lib/zip_get_encryption_implementation.c",
+    "src/lib/zip_get_file_comment.c",
+    "src/lib/zip_get_name.c",
+    "src/lib/zip_get_num_entries.c",
+    "src/lib/zip_get_num_files.c",
+    "src/lib/zip_hash.c",
+    "src/lib/zip_io_util.c",
+    "src/lib/zip_libzip_version.c",
+    "src/lib/zip_memdup.c",
+    "src/lib/zip_mkstempm.c",
+    "src/lib/zip_name_locate.c",
+    "src/lib/zip_new.c",
+    "src/lib/zip_open.c",
+    "src/lib/zip_pkware.c",
+    "src/lib/zip_progress.c",
+    "src/lib/zip_random_unix.c",
+    "src/lib/zip_rename.c",
+    "src/lib/zip_replace.c",
+    "src/lib/zip_set_archive_comment.c",
+    "src/lib/zip_set_archive_flag.c",
+    "src/lib/zip_set_default_password.c",
+    "src/lib/zip_set_file_comment.c",
+    "src/lib/zip_set_file_compression.c",
+    "src/lib/zip_set_name.c",
+    "src/lib/zip_source_accept_empty.c",
+    "src/lib/zip_source_begin_write.c",
+    "src/lib/zip_source_begin_write_cloning.c",
+    "src/lib/zip_source_buffer.c",
+    "src/lib/zip_source_call.c",
+    "src/lib/zip_source_close.c",
+    "src/lib/zip_source_commit_write.c",
+    "src/lib/zip_source_compress.c",
+    "src/lib/zip_source_crc.c",
+    "src/lib/zip_source_error.c",
+    "src/lib/zip_source_file_common.c",
+    "src/lib/zip_source_file_stdio.c",
+    "src/lib/zip_source_file_stdio_named.c",
+    "src/lib/zip_source_free.c",
+    "src/lib/zip_source_function.c",
+    "src/lib/zip_source_get_file_attributes.c",
+    "src/lib/zip_source_is_deleted.c",
+    "src/lib/zip_source_layered.c",
+    "src/lib/zip_source_open.c",
+    "src/lib/zip_source_pkware_decode.c",
+    "src/lib/zip_source_pkware_encode.c",
+    "src/lib/zip_source_read.c",
+    "src/lib/zip_source_remove.c",
+    "src/lib/zip_source_rollback_write.c",
+    "src/lib/zip_source_seek.c",
+    "src/lib/zip_source_seek_write.c",
+    "src/lib/zip_source_stat.c",
+    "src/lib/zip_source_supports.c",
+    "src/lib/zip_source_tell.c",
+    "src/lib/zip_source_tell_write.c",
+    "src/lib/zip_source_window.c",
+    "src/lib/zip_source_write.c",
+    "src/lib/zip_source_zip.c",
+    "src/lib/zip_source_zip_new.c",
+    "src/lib/zip_stat.c",
+    "src/lib/zip_stat_index.c",
+    "src/lib/zip_stat_init.c",
+    "src/lib/zip_strerror.c",
+    "src/lib/zip_string.c",
+    "src/lib/zip_unchange.c",
+    "src/lib/zip_unchange_all.c",
+    "src/lib/zip_unchange_archive.c",
+    "src/lib/zip_unchange_data.c",
+    "src/lib/zip_utf-8.c",
+    "src/lib/zipint.h",
+    "src/zip_err_str.c",
+    "src/zipconf.h",
+  ]
+  if (is_win) {
+    sources -= [ "src/lib/zip_random_unix.c" ]
+    sources += [ "src/lib/zip_random_win32.c" ]
+  }
+
+  deps = [ "//third_party/zlib" ]
+
+  public_deps = [ ":libzip_public_headers" ]
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+
+  public_configs = [ ":libzip_config" ]
+}

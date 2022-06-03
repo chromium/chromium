@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/tdresser/is-input-pending
-[RuntimeEnabled=ExperimentalIsInputPending]
-interface Scheduling {
-    [RuntimeEnabled=ExperimentalIsInputPending] boolean isFramePending();
-    [CallWith=ScriptState, MeasureAs=SchedulingIsInputPending, RuntimeEnabled=ExperimentalIsInputPending] boolean isInputPending(optional sequence<DOMString> inputTypes = []);
+// https://github.com/WICG/is-input-pending
+[
+    Exposed=Window,
+    RuntimeEnabled=ExperimentalIsInputPending
+] interface Scheduling {
+    [RuntimeEnabled=ExperimentalIsFramePending] boolean isFramePending();
+    [MeasureAs=SchedulingIsInputPending, RuntimeEnabled=ExperimentalIsInputPending] boolean isInputPending(optional IsInputPendingOptions options = {});
 };

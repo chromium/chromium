@@ -1,7 +1,8 @@
-CONSOLE WARNING: line 16: Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 When selecting from a child of shadow host to an element in Shadow DOM, a crash should not be caused. This is because the start position of Selection comes after the end position of Selection.
 
-before host drag from here after host
+This test was converted from Shadow DOM v0 to v1, so might not be as applicable with v1.
+
+before host 
 PASS
 PASS successfullyParsed is true
 

@@ -5,9 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("bootstrap_java") {
-  # Use .dex rather than .dex.jar to be usable by package_apk().
-  dex_path = "$target_out_dir/bootstrap.dex"
-  java_files = [
+  sources = [
     "java/org/chromium/incrementalinstall/BootstrapApplication.java",
     "java/org/chromium/incrementalinstall/BootstrapInstrumentation.java",
     "java/org/chromium/incrementalinstall/ClassLoaderPatcher.java",
@@ -17,4 +15,9 @@ android_library("bootstrap_java") {
   ]
   jacoco_never_instrument = true
   no_build_hooks = true
+}
+
+dist_dex("apk_dex") {
+  output = "$target_out_dir/apk.dex"
+  deps = [ ":bootstrap_java" ]
 }

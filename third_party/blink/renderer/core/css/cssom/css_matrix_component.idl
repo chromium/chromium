@@ -9,6 +9,6 @@
     Exposed=(Window,LayoutWorklet,PaintWorklet)
 ] interface CSSMatrixComponent : CSSTransformComponent {
     constructor(DOMMatrixReadOnly matrix,
-        optional CSSMatrixComponentOptions options);
+        optional CSSMatrixComponentOptions options = {});
     attribute DOMMatrix matrix;
 };

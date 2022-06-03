@@ -4,6 +4,8 @@
 
 package org.chromium.mojo.system.impl;
 
+import android.os.ParcelFileDescriptor;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
@@ -163,6 +165,15 @@ public class CoreImpl implements Core {
     @Override
     public UntypedHandle acquireNativeHandle(int handle) {
         return new UntypedHandleImpl(this, handle);
+    }
+
+    /**
+     * @see org.chromium.mojo.system.Core#wrapFileDescriptor(ParcelFileDescriptor)
+     */
+    @Override
+    public UntypedHandle wrapFileDescriptor(ParcelFileDescriptor fd) {
+        int releasedHandle = CoreImplJni.get().createPlatformHandle(fd.detachFd());
+        return acquireNativeHandle(releasedHandle);
     }
 
     /**
@@ -507,5 +518,6 @@ public class CoreImpl implements Core {
                 CoreImpl caller, int mojoHandle, long offset, long numBytes, int flags);
         int unmap(CoreImpl caller, ByteBuffer buffer);
         int getNativeBufferOffset(CoreImpl caller, ByteBuffer buffer, int alignment);
+        int createPlatformHandle(int fd);
     }
 }

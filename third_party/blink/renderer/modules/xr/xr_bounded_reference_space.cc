@@ -27,18 +27,23 @@ float RoundCm(float val) {
 }
 
 Member<DOMPointReadOnly> RoundedDOMPoint(const FloatPoint3D& val) {
-  return DOMPointReadOnly::Create(RoundCm(val.X()), RoundCm(val.Y()),
-                                  RoundCm(val.Z()), 1.0);
+  return DOMPointReadOnly::Create(RoundCm(val.x()), RoundCm(val.y()),
+                                  RoundCm(val.z()), 1.0);
 }
 }  // anonymous namespace
 
 XRBoundedReferenceSpace::XRBoundedReferenceSpace(XRSession* session)
-    : XRReferenceSpace(session, Type::kTypeBoundedFloor) {}
+    : XRReferenceSpace(
+          session,
+          device::mojom::blink::XRReferenceSpaceType::kBoundedFloor) {}
 
 XRBoundedReferenceSpace::XRBoundedReferenceSpace(
     XRSession* session,
     XRRigidTransform* origin_offset)
-    : XRReferenceSpace(session, origin_offset, Type::kTypeBoundedFloor) {}
+    : XRReferenceSpace(
+          session,
+          origin_offset,
+          device::mojom::blink::XRReferenceSpaceType::kBoundedFloor) {}
 
 XRBoundedReferenceSpace::~XRBoundedReferenceSpace() = default;
 
@@ -50,13 +55,13 @@ void XRBoundedReferenceSpace::EnsureUpdated() {
 
   stage_parameters_id_ = session()->StageParametersId();
 
-  const device::mojom::blink::VRDisplayInfoPtr& display_info =
-      session()->GetVRDisplayInfo();
+  const device::mojom::blink::VRStageParametersPtr& stage_parameters =
+      session()->GetStageParameters();
 
-  if (display_info && display_info->stage_parameters) {
-    // Use the transform given by xrDisplayInfo's stage_parameters if available.
-    bounded_native_from_mojo_ = std::make_unique<TransformationMatrix>(
-        display_info->stage_parameters->standing_transform.matrix());
+  if (stage_parameters) {
+    // Use the transform given by stage_parameters if available.
+    mojo_from_bounded_native_ = std::make_unique<TransformationMatrix>(
+        stage_parameters->mojo_from_floor.matrix());
 
     // In order to ensure that the bounds continue to line up with the user's
     // physical environment we need to transform them from native to offset.
@@ -69,33 +74,31 @@ void XRBoundedReferenceSpace::EnsureUpdated() {
     // We may not have bounds if we've lost tracking after being created.
     // Whether we have them or not, we need to clear the existing bounds.
     offset_bounds_geometry_.clear();
-    if (display_info->stage_parameters->bounds &&
-        display_info->stage_parameters->bounds->size() >=
-            kMinimumNumberOfBoundVertices) {
-      for (const auto& bound : *(display_info->stage_parameters->bounds)) {
+    if (stage_parameters->bounds &&
+        stage_parameters->bounds->size() >= kMinimumNumberOfBoundVertices) {
+      for (const auto& bound : *(stage_parameters->bounds)) {
         FloatPoint3D p = offset_from_native.MapPoint(
-            FloatPoint3D(bound.X(), 0.0, bound.Z()));
+            FloatPoint3D(bound.x(), 0.0, bound.z()));
         offset_bounds_geometry_.push_back(RoundedDOMPoint(p));
       }
     }
   } else {
     // If stage parameters aren't available set the transform to null, which
     // will subsequently cause this reference space to return null poses.
-    bounded_native_from_mojo_.reset();
+    mojo_from_bounded_native_.reset();
     offset_bounds_geometry_.clear();
   }
 
   DispatchEvent(*XRReferenceSpaceEvent::Create(event_type_names::kReset, this));
 }
 
-std::unique_ptr<TransformationMatrix>
-XRBoundedReferenceSpace::NativeFromMojo() {
+absl::optional<TransformationMatrix> XRBoundedReferenceSpace::MojoFromNative() {
   EnsureUpdated();
 
-  if (!bounded_native_from_mojo_)
-    return nullptr;
+  if (!mojo_from_bounded_native_)
+    return absl::nullopt;
 
-  return std::make_unique<TransformationMatrix>(*bounded_native_from_mojo_);
+  return *mojo_from_bounded_native_;
 }
 
 HeapVector<Member<DOMPointReadOnly>> XRBoundedReferenceSpace::boundsGeometry() {
@@ -103,12 +106,7 @@ HeapVector<Member<DOMPointReadOnly>> XRBoundedReferenceSpace::boundsGeometry() {
   return offset_bounds_geometry_;
 }
 
-base::Optional<XRNativeOriginInformation>
-XRBoundedReferenceSpace::NativeOrigin() const {
-  return XRNativeOriginInformation::Create(this);
-}
-
-void XRBoundedReferenceSpace::Trace(blink::Visitor* visitor) {
+void XRBoundedReferenceSpace::Trace(Visitor* visitor) const {
   visitor->Trace(offset_bounds_geometry_);
   XRReferenceSpace::Trace(visitor);
 }

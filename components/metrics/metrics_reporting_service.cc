@@ -11,21 +11,12 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/metrics/metrics_pref_names.h"
+#include "components/metrics/metrics_service_client.h"
 #include "components/metrics/unsent_log_store_metrics_impl.h"
 #include "components/metrics/url_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 
 namespace metrics {
-
-namespace {
-
-// If an upload fails, and the transmission was over this byte count, then we
-// will discard the log, and not try to retransmit it.  We also don't persist
-// the log to the prefs for transmission during the next chrome session if this
-// limit is exceeded.
-const size_t kUploadLogAvoidRetransmitSize = 100 * 1024;
-
-}  // namespace
 
 // static
 void MetricsReportingService::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -35,9 +26,11 @@ void MetricsReportingService::RegisterPrefs(PrefRegistrySimple* registry) {
 
 MetricsReportingService::MetricsReportingService(MetricsServiceClient* client,
                                                  PrefService* local_state)
-    : ReportingService(client, local_state, kUploadLogAvoidRetransmitSize),
+    : ReportingService(client,
+                       local_state,
+                       client->GetStorageLimits().max_ongoing_log_size),
       metrics_log_store_(local_state,
-                         kUploadLogAvoidRetransmitSize,
+                         client->GetStorageLimits(),
                          client->GetUploadSigningKey()) {}
 
 MetricsReportingService::~MetricsReportingService() {}
@@ -67,7 +60,7 @@ void MetricsReportingService::LogActualUploadInterval(
     base::TimeDelta interval) {
   UMA_HISTOGRAM_CUSTOM_COUNTS("UMA.ActualLogUploadInterval",
                               interval.InMinutes(), 1,
-                              base::TimeDelta::FromHours(12).InMinutes(), 50);
+                              base::Hours(12).InMinutes(), 50);
 }
 
 void MetricsReportingService::LogCellularConstraint(bool upload_canceled) {
@@ -87,13 +80,13 @@ void MetricsReportingService::LogResponseOrErrorCode(int response_code,
   }
 }
 
-void MetricsReportingService::LogSuccess(size_t log_size) {
+void MetricsReportingService::LogSuccessLogSize(size_t log_size) {
   UMA_HISTOGRAM_COUNTS_10000("UMA.LogSize.OnSuccess", log_size / 1024);
 }
 
-void MetricsReportingService::LogLargeRejection(size_t log_size) {
-  UMA_HISTOGRAM_COUNTS_1M("UMA.Large Rejected Log was Discarded",
-                          static_cast<int>(log_size));
-}
+void MetricsReportingService::LogSuccessMetadata(
+    const std::string& staged_log) {}
+
+void MetricsReportingService::LogLargeRejection(size_t log_size) {}
 
 }  // namespace metrics

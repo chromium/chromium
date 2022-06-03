@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface mixin WindowOrWorkerGlobalScope: original interface mixin defined
+PASS Partial interface mixin WindowOrWorkerGlobalScope: member names are unique
+PASS Partial interface Window: member names are unique
+PASS Window includes GlobalEventHandlers: member names are unique
+PASS Window includes WindowEventHandlers: member names are unique
+PASS Window includes WindowOrWorkerGlobalScope: member names are unique
+PASS WorkerGlobalScope includes WindowOrWorkerGlobalScope: member names are unique
+PASS Window includes AnimationFrameProvider: member names are unique
+PASS Window includes WindowSessionStorage: member names are unique
+PASS Window includes WindowLocalStorage: member names are unique
+FAIL WorkerGlobalScope interface: attribute originPolicyIds assert_true: The prototype object must have a property "originPolicyIds" expected true got false
+FAIL WorkerGlobalScope interface: self must inherit property "originPolicyIds" with the proper type assert_inherits: property "originPolicyIds" not found in prototype chain
+Harness: the test ran to completion.
+

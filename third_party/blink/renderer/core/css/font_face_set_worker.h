@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_FACE_SET_WORKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_FACE_SET_WORKER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/css/font_face.h"
@@ -23,12 +22,12 @@ class Font;
 class CORE_EXPORT FontFaceSetWorker final
     : public FontFaceSet,
       public Supplement<WorkerGlobalScope> {
-  USING_GARBAGE_COLLECTED_MIXIN(FontFaceSetWorker);
-
  public:
   static const char kSupplementName[];
 
   explicit FontFaceSetWorker(WorkerGlobalScope&);
+  FontFaceSetWorker(const FontFaceSetWorker&) = delete;
+  FontFaceSetWorker& operator=(const FontFaceSetWorker&) = delete;
   ~FontFaceSetWorker() override;
 
   ScriptPromise ready(ScriptState*) override;
@@ -45,7 +44,7 @@ class CORE_EXPORT FontFaceSetWorker final
 
   static FontFaceSetWorker* From(WorkerGlobalScope&);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   bool InActiveContext() const override { return true; }
@@ -67,7 +66,6 @@ class CORE_EXPORT FontFaceSetWorker final
 
  private:
   void FireDoneEventIfPossible() override;
-  DISALLOW_COPY_AND_ASSIGN(FontFaceSetWorker);
 };
 
 }  // namespace blink

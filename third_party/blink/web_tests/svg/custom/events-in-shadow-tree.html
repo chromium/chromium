@@ -10,7 +10,7 @@ FAIL
 <div id="host"></div>
 <script>
     var host = document.querySelector('#host');
-    var shadowRoot = host.createShadowRoot();
+    var shadowRoot = host.attachShadow({mode: 'open'});
     var template = document.querySelector('template');
     shadowRoot.appendChild(template.content.cloneNode(true));
     host.addEventListener('click', function(e) {

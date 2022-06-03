@@ -27,8 +27,7 @@ class CSSParserThreadedTest : public MultiThreadedTest {
                                                const String& text) {
     auto* style =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
-    CSSParser::ParseValue(style, prop, text, true,
-                          SecureContextMode::kInsecureContext);
+    CSSParser::ParseValue(style, prop, text, true);
     return style;
   }
 };

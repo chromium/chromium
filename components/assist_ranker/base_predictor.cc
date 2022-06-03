@@ -4,6 +4,7 @@
 
 #include "components/assist_ranker/base_predictor.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "components/assist_ranker/proto/ranker_example.pb.h"
 #include "components/assist_ranker/proto/ranker_model.pb.h"
@@ -58,8 +59,8 @@ void BasePredictor::LogFeatureToUkm(const std::string& feature_name,
                                     ukm::UkmEntryBuilder* ukm_builder) {
   DCHECK(ukm_builder);
 
-  if (!base::Contains(*config_.feature_whitelist, feature_name)) {
-    DVLOG(1) << "Feature not whitelisted: " << feature_name;
+  if (!base::Contains(*config_.feature_allowlist, feature_name)) {
+    DVLOG(1) << "Feature not allowed: " << feature_name;
     return;
   }
 
@@ -95,12 +96,12 @@ void BasePredictor::LogExampleToUkm(const RankerExample& example,
     return;
   }
 
-  if (!config_.feature_whitelist) {
-    DVLOG(0) << "No whitelist specified.";
+  if (!config_.feature_allowlist) {
+    DVLOG(0) << "No allowlist specified.";
     return;
   }
-  if (config_.feature_whitelist->empty()) {
-    DVLOG(0) << "Empty whitelist, examples will not be logged.";
+  if (config_.feature_allowlist->empty()) {
+    DVLOG(0) << "Empty allowlist, examples will not be logged.";
     return;
   }
 

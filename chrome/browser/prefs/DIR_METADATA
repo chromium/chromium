@@ -1,0 +1,4 @@
+monorail: {
+  component: "Internals>Preferences"
+}
+team_email: "chromium-dev@chromium.org"

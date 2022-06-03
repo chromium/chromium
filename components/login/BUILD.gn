@@ -19,7 +19,5 @@ component("login") {
     "//ui/base",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 }

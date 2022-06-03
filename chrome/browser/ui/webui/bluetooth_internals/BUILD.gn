@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 source_set("bluetooth_internals") {
@@ -12,12 +13,12 @@ source_set("bluetooth_internals") {
     "bluetooth_internals_ui.h",
   ]
 
-  public_deps = [
-    "//device/bluetooth:deprecated_experimental_mojo",
-  ]
+  public_deps = [ "//device/bluetooth:deprecated_experimental_mojo" ]
 
   deps = [
     ":mojo_bindings",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/bluetooth_internals:resources",
     "//chrome/common",
     "//content/public/browser",
@@ -25,17 +26,14 @@ source_set("bluetooth_internals") {
     "//ui/webui",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [ "//chrome/browser/chromeos" ]
   }
 }
 
 mojom("mojo_bindings") {
-  sources = [
-    "bluetooth_internals.mojom",
-  ]
+  sources = [ "bluetooth_internals.mojom" ]
 
-  deps = [
-    "//device/bluetooth/public/mojom:deprecated_experimental_interfaces",
-  ]
+  deps =
+      [ "//device/bluetooth/public/mojom:deprecated_experimental_interfaces" ]
 }

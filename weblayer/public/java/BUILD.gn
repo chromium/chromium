@@ -18,24 +18,69 @@ jinja_template("weblayer_client_manifest") {
 }
 
 android_resources("client_resources") {
-  resource_dirs = [ "res" ]
+  sources = [
+    "res/values-night/colors.xml",
+    "res/values-night/values.xml",
+    "res/values-v27/styles.xml",
+    "res/values-v28/styles.xml",
+    "res/values/colors.xml",
+    "res/values/ids.xml",
+    "res/values/styles.xml",
+    "res/values/values.xml",
+    "res/xml/weblayer_file_paths.xml",
+  ]
   android_manifest = weblayer_client_manifest
   android_manifest_dep = ":weblayer_client_manifest"
 }
 
 android_library("java") {
-  java_files = [
+  sources = [
+    "org/chromium/weblayer/ActionModeCallback.java",
+    "org/chromium/weblayer/ActionModeItemType.java",
+    "org/chromium/weblayer/BroadcastReceiver.java",
     "org/chromium/weblayer/Browser.java",
+    "org/chromium/weblayer/BrowserControlsOffsetCallback.java",
+    "org/chromium/weblayer/BrowserEmbeddabilityMode.java",
     "org/chromium/weblayer/BrowserFragment.java",
+    "org/chromium/weblayer/BrowserFragmentCreateParams.java",
+    "org/chromium/weblayer/BrowserRestoreCallback.java",
     "org/chromium/weblayer/BrowsingDataType.java",
     "org/chromium/weblayer/Callback.java",
+    "org/chromium/weblayer/CaptureScreenShotCallback.java",
     "org/chromium/weblayer/ChildProcessService.java",
+    "org/chromium/weblayer/ContextMenuParams.java",
+    "org/chromium/weblayer/CookieChangeCause.java",
+    "org/chromium/weblayer/CookieChangedCallback.java",
+    "org/chromium/weblayer/CookieManager.java",
     "org/chromium/weblayer/CrashReporterCallback.java",
     "org/chromium/weblayer/CrashReporterController.java",
+    "org/chromium/weblayer/DarkModeStrategy.java",
+    "org/chromium/weblayer/Download.java",
     "org/chromium/weblayer/DownloadCallback.java",
+    "org/chromium/weblayer/DownloadError.java",
+    "org/chromium/weblayer/DownloadState.java",
+    "org/chromium/weblayer/ErrorPage.java",
     "org/chromium/weblayer/ErrorPageCallback.java",
+    "org/chromium/weblayer/ExternalIntentInIncognitoCallback.java",
+    "org/chromium/weblayer/ExternalIntentInIncognitoUserDecision.java",
+    "org/chromium/weblayer/FaviconCallback.java",
+    "org/chromium/weblayer/FaviconFetcher.java",
+    "org/chromium/weblayer/FindInPageCallback.java",
+    "org/chromium/weblayer/FindInPageController.java",
     "org/chromium/weblayer/FullscreenCallback.java",
+    "org/chromium/weblayer/GoogleAccountAccessTokenFetcher.java",
+    "org/chromium/weblayer/GoogleAccountServiceType.java",
+    "org/chromium/weblayer/GoogleAccountsCallback.java",
+    "org/chromium/weblayer/GoogleAccountsParams.java",
+    "org/chromium/weblayer/GooglePayDataCallbacksServiceWrapper.java",
+    "org/chromium/weblayer/ImageDecoderService.java",
     "org/chromium/weblayer/LoadError.java",
+    "org/chromium/weblayer/MediaCaptureCallback.java",
+    "org/chromium/weblayer/MediaCaptureController.java",
+    "org/chromium/weblayer/MediaPlaybackBaseService.java",
+    "org/chromium/weblayer/MediaRouteDialogFragment.java",
+    "org/chromium/weblayer/MediaSessionService.java",
+    "org/chromium/weblayer/NavigateParams.java",
     "org/chromium/weblayer/Navigation.java",
     "org/chromium/weblayer/NavigationCallback.java",
     "org/chromium/weblayer/NavigationController.java",
@@ -43,28 +88,55 @@ android_library("java") {
     "org/chromium/weblayer/NewTabCallback.java",
     "org/chromium/weblayer/NewTabType.java",
     "org/chromium/weblayer/ObserverList.java",
+    "org/chromium/weblayer/OpenUrlCallback.java",
+    "org/chromium/weblayer/Page.java",
+    "org/chromium/weblayer/PageInfoDisplayOptions.java",
+    "org/chromium/weblayer/PaymentDetailsUpdateServiceWrapper.java",
+    "org/chromium/weblayer/PrerenderController.java",
     "org/chromium/weblayer/Profile.java",
+    "org/chromium/weblayer/RemoteFragment.java",
+    "org/chromium/weblayer/RemoteMediaService.java",
+    "org/chromium/weblayer/ScrollNotificationType.java",
+    "org/chromium/weblayer/ScrollOffsetCallback.java",
+    "org/chromium/weblayer/SettingType.java",
+    "org/chromium/weblayer/SettingsActivity.java",
+    "org/chromium/weblayer/SettingsFragment.java",
+    "org/chromium/weblayer/SiteSettingsActivity.java",
     "org/chromium/weblayer/Tab.java",
     "org/chromium/weblayer/TabCallback.java",
     "org/chromium/weblayer/TabListCallback.java",
     "org/chromium/weblayer/ThreadCheck.java",
     "org/chromium/weblayer/UnsupportedVersionException.java",
+    "org/chromium/weblayer/UrlBarController.java",
+    "org/chromium/weblayer/UrlBarOptions.java",
+    "org/chromium/weblayer/UserIdentityCallback.java",
+    "org/chromium/weblayer/VerifiesOnO.java",
+    "org/chromium/weblayer/VerifiesOnR.java",
     "org/chromium/weblayer/WebLayer.java",
     "org/chromium/weblayer/WebLayerFileProvider.java",
+    "org/chromium/weblayer/WebMessage.java",
+    "org/chromium/weblayer/WebMessageCallback.java",
+    "org/chromium/weblayer/WebMessageReplyProxy.java",
+    "org/chromium/weblayer/WebViewCompatibilityHelper.java",
     _version_constants_java_file,
   ]
 
+  resources_package = "org.chromium.weblayer"
   deps = [
     ":client_resources",
     ":client_version",
     ":weblayer_client_manifest",
-    "//third_party/android_deps:androidx_annotation_annotation_java",
-    "//third_party/android_deps:com_android_support_support_compat_java",
-    "//third_party/android_deps:com_android_support_support_fragment_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
+    "//weblayer/browser/java:base_module_interfaces_java",
     "//weblayer/browser/java:interfaces_java",
   ]
 
-  android_manifest_for_lint = weblayer_client_manifest
+  proguard_configs = [ "proguard.flags" ]
 }
 
 dist_aar("client_aar") {
@@ -99,7 +171,5 @@ process_version("client_version") {
   template_file =
       "org/chromium/weblayer/WebLayerClientVersionConstants.java.version"
   output = _version_constants_java_file
-  sources = [
-    "//chrome/VERSION",
-  ]
+  sources = [ "//chrome/VERSION" ]
 }

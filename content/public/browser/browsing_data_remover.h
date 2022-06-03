@@ -34,7 +34,7 @@ class BrowsingDataRemoverDelegate;
 //  0. Instantiation.
 //
 //       content::BrowsingDataRemover* remover =
-//           content::BrowserContext::GetBrowsingDataRemover(browser_context);
+//           browser_context->GetBrowsingDataRemover();
 //
 //  1. No observer.
 //
@@ -63,7 +63,7 @@ class BrowsingDataRemoverDelegate;
 class BrowsingDataRemover {
  public:
   // Mask used for Remove.
-  enum DataType {
+  enum DataType : uint64_t {
     // Storage datatypes.
     DATA_TYPE_APP_CACHE = 1 << 0,
     DATA_TYPE_FILE_SYSTEMS = 1 << 1,
@@ -103,11 +103,19 @@ class BrowsingDataRemover {
     // TODO(crbug.com/798760): Remove when fixed.
     DATA_TYPE_AVOID_CLOSING_CONNECTIONS = 1 << 15,
 
+    // Trust Token API (https://github.com/wicg/trust-token-api) persistent
+    // storage.
+    DATA_TYPE_TRUST_TOKENS = 1 << 16,
+
+    // Conversion measurement API
+    // (https://github.com/WICG/conversion-measurement-api) persistent storage.
+    DATA_TYPE_CONVERSIONS = 1 << 17,
+
     // Embedders can add more datatypes beyond this point.
-    DATA_TYPE_CONTENT_END = DATA_TYPE_AVOID_CLOSING_CONNECTIONS,
+    DATA_TYPE_CONTENT_END = DATA_TYPE_CONVERSIONS,
   };
 
-  enum OriginType {
+  enum OriginType : uint64_t {
     // Web storage origins that StoragePartition recognizes as NOT protected
     // according to its special storage policy.
     ORIGIN_TYPE_UNPROTECTED_WEB = 1 << 0,
@@ -138,7 +146,10 @@ class BrowsingDataRemover {
    public:
     // Called when a removal task is finished. Note that every removal task can
     // only have one observer attached to it, and only that one is called.
-    virtual void OnBrowsingDataRemoverDone() = 0;
+    // |failed_data_types| is a bitmask of DataTypes (including those defined by
+    // embedders) for which the deletion did not successfully complete. It will
+    // always be a subset of the |remove_mask| passed into Remove*().
+    virtual void OnBrowsingDataRemoverDone(uint64_t failed_data_types) = 0;
 
    protected:
     virtual ~Observer() {}
@@ -150,8 +161,8 @@ class BrowsingDataRemover {
 
   // Determines whether |origin| matches the |origin_type_mask| according to
   // the |special_storage_policy|.
-  virtual bool DoesOriginMatchMask(
-      int origin_type_mask,
+  virtual bool DoesOriginMatchMaskForTesting(
+      uint64_t origin_type_mask,
       const url::Origin& origin,
       storage::SpecialStoragePolicy* special_storage_policy) = 0;
 
@@ -159,34 +170,24 @@ class BrowsingDataRemover {
   // specified by |remove_mask| and origin types by |origin_type_mask|.
   virtual void Remove(const base::Time& delete_begin,
                       const base::Time& delete_end,
-                      int remove_mask,
-                      int origin_type_mask) = 0;
+                      uint64_t remove_mask,
+                      uint64_t origin_type_mask) = 0;
 
   // A version of the above that in addition informs the |observer| when the
   // removal task is finished.
   virtual void RemoveAndReply(const base::Time& delete_begin,
                               const base::Time& delete_end,
-                              int remove_mask,
-                              int origin_type_mask,
+                              uint64_t remove_mask,
+                              uint64_t origin_type_mask,
                               Observer* observer) = 0;
-
-  // Like Remove(), but in case of URL-keyed only removes data whose URL match
-  // |filter_builder| (e.g. are on certain origin or domain).
-  // RemoveWithFilter() currently only works with FILTERABLE_DATA_TYPES.
-  virtual void RemoveWithFilter(
-      const base::Time& delete_begin,
-      const base::Time& delete_end,
-      int remove_mask,
-      int origin_type_mask,
-      std::unique_ptr<BrowsingDataFilterBuilder> filter_builder) = 0;
 
   // A version of the above that in addition informs the |observer| when the
   // removal task is finished.
   virtual void RemoveWithFilterAndReply(
       const base::Time& delete_begin,
       const base::Time& delete_end,
-      int remove_mask,
-      int origin_type_mask,
+      uint64_t remove_mask,
+      uint64_t origin_type_mask,
       std::unique_ptr<BrowsingDataFilterBuilder> filter_builder,
       Observer* observer) = 0;
 
@@ -208,10 +209,9 @@ class BrowsingDataRemover {
   // consider returning them in OnBrowsingDataRemoverDone() callback. If not,
   // consider simplifying this interface by removing these methods and changing
   // the tests to record the parameters using GMock instead.
-  virtual const base::Time& GetLastUsedBeginTime() = 0;
-  virtual const base::Time& GetLastUsedEndTime() = 0;
-  virtual int GetLastUsedRemovalMask() = 0;
-  virtual int GetLastUsedOriginTypeMask() = 0;
+  virtual const base::Time& GetLastUsedBeginTimeForTesting() = 0;
+  virtual uint64_t GetLastUsedRemovalMaskForTesting() = 0;
+  virtual uint64_t GetLastUsedOriginTypeMaskForTesting() = 0;
 };
 
 }  // namespace content

@@ -4,15 +4,21 @@
 
 #include "extensions/browser/content_verifier/test_utils.h"
 
+#include "base/base64url.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
+#include "base/files/file_util.h"
+#include "base/json/json_writer.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "crypto/sha2.h"
+#include "crypto/signature_creator.h"
 #include "extensions/browser/extension_file_task_runner.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/file_util.h"
+#include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/zlib/google/zip.h"
 
@@ -22,18 +28,47 @@ namespace extensions {
 TestContentVerifySingleJobObserver::TestContentVerifySingleJobObserver(
     const ExtensionId& extension_id,
     const base::FilePath& relative_path)
-    : extension_id_(extension_id), relative_path_(relative_path) {
-  ContentVerifyJob::SetObserverForTests(this);
+    : client_(
+          base::MakeRefCounted<ObserverClient>(extension_id, relative_path)) {
+  ContentVerifyJob::SetObserverForTests(client_);
 }
 
 TestContentVerifySingleJobObserver::~TestContentVerifySingleJobObserver() {
   ContentVerifyJob::SetObserverForTests(nullptr);
 }
 
-void TestContentVerifySingleJobObserver::JobFinished(
+ContentVerifyJob::FailureReason
+TestContentVerifySingleJobObserver::WaitForJobFinished() {
+  return client_->WaitForJobFinished();
+}
+
+ContentHashReader::InitStatus
+TestContentVerifySingleJobObserver::WaitForOnHashesReady() {
+  return client_->WaitForOnHashesReady();
+}
+
+TestContentVerifySingleJobObserver::ObserverClient::ObserverClient(
+    const ExtensionId& extension_id,
+    const base::FilePath& relative_path)
+    : extension_id_(extension_id), relative_path_(relative_path) {
+  EXPECT_TRUE(
+      content::BrowserThread::GetCurrentThreadIdentifier(&creation_thread_));
+}
+
+TestContentVerifySingleJobObserver::ObserverClient::~ObserverClient() = default;
+
+void TestContentVerifySingleJobObserver::ObserverClient::JobFinished(
     const ExtensionId& extension_id,
     const base::FilePath& relative_path,
     ContentVerifyJob::FailureReason reason) {
+  if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
+    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
+        ->PostTask(FROM_HERE,
+                   base::BindOnce(&TestContentVerifySingleJobObserver::
+                                      ObserverClient::JobFinished,
+                                  this, extension_id, relative_path, reason));
+    return;
+  }
   if (extension_id != extension_id_ || relative_path != relative_path_)
     return;
   EXPECT_FALSE(failure_reason_.has_value());
@@ -41,72 +76,90 @@ void TestContentVerifySingleJobObserver::JobFinished(
   job_finished_run_loop_.Quit();
 }
 
-void TestContentVerifySingleJobObserver::OnHashesReady(
+void TestContentVerifySingleJobObserver::ObserverClient::OnHashesReady(
     const ExtensionId& extension_id,
     const base::FilePath& relative_path,
-    bool success) {
+    const ContentHashReader& hash_reader) {
+  if (content::BrowserThread::CurrentlyOn(creation_thread_))
+    OnHashesReadyOnCreationThread(extension_id, relative_path,
+                                  hash_reader.status());
+  else {
+    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(&TestContentVerifySingleJobObserver::ObserverClient::
+                               OnHashesReadyOnCreationThread,
+                           this, extension_id, relative_path,
+                           hash_reader.status()));
+  }
+}
+
+void TestContentVerifySingleJobObserver::ObserverClient::
+    OnHashesReadyOnCreationThread(const ExtensionId& extension_id,
+                                  const base::FilePath& relative_path,
+                                  ContentHashReader::InitStatus hashes_status) {
   if (extension_id != extension_id_ || relative_path != relative_path_)
     return;
   EXPECT_FALSE(seen_on_hashes_ready_);
   seen_on_hashes_ready_ = true;
+  hashes_status_ = hashes_status;
   on_hashes_ready_run_loop_.Quit();
 }
 
 ContentVerifyJob::FailureReason
-TestContentVerifySingleJobObserver::WaitForJobFinished() {
+TestContentVerifySingleJobObserver::ObserverClient::WaitForJobFinished() {
   // Run() returns immediately if Quit() has already been called.
   job_finished_run_loop_.Run();
   EXPECT_TRUE(failure_reason_.has_value());
   return failure_reason_.value_or(ContentVerifyJob::FAILURE_REASON_MAX);
 }
 
-void TestContentVerifySingleJobObserver::WaitForOnHashesReady() {
+ContentHashReader::InitStatus
+TestContentVerifySingleJobObserver::ObserverClient::WaitForOnHashesReady() {
   // Run() returns immediately if Quit() has already been called.
   on_hashes_ready_run_loop_.Run();
+  return hashes_status_;
 }
 
 // TestContentVerifyJobObserver ------------------------------------------------
-void TestContentVerifyJobObserver::ExpectJobResult(
-    const ExtensionId& extension_id,
-    const base::FilePath& relative_path,
-    Result expected_result) {
-  expectations_.push_back(
-      ExpectedResult(extension_id, relative_path, expected_result));
-}
-
-TestContentVerifyJobObserver::TestContentVerifyJobObserver() {
-  EXPECT_TRUE(
-      content::BrowserThread::GetCurrentThreadIdentifier(&creation_thread_));
-  ContentVerifyJob::SetObserverForTests(this);
+TestContentVerifyJobObserver::TestContentVerifyJobObserver()
+    : client_(base::MakeRefCounted<ObserverClient>()) {
+  ContentVerifyJob::SetObserverForTests(client_);
 }
 
 TestContentVerifyJobObserver::~TestContentVerifyJobObserver() {
   ContentVerifyJob::SetObserverForTests(nullptr);
 }
 
-bool TestContentVerifyJobObserver::WaitForExpectedJobs() {
-  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(creation_thread_));
-  if (!expectations_.empty()) {
-    base::RunLoop run_loop;
-    job_quit_closure_ = run_loop.QuitClosure();
-    run_loop.Run();
-  }
-  return expectations_.empty();
+void TestContentVerifyJobObserver::ExpectJobResult(
+    const ExtensionId& extension_id,
+    const base::FilePath& relative_path,
+    Result expected_result) {
+  client_->ExpectJobResult(extension_id, relative_path, expected_result);
 }
 
-void TestContentVerifyJobObserver::JobStarted(
-    const ExtensionId& extension_id,
-    const base::FilePath& relative_path) {}
+bool TestContentVerifyJobObserver::WaitForExpectedJobs() {
+  return client_->WaitForExpectedJobs();
+}
 
-void TestContentVerifyJobObserver::JobFinished(
+TestContentVerifyJobObserver::ObserverClient::ObserverClient() {
+  EXPECT_TRUE(
+      content::BrowserThread::GetCurrentThreadIdentifier(&creation_thread_));
+}
+
+TestContentVerifyJobObserver::ObserverClient::~ObserverClient() = default;
+
+void TestContentVerifyJobObserver::ObserverClient::JobFinished(
     const ExtensionId& extension_id,
     const base::FilePath& relative_path,
     ContentVerifyJob::FailureReason failure_reason) {
   if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
-    base::PostTask(FROM_HERE, {creation_thread_},
-                   base::BindOnce(&TestContentVerifyJobObserver::JobFinished,
-                                  base::Unretained(this), extension_id,
-                                  relative_path, failure_reason));
+    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
+        ->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                &TestContentVerifyJobObserver::ObserverClient::JobFinished,
+                this, extension_id, relative_path, failure_reason));
     return;
   }
   Result result = failure_reason == ContentVerifyJob::NONE ? Result::SUCCESS
@@ -130,8 +183,30 @@ void TestContentVerifyJobObserver::JobFinished(
   }
 }
 
+void TestContentVerifyJobObserver::ObserverClient::ExpectJobResult(
+    const ExtensionId& extension_id,
+    const base::FilePath& relative_path,
+    Result expected_result) {
+  expectations_.push_back(
+      ExpectedResult(extension_id, relative_path, expected_result));
+}
+
+bool TestContentVerifyJobObserver::ObserverClient::WaitForExpectedJobs() {
+  EXPECT_TRUE(content::BrowserThread::CurrentlyOn(creation_thread_));
+  if (!expectations_.empty()) {
+    base::RunLoop run_loop;
+    job_quit_closure_ = run_loop.QuitClosure();
+    run_loop.Run();
+  }
+  return expectations_.empty();
+}
+
 // MockContentVerifierDelegate ------------------------------------------------
-MockContentVerifierDelegate::MockContentVerifierDelegate() = default;
+MockContentVerifierDelegate::MockContentVerifierDelegate()
+    : verifier_key_(
+          kWebstoreSignaturesPublicKey,
+          kWebstoreSignaturesPublicKey + kWebstoreSignaturesPublicKeySize) {}
+
 MockContentVerifierDelegate::~MockContentVerifierDelegate() = default;
 
 ContentVerifierDelegate::VerifierSourceType
@@ -141,8 +216,7 @@ MockContentVerifierDelegate::GetVerifierSourceType(const Extension& extension) {
 
 ContentVerifierKey MockContentVerifierDelegate::GetPublicKey() {
   DCHECK_EQ(VerifierSourceType::SIGNED_HASHES, verifier_source_type_);
-  return ContentVerifierKey(kWebstoreSignaturesPublicKey,
-                            kWebstoreSignaturesPublicKeySize);
+  return verifier_key_;
 }
 
 GURL MockContentVerifierDelegate::GetSignatureFetchUrl(
@@ -173,6 +247,10 @@ void MockContentVerifierDelegate::SetVerifierSourceType(
   verifier_source_type_ = type;
 }
 
+void MockContentVerifierDelegate::SetVerifierKey(std::vector<uint8_t> key) {
+  verifier_key_ = std::move(key);
+}
+
 // VerifierObserver -----------------------------------------------------------
 VerifierObserver::VerifierObserver() {
   EXPECT_TRUE(
@@ -184,29 +262,37 @@ VerifierObserver::~VerifierObserver() {
   ContentVerifier::SetObserverForTests(nullptr);
 }
 
-void VerifierObserver::WaitForFetchComplete(const ExtensionId& extension_id) {
+void VerifierObserver::EnsureFetchCompleted(const ExtensionId& extension_id) {
   EXPECT_TRUE(content::BrowserThread::CurrentlyOn(creation_thread_));
+  if (base::Contains(completed_fetches_, extension_id))
+    return;
   EXPECT_TRUE(id_to_wait_for_.empty());
   EXPECT_EQ(loop_runner_.get(), nullptr);
   id_to_wait_for_ = extension_id;
-  loop_runner_ = new content::MessageLoopRunner();
+  loop_runner_ = base::MakeRefCounted<content::MessageLoopRunner>();
   loop_runner_->Run();
   id_to_wait_for_.clear();
   loop_runner_ = nullptr;
 }
 
-void VerifierObserver::OnFetchComplete(const ExtensionId& extension_id,
-                                       bool success) {
+void VerifierObserver::OnFetchComplete(
+    const scoped_refptr<const ContentHash>& content_hash,
+    bool did_hash_mismatch) {
   if (!content::BrowserThread::CurrentlyOn(creation_thread_)) {
-    base::PostTask(
-        FROM_HERE, {creation_thread_},
-        base::BindOnce(&VerifierObserver::OnFetchComplete,
-                       base::Unretained(this), extension_id, success));
+    content::BrowserThread::GetTaskRunnerForThread(creation_thread_)
+        ->PostTask(FROM_HERE, base::BindOnce(&VerifierObserver::OnFetchComplete,
+                                             base::Unretained(this),
+                                             content_hash, did_hash_mismatch));
     return;
   }
+  const ExtensionId extension_id = content_hash->extension_id();
   completed_fetches_.insert(extension_id);
-  if (extension_id == id_to_wait_for_)
+  content_hash_ = content_hash;
+  did_hash_mismatch_ = did_hash_mismatch;
+  if (extension_id == id_to_wait_for_) {
+    DCHECK(loop_runner_);
     loop_runner_->Quit();
+  }
 }
 
 // ContentHashResult ----------------------------------------------------------
@@ -266,6 +352,156 @@ void ContentHashWaiter::CreateContentHash(
 
 namespace content_verifier_test_utils {
 
+// TestExtensionBuilder -------------------------------------------------------
+TestExtensionBuilder::TestExtensionBuilder()
+    : test_content_verifier_key_(crypto::RSAPrivateKey::Create(2048)),
+      // We have to provide explicit extension id in verified_contents.json.
+      extension_id_(32, 'a') {
+  base::CreateDirectory(extension_dir_.UnpackedPath().Append(kMetadataFolder));
+}
+
+TestExtensionBuilder::~TestExtensionBuilder() = default;
+
+void TestExtensionBuilder::WriteManifest() {
+  extension_dir_.WriteManifest(DictionaryBuilder()
+                                   .Set("manifest_version", 2)
+                                   .Set("name", "Test extension")
+                                   .Set("version", "1.0")
+                                   .ToJSON());
+}
+
+void TestExtensionBuilder::WriteResource(
+    base::FilePath::StringType relative_path,
+    std::string contents) {
+  extension_dir_.WriteFile(relative_path, contents);
+  AddResource(std::move(relative_path), std::move(contents));
+}
+
+void TestExtensionBuilder::AddResource(base::FilePath::StringType relative_path,
+                                       std::string contents) {
+  extension_resources_.emplace_back(base::FilePath(std::move(relative_path)),
+                                    std::move(contents));
+}
+
+void TestExtensionBuilder::WriteComputedHashes() {
+  int block_size = extension_misc::kContentVerificationDefaultBlockSize;
+  ComputedHashes::Data computed_hashes_data;
+
+  for (const auto& resource : extension_resources_) {
+    std::vector<std::string> hashes =
+        ComputedHashes::GetHashesForContent(resource.contents, block_size);
+    computed_hashes_data.Add(resource.relative_path, block_size, hashes);
+  }
+
+  ASSERT_TRUE(ComputedHashes(std::move(computed_hashes_data))
+                  .WriteToFile(file_util::GetComputedHashesPath(
+                      extension_dir_.UnpackedPath())));
+}
+
+std::string TestExtensionBuilder::CreateVerifiedContents() const {
+  std::unique_ptr<base::Value> payload = CreateVerifiedContentsPayload();
+  std::string payload_value;
+  if (!base::JSONWriter::Write(*payload, &payload_value))
+    return "";
+
+  std::string payload_b64;
+  base::Base64UrlEncode(
+      payload_value, base::Base64UrlEncodePolicy::OMIT_PADDING, &payload_b64);
+
+  std::string signature_sha256 = crypto::SHA256HashString("." + payload_b64);
+  std::vector<uint8_t> signature_source(signature_sha256.begin(),
+                                        signature_sha256.end());
+  std::vector<uint8_t> signature_value;
+  if (!crypto::SignatureCreator::Sign(
+          test_content_verifier_key_.get(), crypto::SignatureCreator::SHA256,
+          signature_source.data(), signature_source.size(), &signature_value))
+    return "";
+
+  std::string signature_b64;
+  base::Base64UrlEncode(
+      std::string(signature_value.begin(), signature_value.end()),
+      base::Base64UrlEncodePolicy::OMIT_PADDING, &signature_b64);
+
+  std::unique_ptr<base::Value> signatures =
+      ListBuilder()
+          .Append(DictionaryBuilder()
+                      .Set("header",
+                           DictionaryBuilder().Set("kid", "webstore").Build())
+                      .Set("protected", "")
+                      .Set("signature", signature_b64)
+                      .Build())
+          .Build();
+  std::unique_ptr<base::Value> verified_contents =
+      ListBuilder()
+          .Append(DictionaryBuilder()
+                      .Set("description", "treehash per file")
+                      .Set("signed_content",
+                           DictionaryBuilder()
+                               .Set("payload", payload_b64)
+                               .Set("signatures", std::move(signatures))
+                               .Build())
+                      .Build())
+          .Build();
+
+  std::string json;
+  if (!base::JSONWriter::Write(*verified_contents, &json))
+    return "";
+
+  return json;
+}
+
+void TestExtensionBuilder::WriteVerifiedContents() {
+  std::string verified_contents = CreateVerifiedContents();
+  ASSERT_NE(verified_contents.size(), 0u);
+
+  base::FilePath verified_contents_path =
+      file_util::GetVerifiedContentsPath(extension_dir_.UnpackedPath());
+  ASSERT_EQ(static_cast<int>(verified_contents.size()),
+            base::WriteFile(verified_contents_path, verified_contents.data(),
+                            verified_contents.size()));
+}
+
+std::vector<uint8_t> TestExtensionBuilder::GetTestContentVerifierPublicKey() {
+  std::vector<uint8_t> public_key;
+  test_content_verifier_key_->ExportPublicKey(&public_key);
+  return public_key;
+}
+
+std::unique_ptr<base::Value>
+TestExtensionBuilder::CreateVerifiedContentsPayload() const {
+  int block_size = extension_misc::kContentVerificationDefaultBlockSize;
+
+  ListBuilder files;
+  for (const auto& resource : extension_resources_) {
+    std::string path = base::FilePath(resource.relative_path).AsUTF8Unsafe();
+    std::string tree_hash =
+        ContentHash::ComputeTreeHashForContent(resource.contents, block_size);
+
+    std::string tree_hash_b64;
+    base::Base64UrlEncode(tree_hash, base::Base64UrlEncodePolicy::OMIT_PADDING,
+                          &tree_hash_b64);
+
+    files.Append(DictionaryBuilder()
+                     .Set("path", path)
+                     .Set("root_hash", tree_hash_b64)
+                     .Build());
+  }
+
+  return DictionaryBuilder()
+      .Set("item_id", extension_id_)
+      .Set("item_version", "1.0")
+      .Set("content_hashes", ListBuilder()
+                                 .Append(DictionaryBuilder()
+                                             .Set("format", "treehash")
+                                             .Set("block_size", block_size)
+                                             .Set("hash_block_size", block_size)
+                                             .Set("files", files.Build())
+                                             .Build())
+                                 .Build())
+      .Build();
+}
+
+// Other stuff ----------------------------------------------------------------
 scoped_refptr<Extension> UnzipToDirAndLoadExtension(
     const base::FilePath& extension_zip,
     const base::FilePath& unzip_dir) {
@@ -275,7 +511,7 @@ scoped_refptr<Extension> UnzipToDirAndLoadExtension(
   }
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
-      unzip_dir, Manifest::INTERNAL, 0 /* flags */, &error);
+      unzip_dir, mojom::ManifestLocation::kInternal, 0 /* flags */, &error);
   EXPECT_NE(nullptr, extension.get()) << " error:'" << error << "'";
   return extension;
 }

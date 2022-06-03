@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_RESIZE_VIEWPORT_ANCHOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_RESIZE_VIEWPORT_ANCHOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -24,24 +23,26 @@ class LocalFrameView;
 class CORE_EXPORT ResizeViewportAnchor final
     : public GarbageCollected<ResizeViewportAnchor> {
  public:
-  ResizeViewportAnchor(Page& page) : page_(page), scope_count_(0) {}
+  explicit ResizeViewportAnchor(Page& page) : page_(page), scope_count_(0) {}
+  ResizeViewportAnchor(const ResizeViewportAnchor&) = delete;
+  ResizeViewportAnchor& operator=(const ResizeViewportAnchor&) = delete;
 
   class ResizeScope {
     STACK_ALLOCATED();
 
    public:
-    explicit ResizeScope(ResizeViewportAnchor& anchor) : anchor_(anchor) {
+    explicit ResizeScope(ResizeViewportAnchor& anchor) : anchor_(&anchor) {
       anchor_->BeginScope();
     }
     ~ResizeScope() { anchor_->EndScope(); }
 
    private:
-    Member<ResizeViewportAnchor> anchor_;
+    ResizeViewportAnchor* anchor_;
   };
 
   void ResizeFrameView(const IntSize&);
 
-  void Trace(blink::Visitor* visitor) { visitor->Trace(page_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(page_); }
 
  private:
   void BeginScope() { scope_count_++; }
@@ -54,8 +55,6 @@ class CORE_EXPORT ResizeViewportAnchor final
   ScrollOffset drift_;
   Member<Page> page_;
   int scope_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResizeViewportAnchor);
 };
 
 }  // namespace blink

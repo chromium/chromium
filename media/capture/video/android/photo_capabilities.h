@@ -6,7 +6,6 @@
 #define MEDIA_CAPTURE_VIDEO_ANDROID_PHOTO_CAPABILITIES_H_
 
 #include <jni.h>
-#include <string>
 #include <vector>
 
 #include "base/android/scoped_java_ref.h"

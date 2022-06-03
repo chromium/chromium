@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../resources/gesture-util.js'></script>
+
+<style>
+  #scrollme,
+  #notscrollme {
+    width: 100px;
+    height: 100px;
+    overflow: auto;
+  }
+
+  #scrollme p {
+    height: 1000px;
+  }
+</style>
+
+<div id='scrollme'>
+  <p>This is a scrollable div.</p>
+</div>
+<div id='notscrollme'></div>
+
+<script>
+  function initEventHandlers(element) {
+    element.addEventListener('mousedown', handleEvent);
+    element.addEventListener('mouseup', handleEvent);
+  }
+
+  window.events = {
+    'scrollme': [],
+    'notscrollme': []
+  };
+
+  function handleEvent(e) {
+    window.events[e.target.id].push(e);
+  }
+
+  window.onload = async () => {
+    let d1 = document.querySelector('#scrollme');
+    let d2 = document.querySelector('#notscrollme');
+    const middleButton = 1;
+
+    initEventHandlers(d1);
+    initEventHandlers(d2);
+
+    internals.settings.setScrollAnimatorEnabled(false);
+
+    promise_test(async () => {
+      await waitForCompositorCommit();
+      await mouseDragAndDrop(d1.offsetLeft + d1.offsetWidth - 4,
+        d1.offsetTop + 30,
+        d2.offsetLeft + d2.offsetWidth - 4,
+        d2.offsetTop + 4);
+      await waitFor(() => { return events['scrollme'].length == 2; });
+
+      assert_greater_than(d1.scrollTop, 0);
+      assert_equals(d2.scrollTop, 0);
+      assert_equals(events['notscrollme'].length, 0);
+      assert_equals(events['scrollme'][0].type, 'mousedown');
+      assert_equals(events['scrollme'][0].which, 1);
+      assert_equals(events['scrollme'][1].type, 'mouseup');
+      assert_equals(events['scrollme'][1].which, 1);
+
+      d1.scrollTop = 0;
+      await waitForCompositorCommit();
+      await mouseDragAndDrop(d1.offsetLeft + d1.offsetWidth - 4,
+        d1.offsetTop + 30,
+        d2.offsetLeft + d2.offsetWidth - 4,
+        d2.offsetTop + 4,
+        middleButton);
+      await waitFor(() => { return events['scrollme'].length == 4; });
+
+      assert_greater_than(d1.scrollTop, 0);
+      assert_equals(d2.scrollTop, 0);
+      assert_equals(events['notscrollme'].length, 0);
+      assert_equals(events['scrollme'][2].type, 'mousedown');
+      assert_equals(events['scrollme'][2].which, 2);
+      assert_equals(events['scrollme'][3].type, 'mouseup');
+      assert_equals(events['scrollme'][3].which, 2);
+    }, 'Drag a scrollbar and release it on another DIV, only the DIV owns the' +
+      ' dragging scrollbar receive mouse events');
+  }
+</script>

@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Contains Services, Characteristics and Descriptor aliases.
 
 These values are copied from:
@@ -10,7 +9,6 @@ https://www.bluetooth.com/specifications/gatt/services
 
 https://www.bluetooth.com/specifications/gatt/characteristics
 """
-
 
 SERVICES = [
     'alert_notification',
@@ -50,7 +48,6 @@ SERVICES = [
     'user_data',
     'weight_scale',
 ]
-
 
 CHARACTERISTICS = [
     'aerobic_heart_rate_lower_limit',

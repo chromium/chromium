@@ -7,8 +7,7 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/install_observer.h"
 #include "chrome/browser/extensions/install_tracker.h"
 
@@ -27,6 +26,9 @@ class ScopedActiveInstall : public InstallObserver {
   // is still deregistered upon destruction.
   ScopedActiveInstall(InstallTracker* tracker, const std::string& extension_id);
 
+  ScopedActiveInstall(const ScopedActiveInstall&) = delete;
+  ScopedActiveInstall& operator=(const ScopedActiveInstall&) = delete;
+
   ~ScopedActiveInstall() override;
 
   // Ensures that the active install is not deregistered upon destruction. This
@@ -41,10 +43,9 @@ class ScopedActiveInstall : public InstallObserver {
   void OnShutdown() override;
 
   InstallTracker* tracker_;
-  ScopedObserver<InstallTracker, InstallObserver> tracker_observer_{this};
+  base::ScopedObservation<InstallTracker, InstallObserver> tracker_observation_{
+      this};
   const std::string extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedActiveInstall);
 };
 
 }  // namespace extensions

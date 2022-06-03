@@ -35,17 +35,69 @@ function requestAllFileSystems() {
 
 // Run the tests.
 requestAllFileSystems().then(function() {
+  function exists(entries, fileName) {
+    for (let i = 0; i < entries.length; ++i) {
+      if (entries[i].name === fileName) {
+        return true;
+      }
+    }
+    return false;
+  }
   chrome.test.runTests([
     function testGetRecentFiles() {
       chrome.fileManagerPrivate.getRecentFiles(
-          'native_source', chrome.test.callbackPass(function(entries) {
-            var found = false;
-            for (var i = 0; i < entries.length; ++i) {
-              if (entries[i].name === 'all-justice.jpg') {
-                found = true;
-              }
-            }
-            chrome.test.assertTrue(found, 'all-justice.jpg not found');
+          'native_source', 'all', chrome.test.callbackPass(entries => {
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.jpg'),
+                'all-justice.jpg not found');
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.mp3'),
+                'all-justice.mp3 not found');
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.mp4'),
+                'all-justice.mp4 not found');
+          }));
+    },
+    function testGetRecentAudioFiles() {
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'audio', chrome.test.callbackPass(entries => {
+            chrome.test.assertFalse(
+                exists(entries, 'all-justice.jpg'),
+                'all-justice.jpg unexpectedly found');
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.mp3'),
+                'all-justice.mp3 not found');
+            chrome.test.assertFalse(
+                exists(entries, 'all-justice.mp4'),
+                'all-justice.mp4 unexpectedly found');
+          }));
+    },
+    function testGetRecentImageFiles() {
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'image', chrome.test.callbackPass(entries => {
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.jpg'),
+                'all-justice.jpg not found');
+            chrome.test.assertFalse(
+                exists(entries, 'all-justice.mp3'),
+                'all-justice.mp3 unexpectedly found');
+            chrome.test.assertFalse(
+                exists(entries, 'all-justice.mp4'),
+                'all-justice.mp4 unexpectedly found');
+          }));
+    },
+    function testGetRecentVideoFiles() {
+      chrome.fileManagerPrivate.getRecentFiles(
+          'native_source', 'video', chrome.test.callbackPass(entries => {
+            chrome.test.assertFalse(
+                exists(entries, 'all-justice.jpg'),
+                'all-justice.jpg unexpectedly found');
+            chrome.test.assertFalse(
+                exists(entries, 'all-justice.mp3'),
+                'all-justice.mp3 unexpectedly found');
+            chrome.test.assertTrue(
+                exists(entries, 'all-justice.mp4'),
+                'all-justice.mp4 not found');
           }));
     }
   ]);

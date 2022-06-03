@@ -23,6 +23,9 @@ class BASE_EXPORT ScopedAuthorizationRef {
       : authorization_(authorization) {
   }
 
+  ScopedAuthorizationRef(const ScopedAuthorizationRef&) = delete;
+  ScopedAuthorizationRef& operator=(const ScopedAuthorizationRef&) = delete;
+
   ~ScopedAuthorizationRef() {
     if (authorization_) {
       FreeInternal();
@@ -80,8 +83,6 @@ class BASE_EXPORT ScopedAuthorizationRef {
   void FreeInternal();
 
   AuthorizationRef authorization_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAuthorizationRef);
 };
 
 }  // namespace mac

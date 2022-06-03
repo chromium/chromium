@@ -11,6 +11,7 @@
 
 #include "third_party/blink/renderer/core/accessibility/ax_context.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -19,8 +20,6 @@ class AXObject;
 class AXObjectCacheImpl;
 class LocalFrameClient;
 class Node;
-
-namespace test {
 
 class AccessibilityTest : public RenderingTest {
   USING_FAST_MALLOC(AccessibilityTest);
@@ -33,9 +32,13 @@ class AccessibilityTest : public RenderingTest {
 
   AXObjectCacheImpl& GetAXObjectCache() const;
 
+  AXObject* GetAXObject(LayoutObject* layout_object) const;
+
   AXObject* GetAXObject(const Node& node) const;
 
   AXObject* GetAXRootObject() const;
+
+  AXObject* GetAXBodyObject() const;
 
   // Returns the object with the accessibility focus.
   AXObject* GetAXFocusedObject() const;
@@ -51,6 +54,10 @@ class AccessibilityTest : public RenderingTest {
   std::ostringstream& PrintAXTreeHelper(std::ostringstream&,
                                         const AXObject* root,
                                         size_t level) const;
+
+  ScopedAccessibilityExposeHTMLElementForTest expose_html_element{true};
+  ScopedAccessibilityUseAXPositionForDocumentMarkersForTest use_ax_position{
+      true};
 };
 
 class ParameterizedAccessibilityTest : public testing::WithParamInterface<bool>,
@@ -60,12 +67,13 @@ class ParameterizedAccessibilityTest : public testing::WithParamInterface<bool>,
   ParameterizedAccessibilityTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
-  bool LayoutNGEnabled() const { return GetParam(); }
+  bool LayoutNGEnabled() const {
+    return RuntimeEnabledFeatures::LayoutNGEnabled();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All, ParameterizedAccessibilityTest, testing::Bool());
 
-}  // namespace test
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_ACCESSIBILITY_TESTING_ACCESSIBILITY_TEST_H_

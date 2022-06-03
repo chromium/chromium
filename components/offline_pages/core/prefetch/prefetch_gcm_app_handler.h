@@ -23,6 +23,10 @@ class PrefetchGCMAppHandler : public gcm::GCMAppHandler,
                               public PrefetchGCMHandler {
  public:
   explicit PrefetchGCMAppHandler();
+
+  PrefetchGCMAppHandler(const PrefetchGCMAppHandler&) = delete;
+  PrefetchGCMAppHandler& operator=(const PrefetchGCMAppHandler&) = delete;
+
   ~PrefetchGCMAppHandler() override;
 
   // gcm::GCMAppHandler implementation.
@@ -44,10 +48,8 @@ class PrefetchGCMAppHandler : public gcm::GCMAppHandler,
   std::string GetAppId() const override;
 
  private:
-  // Not owned, PrefetchService owns |this.
+  // Not owned, PrefetchService owns |this|.
   PrefetchService* prefetch_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefetchGCMAppHandler);
 };
 
 }  // namespace offline_pages

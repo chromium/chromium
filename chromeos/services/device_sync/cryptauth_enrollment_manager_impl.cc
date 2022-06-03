@@ -52,8 +52,8 @@ const char kDeviceSoftwarePackage[] = "com.google.chrome.cryptauth";
 std::unique_ptr<SyncScheduler> CreateSyncScheduler(
     SyncScheduler::Delegate* delegate) {
   return std::make_unique<SyncSchedulerImpl>(
-      delegate, base::TimeDelta::FromDays(kEnrollmentRefreshPeriodDays),
-      base::TimeDelta::FromMinutes(kEnrollmentBaseRecoveryPeriodMinutes),
+      delegate, base::Days(kEnrollmentRefreshPeriodDays),
+      base::Minutes(kEnrollmentBaseRecoveryPeriodMinutes),
       kEnrollmentMaxJitterRatio, "CryptAuth Enrollment");
 }
 
@@ -83,23 +83,26 @@ CryptAuthEnrollmentManagerImpl::Factory*
 
 // static
 std::unique_ptr<CryptAuthEnrollmentManager>
-CryptAuthEnrollmentManagerImpl::Factory::NewInstance(
+CryptAuthEnrollmentManagerImpl::Factory::Create(
     base::Clock* clock,
     std::unique_ptr<CryptAuthEnrollerFactory> enroller_factory,
     std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate,
     const cryptauth::GcmDeviceInfo& device_info,
     CryptAuthGCMManager* gcm_manager,
     PrefService* pref_service) {
-  if (!factory_instance_)
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(
+        clock, std::move(enroller_factory), std::move(secure_message_delegate),
+        device_info, gcm_manager, pref_service);
+  }
 
-  return factory_instance_->BuildInstance(
+  return base::WrapUnique(new CryptAuthEnrollmentManagerImpl(
       clock, std::move(enroller_factory), std::move(secure_message_delegate),
-      device_info, gcm_manager, pref_service);
+      device_info, gcm_manager, pref_service));
 }
 
 // static
-void CryptAuthEnrollmentManagerImpl::Factory::SetInstanceForTesting(
+void CryptAuthEnrollmentManagerImpl::Factory::SetFactoryForTesting(
     Factory* factory) {
   factory_instance_ = factory;
 }
@@ -119,19 +122,6 @@ void CryptAuthEnrollmentManagerImpl::RegisterPrefs(
                                std::string());
   registry->RegisterStringPref(prefs::kCryptAuthEnrollmentUserPrivateKey,
                                std::string());
-}
-
-std::unique_ptr<CryptAuthEnrollmentManager>
-CryptAuthEnrollmentManagerImpl::Factory::BuildInstance(
-    base::Clock* clock,
-    std::unique_ptr<CryptAuthEnrollerFactory> enroller_factory,
-    std::unique_ptr<multidevice::SecureMessageDelegate> secure_message_delegate,
-    const cryptauth::GcmDeviceInfo& device_info,
-    CryptAuthGCMManager* gcm_manager,
-    PrefService* pref_service) {
-  return base::WrapUnique(new CryptAuthEnrollmentManagerImpl(
-      clock, std::move(enroller_factory), std::move(secure_message_delegate),
-      device_info, gcm_manager, pref_service));
 }
 
 CryptAuthEnrollmentManagerImpl::CryptAuthEnrollmentManagerImpl(
@@ -173,7 +163,7 @@ void CryptAuthEnrollmentManagerImpl::Start() {
 
 void CryptAuthEnrollmentManagerImpl::ForceEnrollmentNow(
     cryptauth::InvocationReason invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   // We store the invocation reason in a preference so that it can persist
   // across browser restarts. If the sync fails, the next retry should still use
   // this original reason instead of
@@ -187,7 +177,7 @@ bool CryptAuthEnrollmentManagerImpl::IsEnrollmentValid() const {
   base::Time last_enrollment_time = GetLastEnrollmentTime();
   return !last_enrollment_time.is_null() &&
          (clock_->Now() - last_enrollment_time) <
-             base::TimeDelta::FromDays(kValidEnrollmentPeriodDays);
+             base::Days(kValidEnrollmentPeriodDays);
 }
 
 base::Time CryptAuthEnrollmentManagerImpl::GetLastEnrollmentTime() const {
@@ -229,7 +219,7 @@ void CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished(bool success) {
 }
 
 std::string CryptAuthEnrollmentManagerImpl::GetUserPublicKey() const {
-  base::Optional<std::string> public_key = util::DecodeFromValueString(
+  absl::optional<std::string> public_key = util::DecodeFromValueString(
       pref_service_->Get(prefs::kCryptAuthEnrollmentUserPublicKey));
   if (!public_key) {
     PA_LOG(ERROR) << "Invalid public key stored in user prefs.";
@@ -240,7 +230,7 @@ std::string CryptAuthEnrollmentManagerImpl::GetUserPublicKey() const {
 }
 
 std::string CryptAuthEnrollmentManagerImpl::GetUserPrivateKey() const {
-  base::Optional<std::string> private_key = util::DecodeFromValueString(
+  absl::optional<std::string> private_key = util::DecodeFromValueString(
       pref_service_->Get(prefs::kCryptAuthEnrollmentUserPrivateKey));
   if (!private_key) {
     PA_LOG(ERROR) << "Invalid private key stored in user prefs.";
@@ -285,10 +275,10 @@ void CryptAuthEnrollmentManagerImpl::OnKeyPairGenerated(
 }
 
 void CryptAuthEnrollmentManagerImpl::OnReenrollMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {
   ForceEnrollmentNow(cryptauth::INVOCATION_REASON_SERVER_INITIATED,
-                     base::nullopt /* session_id */);
+                     absl::nullopt /* session_id */);
 }
 
 void CryptAuthEnrollmentManagerImpl::OnSyncRequested(
@@ -308,8 +298,8 @@ void CryptAuthEnrollmentManagerImpl::OnSyncRequested(
 void CryptAuthEnrollmentManagerImpl::DoCryptAuthEnrollment() {
   if (GetUserPublicKey().empty() || GetUserPrivateKey().empty()) {
     secure_message_delegate_->GenerateKeyPair(
-        base::Bind(&CryptAuthEnrollmentManagerImpl::OnKeyPairGenerated,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&CryptAuthEnrollmentManagerImpl::OnKeyPairGenerated,
+                       weak_ptr_factory_.GetWeakPtr()));
   } else {
     DoCryptAuthEnrollmentWithKeys();
   }
@@ -357,8 +347,8 @@ void CryptAuthEnrollmentManagerImpl::DoCryptAuthEnrollmentWithKeys() {
   cryptauth_enroller_ = enroller_factory_->CreateInstance();
   cryptauth_enroller_->Enroll(
       GetUserPublicKey(), GetUserPrivateKey(), device_info, invocation_reason,
-      base::Bind(&CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&CryptAuthEnrollmentManagerImpl::OnEnrollmentFinished,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace device_sync

@@ -4,7 +4,9 @@
 
 #include "ui/views/widget/root_view.h"
 
-#include "base/macros.h"
+#include <memory>
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -12,11 +14,15 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/views/context_menu_controller.h"
+#include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view_targeter.h"
-#include "ui/views/widget/root_view.h"
 #include "ui/views/widget/widget_deletion_observer.h"
 #include "ui/views/window/dialog_delegate.h"
+
+#if defined(OS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace views {
 namespace test {
@@ -26,6 +32,10 @@ using RootViewTest = ViewsTestBase;
 class DeleteOnKeyEventView : public View {
  public:
   explicit DeleteOnKeyEventView(bool* set_on_key) : set_on_key_(set_on_key) {}
+
+  DeleteOnKeyEventView(const DeleteOnKeyEventView&) = delete;
+  DeleteOnKeyEventView& operator=(const DeleteOnKeyEventView&) = delete;
+
   ~DeleteOnKeyEventView() override = default;
 
   bool OnKeyPressed(const ui::KeyEvent& event) override {
@@ -37,8 +47,6 @@ class DeleteOnKeyEventView : public View {
  private:
   // Set to true in OnKeyPressed().
   bool* set_on_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteOnKeyEventView);
 };
 
 // Verifies deleting a View in OnKeyPressed() doesn't crash and that the
@@ -53,8 +61,7 @@ TEST_F(RootViewTest, DeleteViewDuringKeyEventDispatch) {
 
   bool got_key_event = false;
 
-  View* content = new View;
-  widget.SetContentsView(content);
+  View* content = widget.SetContentsView(std::make_unique<View>());
 
   View* child = new DeleteOnKeyEventView(&got_key_event);
   content->AddChildView(child);
@@ -79,6 +86,11 @@ TEST_F(RootViewTest, DeleteViewDuringKeyEventDispatch) {
 class TestContextMenuController : public ContextMenuController {
  public:
   TestContextMenuController() = default;
+
+  TestContextMenuController(const TestContextMenuController&) = delete;
+  TestContextMenuController& operator=(const TestContextMenuController&) =
+      delete;
+
   ~TestContextMenuController() override = default;
 
   int show_context_menu_calls() const { return show_context_menu_calls_; }
@@ -104,17 +116,13 @@ class TestContextMenuController : public ContextMenuController {
   int show_context_menu_calls_ = 0;
   View* menu_source_view_ = nullptr;
   ui::MenuSourceType menu_source_type_ = ui::MENU_SOURCE_NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(TestContextMenuController);
 };
 
 // Tests that context menus are shown for certain key events (Shift+F10
 // and VKEY_APPS) by the pre-target handler installed on RootView.
 TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
-#if defined(OS_MACOSX)
   // This behavior is intentionally unsupported on macOS.
-  return;
-#endif
+#if !defined(OS_MAC)
   Widget widget;
   Widget::InitParams init_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -125,9 +133,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
       static_cast<internal::RootView*>(widget.GetRootView());
 
   TestContextMenuController controller;
-  View* focused_view = new View;
+  View* focused_view = widget.SetContentsView(std::make_unique<View>());
   focused_view->set_context_menu_controller(&controller);
-  widget.SetContentsView(focused_view);
   focused_view->SetFocusBehavior(View::FocusBehavior::ALWAYS);
   focused_view->RequestFocus();
 
@@ -144,8 +151,8 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   controller.Reset();
 
   // A context menu should be shown for a keypress of Shift+F10.
-  ui::KeyEvent menu_key_event(
-      ui::ET_KEY_PRESSED, ui::VKEY_F10, ui::EF_SHIFT_DOWN);
+  ui::KeyEvent menu_key_event(ui::ET_KEY_PRESSED, ui::VKEY_F10,
+                              ui::EF_SHIFT_DOWN);
   details = root_view->OnEventFromSource(&menu_key_event);
   EXPECT_FALSE(details.target_destroyed);
   EXPECT_FALSE(details.dispatcher_destroyed);
@@ -163,6 +170,7 @@ TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   EXPECT_EQ(focused_view, controller.menu_source_view());
   EXPECT_EQ(ui::MENU_SOURCE_KEYBOARD, controller.menu_source_type());
   controller.Reset();
+#endif
 }
 
 // View which handles all gesture events.
@@ -170,21 +178,94 @@ class GestureHandlingView : public View {
  public:
   GestureHandlingView() = default;
 
+  GestureHandlingView(const GestureHandlingView&) = delete;
+  GestureHandlingView& operator=(const GestureHandlingView&) = delete;
+
   ~GestureHandlingView() override = default;
 
   void OnGestureEvent(ui::GestureEvent* event) override { event->SetHandled(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GestureHandlingView);
 };
+
+// View which handles all mouse events.
+class MouseHandlingView : public View {
+ public:
+  MouseHandlingView() = default;
+  MouseHandlingView(const MouseHandlingView&) = delete;
+  MouseHandlingView& operator=(const MouseHandlingView&) = delete;
+  ~MouseHandlingView() override = default;
+
+  // View:
+  void OnMouseEvent(ui::MouseEvent* event) override { event->SetHandled(); }
+};
+
+// Verifies that the gesture handler stored in the root view is reset after
+// mouse is released. Note that during mouse event handling,
+// `RootView::SetMouseAndGestureHandler()` may be called to set the gesture
+// handler. Therefore we should reset the gesture handler when mouse is
+// released. We may remove this test in the future if the implementation of the
+// product code changes.
+TEST_F(RootViewTest, GestureHandlerResetAfterMouseReleased) {
+  Widget widget;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.bounds = gfx::Rect(100, 100);
+  widget.Init(std::move(init_params));
+  widget.Show();
+  internal::RootView* root_view =
+      static_cast<internal::RootView*>(widget.GetRootView());
+  View* contents_view = widget.SetContentsView(std::make_unique<View>());
+
+  // Create a child view to handle gestures.
+  View* gesture_handler =
+      contents_view->AddChildView(std::make_unique<GestureHandlingView>());
+  gesture_handler->SetBoundsRect(gfx::Rect(gfx::Size{50, 50}));
+
+  // Create a child view to handle mouse events.
+  View* mouse_handler =
+      contents_view->AddChildView(std::make_unique<MouseHandlingView>());
+  mouse_handler->SetBoundsRect(
+      gfx::Rect(gesture_handler->bounds().bottom_right(), gfx::Size{50, 50}));
+
+  // Emulate to start gesture scroll on `child_view`.
+  const gfx::Point gesture_handler_center_point =
+      gesture_handler->GetBoundsInScreen().CenterPoint();
+  ui::GestureEvent scroll_begin(
+      gesture_handler_center_point.x(), gesture_handler_center_point.y(),
+      ui::EF_NONE, base::TimeTicks(),
+      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_BEGIN));
+  root_view->OnEventFromSource(&scroll_begin);
+  ui::GestureEvent scroll_update(
+      gesture_handler_center_point.x(), gesture_handler_center_point.y(),
+      ui::EF_NONE, base::TimeTicks(),
+      ui::GestureEventDetails(ui::ET_GESTURE_SCROLL_UPDATE, /*delta_x=*/20,
+                              /*delta_y=*/10));
+  root_view->OnEventFromSource(&scroll_update);
+
+  // Emulate the mouse click on `mouse_handler` before gesture scroll ends.
+  const gfx::Point mouse_handler_center_point =
+      mouse_handler->GetBoundsInScreen().CenterPoint();
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, mouse_handler_center_point,
+                               mouse_handler_center_point,
+                               ui::EventTimeForNow(), ui::EF_NONE,
+                               /*changed_button_flags=*/0);
+  ui::MouseEvent released_event(
+      ui::ET_MOUSE_RELEASED, mouse_handler_center_point,
+      mouse_handler_center_point, ui::EventTimeForNow(), ui::EF_NONE,
+      /*changed_button_flags=*/0);
+  root_view->OnMousePressed(pressed_event);
+  root_view->OnMouseReleased(released_event);
+
+  // Check that the gesture handler is reset.
+  EXPECT_EQ(nullptr, root_view->gesture_handler_for_testing());
+}
 
 // Tests that context menus are shown for long press by the post-target handler
 // installed on the RootView only if the event is targetted at a view which can
 // show a context menu.
 TEST_F(RootViewTest, ContextMenuFromLongPress) {
   Widget widget;
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
   init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   init_params.bounds = gfx::Rect(100, 100);
   widget.Init(std::move(init_params));
@@ -194,9 +275,8 @@ TEST_F(RootViewTest, ContextMenuFromLongPress) {
   // Create a view capable of showing the context menu with two children one of
   // which handles all gesture events (e.g. a button).
   TestContextMenuController controller;
-  View* parent_view = new View;
+  View* parent_view = widget.SetContentsView(std::make_unique<View>());
   parent_view->set_context_menu_controller(&controller);
-  widget.SetContentsView(parent_view);
 
   View* gesture_handling_child_view = new GestureHandlingView;
   gesture_handling_child_view->SetBoundsRect(gfx::Rect(10, 10));
@@ -257,8 +337,7 @@ TEST_F(RootViewTest, ContextMenuFromLongPress) {
 // Tests that context menus are not shown for disabled views on a long press.
 TEST_F(RootViewTest, ContextMenuFromLongPressOnDisabledView) {
   Widget widget;
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
   init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   init_params.bounds = gfx::Rect(100, 100);
   widget.Init(std::move(init_params));
@@ -269,10 +348,9 @@ TEST_F(RootViewTest, ContextMenuFromLongPressOnDisabledView) {
   // which handles all gesture events (e.g. a button). Also mark this view
   // as disabled.
   TestContextMenuController controller;
-  View* parent_view = new View;
+  View* parent_view = widget.SetContentsView(std::make_unique<View>());
   parent_view->set_context_menu_controller(&controller);
   parent_view->SetEnabled(false);
-  widget.SetContentsView(parent_view);
 
   View* gesture_handling_child_view = new GestureHandlingView;
   gesture_handling_child_view->SetBoundsRect(gfx::Rect(10, 10));
@@ -339,9 +417,10 @@ class DeleteViewOnEvent : public View {
   DeleteViewOnEvent(ui::EventType delete_event_type, bool* was_destroyed)
       : delete_event_type_(delete_event_type), was_destroyed_(was_destroyed) {}
 
-  ~DeleteViewOnEvent() override {
-      *was_destroyed_ = true;
-  }
+  DeleteViewOnEvent(const DeleteViewOnEvent&) = delete;
+  DeleteViewOnEvent& operator=(const DeleteViewOnEvent&) = delete;
+
+  ~DeleteViewOnEvent() override { *was_destroyed_ = true; }
 
   void OnEvent(ui::Event* event) override {
     if (event->type() == delete_event_type_)
@@ -354,8 +433,6 @@ class DeleteViewOnEvent : public View {
 
   // Tracks whether the view was destroyed.
   bool* was_destroyed_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteViewOnEvent);
 };
 
 // View class which remove itself when it gets an event of type
@@ -365,6 +442,9 @@ class RemoveViewOnEvent : public View {
   explicit RemoveViewOnEvent(ui::EventType remove_event_type)
       : remove_event_type_(remove_event_type) {}
 
+  RemoveViewOnEvent(const RemoveViewOnEvent&) = delete;
+  RemoveViewOnEvent& operator=(const RemoveViewOnEvent&) = delete;
+
   void OnEvent(ui::Event* event) override {
     if (event->type() == remove_event_type_)
       parent()->RemoveChildView(this);
@@ -373,8 +453,6 @@ class RemoveViewOnEvent : public View {
  private:
   // The event type which causes the view to remove itself.
   ui::EventType remove_event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoveViewOnEvent);
 };
 
 // View class which generates a nested event the first time it gets an event of
@@ -384,6 +462,9 @@ class NestedEventOnEvent : public View {
  public:
   NestedEventOnEvent(ui::EventType nested_event_type, View* root_view)
       : nested_event_type_(nested_event_type), root_view_(root_view) {}
+
+  NestedEventOnEvent(const NestedEventOnEvent&) = delete;
+  NestedEventOnEvent& operator=(const NestedEventOnEvent&) = delete;
 
   void OnEvent(ui::Event* event) override {
     if (event->type() == nested_event_type_) {
@@ -401,8 +482,6 @@ class NestedEventOnEvent : public View {
   ui::EventType nested_event_type_;
   // root view of this view; owned by widget.
   View* root_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(NestedEventOnEvent);
 };
 
 }  // namespace
@@ -410,14 +489,12 @@ class NestedEventOnEvent : public View {
 // Verifies deleting a View in OnMouseExited() doesn't crash.
 TEST_F(RootViewTest, DeleteViewOnMouseExitDispatch) {
   Widget widget;
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
   init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget.Init(std::move(init_params));
   widget.SetBounds(gfx::Rect(10, 10, 500, 500));
 
-  View* content = new View;
-  widget.SetContentsView(content);
+  View* content = widget.SetContentsView(std::make_unique<View>());
 
   bool view_destroyed = false;
   View* child = new DeleteViewOnEvent(ui::ET_MOUSE_EXITED, &view_destroyed);
@@ -430,8 +507,7 @@ TEST_F(RootViewTest, DeleteViewOnMouseExitDispatch) {
   // Generate a mouse move event which ensures that |mouse_moved_handler_|
   // is set in the RootView class.
   ui::MouseEvent moved_event(ui::ET_MOUSE_MOVED, gfx::Point(15, 15),
-                             gfx::Point(15, 15), ui::EventTimeForNow(), 0,
-                             0);
+                             gfx::Point(15, 15), ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(moved_event);
   ASSERT_FALSE(view_destroyed);
 
@@ -449,14 +525,12 @@ TEST_F(RootViewTest, DeleteViewOnMouseExitDispatch) {
 // Verifies deleting a View in OnMouseEntered() doesn't crash.
 TEST_F(RootViewTest, DeleteViewOnMouseEnterDispatch) {
   Widget widget;
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
   init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget.Init(std::move(init_params));
   widget.SetBounds(gfx::Rect(10, 10, 500, 500));
 
-  View* content = new View;
-  widget.SetContentsView(content);
+  View* content = widget.SetContentsView(std::make_unique<View>());
 
   bool view_destroyed = false;
   View* child = new DeleteViewOnEvent(ui::ET_MOUSE_ENTERED, &view_destroyed);
@@ -470,8 +544,7 @@ TEST_F(RootViewTest, DeleteViewOnMouseEnterDispatch) {
 
   // Move the mouse within |widget| but outside of |child|.
   ui::MouseEvent moved_event(ui::ET_MOUSE_MOVED, gfx::Point(15, 15),
-                             gfx::Point(15, 15), ui::EventTimeForNow(), 0,
-                             0);
+                             gfx::Point(15, 15), ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(moved_event);
   ASSERT_FALSE(view_destroyed);
 
@@ -495,8 +568,7 @@ TEST_F(RootViewTest, RemoveViewOnMouseEnterDispatch) {
   widget.Init(std::move(init_params));
   widget.SetBounds(gfx::Rect(10, 10, 500, 500));
 
-  View* content = new View;
-  widget.SetContentsView(content);
+  View* content = widget.SetContentsView(std::make_unique<View>());
 
   // |child| gets removed without being deleted, so make it a local
   // to prevent test memory leak.
@@ -535,8 +607,7 @@ TEST_F(RootViewTest, ClearMouseMoveHandlerOnMouseExitDispatch) {
   widget.Init(std::move(init_params));
   widget.SetBounds(gfx::Rect(10, 10, 500, 500));
 
-  View* content = new View;
-  widget.SetContentsView(content);
+  View* content = widget.SetContentsView(std::make_unique<View>());
 
   View* root_view = widget.GetRootView();
 
@@ -571,8 +642,7 @@ TEST_F(RootViewTest,
   widget.Init(std::move(init_params));
   widget.SetBounds(gfx::Rect(10, 10, 500, 500));
 
-  View* content = new View;
-  widget.SetContentsView(content);
+  View* content = widget.SetContentsView(std::make_unique<View>());
 
   View* root_view = widget.GetRootView();
 
@@ -609,8 +679,7 @@ TEST_F(RootViewTest, ClearMouseMoveHandlerOnMouseEnterDispatch) {
   widget.Init(std::move(init_params));
   widget.SetBounds(gfx::Rect(10, 10, 500, 500));
 
-  View* content = new View;
-  widget.SetContentsView(content);
+  View* content = widget.SetContentsView(std::make_unique<View>());
 
   View* root_view = widget.GetRootView();
 
@@ -639,20 +708,17 @@ namespace {
 // View class which deletes its owning Widget when it gets a mouse exit event.
 class DeleteWidgetOnMouseExit : public View {
  public:
-  explicit DeleteWidgetOnMouseExit(Widget* widget)
-      : widget_(widget) {
-  }
+  explicit DeleteWidgetOnMouseExit(Widget* widget) : widget_(widget) {}
+
+  DeleteWidgetOnMouseExit(const DeleteWidgetOnMouseExit&) = delete;
+  DeleteWidgetOnMouseExit& operator=(const DeleteWidgetOnMouseExit&) = delete;
 
   ~DeleteWidgetOnMouseExit() override = default;
 
-  void OnMouseExited(const ui::MouseEvent& event) override {
-    delete widget_;
-  }
+  void OnMouseExited(const ui::MouseEvent& event) override { delete widget_; }
 
  private:
   Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeleteWidgetOnMouseExit);
 };
 
 }  // namespace
@@ -661,17 +727,16 @@ class DeleteWidgetOnMouseExit : public View {
 // View::OnMouseExited().
 TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatch) {
   Widget* widget = new Widget;
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
   init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(init_params));
   widget->SetBounds(gfx::Rect(10, 10, 500, 500));
   WidgetDeletionObserver widget_deletion_observer(widget);
 
-  View* content = new View();
+  auto content = std::make_unique<View>();
   View* child = new DeleteWidgetOnMouseExit(widget);
   content->AddChildView(child);
-  widget->SetContentsView(content);
+  widget->SetContentsView(std::move(content));
 
   // Make |child| smaller than the containing Widget and RootView.
   child->SetBounds(100, 100, 100, 100);
@@ -681,8 +746,7 @@ TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatch) {
 
   // Move the mouse within |child|.
   ui::MouseEvent moved_event(ui::ET_MOUSE_MOVED, gfx::Point(115, 115),
-                             gfx::Point(115, 115), ui::EventTimeForNow(), 0,
-                             0);
+                             gfx::Point(115, 115), ui::EventTimeForNow(), 0, 0);
   root_view->OnMouseMoved(moved_event);
   ASSERT_TRUE(widget_deletion_observer.IsWidgetAlive());
 
@@ -699,17 +763,15 @@ TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatch) {
 // of a mouse exited event which was propagated from one of its children.
 TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatchFromChild) {
   Widget* widget = new Widget;
-  Widget::InitParams init_params =
-      CreateParams(Widget::InitParams::TYPE_POPUP);
+  Widget::InitParams init_params = CreateParams(Widget::InitParams::TYPE_POPUP);
   init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   widget->Init(std::move(init_params));
   widget->SetBounds(gfx::Rect(10, 10, 500, 500));
   WidgetDeletionObserver widget_deletion_observer(widget);
 
-  View* content = new View();
   View* child = new DeleteWidgetOnMouseExit(widget);
   View* subchild = new View();
-  widget->SetContentsView(content);
+  View* content = widget->SetContentsView(std::make_unique<View>());
   content->AddChildView(child);
   child->AddChildView(subchild);
 
@@ -719,7 +781,7 @@ TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatchFromChild) {
   subchild->SetBounds(0, 0, 100, 100);
 
   // Make mouse enter and exit events get propagated from |subchild| to |child|.
-  child->set_notify_enter_exit_on_child(true);
+  child->SetNotifyEnterExitOnChild(true);
 
   internal::RootView* root_view =
       static_cast<internal::RootView*>(widget->GetRootView());
@@ -742,7 +804,16 @@ TEST_F(RootViewTest, DeleteWidgetOnMouseExitDispatchFromChild) {
 namespace {
 class RootViewTestDialogDelegate : public DialogDelegateView {
  public:
-  RootViewTestDialogDelegate() = default;
+  RootViewTestDialogDelegate() {
+    // Ensure that buttons don't influence the layout.
+    DialogDelegate::SetButtons(ui::DIALOG_BUTTON_NONE);
+  }
+
+  RootViewTestDialogDelegate(const RootViewTestDialogDelegate&) = delete;
+  RootViewTestDialogDelegate& operator=(const RootViewTestDialogDelegate&) =
+      delete;
+
+  ~RootViewTestDialogDelegate() override = default;
 
   int layout_count() const { return layout_count_; }
 
@@ -752,16 +823,11 @@ class RootViewTestDialogDelegate : public DialogDelegateView {
     EXPECT_EQ(size(), preferred_size_);
     ++layout_count_;
   }
-  int GetDialogButtons() const override {
-    return ui::DIALOG_BUTTON_NONE;  // Ensure buttons do not influence size.
-  }
 
  private:
   const gfx::Size preferred_size_ = gfx::Size(111, 111);
 
   int layout_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RootViewTestDialogDelegate);
 };
 }  // namespace
 
@@ -786,7 +852,7 @@ TEST_F(RootViewDesktopNativeWidgetTest, SingleLayoutDuringInit) {
   widget->CloseNow();
 }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 
 // Tests that AnnounceText sets up the correct text value on the hidden view,
 // and that the resulting hidden view actually stays hidden.
@@ -803,7 +869,7 @@ TEST_F(RootViewTest, AnnounceTextTest) {
   root_view->SetContentsView(new View());
 
   EXPECT_EQ(1U, root_view->children().size());
-  const base::string16 kText = base::ASCIIToUTF16("Text");
+  const std::u16string kText = u"Text";
   root_view->AnnounceText(kText);
   EXPECT_EQ(2U, root_view->children().size());
   root_view->Layout();
@@ -816,7 +882,114 @@ TEST_F(RootViewTest, AnnounceTextTest) {
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
-#endif  // !defined(OS_MACOSX)
+#endif  // !defined(OS_MAC)
+
+TEST_F(RootViewTest, MouseEventDispatchedToClosestEnabledView) {
+  Widget widget;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.bounds = {100, 100, 100, 100};
+  widget.Init(std::move(init_params));
+  widget.Show();
+  internal::RootView* root_view =
+      static_cast<internal::RootView*>(widget.GetRootView());
+  root_view->SetContentsView(new View());
+
+  View* const contents_view = root_view->GetContentsView();
+  EventCountView* const v1 =
+      contents_view->AddChildView(std::make_unique<EventCountView>());
+  EventCountView* const v2 =
+      v1->AddChildView(std::make_unique<EventCountView>());
+  EventCountView* const v3 =
+      v2->AddChildView(std::make_unique<EventCountView>());
+
+  contents_view->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
+  v1->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
+  v2->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
+  v3->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
+
+  v1->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v2->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  v3->set_handle_mode(EventCountView::CONSUME_EVENTS);
+
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(5, 5),
+                               gfx::Point(5, 5), ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::Point(5, 5),
+                                gfx::Point(5, 5), ui::EventTimeForNow(), 0, 0);
+  root_view->OnMousePressed(pressed_event);
+  root_view->OnMouseReleased(released_event);
+  EXPECT_EQ(0, v1->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(0, v2->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(1, v3->GetEventCount(ui::ET_MOUSE_PRESSED));
+
+  v3->SetEnabled(false);
+  root_view->OnMousePressed(pressed_event);
+  root_view->OnMouseReleased(released_event);
+  EXPECT_EQ(0, v1->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(1, v2->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(1, v3->GetEventCount(ui::ET_MOUSE_PRESSED));
+
+  v3->SetEnabled(true);
+  v2->SetEnabled(false);
+  root_view->OnMousePressed(pressed_event);
+  root_view->OnMouseReleased(released_event);
+  EXPECT_EQ(1, v1->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(1, v2->GetEventCount(ui::ET_MOUSE_PRESSED));
+  EXPECT_EQ(1, v3->GetEventCount(ui::ET_MOUSE_PRESSED));
+}
+
+// If RootView::OnMousePressed() receives a double-click event that isn't
+// handled by any views, it should still report it as handled if the first click
+// was handled. However, it should *not* if the first click was unhandled.
+// Regression test for https://crbug.com/1055674.
+TEST_F(RootViewTest, DoubleClickHandledIffFirstClickHandled) {
+  Widget widget;
+  Widget::InitParams init_params =
+      CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
+  init_params.ownership = Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  init_params.bounds = {100, 100, 100, 100};
+  widget.Init(std::move(init_params));
+  widget.Show();
+  internal::RootView* root_view =
+      static_cast<internal::RootView*>(widget.GetRootView());
+  root_view->SetContentsView(new View());
+
+  View* const contents_view = root_view->GetContentsView();
+  EventCountView* const v1 =
+      contents_view->AddChildView(std::make_unique<EventCountView>());
+
+  contents_view->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
+  v1->SetBoundsRect(gfx::Rect(0, 0, 10, 10));
+
+  ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, gfx::Point(5, 5),
+                               gfx::Point(5, 5), ui::EventTimeForNow(), 0, 0);
+  ui::MouseEvent released_event(ui::ET_MOUSE_RELEASED, gfx::Point(5, 5),
+                                gfx::Point(5, 5), ui::EventTimeForNow(), 0, 0);
+
+  // First click handled, second click unhandled.
+  v1->set_handle_mode(EventCountView::CONSUME_EVENTS);
+  pressed_event.SetClickCount(1);
+  released_event.SetClickCount(1);
+  EXPECT_TRUE(root_view->OnMousePressed(pressed_event));
+  root_view->OnMouseReleased(released_event);
+  v1->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
+  pressed_event.SetClickCount(2);
+  released_event.SetClickCount(2);
+  EXPECT_TRUE(root_view->OnMousePressed(pressed_event));
+  root_view->OnMouseReleased(released_event);
+
+  // Both clicks unhandled.
+  v1->set_handle_mode(EventCountView::PROPAGATE_EVENTS);
+  pressed_event.SetClickCount(1);
+  released_event.SetClickCount(1);
+  EXPECT_FALSE(root_view->OnMousePressed(pressed_event));
+  root_view->OnMouseReleased(released_event);
+  pressed_event.SetClickCount(2);
+  released_event.SetClickCount(2);
+  EXPECT_FALSE(root_view->OnMousePressed(pressed_event));
+  root_view->OnMouseReleased(released_event);
+}
 
 }  // namespace test
 }  // namespace views

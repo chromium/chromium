@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -16,7 +16,5 @@ js_library("iron-dropdown-extracted") {
 }
 
 js_library("iron-dropdown-scroll-manager-extracted") {
-  deps = [
-    "../iron-overlay-behavior:iron-scroll-manager-extracted",
-  ]
+  deps = [ "../iron-overlay-behavior:iron-scroll-manager-extracted" ]
 }

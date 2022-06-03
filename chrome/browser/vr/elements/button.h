@@ -5,10 +5,7 @@
 #ifndef CHROME_BROWSER_VR_ELEMENTS_BUTTON_H_
 #define CHROME_BROWSER_VR_ELEMENTS_BUTTON_H_
 
-#include <memory>
-
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/draw_phase.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/model/color_scheme.h"
@@ -31,6 +28,10 @@ class VR_UI_EXPORT Button : public UiElement {
  public:
   explicit Button(base::RepeatingCallback<void()> click_handler,
                   AudioDelegate* audio_delegate);
+
+  Button(const Button&) = delete;
+  Button& operator=(const Button&) = delete;
+
   ~Button() override;
 
   void Render(UiElementRenderer* renderer,
@@ -65,9 +66,9 @@ class VR_UI_EXPORT Button : public UiElement {
   void OnSetName() override;
   void OnSetSize(const gfx::SizeF& size) override;
   void OnSetCornerRadii(const CornerRadii& radii) override;
-  void NotifyClientSizeAnimated(const gfx::SizeF& size,
-                                int target_property_id,
-                                cc::KeyframeModel* keyframe_model) override;
+  void OnSizeAnimated(const gfx::SizeF& size,
+                      int target_property_id,
+                      gfx::KeyframeModel* keyframe_model) override;
   virtual void OnStateUpdated();
 
  private:
@@ -91,8 +92,6 @@ class VR_UI_EXPORT Button : public UiElement {
   Rect* background_;
   UiElement* hit_plane_;
   Sounds disabled_sounds_;
-
-  DISALLOW_COPY_AND_ASSIGN(Button);
 };
 
 }  // namespace vr

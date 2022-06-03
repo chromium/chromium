@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Only relative units (on the root) should equal the window size in the presence of zoom assert_equals: expected 300 but got 299.9999694824219
+Harness: the test ran to completion.
+

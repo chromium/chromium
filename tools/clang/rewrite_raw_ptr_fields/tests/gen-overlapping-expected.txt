@@ -1,0 +1,18 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-overlapping-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-overlapping-actual.cc:::1095:::11:::raw_ptr<SomeClass>
+r:::gen-overlapping-actual.cc:::1140:::27:::raw_ptr<SomeClass>
+r:::gen-overlapping-actual.cc:::1385:::54:::raw_ptr<struct NonFreeStandingStruct>
+r:::gen-overlapping-actual.cc:::1744:::64:::raw_ptr<struct NonFreeStandingStruct2>
+r:::gen-overlapping-actual.cc:::1780:::11:::raw_ptr<SomeClass>
+r:::gen-overlapping-actual.cc:::941:::11:::raw_ptr<SomeClass>
+r:::gen-overlapping-actual.cc:::941:::28:::raw_ptr<SomeClass>
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+my_namespace::MyStruct::overlapping_1a  # overlapping
+my_namespace::MyStruct::overlapping_1b  # overlapping
+my_namespace::MyStruct::overlapping_2a  # overlapping
+my_namespace::MyStruct::overlapping_3b  # overlapping
+my_namespace::MyStruct::ptr_to_non_free_standing_struct  # overlapping
+my_namespace::MyStruct::ptr_to_non_free_standing_struct2  # overlapping
+==== END FIELD FILTERS ====

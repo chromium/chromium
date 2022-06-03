@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL CSS Test: an element with mix-blend-mode other than normal creates a stacking context assert_not_equals: got disallowed value "auto"
+Harness: the test ran to completion.
+

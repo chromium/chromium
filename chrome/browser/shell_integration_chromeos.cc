@@ -18,12 +18,16 @@ DefaultWebClientSetPermission GetDefaultWebClientSetPermission() {
   return SET_DEFAULT_NOT_ALLOWED;
 }
 
-base::string16 GetApplicationNameForProtocol(const GURL& url) {
-  return base::string16();
+std::u16string GetApplicationNameForProtocol(const GURL& url) {
+  return std::u16string();
 }
 
 DefaultWebClientState GetDefaultBrowser() {
-  return UNKNOWN_DEFAULT;
+  // Chrome is always the default system browser in Chrome OS. This is called
+  // from ChromeAppDelegate::NewWindowContentsDelegate::OpenURLFromTab() where
+  // we should navigate internally since we are the default browser rather than
+  // call platform_util::OpenExternal().
+  return IS_DEFAULT;
 }
 
 bool IsFirefoxDefaultBrowser() {

@@ -1,0 +1,11 @@
+Tests that we can load resources from a dedicated worker.
+1
+Response for fetch with existing resource: {
+    resource : {
+        headers : <object>
+        httpStatusCode : 200
+        stream : <string>
+        success : true
+    }
+}
+

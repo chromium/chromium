@@ -5,7 +5,7 @@
 #include "gpu/ipc/in_process_gpu_thread_holder.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -17,7 +17,6 @@
 #include "gpu/command_buffer/service/sync_point_manager.h"
 #include "gpu/config/gpu_info_collector.h"
 #include "gpu/config/gpu_util.h"
-#include "gpu/ipc/gpu_in_process_thread_service.h"
 #include "ui/gl/init/gl_factory.h"
 
 namespace gpu {
@@ -69,44 +68,54 @@ CommandBufferTaskExecutor* InProcessGpuThreadHolder::GetTaskExecutor() {
 void InProcessGpuThreadHolder::InitializeOnGpuThread(
     base::WaitableEvent* completion) {
   sync_point_manager_ = std::make_unique<SyncPointManager>();
-  scheduler_ = std::make_unique<Scheduler>(
-      task_runner(), sync_point_manager_.get(), gpu_preferences_);
+  scheduler_ =
+      std::make_unique<Scheduler>(sync_point_manager_.get(), gpu_preferences_);
   mailbox_manager_ = gles2::CreateMailboxManager(gpu_preferences_);
   shared_image_manager_ = std::make_unique<SharedImageManager>();
+
+  bool use_passthrough_cmd_decoder =
+      gpu_preferences_.use_passthrough_cmd_decoder &&
+      gles2::PassthroughCommandDecoderSupported();
 
   share_group_ = new gl::GLShareGroup();
   surface_ = gl::init::CreateOffscreenGLSurface(gfx::Size());
   gl::GLContextAttribs attribs = gles2::GenerateGLContextAttribs(
-      ContextCreationAttribs(), false /* use_passthrough_decoder */);
+      ContextCreationAttribs(), use_passthrough_cmd_decoder);
   context_ =
       gl::init::CreateGLContext(share_group_.get(), surface_.get(), attribs);
   CHECK(context_->MakeCurrent(surface_.get()));
   GpuDriverBugWorkarounds gpu_driver_bug_workarounds(
       gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
 
-  bool use_virtualized_gl_context_ = false;
-#if defined(OS_MACOSX)
+  bool use_virtualized_gl_context = false;
+#if defined(OS_MAC)
   // Virtualize GpuPreference:::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM. https://crbug.com/180463
-  use_virtualized_gl_context_ = true;
+  use_virtualized_gl_context = true;
 #endif
-  use_virtualized_gl_context_ |=
+  use_virtualized_gl_context |=
       gpu_driver_bug_workarounds.use_virtualized_gl_contexts;
+  if (use_passthrough_cmd_decoder) {
+    // Virtualized contexts don't work with passthrough command decoder.
+    // See https://crbug.com/914976
+    use_virtualized_gl_context = false;
+  }
+  if (use_virtualized_gl_context)
+    share_group_->SetSharedContext(context_.get());
 
   context_state_ = base::MakeRefCounted<SharedContextState>(
-      share_group_, surface_, context_, use_virtualized_gl_context_,
+      share_group_, surface_, context_, use_virtualized_gl_context,
       base::DoNothing(), gpu_preferences_.gr_context_type);
   auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
       gpu_driver_bug_workarounds, gpu_feature_info_);
   context_state_->InitializeGL(gpu_preferences_, feature_info);
-  context_state_->InitializeGrContext(gpu_driver_bug_workarounds, nullptr);
+  context_state_->InitializeGrContext(gpu_preferences_,
+                                      gpu_driver_bug_workarounds, nullptr);
 
   task_executor_ = std::make_unique<GpuInProcessThreadService>(
-      task_runner(), scheduler_.get(), sync_point_manager_.get(),
-      mailbox_manager_.get(), nullptr, gl::GLSurfaceFormat(), gpu_feature_info_,
-      gpu_preferences_, shared_image_manager_.get(), nullptr,
-      base::BindRepeating(&InProcessGpuThreadHolder::GetSharedContextState,
-                          base::Unretained(this)));
+      this, task_runner(), scheduler_.get(), sync_point_manager_.get(),
+      mailbox_manager_.get(), gl::GLSurfaceFormat(), gpu_feature_info_,
+      gpu_preferences_, shared_image_manager_.get(), nullptr);
 
   completion->Signal();
 }
@@ -127,6 +136,12 @@ scoped_refptr<SharedContextState>
 InProcessGpuThreadHolder::GetSharedContextState() {
   DCHECK(context_state_);
   return context_state_;
+}
+
+scoped_refptr<gl::GLShareGroup> InProcessGpuThreadHolder::GetShareGroup() {
+  if (!share_group_)
+    share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
+  return share_group_;
 }
 
 }  // namespace gpu

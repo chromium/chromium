@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that when multiple requests are waiting for permission, no callbacks are invoked until permission is allowed.");
+
+const mock = new GeolocationMock();
+mock.setGeolocationPosition(51.478, -0.166, 100);
+
+let permissionSet = false;
+
+function allowPermission() {
+    permissionSet = true;
+    mock.setGeolocationPermission(true);
+}
+
+let watchCallbackInvoked = false;
+let oneShotCallbackInvoked = false;
+
+navigator.geolocation.watchPosition(function() {
+    if (permissionSet) {
+        testPassed('Success callback invoked');
+        watchCallbackInvoked = true;
+        maybeFinishTest();
+        return;
+    }
+    testFailed('Success callback invoked unexpectedly');
+    finishJSTest();
+}, function(err) {
+    testFailed('Error callback invoked unexpectedly');
+    finishJSTest();
+});
+
+navigator.geolocation.getCurrentPosition(function() {
+    if (permissionSet) {
+        testPassed('Success callback invoked');
+        oneShotCallbackInvoked = true;
+        maybeFinishTest();
+        return;
+    }
+    testFailed('Success callback invoked unexpectedly');
+    finishJSTest();
+}, function(err) {
+    testFailed('Error callback invoked unexpectedly');
+    finishJSTest();
+});
+
+window.setTimeout(allowPermission, 100);
+
+function maybeFinishTest() {
+    if (watchCallbackInvoked && oneShotCallbackInvoked)
+        finishJSTest();
+}
+</script>
+</body>
+</html>

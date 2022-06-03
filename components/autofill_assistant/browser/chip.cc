@@ -9,36 +9,27 @@ namespace autofill_assistant {
 
 Chip::Chip() = default;
 Chip::~Chip() = default;
+Chip::Chip(const Chip& other) = default;
 Chip::Chip(const ChipProto& proto)
     : type(proto.type()),
       icon(proto.icon()),
       text(proto.text()),
-      sticky(proto.sticky()) {}
+      sticky(proto.sticky()),
+      content_description(proto.content_description()),
+      is_content_description_set(proto.has_content_description()) {}
 
 bool Chip::empty() const {
   return type == UNKNOWN_CHIP_TYPE && text.empty() && icon == NO_ICON;
 }
 
 void SetDefaultChipType(std::vector<UserAction>* user_actions) {
-  ChipType default_type = SUGGESTION;
-  for (const UserAction& user_action : *user_actions) {
-    if (user_action.chip().empty())
-      continue;
-
-    ChipType type = user_action.chip().type;
-    if (type != UNKNOWN_CHIP_TYPE && type != SUGGESTION) {
-      // If there's an action chip, assume chips with unknown type are also
-      // actions.
-      default_type = NORMAL_ACTION;
-      break;
-    }
-  }
   for (UserAction& user_action : *user_actions) {
     if (user_action.chip().empty())
       continue;
 
     if (user_action.chip().type == UNKNOWN_CHIP_TYPE) {
-      user_action.chip().type = default_type;
+      // Assume chips with unknown type are normal actions.
+      user_action.chip().type = NORMAL_ACTION;
     }
   }
 }

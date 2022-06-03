@@ -61,7 +61,7 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
     virtual ~Delegate() = default;
     virtual void OnHeadersSent() = 0;
     virtual void OnHeadersReceived(
-        const spdy::SpdyHeaderBlock& response_headers) = 0;
+        const spdy::Http2HeaderBlock& response_headers) = 0;
     // Might destroy |this|.
     virtual void OnClose(int status) = 0;
   };
@@ -94,12 +94,13 @@ class NET_EXPORT_PRIVATE WebSocketSpdyStreamAdapter
   // SpdyStream::Delegate methods.
 
   void OnHeadersSent() override;
+  void OnEarlyHintsReceived(const spdy::Http2HeaderBlock& headers) override;
   void OnHeadersReceived(
-      const spdy::SpdyHeaderBlock& response_headers,
-      const spdy::SpdyHeaderBlock* pushed_request_headers) override;
+      const spdy::Http2HeaderBlock& response_headers,
+      const spdy::Http2HeaderBlock* pushed_request_headers) override;
   void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
   void OnDataSent() override;
-  void OnTrailers(const spdy::SpdyHeaderBlock& trailers) override;
+  void OnTrailers(const spdy::Http2HeaderBlock& trailers) override;
   void OnClose(int status) override;
   bool CanGreaseFrameType() const override;
   NetLogSource source_dependency() const override;

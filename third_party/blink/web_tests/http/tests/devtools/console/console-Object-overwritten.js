@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests that Web Inspector's console is not broken if Object is overwritten in the inspected page. Test passes if the expression is evaluated in the console and no errors printed. Bug 101320.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -15,8 +15,8 @@
 
   ConsoleTestRunner.evaluateInConsole('var foo = {bar:2012}; foo', step1);
 
-  function step1() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function step1() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

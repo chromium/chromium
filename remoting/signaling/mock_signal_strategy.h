@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "remoting/proto/ftl/v1/chromoting_message.pb.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
@@ -27,6 +28,9 @@ class MockSignalStrategy : public SignalStrategy {
   MOCK_METHOD1(AddListener, void(Listener* listener));
   MOCK_METHOD1(RemoveListener, void(Listener* listener));
   MOCK_METHOD0(GetNextId, std::string());
+  MOCK_METHOD2(SendMessage,
+               bool(const SignalingAddress& destination_address,
+                    const ftl::ChromotingMessage& message));
 
   // GMock currently doesn't support move-only arguments, so we have
   // to use this hack here.

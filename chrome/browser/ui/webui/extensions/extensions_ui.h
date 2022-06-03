@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_EXTENSIONS_EXTENSIONS_UI_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/webui_load_timer.h"
 #include "components/prefs/pref_member.h"
 #include "content/public/browser/web_ui_controller.h"
@@ -24,10 +23,12 @@ namespace extensions {
 class ExtensionsUI : public content::WebUIController {
  public:
   explicit ExtensionsUI(content::WebUI* web_ui);
+  ExtensionsUI(const ExtensionsUI&) = delete;
+  ExtensionsUI& operator=(const ExtensionsUI&) = delete;
   ~ExtensionsUI() override;
 
   static base::RefCountedMemory* GetFaviconResourceBytes(
-      ui::ScaleFactor scale_factor);
+      ui::ResourceScaleFactor scale_factor);
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -39,8 +40,6 @@ class ExtensionsUI : public content::WebUIController {
   BooleanPrefMember in_dev_mode_;
 
   WebuiLoadTimer webui_load_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsUI);
 };
 
 }  // namespace extensions

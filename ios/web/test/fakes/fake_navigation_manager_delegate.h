@@ -13,16 +13,14 @@ namespace web {
 
 class FakeNavigationManagerDelegate : public NavigationManagerDelegate {
  public:
-  void ClearTransientContent() override;
   void ClearDialogs() override;
   void RecordPageStateInNavigationItem() override;
-  void OnGoToIndexSameDocumentNavigation(NavigationInitiationType type,
-                                         bool has_user_gesture) override;
   void LoadCurrentItem(NavigationInitiationType type) override;
   void LoadIfNecessary() override;
   void Reload() override;
   void OnNavigationItemCommitted(NavigationItem* item) override;
   WebState* GetWebState() override;
+  void SetWebStateUserAgent(UserAgentType user_agent_type) override;
   id<CRWWebViewNavigationProxy> GetWebViewNavigationProxy() const override;
   void GoToBackForwardListItem(WKBackForwardListItem* wk_item,
                                NavigationItem* item,

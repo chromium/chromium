@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/widget/widget.h"
@@ -36,6 +35,8 @@ class RoundedLabelWidget : public views::Widget {
   };
 
   RoundedLabelWidget();
+  RoundedLabelWidget(const RoundedLabelWidget&) = delete;
+  RoundedLabelWidget& operator=(const RoundedLabelWidget&) = delete;
   ~RoundedLabelWidget() override;
 
   void Init(InitParams params);
@@ -43,13 +44,10 @@ class RoundedLabelWidget : public views::Widget {
   // Gets the preferred size of the widget centered in |bounds|.
   gfx::Rect GetBoundsCenteredIn(const gfx::Rect& bounds);
 
-  // Places the widget in the middle of |bounds|. The size will be the preferred
-  // size of the label. If |animate| is true, the widget will be animated to the
-  // new bounds.
-  void SetBoundsCenteredIn(const gfx::Rect& bounds, bool animate);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RoundedLabelWidget);
+  // Places the widget in the middle of |bounds_in_screen|. The size will be the
+  // preferred size of the label. If |animate| is true, the widget will be
+  // animated to the new bounds.
+  void SetBoundsCenteredIn(const gfx::Rect& bounds_in_screen, bool animate);
 };
 
 }  // namespace ash

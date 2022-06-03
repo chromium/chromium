@@ -35,38 +35,38 @@ GestureEvent* GestureEvent::Create(AbstractView* view,
   AtomicString event_type;
 
   switch (event.GetType()) {
-    case WebInputEvent::kGestureScrollBegin:
+    case WebInputEvent::Type::kGestureScrollBegin:
       event_type = event_type_names::kGesturescrollstart;
       break;
-    case WebInputEvent::kGestureScrollEnd:
+    case WebInputEvent::Type::kGestureScrollEnd:
       event_type = event_type_names::kGesturescrollend;
       break;
-    case WebInputEvent::kGestureScrollUpdate:
+    case WebInputEvent::Type::kGestureScrollUpdate:
       event_type = event_type_names::kGesturescrollupdate;
       break;
-    case WebInputEvent::kGestureTap:
+    case WebInputEvent::Type::kGestureTap:
       event_type = event_type_names::kGesturetap;
       break;
-    case WebInputEvent::kGestureTapUnconfirmed:
+    case WebInputEvent::Type::kGestureTapUnconfirmed:
       event_type = event_type_names::kGesturetapunconfirmed;
       break;
-    case WebInputEvent::kGestureTapDown:
+    case WebInputEvent::Type::kGestureTapDown:
       event_type = event_type_names::kGesturetapdown;
       break;
-    case WebInputEvent::kGestureShowPress:
+    case WebInputEvent::Type::kGestureShowPress:
       event_type = event_type_names::kGestureshowpress;
       break;
-    case WebInputEvent::kGestureLongPress:
+    case WebInputEvent::Type::kGestureLongPress:
       event_type = event_type_names::kGesturelongpress;
       break;
-    case WebInputEvent::kGestureFlingStart:
+    case WebInputEvent::Type::kGestureFlingStart:
       event_type = event_type_names::kGestureflingstart;
       break;
-    case WebInputEvent::kGestureTwoFingerTap:
-    case WebInputEvent::kGesturePinchBegin:
-    case WebInputEvent::kGesturePinchEnd:
-    case WebInputEvent::kGesturePinchUpdate:
-    case WebInputEvent::kGestureTapCancel:
+    case WebInputEvent::Type::kGestureTwoFingerTap:
+    case WebInputEvent::Type::kGesturePinchBegin:
+    case WebInputEvent::Type::kGesturePinchEnd:
+    case WebInputEvent::Type::kGesturePinchUpdate:
+    case WebInputEvent::Type::kGestureTapCancel:
     default:
       return nullptr;
   }
@@ -98,7 +98,7 @@ bool GestureEvent::IsGestureEvent() const {
   return true;
 }
 
-void GestureEvent::Trace(blink::Visitor* visitor) {
+void GestureEvent::Trace(Visitor* visitor) const {
   UIEvent::Trace(visitor);
 }
 

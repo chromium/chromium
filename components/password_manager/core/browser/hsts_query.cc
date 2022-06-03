@@ -18,8 +18,11 @@ namespace {
 // Helper since a once-callback may need to be called from two paths.
 class HSTSCallbackHelper : public base::RefCounted<HSTSCallbackHelper> {
  public:
-  HSTSCallbackHelper(HSTSCallback user_callback)
+  explicit HSTSCallbackHelper(HSTSCallback user_callback)
       : user_callback_(std::move(user_callback)) {}
+
+  HSTSCallbackHelper(const HSTSCallbackHelper&) = delete;
+  HSTSCallbackHelper& operator=(const HSTSCallbackHelper&) = delete;
 
   void ReportResult(bool result) {
     std::move(user_callback_).Run(result ? HSTSResult::kYes : HSTSResult::kNo);
@@ -32,17 +35,15 @@ class HSTSCallbackHelper : public base::RefCounted<HSTSCallbackHelper> {
   ~HSTSCallbackHelper() = default;
 
   HSTSCallback user_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(HSTSCallbackHelper);
 };
 
 }  // namespace
 
 void PostHSTSQueryForHostAndNetworkContext(
-    const GURL& origin,
+    const url::Origin& origin,
     network::mojom::NetworkContext* network_context,
     HSTSCallback callback) {
-  if (!origin.is_valid()) {
+  if (origin.opaque()) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), HSTSResult::kNo));
     return;

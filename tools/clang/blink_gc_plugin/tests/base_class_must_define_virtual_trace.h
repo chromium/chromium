@@ -17,7 +17,7 @@ class PartBase {
 class PartDerived : public PartBase {
     DISALLOW_NEW();
 public:
-    virtual void Trace(Visitor*);
+ virtual void Trace(Visitor*) const;
 };
 
 class HeapBase : public GarbageCollected<HeapBase> {
@@ -27,7 +27,8 @@ class HeapBase : public GarbageCollected<HeapBase> {
 
 class HeapDerived : public HeapBase {
 public:
-    virtual void Trace(Visitor*);
+ virtual void Trace(Visitor*) const;
+
 private:
     PartDerived m_part;
 };

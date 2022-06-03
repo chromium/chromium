@@ -18,17 +18,11 @@ class BasicCardHelper {
 
  public:
   // Parse 'basic-card' data in |input| and store result in
-  // |supported_networks_output| and |supported_types_output| or throw
-  // exception.
-  //
-  // If |has_supported_card_types| is not null, then it is set to true if the
-  // basic-card specific method data has the "supportedTypes" field.
+  // |supported_networks_output| or throw exception.
   static void ParseBasiccardData(
       const ScriptValue& input,
       Vector<::payments::mojom::blink::BasicCardNetwork>&
           supported_networks_output,
-      Vector<::payments::mojom::blink::BasicCardType>& supported_types_output,
-      bool* has_supported_card_types,
       ExceptionState&);
 
   // Check whether |input| is 'basic-card' network name.

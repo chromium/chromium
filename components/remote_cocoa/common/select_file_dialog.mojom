@@ -28,6 +28,9 @@ struct SelectFileTypeInfo {
 
   // Specifies whether or not there is be a filter added for all files.
   bool include_all_files;
+
+  // Specifies whether the (save) file dialog should keep the extension visible.
+  bool keep_extension_visible;
 };
 
 // The interface to a file selection (Save As, Upload, etc) dialog.

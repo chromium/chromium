@@ -3,12 +3,11 @@
 # found in the LICENSE file.
 
 executable("cplay") {
-  sources = [
-    "cplay.cc",
-    "wav_header.h",
-  ]
+  sources = [ "cplay.cc" ]
+
   deps = [
     "//base",
+    "//chromecast/media/audio:wav_header",
     "//chromecast/media/cma/backend:cast_audio_json",
     "//chromecast/media/cma/backend:public",
     "//chromecast/media/cma/backend:volume_map",

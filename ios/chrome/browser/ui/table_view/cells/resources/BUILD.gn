@@ -45,3 +45,11 @@ imageset("table_view_cell_error_icon") {
     "table_view_cell_error_icon.imageset/table_view_cell_error_icon@3x.png",
   ]
 }
+
+imageset("table_view_cell_info") {
+  sources = [
+    "table_view_cell_info.imageset/Contents.json",
+    "table_view_cell_info.imageset/table_view_cell_info@2x.png",
+    "table_view_cell_info.imageset/table_view_cell_info@3x.png",
+  ]
+}

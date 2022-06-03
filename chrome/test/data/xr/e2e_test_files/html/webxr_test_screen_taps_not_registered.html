@@ -12,6 +12,8 @@ Tests that screen taps aren't registered while in an immersive WebXR session.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
+      setup({single_test: true});
+
       var numTaps = 0;
       webglCanvas.addEventListener("click", () => {numTaps++;}, false);
 

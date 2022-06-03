@@ -7,15 +7,14 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/payments/chrome_payment_request_delegate.h"
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view.h"
 
 class PrefService;
 
-namespace content {
-class WebContents;
-}
+namespace payments {
+class RenderFrameHost;
+}  // namespace payments
 
 namespace payments {
 
@@ -26,21 +25,28 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
  public:
   // This delegate does not own things passed as pointers.
   TestChromePaymentRequestDelegate(
-      content::WebContents* web_contents,
-      PaymentRequestDialogView::ObserverForTest* observer,
+      content::RenderFrameHost* render_frame_host,
+      base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer,
       PrefService* pref_service,
-      bool is_incognito,
+      bool is_off_the_record,
       bool is_valid_ssl,
       bool is_browser_window_active,
       bool skip_ui_for_basic_card);
+
+  TestChromePaymentRequestDelegate(const TestChromePaymentRequestDelegate&) =
+      delete;
+  TestChromePaymentRequestDelegate& operator=(
+      const TestChromePaymentRequestDelegate&) = delete;
+
+  ~TestChromePaymentRequestDelegate() override;
 
   void SetRegionDataLoader(autofill::RegionDataLoader* region_data_loader) {
     region_data_loader_ = region_data_loader;
   }
 
   // ChromePaymentRequestDelegate.
-  void ShowDialog(PaymentRequest* request) override;
-  bool IsIncognito() const override;
+  void ShowDialog(base::WeakPtr<PaymentRequest> request) override;
+  bool IsOffTheRecord() const override;
   autofill::RegionDataLoader* GetRegionDataLoader() override;
   PrefService* GetPrefService() override;
   bool IsBrowserWindowActive() const override;
@@ -48,21 +54,19 @@ class TestChromePaymentRequestDelegate : public ChromePaymentRequestDelegate {
   bool SkipUiForBasicCard() const override;
 
   PaymentRequestDialogView* dialog_view() {
-    return static_cast<PaymentRequestDialogView*>(shown_dialog_);
+    return static_cast<PaymentRequestDialogView*>(shown_dialog_.get());
   }
 
  private:
   // Not owned so must outlive the PaymentRequest object;
   autofill::RegionDataLoader* region_data_loader_;
 
-  PaymentRequestDialogView::ObserverForTest* observer_;
+  base::WeakPtr<PaymentRequestDialogView::ObserverForTest> observer_;
   PrefService* pref_service_;
-  const bool is_incognito_;
+  const bool is_off_the_record_;
   const bool is_valid_ssl_;
   const bool is_browser_window_active_;
   const bool skip_ui_for_basic_card_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestChromePaymentRequestDelegate);
 };
 
 }  // namespace payments

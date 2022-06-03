@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "ui/gfx/vsync_provider.h"
@@ -66,12 +67,13 @@ bool GLSurfacePresentationHelper::GetFrameTimestampInfoIfAvailable(
     const Frame& frame,
     base::TimeTicks* timestamp,
     base::TimeDelta* interval,
+    base::TimeTicks* writes_done,
     uint32_t* flags) {
   DCHECK(frame.timer || frame.fence || egl_timestamp_client_);
 
   if (egl_timestamp_client_) {
     bool result = egl_timestamp_client_->GetFrameTimestampInfoIfAvailable(
-        timestamp, interval, flags, frame.frame_id);
+        timestamp, interval, writes_done, flags, frame.frame_id);
 
     // Workaround null timestamp by setting it to TimeTicks::Now() snapped to
     // the next vsync interval. See
@@ -94,7 +96,7 @@ bool GLSurfacePresentationHelper::GetFrameTimestampInfoIfAvailable(
     int64_t start = 0;
     int64_t end = 0;
     frame.timer->GetStartEndTimestamps(&start, &end);
-    *timestamp = base::TimeTicks() + base::TimeDelta::FromMicroseconds(start);
+    *timestamp = base::TimeTicks() + base::Microseconds(start);
   } else {
     if (!frame.fence->HasCompleted())
       return false;
@@ -253,10 +255,9 @@ void GLSurfacePresentationHelper::CheckPendingFrames() {
       vsync_timebase_ = base::TimeTicks();
       vsync_interval_ = base::TimeDelta();
       static unsigned int count = 0;
-      ++count;
       // GetVSyncParametersIfAvailable() could be called and failed frequently,
       // so we have to limit the LOG to avoid flooding the log.
-      LOG_IF(ERROR, count < 20 || !(count & 0xff))
+      LOG_IF(ERROR, ++count < 4 || !(count & 0xffff))
           << "GetVSyncParametersIfAvailable() failed for " << count
           << " times!";
     }
@@ -319,14 +320,17 @@ void GLSurfacePresentationHelper::CheckPendingFrames() {
 
     base::TimeTicks timestamp;
     base::TimeDelta interval;
+    base::TimeTicks writes_done;
     uint32_t flags = 0;
     // Get timestamp info for a frame if available. If timestamp is not
     // available, it means this frame is not yet done.
-    if (!GetFrameTimestampInfoIfAvailable(frame, &timestamp, &interval, &flags))
+    if (!GetFrameTimestampInfoIfAvailable(frame, &timestamp, &interval,
+                                          &writes_done, &flags))
       break;
 
-    frame_presentation_callback(
-        gfx::PresentationFeedback(timestamp, interval, flags));
+    gfx::PresentationFeedback feedback(timestamp, interval, flags);
+    feedback.writes_done_timestamp = writes_done;
+    frame_presentation_callback(feedback);
   }
 
   if (!pending_frames_.empty())
@@ -387,9 +391,8 @@ void GLSurfacePresentationHelper::ScheduleCheckPendingFrames(
   // If the |vsync_provider_| can not notify us for the next VSync
   // asynchronically, we have to compute the next VSync time and post a delayed
   // task so we can check the VSync later.
-  base::TimeDelta interval = vsync_interval_.is_zero()
-                                 ? base::TimeDelta::FromSeconds(1) / 60
-                                 : vsync_interval_;
+  base::TimeDelta interval =
+      vsync_interval_.is_zero() ? base::Seconds(1) / 60 : vsync_interval_;
   auto now = base::TimeTicks::Now();
   auto next_vsync = now.SnappedToNextTick(vsync_timebase_, interval);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(

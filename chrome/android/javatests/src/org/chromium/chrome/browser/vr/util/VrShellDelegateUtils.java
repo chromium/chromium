@@ -4,11 +4,7 @@
 
 package org.chromium.chrome.browser.vr.util;
 
-import org.junit.Assert;
-
 import org.chromium.chrome.browser.vr.TestVrShellDelegate;
-import org.chromium.chrome.browser.vr.VrCoreInfo;
-import org.chromium.chrome.browser.vr.mock.MockVrCoreVersionChecker;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -31,26 +27,5 @@ public class VrShellDelegateUtils {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { delegate.set(TestVrShellDelegate.getInstance()); });
         return delegate.get();
-    }
-
-    /**
-     * Creates and sets a MockVrCoreVersionCheckerImpl as the VrShellDelegate's VrCoreVersionChecker
-     * instance.
-     *
-     * @param compatibility An int corresponding to a VrCoreCompatibility value that the mock
-     *        version checker will return.
-     * @return The MockVrCoreVersionCheckerImpl that was set as VrShellDelegate's
-     *        VrCoreVersionChecker instance.
-     */
-    public static MockVrCoreVersionChecker setVrCoreCompatibility(int compatibility) {
-        final MockVrCoreVersionChecker mockChecker = new MockVrCoreVersionChecker();
-        mockChecker.setMockReturnValue(new VrCoreInfo(null, compatibility));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            VrShellDelegateUtils.getDelegateInstance().overrideVrCoreVersionCheckerForTesting(
-                    mockChecker);
-        });
-        Assert.assertEquals("Overriding VrCoreVersionChecker failed", compatibility,
-                mockChecker.getLastReturnValue().compatibility);
-        return mockChecker;
     }
 }

@@ -84,7 +84,7 @@ constexpr uint8_t kCertificates[] = {
 TEST(PackedAttestationStatementTest, CBOR) {
   EXPECT_THAT(
       *cbor::Writer::Write(AsCBOR(PackedAttestationStatement(
-          CoseAlgorithmIdentifier::kCoseEs256,
+          CoseAlgorithmIdentifier::kEs256,
           fido_parsing_utils::Materialize(kSignature),
           {fido_parsing_utils::Materialize(kCertificates)}))),
       testing::ElementsAreArray(test_data::kPackedAttestationStatementCBOR));
@@ -92,7 +92,7 @@ TEST(PackedAttestationStatementTest, CBOR) {
 
 TEST(PackedAttestationStatementTest, CBOR_NoCerts) {
   EXPECT_THAT(*cbor::Writer::Write(AsCBOR(PackedAttestationStatement(
-                  CoseAlgorithmIdentifier::kCoseEs256,
+                  CoseAlgorithmIdentifier::kEs256,
                   fido_parsing_utils::Materialize(kSignature), {}))),
               testing::ElementsAreArray(
                   test_data::kPackedAttestationStatementCBORNoCerts));

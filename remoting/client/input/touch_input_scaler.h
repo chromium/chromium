@@ -22,6 +22,10 @@ class TouchInputScaler : public protocol::InputFilter {
  public:
   TouchInputScaler() = default;
   explicit TouchInputScaler(InputStub* input_stub);
+
+  TouchInputScaler(const TouchInputScaler&) = delete;
+  TouchInputScaler& operator=(const TouchInputScaler&) = delete;
+
   ~TouchInputScaler() override;
 
   // Set input and output desktop sizes.
@@ -40,8 +44,6 @@ class TouchInputScaler : public protocol::InputFilter {
   // These hold the max-X,Y coordinates and not the actual width and height.
   webrtc::DesktopSize input_size_;
   webrtc::DesktopSize output_size_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchInputScaler);
 };
 
 }  // namespace remoting

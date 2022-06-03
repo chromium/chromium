@@ -28,11 +28,11 @@ class LineLayoutTextCombine : public LineLayoutText {
 
  private:
   LayoutTextCombine* ToTextCombine() {
-    return ToLayoutTextCombine(GetLayoutObject());
+    return To<LayoutTextCombine>(GetLayoutObject());
   }
 
   const LayoutTextCombine* ToTextCombine() const {
-    return ToLayoutTextCombine(GetLayoutObject());
+    return To<LayoutTextCombine>(GetLayoutObject());
   }
 };
 

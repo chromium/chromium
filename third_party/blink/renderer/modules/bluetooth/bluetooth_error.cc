@@ -86,6 +86,10 @@ DOMException* BluetoothError::CreateDOMException(
   case mojom::blink::WebBluetoothResult::enumeration: \
     return MakeGarbageCollected<DOMException>(name, message);
 
+      // AbortErrors:
+      MAP_ERROR(WATCH_ADVERTISEMENTS_ABORTED, DOMExceptionCode::kAbortError,
+                "The Bluetooth operation was cancelled.");
+
       // InvalidModificationErrors:
       MAP_ERROR(GATT_INVALID_ATTRIBUTE_LENGTH,
                 DOMExceptionCode::kInvalidModificationError,

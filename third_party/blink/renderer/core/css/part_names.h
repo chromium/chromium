@@ -25,6 +25,8 @@ class PartNames {
  public:
   PartNames();
   explicit PartNames(const SpaceSplitString& names);
+  PartNames(const PartNames&) = delete;
+  PartNames& operator=(const PartNames&) = delete;
   // Adds a new map to be applied. It does that apply the map and update the set
   // of names immediately. That will only be done if actually needed.
   //
@@ -44,8 +46,6 @@ class PartNames {
   // A queue of maps that have been passed to ApplyMap but not yet
   // applied. These will be applied only if Contains is eventually called.
   Vector<const NamesMap*> pending_maps_;
-
-  DISALLOW_COPY_AND_ASSIGN(PartNames);
 };
 
 }  // namespace blink

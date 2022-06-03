@@ -16,8 +16,6 @@ class UserActivation;
 class CORE_EXPORT NavigatorUserActivation final
     : public GarbageCollected<NavigatorUserActivation>,
       public Supplement<Navigator> {
-  USING_GARBAGE_COLLECTED_MIXIN(NavigatorUserActivation);
-
  public:
   static const char kSupplementName[];
 
@@ -26,7 +24,7 @@ class CORE_EXPORT NavigatorUserActivation final
 
   explicit NavigatorUserActivation(Navigator&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   static NavigatorUserActivation& From(Navigator&);

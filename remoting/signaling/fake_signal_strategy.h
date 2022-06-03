@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
+#include "base/time/time.h"
 #include "remoting/signaling/iq_sender.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
@@ -33,6 +34,10 @@ class FakeSignalStrategy : public SignalStrategy {
   static void Connect(FakeSignalStrategy* peer1, FakeSignalStrategy* peer2);
 
   FakeSignalStrategy(const SignalingAddress& address);
+
+  FakeSignalStrategy(const FakeSignalStrategy&) = delete;
+  FakeSignalStrategy& operator=(const FakeSignalStrategy&) = delete;
+
   ~FakeSignalStrategy() override;
 
   const std::vector<std::unique_ptr<jingle_xmpp::XmlElement>>& received_messages() {
@@ -77,6 +82,8 @@ class FakeSignalStrategy : public SignalStrategy {
   void AddListener(Listener* listener) override;
   void RemoveListener(Listener* listener) override;
   bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza) override;
+  bool SendMessage(const SignalingAddress& destination_address,
+                   const ftl::ChromotingMessage& message) override;
   std::string GetNextId() override;
   bool IsSignInError() const override;
 
@@ -112,8 +119,6 @@ class FakeSignalStrategy : public SignalStrategy {
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<FakeSignalStrategy> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSignalStrategy);
 };
 
 }  // namespace remoting

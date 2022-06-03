@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/callback_forward.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -12,6 +11,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -32,6 +32,11 @@ const char kSuccessfulOperationPrefix[] = "ok - ";
 class BackgroundSyncBrowserTest : public InProcessBrowserTest {
  public:
   BackgroundSyncBrowserTest() = default;
+
+  BackgroundSyncBrowserTest(const BackgroundSyncBrowserTest&) = delete;
+  BackgroundSyncBrowserTest& operator=(const BackgroundSyncBrowserTest&) =
+      delete;
+
   ~BackgroundSyncBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -47,7 +52,8 @@ class BackgroundSyncBrowserTest : public InProcessBrowserTest {
 
   void SetUpBrowser(Browser* browser) {
     // Load the helper page that helps drive these tests.
-    ui_test_utils::NavigateToURL(browser, https_server_->GetURL(kHelperPage));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(
+        browser, https_server_->GetURL(kHelperPage)));
 
     // Register the Service Worker that's required for Background Sync. The
     // behaviour without an activated worker is covered by layout tests.
@@ -101,7 +107,6 @@ class BackgroundSyncBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(BackgroundSyncBrowserTest, VerifyShutdownBehavior) {

@@ -15,6 +15,10 @@ class ListValue;
 class BookmarksMessageHandler : public content::WebUIMessageHandler {
  public:
   BookmarksMessageHandler();
+
+  BookmarksMessageHandler(const BookmarksMessageHandler&) = delete;
+  BookmarksMessageHandler& operator=(const BookmarksMessageHandler&) = delete;
+
   ~BookmarksMessageHandler() override;
 
  private:
@@ -32,8 +36,6 @@ class BookmarksMessageHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarksMessageHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BOOKMARKS_BOOKMARKS_MESSAGE_HANDLER_H_

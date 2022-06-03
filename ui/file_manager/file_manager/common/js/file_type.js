@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+
+import {FilesAppEntry} from '../../externs/files_app_entry_interfaces.js';
+
+import {VolumeEntry} from './files_app_entry_types.js';
+import {VolumeManagerCommon} from './volume_manager_types.js';
+
 /**
  * Namespace object for file type utility functions.
  */
-function FileType() {}
+export function FileType() {}
 
 /**
  * @typedef {{
@@ -225,7 +232,7 @@ FileType.types = [
     type: 'audio',
     name: 'AUDIO_FILE_TYPE',
     subtype: 'OGG',
-    pattern: /\.og(a|g)$/i,
+    pattern: /\.o(g(a|g)|pus)$/i,
     mimePattern: /audio\/ogg/i
   },
   {
@@ -499,7 +506,7 @@ FileType.getType = (entry, opt_mimeType) => {
         name: '',
         type: 'partition',
         subtype:
-            /** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType,
+            assert(/** @type {VolumeEntry}*/ (entry).volumeInfo.diskFileSystemType),
         icon: '',
       };
     }
@@ -587,6 +594,15 @@ FileType.isRaw = (entry, opt_mimeType) => {
 };
 
 /**
+ * @param {Entry} entry Reference to the file
+ * @param {string=} opt_mimeType Optional mime type for this file.
+ * @return {boolean} Whether or not this is a PDF file.
+ */
+FileType.isPDF = (entry, opt_mimeType) => {
+  return FileType.getType(entry, opt_mimeType).subtype === 'PDF';
+};
+
+/**
  * Files with more pixels won't have preview.
  * @param {!Array<string>} types
  * @param {Entry} entry Reference to the file.
@@ -635,6 +651,7 @@ FileType.getIconOverrides = (entry, opt_rootType) => {
   // Overrides per RootType and defined by fullPath.
   const overrides = {
     [VolumeManagerCommon.RootType.DOWNLOADS]: {
+      '/Camera': 'camera-folder',
       '/Downloads': VolumeManagerCommon.VolumeType.DOWNLOADS,
       '/PvmDefault': 'plugin_vm',
     },

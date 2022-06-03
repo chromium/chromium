@@ -4,6 +4,7 @@
 
 #include "remoting/signaling/iq_sender.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -20,6 +21,7 @@
 
 using ::testing::_;
 using ::testing::DeleteArg;
+using ::testing::DoAll;
 using ::testing::InvokeWithoutArgs;
 using ::testing::NotNull;
 using ::testing::Return;
@@ -49,7 +51,7 @@ class IqSenderTest : public testing::Test {
  public:
   IqSenderTest() : signal_strategy_(SignalingAddress("local_jid@domain.com")) {
     EXPECT_CALL(signal_strategy_, AddListener(NotNull()));
-    sender_.reset(new IqSender(&signal_strategy_));
+    sender_ = std::make_unique<IqSender>(&signal_strategy_);
     EXPECT_CALL(signal_strategy_, RemoveListener(
         static_cast<SignalStrategy::Listener*>(sender_.get())));
   }
@@ -120,7 +122,7 @@ TEST_F(IqSenderTest, Timeout) {
     SendTestMessage();
   });
 
-  request_->SetTimeout(base::TimeDelta::FromMilliseconds(2));
+  request_->SetTimeout(base::Milliseconds(2));
 
   base::RunLoop run_loop;
   EXPECT_CALL(callback_, Run(request_.get(), nullptr))

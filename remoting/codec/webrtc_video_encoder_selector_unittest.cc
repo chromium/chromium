@@ -37,10 +37,11 @@ class WebrtcVideoEncoderSelectorTest : public ::testing::Test {
     // Register three encoders.
     for (int i = 0; i < kEncoderCount; i++) {
       int j = selector_.RegisterEncoder(
-          base::Bind(&WebrtcVideoEncoderSelectorTest::IsProfileSupported,
-                     base::Unretained(this), i),
-          base::Bind(&WebrtcVideoEncoderSelectorTest::CreateEncoder,
-                     base::Unretained(this), i));
+          base::BindRepeating(
+              &WebrtcVideoEncoderSelectorTest::IsProfileSupported,
+              base::Unretained(this), i),
+          base::BindRepeating(&WebrtcVideoEncoderSelectorTest::CreateEncoder,
+                              base::Unretained(this), i));
       EXPECT_EQ(i, j);
     }
     // Set the default DesktopFrame.

@@ -6,7 +6,6 @@
 
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -53,8 +52,7 @@ ComponentPatcher::ComponentPatcher(const base::FilePath& input_dir,
       installer_(installer),
       patcher_(patcher) {}
 
-ComponentPatcher::~ComponentPatcher() {
-}
+ComponentPatcher::~ComponentPatcher() = default;
 
 void ComponentPatcher::Start(Callback callback) {
   callback_ = std::move(callback);
@@ -68,13 +66,13 @@ void ComponentPatcher::StartPatching() {
   if (!commands_) {
     DonePatching(UnpackerError::kDeltaBadCommands, 0);
   } else {
-    next_command_ = commands_->begin();
+    next_command_ = commands_->GetList().begin();
     PatchNextFile();
   }
 }
 
 void ComponentPatcher::PatchNextFile() {
-  if (next_command_ == commands_->end()) {
+  if (next_command_ == commands_->GetList().end()) {
     DonePatching(UnpackerError::kNone, 0);
     return;
   }

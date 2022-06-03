@@ -7,7 +7,7 @@
 #include <stddef.h>
 
 #include "cc/layers/layer.h"
-#include "ui/android/edge_effect_base.h"
+#include "ui/android/edge_effect.h"
 #include "ui/android/window_android_compositor.h"
 
 using std::max;
@@ -44,6 +44,7 @@ OverscrollGlow::OverscrollGlow(OverscrollGlowClient* client)
 
 OverscrollGlow::~OverscrollGlow() {
   Detach();
+  client_ = nullptr;
 }
 
 void OverscrollGlow::Reset() {
@@ -128,7 +129,7 @@ bool OverscrollGlow::Animate(base::TimeTicks current_time,
 
   for (size_t i = 0; i < EDGE_COUNT; ++i) {
     if (edge_effects_[i]->Update(current_time)) {
-      EdgeEffectBase::Edge edge = static_cast<EdgeEffectBase::Edge>(i);
+      EdgeEffect::Edge edge = static_cast<EdgeEffect::Edge>(i);
       edge_effects_[i]->ApplyToLayers(edge, viewport_size_, edge_offsets_[i]);
     }
   }
@@ -141,12 +142,12 @@ void OverscrollGlow::OnFrameUpdated(
     const gfx::SizeF& content_size,
     const gfx::Vector2dF& content_scroll_offset) {
   viewport_size_ = viewport_size;
-  edge_offsets_[EdgeEffectBase::EDGE_TOP] = -content_scroll_offset.y();
-  edge_offsets_[EdgeEffectBase::EDGE_LEFT] = -content_scroll_offset.x();
-  edge_offsets_[EdgeEffectBase::EDGE_BOTTOM] = content_size.height() -
-                                               content_scroll_offset.y() -
-                                               viewport_size.height();
-  edge_offsets_[EdgeEffectBase::EDGE_RIGHT] =
+  edge_offsets_[EdgeEffect::EDGE_TOP] = -content_scroll_offset.y();
+  edge_offsets_[EdgeEffect::EDGE_LEFT] = -content_scroll_offset.x();
+  edge_offsets_[EdgeEffect::EDGE_BOTTOM] = content_size.height() -
+                                           content_scroll_offset.y() -
+                                           viewport_size.height();
+  edge_offsets_[EdgeEffect::EDGE_RIGHT] =
       content_size.width() - content_scroll_offset.x() - viewport_size.width();
 
   // Only allow overscroll on scrollable axes, matching platform behavior.
@@ -192,6 +193,9 @@ void OverscrollGlow::Detach() {
 bool OverscrollGlow::InitializeIfNecessary() {
   if (initialized_)
     return true;
+
+  if (client_ == nullptr)
+    return false;
 
   DCHECK(!root_layer_.get());
   root_layer_ = cc::Layer::Create();
@@ -273,7 +277,7 @@ void OverscrollGlow::Release(base::TimeTicks current_time) {
     edge_effects_[i]->Release(current_time);
 }
 
-EdgeEffectBase* OverscrollGlow::GetOppositeEdge(int edge_index) {
+EdgeEffect* OverscrollGlow::GetOppositeEdge(int edge_index) {
   DCHECK(initialized_);
   return edge_effects_[(edge_index + 2) % EDGE_COUNT].get();
 }

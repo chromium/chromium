@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
-import {$} from 'chrome://resources/js/util.m.js';
+import {$, hasKeyModifiers, isRTL} from 'chrome://resources/js/util.m.js';
 
-import {FittingType} from './pdf_fitting_type.js';
+import {FittingType, Point} from './constants.js';
+import {Gesture, GestureDetector, PinchEventDetail} from './gesture_detector.js';
 import {InactiveZoomManager, ZoomManager} from './zoom_manager.js';
 
 /**
@@ -19,17 +20,20 @@ import {InactiveZoomManager, ZoomManager} from './zoom_manager.js';
  */
 let DocumentDimensions;
 
-/** @typedef {{defaultPageOrientation: number}} */
+/**
+ * @typedef {{
+ *   direction: number,
+ *   defaultPageOrientation: number,
+ *   twoUpViewEnabled: boolean,
+ * }}
+ */
 export let LayoutOptions;
-
-/** @typedef {{x: number, y: number}} */
-export let Point;
 
 /** @typedef {{x: (number|undefined), y: (number|undefined)}} */
 export let PartialPoint;
 
 /** @typedef {{width: number, height: number}} */
-let Size;
+export let Size;
 
 /** @typedef {{x: number, y: number, width: number, height: number}} */
 let ViewportRect;
@@ -61,43 +65,31 @@ function vectorDelta(p1, p2) {
   return {x: p2.x - p1.x, y: p2.y - p1.y};
 }
 
-/**
- * @param {!Point} coordinateInFrame
- * @return {!Point} Coordinate converted to plugin coordinates.
- */
-function frameToPluginCoordinate(coordinateInFrame) {
-  const container = $('plugin');
-  return {
-    x: coordinateInFrame.x - container.getBoundingClientRect().left,
-    y: coordinateInFrame.y - container.getBoundingClientRect().top
-  };
-}
-
 export class Viewport {
   /**
-   * @param {!Window} window
+   * @param {!HTMLElement} scrollParent
    * @param {!HTMLDivElement} sizer The element which represents the size of the
    *     document in the viewport
+   * @param {!HTMLDivElement} content The element which is the parent of the
+   *     plugin in the viewer.
    * @param {number} scrollbarWidth The width of scrollbars on the page
    * @param {number} defaultZoom The default zoom level.
-   * @param {number} topToolbarHeight The number of pixels that should initially
-   *     be left blank above the document for the toolbar.
    */
-  constructor(window, sizer, scrollbarWidth, defaultZoom, topToolbarHeight) {
-    /** @private {!Window} */
-    this.window_ = window;
+  constructor(scrollParent, sizer, content, scrollbarWidth, defaultZoom) {
+    /** @private {!HTMLElement} */
+    this.window_ = scrollParent;
 
     /** @private {!HTMLDivElement} */
     this.sizer_ = sizer;
+
+    /** @private {!HTMLDivElement} */
+    this.content_ = content;
 
     /** @private {number} */
     this.scrollbarWidth_ = scrollbarWidth;
 
     /** @private {number} */
     this.defaultZoom_ = defaultZoom;
-
-    /** @private {number} */
-    this.topToolbarHeight_ = topToolbarHeight;
 
     /** @private {function():void} */
     this.viewportChangedCallback_ = function() {};
@@ -136,17 +128,11 @@ export class Viewport {
     /** @private {!FittingType} */
     this.fittingType_ = FittingType.NONE;
 
-    /**
-     * |twoUpView_| should be in sync with |two_up_view_| in PDFiumEngine.
-     * @private {boolean}
-     */
-    this.twoUpView_ = false;
-
     /** @private {number} */
     this.prevScale_ = 1;
 
-    /** @private {!Viewport.PinchPhase} */
-    this.pinchPhase_ = Viewport.PinchPhase.PINCH_NONE;
+    /** @private {!PinchPhase} */
+    this.pinchPhase_ = PinchPhase.NONE;
 
     /** @private {?Point} */
     this.pinchPanVector_ = null;
@@ -157,9 +143,6 @@ export class Viewport {
     /** @private {?Point} */
     this.firstPinchCenterInFrame_ = null;
 
-    /** @private {number} */
-    this.rotations_ = 0;
-
     /** @private {?Point} */
     this.oldCenterInContent_ = null;
 
@@ -169,11 +152,51 @@ export class Viewport {
     /** @private {!EventTracker} */
     this.tracker_ = new EventTracker();
 
+    /** @private {!GestureDetector} */
+    this.gestureDetector_ = new GestureDetector(this.content_);
+
+    /** @private {boolean} */
+    this.sentPinchEvent_ = false;
+
+    this.gestureDetector_.getEventTarget().addEventListener(
+        'pinchstart',
+        e => this.onPinchStart_(
+            /** @type {!CustomEvent<!PinchEventDetail>} */ (e)));
+    this.gestureDetector_.getEventTarget().addEventListener(
+        'pinchupdate',
+        e => this.onPinchUpdate_(
+            /** @type {!CustomEvent<!PinchEventDetail>} */ (e)));
+    this.gestureDetector_.getEventTarget().addEventListener(
+        'pinchend',
+        e => this.onPinchEnd_(
+            /** @type {!CustomEvent<!PinchEventDetail>} */ (e)));
+
     // Set to a default zoom manager - used in tests.
     this.setZoomManager(new InactiveZoomManager(this.getZoom.bind(this), 1));
 
-    window.addEventListener('scroll', this.updateViewport_.bind(this));
-    window.addEventListener('resize', this.resizeWrapper_.bind(this));
+    // Print Preview
+    if (this.window_ === document.documentElement ||
+        // Necessary check since during testing a fake DOM element is used.
+        !(this.window_ instanceof HTMLElement)) {
+      window.addEventListener('scroll', this.updateViewport_.bind(this));
+      // The following line is only used in tests, since they expect
+      // |scrollCallback| to be called on the mock |window_| object (legacy).
+      this.window_.scrollCallback = this.updateViewport_.bind(this);
+      window.addEventListener('resize', this.resizeWrapper_.bind(this));
+      // The following line is only used in tests, since they expect
+      // |resizeCallback| to be called on the mock |window_| object (legacy).
+      this.window_.resizeCallback = this.resizeWrapper_.bind(this);
+    } else {
+      // Standard PDF viewer
+      this.window_.addEventListener('scroll', this.updateViewport_.bind(this));
+      const resizeObserver = new ResizeObserver(_ => this.resizeWrapper_());
+      const target = this.window_.parentElement;
+      assert(target.id === 'main');
+      resizeObserver.observe(target);
+    }
+
+    document.body.addEventListener(
+        'change-zoom', e => this.setZoom(e.detail.zoom));
   }
 
   /** @param {function():void} viewportChangedCallback */
@@ -196,33 +219,19 @@ export class Viewport {
     this.userInitiatedCallback_ = userInitiatedCallback;
   }
 
-  rotateClockwise() {
-    this.rotateBySteps_(1);
-  }
-
-  rotateCounterclockwise() {
-    this.rotateBySteps_(3);
-  }
-
-  /**
-   * @param {number} n The number of clockwise 90-degree rotations to increment
-   *     by.
-   */
-  rotateBySteps_(n) {
-    this.rotations_ = (this.rotations_ + n) % 4;
-  }
-
   /**
    * @return {number} The number of clockwise 90-degree rotations that have been
    *     applied.
    */
   getClockwiseRotations() {
-    return this.rotations_;
+    const options = this.getLayoutOptions();
+    return options ? options.defaultPageOrientation : 0;
   }
 
-  /** @param {boolean} twoUpView The new two up view state to set. */
-  setTwoUpView(twoUpView) {
-    this.twoUpView_ = twoUpView;
+  /** @return {boolean} Whether viewport is in two-up view mode. */
+  twoUpViewEnabled() {
+    const options = this.getLayoutOptions();
+    return !!options && options.twoUpViewEnabled;
   }
 
   /**
@@ -261,15 +270,17 @@ export class Viewport {
     const height = dimensions.height;
     const width = dimensions.width;
 
-    const matrix = new DOMMatrix();
+    // TODO(dpapad): Use the no-arg constructor when
+    // https://github.com/google/closure-compiler/issues/3768 is fixed.
+    const matrix = new DOMMatrix([1, 0, 0, 1, 0, 0]);
 
-    const rotation = this.rotations_ * 90;
+    const rotation = this.getClockwiseRotations() * 90;
     // Set origin for rotation.
-    if (rotation == 90) {
+    if (rotation === 90) {
       matrix.translateSelf(width, 0);
-    } else if (rotation == 180) {
+    } else if (rotation === 180) {
       matrix.translateSelf(width, height);
-    } else if (rotation == 270) {
+    } else if (rotation === 270) {
       matrix.translateSelf(0, height);
     }
     matrix.rotateSelf(0, 0, rotation);
@@ -280,13 +291,11 @@ export class Viewport {
     matrix.scaleSelf(1, -1);
 
     const pointsToPixels = 96 / 72;
-    const result = matrix.transformPoint({
-      x: point.x * pointsToPixels,
-      y: point.y * pointsToPixels,
-    });
+    const result = matrix.transformPoint(
+        new DOMPoint(point.x * pointsToPixels, point.y * pointsToPixels));
     return {
-      x: result.x + Viewport.PAGE_SHADOW.left,
-      y: result.y + Viewport.PAGE_SHADOW.top,
+      x: result.x + PAGE_SHADOW.left,
+      y: result.y + PAGE_SHADOW.top,
     };
   }
 
@@ -333,6 +342,16 @@ export class Viewport {
    */
   getViewportRect_() {
     const zoom = this.getZoom();
+    // Zoom can be 0 in the case of a PDF that is in a hidden iframe. Avoid
+    // returning undefined values in this case. See https://crbug.com/1202725.
+    if (zoom === 0) {
+      return {
+        x: 0,
+        y: 0,
+        width: 0,
+        height: 0,
+      };
+    }
     return {
       x: this.position.x / zoom,
       y: this.position.y / zoom,
@@ -345,26 +364,17 @@ export class Viewport {
    * @param {number} zoom Zoom to compute scrollbars for
    * @return {{horizontal: boolean, vertical: boolean}} Whether horizontal or
    *     vertical scrollbars are needed.
-   * @private
+   * Public so tests can call it directly.
    */
-  documentNeedsScrollbars_(zoom) {
+  documentNeedsScrollbars(zoom) {
     const zoomedDimensions = this.getZoomedDocumentDimensions_(zoom);
     if (!zoomedDimensions) {
       return {horizontal: false, vertical: false};
     }
 
-    // If scrollbars are required for one direction, expand the document in the
-    // other direction to take the width of the scrollbars into account when
-    // deciding whether the other direction needs scrollbars.
-    if (zoomedDimensions.width > this.window_.innerWidth) {
-      zoomedDimensions.height += this.scrollbarWidth_;
-    } else if (zoomedDimensions.height > this.window_.innerHeight) {
-      zoomedDimensions.width += this.scrollbarWidth_;
-    }
     return {
-      horizontal: zoomedDimensions.width > this.window_.innerWidth,
-      vertical: zoomedDimensions.height + this.topToolbarHeight_ >
-          this.window_.innerHeight
+      horizontal: zoomedDimensions.width > this.window_.offsetWidth,
+      vertical: zoomedDimensions.height > this.window_.offsetHeight
     };
   }
 
@@ -373,7 +383,7 @@ export class Viewport {
    *     vertical scrollbars are needed.
    */
   documentHasScrollbars() {
-    return this.documentNeedsScrollbars_(this.getZoom());
+    return this.documentNeedsScrollbars(this.getZoom());
   }
 
   /**
@@ -385,9 +395,22 @@ export class Viewport {
     const zoomedDimensions = this.getZoomedDocumentDimensions_(this.getZoom());
     if (zoomedDimensions) {
       this.sizer_.style.width = zoomedDimensions.width + 'px';
-      this.sizer_.style.height =
-          zoomedDimensions.height + this.topToolbarHeight_ + 'px';
+      this.sizer_.style.height = zoomedDimensions.height + 'px';
     }
+  }
+
+  /**
+   * @param {!Point} coordinateInFrame
+   * @return {!Point} Coordinate converted to plugin coordinates.
+   * @private
+   */
+  frameToPluginCoordinate_(coordinateInFrame) {
+    const containerRect =
+        this.content_.querySelector('#plugin').getBoundingClientRect();
+    return {
+      x: coordinateInFrame.x - containerRect.left,
+      y: coordinateInFrame.y - containerRect.top
+    };
   }
 
   /**
@@ -413,13 +436,21 @@ export class Viewport {
    * @private
    */
   resize_() {
-    if (this.fittingType_ == FittingType.FIT_TO_PAGE) {
+    // Force fit-to-height when resizing happens as a result of entering full
+    // screen mode.
+    if (document.fullscreenElement !== null) {
+      this.fittingType_ = FittingType.FIT_TO_HEIGHT;
+      this.window_.dispatchEvent(
+          new CustomEvent('fitting-type-changed-for-testing'));
+    }
+
+    if (this.fittingType_ === FittingType.FIT_TO_PAGE) {
       this.fitToPageInternal_(false);
-    } else if (this.fittingType_ == FittingType.FIT_TO_WIDTH) {
+    } else if (this.fittingType_ === FittingType.FIT_TO_WIDTH) {
       this.fitToWidth();
-    } else if (this.fittingType_ == FittingType.FIT_TO_HEIGHT) {
-      this.fitToHeightInternal_(false);
-    } else if (this.internalZoom_ == 0) {
+    } else if (this.fittingType_ === FittingType.FIT_TO_HEIGHT) {
+      this.fitToHeightInternal_(document.fullscreenElement !== null);
+    } else if (this.internalZoom_ === 0) {
       this.fitToNone();
     } else {
       this.updateViewport_();
@@ -428,35 +459,33 @@ export class Viewport {
 
   /** @return {!Point} The scroll position of the viewport. */
   get position() {
-    return {
-      x: this.window_.pageXOffset,
-      y: this.window_.pageYOffset - this.topToolbarHeight_
-    };
+    return {x: this.window_.scrollLeft, y: this.window_.scrollTop};
   }
 
   /**
    * Scroll the viewport to the specified position.
    * @param {!Point} position The position to scroll to.
    */
-  set position(position) {
-    this.window_.scrollTo(position.x, position.y + this.topToolbarHeight_);
+  setPosition(position) {
+    this.window_.scrollTo(position.x, position.y);
   }
 
   /** @return {!Size} the size of the viewport excluding scrollbars. */
   get size() {
-    const needsScrollbars = this.documentNeedsScrollbars_(this.getZoom());
-    const scrollbarWidth = needsScrollbars.vertical ? this.scrollbarWidth_ : 0;
-    const scrollbarHeight =
-        needsScrollbars.horizontal ? this.scrollbarWidth_ : 0;
     return {
-      width: this.window_.innerWidth - scrollbarWidth,
-      height: this.window_.innerHeight - scrollbarHeight
+      width: this.window_.offsetWidth,
+      height: this.window_.offsetHeight,
     };
   }
 
   /** @return {number} The current zoom. */
   getZoom() {
     return this.zoomManager_.applyBrowserZoom(this.internalZoom_);
+  }
+
+  /** @return {!Array<number>} The preset zoom factors. */
+  get presetZoomFactors() {
+    return this.presetZoomFactors_;
   }
 
   /** @param {!ZoomManager} manager */
@@ -472,7 +501,7 @@ export class Viewport {
   }
 
   /**
-   * @return {!Viewport.PinchPhase} The phase of the current pinch gesture for
+   * @return {!PinchPhase} The phase of the current pinch gesture for
    *    the viewport.
    */
   get pinchPhase() {
@@ -532,17 +561,17 @@ export class Viewport {
     this.contentSizeChanged_();
     // Scroll to the scaled scroll position.
     zoom = this.getZoom();
-    this.position = {
+    this.setPosition({
       x: currentScrollPos.x * zoom,
-      y: currentScrollPos.y * zoom
-    };
+      y: currentScrollPos.y * zoom,
+    });
   }
 
   /**
    * Sets the zoom of the viewport.
    * Same as setZoomInternal_ but for pinch zoom we have some more operations.
    * @param {number} scaleDelta The zoom delta.
-   * @param {!Point} center The pinch center in content coordinates.
+   * @param {!Point} center The pinch center in plugin coordinates.
    * @private
    */
   setPinchZoomInternal_(scaleDelta, center) {
@@ -552,11 +581,10 @@ export class Viewport {
             'Viewport.mightZoom_.');
     this.internalZoom_ = this.clampZoom_(this.internalZoom_ * scaleDelta);
 
-    const newCenterInContent = this.frameToContent_(center);
-    const delta = {
-      x: (newCenterInContent.x - this.oldCenterInContent_.x),
-      y: (newCenterInContent.y - this.oldCenterInContent_.y)
-    };
+    assert(this.oldCenterInContent_);
+    const delta = vectorDelta(
+        /** @type {!Point} */ (this.oldCenterInContent_),
+        this.pluginToContent_(center));
 
     // Record the scroll position (relative to the pinch center).
     const zoom = this.getZoom();
@@ -567,28 +595,26 @@ export class Viewport {
 
     this.contentSizeChanged_();
     // Scroll to the scaled scroll position.
-    this.position = {x: currentScrollPos.x, y: currentScrollPos.y};
+    this.setPosition(currentScrollPos);
   }
 
   /**
-   *  Converts a point from frame to content coordinates.
-   *  @param {!Point} framePoint The frame coordinates.
+   *  Converts a point from plugin to content coordinates.
+   *  @param {!Point} pluginPoint The plugin coordinates.
    *  @return {!Point} The content coordinates.
    *  @private
    */
-  frameToContent_(framePoint) {
+  pluginToContent_(pluginPoint) {
     // TODO(mcnee) Add a helper Point class to avoid duplicating operations
     // on plain {x,y} objects.
     const zoom = this.getZoom();
     return {
-      x: (framePoint.x + this.position.x) / zoom,
-      y: (framePoint.y + this.position.y) / zoom
+      x: (pluginPoint.x + this.position.x) / zoom,
+      y: (pluginPoint.y + this.position.y) / zoom
     };
   }
 
-  /**
-   * @param {number} newZoom The zoom level to zoom to.
-   */
+  /** @param {number} newZoom The zoom level to zoom to. */
   setZoom(newZoom) {
     this.fittingType_ = FittingType.NONE;
     this.mightZoom_(() => {
@@ -613,10 +639,10 @@ export class Viewport {
       this.contentSizeChanged_();
       const newZoom = this.getZoom();
       // Scroll to the scaled scroll position.
-      this.position = {
+      this.setPosition({
         x: currentScrollPos.x * newZoom,
-        y: currentScrollPos.y * newZoom
-      };
+        y: currentScrollPos.y * newZoom,
+      });
       this.updateViewport_();
     });
   }
@@ -632,6 +658,15 @@ export class Viewport {
   }
 
   /**
+   * @param {number} index
+   * @return {number} The y coordinate of the bottom of the given page.
+   * @private
+   */
+  getPageBottom_(index) {
+    return this.pageDimensions_[index].y + this.pageDimensions_[index].height;
+  }
+
+  /**
    * Get the page at a given y position. If there are multiple pages
    * overlapping the given y-coordinate, return the page with the smallest
    * index.
@@ -640,21 +675,35 @@ export class Viewport {
    * @private
    */
   getPageAtY_(y) {
+    assert(y >= 0);
+
+    // Drop decimal part of |y| otherwise it can appear as larger than the
+    // bottom of the last page in the document (even without the presence of a
+    // horizontal scrollbar).
+    y = Math.floor(y);
+
     let min = 0;
     let max = this.pageDimensions_.length - 1;
+    if (max === min) {
+      return min;
+    }
+
     while (max >= min) {
-      const page = Math.floor(min + ((max - min) / 2));
+      const page = min + Math.floor((max - min) / 2);
       // There might be a gap between the pages, in which case use the bottom
       // of the previous page as the top for finding the page.
-      let top = 0;
-      if (page > 0) {
-        top = this.pageDimensions_[page - 1].y +
-            this.pageDimensions_[page - 1].height;
-      }
-      const bottom =
-          this.pageDimensions_[page].y + this.pageDimensions_[page].height;
+      const top = page > 0 ? this.getPageBottom_(page - 1) : 0;
+      const bottom = this.getPageBottom_(page);
 
       if (top <= y && y <= bottom) {
+        return page;
+      }
+
+      // If the search reached the last page just return that page. |y| is
+      // larger than the last page's |bottom|, which can happen either because a
+      // horizontal scrollbar exists, or the document is zoomed out enough for
+      // free space to exist at the bottom.
+      if (page === this.pageDimensions_.length - 1) {
         return page;
       }
 
@@ -664,7 +713,10 @@ export class Viewport {
         min = page + 1;
       }
     }
-    return 0;
+
+    // Should always return within the while loop above.
+    assertNotReached('Could not find page for Y position: ' + y);
+    return -1;
   }
 
   /**
@@ -677,7 +729,7 @@ export class Viewport {
   getLastPageInViewport_(viewportRect) {
     const pageAtY = this.getPageAtY_(viewportRect.y + viewportRect.height);
 
-    if (!this.twoUpView_ || pageAtY % 2 == 1 ||
+    if (!this.twoUpViewEnabled() || pageAtY % 2 === 1 ||
         pageAtY + 1 >= this.pageDimensions_.length) {
       return pageAtY;
     }
@@ -721,6 +773,7 @@ export class Viewport {
 
     const firstVisiblePage = this.getPageAtY_(viewportRect.y);
     const lastPossibleVisiblePage = this.getLastPageInViewport_(viewportRect);
+    assert(firstVisiblePage <= lastPossibleVisiblePage);
     if (firstVisiblePage === lastPossibleVisiblePage) {
       return firstVisiblePage;
     }
@@ -768,11 +821,11 @@ export class Viewport {
 
     // First compute the zoom without scrollbars.
     let zoom = this.computeFittingZoomGivenDimensions_(
-        fitWidth, fitHeight, this.window_.innerWidth, this.window_.innerHeight,
-        pageDimensions.width, pageDimensions.height);
+        fitWidth, fitHeight, this.window_.offsetWidth,
+        this.window_.offsetHeight, pageDimensions.width, pageDimensions.height);
 
     // Check if there needs to be any scrollbars.
-    const needsScrollbars = this.documentNeedsScrollbars_(zoom);
+    const needsScrollbars = this.documentNeedsScrollbars(zoom);
 
     // If the document fits, just return the zoom.
     if (!needsScrollbars.horizontal && !needsScrollbars.vertical) {
@@ -784,18 +837,18 @@ export class Viewport {
     // Check if adding a scrollbar will result in needing the other scrollbar.
     const scrollbarWidth = this.scrollbarWidth_;
     if (needsScrollbars.horizontal &&
-        zoomedDimensions.height > this.window_.innerHeight - scrollbarWidth) {
+        zoomedDimensions.height > this.window_.offsetHeight - scrollbarWidth) {
       needsScrollbars.vertical = true;
     }
     if (needsScrollbars.vertical &&
-        zoomedDimensions.width > this.window_.innerWidth - scrollbarWidth) {
+        zoomedDimensions.width > this.window_.offsetWidth - scrollbarWidth) {
       needsScrollbars.horizontal = true;
     }
 
     // Compute available window space.
     const windowWithScrollbars = {
-      width: this.window_.innerWidth,
-      height: this.window_.innerHeight
+      width: this.window_.offsetWidth,
+      height: this.window_.offsetHeight,
     };
     if (needsScrollbars.horizontal) {
       windowWithScrollbars.height -= scrollbarWidth;
@@ -891,10 +944,10 @@ export class Viewport {
       };
       this.setZoomInternal_(this.computeFittingZoom_(dimensions, false, true));
       if (scrollToTopOfPage) {
-        this.position = {
+        this.setPosition({
           x: 0,
-          y: this.pageDimensions_[page].y * this.getZoom()
-        };
+          y: this.pageDimensions_[page].y * this.getZoom(),
+        });
       }
       this.updateViewport_();
     });
@@ -926,10 +979,10 @@ export class Viewport {
       };
       this.setZoomInternal_(this.computeFittingZoom_(dimensions, true, true));
       if (scrollToTopOfPage) {
-        this.position = {
+        this.setPosition({
           x: 0,
-          y: this.pageDimensions_[page].y * this.getZoom()
-        };
+          y: this.pageDimensions_[page].y * this.getZoom(),
+        });
       }
       this.updateViewport_();
     });
@@ -989,101 +1042,138 @@ export class Viewport {
   }
 
   /**
-   * Pinch zoom event handler.
-   * @param {!Object} e The pinch event.
+   * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
+   * @private
    */
-  pinchZoom(e) {
-    this.mightZoom_(() => {
-      this.pinchPhase_ = e.direction == 'out' ?
-          Viewport.PinchPhase.PINCH_UPDATE_ZOOM_OUT :
-          Viewport.PinchPhase.PINCH_UPDATE_ZOOM_IN;
+  pageUpDownSpaceHandler_(e, formFieldFocused) {
+    // Avoid scrolling if the space key is down while a form field is focused
+    // on since the user might be typing space into the field.
+    if (formFieldFocused && e.key === ' ') {
+      this.window_.dispatchEvent(new CustomEvent('scroll-avoided-for-testing'));
+      return;
+    }
 
-      const scaleDelta = e.startScaleRatio / this.prevScale_;
-      if (this.firstPinchCenterInFrame_ != null) {
-        this.pinchPanVector_ =
-            vectorDelta(e.center, this.firstPinchCenterInFrame_);
-      }
+    const isDown = e.key === 'PageDown' || (e.key === ' ' && !e.shiftKey);
+    // Go to the previous/next page if we are fit-to-page or fit-to-height.
+    if (this.isPagedMode_()) {
+      isDown ? this.goToNextPage() : this.goToPreviousPage();
+      // Since we do the movement of the page.
+      e.preventDefault();
+    } else if (
+        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
+            .fromScriptingAPI) {
+      const scrollOffset = (isDown ? 1 : -1) * this.size.height;
+      this.setPosition({
+        x: this.position.x,
+        y: this.position.y + scrollOffset,
+      });
+    }
 
-      const needsScrollbars =
-          this.documentNeedsScrollbars_(this.zoomManager_.applyBrowserZoom(
-              this.clampZoom_(this.internalZoom_ * scaleDelta)));
-
-      this.pinchCenter_ = e.center;
-
-      // If there's no horizontal scrolling, keep the content centered so the
-      // user can't zoom in on the non-content area.
-      // TODO(mcnee) Investigate other ways of scaling when we don't have
-      // horizontal scrolling. We want to keep the document centered,
-      // but this causes a potentially awkward transition when we start
-      // using the gesture center.
-      if (!needsScrollbars.horizontal) {
-        this.pinchCenter_ = {
-          x: this.window_.innerWidth / 2,
-          y: this.window_.innerHeight / 2
-        };
-      } else if (this.keepContentCentered_) {
-        this.oldCenterInContent_ =
-            this.frameToContent_(frameToPluginCoordinate(e.center));
-        this.keepContentCentered_ = false;
-      }
-
-      this.setPinchZoomInternal_(scaleDelta, frameToPluginCoordinate(e.center));
-      this.updateViewport_();
-      this.prevScale_ = e.startScaleRatio;
-    });
+    this.window_.dispatchEvent(new CustomEvent('scroll-proceeded-for-testing'));
   }
 
-  /** @param {!Object} e The pinch event. */
-  pinchZoomStart(e) {
-    this.pinchPhase_ = Viewport.PinchPhase.PINCH_START;
-    this.prevScale_ = 1;
-    this.oldCenterInContent_ =
-        this.frameToContent_(frameToPluginCoordinate(e.center));
+  /**
+   * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
+   * @private
+   */
+  arrowLeftRightHandler_(e, formFieldFocused) {
+    if (formFieldFocused || hasKeyModifiers(e)) {
+      return;
+    }
 
-    const needsScrollbars = this.documentNeedsScrollbars_(this.getZoom());
-    this.keepContentCentered_ = !needsScrollbars.horizontal;
-    // We keep track of begining of the pinch.
-    // By doing so we will be able to compute the pan distance.
-    this.firstPinchCenterInFrame_ = e.center;
+    // Go to the previous/next page if there are no horizontal scrollbars.
+    const isRight = e.key === 'ArrowRight';
+    if (!this.documentHasScrollbars().horizontal) {
+      isRight ? this.goToNextPage() : this.goToPreviousPage();
+      // Since we do the movement of the page.
+      e.preventDefault();
+    } else if (
+        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
+            .fromScriptingAPI) {
+      const scrollOffset = (isRight ? 1 : -1) * SCROLL_INCREMENT;
+      this.setPosition({
+        x: this.position.x + scrollOffset,
+        y: this.position.y,
+      });
+    }
   }
 
-  /** @param {!Object} e The pinch event. */
-  pinchZoomEnd(e) {
-    this.mightZoom_(() => {
-      this.pinchPhase_ = Viewport.PinchPhase.PINCH_END;
-      const scaleDelta = e.startScaleRatio / this.prevScale_;
-      this.pinchCenter_ = /** @type {!Point} */ (e.center);
+  /**
+   * @param {!KeyboardEvent} e
+   * @param {boolean} formFieldFocused
+   * @private
+   */
+  arrowUpDownHandler_(e, formFieldFocused) {
+    if (formFieldFocused || hasKeyModifiers(e)) {
+      return;
+    }
 
-      this.setPinchZoomInternal_(scaleDelta, frameToPluginCoordinate(e.center));
-      this.updateViewport_();
-    });
+    // Go to the previous/next page if Presentation mode is on.
+    const isDown = e.key === 'ArrowDown';
+    if (document.fullscreenElement !== null) {
+      isDown ? this.goToNextPage() : this.goToPreviousPage();
+      e.preventDefault();
+    } else if (
+        /** @type {!{fromScriptingAPI: (boolean|undefined)}} */ (e)
+            .fromScriptingAPI) {
+      const scrollOffset = (isDown ? 1 : -1) * SCROLL_INCREMENT;
+      this.setPosition({
+        x: this.position.x,
+        y: this.position.y + scrollOffset,
+      });
+    }
+  }
 
-    this.pinchPhase_ = Viewport.PinchPhase.PINCH_NONE;
-    this.pinchPanVector_ = null;
-    this.pinchCenter_ = null;
-    this.firstPinchCenterInFrame_ = null;
+  /**
+   * Handle certain directional key events.
+   * @param {!KeyboardEvent} e the event to handle.
+   * @param {boolean} formFieldFocused Whether a form field is currently
+   *     focused.
+   * @return {boolean} Whether the event was handled.
+   */
+  handleDirectionalKeyEvent(e, formFieldFocused) {
+    switch (e.key) {
+      case ' ':
+      case 'PageUp':
+      case 'PageDown':
+        this.pageUpDownSpaceHandler_(e, formFieldFocused);
+        return true;
+      case 'ArrowLeft':
+      case 'ArrowRight':
+        this.arrowLeftRightHandler_(e, formFieldFocused);
+        return true;
+      case 'ArrowDown':
+      case 'ArrowUp':
+        this.arrowUpDownHandler_(e, formFieldFocused);
+        return true;
+      default:
+        return false;
+    }
   }
 
   /**
    * Go to the next page. If the document is in two-up view, go to the left page
-   * of the next row.
+   * of the next row. Public for tests.
    */
   goToNextPage() {
     const currentPage = this.getMostVisiblePage();
-    const nextPageOffset = (this.twoUpView_ && currentPage % 2 == 0) ? 2 : 1;
+    const nextPageOffset =
+        (this.twoUpViewEnabled() && currentPage % 2 === 0) ? 2 : 1;
     this.goToPage(currentPage + nextPageOffset);
   }
 
   /**
    * Go to the previous page. If the document is in two-up view, go to the left
-   * page of the previous row.
+   * page of the previous row. Public for tests.
    */
   goToPreviousPage() {
     const currentPage = this.getMostVisiblePage();
     let previousPageOffset = -1;
 
-    if (this.twoUpView_) {
-      previousPageOffset = (currentPage % 2 == 0) ? -2 : -3;
+    if (this.twoUpViewEnabled()) {
+      previousPageOffset = (currentPage % 2 === 0) ? -2 : -3;
     }
 
     this.goToPage(currentPage + previousPageOffset);
@@ -1100,8 +1190,8 @@ export class Viewport {
   /**
    * Go to the given y position in the given page index.
    * @param {number} page the index of the page to go to. zero-based.
-   * @param {number} x the x position in the page to go to.
-   * @param {number} y the y position in the page to go to.
+   * @param {number|undefined} x the x position in the page to go to.
+   * @param {number|undefined} y the y position in the page to go to.
    */
   goToPageAndXY(page, x, y) {
     this.mightZoom_(() => {
@@ -1115,17 +1205,22 @@ export class Viewport {
         page = this.pageDimensions_.length - 1;
       }
       const dimensions = this.pageDimensions_[page];
-      let toolbarOffset = 0;
-      // Unless we're in fit to page or fit to height mode, scroll above the
-      // page by |this.topToolbarHeight_| so that the toolbar isn't covering it
-      // initially.
-      if (!this.isPagedMode()) {
-        toolbarOffset = this.topToolbarHeight_;
+
+      // If `x` or `y` is not a valid number or specified, then that
+      // coordinate of the current viewport position should be retained.
+      const currentCoords =
+          /** @type {!Point} */ (this.retrieveCurrentScreenCoordinates_());
+      if (x === undefined || Number.isNaN(x)) {
+        x = currentCoords.x;
       }
-      this.position = {
+      if (y === undefined || Number.isNaN(y)) {
+        y = currentCoords.y;
+      }
+
+      this.setPosition({
         x: (dimensions.x + x) * this.getZoom(),
-        y: (dimensions.y + y) * this.getZoom() - toolbarOffset
-      };
+        y: (dimensions.y + y) * this.getZoom(),
+      });
       this.updateViewport_();
     });
   }
@@ -1138,12 +1233,24 @@ export class Viewport {
     this.mightZoom_(() => {
       const initialDimensions = !this.documentDimensions_;
       this.documentDimensions_ = documentDimensions;
+
+      // Override layout direction based on isRTL().
+      if (this.documentDimensions_.layoutOptions) {
+        if (isRTL()) {
+          // `base::i18n::TextDirection::RIGHT_TO_LEFT`
+          this.documentDimensions_.layoutOptions.direction = 1;
+        } else {
+          // `base::i18n::TextDirection::LEFT_TO_RIGHT`
+          this.documentDimensions_.layoutOptions.direction = 2;
+        }
+      }
+
       this.pageDimensions_ = this.documentDimensions_.pageDimensions;
       if (initialDimensions) {
         this.setZoomInternal_(Math.min(
             this.defaultZoom_,
             this.computeFittingZoom_(this.documentDimensions_, true, false)));
-        this.position = {x: 0, y: -this.topToolbarHeight_};
+        this.setPosition({x: 0, y: 0});
       }
       this.contentSizeChanged_();
       this.resize_();
@@ -1156,7 +1263,7 @@ export class Viewport {
    */
   getPageInsetDimensions(page) {
     const pageDimensions = this.pageDimensions_[page];
-    const shadow = Viewport.PAGE_SHADOW;
+    const shadow = PAGE_SHADOW;
     return {
       x: pageDimensions.x + shadow.left,
       y: pageDimensions.y + shadow.top,
@@ -1188,7 +1295,7 @@ export class Viewport {
     // TODO(raymes): This should really be set when the PDF plugin passes the
     // page coordinates, but it isn't yet.
     const x = (this.documentDimensions_.width - pageDimensions.width) / 2 +
-        Viewport.PAGE_SHADOW.left;
+        PAGE_SHADOW.left;
     // Compute the space on the left of the document if the document fits
     // completely in the screen.
     const zoom = this.getZoom();
@@ -1197,8 +1304,8 @@ export class Viewport {
     spaceOnLeft = Math.max(spaceOnLeft, 0);
 
     return {
-      x: x * zoom + spaceOnLeft - this.window_.pageXOffset,
-      y: insetDimensions.y * zoom - this.window_.pageYOffset,
+      x: x * zoom + spaceOnLeft - this.window_.scrollLeft,
+      y: insetDimensions.y * zoom - this.window_.scrollTop,
       width: insetDimensions.width * zoom,
       height: insetDimensions.height * zoom
     };
@@ -1209,11 +1316,41 @@ export class Viewport {
    * In a paged mode, page up and page down scroll to the top of the
    * previous/next page and part of the page is under the toolbar.
    * @return {boolean} Whether the current fitting type is a paged mode.
+   * @private
    */
-  isPagedMode() {
+  isPagedMode_() {
     return (
-        this.fittingType_ == FittingType.FIT_TO_PAGE ||
-        this.fittingType_ == FittingType.FIT_TO_HEIGHT);
+        this.fittingType_ === FittingType.FIT_TO_PAGE ||
+        this.fittingType_ === FittingType.FIT_TO_HEIGHT);
+  }
+
+  /**
+   * Retrieves the in-screen coordinates of the current viewport position.
+   * @return {!Point} The current viewport position.
+   * @private
+   */
+  retrieveCurrentScreenCoordinates_() {
+    const currentPage = this.getMostVisiblePage();
+    const dimension = this.pageDimensions_[currentPage];
+    const x = this.position.x / this.getZoom() - dimension.x;
+    const y = this.position.y / this.getZoom() - dimension.y;
+    return {x: x, y: y};
+  }
+
+  /**
+   * Handles a navigation request to a destination from the current controller.
+   * @param {number} page
+   * @param {number|undefined} x The in-screen x coordinate for the destination.
+   *     If `x` is undefined, retain current x coordinate value.
+   * @param {number|undefined} y The in-screen y coordinate for the destination.
+   *     If `y` is undefined, retain current y coordinate value.
+   * @param {number} zoom
+   */
+  handleNavigateToDestination(page, x, y, zoom) {
+    if (zoom) {
+      this.setZoom(zoom);
+    }
+    this.goToPageAndXY(page, x, y);
   }
 
   /**
@@ -1222,17 +1359,17 @@ export class Viewport {
   scrollTo(point) {
     let changed = false;
     const newPosition = this.position;
-    if (point.x !== undefined && point.x != newPosition.x) {
+    if (point.x !== undefined && point.x !== newPosition.x) {
       newPosition.x = point.x;
       changed = true;
     }
-    if (point.y !== undefined && point.y != newPosition.y) {
+    if (point.y !== undefined && point.y !== newPosition.y) {
       newPosition.y = point.y;
       changed = true;
     }
 
     if (changed) {
-      this.position = newPosition;
+      this.setPosition(newPosition);
     }
   }
 
@@ -1250,19 +1387,151 @@ export class Viewport {
       this.tracker_.removeAll();
     }
   }
+
+  /**
+   * Dispatches a gesture external to this viewport.
+   * @param {!Gesture} gesture The gesture to dispatch.
+   */
+  dispatchGesture(gesture) {
+    // Transform gesture coordinates to be compatible with the Pepper plugin.
+    // TODO(crbug.com/702993): Remove this after the Pepper plugin is removed.
+    const containerRect =
+        this.content_.querySelector('#plugin').getBoundingClientRect();
+    gesture.detail.center = {
+      x: gesture.detail.center.x + containerRect.left,
+      y: gesture.detail.center.y + containerRect.top,
+    };
+    this.gestureDetector_.getEventTarget().dispatchEvent(
+        new CustomEvent(gesture.type, {detail: gesture.detail}));
+  }
+
+  /**
+   * A callback that's called when an update to a pinch zoom is detected.
+   * @param {!CustomEvent<!PinchEventDetail>} e the pinch event.
+   * @private
+   */
+  onPinchUpdate_(e) {
+    // Throttle number of pinch events to one per frame.
+    if (this.sentPinchEvent_) {
+      return;
+    }
+
+    this.sentPinchEvent_ = true;
+    window.requestAnimationFrame(() => {
+      this.sentPinchEvent_ = false;
+      this.mightZoom_(() => {
+        const {direction, center, startScaleRatio} = e.detail;
+        this.pinchPhase_ = direction === 'out' ? PinchPhase.UPDATE_ZOOM_OUT :
+                                                 PinchPhase.UPDATE_ZOOM_IN;
+
+        const scaleDelta = startScaleRatio / this.prevScale_;
+        if (this.firstPinchCenterInFrame_ != null) {
+          this.pinchPanVector_ =
+              vectorDelta(center, this.firstPinchCenterInFrame_);
+        }
+
+        const needsScrollbars =
+            this.documentNeedsScrollbars(this.zoomManager_.applyBrowserZoom(
+                this.clampZoom_(this.internalZoom_ * scaleDelta)));
+
+        const centerInPlugin = this.frameToPluginCoordinate_(center);
+        this.pinchCenter_ = centerInPlugin;
+
+        // If there's no horizontal scrolling, keep the content centered so
+        // the user can't zoom in on the non-content area.
+        // TODO(mcnee) Investigate other ways of scaling when we don't have
+        // horizontal scrolling. We want to keep the document centered,
+        // but this causes a potentially awkward transition when we start
+        // using the gesture center.
+        if (!needsScrollbars.horizontal) {
+          this.pinchCenter_ = {
+            x: this.window_.offsetWidth / 2,
+            y: this.window_.offsetHeight / 2
+          };
+        } else if (this.keepContentCentered_) {
+          this.oldCenterInContent_ = this.pluginToContent_(this.pinchCenter_);
+          this.keepContentCentered_ = false;
+        }
+
+        this.fittingType_ = FittingType.NONE;
+
+        this.setPinchZoomInternal_(scaleDelta, centerInPlugin);
+        this.updateViewport_();
+        this.prevScale_ = /** @type {number} */ (startScaleRatio);
+      });
+    });
+  }
+
+  /**
+   * A callback that's called when the end of a pinch zoom is detected.
+   * @param {!CustomEvent<!PinchEventDetail>} e the pinch event.
+   * @private
+   */
+  onPinchEnd_(e) {
+    // Using rAF for pinch end prevents pinch updates scheduled by rAF getting
+    // sent after the pinch end.
+    window.requestAnimationFrame(() => {
+      this.mightZoom_(() => {
+        const {center, startScaleRatio} = e.detail;
+        this.pinchPhase_ = PinchPhase.END;
+        const scaleDelta = startScaleRatio / this.prevScale_;
+        this.pinchCenter_ = this.frameToPluginCoordinate_(center);
+
+        this.setPinchZoomInternal_(scaleDelta, this.pinchCenter_);
+        this.updateViewport_();
+      });
+
+      this.pinchPhase_ = PinchPhase.NONE;
+      this.pinchPanVector_ = null;
+      this.pinchCenter_ = null;
+      this.firstPinchCenterInFrame_ = null;
+    });
+  }
+
+  /**
+   * A callback that's called when the start of a pinch zoom is detected.
+   * @param {!CustomEvent<!PinchEventDetail>} e the pinch event.
+   * @private
+   */
+  onPinchStart_(e) {
+    // Disable pinch gestures in Presentation  mode.
+    if (document.fullscreenElement !== null) {
+      return;
+    }
+
+    // We also use rAF for pinch start, so that if there is a pinch end event
+    // scheduled by rAF, this pinch start will be sent after.
+    window.requestAnimationFrame(() => {
+      this.pinchPhase_ = PinchPhase.START;
+      this.prevScale_ = 1;
+      this.oldCenterInContent_ =
+          this.pluginToContent_(this.frameToPluginCoordinate_(e.detail.center));
+
+      const needsScrollbars = this.documentNeedsScrollbars(this.getZoom());
+      this.keepContentCentered_ = !needsScrollbars.horizontal;
+      // We keep track of beginning of the pinch.
+      // By doing so we will be able to compute the pan distance.
+      this.firstPinchCenterInFrame_ = e.detail.center;
+    });
+  }
+
+  /** @return {!GestureDetector} */
+  getGestureDetectorForTesting() {
+    return this.gestureDetector_;
+  }
 }
 
 /**
  * Enumeration of pinch states.
- * This should match PinchPhase enum in pdf/out_of_process_instance.h
+ * This should match PinchPhase enum in pdf/pdf_view_plugin_base.cc.
  * @enum {number}
  */
-Viewport.PinchPhase = {
-  PINCH_NONE: 0,
-  PINCH_START: 1,
-  PINCH_UPDATE_ZOOM_OUT: 2,
-  PINCH_UPDATE_ZOOM_IN: 3,
-  PINCH_END: 4
+export const PinchPhase = {
+  NONE: 0,
+  START: 1,
+  UPDATE_ZOOM_OUT: 2,
+  UPDATE_ZOOM_IN: 3,
+  END: 4,
 };
 
 /**
@@ -1270,11 +1539,15 @@ Viewport.PinchPhase = {
  * keys are pressed. Usually we just let the browser handle scrolling on the
  * window when these keys are pressed but in certain cases we need to simulate
  * these events.
+ * @type {number}
  */
-Viewport.SCROLL_INCREMENT = 40;
+const SCROLL_INCREMENT = 40;
 
-/** The width of the page shadow around pages in pixels. */
-Viewport.PAGE_SHADOW = {
+/**
+ * The width of the page shadow around pages in pixels.
+ * @type {!{top: number, bottom: number, left: number, right: number}}
+ */
+export const PAGE_SHADOW = {
   top: 3,
   bottom: 7,
   left: 5,

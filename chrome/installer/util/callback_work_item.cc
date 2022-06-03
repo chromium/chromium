@@ -4,38 +4,18 @@
 
 #include "chrome/installer/util/callback_work_item.h"
 
-#include "base/callback.h"
-#include "base/logging.h"
-#include "chrome/installer/util/work_item.h"
-
 CallbackWorkItem::CallbackWorkItem(
-    base::Callback<bool(const CallbackWorkItem&)> callback)
-    : callback_(callback),
-      roll_state_(RS_UNDEFINED) {
-}
+    base::OnceCallback<bool(const CallbackWorkItem&)> do_action,
+    base::OnceCallback<void(const CallbackWorkItem&)> rollback_action)
+    : do_action_(std::move(do_action)),
+      rollback_action_(std::move(rollback_action)) {}
 
-CallbackWorkItem::~CallbackWorkItem() {
-}
+CallbackWorkItem::~CallbackWorkItem() = default;
 
 bool CallbackWorkItem::DoImpl() {
-  DCHECK_EQ(roll_state_, RS_UNDEFINED);
-
-  roll_state_ = RS_FORWARD;
-  bool result = callback_.Run(*this);
-  roll_state_ = RS_UNDEFINED;
-
-  return result;
+  return std::move(do_action_).Run(*this);
 }
 
 void CallbackWorkItem::RollbackImpl() {
-  DCHECK_EQ(roll_state_, RS_UNDEFINED);
-
-  roll_state_ = RS_BACKWARD;
-  ignore_result(callback_.Run(*this));
-  roll_state_ = RS_UNDEFINED;
-}
-
-bool CallbackWorkItem::IsRollback() const {
-  DCHECK_NE(roll_state_, RS_UNDEFINED);
-  return roll_state_ == RS_BACKWARD;
+  std::move(rollback_action_).Run(*this);
 }

@@ -38,8 +38,8 @@ promise_test(async (t) => {
 }, 'making a same-origin request for CORP: cross-origin');
 
 promise_test(async (t) => {
-  await promise_rejects(
-    t, TypeError(),
+  await promise_rejects_js(
+    t, TypeError,
     fetch(remote('resources/nothing-same-origin-corp.txt'), {mode: 'no-cors'}));
 }, 'making a cross-origin request for CORP: same-origin');
 
@@ -54,8 +54,8 @@ promise_test(async (t) => {
 }, 'making a cross-origin request for CORP: cross-origin');
 
 promise_test(async (t) => {
-  await promise_rejects(
-    t, TypeError(),
+  await promise_rejects_js(
+    t, TypeError,
     fetch(remote('resources/nothing-same-origin-corp.txt?passthrough'),
       {mode: 'no-cors'}));
 }, 'making a cross-origin request for CORP: same-origin [PASS THROUGH]');
@@ -71,15 +71,19 @@ promise_test(async (t) => {
 }, 'making a cross-origin request for CORP: cross-origin [PASS THROUGH]');
 
 promise_test(async (t) => {
-  await promise_rejects(
-    t, TypeError(), fetch(remote('/common/blank.html'), {mode: 'cors'}));
+  await promise_rejects_js(
+    t, TypeError, fetch(remote('/common/blank.html'), {mode: 'cors'}));
 }, 'making a cross-origin request with CORS without ACAO');
 
 promise_test(async (t) => {
   const URL = remote(
-    '/common/blank.html?pipe=header(access-control-allow-origin,*');
+    '/common/blank.html?pipe=header(access-control-allow-origin,*)');
   await fetch(URL, {mode: 'cors'});
 }, 'making a cross-origin request with CORS');
 
+promise_test(async (t) => {
+  const URL = remote('/fetch/api/resources/preflight.py?allow_headers=hoge');
+  await fetch(URL, {mode: 'cors', headers: {'hoge': 'fuga'}});
+}, 'making a cross-origin request with CORS-preflight');
 </script>
 </html>

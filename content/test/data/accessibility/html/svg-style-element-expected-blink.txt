@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++button name='Kettle'
+++++++++++staticText name='Kettle'
+++++++++++++inlineTextBox name='Kettle'

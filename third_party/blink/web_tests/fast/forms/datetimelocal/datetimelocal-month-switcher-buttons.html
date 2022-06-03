@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="datetime-local-0" value="2019-06-10T13:02">
+<input type="datetime-local" id="datetime-local-1" value="2019-09-20T13:02">
+<input type="datetime-local" id="datetime-local-2" value="2019-01-31T13:02">
+<input type="datetime-local" id="datetime-local-3" value="2019-10-31T13:02">
+<script>
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-0');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(dateTimeElement.value, "2019-07-10T13:02", "Month chooser button should have changed month");
+
+    clickDayCellAt(2, 3);
+    assert_equals(dateTimeElement.value, "2019-07-23T13:02", "Clicking date should have changed date");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Datetimelocal picker: Next month button should advance to next month and change selection to same day in that month when doing so.");
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-1');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickPrevMonthButton();
+    assert_equals(dateTimeElement.value, "2019-08-20T13:02", "Selection should have been clipped when moving into shorter month");
+
+    clickDayCellAt(3, 4);
+    assert_equals(dateTimeElement.value, "2019-08-28T13:02", "Clicking date should have changed date");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Datetimelocal picker: Prev month button should advance to previous month and change selection to same day in that month when doing so.");
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-2');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(dateTimeElement.value, "2019-02-28T13:02", "Selection should have been clipped when moving into shorter month");
+
+    clickDayCellAt(3, 3);
+    assert_equals(dateTimeElement.value, "2019-02-20T13:02", "Clicking date should have changed date");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Datetimelocal picker: Next month button should clip date if next month has fewer days");
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-3');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickPrevMonthButton();
+    assert_equals(dateTimeElement.value, "2019-09-30T13:02", "Selection should have been clipped when moving into shorter month");
+
+    clickDayCellAt(3, 3);
+    assert_equals(dateTimeElement.value, "2019-09-25T13:02", "Clicking date should have changed date");
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Datetimelocal picker: Previous month button should clip date if prev month has fewer days");
+
+</script>
+</body>
+</html>

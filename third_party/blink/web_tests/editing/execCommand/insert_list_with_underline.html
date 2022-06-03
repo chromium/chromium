@@ -1,0 +1,43 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a crash when making and removing lists from underlined
+// content. All three paragraphs should be in list items. And all three should
+// be underlined.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<u>^abc</u><br>',
+            '<u>def</u><br>',
+            '<u>ghi|</u>',
+        '</div>',
+    ],
+    'InsertOrderedList',
+    [
+        '<div contenteditable><ol>',
+            '<li><u>^abc</u></li>',
+            '<li><u>def</u></li>',
+            '<li><u>ghi|</u></li>',
+        '</ol></div>',
+    ],
+    'Make list');
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li><u>^abc</u></li>',
+            '<li><u>def</u></li>',
+            '<li><u>ghi|</u></li>',
+        '</ol></div>',
+    ],
+    'InsertOrderedList',
+    [
+        '<div contenteditable>',
+            '<u>^abc</u><br>',
+            '<u>def</u><br>',
+            '<u>ghi|</u>',
+        '</div>',
+    ],
+    'Remove list');
+</script>

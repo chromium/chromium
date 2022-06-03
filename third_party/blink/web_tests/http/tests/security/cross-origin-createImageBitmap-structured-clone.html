@@ -21,8 +21,8 @@ async_test(function(t) {
     image.onload = t.step_func(() => {
         shouldBeTainted(image);
         createImageBitmap(image).then(t.step_func((imageBitmap) => {
-            assert_throws('DataCloneError',
-                          () => worker.postMessage({data:imageBitmap}, [imageBitmap]));
+            assert_throws_dom('DataCloneError',
+                              () => worker.postMessage({data:imageBitmap}, [imageBitmap]));
             t.done();
         }));
     });
@@ -34,7 +34,7 @@ async_test(function(t) {
         canvas.height = 10;
         var context = canvas.getContext("2d");
         context.drawImage(imageBitmap, 0, 0, 10, 10);
-        assert_throws('SecurityError', function () { context.getImageData(0, 0, 10, 10); }, 'ImageBitmap should be tainted');
+        assert_throws_dom('SecurityError', function () { context.getImageData(0, 0, 10, 10); }, 'ImageBitmap should be tainted');
     }
 }, 'Transfer and structured-clone an ImageBitmap should preserve the originClean flag.');
 </script>

@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/iterable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
@@ -22,7 +23,8 @@ class WebData;
 // if the event loop runs.
 class MediaKeyStatusMap final
     : public ScriptWrappable,
-      public PairIterable<ArrayBufferOrArrayBufferView, String> {
+      public PairIterable<Member<V8BufferSource>, String>
+{
   DEFINE_WRAPPERTYPEINFO();
 
  private:
@@ -43,10 +45,10 @@ class MediaKeyStatusMap final
 
   // IDL attributes / methods
   uint32_t size() const { return entries_.size(); }
-  bool has(const ArrayBufferOrArrayBufferView& key_id);
-  ScriptValue get(ScriptState*, const ArrayBufferOrArrayBufferView& key_id);
+  bool has(const V8BufferSource* key_id);
+  ScriptValue get(ScriptState*, const V8BufferSource* key_id);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // PairIterable<> implementation.

@@ -1,23 +1,30 @@
 <!DOCTYPE HTML>
+<!-- Disabled subwidgets can have selected state, but are not selectable -->
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 
-<div id="treeitem1" role="treeitem" tabindex="-1">X</div>
+<div id="treeitem1" role="treeitem" tabindex="-1" aria-selected="false">X</div>
 <div id="option1" role="option" tabindex="-1">X</div>
 <div id="tab1" role="tab" tabindex="-1">X</div>
-<div id="gridcell1" role="gridcell" tabindex="-1">X</div>
-<div id="checkbox1" role="checkbox" tabindex="-1"">X</div>
+<div role="grid">
+  <div id="gridcell1" role="gridcell" tabindex="-1" aria-selected="false">X</div>
+</div>
+<div id="checkbox1" role="checkbox" tabindex="-1">X</div>
 
 <div id="treeitem2" role="treeitem" tabindex="-1" aria-selected="true">X</div>
 <div id="option2" role="option" tabindex="-1" aria-selected="true">X</div>
 <div id="tab2" role="tab" tabindex="-1" aria-selected="true">X</div>
-<div id="gridcell2" role="gridcell" tabindex="-1" aria-selected="true">X</div>
+<div role="grid">
+  <div id="gridcell2" role="gridcell" tabindex="-1" aria-selected="true">X</div>
+</div>
 <div id="checkbox2" role="checkbox" tabindex="-1" aria-selected="true">X</div>
 
 <div id="treeitem3" role="treeitem" tabindex="-1" aria-selected="true" aria-disabled="true">X</div>
 <div id="option3" role="option" tabindex="-1" aria-selected="true" aria-disabled="true">X</div>
 <div id="tab3" role="tab" tabindex="-1" aria-selected="true" aria-disabled="true">X</div>
-<div id="gridcell3" role="gridcell" tabindex="-1" aria-selected="true" aria-disabled="true">X</div>
+<div role="grid">
+  <div id="gridcell3" role="gridcell" tabindex="-1" aria-selected="true" aria-disabled="true">X</div>
+</div>
 
 <script>
 var listbox = document.getElementById("listbox");
@@ -123,23 +130,23 @@ test(function(t) {
 
 test(function(t) {
     var ax = axElementById("treeitem3");
-    assert_equals(ax.isSelected, false);
-}, "Tree item not selected if disabled");
+    assert_equals(ax.isSelected, true);
+}, "Tree item can still have selected state if disabled");
 
 test(function(t) {
     var ax = axElementById("option3");
-    assert_equals(ax.isSelected, false);
-}, "Option not selected if disabled");
+    assert_equals(ax.isSelected, true);
+}, "Option can still have selected state if disabled");
 
 test(function(t) {
     var ax = axElementById("tab3");
-    assert_equals(ax.isSelected, false);
-}, "Tab not selected if disabled");
+    assert_equals(ax.isSelected, true);
+}, "Tab can still have selected state if disabled");
 
 test(function(t) {
     var ax = axElementById("gridcell3");
-    assert_equals(ax.isSelected, false);
-}, "Grid cell not selected if disabled");
+    assert_equals(ax.isSelected, true);
+}, "Grid cell can still have selected state if disabled");
 
 
 

@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+FAIL Test getting align-self set through CSS. assert_equals: alignSelf is not what is should. expected "last baseline" but got "auto"
+PASS Test initial value of align-self through JS
+PASS Test getting and setting align-self through JS
+PASS Test 'auto' value resolution for the root node
+PASS Test bad combinations of align-self
+PASS Test the value 'initial'
+PASS Test the value 'initial' for grid containers
+PASS Test the value 'initial' for flex containers
+PASS Test the value 'initial' for positioned elements
+PASS Test the value 'initial' for positioned elements in grid containers
+PASS Test the value 'initial' for positioned elements in flex containers
+PASS Test the value 'inherit'
+Harness: the test ran to completion.
+

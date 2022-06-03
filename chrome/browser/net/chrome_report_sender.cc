@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "net/url_request/report_sender.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -88,6 +89,7 @@ void SendReport(
   resource_request->url = report_uri;
   resource_request->method = "POST";
   resource_request->load_flags = net::ReportSender::kLoadFlags;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
 
   auto loader = network::SimpleURLLoader::Create(std::move(resource_request),
                                                  traffic_annotation);

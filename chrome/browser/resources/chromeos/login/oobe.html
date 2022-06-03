@@ -7,13 +7,14 @@
 <meta charset="utf-8">
 <meta name="google" value="notranslate">
 <title i18n-content="title"></title>
+<script src="chrome://resources/polymer/v1_0/html-imports/html-imports.min.js"></script>
 <!-- This must be the first import in all login pages. -->
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_components/chromeos/quick_unlock/pin_keyboard.html">
 
+<link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
 <link rel="stylesheet" href="chrome://resources/css/butter_bar.css">
-<link rel="stylesheet" href="chrome://resources/css/dialogs.css">
 <link rel="stylesheet" href="chrome://resources/css/list.css">
 <link rel="stylesheet" href="chrome://resources/css/menu_button.css">
 <link rel="stylesheet" href="chrome://resources/css/menu.css">
@@ -21,22 +22,25 @@
 <link rel="stylesheet" href="chrome://resources/css/throbber.css">
 <link rel="stylesheet" href="chrome://resources/css/widgets.css">
 
-<link rel="stylesheet" href="../../../../../ui/login/bubble.css">
-<link rel="stylesheet" href="md_top_header_bar.css">
-<link rel="stylesheet" href="../../../../../ui/login/oobe.css">
+<link rel="stylesheet" href="oobe.css">
 <link rel="stylesheet" href="oobe_popup_overlay.css">
 <link rel="stylesheet" href="oobe_screen.css">
 
-<link rel="stylesheet" href="md_screen_container.css">
-<link rel="stylesheet" href="../../../../../ui/login/account_picker/chromeos_screen_account_picker.css">
-<link rel="stylesheet" href="../../../../../ui/login/account_picker/chromeos_user_pod_row.css">
+<!--
+  TODO(crbug.com/1229130) - Refactor styles so that there is a clear separation
+  between the styles used in the top level document and oobe-common-styles.
+-->
+<link rel="import" href="components/common_styles/oobe_flex_layout_styles.html">
+<custom-style>
+  <style include="oobe-flex-layout-styles"></style>
+</custom-style>
 
 <script src="chrome://resources/js/cr.js"></script>
 <script src="chrome://resources/js/event_tracker.js"></script>
 <script src="chrome://resources/js/cr/event_target.js"></script>
 <script src="chrome://resources/js/cr/ui.js"></script>
+<script src="chrome://resources/js/assert.js"></script>
 <script src="chrome://resources/js/cr/ui/array_data_model.js"></script>
-<script src="chrome://resources/js/cr/ui/dialogs.js"></script>
 <script src="chrome://resources/js/cr/ui/list_selection_controller.js"></script>
 <script src="chrome://resources/js/cr/ui/list_selection_model.js"></script>
 <script src="chrome://resources/js/cr/ui/list_single_selection_model.js"></script>
@@ -47,38 +51,19 @@
 <script src="chrome://resources/js/cr/ui/menu_item.js"></script>
 <script src="chrome://resources/js/cr/ui/menu.js"></script>
 <script src="chrome://resources/js/cr/ui/menu_button.js"></script>
-<script src="chrome://resources/js/load_time_data.js"></script>
 <script src="chrome://resources/js/promise_resolver.js"></script>
 <script src="chrome://resources/js/util.js"></script>
-<script src="chrome://oobe/strings.js"></script>
-<link rel="stylesheet" href="api_keys_notice.css">
-
-<link rel="stylesheet" href="oobe_screen_enable_debugging.css">
-<link rel="stylesheet" href="oobe_screen_reset.css">
-<link rel="stylesheet" href="oobe_screen_autolaunch.css">
-<link rel="stylesheet" href="oobe_screen_auto_enrollment_check.css">
-<link rel="stylesheet" href="oobe_screen_supervision_transition.css">
-
-<link rel="stylesheet" href="screen_app_launch_splash.css">
-<link rel="stylesheet" href="screen_arc_kiosk_splash.css">
-<link rel="stylesheet" href="screen_arc_terms_of_service.css">
-<link rel="stylesheet" href="screen_error_message.css">
-<link rel="stylesheet" href="screen_tpm_error.css">
-<link rel="stylesheet" href="screen_password_changed.css">
-<link rel="stylesheet" href="screen_wrong_hwid.css">
-<link rel="stylesheet" href="screen_confirm_password.css">
-<link rel="stylesheet" href="screen_fatal_error.css">
-<link rel="stylesheet" href="screen_device_disabled.css">
-<link rel="stylesheet" href="screen_active_directory_password_change.css">
+<script defer src="chrome://oobe/debug.js"></script>
+<script defer src="chrome://oobe/test_api.js"></script>
 
 <script src="chrome://oobe/keyboard_utils.js"></script>
 
-<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="/components/behaviors/i18n_setup.html">
 <link rel="import" href="chrome://oobe/custom_elements.html">
 <script src="chrome://oobe/oobe.js"></script>
 </head>
 <body class="oobe-display chromeos" i18n-values=".style.fontFamily:fontfamily;">
   <include src="md_screen_container.html">
-  <script src="chrome://resources/js/i18n_template.js"></script>
+  <script src="chrome://resources/js/i18n_template_no_process.js"></script>
 </body>
 </html>

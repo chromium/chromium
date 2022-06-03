@@ -60,6 +60,10 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   typedef std::map<IPAddress, SourceAddressInfo> SourceAddressMap;
 
   explicit AddressSorterPosix(ClientSocketFactory* socket_factory);
+
+  AddressSorterPosix(const AddressSorterPosix&) = delete;
+  AddressSorterPosix& operator=(const AddressSorterPosix&) = delete;
+
   ~AddressSorterPosix() override;
 
   // AddressSorter:
@@ -84,8 +88,6 @@ class NET_EXPORT_PRIVATE AddressSorterPosix
   PolicyTable ipv4_scope_table_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AddressSorterPosix);
 };
 
 }  // namespace net

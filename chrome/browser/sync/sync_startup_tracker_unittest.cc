@@ -15,8 +15,8 @@ namespace {
 
 class MockObserver : public SyncStartupTracker::Observer {
  public:
-  MOCK_METHOD0(SyncStartupCompleted, void());
-  MOCK_METHOD0(SyncStartupFailed, void());
+  MOCK_METHOD(void, SyncStartupCompleted, (), (override));
+  MOCK_METHOD(void, SyncStartupFailed, (), (override));
 };
 
 class SyncStartupTrackerTest : public testing::Test {

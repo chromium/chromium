@@ -1,0 +1,5 @@
+include_rules = [
+  # Do not add chrome here (use a delegate instead).
+  "+chromeos/components/chromebox_for_meetings/buildflags",
+  "+chromeos/components/chromebox_for_meetings/features",
+]

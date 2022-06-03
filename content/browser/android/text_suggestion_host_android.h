@@ -13,6 +13,8 @@
 
 namespace content {
 
+class TextSuggestionHostMojoImplAndroid;
+
 // This class, along with its Java counterpart TextSuggestionHost, is used to
 // implement the Android text suggestion menu that appears when you tap a
 // misspelled word. This class creates the Android implementation of
@@ -86,6 +88,9 @@ class TextSuggestionHostAndroid : public RenderWidgetHostConnector {
   // suggestion menu timer.
   void StopSuggestionMenuTimer();
 
+  void BindTextSuggestionHost(
+      mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver);
+
  private:
   RenderFrameHost* GetFocusedFrame();
   base::android::ScopedJavaLocalRef<jobject> GetJavaTextSuggestionHost();
@@ -100,6 +105,7 @@ class TextSuggestionHostAndroid : public RenderWidgetHostConnector {
   RenderWidgetHostViewAndroid* rwhva_;
   JavaObjectWeakGlobalRef java_text_suggestion_host_;
   mojo::Remote<blink::mojom::TextSuggestionBackend> text_suggestion_backend_;
+  std::unique_ptr<TextSuggestionHostMojoImplAndroid> text_suggestion_impl_;
   TimeoutMonitor suggestion_menu_timeout_;
 };
 

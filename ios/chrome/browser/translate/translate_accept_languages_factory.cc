@@ -20,6 +20,12 @@ namespace {
 class TranslateAcceptLanguagesService : public KeyedService {
  public:
   explicit TranslateAcceptLanguagesService(PrefService* prefs);
+
+  TranslateAcceptLanguagesService(const TranslateAcceptLanguagesService&) =
+      delete;
+  TranslateAcceptLanguagesService& operator=(
+      const TranslateAcceptLanguagesService&) = delete;
+
   ~TranslateAcceptLanguagesService() override;
 
   // Returns the associated TranslateAcceptLanguages.
@@ -29,8 +35,6 @@ class TranslateAcceptLanguagesService : public KeyedService {
 
  private:
   translate::TranslateAcceptLanguages accept_languages_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateAcceptLanguagesService);
 };
 
 TranslateAcceptLanguagesService::TranslateAcceptLanguagesService(
@@ -51,8 +55,7 @@ TranslateAcceptLanguagesFactory::GetInstance() {
 
 // static
 translate::TranslateAcceptLanguages*
-TranslateAcceptLanguagesFactory::GetForBrowserState(
-    ios::ChromeBrowserState* state) {
+TranslateAcceptLanguagesFactory::GetForBrowserState(ChromeBrowserState* state) {
   TranslateAcceptLanguagesService* service =
       static_cast<TranslateAcceptLanguagesService*>(
           GetInstance()->GetServiceForBrowserState(state, true));
@@ -71,8 +74,8 @@ TranslateAcceptLanguagesFactory::~TranslateAcceptLanguagesFactory() {
 std::unique_ptr<KeyedService>
 TranslateAcceptLanguagesFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<TranslateAcceptLanguagesService>(
       browser_state->GetPrefs());
 }

@@ -17,24 +17,25 @@ class ImageButton;
 
 namespace ash {
 
-class ASH_EXPORT MediaControlsHeaderView : public views::View,
-                                           public views::ButtonListener {
+class ASH_EXPORT MediaControlsHeaderView : public views::View {
  public:
-  explicit MediaControlsHeaderView(base::OnceClosure close_button_cb);
+  explicit MediaControlsHeaderView(
+      views::Button::PressedCallback close_button_cb);
+
+  MediaControlsHeaderView(const MediaControlsHeaderView&) = delete;
+  MediaControlsHeaderView& operator=(const MediaControlsHeaderView&) = delete;
+
   ~MediaControlsHeaderView() override;
 
   void SetAppIcon(const gfx::ImageSkia& img);
-  void SetAppName(const base::string16& name);
+  void SetAppName(const std::u16string& name);
 
   void SetCloseButtonVisibility(bool visible);
 
   // views::View:
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  const base::string16& app_name_for_testing() const;
+  const std::u16string& app_name_for_testing() const;
   const views::ImageView* app_icon_for_testing() const;
   views::ImageButton* close_button_for_testing() const;
 
@@ -42,10 +43,6 @@ class ASH_EXPORT MediaControlsHeaderView : public views::View,
   views::ImageView* app_icon_view_;
   views::Label* app_name_view_;
   views::ImageButton* close_button_ = nullptr;
-
-  base::OnceClosure close_button_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaControlsHeaderView);
 };
 
 }  // namespace ash

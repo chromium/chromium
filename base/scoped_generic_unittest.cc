@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

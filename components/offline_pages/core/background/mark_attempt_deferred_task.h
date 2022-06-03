@@ -6,7 +6,6 @@
 #define COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_MARK_ATTEMPT_DEFERRED_TASK_H_
 
 #include <stdint.h>
-#include <memory>
 
 #include "components/offline_items_collection/core/fail_state.h"
 #include "components/offline_pages/core/background/request_queue_results.h"

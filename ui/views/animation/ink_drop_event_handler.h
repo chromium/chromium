@@ -7,7 +7,10 @@
 
 #include <memory>
 
+#include "base/scoped_observation.h"
+#include "base/strings/string_piece.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/view.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/views_export.h"
 
@@ -39,15 +42,20 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   };
 
   InkDropEventHandler(View* host_view, Delegate* delegate);
+
+  InkDropEventHandler(const InkDropEventHandler&) = delete;
+  InkDropEventHandler& operator=(const InkDropEventHandler&) = delete;
+
   ~InkDropEventHandler() override;
 
-  void AnimateInkDrop(InkDropState state, const ui::LocatedEvent* event);
+  void AnimateToState(InkDropState state, const ui::LocatedEvent* event);
   ui::LocatedEvent* GetLastRippleTriggeringEvent() const;
 
  private:
   // ui::EventHandler:
   void OnGestureEvent(ui::GestureEvent* event) override;
   void OnMouseEvent(ui::MouseEvent* event) override;
+  base::StringPiece GetLogContext() const override;
 
   // ViewObserver:
   void OnViewVisibilityChanged(View* observed_view,
@@ -71,7 +79,7 @@ class VIEWS_EXPORT InkDropEventHandler : public ui::EventHandler,
   // The last user Event to trigger an InkDrop-ripple animation.
   std::unique_ptr<ui::LocatedEvent> last_ripple_triggering_event_;
 
-  DISALLOW_COPY_AND_ASSIGN(InkDropEventHandler);
+  base::ScopedObservation<View, ViewObserver> observation_{this};
 };
 
 }  // namespace views

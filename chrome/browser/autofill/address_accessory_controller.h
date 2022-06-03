@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_H_
 #define CHROME_BROWSER_AUTOFILL_ADDRESS_ACCESSORY_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/autofill/accessory_controller.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -24,6 +23,11 @@ class AddressAccessoryController
       public AccessoryController {
  public:
   AddressAccessoryController() = default;
+
+  AddressAccessoryController(const AddressAccessoryController&) = delete;
+  AddressAccessoryController& operator=(const AddressAccessoryController&) =
+      delete;
+
   ~AddressAccessoryController() override = default;
 
   // Returns true if the accessory controller may exist for |web_contents|.
@@ -37,16 +41,8 @@ class AddressAccessoryController
   static AddressAccessoryController* GetOrCreate(
       content::WebContents* web_contents);
 
-  // Returns a reference to the unique AddressAccessoryController associated
-  // with |web_contents|. Returns null if no such instance exists.
-  static AddressAccessoryController* GetIfExisting(
-      content::WebContents* web_contents);
-
   // Fetches suggestions and propagates them to the frontend.
   virtual void RefreshSuggestions() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AddressAccessoryController);
 };
 
 }  // namespace autofill

@@ -7,8 +7,8 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/win/atl.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/updater/win/ui/owner_draw_controls.h"
@@ -27,10 +27,12 @@ class YesNoDialog : public CAxDialogImpl<YesNoDialog>,
   static constexpr int IDD = IDD_YES_NO;
 
   YesNoDialog(WTL::CMessageLoop* message_loop, HWND parent);
+  YesNoDialog(const YesNoDialog&) = delete;
+  YesNoDialog& operator=(const YesNoDialog&) = delete;
   ~YesNoDialog() override;
 
-  HRESULT Initialize(const base::string16& yes_no_title,
-                     const base::string16& yes_no_text);
+  HRESULT Initialize(const std::wstring& yes_no_title,
+                     const std::wstring& yes_no_text);
   HRESULT Show();
 
   bool yes_clicked() const { return yes_clicked_; }
@@ -53,15 +55,9 @@ class YesNoDialog : public CAxDialogImpl<YesNoDialog>,
   LRESULT OnClickedButton(WORD notify_code,
                           WORD id,
                           HWND wnd_ctl,
-                          BOOL& handled);  // NOLINT(runtime/references)
-  LRESULT OnClose(UINT msg,
-                  WPARAM wparam,
-                  LPARAM lparam,
-                  BOOL& handled);  // NOLINT(runtime/references)
-  LRESULT OnNCDestroy(UINT msg,
-                      WPARAM wparam,
-                      LPARAM lparam,
-                      BOOL& handled);  // NOLINT(runtime/references)
+                          BOOL& handled);
+  LRESULT OnClose(UINT msg, WPARAM wparam, LPARAM lparam, BOOL& handled);
+  LRESULT OnNCDestroy(UINT msg, WPARAM wparam, LPARAM lparam, BOOL& handled);
 
   WTL::CMessageLoop* message_loop_;
   HWND parent_;
@@ -71,8 +67,6 @@ class YesNoDialog : public CAxDialogImpl<YesNoDialog>,
   base::win::ScopedGDIObject<HICON> hicon_;
 
   WTL::CFont default_font_;
-
-  DISALLOW_COPY_AND_ASSIGN(YesNoDialog);
 };
 
 }  // namespace ui

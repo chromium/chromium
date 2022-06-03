@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/script_fetch_options.h"
 
+#include <utility>
+
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
@@ -13,6 +15,7 @@ namespace blink {
 FetchParameters ScriptFetchOptions::CreateFetchParameters(
     const KURL& url,
     const SecurityOrigin* security_origin,
+    scoped_refptr<const DOMWrapperWorld> world_for_csp,
     CrossOriginAttributeValue cross_origin,
     const WTF::TextEncoding& encoding,
     FetchParameters::DeferOption defer) const {
@@ -21,11 +24,13 @@ FetchParameters ScriptFetchOptions::CreateFetchParameters(
   ResourceRequest resource_request(url);
 
   // Step 1. ... "script", ... [spec text]
-  ResourceLoaderOptions resource_loader_options;
+  ResourceLoaderOptions resource_loader_options(std::move(world_for_csp));
   resource_loader_options.initiator_info.name = "script";
-  FetchParameters params(resource_request, resource_loader_options);
-  params.SetRequestContext(mojom::RequestContextType::SCRIPT);
+  resource_loader_options.reject_coep_unsafe_none = reject_coep_unsafe_none_;
+  FetchParameters params(std::move(resource_request), resource_loader_options);
+  params.SetRequestContext(mojom::blink::RequestContextType::SCRIPT);
   params.SetRequestDestination(network::mojom::RequestDestination::kScript);
+  params.SetRenderBlockingBehavior(render_blocking_behavior_);
 
   // Step 1. ... and CORS setting. [spec text]
   if (cross_origin != kCrossOriginAttributeNotSet)

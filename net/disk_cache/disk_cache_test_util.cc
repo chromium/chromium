@@ -4,9 +4,9 @@
 
 #include "net/disk_cache/disk_cache_test_util.h"
 
+#include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
@@ -15,7 +15,6 @@
 #include "net/disk_cache/cache_util.h"
 
 using base::Time;
-using base::TimeDelta;
 
 std::string GenerateKey(bool same_length) {
   char key[200];
@@ -92,6 +91,22 @@ TestEntryResultCompletionCallback::callback() {
                         base::Unretained(this));
 }
 
+TestRangeResultCompletionCallback::TestRangeResultCompletionCallback() =
+    default;
+
+TestRangeResultCompletionCallback::~TestRangeResultCompletionCallback() =
+    default;
+
+disk_cache::RangeResultCallback TestRangeResultCompletionCallback::callback() {
+  return base::BindOnce(&TestRangeResultCompletionCallback::HelpSetResult,
+                        base::Unretained(this));
+}
+
+void TestRangeResultCompletionCallback::HelpSetResult(
+    const disk_cache::RangeResult& result) {
+  SetResult(result);
+}
+
 // -----------------------------------------------------------------------
 
 MessageLoopHelper::MessageLoopHelper()
@@ -111,7 +126,7 @@ bool MessageLoopHelper::WaitUntilCacheIoFinished(int num_callbacks) {
   ExpectCallbacks(num_callbacks);
   // Create a recurrent timer of 50 ms.
   base::RepeatingTimer timer;
-  timer.Start(FROM_HERE, TimeDelta::FromMilliseconds(50), this,
+  timer.Start(FROM_HERE, base::Milliseconds(50), this,
               &MessageLoopHelper::TimerExpired);
   run_loop_ = std::make_unique<base::RunLoop>();
   run_loop_->Run();

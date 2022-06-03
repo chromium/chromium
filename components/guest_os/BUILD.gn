@@ -28,9 +28,7 @@ static_library("prefs") {
     "guest_os_prefs.h",
   ]
 
-  deps = [
-    "//components/prefs",
-  ]
+  deps = [ "//components/prefs" ]
 }
 
 source_set("unit_tests") {
@@ -49,7 +47,5 @@ source_set("unit_tests") {
     "//testing/gtest",
     "//ui/aura:test_support",
   ]
-  sources = [
-    "guest_os_engagement_metrics_unittest.cc",
-  ]
+  sources = [ "guest_os_engagement_metrics_unittest.cc" ]
 }

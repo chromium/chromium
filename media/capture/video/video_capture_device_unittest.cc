@@ -11,16 +11,20 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/video_frame.h"
 #include "media/capture/video/create_video_capture_device_factory.h"
 #include "media/capture/video/mock_video_capture_device_client.h"
 #include "media/capture/video_capture_types.h"
@@ -35,7 +39,7 @@
 #include "media/capture/video/win/video_capture_device_mf_win.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #endif
 
@@ -46,30 +50,41 @@
 #include "media/capture/video/android/video_capture_device_factory_android.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/public/cros_features.h"
 #include "media/capture/video/chromeos/video_capture_device_chromeos_halv3.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
-#include "media/gpu/test/local_gpu_memory_buffer_manager.h"
+#include "media/gpu/test/local_gpu_memory_buffer_manager.h"  // nogncheck
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // Mac will always give you the size you ask for and this case will fail.
 #define MAYBE_UsingRealWebcam_AllocateBadSize \
   DISABLED_UsingRealWebcam_AllocateBadSize
 // We will always get YUYV from the Mac AVFoundation implementations.
 #define MAYBE_UsingRealWebcam_CaptureMjpeg DISABLED_UsingRealWebcam_CaptureMjpeg
-#define MAYBE_UsingRealWebcam_TakePhoto UsingRealWebcam_TakePhoto
-#define MAYBE_UsingRealWebcam_GetPhotoState UsingRealWebcam_GetPhotoState
-#define MAYBE_UsingRealWebcam_CaptureWithSize UsingRealWebcam_CaptureWithSize
+
+// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// are fixed.
+#define MAYBE_UsingRealWebcam_TakePhoto DISABLED_UsingRealWebcam_TakePhoto
+// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// are fixed.
+#define MAYBE_UsingRealWebcam_GetPhotoState \
+  DISABLED_UsingRealWebcam_GetPhotoState
+// TODO(crbug.com/1128470): Re-enable as soon as issues with resource access
+// are fixed.
+#define MAYBE_UsingRealWebcam_CaptureWithSize \
+  DISABLED_UsingRealWebcam_CaptureWithSize
+
 #define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
-#elif defined(OS_WIN)
-// TODO(crbug.com/893494): Fails on win: error: Value of: device_descriptor.
+#elif defined(OS_WIN) || defined(OS_FUCHSIA)
+// Windows test bots don't have camera.
+// On Fuchsia the tests run under emulator that doesn't support camera.
 #define MAYBE_UsingRealWebcam_AllocateBadSize \
   DISABLED_UsingRealWebcam_AllocateBadSize
 #define MAYBE_UsingRealWebcam_CaptureMjpeg DISABLED_UsingRealWebcam_CaptureMjpeg
@@ -90,7 +105,7 @@
 #define MAYBE_UsingRealWebcam_CaptureWithSize UsingRealWebcam_CaptureWithSize
 #define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_UsingRealWebcam_AllocateBadSize \
   DISABLED_UsingRealWebcam_AllocateBadSize
 #define MAYBE_UsingRealWebcam_CaptureMjpeg UsingRealWebcam_CaptureMjpeg
@@ -99,7 +114,7 @@
 #define MAYBE_UsingRealWebcam_CaptureWithSize UsingRealWebcam_CaptureWithSize
 #define MAYBE_UsingRealWebcam_CheckPhotoCallbackRelease \
   UsingRealWebcam_CheckPhotoCallbackRelease
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // UsingRealWebcam_AllocateBadSize will hang when a real camera is attached and
 // if more than one test is trying to use the camera (even across processes). Do
 // NOT renable this test without fixing the many bugs associated with it:
@@ -129,17 +144,14 @@
 #define WRAPPED_TEST_P(test_case_name, test_name) \
   TEST_P(test_case_name, test_name)
 
+using base::test::RunClosure;
 using ::testing::_;
 using ::testing::Invoke;
-using ::testing::SaveArg;
 using ::testing::Return;
+using ::testing::SaveArg;
 
 namespace media {
 namespace {
-
-ACTION_P(RunClosure, closure) {
-  closure.Run();
-}
 
 void DumpError(media::VideoCaptureError,
                const base::Location& location,
@@ -164,15 +176,17 @@ class MockMFPhotoCallback final : public IMFCaptureEngineOnSampleCallback {
   MOCK_METHOD0(DoRelease, ULONG(void));
   MOCK_METHOD1(DoOnSample, HRESULT(IMFSample*));
 
-  STDMETHOD(QueryInterface)(REFIID riid, void** object) override {
+  IFACEMETHODIMP QueryInterface(REFIID riid, void** object) override {
     return DoQueryInterface(riid, object);
   }
 
-  STDMETHOD_(ULONG, AddRef)() override { return DoAddRef(); }
+  IFACEMETHODIMP_(ULONG) AddRef() override { return DoAddRef(); }
 
-  STDMETHOD_(ULONG, Release)() override { return DoRelease(); }
+  IFACEMETHODIMP_(ULONG) Release() override { return DoRelease(); }
 
-  STDMETHOD(OnSample)(IMFSample* sample) override { return DoOnSample(sample); }
+  IFACEMETHODIMP OnSample(IMFSample* sample) override {
+    return DoOnSample(sample);
+  }
 };
 #endif
 
@@ -187,9 +201,9 @@ class MockImageCaptureClient
       // The first two bytes must be the SOI marker.
       // The next two bytes must be a marker, such as APPn, DTH etc.
       // cf. Section B.2 at https://www.w3.org/Graphics/JPEG/itu-t81.pdf
-      EXPECT_EQ(0xFF, blob->data[0]);         // First SOI byte
-      EXPECT_EQ(0xD8, blob->data[1]);         // Second SOI byte
-      EXPECT_EQ(0xFF, blob->data[2]);         // First byte of the next marker
+      EXPECT_EQ(0xFF, blob->data[0]);  // First SOI byte
+      EXPECT_EQ(0xD8, blob->data[1]);  // Second SOI byte
+      EXPECT_EQ(0xFF, blob->data[2]);  // First byte of the next marker
       OnCorrectPhotoTaken();
     } else if (strcmp("image/png", blob->mime_type.c_str()) == 0) {
       ASSERT_GT(blob->data.size(), 4u);
@@ -219,6 +233,18 @@ class MockImageCaptureClient
   mojom::PhotoStatePtr state_;
 };
 
+base::test::SingleThreadTaskEnvironment::MainThreadType kMainThreadType =
+#if defined(OS_MAC)
+    // Video capture code on MacOSX must run on a CFRunLoop enabled thread
+    // for interaction with AVFoundation.
+    base::test::SingleThreadTaskEnvironment::MainThreadType::UI;
+#elif defined(OS_FUCHSIA)
+    // FIDL APIs on Fuchsia requires IO thread.
+    base::test::SingleThreadTaskEnvironment::MainThreadType::IO;
+#else
+    base::test::SingleThreadTaskEnvironment::MainThreadType::DEFAULT;
+#endif
+
 }  // namespace
 
 class VideoCaptureDeviceTest
@@ -247,29 +273,19 @@ class VideoCaptureDeviceTest
   typedef VideoCaptureDevice::Client Client;
 
   VideoCaptureDeviceTest()
-      :
-#if defined(OS_MACOSX)
-        // Video capture code on MacOSX must run on a CFRunLoop enabled thread
-        // for interaction with AVFoundation.
-        task_environment_(
-            base::test::SingleThreadTaskEnvironment::MainThreadType::UI),
-#endif
-        device_descriptors_(new VideoCaptureDeviceDescriptors()),
+      : task_environment_(kMainThreadType),
         main_thread_task_runner_(base::ThreadTaskRunnerHandle::Get()),
         video_capture_client_(CreateDeviceClient()),
         image_capture_client_(new MockImageCaptureClient()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     local_gpu_memory_buffer_manager_ =
         std::make_unique<LocalGpuMemoryBufferManager>();
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         local_gpu_memory_buffer_manager_.get());
     if (media::ShouldUseCrosCameraService() &&
         !CameraHalDispatcherImpl::GetInstance()->IsStarted()) {
-      CameraHalDispatcherImpl::GetInstance()->Start(
-          base::DoNothing::Repeatedly<mojo::PendingReceiver<
-              chromeos_camera::mojom::MjpegDecodeAccelerator>>(),
-          base::DoNothing::Repeatedly<mojo::PendingReceiver<
-              chromeos_camera::mojom::JpegEncodeAccelerator>>());
+      CameraHalDispatcherImpl::GetInstance()->Start(base::DoNothing(),
+                                                    base::DoNothing());
     }
 #endif
     video_capture_device_factory_ =
@@ -277,7 +293,7 @@ class VideoCaptureDeviceTest
   }
 
   void SetUp() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PowerManagerClient::InitializeFake();
 #endif
 #if defined(OS_ANDROID)
@@ -292,14 +308,15 @@ class VideoCaptureDeviceTest
   }
 
   void TearDown() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     chromeos::PowerManagerClient::Shutdown();
 #endif
   }
 
 #if defined(OS_WIN)
   bool UseWinMediaFoundation() {
-    return std::get<1>(GetParam()) == WIN_MEDIA_FOUNDATION;
+    return std::get<1>(GetParam()) == WIN_MEDIA_FOUNDATION &&
+           VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation();
   }
 #endif
 
@@ -345,79 +362,67 @@ class VideoCaptureDeviceTest
   }
 
   void WaitForCapturedFrame() {
-    run_loop_.reset(
-        new base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed));
+    run_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
     run_loop_->Run();
   }
 
-  std::unique_ptr<VideoCaptureDeviceDescriptor> FindUsableDeviceDescriptor() {
-    video_capture_device_factory_->GetDeviceDescriptors(
-        device_descriptors_.get());
+  absl::optional<VideoCaptureDeviceInfo> FindUsableDevice() {
+    base::RunLoop run_loop;
+    video_capture_device_factory_->GetDevicesInfo(base::BindLambdaForTesting(
+        [this, &run_loop](std::vector<VideoCaptureDeviceInfo> devices_info) {
+          devices_info_ = std::move(devices_info);
+          run_loop.Quit();
+        }));
+    run_loop.Run();
 
+    if (devices_info_.empty()) {
+      DLOG(WARNING) << "No camera found";
+      return absl::nullopt;
+    }
 #if defined(OS_ANDROID)
-    for (const auto& descriptor : *device_descriptors_) {
+    for (const auto& device : devices_info_) {
       // Android deprecated/legacy devices capture on a single thread, which is
       // occupied by the tests, so nothing gets actually delivered.
       // TODO(mcasas): use those devices' test mode to deliver frames in a
       // background thread, https://crbug.com/626857
       if (!VideoCaptureDeviceFactoryAndroid::IsLegacyOrDeprecatedDevice(
-              descriptor.device_id)) {
-        DLOG(INFO) << "Using camera " << descriptor.GetNameAndModel();
-        return std::make_unique<VideoCaptureDeviceDescriptor>(descriptor);
+              device.descriptor.device_id)) {
+        DLOG(INFO) << "Using camera " << device.descriptor.GetNameAndModel();
+        return device;
       }
     }
     DLOG(WARNING) << "No usable camera found";
-    return nullptr;
-#endif
-
-    if (device_descriptors_->empty()) {
-      DLOG(WARNING) << "No camera found";
-      return nullptr;
-    }
-#if defined(OS_WIN)
-    // Dump the camera model to help debugging.
-    // TODO(alaoui.rda@gmail.com): remove after http://crbug.com/730068 is
-    // fixed.
-    LOG(INFO) << "Using camera "
-              << device_descriptors_->front().GetNameAndModel();
+    return absl::nullopt;
 #else
-    DLOG(INFO) << "Using camera "
-               << device_descriptors_->front().GetNameAndModel();
+    auto device = devices_info_.front();
+    DLOG(INFO) << "Using camera " << device.descriptor.GetNameAndModel();
+    return device;
 #endif
-
-    return std::make_unique<VideoCaptureDeviceDescriptor>(
-        device_descriptors_->front());
   }
 
   const VideoCaptureFormat& last_format() const { return last_format_; }
 
-  std::unique_ptr<VideoCaptureDeviceDescriptor>
-  GetFirstDeviceDescriptorSupportingPixelFormat(
+  absl::optional<VideoCaptureDeviceInfo> GetFirstDeviceSupportingPixelFormat(
       const VideoPixelFormat& pixel_format) {
-    if (!FindUsableDeviceDescriptor())
-      return nullptr;
+    if (!FindUsableDevice())
+      return absl::nullopt;
 
-    for (const auto& descriptor : *device_descriptors_) {
-      VideoCaptureFormats supported_formats;
-      video_capture_device_factory_->GetSupportedFormats(descriptor,
-                                                         &supported_formats);
-      for (const auto& formats_iterator : supported_formats) {
-        if (formats_iterator.pixel_format == pixel_format) {
-          return std::unique_ptr<VideoCaptureDeviceDescriptor>(
-              new VideoCaptureDeviceDescriptor(descriptor));
+    for (const auto& device : devices_info_) {
+      for (const auto& format : device.supported_formats) {
+        if (format.pixel_format == pixel_format) {
+          return device;
         }
       }
     }
     DVLOG_IF(1, pixel_format != PIXEL_FORMAT_MAX)
         << VideoPixelFormatToString(pixel_format);
-    return std::unique_ptr<VideoCaptureDeviceDescriptor>();
+    return absl::nullopt;
   }
 
-  bool IsCaptureSizeSupported(const VideoCaptureDeviceDescriptor& device,
+  bool IsCaptureSizeSupported(const VideoCaptureDeviceInfo& device_info,
                               const gfx::Size& size) {
-    VideoCaptureFormats supported_formats;
-    video_capture_device_factory_->GetSupportedFormats(device,
-                                                       &supported_formats);
+    auto& supported_formats = device_info.supported_formats;
     const auto it = std::find_if(
         supported_formats.begin(), supported_formats.end(),
         [&size](VideoCaptureFormat const& f) { return f.frame_size == size; });
@@ -428,19 +433,8 @@ class VideoCaptureDeviceTest
     return true;
   }
 
-  gfx::Size GetSupportedCaptureSize(
-      const VideoCaptureDeviceDescriptor& device) {
-    VideoCaptureFormats supported_formats;
-    video_capture_device_factory_->GetSupportedFormats(device,
-                                                       &supported_formats);
-    if (supported_formats.size() == 0)
-      return gfx::Size(0, 0);
-
-    return supported_formats.begin()->frame_size;
-  }
-
   void RunTestCase(base::OnceClosure test_case) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     // In order to make the test case run on the actual message loop that has
     // been created for this thread, we need to run it inside a RunLoop. This is
     // required, because on MacOS the capture code must run on a CFRunLoop
@@ -464,26 +458,29 @@ class VideoCaptureDeviceTest
   base::win::ScopedCOMInitializer initialize_com_;
 #endif
   base::test::SingleThreadTaskEnvironment task_environment_;
-  std::unique_ptr<VideoCaptureDeviceDescriptors> device_descriptors_;
+  std::vector<VideoCaptureDeviceInfo> devices_info_;
   std::unique_ptr<base::RunLoop> run_loop_;
   scoped_refptr<base::TaskRunner> main_thread_task_runner_;
   std::unique_ptr<MockVideoCaptureDeviceClient> video_capture_client_;
   const scoped_refptr<MockImageCaptureClient> image_capture_client_;
   VideoCaptureFormat last_format_;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<LocalGpuMemoryBufferManager> local_gpu_memory_buffer_manager_;
 #endif
   std::unique_ptr<VideoCaptureDeviceFactory> video_capture_device_factory_;
 };
 
 // Cause hangs on Windows Debug. http://crbug.com/417824
-#if defined(OS_WIN) && !defined(NDEBUG)
-#define MAYBE_OpenInvalidDevice DISABLED_OpenInvalidDevice
+#if (defined(OS_WIN) && !defined(NDEBUG))
+#define MAYBE_UsingRealWebcam_OpenInvalidDevice \
+  DISABLED_UsingRealWebcam_OpenInvalidDevice
 #else
-#define MAYBE_OpenInvalidDevice OpenInvalidDevice
+#define MAYBE_UsingRealWebcam_OpenInvalidDevice \
+  UsingRealWebcam_OpenInvalidDevice
 #endif
 // Tries to allocate an invalid device and verifies it doesn't work.
-WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_OpenInvalidDevice) {
+WRAPPED_TEST_P(VideoCaptureDeviceTest,
+               MAYBE_UsingRealWebcam_OpenInvalidDevice) {
   RunTestCase(
       base::BindOnce(&VideoCaptureDeviceTest::RunOpenInvalidDeviceTestCase,
                      base::Unretained(this)));
@@ -497,13 +494,13 @@ void VideoCaptureDeviceTest::RunOpenInvalidDeviceTestCase() {
       VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation()
           ? VideoCaptureApi::WIN_MEDIA_FOUNDATION
           : VideoCaptureApi::WIN_DIRECT_SHOW;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   invalid_descriptor.capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
 #endif
   std::unique_ptr<VideoCaptureDevice> device =
       video_capture_device_factory_->CreateDevice(invalid_descriptor);
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_FALSE(device);
 #else
   // The presence of the actual device is only checked on AllocateAndStart()
@@ -533,18 +530,17 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_CaptureWithSize) {
                      base::Unretained(this)));
 }
 void VideoCaptureDeviceTest::RunCaptureWithSizeTestCase() {
-  const auto descriptor = FindUsableDeviceDescriptor();
-  ASSERT_TRUE(descriptor);
+  const auto device_info = FindUsableDevice();
+  ASSERT_TRUE(device_info);
 
   const gfx::Size& size = std::get<0>(GetParam());
-  if (!IsCaptureSizeSupported(*descriptor, size))
+  if (!IsCaptureSizeSupported(*device_info, size))
     return;
   const int width = size.width();
   const int height = size.height();
 
   std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(
-          device_descriptors_->front()));
+      video_capture_device_factory_->CreateDevice(device_info->descriptor));
   ASSERT_TRUE(device);
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
@@ -587,11 +583,11 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_AllocateBadSize) {
                      base::Unretained(this)));
 }
 void VideoCaptureDeviceTest::RunAllocateBadSizeTestCase() {
-  const auto descriptor = FindUsableDeviceDescriptor();
-  ASSERT_TRUE(descriptor);
+  const auto device_info = FindUsableDevice();
+  ASSERT_TRUE(device_info);
 
   std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(*descriptor));
+      video_capture_device_factory_->CreateDevice(device_info->descriptor));
   ASSERT_TRUE(device);
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
@@ -619,14 +615,14 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest,
                      base::Unretained(this)));
 }
 void VideoCaptureDeviceTest::RunReAllocateCameraTestCase() {
-  const auto descriptor = FindUsableDeviceDescriptor();
-  ASSERT_TRUE(descriptor);
+  const auto device_info = FindUsableDevice();
+  ASSERT_TRUE(device_info);
 
   // First, do a number of very fast device start/stops.
   for (int i = 0; i <= 5; i++) {
     video_capture_client_ = CreateDeviceClient();
     std::unique_ptr<VideoCaptureDevice> device(
-        video_capture_device_factory_->CreateDevice(*descriptor));
+        video_capture_device_factory_->CreateDevice(device_info->descriptor));
     gfx::Size resolution;
     if (i % 2)
       resolution = gfx::Size(640, 480);
@@ -649,8 +645,7 @@ void VideoCaptureDeviceTest::RunReAllocateCameraTestCase() {
 
   video_capture_client_ = CreateDeviceClient();
   std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(
-          device_descriptors_->front()));
+      video_capture_device_factory_->CreateDevice(device_info->descriptor));
 
   device->AllocateAndStart(capture_params, std::move(video_capture_client_));
   WaitForCapturedFrame();
@@ -666,16 +661,15 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_CaptureMjpeg) {
                              base::Unretained(this)));
 }
 void VideoCaptureDeviceTest::RunCaptureMjpegTestCase() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (media::ShouldUseCrosCameraService()) {
     VLOG(1)
         << "Skipped on Chrome OS device where HAL v3 camera service is used";
     return;
   }
 #endif
-  std::unique_ptr<VideoCaptureDeviceDescriptor> device_descriptor =
-      GetFirstDeviceDescriptorSupportingPixelFormat(PIXEL_FORMAT_MJPEG);
-  ASSERT_TRUE(device_descriptor);
+  auto device_info = GetFirstDeviceSupportingPixelFormat(PIXEL_FORMAT_MJPEG);
+  ASSERT_TRUE(device_info);
 
 #if defined(OS_WIN)
   base::win::Version version = base::win::GetVersion();
@@ -686,7 +680,7 @@ void VideoCaptureDeviceTest::RunCaptureMjpegTestCase() {
   }
 #endif
   std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(*device_descriptor));
+      video_capture_device_factory_->CreateDevice(device_info->descriptor));
   ASSERT_TRUE(device);
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
@@ -703,11 +697,15 @@ void VideoCaptureDeviceTest::RunCaptureMjpegTestCase() {
   // @ 30 fps, so we don't care about the exact resolution we get.
   EXPECT_EQ(last_format().pixel_format, PIXEL_FORMAT_MJPEG);
   EXPECT_GE(static_cast<size_t>(1280 * 720),
-            last_format().ImageAllocationSize());
+            media::VideoFrame::AllocationSize(last_format().pixel_format,
+                                              last_format().frame_size));
   device->StopAndDeAllocate();
 }
 
-WRAPPED_TEST_P(VideoCaptureDeviceTest, NoCameraSupportsPixelFormatMax) {
+#define MAYBE_UsingRealWebcam_NoCameraSupportsPixelFormatMax \
+  UsingRealWebcam_NoCameraSupportsPixelFormatMax
+WRAPPED_TEST_P(VideoCaptureDeviceTest,
+               MAYBE_UsingRealWebcam_NoCameraSupportsPixelFormatMax) {
   RunTestCase(base::BindOnce(
       &VideoCaptureDeviceTest::RunNoCameraSupportsPixelFormatMaxTestCase,
       base::Unretained(this)));
@@ -715,8 +713,8 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest, NoCameraSupportsPixelFormatMax) {
 void VideoCaptureDeviceTest::RunNoCameraSupportsPixelFormatMaxTestCase() {
   // Use PIXEL_FORMAT_MAX to iterate all device names for testing
   // GetDeviceSupportedFormats().
-  std::unique_ptr<VideoCaptureDeviceDescriptor> device_descriptor =
-      GetFirstDeviceDescriptorSupportingPixelFormat(PIXEL_FORMAT_MAX);
+  auto device_descriptor =
+      GetFirstDeviceSupportingPixelFormat(PIXEL_FORMAT_MAX);
   // Verify no camera returned for PIXEL_FORMAT_MAX. Nothing else to test here
   // since we cannot forecast the hardware capabilities.
   ASSERT_FALSE(device_descriptor);
@@ -729,12 +727,13 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_TakePhoto) {
                              base::Unretained(this)));
 }
 void VideoCaptureDeviceTest::RunTakePhotoTestCase() {
-  const auto descriptor = FindUsableDeviceDescriptor();
-  ASSERT_TRUE(descriptor);
+  const auto device_info = FindUsableDevice();
+  ASSERT_TRUE(device_info);
 
-  const gfx::Size frame_size = GetSupportedCaptureSize(*descriptor);
-  if (frame_size == gfx::Size(0, 0))
+  if (device_info->supported_formats.empty())
     return;
+  const gfx::Size frame_size =
+      device_info->supported_formats.front().frame_size;
 
 #if defined(OS_ANDROID)
   // TODO(mcasas): fails on Lollipop devices, reconnect https://crbug.com/646840
@@ -745,7 +744,7 @@ void VideoCaptureDeviceTest::RunTakePhotoTestCase() {
 #endif
 
   std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(*descriptor));
+      video_capture_device_factory_->CreateDevice(device_info->descriptor));
   ASSERT_TRUE(device);
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
@@ -761,7 +760,8 @@ void VideoCaptureDeviceTest::RunTakePhotoTestCase() {
       &MockImageCaptureClient::DoOnPhotoTaken, image_capture_client_);
 
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::Closure quit_closure = BindToCurrentLoop(run_loop.QuitClosure());
+  base::RepeatingClosure quit_closure =
+      BindToCurrentLoop(run_loop.QuitClosure());
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectPhotoTaken())
       .Times(1)
       .WillOnce(RunClosure(quit_closure));
@@ -778,12 +778,13 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest, MAYBE_UsingRealWebcam_GetPhotoState) {
                              base::Unretained(this)));
 }
 void VideoCaptureDeviceTest::RunGetPhotoStateTestCase() {
-  const auto descriptor = FindUsableDeviceDescriptor();
-  ASSERT_TRUE(descriptor);
+  const auto device_info = FindUsableDevice();
+  ASSERT_TRUE(device_info);
 
-  const gfx::Size frame_size = GetSupportedCaptureSize(*descriptor);
-  if (frame_size == gfx::Size(0, 0))
+  if (device_info->supported_formats.empty())
     return;
+  const gfx::Size frame_size =
+      device_info->supported_formats.front().frame_size;
 
 #if defined(OS_ANDROID)
   // TODO(mcasas): fails on Lollipop devices, reconnect https://crbug.com/646840
@@ -794,7 +795,7 @@ void VideoCaptureDeviceTest::RunGetPhotoStateTestCase() {
 #endif
 
   std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(*descriptor));
+      video_capture_device_factory_->CreateDevice(device_info->descriptor));
   ASSERT_TRUE(device);
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
@@ -814,7 +815,8 @@ void VideoCaptureDeviceTest::RunGetPhotoStateTestCase() {
   // first frame.
   WaitForCapturedFrame();
   base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
-  base::Closure quit_closure = BindToCurrentLoop(run_loop.QuitClosure());
+  base::RepeatingClosure quit_closure =
+      BindToCurrentLoop(run_loop.QuitClosure());
   EXPECT_CALL(*image_capture_client_.get(), OnCorrectGetPhotoState())
       .Times(1)
       .WillOnce(RunClosure(quit_closure));
@@ -834,15 +836,14 @@ WRAPPED_TEST_P(VideoCaptureDeviceTest,
   if (!UseWinMediaFoundation())
     return;
 
-  std::unique_ptr<VideoCaptureDeviceDescriptor> descriptor =
-      GetFirstDeviceDescriptorSupportingPixelFormat(PIXEL_FORMAT_MJPEG);
-  ASSERT_TRUE(descriptor);
+  auto device_info = GetFirstDeviceSupportingPixelFormat(PIXEL_FORMAT_MJPEG);
+  ASSERT_TRUE(device_info);
 
   EXPECT_CALL(*video_capture_client_, OnError(_, _, _)).Times(0);
   EXPECT_CALL(*video_capture_client_, OnStarted());
 
   std::unique_ptr<VideoCaptureDevice> device(
-      video_capture_device_factory_->CreateDevice(*descriptor));
+      video_capture_device_factory_->CreateDevice(device_info->descriptor));
   ASSERT_TRUE(device);
 
   VideoCaptureParams capture_params;

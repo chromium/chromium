@@ -6,8 +6,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
-#include "base/mac/sdk_forward_declarations.h"
+#include "base/check_op.h"
 #include "device/bluetooth/bluetooth_classic_device_mac.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
 
@@ -19,13 +18,13 @@
   device::BluetoothL2capChannelMac* _channel;  // weak
 }
 
-- (id)initWithChannel:(device::BluetoothL2capChannelMac*)channel;
+- (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel;
 
 @end
 
 @implementation BluetoothL2capChannelDelegate
 
-- (id)initWithChannel:(device::BluetoothL2capChannelMac*)channel {
+- (instancetype)initWithChannel:(device::BluetoothL2capChannelMac*)channel {
   if ((self = [super init]))
     _channel = channel;
 

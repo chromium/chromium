@@ -4,17 +4,24 @@
 
 #include "media/base/win/mf_helpers.h"
 
-#include "base/metrics/histogram_functions.h"
+#include <d3d11.h>
+
+#include "base/check_op.h"
+#include "base/win/windows_version.h"
 
 namespace media {
 
-namespace mf {
+namespace {
 
-void LogDXVAError(int line) {
-  LOG(ERROR) << "Error in dxva_video_decode_accelerator_win.cc on line "
-             << line;
-  base::UmaHistogramSparse("Media.DXVAVDA.ErrorLine", line);
+// ID3D11DeviceChild, IDXGIObject and ID3D11Device implement SetPrivateData with
+// the exact same parameters.
+template <typename T>
+HRESULT SetDebugNameInternal(T* d3d11_object, const char* debug_string) {
+  return d3d11_object->SetPrivateData(WKPDID_D3DDebugObjectName,
+                                      strlen(debug_string), debug_string);
 }
+
+}  // namespace
 
 Microsoft::WRL::ComPtr<IMFSample> CreateEmptySampleWithBuffer(
     uint32_t buffer_length,
@@ -22,7 +29,7 @@ Microsoft::WRL::ComPtr<IMFSample> CreateEmptySampleWithBuffer(
   CHECK_GT(buffer_length, 0U);
 
   Microsoft::WRL::ComPtr<IMFSample> sample;
-  HRESULT hr = MFCreateSample(sample.GetAddressOf());
+  HRESULT hr = MFCreateSample(&sample);
   RETURN_ON_HR_FAILURE(hr, "MFCreateSample failed",
                        Microsoft::WRL::ComPtr<IMFSample>());
 
@@ -30,10 +37,9 @@ Microsoft::WRL::ComPtr<IMFSample> CreateEmptySampleWithBuffer(
   if (align == 0) {
     // Note that MFCreateMemoryBuffer is same as MFCreateAlignedMemoryBuffer
     // with the align argument being 0.
-    hr = MFCreateMemoryBuffer(buffer_length, buffer.GetAddressOf());
+    hr = MFCreateMemoryBuffer(buffer_length, &buffer);
   } else {
-    hr = MFCreateAlignedMemoryBuffer(buffer_length, align - 1,
-                                     buffer.GetAddressOf());
+    hr = MFCreateAlignedMemoryBuffer(buffer_length, align - 1, &buffer);
   }
   RETURN_ON_HR_FAILURE(hr, "Failed to create memory buffer for sample",
                        Microsoft::WRL::ComPtr<IMFSample>());
@@ -60,6 +66,32 @@ MediaBufferScopedPointer::~MediaBufferScopedPointer() {
   CHECK(SUCCEEDED(hr));
 }
 
-}  // namespace mf
+HRESULT CopyCoTaskMemWideString(LPCWSTR in_string, LPWSTR* out_string) {
+  if (!in_string || !out_string) {
+    return E_INVALIDARG;
+  }
+
+  size_t size = (wcslen(in_string) + 1) * sizeof(wchar_t);
+  LPWSTR copy = reinterpret_cast<LPWSTR>(CoTaskMemAlloc(size));
+  if (!copy)
+    return E_OUTOFMEMORY;
+
+  wcscpy(copy, in_string);
+  *out_string = copy;
+  return S_OK;
+}
+
+HRESULT SetDebugName(ID3D11DeviceChild* d3d11_device_child,
+                     const char* debug_string) {
+  return SetDebugNameInternal(d3d11_device_child, debug_string);
+}
+
+HRESULT SetDebugName(ID3D11Device* d3d11_device, const char* debug_string) {
+  return SetDebugNameInternal(d3d11_device, debug_string);
+}
+
+HRESULT SetDebugName(IDXGIObject* dxgi_object, const char* debug_string) {
+  return SetDebugNameInternal(dxgi_object, debug_string);
+}
 
 }  // namespace media

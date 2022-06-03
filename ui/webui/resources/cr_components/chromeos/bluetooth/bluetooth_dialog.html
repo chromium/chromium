@@ -1,0 +1,135 @@
+    <style include="cr-hidden-style iron-flex">
+      #pairing {
+        margin-bottom: 10px;
+      }
+
+      #pairing cr-input {
+        text-align: center;
+      }
+
+      #pinDiv {
+        margin-top: 10px;
+      }
+
+      .dialog-message {
+        margin-bottom: 10px;
+      }
+
+      div.contents {
+        height: 250px;
+      }
+
+      span {
+        border-radius: 4px;
+        font-size: 20px;
+        height: 40px;
+        line-height: 40px;
+        margin: 0 5px;
+        padding: 0 15px;
+        text-align: center;
+      }
+
+      /* .display indicates a displayed pin code or passkey. */
+      span.display {
+        background: var(--cros-bg-color-dropped-elevation-1);
+        color: var(--cros-text-color-secondary);
+      }
+
+      span.display.next {
+        background: var(--cros-highlight-color);
+        color: var(--cros-button-label-color-secondary);
+      }
+
+      span.display.untyped {
+        background: var(--cros-bg-color-dropped-elevation-2);
+        color: var(--cros-text-color-primary);
+      }
+
+      /* .confirm indicates a confirmation passkey. */
+      span.confirm {
+        background: var(--cros-bg-color-dropped-elevation-1);
+        color: var(--cros-text-color-primary);
+      }
+
+      /* Override default style since it assumes a single action-button */
+      cr-button.cancel-button {
+        margin: 0;
+      }
+
+      cr-button.action-button {
+        margin-inline-start: 8px;
+      }
+    </style>
+    <!-- TODO(stevenjb/dschuyler): Find a solution to support i18n{} here -->
+    <cr-dialog id="dialog" no-cancel="[[noCancel]]"
+        close-text="[[i18n('close')]]" on-cancel="onDialogCanceled_"
+        on-closed="onDialogCanceled_" exportparts="dialog">
+      <div slot="title">[[dialogTitle]]</div>
+      <div slot="body">
+        <div class="contents layout vertical center center-justified"
+            role="alert">
+          <template is="dom-if" if="[[!errorMessage_]]">
+            <div id="pairing" class="layout vertical center center-justified">
+              <div class="dialog-message">
+                [[getMessage_(pairingDevice, pairingEvent_)]]
+              </div>
+              <div hidden$="[[!showEnterPincode_(pairingEvent_)]]">
+                <cr-input id="pincode" minlength="1" maxlength="16"
+                    type="text" auto-validate value="{{pinOrPass_}}">
+                </cr-input>
+              </div>
+              <div hidden$="[[!showEnterPasskey_(pairingEvent_)]]">
+                <cr-input id="passkey" minlength="6" maxlength="6"
+                    type="text" auto-validate value="{{pinOrPass_}}">
+                </cr-input>
+              </div>
+              <div id="pinDiv" class="layout horizontal center center-justified"
+                  hidden="[[!showDisplayPassOrPin_(pairingEvent_)]]">
+                <template is="dom-repeat" items="[[digits_]]">
+                  <span class$="[[getPinClass_(index, pairingEvent_)]]">
+                    [[getPinDigit_(index, pairingEvent_)]]
+                  </span>
+                </template>
+                <span class$="[[getPinClass_(-1, pairingEvent_)]]"
+                    hidden="[[showAcceptReject_(pairingEvent_)]]">
+                  [[i18n('bluetoothEnterKey')]]
+                </span>
+              </div>
+            </div>
+          </template>
+          <template is="dom-if" if="[[errorMessage_]]">
+            <div class="layout vertical center center-justified">
+              <div class="dialog-message">[[errorMessage_]]</div>
+            </div>
+          </template>
+        </div>
+      </div>
+      <div slot="button-container">
+        <template is="dom-if" if="[[!errorMessage_]]">
+          <cr-button hidden$="[[showDismiss_(pairingDevice, pairingEvent_)]]"
+              class="cancel-button" on-click="onCancelTap_">
+           [[i18n('cancel')]]
+          </cr-button>
+          <cr-button hidden$="[[!showAcceptReject_(pairingEvent_)]]"
+              id="accept-button" class="action-button" on-click="onAcceptTap_">
+            [[i18n('bluetoothAccept')]]
+          </cr-button>
+          <cr-button hidden$="[[!showAcceptReject_(pairingEvent_)]]"
+              class="action-button" on-click="onRejectTap_">
+            [[i18n('bluetoothReject')]]
+          </cr-button>
+          <cr-button hidden$="[[!showConnect_(pairingEvent_)]]"
+              disabled="[[!enableConnect_(pairingEvent_, pinOrPass_)]]"
+              class="action-button" on-click="onConnectTap_">
+            [[i18n('bluetoothPair')]]
+          </cr-button>
+          <cr-button hidden$="[[!showDismiss_(pairingDevice, pairingEvent_)]]"
+              class="action-button" on-click="close">
+            [[i18n('ok')]]
+          </cr-button>
+        </template>
+        <template is="dom-if" if="[[errorMessage_]]">
+          <cr-button on-click="close">[[i18n('ok')]]</cr-button>
+        </template>
+      </div>
+    </cr-dialog>

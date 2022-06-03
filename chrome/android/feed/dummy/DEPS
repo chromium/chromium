@@ -1,5 +1,5 @@
 include_rules = [
   "-components/feed",
-  "+chrome/lib/lifecycle/public",
+  "+chrome/browser/android/lifecycle",
   "+components/background_task_scheduler"
 ]

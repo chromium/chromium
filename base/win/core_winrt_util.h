@@ -11,7 +11,6 @@
 #include <windef.h>
 
 #include "base/base_export.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_hstring.h"
 
 namespace base {
@@ -25,10 +24,6 @@ BASE_EXPORT bool ResolveCoreWinRTDelayload();
 
 // The following stubs are provided for when component build is enabled, in
 // order to avoid the propagation of delay-loading CoreWinRT to other modules.
-
-BASE_EXPORT HRESULT RoInitialize(RO_INIT_TYPE init_type);
-
-BASE_EXPORT void RoUninitialize();
 
 BASE_EXPORT HRESULT RoGetActivationFactory(HSTRING class_id,
                                            const IID& iid,

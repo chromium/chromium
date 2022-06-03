@@ -7,9 +7,12 @@
 // NOTE: This mojom exists in two places and must be kept in sync:
 //       Chromium:  //chromeos/services/machine_learning/public/mojom/
 //       Chrome OS: src/platform2/ml/mojom/
+//       Note: Other repos downstream of Chromium might also use this mojom.
 // Example: A backwards-compatible mojom change (and corresponding
 // implementation change) can be made in Chrome OS first, then replicated to the
-// client (Chromium) later.
+// clients (Chromium, other downstream repos) later.
+// Use //chromeos/services/machine_learning/public/mojom/roll_mojoms.sh to help
+// replicate Chrome OS-side changes over to Chromium.
 
 module chromeos.machine_learning.mojom;
 
@@ -21,6 +24,7 @@ import "chromeos/services/machine_learning/public/mojom/graph_executor.mojom";
 // numeric values should never be reused.
 // ModelIds prefixed with UNSUPPORTED_ are no longer supported. Attempts to load
 // them will produce an error.
+[Stable, Extensible]
 enum BuiltinModelId {
   // Unknown ML model. It is marked as unsupported.
   UNSUPPORTED_UNKNOWN = 0,
@@ -31,26 +35,35 @@ enum BuiltinModelId {
   // The Smart Dim (20190221) ML model.
   SMART_DIM_20190221 = 3,
   // The Top Cat (20190722) ML model.
-  TOP_CAT_20190722 = 4,
+  UNSUPPORTED_TOP_CAT_20190722 = 4,
   // The Smart Dim (20190521) ML model.
   SMART_DIM_20190521 = 5,
   // The Search Ranker (20190923) ML model.
   SEARCH_RANKER_20190923 = 6,
 };
 
+// Options for creating the executor.  Options are used for testing and
+// development. They are not typically used in normal, production code.
+[Stable]
+struct GraphExecutorOptions {
+  bool use_nnapi = false;
+};
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
+[Stable, Extensible]
 enum CreateGraphExecutorResult {
   OK = 0,
   MODEL_INTERPRETATION_ERROR = 1,
   MEMORY_ALLOCATION_ERROR = 2,
-  // Remove kMax and use builtin kMaxValue after Mojo uprev (crbug.com/909719).
-  kMax = MEMORY_ALLOCATION_ERROR,
+  NNAPI_UNAVAILABLE = 3,
+  NNAPI_USE_ERROR = 4,
 };
 
 // Model specification for builtin models.
 // Because ml-service can retrieve a builtin model's content and metadata, only
-// an |id| is needed to specify it.
+// an `id` is needed to specify it.
+[Stable]
 struct BuiltinModelSpec {
   BuiltinModelId id;
 };
@@ -58,6 +71,7 @@ struct BuiltinModelSpec {
 // Model specification for downloaded models.
 // For a downloaded model, both of the model content and metadata must be
 // specified.
+[Stable]
 struct FlatBufferModelSpec {
   // The content of the model's tflite model file.
   string model_string;
@@ -68,7 +82,7 @@ struct FlatBufferModelSpec {
   // Used in naming the UMA metric histograms of the model. An example of the
   // names of the histograms is:
   //
-  // MachineLearningService.|metrics_model_name|.ExecuteResult.CpuTimeMicrosec
+  // MachineLearningService.`metrics_model_name`.ExecuteResult.CpuTimeMicrosec
   //
   // This variable must NOT be empty.
   string metrics_model_name;
@@ -77,7 +91,16 @@ struct FlatBufferModelSpec {
 // The lifetime of the cached model is tied to the lifetime of the Model
 // interface pipe. The Model interface pipe can be used to acquire multiple
 // separate GraphExecutor instances.
+// Next ordinal: 2
+[Stable]
 interface Model {
-  CreateGraphExecutor(pending_receiver<GraphExecutor> receiver) =>
+  CreateGraphExecutor@0(pending_receiver<GraphExecutor> receiver) =>
+      (CreateGraphExecutorResult result);
+
+  // This function is temporary. We plan to rationalize this interface and
+  // sync it with the interfaces at chromeos/service/machine_learning.
+  // See crbug/1081597.
+  CreateGraphExecutorWithOptions@1(GraphExecutorOptions options,
+                                   pending_receiver<GraphExecutor> receiver) =>
       (CreateGraphExecutorResult result);
 };

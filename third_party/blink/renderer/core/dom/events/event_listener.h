@@ -21,7 +21,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
@@ -47,7 +46,9 @@ class ExecutionContext;
 class CORE_EXPORT EventListener : public GarbageCollected<EventListener>,
                                   public NameClient {
  public:
-  virtual ~EventListener() = default;
+  EventListener(const EventListener&) = delete;
+  EventListener& operator=(const EventListener&) = delete;
+  ~EventListener() override = default;
 
   // Invokes this event listener.
   virtual void Invoke(ExecutionContext*, Event*) = 0;
@@ -76,7 +77,7 @@ class CORE_EXPORT EventListener : public GarbageCollected<EventListener>,
   // produce the same result as b.Matches(a).
   virtual bool Matches(const EventListener&) const = 0;
 
-  virtual void Trace(Visitor*) {}
+  virtual void Trace(Visitor*) const {}
 
   const char* NameInHeapSnapshot() const override { return "EventListener"; }
 
@@ -94,10 +95,8 @@ class CORE_EXPORT EventListener : public GarbageCollected<EventListener>,
   // subclasses must inherit from either of them.
   friend class JSBasedEventListener;
   friend class NativeEventListener;
-
-  DISALLOW_COPY_AND_ASSIGN(EventListener);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_H_

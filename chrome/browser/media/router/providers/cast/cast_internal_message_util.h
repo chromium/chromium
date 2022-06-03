@@ -6,8 +6,8 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_PROVIDERS_CAST_CAST_INTERNAL_MESSAGE_UTIL_H_
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/presentation/presentation.mojom.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
@@ -16,6 +16,28 @@ namespace media_router {
 using cast::channel::CastMessage;
 
 class MediaSinkInternal;
+
+// Values in the "supportedMediaCommands" list in media status messages
+// sent to the Cast sender SDK.
+constexpr char kMediaCommandPause[] = "pause";
+constexpr char kMediaCommandSeek[] = "seek";
+constexpr char kMediaCommandStreamVolume[] = "stream_volume";
+constexpr char kMediaCommandStreamMute[] = "stream_mute";
+constexpr char kMediaCommandQueueNext[] = "queue_next";
+constexpr char kMediaCommandQueuePrev[] = "queue_prev";
+
+// Values in the "supportedMediaCommands" bit array in media status messages
+// received from Cast receivers. They are converted to string values by
+// SupportedMediaCommandsToListValue().
+enum class MediaCommand {
+  kPause = 1 << 0,
+  kSeek = 1 << 1,
+  kStreamVolume = 1 << 2,
+  kStreamMute = 1 << 3,
+  // 1 << 4 and 1 << 5 are not in use.
+  kQueueNext = 1 << 6,
+  kQueuePrev = 1 << 7,
+};
 
 // Represents a message sent or received by the Cast SDK via a
 // PresentationConnection.
@@ -61,11 +83,14 @@ class CastInternalMessage {
   // a valid Cast internal message.
   static std::unique_ptr<CastInternalMessage> From(base::Value message);
 
+  CastInternalMessage(const CastInternalMessage&) = delete;
+  CastInternalMessage& operator=(const CastInternalMessage&) = delete;
+
   ~CastInternalMessage();
 
   Type type() const { return type_; }
   const std::string& client_id() const { return client_id_; }
-  base::Optional<int> sequence_number() const { return sequence_number_; }
+  absl::optional<int> sequence_number() const { return sequence_number_; }
 
   bool has_session_id() const {
     return type_ == Type::kAppMessage || type_ == Type::kV2Message;
@@ -99,21 +124,19 @@ class CastInternalMessage {
  private:
   CastInternalMessage(Type type,
                       const std::string& client_id,
-                      base::Optional<int> sequence_number,
+                      absl::optional<int> sequence_number,
                       const std::string& session_id,
                       const std::string& namespace_or_v2_type_,
                       base::Value message_body);
 
   const Type type_;
   const std::string client_id_;
-  const base::Optional<int> sequence_number_;
+  const absl::optional<int> sequence_number_;
 
   // Set if |type| is |kAppMessage| or |kV2Message|.
   const std::string session_id_;
   const std::string namespace_or_v2_type_;
   const base::Value message_body_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastInternalMessage);
 };
 
 // Represents a Cast session on a Cast device. Cast sessions are derived from
@@ -206,19 +229,19 @@ blink::mojom::PresentationConnectionMessagePtr CreateAppMessage(
 blink::mojom::PresentationConnectionMessagePtr CreateV2Message(
     const std::string& client_id,
     const base::Value& payload,
-    base::Optional<int> sequence_number);
+    absl::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateErrorMessage(
     const std::string& client_id,
     base::Value error,
-    base::Optional<int> sequence_number);
+    absl::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
-    base::Optional<int> sequence_number);
+    absl::optional<int> sequence_number);
 blink::mojom::PresentationConnectionMessagePtr CreateLeaveSessionAckMessage(
     const std::string& client_id,
-    base::Optional<int> sequence_number);
+    absl::optional<int> sequence_number);
 
-base::Value SupportedMediaRequestsToListValue(int media_requests);
+base::Value SupportedMediaCommandsToListValue(int media_commands);
 
 }  // namespace media_router
 

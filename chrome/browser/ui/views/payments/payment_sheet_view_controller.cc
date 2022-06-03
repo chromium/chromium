@@ -1,4 +1,4 @@
-﻿// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2016 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -12,11 +12,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/message_formatter.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
@@ -29,25 +28,30 @@
 #include "chrome/common/url_constants.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
+#include "components/payments/content/payment_app.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/payment_request_state.h"
 #include "components/payments/core/currency_formatter.h"
-#include "components/payments/core/payment_app.h"
 #include "components/payments/core/payment_prefs.h"
 #include "components/payments/core/strings_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font.h"
 #include "ui/gfx/geometry/insets.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/range/range.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/gfx/text_utils.h"
+#include "ui/gfx/vector_icon_utils.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
@@ -56,57 +60,42 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/grid_layout.h"
-#include "ui/views/vector_icons.h"
 #include "ui/views/view.h"
 
 namespace payments {
 namespace {
-
-// Tags for the buttons in the payment sheet. Starts at
-// |PAYMENT_REQUEST_COMMON_TAG_MAX| not to conflict with tags common
-// to all views.
-enum class PaymentSheetViewControllerTags {
-  SHOW_ORDER_SUMMARY_BUTTON = static_cast<int>(
-      PaymentRequestCommonTags::PAYMENT_REQUEST_COMMON_TAG_MAX),  // Navigate to
-                                                                  // order
-                                                                  // summary
-  SHOW_SHIPPING_BUTTON,         // Navigate to the shipping address screen
-  ADD_SHIPPING_BUTTON,          // Navigate to the shipping address editor
-  SHOW_PAYMENT_METHOD_BUTTON,   // Navigate to the payment method screen
-  ADD_PAYMENT_METHOD_BUTTON,    // Navigate to the payment method editor
-  SHOW_CONTACT_INFO_BUTTON,     // Navigate to the contact info screen
-  ADD_CONTACT_INFO_BUTTON,      // Navigate to the contact info editor
-  SHOW_SHIPPING_OPTION_BUTTON,  // Navigate to the shipping options screen
-  PAY_BUTTON,
-  MAX_TAG,  // Always keep last.
-};
 
 // A class that ensures proper elision of labels in the form
 // "[preview] and N more" where preview might be elided to allow "and N more" to
 // be always visible.
 class PreviewEliderLabel : public views::Label {
  public:
+  METADATA_HEADER(PreviewEliderLabel);
+
   // Creates a PreviewEliderLabel where |preview_text| might be elided,
   // |format_string| is the string with format argument numbers in ICU syntax
   // and |n| is the "N more" item count.
-  PreviewEliderLabel(const base::string16& preview_text,
-                     const base::string16& format_string,
+  PreviewEliderLabel(const std::u16string& preview_text,
+                     const std::u16string& format_string,
                      int n,
                      int text_style)
-      : views::Label(base::string16(), views::style::CONTEXT_LABEL, text_style),
+      : views::Label(std::u16string(), views::style::CONTEXT_LABEL, text_style),
         preview_text_(preview_text),
         format_string_(format_string),
         n_(n) {}
+  PreviewEliderLabel(const PreviewEliderLabel&) = delete;
+  PreviewEliderLabel& operator=(const PreviewEliderLabel&) = delete;
+  ~PreviewEliderLabel() override = default;
 
   // Formats |preview_text_|, |format_string_|, and |n_| into a string that fits
   // inside of |pixel_width|, eliding |preview_text_| as required.
-  base::string16 CreateElidedString(int pixel_width) {
+  std::u16string CreateElidedString(int pixel_width) {
     for (int preview_length = preview_text_.size(); preview_length > 0;
          --preview_length) {
-      base::string16 elided_preview;
+      std::u16string elided_preview;
       gfx::ElideRectangleString(preview_text_, 1, preview_length,
                                 /*strict=*/false, &elided_preview);
-      base::string16 elided_string =
+      std::u16string elided_string =
           base::i18n::MessageFormatter::FormatWithNumberedArgs(
               format_string_, "", elided_preview, n_);
       if (gfx::GetStringWidth(elided_string, font_list()) <= pixel_width)
@@ -115,7 +104,7 @@ class PreviewEliderLabel : public views::Label {
 
     // TODO(crbug.com/714776): Display something meaningful if the preview can't
     // be elided enough for the string to fit.
-    return base::string16();
+    return std::u16string();
   }
 
  private:
@@ -125,17 +114,18 @@ class PreviewEliderLabel : public views::Label {
     views::Label::OnBoundsChanged(previous_bounds);
   }
 
-  base::string16 preview_text_;
-  base::string16 format_string_;
+  std::u16string preview_text_;
+  std::u16string format_string_;
   int n_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreviewEliderLabel);
 };
 
+BEGIN_METADATA(PreviewEliderLabel, views::Label)
+END_METADATA
+
 std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
-    views::ButtonListener* listener,
-    const base::string16& section_name,
-    const base::string16& accessible_content,
+    views::Button::PressedCallback callback,
+    const std::u16string& section_name,
+    const std::u16string& accessible_content,
     std::unique_ptr<views::View> content_view,
     std::unique_ptr<views::View> extra_content_view,
     std::unique_ptr<views::View> trailing_button,
@@ -151,7 +141,8 @@ std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
       kPaymentRequestRowVerticalInsets, kPaymentRequestRowHorizontalInsets,
       kPaymentRequestRowVerticalInsets, trailing_inset);
   std::unique_ptr<PaymentRequestRowView> row =
-      std::make_unique<PaymentRequestRowView>(listener, clickable, row_insets);
+      std::make_unique<PaymentRequestRowView>(std::move(callback), clickable,
+                                              row_insets);
   views::GridLayout* layout =
       row->SetLayoutManager(std::make_unique<views::GridLayout>());
 
@@ -159,27 +150,28 @@ std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
   // A column for the section name.
   constexpr int kNameColumnWidth = 112;
   columns->AddColumn(views::GridLayout::LEADING, vertical_alignment,
-                     views::GridLayout::kFixedSize, views::GridLayout::FIXED,
-                     kNameColumnWidth, 0);
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kFixed, kNameColumnWidth,
+                     0);
 
   constexpr int kPaddingAfterName = 32;
   columns->AddPaddingColumn(views::GridLayout::kFixedSize, kPaddingAfterName);
 
   // A column for the content.
   columns->AddColumn(views::GridLayout::FILL, vertical_alignment, 1.0,
-                     views::GridLayout::USE_PREF, 0, 0);
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   // A column for the extra content.
   columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize, views::GridLayout::USE_PREF,
-                     0, 0);
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   constexpr int kPaddingColumnsWidth = 25;
   columns->AddPaddingColumn(views::GridLayout::kFixedSize,
                             kPaddingColumnsWidth);
   // A column for the trailing_button.
   columns->AddColumn(views::GridLayout::TRAILING, views::GridLayout::CENTER,
-                     views::GridLayout::kFixedSize, views::GridLayout::USE_PREF,
-                     0, 0);
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   std::unique_ptr<views::Label> name_label = CreateMediumLabel(section_name);
@@ -188,14 +180,14 @@ std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
   layout->AddView(std::move(name_label));
 
   if (content_view) {
-    content_view->set_can_process_events_within_subtree(false);
+    content_view->SetCanProcessEventsWithinSubtree(false);
     layout->AddView(std::move(content_view));
   } else {
     layout->SkipColumns(1);
   }
 
   if (extra_content_view) {
-    extra_content_view->set_can_process_events_within_subtree(false);
+    extra_content_view->SetCanProcessEventsWithinSubtree(false);
     layout->AddView(std::move(extra_content_view));
   } else {
     layout->SkipColumns(1);
@@ -211,8 +203,8 @@ std::unique_ptr<PaymentRequestRowView> CreatePaymentSheetRow(
 }
 
 std::unique_ptr<views::View> CreateInlineCurrencyAmountItem(
-    const base::string16& currency,
-    const base::string16& amount,
+    const std::u16string& currency,
+    const std::u16string& amount,
     bool hint_color,
     bool bold) {
   std::unique_ptr<views::View> item_amount_line =
@@ -222,10 +214,11 @@ std::unique_ptr<views::View> CreateInlineCurrencyAmountItem(
   views::ColumnSet* item_amount_columns = item_amount_layout->AddColumnSet(0);
   item_amount_columns->AddColumn(
       views::GridLayout::LEADING, views::GridLayout::LEADING,
-      views::GridLayout::kFixedSize, views::GridLayout::USE_PREF, 0, 0);
-  item_amount_columns->AddColumn(views::GridLayout::TRAILING,
-                                 views::GridLayout::LEADING, 1.0,
-                                 views::GridLayout::USE_PREF, 0, 0);
+      views::GridLayout::kFixedSize,
+      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
+  item_amount_columns->AddColumn(
+      views::GridLayout::TRAILING, views::GridLayout::LEADING, 1.0,
+      views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   DCHECK(!bold || !hint_color);
   std::unique_ptr<views::Label> currency_label;
@@ -254,12 +247,15 @@ std::unique_ptr<views::View> CreateInlineCurrencyAmountItem(
 // functions to create the row view.
 class PaymentSheetRowBuilder {
  public:
-  PaymentSheetRowBuilder(views::ButtonListener* listener,
-                         const base::string16& section_name)
-      : listener_(listener), section_name_(section_name) {}
+  PaymentSheetRowBuilder(PaymentSheetViewController* controller,
+                         const std::u16string& section_name)
+      : controller_(controller), section_name_(section_name) {}
 
-  PaymentSheetRowBuilder& Tag(PaymentSheetViewControllerTags tag) {
-    tag_ = static_cast<int>(tag);
+  PaymentSheetRowBuilder(const PaymentSheetRowBuilder&) = delete;
+  PaymentSheetRowBuilder& operator=(const PaymentSheetRowBuilder&) = delete;
+
+  PaymentSheetRowBuilder& Closure(base::RepeatingClosure closure) {
+    closure_ = std::move(closure);
     return *this;
   }
 
@@ -269,7 +265,7 @@ class PaymentSheetRowBuilder {
   }
 
   PaymentSheetRowBuilder& AccessibleContent(
-      const base::string16& accessible_content) {
+      const std::u16string& accessible_content) {
     accessible_content_ = accessible_content;
     return *this;
   }
@@ -287,19 +283,15 @@ class PaymentSheetRowBuilder {
   std::unique_ptr<PaymentRequestRowView> CreateWithChevron(
       std::unique_ptr<views::View> content_view,
       std::unique_ptr<views::View> extra_content_view) {
-    std::unique_ptr<views::ImageView> chevron =
-        std::make_unique<views::ImageView>();
-    chevron->set_can_process_events_within_subtree(false);
-    std::unique_ptr<views::Label> label =
-        std::make_unique<views::Label>(section_name_);
-    chevron->SetImage(gfx::CreateVectorIcon(
-        views::kSubmenuArrowIcon,
-        color_utils::DeriveDefaultIconColor(label->GetEnabledColor())));
+    auto chevron =
+        std::make_unique<views::ImageView>(ui::ImageModel::FromVectorIcon(
+            vector_icons::kSubmenuArrowIcon, ui::kColorIcon,
+            gfx::GetDefaultSizeOfVectorIcon(vector_icons::kSubmenuArrowIcon)));
+    chevron->SetCanProcessEventsWithinSubtree(false);
     std::unique_ptr<PaymentRequestRowView> section = CreatePaymentSheetRow(
-        listener_, section_name_, accessible_content_, std::move(content_view),
-        std::move(extra_content_view), std::move(chevron),
-        /*clickable=*/true, /*extra_trailing_inset=*/true);
-    section->set_tag(tag_);
+        GetPressedCallback(), section_name_, accessible_content_,
+        std::move(content_view), std::move(extra_content_view),
+        std::move(chevron), /*clickable=*/true, /*extra_trailing_inset=*/true);
     section->SetID(id_);
     return section;
   }
@@ -310,8 +302,8 @@ class PaymentSheetRowBuilder {
   // | Name | truncated_content | button_string |
   // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
   std::unique_ptr<PaymentRequestRowView> CreateWithButton(
-      const base::string16& truncated_content,
-      const base::string16& button_string,
+      const std::u16string& truncated_content,
+      const std::u16string& button_string,
       bool button_enabled) {
     return CreateWithButton(CreateHintLabel(truncated_content, gfx::ALIGN_LEFT),
                             button_string, button_enabled);
@@ -325,15 +317,15 @@ class PaymentSheetRowBuilder {
   // | Name | preview... and N more | button_string |
   // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
   std::unique_ptr<PaymentRequestRowView> CreateWithButton(
-      const base::string16& preview_text,
-      const base::string16& format_string,
+      const std::u16string& preview_text,
+      const std::u16string& format_string,
       int n,
-      const base::string16& button_string,
+      const std::u16string& button_string,
       bool button_enabled) {
     DCHECK(accessible_content_.empty());
     std::unique_ptr<PreviewEliderLabel> content_view =
         std::make_unique<PreviewEliderLabel>(preview_text, format_string, n,
-                                             STYLE_HINT);
+                                             views::style::STYLE_HINT);
     content_view->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     return CreateWithButton(std::move(content_view), button_string,
                             button_enabled);
@@ -346,42 +338,50 @@ class PaymentSheetRowBuilder {
   // +~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~+
   std::unique_ptr<PaymentRequestRowView> CreateWithButton(
       std::unique_ptr<views::View> content_view,
-      const base::string16& button_string,
+      const std::u16string& button_string,
       bool button_enabled) {
-    std::unique_ptr<views::Button> button(
-        views::MdTextButton::CreateSecondaryUiBlueButton(listener_,
-                                                         button_string));
-    button->set_tag(tag_);
+    auto button = std::make_unique<views::MdTextButton>(GetPressedCallback(),
+                                                        button_string);
+    button->SetProminent(true);
     button->SetID(id_);
     button->SetFocusBehavior(views::View::FocusBehavior::ALWAYS);
     button->SetEnabled(button_enabled);
     return CreatePaymentSheetRow(
-        listener_, section_name_, accessible_content_, std::move(content_view),
-        nullptr, std::move(button), /*clickable=*/false,
+        views::Button::PressedCallback(), section_name_, accessible_content_,
+        std::move(content_view), nullptr, std::move(button),
+        /*clickable=*/false,
         /*extra_trailing_inset=*/false, views::GridLayout::CENTER);
   }
 
-  views::ButtonListener* listener_;
-  base::string16 section_name_;
-  base::string16 accessible_content_;
-  int tag_;
+  views::Button::PressedCallback GetPressedCallback() const {
+    return base::BindRepeating(&PaymentSheetViewController::ButtonPressed,
+                               base::Unretained(controller_), closure_);
+  }
+
+  PaymentSheetViewController* const controller_;
+  std::u16string section_name_;
+  std::u16string accessible_content_;
+  base::RepeatingClosure closure_;
   int id_;
-  DISALLOW_COPY_AND_ASSIGN(PaymentSheetRowBuilder);
 };
 
 }  // namespace
 
 PaymentSheetViewController::PaymentSheetViewController(
-    PaymentRequestSpec* spec,
-    PaymentRequestState* state,
-    PaymentRequestDialogView* dialog)
+    base::WeakPtr<PaymentRequestSpec> spec,
+    base::WeakPtr<PaymentRequestState> state,
+    base::WeakPtr<PaymentRequestDialogView> dialog)
     : PaymentRequestSheetController(spec, state, dialog) {
+  DCHECK(spec);
+  DCHECK(state);
   spec->AddObserver(this);
   state->AddObserver(this);
 }
 
 PaymentSheetViewController::~PaymentSheetViewController() {
-  spec()->RemoveObserver(this);
+  if (spec())
+    spec()->RemoveObserver(this);
+
   state()->RemoveObserver(this);
 }
 
@@ -390,22 +390,24 @@ void PaymentSheetViewController::OnSpecUpdated() {
 }
 
 void PaymentSheetViewController::OnSelectedInformationChanged() {
-  UpdatePayButtonState(state()->is_ready_to_pay());
+  primary_button()->SetText(GetPrimaryButtonLabel());
+  primary_button()->SetEnabled(GetPrimaryButtonEnabled());
   UpdateContentView();
 }
 
-std::unique_ptr<views::Button>
-PaymentSheetViewController::CreatePrimaryButton() {
-  std::unique_ptr<views::Button> button(
-      views::MdTextButton::CreateSecondaryUiBlueButton(
-          this, l10n_util::GetStringUTF16(IDS_PAYMENTS_PAY_BUTTON)));
-  button->set_tag(static_cast<int>(PaymentRequestCommonTags::PAY_BUTTON_TAG));
-  button->SetID(static_cast<int>(DialogViewID::PAY_BUTTON));
-  button->SetEnabled(state()->is_ready_to_pay());
-  return button;
+void PaymentSheetViewController::ButtonPressed(base::RepeatingClosure closure) {
+  if (!dialog()->IsInteractive() || !spec())
+    return;
+
+  std::move(closure).Run();
+
+  if (!spec()->retry_error_message().empty()) {
+    spec()->reset_retry_error_message();
+    UpdateContentView();
+  }
 }
 
-base::string16 PaymentSheetViewController::GetSecondaryButtonLabel() {
+std::u16string PaymentSheetViewController::GetSecondaryButtonLabel() {
   return l10n_util::GetStringUTF16(IDS_CANCEL);
 }
 
@@ -413,16 +415,19 @@ bool PaymentSheetViewController::ShouldShowHeaderBackArrow() {
   return false;
 }
 
-base::string16 PaymentSheetViewController::GetSheetTitle() {
+std::u16string PaymentSheetViewController::GetSheetTitle() {
   return l10n_util::GetStringUTF16(IDS_PAYMENTS_TITLE);
 }
 
 void PaymentSheetViewController::FillContentView(views::View* content_view) {
+  if (!spec())
+    return;
+
   views::GridLayout* layout =
       content_view->SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);
   columns->AddColumn(views::GridLayout::FILL, views::GridLayout::CENTER, 1.0,
-                     views::GridLayout::USE_PREF, 0, 0);
+                     views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
   if (!spec()->retry_error_message().empty()) {
     std::unique_ptr<views::View> warning_view =
@@ -434,12 +439,18 @@ void PaymentSheetViewController::FillContentView(views::View* content_view) {
   // The shipping address and contact info rows are optional.
   std::unique_ptr<PaymentRequestRowView> summary_row =
       CreatePaymentSheetSummaryRow();
+  if (!summary_row)
+    return;
+
   PaymentRequestRowView* previous_row = summary_row.get();
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   layout->AddView(std::move(summary_row));
 
   if (state()->ShouldShowShippingSection()) {
     std::unique_ptr<PaymentRequestRowView> shipping_row = CreateShippingRow();
+    if (!shipping_row)
+      return;
+
     shipping_row->set_previous_row(previous_row->AsWeakPtr());
     previous_row = shipping_row.get();
     layout->StartRow(views::GridLayout::kFixedSize, 0);
@@ -483,102 +494,9 @@ PaymentSheetViewController::CreateExtraFooterView() {
   return CreateProductLogoFooterView();
 }
 
-void PaymentSheetViewController::ButtonPressed(views::Button* sender,
-                                               const ui::Event& event) {
-  if (!dialog()->IsInteractive())
-    return;
-
-  bool should_reset_retry_error_message = true;
-  switch (sender->tag()) {
-    case static_cast<int>(
-        PaymentSheetViewControllerTags::SHOW_ORDER_SUMMARY_BUTTON):
-      dialog()->ShowOrderSummary();
-      break;
-
-    case static_cast<int>(PaymentSheetViewControllerTags::SHOW_SHIPPING_BUTTON):
-      dialog()->ShowShippingProfileSheet();
-      break;
-
-    case static_cast<int>(PaymentSheetViewControllerTags::ADD_SHIPPING_BUTTON):
-      dialog()->ShowShippingAddressEditor(
-          BackNavigationType::kPaymentSheet,
-          /*on_edited=*/base::OnceClosure(),  // This is always an add.
-          /*on_added=*/
-          base::BindOnce(&PaymentRequestState::AddAutofillShippingProfile,
-                         state()->AsWeakPtr(), /*selected=*/true),
-          nullptr);
-      break;
-
-    case static_cast<int>(
-        PaymentSheetViewControllerTags::SHOW_PAYMENT_METHOD_BUTTON):
-      dialog()->ShowPaymentMethodSheet();
-      break;
-
-    case static_cast<int>(
-        PaymentSheetViewControllerTags::ADD_PAYMENT_METHOD_BUTTON):
-      dialog()->ShowCreditCardEditor(
-          BackNavigationType::kPaymentSheet,
-          static_cast<int>(PaymentSheetViewControllerTags::MAX_TAG),
-          /*on_edited=*/base::OnceClosure(),  // This is always an add.
-          /*on_added=*/
-          base::BindOnce(&PaymentRequestState::AddAutofillPaymentApp,
-                         state()->AsWeakPtr(), /*selected=*/true),
-          /*credit_card=*/nullptr);
-
-      break;
-
-    case static_cast<int>(
-        PaymentSheetViewControllerTags::SHOW_CONTACT_INFO_BUTTON):
-      dialog()->ShowContactProfileSheet();
-      break;
-
-    case static_cast<int>(
-        PaymentSheetViewControllerTags::ADD_CONTACT_INFO_BUTTON):
-      dialog()->ShowContactInfoEditor(
-          BackNavigationType::kPaymentSheet,
-          /*on_edited=*/base::OnceClosure(),  // This is always an add.
-          /*on_added=*/
-          base::BindOnce(&PaymentRequestState::AddAutofillContactProfile,
-                         state()->AsWeakPtr(), /*selected=*/true));
-      break;
-
-    case static_cast<int>(
-        PaymentSheetViewControllerTags::SHOW_SHIPPING_OPTION_BUTTON):
-      dialog()->ShowShippingOptionSheet();
-      break;
-
-    default:
-      PaymentRequestSheetController::ButtonPressed(sender, event);
-      should_reset_retry_error_message = false;
-      break;
-  }
-
-  if (should_reset_retry_error_message &&
-      !spec()->retry_error_message().empty()) {
-    spec()->reset_retry_error_message();
-    UpdateContentView();
-  }
-}
-
-void PaymentSheetViewController::StyledLabelLinkClicked(
-    views::StyledLabel* label,
-    const gfx::Range& range,
-    int event_flags) {
-  if (!dialog()->IsInteractive())
-    return;
-
-  // The only thing that can trigger this is the user clicking on the "settings"
-  // link in the data attribution text.
-  chrome::ShowSettingsSubPageForProfile(dialog()->GetProfile(),
-                                        chrome::kPaymentsSubPage);
-}
-
-void PaymentSheetViewController::UpdatePayButtonState(bool enabled) {
-  primary_button()->SetEnabled(enabled);
-}
-
 // Creates the Order Summary row, which contains an "Order Summary" label,
-// an inline list of display items, a Total Amount label, and a Chevron.
+// an inline list of display items, a Total Amount label, and a Chevron. Returns
+// nullptr if WeakPtr<PaymentRequestSpec> has become null.
 // +----------------------------------------------+
 // | Order Summary   Item 1            $ 1.34     |
 // |                 Item 2            $ 2.00   > |
@@ -587,15 +505,19 @@ void PaymentSheetViewController::UpdatePayButtonState(bool enabled) {
 // +----------------------------------------------+
 std::unique_ptr<PaymentRequestRowView>
 PaymentSheetViewController::CreatePaymentSheetSummaryRow() {
+  if (!spec())
+    return nullptr;
+
   std::unique_ptr<views::View> inline_summary = std::make_unique<views::View>();
   views::GridLayout* layout =
       inline_summary->SetLayoutManager(std::make_unique<views::GridLayout>());
   views::ColumnSet* columns = layout->AddColumnSet(0);
   columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::LEADING,
-                     1.0, views::GridLayout::USE_PREF, 0, 0);
+                     1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
   constexpr int kItemSummaryPriceFixedWidth = 96;
   columns->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                     views::GridLayout::kFixedSize, views::GridLayout::FIXED,
+                     views::GridLayout::kFixedSize,
+                     views::GridLayout::ColumnSize::kFixed,
                      kItemSummaryPriceFixedWidth, kItemSummaryPriceFixedWidth);
 
   const std::vector<const mojom::PaymentItemPtr*>& items =
@@ -622,7 +544,7 @@ PaymentSheetViewController::CreatePaymentSheetSummaryRow() {
     layout->AddView(CreateInlineCurrencyAmountItem(
         is_mixed_currency ? base::UTF8ToUTF16(spec()->GetFormattedCurrencyCode(
                                 (*items[i])->amount))
-                          : base::string16(),
+                          : std::u16string(),
         spec()->GetFormattedCurrencyAmount((*items[i])->amount), true, false));
   }
 
@@ -644,21 +566,23 @@ PaymentSheetViewController::CreatePaymentSheetSummaryRow() {
   layout->StartRow(views::GridLayout::kFixedSize, 0);
   PaymentApp* selected_app = state()->selected_app();
   const mojom::PaymentItemPtr& total = spec()->GetTotal(selected_app);
-  base::string16 total_label_text = base::UTF8ToUTF16(total->label);
+  std::u16string total_label_text = base::UTF8ToUTF16(total->label);
   std::unique_ptr<views::Label> total_label = CreateBoldLabel(total_label_text);
   layout->AddView(std::move(total_label));
 
-  base::string16 total_currency_code =
+  std::u16string total_currency_code =
       base::UTF8ToUTF16(spec()->GetFormattedCurrencyCode(
           spec()->GetTotal(state()->selected_app())->amount));
-  base::string16 total_amount = spec()->GetFormattedCurrencyAmount(
+  std::u16string total_amount = spec()->GetFormattedCurrencyAmount(
       spec()->GetTotal(state()->selected_app())->amount);
   layout->AddView(CreateInlineCurrencyAmountItem(total_currency_code,
                                                  total_amount, false, true));
 
   PaymentSheetRowBuilder builder(
       this, l10n_util::GetStringUTF16(IDS_PAYMENTS_ORDER_SUMMARY_LABEL));
-  builder.Tag(PaymentSheetViewControllerTags::SHOW_ORDER_SUMMARY_BUTTON)
+  builder
+      .Closure(base::BindRepeating(&PaymentRequestDialogView::ShowOrderSummary,
+                                   dialog()))
       .Id(DialogViewID::PAYMENT_SHEET_SUMMARY_SECTION)
       .AccessibleContent(l10n_util::GetStringFUTF16(
           IDS_PAYMENTS_ORDER_SUMMARY_ACCESSIBLE_LABEL,
@@ -671,11 +595,11 @@ PaymentSheetViewController::CreatePaymentSheetSummaryRow() {
 
 std::unique_ptr<views::View>
 PaymentSheetViewController::CreateShippingSectionContent(
-    base::string16* accessible_content) {
+    std::u16string* accessible_content) {
   DCHECK(accessible_content);
   autofill::AutofillProfile* profile = state()->selected_shipping_profile();
   if (!profile)
-    return std::make_unique<views::Label>(base::string16());
+    return std::make_unique<views::Label>(std::u16string());
 
   return GetShippingAddressLabelWithMissingInfo(
       AddressStyleType::SUMMARY, state()->GetApplicationLocale(), *profile,
@@ -683,7 +607,8 @@ PaymentSheetViewController::CreateShippingSectionContent(
 }
 
 // Creates the Shipping row, which contains a "Shipping address" label, the
-// user's selected shipping address, and a chevron.
+// user's selected shipping address, and a chevron. Returns null if the
+// WeakPtr<PaymentRequestSpec> has become null.
 // +----------------------------------------------+
 // | Shipping Address   Barack Obama              |
 // |                    1600 Pennsylvania Ave.  > |
@@ -691,46 +616,49 @@ PaymentSheetViewController::CreateShippingSectionContent(
 // +----------------------------------------------+
 std::unique_ptr<PaymentRequestRowView>
 PaymentSheetViewController::CreateShippingRow() {
+  if (!spec())
+    return nullptr;
+
   std::unique_ptr<views::Button> section;
   PaymentSheetRowBuilder builder(
       this, GetShippingAddressSectionString(spec()->shipping_type()));
-  builder.Tag(PaymentSheetViewControllerTags::SHOW_SHIPPING_BUTTON);
+  builder
+      .Id(state()->selected_shipping_profile()
+              ? DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION
+              : DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION_BUTTON)
+      .Closure(state()->shipping_profiles().empty()
+                   ? base::BindRepeating(
+                         &PaymentSheetViewController::AddShippingButtonPressed,
+                         base::Unretained(this))
+                   : base::BindRepeating(
+                         &PaymentRequestDialogView::ShowShippingProfileSheet,
+                         dialog()));
   if (state()->selected_shipping_profile()) {
-    builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION);
-    base::string16 accessible_content;
+    std::u16string accessible_content;
     std::unique_ptr<views::View> content =
         CreateShippingSectionContent(&accessible_content);
     return builder.AccessibleContent(accessible_content)
         .CreateWithChevron(std::move(content), nullptr);
-  } else {
-    builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_ADDRESS_SECTION_BUTTON);
-    if (state()->shipping_profiles().empty()) {
-      // If the button is "Add", clicking it should navigate to the editor
-      // instead of the list.
-      builder.Tag(PaymentSheetViewControllerTags::ADD_SHIPPING_BUTTON);
-      return builder.CreateWithButton(base::string16(),
-                                      l10n_util::GetStringUTF16(IDS_ADD),
-                                      /*button_enabled=*/true);
-    } else if (state()->shipping_profiles().size() == 1) {
-      base::string16 truncated_content =
-          GetShippingAddressLabelFormAutofillProfile(
-              *state()->shipping_profiles()[0],
-              state()->GetApplicationLocale());
-      return builder.CreateWithButton(truncated_content,
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    } else {
-      base::string16 format = l10n_util::GetPluralStringFUTF16(
-          IDS_PAYMENT_REQUEST_SHIPPING_ADDRESSES_PREVIEW,
-          state()->shipping_profiles().size() - 1);
-      base::string16 label = GetShippingAddressLabelFormAutofillProfile(
-          *state()->shipping_profiles()[0], state()->GetApplicationLocale());
-      return builder.CreateWithButton(label, format,
-                                      state()->shipping_profiles().size() - 1,
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    }
   }
+  if (state()->shipping_profiles().empty()) {
+    return builder.CreateWithButton(std::u16string(),
+                                    l10n_util::GetStringUTF16(IDS_ADD),
+                                    /*button_enabled=*/true);
+  }
+  const std::u16string label = GetShippingAddressLabelFromAutofillProfile(
+      *state()->shipping_profiles()[0], state()->GetApplicationLocale());
+  if (state()->shipping_profiles().size() == 1) {
+    return builder.CreateWithButton(label,
+                                    l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                    /*button_enabled=*/true);
+  }
+  std::u16string format = l10n_util::GetPluralStringFUTF16(
+      IDS_PAYMENT_REQUEST_SHIPPING_ADDRESSES_PREVIEW,
+      state()->shipping_profiles().size() - 1);
+  return builder.CreateWithButton(label, format,
+                                  state()->shipping_profiles().size() - 1,
+                                  l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                  /*button_enabled=*/true);
 }
 
 // Creates the Payment Method row, which contains a "Payment" label, the user's
@@ -749,71 +677,74 @@ PaymentSheetViewController::CreatePaymentMethodRow() {
   PaymentSheetRowBuilder builder(
       this, l10n_util::GetStringUTF16(
                 IDS_PAYMENT_REQUEST_PAYMENT_METHOD_SECTION_NAME));
-  builder.Tag(PaymentSheetViewControllerTags::SHOW_PAYMENT_METHOD_BUTTON);
-
+  builder
+      .Id(selected_app
+              ? DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION
+              : DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION_BUTTON)
+      .Closure(
+          state()->available_apps().empty()
+              ? base::BindRepeating(
+                    &PaymentSheetViewController::AddPaymentMethodButtonPressed,
+                    base::Unretained(this))
+              : base::BindRepeating(
+                    &PaymentRequestDialogView::ShowPaymentMethodSheet,
+                    dialog()));
   if (selected_app) {
-    std::unique_ptr<views::View> content_view = std::make_unique<views::View>();
+    auto content_view = std::make_unique<views::View>();
 
     views::GridLayout* layout =
         content_view->SetLayoutManager(std::make_unique<views::GridLayout>());
     views::ColumnSet* columns = layout->AddColumnSet(0);
     columns->AddColumn(views::GridLayout::LEADING, views::GridLayout::CENTER,
-                       1.0, views::GridLayout::USE_PREF, 0, 0);
+                       1.0, views::GridLayout::ColumnSize::kUsePreferred, 0, 0);
 
     layout->StartRow(views::GridLayout::kFixedSize, 0);
-    std::unique_ptr<views::Label> selected_app_label =
-        std::make_unique<views::Label>(selected_app->GetLabel());
-    selected_app_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    layout->AddView(std::move(selected_app_label));
+    layout->AddView(std::make_unique<views::Label>(selected_app->GetLabel()))
+        ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
     layout->StartRow(views::GridLayout::kFixedSize, 0);
-    std::unique_ptr<views::Label> selected_app_sublabel =
-        std::make_unique<views::Label>(selected_app->GetSublabel());
-    selected_app_sublabel->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    layout->AddView(std::move(selected_app_sublabel));
+    layout->AddView(std::make_unique<views::Label>(selected_app->GetSublabel()))
+        ->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
     std::unique_ptr<views::ImageView> icon_view = CreateAppIconView(
-        selected_app->icon_resource_id(), selected_app->icon_image_skia(),
+        selected_app->icon_resource_id(), selected_app->icon_bitmap(),
         selected_app->GetLabel());
 
     return builder.AccessibleContent(selected_app->GetLabel())
-        .Id(DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION)
         .CreateWithChevron(std::move(content_view), std::move(icon_view));
-  } else {
-    builder.Id(DialogViewID::PAYMENT_SHEET_PAYMENT_METHOD_SECTION_BUTTON);
-    if (state()->available_apps().empty()) {
-      // If the button is "Add", navigate to the editor directly.
-      builder.Tag(PaymentSheetViewControllerTags::ADD_PAYMENT_METHOD_BUTTON);
-      return builder.CreateWithButton(base::string16(),
-                                      l10n_util::GetStringUTF16(IDS_ADD),
-                                      /*button_enabled=*/true);
-    } else if (state()->available_apps().size() == 1) {
-      return builder.CreateWithButton(state()->available_apps()[0]->GetLabel(),
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    } else {
-      base::string16 format = l10n_util::GetPluralStringFUTF16(
-          IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW,
-          state()->available_apps().size() - 1);
-      return builder.CreateWithButton(state()->available_apps()[0]->GetLabel(),
-                                      format,
-                                      state()->available_apps().size() - 1,
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    }
   }
+  if (state()->available_apps().empty()) {
+    return builder.CreateWithButton(std::u16string(),
+                                    l10n_util::GetStringUTF16(IDS_ADD),
+                                    /*button_enabled=*/true);
+  }
+  const std::u16string label = state()->available_apps()[0]->GetLabel();
+  if (state()->available_apps().size() == 1) {
+    return builder.CreateWithButton(label,
+                                    l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                    /*button_enabled=*/true);
+  }
+  std::u16string format = l10n_util::GetPluralStringFUTF16(
+      IDS_PAYMENT_REQUEST_PAYMENT_METHODS_PREVIEW,
+      state()->available_apps().size() - 1);
+  return builder.CreateWithButton(label, format,
+                                  state()->available_apps().size() - 1,
+                                  l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                  /*button_enabled=*/true);
 }
 
 std::unique_ptr<views::View>
 PaymentSheetViewController::CreateContactInfoSectionContent(
-    base::string16* accessible_content) {
+    std::u16string* accessible_content) {
   autofill::AutofillProfile* profile = state()->selected_contact_profile();
-  *accessible_content = base::string16();
-  return profile ? payments::GetContactInfoLabel(
-                       AddressStyleType::SUMMARY,
-                       state()->GetApplicationLocale(), *profile, *spec(),
-                       *(state()->profile_comparator()), accessible_content)
-                 : std::make_unique<views::Label>(base::string16());
+  *accessible_content = std::u16string();
+  return profile && spec()
+             ? payments::GetContactInfoLabel(
+                   AddressStyleType::SUMMARY, state()->GetApplicationLocale(),
+                   *profile, spec()->request_payer_name(),
+                   spec()->request_payer_email(), spec()->request_payer_phone(),
+                   *(state()->profile_comparator()), accessible_content)
+             : std::make_unique<views::Label>(std::u16string());
 }
 
 // Creates the Contact Info row, which contains a "Contact info" label; the
@@ -828,48 +759,48 @@ PaymentSheetViewController::CreateContactInfoRow() {
   PaymentSheetRowBuilder builder(
       this,
       l10n_util::GetStringUTF16(IDS_PAYMENT_REQUEST_CONTACT_INFO_SECTION_NAME));
-  builder.Tag(PaymentSheetViewControllerTags::SHOW_CONTACT_INFO_BUTTON);
-
+  builder
+      .Id(state()->selected_contact_profile()
+              ? DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION
+              : DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION_BUTTON)
+      .Closure(
+          state()->contact_profiles().empty()
+              ? base::BindRepeating(
+                    &PaymentSheetViewController::AddContactInfoButtonPressed,
+                    base::Unretained(this))
+              : base::BindRepeating(
+                    &PaymentRequestDialogView::ShowContactProfileSheet,
+                    dialog()));
+  if (state()->selected_contact_profile()) {
+    std::u16string accessible_content;
+    std::unique_ptr<views::View> content =
+        CreateContactInfoSectionContent(&accessible_content);
+    return builder.AccessibleContent(accessible_content)
+        .CreateWithChevron(std::move(content), nullptr);
+  }
+  if (state()->contact_profiles().empty()) {
+    return builder.CreateWithButton(std::u16string(),
+                                    l10n_util::GetStringUTF16(IDS_ADD),
+                                    /*button_enabled=*/true);
+  }
   static constexpr autofill::ServerFieldType kLabelFields[] = {
       autofill::NAME_FULL, autofill::PHONE_HOME_WHOLE_NUMBER,
       autofill::EMAIL_ADDRESS};
-
-  if (state()->selected_contact_profile()) {
-    base::string16 accessible_content;
-    std::unique_ptr<views::View> content =
-        CreateContactInfoSectionContent(&accessible_content);
-    return builder.Id(DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION)
-        .AccessibleContent(accessible_content)
-        .CreateWithChevron(std::move(content), nullptr);
-  } else {
-    builder.Id(DialogViewID::PAYMENT_SHEET_CONTACT_INFO_SECTION_BUTTON);
-    if (state()->contact_profiles().empty()) {
-      // If the button is "Add", navigate directly to the editor.
-      builder.Tag(PaymentSheetViewControllerTags::ADD_CONTACT_INFO_BUTTON);
-      return builder.CreateWithButton(base::string16(),
-                                      l10n_util::GetStringUTF16(IDS_ADD),
-                                      /*button_enabled=*/true);
-    } else if (state()->contact_profiles().size() == 1) {
-      base::string16 truncated_content =
-          state()->contact_profiles()[0]->ConstructInferredLabel(
-              kLabelFields, base::size(kLabelFields), base::size(kLabelFields),
-              state()->GetApplicationLocale());
-      return builder.CreateWithButton(truncated_content,
-                                      l10n_util::GetStringUTF16(IDS_CHOOSE),
-                                      /*button_enabled=*/true);
-    } else {
-      base::string16 preview =
-          state()->contact_profiles()[0]->ConstructInferredLabel(
-              kLabelFields, base::size(kLabelFields), base::size(kLabelFields),
-              state()->GetApplicationLocale());
-      base::string16 format = l10n_util::GetPluralStringFUTF16(
-          IDS_PAYMENT_REQUEST_CONTACTS_PREVIEW,
-          state()->contact_profiles().size() - 1);
-      return builder.CreateWithButton(
-          preview, format, state()->contact_profiles().size() - 1,
-          l10n_util::GetStringUTF16(IDS_CHOOSE), /*button_enabled=*/true);
-    }
+  const std::u16string preview =
+      state()->contact_profiles()[0]->ConstructInferredLabel(
+          kLabelFields, base::size(kLabelFields), base::size(kLabelFields),
+          state()->GetApplicationLocale());
+  if (state()->contact_profiles().size() == 1) {
+    return builder.CreateWithButton(preview,
+                                    l10n_util::GetStringUTF16(IDS_CHOOSE),
+                                    /*button_enabled=*/true);
   }
+  std::u16string format =
+      l10n_util::GetPluralStringFUTF16(IDS_PAYMENT_REQUEST_CONTACTS_PREVIEW,
+                                       state()->contact_profiles().size() - 1);
+  return builder.CreateWithButton(
+      preview, format, state()->contact_profiles().size() - 1,
+      l10n_util::GetStringUTF16(IDS_CHOOSE), /*button_enabled=*/true);
 }
 
 std::unique_ptr<PaymentRequestRowView>
@@ -884,50 +815,45 @@ PaymentSheetViewController::CreateShippingOptionRow() {
   //    1.3 There are options and none is selected: display a row with a
   //        choose button and the string "|preview of first option| and N more"
   // 2. There is no selected shipping address: do not display the row.
-  mojom::PaymentShippingOption* selected_option =
-      spec()->selected_shipping_option();
+  if (!spec() || spec()->GetShippingOptions().empty() ||
+      !state()->selected_shipping_profile()) {
+    // 1.1 No shipping options, do not display the row.  (or)
+    // 2. There is no selected address: do not show the shipping option section.
+    return nullptr;
+  }
+
   // The shipping option section displays the currently selected option if there
   // is one. It's not possible to select an option without selecting an address
   // first.
   PaymentSheetRowBuilder builder(
       this, GetShippingOptionSectionString(spec()->shipping_type()));
-  builder.Tag(PaymentSheetViewControllerTags::SHOW_SHIPPING_OPTION_BUTTON);
+  builder.Closure(base::BindRepeating(
+      &PaymentRequestDialogView::ShowShippingOptionSheet, dialog()));
 
-  if (state()->selected_shipping_profile()) {
-    if (spec()->GetShippingOptions().empty()) {
-      // 1.1 No shipping options, do not display the row.
-      return nullptr;
-    }
-
-    if (selected_option) {
-      // 1.2 Show the selected shipping option.
-      base::string16 accessible_content;
-      std::unique_ptr<views::View> option_row_content =
-          CreateShippingOptionLabel(
-              selected_option,
-              spec()->GetFormattedCurrencyAmount(selected_option->amount),
-              /*emphasize_label=*/false, &accessible_content);
-      return builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION)
-          .AccessibleContent(accessible_content)
-          .CreateWithChevron(std::move(option_row_content), nullptr);
-    } else {
-      // 1.3 There are options, none are selected: show the enabled Choose
-      // button.
-      const auto& shipping_options = spec()->GetShippingOptions();
-      return builder
-          .Id(DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION_BUTTON)
-          .CreateWithButton(base::UTF8ToUTF16(shipping_options[0]->label),
-                            l10n_util::GetPluralStringFUTF16(
-                                IDS_PAYMENT_REQUEST_SHIPPING_OPTIONS_PREVIEW,
-                                shipping_options.size() - 1),
-                            shipping_options.size() - 1,
-                            l10n_util::GetStringUTF16(IDS_CHOOSE),
-                            /*button_enabled=*/true);
-    }
-  } else {
-    // 2. There is no selected address: do not show the shipping option section.
-    return nullptr;
+  mojom::PaymentShippingOption* selected_option =
+      spec()->selected_shipping_option();
+  if (selected_option) {
+    // 1.2 Show the selected shipping option.
+    std::u16string accessible_content;
+    std::unique_ptr<views::View> option_row_content = CreateShippingOptionLabel(
+        selected_option,
+        spec()->GetFormattedCurrencyAmount(selected_option->amount),
+        /*emphasize_label=*/false, &accessible_content);
+    return builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION)
+        .AccessibleContent(accessible_content)
+        .CreateWithChevron(std::move(option_row_content), nullptr);
   }
+  // 1.3 There are options, none are selected: show the enabled Choose
+  // button.
+  const auto& shipping_options = spec()->GetShippingOptions();
+  return builder.Id(DialogViewID::PAYMENT_SHEET_SHIPPING_OPTION_SECTION_BUTTON)
+      .CreateWithButton(base::UTF8ToUTF16(shipping_options[0]->label),
+                        l10n_util::GetPluralStringFUTF16(
+                            IDS_PAYMENT_REQUEST_SHIPPING_OPTIONS_PREVIEW,
+                            shipping_options.size() - 1),
+                        shipping_options.size() - 1,
+                        l10n_util::GetStringUTF16(IDS_CHOOSE),
+                        /*button_enabled=*/true);
 }
 
 std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
@@ -940,7 +866,7 @@ std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
       views::BoxLayout::CrossAxisAlignment::kStart);
   content_view->SetLayoutManager(std::move(layout));
 
-  base::string16 data_source;
+  std::u16string data_source;
   // If no transaction has been completed so far, choose which string to display
   // as a function of the profile's signed in state. Otherwise, always show the
   // same string.
@@ -967,26 +893,37 @@ std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
   // BEGIN_LINK and END_LINK. Find the beginning of the link range and the
   // length of the "settings" part, then remove the BEGIN_LINK and END_LINK
   // parts and linkify "settings".
-  base::string16 begin_tag = base::UTF8ToUTF16("BEGIN_LINK");
-  base::string16 end_tag = base::UTF8ToUTF16("END_LINK");
+  // TODO(pkasting): Remove these BEGIN/END_LINK tags and use a substitution for
+  // "Settings", allowing this code to use the offset-returning versions of the
+  // l10n getters.
+  std::u16string begin_tag = u"BEGIN_LINK";
+  std::u16string end_tag = u"END_LINK";
   size_t link_begin = data_source.find(begin_tag);
-  DCHECK(link_begin != base::string16::npos);
+  DCHECK(link_begin != std::u16string::npos);
 
   size_t link_end = data_source.find(end_tag);
-  DCHECK(link_end != base::string16::npos);
+  DCHECK(link_end != std::u16string::npos);
 
   size_t link_length = link_end - link_begin - begin_tag.size();
   data_source.erase(link_end, end_tag.size());
   data_source.erase(link_begin, begin_tag.size());
 
-  std::unique_ptr<views::StyledLabel> data_source_label =
-      std::make_unique<views::StyledLabel>(data_source, this);
+  auto data_source_label = std::make_unique<views::StyledLabel>();
+  data_source_label->SetText(data_source);
+
   data_source_label->SetBorder(views::CreateEmptyBorder(22, 0, 0, 0));
   data_source_label->SetID(static_cast<int>(DialogViewID::DATA_SOURCE_LABEL));
   data_source_label->SetDefaultTextStyle(views::style::STYLE_DISABLED);
 
   views::StyledLabel::RangeStyleInfo link_style =
-      views::StyledLabel::RangeStyleInfo::CreateForLink();
+      views::StyledLabel::RangeStyleInfo::CreateForLink(base::BindRepeating(
+          [](base::WeakPtr<PaymentRequestDialogView> dialog) {
+            if (dialog->IsInteractive()) {
+              chrome::ShowSettingsSubPageForProfile(dialog->GetProfile(),
+                                                    chrome::kPaymentsSubPage);
+            }
+          },
+          dialog()));
 
   // TODO(pbos): Investigate whether this override is necessary.
   link_style.override_color = gfx::kGoogleBlue700;
@@ -996,6 +933,30 @@ std::unique_ptr<views::View> PaymentSheetViewController::CreateDataSourceRow() {
   data_source_label->SizeToFit(0);
   content_view->AddChildView(data_source_label.release());
   return content_view;
+}
+
+void PaymentSheetViewController::AddShippingButtonPressed() {
+  dialog()->ShowShippingAddressEditor(
+      BackNavigationType::kPaymentSheet, base::RepeatingClosure(),
+      base::BindRepeating(&PaymentRequestState::AddAutofillShippingProfile,
+                          state(), true),
+      nullptr);
+}
+
+void PaymentSheetViewController::AddPaymentMethodButtonPressed() {
+  dialog()->ShowCreditCardEditor(
+      BackNavigationType::kPaymentSheet, base::RepeatingClosure(),
+      base::BindRepeating(&PaymentRequestState::AddAutofillPaymentApp, state(),
+                          true),
+      nullptr);
+}
+
+void PaymentSheetViewController::AddContactInfoButtonPressed() {
+  dialog()->ShowContactInfoEditor(
+      BackNavigationType::kPaymentSheet, base::RepeatingClosure(),
+      base::BindRepeating(&PaymentRequestState::AddAutofillContactProfile,
+                          state(), true),
+      nullptr);
 }
 
 }  // namespace payments

@@ -11,7 +11,7 @@
 #import "ios/chrome/browser/store_kit/store_kit_tab_helper.h"
 #import "ios/chrome/test/fakes/fake_store_kit_launcher.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -42,19 +42,31 @@ class ITunesUrlsHandlerTabHelperTest : public PlatformTest {
   bool VerifyStoreKitLaunched(NSString* url_string, bool main_frame) {
     fake_launcher_.launchedProductID = nil;
     fake_launcher_.launchedProductParams = nil;
-    web::WebStatePolicyDecider::RequestInfo request_info(
+    const web::WebStatePolicyDecider::RequestInfo request_info(
         ui::PageTransition::PAGE_TRANSITION_LINK, main_frame,
+        /*target_frame_is_cross_origin=*/false,
         /*has_user_gesture=*/false);
-    bool request_allowed = web_state_.ShouldAllowRequest(
+    __block bool callback_called = false;
+    __block web::WebStatePolicyDecider::PolicyDecision request_policy =
+        web::WebStatePolicyDecider::PolicyDecision::Allow();
+    auto callback =
+        base::BindOnce(^(web::WebStatePolicyDecider::PolicyDecision decision) {
+          request_policy = decision;
+          callback_called = true;
+        });
+    web_state_.ShouldAllowRequest(
         [NSURLRequest requestWithURL:[NSURL URLWithString:url_string]],
-        request_info);
-    return !request_allowed && (fake_launcher_.launchedProductID != nil ||
-                                fake_launcher_.launchedProductParams != nil);
+        request_info, std::move(callback));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(callback_called);
+    return request_policy.ShouldCancelNavigation() &&
+           (fake_launcher_.launchedProductID != nil ||
+            fake_launcher_.launchedProductParams != nil);
   }
 
   web::WebTaskEnvironment task_environment_;
   FakeStoreKitLauncher* fake_launcher_;
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
   std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
   base::HistogramTester histogram_tester_;
 };
@@ -133,6 +145,11 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, MatchingUrlsLaunchesStoreKit) {
                                      /*main_frame=*/true));
   EXPECT_NSEQ(expected_params, fake_launcher_.launchedProductParams);
 
+  EXPECT_TRUE(VerifyStoreKitLaunched(@"http://apps.apple.com/app/id123",
+                                     /*main_frame=*/true));
+  expected_params = @{product_id : @"123"};
+  EXPECT_NSEQ(expected_params, fake_launcher_.launchedProductParams);
+
   EXPECT_TRUE(VerifyStoreKitLaunched(
       @"http://itunes.apple.com/app/test/id123?qux&baz#foo",
       /*main_frame=*/true));
@@ -166,6 +183,6 @@ TEST_F(ITunesUrlsHandlerTabHelperTest, MatchingUrlsLaunchesStoreKit) {
       kITunesURLsHandlingResultHistogram,
       static_cast<base::HistogramBase::Sample>(
           ITunesUrlsStoreKitHandlingResult::kSingleAppUrlHandled),
-      7);
-  histogram_tester_.ExpectTotalCount(kITunesURLsHandlingResultHistogram, 7);
+      8);
+  histogram_tester_.ExpectTotalCount(kITunesURLsHandlingResultHistogram, 8);
 }

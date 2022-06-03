@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace base {
@@ -26,20 +25,23 @@ class WebuiLoadTimer : public content::WebContentsObserver {
   WebuiLoadTimer(content::WebContents* web_contents,
                  const std::string& document_initial_load_uma_id,
                  const std::string& document_load_completed_uma_id);
+
+  WebuiLoadTimer(const WebuiLoadTimer&) = delete;
+  WebuiLoadTimer& operator=(const WebuiLoadTimer&) = delete;
+
   ~WebuiLoadTimer() override;
 
   // WebContentsObserver
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame() override;
+  void DocumentOnLoadCompletedInMainFrame(
+      content::RenderFrameHost* render_frame_host) override;
 
  private:
   std::string document_initial_load_uma_id_;
   std::string document_load_completed_uma_id_;
   std::unique_ptr<base::ElapsedTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebuiLoadTimer);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WEBUI_LOAD_TIMER_H_

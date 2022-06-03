@@ -23,12 +23,12 @@ namespace mdns = api::mdns;
 
 namespace {
 
-// Whitelisted mDNS service types.
+// Allowlisted mDNS service types.
 const char kCastServiceType[] = "_googlecast._tcp.local";
 const char kPrivetServiceType[] = "_privet._tcp.local";
 const char kTestServiceType[] = "_testing._tcp.local";
 
-bool IsServiceTypeWhitelisted(const std::string& service_type) {
+bool IsServiceTypeAllowlisted(const std::string& service_type) {
   return service_type == kCastServiceType ||
          service_type == kPrivetServiceType ||
          service_type == kTestServiceType;
@@ -171,7 +171,7 @@ void MDnsAPI::OnDnsSdEvent(const std::string& service_type,
     args.push_back(std::move(mdns_service));
   }
 
-  std::unique_ptr<base::ListValue> results = mdns::OnServiceList::Create(args);
+  auto results = mdns::OnServiceList::Create(args);
   auto event = std::make_unique<Event>(events::MDNS_ON_SERVICE_LIST,
                                        mdns::OnServiceList::kEventName,
                                        std::move(results), browser_context_);
@@ -179,7 +179,7 @@ void MDnsAPI::OnDnsSdEvent(const std::string& service_type,
 
   // TODO(justinlin): To avoid having listeners without filters getting all
   // events, modify API to have this event require filters.
-  // TODO(reddaly): If event isn't on whitelist, ensure it does not get
+  // TODO(reddaly): If event isn't on allowlist, ensure it does not get
   // broadcast to extensions.
   extensions::EventRouter::Get(browser_context_)
       ->BroadcastEvent(std::move(event));
@@ -198,7 +198,7 @@ bool MDnsAPI::IsMDnsAllowed(const std::string& extension_id,
           ->enabled_extensions()
           .GetByID(extension_id);
   return (extension && (extension->is_platform_app() ||
-                        IsServiceTypeWhitelisted(service_type)));
+                        IsServiceTypeAllowlisted(service_type)));
 }
 
 void MDnsAPI::GetValidOnServiceListListeners(
@@ -218,7 +218,7 @@ void MDnsAPI::GetValidOnServiceListListeners(
       continue;
 
     // Don't listen for services associated only with disabled extensions
-    // or non-whitelisted, non-platform-app extensions.
+    // or non-allowlisted, non-platform-app extensions.
     if (!IsMDnsAllowed(listener->extension_id(), service_type))
       continue;
 

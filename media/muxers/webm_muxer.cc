@@ -8,6 +8,11 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/logging.h"
+#include "base/sequence_checker.h"
+#include "base/time/time.h"
+#include "base/time/time_override.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/limits.h"
 #include "media/base/video_frame.h"
@@ -16,6 +21,40 @@
 namespace media {
 
 namespace {
+
+namespace av1 {
+// CodecPrivate for AV1. See
+// https://github.com/ietf-wg-cellar/matroska-specification/blob/master/codec/av1.md.
+constexpr int high_bitdepth = 0;
+constexpr int twelve_bit = 0;
+constexpr int monochrome = 0;
+constexpr int initial_presentation_delay_present = 0;
+constexpr int initial_presentation_delay_minus_one = 0;
+constexpr int chroma_sample_position = 0;
+constexpr int seq_profile = 0;      // Main
+constexpr int seq_level_idx_0 = 9;  // level 4.1 ~1920x1080@60fps
+constexpr int seq_tier_0 = 0;
+constexpr int chroma_subsampling_x = 1;
+constexpr int chroma_subsampling_y = 1;
+constexpr uint8_t codec_private[4] = {
+    255,                                         //
+    (seq_profile << 5) | seq_level_idx_0,        //
+    (seq_tier_0 << 7) |                          //
+        (high_bitdepth << 6) |                   //
+        (twelve_bit << 5) |                      //
+        (monochrome << 4) |                      //
+        (chroma_subsampling_x << 3) |            //
+        (chroma_subsampling_y << 2) |            //
+        chroma_sample_position,                  //
+    (initial_presentation_delay_present << 4) |  //
+        initial_presentation_delay_minus_one     //
+};
+
+}  // namespace av1
+
+// Force new clusters at a maximum rate of 10 Hz.
+constexpr base::TimeDelta kMinimumForcedClusterDuration =
+    base::Milliseconds(100);
 
 void WriteOpusHeader(const media::AudioParameters& params, uint8_t* header) {
   // See https://wiki.xiph.org/OggOpus#ID_Header.
@@ -58,11 +97,13 @@ static const char kPcmCodecId[] = "A_PCM/FLOAT/IEEE";
 
 static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
   switch (video_codec) {
-    case kCodecVP8:
+    case VideoCodec::kVP8:
       return mkvmuxer::Tracks::kVp8CodecId;
-    case kCodecVP9:
+    case VideoCodec::kVP9:
       return mkvmuxer::Tracks::kVp9CodecId;
-    case kCodecH264:
+    case VideoCodec::kAV1:
+      return mkvmuxer::Tracks::kAv1CodecId;
+    case VideoCodec::kH264:
       return kH264CodecId;
     default:
       NOTREACHED() << "Unsupported codec " << GetCodecName(video_codec);
@@ -70,7 +111,7 @@ static const char* MkvCodeIcForMediaVideoCodecId(VideoCodec video_codec) {
   }
 }
 
-base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
+absl::optional<mkvmuxer::Colour> ColorFromColorSpace(
     const gfx::ColorSpace& color) {
   using mkvmuxer::Colour;
   using MatrixID = gfx::ColorSpace::MatrixID;
@@ -87,7 +128,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       matrix_coefficients = Colour::kBt2020NonConstantLuminance;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_matrix_coefficients(matrix_coefficients);
   int range;
@@ -99,7 +140,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       range = Colour::kFullRange;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_range(range);
   int transfer_characteristics;
@@ -114,7 +155,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       transfer_characteristics = Colour::kSmpteSt2084;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_transfer_characteristics(transfer_characteristics);
   int primaries;
@@ -126,7 +167,7 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
       primaries = Colour::kIturBt2020;
       break;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
   colour.set_primaries(primaries);
   return colour;
@@ -134,21 +175,43 @@ base::Optional<mkvmuxer::Colour> ColorFromColorSpace(
 
 }  // anonymous namespace
 
+// -----------------------------------------------------------------------------
+// WebmMuxer::Delegate:
+
+WebmMuxer::Delegate::Delegate() {
+  // Creation can be done on a different sequence than main activities.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+WebmMuxer::Delegate::~Delegate() = default;
+
+mkvmuxer::int32 WebmMuxer::Delegate::Write(const void* buf,
+                                           mkvmuxer::uint32 len) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DVLOG(2) << __func__ << " len " << len;
+  DCHECK(buf);
+
+  last_data_output_timestamp_ = base::TimeTicks::Now();
+  const auto result = DoWrite(buf, len);
+  position_ += len;
+  return result;
+}
+
+// -----------------------------------------------------------------------------
+// WebmMuxer::VideoParameters:
+
 WebmMuxer::VideoParameters::VideoParameters(
     scoped_refptr<media::VideoFrame> frame)
     : visible_rect_size(frame->visible_rect().size()),
-      frame_rate(0.0),
-      codec(kUnknownVideoCodec),
-      color_space(frame->ColorSpace()) {
-  ignore_result(frame->metadata()->GetDouble(VideoFrameMetadata::FRAME_RATE,
-                                             &frame_rate));
-}
+      frame_rate(frame->metadata().frame_rate.value_or(0.0)),
+      codec(VideoCodec::kUnknown),
+      color_space(frame->ColorSpace()) {}
 
 WebmMuxer::VideoParameters::VideoParameters(
     gfx::Size visible_rect_size,
     double frame_rate,
     VideoCodec codec,
-    base::Optional<gfx::ColorSpace> color_space)
+    absl::optional<gfx::ColorSpace> color_space)
     : visible_rect_size(visible_rect_size),
       frame_rate(frame_rate),
       codec(codec),
@@ -158,41 +221,44 @@ WebmMuxer::VideoParameters::VideoParameters(const VideoParameters&) = default;
 
 WebmMuxer::VideoParameters::~VideoParameters() = default;
 
+// -----------------------------------------------------------------------------
+// WebmMuxer:
+
 WebmMuxer::WebmMuxer(AudioCodec audio_codec,
                      bool has_video,
                      bool has_audio,
-                     const WriteDataCB& write_data_callback)
+                     std::unique_ptr<Delegate> delegate)
     : audio_codec_(audio_codec),
-      video_codec_(kUnknownVideoCodec),
+      video_codec_(VideoCodec::kUnknown),
       video_track_index_(0),
       audio_track_index_(0),
       has_video_(has_video),
       has_audio_(has_audio),
-      write_data_callback_(write_data_callback),
-      position_(0),
+      delegate_(std::move(delegate)),
       force_one_libwebm_error_(false) {
   DCHECK(has_video_ || has_audio_);
-  DCHECK(!write_data_callback_.is_null());
-  DCHECK(audio_codec == kCodecOpus || audio_codec == kCodecPCM)
+  DCHECK(delegate_);
+  DCHECK(audio_codec == AudioCodec::kOpus || audio_codec == AudioCodec::kPCM)
       << " Unsupported audio codec: " << GetCodecName(audio_codec);
 
-  segment_.Init(this);
-  segment_.set_mode(mkvmuxer::Segment::kLive);
-  segment_.OutputCues(false);
+  delegate_->InitSegment(&segment_);
 
   mkvmuxer::SegmentInfo* const info = segment_.GetSegmentInfo();
   info->set_writing_app("Chrome");
   info->set_muxing_app("Chrome");
 
-  // Creation is done on a different thread than main activities.
-  thread_checker_.DetachFromThread();
+  // Creation can be done on a different sequence than main activities.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
 WebmMuxer::~WebmMuxer() {
-  // No need to segment_.Finalize() since is not Seekable(), i.e. a live
-  // stream, but is a good practice.
-  DCHECK(thread_checker_.CalledOnValidThread());
-  segment_.Finalize();
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  Flush();
+}
+
+void WebmMuxer::SetMaximumDurationToForceDataOutput(base::TimeDelta interval) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  max_data_output_interval_ = std::max(interval, kMinimumForcedClusterDuration);
 }
 
 bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
@@ -200,12 +266,12 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
                                std::string encoded_alpha,
                                base::TimeTicks timestamp,
                                bool is_key_frame) {
-  DVLOG(1) << __func__ << " - " << encoded_data.size() << "B";
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(params.codec == kCodecVP8 || params.codec == kCodecVP9 ||
-         params.codec == kCodecH264)
+  DVLOG(2) << __func__ << " - " << encoded_data.size() << "B";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(params.codec == VideoCodec::kVP8 || params.codec == VideoCodec::kVP9 ||
+         params.codec == VideoCodec::kH264 || params.codec == VideoCodec::kAV1)
       << " Unsupported video codec: " << GetCodecName(params.codec);
-  DCHECK(video_codec_ == kUnknownVideoCodec || video_codec_ == params.codec)
+  DCHECK(video_codec_ == VideoCodec::kUnknown || video_codec_ == params.codec)
       << "Unsupported: codec switched, to: " << GetCodecName(params.codec);
 
   if (encoded_data.size() == 0u) {
@@ -220,85 +286,98 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
     video_codec_ = params.codec;
     AddVideoTrack(params.visible_rect_size, GetFrameRate(params),
                   params.color_space);
-    if (first_frame_timestamp_video_.is_null())
-      first_frame_timestamp_video_ = timestamp;
+    if (first_frame_timestamp_video_.is_null()) {
+      // Compensate for time in pause spent before the first frame.
+      first_frame_timestamp_video_ = timestamp - total_time_in_pause_;
+      last_frame_timestamp_video_ = first_frame_timestamp_video_;
+    }
+    // Add codec private for AV1.
+    if (params.codec == VideoCodec::kAV1 &&
+        !segment_.GetTrackByNumber(video_track_index_)
+             ->SetCodecPrivate(av1::codec_private, sizeof(av1::codec_private)))
+      LOG(ERROR) << __func__ << " failed to set CodecPrivate for AV1.";
   }
 
   // TODO(ajose): Support multiple tracks: http://crbug.com/528523
   if (has_audio_ && !audio_track_index_) {
     DVLOG(1) << __func__ << ": delaying until audio track ready.";
     if (is_key_frame)  // Upon Key frame reception, empty the encoded queue.
-      encoded_frames_queue_.clear();
-
-    encoded_frames_queue_.push_back(std::make_unique<EncodedVideoFrame>(
-        std::move(encoded_data), std::move(encoded_alpha), timestamp,
-        is_key_frame));
-    return true;
+      video_frames_.clear();
   }
-
-  // Any saved encoded video frames must have been dumped in OnEncodedAudio();
-  DCHECK(encoded_frames_queue_.empty());
-
-  return AddFrame(encoded_data, encoded_alpha, video_track_index_,
-                  timestamp - first_frame_timestamp_video_, is_key_frame);
+  const base::TimeTicks recorded_timestamp =
+      UpdateLastTimestampMonotonically(timestamp, &last_frame_timestamp_video_);
+  video_frames_.push_back(EncodedFrame{
+      std::move(encoded_data), std::move(encoded_alpha),
+      recorded_timestamp - first_frame_timestamp_video_, is_key_frame});
+  return PartiallyFlushQueues();
 }
 
 bool WebmMuxer::OnEncodedAudio(const media::AudioParameters& params,
                                std::string encoded_data,
                                base::TimeTicks timestamp) {
   DVLOG(2) << __func__ << " - " << encoded_data.size() << "B";
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  MaybeForceNewCluster();
   if (!audio_track_index_) {
     AddAudioTrack(params);
-    if (first_frame_timestamp_audio_.is_null())
-      first_frame_timestamp_audio_ = timestamp;
+    if (first_frame_timestamp_audio_.is_null()) {
+      // Compensate for time in pause spent before the first frame.
+      first_frame_timestamp_audio_ = timestamp - total_time_in_pause_;
+      last_frame_timestamp_audio_ = first_frame_timestamp_audio_;
+    }
   }
 
-  // TODO(ajose): Don't drop audio data: http://crbug.com/547948
-  // TODO(ajose): Support multiple tracks: http://crbug.com/528523
-  if (has_video_ && !video_track_index_) {
-    DVLOG(1) << __func__ << ": delaying until video track ready.";
-    return true;
-  }
+  const base::TimeTicks recorded_timestamp =
+      UpdateLastTimestampMonotonically(timestamp, &last_frame_timestamp_audio_);
+  audio_frames_.push_back(
+      EncodedFrame{encoded_data, std::string(),
+                   recorded_timestamp - first_frame_timestamp_audio_,
+                   /*is_keyframe=*/true});
+  return PartiallyFlushQueues();
+}
 
-  // Dump all saved encoded video frames if any.
-  while (!encoded_frames_queue_.empty()) {
-    const bool res = AddFrame(
-        encoded_frames_queue_.front()->data,
-        encoded_frames_queue_.front()->alpha_data, video_track_index_,
-        encoded_frames_queue_.front()->timestamp - first_frame_timestamp_video_,
-        encoded_frames_queue_.front()->is_keyframe);
-    if (!res)
-      return false;
-    encoded_frames_queue_.pop_front();
+void WebmMuxer::SetLiveAndEnabled(bool track_live_and_enabled, bool is_video) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  bool& written_track_live_and_enabled =
+      is_video ? video_track_live_and_enabled_ : audio_track_live_and_enabled_;
+  if (written_track_live_and_enabled != track_live_and_enabled) {
+    DVLOG(1) << __func__ << (is_video ? " video " : " audio ")
+             << "track live-and-enabled changed to " << track_live_and_enabled;
   }
-  return AddFrame(encoded_data, std::string(), audio_track_index_,
-                  timestamp - first_frame_timestamp_audio_,
-                  true /* is_key_frame -- always true for audio */);
+  written_track_live_and_enabled = track_live_and_enabled;
 }
 
 void WebmMuxer::Pause() {
   DVLOG(1) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!elapsed_time_in_pause_)
-    elapsed_time_in_pause_.reset(new base::ElapsedTimer());
+    elapsed_time_in_pause_ = std::make_unique<base::ElapsedTimer>();
 }
 
 void WebmMuxer::Resume() {
   DVLOG(1) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (elapsed_time_in_pause_) {
     total_time_in_pause_ += elapsed_time_in_pause_->Elapsed();
     elapsed_time_in_pause_.reset();
   }
 }
 
+bool WebmMuxer::Flush() {
+  // Depending on the |delegate_|, it can be either non-seekable (i.e. a live
+  // stream), or seekable (file mode). So calling |segment_.Finalize()| here is
+  // needed.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  FlushQueues();
+  return segment_.Finalize();
+}
+
 void WebmMuxer::AddVideoTrack(
     const gfx::Size& frame_size,
     double frame_rate,
-    const base::Optional<gfx::ColorSpace>& color_space) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+    const absl::optional<gfx::ColorSpace>& color_space) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, video_track_index_)
       << "WebmMuxer can only be initialized once.";
 
@@ -330,7 +409,7 @@ void WebmMuxer::AddVideoTrack(
   DCHECK_EQ(1000000ull, segment_.GetSegmentInfo()->timecode_scale());
 
   // Set alpha channel parameters for only VPX (crbug.com/711825).
-  if (video_codec_ == kCodecH264)
+  if (video_codec_ == VideoCodec::kH264)
     return;
   video_track->SetAlphaMode(mkvmuxer::VideoTrack::kAlpha);
   // Alpha channel, if present, is stored in a BlockAdditional next to the
@@ -343,7 +422,7 @@ void WebmMuxer::AddVideoTrack(
 
 void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
   DVLOG(1) << __func__ << " " << params.AsHumanReadableString();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(0u, audio_track_index_)
       << "WebmMuxer audio can only be initialised once.";
 
@@ -366,7 +445,7 @@ void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
   // Audio data is always pcm_f32le.
   audio_track->set_bit_depth(32u);
 
-  if (audio_codec_ == kCodecOpus) {
+  if (audio_codec_ == AudioCodec::kOpus) {
     audio_track->set_codec_id(mkvmuxer::Tracks::kOpusCodecId);
 
     uint8_t opus_header[OPUS_EXTRADATA_SIZE];
@@ -378,51 +457,73 @@ void WebmMuxer::AddAudioTrack(const media::AudioParameters& params) {
     // Segment's timestamps should be in milliseconds, DCHECK it. See
     // http://www.webmproject.org/docs/container/#muxer-guidelines
     DCHECK_EQ(1000000ull, segment_.GetSegmentInfo()->timecode_scale());
-  } else if (audio_codec_ == kCodecPCM) {
+  } else if (audio_codec_ == AudioCodec::kPCM) {
     audio_track->set_codec_id(kPcmCodecId);
   }
 }
 
-mkvmuxer::int32 WebmMuxer::Write(const void* buf, mkvmuxer::uint32 len) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(buf);
-  write_data_callback_.Run(
-      base::StringPiece(reinterpret_cast<const char*>(buf), len));
-  position_ += len;
-  return 0;
+void WebmMuxer::FlushQueues() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  while ((!video_frames_.empty() || !audio_frames_.empty()) &&
+         FlushNextFrame()) {
+  }
 }
 
-mkvmuxer::int64 WebmMuxer::Position() const {
-  return position_.ValueOrDie();
+bool WebmMuxer::PartiallyFlushQueues() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Punt writing until all tracks have been created.
+  if ((has_audio_ && !audio_track_index_) ||
+      (has_video_ && !video_track_index_)) {
+    return true;
+  }
+
+  bool result = true;
+  // We strictly sort by timestamp unless a track is not live-and-enabled. In
+  // that case we relax this and allow drainage of the live-and-enabled leg.
+  while ((!has_video_ || !video_frames_.empty() ||
+          !video_track_live_and_enabled_) &&
+         (!has_audio_ || !audio_frames_.empty() ||
+          !audio_track_live_and_enabled_) &&
+         result) {
+    if (video_frames_.empty() && audio_frames_.empty())
+      return true;
+    result = FlushNextFrame();
+  }
+  return result;
 }
 
-mkvmuxer::int32 WebmMuxer::Position(mkvmuxer::int64 position) {
-  // The stream is not Seekable() so indicate we cannot set the position.
-  return -1;
-}
+bool WebmMuxer::FlushNextFrame() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::TimeDelta min_timestamp = base::TimeDelta::Max();
+  base::circular_deque<EncodedFrame>* queue = &video_frames_;
+  uint8_t track_index = video_track_index_;
+  if (!video_frames_.empty())
+    min_timestamp = video_frames_.front().relative_timestamp;
 
-bool WebmMuxer::Seekable() const {
-  return false;
-}
+  if (!audio_frames_.empty() &&
+      audio_frames_.front().relative_timestamp < min_timestamp) {
+    queue = &audio_frames_;
+    track_index = audio_track_index_;
+  }
 
-void WebmMuxer::ElementStartNotify(mkvmuxer::uint64 element_id,
-                                   mkvmuxer::int64 position) {
-  // This method gets pinged before items are sent to |write_data_callback_|.
-  DCHECK_GE(position, position_.ValueOrDefault(0))
-      << "Can't go back in a live WebM stream.";
-}
-
-bool WebmMuxer::AddFrame(const std::string& encoded_data,
-                         const std::string& encoded_alpha,
-                         uint8_t track_index,
-                         base::TimeDelta timestamp,
-                         bool is_key_frame) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-  DCHECK(!has_video_ || video_track_index_);
-  DCHECK(!has_audio_ || audio_track_index_);
-
-  most_recent_timestamp_ =
-      std::max(most_recent_timestamp_, timestamp - total_time_in_pause_);
+  EncodedFrame frame = std::move(queue->front());
+  queue->pop_front();
+  // The logic tracking live-and-enabled that temporarily relaxes the strict
+  // timestamp sorting allows for draining a track's queue completely in the
+  // presence of the other track being muted. When the muted track becomes
+  // live-and-enabled again the sorting recommences. However, tracks get encoded
+  // data before live-and-enabled transitions to true. This can lead to us
+  // emitting non-monotonic timestamps to the muxer, which results in an error
+  // return. Fix this by enforcing monotonicity by rewriting timestamps.
+  base::TimeDelta relative_timestamp = frame.relative_timestamp;
+  DLOG_IF(WARNING, relative_timestamp < last_timestamp_written_)
+      << "Enforced a monotonically increasing timestamp. Last written "
+      << last_timestamp_written_ << " new " << relative_timestamp;
+  relative_timestamp = std::max(relative_timestamp, last_timestamp_written_);
+  last_timestamp_written_ = relative_timestamp;
+  auto recorded_timestamp = relative_timestamp.InMicroseconds() *
+                            base::Time::kNanosecondsPerMicrosecond;
 
   if (force_one_libwebm_error_) {
     DVLOG(1) << "Forcing a libwebm error";
@@ -430,36 +531,48 @@ bool WebmMuxer::AddFrame(const std::string& encoded_data,
     return false;
   }
 
-  DCHECK(encoded_data.data());
-  if (encoded_alpha.empty()) {
-    return segment_.AddFrame(
-        reinterpret_cast<const uint8_t*>(encoded_data.data()),
-        encoded_data.size(), track_index,
-        most_recent_timestamp_.InMicroseconds() *
-            base::Time::kNanosecondsPerMicrosecond,
-        is_key_frame);
-  }
-
-  DCHECK(encoded_alpha.data());
-  return segment_.AddFrameWithAdditional(
-      reinterpret_cast<const uint8_t*>(encoded_data.data()),
-      encoded_data.size(),
-      reinterpret_cast<const uint8_t*>(encoded_alpha.data()),
-      encoded_alpha.size(), 1 /* add_id */, track_index,
-      most_recent_timestamp_.InMicroseconds() *
-          base::Time::kNanosecondsPerMicrosecond,
-      is_key_frame);
+  DCHECK(frame.data.data());
+  bool result =
+      frame.alpha_data.empty()
+          ? segment_.AddFrame(
+                reinterpret_cast<const uint8_t*>(frame.data.data()),
+                frame.data.size(), track_index, recorded_timestamp,
+                frame.is_keyframe)
+          : segment_.AddFrameWithAdditional(
+                reinterpret_cast<const uint8_t*>(frame.data.data()),
+                frame.data.size(),
+                reinterpret_cast<const uint8_t*>(frame.alpha_data.data()),
+                frame.alpha_data.size(), 1 /* add_id */, track_index,
+                recorded_timestamp, frame.is_keyframe);
+  return result;
 }
 
-WebmMuxer::EncodedVideoFrame::EncodedVideoFrame(std::string data,
-                                                std::string alpha_data,
-                                                base::TimeTicks timestamp,
-                                                bool is_keyframe)
-    : data(std::move(data)),
-      alpha_data(std::move(alpha_data)),
-      timestamp(timestamp),
-      is_keyframe(is_keyframe) {}
+base::TimeTicks WebmMuxer::UpdateLastTimestampMonotonically(
+    base::TimeTicks timestamp,
+    base::TimeTicks* last_timestamp) {
+  base::TimeTicks compensated_timestamp = timestamp - total_time_in_pause_;
+  // In theory, time increases monotonically. In practice, it does not.
+  // See http://crbug/618407.
+  DLOG_IF(WARNING, compensated_timestamp < *last_timestamp)
+      << "Encountered a non-monotonically increasing timestamp. Was: "
+      << *last_timestamp << ", compensated: " << compensated_timestamp
+      << ", uncompensated: " << timestamp;
+  *last_timestamp = std::max(*last_timestamp, compensated_timestamp);
+  return *last_timestamp;
+}
 
-WebmMuxer::EncodedVideoFrame::~EncodedVideoFrame() = default;
+void WebmMuxer::MaybeForceNewCluster() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!has_video_ || max_data_output_interval_.is_zero() ||
+      delegate_->last_data_output_timestamp().is_null()) {
+    return;
+  }
+
+  if (base::TimeTicks::Now() - delegate_->last_data_output_timestamp() >=
+      max_data_output_interval_) {
+    segment_.ForceNewClusterOnNextFrame();
+  }
+}
 
 }  // namespace media

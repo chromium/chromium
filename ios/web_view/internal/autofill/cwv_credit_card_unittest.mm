@@ -35,19 +35,19 @@ class CWVCreditCardTest : public PlatformTest {
         ui::ResourceBundle::GetSharedInstance();
 
     // Don't load 100P resource since no @1x devices are supported.
-    if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_200P)) {
+    if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
       base::FilePath pak_file_200;
       base::PathService::Get(base::DIR_MODULE, &pak_file_200);
       pak_file_200 =
           pak_file_200.Append(FILE_PATH_LITERAL("web_view_200_percent.pak"));
-      resource_bundle.AddDataPackFromPath(pak_file_200, ui::SCALE_FACTOR_200P);
+      resource_bundle.AddDataPackFromPath(pak_file_200, ui::k200Percent);
     }
-    if (ui::ResourceBundle::IsScaleFactorSupported(ui::SCALE_FACTOR_300P)) {
+    if (ui::ResourceBundle::IsScaleFactorSupported(ui::k300Percent)) {
       base::FilePath pak_file_300;
       base::PathService::Get(base::DIR_MODULE, &pak_file_300);
       pak_file_300 =
           pak_file_300.Append(FILE_PATH_LITERAL("web_view_300_percent.pak"));
-      resource_bundle.AddDataPackFromPath(pak_file_300, ui::SCALE_FACTOR_300P);
+      resource_bundle.AddDataPackFromPath(pak_file_300, ui::k300Percent);
     }
   }
 
@@ -68,31 +68,26 @@ TEST_F(CWVCreditCardTest, Initialization) {
   EXPECT_TRUE(cwv_credit_card.networkIcon.scale == UIScreen.mainScreen.scale);
 }
 
-// Tests CWVCreditCard updates properties.
-TEST_F(CWVCreditCardTest, ModifyProperties) {
+// Tests CWVCreditCard properly wraps the internal card.
+TEST_F(CWVCreditCardTest, ReadProperties) {
   autofill::CreditCard credit_card = autofill::test::GetCreditCard();
   CWVCreditCard* cwv_credit_card =
       [[CWVCreditCard alloc] initWithCreditCard:credit_card];
 
   std::string locale = l10n_util::GetLocaleOverride();
-  autofill::CreditCard new_credit_card = autofill::test::GetCreditCard2();
-  NSString* new_card_holder_full_name = base::SysUTF16ToNSString(
-      new_credit_card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
-  NSString* new_card_number = base::SysUTF16ToNSString(
-      new_credit_card.GetInfo(autofill::CREDIT_CARD_NUMBER, locale));
-  NSString* new_expiration_month = base::SysUTF16ToNSString(
-      new_credit_card.GetInfo(autofill::CREDIT_CARD_EXP_MONTH, locale));
-  NSString* new_expiration_year = base::SysUTF16ToNSString(
-      new_credit_card.GetInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR, locale));
-  cwv_credit_card.cardHolderFullName = new_card_holder_full_name;
-  cwv_credit_card.cardNumber = new_card_number;
-  cwv_credit_card.expirationMonth = new_expiration_month;
-  cwv_credit_card.expirationYear = new_expiration_year;
+  NSString* card_holder_full_name = base::SysUTF16ToNSString(
+      credit_card.GetInfo(autofill::CREDIT_CARD_NAME_FULL, locale));
+  NSString* card_number = base::SysUTF16ToNSString(
+      credit_card.GetInfo(autofill::CREDIT_CARD_NUMBER, locale));
+  NSString* expiration_month = base::SysUTF16ToNSString(
+      credit_card.GetInfo(autofill::CREDIT_CARD_EXP_MONTH, locale));
+  NSString* expiration_year = base::SysUTF16ToNSString(
+      credit_card.GetInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR, locale));
 
-  EXPECT_NSEQ(new_card_holder_full_name, cwv_credit_card.cardHolderFullName);
-  EXPECT_NSEQ(new_card_number, cwv_credit_card.cardNumber);
-  EXPECT_NSEQ(new_expiration_month, cwv_credit_card.expirationMonth);
-  EXPECT_NSEQ(new_expiration_year, cwv_credit_card.expirationYear);
+  EXPECT_NSEQ(card_holder_full_name, cwv_credit_card.cardHolderFullName);
+  EXPECT_NSEQ(card_number, cwv_credit_card.cardNumber);
+  EXPECT_NSEQ(expiration_month, cwv_credit_card.expirationMonth);
+  EXPECT_NSEQ(expiration_year, cwv_credit_card.expirationYear);
 }
 
 }  // namespace ios_web_view

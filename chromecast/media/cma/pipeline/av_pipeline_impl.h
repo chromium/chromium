@@ -17,11 +17,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "chromecast/media/cma/backend/cma_backend.h"
+#include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/pipeline/av_pipeline_client.h"
 #include "chromecast/media/cma/pipeline/stream_decryptor.h"
 #include "chromecast/public/media/cast_decrypt_config.h"
 #include "chromecast/public/media/stream_id.h"
+#include "media/base/callback_registry.h"
+#include "media/base/cdm_context.h"
 #include "media/base/pipeline_status.h"
 
 namespace media {
@@ -39,7 +41,11 @@ class DecoderBufferBase;
 
 class AvPipelineImpl : CmaBackend::Decoder::Delegate {
  public:
-  AvPipelineImpl(CmaBackend::Decoder* decoder, const AvPipelineClient& client);
+  AvPipelineImpl(CmaBackend::Decoder* decoder, AvPipelineClient client);
+
+  AvPipelineImpl(const AvPipelineImpl&) = delete;
+  AvPipelineImpl& operator=(const AvPipelineImpl&) = delete;
+
   ~AvPipelineImpl() override;
 
   void SetCdm(CastCdmContext* cast_cdm_context);
@@ -48,7 +54,7 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
   // time, then start rendering samples.
   bool StartPlayingFrom(base::TimeDelta time,
                         const scoped_refptr<BufferingState>& buffering_state);
-  void Flush(const base::Closure& flush_cb);
+  void Flush(base::OnceClosure flush_cb);
 
   virtual void UpdateStatistics() = 0;
 
@@ -120,11 +126,8 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
   // Pushes one ready buffer to decoder.
   void PushReadyBuffer(scoped_refptr<DecoderBufferBase> buffer);
 
-  // Callbacks:
-  // - when BrowserCdm updated its state.
-  // - when BrowserCdm has been destroyed.
-  void OnCdmStateChanged();
-  void OnCdmDestroyed();
+  // Callbacks when CastCdm updated its state.
+  void OnCdmStateChanged(::media::CdmContext::Event event);
 
   // Callback invoked when a media buffer has been buffered by |frame_provider_|
   // which is a BufferingFrameProvider.
@@ -138,10 +141,10 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
   base::ThreadChecker thread_checker_;
 
   CmaBackend::Decoder* const decoder_;
-  const AvPipelineClient client_;
+  AvPipelineClient client_;
 
   // Callback provided to Flush().
-  base::Closure flush_cb_;
+  base::OnceClosure flush_cb_;
 
   // AV pipeline state.
   State state_;
@@ -180,7 +183,9 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
 
   // CdmContext, if available.
   CastCdmContext* cast_cdm_context_;
-  int player_tracker_callback_id_;
+
+  // To keep the CdmContext event callback registered.
+  std::unique_ptr<::media::CallbackRegistration> event_cb_registration_;
 
   // Decryptor to get clear buffers. All the buffers (clear or encrypted) will
   // be pushed to |decryptor_| before being pushed to |decoder_|. |decryptor_|
@@ -193,8 +198,6 @@ class AvPipelineImpl : CmaBackend::Decoder::Delegate {
   // cancel pending asynchronous decryption (by invalidating this factory's weak
   // ptrs) without affecting other bound callbacks.
   base::WeakPtrFactory<AvPipelineImpl> decrypt_weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AvPipelineImpl);
 };
 
 }  // namespace media

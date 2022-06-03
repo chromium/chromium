@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
@@ -36,20 +37,21 @@ NativeWebContentsModalDialogManagerViews::
     NativeWebContentsModalDialogManagerViews(
         gfx::NativeWindow dialog,
         SingleWebContentsDialogManagerDelegate* native_delegate)
-    : native_delegate_(native_delegate),
-      dialog_(dialog),
-      host_(nullptr),
-      host_destroying_(false) {
+    : native_delegate_(native_delegate), dialog_(dialog) {
   ManageDialog();
 }
 
 NativeWebContentsModalDialogManagerViews::
     ~NativeWebContentsModalDialogManagerViews() {
+  // Temporary, for debugging https://crbug.com/1207814.
+  CHECK(!within_show_);
+
   if (host_)
     host_->RemoveObserver(this);
 
   for (auto* widget : observed_widgets_)
     widget->RemoveObserver(this);
+  CHECK(!IsInObserverList());
 }
 
 void NativeWebContentsModalDialogManagerViews::ManageDialog() {
@@ -92,13 +94,24 @@ void NativeWebContentsModalDialogManagerViews::Show() {
 #if defined(USE_AURA)
   std::unique_ptr<wm::SuspendChildWindowVisibilityAnimations> suspend;
   if (shown_widgets_.find(widget) != shown_widgets_.end()) {
-    suspend.reset(new wm::SuspendChildWindowVisibilityAnimations(
-        widget->GetNativeWindow()->parent()));
+    suspend = std::make_unique<wm::SuspendChildWindowVisibilityAnimations>(
+        widget->GetNativeWindow()->parent());
   }
 #endif
-  ShowWidget(widget);
-  if (host_->ShouldActivateDialog())
+
+  // `host_` should not be null. If you can reproduce this, please comment on
+  // https://crbug.com/1207814.
+  CHECK(host_);
+  // Temporary, for debugging https://crbug.com/1207814.
+  base::AutoReset<bool> within_show(&within_show_, true);
+
+  constrained_window::UpdateWebContentsModalDialogPosition(widget, host_);
+  if (host_->ShouldActivateDialog()) {
+    widget->Show();
     Focus();
+  } else {
+    widget->ShowInactive();
+  }
 
 #if defined(USE_AURA)
   // TODO(pkotwicz): Control the z-order of the constrained dialog via
@@ -109,7 +122,7 @@ void NativeWebContentsModalDialogManagerViews::Show() {
 
 #if !defined(USE_AURA)
   // Don't re-animate when switching tabs. Note this is done on Mac only after
-  // the initial ShowWidget() call above, and then "sticks" for later calls.
+  // the initial Show() call above, and then "sticks" for later calls.
   // TODO(tapted): Consolidate this codepath with Aura.
   widget->SetVisibilityAnimationTransition(views::Widget::ANIMATE_HIDE);
 #endif
@@ -118,11 +131,10 @@ void NativeWebContentsModalDialogManagerViews::Show() {
 void NativeWebContentsModalDialogManagerViews::Hide() {
   views::Widget* widget = GetWidget(dialog());
 #if defined(USE_AURA)
-  std::unique_ptr<wm::SuspendChildWindowVisibilityAnimations> suspend;
-  suspend.reset(new wm::SuspendChildWindowVisibilityAnimations(
-      widget->GetNativeWindow()->parent()));
+  auto suspend = std::make_unique<wm::SuspendChildWindowVisibilityAnimations>(
+      widget->GetNativeWindow()->parent());
 #endif
-  HideWidget(widget);
+  widget->Hide();
 }
 
 void NativeWebContentsModalDialogManagerViews::Close() {
@@ -177,7 +189,7 @@ void NativeWebContentsModalDialogManagerViews::HostChanged(
 
   host_ = new_host;
 
-  // |host_| may be null during WebContents destruction or Win32 tab dragging.
+  // |host_| may be null during WebContents destruction.
   if (host_) {
     host_->AddObserver(this);
 
@@ -192,19 +204,6 @@ void NativeWebContentsModalDialogManagerViews::HostChanged(
 
 gfx::NativeWindow NativeWebContentsModalDialogManagerViews::dialog() {
   return dialog_;
-}
-
-void NativeWebContentsModalDialogManagerViews::ShowWidget(
-    views::Widget* widget) {
-  // |host_| may be NULL during tab drag on Views/Win32.
-  if (host_)
-    constrained_window::UpdateWebContentsModalDialogPosition(widget, host_);
-  widget->Show();
-}
-
-void NativeWebContentsModalDialogManagerViews::HideWidget(
-    views::Widget* widget) {
-  widget->Hide();
 }
 
 views::Widget* NativeWebContentsModalDialogManagerViews::GetWidget(

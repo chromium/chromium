@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
@@ -19,6 +18,7 @@
 #include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -59,6 +59,10 @@ class TetherHostFetcherImplTest : public testing::Test {
         test_remote_device_ref_list_(
             CreateTestRemoteDeviceRefList(test_remote_device_list_)) {}
 
+  TetherHostFetcherImplTest(const TetherHostFetcherImplTest&) = delete;
+  TetherHostFetcherImplTest& operator=(const TetherHostFetcherImplTest&) =
+      delete;
+
   void SetUp() override {
     fake_device_sync_client_ =
         std::make_unique<device_sync::FakeDeviceSyncClient>();
@@ -69,7 +73,7 @@ class TetherHostFetcherImplTest : public testing::Test {
   void InitializeTest() {
     SetSyncedDevices(test_remote_device_list_);
 
-    tether_host_fetcher_ = TetherHostFetcherImpl::Factory::NewInstance(
+    tether_host_fetcher_ = TetherHostFetcherImpl::Factory::Create(
         fake_device_sync_client_.get(), fake_multidevice_setup_client_.get());
 
     fake_device_sync_client_->NotifyReady();
@@ -83,29 +87,29 @@ class TetherHostFetcherImplTest : public testing::Test {
   }
 
   void OnSingleTetherHostFetched(
-      base::Optional<multidevice::RemoteDeviceRef> device) {
+      absl::optional<multidevice::RemoteDeviceRef> device) {
     last_fetched_single_host_ = device;
   }
 
   void VerifyAllTetherHosts(
       const multidevice::RemoteDeviceRefList expected_list) {
     tether_host_fetcher_->FetchAllTetherHosts(
-        base::Bind(&TetherHostFetcherImplTest::OnTetherHostListFetched,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherHostFetcherImplTest::OnTetherHostListFetched,
+                       base::Unretained(this)));
     EXPECT_EQ(expected_list, last_fetched_list_);
   }
 
   void VerifySingleTetherHost(
       const std::string& device_id,
-      base::Optional<multidevice::RemoteDeviceRef> expected_device) {
+      absl::optional<multidevice::RemoteDeviceRef> expected_device) {
     tether_host_fetcher_->FetchTetherHost(
         device_id,
-        base::Bind(&TetherHostFetcherImplTest::OnSingleTetherHostFetched,
-                   base::Unretained(this)));
+        base::BindOnce(&TetherHostFetcherImplTest::OnSingleTetherHostFetched,
+                       base::Unretained(this)));
     if (expected_device)
       EXPECT_EQ(expected_device, last_fetched_single_host_);
     else
-      EXPECT_EQ(base::nullopt, last_fetched_single_host_);
+      EXPECT_EQ(absl::nullopt, last_fetched_single_host_);
   }
 
   multidevice::RemoteDeviceList CreateTestRemoteDeviceList() {
@@ -145,7 +149,7 @@ class TetherHostFetcherImplTest : public testing::Test {
     if (devices.empty()) {
       fake_multidevice_setup_client_->SetHostStatusWithDevice(
           std::make_pair(multidevice_setup::mojom::HostStatus::kNoEligibleHosts,
-                         base::nullopt /* host_device */));
+                         absl::nullopt /* host_device */));
       fake_multidevice_setup_client_->SetFeatureState(
           multidevice_setup::mojom::Feature::kInstantTethering,
           multidevice_setup::mojom::FeatureState::kUnavailableNoVerifiedHost);
@@ -200,7 +204,7 @@ class TetherHostFetcherImplTest : public testing::Test {
   multidevice::RemoteDeviceRefList test_remote_device_ref_list_;
 
   multidevice::RemoteDeviceRefList last_fetched_list_;
-  base::Optional<multidevice::RemoteDeviceRef> last_fetched_single_host_;
+  absl::optional<multidevice::RemoteDeviceRef> last_fetched_single_host_;
   std::unique_ptr<TestObserver> test_observer_;
 
   std::unique_ptr<device_sync::FakeDeviceSyncClient> fake_device_sync_client_;
@@ -208,9 +212,6 @@ class TetherHostFetcherImplTest : public testing::Test {
       fake_multidevice_setup_client_;
 
   std::unique_ptr<TetherHostFetcher> tether_host_fetcher_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TetherHostFetcherImplTest);
 };
 
 TEST_F(TetherHostFetcherImplTest, TestHasSyncedTetherHosts) {
@@ -290,19 +291,19 @@ TEST_F(TetherHostFetcherImplTest, TestSingleTetherHost) {
   SetSyncedDevices(multidevice::RemoteDeviceList{remote_device});
   NotifyNewDevicesSynced();
   VerifySingleTetherHost(test_remote_device_ref_list_[0].GetDeviceId(),
-                         base::nullopt);
+                         absl::nullopt);
 
   // Update the list; now, there are no more devices.
   SetSyncedDevices(multidevice::RemoteDeviceList());
   NotifyNewDevicesSynced();
   VerifySingleTetherHost(test_remote_device_ref_list_[0].GetDeviceId(),
-                         base::nullopt);
+                         absl::nullopt);
 }
 
 TEST_F(TetherHostFetcherImplTest,
        TestSingleTetherHost_IdDoesNotCorrespondToDevice) {
   InitializeTest();
-  VerifySingleTetherHost("nonexistentId", base::nullopt);
+  VerifySingleTetherHost("nonexistentId", absl::nullopt);
 }
 
 }  // namespace tether

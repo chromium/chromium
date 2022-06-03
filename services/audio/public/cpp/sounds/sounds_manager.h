@@ -5,16 +5,14 @@
 #ifndef SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 #define SERVICES_AUDIO_PUBLIC_CPP_SOUNDS_SOUNDS_MANAGER_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 
 namespace audio {
 
@@ -26,7 +24,7 @@ class SoundsManager {
 
   // Creates a singleton instance of the SoundsManager.
   using StreamFactoryBinder = base::RepeatingCallback<void(
-      mojo::PendingReceiver<mojom::StreamFactory>)>;
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory>)>;
   static void Create(StreamFactoryBinder stream_factory_binder);
 
   // Removes a singleton instance of the SoundsManager.
@@ -34,6 +32,9 @@ class SoundsManager {
 
   // Returns a pointer to a singleton instance of the SoundsManager.
   static SoundsManager* Get();
+
+  SoundsManager(const SoundsManager&) = delete;
+  SoundsManager& operator=(const SoundsManager&) = delete;
 
   // Initializes sounds manager for testing. The |manager| will be owned
   // by the internal pointer and will be deleted by Shutdown().
@@ -62,9 +63,6 @@ class SoundsManager {
   virtual ~SoundsManager();
 
   SEQUENCE_CHECKER(sequence_checker_);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SoundsManager);
 };
 
 }  // namespace audio

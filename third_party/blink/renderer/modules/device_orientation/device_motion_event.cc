@@ -25,9 +25,9 @@
 
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_device_motion_event_init.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_data.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_acceleration.h"
-#include "third_party/blink/renderer/modules/device_orientation/device_motion_event_init.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_event_rotation_rate.h"
 
 namespace blink {
@@ -68,7 +68,7 @@ const AtomicString& DeviceMotionEvent::InterfaceName() const {
   return event_interface_names::kDeviceMotionEvent;
 }
 
-void DeviceMotionEvent::Trace(blink::Visitor* visitor) {
+void DeviceMotionEvent::Trace(Visitor* visitor) const {
   visitor->Trace(device_motion_data_);
   Event::Trace(visitor);
 }

@@ -6,7 +6,8 @@ import re
 
 
 def result_contains_repaint_rects(text):
-    return isinstance(text, str) and re.search(r'"paintInvalidations": \[$', text, re.MULTILINE) is not None
+    return (isinstance(text, str) and
+            re.search(r'"invalidations": \[$', text, re.MULTILINE) is not None)
 
 
 def extract_layer_tree(input_str):
@@ -29,7 +30,8 @@ def extract_layer_tree(input_str):
 
 
 def generate_repaint_overlay_html(test_name, actual_text, expected_text):
-    if not result_contains_repaint_rects(actual_text) and not result_contains_repaint_rects(expected_text):
+    if (not result_contains_repaint_rects(actual_text)
+            and not result_contains_repaint_rects(expected_text)):
         return ''
 
     expected_layer_tree = extract_layer_tree(expected_text)
@@ -117,15 +119,8 @@ function draw_layer_rects(context, transforms, layer) {
     }
     if (layer.position)
         context.translate(layer.position[0], layer.position[1]);
-
-    if (layer.paintInvalidations) {
-        var rects = [];
-        for (var i = 0; i < layer.paintInvalidations.length; ++i) {
-            if (layer.paintInvalidations[i].rect)
-                rects.push(layer.paintInvalidations[i].rect);
-        }
-        draw_rects(context, rects);
-    }
+    if (layer.invalidations)
+        draw_rects(context, layer.invalidations);
     context.restore();
 }
 

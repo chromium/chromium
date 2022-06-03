@@ -19,9 +19,7 @@ generate_jni("jni_headers") {
     "javatests/src/org/chromium/mojo/MojoTestRule.java",
     "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java",
   ]
-  public_deps = [
-    ":system_impl_java_jni_headers",
-  ]
+  public_deps = [ ":system_impl_java_jni_headers" ]
 }
 
 generate_jni("system_impl_java_jni_headers") {
@@ -48,7 +46,7 @@ source_set("native_support") {
 }
 
 android_library("system_impl_java") {
-  java_files = [
+  sources = [
     "src/org/chromium/mojo/system/impl/BaseRunLoop.java",
     "src/org/chromium/mojo/system/impl/CoreImpl.java",
     "src/org/chromium/mojo/system/impl/DataPipeConsumerHandleImpl.java",
@@ -62,7 +60,6 @@ android_library("system_impl_java") {
 
   deps = [
     "//base:base_java",
-    "//base:jni_java",
     "//mojo/public/java:system_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -71,18 +68,17 @@ android_library("system_impl_java") {
 # Targets should also depend on :test_support for the native side.
 android_library("test_support_java") {
   testonly = true
-  java_files = [ "javatests/src/org/chromium/mojo/MojoTestRule.java" ]
+  sources = [ "javatests/src/org/chromium/mojo/MojoTestRule.java" ]
   deps = [
     "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/junit",
   ]
 }
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "javatests/mojo_test_rule.cc",
-  ]
+  sources = [ "javatests/mojo_test_rule.cc" ]
   deps = [
     ":jni_headers",
     "//base",
@@ -94,7 +90,7 @@ source_set("test_support") {
 
 android_library("mojo_javatests") {
   testonly = true
-  java_files = [
+  sources = [
     "javatests/src/org/chromium/mojo/HandleMock.java",
     "javatests/src/org/chromium/mojo/TestUtils.java",
     "javatests/src/org/chromium/mojo/bindings/BindingsHelperTest.java",
@@ -110,10 +106,10 @@ android_library("mojo_javatests") {
     "javatests/src/org/chromium/mojo/bindings/ReadAndDispatchMessageTest.java",
     "javatests/src/org/chromium/mojo/bindings/RouterTest.java",
     "javatests/src/org/chromium/mojo/bindings/SerializationTest.java",
-    "javatests/src/org/chromium/mojo/bindings/test/mojom/mojo/IntegrationTestInterfaceTestHelper.java",
     "javatests/src/org/chromium/mojo/bindings/ValidationTest.java",
     "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java",
     "javatests/src/org/chromium/mojo/bindings/ValidationTestUtilTest.java",
+    "javatests/src/org/chromium/mojo/bindings/test/mojom/mojo/IntegrationTestInterfaceTestHelper.java",
     "javatests/src/org/chromium/mojo/system/impl/CoreImplTest.java",
     "javatests/src/org/chromium/mojo/system/impl/WatcherImplTest.java",
   ]
@@ -128,14 +124,12 @@ android_library("mojo_javatests") {
     "//mojo/public/interfaces/bindings/tests:test_mojom_import_java",
     "//mojo/public/java:bindings_java",
     "//mojo/public/java:system_java",
-    "//third_party/android_deps:androidx_test_monitor_java",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit",
   ]
 
-  data = [
-    "//mojo/public/interfaces/bindings/tests/data/validation/",
-  ]
+  data = [ "//mojo/public/interfaces/bindings/tests/data/validation/" ]
 }
 
 shared_library("mojo_java_unittests") {
@@ -169,12 +163,10 @@ instrumentation_test_apk("mojo_test_apk") {
     "//base:base_java",
     "//mojo/public/interfaces/bindings/tests:test_interfaces",
     "//mojo/public/java:bindings_java",
-    "//third_party/android_deps:androidx_test_monitor_java",
-    "//third_party/android_deps:androidx_test_runner_java",
+    "//third_party/androidx:androidx_test_monitor_java",
+    "//third_party/androidx:androidx_test_runner_java",
   ]
   shared_libraries = [ ":mojo_java_unittests" ]
   apk_name = "MojoTest"
   android_manifest = "javatests/AndroidManifest.xml"
-  target_sdk_version = 21
-  enable_multidex = false
 }

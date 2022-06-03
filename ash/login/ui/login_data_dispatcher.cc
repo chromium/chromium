@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/login/ui/login_data_dispatcher.h"
+#include "ash/constants/ash_features.h"
 
 namespace ash {
 
@@ -31,12 +32,25 @@ void LoginDataDispatcher::Observer::OnFingerprintAuthResult(
     const AccountId& account_id,
     bool successful) {}
 
+void LoginDataDispatcher::Observer::OnSmartLockStateChanged(
+    const AccountId& user,
+    SmartLockState state) {}
+
+void LoginDataDispatcher::Observer::OnSmartLockAuthResult(
+    const AccountId& account_id,
+    bool successful) {}
+
 void LoginDataDispatcher::Observer::OnAuthEnabledForUser(
     const AccountId& user) {}
 
 void LoginDataDispatcher::Observer::OnAuthDisabledForUser(
     const AccountId& user,
     const AuthDisabledData& auth_disabled_data) {}
+
+void LoginDataDispatcher::Observer::OnSetTpmLockedState(
+    const AccountId& user,
+    bool is_locked,
+    base::TimeDelta time_left) {}
 
 void LoginDataDispatcher::Observer::OnTapToUnlockEnabledForUserChanged(
     const AccountId& user,
@@ -50,10 +64,10 @@ void LoginDataDispatcher::Observer::OnLockScreenNoteStateChanged(
 
 void LoginDataDispatcher::Observer::OnShowEasyUnlockIcon(
     const AccountId& user,
-    const EasyUnlockIconOptions& icon) {}
+    const EasyUnlockIconInfo& icon_info) {}
 
 void LoginDataDispatcher::Observer::OnWarningMessageUpdated(
-    const base::string16& message) {}
+    const std::u16string& message) {}
 
 void LoginDataDispatcher::Observer::OnSystemInfoChanged(
     bool show,
@@ -123,16 +137,16 @@ void LoginDataDispatcher::SetChallengeResponseAuthEnabledForUser(
     observer.OnChallengeResponseAuthEnabledForUserChanged(user, enabled);
 }
 
-void LoginDataDispatcher::SetFingerprintState(const AccountId& account_id,
-                                              FingerprintState state) {
-  for (auto& observer : observers_)
-    observer.OnFingerprintStateChanged(account_id, state);
-}
-
 void LoginDataDispatcher::SetAvatarForUser(const AccountId& account_id,
                                            const UserAvatar& avatar) {
   for (auto& observer : observers_)
     observer.OnUserAvatarChanged(account_id, avatar);
+}
+
+void LoginDataDispatcher::SetFingerprintState(const AccountId& account_id,
+                                              FingerprintState state) {
+  for (auto& observer : observers_)
+    observer.OnFingerprintStateChanged(account_id, state);
 }
 
 void LoginDataDispatcher::NotifyFingerprintAuthResult(
@@ -140,6 +154,12 @@ void LoginDataDispatcher::NotifyFingerprintAuthResult(
     bool successful) {
   for (auto& observer : observers_)
     observer.OnFingerprintAuthResult(account_id, successful);
+}
+
+void LoginDataDispatcher::NotifySmartLockAuthResult(const AccountId& account_id,
+                                                    bool successful) {
+  for (auto& observer : observers_)
+    observer.OnSmartLockAuthResult(account_id, successful);
 }
 
 void LoginDataDispatcher::EnableAuthForUser(const AccountId& account_id) {
@@ -152,6 +172,13 @@ void LoginDataDispatcher::DisableAuthForUser(
     const AuthDisabledData& auth_disabled_data) {
   for (auto& observer : observers_)
     observer.OnAuthDisabledForUser(account_id, auth_disabled_data);
+}
+
+void LoginDataDispatcher::SetTpmLockedState(const AccountId& account_id,
+                                            bool is_locked,
+                                            base::TimeDelta time_left) {
+  for (auto& observer : observers_)
+    observer.OnSetTpmLockedState(account_id, is_locked, time_left);
 }
 
 void LoginDataDispatcher::SetTapToUnlockEnabledForUser(const AccountId& user,
@@ -172,12 +199,21 @@ void LoginDataDispatcher::SetLockScreenNoteState(mojom::TrayActionState state) {
 
 void LoginDataDispatcher::ShowEasyUnlockIcon(
     const AccountId& user,
-    const EasyUnlockIconOptions& icon) {
+    const EasyUnlockIconInfo& icon_info) {
+  if (base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp))
+    return;
+
   for (auto& observer : observers_)
-    observer.OnShowEasyUnlockIcon(user, icon);
+    observer.OnShowEasyUnlockIcon(user, icon_info);
 }
 
-void LoginDataDispatcher::UpdateWarningMessage(const base::string16& message) {
+void LoginDataDispatcher::SetSmartLockState(const AccountId& user,
+                                            SmartLockState state) {
+  for (auto& observer : observers_)
+    observer.OnSmartLockStateChanged(user, state);
+}
+
+void LoginDataDispatcher::UpdateWarningMessage(const std::u16string& message) {
   for (auto& observer : observers_)
     observer.OnWarningMessageUpdated(message);
 }

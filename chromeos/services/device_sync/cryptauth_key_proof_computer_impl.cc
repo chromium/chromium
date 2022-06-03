@@ -6,8 +6,9 @@
 
 #include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/cryptauth_key.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
@@ -43,10 +44,6 @@ std::string ByteVectorToString(const std::vector<uint8_t>& byte_array) {
   return std::string(byte_array.begin(), byte_array.end());
 }
 
-std::vector<uint8_t> StringToByteVector(const std::string& str) {
-  return std::vector<uint8_t>(str.begin(), str.end());
-}
-
 }  // namespace
 
 // static
@@ -54,13 +51,12 @@ CryptAuthKeyProofComputerImpl::Factory*
     CryptAuthKeyProofComputerImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthKeyProofComputerImpl::Factory*
-CryptAuthKeyProofComputerImpl::Factory::Get() {
+std::unique_ptr<CryptAuthKeyProofComputer>
+CryptAuthKeyProofComputerImpl::Factory::Create() {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance();
 
-  static base::NoDestructor<CryptAuthKeyProofComputerImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthKeyProofComputerImpl());
 }
 
 // static
@@ -71,20 +67,15 @@ void CryptAuthKeyProofComputerImpl::Factory::SetFactoryForTesting(
 
 CryptAuthKeyProofComputerImpl::Factory::~Factory() = default;
 
-std::unique_ptr<CryptAuthKeyProofComputer>
-CryptAuthKeyProofComputerImpl::Factory::BuildInstance() {
-  return base::WrapUnique(new CryptAuthKeyProofComputerImpl());
-}
-
 CryptAuthKeyProofComputerImpl::CryptAuthKeyProofComputerImpl() = default;
 
 CryptAuthKeyProofComputerImpl::~CryptAuthKeyProofComputerImpl() = default;
 
-base::Optional<std::string> CryptAuthKeyProofComputerImpl::ComputeKeyProof(
+absl::optional<std::string> CryptAuthKeyProofComputerImpl::ComputeKeyProof(
     const CryptAuthKey& key,
     const std::string& payload,
     const std::string& salt,
-    const base::Optional<std::string>& info) {
+    const absl::optional<std::string>& info) {
   if (key.IsAsymmetricKey())
     return ComputeAsymmetricKeyProof(key, payload, salt);
 
@@ -92,7 +83,7 @@ base::Optional<std::string> CryptAuthKeyProofComputerImpl::ComputeKeyProof(
   return ComputeSymmetricKeyProof(key, payload, salt, *info);
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 CryptAuthKeyProofComputerImpl::ComputeSymmetricKeyProof(
     const CryptAuthKey& symmetric_key,
     const std::string& payload,
@@ -111,13 +102,13 @@ CryptAuthKeyProofComputerImpl::ComputeSymmetricKeyProof(
   if (!success) {
     PA_LOG(ERROR) << "Failed to compute symmetric key proof for key handle "
                   << symmetric_key.handle();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return std::string(signed_payload.begin(), signed_payload.end());
 }
 
-base::Optional<std::string>
+absl::optional<std::string>
 CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
     const CryptAuthKey& asymmetric_key,
     const std::string& payload,
@@ -126,18 +117,18 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle()
                   << ". Invalid key type: " << asymmetric_key.type();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::unique_ptr<crypto::ECPrivateKey> ec_private_key =
       crypto::ECPrivateKey::CreateFromPrivateKeyInfo(
-          StringToByteVector(asymmetric_key.private_key()));
+          base::as_bytes(base::make_span(asymmetric_key.private_key())));
   if (!ec_private_key) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle() << ". "
                   << "Invalid private key material; expect DER-encoded PKCS #8 "
                   << "PrivateKeyInfo format (RFC 5208).";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::unique_ptr<crypto::ECSignatureCreator> ec_signature_creator =
@@ -145,17 +136,17 @@ CryptAuthKeyProofComputerImpl::ComputeAsymmetricKeyProof(
   if (!ec_signature_creator) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::string to_sign = salt + payload;
   std::vector<uint8_t> key_proof;
   bool success = ec_signature_creator->Sign(
-      StringToByteVector(salt + payload).data(), to_sign.size(), &key_proof);
+      base::as_bytes(base::make_span(to_sign)), &key_proof);
   if (!success) {
     PA_LOG(ERROR) << "Failed to compute asymmetric key proof for key handle "
                   << asymmetric_key.handle();
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return ByteVectorToString(key_proof);

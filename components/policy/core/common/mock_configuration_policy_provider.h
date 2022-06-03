@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_POLICY_CORE_COMMON_MOCK_CONFIGURATION_POLICY_PROVIDER_H_
 #define COMPONENTS_POLICY_CORE_COMMON_MOCK_CONFIGURATION_POLICY_PROVIDER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/schema_registry.h"
@@ -21,9 +20,14 @@ namespace policy {
 class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
  public:
   MockConfigurationPolicyProvider();
+  MockConfigurationPolicyProvider(const MockConfigurationPolicyProvider&) =
+      delete;
+  MockConfigurationPolicyProvider& operator=(
+      const MockConfigurationPolicyProvider&) = delete;
   ~MockConfigurationPolicyProvider() override;
 
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));
+  MOCK_CONST_METHOD1(IsFirstPolicyLoadComplete, bool(PolicyDomain domain));
   MOCK_METHOD0(RefreshPolicies, void());
 
   // Make public for tests.
@@ -49,6 +53,15 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
     ConfigurationPolicyProvider::Init(&registry_);
   }
 
+  // Utility testing method used to set up boilerplate |ON_CALL| defaults.
+  void SetDefaultReturns(bool is_initialization_complete_return,
+                         bool is_first_policy_load_complete_return) {
+    ON_CALL(*this, IsInitializationComplete(testing::_))
+        .WillByDefault(testing::Return(is_initialization_complete_return));
+    ON_CALL(*this, IsFirstPolicyLoadComplete(testing::_))
+        .WillByDefault(testing::Return(is_first_policy_load_complete_return));
+  }
+
   // Convenience method that installs an expectation on RefreshPolicies that
   // just notifies the observers and serves the same policies.
   void SetAutoRefresh();
@@ -57,8 +70,6 @@ class MockConfigurationPolicyProvider : public ConfigurationPolicyProvider {
   void RefreshWithSamePolicies();
 
   SchemaRegistry registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockConfigurationPolicyProvider);
 };
 
 class MockConfigurationPolicyObserver

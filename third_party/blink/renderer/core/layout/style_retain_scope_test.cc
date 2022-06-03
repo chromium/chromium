@@ -25,7 +25,8 @@ TEST(StyleRetainScopeTest, Current) {
 }
 
 TEST(StyleRetainScopeTest, Retain) {
-  scoped_refptr<const ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<const ComputedStyle> style =
+      ComputedStyle::CreateInitialStyleSingleton();
   EXPECT_TRUE(style->HasOneRef());
   {
     StyleRetainScope scope;

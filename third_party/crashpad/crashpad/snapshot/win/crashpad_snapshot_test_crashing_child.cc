@@ -15,7 +15,7 @@
 #include <intrin.h>
 #include <windows.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "client/crashpad_client.h"
 #include "util/misc/capture_context.h"
 #include "util/win/address_types.h"

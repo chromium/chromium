@@ -13,13 +13,56 @@
 
 namespace net {
 
-ReportingEndpointGroupKey::ReportingEndpointGroupKey(url::Origin origin,
-                                                     std::string group_name)
-    : origin(std::move(origin)), group_name(std::move(group_name)) {}
+ReportingEndpointGroupKey::ReportingEndpointGroupKey() = default;
+
+ReportingEndpointGroupKey::ReportingEndpointGroupKey(
+    const NetworkIsolationKey& network_isolation_key,
+    const url::Origin& origin,
+    const std::string& group_name)
+    : ReportingEndpointGroupKey(network_isolation_key,
+                                absl::nullopt,
+                                origin,
+                                group_name) {}
+
+ReportingEndpointGroupKey::ReportingEndpointGroupKey(
+    const NetworkIsolationKey& network_isolation_key,
+    absl::optional<base::UnguessableToken> reporting_source,
+    const url::Origin& origin,
+    const std::string& group_name)
+    : network_isolation_key(network_isolation_key),
+      reporting_source(std::move(reporting_source)),
+      origin(origin),
+      group_name(group_name) {
+  // If |reporting_source| is present, it must not be empty.
+  DCHECK(!(reporting_source.has_value() && reporting_source->is_empty()));
+}
+
+ReportingEndpointGroupKey::ReportingEndpointGroupKey(
+    const ReportingEndpointGroupKey& other,
+    const absl::optional<base::UnguessableToken>& reporting_source)
+    : ReportingEndpointGroupKey(other.network_isolation_key,
+                                reporting_source,
+                                other.origin,
+                                other.group_name) {}
+
+ReportingEndpointGroupKey::ReportingEndpointGroupKey(
+    const ReportingEndpointGroupKey& other) = default;
+ReportingEndpointGroupKey::ReportingEndpointGroupKey(
+    ReportingEndpointGroupKey&& other) = default;
+
+ReportingEndpointGroupKey& ReportingEndpointGroupKey::operator=(
+    const ReportingEndpointGroupKey&) = default;
+ReportingEndpointGroupKey& ReportingEndpointGroupKey::operator=(
+    ReportingEndpointGroupKey&&) = default;
+
+ReportingEndpointGroupKey::~ReportingEndpointGroupKey() = default;
 
 bool operator==(const ReportingEndpointGroupKey& lhs,
                 const ReportingEndpointGroupKey& rhs) {
-  return lhs.origin == rhs.origin && lhs.group_name == rhs.group_name;
+  return std::tie(lhs.reporting_source, lhs.network_isolation_key, lhs.origin,
+                  lhs.group_name) == std::tie(rhs.reporting_source,
+                                              rhs.network_isolation_key,
+                                              rhs.origin, rhs.group_name);
 }
 
 bool operator!=(const ReportingEndpointGroupKey& lhs,
@@ -29,26 +72,35 @@ bool operator!=(const ReportingEndpointGroupKey& lhs,
 
 bool operator<(const ReportingEndpointGroupKey& lhs,
                const ReportingEndpointGroupKey& rhs) {
-  return std::tie(lhs.origin, lhs.group_name) <
-         std::tie(rhs.origin, rhs.group_name);
+  return std::tie(lhs.reporting_source, lhs.network_isolation_key, lhs.origin,
+                  lhs.group_name) < std::tie(rhs.reporting_source,
+                                             rhs.network_isolation_key,
+                                             rhs.origin, rhs.group_name);
 }
+
 bool operator>(const ReportingEndpointGroupKey& lhs,
                const ReportingEndpointGroupKey& rhs) {
-  return std::tie(lhs.origin, lhs.group_name) >
-         std::tie(rhs.origin, rhs.group_name);
+  return std::tie(lhs.reporting_source, lhs.network_isolation_key, lhs.origin,
+                  lhs.group_name) > std::tie(rhs.reporting_source,
+                                             rhs.network_isolation_key,
+                                             rhs.origin, rhs.group_name);
+}
+
+std::string ReportingEndpointGroupKey::ToString() const {
+  return "Source: " +
+         (reporting_source ? reporting_source->ToString() : "null") +
+         "; NIK: " + network_isolation_key.ToDebugString() +
+         "; Origin: " + origin.Serialize() + "; Group name: " + group_name;
 }
 
 const int ReportingEndpoint::EndpointInfo::kDefaultPriority = 1;
 const int ReportingEndpoint::EndpointInfo::kDefaultWeight = 1;
 
-ReportingEndpoint::ReportingEndpoint()
-    : group_key(url::Origin(), std::string()) {}
+ReportingEndpoint::ReportingEndpoint() = default;
 
-ReportingEndpoint::ReportingEndpoint(url::Origin origin,
-                                     std::string group_name,
-                                     EndpointInfo endpoint_info)
-    : group_key(std::move(origin), std::move(group_name)),
-      info(std::move(endpoint_info)) {
+ReportingEndpoint::ReportingEndpoint(const ReportingEndpointGroupKey& group,
+                                     const EndpointInfo& info)
+    : group_key(group), info(info) {
   DCHECK_LE(0, info.weight);
   DCHECK_LE(0, info.priority);
 }
@@ -66,37 +118,33 @@ bool ReportingEndpoint::is_valid() const {
   return info.url.is_valid();
 }
 
-ReportingEndpointGroup::ReportingEndpointGroup()
-    : name(std::string()), include_subdomains(OriginSubdomains::DEFAULT) {}
+ReportingEndpointGroup::ReportingEndpointGroup() = default;
 
 ReportingEndpointGroup::ReportingEndpointGroup(
-    const ReportingEndpointGroup& other)
-    : name(other.name),
-      include_subdomains(other.include_subdomains),
-      ttl(other.ttl),
-      endpoints(other.endpoints) {}
+    const ReportingEndpointGroup& other) = default;
 
 ReportingEndpointGroup::~ReportingEndpointGroup() = default;
 
 CachedReportingEndpointGroup::CachedReportingEndpointGroup(
-    url::Origin origin,
-    std::string name,
+    const ReportingEndpointGroupKey& group_key,
     OriginSubdomains include_subdomains,
     base::Time expires,
     base::Time last_used)
-    : group_key(std::move(origin), std::move(name)),
+    : group_key(group_key),
       include_subdomains(include_subdomains),
       expires(expires),
       last_used(last_used) {}
 
 CachedReportingEndpointGroup::CachedReportingEndpointGroup(
-    url::Origin origin,
     const ReportingEndpointGroup& endpoint_group,
     base::Time now)
-    : CachedReportingEndpointGroup(std::move(origin),
-                                   endpoint_group.name,
+    : CachedReportingEndpointGroup(endpoint_group.group_key,
                                    endpoint_group.include_subdomains,
                                    now + endpoint_group.ttl /* expires */,
-                                   now /* last_used */) {}
+                                   now /* last_used */) {
+  // Don't cache V1 document endpoints; this should only be used for V0
+  // endpoint groups.
+  DCHECK(!endpoint_group.group_key.IsDocumentEndpoint());
+}
 
 }  // namespace net

@@ -25,7 +25,7 @@ const AtomicString& GamepadEvent::InterfaceName() const {
   return event_interface_names::kGamepadEvent;
 }
 
-void GamepadEvent::Trace(blink::Visitor* visitor) {
+void GamepadEvent::Trace(Visitor* visitor) const {
   visitor->Trace(gamepad_);
   Event::Trace(visitor);
 }

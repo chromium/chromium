@@ -1,0 +1,32 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/nearby_sharing/attachment.h"
+#include "crypto/random.h"
+
+namespace {
+
+int64_t CreateRandomId() {
+  int64_t id;
+  crypto::RandBytes(&id, sizeof(id));
+  return id;
+}
+
+}  // namespace
+
+Attachment::Attachment(Family family, int64_t size)
+    : id_(CreateRandomId()), family_(family), size_(size) {}
+
+Attachment::Attachment(int64_t id, Family family, int64_t size)
+    : id_(id), family_(family), size_(size) {}
+
+Attachment::Attachment(const Attachment&) = default;
+
+Attachment::Attachment(Attachment&&) = default;
+
+Attachment& Attachment::operator=(const Attachment&) = default;
+
+Attachment& Attachment::operator=(Attachment&&) = default;
+
+Attachment::~Attachment() = default;

@@ -14,13 +14,16 @@ When updating src/net/base/registry_controlled_domains/effective_tld_names.dat:
 // Chromium note: this is based on Mozilla's file:
 // https://publicsuffix.org/list/public_suffix_list.dat
 
-4. Build tld_cleanup (the "(net)" > "tld_cleanup" project)
+4. Diff the changes and restore any changes annotated with a "// CHROMIUM"
+   comment.
 
-5. Run it (no arguments needed), typically from src/build/Release or
+5. Build tld_cleanup (the "(net)" > "tld_cleanup" project)
+
+6. Run it (no arguments needed), typically from src/build/Release or
    src/build/Debug. It will re-generate
    src/net/base/registry_controlled_domains/effective_tld_names.gperf.
 
-6. Check in the updated effective_tld_names.dat, effective_tld_names.gperf
+7. Check in the updated effective_tld_names.dat, effective_tld_names.gperf
 
 Note that gperf is no longer used for effective_tld_names, but when building
 chromium the file effective_tld_names.gperf will be parsed by make_dafsa.py

@@ -7,5 +7,5 @@
 [
     Exposed=ServiceWorker
 ] interface InstallEvent : ExtendableEvent {
-    constructor(DOMString type, optional ExtendableEventInit eventInitDict);
+    constructor(DOMString type, optional ExtendableEventInit eventInitDict = {});
 };

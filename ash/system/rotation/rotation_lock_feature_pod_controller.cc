@@ -51,6 +51,10 @@ void RotationLockFeaturePodController::OnUserRotationLockChanged() {
 }
 
 void RotationLockFeaturePodController::UpdateButton() {
+  // Even though auto-rotation is also supported when the device is not in a
+  // tablet physical state but kSupportsClamshellAutoRotation is set. The "Auto
+  // rotate" feature pod button in the system tray menu is not expected to be
+  // shown in the case.
   const bool is_auto_rotation_allowed =
       Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
   button_->SetVisible(is_auto_rotation_allowed);
@@ -67,7 +71,7 @@ void RotationLockFeaturePodController::UpdateButton() {
 
   button_->SetToggled(rotation_locked);
 
-  base::string16 tooltip_state;
+  std::u16string tooltip_state;
 
   if (rotation_locked && is_portrait) {
     button_->SetVectorIcon(kUnifiedMenuRotationLockPortraitIcon);

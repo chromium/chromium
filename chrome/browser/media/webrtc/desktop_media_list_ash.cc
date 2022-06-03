@@ -25,11 +25,11 @@ const int kDefaultDesktopMediaListUpdatePeriod = 500;
 
 }  // namespace
 
-DesktopMediaListAsh::DesktopMediaListAsh(content::DesktopMediaID::Type type)
-    : DesktopMediaListBase(base::TimeDelta::FromMilliseconds(
-          kDefaultDesktopMediaListUpdatePeriod)) {
-  DCHECK(type == content::DesktopMediaID::TYPE_SCREEN ||
-         type == content::DesktopMediaID::TYPE_WINDOW);
+DesktopMediaListAsh::DesktopMediaListAsh(DesktopMediaList::Type type)
+    : DesktopMediaListBase(
+          base::Milliseconds(kDefaultDesktopMediaListUpdatePeriod)) {
+  DCHECK(type == DesktopMediaList::Type::kScreen ||
+         type == DesktopMediaList::Type::kWindow);
   type_ = type;
 }
 
@@ -86,7 +86,7 @@ void DesktopMediaListAsh::EnumerateSources(
   aura::Window::Windows root_windows = ash::Shell::GetAllRootWindows();
 
   for (size_t i = 0; i < root_windows.size(); ++i) {
-    if (type_ == content::DesktopMediaID::TYPE_SCREEN) {
+    if (type_ == DesktopMediaList::Type::kScreen) {
       SourceDescription screen_source(
           content::DesktopMediaID::RegisterNativeWindow(
               content::DesktopMediaID::TYPE_SCREEN, root_windows[i]),
@@ -139,8 +139,8 @@ void DesktopMediaListAsh::CaptureThumbnail(content::DesktopMediaID id,
   ++pending_window_capture_requests_;
   ui::GrabWindowSnapshotAndScaleAsync(
       window, window_rect, scaled_rect.size(),
-      base::Bind(&DesktopMediaListAsh::OnThumbnailCaptured,
-                 weak_factory_.GetWeakPtr(), id));
+      base::BindOnce(&DesktopMediaListAsh::OnThumbnailCaptured,
+                     weak_factory_.GetWeakPtr(), id));
 }
 
 void DesktopMediaListAsh::OnThumbnailCaptured(content::DesktopMediaID id,

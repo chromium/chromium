@@ -6,12 +6,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
@@ -58,6 +56,9 @@ class ArcSessionRunnerTest : public testing::Test,
  public:
   ArcSessionRunnerTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  ArcSessionRunnerTest(const ArcSessionRunnerTest&) = delete;
+  ArcSessionRunnerTest& operator=(const ArcSessionRunnerTest&) = delete;
 
   void SetUp() override {
     chromeos::SessionManagerClient::InitializeFakeInMemory();
@@ -138,8 +139,6 @@ class ArcSessionRunnerTest : public testing::Test,
   bool restarting_called_;
   std::unique_ptr<ArcSessionRunner> arc_session_runner_;
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcSessionRunnerTest);
 };
 
 // Exercises the basic functionality of the ArcSessionRunner. Observer should
@@ -148,6 +147,9 @@ TEST_F(ArcSessionRunnerTest, Basic) {
   class Observer : public ArcSessionRunner::Observer {
    public:
     Observer() = default;
+
+    Observer(const Observer&) = delete;
+    Observer& operator=(const Observer&) = delete;
 
     bool stopped_called() const { return stopped_called_; }
 
@@ -159,10 +161,9 @@ TEST_F(ArcSessionRunnerTest, Basic) {
 
    private:
     bool stopped_called_ = false;
-
-    DISALLOW_COPY_AND_ASSIGN(Observer);
   };
 
+  arc_session_runner()->ResumeRunner();
   Observer observer;
   arc_session_runner()->AddObserver(&observer);
   base::ScopedClosureRunner teardown(base::BindOnce(
@@ -187,6 +188,7 @@ TEST_F(ArcSessionRunnerTest, Basic) {
 TEST_F(ArcSessionRunnerTest, StopMidStartup) {
   ResetArcSessionFactory(
       base::BindRepeating(&ArcSessionRunnerTest::CreateSuspendedArcSession));
+  arc_session_runner()->ResumeRunner();
   EXPECT_FALSE(arc_session());
 
   arc_session_runner()->RequestUpgrade(DefaultUpgradeParams());
@@ -202,6 +204,7 @@ TEST_F(ArcSessionRunnerTest, StopMidStartup) {
 TEST_F(ArcSessionRunnerTest, StopMidStartup_MiniInstance) {
   ResetArcSessionFactory(
       base::BindRepeating(&ArcSessionRunnerTest::CreateSuspendedArcSession));
+  arc_session_runner()->ResumeRunner();
   EXPECT_FALSE(arc_session());
 
   arc_session_runner()->RequestStartMiniInstance();
@@ -212,12 +215,51 @@ TEST_F(ArcSessionRunnerTest, StopMidStartup_MiniInstance) {
   EXPECT_FALSE(arc_session());
 }
 
+// Tests the case where the runner is not resumed yet.
+TEST_F(ArcSessionRunnerTest, ExpansionPending) {
+  EXPECT_FALSE(arc_session());
+  // When it's not resumed yet, starting instance will be pending.
+  arc_session_runner()->RequestStartMiniInstance();
+  EXPECT_FALSE(arc_session());
+
+  // It is resumed when they are generated.
+  arc_session_runner()->ResumeRunner();
+  ASSERT_TRUE(arc_session());
+  EXPECT_FALSE(arc_session()->is_running());
+}
+
+// Does the same test with a full instance.
+TEST_F(ArcSessionRunnerTest, ExpansionPending_FullInstance) {
+  EXPECT_FALSE(arc_session());
+  arc_session_runner()->RequestStartMiniInstance();
+  EXPECT_FALSE(arc_session());
+  arc_session_runner()->RequestUpgrade(DefaultUpgradeParams());
+  EXPECT_FALSE(arc_session());
+
+  arc_session_runner()->ResumeRunner();
+  ASSERT_TRUE(arc_session());
+  EXPECT_TRUE(arc_session()->is_running());
+}
+
+// Checks the case where RequestStop() is called before resume.
+TEST_F(ArcSessionRunnerTest, ExpansionPending_StopMidStartup) {
+  EXPECT_FALSE(arc_session());
+  arc_session_runner()->RequestStartMiniInstance();
+  EXPECT_FALSE(arc_session());
+  arc_session_runner()->RequestStop();
+  EXPECT_FALSE(arc_session());
+
+  arc_session_runner()->ResumeRunner();
+  EXPECT_FALSE(arc_session());
+}
+
 // If the boot procedure is failed, then restarting mechanism should not
 // triggered.
 TEST_F(ArcSessionRunnerTest, BootFailure) {
   ResetArcSessionFactory(
       base::BindRepeating(&ArcSessionRunnerTest::CreateBootFailureArcSession,
                           ArcStopReason::GENERIC_BOOT_FAILURE));
+  arc_session_runner()->ResumeRunner();
   EXPECT_FALSE(arc_session());
 
   arc_session_runner()->RequestUpgrade(DefaultUpgradeParams());
@@ -231,6 +273,7 @@ TEST_F(ArcSessionRunnerTest, BootFailure_MiniInstance) {
   ResetArcSessionFactory(
       base::BindRepeating(&ArcSessionRunnerTest::CreateBootFailureArcSession,
                           ArcStopReason::GENERIC_BOOT_FAILURE));
+  arc_session_runner()->ResumeRunner();
   EXPECT_FALSE(arc_session());
 
   // If starting the mini instance fails, arc_session_runner()'s state goes back
@@ -243,6 +286,7 @@ TEST_F(ArcSessionRunnerTest, BootFailure_MiniInstance) {
   // Also make sure that RequestUpgrade() works just fine after the boot
   // failure.
   ResetArcSessionFactory(base::BindRepeating(FakeArcSession::Create));
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->RequestUpgrade(DefaultUpgradeParams());
   ASSERT_TRUE(arc_session());
   EXPECT_TRUE(arc_session()->is_running());
@@ -254,6 +298,7 @@ TEST_F(ArcSessionRunnerTest, Crash_MiniInstance) {
   ResetArcSessionFactory(
       base::BindRepeating(&ArcSessionRunnerTest::CreateBootFailureArcSession,
                           ArcStopReason::CRASH));
+  arc_session_runner()->ResumeRunner();
   EXPECT_FALSE(arc_session());
 
   // If starting the mini instance fails, arc_session_runner()'s state goes back
@@ -266,6 +311,7 @@ TEST_F(ArcSessionRunnerTest, Crash_MiniInstance) {
 
 // Tests that RequestUpgrade works after calling RequestStart.
 TEST_F(ArcSessionRunnerTest, Upgrade) {
+  arc_session_runner()->ResumeRunner();
   EXPECT_FALSE(arc_session());
 
   arc_session_runner()->RequestStartMiniInstance();
@@ -279,6 +325,7 @@ TEST_F(ArcSessionRunnerTest, Upgrade) {
 
 // If the instance is stopped, it should be re-started.
 TEST_F(ArcSessionRunnerTest, Restart) {
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->SetRestartDelayForTesting(base::TimeDelta());
   EXPECT_FALSE(arc_session());
 
@@ -304,6 +351,7 @@ TEST_F(ArcSessionRunnerTest, Restart) {
 }
 
 TEST_F(ArcSessionRunnerTest, GracefulStop) {
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->SetRestartDelayForTesting(base::TimeDelta());
   EXPECT_FALSE(arc_session());
 
@@ -320,6 +368,7 @@ TEST_F(ArcSessionRunnerTest, GracefulStop) {
 }
 
 TEST_F(ArcSessionRunnerTest, Shutdown) {
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->SetRestartDelayForTesting(base::TimeDelta());
   EXPECT_FALSE(arc_session());
 
@@ -335,6 +384,7 @@ TEST_F(ArcSessionRunnerTest, Shutdown) {
 
 // Removing the same observer more than once should be okay.
 TEST_F(ArcSessionRunnerTest, RemoveObserverTwice) {
+  arc_session_runner()->ResumeRunner();
   EXPECT_FALSE(arc_session());
 
   DoNothingObserver do_nothing_observer;
@@ -346,6 +396,7 @@ TEST_F(ArcSessionRunnerTest, RemoveObserverTwice) {
 
 // Removing an unknown observer should be allowed.
 TEST_F(ArcSessionRunnerTest, RemoveUnknownObserver) {
+  arc_session_runner()->ResumeRunner();
   EXPECT_FALSE(arc_session());
 
   DoNothingObserver do_nothing_observer;
@@ -356,6 +407,7 @@ TEST_F(ArcSessionRunnerTest, RemoveUnknownObserver) {
 TEST_F(ArcSessionRunnerTest, UmaRecording_StartUpgradeShutdown) {
   base::HistogramTester tester;
 
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->RequestStartMiniInstance();
   tester.ExpectUniqueSample("Arc.ContainerLifetimeEvent", kContainerStarting,
                             1 /* count of the sample */);
@@ -375,6 +427,7 @@ TEST_F(ArcSessionRunnerTest, UmaRecording_StartUpgradeShutdown) {
 TEST_F(ArcSessionRunnerTest, UmaRecording_StartShutdown) {
   base::HistogramTester tester;
 
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->RequestUpgrade(DefaultUpgradeParams());
   tester.ExpectUniqueSample("Arc.ContainerLifetimeEvent", kContainerStarting,
                             1);
@@ -388,6 +441,7 @@ TEST_F(ArcSessionRunnerTest, UmaRecording_StartShutdown) {
 TEST_F(ArcSessionRunnerTest, UmaRecording_CrashTwice) {
   base::HistogramTester tester;
 
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->SetRestartDelayForTesting(base::TimeDelta());
   EXPECT_FALSE(arc_session());
 
@@ -418,6 +472,7 @@ TEST_F(ArcSessionRunnerTest, UmaRecording_CrashTwice) {
 TEST_F(ArcSessionRunnerTest, UmaRecording_CrashMini) {
   base::HistogramTester tester;
 
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->RequestStartMiniInstance();
   tester.ExpectUniqueSample("Arc.ContainerLifetimeEvent", kContainerStarting,
                             1);
@@ -437,6 +492,7 @@ TEST_F(ArcSessionRunnerTest, UmaRecording_CrashMini) {
 TEST_F(ArcSessionRunnerTest, UmaRecording_BootFail) {
   base::HistogramTester tester;
 
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->RequestStartMiniInstance();
   tester.ExpectUniqueSample("Arc.ContainerLifetimeEvent", kContainerStarting,
                             1);
@@ -455,6 +511,7 @@ TEST_F(ArcSessionRunnerTest, UmaRecording_BootFail) {
 TEST_F(ArcSessionRunnerTest, UmaRecording_LowDisk) {
   base::HistogramTester tester;
 
+  arc_session_runner()->ResumeRunner();
   arc_session_runner()->RequestUpgrade(DefaultUpgradeParams());
   tester.ExpectUniqueSample("Arc.ContainerLifetimeEvent", kContainerStarting,
                             1);

@@ -76,6 +76,22 @@ public class MediaPlayerBridge {
         getLocalPlayer().setSurface(surface);
     }
 
+    @SuppressLint("NewApi")
+    @CalledByNative
+    protected void setPlaybackRate(double speed) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) return;
+
+        Log.w(TAG, "Unexpectedly setting playback speed to 0.");
+        try {
+            MediaPlayer player = getLocalPlayer();
+            player.setPlaybackParams(player.getPlaybackParams().setSpeed((float) speed));
+        } catch (IllegalStateException ise) {
+            Log.e(TAG, "Unable to set playback rate", ise);
+        } catch (IllegalArgumentException iae) {
+            Log.e(TAG, "Unable to set playback rate", iae);
+        }
+    }
+
     @CalledByNative
     protected boolean prepareAsync() {
         try {
@@ -140,12 +156,9 @@ public class MediaPlayerBridge {
         if (hideUrlLog) headersMap.put("x-hide-urls-from-log", "true");
         if (!TextUtils.isEmpty(cookies)) headersMap.put("Cookie", cookies);
         if (!TextUtils.isEmpty(userAgent)) headersMap.put("User-Agent", userAgent);
-        // The security origin check is enforced for devices above K. For devices below K,
-        // only anonymous media HTTP request (no cookies) may be considered same-origin.
-        // Note that if the server rejects the request we must not consider it same-origin.
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT) {
-            headersMap.put("allow-cross-domain-redirect", "false");
-        }
+
+        headersMap.put("android-allow-cross-domain-redirect", "0");
+
         try {
             getLocalPlayer().setDataSource(ContextUtils.getApplicationContext(), uri, headersMap);
             return true;
@@ -296,7 +309,7 @@ public class MediaPlayerBridge {
         boolean canSeekForward = true;
         boolean canSeekBackward = true;
         try {
-            @SuppressLint("PrivateApi")
+            @SuppressLint({"DiscouragedPrivateApi", "PrivateApi"})
             Method getMetadata = player.getClass().getDeclaredMethod(
                     "getMetadata", boolean.class, boolean.class);
             getMetadata.setAccessible(true);

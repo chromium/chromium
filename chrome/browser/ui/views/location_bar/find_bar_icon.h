@@ -5,15 +5,20 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_FIND_BAR_ICON_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_FIND_BAR_ICON_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 class Browser;
 
 // The find icon to show when the find bar is visible.
 class FindBarIcon : public PageActionIconView {
  public:
-  FindBarIcon(Browser* browser, PageActionIconView::Delegate* delegate);
+  METADATA_HEADER(FindBarIcon);
+  FindBarIcon(Browser* browser,
+              IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+              PageActionIconView::Delegate* page_action_icon_delegate);
+  FindBarIcon(const FindBarIcon&) = delete;
+  FindBarIcon& operator=(const FindBarIcon&) = delete;
   ~FindBarIcon() override;
 
   void SetActive(bool activate, bool should_animate);
@@ -22,13 +27,11 @@ class FindBarIcon : public PageActionIconView {
   // PageActionIconView:
   void UpdateImpl() override;
   void OnExecuting(ExecuteSource execute_source) override;
-  views::BubbleDialogDelegateView* GetBubble() const override;
+  views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(FindBarIcon);
-
   Browser* browser_ = nullptr;
 };
 

@@ -27,9 +27,9 @@ struct UploadResponse {
       : callback(base::BindOnce(&UploadResponse::OnComplete,
                                 base::Unretained(this))) {}
 
-  void OnComplete(int error_code, std::vector<base::File> opened_files) {
-    this->error_code = error_code;
-    this->opened_files = std::move(opened_files);
+  void OnComplete(int error, std::vector<base::File> opened) {
+    error_code = error;
+    opened_files = std::move(opened);
   }
 
   network::mojom::NetworkContextClient::OnFileUploadRequestedCallback callback;
@@ -125,7 +125,9 @@ TEST_F(NetworkContextClientBaseTest, UploadOneValidFile) {
 }
 
 #if defined(OS_ANDROID)
-TEST_F(NetworkContextClientBaseTest, UploadOneValidFileWithContentUri) {
+// Flakily fails on Android bots. See http://crbug.com/1027790
+TEST_F(NetworkContextClientBaseTest,
+       DISABLED_UploadOneValidFileWithContentUri) {
   base::FilePath image_path;
   EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &image_path));
   image_path = image_path.AppendASCII("content")

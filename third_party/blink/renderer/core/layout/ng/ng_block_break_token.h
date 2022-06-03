@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_BREAK_TOKEN_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BLOCK_BREAK_TOKEN_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_break_token_data.h"
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_break_token.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -14,6 +17,7 @@
 
 namespace blink {
 
+class NGBoxFragmentBuilder;
 class NGInlineBreakToken;
 
 // Represents a break token for a block node.
@@ -24,40 +28,18 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   //
   // The node is NGBlockNode, or any other NGLayoutInputNode that produces
   // anonymous box.
-  static scoped_refptr<NGBlockBreakToken> Create(
-      NGLayoutInputNode node,
-      LayoutUnit consumed_block_size,
-      const NGBreakTokenVector& child_break_tokens,
-      NGBreakAppeal break_appeal,
-      bool has_seen_all_children) {
-    // We store the children list inline in the break token as a flexible
-    // array. Therefore, we need to make sure to allocate enough space for
-    // that array here, which requires a manual allocation + placement new.
-    void* data = ::WTF::Partitions::FastMalloc(
-        sizeof(NGBlockBreakToken) +
-            child_break_tokens.size() * sizeof(NGBreakToken*),
-        ::WTF::GetStringWithTypeName<NGBlockBreakToken>());
-    new (data) NGBlockBreakToken(PassKey(), node, consumed_block_size,
-                                 child_break_tokens, break_appeal,
-                                 has_seen_all_children);
-    return base::AdoptRef(static_cast<NGBlockBreakToken*>(data));
-  }
+  static NGBlockBreakToken* Create(NGBoxFragmentBuilder*);
 
   // Creates a break token for a node that needs to produce its first fragment
   // in the next fragmentainer. In this case we create a break token for a node
   // that hasn't yet produced any fragments.
-  static scoped_refptr<NGBlockBreakToken> CreateBreakBefore(
-      NGLayoutInputNode node,
-      bool is_forced_break) {
-    auto* token = new NGBlockBreakToken(PassKey(), node);
+  static NGBlockBreakToken* CreateBreakBefore(NGLayoutInputNode node,
+                                              bool is_forced_break) {
+    auto* token = MakeGarbageCollected<NGBlockBreakToken>(PassKey(), node);
     token->is_break_before_ = true;
     token->is_forced_break_ = is_forced_break;
-    return base::AdoptRef(token);
-  }
-
-  ~NGBlockBreakToken() override {
-    for (const NGBreakToken* token : ChildBreakTokens())
-      token->Release();
+    token->has_unpositioned_list_marker_ = node.IsListItem();
+    return token;
   }
 
   // Represents the amount of block-size consumed by previous fragments.
@@ -69,6 +51,38 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // the fragmentainer is shorter than 50px, for instance).
   LayoutUnit ConsumedBlockSize() const { return consumed_block_size_; }
 
+  // The consumed block size when writing back to legacy layout. The only time
+  // this may be different than ConsumedBlockSize() is in the case of a
+  // fragmentainer. We clamp the fragmentainer block size from 0 to 1 for legacy
+  // write-back only in the case where there is content that overflows the
+  // zero-height fragmentainer. This can result in a different consumed block
+  // size when used for legacy. This difference is represented by
+  // |consumed_block_size_legacy_adjustment_|.
+  LayoutUnit ConsumedBlockSizeForLegacy() const {
+    return consumed_block_size_ + consumed_block_size_legacy_adjustment_;
+  }
+
+  // A unique identifier for a fragment that generates a break token. This is
+  // unique within the generating layout input node. The break token of the
+  // first fragment gets 0, then second 1, and so on. Note that we don't "count"
+  // break tokens that aren't associated with a fragment (this happens when we
+  // want a fragmentainer break before laying out the node). What the sequence
+  // number is for such a break token is undefined.
+  unsigned SequenceNumber() const {
+    DCHECK(!IsBreakBefore());
+    return sequence_number_;
+  }
+
+  const NGFlexBreakTokenData& FlexData() const {
+    DCHECK(flex_data_);
+    return *flex_data_;
+  }
+
+  const NGGridBreakTokenData& GridData() const {
+    DCHECK(grid_data_);
+    return *grid_data_;
+  }
+
   // Return true if this is a break token that was produced without any
   // "preceding" fragment. This happens when we determine that the first
   // fragment for a node needs to be created in a later fragmentainer than the
@@ -77,11 +91,42 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
 
   bool IsForcedBreak() const { return is_forced_break_; }
 
+  bool IsCausedByColumnSpanner() const { return is_caused_by_column_spanner_; }
+
   // Return true if all children have been "seen". When we have reached this
   // point, and resume layout in a fragmentainer, we should only process child
   // break tokens, if any, and not attempt to start laying out nodes that don't
   // have one (since all children are either finished, or have a break token).
   bool HasSeenAllChildren() const { return has_seen_all_children_; }
+
+  // Return true if layout was past the block-end border edge of the node when
+  // it fragmented. This typically means that something is overflowing the node,
+  // and that establishes a parallel flow [1]. Subsequent content may be put
+  // into the same fragmentainer as a fragment whose break token is in this
+  // state, as long as it fits.
+  //
+  // [1] https://www.w3.org/TR/css-break-3/#parallel-flows
+  //
+  // <div style="columns:2; column-fill:auto; height:100px;">
+  //   <div id="a" style="height:100px;">
+  //     <div id="inner" style="height:200px;"></div>
+  //   </div>
+  //   <div id="b" style="margin-top:-30px; height:30px;"></div>
+  // </div>
+  //
+  // #a and #b will be in the first column, while #inner will be in both the
+  // first and second one. The important detail here is that we're at the end of
+  // #a exactly at the bottom of the first column - even if #a broke inside
+  // because of #child. This means that we have no space left as such, but we're
+  // not ready to proceed to the next column. Anything that can fit at the
+  // bottom of a column (either because it actually has 0 height, or e.g. a
+  // negative top margin) will be put into that column, not the next.
+  bool IsAtBlockEnd() const { return is_at_block_end_; }
+
+  // True if earlier fragments could not position the list marker.
+  bool HasUnpositionedListMarker() const {
+    return has_unpositioned_list_marker_;
+  }
 
   // The break tokens for children of the layout node.
   //
@@ -91,8 +136,8 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   // this child).
   //
   // A child which we haven't visited yet doesn't have a break token here.
-  const base::span<const NGBreakToken* const> ChildBreakTokens() const {
-    return base::make_span(child_break_tokens_, num_children_);
+  const base::span<const Member<const NGBreakToken>> ChildBreakTokens() const {
+    return base::make_span(child_break_tokens_, const_num_children_);
   }
 
   // Find the child NGInlineBreakToken for the specified node.
@@ -103,25 +148,55 @@ class CORE_EXPORT NGBlockBreakToken final : public NGBreakToken {
   String ToString() const override;
 #endif
 
-  using PassKey = util::PassKey<NGBlockBreakToken>;
+  using PassKey = base::PassKey<NGBlockBreakToken>;
 
   // Must only be called from Create(), because it assumes that enough space
   // has been allocated in the flexible array to store the children.
-  NGBlockBreakToken(PassKey,
-                    NGLayoutInputNode node,
-                    LayoutUnit consumed_block_size,
-                    const NGBreakTokenVector& child_break_tokens,
-                    NGBreakAppeal break_appeal,
-                    bool has_seen_all_children);
+  NGBlockBreakToken(PassKey, NGBoxFragmentBuilder*);
 
   explicit NGBlockBreakToken(PassKey, NGLayoutInputNode node);
 
+  // This exposes a mutable part of the break token for |NGOutOfFlowLayoutPart|.
+  class MutableForOutOfFlow final {
+    STACK_ALLOCATED();
+
+   protected:
+    friend class NGOutOfFlowLayoutPart;
+    // Replace the child break token at the provided |index|.
+    void ReplaceChildBreakToken(const NGBreakToken* child_break_token,
+                                wtf_size_t index) {
+      DCHECK_LT(index, break_token_->const_num_children_);
+      break_token_->child_break_tokens_[index] = child_break_token;
+    }
+
+   private:
+    friend class NGBlockBreakToken;
+    explicit MutableForOutOfFlow(const NGBlockBreakToken* break_token)
+        : break_token_(const_cast<NGBlockBreakToken*>(break_token)) {}
+
+    NGBlockBreakToken* break_token_;
+  };
+
+  MutableForOutOfFlow GetMutableForOutOfFlow() const {
+    return MutableForOutOfFlow(this);
+  }
+
+  void Trace(Visitor*) const override;
+
  private:
   LayoutUnit consumed_block_size_;
+  LayoutUnit consumed_block_size_legacy_adjustment_;
 
-  wtf_size_t num_children_;
+  // TODO(almaher): We won't ever need both of these at the same time.
+  // Consider subclasses instead.
+  std::unique_ptr<const NGFlexBreakTokenData> flex_data_;
+  std::unique_ptr<const NGGridBreakTokenData> grid_data_;
+
+  unsigned sequence_number_ = 0;
+
+  const wtf_size_t const_num_children_;
   // This must be the last member, because it is a flexible array.
-  const NGBreakToken* child_break_tokens_[];
+  Member<const NGBreakToken> child_break_tokens_[];
 };
 
 template <>

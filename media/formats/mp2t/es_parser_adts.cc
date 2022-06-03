@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/bit_reader.h"
@@ -21,6 +20,7 @@
 #include "media/formats/common/offset_byte_queue.h"
 #include "media/formats/mp2t/mp2t_common.h"
 #include "media/formats/mpeg/adts_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -115,11 +115,11 @@ void EsParserAdts::SkipAdtsFrame(const AdtsFrame& adts_frame) {
   es_queue_->Pop(adts_frame.size);
 }
 
-EsParserAdts::EsParserAdts(const NewAudioConfigCB& new_audio_config_cb,
-                           const EmitBufferCB& emit_buffer_cb,
+EsParserAdts::EsParserAdts(NewAudioConfigCB new_audio_config_cb,
+                           EmitBufferCB emit_buffer_cb,
                            bool sbr_in_mimetype)
-    : new_audio_config_cb_(new_audio_config_cb),
-      emit_buffer_cb_(emit_buffer_cb),
+    : new_audio_config_cb_(std::move(new_audio_config_cb)),
+      emit_buffer_cb_(std::move(emit_buffer_cb)),
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
       get_decrypt_config_cb_(),
       init_encryption_scheme_(EncryptionScheme::kUnencrypted),
@@ -128,14 +128,14 @@ EsParserAdts::EsParserAdts(const NewAudioConfigCB& new_audio_config_cb,
 }
 
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
-EsParserAdts::EsParserAdts(const NewAudioConfigCB& new_audio_config_cb,
-                           const EmitBufferCB& emit_buffer_cb,
-                           const GetDecryptConfigCB& get_decrypt_config_cb,
+EsParserAdts::EsParserAdts(NewAudioConfigCB new_audio_config_cb,
+                           EmitBufferCB emit_buffer_cb,
+                           GetDecryptConfigCB get_decrypt_config_cb,
                            EncryptionScheme init_encryption_scheme,
                            bool sbr_in_mimetype)
-    : new_audio_config_cb_(new_audio_config_cb),
-      emit_buffer_cb_(emit_buffer_cb),
-      get_decrypt_config_cb_(get_decrypt_config_cb),
+    : new_audio_config_cb_(std::move(new_audio_config_cb)),
+      emit_buffer_cb_(std::move(emit_buffer_cb)),
+      get_decrypt_config_cb_(std::move(get_decrypt_config_cb)),
       init_encryption_scheme_(init_encryption_scheme),
       sbr_in_mimetype_(sbr_in_mimetype) {}
 #endif
@@ -263,8 +263,8 @@ bool EsParserAdts::UpdateAudioConfiguration(const uint8_t* adts_header,
   scheme = init_encryption_scheme_;
 #endif
   AudioDecoderConfig audio_decoder_config(
-      kCodecAAC, kSampleFormatS16, channel_layout, extended_samples_per_second,
-      extra_data, scheme);
+      AudioCodec::kAAC, kSampleFormatS16, channel_layout,
+      extended_samples_per_second, extra_data, scheme);
 
   if (!audio_decoder_config.IsValidConfig()) {
     DVLOG(1) << "Invalid config: "

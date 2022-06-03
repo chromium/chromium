@@ -22,9 +22,9 @@ class DualMetricMeasurement(story_test.StoryTest):
     else:
       self._enable_tracing = False
 
-  def WillRunStory(self, platform):
+  def WillRunStory(self, platform, story=None):
     if self._enable_tracing:
-      self._tbm_test.WillRunStory(platform)
+      self._tbm_test.WillRunStory(platform, story)
 
   def Measure(self, platform, results):
     for value in results.current_story.GetMeasurements():

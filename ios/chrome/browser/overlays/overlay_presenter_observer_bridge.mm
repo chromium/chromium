@@ -4,7 +4,8 @@
 
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "ios/chrome/browser/overlays/public/overlay_request_support.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -18,12 +19,25 @@ OverlayPresenterObserverBridge::OverlayPresenterObserverBridge(
 
 OverlayPresenterObserverBridge::~OverlayPresenterObserverBridge() = default;
 
+const OverlayRequestSupport* OverlayPresenterObserverBridge::GetRequestSupport(
+    OverlayPresenter* presenter) const {
+  if ([observer_
+          respondsToSelector:@selector(overlayRequestSupportForPresenter:)]) {
+    return [observer_ overlayRequestSupportForPresenter:presenter];
+  }
+  return OverlayRequestSupport::All();
+}
+
 void OverlayPresenterObserverBridge::WillShowOverlay(
     OverlayPresenter* presenter,
-    OverlayRequest* request) {
-  if ([observer_ respondsToSelector:@selector(overlayPresenter:
-                                        willShowOverlayForRequest:)]) {
-    [observer_ overlayPresenter:presenter willShowOverlayForRequest:request];
+    OverlayRequest* request,
+    bool initial_presentation) {
+  if ([observer_ respondsToSelector:@selector
+                 (overlayPresenter:
+                     willShowOverlayForRequest:initialPresentation:)]) {
+    [observer_ overlayPresenter:presenter
+        willShowOverlayForRequest:request
+              initialPresentation:initial_presentation];
   }
 }
 

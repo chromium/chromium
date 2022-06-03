@@ -4,23 +4,26 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
+import android.text.TextUtils;
 import android.text.format.DateUtils;
 import android.util.Pair;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ResolvedSearchTerm.CardTag;
-import org.chromium.components.sync.AndroidSyncSettings;
+import org.chromium.chrome.browser.sync.SyncService;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Centralizes UMA data collection for Contextual Search. All calls must be made from the UI thread.
@@ -30,10 +33,16 @@ public class ContextualSearchUma {
     private static final boolean LONG_PRESS = false;
     private static final boolean TAP = true;
 
-    // Constants used to log UMA "enum" histograms about the Contextual Search's preference state.
-    @IntDef({Preference.UNINITIALIZED, Preference.ENABLED, Preference.DISABLED})
+    /** A pattern to determine if text contains any whitespace. */
+    private static final Pattern CONTAINS_WHITESPACE_PATTERN = Pattern.compile("\\s");
+
+    // Constants with ContextualSearchPreferenceState in enums.xml.
+    // These values are persisted to logs. Entries should not be renumbered and
+    // numeric values should never be reused.
+    @IntDef({ContextualSearchPreference.UNINITIALIZED, ContextualSearchPreference.ENABLED,
+            ContextualSearchPreference.DISABLED})
     @Retention(RetentionPolicy.SOURCE)
-    private @interface Preference {
+    public @interface ContextualSearchPreference {
         int UNINITIALIZED = 0;
         int ENABLED = 1;
         int DISABLED = 2;
@@ -556,15 +565,17 @@ public class ContextualSearchUma {
     static {
         Map<Pair<Integer, Boolean>, Integer> codes =
                 new HashMap<Pair<Integer, Boolean>, Integer>();
-        codes.put(new Pair<Integer, Boolean>(Preference.ENABLED, TAP), Promo.ENABLED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(Preference.DISABLED, TAP), Promo.DISABLED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(Preference.UNINITIALIZED, TAP),
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.ENABLED, TAP),
+                Promo.ENABLED_FROM_TAP);
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.DISABLED, TAP),
+                Promo.DISABLED_FROM_TAP);
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.UNINITIALIZED, TAP),
                 Promo.UNDECIDED_FROM_TAP);
-        codes.put(new Pair<Integer, Boolean>(Preference.ENABLED, LONG_PRESS),
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.ENABLED, LONG_PRESS),
                 Promo.ENABLED_FROM_LONG_PRESS);
-        codes.put(new Pair<Integer, Boolean>(Preference.DISABLED, LONG_PRESS),
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.DISABLED, LONG_PRESS),
                 Promo.DISABLED_FROM_LONG_PRESS);
-        codes.put(new Pair<Integer, Boolean>(Preference.UNINITIALIZED, LONG_PRESS),
+        codes.put(new Pair<Integer, Boolean>(ContextualSearchPreference.UNINITIALIZED, LONG_PRESS),
                 Promo.UNDECIDED_FROM_LONG_PRESS);
         PROMO_BY_GESTURE_CODES = Collections.unmodifiableMap(codes);
     }
@@ -576,7 +587,7 @@ public class ContextualSearchUma {
      */
     public static void logPreferenceState() {
         RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchPreferenceState",
-                getPreferenceValue(), Preference.NUM_ENTRIES);
+                getPreferenceValue(), ContextualSearchPreference.NUM_ENTRIES);
     }
 
     /**
@@ -625,6 +636,15 @@ public class ContextualSearchUma {
     }
 
     /**
+     * Records the total count of times the revised promo card has *ever* been opened. This should
+     * only be called when the user is still undecided.
+     * @param count The total historic count of times the revised promo card ever been shown.
+     */
+    public static void logRevisedPromoOpenCount(int count) {
+        RecordHistogram.recordCountHistogram("Search.ContextualSearchPromoOpenCount2", count);
+    }
+
+    /**
      * Logs the number of taps that have been counted since the user last opened the panel, for
      * undecided users.
      * @param tapsSinceOpen The number of taps to log.
@@ -669,9 +689,27 @@ public class ContextualSearchUma {
      * run flow.
      * @param enabled Whether the preference is being enabled or disabled.
      */
-    public static void logPreferenceChange(boolean enabled) {
+    public static void logMainPreferenceChange(boolean enabled) {
         RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchPreferenceStateChange",
-                enabled ? Preference.ENABLED : Preference.DISABLED, Preference.NUM_ENTRIES);
+                enabled ? ContextualSearchPreference.ENABLED : ContextualSearchPreference.DISABLED,
+                ContextualSearchPreference.NUM_ENTRIES);
+    }
+
+    /**
+     * Logs changes to the Contextual Search privacy opt-in preference.
+     * @param enabled Whether the opt-in preference is being enabled or disabled.
+     */
+    public static void logPrivacyOptInPreferenceChange(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearchPrivacyOptInPreferenceStateChange", enabled);
+    }
+
+    /**
+     * Logs the user's choice for the Contextual Search Promo Card.
+     * @param enabled Whether the opt-in to full privacy is being chosen.
+     */
+    public static void logPromoCardChoice(boolean enabled) {
+        RecordHistogram.recordBooleanHistogram("Search.ContextualSearchPromoCardChoice", enabled);
     }
 
     /**
@@ -683,7 +721,7 @@ public class ContextualSearchUma {
     public static void logPromoOutcome(boolean wasTap, boolean wasMandatory) {
         int preferenceCode = getPreferenceValue();
         RecordHistogram.recordEnumeratedHistogram("Search.ContextualSearchFirstRunFlowOutcome",
-                preferenceCode, Preference.NUM_ENTRIES);
+                preferenceCode, ContextualSearchPreference.NUM_ENTRIES);
 
         int preferenceByGestureCode = getPromoByGestureStateCode(preferenceCode, wasTap);
         if (wasMandatory) {
@@ -774,6 +812,26 @@ public class ContextualSearchUma {
     }
 
     /**
+     * Logs whether we have ever shown an In-Product Help for Translations suggesting that the user
+     * Opt-in.
+     * @param wasIPHShown Whether In-Product help was shown.
+     */
+    public static void logTranslationsOptInIPHShown(boolean wasIPHShown) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.TranslationsOptInIPHShown", wasIPHShown);
+    }
+
+    /**
+     * Logs whether the user actually did opt-in after seeing the In-Product Help for Translations
+     * suggesting that the user should Opt-in.
+     * @param didOptIn Whether the user did opt-in.
+     */
+    public static void logTranslationsOptInIPHWorked(boolean didOptIn) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.TranslationsOptInIPHWorked", didOptIn);
+    }
+
+    /**
      * Logs a user action for the duration of viewing the panel that describes the amount of time
      * the user viewed the bar and panel overall.
      * @param durationMs The duration to record.
@@ -824,7 +882,7 @@ public class ContextualSearchUma {
     public static void logTapResultsSeen(boolean wasPanelSeen) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearch.Tap.ResultsSeen", wasPanelSeen);
-        if (AndroidSyncSettings.get().isSyncEnabled()) {
+        if (SyncService.get() != null && SyncService.get().isSyncRequested()) {
             RecordHistogram.recordBooleanHistogram(
                     "Search.ContextualSearch.Tap.SyncEnabled.ResultsSeen", wasPanelSeen);
         }
@@ -837,6 +895,47 @@ public class ContextualSearchUma {
     public static void logAllResultsSeen(boolean wasPanelSeen) {
         RecordHistogram.recordBooleanHistogram(
                 "Search.ContextualSearch.All.ResultsSeen", wasPanelSeen);
+        // Log a user action for the wasPanelSeen case. This value is used as part of a high-level
+        // guiding metric, which is being migrated to user actions.
+        if (wasPanelSeen) {
+            RecordUserAction.record("Search.ContextualSearch.All.ResultsSeen.true");
+        }
+    }
+
+    /**
+     * Logs all searches that were displayed to the user in a Search Result Page in the panel.
+     * @param wasRelatedSearches Whether the search was due to Related Searches (as opposed to
+     *      being a regular Contextual Search query).
+     */
+    public static void logAllSearches(boolean wasRelatedSearches) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.All.Searches", wasRelatedSearches);
+    }
+
+    /**
+     * Logs a User Action for promoting the Overlay into it's own separate Tab.
+     * @param isShowingRelatedSearchSerp Whether the current SERP shown in the Overlay is from
+     *    Related Searches or not (just a plain Contextual Search).
+     */
+    public static void logTabPromotion(boolean isShowingRelatedSearchSerp) {
+        if (isShowingRelatedSearchSerp) {
+            RecordUserAction.record("RelatedSearches.TabPromotion");
+        } else {
+            RecordUserAction.record("ContextualSearch.TabPromotion");
+        }
+    }
+
+    /**
+     * Logs a User Action for clicking on a search result in the Search Result Page.
+     * @param isShowingRelatedSearchSerp Whether the current SERP shown in the Overlay is from
+     *    Related Searches or not (just a plain Contextual Search).
+     */
+    public static void logSerpResultClicked(boolean isShowingRelatedSearchSerp) {
+        if (isShowingRelatedSearchSerp) {
+            RecordUserAction.record("RelatedSearches.SerpResultClicked");
+        } else {
+            RecordUserAction.record("ContextualSearch.SerpResultClicked");
+        }
     }
 
     /**
@@ -1234,6 +1333,75 @@ public class ContextualSearchUma {
     }
 
     /**
+     * Logs that the user established a new selection when Contextual Search is active.
+     */
+    public static void logSelectionEstablished() {
+        RecordUserAction.record("ContextualSearch.SelectionEstablished");
+    }
+
+    /**
+     * Logs that the user manually adjusted a selection when Contextual Search is active.
+     * @param selection The new selection.
+     */
+    public static void logSelectionAdjusted(@Nullable String selection) {
+        if (TextUtils.isEmpty(selection)) return;
+
+        boolean isSingleWord = !CONTAINS_WHITESPACE_PATTERN.matcher(selection.trim()).find();
+        if (isSingleWord) {
+            RecordUserAction.record("ContextualSearch.ManualRefineSingleWord");
+        } else {
+            RecordUserAction.record("ContextualSearch.ManualRefineMultiWord");
+        }
+    }
+
+    /** Logs a UserAction that the user just acknowledged the Longpress in-panel-help. */
+    static void logInPanelHelpAcknowledged() {
+        RecordUserAction.record("ContextualSearch.logInPanelHelpAcknowledged");
+    }
+
+    /**
+     * Logs that the system automatically expanded the selection when a user triggered
+     * Contextual Search on a multiword phrase that could be identified by the server.
+     * @param fromTapGesture Whether the gesture that originally established the selection
+     *        was Tap.
+     */
+    public static void logSelectionExpanded(boolean fromTapGesture) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.SelectionExpanded", fromTapGesture);
+    }
+
+    /**
+     * Logs that the system sent a server request to resolve the search term.
+     * @param fromTapGesture Whether the gesture that originally established the selection
+     *        was Tap.
+     */
+    public static void logResolveRequested(boolean fromTapGesture) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.ResolveRequested", fromTapGesture);
+    }
+
+    /**
+     * Logs that the system received a server response from a resolve request.
+     * @param fromTapGesture Whether the gesture that originally established the selection
+     *        was Tap.
+     */
+    public static void logResolveReceived(boolean fromTapGesture) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.ResolveReceived", fromTapGesture);
+    }
+
+    /**
+     * Logs that the user needs a translation of the selection. The user may or may not actually
+     * see a translation - this only logs that it's needed.
+     * @param fromTapGesture Whether the gesture that originally established the selection
+     *        was Tap.
+     */
+    public static void logTranslationNeeded(boolean fromTapGesture) {
+        RecordHistogram.recordBooleanHistogram(
+                "Search.ContextualSearch.TranslationNeeded", fromTapGesture);
+    }
+
+    /**
      * Logs how a state was exited for the first time within a Contextual Search.
      * @param fromState The state to transition from.
      * @param toState The state to transition to.
@@ -1388,7 +1556,7 @@ public class ContextualSearchUma {
         if (quickActionShown) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Search.ContextualSearchQuickActions.Category", quickActionCategory,
-                    QuickActionResolve.NUM_ENTRIES);
+                    QuickActionCategory.BOUNDARY);
         }
     }
 
@@ -1564,12 +1732,12 @@ public class ContextualSearchUma {
      * @return The code for the Contextual Search preference.
      */
     private static int getPreferenceValue() {
-        if (ContextualSearchManager.isContextualSearchUninitialized()) {
-            return Preference.UNINITIALIZED;
-        } else if (ContextualSearchManager.isContextualSearchDisabled()) {
-            return Preference.DISABLED;
+        if (ContextualSearchPolicy.isContextualSearchUninitialized()) {
+            return ContextualSearchPreference.UNINITIALIZED;
+        } else if (ContextualSearchPolicy.isContextualSearchDisabled()) {
+            return ContextualSearchPreference.DISABLED;
         }
-        return Preference.ENABLED;
+        return ContextualSearchPreference.ENABLED;
     }
 
     /**

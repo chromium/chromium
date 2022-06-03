@@ -9,25 +9,20 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.pbzero.h"
 #include "ui/gfx/geometry/point_f.h"
 
 #if !defined(OS_IOS)
 #include "ipc/ipc_param_traits.h"  // nogncheck
 #include "mojo/public/cpp/bindings/struct_traits.h"  // nogncheck
 #endif
-
-namespace base {
-namespace trace_event {
-class ConvertableToTraceFormat;
-}
-}
 
 namespace ui {
 
@@ -39,6 +34,11 @@ class LatencyInfoDataView;
 
 // When adding new components, or new metrics based on LatencyInfo,
 // please update latency_info.dot.
+//
+// When adding new components, please update
+// //third_party/perfetto/protos/perfetto/trace/track_event/chrome_latency_info.proto
+// so both this and the internal versions can be kept up to date. Or reach out
+// to tracing@chromium.org so we can assist.
 enum LatencyComponentType {
   // ---------------------------BEGIN COMPONENT-------------------------------
   // BEGIN COMPONENT is when we show the latency begin in chrome://tracing.
@@ -64,8 +64,6 @@ enum LatencyComponentType {
   INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT,
   // Original timestamp of the last event that has been coalesced into this one.
   INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-  // Timestamp when the event's ack is received by the RWH.
-  INPUT_EVENT_LATENCY_ACK_RWH_COMPONENT,
   // Timestamp when the frame is swapped in renderer.
   INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT,
   // Timestamp of when the display compositor receives a compositor frame from
@@ -128,7 +126,7 @@ class LatencyInfo {
   // Adds trace flow events only to LatencyInfos that are being traced.
   static void TraceIntermediateFlowEvents(
       const std::vector<LatencyInfo>& latency_info,
-      const char* trace_name);
+      perfetto::protos::pbzero::ChromeLatencyInfo::Step step);
 
   // Copy timestamp with type |type| from |other| into |this|.
   void CopyLatencyFrom(const LatencyInfo& other, LatencyComponentType type);
@@ -183,7 +181,6 @@ class LatencyInfo {
   void set_trace_id(int64_t trace_id) { trace_id_ = trace_id; }
   ukm::SourceId ukm_source_id() const { return ukm_source_id_; }
   void set_ukm_source_id(ukm::SourceId id) { ukm_source_id_ = id; }
-  const std::string& trace_name() const { return trace_name_; }
   void set_scroll_update_delta(float delta) { scroll_update_delta_ = delta; }
   float scroll_update_delta() const { return scroll_update_delta_; }
   void set_predicted_scroll_update_delta(float delta) {
@@ -192,19 +189,15 @@ class LatencyInfo {
   float predicted_scroll_update_delta() const {
     return predicted_scroll_update_delta_;
   }
+  int64_t gesture_scroll_id() const { return gesture_scroll_id_; }
+  void set_gesture_scroll_id(int64_t id) { gesture_scroll_id_ = id; }
+  int64_t touch_trace_id() const { return touch_trace_id_; }
+  void set_touch_trace_id(int64_t id) { touch_trace_id_ = id; }
 
  private:
   void AddLatencyNumberWithTimestampImpl(LatencyComponentType component,
                                          base::TimeTicks time,
                                          const char* trace_name_str);
-
-  // Converts latencyinfo into format that can be dumped into trace buffer.
-  std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
-  AsTraceableData();
-
-  // Shown as part of the name of the trace event for this LatencyInfo.
-  // String is empty if no tracing is enabled.
-  std::string trace_name_;
 
   LatencyMap latency_components_;
 
@@ -224,6 +217,18 @@ class LatencyInfo {
 
   float scroll_update_delta_;
   float predicted_scroll_update_delta_;
+
+  // The unique id for denoting a scroll gesture. This is only set for
+  // GestureScrollBegin, GestureScrollUpdate, and GestureScrollEnd events, and
+  // allows easy grouping of these global async events into a single logical
+  // scroll in the sql interface of TBMv3 (Trace Based Metrics v3). As a current
+  // implementation detail this unique id comes from the |trace_id| of the
+  // associated GestureScrollBegin (-1 if there was none or it wasn't valid).
+  int64_t gesture_scroll_id_;
+  // The unique id for denoting a touch, tracking from TouchStart through
+  // TouchMoves to TouchEnd. Used for TBMv3 metrics as in the same way as
+  // gesture_scroll_id_.
+  int64_t touch_trace_id_;
 
 #if !defined(OS_IOS)
   friend struct IPC::ParamTraits<ui::LatencyInfo>;

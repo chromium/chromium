@@ -24,6 +24,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothServiceRecordWin {
                             const std::vector<uint8_t>& sdp_bytes,
                             const BluetoothUUID& gatt_uuid);
 
+  BluetoothServiceRecordWin(const BluetoothServiceRecordWin&) = delete;
+  BluetoothServiceRecordWin& operator=(const BluetoothServiceRecordWin&) =
+      delete;
+
   bool IsEqual(const BluetoothServiceRecordWin& other);
 
   // The BTH_ADDR address of the BluetoothDevice providing this service.
@@ -54,8 +58,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothServiceRecordWin {
 
   bool supports_rfcomm_;
   uint8_t rfcomm_channel_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothServiceRecordWin);
 };
 
 }  // namespace device

@@ -1,0 +1,56 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+import "services/network/public/mojom/cross_origin_embedder_policy.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
+
+// How to treat private network requests.
+//
+// Private network requests are requests from a less-private IP address space
+// to a more-private IP address space. Concretely:
+//
+//  - unknown to private
+//  - unknown to local
+//  - public to private
+//  - public to local
+//  - private to local
+//
+// See the definition in the Private Network Access specification:
+// https://wicg.github.io/private-network-access/#ip-address-space
+enum PrivateNetworkRequestPolicy {
+  // Allow the requests.
+  kAllow,
+
+  // Allow the requests, and display a warning in DevTools.
+  kWarn,
+
+  // Block the requests with a CORS error.
+  kBlock,
+
+  // Send a preflight ahead of the actual request, and display a warning in
+  // DevTools if the preflight request fails.
+  kPreflightWarn,
+
+  // Send a preflight ahead of the actual request, and block the request if
+  // the preflight request fails.
+  kPreflightBlock,
+};
+
+struct ClientSecurityState {
+  // See: https://html.spec.whatwg.org/multipage/origin.html#coep
+  CrossOriginEmbedderPolicy cross_origin_embedder_policy;
+
+  // Whether the initiator of the requests is in a web secure context.
+  // See: https://developer.mozilla.org/en-US/docs/Web/Security/Secure_Contexts
+  bool is_web_secure_context = false;
+
+  // The initiator's IP AddressSpace.
+  IPAddressSpace ip_address_space = kUnknown;
+
+  // The policy to apply to private network requests.
+  PrivateNetworkRequestPolicy private_network_request_policy = kAllow;
+};
+

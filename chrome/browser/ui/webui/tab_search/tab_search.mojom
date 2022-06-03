@@ -1,0 +1,201 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module tab_search.mojom;
+
+import "components/tab_groups/public/mojom/tab_group_types.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/token.mojom";
+import "url/mojom/url.mojom";
+
+// Collection of tab searching details associated with a profile.
+struct ProfileData {
+  array<Window> windows;
+  array<TabGroup> tab_groups;
+  array<RecentlyClosedTab> recently_closed_tabs;
+  array<RecentlyClosedTabGroup> recently_closed_tab_groups;
+  bool recently_closed_section_expanded;
+};
+
+// Properties and tabs associated with a window.
+struct Window {
+  bool active;
+  uint32 height;
+  array<Tab> tabs;
+};
+
+// Information about an existing open tab.
+struct Tab {
+  // Whether the tab is active.
+  bool active;
+
+  // The index of the tab in the current tab strip.
+  int32 index;
+
+  // The unique identifier of the tab.
+  int32 tab_id;
+
+  // The group identifier of the tab.
+  mojo_base.mojom.Token? group_id;
+
+  // Whether the tab is pinned.
+  bool pinned;
+
+  // The title of the tab.
+  string title;
+
+  // The URL of the tab.
+  url.mojom.Url url;
+
+  // The URL of the favicon in data scheme.
+  // Only used in OTR profile where chrome://favicon2 is not available.
+  url.mojom.Url? favicon_url;
+
+  // Whether the favicon is the default one.
+  bool is_default_favicon;
+
+  // Whether the tab strip should show the icon.
+  bool show_icon;
+
+  // Time ticks when the tab is last active. This value is used to order open
+  // tabs by recency.
+  mojo_base.mojom.TimeTicks last_active_time_ticks;
+
+  // String representing the elapsed time since the tab was last active.
+  string last_active_elapsed_text;
+};
+
+// Information about a recently closed tab. Recently closed tabs that were
+// closed as part of closing a group will contain a session id belonging to
+// the group while recently closed tabs that were closed individually will
+// contain a group id that associates them with either an open or no longer
+// present tab group.
+struct RecentlyClosedTab {
+  // The unique identifier of the tab.
+  int32 tab_id;
+
+  // The group identifier of the tab.
+  mojo_base.mojom.Token? group_id;
+
+  // The title of the tab.
+  string title;
+
+  // The URL of the tab.
+  url.mojom.Url url;
+
+  // Elapsed time since the tab was last closed. This value is used to order
+  // closed tabs by recency.
+  mojo_base.mojom.Time last_active_time;
+
+  // String representing the elapsed time since the tab was closed.
+  string last_active_elapsed_text;
+};
+
+// Information about a tab group.
+struct TabGroup {
+  // The unique identifier of the tab group.
+  mojo_base.mojom.Token id;
+
+  // The color of the tab group.
+  tab_groups.mojom.Color color;
+
+  // The title of the tab group.
+  string title;
+};
+
+// Information about a recently closed tab group.
+struct RecentlyClosedTabGroup {
+  // The unique identifier of the tab group that is only valid for the duration
+  // of the session.
+  int32 session_id;
+
+  // The unique identifier of the tab group.
+  mojo_base.mojom.Token id;
+
+  // The color of the tab group.
+  tab_groups.mojom.Color color;
+
+  // The title of the tab group.
+  string title;
+
+  // A count of tabs that belong to the tab group.
+  uint32 tab_count;
+
+  // Elapsed time since the group was closed.
+  mojo_base.mojom.Time last_active_time;
+
+  // String representing the elapsed time since the group was closed.
+  string last_active_elapsed_text;
+};
+
+// Information about switching to a tab.
+struct SwitchToTabInfo {
+  int32 tab_id;
+};
+
+// Information about a tab update.
+struct TabUpdateInfo {
+  // Whether the tab is in the active window.
+  bool in_active_window;
+
+  // The tab that was updated.
+  Tab tab;
+};
+
+// Information about a tab removal event.
+struct TabsRemovedInfo {
+  // The tab Ids for the removed tabs.
+  array<int32> tab_ids;
+
+  // Recently closed tab objects that were created for the removed tabs.
+  array<RecentlyClosedTab> recently_closed_tabs;
+};
+
+// Used by the WebUI page to bootstrap bidirectional communication.
+interface PageHandlerFactory {
+  // The WebUI calls this method when the page is first initialized.
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser-side handler for requests from WebUI page.
+interface PageHandler {
+  // Close a specific tab.
+  CloseTab(int32 tab_id);
+
+  // Get window and tab data for the current profile.
+  GetProfileData() => (ProfileData profile_data);
+
+  // Switch to a specific tab.
+  SwitchToTab(SwitchToTabInfo switch_to_tab_info);
+
+  // Open a recently closed tab or tab group.
+  OpenRecentlyClosedEntry(int32 session_id);
+
+  // Save a user's preference for the state of the expandable 'Recently Closed'
+  // list section.
+  SaveRecentlyClosedExpandedPref(bool expanded);
+
+  // Notify the backend that the UI is ready to be shown.
+  ShowUI();
+};
+
+// WebUI-side handler for requests from the browser.
+interface Page {
+  // Called when we require a full refresh of the JS's tab list data structures.
+  // Typically used when tabs in the current profile are deleted, inserted,
+  // moved or replaced.
+  // `profile_tabs` is a collection of all open tabs in the current profile.
+  // This is always populated with at least 1 (the currently active) tab.
+  TabsChanged(ProfileData profile_tabs);
+
+  // Called when a tab's data has changed and we need only issue an update for
+  // that specific tab in the JS's data structures. Typically used for url,
+  // title, or favicon changes. The TabUpdateInfo's `tab` is always populated
+  // with the latest data for the affected tab.
+  TabUpdated(TabUpdateInfo tabUpdateInfo);
+
+  // Callback when tabs are removed.
+  TabsRemoved(TabsRemovedInfo tabsRemovedInfo);
+};

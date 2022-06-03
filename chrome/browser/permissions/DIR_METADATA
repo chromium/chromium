@@ -1,0 +1,4 @@
+monorail: {
+  component: "Internals>Permissions"
+}
+team_email: "permissions-dev@chromium.org"

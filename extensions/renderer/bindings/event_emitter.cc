@@ -290,7 +290,7 @@ void EventEmitter::DispatchAsyncHelper(
       data->Get(context, gin::StringToSymbol(isolate, kFilterKey))
           .ToLocalChecked();
   int filter_id = filter_id_value.As<v8::Int32>()->Value();
-  base::Optional<EventFilteringInfo> filter;
+  absl::optional<EventFilteringInfo> filter;
   if (filter_id != kInvalidFilterId) {
     auto filter_iter = emitter->pending_filters_.find(filter_id);
     DCHECK(filter_iter != emitter->pending_filters_.end());

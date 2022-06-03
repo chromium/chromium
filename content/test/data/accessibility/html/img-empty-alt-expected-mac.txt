@@ -1,5 +1,4 @@
 AXWebArea
 ++AXGroup
-++++AXUnknown
-++++AXImage AXDescription='/read.jpg'
+++++AXImage AXDescription='To get missing image descriptions, open the context menu.'
 ++++AXImage AXDescription='full'

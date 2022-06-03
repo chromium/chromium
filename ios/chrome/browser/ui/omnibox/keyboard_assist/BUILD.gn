@@ -1,0 +1,64 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("keyboard_assist") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "omnibox_assistive_keyboard_delegate.h",
+    "omnibox_assistive_keyboard_delegate.mm",
+    "omnibox_assistive_keyboard_views.h",
+    "omnibox_assistive_keyboard_views.mm",
+    "omnibox_assistive_keyboard_views_utils.h",
+    "omnibox_assistive_keyboard_views_utils.mm",
+    "omnibox_input_assistant_items.h",
+    "omnibox_input_assistant_items.mm",
+    "omnibox_keyboard_accessory_view.h",
+    "omnibox_keyboard_accessory_view.mm",
+    "omnibox_ui_bar_button_item.h",
+    "omnibox_ui_bar_button_item.mm",
+    "voice_search_keyboard_accessory_button.h",
+    "voice_search_keyboard_accessory_button.mm",
+    "voice_search_keyboard_bar_button_item.h",
+    "voice_search_keyboard_bar_button_item.mm",
+  ]
+  deps = [
+    "resources:keyboard_accessory_qr_scanner",
+    "resources:keyboard_accessory_voice_search",
+    "//base",
+    "//base:i18n",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/location_bar:constants",
+    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
+    "//ios/chrome/browser/ui/toolbar/public",
+    "//ios/chrome/browser/ui/util/",
+    "//ios/chrome/browser/voice",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
+    "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
+    "//ui/base",
+    "//ui/gfx",
+  ]
+  allow_circular_includes_from =
+      [ "//ios/chrome/browser/ui/omnibox:omnibox_internal" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "voice_search_keyboard_accessory_button_unittest.mm",
+    "voice_search_keyboard_bar_button_item_unittest.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":keyboard_assist",
+    "//ios/chrome/browser/voice",
+    "//ios/chrome/browser/voice:test_support",
+    "//testing/gtest",
+  ]
+}

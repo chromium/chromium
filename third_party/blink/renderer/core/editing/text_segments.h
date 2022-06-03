@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_TEXT_SEGMENTS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_TEXT_SEGMENTS_H_
 
-#include "base/optional.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"

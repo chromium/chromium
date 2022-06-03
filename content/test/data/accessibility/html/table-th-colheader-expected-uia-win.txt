@@ -1,12 +1,12 @@
-document
-++grid Grid.ColumnCount=2 Grid.RowCount=2 Table.RowOrColumnMajor='RowMajor'
-++++row IsControlElement=false
-++++++columnheader Name='Firstname' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++description Name='Firstname' IsControlElement=false
-++++++columnheader Name='Lastname' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++description Name='Lastname' IsControlElement=false
-++++row IsControlElement=false
-++++++gridcell Name='Jill' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++description Name='Jill' IsControlElement=false
-++++++gridcell Name='Smith' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++description Name='Smith' IsControlElement=false
+Document
+++Table Grid.ColumnCount=2 Grid.RowCount=2 Table.RowOrColumnMajor='RowMajor'
+++++DataItem IsControlElement=false
+++++++DataItem Name='Firstname' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='Firstname' IsControlElement=false
+++++++DataItem Name='Lastname' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='Lastname' IsControlElement=false
+++++DataItem IsControlElement=false
+++++++DataItem Name='Jill' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='Jill' IsControlElement=false
+++++++DataItem Name='Smith' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='Smith' IsControlElement=false

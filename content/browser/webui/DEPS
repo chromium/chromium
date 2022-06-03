@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/crash/content/browser/error_reporting",
+  "+ui/chromeos/styles",
+]

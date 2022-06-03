@@ -1,0 +1,45 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 50, 106, 106]
+      ]
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV",
+      "bounds": [106, 106],
+      "invalidations": [
+        [0, 0, 106, 106]
+      ],
+      "transform": 1
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "position": [3, 3],
+      "bounds": [100, 200],
+      "transform": 1
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [88, 3],
+      "bounds": [15, 100],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 50, 0, 1]
+      ]
+    }
+  ]
+}
+

@@ -7,10 +7,7 @@
 
 #include <jni.h>
 
-#include <memory>
-
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class Profile;
@@ -22,12 +19,15 @@ namespace android {
 class ChromeBackupWatcher {
  public:
   explicit ChromeBackupWatcher(Profile* profile);
+
+  ChromeBackupWatcher(const ChromeBackupWatcher&) = delete;
+  ChromeBackupWatcher& operator=(const ChromeBackupWatcher&) = delete;
+
   virtual ~ChromeBackupWatcher();
 
  private:
   PrefChangeRegistrar registrar_;
   base::android::ScopedJavaGlobalRef<jobject> java_watcher_;
-  DISALLOW_COPY_AND_ASSIGN(ChromeBackupWatcher);
 };
 
 }  //  namespace android

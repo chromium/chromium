@@ -91,21 +91,6 @@ public final class DownloadNotificationUmaHelper {
         int NUM_ENTRIES = 7;
     }
 
-    // Values for the histograms MobileDownload.Background.*. Keep in sync with
-    // MobileDownloadBackgroundDownloadEvent in enums.xml.
-    @IntDef({UmaBackgroundDownload.STARTED, UmaBackgroundDownload.COMPLETED,
-            UmaBackgroundDownload.CANCELLED, UmaBackgroundDownload.FAILED,
-            UmaBackgroundDownload.INTERRUPTED})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface UmaBackgroundDownload {
-        int STARTED = 0;
-        int COMPLETED = 1;
-        int CANCELLED = 2;
-        int FAILED = 3;
-        int INTERRUPTED = 4;
-        int NUM_ENTRIES = 5;
-    }
-
     /**
      * Records an instance where a user interacts with a notification (clicks on, pauses, etc).
      * @param action Notification interaction that was taken (ie. pause, resume).
@@ -123,18 +108,11 @@ public final class DownloadNotificationUmaHelper {
      * understand the frequency of unexpected stops (low memory, task removed, etc).
      * @param stopType Type of the foreground stop that is being recorded ({@link ServiceStopped}).
      */
-    static void recordServiceStoppedHistogram(
-            @ServiceStopped int stopType, boolean withForeground) {
+    static void recordServiceStoppedHistogram(@ServiceStopped int stopType) {
         if (!LibraryLoader.getInstance().isInitialized()) return;
-        if (withForeground) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Android.DownloadManager.ServiceStopped.DownloadForeground", stopType,
                     ServiceStopped.NUM_ENTRIES);
-        } else {
-            RecordHistogram.recordEnumeratedHistogram(
-                    "Android.DownloadManager.ServiceStopped.DownloadNotification", stopType,
-                    ServiceStopped.NUM_ENTRIES);
-        }
     }
 
     /**
@@ -175,29 +153,5 @@ public final class DownloadNotificationUmaHelper {
     static void recordDownloadResumptionHistogram(@UmaDownloadResumption int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 "MobileDownload.DownloadResumption", type, UmaDownloadResumption.NUM_ENTRIES);
-    }
-
-    /**
-     * Helper method to record the background download resumption UMA.
-     * @param type UMA type to be recorded.
-     */
-    static void recordBackgroundDownloadHistogram(@UmaBackgroundDownload int type) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "MobileDownload.Background", type, UmaBackgroundDownload.NUM_ENTRIES);
-    }
-
-    /**
-     * Helper method to record the first background download resumption UMA.
-     * @param type UMA type to be recorded.
-     * @param interruptionCount Number of interruptions since process launch.
-     */
-    static void recordFirstBackgroundDownloadHistogram(
-            @UmaBackgroundDownload int type, int interruptionCount) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "MobileDownload.Background.FirstDownload", type, UmaBackgroundDownload.NUM_ENTRIES);
-        if (type != UmaBackgroundDownload.INTERRUPTED && type != UmaBackgroundDownload.STARTED) {
-            RecordHistogram.recordCountHistogram(
-                    "MobileDownload.FirstBackground.InterruptionCount", interruptionCount);
-        }
     }
 }

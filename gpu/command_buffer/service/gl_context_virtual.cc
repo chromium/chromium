@@ -34,7 +34,7 @@ void GLContextVirtual::Destroy() {
   shared_context_ = nullptr;
 }
 
-bool GLContextVirtual::MakeCurrent(gl::GLSurface* surface) {
+bool GLContextVirtual::MakeCurrentImpl(gl::GLSurface* surface) {
   if (delegate_.get())
     return shared_context_->MakeVirtuallyCurrent(this, surface);
 
@@ -86,11 +86,12 @@ void GLContextVirtual::SetSafeToForceGpuSwitch() {
   return shared_context_->SetSafeToForceGpuSwitch();
 }
 
-unsigned int GLContextVirtual::CheckStickyGraphicsResetStatus() {
-  // Don't pretend we know which one of the virtual contexts was responsible.
+unsigned int GLContextVirtual::CheckStickyGraphicsResetStatusImpl() {
   unsigned int reset_status = shared_context_->CheckStickyGraphicsResetStatus();
-  return reset_status == GL_NO_ERROR ? GL_NO_ERROR
-                                     : GL_UNKNOWN_CONTEXT_RESET_ARB;
+  if (reset_status == GL_NO_ERROR)
+    return GL_NO_ERROR;
+  // Don't pretend we know which one of the virtual contexts was responsible.
+  return GL_UNKNOWN_CONTEXT_RESET_ARB;
 }
 
 void GLContextVirtual::SetUnbindFboOnMakeCurrent() {
@@ -106,7 +107,7 @@ void GLContextVirtual::ForceReleaseVirtuallyCurrent() {
   shared_context_->OnReleaseVirtuallyCurrent(this);
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 uint64_t GLContextVirtual::BackpressureFenceCreate() {
   return shared_context_->BackpressureFenceCreate();
 }

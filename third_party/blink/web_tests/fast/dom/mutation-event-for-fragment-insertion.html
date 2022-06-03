@@ -47,7 +47,7 @@ test(() => {
   fragment.addEventListener('DOMNodeRemoved', () => {
     fragmentLast.appendChild(container);
   }, false);
-  assert_throws('HierarchyRequestError', () => { container.appendChild(fragment); });
+  assert_throws_dom('HierarchyRequestError', () => { container.appendChild(fragment); });
 }, 'appendChild: Reparenting in DOMNodeRemoved handler for a DocumentFragment should throw.');
 
 test(() => {
@@ -58,7 +58,7 @@ test(() => {
   fragment.addEventListener('DOMNodeRemoved', () => {
     fragmentLast.appendChild(container);
   }, false);
-  assert_throws('HierarchyRequestError', () => { container.insertBefore(fragment, container.lastChild); });
+  assert_throws_dom('HierarchyRequestError', () => { container.insertBefore(fragment, container.lastChild); });
 }, 'insertBefore: Reparenting in DOMNodeRemoved handler for a DocumentFragment should throw.');
 
 test(() => {
@@ -69,7 +69,7 @@ test(() => {
   fragment.addEventListener('DOMNodeRemoved', () => {
     fragmentLast.appendChild(container);
   }, false);
-  assert_throws('HierarchyRequestError', () => { container.replaceChild(fragment, container.lastChild); });
+  assert_throws_dom('HierarchyRequestError', () => { container.replaceChild(fragment, container.lastChild); });
 }, 'replaceChild: Reparenting in DOMNodeRemoved handler for a DocumentFragment should throw.');
 </script>
 </body>

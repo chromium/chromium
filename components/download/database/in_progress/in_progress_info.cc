@@ -30,7 +30,10 @@ bool InProgressInfo::operator==(const InProgressInfo& other) const {
          danger_type == other.danger_type &&
          interrupt_reason == other.interrupt_reason && paused == other.paused &&
          metered == other.metered && bytes_wasted == other.bytes_wasted &&
-         auto_resume_count == other.auto_resume_count;
+         auto_resume_count == other.auto_resume_count &&
+         download_schedule == other.download_schedule &&
+         RerouteInfosEqual(reroute_info, other.reroute_info) &&
+         credentials_mode == other.credentials_mode;
 }
 
 }  // namespace download

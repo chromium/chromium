@@ -118,7 +118,7 @@ bool SandboxOriginDatabase::Init(InitOption init_option,
                                 SandboxOriginRepairResult::DB_REPAIR_MAX);
       FALLTHROUGH;
     case DELETE_ON_CORRUPTION:
-      if (!base::DeleteFileRecursively(file_system_directory_))
+      if (!base::DeletePathRecursively(file_system_directory_))
         return false;
       if (!base::CreateDirectory(file_system_directory_))
         return false;
@@ -175,8 +175,7 @@ bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {
 
   // Delete any directories not listed in the origins database.
   for (const base::FilePath& dir : directories) {
-    if (!base::DeleteFile(file_system_directory_.Append(dir),
-                          true /* recursive */)) {
+    if (!base::DeletePathRecursively(file_system_directory_.Append(dir))) {
       DropDatabase();
       return false;
     }
@@ -195,7 +194,7 @@ void SandboxOriginDatabase::HandleError(const base::Location& from_here,
 void SandboxOriginDatabase::ReportInitStatus(const leveldb::Status& status) {
   base::Time now = base::Time::Now();
   base::TimeDelta minimum_interval =
-      base::TimeDelta::FromHours(kSandboxOriginMinimumReportIntervalHours);
+      base::Hours(kSandboxOriginMinimumReportIntervalHours);
   if (last_reported_time_ + minimum_interval >= now)
     return;
   last_reported_time_ = now;
@@ -329,7 +328,7 @@ base::FilePath SandboxOriginDatabase::GetDatabasePath() const {
 
 void SandboxOriginDatabase::RemoveDatabase() {
   DropDatabase();
-  base::DeleteFileRecursively(GetDatabasePath());
+  base::DeletePathRecursively(GetDatabasePath());
 }
 
 bool SandboxOriginDatabase::GetLastPathNumber(int* number) {

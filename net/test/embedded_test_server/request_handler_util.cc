@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/strings/string_util.h"
@@ -27,7 +28,8 @@
 
 namespace net {
 namespace test_server {
-const char kMockHttpHeadersExtension[] = "mock-http-headers";
+constexpr base::FilePath::CharType kMockHttpHeadersExtension[] =
+    FILE_PATH_LITERAL("mock-http-headers");
 
 std::string GetContentType(const base::FilePath& path) {
   if (path.MatchesExtension(FILE_PATH_LITERAL(".crx")))
@@ -60,6 +62,10 @@ std::string GetContentType(const base::FilePath& path) {
     return "audio/wav";
   if (path.MatchesExtension(FILE_PATH_LITERAL(".webp")))
     return "image/webp";
+  if (path.MatchesExtension(FILE_PATH_LITERAL(".mp4")))
+    return "video/mp4";
+  if (path.MatchesExtension(FILE_PATH_LITERAL(".webm")))
+    return "video/webm";
   if (path.MatchesExtension(FILE_PATH_LITERAL(".xml")))
     return "text/xml";
   if (path.MatchesExtension(FILE_PATH_LITERAL(".mhtml")))
@@ -92,7 +98,7 @@ std::unique_ptr<HttpResponse> HandlePrefixedRequest(
 RequestQuery ParseQuery(const GURL& url) {
   RequestQuery queries;
   for (QueryIterator it(url); !it.IsAtEnd(); it.Advance()) {
-    std::string unescaped_query = UnescapeBinaryURLComponent(
+    std::string unescaped_query = base::UnescapeBinaryURLComponent(
         it.GetKey(), UnescapeRule::REPLACE_PLUS_WITH_SPACE);
     queries[unescaped_query].push_back(it.GetUnescapedValue());
   }
@@ -205,15 +211,8 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
   if (!UpdateReplacedText(query, &file_contents))
     return failed_response;
 
-  base::FilePath::StringPieceType mock_headers_extension;
-#if defined(OS_WIN)
-  base::string16 temp = base::ASCIIToUTF16(kMockHttpHeadersExtension);
-  mock_headers_extension = temp;
-#else
-  mock_headers_extension = kMockHttpHeadersExtension;
-#endif
-
-  base::FilePath headers_path(file_path.AddExtension(mock_headers_extension));
+  base::FilePath headers_path(
+      file_path.AddExtension(kMockHttpHeadersExtension));
 
   if (base::PathExists(headers_path)) {
     std::string headers_contents;

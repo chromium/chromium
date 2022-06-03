@@ -9,8 +9,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace link_header_util {
 
@@ -24,17 +23,18 @@ using StringIteratorPair =
 // takes the special syntax of <> enclosed URLs into account.
 std::vector<StringIteratorPair> SplitLinkHeader(const std::string& header);
 
-// Parse an individual link header in its URL and parameters. |begin| and |end|
-// indicate the string to parse. If it is succesfully parsed as a link header
-// value this method returns true, sets |url| to the URL part of the link header
-// value and adds the parameters from the link header value to |params|.
+// Parse an individual link header in its URL and parameters. `begin` and `end`
+// indicate the string to parse. If it is successfully parsed as a link header
+// value this method returns true, sets `url` to the URL part of the link header
+// value and adds the parameters from the link header value to `params`. All
+// keys of `params` are lower cased.
 // If any error occurs parsing, this returns false (but might have also modified
 // |url| and/or |params|).
 bool ParseLinkHeaderValue(
     std::string::const_iterator begin,
     std::string::const_iterator end,
     std::string* url,
-    std::unordered_map<std::string, base::Optional<std::string>>* params);
+    std::unordered_map<std::string, absl::optional<std::string>>* params);
 
 }  // namespace link_header_util
 

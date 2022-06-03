@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"

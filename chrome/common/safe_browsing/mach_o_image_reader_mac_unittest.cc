@@ -8,6 +8,7 @@
 #include <libkern/OSByteOrder.h>
 #include <mach-o/fat.h>
 #include <mach-o/loader.h>
+#include <mach/vm_param.h>
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>

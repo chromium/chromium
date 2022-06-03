@@ -7,14 +7,9 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@class CommandDispatcher;
-
 // QRScannerLegacyCoordinator presents the public interface for the QR scanner
 // feature.
 @interface QRScannerLegacyCoordinator : ChromeCoordinator
-
-// Models.
-@property(nonatomic, readwrite, weak) CommandDispatcher* dispatcher;
 
 @end
 

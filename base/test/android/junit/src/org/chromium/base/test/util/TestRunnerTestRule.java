@@ -12,6 +12,8 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
 
+import androidx.test.core.app.ApplicationProvider;
+
 import org.junit.Assert;
 import org.junit.rules.ExternalResource;
 import org.junit.runner.Description;
@@ -21,7 +23,6 @@ import org.junit.runner.notification.RunListener;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.InitializationError;
-import org.robolectric.RuntimeEnvironment;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ class TestRunnerTestRule extends ExternalResource {
         Instrumentation instrumentation = new Instrumentation() {
             @Override
             public Context getTargetContext() {
-                return RuntimeEnvironment.application;
+                return ApplicationProvider.getApplicationContext();
             }
         };
         InstrumentationRegistry.registerInstance(instrumentation, new Bundle());

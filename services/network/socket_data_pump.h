@@ -5,8 +5,6 @@
 #ifndef SERVICES_NETWORK_SOCKET_DATA_PUMP_H_
 #define SERVICES_NETWORK_SOCKET_DATA_PUMP_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -61,6 +59,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketDataPump {
                  mojo::ScopedDataPipeProducerHandle receive_pipe_handle,
                  mojo::ScopedDataPipeConsumerHandle send_pipe_handle,
                  const net::NetworkTrafficAnnotationTag& traffic_annotation);
+
+  SocketDataPump(const SocketDataPump&) = delete;
+  SocketDataPump& operator=(const SocketDataPump&) = delete;
+
   ~SocketDataPump();
 
  private:
@@ -111,8 +113,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketDataPump {
   const net::NetworkTrafficAnnotationTag traffic_annotation_;
 
   base::WeakPtrFactory<SocketDataPump> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SocketDataPump);
 };
 
 }  // namespace network

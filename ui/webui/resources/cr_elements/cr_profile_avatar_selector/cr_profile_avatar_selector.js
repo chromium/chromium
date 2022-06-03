@@ -7,78 +7,160 @@
  * profile avatar icons and allows an avatar to be selected.
  */
 
+import '../cr_button/cr_button.m.js';
+import '../shared_vars_css.m.js';
+import '../shared_style_css.m.js';
+import '//resources/polymer/v3_0/paper-styles/color.js';
+import '//resources/polymer/v3_0/paper-tooltip/paper-tooltip.js';
+import './cr_profile_avatar_selector_grid.js';
+
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {getImage} from '../../js/icon.js';
+
 /**
  * @typedef {{url: string,
  *            label: string,
- *            isGaiaAvatar: (boolean|undefined),
- *            selected: (boolean|undefined)}}
+ *            index: (number),
+ *            isGaiaAvatar: (boolean),
+ *            selected: (boolean)}}
  */
-let AvatarIcon;
+export let AvatarIcon;
 
-Polymer({
-  is: 'cr-profile-avatar-selector',
+/** @polymer */
+export class CrProfileAvatarSelectorElement extends PolymerElement {
+  static get is() {
+    return 'cr-profile-avatar-selector';
+  }
 
-  properties: {
-    /**
-     * The list of profile avatar URLs and labels.
-     * @type {!Array<!AvatarIcon>}
-     */
-    avatars: {
-      type: Array,
-      value: function() {
-        return [];
-      }
-    },
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    /**
-     * The currently selected profile avatar icon, if any.
-     * @type {?AvatarIcon}
-     */
-    selectedAvatar: {
-      type: Object,
-      notify: true,
-    },
+  static get properties() {
+    return {
+      /**
+       * The list of profile avatar URLs and labels.
+       * @type {!Array<!AvatarIcon>}
+       */
+      avatars: {
+        type: Array,
+        value() {
+          return [];
+        }
+      },
 
-    /** @private {?HTMLElement} */
-    selectedAvatarElement_: Object,
+      /**
+       * The currently selected profile avatar icon, if any.
+       * @type {?AvatarIcon}
+       */
+      selectedAvatar: {
+        type: Object,
+        notify: true,
+      },
 
-    ignoreModifiedKeyEvents: {
-      type: Boolean,
-      value: false,
-    },
-  },
+      ignoreModifiedKeyEvents: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * The currently selected profile avatar icon index, or '-1' if none is
+       * selected.
+       * @type {number}
+       */
+      tabFocusableAvatar_: {
+        type: Number,
+        computed: 'computeTabFocusableAvatar_(avatars, selectedAvatar)',
+      },
+    };
+  }
+
+  /**
+   * @param {number} index
+   * @return {string}
+   * @private
+   */
+  getAvatarId_(index) {
+    return 'avatarId' + index;
+  }
+
+  /**
+   * @param {number} index
+   * @param {!AvatarIcon} item
+   * @return {string}
+   * @private
+   */
+  getTabIndex_(index, item) {
+    if (item.index === this.tabFocusableAvatar_) {
+      return '0';
+    }
+
+    // If no avatar is selected, focus the first element of the grid on 'tab'.
+    if (this.tabFocusableAvatar_ === -1 && index === 0) {
+      return '0';
+    }
+    return '-1';
+  }
+
+  /**
+   * @return {number}
+   * @private
+   */
+  computeTabFocusableAvatar_() {
+    const selectedAvatar =
+        this.avatars.find(avatar => this.isAvatarSelected(avatar));
+    return selectedAvatar ? selectedAvatar.index : -1;
+  }
 
   /** @private */
-  getSelectedClass_: function(isSelected) {
+  getSelectedClass_(avatarItem) {
     // TODO(dpapad): Rename 'iron-selected' to 'selected' now that this CSS
     // class is not assigned by any iron-* behavior.
-    return isSelected ? 'iron-selected' : '';
-  },
+    return this.isAvatarSelected(avatarItem) ? 'iron-selected' : '';
+  }
+
+  /**
+   * @param {AvatarIcon} avatarItem
+   * @return {string}
+   * @private
+   */
+  getCheckedAttribute_(avatarItem) {
+    return this.isAvatarSelected(avatarItem) ? 'true' : 'false';
+  }
+
+  /**
+   * @param {AvatarIcon} avatarItem
+   * @return {boolean}
+   * @private
+   */
+  isAvatarSelected(avatarItem) {
+    return !!avatarItem &&
+        (avatarItem.selected ||
+         (!!this.selectedAvatar &&
+          this.selectedAvatar.index === avatarItem.index));
+  }
 
   /**
    * @param {string} iconUrl
    * @return {string} A CSS image-set for multiple scale factors.
    * @private
    */
-  getIconImageSet_: function(iconUrl) {
-    return cr.icon.getImage(iconUrl);
-  },
+  getIconImageSet_(iconUrl) {
+    return getImage(iconUrl);
+  }
 
   /**
    * @param {!Event} e
    * @private
    */
-  onAvatarTap_: function(e) {
-    // Manual selection for profile creation
-    if (this.selectedAvatarElement_) {
-      this.selectedAvatarElement_.classList.remove('iron-selected');
-    }
-    this.selectedAvatarElement_ = /** @type {!HTMLElement} */ (e.target);
-    this.selectedAvatarElement_.classList.add('iron-selected');
-
+  onAvatarTap_(e) {
     // |selectedAvatar| is set to pass back selection to the owner of this
     // component.
     this.selectedAvatar =
         /** @type {!{model: {item: !AvatarIcon}}} */ (e).model.item;
-  },
-});
+  }
+}
+
+customElements.define(
+    CrProfileAvatarSelectorElement.is, CrProfileAvatarSelectorElement);

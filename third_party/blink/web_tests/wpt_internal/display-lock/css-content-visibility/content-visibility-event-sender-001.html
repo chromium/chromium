@@ -1,0 +1,40 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: focus via tab navigation</title>
+<link rel="author" title="Rakina Zata Amni" href="mailto:rakina@chromium.org">
+<link rel="help" href="https://drafts.csswg.org/css-contain/#content-visibility">
+<meta name="assert" content="tab navigation can target content-visibility: auto subtrees">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 3000px;
+}
+.auto {
+  content-visibility: auto;
+}
+</style>
+
+<div class=spacer></div>
+<div id="container" class=auto>
+  <div id="focusable" tabIndex="0">
+    Focusable div
+  </div>
+</div>
+
+<script>
+async_test((t) => {
+  function runTest() {
+    eventSender.keyDown("Tab", ["shiftKey"]);
+    requestAnimationFrame(() => {
+      t.step(() => assert_equals(document.activeElement, focusable));
+      t.done();
+    });
+  }
+  onload = requestAnimationFrame(() => requestAnimationFrame(runTest));
+}, "Using tab navigation to target an element in an auto subtree focuses element");
+</script>
+</html>

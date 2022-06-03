@@ -44,7 +44,8 @@ def main(argv):
         stats_path = args[0]
     else:
         host = Host()
-        stats_path = host.filesystem.join(host.port_factory.get().artifacts_directory(), 'stats.json')
+        stats_path = host.filesystem.join(
+            host.port_factory.get().artifacts_directory(), 'stats.json')
 
     with open(stats_path, 'r') as fp:
         stats_trie = json.load(fp)
@@ -63,7 +64,8 @@ def main(argv):
 
     for worker in sorted(stats_by_worker.keys()):
         print worker + ':'
-        for test in sorted(stats_by_worker[worker], key=lambda test: test["number"]):
+        for test in sorted(
+                stats_by_worker[worker], key=lambda test: test["number"]):
             print test["name"]
         print
 

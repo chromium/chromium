@@ -9,7 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
@@ -168,9 +168,8 @@ void FakeStreamChannelFactory::PairWith(
   peer_factory->peer_factory_ = weak_factory_.GetWeakPtr();
 }
 
-void FakeStreamChannelFactory::CreateChannel(
-    const std::string& name,
-    const ChannelCreatedCallback& callback) {
+void FakeStreamChannelFactory::CreateChannel(const std::string& name,
+                                             ChannelCreatedCallback callback) {
   std::unique_ptr<FakeStreamSocket> channel(new FakeStreamSocket());
   channels_[name] = channel->GetWeakPtr();
   channel->set_async_write(async_write_);
@@ -189,18 +188,18 @@ void FakeStreamChannelFactory::CreateChannel(
         FROM_HERE,
         base::BindOnce(&FakeStreamChannelFactory::NotifyChannelCreated,
                        weak_factory_.GetWeakPtr(), std::move(channel), name,
-                       callback));
+                       std::move(callback)));
   } else {
-    NotifyChannelCreated(std::move(channel), name, callback);
+    NotifyChannelCreated(std::move(channel), name, std::move(callback));
   }
 }
 
 void FakeStreamChannelFactory::NotifyChannelCreated(
     std::unique_ptr<FakeStreamSocket> owned_channel,
     const std::string& name,
-    const ChannelCreatedCallback& callback) {
+    ChannelCreatedCallback callback) {
   if (channels_.find(name) != channels_.end())
-    callback.Run(std::move(owned_channel));
+    std::move(callback).Run(std::move(owned_channel));
 }
 
 void FakeStreamChannelFactory::CancelChannelCreation(const std::string& name) {

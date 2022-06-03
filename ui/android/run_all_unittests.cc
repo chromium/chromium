@@ -5,8 +5,7 @@
 #include "base/android/jni_android.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/path_service.h"
+#include "base/files/file_path.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_suite.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,24 +18,22 @@ class UIAndroidTestSuite : public base::TestSuite {
  public:
   UIAndroidTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {}
 
+  UIAndroidTestSuite(const UIAndroidTestSuite&) = delete;
+  UIAndroidTestSuite& operator=(const UIAndroidTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
 
     ui::RegisterPathProvider();
 
-    base::FilePath ui_test_pak_path;
-    ASSERT_TRUE(base::PathService::Get(ui::UI_TEST_PAK, &ui_test_pak_path));
-    ui::ResourceBundle::InitSharedInstanceWithPakPath(ui_test_pak_path);
+    ui::ResourceBundle::InitSharedInstanceWithPakPath(base::FilePath());
   }
 
   void Shutdown() override {
     ui::ResourceBundle::CleanupSharedInstance();
     base::TestSuite::Shutdown();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UIAndroidTestSuite);
 };
 
 }  // namespace

@@ -8,8 +8,10 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/views/frame/web_contents_close_handler_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/skia/include/core/SkColor.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/webview/webview.h"
 
 class StatusBubbleViews;
@@ -23,12 +25,20 @@ class ContentsWebView
     : public views::WebView,
       public WebContentsCloseHandlerDelegate {
  public:
+  METADATA_HEADER(ContentsWebView);
   explicit ContentsWebView(content::BrowserContext* browser_context);
+  ContentsWebView(const ContentsWebView&) = delete;
+  ContentsWebView& operator=(const ContentsWebView&) = delete;
   ~ContentsWebView() override;
 
   // Sets the status bubble, which should be repositioned every time
   // this view changes visible bounds.
   void SetStatusBubble(StatusBubbleViews* status_bubble);
+  StatusBubbleViews* GetStatusBubble() const;
+
+  // Allow overriding the view background color. This is used to make a
+  // transparent background for SWAs.
+  void SetBackgroundColorOverride(absl::optional<SkColor> background_color);
 
   // WebView overrides:
   bool GetNeedsNotificationWhenVisibleBoundsChange() const override;
@@ -47,12 +57,13 @@ class ContentsWebView
   void DestroyClonedLayer() override;
 
  private:
+  absl::optional<SkColor> GetBackgroundColor();
   void UpdateBackgroundColor();
   StatusBubbleViews* status_bubble_;
 
-  std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
+  absl::optional<SkColor> background_color_override_;
 
-  DISALLOW_COPY_AND_ASSIGN(ContentsWebView);
+  std::unique_ptr<ui::LayerTreeOwner> cloned_layer_tree_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_CONTENTS_WEB_VIEW_H_

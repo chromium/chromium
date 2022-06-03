@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace media {
 
 class BitReader;
@@ -27,6 +25,9 @@ class TsPacket {
   // Return a TsPacket only when parsing was successful.
   // Return NULL otherwise.
   static TsPacket* Parse(const uint8_t* buf, int size);
+
+  TsPacket(const TsPacket&) = delete;
+  TsPacket& operator=(const TsPacket&) = delete;
 
   ~TsPacket();
 
@@ -64,8 +65,6 @@ class TsPacket {
   // Params from the adaptation field.
   bool discontinuity_indicator_;
   bool random_access_indicator_;
-
-  DISALLOW_COPY_AND_ASSIGN(TsPacket);
 };
 
 }  // namespace mp2t

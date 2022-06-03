@@ -10,21 +10,10 @@
     that die in the SSL negotiation phase, in particular, this is often the
     correct component.
 
-* **Internals>Network>DataProxy**
-
-    Flywheel / the Data Reduction Proxy.  Issues require "Reduce Data Usage" be
-    turned on.  Proxy URL is [https://proxy.googlezip.net:443](#), with
-    [http://compress.googlezip.net:80](#) as a fallback.  Currently Android and
-    iOS only.
-
 * **Internals>Network>Cache**
 
     The cache is the layer that handles most range request logic (Though range
     requests may also be issued by the PDF plugin, XHRs, or other components).
-
-* **Internals>Network>SPDY**
-
-    Covers HTTP2 as well.
 
 * **Internals>Network>HTTP**
 
@@ -142,6 +131,9 @@ they fall largely outside the purview of the network stack team:
     also have some logic at the Internals>Network>Cache layer.
 
 * **UI>Browser>Navigation**
+
+    Despite the name, this covers all issues related to page navigation, not
+    just UI issues.
 
 * **UI>Browser>History**
 

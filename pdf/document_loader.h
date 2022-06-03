@@ -11,10 +11,6 @@
 #include <memory>
 #include <string>
 
-namespace pp {
-class Instance;
-}
-
 namespace chrome_pdf {
 
 class URLLoaderWrapper;
@@ -25,8 +21,6 @@ class DocumentLoader {
    public:
     virtual ~Client() = default;
 
-    // Gets the pp::Instance object.
-    virtual pp::Instance* GetPluginInstance() = 0;
     // Creates new URLLoader based on client settings.
     virtual std::unique_ptr<URLLoaderWrapper> CreateURLLoader() = 0;
     // Notification called when all outstanding pending requests are complete.
@@ -51,15 +45,14 @@ class DocumentLoader {
   virtual bool IsDataAvailable(uint32_t position, uint32_t size) const = 0;
 
   // Data request interface.
-  virtual void RequestData(uint32_t position, uint32_t size) {}
+  virtual void RequestData(uint32_t position, uint32_t size) = 0;
 
   virtual bool IsDocumentComplete() const = 0;
-  virtual void SetDocumentSize(uint32_t size) {}
   virtual uint32_t GetDocumentSize() const = 0;
   virtual uint32_t BytesReceived() const = 0;
 
   // Clear pending requests from the queue.
-  virtual void ClearPendingRequests() {}
+  virtual void ClearPendingRequests() = 0;
 };
 
 }  // namespace chrome_pdf

@@ -7,7 +7,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -21,12 +20,12 @@ class TestPredicate : public ContentPredicate {
  public:
   TestPredicate() {}
 
+  TestPredicate(const TestPredicate&) = delete;
+  TestPredicate& operator=(const TestPredicate&) = delete;
+
   ContentPredicateEvaluator* GetEvaluator() const override {
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestPredicate);
 };
 
 class TestPredicateFactoryGeneratingError : public ContentPredicateFactory {
@@ -35,23 +34,31 @@ class TestPredicateFactoryGeneratingError : public ContentPredicateFactory {
       : error_(error) {
   }
 
+  TestPredicateFactoryGeneratingError(
+      const TestPredicateFactoryGeneratingError&) = delete;
+  TestPredicateFactoryGeneratingError& operator=(
+      const TestPredicateFactoryGeneratingError&) = delete;
+
   std::unique_ptr<const ContentPredicate> CreatePredicate(
       const Extension* extension,
       const base::Value& value,
       std::string* error) override {
     *error = error_;
-    return std::unique_ptr<const ContentPredicate>();
+    return nullptr;
   }
 
  private:
   const std::string error_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPredicateFactoryGeneratingError);
 };
 
 class TestPredicateFactoryGeneratingPredicate : public ContentPredicateFactory {
  public:
   TestPredicateFactoryGeneratingPredicate() {}
+
+  TestPredicateFactoryGeneratingPredicate(
+      const TestPredicateFactoryGeneratingPredicate&) = delete;
+  TestPredicateFactoryGeneratingPredicate& operator=(
+      const TestPredicateFactoryGeneratingPredicate&) = delete;
 
   std::unique_ptr<const ContentPredicate> CreatePredicate(
       const Extension* extension,
@@ -68,8 +75,6 @@ class TestPredicateFactoryGeneratingPredicate : public ContentPredicateFactory {
 
  private:
   std::vector<const ContentPredicate*> created_predicates_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPredicateFactoryGeneratingPredicate);
 };
 
 }  // namespace
@@ -81,11 +86,10 @@ TEST(DeclarativeContentConditionTest, UnknownPredicateName) {
   std::string error;
   std::unique_ptr<ContentCondition> condition = CreateContentCondition(
       nullptr, std::map<std::string, ContentPredicateFactory*>(),
-      *base::test::ParseJsonDeprecated(
-          "{\n"
-          "  \"invalid\": \"foobar\",\n"
-          "  \"instanceType\": \"declarativeContent.PageStateMatcher\",\n"
-          "}"),
+      base::test::ParseJson(R"({
+          "invalid": "foobar",
+          "instanceType": "declarativeContent.PageStateMatcher",
+      })"),
       &error);
   EXPECT_THAT(error, HasSubstr("Unknown condition attribute"));
   EXPECT_FALSE(condition);
@@ -98,12 +102,10 @@ TEST(DeclarativeContentConditionTest,
   predicate_factories["test_predicate"] = &factory;
   std::string error;
   std::unique_ptr<ContentCondition> condition = CreateContentCondition(
-      nullptr, predicate_factories,
-      *base::test::ParseJsonDeprecated(
-          "{\n"
-          "  \"test_predicate\": \"\",\n"
-          "  \"instanceType\": \"declarativeContent.PageStateMatcher\",\n"
-          "}"),
+      nullptr, predicate_factories, base::test::ParseJson(R"({
+          "test_predicate": "",
+          "instanceType": "declarativeContent.PageStateMatcher",
+      })"),
       &error);
   EXPECT_EQ("error message", error);
   EXPECT_FALSE(condition);
@@ -116,13 +118,11 @@ TEST(DeclarativeContentConditionTest, AllSpecifiedPredicatesCreated) {
   predicate_factories["test_predicate2"] = &factory2;
   std::string error;
   std::unique_ptr<ContentCondition> condition = CreateContentCondition(
-      nullptr, predicate_factories,
-      *base::test::ParseJsonDeprecated(
-          "{\n"
-          "  \"test_predicate1\": {},\n"
-          "  \"test_predicate2\": [],\n"
-          "  \"instanceType\": \"declarativeContent.PageStateMatcher\",\n"
-          "}"),
+      nullptr, predicate_factories, base::test::ParseJson(R"({
+          "test_predicate1": {},
+          "test_predicate2": [],
+          "instanceType": "declarativeContent.PageStateMatcher",
+      })"),
       &error);
   ASSERT_TRUE(condition);
   ASSERT_EQ(1u, factory1.created_predicates().size());

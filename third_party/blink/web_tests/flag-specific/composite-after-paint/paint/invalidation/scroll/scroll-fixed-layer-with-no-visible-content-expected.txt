@@ -8,23 +8,19 @@
       "transform": 1
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
-    },
-    {
-      "name": "LayoutNGBlockFlow (positioned) DIV class='absolute green'",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='moveMe' class='fixed clipped'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV class='absolute green'",
-          "rect": [0, 0, 100, 100],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 100, 100]
       ],
       "transform": 2
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

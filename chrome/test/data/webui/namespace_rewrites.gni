@@ -1,0 +1,27 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+test_namespace_rewrites = [
+  "cellularSetup.PSimUIState|PSimUIState",
+  "cellularSetup.CellularSetupPageName|CellularSetupPageName",
+  "global.traceAssertionsForTesting|window.traceAssertionsForTesting",
+  "MockInteractions.blur|blur",
+  "MockInteractions.downAndUp|downAndUp",
+  "MockInteractions.down|down",
+  "MockInteractions.keyDownOn|keyDownOn",
+  "MockInteractions.keyEventOn|keyEventOn",
+  "MockInteractions.keyUpOn|keyUpOn",
+  "MockInteractions.move|move",
+  "MockInteractions.pressAndReleaseKeyOn|pressAndReleaseKeyOn",
+  "MockInteractions.tap|tap",
+  "MockInteractions.up|up",
+  "test_util.eventToPromise|eventToPromise",
+  "test_util.fakeDataBind|fakeDataBind",
+  "test_util.flushTasks|flushTasks",
+  "test_util.isChildVisible|isChildVisible",
+  "test_util.isVisible|isVisible",
+  "test_util.waitAfterNextRender|waitAfterNextRender",
+  "test_util.waitBeforeNextRender|waitBeforeNextRender",
+  "test_util.whenAttributeIs|whenAttributeIs",
+]

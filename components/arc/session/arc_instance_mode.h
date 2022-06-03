@@ -7,7 +7,7 @@
 
 #include <ostream>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace arc {
 
@@ -23,7 +23,7 @@ enum class ArcInstanceMode {
 // Stringified output for logging purpose.
 std::ostream& operator<<(std::ostream& os, ArcInstanceMode mode);
 std::ostream& operator<<(std::ostream& os,
-                         base::Optional<ArcInstanceMode> mode);
+                         absl::optional<ArcInstanceMode> mode);
 
 }  // namespace arc
 

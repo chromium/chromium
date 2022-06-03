@@ -25,6 +25,14 @@
 
 // https://w3c.github.io/encrypted-media/#mediakeysession-interface
 
+enum MediaKeySessionClosedReason {
+    "internal-error",
+    "closed-by-application",
+    "release-acknowledged",
+    "hardware-context-reset",
+    "resource-evicted"
+};
+
 [
     Exposed=Window,
     ActiveScriptWrappable,
@@ -33,17 +41,20 @@
     // session properties
     readonly attribute DOMString sessionId;
     readonly attribute unrestricted double expiration;
-    [CallWith=ScriptState] readonly attribute Promise<void> closed;
+    // When runtime feature EncryptedMediaSessionClosedReason is enabled, the
+    // promise is resolved with "MediaKeySessionClosedReason". Otherwise, it's
+    // resolved with "undefined".
+    [CallWith=ScriptState] readonly attribute Promise<MediaKeySessionClosedReason> closed;
     readonly attribute MediaKeyStatusMap keyStatuses;
     attribute EventHandler onkeystatuseschange;
     attribute EventHandler onmessage;
 
     // session initialization
-    [CallWith=ScriptState] Promise<void> generateRequest(DOMString initDataType, BufferSource initData);
-    [CallWith=ScriptState] Promise<boolean> load(DOMString sessionId);
+    [CallWith=ScriptState, RaisesException] Promise<void> generateRequest(DOMString initDataType, BufferSource initData);
+    [CallWith=ScriptState, RaisesException] Promise<boolean> load(DOMString sessionId);
 
     // session operations
-    [CallWith=ScriptState] Promise<void> update(BufferSource response);
-    [CallWith=ScriptState] Promise<void> close();
-    [CallWith=ScriptState] Promise<void> remove();
+    [CallWith=ScriptState, RaisesException] Promise<void> update(BufferSource response);
+    [CallWith=ScriptState, RaisesException] Promise<void> close();
+    [CallWith=ScriptState, RaisesException] Promise<void> remove();
 };

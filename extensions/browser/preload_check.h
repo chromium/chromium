@@ -6,11 +6,11 @@
 #define EXTENSIONS_BROWSER_PRELOAD_CHECK_H_
 
 #include <set>
+#include <string>
 
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 
 namespace extensions {
 
@@ -22,19 +22,22 @@ class PreloadCheck {
  public:
   // These enumerators should only be referred to by name, so it is safe to
   // insert or remove values as necessary.
-  enum Error {
-    NONE,
-    BLACKLISTED_ID,
-    BLACKLISTED_UNKNOWN,
-    DISALLOWED_BY_POLICY,
-    WEBGL_NOT_SUPPORTED,
-    WINDOW_SHAPE_NOT_SUPPORTED,
+  enum class Error {
+    kBlocklistedId,
+    kBlocklistedUnknown,
+    kDisallowedByPolicy,
+    kWebglNotSupported,
+    kWindowShapeNotSupported,
   };
 
   using Errors = std::set<Error>;
   using ResultCallback = base::OnceCallback<void(const Errors&)>;
 
   explicit PreloadCheck(scoped_refptr<const Extension> extension);
+
+  PreloadCheck(const PreloadCheck&) = delete;
+  PreloadCheck& operator=(const PreloadCheck&) = delete;
+
   virtual ~PreloadCheck();
 
   // This function must be called on the UI thread. The callback also occurs on
@@ -42,15 +45,13 @@ class PreloadCheck {
   virtual void Start(ResultCallback callback) = 0;
 
   // Subclasses may provide an error message.
-  virtual base::string16 GetErrorMessage() const;
+  virtual std::u16string GetErrorMessage() const;
 
   const Extension* extension() { return extension_.get(); }
 
  private:
   // The extension to check.
   scoped_refptr<const Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(PreloadCheck);
 };
 
 }  // namespace extensions

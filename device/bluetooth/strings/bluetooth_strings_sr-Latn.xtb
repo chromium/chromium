@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="sr-Latn">
+<translation id="1412802024419177173">Modem (<ph name="ADDRESS" />)</translation>
+<translation id="1426891891566455573"><ph name="DEVICE_NAME" />, miš</translation>
+<translation id="2162295688984026195"><ph name="DEVICE_NAME" />, kombinacija tastature i miša</translation>
+<translation id="2616803374438260326">Tastatura/miš (<ph name="ADDRESS" />)</translation>
+<translation id="2624917159090553505"><ph name="DEVICE_NAME" />, periferni</translation>
+<translation id="2894380829637873837"><ph name="DEVICE_NAME" />, tablet</translation>
+<translation id="3036527976720628348"><ph name="DEVICE_NAME" />, telefon</translation>
+<translation id="3273951168350045122">Tastatura (<ph name="ADDRESS" />)</translation>
+<translation id="3689300613247337921"><ph name="DEVICE_NAME" />, računar</translation>
+<translation id="4287283380557401002">Audio u automobilu (<ph name="ADDRESS" />)</translation>
+<translation id="430326050669417502">Džojstik (<ph name="ADDRESS" />)</translation>
+<translation id="4698630591226285015"><ph name="DEVICE_NAME" />, audio uređaj</translation>
+<translation id="4986357476502426173"><ph name="DEVICE_NAME" />, video uređaj</translation>
+<translation id="5271696982761495740">Tablet (<ph name="ADDRESS" />)</translation>
+<translation id="5376363957846771741">Nepoznat ili nepodržan uređaj (<ph name="ADDRESS" />)</translation>
+<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
+<translation id="5716052956047449618"><ph name="DEVICE_NAME" />, modem</translation>
+<translation id="6459740836740815150"><ph name="DEVICE_NAME" />, audio uređaj u automobilu</translation>
+<translation id="6542922424766292144"><ph name="DEVICE_NAME" />, tastatura</translation>
+<translation id="654594702871184195">Audio (<ph name="ADDRESS" />)</translation>
+<translation id="6744468237221042970">Računar (<ph name="ADDRESS" />)</translation>
+<translation id="7220023250700248346"><ph name="DEVICE_NAME" />, džojstik</translation>
+<translation id="7501330106833014351">Džojped (<ph name="ADDRESS" />)</translation>
+<translation id="8613368722576151038"><ph name="DEVICE_NAME" />, džojped</translation>
+<translation id="8866374292072238753">Video (<ph name="ADDRESS" />)</translation>
+<translation id="8952558712545617651">Miš (<ph name="ADDRESS" />)</translation>
+<translation id="8961448405689538648"><ph name="DEVICE_NAME" />, nepoznat tip uređaja</translation>
+<translation id="907431882454731668">Periferni (<ph name="ADDRESS" />)</translation>
+<translation id="978248992969828584">Telefon (<ph name="ADDRESS" />)</translation>
+</translationbundle>

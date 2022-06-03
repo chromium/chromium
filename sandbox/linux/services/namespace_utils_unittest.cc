@@ -9,7 +9,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/launch.h"
 #include "sandbox/linux/services/credentials.h"

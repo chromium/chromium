@@ -16,16 +16,17 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/printing/printing_service.h"
 #include "chrome/services/printing/public/mojom/pdf_to_emf_converter.mojom.h"
+#include "chrome/services/printing/public/mojom/printing_service.mojom.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_data.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -51,7 +52,7 @@ class PdfToEmfConverterClientImpl : public mojom::PdfToEmfConverterClient {
   // mojom::PdfToEmfConverterClient implementation.
   void PreCacheFontCharacters(
       const std::vector<uint8_t>& logfont_data,
-      const base::string16& characters,
+      const std::u16string& characters,
       PreCacheFontCharactersCallback callback) override {
     // TODO(scottmg): pdf/ppapi still require the renderer to be able to
     // precache GDI fonts (http://crbug.com/383227), even when using
@@ -73,7 +74,7 @@ class PdfToEmfConverterClientImpl : public mojom::PdfToEmfConverterClient {
     HGDIOBJ old_font = SelectObject(hdc, font_handle);
     DCHECK(old_font != nullptr);
 
-    ExtTextOut(hdc, 0, 0, ETO_GLYPH_INDEX, 0, characters.c_str(),
+    ExtTextOut(hdc, 0, 0, ETO_GLYPH_INDEX, 0, base::as_wcstr(characters),
                characters.length(), nullptr);
 
     SelectObject(hdc, old_font);
@@ -95,13 +96,15 @@ class PdfToEmfConverterClientImpl : public mojom::PdfToEmfConverterClient {
 class PostScriptMetaFile : public Emf {
  public:
   PostScriptMetaFile() {}
+
+  PostScriptMetaFile(const PostScriptMetaFile&) = delete;
+  PostScriptMetaFile& operator=(const PostScriptMetaFile&) = delete;
+
   ~PostScriptMetaFile() override {}
 
  private:
   // Emf:
   bool SafePlayback(HDC hdc) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PostScriptMetaFile);
 };
 
 // Class for converting PDF to another format for printing (Emf, Postscript).
@@ -119,6 +122,10 @@ class PdfConverterImpl : public PdfConverter {
   PdfConverterImpl(scoped_refptr<base::RefCountedMemory> data,
                    const PdfRenderSettings& conversion_settings,
                    StartCallback start_callback);
+
+  PdfConverterImpl(const PdfConverterImpl&) = delete;
+  PdfConverterImpl& operator=(const PdfConverterImpl&) = delete;
+
   ~PdfConverterImpl() override;
 
   static void set_fail_when_initializing_conversion_for_tests(bool fail) {
@@ -132,8 +139,12 @@ class PdfConverterImpl : public PdfConverter {
  private:
   class GetPageCallbackData {
    public:
-    GetPageCallbackData(int page_number, PdfConverter::GetPageCallback callback)
+    GetPageCallbackData(uint32_t page_number,
+                        PdfConverter::GetPageCallback callback)
         : page_number_(page_number), callback_(callback) {}
+
+    GetPageCallbackData(const GetPageCallbackData&) = delete;
+    GetPageCallbackData& operator=(const GetPageCallbackData&) = delete;
 
     GetPageCallbackData(GetPageCallbackData&& other) {
       *this = std::move(other);
@@ -145,21 +156,19 @@ class PdfConverterImpl : public PdfConverter {
       return *this;
     }
 
-    int page_number() const { return page_number_; }
+    uint32_t page_number() const { return page_number_; }
 
     PdfConverter::GetPageCallback callback() const { return callback_; }
 
    private:
-    int page_number_;
+    uint32_t page_number_;
 
     PdfConverter::GetPageCallback callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(GetPageCallbackData);
   };
 
   void Initialize(scoped_refptr<base::RefCountedMemory> data);
 
-  void GetPage(int page_number,
+  void GetPage(uint32_t page_number,
                PdfConverter::GetPageCallback get_page_callback) override;
 
   void Stop();
@@ -202,8 +211,6 @@ class PdfConverterImpl : public PdfConverter {
   base::WeakPtrFactory<PdfConverterImpl> weak_ptr_factory_{this};
 
   static bool simulate_failure_initializing_conversion_;
-
-  DISALLOW_COPY_AND_ASSIGN(PdfConverterImpl);
 };
 
 // static
@@ -214,12 +221,14 @@ std::unique_ptr<MetafilePlayer> PdfConverterImpl::GetMetaFileFromMapping(
   std::unique_ptr<Emf> metafile;
   if (settings_.mode == PdfRenderSettings::Mode::POSTSCRIPT_LEVEL2 ||
       settings_.mode == PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3 ||
+      settings_.mode ==
+          PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS ||
       settings_.mode == PdfRenderSettings::Mode::TEXTONLY) {
     metafile = std::make_unique<PostScriptMetaFile>();
   } else {
     metafile = std::make_unique<Emf>();
   }
-  if (!metafile->InitFromData(mapping.memory(), mapping.size()))
+  if (!metafile->InitFromData(mapping.GetMemoryAsSpan<const uint8_t>()))
     metafile.reset();
   return metafile;
 }
@@ -265,7 +274,7 @@ void PdfConverterImpl::Initialize(scoped_refptr<base::RefCountedMemory> data) {
 
   base::MappedReadOnlyRegion memory =
       base::ReadOnlySharedMemoryRegion::Create(data->size());
-  if (!memory.region.IsValid() || !memory.mapping.IsValid()) {
+  if (!memory.IsValid()) {
     OnFailed(std::string("Failed to create PDF data mapping."));
     return;
   }
@@ -305,7 +314,7 @@ void PdfConverterImpl::OnPageCount(
 }
 
 void PdfConverterImpl::GetPage(
-    int page_number,
+    uint32_t page_number,
     PdfConverter::GetPageCallback get_page_callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(pdf_to_emf_converter_.is_bound());
@@ -407,6 +416,21 @@ void PdfConverterImpl::RecordConversionMetrics() {
     case PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3:
       UMA_HISTOGRAM_MEMORY_KB("Printing.ConversionSize.PostScript3",
                               average_page_size_in_kb);
+      return;
+    case PdfRenderSettings::Mode::EMF_WITH_REDUCED_RASTERIZATION:
+      UMA_HISTOGRAM_MEMORY_KB(
+          "Printing.ConversionSize.EmfWithReducedRasterization",
+          average_page_size_in_kb);
+      return;
+    case PdfRenderSettings::Mode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT:
+      UMA_HISTOGRAM_MEMORY_KB(
+          "Printing.ConversionSize.EmfWithReducedRasterizationAndGdiText",
+          average_page_size_in_kb);
+      return;
+    case PdfRenderSettings::Mode::POSTSCRIPT_LEVEL3_WITH_TYPE42_FONTS:
+      UMA_HISTOGRAM_MEMORY_KB(
+          "Printing.ConversionSize.PostScript3WithType42Fonts",
+          average_page_size_in_kb);
       return;
     default:
       NOTREACHED();

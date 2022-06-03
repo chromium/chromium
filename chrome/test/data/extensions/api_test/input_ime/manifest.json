@@ -7,14 +7,11 @@
   "background": {
     "scripts": ["background.js"]
   },
-  "permissions": [ "input" ],
+  "permissions": [ "input", "inputMethodPrivate" ],
   "input_components": [{
     "name": "Test IME",
-    "type": "ime",
     "id": "test",
-    "description": "Test",  // A user visible description
     "language": "en",  // The primary language this IME is used for
     "layouts": ["us::eng"]
   }]
 }
-

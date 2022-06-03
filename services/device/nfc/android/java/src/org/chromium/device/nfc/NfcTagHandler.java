@@ -32,6 +32,8 @@ public class NfcTagHandler {
     public static NfcTagHandler create(Tag tag) {
         if (tag == null) return null;
 
+        if (NfcBlocklist.getInstance().isTagBlocked(tag)) return null;
+
         Ndef ndef = Ndef.get(tag);
         if (ndef != null) {
             String type = ndef.getType();
@@ -55,6 +57,8 @@ public class NfcTagHandler {
         public void write(NdefMessage message)
                 throws IOException, TagLostException, FormatException, IllegalStateException;
         public NdefMessage read()
+                throws IOException, TagLostException, FormatException, IllegalStateException;
+        public boolean canAlwaysOverwrite()
                 throws IOException, TagLostException, FormatException, IllegalStateException;
     }
 
@@ -80,6 +84,13 @@ public class NfcTagHandler {
                 throws IOException, TagLostException, FormatException, IllegalStateException {
             return mNdef.getNdefMessage();
         }
+
+        @Override
+        public boolean canAlwaysOverwrite()
+                throws IOException, TagLostException, FormatException, IllegalStateException {
+            // Getting null means the tag is empty, overwrite is safe.
+            return mNdef.getNdefMessage() == null;
+        }
     }
 
     /**
@@ -102,6 +113,11 @@ public class NfcTagHandler {
         @Override
         public NdefMessage read() throws FormatException {
             return NdefMessageUtils.emptyNdefMessage();
+        }
+
+        @Override
+        public boolean canAlwaysOverwrite() {
+            return true;
         }
     }
 
@@ -182,5 +198,14 @@ public class NfcTagHandler {
             return mWasConnected;
         }
         return false;
+    }
+
+    /**
+     * Returns false only if the tag is already NDEF formatted and contains some records. Otherwise
+     * true.
+     */
+    public boolean canAlwaysOverwrite()
+            throws IOException, TagLostException, FormatException, IllegalStateException {
+        return mTechHandler.canAlwaysOverwrite();
     }
 }

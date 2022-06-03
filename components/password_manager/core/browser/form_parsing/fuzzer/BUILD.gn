@@ -44,9 +44,7 @@ static_library("fuzzer_support_proto") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "data_accessor_unittest.cc",
-  ]
+  sources = [ "data_accessor_unittest.cc" ]
 
   deps = [
     ":fuzzer_support",
@@ -68,9 +66,7 @@ source_set("unit_tests") {
 # new fuzzer has the "_generic" suffix on its target name.
 
 fuzzer_test("password_manager_form_parser_fuzzer") {
-  sources = [
-    "form_parser_fuzzer.cc",
-  ]
+  sources = [ "form_parser_fuzzer.cc" ]
 
   deps = [
     ":fuzzer_support",
@@ -84,9 +80,7 @@ fuzzer_test("password_manager_form_parser_fuzzer") {
 }
 
 fuzzer_test("password_manager_form_parser_proto_fuzzer") {
-  sources = [
-    "form_parser_proto_fuzzer.cc",
-  ]
+  sources = [ "form_parser_proto_fuzzer.cc" ]
 
   deps = [
     ":form_data_essentials_proto",
@@ -103,7 +97,5 @@ fuzzer_test("password_manager_form_parser_proto_fuzzer") {
 }
 
 proto_library("form_data_essentials_proto") {
-  sources = [
-    "form_data_essentials.proto",
-  ]
+  sources = [ "form_data_essentials.proto" ]
 }

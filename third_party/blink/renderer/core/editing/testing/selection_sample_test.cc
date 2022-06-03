@@ -29,7 +29,6 @@ TEST_F(SelectionSampleTest, GetSelectionTextFlatTree) {
       "  </template>"
       "  <b slot=two>tw|o</b><b slot=one>one</b>"
       "</p>");
-  GetDocument().body()->UpdateDistributionForFlatTreeTraversal();
   EXPECT_EQ(
       "<p>"
       "    ze^ro <slot name=\"one\"><b slot=\"one\">one</b></slot> <slot "
@@ -42,7 +41,7 @@ TEST_F(SelectionSampleTest, GetSelectionTextFlatTree) {
 TEST_F(SelectionSampleTest, SetCommentInBody) {
   const SelectionInDOMTree& selection = SelectionSample::SetSelectionText(
       GetDocument().body(), "<!--^-->foo<!--|-->");
-  EXPECT_EQ("foo", GetDocument().body()->InnerHTMLAsString());
+  EXPECT_EQ("foo", GetDocument().body()->innerHTML());
   EXPECT_EQ(SelectionInDOMTree::Builder()
                 .Collapse(Position(GetDocument().body(), 0))
                 .Extend(Position(GetDocument().body(), 1))
@@ -55,7 +54,7 @@ TEST_F(SelectionSampleTest, SetCommentInElement) {
       GetDocument().body(), "<span id=sample><!--^-->foo<!--|--></span>");
   const Element* const sample = GetDocument().body()->getElementById("sample");
   EXPECT_EQ("<span id=\"sample\">foo</span>",
-            GetDocument().body()->InnerHTMLAsString());
+            GetDocument().body()->innerHTML());
   EXPECT_EQ(SelectionInDOMTree::Builder()
                 .Collapse(Position(sample, 0))
                 .Extend(Position(sample, 1))
@@ -66,7 +65,7 @@ TEST_F(SelectionSampleTest, SetCommentInElement) {
 TEST_F(SelectionSampleTest, SetEmpty1) {
   const SelectionInDOMTree& selection =
       SelectionSample::SetSelectionText(GetDocument().body(), "|");
-  EXPECT_EQ("", GetDocument().body()->InnerHTMLAsString());
+  EXPECT_EQ("", GetDocument().body()->innerHTML());
   EXPECT_EQ(0u, GetDocument().body()->CountChildren());
   EXPECT_EQ(SelectionInDOMTree::Builder()
                 .Collapse(Position(GetDocument().body(), 0))
@@ -77,7 +76,7 @@ TEST_F(SelectionSampleTest, SetEmpty1) {
 TEST_F(SelectionSampleTest, SetEmpty2) {
   const SelectionInDOMTree& selection =
       SelectionSample::SetSelectionText(GetDocument().body(), "^|");
-  EXPECT_EQ("", GetDocument().body()->InnerHTMLAsString());
+  EXPECT_EQ("", GetDocument().body()->innerHTML());
   EXPECT_EQ(0u, GetDocument().body()->CountChildren());
   EXPECT_EQ(SelectionInDOMTree::Builder()
                 .Collapse(Position(GetDocument().body(), 0))
@@ -102,7 +101,7 @@ TEST_F(SelectionSampleTest, SetText) {
   {
     const auto& selection =
         SelectionSample::SetSelectionText(GetDocument().body(), "^ab|c");
-    EXPECT_EQ("abc", GetDocument().body()->InnerHTMLAsString());
+    EXPECT_EQ("abc", GetDocument().body()->innerHTML());
     EXPECT_EQ(SelectionInDOMTree::Builder()
                   .Collapse(Position(GetDocument().body()->firstChild(), 0))
                   .Extend(Position(GetDocument().body()->firstChild(), 2))
@@ -112,7 +111,7 @@ TEST_F(SelectionSampleTest, SetText) {
   {
     const auto& selection =
         SelectionSample::SetSelectionText(GetDocument().body(), "a^b|c");
-    EXPECT_EQ("abc", GetDocument().body()->InnerHTMLAsString());
+    EXPECT_EQ("abc", GetDocument().body()->innerHTML());
     EXPECT_EQ(SelectionInDOMTree::Builder()
                   .Collapse(Position(GetDocument().body()->firstChild(), 1))
                   .Extend(Position(GetDocument().body()->firstChild(), 2))
@@ -122,7 +121,7 @@ TEST_F(SelectionSampleTest, SetText) {
   {
     const auto& selection =
         SelectionSample::SetSelectionText(GetDocument().body(), "ab^|c");
-    EXPECT_EQ("abc", GetDocument().body()->InnerHTMLAsString());
+    EXPECT_EQ("abc", GetDocument().body()->innerHTML());
     EXPECT_EQ(SelectionInDOMTree::Builder()
                   .Collapse(Position(GetDocument().body()->firstChild(), 2))
                   .Build(),
@@ -131,7 +130,7 @@ TEST_F(SelectionSampleTest, SetText) {
   {
     const auto& selection =
         SelectionSample::SetSelectionText(GetDocument().body(), "ab|c^");
-    EXPECT_EQ("abc", GetDocument().body()->InnerHTMLAsString());
+    EXPECT_EQ("abc", GetDocument().body()->innerHTML());
     EXPECT_EQ(SelectionInDOMTree::Builder()
                   .Collapse(Position(GetDocument().body()->firstChild(), 3))
                   .Extend(Position(GetDocument().body()->firstChild(), 2))
@@ -264,10 +263,10 @@ TEST_F(SelectionSampleTest, ConvertTemplatesToShadowRoots) {
   Element* host = body->getElementById("host");
   SelectionSample::ConvertTemplatesToShadowRootsForTesring(
       *(To<HTMLElement>(host)));
-  ShadowRoot* shadow_root = host->ShadowRootIfV1();
+  ShadowRoot* shadow_root = host->GetShadowRoot();
   ASSERT_TRUE(shadow_root->IsShadowRoot());
   EXPECT_EQ("<div>shadow_first</div><div>shadow_second</div>",
-            shadow_root->InnerHTMLAsString());
+            shadow_root->innerHTML());
 }
 
 TEST_F(SelectionSampleTest, ConvertTemplatesToShadowRootsNoTemplates) {
@@ -280,8 +279,8 @@ TEST_F(SelectionSampleTest, ConvertTemplatesToShadowRootsNoTemplates) {
   Element* host = body->getElementById("host");
   SelectionSample::ConvertTemplatesToShadowRootsForTesring(
       *(To<HTMLElement>(host)));
-  EXPECT_FALSE(host->ShadowRootIfV1());
-  EXPECT_EQ("<div>first</div><div>second</div>", host->InnerHTMLAsString());
+  EXPECT_FALSE(host->GetShadowRoot());
+  EXPECT_EQ("<div>first</div><div>second</div>", host->innerHTML());
 }
 
 TEST_F(SelectionSampleTest, ConvertTemplatesToShadowRootsMultipleTemplates) {
@@ -303,15 +302,15 @@ TEST_F(SelectionSampleTest, ConvertTemplatesToShadowRootsMultipleTemplates) {
   Element* host2 = body->getElementById("host2");
   SelectionSample::ConvertTemplatesToShadowRootsForTesring(
       *(To<HTMLElement>(body)));
-  ShadowRoot* shadow_root_1 = host1->ShadowRootIfV1();
-  ShadowRoot* shadow_root_2 = host2->ShadowRootIfV1();
+  ShadowRoot* shadow_root_1 = host1->GetShadowRoot();
+  ShadowRoot* shadow_root_2 = host2->GetShadowRoot();
 
   EXPECT_TRUE(shadow_root_1->IsShadowRoot());
   EXPECT_EQ("<div>shadow_first</div><div>shadow_second</div>",
-            shadow_root_1->InnerHTMLAsString());
+            shadow_root_1->innerHTML());
   EXPECT_TRUE(shadow_root_2->IsShadowRoot());
   EXPECT_EQ("<div>shadow_third</div><div>shadow_forth</div>",
-            shadow_root_2->InnerHTMLAsString());
+            shadow_root_2->innerHTML());
 }
 
 TEST_F(SelectionSampleTest, TraverseShadowContent) {
@@ -324,15 +323,15 @@ TEST_F(SelectionSampleTest, TraverseShadowContent) {
                               "</div>";
   const SelectionInDOMTree& selection =
       SelectionSample::SetSelectionText(body, content);
-  EXPECT_EQ("<div id=\"host\"></div>", body->InnerHTMLAsString());
+  EXPECT_EQ("<div id=\"host\"></div>", body->innerHTML());
 
   Element* host = body->getElementById("host");
-  ShadowRoot* shadow_root = host->ShadowRootIfV1();
+  ShadowRoot* shadow_root = host->GetShadowRoot();
   EXPECT_TRUE(shadow_root->IsShadowRoot());
   EXPECT_EQ(
       "<div id=\"shadow1\">shadow_first</div>"
       "<div id=\"shadow2\">shadow_second</div>",
-      shadow_root->InnerHTMLAsString());
+      shadow_root->innerHTML());
 
   EXPECT_EQ(Position(shadow_root->getElementById("shadow1")->firstChild(), 0),
             selection.Base());
@@ -353,16 +352,16 @@ TEST_F(SelectionSampleTest, TraverseShadowContentWithSlot) {
   const SelectionInDOMTree& selection =
       SelectionSample::SetSelectionText(body, content);
   EXPECT_EQ("<div id=\"host\">foo<span slot=\"slot1\">bar</span></div>",
-            body->InnerHTMLAsString());
+            body->innerHTML());
 
   Element* host = body->getElementById("host");
-  ShadowRoot* shadow_root = host->ShadowRootIfV1();
+  ShadowRoot* shadow_root = host->GetShadowRoot();
   EXPECT_TRUE(shadow_root->IsShadowRoot());
   EXPECT_EQ(
       "<div id=\"shadow1\">shadow_first</div>"
       "<slot name=\"slot1\">slot</slot>"
       "<div id=\"shadow2\">shadow_second</div>",
-      shadow_root->InnerHTMLAsString());
+      shadow_root->innerHTML());
 
   EXPECT_EQ(Position(GetDocument().getElementById("host")->firstChild(), 0),
             selection.Base());
@@ -388,22 +387,22 @@ TEST_F(SelectionSampleTest, TraverseMultipleShadowContents) {
   const SelectionInDOMTree& selection =
       SelectionSample::SetSelectionText(body, content);
   EXPECT_EQ("<div id=\"host1\"></div><div id=\"host2\"></div>",
-            body->InnerHTMLAsString());
+            body->innerHTML());
 
   Element* host1 = body->getElementById("host1");
-  ShadowRoot* shadow_root1 = host1->ShadowRootIfV1();
+  ShadowRoot* shadow_root1 = host1->GetShadowRoot();
   Element* host2 = body->getElementById("host2");
-  ShadowRoot* shadow_root2 = host2->ShadowRootIfV1();
+  ShadowRoot* shadow_root2 = host2->GetShadowRoot();
   EXPECT_TRUE(shadow_root1->IsShadowRoot());
   EXPECT_TRUE(shadow_root2->IsShadowRoot());
   EXPECT_EQ(
       "<div id=\"shadow1\">shadow_first</div>"
       "<div id=\"shadow2\">shadow_second</div>",
-      shadow_root1->InnerHTMLAsString());
+      shadow_root1->innerHTML());
   EXPECT_EQ(
       "<div id=\"shadow3\">shadow_third</div>"
       "<div id=\"shadow4\">shadow_forth</div>",
-      shadow_root2->InnerHTMLAsString());
+      shadow_root2->innerHTML());
 
   EXPECT_EQ(Position(shadow_root1->getElementById("shadow1")->firstChild(), 0),
             selection.Base());

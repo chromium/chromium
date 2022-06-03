@@ -1,0 +1,65 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/buildflag_header.gni")
+import("//build/config/ios/ios_sdk.gni")
+
+source_set("credential_provider") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "archivable_credential.h",
+    "archivable_credential.mm",
+    "archivable_credential_store.h",
+    "archivable_credential_store.mm",
+    "archivable_credential_util.h",
+    "archivable_credential_util.mm",
+    "as_password_credential_identity+credential.h",
+    "as_password_credential_identity+credential.mm",
+    "constants.h",
+    "constants.mm",
+    "memory_credential_store.h",
+    "memory_credential_store.mm",
+    "multi_store_credential_store.h",
+    "multi_store_credential_store.mm",
+    "user_defaults_credential_store.h",
+    "user_defaults_credential_store.mm",
+  ]
+  deps = [
+    ":ui",
+    "//base",
+    "//ios/chrome/common:ios_app_bundle_id_prefix_buildflags",
+    "//ios/chrome/common/app_group",
+  ]
+  frameworks = [
+    "AuthenticationServices.framework",
+    "Foundation.framework",
+  ]
+}
+
+source_set("ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "credential.h",
+    "credential_store.h",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [
+    "archivable_credential_store_unittest.mm",
+    "archivable_credential_unittest.mm",
+    "as_password_credential_identity+credential_unittests.mm",
+    "memory_credential_store_unittests.mm",
+    "multi_store_credential_store_unittests.mm",
+    "user_defaults_credential_store_unittests.mm",
+  ]
+  deps = [
+    ":credential_provider",
+    "//base/test:test_support",
+    "//testing/gtest",
+  ]
+}

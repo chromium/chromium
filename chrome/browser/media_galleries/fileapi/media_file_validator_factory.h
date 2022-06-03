@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_MEDIA_FILE_VALIDATOR_FACTORY_H_
 #define CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_MEDIA_FILE_VALIDATOR_FACTORY_H_
 
-#include "base/macros.h"
+#include "components/download/public/common/quarantine_connection.h"
 #include "storage/browser/file_system/copy_or_move_file_validator.h"
 
 namespace base {
@@ -22,7 +22,13 @@ class FileSystemURL;
 class MediaFileValidatorFactory
     : public storage::CopyOrMoveFileValidatorFactory {
  public:
-  MediaFileValidatorFactory();
+  explicit MediaFileValidatorFactory(
+      download::QuarantineConnectionCallback quarantine_connection_callback);
+
+  MediaFileValidatorFactory(const MediaFileValidatorFactory&) = delete;
+  MediaFileValidatorFactory& operator=(const MediaFileValidatorFactory&) =
+      delete;
+
   ~MediaFileValidatorFactory() override;
 
   // CopyOrMoveFileValidatorFactory implementation.
@@ -31,7 +37,7 @@ class MediaFileValidatorFactory
       const base::FilePath& platform_path) override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(MediaFileValidatorFactory);
+  download::QuarantineConnectionCallback quarantine_connection_callback_;
 };
 
 #endif  // CHROME_BROWSER_MEDIA_GALLERIES_FILEAPI_MEDIA_FILE_VALIDATOR_FACTORY_H_

@@ -1,5 +1,5 @@
-document
-++group IsControlElement=false
-++++document Name='pipe'
-++++++link Name='pipe1'
-++++++link Name='pipe2'
+Document
+++Group IsControlElement=false
+++++Document Name='pipe'
+++++++Hyperlink Name='pipe1'
+++++++Text Name='pipe2'

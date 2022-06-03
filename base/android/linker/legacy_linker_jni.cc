@@ -2,11 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This is the version of the Android-specific Chromium linker that uses
-// the crazy linker to load libraries.
-
-// This source code *cannot* depend on anything from base/ or the C++
-// STL, to keep the final library small, and avoid ugly dependency issues.
+// This is a part of the Android-specific Chromium dynamic linker.
+//
+// See linker_jni.h for more details and the dependency rules.
 
 #include "base/android/linker/legacy_linker_jni.h"
 
@@ -110,11 +108,8 @@ Java_org_chromium_base_library_1loader_LegacyLinker_nativeLoadLibrary(
            static_cast<unsigned long long>(load_address));
   crazy_context_t* context = GetCrazyContext();
 
-  if (!IsValidAddress(load_address)) {
-    LOG_ERROR("Invalid address 0x%llx",
-              static_cast<unsigned long long>(load_address));
+  if (!IsValidAddress(load_address))
     return false;
-  }
 
   // Set the desired load address (0 means randomize it).
   crazy_context_set_load_address(context, static_cast<size_t>(load_address));
@@ -151,11 +146,8 @@ Java_org_chromium_base_library_1loader_LegacyLinker_nativeCreateSharedRelro(
 
   LOG_INFO("Called for %s", lib_name.c_str());
 
-  if (!IsValidAddress(load_address)) {
-    LOG_ERROR("Invalid address 0x%llx",
-              static_cast<unsigned long long>(load_address));
+  if (!IsValidAddress(load_address))
     return false;
-  }
 
   ScopedLibrary library;
   if (!crazy_library_find_by_name(lib_name.c_str(), library.GetPtr())) {

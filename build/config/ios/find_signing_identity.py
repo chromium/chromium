@@ -10,35 +10,80 @@ import subprocess
 import sys
 import re
 
+
+def Redact(value, from_nth_char=5):
+  """Redact value past the N-th character."""
+  return value[:from_nth_char] + '*' * (len(value) - from_nth_char)
+
+
+class Identity(object):
+  """Represents a valid identity."""
+
+  def __init__(self, identifier, name, team):
+    self.identifier = identifier
+    self.name = name
+    self.team = team
+
+  def redacted(self):
+    return Identity(Redact(self.identifier), self.name, Redact(self.team))
+
+  def format(self):
+    return '%s: "%s (%s)"' % (self.identifier, self.name, self.team)
+
+
 def ListIdentities():
   return subprocess.check_output([
-    'xcrun',
-    'security',
-    'find-identity',
-    '-v',
-    '-p',
-    'codesigning',
-  ])
+      'xcrun',
+      'security',
+      'find-identity',
+      '-v',
+      '-p',
+      'codesigning',
+  ]).decode('utf8')
 
 
-def FindValidIdentity(identity_description):
-  lines = list(map(str.strip, ListIdentities().splitlines()))
+def FindValidIdentity(pattern):
+  """Find all identities matching the pattern."""
+  lines = list(l.strip() for l in ListIdentities().splitlines())
   # Look for something like "2) XYZ "iPhone Developer: Name (ABC)""
-  exp = re.compile('[0-9]+\) ([A-F0-9]+) "([^"]*)"')
+  regex = re.compile('[0-9]+\) ([A-F0-9]+) "([^"(]*) \(([^)"]*)\)"')
+
+  result = []
   for line in lines:
-    res = exp.match(line)
+    res = regex.match(line)
     if res is None:
       continue
-    if identity_description in res.group(2):
-      yield res.group(1)
+    if pattern is None or pattern in res.group(2):
+      result.append(Identity(*res.groups()))
+  return result
+
+
+def Main(args):
+  parser = argparse.ArgumentParser('codesign iOS bundles')
+  parser.add_argument('--matching-pattern',
+                      dest='pattern',
+                      help='Pattern used to select the code signing identity.')
+  parsed = parser.parse_args(args)
+
+  identities = FindValidIdentity(parsed.pattern)
+  if len(identities) == 1:
+    print(identities[0].identifier, end='')
+    return 0
+
+  all_identities = FindValidIdentity(None)
+
+  print('Automatic code signing identity selection was enabled but could not')
+  print('find exactly one codesigning identity matching "%s".' % parsed.pattern)
+  print('')
+  print('Check that the keychain is accessible and that there is exactly one')
+  print('valid codesigning identity matching the pattern. Here is the parsed')
+  print('output of `xcrun security find-identity -v -p codesigning`:')
+  print()
+  for i, identity in enumerate(all_identities):
+    print('  %d) %s' % (i + 1, identity.redacted().format()))
+  print('    %d valid identities found' % (len(all_identities)))
+  return 1
 
 
 if __name__ == '__main__':
-  parser = argparse.ArgumentParser('codesign iOS bundles')
-  parser.add_argument(
-      '--identity-description', required=True,
-      help='Text description used to select the code signing identity.')
-  args = parser.parse_args()
-
-  for identity in FindValidIdentity(args.identity_description):
-    print(identity)
+  sys.exit(Main(sys.argv[1:]))

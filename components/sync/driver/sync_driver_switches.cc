@@ -14,6 +14,15 @@ bool IsSyncAllowedByFlag() {
       switches::kDisableSync);
 }
 
+#if defined(OS_IOS)
+bool IsSyncTrustedVaultPassphraseiOSRPCEnabled() {
+  return base::FeatureList::IsEnabled(
+             switches::kSyncTrustedVaultPassphraseRecovery) &&
+         base::FeatureList::IsEnabled(
+             switches::kSyncTrustedVaultPassphraseiOSRPC);
+}
+#endif  // defined(OS_IOS)
+
 // Disables syncing browser data to a Google Account.
 const char kDisableSync[] = "disable-sync";
 
@@ -28,9 +37,6 @@ const char kSyncDisableDeferredStartup[] = "sync-disable-deferred-startup";
 // Controls whether the initial state of the "Capture Specifics" flag on
 // chrome://sync-internals is enabled.
 const char kSyncIncludeSpecificsInProtocolLog[] = "sync-include-specifics";
-
-// Overrides the default server used for profile sync.
-const char kSyncServiceURL[] = "sync-url";
 
 // This flag causes sync to retry very quickly (see polling_constants.h) the
 // when it encounters an error, as the first step towards exponential backoff.
@@ -49,35 +55,50 @@ const base::Feature kSyncAllowWalletDataInTransportModeWithCustomPassphrase{
     "SyncAllowAutofillWalletDataInTransportModeWithCustomPassphrase",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-// If enabled, the sync engine will be shut down in the "paused" state.
-const base::Feature kStopSyncInPausedState{"StopSyncInPausedState",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enable USS implementation of Passwords datatype.
-const base::Feature kSyncUSSPasswords{"SyncUSSPasswords",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enable USS implementation of Nigori datatype.
-const base::Feature kSyncUSSNigori{"SyncUSSNigori",
-                                   base::FEATURE_DISABLED_BY_DEFAULT};
+// Controls whether to enable syncing of Autofill Wallet offer data.
+const base::Feature kSyncAutofillWalletOfferData{
+    "SyncAutofillWalletOfferData", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Controls whether to enable syncing of Wi-Fi configurations.
 const base::Feature kSyncWifiConfigurations{"SyncWifiConfigurations",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables updating a BookmarkNode's GUID by replacing the node itself.
-const base::Feature kUpdateBookmarkGUIDWithNodeReplacement{
-    "UpdateGUIDWithNodeReplacement", base::FEATURE_ENABLED_BY_DEFAULT};
+// Sync requires policies to be loaded before starting.
+const base::Feature kSyncRequiresPoliciesLoaded{
+    "SyncRequiresPoliciesLoaded", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Enables the GUID-aware merge algorithm.
-const base::Feature kMergeBookmarksUsingGUIDs{
-    "MergeBookmarksUsingGUIDs", base::FEATURE_DISABLED_BY_DEFAULT};
+// Max time to delay the sync startup while waiting for policies to load.
+const base::FeatureParam<base::TimeDelta> kSyncPolicyLoadTimeout{
+    &kSyncRequiresPoliciesLoaded, "SyncPolicyLoadTimeout", base::Seconds(10)};
 
-const base::Feature kSyncDeviceInfoInTransportMode{
-    "SyncDeviceInfoInTransportMode", base::FEATURE_DISABLED_BY_DEFAULT};
+#if defined(OS_IOS)
+// Whether RPC is enabled.
+const base::Feature kSyncTrustedVaultPassphraseiOSRPC{
+    "SyncTrustedVaultPassphraseiOSRPC", base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // defined(OS_IOS)
 
-// Enables the running of backend ProfileSyncService tasks on the ThreadPool.
-const base::Feature kProfileSyncServiceUsesThreadPool{
-    "ProfileSyncServiceUsesThreadPool", base::FEATURE_DISABLED_BY_DEFAULT};
+// Keep this entry in sync with the equivalent name in
+// ChromeFeatureList.java.
+const base::Feature kSyncTrustedVaultPassphraseRecovery{
+  "SyncTrustedVaultPassphraseRecovery",
+#if defined(OS_IOS)
+      base::FEATURE_DISABLED_BY_DEFAULT
+#else
+      base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+};
+
+// Whether the entry point to opt in to trusted vault in settings should be
+// shown.
+const base::Feature kSyncTrustedVaultPassphrasePromo{
+    "SyncTrustedVaultPassphrasePromo", base::FEATURE_DISABLED_BY_DEFAULT};
+
+#if defined(OS_CHROMEOS)
+// Whether warning should be shown in sync settings page when lacros
+// side-by-side mode is enabled.
+const base::Feature kSyncSettingsShowLacrosSideBySideWarning{
+    "SyncSettingsShowLacrosSideBySideWarning",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace switches

@@ -4,7 +4,6 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
@@ -13,8 +12,8 @@
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
@@ -24,24 +23,22 @@ namespace chromeos {
 class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
  public:
   AddSupervisionMetricsRecorderTest() = default;
+
+  AddSupervisionMetricsRecorderTest(const AddSupervisionMetricsRecorderTest&) =
+      delete;
+  AddSupervisionMetricsRecorderTest& operator=(
+      const AddSupervisionMetricsRecorderTest&) = delete;
+
   ~AddSupervisionMetricsRecorderTest() override = default;
 
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        chromeos::features::kParentalControlsSettings);
-    InProcessBrowserTest::SetUp();
-  }
-
   void SetUpOnMainThread() override {
+    identity_test_env_ = std::make_unique<signin::IdentityTestEnvironment>();
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     test_web_ui_.set_web_contents(web_contents);
   }
 
-  void ShowAddSupervisionDialog() {
-    content::WebContents* web_contents = test_web_ui_.GetWebContents();
-    AddSupervisionDialog::Show(web_contents->GetTopLevelNativeWindow());
-  }
+  void ShowAddSupervisionDialog() { AddSupervisionDialog::Show(); }
 
   void CloseNowForTesting() {
     AddSupervisionDialog* instance =
@@ -50,20 +47,17 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
   }
 
   void CloseAddSupervisionDialog() {
-    bool out_close_dialog =
-        AddSupervisionDialog::GetInstance()->OnDialogCloseRequested();
-    EXPECT_TRUE(out_close_dialog);
+    AddSupervisionDialog::GetInstance()->OnDialogWillClose();
     CloseNowForTesting();
   }
 
   void NotifySupervisionEnabled() {
-    signin::IdentityTestEnvironment identity_test_env;
     mojo::PendingReceiver<add_supervision::mojom::AddSupervisionHandler>
         receiver;
     AddSupervisionUI add_supervision_ui(&test_web_ui_);
     AddSupervisionHandler add_supervision_handler(
         std::move(receiver), &test_web_ui_,
-        identity_test_env.identity_manager(), &add_supervision_ui);
+        identity_test_env_->identity_manager(), &add_supervision_ui);
     add_supervision_handler.NotifySupervisionEnabled();
   }
 
@@ -73,9 +67,7 @@ class AddSupervisionMetricsRecorderTest : public InProcessBrowserTest {
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(AddSupervisionMetricsRecorderTest);
-
-  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<signin::IdentityTestEnvironment> identity_test_env_;
   content::TestWebUI test_web_ui_;
 };
 
@@ -238,11 +230,11 @@ IN_PROC_BROWSER_TEST_P(AddSupervisionMetricsRecorderTimeTest, UserTimingTest) {
       base::MakeRefCounted<base::TestMockTimeTaskRunner>();
   AddSupervisionMetricsRecorder::GetInstance()->SetClockForTesting(
       task_runner_->GetMockTickClock());
-  base::TimeDelta duration(base::TimeDelta::FromSeconds(GetParam()));
+  base::TimeDelta duration(base::Seconds(GetParam()));
 
   // We need to start at some non-zero point in time or else
   // DCHECK(!start_time_.is_null()) throws.
-  task_runner_->FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_runner_->FastForwardBy(base::Seconds(1));
   ShowAddSupervisionDialog();
   task_runner_->FastForwardBy(duration);
   CloseAddSupervisionDialog();

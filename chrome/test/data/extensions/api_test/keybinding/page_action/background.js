@@ -7,9 +7,4 @@ chrome.pageAction.onClicked.addListener(function(tab) {
   chrome.test.sendMessage('clicked');
 });
 
-chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
-  chrome.pageAction.show(tabId);
-  chrome.test.notifyPass();
-});
-
 chrome.test.notifyPass();

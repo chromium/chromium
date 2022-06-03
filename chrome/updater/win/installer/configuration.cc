@@ -35,7 +35,7 @@ bool Configuration::Initialize(HMODULE module) {
 }
 
 void Configuration::Clear() {
-  if (args_ != nullptr) {
+  if (args_) {
     ::LocalFree(args_);
     args_ = nullptr;
   }

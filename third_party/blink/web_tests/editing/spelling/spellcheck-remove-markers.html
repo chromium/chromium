@@ -96,4 +96,55 @@
         'Removing "contenteditable" attribute on child still keeps the spelling markers.')
     });
 
+  spellcheck_test(
+    '<textarea>|zz. I have a issue.</textarea>',
+    '',
+    '<textarea>#zz#. I have ~a~ issue.</textarea>',
+    {
+      title: '8) Setup for the initial markers.',
+      callback: sample => spellcheck_test(
+        sample,
+        document => document.querySelector('textarea').setAttribute('readonly', ''),
+        '<textarea readonly>zz. I have a issue.</textarea>',
+        'Setting "readonly" attribute removes spelling markers.')
+    });
+
+  spellcheck_test(
+    '<textarea>|zz. I have a issue.</textarea>',
+    '',
+    '<textarea>#zz#. I have ~a~ issue.</textarea>',
+    {
+      title: '9) Setup for the initial markers.',
+      callback: sample => spellcheck_test(
+        sample,
+        document => document.querySelector('textarea').setAttribute('disabled', ''),
+        '<textarea disabled>zz. I have a issue.</textarea>',
+        'Setting "disabled" attribute removes spelling markers.')
+    });
+
+    spellcheck_test(
+    '<div contenteditable>|zz. I have a issue.</div>',
+    '',
+    '<div contenteditable>#zz#. I have ~a~ issue.</div>',
+    {
+      title: '10) Setup for the initial markers.',
+      callback: sample => spellcheck_test(
+        sample,
+        document => document.querySelector('div').setAttribute('spellcheck', 'false'),
+        '<div contenteditable spellcheck="false">zz. I have a issue.</div>',
+        'Setting "spellcheck" attribute to "false" removes spelling markers.')
+    });
+
+    spellcheck_test(
+    '<textarea>|zz. I have a issue.</textarea>',
+    '',
+    '<textarea>#zz#. I have ~a~ issue.</textarea>',
+    {
+      title: '11) Setup for the initial markers.',
+      callback: sample => spellcheck_test(
+        sample,
+        document => document.querySelector('textarea').setAttribute('spellcheck', 'false'),
+        '<textarea spellcheck="false">zz. I have a issue.</textarea>',
+        'Setting "spellcheck" attribute to "false" removes spelling markers for textarea.')
+    });
 </script>

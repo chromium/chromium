@@ -102,7 +102,7 @@ class MODULES_EXPORT ConvolverNode final : public AudioNode {
   bool normalize() const;
   void setNormalize(bool);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // InspectorHelperMixin
   void ReportDidCreate() final;

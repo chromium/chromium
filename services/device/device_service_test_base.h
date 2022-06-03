@@ -7,6 +7,7 @@
 
 #include "base/macros.h"
 #include "base/test/task_environment.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/device_service.mojom.h"
 #include "services/network/test/test_network_connection_tracker.h"
@@ -16,6 +17,7 @@
 namespace device {
 
 class DeviceService;
+class FakeGeolocationManager;
 
 const char kTestGeolocationApiKey[] = "FakeApiKeyForTest";
 
@@ -23,6 +25,10 @@ const char kTestGeolocationApiKey[] = "FakeApiKeyForTest";
 class DeviceServiceTestBase : public testing::Test {
  public:
   DeviceServiceTestBase();
+
+  DeviceServiceTestBase(const DeviceServiceTestBase&) = delete;
+  DeviceServiceTestBase& operator=(const DeviceServiceTestBase&) = delete;
+
   ~DeviceServiceTestBase() override;
 
   // NOTE: It's important to do service instantiation within SetUp instead of
@@ -46,6 +52,10 @@ class DeviceServiceTestBase : public testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> file_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
+#if defined(OS_MAC)
+  std::unique_ptr<FakeGeolocationManager> fake_geolocation_manager_;
+#endif
+
   network::TestURLLoaderFactory test_url_loader_factory_;
 
  private:
@@ -53,8 +63,6 @@ class DeviceServiceTestBase : public testing::Test {
       network_connection_tracker_;
   std::unique_ptr<DeviceService> service_;
   mojo::Remote<mojom::DeviceService> service_remote_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceServiceTestBase);
 };
 
 }  // namespace device

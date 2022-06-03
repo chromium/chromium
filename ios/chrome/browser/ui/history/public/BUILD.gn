@@ -4,7 +4,5 @@
 
 source_set("public") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "history_presentation_delegate.h",
-  ]
+  sources = [ "history_presentation_delegate.h" ]
 }

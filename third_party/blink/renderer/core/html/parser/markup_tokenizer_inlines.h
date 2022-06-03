@@ -59,6 +59,7 @@ inline void AdvanceStringAndASSERT(SegmentedString& source,
 #define BEGIN_STATE(prefix, stateName) \
   case prefix::stateName:              \
   stateName:
+#define BEGIN_STATE_NOLABEL(prefix, stateName) case prefix::stateName:
 #define END_STATE() \
   NOTREACHED();     \
   break;
@@ -74,39 +75,59 @@ inline void AdvanceStringAndASSERT(SegmentedString& source,
 
 // We use this macro when the HTML5 spec says "consume the next input
 // character ... and switch to the <mumble> state."
-#define ADVANCE_TO(prefix, stateName)                     \
-  do {                                                    \
-    DCHECK_NE(state_, prefix::stateName);                 \
-    state_ = prefix::stateName;                           \
-    if (!input_stream_preprocessor_.Advance(source))      \
-      return HaveBufferedCharacterToken();                \
-    cc = input_stream_preprocessor_.NextInputCharacter(); \
-    goto stateName;                                       \
+#define ADVANCE_TO(prefix, stateName)                    \
+  do {                                                   \
+    DCHECK_NE(state_, prefix::stateName);                \
+    state_ = prefix::stateName;                          \
+    if (!input_stream_preprocessor_.Advance(source, cc)) \
+      return HaveBufferedCharacterToken();               \
+    goto stateName;                                      \
+  } while (false)
+
+// Similar to ADVANCE_TO, but we use this macro when the next input character is
+// known not to be a newline character. |AdvancePastNonNewline| will DCHECK this
+// property.
+#define ADVANCE_PAST_NON_NEWLINE_TO(prefix, stateName)                 \
+  do {                                                                 \
+    DCHECK_NE(state_, prefix::stateName);                              \
+    state_ = prefix::stateName;                                        \
+    if (!input_stream_preprocessor_.AdvancePastNonNewline(source, cc)) \
+      return HaveBufferedCharacterToken();                             \
+    goto stateName;                                                    \
   } while (false)
 
 // We use this macro when the HTML5 spec says "consume the next input
 // character" and it doesn't say "switch to ... state".
-#define CONSUME(prefix, stateName)                        \
-  do {                                                    \
-    DCHECK_EQ(state_, prefix::stateName);                 \
-    if (!input_stream_preprocessor_.Advance(source))      \
-      return HaveBufferedCharacterToken();                \
-    cc = input_stream_preprocessor_.NextInputCharacter(); \
-    goto stateName;                                       \
+#define CONSUME(prefix, stateName)                       \
+  do {                                                   \
+    DCHECK_EQ(state_, prefix::stateName);                \
+    if (!input_stream_preprocessor_.Advance(source, cc)) \
+      return HaveBufferedCharacterToken();               \
+    goto stateName;                                      \
+  } while (false)
+
+// Similar to CONSUME, but we use this macro when the next input character is
+// known not to be a newline character. |AdvancePastNonNewline| will DCHECK this
+// property.
+#define CONSUME_NON_NEWLINE(prefix, stateName)                         \
+  do {                                                                 \
+    DCHECK_EQ(state_, prefix::stateName);                              \
+    if (!input_stream_preprocessor_.AdvancePastNonNewline(source, cc)) \
+      return HaveBufferedCharacterToken();                             \
+    goto stateName;                                                    \
   } while (false)
 
 // Sometimes there's more complicated logic in the spec that separates when
 // we consume the next input character and when we switch to a particular
 // state. We handle those cases by advancing the source directly and using
 // this macro to switch to the indicated state.
-#define SWITCH_TO(prefix, stateName)                                  \
-  do {                                                                \
-    DCHECK_NE(state_, prefix::stateName);                             \
-    state_ = prefix::stateName;                                       \
-    if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source)) \
-      return HaveBufferedCharacterToken();                            \
-    cc = input_stream_preprocessor_.NextInputCharacter();             \
-    goto stateName;                                                   \
+#define SWITCH_TO(prefix, stateName)                                      \
+  do {                                                                    \
+    DCHECK_NE(state_, prefix::stateName);                                 \
+    state_ = prefix::stateName;                                           \
+    if (source.IsEmpty() || !input_stream_preprocessor_.Peek(source, cc)) \
+      return HaveBufferedCharacterToken();                                \
+    goto stateName;                                                       \
   } while (false)
 
 }  // namespace blink

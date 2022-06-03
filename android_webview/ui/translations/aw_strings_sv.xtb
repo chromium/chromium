@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
-<translation id="6106989379647458772">Webbsidan på <ph name="PAGE" /> kan vara nere tillfälligt eller ha flyttats permanent till en ny webbadress.</translation>
-<translation id="6312113039770857350">Webbsidan är inte tillgänglig</translation>
-<translation id="8681531050781943054">Det gick inte att läsa in webbsidan på <ph name="PAGE" />. Orsak:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Förslag:<ph name="MARKUP_2" />Kontrollera att du använder en dataanslutning<ph name="MARKUP_3" />Läs in den här webbsidan igen senare<ph name="MARKUP_4" />Kontrollera att du har angett rätt adress<ph name="MARKUP_5" /></translation>
 </translationbundle>

@@ -3,6 +3,7 @@
 <script src="../../../../resources/testharness.js"></script>
 <script src="../../../../resources/testharnessreport.js"></script>
 <script src="../../../../resources/gesture-util.js"></script>
+<script src="../../../../resources/blink-coordinates-util.js"></script>
 <script src="../../../../resources/scrollbar-util.js"></script>
 <style>
 .appearance {
@@ -53,14 +54,19 @@ window.onload = () => {
     y: standardRectFast.top + BUTTON_WIDTH + 5
   }
 
-  // TODO (arakeri): This test was moved to the top due to crbug.com/1017568. Delete the
-  // comment once the bug is fixed.
   promise_test (async () => {
     resetScrollOffset(standardDivFast);
 
     // Click on the track part just above the down arrow.
     await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y - 10);
-    assert_equals(standardDivFast.scrollTop, 74, "Pressing the down trackpart didn't scroll.");
+    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
+    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+      assert_approx_equals(standardDivFast.scrollTop, 74, 1/window.devicePixelRatio,
+        "Pressing the down trackpart didn't scroll.");
+    } else {
+      assert_equals(standardDivFast.scrollTop, 74,
+        "Pressing the down trackpart didn't scroll.");
+    }
   }, "Test mouse click on non-custom composited div scrollbar empty trackparts.");
 
   promise_test (async () => {
@@ -70,15 +76,20 @@ window.onload = () => {
     await mouseDragAndDrop(SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y, SCROLLBAR_THUMB.x, SCROLLBAR_THUMB.y + 20);
     let expected_offset = 0;
 
-    // TODO(arakeri): crbug.com/1016188 has been filed to investigate the differences
-    // in scroll offsets between platforms.
     if (onLinuxPlatform)
-      expected_offset = window.devicePixelRatio == 1 ? 92 : 73;
+      expected_offset = 92;
     else if (onMacPlatform)
-      expected_offset = 46;
+      expected_offset = 46.5;
     else
       expected_offset = window.devicePixelRatio == 1 ? 71 : 73;
-    assert_equals(standardDivFast.scrollTop, expected_offset, "Vertical thumb drag downwards did not scroll as expected.");
+    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
+    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+      assert_approx_equals(standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
+        "Vertical thumb drag downwards did not scroll as expected.");
+    } else {
+      assert_equals(standardDivFast.scrollTop, expected_offset,
+        "Vertical thumb drag downwards did not scroll as expected.");
+    }
   }, "Test mouse drags on non-custom composited div scrollbar thumb.");
 
   promise_test (async () => {
@@ -90,7 +101,16 @@ window.onload = () => {
 
     // Click on the Down arrow for standardRectFast.
     await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, SCROLLBAR_BUTTON_FWD.y);
-    assert_equals(standardDivFast.scrollTop, 40, "Pressing the down arrow didn't scroll.");
+    await waitForAnimationEndTimeBased(() => {return standardDivFast.scrollTop;});
+
+    const EXPECTED_SCROLL = getScrollbarButtonScrollDelta(standardDivFast).y;
+    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+      assert_approx_equals(standardDivFast.scrollTop, EXPECTED_SCROLL, 1/window.devicePixelRatio,
+        "Pressing the down arrow didn't scroll.");
+    } else {
+      assert_equals(standardDivFast.scrollTop, EXPECTED_SCROLL,
+        "Pressing the down arrow didn't scroll.");
+    }
   }, "Test mouse click on non-custom composited div scrollbar arrows.");
 
   promise_test (async () => {
@@ -102,16 +122,19 @@ window.onload = () => {
     await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top + 50, /*left_click*/0, modifier);
     let expected_offset = 0;
     if (onLinuxPlatform)
-      expected_offset = window.devicePixelRatio == 1 ? 87 : 82;
+      expected_offset = 87;
     else if (onMacPlatform)
-      expected_offset = 74;
+      expected_offset = 72.5;
     else
       expected_offset = 82;
 
-    // TODO(arakeri): crbug.com/1019076 Option + click is off by 3-4 px.
-    assert_approx_equals(standardDivFast.scrollTop, expected_offset, 3,
-    modifier + " + click forward didn't scroll.");
-
+    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+      assert_approx_equals(standardDivFast.scrollTop, expected_offset, 1/window.devicePixelRatio,
+        modifier + " + click forward didn't scroll.");
+    } else {
+      assert_equals(standardDivFast.scrollTop, expected_offset,
+        modifier + " + click forward didn't scroll.");
+    }
     await mouseClickOn(SCROLLBAR_BUTTON_FWD.x, standardRectFast.top +
     ((onMacPlatform ? 0 : BUTTON_WIDTH) + 2), /*left_click*/0, modifier);
     assert_equals(standardDivFast.scrollTop, 0, modifier + " + click backward didn't scroll.");

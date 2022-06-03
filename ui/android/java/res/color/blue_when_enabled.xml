@@ -4,6 +4,6 @@
      found in the LICENSE file.
 -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:color="@color/disabled_text_color_link" android:state_enabled="false" />
+    <item android:color="@color/default_text_color_link_disabled" android:state_enabled="false" />
     <item android:color="@color/default_text_color_link"/>
 </selector>

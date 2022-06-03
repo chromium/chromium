@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <utility>
-
 #include "third_party/blink/renderer/modules/worklet/worklet_thread_test_common.h"
+
+#include <utility>
 
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/worker_devtools_params.h"
 #include "third_party/blink/renderer/core/origin_trials/origin_trial_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
@@ -26,21 +28,27 @@ CreateAnimationAndPaintWorkletThread(
     WorkerReportingProxy* reporting_proxy,
     WorkerClients* clients,
     std::unique_ptr<AnimationAndPaintWorkletThread> thread) {
+  LocalDOMWindow* window = document->domWindow();
   thread->Start(
       std::make_unique<GlobalScopeCreationParams>(
-          document->Url(), mojom::ScriptType::kModule,
-          OffMainThreadWorkerScriptFetchOption::kEnabled, "Worklet",
-          document->UserAgent(), nullptr /* web_worker_fetch_context */,
-          Vector<CSPHeaderAndType>(), document->GetReferrerPolicy(),
-          document->GetSecurityOrigin(), document->IsSecureContext(),
-          document->GetHttpsState(), clients,
-          nullptr /* content_settings_client */,
-          document->GetSecurityContext().AddressSpace(),
-          OriginTrialContext::GetTokens(document).get(),
+          window->Url(), mojom::blink::ScriptType::kModule, "Worklet",
+          window->UserAgent(), window->GetFrame()->Loader().UserAgentMetadata(),
+          nullptr /* web_worker_fetch_context */,
+          Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+          Vector<network::mojom::blink::ContentSecurityPolicyPtr>(),
+          window->GetReferrerPolicy(), window->GetSecurityOrigin(),
+          window->IsSecureContext(), window->GetHttpsState(), clients,
+          nullptr /* content_settings_client */, window->AddressSpace(),
+          OriginTrialContext::GetTokens(window).get(),
           base::UnguessableToken::Create(), nullptr /* worker_settings */,
-          kV8CacheOptionsDefault,
-          MakeGarbageCollected<WorkletModuleResponsesMap>()),
-      base::nullopt, std::make_unique<WorkerDevToolsParams>());
+          mojom::blink::V8CacheOptions::kDefault,
+          MakeGarbageCollected<WorkletModuleResponsesMap>(),
+          mojo::NullRemote() /* browser_interface_broker */,
+          window->GetFrame()->Loader().CreateWorkerCodeCacheHost(),
+          BeginFrameProviderParams(), nullptr /* parent_permissions_policy */,
+          window->GetAgentClusterID(), ukm::kInvalidSourceId,
+          window->GetExecutionContextToken()),
+      absl::nullopt, std::make_unique<WorkerDevToolsParams>());
   return thread;
 }
 
@@ -52,7 +60,7 @@ CreateThreadAndProvidePaintWorkletProxyClient(
     WorkerReportingProxy* reporting_proxy,
     PaintWorkletProxyClient* proxy_client) {
   if (!proxy_client)
-    proxy_client = PaintWorkletProxyClient::Create(document, 1);
+    proxy_client = PaintWorkletProxyClient::Create(document->domWindow(), 1);
   WorkerClients* clients = MakeGarbageCollected<WorkerClients>();
   ProvidePaintWorkletProxyClientTo(clients, proxy_client);
 

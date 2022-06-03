@@ -94,16 +94,19 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   explicit LayoutTableCell(Element*);
 
   unsigned ColSpan() const final {
+    NOT_DESTROYED();
     if (!has_col_span_)
       return 1;
     return ParseColSpanFromDOM();
   }
   unsigned ParsedRowSpan() const {
+    NOT_DESTROYED();
     if (!has_row_span_)
       return 1;
     return ParseRowSpanFromDOM();
   }
   unsigned ResolvedRowSpan() const final {
+    NOT_DESTROYED();
     unsigned row_span = ParsedRowSpan();
     if (!row_span) {
       DCHECK(!Section()->NeedsCellRecalc());
@@ -116,24 +119,32 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   void ColSpanOrRowSpanChanged() final;
 
   void SetAbsoluteColumnIndex(unsigned column) {
+    NOT_DESTROYED();
     CHECK_LE(column, kMaxColumnIndex);
     absolute_column_index_ = column;
   }
 
   bool HasSetAbsoluteColumnIndex() const {
+    NOT_DESTROYED();
     return absolute_column_index_ != kUnsetColumnIndex;
   }
 
   unsigned AbsoluteColumnIndex() const final {
+    NOT_DESTROYED();
     DCHECK(HasSetAbsoluteColumnIndex());
     return absolute_column_index_;
   }
 
-  LayoutTableRow* Row() const { return To<LayoutTableRow>(Parent()); }
+  LayoutTableRow* Row() const {
+    NOT_DESTROYED();
+    return To<LayoutTableRow>(Parent());
+  }
   LayoutTableSection* Section() const {
+    NOT_DESTROYED();
     return To<LayoutTableSection>(Parent()->Parent());
   }
   LayoutTable* Table() const {
+    NOT_DESTROYED();
     return To<LayoutTable>(Parent()->Parent()->Parent());
   }
 
@@ -141,12 +152,14 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   LayoutTableCell* NextCell() const;
 
   unsigned RowIndex() const final {
+    NOT_DESTROYED();
     // This function shouldn't be called on a detached cell.
     DCHECK(Row());
     return Row()->RowIndex();
   }
 
   Length StyleOrColLogicalWidth() const final {
+    NOT_DESTROYED();
     const Length& style_width = StyleRef().LogicalWidth();
     if (!style_width.IsAuto())
       return style_width;
@@ -159,11 +172,10 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   }
 
   int LogicalHeightFromStyle() const {
+    NOT_DESTROYED();
     const Length& height = StyleRef().LogicalHeight();
     int style_logical_height =
-        height.IsIntrinsicOrAuto()
-            ? 0
-            : ValueForLength(height, LayoutUnit()).ToInt();
+        height.IsSpecified() ? ValueForLength(height, LayoutUnit()).ToInt() : 0;
 
     // In strict mode, box-sizing: content-box do the right thing and actually
     // add in the border and padding.
@@ -178,6 +190,7 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   }
 
   int LogicalHeightForRowSizing() const {
+    NOT_DESTROYED();
     // FIXME: This function does too much work, and is very hot during table
     // layout!
     int adjusted_logical_height =
@@ -202,6 +215,7 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
 
   LayoutUnit CellBaselinePosition() const;
   bool IsBaselineAligned() const {
+    NOT_DESTROYED();
     EVerticalAlign va = StyleRef().VerticalAlign();
     return va == EVerticalAlign::kBaseline ||
            va == EVerticalAlign::kTextBottom ||
@@ -217,10 +231,19 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
                                EVerticalAlign,
                                SubtreeLayoutScope&);
 
-  void ClearIntrinsicPadding() { SetIntrinsicPadding(0, 0); }
+  void ClearIntrinsicPadding() {
+    NOT_DESTROYED();
+    SetIntrinsicPadding(0, 0);
+  }
 
-  int IntrinsicPaddingBefore() const final { return intrinsic_padding_before_; }
-  int IntrinsicPaddingAfter() const final { return intrinsic_padding_after_; }
+  int IntrinsicPaddingBefore() const final {
+    NOT_DESTROYED();
+    return intrinsic_padding_before_;
+  }
+  int IntrinsicPaddingAfter() const final {
+    NOT_DESTROYED();
+    return intrinsic_padding_after_;
+  }
 
   LayoutUnit PaddingTop() const override;
   LayoutUnit PaddingBottom() const override;
@@ -233,51 +256,68 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
                          bool vertical_scrollbar_changed,
                          ScrollbarChangeContext = kLayout) override;
 
-  bool CellChildrenNeedLayout() const { return cell_children_need_layout_; }
+  bool CellChildrenNeedLayout() const {
+    NOT_DESTROYED();
+    return cell_children_need_layout_;
+  }
   void SetCellChildrenNeedLayout(bool b = true) {
+    NOT_DESTROYED();
     cell_children_need_layout_ = b;
   }
 
   static LayoutTableCell* CreateAnonymous(Document*,
                                           scoped_refptr<ComputedStyle>,
                                           LegacyLayout);
-  static LayoutTableCell* CreateAnonymousWithParent(const LayoutObject*);
+
   LayoutBox* CreateAnonymousBoxWithSameTypeAs(
-      const LayoutObject* parent) const override {
-    return CreateAnonymousWithParent(parent);
-  }
+      const LayoutObject* parent) const override;
 
   // The table's style determines cell order and cell adjacency in the table.
   // Collapsed borders also use in table's inline and block directions.
-  const ComputedStyle& TableStyle() const { return Table()->StyleRef(); }
+  const ComputedStyle& TableStyle() const {
+    NOT_DESTROYED();
+    return Table()->StyleRef();
+  }
 
   BorderValue BorderStartInTableDirection() const {
+    NOT_DESTROYED();
     return StyleRef().BorderStartUsing(TableStyle());
   }
   BorderValue BorderEndInTableDirection() const {
+    NOT_DESTROYED();
     return StyleRef().BorderEndUsing(TableStyle());
   }
   BorderValue BorderBeforeInTableDirection() const {
+    NOT_DESTROYED();
     return StyleRef().BorderBeforeUsing(TableStyle());
   }
   BorderValue BorderAfterInTableDirection() const {
+    NOT_DESTROYED();
     return StyleRef().BorderAfterUsing(TableStyle());
   }
 
-  const char* GetName() const override { return "LayoutTableCell"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutTableCell";
+  }
 
   bool BackgroundIsKnownToBeOpaqueInRect(const PhysicalRect&) const override;
 
   const CollapsedBorderValues* GetCollapsedBorderValues() const {
+    NOT_DESTROYED();
     UpdateCollapsedBorderValues();
     return collapsed_border_values_.get();
   }
   void InvalidateCollapsedBorderValues() {
+    NOT_DESTROYED();
     collapsed_border_values_valid_ = false;
   }
 
   // A table cell's location is relative to its containing section.
-  LayoutBox* LocationContainer() const override { return Section(); }
+  LayoutBox* LocationContainer() const override {
+    NOT_DESTROYED();
+    return Section();
+  }
 
   bool HasLineIfEmpty() const override;
 
@@ -292,52 +332,68 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   // For the following methods, the 'start', 'end', 'before', 'after' directions
   // are all in the table's inline and block directions.
   unsigned CollapsedOuterBorderBefore() const {
+    NOT_DESTROYED();
     return CollapsedBorderHalfBefore(true);
   }
   unsigned CollapsedOuterBorderAfter() const {
+    NOT_DESTROYED();
     return CollapsedBorderHalfAfter(true);
   }
   unsigned CollapsedOuterBorderStart() const {
+    NOT_DESTROYED();
     return CollapsedBorderHalfStart(true);
   }
   unsigned CollapsedOuterBorderEnd() const {
+    NOT_DESTROYED();
     return CollapsedBorderHalfEnd(true);
   }
   unsigned CollapsedInnerBorderBefore() const {
+    NOT_DESTROYED();
     return CollapsedBorderHalfBefore(false);
   }
   unsigned CollapsedInnerBorderAfter() const {
+    NOT_DESTROYED();
     return CollapsedBorderHalfAfter(false);
   }
   unsigned CollapsedInnerBorderStart() const {
+    NOT_DESTROYED();
     return CollapsedBorderHalfStart(false);
   }
   unsigned CollapsedInnerBorderEnd() const {
+    NOT_DESTROYED();
     return CollapsedBorderHalfEnd(false);
   }
 
   bool StartsAtSameColumn(const LayoutTableCell* other) const {
+    NOT_DESTROYED();
     return other && AbsoluteColumnIndex() == other->AbsoluteColumnIndex();
   }
   bool EndsAtSameColumn(const LayoutTableCell* other) const {
+    NOT_DESTROYED();
     return other && AbsoluteColumnIndex() + ColSpan() ==
                         other->AbsoluteColumnIndex() + other->ColSpan();
   }
   bool StartsAtSameRow(const LayoutTableCell* other) const {
+    NOT_DESTROYED();
     return other && RowIndex() == other->RowIndex();
   }
   bool EndsAtSameRow(const LayoutTableCell* other) const {
+    NOT_DESTROYED();
     return other && RowIndex() + ResolvedRowSpan() ==
                         other->RowIndex() + other->ResolvedRowSpan();
   }
 
   void SetIsSpanningCollapsedRow(bool spanning_collapsed_row);
 
-  bool IsSpanningCollapsedRow() const { return is_spanning_collapsed_row_; }
+  bool IsSpanningCollapsedRow() const {
+    NOT_DESTROYED();
+    return is_spanning_collapsed_row_;
+  }
 
   void SetIsSpanningCollapsedColumn(bool spanningCollapsedColumn);
 
   bool IsSpanningCollapsedColumn() const {
+    NOT_DESTROYED();
     return is_spanning_collapsed_column_;
   }
 
@@ -346,26 +402,50 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   // LayoutNGTableCellInterface implementation start.
 
   const LayoutNGTableCellInterface* ToLayoutNGTableCellInterface() const final {
+    NOT_DESTROYED();
     return this;
   }
-  const LayoutTableCell* ToLayoutTableCell() const final { return this; }
-  const LayoutObject* ToLayoutObject() const final { return this; }
-  LayoutObject* ToMutableLayoutObject() final { return this; }
-  LayoutNGTableInterface* TableInterface() const final { return Table(); }
-  LayoutTableCell* NextCellInterface() const final { return NextCell(); }
+  const LayoutTableCell* ToLayoutTableCell() const final {
+    NOT_DESTROYED();
+    return this;
+  }
+  const LayoutObject* ToLayoutObject() const final {
+    NOT_DESTROYED();
+    return this;
+  }
+  LayoutObject* ToMutableLayoutObject() final {
+    NOT_DESTROYED();
+    return this;
+  }
+  LayoutNGTableInterface* TableInterface() const final {
+    NOT_DESTROYED();
+    return Table();
+  }
+  LayoutTableCell* NextCellInterface() const final {
+    NOT_DESTROYED();
+    return NextCell();
+  }
   LayoutTableCell* PreviousCellInterface() const final {
+    NOT_DESTROYED();
     return PreviousCell();
   }
-  LayoutNGTableRowInterface* RowInterface() const final { return Row(); }
+  LayoutNGTableRowInterface* RowInterface() const final {
+    NOT_DESTROYED();
+    return Row();
+  }
   LayoutNGTableSectionInterface* SectionInterface() const final {
+    NOT_DESTROYED();
     return Section();
   }
 
   // LayoutNGTableCellInterface implementation end.
 
+  MinMaxSizes PreferredLogicalWidths() const override;
+
+  void UpdateStyleWritingModeFromRow(const LayoutObject* row);
+
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  void ComputePreferredLogicalWidths() override;
 
   void InvalidatePaint(const PaintInvalidatorContext&) const override;
 
@@ -373,11 +453,17 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
       const LayoutObject*,
       bool ignore_scroll_offset) const override;
 
-  bool CreatesNewFormattingContext() const final { return true; }
+  bool CreatesNewFormattingContext() const final {
+    NOT_DESTROYED();
+    return true;
+  }
 
  protected:
   bool IsOfType(LayoutObjectType type) const override {
-    return type == kLayoutObjectTableCell || LayoutBlockFlow::IsOfType(type);
+    NOT_DESTROYED();
+    return type == kLayoutObjectTableCell ||
+           type == kLayoutObjectTableCellLegacy ||
+           LayoutBlockFlow::IsOfType(type);
   }
 
  private:
@@ -393,17 +479,17 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   void PaintMask(const PaintInfo&,
                  const PhysicalOffset& paint_offset) const override;
 
-  bool ComputeShouldClipOverflow() const override;
+  OverflowClipAxes ComputeOverflowClipAxes() const override;
 
   using CollapsedBorderValuesMethod =
       const CollapsedBorderValue& (CollapsedBorderValues::*)() const;
   LogicalToPhysical<CollapsedBorderValuesMethod>
   CollapsedBorderValuesMethodsPhysical() const {
+    NOT_DESTROYED();
     return LogicalToPhysical<CollapsedBorderValuesMethod>(
         // Collapsed border logical directions are in table's directions.
-        TableStyle().GetWritingMode(), TableStyle().Direction(),
-        &CollapsedBorderValues::StartBorder, &CollapsedBorderValues::EndBorder,
-        &CollapsedBorderValues::BeforeBorder,
+        TableStyle().GetWritingDirection(), &CollapsedBorderValues::StartBorder,
+        &CollapsedBorderValues::EndBorder, &CollapsedBorderValues::BeforeBorder,
         &CollapsedBorderValues::AfterBorder);
   }
 
@@ -414,26 +500,31 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   static constexpr bool kInnerHalfPixelAsOneLeft = true;
 
   PhysicalToLogical<bool> InnerHalfPixelAsOneLogical() const {
+    NOT_DESTROYED();
     return PhysicalToLogical<bool>(
         // Collapsed border logical directions are in table's directions.
-        TableStyle().GetWritingMode(), TableStyle().Direction(),
-        kInnerHalfPixelAsOneTop, kInnerHalfPixelAsOneRight,
-        kInnerHalfPixelAsOneBottom, kInnerHalfPixelAsOneLeft);
+        TableStyle().GetWritingDirection(), kInnerHalfPixelAsOneTop,
+        kInnerHalfPixelAsOneRight, kInnerHalfPixelAsOneBottom,
+        kInnerHalfPixelAsOneLeft);
   }
 
   unsigned CollapsedBorderHalfLeft(bool outer) const {
+    NOT_DESTROYED();
     return CollapsedBorderHalf(kInnerHalfPixelAsOneLeft ^ outer,
                                CollapsedBorderValuesMethodsPhysical().Left());
   }
   unsigned CollapsedBorderHalfRight(bool outer) const {
+    NOT_DESTROYED();
     return CollapsedBorderHalf(kInnerHalfPixelAsOneRight ^ outer,
                                CollapsedBorderValuesMethodsPhysical().Right());
   }
   unsigned CollapsedBorderHalfTop(bool outer) const {
+    NOT_DESTROYED();
     return CollapsedBorderHalf(kInnerHalfPixelAsOneTop ^ outer,
                                CollapsedBorderValuesMethodsPhysical().Top());
   }
   unsigned CollapsedBorderHalfBottom(bool outer) const {
+    NOT_DESTROYED();
     return CollapsedBorderHalf(kInnerHalfPixelAsOneBottom ^ outer,
                                CollapsedBorderValuesMethodsPhysical().Bottom());
   }
@@ -441,24 +532,29 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   // For the following methods, the 'start', 'end', 'before', 'after' directions
   // are all in the table's inline and block directions.
   unsigned CollapsedBorderHalfStart(bool outer) const {
+    NOT_DESTROYED();
     return CollapsedBorderHalf(InnerHalfPixelAsOneLogical().Start() ^ outer,
                                &CollapsedBorderValues::StartBorder);
   }
   unsigned CollapsedBorderHalfEnd(bool outer) const {
+    NOT_DESTROYED();
     return CollapsedBorderHalf(InnerHalfPixelAsOneLogical().End() ^ outer,
                                &CollapsedBorderValues::EndBorder);
   }
   unsigned CollapsedBorderHalfBefore(bool outer) const {
+    NOT_DESTROYED();
     return CollapsedBorderHalf(InnerHalfPixelAsOneLogical().Before() ^ outer,
                                &CollapsedBorderValues::BeforeBorder);
   }
   unsigned CollapsedBorderHalfAfter(bool outer) const {
+    NOT_DESTROYED();
     return CollapsedBorderHalf(InnerHalfPixelAsOneLogical().After() ^ outer,
                                &CollapsedBorderValues::AfterBorder);
   }
 
   unsigned CollapsedBorderHalf(bool half_pixel_as_one,
                                CollapsedBorderValuesMethod m) const {
+    NOT_DESTROYED();
     UpdateCollapsedBorderValues();
     if (const auto* values = GetCollapsedBorderValues())
       return ((values->*m)().Width() + (half_pixel_as_one ? 1 : 0)) / 2;
@@ -466,18 +562,29 @@ class CORE_EXPORT LayoutTableCell : public LayoutBlockFlow,
   }
 
   LogicalToPhysical<int> LogicalIntrinsicPaddingToPhysical() const {
-    return LogicalToPhysical<int>(
-        StyleRef().GetWritingMode(), StyleRef().Direction(), 0, 0,
-        intrinsic_padding_before_, intrinsic_padding_after_);
+    NOT_DESTROYED();
+    return LogicalToPhysical<int>(StyleRef().GetWritingDirection(), 0, 0,
+                                  intrinsic_padding_before_,
+                                  intrinsic_padding_after_);
   }
-  void SetIntrinsicPaddingBefore(int p) { intrinsic_padding_before_ = p; }
-  void SetIntrinsicPaddingAfter(int p) { intrinsic_padding_after_ = p; }
+  void SetIntrinsicPaddingBefore(int p) {
+    NOT_DESTROYED();
+    intrinsic_padding_before_ = p;
+  }
+  void SetIntrinsicPaddingAfter(int p) {
+    NOT_DESTROYED();
+    intrinsic_padding_after_ = p;
+  }
   void SetIntrinsicPadding(int before, int after) {
+    NOT_DESTROYED();
     SetIntrinsicPaddingBefore(before);
     SetIntrinsicPaddingAfter(after);
   }
 
-  bool IsInStartColumn() const { return AbsoluteColumnIndex() == 0; }
+  bool IsInStartColumn() const {
+    NOT_DESTROYED();
+    return AbsoluteColumnIndex() == 0;
+  }
   bool IsInEndColumn() const;
 
   // These functions implement the CSS collapsing border conflict resolution
@@ -550,7 +657,7 @@ inline LayoutTableCell* LayoutTableRow::LastCell() const {
 template <>
 struct DowncastTraits<LayoutTableCell> {
   static bool AllowFrom(const LayoutObject& object) {
-    return object.IsTableCell();
+    return object.IsTableCellLegacy();
   }
 };
 

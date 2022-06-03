@@ -1,0 +1,4 @@
+mixins: "//ui/message_center/COMMON_METADATA"
+monorail {
+  component: "UI>Shell>Notifications"
+}

@@ -7,8 +7,9 @@
 
 #import <UIKit/UIKit.h>
 
+#import <MaterialComponents/MaterialCollectionCells.h>
+
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
-#import "ios/third_party/material_components_ios/src/components/CollectionCells/src/MaterialCollectionCells.h"
 
 // CollectionViewSwitchItem is the model class corresponding to
 // CollectionViewSwitchCell.

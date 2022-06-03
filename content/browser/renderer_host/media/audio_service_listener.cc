@@ -20,69 +20,7 @@
 
 namespace content {
 
-AudioServiceListener::Metrics::Metrics(const base::TickClock* clock)
-    : clock_(clock), initial_downtime_start_(clock_->NowTicks()) {}
-
-AudioServiceListener::Metrics::~Metrics() = default;
-
-void AudioServiceListener::Metrics::ServiceAlreadyRunning() {
-  LogServiceStartStatus(ServiceStartStatus::kAlreadyStarted);
-  initial_downtime_start_ = base::TimeTicks();
-  started_ = clock_->NowTicks();
-}
-
-void AudioServiceListener::Metrics::ServiceCreated() {
-  DCHECK(created_.is_null());
-  created_ = clock_->NowTicks();
-}
-
-void AudioServiceListener::Metrics::ServiceStarted() {
-  started_ = clock_->NowTicks();
-
-  // |created_| is uninitialized if OnServiceCreated() was called before the
-  // listener is initialized with OnInit() call.
-  if (!created_.is_null()) {
-    LogServiceStartStatus(ServiceStartStatus::kSuccess);
-    UMA_HISTOGRAM_TIMES("Media.AudioService.ObservedStartupTime",
-                        started_ - created_);
-    created_ = base::TimeTicks();
-  }
-
-  if (!initial_downtime_start_.is_null()) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioService.ObservedInitialDowntime",
-                               started_ - initial_downtime_start_,
-                               base::TimeDelta(), base::TimeDelta::FromDays(7),
-                               50);
-    initial_downtime_start_ = base::TimeTicks();
-  }
-
-  if (!stopped_.is_null()) {
-    UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioService.ObservedDowntime2",
-                               started_ - stopped_, base::TimeDelta(),
-                               base::TimeDelta::FromDays(7), 50);
-    stopped_ = base::TimeTicks();
-  }
-}
-
-void AudioServiceListener::Metrics::ServiceStopped() {
-  stopped_ = clock_->NowTicks();
-
-  DCHECK(!started_.is_null());
-  UMA_HISTOGRAM_CUSTOM_TIMES("Media.AudioService.ObservedUptime",
-                             stopped_ - started_, base::TimeDelta(),
-                             base::TimeDelta::FromDays(7), 50);
-
-  created_ = base::TimeTicks();
-  started_ = base::TimeTicks();
-}
-
-void AudioServiceListener::Metrics::LogServiceStartStatus(
-    Metrics::ServiceStartStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("Media.AudioService.ObservedStartStatus", status);
-}
-
-AudioServiceListener::AudioServiceListener()
-    : metrics_(base::DefaultTickClock::GetInstance()) {
+AudioServiceListener::AudioServiceListener() {
   ServiceProcessHost::AddObserver(this);
   Init(ServiceProcessHost::GetRunningProcessInfo());
 }
@@ -102,7 +40,6 @@ void AudioServiceListener::Init(
   for (const auto& info : running_service_processes) {
     if (info.IsService<audio::mojom::AudioService>()) {
       process_id_ = info.pid;
-      metrics_.ServiceAlreadyRunning();
       MaybeSetLogFactory();
       break;
     }
@@ -116,8 +53,7 @@ void AudioServiceListener::OnServiceProcessLaunched(
     return;
 
   process_id_ = info.pid;
-  metrics_.ServiceCreated();
-  metrics_.ServiceStarted();
+  MaybeSetLogFactory();
 }
 
 void AudioServiceListener::OnServiceProcessTerminatedNormally(
@@ -126,7 +62,6 @@ void AudioServiceListener::OnServiceProcessTerminatedNormally(
   if (!info.IsService<audio::mojom::AudioService>())
     return;
 
-  metrics_.ServiceStopped();
   process_id_ = base::kNullProcessId;
   log_factory_is_set_ = false;
 }
@@ -137,7 +72,6 @@ void AudioServiceListener::OnServiceProcessCrashed(
   if (!info.IsService<audio::mojom::AudioService>())
     return;
 
-  metrics_.ServiceStopped();
   process_id_ = base::kNullProcessId;
   log_factory_is_set_ = false;
 }

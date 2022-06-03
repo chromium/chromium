@@ -6,6 +6,8 @@ package org.chromium.chrome.test.util.browser.tabmodel;
 
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tabmodel.EmptyTabModelFilter;
+import org.chromium.chrome.browser.tabmodel.IncognitoTabModel;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
@@ -23,7 +25,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
 
     public MockTabModelSelector(
             int tabCount, int incognitoTabCount, MockTabModel.MockTabModelDelegate delegate) {
-        super(null, false);
+        super(null, EmptyTabModelFilter::new, false);
         initialize(new MockTabModel(false, delegate), new MockTabModel(true, delegate));
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
@@ -34,6 +36,17 @@ public class MockTabModelSelector extends TabModelSelectorBase {
             addMockIncognitoTab();
         }
         if (incognitoTabCount > 0) TabModelUtils.setIndex(getModel(true), 0);
+    }
+
+    /**
+     * Exposed to allow tests to initialize the selector with different tab models.
+     * @param normalModel The normal tab model.
+     * @param incognitoModel The incognito tab model.
+     */
+    public void initializeTabModels(TabModel normalModel, IncognitoTabModel incognitoModel) {
+        destroy();
+        getTabModelFilterProvider().resetTabModelFilterListForTesting();
+        initialize(normalModel, incognitoModel);
     }
 
     private static int nextIdOffset() {
@@ -62,5 +75,26 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     @Override
     public int getTotalTabCount() {
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void requestToShowTab(Tab tab, int type) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean closeAllTabsRequest(boolean incognito) {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public boolean isSessionRestoreInProgress() {
+        return false;
+    }
+
+    @Override
+    public void selectModel(boolean incognito) {
+        super.selectModel(incognito);
+        ((MockTabModel) getModel(incognito)).setAsActiveModelForTesting();
     }
 }

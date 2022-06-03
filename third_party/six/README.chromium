@@ -1,0 +1,13 @@
+Name: six
+Short Name: six
+URL: https://github.com/benjaminp/six
+Version: 1.14.0
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: No
+Description:
+Six is a Python 2 and 3 compatibility library. It provides utility functions for smoothing over the differences between the Python versions with the goal of writing Python code that is compatible on both Python versions.
+Local Modifications:
+None
+
+Retrieved as 1.14.0.tar.gz with sha512 hash 1604c083841693beac32a67bdab0c01f8bb77f648f5da408c68c7fa61137843371ae75c7c0a0a19172ad77e737b35a2a762e22a3908b90958a65945b476bfb65

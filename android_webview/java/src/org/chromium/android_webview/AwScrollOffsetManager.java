@@ -6,15 +6,12 @@ package org.chromium.android_webview;
 
 import android.graphics.Rect;
 
-import androidx.annotation.VisibleForTesting;
-
 /**
  * Takes care of syncing the scroll offset between the Android View system and the
  * InProcessViewRenderer.
  *
  * Unless otherwise values (sizes, scroll offsets) are in physical pixels.
  */
-@VisibleForTesting
 public class AwScrollOffsetManager {
     // Values taken from WebViewClassic.
 

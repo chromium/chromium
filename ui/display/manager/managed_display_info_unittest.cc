@@ -4,11 +4,11 @@
 
 #include "ui/display/manager/managed_display_info.h"
 
-#include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/display/display_switches.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/display/manager/touch_device_manager.h"
 #endif
 
@@ -57,22 +57,22 @@ TEST_F(DisplayInfoTest, CreateFromSpec) {
   EXPECT_EQ(1.5f, info.zoom_factor());
 
   info = ManagedDisplayInfo::CreateFromSpecWithID(
-      "200x200#300x200|200x200%59.9|100x100%60|150x100*2|150x150*1.25%30", 10);
+      "250x200#300x200|250x200%59.9|150x100%60|150x100*2|200x150*1.25%30", 10);
 
-  EXPECT_EQ("0,0 200x200", info.bounds_in_native().ToString());
+  EXPECT_EQ("0,0 250x200", info.bounds_in_native().ToString());
   EXPECT_EQ(5u, info.display_modes().size());
   // Modes are sorted in DIP for external display.
   EXPECT_EQ("150x100", info.display_modes()[0].size().ToString());
-  EXPECT_EQ("100x100", info.display_modes()[1].size().ToString());
-  EXPECT_EQ("150x150", info.display_modes()[2].size().ToString());
-  EXPECT_EQ("200x200", info.display_modes()[3].size().ToString());
+  EXPECT_EQ("150x100", info.display_modes()[1].size().ToString());
+  EXPECT_EQ("200x150", info.display_modes()[2].size().ToString());
+  EXPECT_EQ("250x200", info.display_modes()[3].size().ToString());
   EXPECT_EQ("300x200", info.display_modes()[4].size().ToString());
 
-  EXPECT_EQ(0.0f, info.display_modes()[0].refresh_rate());
+  EXPECT_EQ(60.0f, info.display_modes()[0].refresh_rate());
   EXPECT_EQ(60.0f, info.display_modes()[1].refresh_rate());
   EXPECT_EQ(30.0f, info.display_modes()[2].refresh_rate());
   EXPECT_EQ(59.9f, info.display_modes()[3].refresh_rate());
-  EXPECT_EQ(0.0f, info.display_modes()[4].refresh_rate());
+  EXPECT_EQ(60.0f, info.display_modes()[4].refresh_rate());
 
   EXPECT_EQ(2.0f, info.display_modes()[0].device_scale_factor());
   EXPECT_EQ(1.0f, info.display_modes()[1].device_scale_factor());

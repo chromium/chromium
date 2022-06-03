@@ -10,12 +10,14 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "content/browser/browsing_data/browsing_data_browsertest_utils.h"
 #include "content/browser/browsing_data/browsing_data_test_utils.h"
 #include "content/public/browser/same_site_data_remover.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/network_service_util.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
@@ -32,6 +34,11 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
  public:
   SameSiteDataRemoverBrowserTest() {}
 
+  SameSiteDataRemoverBrowserTest(const SameSiteDataRemoverBrowserTest&) =
+      delete;
+  SameSiteDataRemoverBrowserTest& operator=(
+      const SameSiteDataRemoverBrowserTest&) = delete;
+
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
 
@@ -41,8 +48,8 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
     if (IsOutOfProcessNetworkService())
       browsing_data_browsertest_utils::SetUpMockCertVerifier(net::OK);
 
-    https_server_.reset(new net::EmbeddedTestServer(
-        net::test_server::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::test_server::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->SetSSLConfig(net::EmbeddedTestServer::CERT_OK);
     https_server_->RegisterRequestHandler(
         base::BindRepeating(&SameSiteDataRemoverBrowserTest::HandleRequest,
@@ -60,15 +67,27 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
   }
 
   StoragePartition* GetStoragePartition() {
-    return BrowserContext::GetDefaultStoragePartition(GetBrowserContext());
+    return GetBrowserContext()->GetDefaultStoragePartition();
   }
 
   net::EmbeddedTestServer* GetHttpsServer() { return https_server_.get(); }
 
-  void ClearData(bool clear_storage) {
+  void ClearData() {
     base::RunLoop run_loop;
-    ClearSameSiteNoneData(run_loop.QuitClosure(), GetBrowserContext(),
-                          clear_storage);
+    ClearSameSiteNoneData(run_loop.QuitClosure(), GetBrowserContext());
+    run_loop.Run();
+  }
+
+  void ClearData(std::set<std::string>& clear_storage_hosts) {
+    base::RunLoop run_loop;
+    ClearSameSiteNoneCookiesAndStorageForOrigins(
+        run_loop.QuitClosure(), GetBrowserContext(),
+        base::BindLambdaForTesting(
+            [&clear_storage_hosts](const url::Origin& origin,
+                                   storage::SpecialStoragePolicy* policy) {
+              return clear_storage_hosts.find(origin.host()) !=
+                     clear_storage_hosts.end();
+            }));
     run_loop.Run();
   }
 
@@ -89,21 +108,19 @@ class SameSiteDataRemoverBrowserTest : public ContentBrowserTest {
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-
-  DISALLOW_COPY_AND_ASSIGN(SameSiteDataRemoverBrowserTest);
 };
 
-IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
-                       TestClearDataWithStorageRemoval) {
+IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest, TestClearData) {
   StoragePartition* storage_partition = GetStoragePartition();
-  CreateCookieForTest("TestCookie", "www.google.com",
-                      net::CookieSameSite::NO_RESTRICTION,
-                      net::CookieOptions::SameSiteCookieContext::CROSS_SITE,
-                      true /* is_cookie_secure */, GetBrowserContext());
+  CreateCookieForTest(
+      "TestCookie", "www.google.com", net::CookieSameSite::NO_RESTRICTION,
+      net::CookieOptions::SameSiteCookieContext(
+          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
+      true /* is_cookie_secure */, GetBrowserContext());
   browsing_data_browsertest_utils::AddServiceWorker(
       "www.google.com", storage_partition, GetHttpsServer());
 
-  ClearData(/* clear_storage= */ true);
+  ClearData();
 
   // Check that cookies were deleted.
   const std::vector<net::CanonicalCookie>& cookies =
@@ -117,28 +134,31 @@ IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(SameSiteDataRemoverBrowserTest,
-                       TestClearDataWithoutStorageRemoval) {
+                       TestClearDataWithDomains) {
   StoragePartition* storage_partition = GetStoragePartition();
-  CreateCookieForTest("TestCookie", "www.google.com",
-                      net::CookieSameSite::NO_RESTRICTION,
-                      net::CookieOptions::SameSiteCookieContext::CROSS_SITE,
-                      true /* is_cookie_secure */, GetBrowserContext());
+  CreateCookieForTest(
+      "TestCookie", "www.google.com", net::CookieSameSite::NO_RESTRICTION,
+      net::CookieOptions::SameSiteCookieContext(
+          net::CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE),
+      true /* is_cookie_secure */, GetBrowserContext());
   browsing_data_browsertest_utils::AddServiceWorker(
-      "www.google.com", storage_partition, GetHttpsServer());
+      "google.com", storage_partition, GetHttpsServer());
+  browsing_data_browsertest_utils::AddServiceWorker(
+      "foo.bar.com", storage_partition, GetHttpsServer());
 
-  ClearData(/* clear_storage= */ false);
+  std::set<std::string> clear_hosts = {"google.com"};
+  ClearData(clear_hosts);
 
   // Check that cookies were deleted.
   const std::vector<net::CanonicalCookie>& cookies =
       GetAllCookies(GetBrowserContext());
   EXPECT_THAT(cookies, IsEmpty());
 
-  // Storage partition data should NOT have been cleared.
+  // Check that the service worker for the cookie domain was removed.
   std::vector<StorageUsageInfo> service_workers =
       browsing_data_browsertest_utils::GetServiceWorkers(storage_partition);
-  ASSERT_EQ(1u, service_workers.size());
-  EXPECT_EQ(service_workers[0].origin.GetURL(),
-            GetHttpsServer()->GetURL("www.google.com", "/"));
+  EXPECT_EQ(service_workers.size(), 1u);
+  EXPECT_EQ(service_workers[0].origin.host(), "foo.bar.com");
 }
 
 }  // namespace content

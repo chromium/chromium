@@ -8,9 +8,9 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/sync/model/sync_change.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 class SyncData;
@@ -25,7 +25,7 @@ class SettingSyncData {
   // Creates from a sync change.
   explicit SettingSyncData(const syncer::SyncChange& sync_change);
 
-  // Creates from sync data. |change_type| will be ACTION_INVALID.
+  // Creates from sync data. |change_type| will be absl::nullopt.
   explicit SettingSyncData(const syncer::SyncData& sync_data);
 
   // Creates explicitly.
@@ -34,11 +34,15 @@ class SettingSyncData {
                   const std::string& key,
                   std::unique_ptr<base::Value> value);
 
+  SettingSyncData(const SettingSyncData&) = delete;
+  SettingSyncData& operator=(const SettingSyncData&) = delete;
+
   ~SettingSyncData();
 
-  // May return ACTION_INVALID if this object represents sync data that isn't
+  // May return absl::nullopt if this object represents sync data that isn't
   // associated with a sync operation.
-  syncer::SyncChange::SyncChangeType change_type() const {
+  const absl::optional<syncer::SyncChange::SyncChangeType>& change_type()
+      const {
     return change_type_;
   }
   const std::string& extension_id() const { return extension_id_; }
@@ -55,12 +59,10 @@ class SettingSyncData {
   // either an extension or app settings data type.
   void ExtractSyncData(const syncer::SyncData& sync_data);
 
-  syncer::SyncChange::SyncChangeType change_type_;
+  absl::optional<syncer::SyncChange::SyncChangeType> change_type_;
   std::string extension_id_;
   std::string key_;
   std::unique_ptr<base::Value> value_;
-
-  DISALLOW_COPY_AND_ASSIGN(SettingSyncData);
 };
 
 using SettingSyncDataList = std::vector<std::unique_ptr<SettingSyncData>>;

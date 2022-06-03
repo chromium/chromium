@@ -10,25 +10,13 @@
 
 namespace blink {
 
-class DOMException;
 class ScriptPromiseResolver;
 
-class CacheStorageError {
-  STATIC_ONLY(CacheStorageError);
-
- public:
-  // For CallbackPromiseAdapter. Ownership of a given error is not
-  // transferred.
-  using WebType = mojom::CacheStorageError;
-  static DOMException* Take(ScriptPromiseResolver*,
-                            mojom::CacheStorageError web_error) {
-    return CreateException(web_error);
-  }
-
-  static DOMException* CreateException(mojom::CacheStorageError web_error,
-                                       const String& message = String());
-};
-
+// Reject the |resolver| with the appropriate error given |web_error|.
+// When no |message| is provided, the standard one is chosen.
+void RejectCacheStorageWithError(ScriptPromiseResolver* resolver,
+                                 mojom::blink::CacheStorageError web_error,
+                                 const String& message = String());
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_CACHE_STORAGE_CACHE_STORAGE_ERROR_H_

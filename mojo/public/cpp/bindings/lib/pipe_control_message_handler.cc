@@ -7,7 +7,6 @@
 #include "base/logging.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/lib/serialization.h"
-#include "mojo/public/cpp/bindings/lib/serialization_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_util.h"
 #include "mojo/public/cpp/bindings/pipe_control_message_handler_delegate.h"
@@ -43,8 +42,8 @@ bool PipeControlMessageHandler::Accept(Message* message) {
 
 bool PipeControlMessageHandler::Validate(Message* message) {
   internal::ValidationContext validation_context(
-      message->payload(), message->payload_num_bytes(), 0, 0, message,
-      description_.c_str());
+      message->payload(), message->payload_num_bytes(),
+      message->handles()->size(), 0, message, description_.c_str());
 
   if (message->name() == pipe_control::kRunOrClosePipeMessageId) {
     if (!internal::ValidateMessageIsRequestWithoutResponse(
@@ -53,32 +52,44 @@ bool PipeControlMessageHandler::Validate(Message* message) {
     }
     return internal::ValidateMessagePayload<
         pipe_control::internal::RunOrClosePipeMessageParams_Data>(
-            message, &validation_context);
+        message, &validation_context);
   }
 
   return false;
 }
 
 bool PipeControlMessageHandler::RunOrClosePipe(Message* message) {
-  internal::SerializationContext context;
   pipe_control::internal::RunOrClosePipeMessageParams_Data* params =
       reinterpret_cast<
           pipe_control::internal::RunOrClosePipeMessageParams_Data*>(
           message->mutable_payload());
   pipe_control::RunOrClosePipeMessageParamsPtr params_ptr;
   internal::Deserialize<pipe_control::RunOrClosePipeMessageParamsDataView>(
-      params, &params_ptr, &context);
+      params, &params_ptr, message);
 
   if (params_ptr->input->is_peer_associated_endpoint_closed_event()) {
     const auto& event =
         params_ptr->input->get_peer_associated_endpoint_closed_event();
 
-    base::Optional<DisconnectReason> reason;
+    absl::optional<DisconnectReason> reason;
     if (event->disconnect_reason) {
       reason.emplace(event->disconnect_reason->custom_reason,
                      event->disconnect_reason->description);
     }
     return delegate_->OnPeerAssociatedEndpointClosed(event->id, reason);
+  }
+
+  if (params_ptr->input->is_flush_async()) {
+    // NOTE: There's nothing to do here but let the attached pipe go out of
+    // scoped and be closed. This means that the corresponding PendingFlush will
+    // eventually be signalled, unblocking the endpoint which is waiting on it,
+    // if any.
+    return true;
+  }
+
+  if (params_ptr->input->is_pause_until_flush_completes()) {
+    return delegate_->WaitForFlushToComplete(std::move(
+        params_ptr->input->get_pause_until_flush_completes()->flush_pipe));
   }
 
   DVLOG(1) << "Unsupported command in a RunOrClosePipe message pipe control "

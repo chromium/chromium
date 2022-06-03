@@ -8,44 +8,33 @@
  */
 
 // Include test fixture.
-GEN_INCLUDE([
-  '../testing/chromevox_e2e_test_base.js', '../testing/assert_additions.js'
-]);
+GEN_INCLUDE(['../testing/chromevox_e2e_test_base.js']);
 
-/**
- * @constructor
- * @extends {ChromeVoxE2ETest}
- */
-function ChromeVoxLibLouisTest() {
-  ChromeVoxE2ETest.call(this);
-}
-
-ChromeVoxLibLouisTest.prototype = {
-  __proto__: ChromeVoxE2ETest.prototype,
-
-  createLiblouis: function() {
+ChromeVoxLibLouisTest = class extends ChromeVoxE2ETest {
+  createLiblouis() {
     return new LibLouis(
-        chrome.extension.getURL('braille/liblouis_wrapper.js'), '', () => {});
-  },
+        chrome.extension.getURL('chromevox/braille/liblouis_wrapper.js'), '',
+        () => {});
+  }
 
-  withTranslator: function(liblouis, tableNames, callback) {
+  withTranslator(liblouis, tableNames, callback) {
     liblouis.getTranslator(tableNames, this.newCallback(callback));
-  },
+  }
 };
 
 function assertEqualsUint8Array(expected, actual) {
-  var asArray = [];
-  var uint8array = new Uint8Array(actual);
-  for (var i = 0; i < uint8array.length; ++i) {
+  const asArray = [];
+  const uint8array = new Uint8Array(actual);
+  for (let i = 0; i < uint8array.length; ++i) {
     asArray[i] = uint8array[i];
   }
   assertEqualsJSON(expected, asArray);
 }
 
 function LIBLOUIS_TEST_F(testName, testFunc, opt_preamble) {
-  var wrappedTestFunc = function() {
-    var liblouis = new LibLouis(
-        chrome.extension.getURL('braille/liblouis_wrapper.js'), '',
+  const wrappedTestFunc = function() {
+    const liblouis = new LibLouis(
+        chrome.extension.getURL('chromevox/braille/liblouis_wrapper.js'), '',
         testFunc.bind(this));
   };
   TEST_F('ChromeVoxLibLouisTest', testName, wrappedTestFunc, opt_preamble);
@@ -70,16 +59,16 @@ LIBLOUIS_TEST_F('testTranslateComputerBraille', function(liblouis) {
 LIBLOUIS_TEST_F_WITH_PREAMBLE(
     `
 #if defined(MEMORY_SANITIZER)
-#define MAYBE_checkAllTables DISABLED_checkAllTables
+#define MAYBE_CheckAllTables DISABLED_CheckAllTables
 #else
-#define MAYBE_checkAllTables checkAllTables
+#define MAYBE_CheckAllTables CheckAllTables
 #endif
 `,
-    'MAYBE_checkAllTables', function(liblouis) {
+    'MAYBE_CheckAllTables', function(liblouis) {
       BrailleTable.getAll(this.newCallback(function(tables) {
-        var i = 0;
-        var checkNextTable = function() {
-          var table = tables[i++];
+        let i = 0;
+        const checkNextTable = function() {
+          const table = tables[i++];
           if (table) {
             this.withTranslator(
                 liblouis, table.fileNames, function(translator) {
@@ -96,7 +85,7 @@ LIBLOUIS_TEST_F_WITH_PREAMBLE(
 
 LIBLOUIS_TEST_F('testBackTranslateComputerBraille', function(liblouis) {
   this.withTranslator(liblouis, 'en-us-comp8.ctb', function(translator) {
-    var cells = new Uint8Array([0x53, 0x11, 0x07, 0x07, 0x15, 0x2e]);
+    const cells = new Uint8Array([0x53, 0x11, 0x07, 0x07, 0x15, 0x2e]);
     translator.backTranslate(cells.buffer, this.newCallback(function(text) {
       assertEquals('Hello!', text);
     }));
@@ -118,7 +107,7 @@ LIBLOUIS_TEST_F('testTranslateGermanGrade2Braille', function(liblouis) {
 
 LIBLOUIS_TEST_F('testBackTranslateGermanComputerBraille', function(liblouis) {
   this.withTranslator(liblouis, 'de-de-comp8.ctb', function(translator) {
-    var cells = new Uint8Array([0xb3]);
+    const cells = new Uint8Array([0xb3]);
     translator.backTranslate(cells.buffer, this.newCallback(function(text) {
       assertEquals('ü', text);
     }));
@@ -147,15 +136,15 @@ LIBLOUIS_TEST_F('testKeyEventStaticData', function(liblouis) {
         'abcdefghijklmnopqrstuvwxyz 0123456789', [],
         this.newCallback(function(cells, textToBraille, brailleToText) {
           // A-Z.
-          var view = new Uint8Array(cells);
-          for (var i = 0; i < 26; i++) {
+          const view = new Uint8Array(cells);
+          for (let i = 0; i < 26; i++) {
             assertEquals(
                 String.fromCharCode(i + 65),
                 BrailleKeyEvent.brailleDotsToStandardKeyCode[view[i]]);
           }
 
           // 0-9.
-          for (var i = 27; i < 37; i++) {
+          for (let i = 27; i < 37; i++) {
             assertEquals(
                 String.fromCharCode(i + 21),
                 BrailleKeyEvent.brailleDotsToStandardKeyCode[view[i]]);

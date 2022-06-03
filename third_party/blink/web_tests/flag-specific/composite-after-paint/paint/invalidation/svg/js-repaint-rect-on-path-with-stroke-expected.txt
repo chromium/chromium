@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGPath path id='path'",
-          "rect": [29, 29, 142, 92],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGPath path id='path'",
-          "rect": [179, 29, 122, 92],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [29, 29, 142, 92],
+        [179, 29, 122, 92]
       ]
     }
   ]

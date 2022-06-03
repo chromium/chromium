@@ -36,6 +36,10 @@ class CastSysInfo {
   virtual std::string GetSerialNumber() = 0;
   // Returns product code name of the device.
   virtual std::string GetProductName() = 0;
+  // Returns product sku code name of the device.
+  static CHROMECAST_EXPORT std::string GetProductSkuName(
+      CastSysInfo* cast_sys_info) __attribute__((__weak__));
+
   // Returns model name of device (eg: Chromecast, Nexus Player, ...).
   virtual std::string GetDeviceModel() = 0;
   // Returns the board's name.
@@ -63,6 +67,10 @@ class CastSysInfo {
   virtual std::string GetWifiInterface() = 0;
   // Returns the name of the software AP interface.
   virtual std::string GetApInterface() = 0;
+
+  // Returns the setup SSID suffix to use, if configured, an empty string
+  // otherwise.
+  virtual std::string GetProductSsidSuffix() = 0;
 };
 
 }  // namespace chromecast

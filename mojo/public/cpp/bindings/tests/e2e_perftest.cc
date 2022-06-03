@@ -8,9 +8,9 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/current_thread.h"
 #include "base/test/perf_time_logger.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -81,8 +81,7 @@ void PingPongTest::RunTest(int iterations, int batch_size, int message_size) {
   current_iterations_ = 0;
   calls_outstanding_ = 0;
 
-  base::MessageLoopCurrent::Get()->SetNestableTasksAllowed(true);
-  base::RunLoop run_loop;
+  base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
   quit_closure_ = run_loop.QuitClosure();
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&PingPongTest::DoPing, base::Unretained(this)));

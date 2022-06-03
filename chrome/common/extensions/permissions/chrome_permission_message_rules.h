@@ -9,7 +9,7 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/api_permission_set.h"
 #include "extensions/common/permissions/permission_message.h"
@@ -29,6 +29,12 @@ namespace extensions {
 class ChromePermissionMessageFormatter {
  public:
   ChromePermissionMessageFormatter() {}
+
+  ChromePermissionMessageFormatter(const ChromePermissionMessageFormatter&) =
+      delete;
+  ChromePermissionMessageFormatter& operator=(
+      const ChromePermissionMessageFormatter&) = delete;
+
   virtual ~ChromePermissionMessageFormatter() {}
 
   // Returns the permission message for the given set of |permissions|.
@@ -36,9 +42,6 @@ class ChromePermissionMessageFormatter {
   // required/optional permissions for the rule. The set will never be empty.
   virtual PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromePermissionMessageFormatter);
 };
 
 // A simple rule to generate a coalesced permission message that stores the
@@ -59,15 +62,20 @@ class ChromePermissionMessageRule {
  public:
   ChromePermissionMessageRule(ChromePermissionMessageRule&& other);
   ChromePermissionMessageRule& operator=(ChromePermissionMessageRule&& other);
+
+  ChromePermissionMessageRule(const ChromePermissionMessageRule&) = delete;
+  ChromePermissionMessageRule& operator=(const ChromePermissionMessageRule&) =
+      delete;
+
   virtual ~ChromePermissionMessageRule();
 
   // Returns all the rules used to generate permission messages for Chrome apps
   // and extensions.
   static std::vector<ChromePermissionMessageRule> GetAllRules();
 
-  std::set<APIPermission::ID> required_permissions() const;
-  std::set<APIPermission::ID> optional_permissions() const;
-  std::set<APIPermission::ID> all_permissions() const;
+  std::set<mojom::APIPermissionID> required_permissions() const;
+  std::set<mojom::APIPermissionID> optional_permissions() const;
+  std::set<mojom::APIPermissionID> all_permissions() const;
 
   PermissionMessage GetPermissionMessage(
       const PermissionIDSet& permissions) const;
@@ -77,22 +85,19 @@ class ChromePermissionMessageRule {
   // |message_id|).
   ChromePermissionMessageRule(
       int message_id,
-      const std::initializer_list<APIPermission::ID>& required,
-      const std::initializer_list<APIPermission::ID>& optional);
+      const std::initializer_list<mojom::APIPermissionID>& required,
+      const std::initializer_list<mojom::APIPermissionID>& optional);
   // Create a rule with a custom formatter.
   ChromePermissionMessageRule(
       std::unique_ptr<ChromePermissionMessageFormatter> formatter,
-      const std::initializer_list<APIPermission::ID>& required,
-      const std::initializer_list<APIPermission::ID>& optional);
+      const std::initializer_list<mojom::APIPermissionID>& required,
+      const std::initializer_list<mojom::APIPermissionID>& optional);
 
-  std::set<APIPermission::ID> required_permissions_;
-  std::set<APIPermission::ID> optional_permissions_;
+  std::set<mojom::APIPermissionID> required_permissions_;
+  std::set<mojom::APIPermissionID> optional_permissions_;
 
   // Owned by this class.
   std::unique_ptr<ChromePermissionMessageFormatter> formatter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromePermissionMessageRule);
 };
 
 }  // namespace extensions

@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS contents for selector ['']
+PASS contents for selector [':left']
+PASS contents for selector [':right']
+PASS contents for selector [':first']
+PASS contents for selector ['named1']
+PASS contents for selector ['named2']
+PASS contents for selector ['named3']
+PASS contents for selector ['named4']
+PASS contents for selector ['named5']
+FAIL contents for selector ['named6'] assert_equals: unexpected @page contents expected "page-orientation: rotate-right;" but got "page-orientation: initial;"
+FAIL contents for selector ['h5'] assert_equals: unexpected style rule contents expected "display: block;" but got "page-orientation: rotate-right; display: block;"
+Harness: the test ran to completion.
+

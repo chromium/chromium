@@ -21,15 +21,6 @@ void SetUpSimpleHttpServer(const std::map<GURL, std::string>& responses) {
   SetUpHttpServer(std::make_unique<HtmlResponseProvider>(responses));
 }
 
-void SetUpSimpleHttpServerWithSetCookies(
-    const std::map<GURL, std::pair<std::string, std::string>>& responses) {
-  SetUpHttpServer(std::make_unique<HtmlResponseProvider>(responses));
-}
-
-// TODO(crbug.com/694859): Cleanup tests and remove the function. Not
-// necessary after switching to EmbeddedTestServer.
-void SetUpFileBasedHttpServer() {}
-
 void SetUpHttpServer(std::unique_ptr<web::ResponseProvider> provider) {
   web::test::HttpServer& server = web::test::HttpServer::GetSharedInstance();
   DCHECK(server.IsRunning());

@@ -9,19 +9,20 @@ histograms.
 
 from __future__ import print_function
 
-import extract_histograms
 import os
 import sys
-import xml.etree.ElementTree
+from xml.etree import ElementTree as ET
 
-sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
+import extract_histograms
+import histogram_paths
+import merge_xml
+
+sys.path.append(os.path.join(os.path.dirname(__file__), 'common'))
 import path_util
 
-def main():
-  tree = xml.etree.ElementTree.parse(path_util.GetHistogramsFile())
-  root = tree.getroot()
-  assert root.tag == 'histogram-configuration'
 
+def PrintOwners(root):
+  assert root.tag == 'histogram-configuration'
   root_children = root.getchildren()
   histograms = None
   for node in root_children:
@@ -45,7 +46,6 @@ def main():
         continue
       if node.text == extract_histograms.OWNER_PLACEHOLDER:
         continue
-      assert '@' in node.text
       owners.append(node.text)
 
     if not obsolete:
@@ -53,6 +53,35 @@ def main():
         print(name, ' '.join(owners))
       else:
         print(name, 'NO_OWNER')
+
+
+def main():
+  """Prints the owners of histograms in a specific file or of all histograms.
+
+  Args:
+    argv[1]: Optional argument that is the relative path to a specific
+        histograms.xml.
+
+  Example usage to print owners of metadata/Accessibility/histograms.xml:
+    python histogram_ownership.py metadata/Accessibility/histograms.xml
+
+  Example usage to print owners of all histograms:
+    python histogram_ownership.py
+  """
+  if len(sys.argv) == 1:
+    merged_xml_string = merge_xml.MergeFiles(
+        histogram_paths.ALL_XMLS, should_expand_owners=True).toxml()
+    root = ET.fromstring(merged_xml_string)
+  else:
+    rel_path = path_util.GetInputFile(
+        os.path.join('tools', 'metrics', 'histograms', sys.argv[1]))
+    if not os.path.exists(rel_path):
+      raise ValueError("A histograms.xml file does not exist in %s" % rel_path)
+
+    tree = ET.parse(rel_path)
+    root = tree.getroot()
+
+  PrintOwners(root)
 
 
 if __name__ == '__main__':

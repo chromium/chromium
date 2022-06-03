@@ -44,7 +44,8 @@ class Command(object):
     long_help = None
 
     def __init__(self, options=None, requires_local_commits=False):
-        self.required_arguments = self._parse_required_arguments(self.argument_names)
+        self.required_arguments = self._parse_required_arguments(
+            self.argument_names)
         self.options = options
         self.requires_local_commits = requires_local_commits
         # option_parser can be overridden by the tool using set_option_parser
@@ -80,8 +81,9 @@ class Command(object):
                 # For now our parser is rather dumb.  Do some minimal validation that
                 # we haven't confused it.
                 if argument[-1] != ']':
-                    raise Exception('Failure to parse argument string %s.  Argument %s is missing ending ]' %
-                                    (argument_names, argument))
+                    raise Exception(
+                        'Failure to parse argument string %s.  Argument %s is missing ending ]'
+                        % (argument_names, argument))
             else:
                 required_args.append(argument)
         return required_args
@@ -99,21 +101,21 @@ class Command(object):
 
     def check_arguments_and_execute(self, options, args, tool=None):
         if len(args) < len(self.required_arguments):
-            _log.error("%s required, %s provided.  Provided: %s  Required: %s\nSee '%s help %s' for usage.",
-                       pluralize('argument', len(self.required_arguments)),
-                       pluralize('argument', len(args)),
-                       "'%s'" % ' '.join(args),
-                       ' '.join(self.required_arguments),
-                       tool.name(),
-                       self.name)
+            _log.error(
+                "%s required, %s provided.  Provided: %s  Required: %s\nSee '%s help %s' for usage.",
+                pluralize('argument', len(self.required_arguments)),
+                pluralize('argument', len(args)), "'%s'" % ' '.join(args),
+                ' '.join(self.required_arguments), tool.name(), self.name)
             return 1
         return self.execute(options, args, tool) or 0
 
     def standalone_help(self):
-        help_text = self.name_with_arguments().ljust(len(self.name_with_arguments()) + 3) + self.help_text + '\n\n'
+        help_text = self.name_with_arguments().ljust(
+            len(self.name_with_arguments()) + 3) + self.help_text + '\n\n'
         if self.long_help:
             help_text += '%s\n\n' % self.long_help
-        help_text += self.option_parser.format_option_help(optparse.IndentedHelpFormatter())
+        help_text += self.option_parser.format_option_help(
+            optparse.IndentedHelpFormatter())
         return help_text
 
     def execute(self, options, args, tool):
@@ -128,7 +130,6 @@ class Command(object):
 
 
 class HelpPrintingOptionParser(optparse.OptionParser):
-
     def __init__(self, epilog_method=None, *args, **kwargs):
         self.epilog_method = epilog_method
         optparse.OptionParser.__init__(self, *args, **kwargs)
@@ -137,7 +138,8 @@ class HelpPrintingOptionParser(optparse.OptionParser):
         self.print_usage(sys.stderr)
         error_message = '%s: error: %s\n' % (self.get_prog_name(), msg)
         # This method is overridden to add this one line to the output:
-        error_message += '\nType \'%s --help\' to see usage.\n' % self.get_prog_name()
+        error_message += '\nType \'%s --help\' to see usage.\n' % \
+            self.get_prog_name()
         self.exit(1, error_message)
 
     # We override format_epilog to avoid the default formatting which would paragraph-wrap the epilog

@@ -13,13 +13,14 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_manager.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_error.h"
-#include "third_party/blink/renderer/modules/push_messaging/push_messaging_type_converters.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_utils.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
+#include "third_party/blink/renderer/modules/push_messaging/push_type_converter.h"
 #include "third_party/blink/renderer/modules/service_worker/service_worker_registration.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -30,20 +31,24 @@ namespace blink {
 // static
 const char PushMessagingClient::kSupplementName[] = "PushMessagingClient";
 
-PushMessagingClient::PushMessagingClient(LocalFrame& frame)
-    : Supplement<LocalFrame>(frame) {
+PushMessagingClient::PushMessagingClient(LocalDOMWindow& window)
+    : Supplement<LocalDOMWindow>(window), push_messaging_manager_(&window) {
   // This class will be instantiated for every page load (rather than on push
   // messaging use), so there's nothing to be done in this constructor.
 }
 
 // static
-PushMessagingClient* PushMessagingClient::From(LocalFrame* frame) {
-  DCHECK(frame);
-  return Supplement<LocalFrame>::From<PushMessagingClient>(frame);
+PushMessagingClient* PushMessagingClient::From(LocalDOMWindow& window) {
+  auto* client = Supplement<LocalDOMWindow>::From<PushMessagingClient>(window);
+  if (!client) {
+    client = MakeGarbageCollected<PushMessagingClient>(window);
+    Supplement<LocalDOMWindow>::ProvideTo(window, client);
+  }
+  return client;
 }
 
 mojom::blink::PushMessaging* PushMessagingClient::GetPushMessagingRemote() {
-  if (!push_messaging_manager_) {
+  if (!push_messaging_manager_.is_bound()) {
     GetSupplementable()->GetBrowserInterfaceBroker().GetInterface(
         push_messaging_manager_.BindNewPipeAndPassReceiver(
             GetSupplementable()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
@@ -60,11 +65,11 @@ void PushMessagingClient::Subscribe(
   DCHECK(callbacks);
 
   mojom::blink::PushSubscriptionOptionsPtr options_ptr =
-      mojom::blink::PushSubscriptionOptions::From(options);
+      mojo::ConvertTo<mojom::blink::PushSubscriptionOptionsPtr>(options);
 
   // If a developer provided an application server key in |options|, skip
   // fetching the manifest.
-  if (!options->applicationServerKey()->ByteLengthAsSizeT()) {
+  if (!options->applicationServerKey()->ByteLength()) {
     ManifestManager* manifest_manager =
         ManifestManager::From(*GetSupplementable());
     manifest_manager->RequestManifest(
@@ -75,6 +80,11 @@ void PushMessagingClient::Subscribe(
     DoSubscribe(service_worker_registration, std::move(options_ptr),
                 user_gesture, std::move(callbacks));
   }
+}
+
+void PushMessagingClient::Trace(Visitor* visitor) const {
+  Supplement<LocalDOMWindow>::Trace(visitor);
+  visitor->Trace(push_messaging_manager_);
 }
 
 void PushMessagingClient::DidGetManifest(
@@ -149,12 +159,6 @@ void PushMessagingClient::DidSubscribe(
         PushRegistrationStatusToPushErrorType(status),
         PushRegistrationStatusToString(status)));
   }
-}
-
-// static
-void ProvidePushMessagingClientTo(LocalFrame& frame,
-                                  PushMessagingClient* client) {
-  PushMessagingClient::ProvideTo(frame, client);
 }
 
 }  // namespace blink

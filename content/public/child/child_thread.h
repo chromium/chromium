@@ -63,10 +63,8 @@ class CONTENT_EXPORT ChildThread : public IPC::Sender {
   //
   //   For renderers:
   //       1. IO thread, IOThreadHostImpl::BindHostReceiver.
-  //       2. IO thread,
-  //          ContentBrowserClient::BindHostReceiverForRendererOnIOThread.
-  //       3. Main thread, RenderProcessHostImpl::BindHostReceiver.
-  //       4. Main thread, ContentBrowserClient::BindHostReceiverForRenderer.
+  //       2. Main thread, RenderProcessHostImpl::BindHostReceiver.
+  //       3. Main thread, ContentBrowserClient::BindHostReceiverForRenderer.
   //
   // TODO(crbug.com/977637): Document behavior for other process types when
   // their support is added.

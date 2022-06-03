@@ -8,12 +8,16 @@
 #include <stdint.h>
 #include <sys/time.h>
 
-#include "base/optional.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_ANDROID) && __ANDROID_API__ < 21
+#define HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC 1
+#endif
 
 namespace base {
 
@@ -30,8 +34,8 @@ ConditionVariable::ConditionVariable(Lock* user_lock)
   // non-standard pthread_cond_timedwait_monotonic_np. Newer platform
   // versions have pthread_condattr_setclock.
   // Mac can use relative time deadlines.
-#if !defined(OS_MACOSX) && !defined(OS_NACL) && \
-      !(defined(OS_ANDROID) && defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC))
+#if !defined(OS_APPLE) && !defined(OS_NACL) && \
+    !defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC)
   pthread_condattr_t attrs;
   rv = pthread_condattr_init(&attrs);
   DCHECK_EQ(0, rv);
@@ -45,7 +49,7 @@ ConditionVariable::ConditionVariable(Lock* user_lock)
 }
 
 ConditionVariable::~ConditionVariable() {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // This hack is necessary to avoid a fatal pthreads subsystem bug in the
   // Darwin kernel. http://crbug.com/517681.
   {
@@ -64,7 +68,7 @@ ConditionVariable::~ConditionVariable() {
 }
 
 void ConditionVariable::Wait() {
-  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_)
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -80,7 +84,7 @@ void ConditionVariable::Wait() {
 }
 
 void ConditionVariable::TimedWait(const TimeDelta& max_time) {
-  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_)
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
@@ -95,7 +99,7 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
   user_lock_->CheckHeldAndUnmark();
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   int rv = pthread_cond_timedwait_relative_np(
       &condition_, user_mutex_, &relative_time);
 #else
@@ -120,13 +124,13 @@ void ConditionVariable::TimedWait(const TimeDelta& max_time) {
   absolute_time.tv_nsec %= Time::kNanosecondsPerSecond;
   DCHECK_GE(absolute_time.tv_sec, now.tv_sec);  // Overflow paranoia
 
-#if defined(OS_ANDROID) && defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC)
+#if defined(HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC)
   int rv = pthread_cond_timedwait_monotonic_np(
       &condition_, user_mutex_, &absolute_time);
 #else
   int rv = pthread_cond_timedwait(&condition_, user_mutex_, &absolute_time);
-#endif  // OS_ANDROID && HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC
-#endif  // OS_MACOSX
+#endif  // HAVE_PTHREAD_COND_TIMEDWAIT_MONOTONIC
+#endif  // OS_APPLE
 
   // On failure, we only expect the CV to timeout. Any other error value means
   // that we've unexpectedly woken up.

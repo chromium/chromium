@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/mock_css_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
@@ -89,7 +90,7 @@ TEST_P(CSSPaintValueTest, ReportingCompositedUMA) {
   const ComputedStyle& style = *target->Style();
 
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   // Mark the generator as ready - GetImage should succeed when
   // OffMainThreadCSSPaint is enabled.
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
@@ -133,9 +134,9 @@ TEST_P(CSSPaintValueTest, ReportingNonCompositedUMA) {
 
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
   LayoutObject* target = GetLayoutObjectByElementId("target");
-  auto style = ComputedStyle::Create();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   StyleGeneratedImage* style_image =
       MakeGarbageCollected<StyleGeneratedImage>(*paint_value);
   style->SetBorderImageSource(style_image);
@@ -187,7 +188,7 @@ TEST_P(CSSPaintValueTest, DelayPaintUntilGeneratorReady) {
   const ComputedStyle& style = *target->Style();
 
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   // Initially the generator is not ready, so GetImage should fail (and no paint
   // should happen).
@@ -220,7 +221,7 @@ TEST_P(CSSPaintValueTest, GetImageCalledOnMultipleDocuments) {
   const ComputedStyle& style = *target->Style();
 
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 0u);
   paint_value->GetImage(*target, GetDocument(), style, target_size);
@@ -238,7 +239,7 @@ TEST_P(CSSPaintValueTest, NativeInvalidationPropertiesWithNoGenerator) {
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
 
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 0u);
   // There is no generator, so returning a nullptr.
@@ -249,7 +250,7 @@ TEST_P(CSSPaintValueTest, CustomInvalidationPropertiesWithNoGenerator) {
   SetBodyInnerHTML(R"HTML(<div id="target"></div>)HTML");
 
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   EXPECT_EQ(paint_value->NumberOfGeneratorsForTesting(), 0u);
   // There is no generator, so returning a nullptr.
@@ -278,7 +279,7 @@ TEST_P(CSSPaintValueTest, PrintingMustFallbackToMainThread) {
   const ComputedStyle& style = *target->Style();
 
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   ON_CALL(*mock_generator, IsImageGeneratorReady()).WillByDefault(Return(true));
   // This PW can be composited, so we should only fall back to main once, in
@@ -319,7 +320,7 @@ TEST_P(CSSPaintValueTest, DoNotPaintForLink) {
   ASSERT_NE(style.InsideLink(), EInsideLink::kNotInsideLink);
 
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("linkpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   EXPECT_FALSE(paint_value->GetImage(*target, GetDocument(), style,
                                      FloatSize(100, 100)));
 }
@@ -347,14 +348,14 @@ TEST_P(CSSPaintValueTest, DoNotPaintWhenAncestorHasLink) {
   ASSERT_NE(style.InsideLink(), EInsideLink::kNotInsideLink);
 
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("linkpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
   EXPECT_FALSE(paint_value->GetImage(*target, GetDocument(), style,
                                      FloatSize(100, 100)));
 }
 
 TEST_P(CSSPaintValueTest, BuildInputArgumentValuesNotCrash) {
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("testpainter");
-  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
+  CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident, true);
 
   ASSERT_EQ(paint_value->GetParsedInputArgumentsForTesting(), nullptr);
   Vector<std::unique_ptr<CrossThreadStyleValue>> cross_thread_input_arguments;

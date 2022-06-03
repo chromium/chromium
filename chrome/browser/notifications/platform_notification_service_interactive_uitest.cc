@@ -15,10 +15,11 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/scoped_run_loop_timeout.h"
+#include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "chrome/browser/engagement/site_engagement_score.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service_impl.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
@@ -27,19 +28,24 @@
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
-#include "chrome/browser/permissions/permission_manager.h"
-#include "chrome/browser/permissions/permission_request_manager.h"
-#include "chrome/browser/permissions/permission_result.h"
+#include "chrome/browser/permissions/permission_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/permission_manager.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/permission_result.h"
+#include "components/site_engagement/content/site_engagement_score.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -73,8 +79,8 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   ~PlatformNotificationServiceBrowserTest() override = default;
 
   void SetUp() override {
-    https_server_.reset(
-        new net::EmbeddedTestServer(net::EmbeddedTestServer::TYPE_HTTPS));
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
     https_server_->ServeFilesFromSourceDirectory(server_root_);
     ASSERT_TRUE(https_server_->Start());
 
@@ -86,7 +92,7 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
         std::make_unique<NotificationDisplayServiceTester>(
             browser()->profile());
 
-    SiteEngagementScore::SetParamValuesForTesting();
+    site_engagement::SiteEngagementScore::SetParamValuesForTesting();
     NavigateToTestPage(std::string("/") + kTestFileName);
   }
 
@@ -117,23 +123,26 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   // page that's being used in this browser test.
   void GrantNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().GetOrigin(), CONTENT_SETTING_ALLOW);
+        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        CONTENT_SETTING_ALLOW);
   }
 
   // Blocks permission to display Web Notifications for origin of the test
   // page that's being used in this browser test.
   void BlockNotificationPermissionForTest() const {
     NotificationPermissionContext::UpdatePermission(
-        browser()->profile(), TestPageUrl().GetOrigin(), CONTENT_SETTING_BLOCK);
+        browser()->profile(), TestPageUrl().DeprecatedGetOriginAsURL(),
+        CONTENT_SETTING_BLOCK);
   }
 
   bool RequestAndAcceptPermission() {
-    return "granted" ==
-           RequestAndRespondToPermission(PermissionRequestManager::ACCEPT_ALL);
+    return "granted" == RequestAndRespondToPermission(
+                            permissions::PermissionRequestManager::ACCEPT_ALL);
   }
 
   double GetEngagementScore(const GURL& origin) const {
-    return SiteEngagementService::Get(browser()->profile())->GetScore(origin);
+    return site_engagement::SiteEngagementService::Get(browser()->profile())
+        ->GetScore(origin);
   }
 
   GURL GetLastCommittedURL() const {
@@ -145,7 +154,8 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
 
   // Navigates the browser to the test page indicated by |path|.
   void NavigateToTestPage(const std::string& path) const {
-    ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), https_server_->GetURL(path)));
   }
 
   // Executes |script| and stores the result as a string in |result|. A boolean
@@ -161,10 +171,10 @@ class PlatformNotificationServiceBrowserTest : public InProcessBrowserTest {
   }
 
   std::string RequestAndRespondToPermission(
-      PermissionRequestManager::AutoResponseType bubble_response) {
+      permissions::PermissionRequestManager::AutoResponseType bubble_response) {
     std::string result;
     content::WebContents* web_contents = GetActiveWebContents(browser());
-    PermissionRequestManager::FromWebContents(web_contents)
+    permissions::PermissionRequestManager::FromWebContents(web_contents)
         ->set_auto_response_for_test(bubble_response);
     EXPECT_TRUE(RunScript("RequestPermission();", &result));
     return result;
@@ -207,7 +217,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-      base::nullopt /* action_index */, base::nullopt /* reply */);
+      absl::nullopt /* action_index */, absl::nullopt /* reply */);
 
   // We expect +1 engagement for the notification interaction.
   EXPECT_DOUBLE_EQ(1.5, GetEngagementScore(GetLastCommittedURL()));
@@ -308,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_TRUE(notification.never_timeout());
   EXPECT_DOUBLE_EQ(621046800000., notification.timestamp().ToJsTime());
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_FALSE(notification.image().IsEmpty());
   EXPECT_EQ(kIconWidth, notification.image().Width());
   EXPECT_EQ(kIconHeight, notification.image().Height());
@@ -354,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications(false /* is_persistent */);
   ASSERT_EQ(1u, notifications.size());
-  EXPECT_EQ(base::ASCIIToUTF16("Title1"), notifications[0].title());
+  EXPECT_EQ(u"Title1", notifications[0].title());
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
@@ -409,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // The js-provided tag should be part of the id.
   EXPECT_FALSE(all_options_notification.id().find("replace-id") ==
                std::string::npos);
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   EXPECT_FALSE(all_options_notification.image().IsEmpty());
   EXPECT_EQ(kIconWidth, all_options_notification.image().Width());
   EXPECT_EQ(kIconHeight, all_options_notification.image().Height());
@@ -432,7 +442,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 }
 
 // Chrome OS shows the notification settings inline.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
                        WebNotificationSiteSettingsButton) {
   GrantNotificationPermissionForTest();
@@ -461,6 +471,10 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   ASSERT_EQ(1u, notifications.size());
 
   web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  // We see some timeouts in dbg tests, so increase the wait timeout to the
+  // test launcher's timeout.
+  const base::test::ScopedRunLoopTimeout specific_timeout(
+          FROM_HERE, TestTimeouts::test_launcher_timeout());
   ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
   // No engagement should be granted for clicking on the settings link.
@@ -515,7 +529,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-        base::nullopt /* action_index */, base::nullopt /* reply */);
+        absl::nullopt /* action_index */, absl::nullopt /* reply */);
 
     // We have interacted with the button, so expect a notification bump.
     EXPECT_DOUBLE_EQ(1.5, GetEngagementScore(GetLastCommittedURL()));
@@ -608,7 +622,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
     display_service_tester_->SimulateClick(
         NotificationHandler::Type::WEB_PERSISTENT, notifications[0].id(),
-        base::nullopt /* action_index */, base::nullopt /* reply */);
+        absl::nullopt /* action_index */, absl::nullopt /* reply */);
 
     ASSERT_TRUE(RunScript("GetMessageFromWorker()", &script_result));
     EXPECT_EQ("action_close", script_result);
@@ -643,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   std::string script_result;
   ASSERT_TRUE(RunScript("DisplayPersistentNotification()", &script_result));
 
-  GURL test_origin = TestPageUrl().GetOrigin();
+  GURL test_origin = TestPageUrl().DeprecatedGetOriginAsURL();
 
   std::vector<message_center::Notification> notifications =
       GetDisplayedNotifications(true /* is_persistent */);
@@ -670,53 +684,6 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
       PersistentNotificationMetadata::From(
           display_service_tester_->GetMetadataForNotification(notifications[0]))
           ->service_worker_scope);
-}
-
-IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
-                       CheckFilePermissionNotGranted) {
-  // This case should succeed because a normal page URL is used.
-  std::string script_result;
-
-  PermissionManager* permission_manager =
-      PermissionManager::Get(browser()->profile());
-
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      TestPageUrl(), TestPageUrl())
-                .content_setting);
-
-  RequestAndAcceptPermission();
-  EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      TestPageUrl(), TestPageUrl())
-                .content_setting);
-
-  // This case should fail because a file URL is used.
-  base::FilePath dir_source_root;
-  EXPECT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &dir_source_root));
-  base::FilePath full_file_path =
-      dir_source_root.Append(server_root_).AppendASCII(kTestFileName);
-  GURL file_url(net::FilePathToFileURL(full_file_path));
-
-  ui_test_utils::NavigateToURL(browser(), file_url);
-
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      file_url, file_url)
-                .content_setting);
-
-  RequestAndAcceptPermission();
-  EXPECT_EQ(CONTENT_SETTING_ASK,
-            permission_manager
-                ->GetPermissionStatus(ContentSettingsType::NOTIFICATIONS,
-                                      file_url, file_url)
-                .content_setting)
-      << "If this test fails, you may have fixed a bug preventing file origins "
-      << "from sending their origin from Blink; if so you need to update the "
-      << "display function for notification origins to show the file path.";
 }
 
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
@@ -784,7 +751,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
-      0 /* action_index */, base::nullopt /* reply */);
+      0 /* action_index */, absl::nullopt /* reply */);
 
   ASSERT_TRUE(RunScript("GetMessageFromWorker()", &script_result));
   EXPECT_EQ("action_button_click actionId1", script_result);
@@ -798,7 +765,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
-      1 /* action_index */, base::nullopt /* reply */);
+      1 /* action_index */, absl::nullopt /* reply */);
 
   ASSERT_TRUE(RunScript("GetMessageFromWorker()", &script_result));
   EXPECT_EQ("action_button_click actionId2", script_result);
@@ -833,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   display_service_tester_->SimulateClick(
       NotificationHandler::Type::WEB_PERSISTENT, notification.id(),
-      0 /* action_index */, base::ASCIIToUTF16("hello"));
+      0 /* action_index */, u"hello");
 
   ASSERT_TRUE(RunScript("GetMessageFromWorker()", &script_result));
   EXPECT_EQ("action_button_click actionId1 hello", script_result);
@@ -938,8 +905,8 @@ IN_PROC_BROWSER_TEST_F(
   {
     base::RunLoop run_loop;
     handler->OnClick(profile, GURL(kTestNotificationOrigin),
-                     kTestNotificationId, base::nullopt /* action_index */,
-                     base::nullopt /* reply */, run_loop.QuitClosure());
+                     kTestNotificationId, absl::nullopt /* action_index */,
+                     absl::nullopt /* reply */, run_loop.QuitClosure());
     run_loop.Run();
   }
 
@@ -956,10 +923,17 @@ IN_PROC_BROWSER_TEST_F(
 
 // Mac OS X exclusively uses native notifications, so the decision on whether to
 // display notifications whilst fullscreen is deferred to the operating system.
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 
+// TODO(https://crbug.com/1086169) Test is flaky on Linux TSan.
+#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+    defined(THREAD_SANITIZER)
+#define MAYBE_TestShouldDisplayFullscreen DISABLED_TestShouldDisplayFullscreen
+#else
+#define MAYBE_TestShouldDisplayFullscreen TestShouldDisplayFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
-                       TestShouldDisplayFullscreen) {
+                       MAYBE_TestShouldDisplayFullscreen) {
   GrantNotificationPermissionForTest();
 
   // Set the page fullscreen
@@ -995,7 +969,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   ASSERT_NO_FATAL_FAILURE(GrantNotificationPermissionForTest());
 
   Browser* other_browser = CreateBrowser(browser()->profile());
-  ui_test_utils::NavigateToURL(other_browser, GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(other_browser, GURL("about:blank")));
 
   std::string script_result;
   ASSERT_TRUE(RunScript(
@@ -1033,11 +1007,11 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
             notifications[0].fullscreen_visibility());
 }
 
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
-                       KeepAliveRegistryPendingNotificationEvent) {
+                       KeepAliveRegistryPendingNotificationClickEvent) {
   RequestAndAcceptPermission();
 
   std::string script_result;
@@ -1060,8 +1034,8 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   base::RunLoop run_loop;
   handler->OnClick(browser()->profile(), notifications[0].origin_url(),
-                   notifications[0].id(), base::nullopt /* action_index */,
-                   base::nullopt /* reply */, run_loop.QuitClosure());
+                   notifications[0].id(), absl::nullopt /* action_index */,
+                   absl::nullopt /* reply */, run_loop.QuitClosure());
 
   // The asynchronous part of the click event will still be in progress, but
   // the keep alive registration should have been created.
@@ -1073,6 +1047,45 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
 
   ASSERT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
       KeepAliveOrigin::PENDING_NOTIFICATION_CLICK_EVENT));
+}
+
+IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
+                       KeepAliveRegistryPendingNotificationCloseEvent) {
+  RequestAndAcceptPermission();
+
+  std::string script_result;
+  ASSERT_TRUE(RunScript("DisplayPersistentNotification('action_none')",
+                        &script_result));
+  EXPECT_EQ("ok", script_result);
+
+  std::vector<message_center::Notification> notifications =
+      GetDisplayedNotifications(true /* is_persistent */);
+  ASSERT_EQ(1u, notifications.size());
+
+  ASSERT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  NotificationDisplayServiceImpl* display_service =
+      NotificationDisplayServiceImpl::GetForProfile(browser()->profile());
+  NotificationHandler* handler = display_service->GetNotificationHandler(
+      NotificationHandler::Type::WEB_PERSISTENT);
+  ASSERT_TRUE(handler);
+
+  base::RunLoop run_loop;
+  handler->OnClose(browser()->profile(), notifications[0].origin_url(),
+                   notifications[0].id(), true /* by_user */,
+                   run_loop.QuitClosure());
+
+  // The asynchronous part of the close event will still be in progress, but
+  // the keep alive registration should have been created.
+  ASSERT_TRUE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
+
+  // Finish the close event.
+  run_loop.Run();
+
+  ASSERT_FALSE(KeepAliveRegistry::GetInstance()->IsOriginRegistered(
+      KeepAliveOrigin::PENDING_NOTIFICATION_CLOSE_EVENT));
 }
 #endif  // BUILDFLAG(ENABLE_BACKGROUND_MODE)
 

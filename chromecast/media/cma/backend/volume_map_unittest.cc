@@ -6,8 +6,8 @@
 
 #include <string>
 
+#include "base/check.h"
 #include "base/json/json_reader.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "chromecast/media/cma/backend/cast_audio_json.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -29,6 +29,9 @@ class TestFileProvider : public CastAudioJsonProvider {
   TestFileProvider(const std::string& file_contents)
       : file_contents_(file_contents) {}
 
+  TestFileProvider(const TestFileProvider&) = delete;
+  TestFileProvider& operator=(const TestFileProvider&) = delete;
+
   ~TestFileProvider() override = default;
 
   void CallTuningChangedCallback(const std::string& new_config) {
@@ -47,8 +50,6 @@ class TestFileProvider : public CastAudioJsonProvider {
 
   const std::string file_contents_;
   TuningChangedCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFileProvider);
 };
 
 TEST(VolumeMapTest, UsesDefaultMapIfConfigEmpty) {

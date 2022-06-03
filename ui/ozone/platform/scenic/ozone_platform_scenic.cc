@@ -8,19 +8,28 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include <fuchsia/ui/views/cpp/fidl.h>
+#include <lib/ui/scenic/cpp/view_token_pair.h>
+
+#include "base/check.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/memory/ptr_util.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
+#include "base/notreached.h"
+#include "base/task/current_thread.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "ui/base/cursor/cursor_factory.h"
 #include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
 #include "ui/base/ime/fuchsia/input_method_fuchsia.h"
 #include "ui/display/fake/fake_display_delegate.h"
 #include "ui/events/ozone/layout/keyboard_layout_engine_manager.h"
 #include "ui/events/ozone/layout/stub/stub_keyboard_layout_engine.h"
 #include "ui/events/platform/platform_event_source.h"
+#include "ui/gfx/native_widget_types.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
+#include "ui/ozone/platform/scenic/overlay_manager_scenic.h"
 #include "ui/ozone/platform/scenic/scenic_gpu_host.h"
 #include "ui/ozone/platform/scenic/scenic_gpu_service.h"
 #include "ui/ozone/platform/scenic/scenic_surface_factory.h"
@@ -28,41 +37,48 @@
 #include "ui/ozone/platform/scenic/scenic_window_manager.h"
 #include "ui/ozone/platform/scenic/sysmem_buffer_collection.h"
 #include "ui/ozone/platform_selection.h"
-#include "ui/ozone/public/cursor_factory_ozone.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/mojom/scenic_gpu_service.mojom.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/ozone_switches.h"
 #include "ui/ozone/public/system_input_injector.h"
+#include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #include "ui/platform_window/platform_window_init_properties.h"
 
 namespace ui {
 
 namespace {
 
-constexpr OzonePlatform::PlatformProperties kScenicPlatformProperties{
-    /*needs_view_token=*/true,
-    /*custom_frame_pref_default=*/false,
-    /*use_system_title_bar=*/false,
-    /*requires_mojo=*/true,
-    /*message_pump_type_for_gpu=*/base::MessagePumpType::IO};
+::fuchsia::ui::views::ViewRef CloneViewRef(
+    const ::fuchsia::ui::views::ViewRef& view_ref) {
+  ::fuchsia::ui::views::ViewRef dup;
+  zx_status_t status =
+      view_ref.reference.duplicate(ZX_RIGHT_SAME_RIGHTS, &dup.reference);
+  ZX_CHECK(status == ZX_OK, status) << "zx_object_duplicate";
+  return dup;
+}
 
 class ScenicPlatformEventSource : public ui::PlatformEventSource {
  public:
   ScenicPlatformEventSource() = default;
-  ~ScenicPlatformEventSource() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScenicPlatformEventSource);
+  ScenicPlatformEventSource(const ScenicPlatformEventSource&) = delete;
+  ScenicPlatformEventSource& operator=(const ScenicPlatformEventSource&) =
+      delete;
+
+  ~ScenicPlatformEventSource() override = default;
 };
 
 // OzonePlatform for Scenic.
-class OzonePlatformScenic
-    : public OzonePlatform,
-      public base::MessageLoopCurrent::DestructionObserver {
+class OzonePlatformScenic : public OzonePlatform,
+                            public base::CurrentThread::DestructionObserver {
  public:
   OzonePlatformScenic() = default;
+
+  OzonePlatformScenic(const OzonePlatformScenic&) = delete;
+  OzonePlatformScenic& operator=(const OzonePlatformScenic&) = delete;
+
   ~OzonePlatformScenic() override = default;
 
   // OzonePlatform implementation.
@@ -74,9 +90,7 @@ class OzonePlatformScenic
     return overlay_manager_.get();
   }
 
-  CursorFactoryOzone* GetCursorFactoryOzone() override {
-    return cursor_factory_ozone_.get();
-  }
+  CursorFactory* GetCursorFactory() override { return cursor_factory_.get(); }
 
   InputController* GetInputController() override {
     return input_controller_.get();
@@ -94,17 +108,33 @@ class OzonePlatformScenic
   std::unique_ptr<PlatformWindow> CreatePlatformWindow(
       PlatformWindowDelegate* delegate,
       PlatformWindowInitProperties properties) override {
+    BindInMainProcessIfNecessary();
+
     if (!properties.view_token.value) {
-      NOTREACHED();
-      return nullptr;
+      auto view_tokens = scenic::ViewTokenPair::New();
+      properties.view_token = std::move(view_tokens.view_token);
+      properties.view_ref_pair = scenic::ViewRefPair::New();
+      ::ui::fuchsia::GetScenicViewPresenter().Run(
+          std::move(view_tokens.view_holder_token),
+          CloneViewRef(properties.view_ref_pair.view_ref));
     }
+
     return std::make_unique<ScenicWindow>(window_manager_.get(), delegate,
-                                          std::move(properties.view_token),
-                                          std::move(properties.view_ref_pair));
+                                          std::move(properties));
   }
 
   const PlatformProperties& GetPlatformProperties() override {
-    return kScenicPlatformProperties;
+    static base::NoDestructor<OzonePlatform::PlatformProperties> properties;
+    static bool initialised = false;
+    if (!initialised) {
+      properties->needs_view_token = true;
+      properties->message_pump_type_for_gpu = base::MessagePumpType::IO;
+      properties->supports_vulkan_swap_chain = true;
+
+      initialised = true;
+    }
+
+    return *properties;
   }
 
   std::unique_ptr<display::NativeDisplayDelegate> CreateNativeDisplayDelegate()
@@ -117,9 +147,14 @@ class OzonePlatformScenic
     return window_manager_->CreateScreen();
   }
 
+  void InitScreen(PlatformScreen* screen) override {}
+
   std::unique_ptr<InputMethod> CreateInputMethod(
-      internal::InputMethodDelegate* delegate) override {
-    return std::make_unique<InputMethodFuchsia>(delegate);
+      internal::InputMethodDelegate* delegate,
+      gfx::AcceleratedWidget widget) override {
+    return std::make_unique<InputMethodFuchsia>(
+        window_manager_->GetWindow(widget)->is_virtual_keyboard_enabled(),
+        delegate, window_manager_->GetWindow(widget)->CloneViewRef());
   }
 
   void InitializeUI(const InitParams& params) override {
@@ -132,39 +167,36 @@ class OzonePlatformScenic
     window_manager_ = std::make_unique<ScenicWindowManager>();
     overlay_manager_ = std::make_unique<StubOverlayManager>();
     input_controller_ = CreateStubInputController();
-    cursor_factory_ozone_ = std::make_unique<BitmapCursorFactoryOzone>();
-
-    base::MessageLoopCurrent::Get()->AddDestructionObserver(this);
+    cursor_factory_ = std::make_unique<BitmapCursorFactoryOzone>();
 
     scenic_gpu_host_ = std::make_unique<ScenicGpuHost>(window_manager_.get());
 
     // SurfaceFactory is configured here to use a ui-process remote for software
     // output.
-    surface_factory_ = std::make_unique<ScenicSurfaceFactory>(
-        scenic_gpu_host_->CreateHostProcessSelfRemote());
+    if (!surface_factory_)
+      surface_factory_ = std::make_unique<ScenicSurfaceFactory>();
+
+    if (base::ThreadTaskRunnerHandle::IsSet())
+      BindInMainProcessIfNecessary();
   }
 
   void InitializeGPU(const InitParams& params) override {
-    if (params.single_process) {
-      if (!surface_factory_) {
-        // Without calling InitializeForUI, window surfaces cannot be created.
-        // Some test such as gpu_unittests do this.
-        // TODO(spang): This is not ideal; perhaps we should move the GL &
-        // vulkan initializers out of SurfaceFactoryOzone.
-        surface_factory_ =
-            std::make_unique<ScenicSurfaceFactory>(mojo::NullRemote());
-      }
-    } else {
-      DCHECK(!surface_factory_);
+    DCHECK(!surface_factory_ || params.single_process);
+
+    if (!surface_factory_)
+      surface_factory_ = std::make_unique<ScenicSurfaceFactory>();
+
+    if (!params.single_process) {
       mojo::PendingRemote<mojom::ScenicGpuHost> scenic_gpu_host_remote;
       scenic_gpu_service_ = std::make_unique<ScenicGpuService>(
           scenic_gpu_host_remote.InitWithNewPipeAndPassReceiver());
 
       // SurfaceFactory is configured here to use a gpu-process remote. The
       // other end of the pipe will be attached through ScenicGpuService.
-      surface_factory_ = std::make_unique<ScenicSurfaceFactory>(
-          std::move(scenic_gpu_host_remote));
+      surface_factory_->Initialize(std::move(scenic_gpu_host_remote));
     }
+
+    overlay_manager_ = std::make_unique<OverlayManagerScenic>();
   }
 
   void AddInterfaces(mojo::BinderMap* binders) override {
@@ -179,31 +211,44 @@ class OzonePlatformScenic
   }
 
  private:
-  // base::MessageLoopCurrent::DestructionObserver implementation.
-  void WillDestroyCurrentMessageLoop() override {
-    // We must ensure to destroy any resources which rely on the MessageLoop's
-    // async_dispatcher.
-    surface_factory_ = nullptr;
-    scenic_gpu_host_ = nullptr;
-    overlay_manager_ = nullptr;
-    input_controller_ = nullptr;
-    cursor_factory_ozone_ = nullptr;
-    platform_event_source_ = nullptr;
-    window_manager_ = nullptr;
+  // Binds main process surface factory to main process ScenicGpuHost
+  void BindInMainProcessIfNecessary() {
+    if (bound_in_main_process_)
+      return;
+
+    mojo::PendingRemote<mojom::ScenicGpuHost> gpu_host_remote;
+    scenic_gpu_host_->Initialize(
+        gpu_host_remote.InitWithNewPipeAndPassReceiver());
+    surface_factory_->Initialize(std::move(gpu_host_remote));
+    bound_in_main_process_ = true;
+
+    base::CurrentThread::Get()->AddDestructionObserver(this);
   }
+
+  void ShutdownInMainProcess() {
+    DCHECK(bound_in_main_process_);
+    surface_factory_->Shutdown();
+    scenic_gpu_host_->Shutdown();
+    window_manager_->Shutdown();
+    bound_in_main_process_ = false;
+  }
+
+  // base::CurrentThread::DestructionObserver implementation.
+  void WillDestroyCurrentMessageLoop() override { ShutdownInMainProcess(); }
 
   std::unique_ptr<ScenicWindowManager> window_manager_;
 
   std::unique_ptr<KeyboardLayoutEngine> keyboard_layout_engine_;
   std::unique_ptr<PlatformEventSource> platform_event_source_;
-  std::unique_ptr<CursorFactoryOzone> cursor_factory_ozone_;
+  std::unique_ptr<CursorFactory> cursor_factory_;
   std::unique_ptr<InputController> input_controller_;
   std::unique_ptr<OverlayManagerOzone> overlay_manager_;
   std::unique_ptr<ScenicGpuHost> scenic_gpu_host_;
   std::unique_ptr<ScenicGpuService> scenic_gpu_service_;
   std::unique_ptr<ScenicSurfaceFactory> surface_factory_;
 
-  DISALLOW_COPY_AND_ASSIGN(OzonePlatformScenic);
+  // Whether the main process has initialized mojo bindings.
+  bool bound_in_main_process_ = false;
 };
 
 }  // namespace

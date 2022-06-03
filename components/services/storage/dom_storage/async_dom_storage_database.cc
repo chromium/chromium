@@ -11,10 +11,9 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/db.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
@@ -26,7 +25,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
     const leveldb_env::Options& options,
     const base::FilePath& directory,
     const std::string& dbname,
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
     StatusCallback callback) {
@@ -41,7 +40,7 @@ std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenDirectory(
 
 // static
 std::unique_ptr<AsyncDomStorageDatabase> AsyncDomStorageDatabase::OpenInMemory(
-    const base::Optional<base::trace_event::MemoryAllocatorDumpGuid>&
+    const absl::optional<base::trace_event::MemoryAllocatorDumpGuid>&
         memory_dump_id,
     const std::string& tracking_name,
     scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
@@ -99,7 +98,6 @@ void AsyncDomStorageDatabase::DeletePrefixed(
 void AsyncDomStorageDatabase::RewriteDB(StatusCallback callback) {
   DCHECK(database_);
   database_.PostTaskWithThisObject(
-      FROM_HERE,
       base::BindOnce(
           [](StatusCallback callback,
              scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
@@ -175,7 +173,7 @@ void AsyncDomStorageDatabase::OnDatabaseOpened(
   std::swap(tasks, tasks_to_run_on_open_);
   if (status.ok()) {
     for (auto& task : tasks)
-      database_.PostTaskWithThisObject(FROM_HERE, std::move(task));
+      database_.PostTaskWithThisObject(std::move(task));
   }
   std::move(callback).Run(status);
 }

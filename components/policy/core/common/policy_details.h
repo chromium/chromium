@@ -18,10 +18,13 @@ namespace policy {
 // Contains read-only metadata about a Chrome policy.
 struct POLICY_EXPORT PolicyDetails {
   // True if this policy has been deprecated.
-  bool is_deprecated;
+  bool is_deprecated : 1;
+
+  // True if the policy hasn't been released yet.
+  bool is_future : 1;
 
   // True if this policy is a Chrome OS device policy.
-  bool is_device_policy;
+  bool is_device_policy : 1;
 
   // The id of the protobuf field that contains this policy,
   // in the cloud policy protobuf.
@@ -40,8 +43,8 @@ struct POLICY_EXPORT PolicyDetails {
 // GetChromePolicyDetails(). This can be used to inject that
 // function into objects, so that it can be easily mocked for
 // tests.
-typedef base::Callback<const PolicyDetails*(const std::string&)>
-    GetChromePolicyDetailsCallback;
+using GetChromePolicyDetailsCallback =
+    base::RepeatingCallback<const PolicyDetails*(const std::string&)>;
 
 }  // namespace policy
 

@@ -24,6 +24,15 @@ function nel_test(callback, name, properties) {
   }, name, properties);
 }
 
+function nel_iframe_test(callback, name, properties) {
+  promise_test(async t => {
+    await obtainNELLock();
+    await clearReportingAndNELConfigurationsInIframe();
+    await callback(t);
+    await releaseNELLock();
+  }, name, properties);
+}
+
 /*
  * Helper functions for constructing domain names that contain NEL policies.
  */
@@ -66,6 +75,37 @@ function fetchResourceWithBasicPolicy(subdomain) {
 function fetchResourceWithZeroSuccessFractionPolicy(subdomain) {
   const url = _getNELResourceURL(subdomain, "pass.png?id="+reportID+"&success_fraction=0.0");
   return fetch(url, {mode: "no-cors"});
+}
+
+/*
+ * Similar to the above methods, but fetch resources in an iframe. Allows matching
+ * full context of reports sent from an iframe that's same-site relative to the domains
+ * a policy set.
+ */
+
+ function loadResourceWithBasicPolicyInIframe(subdomain) {
+  return loadResourceWithPolicyInIframe(
+      getURLForResourceWithBasicPolicy(subdomain));
+}
+
+function loadResourceWithZeroSuccessFractionPolicyInIframe(subdomain) {
+  return loadResourceWithPolicyInIframe(
+      _getNELResourceURL(subdomain, "pass.png?id="+reportID+"&success_fraction=0.0"));
+}
+
+function clearResourceWithBasicPolicyInIframe(subdomain) {
+  return loadResourceWithPolicyInIframe(
+      getURLForClearingConfiguration(subdomain));
+}
+
+function loadResourceWithPolicyInIframe(url) {
+  return new Promise((resolve, reject) => {
+    const frame = document.createElement('iframe');
+    frame.src = url;
+    frame.onload = () => resolve(frame);
+    frame.onerror = () => reject('failed to load ' + url);
+    document.body.appendChild(frame);
+  });
 }
 
 /*
@@ -170,6 +210,16 @@ async function clearReportingAndNELConfigurations(subdomain) {
   return;
 }
 
+async function clearReportingAndNELConfigurationsInIframe(subdomain) {
+  await Promise.all([
+    clearResourceWithBasicPolicyInIframe(""),
+    clearResourceWithBasicPolicyInIframe("www"),
+    clearResourceWithBasicPolicyInIframe("www1"),
+    clearResourceWithBasicPolicyInIframe("www2"),
+  ]);
+  return;
+}
+
 /*
  * Returns whether all of the fields in obj1 also exist in obj2 with the same
  * values.  (Put another way, returns whether obj1 and obj2 are equal, ignoring
@@ -197,12 +247,14 @@ function _isSubsetOf(obj1, obj2) {
  * expected.
  */
 
-async function reportExists(expected) {
+async function reportExists(expected, retain_reports) {
   var timeout =
     document.querySelector("meta[name=timeout][content=long]") ? 50 : 1;
   var reportLocation =
-    "/network-error-logging/support/report.py?op=retrieve_report&timeout=" +
+    "/reporting/resources/report.py?op=retrieve_report&timeout=" +
     timeout + "&reportID=" + reportID;
+  if (retain_reports)
+    reportLocation += "&retain=1";
   const response = await fetch(reportLocation);
   const json = await response.json();
   for (const report of json) {
@@ -218,11 +270,13 @@ async function reportExists(expected) {
  * expected.
  */
 
-async function reportsExist(expected_reports) {
+async function reportsExist(expected_reports, retain_reports) {
   const timeout = 10;
   let reportLocation =
-    "/network-error-logging/support/report.py?op=retrieve_report&timeout=" +
+    "/reporting/resources/report.py?op=retrieve_report&timeout=" +
     timeout + "&reportID=" + reportID;
+  if (retain_reports)
+    reportLocation += "&retain";
   // There must be the report of pass.png, so adding 1.
   const min_count = expected_reports.length + 1;
   reportLocation += "&min_count=" + min_count;

@@ -94,7 +94,7 @@
     testElement(elementInitial, "Initial", offset.left, offset.top);
     testElement(elementOffscreen, "Offscreen", offset.left, offset.top + 1100);
 
-    eventSender.zoomPageOut();
+    testRunner.zoomPageOut();
     testElement(elementInitial, "Initial", offset.left, offset.top, /* hasZoom */ true);
 
     if (window.testRunner) {

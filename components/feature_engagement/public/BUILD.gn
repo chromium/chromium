@@ -2,14 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
 
-jumbo_source_set("public") {
+source_set("public") {
   sources = [
     "configuration.cc",
     "configuration.h",
@@ -27,22 +25,29 @@ jumbo_source_set("public") {
 
   deps = [
     "//base",
-    "//components/feature_engagement:buildflags",
+    "//components/feed:feature_list",
     "//components/flags_ui",
     "//components/keyed_service/core",
   ]
+
+  if (is_android) {
+    sources += [
+      "android/wrapping_test_tracker.cc",
+      "android/wrapping_test_tracker.h",
+    ]
+
+    deps += [ "//components/feature_engagement/public:jni_headers" ]
+  }
 }
 
-jumbo_source_set("unit_tests") {
+source_set("unit_tests") {
   testonly = true
 
   visibility = [ "//components/feature_engagement:unit_tests" ]
 
   # IMPORTANT NOTE: When adding new tests, also remember to update the list of
   # tests in //components/feature_engagement/components_unittests.filter
-  sources = [
-    "configuration_unittest.cc",
-  ]
+  sources = [ "configuration_unittest.cc" ]
 
   deps = [
     ":public",
@@ -52,16 +57,20 @@ jumbo_source_set("unit_tests") {
 
 if (is_android) {
   android_library("public_java") {
-    java_files = [
+    sources = [
+      "android/java/src/org/chromium/components/feature_engagement/CppWrappedTestTracker.java",
       "android/java/src/org/chromium/components/feature_engagement/EventConstants.java",
       "android/java/src/org/chromium/components/feature_engagement/FeatureConstants.java",
       "android/java/src/org/chromium/components/feature_engagement/Tracker.java",
+      "android/java/src/org/chromium/components/feature_engagement/TriggerDetails.java",
     ]
 
     deps = [
+      ":jni_headers",
       "//base:base_java",
-      "//third_party/android_deps:androidx_annotation_annotation_java",
+      "//third_party/androidx:androidx_annotation_annotation_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
     srcjar_deps = [ ":public_java_enums_srcjar" ]
   }
@@ -69,8 +78,10 @@ if (is_android) {
   java_cpp_enum("public_java_enums_srcjar") {
     visibility = [ ":*" ]
 
-    sources = [
-      "tracker.h",
-    ]
+    sources = [ "tracker.h" ]
+  }
+
+  generate_jni("jni_headers") {
+    sources = [ "android/java/src/org/chromium/components/feature_engagement/CppWrappedTestTracker.java" ]
   }
 }

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/rtp_dump_type.h"
@@ -46,9 +45,10 @@ class WebRtcLoggingController
  public:
   typedef WebRtcLogUploader::GenericDoneCallback GenericDoneCallback;
   typedef WebRtcLogUploader::UploadDoneCallback UploadDoneCallback;
-  typedef base::Callback<void(const std::string&, const std::string&)>
+  typedef base::OnceCallback<void(const std::string&, const std::string&)>
       LogsDirectoryCallback;
-  typedef base::Callback<void(const std::string&)> LogsDirectoryErrorCallback;
+  typedef base::OnceCallback<void(const std::string&)>
+      LogsDirectoryErrorCallback;
 
   // Argument #1: Indicate success/failure.
   // Argument #2: If success, the log's ID. Otherwise, empty.
@@ -62,34 +62,36 @@ class WebRtcLoggingController
   static WebRtcLoggingController* FromRenderProcessHost(
       content::RenderProcessHost* host);
 
+  WebRtcLoggingController(const WebRtcLoggingController&) = delete;
+  WebRtcLoggingController& operator=(const WebRtcLoggingController&) = delete;
+
   // Sets meta data that will be uploaded along with the log and also written
   // in the beginning of the log. Must be called on the IO thread before calling
   // StartLogging.
   void SetMetaData(std::unique_ptr<WebRtcLogMetaDataMap> meta_data,
-                   const GenericDoneCallback& callback);
+                   GenericDoneCallback callback);
 
   // Opens a log and starts logging. Must be called on the IO thread.
-  void StartLogging(const GenericDoneCallback& callback);
+  void StartLogging(GenericDoneCallback callback);
 
   // Stops logging. Log will remain open until UploadLog or DiscardLog is
   // called. Must be called on the IO thread.
-  void StopLogging(const GenericDoneCallback& callback);
+  void StopLogging(GenericDoneCallback callback);
 
   // Uploads the text log and the RTP dumps. Discards the local copy. May only
   // be called after text logging has stopped. Must be called on the IO thread.
-  void UploadLog(const UploadDoneCallback& callback);
+  void UploadLog(UploadDoneCallback callback);
 
   // Uploads a log that was previously saved via a call to StoreLog().
   // Otherwise operates in the same way as UploadLog.
-  void UploadStoredLog(const std::string& log_id,
-                       const UploadDoneCallback& callback);
+  void UploadStoredLog(const std::string& log_id, UploadDoneCallback callback);
 
   // Discards the log and the RTP dumps. May only be called after logging has
   // stopped. Must be called on the IO thread.
-  void DiscardLog(const GenericDoneCallback& callback);
+  void DiscardLog(GenericDoneCallback callback);
 
   // Stores the log locally using a hash of log_id + security origin.
-  void StoreLog(const std::string& log_id, const GenericDoneCallback& callback);
+  void StoreLog(const std::string& log_id, GenericDoneCallback callback);
 
   // May be called on any thread. |upload_log_on_render_close_| is used
   // for decision making and it's OK if it changes before the execution based
@@ -101,13 +103,13 @@ class WebRtcLoggingController
   // Starts dumping the RTP headers for the specified direction. Must be called
   // on the UI thread. |type| specifies which direction(s) of RTP packets should
   // be dumped. |callback| will be called when starting the dump is done.
-  void StartRtpDump(RtpDumpType type, const GenericDoneCallback& callback);
+  void StartRtpDump(RtpDumpType type, GenericDoneCallback callback);
 
   // Stops dumping the RTP headers for the specified direction. Must be called
   // on the UI thread. |type| specifies which direction(s) of RTP packet dumping
   // should be stopped. |callback| will be called when stopping the dump is
   // done.
-  void StopRtpDump(RtpDumpType type, const GenericDoneCallback& callback);
+  void StopRtpDump(RtpDumpType type, GenericDoneCallback callback);
 
   // Called when an RTP packet is sent or received. Must be called on the UI
   // thread.
@@ -133,8 +135,8 @@ class WebRtcLoggingController
   // Ensures that the WebRTC Logs directory exists and then grants render
   // process access to the 'WebRTC Logs' directory, and invokes |callback| with
   // the ids necessary to create a DirectoryEntry object.
-  void GetLogsDirectory(const LogsDirectoryCallback& callback,
-                        const LogsDirectoryErrorCallback& error_callback);
+  void GetLogsDirectory(LogsDirectoryCallback callback,
+                        LogsDirectoryErrorCallback error_callback);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   // chrome::mojom::WebRtcLoggingClient methods:
@@ -154,37 +156,37 @@ class WebRtcLoggingController
 
   // Called after stopping RTP dumps.
   void StoreLogContinue(const std::string& log_id,
-                        const GenericDoneCallback& callback);
+                        GenericDoneCallback callback);
 
   // Writes a formatted log |message| to the |circular_buffer_|.
   void LogToCircularBuffer(const std::string& message);
 
-  void TriggerUpload(const UploadDoneCallback& callback,
+  void TriggerUpload(UploadDoneCallback callback,
                      const base::FilePath& log_directory);
 
   void StoreLogInDirectory(const std::string& log_id,
                            std::unique_ptr<WebRtcLogPaths> log_paths,
-                           const GenericDoneCallback& done_callback,
+                           GenericDoneCallback done_callback,
                            const base::FilePath& directory);
 
   // A helper for TriggerUpload to do the real work.
   void DoUploadLogAndRtpDumps(const base::FilePath& log_directory,
-                              const UploadDoneCallback& callback);
+                              UploadDoneCallback callback);
 
   // Create the RTP dump handler and start dumping. Must be called after making
   // sure the log directory exists.
   void CreateRtpDumpHandlerAndStart(RtpDumpType type,
-                                    const GenericDoneCallback& callback,
+                                    GenericDoneCallback callback,
                                     const base::FilePath& dump_dir);
 
   // A helper for starting RTP dump assuming the RTP dump handler has been
   // created.
-  void DoStartRtpDump(RtpDumpType type, const GenericDoneCallback& callback);
+  void DoStartRtpDump(RtpDumpType type, GenericDoneCallback callback);
 
   bool ReleaseRtpDumps(WebRtcLogPaths* log_paths);
 
   void FireGenericDoneCallback(
-      const WebRtcLoggingController::GenericDoneCallback& callback,
+      WebRtcLoggingController::GenericDoneCallback callback,
       bool success,
       const std::string& error_message);
 
@@ -193,10 +195,9 @@ class WebRtcLoggingController
   // invokes |callback| with the ids necessary to create a DirectoryEntry
   // object. If the |logs_path| couldn't be created or found, |error_callback|
   // is run.
-  void GrantLogsDirectoryAccess(
-      const LogsDirectoryCallback& callback,
-      const LogsDirectoryErrorCallback& error_callback,
-      const base::FilePath& logs_path);
+  void GrantLogsDirectoryAccess(LogsDirectoryCallback callback,
+                                LogsDirectoryErrorCallback error_callback,
+                                const base::FilePath& logs_path);
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   static base::FilePath GetLogDirectoryAndEnsureExists(
@@ -235,8 +236,6 @@ class WebRtcLoggingController
   // "client" meta data key, if exists. 0 means undefined, and is the hash of
   // the empty string.
   int web_app_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcLoggingController);
 };
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_WEBRTC_LOGGING_CONTROLLER_H_

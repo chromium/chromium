@@ -4,7 +4,7 @@
 
 #include "components/payments/content/utility/fingerprint_parser.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"

@@ -5,18 +5,20 @@
 #ifndef DEVICE_VR_UTIL_SLIDING_AVERAGE_H_
 #define DEVICE_VR_UTIL_SLIDING_AVERAGE_H_
 
-#include <vector>
-
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "base/time/time.h"
 #include "device/vr/util/sample_queue.h"
-#include "device/vr/vr_export.h"
 
 namespace device {
 
-class DEVICE_VR_EXPORT SlidingAverage {
+class COMPONENT_EXPORT(DEVICE_VR_UTIL) SlidingAverage {
  public:
   explicit SlidingAverage(size_t window_size);
+
+  SlidingAverage(const SlidingAverage&) = delete;
+  SlidingAverage& operator=(const SlidingAverage&) = delete;
+
   ~SlidingAverage();
 
   void AddSample(int64_t value);
@@ -26,12 +28,15 @@ class DEVICE_VR_EXPORT SlidingAverage {
 
  private:
   SampleQueue values_;
-  DISALLOW_COPY_AND_ASSIGN(SlidingAverage);
 };
 
-class DEVICE_VR_EXPORT SlidingTimeDeltaAverage {
+class COMPONENT_EXPORT(DEVICE_VR_UTIL) SlidingTimeDeltaAverage {
  public:
   explicit SlidingTimeDeltaAverage(size_t window_size);
+
+  SlidingTimeDeltaAverage(const SlidingTimeDeltaAverage&) = delete;
+  SlidingTimeDeltaAverage& operator=(const SlidingTimeDeltaAverage&) = delete;
+
   virtual ~SlidingTimeDeltaAverage();
 
   virtual void AddSample(base::TimeDelta value);
@@ -43,7 +48,6 @@ class DEVICE_VR_EXPORT SlidingTimeDeltaAverage {
 
  private:
   SlidingAverage sample_microseconds_;
-  DISALLOW_COPY_AND_ASSIGN(SlidingTimeDeltaAverage);
 };
 
 }  // namespace device

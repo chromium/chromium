@@ -1,8 +1,0 @@
-include_rules = [
-  "+components/signin/public/identity_manager/account_info.h",
-  "+components/signin/public/identity_manager/access_token_info.h",
-  "+components/signin/public/identity_manager/identity_manager.h",
-  "+components/signin/public/identity_manager/identity_test_environment.h",
-  "+google_apis/gaia/core_account_id.h",
-  "+google_apis/gaia/google_service_auth_error.h",
-]

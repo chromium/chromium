@@ -7,8 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
@@ -48,6 +47,12 @@ const int kTravelCategoryNtpShownCount = 15;
 class ExploreSitesImportCatalogTaskTest : public TaskTestBase {
  public:
   ExploreSitesImportCatalogTaskTest() = default;
+
+  ExploreSitesImportCatalogTaskTest(const ExploreSitesImportCatalogTaskTest&) =
+      delete;
+  ExploreSitesImportCatalogTaskTest& operator=(
+      const ExploreSitesImportCatalogTaskTest&) = delete;
+
   ~ExploreSitesImportCatalogTaskTest() override = default;
 
   void SetUp() override {
@@ -78,8 +83,6 @@ class ExploreSitesImportCatalogTaskTest : public TaskTestBase {
   std::unique_ptr<ExploreSitesStore> store_;
   bool success_;
   bool callback_called_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesImportCatalogTaskTest);
 };
 
 TEST_F(ExploreSitesImportCatalogTaskTest, StoreFailure) {

@@ -12,11 +12,12 @@
 #include <vector>
 
 #include "base/macros.h"
-#include "base/optional.h"
+#include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/http/http_basic_state.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -41,6 +42,10 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
       std::vector<std::string> requested_extensions,
       WebSocketStreamRequestAPI* request,
       WebSocketEndpointLockManager* websocket_endpoint_lock_manager);
+
+  WebSocketBasicHandshakeStream(const WebSocketBasicHandshakeStream&) = delete;
+  WebSocketBasicHandshakeStream& operator=(
+      const WebSocketBasicHandshakeStream&) = delete;
 
   ~WebSocketBasicHandshakeStream() override;
 
@@ -74,7 +79,8 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   void SetPriority(RequestPriority priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   HttpStream* RenewStreamForAuth() override;
-
+  const std::vector<std::string>& GetDnsAliases() const override;
+  base::StringPiece GetAcceptChViaAlps() const override;
 
   // This is called from the top level once correct handshake response headers
   // have been received. It creates an appropriate subclass of WebSocketStream
@@ -94,8 +100,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   // the connection has been accepted.
   void ReadResponseHeadersCallback(CompletionOnceCallback callback, int result);
 
-  void OnFinishOpeningHandshake();
-
   // Validates the response and sends the finished handshake event.
   int ValidateResponse(int rv);
 
@@ -103,7 +107,9 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   // OK if they are, otherwise returns ERR_INVALID_RESPONSE.
   int ValidateUpgradeResponse(const HttpResponseHeaders* headers);
 
-  void OnFailure(const std::string& message);
+  void OnFailure(const std::string& message,
+                 int net_error,
+                 absl::optional<int> response_code);
 
   HttpStreamParser* parser() const { return state_.parser(); }
 
@@ -124,7 +130,7 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
 
   // The key to be sent in the next Sec-WebSocket-Key header. Usually NULL (the
   // key is generated on the fly).
-  base::Optional<std::string> handshake_challenge_for_testing_;
+  absl::optional<std::string> handshake_challenge_for_testing_;
 
   // The required value for the Sec-WebSocket-Accept header.
   std::string handshake_challenge_response_;
@@ -150,8 +156,6 @@ class NET_EXPORT_PRIVATE WebSocketBasicHandshakeStream final
   WebSocketEndpointLockManager* const websocket_endpoint_lock_manager_;
 
   base::WeakPtrFactory<WebSocketBasicHandshakeStream> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebSocketBasicHandshakeStream);
 };
 
 }  // namespace net

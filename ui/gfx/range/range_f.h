@@ -65,20 +65,35 @@ class GFX_RANGE_EXPORT RangeF {
 
   // Returns true if this range intersects the specified |range|.
   constexpr bool Intersects(const RangeF& range) const {
-    return IsValid() && range.IsValid() &&
-           !(range.GetMax() < GetMin() || range.GetMin() >= GetMax());
+    return Intersect(range).IsValid();
+  }
+
+  // Returns true if this range is contained by the specified |range| or it is
+  // an empty range and ending the range |range|. (copied from gfx::Range)
+  constexpr bool IsBoundedBy(const RangeF& range) const {
+    return IsValid() && range.IsValid() && GetMin() >= range.GetMin() &&
+           GetMax() <= range.GetMax();
   }
 
   // Returns true if this range contains the specified |range|.
   constexpr bool Contains(const RangeF& range) const {
-    return IsValid() && range.IsValid() && GetMin() <= range.GetMin() &&
-           range.GetMax() <= GetMax();
+    return range.IsBoundedBy(*this) &&
+           // A non-empty range doesn't contain the range [max, max).
+           (range.GetMax() != GetMax() || range.is_empty() == is_empty());
   }
 
   // Computes the intersection of this range with the given |range|.
   // If they don't intersect, it returns an InvalidRange().
   // The returned range is always empty or forward (never reversed).
-  RangeF Intersect(const RangeF& range) const;
+  constexpr RangeF Intersect(const RangeF& range) const {
+    const float min = std::max(GetMin(), range.GetMin());
+    const float max = std::min(GetMax(), range.GetMax());
+
+    return (min < max || Contains(range) || range.Contains(*this))
+               ? RangeF(min, max)
+               : InvalidRange();
+  }
+
   RangeF Intersect(const Range& range) const;
 
   // Floor/Ceil/Round the start and end values of the given RangeF.

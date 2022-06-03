@@ -29,40 +29,48 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   LayerTreeDebugState(const LayerTreeDebugState& other);
   ~LayerTreeDebugState();
 
-  bool show_fps_counter;
-  DebugBorderTypes show_debug_borders;
+  bool show_fps_counter = false;
+  DebugBorderTypes show_debug_borders = false;
 
-  bool show_layout_shift_regions;
-  bool show_paint_rects;
-  bool show_property_changed_rects;
-  bool show_surface_damage_rects;
-  bool show_screen_space_rects;
-  bool show_touch_event_handler_rects;
-  bool show_wheel_event_handler_rects;
-  bool show_scroll_event_handler_rects;
-  bool show_non_fast_scrollable_rects;
-  bool show_main_thread_scrolling_reason_rects;
-  bool show_layer_animation_bounds_rects;
+  bool show_layout_shift_regions = false;
+  bool show_paint_rects = false;
+  bool show_property_changed_rects = false;
+  bool show_surface_damage_rects = false;
+  bool show_screen_space_rects = false;
+  bool show_touch_event_handler_rects = false;
+  bool show_wheel_event_handler_rects = false;
+  bool show_scroll_event_handler_rects = false;
+  bool show_non_fast_scrollable_rects = false;
+  bool show_main_thread_scrolling_reason_rects = false;
+  bool show_layer_animation_bounds_rects = false;
 
-  int slow_down_raster_scale_factor;
-  bool rasterize_only_visible_content;
-  bool show_picture_borders;
+  int slow_down_raster_scale_factor = 0;
+  bool rasterize_only_visible_content = false;
+  bool highlight_non_lcd_text_layers = false;
 
-  bool show_hit_test_borders;
+  bool show_hit_test_borders = false;
+
+  // This is part of the feature to show performance metrics on HUD. This
+  // particular flag is set only in Blink.
+  bool show_web_vital_metrics = false;
+  bool show_smoothness_metrics = false;
 
   void SetRecordRenderingStats(bool enabled);
   bool RecordRenderingStats() const;
 
-  bool ShowHudInfo() const;
-  bool ShowHudRects() const;
+  // HUD layer is responsible for drawing debug rects as well as displaying HUD
+  // overlay. This function checks if a HUD layer should be created for any of
+  // these situations.
+  bool ShouldCreateHudLayer() const;
+  bool ShowDebugRects() const;
   bool ShowMemoryStats() const;
+  bool ShouldDrawHudInfo() const;
+  void TurnOffHudInfoDisplay();
 
   static bool Equal(const LayerTreeDebugState& a, const LayerTreeDebugState& b);
-  static LayerTreeDebugState Unite(const LayerTreeDebugState& a,
-                                   const LayerTreeDebugState& b);
 
  private:
-  bool record_rendering_stats_;
+  bool record_rendering_stats_ = false;
 };
 
 }  // namespace cc

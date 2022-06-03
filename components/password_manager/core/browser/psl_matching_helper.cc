@@ -7,14 +7,11 @@
 #include <memory>
 #include <ostream>
 
-#include "base/logging.h"
 #include "base/strings/string_util.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
-
-using autofill::PasswordForm;
 
 namespace password_manager {
 
@@ -44,26 +41,25 @@ std::ostream& operator<<(std::ostream& out, MatchResult result) {
   return out;
 }
 
-bool IsFederatedRealm(const std::string& form_signon_realm,
-                      const GURL& origin) {
+bool IsFederatedRealm(const std::string& form_signon_realm, const GURL& url) {
   // The format should be "federation://origin.host/federation.host;
-  std::string federated_realm = "federation://" + origin.host() + "/";
+  std::string federated_realm = "federation://" + url.host() + "/";
   return form_signon_realm.size() > federated_realm.size() &&
          base::StartsWith(form_signon_realm, federated_realm,
                           base::CompareCase::INSENSITIVE_ASCII);
 }
 
 bool IsFederatedPSLMatch(const std::string& form_signon_realm,
-                         const GURL& form_origin,
-                         const GURL& origin) {
-  if (!IsPublicSuffixDomainMatch(form_origin.spec(), origin.spec()))
+                         const GURL& form_url,
+                         const GURL& url) {
+  if (!IsPublicSuffixDomainMatch(form_url.spec(), url.spec()))
     return false;
 
-  return IsFederatedRealm(form_signon_realm, form_origin);
+  return IsFederatedRealm(form_signon_realm, form_url);
 }
 
 MatchResult GetMatchResult(const PasswordForm& form,
-                           const PasswordStore::FormDigest& form_digest) {
+                           const PasswordFormDigest& form_digest) {
   if (form.signon_realm == form_digest.signon_realm)
     return MatchResult::EXACT_MATCH;
 
@@ -78,13 +74,14 @@ MatchResult GetMatchResult(const PasswordForm& form,
 
   const bool allow_federated_match = !form.federation_origin.opaque();
   if (allow_federated_match &&
-      IsFederatedRealm(form.signon_realm, form_digest.origin) &&
-      form.origin.GetOrigin() == form_digest.origin.GetOrigin()) {
+      IsFederatedRealm(form.signon_realm, form_digest.url) &&
+      form.url.DeprecatedGetOriginAsURL() ==
+          form_digest.url.DeprecatedGetOriginAsURL()) {
     return MatchResult::FEDERATED_MATCH;
   }
 
   if (allow_federated_match &&
-      IsFederatedPSLMatch(form.signon_realm, form.origin, form_digest.origin)) {
+      IsFederatedPSLMatch(form.signon_realm, form.url, form_digest.url)) {
     return MatchResult::FEDERATED_PSL_MATCH;
   }
 

@@ -146,6 +146,12 @@ void aom_yv12_partial_copy_y_c(const struct yv12_buffer_config* src_ybc,
                                int vstart2);
 #define aom_yv12_partial_copy_y aom_yv12_partial_copy_y_c
 
+int aom_yv12_realloc_with_new_border_c(struct yv12_buffer_config* ybf,
+                                       int new_border,
+                                       int byte_alignment,
+                                       int num_planes);
+#define aom_yv12_realloc_with_new_border aom_yv12_realloc_with_new_border_c
+
 void aom_scale_rtcd(void);
 
 #include "config/aom_config.h"

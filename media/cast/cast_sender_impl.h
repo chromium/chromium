@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/cast/cast_environment.h"
 #include "media/cast/cast_sender.h"
@@ -21,20 +20,22 @@ class VideoSender;
 
 // This class combines all required sending objects such as the audio and video
 // senders, pacer, packet receiver and frame input.
-class CastSenderImpl : public CastSender {
+class CastSenderImpl final : public CastSender {
  public:
   CastSenderImpl(scoped_refptr<CastEnvironment> cast_environment,
                  CastTransport* const transport_sender);
 
   void InitializeAudio(const FrameSenderConfig& audio_config,
-                       const StatusChangeCallback& status_change_cb) final;
+                       StatusChangeOnceCallback status_change_cb) final;
   void InitializeVideo(
       const FrameSenderConfig& video_config,
       const StatusChangeCallback& status_change_cb,
-      const CreateVideoEncodeAcceleratorCallback& create_vea_cb,
-      const CreateVideoEncodeMemoryCallback& create_video_encode_mem_cb) final;
+      const CreateVideoEncodeAcceleratorCallback& create_vea_cb) final;
 
   void SetTargetPlayoutDelay(base::TimeDelta new_target_playout_delay) final;
+
+  CastSenderImpl(const CastSenderImpl&) = delete;
+  CastSenderImpl& operator=(const CastSenderImpl&) = delete;
 
   ~CastSenderImpl() final;
 
@@ -43,7 +44,7 @@ class CastSenderImpl : public CastSender {
 
  private:
   void ReceivedPacket(std::unique_ptr<Packet> packet);
-  void OnAudioStatusChange(const StatusChangeCallback& status_change_cb,
+  void OnAudioStatusChange(StatusChangeOnceCallback status_change_cb,
                            OperationalStatus status);
   void OnVideoStatusChange(const StatusChangeCallback& status_change_cb,
                            OperationalStatus status);
@@ -59,8 +60,6 @@ class CastSenderImpl : public CastSender {
 
   // NOTE: Weak pointers must be invalidated before all other member variables.
   base::WeakPtrFactory<CastSenderImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastSenderImpl);
 };
 
 }  // namespace cast

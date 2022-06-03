@@ -40,8 +40,6 @@ class Page;
 
 class ContextFeatures final : public GarbageCollected<ContextFeatures>,
                               public Supplement<Page> {
-  USING_GARBAGE_COLLECTED_MIXIN(ContextFeatures);
-
  public:
   static const char kSupplementName[];
 
@@ -57,7 +55,7 @@ class ContextFeatures final : public GarbageCollected<ContextFeatures>,
   static bool MutationEventsEnabled(Document*);
 
   explicit ContextFeatures(std::unique_ptr<ContextFeaturesClient> client)
-      : client_(std::move(client)) {}
+      : Supplement(nullptr), client_(std::move(client)) {}
 
   bool IsEnabled(Document*, FeatureType, bool) const;
   void UrlDidChange(Document*);

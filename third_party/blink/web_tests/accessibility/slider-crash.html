@@ -1,0 +1,15 @@
+<!DOCTYPE HTML>
+<script src="../resources/gc.js"></script>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<input min=0 max=100 value=50 onchange=update(this) type=range id=slider>
+
+<script>
+function update(slider) {
+  slider.parentElement.removeChild(slider);
+}
+test(function(t) {
+  accessibilityController.accessibleElementById('slider').decrement();
+}, "Decrementing a slider that's destroyed doesn't crash.");
+</script>

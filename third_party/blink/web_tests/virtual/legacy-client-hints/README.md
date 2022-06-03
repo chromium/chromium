@@ -1,0 +1,1 @@
+This virtual test suite is for testing the legacy Client Hints behavior alongside Permissions Policy delegation, and see that when the flag is on, legacy hints are sent regardless of Permissions Policy opt-in.

@@ -1,0 +1,28 @@
+{
+  "gn-builder-linux": {
+    "gn_args": {
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "use_goma": true,
+      "use_ozone": true
+    }
+  },
+  "gn-builder-mac": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "gn-builder-win": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  }
+}

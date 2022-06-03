@@ -14,13 +14,13 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/task/post_task.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
-#include "chrome/app/shutdown_signal_handlers_posix.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/browser/sessions/session_restore.h"
+#include "chrome/browser/shutdown_signal_handlers_posix.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/result_codes.h"
@@ -39,6 +39,9 @@ void SIGCHLDHandler(int signal) {
 // way through startup which causes all sorts of problems.
 class ExitHandler {
  public:
+  ExitHandler(const ExitHandler&) = delete;
+  ExitHandler& operator=(const ExitHandler&) = delete;
+
   // Invokes exit when appropriate.
   static void ExitWhenPossibleOnUIThread(int signal);
 
@@ -47,20 +50,17 @@ class ExitHandler {
   ~ExitHandler();
 
   // Called when a session restore has finished.
-  void OnSessionRestoreDone(int num_tabs_restored);
+  void OnSessionRestoreDone(Profile* profile, int num_tabs_restored);
 
   // Does the appropriate call to Exit.
   static void Exit();
 
   // Points to the on-session-restored callback that was registered with
   // SessionRestore's callback list. When objects of this class are destroyed,
-  // the subscription object's destructor will automatically unregister the
-  // callback in SessionRestore, so that the callback list does not contain any
-  // obsolete callbacks.
-  SessionRestore::CallbackSubscription
-      on_session_restored_callback_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExitHandler);
+  // the subscription's destructor will automatically unregister the callback in
+  // SessionRestore, so that the callback list does not contain any obsolete
+  // callbacks.
+  base::CallbackListSubscription on_session_restored_callback_subscription_;
 };
 
 // static
@@ -70,7 +70,9 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
     // ExitHandler takes care of deleting itself.
     new ExitHandler();
   } else {
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     switch (signal) {
       case SIGINT:
       case SIGHUP:
@@ -101,28 +103,27 @@ void ExitHandler::ExitWhenPossibleOnUIThread(int signal) {
 
 ExitHandler::ExitHandler() {
   on_session_restored_callback_subscription_ =
-      SessionRestore::RegisterOnSessionRestoredCallback(
-          base::Bind(&ExitHandler::OnSessionRestoreDone,
-                     base::Unretained(this)));
+      SessionRestore::RegisterOnSessionRestoredCallback(base::BindRepeating(
+          &ExitHandler::OnSessionRestoreDone, base::Unretained(this)));
 }
 
 ExitHandler::~ExitHandler() {
 }
 
-void ExitHandler::OnSessionRestoreDone(int /* num_tabs */) {
+void ExitHandler::OnSessionRestoreDone(Profile* profile, int /* num_tabs */) {
   if (!SessionRestore::IsRestoringSynchronously()) {
     // At this point the message loop may not be running (meaning we haven't
     // gotten through browser startup, but are close). Post the task to at which
     // point the message loop is running.
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&ExitHandler::Exit));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ExitHandler::Exit));
     delete this;
   }
 }
 
 // static
 void ExitHandler::Exit() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On ChromeOS, exiting on signal should be always clean.
   chrome::ExitIgnoreUnloadHandlers();
 #else
@@ -135,13 +136,13 @@ void ExitHandler::Exit() {
 // ChromeBrowserMainPartsPosix -------------------------------------------------
 
 ChromeBrowserMainPartsPosix::ChromeBrowserMainPartsPosix(
-    const content::MainFunctionParams& parameters,
+    content::MainFunctionParams parameters,
     StartupData* startup_data)
-    : ChromeBrowserMainParts(parameters, startup_data) {}
+    : ChromeBrowserMainParts(std::move(parameters), startup_data) {}
 
 int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   const int result = ChromeBrowserMainParts::PreEarlyInitialization();
-  if (result != service_manager::RESULT_CODE_NORMAL_EXIT)
+  if (result != content::RESULT_CODE_NORMAL_EXIT)
     return result;
 
   // We need to accept SIGCHLD, even though our handler is a no-op because
@@ -151,22 +152,22 @@ int ChromeBrowserMainPartsPosix::PreEarlyInitialization() {
   action.sa_handler = SIGCHLDHandler;
   CHECK_EQ(0, sigaction(SIGCHLD, &action, NULL));
 
-  return service_manager::RESULT_CODE_NORMAL_EXIT;
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
-void ChromeBrowserMainPartsPosix::PostMainMessageLoopStart() {
-  ChromeBrowserMainParts::PostMainMessageLoopStart();
+void ChromeBrowserMainPartsPosix::PostCreateMainMessageLoop() {
+  ChromeBrowserMainParts::PostCreateMainMessageLoop();
 
   // Exit in response to SIGINT, SIGTERM, etc.
   InstallShutdownSignalHandlers(
       base::BindOnce(&ExitHandler::ExitWhenPossibleOnUIThread),
-      base::CreateSingleThreadTaskRunner({BrowserThread::UI}));
+      content::GetUIThreadTaskRunner({}));
 }
 
 void ChromeBrowserMainPartsPosix::ShowMissingLocaleMessageBox() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();  // Should not ever happen on ChromeOS.
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   // Not called on Mac because we load the locale files differently.
   NOTREACHED();
 #elif defined(USE_AURA)

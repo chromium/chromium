@@ -33,7 +33,6 @@
     </if>
     <output filename="extensions_strings_et.pak" type="data_package" lang="et" />
     <output filename="extensions_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="extensions_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="extensions_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="extensions_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="extensions_strings_fr.pak" type="data_package" lang="fr" />
@@ -43,6 +42,9 @@
     <output filename="extensions_strings_hr.pak" type="data_package" lang="hr" />
     <output filename="extensions_strings_hu.pak" type="data_package" lang="hu" />
     <output filename="extensions_strings_id.pak" type="data_package" lang="id" />
+    <if expr="chromeos or lacros">
+      <output filename="extensions_strings_is.pak" type="data_package" lang="is" />
+    </if>
     <output filename="extensions_strings_it.pak" type="data_package" lang="it" />
     <output filename="extensions_strings_ja.pak" type="data_package" lang="ja" />
     <output filename="extensions_strings_kn.pak" type="data_package" lang="kn" />
@@ -80,6 +82,10 @@
     <output filename="extensions_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="extensions_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="extensions_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="extensions_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="extensions_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="extensions_strings_af.xtb" lang="af" />
@@ -148,6 +154,7 @@
     <file path="extensions_strings_sl.xtb" lang="sl" />
     <file path="extensions_strings_sq.xtb" lang="sq" />
     <file path="extensions_strings_sr.xtb" lang="sr" />
+    <file path="extensions_strings_sr-Latn.xtb" lang="sr-Latn" />
     <file path="extensions_strings_sv.xtb" lang="sv" />
     <file path="extensions_strings_sw.xtb" lang="sw" />
     <file path="extensions_strings_ta.xtb" lang="ta" />
@@ -163,7 +170,7 @@
     <file path="extensions_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="extensions_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
 
       <!-- Document Scan API strings. Please keep alphabetized. -->
@@ -201,12 +208,6 @@
       </message>
       <message name="IDS_EXTENSION_LOAD_CSS_FAILED" desc="">
         Could not load css '<ph name="RELATIVE_PATH">$1<ex>file.css</ex></ph>' for content script.
-      </message>
-      <message name="IDS_EXTENSION_LOAD_ICON_FAILED" desc="">
-        Could not load extension icon '<ph name="ICON">$1<ex>icon.png</ex></ph>'.
-      </message>
-      <message name="IDS_EXTENSION_LOAD_ICON_NOT_SUFFICIENTLY_VISIBLE" desc="">
-        The icon is not sufficiently visible '<ph name="ICON">$1<ex>icon.png</ex></ph>'.
       </message>
       <message name="IDS_EXTENSION_LOAD_JAVASCRIPT_FAILED" desc="">
         Could not load javascript '<ph name="RELATIVE_PATH">$1<ex>javas.js</ex></ph>' for content script.
@@ -360,6 +361,9 @@
         This extension reloaded itself too frequently.
       </message>
       <message name="IDS_EXTENSION_WARNING_RULESET_FAILED_TO_LOAD" desc="Warning message which indicates that the Declarative Net Request ruleset for the extension failed to load. Hence the extension might not be able to block/redirect network requests.">
+        The extension failed to load properly. It might not be able to intercept network requests.
+      </message>
+      <message name="IDS_EXTENSION_WARNING_ENABLED_RULE_COUNT_EXCEEDED" desc="Warning message which indicates that some Declarative Net Request rulesets for the extension were not enabled because the global rule limit was exceeded. Hence the extension might not be able to block/redirect network requests.">
         The extension failed to load properly. It might not be able to intercept network requests.
       </message>
 

@@ -8,6 +8,7 @@ import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -16,10 +17,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.test.filters.SmallTest;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 
+import androidx.core.app.ActivityCompat;
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -27,11 +29,13 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.Function;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -41,13 +45,14 @@ import java.util.Arrays;
 /**
  * Tests that file inputs work as expected.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(WebLayerJUnit4ClassRunner.class)
 public class InputTypesTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
             new InstrumentationActivityTestRule();
 
     private File mTempFile;
+    private File mTestDir;
     private int mCameraPermission = PackageManager.PERMISSION_GRANTED;
 
     private class FileIntentInterceptor implements InstrumentationActivity.IntentInterceptor {
@@ -58,10 +63,10 @@ public class InputTypesTest {
         private CallbackHelper mCallbackHelper = new CallbackHelper();
 
         @Override
-        public void interceptIntent(
-                Fragment fragment, Intent intent, int requestCode, Bundle options) {
+        public void interceptIntent(Intent intent, int requestCode, Bundle options) {
             new Handler().post(() -> {
-                fragment.onActivityResult(requestCode, mResultCode, mResponseIntent);
+                mActivityTestRule.getActivity().getActivityResultRegistry().dispatchResult(
+                        requestCode, mResultCode, mResponseIntent);
                 mLastIntent = intent;
                 mCallbackHelper.notifyCalled();
             });
@@ -127,21 +132,27 @@ public class InputTypesTest {
         Bundle extras = new Bundle();
         // We need to override the context with which to create WebLayer.
         extras.putBoolean(InstrumentationActivity.EXTRA_CREATE_WEBLAYER, false);
+
+        Function<Context, Context> applicationContextBuilder = (baseContext) -> {
+            return new InMemorySharedPreferencesContext(baseContext) {
+                @Override
+                public int checkPermission(String permission, int pid, int uid) {
+                    if (permission.equals(Manifest.permission.CAMERA)) {
+                        return mCameraPermission;
+                    }
+                    return getBaseContext().checkPermission(permission, pid, uid);
+                }
+            };
+        };
+        InstrumentationActivity.setActivityContextBuilder(applicationContextBuilder);
+
         InstrumentationActivity activity = mActivityTestRule.launchShell(extras);
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            activity.loadWebLayerSync(
-                    new InMemorySharedPreferencesContext(activity.getApplication()) {
-                        @Override
-                        public int checkPermission(String permission, int pid, int uid) {
-                            if (permission.equals(Manifest.permission.CAMERA)) {
-                                return mCameraPermission;
-                            }
-                            return getBaseContext().checkPermission(permission, pid, uid);
-                        }
-                    });
-        });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { activity.loadWebLayerSync(activity.getApplicationContext()); });
         mActivityTestRule.navigateAndWait(mActivityTestRule.getTestDataURL("input_types.html"));
-        mTempFile = File.createTempFile("file", null);
+        mTestDir = new File(UrlUtils.getIsolatedTestFilePath("weblayer"));
+        if (!mTestDir.exists()) mTestDir.mkdir();
+        mTempFile = File.createTempFile("file", null, mTestDir);
         activity.setIntentInterceptor(mIntentInterceptor);
         ActivityCompat.setPermissionCompatDelegate(mPermissionCompatDelegate);
 
@@ -153,6 +164,7 @@ public class InputTypesTest {
     @After
     public void tearDown() {
         mTempFile.delete();
+        mTestDir.delete();
         ActivityCompat.setPermissionCompatDelegate(null);
     }
 
@@ -252,7 +264,7 @@ public class InputTypesTest {
         Intent response = new Intent();
         ClipData clipData = ClipData.newUri(mActivityTestRule.getActivity().getContentResolver(),
                 "uris", Uri.fromFile(mTempFile));
-        File otherTempFile = File.createTempFile("file2", null);
+        File otherTempFile = File.createTempFile("file2", null, mTestDir);
         clipData.addItem(new ClipData.Item(Uri.fromFile(otherTempFile)));
         response.setClipData(clipData);
         mIntentInterceptor.setResponse(Activity.RESULT_OK, response);
@@ -320,9 +332,9 @@ public class InputTypesTest {
 
     private void waitForNumFiles(String id, int num) {
         CriteriaHelper.pollInstrumentationThread(() -> {
-            return num
-                    == mActivityTestRule.executeScriptAndExtractInt(
-                            "document.getElementById('" + id + "').files.length");
+            int actual = mActivityTestRule.executeScriptAndExtractInt(
+                    "document.getElementById('" + id + "').files.length");
+            Criteria.checkThat(actual, Matchers.is(num));
         });
     }
 

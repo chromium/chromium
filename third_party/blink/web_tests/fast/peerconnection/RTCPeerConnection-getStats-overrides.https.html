@@ -69,7 +69,7 @@ promise_test(async t => {
   let pc = new RTCPeerConnection();
   t.add_cleanup(() => pc.close());
   let nonsense = 5;
-  await promise_rejects(t, new TypeError(), pc.getStats(nonsense));
+  await promise_rejects_js(t, TypeError, pc.getStats(nonsense));
 }, 'Signature: getStats(nonsense) throws exception');
 
 promise_test(async t => {

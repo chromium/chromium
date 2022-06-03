@@ -4,27 +4,113 @@
 
 #include "ui/ozone/platform/wayland/host/wayland_screen.h"
 
+#include <set>
+#include <vector>
+
+#include "base/containers/contains.h"
+#include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "ui/base/linux/linux_desktop.h"
 #include "ui/display/display.h"
 #include "ui/display/display_finder.h"
-#include "ui/display/display_observer.h"
+#include "ui/display/display_list.h"
+#include "ui/display/util/gpu_info_util.h"
+#include "ui/gfx/buffer_types.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/point.h"
-#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/native_widget_types.h"
+#include "ui/ozone/platform/wayland/host/org_kde_kwin_idle.h"
+#include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor_position.h"
 #include "ui/ozone/platform/wayland/host/wayland_window.h"
+#include "ui/ozone/platform/wayland/host/zwp_idle_inhibit_manager.h"
+
+#if defined(USE_DBUS)
+#include "ui/ozone/platform/wayland/host/org_gnome_mutter_idle_monitor.h"
+#endif
 
 namespace ui {
+namespace {
+
+display::Display::Rotation WaylandTransformToRotation(int32_t transform) {
+  switch (transform) {
+    case WL_OUTPUT_TRANSFORM_NORMAL:
+      return display::Display::ROTATE_0;
+    case WL_OUTPUT_TRANSFORM_90:
+      return display::Display::ROTATE_90;
+    case WL_OUTPUT_TRANSFORM_180:
+      return display::Display::ROTATE_180;
+    case WL_OUTPUT_TRANSFORM_270:
+      return display::Display::ROTATE_270;
+    // ui::display::Display does not support flipped rotation.
+    // see ui::display::Display::Rotation comment.
+    case WL_OUTPUT_TRANSFORM_FLIPPED:
+    case WL_OUTPUT_TRANSFORM_FLIPPED_90:
+    case WL_OUTPUT_TRANSFORM_FLIPPED_180:
+    case WL_OUTPUT_TRANSFORM_FLIPPED_270:
+      NOTIMPLEMENTED_LOG_ONCE();
+      return display::Display::ROTATE_0;
+  }
+  NOTREACHED();
+  return display::Display::ROTATE_0;
+}
+
+}  // namespace
 
 WaylandScreen::WaylandScreen(WaylandConnection* connection)
     : connection_(connection), weak_factory_(this) {
   DCHECK(connection_);
+
+  // Chromium specifies either RGBA_8888 or BGRA_8888 as initial image format
+  // for alpha case and RGBX_8888 for no alpha case. Figure out
+  // which one is supported and use that. If RGBX_8888 is not supported, the
+  // format that |have_format_alpha| uses will be used by default (RGBA_8888 or
+  // BGRA_8888).
+  auto buffer_formats =
+      connection_->buffer_manager_host()->GetSupportedBufferFormats();
+  for (const auto& buffer_format : buffer_formats) {
+    auto format = buffer_format.first;
+
+    // TODO(crbug.com/1127822): Investigate a better fix for this.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+    // RGBA_8888 is the preferred format, except when running on ChromiumOS. See
+    // crbug.com/1127558.
+    if (format == gfx::BufferFormat::RGBA_8888)
+      image_format_alpha_ = gfx::BufferFormat::RGBA_8888;
+
+      // TODO(1128997): |image_format_no_alpha_| should use RGBX_8888 when it's
+      // available, but for some reason Chromium gets broken when it's used.
+      // Though,  we can import RGBX_8888 dma buffer to EGLImage successfully.
+      // Enable that back when the issue is resolved.
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+    if (!image_format_alpha_ && format == gfx::BufferFormat::BGRA_8888)
+      image_format_alpha_ = gfx::BufferFormat::BGRA_8888;
+
+    if (image_format_alpha_ && image_format_no_alpha_)
+      break;
+  }
+
+  // If no buffer formats are found (neither wl_drm nor zwp_linux_dmabuf are
+  // supported or the system has very limited set of supported buffer formats),
+  // RGBA_8888 is used by default. On Wayland, that seems to be the most
+  // supported.
+  if (!image_format_alpha_)
+    image_format_alpha_ = gfx::BufferFormat::RGBA_8888;
+  if (!image_format_no_alpha_)
+    image_format_no_alpha_ = image_format_alpha_;
 }
 
 WaylandScreen::~WaylandScreen() = default;
 
-void WaylandScreen::OnOutputAdded(uint32_t output_id) {
-  display_list_.AddDisplay(display::Display(output_id),
-                           display::DisplayList::Type::NOT_PRIMARY);
+void WaylandScreen::OnOutputAddedOrUpdated(uint32_t output_id,
+                                           const gfx::Rect& bounds,
+                                           float scale,
+                                           int32_t transform) {
+  AddOrUpdateDisplay(output_id, bounds, scale, transform);
 }
 
 void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
@@ -45,45 +131,53 @@ void WaylandScreen::OnOutputRemoved(uint32_t output_id) {
   display_list_.RemoveDisplay(output_id);
 }
 
-void WaylandScreen::OnOutputMetricsChanged(uint32_t output_id,
-                                           const gfx::Rect& new_bounds,
-                                           int32_t device_pixel_ratio) {
+void WaylandScreen::AddOrUpdateDisplay(uint32_t output_id,
+                                       const gfx::Rect& new_bounds,
+                                       float scale_factor,
+                                       int32_t transform) {
   display::Display changed_display(output_id);
-  if (!display::Display::HasForceDeviceScaleFactor())
-    changed_display.set_device_scale_factor(device_pixel_ratio);
-  changed_display.set_bounds(new_bounds);
-  changed_display.set_work_area(new_bounds);
-
-  bool is_primary = false;
-  display::Display display_nearest_origin =
-      GetDisplayNearestPoint(gfx::Point(0, 0));
-  // If bounds of the nearest to origin display are empty, it must have been the
-  // very first and the same display added before.
-  if (display_nearest_origin.bounds().IsEmpty()) {
-    DCHECK_EQ(display_nearest_origin.id(), changed_display.id());
-    is_primary = true;
-  } else if (changed_display.bounds().origin() <
-             display_nearest_origin.bounds().origin()) {
-    // If changed display is nearer to the origin than the previous display,
-    // that one must become a primary display.
-    is_primary = true;
-  } else if (changed_display.bounds().OffsetFromOrigin() ==
-             display_nearest_origin.bounds().OffsetFromOrigin()) {
-    // If changed display has the same origin as the nearest to origin display,
-    // |changed_display| must become a primary one or it has already been the
-    // primary one. If a user changed positions of two displays (the second at
-    // x,x was set to 0,0), the second change will modify geometry of the
-    // display, which used to be the one nearest to the origin.
-    is_primary = true;
+  if (!display::Display::HasForceDeviceScaleFactor()) {
+    changed_display.SetScaleAndBounds(scale_factor, new_bounds);
+  } else {
+    changed_display.set_bounds(new_bounds);
+    changed_display.set_work_area(new_bounds);
   }
 
-  display_list_.UpdateDisplay(
-      changed_display, is_primary ? display::DisplayList::Type::PRIMARY
-                                  : display::DisplayList::Type::NOT_PRIMARY);
+  DCHECK_GE(transform, WL_OUTPUT_TRANSFORM_NORMAL);
+  DCHECK_LE(transform, WL_OUTPUT_TRANSFORM_FLIPPED_270);
+  display::Display::Rotation rotation = WaylandTransformToRotation(transform);
+  changed_display.set_rotation(rotation);
+  changed_display.set_panel_rotation(rotation);
 
-  auto* wayland_window_manager = connection_->wayland_window_manager();
-  for (auto* window : wayland_window_manager->GetWindowsOnOutput(output_id))
-    window->UpdateBufferScale(true);
+  gfx::DisplayColorSpaces color_spaces;
+  color_spaces.SetOutputBufferFormats(image_format_no_alpha_.value(),
+                                      image_format_alpha_.value());
+  changed_display.set_color_spaces(color_spaces);
+
+  // There are 2 cases where |changed_display| must be set as primary:
+  // 1. When it is the first one being added to the |display_list_|. Or
+  // 2. If it is nearest the origin than the previous primary or has the
+  // same origin as it. When an user, for example, swaps two side-by-side
+  // displays, at some point, as the notification come in, both will have
+  // the same origin.
+  auto type = display::DisplayList::Type::NOT_PRIMARY;
+  if (display_list_.displays().empty()) {
+    type = display::DisplayList::Type::PRIMARY;
+  } else {
+    auto nearest_origin = GetDisplayNearestPoint({0, 0}).bounds().origin();
+    auto changed_origin = changed_display.bounds().origin();
+    if (changed_origin < nearest_origin || changed_origin == nearest_origin)
+      type = display::DisplayList::Type::PRIMARY;
+  }
+
+  display_list_.AddOrUpdateDisplay(changed_display, type);
+}
+
+void WaylandScreen::OnTabletStateChanged(display::TabletState tablet_state) {
+  auto* observer_list = display_list_.observers();
+  for (auto& observer : *observer_list) {
+    observer.OnDisplayTabletStateChanged(tablet_state);
+  }
 }
 
 base::WeakPtr<WaylandScreen> WaylandScreen::GetWeakPtr() {
@@ -107,31 +201,21 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
   if (!window)
     return GetPrimaryDisplay();
 
-  const auto* parent_window = window->parent_window();
-  const auto entered_outputs_ids = window->entered_outputs_ids();
+  const auto entered_output_id = window->GetPreferredEnteredOutputId();
   // Although spec says a surface receives enter/leave surface events on
   // create/move/resize actions, this might be called right after a window is
-  // created, but it has not been configured by a Wayland compositor and it has
-  // not received enter surface events yet. Another case is when a user switches
-  // between displays in a single output mode - Wayland may not send enter
-  // events immediately, which can result in empty container of entered ids
-  // (check comments in WaylandWindow::RemoveEnteredOutputId). In this case,
-  // it's also safe to return the primary display.
-  // A child window will most probably enter the same display than its parent
-  // so we return the parent's display if there is a parent.
-  if (entered_outputs_ids.empty()) {
-    if (parent_window)
-      return GetDisplayForAcceleratedWidget(parent_window->GetWidget());
+  // created, but it has not been configured by a Wayland compositor and it
+  // has not received enter surface events yet. Another case is when a user
+  // switches between displays in a single output mode - Wayland may not send
+  // enter events immediately, which can result in empty container of entered
+  // ids (check comments in WaylandWindow::OnEnteredOutputIdRemoved). In this
+  // case, it's also safe to return the primary display.
+  if (entered_output_id == 0)
     return GetPrimaryDisplay();
-  }
 
   DCHECK(!display_list_.displays().empty());
-
-  // A widget can be located on two or more displays. It would be better if the
-  // most in DIP occupied display was returned, but it's impossible to do so in
-  // Wayland. Thus, return the one that was used the earliest.
   for (const auto& display : display_list_.displays()) {
-    if (display.id() == *entered_outputs_ids.begin())
+    if (display.id() == entered_output_id)
       return display;
   }
 
@@ -140,21 +224,23 @@ display::Display WaylandScreen::GetDisplayForAcceleratedWidget(
 }
 
 gfx::Point WaylandScreen::GetCursorScreenPoint() const {
-  auto* wayland_window_manager = connection_->wayland_window_manager();
   // Wayland does not provide either location of surfaces in global space
   // coordinate system or location of a pointer. Instead, only locations of
-  // mouse/touch events are known. Given that Chromium assumes top-level windows
-  // are located at origin, always provide a cursor point in regards to
-  // surfaces' location.
+  // mouse/touch events are known. Given that Chromium assumes top-level
+  // windows are located at origin, always provide a cursor point in regards
+  // to surfaces' location.
   //
-  // If a pointer is located in any of the existing wayland windows, return the
-  // last known cursor position. Otherwise, return such a point, which is not
-  // contained by any of the windows.
+  // If a pointer is located in any of the existing wayland windows, return
+  // the last known cursor position. Otherwise, return such a point, which is
+  // not contained by any of the windows.
   auto* cursor_position = connection_->wayland_cursor_position();
-  if (wayland_window_manager->GetCurrentFocusedWindow() && cursor_position)
+  if (connection_->wayland_window_manager()
+          ->GetCurrentPointerOrTouchFocusedWindow() &&
+      cursor_position)
     return cursor_position->GetCursorSurfacePoint();
 
-  auto* window = wayland_window_manager->GetWindowWithLargestBounds();
+  auto* window =
+      connection_->wayland_window_manager()->GetWindowWithLargestBounds();
   DCHECK(window);
   const gfx::Rect bounds = window->GetBounds();
   return gfx::Point(bounds.width() + 10, bounds.height() + 10);
@@ -164,15 +250,26 @@ gfx::AcceleratedWidget WaylandScreen::GetAcceleratedWidgetAtScreenPoint(
     const gfx::Point& point) const {
   // It is safe to check only for focused windows and test if they contain the
   // point or not.
-  auto* window =
-      connection_->wayland_window_manager()->GetCurrentFocusedWindow();
-  if (window && window->GetBounds().Contains(point))
+  auto* window = connection_->wayland_window_manager()
+                     ->GetCurrentPointerOrTouchFocusedWindow();
+  if (window && window->GetBoundsInDIP().Contains(point))
     return window->GetWidget();
   return gfx::kNullAcceleratedWidget;
 }
 
+gfx::AcceleratedWidget WaylandScreen::GetLocalProcessWidgetAtPoint(
+    const gfx::Point& point,
+    const std::set<gfx::AcceleratedWidget>& ignore) const {
+  auto widget = GetAcceleratedWidgetAtScreenPoint(point);
+  return !widget || base::Contains(ignore, widget) ? gfx::kNullAcceleratedWidget
+                                                   : widget;
+}
+
 display::Display WaylandScreen::GetDisplayNearestPoint(
     const gfx::Point& point) const {
+  auto displays = GetAllDisplays();
+  if (displays.size() <= 1)
+    return GetPrimaryDisplay();
   return *FindDisplayNearestPoint(display_list_.displays(), point);
 }
 
@@ -187,12 +284,82 @@ display::Display WaylandScreen::GetDisplayMatching(
   return display_matching ? *display_matching : GetPrimaryDisplay();
 }
 
+void WaylandScreen::SetScreenSaverSuspended(bool suspend) {
+  if (!connection_->zwp_idle_inhibit_manager())
+    return;
+
+  if (suspend) {
+    // Wayland inhibits idle behaviour on certain output, and implies that a
+    // surface bound to that output should obtain the inhibitor and hold it
+    // until it no longer needs to prevent the output to go idle.
+    // We assume that the idle lock is initiated by the user, and therefore the
+    // surface that we should use is the one owned by the window that is focused
+    // currently.
+    const auto* window_manager = connection_->wayland_window_manager();
+    DCHECK(window_manager);
+    const auto* current_window = window_manager->GetCurrentFocusedWindow();
+    if (!current_window) {
+      LOG(WARNING) << "Cannot inhibit going idle when no window is focused";
+      return;
+    }
+    DCHECK(current_window->root_surface());
+    idle_inhibitor_ = connection_->zwp_idle_inhibit_manager()->CreateInhibitor(
+        current_window->root_surface()->surface());
+  } else {
+    idle_inhibitor_.reset();
+  }
+}
+
+bool WaylandScreen::IsScreenSaverActive() const {
+  return idle_inhibitor_ != nullptr;
+}
+
+base::TimeDelta WaylandScreen::CalculateIdleTime() const {
+  // Try the org_kde_kwin_idle Wayland protocol extension (KWin).
+  if (const auto* kde_idle = connection_->org_kde_kwin_idle()) {
+    const auto idle_time = kde_idle->GetIdleTime();
+    if (idle_time)
+      return *idle_time;
+  }
+
+#if defined(USE_DBUS)
+  // Try the org.gnome.Mutter.IdleMonitor D-Bus service (Mutter).
+  if (!org_gnome_mutter_idle_monitor_)
+    org_gnome_mutter_idle_monitor_ =
+        std::make_unique<OrgGnomeMutterIdleMonitor>();
+  const auto idle_time = org_gnome_mutter_idle_monitor_->GetIdleTime();
+  if (idle_time)
+    return *idle_time;
+#endif  // defined(USE_DBUS)
+
+  NOTIMPLEMENTED_LOG_ONCE();
+
+  // No providers.  Return 0 which means the system never gets idle.
+  return base::Seconds(0);
+}
+
 void WaylandScreen::AddObserver(display::DisplayObserver* observer) {
   display_list_.AddObserver(observer);
 }
 
 void WaylandScreen::RemoveObserver(display::DisplayObserver* observer) {
   display_list_.RemoveObserver(observer);
+}
+
+std::vector<base::Value> WaylandScreen::GetGpuExtraInfo(
+    const gfx::GpuExtraInfo& gpu_extra_info) {
+  auto values = GetDesktopEnvironmentInfo();
+  std::vector<std::string> protocols;
+  for (const auto& protocol_and_version : connection_->available_globals()) {
+    protocols.push_back(base::StringPrintf("%s:%u",
+                                           protocol_and_version.first.c_str(),
+                                           protocol_and_version.second));
+  }
+  values.push_back(
+      display::BuildGpuInfoEntry("Interfaces exposed by the Wayland compositor",
+                                 base::JoinString(protocols, " ")));
+  StorePlatformNameIntoListOfValues(values, "wayland");
+  return values;
 }
 
 }  // namespace ui

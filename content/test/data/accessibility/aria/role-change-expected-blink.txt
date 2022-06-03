@@ -1,0 +1,22 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++grid
+++++++++row
+++++++++++cell name='Cell'
+++++++++++++staticText name='Cell'
+++++++++++++++inlineTextBox name='Cell'
+++++++++++cell name='Cell'
+++++++++++++staticText name='Cell'
+++++++++++++++inlineTextBox name='Cell'
+++++++table name='Real data table'
+++++++++caption
+++++++++++staticText name='Real data table'
+++++++++++++inlineTextBox name='Real '
+++++++++++++inlineTextBox name='data '
+++++++++++++inlineTextBox name='table'
+++++++++rowGroup ignored
+++++++++++row
+++++++++++++cell name='X'
+++++++++++++++staticText name='X'
+++++++++++++++++inlineTextBox name='X'

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {RemoteCall} from './remote_call.js';
 
 /**
  * Sends a command to the controlling test harness, namely and usually, the
@@ -21,7 +21,7 @@
  * @return {Promise} Promise to be fulfilled with the value returned by the
  *     chrome.test.sendMessage callback.
  */
-function sendTestMessage(command) {
+export function sendTestMessage(command) {
   if (typeof command.name === 'string') {
     return new Promise(function(fulfill) {
       chrome.test.sendMessage(JSON.stringify(command), fulfill);
@@ -38,7 +38,7 @@ function sendTestMessage(command) {
  * @return {Promise} Promise that will resolve after Time in milliseconds
  *     has elapsed.
  */
-function wait(time) {
+export function wait(time) {
   return new Promise(function(resolve) {
     setTimeout(resolve, time);
   });
@@ -48,10 +48,10 @@ function wait(time) {
  * Verifies if there are no Javascript errors in the given app window by
  * asserting the count returned by the app.getErrorCount remote call.
  * @param {!RemoteCall} app RemoteCall interface to the app window.
- * @param {function()} callback Completion callback.
+ * @param {function()=} callback Completion callback.
  * @return {Promise} Promise to be fulfilled on completion.
  */
-async function checkIfNoErrorsOccuredOnApp(app, callback) {
+export async function checkIfNoErrorsOccuredOnApp(app, callback) {
   const count = await app.callRemoteTestUtil('getErrorCount', null, []);
   chrome.test.assertEq(0, count, 'The error count is not 0.');
   if (callback) {
@@ -64,7 +64,7 @@ async function checkIfNoErrorsOccuredOnApp(app, callback) {
  * @param {Promise} promise Promise to add the check to.
  * @param {Array<!RemoteCall>} apps An array of RemoteCall interfaces.
  */
-async function testPromiseAndApps(promise, apps) {
+export async function testPromiseAndApps(promise, apps) {
   const finished = chrome.test.callbackPass(function() {
     // The callbackPass is necessary to avoid prematurely finishing tests.
     // Don't use chrome.test.succeed() here to avoid doubled success log.
@@ -84,21 +84,21 @@ async function testPromiseAndApps(promise, apps) {
  * @type {number}
  * @const
  */
-const REPEAT_UNTIL_INTERVAL = 200;
+export const REPEAT_UNTIL_INTERVAL = 200;
 
 /**
  * Interval milliseconds between log output of repeatUntil.
  * @type {number}
  * @const
  */
-const LOG_INTERVAL = 3000;
+export const LOG_INTERVAL = 3000;
 
 /**
  * Returns caller's file, function and line/column number from the call stack.
  * @return {string} String with the caller's file name and line/column number,
  *     as returned by exception stack trace. Example "at /a_file.js:1:1".
  */
-function getCaller() {
+export function getCaller() {
   const error = new Error('For extracting error.stack');
   const ignoreStackLines = 3;
   const lines = error.stack.split('\n');
@@ -113,15 +113,15 @@ function getCaller() {
 
 /**
  * Returns a pending marker. See also the repeatUntil function.
- * @param {string} name of test function that originated the operation,
+ * @param {string} caller name of test function that originated the operation,
  *     it's the return of getCaller() function.
  * @param {string} message Pending reason including %s, %d, or %j markers. %j
  *     format an object as JSON.
- * @param {Array<*>} var_args Values to be assigined to %x markers.
+ * @param {...*} var_args Values to be assigined to %x markers.
  * @return {Object} Object which returns true for the expression: obj instanceof
  *     pending.
  */
-function pending(caller, message, var_args) {
+export function pending(caller, message, var_args) {
   // |index| is used to ignore caller and message arguments subsisting markers
   // (%s, %d and %j) within message with the remaining |arguments|.
   let index = 2;
@@ -149,11 +149,11 @@ function pending(caller, message, var_args) {
  * Waits until the checkFunction returns a value but a pending marker.
  * @param {function():*} checkFunction Function to check a condition. It can
  *     return a pending marker created by a pending function.
- * @return {Promise} Promise to be fulfilled with the return value of
+ * @return {!Promise} Promise to be fulfilled with the return value of
  *     checkFunction when the checkFunction reutrns a value but a pending
  *     marker.
  */
-async function repeatUntil(checkFunction) {
+export async function repeatUntil(checkFunction) {
   let logTime = Date.now() + LOG_INTERVAL;
   while (true) {
     const result = await checkFunction();
@@ -176,7 +176,7 @@ async function repeatUntil(checkFunction) {
  * @param {function(string)} callback Completion callback.
  * @param {Object=} opt_debug If truthy, log the result.
  */
-async function sendBrowserTestCommand(command, callback, opt_debug) {
+export async function sendBrowserTestCommand(command, callback, opt_debug) {
   const caller = getCaller();
   if (typeof command.name !== 'string') {
     chrome.test.fail('Invalid test command: ' + JSON.stringify(command));
@@ -206,7 +206,7 @@ async function sendBrowserTestCommand(command, callback, opt_debug) {
  * @return {Promise} Promise to be fulfilled with the window ID of the
  *     app window.
  */
-function waitForAppWindow(windowUrl) {
+export function waitForAppWindow(windowUrl) {
   const caller = getCaller();
   const command = {'name': 'getAppWindowId', 'windowUrl': windowUrl};
   return repeatUntil(async () => {
@@ -219,34 +219,18 @@ function waitForAppWindow(windowUrl) {
 }
 
 /**
- * Wait for the count of windows for app |appId| to equal |expectedCount|.
- * @param{string} appId ID of the app to count windows for.
- * @param{number} expectedCount Number of app windows to wait for.
- * @return {Promise} Promise to be fulfilled when the number of app windows
- *     equals |expectedCount|.
- */
-function waitForAppWindowCount(appId, expectedCount) {
-  const caller = getCaller();
-  const command = {'name': 'countAppWindows', 'appId': appId};
-  return repeatUntil(async () => {
-    if (await sendTestMessage(command) != expectedCount) {
-      return pending(caller, 'waitForAppWindowCount ' + appId + ' ' + result);
-    }
-    return true;
-  });
-}
-
-/**
  * Get all the browser windows.
+ * @param {number} expectedInitialCount The number of windows expected before
+ *     opening a new one.
  * @return {Object} Object returned from chrome.windows.getAll().
  */
-async function getBrowserWindows() {
+export async function getBrowserWindows(expectedInitialCount = 0) {
   const caller = getCaller();
   return repeatUntil(async () => {
     const result = await new Promise(function(fulfill) {
       chrome.windows.getAll({'populate': true}, fulfill);
     });
-    if (result.length == 0) {
+    if (result.length === expectedInitialCount) {
       return pending(caller, 'getBrowserWindows ' + result.length);
     }
     return result;
@@ -261,9 +245,9 @@ async function getBrowserWindows() {
  *     result of function. The argument is true on success.
  * @return {Promise} Promise to be fulfilled when the entries are added.
  */
-async function addEntries(volumeNames, entries, opt_callback) {
+export async function addEntries(volumeNames, entries, opt_callback) {
   if (volumeNames.length == 0) {
-    callback(true);
+    opt_callback && opt_callback(true);
     return;
   }
   const volumeResultPromises = volumeNames.map(function(volume) {
@@ -289,33 +273,52 @@ async function addEntries(volumeNames, entries, opt_callback) {
  * @enum {string}
  * @const
  */
-const EntryType = Object.freeze({
+export const EntryType = {
   FILE: 'file',
   DIRECTORY: 'directory',
   LINK: 'link',
   SHARED_DRIVE: 'team_drive',
   COMPUTER: 'Computer'
-});
+};
+Object.freeze(EntryType);
 
 /**
  * @enum {string}
  * @const
  */
-const SharedOption = Object.freeze({
+
+export const SharedOption = {
   NONE: 'none',
   SHARED: 'shared',
   SHARED_WITH_ME: 'sharedWithMe',
   NESTED_SHARED_WITH_ME: 'nestedSharedWithMe',
-});
+};
+Object.freeze(SharedOption);
+
 
 /**
- * @enum {string}
+ * @typedef {{
+ *   downloads: string,
+ *   drive: string,
+ *   android_files: string,
+ * }}
+ *
  */
-const RootPath = Object.seal({
+export let getRootPathsResult;
+
+/**
+ * @typedef {{
+ *   DOWNLOADS: string,
+ *   DRIVE: string,
+ *   ANDROID_FILES: string,
+ * }}
+ */
+export const RootPath = {
   DOWNLOADS: '/must-be-filled-in-test-setup',
   DRIVE: '/must-be-filled-in-test-setup',
   ANDROID_FILES: '/must-be-filled-in-test-setup',
-});
+};
+Object.seal(RootPath);
 
 
 /**
@@ -323,169 +326,123 @@ const RootPath = Object.seal({
  * TestEntryCapabilities in file_manager_browsertest_base.cc. All capabilities
  * default to true if not specified.
  *
- * @record
- * @struct
+ * @typedef {{
+ *    canCopy: (boolean|undefined),
+ *    canDelete: (boolean|undefined),
+ *    canRename: (boolean|undefined),
+ *    canAddChildren: (boolean|undefined),
+ *    canShare: (boolean|undefined),
+ * }}
  */
-function TestEntryCapabilities() {}
-
-/**
- * @type {boolean|undefined}
- */
-TestEntryCapabilities.prototype.canCopy = true;
-
-/**
- * @type {boolean|undefined}
- */
-TestEntryCapabilities.prototype.canDelete = true;
-
-/**
- * @type {boolean|undefined}
- */
-TestEntryCapabilities.prototype.canRename = true;
-
-/**
- * @type {boolean|undefined}
- */
-TestEntryCapabilities.prototype.canAddChildren = true;
-
-/**
- * @type {boolean|undefined}
- */
-TestEntryCapabilities.prototype.canShare = true;
+export let TestEntryCapabilities;
 
 /**
  * The folder features for the test entry. Structure should match
  * TestEntryFolderFeature in file_manager_browsertest_base.cc. All features
  * default to false is not specified.
  *
- * @record
- * @struct
+ * @typedef {{
+ *    isMachineRoot: (boolean|undefined),
+ *    isArbitrarySyncFolder: (boolean|undefined),
+ *    isExternalMedia: (boolean|undefined),
+ * }}
  */
-function TestEntryFolderFeature() {}
-
-/**
- * @type {boolean|undefined}
- */
-TestEntryFolderFeature.prototype.isMachineRoot = false;
-
-/**
- * @type {boolean|undefined}
- */
-TestEntryFolderFeature.prototype.isArbitrarySyncFolder = false;
-
-/**
- * @type {boolean|undefined}
- */
-TestEntryFolderFeature.prototype.isExternalMedia = false;
+export let TestEntryFolderFeature;
 
 /**
  * Parameters to creat a Test Entry in the file manager. Structure should match
  * TestEntryInfo in file_manager_browsertest_base.cc.
  *
- * @record
- * @struct
+ * Field details:
+ *
+ * sourceFileName: Source file name that provides file contents (file location
+ * relative to /chrome/test/data/chromeos/file_manager/).
+ *
+ * targetPath: Name of entry on the test file system. Used to determine the
+ * actual name of the file.
+ *
+ * teamDriveName: Name of the team drive this entry is in. Defaults to a blank
+ * string (no team drive). Team Drive names must be unique.
+ *
+ * computerName: Name of the computer this entry is in. Defaults to a blank
+ * string (no computer). Computer names must be unique.
+ *
+ * lastModifiedTime: Last modified time as a text to be shown in the last
+ * modified column.
+ *
+ * nameText: File name to be shown in the name column.
+ *
+ * sizeText: Size text to be shown in the size column.
+ *
+ * typeText: Type name to be shown in the type column.
+ *
+ * capabilities:  Capabilities of this file. Defaults to all capabilities
+ * available (read-write access).
+ *
+ * folderFeature: Folder features of this file. Defaults to all features
+ * disabled.
+ *
+ * @typedef {{
+ *    type: EntryType,
+ *    sourceFileName: (string|undefined),
+ *    targetPath: (string|undefined),
+ *    teamDriveName: (string|undefined),
+ *    computerName: (string|undefined),
+ *    mimeType: (string|undefined),
+ *    sharedOption: (SharedOption|undefined),
+ *    lastModifiedTime: (string|undefined),
+ *    nameText: (string|undefined),
+ *    sizeText: (string|undefined),
+ *    typeText: (string|undefined),
+ *    capabilities: (TestEntryCapabilities|undefined),
+ *    folderFeature: (TestEntryFolderFeature|undefined),
+ * }}
  */
-function TestEntryInfoOptions() {}
-
-/**
- * @type {EntryType} Entry type.
- */
-TestEntryInfoOptions.prototype.type;
-/**
- * @type {string|undefined} Source file name that provides file contents
- *     (file location relative to /chrome/test/data/chromeos/file_manager/).
- */
-TestEntryInfoOptions.prototype.sourceFileName;
-/**
- * @type {string} Name of entry on the test file system. Used to determine the
- *     actual name of the file.
- */
-TestEntryInfoOptions.prototype.targetPath;
-/**
- * @type {string} Name of the team drive this entry is in. Defaults to a blank
- *     string (no team drive). Team Drive names must be unique.
- */
-TestEntryInfoOptions.prototype.teamDriveName;
-/**
- * @type {string} Name of the computer this entry is in. Defaults to a blank
- *     string (no computer). Computer names must be unique.
- */
-TestEntryInfoOptions.prototype.computerName;
-/**
- * @type {string|undefined} Mime type.
- */
-TestEntryInfoOptions.prototype.mimeType;
-/**
- * @type {SharedOption|undefined} Shared option. Defaults to NONE (not shared).
- */
-TestEntryInfoOptions.prototype.sharedOption;
-/**
- * @type {string} Last modified time as a text to be shown in the last modified
- *     column.
- */
-TestEntryInfoOptions.prototype.lastModifiedTime;
-/**
- * @type {string} File name to be shown in the name column.
- */
-TestEntryInfoOptions.prototype.nameText;
-/**
- * @type {string} Size text to be shown in the size column.
- */
-TestEntryInfoOptions.prototype.sizeText;
-/**
- * @type {string} Type name to be shown in the type column.
- */
-TestEntryInfoOptions.prototype.typeText;
-/**
- * @type {TestEntryCapabilities|undefined} Capabilities of this file. Defaults
- *     to all capabilities available (read-write access).
- */
-TestEntryInfoOptions.prototype.capabilities;
-
-/**
- * @type {TestEntryFolderFeature|undefined} Foder features of this file.
- *     Defaults to all features disabled.
- */
-TestEntryInfoOptions.prototype.folderFeature;
+export let TestEntryInfoOptions;
 
 /**
  * File system entry information for tests. Structure should match TestEntryInfo
  * in file_manager_browsertest_base.cc
  * TODO(sashab): Remove this, rename TestEntryInfoOptions to TestEntryInfo and
  * set the defaults in the record definition above.
- *
- * @param {TestEntryInfoOptions} options Parameters to create the TestEntryInfo.
  */
-function TestEntryInfo(options) {
-  this.type = options.type;
-  this.sourceFileName = options.sourceFileName || '';
-  this.targetPath = options.targetPath;
-  this.teamDriveName = options.teamDriveName || '';
-  this.computerName = options.computerName || '';
-  this.mimeType = options.mimeType || '';
-  this.sharedOption = options.sharedOption || SharedOption.NONE;
-  this.lastModifiedTime = options.lastModifiedTime;
-  this.nameText = options.nameText;
-  this.sizeText = options.sizeText;
-  this.typeText = options.typeText;
-  this.capabilities = options.capabilities;
-  this.folderFeature = options.folderFeature;
-  this.pinned = !!options.pinned;
-  Object.freeze(this);
+export class TestEntryInfo {
+  /**
+   * @param {TestEntryInfoOptions} options Parameters to create the
+   *     TestEntryInfo.
+   */
+  constructor(options) {
+    this.type = options.type;
+    this.sourceFileName = options.sourceFileName || '';
+    this.thumbnailFileName = options.thumbnailFileName || '';
+    this.targetPath = options.targetPath;
+    this.teamDriveName = options.teamDriveName || '';
+    this.computerName = options.computerName || '';
+    this.mimeType = options.mimeType || '';
+    this.sharedOption = options.sharedOption || SharedOption.NONE;
+    this.lastModifiedTime = options.lastModifiedTime;
+    this.nameText = options.nameText || '';
+    this.sizeText = options.sizeText || '';
+    this.typeText = options.typeText || '';
+    this.capabilities = options.capabilities;
+    this.folderFeature = options.folderFeature;
+    this.pinned = !!options.pinned;
+    Object.freeze(this);
+  }
+
+  static getExpectedRows(entries) {
+    return entries.map(function(entry) {
+      return entry.getExpectedRow();
+    });
+  }
+
+  /**
+   * Obtains a expected row contents of the file in the file list.
+   */
+  getExpectedRow() {
+    return [this.nameText, this.sizeText, this.typeText, this.lastModifiedTime];
+  }
 }
-
-TestEntryInfo.getExpectedRows = function(entries) {
-  return entries.map(function(entry) {
-    return entry.getExpectedRow();
-  });
-};
-
-/**
- * Obtains a expected row contents of the file in the file list.
- */
-TestEntryInfo.prototype.getExpectedRow = function() {
-  return [this.nameText, this.sizeText, this.typeText, this.lastModifiedTime];
-};
 
 /**
  * Filesystem entries used by the test cases.
@@ -496,7 +453,7 @@ TestEntryInfo.prototype.getExpectedRow = function() {
  * @type {Object<TestEntryInfo>}
  * @const
  */
-const ENTRIES = {
+export const ENTRIES = {
   hello: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'text.txt',
@@ -511,6 +468,7 @@ const ENTRIES = {
   world: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'video.ogv',
+    thumbnailFileName: 'image.png',
     targetPath: 'world.ogv',
     mimeType: 'video/ogg',
     lastModifiedTime: 'Jul 4, 2012, 10:35 AM',
@@ -566,6 +524,7 @@ const ENTRIES = {
   desktop: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'image.png',
+    thumbnailFileName: 'image.png',
     targetPath: 'My Desktop Background.png',
     mimeType: 'image/png',
     lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
@@ -608,6 +567,29 @@ const ENTRIES = {
     typeText: 'JPEG image'
   }),
 
+  // Used to differentiate between .jpg and .jpeg handling.
+  sampleJpeg: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'small.jpg',
+    targetPath: 'sample.jpeg',
+    mimeType: 'image/jpeg',
+    lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
+    nameText: 'sample.jpeg',
+    sizeText: '1 KB',
+    typeText: 'JPEG image'
+  }),
+
+  brokenJpeg: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'broken.jpg',
+    targetPath: 'broken.jpg',
+    mimeType: 'image/jpeg',
+    lastModifiedTime: 'Jan 18, 2038, 1:02 AM',
+    nameText: 'broken.jpg',
+    sizeText: '1 byte',
+    typeText: 'JPEG image'
+  }),
+
   exifImage: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'exif.jpg',
@@ -628,6 +610,17 @@ const ENTRIES = {
     nameText: 'raw.orf',
     sizeText: '214 KB',
     typeText: 'ORF image'
+  }),
+
+  nefImage: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'raw.nef',
+    // No mime type.
+    targetPath: 'raw.nef',
+    lastModifiedTime: 'May 9, 2015, 11:16 PM',
+    nameText: 'raw.nef',
+    sizeText: '92 KB',
+    typeText: 'NEF image'
   }),
 
   beautiful: new TestEntryInfo({
@@ -684,6 +677,28 @@ const ENTRIES = {
     pinned: true
   }),
 
+  sharedDirectory: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: 'Shared',
+    sharedOption: SharedOption.SHARED,
+    lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
+    nameText: 'Shared',
+    sizeText: '--',
+    typeText: 'Folder'
+  }),
+
+  sharedDirectoryFile: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.txt',
+    targetPath: 'Shared/file.txt',
+    mimeType: 'text/plain',
+    sharedOption: SharedOption.SHARED,
+    lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
+    nameText: 'file.txt',
+    sizeText: '51 bytes',
+    typeText: 'Plain text'
+  }),
+
   newlyAdded: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'music.ogg',
@@ -717,6 +732,28 @@ const ENTRIES = {
     typeText: 'Plain text',
   }),
 
+  utf8Text: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'utf8.txt',
+    targetPath: 'utf8.txt',
+    mimeType: 'text/plain',
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    nameText: 'utf8.txt',
+    sizeText: '191 bytes',
+    typeText: 'Plain text',
+  }),
+
+  mHtml: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'page.mhtml',
+    targetPath: 'page.mhtml',
+    mimeType: 'multipart/related',
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    nameText: 'page.mhtml',
+    sizeText: '421 bytes',
+    typeText: 'HTML document',
+  }),
+
   tallHtml: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'tall.html',
@@ -736,6 +773,17 @@ const ENTRIES = {
     lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
     nameText: 'tall.pdf',
     sizeText: '15 KB',
+    typeText: 'PDF document',
+  }),
+
+  popupPdf: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'popup.pdf',
+    targetPath: 'popup.pdf',
+    mimeType: 'application/pdf',
+    lastModifiedTime: 'Jul 4, 2000, 10:42 AM',
+    nameText: 'popup.pdf',
+    sizeText: '538 bytes',
     typeText: 'PDF document',
   }),
 
@@ -816,6 +864,15 @@ const ENTRIES = {
     typeText: 'Folder'
   }),
 
+  dotTrash: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: '.Trash',
+    lastModifiedTime: 'Jan 1, 2000, 1:00 AM',
+    nameText: '.Trash',
+    sizeText: '--',
+    typeText: 'Folder'
+  }),
+
   deeplyBurriedSmallJpeg: new TestEntryInfo({
     type: EntryType.FILE,
     targetPath: 'A/B/C/deep.jpg',
@@ -866,50 +923,6 @@ const ENTRIES = {
     lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
     nameText: 'archive.zip',
     sizeText: '743 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveSJIS: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'archive_sjis.zip',
-    targetPath: 'archive_sjis.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Dec 21, 2018, 12:21 PM',
-    nameText: 'archive_sjis.zip',
-    sizeText: '160 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveMacOs: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'archive_macos.zip',
-    targetPath: 'archive_macos.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Dec 21, 2018, 12:21 PM',
-    nameText: 'archive_macos.zip',
-    sizeText: '190 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveWithAbsolutePaths: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'absolute_paths.zip',
-    targetPath: 'absolute_paths.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
-    nameText: 'absolute_paths.zip',
-    sizeText: '400 bytes',
-    typeText: 'Zip archive'
-  }),
-
-  zipArchiveEncrypted: new TestEntryInfo({
-    type: EntryType.FILE,
-    sourceFileName: 'encrypted.zip',
-    targetPath: 'encrypted.zip',
-    mimeType: 'application/x-zip',
-    lastModifiedTime: 'Jan 1, 2014, 1:00 AM',
-    nameText: 'encrypted.zip',
-    sizeText: '589 bytes',
     typeText: 'Zip archive'
   }),
 
@@ -1294,7 +1307,7 @@ const ENTRIES = {
     typeText: 'Plain text'
   }),
 
-  sharedDirectory: new TestEntryInfo({
+  sharedWithMeDirectory: new TestEntryInfo({
     type: EntryType.DIRECTORY,
     targetPath: 'Shared Directory',
     sharedOption: SharedOption.SHARED_WITH_ME,
@@ -1304,7 +1317,7 @@ const ENTRIES = {
     typeText: 'Folder'
   }),
 
-  sharedDirectoryFile: new TestEntryInfo({
+  sharedWithMeDirectoryFile: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'text.txt',
     targetPath: 'Shared Directory/file.txt',
@@ -1326,6 +1339,15 @@ const ENTRIES = {
     sizeText: '51 bytes',
     typeText: 'CRDOWNLOAD file'
   }),
+
+  pluginVm: new TestEntryInfo({
+    type: EntryType.DIRECTORY,
+    targetPath: 'PvmDefault',
+    lastModifiedTime: 'Jan 1, 1980, 11:59 PM',
+    nameText: 'Windows Files',
+    sizeText: '--',
+    typeText: 'Folder'
+  }),
 };
 
 /**
@@ -1334,12 +1356,13 @@ const ENTRIES = {
  * @param {number} value The value within that histogram to query.
  * @return {!Promise<number>} A promise fulfilled with the count.
  */
-async function getHistogramCount(name, value) {
-  return JSON.parse(await sendTestMessage({
+export async function getHistogramCount(name, value) {
+  const result = await sendTestMessage({
     'name': 'getHistogramCount',
     'histogramName': name,
     'value': value,
-  }));
+  });
+  return /** @type {number} */ (JSON.parse(result));
 }
 
 /**
@@ -1347,28 +1370,10 @@ async function getHistogramCount(name, value) {
  * @param {string} name The user action to be queried.
  * @return {!Promise<number>} A promise fulfilled with the count.
  */
-async function getUserActionCount(name) {
-  return JSON.parse(await sendTestMessage({
+export async function getUserActionCount(name) {
+  const result = await sendTestMessage({
     'name': 'getUserActionCount',
     'userActionName': name,
-  }));
-}
-
-/**
- * Simulate Click in the UI in the middle of the element.
- * @param{string} appId ID of the app that contains the element. NOTE: The click
- *     is simulated on most recent window in the window system.
- * @param {string|!Array<string>} query Query to the element to be clicked.
- * @return {!Promise} A promise fulfilled after the click event.
- */
-async function simulateUiClick(appId, query) {
-  const element =
-      await remoteCall.waitForElementStyles(appId, query, ['display']);
-  chrome.test.assertTrue(!!element, 'element for simulateUiClick not found');
-
-  // Find the middle of the element.
-  const x = Math.floor(element.renderedLeft + (element.renderedWidth / 2));
-  const y = Math.floor(element.renderedTop + (element.renderedHeight / 2));
-
-  return sendTestMessage({name: 'simulateClick', 'clickX': x, 'clickY': y});
+  });
+  return /** @type {number} */ (JSON.parse(result));
 }

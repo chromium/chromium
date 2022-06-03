@@ -6,7 +6,7 @@
 
 [
     Exposed=Window,
-    ImplementedAs=NavigatorGPU
+    ImplementedAs=GPU
 ] partial interface Navigator {
-    [SameObject, RuntimeEnabled=WebGPU, CallWith=ScriptState] readonly attribute GPU gpu;
+    [SameObject, RuntimeEnabled=WebGPU] readonly attribute GPU gpu;
 };

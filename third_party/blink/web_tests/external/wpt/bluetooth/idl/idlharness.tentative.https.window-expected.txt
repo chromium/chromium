@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 204 tests; 147 PASS, 57 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 205 tests; 154 PASS, 51 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -30,7 +30,8 @@ PASS Bluetooth interface: existence and properties of interface prototype object
 PASS Bluetooth interface: operation getAvailability()
 FAIL Bluetooth interface: attribute onavailabilitychanged assert_true: The prototype object must have a property "onavailabilitychanged" expected true got false
 FAIL Bluetooth interface: attribute referringDevice assert_true: The prototype object must have a property "referringDevice" expected true got false
-PASS Bluetooth interface: operation requestDevice(RequestDeviceOptions)
+PASS Bluetooth interface: operation getDevices()
+PASS Bluetooth interface: operation requestDevice(optional RequestDeviceOptions)
 PASS Bluetooth interface: attribute onadvertisementreceived
 FAIL Bluetooth interface: attribute ongattserverdisconnected assert_true: The prototype object must have a property "ongattserverdisconnected" expected true got false
 FAIL Bluetooth interface: attribute oncharacteristicvaluechanged assert_true: The prototype object must have a property "oncharacteristicvaluechanged" expected true got false
@@ -42,8 +43,9 @@ PASS Stringification of navigator.bluetooth
 PASS Bluetooth interface: navigator.bluetooth must inherit property "getAvailability()" with the proper type
 FAIL Bluetooth interface: navigator.bluetooth must inherit property "onavailabilitychanged" with the proper type assert_inherits: property "onavailabilitychanged" not found in prototype chain
 FAIL Bluetooth interface: navigator.bluetooth must inherit property "referringDevice" with the proper type assert_inherits: property "referringDevice" not found in prototype chain
-PASS Bluetooth interface: navigator.bluetooth must inherit property "requestDevice(RequestDeviceOptions)" with the proper type
-PASS Bluetooth interface: calling requestDevice(RequestDeviceOptions) on navigator.bluetooth with too few arguments must throw TypeError
+PASS Bluetooth interface: navigator.bluetooth must inherit property "getDevices()" with the proper type
+PASS Bluetooth interface: navigator.bluetooth must inherit property "requestDevice(optional RequestDeviceOptions)" with the proper type
+PASS Bluetooth interface: calling requestDevice(optional RequestDeviceOptions) on navigator.bluetooth with too few arguments must throw TypeError
 PASS Bluetooth interface: navigator.bluetooth must inherit property "onadvertisementreceived" with the proper type
 FAIL Bluetooth interface: navigator.bluetooth must inherit property "ongattserverdisconnected" with the proper type assert_inherits: property "ongattserverdisconnected" not found in prototype chain
 FAIL Bluetooth interface: navigator.bluetooth must inherit property "oncharacteristicvaluechanged" with the proper type assert_inherits: property "oncharacteristicvaluechanged" not found in prototype chain
@@ -73,10 +75,9 @@ PASS BluetoothDevice interface: existence and properties of interface prototype 
 PASS BluetoothDevice interface: attribute id
 PASS BluetoothDevice interface: attribute name
 PASS BluetoothDevice interface: attribute gatt
-FAIL BluetoothDevice interface: operation watchAdvertisements() assert_own_property: interface prototype object missing non-static operation expected property "watchAdvertisements" missing
-FAIL BluetoothDevice interface: operation unwatchAdvertisements() assert_own_property: interface prototype object missing non-static operation expected property "unwatchAdvertisements" missing
-FAIL BluetoothDevice interface: attribute watchingAdvertisements assert_true: The prototype object must have a property "watchingAdvertisements" expected true got false
-FAIL BluetoothDevice interface: attribute onadvertisementreceived assert_true: The prototype object must have a property "onadvertisementreceived" expected true got false
+PASS BluetoothDevice interface: operation watchAdvertisements(optional WatchAdvertisementsOptions)
+PASS BluetoothDevice interface: attribute watchingAdvertisements
+PASS BluetoothDevice interface: attribute onadvertisementreceived
 PASS BluetoothDevice interface: attribute ongattserverdisconnected
 FAIL BluetoothDevice interface: attribute oncharacteristicvaluechanged assert_true: The prototype object must have a property "oncharacteristicvaluechanged" expected true got false
 FAIL BluetoothDevice interface: attribute onserviceadded assert_true: The prototype object must have a property "onserviceadded" expected true got false
@@ -129,7 +130,7 @@ PASS BluetoothRemoteGATTServer interface: attribute connected
 PASS BluetoothRemoteGATTServer interface: operation connect()
 PASS BluetoothRemoteGATTServer interface: operation disconnect()
 PASS BluetoothRemoteGATTServer interface: operation getPrimaryService(BluetoothServiceUUID)
-PASS BluetoothRemoteGATTServer interface: operation getPrimaryServices(BluetoothServiceUUID)
+PASS BluetoothRemoteGATTServer interface: operation getPrimaryServices(optional BluetoothServiceUUID)
 FAIL BluetoothRemoteGATTService interface: existence and properties of interface object assert_equals: prototype of BluetoothRemoteGATTService is not EventTarget expected function "function EventTarget() { [native code] }" but got function "function () { [native code] }"
 PASS BluetoothRemoteGATTService interface object length
 PASS BluetoothRemoteGATTService interface object name
@@ -140,9 +141,9 @@ PASS BluetoothRemoteGATTService interface: attribute device
 PASS BluetoothRemoteGATTService interface: attribute uuid
 PASS BluetoothRemoteGATTService interface: attribute isPrimary
 PASS BluetoothRemoteGATTService interface: operation getCharacteristic(BluetoothCharacteristicUUID)
-PASS BluetoothRemoteGATTService interface: operation getCharacteristics(BluetoothCharacteristicUUID)
+PASS BluetoothRemoteGATTService interface: operation getCharacteristics(optional BluetoothCharacteristicUUID)
 FAIL BluetoothRemoteGATTService interface: operation getIncludedService(BluetoothServiceUUID) assert_own_property: interface prototype object missing non-static operation expected property "getIncludedService" missing
-FAIL BluetoothRemoteGATTService interface: operation getIncludedServices(BluetoothServiceUUID) assert_own_property: interface prototype object missing non-static operation expected property "getIncludedServices" missing
+FAIL BluetoothRemoteGATTService interface: operation getIncludedServices(optional BluetoothServiceUUID) assert_own_property: interface prototype object missing non-static operation expected property "getIncludedServices" missing
 FAIL BluetoothRemoteGATTService interface: attribute oncharacteristicvaluechanged assert_true: The prototype object must have a property "oncharacteristicvaluechanged" expected true got false
 FAIL BluetoothRemoteGATTService interface: attribute onserviceadded assert_true: The prototype object must have a property "onserviceadded" expected true got false
 FAIL BluetoothRemoteGATTService interface: attribute onservicechanged assert_true: The prototype object must have a property "onservicechanged" expected true got false
@@ -158,11 +159,11 @@ PASS BluetoothRemoteGATTCharacteristic interface: attribute uuid
 PASS BluetoothRemoteGATTCharacteristic interface: attribute properties
 PASS BluetoothRemoteGATTCharacteristic interface: attribute value
 PASS BluetoothRemoteGATTCharacteristic interface: operation getDescriptor(BluetoothDescriptorUUID)
-PASS BluetoothRemoteGATTCharacteristic interface: operation getDescriptors(BluetoothDescriptorUUID)
+PASS BluetoothRemoteGATTCharacteristic interface: operation getDescriptors(optional BluetoothDescriptorUUID)
 PASS BluetoothRemoteGATTCharacteristic interface: operation readValue()
 PASS BluetoothRemoteGATTCharacteristic interface: operation writeValue(BufferSource)
-FAIL BluetoothRemoteGATTCharacteristic interface: operation writeValueWithResponse(BufferSource) assert_own_property: interface prototype object missing non-static operation expected property "writeValueWithResponse" missing
-FAIL BluetoothRemoteGATTCharacteristic interface: operation writeValueWithoutResponse(BufferSource) assert_own_property: interface prototype object missing non-static operation expected property "writeValueWithoutResponse" missing
+PASS BluetoothRemoteGATTCharacteristic interface: operation writeValueWithResponse(BufferSource)
+PASS BluetoothRemoteGATTCharacteristic interface: operation writeValueWithoutResponse(BufferSource)
 PASS BluetoothRemoteGATTCharacteristic interface: operation startNotifications()
 PASS BluetoothRemoteGATTCharacteristic interface: operation stopNotifications()
 PASS BluetoothRemoteGATTCharacteristic interface: attribute oncharacteristicvaluechanged
@@ -198,9 +199,9 @@ PASS BluetoothUUID interface object name
 PASS BluetoothUUID interface: existence and properties of interface prototype object
 PASS BluetoothUUID interface: existence and properties of interface prototype object's "constructor" property
 PASS BluetoothUUID interface: existence and properties of interface prototype object's @@unscopables property
-PASS BluetoothUUID interface: operation getService([object Object],[object Object])
-PASS BluetoothUUID interface: operation getCharacteristic([object Object],[object Object])
-PASS BluetoothUUID interface: operation getDescriptor([object Object],[object Object])
+PASS BluetoothUUID interface: operation getService((DOMString or unsigned long))
+PASS BluetoothUUID interface: operation getCharacteristic((DOMString or unsigned long))
+PASS BluetoothUUID interface: operation getDescriptor((DOMString or unsigned long))
 PASS BluetoothUUID interface: operation canonicalUUID(unsigned long)
 PASS Navigator interface: attribute bluetooth
 PASS Navigator interface: navigator must inherit property "bluetooth" with the proper type

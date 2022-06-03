@@ -26,7 +26,9 @@ Gamepad::Gamepad()
 
 Gamepad::Gamepad(const Gamepad& other) = default;
 
-void Gamepad::SetID(const base::string16& src) {
+Gamepad& Gamepad::operator=(const Gamepad& other) = default;
+
+void Gamepad::SetID(const std::u16string& src) {
   memset(id, 0, sizeof(id));
   src.copy(id, kIdLengthCap - 1);
 }

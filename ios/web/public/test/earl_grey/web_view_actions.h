@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_TEST_EARL_GREY_WEB_VIEW_ACTIONS_H_
 #define IOS_WEB_PUBLIC_TEST_EARL_GREY_WEB_VIEW_ACTIONS_H_
 
-#include <string>
 
 @class ElementSelector;
 @protocol GREYAction;

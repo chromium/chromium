@@ -5,13 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_NOTIFICATIONS_SERVICE_WORKER_REGISTRATION_NOTIFICATIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_NOTIFICATIONS_SERVICE_WORKER_REGISTRATION_NOTIFICATIONS_H_
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/public/mojom/notifications/notification.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
@@ -32,9 +30,7 @@ class ServiceWorkerRegistration;
 class ServiceWorkerRegistrationNotifications final
     : public GarbageCollected<ServiceWorkerRegistrationNotifications>,
       public Supplement<ServiceWorkerRegistration>,
-      public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(ServiceWorkerRegistrationNotifications);
-
+      public ExecutionContextLifecycleObserver {
  public:
   static const char kSupplementName[];
 
@@ -50,10 +46,15 @@ class ServiceWorkerRegistrationNotifications final
   ServiceWorkerRegistrationNotifications(ExecutionContext*,
                                          ServiceWorkerRegistration*);
 
-  // ContextLifecycleObserver interface.
-  void ContextDestroyed(ExecutionContext* context) override;
+  ServiceWorkerRegistrationNotifications(
+      const ServiceWorkerRegistrationNotifications&) = delete;
+  ServiceWorkerRegistrationNotifications& operator=(
+      const ServiceWorkerRegistrationNotifications&) = delete;
 
-  void Trace(blink::Visitor* visitor) override;
+  // ExecutionContextLifecycleObserver interface.
+  void ContextDestroyed() override;
+
+  void Trace(Visitor* visitor) const override;
 
  private:
   static ServiceWorkerRegistrationNotifications& From(
@@ -68,10 +69,7 @@ class ServiceWorkerRegistrationNotifications final
                         ScriptPromiseResolver* resolver,
                         NotificationResourcesLoader* loader);
 
-  Member<ServiceWorkerRegistration> registration_;
   HeapHashSet<Member<NotificationResourcesLoader>> loaders_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerRegistrationNotifications);
 };
 
 }  // namespace blink

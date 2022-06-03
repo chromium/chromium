@@ -9,76 +9,54 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state_manager.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
-#import "ios/chrome/browser/tabs/tab_model_list.h"
+#import "ios/chrome/browser/main/all_web_state_list_observation_registrar.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 IncognitoWebStateObserver::IncognitoWebStateObserver() {
-  TabModelList::AddObserver(this);
-
-  // Observe all existing off-the-record TabModels' WebStateLists.
-  std::vector<ios::ChromeBrowserState*> browser_states =
+  std::vector<ChromeBrowserState*> browser_states =
       GetApplicationContext()
           ->GetChromeBrowserStateManager()
           ->GetLoadedBrowserStates();
 
-  for (ios::ChromeBrowserState* browser_state : browser_states) {
+  // Observer all incognito browsers' web state lists.
+  for (ChromeBrowserState* browser_state : browser_states) {
     DCHECK(!browser_state->IsOffTheRecord());
-
-    if (!browser_state->HasOffTheRecordChromeBrowserState())
-      continue;
-    ios::ChromeBrowserState* otr_browser_state =
-        browser_state->GetOffTheRecordChromeBrowserState();
-
-    NSArray<TabModel*>* tab_models =
-        TabModelList::GetTabModelsForChromeBrowserState(otr_browser_state);
-    for (TabModel* tab_model in tab_models)
-      scoped_observer_.Add([tab_model webStateList]);
+    registrars_.insert(std::make_unique<AllWebStateListObservationRegistrar>(
+        browser_state, std::make_unique<Observer>(this),
+        AllWebStateListObservationRegistrar::Mode::INCOGNITO));
   }
 }
 
-IncognitoWebStateObserver::~IncognitoWebStateObserver() {
-  TabModelList::RemoveObserver(this);
+IncognitoWebStateObserver::~IncognitoWebStateObserver() {}
+
+IncognitoWebStateObserver::Observer::Observer(
+    IncognitoWebStateObserver* incognito_tracker)
+    : incognito_tracker_(incognito_tracker) {}
+IncognitoWebStateObserver::Observer::~Observer() {}
+
+void IncognitoWebStateObserver::Observer::WebStateInsertedAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index,
+    bool activating) {
+  incognito_tracker_->OnIncognitoWebStateAdded();
 }
 
-void IncognitoWebStateObserver::TabModelRegisteredWithBrowserState(
-    TabModel* tab_model,
-    ios::ChromeBrowserState* browser_state) {
-  if (browser_state->IsOffTheRecord() &&
-      !scoped_observer_.IsObserving([tab_model webStateList])) {
-    scoped_observer_.Add([tab_model webStateList]);
-  }
+void IncognitoWebStateObserver::Observer::WebStateDetachedAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index) {
+  incognito_tracker_->OnIncognitoWebStateRemoved();
 }
 
-void IncognitoWebStateObserver::TabModelUnregisteredFromBrowserState(
-    TabModel* tab_model,
-    ios::ChromeBrowserState* browser_state) {
-  if (browser_state->IsOffTheRecord()) {
-    DCHECK(scoped_observer_.IsObserving([tab_model webStateList]));
-    scoped_observer_.Remove([tab_model webStateList]);
-  }
-}
-
-void IncognitoWebStateObserver::WebStateInsertedAt(WebStateList* web_state_list,
-                                                   web::WebState* web_state,
-                                                   int index,
-                                                   bool activating) {
-  OnIncognitoWebStateAdded();
-}
-
-void IncognitoWebStateObserver::WebStateDetachedAt(WebStateList* web_state_list,
-                                                   web::WebState* web_state,
-                                                   int index) {
-  OnIncognitoWebStateRemoved();
-}
-
-void IncognitoWebStateObserver::WebStateReplacedAt(WebStateList* web_state_list,
-                                                   web::WebState* old_web_state,
-                                                   web::WebState* new_web_state,
-                                                   int index) {
+void IncognitoWebStateObserver::Observer::WebStateReplacedAt(
+    WebStateList* web_state_list,
+    web::WebState* old_web_state,
+    web::WebState* new_web_state,
+    int index) {
   // This is invoked when a Tab is replaced by another Tab without any visible
   // UI change. There is nothing to do since the number of Tabs haven't changed.
 }

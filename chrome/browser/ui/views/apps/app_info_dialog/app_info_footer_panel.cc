@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_footer_panel.h"
 
+#include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -15,6 +17,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -22,11 +25,12 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // gn check complains on Linux Ozone.
 #include "ash/public/cpp/shelf_model.h"  // nogncheck
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller_util.h"
+#include "chrome/browser/ui/ash/shelf/app_shortcut_shelf_item_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
 
 AppInfoFooterPanel::AppInfoFooterPanel(Profile* profile,
@@ -50,7 +54,7 @@ std::unique_ptr<AppInfoFooterPanel> AppInfoFooterPanel::CreateFooterPanel(
     Profile* profile,
     const extensions::Extension* app) {
   if (CanCreateShortcuts(app) ||
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       CanSetPinnedToShelf(profile, app) ||
 #endif
       CanUninstallApp(profile, app))
@@ -61,35 +65,41 @@ std::unique_ptr<AppInfoFooterPanel> AppInfoFooterPanel::CreateFooterPanel(
 void AppInfoFooterPanel::CreateButtons() {
   if (CanCreateShortcuts(app_)) {
     create_shortcuts_button_ =
-        AddChildView(views::MdTextButton::CreateSecondaryUiButton(
-            this, l10n_util::GetStringUTF16(
-                      IDS_APPLICATION_INFO_CREATE_SHORTCUTS_BUTTON_TEXT)));
+        AddChildView(std::make_unique<views::MdTextButton>(
+            base::BindRepeating(&AppInfoFooterPanel::CreateShortcuts,
+                                base::Unretained(this)),
+            l10n_util::GetStringUTF16(
+                IDS_APPLICATION_INFO_CREATE_SHORTCUTS_BUTTON_TEXT)));
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (CanSetPinnedToShelf(profile_, app_)) {
-    pin_to_shelf_button_ =
-        AddChildView(views::MdTextButton::CreateSecondaryUiButton(
-            this, l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_PIN)));
+    pin_to_shelf_button_ = AddChildView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&AppInfoFooterPanel::SetPinnedToShelf,
+                            base::Unretained(this), true),
+        l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_PIN)));
     unpin_from_shelf_button_ =
-        AddChildView(views::MdTextButton::CreateSecondaryUiButton(
-            this, l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_UNPIN)));
+        AddChildView(std::make_unique<views::MdTextButton>(
+            base::BindRepeating(&AppInfoFooterPanel::SetPinnedToShelf,
+                                base::Unretained(this), false),
+            l10n_util::GetStringUTF16(IDS_APP_LIST_CONTEXT_MENU_UNPIN)));
     UpdatePinButtons(false);
   }
 #endif
 
   if (CanUninstallApp(profile_, app_)) {
-    remove_button_ = AddChildView(views::MdTextButton::CreateSecondaryUiButton(
-        this,
+    remove_button_ = AddChildView(std::make_unique<views::MdTextButton>(
+        base::BindRepeating(&AppInfoFooterPanel::UninstallApp,
+                            base::Unretained(this)),
         l10n_util::GetStringUTF16(IDS_APPLICATION_INFO_UNINSTALL_BUTTON_TEXT)));
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AppInfoFooterPanel::UpdatePinButtons(bool focus_visible_button) {
   if (pin_to_shelf_button_ && unpin_from_shelf_button_) {
     const bool was_pinned =
-        ChromeLauncherController::instance()->shelf_model()->IsAppPinned(
+        ChromeShelfController::instance()->shelf_model()->IsAppPinned(
             app_->id());
     pin_to_shelf_button_->SetVisible(!was_pinned);
     unpin_from_shelf_button_->SetVisible(was_pinned);
@@ -103,26 +113,9 @@ void AppInfoFooterPanel::UpdatePinButtons(bool focus_visible_button) {
 }
 #endif
 
-void AppInfoFooterPanel::ButtonPressed(views::Button* sender,
-                                       const ui::Event& event) {
-  if (sender == create_shortcuts_button_) {
-    CreateShortcuts();
-#if defined(OS_CHROMEOS)
-  } else if (sender == pin_to_shelf_button_) {
-    SetPinnedToShelf(true);
-  } else if (sender == unpin_from_shelf_button_) {
-    SetPinnedToShelf(false);
-#endif
-  } else if (sender == remove_button_) {
-    UninstallApp();
-  } else {
-    NOTREACHED();
-  }
-}
-
 void AppInfoFooterPanel::OnExtensionUninstallDialogClosed(
     bool did_start_uninstall,
-    const base::string16& error) {
+    const std::u16string& error) {
   if (did_start_uninstall) {
     // Close the App Info dialog as well (which will free the dialog too).
     Close();
@@ -134,33 +127,32 @@ void AppInfoFooterPanel::OnExtensionUninstallDialogClosed(
 void AppInfoFooterPanel::CreateShortcuts() {
   DCHECK(CanCreateShortcuts(app_));
   chrome::ShowCreateChromeAppShortcutsDialog(GetWidget()->GetNativeWindow(),
-                                             profile_,
-                                             app_,
-                                             base::Callback<void(bool)>());
+                                             profile_, app_, base::DoNothing());
 }
 
 // static
 bool AppInfoFooterPanel::CanCreateShortcuts(const extensions::Extension* app) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ash platforms can't create shortcuts.
   return false;
 #else
   // Extensions and the Chrome component app can't have shortcuts.
   return app->id() != extension_misc::kChromeAppId && !app->is_extension();
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void AppInfoFooterPanel::SetPinnedToShelf(bool value) {
   DCHECK(CanSetPinnedToShelf(profile_, app_));
   ash::ShelfModel* shelf_model =
-      ChromeLauncherController::instance()->shelf_model();
+      ChromeShelfController::instance()->shelf_model();
   DCHECK(shelf_model);
   ash::ShelfModel::ScopedUserTriggeredMutation user_triggered(shelf_model);
-  if (value)
-    shelf_model->PinAppWithID(app_->id());
-  else
-    shelf_model->UnpinAppWithID(app_->id());
+  if (value) {
+    PinAppWithIDToShelf(app_->id());
+  } else {
+    UnpinAppWithIDFromShelf(app_->id());
+  }
 
   UpdatePinButtons(true);
   Layout();
@@ -174,7 +166,7 @@ bool AppInfoFooterPanel::CanSetPinnedToShelf(Profile* profile,
          (GetPinnableForAppID(app->id(), profile) ==
           AppListControllerDelegate::PIN_EDITABLE);
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void AppInfoFooterPanel::UninstallApp() {
   DCHECK(CanUninstallApp(profile_, app_));
@@ -193,3 +185,6 @@ bool AppInfoFooterPanel::CanUninstallApp(Profile* profile,
   return policy->UserMayModifySettings(app, nullptr) &&
          !policy->MustRemainInstalled(app, nullptr);
 }
+
+BEGIN_METADATA(AppInfoFooterPanel, AppInfoPanel)
+END_METADATA

@@ -28,12 +28,15 @@ void MenuRunnerImplAdapter::Release() {
   delete this;
 }
 
-void MenuRunnerImplAdapter::RunMenuAt(Widget* parent,
-                                      MenuButtonController* button_controller,
-                                      const gfx::Rect& bounds,
-                                      MenuAnchorPosition anchor,
-                                      int32_t types) {
-  impl_->RunMenuAt(parent, button_controller, bounds, anchor, types);
+void MenuRunnerImplAdapter::RunMenuAt(
+    Widget* parent,
+    MenuButtonController* button_controller,
+    const gfx::Rect& bounds,
+    MenuAnchorPosition anchor,
+    int32_t types,
+    gfx::NativeView native_view_for_gestures) {
+  impl_->RunMenuAt(parent, button_controller, bounds, anchor, types,
+                   native_view_for_gestures);
 }
 
 void MenuRunnerImplAdapter::Cancel() {

@@ -5,7 +5,7 @@
 #include "services/device/generic_sensor/platform_sensor_provider_winrt.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -71,7 +71,7 @@ TEST(PlatformSensorProviderTestWinrt, SensorCreationReturnCheck) {
       std::move(mock_sensor_reader_factory));
 
   // CreateSensor is async so use a RunLoop to wait for completion.
-  base::Optional<base::RunLoop> run_loop;
+  absl::optional<base::RunLoop> run_loop;
   bool expect_sensor_valid = false;
 
   base::RepeatingCallback<void(scoped_refptr<PlatformSensor> sensor)>

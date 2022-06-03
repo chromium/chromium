@@ -7,7 +7,9 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
+#include "third_party/blink/renderer/core/timing/layout_shift_attribution.h"
 #include "third_party/blink/renderer/core/timing/performance_entry.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -17,10 +19,24 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  LayoutShift(double start_time,
-              double value,
-              bool input_detected,
-              double input_timestamp);
+  // Maximum number of attributions (shifted elements) to record in any single
+  // animation frame.
+  static constexpr int kMaxAttributions = 5;
+  typedef HeapVector<Member<LayoutShiftAttribution>, kMaxAttributions>
+      AttributionList;
+
+  static LayoutShift* Create(double start_time,
+                             double value,
+                             bool input_detected,
+                             double input_timestamp,
+                             AttributionList sources);
+
+  explicit LayoutShift(double start_time,
+                       double value,
+                       bool input_detected,
+                       double input_timestamp,
+                       AttributionList sources);
+
   ~LayoutShift() override;
 
   AtomicString entryType() const override;
@@ -30,7 +46,9 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
   bool hadRecentInput() const { return had_recent_input_; }
   double lastInputTime() const { return most_recent_input_timestamp_; }
 
-  void Trace(blink::Visitor*) override;
+  const AttributionList& sources() const { return sources_; }
+
+  void Trace(Visitor*) const override;
 
  private:
   void BuildJSONValue(V8ObjectBuilder&) const override;
@@ -38,6 +56,14 @@ class CORE_EXPORT LayoutShift final : public PerformanceEntry {
   double value_;
   bool had_recent_input_;
   DOMHighResTimeStamp most_recent_input_timestamp_;
+  AttributionList sources_;
+};
+
+template <>
+struct DowncastTraits<LayoutShift> {
+  static bool AllowFrom(const PerformanceEntry& entry) {
+    return entry.EntryTypeEnum() == PerformanceEntry::EntryType::kLayoutShift;
+  }
 };
 
 }  // namespace blink

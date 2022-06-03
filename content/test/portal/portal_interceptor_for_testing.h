@@ -16,8 +16,8 @@
 #include "content/browser/portal/portal.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "third_party/blink/public/mojom/portal/portal.mojom-forward.h"
 #include "third_party/blink/public/mojom/portal/portal.mojom-test-utils.h"
-#include "third_party/blink/public/mojom/portal/portal.mojom.h"
 
 namespace content {
 
@@ -52,6 +52,8 @@ class PortalInterceptorForTesting final
   // blink::mojom::PortalInterceptorForTesting
   blink::mojom::Portal* GetForwardingInterface() override;
   void Activate(blink::TransferableMessage data,
+                base::TimeTicks activation_time,
+                uint64_t trace_id,
                 ActivateCallback callback) override;
   void Navigate(const GURL& url,
                 blink::mojom::ReferrerPtr referrer,

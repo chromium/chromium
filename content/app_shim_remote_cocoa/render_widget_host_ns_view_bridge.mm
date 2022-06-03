@@ -9,9 +9,11 @@
 #include "components/remote_cocoa/app_shim/ns_view_ids.h"
 #include "content/app_shim_remote_cocoa/render_widget_host_ns_view_host_helper.h"
 #include "content/common/cursors/webcursor.h"
+#include "content/common/mac/attributed_string_type_converters.h"
 #import "skia/ext/skia_utils_mac.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #import "ui/base/cocoa/animation_utils.h"
+#include "ui/base/mojom/attributed_string.mojom.h"
 #include "ui/display/screen.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
@@ -21,7 +23,6 @@ namespace remote_cocoa {
 RenderWidgetHostNSViewBridge::RenderWidgetHostNSViewBridge(
     mojom::RenderWidgetHostNSViewHost* host,
     RenderWidgetHostNSViewHostHelper* host_helper) {
-  display::Screen::GetScreen()->AddObserver(this);
 
   cocoa_view_.reset([[RenderWidgetHostViewCocoa alloc]
         initWithHost:host
@@ -44,7 +45,6 @@ RenderWidgetHostNSViewBridge::~RenderWidgetHostNSViewBridge() {
                     withObject:nil
                     afterDelay:0];
   cocoa_view_.autorelease();
-  display::Screen::GetScreen()->RemoveObserver(this);
   popup_window_.reset();
 }
 
@@ -155,7 +155,7 @@ void RenderWidgetHostNSViewBridge::SetVisible(bool visible) {
 }
 
 void RenderWidgetHostNSViewBridge::SetTooltipText(
-    const base::string16& tooltip_text) {
+    const std::u16string& tooltip_text) {
   // Called from the renderer to tell us what the tooltip text should be. It
   // calls us frequently so we need to cache the value to prevent doing a lot
   // of repeat work.
@@ -170,7 +170,7 @@ void RenderWidgetHostNSViewBridge::SetTooltipText(
   // Windows; we're just trying to be polite. Don't persist the trimmed
   // string, as then the comparison above will always fail and we'll try to
   // set it again every single time the mouse moves.
-  base::string16 display_text = tooltip_text_;
+  std::u16string display_text = tooltip_text_;
   if (tooltip_text_.length() > kMaxTooltipLength)
     display_text = tooltip_text_.substr(0, kMaxTooltipLength);
 
@@ -195,7 +195,7 @@ void RenderWidgetHostNSViewBridge::SetTextInputState(
   [cocoa_view_ setTextInputFlags:flags];
 }
 
-void RenderWidgetHostNSViewBridge::SetTextSelection(const base::string16& text,
+void RenderWidgetHostNSViewBridge::SetTextSelection(const std::u16string& text,
                                                     uint64_t offset,
                                                     const gfx::Range& range) {
   [cocoa_view_ setTextSelectionText:text offset:offset range:range];
@@ -211,23 +211,34 @@ void RenderWidgetHostNSViewBridge::SetShowingContextMenu(bool showing) {
   [cocoa_view_ setShowingContextMenu:showing];
 }
 
+void RenderWidgetHostNSViewBridge::OnDisplayAdded(const display::Display&) {
+  [cocoa_view_ updateScreenProperties];
+}
+
+void RenderWidgetHostNSViewBridge::OnDisplayRemoved(const display::Display&) {
+  [cocoa_view_ updateScreenProperties];
+}
+
 void RenderWidgetHostNSViewBridge::OnDisplayMetricsChanged(
-    const display::Display& display,
-    uint32_t changed_metrics) {
+    const display::Display&,
+    uint32_t) {
   // Note that -updateScreenProperties is also be called by the notification
   // NSWindowDidChangeBackingPropertiesNotification (some of these calls
   // will be redundant).
   [cocoa_view_ updateScreenProperties];
 }
 
-void RenderWidgetHostNSViewBridge::DisplayCursor(
-    const content::WebCursor& cursor) {
-  content::WebCursor non_const_cursor(cursor);
-  [cocoa_view_ updateCursor:non_const_cursor.GetNativeCursor()];
+void RenderWidgetHostNSViewBridge::DisplayCursor(const ui::Cursor& cursor) {
+  [cocoa_view_ updateCursor:content::WebCursor(cursor).GetNativeCursor()];
 }
 
 void RenderWidgetHostNSViewBridge::SetCursorLocked(bool locked) {
   [cocoa_view_ setCursorLocked:locked];
+}
+
+void RenderWidgetHostNSViewBridge::SetCursorLockedUnacceleratedMovement(
+    bool unaccelerated) {
+  [cocoa_view_ setCursorLockedUnacceleratedMovement:unaccelerated];
 }
 
 void RenderWidgetHostNSViewBridge::ShowDictionaryOverlayForSelection() {
@@ -236,14 +247,13 @@ void RenderWidgetHostNSViewBridge::ShowDictionaryOverlayForSelection() {
 }
 
 void RenderWidgetHostNSViewBridge::ShowDictionaryOverlay(
-    const mac::AttributedStringCoder::EncodedString& encoded_string,
+    ui::mojom::AttributedStringPtr attributed_string,
     const gfx::Point& baseline_point) {
-  NSAttributedString* string =
-      mac::AttributedStringCoder::Decode(&encoded_string);
+  NSAttributedString* string = attributed_string.To<NSAttributedString*>();
   if ([string length] == 0)
     return;
   NSPoint flipped_baseline_point = {
-      baseline_point.x(),
+      static_cast<CGFloat>(baseline_point.x()),
       [cocoa_view_ frame].size.height - baseline_point.y(),
   };
   [cocoa_view_ showDefinitionForAttributedString:string
@@ -251,8 +261,8 @@ void RenderWidgetHostNSViewBridge::ShowDictionaryOverlay(
 }
 
 void RenderWidgetHostNSViewBridge::LockKeyboard(
-    const base::Optional<std::vector<uint32_t>>& uint_dom_codes) {
-  base::Optional<base::flat_set<ui::DomCode>> dom_codes;
+    const absl::optional<std::vector<uint32_t>>& uint_dom_codes) {
+  absl::optional<base::flat_set<ui::DomCode>> dom_codes;
   if (uint_dom_codes) {
     dom_codes.emplace();
     for (const auto& uint_dom_code : *uint_dom_codes)
@@ -263,6 +273,16 @@ void RenderWidgetHostNSViewBridge::LockKeyboard(
 
 void RenderWidgetHostNSViewBridge::UnlockKeyboard() {
   [cocoa_view_ unlockKeyboard];
+}
+
+void RenderWidgetHostNSViewBridge::ShowSharingServicePicker(
+    const std::string& title,
+    const std::string& text,
+    const std::string& url,
+    const std::vector<std::string>& file_paths,
+    ShowSharingServicePickerCallback callback) {
+  ShowSharingServicePickerForView(cocoa_view_, title, text, url, file_paths,
+                                  std::move(callback));
 }
 
 }  // namespace remote_cocoa

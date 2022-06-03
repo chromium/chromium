@@ -5,28 +5,31 @@ Night mode (aka Dark Theme) enables users to experience UI surfaces, rendered as
 [TOC]
 
 ## Implement night mode UI for new features
-###Colors
-Colors defined in **color_palette.xml** are independent of night mode (i.e. will not change in night mode), and are used for color references defined in **values/colors.xml** and **values-night/colors.xml**.
+
+### Colors
+
+Colors defined in **color_palette.xml** and **semantic_colors_non_adaptive.xml** are independent of night mode (i.e. will not change in night mode), and are used for color references defined in **values/semantic_colors_adaptive.xml** and **values-night/colors.xml**.
 
 Color references in values/colors.xml will be used for day mode (aka light theme), and also for night mode if the particular color reference is not defined in values-night/colors.xml. Color references in values-night/colors.xml will be used for night mode.
 
-**Example**  
-In most cases, you should make use of the color references that are already defined in [//src/ui/android/java/res/values/color_palette.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values/color_palette.xml?q=color_palette.xml&sq=package:chromium&dr) and [//src/ui/android/java/res/values/colors.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values/colors.xml?sq=package:chromium&dr&g=0) for your new feature.
+**Example**
+
+In most cases, you should make use of the color references that are already defined in [//src/ui/android/java/res/values/color_palette.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values/color_palette.xml) and [//src/ui/android/java/res/values/semantic_colors_adaptive.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values/semantic_colors_adaptive.xml) for your new feature.
 
 However as an example, suppose you got approval from snowflake-team@chromium.org to add a new background color.
 
-In [//src/ui/android/java/res/values/color_palette.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values/color_palette.xml?q=color_palette.xml&sq=package:chromium&dr), add
+In [//src/ui/android/java/res/values/semantic_colors_non_adaptive.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values/semantic_colors_non_adaptive.xml), add non-adaptive colors:
 ```xml
 <color name="new_bg_color_light">some light background color</color>
 <color name="new_bg_color_dark">some dark background color</color>
 ```
 
-In [//src/ui/android/java/res/values/colors.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values/colors.xml?sq=package:chromium&dr&g=0), add
+In [//src/ui/android/java/res/values/semantic_colors_adaptive.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values/semantic_colors_adaptive.xml), add adaptive colors in light mode:
 ```xml
 <color name="new_bg_color">@color/new_bg_color_light</color>
 ```
 
-In [//src/ui/android/java/res_night/values-night/colors.xml](https://cs.chromium.org/chromium/src/ui/android/java/res_night/values-night/colors.xml), add
+In [//src/ui/android/java/res/values-night/colors.xml](https://cs.chromium.org/chromium/src/ui/android/java/res/values-night/colors.xml), add adaptive colors in night mode:
 ```xml
 <color name="new_bg_color">@color/new_bg_color_dark</color>
 ```
@@ -35,7 +38,7 @@ An example to use this color in XML:
 ```xml
 <View
 	...
-	android:background="new_bg_color" />
+	android:background="@color/new_bg_color" />
 ```
 
 An example to use this color in Java:
@@ -50,24 +53,25 @@ Optionally, if the color is used exclusively for your feature, or if you want to
 <color name="my_shiny_new_feature_bg_color">@color/new_bg_color</color>
 ```
 
-If your feature needs colors that don't change based on day/night mode (e.g incognito mode UI), in the values/colors.xml that contains colors specifically for your feature, reference the colors defined in color_palette.xml. There is no need to define the color reference in values-night/colors.xml.
+If your feature needs colors that don't change based on day/night mode (e.g incognito mode UI), in the values/colors.xml that contains colors specifically for your feature, reference the colors defined in semantic_colors_non_adaptive.xml if possible. If it is not defined in semantic_colors_non_adaptive.xml, ask snowflake-team@chromium.org for approval of adding a new color in semantic_colors_non_adaptive.xml. There is no need to define the color reference in values-night/colors.xml.
+
 ```xml
 <!-- Dark background color for my shiny new feature regardless of day/night mode. -->
 <color name="my_shiny_new_feature_bg_color_dark">@color/new_bg_color_dark</color>
 ```
 
-###Styles
-Colors used in styles can be either adaptcive or independent of night mode. When using existing or adding new styles, make sure the colors used in the styles fit your need.
+### Styles
+
+Colors used in styles can be either adaptive or independent of night mode. When using existing or adding new styles, make sure the colors used in the styles fit your need.
 
 **Best practice of naming styles**
 
 * If the color adapts for night mode, avoid mentioning a specific color in the style name since it may not be accurate in night mode.
 ```xml
 <!-- OK -->
-<style name="TextAppearance.Headline">
+<style name="TextAppearance.Headline.Primary">
   <!-- default_text_color is dark grey in day mode, and white in night mode. -->
-  <item name="android:textColor">@color/default_text_color</item>
-  ...
+  <item name="android:textColor">@color/default_text_color_list</item>
 </style>
 
 <!-- NOT OK -->
@@ -83,55 +87,62 @@ Colors used in styles can be either adaptcive or independent of night mode. When
   <item name="android:textColor">@color/some_blue_color</item>
 </style>
 ```
-* If independent of night mode, mention a specific color or where it is generally used.
+* If independent of night mode, mention a specific color or where it is generally used. Suffixed by "Light" or "Dark" if the style is inherited from an adaptive style.
+
 ```xml
 <!-- OK -->
-<style name="TextAppearance.Headline.White">
-  <item name="android:textColor">@android:color/white</item>
+<style name="TextAppearance.Body.Incognito">
+  <item name="android:textColor">@colors/default_text_color_light</item>
   ...
 </style>
 
 <!-- OK -->
-<style name="TextAppearance.Body.Incognito">
-  <item name="android:textColor">@android:color/white</item>
-  ...
+<style name="TextAppearance.Headline.Primary.Light">
+  <item name="android:textColor">@color/default_text_color_light_list</item>
+</style>
+<style name="TextAppearance.Headline.Primary.Dark">
+  <item name="android:textColor">@color/default_text_color_dark_list</item>
 </style>
 ```
 
-###Themes
-If adding a new theme, make sure the parent (or any indirect ancestor) theme of the new theme is one of the AppCompat DayNight themes (prefixed with `Theme.AppCompat.DayNight`), or alternatively, define the same theme in values-night/ with the desired parent theme for night mode. See [dark theme](https://developer.android.com/preview/features/darktheme) in Android developer guide for more details.
+### Themes
 
-###Troubleshooting
+If adding a new theme, make sure the parent (or any indirect ancestor) theme of the new theme is one of the MaterialComponents DayNight themes (prefixed with `Theme.MaterialComponents.DayNight`), or alternatively, define the same theme in values-night/ with the desired parent theme for night mode. See [dark theme](https://developer.android.com/preview/features/darktheme) in Android developer guide for more details.
+
+### Troubleshooting
+
 * Make sure `View` is inflated from `Activity` context instead of `Application` context
-  * `RemoteView` is an exception. See [RemoteViewsWithNightModeInflater.java](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/night_mode/RemoteViewsWithNightModeInflater.java?) for details.
+  * `RemoteView` is an exception. See [RemoteViewsWithNightModeInflater.java](https://cs.chromium.org/chromium/src/chrome/android/java/src/org/chromium/chrome/browser/night_mode/RemoteViewsWithNightModeInflater.java) for details.
 * Make sure color resources are accessed from `Activity` or `View` context instead of `Application` context
 * Check whether `Configuration.uiMode & UI_MODE_NIGHT_MASK` gives the correct UI night mode
-  * If uiMode is not correct, it could be a support library issue or an Android framework issue. You can contact chrome-android-app@chromium.org for help.
+  * If uiMode is not correct, it could be a support library issue or an Android framework issue. You can contact clank-app-team@google.com for help.
 
 ## Test new features in night mode
 ### Automatic Testing
+
 Render tests are the recommended way to verify the appearance of night mode UI. If you are not familiar with render tests, please take a look at [render test instructions](/ui/android/javatests/src/org/chromium/ui/test/util/RENDER_TESTS.md) to learn about how to write a new render test and upload golden images.
 
 **For tests using DummyUiActivity:**
 
 * Put all the render tests into a separate test suite
-* Use class parameter [`NightModeTestUtils.NightModeParams.class`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/NightModeTestUtils.java?type=cs&q=NightModeTestUtils.NightModeParams)
+* Use class parameter [`NightModeTestUtils.NightModeParams.class`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=NightModeTestUtils.NightModeParams)
 * Pass in a boolean parameter that indicates night mode state in constructor
-* Set up night mode in constructor by calling [`NightModeTestUtils#setUpNightModeForDummyUiActivity()`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/NightModeTestUtils.java?type=cs&q=setUpNightModeForDummyUiActivity&sq=package:chromium) and [`RenderTestRule#setNightModeEnabled()`](https://cs.chromium.org/chromium/src/chrome/test/android/javatests/src/org/chromium/chrome/test/util/RenderTestRule.java?type=cs&q=setNightModeEnabled)
-* During [`tearDownTest()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/DummyUiActivityTestCase.java?type=cs&q=tearDownTest), reset night mode state by calling [`NightModeTestUtils#tearDownNightModeForDummyUiActivity()`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/NightModeTestUtils.java?type=cs&q=tearDownNightModeForDummyUiActivity)
+* Set up night mode in constructor by calling [`NightModeTestUtils#setUpNightModeForDummyUiActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=setUpNightModeForDummyUiActivity&sq=package:chromium) and [`RenderTestRule#setNightModeEnabled()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/RenderTestRule.java?type=cs&q=setNightModeEnabled)
+* During [`tearDownTest()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/DummyUiActivityTestCase.java?type=cs&q=tearDownTest), reset night mode state by calling [`NightModeTestUtils#tearDownNightModeForDummyUiActivity()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/NightModeTestUtils.java?type=cs&q=tearDownNightModeForDummyUiActivity)
 
 See [this CL](https://chromium-review.googlesource.com/c/chromium/src/+/1613883) as an example
 
 **For tests using ChromeActivityTestRule:**
 
-* In the method annotated with `@BeforeClass`, initialize states by calling [`NightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched()`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/NightModeTestUtils.java?type=cs&q=setUpNightModeBeforeChromeActivityLaunched)
+* In the method annotated with `@BeforeClass`, initialize states by calling [`ChromeNightModeTestUtils.setUpNightModeBeforeChromeActivityLaunched()`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/ChromeNightModeTestUtils.java?type=cs&q=setUpNightModeBeforeChromeActivityLaunched)
 * Add method `setupNightMode()` with annotation `@ParameterAnnotations.UseMethodParameterBefore(NightModeTestUtils.NightModeParams.class)`
-* In method `setupNightMode()`, set up night mode state by calling [`NightModeTestUtils#setUpNightModeForChromeActivity()`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/NightModeTestUtils.java?type=cs&q=setUpNightModeForChromeActivity) and [`RenderTestRule#setNightModeEnabled()`](https://cs.chromium.org/chromium/src/chrome/test/android/javatests/src/org/chromium/chrome/test/util/RenderTestRule.java?type=cs&q=setNightModeEnabled)
-* In the method annotated with `@AfterClass`, reset night mode state by calling [`tearDownNightModeAfterChromeActivityDestroyed`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/NightModeTestUtils.java?type=cs&q=tearDownNightModeAfterChromeActivityDestroyed)
+* In method `setupNightMode()`, set up night mode state by calling [`ChromeNightModeTestUtils#setUpNightModeForChromeActivity()`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/ChromeNightModeTestUtils.java?type=cs&q=setUpNightModeForChromeActivity) and [`RenderTestRule#setNightModeEnabled()`](https://cs.chromium.org/chromium/src/ui/android/javatests/src/org/chromium/ui/test/util/RenderTestRule.java?type=cs&q=setNightModeEnabled)
+* In the method annotated with `@AfterClass`, reset night mode state by calling [`tearDownNightModeAfterChromeActivityDestroyed`](https://cs.chromium.org/chromium/src/chrome/android/javatests/src/org/chromium/chrome/browser/night_mode/ChromeNightModeTestUtils.java?type=cs&q=tearDownNightModeAfterChromeActivityDestroyed)
 
 See [this CL](https://chromium-review.googlesource.com/c/chromium/src/+/1656668) as an example
 
-###Manual Testing
+### Manual Testing
+
 Different ways to turn on night mode:
 
 * Go to Chrome **Settings -> Themes** on Android L+
@@ -144,7 +155,7 @@ Ways to turn on night mode on **custom tab**:
 * Turn on power save mode (aka **battery saver**) on Android P+
 * Go to **Android Settings -> Developer options -> Night mode** on Android P
 * Go to **Android Settings -> Display -> Theme** on Android Q
-* [Set color scheme](https://cs.chromium.org/chromium/src/third_party/android_sdk/androidx_browser/browser/src/main/java/androidx/browser/customtabs/CustomTabsIntent.java?) to `COLOR_SCHEME_DARK` on creating a `CustomTabsIntent.Builder`
+* [Set color scheme](https://cs.chromium.org/chromium/src/third_party/android_sdk/androidx_browser/src/browser/browser/src/main/java/androidx/browser/customtabs/CustomTabsIntent.java) to `COLOR_SCHEME_DARK` on creating a `CustomTabsIntent.Builder`
 
 Some tips:
 

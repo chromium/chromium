@@ -6,24 +6,16 @@
       xmlns:tools="http://schemas.android.com/tools"
       package="org.chromium.chrome.tests.support">
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application>
-        <service android:name="org.chromium.chrome.browser.media.TestMediaRouteProviderService"
-                android:label="testMediaRouteProviderService"
-                android:process=":mrp"
-                tools:ignore="ExportedService" >
-            <intent-filter>
-                <action android:name="android.media.MediaRouteProviderService" />
-            </intent-filter>
-        </service>
-
-        <activity android:name="org.chromium.chrome.browser.browserservices.ActivityWithDeepLink">
+        <activity android:name="org.chromium.chrome.browser.browserservices.ActivityWithDeepLink"
+  android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE"/>
                 <data android:scheme="https"
-                      android:host="www.example.com"
-                      android:pathPrefix="/notifications"/>
+                      android:host="www.example.com"/>
             </intent-filter>
         </activity>
 

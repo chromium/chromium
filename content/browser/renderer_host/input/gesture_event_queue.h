@@ -7,17 +7,13 @@
 
 #include <stddef.h>
 
-#include <memory>
-
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/fling_controller.h"
 #include "content/common/content_export.h"
-#include "content/public/common/input_event_ack_source.h"
-#include "content/public/common/input_event_ack_state.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace content {
 class GestureEventQueueTest;
@@ -32,9 +28,10 @@ class CONTENT_EXPORT GestureEventQueueClient {
   virtual void SendGestureEventImmediately(
       const GestureEventWithLatencyInfo& event) = 0;
 
-  virtual void OnGestureEventAck(const GestureEventWithLatencyInfo& event,
-                                 InputEventAckSource ack_source,
-                                 InputEventAckState ack_result) = 0;
+  virtual void OnGestureEventAck(
+      const GestureEventWithLatencyInfo& event,
+      blink::mojom::InputEventResultSource ack_source,
+      blink::mojom::InputEventResultState ack_result) = 0;
 };
 
 // Despite its name, this class isn't so much one queue as it is a collection
@@ -78,6 +75,10 @@ class CONTENT_EXPORT GestureEventQueue {
                     FlingControllerEventSenderClient* fling_event_sender_client,
                     FlingControllerSchedulerClient* fling_scheduler_client,
                     const Config& config);
+
+  GestureEventQueue(const GestureEventQueue&) = delete;
+  GestureEventQueue& operator=(const GestureEventQueue&) = delete;
+
   ~GestureEventQueue();
 
   // Allow the fling controller to observe the gesture event. Returns true if
@@ -98,8 +99,8 @@ class CONTENT_EXPORT GestureEventQueue {
 
   // Indicates that the caller has received an acknowledgement from the renderer
   // with state |ack_result| and event |type|.
-  void ProcessGestureAck(InputEventAckSource ack_source,
-                         InputEventAckState ack_result,
+  void ProcessGestureAck(blink::mojom::InputEventResultSource ack_source,
+                         blink::mojom::InputEventResultState ack_result,
                          blink::WebInputEvent::Type type,
                          const ui::LatencyInfo& latency);
 
@@ -121,7 +122,7 @@ class CONTENT_EXPORT GestureEventQueue {
   gfx::Vector2dF CurrentFlingVelocity() const;
 
   void set_debounce_interval_time_ms_for_testing(int interval_ms) {
-    debounce_interval_ = base::TimeDelta::FromMilliseconds(interval_ms);
+    debounce_interval_ = base::Milliseconds(interval_ms);
   }
 
   // TODO(nburris): Wheel event acks shouldn't really go through the gesture
@@ -129,8 +130,10 @@ class CONTENT_EXPORT GestureEventQueue {
   // FlingController. The FlingController should probably be owned by the
   // InputRouter instead.
   void OnWheelEventAck(const MouseWheelEventWithLatencyInfo& event,
-                       InputEventAckSource ack_source,
-                       InputEventAckState ack_result);
+                       blink::mojom::InputEventResultSource ack_source,
+                       blink::mojom::InputEventResultState ack_result);
+
+  bool IsFlingActiveForTest() { return FlingInProgressForTest(); }
 
  private:
   friend class GestureEventQueueTest;
@@ -140,16 +143,21 @@ class CONTENT_EXPORT GestureEventQueue {
       : public GestureEventWithLatencyInfo {
    public:
     GestureEventWithLatencyInfoAndAckState(const GestureEventWithLatencyInfo&);
-    InputEventAckState ack_state() const { return ack_state_; }
-    void set_ack_info(InputEventAckSource source, InputEventAckState state) {
+    blink::mojom::InputEventResultState ack_state() const { return ack_state_; }
+    void set_ack_info(blink::mojom::InputEventResultSource source,
+                      blink::mojom::InputEventResultState state) {
       ack_source_ = source;
       ack_state_ = state;
     }
-    InputEventAckSource ack_source() const { return ack_source_; }
+    blink::mojom::InputEventResultSource ack_source() const {
+      return ack_source_;
+    }
 
    private:
-    InputEventAckSource ack_source_ = InputEventAckSource::UNKNOWN;
-    InputEventAckState ack_state_ = INPUT_EVENT_ACK_STATE_UNKNOWN;
+    blink::mojom::InputEventResultSource ack_source_ =
+        blink::mojom::InputEventResultSource::kUnknown;
+    blink::mojom::InputEventResultState ack_state_ =
+        blink::mojom::InputEventResultState::kUnknown;
   };
 
   // Inovked on the expiration of the debounce interval to release
@@ -164,8 +172,8 @@ class CONTENT_EXPORT GestureEventQueue {
   // Will preserve the FIFO order as events originally arrived.
   void AckCompletedEvents();
   void AckGestureEventToClient(const GestureEventWithLatencyInfo&,
-                               InputEventAckSource,
-                               InputEventAckState);
+                               blink::mojom::InputEventResultSource,
+                               blink::mojom::InputEventResultState);
 
   bool FlingInProgressForTest() const;
 
@@ -210,8 +218,6 @@ class CONTENT_EXPORT GestureEventQueue {
   // True when the last GSE event is either in the debouncing_deferral_queue_ or
   // pushed to the queue and dropped from it later on.
   bool scroll_end_filtered_by_deboucing_deferral_queue_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureEventQueue);
 };
 
 }  // namespace content

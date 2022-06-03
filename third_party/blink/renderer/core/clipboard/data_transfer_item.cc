@@ -106,7 +106,7 @@ void DataTransferItem::RunGetAsStringTask(
     callback->InvokeAndReportException(nullptr, data);
 }
 
-void DataTransferItem::Trace(blink::Visitor* visitor) {
+void DataTransferItem::Trace(Visitor* visitor) const {
   visitor->Trace(data_transfer_);
   visitor->Trace(item_);
   ScriptWrappable::Trace(visitor);

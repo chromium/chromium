@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
@@ -24,6 +24,8 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/ui/views/settings_reset_prompt_dialog.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -107,14 +109,19 @@ class MockSettingsResetPromptModel
                        ? RESET_REQUIRED
                        : NO_RESET_REQUIRED_DUE_TO_DOMAIN_NOT_MATCHED));
   }
+
+  MockSettingsResetPromptModel(const MockSettingsResetPromptModel&) = delete;
+  MockSettingsResetPromptModel& operator=(const MockSettingsResetPromptModel&) =
+      delete;
+
   ~MockSettingsResetPromptModel() override {}
 
   void PerformReset(std::unique_ptr<BrandcodedDefaultSettings> default_settings,
-                    const base::Closure& callback) override {
-    MockPerformReset(default_settings.get(), callback);
+                    base::OnceClosure callback) override {
+    MockPerformReset(default_settings.get(), std::move(callback));
   }
   MOCK_METHOD2(MockPerformReset,
-               void(BrandcodedDefaultSettings*, const base::Closure&));
+               void(BrandcodedDefaultSettings*, base::OnceClosure));
   MOCK_CONST_METHOD0(ShouldPromptForReset, bool());
   MOCK_METHOD0(DialogShown, void());
   MOCK_CONST_METHOD0(homepage, GURL());
@@ -128,8 +135,6 @@ class MockSettingsResetPromptModel
  private:
   std::vector<GURL> startup_urls_;
   std::vector<GURL> startup_urls_to_reset_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockSettingsResetPromptModel);
 };
 
 class SettingsResetPromptDialogTest : public DialogBrowserTest {
@@ -167,6 +172,30 @@ IN_PROC_BROWSER_TEST_F(SettingsResetPromptDialogTest,
 }
 IN_PROC_BROWSER_TEST_F(SettingsResetPromptDialogTest,
                        InvokeUi_HomePageChanged) {
+  ShowAndVerifyUi();
+}
+
+class SettingsResetPromptDialogCloseTest : public DialogBrowserTest {
+ public:
+  void ShowUi(const std::string& name) override {
+    auto model = std::make_unique<NiceMock<MockSettingsResetPromptModel>>(
+        browser()->profile(),
+        ModelParams{SettingType::DEFAULT_SEARCH_ENGINE, 0});
+
+    dialog_ = new SettingsResetPromptDialog(
+        browser(),
+        new safe_browsing::SettingsResetPromptController(
+            std::move(model), std::make_unique<BrandcodedDefaultSettings>()));
+    dialog_->Show();
+  }
+  void DismissUi() override { dialog_->Close(); }
+
+ private:
+  SettingsResetPromptDialog* dialog_ = nullptr;
+};
+
+IN_PROC_BROWSER_TEST_F(SettingsResetPromptDialogCloseTest,
+                       InvokeUi_DoNotCrashOnClose) {
   ShowAndVerifyUi();
 }
 

@@ -23,6 +23,7 @@ import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.test.ui.R;
 import org.chromium.ui.shadows.ShadowAsyncLayoutInflater;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -37,12 +38,11 @@ public class AsyncViewProviderTest {
     private AsyncViewStub mAsyncViewStub;
     private AsyncViewProvider<View> mAsyncViewProvider;
     private final AtomicInteger mEventCount = new AtomicInteger();
-    private static final int MAIN_LAYOUT_RESOURCE_ID = org.chromium.test.ui.R.layout.main_view;
-    private static final int INFLATE_LAYOUT_RESOURCE_ID =
-            org.chromium.test.ui.R.layout.inflated_view;
-    private static final int STUB_ID = org.chromium.test.ui.R.id.view_stub;
-    private static final int INFLATED_VIEW_ID = org.chromium.test.ui.R.id.inflated_view;
-    private static final int PREINFLATED_VIEW_ID = org.chromium.test.ui.R.id.pre_inflated_view;
+    private static final int MAIN_LAYOUT_RESOURCE_ID = R.layout.main_view;
+    private static final int INFLATE_LAYOUT_RESOURCE_ID = R.layout.inflated_view;
+    private static final int STUB_ID = R.id.view_stub;
+    private static final int INFLATED_VIEW_ID = R.id.inflated_view;
+    private static final int PREINFLATED_VIEW_ID = R.id.pre_inflated_view;
 
     @Before
     public void setUp() {

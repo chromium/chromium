@@ -10,7 +10,7 @@ namespace blink {
 
 ServiceWorkerRegistrationContentIndex::ServiceWorkerRegistrationContentIndex(
     ServiceWorkerRegistration* registration)
-    : registration_(registration) {}
+    : Supplement(*registration) {}
 
 const char ServiceWorkerRegistrationContentIndex::kSupplementName[] =
     "ServiceWorkerRegistrationContentIndex";
@@ -38,18 +38,18 @@ ContentIndex* ServiceWorkerRegistrationContentIndex::index(
 
 ContentIndex* ServiceWorkerRegistrationContentIndex::index() {
   if (!content_index_) {
-    ExecutionContext* execution_context = registration_->GetExecutionContext();
+    ExecutionContext* execution_context =
+        GetSupplementable()->GetExecutionContext();
     // TODO(falken): Consider defining a task source in the spec for this event.
     content_index_ = MakeGarbageCollected<ContentIndex>(
-        registration_,
+        GetSupplementable(),
         execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI));
   }
 
   return content_index_.Get();
 }
 
-void ServiceWorkerRegistrationContentIndex::Trace(blink::Visitor* visitor) {
-  visitor->Trace(registration_);
+void ServiceWorkerRegistrationContentIndex::Trace(Visitor* visitor) const {
   visitor->Trace(content_index_);
   Supplement<ServiceWorkerRegistration>::Trace(visitor);
 }

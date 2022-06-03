@@ -5,13 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_WORKLET_OBJECT_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_WORKERS_THREADED_WORKLET_OBJECT_PROXY_H_
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/workers/threaded_object_proxy_base.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
 namespace blink {
 
@@ -33,6 +33,10 @@ class CORE_EXPORT ThreadedWorkletObjectProxy : public ThreadedObjectProxyBase {
   static std::unique_ptr<ThreadedWorkletObjectProxy> Create(
       ThreadedWorkletMessagingProxy*,
       ParentExecutionContextTaskRunners*);
+
+  ThreadedWorkletObjectProxy(const ThreadedWorkletObjectProxy&) = delete;
+  ThreadedWorkletObjectProxy& operator=(const ThreadedWorkletObjectProxy&) =
+      delete;
   ~ThreadedWorkletObjectProxy() override;
 
   void FetchAndInvokeScript(
@@ -58,7 +62,6 @@ class CORE_EXPORT ThreadedWorkletObjectProxy : public ThreadedObjectProxyBase {
   // the tasks.
   CrossThreadWeakPersistent<ThreadedWorkletMessagingProxy>
       messaging_proxy_weak_ptr_;
-  DISALLOW_COPY_AND_ASSIGN(ThreadedWorkletObjectProxy);
 };
 
 }  // namespace blink

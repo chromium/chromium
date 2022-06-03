@@ -9,10 +9,12 @@
 #include "base/bind.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/nix/xdg_util.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 
 namespace {
@@ -88,9 +90,8 @@ void DetectAndOpenPrinterConfigDialog() {
 namespace printing {
 
 void PrinterManagerDialog::ShowPrinterManagerDialog(Profile* profile) {
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_BLOCKING},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&DetectAndOpenPrinterConfigDialog));
 }
 

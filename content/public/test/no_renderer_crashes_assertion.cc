@@ -88,7 +88,20 @@ void NoRendererCrashesAssertion::Observe(
       break;  // Crash - need to trigger a test failure below.
   }
 
-  FAIL() << "Unexpected termination of a renderer process";
+  const auto exit_code = process_info->exit_code;
+  // Windows error codes such as 0xC0000005 and 0xC0000409 are much easier
+  // to recognize and differentiate in hex.
+  if (static_cast<int>(exit_code) < -100) {
+    FAIL() << "Unexpected termination of a renderer process"
+           << "; status: " << process_info->status << ", exit_code: 0x"
+           << std::hex << exit_code;
+  } else {
+    // Print other error codes as a signed integer so that small negative
+    // numbers are also recognizable.
+    FAIL() << "Unexpected termination of a renderer process"
+           << "; status: " << process_info->status
+           << ", exit_code: " << exit_code;
+  }
 }
 
 ScopedAllowRendererCrashes::ScopedAllowRendererCrashes()

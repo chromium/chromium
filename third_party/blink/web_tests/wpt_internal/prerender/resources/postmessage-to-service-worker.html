@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script>
+async function startPostMessage() {
+  assert_true(document.prerendering);
+  assert_not_equals(navigator.serviceWorker.controller, null,
+                    'prerendered page should be controlled');
+
+  const messagePromise =
+      new Promise(resolve => navigator.serviceWorker.onmessage = resolve);
+  navigator.serviceWorker.controller.postMessage('postmessage to worker');
+  const result = await messagePromise;
+
+  const bc = new BroadcastChannel('prerender-channel');
+  bc.postMessage(result.data);
+  bc.close();
+}
+
+startPostMessage();
+</script>

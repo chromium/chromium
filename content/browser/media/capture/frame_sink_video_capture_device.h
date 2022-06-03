@@ -10,15 +10,18 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/callback_forward.h"
+#include "base/check.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
+#include "base/token.h"
+#include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/host/client_frame_sink_video_capturer.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/base/video_frame.h"
+#include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video/video_frame_receiver.h"
 #include "media/capture/video_capture_types.h"
@@ -26,6 +29,7 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/wake_lock.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -50,6 +54,11 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       public viz::mojom::FrameSinkVideoConsumer {
  public:
   FrameSinkVideoCaptureDevice();
+
+  FrameSinkVideoCaptureDevice(const FrameSinkVideoCaptureDevice&) = delete;
+  FrameSinkVideoCaptureDevice& operator=(const FrameSinkVideoCaptureDevice&) =
+      delete;
+
   ~FrameSinkVideoCaptureDevice() override;
 
   // Deviation from the VideoCaptureDevice interface: Since the memory pooling
@@ -71,8 +80,12 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   void RequestRefreshFrame() final;
   void MaybeSuspend() final;
   void Resume() final;
+  void Crop(const base::Token& crop_id,
+            base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
+      override;
   void StopAndDeAllocate() final;
-  void OnUtilizationReport(int frame_feedback_id, double utilization) final;
+  void OnUtilizationReport(int frame_feedback_id,
+                           media::VideoCaptureFeedback feedback) final;
 
   // FrameSinkVideoConsumer implementation.
   void OnFrameCaptured(
@@ -82,15 +95,59 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
       mojo::PendingRemote<viz::mojom::FrameSinkVideoConsumerFrameCallbacks>
           callbacks) final;
   void OnStopped() final;
+  void OnLog(const std::string& message) final;
+
+  // All of the information necessary to select a target for capture.
+  struct VideoCaptureTarget {
+    VideoCaptureTarget() = default;
+    VideoCaptureTarget(viz::FrameSinkId frame_sink_id,
+                       viz::SubtreeCaptureId subtree_capture_id,
+                       const base::Token& crop_id)
+        : frame_sink_id(frame_sink_id),
+          subtree_capture_id(subtree_capture_id),
+          crop_id(crop_id) {
+      // Subtree-capture and region-capture are mutually exclusive.
+      // This is trivially guaranteed by subtree-capture only being supported
+      // on Aura window-capture, and region-capture only being supported on
+      // tab-capture.
+      DCHECK(!subtree_capture_id.is_valid() || crop_id.is_zero());
+    }
+
+    // The target frame sink id.
+    viz::FrameSinkId frame_sink_id;
+
+    // The subtree capture identifier--may be default initialized to indicate
+    // that the entire frame sink (defined by |frame_sink_id|) should be
+    // captured.
+    viz::SubtreeCaptureId subtree_capture_id;
+
+    // If |crop_id| is non-zero, it indicates that the video should be
+    // cropped to coordinates identified by it.
+    base::Token crop_id;
+
+    inline bool operator==(const VideoCaptureTarget& other) const {
+      return frame_sink_id == other.frame_sink_id &&
+             subtree_capture_id == other.subtree_capture_id &&
+             crop_id == other.crop_id;
+    }
+
+    inline bool operator!=(const VideoCaptureTarget& other) const {
+      return !(*this == other);
+    }
+  };
 
   // These are called to notify when the capture target has changed or was
   // permanently lost.
-  void OnTargetChanged(const viz::FrameSinkId& frame_sink_id);
-  void OnTargetPermanentlyLost();
+  virtual void OnTargetChanged(const VideoCaptureTarget& target);
+  virtual void OnTargetPermanentlyLost();
 
  protected:
   MouseCursorOverlayController* cursor_controller() const {
+#if !defined(OS_ANDROID)
     return cursor_controller_.get();
+#else
+    return nullptr;
+#endif
   }
 
   // Subclasses override these to perform additional start/stop tasks.
@@ -131,7 +188,7 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
   // Current capture target. This is cached to resolve a race where
   // OnTargetChanged() can be called before the |capturer_| is created in
   // OnCapturerCreated().
-  viz::FrameSinkId target_;
+  VideoCaptureTarget target_;
 
   // The requested format, rate, and other capture constraints.
   media::VideoCaptureParams capture_params_;
@@ -157,22 +214,22 @@ class CONTENT_EXPORT FrameSinkVideoCaptureDevice
 
   // Set when OnFatalError() is called. This prevents any future
   // AllocateAndStartWithReceiver() calls from succeeding.
-  base::Optional<std::string> fatal_error_message_;
+  absl::optional<std::string> fatal_error_message_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+#if !defined(OS_ANDROID)
   // Controls the overlay that renders the mouse cursor onto each video frame.
   const std::unique_ptr<MouseCursorOverlayController,
                         BrowserThread::DeleteOnUIThread>
       cursor_controller_;
+#endif
 
   // Prevent display sleeping while content capture is in progress.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
 
   // Creates WeakPtrs for use on the device thread.
   base::WeakPtrFactory<FrameSinkVideoCaptureDevice> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FrameSinkVideoCaptureDevice);
 };
 
 }  // namespace content

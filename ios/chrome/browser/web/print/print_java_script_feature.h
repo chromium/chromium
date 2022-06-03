@@ -1,0 +1,29 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_WEB_PRINT_PRINT_JAVA_SCRIPT_FEATURE_H_
+#define IOS_CHROME_BROWSER_WEB_PRINT_PRINT_JAVA_SCRIPT_FEATURE_H_
+
+#include "base/no_destructor.h"
+#import "ios/web/public/js_messaging/java_script_feature.h"
+
+// A feature which listens for window.print() commands.
+class PrintJavaScriptFeature : public web::JavaScriptFeature {
+ private:
+  friend class base::NoDestructor<PrintJavaScriptFeature>;
+  friend class PrintJavaScriptFeatureTest;
+
+  PrintJavaScriptFeature();
+  ~PrintJavaScriptFeature() override;
+
+  PrintJavaScriptFeature(const PrintJavaScriptFeature&) = delete;
+  PrintJavaScriptFeature& operator=(const PrintJavaScriptFeature&) = delete;
+
+  // JavaScriptFeature:
+  absl::optional<std::string> GetScriptMessageHandlerName() const override;
+  void ScriptMessageReceived(web::WebState* web_state,
+                             const web::ScriptMessage& message) override;
+};
+
+#endif  // IOS_CHROME_BROWSER_WEB_PRINT_PRINT_JAVA_SCRIPT_FEATURE_H_

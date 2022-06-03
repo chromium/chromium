@@ -25,13 +25,15 @@ class MockBluetoothGattService : public BluetoothRemoteGattService {
   MockBluetoothGattService(MockBluetoothDevice* device,
                            const std::string& identifier,
                            const BluetoothUUID& uuid,
-                           bool is_primary,
-                           bool is_local);
+                           bool is_primary);
+
+  MockBluetoothGattService(const MockBluetoothGattService&) = delete;
+  MockBluetoothGattService& operator=(const MockBluetoothGattService&) = delete;
+
   ~MockBluetoothGattService() override;
 
   MOCK_CONST_METHOD0(GetIdentifier, std::string());
   MOCK_CONST_METHOD0(GetUUID, BluetoothUUID());
-  MOCK_CONST_METHOD0(IsLocal, bool());
   MOCK_CONST_METHOD0(IsPrimary, bool());
   MOCK_CONST_METHOD0(GetDevice, BluetoothDevice*());
   MOCK_CONST_METHOD0(GetCharacteristics,
@@ -43,15 +45,9 @@ class MockBluetoothGattService : public BluetoothRemoteGattService {
   MOCK_CONST_METHOD1(
       GetCharacteristicsByUUID,
       std::vector<BluetoothRemoteGattCharacteristic*>(const BluetoothUUID&));
-  MOCK_METHOD1(AddIncludedService, bool(BluetoothRemoteGattService*));
-  MOCK_METHOD2(Register, void(const base::Closure&, const ErrorCallback&));
-  MOCK_METHOD2(Unregister, void(const base::Closure&, const ErrorCallback&));
 
   void AddMockCharacteristic(
       std::unique_ptr<MockBluetoothGattCharacteristic> mock_characteristic);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockBluetoothGattService);
 };
 
 }  // namespace device

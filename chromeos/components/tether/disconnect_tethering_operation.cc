@@ -23,31 +23,26 @@ DisconnectTetheringOperation::Factory*
 
 // static
 std::unique_ptr<DisconnectTetheringOperation>
-DisconnectTetheringOperation::Factory::NewInstance(
+DisconnectTetheringOperation::Factory::Create(
     multidevice::RemoteDeviceRef device_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client) {
-  if (!factory_instance_) {
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(
+        device_to_connect, device_sync_client, secure_channel_client);
   }
-  return factory_instance_->BuildInstance(device_to_connect, device_sync_client,
-                                          secure_channel_client);
+
+  return base::WrapUnique(new DisconnectTetheringOperation(
+      device_to_connect, device_sync_client, secure_channel_client));
 }
 
 // static
-void DisconnectTetheringOperation::Factory::SetInstanceForTesting(
+void DisconnectTetheringOperation::Factory::SetFactoryForTesting(
     Factory* factory) {
   factory_instance_ = factory;
 }
 
-std::unique_ptr<DisconnectTetheringOperation>
-DisconnectTetheringOperation::Factory::BuildInstance(
-    multidevice::RemoteDeviceRef device_to_connect,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client) {
-  return base::WrapUnique(new DisconnectTetheringOperation(
-      device_to_connect, device_sync_client, secure_channel_client));
-}
+DisconnectTetheringOperation::Factory::~Factory() = default;
 
 DisconnectTetheringOperation::DisconnectTetheringOperation(
     multidevice::RemoteDeviceRef device_to_connect,

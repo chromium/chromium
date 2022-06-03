@@ -13,8 +13,8 @@ namespace blink {
 namespace vector_math {
 namespace sse {
 
-constexpr size_t kBitsPerRegister = 128u;
-constexpr size_t kPackedFloatsPerRegister = kBitsPerRegister / 32u;
+constexpr uint32_t kBitsPerRegister = 128u;
+constexpr uint32_t kPackedFloatsPerRegister = kBitsPerRegister / 32u;
 constexpr size_t kFramesToProcessMask = ~(kPackedFloatsPerRegister - 1u);
 
 bool IsAligned(const float*);
@@ -36,6 +36,12 @@ void PrepareFilterForConv(const float* filter_p,
 
 // dest[k] = source1[k] + source2[k]
 void Vadd(const float* source1p,
+          const float* source2p,
+          float* dest_p,
+          uint32_t frames_to_process);
+
+// dest[k] = source1[k] - source2[k]
+void Vsub(const float* source1p,
           const float* source2p,
           float* dest_p,
           uint32_t frames_to_process);
@@ -67,6 +73,17 @@ void Vsma(const float* source_p,
 // dest[k] = scale * source[k]
 void Vsmul(const float* source_p,
            const float* scale,
+           float* dest_p,
+           uint32_t frames_to_process);
+
+// dest[k] = addend + source[k]
+void Vsadd(const float* source_p,
+           const float* addend,
+           float* dest_p,
+           uint32_t frames_to_process);
+
+void Vsadd(const float* source_p,
+           float addend,
            float* dest_p,
            uint32_t frames_to_process);
 

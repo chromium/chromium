@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "description": "Test extension that sets an uninstall URL.",
   "background": {
-    "scripts": ["bg.js"]
+    "scripts": ["bg.js"],
+    "persistent": true
   }
 }

@@ -11,24 +11,23 @@
 #include <string>
 #include <utility>
 
-#include "ash/public/cpp/app_types.h"
+#include "ash/constants/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/session/test_session_controller_client.h"
-#include "ash/test/ash_test_helper.h"
 #include "ash/wm/desks/desks_util.h"
+#include "ash/wm/overview/overview_types.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/template_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/traits_bag.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/user_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/aura/env.h"
 #include "ui/display/display.h"
+#include "ui/events/event_constants.h"
 #include "ui/events/test/event_generator.h"
 
 namespace aura {
@@ -60,19 +59,27 @@ class Rect;
 }
 
 namespace views {
+class View;
 class Widget;
 class WidgetDelegate;
-}
+}  // namespace views
 
 namespace ash {
 
+class AmbientAshTestHelper;
 class AppListTestHelper;
+class AshTestHelper;
 class Shelf;
-class TestScreenshotDelegate;
+class TestAppListClient;
+class TestShellDelegate;
 class TestSystemTrayClient;
 class UnifiedSystemTray;
 class WorkAreaInsets;
 
+// Base class for most tests in //ash. Constructs ash::Shell and all its
+// dependencies. Provides a user login session (use NoSessionAshTestBase for
+// tests that start at the login screen or need unusual user types). Sets
+// animation durations to zero via AshTestHelper/AuraTestHelper.
 class AshTestBase : public testing::Test {
  public:
   // Constructs an AshTestBase with |traits| being forwarded to its
@@ -80,20 +87,22 @@ class AshTestBase : public testing::Test {
   // specified.
   template <typename... TaskEnvironmentTraits>
   NOINLINE explicit AshTestBase(TaskEnvironmentTraits&&... traits)
-      : task_environment_(base::in_place,
-                          base::test::TaskEnvironment::MainThreadType::UI,
-                          std::forward<TaskEnvironmentTraits>(traits)...) {}
+      : AshTestBase(std::make_unique<base::test::TaskEnvironment>(
+            base::test::TaskEnvironment::MainThreadType::UI,
+            std::forward<TaskEnvironmentTraits>(traits)...)) {}
 
-  // Alternatively a subclass may pass this tag to ask this AshTestBase not to
-  // instantiate a TaskEnvironment. The subclass is then responsible to
-  // instantiate one before AshTestBase::SetUp().
-  struct SubclassManagesTaskEnvironment {};
-  explicit AshTestBase(SubclassManagesTaskEnvironment tag);
+  // Alternatively a subclass may pass a TaskEnvironment directly.
+  explicit AshTestBase(
+      std::unique_ptr<base::test::TaskEnvironment> task_environment);
+
+  AshTestBase(const AshTestBase&) = delete;
+  AshTestBase& operator=(const AshTestBase&) = delete;
 
   ~AshTestBase() override;
 
   // testing::Test:
   void SetUp() override;
+  void SetUp(std::unique_ptr<TestShellDelegate> delegate);
   void TearDown() override;
 
   // Returns the Shelf for the primary display.
@@ -112,7 +121,7 @@ class AshTestBase : public testing::Test {
   // Returns a root Window. Usually this is the active root Window, but that
   // method can return NULL sometimes, and in those cases, we fall back on the
   // primary root Window.
-  aura::Window* CurrentContext();
+  aura::Window* GetContext();
 
   // Creates and shows a widget. See ash/public/cpp/shell_window_ids.h for
   // values for |container_id|.
@@ -121,6 +130,9 @@ class AshTestBase : public testing::Test {
       int container_id = desks_util::GetActiveDeskContainerId(),
       const gfx::Rect& bounds = gfx::Rect(),
       bool show = true);
+
+  // Creates a frameless widget for testing.
+  static std::unique_ptr<views::Widget> CreateFramelessTestWidget();
 
   // Creates a widget with a visible WINDOW_TYPE_NORMAL window with the given
   // |app_type|. If |app_type| is AppType::NON_APP, this window is considered a
@@ -155,17 +167,6 @@ class AshTestBase : public testing::Test {
   // StackingController instead of taking a parent.
   aura::Window* CreateTestWindowInShellWithId(int id);
   aura::Window* CreateTestWindowInShellWithBounds(const gfx::Rect& bounds);
-  aura::Window* CreateTestWindowInShell(SkColor color,
-                                        int id,
-                                        const gfx::Rect& bounds);
-
-  // Creates a visible window parented to |parent| with the specified bounds and
-  // id.
-  std::unique_ptr<aura::Window> CreateChildWindow(
-      aura::Window* parent,
-      const gfx::Rect& bounds = gfx::Rect(),
-      int shell_window_id = kShellWindowId_Invalid);
-
   aura::Window* CreateTestWindowInShellWithDelegate(
       aura::WindowDelegate* delegate,
       int id,
@@ -195,6 +196,20 @@ class AshTestBase : public testing::Test {
   bool TestIfMouseWarpsAt(ui::test::EventGenerator* event_generator,
                           const gfx::Point& point_in_screen);
 
+  // Presses and releases a key to simulate typing one character.
+  void PressAndReleaseKey(ui::KeyboardCode key_code, int flags = ui::EF_NONE);
+
+  // Moves the mouse to the center of the view and generates a left button click
+  // event.
+  void SimulateMouseClickAt(ui::test::EventGenerator* event_generator,
+                            const views::View* target_view);
+
+  // Enters/Exits overview mode with the given animation type `type`.
+  bool EnterOverview(
+      OverviewEnterExitType type = OverviewEnterExitType::kNormal);
+  bool ExitOverview(
+      OverviewEnterExitType type = OverviewEnterExitType::kNormal);
+
  protected:
   enum UserSessionBlockReason {
     FIRST_BLOCK_REASON,
@@ -211,11 +226,16 @@ class AshTestBase : public testing::Test {
   static display::Display::Rotation GetCurrentInternalDisplayRotation();
 
   void set_start_session(bool start_session) { start_session_ = start_session; }
-  void disable_provide_local_state() { provide_local_state_ = false; }
 
-  AshTestHelper* ash_test_helper() { return &ash_test_helper_; }
+  base::test::TaskEnvironment* task_environment() {
+    return task_environment_.get();
+  }
+  TestingPrefServiceSimple* local_state() { return &local_state_; }
+  AshTestHelper* ash_test_helper() { return ash_test_helper_.get(); }
 
-  TestScreenshotDelegate* GetScreenshotDelegate();
+  void SetUserPref(const std::string& user_email,
+                   const std::string& path,
+                   const base::Value& value);
 
   TestSessionControllerClient* GetSessionControllerClient();
 
@@ -223,14 +243,29 @@ class AshTestBase : public testing::Test {
 
   AppListTestHelper* GetAppListTestHelper();
 
+  TestAppListClient* GetTestAppListClient();
+
+  AmbientAshTestHelper* GetAmbientAshTestHelper();
+
   // Emulates an ash session that have |session_count| user sessions running.
   // Note that existing user sessions will be cleared.
   void CreateUserSessions(int session_count);
 
   // Simulates a user sign-in. It creates a new user session, adds it to
   // existing user sessions and makes it the active user session.
+  //
+  // For convenience |user_email| is used to create an |AccountId|. For testing
+  // behavior where |AccountId|s are compared, prefer the method of the same
+  // name that takes an |AccountId| created with a valid storage key instead.
+  // See the documentation for|AccountId::GetUserEmail| for discussion.
   void SimulateUserLogin(
       const std::string& user_email,
+      user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
+
+  // Simulates a user sign-in. It creates a new user session, adds it to
+  // existing user sessions and makes it the active user session.
+  void SimulateUserLogin(
+      const AccountId& account_id,
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR);
 
   // Simular to SimulateUserLogin but for a newly created user first ever login.
@@ -263,9 +298,9 @@ class AshTestBase : public testing::Test {
   void BlockUserSession(UserSessionBlockReason block_reason);
   void UnblockUserSession();
 
-  // Enable or disable the keyboard for touch and run the message loop to
-  // allow observer operations to complete.
-  void SetTouchKeyboardEnabled(bool enabled);
+  // Enable or disable the virtual on-screen keyboard and run the message loop
+  // to allow observer operations to complete.
+  void SetVirtualKeyboardEnabled(bool enabled);
 
   void DisableIME();
 
@@ -280,40 +315,33 @@ class AshTestBase : public testing::Test {
 
   bool setup_called_ = false;
   bool teardown_called_ = false;
-  // |SetUp()| doesn't activate session if this is set to false.
-  bool start_session_ = true;
-  // |SetUp()| doesn't inject local-state PrefService into Shell if this is
-  // set to false.
-  bool provide_local_state_ = true;
 
-  // Must be initialized at construction because some tests rely on AshTestBase
-  // methods before AshTestBase::SetUp().
-  AshTestHelper ash_test_helper_;
+  // SetUp() doesn't activate session if this is set to false.
+  bool start_session_ = true;
+
+  // |task_environment_| is initialized-once at construction time but
+  // subclasses may elect to provide their own.
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
+
+  // A pref service used for local state.
+  TestingPrefServiceSimple local_state_;
+
+  // Must be constructed after |task_environment_|.
+  std::unique_ptr<AshTestHelper> ash_test_helper_;
 
   std::unique_ptr<ui::test::EventGenerator> event_generator_;
-
-  // protected so it can be accesssed by test subclasses to drive the task
-  // environment.
- protected:
-  // |task_environment_| is initialized-once at construction time but
-  // subclasses may elect to provide their own. Declare it last to ensure its
-  // initialization/destruction semantics are identical in the
-  // SubclassManagesTaskEnvironment mode.
-  base::Optional<base::test::TaskEnvironment> task_environment_;
-
-  // Private again for DISALLOW_COPY_AND_ASSIGN; additional members should be
-  // added in the first private section to be before |task_environment_|.
- private:
-  DISALLOW_COPY_AND_ASSIGN(AshTestBase);
 };
 
 class NoSessionAshTestBase : public AshTestBase {
  public:
-  NoSessionAshTestBase() { set_start_session(false); }
-  ~NoSessionAshTestBase() override {}
+  NoSessionAshTestBase();
+  explicit NoSessionAshTestBase(
+      base::test::TaskEnvironment::TimeSource time_source);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(NoSessionAshTestBase);
+  NoSessionAshTestBase(const NoSessionAshTestBase&) = delete;
+  NoSessionAshTestBase& operator=(const NoSessionAshTestBase&) = delete;
+
+  ~NoSessionAshTestBase() override;
 };
 
 }  // namespace ash

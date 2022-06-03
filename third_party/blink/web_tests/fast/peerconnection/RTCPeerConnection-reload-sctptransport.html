@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RTCPeerConnection-crash-tests</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+'use strict;'
+
+promise_test(async t => {
+  if (sessionStorage.getItem('test-state') === 'reloading') {
+    return; // success
+  }
+  sessionStorage.setItem('test-state', 'starting');
+  const pc1 = new RTCPeerConnection();
+  const pc2 = new RTCPeerConnection();
+  pc1.onicecandidate = (ev) => {
+    if (ev.candidate) {
+      pc2.addIceCandidate(ev.candidate);
+    }
+  }
+  pc2.onicecandidate = (ev) => {
+    if (ev.candidate) {
+      pc1.addIceCandidate(ev.candidate);
+    }
+  }
+  const dc = pc1.createDataChannel('foo');
+
+  const offer = await pc1.createOffer();
+  racer = pc1.setLocalDescription(offer);
+  sessionStorage.setItem('test-state', 'reloading');
+  location.reload();
+  // Note - execution continues after reload.
+  await racer;
+  await pc2.setRemoteDescription(offer);
+  const answer = await pc2.createAnswer();
+  await pc2.setLocalDescription(answer);
+}, 'Reload while negotiating PC with SCTP connection does not crash');
+
+</script>
+</body>
+</html>

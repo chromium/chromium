@@ -32,140 +32,94 @@
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_
 
 #include "base/callback.h"
-#include "base/time/time.h"
+#include "build/build_config.h"
 #include "cc/input/browser_controls_state.h"
 #include "cc/metrics/begin_main_frame_metrics.h"
 #include "cc/paint/element_id.h"
 #include "cc/trees/layer_tree_host_client.h"
+#include "third_party/blink/public/common/input/web_menu_source_type.h"
+#include "third_party/blink/public/common/metrics/document_update_reason.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_context.mojom-shared.h"
+#include "third_party/blink/public/mojom/input/pointer_lock_result.mojom-shared.h"
+#include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/blink/public/platform/cross_variant_mojo_util.h"
+#include "third_party/blink/public/platform/input/input_handler_proxy.h"
+#include "third_party/blink/public/platform/scheduler/web_agent_group_scheduler.h"
 #include "third_party/blink/public/platform/web_common.h"
-#include "third_party/blink/public/platform/web_float_size.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
-#include "third_party/blink/public/platform/web_menu_source_type.h"
-#include "third_party/blink/public/platform/web_point.h"
-#include "third_party/blink/public/platform/web_rect.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_text_input_info.h"
+#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/public/web/web_hit_test_result.h"
-#include "third_party/blink/public/web/web_ime_text_span.h"
+#include "third_party/blink/public/web/web_lifecycle_update.h"
 #include "third_party/blink/public/web/web_range.h"
-#include "third_party/blink/public/web/web_text_direction.h"
 
 namespace cc {
-struct ApplyViewportChangesArgs;
-class AnimationHost;
+class LayerTreeHost;
+class LayerTreeSettings;
 }
 
-namespace gfx {
-class Point;
+namespace display {
+struct ScreenInfo;
+struct ScreenInfos;
+}  // namespace display
+
+namespace ui {
+class Cursor;
+class LatencyInfo;
 }
 
 namespace blink {
+struct VisualProperties;
 class WebCoalescedInputEvent;
+
+namespace scheduler {
+class WebRenderWidgetSchedulingState;
+}
 
 class WebWidget {
  public:
-  // Called during set up of the WebWidget to declare the AnimationHost for
-  // the widget to use. This does not pass ownership, but the caller must keep
-  // the pointer valid until Close() is called.
-  virtual void SetAnimationHost(cc::AnimationHost*) = 0;
+  // Initialize compositing. This will create a LayerTreeHost but will not
+  // allocate a frame sink or begin producing frames until SetCompositorVisible
+  // is called. |settings| is typically null. When |settings| is null
+  // the default settings will be used, tests may provide a |settings| object to
+  // override the defaults.
+  virtual void InitializeCompositing(
+      scheduler::WebAgentGroupScheduler& agent_group_scheduler,
+      const display::ScreenInfos& screen_info,
+      const cc::LayerTreeSettings* settings) = 0;
 
-  // This method closes and deletes the WebWidget.
-  virtual void Close() {}
+  // Set the compositor as visible. If |visible| is true, then the compositor
+  // will request a new layer frame sink and begin producing frames from the
+  // compositor.
+  virtual void SetCompositorVisible(bool visible) = 0;
 
   // Returns the current size of the WebWidget.
-  virtual WebSize Size() { return WebSize(); }
+  virtual gfx::Size Size() { return gfx::Size(); }
 
   // Called to resize the WebWidget.
-  virtual void Resize(const WebSize&) {}
-
-  // Called to notify the WebWidget of entering/exiting fullscreen mode.
-  virtual void DidEnterFullscreen() {}
-  virtual void DidExitFullscreen() {}
-
-  // TODO(crbug.com/704763): Remove the need for this.
-  virtual void SetSuppressFrameRequestsWorkaroundFor704763Only(bool) {}
-
-  // Called to update imperative animation state. This should be called before
-  // paint, although the client can rate-limit these calls.
-  // |last_frame_time| is in seconds. |record_main_frame_metrics| is true when
-  // UMA and UKM metrics should be emitted for animation work.
-  virtual void BeginFrame(base::TimeTicks last_frame_time,
-                          bool record_main_frame_metrics) {}
-
-  // Called after UpdateAllLifecyclePhases has run in response to a BeginFrame.
-  virtual void DidBeginFrame() {}
-
-  // Called when main frame metrics are desired. The local frame's UKM
-  // aggregator must be informed that collection is starting for the
-  // frame.
-  virtual void RecordStartOfFrameMetrics() {}
-
-  // Called when a main frame time metric should be emitted, along with
-  // any metrics that depend upon the main frame total time.
-  virtual void RecordEndOfFrameMetrics(base::TimeTicks frame_begin_time) {}
-
-  // Return metrics information for the stages of BeginMainFrame. This is
-  // ultimately implemented by Blink's LocalFrameUKMAggregator. It must be a
-  // distinct call from the FrameMetrics above because the BeginMainFrameMetrics
-  // for compositor latency must be gathered before the layer tree is
-  // committed to the compositor, which is before the call to
-  // RecordEndOfFrameMetrics.
-  virtual std::unique_ptr<cc::BeginMainFrameMetrics>
-  GetBeginMainFrameMetrics() {
-    return nullptr;
-  }
-
-  // Methods called to mark the beginning and end of input processing work
-  // before rAF scripts are executed. Only called when gathering main frame
-  // UMA and UKM. That is, when RecordStartOfFrameMetrics has been called, and
-  // before RecordEndOfFrameMetrics has been called. Only implement if the
-  // rAF input update will be called as part of a layer tree view main frame
-  // update.
-  virtual void BeginRafAlignedInput() {}
-  virtual void EndRafAlignedInput() {}
-
-  // Methods called to mark the beginning and end of the
-  // LayerTreeHost::UpdateLayers method. Only called when gathering main frame
-  // UMA and UKM. That is, when RecordStartOfFrameMetrics has been called, and
-  // before RecordEndOfFrameMetrics has been called.
-  virtual void BeginUpdateLayers() {}
-  virtual void EndUpdateLayers() {}
-
-  // Methods called to mark the beginning and end of a commit to the impl
-  // thread for a frame. Only called when gathering main frame
-  // UMA and UKM. That is, when RecordStartOfFrameMetrics has been called, and
-  // before RecordEndOfFrameMetrics has been called.
-  virtual void BeginCommitCompositorFrame() {}
-  virtual void EndCommitCompositorFrame() {}
+  virtual void Resize(const gfx::Size&) {}
 
   // Called to run through the entire set of document lifecycle phases needed
   // to render a frame of the web widget. This MUST be called before Paint,
   // and it may result in calls to WebViewClient::DidInvalidateRect (for
   // non-composited WebViews).
-  // |LifecycleUpdateReason| must be used to indicate the source of the
+  // |reason| must be used to indicate the source of the
   // update for the purposes of metrics gathering.
-  enum class LifecycleUpdate { kLayout, kPrePaint, kAll };
-  // This must be kept coordinated with DocumentLifecycle::LifecycleUpdateReason
-  enum class LifecycleUpdateReason { kBeginMainFrame, kTest, kOther };
-  virtual void UpdateAllLifecyclePhases(LifecycleUpdateReason reason) {
-    UpdateLifecycle(LifecycleUpdate::kAll, reason);
+  virtual void UpdateAllLifecyclePhases(DocumentUpdateReason reason) {
+    UpdateLifecycle(WebLifecycleUpdate::kAll, reason);
   }
 
   // UpdateLifecycle is used to update to a specific lifestyle phase, as given
   // by |LifecycleUpdate|. To update all lifecycle phases, use
   // UpdateAllLifecyclePhases.
-  // |LifecycleUpdateReason| must be used to indicate the source of the
+  // |reason| must be used to indicate the source of the
   // update for the purposes of metrics gathering.
-  virtual void UpdateLifecycle(LifecycleUpdate requested_update,
-                               LifecycleUpdateReason reason) {}
-
-  // Called to inform the WebWidget of a change in theme.
-  // Implementors that cache rendered copies of widgets need to re-render
-  // on receiving this message
-  virtual void ThemeChanged() {}
+  virtual void UpdateLifecycle(WebLifecycleUpdate requested_update,
+                               DocumentUpdateReason reason) {}
 
   // Do a hit test at given point and return the WebHitTestResult.
-  virtual WebHitTestResult HitTestResultAt(const gfx::Point&) = 0;
+  virtual WebHitTestResult HitTestResultAt(const gfx::PointF&) = 0;
 
   // Called to inform the WebWidget of an input event.
   virtual WebInputEventResult HandleInputEvent(const WebCoalescedInputEvent&) {
@@ -182,64 +136,99 @@ class WebWidget {
   // Called to inform the WebWidget of the mouse cursor's visibility.
   virtual void SetCursorVisibilityState(bool is_visible) {}
 
-  // Inform WebWidget fallback cursor mode toggled.
-  virtual void OnFallbackCursorModeToggled(bool is_on) {}
-
-  // Applies viewport related properties during a commit from the compositor
-  // thread.
-  virtual void ApplyViewportChanges(const cc::ApplyViewportChangesArgs& args) {}
-
-  virtual void RecordManipulationTypeCounts(cc::ManipulationInfo info) {}
-
-  virtual void SendOverscrollEventFromImplSide(
-      const gfx::Vector2dF& overscroll_delta,
-      cc::ElementId scroll_latched_element_id) {}
-  virtual void SendScrollEndEventFromImplSide(
-      cc::ElementId scroll_latched_element_id) {}
-
-  // Called to inform the WebWidget that mouse capture was lost.
-  virtual void MouseCaptureLost() {}
-
   // Called to inform the WebWidget that it has gained or lost keyboard focus.
   virtual void SetFocus(bool) {}
 
-  // Returns the anchor and focus bounds of the current selection.
-  // If the selection range is empty, it returns the caret bounds.
-  virtual bool SelectionBounds(WebRect& anchor, WebRect& focus) const {
-    return false;
-  }
+  // Returns the state of focus for the WebWidget.
+  virtual bool HasFocus() { return false; }
 
-  // Returns true if the WebWidget is currently animating a GestureFling.
-  virtual bool IsFlinging() const { return false; }
+  // Accessor to the WebWidget scheduing state.
+  virtual scheduler::WebRenderWidgetSchedulingState*
+  RendererWidgetSchedulingState() = 0;
 
-  // Returns true if the WebWidget uses GPU accelerated compositing
-  // to render its contents.
-  virtual bool IsAcceleratedCompositingActive() const { return false; }
+  virtual void SetCursor(const ui::Cursor& cursor) = 0;
 
-  // Returns true if the WebWidget created is of type PepperWidget.
-  virtual bool IsPepperWidget() const { return false; }
+  // Get the current tooltip text.
+  virtual WebString GetLastToolTipTextForTesting() const { return WebString(); }
 
-  // Calling WebWidgetClient::requestPointerLock() will result in one
-  // return call to didAcquirePointerLock() or didNotAcquirePointerLock().
-  virtual void DidAcquirePointerLock() {}
-  virtual void DidNotAcquirePointerLock() {}
+  // Whether or not the widget is in the process of handling input events.
+  virtual bool HandlingInputEvent() = 0;
 
-  // Pointer lock was held, but has been lost. This may be due to a
-  // request via WebWidgetClient::requestPointerUnlock(), or for other
-  // reasons such as the user exiting lock, window focus changing, etc.
-  virtual void DidLosePointerLock() {}
+  // Set state that the widget is in the process of handling input events.
+  virtual void SetHandlingInputEvent(bool handling) = 0;
 
-  // Called by client to request showing the context menu.
-  virtual void ShowContextMenu(WebMenuSourceType) {}
+  using HandledEventCallback = base::OnceCallback<void(
+      mojom::InputEventResultState ack_state,
+      const ui::LatencyInfo& latency_info,
+      std::unique_ptr<InputHandlerProxy::DidOverscrollParams>,
+      absl::optional<cc::TouchAction>)>;
 
-  // When the WebWidget is part of a frame tree, returns the active url for
-  // main frame of that tree, if the main frame is local in that tree. When
-  // the WebWidget is of a different kind (e.g. a popup) it returns the active
-  // url for the main frame of the frame tree that spawned the WebWidget, if
-  // the main frame is local in that tree. When the relevant main frame is
-  // remote in that frame tree, then the url is not known, and an empty url is
-  // returned.
-  virtual WebURL GetURLForDebugTrace() = 0;
+  // Process the input event, invoking the callback when complete. This
+  // method will call the callback synchronously.
+  virtual void ProcessInputEventSynchronouslyForTesting(
+      const WebCoalescedInputEvent&,
+      HandledEventCallback) = 0;
+
+  virtual void DidOverscrollForTesting(
+      const gfx::Vector2dF& overscroll_delta,
+      const gfx::Vector2dF& accumulated_overscroll,
+      const gfx::PointF& position_in_viewport,
+      const gfx::Vector2dF& velocity_in_viewport) {}
+
+  // Requests the text input state be updated. If anything has changed the
+  // updated state will be sent to the browser.
+  virtual void UpdateTextInputState() = 0;
+
+  // Flush any pending input.
+  virtual void FlushInputProcessedCallback() = 0;
+
+  // Cancel the current composition.
+  virtual void CancelCompositionForPepper() = 0;
+
+  // Requests the selection bounds be updated.
+  virtual void UpdateSelectionBounds() = 0;
+
+  // Request the virtual keyboard be shown.
+  virtual void ShowVirtualKeyboard() = 0;
+
+  // Apply the visual properties to the widget.
+  virtual void ApplyVisualProperties(
+      const VisualProperties& visual_properties) = 0;
+
+  // Returns information about the screen where this view's widgets are being
+  // displayed.
+  virtual const display::ScreenInfo& GetScreenInfo() = 0;
+
+  // Returns information about all available screens.
+  virtual const display::ScreenInfos& GetScreenInfos() = 0;
+
+  // Returns original (non-emulated) information about the screen where this
+  // view's widgets are being displayed.
+  virtual const display::ScreenInfo& GetOriginalScreenInfo() = 0;
+
+  // Returns original (non-emulated) information about all available screens.
+  virtual const display::ScreenInfos& GetOriginalScreenInfos() = 0;
+
+  // Called to get the position of the widget's window in screen
+  // coordinates. Note, the window includes any decorations such as borders,
+  // scrollbars, URL bar, tab strip, etc. if they exist.
+  virtual gfx::Rect WindowRect() = 0;
+
+  // Called to get the view rect in screen coordinates. This is the actual
+  // content view area, i.e. doesn't include any window decorations.
+  virtual gfx::Rect ViewRect() = 0;
+
+  // Sets the screen rects (in screen coordinates).
+  virtual void SetScreenRects(const gfx::Rect& widget_screen_rect,
+                              const gfx::Rect& window_screen_rect) = 0;
+
+  // Returns the visible viewport size (in screen coorindates).
+  virtual gfx::Size VisibleViewportSizeInDIPs() = 0;
+
+  // Returns the emulator scale.
+  virtual float GetEmulatorScale() { return 1.0f; }
+
+  virtual bool IsHidden() const = 0;
 
  protected:
   ~WebWidget() = default;
@@ -247,4 +236,4 @@ class WebWidget {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_WIDGET_H_

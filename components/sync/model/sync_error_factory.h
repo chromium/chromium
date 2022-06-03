@@ -14,8 +14,8 @@ namespace syncer {
 
 class SyncErrorFactory {
  public:
-  SyncErrorFactory();
-  virtual ~SyncErrorFactory();
+  SyncErrorFactory() = default;
+  virtual ~SyncErrorFactory() = default;
 
   // Creates a SyncError object and uploads this call stack to breakpad.
   virtual SyncError CreateAndUploadError(const base::Location& location,

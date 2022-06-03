@@ -13,12 +13,12 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -47,6 +47,10 @@ enum MediaCodecStatus {
 class MEDIA_EXPORT MediaCodecBridge {
  public:
   MediaCodecBridge() = default;
+
+  MediaCodecBridge(const MediaCodecBridge&) = delete;
+  MediaCodecBridge& operator=(const MediaCodecBridge&) = delete;
+
   virtual ~MediaCodecBridge() = default;
 
   // Calls MediaCodec#stop(). However, due to buggy implementations (b/8125974)
@@ -75,6 +79,13 @@ class MEDIA_EXPORT MediaCodecBridge {
   // or MEDIA_CODEC_OK otherwise.
   virtual MediaCodecStatus GetOutputChannelCount(int* channel_count) = 0;
 
+  // Fills in |color_space| with the color space of the decoded video.  This
+  // is valid after DequeueOutputBuffer() signals a format change.  Will return
+  // MEDIA_CODEC_OK on success, with |color_space| initialized, or
+  // MEDIA_CODEC_ERROR with |color_space| unmodified otherwise.
+  virtual MediaCodecStatus GetOutputColorSpace(
+      gfx::ColorSpace* color_space) = 0;
+
   // Submits a byte array to the given input buffer. Call this after getting an
   // available buffer from DequeueInputBuffer(). If |data| is NULL, it assumes
   // the input buffer has already been populated (but still obeys |size|).
@@ -95,7 +106,7 @@ class MEDIA_EXPORT MediaCodecBridge {
       const std::string& iv,
       const std::vector<SubsampleEntry>& subsamples,
       EncryptionScheme encryption_scheme,
-      base::Optional<EncryptionPattern> encryption_pattern,
+      absl::optional<EncryptionPattern> encryption_pattern,
       base::TimeDelta presentation_time) = 0;
 
   // Submits an empty buffer with the END_OF_STREAM flag set.
@@ -162,7 +173,8 @@ class MEDIA_EXPORT MediaCodecBridge {
   // Returns the CodecType this codec was created with.
   virtual CodecType GetCodecType() const = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaCodecBridge);
+  // Returns the max input size we configured the codec with.
+  virtual size_t GetMaxInputSize() = 0;
 };
 
 }  // namespace media

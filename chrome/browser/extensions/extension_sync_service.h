@@ -11,16 +11,17 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/sync_bundle.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/sync/model/model_error.h"
 #include "components/sync/model/syncable_service.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
+#include "extensions/browser/extension_system.h"
 
 class Profile;
 
@@ -39,6 +40,10 @@ class ExtensionSyncService : public syncer::SyncableService,
                              public extensions::ExtensionPrefsObserver {
  public:
   explicit ExtensionSyncService(Profile* profile);
+
+  ExtensionSyncService(const ExtensionSyncService&) = delete;
+  ExtensionSyncService& operator=(const ExtensionSyncService&) = delete;
+
   ~ExtensionSyncService() override;
 
   // Convenience function to get the ExtensionSyncService for a BrowserContext.
@@ -49,29 +54,16 @@ class ExtensionSyncService : public syncer::SyncableService,
   // is synced as part of ExtensionSyncData (e.g. incognito_enabled).
   void SyncExtensionChangeIfNeeded(const extensions::Extension& extension);
 
-  // Returns whether the extension with the given |id| will be re-enabled once
-  // it is updated to the given |version|. This happens when we get a Sync
-  // update telling us to re-enable a newer version than what is currently
-  // installed.
-  // TODO(crbug/1019813): The logic for this function was broken after forced
-  // custodian installations were removed. See
-  // ExtensionServiceTestSupervised.
-  // UpdateWithPermissionIncreaseApprovalNewVersion
-  // for an example of when this function should return true but returns false
-  // instead in the test code.
-  bool HasPendingReenable(const std::string& id,
-                          const base::Version& version) const;
-
   // syncer::SyncableService implementation.
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  syncer::SyncMergeResult MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> sync_error_factory) override;
   void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override;
-  syncer::SyncError ProcessSyncChanges(
+  syncer::SyncDataList GetAllSyncDataForTesting(syncer::ModelType type) const;
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -117,10 +109,6 @@ class ExtensionSyncService : public syncer::SyncableService,
   // Applies the given change coming in from the server to the local state.
   void ApplySyncData(const extensions::ExtensionSyncData& extension_sync_data);
 
-  // Applies the bookmark app specific parts of |extension_sync_data|.
-  void ApplyBookmarkAppSyncData(
-      const extensions::ExtensionSyncData& extension_sync_data);
-
   // Collects the ExtensionSyncData for all installed apps or extensions.
   std::vector<extensions::ExtensionSyncData> GetLocalSyncDataList(
       syncer::ModelType type) const;
@@ -139,11 +127,14 @@ class ExtensionSyncService : public syncer::SyncableService,
   // The normal profile associated with this ExtensionSyncService.
   Profile* profile_;
 
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      registry_observer_{this};
-  ScopedObserver<extensions::ExtensionPrefs, extensions::ExtensionPrefsObserver>
-      prefs_observer_{this};
+  extensions::ExtensionSystem* system_;
+
+  base::ScopedObservation<extensions::ExtensionRegistry,
+                          extensions::ExtensionRegistryObserver>
+      registry_observation_{this};
+  base::ScopedObservation<extensions::ExtensionPrefs,
+                          extensions::ExtensionPrefsObserver>
+      prefs_observation_{this};
 
   // When this is set to true, any incoming updates (from the observers as well
   // as from explicit SyncExtensionChangeIfNeeded calls) are ignored. This is
@@ -165,8 +156,6 @@ class ExtensionSyncService : public syncer::SyncableService,
   // have started happening. It will cause sync to call us back
   // asynchronously via MergeDataAndStartSyncing as soon as possible.
   syncer::SyncableService::StartSyncFlare flare_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionSyncService);
 };
 
 #endif  // CHROME_BROWSER_EXTENSIONS_EXTENSION_SYNC_SERVICE_H_

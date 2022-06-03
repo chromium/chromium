@@ -13,7 +13,7 @@ $ tools/perf/run_benchmark --browser=system dummy_benchmark.noisy_benchmark_1
 ```
 
 Otherwise have a look at the required catapult dependencies listed in the
-[.vpython](https://chromium.googlesource.com/chromium/src/+/master/.vpython)
+[.vpython](https://chromium.googlesource.com/chromium/src/+/main/.vpython)
 spec file.
 
 ## Desktop benchmarks
@@ -29,7 +29,7 @@ possible (e.g: AntiVirus,..) before running the benchmarks.
 ### ChromeOS
 
 Virtual Machine: see
-[cros_vm.md doc](https://chromium.googlesource.com/chromiumos/docs/+/master/cros_vm.md)
+[cros_vm.md doc](https://chromium.googlesource.com/chromiumos/docs/+/main/cros_vm.md)
 
 Actual CrOS machine: please contact achuith@, cywang@ from CrOS teams for
 advice.

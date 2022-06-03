@@ -10,7 +10,7 @@
 #include <string>
 
 #include "base/macros.h"
-#include "components/crash/content/app/crash_reporter_client.h"
+#include "components/crash/core/app/crash_reporter_client.h"
 
 namespace chromecast {
 
@@ -19,6 +19,10 @@ class CastCrashReporterClient : public crash_reporter::CrashReporterClient {
   static void InitCrashReporter(const std::string& process_type);
 
   CastCrashReporterClient();
+
+  CastCrashReporterClient(const CastCrashReporterClient&) = delete;
+  CastCrashReporterClient& operator=(const CastCrashReporterClient&) = delete;
+
   ~CastCrashReporterClient() override;
 
   // crash_reporter::CrashReporterClient implementation:
@@ -28,8 +32,6 @@ class CastCrashReporterClient : public crash_reporter::CrashReporterClient {
 
  private:
   static uint64_t GetProcessStartTime();
-
-  DISALLOW_COPY_AND_ASSIGN(CastCrashReporterClient);
 };
 
 }  // namespace chromecast

@@ -4,9 +4,11 @@
 
 #include "components/storage_monitor/storage_monitor.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/storage_monitor/removable_storage_observer.h"
 #include "components/storage_monitor/transient_device_ids.h"
@@ -139,7 +141,7 @@ StorageMonitor::StorageMonitor()
       initializing_(false),
       initialized_(false),
       transient_device_ids_(new TransientDeviceIds) {
-  receiver_.reset(new ReceiverImpl(this));
+  receiver_ = std::make_unique<ReceiverImpl>(this);
 }
 
 StorageMonitor::~StorageMonitor() {

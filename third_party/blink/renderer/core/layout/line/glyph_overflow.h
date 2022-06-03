@@ -58,10 +58,10 @@ struct GlyphOverflow {
       ascent = font_data->GetFontMetrics().FloatAscent(baseline_type);
       descent = font_data->GetFontMetrics().FloatDescent(baseline_type);
     }
-    top = std::max(0.0f, -bounds.Y() - ascent);
-    bottom = std::max(0.0f, bounds.MaxY() - descent);
-    left = std::max(0.0f, -bounds.X());
-    right = std::max(0.0f, bounds.MaxX() - text_width);
+    top = std::max(0.0f, -bounds.y() - ascent);
+    bottom = std::max(0.0f, bounds.bottom() - descent);
+    left = std::max(0.0f, -bounds.x());
+    right = std::max(0.0f, bounds.right() - text_width);
   }
 
   // Top and bottom are the amounts of glyph overflows exceeding the font

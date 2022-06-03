@@ -6,8 +6,9 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/files/file_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "build/branding_buildflags.h"
@@ -24,7 +25,6 @@ const wchar_t kUpdateClientStateRegKey[] =
 const wchar_t kUpdateClientsRegKey[] = L"Software\\Google\\Update\\Clients";
 
 // Copied from google_chrome_install_modes.cc.
-const wchar_t kBinariesAppGuid[] = L"{4DC8B4CA-1BDA-483e-B5FA-D3C12E15B62D}";
 const wchar_t kBrowserAppGuid[] = L"{8A69D345-D564-463c-AFF1-A69D9E530F96}";
 const wchar_t kSxSBrowserAppGuid[] = L"{4ea16ac7-fd5a-47c3-875b-dbf4a2008c20}";
 #else
@@ -37,7 +37,7 @@ const wchar_t kUninstallStringField[] = L"UninstallString";
 const wchar_t kVersionStringField[] = L"pv";
 
 // Returns the registry path to where Client state is stored.
-base::string16 GetClientStateRegKey() {
+std::wstring GetClientStateRegKey() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return kUpdateClientStateRegKey;
 #else
@@ -47,7 +47,7 @@ base::string16 GetClientStateRegKey() {
 
 // Returns the registry path to where basic information about the Clients
 // like name and version information are stored.
-base::string16 GetClientsRegKey() {
+std::wstring GetClientsRegKey() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return kUpdateClientsRegKey;
 #else
@@ -58,13 +58,13 @@ base::string16 GetClientsRegKey() {
 // Reads a string value from the specified product's registry key. Returns true
 // iff the value is present and successfully read.
 bool GetValueFromRegistry(InstallationLevel level,
-                          const base::string16 key_path,
+                          const std::wstring key_path,
                           const wchar_t* app_guid,
                           const wchar_t* value_name,
-                          base::string16* value) {
-  HKEY root_key = (level == USER_LEVEL_INSTALLATION) ?
-      HKEY_CURRENT_USER : HKEY_LOCAL_MACHINE;
-  base::string16 subkey(key_path);
+                          std::wstring* value) {
+  HKEY root_key = (level == USER_LEVEL_INSTALLATION) ? HKEY_CURRENT_USER
+                                                     : HKEY_LOCAL_MACHINE;
+  std::wstring subkey(key_path);
   if (app_guid)
     subkey.append(1, L'\\').append(app_guid);
   base::win::RegKey reg_key;
@@ -83,7 +83,7 @@ bool GetValueFromRegistry(InstallationLevel level,
 // occurs or the product is not installed at the specified level.
 base::FilePath GetSetupExeFromRegistry(InstallationLevel level,
                                        const wchar_t* app_guid) {
-  base::string16 uninstall;
+  std::wstring uninstall;
   if (GetValueFromRegistry(level, GetClientStateRegKey(), app_guid,
                            kUninstallStringField, &uninstall)) {
     base::FilePath setup_exe_path(uninstall);
@@ -96,20 +96,13 @@ base::FilePath GetSetupExeFromRegistry(InstallationLevel level,
 // Returns the path to an existing setup.exe at the specified level, if it can
 // be found via the registry.
 base::FilePath GetSetupExeForInstallationLevel(InstallationLevel level) {
-  base::FilePath setup_exe_path;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  // Look in the registry for Chrome Binaries first.
-  setup_exe_path = GetSetupExeFromRegistry(level, kBinariesAppGuid);
-  // If the above fails, look in the registry for Chrome next.
-  if (setup_exe_path.empty())
-    setup_exe_path = GetSetupExeFromRegistry(level, kBrowserAppGuid);
-  // If we fail again, then setup_exe_path would be empty.
+  // Look in the registry for Chrome.
+  return GetSetupExeFromRegistry(level, kBrowserAppGuid);
 #else
   // For Chromium, there are no GUIDs. Just look in the Chromium registry key.
-  setup_exe_path = GetSetupExeFromRegistry(level, nullptr);
+  return GetSetupExeFromRegistry(level, nullptr);
 #endif
-
-  return setup_exe_path;
 }
 
 // Returns the path to an installed |exe_file| (e.g. chrome.exe) at the
@@ -171,10 +164,10 @@ base::Version GetChromeVersionForInstallationLevel(InstallationLevel level,
     return base::Version();
 #endif
 
-  base::string16 version_str;
+  std::wstring version_str;
   if (GetValueFromRegistry(level, GetClientsRegKey(), app_guid,
                            kVersionStringField, &version_str)) {
-    base::Version version(base::UTF16ToASCII(version_str));
+    base::Version version(base::WideToASCII(version_str));
     if (version.IsValid())
       return version;
   }

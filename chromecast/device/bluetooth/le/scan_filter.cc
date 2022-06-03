@@ -4,7 +4,7 @@
 
 #include "chromecast/device/bluetooth/le/scan_filter.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -29,7 +29,7 @@ bool ScanFilter::Matches(const LeScanResult& scan_result) const {
   }
 
   if (service_uuid) {
-    base::Optional<LeScanResult::UuidList> all_uuids =
+    absl::optional<LeScanResult::UuidList> all_uuids =
         scan_result.AllServiceUuids();
     if (!all_uuids) {
       return false;
@@ -41,7 +41,7 @@ bool ScanFilter::Matches(const LeScanResult& scan_result) const {
   }
 
   if (!name && regex_name) {
-    base::Optional<std::string> scan_name = scan_result.Name();
+    absl::optional<std::string> scan_name = scan_result.Name();
     if (!scan_name || !RE2::PartialMatch(*scan_name, *regex_name)) {
       return false;
     }

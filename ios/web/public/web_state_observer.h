@@ -25,6 +25,9 @@ enum class PageLoadCompletionStatus : bool { SUCCESS = 0, FAILURE = 1 };
 // load events from WebState.
 class WebStateObserver {
  public:
+  WebStateObserver(const WebStateObserver&) = delete;
+  WebStateObserver& operator=(const WebStateObserver&) = delete;
+
   virtual ~WebStateObserver();
 
   // These methods are invoked every time the WebState changes visibility.
@@ -49,6 +52,14 @@ class WebStateObserver {
   // particular navigation before DidStartNavigation is called on the next.
   virtual void DidStartNavigation(WebState* web_state,
                                   NavigationContext* navigation_context) {}
+
+  // Called when an in-progress main-frame navigation in |web_state| receives
+  // a server redirect to a different URL. At the point where this is called,
+  // |navigation_context|'s URL has already been updated, so calling GetUrl()
+  // on |navigation_context| will return the redirect URL rather than the
+  // original URL.
+  virtual void DidRedirectNavigation(WebState* web_state,
+                                     NavigationContext* navigation_context) {}
 
   // Called when a navigation finished in the WebState for the main frame. This
   // happens when a navigation is committed, aborted or replaced by a new one.
@@ -132,15 +143,16 @@ class WebStateObserver {
   // possibly by other means).
   virtual void RenderProcessGone(WebState* web_state) {}
 
+  // Invoked when the WebState becomes realized (e.g. when it becomes fully
+  // operational after being restored).
+  virtual void WebStateRealized(WebState* web_state) {}
+
   // Invoked when the WebState is being destroyed. Gives subclasses a chance
   // to cleanup.
   virtual void WebStateDestroyed(WebState* web_state) {}
 
  protected:
   WebStateObserver();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebStateObserver);
 };
 
 }  // namespace web

@@ -38,13 +38,16 @@ class BufferExtensionStreamDataSource final
                                   const void* data,
                                   size_t data_size);
 
+  BufferExtensionStreamDataSource(const BufferExtensionStreamDataSource&) =
+      delete;
+  BufferExtensionStreamDataSource& operator=(
+      const BufferExtensionStreamDataSource&) = delete;
+
   size_t StreamDataSize() override;
   bool ReadStreamData(Delegate* delegate) override;
 
  private:
   std::vector<uint8_t> data_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferExtensionStreamDataSource);
 };
 
 }  // namespace test

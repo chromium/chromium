@@ -11,8 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/vulkan/buildflags.h"
@@ -30,24 +29,35 @@ class ScenicSurface;
 
 class ScenicSurfaceFactory : public SurfaceFactoryOzone {
  public:
-  explicit ScenicSurfaceFactory(
-      mojo::PendingRemote<mojom::ScenicGpuHost> gpu_host);
+  ScenicSurfaceFactory();
+
+  ScenicSurfaceFactory(const ScenicSurfaceFactory&) = delete;
+  ScenicSurfaceFactory& operator=(const ScenicSurfaceFactory&) = delete;
+
   ~ScenicSurfaceFactory() override;
 
+  // Initializes the surface factory. Binds the surface factory to the
+  // current thread (and thus must run with a message loop).
+  void Initialize(mojo::PendingRemote<mojom::ScenicGpuHost> gpu_host);
+
+  // Disconnects from ScenicGpuHost and detaches from the current thread.
+  // After shutting down, it is safe to call Initialize() again.
+  void Shutdown();
+
   // SurfaceFactoryOzone implementation.
-  std::vector<gl::GLImplementation> GetAllowedGLImplementations() override;
-  GLOzone* GetGLOzone(gl::GLImplementation implementation) override;
+  std::vector<gl::GLImplementationParts> GetAllowedGLImplementations() override;
+  GLOzone* GetGLOzone(const gl::GLImplementationParts& implementation) override;
   std::unique_ptr<PlatformWindowSurface> CreatePlatformWindowSurface(
       gfx::AcceleratedWidget widget) override;
   std::unique_ptr<SurfaceOzoneCanvas> CreateCanvasForWidget(
-      gfx::AcceleratedWidget widget,
-      scoped_refptr<base::SequencedTaskRunner> task_runner) override;
+      gfx::AcceleratedWidget widget) override;
   scoped_refptr<gfx::NativePixmap> CreateNativePixmap(
       gfx::AcceleratedWidget widget,
       VkDevice vk_device,
       gfx::Size size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage) override;
+      gfx::BufferUsage usage,
+      absl::optional<gfx::Size> framebuffer_size = absl::nullopt) override;
   void CreateNativePixmapAsync(gfx::AcceleratedWidget widget,
                                VkDevice vk_device,
                                gfx::Size size,
@@ -56,8 +66,8 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
                                NativePixmapCallback callback) override;
 #if BUILDFLAG(ENABLE_VULKAN)
   std::unique_ptr<gpu::VulkanImplementation> CreateVulkanImplementation(
-      bool allow_protected_memory,
-      bool enforce_protected_memory) override;
+      bool use_swiftshader,
+      bool allow_protected_memory) override;
 #endif
 
   // Registers a surface for a |widget|.
@@ -78,24 +88,20 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
   ScenicSurface* GetSurface(gfx::AcceleratedWidget widget)
       LOCKS_EXCLUDED(surface_lock_);
 
- private:
   // Creates a new scenic session on any thread.
   scenic::SessionPtrAndListenerRequest CreateScenicSession();
 
-  // Creates a new scenic session on the main thread.
-  void CreateScenicSessionOnMainThread(
-      fidl::InterfaceRequest<fuchsia::ui::scenic::Session> session_request,
-      fidl::InterfaceHandle<fuchsia::ui::scenic::SessionListener> listener);
-
+ private:
   // Links a surface to its parent window in the host process.
-  void AttachSurfaceToWindow(gfx::AcceleratedWidget window,
-                             mojo::ScopedHandle surface_view_holder_token_mojo);
+  void AttachSurfaceToWindow(
+      gfx::AcceleratedWidget window,
+      mojo::PlatformHandle surface_view_holder_token_mojo);
 
   base::flat_map<gfx::AcceleratedWidget, ScenicSurface*> surface_map_
       GUARDED_BY(surface_lock_);
   base::Lock surface_lock_;
 
-  mojo::Remote<mojom::ScenicGpuHost> const gpu_host_;
+  mojo::Remote<mojom::ScenicGpuHost> gpu_host_;
   std::unique_ptr<GLOzone> egl_implementation_;
 
   fuchsia::ui::scenic::ScenicPtr scenic_;
@@ -108,8 +114,6 @@ class ScenicSurfaceFactory : public SurfaceFactoryOzone {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<ScenicSurfaceFactory> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScenicSurfaceFactory);
 };
 
 }  // namespace ui

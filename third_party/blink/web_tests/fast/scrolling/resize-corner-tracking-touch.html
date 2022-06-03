@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+div {
+        overflow: auto;
+        resize: both;
+        border: blue 2px solid;
+}
+
+textarea {
+        resize: both;
+}
+
+iframe {
+        border: blue 2px solid;
+}
+</style>
+
+<div id="placeholder" style="width: 150px; height: 150px;">a placeholder so that we have enough elements to scroll the page</div>
+<div id="div" style="width: 150px; height: 100px;;"></div>
+<textarea id="textarea1" style="width: 150px; height: 100px;"></textarea>
+<br>
+<iframe id="iframe1" src="resources/resize-corner-tracking-touch-iframe.html" style="resize:both; width: 200px; height: 200px"></iframe>
+
+<script type="text/javascript">
+    async function resize(target, offset, touch_delta, device)
+    {
+        var rect = target.getBoundingClientRect();
+        if (typeof(device) == "undefined")
+           device = GestureSourceType.TOUCH_INPUT;
+        await smoothScrollWithXY(-touch_delta.touch_delta_x, -touch_delta.touch_delta_y,
+                                 rect.right + offset.x, rect.bottom + offset.y, device,
+                                 SPEED_INSTANT);
+    }
+
+    promise_test(async () => {
+        // Scroll the page first to test that resize works with scrolled page.
+        document.scrollingElement.scrollTop = 50;
+
+        // Touch scrolling starting at inside the object, and within the normal
+        // resizer area (15x15), e.g. offset (-6, -7) from bottom right corner of
+        // the object, will do the resize.
+        var target = document.getElementById("div");
+        var old_width = target.offsetWidth;
+        var old_height = target.offsetHeight;
+        await resize(target, {x: -6, y: -7}, {touch_delta_x: 20, touch_delta_y: 10});
+        // The resize expectation includes the touch slop region and is one frame
+        // in the future based on the addition of the values of position and delta.
+        assert_equals(target.offsetWidth - old_width, 53);
+        assert_equals(target.offsetHeight - old_height, 17);
+    }, 'Touch scrolling inside the resizer area of div will do the resize.');
+
+    promise_test(async () => {
+        // Touch scrolling starting at outside of the object, e.g. offset (6, 7)
+        // from bottom right corner of the object, won't do the resize.
+        var target = document.getElementById("div");
+        var old_width = target.offsetWidth;
+        var old_height = target.offsetHeight;
+        await resize(target, {x: 6, y: 7}, {touch_delta_x: 20, touch_delta_y: 10});
+        assert_equals(target.offsetWidth - old_width, 0);
+        assert_equals(target.offsetHeight - old_height, 0);
+    }, 'Touch scrolling outside of div will not do the resize.');
+
+    promise_test(async () => {
+        // Touch scrolling starting at inside the object, and only a little bit
+        // off the resizer area, e.g. offset (-20, -20) from bottom right corner of
+        // the object, will do the resize.
+        var target = document.getElementById("textarea1");
+        var old_width = target.offsetWidth;
+        var old_height = target.offsetHeight;
+        await resize(target, {x: -20, y: -20}, {touch_delta_x: 20, touch_delta_y: 10});
+        // The resize expectation includes the touch slop region and is one frame
+        // in the future based on the addition of the values of position and delta.
+        assert_equals(target.offsetWidth - old_width, 53);
+        assert_equals(target.offsetHeight - old_height, 17);
+    }, 'Touch scrolling a little off the resizer area of textarea will do the resize.');
+
+    promise_test(async () => {
+        var target = document.getElementById("textarea1");
+        var old_width = target.offsetWidth;
+        var old_height = target.offsetHeight;
+        await resize(target, {x: -6, y: -7}, {touch_delta_x: 20, touch_delta_y: 10},
+                     GestureSourceType.TOUCHPAD_INPUT);
+        assert_equals(target.offsetWidth - old_width, 0);
+        assert_equals(target.offsetHeight - old_height, 0);
+    }, 'Touchpad scroll should not resize textarea');
+
+    promise_test(async () => {
+        // Scroll the page again
+        document.scrollingElement.scrollTop += 100;
+
+        var iframe = document.getElementById("iframe1");
+        var old_width = iframe.offsetWidth;
+        var old_height = iframe.offsetHeight;
+        await resize(iframe, {x: -6, y: -7}, {touch_delta_x: 20, touch_delta_y: 10});
+        assert_equals(iframe.offsetWidth - old_width, 53);
+        assert_equals(iframe.offsetHeight - old_height, 17);
+    }, 'Touch scrolling inside the resizer area of iframe will do the resize after scroll.');
+
+    promise_test(async () => {
+        var iframe = document.getElementById("iframe1");
+        var old_width = iframe.offsetWidth;
+        var old_height = iframe.offsetHeight;
+        await resize(iframe, {x: -20, y: -20}, {touch_delta_x: 20, touch_delta_y: 10});
+        assert_equals(iframe.offsetWidth - old_width, 53);
+        assert_equals(iframe.offsetHeight - old_height, 17);
+    }, 'Touch scrolling a little off the resizer area of iframe will do the resize after scroll.');
+
+    promise_test(async () => {
+        var iframe = document.getElementById("iframe1");
+        var rect = iframe.getBoundingClientRect();
+        var target = iframe.contentDocument.getElementById("textarea2");
+        var old_width = target.offsetWidth;
+        var old_height = target.offsetHeight;
+        await resize(target, {x: rect.left - 6, y: rect.top - 7},
+                     {touch_delta_x: 20, touch_delta_y: 10});
+        assert_equals(target.offsetWidth - old_width, 53);
+        assert_equals(target.offsetHeight - old_height, 17);
+    }, 'Touch scrolling inside the resizer area of textarea in iframe will do the resize after scroll.');
+</script>

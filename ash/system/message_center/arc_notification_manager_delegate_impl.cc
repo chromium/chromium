@@ -32,7 +32,7 @@ void ArcNotificationManagerDelegateImpl::ShowMessageCenter() {
       ->GetPrimaryRootWindowController()
       ->GetStatusAreaWidget()
       ->unified_system_tray()
-      ->ShowBubble(false /* show_by_click */);
+      ->ShowBubble();
 }
 
 void ArcNotificationManagerDelegateImpl::HideMessageCenter() {

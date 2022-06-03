@@ -9,17 +9,14 @@
 #include <set>
 #include <string>
 
-#include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/active_tab_permission_granter.h"
 #include "chrome/common/extensions/webstore_install_result.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "content/public/browser/web_contents_receiver_set.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "extensions/browser/api/declarative_net_request/web_contents_helper.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -46,6 +43,9 @@ class TabHelper : public content::WebContentsObserver,
                   public ExtensionRegistryObserver,
                   public content::WebContentsUserData<TabHelper> {
  public:
+  TabHelper(const TabHelper&) = delete;
+  TabHelper& operator=(const TabHelper&) = delete;
+
   ~TabHelper() override;
 
   // Sets the extension denoting this as an app. If |extension| is non-null this
@@ -54,7 +54,7 @@ class TabHelper : public content::WebContentsObserver,
   //
   // NOTE: this should only be manipulated before the tab is added to a browser.
   // TODO(sky): resolve if this is the right way to identify an app tab. If it
-  // is, than this should be passed in the constructor.
+  // is, then this should be passed in the constructor.
   void SetExtensionApp(const Extension* extension);
 
   // Convenience for setting the app extension by id. This does nothing if
@@ -67,7 +67,7 @@ class TabHelper : public content::WebContentsObserver,
 
   // Return ExtensionId for extension app.
   // If an app extension has not been set, returns empty id.
-  ExtensionId GetAppId() const;
+  ExtensionId GetExtensionAppId() const;
 
   // If an app extension has been explicitly set for this WebContents its icon
   // is returned.
@@ -88,6 +88,8 @@ class TabHelper : public content::WebContentsObserver,
     return active_tab_permission_granter_.get();
   }
 
+  void OnWatchedPageChanged(const std::vector<std::string>& css_selectors);
+
  private:
   // Utility function to invoke member functions on all relevant
   // ContentRulesRegistries.
@@ -107,21 +109,20 @@ class TabHelper : public content::WebContentsObserver,
   void DidCloneToNewWebContents(
       content::WebContents* old_web_contents,
       content::WebContents* new_web_contents) override;
+  void WebContentsDestroyed() override;
 
   // ExtensionFunctionDispatcher::Delegate overrides.
   WindowController* GetExtensionWindowController() const override;
   content::WebContents* GetAssociatedWebContents() const override;
 
   // ExtensionRegistryObserver:
+  void OnExtensionLoaded(content::BrowserContext* browser_context,
+                         const Extension* extension) override;
   void OnExtensionUnloaded(content::BrowserContext* browser_context,
                            const Extension* extension,
                            UnloadedExtensionReason reason) override;
 
   // Message handlers.
-  void OnGetAppInstallState(content::RenderFrameHost* host,
-                            const GURL& requestor_url,
-                            int return_route_id,
-                            int callback_id);
   void OnContentScriptsExecuting(content::RenderFrameHost* host,
                                  const ExecutingScriptsMap& extension_ids,
                                  const GURL& on_url);
@@ -153,10 +154,12 @@ class TabHelper : public content::WebContentsObserver,
 
   std::unique_ptr<ExtensionActionRunner> extension_action_runner_;
 
+  declarative_net_request::WebContentsHelper declarative_net_request_helper_;
+
   std::unique_ptr<ActiveTabPermissionGranter> active_tab_permission_granter_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      registry_observation_{this};
 
   // Vend weak pointers that can be invalidated to stop in-progress loads.
   base::WeakPtrFactory<TabHelper> image_loader_ptr_factory_{this};
@@ -165,8 +168,6 @@ class TabHelper : public content::WebContentsObserver,
   base::WeakPtrFactory<TabHelper> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(TabHelper);
 };
 
 }  // namespace extensions

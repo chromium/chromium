@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>RTCPeerConnection-crash-tests</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+'use strict;'
+
+promise_test(async t => {
+  // Note that this test uses location.reload, so there can't be more than
+  // one test per file with this simple reload-detection scheme.
+  if (sessionStorage.getItem('test-state') === 'reloading') {
+    return; // success
+  }
+  sessionStorage.setItem('test-state', 'starting');
+  // Set conditions that will cause OnInterestingUsage to be called.
+  const pc = new RTCPeerConnection();
+  pc.addTransceiver('audio');
+  const offer = await pc.createOffer();
+  const hasCandidate = new Promise(resolve => {
+    pc.onicecandidate = (e) => {
+      resolve();
+    }
+  });
+  await pc.setLocalDescription(offer);
+  await hasCandidate;
+
+  const pc2 = new RTCPeerConnection();
+  sessionStorage.setItem('test-state', 'reloading');
+  location.reload();
+}, 'Reload with active PC with interesting usage does not crash');
+
+</script>
+</body>
+</html>

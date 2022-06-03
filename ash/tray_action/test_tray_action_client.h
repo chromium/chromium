@@ -8,7 +8,6 @@
 #include <vector>
 
 #include "ash/public/mojom/tray_action.mojom.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
@@ -17,6 +16,9 @@ namespace ash {
 class TestTrayActionClient : public mojom::TrayActionClient {
  public:
   TestTrayActionClient();
+
+  TestTrayActionClient(const TestTrayActionClient&) = delete;
+  TestTrayActionClient& operator=(const TestTrayActionClient&) = delete;
 
   ~TestTrayActionClient() override;
 
@@ -42,8 +44,6 @@ class TestTrayActionClient : public mojom::TrayActionClient {
 
   std::vector<mojom::LockScreenNoteOrigin> note_origins_;
   std::vector<mojom::CloseLockScreenNoteReason> close_note_reasons_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTrayActionClient);
 };
 
 }  // namespace ash

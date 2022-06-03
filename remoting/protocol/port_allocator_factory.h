@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/memory/ref_counted.h"
+#include "base/memory/weak_ptr.h"
 
 namespace cricket {
 class PortAllocator;
@@ -16,6 +17,7 @@ class PortAllocator;
 namespace remoting {
 namespace protocol {
 
+class SessionOptionsProvider;
 class TransportContext;
 
 // Factory class used for creating cricket::PortAllocator that is used
@@ -25,7 +27,8 @@ class PortAllocatorFactory {
   virtual ~PortAllocatorFactory() {}
 
   virtual std::unique_ptr<cricket::PortAllocator> CreatePortAllocator(
-      scoped_refptr<TransportContext> transport_context) = 0;
+      scoped_refptr<TransportContext> transport_context,
+      base::WeakPtr<SessionOptionsProvider> session_options_provider) = 0;
 };
 
 }  // namespace protocol

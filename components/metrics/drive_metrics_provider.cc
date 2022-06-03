@@ -7,13 +7,13 @@
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
 
@@ -32,15 +32,15 @@ void DriveMetricsProvider::ProvideSystemProfileMetrics(
                    hardware->mutable_user_data_drive());
 }
 
-void DriveMetricsProvider::AsyncInit(const base::Closure& done_callback) {
-  base::PostTaskAndReplyWithResult(
+void DriveMetricsProvider::AsyncInit(base::OnceClosure done_callback) {
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::Bind(&DriveMetricsProvider::GetDriveMetricsOnBackgroundThread,
-                 local_state_path_key_),
-      base::Bind(&DriveMetricsProvider::GotDriveMetrics,
-                 weak_ptr_factory_.GetWeakPtr(), done_callback));
+      base::BindOnce(&DriveMetricsProvider::GetDriveMetricsOnBackgroundThread,
+                     local_state_path_key_),
+      base::BindOnce(&DriveMetricsProvider::GotDriveMetrics,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(done_callback)));
 }
 
 DriveMetricsProvider::SeekPenaltyResponse::SeekPenaltyResponse()
@@ -69,26 +69,15 @@ void DriveMetricsProvider::QuerySeekPenalty(
   if (!base::PathService::Get(path_service_key, &path))
     return;
 
-  base::TimeTicks start = base::TimeTicks::Now();
-
   response->success = HasSeekPenalty(path, &response->has_seek_penalty);
-
-  UMA_HISTOGRAM_TIMES("Hardware.Drive.HasSeekPenalty_Time",
-                      base::TimeTicks::Now() - start);
-  UMA_HISTOGRAM_BOOLEAN("Hardware.Drive.HasSeekPenalty_Success",
-                        response->success);
-  if (response->success) {
-    UMA_HISTOGRAM_BOOLEAN("Hardware.Drive.HasSeekPenalty",
-                          response->has_seek_penalty);
-  }
 }
 
 void DriveMetricsProvider::GotDriveMetrics(
-    const base::Closure& done_callback,
+    base::OnceClosure done_callback,
     const DriveMetricsProvider::DriveMetrics& metrics) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   metrics_ = metrics;
-  done_callback.Run();
+  std::move(done_callback).Run();
 }
 
 void DriveMetricsProvider::FillDriveMetrics(

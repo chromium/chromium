@@ -6,7 +6,6 @@
 
 #include <linux/input.h>
 
-#include "base/logging.h"
 
 namespace ui {
 

@@ -7,27 +7,28 @@
 #include <stdint.h>
 
 #include "content/common/input/web_touch_event_traits.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/types/event_type.h"
 
 namespace {
 
 ui::EventType WebTouchPointStateToEventType(
     blink::WebTouchPoint::State state) {
   switch (state) {
-    case blink::WebTouchPoint::kStateReleased:
+    case blink::WebTouchPoint::State::kStateReleased:
       return ui::ET_TOUCH_RELEASED;
 
-    case blink::WebTouchPoint::kStatePressed:
+    case blink::WebTouchPoint::State::kStatePressed:
       return ui::ET_TOUCH_PRESSED;
 
-    case blink::WebTouchPoint::kStateMoved:
+    case blink::WebTouchPoint::State::kStateMoved:
       return ui::ET_TOUCH_MOVED;
 
-    case blink::WebTouchPoint::kStateCancelled:
+    case blink::WebTouchPoint::State::kStateCancelled:
       return ui::ET_TOUCH_CANCELLED;
 
     default:
@@ -46,16 +47,16 @@ bool MakeUITouchEventsFromWebTouchEvents(
   const blink::WebTouchEvent& touch = touch_with_latency.event;
   ui::EventType type = ui::ET_UNKNOWN;
   switch (touch.GetType()) {
-    case blink::WebInputEvent::kTouchStart:
+    case blink::WebInputEvent::Type::kTouchStart:
       type = ui::ET_TOUCH_PRESSED;
       break;
-    case blink::WebInputEvent::kTouchEnd:
+    case blink::WebInputEvent::Type::kTouchEnd:
       type = ui::ET_TOUCH_RELEASED;
       break;
-    case blink::WebInputEvent::kTouchMove:
+    case blink::WebInputEvent::Type::kTouchMove:
       type = ui::ET_TOUCH_MOVED;
       break;
-    case blink::WebInputEvent::kTouchCancel:
+    case blink::WebInputEvent::Type::kTouchCancel:
       type = ui::ET_TOUCH_CANCELLED;
       break;
     default:
@@ -77,9 +78,10 @@ bool MakeUITouchEventsFromWebTouchEvents(
       location = point.PositionInScreen();
     auto uievent = std::make_unique<ui::TouchEvent>(
         type, gfx::Point(), timestamp,
-        ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, point.id,
+        ui::PointerDetails(ui::EventPointerType::kTouch, point.id,
                            point.radius_x, point.radius_y, point.force,
-                           point.rotation_angle),
+                           point.rotation_angle, point.tilt_x, point.tilt_y,
+                           point.tangential_pressure),
         flags);
     uievent->set_location_f(location);
     uievent->set_root_location_f(location);
@@ -89,10 +91,11 @@ bool MakeUITouchEventsFromWebTouchEvents(
   return true;
 }
 
-bool InputEventAckStateIsSetNonBlocking(InputEventAckState ack_state) {
+bool InputEventResultStateIsSetNonBlocking(
+    blink::mojom::InputEventResultState ack_state) {
   switch (ack_state) {
-    case INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING:
-    case INPUT_EVENT_ACK_STATE_SET_NON_BLOCKING_DUE_TO_FLING:
+    case blink::mojom::InputEventResultState::kSetNonBlocking:
+    case blink::mojom::InputEventResultState::kSetNonBlockingDueToFling:
       return true;
     default:
       return false;

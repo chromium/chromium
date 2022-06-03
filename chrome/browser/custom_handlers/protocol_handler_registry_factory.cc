@@ -8,6 +8,7 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -59,7 +60,7 @@ KeyedService* ProtocolHandlerRegistryFactory::BuildServiceInstanceFor(
   ProtocolHandlerRegistry* registry = new ProtocolHandlerRegistry(
       context, std::make_unique<ProtocolHandlerRegistry::Delegate>());
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If installing defaults, they must be installed prior calling
   // InitProtocolSettings
   registry->InstallDefaultsForChromeOS();

@@ -26,51 +26,89 @@ class GerritAPITest(unittest.TestCase):
 
 
 class GerritCLTest(unittest.TestCase):
-
     def test_url(self):
         data = {
             'change_id': 'Ib58c7125d85d2fd71af711ea8bbd2dc927ed02cb',
             '_number': 638250,
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
-        self.assertEqual(gerrit_cl.url, 'https://chromium-review.googlesource.com/638250')
+        self.assertEqual(gerrit_cl.url,
+                         'https://chromium-review.googlesource.com/638250')
 
-    def test_fetch_current_revision_commit(self):
-        host = MockHost()
-        host.executive = mock_git_commands({
-            'fetch': '',
-            'rev-parse': '4de71d0ce799af441c1f106c5432c7fa7256be45',
-            'footers': 'no-commit-position-yet'
-        }, strict=True)
+    def test_current_revision_description(self):
         data = {
             'change_id': 'Ib58c7125d85d2fd71af711ea8bbd2dc927ed02cb',
             'subject': 'fake subject',
             '_number': 638250,
             'current_revision': '1',
-            'revisions': {'1': {
-                'fetch': {'http': {
-                    'url': 'https://chromium.googlesource.com/chromium/src',
-                    'ref': 'refs/changes/50/638250/1'
-                }}
-            }},
-            'owner': {'email': 'test@chromium.org'},
+            'revisions': {
+                '1': {}
+            },
+            'owner': {
+                'email': 'test@chromium.org'
+            },
+        }
+        gerrit_cl = GerritCL(data, MockGerritAPI())
+        self.assertEqual(gerrit_cl.current_revision_description, '')
+
+        data['revisions']['1']['description'] = 'patchset 1'
+        gerrit_cl = GerritCL(data, MockGerritAPI())
+        self.assertEqual(gerrit_cl.current_revision_description, 'patchset 1')
+
+    def test_fetch_current_revision_commit(self):
+        host = MockHost()
+        host.executive = mock_git_commands(
+            {
+                'fetch': '',
+                'rev-parse': '4de71d0ce799af441c1f106c5432c7fa7256be45',
+                'footers': 'no-commit-position-yet'
+            },
+            strict=True)
+        data = {
+            'change_id': 'Ib58c7125d85d2fd71af711ea8bbd2dc927ed02cb',
+            'subject': 'fake subject',
+            '_number': 638250,
+            'current_revision': '1',
+            'revisions': {
+                '1': {
+                    'fetch': {
+                        'http': {
+                            'url':
+                            'https://chromium.googlesource.com/chromium/src',
+                            'ref':
+                            'refs/changes/50/638250/1'
+                        }
+                    }
+                }
+            },
+            'owner': {
+                'email': 'test@chromium.org'
+            },
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
         commit = gerrit_cl.fetch_current_revision_commit(host)
 
-        self.assertEqual(commit.sha, '4de71d0ce799af441c1f106c5432c7fa7256be45')
-        self.assertEqual(host.executive.calls, [
-            ['git', 'fetch', 'https://chromium.googlesource.com/chromium/src', 'refs/changes/50/638250/1'],
-            ['git', 'rev-parse', 'FETCH_HEAD'],
-            ['git', 'footers', '--position', '4de71d0ce799af441c1f106c5432c7fa7256be45']
-        ])
+        self.assertEqual(commit.sha,
+                         '4de71d0ce799af441c1f106c5432c7fa7256be45')
+        self.assertEqual(host.executive.calls,
+                         [[
+                             'git', 'fetch',
+                             'https://chromium.googlesource.com/chromium/src',
+                             'refs/changes/50/638250/1'
+                         ], ['git', 'rev-parse', 'FETCH_HEAD'],
+                          [
+                              'git', 'footers', '--position',
+                              '4de71d0ce799af441c1f106c5432c7fa7256be45'
+                          ]])
 
     def test_empty_cl_is_not_exportable(self):
         data = {
             'change_id': 'Ib58c7125d85d2fd71af711ea8bbd2dc927ed02cb',
             'subject': 'fake subject',
             '_number': 638250,
-            'owner': {'email': 'test@chromium.org'},
+            'owner': {
+                'email': 'test@chromium.org'
+            },
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
         # It's important that this does not throw!
@@ -82,13 +120,17 @@ class GerritCLTest(unittest.TestCase):
             'subject': 'fake subject',
             '_number': 638250,
             'current_revision': '1',
-            'revisions': {'1': {
-                'commit_with_footers': 'fake subject',
-                'files': {
-                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'fake subject',
+                    'files': {
+                        RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+                    }
                 }
-            }},
-            'owner': {'email': 'test@chromium.org'},
+            },
+            'owner': {
+                'email': 'test@chromium.org'
+            },
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
         self.assertTrue(gerrit_cl.is_exportable())
@@ -99,13 +141,17 @@ class GerritCLTest(unittest.TestCase):
             'subject': 'fake subject',
             '_number': 638250,
             'current_revision': '1',
-            'revisions': {'1': {
-                'commit_with_footers': 'fake subject',
-                'files': {
-                    RELATIVE_WEB_TESTS + 'foo/bar.html': '',
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'fake subject',
+                    'files': {
+                        RELATIVE_WEB_TESTS + 'foo/bar.html': '',
+                    }
                 }
-            }},
-            'owner': {'email': 'test@chromium.org'},
+            },
+            'owner': {
+                'email': 'test@chromium.org'
+            },
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
         self.assertFalse(gerrit_cl.is_exportable())
@@ -116,13 +162,17 @@ class GerritCLTest(unittest.TestCase):
             'subject': 'fake subject',
             '_number': 638250,
             'current_revision': '1',
-            'revisions': {'1': {
-                'commit_with_footers': 'fake subject\nNo-Export: true',
-                'files': {
-                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'fake subject\nNo-Export: true',
+                    'files': {
+                        RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+                    }
                 }
-            }},
-            'owner': {'email': 'test@chromium.org'},
+            },
+            'owner': {
+                'email': 'test@chromium.org'
+            },
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
         self.assertFalse(gerrit_cl.is_exportable())
@@ -133,13 +183,17 @@ class GerritCLTest(unittest.TestCase):
             'subject': 'fake subject',
             '_number': 638250,
             'current_revision': '1',
-            'revisions': {'1': {
-                'commit_with_footers': 'fake subject\nNOEXPORT=true',
-                'files': {
-                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'fake subject\nNOEXPORT=true',
+                    'files': {
+                        RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+                    }
                 }
-            }},
-            'owner': {'email': 'test@chromium.org'},
+            },
+            'owner': {
+                'email': 'test@chromium.org'
+            },
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
         self.assertFalse(gerrit_cl.is_exportable())
@@ -150,13 +204,17 @@ class GerritCLTest(unittest.TestCase):
             'subject': 'Import something',
             '_number': 638250,
             'current_revision': '1',
-            'revisions': {'1': {
-                'commit_with_footers': 'fake subject',
-                'files': {
-                    RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+            'revisions': {
+                '1': {
+                    'commit_with_footers': 'fake subject',
+                    'files': {
+                        RELATIVE_WEB_TESTS + 'external/wpt/foo/bar.html': '',
+                    }
                 }
-            }},
-            'owner': {'email': 'test@chromium.org'},
+            },
+            'owner': {
+                'email': 'test@chromium.org'
+            },
         }
         gerrit_cl = GerritCL(data, MockGerritAPI())
         self.assertTrue(gerrit_cl.is_exportable())

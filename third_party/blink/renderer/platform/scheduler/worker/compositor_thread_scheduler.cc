@@ -48,16 +48,14 @@ CompositorThreadScheduler::DefaultTaskQueue() {
   return helper()->DefaultNonMainThreadTaskQueue();
 }
 
-void CompositorThreadScheduler::InitImpl() {}
-
 void CompositorThreadScheduler::OnTaskCompleted(
     NonMainThreadTaskQueue* worker_task_queue,
     const base::sequence_manager::Task& task,
     base::sequence_manager::TaskQueue::TaskTiming* task_timing,
     base::sequence_manager::LazyNow* lazy_now) {
   task_timing->RecordTaskEnd(lazy_now);
-  compositor_metrics_helper_.RecordTaskMetrics(worker_task_queue, task,
-                                               *task_timing);
+  DispatchOnTaskCompletionCallbacks();
+  compositor_metrics_helper_.RecordTaskMetrics(task, *task_timing);
 }
 
 scoped_refptr<scheduler::SingleThreadIdleTaskRunner>
@@ -82,13 +80,18 @@ CompositorThreadScheduler::DefaultTaskRunner() {
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
+CompositorThreadScheduler::InputTaskRunner() {
+  return helper()->InputTaskRunner();
+}
+
+scoped_refptr<base::SingleThreadTaskRunner>
 CompositorThreadScheduler::CompositorTaskRunner() {
   NOTREACHED();
   return nullptr;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
-CompositorThreadScheduler::IPCTaskRunner() {
+CompositorThreadScheduler::NonWakingTaskRunner() {
   NOTREACHED();
   return nullptr;
 }
@@ -120,7 +123,7 @@ base::TimeTicks CompositorThreadScheduler::WillProcessIdleTask() {
   // TODO(flackr): Return the next frame time as the deadline instead.
   // TODO(flackr): Ensure that oilpan GC does happen on the compositor thread
   // even though we will have no long idle periods. https://crbug.com/609531
-  return base::TimeTicks::Now() + base::TimeDelta::FromMillisecondsD(16.7);
+  return base::TimeTicks::Now() + base::Milliseconds(16.7);
 }
 
 void CompositorThreadScheduler::DidProcessIdleTask() {}

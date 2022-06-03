@@ -1,4 +1,4 @@
-// META: global=jsshell
+// META: global=window,dedicatedworker,jsshell
 // META: script=/wasm/jsapi/wasm-module-builder.js
 // META: script=/wasm/jsapi/assertions.js
 
@@ -16,11 +16,11 @@ test(() => {
 }, "length");
 
 test(() => {
-  assert_throws(new TypeError(), () => new WebAssembly.Module());
+  assert_throws_js(TypeError, () => new WebAssembly.Module());
 }, "No arguments");
 
 test(() => {
-  assert_throws(new TypeError(), () => WebAssembly.Module(emptyModuleBinary));
+  assert_throws_js(TypeError, () => WebAssembly.Module(emptyModuleBinary));
 }, "Calling");
 
 test(() => {
@@ -38,19 +38,19 @@ test(() => {
     Array.from(emptyModuleBinary),
   ];
   for (const argument of invalidArguments) {
-    assert_throws(new TypeError(), () => new WebAssembly.Module(argument),
-                  `new Module(${format_value(argument)})`);
+    assert_throws_js(TypeError, () => new WebAssembly.Module(argument),
+                     `new Module(${format_value(argument)})`);
   }
 }, "Invalid arguments");
 
 test(() => {
   const buffer = new Uint8Array();
-  assert_throws(new WebAssembly.CompileError(), () => new WebAssembly.Module(buffer));
+  assert_throws_js(WebAssembly.CompileError, () => new WebAssembly.Module(buffer));
 }, "Empty buffer");
 
 test(() => {
   const buffer = new Uint8Array(Array.from(emptyModuleBinary).concat([0, 0]));
-  assert_throws(new WebAssembly.CompileError(), () => new WebAssembly.Module(buffer));
+  assert_throws_js(WebAssembly.CompileError, () => new WebAssembly.Module(buffer));
 }, "Invalid code");
 
 test(() => {

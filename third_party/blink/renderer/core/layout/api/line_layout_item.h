@@ -5,15 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_API_LINE_LAYOUT_ITEM_H_
 
-#include "third_party/blink/renderer/core/editing/position_with_affinity.h"
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
-#include "third_party/blink/renderer/core/layout/layout_text.h"
-#include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
-
-#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_table_deleted_value_type.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 
@@ -21,12 +15,8 @@ class ComputedStyle;
 class Document;
 class HitTestRequest;
 class HitTestLocation;
-class LayoutObject;
 class LineLayoutBox;
 class LineLayoutAPIShim;
-
-static LayoutObject* const kHashTableDeletedValue =
-    reinterpret_cast<LayoutObject*>(-1);
 
 class LineLayoutItem {
   DISALLOW_NEW();
@@ -35,8 +25,10 @@ class LineLayoutItem {
   explicit LineLayoutItem(LayoutObject* layout_object)
       : layout_object_(layout_object) {}
 
-  explicit LineLayoutItem(WTF::HashTableDeletedValueType)
-      : layout_object_(kHashTableDeletedValue) {}
+  explicit LineLayoutItem(WTF::HashTableDeletedValueType) {
+    WTF::HashTraits<decltype(layout_object_)>::ConstructDeletedValue(
+        layout_object_, false);
+  }
 
   LineLayoutItem(std::nullptr_t) : layout_object_(nullptr) {}
 
@@ -63,6 +55,8 @@ class LineLayoutItem {
   Node* GetNode() const { return layout_object_->GetNode(); }
 
   Node* NonPseudoNode() const { return layout_object_->NonPseudoNode(); }
+
+  Node* GetNodeForOwnerNodeId() const;
 
   LineLayoutItem Parent() const {
     return LineLayoutItem(layout_object_->Parent());
@@ -107,13 +101,9 @@ class LineLayoutItem {
 
   const ComputedStyle& StyleRef() const { return layout_object_->StyleRef(); }
 
-  const ComputedStyle* Style(bool first_line) const {
-    return layout_object_->Style(first_line);
-  }
+  const ComputedStyle* Style(bool first_line) const;
 
-  const ComputedStyle& StyleRef(bool first_line) const {
-    return layout_object_->StyleRef(first_line);
-  }
+  const ComputedStyle& StyleRef(bool first_line) const;
 
   Document& GetDocument() const { return layout_object_->GetDocument(); }
 
@@ -204,9 +194,7 @@ class LineLayoutItem {
 
   bool IsText() const { return layout_object_->IsText(); }
 
-  bool IsEmptyText() const {
-    return IsText() && ToLayoutText(layout_object_)->GetText().IsEmpty();
-  }
+  bool IsEmptyText() const;
 
   bool HasLayer() const { return layout_object_->HasLayer(); }
 
@@ -221,9 +209,9 @@ class LineLayoutItem {
     layout_object_->SetAncestorLineBoxDirty();
   }
 
-  int CaretMinOffset() const { return layout_object_->CaretMinOffset(); }
-
-  int CaretMaxOffset() const { return layout_object_->CaretMaxOffset(); }
+  // TODO(yosin): We should not use |CaretMaxOffset()|, because this function
+  // may be used for creating invalid pointer, e.g. <hr>@1.
+  int CaretMaxOffset() const;
 
   bool HasFlippedBlocksWritingMode() const {
     return layout_object_->HasFlippedBlocksWritingMode();
@@ -256,20 +244,20 @@ class LineLayoutItem {
 
   // TODO(dgrogan/eae): Can we change this to GlobalToLocal and vice versa
   // instead of having 4 methods? See localToAbsoluteQuad below.
-  PositionWithAffinity PositionForPoint(const PhysicalOffset& point) {
-    return layout_object_->PositionForPoint(point);
-  }
+  PositionWithAffinity PositionForPoint(const PhysicalOffset& point);
 
   PositionWithAffinity CreatePositionWithAffinity(int offset,
-                                                  TextAffinity affinity) {
-    return layout_object_->CreatePositionWithAffinity(offset, affinity);
-  }
+                                                  TextAffinity affinity) const;
+
+  PositionWithAffinity PositionAfterThis() const;
+
+  PositionWithAffinity PositionBeforeThis() const;
 
   LineLayoutItem PreviousInPreOrder(const LayoutObject* stay_within) const {
     return LineLayoutItem(layout_object_->PreviousInPreOrder(stay_within));
   }
 
-  bool HasOverflowClip() const { return layout_object_->HasOverflowClip(); }
+  bool IsScrollContainer() const { return layout_object_->IsScrollContainer(); }
 
   // TODO(dgrogan/eae): Can we instead add a TearDown method to the API
   // instead of exposing this and other shutdown code to line layout?
@@ -277,24 +265,16 @@ class LineLayoutItem {
     return layout_object_->DocumentBeingDestroyed();
   }
 
-  IntRect VisualRectForInlineBox() const {
-    return layout_object_->VisualRectForInlineBox();
-  }
-  IntRect PartialInvalidationVisualRectForInlineBox() const {
-    return layout_object_->PartialInvalidationVisualRectForInlineBox();
-  }
-
   bool IsHashTableDeletedValue() const {
-    return layout_object_ == kHashTableDeletedValue;
+    return WTF::HashTraits<decltype(layout_object_)>::IsDeletedValue(
+        layout_object_);
   }
 
   void SetShouldDoFullPaintInvalidation() {
     layout_object_->SetShouldDoFullPaintInvalidation();
   }
 
-  void SlowSetPaintingLayerNeedsRepaint() {
-    ObjectPaintInvalidator(*layout_object_).SlowSetPaintingLayerNeedsRepaint();
-  }
+  void SlowSetPaintingLayerNeedsRepaint();
 
   void SetIsTruncated(bool set_truncation) {
     layout_object_->SetIsTruncated(set_truncation);
@@ -330,12 +310,11 @@ class LineLayoutItem {
 
 #endif
 
- protected:
   LayoutObject* GetLayoutObject() { return layout_object_; }
   const LayoutObject* GetLayoutObject() const { return layout_object_; }
 
  private:
-  LayoutObject* layout_object_;
+  WeakPersistent<LayoutObject> layout_object_;
 
   friend class LayoutBlockFlow;
   friend class LineLayoutAPIShim;

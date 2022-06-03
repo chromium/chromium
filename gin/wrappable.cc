@@ -4,7 +4,7 @@
 
 #include "gin/wrappable.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "gin/object_template_builder.h"
 #include "gin/per_isolate_data.h"
 

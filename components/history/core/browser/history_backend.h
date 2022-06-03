@@ -15,33 +15,38 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/flat_set.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
-#include "base/single_thread_task_runner.h"
 #include "base/supports_user_data.h"
 #include "base/task/cancelable_task_tracker.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "components/favicon/core/favicon_backend_delegate.h"
+#include "components/favicon/core/favicon_database.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/expire_history_backend.h"
 #include "components/history/core/browser/history_backend_notifier.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_id.h"
-#include "components/history/core/browser/thumbnail_database.h"
 #include "components/history/core/browser/visit_tracker.h"
 #include "sql/init_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 class SkBitmap;
-class TestingProfile;
 
 namespace base {
 class SingleThreadTaskRunner;
+}
+
+namespace favicon {
+class FaviconBackend;
 }
 
 namespace syncer {
@@ -54,6 +59,7 @@ class HistoryBackendClient;
 class HistoryBackendDBBaseTest;
 class HistoryBackendObserver;
 class HistoryBackend;
+class TestHistoryBackend;
 class HistoryBackendTest;
 class HistoryDatabase;
 struct HistoryDatabaseParams;
@@ -63,16 +69,12 @@ class HistoryBackendHelper;
 class TypedURLSyncBridge;
 class URLDatabase;
 
-// The maximum number of bitmaps for a single icon URL which can be stored in
-// the thumbnail database.
-static const size_t kMaxFaviconBitmapsPerIconURL = 8;
-
-// Returns a formatted version of |url| with the HTTP/HTTPS scheme, port,
+// Returns a formatted version of `url` with the HTTP/HTTPS scheme, port,
 // username/password, and any trivial subdomains (e.g., "www.", "m.") removed.
-base::string16 FormatUrlForRedirectComparison(const GURL& url);
+std::u16string FormatUrlForRedirectComparison(const GURL& url);
 
-// Advances (if |day| >= 0) or backtracks (if |day| < 0) from |time| by
-// abs(|day|) calendar days in local timezone and returns the midnight of the
+// Advances (if `day` >= 0) or backtracks (if `day` < 0) from `time` by
+// abs(`day`) calendar days in local timezone and returns the midnight of the
 // resulting day.
 base::Time MidnightNDaysLater(base::Time time, int days);
 
@@ -84,6 +86,10 @@ class QueuedHistoryDBTask {
       std::unique_ptr<HistoryDBTask> task,
       scoped_refptr<base::SingleThreadTaskRunner> origin_loop,
       const base::CancelableTaskTracker::IsCanceledCallback& is_canceled);
+
+  QueuedHistoryDBTask(const QueuedHistoryDBTask&) = delete;
+  QueuedHistoryDBTask& operator=(const QueuedHistoryDBTask&) = delete;
+
   ~QueuedHistoryDBTask();
 
   bool is_canceled();
@@ -94,8 +100,6 @@ class QueuedHistoryDBTask {
   std::unique_ptr<HistoryDBTask> task_;
   scoped_refptr<base::SingleThreadTaskRunner> origin_loop_;
   base::CancelableTaskTracker::IsCanceledCallback is_canceled_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueuedHistoryDBTask);
 };
 
 // *See the .cc file for more information on the design.*
@@ -110,7 +114,8 @@ class QueuedHistoryDBTask {
 // functions in the history service. These functions are not documented
 // here, see the history service for behavior.
 class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
-                       public HistoryBackendNotifier {
+                       public HistoryBackendNotifier,
+                       public favicon::FaviconBackendDelegate {
  public:
   // Interface implemented by the owner of the HistoryBackend object. Normally,
   // the history service implements this to send stuff back to the main thread.
@@ -118,10 +123,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // a history service object.
   class Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
 
     // Called when the database cannot be read correctly for some reason.
-    // |diagnostics| contains information about the underlying database
+    // `diagnostics` contains information about the underlying database
     // which can help in identifying the cause of the profile error.
     virtual void NotifyProfileError(sql::InitStatus init_status,
                                     const std::string& diagnostics) = 0;
@@ -140,7 +145,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // http://www.google.com) and the given icon URL (e.g.
     // http://www.google.com/favicon.ico) have changed. HistoryService notifies
     // any registered callbacks. It is valid to call NotifyFaviconsChanged()
-    // with non-empty |page_urls| and an empty |icon_url| and vice versa.
+    // with non-empty `page_urls` and an empty `icon_url` and vice versa.
     virtual void NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                                        const GURL& icon_url) = 0;
 
@@ -165,7 +170,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // thread.
     virtual void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                                 KeywordID keyword_id,
-                                                const base::string16& term) = 0;
+                                                const std::u16string& term) = 0;
 
     // Notify HistoryService that keyword search term has been deleted.
     // The event will be forwarded to the HistoryServiceObservers in the correct
@@ -183,11 +188,11 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // constructed on any thread, but all other functions including Init() must
   // be called on the history thread.
   //
-  // |history_dir| is the directory where the history files will be placed.
+  // `history_dir` is the directory where the history files will be placed.
   // See the definition of BroadcastNotificationsCallback above. This function
   // takes ownership of the callback pointer.
   //
-  // |history_client| is used to determine bookmarked URLs when deleting and
+  // `history_client` is used to determine bookmarked URLs when deleting and
   // may be null.
   //
   // This constructor is fast and does no I/O, so can be called at any time.
@@ -195,11 +200,14 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                  std::unique_ptr<HistoryBackendClient> backend_client,
                  scoped_refptr<base::SequencedTaskRunner> task_runner);
 
+  HistoryBackend(const HistoryBackend&) = delete;
+  HistoryBackend& operator=(const HistoryBackend&) = delete;
+
   // Must be called after creation but before any objects are created. If this
   // fails, all other functions will fail as well. (Since this runs on another
   // thread, we don't bother returning failure.)
   //
-  // |force_fail| can be set during unittests to unconditionally fail to init.
+  // `force_fail` can be set during unittests to unconditionally fail to init.
   void Init(bool force_fail,
             const HistoryDatabaseParams& history_database_params);
 
@@ -216,10 +224,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   void ClearCachedDataForContextID(ContextID context_id);
 
-  // Clears all on-demand favicons from thumbnail database.
+  // Clears all on-demand favicons.
   void ClearAllOnDemandFavicons();
 
-  // Gets the counts and last last time of URLs that belong to |origins| in the
+  // Gets the counts and last last time of URLs that belong to `origins` in the
   // history database. Origins that are not in the history database will be in
   // the map with a count and time of 0.
   // Returns an empty map if db_ is not initialized.
@@ -228,24 +236,31 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Navigation ----------------------------------------------------------------
 
-  // |request.time| must be unique with high probability.
+  // `request.time` must be unique with high probability.
   void AddPage(const HistoryAddPageArgs& request);
-  virtual void SetPageTitle(const GURL& url, const base::string16& title);
-  void AddPageNoVisitForBookmark(const GURL& url, const base::string16& title);
+  virtual void SetPageTitle(const GURL& url, const std::u16string& title);
+  void AddPageNoVisitForBookmark(const GURL& url, const std::u16string& title);
   void UpdateWithPageEndTime(ContextID context_id,
                              int nav_entry_id,
                              const GURL& url,
                              base::Time end_ts);
+  void SetFlocAllowed(ContextID context_id, int nav_entry_id, const GURL& url);
+  void AddContentModelAnnotationsForVisit(
+      VisitID visit_id,
+      const VisitContentModelAnnotations& model_annotations);
+  void AddRelatedSearchesForVisit(
+      VisitID visit_id,
+      const std::vector<std::string>& related_searches);
 
   // Querying ------------------------------------------------------------------
 
-  // Run the |callback| on the History thread.
-  // |callback| should handle the null database case.
+  // Run the `callback` on the History thread.
+  // `callback` should handle the null database case.
   void ScheduleAutocomplete(
       base::OnceCallback<void(HistoryBackend*, URLDatabase*)> callback);
 
   QueryURLResult QueryURL(const GURL& url, bool want_visits);
-  QueryResults QueryHistory(const base::string16& text_query,
+  QueryResults QueryHistory(const std::u16string& text_query,
                             const QueryOptions& options);
 
   // Computes the most recent URL(s) that the given canonical URL has
@@ -256,22 +271,22 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   RedirectList QueryRedirectsFrom(const GURL& url);
 
   // Similar to above function except computes a chain of redirects to the
-  // given URL. Stores the most recent list of redirects ending at |url| in the
+  // given URL. Stores the most recent list of redirects ending at `url` in the
   // given RedirectList. For example, if we have the redirect list A -> B -> C,
   // then calling this function with url=C would fill redirects with {B, A}.
   RedirectList QueryRedirectsTo(const GURL& url);
 
   VisibleVisitCountToHostResult GetVisibleVisitCountToHost(const GURL& url);
 
-  // Request the |result_count| most visited URLs and the chain of
-  // redirects leading to each of these URLs. |days_back| is the
+  // Request the `result_count` most visited URLs and the chain of
+  // redirects leading to each of these URLs. `days_back` is the
   // number of days of history to use. Used by TopSites.
   MostVisitedURLList QueryMostVisitedURLs(int result_count, int days_back);
 
   // Statistics ----------------------------------------------------------------
 
   // Gets the number of URLs as seen in chrome://history within the time range
-  // [|begin_time|, |end_time|). Each URL is counted only once per day. For
+  // [`begin_time`, `end_time`). Each URL is counted only once per day. For
   // determination of the date, timestamps are converted to dates using local
   // time.
   HistoryCountResult GetHistoryCount(const base::Time& begin_time,
@@ -285,21 +300,21 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // top-level domain (eTLD) + 1, e.g. "foo.com", "bar.co.uk") visited within
   // the 1-day, 7-day or 28-day span that ends at a midnight in local timezone.
   //
-  // For each of the most recent |number_of_days_to_report| midnights before
-  // |report_time|(inclusive), this function computes a subset of
+  // For each of the most recent `number_of_days_to_report` midnights before
+  // `report_time`(inclusive), this function computes a subset of
   // {1-day, 7-day, 28-day} metrics whose spanning periods all end on that
   // midnight. This subset of metrics to compute is specified by a bitmask
-  // |metric_type_bitmask|, which takes a bitwise combination of
+  // `metric_type_bitmask`, which takes a bitwise combination of
   // kEnableLast1DayMetric, kEnableLast7DayMetric and kEnableLast28DayMetric.
   //
   // All computed metrics are stored in DomainDiversityResults, which represents
   // a collection of DomainMetricSet's. Each DomainMetricSet contains up to 3
   // metrics ending at one unique midnight in the time range of
-  // |number_of_days_to_report| days before |report_time|. The collection of
+  // `number_of_days_to_report` days before `report_time`. The collection of
   // DomainMetricSet is sorted reverse chronologically by the ending midnight.
   //
-  // For example, when |report_time| = 2019/11/01 00:01am, |number_of_days| = 3,
-  // |metric_type_bitmask| = kEnableLast28DayMetric | kEnableLast1DayMetric,
+  // For example, when `report_time` = 2019/11/01 00:01am, `number_of_days` = 3,
+  // `metric_type_bitmask` = kEnableLast28DayMetric | kEnableLast1DayMetric,
   // DomainDiversityResults will hold 3 DomainMetricSets, each containing 2
   // metrics measuring domain visit counts spanning the following date ranges
   // (all dates are inclusive):
@@ -310,12 +325,29 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       DomainMetricBitmaskType metric_type_bitmask);
 
   // Gets the last time any webpage on the given host was visited within the
-  // time range [|begin_time|, |end_time|). If the given host has not been
+  // time range [`begin_time`, `end_time`). If the given host has not been
   // visited in the given time range, the result will have a null base::Time,
+  // but still report success. Only queries http and https hosts.
+  HistoryLastVisitResult GetLastVisitToHost(const std::string& host,
+                                            base::Time begin_time,
+                                            base::Time end_time);
+
+  // Same as the above, but for the given origin instead of host.
+  HistoryLastVisitResult GetLastVisitToOrigin(const url::Origin& origin,
+                                              base::Time begin_time,
+                                              base::Time end_time);
+
+  // Gets the last time `url` was visited before `end_time`. If the given URL
+  // has not been visited in the past, the result will have a null base::Time,
   // but still report success.
-  HistoryLastVisitToHostResult GetLastVisitToHost(const GURL& host,
-                                                  base::Time begin_time,
-                                                  base::Time end_time);
+  HistoryLastVisitResult GetLastVisitToURL(const GURL& url,
+                                           base::Time end_time);
+
+  // Gets counts for total visits and days visited for pages matching `host`'s
+  // scheme, port, and host. Counts only user-visible visits.
+  DailyVisitsResult GetDailyVisitsToHost(const GURL& host,
+                                         base::Time begin_time,
+                                         base::Time end_time);
 
   // Favicon -------------------------------------------------------------------
 
@@ -354,7 +386,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                     scoped_refptr<base::RefCountedMemory> bitmap_data,
                     const gfx::Size& pixel_size);
 
-  // |page_urls| must not be empty.
+  // `page_urls` must not be empty.
   void SetFavicons(const base::flat_set<GURL>& page_urls,
                    favicon_base::IconType icon_type,
                    const GURL& icon_url,
@@ -375,6 +407,8 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   void SetFaviconsOutOfDateForPage(const GURL& page_url);
 
+  void SetFaviconsOutOfDateBetween(base::Time begin, base::Time end);
+
   void TouchOnDemandFavicon(const GURL& icon_url);
 
   void SetImportedFavicons(
@@ -392,14 +426,45 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   void SetKeywordSearchTermsForURL(const GURL& url,
                                    KeywordID keyword_id,
-                                   const base::string16& term);
+                                   const std::u16string& term);
 
   void DeleteAllSearchTermsForKeyword(KeywordID keyword_id);
 
   void DeleteKeywordSearchTermForURL(const GURL& url);
 
   void DeleteMatchingURLsForKeyword(KeywordID keyword_id,
-                                    const base::string16& term);
+                                    const std::u16string& term);
+
+  // Clusters ------------------------------------------------------------------
+  // See `HistoryService`'s comments for details on these functions.
+
+  void AddContextAnnotationsForVisit(
+      VisitID visit_id,
+      const VisitContextAnnotations& visit_context_annotations);
+
+  // Gets a vector of reverse-chronological `AnnotatedVisit` instances based on
+  // `options`. Uses the same de-duplication and visibility logic as
+  // `HistoryService::QueryHistory()`.
+  //
+  // If `limited_by_max_count` is non-nullptr, it will be set to true if the
+  // number of results was limited by `options.max_count`.
+  std::vector<AnnotatedVisit> GetAnnotatedVisits(
+      const QueryOptions& options,
+      bool* limited_by_max_count = nullptr);
+
+  ClusterIdsAndAnnotatedVisitsResult GetRecentClusterIdsAndAnnotatedVisits(
+      base::Time minimum_time,
+      int max_results);
+
+  std::vector<Cluster> GetClusters(int max_results);
+
+  // Finds the 1st visit in the redirect chain containing `visit`. Similar to
+  // `GetRedirectsToSpecificVisit()`, except 1) only returns the 1st visit of
+  // the redirect chain instead of the entire chain, and 2) ignores referrals.
+  // May return an invalid `VisitRow` if there's something wrong with the DB.
+  // The caller is responsible for identifying, by looking at `visit_id`, and
+  // handling this case.
+  VisitRow GetRedirectChainStart(VisitRow visit);
 
   // Observers -----------------------------------------------------------------
 
@@ -417,12 +482,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   virtual bool GetVisitsForURL(URLID id, VisitVector* visits);
 
-  // Fetches up to |max_visits| most recent visits for the passed URL.
+  // Fetches up to `max_visits` most recent visits for the passed URL.
   virtual bool GetMostRecentVisitsForURL(URLID id,
                                          int max_visits,
                                          VisitVector* visits);
 
-  // For each element in |urls|, updates the pre-existing URLRow in the database
+  // For each element in `urls`, updates the pre-existing URLRow in the database
   // with the same ID; or ignores the element if no such row exists. Returns the
   // number of records successfully updated.
   virtual size_t UpdateURLs(const URLRows& urls);
@@ -434,17 +499,20 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   virtual bool RemoveVisits(const VisitVector& visits);
 
-  // Returns the VisitSource associated with each one of the passed visits.
+  // Returns the `VisitSource` associated with each one of the passed visits.
   // If there is no entry in the map for a given visit, that means the visit
-  // was SOURCE_BROWSED. Returns false if there is no HistoryDatabase..
+  // was `SOURCE_BROWSED`. Returns false if there is no `HistoryDatabase`.
   bool GetVisitsSource(const VisitVector& visits, VisitSourceMap* sources);
+
+  // Like `GetVisitsSource`, but for a single visit.
+  bool GetVisitSource(const VisitID visit_id, VisitSource* source);
 
   virtual bool GetURL(const GURL& url, URLRow* url_row);
 
   bool GetURLByID(URLID url_id, URLRow* url_row);
 
   // Returns the sync controller delegate for syncing typed urls. The returned
-  // delegate is owned by |this| object.
+  // delegate is owned by `this` object.
   base::WeakPtr<syncer::ModelTypeControllerDelegate>
   GetTypedURLSyncControllerDelegate();
 
@@ -464,9 +532,9 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                             base::Time end_time,
                             bool user_initiated);
 
-  // Finds the URLs visited at |times| and expires all their visits within
-  // [|begin_time|, |end_time|). All times in |times| should be in
-  // [|begin_time|, |end_time|). This is used when expiration request is from
+  // Finds the URLs visited at `times` and expires all their visits within
+  // [`begin_time`, `end_time`). All times in `times` should be in
+  // [`begin_time`, `end_time`). This is used when expiration request is from
   // server side, i.e. web history deletes, where only visit times (possibly
   // incomplete) are transmitted to protect user's privacy.
   void ExpireHistoryForTimes(const std::set<base::Time>& times,
@@ -474,7 +542,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                              base::Time end_time);
 
   // Calls ExpireHistoryBetween() once for each element in the vector.
-  // The fields of |ExpireHistoryArgs| map directly to the arguments of
+  // The fields of `ExpireHistoryArgs` map directly to the arguments of
   // of ExpireHistoryBetween().
   void ExpireHistory(const std::vector<ExpireHistoryArgs>& expire_list);
 
@@ -516,7 +584,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // complete description.
   void SetOnBackendDestroyTask(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      const base::Closure& task);
+      base::OnceClosure task);
 
   // Adds the given rows to the database if it doesn't exist. A visit will be
   // added for each given URL at the last visit time in the URLRow if the
@@ -543,99 +611,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
  private:
   friend class base::RefCountedThreadSafe<HistoryBackend>;
+  friend class TestHistoryBackend;
   friend class HistoryBackendTest;
   friend class HistoryBackendDBBaseTest;  // So the unit tests can poke our
                                           // innards.
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteAll);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteAllURLPreviouslyDeleted);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteAllThenAddData);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPagesWithDetails);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, UpdateURLs);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, ImportedFaviconsTest);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, URLsNoLongerBookmarked);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, StripUsernamePasswordTest);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteThumbnailsDatabaseTest);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageVisitSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageVisitBackForward);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageVisitRedirectBackForward);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageVisitNotLastVisit);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           AddPageVisitFiresNotificationWithCorrectDetails);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddPageArgsSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, AddVisitsSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetMostRecentVisits);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, RemoveVisitsSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, RemoveVisitsTransitions);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, MigrationVisitSource);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           SetFaviconMappingsForPageAndRedirects);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           SetFaviconMappingsForPageAndRedirectsWithFragment);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           RecentRedirectsForClientRedirects);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           SetFaviconMappingsForPageDuplicates);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetFaviconsDeleteBitmaps);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetFaviconsReplaceBitmapData);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           SetFaviconsSameFaviconURLForTwoPages);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetFaviconsWithTwoPageURLs);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetOnDemandFaviconsForEmptyDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetOnDemandFaviconsForPageInDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, SetOnDemandFaviconsForIconInDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           UpdateFaviconMappingsAndFetchNoChange);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, MergeFaviconPageURLNotInDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, MergeFaviconPageURLInDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, MergeFaviconMaxFaviconsPerPage);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           MergeFaviconIconURLMappedToDifferentPageURL);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           MergeFaviconMaxFaviconBitmapsPerIconURL);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           MergeIdenticalFaviconDoesNotChangeLastUpdatedTime);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           FaviconChangedNotificationNewFavicon);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           FaviconChangedNotificationBitmapDataChanged);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           FaviconChangedNotificationIconMappingChanged);
-  FRIEND_TEST_ALL_PREFIXES(
-      HistoryBackendTest,
-      FaviconChangedNotificationIconMappingAndBitmapDataChanged);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           FaviconChangedNotificationsMergeCopy);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, NoFaviconChangedNotifications);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           UpdateFaviconMappingsAndFetchMultipleIconTypes);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, CloneFaviconMappingsForPages);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetFaviconsFromDBEmpty);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           GetFaviconsFromDBNoFaviconBitmaps);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           GetFaviconsFromDBSelectClosestMatch);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetFaviconsFromDBIconType);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetFaviconsFromDBExpired);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetFaviconsFromDBFallbackToHost);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest,
-                           UpdateFaviconMappingsAndFetchNoDB);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, QueryFilteredURLs);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_ElidePortAndScheme);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_ElideWWW);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_OnlyLast30Days);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_MaxNumHosts);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, TopHosts_IgnoreUnusualURLs);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, GetCountsAndLastVisitForOrigins);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, UpdateVisitDuration);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, ExpireHistoryForTimes);
-  FRIEND_TEST_ALL_PREFIXES(HistoryBackendTest, DeleteFTSIndexDatabases);
-  FRIEND_TEST_ALL_PREFIXES(ProfileSyncServiceTypedUrlTest,
-                           ProcessUserChangeRemove);
-  friend class ::TestingProfile;
 
-  // Returns the name of the Favicons database. This is the new name
-  // of the Thumbnails database.
+  // Returns the name of the Favicons database.
   base::FilePath GetFaviconsFileName() const;
 
   class URLQuerier;
@@ -667,22 +648,25 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
       bool hidden,
       VisitSource visit_source,
       bool should_increment_typed_count,
-      base::Optional<base::string16> title = base::nullopt);
+      VisitID opener_visit,
+      absl::optional<std::u16string> title = absl::nullopt);
 
-  // Returns a redirect chain in |redirects| for the VisitID
-  // |cur_visit|. |cur_visit| is assumed to be valid. Assumes that
+  // Returns a redirect chain in `redirects` for the VisitID
+  // `cur_visit`. `cur_visit` is assumed to be valid. Assumes that
   // this HistoryBackend object has been Init()ed successfully.
   void GetRedirectsFromSpecificVisit(VisitID cur_visit,
                                      RedirectList* redirects);
 
-  // Similar to the above function except returns a redirect list ending
-  // at |cur_visit|.
+  // Similar to the above function except returns a redirect-or-referral list
+  // ending at `cur_visit`. E.g. if visit A redirected to visit B, which
+  // referred to visit C, then the return list for visit E would include all 3
+  // visits.
   void GetRedirectsToSpecificVisit(VisitID cur_visit, RedirectList* redirects);
 
   // Updates the visit_duration information in visits table.
   void UpdateVisitDuration(VisitID visit_id, const base::Time end_ts);
 
-  // Returns whether |url| is on an untyped intranet host.
+  // Returns whether `url` is on an untyped intranet host.
   bool IsUntypedIntranetHost(const GURL& url);
 
   // Querying ------------------------------------------------------------------
@@ -693,9 +677,20 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // search for results which match the given text query.
   // Both functions assume QueryHistory already checked the DB for validity.
   void QueryHistoryBasic(const QueryOptions& options, QueryResults* result);
-  void QueryHistoryText(const base::string16& text_query,
+  void QueryHistoryText(const std::u16string& text_query,
                         const QueryOptions& options,
                         QueryResults* result);
+
+  // Performs a brute force search over the database to find any host names that
+  // match the `host_name` string. Returns any matches.
+  URLRows GetMatchesForHost(const std::u16string& host_name);
+
+  // Clusters ------------------------------------------------------------------
+
+  // Convert `AnnotatedVisitRow`s to `AnnotatedVisit`s. Drops rows without
+  // associated URL or visit rows, though this shouldn't happen usually.
+  std::vector<AnnotatedVisit> AnnotatedVisitsFromRows(
+      const std::vector<AnnotatedVisitRow>& rows);
 
   // Committing ----------------------------------------------------------------
 
@@ -732,117 +727,19 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // Favicons ------------------------------------------------------------------
 
-  // If |bitmaps_are_expired| is true, the icon for |icon_url| will be modified
-  // only if it's not present in the database. In that case, it will be
-  // initially set as expired. Returns whether the new bitmaps were actually
-  // written. |page_urls| must not be empty.
-  bool SetFaviconsImpl(const base::flat_set<GURL>& page_urls,
-                       favicon_base::IconType icon_type,
-                       const GURL& icon_url,
-                       const std::vector<SkBitmap>& bitmaps,
-                       FaviconBitmapType type);
-
-  // Used by both UpdateFaviconMappingsAndFetch() and GetFavicon().
-  // If there is a favicon stored in the database for |icon_url|, a mapping is
-  // added to the database from each element in |page_urls| (and all redirects)
-  // to |icon_url|.
-  void UpdateFaviconMappingsAndFetchImpl(
-      const base::flat_set<GURL>& page_urls,
-      const GURL& icon_url,
-      favicon_base::IconType icon_type,
-      const std::vector<int>& desired_sizes,
-      std::vector<favicon_base::FaviconRawBitmapResult>* results);
-
-  // Set the favicon bitmaps of |type| for |icon_id|.
-  // For each entry in |bitmaps|, if a favicon bitmap already exists at the
-  // entry's pixel size, replace the favicon bitmap's data with the entry's
-  // bitmap data. Otherwise add a new favicon bitmap.
-  // Any favicon bitmaps already mapped to |icon_id| whose pixel size does not
-  // match the pixel size of one of |bitmaps| is deleted.
-  // For bitmap type FaviconBitmapType::ON_DEMAND, this is legal to call only
-  // for a newly created |icon_id| (that has no bitmaps yet).
-  // Returns true if any of the bitmap data at |icon_id| is changed as a result
-  // of calling this method.
-  bool SetFaviconBitmaps(favicon_base::FaviconID icon_id,
-                         const std::vector<SkBitmap>& bitmaps,
-                         FaviconBitmapType type);
-
-  // Returns true if the bitmap data at |bitmap_id| equals |new_bitmap_data|.
-  bool IsFaviconBitmapDataEqual(
-      FaviconBitmapID bitmap_id,
-      const scoped_refptr<base::RefCountedMemory>& new_bitmap_data);
-
-  // Returns true if there are favicons for |page_url| and one of the types in
-  // |icon_types|.
-  // |favicon_bitmap_results| is set to the favicon bitmaps whose edge sizes
-  // most closely match |desired_sizes|. If |desired_sizes| has a '0' entry, the
-  // largest favicon bitmap with one of the icon types in |icon_types| is
-  // returned. If |icon_types| contains multiple icon types and there are
-  // several matched icon types in the database, results will only be returned
-  // for a single icon type in the priority of kTouchPrecomposedIcon,
-  // kTouchIcon, and kFavicon. If |fallback_to_host| is true, the host of
-  // |page_url| will be used to search the favicon database if an exact match
-  // cannot be found. See the comment for GetFaviconResultsForBestMatch() for
-  // more details on how |favicon_bitmap_results| is constructed.
-  bool GetFaviconsFromDB(const GURL& page_url,
-                         const favicon_base::IconTypeSet& icon_types,
-                         const std::vector<int>& desired_sizes,
-                         bool fallback_to_host,
-                         std::vector<favicon_base::FaviconRawBitmapResult>*
-                             favicon_bitmap_results);
-
-  // Returns the favicon bitmaps whose edge sizes most closely match
-  // |desired_sizes| in |favicon_bitmap_results|. If |desired_sizes| has a '0'
-  // entry, only the largest favicon bitmap is returned. Goodness is computed
-  // via SelectFaviconFrameIndices(). It is computed on a per FaviconID basis,
-  // thus all |favicon_bitmap_results| are guaranteed to be for the same
-  // FaviconID. |favicon_bitmap_results| will have at most one entry for each
-  // desired edge size. There will be fewer entries if the same favicon bitmap
-  // is the best result for multiple edge sizes.
-  // Returns true if there were no errors.
-  bool GetFaviconBitmapResultsForBestMatch(
-      const std::vector<favicon_base::FaviconID>& candidate_favicon_ids,
-      const std::vector<int>& desired_sizes,
-      std::vector<favicon_base::FaviconRawBitmapResult>*
-          favicon_bitmap_results);
-
-  // Maps the favicon ID |icon_id| to |page_url| (and all redirects) for
-  // |icon_type|. |icon_id| == 0 deletes previously existing mappings.
-  // Returns true if the mappings for the page or any of its redirects were
-  // changed.
-  bool SetFaviconMappingsForPageAndRedirects(const GURL& page_url,
-                                             favicon_base::IconType icon_type,
-                                             favicon_base::FaviconID icon_id);
-
-  // Maps the favicon ID |icon_id| to URLs in |page_urls| for |icon_type|.
-  // |icon_id| == 0 deletes previously existing mappings.
-  // Returns page URLs among |page_urls| whose mappings were changed (might be
-  // empty).
-  std::vector<GURL> SetFaviconMappingsForPages(
-      const base::flat_set<GURL>& page_urls,
-      favicon_base::IconType icon_type,
-      favicon_base::FaviconID icon_id);
-
-  // Maps the favicon ID |icon_ids| to |page_url| for |icon_type|.
-  // |icon_id| == 0 deletes previously existing mappings.
-  // Returns true if the function changed at least one of |page_url|'s mappings.
-  bool SetFaviconMappingsForPage(const GURL& page_url,
-                                 favicon_base::IconType icon_type,
-                                 favicon_base::FaviconID icon_id);
-
-  // Returns all the page URLs in the redirect chain for |page_url|. If there
-  // are no known redirects for |page_url|, returns a vector with |page_url|.
+  // Returns all the page URLs in the redirect chain for `page_url`. If there
+  // are no known redirects for `page_url`, returns a vector with `page_url`.
   RedirectList GetCachedRecentRedirects(const GURL& page_url);
 
-  // Send notification that the favicon has changed for |page_url| and all its
+  // Send notification that the favicon has changed for `page_url` and all its
   // redirects. This should be called if the mapping between the page URL
   // (e.g. http://www.google.com) and the icon URL (e.g.
   // http://www.google.com/favicon.ico) has changed.
   void SendFaviconChangedNotificationForPageAndRedirects(const GURL& page_url);
 
-  // Send notification that the bitmap data for the favicon at |icon_url| has
+  // Send notification that the bitmap data for the favicon at `icon_url` has
   // changed. Sending this notification is important because the favicon at
-  // |icon_url| may be mapped to hundreds of page URLs.
+  // `icon_url` may be mapped to hundreds of page URLs.
   void SendFaviconChangedNotificationForIconURL(const GURL& icon_url);
 
   // Generic stuff -------------------------------------------------------------
@@ -861,21 +758,21 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   void NotifyURLsModified(const URLRows& changed_urls,
                           bool is_from_expiration) override;
   void NotifyURLsDeleted(DeletionInfo deletion_info) override;
+  void NotifyVisitDeleted(const VisitRow& visit) override;
 
   // Deleting all history ------------------------------------------------------
 
   // Deletes all history. This is a special case of deleting that is separated
   // from our normal dependency-following method for performance reasons. The
   // logic lives here instead of ExpireHistoryBackend since it will cause
-  // re-initialization of some databases (e.g. Thumbnails) that could fail.
+  // re-initialization of some databases (e.g. favicons) that could fail.
   // When these databases are not valid, our pointers must be null, so we need
   // to handle this type of operation to keep the pointers in sync.
   void DeleteAllHistory();
 
-  // Given a vector of all URLs that we will keep, removes all thumbnails
-  // referenced by any URL, and also all favicons that aren't used by those
-  // URLs.
-  bool ClearAllThumbnailHistory(const std::vector<GURL>& kept_urls);
+  // Given a vector of all URLs that we will keep, removes all favicons that
+  // aren't used by those URLs.
+  bool ClearAllFaviconHistory(const std::vector<GURL>& kept_urls);
 
   // Deletes all information in the history database, except for the supplied
   // set of URLs in the URL table (these should correspond to the bookmarked
@@ -887,6 +784,12 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Deletes the FTS index database files, which are no longer used.
   void DeleteFTSIndexDatabases();
 
+  // favicon::FaviconBackendDelegate
+  std::vector<GURL> GetCachedRecentRedirectsForPage(
+      const GURL& page_url) override;
+
+  bool ProcessSetFaviconsResult(const favicon::SetFaviconsResult& result,
+                                const GURL& icon_url);
   // Data ----------------------------------------------------------------------
 
   // Delegate. See the class definition above for more information. This will
@@ -897,23 +800,23 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // Directory where database files will be stored, empty until Init is called.
   base::FilePath history_dir_;
 
-  // The history/thumbnail databases. Either may be null if the database could
+  // The history/favicon databases. Either may be null if the database could
   // not be opened, all users must first check for null and return immediately
-  // if it is. The thumbnail DB may be null when the history one isn't, but not
+  // if it is. The favicon DB may be null when the history one isn't, but not
   // vice-versa.
   std::unique_ptr<HistoryDatabase> db_;
   bool scheduled_kill_db_;  // Database is being killed due to error.
-  std::unique_ptr<ThumbnailDatabase> thumbnail_db_;
+  std::unique_ptr<favicon::FaviconBackend> favicon_backend_;
 
   // Manages expiration between the various databases.
   ExpireHistoryBackend expirer_;
 
   // A commit has been scheduled to occur sometime in the future. We can check
   // !IsCancelled() to see if there is a commit scheduled in the future (note
-  // that CancelableClosure starts cancelled with the default constructor), and
-  // we can use Cancel() to cancel the scheduled commit. There can be only one
-  // scheduled commit at a time (see ScheduleCommit).
-  base::CancelableClosure scheduled_commit_;
+  // that CancelableOnceClosure starts cancelled with the default constructor),
+  // and we can use Cancel() to cancel the scheduled commit. There can be only
+  // one scheduled commit at a time (see ScheduleCommit).
+  base::CancelableOnceClosure scheduled_commit_;
 
   // Maps recent redirect destination pages to the chain of redirects that
   // brought us to there. Pages that did not have redirects or were not the
@@ -924,7 +827,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   //
   // As with AddPage, the last item in the redirect chain will be the
   // destination of the redirect (i.e., the key into recent_redirects_);
-  typedef base::MRUCache<GURL, RedirectList> RedirectCache;
+  typedef base::LRUCache<GURL, RedirectList> RedirectCache;
   RedirectCache recent_redirects_;
 
   // Timestamp of the first entry in our database.
@@ -932,14 +835,10 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   // When set, this is the task that should be invoked on destruction.
   scoped_refptr<base::SingleThreadTaskRunner> backend_destroy_task_runner_;
-  base::Closure backend_destroy_task_;
+  base::OnceClosure backend_destroy_task_;
 
   // Tracks page transition types.
   VisitTracker tracker_;
-
-  // A boolean variable to track whether we have already purged obsolete segment
-  // data.
-  bool segment_queried_;
 
   // List of QueuedHistoryDBTasks to run;
   std::list<std::unique_ptr<QueuedHistoryDBTask>> queued_history_db_tasks_;
@@ -968,8 +867,6 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   // HistoryBackend::Init is called. Defined after observers_ because
   // it unregisters itself as observer during destruction.
   std::unique_ptr<TypedURLSyncBridge> typed_url_sync_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(HistoryBackend);
 };
 
 }  // namespace history

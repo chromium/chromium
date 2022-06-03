@@ -20,44 +20,35 @@
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/sandbox_types.h"
 
-namespace base {
-namespace win {
-
-class StartupInformation;
-
-}  // namespace win
-}  // namespace base
-
 namespace sandbox {
 
 class SharedMemIPCServer;
 class Sid;
-class ThreadProvider;
+class ThreadPool;
+class StartupInformationHelper;
 
 // TargetProcess models a target instance (child process). Objects of this
 // class are owned by the Policy used to create them.
 class TargetProcess {
  public:
+  TargetProcess() = delete;
+
   // The constructor takes ownership of |initial_token| and |lockdown_token|
   TargetProcess(base::win::ScopedHandle initial_token,
                 base::win::ScopedHandle lockdown_token,
                 HANDLE job,
-                ThreadProvider* thread_pool,
+                ThreadPool* thread_pool,
                 const std::vector<Sid>& impersonation_capabilities);
-  ~TargetProcess();
 
-  // TODO(cpu): Currently there does not seem to be a reason to implement
-  // reference counting for this class since is internal, but kept the
-  // the same interface so the interception framework does not need to be
-  // touched at this point.
-  void AddRef() {}
-  void Release() {}
+  TargetProcess(const TargetProcess&) = delete;
+  TargetProcess& operator=(const TargetProcess&) = delete;
+
+  ~TargetProcess();
 
   // Creates the new target process. The process is created suspended.
   ResultCode Create(const wchar_t* exe_path,
                     const wchar_t* command_line,
-                    bool inherit_handles,
-                    const base::win::StartupInformation& startup_info,
+                    std::unique_ptr<StartupInformationHelper> startup_info,
                     base::win::ScopedProcessInformation* target_info,
                     DWORD* win_error);
 
@@ -112,12 +103,14 @@ class TargetProcess {
   base::win::ScopedHandle initial_token_;
   // Kernel handle to the shared memory used by the IPC server.
   base::win::ScopedHandle shared_section_;
-  // Job object containing the target process.
+  // Job object containing the target process. This is used during
+  // process creation prior to Windows 10 and to identify the process in
+  // broker_services.cc.
   HANDLE job_;
   // Reference to the IPC subsystem.
   std::unique_ptr<SharedMemIPCServer> ipc_server_;
   // Provides the threads used by the IPC. This class does not own this pointer.
-  ThreadProvider* thread_pool_;
+  ThreadPool* thread_pool_;
   // Base address of the main executable
   void* base_address_;
   // Full name of the target executable.
@@ -126,15 +119,14 @@ class TargetProcess {
   std::vector<Sid> impersonation_capabilities_;
 
   // Function used for testing.
-  friend TargetProcess* MakeTestTargetProcess(HANDLE process,
-                                              HMODULE base_address);
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(TargetProcess);
+  friend std::unique_ptr<TargetProcess> MakeTestTargetProcess(
+      HANDLE process,
+      HMODULE base_address);
 };
 
 // Creates a mock TargetProcess used for testing interceptions.
-// TODO(cpu): It seems that this method is not going to be used anymore.
-TargetProcess* MakeTestTargetProcess(HANDLE process, HMODULE base_address);
+std::unique_ptr<TargetProcess> MakeTestTargetProcess(HANDLE process,
+                                                     HMODULE base_address);
 
 }  // namespace sandbox
 

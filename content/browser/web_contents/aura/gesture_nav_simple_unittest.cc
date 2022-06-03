@@ -61,7 +61,9 @@ class GestureNavSimpleTest : public RenderViewHostImplTestHarness {
   GestureNavSimpleTest()
       : first_("https://www.google.com"), second_("http://www.chromium.org") {}
 
-  ~GestureNavSimpleTest() override {}
+  ~GestureNavSimpleTest() override = default;
+  GestureNavSimpleTest(const GestureNavSimpleTest&) = delete;
+  GestureNavSimpleTest& operator=(const GestureNavSimpleTest&) = delete;
 
  protected:
   // RenderViewHostImplTestHarness:
@@ -126,16 +128,14 @@ class GestureNavSimpleTest : public RenderViewHostImplTestHarness {
   const GURL second_;
 
   std::unique_ptr<GestureNavSimple> gesture_nav_simple_;
-
-  DISALLOW_COPY_AND_ASSIGN(GestureNavSimpleTest);
 };
 
 // Tests that setting 'overscroll-behavior-x' to 'auto' allows gesture-nav.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorXAutoAllowsGestureNav) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_auto;
-  behavior_x_auto.x = cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto;
+  behavior_x_auto.x = cc::OverscrollBehavior::Type::kAuto;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_EAST,
@@ -147,10 +147,10 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorXAutoAllowsGestureNav) {
 
 // Tests that setting 'overscroll-behavior-x' to 'contain' prevents gesture-nav.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorXContainPreventsGestureNav) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_contain;
-  behavior_x_contain.x = cc::OverscrollBehavior::kOverscrollBehaviorTypeContain;
+  behavior_x_contain.x = cc::OverscrollBehavior::Type::kContain;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_EAST,
@@ -162,10 +162,10 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorXContainPreventsGestureNav) {
 
 // Tests that setting 'overscroll-behavior-x' to 'none' prevents gesture-nav.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorXNonePreventsGestureNav) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_none;
-  behavior_x_none.x = cc::OverscrollBehavior::kOverscrollBehaviorTypeNone;
+  behavior_x_none.x = cc::OverscrollBehavior::Type::kNone;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_EAST,
@@ -178,7 +178,7 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorXNonePreventsGestureNav) {
 // Tests that setting 'overscroll-behavior-y' to 'auto' allows pull-to-refresh.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorYAutoAllowsPullToRefresh) {
   cc::OverscrollBehavior behavior_y_auto;
-  behavior_y_auto.y = cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto;
+  behavior_y_auto.y = cc::OverscrollBehavior::Type::kAuto;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_SOUTH,
@@ -192,7 +192,7 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorYAutoAllowsPullToRefresh) {
 // pull-to-refresh.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorYContainPreventsPullToRefresh) {
   cc::OverscrollBehavior behavior_y_contain;
-  behavior_y_contain.y = cc::OverscrollBehavior::kOverscrollBehaviorTypeContain;
+  behavior_y_contain.y = cc::OverscrollBehavior::Type::kContain;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_SOUTH,
@@ -206,7 +206,7 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorYContainPreventsPullToRefresh) {
 // pull-to-refresh.
 TEST_F(GestureNavSimpleTest, OverscrollBehaviorYNonePreventsPullToRefresh) {
   cc::OverscrollBehavior behavior_y_none;
-  behavior_y_none.y = cc::OverscrollBehavior::kOverscrollBehaviorTypeNone;
+  behavior_y_none.y = cc::OverscrollBehavior::Type::kNone;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_SOUTH,
@@ -219,12 +219,12 @@ TEST_F(GestureNavSimpleTest, OverscrollBehaviorYNonePreventsPullToRefresh) {
 // Tests that setting 'overscroll-behavior-x' to a value that prevents
 // gesture-nav after it has started does not affect aborting it.
 TEST_F(GestureNavSimpleTest, PreventGestureNavBeforeAbort) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_auto;
-  behavior_x_auto.x = cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto;
+  behavior_x_auto.x = cc::OverscrollBehavior::Type::kAuto;
   cc::OverscrollBehavior behavior_x_contain;
-  behavior_x_contain.x = cc::OverscrollBehavior::kOverscrollBehaviorTypeContain;
+  behavior_x_contain.x = cc::OverscrollBehavior::Type::kContain;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_EAST,
@@ -239,18 +239,18 @@ TEST_F(GestureNavSimpleTest, PreventGestureNavBeforeAbort) {
 
   EXPECT_EQ(OverscrollMode::OVERSCROLL_NONE, mode());
   EXPECT_EQ(OverscrollSource::NONE, source());
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 }
 
 // Tests that after gesture-nav was prevented due to 'overscroll-behavior-x',
 // setting it to 'auto' does not affect aborting overscroll.
 TEST_F(GestureNavSimpleTest, AllowGestureNavBeforeAbort) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_contain;
-  behavior_x_contain.x = cc::OverscrollBehavior::kOverscrollBehaviorTypeContain;
+  behavior_x_contain.x = cc::OverscrollBehavior::Type::kContain;
   cc::OverscrollBehavior behavior_x_auto;
-  behavior_x_auto.x = cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto;
+  behavior_x_auto.x = cc::OverscrollBehavior::Type::kAuto;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_EAST,
@@ -265,16 +265,16 @@ TEST_F(GestureNavSimpleTest, AllowGestureNavBeforeAbort) {
 
   EXPECT_EQ(OverscrollMode::OVERSCROLL_NONE, mode());
   EXPECT_EQ(OverscrollSource::NONE, source());
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 }
 
 // Tests that preventing gesture-nav using 'overscroll-behavior-x' does not
 // affect completing overscroll.
 TEST_F(GestureNavSimpleTest, CompletePreventedGestureNav) {
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 
   cc::OverscrollBehavior behavior_x_contain;
-  behavior_x_contain.x = cc::OverscrollBehavior::kOverscrollBehaviorTypeContain;
+  behavior_x_contain.x = cc::OverscrollBehavior::Type::kContain;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_EAST,
@@ -287,16 +287,16 @@ TEST_F(GestureNavSimpleTest, CompletePreventedGestureNav) {
 
   EXPECT_EQ(OverscrollMode::OVERSCROLL_NONE, mode());
   EXPECT_EQ(OverscrollSource::NONE, source());
-  EXPECT_EQ(second(), contents()->GetURL());
+  EXPECT_EQ(second(), contents()->GetLastCommittedURL());
 }
 
 // Tests that setting 'overscroll-behavior-y' to a value that prevents
 // pull-to-refresh after it has started does not affect aborting it.
 TEST_F(GestureNavSimpleTest, PreventPullToRefreshBeforeAbort) {
   cc::OverscrollBehavior behavior_y_auto;
-  behavior_y_auto.y = cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto;
+  behavior_y_auto.y = cc::OverscrollBehavior::Type::kAuto;
   cc::OverscrollBehavior behavior_y_contain;
-  behavior_y_contain.y = cc::OverscrollBehavior::kOverscrollBehaviorTypeContain;
+  behavior_y_contain.y = cc::OverscrollBehavior::Type::kContain;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_SOUTH,
@@ -318,9 +318,9 @@ TEST_F(GestureNavSimpleTest, PreventPullToRefreshBeforeAbort) {
 // overscroll.
 TEST_F(GestureNavSimpleTest, AllowPullToRefreshBeforeAbort) {
   cc::OverscrollBehavior behavior_y_contain;
-  behavior_y_contain.y = cc::OverscrollBehavior::kOverscrollBehaviorTypeContain;
+  behavior_y_contain.y = cc::OverscrollBehavior::Type::kContain;
   cc::OverscrollBehavior behavior_y_auto;
-  behavior_y_auto.y = cc::OverscrollBehavior::kOverscrollBehaviorTypeAuto;
+  behavior_y_auto.y = cc::OverscrollBehavior::Type::kAuto;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_SOUTH,
@@ -341,7 +341,7 @@ TEST_F(GestureNavSimpleTest, AllowPullToRefreshBeforeAbort) {
 // affect completing overscroll.
 TEST_F(GestureNavSimpleTest, CompletePreventedPullToRefresh) {
   cc::OverscrollBehavior behavior_y_contain;
-  behavior_y_contain.y = cc::OverscrollBehavior::kOverscrollBehaviorTypeContain;
+  behavior_y_contain.y = cc::OverscrollBehavior::Type::kContain;
 
   OnOverscrollModeChange(OverscrollMode::OVERSCROLL_NONE,
                          OverscrollMode::OVERSCROLL_SOUTH,

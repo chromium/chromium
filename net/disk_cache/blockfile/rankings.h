@@ -72,6 +72,9 @@ class Rankings {
     explicit ScopedRankingsBlock(Rankings* rankings);
     ScopedRankingsBlock(Rankings* rankings, CacheRankingsBlock* node);
 
+    ScopedRankingsBlock(const ScopedRankingsBlock&) = delete;
+    ScopedRankingsBlock& operator=(const ScopedRankingsBlock&) = delete;
+
     ~ScopedRankingsBlock() {
       rankings_->FreeRankingsBlock(get());
     }
@@ -89,7 +92,6 @@ class Rankings {
 
    private:
     Rankings* rankings_;
-    DISALLOW_COPY_AND_ASSIGN(ScopedRankingsBlock);
   };
 
   // If we have multiple lists, we have to iterate through all at the same time.
@@ -104,6 +106,10 @@ class Rankings {
   };
 
   Rankings();
+
+  Rankings(const Rankings&) = delete;
+  Rankings& operator=(const Rankings&) = delete;
+
   ~Rankings();
 
   bool Init(BackendImpl* backend, bool count_lists);
@@ -207,8 +213,6 @@ class Rankings {
   BackendImpl* backend_;
   LruData* control_data_;  // Data related to the LRU lists.
   IteratorList iterators_;
-
-  DISALLOW_COPY_AND_ASSIGN(Rankings);
 };
 
 }  // namespace disk_cache

@@ -4,7 +4,6 @@
 
 // #import {assertInstanceof} from './assert.m.js';
 // #import {dispatchSimpleEvent} from './cr.m.js';
-// <include src="assert.js">
 
 /**
  * Alias for document.getElementById. Found elements must be HTMLElements.
@@ -100,12 +99,13 @@
 }
 
 /**
- * Disables text selection and dragging, with optional whitelist callbacks.
+ * Disables text selection and dragging, with optional callbacks to specify
+ * overrides.
  * @param {function(Event):boolean=} opt_allowSelectStart Unless this function
  *    is defined and returns true, the onselectionstart event will be
- *    surpressed.
+ *    suppressed.
  * @param {function(Event):boolean=} opt_allowDragStart Unless this function
- *    is defined and returns true, the ondragstart event will be surpressed.
+ *    is defined and returns true, the ondragstart event will be suppressed.
  */
 /* #export */ function disableTextSelectAndDrag(
     opt_allowSelectStart, opt_allowDragStart) {
@@ -129,7 +129,7 @@
  * @return {boolean} True if Chrome is running an RTL UI.
  */
 /* #export */ function isRTL() {
-  return document.documentElement.dir == 'rtl';
+  return document.documentElement.dir === 'rtl';
 }
 
 /**
@@ -161,8 +161,8 @@
 
 /**
  * Creates a new URL which is the old URL with a GET param of key=value.
- * @param {string} url The base URL. There is not sanity checking on the URL so
- *     it must be passed in a proper format.
+ * @param {string} url The base URL. There is no validation checking on the URL
+ *     so it must be passed in a proper format.
  * @param {string} key The key of the param.
  * @param {string} value The value of the param.
  * @return {string} The new URL.
@@ -170,7 +170,7 @@
 /* #export */ function appendParam(url, key, value) {
   const param = encodeURIComponent(key) + '=' + encodeURIComponent(value);
 
-  if (url.indexOf('?') == -1) {
+  if (url.indexOf('?') === -1) {
     return url + '?' + param;
   }
   return url + '&' + param;
@@ -322,110 +322,6 @@
   });
 }
 
-// <if expr="is_ios">
-// Polyfill 'key' in KeyboardEvent for iOS.
-// This function is not intended to be complete but should
-// be sufficient enough to have iOS work correctly while
-// it does not support key yet.
-if (!('key' in KeyboardEvent.prototype)) {
-  Object.defineProperty(KeyboardEvent.prototype, 'key', {
-    /** @this {KeyboardEvent} */
-    get: function() {
-      // 0-9
-      if (this.keyCode >= 0x30 && this.keyCode <= 0x39) {
-        return String.fromCharCode(this.keyCode);
-      }
-
-      // A-Z
-      if (this.keyCode >= 0x41 && this.keyCode <= 0x5a) {
-        let result = String.fromCharCode(this.keyCode).toLowerCase();
-        if (this.shiftKey) {
-          result = result.toUpperCase();
-        }
-        return result;
-      }
-
-      // Special characters
-      switch (this.keyCode) {
-        case 0x08:
-          return 'Backspace';
-        case 0x09:
-          return 'Tab';
-        case 0x0d:
-          return 'Enter';
-        case 0x10:
-          return 'Shift';
-        case 0x11:
-          return 'Control';
-        case 0x12:
-          return 'Alt';
-        case 0x1b:
-          return 'Escape';
-        case 0x20:
-          return ' ';
-        case 0x21:
-          return 'PageUp';
-        case 0x22:
-          return 'PageDown';
-        case 0x23:
-          return 'End';
-        case 0x24:
-          return 'Home';
-        case 0x25:
-          return 'ArrowLeft';
-        case 0x26:
-          return 'ArrowUp';
-        case 0x27:
-          return 'ArrowRight';
-        case 0x28:
-          return 'ArrowDown';
-        case 0x2d:
-          return 'Insert';
-        case 0x2e:
-          return 'Delete';
-        case 0x5b:
-          return 'Meta';
-        case 0x70:
-          return 'F1';
-        case 0x71:
-          return 'F2';
-        case 0x72:
-          return 'F3';
-        case 0x73:
-          return 'F4';
-        case 0x74:
-          return 'F5';
-        case 0x75:
-          return 'F6';
-        case 0x76:
-          return 'F7';
-        case 0x77:
-          return 'F8';
-        case 0x78:
-          return 'F9';
-        case 0x79:
-          return 'F10';
-        case 0x7a:
-          return 'F11';
-        case 0x7b:
-          return 'F12';
-        case 0xbb:
-          return '=';
-        case 0xbd:
-          return '-';
-        case 0xdb:
-          return '[';
-        case 0xdd:
-          return ']';
-      }
-      return 'Unidentified';
-    }
-  });
-} else {
-  window.console.log('KeyboardEvent.Key polyfill not required');
-}
-// </if>  /* is_ios */
-
 /**
  * @param {!Event} e
  * @return {boolean} Whether a modifier key was down when processing |e|.
@@ -439,5 +335,7 @@ if (!('key' in KeyboardEvent.prototype)) {
  * @return {boolean} Whether the element is interactive via text input.
  */
 /* #export */ function isTextInputElement(el) {
-  return el.tagName == 'INPUT' || el.tagName == 'TEXTAREA';
+  return el.tagName === 'INPUT' || el.tagName === 'TEXTAREA';
 }
+
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

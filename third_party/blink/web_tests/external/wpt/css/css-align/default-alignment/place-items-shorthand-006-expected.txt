@@ -1,0 +1,172 @@
+This is a testharness.js-based test.
+Found 168 tests; 143 PASS, 25 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS Checking place-items: normal left
+PASS Checking place-items: normal right
+PASS Checking place-items: normal normal
+PASS Checking place-items: normal stretch
+PASS Checking place-items: normal start
+PASS Checking place-items: normal end
+PASS Checking place-items: normal self-start
+PASS Checking place-items: normal self-end
+PASS Checking place-items: normal center
+PASS Checking place-items: normal flex-start
+PASS Checking place-items: normal flex-end
+PASS Checking place-items: normal baseline
+PASS Checking place-items: normal first baseline
+FAIL Checking place-items: normal last baseline assert_equals: normal last baseline specified value expected "normal last baseline" but got ""
+PASS Checking place-items: stretch left
+PASS Checking place-items: stretch right
+PASS Checking place-items: stretch normal
+PASS Checking place-items: stretch stretch
+PASS Checking place-items: stretch start
+PASS Checking place-items: stretch end
+PASS Checking place-items: stretch self-start
+PASS Checking place-items: stretch self-end
+PASS Checking place-items: stretch center
+PASS Checking place-items: stretch flex-start
+PASS Checking place-items: stretch flex-end
+PASS Checking place-items: stretch baseline
+PASS Checking place-items: stretch first baseline
+FAIL Checking place-items: stretch last baseline assert_equals: stretch last baseline specified value expected "stretch last baseline" but got ""
+PASS Checking place-items: start left
+PASS Checking place-items: start right
+PASS Checking place-items: start normal
+PASS Checking place-items: start stretch
+PASS Checking place-items: start start
+PASS Checking place-items: start end
+PASS Checking place-items: start self-start
+PASS Checking place-items: start self-end
+PASS Checking place-items: start center
+PASS Checking place-items: start flex-start
+PASS Checking place-items: start flex-end
+PASS Checking place-items: start baseline
+PASS Checking place-items: start first baseline
+FAIL Checking place-items: start last baseline assert_equals: start last baseline specified value expected "start last baseline" but got ""
+PASS Checking place-items: end left
+PASS Checking place-items: end right
+PASS Checking place-items: end normal
+PASS Checking place-items: end stretch
+PASS Checking place-items: end start
+PASS Checking place-items: end end
+PASS Checking place-items: end self-start
+PASS Checking place-items: end self-end
+PASS Checking place-items: end center
+PASS Checking place-items: end flex-start
+PASS Checking place-items: end flex-end
+PASS Checking place-items: end baseline
+PASS Checking place-items: end first baseline
+FAIL Checking place-items: end last baseline assert_equals: end last baseline specified value expected "end last baseline" but got ""
+PASS Checking place-items: self-start left
+PASS Checking place-items: self-start right
+PASS Checking place-items: self-start normal
+PASS Checking place-items: self-start stretch
+PASS Checking place-items: self-start start
+PASS Checking place-items: self-start end
+PASS Checking place-items: self-start self-start
+PASS Checking place-items: self-start self-end
+PASS Checking place-items: self-start center
+PASS Checking place-items: self-start flex-start
+PASS Checking place-items: self-start flex-end
+PASS Checking place-items: self-start baseline
+PASS Checking place-items: self-start first baseline
+FAIL Checking place-items: self-start last baseline assert_equals: self-start last baseline specified value expected "self-start last baseline" but got ""
+PASS Checking place-items: self-end left
+PASS Checking place-items: self-end right
+PASS Checking place-items: self-end normal
+PASS Checking place-items: self-end stretch
+PASS Checking place-items: self-end start
+PASS Checking place-items: self-end end
+PASS Checking place-items: self-end self-start
+PASS Checking place-items: self-end self-end
+PASS Checking place-items: self-end center
+PASS Checking place-items: self-end flex-start
+PASS Checking place-items: self-end flex-end
+PASS Checking place-items: self-end baseline
+PASS Checking place-items: self-end first baseline
+FAIL Checking place-items: self-end last baseline assert_equals: self-end last baseline specified value expected "self-end last baseline" but got ""
+PASS Checking place-items: center left
+PASS Checking place-items: center right
+PASS Checking place-items: center normal
+PASS Checking place-items: center stretch
+PASS Checking place-items: center start
+PASS Checking place-items: center end
+PASS Checking place-items: center self-start
+PASS Checking place-items: center self-end
+PASS Checking place-items: center center
+PASS Checking place-items: center flex-start
+PASS Checking place-items: center flex-end
+PASS Checking place-items: center baseline
+PASS Checking place-items: center first baseline
+FAIL Checking place-items: center last baseline assert_equals: center last baseline specified value expected "center last baseline" but got ""
+PASS Checking place-items: flex-start left
+PASS Checking place-items: flex-start right
+PASS Checking place-items: flex-start normal
+PASS Checking place-items: flex-start stretch
+PASS Checking place-items: flex-start start
+PASS Checking place-items: flex-start end
+PASS Checking place-items: flex-start self-start
+PASS Checking place-items: flex-start self-end
+PASS Checking place-items: flex-start center
+PASS Checking place-items: flex-start flex-start
+PASS Checking place-items: flex-start flex-end
+PASS Checking place-items: flex-start baseline
+PASS Checking place-items: flex-start first baseline
+FAIL Checking place-items: flex-start last baseline assert_equals: flex-start last baseline specified value expected "flex-start last baseline" but got ""
+PASS Checking place-items: flex-end left
+PASS Checking place-items: flex-end right
+PASS Checking place-items: flex-end normal
+PASS Checking place-items: flex-end stretch
+PASS Checking place-items: flex-end start
+PASS Checking place-items: flex-end end
+PASS Checking place-items: flex-end self-start
+PASS Checking place-items: flex-end self-end
+PASS Checking place-items: flex-end center
+PASS Checking place-items: flex-end flex-start
+PASS Checking place-items: flex-end flex-end
+PASS Checking place-items: flex-end baseline
+PASS Checking place-items: flex-end first baseline
+FAIL Checking place-items: flex-end last baseline assert_equals: flex-end last baseline specified value expected "flex-end last baseline" but got ""
+PASS Checking place-items: baseline left
+PASS Checking place-items: baseline right
+PASS Checking place-items: baseline normal
+PASS Checking place-items: baseline stretch
+PASS Checking place-items: baseline start
+PASS Checking place-items: baseline end
+PASS Checking place-items: baseline self-start
+PASS Checking place-items: baseline self-end
+PASS Checking place-items: baseline center
+PASS Checking place-items: baseline flex-start
+PASS Checking place-items: baseline flex-end
+PASS Checking place-items: baseline baseline
+PASS Checking place-items: baseline first baseline
+FAIL Checking place-items: baseline last baseline assert_equals: baseline last baseline specified value expected "baseline last baseline" but got ""
+PASS Checking place-items: first baseline left
+PASS Checking place-items: first baseline right
+PASS Checking place-items: first baseline normal
+PASS Checking place-items: first baseline stretch
+PASS Checking place-items: first baseline start
+PASS Checking place-items: first baseline end
+PASS Checking place-items: first baseline self-start
+PASS Checking place-items: first baseline self-end
+PASS Checking place-items: first baseline center
+PASS Checking place-items: first baseline flex-start
+PASS Checking place-items: first baseline flex-end
+PASS Checking place-items: first baseline baseline
+PASS Checking place-items: first baseline first baseline
+FAIL Checking place-items: first baseline last baseline assert_equals: first baseline last baseline specified value expected "baseline last baseline" but got ""
+FAIL Checking place-items: last baseline left assert_equals: last baseline left specified value expected "last baseline left" but got ""
+FAIL Checking place-items: last baseline right assert_equals: last baseline right specified value expected "last baseline right" but got ""
+FAIL Checking place-items: last baseline normal assert_equals: last baseline normal specified value expected "last baseline normal" but got ""
+FAIL Checking place-items: last baseline stretch assert_equals: last baseline stretch specified value expected "last baseline stretch" but got ""
+FAIL Checking place-items: last baseline start assert_equals: last baseline start specified value expected "last baseline start" but got ""
+FAIL Checking place-items: last baseline end assert_equals: last baseline end specified value expected "last baseline end" but got ""
+FAIL Checking place-items: last baseline self-start assert_equals: last baseline self-start specified value expected "last baseline self-start" but got ""
+FAIL Checking place-items: last baseline self-end assert_equals: last baseline self-end specified value expected "last baseline self-end" but got ""
+FAIL Checking place-items: last baseline center assert_equals: last baseline center specified value expected "last baseline center" but got ""
+FAIL Checking place-items: last baseline flex-start assert_equals: last baseline flex-start specified value expected "last baseline flex-start" but got ""
+FAIL Checking place-items: last baseline flex-end assert_equals: last baseline flex-end specified value expected "last baseline flex-end" but got ""
+FAIL Checking place-items: last baseline baseline assert_equals: last baseline baseline specified value expected "last baseline baseline" but got ""
+FAIL Checking place-items: last baseline first baseline assert_equals: last baseline first baseline specified value expected "last baseline baseline" but got ""
+FAIL Checking place-items: last baseline last baseline assert_equals: last baseline last baseline specified value expected "last baseline" but got ""
+Harness: the test ran to completion.
+

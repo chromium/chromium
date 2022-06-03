@@ -6,7 +6,7 @@
   TestRunner.addResult(
       `Tests a handling of a click on the link in a message, which had been shown before its originating script was added.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -21,13 +21,13 @@
 
 
   var message = new SDK.ConsoleMessage(
-      TestRunner.runtimeModel, SDK.ConsoleMessage.MessageSource.JS,
-      SDK.ConsoleMessage.MessageLevel.Info, 'hello?', null,
-      'http://127.0.0.1:8000/devtools/resources/source2.js');
+      TestRunner.runtimeModel, Protocol.Log.LogEntrySource.JS,
+      Protocol.Log.LogEntryLevel.Info, 'hello?',
+      {url: 'http://127.0.0.1:8000/devtools/resources/source2.js'});
 
   SDK.consoleModel.addMessage(message);
   TestRunner.debuggerModel.addEventListener(SDK.DebuggerModel.Events.ParsedScriptSource, onScriptAdded);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.evaluateInPage('loadScript()');
 
   function onScriptAdded(event) {
@@ -35,7 +35,7 @@
       return;
 
     TestRunner.addResult('script was added');
-    var message = Console.ConsoleView.instance()._visibleViewMessages[0];
+    var message = Console.ConsoleView.instance().visibleViewMessages[0];
     var anchorElement = message.element().querySelector('.devtools-link');
     anchorElement.click();
   }
@@ -45,10 +45,10 @@
     TestRunner.completeTest();
   };
 
-  UI.inspectorView._tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, panelChanged);
+  UI.inspectorView.tabbedPane.addEventListener(UI.TabbedPane.Events.TabSelected, panelChanged);
 
   function panelChanged() {
-    TestRunner.addResult('Panel ' + UI.inspectorView._tabbedPane._currentTab.id + ' was opened');
+    TestRunner.addResult('Panel ' + UI.inspectorView.tabbedPane.currentTab.id + ' was opened');
     TestRunner.completeTest();
   }
 })();

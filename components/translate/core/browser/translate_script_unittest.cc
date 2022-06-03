@@ -6,15 +6,15 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/translate/core/browser/translate_download_manager.h"
 #include "components/translate/core/common/translate_switches.h"
-#include "components/variations/variations_http_header_provider.h"
+#include "components/variations/scoped_variations_ids_provider.h"
+#include "components/variations/variations_ids_provider.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
@@ -32,9 +32,11 @@ class TranslateScriptTest : public testing::Test {
             base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
                 &test_url_loader_factory_)) {}
 
+  TranslateScriptTest(const TranslateScriptTest&) = delete;
+  TranslateScriptTest& operator=(const TranslateScriptTest&) = delete;
+
  protected:
   void SetUp() override {
-    variations::VariationsHttpHeaderProvider::GetInstance()->ResetForTesting();
     script_ = std::make_unique<TranslateScript>();
     auto* translate_download_manager = TranslateDownloadManager::GetInstance();
     translate_download_manager->set_application_locale("en");
@@ -62,12 +64,15 @@ class TranslateScriptTest : public testing::Test {
   }
 
  private:
-  void OnComplete(bool success, const std::string& script) {
+  void OnComplete(bool success) {
     // No op.
   }
 
   // Sets up the task scheduling/task-runner environment for each test.
   base::test::TaskEnvironment task_environment_;
+
+  variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{
+      variations::VariationsIdsProvider::Mode::kUseSignedInState};
 
   // The translate script.
   std::unique_ptr<TranslateScript> script_;
@@ -75,8 +80,6 @@ class TranslateScriptTest : public testing::Test {
   // Factory to create programmatic URL loaders.
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateScriptTest);
 };
 
 TEST_F(TranslateScriptTest, CheckScriptParameters) {
@@ -91,7 +94,8 @@ TEST_F(TranslateScriptTest, CheckScriptParameters) {
   GURL expected_url(TranslateScript::kScriptURL);
   GURL url = last_resource_request.url;
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(expected_url.GetOrigin().spec(), url.GetOrigin().spec());
+  EXPECT_EQ(expected_url.DeprecatedGetOriginAsURL().spec(),
+            url.DeprecatedGetOriginAsURL().spec());
   EXPECT_EQ(expected_url.path(), url.path());
 
   EXPECT_EQ(network::mojom::CredentialsMode::kOmit,
@@ -148,7 +152,8 @@ TEST_F(TranslateScriptTest, CheckScriptURL) {
   GURL expected_url(script_url);
   GURL url = last_resource_request.url;
   EXPECT_TRUE(url.is_valid());
-  EXPECT_EQ(expected_url.GetOrigin().spec(), url.GetOrigin().spec());
+  EXPECT_EQ(expected_url.DeprecatedGetOriginAsURL().spec(),
+            url.DeprecatedGetOriginAsURL().spec());
   EXPECT_EQ(expected_url.path(), url.path());
 }
 

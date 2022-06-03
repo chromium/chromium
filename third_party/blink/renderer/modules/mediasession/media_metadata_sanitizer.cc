@@ -6,12 +6,12 @@
 
 #include "third_party/blink/public/mojom/mediasession/media_session.mojom-blink.h"
 #include "third_party/blink/public/platform/web_icon_sizes_parser.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_image.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
-#include "third_party/blink/renderer/modules/mediasession/media_image.h"
 #include "third_party/blink/renderer/modules/mediasession/media_metadata.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_operators.h"
 #include "url/url_constants.h"
 
@@ -41,7 +41,7 @@ bool CheckMediaImageSrcSanity(const KURL& src, ExecutionContext* context) {
 
   if (!src.ProtocolIs(url::kHttpScheme) && !src.ProtocolIs(url::kHttpsScheme) &&
       !src.ProtocolIs(url::kDataScheme) && !src.ProtocolIs(url::kBlobScheme)) {
-    context->AddConsoleMessage(ConsoleMessage::Create(
+    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
         "MediaImage src can only be of http/https/data/blob scheme: " +
@@ -51,7 +51,7 @@ bool CheckMediaImageSrcSanity(const KURL& src, ExecutionContext* context) {
 
   DCHECK(src.GetString().Is8Bit());
   if (src.GetString().length() > url::kMaxURLChars) {
-    context->AddConsoleMessage(ConsoleMessage::Create(
+    context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::ConsoleMessageSource::kJavaScript,
         mojom::ConsoleMessageLevel::kWarning,
         "MediaImage src exceeds maximum URL length: " + src.GetString()));
@@ -78,7 +78,7 @@ media_session::mojom::blink::MediaImagePtr SanitizeMediaImageAndConvertToMojo(
        WebIconSizesParser::ParseIconSizes(image->sizes())) {
     mojo_image->sizes.push_back(web_size);
     if (mojo_image->sizes.size() == kMaxNumberOfImageSizes) {
-      context->AddConsoleMessage(ConsoleMessage::Create(
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kWarning,
           "The number of MediaImage sizes exceeds the upper limit. "
@@ -110,7 +110,7 @@ MediaMetadataSanitizer::SanitizeAndConvertToMojo(const MediaMetadata* metadata,
     if (!mojo_image.is_null())
       mojo_metadata->artwork.push_back(std::move(mojo_image));
     if (mojo_metadata->artwork.size() == kMaxNumberOfMediaImages) {
-      context->AddConsoleMessage(ConsoleMessage::Create(
+      context->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
           mojom::ConsoleMessageSource::kJavaScript,
           mojom::ConsoleMessageLevel::kWarning,
           "The number of MediaImage sizes exceeds the upper limit. "

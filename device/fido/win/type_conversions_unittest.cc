@@ -4,6 +4,7 @@
 
 #include "device/fido/win/type_conversions.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -24,7 +25,7 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
     std::vector<uint8_t> cbor_attestation_statement;
     uint8_t used_transport;  // WEBAUTHN_CTAP_TRANSPORT_* from <webauthn.h>
     bool success;
-    base::Optional<FidoTransportProtocol> expected_transport;
+    absl::optional<FidoTransportProtocol> expected_transport;
   } test_cases[] = {
       {L"packed",
        fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData),
@@ -48,7 +49,7 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
        fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData),
        fido_parsing_utils::Materialize(
            test_data::kPackedAttestationStatementCBOR),
-       WEBAUTHN_CTAP_TRANSPORT_TEST, true, base::nullopt},
+       WEBAUTHN_CTAP_TRANSPORT_TEST, true, absl::nullopt},
       // Unknown attestation formats
       {L"weird-unknown-format",
        fido_parsing_utils::Materialize(test_data::kTestSignAuthenticatorData),
@@ -87,15 +88,15 @@ TEST(TypeConversionsTest, ToAuthenticatorMakeCredentialResponse) {
        false},
   };
   size_t i = 0;
-  for (const auto test : test_cases) {
+  for (const auto& test : test_cases) {
     SCOPED_TRACE(::testing::Message() << "Test case " << i++);
     auto response =
         ToAuthenticatorMakeCredentialResponse(WEBAUTHN_CREDENTIAL_ATTESTATION{
             WEBAUTHN_CREDENTIAL_ATTESTATION_VERSION_3,
             test.format,
-            test.authenticator_data.size(),
+            base::checked_cast<DWORD>(test.authenticator_data.size()),
             const_cast<unsigned char*>(test.authenticator_data.data()),
-            test.cbor_attestation_statement.size(),
+            base::checked_cast<DWORD>(test.cbor_attestation_statement.size()),
             const_cast<unsigned char*>(test.cbor_attestation_statement.data()),
             // dwAttestationDecodeType and pvAttestationDecode are ignored.
             WEBAUTHN_ATTESTATION_DECODE_NONE,

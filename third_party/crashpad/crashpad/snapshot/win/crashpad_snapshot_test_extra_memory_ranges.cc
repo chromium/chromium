@@ -14,7 +14,7 @@
 
 #include <windows.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "client/crashpad_info.h"
 #include "util/file/file_io.h"
 

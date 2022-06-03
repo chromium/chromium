@@ -31,7 +31,18 @@ function loadFrame(iframe, src) {
         resolve(e.data);
       }, { once: true });
     }).then(function(data) {
-      assert_true(data.enabled, 'Paymentrequest():');
+      // paymentrequest is enabled if:
+      //     a. same origin; or
+      //     b. enabled by allowpaymentrequest.
+      if (src === srcs[0] || allowpaymentrequest) {
+        assert_true(data.enabled, 'Paymentrequest():');
+      } else {
+        assert_false(data.enabled, 'Paymentrequest():');
+        assert_equals(data.name, 'SecurityError', 'Exception Name:');
+        assert_equals(data.message, "Failed to construct 'PaymentRequest': " +
+          "Must be in a top-level browsing context or an iframe needs to " +
+          "specify 'allowpaymentrequest' explicitly", 'Error Message:');
+      }
     });
   }, 'Paymentrequest enabled for all on URL: ' + src + ' with ' +
     'allowpaymentrequest = ' + allowpaymentrequest);

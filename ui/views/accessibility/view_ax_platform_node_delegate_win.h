@@ -20,7 +20,7 @@ class ViewAXPlatformNodeDelegateWin : public ViewAXPlatformNodeDelegate {
   ~ViewAXPlatformNodeDelegateWin() override;
 
   // |ViewAXPlatformNodeDelegate| overrides:
-  gfx::NativeViewAccessible GetParent() override;
+  gfx::NativeViewAccessible GetParent() const override;
   gfx::AcceleratedWidget GetTargetForNativeAccessibilityEvent() override;
   gfx::Rect GetBoundsRect(
       const ui::AXCoordinateSystem coordinate_system,

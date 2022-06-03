@@ -57,16 +57,16 @@ class ChromeBrowserProviderSuggestionsCursor extends AbstractCursor {
     public String getString(int column) {
         switch (column) {
             case COLUMN_ID:
-                return mCursor.getString(mCursor.getColumnIndex(BookmarkColumns.ID));
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(BookmarkColumns.ID));
             case COLUMN_SUGGEST_INTENT_ACTION:
                 return Intent.ACTION_VIEW;
             case COLUMN_SUGGEST_INTENT_DATA:
-                return mCursor.getString(mCursor.getColumnIndex(BookmarkColumns.URL));
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(BookmarkColumns.URL));
             case COLUMN_SUGGEST_TEXT_1:
-                return mCursor.getString(mCursor.getColumnIndex(BookmarkColumns.TITLE));
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(BookmarkColumns.TITLE));
             case COLUMN_SUGGEST_TEXT_2:
             case COLUMN_SUGGEST_TEXT_2_URL:
-                return mCursor.getString(mCursor.getColumnIndex(BookmarkColumns.URL));
+                return mCursor.getString(mCursor.getColumnIndexOrThrow(BookmarkColumns.URL));
             case COLUMN_SUGGEST_ICON_1:
                 // This is the icon displayed to the left of the result in QSB.
                 return Integer.toString(R.mipmap.app_icon);
@@ -75,8 +75,8 @@ class ChromeBrowserProviderSuggestionsCursor extends AbstractCursor {
                 // time of 0 for all bookmarks. In the Android provider, this will yield a negative
                 // last access time. A negative last access time will cause global search to discard
                 // the result, so fix it up before we return it.
-                long lastAccess = mCursor.getLong(
-                        mCursor.getColumnIndex(BookmarkColumns.DATE));
+                long lastAccess =
+                        mCursor.getLong(mCursor.getColumnIndexOrThrow(BookmarkColumns.DATE));
                 return lastAccess < 0 ? "0" : "" + lastAccess;
             default:
                 throw new UnsupportedOperationException();
@@ -93,8 +93,8 @@ class ChromeBrowserProviderSuggestionsCursor extends AbstractCursor {
         switch (c) {
             case 7:
                 // See comments above in getString() re. negative last access times.
-                long lastAccess = mCursor.getLong(
-                        mCursor.getColumnIndex(BookmarkColumns.DATE));
+                long lastAccess =
+                        mCursor.getLong(mCursor.getColumnIndexOrThrow(BookmarkColumns.DATE));
                 return lastAccess < 0 ? 0 : lastAccess;
             default:
                 throw new UnsupportedOperationException();

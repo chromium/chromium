@@ -16,23 +16,20 @@ CWV_EXPORT
 @interface CWVCreditCard : NSObject
 
 // The full name of the card holder. e.g. "John Doe".
-@property(nonatomic, copy, nullable) NSString* cardHolderFullName;
+@property(nonatomic, copy, nullable, readonly) NSString* cardHolderFullName;
 // The permanent account number of the card. e.g. "0123456789012345".
-@property(nonatomic, copy, nullable) NSString* cardNumber;
+@property(nonatomic, copy, nullable, readonly) NSString* cardNumber;
 // The network this card belongs to. e.g. "Visa", "Amex", "MasterCard".
 // Inferred from |cardNumber|.
 @property(nonatomic, copy, nullable, readonly) NSString* networkName;
 // The image that represents the |networkName|.
-@property(nonatomic, readonly) UIImage* networkIcon;
+@property(nonatomic, readonly, readonly) UIImage* networkIcon;
 // The month this card expires on. e.g. "08".
-@property(nonatomic, copy, nullable) NSString* expirationMonth;
+@property(nonatomic, copy, nullable, readonly) NSString* expirationMonth;
 // The year this card expires on. e.g. "2020".
-@property(nonatomic, copy, nullable) NSString* expirationYear;
+@property(nonatomic, copy, nullable, readonly) NSString* expirationYear;
 // The issuing bank of this card. "Chase", "Bank of America".
 @property(nonatomic, copy, nullable, readonly) NSString* bankName;
-// If a card comes from Google Payments, it can only be edited or deleted by
-// visiting https://payments.google.com.
-@property(nonatomic, readonly, getter=isFromGooglePay) BOOL fromGooglePay;
 
 - (instancetype)init NS_UNAVAILABLE;
 

@@ -98,36 +98,6 @@
         TestRunner.addResult(String.sprintf('rad: %.4f', UI.Geometry.degreesToRadians(angles[i])));
 
       next();
-    },
-
-    function testEulerAnglesFromRotationMatrix(next) {
-      var rotationMatrices = [
-        'matrix3d(0.612, 0.353, -0.707, 0, 0.280, 0.739, 0.612, 0, 0.739, -0.573, 0.353, 0, 0, 0, 0, 1)',
-
-        'matrix3d(0.353, 0.612, -0.707, 0, -0.573, 0.739, 0.353, 0, 0.739, 0.280, 0.612, 0, 0, 0, 0, 1)',
-
-        'matrix3d(0.342, 0, -0.939, 0, 0.321, 0.939, 0.116, 0, 0.883, -0.342, 0.321, 0, 0, 0, 0, 1)'
-      ];
-
-      for (var i = 0; i < rotationMatrices.length; ++i) {
-        var angles = UI.Geometry.EulerAngles.fromRotationMatrix(new WebKitCSSMatrix(rotationMatrices[i]));
-        TestRunner.addResult(String.sprintf('Euler angles: %.4f %.4f %.4f', angles.alpha, angles.beta, angles.gamma));
-      }
-      next();
-    },
-
-    function testEulerAnglesToRotate3DString(next) {
-      var angles = [
-        new UI.Geometry.EulerAngles(0, 0, 0), new UI.Geometry.EulerAngles(1, 2, 3),
-        new UI.Geometry.EulerAngles(-1, -2, 3), new UI.Geometry.EulerAngles(-1, 2, -3),
-        new UI.Geometry.EulerAngles(0, 1, 2), new UI.Geometry.EulerAngles(1, 0, 2), new UI.Geometry.EulerAngles(1, 2, 0)
-      ];
-
-      for (var i = 0; i < angles.length; ++i) {
-        var rotate3DString = angles[i].toRotate3DString();
-        TestRunner.addResult(String.sprintf('Transform: %s', rotate3DString));
-      }
-      next();
     }
 
   ]);

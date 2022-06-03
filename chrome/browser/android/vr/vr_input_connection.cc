@@ -8,7 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/features/vr/jni_headers/TextEditAction_jni.h"
 #include "chrome/android/features/vr/jni_headers/VrInputConnection_jni.h"

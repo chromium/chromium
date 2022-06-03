@@ -9,18 +9,21 @@
 #include <vector>
 
 #include "ash/public/cpp/login_screen.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/ash/test_login_screen_model.h"
-#include "mojo/public/cpp/bindings/binding.h"
 
 namespace ash {
 class ScopedGuestButtonBlocker;
+enum class SupervisedAction;
 }
 
 // Test implementation of ash's mojo LoginScreen interface.
 class TestLoginScreen : public ash::LoginScreen {
  public:
   TestLoginScreen();
+
+  TestLoginScreen(const TestLoginScreen&) = delete;
+  TestLoginScreen& operator=(const TestLoginScreen&) = delete;
+
   ~TestLoginScreen() override;
 
   // ash::LoginScreen:
@@ -33,24 +36,21 @@ class TestLoginScreen : public ash::LoginScreen {
   bool IsReadyForPassword() override;
   void EnableAddUserButton(bool enable) override;
   void EnableShutdownButton(bool enable) override;
-  void ShowGuestButtonInOobe(bool show) override;
+  void EnableShelfButtons(bool enable) override;
+  void SetIsFirstSigninStep(bool is_first) override;
   void ShowParentAccessButton(bool show) override;
-  void ShowParentAccessWidget(
-      const AccountId& child_account_id,
-      base::RepeatingCallback<void(bool success)> callback,
-      ash::ParentAccessRequestReason reason,
-      bool extra_dimmer,
-      base::Time validation_time) override;
   void SetAllowLoginAsGuest(bool allow_guest) override;
   std::unique_ptr<ash::ScopedGuestButtonBlocker> GetScopedGuestButtonBlocker()
       override;
   void RequestSecurityTokenPin(ash::SecurityTokenPinRequest request) override;
   void ClearSecurityTokenPinRequest() override;
+  bool SetLoginShelfGestureHandler(const std::u16string& nudge_text,
+                                   const base::RepeatingClosure& fling_callback,
+                                   base::OnceClosure exit_callback) override;
+  void ClearLoginShelfGestureHandler() override;
 
  private:
   TestLoginScreenModel test_screen_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestLoginScreen);
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_TEST_LOGIN_SCREEN_H_

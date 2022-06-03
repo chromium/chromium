@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+
+<input type=color id=colorinput value='#ffffff'>
+
+<script>
+function setTimeoutPromise() {
+  return new Promise(resolve => setTimeout(resolve, 0));
+}
+
+promise_test(async () => {
+  await openPickerWithPromise(document.getElementById('colorinput'));
+  popupWindow.focus();
+  const popupDocument = popupWindow.document;
+
+  const hueSliderSelectionRing = popupDocument.querySelector('hue-slider > color-selection-ring');
+  const rValueContainer = popupDocument.getElementById('rValueContainer');
+  const gValueContainer = popupDocument.getElementById('gValueContainer');
+  const bValueContainer = popupDocument.getElementById('bValueContainer');
+
+  hueSliderSelectionRing.focus();
+
+  eventSender.keyDown('Tab');
+  await setTimeoutPromise();
+  assert_equals(rValueContainer.selectionStart, 0,
+    'Tabbing into the text field should select the text in it.');
+  assert_equals(rValueContainer.selectionEnd, 3,
+    'Tabbing into the text field should select the text in it.');
+
+  eventSender.keyDown('Tab');
+  await setTimeoutPromise();
+  assert_equals(gValueContainer.selectionStart, 0,
+    'Tabbing into the text field should select the text in it.');
+  assert_equals(gValueContainer.selectionEnd, 3,
+    'Tabbing into the text field should select the text in it.');
+
+  eventSender.keyDown('Tab');
+  await setTimeoutPromise();
+  assert_equals(bValueContainer.selectionStart, 0,
+    'Tabbing into the text field should select the text in it.');
+  assert_equals(bValueContainer.selectionEnd, 3,
+    'Tabbing into the text field should select the text in it.');
+
+  rValueContainer.click();
+  assert_equals(rValueContainer.selectionStart, 0,
+    'Clicking the text field should select the text in it.');
+  assert_equals(rValueContainer.selectionEnd, 3,
+    'Clicking the text field should select the text in it.');
+
+  gValueContainer.click();
+  assert_equals(gValueContainer.selectionStart, 0,
+    'Clicking the text field should select the text in it.');
+  assert_equals(gValueContainer.selectionEnd, 3,
+    'Clicking the text field should select the text in it.');
+
+  bValueContainer.click();
+  assert_equals(bValueContainer.selectionStart, 0,
+    'Clicking the text field should select the text in it.');
+  assert_equals(bValueContainer.selectionEnd, 3,
+    'Clicking the text field should select the text in it.');
+
+}, 'Focusing color channels of color picker should select the entire number for easy replacing.');
+</script>

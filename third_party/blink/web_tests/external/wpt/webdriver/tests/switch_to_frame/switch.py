@@ -2,11 +2,10 @@ import pytest
 
 import webdriver.protocol as protocol
 
-from webdriver import StaleElementReferenceException
+from webdriver import NoSuchElementException
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_same_element, assert_success
-from tests.support.inline import inline, iframe
 
 
 def switch_to_frame(session, frame):
@@ -17,18 +16,13 @@ def switch_to_frame(session, frame):
         session=session)
 
 
-def frameset(*docs):
-    frames = map(lambda doc: "<frame src='{}'></frame>".format(inline(doc)), docs)
-    return "<frameset rows='{}'>\n{}</frameset>".format(len(frames) * "*,", "\n".join(frames))
-
-
 def test_null_parameter_value(session, http):
     path = "/session/{session_id}/frame".format(**vars(session))
     with http.post(path, None) as response:
         assert_error(Response.from_http(response), "invalid argument")
 
 
-def test_null_response_value(session):
+def test_null_response_value(session, inline, iframe):
     session.url = inline(iframe("<p>foo"))
     frame = session.find.css("iframe", all=False)
 
@@ -37,113 +31,86 @@ def test_null_response_value(session):
     assert value is None
 
 
+@pytest.mark.parametrize("id", [
+    None,
+    0,
+    {"element-6066-11e4-a52e-4f735466cecf": "foo"},
+])
+def test_no_top_browsing_context(session, url, id):
+    session.window_handle = session.new_window()
+
+    session.url = url("/webdriver/tests/support/html/frames.html")
+
+    subframe = session.find.css("#sub-frame", all=False)
+    session.switch_frame(subframe)
+
+    session.window.close()
+
+    response = switch_to_frame(session, id)
+    assert_error(response, "no such window")
+
+
+@pytest.mark.parametrize("id", [
+    None,
+    0,
+    {"element-6066-11e4-a52e-4f735466cecf": "foo"},
+])
+def test_no_browsing_context(session, closed_frame, id):
+    response = switch_to_frame(session, id)
+    if id is None:
+        assert_success(response)
+        session.find.css("#delete", all=False)
+    else:
+        assert_error(response, "no such window")
+
+
+def test_no_browsing_context_when_already_top_level(session, closed_window):
+    response = switch_to_frame(session, None)
+    assert_error(response, "no such window")
+
+
 @pytest.mark.parametrize("value", ["foo", True, [], {}])
 def test_frame_id_invalid_types(session, value):
     response = switch_to_frame(session, value)
     assert_error(response, "invalid argument")
 
 
-@pytest.mark.parametrize("value", [-1, 2**16])
-def test_frame_id_out_of_bounds(session, value):
-    response = switch_to_frame(session, value)
-    assert_error(response, "invalid argument")
-
-
-def test_no_browsing_context(session, closed_window):
-    response = switch_to_frame(session, 1)
-    assert_error(response, "no such window")
-
-
-def test_frame_id_null(session):
+def test_frame_id_null(session, inline, iframe):
     session.url = inline(iframe("{}<div>foo".format(iframe("<p>bar"))))
 
     frame1 = session.find.css("iframe", all=False)
     session.switch_frame(frame1)
-    frame1_element = session.find.css("div", all=False)
+    element1 = session.find.css("div", all=False)
 
     frame2 = session.find.css("iframe", all=False)
     session.switch_frame(frame2)
-    frame2_element = session.find.css("p", all=False)
+    element2 = session.find.css("p", all=False)
 
     # Switch to top-level browsing context
     response = switch_to_frame(session, None)
     assert_success(response)
 
-    with pytest.raises(StaleElementReferenceException):
-        frame2_element.text
-    with pytest.raises(StaleElementReferenceException):
-        frame1_element.text
+    with pytest.raises(NoSuchElementException):
+        element2.text
+    with pytest.raises(NoSuchElementException):
+        element1.text
 
     frame = session.find.css("iframe", all=False)
     assert_same_element(session, frame, frame1)
 
 
-@pytest.mark.parametrize("index, value", [[0, "foo"], [1, "bar"]])
-def test_frame_id_number_index(session, index, value):
-    session.url = inline("{}{}".format(iframe("<p>foo"), iframe("<p>bar")))
+def test_find_element_while_frame_is_still_loading(session, url):
+    session.timeouts.implicit = 5
 
-    response = switch_to_frame(session, index)
-    assert_success(response)
+    frame_url = url("/webdriver/tests/support/html/subframe.html?pipe=trickle(d2)")
+    page_url = "<html><body><iframe src='{}'></iframe></body></html>".format(frame_url)
 
-    frame_element = session.find.css("p", all=False)
-    assert frame_element.text == value
+    session.execute_script(
+        "document.documentElement.innerHTML = arguments[0];", args=[page_url])
 
+    frame1 = session.find.css("iframe", all=False)
+    session.switch_frame(frame1)
 
-def test_frame_id_number_index_out_of_bounds(session):
-    session.url = inline(iframe("<p>foo"))
-
-    response = switch_to_frame(session, 1)
-    assert_error(response, "no such frame")
-
-
-@pytest.mark.parametrize("index, value", [[0, "foo"], [1, "bar"]])
-def test_frame_id_webelement_frame(session, index, value):
-    session.url = inline(frameset("<p>foo", "<p>bar"))
-    frames = session.find.css("frame")
-    assert len(frames) == 2
-
-    response = switch_to_frame(session, frames[index])
-    assert_success(response)
-
-    frame_element = session.find.css("p", all=False)
-    assert frame_element.text == value
-
-
-@pytest.mark.parametrize("index, value", [[0, "foo"], [1, "bar"]])
-def test_frame_id_webelement_iframe(session, index, value):
-    session.url = inline("{}{}".format(iframe("<p>foo"), iframe("<p>bar")))
-    frames = session.find.css("iframe")
-    assert len(frames) == 2
-
-    response = switch_to_frame(session, frames[index])
-    assert_success(response)
-
-    frame_element = session.find.css("p", all=False)
-    assert frame_element.text == value
-
-
-def test_frame_id_webelement_no_element_reference(session):
-    session.url = inline(iframe("<p>foo"))
-    frame = session.find.css("iframe", all=False)
-    frame.id = "bar"
-
-    response = switch_to_frame(session, frame)
-    assert_error(response, "no such element")
-
-
-def test_frame_id_webelement_stale_reference(session):
-    session.url = inline(iframe("<p>foo"))
-    frame = session.find.css("iframe", all=False)
-
-    session.switch_frame(frame)
-
-    response = switch_to_frame(session, frame)
-    assert_error(response, "stale element reference")
-
-
-def test_frame_id_webelement_no_frame_element(session):
-    session.url = inline("<p>foo")
-    no_frame = session.find.css("p", all=False)
-
-    response = switch_to_frame(session, no_frame)
-    assert_error(response, "no such frame")
+    # Ensure that the is always a valid browsing context, and the element
+    # can be found eventually.
+    session.find.css("#delete", all=False)

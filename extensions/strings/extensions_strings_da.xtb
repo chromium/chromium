@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Gisp! Den tilfældige personlige RSA-nøgle kunne ikke genereres.</translation>
 <translation id="1445572445564823378">Denne udvidelse gør <ph name="PRODUCT_NAME" /> langsommere. Du bør deaktivere den for at gøre <ph name="PRODUCT_NAME" /> hurtig igen.</translation>
 <translation id="1468038450257740950">WebGL understøttes ikke.</translation>
-<translation id="149347756975725155">Udvidelsesikonet '<ph name="ICON" />' kunne ikke indlæses.</translation>
 <translation id="1803557475693955505">Baggrundssiden '<ph name="BACKGROUND_PAGE" />' kunne ikke indlæses.</translation>
 <translation id="2159915644201199628">Billedet kunne afkodes: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Lokalisering anvendt, men default_locale blev ikke angivet i manifestet.</translation>
@@ -25,7 +24,7 @@
 <translation id="3561217442734750519">Indtastningsværdi for personlig nøgle skal være en gyldig sti.</translation>
 <translation id="388442998277590542">Siden med valgmuligheder '<ph name="OPTIONS_PAGE" />' kunne ikke indlæses.</translation>
 <translation id="3984413272403535372">Fejl under signering af udvidelse.</translation>
-<translation id="39964277676607559">Javascriptet '<ph name="RELATIVE_PATH" />' til indholdsscript kunne ikke indlæses.</translation>
+<translation id="39964277676607559">JavaScriptet '<ph name="RELATIVE_PATH" />' til indholdsscript kunne ikke indlæses.</translation>
 <translation id="4115165561519362854">Administratoren af denne computer kræver, at <ph name="EXTENSION_NAME" /> har en minimumsversion af <ph name="EXTENSION_VERSION" />. Den kan ikke aktiveres, før den er blevet opdateret til den pågældende version (eller nyere).</translation>
 <translation id="4233778200880751280">Siden "<ph name="ABOUT_PAGE" />" kunne ikke indlæses.</translation>
 <translation id="471800408830181311">Den personlige nøgle kunne ikke udstedes.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Den personlige nøgle kunne ikke læses.</translation>
 <translation id="6391538222494443604">Indtastningsindeks skal eksistere.</translation>
 <translation id="641087317769093025">Udvidelsen kunne ikke udpakkes</translation>
-<translation id="6413453408918378296">Ikonet er ikke tilstrækkeligt synligt "<ph name="ICON" />".</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" anmoder om adgang til en eller flere af dine enheder:</translation>
 <translation id="657064425229075395">Baggrundsscriptet  "<ph name="BACKGROUND_SCRIPT" />" kunne ikke indlæses.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> fra <ph name="VENDOR_NAME" /> (serienummer <ph name="SERIAL_NUMBER" />)</translation>

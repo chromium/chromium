@@ -1,0 +1,319 @@
+Release 1.14.1 (2020-10-08)
+===========================
+* Python 3.9 compatibility (stop using removed interfaces)
+* Fix handling of enum attributes in fields
+
+Release 1.14 (2020-02-22)
+=========================
+* Fix size computation of imported lists
+* Allow access to the original type in the XML
+* Add sysroot prefix to pkgconfig file (Fixes #9)
+ 
+Release 1.13 (2018-02-28)
+=========================
+* dri3: Add multi-plane/modifier protocol for v1.2
+* present: Add suboptimal-copy protocol for v1.2
+* randr: Add output-lease protocol for v1.6
+* Add support for variable-sized lists of FDs
+* xge: Add safe generic-event sending support
+* Fix initial connection handshaking
+* Updated XML DTD
+* Python 3.x cleanups and compatibility
+
+Release 1.12 (2016-05-18)
+=========================
+* xinput: Various padding-related additions and fixes
+* xinput: Various type fixes
+* xinput: Various mask fixes
+* xinput: Various additions of enums
+* Define new "altmask" attribute
+* Define new switch-case construct
+* xinput: Convert various construct from bitcase to case
+* xinput: Add full support for various requests
+* Define new sumof with nested expressions
+* present: Specify length of RedirectNotify.notifies
+* Define new listelement-ref construct
+* xinput: Support list axisvalues in events
+* Define new paramref construct
+* xfixes: Fix GetCursorImageAndName cursor image support
+* Replace valueparam with other construct in various extensions
+* Remove support for the valueparam construct
+* xprint: Fix some list definitions
+* randr: Add RandR 1.5 requests and data types
+* shm: Mark PutImage.send_event field as boolean
+* glx: Add IsEnabled request
+* Make padding explicit in various places
+* Fix typos in some documentation examples
+* Add an automatic alignment checker
+* Optionally enforce serilization of pads for ABI compatibility
+
+Release 1.11 (2014-08-01)
+=========================
+* Add support for <pad align="n" />
+* xkb: Fix padding bug in GetMap
+* xcbgen: Track directly included modules
+* xprint: Fix PrintGetAttributes reply
+* xkb: Fix use of nKTLevels
+* xv: Fix padding in struct AdaptorInfo
+* xproto: Fix EnterNotify documentation
+* Update the protocol schema
+* xinput: Add missing pad in DeviceResolutionCtl
+* xinput: Add missing pad in XIChangeHierarchy
+* xinput: Add missing modLatches as comment in LatchLockState
+
+Release 1.10 (2013-12-22)
+=========================
+* xkb: comment out portions that libxcb doesn't handle properly
+* Present: Remove reference to nonexistent enum
+* sync: Add missing namespace for the INT64 struct
+* sync: VALUETYPE and TESTTYPE are enum
+* xinput: Add XI2 event enum. for event selection
+* Rename ge events to GeGeneric events to avoid clash with libxcb
+
+Release 1.9 (2013-11-07)
+========================
+* Add Present protocol specification
+* Add DRI3
+* Add MIT-SHM AttachFd and CreateSegment requests
+* Add support for file descriptor request fields
+* Define X generic event structure
+* Add CARD64/INT64 protocol types
+* XKB: Rewrite AXOption
+* XKB: Fix values of AXFBOpt enum
+* xkb: Fix struct ExtensionDeviceNotify
+* xkb: Pad structs CommonDoodad and SALockDeviceBtn
+* randr: Fix GetProviderProperty reply
+* Enforce a bit or value in enum items
+* xkb: Add missing LedClass and BellClass enum values
+* xkb: Add missing 'supported' field to GetNamedIndicator reply
+* xkb: Unify Overlay1Behavior and Overlay2Behavior
+* xkb: Change DfltBtnAbsolute to the value used by the server
+* xkb: Fix key type map entry field order
+* xkb: Work around alignment problems in GetNames and GetMap replies
+* xinput: Use BARRIER from xfixes
+* xinput: Unlock uninterpreted lists
+* xinput: Add XI v2.3
+* xinput: Add XI v2.2
+* xinput: Add XI v2.1
+* xinput: Add XI v2.0
+* xinput: Add XI v1.5
+* xinput: Cleanup implementation of XI up to v1.4
+* Add support for X Generic Extension events
+* sync: Change value list param of CreateAlarm and ChangeAlarm into switch
+* res: Add ClientIdMask enum
+* res: Fix and rename list in ClientIdValue
+* randr: Add provider object support (RandR v1.4)
+* xtest: Version bump 2.1..2.2
+* glx: Version bump 1.3..1.4
+* composite: Version bump 0.3..0.4
+* xfixes: Rename enum DirectionMask to BarrierDirec.
+* XKB: Correct enum to mask
+* screensaver: Use enum and mask attributes
+* screensaver: Remove wrong fields from Notify event
+* Prototype for XRes v1.2
+* XKB: Fix calculation in GetIndicatorMap
+* XKB: Fix GetKbdByName
+* Allow multiple <enumref> in a <bitcase>
+* XKB: Change CARD8 to char where ASCII is expected
+* XKB: Fix VirtualMods
+* XKB: Fix SymInterpret
+* XKB: Fix CountedString16 padding
+* xkb: Revert half of d42d791 XKB: Fix broken events
+* xfixes: Update to version 5
+* autogen.sh: Implement GNOME Build API
+
+Release 1.8 (2012-10-05)
+========================
+* dri2: Update to DRI2 1.4
+* XKB: Fix broken events
+* xproto: add doc tags, xcbgen: handle doc tags
+
+Release 1.7.1 (2012-03-23)
+==========================
+* Add ge and xf86vidmode protocol descriptions
+* Remove now unnecessary files as everything is implemented in xcbgen
+* Rename the ExprType "parent" attribute to "parents"
+
+Release 1.7 (2012-01-11)
+========================
+* Add missing padding bytes to ChangeKeyboardMapping request
+* Corrected type of FakeInput rootX & rootY fields
+* Changed Exception message in case of unknown/unhandled XML tags
+* xcbgen: perform lenfield lookup within all anchestors
+* Add support for new expr tags popcount, enumref, sumof
+* Changed handling of anchestor types
+* Assign switch name to bitcases
+* Support name attribute for bitcases and set BitcaseType.has_name accordingly
+* Use absolute imports in xcbgen for Python 3 compatibilit
+* dri2: Update to version 1.3 (v2)
+* glx: Replace some 'reserved' fields with explicit padding
+* glx: Use glx:CONTEXT for share_list parameter of CreateNewContext
+* glx: Use FBCONFIG type for fbconfig parameter of CreateNewContext and CreatePixmap
+* glx: Add protocol for GLX_ARB_create_context and GLX_ARB_create_context_profile
+* Add support for fence sync objects
+* xf86dri: fix GetDrawableInfo reply
+* xproto: fix TranslateCoordinates reply
+* xcbgen: Add unop support
+* xf86vidmode: Fix padding expressions
+* dri2: Add proper padding before driver_name
+* Add libdir/exec_prefix to xcb-xproto.pc
+* Revive support for hex literals in protocol
+* Add description of new protocol elements
+* Add XKEYBOARD protocol description
+* Fix ChangeHosts address string
+* Fix SetFontPath path string encoding
+* Fix some fields name
+* Fix XKB GetState missing lookupMods field
+* Add RENDER 0.11 definitions
+
+Release 1.6 (2009-12-02)
+========================
+* Add DRI2 protocol, based off of dri2proto.h and the server code. (v2)
+* xf86dri.xml seems to have been wrong forever. Fixes bug #16894.
+* shape: add missing padding bytes to GetRectangles
+* Add XML description for the Generic Event extension.
+* Add XML description for the XFree86VidMode extension.
+* Fix typo in xf86vidmode.xml
+* Fix length calculation for xfixes/FetchRegion reply
+* Add pre-defined atoms to Atom enum
+
+Release 1.5 (2009-05-09)
+========================
+* Add support for mod mask Any
+* Add and use altenum (non-exhaustive enum)
+* Tweak some XInput specs
+* Fix milter spelling
+* Correct the length calculation for the value field of GetPropertyReply
+* xtest: rename window field to root
+* randr: add version 1.3 requests
+* shm: fix ShmCompletion event
+
+Release 1.4 (2009-02-16)
+========================
+* Add explicit padding in various protocol description.
+* Associate fields with the enum which describes their allowed values.
+
+Release 1.3 (2008-12-10)
+========================
+Explicit padding was added in various protocol description.
+
+Protcol fixes:
+* RandR
+* X proto
+* Change CARD8 to char when specs requires STRING8
+
+Release 1.2 (2008-07-17)
+========================
+New extensions:
+* XInput 1.4
+* SELinux 1.0
+
+Various fixes in protocol description:
+* X proto
+* X-Resource
+* XVMC
+* GLX
+
+New Python parser language-independent parts.
+
+Release 1.1 (2007-11-04)
+========================
+
+Incompatible change to the XML schema: rather than special-casing the
+treatment of protocol extension names, use the new extension-multiword
+attribute.  Normally, XCB prefixes C extension functions with
+xcb_extname_.  However, some of the existing extensions used multi-word
+names, such as xcb_big_requests_ or xcb_xc_misc_. Those extensions now
+use this attribute to match their existing defined API.  This allows the
+XCB code generator to avoid special-casing those extension names.
+
+Protocol updates:
+* Update DAMAGE to 1.1
+* Update RandR to version 1.2
+
+Bug fixes:
+* fix XSync Initialize call
+* Update autogen.sh to one that does objdir != srcdir.
+
+
+Release 1.0 (2006-11-23)
+========================
+
+The "Thanksgiving" release: We feel thankful to have it released.
+
+* Fix Bug #8990: randr type fixes
+* Fixed screen parameter type in several GLX requests to use CARD32 instead
+  of the SCREEN structure.
+* Corrected valueparam arguments to attribute lists in several requests and
+  a reply.
+* Estethic change for attribute parameter name
+* Remove support for the <localfield> tag: nothing needs it.
+* Fix Bug #8973: In UngrabKey, the 'key' field should have type KEYCODE, not
+  the more general CARD8.
+
+
+Release 1.0 RC3 (2006-11-02)
+============================
+
+* Add support for the Xinerama extension, version 1.1
+* Protocol descriptions now document the major and minor version numbers
+  of the extension version they support, through major-version and
+  minor-version attributes on the xcb tag.  XML Schema updated
+  accordingly.
+* Minor source reorganization: Now that the extensions do not get
+  installed to an extensions/ subdirectory, move them out of the
+  extensions/ subdirectory in the source as well.
+* Various protocol description fixes:
+    * Add REPEAT enumeration to Render extension to fix bug #8535
+    * Fix core xproto GrabMode enumeration (reported by Yang JianJun)
+    * Fix core xproto cap style enumeration (bug #8857).
+
+
+Release 1.0 RC2 (2006-10-07)
+============================
+
+* Add <import>xproto</import> explicitly to extensions that use xproto;
+  this goes along with the change in the code generator for libxcb 1.0 RC2 to
+  stop implicitly importing xproto.
+* Change "union" to "xidunion" for XID unions like DRAWABLE and FONTABLE,
+  so that the code generator can more easily declare these XID unions as
+  integer typedefs rather than unions.
+* Replace structures attempting to provide C type safety with CARD32 typedefs
+* render.xml no longer describes the CompositeGlyphs* requests as taking lists
+  of complicated unions of structures of lists: it says instead that they take
+  a LISTofBYTE. The caller is responsible for constructing an appropriate
+  sequence of glyph elements. Previously, the requests could not actually be
+  used because XCB did not correctly compute the length of the provided data.
+
+
+Release 1.0 RC1 (2006-09-25)
+============================
+
+The Great XCB Renaming
+----------------------
+
+* Rename shape_op and shape_kind to drop the "shape_" prefix, since
+  otherwise these types end up as xcb_shape_shape_{op,kind}_t.
+* Remove leading underscores from enums in the GLX protocol description,
+  previously needed to ensure a word separator, but now redundant.
+* The XML-XCB protocol descriptions have moved to /usr/share/xcb, with
+  extension descriptions no longer relegated to an extensions/ subdirectory.
+
+GIT Repository split
+--------------------
+
+Previously, several XCB-related projects all existed under the umbrella
+of a single monolithic GIT repository with per-project subdirectories.
+We have split this repository into individual per-project repositories.
+
+Josh Triplett and Jamey Sharp wrote a tool called git-split to
+accomplish this repository split. git-split reconstructs the history of
+a sub-project previously stored in a subdirectory of a larger
+repository. It constructs new commit objects based on the existing tree
+objects for the subtree in each commit, and discards commits which do
+not affect the history of the sub-project, as well as merges made
+unnecessary due to these discarded commits.
+
+We would like to acknowledge the work of the gobby team in creating a
+collaborative editor which greatly aided the development of git-split
+(as well as these release notes).

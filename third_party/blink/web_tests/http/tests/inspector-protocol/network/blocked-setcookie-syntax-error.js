@@ -8,7 +8,7 @@
   const helper = (await testRunner.loadScript('resources/extra-info-helper.js'))(dp, session);
 
   const {requestExtraInfo, responseExtraInfo} = await helper.navigateWithExtraInfo(setCookieInvalidSyntax);
-  testRunner.log(`Invalid syntax blocked set-cookies: ${JSON.stringify(responseExtraInfo.params.blockedCookies, null, 2)}`);
+  testRunner.log(responseExtraInfo.params.blockedCookies, 'Invalid syntax blocked set-cookies:');
 
   testRunner.completeTest();
 })

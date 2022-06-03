@@ -11,10 +11,10 @@
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "components/arc/mojom/app.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AppListControllerDelegate;
 class ArcPlayStoreAppContextMenu;
@@ -31,33 +31,40 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
  public:
   ArcPlayStoreSearchResult(arc::mojom::AppDiscoveryResultPtr data,
                            Profile* profile,
-                           AppListControllerDelegate* list_controller);
+                           AppListControllerDelegate* list_controller,
+                           const std::u16string& query);
+
+  ArcPlayStoreSearchResult(const ArcPlayStoreSearchResult&) = delete;
+  ArcPlayStoreSearchResult& operator=(const ArcPlayStoreSearchResult&) = delete;
+
   ~ArcPlayStoreSearchResult() override;
 
   // ChromeSearchResult overrides:
   void GetContextMenuModel(GetMenuModelCallback callback) override;
   void Open(int event_flags) override;
-  ash::SearchResultType GetSearchResultType() const override;
 
   // app_list::AppContextMenuDelegate overrides:
   void ExecuteLaunchCommand(int event_flags) override;
 
  private:
-  const base::Optional<std::string>& install_intent_uri() const {
+  const absl::optional<std::string>& install_intent_uri() const {
     return data_->install_intent_uri;
   }
-  const base::Optional<std::string>& label() const { return data_->label; }
+  const absl::optional<std::string>& label() const { return data_->label; }
   bool is_instant_app() const { return data_->is_instant_app; }
-  const base::Optional<std::string>& formatted_price() const {
+  const absl::optional<std::string>& formatted_price() const {
     return data_->formatted_price;
   }
   float review_score() const { return data_->review_score; }
   const std::vector<uint8_t>& icon_png_data() const {
-    return data_->icon_png_data;
+    return data_->icon->icon_png_data.value();
   }
 
   // ChromeSearchResult overrides:
   AppContextMenu* GetAppContextMenu() override;
+
+  // Callback passed to |icon_decode_request_|.
+  void OnIconDecoded(const gfx::ImageSkia&);
 
   arc::mojom::AppDiscoveryResultPtr data_;
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
@@ -68,8 +75,6 @@ class ArcPlayStoreSearchResult : public ChromeSearchResult,
   std::unique_ptr<ArcPlayStoreAppContextMenu> context_menu_;
 
   base::WeakPtrFactory<ArcPlayStoreSearchResult> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPlayStoreSearchResult);
 };
 
 }  // namespace app_list

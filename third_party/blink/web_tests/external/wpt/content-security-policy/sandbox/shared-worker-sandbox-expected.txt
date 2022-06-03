@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL sandbox directive for SharedWorker assert_equals: Origin should not be sandboxed expected "http://web-platform.test:8001" but got "null"
+Harness: the test ran to completion.
+

@@ -1,0 +1,194 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//printing/buildflags/buildflags.gni")
+
+mojom("mojom") {
+  sources = [
+    "account_manager.mojom",
+    "app_service.mojom",
+    "app_service_types.mojom",
+    "app_window_tracker.mojom",
+    "authentication.mojom",
+    "automation.mojom",
+    "bitmap.mojom",
+    "browser_app_instance_registry.mojom",
+    "browser_version.mojom",
+    "cert_database.mojom",
+    "clipboard.mojom",
+    "clipboard_history.mojom",
+    "content_protection.mojom",
+    "crosapi.mojom",
+    "device_attributes.mojom",
+    "device_settings_service.mojom",
+    "download_controller.mojom",
+    "drive_integration_service.mojom",
+    "feedback.mojom",
+    "field_trial.mojom",
+    "file_manager.mojom",
+    "force_installed_tracker.mojom",
+    "geolocation.mojom",
+    "holding_space_service.mojom",
+    "identity_manager.mojom",
+    "idle_service.mojom",
+    "image_writer.mojom",
+    "keystore_error.mojom",
+    "keystore_service.mojom",
+    "kiosk_session_service.mojom",
+    "local_printer.mojom",
+    "login_state.mojom",
+    "message_center.mojom",
+    "metrics_reporting.mojom",
+    "native_theme.mojom",
+    "network_settings_service.mojom",
+    "networking_attributes.mojom",
+    "notification.mojom",
+    "policy_service.mojom",
+    "power.mojom",
+    "prefs.mojom",
+    "remoting.mojom",
+    "resource_manager.mojom",
+    "screen_manager.mojom",
+    "select_file.mojom",
+    "structured_metrics_service.mojom",
+    "system_display.mojom",
+    "task_manager.mojom",
+    "test_controller.mojom",
+    "tts.mojom",
+    "url_handler.mojom",
+    "video_capture.mojom",
+    "web_page_info.mojom",
+  ]
+  disable_variants = true
+
+  public_deps = [
+    "//chromeos/components/sensors/mojom",
+    "//chromeos/services/machine_learning/public/mojom",
+    "//components/metrics/structured/mojom",
+    "//components/services/app_service/public/mojom:mojom",
+    "//media/capture/mojom:image_capture",
+    "//media/capture/mojom:video_capture_types",
+    "//mojo/public/mojom/base",
+    "//printing/backend/mojom",
+    "//printing/mojom",
+    "//remoting/host/mojom:mojom",
+    "//services/device/public/mojom:mojom",
+    "//services/media_session/public/mojom:mojom",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/accessibility/mojom",
+    "//ui/base/mojom",
+    "//ui/gfx/geometry/mojom",
+    "//ui/gfx/image/mojom",
+    "//ui/gfx/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "crosapi.mojom.App"
+          cpp = "::apps::mojom::AppPtr"
+          move_only = true
+          nullable_is_same_type = true
+        },
+        {
+          mojom = "crosapi.mojom.UninstallSource"
+          cpp = "::apps::mojom::UninstallSource"
+        },
+        {
+          mojom = "crosapi.mojom.CapabilityAccess"
+          cpp = "::apps::mojom::CapabilityAccessPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.IconType"
+          cpp = "::apps::IconType"
+        },
+        {
+          mojom = "crosapi.mojom.IconValue"
+          cpp = "::apps::IconValuePtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.IconKey"
+          cpp = "::apps::mojom::IconKeyPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.WindowMode"
+          cpp = "::apps::mojom::WindowMode"
+        },
+        {
+          mojom = "crosapi.mojom.AppType"
+          cpp = "::apps::mojom::AppType"
+        },
+        {
+          mojom = "crosapi.mojom.LaunchSource"
+          cpp = "::apps::mojom::LaunchSource"
+        },
+        {
+          mojom = "crosapi.mojom.BrowserWindowInstanceUpdate"
+          cpp = "::apps::BrowserWindowInstanceUpdate"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.BrowserAppInstanceUpdate"
+          cpp = "::apps::BrowserAppInstanceUpdate"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.BrowserAppInstanceType"
+          cpp = "::apps::BrowserAppInstanceUpdate::Type"
+        },
+        {
+          mojom = "crosapi.mojom.Permission"
+          cpp = "::apps::mojom::PermissionPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.PreferredApp"
+          cpp = "::apps::mojom::PreferredAppPtr"
+          move_only = true
+        },
+        {
+          mojom = "crosapi.mojom.PreferredAppChanges"
+          cpp = "::apps::mojom::PreferredAppChangesPtr"
+          move_only = true
+        },
+      ]
+      traits_headers = [
+        "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
+        "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
+        "//components/services/app_service/public/cpp/icon_types.h",
+        "//components/services/app_service/public/mojom/types.mojom.h",
+      ]
+      traits_sources = [
+        "//chromeos/crosapi/mojom/app_service_types_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.cc",
+      ]
+      traits_public_deps = [
+        "//components/services/app_service/public/cpp:browser_app_instance_registry_update",
+        "//components/services/app_service/public/cpp:icon_types",
+        "//components/services/app_service/public/mojom:mojom",
+      ]
+    },
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "app_service_types_traits_unittest.cc" ]
+
+  deps = [
+    ":mojom",
+    "//base/test:test_support",
+    "//components/services/app_service/public/cpp:intents",
+    "//components/services/app_service/public/mojom:mojom",
+    "//mojo/public/cpp/test_support:test_utils",
+    "//testing/gtest",
+    "//ui/gfx:test_support",
+  ]
+}

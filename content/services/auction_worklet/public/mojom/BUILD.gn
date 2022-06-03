@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+mojom("mojom") {
+  generate_java = false
+  sources = [
+    "auction_worklet_service.mojom",
+    "bidder_worklet.mojom",
+    "seller_worklet.mojom",
+  ]
+  deps = [
+    "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
+    "//services/network/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
+}

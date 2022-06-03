@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 87: Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 Test whether :host matches a shadow host correctly.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
@@ -19,7 +18,7 @@ PASS backgroundColorOf('host') is "rgba(0, 0, 0, 0)"
 PASS backgroundColorOf('host') is "rgb(0, 128, 0)"
 :host with :host-context in a shadow tree should match its shadow host.
 PASS backgroundColorOf('host') is "rgb(0, 128, 0)"
-:host takes simple selectors and matches when one of the simple selectors matches.
+:host takes a simple selector and matches when the simple selector matches.
 PASS backgroundColorOf('host') is "rgb(0, 128, 0)"
 :host matches a shadow host in just a nested shadow tree, not all enclosing shadow trees.
 PASS backgroundColorOf('host1') is "rgba(0, 0, 0, 0)"

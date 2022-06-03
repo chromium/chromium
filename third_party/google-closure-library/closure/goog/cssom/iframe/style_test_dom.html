@@ -1,0 +1,118 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style type="text/css">
+ @import url("style_test_import.css");
+
+    body { font-family: Verdana; }
+    div { background-color: #ffc; margin: 10px 0; }
+    p { margin: 10px 0; }
+    .boxy { padding: 5px; background-color: #fa0; }
+    .special .boxy { padding: 10px; background-color: #abef00; }
+    div div strong { color: red; }
+    div { line-height: 1.3; }
+    .wrapper .inner-wrapper { border: 2px solid pink;}
+    a { color: red; }
+    #source4 { background-color: #900; }
+
+    #backgroundTest-ancestor-1 {
+      background-color: rgb(128,0,128);
+    }
+    #backgroundTest-ancestor-0 {
+      background-image: url("../../images/blank.gif");
+      background-position: 40px 70px;
+      background-repeat: repeat;
+      background-color: transparent;
+      padding: 5px 8px;
+    }
+    div#backgroundTest-parent {
+      border: 1px solid black;
+      background-color: transparent;
+    }
+    div#backgroundTest {
+      position: relative;
+      background-color: transparent;
+      height: 100px;
+      margin-top: 0;
+    }
+</style>
+<style type="text/css">
+ .goog-presently-theme-monochrome {
+      background-color: black;
+      color: #CCC;
+    }
+   .goog-presently-theme-monochrome a {
+     color: #FFF;
+    }
+    .goog-presently-theme-monochrome p#source4 {
+      font-variant: small-caps;
+    }
+
+    .italic {
+      font-style: italic;
+    }
+</style>
+<style type="text/css">
+ @font-face {
+      font-family: Cavalier;
+    }
+    #cavalier {
+      font-family: Cavalier;
+    }
+</style>
+<div class="wrapper">
+ <div class="inner-wrapper">
+  <div class="italic" id="source1">
+   hello world
+  </div>
+  <div id="source2">
+   <div>
+    Some
+    <strong>
+     strong
+    </strong>
+    text
+   </div>
+   <div class="boxy exciting">
+    A box
+   </div>
+   <div class="inner-wrapper">
+    A wrapper
+   </div>
+  </div>
+  <div class="special" id="source3">
+   Some
+   <strong>
+    strong
+   </strong>
+   text
+   <div class="boxy">
+    A box
+   </div>
+  </div>
+  <div class="goog-presently-theme-monochrome" id="ancestor">
+   <p id="source4" style="background-color: #900">
+    Here's a link:
+    <a href="#">
+     my link
+    </a>
+   </p>
+  </div>
+  <div id="backgroundTest-ancestor-1">
+   <div id="backgroundTest-ancestor-0">
+    <div id="backgroundTest-parent">
+     <div id="backgroundTest">
+      hello
+     </div>
+    </div>
+   </div>
+  </div>
+  <div id="cavalier">
+  </div>
+ </div>
+</div>
+<br>
+</br>

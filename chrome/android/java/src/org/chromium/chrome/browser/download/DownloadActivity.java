@@ -5,19 +5,19 @@
 package org.chromium.chrome.browser.download;
 
 import android.app.Activity;
-import android.content.ComponentName;
 import android.os.Bundle;
 
-import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.download.home.DownloadManagerCoordinator;
-import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactory;
+import org.chromium.chrome.browser.download.home.DownloadManagerCoordinatorFactoryHelper;
 import org.chromium.chrome.browser.download.home.DownloadManagerUiConfig;
-import org.chromium.chrome.browser.download.home.filter.Filters;
+import org.chromium.chrome.browser.download.home.DownloadManagerUiConfigHelper;
 import org.chromium.chrome.browser.download.items.OfflineContentAggregatorNotificationBridgeUiFactory;
-import org.chromium.chrome.browser.util.IntentUtils;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
+import org.chromium.chrome.browser.profiles.ProfileKey;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.ui.base.ActivityAndroidPermissionDelegate;
 import org.chromium.ui.base.AndroidPermissionDelegate;
 import org.chromium.ui.modaldialog.ModalDialogManager;
@@ -32,7 +32,6 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     private static final String BUNDLE_KEY_CURRENT_URL = "current_url";
 
     private DownloadManagerCoordinator mDownloadCoordinator;
-    private boolean mIsOffTheRecord;
     private AndroidPermissionDelegate mPermissionDelegate;
     private ModalDialogManager mModalDialogManager;
 
@@ -46,39 +45,38 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
                     mCurrentUrl = url;
                 }
             };
+    private OTRProfileID mOtrProfileID;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        mCurrentUrl = savedInstanceState == null
+                ? UrlConstants.DOWNLOADS_URL
+                : savedInstanceState.getString(BUNDLE_KEY_CURRENT_URL);
+
         // Loads offline pages and prefetch downloads.
         OfflineContentAggregatorNotificationBridgeUiFactory.instance();
-        boolean isOffTheRecord = DownloadUtils.shouldShowOffTheRecordDownloads(getIntent());
         boolean showPrefetchContent = DownloadUtils.shouldShowPrefetchContent(getIntent());
-        ComponentName parentComponent = IntentUtils.safeGetParcelableExtra(
-                getIntent(), IntentHandler.EXTRA_PARENT_COMPONENT);
         mPermissionDelegate =
                 new ActivityAndroidPermissionDelegate(new WeakReference<Activity>(this));
+        mOtrProfileID = DownloadUtils.getOTRProfileIDFromIntent(getIntent());
+
         DownloadManagerUiConfig config =
-                new DownloadManagerUiConfig.Builder()
-                        .setIsOffTheRecord(isOffTheRecord)
+                DownloadManagerUiConfigHelper.fromFlags()
+                        .setOTRProfileID(mOtrProfileID)
                         .setIsSeparateActivity(true)
                         .setShowPaginationHeaders(DownloadUtils.shouldShowPaginationHeaders())
+                        .setStartWithPrefetchedContent(showPrefetchContent)
                         .build();
 
         mModalDialogManager = new ModalDialogManager(
                 new AppModalPresenter(this), ModalDialogManager.ModalDialogType.APP);
-        mDownloadCoordinator = DownloadManagerCoordinatorFactory.create(
-                this, config, getSnackbarManager(), parentComponent, mModalDialogManager);
+        mDownloadCoordinator = DownloadManagerCoordinatorFactoryHelper.create(
+                this, config, getSnackbarManager(), mModalDialogManager);
         setContentView(mDownloadCoordinator.getView());
-        mIsOffTheRecord = isOffTheRecord;
+        if (!showPrefetchContent) mDownloadCoordinator.updateForUrl(mCurrentUrl);
         mDownloadCoordinator.addObserver(mUiObserver);
-
-        // TODO(crbug/905893) : Use {@link Filters.toUrl) once old download home is removed.
-        mCurrentUrl = savedInstanceState == null
-                ? UrlConstants.DOWNLOADS_URL
-                : savedInstanceState.getString(BUNDLE_KEY_CURRENT_URL);
-        if (showPrefetchContent) mCurrentUrl = Filters.toUrl(Filters.FilterType.PREFETCHED);
-        mDownloadCoordinator.updateForUrl(mCurrentUrl);
     }
 
     @Override
@@ -90,7 +88,8 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     @Override
     public void onResume() {
         super.onResume();
-        DownloadUtils.checkForExternallyRemovedDownloads(mIsOffTheRecord);
+        ProfileKey profileKey = IncognitoUtils.getProfileKeyFromOTRProfileID(mOtrProfileID);
+        DownloadUtils.checkForExternallyRemovedDownloads(profileKey);
     }
 
     @Override
@@ -117,6 +116,7 @@ public class DownloadActivity extends SnackbarActivity implements ModalDialogMan
     }
 
     @Override
+    @SuppressWarnings("MissingSuperCall")
     public void onRequestPermissionsResult(
             int requestCode, String[] permissions, int[] grantResults) {
         mPermissionDelegate.handlePermissionResult(requestCode, permissions, grantResults);

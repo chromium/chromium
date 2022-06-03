@@ -6,7 +6,7 @@
 
 #include <ostream>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace subresource_filter {
 

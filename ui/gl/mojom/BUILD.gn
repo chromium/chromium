@@ -5,21 +5,26 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "gpu_preference.mojom",
-  ]
+  generate_java = true
 
-  public_deps = [
-    "//mojo/public/mojom/base",
+  sources = [ "gpu_preference.mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "gl.mojom.GpuPreference"
+          cpp = "::gl::GpuPreference"
+        },
+      ]
+      traits_headers = [ "gpu_preference_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gl" ]
+    },
   ]
 }
 
 mojom("test_interfaces") {
-  sources = [
-    "traits_test_service.mojom",
-  ]
+  sources = [ "traits_test_service.mojom" ]
 
-  public_deps = [
-    ":mojom",
-  ]
+  public_deps = [ ":mojom" ]
 }

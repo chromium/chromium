@@ -8,22 +8,20 @@
 #include <memory>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
-#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_delegate.h"
-#include "components/password_manager/core/browser/android_affiliation/test_affiliation_fetcher_factory.h"
+#include "components/password_manager/core/browser/android_affiliation/affiliation_fetcher_interface.h"
+#include "components/password_manager/core/browser/site_affiliation/affiliation_fetcher_factory.h"
 
 namespace password_manager {
 
 // A fake AffiliationFetcher that can be used in tests to return fake API
 // responses to users of AffiliationFetcher.
-class FakeAffiliationFetcher : public AffiliationFetcher {
+class FakeAffiliationFetcher : public AffiliationFetcherInterface {
  public:
   FakeAffiliationFetcher(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const std::vector<FacetURI>& facet_ids,
       AffiliationFetcherDelegate* delegate);
-  ~FakeAffiliationFetcher();
+  ~FakeAffiliationFetcher() override;
 
   // Simulates successful completion of the request with |fake_result|. Note
   // that the consumer may choose to destroy |this| from within this call.
@@ -34,18 +32,22 @@ class FakeAffiliationFetcher : public AffiliationFetcher {
   // may choose to destroy |this| from within this call.
   void SimulateFailure();
 
+  // AffiliationFetcherInterface
+  void StartRequest(const std::vector<FacetURI>& facet_uris,
+                    RequestInfo request_info) override;
+  const std::vector<FacetURI>& GetRequestedFacetURIs() const override;
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(FakeAffiliationFetcher);
+  AffiliationFetcherDelegate* const delegate_;
+
+  std::vector<FacetURI> facets_;
 };
 
-// While this factory is in scope, calls to AffiliationFetcher::Create() will
-// produce FakeAffiliationFetchers that can be used in tests to return fake API
-// responses to users of AffiliationFetcher. Nesting is not supported.
-class ScopedFakeAffiliationFetcherFactory
-    : public TestAffiliationFetcherFactory {
+// Used in tests to return fake API responses to users of AffiliationFetcher.
+class FakeAffiliationFetcherFactory : public AffiliationFetcherFactory {
  public:
-  ScopedFakeAffiliationFetcherFactory();
-  ~ScopedFakeAffiliationFetcherFactory() override;
+  FakeAffiliationFetcherFactory();
+  ~FakeAffiliationFetcherFactory() override;
 
   // Returns the next FakeAffiliationFetcher instance previously produced, so
   // that that the testing code can inject a response and simulate completion
@@ -64,17 +66,13 @@ class ScopedFakeAffiliationFetcherFactory
   bool has_pending_fetchers() const { return !pending_fetchers_.empty(); }
 
   // AffiliationFetcherFactory:
-  AffiliationFetcher* CreateInstance(
+  std::unique_ptr<AffiliationFetcherInterface> CreateInstance(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const std::vector<FacetURI>& facet_ids,
       AffiliationFetcherDelegate* delegate) override;
 
  private:
-  // Fakes created by this factory. The elements are owned by the production
-  // code that normally owns the result of AffiliationFetcher::Create().
+  // Fakes created by this factory.
   base::queue<FakeAffiliationFetcher*> pending_fetchers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedFakeAffiliationFetcherFactory);
 };
 
 }  // namespace password_manager

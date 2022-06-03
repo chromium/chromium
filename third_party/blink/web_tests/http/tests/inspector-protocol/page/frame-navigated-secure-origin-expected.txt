@@ -1,0 +1,29 @@
+Tests that Page.frameNavigated reports isSecureOrigin[Explanation] correctly
+Navigate to localhost
+{
+  "securityOrigin": "http://localhost:8000",
+  "secureContextType": "SecureLocalhost"
+}
+{
+  "securityOrigin": "https://devtools.test:8443",
+  "secureContextType": "Secure"
+}
+Navigate to URL without secure scheme
+{
+  "securityOrigin": "http://devtools.test:8000",
+  "secureContextType": "InsecureScheme"
+}
+{
+  "securityOrigin": "https://devtools.test:8443",
+  "secureContextType": "InsecureAncestor"
+}
+Navigate to URL with secure scheme
+{
+  "securityOrigin": "https://localhost:8443",
+  "secureContextType": "SecureLocalhost"
+}
+{
+  "securityOrigin": "https://devtools.test:8443",
+  "secureContextType": "Secure"
+}
+

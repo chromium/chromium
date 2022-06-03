@@ -12,7 +12,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 
 namespace base {
 namespace win {
@@ -57,7 +57,7 @@ class BASE_EXPORT ObjectWatcher {
  public:
   class BASE_EXPORT Delegate {
    public:
-    virtual ~Delegate() {}
+    virtual ~Delegate() = default;
     // Called from the sequence that started the watch when a signaled object is
     // detected. To continue watching the object, StartWatching must be called
     // again.
@@ -65,6 +65,10 @@ class BASE_EXPORT ObjectWatcher {
   };
 
   ObjectWatcher();
+
+  ObjectWatcher(const ObjectWatcher&) = delete;
+  ObjectWatcher& operator=(const ObjectWatcher&) = delete;
+
   ~ObjectWatcher();
 
   // When the object is signaled, the given delegate is notified on the sequence
@@ -130,8 +134,6 @@ class BASE_EXPORT ObjectWatcher {
   bool run_once_ = true;
 
   WeakPtrFactory<ObjectWatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ObjectWatcher);
 };
 
 }  // namespace win

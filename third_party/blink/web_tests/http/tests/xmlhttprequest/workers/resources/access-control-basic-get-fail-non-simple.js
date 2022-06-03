@@ -32,7 +32,7 @@ function start()
     try {
 	var xhr = new XMLHttpRequest;
 	xhr.open("GET", "http://localhost:8000/xmlhttprequest/resources/access-control-basic-get-fail-non-simple.cgi", false);
-	// Non-whitelisted method
+	// Non-CORS-saflisted method
 	xhr.setRequestHeader("x-webkit", "foobar");
         xhr.send();
     } catch(e) {

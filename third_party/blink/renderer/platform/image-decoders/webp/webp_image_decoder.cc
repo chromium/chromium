@@ -31,11 +31,12 @@
 #include <string.h>
 
 #include "base/feature_list.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_macros.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/wtf/wtf.h"
 #include "third_party/skia/include/core/SkData.h"
-#include "third_party/skia/include/core/SkYUVAIndex.h"
 
 #if defined(ARCH_CPU_BIG_ENDIAN)
 #error Blink assumes a little-endian target.
@@ -52,27 +53,27 @@ inline void findBlendRangeAtRow(const blink::IntRect& src,
                                 int& width1,
                                 int& left2,
                                 int& width2) {
-  SECURITY_DCHECK(canvasY >= src.Y() && canvasY < src.MaxY());
+  SECURITY_DCHECK(canvasY >= src.y() && canvasY < src.bottom());
   left1 = -1;
   width1 = 0;
   left2 = -1;
   width2 = 0;
 
-  if (canvasY < dst.Y() || canvasY >= dst.MaxY() || src.X() >= dst.MaxX() ||
-      src.MaxX() <= dst.X()) {
-    left1 = src.X();
-    width1 = src.Width();
+  if (canvasY < dst.y() || canvasY >= dst.bottom() || src.x() >= dst.right() ||
+      src.right() <= dst.x()) {
+    left1 = src.x();
+    width1 = src.width();
     return;
   }
 
-  if (src.X() < dst.X()) {
-    left1 = src.X();
-    width1 = dst.X() - src.X();
+  if (src.x() < dst.x()) {
+    left1 = src.x();
+    width1 = dst.x() - src.x();
   }
 
-  if (src.MaxX() > dst.MaxX()) {
-    left2 = dst.MaxX();
-    width2 = src.MaxX() - dst.MaxX();
+  if (src.right() > dst.right()) {
+    left2 = dst.right();
+    width2 = src.right() - dst.right();
   }
 }
 
@@ -113,14 +114,14 @@ void alphaBlendNonPremultiplied(blink::ImageFrame& src,
 
 // Do not rename entries nor reuse numeric values. See the following link for
 // descriptions: https://developers.google.com/speed/webp/docs/riff_container.
-enum WebPFileFormat {
-  kSimpleLossyFileFormat = 0,
-  kSimpleLosslessFileFormat = 1,
-  kExtendedAlphaFileFormat = 2,
-  kExtendedAnimationFileFormat = 3,
-  kExtendedAnimationWithAlphaFileFormat = 4,
-  kUnknownFileFormat = 5,
-  kCountWebPFileFormats
+enum class WebPFileFormat {
+  kSimpleLossy = 0,
+  kSimpleLossless = 1,
+  kExtendedAlpha = 2,
+  kExtendedAnimation = 3,
+  kExtendedAnimationWithAlpha = 4,
+  kUnknown = 5,
+  kMaxValue = kUnknown,
 };
 
 // Validates that |blob| is a simple lossy WebP image. Note that this explicitly
@@ -152,22 +153,19 @@ void UpdateWebPFileFormatUMA(const sk_sp<SkData>& blob) {
   constexpr int kLossyFormat = 1;
   constexpr int kLosslessFormat = 2;
 
-  WebPFileFormat file_format = kUnknownFileFormat;
+  WebPFileFormat file_format = WebPFileFormat::kUnknown;
   if (features.has_alpha && features.has_animation)
-    file_format = kExtendedAnimationWithAlphaFileFormat;
+    file_format = WebPFileFormat::kExtendedAnimationWithAlpha;
   else if (features.has_animation)
-    file_format = kExtendedAnimationFileFormat;
+    file_format = WebPFileFormat::kExtendedAnimation;
   else if (features.has_alpha)
-    file_format = kExtendedAlphaFileFormat;
+    file_format = WebPFileFormat::kExtendedAlpha;
   else if (features.format == kLossyFormat)
-    file_format = kSimpleLossyFileFormat;
+    file_format = WebPFileFormat::kSimpleLossy;
   else if (features.format == kLosslessFormat)
-    file_format = kSimpleLosslessFileFormat;
+    file_format = WebPFileFormat::kSimpleLossless;
 
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(
-      blink::EnumerationHistogram, file_format_histogram,
-      ("Blink.DecodedImage.WebPFileFormat", kCountWebPFileFormats));
-  file_format_histogram.Count(file_format);
+  UMA_HISTOGRAM_ENUMERATION("Blink.DecodedImage.WebPFileFormat", file_format);
 }
 
 }  // namespace
@@ -176,7 +174,7 @@ namespace blink {
 
 WEBPImageDecoder::WEBPImageDecoder(AlphaOption alpha_option,
                                    const ColorBehavior& color_behavior,
-                                   size_t max_decoded_bytes)
+                                   wtf_size_t max_decoded_bytes)
     : ImageDecoder(alpha_option,
                    ImageDecoder::kDefaultBitDepth,
                    color_behavior,
@@ -186,7 +184,7 @@ WEBPImageDecoder::WEBPImageDecoder(AlphaOption alpha_option,
       frame_background_has_alpha_(false),
       demux_(nullptr),
       demux_state_(WEBP_DEMUX_PARSING_HEADER),
-      have_already_parsed_this_data_(false),
+      have_parsed_current_data_(false),
       repetition_count_(kAnimationLoopOnce),
       decoded_height_(0) {
   blend_function_ = (alpha_option == kAlphaPremultiplied)
@@ -259,7 +257,7 @@ bool WEBPImageDecoder::CanAllowYUVDecodingForWebP() {
 }
 
 void WEBPImageDecoder::OnSetData(SegmentReader* data) {
-  have_already_parsed_this_data_ = false;
+  have_parsed_current_data_ = false;
   // TODO(crbug.com/943519): Modify this approach for incremental YUV (when
   // we don't require IsAllDataReceived() to be true before decoding).
   if (IsAllDataReceived()) {
@@ -274,16 +272,21 @@ int WEBPImageDecoder::RepetitionCount() const {
   return Failed() ? kAnimationLoopOnce : repetition_count_;
 }
 
-bool WEBPImageDecoder::FrameIsReceivedAtIndex(size_t index) const {
+bool WEBPImageDecoder::FrameIsReceivedAtIndex(wtf_size_t index) const {
   if (!demux_ || demux_state_ <= WEBP_DEMUX_PARSING_HEADER)
     return false;
   if (!(format_flags_ & ANIMATION_FLAG))
     return ImageDecoder::FrameIsReceivedAtIndex(index);
+  // frame_buffer_cache_.size() is equal to the return value of
+  // DecodeFrameCount(). WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT) returns the
+  // number of ANMF chunks that have been received. (See also the DCHECK on
+  // animated_frame.complete in InitializeNewFrame().) Therefore we can return
+  // true if |index| is valid for frame_buffer_cache_.
   bool frame_is_received_at_index = index < frame_buffer_cache_.size();
   return frame_is_received_at_index;
 }
 
-base::TimeDelta WEBPImageDecoder::FrameDurationAtIndex(size_t index) const {
+base::TimeDelta WEBPImageDecoder::FrameDurationAtIndex(wtf_size_t index) const {
   return index < frame_buffer_cache_.size()
              ? frame_buffer_cache_[index].Duration()
              : base::TimeDelta();
@@ -293,14 +296,17 @@ bool WEBPImageDecoder::UpdateDemuxer() {
   if (Failed())
     return false;
 
-  const unsigned kWebpHeaderSize = 30;
+  // RIFF header (12 bytes) + data chunk header (8 bytes).
+  const unsigned kWebpHeaderSize = 20;
+  // The number of bytes needed to retrieve the size will vary based on the
+  // type of chunk (VP8/VP8L/VP8X). This check just serves as an early out
+  // before bitstream validation can occur.
   if (data_->size() < kWebpHeaderSize)
     return IsAllDataReceived() ? SetFailed() : false;
 
-  if (have_already_parsed_this_data_)
+  if (have_parsed_current_data_)
     return true;
-
-  have_already_parsed_this_data_ = true;
+  have_parsed_current_data_ = true;
 
   if (consolidated_data_ && consolidated_data_->size() >= data_->size()) {
     // Less data provided than last time. |consolidated_data_| is guaranteed
@@ -311,12 +317,12 @@ bool WEBPImageDecoder::UpdateDemuxer() {
   if (IsAllDataReceived() && !consolidated_data_) {
     consolidated_data_ = data_->GetAsSkData();
   } else {
-    buffer_.ReserveCapacity(data_->size());
+    buffer_.ReserveCapacity(base::checked_cast<wtf_size_t>(data_->size()));
     while (buffer_.size() < data_->size()) {
       const char* segment;
       const size_t bytes = data_->GetSomeData(segment, buffer_.size());
       DCHECK(bytes);
-      buffer_.Append(segment, bytes);
+      buffer_.Append(segment, base::checked_cast<wtf_size_t>(bytes));
     }
     DCHECK_EQ(buffer_.size(), data_->size());
     consolidated_data_ =
@@ -328,10 +334,18 @@ bool WEBPImageDecoder::UpdateDemuxer() {
       reinterpret_cast<const uint8_t*>(consolidated_data_->data()),
       consolidated_data_->size()};
   demux_ = WebPDemuxPartial(&input_data, &demux_state_);
-  if (!demux_ || (IsAllDataReceived() && demux_state_ != WEBP_DEMUX_DONE)) {
-    if (!demux_)
+  const bool truncated_file =
+      IsAllDataReceived() && demux_state_ != WEBP_DEMUX_DONE;
+  if (!demux_ || demux_state_ < WEBP_DEMUX_PARSED_HEADER || truncated_file) {
+    if (!demux_) {
       consolidated_data_.reset();
-    return SetFailed();
+    } else {
+      // We delete the demuxer early to avoid breaking the expectation that
+      // frame count == 0 when IsSizeAvailable() is false.
+      WebPDemuxDelete(demux_);
+      demux_ = nullptr;
+    }
+    return truncated_file ? SetFailed() : false;
   }
 
   DCHECK_GT(demux_state_, WEBP_DEMUX_PARSING_HEADER);
@@ -371,21 +385,21 @@ bool WEBPImageDecoder::UpdateDemuxer() {
 
   DCHECK(IsDecodedSizeAvailable());
 
-  size_t frame_count = WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT);
+  wtf_size_t frame_count = WebPDemuxGetI(demux_, WEBP_FF_FRAME_COUNT);
   UpdateAggressivePurging(frame_count);
 
   return true;
 }
 
-void WEBPImageDecoder::OnInitFrameBuffer(size_t frame_index) {
+void WEBPImageDecoder::OnInitFrameBuffer(wtf_size_t frame_index) {
   // ImageDecoder::InitFrameBuffer does a DCHECK if |frame_index| exists.
   ImageFrame& buffer = frame_buffer_cache_[frame_index];
 
-  const size_t required_previous_frame_index =
+  const wtf_size_t required_previous_frame_index =
       buffer.RequiredPreviousFrameIndex();
   if (required_previous_frame_index == kNotFound) {
     frame_background_has_alpha_ =
-        !buffer.OriginalFrameRect().Contains(IntRect(IntPoint(), Size()));
+        !buffer.OriginalFrameRect().Contains(IntRect(gfx::Point(), Size()));
   } else {
     const ImageFrame& prev_buffer =
         frame_buffer_cache_[required_previous_frame_index];
@@ -403,6 +417,9 @@ void WEBPImageDecoder::OnInitFrameBuffer(size_t frame_index) {
 void WEBPImageDecoder::DecodeToYUV() {
   DCHECK(IsDoingYuvDecode());
 
+  // Only 8-bit YUV decode is currently supported.
+  DCHECK_EQ(image_planes_->color_type(), kGray_8_SkColorType);
+
   if (Failed())
     return;
 
@@ -416,38 +433,32 @@ void WEBPImageDecoder::DecodeToYUV() {
   } else {
     std::unique_ptr<WebPIterator, void (*)(WebPIterator*)> webp_frame(
         &webp_iter, WebPDemuxReleaseIterator);
-    DecodeSingleFrameToYUV(webp_frame->fragment.bytes,
-                           webp_frame->fragment.size);
+    DecodeSingleFrameToYUV(
+        webp_frame->fragment.bytes,
+        base::checked_cast<wtf_size_t>(webp_frame->fragment.size));
   }
 }
 
-IntSize WEBPImageDecoder::DecodedYUVSize(int component) const {
-  DCHECK_GE(component, 0);
-  // TODO(crbug.com/910276): Change after alpha support.
-  DCHECK_LE(component, 2);
+IntSize WEBPImageDecoder::DecodedYUVSize(cc::YUVIndex index) const {
   DCHECK(IsDecodedSizeAvailable());
-  switch (component) {
-    case SkYUVAIndex::kY_Index:
+  switch (index) {
+    case cc::YUVIndex::kY:
       return Size();
-    case SkYUVAIndex::kU_Index:
-      FALLTHROUGH;
-    case SkYUVAIndex::kV_Index:
-      return IntSize((Size().Width() + 1) / 2, (Size().Height() + 1) / 2);
+    case cc::YUVIndex::kU:
+    case cc::YUVIndex::kV:
+      return IntSize((Size().width() + 1) / 2, (Size().height() + 1) / 2);
   }
   NOTREACHED();
   return IntSize(0, 0);
 }
 
-size_t WEBPImageDecoder::DecodedYUVWidthBytes(int component) const {
-  DCHECK_GE(component, 0);
-  DCHECK_LE(component, 2);
-  switch (component) {
-    case SkYUVAIndex::kY_Index:
-      return base::checked_cast<size_t>(Size().Width());
-    case SkYUVAIndex::kU_Index:
-      FALLTHROUGH;
-    case SkYUVAIndex::kV_Index:
-      return base::checked_cast<size_t>((Size().Width() + 1) / 2);
+wtf_size_t WEBPImageDecoder::DecodedYUVWidthBytes(cc::YUVIndex index) const {
+  switch (index) {
+    case cc::YUVIndex::kY:
+      return base::checked_cast<wtf_size_t>(Size().width());
+    case cc::YUVIndex::kU:
+    case cc::YUVIndex::kV:
+      return base::checked_cast<wtf_size_t>((Size().width() + 1) / 2);
   }
   NOTREACHED();
   return 0;
@@ -468,13 +479,14 @@ cc::YUVSubsampling WEBPImageDecoder::GetYUVSubsampling() const {
   return cc::YUVSubsampling::kUnknown;
 }
 
-bool WEBPImageDecoder::CanReusePreviousFrameBuffer(size_t frame_index) const {
+bool WEBPImageDecoder::CanReusePreviousFrameBuffer(
+    wtf_size_t frame_index) const {
   DCHECK(frame_index < frame_buffer_cache_.size());
   return frame_buffer_cache_[frame_index].GetAlphaBlendSource() !=
          ImageFrame::kBlendAtopPreviousFrame;
 }
 
-void WEBPImageDecoder::ClearFrameBuffer(size_t frame_index) {
+void WEBPImageDecoder::ClearFrameBuffer(wtf_size_t frame_index) {
   if (demux_ && demux_state_ >= WEBP_DEMUX_PARSED_HEADER &&
       frame_buffer_cache_[frame_index].GetStatus() ==
           ImageFrame::kFramePartial) {
@@ -494,7 +506,8 @@ void WEBPImageDecoder::ReadColorProfile() {
 
   const char* profile_data =
       reinterpret_cast<const char*>(chunk_iterator.chunk.bytes);
-  size_t profile_size = chunk_iterator.chunk.size;
+  wtf_size_t profile_size =
+      base::checked_cast<wtf_size_t>(chunk_iterator.chunk.size);
 
   if (auto profile = ColorProfile::Create(profile_data, profile_size)) {
     if (profile->GetProfile()->data_color_space == skcms_Signature_RGB) {
@@ -507,7 +520,7 @@ void WEBPImageDecoder::ReadColorProfile() {
   WebPDemuxReleaseChunkIterator(&chunk_iterator);
 }
 
-void WEBPImageDecoder::ApplyPostProcessing(size_t frame_index) {
+void WEBPImageDecoder::ApplyPostProcessing(wtf_size_t frame_index) {
   ImageFrame& buffer = frame_buffer_cache_[frame_index];
   int width;
   int decoded_height;
@@ -521,10 +534,10 @@ void WEBPImageDecoder::ApplyPostProcessing(size_t frame_index) {
     return;
 
   const IntRect& frame_rect = buffer.OriginalFrameRect();
-  SECURITY_DCHECK(width == frame_rect.Width());
-  SECURITY_DCHECK(decoded_height <= frame_rect.Height());
-  const int left = frame_rect.X();
-  const int top = frame_rect.Y();
+  SECURITY_DCHECK(width == frame_rect.width());
+  SECURITY_DCHECK(decoded_height <= frame_rect.height());
+  const int left = frame_rect.x();
+  const int top = frame_rect.y();
 
   // TODO (msarett):
   // Here we apply the color space transformation to the dst space.
@@ -595,7 +608,7 @@ void WEBPImageDecoder::ApplyPostProcessing(size_t frame_index) {
   buffer.SetPixelsChanged(true);
 }
 
-size_t WEBPImageDecoder::DecodeFrameCount() {
+wtf_size_t WEBPImageDecoder::DecodeFrameCount() {
   // If UpdateDemuxer() fails, return the existing number of frames. This way if
   // we get halfway through the image before decoding fails, we won't suddenly
   // start reporting that the image has zero frames.
@@ -603,7 +616,7 @@ size_t WEBPImageDecoder::DecodeFrameCount() {
                          : frame_buffer_cache_.size();
 }
 
-void WEBPImageDecoder::InitializeNewFrame(size_t index) {
+void WEBPImageDecoder::InitializeNewFrame(wtf_size_t index) {
   if (!(format_flags_ & ANIMATION_FLAG)) {
     DCHECK(!index);
     return;
@@ -615,9 +628,8 @@ void WEBPImageDecoder::InitializeNewFrame(size_t index) {
   IntRect frame_rect(animated_frame.x_offset, animated_frame.y_offset,
                      animated_frame.width, animated_frame.height);
   buffer->SetOriginalFrameRect(
-      Intersection(frame_rect, IntRect(IntPoint(), Size())));
-  buffer->SetDuration(
-      base::TimeDelta::FromMilliseconds(animated_frame.duration));
+      IntersectRects(frame_rect, IntRect(gfx::Point(), Size())));
+  buffer->SetDuration(base::Milliseconds(animated_frame.duration));
   buffer->SetDisposalMethod(animated_frame.dispose_method ==
                                     WEBP_MUX_DISPOSE_BACKGROUND
                                 ? ImageFrame::kDisposeOverwriteBgcolor
@@ -630,13 +642,13 @@ void WEBPImageDecoder::InitializeNewFrame(size_t index) {
   WebPDemuxReleaseIterator(&animated_frame);
 }
 
-void WEBPImageDecoder::Decode(size_t index) {
+void WEBPImageDecoder::Decode(wtf_size_t index) {
   DCHECK(!IsDoingYuvDecode());
 
   if (Failed())
     return;
 
-  Vector<size_t> frames_to_decode = FindFramesToDecode(index);
+  Vector<wtf_size_t> frames_to_decode = FindFramesToDecode(index);
 
   DCHECK(demux_);
   for (auto i = frames_to_decode.rbegin(); i != frames_to_decode.rend(); ++i) {
@@ -651,8 +663,9 @@ void WEBPImageDecoder::Decode(size_t index) {
     } else {
       std::unique_ptr<WebPIterator, void (*)(WebPIterator*)> webp_frame(
           &webp_iter, WebPDemuxReleaseIterator);
-      DecodeSingleFrame(webp_frame->fragment.bytes, webp_frame->fragment.size,
-                        *i);
+      DecodeSingleFrame(
+          webp_frame->fragment.bytes,
+          base::checked_cast<wtf_size_t>(webp_frame->fragment.size), *i);
     }
 
     if (Failed())
@@ -671,7 +684,7 @@ void WEBPImageDecoder::Decode(size_t index) {
 }
 
 bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
-                                              size_t data_size) {
+                                              wtf_size_t data_size) {
   DCHECK(IsDoingYuvDecode());
   DCHECK(!Failed());
 
@@ -690,29 +703,23 @@ bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
   // Even if |decoder_| already exists, we must get most up-to-date pointers
   // because memory location might change e.g. upon tab resume.
   decoder_buffer_.u.YUVA.y =
-      static_cast<uint8_t*>(image_planes->Plane(SkYUVAIndex::kY_Index));
+      static_cast<uint8_t*>(image_planes->Plane(cc::YUVIndex::kY));
   decoder_buffer_.u.YUVA.u =
-      static_cast<uint8_t*>(image_planes->Plane(SkYUVAIndex::kU_Index));
+      static_cast<uint8_t*>(image_planes->Plane(cc::YUVIndex::kU));
   decoder_buffer_.u.YUVA.v =
-      static_cast<uint8_t*>(image_planes->Plane(SkYUVAIndex::kV_Index));
+      static_cast<uint8_t*>(image_planes->Plane(cc::YUVIndex::kV));
 
   if (!decoder_) {
     // libwebp only supports YUV 420 subsampling
-    decoder_buffer_.u.YUVA.y_stride =
-        image_planes->RowBytes(SkYUVAIndex::kY_Index);
-    decoder_buffer_.u.YUVA.y_size =
-        decoder_buffer_.u.YUVA.y_stride *
-        DecodedYUVSize(SkYUVAIndex::kY_Index).Height();
-    decoder_buffer_.u.YUVA.u_stride =
-        image_planes->RowBytes(SkYUVAIndex::kU_Index);
-    decoder_buffer_.u.YUVA.u_size =
-        decoder_buffer_.u.YUVA.u_stride *
-        DecodedYUVSize(SkYUVAIndex::kU_Index).Height();
-    decoder_buffer_.u.YUVA.v_stride =
-        image_planes->RowBytes(SkYUVAIndex::kV_Index);
-    decoder_buffer_.u.YUVA.v_size =
-        decoder_buffer_.u.YUVA.v_stride *
-        DecodedYUVSize(SkYUVAIndex::kV_Index).Height();
+    decoder_buffer_.u.YUVA.y_stride = image_planes->RowBytes(cc::YUVIndex::kY);
+    decoder_buffer_.u.YUVA.y_size = decoder_buffer_.u.YUVA.y_stride *
+                                    DecodedYUVSize(cc::YUVIndex::kY).height();
+    decoder_buffer_.u.YUVA.u_stride = image_planes->RowBytes(cc::YUVIndex::kU);
+    decoder_buffer_.u.YUVA.u_size = decoder_buffer_.u.YUVA.u_stride *
+                                    DecodedYUVSize(cc::YUVIndex::kU).height();
+    decoder_buffer_.u.YUVA.v_stride = image_planes->RowBytes(cc::YUVIndex::kV);
+    decoder_buffer_.u.YUVA.v_size = decoder_buffer_.u.YUVA.v_stride *
+                                    DecodedYUVSize(cc::YUVIndex::kV).height();
 
     decoder_buffer_.is_external_memory = 1;
     decoder_ = WebPINewDecoder(&decoder_buffer_);
@@ -728,12 +735,13 @@ bool WEBPImageDecoder::DecodeSingleFrameToYUV(const uint8_t* data_bytes,
   // TODO(crbug.com/911246): Do post-processing once skcms_Transform
   // supports multiplanar formats.
   ClearDecoder();
+  image_planes->SetHasCompleteScan();
   return true;
 }
 
 bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
-                                         size_t data_size,
-                                         size_t frame_index) {
+                                         wtf_size_t data_size,
+                                         wtf_size_t frame_index) {
   DCHECK(!IsDoingYuvDecode());
   if (Failed())
     return false;
@@ -744,7 +752,7 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
   DCHECK_NE(buffer.GetStatus(), ImageFrame::kFrameComplete);
 
   if (buffer.GetStatus() == ImageFrame::kFrameEmpty) {
-    if (!buffer.AllocatePixelData(Size().Width(), Size().Height(),
+    if (!buffer.AllocatePixelData(Size().width(), Size().height(),
                                   ColorSpaceForSkImages())) {
       return SetFailed();
     }
@@ -754,7 +762,7 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
     // is loading. The correct alpha value for the frame will be set when
     // it is fully decoded.
     buffer.SetHasAlpha(true);
-    buffer.SetOriginalFrameRect(IntRect(IntPoint(), Size()));
+    buffer.SetOriginalFrameRect(IntRect(gfx::Point(), Size()));
   }
 
   const IntRect& frame_rect = buffer.OriginalFrameRect();
@@ -763,16 +771,16 @@ bool WEBPImageDecoder::DecodeSingleFrame(const uint8_t* data_bytes,
     WebPInitDecBuffer(&decoder_buffer_);
     decoder_buffer_.colorspace = RGBOutputMode();
     decoder_buffer_.u.RGBA.stride =
-        Size().Width() * sizeof(ImageFrame::PixelData);
+        Size().width() * sizeof(ImageFrame::PixelData);
     decoder_buffer_.u.RGBA.size =
-        decoder_buffer_.u.RGBA.stride * frame_rect.Height();
+        decoder_buffer_.u.RGBA.stride * frame_rect.height();
     decoder_buffer_.is_external_memory = 1;
     decoder_ = WebPINewDecoder(&decoder_buffer_);
     if (!decoder_)
       return SetFailed();
   }
   decoder_buffer_.u.RGBA.rgba = reinterpret_cast<uint8_t*>(
-      buffer.GetAddr(frame_rect.X(), frame_rect.Y()));
+      buffer.GetAddr(frame_rect.x(), frame_rect.y()));
 
   switch (WebPIUpdate(decoder_, data_bytes, data_size)) {
     case VP8_STATUS_OK:

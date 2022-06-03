@@ -4,6 +4,7 @@
 
 #include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
@@ -27,8 +28,14 @@ class MockNeuralModel : public NeuralStylusPalmDetectionFilterModel {
 class NeuralStylusPalmDetectionFilterTest : public testing::Test {
  public:
   NeuralStylusPalmDetectionFilterTest() = default;
+
+  NeuralStylusPalmDetectionFilterTest(
+      const NeuralStylusPalmDetectionFilterTest&) = delete;
+  NeuralStylusPalmDetectionFilterTest& operator=(
+      const NeuralStylusPalmDetectionFilterTest&) = delete;
+
   void SetUp() override {
-    shared_palm_state.reset(new SharedPalmDetectionFilterState);
+    shared_palm_state = std::make_unique<SharedPalmDetectionFilterState>();
     model_ = new testing::StrictMock<MockNeuralModel>;
     model_config_.biggest_near_neighbor_count = 2;
     model_config_.min_sample_count = 2;
@@ -36,17 +43,16 @@ class NeuralStylusPalmDetectionFilterTest : public testing::Test {
     model_config_.max_neighbor_distance_in_mm = 20;
     model_config_.heuristic_palm_touch_limit = 40;
     model_config_.heuristic_palm_area_limit = 1000;
-    model_config_.max_dead_neighbor_time =
-        base::TimeDelta::FromMillisecondsD(100);
+    model_config_.max_dead_neighbor_time = base::Milliseconds(100);
     EXPECT_CALL(*model_, config())
         .Times(testing::AnyNumber())
         .WillRepeatedly(testing::ReturnRef(model_config_));
     EXPECT_TRUE(
         CapabilitiesToDeviceInfo(kNocturneTouchScreen, &nocturne_touchscreen_));
-    palm_detection_filter_.reset(new NeuralStylusPalmDetectionFilter(
+    palm_detection_filter_ = std::make_unique<NeuralStylusPalmDetectionFilter>(
         nocturne_touchscreen_,
         std::unique_ptr<NeuralStylusPalmDetectionFilterModel>(model_),
-        shared_palm_state.get()));
+        shared_palm_state.get());
     touch_.resize(kNumTouchEvdevSlots);
     for (size_t i = 0; i < touch_.size(); ++i) {
       touch_[i].slot = i;
@@ -61,7 +67,6 @@ class NeuralStylusPalmDetectionFilterTest : public testing::Test {
   MockNeuralModel* model_;
   NeuralStylusPalmDetectionFilterModelConfig model_config_;
   std::unique_ptr<PalmDetectionFilter> palm_detection_filter_;
-  DISALLOW_COPY_AND_ASSIGN(NeuralStylusPalmDetectionFilterTest);
 };
 
 class NeuralStylusPalmDetectionFilterDeathTest
@@ -74,13 +79,26 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, EventDeviceSimpleTest) {
       {kEveTouchScreen, true},
       {kLinkTouchscreen, true},  // No ABS_MT_TOOL_TYPE
       {kNocturneStylus, false},
-      {kKohakuTouchscreen, true}};
+      {kKohakuTouchscreen, true},
+      // The Wacom Intuos is external.
+      {kWacomIntuosPtS_Finger, false}};
   for (const auto& it : devices) {
     EXPECT_TRUE(CapabilitiesToDeviceInfo(it.first, &devinfo));
     EXPECT_EQ(it.second,
               NeuralStylusPalmDetectionFilter::
                   CompatibleWithNeuralStylusPalmDetectionFilter(devinfo))
         << "Failed on " << it.first.name;
+    EXPECT_EQ(false, NeuralStylusPalmDetectionFilter::
+                         CompatibleWithNeuralStylusPalmDetectionFilter(
+                             devinfo, "{\"touch-compatible\": \"false\"}"));
+    EXPECT_EQ(false,
+              NeuralStylusPalmDetectionFilter::
+                  CompatibleWithNeuralStylusPalmDetectionFilter(devinfo, "{}"));
+    if (it.second) {
+      EXPECT_EQ(true, NeuralStylusPalmDetectionFilter::
+                          CompatibleWithNeuralStylusPalmDetectionFilter(
+                              devinfo, "{\"touch-compatible\": \"true\"}"));
+    }
   }
 }
 
@@ -110,7 +128,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, ShortTouchPalmAreaTest) {
   touch_[0].major = 34;  // 34 * 32 = 1088
   touch_[0].minor = 32;
   base::TimeTicks touch_time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromMillisecondsD(10.0);
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   EXPECT_TRUE(actual_held.none());
@@ -119,7 +137,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, ShortTouchPalmAreaTest) {
   touch_[0].was_touching = true;
   touch_[0].touching = false;
   touch_[0].tracking_id = -1;
-  touch_time += base::TimeDelta::FromMillisecondsD(8.0f);
+  touch_time += base::Milliseconds(8.0f);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   EXPECT_TRUE(actual_held.none());
@@ -136,7 +154,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, ShortTouchPalmSizeTest) {
   touch_[0].major = 25;
   touch_[0].minor = 17;
   base::TimeTicks touch_time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromMillisecondsD(10.0);
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   EXPECT_TRUE(actual_held.none());
@@ -145,13 +163,13 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, ShortTouchPalmSizeTest) {
   touch_[0].was_touching = true;
   touch_[0].touching = false;
   touch_[0].tracking_id = -1;
-  touch_time += base::TimeDelta::FromMillisecondsD(8.0f);
+  touch_time += base::Milliseconds(8.0f);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   EXPECT_TRUE(actual_held.none());
   EXPECT_TRUE(actual_cancelled.none());
 
-  touch_time += base::TimeDelta::FromSecondsD(3600);
+  touch_time += base::Seconds(3600);
   touch_[0].touching = true;
   touch_[0].major = 57;
   touch_[0].tracking_id = 601;
@@ -163,7 +181,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, ShortTouchPalmSizeTest) {
   touch_[0].was_touching = true;
   touch_[0].touching = false;
   touch_[0].tracking_id = -1;
-  touch_time += base::TimeDelta::FromMillisecondsD(8.0f);
+  touch_time += base::Milliseconds(8.0f);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   EXPECT_TRUE(actual_held.none());
@@ -180,6 +198,10 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, CallFilterTest) {
   std::bitset<kNumTouchEvdevSlots> actual_held, actual_cancelled;
   std::bitset<kNumTouchEvdevSlots> expected_cancelled;
 
+  model_config_.max_blank_time = base::Milliseconds(100);
+  model_config_.use_tracking_id_count = true;
+  model_config_.use_active_tracking_id_count = true;
+
   touch_[0].touching = true;
   touch_[0].tracking_id = 500;
   touch_[0].major = 15;
@@ -188,7 +210,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, CallFilterTest) {
   touch_[0].y = 10;
   touch_[0].slot = 0;
   base::TimeTicks touch_time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromMillisecondsD(10.0);
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   EXPECT_TRUE(actual_held.none());
@@ -215,7 +237,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, CallFilterTest) {
   touch_[2].tracking_id = 502;
   touch_[2].slot = 2;
 
-  touch_time += base::TimeDelta::FromMillisecondsD(8.0f);
+  touch_time += base::Milliseconds(8.0f);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   EXPECT_TRUE(actual_held.none());
@@ -235,23 +257,45 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, CallFilterTest) {
       11, 9,  0, 0.625, 1, 11, 9,  0,    0.625, 1, 0,   0,    0, 0, 0,
       0,  0,  0, 0,     0, 0,  0,  0,    0,     0, 0.4, 0,    0, 0, 0,
       0,  0,  0, 0,     0, 0,  0,  0,    0,     0, 0,   0,    0, 0, 0,
-      0,  0,  0, 0,     0, 0,  0,  0,    0,     0, 0,   0,    0};
+      0,  0,  0, 0,     0, 0,  0,  0,    0,     0, 0,   0,    0, 4, 4};
   EXPECT_CALL(*model_,
               Inference(testing::Pointwise(testing::FloatEq(), features)))
       .Times(1)
       .WillOnce(testing::Return(0.5));
-  touch_time += base::TimeDelta::FromMillisecondsD(8.0f);
+  touch_time += base::Milliseconds(8.0f);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   EXPECT_TRUE(actual_held.none());
   expected_cancelled.set(0, true);
+  EXPECT_EQ(actual_cancelled, expected_cancelled);
+
+  // Touch 0 already ended in last report, now we mark touch 2 ended, its last
+  // two features should be 4 and 3 (tracking_id_count and
+  // active_tracking_id_count).
+  touch_[0].was_touching = false;
+  touch_[2].tracking_id = -1;
+  touch_[3].was_touching = true;
+  features = {10, 8, 0, 73.55, 1, 10, 8, 0,   73.55, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0.4, 0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0, 0, 0,
+              0,  0, 0, 0,     0, 0,  0, 0,   0,     0, 0, 0, 0, 0, 0, 0, 4, 3};
+  EXPECT_CALL(*model_,
+              Inference(testing::Pointwise(testing::FloatEq(), features)))
+      .Times(1)
+      .WillOnce(testing::Return(0.5));
+  touch_time += base::Milliseconds(8.0f);
+  palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
+                                 &actual_cancelled);
+  EXPECT_TRUE(actual_held.none());
+  expected_cancelled.set(2, true);
   EXPECT_EQ(actual_cancelled, expected_cancelled);
 }
 
 TEST_F(NeuralStylusPalmDetectionFilterTest, InferenceOnceNotPalm) {
   std::bitset<kNumTouchEvdevSlots> actual_held, actual_cancelled;
   base::TimeTicks touch_time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromMillisecondsD(10.0);
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
 
   touch_[0].touching = true;
   touch_[0].tracking_id = 600;
@@ -266,7 +310,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, InferenceOnceNotPalm) {
     if (i != 0) {
       touch_[0].was_touching = true;
     }
-    touch_time += base::TimeDelta::FromMillisecondsD(8.0f);
+    touch_time += base::Milliseconds(8.0f);
     palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                    &actual_cancelled);
     ASSERT_TRUE(actual_held.none()) << " Failed at " << i;
@@ -278,7 +322,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, InferenceOncePalm) {
   std::bitset<kNumTouchEvdevSlots> actual_held, actual_cancelled;
   std::bitset<kNumTouchEvdevSlots> expected_cancelled;
   base::TimeTicks touch_time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromMillisecondsD(10.0);
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
   expected_cancelled.set(0, true);
   touch_[0].touching = true;
   touch_[0].tracking_id = 600;
@@ -290,17 +334,15 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, InferenceOncePalm) {
       .Times(1)
       .WillOnce(testing::Return(0.5));
 
-  base::TimeTicks original_finger_time =
-      touch_time + base::TimeDelta::FromMillisecondsD(8.0f);
+  base::TimeTicks original_finger_time = touch_time + base::Milliseconds(8.0f);
   base::TimeTicks original_palm_time =
-      touch_time +
-      model_config_.max_sample_count * base::TimeDelta::FromMillisecondsD(8.0f);
+      touch_time + model_config_.max_sample_count * base::Milliseconds(8.0f);
 
   for (size_t i = 0; i < 5000; ++i) {
     if (i != 0) {
       touch_[0].was_touching = true;
     }
-    touch_time += base::TimeDelta::FromMillisecondsD(8.0f);
+    touch_time += base::Milliseconds(8.0f);
     palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                    &actual_cancelled);
     ASSERT_EQ(original_finger_time,
@@ -332,7 +374,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, DelayShortFingerTouch) {
   touch_[0].major = 39;
   touch_[0].minor = 21;
   base::TimeTicks touch_time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromMillisecondsD(10.0);
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
 
@@ -352,7 +394,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, DelayShortPalmTouch) {
   touch_[0].major = 39;
   touch_[0].minor = 30;
   base::TimeTicks touch_time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromMillisecondsD(10.0);
+      base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
 
@@ -363,7 +405,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, DelayShortPalmTouch) {
   // Delay continues even afterwards, until inference time: then it's off.
   for (uint32_t i = 1; i < model_config_.max_sample_count - 1; ++i) {
     touch_[0].was_touching = true;
-    touch_time += base::TimeDelta::FromMillisecondsD(10.0);
+    touch_time += base::Milliseconds(10.0);
     touch_[0].major = 15;
     touch_[0].minor = 15;
     touch_[0].x += 1;
@@ -377,8 +419,7 @@ TEST_F(NeuralStylusPalmDetectionFilterTest, DelayShortPalmTouch) {
   EXPECT_CALL(*model_, Inference(testing::_))
       .Times(1)
       .WillOnce(testing::Return(-0.1));
-  touch_time =
-      base::TimeTicks::UnixEpoch() + base::TimeDelta::FromMillisecondsD(10.0);
+  touch_time = base::TimeTicks::UnixEpoch() + base::Milliseconds(10.0);
   palm_detection_filter_->Filter(touch_, touch_time, &actual_held,
                                  &actual_cancelled);
   expected_held.set(0, false);

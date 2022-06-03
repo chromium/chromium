@@ -69,10 +69,9 @@ That said, changing core events may have consequences for external consumers of
 NetLogs, which rely on the structure and parameters to events for pretty
 printing and log analysis.
 
-The [NetLog
-viewer](https://chromium.googlesource.com/catapult/+/master/netlog_viewer/) for
-instance pretty prints certain parameters based on their names, and the event
-name that added them.
+The [NetLog viewer](https://netlog-viewer.appspot.com/) for instance pretty
+prints certain parameters based on their names, and the event name that added
+them.
 
 ### Example 1
 

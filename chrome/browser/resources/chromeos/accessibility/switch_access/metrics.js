@@ -10,7 +10,7 @@ const SwitchAccessMetrics = {
    * @param {string} action
    */
   recordMenuAction: (action) => {
-    let metricName = 'Accessibility.CrosSwitchAccess.MenuAction.' +
+    const metricName = 'Accessibility.CrosSwitchAccess.MenuAction.' +
         SwitchAccessMetrics.toUpperCamelCase(action);
     chrome.metricsPrivate.recordUserAction(metricName);
   },

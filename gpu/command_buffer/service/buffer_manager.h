@@ -14,9 +14,10 @@
 #include <unordered_map>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/common/buffer.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -246,6 +247,10 @@ class GPU_GLES2_EXPORT BufferManager
     : public base::trace_event::MemoryDumpProvider {
  public:
   BufferManager(MemoryTracker* memory_tracker, FeatureInfo* feature_info);
+
+  BufferManager(const BufferManager&) = delete;
+  BufferManager& operator=(const BufferManager&) = delete;
+
   ~BufferManager() override;
 
   void MarkContextLost();
@@ -466,8 +471,6 @@ class GPU_GLES2_EXPORT BufferManager
 
   bool lost_context_;
   bool use_client_side_arrays_for_stream_buffers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferManager);
 };
 
 }  // namespace gles2

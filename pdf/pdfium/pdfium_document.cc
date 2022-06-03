@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "pdf/document_loader.h"
 
 namespace chrome_pdf {

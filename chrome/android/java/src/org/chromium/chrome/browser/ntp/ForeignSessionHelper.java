@@ -8,6 +8,7 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,12 +81,12 @@ public class ForeignSessionHelper {
      * Represents synced foreign tab.
      */
     static class ForeignSessionTab {
-        public final String url;
+        public final GURL url;
         public final String title;
         public final long timestamp;
         public final int id;
 
-        private ForeignSessionTab(String url, String title, long timestamp, int id) {
+        private ForeignSessionTab(GURL url, String title, long timestamp, int id) {
             this.url = url;
             this.title = title;
             this.timestamp = timestamp;
@@ -112,7 +113,7 @@ public class ForeignSessionHelper {
 
     @CalledByNative
     private static void pushTab(
-            ForeignSessionWindow window, String url, String title, long timestamp, int sessionId) {
+            ForeignSessionWindow window, GURL url, String title, long timestamp, int sessionId) {
         ForeignSessionTab tab = new ForeignSessionTab(url, title, timestamp, sessionId);
         window.tabs.add(tab);
     }

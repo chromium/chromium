@@ -43,7 +43,7 @@ class CORE_EXPORT NodeEventContext {
  public:
   // FIXME: Use ContainerNode instead of Node.
   NodeEventContext(Node&, EventTarget& current_target);
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
   Node& GetNode() const { return *node_; }
 

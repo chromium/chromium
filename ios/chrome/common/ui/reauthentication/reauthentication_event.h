@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_COMMON_UI_REAUTHENTICATION_REAUTHENTICATION_EVENT_H_
+#define IOS_CHROME_COMMON_UI_REAUTHENTICATION_REAUTHENTICATION_EVENT_H_
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Must be in sync with ReauthenticationEvent enum in
+// tools/metrics/histograms/enums.xml.
+enum class ReauthenticationEvent {
+  kAttempt = 0,
+  kSuccess = 1,
+  kFailure = 2,
+  kMissingPasscode = 3,
+  kMaxValue = kMissingPasscode,
+};
+
+#endif  // IOS_CHROME_COMMON_UI_REAUTHENTICATION_REAUTHENTICATION_EVENT_H_

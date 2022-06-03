@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL @@toStringTag exists on the namespace object with the appropriate descriptor assert_equals: value expected "console" but got "Object"
+FAIL Object.prototype.toString applied to the namespace object assert_equals: expected "[object console]" but got "[object Object]"
+PASS Object.prototype.toString applied after modifying the namespace object's @@toStringTag
+PASS Object.prototype.toString applied after deleting @@toStringTag
+Harness: the test ran to completion.
+

@@ -10,3 +10,4 @@
     GPUTextureView createView(optional GPUTextureViewDescriptor descriptor = {});
     void destroy();
 };
+GPUTexture includes GPUObjectBase;

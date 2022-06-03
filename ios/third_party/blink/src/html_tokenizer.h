@@ -36,6 +36,10 @@ namespace WebCore {
 class HTMLTokenizer {
 public:
     HTMLTokenizer();
+
+    HTMLTokenizer(const HTMLTokenizer&) = delete;
+    HTMLTokenizer& operator=(const HTMLTokenizer&) = delete;
+
     ~HTMLTokenizer();
 
     void reset();
@@ -150,8 +154,6 @@ private:
 
     // http://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream
     InputStreamPreprocessor<HTMLTokenizer> m_inputStreamPreprocessor;
-
-    DISALLOW_COPY_AND_ASSIGN(HTMLTokenizer);
 };
 }
 

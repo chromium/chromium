@@ -56,7 +56,7 @@ function methodNotFullyActive(button, method, ...args) {
   const text = button.textContent.trim();
   promise_test(async t => {
     const iframe = document.createElement("iframe");
-    iframe.allowPaymentRequest = true;
+    iframe.allow = "payment";
     document.body.appendChild(iframe);
 
     // We first got to page1.html, grab a PaymentResponse instance.
@@ -72,7 +72,7 @@ function methodNotFullyActive(button, method, ...args) {
     // Now, response's relevant global object's document is no longer active.
     // So, promise needs to reject appropriately.
     const promise = response[methodName](...args);
-    await promise_rejects(
+    await promise_rejects_dom(
       t,
       "AbortError",
       promise,
@@ -87,7 +87,7 @@ function methodBecomesNotFullyActive(button, methodName, ...args) {
   const text = button.textContent.trim();
   promise_test(async t => {
     const iframe = document.createElement("iframe");
-    iframe.allowPaymentRequest = true;
+    iframe.allow = "payment";
     document.body.appendChild(iframe);
 
     // We first got to page1.html, grab a PaymentResponse instance.
@@ -107,7 +107,7 @@ function methodBecomesNotFullyActive(button, methodName, ...args) {
 
     // Now, response's relevant global object's document is no longer active.
     // So, promise needs to reject appropriately.
-    await promise_rejects(
+    await promise_rejects_dom(
       t,
       "AbortError",
       promise,

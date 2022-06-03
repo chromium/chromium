@@ -23,7 +23,7 @@
 #if defined(OS_WIN)
 #include <windows.h>
 #include "base/win/scoped_handle.h"
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
 #include "base/mac/scoped_mach_port.h"
 #endif
 
@@ -36,7 +36,7 @@
 #if defined(OS_FUCHSIA)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE \
   MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT
 #elif defined(OS_WIN) || defined(OS_POSIX)
 #define SHARED_BUFFER_PLATFORM_HANDLE_TYPE SIMPLE_PLATFORM_HANDLE_TYPE
@@ -92,7 +92,7 @@ TEST_F(PlatformWrapperTest, WrapPlatformHandle) {
     WriteMessageWithHandles(h, kMessage, &wrapped_handle, 1);
   });
 
-  base::DeleteFile(temp_file_path, false);
+  base::DeleteFile(temp_file_path);
 }
 
 DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformFile, PlatformWrapperTest, h) {
@@ -134,8 +134,7 @@ TEST_F(PlatformWrapperTest, WrapPlatformSharedMemoryRegion) {
 #if defined(OS_WIN)
     os_buffer.value =
         reinterpret_cast<uint64_t>(platform_region.PassPlatformHandle().Take());
-#elif defined(OS_MACOSX) && !defined(OS_IOS) || defined(OS_FUCHSIA) || \
-    defined(OS_ANDROID)
+#elif defined(OS_MAC) || defined(OS_FUCHSIA) || defined(OS_ANDROID)
     os_buffer.value =
         static_cast<uint64_t>(platform_region.PassPlatformHandle().release());
 #elif defined(OS_POSIX)
@@ -199,7 +198,7 @@ DEFINE_TEST_CLIENT_TEST_WITH_PIPE(ReadPlatformSharedBuffer,
 #elif defined(OS_FUCHSIA)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_FUCHSIA_HANDLE, os_buffer.type);
   auto platform_handle = zx::vmo(static_cast<zx_handle_t>(os_buffer.value));
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
   ASSERT_EQ(MOJO_PLATFORM_HANDLE_TYPE_MACH_PORT, os_buffer.type);
   auto platform_handle =
       base::mac::ScopedMachSendRight(static_cast<mach_port_t>(os_buffer.value));

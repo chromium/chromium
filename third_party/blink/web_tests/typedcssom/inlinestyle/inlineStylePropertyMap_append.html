@@ -8,20 +8,20 @@
 
 // Append
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.append('width', new CSSUnitValue(60, 'px'));
   });
 }, "Attempting to append to a property that doesn't support multiple values throws");
 
 test(function() {
   // TODO(meade): Use a property that supports multiple values when that is available.
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.append('width', new CSSUnitValue(70, 'number'));
   });
 }, "Appending an invalid type to a property throws");
 
 test(function() {
-  assert_throws(new TypeError(), function() {
+  assert_throws_js(TypeError, function() {
     testElement.attributeStyleMap.append('lemons', new CSSUnitValue(6, 'number'));
   });
 }, "Attempting to append to an invalid property throws");

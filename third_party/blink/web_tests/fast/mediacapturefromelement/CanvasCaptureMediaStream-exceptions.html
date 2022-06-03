@@ -6,8 +6,8 @@
 
 test(function() {
   var canvas = document.createElement('canvas');
-  assert_throws("NotSupportedError", function() { canvas.captureStream(-0.5) },
-                "cannot have negative frame rate");
+  assert_throws_dom("NotSupportedError", function() { canvas.captureStream(-0.5) },
+                    "cannot have negative frame rate");
 }, 'check captureStream() throws Exception with invalid frame rate');
 
 function makeAsyncTest() {
@@ -21,8 +21,8 @@ function makeAsyncTest() {
       ctx.fillStyle = pattern;
       ctx.fillRect(0, 0, 100, 100);
 
-      assert_throws("SecurityError", function() { canvas.captureStream() },
-                "cannot have cross origin");
+      assert_throws_dom("SecurityError", function() { canvas.captureStream() },
+                        "cannot have cross origin");
       test.done();
     });
     image.src = "resources/svg-with-image-with-foreignobject.svg";

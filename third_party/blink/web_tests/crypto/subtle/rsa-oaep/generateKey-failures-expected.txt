@@ -4,25 +4,25 @@ On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE
 
 
 generateKey() with a modulusLength -30...
-error is: TypeError: RsaHashedKeyGenParams: modulusLength: Outside of numeric range
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': RsaHashedKeyGenParams: modulusLength: Outside of numeric range
 
 generateKey() with modulusLength NaN...
-error is: TypeError: RsaHashedKeyGenParams: modulusLength: Is not a number
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': RsaHashedKeyGenParams: modulusLength: Is not a number
 
 generateKey() without modulusLength...
-error is: TypeError: RsaHashedKeyGenParams: modulusLength: Missing required property
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': RsaHashedKeyGenParams: modulusLength: Missing required property
 
 generateKey() without publicExponent...
-error is: TypeError: RsaHashedKeyGenParams: publicExponent: Missing or not a Uint8Array
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': RsaHashedKeyGenParams: publicExponent: Missing or not a Uint8Array
 
 generateKey() with publicExponent that is an integer...
-error is: TypeError: RsaHashedKeyGenParams: publicExponent: Missing or not a Uint8Array
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': RsaHashedKeyGenParams: publicExponent: Missing or not a Uint8Array
 
 generateKey() with publicExponent that is null...
-error is: TypeError: RsaHashedKeyGenParams: publicExponent: Missing or not a Uint8Array
+error is: TypeError: Failed to execute 'generateKey' on 'SubtleCrypto': RsaHashedKeyGenParams: publicExponent: Missing or not a Uint8Array
 
 generateKey() with invalid hash name...
-error is: NotSupportedError: RsaHashedKeyGenParams: hash: Algorithm: Unrecognized name
+error is: NotSupportedError: Failed to execute 'generateKey' on 'SubtleCrypto': RsaHashedKeyGenParams: hash: Algorithm: Unrecognized name
 PASS successfullyParsed is true
 
 TEST COMPLETE

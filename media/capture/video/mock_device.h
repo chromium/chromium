@@ -35,7 +35,7 @@ class MockDevice : public media::VideoCaptureDevice {
                     SetPhotoOptionsCallback* callback));
   MOCK_METHOD1(DoTakePhoto, void(TakePhotoCallback* callback));
   MOCK_METHOD2(OnUtilizationReport,
-               void(int frame_feedback_id, double utilization));
+               void(int frame_feedback_id, media::VideoCaptureFeedback));
 
   void AllocateAndStart(const media::VideoCaptureParams& params,
                         std::unique_ptr<Client> client) override;

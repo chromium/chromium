@@ -1,0 +1,4 @@
+monorail {
+  component: "UI>Browser>Passwords"
+}
+team_email: "chromium-dev@chromium.org"

@@ -15,14 +15,18 @@ TEST(TopDomainUtilTest, IsEditDistanceCandidate) {
   // Domain label ("abc") is too short, even though the whole string is long
   // enough.
   EXPECT_FALSE(IsEditDistanceCandidate("abc.com.tr"));
+  // Also too short.
+  EXPECT_FALSE(IsEditDistanceCandidate("abcd.com.tr"));
+  // Label has 5 characters, which is sufficient.
+  EXPECT_TRUE(IsEditDistanceCandidate("abcde.com.tr"));
 }
 
 TEST(TopDomainUtilTest, HostnameWithoutRegistry) {
   EXPECT_EQ("google", HostnameWithoutRegistry("google"));
-  EXPECT_EQ("google.", HostnameWithoutRegistry("google."));
-  EXPECT_EQ("google..", HostnameWithoutRegistry("google.."));
-  EXPECT_EQ("google.", HostnameWithoutRegistry("google.com"));
-  EXPECT_EQ("google.", HostnameWithoutRegistry("google.com.tr"));
+  EXPECT_EQ("google", HostnameWithoutRegistry("google."));
+  EXPECT_EQ("google", HostnameWithoutRegistry("google.."));
+  EXPECT_EQ("google", HostnameWithoutRegistry("google.com"));
+  EXPECT_EQ("google", HostnameWithoutRegistry("google.com.tr"));
   // blogspot.com is a private registry.
-  EXPECT_EQ("blogspot.", HostnameWithoutRegistry("blogspot.com"));
+  EXPECT_EQ("blogspot", HostnameWithoutRegistry("blogspot.com"));
 }

@@ -5,10 +5,6 @@
 import("//remoting/remoting_locales.gni")
 import("//tools/grit/grit_rule.gni")
 
-if (is_android) {
-  import("//build/config/android/rules.gni")
-}
-
 group("resources") {
   public_deps = [
     ":copy_locales",
@@ -32,9 +28,7 @@ action("verify_resources") {
   inputs = [ "remoting_strings.grd" ] + sources_to_verify
 
   stampfile = "$root_out_dir/remoting_resources_verified_stamp"
-  outputs = [
-    stampfile,
-  ]
+  outputs = [ stampfile ]
 
   args = [
            "-t",
@@ -60,14 +54,12 @@ grit("strings") {
   # generated file root.
   output_dir = root_gen_dir
 
-  outputs = [
-    "remoting/base/string_resources.h",
-  ]
+  outputs = [ "remoting/base/string_resources.h" ]
 
   # The grd produces a *.pak file and a messages.json file (this one uses
   # underscores instead of hyphens) for each locale.
   outputs +=
-      process_file_template(remoting_locales,
+      process_file_template(remoting_locales_with_pseudolocales,
                             [ "remoting/resources/{{source_name_part}}.pak" ])
 
   outputs += remoting_resources_locale_files
@@ -86,9 +78,7 @@ if (is_android) {
     grit_output_dir = "$root_gen_dir/remoting/android/res"
     generated_files =
         rebase_path(android_string_outputs, "remoting/android/res", ".")
-    deps = [
-      ":strings",
-    ]
+    deps = [ ":strings" ]
   }
 }
 
@@ -104,7 +94,7 @@ action("copy_locales") {
           [ "$root_gen_dir/remoting/resources/{{source_name_part}}.pak" ])
 
   # Likewise, process the outputs in the same way as the inputs.
-  if (is_mac || is_ios) {
+  if (is_apple) {
     # On mac, use underscores instead of hyphens and put the files in a
     # different place.
     outputs = process_file_template(
@@ -125,7 +115,5 @@ action("copy_locales") {
            rebase_path(root_out_dir, root_build_dir),
          ] + remoting_locales
 
-  deps = [
-    ":strings",
-  ]
+  deps = [ ":strings" ]
 }

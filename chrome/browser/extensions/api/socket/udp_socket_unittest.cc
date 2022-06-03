@@ -9,12 +9,13 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/storage_partition.h"
@@ -37,8 +38,7 @@ class UDPSocketUnitTest : public extensions::ExtensionServiceTestBase {
 
   std::unique_ptr<UDPSocket> CreateSocket() {
     network::mojom::NetworkContext* network_context =
-        content::BrowserContext::GetDefaultStoragePartition(profile())
-            ->GetNetworkContext();
+        profile()->GetDefaultStoragePartition()->GetNetworkContext();
     mojo::PendingRemote<network::mojom::UDPSocket> socket;
     mojo::PendingRemote<network::mojom::UDPSocketListener> listener_remote;
     mojo::PendingReceiver<network::mojom::UDPSocketListener> listener_receiver =
@@ -140,7 +140,7 @@ TEST_F(UDPSocketUnitTest, TestUDPMulticastLoopbackMode) {
 
 // Send a test multicast packet every second.
 // Once the target socket received the packet, the message loop will exit.
-static void SendMulticastPacket(const base::Closure& quit_run_loop,
+static void SendMulticastPacket(base::OnceClosure quit_run_loop,
                                 UDPSocket* src,
                                 int result) {
   if (result == 0) {
@@ -149,15 +149,16 @@ static void SendMulticastPacket(const base::Closure& quit_run_loop,
     src->Write(data, kTestMessageLength, base::BindOnce(&OnSendCompleted));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
-        base::BindOnce(&SendMulticastPacket, quit_run_loop, src, result),
-        base::TimeDelta::FromSeconds(1));
+        base::BindOnce(&SendMulticastPacket, std::move(quit_run_loop), src,
+                       result),
+        base::Seconds(1));
   } else {
-    quit_run_loop.Run();
+    std::move(quit_run_loop).Run();
     FAIL() << "Failed to connect to multicast address. Error code: " << result;
   }
 }
 
-static void OnMulticastReadCompleted(const base::Closure& quit_run_loop,
+static void OnMulticastReadCompleted(base::OnceClosure quit_run_loop,
                                      bool* packet_received,
                                      int count,
                                      scoped_refptr<net::IOBuffer> io_buffer,
@@ -167,10 +168,16 @@ static void OnMulticastReadCompleted(const base::Closure& quit_run_loop,
   EXPECT_EQ(kTestMessageLength, count);
   EXPECT_EQ(0, strncmp(io_buffer->data(), kTestMessage, kTestMessageLength));
   *packet_received = true;
-  quit_run_loop.Run();
+  std::move(quit_run_loop).Run();
 }
 
-TEST_F(UDPSocketUnitTest, TestUDPMulticastRecv) {
+// TODO(https://crbug.com/1210643): Test is flaky on Mac.
+#if defined(OS_MAC)
+#define MAYBE_TestUDPMulticastRecv DISABLED_TestUDPMulticastRecv
+#else
+#define MAYBE_TestUDPMulticastRecv TestUDPMulticastRecv
+#endif
+TEST_F(UDPSocketUnitTest, MAYBE_TestUDPMulticastRecv) {
   const int kPort = 9999;
   const char kGroup[] = "237.132.100.17";
   bool packet_received = false;

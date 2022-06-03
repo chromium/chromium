@@ -14,7 +14,7 @@ test(() => {
                 '<div>four five six</div>',
             '</div>',
         ].join(''),
-        selection => {
+        (selection, testRunner) => {
             testRunner.execCommand('deleteToEndOfParagraph');
         },
         [
@@ -31,7 +31,7 @@ test(() => {
                 '<div>four five six</div>',
             '</div>',
         ].join(''),
-        selection => {
+        (selection, testRunner) => {
             testRunner.execCommand('deleteToEndOfParagraph');
         },
         [

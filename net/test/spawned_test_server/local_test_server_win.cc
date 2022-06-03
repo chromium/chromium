@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_number_conversions.h"
@@ -54,7 +55,7 @@ bool LocalTestServer::LaunchPython(
     const base::FilePath& testserver_path,
     const std::vector<base::FilePath>& python_path) {
   base::CommandLine python_command(base::CommandLine::NO_PROGRAM);
-  if (!GetPythonCommand(&python_command))
+  if (!GetPython3Command(&python_command))
     return false;
 
   python_command.AppendArgPath(testserver_path);

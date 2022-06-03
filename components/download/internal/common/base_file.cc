@@ -12,7 +12,6 @@
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
@@ -23,7 +22,7 @@
 #include "components/download/public/common/download_interrupt_reasons_utils.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_stats.h"
-#include "components/download/quarantine/quarantine.h"
+#include "components/services/quarantine/quarantine.h"
 #include "crypto/secure_hash.h"
 
 #if defined(OS_WIN)
@@ -53,6 +52,9 @@ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
         os_error_(os_error),
         interrupt_reason_(interrupt_reason) {}
 
+  FileErrorData(const FileErrorData&) = delete;
+  FileErrorData& operator=(const FileErrorData&) = delete;
+
   ~FileErrorData() override = default;
 
   void AppendAsTraceFormat(std::string* out) const override {
@@ -70,7 +72,6 @@ class FileErrorData : public base::trace_event::ConvertableToTraceFormat {
   std::string operation_;
   int os_error_;
   DownloadInterruptReason interrupt_reason_;
-  DISALLOW_COPY_AND_ASSIGN(FileErrorData);
 };
 
 void InitializeFile(base::File* file, const base::FilePath& file_path) {
@@ -82,27 +83,22 @@ void InitializeFile(base::File* file, const base::FilePath& file_path) {
 #endif  // defined(OS_ANDROID)
 
   // Use exclusive write to prevent another process from writing the file.
-  file->Initialize(
-      file_path,
-      base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
-          base::File::FLAG_READ
-#if defined(OS_WIN)
-          // Don't allow other process to write to the file while Chrome is
-          // writing to it. On posix systems, use FLAG_EXCLUSIVE_WRITE will
-          // cause file creation to fail if the file already exists.
-          | base::File::FLAG_EXCLUSIVE_WRITE
-#endif  // defined(OS_WIN)
-  );
+  file->Initialize(file_path,
+                   base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_WRITE |
+                       base::File::FLAG_READ |
+                       // Don't allow other processes to write to the file while
+                       // Chrome is writing (Windows-specific).
+                       base::File::FLAG_WIN_EXCLUSIVE_WRITE);
 }
 
-void DeleteFile(const base::FilePath& file_path) {
+void DeleteFileWrapper(const base::FilePath& file_path) {
 #if defined(OS_ANDROID)
   if (file_path.IsContentUri()) {
     DownloadCollectionBridge::DeleteIntermediateUri(file_path);
     return;
   }
 #endif  // defined(OS_ANDROID)
-  base::DeleteFile(file_path, false);
+  base::DeleteFile(file_path);
 }
 
 }  // namespace
@@ -235,7 +231,8 @@ bool BaseFile::ValidateDataInFile(int64_t offset,
     return true;
 
   std::unique_ptr<char[]> buffer(new char[data_len]);
-  if (file_.Read(offset, buffer.get(), data_len) <= 0)
+  int bytes_read = file_.Read(offset, buffer.get(), data_len);
+  if (bytes_read < 0 || static_cast<size_t>(bytes_read) < data_len)
     return false;
 
   return memcmp(data, buffer.get(), data_len) == 0;
@@ -311,7 +308,7 @@ void BaseFile::Cancel() {
   if (!full_path_.empty()) {
     CONDITIONAL_TRACE(
         INSTANT0("download", "DownloadFileDeleted", TRACE_EVENT_SCOPE_THREAD));
-    DeleteFile(full_path_);
+    DeleteFileWrapper(full_path_);
   }
 
   Detach();
@@ -593,6 +590,9 @@ GURL GetEffectiveAuthorityURL(const GURL& source_url,
     // ftp:// has an authority.
     if (source_url.SchemeIs(url::kFtpScheme))
       return source_url;
+
+    if (source_url.SchemeIs(url::kBlobScheme))
+      return url::Origin::Create(source_url).GetURL();
   }
 
   if (referrer_url.is_valid() && referrer_url.SchemeIsHTTPOrHTTPS())
@@ -602,33 +602,6 @@ GURL GetEffectiveAuthorityURL(const GURL& source_url,
 }
 
 }  // namespace
-
-#if defined(OS_WIN) || defined(OS_MACOSX) || defined(OS_LINUX)
-
-DownloadInterruptReason BaseFile::AnnotateWithSourceInformationSync(
-    const std::string& client_guid,
-    const GURL& source_url,
-    const GURL& referrer_url) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(!detached_);
-  DCHECK(!full_path_.empty());
-
-  CONDITIONAL_TRACE(BEGIN0("download", "DownloadFileAnnotate"));
-  QuarantineFileResult result = QuarantineFile(
-      full_path_, GetEffectiveAuthorityURL(source_url, referrer_url),
-      referrer_url, client_guid);
-  CONDITIONAL_TRACE(END0("download", "DownloadFileAnnotate"));
-
-  return QuarantineFileResultToReason(result);
-}
-#else  // !OS_WIN && !OS_MACOSX && !OS_LINUX
-DownloadInterruptReason BaseFile::AnnotateWithSourceInformationSync(
-    const std::string& client_guid,
-    const GURL& source_url,
-    const GURL& referrer_url) {
-  return DOWNLOAD_INTERRUPT_REASON_NONE;
-}
-#endif
 
 void BaseFile::OnFileQuarantined(
     bool connection_error,
@@ -665,10 +638,12 @@ void BaseFile::AnnotateWithSourceInformation(
   GURL authority_url = GetEffectiveAuthorityURL(source_url, referrer_url);
   if (!remote_quarantine) {
 #if defined(OS_WIN)
-    QuarantineFileResult result = quarantine::SetInternetZoneIdentifierDirectly(
-        full_path_, authority_url, referrer_url);
+    quarantine::mojom::QuarantineFileResult result =
+        quarantine::SetInternetZoneIdentifierDirectly(full_path_, authority_url,
+                                                      referrer_url);
 #else
-    QuarantineFileResult result = QuarantineFileResult::ANNOTATION_FAILED;
+    quarantine::mojom::QuarantineFileResult result =
+        quarantine::mojom::QuarantineFileResult::ANNOTATION_FAILED;
 #endif
     std::move(on_annotation_done_callback)
         .Run(QuarantineFileResultToReason(result));

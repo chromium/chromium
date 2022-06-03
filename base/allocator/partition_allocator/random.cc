@@ -4,63 +4,65 @@
 
 #include "base/allocator/partition_allocator/random.h"
 
-#include "base/allocator/partition_allocator/spin_lock.h"
-#include "base/logging.h"
-#include "base/no_destructor.h"
+#include <type_traits>
+
+#include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/rand_util.h"
 
 namespace base {
 
-// This is the same PRNG as used by tcmalloc for mapping address randomness;
-// see http://burtleburtle.net/bob/rand/smallprng.html.
-struct RandomContext {
-  subtle::SpinLock lock;
-  bool initialized;
-  uint32_t a;
-  uint32_t b;
-  uint32_t c;
-  uint32_t d;
+namespace partition_alloc {
+class RandomGenerator {
+ public:
+  constexpr RandomGenerator() {}
+
+  uint32_t RandomValue() {
+    internal::ScopedGuard<true> guard(lock_);
+    return GetGenerator()->RandUint32();
+  }
+
+  void SeedForTesting(uint64_t seed) {
+    internal::ScopedGuard<true> guard(lock_);
+    GetGenerator()->ReseedForTesting(seed);
+  }
+
+ private:
+  internal::PartitionLock lock_ = {};
+  bool initialized_ GUARDED_BY(lock_) = false;
+  union {
+    base::InsecureRandomGenerator instance_ GUARDED_BY(lock_);
+    uint8_t instance_buffer_[sizeof(base::InsecureRandomGenerator)] GUARDED_BY(
+        lock_) = {};
+  };
+
+  base::InsecureRandomGenerator* GetGenerator()
+      EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    if (!initialized_) {
+      new (instance_buffer_) base::InsecureRandomGenerator();
+      initialized_ = true;
+    }
+    return &instance_;
+  }
 };
+
+// Note: this is redundant, since the anonymous union is incompatible with a
+// non-trivial default destructor. Not meant to be destructed anyway.
+static_assert(std::is_trivially_destructible<RandomGenerator>::value, "");
+
+}  // namespace partition_alloc
 
 namespace {
 
-RandomContext* GetRandomContext() {
-  static NoDestructor<RandomContext> g_random_context;
-  RandomContext* x = g_random_context.get();
-  subtle::SpinLock::Guard guard(x->lock);
-  if (UNLIKELY(!x->initialized)) {
-    const uint64_t r1 = RandUint64();
-    const uint64_t r2 = RandUint64();
-    x->a = static_cast<uint32_t>(r1);
-    x->b = static_cast<uint32_t>(r1 >> 32);
-    x->c = static_cast<uint32_t>(r2);
-    x->d = static_cast<uint32_t>(r2 >> 32);
-    x->initialized = true;
-  }
-  return x;
-}
+partition_alloc::RandomGenerator g_generator = {};
 
 }  // namespace
 
 uint32_t RandomValue() {
-  RandomContext* x = GetRandomContext();
-  subtle::SpinLock::Guard guard(x->lock);
-#define rot(x, k) (((x) << (k)) | ((x) >> (32 - (k))))
-  uint32_t e = x->a - rot(x->b, 27);
-  x->a = x->b ^ rot(x->c, 17);
-  x->b = x->c + x->d;
-  x->c = x->d + e;
-  x->d = e + x->a;
-  return x->d;
-#undef rot
+  return g_generator.RandomValue();
 }
 
 void SetMmapSeedForTesting(uint64_t seed) {
-  RandomContext* x = GetRandomContext();
-  subtle::SpinLock::Guard guard(x->lock);
-  x->a = x->b = static_cast<uint32_t>(seed);
-  x->c = x->d = static_cast<uint32_t>(seed >> 32);
-  x->initialized = true;
+  return g_generator.SeedForTesting(seed);
 }
 
 }  // namespace base

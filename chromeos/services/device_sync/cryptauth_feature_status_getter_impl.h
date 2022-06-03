@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/services/device_sync/cryptauth_device_sync_result.h"
@@ -32,17 +31,26 @@ class CryptAuthFeatureStatusGetterImpl : public CryptAuthFeatureStatusGetter {
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<CryptAuthFeatureStatusGetter> BuildInstance(
+    static std::unique_ptr<CryptAuthFeatureStatusGetter> Create(
         CryptAuthClientFactory* client_factory,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<CryptAuthFeatureStatusGetter> CreateInstance(
+        CryptAuthClientFactory* client_factory,
+        std::unique_ptr<base::OneShotTimer> timer) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  CryptAuthFeatureStatusGetterImpl(const CryptAuthFeatureStatusGetterImpl&) =
+      delete;
+  CryptAuthFeatureStatusGetterImpl& operator=(
+      const CryptAuthFeatureStatusGetterImpl&) = delete;
 
   ~CryptAuthFeatureStatusGetterImpl() override;
 
@@ -75,8 +83,6 @@ class CryptAuthFeatureStatusGetterImpl : public CryptAuthFeatureStatusGetter {
 
   CryptAuthClientFactory* client_factory_ = nullptr;
   std::unique_ptr<base::OneShotTimer> timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthFeatureStatusGetterImpl);
 };
 
 }  // namespace device_sync

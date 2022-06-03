@@ -22,6 +22,14 @@ struct PhysicalOffsetRectUniteTestData {
     {"b empty", {1, 2, 3, 4}, {}, {1, 2, 3, 4}},
     {"a larger", {100, 50, 300, 200}, {200, 50, 200, 200}, {100, 50, 300, 200}},
     {"b larger", {200, 50, 200, 200}, {100, 50, 300, 200}, {100, 50, 300, 200}},
+    {"saturated width",
+     {-1000, 0, 200, 200},
+     {33554402, 500, 30, 100},
+     {0, 0, 99999999, 600}},
+    {"saturated height",
+     {0, -1000, 200, 200},
+     {0, 33554402, 100, 30},
+     {0, 0, 200, 99999999}},
 };
 
 std::ostream& operator<<(std::ostream& os,
@@ -42,7 +50,68 @@ TEST_P(PhysicalRectUniteTest, Data) {
   const auto& data = GetParam();
   PhysicalRect actual = data.a;
   actual.Unite(data.b);
-  EXPECT_EQ(data.expected, actual);
+  auto expected = data.expected;
+  constexpr int kExtraForSaturation = 2000;
+  // On arm, you cannot actually get the true saturated value just by
+  // setting via LayoutUnit constructor. Instead, add to the expected
+  // value to actually get a saturated expectation (which is what happens in
+  // the Unite operation).
+  if (data.expected.size.width == GetMaxSaturatedSetResultForTesting()) {
+    expected.size.width += kExtraForSaturation;
+  }
+
+  if (data.expected.size.height == GetMaxSaturatedSetResultForTesting()) {
+    expected.size.height += kExtraForSaturation;
+  }
+  EXPECT_EQ(expected, actual);
+}
+
+TEST(PhysicalRectTest, SquaredDistanceTo) {
+  PhysicalRect rect(0, 0, 200, 200);
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(-10, -10)))
+      << "over the top-left corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 0)))
+      << "on the top-left corner";
+  EXPECT_EQ(100, rect.SquaredDistanceTo(PhysicalOffset(10, -10)))
+      << "over the top edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(10, 0)))
+      << "on the top edge";
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(210, -10)))
+      << "over the top-right corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 0)))
+      << "on the top-right corner";
+  EXPECT_EQ(100, rect.SquaredDistanceTo(PhysicalOffset(210, 10)))
+      << "over the right edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 10)))
+      << "on the right edge";
+  EXPECT_EQ(200, rect.SquaredDistanceTo(PhysicalOffset(210, 210)))
+      << "over the bottom-right corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(200, 200)))
+      << "on the bottom-right corner";
+  EXPECT_EQ(10000, rect.SquaredDistanceTo(PhysicalOffset(100, 300)))
+      << "over the bottom edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(100, 200)))
+      << "on the bottom edge";
+  EXPECT_EQ(401, rect.SquaredDistanceTo(PhysicalOffset(-20, 201)))
+      << "over the bottom-left corner";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 200)))
+      << "on the bottom-left corner";
+  EXPECT_EQ(9, rect.SquaredDistanceTo(PhysicalOffset(-3, 100)))
+      << "over the left edge";
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(0, 3)))
+      << "on the left edge";
+
+  EXPECT_EQ(0, rect.SquaredDistanceTo(PhysicalOffset(10, 190))) << "contained";
+
+  // Huge size
+  rect = PhysicalRect(LayoutUnit(500), LayoutUnit(), LayoutUnit::Max(),
+                      LayoutUnit());
+  EXPECT_GT(rect.SquaredDistanceTo(PhysicalOffset(10, 0)), 0);
+
+  // Negative size
+  rect = PhysicalRect(LayoutUnit(500), LayoutUnit(), LayoutUnit(-100),
+                      LayoutUnit());
+  EXPECT_EQ(1, rect.SquaredDistanceTo(PhysicalOffset(501, 0)));
 }
 
 TEST(PhysicalRectTest, InclusiveIntersect) {

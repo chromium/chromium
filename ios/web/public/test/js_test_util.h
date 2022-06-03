@@ -10,9 +10,6 @@
 
 #include "base/compiler_specific.h"
 
-@class CRWJSInjectionManager;
-@class CRWJSInjectionReceiver;
-
 namespace web {
 namespace test {
 
@@ -21,12 +18,6 @@ namespace test {
 // NSString (string), NSNumber (number or boolean), NSDictionary (object),
 // NSArray (array), NSNull (null), NSDate (Date), nil (undefined or execution
 // exception).
-
-// Executes JavaScript on the |manager| and returns the result as an id.
-id ExecuteJavaScript(CRWJSInjectionManager* manager, NSString* script);
-
-// Executes JavaScript on the |receiver| and returns the result as an id.
-id ExecuteJavaScript(CRWJSInjectionReceiver* receiver, NSString* script);
 
 // Executes JavaScript on |web_view| and returns the result as an id.
 // |error| can be null and will be updated only if script execution fails.
@@ -37,6 +28,22 @@ id ExecuteJavaScript(WKWebView* web_view,
 // Executes JavaScript on |web_view| and returns the result as an id.
 // Fails if there was an error during script execution.
 id ExecuteJavaScript(WKWebView* web_view, NSString* script);
+
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+// Executes JavaScript in |frame| within |content_world| and returns the result
+// as an id. |error| can be null and will be updated only if script execution
+// fails.
+id ExecuteJavaScript(WKWebView* web_view,
+                     WKContentWorld* content_world,
+                     NSString* script,
+                     NSError* __autoreleasing* error) API_AVAILABLE(ios(14.0));
+
+// Executes JavaScript in |frame| and returns the result as an id.
+// Fails if there was an error during script execution.
+id ExecuteJavaScript(WKWebView* web_view,
+                     WKContentWorld* content_world,
+                     NSString* script) API_AVAILABLE(ios(14.0));
+#endif  // defined(__IPHONE14_0)
 
 // Synchronously loads |html| into |web_view|. Returns true is successful or
 // false if the |web_view| never finishes loading.
@@ -50,6 +57,10 @@ bool WaitForInjectedScripts(WKWebView* web_view) WARN_UNUSED_RESULT;
 // Returns an autoreleased string containing the JavaScript loaded from a
 // bundled resource file with the given name (excluding extension).
 NSString* GetPageScript(NSString* script_file_name);
+
+// Returns the JavaScript which defines __gCrWeb, __gCrWeb.common, and
+// __gCrWeb.message.
+NSString* GetSharedScripts();
 
 }  // namespace test
 }  // namespace web

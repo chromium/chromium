@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_REMOTE_CHANGE_PROCESSOR_WRAPPER_H_
 #define CHROME_BROWSER_SYNC_FILE_SYSTEM_DRIVE_BACKEND_REMOTE_CHANGE_PROCESSOR_WRAPPER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/sync_file_system/remote_change_processor.h"
@@ -23,28 +22,30 @@ class RemoteChangeProcessorWrapper
   explicit RemoteChangeProcessorWrapper(
       RemoteChangeProcessor* remote_change_processor);
 
+  RemoteChangeProcessorWrapper(const RemoteChangeProcessorWrapper&) = delete;
+  RemoteChangeProcessorWrapper& operator=(const RemoteChangeProcessorWrapper&) =
+      delete;
+
   void PrepareForProcessRemoteChange(
       const storage::FileSystemURL& url,
-      const RemoteChangeProcessor::PrepareChangeCallback& callback);
+      RemoteChangeProcessor::PrepareChangeCallback callback);
 
   void ApplyRemoteChange(const FileChange& change,
                          const base::FilePath& local_path,
                          const storage::FileSystemURL& url,
-                         const SyncStatusCallback& callback);
+                         SyncStatusCallback callback);
 
   void FinalizeRemoteSync(const storage::FileSystemURL& url,
                           bool clear_local_changes,
-                          const base::Closure& completion_callback);
+                          base::OnceClosure completion_callback);
 
   void RecordFakeLocalChange(const storage::FileSystemURL& url,
                              const FileChange& change,
-                             const SyncStatusCallback& callback);
+                             SyncStatusCallback callback);
 
  private:
   RemoteChangeProcessor* remote_change_processor_;
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteChangeProcessorWrapper);
 };
 
 }  // namespace drive_backend

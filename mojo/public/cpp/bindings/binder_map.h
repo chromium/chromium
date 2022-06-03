@@ -12,111 +12,126 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/lib/binder_map_internal.h"
 
 namespace mojo {
 
-// BinderMap is a simple helper class which maintains a registry of callbacks
-// that can bind receivers for arbitrary Mojo interfaces. By default a BinderMap
-// is empty and cannot bind any interfaces.
+// BinderMapWithContext is a helper class that maintains a registry of
+// callbacks that bind receivers for arbitrary Mojo interfaces. By default the
+// map is empty and cannot bind any interfaces.
 //
 // Call |Add()| to register a new binder for a specific interface.
-// Call |Bind()| to attempt to run a registered binder on the generic input
+// Call |TryBind()| to attempt to run a registered binder on the generic
+// input receiver. If a suitable binder is found, it will take ownership of the
 // receiver.
 //
-// BinderMap instances are safe to move across sequences but must be used from
-// only once sequence at a time; they are also copyable.
-class COMPONENT_EXPORT(MOJO_CPP_BINDINGS) BinderMap {
+// If a non-void ContextType is specified, registered callbacks must accept an
+// additional ContextType argument, and each invocation of |TryBind()| must
+// provide such a value.
+//
+// NOTE: Most common uses of BinderMapWithContext do not require a context value
+// per bind request. Use the BinderMap alias defined below this class in such
+// cases.
+template <typename ContextType>
+class BinderMapWithContext {
  public:
-  BinderMap();
-  BinderMap(const BinderMap&);
-  BinderMap(BinderMap&&);
-  ~BinderMap();
-
-  BinderMap& operator=(const BinderMap&);
-  BinderMap& operator=(BinderMap&&);
+  using Traits = internal::BinderContextTraits<ContextType>;
+  using ContextValueType = typename Traits::ValueType;
+  using GenericBinderType = typename Traits::GenericBinderType;
 
   template <typename Interface>
-  using Binder = base::RepeatingCallback<void(PendingReceiver<Interface>)>;
+  using BinderType = typename Traits::template BinderType<Interface>;
 
-  // Adds a binder for Interface to this BinderMap. If |Bind()| is ever called
-  // with a GenericPendingReceiver which matches Interface, this binder will be
-  // invoked asynchronously on |task_runner|.
+  BinderMapWithContext() = default;
+  BinderMapWithContext(const BinderMapWithContext&) = default;
+  BinderMapWithContext(BinderMapWithContext&&) = default;
+  ~BinderMapWithContext() = default;
+
+  BinderMapWithContext& operator=(const BinderMapWithContext&) = default;
+  BinderMapWithContext& operator=(BinderMapWithContext&&) = default;
+
+  // Adds a new binder specifically for Interface receivers. This exists for the
+  // convenience of being able to register strongly-typed binding methods like:
   //
-  // It's an error to call |Add()| multiple times for the same interface.
+  //   void OnBindFoo(mojo::PendingReceiver<Foo> receiver) { ... }
+  //
+  // more easily.
+  //
+  // If |Add()| is called multiple times for the same interface, the most
+  // recent one replaces any existing binder.
   template <typename Interface>
-  void Add(Binder<Interface> binder,
-           scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    AddGenericBinder(
-        Interface::Name_,
-        MakeGenericBinder(std::move(binder), std::move(task_runner)));
+  void Add(BinderType<Interface> binder,
+           scoped_refptr<base::SequencedTaskRunner> task_runner = nullptr) {
+    binders_[Interface::Name_] = std::make_unique<
+        internal::GenericCallbackBinderWithContext<ContextType>>(
+        Traits::MakeGenericBinder(std::move(binder)), std::move(task_runner));
   }
 
-  // Temporary helper during the transition to new Mojo types.
-  template <typename Interface>
-  using LegacyBinder =
-      base::RepeatingCallback<void(InterfaceRequest<Interface>)>;
+  // Attempts to bind the |receiver| using one of the registered binders in
+  // this map. If a matching binder is found, ownership of the |receiver|'s
+  // MessagePipe will be transferred and this will return |true|. If the binder
+  // was registered with a SequencedTaskRunner, the binder will be dispatched
+  // asynchronously on it; otherwise, it will be called directly.
+  //
+  // If no matching binder is found, this returns |false| and the |receiver|
+  // will be left intact for the caller.
+  //
+  // This method is only usable when ContextType is void.
+  bool TryBind(mojo::GenericPendingReceiver* receiver) WARN_UNUSED_RESULT {
+    static_assert(IsVoidContext::value,
+                  "TryBind() must be called with a context value when "
+                  "ContextType is non-void.");
+    auto it = binders_.find(*receiver->interface_name());
+    if (it == binders_.end())
+      return false;
 
-  template <typename Interface>
-  void Add(LegacyBinder<Interface> binder,
-           scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    AddGenericBinder(
-        Interface::Name_,
-        MakeGenericBinder(std::move(binder), std::move(task_runner)));
+    it->second->BindInterface(receiver->PassPipe());
+    return true;
   }
 
-  // Attempts to bind |receiver| using one of the binders registered in this
-  // BinderMap. If a matching binder is found, it is scheduled to run
-  // asynchronously on its associated SequencedTaskRunner; the value in
-  // |*receiver| is consumed immediately and this method returns |true|.
-  //
-  // If no matching binder is found, |*receiver| is left intact and this method
-  // returns |false|.
-  bool Bind(GenericPendingReceiver* receiver) WARN_UNUSED_RESULT;
+  // Like above, but passes |context| to the binder if one exists. Only usable
+  // when ContextType is non-void.
+  bool TryBind(ContextValueType context,
+               mojo::GenericPendingReceiver* receiver) WARN_UNUSED_RESULT {
+    static_assert(!IsVoidContext::value,
+                  "TryBind() must be called without a context value when "
+                  "ContextType is void.");
+    auto it = binders_.find(*receiver->interface_name());
+    if (it == binders_.end())
+      return default_binder_ && default_binder_.Run(context, *receiver);
 
-  // Indicates whether or not |Bind()| would succeed if given |receiver|.
-  bool CanBind(const GenericPendingReceiver& receiver) const;
+    it->second->BindInterface(std::move(context), receiver->PassPipe());
+    return true;
+  }
+
+  // DO NOT USE. This sets a generic default handler for any receiver that
+  // doesn't match a registered binder. It's a transitional API to help migrate
+  // some older code to BinderMap. Reliance on this mechanism makes security
+  // auditing more difficult. Note that this intentionally only supports use
+  // with a non-void ContextType, since that's the only existing use case.
+  using DefaultBinder =
+      base::RepeatingCallback<bool(ContextValueType context,
+                                   mojo::GenericPendingReceiver&)>;
+  void SetDefaultBinderDeprecated(DefaultBinder binder) {
+    default_binder_ = std::move(binder);
+  }
 
  private:
-  using GenericBinder = base::RepeatingCallback<void(GenericPendingReceiver)>;
+  using IsVoidContext = std::is_same<ContextType, void>;
 
-  template <typename Interface>
-  GenericBinder MakeGenericBinder(
-      Binder<Interface> binder,
-      scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    return base::BindRepeating(
-        [](Binder<Interface> binder,
-           scoped_refptr<base::SequencedTaskRunner> task_runner,
-           GenericPendingReceiver receiver) {
-          task_runner->PostTask(
-              FROM_HERE, base::BindOnce(binder, receiver.As<Interface>()));
-        },
-        std::move(binder), std::move(task_runner));
-  }
-
-  template <typename Interface>
-  GenericBinder MakeGenericBinder(
-      LegacyBinder<Interface> binder,
-      scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    return base::BindRepeating(
-        [](LegacyBinder<Interface> binder,
-           scoped_refptr<base::SequencedTaskRunner> task_runner,
-           GenericPendingReceiver receiver) {
-          InterfaceRequest<Interface> request = receiver.As<Interface>();
-          task_runner->PostTask(FROM_HERE,
-                                base::BindOnce(binder, std::move(request)));
-        },
-        std::move(binder), std::move(task_runner));
-  }
-
-  void AddGenericBinder(base::StringPiece name, GenericBinder binder);
-
-  std::map<std::string, GenericBinder> binders_;
+  std::map<
+      std::string,
+      std::unique_ptr<internal::GenericCallbackBinderWithContext<ContextType>>>
+      binders_;
+  DefaultBinder default_binder_;
 };
+
+// Common alias for BinderMapWithContext that has no context. Binders added to
+// this type of map will only take a single PendingReceiver<T> argument (or a
+// GenericPendingReceiver).
+class BinderMap : public BinderMapWithContext<void> {};
 
 }  // namespace mojo
 

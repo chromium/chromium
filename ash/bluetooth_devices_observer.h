@@ -6,7 +6,6 @@
 #define ASH_BLUETOOTH_DEVICES_OBSERVER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "ui/events/devices/input_device.h"
@@ -27,6 +26,10 @@ class BluetoothDevicesObserver : public device::BluetoothAdapter::Observer {
 
   explicit BluetoothDevicesObserver(
       const AdapterOrDeviceChangedCallback& device_changed_callback);
+
+  BluetoothDevicesObserver(const BluetoothDevicesObserver&) = delete;
+  BluetoothDevicesObserver& operator=(const BluetoothDevicesObserver&) = delete;
+
   ~BluetoothDevicesObserver() override;
 
   // device::BluetoothAdapter::Observer:
@@ -61,8 +64,6 @@ class BluetoothDevicesObserver : public device::BluetoothAdapter::Observer {
   AdapterOrDeviceChangedCallback adapter_or_device_changed_callback_;
 
   base::WeakPtrFactory<BluetoothDevicesObserver> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDevicesObserver);
 };
 
 }  // namespace ash

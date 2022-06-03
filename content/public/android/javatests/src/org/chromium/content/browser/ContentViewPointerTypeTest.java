@@ -24,7 +24,7 @@ import org.chromium.content_shell.ShellViewAndroidDelegate;
 import org.chromium.content_shell.ShellViewAndroidDelegate.OnCursorUpdateHelper;
 import org.chromium.content_shell_apk.ContentShellActivity;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
-import org.chromium.ui_base.web.CursorType;
+import org.chromium.ui.mojom.CursorType;
 
 /**
  * Tests that we can move mouse cursor and test cursor icon.

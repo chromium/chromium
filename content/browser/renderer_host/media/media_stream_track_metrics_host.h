@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <string>
 
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

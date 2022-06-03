@@ -22,6 +22,11 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   // The closing notification is sent immediately in response to (i.e. in the
   // same call stack as) a request to close the Widget (via Close() or
   // CloseNow()).
+  // TODO(crbug.com/1240365): Remove this, this API is too scary. Users of this
+  // API can expect it to always be called, but it's only called on the same
+  // stack as a close request. If the Widget closes due to OS native-widget
+  // destruction this is never called. Replace existing uses with
+  // OnWidgetDestroying() or by using ViewTrackers to track View lifetimes.
   virtual void OnWidgetClosing(Widget* widget) {}
 
   // Invoked after notification is received from the event loop that the native
@@ -41,13 +46,14 @@ class VIEWS_EXPORT WidgetObserver : public base::CheckedObserver {
   virtual void OnWidgetDragWillStart(Widget* widget) {}
   virtual void OnWidgetDragComplete(Widget* widget) {}
 
-  virtual void OnWidgetVisibilityChanging(Widget* widget, bool visible) {}
   virtual void OnWidgetVisibilityChanged(Widget* widget, bool visible) {}
 
   virtual void OnWidgetActivationChanged(Widget* widget, bool active) {}
 
   virtual void OnWidgetBoundsChanged(Widget* widget,
                                      const gfx::Rect& new_bounds) {}
+
+  virtual void OnWidgetThemeChanged(Widget* widget) {}
 
  protected:
   ~WidgetObserver() override = default;

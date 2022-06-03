@@ -8,15 +8,15 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "chrome/browser/extensions/extension_action.h"
-#include "chrome/browser/extensions/extension_action_manager.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/browser/extension_action.h"
+#include "extensions/browser/extension_action_manager.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 
@@ -29,11 +29,11 @@ size_t GetPageActionCount(content::WebContents* web_contents,
                           bool only_count_visible) {
   DCHECK(web_contents);
   size_t count = 0u;
-  SessionID tab_id = SessionTabHelper::IdForTab(web_contents);
+  SessionID tab_id = sessions::SessionTabHelper::IdForTab(web_contents);
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   ToolbarActionsModel* toolbar_model = ToolbarActionsModel::Get(profile);
-  const std::vector<ToolbarActionsModel::ActionId>& toolbar_action_ids =
+  const base::flat_set<ToolbarActionsModel::ActionId>& toolbar_action_ids =
       toolbar_model->action_ids();
   ExtensionActionManager* action_manager =
       ExtensionActionManager::Get(web_contents->GetBrowserContext());

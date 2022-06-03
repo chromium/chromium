@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_SLOT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_SLOT_ELEMENT_H_
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_text.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 
@@ -42,9 +43,6 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static HTMLSlotElement* CreateUserAgentDefaultSlot(Document&);
-  static HTMLSlotElement* CreateUserAgentCustomAssignSlot(Document&);
-
   HTMLSlotElement(Document&);
 
   const HeapVector<Member<Node>>& AssignedNodes() const;
@@ -72,9 +70,11 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   const HeapVector<Member<Node>> FlattenedAssignedNodes();
 
   void WillRecalcAssignedNodes() { ClearAssignedNodes(); }
-  void DidRecalcAssignedNodes() {
+  void DidRecalcAssignedNodes(bool display_locked_subtree) {
     UpdateFlatTreeNodeDataForAssignedNodes();
     RecalcFlatTreeChildren();
+    if (display_locked_subtree)
+      DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded();
   }
 
   void AttachLayoutTree(AttachContext&) final;
@@ -90,7 +90,7 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
   // dirty.  e.g. To detect a slotchange event in DOM mutations.
   bool HasAssignedNodesSlow() const;
 
-  bool SupportsAssignment() const { return IsInV1ShadowTree(); }
+  bool SupportsAssignment() const { return IsInShadowTree(); }
 
   void CheckFallbackAfterInsertedIntoShadowTree();
   void CheckFallbackAfterRemovedFromShadowTree();
@@ -103,24 +103,31 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
 
   static AtomicString NormalizeSlotName(const AtomicString&);
 
-  void RecalcStyleForSlotChildren(const StyleRecalcChange);
+  void RecalcStyleForSlotChildren(const StyleRecalcChange,
+                                  const StyleRecalcContext&);
 
   // For User-Agent Shadow DOM
   static const AtomicString& UserAgentCustomAssignSlotName();
   static const AtomicString& UserAgentDefaultSlotName();
 
   // For imperative Shadow DOM distribution APIs
-  void assign(HeapVector<Member<Node>> nodes);
-  const HeapHashSet<Member<Node>>& AssignedNodesCandidate() const {
-    return assigned_nodes_candidates_;
-  }
+  // IDL assign() implementation.
+  void assign(HeapVector<Member<V8UnionElementOrText>>& nodes, ExceptionState&);
+  // assign() c++ implementation.
+  void Assign(const HeapVector<Member<Node>>& nodes);
 
-  void Trace(Visitor*) override;
+  const HeapLinkedHashSet<WeakMember<Node>>& ManuallyAssignedNodes() const {
+    return manually_assigned_nodes_;
+  }
+  void RemoveManuallyAssignedNode(Node&);
+
+  void Trace(Visitor*) const override;
 
  private:
   InsertionNotificationRequest InsertedInto(ContainerNode&) final;
   void RemovedFrom(ContainerNode&) final;
-  void DidRecalcStyle(const StyleRecalcChange) final;
+
+  void ChildrenChanged(const ChildrenChange&) override;
 
   void EnqueueSlotChangeEvent();
 
@@ -136,19 +143,21 @@ class CORE_EXPORT HTMLSlotElement final : public HTMLElement {
       const HeapVector<Member<Node>>& old_slotted,
       const HeapVector<Member<Node>>& new_slotted);
 
-  void SetNeedsDistributionRecalcWillBeSetNeedsAssignmentRecalc();
+  void SetShadowRootNeedsAssignmentRecalc();
+  bool CheckNodesValidity(HeapVector<Member<Node>> nodes, ExceptionState&);
 
   void RecalcFlatTreeChildren();
   void UpdateFlatTreeNodeDataForAssignedNodes();
   void ClearAssignedNodesAndFlatTreeChildren();
+  void DetachDisplayLockedAssignedNodesLayoutTreeIfNeeded();
 
   HeapVector<Member<Node>> assigned_nodes_;
   HeapVector<Member<Node>> flat_tree_children_;
 
   bool slotchange_event_enqueued_ = false;
 
-  // For imperative Shadow DOM distribution APIs
-  HeapHashSet<Member<Node>> assigned_nodes_candidates_;
+  // Imperative Shadow DOM distribution API.
+  HeapLinkedHashSet<WeakMember<Node>> manually_assigned_nodes_;
 
   template <typename T, wtf_size_t S>
   struct LCSArray {

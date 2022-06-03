@@ -4,28 +4,32 @@
 
 package org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections;
 
-import static org.chromium.chrome.browser.widget.prefeditor.EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC;
+import static org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel.INPUT_TYPE_HINT_ALPHA_NUMERIC;
 
 import android.content.Context;
-import android.support.annotation.Nullable;
-import android.support.v4.util.Pair;
 import android.text.Editable;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Space;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.core.util.Pair;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorFieldModel;
+import org.chromium.chrome.browser.autofill.prefeditor.EditorTextField;
 import org.chromium.chrome.browser.autofill_assistant.AssistantTextUtils;
+import org.chromium.chrome.browser.autofill_assistant.LayoutUtils;
+import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpander;
-import org.chromium.chrome.browser.widget.prefeditor.EditorFieldModel;
-import org.chromium.chrome.browser.widget.prefeditor.EditorTextField;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /** A section which displays one or multiple text inputs for the user to type in. */
@@ -36,6 +40,8 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
     private Delegate mDelegate;
     private int mTopPadding;
     private int mBottomPadding;
+    private final List<TextView> mSummaryViews = new ArrayList<>();
+    private final int mTitleToContentPadding;
 
     /** Factory for a single text input field. */
     public static class TextInputFactory {
@@ -52,7 +58,8 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
             mKey = key;
         }
 
-        View createView(Context context, Callback<Pair<String, String>> changedCallback) {
+        EditorTextField createView(
+                Context context, Callback<Pair<String, String>> changedCallback) {
             TextWatcher textWatcher = new TextWatcher() {
                 @Override
                 public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -77,10 +84,11 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
                     EditorFieldModel.createTextInput(typeHint, mHint, /* suggestions = */ null,
                             /* formatter = */ null, /* validator = */ null,
                             /* valueIconGenerator = */ null, /* requiredErrorMessage = */ null,
-                            /* invalidErrorMessage = */ null, mValue),
+                            /* invalidErrorMessage = */ null,
+                            EditorFieldModel.LENGTH_COUNTER_LIMIT_NONE, mValue),
                     (v, actionId, event)
                             -> false,
-                    /* filter = */ null, textWatcher, /* observer = */ null);
+                    /* filter = */ null, textWatcher);
         }
     }
 
@@ -104,8 +112,10 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
             List<TextInputFactory> inputs, @Nullable Delegate delegate) {
         mContext = context;
         mDelegate = delegate;
+        mTitleToContentPadding = context.getResources().getDimensionPixelSize(
+                R.dimen.autofill_assistant_payment_request_title_padding);
 
-        LayoutInflater inflater = LayoutInflater.from(context);
+        LayoutInflater inflater = LayoutUtils.createInflater(context);
         mSectionExpander = new AssistantVerticalExpander(context, null);
         View sectionTitle =
                 inflater.inflate(R.layout.autofill_assistant_payment_request_section_title, null);
@@ -114,23 +124,42 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
         AssistantTextUtils.applyVisualAppearanceTags(titleView, title, null);
 
         mInputContainer = createInputContainer();
+        LinearLayout summaryViews = new LinearLayout(context);
+        summaryViews.setOrientation(LinearLayout.VERTICAL);
         int horizontalMargin = context.getResources().getDimensionPixelSize(
                 R.dimen.autofill_assistant_bottombar_horizontal_spacing);
         for (TextInputFactory input : inputs) {
-            View inputView = input.createView(context, result -> {
+            TextView summaryView = new TextView(context);
+            ApiCompatibilityUtils.setTextAppearance(
+                    summaryView, R.style.TextAppearance_TextMedium_Secondary);
+            EditorTextField inputView = input.createView(context, result -> {
                 if (mDelegate == null) {
                     return;
                 }
-                mDelegate.onValueChanged(result.first, result.second);
+                summaryView.setText(result.second);
+                summaryView.setVisibility(
+                        TextUtils.isEmpty(result.second) ? View.GONE : View.VISIBLE);
+
+                mDelegate.onValueChanged(
+                        result.first, new AssistantValue(new String[] {result.second}));
+            });
+            inputView.getEditText().setOnFocusChangeListener((unusedView, hasFocus) -> {
+                if (mDelegate != null) {
+                    mDelegate.onInputTextFocusChanged(hasFocus);
+                }
             });
             mInputContainer.addView(inputView);
+            mSummaryViews.add(summaryView);
+            summaryViews.addView(summaryView);
+            setHorizontalMargins(summaryView, horizontalMargin, horizontalMargin);
             setHorizontalMargins(inputView, horizontalMargin, horizontalMargin);
         }
         mSectionExpander.setExpandedView(mInputContainer,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-        mSectionExpander.setCollapsedView(
-                new Space(context, null), new ViewGroup.LayoutParams(0, 0));
+        mSectionExpander.setCollapsedView(summaryViews,
+                new LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mSectionExpander.setTitleView(sectionTitle,
                 new LinearLayout.LayoutParams(
                         ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -161,6 +190,15 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
         mDelegate = delegate;
     }
 
+    private boolean isEmpty() {
+        for (int i = 0; i < mSummaryViews.size(); i++) {
+            if (mSummaryViews.get(i).length() > 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     private void setHorizontalMargins(View view, int marginStart, int marginEnd) {
         ViewGroup.MarginLayoutParams lp = (ViewGroup.MarginLayoutParams) view.getLayoutParams();
         lp.setMarginStart(marginStart);
@@ -170,15 +208,29 @@ public class AssistantTextInputSection implements AssistantAdditionalSection {
 
     private void updatePaddings() {
         View titleView = mSectionExpander.getTitleView();
-        if (mSectionExpander.isExpanded()) {
+        View chevronButton = mSectionExpander.getChevronButton();
+        if (isEmpty()) {
+            // Section is empty, i.e., the title is the bottom-most widget.
+            setTopAndBottomPadding(titleView, mTopPadding, mBottomPadding);
+            setTopAndBottomPadding(chevronButton, mTopPadding, mBottomPadding);
+            setTopAndBottomPadding(mSectionExpander.getCollapsedView(),
+                    mSectionExpander.getCollapsedView().getPaddingTop(), 0);
+        } else if (mSectionExpander.isExpanded()) {
             // Section is expanded, i.e., the expanded widget is the bottom-most widget.
-            titleView.setPadding(titleView.getPaddingLeft(), mTopPadding,
-                    titleView.getPaddingRight(), titleView.getPaddingBottom());
+            setTopAndBottomPadding(titleView, mTopPadding, mTitleToContentPadding);
+            setTopAndBottomPadding(chevronButton, mTopPadding, mTitleToContentPadding);
+            // No need to set additional bottom padding, expanded sections have enough already.
         } else {
-            // Section is collapsed -> title is both top-most and bottom-most widget.
-            titleView.setPadding(titleView.getPaddingLeft(), mTopPadding,
-                    titleView.getPaddingRight(), mBottomPadding);
+            // Section is non-empty and collapsed -> collapsed widget is the bottom-most widget.
+            setTopAndBottomPadding(titleView, mTopPadding, mTitleToContentPadding);
+            setTopAndBottomPadding(chevronButton, mTopPadding, mBottomPadding);
+            setTopAndBottomPadding(mSectionExpander.getCollapsedView(),
+                    mSectionExpander.getCollapsedView().getPaddingTop(), mBottomPadding);
         }
+    }
+
+    private void setTopAndBottomPadding(View view, int topPadding, int bottomPadding) {
+        view.setPadding(view.getPaddingLeft(), topPadding, view.getPaddingRight(), bottomPadding);
     }
 
     private ViewGroup createInputContainer() {

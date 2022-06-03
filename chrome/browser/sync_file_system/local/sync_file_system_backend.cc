@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/task/post_task.h"
+#include "base/check_op.h"
+#include "base/types/pass_key.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -89,17 +89,18 @@ void SyncFileSystemBackend::ResolveURL(const storage::FileSystemURL& url,
 
   if (skip_initialize_syncfs_service_for_testing_) {
     GetDelegate()->OpenFileSystem(
-        url.origin().GetURL(), url.type(), mode, std::move(callback),
+        url.storage_key(), url.type(), mode, std::move(callback),
         GetSyncableFileSystemRootURI(url.origin().GetURL()));
     return;
   }
 
   // It is safe to pass Unretained(this) since |context_| owns it.
-  SyncStatusCallback initialize_callback = base::Bind(
+  SyncStatusCallback initialize_callback = base::BindOnce(
       &SyncFileSystemBackend::DidInitializeSyncFileSystemService,
       base::Unretained(this), base::RetainedRef(context_),
-      url.origin().GetURL(), url.type(), mode, base::Passed(&callback));
-  InitializeSyncFileSystemService(url.origin().GetURL(), initialize_callback);
+      url.origin().GetURL(), url.type(), mode, std::move(callback));
+  InitializeSyncFileSystemService(url.origin().GetURL(),
+                                  std::move(initialize_callback));
 }
 
 storage::AsyncFileUtil* SyncFileSystemBackend::GetAsyncFileUtil(
@@ -121,7 +122,8 @@ SyncFileSystemBackend::GetCopyOrMoveFileValidatorFactory(
   return nullptr;
 }
 
-storage::FileSystemOperation* SyncFileSystemBackend::CreateFileSystemOperation(
+std::unique_ptr<storage::FileSystemOperation>
+SyncFileSystemBackend::CreateFileSystemOperation(
     const storage::FileSystemURL& url,
     storage::FileSystemContext* context,
     base::File::Error* error_code) const {
@@ -139,8 +141,9 @@ storage::FileSystemOperation* SyncFileSystemBackend::CreateFileSystemOperation(
                                                 std::move(operation_context));
   }
 
-  return new SyncableFileSystemOperation(url, context,
-                                         std::move(operation_context));
+  return std::make_unique<SyncableFileSystemOperation>(
+      url, context, std::move(operation_context),
+      base::PassKey<SyncFileSystemBackend>());
 }
 
 bool SyncFileSystemBackend::SupportsStreaming(
@@ -233,28 +236,29 @@ storage::SandboxFileSystemBackendDelegate* SyncFileSystemBackend::GetDelegate()
 
 void SyncFileSystemBackend::InitializeSyncFileSystemService(
     const GURL& origin_url,
-    const SyncStatusCallback& callback) {
+    SyncStatusCallback callback) {
   // Repost to switch from IO thread to UI thread.
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     DCHECK_CURRENTLY_ON(BrowserThread::IO);
     // It is safe to pass Unretained(this) (see comments in OpenFileSystem()).
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&SyncFileSystemBackend::InitializeSyncFileSystemService,
-                       base::Unretained(this), origin_url, callback));
+                       base::Unretained(this), origin_url,
+                       std::move(callback)));
     return;
   }
 
   if (!g_browser_process->profile_manager()->IsValidProfile(profile_)) {
     // Profile was destroyed.
-    callback.Run(SYNC_FILE_ERROR_FAILED);
+    std::move(callback).Run(SYNC_FILE_ERROR_FAILED);
     return;
   }
 
   SyncFileSystemService* service =
       SyncFileSystemServiceFactory::GetForProfile(profile_);
   DCHECK(service);
-  service->InitializeForApp(context_, origin_url, callback);
+  service->InitializeForApp(context_, origin_url, std::move(callback));
 }
 
 void SyncFileSystemBackend::DidInitializeSyncFileSystemService(
@@ -268,8 +272,8 @@ void SyncFileSystemBackend::DidInitializeSyncFileSystemService(
   if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // It is safe to pass Unretained(this) since |context| owns it.
-    base::PostTask(
-        FROM_HERE, {BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(
             &SyncFileSystemBackend::DidInitializeSyncFileSystemService,
             base::Unretained(this), base::RetainedRef(context), origin_url,

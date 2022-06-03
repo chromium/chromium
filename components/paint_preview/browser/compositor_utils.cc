@@ -7,8 +7,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "components/discardable_memory/service/discardable_shared_memory_manager.h"
+#include "components/paint_preview/browser/paint_preview_compositor_service_impl.h"
 #include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -30,26 +32,64 @@ void BindDiscardableSharedMemoryManagerOnIOThread(
 
 }  // namespace
 
+std::unique_ptr<PaintPreviewCompositorService, base::OnTaskRunnerDeleter>
+StartCompositorService(base::OnceClosure disconnect_handler) {
+  // Create a dedicated sequence for communicating with the compositor. This
+  // sequence will handle message serialization/deserialization of bitmaps so it
+  // affects user visible elements. This is an implementation detail and the
+  // caller should continue to communicate with the compositor via the sequence
+  // that called this.
+  auto compositor_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::TaskPriority::USER_VISIBLE,
+       base::ThreadPolicy::MUST_USE_FOREGROUND});
+
+  // The discardable memory manager isn't initialized here. This is handled in
+  // the constructor of PaintPreviewCompositorServiceImpl once the pending
+  // remote becomes bound.
+  mojo::PendingRemote<mojom::PaintPreviewCompositorCollection> pending_remote;
+  compositor_task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CreateCompositorCollectionPending,
+                     pending_remote.InitWithNewPipeAndPassReceiver()));
+
+  return std::unique_ptr<PaintPreviewCompositorServiceImpl,
+                         base::OnTaskRunnerDeleter>(
+      new PaintPreviewCompositorServiceImpl(std::move(pending_remote),
+                                            compositor_task_runner,
+                                            std::move(disconnect_handler)),
+      base::OnTaskRunnerDeleter(base::SequencedTaskRunnerHandle::Get()));
+}
+
 mojo::Remote<mojom::PaintPreviewCompositorCollection>
 CreateCompositorCollection() {
-  auto collection = content::ServiceProcessHost::Launch<
-      mojom::PaintPreviewCompositorCollection>(
+  mojo::Remote<mojom::PaintPreviewCompositorCollection> collection;
+  CreateCompositorCollectionPending(collection.BindNewPipeAndPassReceiver());
+  BindDiscardableSharedMemoryManager(&collection);
+  return collection;
+}
+
+void CreateCompositorCollectionPending(
+    mojo::PendingReceiver<mojom::PaintPreviewCompositorCollection> collection) {
+  content::ServiceProcessHost::Launch<mojom::PaintPreviewCompositorCollection>(
+      std::move(collection),
       content::ServiceProcessHost::Options()
           .WithDisplayName(IDS_PAINT_PREVIEW_COMPOSITOR_SERVICE_DISPLAY_NAME)
-          .WithSandboxType(service_manager::SandboxType::kPdfCompositor)
           .Pass());
+}
+
+void BindDiscardableSharedMemoryManager(
+    mojo::Remote<mojom::PaintPreviewCompositorCollection>* collection) {
   mojo::PendingRemote<discardable_memory::mojom::DiscardableSharedMemoryManager>
       discardable_memory_manager;
 
   // Set up the discardable memory manager.
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(
           &BindDiscardableSharedMemoryManagerOnIOThread,
           discardable_memory_manager.InitWithNewPipeAndPassReceiver()));
-  collection->SetDiscardableSharedMemoryManager(
+  collection->get()->SetDiscardableSharedMemoryManager(
       std::move(discardable_memory_manager));
-  return collection;
 }
 
 }  // namespace paint_preview

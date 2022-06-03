@@ -1,0 +1,5 @@
+notclipped: layer(285x200) has hit test rect (0,50 200x25)
+
+clipped: layer(285x200) has hit test rect (0,175 200x25)
+
+

@@ -5,8 +5,11 @@
 #ifndef CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_H_
 #define CHROME_BROWSER_LIFETIME_APPLICATION_LIFETIME_H_
 
+#include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 class Browser;
 
@@ -38,6 +41,8 @@ void AttemptRelaunch();
 // that all user prompts (e.g., beforeunload handlers and confirmation to abort
 // in-progress downloads) are bypassed.
 void RelaunchIgnoreUnloadHandlers();
+// TODO(https://crbug.com/1227426): for debugging.
+bool DidCallRelaunchIgnoreUnloadHandlers();
 #endif
 
 // Attempt to exit by closing all browsers.  This is equivalent to
@@ -57,7 +62,7 @@ void AttemptExit();
 // use AttemptExit or AttemptRestart respectively.
 void ExitIgnoreUnloadHandlers();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Returns true if any of the above Attempt calls have been called.
 bool IsAttemptingShutdown();
 #endif
@@ -85,6 +90,14 @@ void OnAppExiting();
 // Called once the application is exiting to do any platform specific
 // processing required.
 void HandleAppExitingForPlatform();
+
+// Called when the process of closing all browsers starts or is cancelled.
+void OnClosingAllBrowsers(bool closing);
+
+// Registers a callback that will be invoked with true when all browsers start
+// closing, and false if and when that process is cancelled.
+base::CallbackListSubscription AddClosingAllBrowsersCallback(
+    base::RepeatingCallback<void(bool)> closing_all_browsers_callback);
 #endif  // !defined(OS_ANDROID)
 
 }  // namespace chrome

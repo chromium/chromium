@@ -1,63 +1,36 @@
-<html>
-<head>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
+const kStyle = 'div, img { width: 200px; height: 100px; }';
+selection_test(
+    [
+        `<style>${kStyle}</style>`,
+        '<div contenteditable id="target"></div>',
+        '^<img id="image">|',
+    ],
+    selection => {
+        if (!window.eventSender)
+          throw 'This test requires eventSender.';
+
+        const image = selection.document.getElementById('image');
+        eventSender.mouseMoveTo(
+            selection.computeLeft(image) + 30,
+            selection.computeTop(image) + 30);
+        eventSender.mouseDown();
+
+        const target = selection.document.getElementById('target');
+        eventSender.mouseMoveTo(
+            selection.computeLeft(target) + 30,
+            selection.computeTop(target) + 30);
+        eventSender.mouseUp();
+    },
+    [
+        `<style>${kStyle}</style>`,
+        '<div contenteditable id="target">',
+            '^<img id="image">|',
+        '</div>',
+        '<img id="image">',
+    ]);
 </script>
-
-<script>
-function log(message) {
-    var console = document.getElementById("console");
-    var li = document.createElement("li");
-    var text = document.createTextNode(message);
-    
-    console.appendChild(li);
-    li.appendChild(text);
-}
-
-function runTest() {
-    if (window.testRunner)
-        testRunner.waitUntilDone();
-    // Let the subframe come into being.
-    window.setTimeout(step2, 100);
-    e = document.getElementById("dragme");
-    setSelectionCommand(e, 0, e, 0);
-}
-
-function step2() 
-{
-    if (!window.testRunner) {
-        log("This test uses the eventSender.  To run it manually, drag the selected image into the editable div and drop it.  It should appear inside the editable div.");
-        return;
-    }
-    
-    log("Abe should appear twice, once inside the div and once outside it.");
-    
-    e = document.getElementById("dragme");
-    x = e.offsetLeft + e.offsetWidth / 2;
-    y = e.offsetTop + e.offsetHeight / 2;
-
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseDown();    
-    e = document.getElementById("target");
-    x = e.offsetLeft + e.offsetWidth / 2;
-    y = e.offsetTop + e.offsetHeight / 2;
-    
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseUp();
-    
-    testRunner.notifyDone();
-}
-</script>
-</head>
-
-<body style="padding:0; margin:0" onload="runTest();">  
-
-<div id="target" style="border: 1px solid black; width: 300px; height: 120px;" contenteditable="true"></div>
-<img id="dragme" src="../resources/abe.png">
-
-<ul id="console"></ul>
-</body>

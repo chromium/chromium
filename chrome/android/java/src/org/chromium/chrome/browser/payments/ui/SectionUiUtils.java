@@ -13,7 +13,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.widget.prefeditor.EditableOption;
+import org.chromium.components.autofill.EditableOption;
 
 /**
  * Utility functions for PaymentRequestSection.

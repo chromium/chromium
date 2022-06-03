@@ -6,19 +6,25 @@
 
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/system_tray_client.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/model/system_tray_model.h"
 #include "ash/system/network/tray_network_state_model.h"
-#include "ash/system/unified/top_shortcut_button.h"
+#include "ash/system/tray/tray_toggle_button.h"
 #include "base/bind.h"
+#include "chromeos/dbus/hermes/hermes_manager_client.h"
+#include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/onc/onc_constants.h"
 #include "components/vector_icons/vector_icons.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
+
+using chromeos::network_config::IsInhibited;
 
 using chromeos::network_config::mojom::DeviceStateProperties;
 using chromeos::network_config::mojom::DeviceStateType;
@@ -35,12 +41,21 @@ namespace {
 
 const int64_t kBluetoothTimeoutDelaySeconds = 2;
 
+bool IsCellularDeviceInhibited() {
+  const DeviceStateProperties* cellular_device =
+      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+          NetworkType::kCellular);
+  if (!cellular_device)
+    return false;
+  return cellular_device->inhibit_reason !=
+         chromeos::network_config::mojom::InhibitReason::kNotInhibited;
+}
+
 bool IsCellularSimLocked() {
   const DeviceStateProperties* cellular_device =
       Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
           NetworkType::kCellular);
-  return cellular_device &&
-         !cellular_device->sim_lock_status->lock_type.empty();
+  return IsInhibited(cellular_device);
 }
 
 void ShowCellularSettings() {
@@ -65,6 +80,54 @@ bool IsSecondaryUser() {
       Shell::Get()->session_controller();
   return session_controller->IsActiveUserSessionStarted() &&
          !session_controller->IsUserPrimary();
+}
+
+bool IsESimSupported() {
+  const DeviceStateProperties* cellular_device =
+      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+          NetworkType::kCellular);
+
+  if (!cellular_device || !cellular_device->sim_infos)
+    return false;
+
+  // Check both the SIM slot infos and the number of EUICCs because the former
+  // comes from Shill and the latter from Hermes, and so there may be instances
+  // where one may be true while they other isn't.
+  if (chromeos::HermesManagerClient::Get()->GetAvailableEuiccs().empty())
+    return false;
+
+  for (const auto& sim_info : *cellular_device->sim_infos) {
+    if (!sim_info->eid.empty())
+      return true;
+  }
+  return false;
+}
+
+int GetAddESimTooltipMessageId() {
+  const DeviceStateProperties* cellular_device =
+      Shell::Get()->system_tray_model()->network_state_model()->GetDevice(
+          NetworkType::kCellular);
+  if (!cellular_device) {
+    return 0;
+  }
+
+  switch (cellular_device->inhibit_reason) {
+    case chromeos::network_config::mojom::InhibitReason::kInstallingProfile:
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_INSTALLING_PROFILE;
+    case chromeos::network_config::mojom::InhibitReason::kRenamingProfile:
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_RENAMING_PROFILE;
+    case chromeos::network_config::mojom::InhibitReason::kRemovingProfile:
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REMOVING_PROFILE;
+    case chromeos::network_config::mojom::InhibitReason::kConnectingToProfile:
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_CONNECTING_TO_PROFILE;
+    case chromeos::network_config::mojom::InhibitReason::kRefreshingProfileList:
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REFRESHING_PROFILE_LIST;
+    case chromeos::network_config::mojom::InhibitReason::kNotInhibited:
+      return IDS_ASH_STATUS_TRAY_ADD_CELLULAR_LABEL;
+    case chromeos::network_config::mojom::InhibitReason::kResettingEuiccMemory:
+      // TODO(crbug.com/1231305) Update when reset reason strings are finalized.
+      return IDS_ASH_STATUS_TRAY_INHIBITED_CELLULAR_REMOVING_PROFILE;
+  }
 }
 
 }  // namespace
@@ -99,17 +162,7 @@ int NetworkSectionHeaderView::GetHeightForWidth(int width) const {
   // Make row height fixed avoiding layout manager adjustments.
   return GetPreferredSize().height();
 }
-void NetworkSectionHeaderView::ButtonPressed(views::Button* sender,
-                                             const ui::Event& event) {
-  DCHECK_EQ(toggle_, sender);
-  // In the event of frequent clicks, helps to prevent a toggle button state
-  // from becoming inconsistent with the async operation of enabling /
-  // disabling of mobile radio. The toggle will get unlocked in the next
-  // call to NetworkListView::Update(). Note that we don't disable/enable
-  // because that would clear focus.
-  toggle_->SetAcceptsEvents(false);
-  OnToggleToggled(toggle_->GetIsOn());
-}
+
 void NetworkSectionHeaderView::InitializeLayout() {
   TrayPopupUtils::ConfigureAsStickyHeader(this);
   SetLayoutManager(std::make_unique<views::FillLayout>());
@@ -123,9 +176,22 @@ void NetworkSectionHeaderView::InitializeLayout() {
 }
 
 void NetworkSectionHeaderView::AddToggleButton(bool enabled) {
-  toggle_ = TrayPopupUtils::CreateToggleButton(this, title_id_);
+  toggle_ = new TrayToggleButton(
+      base::BindRepeating(&NetworkSectionHeaderView::ToggleButtonPressed,
+                          base::Unretained(this)),
+      title_id_);
   toggle_->SetIsOn(enabled);
   container_->AddView(TriView::Container::END, toggle_);
+}
+
+void NetworkSectionHeaderView::ToggleButtonPressed() {
+  // In the event of frequent clicks, helps to prevent a toggle button state
+  // from becoming inconsistent with the async operation of enabling /
+  // disabling of mobile radio. The toggle will get unlocked in the next
+  // call to NetworkListView::Update(). Note that we don't disable/enable
+  // because that would clear focus.
+  toggle_->SetAcceptsEvents(false);
+  OnToggleToggled(toggle_->GetIsOn());
 }
 
 MobileSectionHeaderView::MobileSectionHeaderView()
@@ -135,9 +201,12 @@ MobileSectionHeaderView::MobileSectionHeaderView()
                            model()->GetDeviceState(NetworkType::kTether) ==
                                DeviceStateType::kEnabled;
   NetworkSectionHeaderView::Init(initially_enabled);
+  model()->AddObserver(this);
 }
 
-MobileSectionHeaderView::~MobileSectionHeaderView() {}
+MobileSectionHeaderView::~MobileSectionHeaderView() {
+  model()->RemoveObserver(this);
+}
 
 const char* MobileSectionHeaderView::GetClassName() const {
   return "MobileSectionHeaderView";
@@ -159,33 +228,32 @@ int MobileSectionHeaderView::UpdateToggleAndGetStatusMessage(
       return IDS_ASH_STATUS_TRAY_INITIALIZING_CELLULAR;
     }
 
-    const DeviceStateProperties* cellular_device =
-        model()->GetDevice(NetworkType::kCellular);
-    if (cellular_device->sim_absent) {
-      SetToggleVisibility(false);
-      return IDS_ASH_STATUS_TRAY_SIM_CARD_MISSING;
+    if (IsCellularDeviceInhibited()) {
+      // When a device is inhibited, it cannot process any new operations. Thus,
+      // keep the toggle on to show users that the device is active, but set it
+      // to be disabled to make it clear that users cannot update it until it
+      // becomes uninhibited.
+      SetToggleVisibility(true);
+      SetToggleState(false /* toggle_enabled */, true /* is_on */);
+      return 0;
     }
 
+    bool toggle_enabled = default_toggle_enabled &&
+                          (cellular_state == DeviceStateType::kEnabled ||
+                           cellular_state == DeviceStateType::kDisabled);
     bool cellular_enabled = cellular_state == DeviceStateType::kEnabled;
     SetToggleVisibility(true);
-    SetToggleState(default_toggle_enabled, cellular_enabled);
-
-    if (cellular_device->sim_lock_status &&
-        !cellular_device->sim_lock_status->lock_type.empty()) {
-      return IDS_ASH_STATUS_TRAY_SIM_CARD_LOCKED;
+    SetToggleState(toggle_enabled, cellular_enabled);
+    if (cellular_state == DeviceStateType::kDisabling) {
+      return IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLING;
     }
-    if (cellular_device->scanning)
-      return IDS_ASH_STATUS_TRAY_MOBILE_SCANNING;
 
-    if (cellular_enabled && !mobile_has_networks) {
-      // If no connectable Mobile network is available, show 'turn on
-      // Bluetooth' if Tether is available but not initialized, otherwise
-      // show 'no networks'.
-      if (tether_state == DeviceStateType::kUninitialized)
-        return IDS_ENABLE_BLUETOOTH;
+    if (cellular_enabled) {
+      if (mobile_has_networks)
+        return 0;
       return IDS_ASH_STATUS_TRAY_NO_MOBILE_NETWORKS;
     }
-    return 0;
+    return IDS_ASH_STATUS_TRAY_NETWORK_MOBILE_DISABLED;
   }
 
   // When Cellular is not available, always show the toggle.
@@ -266,6 +334,49 @@ void MobileSectionHeaderView::OnToggleToggled(bool is_on) {
   model()->SetNetworkTypeEnabledState(NetworkType::kTether, is_on);
 }
 
+void MobileSectionHeaderView::AddExtraButtons(bool enabled) {
+  // The button navigates to Settings, only add it if this can occur.
+  if (!TrayPopupUtils::CanOpenWebUISettings())
+    return;
+
+  // The button opens the eSIM setup flow, and should only be added if the
+  // device is eSIM-capable.
+  if (IsESimSupported())
+    PerformAddExtraButtons(enabled);
+}
+
+void MobileSectionHeaderView::DeviceStateListChanged() {
+  if (!add_esim_button_)
+    return;
+  add_esim_button_->SetEnabled(can_add_esim_button_be_enabled_ &&
+                               !IsCellularDeviceInhibited());
+  add_esim_button_->SetTooltipText(
+      l10n_util::GetStringUTF16(GetAddESimTooltipMessageId()));
+}
+
+void MobileSectionHeaderView::PerformAddExtraButtons(bool enabled) {
+  can_add_esim_button_be_enabled_ = enabled;
+  const gfx::VectorIcon& icon = base::i18n::IsRTL() ? kAddCellularNetworkRtlIcon
+                                                    : kAddCellularNetworkIcon;
+  add_esim_button_ = new TopShortcutButton(
+      base::BindRepeating(&MobileSectionHeaderView::AddCellularButtonPressed,
+                          base::Unretained(this)),
+      icon, GetAddESimTooltipMessageId());
+
+  add_esim_button_->SetEnabled(enabled && !IsCellularDeviceInhibited());
+
+  // Because the toggle is added conditionally and the check is asynchronous, we
+  // need override the view index here in order for correct ordering of the
+  // toggle and the add cellular button.
+  container()->AddViewAt(TriView::Container::END, add_esim_button_,
+                         /*index=*/0);
+}
+
+void MobileSectionHeaderView::AddCellularButtonPressed() {
+  Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
+      ::onc::network_type::kCellular);
+}
+
 void MobileSectionHeaderView::EnableBluetooth() {
   DCHECK(!waiting_for_tether_initialize_);
 
@@ -274,7 +385,7 @@ void MobileSectionHeaderView::EnableBluetooth() {
       ->SetPrimaryUserBluetoothPowerSetting(true /* enabled */);
   waiting_for_tether_initialize_ = true;
   enable_bluetooth_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kBluetoothTimeoutDelaySeconds),
+      FROM_HERE, base::Seconds(kBluetoothTimeoutDelaySeconds),
       base::BindOnce(&MobileSectionHeaderView::OnEnableBluetoothTimeout,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -308,23 +419,20 @@ void WifiSectionHeaderView::OnToggleToggled(bool is_on) {
 }
 
 void WifiSectionHeaderView::AddExtraButtons(bool enabled) {
-  auto* join_button = new TopShortcutButton(this, vector_icons::kWifiAddIcon,
-                                            IDS_ASH_STATUS_TRAY_OTHER_WIFI);
+  auto* join_button = new TopShortcutButton(
+      base::BindRepeating(&WifiSectionHeaderView::JoinButtonPressed,
+                          base::Unretained(this)),
+      vector_icons::kWifiAddIcon, IDS_ASH_STATUS_TRAY_OTHER_WIFI);
   join_button->SetEnabled(enabled);
   container()->AddView(TriView::Container::END, join_button);
   join_button_ = join_button;
 }
 
-void WifiSectionHeaderView::ButtonPressed(views::Button* sender,
-                                          const ui::Event& event) {
-  if (sender == join_button_) {
-    Shell::Get()->metrics()->RecordUserMetricsAction(
-        UMA_STATUS_AREA_NETWORK_JOIN_OTHER_CLICKED);
-    Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
-        ::onc::network_type::kWiFi);
-    return;
-  }
-  NetworkSectionHeaderView::ButtonPressed(sender, event);
+void WifiSectionHeaderView::JoinButtonPressed() {
+  Shell::Get()->metrics()->RecordUserMetricsAction(
+      UMA_STATUS_AREA_NETWORK_JOIN_OTHER_CLICKED);
+  Shell::Get()->system_tray_model()->client()->ShowNetworkCreate(
+      ::onc::network_type::kWiFi);
 }
 
 }  // namespace tray

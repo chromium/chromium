@@ -8,7 +8,8 @@
 
 namespace blink {
 
-void CSSCustomPropertyDeclaration::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSCustomPropertyDeclaration::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
 }
 

@@ -1,0 +1,159 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+import("//testing/test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+config("shell_encryption_config1") {
+  # TODO(crbug.com/1095122) Reenable the warning for unused functions and typedef.
+  cflags = [
+    "-Wno-unused-local-typedef",
+    "-Wno-unused-function",
+    "-Wno-sign-compare",
+    "-Wno-ignored-qualifiers",
+  ]
+
+  include_dirs = [
+    # Allow includes to be prefixed with shell-encryption/src/ in case it is not an
+    # immediate subdirectory of the top-level.
+    "src",
+
+    # Allow includes to be prefixed with shell-encryption/ in case it is not an
+    # immediate subdirectory of the top-level. That's mainly is being used for
+    # glog/logging.h includes.
+    ".",
+
+    # Just like the root shell-encryption directory is added to include path, the
+    # corresponding directory tree with generated files needs to be added too.
+    # Note: this path does not change depending on the current target, e.g.
+    # it is always "//gen/third_party/shell-encryption/src" when building with Chromium.
+    # See also: http://cs.chromium.org/?q=%5C"default_include_dirs
+    # https://gn.googlesource.com/gn/+/master/docs/reference.md#target_gen_dir"
+    target_gen_dir,
+  ]
+}
+
+# Protos.
+proto_library("serialization_proto") {
+  sources = [ "src/serialization.proto" ]
+  proto_in_dir = "src/"
+}
+
+proto_library("coefficient_polynomial_proto") {
+  sources = [ "src/testing/coefficient_polynomial.proto" ]
+  proto_in_dir = "src/testing/"
+}
+
+# SHELL lib.
+if (is_chromeos_ash) {
+  source_set("shell_encryption") {
+    public_configs = [ ":shell_encryption_config1" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    public = [
+      "glog/logging.h",
+      "src/bits_util.h",
+      "src/constants.h",
+      "src/context.h",
+      "src/error_params.h",
+      "src/galois_key.h",
+      "src/int256.h",
+      "src/integral_types.h",
+      "src/montgomery.h",
+      "src/ntt_parameters.h",
+      "src/polynomial.h",
+      "src/prng/chacha_prng.h",
+      "src/prng/chacha_prng_util.h",
+      "src/prng/integral_prng_types.h",
+      "src/prng/prng.h",
+      "src/prng/single_thread_chacha_prng.h",
+      "src/relinearization_key.h",
+      "src/sample_error.h",
+      "src/status_macros.h",
+      "src/statusor.h",
+      "src/symmetric_encryption.h",
+      "src/symmetric_encryption_with_prng.h",
+      "src/transcription.h",
+    ]
+    sources = [
+      "src/int256.cc",
+      "src/montgomery.cc",
+      "src/ntt_parameters.cc",
+      "src/prng/chacha_prng.cc",
+      "src/prng/chacha_prng_util.cc",
+      "src/prng/single_thread_chacha_prng.cc",
+      "src/relinearization_key.cc",
+      "src/statusor.cc",
+    ]
+    public_deps = [
+      ":serialization_proto",
+      "//base:base",
+      "//third_party/abseil-cpp:absl",
+      "//third_party/boringssl:boringssl",
+      "//third_party/protobuf:protobuf_lite",
+    ]
+  }
+}
+
+if (is_chromeos_ash) {
+  source_set("shell_encryption_test_library") {
+    testonly = true
+    public_configs = [ ":shell_encryption_config1" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    public = [
+      "src/prng/integral_prng_testing_types.h",
+      "src/testing/coefficient_polynomial.h",
+      "src/testing/coefficient_polynomial_ciphertext.h",
+      "src/testing/parameters.h",
+      "src/testing/protobuf_matchers.h",
+      "src/testing/status_matchers.h",
+      "src/testing/status_testing.h",
+      "src/testing/testing_prng.h",
+      "src/testing/testing_utils.h",
+    ]
+    public_deps = [
+      ":coefficient_polynomial_proto",
+      ":shell_encryption",
+      "//testing/gmock:gmock",
+      "//testing/gtest:gtest",
+    ]
+  }
+
+  test("shell_encryption_unittests") {
+    testonly = true
+    public_configs = [ ":shell_encryption_config1" ]
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    sources = [
+      "src/bits_util_test.cc",
+      "src/context_test.cc",
+      "src/error_params_test.cc",
+      "src/galois_key_test.cc",
+      "src/int256_test.cc",
+      "src/montgomery_test.cc",
+      "src/ntt_parameters_test.cc",
+      "src/polynomial_test.cc",
+      "src/prng/prng_test.cc",
+      "src/prng/single_thread_chacha_prng_test.cc",
+      "src/relinearization_key_test.cc",
+      "src/sample_error_test.cc",
+      "src/status_macros_test.cc",
+      "src/statusor_test.cc",
+      "src/symmetric_encryption_test.cc",
+      "src/symmetric_encryption_with_prng_test.cc",
+      "src/testing/coefficient_polynomial_ciphertext_test.cc",
+      "src/testing/coefficient_polynomial_test.cc",
+      "src/testing/protobuf_matchers_test.cc",
+      "src/transcription_test.cc",
+      "tests/run_all_unittests.cc",
+    ]
+    deps = [
+      ":shell_encryption_test_library",
+      "//base/test:test_support",
+      "//testing/gtest",
+    ]
+  }
+}

@@ -39,7 +39,7 @@
 
     function addShadowDOM() {
         var targetDiv = document.getElementById("targetDiv");
-        var root = targetDiv.createShadowRoot();
+        var root = targetDiv.attachShadow({mode: 'open'});
         var shadowDiv = document.createElement("div");
         shadowDiv.style.width = "20px";
         shadowDiv.style.height = "20px";

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests sidebars in WebInspector extensions API\n`);
-  await TestRunner.loadModule('extensions_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
 
   TestRunner.dumpSidebarContent = function(panelName, callback) {
     var sidebar = TestRunner._extensionSidebar(panelName);

@@ -10,48 +10,63 @@
 
 #include "base/barrier_closure.h"
 #include "base/callback.h"
+#include "base/types/pass_key.h"
 #include "content/common/content_export.h"
 #include "services/network/public/mojom/cors_origin_pattern.mojom.h"
 #include "url/origin.h"
 
 namespace content {
 
+class BrowserContext;
+class SharedCorsOriginAccessList;
 class StoragePartition;
 
-// A class used to make an asynchronous Mojo call with cloned patterns for each
-// StoragePartition iteration. |this| instance will be destructed when all
-// existing asynchronous Mojo calls made in SetLists() are done, and |closure|
-// will be invoked on destructing |this|.
-//
-// Typically this would be used to implement
-// BrowserContext::SetCorsOriginAccessListForOrigin, and would use
-// ForEachStoragePartition with SetLists as the StoragePartitionCallback.
+// A class for mutating CORS examptions list associated with a BrowserContext:
+// 1. the in-process list in BrowserContext::shared_cors_origin_access_list
+// 2. the per-NetworkContext (i.e. per-StoragePartition) lists
 class CONTENT_EXPORT CorsOriginPatternSetter
     : public base::RefCounted<CorsOriginPatternSetter> {
  public:
-  CorsOriginPatternSetter(
+  // Sets |allow_patterns| and |block_patterns| for |source_origin| for the
+  // |browser_context|.
+  //
+  // The new settings will be 1) set in the SharedCorsOriginAccessList from
+  // |browser_context|'s GetSharedCorsOriginAccessList as well as 2) pushed to
+  // all network::mojom::NetworkContexts associated with all the current
+  // StoragePartitions of the |browser_context|.  |closure| will be called once
+  // all the stores/pushes have been acked.
+  static void Set(
+      content::BrowserContext* browser_context,
       const url::Origin& source_origin,
       std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
       std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
       base::OnceClosure closure);
 
-  void SetLists(StoragePartition* partition);
+  // The constructor is semi-private (CorsOriginPatternSetter should only be
+  // constructed internally, within the implementation of the public Set
+  // method).
+  using PassKey = base::PassKey<CorsOriginPatternSetter>;
+  CorsOriginPatternSetter(
+      base::PassKey<CorsOriginPatternSetter> pass_key,
+      const url::Origin& source_origin,
+      std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns,
+      std::vector<network::mojom::CorsOriginPatternPtr> block_patterns,
+      base::OnceClosure closure);
 
-  static std::vector<network::mojom::CorsOriginPatternPtr> ClonePatterns(
-      const std::vector<network::mojom::CorsOriginPatternPtr>& patterns);
+  CorsOriginPatternSetter(const CorsOriginPatternSetter&) = delete;
+  CorsOriginPatternSetter& operator=(const CorsOriginPatternSetter&) = delete;
 
  private:
   friend class base::RefCounted<CorsOriginPatternSetter>;
-
   ~CorsOriginPatternSetter();
+
+  void SetForStoragePartition(content::StoragePartition* partition);
 
   const url::Origin source_origin_;
   const std::vector<network::mojom::CorsOriginPatternPtr> allow_patterns_;
   const std::vector<network::mojom::CorsOriginPatternPtr> block_patterns_;
 
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(CorsOriginPatternSetter);
 };
 
 }  // namespace content

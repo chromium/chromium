@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS Property align-items value 'normal'
+PASS Property align-items value 'stretch'
+PASS Property align-items value 'baseline'
+FAIL Property align-items value 'last baseline' assert_true: 'last baseline' is a supported value for align-items. expected true got false
+PASS Property align-items value 'center'
+PASS Property align-items value 'start'
+PASS Property align-items value 'end'
+PASS Property align-items value 'self-start'
+PASS Property align-items value 'self-end'
+PASS Property align-items value 'flex-start'
+PASS Property align-items value 'flex-end'
+PASS Property align-items value 'unsafe center'
+PASS Property align-items value 'safe self-end'
+Harness: the test ran to completion.
+

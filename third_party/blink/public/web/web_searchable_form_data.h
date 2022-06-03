@@ -64,4 +64,4 @@ class WebSearchableFormData {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_SEARCHABLE_FORM_DATA_H_

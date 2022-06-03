@@ -4,17 +4,25 @@
 
 module blink.mojom;
 
-import "third_party/blink/public/mojom/feature_policy/feature_policy.mojom";
-import "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom";
-import "third_party/blink/public/mojom/feature_policy/policy_value.mojom";
+import "services/network/public/mojom/web_sandbox_flags.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom";
+import "third_party/blink/public/mojom/permissions_policy/document_policy_feature.mojom";
+import "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom";
+import "third_party/blink/public/mojom/permissions_policy/policy_value.mojom";
 
 // This struct holds frame policy value that needs to be passed from browser
 // process to renderer process during navigation. It is used as a data
 // member of CommitNavigationParams. For details, please refer to
 // navigation_params.mojom.
 struct FramePolicy {
-  blink.mojom.WebSandboxFlags sandbox_flags;
-  array<blink.mojom.ParsedFeaturePolicyDeclaration> container_policy;
-  map<blink.mojom.FeaturePolicyFeature, blink.mojom.PolicyValue> required_document_policy;
-  bool allowed_to_download = true;
+  network.mojom.WebSandboxFlags sandbox_flags;
+  array<blink.mojom.ParsedPermissionsPolicyDeclaration> container_policy;
+  map<blink.mojom.DocumentPolicyFeature, blink.mojom.PolicyValue> required_document_policy;
+
+  // IMPORTANT NOTE: This is a temporary member that does not align with the
+  // long-term architecture, and will be removed after the <fencedframe>
+  // ShadowDOM-based origin trial, please do not use this for anything else. See
+  // https://docs.google.com/document/d/1ijTZJT3DHQ1ljp4QQe4E4XCCRaYAxmInNzN1SzeJM8s/edit
+  // and crbug.com/1123606.
+  bool is_fenced = false;
 };

@@ -5,11 +5,12 @@
 #ifndef ASH_SYSTEM_UNIFIED_QUIET_MODE_FEATURE_POD_CONTROLLER_H_
 #define ASH_SYSTEM_UNIFIED_QUIET_MODE_FEATURE_POD_CONTROLLER_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "ash/public/cpp/notifier_settings_observer.h"
 #include "ash/system/unified/feature_pod_controller_base.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/message_center/message_center_observer.h"
 
 namespace ash {
@@ -26,6 +27,11 @@ class ASH_EXPORT QuietModeFeaturePodController
  public:
   explicit QuietModeFeaturePodController(
       UnifiedSystemTrayController* tray_controller);
+
+  QuietModeFeaturePodController(const QuietModeFeaturePodController&) = delete;
+  QuietModeFeaturePodController& operator=(
+      const QuietModeFeaturePodController&) = delete;
+
   ~QuietModeFeaturePodController() override;
 
   // FeaturePodControllerBase:
@@ -42,13 +48,15 @@ class ASH_EXPORT QuietModeFeaturePodController
       const std::vector<NotifierMetadata>& notifiers) override;
 
  private:
-  base::string16 GetQuietModeStateTooltip();
+  std::u16string GetQuietModeStateTooltip();
+
+  void RecordDisabledNotifierCount(int disabled_count);
 
   UnifiedSystemTrayController* const tray_controller_;
 
   FeaturePodButton* button_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(QuietModeFeaturePodController);
+  absl::optional<int> last_disabled_count_;
 };
 
 }  // namespace ash

@@ -28,7 +28,8 @@ class BASE_EXPORT AtomicFlagSet {
 
  public:
   explicit AtomicFlagSet(scoped_refptr<AssociatedThreadId> associated_thread);
-
+  AtomicFlagSet(const AtomicFlagSet&) = delete;
+  AtomicFlagSet& operator=(const AtomicFlagSet&) = delete;
   // AtomicFlags need to be released (or deleted) before this can be deleted.
   ~AtomicFlagSet();
 
@@ -89,6 +90,8 @@ class BASE_EXPORT AtomicFlagSet {
   // AtomicFlag's with one bit per flag.
   struct BASE_EXPORT Group {
     Group();
+    Group(const Group&) = delete;
+    Group& operator=(const Group&) = delete;
     ~Group();
 
     static constexpr int kNumFlags = sizeof(size_t) * 8;
@@ -112,9 +115,6 @@ class BASE_EXPORT AtomicFlagSet {
     // Computes the index of the |flag_callbacks| based on the number of leading
     // zero bits in |flag|.
     static int IndexOfFirstFlagSet(size_t flag);
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Group);
   };
 
  private:
@@ -131,8 +131,6 @@ class BASE_EXPORT AtomicFlagSet {
   scoped_refptr<AssociatedThreadId> associated_thread_;
   std::unique_ptr<Group> alloc_list_head_;
   Group* partially_free_list_head_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AtomicFlagSet);
 };
 
 }  // namespace internal

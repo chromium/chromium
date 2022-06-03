@@ -14,6 +14,9 @@ import zipfile
 
 from util import build_utils
 
+sys.path.insert(1, os.path.join(build_utils.DIR_SOURCE_ROOT, 'build'))
+import print_python_deps
+
 # When set and a difference is detected, a diff of what changed is printed.
 PRINT_EXPLANATIONS = int(os.environ.get('PRINT_BUILD_EXPLANATIONS', 0))
 
@@ -29,7 +32,7 @@ def CallAndWriteDepfileIfStale(on_stale_md5,
                                output_paths=None,
                                force=False,
                                pass_changes=False,
-                               track_subpaths_whitelist=None,
+                               track_subpaths_allowlist=None,
                                depfile_deps=None):
   """Wraps CallAndRecordIfStale() and writes a depfile if applicable.
 
@@ -48,7 +51,7 @@ def CallAndWriteDepfileIfStale(on_stale_md5,
   input_strings = list(input_strings or [])
   output_paths = list(output_paths or [])
 
-  input_paths += build_utils.ComputePythonDependencies()
+  input_paths += print_python_deps.ComputePythonDependencies()
 
   CallAndRecordIfStale(
       on_stale_md5,
@@ -58,14 +61,13 @@ def CallAndWriteDepfileIfStale(on_stale_md5,
       output_paths=output_paths,
       force=force,
       pass_changes=pass_changes,
-      track_subpaths_whitelist=track_subpaths_whitelist)
+      track_subpaths_allowlist=track_subpaths_allowlist)
 
   # Write depfile even when inputs have not changed to ensure build correctness
   # on bots that build with & without patch, and the patch changes the depfile
   # location.
   if hasattr(options, 'depfile') and options.depfile:
-    build_utils.WriteDepfile(
-        options.depfile, output_paths[0], depfile_deps, add_pydeps=False)
+    build_utils.WriteDepfile(options.depfile, output_paths[0], depfile_deps)
 
 
 def CallAndRecordIfStale(function,
@@ -75,7 +77,7 @@ def CallAndRecordIfStale(function,
                          output_paths=None,
                          force=False,
                          pass_changes=False,
-                         track_subpaths_whitelist=None):
+                         track_subpaths_allowlist=None):
   """Calls function if outputs are stale.
 
   Outputs are considered stale if:
@@ -96,7 +98,7 @@ def CallAndRecordIfStale(function,
     force: Whether to treat outputs as missing regardless of whether they
       actually are.
     pass_changes: Whether to pass a Changes instance to |function|.
-    track_subpaths_whitelist: Relevant only when pass_changes=True. List of .zip
+    track_subpaths_allowlist: Relevant only when pass_changes=True. List of .zip
       files from |input_paths| to make subpath information available for.
   """
   assert record_path or output_paths
@@ -112,11 +114,11 @@ def CallAndRecordIfStale(function,
   new_metadata = _Metadata(track_entries=pass_changes or PRINT_EXPLANATIONS)
   new_metadata.AddStrings(input_strings)
 
-  zip_whitelist = set(track_subpaths_whitelist or [])
+  zip_allowlist = set(track_subpaths_allowlist or [])
   for path in input_paths:
     # It's faster to md5 an entire zip file than it is to just locate & hash
     # its central directory (which is what this used to do).
-    if path in zip_whitelist:
+    if path in zip_allowlist:
       entries = _ExtractZipEntries(path)
       new_metadata.AddZipFile(path, entries)
     else:
@@ -125,15 +127,21 @@ def CallAndRecordIfStale(function,
   old_metadata = None
   force = force or _FORCE_REBUILD
   missing_outputs = [x for x in output_paths if force or not os.path.exists(x)]
+  too_new = []
   # When outputs are missing, don't bother gathering change information.
   if not missing_outputs and os.path.exists(record_path):
-    with open(record_path, 'r') as jsonfile:
-      try:
-        old_metadata = _Metadata.FromFile(jsonfile)
-      except:  # pylint: disable=bare-except
-        pass  # Not yet using new file format.
+    record_mtime = os.path.getmtime(record_path)
+    # Outputs newer than the change information must have been modified outside
+    # of the build, and should be considered stale.
+    too_new = [x for x in output_paths if os.path.getmtime(x) > record_mtime]
+    if not too_new:
+      with open(record_path, 'r') as jsonfile:
+        try:
+          old_metadata = _Metadata.FromFile(jsonfile)
+        except:  # pylint: disable=bare-except
+          pass  # Not yet using new file format.
 
-  changes = Changes(old_metadata, new_metadata, force, missing_outputs)
+  changes = Changes(old_metadata, new_metadata, force, missing_outputs, too_new)
   if not changes.HasChanges():
     return
 
@@ -153,11 +161,13 @@ def CallAndRecordIfStale(function,
 class Changes(object):
   """Provides and API for querying what changed between runs."""
 
-  def __init__(self, old_metadata, new_metadata, force, missing_outputs):
+  def __init__(self, old_metadata, new_metadata, force, missing_outputs,
+               too_new):
     self.old_metadata = old_metadata
     self.new_metadata = new_metadata
     self.force = force
     self.missing_outputs = missing_outputs
+    self.too_new = too_new
 
   def _GetOldTag(self, path, subpath=None):
     return self.old_metadata and self.old_metadata.GetTag(path, subpath)
@@ -254,6 +264,8 @@ class Changes(object):
       return 'force=True'
     elif self.missing_outputs:
       return 'Outputs do not exist:\n  ' + '\n  '.join(self.missing_outputs)
+    elif self.too_new:
+      return 'Outputs newer than stamp file:\n  ' + '\n  '.join(self.too_new)
     elif self.old_metadata is None:
       return 'Previous stamp file not found.'
 
@@ -443,7 +455,7 @@ def _ComputeInlineMd5(iterable):
   """Computes the md5 of the concatenated parameters."""
   md5 = hashlib.md5()
   for item in iterable:
-    md5.update(str(item))
+    md5.update(str(item).encode('ascii'))
   return md5.hexdigest()
 
 

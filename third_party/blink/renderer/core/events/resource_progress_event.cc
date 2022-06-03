@@ -45,7 +45,7 @@ const AtomicString& ResourceProgressEvent::InterfaceName() const {
   return event_interface_names::kResourceProgressEvent;
 }
 
-void ResourceProgressEvent::Trace(blink::Visitor* visitor) {
+void ResourceProgressEvent::Trace(Visitor* visitor) const {
   ProgressEvent::Trace(visitor);
 }
 

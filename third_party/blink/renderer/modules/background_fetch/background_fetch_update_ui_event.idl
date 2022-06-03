@@ -9,5 +9,5 @@
     RuntimeEnabled=BackgroundFetch
 ] interface BackgroundFetchUpdateUIEvent : BackgroundFetchEvent {
     constructor(DOMString type, BackgroundFetchEventInit init);
-    [CallWith=ScriptState, RaisesException] Promise<void> updateUI(optional BackgroundFetchUIOptions options);
+  [CallWith=ScriptState, RaisesException] Promise<void> updateUI(optional BackgroundFetchUIOptions options = {});
 };

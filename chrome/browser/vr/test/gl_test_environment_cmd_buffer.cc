@@ -71,7 +71,9 @@ GlTestEnvironment::GlTestEnvironment(const gfx::Size frame_buffer_size) {
       true,                                                      /* offscreen */
       gpu::kNullSurfaceHandle,                                   /* window */
       attributes, gpu::SharedMemoryLimits(),
-      nullptr /* memory_buffer_manager */, nullptr, /* image_factory */
+      nullptr /* memory_buffer_manager */, nullptr /* image_factory */,
+      nullptr /* gpu_task_scheduler_helper */,
+      nullptr /* display_compositor_memory_and_task_controller_on_gpu */,
       base::ThreadTaskRunnerHandle::Get());
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   gles2::SetGLContext(context_->GetImplementation());

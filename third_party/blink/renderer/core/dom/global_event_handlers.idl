@@ -33,7 +33,6 @@
     LegacyTreatAsPartialInterface
 ] interface mixin GlobalEventHandlers {
     attribute EventHandler onabort;
-    [RuntimeEnabled=InvisibleDOM] attribute EventHandler onactivateinvisible;
     attribute EventHandler onblur;
     attribute EventHandler oncancel;
     attribute EventHandler oncanplay;
@@ -55,8 +54,7 @@
     attribute EventHandler ondurationchange;
     attribute EventHandler onemptied;
     attribute EventHandler onended;
-    // FIXME: onerror should be an OnErrorEventHandler.
-    attribute EventHandler onerror;
+    attribute OnErrorEventHandler onerror;
     attribute EventHandler onfocus;
     attribute EventHandler onformdata;
     attribute EventHandler oninput;
@@ -69,8 +67,8 @@
     attribute EventHandler onloadedmetadata;
     attribute EventHandler onloadstart;
     attribute EventHandler onmousedown;
-    [LenientThis] attribute EventHandler onmouseenter;
-    [LenientThis] attribute EventHandler onmouseleave;
+    [LegacyLenientThis] attribute EventHandler onmouseenter;
+    [LegacyLenientThis] attribute EventHandler onmouseleave;
     attribute EventHandler onmousemove;
     attribute EventHandler onmouseout;
     attribute EventHandler onmouseover;
@@ -82,14 +80,15 @@
     attribute EventHandler onplaying;
     attribute EventHandler onprogress;
     attribute EventHandler onratechange;
-    [RuntimeEnabled=DisplayLocking] attribute EventHandler onrendersubtreeactivation;
     attribute EventHandler onreset;
     attribute EventHandler onresize;
     attribute EventHandler onscroll;
     [RuntimeEnabled=OverscrollCustomization] attribute EventHandler onscrollend;
+    attribute EventHandler onsecuritypolicyviolation;
     attribute EventHandler onseeked;
     attribute EventHandler onseeking;
     attribute EventHandler onselect;
+    attribute EventHandler onslotchange;
     //attribute EventHandler onsort;
     attribute EventHandler onstalled;
     attribute EventHandler onsubmit;
@@ -98,6 +97,10 @@
     attribute EventHandler ontoggle;
     attribute EventHandler onvolumechange;
     attribute EventHandler onwaiting;
+    attribute EventHandler onwebkitanimationend;
+    attribute EventHandler onwebkitanimationiteration;
+    attribute EventHandler onwebkitanimationstart;
+    attribute EventHandler onwebkittransitionend;
     attribute EventHandler onwheel;
 
     // auxclick
@@ -138,5 +141,8 @@
 
     // CSS Transitions
     // https://drafts.csswg.org/css-transitions/#interface-globaleventhandlers-idl
+    attribute EventHandler ontransitionrun;
+    attribute EventHandler ontransitionstart;
     attribute EventHandler ontransitionend;
+    attribute EventHandler ontransitioncancel;
 };

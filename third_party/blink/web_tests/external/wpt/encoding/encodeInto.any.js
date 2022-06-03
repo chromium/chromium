@@ -1,3 +1,6 @@
+// META: global=window,worker
+// META: script=/common/sab.js
+
 [
   {
     "input": "Hi",
@@ -77,15 +80,15 @@
     ["ArrayBuffer", "SharedArrayBuffer"].forEach(arrayBufferOrSharedArrayBuffer => {
       test(() => {
         // Setup
-        const bufferLength = testData.destinationLength + destinationData.bufferIncrease,
-              destinationOffset = destinationData.destinationOffset,
-              destinationLength = testData.destinationLength,
-              destinationFiller = destinationData.filler,
-              encoder = new TextEncoder(),
-              buffer = new self[arrayBufferOrSharedArrayBuffer](bufferLength),
-              view = new Uint8Array(buffer, destinationOffset, destinationLength),
-              fullView = new Uint8Array(buffer),
-              control = new Array(bufferLength);
+        const bufferLength = testData.destinationLength + destinationData.bufferIncrease;
+        const destinationOffset = destinationData.destinationOffset;
+        const destinationLength = testData.destinationLength;
+        const destinationFiller = destinationData.filler;
+        const encoder = new TextEncoder();
+        const buffer = createBuffer(arrayBufferOrSharedArrayBuffer, bufferLength);
+        const view = new Uint8Array(buffer, destinationOffset, destinationLength);
+        const fullView = new Uint8Array(buffer);
+        const control = new Array(bufferLength);
         let byte = destinationFiller;
         for (let i = 0; i < bufferLength; i++) {
           if (destinationFiller === "random") {
@@ -117,29 +120,30 @@
   });
 });
 
-[DataView,
- Int8Array,
- Int16Array,
- Int32Array,
- Uint16Array,
- Uint32Array,
- Uint8ClampedArray,
- Float32Array,
- Float64Array].forEach(view => {
+["DataView",
+ "Int8Array",
+ "Int16Array",
+ "Int32Array",
+ "Uint16Array",
+ "Uint32Array",
+ "Uint8ClampedArray",
+ "BigInt64Array",
+ "BigUint64Array",
+ "Float32Array",
+ "Float64Array"].forEach(type => {
   ["ArrayBuffer", "SharedArrayBuffer"].forEach((arrayBufferOrSharedArrayBuffer) => {
     test(() => {
-      assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", new view(new self[arrayBufferOrSharedArrayBuffer](0))));
-    }, "Invalid encodeInto() destination: " + view.name + ", backed by: " + arrayBufferOrSharedArrayBuffer);
+      const viewInstance = new self[type](createBuffer(arrayBufferOrSharedArrayBuffer, 0));
+      assert_throws_js(TypeError, () => new TextEncoder().encodeInto("", viewInstance));
+    }, "Invalid encodeInto() destination: " + type + ", backed by: " + arrayBufferOrSharedArrayBuffer);
   });
 });
 
 ["ArrayBuffer", "SharedArrayBuffer"].forEach((arrayBufferOrSharedArrayBuffer) => {
   test(() => {
-    assert_throws(new TypeError(), () => new TextEncoder().encodeInto("", new self[arrayBufferOrSharedArrayBuffer](10)));
+    assert_throws_js(TypeError, () => new TextEncoder().encodeInto("", createBuffer(arrayBufferOrSharedArrayBuffer, 10)));
   }, "Invalid encodeInto() destination: " + arrayBufferOrSharedArrayBuffer);
 });
-
-
 
 test(() => {
   const buffer = new ArrayBuffer(10),

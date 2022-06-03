@@ -1,0 +1,13 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='initial spacer, will initially make everything below this far away from the viewport'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='This text will get viewport-activated because it's in the viewport, and will be in AX tree with layout.'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='This text is also in viewport.'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='spacer so that everything below will be offscreen (and won't get viewport-activated)'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='<newline>    This text will not get viewport-activated, and will be in AX tree but without layout.<newline>  '
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='doneActivating'

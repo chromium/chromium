@@ -20,9 +20,7 @@ static_library("test") {
     "test_history_database.cc",
     "test_history_database.h",
     "thumbnail-inl.h",
-    "thumbnail.cc",
     "thumbnail.h",
-    "thumbnail_ios.mm",
     "wait_top_sites_loaded_observer.cc",
     "wait_top_sites_loaded_observer.h",
   ]
@@ -42,6 +40,8 @@ static_library("test") {
   ]
 
   if (is_ios) {
-    sources -= [ "thumbnail.cc" ]
+    sources += [ "thumbnail_ios.mm" ]
+  } else {
+    sources += [ "thumbnail.cc" ]
   }
 }

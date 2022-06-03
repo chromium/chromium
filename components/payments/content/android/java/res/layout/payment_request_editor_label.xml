@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2016 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/editor_dialog_section_large_spacing"
+        android:layout_marginBottom="@dimen/editor_dialog_section_large_spacing"
+        android:layout_marginStart="@dimen/pref_autofill_field_horizontal_padding"
+        android:layout_marginEnd="@dimen/pref_autofill_field_horizontal_padding">
+
+    <ImageView
+            android:id="@+id/icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:importantForAccessibility="no" />
+
+    <TextView
+            android:id="@+id/top_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toStartOf="@id/icon"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            style="@style/PreferenceTitle" />
+
+    <TextView
+            android:id="@+id/mid_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/top_label"
+            android:layout_toStartOf="@id/icon"
+            android:layout_alignParentStart="true"
+            style="@style/PreferenceSummary" />
+
+    <TextView
+            android:id="@+id/bottom_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/mid_label"
+            android:layout_toStartOf="@id/icon"
+            android:layout_alignParentStart="true"
+            android:textAppearance="@style/TextAppearance.TextSmall.Secondary" />
+
+</RelativeLayout>

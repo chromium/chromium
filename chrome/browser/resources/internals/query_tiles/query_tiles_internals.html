@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Query Tiles Internals</title>
+    <meta name="viewport" content="width=device-width">
+    <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+  </head>
+  <body>
+    <h1>Query Tiles Internals</h1>
+    <h4>Fetcher Controller</h4>
+    <div>
+      <button id="start-fetch">Start fetch</button>
+    </div>
+    <h4>Database Controller</h4>
+    <div>
+      <button id="purge-db">Purge database</button>
+    </div>
+    <h4>Service State</h4>
+    <div>
+      Fetcher status: <span id="fetcher-status"></span>
+      Database status: <span id="group-status"></span>
+    </div>
+    <h4>Server address</h4>
+    <div>
+      <Label for="base-url">Base URL:</Label>
+      <input type="text" id="base-url" placeholder="https://chromeupboarding-pa.googleapis.com">
+      <button id="prototype-server">Prototype server</button>
+      <button id="prod-server">Prod server</button>
+      <button id="set-url">Set base URL</button>
+    </div>
+    <h4>Tile data</h4>
+      Group info: <span id="group-info"></span>
+      Tile proto: <span id="tile-proto"></span>
+    <div>
+    </div>
+    <script type="module" src="query_tiles_internals.js"></script>
+  </body>
+</html>

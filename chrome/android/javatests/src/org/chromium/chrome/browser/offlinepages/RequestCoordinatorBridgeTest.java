@@ -4,23 +4,25 @@
 
 package org.chromium.chrome.browser.offlinepages;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Callback;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.offlinepages.background.UpdateRequestResult;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -36,24 +38,25 @@ import java.util.concurrent.atomic.AtomicReference;
 /** Unit tests for {@link RequestCoordinatorBridge}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
 public class RequestCoordinatorBridgeTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final int TIMEOUT_MS = 5000;
 
     private RequestCoordinatorBridge mRequestCoordinatorBridge;
+    private Profile mProfile;
 
-    private void initializeBridgeForProfile(final boolean incognitoProfile)
-            throws InterruptedException {
+    private void initializeBridgeForProfile() throws InterruptedException {
         final Semaphore semaphore = new Semaphore(0);
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            Profile profile = Profile.getLastUsedProfile();
-            if (incognitoProfile) {
-                profile = profile.getOffTheRecordProfile();
-            }
-            mRequestCoordinatorBridge = RequestCoordinatorBridge.getForProfile(profile);
+            mRequestCoordinatorBridge = RequestCoordinatorBridge.getForProfile(mProfile);
             semaphore.release();
         });
         Assert.assertTrue(semaphore.tryAcquire(TIMEOUT_MS, TimeUnit.MILLISECONDS));
@@ -61,8 +64,6 @@ public class RequestCoordinatorBridgeTest {
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Ensure we start in an offline state.
             NetworkChangeNotifier.forceConnectivityState(false);
@@ -71,12 +72,20 @@ public class RequestCoordinatorBridgeTest {
             }
         });
 
-        initializeBridgeForProfile(false);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mProfile = Profile.getLastUsedRegularProfile(); });
+
+        initializeBridgeForProfile();
+
+        List<Long> requestsToRemove = new ArrayList<>();
+        for (SavePageRequest savePageRequest : OfflineTestUtil.getRequestsInQueue()) {
+            requestsToRemove.add(Long.valueOf(savePageRequest.getRequestId()));
+        }
+        removeRequestsFromQueue(requestsToRemove);
     }
 
     @Test
     @MediumTest
-    @RetryOnFailure
     public void testGetRequestsInQueue() throws Exception {
         String url = "https://www.google.com/";
         String namespace = "custom_tabs";
@@ -110,15 +119,29 @@ public class RequestCoordinatorBridgeTest {
 
     @Test
     @MediumTest
-    @RetryOnFailure
-    public void testRequestCoordinatorBridgeDisabledInIncognito() throws Exception {
-        initializeBridgeForProfile(true);
+    public void testRequestCoordinatorBridgeDisabledInIncognitoTabbedActivity() throws Exception {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mProfile = Profile.getLastUsedRegularProfile().getPrimaryOTRProfile(
+                    /*createIfNeeded=*/true);
+        });
+        initializeBridgeForProfile();
         Assert.assertEquals(null, mRequestCoordinatorBridge);
     }
 
     @Test
     @MediumTest
-    @RetryOnFailure
+    public void testRequestCoordinatorBridgeDisabledInIncognitoCCT() throws Exception {
+        OTRProfileID otrProfileID = OTRProfileID.createUnique("CCT:Incognito");
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mProfile = Profile.getLastUsedRegularProfile().getOffTheRecordProfile(
+                    otrProfileID, /*createIfNeeded=*/true);
+        });
+        initializeBridgeForProfile();
+        Assert.assertEquals(null, mRequestCoordinatorBridge);
+    }
+
+    @Test
+    @MediumTest
     public void testRemoveRequestsFromQueue() throws Exception {
         String url = "https://www.google.com/";
         String namespace = "custom_tabs";

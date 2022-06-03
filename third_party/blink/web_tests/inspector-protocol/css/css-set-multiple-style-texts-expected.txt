@@ -24,13 +24,13 @@ The test verifies functionality of protocol method CSS.setStyleTexts.
 
 
 Running test: testMalformedArguments1
-Expected protocol error: Invalid parameters (edits.1.styleSheetId: string value expected)
+Expected protocol error: Invalid parameters (Failed to deserialize params.edits.styleSheetId - BINDINGS: mandatory field missing <somewhere>)
 
 Running test: testMalformedArguments2
-Expected protocol error: Invalid parameters (edits.0.range: object expected; edits.0.text: string value expected; edits.2.styleSheetId: string value expected)
+Expected protocol error: Invalid parameters (Failed to deserialize params.edits.range - BINDINGS: mandatory field missing <somewhere>)
 
 Running test: testMalformedArguments3
-Expected protocol error: Invalid parameters (edits.0.range.startLine: integer value expected)
+Expected protocol error: Invalid parameters (Failed to deserialize params.edits.range.startLine - BINDINGS: int32 value expected <somewhere>)
 
 Running test: testFirstEditDoesNotApply
 Expected protocol error: Failed applying edit #0: SyntaxError Style text is not valid.

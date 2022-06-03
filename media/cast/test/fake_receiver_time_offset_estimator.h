@@ -5,7 +5,6 @@
 #ifndef MEDIA_CAST_TEST_FAKE_RECEIVER_TIME_OFFSET_ESTIMATOR_H_
 #define MEDIA_CAST_TEST_FAKE_RECEIVER_TIME_OFFSET_ESTIMATOR_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/threading/thread_checker.h"
 #include "media/cast/logging/logging_defines.h"
@@ -17,9 +16,15 @@ namespace test {
 
 // This class is used for testing. It will always return the |offset| value
 // provided during construction as offset bounds.
-class FakeReceiverTimeOffsetEstimator : public ReceiverTimeOffsetEstimator {
+class FakeReceiverTimeOffsetEstimator final
+    : public ReceiverTimeOffsetEstimator {
  public:
   FakeReceiverTimeOffsetEstimator(base::TimeDelta offset);
+
+  FakeReceiverTimeOffsetEstimator(const FakeReceiverTimeOffsetEstimator&) =
+      delete;
+  FakeReceiverTimeOffsetEstimator& operator=(
+      const FakeReceiverTimeOffsetEstimator&) = delete;
 
   ~FakeReceiverTimeOffsetEstimator() final;
 
@@ -33,7 +38,6 @@ class FakeReceiverTimeOffsetEstimator : public ReceiverTimeOffsetEstimator {
 
  private:
   const base::TimeDelta offset_;
-  DISALLOW_COPY_AND_ASSIGN(FakeReceiverTimeOffsetEstimator);
 };
 
 }  // namespace test

@@ -1,0 +1,57 @@
+A squashing Layer that becomes non-composited should correctly send a repaint invalidation to the new container GraphicsLayer that it paints into. When run interactively, hovering over the force-composited gray div should not cause other layers to disappear.
+
+CASE 1, original layer tree:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='forceComposited' class='composited underneath'",
+      "bounds": [150, 150],
+      "contentsOpaque": true,
+      "backgroundColor": "#808080",
+      "transform": 1
+    },
+    {
+      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV id='A' class='overlap1')",
+      "position": [120, 120],
+      "bounds": [210, 210],
+      "backgroundColor": "#FF00FF",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [90, 90, 0, 1]
+      ]
+    }
+  ]
+}
+
+CASE 2, The original composited layer is no longer composited, which then also removes all squashing layers. The important point is that there should be an appropriate repaint to the root GraphicsLayer:
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [270, 270, 150, 150],
+        [240, 240, 150, 150],
+        [210, 210, 150, 150],
+        [90, 90, 150, 150]
+      ]
+    }
+  ]
+}
+

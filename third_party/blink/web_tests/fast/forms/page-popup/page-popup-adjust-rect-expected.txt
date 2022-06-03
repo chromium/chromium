@@ -27,9 +27,9 @@ PASS popupWindow.adjustWindowRect(30, 10, 30, 10).toString() is "Rectangle(40,10
 PASS popupWindow.adjustWindowRect(30, 10, 30, 10).toString() is "Rectangle(50,10,30,10)"
 PASS popupWindow.adjustWindowRect(30, 10, 30, 10).toString() is "Rectangle(50,10,30,10)"
 PASS popupWindow.adjustWindowRect(30, 10, 30, 10).toString() is "Rectangle(60,10,30,10)"
+PASS popupWindow.adjustWindowRect(30, 10, 30, 10).toString() is "Rectangle(70,10,30,10)"
 PASS popupWindow.adjustWindowRect(30, 10, 30, 10).toString() is "Rectangle(80,10,30,10)"
 PASS popupWindow.adjustWindowRect(30, 10, 30, 10).toString() is "Rectangle(90,10,30,10)"
-PASS popupWindow.adjustWindowRect(30, 10, 30, 10).toString() is "Rectangle(100,10,30,10)"
 Move anchor element along the vertical axis. Open popup that is too tall.
 PASS popupWindow.adjustWindowRect(30, 1000, 30, 10).toString() is "Rectangle(0,-10,30,60)"
 PASS popupWindow.adjustWindowRect(30, 1000, 30, 10).toString() is "Rectangle(0,0,30,60)"

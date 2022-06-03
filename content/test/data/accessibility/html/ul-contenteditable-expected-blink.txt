@@ -1,0 +1,15 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++textField multiline value='Hello<newline><newline>Bye'
+++++++++list
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++staticText name='Hello'
+++++++++++++++inlineTextBox name='Hello'
+++++++++++listItem
+++++++++++++listMarker name='%E2%80%A2 '
+++++++++++++++staticText ignored name='%E2%80%A2 '
+++++++++++++staticText name='Bye'
+++++++++++++++inlineTextBox name='Bye'

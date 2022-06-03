@@ -9,7 +9,7 @@
 description("Tests to ensure that ShadowRoot.getElementById works even after mutation");
 
 var host = document.getElementById("host");
-var shadow = host.createShadowRoot();
+var shadow = host.attachShadow({mode: 'open'});
 
 shouldBe("null", "shadow.getElementById('foo')");
 

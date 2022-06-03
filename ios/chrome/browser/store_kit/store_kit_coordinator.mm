@@ -7,7 +7,7 @@
 #import <StoreKit/StoreKit.h>
 #import <UIKit/UIKit.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

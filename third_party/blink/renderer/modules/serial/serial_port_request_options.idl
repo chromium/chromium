@@ -5,4 +5,5 @@
 // https://wicg.github.io/serial
 
 dictionary SerialPortRequestOptions {
+  sequence<SerialPortFilter> filters;
 };

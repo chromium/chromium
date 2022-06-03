@@ -6,8 +6,10 @@
 #define COMPONENTS_SYNC_DEVICE_INFO_DEVICE_INFO_SYNC_SERVICE_IMPL_H_
 
 #include <memory>
-#include <string>
 
+#include "base/callback_helpers.h"
+#include "components/sync/invalidations/fcm_registration_token_observer.h"
+#include "components/sync/invalidations/interested_data_types_handler.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync_device_info/device_info_sync_service.h"
 
@@ -17,18 +19,29 @@ class DeviceInfoPrefs;
 class DeviceInfoSyncClient;
 class DeviceInfoSyncBridge;
 class MutableLocalDeviceInfoProvider;
+class SyncInvalidationsService;
 
-class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService {
+class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService,
+                                  public FCMRegistrationTokenObserver,
+                                  public InterestedDataTypesHandler {
  public:
   // |local_device_info_provider| must not be null.
   // |device_info_prefs| must not be null.
   // |device_info_sync_client| must not be null and must outlive this object.
+  // |sync_invalidations_service| can be null if sync invalidations are
+  // disabled.
   DeviceInfoSyncServiceImpl(
       OnceModelTypeStoreFactory model_type_store_factory,
       std::unique_ptr<MutableLocalDeviceInfoProvider>
           local_device_info_provider,
       std::unique_ptr<DeviceInfoPrefs> device_info_prefs,
-      std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client);
+      std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client,
+      SyncInvalidationsService* sync_invalidations_service);
+
+  DeviceInfoSyncServiceImpl(const DeviceInfoSyncServiceImpl&) = delete;
+  DeviceInfoSyncServiceImpl& operator=(const DeviceInfoSyncServiceImpl&) =
+      delete;
+
   ~DeviceInfoSyncServiceImpl() override;
 
   // DeviceInfoSyncService implementation.
@@ -37,11 +50,22 @@ class DeviceInfoSyncServiceImpl : public DeviceInfoSyncService {
   base::WeakPtr<ModelTypeControllerDelegate> GetControllerDelegate() override;
   void RefreshLocalDeviceInfo() override;
 
+  // FCMRegistrationTokenObserver implementation.
+  void OnFCMRegistrationTokenChanged() override;
+
+  // InterestedDataTypesHandler implementation.
+  void OnInterestedDataTypesChanged() override;
+  void SetCommittedAdditionalInterestedDataTypesCallback(
+      base::RepeatingCallback<void(const ModelTypeSet&)> callback) override;
+
+  // KeyedService overrides.
+  void Shutdown() override;
+
  private:
   std::unique_ptr<DeviceInfoSyncClient> device_info_sync_client_;
   std::unique_ptr<DeviceInfoSyncBridge> bridge_;
 
-  DISALLOW_COPY_AND_ASSIGN(DeviceInfoSyncServiceImpl);
+  SyncInvalidationsService* const sync_invalidations_service_;
 };
 
 }  // namespace syncer

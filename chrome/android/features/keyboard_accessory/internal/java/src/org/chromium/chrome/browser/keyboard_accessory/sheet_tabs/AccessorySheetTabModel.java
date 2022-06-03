@@ -4,9 +4,8 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
-import android.support.v7.widget.RecyclerView;
-
 import androidx.annotation.IntDef;
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
 import org.chromium.ui.modelutil.ListModel;
@@ -26,7 +25,8 @@ class AccessorySheetTabModel extends ListModel<AccessorySheetTabModel.AccessoryS
      */
     static class AccessorySheetDataPiece {
         @IntDef({Type.TITLE, Type.PASSWORD_INFO, Type.ADDRESS_INFO, Type.CREDIT_CARD_INFO,
-                Type.TOUCH_TO_FILL_INFO, Type.FOOTER_COMMAND, Type.WARNING})
+                Type.TOUCH_TO_FILL_INFO, Type.FOOTER_COMMAND, Type.WARNING, Type.OPTION_TOGGLE,
+                Type.PROMO_CODE_INFO})
         @Retention(RetentionPolicy.SOURCE)
         @interface Type {
             /**
@@ -57,6 +57,16 @@ class AccessorySheetTabModel extends ListModel<AccessorySheetTabModel.AccessoryS
              * An optional warning to be displayed at the beginning of a sheet.
              */
             int WARNING = 7;
+            /**
+             * An optional toggle to be displayed at the beginning of a sheet. Used for example
+             * to allow the user to enable password saving for a website for which saving was
+             * previously disabled.
+             */
+            int OPTION_TOGGLE = 8;
+            /**
+             * A section containing a promo code info.
+             */
+            int PROMO_CODE_INFO = 9;
         }
 
         private Object mDataPiece;

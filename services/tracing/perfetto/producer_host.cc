@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/process/process.h"
+#include "base/tracing/perfetto_task_runner.h"
 #include "build/build_config.h"
 #include "services/tracing/perfetto/perfetto_service.h"
 #include "services/tracing/public/cpp/perfetto/producer_client.h"
@@ -19,16 +20,8 @@
 
 namespace tracing {
 
-// TODO(oysteine): Find a good compromise between performance and
-// data granularity (mainly relevant to running with small buffer sizes
-// when we use background tracing) on Android.
-#if defined(OS_ANDROID)
-constexpr size_t kSMBPageSizeInBytes = 4 * 1024;
-#else
-constexpr size_t kSMBPageSizeInBytes = 32 * 1024;
-#endif
-
-ProducerHost::ProducerHost() = default;
+ProducerHost::ProducerHost(base::tracing::PerfettoTaskRunner* task_runner)
+    : task_runner_(task_runner) {}
 
 ProducerHost::~ProducerHost() {
   // Manually reset to prevent any callbacks from the ProducerEndpoint
@@ -36,44 +29,64 @@ ProducerHost::~ProducerHost() {
   producer_endpoint_.reset();
 }
 
-void ProducerHost::Initialize(
+ProducerHost::InitializationResult ProducerHost::Initialize(
     mojo::PendingRemote<mojom::ProducerClient> producer_client,
     perfetto::TracingService* service,
-    const std::string& name) {
+    const std::string& name,
+    mojo::ScopedSharedBufferHandle shared_memory,
+    uint64_t shared_memory_buffer_page_size_bytes) {
   DCHECK(service);
   DCHECK(!producer_endpoint_);
 
   producer_client_.Bind(std::move(producer_client));
 
-  // Attempt to parse the PID out of the producer name.
-  // If the Producer is in-process, we:
-  // * Signal Perfetto that it should create and manage its own
-  // SharedMemoryArbiter
-  //   when we call ConnectProducer.
-  // * Set the local ProducerClient instance to use this SMA instead of passing
-  //   an SMB handle over Mojo and letting it create its own.
-  // * After that point, any TraceWriter created by TraceEventDataSource will
-  //   use this in-process SMA, and hence be able to synchronously flush full
-  //   SMB chunks if we're running on the same sequence as the Perfetto service,
-  //   hence we avoid any deadlocking occurring from trace events emitted from
-  //   the Perfetto sequence filling up the SMB and stalling while waiting for
-  //   Perfetto to free the chunks.
-  if (!base::FeatureList::IsEnabled(
-          features::kPerfettoForceOutOfProcessProducer)) {
-    base::ProcessId pid;
-    if (PerfettoService::ParsePidFromProducerName(name, &pid)) {
-      is_in_process_ = (pid == base::Process::Current().Pid());
+  auto shm = std::make_unique<MojoSharedMemory>(std::move(shared_memory));
+  // We may fail to map the buffer provided by the ProducerClient.
+  if (!shm->start()) {
+    return InitializationResult::kSmbMappingFailed;
+  }
+
+  size_t shm_size = shm->size();
+  MojoSharedMemory* shm_raw = shm.get();
+
+  // TODO(oysteine): Figure out a uid once we need it.
+  producer_endpoint_ = service->ConnectProducer(
+      this, 0 /* uid */, name, shm_size, /*in_process=*/false,
+      perfetto::TracingService::ProducerSMBScrapingMode::kDefault,
+      shared_memory_buffer_page_size_bytes, std::move(shm));
+
+  // In some cases, the service may deny the producer connection (e.g. if too
+  // many producers are registered).
+  if (!producer_endpoint_) {
+    return InitializationResult::kProducerEndpointConstructionFailed;
+  }
+
+  // The service will adopt the shared memory buffer provided by the
+  // ProducerClient as long as it is correctly sized.
+  if (producer_endpoint_->shared_memory() != shm_raw) {
+    return InitializationResult::kSmbNotAdopted;
+  }
+
+  // When we are in-process, we don't use the in-process arbiter perfetto would
+  // provide (thus pass |in_process = false| to ConnectProducer), but rather
+  // bind the ProducerClient's arbiter to the service's endpoint and task runner
+  // directly. This allows us to use startup tracing via an unbound SMA, while
+  // avoiding some cross-sequence PostTasks when committing chunks (since we
+  // bypass mojo).
+  base::ProcessId pid;
+  if (PerfettoService::ParsePidFromProducerName(name, &pid)) {
+    bool in_process = (pid == base::Process::Current().Pid());
+    // TODO(skyostil): Implement arbiter binding for the client API.
+    if (in_process && !base::FeatureList::IsEnabled(
+                          features::kEnablePerfettoClientApiProducer)) {
+      PerfettoTracedProcess::Get()
+          ->producer_client()
+          ->BindInProcessSharedMemoryArbiter(producer_endpoint_.get(),
+                                             task_runner_);
     }
   }
 
-  // TODO(oysteine): Figure out an uid once we need it.
-  // TODO(oysteine): Figure out a good buffer size.
-  producer_endpoint_ = service->ConnectProducer(
-      this, 0 /* uid */, name,
-      /*shared_memory_size_hint_bytes=*/4 * 1024 * 1024, is_in_process_,
-      perfetto::TracingService::ProducerSMBScrapingMode::kDefault,
-      /*shared_memory_page_size_hint_bytes=*/kSMBPageSizeInBytes);
-  DCHECK(producer_endpoint_);
+  return InitializationResult::kSuccess;
 }
 
 void ProducerHost::OnConnect() {
@@ -85,23 +98,7 @@ void ProducerHost::OnDisconnect() {
 }
 
 void ProducerHost::OnTracingSetup() {
-  if (is_in_process_) {
-    PerfettoTracedProcess::Get()
-        ->producer_client()
-        ->set_in_process_shmem_arbiter(
-            producer_endpoint_->GetInProcessShmemArbiter());
-    return;
-  }
-
-  MojoSharedMemory* shared_memory =
-      static_cast<MojoSharedMemory*>(producer_endpoint_->shared_memory());
-  DCHECK(shared_memory);
-  DCHECK(producer_client_);
-  mojo::ScopedSharedBufferHandle shm = shared_memory->Clone();
-  DCHECK(shm.is_valid());
-
-  producer_client_->OnTracingStart(
-      std::move(shm), producer_endpoint_->shared_buffer_page_size_kb() * 1024);
+  producer_client_->OnTracingStart();
 }
 
 void ProducerHost::SetupDataSource(perfetto::DataSourceInstanceID,

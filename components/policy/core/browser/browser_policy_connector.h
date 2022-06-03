@@ -7,9 +7,9 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/browser/browser_policy_connector_base.h"
 #include "components/policy/policy_export.h"
@@ -31,6 +31,8 @@ class PolicyStatisticsCollector;
 // subclasses.
 class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
  public:
+  BrowserPolicyConnector(const BrowserPolicyConnector&) = delete;
+  BrowserPolicyConnector& operator=(const BrowserPolicyConnector&) = delete;
   ~BrowserPolicyConnector() override;
 
   // Finalizes the initialization of the connector. This call can be skipped on
@@ -40,7 +42,7 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) = 0;
 
   // Checks whether this device is under any kind of enterprise management.
-  virtual bool IsEnterpriseManaged() const = 0;
+  virtual bool IsDeviceEnterpriseManaged() const = 0;
 
   // Checks whether there are any machine-level policies configured.
   virtual bool HasMachineLevelPolicies() = 0;
@@ -56,6 +58,15 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
     return device_management_service_.get();
   }
 
+  // Returns the URL for the device management service endpoint.
+  std::string GetDeviceManagementUrl() const;
+
+  // Returns the URL for the realtime reporting service endpoint.
+  std::string GetRealtimeReportingUrl() const;
+
+  // Returns the URL for the encrypted reporting service endpoint.
+  std::string GetEncryptedReportingUrl() const;
+
   // Check whether a user is known to be non-enterprise. Domains such as
   // gmail.com and googlemail.com are known to not be managed. Also returns
   // false if the username is empty.
@@ -66,14 +77,11 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
   // with a nullptr.
   static void SetNonEnterpriseDomainForTesting(const char* domain);
 
-  // Returns the URL for the device management service endpoint.
-  static std::string GetDeviceManagementUrl();
-
-  // Returns the URL for the realtime reporting service endpoint.
-  static std::string GetRealtimeReportingUrl();
-
   // Registers refresh rate prefs.
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  // Returns true if the command line switch of policy can be used.
+  virtual bool IsCommandLineSwitchSupported() const = 0;
 
  protected:
   // Builds an uninitialized BrowserPolicyConnector.
@@ -86,12 +94,13 @@ class POLICY_EXPORT BrowserPolicyConnector : public BrowserPolicyConnectorBase {
       PrefService* local_state,
       std::unique_ptr<DeviceManagementService> device_management_service);
 
+  // Returns true if the given |provider| has any registered policies.
+  bool ProviderHasPolicies(const ConfigurationPolicyProvider* provider) const;
+
  private:
   std::unique_ptr<PolicyStatisticsCollector> policy_statistics_collector_;
 
   std::unique_ptr<DeviceManagementService> device_management_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserPolicyConnector);
 };
 
 }  // namespace policy

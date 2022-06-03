@@ -16,6 +16,7 @@
 // notification_helper_unittests.exe have data dependency on chrome.exe.
 
 #include <memory>
+#include <string>
 
 #include <wrl/client.h>
 
@@ -25,7 +26,6 @@
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/process/process_iterator.h"
-#include "base/strings/string16.h"
 #include "base/test/test_timeouts.h"
 #include "base/win/scoped_com_initializer.h"
 #include "base/win/windows_types.h"
@@ -40,7 +40,7 @@
 namespace {
 
 // Returns the process with name |name| if it is found.
-base::Process FindProcess(const base::string16& name) {
+base::Process FindProcess(const std::wstring& name) {
   unsigned int pid;
   {
     base::NamedProcessIterator iter(name, nullptr);
@@ -70,6 +70,10 @@ base::Process FindProcess(const base::string16& name) {
 }  // namespace
 
 class NotificationHelperTest : public testing::Test {
+ public:
+  NotificationHelperTest(const NotificationHelperTest&) = delete;
+  NotificationHelperTest& operator=(const NotificationHelperTest&) = delete;
+
  protected:
   NotificationHelperTest() : root_(HKEY_CURRENT_USER) {}
 
@@ -116,8 +120,6 @@ class NotificationHelperTest : public testing::Test {
   std::unique_ptr<WorkItemList> work_item_list_;
 
   base::win::ScopedCOMInitializer scoped_com_initializer_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationHelperTest);
 };
 
 TEST_F(NotificationHelperTest, NotificationHelperServerTest) {

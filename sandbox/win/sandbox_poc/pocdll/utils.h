@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SANDBOX_POC_POCDLL_UTILS_H__
-#define SANDBOX_SANDBOX_POC_POCDLL_UTILS_H__
+#ifndef SANDBOX_WIN_SANDBOX_POC_POCDLL_UTILS_H_
+#define SANDBOX_WIN_SANDBOX_POC_POCDLL_UTILS_H_
 
 #include <stdio.h>
 #include <io.h>
@@ -14,9 +14,10 @@
 // object goes out of scope
 class HandleToFile {
  public:
-  HandleToFile() {
-    file_ = NULL;
-  }
+  HandleToFile() { file_ = nullptr; }
+
+  HandleToFile(const HandleToFile&) = delete;
+  HandleToFile& operator=(const HandleToFile&) = delete;
 
   // Note: c_file_handle_ does not need to be closed because fclose does it.
   ~HandleToFile() {
@@ -59,8 +60,6 @@ class HandleToFile {
  private:
   // the FILE* returned. We need to closed it at the end.
   FILE* file_;
-
-  DISALLOW_COPY_AND_ASSIGN(HandleToFile);
 };
 
-#endif  // SANDBOX_SANDBOX_POC_POCDLL_UTILS_H__
+#endif  // SANDBOX_WIN_SANDBOX_POC_POCDLL_UTILS_H_

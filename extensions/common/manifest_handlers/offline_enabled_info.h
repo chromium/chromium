@@ -30,15 +30,17 @@ struct OfflineEnabledInfo : public Extension::ManifestData {
 class OfflineEnabledHandler : public ManifestHandler {
  public:
   OfflineEnabledHandler();
+
+  OfflineEnabledHandler(const OfflineEnabledHandler&) = delete;
+  OfflineEnabledHandler& operator=(const OfflineEnabledHandler&) = delete;
+
   ~OfflineEnabledHandler() override;
 
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   bool AlwaysParseForType(Manifest::Type type) const override;
 
  private:
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflineEnabledHandler);
 };
 
 }  // namespace extensions

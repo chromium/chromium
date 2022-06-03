@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/web_contents_tag.h"
 
 namespace base {
@@ -25,6 +24,9 @@ class WebContentsTaskProvider;
 // WebContentsTaskProvider::StartUpdating() is called.
 class WebContentsTagsManager {
  public:
+  WebContentsTagsManager(const WebContentsTagsManager&) = delete;
+  WebContentsTagsManager& operator=(const WebContentsTagsManager&) = delete;
+
   static WebContentsTagsManager* GetInstance();
 
   void AddTag(WebContentsTag* tag);
@@ -57,8 +59,6 @@ class WebContentsTagsManager {
 
   // A set of all the WebContentsTags seen so far.
   std::vector<WebContentsTag*> tracked_tags_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsTagsManager);
 };
 
 }  // namespace task_manager

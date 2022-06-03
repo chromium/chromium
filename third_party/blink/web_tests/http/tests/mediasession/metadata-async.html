@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<title>MediaMetadata Mojo Test</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script type="module">
+import {MediaSessionServiceMock} from './resources/mediasessionservice-mock.js';
+import {assert_metadata_equals} from './resources/utils.js';
+
+async_test(t => {
+  // The following are expected results.
+  var results = [
+    new MediaMetadata({}),
+    new MediaMetadata({
+      title: 'new title',
+      album: 'new album',
+      artist: 'new artist',
+      artwork: [
+          { src: 'http://example.com/', type: 'image/png', sizes: '40x40' }
+      ]
+    }),
+    new MediaMetadata({
+      title: 'first timeout',
+      album: 'new album',
+      artist: 'new artist',
+      artwork: [
+          { src: 'http://example.com/', type: 'image/png', sizes: '40x40' }
+      ]
+    }),
+    new MediaMetadata({
+      title: 'second timeout',
+      album: 'new album',
+      artist: 'new artist',
+      artwork: [
+          { src: 'http://example.com/', type: 'image/png', sizes: '40x40' }
+      ]
+    }),
+  ];
+  var resultId = 0;
+
+  const m = new MediaSessionServiceMock();
+  m.setMetadataCallback(t.step_func(receivedMetadata => {
+    assert_metadata_equals(receivedMetadata, results[resultId]);
+    ++resultId;
+
+    if (results.length == resultId)
+      t.done();
+  }));
+
+  // Setting the metadata property will update the mojo service.
+  window.navigator.mediaSession.metadata = new MediaMetadata({});
+
+  // All the next lines will produce only one call.
+  window.navigator.mediaSession.metadata.title = 'new title';
+  window.navigator.mediaSession.metadata.album = 'new album';
+  window.navigator.mediaSession.metadata.artist = 'new artist';
+  window.navigator.mediaSession.metadata.artwork = [
+    { src: 'http://example.com/', sizes: '40x40', type: 'image/png' }
+  ];
+
+  // This two last changes are made asynchronously and will go in different
+  // mojo calls.
+  setTimeout(_ => {
+    window.navigator.mediaSession.metadata.title = 'first timeout';
+    setTimeout(_ => {
+      window.navigator.mediaSession.metadata.title = 'second timeout';
+    });
+  });
+}, "test that MediaMetadata is correctly propagated twice");
+
+</script>

@@ -8,7 +8,6 @@
 #include "gpu/config/gpu_info.h"
 #include "ipc/ipc_message_macros.h"
 #include "media/base/ipc/media_param_traits.h"
-#include "media/gpu/ipc/common/create_video_encoder_params.h"
 #include "media/video/video_decode_accelerator.h"
 #include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/ipc/color/gfx_param_traits.h"
@@ -30,14 +29,6 @@ IPC_STRUCT_TRAITS_BEGIN(media::VideoDecodeAccelerator::Config)
   IPC_STRUCT_TRAITS_MEMBER(container_color_space)
   IPC_STRUCT_TRAITS_MEMBER(target_color_space)
   IPC_STRUCT_TRAITS_MEMBER(hdr_metadata)
-IPC_STRUCT_TRAITS_END()
-
-IPC_STRUCT_TRAITS_BEGIN(media::CreateVideoEncoderParams)
-  IPC_STRUCT_TRAITS_MEMBER(input_format)
-  IPC_STRUCT_TRAITS_MEMBER(input_visible_size)
-  IPC_STRUCT_TRAITS_MEMBER(output_profile)
-  IPC_STRUCT_TRAITS_MEMBER(initial_bitrate)
-  IPC_STRUCT_TRAITS_MEMBER(encoder_route_id)
 IPC_STRUCT_TRAITS_END()
 
 #endif  // MEDIA_GPU_IPC_COMMON_MEDIA_PARAM_TRAITS_MACROS_H_

@@ -6,11 +6,12 @@
 
 #include <limits>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -19,7 +20,6 @@
 #include "base/process/kill.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_timeouts.h"
@@ -31,6 +31,7 @@
 #include "chrome/chrome_cleaner/os/system_util.h"
 #include "chrome/chrome_cleaner/os/system_util_cleaner.h"
 #include "chrome/chrome_cleaner/os/task_scheduler.h"
+#include "chrome/chrome_cleaner/strings/wstring_embedded_nulls.h"
 #include "chrome/chrome_cleaner/test/file_remover_test_util.h"
 #include "chrome/chrome_cleaner/test/reboot_deletion_helper.h"
 #include "chrome/chrome_cleaner/test/scoped_process_protector.h"
@@ -48,7 +49,7 @@ using chrome_cleaner::CreateEmptyFile;
 using chrome_cleaner::GetWow64RedirectedSystemPath;
 using chrome_cleaner::IsFileRegisteredForPostRebootRemoval;
 using chrome_cleaner::ScopedTempDirNoWow64;
-using chrome_cleaner::String16EmbeddedNulls;
+using chrome_cleaner::WStringEmbeddedNulls;
 
 namespace chrome_cleaner_sandbox {
 
@@ -58,37 +59,37 @@ constexpr wchar_t kDirectNonRegistryPath[] = L"\\DosDevice\\C:";
 constexpr wchar_t kTrickyNonRegistryPath[] =
     L"\\Registry\\Machine\\..\\..\\DosDevice\\C:";
 
-String16EmbeddedNulls FullyQualifiedKeyPathWithTrailingNull(
+WStringEmbeddedNulls FullyQualifiedKeyPathWithTrailingNull(
     const ScopedTempRegistryKey& temp_key,
     const std::vector<wchar_t>& key_name) {
   // key vectors are expected to end with NULL.
   DCHECK_EQ(key_name.back(), L'\0');
 
-  base::string16 full_key_path(temp_key.FullyQualifiedPath());
+  std::wstring full_key_path(temp_key.FullyQualifiedPath());
   full_key_path += L"\\";
   // Include key_name's trailing NULL.
   full_key_path.append(key_name.begin(), key_name.end());
-  return String16EmbeddedNulls(full_key_path);
+  return WStringEmbeddedNulls(full_key_path);
 }
 
-String16EmbeddedNulls StringWithTrailingNull(const base::string16& str) {
-  // string16::size() does not count the trailing null.
-  return String16EmbeddedNulls(str.c_str(), str.size() + 1);
+WStringEmbeddedNulls StringWithTrailingNull(const std::wstring& str) {
+  // wstring::size() does not count the trailing null.
+  return WStringEmbeddedNulls(str.c_str(), str.size() + 1);
 }
 
-String16EmbeddedNulls VeryLongStringWithPrefix(
-    const String16EmbeddedNulls& prefix) {
-  return String16EmbeddedNulls(base::string16(prefix.CastAsWCharArray()) +
-                               base::string16(kMaxRegistryParamLength, L'a'));
+WStringEmbeddedNulls VeryLongStringWithPrefix(
+    const WStringEmbeddedNulls& prefix) {
+  return WStringEmbeddedNulls(std::wstring(prefix.CastAsWCharArray()) +
+                              std::wstring(kMaxRegistryParamLength, L'a'));
 }
 
-base::FilePath GetNativePath(const base::string16& path) {
+base::FilePath GetNativePath(const std::wstring& path) {
   // Add the native \??\ prefix described at
   // https://googleprojectzero.blogspot.com/2016/02/the-definitive-guide-on-win32-to-nt.html
   return base::FilePath(base::StrCat({L"\\??\\", path}));
 }
 
-base::FilePath GetUniversalPath(const base::string16& path) {
+base::FilePath GetUniversalPath(const std::wstring& path) {
   // Add the universal \\?\ prefix described at
   // https://docs.microsoft.com/en-us/windows/desktop/fileio/naming-a-file#namespaces
   return base::FilePath(base::StrCat({L"\\\\?\\", path}));
@@ -481,7 +482,7 @@ class CleanerInterfaceRegistryTest : public ::testing::Test {
 
     // Create a default and a named value.
     EXPECT_EQ(STATUS_SUCCESS,
-              NativeSetValueKey(subkey_handle_, String16EmbeddedNulls(nullptr),
+              NativeSetValueKey(subkey_handle_, WStringEmbeddedNulls(nullptr),
                                 REG_SZ, value_));
     EXPECT_EQ(STATUS_SUCCESS,
               NativeSetValueKey(subkey_handle_, value_name_, REG_SZ, value_));
@@ -500,10 +501,10 @@ class CleanerInterfaceRegistryTest : public ::testing::Test {
  protected:
   ScopedTempRegistryKey temp_key_;
   HANDLE subkey_handle_;
-  String16EmbeddedNulls full_key_path_;
-  String16EmbeddedNulls value_name_{L'f', L'o', L'o', L'\0'};
-  String16EmbeddedNulls value_{L'b', L'a', L'r', L'\0'};
-  String16EmbeddedNulls valid_changed_value_{L'b', L'a', L'\0'};
+  WStringEmbeddedNulls full_key_path_;
+  WStringEmbeddedNulls value_name_{L'f', L'o', L'o', L'\0'};
+  WStringEmbeddedNulls value_{L'b', L'a', L'r', L'\0'};
+  WStringEmbeddedNulls valid_changed_value_{L'b', L'a', L'\0'};
   ShouldNormalizeRegistryValue default_value_should_be_normalized_;
 };
 
@@ -517,16 +518,16 @@ TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryKey_Success) {
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryKey_NullKey) {
-  EXPECT_FALSE(SandboxNtDeleteRegistryKey(String16EmbeddedNulls(nullptr)));
+  EXPECT_FALSE(SandboxNtDeleteRegistryKey(WStringEmbeddedNulls(nullptr)));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryKey_LongKey) {
-  String16EmbeddedNulls long_key = VeryLongStringWithPrefix(full_key_path_);
+  WStringEmbeddedNulls long_key = VeryLongStringWithPrefix(full_key_path_);
   EXPECT_FALSE(SandboxNtDeleteRegistryKey(long_key));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryKey_KeyMissingTerminator) {
-  String16EmbeddedNulls no_terminating_null_key(
+  WStringEmbeddedNulls no_terminating_null_key(
       full_key_path_.CastAsWCharArray(), full_key_path_.size() - 1);
   EXPECT_FALSE(SandboxNtDeleteRegistryKey(no_terminating_null_key));
 }
@@ -543,28 +544,28 @@ TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryValue_Success) {
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryValue_NullKey) {
-  EXPECT_FALSE(SandboxNtDeleteRegistryValue(String16EmbeddedNulls(nullptr),
-                                            value_name_));
+  EXPECT_FALSE(
+      SandboxNtDeleteRegistryValue(WStringEmbeddedNulls(nullptr), value_name_));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryValue_NullValue) {
   EXPECT_FALSE(SandboxNtDeleteRegistryValue(full_key_path_,
-                                            String16EmbeddedNulls(nullptr)));
+                                            WStringEmbeddedNulls(nullptr)));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryValue_LongKey) {
-  String16EmbeddedNulls long_key = VeryLongStringWithPrefix(full_key_path_);
+  WStringEmbeddedNulls long_key = VeryLongStringWithPrefix(full_key_path_);
   EXPECT_FALSE(SandboxNtDeleteRegistryValue(long_key, value_name_));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtDeleteRegistryValue_LongValue) {
-  String16EmbeddedNulls very_long_name = VeryLongStringWithPrefix(value_name_);
+  WStringEmbeddedNulls very_long_name = VeryLongStringWithPrefix(value_name_);
   EXPECT_FALSE(SandboxNtDeleteRegistryValue(full_key_path_, very_long_name));
 }
 
 TEST_F(CleanerInterfaceRegistryTest,
        NtDeleteRegistryValue_KeyMissingTerminator) {
-  String16EmbeddedNulls no_terminating_null_key(
+  WStringEmbeddedNulls no_terminating_null_key(
       full_key_path_.CastAsWCharArray(), full_key_path_.size() - 1);
   EXPECT_FALSE(
       SandboxNtDeleteRegistryValue(no_terminating_null_key, value_name_));
@@ -572,15 +573,15 @@ TEST_F(CleanerInterfaceRegistryTest,
 
 TEST_F(CleanerInterfaceRegistryTest,
        NtDeleteRegistryValue_ValueMissingTerminator) {
-  String16EmbeddedNulls no_terminating_null_name(value_name_.CastAsWCharArray(),
-                                                 value_name_.size() - 1);
+  WStringEmbeddedNulls no_terminating_null_name(value_name_.CastAsWCharArray(),
+                                                value_name_.size() - 1);
   EXPECT_FALSE(
       SandboxNtDeleteRegistryValue(full_key_path_, no_terminating_null_name));
 }
 
 TEST_F(CleanerInterfaceRegistryTest,
        NtDeleteRegistryValue_ValueNameHasEmbeddedNull) {
-  String16EmbeddedNulls value_name{L'f', L'o', L'\0', L'o', L'\0'};
+  WStringEmbeddedNulls value_name{L'f', L'o', L'\0', L'o', L'\0'};
 
   EXPECT_EQ(STATUS_SUCCESS,
             NativeSetValueKey(subkey_handle_, value_name, REG_SZ, value_));
@@ -604,7 +605,7 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_Success) {
       default_value_should_be_normalized_));
 
   DWORD type = 0;
-  String16EmbeddedNulls actual_value;
+  WStringEmbeddedNulls actual_value;
   EXPECT_TRUE(
       NativeQueryValueKey(subkey_handle_, value_name_, &type, &actual_value));
   EXPECT_EQ(REG_SZ, type);
@@ -613,37 +614,37 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_Success) {
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_NullKey) {
   EXPECT_FALSE(SandboxNtChangeRegistryValue(
-      String16EmbeddedNulls(nullptr), value_name_, valid_changed_value_,
+      WStringEmbeddedNulls(nullptr), value_name_, valid_changed_value_,
       default_value_should_be_normalized_));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_NullValue) {
   EXPECT_TRUE(SandboxNtChangeRegistryValue(
-      full_key_path_, value_name_, String16EmbeddedNulls(nullptr),
+      full_key_path_, value_name_, WStringEmbeddedNulls(nullptr),
       default_value_should_be_normalized_));
 
-  String16EmbeddedNulls actual_value;
+  WStringEmbeddedNulls actual_value;
   EXPECT_TRUE(
       NativeQueryValueKey(subkey_handle_, value_name_, nullptr, &actual_value));
   EXPECT_EQ(0U, actual_value.size());
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_LongKey) {
-  String16EmbeddedNulls long_key = VeryLongStringWithPrefix(full_key_path_);
+  WStringEmbeddedNulls long_key = VeryLongStringWithPrefix(full_key_path_);
   EXPECT_FALSE(
       SandboxNtChangeRegistryValue(long_key, value_name_, valid_changed_value_,
                                    default_value_should_be_normalized_));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_LongValueName) {
-  String16EmbeddedNulls very_long_name = VeryLongStringWithPrefix(value_name_);
+  WStringEmbeddedNulls very_long_name = VeryLongStringWithPrefix(value_name_);
   EXPECT_FALSE(SandboxNtChangeRegistryValue(
       full_key_path_, very_long_name, valid_changed_value_,
       default_value_should_be_normalized_));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_LongValue) {
-  String16EmbeddedNulls very_long_value = VeryLongStringWithPrefix(value_);
+  WStringEmbeddedNulls very_long_value = VeryLongStringWithPrefix(value_);
   EXPECT_FALSE(
       SandboxNtChangeRegistryValue(full_key_path_, value_name_, very_long_value,
                                    default_value_should_be_normalized_));
@@ -651,7 +652,7 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_LongValue) {
 
 TEST_F(CleanerInterfaceRegistryTest,
        NtChangeRegistryValue_KeyMissingTerminator) {
-  String16EmbeddedNulls no_terminating_null_key(
+  WStringEmbeddedNulls no_terminating_null_key(
       full_key_path_.CastAsWCharArray(), full_key_path_.size() - 1);
   EXPECT_FALSE(SandboxNtChangeRegistryValue(
       no_terminating_null_key, value_name_, valid_changed_value_,
@@ -660,15 +661,15 @@ TEST_F(CleanerInterfaceRegistryTest,
 
 TEST_F(CleanerInterfaceRegistryTest,
        NtChangeRegistryValue_ValueNameMissingTerminator) {
-  String16EmbeddedNulls no_terminating_null_name(value_name_.CastAsWCharArray(),
-                                                 value_name_.size() - 1);
+  WStringEmbeddedNulls no_terminating_null_name(value_name_.CastAsWCharArray(),
+                                                value_name_.size() - 1);
   EXPECT_FALSE(SandboxNtChangeRegistryValue(
       full_key_path_, no_terminating_null_name, valid_changed_value_,
       default_value_should_be_normalized_));
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_NoNullTerminator) {
-  String16EmbeddedNulls no_terminating_null_value(
+  WStringEmbeddedNulls no_terminating_null_value(
       valid_changed_value_.CastAsWCharArray(), valid_changed_value_.size());
   EXPECT_TRUE(SandboxNtChangeRegistryValue(
       full_key_path_, value_name_, no_terminating_null_value,
@@ -676,7 +677,7 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_NoNullTerminator) {
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_MissingValue) {
-  String16EmbeddedNulls absent_value_name{L'f', L'o', L'\0', L'o', L'\0'};
+  WStringEmbeddedNulls absent_value_name{L'f', L'o', L'\0', L'o', L'\0'};
 
   EXPECT_FALSE(SandboxNtChangeRegistryValue(
       full_key_path_, absent_value_name, valid_changed_value_,
@@ -684,7 +685,7 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_MissingValue) {
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_OtherValidType) {
-  String16EmbeddedNulls reference_value_name{L'f', L'o', L'\0', L'o', L'\0'};
+  WStringEmbeddedNulls reference_value_name{L'f', L'o', L'\0', L'o', L'\0'};
 
   EXPECT_EQ(STATUS_SUCCESS,
             NativeSetValueKey(subkey_handle_, reference_value_name,
@@ -701,7 +702,7 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_OtherValidType) {
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_InvalidType) {
-  String16EmbeddedNulls value_name{L'f', L'o', L'\0', L'o', L'\0'};
+  WStringEmbeddedNulls value_name{L'f', L'o', L'\0', L'o', L'\0'};
 
   EXPECT_EQ(STATUS_SUCCESS,
             NativeSetValueKey(subkey_handle_, value_name, REG_BINARY, value_));
@@ -717,17 +718,17 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_InvalidType) {
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_NullName) {
   EXPECT_EQ(STATUS_SUCCESS,
-            NativeSetValueKey(subkey_handle_, String16EmbeddedNulls(nullptr),
+            NativeSetValueKey(subkey_handle_, WStringEmbeddedNulls(nullptr),
                               REG_SZ, value_));
 
   EXPECT_TRUE(SandboxNtChangeRegistryValue(
-      full_key_path_, String16EmbeddedNulls(nullptr), valid_changed_value_,
+      full_key_path_, WStringEmbeddedNulls(nullptr), valid_changed_value_,
       default_value_should_be_normalized_));
 
   DWORD type = 0;
-  String16EmbeddedNulls actual_value;
-  EXPECT_TRUE(NativeQueryValueKey(
-      subkey_handle_, String16EmbeddedNulls(nullptr), &type, &actual_value));
+  WStringEmbeddedNulls actual_value;
+  EXPECT_TRUE(NativeQueryValueKey(subkey_handle_, WStringEmbeddedNulls(nullptr),
+                                  &type, &actual_value));
   EXPECT_EQ(REG_SZ, type);
   EXPECT_EQ(valid_changed_value_, actual_value);
 }
@@ -742,17 +743,16 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_NonRegistryPath) {
 }
 
 TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_AllowNormalization) {
-  String16EmbeddedNulls value = StringWithTrailingNull(L"f o q b,ab");
+  WStringEmbeddedNulls value = StringWithTrailingNull(L"f o q b,ab");
   EXPECT_EQ(STATUS_SUCCESS,
             NativeSetValueKey(subkey_handle_, value_name_, REG_SZ, value));
 
-  String16EmbeddedNulls normalized_value =
-      StringWithTrailingNull(L"f,o,q,b,ab");
+  WStringEmbeddedNulls normalized_value = StringWithTrailingNull(L"f,o,q,b,ab");
   EXPECT_FALSE(SandboxNtChangeRegistryValue(
       full_key_path_, value_name_, normalized_value,
       default_value_should_be_normalized_));
 
-  String16EmbeddedNulls normalized_shortened_value =
+  WStringEmbeddedNulls normalized_shortened_value =
       StringWithTrailingNull(L"f,o,b,ab");
   EXPECT_FALSE(SandboxNtChangeRegistryValue(
       full_key_path_, value_name_, normalized_shortened_value,
@@ -760,8 +760,8 @@ TEST_F(CleanerInterfaceRegistryTest, NtChangeRegistryValue_AllowNormalization) {
 
   // Switch to allow every value to be normalized.
   ShouldNormalizeRegistryValue normalize_all_values =
-      base::BindRepeating([](const String16EmbeddedNulls&,
-                             const String16EmbeddedNulls&) { return true; });
+      base::BindRepeating([](const WStringEmbeddedNulls&,
+                             const WStringEmbeddedNulls&) { return true; });
   EXPECT_TRUE(SandboxNtChangeRegistryValue(
       full_key_path_, value_name_, normalized_value, normalize_all_values));
 
@@ -795,7 +795,8 @@ TEST(CleanerSandboxInterface, DeleteService_Success) {
   EXPECT_FALSE(chrome_cleaner::DoesServiceExist(service_handle.service_name()));
 }
 
-TEST_F(CleanerSandboxInterfaceRunningServiceTest, DeleteService_Running) {
+// TODO(crbug.com/1061171): Test is flaky.
+TEST_F(CleanerSandboxInterfaceRunningServiceTest, DISABLED_DeleteService_Running) {
   ASSERT_TRUE(chrome_cleaner::EnsureNoTestServicesRunning());
 
   chrome_cleaner::TestScopedServiceHandle service_handle;
@@ -808,7 +809,8 @@ TEST_F(CleanerSandboxInterfaceRunningServiceTest, DeleteService_Running) {
   EXPECT_FALSE(chrome_cleaner::DoesServiceExist(service_handle.service_name()));
 }
 
-TEST_F(CleanerSandboxInterfaceRunningServiceTest, DeleteService_HandleHeld) {
+// TODO(crbug.com/1061171): Test is flaky.
+TEST_F(CleanerSandboxInterfaceRunningServiceTest, DISABLED_DeleteService_HandleHeld) {
   ASSERT_TRUE(chrome_cleaner::EnsureNoTestServicesRunning());
 
   chrome_cleaner::TestScopedServiceHandle service_handle;

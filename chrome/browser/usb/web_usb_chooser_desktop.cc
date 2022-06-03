@@ -6,35 +6,22 @@
 
 #include <utility>
 
+#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
-#include "chrome/browser/ui/chrome_bubble_manager.h"
-#include "chrome/browser/ui/permission_bubble/chooser_bubble_delegate.h"
 #include "chrome/browser/usb/usb_chooser_controller.h"
-#include "components/bubble/bubble_controller.h"
 #include "content/public/browser/web_contents.h"
 
 WebUsbChooserDesktop::WebUsbChooserDesktop(
     content::RenderFrameHost* render_frame_host)
     : WebUsbChooser(render_frame_host) {}
 
-WebUsbChooserDesktop::~WebUsbChooserDesktop() {
-  if (bubble_)
-    bubble_->CloseBubble(BUBBLE_CLOSE_FORCED);
-}
+WebUsbChooserDesktop::~WebUsbChooserDesktop() = default;
 
 void WebUsbChooserDesktop::ShowChooser(
     std::unique_ptr<UsbChooserController> controller) {
-  // Only one chooser bubble may be shown at a time.
-  if (bubble_)
-    bubble_->CloseBubble(BUBBLE_CLOSE_FORCED);
-
-  auto delegate = std::make_unique<ChooserBubbleDelegate>(
-      render_frame_host(), std::move(controller));
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host());
-  Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
-  if (browser)
-    bubble_ = browser->GetBubbleManager()->ShowBubble(std::move(delegate));
+  closure_runner_.RunAndReset();
+  closure_runner_.ReplaceClosure(chrome::ShowDeviceChooserDialog(
+      render_frame_host(), std::move(controller)));
 }
 
 base::WeakPtr<WebUsbChooser> WebUsbChooserDesktop::GetWeakPtr() {

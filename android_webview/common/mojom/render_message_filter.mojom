@@ -1,0 +1,12 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module android_webview.mojom;
+
+// An extension to content.mojom.RenderMessageFilter and implemented in Browser.
+interface RenderMessageFilter {
+
+  // Called when a subframe is created.
+  SubFrameCreated(int32 parent_render_frame_id, int32 child_render_frame_id);
+};

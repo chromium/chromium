@@ -29,8 +29,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_TASK_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBDATABASE_DATABASE_TASK_H_
 
-#include <memory>
-
+#include "base/dcheck_is_on.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -49,6 +48,9 @@ class DatabaseTask {
   USING_FAST_MALLOC(DatabaseTask);
 
  public:
+  DatabaseTask(const DatabaseTask&) = delete;
+  DatabaseTask& operator=(const DatabaseTask&) = delete;
+
   virtual ~DatabaseTask();
 
   void Run();
@@ -69,8 +71,6 @@ class DatabaseTask {
   virtual const char* DebugTaskName() const = 0;
   bool complete_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DatabaseTask);
 };
 
 class Database::DatabaseOpenTask final : public DatabaseTask {

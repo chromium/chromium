@@ -4,12 +4,15 @@
 
 module network.mojom;
 
-import "url/mojom/origin.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
 
 // Mapped to net::NetworkIsolationKey.
 struct NetworkIsolationKey {
   // Keeping optional to allow clients that do not populate top frame origin.
   // TODO(crbug.com/910721): This will eventually always be populated.
-  url.mojom.Origin? top_frame_origin;
-  url.mojom.Origin? frame_origin;
+  SchemefulSite? top_frame_site;
+  SchemefulSite? frame_site;
+
+  mojo_base.mojom.UnguessableToken? nonce;
 };

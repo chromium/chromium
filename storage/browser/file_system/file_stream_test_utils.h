@@ -20,8 +20,12 @@ void ReadFromReader(FileStreamReader* reader,
                     size_t size,
                     int* result);
 
-// Writes |data| to |writer|, an intialized FileStreamWriter. Returns net::OK if
-// successful, otherwise a net error.
+// Returns the length of the file if it could be successfully retrieved,
+// otherwise a net error.
+int64_t GetLengthFromReader(FileStreamReader* reader);
+
+// Writes |data| to |writer|, an initialized FileStreamWriter. Returns net::OK
+// if successful, otherwise a net error.
 int WriteStringToWriter(FileStreamWriter* writer, const std::string& data);
 
 }  // namespace storage

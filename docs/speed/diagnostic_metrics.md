@@ -14,7 +14,7 @@ There are three types of diagnostic metrics:
 
 We often notice that a number is Too Big. Whether it’s the time it took to generate a frame, or the time until a page was visible, the first thing we want to know is what’s contributing to the number.
 
-Summations enable us to answer these questions. In a Summation diagnostic, the diagnostic metrics sum up to the higher level metric. For example, a Summation diagnostic for First Meaningful Paint (FMP) might be the durations the main thread spent doing various tasks, such as Style, Layout, V8, Idle, etc before FMP fired. These diagnostics often lead to hierarchies, where the top level metric, such as FMP, has a diagnostic metric, such as time spent in V8 before FMP, which has further diagnostic metrics, such as the time spent parsing, compiling, or executing JS. Summation breakdowns are implemented in telemetry as [Related Histogram Breakdowns](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/value/diagnostics/related_histogram_breakdown.html?q=RelatedHistogramBreakdown&sq=package:chromium&l=18).
+Summations enable us to answer these questions. In a Summation diagnostic, the diagnostic metrics sum up to the higher level metric. For example, a Summation diagnostic for First Meaningful Paint (FMP) might be the durations the main thread spent doing various tasks, such as Style, Layout, V8, Idle, etc before FMP fired. These diagnostics often lead to hierarchies, where the top level metric, such as FMP, has a diagnostic metric, such as time spent in V8 before FMP, which has further diagnostic metrics, such as the time spent parsing, compiling, or executing JS.
 
 With Summation diagnostics, the top level metric equals the sum of all diagnostics metrics. It’s **extremely important** that you don’t leave things out of a Summation diagnostic. This can seem a little daunting - how are you going to account for everything that contributes to the top level metric?
 
@@ -51,7 +51,7 @@ Diagnostics are imperfect. You'll always have some unexplained. And tracking you
 
 Slicing Diagnostics split up a metric based on its context. For example, we could split up Memory Use by whether a process has foreground tabs, or the number of tabs a user has open, or whether there’s a video playing. For each way we slice the metric, the higher level metric is a weighted average of the diagnostic metrics.
 
-With Slicing diagnostics, the top level metric equals the weighted sum of all diagnostic metrics. In the examples above, the weight of each diagnostic is the fraction of the time spent in the given context. Slicing diagnostics are implemented in telemetry via [Related Histogram Maps](https://cs.chromium.org/chromium/src/third_party/catapult/tracing/tracing/value/diagnostics/related_histogram_map.html?q=RelatedHistogramMap&sq=package:chromium&l=16).
+With Slicing diagnostics, the top level metric equals the weighted sum of all diagnostic metrics. In the examples above, the weight of each diagnostic is the fraction of the time spent in the given context.
 
 In the same way that when constructing a Summation Diagnostic we account for everything which contributes to the high level metric, when producing a Slicing Diagnostic, we ensure that we don’t leave out any contexts. If you want to Slice a metric by the number of tabs a user has open, you shouldn’t just use a set of reasonable tab numbers, from 1-8 for example. You should make sure to also have an overflow context (9+), so we get the full picture.
 

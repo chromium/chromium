@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "google_apis/gcm/base/mcs_util.h"

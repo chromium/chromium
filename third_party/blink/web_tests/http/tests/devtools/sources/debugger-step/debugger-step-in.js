@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests "step in" functionality in debugger.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function d()
@@ -26,8 +26,8 @@
   }
 
   var stepCount = 0;
-  function step2(callFrames) {
-    SourcesTestRunner.captureStackTrace(callFrames);
+  async function step2(callFrames) {
+    await SourcesTestRunner.captureStackTrace(callFrames);
     if (stepCount < 2) {
       TestRunner.addResult('Stepping into...');
       SourcesTestRunner.stepInto();

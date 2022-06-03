@@ -11,20 +11,20 @@
 #include "android_webview/browser/gfx/test/fake_window.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/resources/resource_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 namespace test {
-class SingleThreadTaskEnvironment;
+class TaskEnvironment;
 }
 }  // namespace base
 
 namespace content {
 class SynchronousCompositor;
 class TestSynchronousCompositor;
-}
+}  // namespace content
 
 namespace ui {
 class TouchHandleDrawable;
@@ -45,6 +45,9 @@ class RenderingTest : public testing::Test,
                       public BrowserViewRendererClient,
                       public WindowHooks {
  public:
+  RenderingTest(const RenderingTest&) = delete;
+  RenderingTest& operator=(const RenderingTest&) = delete;
+
   // BrowserViewRendererClient overrides.
   void OnNewPicture() override;
   void PostInvalidate() override;
@@ -75,7 +78,6 @@ class RenderingTest : public testing::Test,
       bool view_tree_force_dark_state) override {}
 
  protected:
-
   RenderingTest();
   ~RenderingTest() override;
 
@@ -99,10 +101,8 @@ class RenderingTest : public testing::Test,
   std::unique_ptr<content::TestSynchronousCompositor> compositor_;
 
  private:
-  std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
+  std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderingTest);
 };
 
 #define RENDERING_TEST_F(TEST_FIXTURE_NAME)         \

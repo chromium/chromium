@@ -36,6 +36,11 @@ class OwningAudioManagerAccessor : public Service::AudioManagerAccessor {
 
   explicit OwningAudioManagerAccessor(
       AudioManagerFactoryCallback audio_manager_factory_cb);
+
+  OwningAudioManagerAccessor(const OwningAudioManagerAccessor&) = delete;
+  OwningAudioManagerAccessor& operator=(const OwningAudioManagerAccessor&) =
+      delete;
+
   ~OwningAudioManagerAccessor() override;
 
   media::AudioManager* GetAudioManager() final;
@@ -53,7 +58,6 @@ class OwningAudioManagerAccessor : public Service::AudioManagerAccessor {
   media::AudioLogFactory* log_factory_ = nullptr;  // not owned.
 
   THREAD_CHECKER(thread_checker_);
-  DISALLOW_COPY_AND_ASSIGN(OwningAudioManagerAccessor);
 };
 
 }  // namespace audio

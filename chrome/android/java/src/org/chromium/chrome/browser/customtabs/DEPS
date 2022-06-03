@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/browser/android/browserservices",
+  "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles/Profile.java",
+  "+chrome/browser/tabmodel",
+  "+chrome/browser/tabpersistence",
+]

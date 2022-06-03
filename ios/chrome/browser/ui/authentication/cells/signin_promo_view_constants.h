@@ -9,10 +9,12 @@
 
 typedef NS_ENUM(NSInteger, SigninPromoViewMode) {
   // No identity available on the device.
-  SigninPromoViewModeColdState,
-  // At least one identity is available on the device and the user can sign
+  SigninPromoViewModeNoAccounts,
+  // At least one identity is available on the device and the user can sign in
   // without entering their credentials.
-  SigninPromoViewModeWarmState,
+  SigninPromoViewModeSigninWithAccount,
+  // The user is signed in to Chrome and can enable Sync on the primary account.
+  SigninPromoViewModeSyncWithPrimaryAccount,
 };
 
 extern NSString* const kSigninPromoViewId;

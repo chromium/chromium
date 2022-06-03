@@ -9,23 +9,25 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes_factory.h"
 #include "components/services/storage/indexed_db/transactional_leveldb/leveldb_write_batch.h"
+#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 #include "third_party/leveldatabase/src/include/leveldb/comparator.h"
 #include "third_party/leveldatabase/src/include/leveldb/status.h"
-#include "url/origin.h"
 
 // Contains common operations for LevelDBTransactions and/or LevelDBDatabases.
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace content {
 class TransactionalLevelDBDatabase;
@@ -39,20 +41,23 @@ extern const base::FilePath::CharType kBlobExtension[];
 extern const base::FilePath::CharType kIndexedDBExtension[];
 extern const base::FilePath::CharType kLevelDBExtension[];
 
-base::FilePath GetBlobStoreFileName(const url::Origin& origin);
-base::FilePath GetLevelDBFileName(const url::Origin& origin);
-base::FilePath ComputeCorruptionFileName(const url::Origin& origin);
+base::FilePath GetBlobStoreFileName(const blink::StorageKey& storage_key);
+base::FilePath GetLevelDBFileName(const blink::StorageKey& storage_key);
+base::FilePath ComputeCorruptionFileName(const blink::StorageKey& storage_key);
 
 // Returns if the given file path is too long for the current operating system's
 // file system.
-bool IsPathTooLong(const base::FilePath& leveldb_dir);
+bool IsPathTooLong(storage::FilesystemProxy* filesystem,
+                   const base::FilePath& leveldb_dir);
 
-// If a corruption file for the given |origin| at the given |path_base| exists
-// it is deleted, and the message is returned. If the file does not exist, or if
-// there is an error parsing the message, then this method returns an empty
-// string (and deletes the file).
-std::string CONTENT_EXPORT ReadCorruptionInfo(const base::FilePath& path_base,
-                                              const url::Origin& origin);
+// If a corruption file for the given `storage_key` at the given |path_base|
+// exists it is deleted, and the message is returned. If the file does not
+// exist, or if there is an error parsing the message, then this method returns
+// an empty string (and deletes the file).
+std::string CONTENT_EXPORT
+ReadCorruptionInfo(storage::FilesystemProxy* filesystem_proxy,
+                   const base::FilePath& path_base,
+                   const blink::StorageKey& storage_key);
 
 // Was able to use LevelDB to read the data w/o error, but the data read was not
 // in the expected format.
@@ -128,13 +133,13 @@ WARN_UNUSED_RESULT leveldb::Status PutVarInt(
 template <typename DBOrTransaction>
 WARN_UNUSED_RESULT leveldb::Status GetString(DBOrTransaction* db,
                                              const base::StringPiece& key,
-                                             base::string16* found_string,
+                                             std::u16string* found_string,
                                              bool* found);
 
 WARN_UNUSED_RESULT leveldb::Status PutString(
     TransactionalLevelDBTransaction* transaction,
     const base::StringPiece& key,
-    const base::string16& value);
+    const std::u16string& value);
 
 WARN_UNUSED_RESULT leveldb::Status PutIDBKeyPath(
     TransactionalLevelDBTransaction* transaction,
@@ -212,6 +217,15 @@ template <typename Transaction>
 WARN_UNUSED_RESULT leveldb::Status SetEarliestSweepTime(
     Transaction* txn,
     base::Time earliest_sweep);
+
+WARN_UNUSED_RESULT leveldb::Status GetEarliestCompactionTime(
+    TransactionalLevelDBDatabase* db,
+    base::Time* earliest_compaction);
+
+template <typename Transaction>
+WARN_UNUSED_RESULT leveldb::Status SetEarliestCompactionTime(
+    Transaction* txn,
+    base::Time earliest_compaction);
 
 CONTENT_EXPORT const leveldb::Comparator* GetDefaultLevelDBComparator();
 

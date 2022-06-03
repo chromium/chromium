@@ -10,7 +10,7 @@ import java.util.ArrayList;
  * This class is used to specify the frame's session by a list of Frame ContentCaptureData from the
  * interested frame to root.
  */
-public class FrameSession extends ArrayList<ContentCaptureData> {
+public class FrameSession extends ArrayList<ContentCaptureFrame> {
     /**
      * @param length is reserved frame list length.
      */

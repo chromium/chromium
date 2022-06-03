@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_SYNCED_WINDOW_DELEGATE_H_
 #define COMPONENTS_SYNC_SESSIONS_SYNCED_WINDOW_DELEGATE_H_
 
-#include <set>
-
 #include "components/sessions/core/session_id.h"
 
 namespace sync_sessions {

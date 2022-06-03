@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_REQUEST_CALLBACK_COLLECTION_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_REQUEST_CALLBACK_COLLECTION_H_
 
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -16,20 +15,28 @@ class V8XRFrameRequestCallback;
 class XRFrame;
 class XRSession;
 
+namespace probe {
+class AsyncTaskId;
+}
+
 class XRFrameRequestCallbackCollection final
     : public GarbageCollected<XRFrameRequestCallbackCollection>,
       public NameClient {
  public:
   explicit XRFrameRequestCallbackCollection(ExecutionContext*);
+  ~XRFrameRequestCallbackCollection() override = default;
 
   using CallbackId = int;
   CallbackId RegisterCallback(V8XRFrameRequestCallback*);
   void CancelCallback(CallbackId);
   void ExecuteCallbacks(XRSession*, double timestamp, XRFrame*);
 
-  bool IsEmpty() const { return !callbacks_.size(); }
+  bool IsEmpty() const {
+    DCHECK_EQ(callback_frame_requests_.size(), callback_async_tasks_.size());
+    return !callback_frame_requests_.size();
+  }
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {
     return "XRFrameRequestCallbackCollection";
   }
@@ -41,15 +48,18 @@ class XRFrameRequestCallbackCollection final
            !WTF::IsHashTraitsEmptyValue<Traits, CallbackId>(id);
   }
 
-  using CallbackAndAsyncTask =
-      std::pair<Member<V8XRFrameRequestCallback>, probe::AsyncTaskId>;
-  using CallbackMap = HeapHashMap<CallbackId, CallbackAndAsyncTask>;
+  using CallbackFrameRequestMap =
+      HeapHashMap<CallbackId, Member<V8XRFrameRequestCallback>>;
+  using CallbackAsyncTaskMap =
+      HashMap<CallbackId, std::unique_ptr<probe::AsyncTaskId>>;
 
-  CallbackMap callbacks_;
+  CallbackFrameRequestMap callback_frame_requests_;
+  CallbackAsyncTaskMap callback_async_tasks_;
   Vector<CallbackId> pending_callbacks_;
 
   // Only non-empty while inside executeCallbacks.
-  CallbackMap current_callbacks_;
+  CallbackFrameRequestMap current_callback_frame_requests_;
+  CallbackAsyncTaskMap current_callback_async_tasks_;
 
   CallbackId next_callback_id_ = 0;
 
@@ -58,4 +68,4 @@ class XRFrameRequestCallbackCollection final
 
 }  // namespace blink
 
-#endif  // FrameRequestCallbackCollection_h
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_FRAME_REQUEST_CALLBACK_COLLECTION_H_

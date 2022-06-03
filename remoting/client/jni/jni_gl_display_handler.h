@@ -11,9 +11,9 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "remoting/base/queued_task_poster.h"
 #include "remoting/client/display/gl_renderer.h"
 #include "remoting/client/display/gl_renderer_delegate.h"
-#include "remoting/client/queued_task_poster.h"
 #include "remoting/protocol/cursor_shape_stub.h"
 
 namespace remoting {
@@ -30,6 +30,10 @@ class ChromotingClientRuntime;
 class JniGlDisplayHandler {
  public:
   JniGlDisplayHandler(const base::android::JavaRef<jobject>& java_client);
+
+  JniGlDisplayHandler(const JniGlDisplayHandler&) = delete;
+  JniGlDisplayHandler& operator=(const JniGlDisplayHandler&) = delete;
+
   ~JniGlDisplayHandler();
 
   std::unique_ptr<protocol::CursorShapeStub> CreateCursorShapeStub();
@@ -90,7 +94,6 @@ class JniGlDisplayHandler {
 
   // Used on UI thread.
   base::WeakPtrFactory<JniGlDisplayHandler> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(JniGlDisplayHandler);
 };
 
 }  // namespace remoting

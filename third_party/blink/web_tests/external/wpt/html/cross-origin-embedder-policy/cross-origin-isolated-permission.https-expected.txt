@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS frame: origin = https://web-platform.test:8444, value = undefined
+PASS frame: origin = https://web-platform.test:8444, value = *
+PASS frame: origin = https://web-platform.test:8444, value = self
+PASS frame: origin = https://web-platform.test:8444, value = (\)
+PASS frame: origin = https://www1.web-platform.test:8444, value = undefined
+PASS frame: origin = https://www1.web-platform.test:8444, value = *
+PASS frame: origin = https://www1.web-platform.test:8444, value = self
+PASS frame: origin = https://www1.web-platform.test:8444, value = (\)
+PASS dedicated worker: scheme = https, value = undefined
+PASS dedicated worker: scheme = https, value = *
+PASS dedicated worker: scheme = https, value = self
+PASS dedicated worker: scheme = https, value = (\)
+PASS dedicated worker: scheme = data, value = undefined
+PASS dedicated worker: scheme = data, value = *
+PASS dedicated worker: scheme = data, value = self
+PASS dedicated worker: scheme = data, value = (\)
+PASS dedicated worker: scheme = blob, value = undefined
+PASS dedicated worker: scheme = blob, value = *
+PASS dedicated worker: scheme = blob, value = self
+PASS dedicated worker: scheme = blob, value = (\)
+PASS shared worker: withCoopCoep = false
+FAIL shared worker: withCoopCoep = true assert_equals: expected true but got false
+PASS service worker: withCoopCoep = false
+FAIL service worker: withCoopCoep = true assert_equals: expected true but got false
+Harness: the test ran to completion.
+

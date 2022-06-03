@@ -10,8 +10,10 @@ namespace cloud_print {
 
 // The string to be appended to the user-agent for cloud print requests.
 extern const char kCloudPrintUserAgent[];
-// The proxy header required by cloud print server.
-extern const char kChromeCloudPrintProxyHeader[];
+// The proxy header name required by cloud print server.
+extern const char kChromeCloudPrintProxyHeaderName[];
+// The proxy header value required by cloud print server.
+extern const char kChromeCloudPrintProxyHeaderValue[];
 // The source of cloud print notifications.
 extern const char kCloudPrintPushNotificationsSource[];
 
@@ -31,8 +33,6 @@ extern const char kUseCDD[];
 
 extern const char kContentTypeJSON[];
 extern const char kContentTypePDF[];
-extern const char kContentTypeXML[];
-extern const char kContentTypeXPS[];
 
 // Value of "code" parameter in cloud print "/message" requests.
 extern const char kPrintSystemFailedMessageId[];

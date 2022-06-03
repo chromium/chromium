@@ -41,6 +41,13 @@ void SkiaTraceMemoryDumpImpl::dumpNumericValue(const char* dumpName,
   dump->AddScalar(valueName, units, value);
 }
 
+void SkiaTraceMemoryDumpImpl::dumpStringValue(const char* dump_name,
+                                              const char* value_name,
+                                              const char* value) {
+  auto* dump = process_memory_dump_->GetOrCreateAllocatorDump(dump_name);
+  dump->AddString(value_name, "", value);
+}
+
 void SkiaTraceMemoryDumpImpl::setMemoryBacking(const char* dumpName,
                                                const char* backingType,
                                                const char* backingObjectId) {

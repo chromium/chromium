@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/observer_list.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -55,6 +54,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothInputClient : public BluezDBusClient {
                                       const std::string& property_name) {}
   };
 
+  BluetoothInputClient(const BluetoothInputClient&) = delete;
+  BluetoothInputClient& operator=(const BluetoothInputClient&) = delete;
+
   ~BluetoothInputClient() override;
 
   // Adds and removes observers for events on all remote bluetooth input
@@ -72,9 +74,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothInputClient : public BluezDBusClient {
 
  protected:
   BluetoothInputClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothInputClient);
 };
 
 }  // namespace bluez

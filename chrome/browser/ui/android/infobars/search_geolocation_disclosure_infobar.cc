@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/android/infobars/search_geolocation_disclosure_infobar.h"
 
 #include "base/android/jni_string.h"
+#include "base/bind.h"
 #include "chrome/android/chrome_jni_headers/SearchGeolocationDisclosureInfoBar_jni.h"
 #include "chrome/browser/android/search_permissions/search_geolocation_disclosure_infobar_delegate.h"
 
@@ -13,18 +14,20 @@ using base::android::ScopedJavaLocalRef;
 
 SearchGeolocationDisclosureInfoBar::SearchGeolocationDisclosureInfoBar(
     std::unique_ptr<SearchGeolocationDisclosureInfoBarDelegate> delegate)
-    : InfoBarAndroid(std::move(delegate)) {}
+    : infobars::InfoBarAndroid(std::move(delegate)) {}
 
-SearchGeolocationDisclosureInfoBar::~SearchGeolocationDisclosureInfoBar() {
-}
+SearchGeolocationDisclosureInfoBar::~SearchGeolocationDisclosureInfoBar() =
+    default;
 
 ScopedJavaLocalRef<jobject>
-SearchGeolocationDisclosureInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+SearchGeolocationDisclosureInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   ScopedJavaLocalRef<jstring> message_text =
       base::android::ConvertUTF16ToJavaString(
           env, GetDelegate()->message_text());
   return Java_SearchGeolocationDisclosureInfoBar_show(
-      env, GetEnumeratedIconId(), message_text,
+      env, resource_id_mapper.Run(delegate()->GetIconId()), message_text,
       GetDelegate()->inline_link_range().start(),
       GetDelegate()->inline_link_range().end());
 }

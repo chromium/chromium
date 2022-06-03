@@ -4,10 +4,13 @@
 
 #include "services/device/usb/usb_context.h"
 
+#include <memory>
+
 #include "base/atomicops.h"
 #include "base/logging.h"
 #include "base/macros.h"
 #include "base/threading/simple_thread.h"
+#include "base/threading/thread_restrictions.h"
 #include "services/device/usb/usb_error.h"
 #include "third_party/libusb/src/libusb/interrupt.h"
 #include "third_party/libusb/src/libusb/libusb.h"
@@ -20,6 +23,10 @@ namespace device {
 class UsbContext::UsbEventHandler : public base::SimpleThread {
  public:
   explicit UsbEventHandler(libusb_context* context);
+
+  UsbEventHandler(const UsbEventHandler&) = delete;
+  UsbEventHandler& operator=(const UsbEventHandler&) = delete;
+
   ~UsbEventHandler() override;
 
   // base::SimpleThread
@@ -30,7 +37,6 @@ class UsbContext::UsbEventHandler : public base::SimpleThread {
  private:
   base::subtle::Atomic32 running_;
   libusb_context* context_;
-  DISALLOW_COPY_AND_ASSIGN(UsbEventHandler);
 };
 
 UsbContext::UsbEventHandler::UsbEventHandler(libusb_context* context)
@@ -63,12 +69,19 @@ void UsbContext::UsbEventHandler::Stop() {
 
 UsbContext::UsbContext(PlatformUsbContext context) : context_(context) {
   // Ownership of the PlatformUsbContext is passed to the event handler thread.
-  event_handler_.reset(new UsbEventHandler(context_));
+  event_handler_ = std::make_unique<UsbEventHandler>(context_);
   event_handler_->Start();
 }
 
 UsbContext::~UsbContext() {
   event_handler_->Stop();
+
+  // Temporary workaround for https://crbug.com/1150182 until the libusb backend
+  // is removed in https://crbug.com/1096743. The last outstanding transfer can
+  // cause this class to be released on a worker thread where blocking is not
+  // typically allowed. Make an exception here as this will only occur during
+  // shutdown.
+  base::ScopedAllowBaseSyncPrimitives allow_sync;
   event_handler_->Join();
 }
 

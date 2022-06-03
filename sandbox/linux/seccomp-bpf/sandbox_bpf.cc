@@ -6,15 +6,19 @@
 
 #include <errno.h>
 #include <stdint.h>
+#include <string.h>
 #include <sys/prctl.h>
 #include <sys/types.h>
 #include <unistd.h>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
+#include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/bpf_dsl.h"
 #include "sandbox/linux/bpf_dsl/codegen.h"
 #include "sandbox/linux/bpf_dsl/policy.h"
@@ -30,6 +34,7 @@
 #include "sandbox/linux/system_headers/linux_filter.h"
 #include "sandbox/linux/system_headers/linux_seccomp.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
+#include "sandbox/sandbox_buildflags.h"
 
 namespace sandbox {
 
@@ -74,16 +79,13 @@ bool KernelHasLGBug() {
   return false;
 }
 
-// Check if the kernel supports seccomp-filter via the seccomp system call
-// and the TSYNC feature to enable seccomp on all threads.
-bool KernelSupportsSeccompTsync() {
+bool KernelSupportsSeccompFlags(unsigned int flags) {
   if (KernelHasLGBug()) {
     return false;
   }
 
   errno = 0;
-  const int rv =
-      sys_seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, nullptr);
+  const int rv = sys_seccomp(SECCOMP_SET_MODE_FILTER, flags, nullptr);
 
   if (rv == -1 && errno == EFAULT) {
     return true;
@@ -93,6 +95,20 @@ bool KernelSupportsSeccompTsync() {
   DCHECK(ENOSYS == errno || EINVAL == errno);
   return false;
 }
+
+// Check if the kernel supports seccomp-filter via the seccomp system call
+// and the TSYNC feature to enable seccomp on all threads.
+bool KernelSupportsSeccompTsync() {
+  return KernelSupportsSeccompFlags(SECCOMP_FILTER_FLAG_TSYNC);
+}
+
+#if BUILDFLAG(DISABLE_SECCOMP_SSBD)
+// Check if the kernel supports seccomp-filter via the seccomp system call and
+// without spec flaw mitigation.
+bool KernelSupportSeccompSpecAllow() {
+  return KernelSupportsSeccompFlags(SECCOMP_FILTER_FLAG_SPEC_ALLOW);
+}
+#endif
 
 uint64_t EscapePC() {
   intptr_t rv = Syscall::Call(-1);
@@ -130,7 +146,7 @@ bool SandboxBPF::SupportsSeccompSandbox(SeccompLevel level) {
   return false;
 }
 
-bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level) {
+bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level, bool enable_ibpb) {
   DCHECK(policy_);
   CHECK(seccomp_level == SeccompLevel::SINGLE_THREADED ||
         seccomp_level == SeccompLevel::MULTI_THREADED);
@@ -139,7 +155,6 @@ bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level) {
     SANDBOX_DIE(
         "Cannot repeatedly start sandbox. Create a separate Sandbox "
         "object instead.");
-    return false;
   }
 
   if (!proc_fd_.is_valid()) {
@@ -156,7 +171,6 @@ bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level) {
     if (!supports_tsync) {
       SANDBOX_DIE("Cannot start sandbox; kernel does not support synchronizing "
                   "filters for a threadgroup");
-      return false;
     }
   }
 
@@ -168,8 +182,7 @@ bool SandboxBPF::StartSandbox(SeccompLevel seccomp_level) {
   }
 
   // Install the filters.
-  InstallFilter(supports_tsync ||
-                seccomp_level == SeccompLevel::MULTI_THREADED);
+  InstallFilter(seccomp_level == SeccompLevel::MULTI_THREADED, enable_ibpb);
 
   return true;
 }
@@ -208,7 +221,7 @@ CodeGen::Program SandboxBPF::AssembleFilter() {
   return compiler.Compile();
 }
 
-void SandboxBPF::InstallFilter(bool must_sync_threads) {
+void SandboxBPF::InstallFilter(bool must_sync_threads, bool enable_ibpb) {
   // We want to be very careful in not imposing any requirements on the
   // policies that are set with SetSandboxPolicy(). This means, as soon as
   // the sandbox is active, we shouldn't be relying on libraries that could
@@ -237,23 +250,64 @@ void SandboxBPF::InstallFilter(bool must_sync_threads) {
     SANDBOX_DIE("Kernel refuses to enable no-new-privs");
   }
 
-  // Install BPF filter program. If the thread state indicates multi-threading
-  // support, then the kernel hass the seccomp system call. Otherwise, fall
-  // back on prctl, which requires the process to be single-threaded.
+  // Install BPF filter program. If the thread state indicates that tsync is
+  // necessary or SECCOMP_FILTER_FLAG_SPEC_ALLOW is supported, then the kernel
+  // has the seccomp system call. Otherwise, fall back on prctl, which requires
+  // the process to be single-threaded.
+  unsigned int seccomp_filter_flags = 0;
   if (must_sync_threads) {
-    int rv =
-        sys_seccomp(SECCOMP_SET_MODE_FILTER, SECCOMP_FILTER_FLAG_TSYNC, &prog);
-    if (rv) {
-      SANDBOX_DIE(
-          "Kernel refuses to turn on and synchronize threads for BPF filters");
+    seccomp_filter_flags |= SECCOMP_FILTER_FLAG_TSYNC;
+#if BUILDFLAG(DISABLE_SECCOMP_SSBD)
+    // Seccomp will disable indirect branch speculation and speculative store
+    // bypass simultaneously. To only opt-out SSBD, following steps are needed
+    // 1. Disable IBSpec with prctl
+    // 2. Call seccomp with SECCOMP_FILTER_FLAG_SPEC_ALLOW
+    // As prctl provide a per thread control of the speculation feature, only
+    // opt-out SSBD when process is single-threaded and tsync is not necessary.
+  } else if (KernelSupportSeccompSpecAllow()) {
+    seccomp_filter_flags |= SECCOMP_FILTER_FLAG_SPEC_ALLOW;
+    if (enable_ibpb) {
+      DisableIBSpec();
     }
+#endif
   } else {
     if (prctl(PR_SET_SECCOMP, SECCOMP_MODE_FILTER, &prog)) {
       SANDBOX_DIE("Kernel refuses to turn on BPF filters");
     }
+    sandbox_has_started_ = true;
+    return;
   }
 
+  int rv = sys_seccomp(SECCOMP_SET_MODE_FILTER, seccomp_filter_flags, &prog);
+  if (rv) {
+    SANDBOX_DIE("Kernel refuses to turn on BPF filters");
+  }
   sandbox_has_started_ = true;
+}
+
+void SandboxBPF::DisableIBSpec() {
+  // Test if the per-task control of the mitigation is available. If
+  // PR_SPEC_PRCTL is set, then the per-task control of the mitigation is
+  // available. If not set, prctl(PR_SET_SPECULATION_CTRL) for the speculation
+  // misfeature will fail.
+  const int rv =
+      prctl(PR_GET_SPECULATION_CTRL, PR_SPEC_INDIRECT_BRANCH, 0, 0, 0);
+  // Kernel control of the speculation misfeature is not supported or the
+  // misfeature is already force disabled.
+  if (rv < 0 || (rv & PR_SPEC_FORCE_DISABLE)) {
+    return;
+  }
+
+  if (!(rv & PR_SPEC_PRCTL)) {
+    DVLOG(1) << "Indirect branch speculation can not be controled by prctl. "
+             << rv;
+    return;
+  }
+
+  if (prctl(PR_SET_SPECULATION_CTRL, PR_SPEC_INDIRECT_BRANCH,
+            PR_SPEC_FORCE_DISABLE, 0, 0)) {
+    PLOG(ERROR) << "Kernel failed to force disable indirect branch speculation";
+  }
 }
 
 }  // namespace sandbox

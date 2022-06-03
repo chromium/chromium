@@ -5,15 +5,12 @@
 import("//build/config/ios/asset_catalog.gni")
 
 colorset("settings_catalog_example_text") {
-  sources = [
-    "settings_catalog_example_text.colorset/Contents.json",
-  ]
+  sources = [ "settings_catalog_example_text.colorset/Contents.json" ]
 }
 
 imageset("app_icon_placeholder") {
   sources = [
     "app_icon_placeholder.imageset/Contents.json",
-    "app_icon_placeholder.imageset/app_icon_placeholder.png",
     "app_icon_placeholder.imageset/app_icon_placeholder@2x.png",
     "app_icon_placeholder.imageset/app_icon_placeholder@3x.png",
   ]
@@ -22,16 +19,22 @@ imageset("app_icon_placeholder") {
 imageset("encryption_error") {
   sources = [
     "encryption_error.imageset/Contents.json",
-    "encryption_error.imageset/encryption_error.png",
     "encryption_error.imageset/encryption_error@2x.png",
     "encryption_error.imageset/encryption_error@3x.png",
+  ]
+}
+
+imageset("enterprise_icon") {
+  sources = [
+    "enterprise_icon.imageset/Contents.json",
+    "enterprise_icon.imageset/enterprise_icon@2x.png",
+    "enterprise_icon.imageset/enterprise_icon@3x.png",
   ]
 }
 
 imageset("settings_accounts_add_account") {
   sources = [
     "settings_accounts_add_account.imageset/Contents.json",
-    "settings_accounts_add_account.imageset/settings_accounts_add_account.png",
     "settings_accounts_add_account.imageset/settings_accounts_add_account@2x.png",
     "settings_accounts_add_account.imageset/settings_accounts_add_account@3x.png",
   ]
@@ -40,7 +43,6 @@ imageset("settings_accounts_add_account") {
 imageset("settings_error") {
   sources = [
     "settings_error.imageset/Contents.json",
-    "settings_error.imageset/settings_error.png",
     "settings_error.imageset/settings_error@2x.png",
     "settings_error.imageset/settings_error@3x.png",
   ]
@@ -49,7 +51,6 @@ imageset("settings_error") {
 imageset("settings_about_chrome") {
   sources = [
     "settings_about_chrome.imageset/Contents.json",
-    "settings_about_chrome.imageset/settings_about_chrome.png",
     "settings_about_chrome.imageset/settings_about_chrome@2x.png",
     "settings_about_chrome.imageset/settings_about_chrome@3x.png",
   ]
@@ -58,7 +59,6 @@ imageset("settings_about_chrome") {
 imageset("settings_article_suggestions") {
   sources = [
     "settings_article_suggestions.imageset/Contents.json",
-    "settings_article_suggestions.imageset/settings_article_suggestions.png",
     "settings_article_suggestions.imageset/settings_article_suggestions@2x.png",
     "settings_article_suggestions.imageset/settings_article_suggestions@3x.png",
   ]
@@ -67,7 +67,6 @@ imageset("settings_article_suggestions") {
 imageset("settings_bandwidth") {
   sources = [
     "settings_bandwidth.imageset/Contents.json",
-    "settings_bandwidth.imageset/settings_bandwidth.png",
     "settings_bandwidth.imageset/settings_bandwidth@2x.png",
     "settings_bandwidth.imageset/settings_bandwidth@3x.png",
   ]
@@ -76,7 +75,6 @@ imageset("settings_bandwidth") {
 imageset("settings_content_settings") {
   sources = [
     "settings_content_settings.imageset/Contents.json",
-    "settings_content_settings.imageset/settings_content_settings.png",
     "settings_content_settings.imageset/settings_content_settings@2x.png",
     "settings_content_settings.imageset/settings_content_settings@3x.png",
   ]
@@ -85,7 +83,6 @@ imageset("settings_content_settings") {
 imageset("settings_debug") {
   sources = [
     "settings_debug.imageset/Contents.json",
-    "settings_debug.imageset/settings_debug.png",
     "settings_debug.imageset/settings_debug@2x.png",
     "settings_debug.imageset/settings_debug@3x.png",
   ]
@@ -102,7 +99,6 @@ imageset("settings_language_settings") {
 imageset("settings_passwords") {
   sources = [
     "settings_passwords.imageset/Contents.json",
-    "settings_passwords.imageset/settings_passwords.png",
     "settings_passwords.imageset/settings_passwords@2x.png",
     "settings_passwords.imageset/settings_passwords@3x.png",
   ]
@@ -111,7 +107,6 @@ imageset("settings_passwords") {
 imageset("settings_payment_methods") {
   sources = [
     "settings_payment_methods.imageset/Contents.json",
-    "settings_payment_methods.imageset/payment_methods.png",
     "settings_payment_methods.imageset/payment_methods@2x.png",
     "settings_payment_methods.imageset/payment_methods@3x.png",
   ]
@@ -120,7 +115,6 @@ imageset("settings_payment_methods") {
 imageset("settings_addresses") {
   sources = [
     "settings_addresses.imageset/Contents.json",
-    "settings_addresses.imageset/addresses.png",
     "settings_addresses.imageset/addresses@2x.png",
     "settings_addresses.imageset/addresses@3x.png",
   ]
@@ -129,16 +123,22 @@ imageset("settings_addresses") {
 imageset("settings_privacy") {
   sources = [
     "settings_privacy.imageset/Contents.json",
-    "settings_privacy.imageset/settings_privacy.png",
     "settings_privacy.imageset/settings_privacy@2x.png",
     "settings_privacy.imageset/settings_privacy@3x.png",
+  ]
+}
+
+imageset("settings_safe_browsing") {
+  sources = [
+    "settings_safe_browsing.imageset/Contents.json",
+    "settings_safe_browsing.imageset/settings_safe_browsing@2x.png",
+    "settings_safe_browsing.imageset/settings_safe_browsing@3x.png",
   ]
 }
 
 imageset("settings_search_engine") {
   sources = [
     "settings_search_engine.imageset/Contents.json",
-    "settings_search_engine.imageset/settings_search_engine.png",
     "settings_search_engine.imageset/settings_search_engine@2x.png",
     "settings_search_engine.imageset/settings_search_engine@3x.png",
   ]
@@ -147,7 +147,6 @@ imageset("settings_search_engine") {
 imageset("settings_voice_search") {
   sources = [
     "settings_voice_search.imageset/Contents.json",
-    "settings_voice_search.imageset/settings_voice_search.png",
     "settings_voice_search.imageset/settings_voice_search@2x.png",
     "settings_voice_search.imageset/settings_voice_search@3x.png",
   ]
@@ -158,14 +157,6 @@ imageset("sync_and_google_services") {
     "sync_and_google_services.imageset/Contents.json",
     "sync_and_google_services.imageset/sync_and_google_services@2x.png",
     "sync_and_google_services.imageset/sync_and_google_services@3x.png",
-  ]
-}
-
-imageset("sync_and_google_services_sync_error") {
-  sources = [
-    "sync_and_google_services_sync_error.imageset/Contents.json",
-    "sync_and_google_services_sync_error.imageset/sync_and_google_services_sync_error@2x.png",
-    "sync_and_google_services_sync_error.imageset/sync_and_google_services_sync_error@3x.png",
   ]
 }
 
@@ -182,5 +173,45 @@ imageset("sync_and_google_services_sync_on") {
     "sync_and_google_services_sync_on.imageset/Contents.json",
     "sync_and_google_services_sync_on.imageset/sync_and_google_services_sync_on@2x.png",
     "sync_and_google_services_sync_on.imageset/sync_and_google_services_sync_on@3x.png",
+  ]
+}
+
+imageset("settings_google_services") {
+  sources = [
+    "settings_google_services.imageset/Contents.json",
+    "settings_google_services.imageset/settings_google_services@2x.png",
+    "settings_google_services.imageset/settings_google_services@3x.png",
+  ]
+}
+
+imageset("settings_unsafe_state") {
+  sources = [
+    "settings_unsafe_state.imageset/Contents.json",
+    "settings_unsafe_state.imageset/settings_unsafe_state@2x.png",
+    "settings_unsafe_state.imageset/settings_unsafe_state@3x.png",
+  ]
+}
+
+imageset("settings_safe_state") {
+  sources = [
+    "settings_safe_state.imageset/Contents.json",
+    "settings_safe_state.imageset/settings_safe_state@2x.png",
+    "settings_safe_state.imageset/settings_safe_state@3x.png",
+  ]
+}
+
+imageset("settings_info") {
+  sources = [
+    "settings_info.imageset/Contents.json",
+    "settings_info.imageset/settings_info@2x.png",
+    "settings_info.imageset/settings_info@3x.png",
+  ]
+}
+
+imageset("settings_safety_check") {
+  sources = [
+    "settings_safety_check.imageset/Contents.json",
+    "settings_safety_check.imageset/settings_safety_check@2x.png",
+    "settings_safety_check.imageset/settings_safety_check@3x.png",
   ]
 }

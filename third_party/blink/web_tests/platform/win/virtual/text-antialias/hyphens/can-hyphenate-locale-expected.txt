@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-PASS This test requires "internals.canHyphenate"
-FAIL "en-us" can hyphenate assert_true: expected true got false
-FAIL "en-gu" can hyphenate assert_true: expected true got false
-PASS "ja-jp" cannot hyphenate
-Harness: the test ran to completion.
-

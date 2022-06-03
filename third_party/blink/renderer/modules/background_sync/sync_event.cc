@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/background_sync/sync_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_sync_event_init.h"
+
 namespace blink {
 
 SyncEvent::SyncEvent(const AtomicString& type,

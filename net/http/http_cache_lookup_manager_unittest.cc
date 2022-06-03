@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_cache_lookup_manager.h"
 #include "net/http/http_transaction_test_util.h"
@@ -29,8 +30,7 @@ class MockServerPushHelper : public ServerPushDelegate::ServerPushHelper {
  public:
   explicit MockServerPushHelper(const GURL& url)
       : request_url_(url),
-        network_isolation_key_(url::Origin::Create(url),
-                               url::Origin::Create(url)) {}
+        network_isolation_key_(SchemefulSite(url), SchemefulSite(url)) {}
 
   const GURL& GetURL() const override { return request_url_; }
 
@@ -52,12 +52,26 @@ class MockServerPushHelper : public ServerPushDelegate::ServerPushHelper {
 
 std::unique_ptr<MockTransaction> CreateMockTransaction(const GURL& url) {
   MockTransaction mock_trans = {
-      url.spec().c_str(), "GET", base::Time(), "", LOAD_NORMAL,
+      url.spec().c_str(),
+      "GET",
+      base::Time(),
+      "",
+      LOAD_NORMAL,
+      DefaultTransportInfo(),
       "HTTP/1.1 200 OK",
       "Date: Wed, 28 Nov 2007 09:40:09 GMT\n"
       "Last-Modified: Wed, 28 Nov 2007 00:40:09 GMT\n",
-      base::Time(), "<html><body>Google Blah Blah</body></html>",
-      TEST_MODE_NORMAL, nullptr, nullptr, nullptr, 0, 0, OK};
+      base::Time(),
+      "<html><body>Google Blah Blah</body></html>",
+      {},
+      TEST_MODE_NORMAL,
+      nullptr,
+      nullptr,
+      nullptr,
+      0,
+      0,
+      OK,
+  };
   return std::make_unique<MockTransaction>(mock_trans);
 }
 
@@ -182,9 +196,9 @@ TEST_P(HttpCacheLookupManagerTest_NetworkIsolationKey, ServerPushCacheStatus) {
   std::unique_ptr<MockServerPushHelper> push_helper =
       std::make_unique<MockServerPushHelper>(request_url);
   if (!use_same_network_isolation_key) {
-    url::Origin origin = url::Origin::Create(GURL("http://www.abc.com"));
+    SchemefulSite site(GURL("http://www.abc.com"));
     push_helper->set_network_isolation_key(
-        net::NetworkIsolationKey(origin, origin));
+        net::NetworkIsolationKey(site, site));
   }
 
   MockServerPushHelper* push_helper_ptr = push_helper.get();
@@ -208,7 +222,7 @@ TEST_P(HttpCacheLookupManagerTest_NetworkIsolationKey, ServerPushCacheStatus) {
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    /* no prefix */,
+    All,
     HttpCacheLookupManagerTest_NetworkIsolationKey,
     ::testing::Bool());
 

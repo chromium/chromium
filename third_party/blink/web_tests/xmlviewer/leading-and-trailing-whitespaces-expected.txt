@@ -1,3 +1,0 @@
-Tests leading and trailing whitespaces in xml viewer.
-
-SUCCESS

@@ -14,7 +14,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "unique_position.proto";
+import "components/sync/protocol/unique_position.proto";
 
 // Sync proto to store entity metadata in model type storage.
 message EntityMetadata {
@@ -71,4 +71,9 @@ message EntityMetadata {
   // unique_position.proto for more information about its internal
   // representation.
   optional UniquePosition unique_position = 11;
+
+  // Used only for bookmarks. It's analogous to |specifics_hash| but it
+  // exclusively hashes the content of the favicon image, as represented in
+  // proto field BookmarkSpecifics.favicon, using base::PersistentHash().
+  optional fixed32 bookmark_favicon_hash = 12;
 }

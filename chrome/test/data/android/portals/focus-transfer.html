@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<body>
+  <portal src="focus-transfer-portal.html"></portal>
+  <button>button</button>
+  <script>
+    let windowBlurred = false;
+    let buttonBlurred = false;
+
+    function activatePortal() {
+      let portal = document.querySelector('portal');
+      portal.activate().then(() => {
+        document.body.removeChild(portal);
+        window.portalHost.onmessage = e => {
+          if (e.data === 'windowBlurred')
+            window.portalHost.postMessage(windowBlurred);
+          if (e.data === 'buttonBlurred')
+            window.portalHost.postMessage(buttonBlurred);
+        }
+      });
+    }
+
+    let button = document.querySelector('button');
+    button.focus();
+
+    window.onblur = () => windowBlurred = true;
+    button.onblur = () => buttonBlurred = true;
+  </script>
+</body>

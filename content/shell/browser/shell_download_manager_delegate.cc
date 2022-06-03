@@ -12,13 +12,14 @@
 #endif
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -75,7 +76,8 @@ bool ShellDownloadManagerDelegate::DetermineDownloadTarget(
         download->GetForcedFilePath(),
         download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
-        download->GetForcedFilePath(),
+        download::DownloadItem::MixedContentStatus::UNKNOWN,
+        download->GetForcedFilePath(), absl::nullopt /*download_schedule*/,
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
     return true;
   }
@@ -84,15 +86,15 @@ bool ShellDownloadManagerDelegate::DetermineDownloadTarget(
       &ShellDownloadManagerDelegate::OnDownloadPathGenerated,
       weak_ptr_factory_.GetWeakPtr(), download->GetId(), std::move(*callback));
 
-  PostTask(FROM_HERE,
-           {base::ThreadPool(), base::MayBlock(),
-            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
-            base::TaskPriority::USER_VISIBLE},
-           base::BindOnce(&ShellDownloadManagerDelegate::GenerateFilename,
-                          download->GetURL(), download->GetContentDisposition(),
-                          download->GetSuggestedFilename(),
-                          download->GetMimeType(), default_download_path_,
-                          std::move(filename_determined_callback)));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+       base::TaskPriority::USER_VISIBLE},
+      base::BindOnce(&ShellDownloadManagerDelegate::GenerateFilename,
+                     download->GetURL(), download->GetContentDisposition(),
+                     download->GetSuggestedFilename(), download->GetMimeType(),
+                     default_download_path_,
+                     std::move(filename_determined_callback)));
   return true;
 }
 
@@ -126,8 +128,8 @@ void ShellDownloadManagerDelegate::GenerateFilename(
     base::CreateDirectory(suggested_directory);
 
   base::FilePath suggested_path(suggested_directory.Append(generated_name));
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(std::move(callback), suggested_path));
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), suggested_path));
 }
 
 void ShellDownloadManagerDelegate::OnDownloadPathGenerated(
@@ -140,7 +142,9 @@ void ShellDownloadManagerDelegate::OnDownloadPathGenerated(
     std::move(callback).Run(
         suggested_path, download::DownloadItem::TARGET_DISPOSITION_OVERWRITE,
         download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+        download::DownloadItem::MixedContentStatus::UNKNOWN,
         suggested_path.AddExtension(FILE_PATH_LITERAL(".crdownload")),
+        absl::nullopt /*download_schedule*/,
         download::DOWNLOAD_INTERRUPT_REASON_NONE);
     return;
   }
@@ -190,7 +194,9 @@ void ShellDownloadManagerDelegate::ChooseDownloadPath(
 
   std::move(callback).Run(result,
                           download::DownloadItem::TARGET_DISPOSITION_PROMPT,
-                          download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS, result,
+                          download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+                          download::DownloadItem::MixedContentStatus::UNKNOWN,
+                          result, absl::nullopt /*download_schedule*/,
                           download::DOWNLOAD_INTERRUPT_REASON_NONE);
 }
 

@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/accessibility_notification_waiter.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -66,8 +67,9 @@ class AccessibilityObjectModelBrowserTest : public ContentBrowserTest {
 
 }  // namespace
 
+// TODO(http://crbug.com/1212324): Flaky on various builders.
 IN_PROC_BROWSER_TEST_F(AccessibilityObjectModelBrowserTest,
-                       EventListenerOnVirtualNode) {
+                       DISABLED_EventListenerOnVirtualNode) {
   ASSERT_TRUE(embedded_test_server()->Start());
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 

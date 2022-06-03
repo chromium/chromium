@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "ui/message_center/public/cpp/notification.h"
 
 class NotificationDisplayService;
@@ -23,6 +22,8 @@ class SystemNotificationHelper {
   // Note that only single instance of this class should be created. The
   // instance is retrievable by SystemNotificationHelper::GetInstance().
   SystemNotificationHelper();
+  SystemNotificationHelper(const SystemNotificationHelper&) = delete;
+  SystemNotificationHelper& operator=(const SystemNotificationHelper&) = delete;
   ~SystemNotificationHelper();
 
   // Displays a notification which isn't tied to a normal user profile. The
@@ -42,8 +43,6 @@ class SystemNotificationHelper {
 
   // The global system NotificationDisaplyService, not bound to any profile.
   std::unique_ptr<NotificationDisplayService> system_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemNotificationHelper);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_SYSTEM_NOTIFICATION_HELPER_H_

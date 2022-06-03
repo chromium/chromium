@@ -10,6 +10,95 @@
 
 namespace metrics {
 
+namespace {
+
+class MatchesNameHashIndexAndKey {
+ public:
+  MatchesNameHashIndexAndKey(int name_hash_index, absl::optional<int64_t> key)
+      : name_hash_index_(name_hash_index), key_(key) {}
+
+  bool operator()(const CallStackProfile::MetadataItem& item) const {
+    absl::optional<int64_t> item_key_as_optional =
+        item.has_key() ? item.key() : absl::optional<int64_t>();
+    return item.name_hash_index() == name_hash_index_ &&
+           key_ == item_key_as_optional;
+  }
+
+ private:
+  int name_hash_index_;
+  absl::optional<int64_t> key_;
+};
+
+// Finds the last value for a prior metadata application with |name_hash_index|
+// and |key| from |begin| that was still active at |end|. Returns nullopt if no
+// such application exists.
+absl::optional<int64_t> FindLastOpenEndedMetadataValue(
+    int name_hash_index,
+    absl::optional<int64_t> key,
+    google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
+        begin,
+    google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
+        end) {
+  // Search the samples backward from the end of the range, looking for an
+  // application of the same metadata name hash/key that doesn't have a
+  // corresponding removal.
+  const auto rbegin = std::make_reverse_iterator(end);
+  const auto rend = std::make_reverse_iterator(begin);
+  for (auto it = rbegin; it != rend; ++it) {
+    auto item = std::find_if(it->metadata().begin(), it->metadata().end(),
+                             MatchesNameHashIndexAndKey(name_hash_index, key));
+
+    if (item == it->metadata().end()) {
+      // The sample does not contain a matching item.
+      continue;
+    }
+
+    if (!item->has_value()) {
+      // A matching item was previously applied, but stopped being applied
+      // before the last sample in the range.
+      return absl::nullopt;
+    }
+
+    // Else, a matching item was applied at this sample.
+    return item->value();
+  }
+
+  // No matching items were previously applied.
+  return absl::nullopt;
+}
+
+// Clears any existing metadata changes between |begin| and |end|.
+void ClearExistingMetadata(
+    const int name_hash_index,
+    absl::optional<int64_t> key,
+    google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
+        begin,
+    google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
+        end) {
+  for (auto it = begin; it != end; ++it) {
+    google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem>*
+        metadata = it->mutable_metadata();
+    metadata->erase(
+        std::remove_if(metadata->begin(), metadata->end(),
+                       MatchesNameHashIndexAndKey(name_hash_index, key)),
+        metadata->end());
+  }
+}
+
+// Sets the state of |item| to the provided values.
+void SetMetadataItem(int name_hash_index,
+                     absl::optional<int64_t> key,
+                     absl::optional<int64_t> value,
+                     CallStackProfile::MetadataItem* item) {
+  item->set_name_hash_index(name_hash_index);
+  if (key.has_value())
+    item->set_key(*key);
+  if (value.has_value())
+    item->set_value(*value);
+}
+
+}  // namespace
+
 CallStackProfileMetadata::CallStackProfileMetadata() = default;
 
 CallStackProfileMetadata::~CallStackProfileMetadata() = default;
@@ -18,8 +107,8 @@ CallStackProfileMetadata::~CallStackProfileMetadata() = default;
 // suspended so must not take any locks, including indirectly through use of
 // heap allocation, LOG, CHECK, or DCHECK.
 void CallStackProfileMetadata::RecordMetadata(
-    base::ProfileBuilder::MetadataProvider* metadata_provider) {
-  metadata_item_count_ = metadata_provider->GetItems(&metadata_items_);
+    const base::MetadataRecorder::MetadataProvider& metadata_provider) {
+  metadata_item_count_ = metadata_provider.GetItems(&metadata_items_);
 }
 
 google::protobuf::RepeatedPtrField<CallStackProfile::MetadataItem>
@@ -62,6 +151,89 @@ CallStackProfileMetadata::CreateSampleMetadata(
   return metadata_items;
 }
 
+void CallStackProfileMetadata::ApplyMetadata(
+    const base::MetadataRecorder::Item& item,
+    google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
+        begin,
+    google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>::iterator
+        end,
+    google::protobuf::RepeatedPtrField<CallStackProfile::StackSample>*
+        stack_samples,
+    google::protobuf::RepeatedField<uint64_t>* metadata_name_hashes) {
+  if (begin == end)
+    return;
+
+  // This function works by finding the previously effective metadata values
+  // with the same name hash and key at the begin and end of the range. The
+  // range is then cleared of any metadata changes (with the same name hash and
+  // key) in preparation for recording the metadata application at the start of
+  // the range and the removal at the end of the range.
+  //
+  // We expect this function to be called at most a few times per collection, so
+  // it's written to be readable rather than optimally performant. If
+  // performance becomes a concern, the two FindLastOpenEndedMetadataValue()
+  // calls can be merged into one to avoid one loop over the samples, or a more
+  // efficient representation of when metadata is set/unset could be used to
+  // avoid the looping entirely.
+
+  const size_t name_hash_index =
+      MaybeAppendNameHash(item.name_hash, metadata_name_hashes);
+
+  // The previously set metadata value immediately prior to begin, or nullopt if
+  // none.
+  const absl::optional<int64_t> previous_value_before_begin =
+      FindLastOpenEndedMetadataValue(name_hash_index, item.key,
+                                     stack_samples->begin(), begin);
+
+  // The end of the range will be in one of two states: terminating before the
+  // last recorded sample, or terminating at the last recorded sample. If it
+  // terminates before the last recorded sample then we are able to record the
+  // removal of the metadata on the sample following the end of the
+  // range. Otherwise we have to wait for the next recorded sample to record the
+  // removal of the metadata.
+  const bool range_terminates_at_last_sample = end == stack_samples->end();
+
+  // The previously set metadata value at *end (or the one to be set on the next
+  // sample if range_terminates_at_last_sample).
+  const absl::optional<int64_t> previous_value_at_end =
+      FindLastOpenEndedMetadataValue(
+          name_hash_index, item.key, stack_samples->begin(),
+          // If a sample past the end exists check its value as well, since
+          // we'll be overwriting that sample's metadata below.
+          (range_terminates_at_last_sample ? end : end + 1));
+
+  ClearExistingMetadata(name_hash_index, item.key, begin,
+                        (range_terminates_at_last_sample ? end : end + 1));
+
+  // Enable the metadata on the initial sample if different than the previous
+  // state.
+  if (!previous_value_before_begin.has_value() ||
+      *previous_value_before_begin != item.value) {
+    SetMetadataItem(name_hash_index, item.key, item.value,
+                    begin->mutable_metadata()->Add());
+  }
+
+  if (range_terminates_at_last_sample) {
+    // We note that the metadata item that was set for the last sample in
+    // previous_items_ to enable computing the appropriate deltas from it on
+    // the next recorded sample.
+    previous_items_[MetadataKey(item.name_hash, item.key)] = item.value;
+  } else if (!previous_value_at_end.has_value() ||
+             *previous_value_at_end != item.value) {
+    // A sample exists past the end of the range so we can use that sample to
+    // record the end of the metadata application. We do so if there was no
+    // previous value at the end or it was different than what we set at begin.
+    SetMetadataItem(name_hash_index, item.key,
+                    // If we had a previously set item at the end of the range,
+                    // set its value. Otherwise leave the value empty to denote
+                    // that it is being unset.
+                    previous_value_at_end.has_value()
+                        ? *previous_value_at_end
+                        : absl::optional<int64_t>(),
+                    end->mutable_metadata()->Add());
+  }
+}
+
 bool CallStackProfileMetadata::MetadataKeyCompare::operator()(
     const MetadataKey& a,
     const MetadataKey& b) const {
@@ -69,7 +241,7 @@ bool CallStackProfileMetadata::MetadataKeyCompare::operator()(
 }
 
 CallStackProfileMetadata::MetadataKey::MetadataKey(uint64_t name_hash,
-                                                   base::Optional<int64_t> key)
+                                                   absl::optional<int64_t> key)
     : name_hash(name_hash), key(key) {}
 
 CallStackProfileMetadata::MetadataKey::MetadataKey(const MetadataKey& other) =
@@ -79,7 +251,7 @@ operator=(const MetadataKey& other) = default;
 
 CallStackProfileMetadata::MetadataMap
 CallStackProfileMetadata::CreateMetadataMap(
-    base::ProfileBuilder::MetadataItemArray items,
+    base::MetadataRecorder::ItemArray items,
     size_t item_count) {
   MetadataMap item_map;
   for (size_t i = 0; i < item_count; ++i)

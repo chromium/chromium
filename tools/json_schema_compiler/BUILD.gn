@@ -5,10 +5,10 @@
 # Utility sources against which generated API modules should be linked.
 source_set("generated_api_util") {
   sources = [
+    "manifest_parse_util.cc",
+    "manifest_parse_util.h",
     "util.cc",
     "util.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

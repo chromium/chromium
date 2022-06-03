@@ -24,6 +24,7 @@
 #include "absl/synchronization/mutex.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace {
 
 absl::once_flag once;
@@ -102,4 +103,5 @@ TEST(CallOnceTest, ExecutionCount) {
 }
 
 }  // namespace
+ABSL_NAMESPACE_END
 }  // namespace absl

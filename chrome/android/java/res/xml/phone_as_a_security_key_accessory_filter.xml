@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<!--
+This filter captures desktop Chrome (using AOA[1]) trying to use this phone
+as a security key over USB. The model string is a random, magic value
+that identifies such requests. On the desktop side this magic value is
+known as |kCableOverAOAModel| in services/device/public/mojom/usb_device.mojom.
+
+[1] https://source.android.com/devices/accessories/aoa
+-->
+<resources>
+    <usb-accessory model="12eba9f901039b36"/>
+    <!-- Never attempt to match a version here: https://crbug.com/1174217 -->
+</resources>

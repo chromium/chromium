@@ -11,6 +11,7 @@ async_test(t => {
   enableTestMode(video);
 
   video.oncanplaythrough = t.step_func(_ => {
+    video.oncanplaythrough = undefined;
     var track1 = video.addTextTrack("captions");
 
     for (var i = 0; i < captions.length; ++i)
@@ -32,20 +33,26 @@ async_test(t => {
         "-internal-media-controls-text-track-list");
 
       clickCaptionButton(video, t.step_func(() => {
+
+        // Captions should still be hidden until playback begins
         assert_equals(getComputedStyle(captionsList).display, "none");
+        checkCaptionsHidden(video);
 
-        // Captions track should become visible after the closed caption button is pressed.
-        checkCaptionsVisible(video, captions);
-        checkButtonHasClass(toggleClosedCaptionsButton(video), "visible");
+        video.play();
+        video.onplaying = t.step_func(() => {
+          // Captions track should become visible after playback begins
+          checkCaptionsVisible(video, captions);
+          checkButtonHasClass(toggleClosedCaptionsButton(video), "visible");
 
-        // Click the closed captions button again and make sure the menu does not appear.
-        clickCaptionButton(video, t.step_func_done(() => {
-          assert_equals(getComputedStyle(captionsList).display, "none");
+          // Click the closed captions button again and make sure the menu does not appear.
+          clickCaptionButton(video, t.step_func_done(() => {
+            assert_equals(getComputedStyle(captionsList).display, "none");
 
-          // Captions track should become invisible after the closed caption button is pressed.
-          checkCaptionsHidden(video);
-          checkButtonNotHasClass(toggleClosedCaptionsButton(video), "visible");
-        }));
+            // Captions track should become invisible after the closed caption button is pressed.
+            checkCaptionsHidden(video);
+            checkButtonNotHasClass(toggleClosedCaptionsButton(video), "visible");
+          }));
+        });
       }));
     }));
   });

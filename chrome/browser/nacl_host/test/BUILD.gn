@@ -4,11 +4,9 @@
 
 import("//components/nacl/features.gni")
 
-if (enable_nacl && (is_linux || is_win)) {
+if (enable_nacl && (is_linux || is_chromeos || is_win)) {
   executable("mock_nacl_gdb") {
-    sources = [
-      "mock_nacl_gdb.cc",
-    ]
+    sources = [ "mock_nacl_gdb.cc" ]
     deps = [
       "//base",
 

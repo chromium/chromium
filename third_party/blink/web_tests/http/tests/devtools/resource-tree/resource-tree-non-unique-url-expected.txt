@@ -6,6 +6,8 @@ Frames
         resource-tree-non-unique-url-iframe.html
             Images
                 styles-non-unique-url.css
+            Stylesheets
+                styles-non-unique-url.css
             resource-tree-non-unique-url-iframe.html
         inspected-page.html
 Sources:

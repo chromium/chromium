@@ -5,8 +5,10 @@
 #ifndef UI_BASE_IME_LINUX_LINUX_INPUT_METHOD_CONTEXT_H_
 #define UI_BASE_IME_LINUX_LINUX_INPUT_METHOD_CONTEXT_H_
 
+#include <string>
+#include <vector>
+
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/text_input_type.h"
 
 namespace gfx {
@@ -18,6 +20,7 @@ namespace ui {
 
 struct CompositionText;
 class KeyEvent;
+struct ImeTextSpan;
 
 // An interface of input method context for input method frameworks on
 // GNU/Linux and likes.
@@ -30,12 +33,15 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
   // before dispatching a key event.
   virtual bool DispatchKeyEvent(const ui::KeyEvent& key_event) = 0;
 
+  // Returns whether the event is a peek key event.
+  virtual bool IsPeekKeyEvent(const ui::KeyEvent& key_event) = 0;
+
   // Tells the system IME for the cursor rect which is relative to the
   // client window rect.
   virtual void SetCursorLocation(const gfx::Rect& rect) = 0;
 
   // Tells the system IME the surrounding text around the cursor location.
-  virtual void SetSurroundingText(const base::string16& text,
+  virtual void SetSurroundingText(const std::u16string& text,
                                   const gfx::Range& selection_range) = 0;
 
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
@@ -55,10 +61,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
   virtual ~LinuxInputMethodContextDelegate() {}
 
   // Commits the |text| to the text input client.
-  virtual void OnCommit(const base::string16& text) = 0;
+  virtual void OnCommit(const std::u16string& text) = 0;
 
-  // Deletes the surrounding text at |index| for given |length|.
-  virtual void OnDeleteSurroundingText(int32_t index, uint32_t length) = 0;
+  // Deletes the surrounding text around selection. |before| and |after|
+  // are in UTF-16 code points.
+  virtual void OnDeleteSurroundingText(size_t before, size_t after) = 0;
 
   // Sets the composition text to the text input client.
   virtual void OnPreeditChanged(const CompositionText& composition_text) = 0;
@@ -69,6 +76,11 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContextDelegate {
 
   // Prepares things for a new composition session.
   virtual void OnPreeditStart() = 0;
+
+  // Sets the composition from the current text in the text input client.
+  // |range| is in UTF-16 code range.
+  virtual void OnSetPreeditRegion(const gfx::Range& range,
+                                  const std::vector<ImeTextSpan>& spans) = 0;
 };
 
 }  // namespace ui

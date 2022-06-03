@@ -10,25 +10,18 @@
   },
   "input_components": [{
     "name": "IdentityIME",
-    "type": "ime",
     "id": "IdentityIME",
-    "description": "Works as IME but do nothing",
     "language": "en",
     "layouts": ["us::eng"]
   },{
     "name": "ToUpperIME",
-    "type": "ime",
     "id": "ToUpperIME",
-    "description": "Convert given key character to upper case.",
     "language": "en",
     "layouts": ["us::eng"]
   },{
     "name": "APIArgumentIME",
-    "type": "ime",
     "id": "APIArgumentIME",
-    "description": "Send back argument into Chrome.",
     "language": "en",
     "layouts": ["us::eng"]
   }]
 }
-

@@ -5,21 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_AVAILABILITY_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PRESENTATION_PRESENTATION_AVAILABILITY_H_
 
-#include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_observer.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_promise_property.h"
-#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
 class ExecutionContext;
+class KURL;
 
 // Expose whether there is a presentation display available for |url|. The
 // object will be initialized with a default value passed via ::take() and will
@@ -28,10 +26,9 @@ class ExecutionContext;
 class MODULES_EXPORT PresentationAvailability final
     : public EventTargetWithInlineData,
       public ActiveScriptWrappable<PresentationAvailability>,
-      public ContextLifecycleStateObserver,
+      public ExecutionContextLifecycleStateObserver,
       public PageVisibilityObserver,
       public PresentationAvailabilityObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(PresentationAvailability);
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -53,9 +50,9 @@ class MODULES_EXPORT PresentationAvailability final
   // ScriptWrappable implementation.
   bool HasPendingActivity() const final;
 
-  // ContextLifecycleStateObserver implementation.
+  // ExecutionContextLifecycleStateObserver implementation.
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
-  void ContextDestroyed(ExecutionContext*) override;
+  void ContextDestroyed() override;
 
   // PageVisibilityObserver implementation.
   void PageVisibilityChanged() override;
@@ -64,7 +61,7 @@ class MODULES_EXPORT PresentationAvailability final
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   // EventTarget implementation.
@@ -72,10 +69,10 @@ class MODULES_EXPORT PresentationAvailability final
                           RegisteredEventListener&) override;
 
  private:
-  // Current state of the ContextLifecycleStateObserver. It is Active when
-  // created. It becomes Suspended when suspend() is called and moves back to
-  // Active if resume() is called. It becomes Inactive when stop() is called or
-  // at destruction time.
+  // Current state of the ExecutionContextLifecycleStateObserver. It is Active
+  // when created. It becomes Suspended when suspend() is called and moves back
+  // to Active if resume() is called. It becomes Inactive when stop() is called
+  // or at destruction time.
   enum class State : char {
     kActive,
     kSuspended,

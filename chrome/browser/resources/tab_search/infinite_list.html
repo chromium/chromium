@@ -1,0 +1,15 @@
+<style>
+  :host {
+    display: block;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+  }
+</style>
+<div id="container">
+  <iron-selector id="selector" on-keydown="onKeyDown_"
+      on-iron-select="onSelectedChanged_" role="listbox"
+      selectable="[[selectableSelector_()]]" selected-class="selected">
+    <slot></slot>
+  </iron-selector>
+</div>

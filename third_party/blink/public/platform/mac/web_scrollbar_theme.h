@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SCROLLBAR_THEME_H_
 #define THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SCROLLBAR_THEME_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
 
 namespace blink {
@@ -51,8 +51,8 @@ class WebScrollbarTheme {
   // |redraw| is true if the update requires a redraw to include the change.
   // |jump_on_track_click| is the current value of AppleScrollerPagingBehavior.
   BLINK_EXPORT static void UpdateScrollbarsWithNSDefaults(
-      base::Optional<float> initial_button_delay,
-      base::Optional<float> autoscroll_button_delay,
+      absl::optional<float> initial_button_delay,
+      absl::optional<float> autoscroll_button_delay,
       ScrollerStyle preferred_scroller_style,
       bool redraw,
       bool jump_on_track_click);
@@ -60,4 +60,4 @@ class WebScrollbarTheme {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_MAC_WEB_SCROLLBAR_THEME_H_

@@ -31,11 +31,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 
 Running: testSetStyleCSSText
 <div id="container" style="color: rgb(192, 255, 238);">…</div>
@@ -46,11 +41,6 @@ element.style { ()
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
 
 
 Running: testSetViaParsedAttributes
@@ -81,11 +71,6 @@ element.style { ()
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 
 Running: testSetViaAncestorClass
 <div id="child"></div>
@@ -105,11 +90,6 @@ div { (user agent stylesheet)
 Style Attribute { ()
     color: rgb(192, 255, 238);
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 
 Running: testSetViaSiblingAttr
 <div id="childSibling"></div>
@@ -128,10 +108,5 @@ div { (user agent stylesheet)
 [expanded] 
 Style Attribute { ()
     color: rgb(192, 255, 238);
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
 
 

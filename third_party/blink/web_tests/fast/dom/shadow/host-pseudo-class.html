@@ -130,13 +130,13 @@ backgroundColorShouldBe('host', 'rgb(0, 128, 0)');
 
 cleanUp();
 
-debug(':host takes simple selectors and matches when one of the simple selectors matches.');
+debug(':host takes a simple selector and matches when the simple selector matches.');
 
 sandbox.appendChild(
     createDOM('div', {'id': 'host'},
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(body:not(.mytheme), span, div#host) { background-color: green; }')),
+                document.createTextNode(':host(div#host) { background-color: green; }')),
             createDOM('div', {},
                 document.createTextNode('Hello')))));
 
@@ -196,13 +196,13 @@ sandbox.appendChild(
     createDOM('div', {'id': 'host'},
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(div:host, div#sandbox) { background-color: green; }')),
+                document.createTextNode(':host(:is(div:host, div#sandbox)) { background-color: green; }')),
             createDOM('style', {},
                 document.createTextNode(':host(body.mytheme) { background-color: red; }')),
             createDOM('div', {},
                 document.createTextNode('Hello')))));
 
-// :host(div:host, div#sandbox) wins, because div#sandbox > body.mytheme.
+// :host(:is(div:host, div#sandbox)) wins, because div#sandbox > body.mytheme.
 backgroundColorShouldBe('host', 'rgb(0, 128, 0)');
 
 cleanUp();
@@ -227,7 +227,7 @@ sandbox.appendChild(
     createDOM('div', {'id': 'host', 'class': 'foobar' },
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(div:host, div#host:host) > div { background-color: green; }')),
+                document.createTextNode(':host(:is(div:host, div#host:host)) > div { background-color: green; }')),
             createDOM('style', {},
                 document.createTextNode(':host(div.foobar) > div { background-color: red; }')),
             createDOM('div', {'id': 'target'},
@@ -241,7 +241,7 @@ sandbox.appendChild(
     createDOM('div', {'id': 'host', 'class': 'host'},
         createShadowRoot(
             createDOM('style', {},
-                document.createTextNode(':host(div:host, div#host.host:host) > div { background-color: green; }')),
+                document.createTextNode(':host(:is(div:host, div#host.host:host)) > div { background-color: green; }')),
             createDOM('style', {},
                 document.createTextNode(':host(div) > div#target { background-color: red; }')),
             createDOM('div', {'id': 'target'},

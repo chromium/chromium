@@ -12,7 +12,7 @@ helperDiv = container.appendChild(document.createElement("div"));
 helperFrame = container.appendChild(document.createElement("iframe"));
 
 helperFrame.contentWindow.onunload = function() {
-    shadowRoot = helperDiv.createShadowRoot();
+    shadowRoot = helperDiv.attachShadow({mode: 'open'});
     innerFrame = shadowRoot.appendChild(document.createElement("iframe"));
 };
 

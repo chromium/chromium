@@ -1,0 +1,41 @@
+<title>Regression tests for crbug.com/1104580</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+
+<script>
+async_test((test) => {
+  if (!navigator.gpu) {
+    // {navigator.gpu} is required for this test, but it only exists on
+    // Windows. If it does not exist, we end the test immediately.
+    test.done();
+    return;
+  }
+
+    navigator.gpu.requestAdapter().then(adapter => {
+      if (!adapter) {
+        test.done();
+        return;
+      }
+      return adapter.requestDevice();
+    }).catch(err => {
+      test.done();
+      return;
+    }).then(device => {
+      if (!device) {
+        test.done();
+        return;
+      }
+      device.createBuffer({
+        size: 24,
+        usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
+        mappedAtCreation: true
+      });
+      device.createBuffer({
+        size: 0,
+        usage: GPUBufferUsage.VERTEX | 2261634.5098,
+        mappedAtCreation: true
+      });
+      test.done();
+    });
+}, 'Regression test for crbug.com/1104580');
+</script>

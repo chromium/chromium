@@ -32,7 +32,7 @@ window.onload = function() {
 
 function onStart() {
   target.removeEventListener('animationstart', onStart);
-  setTimeout(setDisplayNone, 300);
+  requestAnimationFrame(setDisplayNone);
 }
 
 function setDisplayNone() {
@@ -53,7 +53,7 @@ function setDisplayBlock() {
 }
 
 function onRestart(e) {
-  setTimeout(asyncHandle.step_func_done(measureProgress), 100);
+  requestAnimationFrame(asyncHandle.step_func_done(measureProgress));
 }
 
 function measureProgress() {

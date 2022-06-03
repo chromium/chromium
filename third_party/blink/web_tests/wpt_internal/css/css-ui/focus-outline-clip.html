@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+<title>Tests that a paint clip, clips a focus outline.</title>
+<link rel="match" href="../reference/ref-filled-green-100px-square-only.html">
+<link rel="help" href="https://crbug.com/1049976">
+<p>Test passes if there is a filled green square.</p>
+<div style="overflow: hidden; width: 100px; height: 100px; background: green;">
+  <a style="display: block; width: 110px; height: 110px; margin: -5px; outline: auto;" href="https://www.example.com/" id="target"></a>
+</div>

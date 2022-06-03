@@ -5,9 +5,12 @@
 #include "gin/data_object_builder.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "gin/dictionary.h"
 #include "gin/public/isolate_holder.h"
 #include "gin/test/v8_test.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-function.h"
 
 namespace gin {
 namespace {

@@ -16,6 +16,7 @@
 #include "build/build_config.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
+#include "weblayer/public/download_delegate.h"
 #include "weblayer/public/navigation_observer.h"
 #include "weblayer/public/tab_observer.h"
 
@@ -26,20 +27,28 @@ namespace views {
 class Widget;
 class ViewsDelegate;
 }  // namespace views
+#if !defined(OS_CHROMEOS)
+namespace display {
+class Screen;
+}
 namespace wm {
 class WMState;
 }
+#endif
 #endif  // defined(USE_AURA)
 
 class GURL;
 
 namespace weblayer {
+class Browser;
 class Profile;
 class Tab;
 
 // This represents one window of the Web Shell, i.e. all the UI including
 // buttons and url bar, as well as the web content area.
-class Shell : public TabObserver, public NavigationObserver {
+class Shell : public TabObserver,
+              public NavigationObserver,
+              public DownloadDelegate {
  public:
   ~Shell() override;
 
@@ -53,9 +62,13 @@ class Shell : public TabObserver, public NavigationObserver {
   // Do one time initialization at application startup.
   static void Initialize();
 
-  static Shell* CreateNewWindow(weblayer::Profile* web_profile,
+#if defined(OS_ANDROID)
+  static Shell* CreateNewWindow(const GURL& url, const gfx::Size& initial_size);
+#else
+  static Shell* CreateNewWindow(Profile* web_profile,
                                 const GURL& url,
                                 const gfx::Size& initial_size);
+#endif
 
   // Returns the currently open windows.
   static std::vector<Shell*>& windows() { return windows_; }
@@ -69,6 +82,7 @@ class Shell : public TabObserver, public NavigationObserver {
   static void SetMainMessageLoopQuitClosure(base::OnceClosure quit_closure);
 
   Tab* tab();
+  Browser* browser();
 
   gfx::NativeWindow window() { return window_; }
 
@@ -77,7 +91,11 @@ class Shell : public TabObserver, public NavigationObserver {
  private:
   enum UIControl { BACK_BUTTON, FORWARD_BUTTON, STOP_BUTTON };
 
-  explicit Shell(std::unique_ptr<Tab> tab);
+  static Shell* CreateNewWindowWithBrowser(std::unique_ptr<Browser> browser,
+                                           const GURL& url,
+                                           const gfx::Size& initial_size);
+
+  explicit Shell(std::unique_ptr<Browser> browser);
 
   // TabObserver implementation:
   void DisplayedUrlChanged(const GURL& url) override;
@@ -86,8 +104,20 @@ class Shell : public TabObserver, public NavigationObserver {
   void LoadStateChanged(bool is_loading, bool to_different_document) override;
   void LoadProgressChanged(double progress) override;
 
+  // DownloadDelegate implementation:
+  bool InterceptDownload(const GURL& url,
+                         const std::string& user_agent,
+                         const std::string& content_disposition,
+                         const std::string& mime_type,
+                         int64_t content_length) override;
+  void AllowDownload(Tab* tab,
+                     const GURL& url,
+                     const std::string& request_method,
+                     absl::optional<url::Origin> request_initiator,
+                     AllowDownloadCallback callback) override;
+
   // Helper to create a new Shell.
-  static Shell* CreateShell(std::unique_ptr<Tab> tab,
+  static Shell* CreateShell(std::unique_ptr<Browser> browser,
                             const gfx::Size& initial_size);
 
   // Helper for one time initialization of application
@@ -124,9 +154,9 @@ class Shell : public TabObserver, public NavigationObserver {
   void PlatformSetLoadProgress(double progress);
 
   // Set the title of shell window
-  void PlatformSetTitle(const base::string16& title);
+  void PlatformSetTitle(const std::u16string& title);
 
-  std::unique_ptr<Tab> tab_;
+  std::unique_ptr<Browser> browser_;
 
   gfx::NativeWindow window_;
 
@@ -136,6 +166,7 @@ class Shell : public TabObserver, public NavigationObserver {
   base::android::ScopedJavaGlobalRef<jobject> java_object_;
 #elif defined(USE_AURA)
   static wm::WMState* wm_state_;
+  static display::Screen* screen_;
 #if defined(TOOLKIT_VIEWS)
   static views::ViewsDelegate* views_delegate_;
 

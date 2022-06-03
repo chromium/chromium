@@ -1,0 +1,25 @@
+diff --git a/chrome/browser/google/google_update_win.cc b/chrome/browser/google/google_update_win.cc
+index c881ad2873d7..69e74f902b85 100644
+--- a/chrome/browser/google/google_update_win.cc
++++ b/chrome/browser/google/google_update_win.cc
+@@ -723,7 +723,7 @@ bool UpdateCheckDriver::IsFinalState(
+     return true;
+   }
+   if (state_value == STATE_INSTALL_COMPLETE) {
+-    DCHECK(install_update_if_possible_);
++    // Hack DCHECK(install_update_if_possible_);
+     *upgrade_status = UPGRADE_SUCCESSFUL;
+     return true;
+   }
+@@ -743,7 +743,10 @@ bool UpdateCheckDriver::IsIntermediateState(
+   // NO_UPDATE will have been handled in IsFinalState if not doing an install,
+   // as will STATE_INSTALL_COMPLETE when doing an install. All other states
+   // following UPDATE_AVAILABLE will only happen when an install is to be done.
+-  DCHECK(state_value < STATE_UPDATE_AVAILABLE || install_update_if_possible_);
++
++  // Hack DCHECK(state_value < STATE_UPDATE_AVAILABLE ||
++  // install_update_if_possible_);
++
+   *progress = 0;
+ 
+   switch (state_value) {

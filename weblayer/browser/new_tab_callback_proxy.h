@@ -20,17 +20,18 @@ class TabImpl;
 class NewTabCallbackProxy : public NewTabDelegate {
  public:
   NewTabCallbackProxy(JNIEnv* env, jobject obj, TabImpl* tab);
+
+  NewTabCallbackProxy(const NewTabCallbackProxy&) = delete;
+  NewTabCallbackProxy& operator=(const NewTabCallbackProxy&) = delete;
+
   ~NewTabCallbackProxy() override;
 
   // NewTabDelegate:
-  void OnNewTab(std::unique_ptr<Tab> tab, NewTabType type) override;
-  void CloseTab() override;
+  void OnNewTab(Tab* tab, NewTabType type) override;
 
  private:
   TabImpl* tab_;
   base::android::ScopedJavaGlobalRef<jobject> java_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(NewTabCallbackProxy);
 };
 
 }  // namespace weblayer

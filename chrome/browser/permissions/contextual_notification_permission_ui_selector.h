@@ -6,40 +6,43 @@
 #define CHROME_BROWSER_PERMISSIONS_CONTEXTUAL_NOTIFICATION_PERMISSION_UI_SELECTOR_H_
 
 #include "base/callback.h"
-#include "base/optional.h"
+#include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
-#include "chrome/browser/permissions/notification_permission_ui_selector.h"
+#include "components/permissions/permission_ui_selector.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-class Profile;
+namespace permissions {
 class PermissionRequest;
+enum class RequestType;
+}
 
 namespace url {
 class Origin;
 }
 
-// Determines if the quiet prompt UI should be used to display a notification
-// permission request on a given site. This is the case when:
-//  1) the quiet UI is enabled in prefs for all sites, either directly by the
-//     user in settings, or by the AdaptiveQuietNotificationPermissionUiEnabler.
-//  2) the quiet UI is triggered by crowd deny, either through:
-//     a) CrowdDenyPreloadData, that is, the component updater, or
-//     b) CrowdDenySafeBrowsingRequest, that is, on-demand Safe Browsing pings.
-// If both (1) and (2) are fulfilled, the crowd-deny UI is shown.
+// Determines if crowd deny or abusive blocklists prescribe that the quiet UI
+// should be used to display a notification permission request on a given site.
+// This is the case when the  both of the below sources classify the origin as
+// spammy or abusive:
+//   a) CrowdDenyPreloadData, that is, the component updater, and
+//   b) CrowdDenySafeBrowsingRequest, that is, on-demand Safe Browsing pings.
 //
 // Each instance of this class is long-lived and can support multiple requests,
 // but only one at a time.
 class ContextualNotificationPermissionUiSelector
-    : public NotificationPermissionUiSelector {
+    : public permissions::PermissionUiSelector {
  public:
-  // Constructs an instance in the context of the given |profile|.
-  explicit ContextualNotificationPermissionUiSelector(Profile* profile);
+  ContextualNotificationPermissionUiSelector();
   ~ContextualNotificationPermissionUiSelector() override;
 
   // NotificationPermissionUiSelector:
-  void SelectUiToUse(PermissionRequest* request,
+  void SelectUiToUse(permissions::PermissionRequest* request,
                      DecisionMadeCallback callback) override;
 
   void Cancel() override;
+
+  bool IsPermissionRequestSupported(
+      permissions::RequestType request_type) override;
 
  private:
   ContextualNotificationPermissionUiSelector(
@@ -47,17 +50,20 @@ class ContextualNotificationPermissionUiSelector
   ContextualNotificationPermissionUiSelector& operator=(
       const ContextualNotificationPermissionUiSelector&) = delete;
 
-  void EvaluateCrowdDenyTrigger(url::Origin origin);
+  void EvaluatePerSiteTriggers(const url::Origin& origin);
   void OnSafeBrowsingVerdictReceived(
+      Decision candidate_decision,
       CrowdDenySafeBrowsingRequest::Verdict verdict);
-  void OnCrowdDenyTriggerEvaluated(UiToUse ui_to_use);
+  void Notify(const Decision& decision);
 
-  void Notify(UiToUse ui_to_use, base::Optional<QuietUiReason> quiet_ui_reason);
+  void OnSiteReputationReady(
+      const url::Origin& origin,
+      const CrowdDenyPreloadData::SiteReputation* reputation);
 
-  Profile* profile_;
-
-  base::Optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;
+  absl::optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;
   DecisionMadeCallback callback_;
+  base::WeakPtrFactory<ContextualNotificationPermissionUiSelector>
+      weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_PERMISSIONS_CONTEXTUAL_NOTIFICATION_PERMISSION_UI_SELECTOR_H_

@@ -6,11 +6,12 @@
  * @fileoverview Polymer element for displaying and modifying a list of cellular
  * access points.
  */
-(function() {
-'use strict';
 
 const kDefaultAccessPointName = 'NONE';
 const kOtherAccessPointName = 'Other';
+
+const USE_ATTACH_APN_ON_SAVE_METRIC_NAME =
+    'Network.Cellular.Apn.UseAttachApnOnSave';
 
 Polymer({
   is: 'network-apnlist',
@@ -18,14 +19,24 @@ Polymer({
   behaviors: [I18nBehavior],
 
   properties: {
-    /** @private {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
+    disabled: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @type {!chromeos.networkConfig.mojom.ManagedProperties|undefined} */
     managedProperties: {
       type: Object,
       observer: 'managedPropertiesChanged_',
     },
 
     /**
-     * accessPointName value of the selected APN.
+     * The name property of the selected APN. If a name property is empty, the
+     * accessPointName property will be used. We use 'name' so that multiple
+     * APNs with the same accessPointName can be supported, so long as they have
+     * a unique 'name' property. This is necessary to allow custom  'other'
+     * entries (which are always named 'Other') that match an existing
+     * accessPointName but provide a different username/password.
      * @private
      */
     selectedApn_: {
@@ -40,7 +51,7 @@ Polymer({
      */
     apnSelectList_: {
       type: Array,
-      value: function() {
+      value() {
         return [];
       }
     },
@@ -49,10 +60,16 @@ Polymer({
      * The user settable properties for a new ('other') APN. The values for
      * accessPointName, username, and password will be set to the currently
      * active APN if it does not match an existing list entry.
-     * @private {chromeos.networkConfig.mojom.ApnProperties|undefined}
+     * @private {!chromeos.networkConfig.mojom.ApnProperties}
      */
     otherApn_: {
       type: Object,
+      value() {
+        return {
+          accessPointName: kDefaultAccessPointName,
+          name: kOtherAccessPointName,
+        };
+      }
     },
 
     /**
@@ -61,7 +78,7 @@ Polymer({
      */
     otherApnFields_: {
       type: Array,
-      value: function() {
+      value() {
         return ['accessPointName', 'username', 'password'];
       },
       readOnly: true
@@ -73,7 +90,7 @@ Polymer({
      */
     otherApnEditTypes_: {
       type: Object,
-      value: function() {
+      value() {
         return {
           'accessPointName': 'String',
           'username': 'String',
@@ -82,6 +99,29 @@ Polymer({
       },
       readOnly: true
     },
+
+    /** @private */
+    isAttachApnAllowed_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('useAttachApn') &&
+            loadTimeData.getBoolean('useAttachApn');
+      }
+    },
+
+    /** @private */
+    isAttachApnToggleEnabled_: {
+      type: Boolean,
+      value: false,
+    },
+  },
+
+  /*
+   * Returns the select APN SelectElement.
+   * @return {?HTMLSelectElement}
+   */
+  getApnSelect() {
+    return /** @type {?HTMLSelectElement} */ (this.$$('#selectApn'));
   },
 
   /**
@@ -89,11 +129,10 @@ Polymer({
    * @return {!chromeos.networkConfig.mojom.ApnProperties}
    * @private
    */
-  getApnFromManaged_: function(apn) {
+  getApnFromManaged_(apn) {
     return {
+      // authentication and language are ignored in this UI.
       accessPointName: OncMojo.getActiveString(apn.accessPointName),
-      authentication: OncMojo.getActiveString(apn.authentication),
-      language: OncMojo.getActiveString(apn.language),
       localizedName: OncMojo.getActiveString(apn.localizedName),
       name: OncMojo.getActiveString(apn.name),
       password: OncMojo.getActiveString(apn.password),
@@ -102,89 +141,141 @@ Polymer({
   },
 
   /** @private*/
-  managedPropertiesChanged_: function() {
-    const cellular = this.managedProperties.typeProperties.cellular;
+  getActiveApnFromProperties_(managedProperties) {
+    const cellular = managedProperties.typeProperties.cellular;
     /** @type {!chromeos.networkConfig.mojom.ApnProperties|undefined} */ let
         activeApn;
-    if (cellular.apn) {
-      activeApn = this.getApnFromManaged_(cellular.apn);
+    // We show selectedAPN as the active entry in the select list but it may
+    // not correspond to the currently "active" APN which is represented by
+    // lastGoodApn.
+    if (cellular.selectedApn) {
+      activeApn = this.getApnFromManaged_(cellular.selectedApn);
     } else if (cellular.lastGoodApn && cellular.lastGoodApn.accessPointName) {
       activeApn = cellular.lastGoodApn;
     }
-    this.setApnSelectList_(activeApn);
+    if (activeApn && !activeApn.accessPointName) {
+      activeApn = undefined;
+    }
+    return activeApn;
+  },
+
+  /** @private*/
+  shouldUpdateSelectList_(oldManagedProperties) {
+    if (!oldManagedProperties) {
+      return true;
+    }
+
+    const newActiveApn =
+        this.getActiveApnFromProperties_(this.managedProperties);
+    const oldActiveApn = this.getActiveApnFromProperties_(oldManagedProperties);
+    if (!OncMojo.apnMatch(newActiveApn, oldActiveApn)) {
+      return true;
+    }
+
+    const newApnList = this.managedProperties.typeProperties.cellular.apnList;
+    const oldApnList = oldManagedProperties.typeProperties.cellular.apnList;
+    if (!OncMojo.apnListMatch(
+            oldApnList && oldApnList.activeValue,
+            newApnList && newApnList.activeValue)) {
+      return true;
+    }
+
+    const newCustomApnList =
+        this.managedProperties.typeProperties.cellular.customApnList;
+    const oldCustomApnList =
+        oldManagedProperties.typeProperties.cellular.customApnList;
+    if (!OncMojo.apnListMatch(oldCustomApnList, newCustomApnList)) {
+      return true;
+    }
+
+    return false;
+  },
+
+  /** @private*/
+  managedPropertiesChanged_(managedProperties, oldManagedProperties) {
+    if (!this.shouldUpdateSelectList_(oldManagedProperties)) {
+      return;
+    }
+    this.setApnSelectList_(this.getActiveApnFromProperties_(managedProperties));
   },
 
   /**
    * Sets the list of selectable APNs for the UI. Appends an 'Other' entry
    * (see comments for |otherApn_| above).
-   * @param {chromeos.networkConfig.mojom.ApnProperties|undefined} activeApn The
-   *     currently active APN properties.
+   * @param {chromeos.networkConfig.mojom.ApnProperties|undefined} activeApn
    * @private
    */
-  setApnSelectList_: function(activeApn) {
-    // Copy the list of APNs from this.managedProperties.
-    const apnList = this.getApnList_().slice();
+  setApnSelectList_(activeApn) {
+    const apnList = this.generateApnList_();
+    if (apnList === undefined || apnList.length === 0) {
+      // Show other APN when no APN list property is available.
+      this.apnSelectList_ = [this.otherApn_];
+      this.set('selectedApn_', kOtherAccessPointName);
+      return;
+    }
+    // Get the list entry for activeApn if it exists. It will have 'name' set.
+    let activeApnInList;
+    if (activeApn) {
+      activeApnInList = apnList.find(a => a.name === activeApn.name);
+    }
 
-    // Test whether |activeApn| is in the current APN list in managedProperties.
-    const activeApnInList = activeApn && apnList.some(function(a) {
-      return a.accessPointName == activeApn.accessPointName;
-    });
-
-    // If |activeApn| is specified and not in the list, use the active
-    // properties for 'other'. Otherwise use any existing 'other' properties.
-    const otherApnProperties =
-        (activeApn && !activeApnInList) ? activeApn : this.otherApn_;
-    const otherApn = this.createApnObject_(otherApnProperties);
-
-    // Always use 'Other' for the name of custom APN entries (the name does
-    // not get saved).
-    otherApn.name = kOtherAccessPointName;
-
-    // If no 'active' or 'other' AccessPointName was provided, use the default.
-    otherApn.accessPointName =
-        otherApn.accessPointName || kDefaultAccessPointName;
-
-    // Save the 'other' properties.
-    this.otherApn_ = otherApn;
-
-    // Append 'other' to the end of the list of APNs.
-    apnList.push(otherApn);
+    const customApnList =
+        this.managedProperties.typeProperties.cellular.customApnList;
+    let otherApn = this.otherApn_;
+    if (customApnList && customApnList.length) {
+      // If custom apn list exists, then use it's first entry as otherApn.
+      otherApn = customApnList[0];
+    } else if (!activeApnInList && activeApn && activeApn.accessPointName) {
+      // If the active APN is not in the list, copy it to otherApn.
+      otherApn = activeApn;
+    }
+    this.isAttachApnToggleEnabled_ =
+        otherApn.attach === OncMojo.USE_ATTACH_APN_NAME;
+    this.otherApn_ = {
+      accessPointName: otherApn.accessPointName,
+      name: kOtherAccessPointName,
+      username: otherApn.username,
+      password: otherApn.password,
+    };
+    apnList.push(this.otherApn_);
 
     this.apnSelectList_ = apnList;
-    this.selectedApn_ =
-        (activeApn && activeApn.accessPointName) || otherApn.accessPointName;
+    const selectedApn =
+        activeApnInList ? activeApnInList.name : kOtherAccessPointName;
+    assert(selectedApn);
+    this.set('selectedApn_', selectedApn);
+
+    // Wait for the dom-repeat to populate the <option> entries then explicitly
+    // set the selected value.
+    this.async(function() {
+      this.$.selectApn.value = this.selectedApn_;
+    });
   },
 
   /**
-   * @param {!chromeos.networkConfig.mojom.ApnProperties|undefined=}
-   *     apnProperties
-   * @return {!chromeos.networkConfig.mojom.ApnProperties} A new APN object with
-   *     properties from |apnProperties| if provided.
+   * Returns a modified copy of the APN properties or undefined if the
+   * property is not set. All entries in the returned copy will have nonempty
+   * name and accessPointName properties.
+   * @return {!Array<!chromeos.networkConfig.mojom.ApnProperties>|undefined}
    * @private
    */
-  createApnObject_: function(apnProperties) {
-    const newApn = {accessPointName: ''};
-    if (apnProperties) {
-      Object.assign(newApn, apnProperties);
-    }
-    return newApn;
-  },
-
-  /**
-   * @return {!Array<!chromeos.networkConfig.mojom.ApnProperties>} The list of
-   *     APN properties in |managedProperties| or an empty list if the property
-   *     is not set.
-   * @private
-   */
-  getApnList_: function() {
+  generateApnList_() {
     if (!this.managedProperties) {
-      return [];
+      return undefined;
     }
     const apnList = this.managedProperties.typeProperties.cellular.apnList;
     if (!apnList) {
-      return [];
+      return undefined;
     }
-    return apnList.activeValue;
+    return apnList.activeValue.filter(apn => !!apn.accessPointName).map(apn => {
+      return {
+        accessPointName: apn.accessPointName,
+        localizedName: apn.localizedName,
+        name: apn.name || apn.accessPointName,
+        username: apn.username,
+        password: apn.password,
+      };
+    });
   },
 
   /**
@@ -192,18 +283,20 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onSelectApnChange_: function(event) {
+  onSelectApnChange_(event) {
     const target = /** @type {!HTMLSelectElement} */ (event.target);
-    const accessPointName = target.value;
-    // When selecting 'Other', don't set a change event unless a valid
+    const name = target.value;
+    // When selecting 'Other', don't send a change event unless a valid
     // non-default value has been set for Other.
-    if (this.isOtherSelected_(accessPointName) &&
-        (!this.otherApn_ || !this.otherApn_.accessPointName ||
-         this.otherApn_.accessPointName == kDefaultAccessPointName)) {
-      this.selectedApn_ = accessPointName;
+    if (name === kOtherAccessPointName &&
+        (!this.otherApn_.accessPointName ||
+         this.otherApn_.accessPointName === kDefaultAccessPointName)) {
+      this.selectedApn_ = name;
       return;
     }
-    this.sendApnChange_(accessPointName);
+    // The change will generate an update which will update selectedApn_ and
+    // refresh the UI.
+    this.sendApnChange_(name);
   },
 
   /**
@@ -211,10 +304,10 @@ Polymer({
    * @param {!CustomEvent<!{field: string, value: string}>} event
    * @private
    */
-  onOtherApnChange_: function(event) {
+  onOtherApnChange_(event) {
     // TODO(benchan/stevenjb): Move the toUpperCase logic to shill or
     // onc_translator_onc_to_shill.cc.
-    const value = (event.detail.field == 'accessPointName') ?
+    const value = (event.detail.field === 'accessPointName') ?
         event.detail.value.toUpperCase() :
         event.detail.value;
     this.set('otherApn_.' + event.detail.field, value);
@@ -223,44 +316,62 @@ Polymer({
 
   /**
    * Event triggered when the Other APN 'Save' button is tapped.
-   * @param {!Event} event
    * @private
    */
-  onSaveOtherTap_: function(event) {
-    this.sendApnChange_(this.selectedApn_);
+  onSaveOtherTap_() {
+    if (this.sendApnChange_(this.selectedApn_) && this.isAttachApnAllowed_) {
+      chrome.metricsPrivate.recordBoolean(
+          USE_ATTACH_APN_ON_SAVE_METRIC_NAME, this.isAttachApnToggleEnabled_);
+    }
   },
 
   /**
-   * Send the apn-change event.
-   * @param {string} accessPointName
+   * Attempts to send the apn-change event. Returns true if it succeeds.
+   * @param {string} name The APN name property.
+   * @return {boolean}
    * @private
    */
-  sendApnChange_: function(accessPointName) {
-    const apnList = this.getApnList_();
-    let apn = this.findApnInList_(apnList, accessPointName);
-    if (apn == undefined) {
-      apn = this.createApnObject_();
-      if (this.otherApn_) {
-        apn.accessPointName = this.otherApn_.accessPointName;
-        apn.username = this.otherApn_.username;
-        apn.password = this.otherApn_.password;
+  sendApnChange_(name) {
+    let apn;
+    if (name === kOtherAccessPointName) {
+      if (!this.otherApn_.accessPointName ||
+          this.otherApn_.accessPointName === kDefaultAccessPointName) {
+        // No valid APN set, do nothing.
+        return false;
+      }
+      apn = {
+        accessPointName: this.otherApn_.accessPointName,
+        username: this.otherApn_.username,
+        password: this.otherApn_.password,
+        attach: this.isAttachApnToggleEnabled_ ? OncMojo.USE_ATTACH_APN_NAME :
+                                                 '',
+      };
+    } else {
+      apn = this.apnSelectList_.find(a => a.name === name);
+      if (apn === undefined) {
+        // Potential edge case if an update is received before this is invoked.
+        console.error('Selected APN not in list');
+        return false;
       }
     }
     this.fire('apn-change', apn);
+    return true;
   },
 
   /**
-   * @param {string} accessPointName
-   * @return {boolean} True if the 'other' APN is currently selected.
+   * @return {boolean}
    * @private
    */
-  isOtherSelected_: function(accessPointName) {
-    if (!this.managedProperties) {
-      return false;
-    }
-    const apnList = this.getApnList_();
-    const apn = this.findApnInList_(apnList, accessPointName);
-    return apn == undefined;
+  isDisabled_() {
+    return this.disabled || this.selectedApn_ === '';
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  showOtherApn_() {
+    return this.selectedApn_ === kOtherAccessPointName;
   },
 
   /**
@@ -268,21 +379,9 @@ Polymer({
    * @return {string} The most descriptive name for the access point.
    * @private
    */
-  apnDesc_: function(apn) {
-    return apn.localizedName || apn.name || apn.accessPointName;
-  },
-
-  /**
-   * @param {!Array<!chromeos.networkConfig.mojom.ApnProperties>} apnList
-   * @param {string} accessPointName
-   * @return {chromeos.networkConfig.mojom.ApnProperties|undefined} The entry in
-   *     |apnList| matching |accessPointName| if it exists, or undefined.
-   * @private
-   */
-  findApnInList_: function(apnList, accessPointName) {
-    return apnList.find(function(a) {
-      return a.accessPointName == accessPointName;
-    });
+  apnDesc_(apn) {
+    assert(apn.name);
+    return apn.localizedName || apn.name;
   },
 
   /**
@@ -291,8 +390,7 @@ Polymer({
    *     apn item.
    * @private
    */
-  isApnItemSelected_: function(item) {
-    return item.accessPointName == this.selectedApn_;
+  isApnItemSelected_(item) {
+    return item.accessPointName === this.selectedApn_;
   }
 });
-})();

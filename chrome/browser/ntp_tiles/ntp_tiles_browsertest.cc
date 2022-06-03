@@ -15,6 +15,7 @@
 #include "components/history/core/browser/top_sites.h"
 #include "components/ntp_tiles/most_visited_sites.h"
 #include "components/ntp_tiles/ntp_tile.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -56,15 +57,15 @@ class MostVisitedSitesWaiter : public MostVisitedSites::Observer {
   void OnURLsAvailable(
       const std::map<SectionType, NTPTilesVector>& sections) override {
     tiles_ = sections.at(SectionType::PERSONALIZED);
-    if (!quit_closure_.is_null()) {
-      quit_closure_.Run();
+    if (quit_closure_) {
+      std::move(quit_closure_).Run();
     }
   }
 
   void OnIconMadeAvailable(const GURL& site_url) override {}
 
  private:
-  base::Closure quit_closure_;
+  base::OnceClosure quit_closure_;
   NTPTilesVector tiles_;
 };
 
@@ -90,25 +91,19 @@ class NTPTilesTest : public InProcessBrowserTest {
 };
 
 // Tests that after navigating to a URL, ntp tiles will include the URL.
-// Flaky on Windows bots (http://crbug.com/746088).
-#if defined(OS_WIN)
-#define MAYBE_LoadURL DISABLED_LoadURL
-#else
-#define MAYBE_LoadURL LoadURL
-#endif
 IN_PROC_BROWSER_TEST_F(NTPTilesTest, LoadURL) {
   ASSERT_TRUE(embedded_test_server()->Start());
   const GURL page_url = embedded_test_server()->GetURL("/simple.html");
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), page_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   MostVisitedSitesWaiter waiter;
 
   // This call will call SyncWithHistory(), which means the new URL will be in
   // the next set of tiles that the waiter retrieves.
-  most_visited_sites_->SetMostVisitedURLsObserver(&waiter, /*num_sites=*/8);
+  most_visited_sites_->AddMostVisitedURLsObserver(&waiter, /*max_num_sites=*/8);
 
   NTPTilesVector tiles = waiter.WaitForTiles();
   EXPECT_THAT(tiles, Contains(MatchesTile("OK", page_url.spec().c_str(),
@@ -125,9 +120,9 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, ServerRedirect) {
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), first_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   MostVisitedSitesWaiter waiter;
-  most_visited_sites_->SetMostVisitedURLsObserver(&waiter, /*num_sites=*/8);
+  most_visited_sites_->AddMostVisitedURLsObserver(&waiter, /*max_num_sites=*/8);
 
   NTPTilesVector tiles = waiter.WaitForTiles();
 
@@ -147,11 +142,11 @@ IN_PROC_BROWSER_TEST_F(NTPTilesTest, NavigateAfterSettingObserver) {
 
   // Register the observer before doing the navigation.
   MostVisitedSitesWaiter waiter;
-  most_visited_sites_->SetMostVisitedURLsObserver(&waiter, /*num_sites=*/8);
+  most_visited_sites_->AddMostVisitedURLsObserver(&waiter, /*max_num_sites=*/8);
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), page_url, WindowOpenDisposition::CURRENT_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   most_visited_sites_->Refresh();
   NTPTilesVector tiles = waiter.WaitForTiles();

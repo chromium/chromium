@@ -64,10 +64,7 @@ NinePieceImageData::NinePieceImageData()
                    Length::Percent(100),
                    Length::Percent(100)),
       border_slices(1.0, 1.0, 1.0, 1.0),
-      outset(Length::Fixed(0),
-             Length::Fixed(0),
-             Length::Fixed(0),
-             Length::Fixed(0)) {}
+      outset(0, 0, 0, 0) {}
 
 bool NinePieceImageData::operator==(const NinePieceImageData& other) const {
   return DataEquivalent(image, other.image) &&

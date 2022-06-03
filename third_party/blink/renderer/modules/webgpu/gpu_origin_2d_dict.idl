@@ -5,7 +5,7 @@
 // https://gpuweb.github.io/gpuweb/
 
 dictionary GPUOrigin2DDict {
-    unsigned long x = 0;
-    unsigned long y = 0;
+    GPUIntegerCoordinate x = 0;
+    GPUIntegerCoordinate y = 0;
 };
 

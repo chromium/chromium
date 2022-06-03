@@ -12,7 +12,7 @@
 
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/platform_thread.h"
@@ -32,16 +32,12 @@
 #include "chrome/browser/component_updater/vr_assets_component_installer.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
-#include "chrome/browser/permissions/permission_manager.h"
-#include "chrome/browser/permissions/permission_result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ui/page_info/chrome_page_info_delegate.h"
 #include "chrome/browser/vr/assets_loader.h"
 #include "chrome/browser/vr/browser_renderer.h"
 #include "chrome/browser/vr/location_bar_helper.h"
-#include "chrome/browser/vr/metrics/metrics_helper.h"
-#include "chrome/browser/vr/metrics/session_metrics_helper.h"
 #include "chrome/browser/vr/model/assets.h"
 #include "chrome/browser/vr/model/omnibox_suggestions.h"
 #include "chrome/browser/vr/model/text_input_info.h"
@@ -49,6 +45,8 @@
 #include "chrome/browser/vr/vr_tab_helper.h"
 #include "chrome/browser/vr/vr_web_contents_observer.h"
 #include "chrome/common/url_constants.h"
+#include "components/browser_ui/util/android/url_constants.h"
+#include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -89,11 +87,9 @@ namespace vr {
 namespace {
 vr::VrShell* g_vr_shell_instance;
 
-constexpr base::TimeDelta kPollCapturingStateInterval =
-    base::TimeDelta::FromSecondsD(0.2);
+constexpr base::TimeDelta kPollCapturingStateInterval = base::Seconds(0.2);
 
-constexpr base::TimeDelta kAssetsComponentWaitDelay =
-    base::TimeDelta::FromSeconds(2);
+constexpr base::TimeDelta kAssetsComponentWaitDelay = base::Seconds(2);
 
 static constexpr float kInchesToMeters = 0.0254f;
 // Screen pixel density of the Google Pixel phone in pixels per inch.
@@ -178,13 +174,12 @@ VrShell::VrShell(JNIEnv* env,
   if (!can_load_new_assets_) {
     waiting_for_assets_component_timer_.Start(
         FROM_HERE, kAssetsComponentWaitDelay,
-        base::BindRepeating(&VrShell::OnAssetsComponentWaitTimeout,
-                            weak_ptr_factory_.GetWeakPtr()));
+        base::BindOnce(&VrShell::OnAssetsComponentWaitTimeout,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   AssetsLoader::GetInstance()->SetOnComponentReadyCallback(base::BindRepeating(
       &VrShell::OnAssetsComponentReady, weak_ptr_factory_.GetWeakPtr()));
-  AssetsLoader::GetInstance()->GetMetricsHelper()->OnEnter(Mode::kVr);
 
   UpdateVrAssetsComponent(g_browser_process->component_updater());
 
@@ -239,14 +234,6 @@ void VrShell::SwapContents(JNIEnv* env,
       web_contents_, ui_, toolbar_.get(),
       base::BindOnce(&VrShell::ContentWebContentsDestroyed,
                      base::Unretained(this)));
-
-  // TODO(https://crbug.com/684661): Make SessionMetricsHelper tab-aware and
-  // able to track multiple tabs.
-  if (web_contents_ && !SessionMetricsHelper::FromWebContents(web_contents_)) {
-    SessionMetricsHelper::CreateForWebContents(
-        web_contents_,
-        webvr_mode_ ? Mode::kWebXrVrPresentation : Mode::kVrBrowsingRegular);
-  }
 }
 
 void VrShell::SetAndroidGestureTarget(
@@ -313,15 +300,6 @@ void VrShell::PostToGlThread(const base::Location& from_here,
 
 void VrShell::Navigate(GURL url, NavigationMethod method) {
   JNIEnv* env = base::android::AttachCurrentThread();
-
-  // Record metrics.
-  if (method == NavigationMethod::kOmniboxSuggestionSelected ||
-      method == NavigationMethod::kOmniboxUrlEntry) {
-    SessionMetricsHelper* metrics_helper =
-        SessionMetricsHelper::FromWebContents(web_contents_);
-    if (metrics_helper)
-      metrics_helper->RecordUrlRequested(url, method);
-  }
 
   Java_VrShell_loadUrl(env, j_vr_shell_,
                        base::android::ConvertUTF8ToJavaString(env, url.spec()));
@@ -429,13 +407,6 @@ void VrShell::OnPause(JNIEnv* env, const JavaParamRef<jobject>& obj) {
   PostToGlThread(FROM_HERE, base::BindOnce(&BrowserRenderer::OnPause,
                                            gl_thread_->GetBrowserRenderer()));
 
-  // exit vr session
-  SessionMetricsHelper* metrics_helper =
-      SessionMetricsHelper::FromWebContents(web_contents_);
-  if (metrics_helper)
-    metrics_helper->SetVRActive(false);
-  SetIsInVR(GetNonNativePageWebContents(), false);
-
   poll_capturing_state_task_.Cancel();
 }
 
@@ -449,12 +420,6 @@ void VrShell::OnResume(JNIEnv* env, const JavaParamRef<jobject>& obj) {
 
   PostToGlThread(FROM_HERE, base::BindOnce(&BrowserRenderer::OnResume,
                                            gl_thread_->GetBrowserRenderer()));
-
-  SessionMetricsHelper* metrics_helper =
-      SessionMetricsHelper::FromWebContents(web_contents_);
-  if (metrics_helper)
-    metrics_helper->SetVRActive(true);
-  SetIsInVR(GetNonNativePageWebContents(), true);
 
   PollCapturingState();
 }
@@ -474,10 +439,6 @@ void VrShell::SetWebVrMode(JNIEnv* env,
                            const JavaParamRef<jobject>& obj,
                            bool enabled) {
   webvr_mode_ = enabled;
-  SessionMetricsHelper* metrics_helper =
-      SessionMetricsHelper::FromWebContents(web_contents_);
-  if (metrics_helper)
-    metrics_helper->SetWebVREnabled(enabled);
   PostToGlThread(FROM_HERE,
                  base::BindOnce(&BrowserRenderer::SetWebXrMode,
                                 gl_thread_->GetBrowserRenderer(), enabled));
@@ -485,13 +446,6 @@ void VrShell::SetWebVrMode(JNIEnv* env,
   // permissions.
   CreatePageInfo();
   ui_->SetWebVrMode(enabled);
-
-  if (webvr_mode_) {
-    AssetsLoader::GetInstance()->GetMetricsHelper()->OnEnter(
-        Mode::kWebXrVrPresentation);
-  } else {
-    AssetsLoader::GetInstance()->GetMetricsHelper()->OnEnter(Mode::kVrBrowsing);
-  }
 }
 
 bool VrShell::GetWebVrMode(JNIEnv* env, const JavaParamRef<jobject>& obj) {
@@ -620,7 +574,7 @@ void VrShell::SetDialogFloating(JNIEnv* env,
 void VrShell::ShowToast(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         jstring jtext) {
-  base::string16 text;
+  std::u16string text;
   base::android::ConvertJavaStringToUTF16(env, jtext, &text);
   gl_thread_->ShowPlatformToast(text);
 }
@@ -676,8 +630,8 @@ void VrShell::DialogSurfaceCreated(jobject surface,
   Java_VrShell_dialogSurfaceCreated(env, j_vr_shell_, ref);
 }
 
-void VrShell::GvrDelegateReady(gvr::ViewerType viewer_type) {
-  delegate_provider_->SetDelegate(this, viewer_type);
+void VrShell::GvrDelegateReady() {
+  delegate_provider_->SetDelegate(this);
 }
 
 void VrShell::SendRequestPresentReply(device::mojom::XRSessionPtr session) {
@@ -739,32 +693,6 @@ void VrShell::ExitFullscreen() {
   }
 }
 
-void VrShell::LogUnsupportedModeUserMetric(JNIEnv* env,
-                                           const JavaParamRef<jobject>& obj,
-                                           int mode) {
-  LogUnsupportedModeUserMetric((UiUnsupportedMode)mode);
-}
-
-void VrShell::RecordVrStartAction(VrStartAction action) {
-  SessionMetricsHelper* metrics_helper =
-      SessionMetricsHelper::FromWebContents(web_contents_);
-  if (metrics_helper) {
-    metrics_helper->RecordVrStartAction(action);
-  }
-}
-
-// TODO(https://crbug.com/965744): Rename below method to better reflect its
-// purpose (recording a start of immersive VR session).
-void VrShell::RecordPresentationStartAction(
-    PresentationStartAction action,
-    const device::mojom::XRRuntimeSessionOptions& options) {
-  DCHECK_EQ(options.mode, device::mojom::XRSessionMode::kImmersiveVr);
-  SessionMetricsHelper* metrics_helper =
-      SessionMetricsHelper::FromWebContents(web_contents_);
-  if (metrics_helper)
-    metrics_helper->RecordPresentationStartAction(action, options);
-}
-
 void VrShell::ShowSoftInput(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj,
                             bool show) {
@@ -782,11 +710,6 @@ void VrShell::UpdateWebInputIndices(
                                            base::Unretained(gl_thread_.get()),
                                            selection_start, selection_end,
                                            composition_start, composition_end));
-}
-
-void VrShell::LogUnsupportedModeUserMetric(UiUnsupportedMode mode) {
-  UMA_HISTOGRAM_ENUMERATION("VR.Shell.EncounteredUnsupportedMode", mode,
-                            UiUnsupportedMode::kCount);
 }
 
 content::WebContents* VrShell::GetNonNativePageWebContents() const {
@@ -840,19 +763,9 @@ void VrShell::OnExitVrPromptResult(UiUnsupportedMode reason,
   }
 
   DCHECK_NE(reason, UiUnsupportedMode::kCount);
-  if (reason == UiUnsupportedMode::kVoiceSearchNeedsRecordAudioOsPermission) {
-    // Note that we already measure the number of times the user exits VR
-    // because of the record audio permission through
-    // VR.Shell.EncounteredUnsupportedMode histogram. This histogram measures
-    // whether the user chose to proceed to grant the OS record audio permission
-    // through the reported Boolean.
-    UMA_HISTOGRAM_BOOLEAN("VR.VoiceSearch.RecordAudioOsPermissionPromptChoice",
-                          choice == ExitVrPromptChoice::CHOICE_EXIT);
-  }
 
   JNIEnv* env = base::android::AttachCurrentThread();
-  Java_VrShell_onExitVrRequestResult(env, j_vr_shell_, static_cast<int>(reason),
-                                     should_exit);
+  Java_VrShell_onExitVrRequestResult(env, j_vr_shell_, should_exit);
 }
 
 void VrShell::OnContentScreenBoundsChanged(const gfx::SizeF& bounds) {
@@ -903,17 +816,13 @@ void VrShell::SetVoiceSearchActive(bool active) {
     std::string profile_locale = g_browser_process->GetApplicationLocale();
     speech_recognizer_.reset(new SpeechRecognizer(
         this, ui_,
-        content::BrowserContext::GetDefaultStoragePartition(profile)
+        profile->GetDefaultStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcessIOThread(),
         profile->GetPrefs()->GetString(language::prefs::kAcceptLanguages),
         profile_locale));
   }
   if (active) {
     speech_recognizer_->Start();
-    SessionMetricsHelper* metrics_helper =
-        SessionMetricsHelper::FromWebContents(web_contents_);
-    if (metrics_helper)
-      metrics_helper->RecordVoiceSearchStarted();
   } else {
     speech_recognizer_->Stop();
   }
@@ -952,8 +861,8 @@ void VrShell::RequestRecordAudioPermissionResult(
 }
 
 void VrShell::PollCapturingState() {
-  poll_capturing_state_task_.Reset(base::BindRepeating(
-      &VrShell::PollCapturingState, base::Unretained(this)));
+  poll_capturing_state_task_.Reset(
+      base::BindOnce(&VrShell::PollCapturingState, base::Unretained(this)));
   main_thread_task_runner_->PostDelayedTask(
       FROM_HERE, poll_capturing_state_task_.callback(),
       kPollCapturingStateInterval);
@@ -1013,7 +922,7 @@ void VrShell::PollCapturingState() {
     }
   }
 
-  geolocation_config_->IsHighAccuracyLocationBeingCaptured(base::BindRepeating(
+  geolocation_config_->IsHighAccuracyLocationBeingCaptured(base::BindOnce(
       [](VrShell* shell, BrowserUiInterface* ui,
          CapturingStateModel* active_capturing,
          CapturingStateModel* background_capturing,
@@ -1072,7 +981,7 @@ bool VrShell::ShouldDisplayURL() const {
   GURL url = entry->GetVirtualURL();
   // URL is of the form chrome-native://.... This is not useful for the user.
   // Hide it.
-  if (url.SchemeIs(chrome::kChromeUINativeScheme)) {
+  if (url.SchemeIs(browser_ui::kChromeUINativeScheme)) {
     return false;
   }
   // URL is of the form chrome://....
@@ -1082,22 +991,12 @@ bool VrShell::ShouldDisplayURL() const {
   return ChromeLocationBarModelDelegate::ShouldDisplayURL();
 }
 
-void VrShell::OnVoiceResults(const base::string16& result) {
+void VrShell::OnVoiceResults(const std::u16string& result) {
   JNIEnv* env = base::android::AttachCurrentThread();
   GURL url;
   bool input_was_url;
   std::tie(url, input_was_url) =
       autocomplete_controller_->GetUrlFromVoiceInput(result);
-
-  // TODO(http://crbug.com/817559): If the user is doing a voice search from the
-  // new tab page, no metrics data is recorded (including voice search started).
-  // Fix this.
-
-  // This should happen before the load to avoid concurency issues.
-  SessionMetricsHelper* metrics_helper =
-      SessionMetricsHelper::FromWebContents(web_contents_);
-  if (metrics_helper && input_was_url)
-    metrics_helper->RecordUrlRequested(url, NavigationMethod::kVoiceSearch);
 
   Java_VrShell_loadUrl(env, j_vr_shell_,
                        base::android::ConvertUTF8ToJavaString(env, url.spec()));
@@ -1114,8 +1013,6 @@ void VrShell::OnAssetsLoaded(AssetsLoadStatus status,
     VLOG(1) << "Failed to load VR assets component";
   }
 
-  AssetsLoader::GetInstance()->GetMetricsHelper()->OnAssetsLoaded(
-      status, component_version);
   ui_finished_loading_ = true;
 }
 
@@ -1272,13 +1169,11 @@ std::unique_ptr<PageInfo> VrShell::CreatePageInfo() {
   if (!entry)
     return nullptr;
 
-  SecurityStateTabHelper* helper =
-      SecurityStateTabHelper::FromWebContents(web_contents_);
-  return std::make_unique<PageInfo>(
-      this, Profile::FromBrowserContext(web_contents_->GetBrowserContext()),
-      TabSpecificContentSettings::FromWebContents(web_contents_), web_contents_,
-      entry->GetVirtualURL(), helper->GetSecurityLevel(),
-      *helper->GetVisibleSecurityState());
+  auto page_info = std::make_unique<PageInfo>(
+      std::make_unique<ChromePageInfoDelegate>(web_contents_), web_contents_,
+      entry->GetVirtualURL());
+  page_info->InitializeUiState(this, base::DoNothing());
+  return page_info;
 }
 
 gfx::AcceleratedWidget VrShell::GetRenderSurface() {

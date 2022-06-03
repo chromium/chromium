@@ -7,6 +7,10 @@ var assertTrue = chrome.test.assertTrue;
 var fail = chrome.test.fail;
 var succeed = chrome.test.succeed;
 
+const isServiceWorker = ('ServiceWorkerGlobalScope' in self);
+const extensionId = 'iegclhlplifhodhkoafiokenjoapiobj';
+const serviceWorkerScriptName = 'generated_service_worker__.js';
+
 function checkIsDefined(prop) {
   if (!chrome.runtime) {
     fail('chrome.runtime is not defined');
@@ -19,13 +23,29 @@ function checkIsDefined(prop) {
   return true;
 }
 
+function getLocation() {
+  return isServiceWorker ? self.location.toString() : window.location.href;
+};
+
+function getPath() {
+  return isServiceWorker ? '/' + serviceWorkerScriptName
+      : '/_generated_background_page.html';
+};
+
 chrome.test.runTests([
+
+  function testID() {
+    if (!checkIsDefined('id'))
+      return;
+    assertEq(extensionId, chrome.runtime.id);
+    succeed();
+  },
 
   function testGetURL() {
     if (!checkIsDefined('getURL'))
       return;
-    var url = chrome.runtime.getURL('_generated_background_page.html');
-    assertEq(url, window.location.href);
+    assertEq('chrome-extension://' + chrome.runtime.id + getPath(),
+             getLocation());
     succeed();
   },
 
@@ -33,25 +53,20 @@ chrome.test.runTests([
     if (!checkIsDefined('getManifest'))
       return;
     var manifest = chrome.runtime.getManifest();
-    if (!manifest || !manifest.background || !manifest.background.scripts) {
-      fail();
+    if (!manifest || !manifest.background ||
+        !(manifest.background.scripts || manifest.background.service_worker)) {
+      fail('Extension has no background or worker script.');
       return;
     }
-    assertEq(manifest.name, 'chrome.runtime API Test');
-    assertEq(manifest.version, '1');
-    assertEq(manifest.manifest_version, 2);
-    assertEq(manifest.background.scripts, ['test.js']);
+    assertEq('chrome.runtime API Test', manifest.name);
+    assertEq('1', manifest.version);
+    assertEq(2, manifest.manifest_version);
+    if (manifest.background.scripts) {
+      assertEq(['test.js'], manifest.background.scripts);
+    } else {
+      assertEq(serviceWorkerScriptName, manifest.background.service_worker);
+    }
     succeed();
   },
-
-  function testID() {
-    if (!checkIsDefined('id'))
-      return;
-    // We *could* get the browser to tell the test what the extension ID is,
-    // and compare against that. It's a pain. Testing for a non-empty ID should
-    // be good enough.
-    assertTrue(chrome.runtime.id != '', 'chrome.runtime.id is empty-string.');
-    succeed();
-  }
 
 ]);

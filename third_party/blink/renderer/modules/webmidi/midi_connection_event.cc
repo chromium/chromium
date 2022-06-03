@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/modules/webmidi/midi_connection_event.h"
 
-#include "third_party/blink/renderer/modules/webmidi/midi_connection_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_midi_connection_event_init.h"
 
 namespace blink {
 
@@ -42,7 +42,7 @@ MIDIConnectionEvent::MIDIConnectionEvent(
     port_ = initializer->port();
 }
 
-void MIDIConnectionEvent::Trace(blink::Visitor* visitor) {
+void MIDIConnectionEvent::Trace(Visitor* visitor) const {
   visitor->Trace(port_);
   Event::Trace(visitor);
 }

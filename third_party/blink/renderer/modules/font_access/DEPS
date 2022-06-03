@@ -1,0 +1,8 @@
+include_rules = [
+    "-third_party/blink/renderer/modules",
+    "+base/big_endian.h",
+    "+base/memory/read_only_shared_memory_region.h",
+    "+third_party/blink/renderer/modules/event_target_modules.h",
+    "+third_party/blink/renderer/modules/font_access",
+    "+third_party/blink/renderer/modules/modules_export.h",
+]

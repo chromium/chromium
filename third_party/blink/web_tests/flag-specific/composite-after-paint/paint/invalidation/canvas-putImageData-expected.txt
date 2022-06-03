@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutHTMLCanvas CANVAS id='canvas'",
-          "rect": [8, 8, 90, 90],
-          "reason": "invalidate paint rectangle"
-        }
+      "invalidations": [
+        [8, 8, 100, 100]
       ]
     }
   ]

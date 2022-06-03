@@ -52,6 +52,10 @@
       will-change: -webkit-filter;
     }
 
+    #willChangeBackdropFilter {
+      will-change: backdrop-filter;
+    }
+
     #willChangeCombinationThatComposites {
       will-change: transition, -webkit-animation, opacity, z-index;
     }
@@ -82,7 +86,8 @@
   <div id="willChangeTop" class="positioned shouldComposite"></div>
   <div id="willChangeBottom" class="shouldNotComposite"></div>
   <div id="willChangeBottom" class="positioned shouldComposite"></div>
-  <div id="willChangeFilter" class="shouldNotComposite"></div>
+  <div id="willChangeFilter" class="shouldComposite"></div>
+  <div id="willChangeBackdropFilter" class="shouldComposite"></div>
   <div id="willChangeCombinationThatComposites" class="shouldComposite"></div>
   <div id="willChangeZIndex" class="shouldNotComposite"></div>
 

@@ -3,11 +3,11 @@ Test that causes are correctly generated for various types of events.
 
 Running: testTimerInstall
 PASS - record contained Timer Installed
-Promise @ setTimeoutFunction.js:
+(anonymous) @ setTimeoutFunction.js:
 
 Running: testRequestAnimationFrame
 PASS - record contained Animation Frame Requested
-Promise @ requestAnimationFrameFunction.js:
+(anonymous) @ requestAnimationFrameFunction.js:
 
 Running: testStyleRecalc
 PASS - record contained First Invalidated

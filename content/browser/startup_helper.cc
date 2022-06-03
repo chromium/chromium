@@ -11,6 +11,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/system/sys_info.h"
 #include "base/task/thread_pool/initialization_util.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -33,8 +34,7 @@ std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
     // Create field trials without activating them, so that this behaves in a
     // consistent manner with field trials created from the server.
     bool result = base::FieldTrialList::CreateTrialsFromString(
-        command_line->GetSwitchValueASCII(::switches::kForceFieldTrials),
-        std::set<std::string>());
+        command_line->GetSwitchValueASCII(::switches::kForceFieldTrials));
     CHECK(result) << "Invalid --" << ::switches::kForceFieldTrials
                   << " list specified.";
   }
@@ -46,18 +46,37 @@ std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
   return field_trial_list;
 }
 
+namespace {
+#if defined(OS_ANDROID)
+// Mobile config, for iOS see ios/web/app/web_main_loop.cc.
+constexpr int kThreadPoolDefaultMin = 6;
+constexpr int kThreadPoolMax = 8;
+constexpr double kThreadPoolCoresMultiplier = 0.6;
+constexpr int kThreadPoolOffset = 0;
+#else
+// Desktop config.
+constexpr int kThreadPoolDefaultMin = 16;
+constexpr int kThreadPoolMax = 32;
+constexpr double kThreadPoolCoresMultiplier = 0.6;
+constexpr int kThreadPoolOffset = 0;
+#endif
+
+const base::Feature kBrowserThreadPoolAdjustment{
+    "BrowserThreadPoolAdjustment", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::FeatureParam<int> kBrowserThreadPoolMin{
+    &kBrowserThreadPoolAdjustment, "min", kThreadPoolDefaultMin};
+}  // namespace
+
 // TODO(scheduler-dev): Standardize thread pool logic and remove the need for
 // specifying thread count manually.
 void StartBrowserThreadPool() {
+  // Ensure we always support at least one thread regardless of the field trial
+  // param setting.
+  int min = std::max(kBrowserThreadPoolMin.Get(), 1);
   base::ThreadPoolInstance::InitParams thread_pool_init_params = {
-#if defined(OS_ANDROID)
-    // Mobile config, for iOS see ios/web/app/web_main_loop.cc.
-    base::RecommendedMaxNumberOfThreadsInThreadGroup(6, 8, 0.6, 0)
-#else
-    // Desktop config.
-    base::RecommendedMaxNumberOfThreadsInThreadGroup(16, 32, 0.6, 0)
-#endif
-  };
+      base::RecommendedMaxNumberOfThreadsInThreadGroup(
+          min, kThreadPoolMax, kThreadPoolCoresMultiplier, kThreadPoolOffset)};
 
 #if defined(OS_WIN)
   thread_pool_init_params.common_thread_pool_environment = base::

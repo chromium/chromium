@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {ENTRIES, RootPath, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
 
 /**
  * Tests restoring the sorting order.
@@ -24,14 +27,18 @@ testcase.restoreSortColumn = async () => {
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(1)']);
 
   // Check the sorted style of the header.
-  await remoteCall.waitForElement(appId, '.table-header-sort-image-asc');
+  const iconSortedAsc =
+      '.table-header-cell .sorted [iron-icon="files16:arrow_up_small"]';
+  await remoteCall.waitForElement(appId, iconSortedAsc);
 
   // Sort by size (in descending order).
   await remoteCall.callRemoteTestUtil(
       'fakeMouseClick', appId, ['.table-header-cell:nth-of-type(2)']);
 
   // Check the sorted style of the header.
-  await remoteCall.waitForElement(appId, '.table-header-sort-image-desc');
+  const iconSortedDesc =
+      '.table-header-cell .sorted [iron-icon="files16:arrow_down_small"]';
+  await remoteCall.waitForElement(appId, iconSortedDesc);
 
   // Check the sorted files.
   await remoteCall.waitForFiles(appId, EXPECTED_FILES, {orderCheck: true});
@@ -40,7 +47,7 @@ testcase.restoreSortColumn = async () => {
   appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
   // Check the sorted style of the header.
-  await remoteCall.waitForElement(appId, '.table-header-sort-image-desc');
+  await remoteCall.waitForElement(appId, iconSortedDesc);
 
   // Check the sorted files.
   await remoteCall.waitForFiles(appId, EXPECTED_FILES, {orderCheck: true});

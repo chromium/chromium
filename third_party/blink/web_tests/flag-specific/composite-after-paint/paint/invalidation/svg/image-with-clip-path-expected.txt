@@ -5,22 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGImage image",
-          "rect": [20, 20, 60, 60],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGImage image",
-          "rect": [20, 20, 60, 60],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGImage image",
-          "rect": [175, 25, 50, 50],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [20, 20, 60, 60],
+        [175, 25, 50, 50]
       ]
     }
   ]

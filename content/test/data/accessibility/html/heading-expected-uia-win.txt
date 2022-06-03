@@ -1,13 +1,13 @@
-document
-++heading Name='Heading 1'
-++++description Name='Heading 1' IsControlElement=false
-++heading Name='Heading 2'
-++++description Name='Heading 2' IsControlElement=false
-++heading Name='Heading 3'
-++++description Name='Heading 3' IsControlElement=false
-++heading Name='Heading 4'
-++++description Name='Heading 4' IsControlElement=false
-++heading Name='Heading 5'
-++++description Name='Heading 5' IsControlElement=false
-++heading Name='Heading 6'
-++++description Name='Heading 6' IsControlElement=false
+Document
+++Text Name='Heading 1'
+++++Text Name='Heading 1' IsControlElement=false
+++Text Name='Heading 2'
+++++Text Name='Heading 2' IsControlElement=false
+++Text Name='Heading 3'
+++++Text Name='Heading 3' IsControlElement=false
+++Text Name='Heading 4'
+++++Text Name='Heading 4' IsControlElement=false
+++Text Name='Heading 5'
+++++Text Name='Heading 5' IsControlElement=false
+++Text Name='Heading 6'
+++++Text Name='Heading 6' IsControlElement=false

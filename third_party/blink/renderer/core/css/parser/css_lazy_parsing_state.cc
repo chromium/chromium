@@ -36,7 +36,7 @@ const CSSParserContext* CSSLazyParsingState::Context() {
   return context_;
 }
 
-void CSSLazyParsingState::Trace(blink::Visitor* visitor) {
+void CSSLazyParsingState::Trace(Visitor* visitor) const {
   visitor->Trace(owning_contents_);
   visitor->Trace(document_);
   visitor->Trace(context_);

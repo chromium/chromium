@@ -8,8 +8,6 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/time/default_clock.h"
-#include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_saver.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -18,10 +16,6 @@
 
 namespace password_manager {
 namespace {
-
-using autofill::PasswordForm;
-using metrics_util::GenerationPresaveConflict;
-using metrics_util::LogGenerationPresaveConflict;
 
 std::vector<PasswordForm> DeepCopyVector(
     const std::vector<const PasswordForm*>& forms) {
@@ -46,23 +40,28 @@ class PasswordDataForUI : public PasswordFormManagerForUI {
   PasswordDataForUI& operator=(const PasswordDataForUI&) = delete;
 
   // PasswordFormManagerForUI:
-  const GURL& GetOrigin() const override;
+  const GURL& GetURL() const override;
   const std::vector<const PasswordForm*>& GetBestMatches() const override;
   std::vector<const PasswordForm*> GetFederatedMatches() const override;
   const PasswordForm& GetPendingCredentials() const override;
   metrics_util::CredentialSourceType GetCredentialSource() const override;
   PasswordFormMetricsRecorder* GetMetricsRecorder() override;
   base::span<const InteractionsStats> GetInteractionsStats() const override;
-  bool IsBlacklisted() const override;
+  base::span<const InsecureCredential> GetInsecureCredentials() const override;
+  bool IsBlocklisted() const override;
+  bool WasUnblocklisted() const override;
+  bool IsMovableToAccountStore() const override;
   void Save() override;
   void Update(const PasswordForm& credentials_to_update) override;
-  void OnUpdateUsernameFromPrompt(const base::string16& new_username) override;
-  void OnUpdatePasswordFromPrompt(const base::string16& new_password) override;
+  void OnUpdateUsernameFromPrompt(const std::u16string& new_username) override;
+  void OnUpdatePasswordFromPrompt(const std::u16string& new_password) override;
   void OnNopeUpdateClicked() override;
   void OnNeverClicked() override;
   void OnNoInteraction(bool is_update) override;
-  void PermanentlyBlacklist() override;
+  void Blocklist() override;
   void OnPasswordsRevealed() override;
+  void MoveCredentialsToAccountStore() override;
+  void BlockMovingCredentialsToAccountStore() override;
 
  private:
   PasswordForm pending_form_;
@@ -90,8 +89,8 @@ PasswordDataForUI::PasswordDataForUI(
     matches_.push_back(&form);
 }
 
-const GURL& PasswordDataForUI::GetOrigin() const {
-  return pending_form_.origin;
+const GURL& PasswordDataForUI::GetURL() const {
+  return pending_form_.url;
 }
 
 const std::vector<const PasswordForm*>& PasswordDataForUI::GetBestMatches()
@@ -126,13 +125,27 @@ base::span<const InteractionsStats> PasswordDataForUI::GetInteractionsStats()
   return {};
 }
 
-bool PasswordDataForUI::IsBlacklisted() const {
+base::span<const InsecureCredential> PasswordDataForUI::GetInsecureCredentials()
+    const {
+  return {};
+}
+
+bool PasswordDataForUI::IsBlocklisted() const {
   // 'true' would suppress the bubble.
   return false;
 }
 
+bool PasswordDataForUI::WasUnblocklisted() const {
+  // This information should not be relevant hereconst.
+  return false;
+}
+
+bool PasswordDataForUI::IsMovableToAccountStore() const {
+  // This is irrelevant for the generation conflict resolution bubble.
+  return false;
+}
+
 void PasswordDataForUI::Save() {
-  LogPresavedUpdateUIDismissalReason(metrics_util::CLICKED_SAVE);
   bubble_interaction_cb_.Run(true, pending_form_);
 }
 
@@ -142,33 +155,34 @@ void PasswordDataForUI::Update(const PasswordForm&) {
 }
 
 void PasswordDataForUI::OnUpdateUsernameFromPrompt(
-    const base::string16& new_username) {
+    const std::u16string& new_username) {
   pending_form_.username_value = new_username;
 }
 
 void PasswordDataForUI::OnUpdatePasswordFromPrompt(
-    const base::string16& new_password) {
+    const std::u16string& new_password) {
   // Ignore. The generated password can be edited in-place.
 }
 
 void PasswordDataForUI::OnNopeUpdateClicked() {
-  LogPresavedUpdateUIDismissalReason(metrics_util::CLICKED_CANCEL);
   bubble_interaction_cb_.Run(false, pending_form_);
 }
 
 void PasswordDataForUI::OnNeverClicked() {
-  LogPresavedUpdateUIDismissalReason(metrics_util::CLICKED_NEVER);
   bubble_interaction_cb_.Run(false, pending_form_);
 }
 
 void PasswordDataForUI::OnNoInteraction(bool is_update) {
-  LogPresavedUpdateUIDismissalReason(metrics_util::NO_DIRECT_INTERACTION);
   bubble_interaction_cb_.Run(false, pending_form_);
 }
 
-void PasswordDataForUI::PermanentlyBlacklist() {}
+void PasswordDataForUI::Blocklist() {}
 
 void PasswordDataForUI::OnPasswordsRevealed() {}
+
+void PasswordDataForUI::MoveCredentialsToAccountStore() {}
+
+void PasswordDataForUI::BlockMovingCredentialsToAccountStore() {}
 
 // Returns a form from |matches| that causes a name conflict with |generated|.
 const PasswordForm* FindUsernameConflict(
@@ -184,7 +198,7 @@ const PasswordForm* FindUsernameConflict(
 
 PasswordGenerationManager::PasswordGenerationManager(
     PasswordManagerClient* client)
-    : client_(client), clock_(new base::DefaultClock) {}
+    : client_(client) {}
 
 PasswordGenerationManager::~PasswordGenerationManager() = default;
 
@@ -197,31 +211,24 @@ std::unique_ptr<PasswordGenerationManager> PasswordGenerationManager::Clone()
 
 void PasswordGenerationManager::GeneratedPasswordAccepted(
     PasswordForm generated,
-    const FormFetcher& fetcher,
+    const std::vector<const PasswordForm*>& non_federated_matches,
+    const std::vector<const PasswordForm*>& federated_matches,
     base::WeakPtr<PasswordManagerDriver> driver) {
   // Clear the username value if there are already saved credentials with
   // the same username in order to prevent overwriting.
-  std::vector<const PasswordForm*> matches = fetcher.GetNonFederatedMatches();
-  if (FindUsernameConflict(generated, matches)) {
+  if (FindUsernameConflict(generated, non_federated_matches)) {
     generated.username_value.clear();
-    const PasswordForm* conflict = FindUsernameConflict(generated, matches);
+    const PasswordForm* conflict =
+        FindUsernameConflict(generated, non_federated_matches);
     if (conflict) {
-      LogGenerationPresaveConflict(
-          GenerationPresaveConflict::kConflictWithEmptyUsername);
       auto bubble_launcher = std::make_unique<PasswordDataForUI>(
-          std::move(generated), matches, fetcher.GetFederatedMatches(),
+          std::move(generated), non_federated_matches, federated_matches,
           base::BindRepeating(&PasswordGenerationManager::OnPresaveBubbleResult,
                               weak_factory_.GetWeakPtr(), std::move(driver)));
       client_->PromptUserToSaveOrUpdatePassword(std::move(bubble_launcher),
                                                 true);
       return;
-    } else {
-      LogGenerationPresaveConflict(
-          GenerationPresaveConflict::kNoConflictWithEmptyUsername);
     }
-  } else {
-    LogGenerationPresaveConflict(
-        GenerationPresaveConflict::kNoUsernameConflict);
   }
   driver->GeneratedPasswordAccepted(generated.password_value);
 }
@@ -235,14 +242,14 @@ void PasswordGenerationManager::PresaveGeneratedPassword(
   // the same username in order to prevent overwriting.
   if (FindUsernameConflict(generated, matches))
     generated.username_value.clear();
-  generated.date_created = clock_->Now();
+  generated.date_created = base::Time::Now();
   if (presaved_) {
     form_saver->UpdateReplace(generated, {} /* matches */,
-                              base::string16() /* old_password */,
+                              std::u16string() /* old_password */,
                               presaved_.value() /* old_primary_key */);
   } else {
     form_saver->Save(generated, {} /* matches */,
-                     base::string16() /* old_password */);
+                     std::u16string() /* old_password */);
   }
   presaved_ = std::move(generated);
 }
@@ -257,11 +264,11 @@ void PasswordGenerationManager::PasswordNoLongerGenerated(
 void PasswordGenerationManager::CommitGeneratedPassword(
     PasswordForm generated,
     const std::vector<const PasswordForm*>& matches,
-    const base::string16& old_password,
+    const std::u16string& old_password,
     FormSaver* form_saver) {
   DCHECK(presaved_);
-  generated.date_last_used = clock_->Now();
-  generated.date_created = clock_->Now();
+  generated.date_last_used = base::Time::Now();
+  generated.date_created = base::Time::Now();
   form_saver->UpdateReplace(generated, matches, old_password,
                             presaved_.value() /* old_primary_key */);
 }
@@ -271,7 +278,9 @@ void PasswordGenerationManager::OnPresaveBubbleResult(
     bool accepted,
     const PasswordForm& pending) {
   weak_factory_.InvalidateWeakPtrs();
-  if (accepted) {
+  if (driver && accepted) {
+    // See https://crbug.com/1210341 for when `driver` might be null due to a
+    // compromised renderer.
     driver->GeneratedPasswordAccepted(pending.password_value);
   }
 }

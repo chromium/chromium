@@ -10,7 +10,8 @@
 #include "base/bind.h"
 #include "base/strings/string_split.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_tick_clock.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -32,7 +33,7 @@ constexpr int kDefaultMaxNumBurstAccesses = 10;
 // The minimum time between consecutive reads of a log source by a particular
 // extension.
 constexpr base::TimeDelta kDefaultRateLimitingTimeout =
-    base::TimeDelta::FromMilliseconds(1000);
+    base::Milliseconds(1000);
 
 // The maximum number of accesses on a single log source that can be allowed
 // before the next recharge increment. See access_rate_limiter.h for more info.
@@ -52,7 +53,7 @@ base::TimeDelta GetMinTimeBetweenReads() {
 // of strings, each string containing a single line.
 void GetLogLinesFromSystemLogsResponse(const SystemLogsResponse& response,
                                        std::vector<std::string>* log_lines) {
-  for (const std::pair<std::string, std::string>& pair : response) {
+  for (const std::pair<const std::string, std::string>& pair : response) {
     std::vector<std::string> new_lines = base::SplitString(
         pair.second, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
     log_lines->reserve(log_lines->size() + new_lines.size());
@@ -60,13 +61,13 @@ void GetLogLinesFromSystemLogsResponse(const SystemLogsResponse& response,
   }
 }
 
-// Anonymizes the strings in |result|.
-void AnonymizeResults(
-    scoped_refptr<feedback::AnonymizerToolContainer> anonymizer_container,
+// Redacts the strings in |result|.
+void RedactResults(
+    scoped_refptr<feedback::RedactionToolContainer> redactor_container,
     ReadLogSourceResult* result) {
-  feedback::AnonymizerTool* anonymizer = anonymizer_container->Get();
+  feedback::RedactionTool* redactor = redactor_container->Get();
   for (std::string& line : result->log_lines)
-    line = anonymizer->Anonymize(line);
+    line = redactor->Redact(line);
 }
 
 }  // namespace
@@ -74,14 +75,14 @@ void AnonymizeResults(
 LogSourceAccessManager::LogSourceAccessManager(content::BrowserContext* context)
     : context_(context),
       tick_clock_(base::DefaultTickClock::GetInstance()),
-      task_runner_for_anonymizer_(base::CreateSequencedTaskRunner(
+      task_runner_for_redactor_(base::ThreadPool::CreateSequencedTaskRunner(
           // User visible as the feedback_api is used by the Chrome (OS)
           // feedback extension while the user may be looking at a spinner.
-          {base::ThreadPool(), base::TaskPriority::USER_VISIBLE,
+          {base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
-      anonymizer_container_(
-          base::MakeRefCounted<feedback::AnonymizerToolContainer>(
-              task_runner_for_anonymizer_,
+      redactor_container_(
+          base::MakeRefCounted<feedback::RedactionToolContainer>(
+              task_runner_for_redactor_,
               /* first_party_extension_ids= */ nullptr)) {}
 
 LogSourceAccessManager::~LogSourceAccessManager() {}
@@ -159,9 +160,9 @@ void LogSourceAccessManager::OnFetchComplete(
   // an undefined execution order of arguments in a function call
   // (std::move(result) being executed before result.get()).
   ReadLogSourceResult* result_ptr = result.get();
-  task_runner_for_anonymizer_->PostTaskAndReply(
+  task_runner_for_redactor_->PostTaskAndReply(
       FROM_HERE,
-      base::BindOnce(AnonymizeResults, anonymizer_container_,
+      base::BindOnce(RedactResults, redactor_container_,
                      base::Unretained(result_ptr)),
       base::BindOnce(std::move(callback), std::move(result)));
 
@@ -222,8 +223,8 @@ LogSourceAccessManager::ResourceId LogSourceAccessManager::CreateResource(
   // passed in as part of a callback.
   resource_manager->Get(extension_id, resource_id)
       ->set_unregister_callback(
-          base::Bind(&LogSourceAccessManager::RemoveHandle,
-                     weak_factory_.GetWeakPtr(), resource_id));
+          base::BindOnce(&LogSourceAccessManager::RemoveHandle,
+                         weak_factory_.GetWeakPtr(), resource_id));
 
   open_handles_.emplace(
       resource_id, std::make_unique<SourceAndExtension>(source, extension_id));

@@ -19,7 +19,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 
 namespace crashpad {
 
@@ -97,6 +96,10 @@ class ExceptionPorts {
     using VectorType = std::vector<ExceptionHandler>;
 
     ExceptionHandlerVector();
+
+    ExceptionHandlerVector(const ExceptionHandlerVector&) = delete;
+    ExceptionHandlerVector& operator=(const ExceptionHandlerVector&) = delete;
+
     ~ExceptionHandlerVector();
 
     VectorType::const_iterator begin() const { return vector_.begin(); }
@@ -113,8 +116,6 @@ class ExceptionPorts {
     void Deallocate();
 
     VectorType vector_;
-
-    DISALLOW_COPY_AND_ASSIGN(ExceptionHandlerVector);
   };
 
   //! \brief Constructs an interface object to get or set exception ports on a
@@ -135,6 +136,9 @@ class ExceptionPorts {
   //!     In this case, ownership of the target port will be managed
   //!     appropriately for \a target_type.
   ExceptionPorts(TargetType target_type, mach_port_t target_port);
+
+  ExceptionPorts(const ExceptionPorts&) = delete;
+  ExceptionPorts& operator=(const ExceptionPorts&) = delete;
 
   ~ExceptionPorts();
 
@@ -178,6 +182,38 @@ class ExceptionPorts {
                         exception_behavior_t behavior,
                         thread_state_flavor_t flavor) const;
 
+  //! \brief Calls `*_swap_exception_ports()` on the target.
+  //!
+  //! \param[in] mask A mask specifying the exception types to direct to \a
+  //!     port, containing `EXC_MASK_*` values.
+  //! \param[in] new_port A send right to a Mach port that will handle
+  //!     exceptions sustained by \a target_port of the types indicated in \a
+  //!     mask. The send right is copied, not consumed, by this call.
+  //! \param[in] new_behavior The “behavior” that the exception handler at \a
+  //!     port implements: `EXCEPTION_DEFAULT`, `EXCEPTION_STATE`, or
+  //!     `EXCEPTION_STATE_IDENTITY`, possibly combined with
+  //!     `MACH_EXCEPTION_CODES`.
+  //! \param[in] new_flavor The thread state flavor that the exception handler
+  //!     at \a port expects to receive and possibly modify. This argument has
+  //!     no effect for \a new_behavior values that indicate a “default”
+  //!     behavior.
+  //! \param[out] old_handlers The exception handlers registered for \a
+  //!     target_port to handle exceptions indicated in \a mask. If no execption
+  //!     port is registered for a bit in \a mask, \a old_handlers will not
+  //!     contain an entry corresponding to that bit. This is a departure from
+  //!     the `*_get_exception_ports()` functions, which may return a handler
+  //!     whose port is set to `EXCEPTION_PORT_NULL` in this case. On failure,
+  //!     this argument is untouched.
+  //!
+  //! \return `true` if `*_swap_exception_ports()` returned `KERN_SUCCESS`, with
+  //!     \a old_handlers set appropriately. . `false` otherwise, with an
+  //!     appropriate message logged.
+  bool SwapExceptionPorts(exception_mask_t mask,
+                          exception_handler_t new_port,
+                          exception_behavior_t new_behavior,
+                          thread_state_flavor_t new_flavor,
+                          ExceptionHandlerVector* old_handlers) const;
+
   //! \brief Returns a string identifying the target type.
   //!
   //! \return `"host"`, `"task"`, or `"thread"`, as appropriate.
@@ -198,8 +234,20 @@ class ExceptionPorts {
                                                  exception_behavior_t,
                                                  thread_state_flavor_t);
 
+  using SwapExceptionPortsType = kern_return_t(*)(mach_port_t,
+                                                  exception_mask_t,
+                                                  exception_handler_t,
+                                                  exception_behavior_t,
+                                                  thread_state_flavor_t,
+                                                  exception_mask_array_t,
+                                                  mach_msg_type_number_t*,
+                                                  exception_handler_array_t,
+                                                  exception_behavior_array_t,
+                                                  exception_flavor_array_t);
+
   GetExceptionPortsType get_exception_ports_;
   SetExceptionPortsType set_exception_ports_;
+  SwapExceptionPortsType swap_exception_ports_;
   const char* target_name_;
   mach_port_t target_port_;
 
@@ -209,8 +257,6 @@ class ExceptionPorts {
   // even with a TASK_NULL target_port, because it is incorrect to deallocate
   // the result of mach_task_self().
   bool dealloc_target_port_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExceptionPorts);
 };
 
 }  // namespace crashpad

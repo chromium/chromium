@@ -4,11 +4,10 @@
 
 #include "components/sync_device_info/device_info_util.h"
 
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/device_info_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::Time;
-using base::TimeDelta;
 using sync_pb::DeviceInfoSpecifics;
 
 namespace syncer {
@@ -22,57 +21,59 @@ class DeviceInfoUtilTest : public testing::Test {
     // respectively,
     // than both constants.
     EXPECT_LT(small_, DeviceInfoUtil::kActiveThreshold);
-    EXPECT_LT(small_, DeviceInfoUtil::kPulseInterval);
+    EXPECT_LT(small_, DeviceInfoUtil::GetPulseInterval());
     EXPECT_GT(big_, DeviceInfoUtil::kActiveThreshold);
-    EXPECT_GT(big_, DeviceInfoUtil::kPulseInterval);
+    EXPECT_GT(big_, DeviceInfoUtil::GetPulseInterval());
   }
 
   const Time now_ = Time::Now();
-  const TimeDelta small_ = TimeDelta::FromMilliseconds(1);
-  const TimeDelta big_ = TimeDelta::FromDays(1000);
+  const base::TimeDelta small_ = base::Milliseconds(1);
+  const base::TimeDelta big_ = base::Days(1000);
 };
 
 }  // namespace
 
 TEST_F(DeviceInfoUtilTest, CalculatePulseDelaySame) {
-  EXPECT_EQ(DeviceInfoUtil::kPulseInterval,
+  EXPECT_EQ(DeviceInfoUtil::GetPulseInterval(),
             DeviceInfoUtil::CalculatePulseDelay(Time(), Time()));
-  EXPECT_EQ(DeviceInfoUtil::kPulseInterval,
+  EXPECT_EQ(DeviceInfoUtil::GetPulseInterval(),
             DeviceInfoUtil::CalculatePulseDelay(now_, now_));
-  EXPECT_EQ(DeviceInfoUtil::kPulseInterval,
+  EXPECT_EQ(DeviceInfoUtil::GetPulseInterval(),
             DeviceInfoUtil::CalculatePulseDelay(now_ + big_, now_ + big_));
 }
 
 TEST_F(DeviceInfoUtilTest, CalculatePulseDelayMiddle) {
-  EXPECT_EQ(DeviceInfoUtil::kPulseInterval - small_,
+  EXPECT_EQ(DeviceInfoUtil::GetPulseInterval() - small_,
             DeviceInfoUtil::CalculatePulseDelay(Time(), Time() + small_));
   EXPECT_EQ(small_,
             DeviceInfoUtil::CalculatePulseDelay(
-                Time(), Time() + DeviceInfoUtil::kPulseInterval - small_));
+                Time(), Time() + DeviceInfoUtil::GetPulseInterval() - small_));
 }
 
 TEST_F(DeviceInfoUtilTest, CalculatePulseDelayStale) {
-  EXPECT_EQ(TimeDelta(), DeviceInfoUtil::CalculatePulseDelay(
-                             Time(), Time() + DeviceInfoUtil::kPulseInterval));
-  EXPECT_EQ(TimeDelta(),
+  EXPECT_EQ(base::TimeDelta(),
             DeviceInfoUtil::CalculatePulseDelay(
-                Time(), Time() + DeviceInfoUtil::kPulseInterval + small_));
-  EXPECT_EQ(TimeDelta(),
+                Time(), Time() + DeviceInfoUtil::GetPulseInterval()));
+  EXPECT_EQ(base::TimeDelta(),
             DeviceInfoUtil::CalculatePulseDelay(
-                Time(), Time() + DeviceInfoUtil::kPulseInterval + small_));
-  EXPECT_EQ(TimeDelta(), DeviceInfoUtil::CalculatePulseDelay(
-                             now_, now_ + DeviceInfoUtil::kPulseInterval));
+                Time(), Time() + DeviceInfoUtil::GetPulseInterval() + small_));
+  EXPECT_EQ(base::TimeDelta(),
+            DeviceInfoUtil::CalculatePulseDelay(
+                Time(), Time() + DeviceInfoUtil::GetPulseInterval() + small_));
+  EXPECT_EQ(base::TimeDelta(),
+            DeviceInfoUtil::CalculatePulseDelay(
+                now_, now_ + DeviceInfoUtil::GetPulseInterval()));
 }
 
 TEST_F(DeviceInfoUtilTest, CalculatePulseDelayFuture) {
-  EXPECT_EQ(DeviceInfoUtil::kPulseInterval,
+  EXPECT_EQ(DeviceInfoUtil::GetPulseInterval(),
             DeviceInfoUtil::CalculatePulseDelay(Time() + small_, Time()));
-  EXPECT_EQ(DeviceInfoUtil::kPulseInterval,
+  EXPECT_EQ(DeviceInfoUtil::GetPulseInterval(),
             DeviceInfoUtil::CalculatePulseDelay(
-                Time() + DeviceInfoUtil::kPulseInterval, Time()));
-  EXPECT_EQ(DeviceInfoUtil::kPulseInterval,
+                Time() + DeviceInfoUtil::GetPulseInterval(), Time()));
+  EXPECT_EQ(DeviceInfoUtil::GetPulseInterval(),
             DeviceInfoUtil::CalculatePulseDelay(Time() + big_, Time()));
-  EXPECT_EQ(DeviceInfoUtil::kPulseInterval,
+  EXPECT_EQ(DeviceInfoUtil::GetPulseInterval(),
             DeviceInfoUtil::CalculatePulseDelay(now_ + big_, now_));
 }
 

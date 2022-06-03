@@ -4,73 +4,95 @@
 
 #include "ash/assistant/model/assistant_alarm_timer_model.h"
 
+#include <utility>
+
 #include "ash/assistant/model/assistant_alarm_timer_model_observer.h"
-#include "base/stl_util.h"
+#include "base/time/time.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
 namespace ash {
+
+using chromeos::assistant::AssistantTimer;
 
 AssistantAlarmTimerModel::AssistantAlarmTimerModel() = default;
 
 AssistantAlarmTimerModel::~AssistantAlarmTimerModel() = default;
 
 void AssistantAlarmTimerModel::AddObserver(
-    AssistantAlarmTimerModelObserver* observer) {
+    AssistantAlarmTimerModelObserver* observer) const {
   observers_.AddObserver(observer);
 }
 
 void AssistantAlarmTimerModel::RemoveObserver(
-    AssistantAlarmTimerModelObserver* observer) {
+    AssistantAlarmTimerModelObserver* observer) const {
   observers_.RemoveObserver(observer);
 }
 
-void AssistantAlarmTimerModel::AddAlarmTimer(const AlarmTimer& alarm_timer) {
-  DCHECK(!base::Contains(alarms_timers_, alarm_timer.id));
-  alarms_timers_[alarm_timer.id] = alarm_timer;
-  NotifyAlarmTimerAdded(alarm_timer, /*time_remaining=*/base::TimeTicks::Now() -
-                                         alarm_timer.end_time);
+void AssistantAlarmTimerModel::AddOrUpdateTimer(
+    const AssistantTimer& const_timer) {
+  AssistantTimer timer = const_timer;
+
+  auto it = timers_.find(timer.id);
+  if (it == timers_.end()) {
+    timer.creation_time = timer.creation_time.value_or(base::Time::Now());
+    timers_[timer.id] = timer;
+    timers_[timer.id] = timer;
+    NotifyTimerAdded(timer);
+    return;
+  }
+
+  // If not explicitly provided, carry forward |creation_time|. This allows us
+  // to track the lifetime of |timer| across updates.
+  timer.creation_time =
+      timer.creation_time.value_or(timers_[timer.id].creation_time.value());
+
+  timers_[timer.id] = timer;
+  NotifyTimerUpdated(timer);
 }
 
-void AssistantAlarmTimerModel::RemoveAllAlarmsTimers() {
-  if (alarms_timers_.empty())
+void AssistantAlarmTimerModel::RemoveTimer(const std::string& id) {
+  auto it = timers_.find(id);
+  if (it == timers_.end())
     return;
 
-  alarms_timers_.clear();
-  NotifyAllAlarmsTimersRemoved();
+  AssistantTimer timer = it->second;
+  timers_.erase(it);
+
+  NotifyTimerRemoved(timer);
 }
 
-const AlarmTimer* AssistantAlarmTimerModel::GetAlarmTimerById(
+void AssistantAlarmTimerModel::RemoveAllTimers() {
+  while (!timers_.empty())
+    RemoveTimer(timers_.begin()->second.id);
+}
+
+std::vector<const AssistantTimer*> AssistantAlarmTimerModel::GetAllTimers()
+    const {
+  std::vector<const AssistantTimer*> timers;
+  for (const auto& pair : timers_)
+    timers.push_back(&pair.second);
+  return timers;
+}
+
+const AssistantTimer* AssistantAlarmTimerModel::GetTimerById(
     const std::string& id) const {
-  auto it = alarms_timers_.find(id);
-  return it != alarms_timers_.end() ? &it->second : nullptr;
+  auto it = timers_.find(id);
+  return it != timers_.end() ? &it->second : nullptr;
 }
 
-void AssistantAlarmTimerModel::Tick() {
-  const base::TimeTicks now = base::TimeTicks::Now();
-
-  // Calculate remaining time for all tracked alarms/timers.
-  std::map<std::string, base::TimeDelta> times_remaining;
-  for (auto& alarm_timer : alarms_timers_)
-    times_remaining[alarm_timer.first] = now - alarm_timer.second.end_time;
-
-  NotifyAlarmsTimersTicked(times_remaining);
-}
-
-void AssistantAlarmTimerModel::NotifyAlarmTimerAdded(
-    const AlarmTimer& alarm_timer,
-    const base::TimeDelta& time_remaining) {
+void AssistantAlarmTimerModel::NotifyTimerAdded(const AssistantTimer& timer) {
   for (auto& observer : observers_)
-    observer.OnAlarmTimerAdded(alarm_timer, time_remaining);
+    observer.OnTimerAdded(timer);
 }
 
-void AssistantAlarmTimerModel::NotifyAlarmsTimersTicked(
-    const std::map<std::string, base::TimeDelta>& times_remaining) {
+void AssistantAlarmTimerModel::NotifyTimerUpdated(const AssistantTimer& timer) {
   for (auto& observer : observers_)
-    observer.OnAlarmsTimersTicked(times_remaining);
+    observer.OnTimerUpdated(timer);
 }
 
-void AssistantAlarmTimerModel::NotifyAllAlarmsTimersRemoved() {
+void AssistantAlarmTimerModel::NotifyTimerRemoved(const AssistantTimer& timer) {
   for (auto& observer : observers_)
-    observer.OnAllAlarmsTimersRemoved();
+    observer.OnTimerRemoved(timer);
 }
 
 }  // namespace ash

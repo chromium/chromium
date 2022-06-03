@@ -8,8 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "components/offline_pages/task/task.h"
@@ -26,6 +25,11 @@ namespace explore_sites {
 class ExploreSitesClearCatalogTest : public TaskTestBase {
  public:
   ExploreSitesClearCatalogTest() = default;
+
+  ExploreSitesClearCatalogTest(const ExploreSitesClearCatalogTest&) = delete;
+  ExploreSitesClearCatalogTest& operator=(const ExploreSitesClearCatalogTest&) =
+      delete;
+
   ~ExploreSitesClearCatalogTest() override = default;
 
   void SetUp() override {
@@ -56,21 +60,28 @@ class ExploreSitesClearCatalogTest : public TaskTestBase {
       ExploreSitesSchema::InitMetaTable(db, &meta_table);
       meta_table.SetValue("current_catalog", "5678");
       meta_table.SetValue("downloading_catalog", "9101112");
-      sql::Statement insert(db->GetUniqueStatement(R"(
-INSERT INTO categories
-(category_id, version_token, type, label)
-VALUES
-(3, "5678", 1, "label_1"), -- current catalog
-(4, "5678", 2, "label_2"); -- current catalog)"));
-      if (!insert.Run())
+
+      static constexpr char kCategoriesSql[] =
+          // clang-format off
+          "INSERT INTO categories"
+              "(category_id, version_token, type, label)"
+              "VALUES"
+                  "(3, '5678', 1, 'label_1'),"  // current catalog
+                  "(4, '5678', 2, 'label_2')";  // current catalog
+      // clang-format on
+      sql::Statement insert_categories(db->GetUniqueStatement(kCategoriesSql));
+      if (!insert_categories.Run())
         return false;
 
-      sql::Statement insert_sites(db->GetUniqueStatement(R"(
-INSERT INTO sites
-(site_id, url, category_id, title)
-VALUES
-(3, "https://www.example.com/1", 3, "example_1"),
-(4, "https://www.example.com/2", 4, "example_2");)"));
+      static constexpr char kSitesSql[] =
+          // clang-format off
+          "INSERT INTO sites"
+              "(site_id, url, category_id, title)"
+              "VALUES"
+                  "(3, 'https://www.example.com/1', 3, 'example_1'),"
+                  "(4, 'https://www.example.com/2', 4, 'example_2')";
+      // clang-format on
+      sql::Statement insert_sites(db->GetUniqueStatement(kSitesSql));
       return insert_sites.Run();
     }));
     ASSERT_NE(std::make_pair(std::string(), std::string()),
@@ -99,7 +110,7 @@ VALUES
   std::pair<int, int> GetCatalogSizes() {
     int site_count = -1;
     int category_count = -1;
-    // Check that DB's site_blacklist table is empty.
+    // Check that DB's blocklist table is empty.
     ExecuteSync(base::BindLambdaForTesting([&](sql::Database* db) {
       sql::Statement site_count_s(
           db->GetUniqueStatement("SELECT COUNT(*) FROM sites"));
@@ -119,8 +130,6 @@ VALUES
 
  private:
   std::unique_ptr<ExploreSitesStore> store_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesClearCatalogTest);
 };
 
 TEST_F(ExploreSitesClearCatalogTest, StoreFailure) {

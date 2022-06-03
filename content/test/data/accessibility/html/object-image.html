@@ -1,0 +1,12 @@
+<!--
+@AURALINUX-ALLOW:tag:*
+@BLINK-ALLOW:htmlTag='slot'
+@WAIT-FOR:complete
+-->
+<div>
+    <object data="./greenbox.png"
+            onload="document.getElementById('done').innerText='complete';">
+        Fallback
+    </object>
+</div>
+<div id="done"></div>

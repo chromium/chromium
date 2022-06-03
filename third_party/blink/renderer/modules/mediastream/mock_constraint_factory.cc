@@ -14,13 +14,13 @@ MockConstraintFactory::MockConstraintFactory() {}
 
 MockConstraintFactory::~MockConstraintFactory() {}
 
-WebMediaTrackConstraintSet& MockConstraintFactory::AddAdvanced() {
+MediaTrackConstraintSetPlatform& MockConstraintFactory::AddAdvanced() {
   advanced_.emplace_back();
   return advanced_.back();
 }
 
-WebMediaConstraints MockConstraintFactory::CreateWebMediaConstraints() const {
-  WebMediaConstraints constraints;
+MediaConstraints MockConstraintFactory::CreateMediaConstraints() const {
+  MediaConstraints constraints;
   constraints.Initialize(basic_, advanced_);
   return constraints;
 }
@@ -41,7 +41,7 @@ void MockConstraintFactory::DisableAecAudioConstraints() {
 }
 
 void MockConstraintFactory::Reset() {
-  basic_ = WebMediaTrackConstraintSet();
+  basic_ = MediaTrackConstraintSetPlatform();
   advanced_.clear();
 }
 

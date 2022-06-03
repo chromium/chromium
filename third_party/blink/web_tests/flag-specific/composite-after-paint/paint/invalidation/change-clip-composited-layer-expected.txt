@@ -9,12 +9,10 @@
     {
       "name": "LayoutNGBlockFlow DIV id='target'",
       "bounds": [100, 10],
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV id='target'",
-          "rect": [0, 0, 100, 10],
-          "reason": "full layer"
-        }
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "invalidations": [
+        [0, 0, 50, 10]
       ],
       "transform": 1
     }

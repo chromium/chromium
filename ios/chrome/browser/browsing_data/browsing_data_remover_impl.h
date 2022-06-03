@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_
 
-#include <memory>
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
@@ -20,12 +19,9 @@
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remover.h"
 
+class ChromeBrowserState;
 @class SessionServiceIOS;
 @class WKWebView;
-
-namespace ios {
-class ChromeBrowserState;
-}
 
 namespace net {
 class URLRequestContextGetter;
@@ -37,8 +33,12 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
  public:
   // Creates a BrowsingDataRemoverImpl to remove browser data from the
   // specified ChromeBrowserstate. Use Remove to initiate the removal.
-  BrowsingDataRemoverImpl(ios::ChromeBrowserState* browser_state,
+  BrowsingDataRemoverImpl(ChromeBrowserState* browser_state,
                           SessionServiceIOS* session_service);
+
+  BrowsingDataRemoverImpl(const BrowsingDataRemoverImpl&) = delete;
+  BrowsingDataRemoverImpl& operator=(const BrowsingDataRemoverImpl&) = delete;
+
   ~BrowsingDataRemoverImpl() override;
 
   // KeyedService implementation.
@@ -49,6 +49,7 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   void Remove(browsing_data::TimePeriod time_period,
               BrowsingDataRemoveMask remove_mask,
               base::OnceClosure callback) override;
+  void RemoveSessionsData(NSArray<NSString*>* session_ids) override;
 
  private:
   // Represents a single removal task. Contains all parameters to execute it.
@@ -110,16 +111,10 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // ChromeBrowserState we're to remove from.
-  ios::ChromeBrowserState* browser_state_ = nullptr;
+  ChromeBrowserState* browser_state_ = nullptr;
 
   // SessionService to use (allow injection of a specific instance for testing).
   SessionServiceIOS* session_service_ = nil;
-
-  // Dummy WKWebView. A WKWebView object is created before deleting cookies. and
-  // is deleted after deleting cookies is completed. this is a workaround that
-  // makes sure that there is a WKWebView object alive while accessing
-  // WKHTTPCookieStore.
-  WKWebView* dummy_web_view_ = nil;
 
   // Used to delete data from HTTP cache.
   scoped_refptr<net::URLRequestContextGetter> context_getter_;
@@ -136,11 +131,9 @@ class BrowsingDataRemoverImpl : public BrowsingDataRemover {
   // Used if we need to clear history.
   base::CancelableTaskTracker history_task_tracker_;
 
-  std::unique_ptr<TemplateURLService::Subscription> template_url_subscription_;
+  base::CallbackListSubscription template_url_subscription_;
 
   base::WeakPtrFactory<BrowsingDataRemoverImpl> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverImpl);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_IMPL_H_

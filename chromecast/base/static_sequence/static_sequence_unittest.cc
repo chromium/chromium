@@ -14,8 +14,8 @@ struct TestSequence : StaticSequence<TestSequence> {};
 
 struct CustomTraitsProvider {
   static constexpr base::TaskTraits GetTraits() {
-    return {base::ThreadPool(), base::TaskPriority::LOWEST,
-            base::ThreadPolicy::PREFER_BACKGROUND, base::MayBlock()};
+    return {base::TaskPriority::LOWEST, base::ThreadPolicy::PREFER_BACKGROUND,
+            base::MayBlock()};
   }
 };
 

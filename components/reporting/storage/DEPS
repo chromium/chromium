@@ -1,0 +1,7 @@
+include_rules = [
+  "+base",
+  "+crypto",
+  "+third_party/protobuf",
+  "+third_party/snappy",
+]
+

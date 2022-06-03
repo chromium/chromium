@@ -7,6 +7,7 @@
 
 #include <fuzzer/FuzzedDataProvider.h>
 
+#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
@@ -73,7 +74,7 @@ IndexedDBKey CreateKey(FuzzedDataProvider* fuzzed_data) {
       if (fuzzed_data->remaining_bytes() < 1)
         return IndexedDBKey(base::UTF8ToUTF16(std::string()));
       auto str_size = fuzzed_data->ConsumeIntegral<size_t>();
-      base::string16 data_str =
+      std::u16string data_str =
           base::UTF8ToUTF16(fuzzed_data->ConsumeBytesAsString(str_size));
       return IndexedDBKey(data_str);
     }

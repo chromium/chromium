@@ -21,7 +21,9 @@ enum GamepadHapticsResult {
 
 // Gamepad vibration is proposed as an extension to the Gamepad API.
 // https://github.com/w3c/gamepad/pull/68
-interface GamepadHapticActuator {
+[
+    Exposed=Window
+] interface GamepadHapticActuator {
     readonly attribute GamepadHapticActuatorType type;
     [CallWith=ScriptState] Promise<GamepadHapticsResult> playEffect(
         GamepadHapticEffectType type,

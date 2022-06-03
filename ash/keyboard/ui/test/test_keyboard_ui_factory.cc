@@ -56,6 +56,11 @@ aura::Window* TestKeyboardUIFactory::TestKeyboardUI::GetKeyboardWindow() const {
   return window_.get();
 }
 
+ui::GestureConsumer* TestKeyboardUIFactory::TestKeyboardUI::GetGestureConsumer()
+    const {
+  return GetKeyboardWindow();
+}
+
 ui::InputMethod* TestKeyboardUIFactory::TestKeyboardUI::GetInputMethod() {
   return input_method_;
 }

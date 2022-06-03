@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-find-bad-constructs -Xclang checked-ptr-as-trivial-member -Xclang -plugin-arg-find-bad-constructs -Xclang raw-ptr-template-as-trivial-member

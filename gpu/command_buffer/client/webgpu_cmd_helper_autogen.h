@@ -25,13 +25,15 @@ void AssociateMailboxImmediate(GLuint device_id,
                                GLuint id,
                                GLuint generation,
                                GLuint usage,
+                               MailboxFlags flags,
                                const GLbyte* mailbox) {
   const uint32_t size = webgpu::cmds::AssociateMailboxImmediate::ComputeSize();
   webgpu::cmds::AssociateMailboxImmediate* c =
       GetImmediateCmdSpaceTotalSize<webgpu::cmds::AssociateMailboxImmediate>(
           size);
   if (c) {
-    c->Init(device_id, device_generation, id, generation, usage, mailbox);
+    c->Init(device_id, device_generation, id, generation, usage, flags,
+            mailbox);
   }
 }
 
@@ -43,7 +45,18 @@ void DissociateMailbox(GLuint texture_id, GLuint texture_generation) {
   }
 }
 
-void RequestAdapter(uint32_t request_adapter_serial,
+void DissociateMailboxForPresent(GLuint device_id,
+                                 GLuint device_generation,
+                                 GLuint texture_id,
+                                 GLuint texture_generation) {
+  webgpu::cmds::DissociateMailboxForPresent* c =
+      GetCmdSpace<webgpu::cmds::DissociateMailboxForPresent>();
+  if (c) {
+    c->Init(device_id, device_generation, texture_id, texture_generation);
+  }
+}
+
+void RequestAdapter(uint64_t request_adapter_serial,
                     uint32_t power_preference) {
   webgpu::cmds::RequestAdapter* c = GetCmdSpace<webgpu::cmds::RequestAdapter>();
   if (c) {
@@ -51,15 +64,17 @@ void RequestAdapter(uint32_t request_adapter_serial,
   }
 }
 
-void RequestDevice(uint32_t request_device_serial,
+void RequestDevice(uint64_t request_device_serial,
                    uint32_t adapter_service_id,
+                   uint32_t device_id,
+                   uint32_t device_generation,
                    uint32_t request_device_properties_shm_id,
                    uint32_t request_device_properties_shm_offset,
                    uint32_t request_device_properties_size) {
   webgpu::cmds::RequestDevice* c = GetCmdSpace<webgpu::cmds::RequestDevice>();
   if (c) {
-    c->Init(request_device_serial, adapter_service_id,
-            request_device_properties_shm_id,
+    c->Init(request_device_serial, adapter_service_id, device_id,
+            device_generation, request_device_properties_shm_id,
             request_device_properties_shm_offset,
             request_device_properties_size);
   }

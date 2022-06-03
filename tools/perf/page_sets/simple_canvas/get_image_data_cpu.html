@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+
+var colourCounter = 0;
+var canvas2D = document.createElement("canvas");
+var ctx2D = canvas2D.getContext("2d", { willReadFrequently: true });
+document.body.appendChild(canvas2D);
+
+function setSize(width, height) {
+    canvas2D.width = width;
+    canvas2D.height = height;
+}
+
+function fillCanvas(ctx2d, canvas2d) {
+    ctx2d.fillStyle = "rgba(0, 0, " + colourCounter + ", 1)";
+    colourCounter = (colourCounter + 1) % 256;
+    ctx2d.fillRect(0, 0, canvas2d.width, canvas2d.height);
+}
+
+function getImageDataOnCPUFromCanvas2D() {
+  fillCanvas(ctx2D, canvas2D);
+  ctx2D.getImageData(0, 0, canvas2D.width, canvas2D.height);
+  requestAnimationFrame(getImageDataOnCPUFromCanvas2D);
+}
+
+window.onload = function() {
+  setSize(1024, 1024);
+  getImageDataOnCPUFromCanvas2D();
+}
+
+</script>
+</body>
+</html>

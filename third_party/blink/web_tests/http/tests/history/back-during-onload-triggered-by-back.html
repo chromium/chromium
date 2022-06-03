@@ -10,7 +10,7 @@
 <script>
 description('Tests that an onload handler that runs history.back() that\'s triggered by a history.back() doesn\'t crash the browser (see http://crbug.com/59554 for more details).');
 
-onload = function()
+onpageshow = function()
 {
   if (window.localStorage.started) {
       delete window.localStorage.started;

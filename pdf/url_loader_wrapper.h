@@ -5,10 +5,11 @@
 #ifndef PDF_URL_LOADER_WRAPPER_H_
 #define PDF_URL_LOADER_WRAPPER_H_
 
+#include <stdint.h>
+
 #include <string>
 
-#include "base/macros.h"
-#include "ppapi/cpp/completion_callback.h"
+#include "pdf/ppapi_migration/callback.h"
 
 namespace chrome_pdf {
 
@@ -37,8 +38,8 @@ class URLLoaderWrapper {
   // Returns if the response contains multi parts.
   virtual bool IsMultipart() const = 0;
 
-  // If true, |start| contains the start of the byte range.
-  // If false, response contains full document and |start| will be undefined.
+  // If true, `start` contains the start of the byte range.
+  // If false, response contains full document and `start` will be undefined.
   virtual bool GetByteRangeStart(int* start) const = 0;
 
   // Close connection.
@@ -49,21 +50,14 @@ class URLLoaderWrapper {
                          const std::string& referrer_url,
                          uint32_t position,
                          uint32_t size,
-                         const pp::CompletionCallback& cc) = 0;
+                         ResultCallback callback) = 0;
 
   // Read the response body. The size of the buffer must be large enough to
   // hold the specified number of bytes to read.
   // This function might perform a partial read.
   virtual void ReadResponseBody(char* buffer,
                                 int buffer_size,
-                                const pp::CompletionCallback& cc) = 0;
-  // Returns the current download progress.
-  // Progress only refers to the response body and does not include the headers.
-  // If false, progress is unknown, bytes_received/total_bytes_to_be_received
-  // will be undefined.
-  virtual bool GetDownloadProgress(
-      int64_t* bytes_received,
-      int64_t* total_bytes_to_be_received) const = 0;
+                                ResultCallback callback) = 0;
 };
 
 }  // namespace chrome_pdf

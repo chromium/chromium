@@ -1,0 +1,53 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/quota/quota_types.mojom";
+
+// Receives quota change notifications for a frame or worker.
+//
+// The interface is used to by the quota system in the browser process, to
+// send notifications to Blink in the renderer process.
+interface QuotaChangeListener {
+  // Triggered due to storage pressure.
+  OnQuotaChange();
+};
+
+// Implements the Web Platform's quota ("Storage") API.
+//
+// The interface is consumed by Blink in the renderer process. The interface is
+// currently implemented in the browser process, and will eventually move to the
+// Storage Service.
+interface QuotaManagerHost {
+  // Subscribes to changes in the quota transmitted in a request to an URL.
+  //
+  // The subscription is canceled by closing the pipe.
+  AddChangeListener(pending_remote<QuotaChangeListener> listener) => ();
+
+  // Retrieves the origin's current usage and quota.
+  //
+  // This method can be called from frames and workers.
+  QueryStorageUsageAndQuota(blink.mojom.StorageType storage_type) =>
+      (blink.mojom.QuotaStatusCode error,
+       int64 current_usage,
+       int64 current_quota,
+       UsageBreakdown usage_breakdown);
+
+  // Requests a new quota size for the origin.
+  //
+  // This method can only be called from frames, because the implementation may
+  // involve a permission prompt. |requested_size| indicates how much storage
+  // space the origin expects to need.
+  //
+  // The callback reflects the result of the quota grant. The granted quota may
+  // be different than the requested amount.
+  //
+  // This method is only used in the old FileSystem API.
+  RequestStorageQuota(blink.mojom.StorageType storage_type,
+                      uint64 requested_size) =>
+      (blink.mojom.QuotaStatusCode error,
+       int64 current_usage,
+       int64 granted_quota);
+};

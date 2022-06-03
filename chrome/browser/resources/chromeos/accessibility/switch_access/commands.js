@@ -2,37 +2,40 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-const SwitchAccessCommand = chrome.accessibilityPrivate.SwitchAccessCommand;
-/**
- * Class to run and get details about user commands.
- */
-class Commands {
-  /**
-   * @param {SwitchAccessInterface} switchAccess
-   */
-  constructor(switchAccess) {
-    /**
-     * SwitchAccess reference.
-     * @private {SwitchAccessInterface}
-     */
-    this.switchAccess_ = switchAccess;
+import {ActionManager} from './action_manager.js';
+import {AutoScanManager} from './auto_scan_manager.js';
+import {Navigator} from './navigator.js';
 
+const SwitchAccessCommand = chrome.accessibilityPrivate.SwitchAccessCommand;
+
+/**
+ * Runs user commands.
+ */
+export class Commands {
+  /** @private */
+  constructor() {
     /**
      * A map from command name to the function binding for the command.
      * @private {!Map<!SwitchAccessCommand, !function(): void>}
      */
-    this.commandMap_ = this.buildCommandMap_();
+    this.commandMap_ = new Map([
+      [SwitchAccessCommand.SELECT, ActionManager.onSelect],
+      [
+        SwitchAccessCommand.NEXT,
+        Navigator.byItem.moveForward.bind(Navigator.byItem)
+      ],
+      [
+        SwitchAccessCommand.PREVIOUS,
+        Navigator.byItem.moveBackward.bind(Navigator.byItem)
+      ]
+    ]);
 
-    this.init_();
+    chrome.accessibilityPrivate.onSwitchAccessCommand.addListener(
+        command => this.runCommand_(command));
   }
 
-  /**
-   * Starts listening for Switch Access command events.
-   * @private
-   */
-  init_() {
-    chrome.accessibilityPrivate.onSwitchAccessCommand.addListener(
-        this.runCommand_.bind(this));
+  static initialize() {
+    Commands.instance = new Commands();
   }
 
   /**
@@ -42,28 +45,6 @@ class Commands {
    */
   runCommand_(command) {
     this.commandMap_.get(command)();
-    this.switchAccess_.restartAutoScan();
-  }
-
-  /**
-   * Build a map from command name to the function binding for the command.
-   * @return {!Map<!SwitchAccessCommand, !function(): void>}
-   * @private
-   */
-  buildCommandMap_() {
-    return new Map([
-      [
-        SwitchAccessCommand.SELECT,
-        this.switchAccess_.enterMenu.bind(this.switchAccess_)
-      ],
-      [
-        SwitchAccessCommand.NEXT,
-        this.switchAccess_.moveForward.bind(this.switchAccess_)
-      ],
-      [
-        SwitchAccessCommand.PREVIOUS,
-        this.switchAccess_.moveBackward.bind(this.switchAccess_)
-      ]
-    ]);
+    AutoScanManager.restartIfRunning();
   }
 }

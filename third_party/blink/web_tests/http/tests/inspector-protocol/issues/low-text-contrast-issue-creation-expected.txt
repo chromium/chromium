@@ -1,0 +1,18 @@
+Tests that low text contrast issues are reported.
+Inspector issue: {
+    issue : {
+        code : LowTextContrastIssue
+        details : {
+            lowTextContrastIssueDetails : {
+                contrastRatio : 3.95
+                fontSize : 16px
+                fontWeight : 400
+                thresholdAA : 4.5
+                thresholdAAA : 7
+                violatingNodeId : 6
+                violatingNodeSelector : div.issue
+            }
+        }
+    }
+}
+

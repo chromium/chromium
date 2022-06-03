@@ -4,19 +4,14 @@
 
 #include "components/bookmarks/browser/bookmark_client.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace bookmarks {
 
 void BookmarkClient::Init(BookmarkModel* model) {}
 
-bool BookmarkClient::PreferTouchIcon() {
-  return false;
-}
-
 base::CancelableTaskTracker::TaskId BookmarkClient::GetFaviconImageForPageURL(
     const GURL& page_url,
-    favicon_base::IconType type,
     favicon_base::FaviconImageCallback callback,
     base::CancelableTaskTracker* tracker) {
   return base::CancelableTaskTracker::kBadTaskId;

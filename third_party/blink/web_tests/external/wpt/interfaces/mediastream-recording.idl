@@ -1,11 +1,11 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: MediaStream Recording (https://w3c.github.io/mediacapture-record/)
 
-[Exposed=Window,
- Constructor(MediaStream stream, optional MediaRecorderOptions options)]
+[Exposed=Window]
 interface MediaRecorder : EventTarget {
+  constructor(MediaStream stream, optional MediaRecorderOptions options = {});
   readonly attribute MediaStream stream;
   readonly attribute DOMString mimeType;
   readonly attribute RecordingState state;
@@ -17,12 +17,13 @@ interface MediaRecorder : EventTarget {
   attribute EventHandler onerror;
   readonly attribute unsigned long videoBitsPerSecond;
   readonly attribute unsigned long audioBitsPerSecond;
+  readonly attribute BitrateMode audioBitrateMode;
 
-  void start(optional unsigned long timeslice);
-  void stop();
-  void pause();
-  void resume();
-  void requestData();
+  undefined start(optional unsigned long timeslice);
+  undefined stop();
+  undefined pause();
+  undefined resume();
+  undefined requestData();
 
   static boolean isTypeSupported(DOMString type);
 };
@@ -32,6 +33,12 @@ dictionary MediaRecorderOptions {
   unsigned long audioBitsPerSecond;
   unsigned long videoBitsPerSecond;
   unsigned long bitsPerSecond;
+  BitrateMode audioBitrateMode = "variable";
+};
+
+enum BitrateMode {
+  "constant",
+  "variable"
 };
 
 enum RecordingState {
@@ -40,8 +47,9 @@ enum RecordingState {
   "paused"
 };
 
-[Exposed=Window, Constructor(DOMString type, BlobEventInit eventInitDict)]
+[Exposed=Window]
 interface BlobEvent : Event {
+  constructor(DOMString type, BlobEventInit eventInitDict);
   [SameObject] readonly attribute Blob data;
   readonly attribute DOMHighResTimeStamp timecode;
 };
@@ -55,7 +63,8 @@ dictionary MediaRecorderErrorEventInit : EventInit {
   required DOMException error;
 };
 
-[Exposed=Window, Constructor(DOMString type, MediaRecorderErrorEventInit eventInitDict)]
+[Exposed=Window]
 interface MediaRecorderErrorEvent : Event {
+  constructor(DOMString type, MediaRecorderErrorEventInit eventInitDict);
   [SameObject] readonly attribute DOMException error;
 };

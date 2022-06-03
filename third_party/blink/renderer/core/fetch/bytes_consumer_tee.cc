@@ -24,8 +24,6 @@ namespace {
 
 class NoopClient final : public GarbageCollected<NoopClient>,
                          public BytesConsumer::Client {
-  USING_GARBAGE_COLLECTED_MIXIN(NoopClient);
-
  public:
   void OnStateChange() override {}
   String DebugName() const override { return "NoopClient"; }
@@ -33,8 +31,6 @@ class NoopClient final : public GarbageCollected<NoopClient>,
 
 class TeeHelper final : public GarbageCollected<TeeHelper>,
                         public BytesConsumer::Client {
-  USING_GARBAGE_COLLECTED_MIXIN(TeeHelper);
-
  public:
   TeeHelper(ExecutionContext* execution_context, BytesConsumer* consumer)
       : src_(consumer),
@@ -113,7 +109,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
   BytesConsumer* Destination1() const { return destination1_; }
   BytesConsumer* Destination2() const { return destination2_; }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(src_);
     visitor->Trace(destination1_);
     visitor->Trace(destination2_);
@@ -138,7 +134,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
     const char* data() const { return buffer_.data(); }
     wtf_size_t size() const { return buffer_.size(); }
 
-    void Trace(blink::Visitor* visitor) {}
+    void Trace(Visitor* visitor) const {}
 
    private:
     Vector<char> buffer_;
@@ -268,7 +264,7 @@ class TeeHelper final : public GarbageCollected<TeeHelper>,
 
     bool IsCancelled() const { return is_cancelled_; }
 
-    void Trace(blink::Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(execution_context_);
       visitor->Trace(tee_);
       visitor->Trace(client_);

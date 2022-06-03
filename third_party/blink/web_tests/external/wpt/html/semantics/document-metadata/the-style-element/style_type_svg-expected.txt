@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS With no type attribute, the style should apply
+PASS With an empty type attribute, the style should apply
+FAIL With a mixed-case type attribute, the style should apply assert_equals: expected "rgb(0, 128, 0)" but got "rgb(0, 0, 0)"
+PASS With a whitespace-surrounded type attribute, the style should not apply
+PASS With a charset parameter in the type attribute, the style should not apply
+Harness: the test ran to completion.
+

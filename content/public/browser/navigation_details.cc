@@ -15,7 +15,10 @@ LoadCommittedDetails::LoadCommittedDetails()
       is_main_frame(true),
       http_status_code(0) {}
 
-LoadCommittedDetails::LoadCommittedDetails(const LoadCommittedDetails& other) =
+LoadCommittedDetails::LoadCommittedDetails(const LoadCommittedDetails&) =
     default;
+
+LoadCommittedDetails& LoadCommittedDetails::operator=(
+    const LoadCommittedDetails&) = default;
 
 }  // namespace content

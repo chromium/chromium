@@ -21,13 +21,17 @@ scoped_refptr<ResourceRequestBody> ResourceRequestBody::CreateFromBytes(
   return result;
 }
 
+bool ResourceRequestBody::EnableToAppendElement() const {
+  return elements_.empty() ||
+         (elements_.front().type() !=
+          mojom::DataElementDataView::Tag::kChunkedDataPipe);
+}
+
 void ResourceRequestBody::AppendBytes(std::vector<uint8_t> bytes) {
-  DCHECK(elements_.empty() ||
-         elements_.front().type() != mojom::DataElementType::kChunkedDataPipe);
+  DCHECK(EnableToAppendElement());
 
   if (bytes.size() > 0) {
-    elements_.push_back(DataElement());
-    elements_.back().SetToBytes(std::move(bytes));
+    elements_.emplace_back(DataElementBytes(std::move(bytes)));
   }
 }
 
@@ -44,63 +48,36 @@ void ResourceRequestBody::AppendFileRange(
     uint64_t offset,
     uint64_t length,
     const base::Time& expected_modification_time) {
-  DCHECK(elements_.empty() ||
-         elements_.front().type() != mojom::DataElementType::kChunkedDataPipe);
+  DCHECK(EnableToAppendElement());
 
-  elements_.push_back(DataElement());
-  elements_.back().SetToFilePathRange(file_path, offset, length,
-                                      expected_modification_time);
-}
-
-void ResourceRequestBody::AppendRawFileRange(
-    base::File file,
-    const base::FilePath& file_path,
-    uint64_t offset,
-    uint64_t length,
-    const base::Time& expected_modification_time) {
-  DCHECK(elements_.empty() ||
-         elements_.front().type() != mojom::DataElementType::kChunkedDataPipe);
-
-  elements_.push_back(DataElement());
-  elements_.back().SetToFileRange(std::move(file), file_path, offset, length,
-                                  expected_modification_time);
-}
-
-void ResourceRequestBody::AppendBlob(const std::string& uuid) {
-  AppendBlob(uuid, std::numeric_limits<uint64_t>::max());
-}
-
-void ResourceRequestBody::AppendBlob(const std::string& uuid, uint64_t length) {
-  DCHECK(elements_.empty() ||
-         elements_.front().type() != mojom::DataElementType::kChunkedDataPipe);
-
-  elements_.push_back(DataElement());
-  elements_.back().SetToBlobRange(uuid, 0 /* offset */, length);
+  elements_.emplace_back(
+      DataElementFile(file_path, offset, length, expected_modification_time));
 }
 
 void ResourceRequestBody::AppendDataPipe(
     mojo::PendingRemote<mojom::DataPipeGetter> data_pipe_getter) {
-  DCHECK(elements_.empty() ||
-         elements_.front().type() != mojom::DataElementType::kChunkedDataPipe);
+  DCHECK(EnableToAppendElement());
+  DCHECK(data_pipe_getter);
 
-  elements_.push_back(DataElement());
-  elements_.back().SetToDataPipe(std::move(data_pipe_getter));
+  elements_.emplace_back(DataElementDataPipe(std::move(data_pipe_getter)));
 }
 
 void ResourceRequestBody::SetToChunkedDataPipe(
-    mojo::PendingRemote<mojom::ChunkedDataPipeGetter>
-        chunked_data_pipe_getter) {
+    mojo::PendingRemote<mojom::ChunkedDataPipeGetter> chunked_data_pipe_getter,
+    ReadOnlyOnce read_only_once) {
   DCHECK(elements_.empty());
+  DCHECK(chunked_data_pipe_getter);
 
-  elements_.push_back(DataElement());
-  elements_.back().SetToChunkedDataPipe(std::move(chunked_data_pipe_getter));
+  elements_.emplace_back(DataElementChunkedDataPipe(
+      std::move(chunked_data_pipe_getter), read_only_once));
 }
 
 std::vector<base::FilePath> ResourceRequestBody::GetReferencedFiles() const {
   std::vector<base::FilePath> result;
   for (const auto& element : *elements()) {
-    if (element.type() == mojom::DataElementType::kFile)
-      result.push_back(element.path());
+    if (element.type() == mojom::DataElementDataView::Tag::kFile) {
+      result.push_back(element.As<DataElementFile>().path());
+    }
   }
   return result;
 }

@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/layout/api/selection_state.h"
 
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include <ostream>
+
+#include "base/notreached.h"
 
 namespace blink {
 

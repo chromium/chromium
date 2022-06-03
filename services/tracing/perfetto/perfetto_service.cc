@@ -7,11 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
+#include "mojo/public/cpp/bindings/message.h"
 #include "services/tracing/perfetto/consumer_host.h"
 #include "services/tracing/perfetto/producer_host.h"
 #include "services/tracing/public/cpp/perfetto/shared_memory.h"
@@ -62,7 +64,6 @@ PerfettoService::PerfettoService(
   // Chromium uses scraping of the shared memory chunks to ensure that data
   // from threads without a MessageLoop doesn't get lost.
   service_->SetSMBScrapingEnabled(true);
-  DCHECK(service_);
 
   receivers_.set_disconnect_handler(base::BindRepeating(
       &PerfettoService::OnServiceDisconnect, base::Unretained(this)));
@@ -85,12 +86,43 @@ void PerfettoService::BindReceiver(
 
 void PerfettoService::ConnectToProducerHost(
     mojo::PendingRemote<mojom::ProducerClient> producer_client,
-    mojo::PendingReceiver<mojom::ProducerHost> producer_host_receiver) {
-  auto new_producer = std::make_unique<ProducerHost>();
+    mojo::PendingReceiver<mojom::ProducerHost> producer_host_receiver,
+    mojo::ScopedSharedBufferHandle shared_memory,
+    uint64_t shared_memory_buffer_page_size_bytes) {
+  if (!shared_memory.is_valid()) {
+    // Connection requests should always include an SMB.
+    mojo::ReportBadMessage("Producer connection request without SMB");
+    return;
+  }
+
+  auto new_producer = std::make_unique<ProducerHost>(&perfetto_task_runner_);
   uint32_t producer_pid = receivers_.current_context();
-  new_producer->Initialize(std::move(producer_client), service_.get(),
-                           base::StrCat({mojom::kPerfettoProducerNamePrefix,
-                                         base::NumberToString(producer_pid)}));
+  DCHECK(shared_memory.is_valid());
+  ProducerHost::InitializationResult result = new_producer->Initialize(
+      std::move(producer_client), service_.get(),
+      base::StrCat({mojom::kPerfettoProducerNamePrefix,
+                    base::NumberToString(producer_pid)}),
+      std::move(shared_memory), shared_memory_buffer_page_size_bytes);
+
+  base::UmaHistogramEnumeration("Tracing.ProducerHostInitializationResult",
+                                result);
+
+  if (result == ProducerHost::InitializationResult::kSmbNotAdopted) {
+    // When everything else succeeds, but the SMB was not accepted, the producer
+    // must be misbehaving. SMBs are not accepted only if they are incorrectly
+    // sized, but SMB/page sizes are constants in Chromium.
+    mojo::ReportBadMessage("Producer connection request with invalid SMB");
+    return;
+  }
+
+  if (result != ProducerHost::InitializationResult::kSuccess) {
+    // In other failure scenarios, the tracing service may have encountered an
+    // internal error not caused by a misbehaving producer, e.g. we have too
+    // many producers registered or mapping the SMB failed (crbug/1154344). In
+    // these cases, we have no choice but to ignore the failure and cancel the
+    // producer connection by dropping |new_producer|.
+    return;
+  }
 
   ++num_active_connections_[producer_pid];
   producer_receivers_.Add(std::move(new_producer),
@@ -109,6 +141,15 @@ void PerfettoService::RemoveActiveServicePid(base::ProcessId pid) {
   num_active_connections_.erase(pid);
   for (auto* tracing_session : tracing_sessions_) {
     tracing_session->OnActiveServicePidRemoved(pid);
+  }
+}
+
+void PerfettoService::RemoveActiveServicePidIfNoActiveConnections(
+    base::ProcessId pid) {
+  const auto num_connections_it = num_active_connections_.find(pid);
+  if (num_connections_it == num_active_connections_.end() ||
+      num_connections_it->second == 0) {
+    RemoveActiveServicePid(pid);
   }
 }
 

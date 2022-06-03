@@ -8,26 +8,29 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/ozone/platform/wayland/common/wayland.h"
 #include "ui/ozone/platform/wayland/host/wayland_connection.h"
+#include "ui/ozone/platform/wayland/host/wayland_event_source.h"
+#include "ui/ozone/platform/wayland/test/test_compositor.h"
 #include "ui/ozone/platform/wayland/test/test_wayland_server_thread.h"
 
 namespace ui {
-
-namespace {
-constexpr uint32_t kXdgVersionStable = 7;
-}
 
 TEST(WaylandConnectionTest, Ping) {
   base::test::SingleThreadTaskEnvironment task_environment(
       base::test::SingleThreadTaskEnvironment::MainThreadType::UI);
   wl::TestWaylandServerThread server;
-  ASSERT_TRUE(server.Start(kXdgVersionStable));
+  ASSERT_TRUE(server.Start({.shell_version = wl::ShellVersion::kStable}));
   WaylandConnection connection;
   ASSERT_TRUE(connection.Initialize());
-  connection.StartProcessingEvents();
+  connection.event_source()->UseSingleThreadedPollingForTesting();
+  connection.event_source()->StartProcessingEvents();
 
   base::RunLoop().RunUntilIdle();
   server.Pause();
+
+  EXPECT_EQ(wl::TestCompositor::kVersion,
+            wl::get_version_of_object(connection.compositor()));
 
   xdg_wm_base_send_ping(server.xdg_shell()->resource(), 1234);
   EXPECT_CALL(*server.xdg_shell(), Pong(1234));

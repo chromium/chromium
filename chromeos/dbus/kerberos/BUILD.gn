@@ -24,9 +24,8 @@ component("kerberos") {
 }
 
 proto_library("kerberos_proto") {
-  sources = [
-    "//third_party/cros_system_api/dbus/kerberos/kerberos_service.proto",
-  ]
+  sources =
+      [ "//third_party/cros_system_api/dbus/kerberos/kerberos_service.proto" ]
 
   proto_out_dir = "chromeos/dbus/kerberos"
 }

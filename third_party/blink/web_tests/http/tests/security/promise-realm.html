@@ -49,7 +49,7 @@ test(() => {
     assert_unreached("type mismatch error, case 3: must be a reject promise");
   });
 
-  assert_throws("SecurityError", function () {
+  assert_throws_dom("SecurityError", function () {
     fetch.call(cross, 'resources/dummy.html')
   });
 }, "Reject promises must be created in the current realm");

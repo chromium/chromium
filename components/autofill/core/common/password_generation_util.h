@@ -5,7 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_GENERATION_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_COMMON_PASSWORD_GENERATION_UTIL_H_
 
-#include "components/autofill/core/common/password_form.h"
+#include <string>
+
+#include "base/i18n/rtl.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace autofill {
@@ -107,11 +111,11 @@ struct PasswordGenerationActions {
 struct PasswordGenerationUIData {
   PasswordGenerationUIData(const gfx::RectF& bounds,
                            int max_length,
-                           const base::string16& generation_element,
-                           uint32_t generation_element_id,
+                           const std::u16string& generation_element,
+                           FieldRendererId generation_element_id,
                            bool is_generation_element_password_type,
                            base::i18n::TextDirection text_direction,
-                           const autofill::PasswordForm& password_form);
+                           const autofill::FormData& form_data);
   PasswordGenerationUIData();
   PasswordGenerationUIData(const PasswordGenerationUIData& rhs);
   PasswordGenerationUIData(PasswordGenerationUIData&& rhs);
@@ -128,10 +132,10 @@ struct PasswordGenerationUIData {
   int max_length;
 
   // Name of the password field to which the generation popup is attached.
-  base::string16 generation_element;
+  std::u16string generation_element;
 
   // Renderer ID of the generation element.
-  uint32_t generation_element_id;
+  FieldRendererId generation_element_id;
 
   // Is the generation element |type=password|.
   bool is_generation_element_password_type;
@@ -140,7 +144,7 @@ struct PasswordGenerationUIData {
   base::i18n::TextDirection text_direction;
 
   // The form associated with the password field.
-  autofill::PasswordForm password_form;
+  autofill::FormData form_data;
 };
 
 void LogPasswordGenerationEvent(PasswordGenerationEvent event);

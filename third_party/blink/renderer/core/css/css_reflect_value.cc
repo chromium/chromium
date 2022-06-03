@@ -44,7 +44,7 @@ bool CSSReflectValue::Equals(const CSSReflectValue& other) const {
          DataEquivalent(mask_, other.mask_);
 }
 
-void CSSReflectValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSReflectValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(direction_);
   visitor->Trace(offset_);
   visitor->Trace(mask_);

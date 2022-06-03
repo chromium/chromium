@@ -14,7 +14,7 @@ HERE="`dirname "$CHROME_WRAPPER"`"
 # detect whether the system xdg utilities are sufficiently new to be likely to
 # work for us by looking for xdg-settings. If we find it, we leave $PATH alone,
 # so that the system xdg utilities (including any distro patches) will be used.
-if ! which xdg-settings &> /dev/null; then
+if ! command -v xdg-settings &> /dev/null; then
   # Old xdg utilities. Prepend $HERE to $PATH to use ours instead.
   export PATH="$HERE:$PATH"
 else

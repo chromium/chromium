@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
-
 namespace chrome_cleaner {
 
 namespace internal {
@@ -24,19 +22,19 @@ namespace internal {
 struct FileInformation {
   FileInformation();
 
-  FileInformation(const base::string16& path,
+  FileInformation(const std::wstring& path,
                   const std::string& creation_date,
                   const std::string& last_modified_date,
                   const std::string& sha256,
                   int64_t size,
-                  const base::string16& company_name,
-                  const base::string16& company_short_name,
-                  const base::string16& product_name,
-                  const base::string16& product_short_name,
-                  const base::string16& internal_name,
-                  const base::string16& original_filename,
-                  const base::string16& file_description,
-                  const base::string16& file_version,
+                  const std::wstring& company_name,
+                  const std::wstring& company_short_name,
+                  const std::wstring& product_name,
+                  const std::wstring& product_short_name,
+                  const std::wstring& internal_name,
+                  const std::wstring& original_filename,
+                  const std::wstring& file_description,
+                  const std::wstring& file_version,
                   bool active_file = false);
 
   FileInformation(const FileInformation& other);
@@ -45,20 +43,20 @@ struct FileInformation {
 
   FileInformation& operator=(const FileInformation& other);
 
-  base::string16 path;
+  std::wstring path;
   std::string creation_date;
   std::string last_modified_date;
   std::string sha256;
   int64_t size = 0ULL;
   // The following are internal fields of the PE header.
-  base::string16 company_name;
-  base::string16 company_short_name;
-  base::string16 product_name;
-  base::string16 product_short_name;
-  base::string16 internal_name;
-  base::string16 original_filename;
-  base::string16 file_description;
-  base::string16 file_version;
+  std::wstring company_name;
+  std::wstring company_short_name;
+  std::wstring product_name;
+  std::wstring product_short_name;
+  std::wstring internal_name;
+  std::wstring original_filename;
+  std::wstring file_description;
+  std::wstring file_version;
   bool active_file = false;
 };
 

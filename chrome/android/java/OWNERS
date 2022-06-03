@@ -1,3 +1,0 @@
-per-file *.expected=*
-per-file *.flags=smaier@chromium.org
-per-file *.grd*=twellington@chromium.org

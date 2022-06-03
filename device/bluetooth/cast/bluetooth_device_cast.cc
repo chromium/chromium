@@ -10,7 +10,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/strings/stringprintf.h"
+#include "base/logging.h"
 #include "chromecast/device/bluetooth/bluetooth_util.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_service.h"
@@ -83,6 +83,11 @@ std::string BluetoothDeviceCast::GetAddress() const {
   return address_;
 }
 
+BluetoothDevice::AddressType BluetoothDeviceCast::GetAddressType() const {
+  NOTIMPLEMENTED();
+  return ADDR_TYPE_UNKNOWN;
+}
+
 BluetoothDevice::VendorIDSource BluetoothDeviceCast::GetVendorIDSource() const {
   return VENDOR_ID_UNKNOWN;
 }
@@ -103,7 +108,7 @@ uint16_t BluetoothDeviceCast::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothDeviceCast::GetName() const {
+absl::optional<std::string> BluetoothDeviceCast::GetName() const {
   return name_;
 }
 
@@ -128,12 +133,12 @@ bool BluetoothDeviceCast::IsConnecting() const {
   return pending_connect_;
 }
 
-base::Optional<int8_t> BluetoothDeviceCast::GetInquiryRSSI() const {
+absl::optional<int8_t> BluetoothDeviceCast::GetInquiryRSSI() const {
   // TODO(slan): Plumb this from the type_to_data field of ScanResult.
   return BluetoothDevice::GetInquiryRSSI();
 }
 
-base::Optional<int8_t> BluetoothDeviceCast::GetInquiryTxPower() const {
+absl::optional<int8_t> BluetoothDeviceCast::GetInquiryTxPower() const {
   // TODO(slan): Remove if we do not need this.
   return BluetoothDevice::GetInquiryTxPower();
 }
@@ -154,35 +159,32 @@ bool BluetoothDeviceCast::ExpectingConfirmation() const {
   return false;
 }
 
-void BluetoothDeviceCast::GetConnectionInfo(
-    const ConnectionInfoCallback& callback) {
+void BluetoothDeviceCast::GetConnectionInfo(ConnectionInfoCallback callback) {
   // TODO(slan): Implement this?
   NOTIMPLEMENTED();
 }
 
 void BluetoothDeviceCast::SetConnectionLatency(
     ConnectionLatency connection_latency,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
   // TODO(slan): This many be needed for some high-performance BLE devices.
   NOTIMPLEMENTED();
-  error_callback.Run();
+  std::move(error_callback).Run();
 }
 
 void BluetoothDeviceCast::Connect(PairingDelegate* pairing_delegate,
-                                  base::OnceClosure callback,
-                                  ConnectErrorCallback error_callback) {
+                                  ConnectCallback callback) {
   // This method is used only for Bluetooth classic.
   NOTIMPLEMENTED() << __func__ << " Only BLE functionality is supported.";
-  std::move(error_callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
+  std::move(callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
 }
 
 void BluetoothDeviceCast::Pair(PairingDelegate* pairing_delegate,
-                               base::OnceClosure callback,
-                               ConnectErrorCallback error_callback) {
+                               ConnectCallback callback) {
   // TODO(slan): Implement this or delegate to lower level.
   NOTIMPLEMENTED();
-  std::move(error_callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
+  std::move(callback).Run(BluetoothDevice::ERROR_UNSUPPORTED_DEVICE);
 }
 
 void BluetoothDeviceCast::SetPinCode(const std::string& pincode) {
@@ -206,33 +208,33 @@ void BluetoothDeviceCast::CancelPairing() {
   NOTREACHED() << "Pairing not supported.";
 }
 
-void BluetoothDeviceCast::Disconnect(const base::Closure& callback,
-                                     const ErrorCallback& error_callback) {
+void BluetoothDeviceCast::Disconnect(base::OnceClosure callback,
+                                     ErrorCallback error_callback) {
   // This method is used only for Bluetooth classic.
   NOTIMPLEMENTED() << __func__ << " Only BLE functionality is supported.";
-  error_callback.Run();
+  std::move(error_callback).Run();
 }
 
-void BluetoothDeviceCast::Forget(const base::Closure& callback,
-                                 const ErrorCallback& error_callback) {
+void BluetoothDeviceCast::Forget(base::OnceClosure callback,
+                                 ErrorCallback error_callback) {
   NOTIMPLEMENTED() << __func__ << " Only BLE functionality is supported.";
-  error_callback.Run();
+  std::move(error_callback).Run();
 }
 
 void BluetoothDeviceCast::ConnectToService(
     const BluetoothUUID& uuid,
-    const ConnectToServiceCallback& callback,
-    const ConnectToServiceErrorCallback& error_callback) {
+    ConnectToServiceCallback callback,
+    ConnectToServiceErrorCallback error_callback) {
   NOTIMPLEMENTED() << __func__ << " GATT server mode not supported";
-  error_callback.Run("Not Implemented");
+  std::move(error_callback).Run("Not Implemented");
 }
 
 void BluetoothDeviceCast::ConnectToServiceInsecurely(
     const device::BluetoothUUID& uuid,
-    const ConnectToServiceCallback& callback,
-    const ConnectToServiceErrorCallback& error_callback) {
+    ConnectToServiceCallback callback,
+    ConnectToServiceErrorCallback error_callback) {
   NOTIMPLEMENTED() << __func__ << " GATT server mode not supported";
-  error_callback.Run("Not Implemented");
+  std::move(error_callback).Run("Not Implemented");
 }
 
 bool BluetoothDeviceCast::UpdateWithScanResult(
@@ -240,7 +242,7 @@ bool BluetoothDeviceCast::UpdateWithScanResult(
   DVLOG(3) << __func__;
   bool changed = false;
 
-  base::Optional<std::string> result_name = result.Name();
+  absl::optional<std::string> result_name = result.Name();
 
   // Advertisements for the same device can use different names. For now, the
   // last name wins. An empty string represents no name.
@@ -291,7 +293,7 @@ bool BluetoothDeviceCast::SetConnected(bool connected) {
   // Update state in the base class. This will cause pending callbacks to be
   // fired.
   if (!was_connected && connected) {
-    DidConnectGatt();
+    DidConnectGatt(/*error_code=*/absl::nullopt);
     remote_device_->GetServices(base::BindOnce(
         &BluetoothDeviceCast::OnGetServices, weak_factory_.GetWeakPtr()));
   } else if (was_connected && !connected) {
@@ -342,7 +344,8 @@ bool BluetoothDeviceCast::UpdateCharacteristicValue(
   return false;
 }
 
-void BluetoothDeviceCast::CreateGattConnectionImpl() {
+void BluetoothDeviceCast::CreateGattConnectionImpl(
+    absl::optional<BluetoothUUID> service_uuid) {
   DVLOG(2) << __func__ << " " << pending_connect_;
   if (pending_connect_)
     return;
@@ -355,11 +358,15 @@ void BluetoothDeviceCast::DisconnectGatt() {
   // The device is intentionally not disconnected.
 }
 
-void BluetoothDeviceCast::OnConnect(bool success) {
+void BluetoothDeviceCast::OnConnect(
+    chromecast::bluetooth::RemoteDevice::ConnectStatus status) {
+  bool success =
+      (status == chromecast::bluetooth::RemoteDevice::ConnectStatus::kSuccess);
   DVLOG(2) << __func__ << " success:" << success;
   pending_connect_ = false;
-  if (!success)
-    DidFailToConnectGatt(ERROR_FAILED);
+  if (!success) {
+    DidConnectGatt(ERROR_FAILED);
+  }
 }
 
 }  // namespace device

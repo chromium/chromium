@@ -20,11 +20,11 @@
 
 // https://html.spec.whatwg.org/C/#htmlframesetelement
 
-// FIXME: HTMLFrameSetElement should not have [OverrideBuiltins].
+// FIXME: HTMLFrameSetElement should not have [LegacyOverrideBuiltIns].
 [
     Exposed=Window,
     HTMLConstructor,
-    OverrideBuiltins
+    LegacyOverrideBuiltIns
 ] interface HTMLFrameSetElement : HTMLElement {
     [CEReactions, Reflect] attribute DOMString cols;
     [CEReactions, Reflect] attribute DOMString rows;
@@ -33,7 +33,7 @@
     // HTMLElement (which includes GlobalEventHandlers), but have different
     // behavior. See https://www.w3.org/Bugs/Public/show_bug.cgi?id=28166
     attribute EventHandler onblur;
-    attribute EventHandler onerror;
+    attribute OnErrorEventHandler onerror;
     attribute EventHandler onfocus;
     attribute EventHandler onload;
     attribute EventHandler onresize;

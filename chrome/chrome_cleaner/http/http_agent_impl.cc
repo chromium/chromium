@@ -17,8 +17,7 @@
 
 #include "base/file_version_info.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 #include "base/win/scoped_handle.h"
@@ -70,14 +69,16 @@ void CALLBACK WinHttpStatusCallback(HINTERNET internet,
 class WinHttpHandleTraits {
  public:
   typedef HINTERNET Handle;
+
+  WinHttpHandleTraits() = delete;
+  WinHttpHandleTraits(const WinHttpHandleTraits&) = delete;
+  WinHttpHandleTraits& operator=(const WinHttpHandleTraits&) = delete;
+
   static bool CloseHandle(HINTERNET handle) {
     return ::WinHttpCloseHandle(handle) == TRUE;
   }
   static bool IsHandleValid(HINTERNET handle) { return handle != nullptr; }
   static HINTERNET NullHandle() { return nullptr; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WinHttpHandleTraits);
 };
 
 typedef base::win::GenericScopedHandle<WinHttpHandleTraits,
@@ -88,6 +89,10 @@ typedef base::win::GenericScopedHandle<WinHttpHandleTraits,
 class AutoWinHttpProxyConfig {
  public:
   AutoWinHttpProxyConfig() : proxy_config_() {}
+
+  AutoWinHttpProxyConfig(const AutoWinHttpProxyConfig&) = delete;
+  AutoWinHttpProxyConfig& operator=(const AutoWinHttpProxyConfig&) = delete;
+
   ~AutoWinHttpProxyConfig() {
     if (proxy_config_.lpszAutoConfigUrl)
       ::GlobalFree(proxy_config_.lpszAutoConfigUrl);
@@ -118,14 +123,14 @@ class AutoWinHttpProxyConfig {
   // Returns the proxy auto-configuration URL, or an empty string if automatic
   // proxy configuration is disabled. Only valid after a successful call to
   // Load().
-  const base::char16* auto_config_url() const {
+  const wchar_t* auto_config_url() const {
     return proxy_config_.lpszAutoConfigUrl ? proxy_config_.lpszAutoConfigUrl
                                            : L"";
   }
 
   // Returns the proxy configuration string that should be passed to
   // WinHttpOpen.
-  const base::char16* proxy() const {
+  const wchar_t* proxy() const {
     return (proxy_config_.lpszProxy && proxy_config_.lpszProxy[0] != 0)
                ? proxy_config_.lpszProxy
                : WINHTTP_NO_PROXY_NAME;
@@ -133,7 +138,7 @@ class AutoWinHttpProxyConfig {
 
   // Returns the proxy bypass configuration string that should be passed to
   // WinHttpOpen. Only valid after a successful call to Load().
-  const base::char16* proxy_bypass() const {
+  const wchar_t* proxy_bypass() const {
     return access_type() == WINHTTP_ACCESS_TYPE_NO_PROXY
                ? WINHTTP_NO_PROXY_BYPASS
                : proxy_config_.lpszProxyBypass;
@@ -141,8 +146,6 @@ class AutoWinHttpProxyConfig {
 
  private:
   WINHTTP_CURRENT_USER_IE_PROXY_CONFIG proxy_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoWinHttpProxyConfig);
 };
 
 // A helper class that retrieves and frees URL-specific proxy settings.
@@ -156,6 +159,10 @@ class AutoWinHttpUrlProxyConfig {
         is_valid_(false),
         url_proxy_config_() {}
 
+  AutoWinHttpUrlProxyConfig(const AutoWinHttpUrlProxyConfig&) = delete;
+  AutoWinHttpUrlProxyConfig& operator=(const AutoWinHttpUrlProxyConfig&) =
+      delete;
+
   ~AutoWinHttpUrlProxyConfig() {
     if (url_proxy_config_.lpszProxy)
       ::GlobalFree(url_proxy_config_.lpszProxy);
@@ -166,7 +173,7 @@ class AutoWinHttpUrlProxyConfig {
   // Loads URL-specific proxy settings for |url| using |session|. Returns true
   // if auto-configuration is disabled or if the settings are successfully
   // loaded.
-  bool Load(HINTERNET session, const base::string16& url) {
+  bool Load(HINTERNET session, const std::wstring& url) {
     // http://msdn.microsoft.com/en-us/library/fze2ytx2(v=vs.110).aspx implies
     // that auto-detection is to be used before a specified configuration file.
 
@@ -226,37 +233,37 @@ class AutoWinHttpUrlProxyConfig {
 
  private:
   bool auto_detect_;
-  base::string16 auto_config_url_;
+  std::wstring auto_config_url_;
   bool is_valid_;
   WINHTTP_PROXY_INFO url_proxy_config_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoWinHttpUrlProxyConfig);
 };
 
 // Implements HttpResponse using the WinHTTP API.
 class HttpResponseImpl : public HttpResponse {
  public:
+  HttpResponseImpl(const HttpResponseImpl&) = delete;
+  HttpResponseImpl& operator=(const HttpResponseImpl&) = delete;
+
   ~HttpResponseImpl() override;
 
   // Issues the request defined by its parameters and, if successful, returns an
   // HttpResponse that may be used to access the response. See HttpAgent::Post
   // for a description of the parameters.
-  static std::unique_ptr<HttpResponse> Create(
-      const base::string16& user_agent,
-      const base::string16& host,
-      uint16_t port,
-      const base::string16& method,
-      const base::string16& path,
-      bool secure,
-      const base::string16& extra_headers,
-      const std::string& body);
+  static std::unique_ptr<HttpResponse> Create(const std::wstring& user_agent,
+                                              const std::wstring& host,
+                                              uint16_t port,
+                                              const std::wstring& method,
+                                              const std::wstring& path,
+                                              bool secure,
+                                              const std::wstring& extra_headers,
+                                              const std::string& body);
 
   // HttpResponse implementation.
   bool GetStatusCode(uint16_t* status_code) override;
   bool GetContentLength(bool* has_content_length,
                         uint32_t* content_length) override;
   bool GetContentType(bool* has_content_type,
-                      base::string16* content_type) override;
+                      std::wstring* content_type) override;
   bool HasData(bool* has_data) override;
   bool ReadData(char* buffer, uint32_t* count) override;
 
@@ -276,21 +283,19 @@ class HttpResponseImpl : public HttpResponse {
   ScopedWinHttpHandle session_;
   ScopedWinHttpHandle connection_;
   ScopedWinHttpHandle request_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpResponseImpl);
 };
 
 HttpResponseImpl::~HttpResponseImpl() {}
 
 // static
 std::unique_ptr<HttpResponse> HttpResponseImpl::Create(
-    const base::string16& user_agent,
-    const base::string16& host,
+    const std::wstring& user_agent,
+    const std::wstring& host,
     uint16_t port,
-    const base::string16& method,
-    const base::string16& path,
+    const std::wstring& method,
+    const std::wstring& path,
     bool secure,
-    const base::string16& extra_headers,
+    const std::wstring& extra_headers,
     const std::string& body) {
   // Retrieve the user's proxy configuration.
   AutoWinHttpProxyConfig proxy_config;
@@ -426,11 +431,11 @@ bool HttpResponseImpl::GetContentLength(bool* has_content_length,
 }
 
 bool HttpResponseImpl::GetContentType(bool* has_content_type,
-                                      base::string16* content_type) {
+                                      std::wstring* content_type) {
   DCHECK(has_content_type);
   DCHECK(content_type);
 
-  base::char16 content_type_buffer[256] = {0};
+  wchar_t content_type_buffer[256] = {0};
 
   if (QueryHeader(WINHTTP_QUERY_CONTENT_TYPE, has_content_type,
                   &content_type_buffer, sizeof(content_type_buffer))) {
@@ -492,14 +497,14 @@ bool HttpResponseImpl::QueryHeader(DWORD info_level,
   return false;
 }
 
-base::string16 GetWinHttpVersion() {
+std::wstring GetWinHttpVersion() {
   HMODULE win_http_module = nullptr;
   if (::GetModuleHandleEx(0, L"winhttp.dll", &win_http_module)) {
     std::unique_ptr<FileVersionInfo> win_http_module_version_info(
         FileVersionInfo::CreateFileVersionInfoForModule(win_http_module));
     ::FreeLibrary(win_http_module);
     if (win_http_module_version_info)
-      return win_http_module_version_info->product_version();
+      return base::AsWString(win_http_module_version_info->product_version());
   }
   return L"?";
 }
@@ -514,7 +519,7 @@ void GetOSAndCPU(UserAgent* user_agent) {
   user_agent->set_os_version(os_major_version, os_minor_version);
 
   base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
-  if (os_info->wow64_status() == base::win::OSInfo::WOW64_ENABLED) {
+  if (os_info->IsWowX86OnAMD64()) {
     user_agent->set_architecture(UserAgent::WOW64);
   } else {
     base::win::OSInfo::WindowsArchitecture windows_architecture =
@@ -530,8 +535,8 @@ void GetOSAndCPU(UserAgent* user_agent) {
 
 }  // namespace
 
-HttpAgentImpl::HttpAgentImpl(const base::string16& product_name,
-                             const base::string16& product_version) {
+HttpAgentImpl::HttpAgentImpl(base::WStringPiece product_name,
+                             base::WStringPiece product_version) {
   UserAgent user_agent(product_name, product_version);
   user_agent.set_winhttp_version(GetWinHttpVersion());
   GetOSAndCPU(&user_agent);
@@ -541,11 +546,11 @@ HttpAgentImpl::HttpAgentImpl(const base::string16& product_name,
 HttpAgentImpl::~HttpAgentImpl() {}
 
 std::unique_ptr<HttpResponse> HttpAgentImpl::Post(
-    const base::string16& host,
+    const std::wstring& host,
     uint16_t port,
-    const base::string16& path,
+    const std::wstring& path,
     bool secure,
-    const base::string16& extra_headers,
+    const std::wstring& extra_headers,
     const std::string& body,
     const net::NetworkTrafficAnnotationTag& /*traffic_annotation*/) {
   return HttpResponseImpl::Create(user_agent_, host, port, L"POST", path,
@@ -553,11 +558,11 @@ std::unique_ptr<HttpResponse> HttpAgentImpl::Post(
 }
 
 std::unique_ptr<HttpResponse> HttpAgentImpl::Get(
-    const base::string16& host,
+    const std::wstring& host,
     uint16_t port,
-    const base::string16& path,
+    const std::wstring& path,
     bool secure,
-    const base::string16& extra_headers,
+    const std::wstring& extra_headers,
     const net::NetworkTrafficAnnotationTag& /*traffic_annotation*/) {
   return HttpResponseImpl::Create(user_agent_, host, port, L"GET", path, secure,
                                   extra_headers, "");

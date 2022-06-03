@@ -1,0 +1,16 @@
+GskRenderNodeType gsk_render_node_get_node_type(GskRenderNode* node);
+void gsk_render_node_unref(GskRenderNode* node);
+GskRenderNode* gsk_transform_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_opacity_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_color_matrix_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_repeat_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_clip_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_rounded_clip_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_shadow_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_blur_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_debug_node_get_child(GskRenderNode* node);
+GskRenderNode* gsk_container_node_get_child(GskRenderNode* node, guint idx);
+GskRenderNode* gsk_gl_shader_node_get_child(GskRenderNode* node, guint idx);
+guint gsk_container_node_get_n_children(GskRenderNode* node);
+guint gsk_gl_shader_node_get_n_children(GskRenderNode* node);
+GdkTexture* gsk_texture_node_get_texture(GskRenderNode* node);

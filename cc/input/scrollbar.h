@@ -11,15 +11,12 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
 
-static constexpr int kPixelsPerLineStep = 40;
-static constexpr float kMinFractionToStepWhenPaging = 0.875f;
-
 // Autoscrolling (on the main thread) happens by applying a delta every 50ms.
 // Hence, pixels per second for a autoscroll cc animation can be calculated as:
 // autoscroll velocity = delta / 0.05 sec = delta x 20
 static constexpr float kAutoscrollMultiplier = 20.f;
 static constexpr base::TimeDelta kInitialAutoscrollTimerDelay =
-    base::TimeDelta::FromMilliseconds(250);
+    base::Milliseconds(250);
 
 // Constants used to figure the how far out in the non-scrolling direction
 // should trigger the thumb to snap back to its origin.  These calculations are
@@ -30,9 +27,9 @@ static constexpr int kDefaultWinScrollbarThickness = 17;
 
 namespace cc {
 
-enum ScrollbarOrientation { HORIZONTAL, VERTICAL };
+enum class ScrollbarOrientation { HORIZONTAL, VERTICAL };
 
-enum ScrollbarPart {
+enum class ScrollbarPart {
   THUMB,
   TRACK_BUTTONS_TICKMARKS,  // for PartNeedsRepaint() and PaintPart() only.
   BACK_BUTTON,
@@ -44,12 +41,17 @@ enum ScrollbarPart {
 
 class Scrollbar : public base::RefCounted<Scrollbar> {
  public:
+  // Check if this scrollbar and the other scrollbar are backed with the same
+  // source scrollbar (e.g. blink::Scrollbar).
+  virtual bool IsSame(const Scrollbar&) const = 0;
+
   virtual ScrollbarOrientation Orientation() const = 0;
   virtual bool IsLeftSideVerticalScrollbar() const = 0;
   virtual bool IsSolidColor() const = 0;
   virtual bool IsOverlay() const = 0;
   virtual bool HasThumb() const = 0;
   virtual bool SupportsDragSnapBack() const = 0;
+  virtual bool JumpOnTrackClick() const = 0;
 
   // The following rects are all relative to the scrollbar's origin.
   // The location of ThumbRect reflects scroll offset, but cc will ignore it
@@ -60,7 +62,7 @@ class Scrollbar : public base::RefCounted<Scrollbar> {
   virtual gfx::Rect BackButtonRect() const = 0;
   virtual gfx::Rect ForwardButtonRect() const = 0;
 
-  virtual float ThumbOpacity() const = 0;
+  virtual float Opacity() const = 0;
   virtual bool HasTickmarks() const = 0;
 
   // Whether we need to repaint the part. Only THUMB and TRACK_BUTTONS_TICKMARKS

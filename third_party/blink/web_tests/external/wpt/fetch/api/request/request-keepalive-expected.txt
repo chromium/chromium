@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS keepalive flag
-FAIL keepalive flag with stream body assert_throws: function "() => {new Request('/', init)}" did not throw
-Harness: the test ran to completion.
-

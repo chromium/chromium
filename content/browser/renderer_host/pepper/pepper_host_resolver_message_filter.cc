@@ -10,13 +10,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/task/post_task.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
 #include "content/browser/renderer_host/pepper/pepper_socket_utils.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/socket_permission_request.h"
@@ -103,7 +104,7 @@ scoped_refptr<base::SequencedTaskRunner>
 PepperHostResolverMessageFilter::OverrideTaskRunnerForMessage(
     const IPC::Message& message) {
   if (message.type() == PpapiHostMsg_HostResolver_Resolve::ID)
-    return base::CreateSingleThreadTaskRunner({BrowserThread::UI});
+    return GetUIThreadTaskRunner({});
   return nullptr;
 }
 
@@ -134,11 +135,12 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
     return PP_ERROR_NOACCESS;
   }
 
-  RenderProcessHost* render_process_host =
-      RenderProcessHost::FromID(render_process_id_);
-  if (!render_process_host)
+  RenderFrameHost* render_frame_host =
+      RenderFrameHost::FromID(render_process_id_, render_frame_id_);
+  if (!render_frame_host)
     return PP_ERROR_FAILED;
-  auto* storage_partition = render_process_host->GetStoragePartition();
+  auto* storage_partition =
+      render_frame_host->GetProcess()->GetStoragePartition();
 
   // Grab a reference to this class to ensure that it's fully alive if a
   // connection error occurs (i.e. ref count is higher than 0 and there's no
@@ -150,15 +152,14 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
       network::mojom::ResolveHostParameters::New();
   PrepareRequestInfo(hint, parameters.get());
 
-  // TODO(mmenke): Pass in correct NetworkIsolationKey.
   storage_partition->GetNetworkContext()->ResolveHost(
       net::HostPortPair(host_port.host, host_port.port),
-      net::NetworkIsolationKey::Todo(), std::move(parameters),
+      render_frame_host->GetNetworkIsolationKey(), std::move(parameters),
       receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&PepperHostResolverMessageFilter::OnComplete,
                      base::Unretained(this), net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
   host_resolve_context_ = context->MakeReplyMessageContext();
 
   return PP_OK_COMPLETIONPENDING;
@@ -167,12 +168,12 @@ int32_t PepperHostResolverMessageFilter::OnMsgResolve(
 void PepperHostResolverMessageFilter::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&PepperHostResolverMessageFilter::OnLookupFinished, this,
                      resolve_error_info.error, std::move(resolved_addresses),
                      host_resolve_context_));
@@ -183,12 +184,12 @@ void PepperHostResolverMessageFilter::OnComplete(
 
 void PepperHostResolverMessageFilter::OnLookupFinished(
     int net_result,
-    const base::Optional<net::AddressList>& addresses,
+    const absl::optional<net::AddressList>& addresses,
     const ReplyMessageContext& context) {
   if (net_result != net::OK) {
     SendResolveError(NetErrorToPepperError(net_result), context);
   } else {
-    const std::string& canonical_name = addresses.value().canonical_name();
+    const std::string& canonical_name = addresses.value().GetCanonicalName();
     NetAddressList net_address_list;
     CreateNetAddressListFromAddressList(addresses.value(), &net_address_list);
     if (net_address_list.empty())

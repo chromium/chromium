@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_POLICY_LOW_LEVEL_H__
-#define SANDBOX_SRC_POLICY_LOW_LEVEL_H__
+#ifndef SANDBOX_WIN_SRC_POLICY_LOW_LEVEL_H_
+#define SANDBOX_WIN_SRC_POLICY_LOW_LEVEL_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -79,9 +79,14 @@ class PolicyRule;
 // Provides the means to collect rules into a policy store (memory)
 class LowLevelPolicy {
  public:
+  LowLevelPolicy() = delete;
+
   // policy_store: must contain allocated memory and the internal
   // size fields set to correct values.
   explicit LowLevelPolicy(PolicyGlobal* policy_store);
+
+  LowLevelPolicy(const LowLevelPolicy&) = delete;
+  LowLevelPolicy& operator=(const LowLevelPolicy&) = delete;
 
   // Destroys all the policy rules.
   ~LowLevelPolicy();
@@ -103,7 +108,6 @@ class LowLevelPolicy {
   };
   std::list<RuleNode> rules_;
   PolicyGlobal* policy_store_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(LowLevelPolicy);
 };
 
 // There are 'if' rules and 'if not' comparisons
@@ -186,4 +190,4 @@ class PolicyRule {
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_POLICY_LOW_LEVEL_H__
+#endif  // SANDBOX_WIN_SRC_POLICY_LOW_LEVEL_H_

@@ -1,0 +1,40 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+{
+  "tap": {
+    "keyboard": [
+      {
+        "name": "TestA",
+        "key": "KeyA",
+        "location": [
+          {
+            "type": "position",
+            "anchor_to_target": [
+              0.5,
+              0.5
+            ]
+          }
+        ]
+      },
+      {
+        "name": "TestB",
+        "key": "KeyB",
+        "location": [
+          {
+            "type": "position",
+            "anchor": [
+              1,
+              1
+            ],
+            "anchor_to_target": [
+              -0.1,
+              -0.1
+            ]
+          }
+        ]
+      }
+    ]
+  }
+}

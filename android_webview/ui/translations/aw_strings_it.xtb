@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
-<translation id="6106989379647458772">La pagina web all'indirizzo <ph name="PAGE" /> potrebbe non essere momentaneamente disponibile o potrebbe essere stata trasferita definitivamente a un nuovo indirizzo web.</translation>
-<translation id="6312113039770857350">Pagina web non disponibile</translation>
-<translation id="8681531050781943054">Impossibile caricare la pagina web all'indirizzo <ph name="PAGE" /> perché:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Suggerimenti.<ph name="MARKUP_2" />Assicurati di avere una connessione dati<ph name="MARKUP_3" />Ricarica la pagina web in un secondo momento<ph name="MARKUP_4" />Controlla l'indirizzo inserito<ph name="MARKUP_5" /></translation>
 </translationbundle>

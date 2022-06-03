@@ -27,9 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
@@ -44,6 +41,8 @@ class CORE_EXPORT HTMLTokenizer {
 
  public:
   explicit HTMLTokenizer(const HTMLParserOptions&);
+  HTMLTokenizer(const HTMLTokenizer&) = delete;
+  HTMLTokenizer& operator=(const HTMLTokenizer&) = delete;
   ~HTMLTokenizer();
 
   void Reset();
@@ -197,6 +196,11 @@ class CORE_EXPORT HTMLTokenizer {
  private:
   inline bool ProcessEntity(SegmentedString&);
 
+  // Returns true if it has skipped all the whitespaces and we still have
+  // characters in the source.
+  ALWAYS_INLINE bool SkipWhitespaces(SegmentedString& source, UChar& cc);
+  NOINLINE bool SkipWhitespacesHelper(SegmentedString& source, UChar& cc);
+
   inline void ParseError();
 
   inline void BufferCharacter(UChar character) {
@@ -217,6 +221,10 @@ class CORE_EXPORT HTMLTokenizer {
     state_ = state;
     return true;
   }
+
+  ALWAYS_INLINE bool EmitData(SegmentedString& source, UChar cc);
+
+  ALWAYS_INLINE bool EmitPLAINTEXT(SegmentedString& source, UChar cc);
 
   inline bool EmitEndOfFile(SegmentedString& source) {
     if (HaveBufferedCharacterToken())
@@ -265,21 +273,19 @@ class CORE_EXPORT HTMLTokenizer {
   // http://www.whatwg.org/specs/web-apps/current-work/#preprocessing-the-input-stream
   InputStreamPreprocessor<HTMLTokenizer> input_stream_preprocessor_;
 
-  Vector<UChar, 32> appropriate_end_tag_name_;
+  LiteralBuffer<UChar, 32> appropriate_end_tag_name_;
 
   // http://www.whatwg.org/specs/web-apps/current-work/#temporary-buffer
-  Vector<LChar, 32> temporary_buffer_;
+  LiteralBuffer<LChar, 32> temporary_buffer_;
 
   // We occationally want to emit both a character token and an end tag
   // token (e.g., when lexing script). We buffer the name of the end tag
   // token here so we remember it next time we re-enter the tokenizer.
-  Vector<LChar, 32> buffered_end_tag_name_;
+  LiteralBuffer<LChar, 32> buffered_end_tag_name_;
 
   HTMLParserOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(HTMLTokenizer);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_TOKENIZER_H_

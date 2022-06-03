@@ -15,9 +15,4 @@ svg:rect[Attributes Style] { ()
 :not(svg) { (user agent stylesheet)
     transform-origin: 0px 0px;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 

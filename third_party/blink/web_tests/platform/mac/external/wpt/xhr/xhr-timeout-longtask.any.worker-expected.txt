@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Long tasks should not trigger load timeout assert_unreached: [object ProgressEvent] Reached unreachable code
+Harness: the test ran to completion.
+

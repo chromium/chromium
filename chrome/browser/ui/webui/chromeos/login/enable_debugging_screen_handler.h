@@ -6,17 +6,16 @@
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENABLE_DEBUGGING_SCREEN_HANDLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
-#include "chrome/browser/chromeos/login/help_app_launcher.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 
 class PrefRegistrySimple;
 
-namespace chromeos {
-
+namespace ash {
 class EnableDebuggingScreen;
+}
+
+namespace chromeos {
 
 // Interface between enable debugging screen and its representation.
 // Note, do not forget to call OnViewDestroyed in the dtor.
@@ -24,11 +23,20 @@ class EnableDebuggingScreenView {
  public:
   constexpr static StaticOobeScreenId kScreenId{"debugging"};
 
+  enum UIState {
+    UI_STATE_ERROR = -1,
+    UI_STATE_REMOVE_PROTECTION = 1,
+    UI_STATE_SETUP = 2,
+    UI_STATE_WAIT = 3,
+    UI_STATE_DONE = 4,
+  };
+
   virtual ~EnableDebuggingScreenView() {}
 
   virtual void Show() = 0;
   virtual void Hide() = 0;
-  virtual void SetDelegate(EnableDebuggingScreen* screen) = 0;
+  virtual void SetDelegate(ash::EnableDebuggingScreen* screen) = 0;
+  virtual void UpdateUIState(UIState state) = 0;
 };
 
 // WebUI implementation of EnableDebuggingScreenView.
@@ -38,12 +46,18 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
   using TView = EnableDebuggingScreenView;
 
   explicit EnableDebuggingScreenHandler(JSCallsContainer* js_calls_container);
+
+  EnableDebuggingScreenHandler(const EnableDebuggingScreenHandler&) = delete;
+  EnableDebuggingScreenHandler& operator=(const EnableDebuggingScreenHandler&) =
+      delete;
+
   ~EnableDebuggingScreenHandler() override;
 
   // EnableDebuggingScreenView implementation:
   void Show() override;
   void Hide() override;
-  void SetDelegate(EnableDebuggingScreen* screen) override;
+  void SetDelegate(ash::EnableDebuggingScreen* screen) override;
+  void UpdateUIState(UIState state) override;
 
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
@@ -57,51 +71,22 @@ class EnableDebuggingScreenHandler : public EnableDebuggingScreenView,
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
  private:
-  enum UIState {
-    UI_STATE_ERROR = -1,
-    UI_STATE_REMOVE_PROTECTION = 1,
-    UI_STATE_SETUP = 2,
-    UI_STATE_WAIT = 3,
-    UI_STATE_DONE = 4,
-  };
-
   // JS messages handlers.
-  void HandleOnCancel();
-  void HandleOnDone();
-  void HandleOnLearnMore();
-  void HandleOnRemoveRootFSProtection();
   void HandleOnSetup(const std::string& password);
 
-  void ShowWithParams();
-
-  // Callback for CryptohomeClient::WaitForServiceToBeAvailable
-  void OnCryptohomeDaemonAvailabilityChecked(bool service_is_available);
-
-  // Callback for DebugDaemonClient::WaitForServiceToBeAvailable
-  void OnDebugDaemonServiceAvailabilityChecked(bool service_is_available);
-
-  // Callback for DebugDaemonClient::EnableDebuggingFeatures().
-  void OnEnableDebuggingFeatures(bool success);
-
-  // Callback for DebugDaemonClient::QueryDebuggingFeatures().
-  void OnQueryDebuggingFeatures(bool success, int features_flag);
-
-  // Callback for DebugDaemonClient::RemoveRootfsVerification().
-  void OnRemoveRootfsVerification(bool success);
-
-  // Updates UI state.
-  void UpdateUIState(UIState state);
-
-  EnableDebuggingScreen* screen_ = nullptr;
+  ash::EnableDebuggingScreen* screen_ = nullptr;
 
   // Keeps whether screen should be shown right after initialization.
   bool show_on_init_ = false;
-
-  base::WeakPtrFactory<EnableDebuggingScreenHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(EnableDebuggingScreenHandler);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::EnableDebuggingScreenHandler;
+using ::chromeos::EnableDebuggingScreenView;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_ENABLE_DEBUGGING_SCREEN_HANDLER_H_

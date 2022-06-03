@@ -5,14 +5,13 @@
 #ifndef BASE_PARAMETER_PACK_H_
 #define BASE_PARAMETER_PACK_H_
 
+#include <stddef.h>
+
 #include <initializer_list>
+#include <tuple>
 #include <type_traits>
 
-#include <cstddef>
-#if !defined(__clang__)
-#include <tuple>
-#endif
-
+#include "base/template_util.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -54,26 +53,16 @@ template <typename... Ts>
 struct ParameterPack {
   // Checks if |Type| occurs in the parameter pack.
   template <typename Type>
-  static constexpr bool HasType() {
-    return any_of({std::is_same<Type, Ts>::value...});
-  }
+  using HasType = bool_constant<any_of({std::is_same<Type, Ts>::value...})>;
 
   // Checks if the parameter pack only contains |Type|.
   template <typename Type>
-  static constexpr bool OnlyHasType() {
-    return all_of({std::is_same<Type, Ts>::value...});
-  }
+  using OnlyHasType = bool_constant<all_of({std::is_same<Type, Ts>::value...})>;
 
   // Checks if |Type| occurs only once in the parameter pack.
   template <typename Type>
-  static constexpr bool IsUniqueInPack() {
-    size_t count = 0;
-    for (bool value : {std::is_same<Type, Ts>::value...}) {
-      if (value)
-        count++;
-    }
-    return count == 1;
-  }
+  using IsUniqueInPack =
+      bool_constant<count({std::is_same<Type, Ts>::value...}, true) == 1>;
 
   // Returns the zero-based index of |Type| within |Pack...| or |pack_npos| if
   // it's not within the pack.
@@ -90,20 +79,11 @@ struct ParameterPack {
 
   // Helper for extracting the Nth type from a parameter pack.
   template <size_t N>
-#if defined(__clang__) && !defined(OS_NACL)
-  // A clang extension which efficiently returns the Nth type from a pack. This
-  // is faster to compile than std::tuple_element<>.
-  // See: https://ldionne.com/2015/11/29/efficient-parameter-pack-indexing/
-  using NthType = __type_pack_element<N, Ts...>;
-#else
-  using NthType = typename std::tuple_element<N, std::tuple<Ts...>>::type;
-#endif
+  using NthType = std::tuple_element_t<N, std::tuple<Ts...>>;
 
   // Checks if every type in the parameter pack is the same.
-  static constexpr bool IsAllSameType() {
-    using FirstType = NthType<0>;
-    return all_of({std::is_same<FirstType, Ts>::value...});
-  }
+  using IsAllSameType =
+      bool_constant<all_of({std::is_same<NthType<0>, Ts>::value...})>;
 };
 
 }  // namespace base

@@ -7,8 +7,8 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/test_extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -26,11 +26,12 @@
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/notification_service.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/range/range.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #endif
 
@@ -38,14 +39,16 @@ class BookmarkBubbleSignInDelegateTest : public InProcessBrowserTest {
  public:
   BookmarkBubbleSignInDelegateTest() {}
 
+  BookmarkBubbleSignInDelegateTest(const BookmarkBubbleSignInDelegateTest&) =
+      delete;
+  BookmarkBubbleSignInDelegateTest& operator=(
+      const BookmarkBubbleSignInDelegateTest&) = delete;
+
   Profile* profile() { return browser()->profile(); }
 
   void ReplaceBlank(Browser* browser);
 
   void SignInBrowser(Browser* browser);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarkBubbleSignInDelegateTest);
 };
 
 // The default browser created for tests start with one tab open on
@@ -56,13 +59,12 @@ void BookmarkBubbleSignInDelegateTest::ReplaceBlank(Browser* browser) {
   NavigateParams params(
       GetSingletonTabNavigateParams(browser, GURL("chrome:version")));
   params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  ShowSingletonTabOverwritingNTP(browser, std::move(params));
+  ShowSingletonTabOverwritingNTP(browser, &params);
 }
 
 void BookmarkBubbleSignInDelegateTest::SignInBrowser(Browser* browser) {
-  std::unique_ptr<BubbleSyncPromoDelegate> delegate;
-  delegate.reset(new BookmarkBubbleSignInDelegate(browser));
-  delegate->OnEnableSync(AccountInfo(), false /* is_default_promo_account */);
+  auto delegate = std::make_unique<BookmarkBubbleSignInDelegate>(browser);
+  delegate->OnEnableSync(AccountInfo());
 }
 
 IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, OnSignInLinkClicked) {
@@ -130,8 +132,8 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
 
   int starting_tab_count = extra_browser->tab_strip_model()->count();
 
-  std::unique_ptr<BubbleSyncPromoDelegate> delegate;
-  delegate.reset(new BookmarkBubbleSignInDelegate(browser()));
+  std::unique_ptr<BubbleSyncPromoDelegate> delegate =
+      std::make_unique<BookmarkBubbleSignInDelegate>(browser());
 
   BrowserList::SetLastActive(extra_browser);
 
@@ -140,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBubbleSignInDelegateTest, BrowserRemoved) {
   browser()->tab_strip_model()->CloseAllTabs();
   content::RunAllPendingInMessageLoop();
 
-  delegate->OnEnableSync(AccountInfo(), false /* is_default_promo_account */);
+  delegate->OnEnableSync(AccountInfo());
 
   int tab_count = extra_browser->tab_strip_model()->count();
   // A new tab should have been opened in the extra browser, which should be

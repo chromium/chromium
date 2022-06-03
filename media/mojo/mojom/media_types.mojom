@@ -8,13 +8,17 @@ import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/vulkan_ycbcr_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/buffer_types.mojom";
 import "ui/gfx/mojom/color_space.mojom";
+import "ui/gfx/mojom/hdr_metadata.mojom";
 
 // See media/base/audio_codecs.h for descriptions.
 [Native]
 enum AudioCodec;
+[Native]
+enum AudioCodecProfile;
 
 // See media/base/buffering_state.h for descriptions.
 [Native]
@@ -26,17 +30,21 @@ enum BufferingStateChangeReason;
 [Native]
 enum ChannelLayout;
 
-// See media/base/video_types.h for descriptions.
-[Native]
-enum ColorSpace;
-
 // See media/base/decode_status.h for descriptions.
 [Native]
 enum DecodeStatus;
 
-// See media/base/media_log_event.h for description.
+// See media/base/status_codes.h for descriptions.
 [Native]
-struct MediaLogEvent;
+enum StatusCode;
+
+// See media/base/media_content_type.h for descriptions.
+[Native]
+enum MediaContentType;
+
+// See media/base/media_log_record.h for description.
+[Native]
+struct MediaLogRecord;
 
 // See media/base/output_device_info.h for descriptions.
 [Native]
@@ -62,9 +70,32 @@ enum VideoCodecProfile;
 [Native]
 enum VideoPixelFormat;
 
-// See media/base/video_transformation.h for descriptions.
+// See media/base/decoder.h for descriptions.
 [Native]
-enum VideoRotation;
+enum VideoDecoderType;
+
+// See media/base/decoder.h for descriptions.
+[Native]
+enum AudioDecoderType;
+
+// See media/base/video_transformation.h for descriptions.
+enum VideoRotation {
+  kVideoRotation0,
+  kVideoRotation90,
+  kVideoRotation180,
+  kVideoRotation270,
+};
+
+// see media/base/video_frame_metadata.h for descriptions.
+enum CopyMode {
+  kCopyToNewTexture,
+  kCopyMailboxesOnly,
+};
+
+// see third_party/blink/public/platform/web_fullscreen_video_status.h for
+// descriptions.
+[Native]
+enum FullscreenVideoStatus;
 
 // See media/base/video_transformation.h for descriptions.
 struct VideoTransformation {
@@ -90,6 +121,7 @@ enum MediaStatusState;
 
 // This defines a mojo transport format for media::EncryptionPattern
 // See media/base/encryption_pattern.h for description.
+[Stable]
 struct EncryptionPattern {
   uint32 crypt_byte_block;
   uint32 skip_byte_block;
@@ -98,6 +130,28 @@ struct EncryptionPattern {
 // See media/base/encryption_scheme.h for description.
 [Native]
 enum EncryptionScheme;
+
+// See media::EncryptionType for descriptions.
+enum EncryptionType {
+  kNone,
+  kClear,
+  kEncrypted,
+  kEncryptedWithClearLead,
+};
+
+// See media/base/svc_scalability_mode.h for description.
+// This mojo enum only list hardware codec supported scalability mode.
+enum SVCScalabilityMode {
+  // kUnsupportedMode is used to handle the enum differ of C++ and Mojo
+  // SVCScalabilityMode in ToMojom, should not be used in other place.
+  kUnsupportedMode,
+  kL1T2,
+  kL1T3,
+  kL2T2Key,
+  kL2T3Key,
+  kL3T2Key,
+  kL3T3Key,
+};
 
 // This defines a mojo transport format for media::VideoColorSpace.
 // See media/base/video_color_space.h for description.
@@ -120,34 +174,22 @@ struct VideoColorSpace {
   RangeID range;
 };
 
-// This defines a mojo transport format for media::HDRMetadata.
-// See media/base/hdr_metadata.h for description.
-struct MasteringMetadata {
-  gfx.mojom.PointF primary_r;
-  gfx.mojom.PointF primary_g;
-  gfx.mojom.PointF primary_b;
-  gfx.mojom.PointF white_point;
-  float luminance_max;
-  float luminance_min;
-};
-
-struct HDRMetadata {
-  MasteringMetadata mastering_metadata;
-  uint32 max_content_light_level;
-  uint32 max_frame_average_light_level;
-};
-
 // This defines a mojo transport format for media::AudioDecoderConfig.
 // See media/base/audio_decoder_config.h for descriptions.
+// TODO(crbug.com/1232205): Support `channels_` set by SetChannelsForDiscrete().
 struct AudioDecoderConfig {
   AudioCodec codec;
   SampleFormat sample_format;
   ChannelLayout channel_layout;
   int32 samples_per_second;
   array<uint8> extra_data;
+  EncryptionScheme encryption_scheme;
   mojo_base.mojom.TimeDelta seek_preroll;
   int32 codec_delay;
-  EncryptionScheme encryption_scheme;
+  AudioCodecProfile profile;
+  ChannelLayout target_output_channel_layout;
+  bool should_discard_decoder_delay;
+  array<uint8> aac_extra_data;
 };
 
 // This defines a mojo transport format for media::VideoDecoderConfig.
@@ -164,12 +206,21 @@ struct VideoDecoderConfig {
   array<uint8> extra_data;
   EncryptionScheme encryption_scheme;
   VideoColorSpace color_space_info;
-  HDRMetadata? hdr_metadata;
+  gfx.mojom.HDRMetadata? hdr_metadata;
 };
 
 // Native struct media::SubsampleEntry;
 [Native]
 struct SubsampleEntry;
+
+// See media::CdmSessionClosedReason for descriptions.
+enum CdmSessionClosedReason {
+  kInternalError,
+  kClose,
+  kReleaseAcknowledged,
+  kHardwareContextReset,
+  kResourceEvicted,
+};
 
 // This defines a mojo transport format for media::DecryptConfig.
 // See media/base/decrypt_config.h for descriptions.
@@ -236,6 +287,95 @@ struct AudioBuffer {
   array<uint8> data;
 };
 
+// This defines a mojo transport format for an interleaved, signed
+// 16-bit audio buffer.
+struct AudioDataS16 {
+  // Number of channels.
+  int32 channel_count;
+
+  // Sample rate of the buffer.
+  int32 sample_rate;
+
+  // Number of frames in the buffer.
+  int32 frame_count;
+
+  // Channel data.
+  array<int16> data;
+};
+
+// See media/base/video_frame_metadata.h for a description of fields.
+// TODO(crbug.com/657632): Remove |has_*| values and use nullable types.
+struct VideoFrameMetadata {
+  bool allow_overlay;
+
+  mojo_base.mojom.TimeTicks? capture_begin_time;
+  mojo_base.mojom.TimeTicks? capture_end_time;
+
+  bool has_capture_counter;
+  int32 capture_counter;
+
+  gfx.mojom.Rect? capture_update_rect;
+
+  bool has_copy_mode;
+  CopyMode copy_mode;
+
+  bool end_of_stream;
+
+  mojo_base.mojom.TimeDelta? frame_duration;
+
+  bool has_frame_rate;
+  double frame_rate;
+
+  bool interactive_content;
+
+  mojo_base.mojom.TimeTicks? reference_time;
+
+  bool read_lock_fences_enabled;
+
+  VideoTransformation? transformation;
+
+  bool texture_owner;
+
+  bool wants_promotion_hint;
+
+  bool protected_video;
+
+  bool hw_protected;
+
+  mojo_base.mojom.UnguessableToken? overlay_plane_id;
+
+  bool power_efficient;
+
+  bool texture_origin_is_top_left;
+
+  bool has_device_scale_factor;
+  double device_scale_factor;
+
+  bool has_page_scale_factor;
+  double page_scale_factor;
+
+  bool has_root_scroll_offset_x;
+  double root_scroll_offset_x;
+
+  bool has_root_scroll_offset_y;
+  double root_scroll_offset_y;
+
+  bool has_top_controls_visible_height;
+  double top_controls_visible_height;
+
+  mojo_base.mojom.TimeTicks? decode_begin_time;
+  mojo_base.mojom.TimeTicks? decode_end_time;
+
+  mojo_base.mojom.TimeDelta? processing_time;
+
+  bool has_rtp_timestamp;
+  double rtp_timestamp;
+
+  mojo_base.mojom.TimeTicks? receive_time;
+
+  mojo_base.mojom.TimeDelta? wallclock_frame_duration;
+};
+
 // This defines a mojo transport format for media::VideoFrame.
 struct VideoFrame {
   // Format of the frame.
@@ -257,16 +397,16 @@ struct VideoFrame {
   VideoFrameData data;
 
   // Extra properties associated with the VideoFrame.
-  mojo_base.mojom.DictionaryValue metadata;
+  VideoFrameMetadata metadata;
 
   gfx.mojom.ColorSpace color_space;
+  gfx.mojom.HDRMetadata? hdr_metadata;
 };
 
 // Possible choices for storing VideoFrame data.
 union VideoFrameData {
   EosVideoFrameData eos_data;
   SharedBufferVideoFrameData shared_buffer_data;
-  DmabufVideoFrameData dmabuf_data;
   GpuMemoryBufferVideoFrameData gpu_memory_buffer_data;
   MailboxVideoFrameData mailbox_data;
 };
@@ -283,18 +423,8 @@ struct SharedBufferVideoFrameData {
 
   // Stride and offsets for each plane. Offsets are relative to the start
   // of |frame_data|.
-  int32 y_stride;
-  int32 u_stride;
-  int32 v_stride;
-  uint64 y_offset;
-  uint64 u_offset;
-  uint64 v_offset;
-};
-
-// This defines video frame data stored in dmabuf.
-struct DmabufVideoFrameData {
-  // Size depends on media::VideoFrame::NumPlanes with frame format.
-  array<handle> dmabuf_fds;
+  array<int32> strides;
+  array<uint32> offsets;
 };
 
 struct GpuMemoryBufferVideoFrameData {
@@ -342,9 +472,67 @@ struct PredictionTargets {
   uint32 frames_power_efficient = 0;
 };
 
-// See media/base/pipeline/status.h for descriptions.
-struct PipelineDecoderInfo {
-  string decoder_name;
+// See media/base/pipeline_status.h for descriptions.
+struct AudioPipelineInfo {
+  AudioDecoderType decoder_type;
   bool is_platform_decoder = false;
   bool has_decrypting_demuxer_stream = false;
+  EncryptionType encryption_type;
+};
+
+// See media/base/pipeline_status.h for descriptions.
+struct VideoPipelineInfo {
+  VideoDecoderType decoder_type;
+  bool is_platform_decoder = false;
+  bool has_decrypting_demuxer_stream = false;
+  EncryptionType encryption_type;
+};
+
+// See media/base/status.h for descriptions.
+struct StatusData {
+  string group;
+  uint16 code;
+  string message;
+  array<mojo_base.mojom.Value> frames;
+  array<StatusData> causes;
+  mojo_base.mojom.Value data;
+};
+
+struct Status {
+  StatusData? internal;
+};
+
+// Types of media stream, categorised by the media stream's source.
+// The enum values are emitted to metrics. Do not reorder.
+enum MediaStreamType {
+  kLocalElementCapture = 0, // The source is a local capture from element.
+  kLocalDeviceCapture = 1, // The source is a local device capture, e.g. webcam.
+  kLocalTabCapture = 2, // The source is a local tab capture.
+  kLocalDesktopCapture = 3, // The source is a local desktop capture.
+  kLocalDisplayCapture = 4, // The source is a local display capture.
+  kRemote = 5, // The source is a remote peer connection.
+  kNone = 6, // Not a media stream.
+};
+
+// Error codes propagated by Input media streams OnError methods to indicate the
+// reason for an error.
+enum InputStreamErrorCode {
+  kUnknown = 0,
+  kSystemPermissions = 1,
+  kDeviceInUse = 2,
+};
+
+// See media/base/renderer_factory_selector.h for description.
+enum RendererType {
+  kDefault = 0,          // DefaultRendererFactory
+  kMojo = 1,             // MojoRendererFactory
+  kMediaPlayer = 2,      // MediaPlayerRendererClientFactory
+  kCourier = 3,          // CourierRendererFactory
+  kFlinging = 4,         // FlingingRendererClientFactory
+  kCast = 5,             // CastRendererClientFactory
+  kMediaFoundation = 6,  // MediaFoundationRendererClientFactory
+  // kFuchsia = 7,       // Deprecated
+  kRemoting = 8,         // RemotingRendererFactory for remoting::Receiver
+  kCastStreaming = 9,    // CastStreamingRendererFactory
+  kContentEmbedderDefined = 10,  // Defined by the content embedder
 };

@@ -10,11 +10,18 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/animation/ink_drop.h"
 
-FindBarIcon::FindBarIcon(Browser* browser,
-                         PageActionIconView::Delegate* delegate)
-    : PageActionIconView(nullptr, 0, delegate), browser_(browser) {
+FindBarIcon::FindBarIcon(
+    Browser* browser,
+    IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+    PageActionIconView::Delegate* page_action_icon_delegate)
+    : PageActionIconView(nullptr,
+                         0,
+                         icon_label_bubble_delegate,
+                         page_action_icon_delegate),
+      browser_(browser) {
   DCHECK(browser_);
 }
 
@@ -22,26 +29,29 @@ FindBarIcon::~FindBarIcon() {}
 
 void FindBarIcon::SetActive(bool activate, bool should_animate) {
   if (activate ==
-      (GetInkDrop()->GetTargetInkDropState() == views::InkDropState::ACTIVATED))
+      (views::InkDrop::Get(this)->GetInkDrop()->GetTargetInkDropState() ==
+       views::InkDropState::ACTIVATED))
     return;
   if (activate) {
     if (should_animate) {
-      AnimateInkDrop(views::InkDropState::ACTIVATED, nullptr);
+      views::InkDrop::Get(this)->AnimateToState(views::InkDropState::ACTIVATED,
+                                                nullptr);
     } else {
-      GetInkDrop()->SnapToActivated();
+      views::InkDrop::Get(this)->GetInkDrop()->SnapToActivated();
     }
   } else {
-    AnimateInkDrop(views::InkDropState::HIDDEN, nullptr);
+    views::InkDrop::Get(this)->AnimateToState(views::InkDropState::HIDDEN,
+                                              nullptr);
   }
 }
 
-base::string16 FindBarIcon::GetTextForTooltipAndAccessibleName() const {
+std::u16string FindBarIcon::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringUTF16(IDS_TOOLTIP_FIND);
 }
 
 void FindBarIcon::OnExecuting(ExecuteSource execute_source) {}
 
-views::BubbleDialogDelegateView* FindBarIcon::GetBubble() const {
+views::BubbleDialogDelegate* FindBarIcon::GetBubble() const {
   return nullptr;
 }
 
@@ -59,3 +69,6 @@ void FindBarIcon::UpdateImpl() {
   SetVisible(browser_->GetFindBarController()->find_bar()->IsFindBarVisible());
   SetActive(GetVisible(), was_visible != GetVisible());
 }
+
+BEGIN_METADATA(FindBarIcon, PageActionIconView)
+END_METADATA

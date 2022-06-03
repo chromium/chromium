@@ -1,0 +1,36 @@
+<!--
+@AURALINUX-DENY:checkable
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <body>
+    <!-- When the radio button's associated label is not set to be
+      focusable, it will be ignored from the accessibility tree. -->
+    <label for="radio1">
+      label ignored for radio button
+      <input type="radio" id="radio1">
+    </label>
+
+    <!-- When the checkbox's associated label is not set to be
+      focusable, it will be ignored from the accessibility tree. -->
+    <label for="checkbox1">
+      label ignored for checkbox
+      <input type="checkbox" id="checkbox1">
+    </label>
+
+    <!-- When the radio button's associated label is set to be focusable,
+      it will be included in the accessibility tree. -->
+    <label for="radio2" tabindex="0">
+      label exposed for radio button
+      <input type="radio" id="radio2" tabindex="-1">
+    </label>
+
+    <!-- When the checkbox's associated label is set to be focusable,
+      it will be included in the accessibility tree. -->
+    <label for="checkbox2" tabindex="0">
+      label exposed for checkbox
+      <input type="checkbox" id="checkbox2" tabindex="-1">
+    </label>
+  </body>
+</html>

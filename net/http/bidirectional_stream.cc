@@ -37,24 +37,25 @@ namespace net {
 
 namespace {
 
-base::Value NetLogHeadersParams(const spdy::SpdyHeaderBlock* headers,
+base::Value NetLogHeadersParams(const spdy::Http2HeaderBlock* headers,
                                 NetLogCaptureMode capture_mode) {
-  base::DictionaryValue dict;
-  dict.SetKey("headers", ElideSpdyHeaderBlockForNetLog(*headers, capture_mode));
-  return std::move(dict);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey("headers",
+              ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
+  return dict;
 }
 
 base::Value NetLogParams(const GURL& url,
                          const std::string& method,
                          const HttpRequestHeaders* headers,
                          NetLogCaptureMode capture_mode) {
-  base::DictionaryValue dict;
-  dict.SetString("url", url.possibly_invalid_spec());
-  dict.SetString("method", method);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("url", url.possibly_invalid_spec());
+  dict.SetStringKey("method", method);
   std::string empty;
   base::Value headers_param(headers->NetLogParams(empty, capture_mode));
   dict.SetKey("headers", std::move(headers_param));
-  return std::move(dict);
+  return dict;
 }
 
 }  // namespace
@@ -113,13 +114,13 @@ BidirectionalStream::BidirectionalStream(
   }
 
   SSLConfig ssl_config;
-  session->GetAlpnProtos(&ssl_config.alpn_protos);
+  ssl_config.alpn_protos = session->GetAlpnProtos();
+  ssl_config.application_settings = session->GetApplicationSettings();
 
   StartRequest(ssl_config);
 }
 
 BidirectionalStream::~BidirectionalStream() {
-  UpdateHistograms();
   if (net_log_.IsCapturing()) {
     net_log_.EndEvent(NetLogEventType::BIDIRECTIONAL_STREAM_ALIVE);
   }
@@ -238,7 +239,7 @@ void BidirectionalStream::OnStreamReady(bool request_headers_sent) {
 }
 
 void BidirectionalStream::OnHeadersReceived(
-    const spdy::SpdyHeaderBlock& response_headers) {
+    const spdy::Http2HeaderBlock& response_headers) {
   HttpResponseInfo response_info;
   if (!SpdyHeadersToHttpResponse(response_headers, &response_info)) {
     DLOG(WARNING) << "Invalid headers";
@@ -311,7 +312,7 @@ void BidirectionalStream::OnDataSent() {
 }
 
 void BidirectionalStream::OnTrailersReceived(
-    const spdy::SpdyHeaderBlock& trailers) {
+    const spdy::Http2HeaderBlock& trailers) {
   if (net_log_.IsCapturing()) {
     net_log_.AddEvent(NetLogEventType::BIDIRECTIONAL_STREAM_RECV_TRAILERS,
                       [&](NetLogCaptureMode capture_mode) {
@@ -429,50 +430,6 @@ void BidirectionalStream::OnQuicBroken() {}
 
 void BidirectionalStream::NotifyFailed(int error) {
   delegate_->OnFailed(error);
-}
-
-void BidirectionalStream::UpdateHistograms() {
-  // If the request failed before response is started, treat the metrics as
-  // bogus and skip logging.
-  if (load_timing_info_.request_start.is_null() ||
-      load_timing_info_.receive_headers_end.is_null() ||
-      read_end_time_.is_null() || load_timing_info_.send_start.is_null() ||
-      load_timing_info_.send_end.is_null()) {
-    return;
-  }
-  if (GetProtocol() == kProtoHTTP2) {
-    UMA_HISTOGRAM_TIMES("Net.BidirectionalStream.TimeToReadStart.HTTP2",
-                        load_timing_info_.receive_headers_end -
-                            load_timing_info_.request_start);
-    UMA_HISTOGRAM_TIMES("Net.BidirectionalStream.TimeToReadEnd.HTTP2",
-                        read_end_time_ - load_timing_info_.request_start);
-    UMA_HISTOGRAM_TIMES(
-        "Net.BidirectionalStream.TimeToSendStart.HTTP2",
-        load_timing_info_.send_start - load_timing_info_.request_start);
-    UMA_HISTOGRAM_TIMES(
-        "Net.BidirectionalStream.TimeToSendEnd.HTTP2",
-        load_timing_info_.send_end - load_timing_info_.request_start);
-    UMA_HISTOGRAM_COUNTS_1M("Net.BidirectionalStream.ReceivedBytes.HTTP2",
-                            stream_impl_->GetTotalReceivedBytes());
-    UMA_HISTOGRAM_COUNTS_1M("Net.BidirectionalStream.SentBytes.HTTP2",
-                            stream_impl_->GetTotalSentBytes());
-  } else if (GetProtocol() == kProtoQUIC) {
-    UMA_HISTOGRAM_TIMES("Net.BidirectionalStream.TimeToReadStart.QUIC",
-                        load_timing_info_.receive_headers_end -
-                            load_timing_info_.request_start);
-    UMA_HISTOGRAM_TIMES("Net.BidirectionalStream.TimeToReadEnd.QUIC",
-                        read_end_time_ - load_timing_info_.request_start);
-    UMA_HISTOGRAM_TIMES(
-        "Net.BidirectionalStream.TimeToSendStart.QUIC",
-        load_timing_info_.send_start - load_timing_info_.request_start);
-    UMA_HISTOGRAM_TIMES(
-        "Net.BidirectionalStream.TimeToSendEnd.QUIC",
-        load_timing_info_.send_end - load_timing_info_.request_start);
-    UMA_HISTOGRAM_COUNTS_1M("Net.BidirectionalStream.ReceivedBytes.QUIC",
-                            stream_impl_->GetTotalReceivedBytes());
-    UMA_HISTOGRAM_COUNTS_1M("Net.BidirectionalStream.SentBytes.QUIC",
-                            stream_impl_->GetTotalSentBytes());
-  }
 }
 
 }  // namespace net

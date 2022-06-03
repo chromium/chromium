@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
 
 #include "base/containers/stack.h"
@@ -369,9 +370,9 @@ ShareGroup::ShareGroup(bool bind_generates_resource, uint64_t tracing_guid)
          i < static_cast<int>(SharedIdNamespaces::kNumSharedIdNamespaces);
          ++i) {
       if (i == static_cast<int>(SharedIdNamespaces::kProgramsAndShaders)) {
-        id_handlers_[i].reset(new NonReusedIdHandler());
+        id_handlers_[i] = std::make_unique<NonReusedIdHandler>();
       } else {
-        id_handlers_[i].reset(new IdHandler());
+        id_handlers_[i] = std::make_unique<IdHandler>();
       }
     }
   } else {
@@ -379,15 +380,15 @@ ShareGroup::ShareGroup(bool bind_generates_resource, uint64_t tracing_guid)
          i < static_cast<int>(SharedIdNamespaces::kNumSharedIdNamespaces);
          ++i) {
       if (i == static_cast<int>(SharedIdNamespaces::kProgramsAndShaders)) {
-        id_handlers_[i].reset(new NonReusedIdHandler());
+        id_handlers_[i] = std::make_unique<NonReusedIdHandler>();
       } else {
-        id_handlers_[i].reset(new StrictIdHandler(i));
+        id_handlers_[i] = std::make_unique<StrictIdHandler>(i);
       }
     }
   }
-  program_info_manager_.reset(new ProgramInfoManager);
+  program_info_manager_ = std::make_unique<ProgramInfoManager>();
   for (auto& range_id_handler : range_id_handlers_) {
-    range_id_handler.reset(new RangeIdHandler());
+    range_id_handler = std::make_unique<RangeIdHandler>();
   }
 }
 

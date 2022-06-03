@@ -10,6 +10,7 @@ package org.chromium.ui.base;
 public interface AndroidPermissionDelegate {
     /**
      * Determine whether access to a particular permission is granted.
+     *
      * @param permission The permission whose access is to be checked.
      * @return Whether access to the permission is granted.
      */
@@ -17,15 +18,15 @@ public interface AndroidPermissionDelegate {
 
     /**
      * Determine whether the specified permission can be requested.
-     *
      * <p>
-     * A permission can be requested in the following states:
-     * 1.) Default un-granted state, permission can be requested
-     * 2.) Permission previously requested but denied by the user, but the user did not select
-     *     "Never ask again".
+     * A permission can not be requested in the following states:
+     * <ul>
+     *   <li>Permission is denied by policy.
+     *   <li>Permission previously denied and the user selected "Never ask again".
+     * </ul>
      *
      * @param permission The permission name.
-     * @return Whether the requesting the permission is allowed.
+     * @return Whether the permission can be requested.
      */
     boolean canRequestPermission(String permission);
 
@@ -39,6 +40,7 @@ public interface AndroidPermissionDelegate {
 
     /**
      * Requests the specified permissions are granted for further use.
+     *
      * @param permissions The list of permissions to request access to.
      * @param callback The callback to be notified whether the permissions were granted.
      */
@@ -46,9 +48,12 @@ public interface AndroidPermissionDelegate {
 
     /**
      * Handle the result from requesting permissions.
+     *
      * @param requestCode The request code passed in requestPermissions.
      * @param permissions The list of requested permissions.
-     * @param grantResults The grant results for the corresponding permissions.
+     * @param grantResults The grant results for the corresponding permissions which is either
+     *         {@link android.content.pm.PackageManager#PERMISSION_GRANTED} or {@link
+     *         android.content.pm.PackageManager#PERMISSION_DENIED}.
      * @return True if the result was handled.
      */
     boolean handlePermissionResult(int requestCode, String[] permissions, int[] grantResults);

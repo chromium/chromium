@@ -40,6 +40,15 @@ imageset("activity_services_find_in_page") {
   ]
 }
 
+imageset("activity_services_generate_qr_code") {
+  sources = [
+    "activity_services_generate_qr_code.imageset/Contents.json",
+    "activity_services_generate_qr_code.imageset/activity_services_generate_qr_code-60@2x.png",
+    "activity_services_generate_qr_code.imageset/activity_services_generate_qr_code-60@3x.png",
+    "activity_services_generate_qr_code.imageset/activity_services_generate_qr_code-76@2x.png",
+  ]
+}
+
 imageset("activity_services_print") {
   sources = [
     "activity_services_print.imageset/Contents.json",

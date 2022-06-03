@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL fieldset generated content assert_equals: clientWidth expected 59 but got 47
-Harness: the test ran to completion.
-

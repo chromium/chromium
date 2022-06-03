@@ -6,21 +6,32 @@
 #define CHROMECAST_DEVICE_BLUETOOTH_LE_GATT_CLIENT_MANAGER_H_
 
 #include <map>
+#include <memory>
 #include <set>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
+#include "chromecast/device/bluetooth/le/remote_characteristic.h"
+#include "chromecast/device/bluetooth/le/remote_device.h"
+#include "chromecast/device/bluetooth/le/remote_service.h"
 #include "chromecast/public/bluetooth/bluetooth_types.h"
 
+namespace base {
+class SingleThreadTaskRunner;
+}  // namespace base
+
 namespace chromecast {
+namespace bluetooth_v2_shlib {
+class GattClient;
+}  // namespace bluetooth_v2_shlib
+
 namespace bluetooth {
 
-class RemoteCharacteristic;
-class RemoteDevice;
-class RemoteService;
+class BluetoothManagerPlatform;
+class LeScanManager;
 
 class GattClientManager {
  public:
@@ -55,6 +66,20 @@ class GattClientManager {
     virtual ~Observer() = default;
   };
 
+  static std::unique_ptr<GattClientManager> Create(
+      bluetooth_v2_shlib::GattClient* gatt_client,
+      BluetoothManagerPlatform* bluetooth_manager,
+      LeScanManager* le_scan_manager);
+
+  GattClientManager(const GattClientManager&) = delete;
+  GattClientManager& operator=(const GattClientManager&) = delete;
+
+  virtual ~GattClientManager() = default;
+
+  virtual void Initialize(
+      scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) = 0;
+  virtual void Finalize() = 0;
+
   virtual void AddObserver(Observer* o) = 0;
   virtual void RemoveObserver(Observer* o) = 0;
 
@@ -87,16 +112,27 @@ class GattClientManager {
   // Note that these devices might not be connected.
   virtual void NotifyBonded(const bluetooth_v2_shlib::Addr& addr) = 0;
 
+  // Returns true if |addr| corresponds to a connected BLE device.
+  virtual bool IsConnectedLeDevice(const bluetooth_v2_shlib::Addr& addr) = 0;
+
+  // Enable or disable GATT client connectability. Returns |true| if successful
+  // otherwise |false|.
+  virtual bool SetGattClientConnectable(bool connectable) = 0;
+
+  // Disconnect all connected devices. Callback will return |true| if all
+  // devices are disconnected, otherwise false.
+  // When disabling GATT client, caller should call
+  // SetGattClientConnectable(false) before calling DisconnectAll so that
+  // upcoming GATT client connections can also be blocked.
+  using StatusCallback = base::OnceCallback<void(bool)>;
+  virtual void DisconnectAll(StatusCallback cb) = 0;
+
   // TODO(bcf): Deprecated. Should be removed now that this class may be used
   // from any thread.
   virtual scoped_refptr<base::SingleThreadTaskRunner> task_runner() = 0;
 
  protected:
   GattClientManager() = default;
-  virtual ~GattClientManager() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GattClientManager);
 };
 
 }  // namespace bluetooth

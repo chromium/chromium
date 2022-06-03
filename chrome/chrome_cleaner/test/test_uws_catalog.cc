@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "chrome/chrome_cleaner/test/test_uws_catalog.h"
+
+#include "base/notreached.h"
 #include "chrome/chrome_cleaner/pup_data/dynamic_pup.h"
 #include "chrome/chrome_cleaner/pup_data/test_uws.h"
 

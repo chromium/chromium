@@ -44,13 +44,18 @@ class CertPolicy {
 class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
  public:
   AwSSLHostStateDelegate();
+
+  AwSSLHostStateDelegate(const AwSSLHostStateDelegate&) = delete;
+  AwSSLHostStateDelegate& operator=(const AwSSLHostStateDelegate&) = delete;
+
   ~AwSSLHostStateDelegate() override;
 
   // Records that |cert| is permitted to be used for |host| in the future, for
   // a specified |error| type.
   void AllowCert(const std::string& host,
                  const net::X509Certificate& cert,
-                 int error) override;
+                 int error,
+                 content::WebContents* web_contents) override;
 
   void Clear(
       base::RepeatingCallback<bool(const std::string&)> host_filter) override;
@@ -59,7 +64,8 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   content::SSLHostStateDelegate::CertJudgment QueryPolicy(
       const std::string& host,
       const net::X509Certificate& cert,
-      int error) override;
+      int error,
+      content::WebContents* web_contents) override;
 
   // Records that a host has run insecure content.
   void HostRanInsecureContent(const std::string& host,
@@ -71,6 +77,12 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
                                  int child_id,
                                  InsecureContentType content_type) override;
 
+  // HTTPS-First Mode is not implemented in Android Webview.
+  void AllowHttpForHost(const std::string& host,
+                        content::WebContents* web_contents) override;
+  bool IsHttpAllowedForHost(const std::string& host,
+                            content::WebContents* web_contents) override;
+
   // Revokes all SSL certificate error allow exceptions made by the user for
   // |host|.
   void RevokeUserAllowExceptions(const std::string& host) override;
@@ -79,13 +91,12 @@ class AwSSLHostStateDelegate : public content::SSLHostStateDelegate {
   // |host|. This does not mean that *all* certificate errors are allowed, just
   // that there exists an exception. To see if a particular certificate and
   // error combination exception is allowed, use QueryPolicy().
-  bool HasAllowException(const std::string& host) override;
+  bool HasAllowException(const std::string& host,
+                         content::WebContents* web_contents) override;
 
  private:
   // Certificate policies for each host.
   std::map<std::string, internal::CertPolicy> cert_policy_for_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwSSLHostStateDelegate);
 };
 
 }  // namespace android_webview

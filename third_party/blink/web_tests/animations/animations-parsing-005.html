@@ -230,13 +230,13 @@ test(() => {
 test(() => {
   style.animation = "";
 
-  style.animation = "solid red";
+  style.animation = "solid red green";
   assert_equals(style.animation, '');
   assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
   assert_equals(style.webkitAnimation, '');
   assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
 
-  style.animation = "all 30s width ease-in";
+  style.animation = "all 30s width height ease-in";
   assert_equals(style.animation, '');
   assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
   assert_equals(style.webkitAnimation, '');
@@ -254,13 +254,13 @@ test(() => {
   assert_equals(style.webkitAnimation, '');
   assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
 
-  style.animation = "ease-in opacity 20s 10s myAnim, none";
+  style.animation = "ease-in opacity top 20s 10s myAnim, none";
   assert_equals(style.animation, '');
   assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
   assert_equals(style.webkitAnimation, '');
   assert_equals(computedStyle.webkitAnimation, 'none 0s ease 0s 1 normal none running');
 
-  style.animation = "none, ease-in opacity 20s 10s myAnim";
+  style.animation = "none, ease-in opacity top 20s 10s myAnim";
   assert_equals(style.animation, '');
   assert_equals(computedStyle.animation, 'none 0s ease 0s 1 normal none running');
   assert_equals(style.webkitAnimation, '');

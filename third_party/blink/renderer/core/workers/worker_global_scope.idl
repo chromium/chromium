@@ -34,14 +34,16 @@
     readonly attribute WorkerGlobalScope self;
     readonly attribute WorkerLocation location;
 
-    // TODO(foolip): onerror should be an OnErrorEventHandler.
-    attribute EventHandler onerror;
+    attribute OnErrorEventHandler onerror;
     attribute EventHandler onlanguagechange;
+    [RuntimeEnabled=TimeZoneChangeEvent] attribute EventHandler ontimezonechange;
     // attribute EventHandler onoffline;
     // attribute EventHandler ononline;
 
     // https://html.spec.whatwg.org/C/#apis-available-to-workers
-    [RaisesException] void importScripts(ScriptURLString... urls);
+    // Although RaisesException is not specified, importScripts() can actually
+    // throw exceptions directly to V8.
+    void importScripts(ScriptURLString... urls);
     readonly attribute WorkerNavigator navigator;
 
 
@@ -74,7 +76,7 @@
     readonly attribute FontFaceSet fonts;
 
     // TrustedTypes API: http://github.com/wicg/trusted-types
-    [RuntimeEnabled=TrustedDOMTypes, Unforgeable] readonly attribute TrustedTypePolicyFactory trustedTypes;
+    [RuntimeEnabled=TrustedDOMTypes] readonly attribute TrustedTypePolicyFactory trustedTypes;
 };
 
 WorkerGlobalScope includes WindowOrWorkerGlobalScope;

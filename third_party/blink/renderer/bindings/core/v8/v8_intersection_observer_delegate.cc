@@ -10,14 +10,13 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
 V8IntersectionObserverDelegate::V8IntersectionObserverDelegate(
     V8IntersectionObserverCallback* callback,
     ScriptState* script_state)
-    : ContextClient(ExecutionContext::From(script_state)),
+    : ExecutionContextClient(ExecutionContext::From(script_state)),
       callback_(callback) {}
 
 V8IntersectionObserverDelegate::~V8IntersectionObserverDelegate() = default;
@@ -29,13 +28,13 @@ void V8IntersectionObserverDelegate::Deliver(
 }
 
 ExecutionContext* V8IntersectionObserverDelegate::GetExecutionContext() const {
-  return ContextClient::GetExecutionContext();
+  return ExecutionContextClient::GetExecutionContext();
 }
 
-void V8IntersectionObserverDelegate::Trace(blink::Visitor* visitor) {
+void V8IntersectionObserverDelegate::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   IntersectionObserverDelegate::Trace(visitor);
-  ContextClient::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
 }
 
 }  // namespace blink

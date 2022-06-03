@@ -1,5 +1,5 @@
 // This file provides a PermissionsHelper object which can be used by
-// LayoutTests using testRunner to handle permissions. The methods in the object
+// LayoutTests to handle permissions. The methods in the object
 // return promises so can be used to write idiomatic, race-free code.
 //
 // The current available methods are:
@@ -39,6 +39,8 @@ var PermissionsHelper = (function() {
         return {name: "periodic-background-sync"};
       case "nfc":
         return {name: "nfc"};
+      case "display-capture":
+        return {name: "display-capture"};
       default:
         throw "Invalid permission name provided";
     }
@@ -46,21 +48,7 @@ var PermissionsHelper = (function() {
 
   return {
     setPermission: function(name, state) {
-      return new Promise(function(resolver, reject) {
-        navigator.permissions.query(nameToObject(name)).then(function(result) {
-            if (result.state == state) {
-                resolver()
-                return;
-            }
-
-            result.onchange = function() {
-                result.onchange = null;
-                resolver();
-            };
-
-            testRunner.setPermission(name, state, location.origin, location.origin);
-        });
-      });
+      return internals.setPermission(nameToObject(name), state, location.origin, location.origin);
     }
   }
 })();

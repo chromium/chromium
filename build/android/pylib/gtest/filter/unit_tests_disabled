@@ -19,9 +19,6 @@ AutofillTableTest.UpdateAutofillProfile
 AutofillProfileTest.*
 CreditCardTest.SetInfoExpirationMonth
 
-# crbug.com/139398
-DownloadItemModelTest.InterruptTooltip
-
 # Tests crashing in the APK
 # l10n_util.cc(655)] Check failed: std::string::npos != pos
 DownloadItemModelTest.InterruptStatus

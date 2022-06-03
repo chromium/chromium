@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that breakpoints are correctly handled while debugger is turned off\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.navigatePromise(
       'resources/debugger-disable-add-breakpoint.html');
@@ -22,16 +22,16 @@
     TestRunner.addResult('Main resource was shown.');
     TestRunner.debuggerModel.addEventListener(
         SDK.DebuggerModel.Events.DebuggerWasDisabled, step3, this);
-    TestRunner.debuggerModel._disableDebugger();
+    TestRunner.debuggerModel.disableDebugger();
   }
 
   async function step3() {
     TestRunner.debuggerModel.removeEventListener(
         SDK.DebuggerModel.Events.DebuggerWasDisabled, step3, this);
     TestRunner.addResult('Debugger disabled.');
-    SourcesTestRunner.setBreakpoint(testSourceFrame, 3, '', true);
+    await SourcesTestRunner.setBreakpoint(testSourceFrame, 3, '', true);
     TestRunner.addResult('Breakpoint added');
-    await TestRunner.debuggerModel._enableDebugger();
+    await TestRunner.debuggerModel.enableDebugger();
     step4();
   }
 
@@ -48,19 +48,23 @@
     TestRunner.addResult('Disable debugger again');
     TestRunner.debuggerModel.addEventListener(
         SDK.DebuggerModel.Events.DebuggerWasDisabled, step7, this);
-    TestRunner.debuggerModel._disableDebugger();
+    TestRunner.debuggerModel.disableDebugger();
   }
 
   function step7() {
     TestRunner.addResult('Debugger disabled');
+    TestRunner.debuggerModel.removeEventListener(
+      SDK.DebuggerModel.Events.DebuggerWasDisabled, step7, this);
     SourcesTestRunner.removeBreakpoint(testSourceFrame, 3);
     TestRunner.addResult('Breakpoint removed');
     TestRunner.debuggerModel.addEventListener(
         SDK.DebuggerModel.Events.DebuggerWasEnabled, step8, this);
-    TestRunner.debuggerModel._enableDebugger();
+    TestRunner.debuggerModel.enableDebugger();
   }
 
   function step8() {
+    TestRunner.debuggerModel.removeEventListener(
+      SDK.DebuggerModel.Events.DebuggerWasEnabled, step8, this);
     TestRunner.addResult('Debugger enabled');
     TestRunner.addResult('Evaluating test function.');
     TestRunner.evaluateInPage('testFunction()', step9);

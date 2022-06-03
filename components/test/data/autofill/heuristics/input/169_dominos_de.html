@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title></title>
+  </head>
+  <body>
+    <form id="delivery-details" method="POST">
+        <label id="customer-postcode-label" class="form-label" for="customer-postcode">Postleitzahl</label>
+        <input value="" placeholder="" id="customer-postcode" type="text" class="form-control" name="Customer.Postcode">
+        <label id="customer-street-name-label" for="customer-street-name" class="form-label">
+            Straßenname
+        </label>
+        <input class="form-control" value="" id="customer-street-name" type="text" name="Customer.Street" >
+        <label id="customer-street-no-label" for="customer-street-no" class="form-label">
+            Hausnummer
+        </label>
+        <input value="" id="customer-street-no" class="form-control" type="text" name="Customer.StreetNo" >
+        <input type="checkbox" id="at_remember-my-details" name="Customer.RememberMyDetails" value="true">
+        <label class="form-label checkbox" id="remember-my-details-label" for="at_remember-my-details">Filialauswahl merken</label>
+    </form>
+  </body>
+</html>

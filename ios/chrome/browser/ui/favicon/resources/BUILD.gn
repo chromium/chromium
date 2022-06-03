@@ -4,15 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("default_world_favicon") {
-  sources = [
-    "default_world_favicon.imageset/Contents.json",
-    "default_world_favicon.imageset/default_world_favicon.png",
-    "default_world_favicon.imageset/default_world_favicon@2x.png",
-    "default_world_favicon.imageset/default_world_favicon@3x.png",
-  ]
-}
-
 imageset("default_world_favicon_incognito") {
   sources = [
     "default_world_favicon_incognito.imageset/Contents.json",

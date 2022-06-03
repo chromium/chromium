@@ -1,16 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow DIV id='box' class='green drop-shadowed box'",
-          "rect": [8, 8, 330, 330],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [8, 8, 330, 330]
       ]
     },
     {
@@ -18,12 +14,8 @@
       "bounds": [200, 200],
       "contentsOpaque": true,
       "backgroundColor": "#008000",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow DIV id='box' class='green box blurry'",
-          "rect": [0, 0, 200, 200],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 200, 200]
       ],
       "transform": 1
     }

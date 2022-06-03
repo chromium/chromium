@@ -7,6 +7,12 @@ import("//build/config/linux/pkg_config.gni")
 
 assert(is_linux, "This file should only be referenced on Linux")
 
+declare_args() {
+  # The (major) version of GTK to build against.  A different version may be
+  # loaded at runtime.
+  gtk_version = 3
+}
+
 # GN doesn't check visibility for configs so we give this an obviously internal
 # name to discourage random targets from accidentally depending on this and
 # bypassing the GTK target's visibility.
@@ -15,28 +21,33 @@ pkg_config("gtk_internal_config") {
   # misconfigured systems.
   packages = [
     "gmodule-2.0",
-    "gtk+-${gtk_version}.0",
     "gthread-2.0",
   ]
+  if (gtk_version == 3) {
+    packages += [ "gtk+-3.0" ]
+  } else {
+    assert(gtk_version == 4)
+    packages += [ "gtk4" ]
+  }
 }
 
-# Basically no parts of Chrome should depend on GTK. To prevent accidents, the
-# parts that explicitly need GTK are whitelisted on this target.
 group("gtk") {
   visibility = [
-    "//chrome/test:interactive_ui_tests",
-    "//chrome/test:unit_tests",
+    # This is the only target that can depend on GTK.  Do not add more targets
+    # to this list.
+    "//ui/gtk:gtk_stubs",
+
+    # These are allow-listed for WebRTC builds.
     "//examples:peerconnection_client",
-    "//gpu/gles2_conform_support:gles2_conform_test_windowless",
-    "//remoting/host/linux",
+    "//remoting/host:common",
+    "//remoting/host:remoting_me2me_host_static",
+    "//remoting/host/file_transfer",
     "//remoting/host/it2me:common",
     "//remoting/host/it2me:remote_assistance_host",
-    "//remoting/host:common",
-    "//remoting/host/file_transfer",
-    "//remoting/host:remoting_me2me_host_static",
+    "//remoting/host/linux",
+    "//remoting/host/remote_open_url:common",
     "//remoting/test:it2me_standalone_host_main",
     "//webrtc/examples:peerconnection_client",
-    "//chrome/browser/ui/libgtkui:*",
   ]
 
   public_configs = [ ":gtk_internal_config" ]
@@ -44,10 +55,15 @@ group("gtk") {
 
 # Depend on "gtkprint" to get this.
 pkg_config("gtkprint_internal_config") {
-  packages = [ "gtk+-unix-print-${gtk_version}.0" ]
+  if (gtk_version == 3) {
+    packages = [ "gtk+-unix-print-3.0" ]
+  } else {
+    assert(gtk_version == 4)
+    packages = [ "gtk4-unix-print" ]
+  }
 }
 
 group("gtkprint") {
-  visibility = [ "//chrome/browser/ui/libgtkui:*" ]
+  visibility = [ "//ui/gtk:*" ]
   public_configs = [ ":gtkprint_internal_config" ]
 }

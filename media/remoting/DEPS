@@ -1,3 +1,5 @@
 include_rules = [
   "+mojo/public",
+  "+third_party/openscreen/src/cast/streaming",
+  "+third_party/openscreen/src/util",
 ]

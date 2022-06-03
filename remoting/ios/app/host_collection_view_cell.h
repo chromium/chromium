@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/third_party/material_components_ios/src/components/Collections/src/MaterialCollections.h"
+#import <MaterialComponents/MaterialCollections.h>
 
 @class HostInfo;
 

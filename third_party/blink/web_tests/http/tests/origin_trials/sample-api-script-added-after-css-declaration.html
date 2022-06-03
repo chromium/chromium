@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test Sample API enabled CSS property when trial is enabled by script-added meta tag</title>
+<link rel="stylesheet" href="resources/origintrials.css">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/origin-trials-helper.js"></script>
+<script src="resources/origintrials.js"></script>
+<script>
+
+// TODO(iclelland): Generate this sample token during the build. The token
+//   below will expire in 2033, but it would be better to always have a token which
+//   is guaranteed to be valid when the tests are run. -->
+// Generate these tokens with the given commands:
+// generate_token.py http://127.0.0.1:8000 Frobulate --expire-timestamp=2000000000
+var token = "AlCoOPbezqtrGMzSzbLQC4c+oPqO6yuioemcBPjgcXajF8jtmZr4B8tJRPAARPbsX6hDeVyXCKHzEJfpBXvZgQEAAABReyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRnJvYnVsYXRlIiwgImV4cGlyeSI6IDIwMDAwMDAwMDB9";
+
+// The trial is not enabled, as no token is provided.
+expect_failure_css(document.documentElement);
+
+// Add the token to enable the trial.
+OriginTrialsHelper.add_token(token);
+
+// The trial is now enabled, by the token added via script.
+expect_success();
+expect_success_css(document.documentElement, 'none');
+
+</script>

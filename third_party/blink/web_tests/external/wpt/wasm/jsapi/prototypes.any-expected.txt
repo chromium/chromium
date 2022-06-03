@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL _Module assert_true: _Module instanceof _Module expected true got false
+FAIL _Instance assert_true: _Instance instanceof _Instance expected true got false
+FAIL _Memory assert_true: _Memory instanceof _Memory expected true got false
+FAIL _Table assert_true: _Table instanceof _Table expected true got false
+FAIL _Global assert_true: _Global instanceof _Global expected true got false
+Harness: the test ran to completion.
+

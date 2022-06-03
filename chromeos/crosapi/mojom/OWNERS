@@ -1,0 +1,17 @@
+per-file *.mojom=set noparent
+
+# For small changes, like adding a field to an existing API, prefer
+# Lacros owners. See go/lacros-mojo-security-review
+per-file *.mojom=file://chromeos/LACROS_OWNERS
+
+# Prefer Chrome OS owners for larger or security-sensitive changes
+# to the Lacros API. See go/lacros-mojo-security-review
+per-file *.mojom=file://chromeos/SECURITY_OWNERS
+
+# General Chrome IPC owners are a last resort.
+per-file *.mojom=file://ipc/SECURITY_OWNERS
+
+per-file *_mojom_traits*.*=set noparent
+per-file *_mojom_traits*.*=file://chromeos/LACROS_OWNERS
+per-file *_mojom_traits*.*=file://chromeos/SECURITY_OWNERS
+per-file *_mojom_traits*.*=file://ipc/SECURITY_OWNERS

@@ -8,10 +8,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/ash_public_export.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "components/sync/model/string_ordinal.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/range/range.h"
 #include "url/gurl.h"
@@ -32,24 +34,24 @@ constexpr int kMouseDragThreshold = 2;
 // Id of OEM folder in app list.
 ASH_PUBLIC_EXPORT extern const char kOemFolderId[];
 
+// The AppListItem ID of the "Linux apps" folder.
+ASH_PUBLIC_EXPORT extern const char kCrostiniFolderId[];
+
 // App list config types supported by AppListConfig.
 enum class AppListConfigType {
-  // Config type used for all screens when app_list_features::ScalableAppList
-  // feature is disabled. (Note that two configs having this type can differ, in
-  // case one of them is scaled down).
-  kShared,
-
-  // Config used on large screens when app_list_features::ScalableAppList
-  // feature is enabled.
+  // Legacy configs, chosen based on the size of the screen.
+  // Used when ProductivityLauncher is disabled.
   kLarge,
-
-  // Config used on medium sized screens when app_list_features::ScalableAppList
-  // feature is enabled.
   kMedium,
+  kSmall,
 
-  // Config used on small screens when app_list_features::ScalableAppList
-  // feature is enabled.
-  kSmall
+  // Config for tablet mode on typical size screens.
+  // Used when ProductivityLauncher is enabled.
+  kRegular,
+
+  // Config for clamshell mode. Also used for tablet mode on small screens.
+  // Used when ProductivityLauncher is enabled.
+  kDense,
 };
 
 // A structure holding the common information which is sent between ash and,
@@ -63,13 +65,55 @@ struct ASH_PUBLIC_EXPORT AppListItemMetadata {
   std::string name;        // Corresponding app/folder's name of the item.
   std::string short_name;  // Corresponding app's short name of the item. Empty
                            // if the app doesn't have one or it's a folder.
-  std::string folder_id;   // Id of folder where the item resides.
+
+  AppStatus app_status = AppStatus::kReady;  // App status.
+
+  std::string folder_id;           // Id of folder where the item resides.
   syncer::StringOrdinal position;  // Position of the item.
   bool is_folder = false;          // Whether this item is a folder.
   bool is_persistent = false;  // Whether this folder is allowed to contain only
                                // 1 item.
   gfx::ImageSkia icon;         // The icon of this item.
   bool is_page_break = false;  // Whether this item is a "page break" item.
+  SkColor badge_color = SK_ColorWHITE;  // Notification badge color.
+
+  int icon_version = 0;  // An int represent icon version. If changed, `icon`
+                         // should be reloaded.
+};
+
+// All possible orders to sort app list items.
+enum class AppListSortOrder {
+  // The sort order is not set.
+  kCustom = 0,
+
+  // Items are sorted by the name alphabetical order. Note that folders are
+  // always placed in front of other types of items.
+  kNameAlphabetical,
+
+  // Items are sorted by the name reverse alphabetical order. Note that folders
+  // are always placed in front of other types of items.
+  kNameReverseAlphabetical
+};
+
+// Lists the reasons that ash requests for item position update.
+enum class RequestPositionUpdateReason {
+  // Fix the position when multiple items share the same position.
+  kFixItem,
+
+  // Move an item.
+  kMoveItem
+};
+
+// Lists the reasons that ash requests to move an item into a folder.
+enum class RequestMoveToFolderReason {
+  // Merge two items and move the first item to the created folder.
+  kMergeFirstItem,
+
+  // Merge two items and move the second item to the created folder.
+  kMergeSecondItem,
+
+  // Move an item to an existed folder.
+  kMoveItem
 };
 
 // All possible states of the app list.
@@ -131,7 +175,12 @@ enum class AppListLaunchType {
   kAppSearchResult,
 };
 
-// Type of the search result, which is set in Chrome.
+// Type of the search result, which is set in Chrome. These values are persisted
+// to logs. Entries should not be renumbered and numeric values should never be
+// reused.
+//
+// TODO(crbug.com/1258415): kFileChip and kDriveChip can be deprecated once the
+// new launcher is launched.
 enum class AppListSearchResultType {
   kUnknown,       // Unknown type. Don't use over IPC
   kInstalledApp,  // Installed apps.
@@ -144,28 +193,55 @@ enum class AppListSearchResultType {
   kPlayStoreReinstallApp,  // Reinstall recommendations from PlayStore.
   kArcAppShortcut,         // ARC++ app shortcuts.
   kZeroStateFile,          // Zero state local file results.
-  kDriveQuickAccess,       // Drive QuickAccess results.
+  kZeroStateDrive,         // Drive QuickAccess results.
+  kFileChip,               // Local file results in suggestion chips.
+  kDriveChip,              // Drive file results in suggestion chips.
+  kAssistantChip,          // Assistant results in suggestion chips.
+  kOsSettings,             // OS settings results.
+  kInternalPrivacyInfo,    // Result used internally by privacy notices.
+  kAssistantText,          // Assistant text results.
+  kHelpApp,                // Help App (aka Explore) results.
+  kFileSearch,             // Local file search results.
+  kDriveSearch,            // Drive file search results.
   // Add new values here.
+  kMaxValue = kDriveSearch,
 };
 
-// How the result should be displayed. Do not change the order of these as
-// they are used for metrics.
+// The different categories a search result can be part of. Every search result
+// to be displayed in the search box should be associated with one category. It
+// is an error for results displayed in the search box to have a kUnknown
+// category, but results displayed in other views - eg. the Continue section -
+// may use kUnknown.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AppListSearchResultCategory {
+  kUnknown = 0,
+  kApps = 1,
+  kAppShortcuts = 2,
+  kWeb = 3,
+  kFiles = 4,
+  kSettings = 5,
+  kHelp = 6,
+  kPlayStore = 7,
+  kSearchAndAssistant = 8,
+  kMaxValue = kSearchAndAssistant,
+};
+
+// Which UI container(s) the result should be displayed in.
+// Do not change the order of these as they are used for metrics.
+//
+// TODO(1258415): kChip can be deprecated once the new launcher is launched.
 enum SearchResultDisplayType {
   kNone = 0,
-  kList,
-  kTile,
-  kRecommendation,
-  kCard,
-  // Add new values here.
-
+  kList = 1,  // Displays in search list
+  kTile = 2,  // Displays in search tiles
+  // kRecommendation = 3  // No longer used, split between kTile and kChip
+  kCard = 4,      // Displays in answer cards
+  kChip = 5,      // Displays in suggestion chips
+  kContinue = 6,  // Displays in the Continue section
+  // Add new values here
   kLast,  // Don't use over IPC
-};
-
-// Which UI container should the result be displayed in.
-enum SearchResultDisplayLocation {
-  kSuggestionChipContainer,
-  kTileListContainer,
-  kPlacementUndefined,
 };
 
 // Which index in the UI container should the result be placed in.
@@ -179,19 +255,66 @@ enum SearchResultDisplayIndex {
   kUndefined,
 };
 
-// Actions for OmniBox zero state suggestion.
-enum OmniBoxZeroStateAction {
-  // Removes the zero state suggestion.
-  kRemoveSuggestion = 0,
-  // Appends the suggestion to search box query.
-  kAppendSuggestion,
-  // kZeroStateActionMax is always last.
-  kZeroStateActionMax
+// The rich entity subtype of Omnibox results.
+enum SearchResultOmniboxDisplayType {
+  kDefault,
+  kAnswer,
+  kCalculatorAnswer,
+  kRichImage,
+  kFavicon,
+  kOmniboxTypeMax,  // Do not use.
 };
 
-// Returns OmniBoxZeroStateAction mapped for |button_index|.
-ASH_PUBLIC_EXPORT OmniBoxZeroStateAction
-GetOmniBoxZeroStateAction(int button_index);
+// Actions for search results. These map to the buttons beside some search
+// results, and do not include the launching of the result itself.
+// TODO(crbug.com/1263751): Currently these are only relevant to omnibox
+// results, but these are being generalized to other result types.
+enum SearchResultActionType {
+  // Removes the search result.
+  kRemove = 0,
+  // Appends the result to search box query.
+  kAppend,
+  // kSearchResultActionMax is always last.
+  kSearchResultActionTypeMax
+};
+
+// The shape to mask a search result icon with.
+enum class SearchResultIconShape {
+  kDefault,
+  kRectangle,
+  kRoundedRectangle,
+  kCircle,
+};
+
+struct ASH_PUBLIC_EXPORT SearchResultIconInfo {
+  SearchResultIconInfo();
+  // TODO(crbug.com/1232897): Make the search backend explicitly set dimension
+  // and shape for all icons by removing the one- and two-argument versions of
+  // the constructor.
+  explicit SearchResultIconInfo(gfx::ImageSkia icon);
+  SearchResultIconInfo(gfx::ImageSkia icon, int dimension);
+  SearchResultIconInfo(gfx::ImageSkia icon,
+                       int dimension,
+                       SearchResultIconShape shape);
+
+  SearchResultIconInfo(const SearchResultIconInfo&);
+
+  ~SearchResultIconInfo();
+
+  // The icon itself.
+  gfx::ImageSkia icon;
+
+  // The size to display the icon at, while preserving aspect ratio. Only
+  // used for the results list view.
+  absl::optional<int> dimension;
+
+  // The shape to mask the icon with. Only used by the results list view.
+  SearchResultIconShape shape = SearchResultIconShape::kDefault;
+};
+
+// Returns SearchResultActionType mapped for |button_index|.
+ASH_PUBLIC_EXPORT SearchResultActionType
+GetSearchResultActionType(int button_index);
 
 // A tagged range in search result text.
 struct ASH_PUBLIC_EXPORT SearchResultTag {
@@ -219,13 +342,13 @@ using SearchResultTags = std::vector<SearchResultTag>;
 struct ASH_PUBLIC_EXPORT SearchResultAction {
   SearchResultAction();
   SearchResultAction(const gfx::ImageSkia& image,
-                     const base::string16& tooltip_text,
+                     const std::u16string& tooltip_text,
                      bool visible_on_hover);
   SearchResultAction(const SearchResultAction& other);
   ~SearchResultAction();
 
   gfx::ImageSkia image;
-  base::string16 tooltip_text;
+  std::u16string tooltip_text;
   // Visible when button or its parent row in hover state.
   bool visible_on_hover;
 };
@@ -242,13 +365,13 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   std::string id;
 
   // The title of the result, e.g. an app's name, an autocomplete query, etc.
-  base::string16 title;
+  std::u16string title;
 
   // A detail string of this result.
-  base::string16 details;
+  std::u16string details;
 
   // An text to be announced by a screen reader app.
-  base::string16 accessible_name;
+  std::u16string accessible_name;
 
   // How the title matches the query. See the SearchResultTag section for more
   // details.
@@ -267,26 +390,32 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   float rating = -1.0;
 
   // A formatted price string, e.g. "$7.09", "HK$3.94", etc.
-  base::string16 formatted_price;
+  std::u16string formatted_price;
+
+  // Which category a search result is contained in within the search box. May
+  // be kUnknown for results displayed in non-search-box views, eg. the Continue
+  // section.
+  AppListSearchResultCategory category = AppListSearchResultCategory::kUnknown;
+
+  // Whether this result is a top match and should be shown in the Top Matches
+  // section instead of its category.
+  bool best_match = false;
 
   // The type of this result.
   AppListSearchResultType result_type = AppListSearchResultType::kUnknown;
 
-  // The subtype of this result. Derived search result classes can use this to
-  // represent their own subtypes. Currently, OmniboxResult sets this to
-  // indicate this is a history result, previous query, etc. A value of -1
-  // indicates no subtype has been set.
-  int result_subtype = -1;
+  // A search result type used for metrics.
+  ash::SearchResultType metrics_type = ash::SEARCH_RESULT_TYPE_BOUNDARY;
 
-  // How this result is displayed.
+  // Which UI container(s) the result should be displayed in.
   SearchResultDisplayType display_type = SearchResultDisplayType::kList;
-
-  // Which UI container should the result be displayed in.
-  SearchResultDisplayLocation display_location =
-      SearchResultDisplayLocation::kPlacementUndefined;
 
   // Which index in the UI container should the result be placed in.
   SearchResultDisplayIndex display_index = SearchResultDisplayIndex::kUndefined;
+
+  // The rich entity subtype of Omnibox results.
+  SearchResultOmniboxDisplayType omnibox_type =
+      SearchResultOmniboxDisplayType::kDefault;
 
   // A score to settle conflicts between two apps with the same requested
   // |display_index|.
@@ -301,25 +430,34 @@ struct ASH_PUBLIC_EXPORT SearchResultMetadata {
   // Whether this result is installing.
   bool is_installing = false;
 
+  // Whether this result is a recommendation.
+  bool is_recommendation = false;
+
   // A query URL associated with this result. The meaning and treatment of the
   // URL (e.g. displaying inline web contents) is dependent on the result type.
-  base::Optional<GURL> query_url;
+  absl::optional<GURL> query_url;
 
   // An optional id that identifies an equivalent result to this result. Answer
   // card result has this set to remove the equivalent omnibox
   // search-what-you-typed result when there is an answer card for the query.
-  base::Optional<std::string> equivalent_result_id;
+  absl::optional<std::string> equivalent_result_id;
 
   // The icon of this result.
-  gfx::ImageSkia icon;
+  SearchResultIconInfo icon;
 
   // The icon of this result in a smaller dimension to be rendered in suggestion
   // chip view.
+  // TODO(crbug.com/1225161): Remove this and replace it with |icon| and an
+  // appropriately set |icon_dimension|.
   gfx::ImageSkia chip_icon;
 
   // The badge icon of this result that indicates its type, e.g. installable
   // from PlayStore, installable from WebStore, etc.
-  gfx::ImageSkia badge_icon;
+  ui::ImageModel badge_icon;
+
+  // Flag indicating whether the `badge_icon` should be painted atop a circle
+  // background image.
+  bool use_badge_icon_background = false;
 
   // If set to true, whether or not to send visibility updates through to to
   // the chrome side when this result is set visible/invisible.

@@ -7,9 +7,8 @@
 <translation id="1420684932347524586">এ বাবা! র‌্যান্ডম RSA ব্যক্তিগত কী জেনারেট করতে ব্যর্থ৷</translation>
 <translation id="1445572445564823378">এই এক্সটেনশনটির গতি কমে যাচ্ছে <ph name="PRODUCT_NAME" />৷ আপনাকে <ph name="PRODUCT_NAME" />-এর সম্পাদনা পুনঃস্থাপন করার জন্য এটিকে বন্ধ করতে হবে৷</translation>
 <translation id="1468038450257740950">WebGL সমর্থিত নয়৷</translation>
-<translation id="149347756975725155">এক্সটেনশন আইকন '<ph name="ICON" />' লোড করা যায়নি৷</translation>
 <translation id="1803557475693955505">পৃষ্ঠভূমি পৃষ্ঠা '<ph name="BACKGROUND_PAGE" />' লোড করা যায়নি৷</translation>
-<translation id="2159915644201199628">ইমেজ ডিকোড করা যায়নি: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2159915644201199628">ছবি ডিকোড করা যায়নি: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">স্থানীয়করণ ব্যবহৃত হয়েছে, কিন্তু default_locale তালিকাতে উল্লেখ ছিল না৷</translation>
 <translation id="2576842806987913196">এই নামের একটি CRX ফাইল ইতিমধ্যে বিদ্যমান আছে৷</translation>
 <translation id="2785530881066938471">বর্তমান স্ক্রিপ্টটির জন্য <ph name="RELATIVE_PATH" /> ফাইলটি লোড করতে পারা যায়নি৷ এটি UTF-8 এনকোড হওয়া নেই৷</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ব্যক্তিগত কী-টি পড়তে ব্যর্থ৷</translation>
 <translation id="6391538222494443604">ইনপুট নির্দেশিকা বন্ধ করা আবশ্যক৷</translation>
 <translation id="641087317769093025">এক্সটেনশন আনজিপ করা যায়নি</translation>
-<translation id="6413453408918378296">এই আইকনটি যথেষ্ট পরিষ্কারভাবে দেখা যাচ্ছে না '<ph name="ICON" />'।</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" আপনার এক বা একাধিক ডিভাইসে অ্যাক্সেসের জন্য অনুরোধ করছে:</translation>
 <translation id="657064425229075395">পশ্চাদপট লিপি '<ph name="BACKGROUND_SCRIPT" />' লোড করা যায়নি৷</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" /> এর পক্ষ থেকে <ph name="PRODUCT_NAME" /> (ক্রমিক সংখ্যা <ph name="SERIAL_NUMBER" />)</translation>

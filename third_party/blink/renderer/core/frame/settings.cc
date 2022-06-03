@@ -28,11 +28,53 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/graphics/dark_mode_settings.h"
+#include "build/chromeos_buildflags.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace blink {
+
+namespace {
+
+// For generated Settings::SetFromStrings().
+template <typename T>
+struct FromString {
+  T operator()(const String& s) { return static_cast<T>(s.ToInt()); }
+};
+
+template <>
+struct FromString<String> {
+  const String& operator()(const String& s) { return s; }
+};
+
+template <>
+struct FromString<bool> {
+  bool operator()(const String& s) { return s.IsEmpty() || s == "true"; }
+};
+
+template <>
+struct FromString<float> {
+  float operator()(const String& s) { return s.ToFloat(); }
+};
+
+template <>
+struct FromString<double> {
+  double operator()(const String& s) { return s.ToDouble(); }
+};
+
+template <>
+struct FromString<IntSize> {
+  IntSize operator()(const String& s) {
+    Vector<String> fields;
+    s.Split(',', fields);
+    return IntSize(fields.size() > 0 ? fields[0].ToInt() : 0,
+                   fields.size() > 1 ? fields[1].ToInt() : 0);
+  }
+};
+
+}  // namespace
 
 // NOTEs
 //  1) EditingMacBehavior comprises builds on Mac;
@@ -41,16 +83,18 @@ namespace blink {
 //     Darwin/MacOS/Android (and then abusing the terminology);
 //  4) EditingAndroidBehavior comprises Android builds.
 // 99) MacEditingBehavior is used a fallback.
-static EditingBehaviorType EditingBehaviorTypeForPlatform() {
+static mojom::blink::EditingBehavior EditingBehaviorTypeForPlatform() {
   return
-#if defined(OS_MACOSX)
-      kEditingMacBehavior
+#if defined(OS_MAC)
+      mojom::blink::EditingBehavior::kEditingMacBehavior
 #elif defined(OS_WIN)
-      kEditingWindowsBehavior
+      mojom::blink::EditingBehavior::kEditingWindowsBehavior
 #elif defined(OS_ANDROID)
-      kEditingAndroidBehavior
+      mojom::blink::EditingBehavior::kEditingAndroidBehavior
+#elif defined(OS_CHROMEOS)
+      mojom::blink::EditingBehavior::kEditingChromeOSBehavior
 #else  // Rest of the UNIX-like systems
-      kEditingUnixBehavior
+      mojom::blink::EditingBehavior::kEditingUnixBehavior
 #endif
       ;
 }
@@ -61,8 +105,7 @@ static const bool kDefaultSelectTrailingWhitespaceEnabled = true;
 static const bool kDefaultSelectTrailingWhitespaceEnabled = false;
 #endif
 
-Settings::Settings()
-    : text_autosizing_enabled_(false) SETTINGS_INITIALIZER_LIST {}
+Settings::Settings() : delegate_(nullptr) SETTINGS_INITIALIZER_LIST {}
 
 SETTINGS_SETTER_BODIES
 
@@ -73,33 +116,6 @@ void Settings::SetDelegate(SettingsDelegate* delegate) {
 void Settings::Invalidate(SettingsDelegate::ChangeType change_type) {
   if (delegate_)
     delegate_->SettingsChanged(change_type);
-}
-
-void Settings::SetTextAutosizingEnabled(bool text_autosizing_enabled) {
-  if (text_autosizing_enabled_ == text_autosizing_enabled)
-    return;
-
-  text_autosizing_enabled_ = text_autosizing_enabled;
-  Invalidate(SettingsDelegate::kTextAutosizingChange);
-}
-
-// TODO: Move to Settings.json5 once make_settings can understand IntSize.
-void Settings::SetTextAutosizingWindowSizeOverride(
-    const IntSize& text_autosizing_window_size_override) {
-  if (text_autosizing_window_size_override_ ==
-      text_autosizing_window_size_override)
-    return;
-
-  text_autosizing_window_size_override_ = text_autosizing_window_size_override;
-  Invalidate(SettingsDelegate::kTextAutosizingChange);
-}
-
-void Settings::SetForceDarkModeEnabled(bool enabled) {
-  if (force_dark_mode_ == enabled)
-    return;
-  force_dark_mode_ = enabled;
-  SetDarkModeEnabled(force_dark_mode_);
-  Invalidate(SettingsDelegate::kColorSchemeChange);
 }
 
 }  // namespace blink

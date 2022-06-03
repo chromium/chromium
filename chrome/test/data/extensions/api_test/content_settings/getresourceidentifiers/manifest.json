@@ -5,6 +5,7 @@
   "description" : "Content Settings API Test Extension",
   "permissions": [ "contentSettings" ],
   "background": {
-    "page": "test.html"
+    "scripts": ["test.js"],
+    "persistent": true
   }
 }

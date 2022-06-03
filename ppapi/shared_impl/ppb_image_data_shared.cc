@@ -4,7 +4,7 @@
 
 #include "ppapi/shared_impl/ppb_image_data_shared.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
 
 #if !defined(OS_NACL) && !defined(NACL_WIN64)

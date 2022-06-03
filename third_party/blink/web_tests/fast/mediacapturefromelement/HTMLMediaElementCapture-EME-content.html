@@ -18,9 +18,9 @@ test(function() {
     return video.setMediaKeys(mediaKeys);
   }).then(function(result) {
     video.src = "../../media/content/test-encrypted.webm";
-    assert_throws("NotSupportedError",
-                  function() { var stream = video.captureStream(); },
-                  "Cannot create a captureStream() out of a protected <video>");
+    assert_throws_dom("NotSupportedError",
+                      function() { var stream = video.captureStream(); },
+                      "Cannot create a captureStream() out of a protected <video>");
   });
 
 }, 'check <video> captureStream() fails on an encrypted/protected media');

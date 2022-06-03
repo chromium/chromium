@@ -6,12 +6,13 @@
 
 goog.provide('__crWeb.fill');
 
-goog.require('__crWeb.form');
+// Requires __crWeb.form.
 
 /**
  * @typedef {{
  *   name: string,
  *   value: string,
+ *   unique_renderer_id: string,
  *   form_control_type: string,
  *   autocomplete_attributes: string,
  *   max_length: number,
@@ -29,9 +30,11 @@ let AutofillFormFieldData;
 /**
  * @typedef {{
  *   name: string,
+ *   unique_renderer_id: string,
  *   origin: string,
  *   action: string,
  *   fields: Array<AutofillFormFieldData>
+ *   frame_id: string
  * }}
  */
 let AutofillFormData;
@@ -69,7 +72,7 @@ __gCrWeb.fill.MAX_DATA_LENGTH = 1024;
  * Google code project settings.
  *
  * This variable is |kMaxParseableFields| from
- * chromium/src/components/autofill/content/renderer/form_autofill_util.h
+ * chromium/src/components/autofill/core/common/autofill_constants.h
  *
  * @const {number}
  */
@@ -132,6 +135,20 @@ __gCrWeb.fill.EXTRACT_MASK_OPTIONS = 1 << 2;
 __gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION = 0;
 
 /**
+ * The value for a unique form or field ID not set or missing.
+ *
+ * @const {string}
+ */
+__gCrWeb.fill.RENDERER_ID_NOT_SET = '0';
+
+/**
+ * The JS Symbol object used to set stable unique form and field IDs.
+ *
+ * @const {symbol}
+ */
+__gCrWeb.fill.ID_SYMBOL = window.Symbol.for('__gChrome~uniqueID');
+
+/**
  * Returns true if an element can be autocompleted.
  *
  * This method aims to provide the same logic as method
@@ -146,7 +163,8 @@ __gCrWeb.fill.autoComplete = function(element) {
   if (!element) {
     return false;
   }
-  if (__gCrWeb.common.getLowerCaseAttribute(element, 'autocomplete') == 'off') {
+  if (__gCrWeb.common.getLowerCaseAttribute(element, 'autocomplete') ===
+      'off') {
     return false;
   }
   if (__gCrWeb.common.getLowerCaseAttribute(element.form, 'autocomplete') ==
@@ -210,29 +228,35 @@ function setInputElementAngularValue_(value, input) {
  *
  * @param {string} value The value the input element will be set.
  * @param {Element} input The input element of which the value is set.
- * @param {function()=} callback Callback function with a boolean
- *     argument that indicates if the input element's value was changed.
+ * @param {function()=} callback Callback function called after the input
+ *     element's value is changed.
+ * @return {boolean} Whether the value has been set successfully.
  */
 __gCrWeb.fill.setInputElementValue = function(
     value, input, callback = undefined) {
-  if (!input) return;
+  if (!input) {
+    return false;
+  }
 
   const activeElement = document.activeElement;
-  if (input != activeElement) {
+  if (input !== activeElement) {
     __gCrWeb.fill.createAndDispatchHTMLEvent(
         activeElement, value, 'blur', true, false);
     __gCrWeb.fill.createAndDispatchHTMLEvent(
         input, value, 'focus', true, false);
   }
 
-  setInputElementValue_(value, input);
-  if (callback) callback();
+  const filled = setInputElementValue_(value, input);
+  if (callback) {
+    callback();
+  }
 
-  if (input != activeElement) {
+  if (input !== activeElement) {
     __gCrWeb.fill.createAndDispatchHTMLEvent(input, value, 'blur', true, false);
     __gCrWeb.fill.createAndDispatchHTMLEvent(
         activeElement, value, 'focus', true, false);
   }
+  return filled;
 };
 
 /**
@@ -240,6 +264,7 @@ __gCrWeb.fill.setInputElementValue = function(
  *
  * @param {string} value The value the input element will be set.
  * @param {Element} input The input element of which the value is set.
+ * @return {boolean} Whether the value has been set successfully.
  */
 function setInputElementValue_(value, input) {
   const propertyName = (input.type === 'checkbox' || input.type === 'radio') ?
@@ -255,7 +280,9 @@ function setInputElementValue_(value, input) {
   }
 
   // Return early if the value hasn't changed.
-  if (input[propertyName] == value) return;
+  if (input[propertyName] === value) {
+    return false;
+  }
 
   // When the user inputs a value in an HTMLInput field, the property setter is
   // not called. The different frameworks often call it explicitly when
@@ -280,7 +307,7 @@ function setInputElementValue_(value, input) {
 
   if (overrideProperty) {
     const newProperty = {
-      get: function() {
+      get() {
         if (setterCalled && oldPropertyDescriptor.get) {
           return oldPropertyDescriptor.get.call(input);
         }
@@ -311,7 +338,7 @@ function setInputElementValue_(value, input) {
 
   if (overrideProperty) {
     Object.defineProperty(input, propertyName, oldPropertyDescriptor);
-    if (!setterCalled && input[propertyName] != value) {
+    if (!setterCalled && input[propertyName] !== value) {
       // The setter was never called. This may be intentional (the framework
       // ignored the input event) or not (the event did not conform to what
       // framework expected). The whole function will likely fail, but try to
@@ -319,6 +346,7 @@ function setInputElementValue_(value, input) {
       input[propertyName] = value;
     }
   }
+  return true;
 }
 
 /**
@@ -387,7 +415,7 @@ __gCrWeb.fill.sanitizeValueForTextFieldInputType = function(
   // This logic is from method String limitLength() in TextFieldInputType.h
   for (let i = 0; i < newLength; ++i) {
     const current = valueWithLineBreakRemoved[i];
-    if (current < ' ' && current != '\t') {
+    if (current < ' ' && current !== '\t') {
       newLength = i;
       break;
     }
@@ -493,7 +521,7 @@ __gCrWeb.fill.createAndDispatchHTMLEvent = function(
     element, value, type, bubbles, cancelable) {
   const event =
       new Event(type, {bubbles: bubbles, cancelable: cancelable, data: value});
-  if (type == 'input') {
+  if (type === 'input') {
     event.inputType = 'insertText';
   }
   element.dispatchEvent(event);
@@ -551,6 +579,10 @@ function extractFieldsFromControlElements_(
     if (!__gCrWeb.fill.isAutofillableElement(controlElement)) {
       continue;
     }
+    try {
+      __gCrWeb.fill.setUniqueIDIfNeeded(controlElements[i]);
+    } catch (e) {
+    }
 
     // Create a new AutofillFormFieldData, fill it out and map it to the
     // field's name.
@@ -582,7 +614,9 @@ function isVisibleNode_(node) {
 
   if (node.nodeType === Node.ELEMENT_NODE) {
     const style = window.getComputedStyle(/** @type {Element} */ (node));
-    if (style.visibility == 'hidden' || style.display == 'none') return false;
+    if (style.visibility === 'hidden' || style.display === 'none') {
+      return false;
+    }
   }
 
   // Verify all ancestors are focusable.
@@ -642,7 +676,7 @@ function matchLabelsAndFields_(
         }
       }
     } else if (
-        fieldElement.form != formElement || fieldElement.type === 'hidden') {
+        fieldElement.form !== formElement || fieldElement.type === 'hidden') {
       continue;
     } else {
       // Typical case: look up |fieldData| in |elementArray|.
@@ -810,13 +844,17 @@ __gCrWeb.fill.webFormElementToFormData = function(
   }
 
   form['name'] = __gCrWeb.form.getFormIdentifier(formElement);
-  form['origin'] =
-      __gCrWeb.common.removeQueryAndReferenceFromURL(frame.location.href);
+  form['origin'] = __gCrWeb.common.removeQueryAndReferenceFromURL(frame.origin);
   form['action'] = __gCrWeb.fill.getCanonicalActionForForm(formElement);
 
   // The raw name and id attributes, which may be empty.
   form['name_attribute'] = formElement.getAttribute('name') || '';
   form['id_attribute'] = formElement.getAttribute('id') || '';
+
+  __gCrWeb.fill.setUniqueIDIfNeeded(formElement);
+  form['unique_renderer_id'] = __gCrWeb.fill.getUniqueID(formElement);
+
+  form['frame_id'] = frame.__gCrWeb.message.getFrameId();
 
   // Note different from form_autofill_util.cc version of this method, which
   // computes |form.action| using document.completeURL(form_element.action())
@@ -915,9 +953,9 @@ __gCrWeb.fill.trimWhitespaceTrailing = function(input) {
 __gCrWeb.fill.combineAndCollapseWhitespace = function(
     prefix, suffix, forceWhitespace) {
   const prefixTrimmed = __gCrWeb.fill.trimWhitespaceTrailing(prefix);
-  const prefixTrailingWhitespace = prefixTrimmed != prefix;
+  const prefixTrailingWhitespace = prefixTrimmed !== prefix;
   const suffixTrimmed = __gCrWeb.fill.trimWhitespaceLeading(suffix);
-  const suffixLeadingWhitespace = suffixTrimmed != suffix;
+  const suffixLeadingWhitespace = suffixTrimmed !== suffix;
   if (prefixTrailingWhitespace || suffixLeadingWhitespace || forceWhitespace) {
     return prefixTrimmed + ' ' + suffixTrimmed;
   } else {
@@ -1086,7 +1124,7 @@ __gCrWeb.fill.inferLabelFromSibling = function(element, forward) {
     }
 
     // Otherwise, only consider normal HTML elements and their contents.
-    if (nodeType != Node.TEXT_NODE && nodeType != Node.ELEMENT_NODE) {
+    if (nodeType !== Node.TEXT_NODE && nodeType !== Node.ELEMENT_NODE) {
       break;
     }
 
@@ -1218,7 +1256,7 @@ __gCrWeb.fill.inferLabelFromAriaLabel = function(element) {
  */
 __gCrWeb.fill.InferLabelFromValueAttr = function(element) {
   if (!element || !element.value || !element.hasAttribute('value') ||
-      element.value != element.getAttribute('value')) {
+      element.value !== element.getAttribute('value')) {
     return '';
   }
 
@@ -1232,7 +1270,7 @@ __gCrWeb.fill.InferLabelFromValueAttr = function(element) {
  *
  * It is based on the logic in
  *     bool IsLabelValid(base::StringPiece16 inferred_label,
- *         const std::vector<base::char16>& stop_words)
+ *         const std::vector<char16_t>& stop_words)
  * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
  * The list of characters that are considered special is hard-coded in a regexp.
  *
@@ -1861,7 +1899,7 @@ __gCrWeb.fill.nodeValue = function(node) {
 __gCrWeb.fill.value = function(element) {
   let value = element.value;
   if (__gCrWeb.fill.isSelectElement(element)) {
-    if (element.options.length > 0 && element.selectedIndex == 0 &&
+    if (element.options.length > 0 && element.selectedIndex === 0 &&
         element.options[0].disabled &&
         !element.options[0].hasAttribute('selected')) {
       for (let i = 0; i < element.options.length; i++) {
@@ -1910,6 +1948,9 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
   field['name_attribute'] = element.getAttribute('name') || '';
   field['id_attribute'] = element.getAttribute('id') || '';
 
+  __gCrWeb.fill.setUniqueIDIfNeeded(element);
+  field['unique_renderer_id'] = __gCrWeb.fill.getUniqueID(element);
+
   field['form_control_type'] = element.type;
   const autocompleteAttribute = element.getAttribute('autocomplete');
   if (autocompleteAttribute) {
@@ -1924,7 +1965,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
   }
 
   const roleAttribute = element.getAttribute('role');
-  if (roleAttribute && roleAttribute.toLowerCase() == 'presentation') {
+  if (roleAttribute && roleAttribute.toLowerCase() === 'presentation') {
     field['role'] = __gCrWeb.fill.ROLE_ATTRIBUTE_PRESENTATION;
   }
 
@@ -1947,7 +1988,7 @@ __gCrWeb.fill.webFormControlElementToFormField = function(
   if (__gCrWeb.fill.isAutofillableInputElement(element)) {
     if (__gCrWeb.fill.isTextInput(element)) {
       field['max_length'] = element.maxLength;
-      if (field['max_length'] == -1) {
+      if (field['max_length'] === -1) {
         // Take default value as defined by W3C.
         field['max_length'] = 524288;
       }
@@ -2075,5 +2116,228 @@ __gCrWeb.fill.getAriaLabel = function(element) {
 __gCrWeb.fill.getAriaDescription = function(element) {
   return coalesceTextByIdList(element, 'aria-describedby');
 };
+
+/**
+ * Searches an element's ancestors to see if the element is inside a <form> or
+ * <fieldset>.
+ *
+ * It is based on the logic in
+ *     bool (const WebElement& element)
+ * in chromium/src/components/autofill/content/renderer/form_cache.cc
+ *
+ * @param {!FormControlElement} element An element to examine.
+ * @return {boolean} Whether the element is inside a <form> or <fieldset>.
+ */
+__gCrWeb.fill.isElementInsideFormOrFieldSet = function(element) {
+  let parentNode = element.parentNode;
+  while (parentNode) {
+    if ((parentNode.nodeType === Node.ELEMENT_NODE) &&
+        (__gCrWeb.fill.hasTagName(parentNode, 'form') ||
+         __gCrWeb.fill.hasTagName(parentNode, 'fieldset'))) {
+      return true;
+    }
+    parentNode = parentNode.parentNode;
+  }
+  return false;
+};
+
+/**
+ * Get all form control elements from |elements| that are not part of a form.
+ * Also append the fieldsets encountered that are not part of a form to
+ * |fieldsets|.
+ *
+ * It is based on the logic in:
+ *     std::vector<WebFormControlElement>
+ *     GetUnownedAutofillableFormFieldElements(
+ *         const WebElementCollection& elements,
+ *         std::vector<WebElement>* fieldsets);
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc.
+ *
+ * In the C++ version, |fieldsets| can be NULL, in which case we do not try to
+ * append to it.
+ *
+ * @param {Array<!FormControlElement>} elements elements to look through.
+ * @param {Array<Element>} fieldsets out param for unowned fieldsets.
+ * @return {Array<FormControlElement>} The elements that are not part of a form.
+ */
+__gCrWeb.fill.getUnownedAutofillableFormFieldElements = function(
+    elements, fieldsets) {
+  const unownedFieldsetChildren = [];
+  for (let i = 0; i < elements.length; ++i) {
+    if (__gCrWeb.form.isFormControlElement(elements[i])) {
+      if (!elements[i].form) {
+        unownedFieldsetChildren.push(elements[i]);
+      }
+    }
+
+    if (__gCrWeb.fill.hasTagName(elements[i], 'fieldset') &&
+        !__gCrWeb.fill.isElementInsideFormOrFieldSet(elements[i])) {
+      fieldsets.push(elements[i]);
+    }
+  }
+  return __gCrWeb.fill.extractAutofillableElementsFromSet(
+      unownedFieldsetChildren);
+};
+
+
+/**
+ * Fills |form| with the form data object corresponding to the unowned elements
+ * and fieldsets in the document.
+ * |extract_mask| controls what data is extracted.
+ * Returns true if |form| is filled out. Returns false if there are no fields or
+ * too many fields in the |form|.
+ *
+ * It is based on the logic in
+ *     bool UnownedFormElementsAndFieldSetsToFormData(
+ *         const std::vector<blink::WebElement>& fieldsets,
+ *         const std::vector<blink::WebFormControlElement>& control_elements,
+ *         const GURL& origin,
+ *         ExtractMask extract_mask,
+ *         FormData* form)
+ * and
+ *     bool UnownedCheckoutFormElementsAndFieldSetsToFormData(
+ *         const std::vector<blink::WebElement>& fieldsets,
+ *         const std::vector<blink::WebFormControlElement>& control_elements,
+ *         const blink::WebFormControlElement* element,
+ *         const blink::WebDocument& document,
+ *         ExtractMask extract_mask,
+ *         FormData* form,
+ *         FormFieldData* field)
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.cc
+ *
+ * @param {HTMLFrameElement|Window} frame The window or frame where the
+ *     formElement is in.
+ * @param {Array<Element>} fieldsets The fieldsets to look through.
+ * @param {Array<FormControlElement>} controlElements The control elements that
+ *     will be processed.
+ * @param {number} extractMask Mask controls what data is extracted from
+ *     formElement.
+ * @param {bool} restrictUnownedFieldsToFormlessCheckout whether forms made of
+ *     unowned fields (i.e., not within a <form> tag) should be restricted to
+ *     those that appear to be in a checkout flow.
+ * @param {AutofillFormData} form Form to fill in the AutofillFormData
+ *     information of formElement.
+ * @return {boolean} Whether there are fields and not too many fields in the
+ *     form.
+ */
+__gCrWeb.fill.unownedFormElementsAndFieldSetsToFormData = function(
+    frame, fieldsets, controlElements, extractMask,
+    restrictUnownedFieldsToFormlessCheckout, form) {
+  if (!frame) {
+    return false;
+  }
+  form['name'] = '';
+  form['origin'] = __gCrWeb.common.removeQueryAndReferenceFromURL(frame.origin);
+  form['action'] = '';
+  form['is_form_tag'] = false;
+
+  if (!restrictUnownedFieldsToFormlessCheckout) {
+    return __gCrWeb.fill.formOrFieldsetsToFormData(
+        null /* formElement*/, null /* formControlElement */, fieldsets,
+        controlElements, extractMask, form, null /* field */);
+  }
+
+
+  const title = document.title.toLowerCase();
+  const path = document.location.pathname.toLowerCase();
+  // The keywords are defined in
+  // UnownedCheckoutFormElementsAndFieldSetsToFormData in
+  // components/autofill/content/renderer/form_autofill_util.cc
+  const keywords =
+      ['payment', 'checkout', 'address', 'delivery', 'shipping', 'wallet'];
+
+  const count = keywords.length;
+  for (let index = 0; index < count; index++) {
+    const keyword = keywords[index];
+    if (title.includes(keyword) || path.includes(keyword)) {
+      return __gCrWeb.fill.formOrFieldsetsToFormData(
+          null /* formElement*/, null /* formControlElement */, fieldsets,
+          controlElements, extractMask, form, null /* field */);
+    }
+  }
+
+  // Since it's not a checkout flow, only add fields that have a non-"off"
+  // autocomplete attribute to the formless autofill.
+  const controlElementsWithAutocomplete = [];
+  for (let index = 0; index < controlElements.length; index++) {
+    if (controlElements[index].hasAttribute('autocomplete') &&
+        controlElements[index].getAttribute('autocomplete') !== 'off') {
+      controlElementsWithAutocomplete.push(controlElements[index]);
+    }
+  }
+
+  if (controlElementsWithAutocomplete.length === 0) {
+    return false;
+  }
+  return __gCrWeb.fill.formOrFieldsetsToFormData(
+      null /* formElement*/, null /* formControlElement */, fieldsets,
+      controlElementsWithAutocomplete, extractMask, form, null /* field */);
+};
+
+
+/**
+ * Returns the auto-fillable form control elements in |formElement|.
+ *
+ * It is based on the logic in:
+ *     std::vector<blink::WebFormControlElement>
+ *     ExtractAutofillableElementsFromSet(
+ *         const WebVector<WebFormControlElement>& control_elements);
+ * in chromium/src/components/autofill/content/renderer/form_autofill_util.h.
+ *
+ * @param {Array<FormControlElement>} controlElements Set of control elements.
+ * @return {Array<FormControlElement>} The array of autofillable elements.
+ */
+__gCrWeb.fill.extractAutofillableElementsFromSet = function(controlElements) {
+  const autofillableElements = [];
+  for (let i = 0; i < controlElements.length; ++i) {
+    const element = controlElements[i];
+    if (!__gCrWeb.fill.isAutofillableElement(element)) {
+      continue;
+    }
+    autofillableElements.push(element);
+  }
+  return autofillableElements;
+};
+
+/**
+ * @param {int} nextAvailableID Next available integer.
+ */
+__gCrWeb.fill['setUpForUniqueIDs'] = function(nextAvailableID) {
+  document[__gCrWeb.fill.ID_SYMBOL] = nextAvailableID;
+};
+
+/**
+ * @param {Element} element Form or form input element.
+ */
+__gCrWeb.fill.setUniqueIDIfNeeded = function(element) {
+  try {
+    const uniqueID = __gCrWeb.fill.ID_SYMBOL;
+    // Do not assign element id value if the base value for the document
+    // is not set.
+    if (typeof document[uniqueID] !== 'undefined' &&
+        typeof element[uniqueID] === 'undefined') {
+      element[uniqueID] = document[uniqueID]++;
+    }
+  } catch (e) {
+  }
+};
+
+/**
+ * @param {Element} element Form or form input element.
+ * @return {String} Unique stable ID converted to string..
+ */
+__gCrWeb.fill.getUniqueID = function(element) {
+  try {
+    const uniqueID = __gCrWeb.fill.ID_SYMBOL;
+    if (typeof element[uniqueID] !== 'undefined' && !isNaN(element[uniqueID])) {
+      return element[uniqueID].toString();
+    } else {
+      return __gCrWeb.fill.RENDERER_ID_NOT_SET;
+    }
+  } catch (e) {
+    return __gCrWeb.fill.RENDERER_ID_NOT_SET;
+  }
+};
+
 
 }());  // End of anonymous object

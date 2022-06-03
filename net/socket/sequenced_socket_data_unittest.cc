@@ -6,10 +6,10 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -56,6 +56,9 @@ class ReentrantHelper {
         second_read_(false),
         second_write_data_(nullptr),
         second_len_(-1) {}
+
+  ReentrantHelper(const ReentrantHelper&) = delete;
+  ReentrantHelper& operator=(const ReentrantHelper&) = delete;
 
   // Expect that the previous operation will return |first_len| and will fill
   // |first_read_data_| with |first_read_data|.
@@ -144,8 +147,6 @@ class ReentrantHelper {
   scoped_refptr<IOBuffer> second_read_buf_;
   const char* second_write_data_;
   int second_len_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReentrantHelper);
 };
 
 class SequencedSocketDataTest : public TestWithTaskEnvironment {
@@ -250,7 +251,8 @@ void SequencedSocketDataTest::Initialize(base::span<const MockRead> reads,
   socket_factory_.AddSocketDataProvider(data_.get());
   sock_ = socket_factory_.CreateTransportClientSocket(
       AddressList(IPEndPoint(IPAddress::IPv4Localhost(), 443)),
-      nullptr /* socket_performance_watcher */, nullptr /* net_log */,
+      nullptr /* socket_performance_watcher */,
+      nullptr /* network_quality_estimator */, nullptr /* net_log */,
       NetLogSource());
   TestCompletionCallback callback;
   EXPECT_EQ(OK, sock_->Connect(callback.callback()));

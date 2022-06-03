@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#0072A3'>
+<script>
+'use strict';
+
+let t = async_test('Color picker: Focusing the color well\'s selection ring should not scroll it into view.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const colorWellSelectionRing = popupDocument.querySelector('color-well > color-selection-ring');
+    const colorWellSelectionRingOriginalRect = colorWellSelectionRing.getBoundingClientRect();
+    eventSender.keyDown('Tab');
+    assert_false(didColorWellSelectionRingMove(colorWellSelectionRingOriginalRect, colorWellSelectionRing.getBoundingClientRect()), "Color well selection ring should not have moved after it was focused via tab.");
+    eventSender.keyDown('Tab');
+    eventSender.keyDown('Tab', ['shiftKey']);
+    assert_false(didColorWellSelectionRingMove(colorWellSelectionRingOriginalRect, colorWellSelectionRing.getBoundingClientRect()), "Color well selection ring should not have moved after it was focused via shift+tab.");
+    eventSender.mouseMoveTo(colorWellSelectionRingOriginalRect.left + (colorWellSelectionRingOriginalRect.width / 2),
+        colorWellSelectionRingOriginalRect.top + (colorWellSelectionRingOriginalRect.height / 2));
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    assert_false(didColorWellSelectionRingMove(colorWellSelectionRingOriginalRect, colorWellSelectionRing.getBoundingClientRect()), "Color well selection ring should not have moved after it was focused via click.");
+  }));
+});
+
+function didColorWellSelectionRingMove(colorWellSelectionRingOriginalRect, colorWellSelectionRingCurrentRect) {
+  return ((colorWellSelectionRingOriginalRect.top !== colorWellSelectionRingCurrentRect.top) ||
+      (colorWellSelectionRingOriginalRect.left !== colorWellSelectionRingCurrentRect.left) ||
+      (colorWellSelectionRingOriginalRect.bottom !== colorWellSelectionRingCurrentRect.bottom) ||
+      (colorWellSelectionRingOriginalRect.right !== colorWellSelectionRingCurrentRect.right));
+}
+
+</script>
+</body>
+</html>

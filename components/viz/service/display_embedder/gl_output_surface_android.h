@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_GL_OUTPUT_SURFACE_ANDROID_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_EMBEDDER_GL_OUTPUT_SURFACE_ANDROID_H_
 
-#include <memory>
-
 #include "components/viz/service/display_embedder/gl_output_surface.h"
 
 namespace viz {
@@ -15,6 +13,10 @@ class GLOutputSurfaceAndroid : public GLOutputSurface {
   GLOutputSurfaceAndroid(
       scoped_refptr<VizProcessContextProvider> context_provider,
       gpu::SurfaceHandle surface_handle);
+
+  GLOutputSurfaceAndroid(const GLOutputSurfaceAndroid&) = delete;
+  GLOutputSurfaceAndroid& operator=(const GLOutputSurfaceAndroid&) = delete;
+
   ~GLOutputSurfaceAndroid() override;
 
   // GLOutputSurface implementation:
@@ -23,8 +25,6 @@ class GLOutputSurfaceAndroid : public GLOutputSurface {
       uint32_t flags,
       gpu::ContextSupport::SwapCompletedCallback swap_callback,
       gpu::ContextSupport::PresentationCallback presentation_callback) override;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOutputSurfaceAndroid);
 };
 
 }  // namespace viz

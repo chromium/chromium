@@ -5,8 +5,8 @@
 #ifndef NET_HTTP2_PLATFORM_IMPL_HTTP2_MACROS_IMPL_H_
 #define NET_HTTP2_PLATFORM_IMPL_HTTP2_MACROS_IMPL_H_
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 
 #define HTTP2_FALLTHROUGH_IMPL FALLTHROUGH
 #define HTTP2_UNREACHABLE_IMPL() DCHECK(false)

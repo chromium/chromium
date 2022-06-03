@@ -20,6 +20,10 @@ namespace content {
 class WakeLockContextHost {
  public:
   explicit WakeLockContextHost(WebContents* web_contents);
+
+  WakeLockContextHost(const WakeLockContextHost&) = delete;
+  WakeLockContextHost& operator=(const WakeLockContextHost&) = delete;
+
   ~WakeLockContextHost();
 
   // This callback is passed into the DeviceService constructor in order to
@@ -40,8 +44,6 @@ class WakeLockContextHost {
 
   // The WakeLockContext instance that is connected to this instance.
   mojo::Remote<device::mojom::WakeLockContext> wake_lock_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WakeLockContextHost);
 };
 
 }  // namespace content

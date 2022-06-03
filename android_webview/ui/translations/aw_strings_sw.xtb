@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sw">
-<translation id="6106989379647458772">Huenda ukurasa wa wavuti ulio kwenye <ph name="PAGE" /> haupatikani kwa muda au umehamishwa kabisa hadi kwenye anwani mpya ya wavuti.</translation>
-<translation id="6312113039770857350">Ukurasa wa wavuti haupatikani</translation>
-<translation id="8681531050781943054">Ukurasa wa wavuti ulio kwenye <ph name="PAGE" /> haukuweza kupakiwa kwa sababu:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Mapendekezo:<ph name="MARKUP_2" />Hakikisha kuwa una muunganisho wa data<ph name="MARKUP_3" />Pakia upya ukurasa huu wa wavuti baadaye<ph name="MARKUP_4" />Kagua anwani uliyoweka<ph name="MARKUP_5" /></translation>
 </translationbundle>

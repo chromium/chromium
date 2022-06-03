@@ -29,8 +29,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_NETWORK_RESOURCES_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_NETWORK_RESOURCES_DATA_H_
 
+#include "net/cert/x509_certificate.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
 #include "third_party/blink/renderer/core/inspector/inspector_page_agent.h"
+#include "third_party/blink/renderer/core/loader/resource/font_resource.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/network/http_header_map.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -44,7 +47,6 @@ namespace blink {
 
 class EncodedFormData;
 class ExecutionContext;
-class Resource;
 class ResourceResponse;
 class TextResourceDecoder;
 
@@ -54,7 +56,6 @@ class XHRReplayData final : public GarbageCollected<XHRReplayData> {
                 const AtomicString& method,
                 const KURL&,
                 bool async,
-                scoped_refptr<EncodedFormData>,
                 bool include_credentials);
 
   void AddHeader(const AtomicString& key, const AtomicString& value);
@@ -63,23 +64,18 @@ class XHRReplayData final : public GarbageCollected<XHRReplayData> {
   const AtomicString& Method() const { return method_; }
   const KURL& Url() const { return url_; }
   bool Async() const { return async_; }
-  EncodedFormData* FormData() const { return form_data_.get(); }
   const HTTPHeaderMap& Headers() const { return headers_; }
   bool IncludeCredentials() const { return include_credentials_; }
 
-  virtual void Trace(blink::Visitor* visitor) {
+  virtual void Trace(Visitor* visitor) const {
     visitor->Trace(execution_context_);
   }
-
-  void DeleteFormData() { form_data_ = nullptr; }
 
  private:
   WeakMember<ExecutionContext> execution_context_;
   AtomicString method_;
   KURL url_;
   bool async_;
-  // TODO(http://crbug.com/958524): Remove form_data_ after OutOfBlinkCORS is launched.
-  scoped_refptr<EncodedFormData> form_data_;
   HTTPHeaderMap headers_;
   bool include_credentials_;
 };
@@ -87,7 +83,8 @@ class XHRReplayData final : public GarbageCollected<XHRReplayData> {
 class NetworkResourcesData final
     : public GarbageCollected<NetworkResourcesData> {
  public:
-  class ResourceData final : public GarbageCollected<ResourceData> {
+  class ResourceData final : public GarbageCollected<ResourceData>,
+                             public FontResourceClearDataObserver {
     friend class NetworkResourcesData;
 
    public:
@@ -104,15 +101,17 @@ class NetworkResourcesData final
 
     KURL RequestedURL() const { return requested_url_; }
 
+    // Returns the size of request and response content.
+    size_t ContentSize() const;
     bool HasContent() const { return !content_.IsNull(); }
     String Content() const { return content_; }
     void SetContent(const String&, bool base64_encoded);
 
     bool Base64Encoded() const { return base64_encoded_; }
 
-    size_t RemoveContent();
     bool IsContentEvicted() const { return is_content_evicted_; }
-    size_t EvictContent();
+    // Evicts the post data and the respone content.
+    WARN_UNUSED_RESULT size_t EvictContent();
 
     InspectorPageAgent::ResourceType GetType() const { return type_; }
     void SetType(InspectorPageAgent::ResourceType type) { type_ = type; }
@@ -153,9 +152,9 @@ class NetworkResourcesData final
     int64_t RawHeaderSize() const { return raw_header_size_; }
     void SetRawHeaderSize(int64_t size) { raw_header_size_ = size; }
 
-    Vector<AtomicString> Certificate() { return certificate_; }
-    void SetCertificate(const Vector<AtomicString>& certificate) {
-      certificate_ = certificate;
+    net::X509Certificate* Certificate() { return certificate_.get(); }
+    void SetCertificate(scoped_refptr<net::X509Certificate> certificate) {
+      certificate_ = std::move(certificate);
     }
     int64_t PendingEncodedDataLength() const {
       return pending_encoded_data_length_;
@@ -165,17 +164,22 @@ class NetworkResourcesData final
       pending_encoded_data_length_ += encoded_data_length;
     }
     void SetPostData(scoped_refptr<EncodedFormData> post_data) {
-      post_data_ = post_data;
+      post_data_ = std::move(post_data);
     }
     EncodedFormData* PostData() const { return post_data_.get(); }
-    void Trace(blink::Visitor*);
+
+    // FontResourceClearDataObserver implementation.
+    void FontResourceDataWillBeCleared() override;
+
+    void Trace(Visitor*) const override;
 
    private:
     bool HasData() const { return data_buffer_.get(); }
-    uint64_t DataLength() const;
     void AppendData(const char* data, size_t data_length);
+    // Removes just the response content.
+    WARN_UNUSED_RESULT size_t RemoveResponseContent();
     size_t DecodeDataToContent();
-    void ProcessCustomWeakness(const WeakCallbackInfo&);
+    void ProcessCustomWeakness(const LivenessBroker&);
 
     Member<NetworkResourcesData> network_resources_data_;
     String request_id_;
@@ -196,17 +200,14 @@ class NetworkResourcesData final
     int64_t pending_encoded_data_length_;
 
     scoped_refptr<SharedBuffer> buffer_;
+
+    // We use UntracedMember<> here to do custom weak processing.
     UntracedMember<const Resource> cached_resource_;
+
     scoped_refptr<BlobDataHandle> downloaded_file_blob_;
-    Vector<AtomicString> certificate_;
+    scoped_refptr<net::X509Certificate> certificate_;
     scoped_refptr<EncodedFormData> post_data_;
   };
-
-  static NetworkResourcesData* Create(size_t total_buffer_size,
-                                      size_t resource_buffer_size) {
-    return MakeGarbageCollected<NetworkResourcesData>(total_buffer_size,
-                                                      resource_buffer_size);
-  }
 
   NetworkResourcesData(size_t total_buffer_size, size_t resource_buffer_size);
   ~NetworkResourcesData();
@@ -238,13 +239,13 @@ class NetworkResourcesData final
   void SetXHRReplayData(const String& request_id, XHRReplayData*);
   XHRReplayData* XhrReplayData(const String& request_id);
   void SetCertificate(const String& request_id,
-                      const Vector<AtomicString>& certificate);
+                      scoped_refptr<net::X509Certificate>);
   HeapVector<Member<ResourceData>> Resources();
 
   int64_t GetAndClearPendingEncodedDataLength(const String& request_id);
   void AddPendingEncodedDataLength(const String& request_id,
                                    size_t encoded_data_length);
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   ResourceData* ResourceDataForRequestId(const String& request_id) const;
@@ -266,4 +267,4 @@ class NetworkResourcesData final
 
 }  // namespace blink
 
-#endif  // !defined(NetworkResourcesData_h)
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_NETWORK_RESOURCES_DATA_H_

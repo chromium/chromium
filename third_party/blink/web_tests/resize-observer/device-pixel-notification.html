@@ -1,0 +1,146 @@
+<!doctype HTML>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="./resources/resizeTestHelper.js"></script>
+<body></body>
+
+<script>
+'use strict';
+
+// allow uncaught exception because ResizeObserver posts exceptions
+// to window error handler when limit is exceeded.
+setup({allow_uncaught_exception: true});
+
+function test() {
+  let t = document.createElement("div");
+  document.body.appendChild(t);
+  t.style.height = "25.25px";
+  t.style.width = "55.5px";
+  document.body.style.zoom = 1;
+  let helper = new ResizeTestHelper(
+    "An observation is fired when device-pixel-content-box is being " +
+    "observed and sub pixel values are used",
+  [
+    {
+      setup: observer => {
+        observer.observe(t, {box: "device-pixel-content-box"});
+      },
+      notify: entries => {
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, t, "target is t");
+        assert_equals(entries[0].contentRect.width, 55.5, "target width");
+        assert_equals(entries[0].contentRect.height, 25.25, "target height");
+        assert_equals(entries[0].contentBoxSize[0].inlineSize, 55.5,
+                      "target content-box inline size");
+        assert_equals(entries[0].contentBoxSize[0].blockSize, 25.25,
+                      "target content-box block size");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 55.5,
+                      "target border-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 25.25,
+                      "target border-box block size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 56,
+                      "target device-pixel-content-box inline size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 25,
+                      "target device-pixel-content-box block size");
+      }
+    },
+    {
+      setup: observer => {
+        t.style.marginLeft = "10.5px"
+      },
+      notify: entries => {
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, t, "target is t");
+        assert_equals(entries[0].contentRect.width, 55.5, "target width");
+        assert_equals(entries[0].contentRect.height, 25.25, "target height");
+        assert_equals(entries[0].contentBoxSize[0].inlineSize, 55.5,
+                      "target content-box inline size");
+        assert_equals(entries[0].contentBoxSize[0].blockSize, 25.25,
+                      "target content-box block size");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 55.5,
+                      "target border-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 25.25,
+                      "target border-box block size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 55,
+                      "target device-pixel-content-box inline size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 25,
+                      "target device-pixel-content-box block size");
+      }
+    },
+    {
+      setup: observer => {
+        document.body.style.zoom = 3;
+      },
+      notify: entries => {
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, t, "target is t");
+        assert_equals(entries[0].contentRect.width, 55.5, "target width");
+        assert_equals(entries[0].contentRect.height, 25.25, "target height");
+        assert_equals(entries[0].contentBoxSize[0].inlineSize, 55.5,
+                      "target content-box inline size");
+        assert_equals(entries[0].contentBoxSize[0].blockSize, 25.25,
+                      "target content-box block size");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 55.5,
+                      "target content-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 25.25,
+                      "target content-box block size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].inlineSize, 166,
+                      "target content-box inline size");
+        assert_equals(entries[0].devicePixelContentBoxSize[0].blockSize, 76,
+                      "target content-box block size");
+      }
+    }
+  ]);
+
+  return helper.start(() => t.remove());
+}
+
+function test2() {
+  // Ensure a resize observer callback that triggers only layout does not crash
+  // the browser
+
+  let c = document.createElement('canvas');
+  let a = document.createElement('div');
+  a.style.height = '10px';
+  a.style.width = '20px';
+  c.width = "500";
+  c.height = "500";
+  document.body.appendChild(c);
+  document.body.appendChild(a);
+
+  let helper = new ResizeTestHelper(
+    "Resize observer callback triggers layout without style change",
+  [
+    {
+      setup: observer => {
+        observer.observe(a, { box: "border-box" });
+      },
+      notify: entries => {
+
+      }
+    },
+    {
+      setup: observer => {
+        a.style.width = '50px';
+      },
+      notify: entries => {
+        c.height = "100";
+        assert_equals(entries.length, 1, "1 pending notification");
+        assert_equals(entries[0].target, a, "target is t");
+        assert_equals(entries[0].contentRect.width, 50, "target width");
+        assert_equals(entries[0].contentRect.height, 10, "target height");
+        assert_equals(entries[0].borderBoxSize[0].inlineSize, 50,
+                      "target border-box inline size");
+        assert_equals(entries[0].borderBoxSize[0].blockSize, 10,
+                      "target border-box block size");
+      }
+    },
+  ]);
+  return helper.start(() => assert_equals(c.height, 100,
+                      "canvas height"));
+}
+
+test();
+test2();
+
+</script>

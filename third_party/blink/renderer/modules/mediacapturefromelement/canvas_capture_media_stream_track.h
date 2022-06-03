@@ -37,7 +37,7 @@ class CanvasCaptureMediaStreamTrack final : public MediaStreamTrack {
 
   CanvasCaptureMediaStreamTrack* clone(ScriptState*) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<HTMLCanvasElement> canvas_element_;
@@ -46,4 +46,4 @@ class CanvasCaptureMediaStreamTrack final : public MediaStreamTrack {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIACAPTUREFROMELEMENT_CANVAS_CAPTURE_MEDIA_STREAM_TRACK_H_

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ms">
-<translation id="6106989379647458772">Halaman web di <ph name="PAGE" /> mungkin tergendala sebentar atau mungkin telah dipindahkan secara kekal ke alamat web baharu.</translation>
-<translation id="6312113039770857350">Halaman web tidak tersedia</translation>
-<translation id="8681531050781943054">Halaman web di <ph name="PAGE" /> tidak boleh dimuatkan kerana:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Cadangan:<ph name="MARKUP_2" />Pastikan anda mempunyai sambungan data<ph name="MARKUP_3" />Muatkan semula halaman web ini kemudian<ph name="MARKUP_4" />Semak alamat yang anda masukkan<ph name="MARKUP_5" /></translation>
 </translationbundle>

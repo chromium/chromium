@@ -7,7 +7,6 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "components/viz/common/gpu/metal_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -17,6 +16,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
 #include "gpu/command_buffer/service/texture_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/buildflags.h"
@@ -35,103 +35,18 @@ namespace gpu {
 
 namespace {
 
-struct GLFormatInfo {
-  bool supported = false;
-
-  // GL internal_format/format/type triplet.
-  GLuint internal_format = 0;
-  GLenum format = 0;
-  GLenum type = 0;
-};
-
-// Get GL format triplets and modify them to match the logic in
-// gl_image_iosurface.mm
-GLFormatInfo GetGLFormatInfo(viz::ResourceFormat format) {
-  GLFormatInfo info = {
-      true,
-      viz::GLInternalFormat(format),
-      viz::GLDataFormat(format),
-      viz::GLDataType(format),
-  };
-
-  if (info.internal_format == GL_ZERO || info.format == GL_ZERO ||
-      info.type == GL_ZERO) {
-    return {false, GL_ZERO, GL_ZERO, GL_ZERO};
-  }
-
-  switch (format) {
-    case viz::BGRA_8888:
-      info.format = GL_RGBA;
-      info.internal_format = GL_RGBA;
-      break;
-
-      // Technically we should use GL_RGB but CGLTexImageIOSurface2D() (and
-      // OpenGL ES 3.0, for the case) support only GL_RGBA (the hardware ignores
-      // the alpha channel anyway), see https://crbug.com/797347.
-    case viz::BGRX_1010102:
-      info.format = GL_RGBA;
-      info.internal_format = GL_RGBA;
-      break;
-
-    default:
-      break;
-  }
-
-  return info;
-}
-
-void FlushIOSurfaceGLOperations() {
-  // The CGLTexImageIOSurface2D documentation says that we need to call
-  // glFlush, otherwise there is the risk of a race between different
-  // graphics contexts.
-  gl::GLApi* api = gl::g_current_gl_context;
-  api->glFlushFn();
-}
-
-base::Optional<WGPUTextureFormat> GetWGPUFormat(gfx::BufferFormat format) {
-  switch (format) {
-    case gfx::BufferFormat::R_8:
-      return WGPUTextureFormat_R8Unorm;
-    case gfx::BufferFormat::RG_88:
-      return WGPUTextureFormat_RG8Unorm;
-    case gfx::BufferFormat::RGBX_8888:
-    case gfx::BufferFormat::RGBA_8888:
-    case gfx::BufferFormat::BGRX_8888:
-      return WGPUTextureFormat_BGRA8Unorm;
-    default:
-      return {};
-  }
-}
-
-base::scoped_nsprotocol<id<MTLTexture>> API_AVAILABLE(macos(10.11))
-    CreateMetalTexture(id<MTLDevice> mtl_device,
-                       IOSurfaceRef io_surface,
-                       const gfx::Size& size,
-                       viz::ResourceFormat format) {
+base::scoped_nsprotocol<id<MTLTexture>> CreateMetalTexture(
+    id<MTLDevice> mtl_device,
+    IOSurfaceRef io_surface,
+    const gfx::Size& size,
+    viz::ResourceFormat format) {
   TRACE_EVENT0("gpu", "SharedImageBackingFactoryIOSurface::CreateMetalTexture");
   base::scoped_nsprotocol<id<MTLTexture>> mtl_texture;
-  MTLPixelFormat mtl_pixel_format;
-  switch (format) {
-    case viz::RED_8:
-    case viz::ALPHA_8:
-    case viz::LUMINANCE_8:
-      mtl_pixel_format = MTLPixelFormatR8Unorm;
-      break;
-    case viz::RG_88:
-      mtl_pixel_format = MTLPixelFormatRG8Unorm;
-      break;
-    case viz::RGBA_8888:
-      mtl_pixel_format = MTLPixelFormatRGBA8Unorm;
-      break;
-    case viz::BGRA_8888:
-      mtl_pixel_format = MTLPixelFormatBGRA8Unorm;
-      break;
-    default:
-      // TODO(https://crbug.com/952063): Add support for all formats supported
-      // by GLImageIOSurface.
-      DLOG(ERROR) << "Resource format not yet supported in Metal.";
-      return mtl_texture;
-  }
+  MTLPixelFormat mtl_pixel_format =
+      static_cast<MTLPixelFormat>(viz::ToMTLPixelFormat(format));
+  if (mtl_pixel_format == MTLPixelFormatInvalid)
+    return mtl_texture;
+
   base::scoped_nsobject<MTLTextureDescriptor> mtl_tex_desc(
       [MTLTextureDescriptor new]);
   [mtl_tex_desc setTextureType:MTLTextureType2D];
@@ -155,100 +70,15 @@ base::scoped_nsprotocol<id<MTLTexture>> API_AVAILABLE(macos(10.11))
   return mtl_texture;
 }
 
+base::ScopedCFTypeRef<IOSurfaceRef> GetIOSurfaceFromImage(
+    scoped_refptr<gl::GLImage> image) {
+  base::ScopedCFTypeRef<IOSurfaceRef> result;
+  if (image->GetType() == gl::GLImage::Type::IOSURFACE)
+    result = static_cast<gl::GLImageIOSurface*>(image.get())->io_surface();
+  return result;
+}
+
 }  // anonymous namespace
-
-// Representation of a SharedImageBackingIOSurface as a GL Texture.
-class SharedImageRepresentationGLTextureIOSurface
-    : public SharedImageRepresentationGLTexture {
- public:
-  SharedImageRepresentationGLTextureIOSurface(SharedImageManager* manager,
-                                              SharedImageBacking* backing,
-                                              MemoryTypeTracker* tracker,
-                                              gles2::Texture* texture)
-      : SharedImageRepresentationGLTexture(manager, backing, tracker),
-        texture_(texture) {
-    DCHECK(texture_);
-  }
-
-  ~SharedImageRepresentationGLTextureIOSurface() override {
-    texture_->RemoveLightweightRef(has_context());
-  }
-
-  gles2::Texture* GetTexture() override { return texture_; }
-
-  bool BeginAccess(GLenum mode) override { return true; }
-
-  void EndAccess() override { FlushIOSurfaceGLOperations(); }
-
- private:
-  gles2::Texture* texture_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageRepresentationGLTextureIOSurface);
-};
-
-// Representation of a SharedImageBackingIOSurface as a Skia Texture.
-class SharedImageRepresentationSkiaIOSurface
-    : public SharedImageRepresentationSkia {
- public:
-  SharedImageRepresentationSkiaIOSurface(
-      SharedImageManager* manager,
-      SharedImageBacking* backing,
-      scoped_refptr<SharedContextState> context_state,
-      sk_sp<SkPromiseImageTexture> promise_texture,
-      MemoryTypeTracker* tracker,
-      gles2::Texture* gles2_texture)
-      : SharedImageRepresentationSkia(manager, backing, tracker),
-        context_state_(std::move(context_state)),
-        promise_texture_(std::move(promise_texture)),
-        gles2_texture_(gles2_texture) {
-    DCHECK(promise_texture_);
-  }
-
-  ~SharedImageRepresentationSkiaIOSurface() override {
-    if (gles2_texture_)
-      gles2_texture_->RemoveLightweightRef(has_context());
-  }
-
-  sk_sp<SkSurface> BeginWriteAccess(
-      int final_msaa_count,
-      const SkSurfaceProps& surface_props,
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
-    SkColorType sk_color_type = viz::ResourceFormatToClosestSkColorType(
-        /*gpu_compositing=*/true, format());
-
-    return SkSurface::MakeFromBackendTextureAsRenderTarget(
-        context_state_->gr_context(), promise_texture_->backendTexture(),
-        kTopLeft_GrSurfaceOrigin, final_msaa_count, sk_color_type,
-        backing()->color_space().ToSkColorSpace(), &surface_props);
-  }
-
-  void EndWriteAccess(sk_sp<SkSurface> surface) override {
-    if (context_state_->GrContextIsGL())
-      FlushIOSurfaceGLOperations();
-
-    if (gles2_texture_ &&
-        gles2_texture_->IsLevelCleared(gles2_texture_->target(), 0)) {
-      backing()->SetCleared();
-    }
-  }
-
-  sk_sp<SkPromiseImageTexture> BeginReadAccess(
-      std::vector<GrBackendSemaphore>* begin_semaphores,
-      std::vector<GrBackendSemaphore>* end_semaphores) override {
-    return promise_texture_;
-  }
-
-  void EndReadAccess() override {
-    if (context_state_->GrContextIsGL())
-      FlushIOSurfaceGLOperations();
-  }
-
- private:
-  scoped_refptr<SharedContextState> context_state_;
-  sk_sp<SkPromiseImageTexture> promise_texture_;
-  gles2::Texture* const gles2_texture_;
-};
 
 // Representation of a SharedImageBackingIOSurface as a Dawn Texture.
 #if BUILDFLAG(USE_DAWN)
@@ -281,33 +111,30 @@ class SharedImageRepresentationDawnIOSurface
   }
 
   WGPUTexture BeginAccess(WGPUTextureUsage usage) final {
-    WGPUTextureDescriptor desc;
-    desc.nextInChain = nullptr;
-    desc.format = wgpu_format_;
-    desc.usage = usage;
-    desc.dimension = WGPUTextureDimension_2D;
-    desc.size = {size().width(), size().height(), 1};
-    desc.arrayLayerCount = 1;
-    desc.mipLevelCount = 1;
-    desc.sampleCount = 1;
+    WGPUTextureDescriptor texture_descriptor = {};
+    texture_descriptor.format = wgpu_format_;
+    texture_descriptor.usage = usage;
+    texture_descriptor.dimension = WGPUTextureDimension_2D;
+    texture_descriptor.size = {static_cast<uint32_t>(size().width()),
+                               static_cast<uint32_t>(size().height()), 1};
+    texture_descriptor.mipLevelCount = 1;
+    texture_descriptor.sampleCount = 1;
 
-    texture_ =
-        dawn_native::metal::WrapIOSurface(device_, &desc, io_surface_.get(), 0);
+    // We need to have an internal usage of CopySrc in order to use
+    // CopyTextureToTextureInternal.
+    WGPUDawnTextureInternalUsageDescriptor internalDesc = {};
+    internalDesc.chain.sType = WGPUSType_DawnTextureInternalUsageDescriptor;
+    internalDesc.internalUsage = WGPUTextureUsage_CopySrc;
+    texture_descriptor.nextInChain =
+        reinterpret_cast<WGPUChainedStruct*>(&internalDesc);
 
-    if (texture_) {
-      // Keep a reference to the texture so that it stays valid (its content
-      // might be destroyed).
-      dawn_procs_.textureReference(texture_);
+    dawn_native::metal::ExternalImageDescriptorIOSurface descriptor;
+    descriptor.cTextureDescriptor = &texture_descriptor;
+    descriptor.isInitialized = IsCleared();
+    descriptor.ioSurface = io_surface_.get();
+    descriptor.plane = 0;
 
-      // Assume that the user of this representation will write to the texture
-      // so set the cleared flag so that other representations don't overwrite
-      // the result.
-      // TODO(cwallez@chromium.org): This is incorrect and allows reading
-      // uninitialized data. When !IsCleared we should tell dawn_native to
-      // consider the texture lazy-cleared.
-      SetCleared();
-    }
-
+    texture_ = dawn_native::metal::WrapIOSurface(device_, &descriptor);
     return texture_;
   }
 
@@ -315,8 +142,10 @@ class SharedImageRepresentationDawnIOSurface
     if (!texture_) {
       return;
     }
-    // TODO(cwallez@chromium.org): query dawn_native to know if the texture was
-    // cleared and set IsCleared appropriately.
+
+    if (dawn_native::IsTextureSubresourceInitialized(texture_, 0, 1, 0, 1)) {
+      SetCleared();
+    }
 
     // All further operations on the textures are errors (they would be racy
     // with other backings).
@@ -348,362 +177,90 @@ class SharedImageRepresentationDawnIOSurface
 };
 #endif  // BUILDFLAG(USE_DAWN)
 
-// Implementation of SharedImageBacking by wrapping IOSurfaces. Disable
-// unguarded availability warnings because they are incompatible with using a
-// scoped_nsprotocol for the id<MTLTexture> and because all access to Metal is
-// guarded on the context provider already successfully using Metal.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wunguarded-availability"
-class SharedImageBackingIOSurface : public ClearTrackingSharedImageBacking {
- public:
-  SharedImageBackingIOSurface(const Mailbox& mailbox,
-                              viz::ResourceFormat format,
-                              const gfx::Size& size,
-                              const gfx::ColorSpace& color_space,
-                              uint32_t usage,
-                              base::ScopedCFTypeRef<IOSurfaceRef> io_surface,
-                              base::Optional<WGPUTextureFormat> dawn_format,
-                              size_t estimated_size)
-      : ClearTrackingSharedImageBacking(mailbox,
-                                        format,
-                                        size,
-                                        color_space,
-                                        usage,
-                                        estimated_size,
-                                        false /* is_thread_safe */),
-        io_surface_(std::move(io_surface)),
-        dawn_format_(dawn_format) {
-    DCHECK(io_surface_);
-  }
-  ~SharedImageBackingIOSurface() final {
-    TRACE_EVENT0("gpu", "SharedImageBackingFactoryIOSurface::Destroy");
-    DCHECK(io_surface_);
+// static
+sk_sp<SkPromiseImageTexture>
+SharedImageBackingFactoryIOSurface::ProduceSkiaPromiseTextureMetal(
+    SharedImageBacking* backing,
+    scoped_refptr<SharedContextState> context_state,
+    scoped_refptr<gl::GLImage> image) {
+  DCHECK(context_state->GrContextIsMetal());
 
-    if (legacy_texture_) {
-      legacy_texture_->RemoveLightweightRef(have_context());
-      legacy_texture_ = nullptr;
-    }
-    mtl_texture_.reset();
-    io_surface_.reset();
-  }
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+      static_cast<gl::GLImageIOSurface*>(image.get())->io_surface();
 
-  gfx::Rect ClearedRect() const final {
-    // If a |legacy_texture_| exists, defer to that. Once created,
-    // |legacy_texture_| is never destroyed, so no need to synchronize with
-    // ClearedRectInternal.
-    if (legacy_texture_) {
-      return legacy_texture_->GetLevelClearedRect(legacy_texture_->target(), 0);
-    } else {
-      return ClearedRectInternal();
-    }
-  }
+  id<MTLDevice> mtl_device =
+      context_state->metal_context_provider()->GetMTLDevice();
+  auto mtl_texture = CreateMetalTexture(mtl_device, io_surface.get(),
+                                        backing->size(), backing->format());
+  DCHECK(mtl_texture);
 
-  void SetClearedRect(const gfx::Rect& cleared_rect) final {
-    // If a |legacy_texture_| exists, defer to that. Once created,
-    // |legacy_texture_| is never destroyed, so no need to synchronize with
-    // ClearedRectInternal.
-    if (legacy_texture_) {
-      legacy_texture_->SetLevelClearedRect(legacy_texture_->target(), 0,
-                                           cleared_rect);
-    } else {
-      SetClearedRectInternal(cleared_rect);
-    }
-  }
+  GrMtlTextureInfo info;
+  info.fTexture.retain(mtl_texture.get());
+  auto gr_backend_texture =
+      GrBackendTexture(backing->size().width(), backing->size().height(),
+                       GrMipMapped::kNo, info);
+  return SkPromiseImageTexture::Make(gr_backend_texture);
+}
 
-  void Update(std::unique_ptr<gfx::GpuFence> in_fence) final {}
-
-  bool ProduceLegacyMailbox(MailboxManager* mailbox_manager) final {
-    DCHECK(io_surface_);
-
-    legacy_texture_ = GenGLTexture();
-    if (!legacy_texture_) {
-      return false;
-    }
-
-    // Make sure our |legacy_texture_| has the right initial cleared rect.
-    legacy_texture_->SetLevelClearedRect(legacy_texture_->target(), 0,
-                                         ClearedRectInternal());
-
-    mailbox_manager->ProduceTexture(mailbox(), legacy_texture_);
-    return true;
-  }
-
- protected:
-  std::unique_ptr<SharedImageRepresentationGLTexture> ProduceGLTexture(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker) final {
-    gles2::Texture* texture = GenGLTexture();
-    if (!texture) {
-      return nullptr;
-    }
-
-    return std::make_unique<SharedImageRepresentationGLTextureIOSurface>(
-        manager, this, tracker, texture);
-  }
-
-  std::unique_ptr<SharedImageRepresentationSkia> ProduceSkia(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      scoped_refptr<SharedContextState> context_state) override {
-    gles2::Texture* gles2_texture = nullptr;
-    GrBackendTexture gr_backend_texture;
-    if (context_state->GrContextIsGL()) {
-      gles2_texture = GenGLTexture();
-      if (!gles2_texture)
-        return nullptr;
-      GetGrBackendTexture(
-          context_state->feature_info(), gles2_texture->target(), size(),
-          gles2_texture->service_id(), format(), &gr_backend_texture);
-    }
-    if (context_state->GrContextIsMetal()) {
-      if (!mtl_texture_) {
-        id<MTLDevice> mtl_device =
-            context_state->metal_context_provider()->GetMTLDevice();
-        mtl_texture_ =
-            CreateMetalTexture(mtl_device, io_surface_, size(), format());
-        DCHECK(mtl_texture_);
-      }
-      GrMtlTextureInfo info;
-      info.fTexture.retain(mtl_texture_.get());
-      gr_backend_texture = GrBackendTexture(size().width(), size().height(),
-                                            GrMipMapped::kNo, info);
-    }
-    sk_sp<SkPromiseImageTexture> promise_texture =
-        SkPromiseImageTexture::Make(gr_backend_texture);
-    return std::make_unique<SharedImageRepresentationSkiaIOSurface>(
-        manager, this, std::move(context_state), promise_texture, tracker,
-        gles2_texture);
-  }
-
-  std::unique_ptr<SharedImageRepresentationDawn> ProduceDawn(
-      SharedImageManager* manager,
-      MemoryTypeTracker* tracker,
-      WGPUDevice device) override {
+// static
+std::unique_ptr<SharedImageRepresentationDawn>
+SharedImageBackingFactoryIOSurface::ProduceDawn(
+    SharedImageManager* manager,
+    SharedImageBacking* backing,
+    MemoryTypeTracker* tracker,
+    WGPUDevice device,
+    scoped_refptr<gl::GLImage> image) {
 #if BUILDFLAG(USE_DAWN)
-    if (!dawn_format_) {
-      LOG(ERROR) << "Format not supported for Dawn";
-      return nullptr;
-    }
+  // See comments in SharedImageBackingFactoryIOSurface::CreateSharedImage
+  // regarding RGBA versus BGRA.
+  viz::ResourceFormat actual_format = backing->format();
+  if (actual_format == viz::RGBA_8888)
+    actual_format = viz::BGRA_8888;
 
-    return std::make_unique<SharedImageRepresentationDawnIOSurface>(
-        manager, this, tracker, device, io_surface_, dawn_format_.value());
+  auto io_surface = GetIOSurfaceFromImage(image);
+  if (!io_surface)
+    return nullptr;
+
+  absl::optional<WGPUTextureFormat> wgpu_format =
+      viz::ToWGPUFormat(actual_format);
+  if (wgpu_format.value() == WGPUTextureFormat_Undefined)
+    return nullptr;
+
+  return std::make_unique<SharedImageRepresentationDawnIOSurface>(
+      manager, backing, tracker, device, io_surface, wgpu_format.value());
 #else   // BUILDFLAG(USE_DAWN)
-    return nullptr;
-#endif  // BUILDFLAG(USE_DAWN)
-  }
-
- private:
-  gles2::Texture* GenGLTexture() {
-    TRACE_EVENT0("gpu", "SharedImageBackingFactoryIOSurface::GenGLTexture");
-    GLFormatInfo gl_info = GetGLFormatInfo(format());
-    DCHECK(gl_info.supported);
-
-    // Wrap the IOSurface in a GLImageIOSurface
-    scoped_refptr<gl::GLImageIOSurface> image(
-        gl::GLImageIOSurface::Create(size(), gl_info.internal_format));
-    if (!image->Initialize(io_surface_, gfx::GenericSharedMemoryId(),
-                           viz::BufferFormat(format()))) {
-      LOG(ERROR) << "Failed to create GLImageIOSurface";
-      return nullptr;
-    }
-
-    gl::GLApi* api = gl::g_current_gl_context;
-
-    // Save the currently bound rectangle texture to reset it once we are done.
-    GLint old_texture_binding = 0;
-    api->glGetIntegervFn(GL_TEXTURE_BINDING_RECTANGLE, &old_texture_binding);
-
-    // Create a gles2 rectangle texture to bind to the IOSurface.
-    GLuint service_id = 0;
-    api->glGenTexturesFn(1, &service_id);
-    api->glBindTextureFn(GL_TEXTURE_RECTANGLE, service_id);
-    api->glTexParameteriFn(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MIN_FILTER,
-                           GL_LINEAR);
-    api->glTexParameteriFn(GL_TEXTURE_RECTANGLE, GL_TEXTURE_MAG_FILTER,
-                           GL_LINEAR);
-    api->glTexParameteriFn(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_S,
-                           GL_CLAMP_TO_EDGE);
-    api->glTexParameteriFn(GL_TEXTURE_RECTANGLE, GL_TEXTURE_WRAP_T,
-                           GL_CLAMP_TO_EDGE);
-
-    // Bind the GLImageIOSurface to our texture
-    if (!image->BindTexImage(GL_TEXTURE_RECTANGLE)) {
-      LOG(ERROR) << "Failed to bind GLImageIOSurface";
-      api->glBindTextureFn(GL_TEXTURE_RECTANGLE, old_texture_binding);
-      api->glDeleteTexturesFn(1, &service_id);
-      return nullptr;
-    }
-
-    // If the backing is already cleared, no need to clear it again.
-    gfx::Rect cleared_rect = ClearedRect();
-
-    // Manually create a gles2::Texture wrapping our driver texture.
-    gles2::Texture* texture = new gles2::Texture(service_id);
-    texture->SetLightweightRef();
-    texture->SetTarget(GL_TEXTURE_RECTANGLE, 1);
-    texture->sampler_state_.min_filter = GL_LINEAR;
-    texture->sampler_state_.mag_filter = GL_LINEAR;
-    texture->sampler_state_.wrap_t = GL_CLAMP_TO_EDGE;
-    texture->sampler_state_.wrap_s = GL_CLAMP_TO_EDGE;
-    texture->SetLevelInfo(GL_TEXTURE_RECTANGLE, 0, gl_info.internal_format,
-                          size().width(), size().height(), 1, 0, gl_info.format,
-                          gl_info.type, cleared_rect);
-    texture->SetLevelImage(GL_TEXTURE_RECTANGLE, 0, image.get(),
-                           gles2::Texture::BOUND);
-    texture->SetImmutable(true, false);
-
-    DCHECK_EQ(image->GetInternalFormat(), gl_info.internal_format);
-
-    api->glBindTextureFn(GL_TEXTURE_RECTANGLE, old_texture_binding);
-    return texture;
-  }
-
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface_;
-  base::Optional<WGPUTextureFormat> dawn_format_;
-  base::scoped_nsprotocol<id<MTLTexture>> mtl_texture_;
-
-  // A texture for the associated legacy mailbox.
-  gles2::Texture* legacy_texture_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingIOSurface);
-};
-#pragma clang diagnostic pop
-
-// Implementation of SharedImageBackingFactoryIOSurface that creates
-// SharedImageBackings wrapping IOSurfaces.
-SharedImageBackingFactoryIOSurface::SharedImageBackingFactoryIOSurface(
-    const GpuDriverBugWorkarounds& workarounds,
-    const GpuFeatureInfo& gpu_feature_info,
-    bool use_gl)
-    : use_gl_(use_gl) {
-  if (use_gl_) {
-    CollectGLFormatInfo(workarounds, gpu_feature_info);
-  }
-}
-
-void SharedImageBackingFactoryIOSurface::CollectGLFormatInfo(
-    const GpuDriverBugWorkarounds& workarounds,
-    const GpuFeatureInfo& gpu_feature_info) {
-  scoped_refptr<gles2::FeatureInfo> feature_info =
-      new gles2::FeatureInfo(workarounds, gpu_feature_info);
-  feature_info->Initialize(ContextType::CONTEXT_TYPE_OPENGLES2, false,
-                           gles2::DisallowedFeatures());
-  const gles2::Validators* validators = feature_info->validators();
-
-  // Precompute for each format if we can use it with GL.
-  for (int i = 0; i <= viz::RESOURCE_FORMAT_MAX; ++i) {
-    viz::ResourceFormat format = static_cast<viz::ResourceFormat>(i);
-    GLFormatInfo gl_info = GetGLFormatInfo(format);
-
-    format_supported_by_gl_[i] =
-        gl_info.supported &&
-        validators->texture_internal_format.IsValid(gl_info.internal_format) &&
-        validators->texture_format.IsValid(gl_info.format) &&
-        validators->pixel_type.IsValid(gl_info.type);
-  }
-}
-
-SharedImageBackingFactoryIOSurface::~SharedImageBackingFactoryIOSurface() =
-    default;
-
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryIOSurface::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    uint32_t usage,
-    bool is_thread_safe) {
-  TRACE_EVENT0("gpu", "SharedImageBackingFactoryIOSurface::CreateSharedImage");
-  DCHECK(!is_thread_safe);
-  // Check the format is supported and for simplicity always require it to be
-  // supported for GL.
-  if (use_gl_ && !format_supported_by_gl_[format]) {
-    LOG(ERROR) << "viz::ResourceFormat " << format
-               << " not supported by IOSurfaces";
-    return nullptr;
-  }
-
-  // Calculate SharedImage size in bytes.
-  size_t estimated_size;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, format, &estimated_size)) {
-    LOG(ERROR) << "Failed to calculate SharedImage size";
-    return nullptr;
-  }
-
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      gfx::CreateIOSurface(size, viz::BufferFormat(format), false));
-  if (!io_surface) {
-    LOG(ERROR) << "Failed to allocate IOSurface.";
-    return nullptr;
-  }
-
-  gfx::IOSurfaceSetColorSpace(io_surface, color_space);
-
-  // OpenGL textures bound to IOSurfaces won't work on macOS unless the internal
-  // format is BGRA, so force a BGRA internal format for viz::RGBA_8888.
-  base::Optional<WGPUTextureFormat> wgpu_format =
-      format == viz::RGBA_8888 ? WGPUTextureFormat_BGRA8Unorm
-                               : viz::ToWGPUFormat(format);
-  if (wgpu_format.value() == WGPUTextureFormat_Undefined) {
-    wgpu_format = base::nullopt;
-  }
-
-  return std::make_unique<SharedImageBackingIOSurface>(
-      mailbox, format, size, color_space, usage, std::move(io_surface),
-      wgpu_format, estimated_size);
-}
-
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryIOSurface::CreateSharedImage(
-    const Mailbox& mailbox,
-    viz::ResourceFormat format,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    uint32_t usage,
-    base::span<const uint8_t> pixel_data) {
-  NOTIMPLEMENTED();
   return nullptr;
+#endif  // BUILDFLAG(USE_DAWN)
 }
 
-std::unique_ptr<SharedImageBacking>
-SharedImageBackingFactoryIOSurface::CreateSharedImage(
-    const Mailbox& mailbox,
-    int client_id,
-    gfx::GpuMemoryBufferHandle handle,
-    gfx::BufferFormat format,
-    SurfaceHandle surface_handle,
-    const gfx::Size& size,
-    const gfx::ColorSpace& color_space,
-    uint32_t usage) {
-  if (handle.type != gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER) {
-    NOTIMPLEMENTED();
-    return nullptr;
+// static
+bool SharedImageBackingFactoryIOSurface::InitializePixels(
+    SharedImageBacking* backing,
+    scoped_refptr<gl::GLImage> image,
+    const uint8_t* src_data) {
+  auto io_surface = GetIOSurfaceFromImage(image);
+  if (!io_surface)
+    return false;
+
+  IOReturn r = IOSurfaceLock(io_surface, kIOSurfaceLockAvoidSync, nullptr);
+  DCHECK_EQ(kIOReturnSuccess, r);
+
+  uint8_t* dst_data =
+      reinterpret_cast<uint8_t*>(IOSurfaceGetBaseAddress(io_surface));
+  size_t dst_stride = IOSurfaceGetBytesPerRow(io_surface);
+  const size_t src_stride =
+      (BitsPerPixel(backing->format()) / 8) * backing->size().width();
+
+  size_t height = backing->size().height();
+  for (size_t y = 0; y < height; ++y) {
+    memcpy(dst_data, src_data, src_stride);
+    dst_data += dst_stride;
+    src_data += src_stride;
   }
 
-  base::ScopedCFTypeRef<IOSurfaceRef> io_surface(
-      IOSurfaceLookupFromMachPort(handle.mach_port.get()));
-  if (!io_surface) {
-    DLOG(ERROR) << "IOSurfaceLookupFromMachPort failed.";
-    return nullptr;
-  }
-
-  viz::ResourceFormat resource_format = viz::GetResourceFormat(format);
-  size_t estimated_size = 0;
-  if (!viz::ResourceSizes::MaybeSizeInBytes(size, resource_format,
-                                            &estimated_size)) {
-    DLOG(ERROR) << "Failed to calculate SharedImage size";
-    return nullptr;
-  }
-
-  return std::make_unique<SharedImageBackingIOSurface>(
-      mailbox, resource_format, size, color_space, usage, std::move(io_surface),
-      GetWGPUFormat(format), estimated_size);
-}
-
-bool SharedImageBackingFactoryIOSurface::CanImportGpuMemoryBuffer(
-    gfx::GpuMemoryBufferType memory_buffer_type) {
-  return false;
+  r = IOSurfaceUnlock(io_surface, 0, nullptr);
+  DCHECK_EQ(kIOReturnSuccess, r);
+  return true;
 }
 
 }  // namespace gpu

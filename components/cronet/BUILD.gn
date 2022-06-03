@@ -26,9 +26,7 @@ buildflag_header("cronet_buildflags") {
 
 process_version("cronet_version_header") {
   template_file = "//components/cronet/version.h.in"
-  sources = [
-    "//chrome/VERSION",
-  ]
+  sources = [ "//chrome/VERSION" ]
   output = "$target_gen_dir/version.h"
   extra_args = [
     "-e",
@@ -48,8 +46,6 @@ source_set("cronet_common") {
     "cronet_url_request.h",
     "cronet_url_request_context.cc",
     "cronet_url_request_context.h",
-    "histogram_manager.cc",
-    "histogram_manager.h",
     "host_cache_persistence_manager.cc",
     "host_cache_persistence_manager.h",
     "stale_host_resolver.cc",
@@ -61,21 +57,13 @@ source_set("cronet_common") {
     ":cronet_buildflags",
     ":cronet_version_header",
     "//base",
-    "//components/metrics:metrics",
     "//components/prefs:prefs",
     "//net",
     "//third_party/metrics_proto",
   ]
 
-  if (disable_histogram_support) {
-    sources -= [
-      "histogram_manager.cc",
-      "histogram_manager.h",
-    ]
-    deps -= [
-      "//components/metrics:metrics",
-      "//third_party/metrics_proto",
-    ]
+  if (!disable_histogram_support) {
+    public_deps = [ "//components/metrics:library_support" ]
   }
 }
 
@@ -84,9 +72,7 @@ source_set("metrics_util") {
     "metrics_util.cc",
     "metrics_util.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 # Unit tests for Cronet common implementation.
@@ -100,15 +86,10 @@ source_set("cronet_common_unittests") {
   ]
 
   sources = [
-    "histogram_manager_unittest.cc",
     "host_cache_persistence_manager_unittest.cc",
     "stale_host_resolver_unittest.cc",
     "url_request_context_config_unittest.cc",
   ]
-
-  if (disable_histogram_support) {
-    sources -= [ "histogram_manager_unittest.cc" ]
-  }
 }
 
 # For platforms on which the native Cronet library is used, build the library,
@@ -117,25 +98,18 @@ source_set("cronet_common_unittests") {
 if (is_android) {
   group("cronet_package") {
     testonly = true
-    deps = [
-      "//components/cronet/android:cronet_package_android",
-    ]
+    deps = [ "//components/cronet/android:cronet_package_android" ]
   }
 } else if (is_ios) {
   group("cronet_package") {
-    deps = [
-      "//components/cronet/ios:cronet_package_ios",
-    ]
+    deps = [ "//components/cronet/ios:cronet_package_ios" ]
   }
 } else {
   config("shared_library_public_config") {
     if (is_mac && !is_component_build) {
       # Executable targets that depend on the shared libraries below need to have
       # the rpath setup in non-component build configurations.
-      ldflags = [
-        "-rpath",
-        "@executable_path/",
-      ]
+      ldflags = [ "-Wl,-rpath,@executable_path/" ]
     }
   }
 
@@ -153,9 +127,7 @@ if (is_android) {
       "//net",
     ]
 
-    sources = [
-      "cronet_global_state_stubs.cc",
-    ]
+    sources = [ "cronet_global_state_stubs.cc" ]
 
     if (is_mac && !is_component_build) {
       ldflags = [
@@ -183,8 +155,13 @@ if (is_android) {
 
     defines = [ "CRONET_TESTS_IMPLEMENTATION" ]
 
-    if (is_linux && !is_component_build) {
+    if ((is_linux || is_chromeos) && !is_component_build) {
       public_configs = [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
+    }
+
+    if (is_fuchsia) {
+      additional_manifest_fragments =
+          [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
     }
   }
 
@@ -211,12 +188,8 @@ if (is_android) {
     _license_path = "$_package_dir/LICENSE"
 
     script = "//tools/licenses.py"
-    inputs = [
-      lastchange_file,
-    ]
-    outputs = [
-      _license_path,
-    ]
+    inputs = [ lastchange_file ]
+    outputs = [ _license_path ]
     args = [
       "license_file",
       rebase_path(_license_path, root_build_dir),
@@ -234,21 +207,15 @@ if (is_android) {
       "//AUTHORS",
       "//chrome/VERSION",
     ]
-    deps = [
-      ":cronet",
-    ]
-    outputs = [
-      "$_package_dir/{{source_file_part}}",
-    ]
+    deps = [ ":cronet" ]
+    outputs = [ "$_package_dir/{{source_file_part}}" ]
   }
 
   # Copy headers.
   copy("cronet_package_headers") {
     sources = cronet_native_public_headers + grpc_public_headers
 
-    outputs = [
-      "$_package_dir/include/{{source_file_part}}",
-    ]
+    outputs = [ "$_package_dir/include/{{source_file_part}}" ]
   }
 
   group("cronet_package") {
@@ -288,15 +255,13 @@ if (is_android) {
       "//components/cronet",
       "//components/cronet/native:cronet_native_headers",
     ]
-    if (is_linux && !is_component_build) {
+    if ((is_linux || is_chromeos) && !is_component_build) {
       public_configs = [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
     }
   }
 
   test("cronet_sample_test") {
-    sources = [
-      "native/sample/test/sample_test.cc",
-    ]
+    sources = [ "native/sample/test/sample_test.cc" ]
     deps = [
       ":cronet_sample",
       "//testing/gtest:gtest",

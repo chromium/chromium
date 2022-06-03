@@ -33,7 +33,7 @@ class ExtensionRegistryObserver;
 enum class UnloadedExtensionReason;
 
 // ExtensionRegistry holds sets of the installed extensions for a given
-// BrowserContext. An incognito browser context and its master browser context
+// BrowserContext. An incognito browser context and its original browser context
 // share a single registry.
 class ExtensionRegistry : public KeyedService {
  public:
@@ -43,12 +43,16 @@ class ExtensionRegistry : public KeyedService {
     ENABLED = 1 << 0,
     DISABLED = 1 << 1,
     TERMINATED = 1 << 2,
-    BLACKLISTED = 1 << 3,
+    BLOCKLISTED = 1 << 3,
     BLOCKED = 1 << 4,
     EVERYTHING = (1 << 5) - 1,
   };
 
   explicit ExtensionRegistry(content::BrowserContext* browser_context);
+
+  ExtensionRegistry(const ExtensionRegistry&) = delete;
+  ExtensionRegistry& operator=(const ExtensionRegistry&) = delete;
+
   ~ExtensionRegistry() override;
 
   // Returns the instance for the given |browser_context|.
@@ -67,8 +71,8 @@ class ExtensionRegistry : public KeyedService {
   const ExtensionSet& terminated_extensions() const {
     return terminated_extensions_;
   }
-  const ExtensionSet& blacklisted_extensions() const {
-    return blacklisted_extensions_;
+  const ExtensionSet& blocklisted_extensions() const {
+    return blocklisted_extensions_;
   }
   const ExtensionSet& blocked_extensions() const { return blocked_extensions_; }
   const ExtensionSet& ready_extensions() const { return ready_extensions_; }
@@ -81,7 +85,7 @@ class ExtensionRegistry : public KeyedService {
   //  * enabled_extensions()     --> ExtensionRegistry::ENABLED
   //  * disabled_extensions()    --> ExtensionRegistry::DISABLED
   //  * terminated_extensions()  --> ExtensionRegistry::TERMINATED
-  //  * blacklisted_extensions() --> ExtensionRegistry::BLACKLISTED
+  //  * blocklisted_extensions() --> ExtensionRegistry::BLOCKLISTED
   //  * blocked_extensions()     --> ExtensionRegistry::BLOCKED
   std::unique_ptr<ExtensionSet> GenerateInstalledExtensionsSet(
       int include_mask) const;
@@ -131,18 +135,21 @@ class ExtensionRegistry : public KeyedService {
   // not be any installed extension with |extension|'s ID.
   void TriggerOnUninstalled(const Extension* extension, UninstallReason reason);
 
+  // Invokes the observer method OnExtensionUninstallationDenied().
+  void TriggerOnUninstallationDenied(const Extension* extension);
+
   // Find an extension by ID using |include_mask| to pick the sets to search:
   //  * enabled_extensions()     --> ExtensionRegistry::ENABLED
   //  * disabled_extensions()    --> ExtensionRegistry::DISABLED
   //  * terminated_extensions()  --> ExtensionRegistry::TERMINATED
-  //  * blacklisted_extensions() --> ExtensionRegistry::BLACKLISTED
+  //  * blocklisted_extensions() --> ExtensionRegistry::BLOCKLISTED
   //  * blocked_extensions()     --> ExtensionRegistry::BLOCKED
   // Returns NULL if the extension is not found in the selected sets.
   const Extension* GetExtensionById(const std::string& id,
                                     int include_mask) const;
 
   // Looks up an extension by ID, regardless of whether it's enabled,
-  // disabled, blacklisted, or terminated.
+  // disabled, blocklisted, or terminated.
   const Extension* GetInstalledExtension(const std::string& id) const;
 
   // Adds the specified extension to the enabled set. The registry becomes an
@@ -166,9 +173,9 @@ class ExtensionRegistry : public KeyedService {
   bool AddTerminated(const scoped_refptr<const Extension>& extension);
   bool RemoveTerminated(const std::string& id);
 
-  // As above, but for the blacklisted set.
-  bool AddBlacklisted(const scoped_refptr<const Extension>& extension);
-  bool RemoveBlacklisted(const std::string& id);
+  // As above, but for the blocklisted set.
+  bool AddBlocklisted(const scoped_refptr<const Extension>& extension);
+  bool RemoveBlocklisted(const std::string& id);
 
   // As above, but for the blocked set.
   bool AddBlocked(const scoped_refptr<const Extension>& extension);
@@ -194,11 +201,11 @@ class ExtensionRegistry : public KeyedService {
   // Extensions that are installed and terminated.
   ExtensionSet terminated_extensions_;
 
-  // Extensions that are installed and blacklisted. Generally these shouldn't be
+  // Extensions that are installed and blocklisted. Generally these shouldn't be
   // considered as installed by the extension platform: we only keep them around
-  // so that if extensions are blacklisted by mistake they can easily be
-  // un-blacklisted.
-  ExtensionSet blacklisted_extensions_;
+  // so that if extensions are blocklisted by mistake they can easily be
+  // un-blocklisted.
+  ExtensionSet blocklisted_extensions_;
 
   // Extensions that are installed and blocked. Will never be loaded.
   ExtensionSet blocked_extensions_;
@@ -210,8 +217,6 @@ class ExtensionRegistry : public KeyedService {
   base::ObserverList<ExtensionRegistryObserver>::Unchecked observers_;
 
   content::BrowserContext* const browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionRegistry);
 };
 
 }  // namespace extensions

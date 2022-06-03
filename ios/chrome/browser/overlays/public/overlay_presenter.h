@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTER_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTER_H_
 
-#include <memory>
 
 #include "ios/chrome/browser/overlays/public/overlay_modality.h"
 
@@ -23,6 +22,9 @@ class OverlayPresenter {
   // |modality|, creating one if necessary.
   static OverlayPresenter* FromBrowser(Browser* browser,
                                        OverlayModality modality);
+
+  // Returns the presenter's modality.
+  virtual OverlayModality GetModality() const = 0;
 
   // Sets the presentation context in which to show overlay UI.  Upon being set,
   // the presenter will attempt to begin presenting overlay UI for the active

@@ -1,0 +1,16 @@
+Name: pywebsocket3
+Short Name: pywebsocket3
+URL: https://github.com/GoogleChromeLabs/pywebsocket3/
+Version: 0
+License: New BSD
+License File: src/LICENSE
+Security Critical: no
+
+Description:
+pywebsocket3 is a WebSocket server which is intended for testing.
+Chromium uses it for WebSocket related tests on Extensions, PPAPI, and so on.
+
+Local Modifications:
+Many chromium developers join pywebsocket3 development.
+If you need some local modifications, please contact them directly.
+They will check your change in pywebsocket repository.

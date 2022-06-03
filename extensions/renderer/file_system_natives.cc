@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "content/public/common/url_constants.h"
 #include "extensions/common/constants.h"
 #include "extensions/renderer/script_context.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -15,6 +16,8 @@
 #include "third_party/blink/public/web/web_dom_file_system.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-primitive.h"
 
 namespace extensions {
 
@@ -47,7 +50,12 @@ void FileSystemNatives::GetIsolatedFileSystem(
 
   GURL context_url =
       extensions::ScriptContext::GetDocumentLoaderURLForFrame(webframe);
-  CHECK(context_url.SchemeIs(extensions::kExtensionScheme));
+  // The chrome://file-manager page also uses the fileSystem APIs. Note that
+  // we use a raw string here because the constant is defined at a different
+  // layer, and it's not worth pulling it up into //extensions just for this.
+  CHECK(context_url.SchemeIs(extensions::kExtensionScheme) ||
+        (context_url.SchemeIs(content::kChromeUIScheme) &&
+         context_url.host_piece() == "file-manager"));
 
   const GURL origin(url::Origin::Create(context_url).Serialize());
   std::string name(storage::GetIsolatedFileSystemName(origin, file_system_id));

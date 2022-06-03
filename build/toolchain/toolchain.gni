@@ -6,49 +6,45 @@
 # toolchain() rules themselves.
 
 import("//build/config/chrome_build.gni")
+import("//build/config/chromecast_build.gni")
 import("//build_overrides/build.gni")
 
 declare_args() {
-  # If this is set to true, or if LLVM_FORCE_HEAD_REVISION is set to 1
-  # in the environment, we use the revision in the llvm repo to determine
+  # If this is set to true, we use the revision in the llvm repo to determine
   # the CLANG_REVISION to use, instead of the version hard-coded into
   # //tools/clang/scripts/update.py. This should only be used in
-  # conjunction with setting LLVM_FORCE_HEAD_REVISION in the
-  # environment when `gclient runhooks` is run as well.
+  # conjunction with setting the llvm_force_head_revision DEPS variable when
+  # `gclient runhooks` is run as well.
   llvm_force_head_revision = false
-
-  # Compile with Xcode version of clang instead of hermetic version shipped
-  # with the build. Used to be used iOS for official builds, but is now off by
-  # default for all configurations.
-  use_xcode_clang = false
 
   # Used for binary size analysis.
   generate_linker_map = is_android && is_official_build
 }
 
+# This variable is no longer used in Chromium, but some projects based on
+# //build still reference it, so keep defining until all references have
+# been removed from those projects. It is defined outside of `declare_args`
+# as it setting it in `args.gn` is no longer supported.
+# TODO(crbug.com/1266466): Remove when no longer used by other projects.
+use_xcode_clang = false
+
 if (generate_linker_map) {
-  assert(
-      is_official_build,
-      "Linker map files should only be generated when is_official_build = true")
-  assert(current_os == "android" || target_os == "linux",
-         "Linker map files should only be generated for Android and Linux")
+  assert(is_official_build || is_chromecast,
+         "Linker map files should only be generated when is_official_build = " +
+             "true or is_chromecast = true")
+  assert(current_os == "android" || current_os == "linux" ||
+             target_os == "android" || target_os == "linux" ||
+             target_os == "chromeos",
+         "Linker map files should only be generated for Android, Linux, " +
+             "or ChromeOS.")
 }
 
 declare_args() {
-  if (is_clang) {
-    # Clang compiler version. Clang files are placed at version-dependent paths.
-    clang_version = "10.0.0"
-  }
+  clang_version = "14.0.0"
 }
 
-# Check target_os here instead of is_ios as this file is loaded for secondary
-# toolchain (host toolchain in particular) but the argument is the same for
-# all toolchains.
-assert(!use_xcode_clang || target_os == "ios",
-       "Using Xcode's clang is only supported in iOS builds")
-
 # Extension for shared library files (including leading dot).
-if (is_mac || is_ios) {
+if (is_apple) {
   shlib_extension = ".dylib"
 } else if (is_android && is_component_build) {
   # By appending .cr, we prevent name collisions with libraries already
@@ -95,3 +91,13 @@ if (host_os == "win") {
   stamp_command = "touch {{output}}"
   copy_command = "ln -f {{source}} {{output}} 2>/dev/null || (rm -rf {{output}} && cp -af {{source}} {{output}})"
 }
+
+# This variable is true if the current toolchain is one of the target
+# toolchains, i.e. a toolchain which is being used to build the main Chrome
+# binary. This generally means "not the host toolchain", but in the case where
+# we're targeting the host it's true then as well. We do require current_os to
+# match target_os so that for example we avoid considering Android as a target
+# toolchain when targeting CrOS.
+is_a_target_toolchain =
+    (current_toolchain != host_toolchain ||
+     default_toolchain == host_toolchain) && current_os == target_os

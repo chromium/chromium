@@ -4,7 +4,15 @@
 
 module feed_internals.mojom;
 
+import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
+
+// Feed sorting order options.
+enum FeedOrder {
+  kUnspecified = 0,
+  kGrouped,
+  kReverseChron
+};
 
 // General properties of Feed suggestions.
 struct Properties {
@@ -20,21 +28,24 @@ struct Properties {
   // Whether prefetching for offline availability is enabled.
   bool is_prefetching_enabled;
 
+  // Whether debugging the WebFeed follow intro is enabled.
+  bool is_web_feed_follow_intro_debug_enabled;
+
+  // Whether the legacy feed endpoint should be used for Web Feed content
+  // fetches.
+  bool use_feed_query_requests_for_web_feeds;
+
+  // Last load stream status, human readable.
+  string load_stream_status;
+
   // Feed fetch URL.
   url.mojom.Url feed_fetch_url;
-};
 
-struct UserClassifier {
-  // User class description.
-  string user_class_description;
+  // Feed upload actions URL.
+  url.mojom.Url feed_actions_url;
 
-  // Estimated average length of time between two successive suggestion views of
-  // in hours.
-  float avg_hours_between_views;
-
-  // Estimated average length of time between two successive uses of suggestions
-  // in hours.
-  float avg_hours_between_uses;
+  // Following feed order.
+  FeedOrder following_feed_order;
 };
 
 struct LastFetchProperties {
@@ -44,38 +55,21 @@ struct LastFetchProperties {
   // Reason for the last fetch.
   string last_fetch_trigger;
 
-  // Last fetch time.
-  Time? last_fetch_time;
+  // Last fetch time. Zero if there was no last fetch.
+  mojo_base.mojom.TimeDelta last_fetch_time;
 
-  // Time until which the scheduler will stop requesting refreshes, unless there
-  // is direct user interaction.
-  Time? refresh_suppress_time;
+  // Time until which the scheduler will stop requesting refreshes.
+  // Zero if there is direct user interaction.
+  mojo_base.mojom.TimeDelta refresh_suppress_time;
 
   // For test server authentication.
   string last_bless_nonce;
-};
 
-// Models a single suggestion in the Feed.
-struct Suggestion {
-  // Title of the suggestion.
-  string title;
+  // Last net status for actions upload.
+  int32 last_action_upload_status;
 
-  // URL of the suggested page.
-  url.mojom.Url url;
-
-  // Name of the content's publisher.
-  string publisher_name;
-
-  // URL of the image associated with the suggestion.
-  url.mojom.Url image_url;
-
-  // URL of the suggested page's favicon.
-  url.mojom.Url favicon_url;
-};
-
-// Time wrapper to allow for nullable objects.
-struct Time {
-  double ms_since_epoch;
+  // Last action upload time.
+  mojo_base.mojom.TimeDelta last_action_upload_time;
 };
 
 // Browser interface for the page. Consists of calls for data and hooks for
@@ -84,31 +78,47 @@ interface PageHandler {
   // Get general property values.
   GetGeneralProperties() => (Properties properties);
 
-  // Get user classifier property values.
-  GetUserClassifierProperties() => (UserClassifier properties);
-
-  // Clear stored properties for the user classifier.
-  ClearUserClassifierProperties();
-
   // Get last fetch data.
   GetLastFetchProperties() => (LastFetchProperties properties);
 
-  // Clear all data cached by the Feed library. Also triggers a refresh of the
-  // Feed.
-  ClearCachedDataAndRefreshFeed();
+  // Trigger a refresh of the For-you Feed.
+  RefreshForYouFeed();
 
-  // Trigger a refresh of the Feed.
-  RefreshFeed();
+  // Trigger a refresh of the Following Feed.
+  RefreshFollowingFeed();
 
-  // Get the last known content with metadata.
-  GetCurrentContent() => (array<Suggestion> suggestions);
+  // Trigger a refresh of the Web Feed suggestions.
+  RefreshWebFeedSuggestions();
 
-  // Internal state dump of the Feed library's process scope.
+  // Internal state dump of the Feed library's process scope. Human-readable.
   GetFeedProcessScopeDump() => (string dump);
 
-  // Record all Feed metrics into a log.
+  // Record all Feed metrics into a human-readable log.
   GetFeedHistograms() => (string log);
 
-  // Set feed host override. Empty to clear override.
-  OverrideFeedHost(string host);
+  // Overrides the scheme, host, and port used to make Feed Query requests.
+  // Other URL components, like the path, are ignored.
+  // Empty to clear override.
+  // This allows for testing the Feed against a development server.
+  OverrideFeedHost(url.mojom.Url host);
+
+  // Overrides the scheme, host, and port used to make Discover API requests.
+  // Other URL components, like the path, are ignored.
+  // Empty to clear override.
+  // This allows for testing the Feed against a development server.
+  OverrideDiscoverApiEndpoint(url.mojom.Url endpoint_url);
+
+  // Overrides the feed stream data with the payload inside a feedui::Slice for
+  // testing purpose. See go/feed-stream-data-testing for more details.
+  OverrideFeedStreamData(array<uint8> data);
+
+  // Sets whether debugging the WebFeed follow intro is enabled.
+  SetWebFeedFollowIntroDebugEnabled(bool enabled);
+
+  // Sets whether the legacy feed endpoint should be used for Web Feed content
+  // fetches.
+  SetUseFeedQueryRequestsForWebFeeds(bool use_legacy);
+
+  // Sets the Following feed order in local preferences.
+  SetFollowingFeedOrder(FeedOrder order);
 };

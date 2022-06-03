@@ -1,0 +1,14 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "media/mojo/mojom/media_types.mojom";
+
+// This interface notifies the browser of an event occurring in the
+// media pipeline. It sends media event logs from renderer to browser.
+interface MediaInternalLogRecords {
+  // Sends batched media logs to MediaInternalLogRecordsImpl::Log
+  Log(array<media.mojom.MediaLogRecord> events);
+};

@@ -9,11 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/component_updater/configurator_impl.h"
 #include "components/update_client/configurator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class GURL;
 
 namespace content {
 class BrowserContext;
@@ -21,6 +24,7 @@ class BrowserContext;
 
 namespace update_client {
 class ActivityDataService;
+class CrxDownloaderFactory;
 class NetworkFetcherFactory;
 class ProtocolHandlerFactory;
 }
@@ -36,9 +40,16 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
           content::BrowserContext* context)>;
 
   static scoped_refptr<ChromeUpdateClientConfig> Create(
-      content::BrowserContext* context);
+      content::BrowserContext* context,
+      absl::optional<GURL> url_override);
 
-  int InitialDelay() const override;
+  ChromeUpdateClientConfig(content::BrowserContext* context,
+                           absl::optional<GURL> url_override);
+
+  ChromeUpdateClientConfig(const ChromeUpdateClientConfig&) = delete;
+  ChromeUpdateClientConfig& operator=(const ChromeUpdateClientConfig&) = delete;
+
+  double InitialDelay() const override;
   int NextCheckDelay() const override;
   int OnDemandDelay() const override;
   int UpdateDelay() const override;
@@ -53,6 +64,8 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
   std::string GetDownloadPreference() const override;
   scoped_refptr<update_client::NetworkFetcherFactory> GetNetworkFetcherFactory()
+      override;
+  scoped_refptr<update_client::CrxDownloaderFactory> GetCrxDownloaderFactory()
       override;
   scoped_refptr<update_client::UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<update_client::PatcherFactory> GetPatcherFactory() override;
@@ -70,7 +83,6 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   friend class base::RefCountedThreadSafe<ChromeUpdateClientConfig>;
   friend class ExtensionUpdateClientBaseTest;
 
-  explicit ChromeUpdateClientConfig(content::BrowserContext* context);
   ~ChromeUpdateClientConfig() override;
 
   // Injects a new client config by changing the creation factory.
@@ -84,10 +96,10 @@ class ChromeUpdateClientConfig : public update_client::Configurator {
   PrefService* pref_service_;
   std::unique_ptr<update_client::ActivityDataService> activity_data_service_;
   scoped_refptr<update_client::NetworkFetcherFactory> network_fetcher_factory_;
+  scoped_refptr<update_client::CrxDownloaderFactory> crx_downloader_factory_;
   scoped_refptr<update_client::UnzipperFactory> unzip_factory_;
   scoped_refptr<update_client::PatcherFactory> patch_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeUpdateClientConfig);
+  absl::optional<GURL> url_override_;
 };
 
 }  // namespace extensions

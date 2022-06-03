@@ -1,4 +1,4 @@
-FAIL document.querySelector('input').offsetHeight > 10 should be true. Was false.
+PASS document.querySelector('input').offsetHeight > 10 is true
 PASS successfullyParsed is true
 
 TEST COMPLETE

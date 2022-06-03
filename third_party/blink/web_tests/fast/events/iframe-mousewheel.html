@@ -1,47 +1,28 @@
-<script src="../../resources/js-test.js"></script>
-<p id="description"></p>
+<!DOCTYPE html>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
 <iframe id="frame" src="resources/iframe-mousewheel.html"></iframe>
-<div id="console"></div>
+
 <script>
-if (window.testRunner)
-    testRunner.waitUntilDone();
-
-var testFinished = false;
-
-description("This test can be used to verify that a mousewheel event is fired when wheeling over the subframe but not dispatched to the parent frame.");
+var receivedMouseWheel = false;
+var iframeReceivedMouseWheel = false;
 
 document.addEventListener("wheel", function() {
-    testFailed("Received wheel event in parent");
-    if (window.testRunner)
-        testRunner.notifyDone();
+    receivedMouseWheel = true;
 });
 
 function iframeMouseWheel()
 {
-    if (testFinished)
-        return;
-    testFinished = true;
-    setTimeout(done, 0);
+    iframeReceivedMouseWheel = true;
 }
 
-function done()
-{
-    testPassed("received mousewheel event.");
-    if (window.testRunner)
-        testRunner.notifyDone();
-}
-
-function runTest()
-{
-     if (!window.eventSender)
-        return;
-
+promise_test(async () => {
     var frame = document.getElementById("frame");
-    var centerX = frame.offsetLeft + frame.offsetWidth / 2;
-    var centerY = frame.offsetTop + frame.offsetHeight / 2;
-    eventSender.mouseMoveTo(centerX, centerY);
-    eventSender.mouseScrollBy(0, 53);
-}
+    var center = elementCenter(frame);
+    await wheelTick(0, -1, center, 4000);
+    assert_false(receivedMouseWheel, "Received wheel event in parent");
+    assert_true(iframeReceivedMouseWheel, "Received wheel event in iframe");
+}, "Mousewheel in iframe doesn't dispatch to parent.");
 
-window.onload = runTest;
 </script>

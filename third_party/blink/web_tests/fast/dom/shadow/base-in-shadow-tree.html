@@ -10,7 +10,7 @@
 <script>
 var container = document.getElementById('container');
 
-var shadowRoot = container.createShadowRoot();
+var shadowRoot = container.attachShadow({mode: 'open'});
 
 var base = document.createElement('base');
 base.setAttribute('href', 'http://www.example.com/');

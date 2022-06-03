@@ -5,7 +5,6 @@
 #ifndef MEDIA_BASE_MEDIA_OBSERVER_H_
 #define MEDIA_BASE_MEDIA_OBSERVER_H_
 
-#include "media/base/cdm_context.h"
 #include "media/base/pipeline_metadata.h"
 #include "url/gurl.h"
 
@@ -33,9 +32,6 @@ class MEDIA_EXPORT MediaObserverClient {
   // Requests to switch to local renderer. According to |reason|, a text message
   // may be displayed to explain why the switch occurred.
   virtual void SwitchToLocalRenderer(ReasonToSwitchToLocal reason) = 0;
-
-  // Requests to activate monitoring changes on viewport intersection.
-  virtual void ActivateViewportIntersectionMonitoring(bool activate) = 0;
 
   // Reports the latest compatibility state of the element's source for remote
   // playback.
@@ -69,6 +65,9 @@ class MEDIA_EXPORT MediaObserver {
   // "disableRemotePlayback" media element attribute, as described in the
   // Remote Playback API spec: https://w3c.github.io/remote-playback
   virtual void OnRemotePlaybackDisabled(bool disabled) = 0;
+
+  // Called on Android, whenever we detect that we are playing back HLS.
+  virtual void OnHlsManifestDetected() = 0;
 
   // Called when the media is playing/paused.
   virtual void OnPlaying() = 0;

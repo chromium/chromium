@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html language="en">
+  <head>
+    <title>a.com</title>
+    <script language="javascript">
+      function onLoad() {
+        // The embedded iframe is dynamically loaded because we don't know
+        // the port where it is hosted until runtime.
+        console.log("a_embeds_b.html loaded");
+        let l = window.location;
+        let url = `${l.protocol}//b.com:${l.port}/b.html`;
+        console.log(`loading iframe [${url}]`);
+        let iframe = document.createElement('iframe');
+        iframe.setAttribute('src', url);
+        document.body.appendChild(iframe);
+      }
+    </script>
+  </head>
+  <body onload="onLoad();">
+    Welcome to a.com, embedding b.com!
+  </body>
+</html>

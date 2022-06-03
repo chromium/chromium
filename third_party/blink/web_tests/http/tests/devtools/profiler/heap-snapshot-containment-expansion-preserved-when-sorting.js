@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests Containment view of detailed heap snapshots. Expanded nodes must be preserved after sorting.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
 
   var instanceCount = 25;
@@ -42,7 +42,7 @@
       HeapProfilerTestRunner.expandRow(row, expandA);
       function expandA(row) {
         function propertyMatcher(data) {
-          return data._referenceName === 'a' && data._name.charAt(0) === 'A';
+          return data.referenceName === 'a' && data.name.charAt(0) === 'A';
         }
         var aRow = HeapProfilerTestRunner.findMatchingRow(propertyMatcher, row);
         TestRunner.assertEquals(true, !!aRow, '"a: A" row');

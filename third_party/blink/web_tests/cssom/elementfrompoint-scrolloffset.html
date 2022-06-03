@@ -15,11 +15,13 @@ test(function() {
   // Test that elementFromPoint hits div element.
   assert_equals(document.elementFromPoint(100.249 - scrolloffset, 12), divElement);
 
-  // Page zoom factor should not affect result.
-  eventSender.setPageZoomFactor(3.0);
-  assert_equals(document.elementFromPoint(100.249 - scrolloffset, 12), divElement);
+  if (window.testRunner) {
+    // Page zoom factor should not affect result.
+    testRunner.setPageZoomFactor(3.0);
+    assert_equals(document.elementFromPoint(100.249 - scrolloffset, 12), divElement);
 
-  eventSender.setPageZoomFactor(4.0);
-  assert_equals(document.elementFromPoint(100.249 - scrolloffset, 12), divElement);
+    testRunner.setPageZoomFactor(4.0);
+    assert_equals(document.elementFromPoint(100.249 - scrolloffset, 12), divElement);
+  }
 });
 </script>

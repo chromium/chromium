@@ -4,7 +4,10 @@
 
 #import "ios/web/public/session/crw_session_storage.h"
 
+#include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
+#include "ios/web/common/features.h"
 #import "ios/web/navigation/navigation_item_impl.h"
 #import "ios/web/navigation/navigation_item_storage_test_util.h"
 #import "ios/web/navigation/serializable_user_data_manager_impl.h"
@@ -53,8 +56,8 @@ BOOL SessionStoragesAreEqual(CRWSessionStorage* session1,
   return ItemStorageListsAreEqual(items1, items2) &&
          session1.hasOpener == session2.hasOpener &&
          session1.lastCommittedItemIndex == session2.lastCommittedItemIndex &&
-         session1.previousItemIndex == session2.previousItemIndex &&
-         UserDataAreEqual(session1.userData, session2.userData);
+         UserDataAreEqual(session1.userData, session2.userData) &&
+         session1.userAgentType == session2.userAgentType;
 }
 }  // namespace
 
@@ -65,7 +68,6 @@ class CRWNSessionStorageTest : public PlatformTest {
     // Set up |session_storage_|.
     [session_storage_ setHasOpener:YES];
     [session_storage_ setLastCommittedItemIndex:4];
-    [session_storage_ setPreviousItemIndex:3];
     // Create an item storage.
     CRWNavigationItemStorage* item_storage =
         [[CRWNavigationItemStorage alloc] init];
@@ -77,8 +79,6 @@ class CRWNSessionStorageTest : public PlatformTest {
     [item_storage
         setDisplayState:web::PageDisplayState(CGPointZero, UIEdgeInsetsZero,
                                               0.0, 0.0, 0.0)];
-    [item_storage
-        setPOSTData:[@"Test data" dataUsingEncoding:NSUTF8StringEncoding]];
     [item_storage setHTTPRequestHeaders:@{ @"HeaderKey" : @"HeaderValue" }];
     [session_storage_ setItemStorages:@[ item_storage ]];
     // Create serializable user data.
@@ -86,6 +86,7 @@ class CRWNSessionStorageTest : public PlatformTest {
         new web::SerializableUserDataImpl(
             @{ @"key" : @"value" }));
     [session_storage_ setSerializableUserData:std::move(user_data)];
+    [session_storage_ setUserAgentType:web::UserAgentType::DESKTOP];
   }
 
  protected:
@@ -95,6 +96,24 @@ class CRWNSessionStorageTest : public PlatformTest {
 // Tests that unarchiving CRWSessionStorage data results in an equivalent
 // storage.
 TEST_F(CRWNSessionStorageTest, EncodeDecode) {
+  NSKeyedArchiver* archiver =
+      [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
+  [archiver encodeObject:session_storage_ forKey:NSKeyedArchiveRootObjectKey];
+  [archiver finishEncoding];
+  NSData* data = [archiver encodedData];
+  NSKeyedUnarchiver* unarchiver =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
+  unarchiver.requiresSecureCoding = NO;
+  id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  EXPECT_TRUE(SessionStoragesAreEqual(session_storage_, decoded));
+}
+
+// Tests that unarchiving CRWSessionStorage data results in an equivalent
+// storage when the user agent is automatic.
+TEST_F(CRWNSessionStorageTest, EncodeDecodeAutomatic) {
+  base::test::ScopedFeatureList feature;
+  feature.InitAndEnableFeature(web::features::kUseDefaultUserAgentInWebClient);
+  session_storage_.userAgentType = web::UserAgentType::AUTOMATIC;
   NSKeyedArchiver* archiver =
       [[NSKeyedArchiver alloc] initRequiringSecureCoding:NO];
   [archiver encodeObject:session_storage_ forKey:NSKeyedArchiveRootObjectKey];

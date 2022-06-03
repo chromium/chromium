@@ -27,6 +27,10 @@ class FrameGeneratorForTest;
 class MockFrameConsumer {
  public:
   explicit MockFrameConsumer(CodedFrameProvider* coded_frame_provider);
+
+  MockFrameConsumer(const MockFrameConsumer&) = delete;
+  MockFrameConsumer& operator=(const MockFrameConsumer&) = delete;
+
   ~MockFrameConsumer();
 
   void Configure(const std::vector<bool>& delayed_task_pattern,
@@ -35,7 +39,7 @@ class MockFrameConsumer {
 
   // Starts consuming frames. Invoke |done_cb| when all the expected frames
   // have been received.
-  void Start(const base::Closure& done_cb);
+  void Start(base::OnceClosure done_cb);
 
  private:
   void ReadFrame();
@@ -47,7 +51,7 @@ class MockFrameConsumer {
 
   CodedFrameProvider* const coded_frame_provider_;
 
-  base::Closure done_cb_;
+  base::OnceClosure done_cb_;
 
   // Parameterization of the frame consumer:
   // |delayed_task_pattern_| indicates the pattern for fetching frames,
@@ -62,8 +66,6 @@ class MockFrameConsumer {
 
   // Expected results.
   std::unique_ptr<FrameGeneratorForTest> frame_generator_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFrameConsumer);
 };
 
 }  // namespace media

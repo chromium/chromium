@@ -4,7 +4,7 @@
 
 #include "ios/chrome/common/x_callback_url.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/escape.h"
@@ -27,7 +27,7 @@ bool IsXCallbackURL(const GURL& url) {
     return url.host_piece() == kXCallbackURLHost;
 
   base::StringPiece path_piece = url.path_piece();
-  if (path_piece.starts_with("//"))
+  if (base::StartsWith(path_piece, "//"))
     path_piece = path_piece.substr(2, base::StringPiece::npos);
 
   size_t pos = path_piece.find('/', 0);

@@ -7,7 +7,7 @@
 
 #include <SLES/OpenSLES.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/base/media_export.h"
 
 namespace media {

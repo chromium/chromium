@@ -11,6 +11,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync/base/sync_prefs.h"
 #include "components/sync/driver/sync_user_settings.h"
@@ -27,6 +28,9 @@ class TestSyncService : public syncer::TestSyncService {
  public:
   TestSyncService() = default;
 
+  TestSyncService(const TestSyncService&) = delete;
+  TestSyncService& operator=(const TestSyncService&) = delete;
+
   void AddObserver(syncer::SyncServiceObserver* observer) override {
     observer_ = observer;
   }
@@ -38,8 +42,6 @@ class TestSyncService : public syncer::TestSyncService {
 
  private:
   syncer::SyncServiceObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSyncService);
 };
 
 }  // namespace
@@ -50,6 +52,10 @@ class UnifiedConsentServiceTest : public testing::Test {
     UnifiedConsentService::RegisterPrefs(pref_service_.registry());
     syncer::SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
   }
+
+  UnifiedConsentServiceTest(const UnifiedConsentServiceTest&) = delete;
+  UnifiedConsentServiceTest& operator=(const UnifiedConsentServiceTest&) =
+      delete;
 
   ~UnifiedConsentServiceTest() override {
     if (consent_service_)
@@ -78,8 +84,6 @@ class UnifiedConsentServiceTest : public testing::Test {
   signin::IdentityTestEnvironment identity_test_environment_;
   TestSyncService sync_service_;
   std::unique_ptr<UnifiedConsentService> consent_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(UnifiedConsentServiceTest);
 };
 
 TEST_F(UnifiedConsentServiceTest, DefaultValuesWhenSignedOut) {
@@ -90,7 +94,8 @@ TEST_F(UnifiedConsentServiceTest, DefaultValuesWhenSignedOut) {
 
 TEST_F(UnifiedConsentServiceTest, EnableUrlKeyedAnonymizedDataCollection) {
   CreateConsentService();
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com");
+  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
+                                               signin::ConsentLevel::kSync);
   EXPECT_FALSE(pref_service_.GetBoolean(
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 
@@ -102,7 +107,8 @@ TEST_F(UnifiedConsentServiceTest, EnableUrlKeyedAnonymizedDataCollection) {
 
 TEST_F(UnifiedConsentServiceTest, Migration_UpdateSettings) {
   // Create user that syncs history and has no custom passphrase.
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com");
+  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
+                                               signin::ConsentLevel::kSync);
   sync_service_.GetUserSettings()->SetSelectedTypes(
       false, {syncer::UserSelectableType::kHistory});
   EXPECT_TRUE(sync_service_.IsSyncFeatureActive());
@@ -117,12 +123,13 @@ TEST_F(UnifiedConsentServiceTest, Migration_UpdateSettings) {
       prefs::kUrlKeyedAnonymizedDataCollectionEnabled));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(UnifiedConsentServiceTest, ClearPrimaryAccountDisablesSomeServices) {
   base::HistogramTester histogram_tester;
 
   CreateConsentService();
-  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com");
+  identity_test_environment_.SetPrimaryAccount("testaccount@gmail.com",
+                                               signin::ConsentLevel::kSync);
 
   // Precondition: Enable unified consent.
   consent_service_->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
@@ -144,6 +151,6 @@ TEST_F(UnifiedConsentServiceTest, Migration_NotSignedIn) {
   // creation of the consent service.
   EXPECT_EQ(GetMigrationState(), unified_consent::MigrationState::kCompleted);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace unified_consent

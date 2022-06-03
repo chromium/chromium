@@ -1,11 +1,9 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Logic for reading .a files."""
-
-from __future__ import print_function
 
 import argparse
 import logging
@@ -15,7 +13,7 @@ import os
 def IsThinArchive(path):
   """Returns whether the given .a is a thin archive."""
   with open(path, 'rb') as f:
-    return f.read(8) == '!<thin>\n'
+    return f.read(8) == b'!<thin>\n'
 
 
 def CreateThinObjectPath(archive_path, subpath):
@@ -31,13 +29,20 @@ def CreateThinObjectPath(archive_path, subpath):
 
 
 def IterArchiveChunks(path):
-  """For each .o embedded in the given .a file, yields (foo.o, foo_contents)."""
+  """For each .o embedded in the given .a file, yields (foo.o, foo_contents).
+
+  Args:
+    path: Path to .a file.
+
+  Returns:
+    A (str, bytes) tuple, specifying (.o file entry, None or payload data).
+  """
   # File format reference:
   # https://github.com/pathscale/binutils/blob/master/gold/archive.cc
   with open(path, 'rb') as f:
     header = f.read(8)
-    is_thin = header == '!<thin>\n'
-    if not is_thin and header != '!<arch>\n':
+    is_thin = header == b'!<thin>\n'
+    if not is_thin and header != b'!<arch>\n':
       raise Exception('Invalid .a: ' + path)
 
     def read_payload(size):
@@ -54,19 +59,19 @@ def IterArchiveChunks(path):
       entry_name = entry[:16].rstrip()
       entry_size = int(entry[48:58].rstrip())
 
-      if entry_name in ('', '/', '//', '/SYM64/'):
+      if entry_name in (b'', b'/', b'//', b'/SYM64/'):
         payload = read_payload(entry_size)
         # Metadata sections we don't care about.
-        if entry_name == '//':
+        if entry_name == b'//':
           name_list = payload
         continue
 
-      if entry_name[0] == '/':
+      if entry_name[0:1] == b'/':
         # Name is specified as location in name table.
         # E.g.: /123
         name_offset = int(entry_name[1:])
         # String table enties are delimited by \n (e.g. "browser.o/\n").
-        end_idx = name_list.index('\n', name_offset)
+        end_idx = name_list.index(b'\n', name_offset)
         entry_name = name_list[name_offset:end_idx]
       else:
         # Name specified inline with spaces for padding (e.g. "browser.o/    ").
@@ -74,7 +79,7 @@ def IterArchiveChunks(path):
 
       # Although entry_size exists for thin archives, no data exists in the .a.
       entry_data = None if is_thin else read_payload(entry_size)
-      yield entry_name.rstrip('/'), entry_data
+      yield entry_name.rstrip(b'/').decode('ascii'), entry_data
 
 
 def ExpandThinArchives(paths, output_directory):

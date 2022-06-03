@@ -78,13 +78,13 @@ function construct(n) {
       currentContainer = document.createElement("div");
       currentContainer.classList = "container large";
       if (i > 0)
-        currentContainer.renderSubtree = "invisible";
+        currentContainer.style = "content-visibility: hidden-matchable";
       document.body.appendChild(currentContainer);
     }
     const clone = specimen.cloneNode(true);
     clone.id = "id" + i;
     clone.classList = "container small";
-    clone.renderSubtree = "invisible";
+    clone.style = "content-visibility: hidden-matchable";
     currentContainer.appendChild(clone);
   }
 }
@@ -93,7 +93,7 @@ let nextId = 0;
 function commitNextLock() {
   const element = document.getElementById("id" + nextId);
   ++nextId;
-  element.renderSubtree = "";
+  element.style = "";
 }
 
 let testDone = false;

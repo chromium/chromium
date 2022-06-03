@@ -13,12 +13,15 @@ namespace extensions {
 class TestPermissionMessageProvider : public PermissionMessageProvider {
  public:
   TestPermissionMessageProvider();
+
+  TestPermissionMessageProvider(const TestPermissionMessageProvider&) = delete;
+  TestPermissionMessageProvider& operator=(
+      const TestPermissionMessageProvider&) = delete;
+
   ~TestPermissionMessageProvider() override;
 
  private:
   PermissionMessages GetPermissionMessages(
-      const PermissionIDSet& permissions) const override;
-  PermissionMessages GetPowerfulPermissionMessages(
       const PermissionIDSet& permissions) const override;
   bool IsPrivilegeIncrease(const PermissionSet& granted_permissions,
                            const PermissionSet& requested_permissions,
@@ -26,8 +29,6 @@ class TestPermissionMessageProvider : public PermissionMessageProvider {
   PermissionIDSet GetAllPermissionIDs(
       const PermissionSet& permissions,
       Manifest::Type extension_type) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TestPermissionMessageProvider);
 };
 
 }  // namespace extensions

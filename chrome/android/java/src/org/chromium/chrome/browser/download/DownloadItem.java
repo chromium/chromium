@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.download;
 
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadState;
 import org.chromium.components.download.ResumeMode;
 import org.chromium.components.offline_items_collection.ContentId;
@@ -163,9 +164,10 @@ public class DownloadItem {
         offlineItem.totalSizeBytes = downloadInfo.getBytesTotalSize();
         offlineItem.receivedBytes = downloadInfo.getBytesReceived();
         offlineItem.isResumable = downloadInfo.isResumable();
-        offlineItem.pageUrl = downloadInfo.getUrl();
+        offlineItem.url = downloadInfo.getUrl();
         offlineItem.originalUrl = downloadInfo.getOriginalUrl();
         offlineItem.isOffTheRecord = downloadInfo.isOffTheRecord();
+        offlineItem.otrProfileId = OTRProfileID.serialize(downloadInfo.getOTRProfileId());
         offlineItem.mimeType = downloadInfo.getMimeType();
         offlineItem.progress = downloadInfo.getProgress();
         offlineItem.timeRemainingMs = downloadInfo.getTimeRemainingInMillis();
@@ -178,6 +180,7 @@ public class DownloadItem {
         offlineItem.completionTimeMs = item.getEndTime();
         offlineItem.externallyRemoved = item.hasBeenExternallyRemoved();
         offlineItem.canRename = item.getDownloadInfo().state() == DownloadState.COMPLETE;
+        offlineItem.schedule = downloadInfo.getOfflineItemSchedule();
         switch (downloadInfo.state()) {
             case DownloadState.IN_PROGRESS:
                 offlineItem.state = downloadInfo.isPaused() ? OfflineItemState.PAUSED

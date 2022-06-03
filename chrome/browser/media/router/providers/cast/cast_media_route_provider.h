@@ -10,10 +10,10 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chrome/browser/media/router/providers/cast/cast_app_discovery_service.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
-#include "chrome/common/media_router/mojom/media_router.mojom.h"
+#include "components/media_router/common/mojom/logger.mojom.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -45,6 +45,10 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
       cast_channel::CastMessageHandler* message_handler,
       const std::string& hash_token,
       const scoped_refptr<base::SequencedTaskRunner>& task_runner);
+
+  CastMediaRouteProvider(const CastMediaRouteProvider&) = delete;
+  CastMediaRouteProvider& operator=(const CastMediaRouteProvider&) = delete;
+
   ~CastMediaRouteProvider() override;
 
   // mojom::MediaRouteProvider:
@@ -86,18 +90,12 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   void DetachRoute(const std::string& route_id) override;
   void EnableMdnsDiscovery() override;
   void UpdateMediaSinks(const std::string& media_source) override;
-  void SearchSinks(const std::string& sink_id,
-                   const std::string& media_source,
-                   mojom::SinkSearchCriteriaPtr search_criteria,
-                   SearchSinksCallback callback) override;
-  void ProvideSinks(
-      const std::string& provider_name,
-      const std::vector<media_router::MediaSinkInternal>& sinks) override;
   void CreateMediaRouteController(
       const std::string& route_id,
       mojo::PendingReceiver<mojom::MediaController> media_controller,
       mojo::PendingRemote<mojom::MediaStatusObserver> observer,
       CreateMediaRouteControllerCallback callback) override;
+  void GetState(GetStateCallback callback) override;
 
  private:
   void Init(mojo::PendingReceiver<mojom::MediaRouteProvider> receiver,
@@ -119,6 +117,9 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   // Mojo remote to the Media Router.
   mojo::Remote<mojom::MediaRouter> media_router_;
 
+  // Mojo remote to the logger owned by the Media Router.
+  mojo::Remote<mojom::Logger> logger_;
+
   // Non-owned pointer to the Cast MediaSinkServiceBase instance.
   MediaSinkServiceBase* const media_sink_service_;
 
@@ -129,13 +130,11 @@ class CastMediaRouteProvider : public mojom::MediaRouteProvider {
   cast_channel::CastMessageHandler* const message_handler_;
 
   // Registered sink queries.
-  base::flat_map<MediaSource::Id, CastAppDiscoveryService::Subscription>
-      sink_queries_;
+  base::flat_map<MediaSource::Id, base::CallbackListSubscription> sink_queries_;
 
   std::unique_ptr<CastActivityManager> activity_manager_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(CastMediaRouteProvider);
 };
 
 }  // namespace media_router

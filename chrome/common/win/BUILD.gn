@@ -8,23 +8,18 @@ import("//chrome/process_version_rc_template.gni")
 
 message_compiler("eventlog_messages") {
   visibility = [
-    "//chrome/chrome_watcher:chrome_watcher",
     "//chrome/common",
     ":eventlog_provider",
   ]
 
-  sources = [
-    "eventlog_messages.mc",
-  ]
+  sources = [ "eventlog_messages.mc" ]
 
   user_mode_logging = false
   compile_generated_code = false
 }
 
 process_version_rc_template("eventlog_provider_dll_version") {
-  sources = [
-    "eventlog_provider.ver",
-  ]
+  sources = [ "eventlog_provider.ver" ]
   output = "$target_gen_dir/eventlog_provider_dll_version.rc"
 }
 
@@ -34,7 +29,7 @@ shared_library("eventlog_provider") {
     "eventlog_provider.cc",
   ]
 
-  if (!is_asan) {
+  if (!is_asan && !use_clang_profiling) {
     no_default_deps = true
     ldflags = [ "/NOENTRY" ]
   }

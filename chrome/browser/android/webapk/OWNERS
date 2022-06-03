@@ -1,7 +1,4 @@
-dominickn@chromium.org
-hanxi@chromium.org
-pkotwicz@chromium.org
-yfriedman@chromium.org
+file://components/webapk/OWNERS
 
-# TEAM: webapk-team@chromium.org
-# COMPONENT: Mobile>WebAPKs
+# Additional owners:
+dominickn@chromium.org

@@ -9,10 +9,11 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "gpu/command_buffer/service/command_buffer_service.h"
 #include "gpu/command_buffer/service/decoder_client.h"
+#include "ui/gfx/ipc/color/gfx_param_traits.h"
 
 namespace gpu {
 namespace {
@@ -379,6 +380,33 @@ error::Error CommonDecoder::HandleInsertFenceSync(
   // context.
   ExitCommandProcessingEarly();
   return error::kNoError;
+}
+
+bool CommonDecoder::ReadColorSpace(uint32_t shm_id,
+                                   uint32_t shm_offset,
+                                   uint32_t color_space_size,
+                                   gfx::ColorSpace* color_space) {
+  // Use the default (invalid) color space if no space was serialized.
+  if (!shm_id && !shm_offset && !color_space_size) {
+    *color_space = gfx::ColorSpace();
+    return true;
+  }
+
+  const char* data = static_cast<const char*>(
+      GetAddressAndCheckSize(shm_id, shm_offset, color_space_size));
+  if (!data) {
+    return false;
+  }
+
+  // Make a copy to reduce the risk of a time of check to time of use attack.
+  std::vector<char> color_space_data(data, data + color_space_size);
+  base::Pickle color_space_pickle(color_space_data.data(), color_space_size);
+  base::PickleIterator iterator(color_space_pickle);
+  if (!IPC::ParamTraits<gfx::ColorSpace>::Read(&color_space_pickle, &iterator,
+                                               color_space)) {
+    return false;
+  }
+  return true;
 }
 
 }  // namespace gpu

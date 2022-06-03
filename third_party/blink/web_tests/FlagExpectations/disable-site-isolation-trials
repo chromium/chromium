@@ -1,5 +1,4 @@
-# tags: [ Android Fuchsia IOS IOS12.2 IOS13.0 Linux Mac Mac10.10 Mac10.11 Mac10.12 Retina
-#         Mac10.13 Win Win7 Win10 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.12 Mac10.13 Win Win7 Win10 ]
 # tags: [ Release Debug ]
 # results: [ Timeout Crash Pass Failure Slow Skip ]
 
@@ -11,11 +10,7 @@ crbug.com/922725 http/tests/media/autoplay/document-user-activation-cross-origin
 crbug.com/910979 http/tests/html/validation-bubble-oopif-clip.html [ Failure ]
 
 # These started failing when network service was enabled by default.
-crbug.com/933880 external/wpt/FileAPI/url/cross-global-revoke.sub.html [ Failure ]
-crbug.com/933880 external/wpt/FileAPI/url/url-with-fetch.any.html [ Failure ]
-crbug.com/933880 external/wpt/FileAPI/url/url-with-xhr.any.html [ Failure ]
 crbug.com/933880 external/wpt/service-workers/service-worker/request-end-to-end.https.html [ Failure ]
-crbug.com/933880 http/tests/inspector-protocol/network/interception-take-stream.js [ Failure ]
 crbug.com/933880 http/tests/inspector-protocol/network/raw-headers-for-protected-document.js [ Failure ]
 crbug.com/933880 http/tests/inspector-protocol/network/security-info-on-response.js [ Failure ]
 crbug.com/933880 http/tests/inspector-protocol/network/xhr-interception-auth-fail.js [ Failure ]
@@ -25,4 +20,24 @@ crbug.com/933880 http/tests/misc/redirect-to-about-blank.html [ Timeout ]
 http/tests/inspector-protocol/fetch/fetch-oopif.js [ Skip ]
 
 # JS Self-Profiling currently requires site isolation.
-crbug.com/956688 http/tests/js-self-profiling/ [ Skip ]
+crbug.com/956688 wpt_internal/js-self-profiling/* [ Skip ]
+
+crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-current.sub.html [ Failure ]
+crbug.com/1106413 external/wpt/webmessaging/multi-globals/broadcastchannel-incumbent.sub.html [ Failure ]
+
+# Opt-in origin-keying is intentionally disabled with --disable-site-isolation-trials.
+virtual/no-auto-wpt-origin-isolation/external/wpt/html/browsers/origin/origin-keyed-agent-clusters/* [ Skip ]
+
+# OOPIF tests need site isolation
+http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession.js [ Skip ]
+http/tests/inspector-protocol/target/target-setAutoAttach-oopif-multisession-wait.js [ Skip ]
+http/tests/inspector-protocol/conversion/impression-insecure-main-frame-with-iframe.js [ Skip ]
+http/tests/inspector-protocol/target/auto-attach-sub-sub-frame.js [ Skip ]
+virtual/fenced-frame-mparch/http/tests/inspector-protocol/fenced-frame/fenced-frame-in-oopif-auto-attach.js [ Skip ]
+
+# Fix to unblock wpt-importer
+crbug.com/1209223 http/tests/inspector-protocol/fetch/mime-type-sniffing.js [ Failure ]
+
+# Fix to unblock wpt-importer
+crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-multi-globals.sub.html [ Failure ]
+crbug.com/1209223 external/wpt/html/browsers/browsing-the-web/navigating-across-documents/javascript-url-security-check-same-origin-domain.sub.html [ Failure ]

@@ -1,21 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_policy_pref_indicator.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../site_favicon.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="site_settings_behavior.html">
-<link rel="import" href="site_settings_prefs_browser_proxy.html">
-
-<dom-module id="site-list-entry">
-  <template>
     <style include="settings-shared">
       :host {
         padding-inline-end: 4px;
@@ -36,12 +18,12 @@
         <site-favicon url="[[model.origin]]"></site-favicon>
         <div class="middle no-min-width">
           <div class="text-elide">
-            <span class="url-directionality">[[computeDisplayName_(model)]]
-            </span>
+            <span class="url-directionality">
+              [[computeDisplayName_(model)]]</span>
           </div>
 
           <!-- This div must not contain extra whitespace. -->
-          <div class="secondary text-elide"
+          <div class="secondary"
               id="siteDescription">[[computeSiteDescription_(model)]]</div>
         </div>
         <template is="dom-if" if="[[allowNavigateToSiteDetail_]]">
@@ -59,6 +41,14 @@
             on-focus="onShowTooltip_" focus-row-control focus-type="policy">
         </cr-policy-pref-indicator>
       </template>
+      <template is="dom-if" if="[[model.incognito]]">
+        <cr-tooltip-icon id="incognitoTooltip"
+            icon-aria-label="$i18n{incognitoSiteExceptionDesc}"
+            icon-class="settings20:incognito"
+            focus-row-control focus-type="incognito"
+            on-mouseenter="onShowIncognitoTooltip_"
+            on-focus="onShowIncognitoTooltip_"></cr-tooltip-icon>
+      </template>
       <cr-icon-button id="resetSite" class="icon-delete-gray"
           hidden="[[shouldHideResetButton_(model, readOnlyList)]]"
           on-click="onResetButtonTap_"
@@ -69,6 +59,3 @@
           on-click="onShowActionMenuTap_" title="$i18n{moreActions}"
           focus-row-control focus-type="menu"></cr-icon-button>
     </div>
-  </template>
-  <script src="site_list_entry.js"></script>
-</dom-module>

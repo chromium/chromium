@@ -11,12 +11,12 @@ var jsTestIsAsync = true;
 
 function makePageVisible() {
     if (window.testRunner)
-        testRunner.setPageVisibility("visible");
+        testRunner.setMainWindowHidden(false);
 }
 
 function makePageHidden() {
     if (window.testRunner)
-        testRunner.setPageVisibility("hidden");
+        testRunner.setMainWindowHidden(true);
 }
 
 function checkIsPageVisible() {

@@ -47,7 +47,7 @@ class UDPSocketPerfTest : public PlatformTest {
 
   void DoneWritePacketsToSocket(UDPClientSocket* socket,
                                 int num_of_packets,
-                                base::Closure done_callback,
+                                base::OnceClosure* done_callback,
                                 int error) {
     WritePacketsToSocket(socket, num_of_packets, done_callback);
   }
@@ -55,7 +55,7 @@ class UDPSocketPerfTest : public PlatformTest {
   // Send |num_of_packets| to |socket|. Invoke |done_callback| when done.
   void WritePacketsToSocket(UDPClientSocket* socket,
                             int num_of_packets,
-                            base::Closure done_callback);
+                            base::OnceClosure* done_callback);
 
   // Use non-blocking IO if |use_nonblocking_io| is true. This variable only
   // has effect on Windows.
@@ -81,7 +81,7 @@ void CreateUDPAddress(const std::string& ip_str,
 
 void UDPSocketPerfTest::WritePacketsToSocket(UDPClientSocket* socket,
                                              int num_of_packets,
-                                             base::Closure done_callback) {
+                                             base::OnceClosure* done_callback) {
   scoped_refptr<IOBufferWithSize> io_buffer =
       base::MakeRefCounted<IOBufferWithSize>(kPacketSize);
   memset(io_buffer->data(), 'G', kPacketSize);
@@ -98,7 +98,7 @@ void UDPSocketPerfTest::WritePacketsToSocket(UDPClientSocket* socket,
     --num_of_packets;
   }
   if (!num_of_packets) {
-    done_callback.Run();
+    std::move(*done_callback).Run();
     return;
   }
 }
@@ -130,10 +130,11 @@ void UDPSocketPerfTest::WriteBenchmark(bool use_nonblocking_io) {
   EXPECT_THAT(rv, IsOk());
 
   base::RunLoop run_loop;
+  base::OnceClosure done_callback = run_loop.QuitClosure();
   base::ElapsedTimer write_elapsed_timer;
   int packets = 100000;
   client->SetSendBufferSize(1024);
-  WritePacketsToSocket(client.get(), packets, run_loop.QuitClosure());
+  WritePacketsToSocket(client.get(), packets, &done_callback);
   run_loop.Run();
 
   double write_elapsed = write_elapsed_timer.Elapsed().InSecondsF();

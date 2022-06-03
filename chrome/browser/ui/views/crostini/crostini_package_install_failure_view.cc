@@ -5,11 +5,12 @@
 #include "chrome/browser/ui/views/crostini/crostini_package_install_failure_view.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/message_box_view.h"
@@ -32,46 +33,28 @@ void CrostiniPackageInstallFailureView::Show(const std::string& error_message) {
       ->Show();
 }
 
-int CrostiniPackageInstallFailureView::GetDialogButtons() const {
-  return ui::DIALOG_BUTTON_OK;
-}
-
-bool CrostiniPackageInstallFailureView::ShouldShowCloseButton() const {
-  return false;
-}
-
-base::string16 CrostiniPackageInstallFailureView::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(
-      IDS_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_TITLE);
-}
-
-gfx::Size CrostiniPackageInstallFailureView::CalculatePreferredSize() const {
-  const int dialog_width = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                               DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH) -
-                           margins().width();
-  return gfx::Size(dialog_width, GetHeightForWidth(dialog_width));
-}
-
 CrostiniPackageInstallFailureView::CrostiniPackageInstallFailureView(
     const std::string& error_message) {
+  SetShowCloseButton(false);
+  SetTitle(IDS_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_TITLE);
+  SetButtons(ui::DIALOG_BUTTON_OK);
   views::LayoutProvider* provider = views::LayoutProvider::Get();
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical,
       provider->GetInsetsMetric(views::InsetsMetric::INSETS_DIALOG),
       provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
   set_margins(provider->GetDialogInsetsForContentType(
-      views::DialogContentType::TEXT, views::DialogContentType::TEXT));
+      views::DialogContentType::kText, views::DialogContentType::kText));
+  set_fixed_width(views::LayoutProvider::Get()->GetDistanceMetric(
+      views::DISTANCE_MODAL_DIALOG_PREFERRED_WIDTH));
 
-  views::StyledLabel* message_label = new views::StyledLabel(
-      l10n_util::GetStringUTF16(
-          IDS_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_MESSAGE),
-      nullptr);
-  AddChildView(message_label);
+  views::StyledLabel* message_label =
+      AddChildView(std::make_unique<views::StyledLabel>());
+  message_label->SetText(l10n_util::GetStringUTF16(
+      IDS_CROSTINI_PACKAGE_INSTALL_FAILURE_VIEW_MESSAGE));
 
-  views::MessageBoxView::InitParams error_box_init_params(
-      base::UTF8ToUTF16(error_message));
   views::MessageBoxView* error_box =
-      new views::MessageBoxView(error_box_init_params);
+      new views::MessageBoxView(base::UTF8ToUTF16(error_message));
   AddChildView(error_box);
 
   set_close_on_deactivate(true);
@@ -80,3 +63,7 @@ CrostiniPackageInstallFailureView::CrostiniPackageInstallFailureView(
 
 CrostiniPackageInstallFailureView::~CrostiniPackageInstallFailureView() =
     default;
+
+BEGIN_METADATA(CrostiniPackageInstallFailureView,
+               views::BubbleDialogDelegateView)
+END_METADATA

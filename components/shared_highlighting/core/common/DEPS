@@ -1,0 +1,9 @@
+include_rules = [
+  "+base/metrics/histogram_functions.h",
+  "+components/search_engines/search_engine_utils.h",
+  "+components/ukm/test_ukm_recorder.h",
+  "+net/base",
+  "+services/metrics/public",
+  "+third_party/re2",
+  "+url",
+]

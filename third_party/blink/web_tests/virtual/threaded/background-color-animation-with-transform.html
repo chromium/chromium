@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<style>
+#target {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+  transform: translate(10px, 10px);
+}
+</style>
+<div id="target"></div>
+<script>
+promise_test(function() {
+  var animation = target.animate(
+  [
+    { backgroundColor: 'blue' },
+    { backgroundColor: 'green'},
+  ], {
+    duration: 3000,
+    iterations: Infinity
+  });
+  return animation.ready.then(() => {
+    assert_true(internals.isCompositedAnimation(animation));
+  });
+}, 'background color animations should run on the compositor in the presence of transforms');
+</script>

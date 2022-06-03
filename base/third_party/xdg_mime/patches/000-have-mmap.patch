@@ -1,0 +1,13 @@
+diff --git a/base/third_party/xdg_mime/xdgmimecache.c b/base/third_party/xdg_mime/xdgmimecache.c
+index acaed9d470ed..ccf297527788 100644
+--- a/base/third_party/xdg_mime/xdgmimecache.c
++++ b/base/third_party/xdg_mime/xdgmimecache.c
+@@ -40,6 +40,8 @@
+ 
+ #include <netinet/in.h> /* for ntohl/ntohs */
+ 
++#define HAVE_MMAP 1
++
+ #ifdef HAVE_MMAP
+ #include <sys/mman.h>
+ #else

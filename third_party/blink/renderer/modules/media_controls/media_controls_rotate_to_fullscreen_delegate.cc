@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/modules/media_controls/media_controls_rotate_to_fullscreen_delegate.h"
 
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_screen_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/public/platform/user_metrics_action.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element_controls_list.h"
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
@@ -19,6 +20,8 @@
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/display/mojom/screen_orientation.mojom-blink.h"
+#include "ui/display/screen_info.h"
 
 namespace blink {
 
@@ -58,14 +61,6 @@ void MediaControlsRotateToFullscreenDelegate::Attach() {
   // to receive events for 180 deg rotations).
   dom_window->addEventListener(event_type_names::kOrientationchange, this,
                                false);
-
-  // TODO(795286): device orientation now requires a v8::Context in the stack so
-  // we are creating one so the event pump starts running.
-  LocalFrame* frame = video_element_->GetDocument().GetFrame();
-  if (!frame)
-    return;
-
-  ScriptState::Scope scope(ToScriptStateForMainWorld(frame));
   dom_window->addEventListener(event_type_names::kDeviceorientation, this,
                                false);
 }
@@ -111,7 +106,7 @@ void MediaControlsRotateToFullscreenDelegate::Invoke(
     if (event->isTrusted() &&
         event->InterfaceName() ==
             event_interface_names::kDeviceOrientationEvent) {
-      OnDeviceOrientationAvailable(ToDeviceOrientationEvent(event));
+      OnDeviceOrientationAvailable(To<DeviceOrientationEvent>(event));
     }
     return;
   }
@@ -136,7 +131,8 @@ void MediaControlsRotateToFullscreenDelegate::OnStateChange() {
         {}, {kIntersectionThreshold}, &video_element_->GetDocument(),
         WTF::BindRepeating(
             &MediaControlsRotateToFullscreenDelegate::OnIntersectionChange,
-            WrapWeakPersistent(this)));
+            WrapWeakPersistent(this)),
+        LocalFrameUkmAggregator::kMediaIntersectionObserver);
     intersection_observer_->observe(video_element_);
   } else if (!needs_intersection_observer && intersection_observer_) {
     intersection_observer_->disconnect();
@@ -172,7 +168,7 @@ void MediaControlsRotateToFullscreenDelegate::OnDeviceOrientationAvailable(
   // zero, even though that's a valid (albeit unlikely) device orientation.
   DeviceOrientationData* data = event->Orientation();
   device_orientation_supported_ =
-      base::make_optional(data->CanProvideBeta() && data->CanProvideGamma() &&
+      absl::make_optional(data->CanProvideBeta() && data->CanProvideGamma() &&
                           (data->Beta() != 0.0 || data->Gamma() != 0.0));
 }
 
@@ -233,7 +229,9 @@ void MediaControlsRotateToFullscreenDelegate::OnScreenOrientationChange() {
       *static_cast<MediaControlsImpl*>(video_element_->GetMediaControls());
 
   {
-    LocalFrame::NotifyUserActivation(video_element_->GetDocument().GetFrame());
+    LocalFrame::NotifyUserActivation(
+        video_element_->GetDocument().GetFrame(),
+        mojom::blink::UserActivationNotificationType::kInteraction);
 
     bool should_be_fullscreen =
         current_screen_orientation_ == video_orientation;
@@ -271,14 +269,16 @@ MediaControlsRotateToFullscreenDelegate::ComputeScreenOrientation() const {
   if (!frame)
     return SimpleOrientation::kUnknown;
 
-  switch (frame->GetChromeClient().GetScreenInfo(*frame).orientation_type) {
-    case kWebScreenOrientationPortraitPrimary:
-    case kWebScreenOrientationPortraitSecondary:
+  ChromeClient& chrome_client = frame->GetChromeClient();
+  const display::ScreenInfo& screen_info = chrome_client.GetScreenInfo(*frame);
+  switch (screen_info.orientation_type) {
+    case display::mojom::blink::ScreenOrientation::kPortraitPrimary:
+    case display::mojom::blink::ScreenOrientation::kPortraitSecondary:
       return SimpleOrientation::kPortrait;
-    case kWebScreenOrientationLandscapePrimary:
-    case kWebScreenOrientationLandscapeSecondary:
+    case display::mojom::blink::ScreenOrientation::kLandscapePrimary:
+    case display::mojom::blink::ScreenOrientation::kLandscapeSecondary:
       return SimpleOrientation::kLandscape;
-    case kWebScreenOrientationUndefined:
+    case display::mojom::blink::ScreenOrientation::kUndefined:
       return SimpleOrientation::kUnknown;
   }
 
@@ -286,7 +286,7 @@ MediaControlsRotateToFullscreenDelegate::ComputeScreenOrientation() const {
   return SimpleOrientation::kUnknown;
 }
 
-void MediaControlsRotateToFullscreenDelegate::Trace(blink::Visitor* visitor) {
+void MediaControlsRotateToFullscreenDelegate::Trace(Visitor* visitor) const {
   NativeEventListener::Trace(visitor);
   visitor->Trace(video_element_);
   visitor->Trace(intersection_observer_);

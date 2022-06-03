@@ -4,15 +4,14 @@
 
 #include "ios/web/common/features.h"
 
+#include "base/metrics/field_trial_params.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 namespace web {
 namespace features {
-
-const base::Feature kIgnoresViewportScaleLimits{
-    "IgnoresViewportScaleLimits", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kCrashOnUnexpectedURLChange{
     "CrashOnUnexpectedURLChange", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -29,23 +28,76 @@ const base::Feature kKeepsRenderProcessAlive{"KeepsRenderProcessAlive",
 const base::Feature kClearOldNavigationRecordsWorkaround{
     "ClearOldNavigationRecordsWorkaround", base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kSSLCommittedInterstitials{
-    "SSLCommittedInterstitials", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kUseWKWebViewLoading{"UseWKWebViewLoading",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
-
 const base::Feature kEnablePersistentDownloads{
     "EnablePersistentDownloads", base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::Feature kUseJSForErrorPage{"UseJSForErrorPage",
-                                       base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kUseDefaultUserAgentInWebClient{
     "UseDefaultUserAgentInWebClient", base::FEATURE_DISABLED_BY_DEFAULT};
 
-bool UseWKWebViewLoading() {
-  return base::FeatureList::IsEnabled(web::features::kUseWKWebViewLoading);
+const base::Feature kPreserveScrollViewProperties{
+    "PreserveScrollViewProperties", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kIOSLegacyTLSInterstitial{"IOSLegacyTLSInterstitial",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kRecordSnapshotSize{"RecordSnapshotSize",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSetRequestAttribution{"SetRequestAttribution",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kWebViewNativeContextMenu{"WebViewNativeContextMenu",
+                                              base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kWebViewNativeContextMenuPhase2{
+    "WebViewNativeContextMenuPhase2", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDefaultWebViewContextMenu{
+    "DefaultWebViewContextMenu", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kDisableNonHTMLScreenshotOnIOS15{
+    "DisableNonHTMLScreenshotOnIOS15", base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kIOSSharedHighlightingColorChange{
+    "IOSSharedHighlightingColorChange", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kCreatePendingItemForPostFormSubmission{
+    "CreatePendingItemForPostFormSubmission",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableNewDownloadAPI{"EnableNewDownloadAPI",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kSynthesizedRestoreSession{
+    "SynthesizedRestoreSession", base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kEnableUnrealizedWebStates{"EnableUnrealizedWebStates"};
+
+bool UseWebClientDefaultUserAgent() {
+  return base::FeatureList::IsEnabled(kUseDefaultUserAgentInWebClient);
+}
+
+bool UseWebViewNativeContextMenuWeb() {
+  return base::FeatureList::IsEnabled(kDefaultWebViewContextMenu);
+}
+
+bool UseWebViewNativeContextMenuSystem() {
+  return base::FeatureList::IsEnabled(kWebViewNativeContextMenu) ||
+         base::FeatureList::IsEnabled(kWebViewNativeContextMenuPhase2);
+}
+
+bool ShouldTakeScreenshotOnNonHTMLContent() {
+  if (@available(iOS 15, *)) {
+    return !base::FeatureList::IsEnabled(kDisableNonHTMLScreenshotOnIOS15);
+  }
+  return true;
+}
+
+bool IsNewDownloadAPIEnabled() {
+  if (@available(iOS 15, *)) {
+    return base::FeatureList::IsEnabled(kEnableNewDownloadAPI);
+  }
+  return false;
 }
 
 }  // namespace features

@@ -6,10 +6,13 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
+#include "ios/web/public/browser_state.h"
 #include "ios/web/public/security/certificate_policy_cache.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
+#include "net/cert/x509_util.h"
+#include "net/cert/x509_util_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -46,8 +49,10 @@ static_assert(net::CERT_STATUS_REV_CHECKING_ENABLED == 1 << 17,
 
 namespace web {
 
-SessionCertificatePolicyCacheImpl::SessionCertificatePolicyCacheImpl()
-    : allowed_certs_([[NSMutableSet alloc] init]) {}
+SessionCertificatePolicyCacheImpl::SessionCertificatePolicyCacheImpl(
+    BrowserState* browser_state)
+    : SessionCertificatePolicyCache(browser_state),
+      allowed_certs_([[NSMutableSet alloc] init]) {}
 
 SessionCertificatePolicyCacheImpl::~SessionCertificatePolicyCacheImpl() {}
 
@@ -56,8 +61,8 @@ void SessionCertificatePolicyCacheImpl::UpdateCertificatePolicyCache(
   DCHECK_CURRENTLY_ON(WebThread::UI);
   DCHECK(cache.get());
   NSSet* allowed_certs = [NSSet setWithSet:allowed_certs_];
-  const scoped_refptr<web::CertificatePolicyCache> cache_copy = cache;
-  base::PostTask(FROM_HERE, {web::WebThread::IO}, base::BindOnce(^{
+  const scoped_refptr<CertificatePolicyCache> cache_copy = cache;
+  base::PostTask(FROM_HERE, {WebThread::IO}, base::BindOnce(^{
                    for (CRWSessionCertificateStorage* cert in allowed_certs) {
                      cache_copy->AllowCertForHost(cert.certificate, cert.host,
                                                   cert.status);
@@ -66,14 +71,32 @@ void SessionCertificatePolicyCacheImpl::UpdateCertificatePolicyCache(
 }
 
 void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
-    const scoped_refptr<net::X509Certificate> certificate,
+    scoped_refptr<net::X509Certificate> certificate,
     const std::string& host,
     net::CertStatus status) {
   DCHECK_CURRENTLY_ON(WebThread::UI);
+  // Store user decisions with the leaf cert, ignoring any intermediates.
+  // This is because WKWebView returns the verified certificate chain in
+  // |webView:didReceiveAuthenticationChallenge:completionHandler:|,
+  // but the server-supplied chain in
+  // |webView:didFailProvisionalNavigation:withError:|.
+  if (!certificate->intermediate_buffers().empty()) {
+    certificate = net::X509Certificate::CreateFromBuffer(
+        bssl::UpRef(certificate->cert_buffer()), {});
+    DCHECK(certificate);
+  }
+  DCHECK(certificate->intermediate_buffers().empty());
+
   [allowed_certs_ addObject:[[CRWSessionCertificateStorage alloc]
                                 initWithCertificate:certificate
                                                host:host
                                              status:status]];
+  const scoped_refptr<CertificatePolicyCache> cache =
+      GetCertificatePolicyCache();
+  base::PostTask(
+      FROM_HERE, {WebThread::IO},
+      base::BindOnce(&CertificatePolicyCache::AllowCertForHost, cache,
+                     base::RetainedRef(certificate.get()), host, status));
 }
 
 void SessionCertificatePolicyCacheImpl::SetAllowedCerts(NSSet* allowed_certs) {

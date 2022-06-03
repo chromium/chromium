@@ -1,0 +1,6 @@
+The tests in this folder is meant for both manual test and automated test, for
+both Mobile and Desktop. To run these tests manually, take the following steps:
+* start a http server to serve the directory "components/test/data/payments/"
+* start Chrome with "--ignore-certificate-errors"
+* for mobile, setup port-forwarding if necessary
+* use the browser to open merchant.html

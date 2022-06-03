@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script>
+if (window.testRunner)
+    testRunner.setPrinting();
+</script>
+<div>
+  This goes on the first page.
+  <div style="page:special;">This goes on the second page.</div>
+  <div style="page:special;">This goes on the second page, too.</div>
+  <div>This goes on the third page.</div>
+  <div style="page:special;">
+    <div>This goes on the fourth page.</div>
+    <div style="page:special2;">This goes on the fifth page.</div>
+    <div>This goes on the sixth page.</div>
+    <!-- Page names are case-sensitive. -->
+    <div style="page:special;">This goes on the sixth page, too.</div>
+    <div style="page:SPECIAL;">This one goes on the seventh page.</div>
+  </div>
+  <div>This goes on the eighth page.</div>
+  <!-- 'auto' is a valid keyword for this property, and should be
+       case-insensitive. -->
+  <div style="page:auto;">This goes on the eighth page, too.</div>
+  <div style="page:AUTO;">This goes on the eighth page, too.</div>
+  <!-- 'inline' is an invalid keyword for this property, and should be treated
+       as <custom-ident>. -->
+  <div style="page:inline;">This goes on the ninth page.</div>
+  <div style="page:INLINE;">This goes on the tenth page.</div>
+</div>

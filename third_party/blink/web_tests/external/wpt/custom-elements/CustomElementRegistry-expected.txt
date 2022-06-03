@@ -1,0 +1,49 @@
+This is a testharness.js-based test.
+PASS CustomElementRegistry interface must have define as a method
+PASS customElements.define must throw when the element interface is not a constructor
+PASS customElements.define must not throw the constructor is HTMLElement
+PASS customElements.define must throw with an invalid name
+PASS customElements.define must throw when there is already a custom element of the same name
+PASS customElements.define must throw a NotSupportedError when there is already a custom element with the same class
+PASS customElements.define must throw a NotSupportedError when element definition is running flag is set
+PASS customElements.define must check IsConstructor on the constructor before checking the element definition is running flag
+PASS customElements.define must validate the custom element name before checking the element definition is running flag
+PASS customElements.define unset the element definition is running flag before upgrading custom elements
+PASS customElements.define must not throw when defining another custom element in a different global object during Get(constructor, "prototype")
+PASS Custom Elements: CustomElementRegistry interface
+PASS customElements.define must get "prototype", "disabledFeatures", and "formAssociated" property of the constructor
+PASS customElements.define must rethrow an exception thrown while getting "prototype" property of the constructor
+PASS customElements.define must throw when "prototype" property of the constructor is not an object
+PASS customElements.define must get callbacks of the constructor prototype
+PASS customElements.define must rethrow an exception thrown while getting callbacks on the constructor prototype
+PASS customElements.define must rethrow an exception thrown while converting a callback value to Function callback type
+PASS customElements.define must get "observedAttributes" property on the constructor prototype when "attributeChangedCallback" is present
+PASS customElements.define must rethrow an exception thrown while getting observedAttributes on the constructor prototype
+PASS customElements.define must rethrow an exception thrown while converting the value of observedAttributes to sequence<DOMString>
+PASS customElements.define must rethrow an exception thrown while iterating over observedAttributes to sequence<DOMString>
+PASS customElements.define must rethrow an exception thrown while retrieving Symbol.iterator on observedAttributes
+PASS customElements.define must not throw even if "observedAttributes" fails to convert if "attributeChangedCallback" is not defined
+PASS customElements.define must rethrow an exception thrown while getting disabledFeatures on the constructor prototype
+PASS customElements.define must rethrow an exception thrown while converting the value of disabledFeatures to sequence<DOMString>
+PASS customElements.define must rethrow an exception thrown while iterating over disabledFeatures to sequence<DOMString>
+PASS customElements.define must rethrow an exception thrown while retrieving Symbol.iterator on disabledFeatures
+PASS customElements.define must rethrow an exception thrown while getting formAssociated on the constructor prototype
+PASS customElements.define must get four additional callbacks on the prototype if formAssociated is converted to true
+PASS customElements.define must rethrow an exception thrown while getting additional formAssociated callbacks on the constructor prototype
+PASS customElements.define must define an instantiatable custom element
+PASS customElements.define must upgrade elements in the shadow-including tree order
+PASS CustomElementRegistry interface must have get as a method
+PASS customElements.get must return undefined when the registry does not contain an entry with the given name
+PASS customElements.get must return undefined when the registry does not contain an entry with the given name even if the name was not a valid custom element name
+PASS customElements.get return the constructor of the entry with the given name when there is a matching entry.
+PASS customElements.whenDefined must return a promise for a valid custom element name
+PASS customElements.whenDefined must return the same promise each time invoked for a valid custom element name which has not been defined
+PASS customElements.whenDefined must return an unresolved promise when the registry does not contain the entry with the given name
+PASS customElements.whenDefined must return a rejected promise when the given name is not a valid custom element name
+FAIL customElements.whenDefined must return a resolved promise when the registry contains the entry with the given name assert_equals: The promise returned by "whenDefined" must be resolved with the constructor of the element when a custom element is defined expected (function) function "class PreexistingCustomElement extends HTMLElement { }" but got (undefined) undefined
+FAIL customElements.whenDefined must return a new resolved promise each time invoked when the registry contains the entry with the given name assert_equals: The promise returned by "whenDefined" must be resolved with the constructor of the element when a custom element is defined expected (function) function "class AnotherExistingCustomElement extends HTMLElement {}" but got (undefined) undefined
+FAIL A promise returned by customElements.whenDefined must be resolved by "define" assert_equals: The promise returned by "whenDefined" must be resolved with the constructor of the element when a custom element is defined expected (function) function "class ElementDefinedAfterWhenDefined extends HTMLElement { }" but got (undefined) undefined
+FAIL A promise returned by customElements.whenDefined must be resolved with the defined class assert_equals: The promise returned by "whenDefined" must resolve with the defined class expected (function) function "class ResolvedCustomElement extends HTMLElement {}" but got (undefined) undefined
+FAIL A promise returned by customElements.whenDefined must be resolved with the defined class once such class is defined assert_equals: The promise returned by "whenDefined" must resolve with the defined class once such class is defined expected (function) function "class NotResolvedYetCustomElement extends HTMLElement {}" but got (undefined) undefined
+Harness: the test ran to completion.
+

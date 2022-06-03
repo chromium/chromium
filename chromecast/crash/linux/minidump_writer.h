@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/time/time.h"
 #include "chromecast/crash/linux/minidump_params.h"
 #include "chromecast/crash/linux/synchronized_minidump_manager.h"
 
@@ -16,11 +15,16 @@ namespace chromecast {
 
 class MinidumpGenerator;
 
+struct Attachment {
+  std::string file_path;
+  bool is_static;
+};
+
 // Class for writing a minidump with synchronized access to the minidumps
 // directory.
 class MinidumpWriter : public SynchronizedMinidumpManager {
  public:
-  typedef base::Callback<int(const std::string&)> DumpStateCallback;
+  using DumpStateCallback = base::OnceCallback<int(const std::string&)>;
 
   // Constructs a writer for a minidump. If |minidump_filename| is absolute, it
   // must be a path to a file in the |dump_path_| directory. Otherwise, it
@@ -33,13 +37,18 @@ class MinidumpWriter : public SynchronizedMinidumpManager {
   MinidumpWriter(MinidumpGenerator* minidump_generator,
                  const std::string& minidump_filename,
                  const MinidumpParams& params,
-                 const base::Callback<int(const std::string&)>& dump_state_cb);
+                 DumpStateCallback dump_state_cb,
+                 const std::vector<Attachment>* attachments = nullptr);
 
   // Like the constructor above, but the default implementation of
   // |dump_state_cb_| is used inside DoWork().
   MinidumpWriter(MinidumpGenerator* minidump_generator,
                  const std::string& minidump_filename,
-                 const MinidumpParams& params);
+                 const MinidumpParams& params,
+                 const std::vector<Attachment>* attachments = nullptr);
+
+  MinidumpWriter(const MinidumpWriter&) = delete;
+  MinidumpWriter& operator=(const MinidumpWriter&) = delete;
 
   ~MinidumpWriter() override;
 
@@ -56,14 +65,13 @@ class MinidumpWriter : public SynchronizedMinidumpManager {
   MinidumpGenerator* const minidump_generator_;
   base::FilePath minidump_path_;
   const MinidumpParams params_;
+  const std::vector<Attachment>* attachments_;
 
   // This callback is Run() to dump a log to |minidump_path_|.txt.gz, taking
   // |minidump_path_| as a parameter. It returns 0 on success, and a negative
   // integer otherwise. If a callback is not passed in the constructor, the
   // default implemementaion is used.
   DumpStateCallback dump_state_cb_;
-
-  DISALLOW_COPY_AND_ASSIGN(MinidumpWriter);
 };
 
 }  // namespace chromecast

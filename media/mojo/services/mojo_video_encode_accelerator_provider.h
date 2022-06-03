@@ -6,7 +6,7 @@
 #define MEDIA_MOJO_SERVICES_MOJO_VIDEO_ENCODE_ACCELERATOR_PROVIDER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/mojo_video_encode_accelerator_service.h"
@@ -14,6 +14,7 @@
 
 namespace gpu {
 struct GpuPreferences;
+class GpuDriverBugWorkarounds;
 }  // namespace gpu
 
 namespace media {
@@ -24,30 +25,40 @@ class MEDIA_MOJO_EXPORT MojoVideoEncodeAcceleratorProvider
     : public mojom::VideoEncodeAcceleratorProvider {
  public:
   using CreateAndInitializeVideoEncodeAcceleratorCallback =
-      MojoVideoEncodeAcceleratorService::
-          CreateAndInitializeVideoEncodeAcceleratorCallback;
+      base::RepeatingCallback<std::unique_ptr<::media::VideoEncodeAccelerator>(
+          const ::media::VideoEncodeAccelerator::Config& config,
+          VideoEncodeAccelerator::Client* client,
+          const gpu::GpuPreferences& gpu_preferences,
+          const gpu::GpuDriverBugWorkarounds& gpu_workarounds)>;
 
   static void Create(
       mojo::PendingReceiver<mojom::VideoEncodeAcceleratorProvider> receiver,
-      const CreateAndInitializeVideoEncodeAcceleratorCallback&
-          create_vea_callback,
-      const gpu::GpuPreferences& gpu_preferences);
+      CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   MojoVideoEncodeAcceleratorProvider(
-      const CreateAndInitializeVideoEncodeAcceleratorCallback&
-          create_vea_callback,
-      const gpu::GpuPreferences& gpu_preferences);
+      CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback,
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
+
+  MojoVideoEncodeAcceleratorProvider(
+      const MojoVideoEncodeAcceleratorProvider&) = delete;
+  MojoVideoEncodeAcceleratorProvider& operator=(
+      const MojoVideoEncodeAcceleratorProvider&) = delete;
+
   ~MojoVideoEncodeAcceleratorProvider() override;
 
   // mojom::VideoEncodeAcceleratorProvider impl.
   void CreateVideoEncodeAccelerator(
       mojo::PendingReceiver<mojom::VideoEncodeAccelerator> receiver) override;
+  void GetVideoEncodeAcceleratorSupportedProfiles(
+      GetVideoEncodeAcceleratorSupportedProfilesCallback callback) override;
 
  private:
   const CreateAndInitializeVideoEncodeAcceleratorCallback create_vea_callback_;
   const gpu::GpuPreferences& gpu_preferences_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoVideoEncodeAcceleratorProvider);
+  const gpu::GpuDriverBugWorkarounds gpu_workarounds_;
 };
 
 }  // namespace media

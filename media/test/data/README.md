@@ -46,8 +46,19 @@ bear-vp8-webvtt.webm as a 'subt' handler type.
 Just the first initialization segment of bear-1280x720_av_frag.mp4, modified to
 have the mvhd version 0 32-bit duration field set to all 1's.
 
-#### media/test/data/negative-audio-timestamps.avi
-A truncated audio/video file with audio packet timestamps of -1. We need to ensure that these packets arent dropped.
+#### negative-audio-timestamps.avi
+A truncated audio/video file with audio packet timestamps of -1. We need to ensure that these packets aren't dropped.
+
+#### noise-xhe-aac.mp4
+Fragmented mp4 of noise encoded with xHE-AAC, from xHE-AAC samples in [Android
+CTS](https://android.googlesource.com/platform/cts/+/master/tests/tests/media/res/raw),
+using ffmpeg version 4.2.2 (where nofillin lets audio nonkeyframes in input be
+indicated the same in output, unlike more recent tip-of-tree ffmpeg's operation
+with this option) to remux, unfortunately with empty MOOV not giving real
+duration:
+```
+ffmpeg -fflags nofillin -i noise_2ch_48khz_aot42_19_lufs_mp4.m4a -acodec copy -t 1 -movflags frag_keyframe+empty_moov+default_base_moof noise-xhe-aac.mp4
+```
 
 ### FLAC
 
@@ -110,6 +121,9 @@ ffmpeg -i bear-av1-slowstart.mp4 -vcodec copy -strict -2 -y -f mp4 \
   -movflags frag_keyframe+empty_moov+default_base_moof+faststart bear-av1.mp4
 ```
 
+#### bear-mono-av1.mp4
+Similar to the above but using aomenc for encoding with the --monochrome option.
+
 #### bear-av1.webm
 Created using aomenc with the following command:
 ```
@@ -164,14 +178,23 @@ has support for OPUS in MP4 as experimental.
 
 #### av1-svc-L2T2.ivf
 AV1 data that has spatial and temporal layers.
-This is the same as av1-1-b8-22-svc-L2T2.ivf in
-[libaom test vectors]:https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+This is the same as av1-1-b8-22-svc-L2T2.ivf in [libaom test vectors].
+The video license is [libaom LICENSE].
 
 #### av1-show_existing_frame.ivf
 AV1 data that contains frames with `show_existing_frame=1`.
 This is the same as 00000592.ivf in
-https://people.xiph.org/~tterribe/av1/samples-all/
+https://people.xiph.org/~tterribe/av1/samples-all/.
+The video license is [libaom LICENSE].
 
+#### blackwhite\_yuv444p-frame.av1.ivf
+The first frame of blackwhite\_yuv444p.mp4 coded in AV1 by the following command.
+`ffmpeg -i blackwhite_yuv444p.mp4 -strict -2 -vcodec av1 -vframes 1 blackwhite_yuv444p-frame.av1.ivf`
+
+#### av1-film\_grain.ivf
+AV1 data where film grain feature is used.
+This is the same as av1-1-b8-23-film\_grain-50.ivf in [libaom test vectors].
+The video license is [libaom LICENSE].
 
 ### Alpha Channel
 
@@ -232,6 +255,17 @@ ffmpeg -i bear-320x240.webm -acodec copy -vcodec copy -f webm pipe:1 > bear-320x
 a WebM file containing color metadata in MKV/WebM Colour element copied from
 libwebm/testing/testdata/colour.webm
 
+#### four-colors.png
+An image (320x240 .png file) of 4 color blocks (Y,R,G,B) is first created by
+Windows Paint.exe.
+
+#### four-colors.y4m
+A 320x240 raw YUV single frame video with 4 color blocks (Y,R,G,B)
+Converted from four-colors.png using ffmpeg:
+```
+ffmpeg -i four-colors.png  -pix_fmt yuv420p  -f yuv4mpegpipe four-colors.y4m"
+```
+
 #### four-colors.mp4
 A 960x540 H.264 mp4 video with 4 color blocks (Y,R,G,B) in every frame. The
 video playback looks like a still image. An image of 4 color blocks (.png file)
@@ -254,6 +288,13 @@ a rotation of 180 degrees in mp4 meta data.
 Actual video frames are the same as four-colors.mp4, except it specifies
 a rotation of 270 degrees in mp4 meta data.
 
+#### four-colors-incompatible-stride.y4m
+A 962x540 raw YUV single frame video with 4 color blocks (Y,R,G,B) and a GL
+incompatible stride. Converted from four-colors.mp4 using ffmpeg:
+```
+ffmpeg -i four-colors.mp4 -vf "scale=w=962:h=540,format=yuv420p" -frames:v 1 four-colors-incompatible-stride.y4m
+```
+
 #### four-colors-vp9.webm
 A 960x540 vp9 video with 4 color blocks (Y,R,G,B) in every frame. This is
 converted from four-colors.mp4 by ffmpeg.
@@ -266,6 +307,27 @@ is converted from four-colors.mp4 by adding an opacity of 0.5 using ffmpeg.
 #### bear-320x240-vp9_profile2.webm
 VP9 encoded video with profile 2 (10-bit, 4:2:0).
 Codec string: vp09.02.10.10.01.02.02.02.00.
+
+#### vp9-hdr-init-segment.mp4
+Init segment for a VP9.2 HDR in MP4 file; from https://crbug.com/1102200#c6. The
+SmDm and CoLL boxes have been added using mp4edit:
+
+mp4edit.exe --insert moov/trak/mdia/minf/stbl/stsd/vp09:smdm.bin \
+            --insert moov/trak/mdia/minf/stbl/stsd/vp09:coll.bin \
+            vp9-hdr-init-segment.mp4 fixed.mp4
+
+smdm.bin and coll.bin generated with program from https://crbug.com/1123430#c5.
+
+#### bear-320x180-10bit-frame-\{0,1,2,3\}.h264
+The first four frames of the H.264 version of bear-av1-320x180-10bit.mp4 created
+using the following command.
+`ffmpeg -i bear-av1-320x180-10bit.mp4 -vcodec h264 -vframes 4 bear-320x180-10bit-4frames.h264`
+The file is then split into bitstreams each of which contains a single frame, so
+that they contain frames as below.
+bear-320x180-10bit-frame-0.h264: SPS+PPS+Single IDR
+bear-320x180-10bit-frame-1.h264: B
+bear-320x180-10bit-frame-2.h264: B
+bear-320x180-10bit-frame-3.h264: P
 
 ### AAC test data from MPEG-DASH demoplayer (44100 Hz, stereo)
 Duration of each packet is (1024/44100 Hz), approximately 23.22 ms.
@@ -497,6 +559,17 @@ using key ID [1] and key [2].
 Unless noted otherwise, the codec string is `av01.0.04M.08` for 8-bit files,
 and `av01.0.04M.10` for 10-bit files.
 
+#### av1-I-frame-320x240
+vpxdec media/test/data/bear-vp9.webm -o bear.y4m
+aomenc -o bear.ivf -p 2 --target-bitrate=150 bear.y4m --limit=1 --ivf
+tail -c +45 bear.ivf > av1-I-frame-320x240
+
+#### av1-I-frame-1280x720
+Same as av1-I-frame-320x240 but using bear-1280x720.webm as input.
+
+#### av1-monochrome-I-frame-320x240-[8,10,12]bpp
+Same as av1-I-frame-320x240 with --monochrome and -b=[8,10,12] aomenc options.
+
 #### bear-av1-cenc.mp4
 Encrypted version of bear-av1.mp4. Encrypted by [Shaka Packager] built locally
 at commit 53aa775ea488c0ffd3a2e1cb78ad000154e414e1 using key ID [1] and key [2].
@@ -655,6 +728,46 @@ JSON file that contains all metadata related to test-25fps.vp9_2, used by the
 video_decode_accelerator_tests. This includes the video codec, resolution and
 md5 checksums of individual video frames when converted to the I420 format.
 
+#### test-25fps.av1.ivf:
+The av1 video whose content is the same as test-25fps.h264.
+```
+ffmpeg -i test-25fps.h264 -vcodec libaom-av1 test-25fps.av1.ivf
+```
+
+#### test-25fps.av1.ivf.json:
+JSON file that contains all metadata related to test-25fps.av1.ivf, used by the
+video\_decode\_accelerator\_tests. This includes the video codec, resolution and
+md5 checksums of individual video frames when converted to the I420 format.
+
+#### test-25fps.hevc:
+H.265/HEVC video whose content is the same as test-25fps.h264.
+```
+ffmpeg -i test-25fps.h264 -vcodec hevc test25fps.hevc
+```
+
+#### test-25fps.hevc.json:
+JSON file that contains all metadata related to test-25fps.hevc, used by the
+video\_decode\_accelerator\_tests. This includes the video codec, resolution and
+md5 checksums of individual video frames when converted to the I420 format.
+
+#### test-25fps.hevc10:
+10-bit H.265/HEVC video whose content is the same as test-25fps.h264 but
+converted to 10bpp.
+```
+ffmpeg -i test-25fps.h264 -vcodec hevc -pix_fmt yuv420p10le test25fps.hevc10
+```
+
+#### test-25fps.hevc10.json:
+JSON file that contains all metadata related to test-25fps.hevc10, used by the
+video\_decode\_accelerator\_tests. This includes the video codec, resolution and
+md5 checksums of individual video frames when converted to the I420 format.
+
+### VP9 video with raw vp9 frames
+
+#### buck-1280x720-vp9.webm
+1280x720 version of Big Buck Bunny https://peach.blender.org/ muxed with raw
+vp9 frames (versus superframes).
+
 
 ### VP9 video with show_existing_frame flag
 
@@ -719,56 +832,102 @@ The frame sizes change between 1080p and 720p every 24 frames.
 
 #### bear_320x192_40frames.yuv.webm
 First 40 raw i420 frames of bear-1280x720.mp4 scaled down to 320x192 for
-video_encode_accelerator_unittest. Encoded with vp9 lossless:
+video_encode_accelerator_tests. Encoded with vp9 lossless:
 `ffmpeg -pix_fmt yuv420p -s:v 320x192 -r 30 -i bear_320x192_40frames.yuv -lossless 1 bear_320x192_40frames.yuv.webm`
 
 #### bear_640x384_40frames.yuv.webm
 First 40 raw i420 frames of bear-1280x720.mp4 scaled down to 340x384 for
-video_encode_accelerator_unittest. Encoded with vp9 lossless:
+video_encode_accelerator_tests. Encoded with vp9 lossless:
 `ffmpeg -pix_fmt yuv420p -s:v 640x384 -r 30 -i bear_640x384_40frames.yuv -lossless 1 bear_640x384_40frames.yuv.webm`
 
 
 ### ImageProcessor Test Files
 
-#### bear\_320x192.i420.yuv
+#### bear\_320x192.i420.yuv.webm
 First frame of bear\_320x192\_40frames.yuv for image\_processor_test.
+To get the uncompressed yuv, execute the following command.
+`vpxdec bear_320x192.i420.yuv.webm --rawvideo -o bear_320x192.i420.yuv`
 
 #### bear\_320x192.i420.yuv.json
 Metadata describing bear\_320x192.i420.yuv.
 
 #### bear\_320x192.nv12.yuv
-First frame of bear\_320x192\_40frames.nv12.yuv for image\_processor_test.
+First frame of bear\_320x192\_40frames.yuv for image\_processor_test and
+formatted nv12.
+To get the uncompressed yuv, execute the following command.
+`ffmpeg -s:v 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv  -c:v rawvideo -pix_fmt nv12 bear_320x192.nv12.yuv`
 
 #### bear\_320x192.nv12.yuv.json
 Metadata describing bear\_320x192.nv12.yuv.
 
 #### bear\_320x192.yv12.yuv
-First frame of bear\_320x192\_40frames.yv12.yuv for image\_processor_test.
+First frame of bear\_320x192\_40frames.yv12.yuv for image\_processor_test and
+formatted yv12.
+To get the uncompressed yuv, execute the following command.
+`ffmpeg -s:v 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv  -c:v rawvideo -pix_fmt yuv420p -vf shuffleplanes=0:2:1 bear_320x192.yv12.yuv`
 
 #### bear\_320x192.rgba
-RAW RGBA format data. This data is created from bear\_320x192.i420.yuv by the
-following command. Alpha channel is always 0xFF because of that.
+RAW RGBA format data. This data is created from bear\_320x192.i420.yuv.
+Alpha channel is always 0xFF.
+To get the uncompressed yuv, execute the following command.
 `ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt rgba bear_320x192.rgba`
 
 #### bear\_320x192.bgra
-RAW BGRA format data. This data is created from bear\_320x192.i420.yuv by the
-following command. Alpha channel is always 0xFF because of that.
-`ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt rgba bear_320x192.bgra`
+RAW BGRA format data. This data is created from bear\_320x192.i420.yuv.
+Alpha channel is always 0xFF.
+To get the uncompressed yuv, execute the following command.
+`ffmpeg -s 320x192 -pix_fmt yuv420p -i bear_320x192.i420.yuv -vcodec rawvideo -f image2 -pix_fmt bgra bear_320x192.bgra`
 
+#### bear\_192x320\_90.nv12.yuv
+Rotate bear\_320x192.nv12.yuv by 90 degrees clockwise.
+`ffmpeg -s:v 320x192 -pix_fmt nv12 -i bear_320x192.nv12.yuv -vf transpose=1 -c:v rawvideo -pix_fmt nv12 bear_192x320_90.nv12.yuv`
+
+#### bear\_192x320\_90.nv12.yuv.json
+Metadata describing bear\_192x320\_90.nv12.yuv
+
+#### bear\_320x192\_180.nv12.yuv
+Rotate bear\_320x192.nv12.yuv by 180 degrees clockwise.
+`ffmpeg -s:v 320x192 -pix_fmt nv12 -i bear_320x192.nv12.yuv -vf "transpose=2,transpose=2" -c:v rawvideo -pix_fmt nv12 bear_320x192_180.nv12.yuv`
+
+#### bear\_320x192\_180.nv12.yuv.json
+Metadata describing bear\_320x192\_180.nv12.yuv
+
+#### bear\_192x320\_270.nv12.yuv
+Rotate bear\_320x192.nv12.yuv by 270 degrees clockwise.
+`ffmpeg -s:v 320x192 -pix_fmt nv12 -i bear_320x192.nv12.yuv -vf transpose=2 -c:v rawvideo -pix_fmt nv12 bear_192x320_270.nv12.yuv`
+
+#### bear\_192x320\_270.nv12.yuv.json
+Metadata describing bear\_192x320\_270.nv12.yuv
 
 #### puppets-1280x720.nv12.yuv
 RAW NV12 format data. The width and height are 1280 and 720, respectively.
 This data is created from peach\_pi-1280x720.jpg by the following command.
 `ffmpeg -i peach_pi-1280x720.jpg -s 1280x720 -pix_fmt nv12 puppets-1280x720.nv12.yuv`
 
+To get the uncompressed yuv, execute the following commands.
+`vpxdec puppets-1280x720.i420.yuv.webm --rawvideo -o puppets-1280x720.i420.yuv`
+`ffmpeg -s:v 1280x720 -pix_fmt yuv420p -i puppets-1280x720.i420.yuv -c:v rawvideo -pix_fmt nv12 puppets-1280x720.nv12.yuv`
+
 #### puppets-640x360.nv12.yuv
 RAW NV12 format data. The width and height are 640 and 360, respectively.
-This data is created from puppets-1280x720.nv12.yuv by the following command.
+To get the uncompressed yuv, execute the following command.
 `ffmpeg -s:v 1280x720 -pix_fmt nv12 -i puppets-1280x720.nv12.yuv -vf scale=640x360 -c:v rawvideo -pix_fmt nv12 puppets-640x360.nv12.yuv`
+
+#### puppets-480x270.nv12.yuv
+RAW NV12 format data. The width and height are 640 and 360, respectively.
+To get the uncompressed yuv, execute the following command.
+`ffmpeg -s:v 1280x720 -pix_fmt nv12 -i puppets-1280x720.nv12.yuv -vf scale=480x270 -c:v rawvideo -pix_fmt nv12 puppets-480x270.nv12.yuv`
+
+### puppets-640x360\_in\_640x480.nv12.yuv
+RAW NV12 format data. The width and height are 640 and 480, respectively.
+The meaningful image is at the rectangle (0, 0, 640x360) in the image. The area
+outside this rectangle is black.
+To get the uncompressed yuv, execute the following command.
+`ffmpeg -s:v 640x360 -pix_fmt nv12 -i puppets-640x360.nv12.yuv -vf "scale=640:480:force_original_aspect_ratio=decrease,pad=640:480:(ow-iw)/2:(oh-ih)/2" -c:v rawvideo -pix_fmt nv12 puppets-640x360_in_640x480.nv12.yuv`
 
 #### puppets-320x180.nv12.yuv
 RAW NV12 format data. The width and height are 320 and 180, respectively.
-This data is created from puppets-1280x720.nv12.yuv by the following command.
+To get the uncompressed yuv, execute the following command.
 `ffmpeg -s:v 1280x720 -pix_fmt nv12 -i puppets-1280x720.nv12.yuv -vf scale=320x180 -c:v rawvideo -pix_fmt nv12 puppets-320x180.nv12.yuv`
 
 ###  VP9 parser test files:
@@ -781,6 +940,44 @@ Created using "avconv -i bear-vp9.webm -vcodec copy -an -f ivf bear-vp9.ivf".
 #### test-25fps.vp9.context
 Manually dumped from libvpx with bear-vp9.ivf and test-25fps.vp9. See
 vp9_parser_unittest.cc for description of their format.
+
+
+### H264 decoder test files:
+
+#### blackwhite\_yuv444p-frame.h264
+The first frame of blackwhite_yuv444p.mp4 by the following command.
+`ffmpeg -i blackwhite_yuv444p.mp4 -vcodec copy -vframes 1 blackwhite_yuv444p-frame.h264`
+
+### HEVC parser/decoder test files:
+
+#### bear.hevc
+Used by h265_parser_unittest.cc.
+
+#### bbb.hevc
+Used by h265_parser_unittest.cc. Copied from bbb_hevc_176x144_176kbps_60fps.hevc
+in Android repo.
+
+#### bear-sps-pps.hevc
+SPS and PPS from bear.hevc for h265_decoder_unittest.cc.
+
+#### bear-frame\{0,1,2,3,4,5\}.hevc
+Single IDR, P, B, B, B, P frames respectively from bear.hevc for
+h265_decoder_unittest.cc.
+
+#### bear-320x180-10bit-frame-\{0,1,2,3\}.hevc
+The first four frames of the HEVC version of bear-av1-320x180-10bit.mp4 created
+using the following command.
+`ffmpeg -i bear-av1-320x180-10bit.mp4 -vcodec hevc -vframes 4 bear-320x180-10bit-4frames.hevc`
+The file is then split into bitstreams each of which contains a single frame, so
+that they contain frames as below.
+bear-320x180-10bit-frame-0.hevc: SPS+PPS+Single IDR
+bear-320x180-10bit-frame-1.hevc: B
+bear-320x180-10bit-frame-2.hevc: B
+bear-320x180-10bit-frame-3.hevc: P
+
+#### blackwhite\_yuv444p-frame.hevc
+The first frame of blackwhite_yuv444p.mp4 coded in HEVC by the following command.
+`ffmpeg -i blackwhite_yuv444p.mp4 -vcodec hevc -vframes 1 blackwhite_yuv444p-frame.hevc`
 
 ###  WebM files for testing multiple tracks.
 
@@ -1021,9 +1218,18 @@ ffmpeg -f lavfi -i "sine=frequency=500:sample_rate=48000" -t 5 -c:v libvpx a500h
 ffmpeg -i red.webm -i green.webm -i blue.webm -i a300hz.webm -i a500hz.webm -map 0 -map 1 -map 2 -map 3 -map 4  multitrack-3video-2audio.webm
 ```
 
+### Spherical metadata WebM files
+
+#### bear-spherical-metadata.webm
+bear_silent.webm video injected with "stereo_mode=SIDE_BY_SIDE_LEFT_EYE_FIRST", "projectionType=EQUIRECTANGULAR",
+and projection pose_yaw, pose_pitch, and pose_roll = 10, 20, and 30 respectively.
+
 ### Opus pre-skip and end-trimming test clips
 https://people.xiph.org/~greg/opus_testvectors/
 
 * opus-trimming-test.mp4
 * opus-trimming-test.ogg
 * opus-trimming-test.webm
+
+[libaom test vectors]: https://aomedia.googlesource.com/aom/+/master/test/test_vectors.cc
+[libaom LICENSE]: https://source.chromium.org/chromium/chromium/src/+/main:media/test/data/licenses/AOM-LICENSE

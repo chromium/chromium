@@ -23,7 +23,7 @@ from diff_util import PromptUserToAcceptDiff
 import path_util
 
 import histogram_paths
-import histograms_print_style
+import histogram_configuration_model
 
 ENUMS_PATH = histogram_paths.ENUMS_XML
 POLICY_TEMPLATES_PATH = 'components/policy/resources/policy_templates.json'
@@ -122,20 +122,19 @@ def main():
     sys.exit(1)
 
   with open(path_util.GetInputFile(POLICY_TEMPLATES_PATH), 'rb') as f:
-    policy_templates = literal_eval(f.read())
+    policy_templates = literal_eval(f.read().decode('utf-8'))
 
   with open(ENUMS_PATH, 'rb') as f:
     histograms_doc = minidom.parse(f)
     f.seek(0)
-    xml = f.read()
+    xml = f.read().decode('utf-8')
 
   UpdatePoliciesHistogramDefinitions(policy_templates, histograms_doc)
   UpdateAtomicGroupsHistogramDefinitions(policy_templates, histograms_doc)
-  new_xml = histograms_print_style.GetPrintStyle().PrettyPrintXml(
-      histograms_doc)
+  new_xml = histogram_configuration_model.PrettifyTree(histograms_doc)
   if PromptUserToAcceptDiff(xml, new_xml, 'Is the updated version acceptable?'):
     with open(ENUMS_PATH, 'wb') as f:
-      f.write(new_xml)
+      f.write(new_xml.encode('utf-8'))
 
 
 if __name__ == '__main__':

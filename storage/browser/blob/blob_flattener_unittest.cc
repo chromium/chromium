@@ -179,8 +179,8 @@ TEST_F(BlobFlattenerTest, BlobWithSlices) {
   // * full data blob,
   // * pending data,
 
-  context_ =
-      std::make_unique<BlobStorageContext>(temp_dir_.GetPath(), file_runner_);
+  context_ = std::make_unique<BlobStorageContext>(
+      temp_dir_.GetPath(), temp_dir_.GetPath(), file_runner_);
   SetTestMemoryLimits();
 
   std::unique_ptr<BlobDataHandle> data_blob;

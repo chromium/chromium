@@ -2,7 +2,7 @@ This file explains the purpose of this directory and how to set everything up
 to run the related unit test to verify the icon visibility algorithm is
 working reasonably well.
 
-The unit test is in src/extesions/common/image_util_unittest.cc and is
+The unit test is in src/extensions/common/image_util_unittest.cc and is
 disabled, so it doesn't run under normal testing:
 
 TEST(ImageUtilTest, DISABLED_AnalyzeAllDownloadedIcons)

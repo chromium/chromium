@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/autofill/payments/autofill_dialog_models.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -25,31 +26,32 @@ const int kNumberOfExpirationYears = 10;
 // Returns the items that are in the expiration year dropdown. If
 // |additional_year| is not 0 and not within the normal range, it will be added
 // accordingly.
-std::vector<base::string16> GetExpirationYearItems(int additional_year) {
-  std::vector<base::string16> years;
+std::vector<ui::SimpleComboboxModel::Item> GetExpirationYearItems(
+    int additional_year) {
+  std::vector<ui::SimpleComboboxModel::Item> years;
   // Add the "Year" placeholder item.
-  years.push_back(
+  years.emplace_back(
       l10n_util::GetStringUTF16(IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_YEAR));
 
   base::Time::Exploded now_exploded;
   AutofillClock::Now().LocalExplode(&now_exploded);
 
   if (additional_year != 0 && additional_year < now_exploded.year)
-    years.push_back(base::UTF8ToUTF16(std::to_string(additional_year)));
+    years.emplace_back(base::NumberToString16(additional_year));
 
   for (int i = 0; i < kNumberOfExpirationYears; i++)
-    years.push_back(base::UTF8ToUTF16(std::to_string(now_exploded.year + i)));
+    years.emplace_back(base::NumberToString16(now_exploded.year + i));
 
   if (additional_year != 0 &&
       additional_year >= now_exploded.year + kNumberOfExpirationYears) {
-    years.push_back(base::UTF8ToUTF16(std::to_string(additional_year)));
+    years.emplace_back(base::NumberToString16(additional_year));
   }
 
   return years;
 }
 
 // Formats a month, zero-padded (e.g. "02").
-base::string16 FormatMonth(int month) {
+std::u16string FormatMonth(int month) {
   return base::ASCIIToUTF16(base::StringPrintf("%.2d", month));
 }
 
@@ -66,7 +68,7 @@ int MonthComboboxModel::GetItemCount() const {
   return 13;
 }
 
-base::string16 MonthComboboxModel::GetItemAt(int index) {
+std::u16string MonthComboboxModel::GetItemAt(int index) const {
   return index == 0 ? l10n_util::GetStringUTF16(
                           IDS_AUTOFILL_DIALOG_PLACEHOLDER_EXPIRY_MONTH)
                     : FormatMonth(index);
@@ -89,7 +91,7 @@ YearComboboxModel::YearComboboxModel(int additional_year)
 YearComboboxModel::~YearComboboxModel() {}
 
 void YearComboboxModel::SetDefaultIndexByYear(int year) {
-  const base::string16& year_value = base::NumberToString16(year);
+  const std::u16string& year_value = base::NumberToString16(year);
   for (int i = 1; i < GetItemCount(); i++) {
     if (year_value == GetItemAt(i)) {
       default_index_ = i;

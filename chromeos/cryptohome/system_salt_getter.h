@@ -12,9 +12,9 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "chromeos/dbus/cryptohome/UserDataAuth.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -31,6 +31,9 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   static void Shutdown();
   static SystemSaltGetter* Get();
 
+  SystemSaltGetter(const SystemSaltGetter&) = delete;
+  SystemSaltGetter& operator=(const SystemSaltGetter&) = delete;
+
   // Converts |salt| to a hex encoded string.
   static std::string ConvertRawSaltToHexString(const RawSalt& salt);
 
@@ -44,6 +47,8 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
 
   // Returns pointer to binary system salt if it is already known.
   // Returns nullptr if system salt is not known.
+  // WARNING: This pointer is null early in startup. Do not assume it is valid.
+  // Prefer GetSystemSalt() above. https://crbug.com/1122674
   const RawSalt* GetRawSalt() const;
 
   // This is for browser tests API.
@@ -57,8 +62,9 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   // Used to implement GetSystemSalt().
   void DidWaitForServiceToBeAvailable(GetSystemSaltCallback callback,
                                       bool service_is_available);
-  void DidGetSystemSalt(GetSystemSaltCallback callback,
-                        base::Optional<std::vector<uint8_t>> system_salt);
+  void DidGetSystemSalt(
+      GetSystemSaltCallback system_salt_callback,
+      absl::optional<::user_data_auth::GetSystemSaltReply> system_salt_reply);
 
   RawSalt raw_salt_;
   std::string system_salt_;
@@ -67,10 +73,14 @@ class COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) SystemSaltGetter {
   std::vector<base::OnceClosure> on_system_salt_ready_;
 
   base::WeakPtrFactory<SystemSaltGetter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSaltGetter);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::SystemSaltGetter;
+}
 
 #endif  // CHROMEOS_CRYPTOHOME_SYSTEM_SALT_GETTER_H_

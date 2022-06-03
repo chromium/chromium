@@ -13,7 +13,6 @@
 
 #include "base/base_switches.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -172,7 +171,7 @@ ResultCode SandboxTargetHooks::TargetStartedWithHighPrivileges() {
 
 SandboxType SandboxProcessType() {
   // This should only be called by children processes.
-  DCHECK(sandbox::SandboxFactory::GetTargetServices() != nullptr);
+  DCHECK(sandbox::SandboxFactory::GetTargetServices());
 
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   int val = -1;
@@ -223,7 +222,7 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
   if (g_target_processes->erase(type))
     DCHECK_EQ(SandboxType::kTest, type);
 
-  base::ScopedClosureRunner notify_hooks_on_failure(base::DoNothing::Once());
+  base::ScopedClosureRunner notify_hooks_on_failure;
 
   if (hooks) {
     // Unretained is safe because |hooks| lives for the entire enclosing scope.
@@ -258,7 +257,7 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
           base::WaitableEvent::InitialState::NOT_SIGNALED);
   command_line.AppendSwitchNative(
       chrome_cleaner::kInitDoneNotifierSwitch,
-      base::NumberToString16(
+      base::NumberToWString(
           base::win::HandleToUint32(init_done_event->handle())));
   policy->AddHandleToShare(init_done_event->handle());
 
@@ -357,8 +356,8 @@ ResultCode StartSandboxTarget(const base::CommandLine& sandbox_command_line,
   // global that will be cleaned up by the OS on exit, so that it can be polled
   // in |IsSandboxTargetRunning|.
   g_target_processes->emplace(type, base::Process(std::move(process_handle)));
-  terminate_process_on_failure.ReplaceClosure(base::DoNothing::Once());
-  notify_hooks_on_failure.ReplaceClosure(base::DoNothing::Once());
+  terminate_process_on_failure.ReplaceClosure(base::NullCallback());
+  notify_hooks_on_failure.ReplaceClosure(base::NullCallback());
 
   return RESULT_CODE_SUCCESS;
 }

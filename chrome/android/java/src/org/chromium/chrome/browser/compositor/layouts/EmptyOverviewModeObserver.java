@@ -7,18 +7,17 @@ package org.chromium.chrome.browser.compositor.layouts;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior.OverviewModeObserver;
 
 /**
-* An empty implementation of {@link OverviewModeObserver}.
-*/
+ * An empty implementation of {@link OverviewModeObserver}.
+ * DEPRECATED, please use {@link
+ * org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver} instead.
+ */
+@Deprecated
 public class EmptyOverviewModeObserver implements OverviewModeObserver {
     @Override
     public void onOverviewModeStartedShowing(boolean showToolbar) {}
 
     @Override
     public void onOverviewModeFinishedShowing() {}
-
-    @Override
-    public void onOverviewModeStateChanged(
-            @OverviewModeState int overviewModeState, boolean showTabSwitcherToolbar) {}
 
     @Override
     public void onOverviewModeStartedHiding(boolean showToolbar, boolean delayAnimation) {}

@@ -11,18 +11,20 @@ source_set("omaha") {
   deps = [
     "//base",
     "//base:i18n",
+    "//build:branding_buildflags",
     "//components/metrics",
     "//components/prefs",
     "//components/profile_metrics",
     "//components/version_info",
+    "//ios/chrome/app:tests_hook",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/browser_state_metrics",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/common",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/omaha",
+    "//ios/public/provider/chrome/browser/omaha:omaha_api",
     "//ios/web",
     "//net",
     "//third_party/libxml:xml_writer",
@@ -33,9 +35,7 @@ source_set("omaha") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "omaha_service_unittest.mm",
-  ]
+  sources = [ "omaha_service_unittest.mm" ]
   deps = [
     ":omaha",
     "//base",
@@ -44,10 +44,11 @@ source_set("unit_tests") {
     "//components/version_info",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/upgrade",
+    "//ios/chrome/browser/upgrade:public",
     "//ios/chrome/common",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/omaha",
+    "//ios/public/provider/chrome/browser/omaha:omaha_api",
     "//ios/web",
     "//ios/web/public/test",
     "//net:test_support",

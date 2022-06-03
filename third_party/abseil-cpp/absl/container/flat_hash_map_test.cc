@@ -14,6 +14,9 @@
 
 #include "absl/container/flat_hash_map.h"
 
+#include <memory>
+
+#include "absl/base/internal/raw_logging.h"
 #include "absl/container/internal/hash_generator_testing.h"
 #include "absl/container/internal/unordered_map_constructor_test.h"
 #include "absl/container/internal/unordered_map_lookup_test.h"
@@ -22,13 +25,28 @@
 #include "absl/types/any.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 namespace {
 using ::absl::container_internal::hash_internal::Enum;
 using ::absl::container_internal::hash_internal::EnumClass;
 using ::testing::_;
+using ::testing::IsEmpty;
 using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
+
+// Check that absl::flat_hash_map works in a global constructor.
+struct BeforeMain {
+  BeforeMain() {
+    absl::flat_hash_map<int, int> x;
+    x.insert({1, 1});
+    ABSL_RAW_CHECK(x.find(0) == x.end(), "x should not contain 0");
+    auto it = x.find(1);
+    ABSL_RAW_CHECK(it != x.end(), "x should contain 1");
+    ABSL_RAW_CHECK(it->second, "1 should map to 1");
+  }
+};
+const BeforeMain before_main;
 
 template <class K, class V>
 using Map = flat_hash_map<K, V, StatefulTestingHash, StatefulTestingEqual,
@@ -45,6 +63,11 @@ INSTANTIATE_TYPED_TEST_SUITE_P(FlatHashMap, ConstructorTest, MapTypes);
 INSTANTIATE_TYPED_TEST_SUITE_P(FlatHashMap, LookupTest, MapTypes);
 INSTANTIATE_TYPED_TEST_SUITE_P(FlatHashMap, MembersTest, MapTypes);
 INSTANTIATE_TYPED_TEST_SUITE_P(FlatHashMap, ModifiersTest, MapTypes);
+
+using UniquePtrMapTypes = ::testing::Types<Map<int, std::unique_ptr<int>>>;
+
+INSTANTIATE_TYPED_TEST_SUITE_P(FlatHashMap, UniquePtrModifiersTest,
+                               UniquePtrMapTypes);
 
 TEST(FlatHashMap, StandardLayout) {
   struct Int {
@@ -207,41 +230,85 @@ TEST(FlatHashMap, MergeExtractInsert) {
   EXPECT_THAT(m, UnorderedElementsAre(Pair(1, 17), Pair(2, 9)));
 }
 
-#if (defined(ABSL_HAVE_STD_ANY) || !defined(_LIBCPP_VERSION)) && \
-    !defined(__EMSCRIPTEN__)
-TEST(FlatHashMap, Any) {
-  absl::flat_hash_map<int, absl::any> m;
-  m.emplace(1, 7);
-  auto it = m.find(1);
-  ASSERT_NE(it, m.end());
-  EXPECT_EQ(7, absl::any_cast<int>(it->second));
+bool FirstIsEven(std::pair<const int, int> p) { return p.first % 2 == 0; }
 
-  m.emplace(std::piecewise_construct, std::make_tuple(2), std::make_tuple(8));
-  it = m.find(2);
-  ASSERT_NE(it, m.end());
-  EXPECT_EQ(8, absl::any_cast<int>(it->second));
-
-  m.emplace(std::piecewise_construct, std::make_tuple(3),
-            std::make_tuple(absl::any(9)));
-  it = m.find(3);
-  ASSERT_NE(it, m.end());
-  EXPECT_EQ(9, absl::any_cast<int>(it->second));
-
-  struct H {
-    size_t operator()(const absl::any&) const { return 0; }
-  };
-  struct E {
-    bool operator()(const absl::any&, const absl::any&) const { return true; }
-  };
-  absl::flat_hash_map<absl::any, int, H, E> m2;
-  m2.emplace(1, 7);
-  auto it2 = m2.find(1);
-  ASSERT_NE(it2, m2.end());
-  EXPECT_EQ(7, it2->second);
+TEST(FlatHashMap, EraseIf) {
+  // Erase all elements.
+  {
+    flat_hash_map<int, int> s = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
+    erase_if(s, [](std::pair<const int, int>) { return true; });
+    EXPECT_THAT(s, IsEmpty());
+  }
+  // Erase no elements.
+  {
+    flat_hash_map<int, int> s = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
+    erase_if(s, [](std::pair<const int, int>) { return false; });
+    EXPECT_THAT(s, UnorderedElementsAre(Pair(1, 1), Pair(2, 2), Pair(3, 3),
+                                        Pair(4, 4), Pair(5, 5)));
+  }
+  // Erase specific elements.
+  {
+    flat_hash_map<int, int> s = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
+    erase_if(s,
+             [](std::pair<const int, int> kvp) { return kvp.first % 2 == 1; });
+    EXPECT_THAT(s, UnorderedElementsAre(Pair(2, 2), Pair(4, 4)));
+  }
+  // Predicate is function reference.
+  {
+    flat_hash_map<int, int> s = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
+    erase_if(s, FirstIsEven);
+    EXPECT_THAT(s, UnorderedElementsAre(Pair(1, 1), Pair(3, 3), Pair(5, 5)));
+  }
+  // Predicate is function pointer.
+  {
+    flat_hash_map<int, int> s = {{1, 1}, {2, 2}, {3, 3}, {4, 4}, {5, 5}};
+    erase_if(s, &FirstIsEven);
+    EXPECT_THAT(s, UnorderedElementsAre(Pair(1, 1), Pair(3, 3), Pair(5, 5)));
+  }
 }
-#endif  // (defined(ABSL_HAVE_STD_ANY) || !defined(_LIBCPP_VERSION)) &&
-        // !defined(__EMSCRIPTEN__)
+
+// This test requires std::launder for mutable key access in node handles.
+#if defined(__cpp_lib_launder) && __cpp_lib_launder >= 201606
+TEST(FlatHashMap, NodeHandleMutableKeyAccess) {
+  flat_hash_map<std::string, std::string> map;
+
+  map["key1"] = "mapped";
+
+  auto nh = map.extract(map.begin());
+  nh.key().resize(3);
+  map.insert(std::move(nh));
+
+  EXPECT_THAT(map, testing::ElementsAre(Pair("key", "mapped")));
+}
+#endif
+
+TEST(FlatHashMap, Reserve) {
+  // Verify that if we reserve(size() + n) then we can perform n insertions
+  // without a rehash, i.e., without invalidating any references.
+  for (size_t trial = 0; trial < 20; ++trial) {
+    for (size_t initial = 3; initial < 100; ++initial) {
+      // Fill in `initial` entries, then erase 2 of them, then reserve space for
+      // two inserts and check for reference stability while doing the inserts.
+      flat_hash_map<size_t, size_t> map;
+      for (size_t i = 0; i < initial; ++i) {
+        map[i] = i;
+      }
+      map.erase(0);
+      map.erase(1);
+      map.reserve(map.size() + 2);
+      size_t& a2 = map[2];
+      // In the event of a failure, asan will complain in one of these two
+      // assignments.
+      map[initial] = a2;
+      map[initial + 1] = a2;
+      // Fail even when not under asan:
+      size_t& a2new = map[2];
+      EXPECT_EQ(&a2, &a2new);
+    }
+  }
+}
 
 }  // namespace
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

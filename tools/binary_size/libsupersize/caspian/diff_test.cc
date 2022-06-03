@@ -67,6 +67,8 @@ int32_t SumOfSymbolPadding(const DeltaSizeInfo& info) {
 
 std::unique_ptr<SizeInfo> CreateSizeInfo() {
   std::unique_ptr<SizeInfo> info = std::make_unique<SizeInfo>();
+  info->containers.emplace_back("");
+  Container::AssignShortNames(&info->containers);
   info->raw_symbols.push_back(
       MakeSymbol(SectionId::kDexMethod, 10, "a", "com.Foo#bar()"));
   info->raw_symbols.push_back(MakeSymbol(SectionId::kText, 20, "a", ".Lfoo"));
@@ -74,6 +76,10 @@ std::unique_ptr<SizeInfo> CreateSizeInfo() {
   info->raw_symbols.push_back(MakeSymbol(SectionId::kText, 40, "b"));
   info->raw_symbols.push_back(MakeSymbol(SectionId::kText, 50, "b"));
   info->raw_symbols.push_back(MakeSymbol(SectionId::kText, 60, ""));
+
+  for (auto sym : info->raw_symbols) {
+    sym.container_ = &info->containers[0];
+  }
   return info;
 }
 
@@ -150,6 +156,23 @@ TEST(DiffTest, TestDontMatchAcrossSections) {
   DeltaSizeInfo diff = Diff(size_info1.get(), size_info2.get());
 
   DeltaSizeInfo::Results expected_counts{6, 0, 1, 1};
+  EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
+  EXPECT_EQ(0, SumOfSymbolSizes(diff));
+}
+
+TEST(DiffTest, TestDontMatchAcrossContainers) {
+  std::unique_ptr<SizeInfo> size_info1 = CreateSizeInfo();
+  std::unique_ptr<SizeInfo> size_info2 = CreateSizeInfo();
+  size_info1->containers.emplace_back("C2");
+  Container::AssignShortNames(&size_info1->containers);
+  size_info2->containers.emplace_back("C2");
+  Container::AssignShortNames(&size_info2->containers);
+
+  size_info1->raw_symbols[0].container_ = &size_info1->containers[1];
+
+  DeltaSizeInfo diff = Diff(size_info1.get(), size_info2.get());
+
+  DeltaSizeInfo::Results expected_counts{5, 0, 1, 1};
   EXPECT_EQ(expected_counts, diff.CountsByDiffStatus());
   EXPECT_EQ(0, SumOfSymbolSizes(diff));
 }

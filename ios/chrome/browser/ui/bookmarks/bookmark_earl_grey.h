@@ -55,6 +55,10 @@ const GURL GetFrenchUrl();
 // GREYAssert is induced if the folder doesn't exist or the count doesn't match.
 - (void)verifyChildCount:(int)count inFolderWithName:(NSString*)name;
 
+// Programmatically adds a bookmark with the given title and URL. GREYAssert is
+// induced if the bookmark cannot be added.
+- (void)addBookmarkWithTitle:(NSString*)title URL:(NSString*)url;
+
 // Removes programmatically the first bookmark with the given title. GREYAssert
 // is induced if the bookmark can't be removed.
 - (void)removeBookmarkWithTitle:(NSString*)title;
@@ -72,6 +76,10 @@ const GURL GetFrenchUrl();
 // bookmarks does exist.
 - (void)verifyAbsenceOfBookmarkWithURL:(NSString*)URL;
 
+// Verifies that a folder called |title| exists. GREYAssert is induced if the
+// folder doesn't exist.
+- (void)verifyExistenceOfFolderWithTitle:(NSString*)title;
+
 #pragma mark - Promo
 
 // Checks that the promo has already been seen or not. GREYAssert is induced if
@@ -86,9 +94,6 @@ const GURL GetFrenchUrl();
 
 // Returns the number of times a Promo has been seen.
 - (int)numberOfTimesPromoAlreadySeen;
-
-// Sets up a FakeIdentity and returns the email of this Identity.
-- (NSString*)setupFakeIdentity;
 
 @end
 

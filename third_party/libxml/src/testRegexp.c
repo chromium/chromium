@@ -185,20 +185,19 @@ static void
 testReduce(xmlExpCtxtPtr ctxt, xmlExpNodePtr expr, const char *tst) {
     xmlBufferPtr xmlExpBuf;
     xmlExpNodePtr sub, deriv;
-    xmlExpBuf = xmlBufferCreate();
 
     sub = xmlExpParse(ctxt, tst);
     if (sub == NULL) {
         printf("Subset %s failed to parse\n", tst);
 	return;
     }
+    xmlExpBuf = xmlBufferCreate();
     xmlExpDump(xmlExpBuf, sub);
     printf("Subset parsed as: %s\n",
            (const char *) xmlBufferContent(xmlExpBuf));
     deriv = xmlExpExpDerive(ctxt, expr, sub);
     if (deriv == NULL) {
         printf("Derivation led to an internal error, report this !\n");
-	return;
     } else {
         xmlBufferEmpty(xmlExpBuf);
 	xmlExpDump(xmlExpBuf, deriv);
@@ -210,6 +209,7 @@ testReduce(xmlExpCtxtPtr ctxt, xmlExpNodePtr expr, const char *tst) {
 	           (const char *) xmlBufferContent(xmlExpBuf));
 	xmlExpFree(ctxt, deriv);
     }
+    xmlBufferFree(xmlExpBuf);
     xmlExpFree(ctxt, sub);
 }
 

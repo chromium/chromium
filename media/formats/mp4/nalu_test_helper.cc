@@ -4,7 +4,7 @@
 
 #include "media/formats/mp4/nalu_test_helper.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "media/video/h264_parser.h"

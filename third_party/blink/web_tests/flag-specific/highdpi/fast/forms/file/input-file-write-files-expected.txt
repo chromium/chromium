@@ -1,0 +1,15 @@
+This tests the files attribute in file input forms
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+FAIL file1.files.length should be 1. Was 0.
+PASS file1.files = 'foo' threw exception TypeError: Failed to set the 'files' property on 'HTMLInputElement': Failed to convert value to 'FileList'..
+FAIL file1.files.length should be 1. Was 0.
+FAIL file1.files.item(0).name should be foo.txt. Threw exception TypeError: Cannot read properties of null (reading 'name')
+FAIL file1.files.length should be 1. Was 0.
+FAIL file1.files.item(0).name should be bar.txt. Threw exception TypeError: Cannot read properties of null (reading 'name')
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+ 

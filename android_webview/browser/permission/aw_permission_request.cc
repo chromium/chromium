@@ -61,7 +61,7 @@ void AwPermissionRequest::OnAcceptInternal(bool accept) {
 
 void AwPermissionRequest::DeleteThis() {
   ScopedJavaLocalRef<jobject> j_request = GetJavaObject();
-  if (j_request.is_null())
+  if (!j_request)
     return;
   Java_AwPermissionRequest_destroyNative(AttachCurrentThread(), j_request);
 }

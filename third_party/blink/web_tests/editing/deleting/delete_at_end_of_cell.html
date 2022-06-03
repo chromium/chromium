@@ -1,0 +1,21 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests for a problem where empty table rows after the selection being
+// deleted would be removed incorrectly. Only the last letter in 'XYZ' should be
+// removed during this delete.
+selection_test(
+    [
+        '<div contenteditable><table border="1"><tbody><tr>',
+            '<td>XYZ|</td><td></td></tr><tr><td></td><td></td>',
+        '</tr></tbody></table</div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable><table border="1"><tbody><tr>',
+            '<td>XY|</td><td></td></tr><tr><td></td><td></td>',
+        '</tr></tbody></table></div>',
+    ]);
+</script>

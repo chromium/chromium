@@ -11,21 +11,6 @@
 #include "media/cast/constants.h"
 #include "media/cast/net/cast_transport_config.h"
 
-namespace {
-
-void CreateVideoEncodeAccelerator(
-    const media::cast::ReceiveVideoEncodeAcceleratorCallback& callback) {
-  // Do nothing.
-}
-
-void CreateVideoEncodeMemory(
-    size_t size,
-    const media::cast::ReceiveVideoEncodeMemoryCallback& callback) {
-  // Do nothing.
-}
-
-}  // namespace
-
 namespace media {
 namespace cast {
 
@@ -91,15 +76,6 @@ FrameSenderConfig GetDefaultVideoSenderConfig() {
       kDefaultNumberOfVideoBuffers;
   config.video_codec_params.number_of_encode_threads = 2;
   return config;
-}
-
-CreateVideoEncodeAcceleratorCallback
-CreateDefaultVideoEncodeAcceleratorCallback() {
-  return base::Bind(&CreateVideoEncodeAccelerator);
-}
-
-CreateVideoEncodeMemoryCallback CreateDefaultVideoEncodeMemoryCallback() {
-  return base::Bind(&CreateVideoEncodeMemory);
 }
 
 }  // namespace cast

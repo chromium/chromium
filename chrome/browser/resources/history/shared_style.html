@@ -1,13 +1,16 @@
-<link rel="import" href="shared_vars.html">
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-
-<dom-module id="shared-style">
   <template>
     <style include="cr-hidden-style">
       a {
         color: var(--cr-link-color);
         text-decoration: none;
+      }
+
+      .history-cards {
+        margin: 0 auto;
+        max-width: var(--card-max-width);
+        min-width: var(--card-min-width);
+        padding: 0 var(--card-padding-side);
+        width: calc(100% - 2 * var(--card-padding-side));
       }
 
       .card-title {
@@ -59,4 +62,3 @@
       }
     </style>
   </template>
-</dom-module>

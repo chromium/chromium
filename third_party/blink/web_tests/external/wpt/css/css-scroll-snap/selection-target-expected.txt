@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test scrolling into view when typing promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+Harness: the test ran to completion.
+

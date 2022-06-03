@@ -4,7 +4,6 @@
 
 #include <sstream>
 
-#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/sync_file_system/file_change.h"
 

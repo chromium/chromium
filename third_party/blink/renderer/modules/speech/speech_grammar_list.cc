@@ -25,7 +25,6 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_grammar_list.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 
@@ -45,9 +44,8 @@ SpeechGrammar* SpeechGrammarList::item(unsigned index) const {
 void SpeechGrammarList::addFromUri(ScriptState* script_state,
                                    const String& src,
                                    double weight) {
-  Document* document = To<Document>(ExecutionContext::From(script_state));
-  grammars_.push_back(
-      SpeechGrammar::Create(document->CompleteURL(src), weight));
+  ExecutionContext* context = ExecutionContext::From(script_state);
+  grammars_.push_back(SpeechGrammar::Create(context->CompleteURL(src), weight));
 }
 
 void SpeechGrammarList::addFromString(const String& string, double weight) {
@@ -59,7 +57,7 @@ void SpeechGrammarList::addFromString(const String& string, double weight) {
 
 SpeechGrammarList::SpeechGrammarList() = default;
 
-void SpeechGrammarList::Trace(blink::Visitor* visitor) {
+void SpeechGrammarList::Trace(Visitor* visitor) const {
   visitor->Trace(grammars_);
   ScriptWrappable::Trace(visitor);
 }

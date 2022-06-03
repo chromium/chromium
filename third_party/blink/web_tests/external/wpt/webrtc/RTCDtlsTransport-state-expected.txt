@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS DTLS transport goes to connected state
+PASS close() causes the local transport to close immediately
+PASS close() causes the other end's DTLS transport to close
+FAIL stop bundled transceiver retains dtls transport state assert_equals: getReceivers does not expose a receiver of a stopped transceiver expected 1 but got 2
+Harness: the test ran to completion.
+

@@ -1,0 +1,13 @@
+Name: firebase-installations-interop
+Short Name: firebase-installations-interop
+URL: https://firebase.google.com
+Version: 16.0.1
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Interface library for Firebase Installations SDK.
+
+Local Modifications:
+No modifications.

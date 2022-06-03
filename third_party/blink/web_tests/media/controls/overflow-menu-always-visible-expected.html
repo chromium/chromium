@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>Overflow menu always visible - expected</title>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
 <script src="../media-controls.js"></script>
 <style>
   video {
@@ -10,11 +11,20 @@
 </style>
 <video controls muted></video>
 <script>
+  function waitForVideoPresentation(video) {
+    return new Promise(resolve => {
+      video.requestVideoFrameCallback(resolve);
+    });
+  }
+  if (window.testRunner)
+    testRunner.waitUntilDone();
+
   var video = document.querySelector('video');
   enableTestMode(video);
   video.src = '../content/test.ogv';
   video.addTextTrack('captions', 'foo');
   video.addTextTrack('captions', 'bar');
+  let videoPresentation = waitForVideoPresentation(video);
 
   video.addEventListener('loadedmetadata', () => {
     var coords = elementCoordinates(overflowButton(video));
@@ -23,5 +33,11 @@
     // Disabling pointer events on the overflow menu to avoid a flakyness with
     // :hover sometimes applying.
     overflowMenu(video).style = 'pointer-events: none;';
+
+    videoPresentation.then(() => {
+      runAfterLayoutAndPaint(() => {
+        testRunner.notifyDone();
+      });
+    });
   });
 </script>

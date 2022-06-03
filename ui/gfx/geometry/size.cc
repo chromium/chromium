@@ -8,7 +8,7 @@
 #include <windows.h>
 #elif defined(OS_IOS)
 #include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #endif
 
@@ -16,12 +16,11 @@
 #include "base/numerics/safe_math.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace gfx {
 
-#if defined(OS_MACOSX) || defined(OS_IOS)
+#if defined(OS_APPLE)
 Size::Size(const CGSize& s)
     : width_(s.width < 0 ? 0 : s.width),
       height_(s.height < 0 ? 0 : s.height) {
@@ -49,7 +48,7 @@ SIZE Size::ToSIZE() const {
   s.cy = height();
   return s;
 }
-#elif defined(OS_MACOSX) || defined(OS_IOS)
+#elif defined(OS_APPLE)
 CGSize Size::ToCGSize() const {
   return CGSizeMake(width(), height());
 }
@@ -71,13 +70,13 @@ void Size::Enlarge(int grow_width, int grow_height) {
 }
 
 void Size::SetToMin(const Size& other) {
-  width_ = width() <= other.width() ? width() : other.width();
-  height_ = height() <= other.height() ? height() : other.height();
+  width_ = std::min(width_, other.width_);
+  height_ = std::min(height_, other.height_);
 }
 
 void Size::SetToMax(const Size& other) {
-  width_ = width() >= other.width() ? width() : other.width();
-  height_ = height() >= other.height() ? height() : other.height();
+  width_ = std::max(width_, other.width_);
+  height_ = std::max(height_, other.height_);
 }
 
 std::string Size::ToString() const {

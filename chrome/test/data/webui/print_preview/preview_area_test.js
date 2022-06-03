@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayer, PluginProxy, PreviewAreaState, Size, State} from 'chrome://print/print_preview.js';
+import {Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, Error, Margins, MeasurementSystem, MeasurementSystemUnitType, NativeLayerImpl, PluginProxyImpl, PreviewAreaState, Size, State} from 'chrome://print/print_preview.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {NativeLayerStub} from 'chrome://test/print_preview/native_layer_stub.js';
-import {PDFPluginStub} from 'chrome://test/print_preview/plugin_stub.js';
-import {getCddTemplate} from 'chrome://test/print_preview/print_preview_test_utils.js';
-import {fakeDataBind} from 'chrome://test/test_util.m.js';
+import {fakeDataBind} from 'chrome://webui-test/test_util.js';
+import {NativeLayerStub} from './native_layer_stub.js';
+import {getCddTemplate} from './print_preview_test_utils.js';
+import {TestPluginProxy} from './test_plugin_proxy.js';
 
 window.preview_area_test = {};
 preview_area_test.suiteName = 'PreviewAreaTest';
@@ -29,12 +29,12 @@ suite(preview_area_test.suiteName, function() {
   /** @override */
   setup(function() {
     nativeLayer = new NativeLayerStub();
-    NativeLayer.setInstance(nativeLayer);
+    NativeLayerImpl.setInstance(nativeLayer);
     nativeLayer.setPageCount(3);
-    pluginProxy = new PDFPluginStub();
-    PluginProxy.setInstance(pluginProxy);
+    pluginProxy = new TestPluginProxy();
+    PluginProxyImpl.setInstance(pluginProxy);
 
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     const model = document.createElement('print-preview-model');
     document.body.appendChild(model);
     model.setSetting('pages', [1, 2, 3]);
@@ -62,10 +62,12 @@ suite(preview_area_test.suiteName, function() {
     const whenPreviewStarted = nativeLayer.whenCalled('getPreview');
     previewArea.state = State.READY;
     assertEquals(PreviewAreaState.LOADING, previewArea.previewState);
-    assertFalse(previewArea.$$('.preview-area-overlay-layer')
-                    .classList.contains('invisible'));
+    assertFalse(
+        previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+            .classList.contains('invisible'));
     const message =
-        previewArea.$$('.preview-area-message').querySelector('span');
+        previewArea.shadowRoot.querySelector('.preview-area-message')
+            .querySelector('span');
     assertEquals('Loading preview', message.textContent.trim());
 
     previewArea.startPreview();
@@ -73,8 +75,9 @@ suite(preview_area_test.suiteName, function() {
     return whenPreviewStarted.then(() => {
       assertEquals(PreviewAreaState.DISPLAY_PREVIEW, previewArea.previewState);
       assertEquals(3, pluginProxy.getCallCount('loadPreviewPage'));
-      assertTrue(previewArea.$$('.preview-area-overlay-layer')
-                     .classList.contains('invisible'));
+      assertTrue(
+          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+              .classList.contains('invisible'));
 
       // If destination capabilities fetch fails, the invalid printer error
       // will be set by the destination settings.
@@ -84,8 +87,9 @@ suite(preview_area_test.suiteName, function() {
       previewArea.state = State.ERROR;
       previewArea.error = Error.INVALID_PRINTER;
       assertEquals(PreviewAreaState.ERROR, previewArea.previewState);
-      assertFalse(previewArea.$$('.preview-area-overlay-layer')
-                      .classList.contains('invisible'));
+      assertFalse(
+          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+              .classList.contains('invisible'));
       assertEquals(
           'The selected printer is not available or not installed ' +
               'correctly.  Check your printer or try selecting another ' +
@@ -103,9 +107,11 @@ suite(preview_area_test.suiteName, function() {
 
     return whenPreviewStarted.then(() => {
       assertEquals(PreviewAreaState.DISPLAY_PREVIEW, previewArea.previewState);
-      assertTrue(previewArea.$$('.preview-area-overlay-layer')
-                     .classList.contains('invisible'));
-      const plugin = previewArea.$$('.preview-area-plugin');
+      assertTrue(
+          previewArea.shadowRoot.querySelector('.preview-area-overlay-layer')
+              .classList.contains('invisible'));
+      const plugin =
+          previewArea.shadowRoot.querySelector('.preview-area-plugin');
       assertEquals(null, plugin.getAttribute('tabindex'));
 
       // This can be triggered at any time by a resizing of the viewport or

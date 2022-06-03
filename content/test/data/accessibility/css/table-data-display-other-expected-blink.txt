@@ -1,0 +1,26 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++table tableRowCount=2 tableColumnCount=3
+++++++++rowGroup ignored
+++++++++++row tableRowIndex=0
+++++++++++++columnHeader name='1' tableCellColumnIndex=0 tableCellRowIndex=0
+++++++++++++++staticText name='1'
+++++++++++++++++inlineTextBox name='1'
+++++++++++++columnHeader name='2' tableCellColumnIndex=1 tableCellRowIndex=0
+++++++++++++++staticText name='2'
+++++++++++++++++inlineTextBox name='2'
+++++++++++++columnHeader name='3' tableCellColumnIndex=2 tableCellRowIndex=0
+++++++++++++++staticText name='3'
+++++++++++++++++inlineTextBox name='3'
+++++++++rowGroup ignored
+++++++++++row tableRowIndex=1
+++++++++++++cell name='a' tableCellColumnIndex=0 tableCellRowIndex=1
+++++++++++++++staticText name='a'
+++++++++++++++++inlineTextBox name='a'
+++++++++++++cell name='b' tableCellColumnIndex=1 tableCellRowIndex=1
+++++++++++++++staticText name='b'
+++++++++++++++++inlineTextBox name='b'
+++++++++++++cell name='c' tableCellColumnIndex=2 tableCellRowIndex=1
+++++++++++++++staticText name='c'
+++++++++++++++++inlineTextBox name='c'

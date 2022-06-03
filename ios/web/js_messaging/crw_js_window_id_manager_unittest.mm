@@ -7,7 +7,7 @@
 #import <WebKit/WebKit.h>
 
 #import "ios/web/js_messaging/page_script_util.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -21,16 +21,22 @@ namespace web {
 // Test fixture for testing CRWJSWindowIDManager class.
 class JSWindowIDManagerTest : public PlatformTest {
  protected:
-  TestBrowserState browser_state_;
+  // Creates and returns a WKWebView instance configured with the necessary
+  // shared scripts.
+  WKWebView* CreateWebView() {
+    WKWebView* web_view = [[WKWebView alloc] init];
+    web::test::ExecuteJavaScript(web_view, web::test::GetSharedScripts());
+    return web_view;
+  }
+
+  FakeBrowserState browser_state_;
 };
 
 // Tests that window ID injection by a second manager results in a different
 // window ID.
 TEST_F(JSWindowIDManagerTest, WindowIDDifferentManager) {
   // Inject the first manager.
-  WKWebView* web_view = [[WKWebView alloc] init];
-  test::ExecuteJavaScript(web_view,
-                          GetDocumentStartScriptForAllFrames(&browser_state_));
+  WKWebView* web_view = CreateWebView();
 
   CRWJSWindowIDManager* manager =
       [[CRWJSWindowIDManager alloc] initWithWebView:web_view];
@@ -39,9 +45,7 @@ TEST_F(JSWindowIDManagerTest, WindowIDDifferentManager) {
               test::ExecuteJavaScript(web_view, @"window.__gCrWeb.windowId"));
 
   // Inject the second manager.
-  WKWebView* web_view2 = [[WKWebView alloc] init];
-  test::ExecuteJavaScript(web_view2,
-                          GetDocumentStartScriptForAllFrames(&browser_state_));
+  WKWebView* web_view2 = CreateWebView();
 
   CRWJSWindowIDManager* manager2 =
       [[CRWJSWindowIDManager alloc] initWithWebView:web_view2];
@@ -55,9 +59,7 @@ TEST_F(JSWindowIDManagerTest, WindowIDDifferentManager) {
 
 // Tests that injecting multiple times creates a new window ID.
 TEST_F(JSWindowIDManagerTest, MultipleInjections) {
-  WKWebView* web_view = [[WKWebView alloc] init];
-  test::ExecuteJavaScript(web_view,
-                          GetDocumentStartScriptForAllFrames(&browser_state_));
+  WKWebView* web_view = CreateWebView();
 
   // First injection.
   CRWJSWindowIDManager* manager =
@@ -86,8 +88,7 @@ TEST_F(JSWindowIDManagerTest, InjectionRetry) {
   EXPECT_FALSE(test::ExecuteJavaScript(web_view, @"window.__gCrWeb"));
 
   // Now inject window.__gCrWeb and check if window ID injection retried.
-  test::ExecuteJavaScript(web_view,
-                          GetDocumentStartScriptForAllFrames(&browser_state_));
+  web::test::ExecuteJavaScript(web_view, web::test::GetSharedScripts());
   EXPECT_NSEQ([manager windowID],
               test::ExecuteJavaScript(web_view, @"window.__gCrWeb.windowId"));
 }

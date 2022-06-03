@@ -11,7 +11,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -109,7 +110,7 @@ void ProxyConfigServiceImpl::UpdateProxyConfig(
   pref_config_state_ = config_state;
   pref_config_ = config;
 
-  if (!observers_.might_have_observers())
+  if (observers_.empty())
     return;
 
   // Evaluate the proxy configuration. If GetLatestProxyConfig returns

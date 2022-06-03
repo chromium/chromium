@@ -21,6 +21,10 @@ namespace huffman_trie {
 class BitWriter {
  public:
   BitWriter();
+
+  BitWriter(const BitWriter&) = delete;
+  BitWriter& operator=(const BitWriter&) = delete;
+
   ~BitWriter();
 
   // Appends |bit| to the end of the buffer.
@@ -51,8 +55,6 @@ class BitWriter {
   uint32_t position_ = 0;
 
   std::vector<uint8_t> bytes_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitWriter);
 };
 
 }  // namespace huffman_trie

@@ -12,26 +12,39 @@
 
 namespace WTF {
 
-// CrossThreadBindOnce is Bind() for cross-thread task posting.
-// Analogously, CrossThreadBindRepeating() is a repeating version
-// of CrossThreadBindOnce().
-// Both apply CrossThreadCopier to the arguments.
+// `CrossThreadBindOnce()` and `CrossThreadBindRepeating()` are the Blink
+// equivalents of `base::BindOnce()` and `base::BindRepeating()` for creating
+// a callback that is run or destroyed on a different thread.
 //
-// TODO(crbug.com/963574): Deprecate CrossThreadBindRepeating().
+// Unlike `base::RepeatingCallback`, a repeatable cross-thread function is *not*
+// copyable. This is intentional: a number of objects in Blink (notably
+// `String`) are thread-hostile: allowing a cross-thread function to be copied
+// means it would be easy to end up in situations where multiple threads might
+// unsafely reference the same `String` object.
+//
+// TODO(crbug.com/963574): Deprecate `CrossThreadBindRepeating()`.
 //
 // Example:
-//     void Func1(int, const String&);
-//     f = CrossThreadBindOnce(&Func1, 42, str);
-// Func1(42, str2) will be called when |std::move(f).Run()| is executed,
-// where |str2| is a deep copy of |str| (created by str.IsolatedCopy()).
+// // Given the prototype:
+// // void MyFunction(const String&, int);
+// String str = "Hello world!";
+// CrossThreadFunction<void(int)> f =
+//     CrossThreadBindOnce(&MyFunction, str);
+// std::move(f).Run(42);  // Calls MyFunction(<deep copy of `str`>, 42);
 //
-// CrossThreadBindOnce(str) is similar to
-// Bind(str.IsolatedCopy()), but the latter is NOT thread-safe due to
-// temporary objects (https://crbug.com/390851).
+// Arguments bound to a `CrossThreadFunction` are copied with
+// `CrossThreadCopier`. In the case of `String`, the argument is a deep copy of
+// `str` that is created by `String::IsolatedCopy()`.
 //
-// Don't (if you pass the task across threads):
-//     Bind(&Func1, 42, str);
-//     Bind(&Func1, 42, str.IsolatedCopy());
+// Important!
+// `CrossThreadBindOnce(str)` is similar to `BindOnce(str.IsolatedCopy())`, but
+// historically, the latter was unsafe since it was possible to end up with
+// situations where a thread-hostile `String` would be referenced on multiple
+// threads, leading to crashes. See https://crbug.com/390851 for more details.
+//
+// In contrast, `CrossThreadBindOnce()` and `CrossThreadBindRepeating()` are
+// implemented in a way that only the destination thread can refer to any bound
+// arguments.
 
 namespace internal {
 
@@ -75,10 +88,10 @@ auto CrossThreadBindRepeating(FunctionType&& function, Ps&&... parameters) {
                                           std::decay_t<Ps>...>::ok,
       "A bound argument uses a bad pattern.");
   return internal::MakeCrossThreadFunction(
-      base::Bind(internal::CoerceFunctorForCrossThreadBind(
-                     std::forward<FunctionType>(function)),
-                 CrossThreadCopier<std::decay_t<Ps>>::Copy(
-                     std::forward<Ps>(parameters))...));
+      base::BindRepeating(internal::CoerceFunctorForCrossThreadBind(
+                              std::forward<FunctionType>(function)),
+                          CrossThreadCopier<std::decay_t<Ps>>::Copy(
+                              std::forward<Ps>(parameters))...));
 }
 
 template <typename FunctionType, typename... Ps>

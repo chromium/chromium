@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -30,6 +29,12 @@ class ShelfApplicationMenuModelTestAPI {
   // Creates a test api to access the internals of the |menu|.
   explicit ShelfApplicationMenuModelTestAPI(ShelfApplicationMenuModel* menu)
       : menu_(menu) {}
+
+  ShelfApplicationMenuModelTestAPI(const ShelfApplicationMenuModelTestAPI&) =
+      delete;
+  ShelfApplicationMenuModelTestAPI& operator=(
+      const ShelfApplicationMenuModelTestAPI&) = delete;
+
   ~ShelfApplicationMenuModelTestAPI() = default;
 
   // Give public access to this metrics recording functions.
@@ -41,13 +46,11 @@ class ShelfApplicationMenuModelTestAPI {
  private:
   // The ShelfApplicationMenuModel to provide internal access to. Not owned.
   ShelfApplicationMenuModel* menu_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfApplicationMenuModelTestAPI);
 };
 
 // Verifies the menu contents given an empty item list.
 TEST(ShelfApplicationMenuModelTest, VerifyContentsWithNoMenuItems) {
-  base::string16 title = base::ASCIIToUTF16("title");
+  std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, {}, nullptr);
   // Expect the title and a separator.
   ASSERT_EQ(2, menu.GetItemCount());
@@ -60,14 +63,14 @@ TEST(ShelfApplicationMenuModelTest, VerifyContentsWithNoMenuItems) {
 // Verifies the menu contents given a non-empty item list.
 TEST(ShelfApplicationMenuModelTest, VerifyContentsWithMenuItems) {
   ShelfApplicationMenuModel::Items items;
-  base::string16 title1 = base::ASCIIToUTF16("title1");
-  base::string16 title2 = base::ASCIIToUTF16("title2");
-  base::string16 title3 = base::ASCIIToUTF16("title3");
-  items.push_back({title1, gfx::ImageSkia()});
-  items.push_back({title2, gfx::ImageSkia()});
-  items.push_back({title3, gfx::ImageSkia()});
+  std::u16string title1 = u"title1";
+  std::u16string title2 = u"title2";
+  std::u16string title3 = u"title3";
+  items.push_back({static_cast<int>(items.size()), title1, gfx::ImageSkia()});
+  items.push_back({static_cast<int>(items.size()), title2, gfx::ImageSkia()});
+  items.push_back({static_cast<int>(items.size()), title3, gfx::ImageSkia()});
 
-  base::string16 title = base::ASCIIToUTF16("title");
+  std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, std::move(items), nullptr);
   ShelfApplicationMenuModelTestAPI menu_test_api(&menu);
 
@@ -96,7 +99,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyHistogramBuckets) {
   const int kNumMenuItemsEnabled = 7;
 
   base::HistogramTester histogram_tester;
-  ShelfApplicationMenuModel menu(base::ASCIIToUTF16("title"), {}, nullptr);
+  ShelfApplicationMenuModel menu(u"title", {}, nullptr);
   ShelfApplicationMenuModelTestAPI menu_test_api(&menu);
   menu_test_api.RecordMenuItemSelectedMetrics(kCommandId, kNumMenuItemsEnabled);
 
@@ -114,7 +117,7 @@ TEST(ShelfApplicationMenuModelTest, VerifyHistogramOnExecute) {
   base::HistogramTester histogram_tester;
 
   ShelfApplicationMenuModel::Items items(1);
-  base::string16 title = base::ASCIIToUTF16("title");
+  std::u16string title = u"title";
   ShelfApplicationMenuModel menu(title, std::move(items), nullptr);
   menu.ExecuteCommand(0, 0);
 

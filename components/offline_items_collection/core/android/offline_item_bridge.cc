@@ -38,15 +38,16 @@ JNI_OfflineItemBridge_createOfflineItemAndMaybeAddToList(
       item.completion_time.ToJavaTime(), item.last_accessed_time.ToJavaTime(),
       item.is_openable, ConvertUTF8ToJavaString(env, item.file_path.value()),
       ConvertUTF8ToJavaString(env, item.mime_type),
-      ConvertUTF8ToJavaString(env, item.page_url.spec()),
+      ConvertUTF8ToJavaString(env, item.url.spec()),
       ConvertUTF8ToJavaString(env, item.original_url.spec()),
-      item.is_off_the_record, static_cast<jint>(item.state),
-      static_cast<jint>(item.fail_state), static_cast<jint>(item.pending_state),
-      item.is_resumable, item.allow_metered, item.received_bytes,
-      item.progress.value, item.progress.max.value_or(-1),
-      static_cast<jint>(item.progress.unit), item.time_remaining_ms,
-      item.is_dangerous, item.can_rename, item.ignore_visuals,
-      item.content_quality_score);
+      item.is_off_the_record, ConvertUTF8ToJavaString(env, item.otr_profile_id),
+      static_cast<jint>(item.state), static_cast<jint>(item.fail_state),
+      static_cast<jint>(item.pending_state), item.is_resumable,
+      item.allow_metered, item.received_bytes, item.progress.value,
+      item.progress.max.value_or(-1), static_cast<jint>(item.progress.unit),
+      item.time_remaining_ms, item.is_dangerous, item.can_rename,
+      item.ignore_visuals, item.content_quality_score,
+      OfflineItemBridge::CreateOfflineItemSchedule(env, item.schedule));
 }
 
 }  // namespace
@@ -73,13 +74,26 @@ ScopedJavaLocalRef<jobject> OfflineItemBridge::CreateOfflineItemList(
 // static
 ScopedJavaLocalRef<jobject> OfflineItemBridge::CreateUpdateDelta(
     JNIEnv* env,
-    const base::Optional<UpdateDelta>& update_delta) {
+    const absl::optional<UpdateDelta>& update_delta) {
   if (!update_delta.has_value())
     return ScopedJavaLocalRef<jobject>();
 
   return Java_OfflineItemBridge_createUpdateDelta(
       env, update_delta.value().state_changed,
       update_delta.value().visuals_changed);
+}
+
+// static
+ScopedJavaLocalRef<jobject> OfflineItemBridge::CreateOfflineItemSchedule(
+    JNIEnv* env,
+    const absl::optional<OfflineItemSchedule>& schedule) {
+  if (!schedule.has_value())
+    return ScopedJavaLocalRef<jobject>();
+
+  int64_t start_time_ms =
+      schedule->start_time.has_value() ? schedule->start_time->ToJavaTime() : 0;
+  return Java_OfflineItemBridge_createOfflineItemSchedule(
+      env, schedule->only_on_wifi, start_time_ms);
 }
 
 OfflineItemBridge::OfflineItemBridge() = default;

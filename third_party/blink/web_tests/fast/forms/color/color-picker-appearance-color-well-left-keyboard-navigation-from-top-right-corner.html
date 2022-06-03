@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#A8A8A8'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+openPickerAppearanceOnly(document.getElementById('color'), openPickerSuccessfulCallback);
+
+function openPickerSuccessfulCallback() {
+  popupWindow.focus();
+  const popupDocument = popupWindow.document;
+  const colorWell = popupDocument.querySelector('color-well');
+  const colorWellRect = colorWell.getBoundingClientRect();
+  eventSender.mouseMoveTo(colorWellRect.right - 1, colorWellRect.top);
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+  for (let i = 0; i < 25; i++) {
+    eventSender.keyDown('ArrowLeft');
+  }
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

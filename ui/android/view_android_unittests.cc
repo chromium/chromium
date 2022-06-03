@@ -76,8 +76,8 @@ class ViewAndroidBoundsTest : public testing::Test {
     ui::MotionEventAndroid::Pointer pointer0(0, x, y, 0, 0, 0, 0, 0);
     ui::MotionEventAndroid::Pointer pointer1(0, 0, 0, 0, 0, 0, 0, 0);
     ui::MotionEventAndroid event(nullptr, JavaParamRef<jobject>(nullptr), 1.f,
-                                 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, false,
-                                 &pointer0, &pointer1);
+                                 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0,
+                                 false, &pointer0, &pointer1);
     root_.OnTouchEvent(event);
   }
 
@@ -275,58 +275,71 @@ TEST(ViewAndroidTest, ChecksMultipleEventForwarders) {
 
 class Observer : public ViewAndroidObserver {
  public:
-  Observer() : attached_(false) {}
+  Observer() : attached_(false), destroyed_(false) {}
 
   void OnAttachedToWindow() override { attached_ = true; }
 
   void OnDetachedFromWindow() override { attached_ = false; }
 
+  void OnViewAndroidDestroyed() override { destroyed_ = true; }
+
   bool attached_;
+  bool destroyed_;
 };
 
 TEST(ViewAndroidTest, Observer) {
   std::unique_ptr<WindowAndroid> window(WindowAndroid::CreateForTesting());
-  ViewAndroid top;
-  ViewAndroid bottom;
 
   Observer top_observer;
   Observer bottom_observer;
-
-  top.AddObserver(&top_observer);
-  bottom.AddObserver(&bottom_observer);
-
-  top.AddChild(&bottom);
-
-  EXPECT_FALSE(top_observer.attached_);
-  EXPECT_FALSE(bottom_observer.attached_);
-
-  // Views in a tree all get notified of 'attached' event.
-  window->AddChild(&top);
-  EXPECT_TRUE(top_observer.attached_);
-  EXPECT_TRUE(bottom_observer.attached_);
-
-  // Observer, upon addition, does not get notified of the current
-  // attached state.
   Observer top_observer2;
-  top.AddObserver(&top_observer2);
-  EXPECT_FALSE(top_observer2.attached_);
 
-  bottom.RemoveFromParent();
-  EXPECT_FALSE(bottom_observer.attached_);
-  top.RemoveFromParent();
-  EXPECT_FALSE(top_observer.attached_);
+  {
+    ViewAndroid top;
+    ViewAndroid bottom;
 
-  window->AddChild(&top);
-  EXPECT_TRUE(top_observer.attached_);
+    top.AddObserver(&top_observer);
+    bottom.AddObserver(&bottom_observer);
 
-  // View, upon addition to a tree in the attached state, should be notified.
-  top.AddChild(&bottom);
-  EXPECT_TRUE(bottom_observer.attached_);
+    top.AddChild(&bottom);
 
-  // Views in a tree all get notified of 'detached' event.
-  top.RemoveFromParent();
-  EXPECT_FALSE(top_observer.attached_);
-  EXPECT_FALSE(bottom_observer.attached_);
+    EXPECT_FALSE(top_observer.attached_);
+    EXPECT_FALSE(bottom_observer.attached_);
+
+    // Views in a tree all get notified of 'attached' event.
+    window->AddChild(&top);
+    EXPECT_TRUE(top_observer.attached_);
+    EXPECT_TRUE(bottom_observer.attached_);
+
+    // Observer, upon addition, does not get notified of the current
+    // attached state.
+    top.AddObserver(&top_observer2);
+    EXPECT_FALSE(top_observer2.attached_);
+
+    bottom.RemoveFromParent();
+    EXPECT_FALSE(bottom_observer.attached_);
+    top.RemoveFromParent();
+    EXPECT_FALSE(top_observer.attached_);
+
+    window->AddChild(&top);
+    EXPECT_TRUE(top_observer.attached_);
+
+    // View, upon addition to a tree in the attached state, should be notified.
+    top.AddChild(&bottom);
+    EXPECT_TRUE(bottom_observer.attached_);
+
+    // Views in a tree all get notified of 'detached' event.
+    top.RemoveFromParent();
+    EXPECT_FALSE(top_observer.attached_);
+    EXPECT_FALSE(bottom_observer.attached_);
+
+    // Remove the second top observer to test the destruction notification.
+    top.RemoveObserver(&top_observer2);
+  }
+
+  EXPECT_TRUE(top_observer.destroyed_);
+  EXPECT_FALSE(top_observer2.destroyed_);
+  EXPECT_TRUE(bottom_observer.destroyed_);
 }
 
 TEST(ViewAndroidTest, WindowAndroidDestructionDetachesAllViewAndroid) {
@@ -350,6 +363,9 @@ TEST(ViewAndroidTest, WindowAndroidDestructionDetachesAllViewAndroid) {
 
   EXPECT_FALSE(top_observer.attached_);
   EXPECT_FALSE(bottom_observer.attached_);
+
+  top.RemoveObserver(&top_observer);
+  bottom.RemoveObserver(&bottom_observer);
 }
 
 }  // namespace ui

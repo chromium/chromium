@@ -33,8 +33,9 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_piece.h"
+#include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -54,15 +55,15 @@ class WebContentDecryptionModule;
 // The WebContentDecryptionModule has the same lifetime as this object.
 class MediaKeys : public ScriptWrappable,
                   public ActiveScriptWrappable<MediaKeys>,
-                  public ContextLifecycleObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(MediaKeys);
+                  public ExecutionContextLifecycleObserver {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
   MediaKeys(
       ExecutionContext*,
       const WebVector<WebEncryptedMediaSessionType>& supported_session_types,
-      std::unique_ptr<WebContentDecryptionModule>);
+      std::unique_ptr<WebContentDecryptionModule>,
+      const MediaKeysConfig&);
   ~MediaKeys() override;
 
   MediaKeySession* createSession(ScriptState*,
@@ -70,9 +71,12 @@ class MediaKeys : public ScriptWrappable,
                                  ExceptionState&);
 
   ScriptPromise setServerCertificate(ScriptState*,
-                                     const DOMArrayPiece& server_certificate);
+                                     const DOMArrayPiece& server_certificate,
+                                     ExceptionState&);
 
-  ScriptPromise getStatusForPolicy(ScriptState*, const MediaKeysPolicy*);
+  ScriptPromise getStatusForPolicy(ScriptState*,
+                                   const MediaKeysPolicy*,
+                                   ExceptionState&);
 
   // Indicates that the provided HTMLMediaElement wants to use this object.
   // Returns true if no other HTMLMediaElement currently references this
@@ -92,12 +96,12 @@ class MediaKeys : public ScriptWrappable,
 
   WebContentDecryptionModule* ContentDecryptionModule();
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
-  // ContextLifecycleObserver implementation.
-  // FIXME: This class could derive from ContextLifecycleObserver
+  // ExecutionContextLifecycleObserver implementation.
+  // FIXME: This class could derive from ExecutionContextLifecycleObserver
   // again (http://crbug.com/483722).
-  void ContextDestroyed(ExecutionContext*) override;
+  void ContextDestroyed() override;
 
   // ScriptWrappable implementation.
   bool HasPendingActivity() const final;
@@ -115,6 +119,7 @@ class MediaKeys : public ScriptWrappable,
 
   const WebVector<WebEncryptedMediaSessionType> supported_session_types_;
   std::unique_ptr<WebContentDecryptionModule> cdm_;
+  const MediaKeysConfig config_;
 
   // Keep track of the HTMLMediaElement that references this object. Keeping
   // a WeakMember so that HTMLMediaElement's lifetime isn't dependent on
@@ -131,7 +136,7 @@ class MediaKeys : public ScriptWrappable,
   bool reserved_for_media_element_;
 
   HeapDeque<Member<PendingAction>> pending_actions_;
-  TaskRunnerTimer<MediaKeys> timer_;
+  HeapTaskRunnerTimer<MediaKeys> timer_;
 };
 
 }  // namespace blink

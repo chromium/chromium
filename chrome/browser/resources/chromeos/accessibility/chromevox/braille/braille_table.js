@@ -25,7 +25,7 @@ BrailleTable.Table;
 /**
  * @const {string}
  */
-BrailleTable.TABLE_PATH = 'braille/tables.json';
+BrailleTable.TABLE_PATH = 'chromevox/braille/tables.json';
 
 
 /**
@@ -48,16 +48,16 @@ BrailleTable.getAll = function(callback) {
     });
     return tables;
   }
-  var url = chrome.extension.getURL(BrailleTable.TABLE_PATH);
+  const url = chrome.extension.getURL(BrailleTable.TABLE_PATH);
   if (!url) {
     throw 'Invalid path: ' + BrailleTable.TABLE_PATH;
   }
 
-  var xhr = new XMLHttpRequest();
+  const xhr = new XMLHttpRequest();
   xhr.open('GET', url, true);
   xhr.onreadystatechange = function() {
-    if (xhr.readyState == 4) {
-      if (xhr.status == 200) {
+    if (xhr.readyState === 4) {
+      if (xhr.status === 200) {
         callback(appendCommonFilename(
             /** @type {!Array<BrailleTable.Table>} */ (
                 JSON.parse(xhr.responseText))));
@@ -96,7 +96,7 @@ BrailleTable.getUncontracted = function(tables, table) {
     // An 8 dot table for the same language is prefered over a 6 dot table
     // even if the locales differ by region.
     if (current.dots === '6' && candidate.dots === '8' &&
-        current.locale.lastIndexOf(candidate.locale, 0) == 0) {
+        current.locale.lastIndexOf(candidate.locale, 0) === 0) {
       return candidate;
     }
     if (current.locale === candidate.locale &&
@@ -115,7 +115,9 @@ BrailleTable.getUncontracted = function(tables, table) {
  * @return {string} Localized display name.
  */
 BrailleTable.getDisplayName = function(table) {
-  var localeName = Msgs.getLocaleDisplayName(table.locale);
+  const localeName = chrome.accessibilityPrivate.getDisplayNameForLocale(
+      table.locale /* locale to be displayed */,
+      chrome.i18n.getUILanguage().toLowerCase() /* locale to localize into */);
   if (!table.grade && !table.variant) {
     return localeName;
   } else if (table.grade && !table.variant) {

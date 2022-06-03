@@ -5,8 +5,6 @@
 package org.chromium.chrome.browser.omaha;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.os.Build;
 import android.text.format.DateUtils;
 import android.util.Xml;
@@ -16,14 +14,8 @@ import androidx.annotation.VisibleForTesting;
 import org.xmlpull.v1.XmlSerializer;
 
 import org.chromium.base.BuildInfo;
-import org.chromium.base.Log;
-import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.identity.SettingsSecureBasedIdentificationGenerator;
-import org.chromium.chrome.browser.identity.UniqueIdentificationGeneratorFactory;
-import org.chromium.chrome.browser.init.ProcessInitializationHandler;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.ChromeSigninController;
-import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
+import org.chromium.chrome.browser.uid.UniqueIdentificationGeneratorFactory;
 import org.chromium.ui.base.DeviceFormFactor;
 
 import java.io.IOException;
@@ -44,8 +36,7 @@ public abstract class RequestGenerator {
 
     private final Context mApplicationContext;
 
-    @VisibleForTesting
-    public RequestGenerator(Context context) {
+    protected RequestGenerator(Context context) {
         mApplicationContext = context.getApplicationContext();
         UniqueIdentificationGeneratorFactory.registerGenerator(
                 SettingsSecureBasedIdentificationGenerator.GENERATOR_ID,
@@ -71,7 +62,7 @@ public abstract class RequestGenerator {
      * with some additional dummy values supplied.
      */
     public String generateXML(String sessionID, String versionName, long installAge,
-            RequestData data) throws RequestFailureException {
+            int lastCheckDate, RequestData data) throws RequestFailureException {
         XmlSerializer serializer = Xml.newSerializer();
         StringWriter writer = new StringWriter();
         try {
@@ -81,12 +72,16 @@ public abstract class RequestGenerator {
             // Set up <request protocol=3.0 ...>
             serializer.startTag(null, "request");
             serializer.attribute(null, "protocol", "3.0");
-            serializer.attribute(null, "version", "Android-1.0.0.0");
+            serializer.attribute(null, "updater", "Android");
+            serializer.attribute(null, "updaterversion", versionName);
+            serializer.attribute(null, "updaterchannel",
+                    StringSanitizer.sanitize(BuildInfo.getInstance().hostPackageLabel));
             serializer.attribute(null, "ismachine", "1");
             serializer.attribute(null, "requestid", "{" + data.getRequestID() + "}");
             serializer.attribute(null, "sessionid", "{" + sessionID + "}");
             serializer.attribute(null, "installsource", data.getInstallSource());
             serializer.attribute(null, "userid", "{" + getDeviceID() + "}");
+            serializer.attribute(null, "dedup", "uid");
 
             // Set up <os platform="android"... />
             serializer.startTag(null, "os");
@@ -105,14 +100,6 @@ public abstract class RequestGenerator {
             serializer.attribute(null, "lang", getLanguage());
             serializer.attribute(null, "installage", String.valueOf(installAge));
             serializer.attribute(null, "ap", getAdditionalParameters());
-            // <code>_numaccounts</code> is actually number of profiles, which is always one for
-            // Chrome Android.
-            serializer.attribute(null, "_numaccounts", "1");
-            serializer.attribute(null, "_numgoogleaccountsondevice",
-                    String.valueOf(getNumGoogleAccountsOnDevice()));
-            serializer.attribute(null, "_numsignedin", String.valueOf(getNumSignedIn()));
-            serializer.attribute(
-                    null, "_dl_mgr_disabled", String.valueOf(getDownloadManagerState()));
 
             if (data.isSendInstallEvent()) {
                 // Set up <event eventtype="2" eventresult="1" />
@@ -125,9 +112,11 @@ public abstract class RequestGenerator {
                 serializer.startTag(null, "updatecheck");
                 serializer.endTag(null, "updatecheck");
 
-                // Set up <ping active="1" />
+                // Set up <ping active="1" rd="..." ad="..." />
                 serializer.startTag(null, "ping");
                 serializer.attribute(null, "active", "1");
+                serializer.attribute(null, "ad", String.valueOf(lastCheckDate));
+                serializer.attribute(null, "rd", String.valueOf(lastCheckDate));
                 serializer.endTag(null, "ping");
             }
 
@@ -137,12 +126,6 @@ public abstract class RequestGenerator {
             serializer.endDocument();
         } catch (IOException e) {
             throw new RequestFailureException("Caught an IOException creating the XML: ", e);
-        } catch (IllegalArgumentException e) {
-            throw new RequestFailureException(
-                    "Caught an IllegalArgumentException creating the XML: ", e);
-        } catch (IllegalStateException e) {
-            throw new RequestFailureException(
-                    "Caught an IllegalStateException creating the XML: ", e);
         }
 
         return writer.toString();
@@ -190,92 +173,17 @@ public abstract class RequestGenerator {
     }
 
     /**
-     * Returns the number of accounts on the device, bucketed into:
-     * 0 accounts, 1 account, or 2+ accounts.
-     *
-     * @return Number of accounts on the device, bucketed as above.
-     */
-    @VisibleForTesting
-    public int getNumGoogleAccountsOnDevice() {
-        // RequestGenerator may be invoked from JobService or AlarmManager (through OmahaService),
-        // so have to make sure AccountManagerFacade instance is initialized.
-        int numAccounts = 0;
-        try {
-            // TODO(waffles@chromium.org): Ideally, this should be asynchronous.
-            PostTask.runSynchronously(UiThreadTaskTraits.DEFAULT,
-                    () -> ProcessInitializationHandler.getInstance().initializePreNative());
-            numAccounts = AccountManagerFacade.get().getGoogleAccounts().size();
-        } catch (Exception e) {
-            Log.e(TAG, "Can't get number of accounts.", e);
-        }
-        switch (numAccounts) {
-            case 0:
-                return 0;
-            case 1:
-                return 1;
-            default:
-                return 2;
-        }
-    }
-
-    /**
-     * Determine number of accounts signed in.
-     */
-    @VisibleForTesting
-    public int getNumSignedIn() {
-        // We only have a single account.
-        return ChromeSigninController.get().isSignedIn() ? 1 : 0;
-    }
-
-    /**
-     * Returns DownloadManager system service enabled state as
-     * -1 - manager state unknown
-     *  0 - manager enabled
-     *  1 - manager disabled by user
-     *  2 - manager disabled by unknown source
-     */
-    @VisibleForTesting
-    public int getDownloadManagerState() {
-        PackageInfo info;
-        try {
-            info = getContext().getPackageManager().getPackageInfo(
-                    "com.android.providers.downloads", 0);
-        } catch (PackageManager.NameNotFoundException e) {
-            // DownloadManager Package not found.
-            return -1;
-        }
-        int state = getContext().getPackageManager().getApplicationEnabledSetting(info.packageName);
-        switch (state) {
-            case PackageManager.COMPONENT_ENABLED_STATE_DEFAULT:
-                // Service enable state is taken directly from the manifest.
-                if (info.applicationInfo.enabled) {
-                    return 0;
-                } else {
-                    // Service enable state set to disabled in the manifest.
-                    return 2;
-                }
-            case PackageManager.COMPONENT_ENABLED_STATE_ENABLED:
-                return 0;
-            case PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER:
-                // Service enable state has been explicitly disabled by the user.
-                return 1;
-            case PackageManager.COMPONENT_ENABLED_STATE_DISABLED:
-            case PackageManager.COMPONENT_ENABLED_STATE_DISABLED_UNTIL_USED:
-                // Service enable state has been explicitly disabled. Source unknown.
-                return 2;
-            default:
-                // Illegal value returned by getApplicationEnabledSetting(). Should never happen.
-                return -1;
-        }
-    }
-
-    /**
      * Return a device-specific ID.
      */
     public String getDeviceID() {
-        return UniqueIdentificationGeneratorFactory
-                .getInstance(SettingsSecureBasedIdentificationGenerator.GENERATOR_ID)
-                .getUniqueId(SALT);
+        try {
+            return UniqueIdentificationGeneratorFactory
+                    .getInstance(SettingsSecureBasedIdentificationGenerator.GENERATOR_ID)
+                    .getUniqueId(SALT);
+        } catch (SecurityException unused) {
+            // In some cases the browser lacks permission to get the ID. Consult crbug.com/1158707.
+            return "";
+        }
     }
 
     /**

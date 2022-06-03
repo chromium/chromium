@@ -9,6 +9,7 @@
         <link rel="help" href="http://www.w3.org/TR/css-shapes-1/#typedef-shape-box">
         <meta name="assert" content="Shape-outside may be a pair of shape and box values">
         <meta name="flags" content="ahem dom">
+        <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1">
         <script src="/resources/testharness.js"></script>
         <script src="/resources/testharnessreport.js"></script>
         <script src="support/parsing-utils.js"></script>
@@ -34,8 +35,8 @@
             },
             {
               "actual": "polygon(nonzero, 1px 1px) margin-box",
-              "expected_inline": "polygon(1px 1px) margin-box",
-              "expected_computed": "polygon(1px 1px) margin-box"
+              "expected_inline": "polygon(1px 1px)",
+              "expected_computed": "polygon(1px 1px)"
             },
             {
               "actual": " content-box polygon(nonzero, 1px 1px)",
@@ -54,8 +55,8 @@
             },
             {
               "actual": "margin-box polygon(nonzero, 1px 1px)",
-              "expected_inline": "polygon(1px 1px) margin-box",
-              "expected_computed": "polygon(1px 1px) margin-box"
+              "expected_inline": "polygon(1px 1px)",
+              "expected_computed": "polygon(1px 1px)"
             }
         ];
         generate_tests( ParsingUtils.testInlineStyle,

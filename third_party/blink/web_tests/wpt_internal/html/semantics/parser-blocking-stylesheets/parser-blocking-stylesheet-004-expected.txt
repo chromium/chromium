@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL setTimeout() triggered while the stylesheet is loading. assert_equals: #after-sheet element should not have been inserted into the DOM. expected null but got Element node <meta id="after-sheet"></meta>
+Harness: the test ran to completion.
+

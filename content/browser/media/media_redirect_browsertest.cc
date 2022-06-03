@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "build/build_config.h"
 #include "content/browser/media/media_browsertest.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "media/base/test_data_util.h"
@@ -35,7 +36,7 @@ class MediaRedirectTest : public MediaBrowserTest {
     http_test_server->StartAcceptingConnections();
 
     // Run the normal media playback test.
-    EXPECT_EQ(media::kEnded, RunTest(player_url, media::kEnded));
+    EXPECT_EQ(media::kEndedTitle, RunTest(player_url, media::kEndedTitle));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> RedirectResponseHandler(
@@ -43,7 +44,7 @@ class MediaRedirectTest : public MediaBrowserTest {
       const net::test_server::HttpRequest& request) {
     if (!base::StartsWith(request.relative_url, "/" + kHiddenPath,
                           base::CompareCase::SENSITIVE)) {
-      return std::unique_ptr<net::test_server::HttpResponse>();
+      return nullptr;
     }
 
     std::unique_ptr<net::test_server::BasicHttpResponse> http_response(

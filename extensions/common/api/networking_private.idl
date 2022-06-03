@@ -7,7 +7,7 @@
 // API is only valid if called from a browser or app associated with the
 // primary user. See the Open Network Configuration (ONC) documentation for
 // descriptions of properties:
-// <a href="https://code.google.com/p/chromium/codesearch#chromium/src/components/onc/docs/onc_spec.html">
+// <a href="https://source.chromium.org/chromium/chromium/src/+/HEAD:components/onc/docs/onc_spec.md">
 // src/components/onc/docs/onc_spec.html</a>, or the
 // <a href="http://www.chromium.org/chromium-os/chromiumos-design-docs/open-network-configuration">
 // Open Network Configuration</a> page at chromium.org.
@@ -233,6 +233,7 @@ namespace networkingPrivate {
     DOMString? AnonymousIdentity;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     DOMString? Identity;
@@ -254,6 +255,7 @@ namespace networkingPrivate {
     ManagedDOMString? AnonymousIdentity;
     ManagedCertificatePattern? ClientCertPattern;
     ManagedDOMString? ClientCertPKCS11Id;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedDOMString? Identity;
@@ -316,6 +318,7 @@ namespace networkingPrivate {
     DOMString AuthenticationType;
     CertificatePattern? ClientCertPattern;
     DOMString? ClientCertPKCS11Id;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     EAPProperties? EAP;
@@ -332,6 +335,7 @@ namespace networkingPrivate {
     ManagedDOMString AuthenticationType;
     ManagedCertificatePattern? ClientCertPattern;
     ManagedDOMString? ClientCertPKCS11Id;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedEAPProperties? EAP;
@@ -419,6 +423,7 @@ namespace networkingPrivate {
     DOMString? Cipher;
     DOMString? ClientCertPKCS11Id;
     CertificatePattern? ClientCertPattern;
+    DOMString? ClientCertProvisioningProfileId;
     DOMString? ClientCertRef;
     DOMString? ClientCertType;
     DOMString? CompLZO;
@@ -460,6 +465,7 @@ namespace networkingPrivate {
     ManagedDOMString? Cipher;
     ManagedDOMString? ClientCertPKCS11Id;
     ManagedCertificatePattern? ClientCertPattern;
+    ManagedDOMString? ClientCertProvisioningProfileId;
     ManagedDOMString? ClientCertRef;
     ManagedDOMString? ClientCertType;
     ManagedDOMString? CompLZO;
@@ -578,6 +584,8 @@ namespace networkingPrivate {
 
   dictionary CellularStateProperties {
     ActivationStateType? ActivationState;
+    DOMString? EID;
+    DOMString? ICCID;
     DOMString? NetworkTechnology;
     DOMString? RoamingState;
     boolean? Scanning;
@@ -648,15 +656,12 @@ namespace networkingPrivate {
     EAPProperties? EAP;
     long? Frequency;
     long[]? FrequencyList;
-    boolean? FTEnabled;
     DOMString? HexSSID;
     boolean? HiddenSSID;
     DOMString? Passphrase;
-    long? RoamThreshold;
     DOMString? SSID;
     DOMString? Security;
     long? SignalStrength;
-    DOMString? TetheringState;
   };
 
   dictionary ManagedWiFiProperties {
@@ -666,15 +671,12 @@ namespace networkingPrivate {
     ManagedEAPProperties? EAP;
     long? Frequency;
     long[]? FrequencyList;
-    ManagedBoolean? FTEnabled;
     ManagedDOMString? HexSSID;
     ManagedBoolean? HiddenSSID;
     ManagedDOMString? Passphrase;
-    ManagedLong? RoamThreshold;
     ManagedDOMString? SSID;
     ManagedDOMString Security;
     long? SignalStrength;
-    DOMString? TetheringState;
   };
 
   dictionary WiFiStateProperties {
@@ -685,7 +687,6 @@ namespace networkingPrivate {
     DOMString Security;
     long? SignalStrength;
     DOMString? SSID;
-    DOMString? TetheringState;
   };
 
   dictionary NetworkConfigProperties {
@@ -713,6 +714,7 @@ namespace networkingPrivate {
     IPConfigType? IPAddressConfigType;
     IPConfigProperties[]? IPConfigs;
     DOMString? MacAddress;
+    boolean? Metered;
     DOMString? Name;
     IPConfigType? NameServersConfigType;
     long? Priority;
@@ -741,6 +743,7 @@ namespace networkingPrivate {
     ManagedIPConfigType? IPAddressConfigType;
     IPConfigProperties[]? IPConfigs;
     DOMString? MacAddress;
+    ManagedBoolean? Metered;
     ManagedDOMString? Name;
     ManagedIPConfigType? NameServersConfigType;
     ManagedLong? Priority;
@@ -793,42 +796,6 @@ namespace networkingPrivate {
     boolean? ManagedNetworkAvailable;
   };
 
-  dictionary VerificationProperties {
-    // A string containing a PEM-encoded (including the 'BEGIN CERTIFICATE'
-    // header and 'END CERTIFICATE' footer) X.509 certificate for use in
-    // verifying the signed data.
-    DOMString certificate;
-
-    // An array of PEM-encoded X.509 intermediate certificate authority
-    // certificates. Each PEM-encoded certificate is expected to have the
-    // 'BEGIN CERTIFICATE' header and 'END CERTIFICATE' footer.
-    DOMString[]? intermediateCertificates;
-
-    // A string containing a base64-encoded RSAPublicKey ASN.1 structure,
-    // representing the public key to be used by
-    // $(ref:verifyAndEncryptCredentials) and $(ref:verifyAndEncryptData)
-    // methods.
-    DOMString publicKey;
-
-    // A string containing a base64-encoded random binary data for use in
-    // verifying the signed data.
-    DOMString nonce;
-
-    // A string containing the identifying data string signed by the device.
-    DOMString signedData;
-
-    // A string containing the serial number of the device.
-    DOMString deviceSerial;
-
-    // A string containing the SSID of the device. Should be empty for new
-    // configurations.
-    DOMString deviceSsid;
-
-    // A string containing the BSSID of the device. Should be empty for new
-    // configurations.
-    DOMString deviceBssid;
-  };
-
   dictionary NetworkFilter {
     // The type of networks to return.
     NetworkType networkType;
@@ -858,10 +825,10 @@ namespace networkingPrivate {
     // or configured. Defaults to false.
     boolean? AllowOnlyPolicyNetworksToConnectIfAvailable;
 
-    // List of blacklisted networks. Connections to blacklisted networks are
-    // prohibited. Networks can be whitelisted again by specifying an explicit
+    // List of blocked networks. Connections to blocked networks are
+    // prohibited. Networks can be allowed again by specifying an explicit
     // network configuration. Defaults to an empty list.
-    DOMString[]? BlacklistedHexSSIDs;
+    DOMString[]? BlockedHexSSIDs;
   };
 
   dictionary Certificate {
@@ -910,22 +877,26 @@ namespace networkingPrivate {
   callback GetGlobalPolicyCallback = void(GlobalPolicy result);
   callback GetCertificateListsCallback = void(CertificateLists result);
 
-  // These functions all report failures via $(ref:runtime.lastError).
+  // These functions all report failures either via $(ref:runtime.lastError)
+  // when using callbacks or passed to the rejection handler when using
+  // promises.
   interface Functions {
     // Gets all the properties of the network with id networkGuid. Includes all
     // properties of the network (read-only and read/write values).
     // |networkGuid|: The GUID of the network to get properties for.
     // |callback|: Called with the network properties when received.
-    static void getProperties(DOMString networkGuid,
-                              GetPropertiesCallback callback);
+    [supportsPromises] static void getProperties(
+        DOMString networkGuid,
+        GetPropertiesCallback callback);
 
     // Gets the merged properties of the network with id networkGuid from the
     // sources: User settings, shared settings, user policy, device policy and
     // the currently active settings.
     // |networkGuid|: The GUID of the network to get properties for.
     // |callback|: Called with the managed network properties when received.
-    static void getManagedProperties(DOMString networkGuid,
-                                     GetManagedPropertiesCallback callback);
+    [supportsPromises] static void getManagedProperties(
+        DOMString networkGuid,
+        GetManagedPropertiesCallback callback);
 
     // Gets the cached read-only properties of the network with id networkGuid.
     // This is meant to be a higher performance function than
@@ -937,8 +908,9 @@ namespace networkingPrivate {
     // Cellular.RoamingState.
     // |networkGuid|: The GUID of the network to get properties for.
     // |callback|: Called immediately with the network state properties.
-    static void getState(DOMString networkGuid,
-                         GetStatePropertiesCallback callback);
+    [supportsPromises] static void getState(
+        DOMString networkGuid,
+        GetStatePropertiesCallback callback);
 
     // Sets the properties of the network with id |networkGuid|. This is only
     // valid for configured networks (Source != None). Unconfigured visible
@@ -946,9 +918,10 @@ namespace networkingPrivate {
     // |networkGuid|: The GUID of the network to set properties for.
     // |properties|: The properties to set.
     // |callback|: Called when the operation has completed.
-    static void setProperties(DOMString networkGuid,
-                              NetworkConfigProperties properties,
-                              optional VoidCallback callback);
+    [supportsPromises] static void setProperties(
+        DOMString networkGuid,
+        NetworkConfigProperties properties,
+        optional VoidCallback callback);
 
     // Creates a new network configuration from properties. If a matching
     // configured network already exists, this will fail. Otherwise returns the
@@ -957,9 +930,10 @@ namespace networkingPrivate {
     // |properties|: The properties to configure the new network with.
     // |callback|: Called with the GUID for the new network configuration once
     //     the network has been created.
-    static void createNetwork(boolean shared,
-                              NetworkConfigProperties properties,
-                              optional StringCallback callback);
+    [supportsPromises] static void createNetwork(
+        boolean shared,
+        NetworkConfigProperties properties,
+        optional StringCallback callback);
 
     // Forgets a network configuration by clearing any configured properties for
     // the network with GUID 'networkGuid'. This may also include any other
@@ -968,8 +942,9 @@ namespace networkingPrivate {
     // fail.
     // |networkGuid|: The GUID of the network to forget.
     // |callback|: Called when the operation has completed.
-    static void forgetNetwork(DOMString networkGuid,
-                              optional VoidCallback callback);
+    [supportsPromises] static void forgetNetwork(
+        DOMString networkGuid,
+        optional VoidCallback callback);
 
     // Returns a list of network objects with the same properties provided by
     // $(ref:networkingPrivate.getState). A filter is provided to specify the
@@ -979,8 +954,8 @@ namespace networkingPrivate {
     // |filter|: Describes which networks to return.
     // |callback|: Called with a dictionary of networks and their state
     //     properties when received.
-    static void getNetworks(NetworkFilter filter,
-                            GetNetworksCallback callback);
+    [supportsPromises] static void getNetworks(NetworkFilter filter,
+                                               GetNetworksCallback callback);
 
     // Deprecated. Please use $(ref:networkingPrivate.getNetworks) with
     // filter.visible = true instead.
@@ -994,7 +969,8 @@ namespace networkingPrivate {
 
     // Returns a list of $(ref:networkingPrivate.DeviceStateProperties) objects.
     // |callback|: Called with a list of devices and their state.
-    static void getDeviceStates(GetDeviceStatesCallback callback);
+    [supportsPromises] static void getDeviceStates(
+        GetDeviceStatesCallback callback);
 
     // Enables any devices matching the specified network type. Note, the type
     // might represent multiple network types (e.g. 'Wireless').
@@ -1021,15 +997,16 @@ namespace networkingPrivate {
     //     to be notified when a network state changes. If the connect request
     //     immediately failed (e.g. the network is unconfigured),
     //     $(ref:runtime.lastError) will be set with a failure reason.
-    static void startConnect(DOMString networkGuid,
-                             optional VoidCallback callback);
+    [supportsPromises] static void startConnect(DOMString networkGuid,
+                                                optional VoidCallback callback);
 
     // Starts a disconnect from the network with networkGuid.
     // |networkGuid|: The GUID of the network to disconnect from.
     // |callback|: Called when the disconnect request has been sent. See note
     //     for $(ref:startConnect).
-    static void startDisconnect(DOMString networkGuid,
-                                optional VoidCallback callback);
+    [supportsPromises] static void startDisconnect(
+        DOMString networkGuid,
+        optional VoidCallback callback);
 
     // Starts activation of the Cellular network with networkGuid. If called
     // for a network that is already activated, or for a network with a carrier
@@ -1039,60 +1016,18 @@ namespace networkingPrivate {
     // |carrier|: Optional name of carrier to activate.
     // |callback|: Called when the activation request has been sent. See note
     //     for $(ref:startConnect).
-    static void startActivate(DOMString networkGuid,
-                              optional DOMString carrier,
-                              optional VoidCallback callback);
-
-    // Verifies that the device is a trusted device.
-    // |properties|: Properties of the destination to use in verifying that it
-    //     is a trusted device.
-    // |callback|: A callback function that indicates whether or not the device
-    //     is a trusted device.
-    [nodoc, deprecated = "Use networking.castPrivate API."]
-    static void verifyDestination(VerificationProperties properties,
-                                  BooleanCallback callback);
-
-    // Verifies that the device is a trusted device and encrypts supplied
-    // data with device public key.
-    // |properties|: Properties of the destination to use in verifying that it
-    //     is a trusted device.
-    // |data|: A string containing the base64-encoded data to encrypt.
-    // |callback|: A callback function that receives base64-encoded encrypted
-    //     data to send to a trusted device.
-    [nodoc, deprecated = "Use networking.castPrivate API."]
-    static void verifyAndEncryptData(VerificationProperties properties,
-                                     DOMString data,
-                                     StringCallback callback);
-
-    // Enables TDLS for WiFi traffic with a specified peer if available.
-    // |ip_or_mac_address|: The IP or MAC address of the peer with which to
-    //     enable a TDLS connection.
-    // |enabled| If true, enable TDLS, otherwise disable TDLS.
-    // |callback|: A callback function that receives a string with an error or
-    //     the current TDLS status. 'Failed' indicates that the request failed
-    //     (e.g. MAC address lookup failed). 'Timeout' indicates that the lookup
-    //     timed out. Otherwise a valid status is returned (see
-    //     $(ref:getWifiTDLSStatus)).
-    [nodoc, deprecated = "Use networking.castPrivate API."]
-    static void setWifiTDLSEnabledState(DOMString ip_or_mac_address,
-                                        boolean enabled,
-                                        optional StringCallback callback);
-
-    // Returns the current TDLS status for the specified peer.
-    // |ip_or_mac_address|: The IP or MAC address of the peer.
-    // |callback|: A callback function that receives a string with the current
-    //     TDLS status which can be 'Connected', 'Disabled', 'Disconnected',
-    //     'Nonexistent', or 'Unknown'.
-    [nodoc, deprecated = "Use networking.castPrivate API."]
-    static void getWifiTDLSStatus(DOMString ip_or_mac_address,
-                                  StringCallback callback);
+    [supportsPromises] static void startActivate(
+        DOMString networkGuid,
+        optional DOMString carrier,
+        optional VoidCallback callback);
 
     // Returns captive portal status for the network matching 'networkGuid'.
     // |networkGuid|: The GUID of the network to get captive portal status for.
     // |callback|: A callback function that returns the results of the query for
     //     network captive portal status.
-    static void getCaptivePortalStatus(DOMString networkGuid,
-                                       CaptivePortalStatusCallback callback);
+    [supportsPromises] static void getCaptivePortalStatus(
+        DOMString networkGuid,
+        CaptivePortalStatusCallback callback);
 
     // Unlocks a Cellular SIM card.
     // * If the SIM is PIN locked, |pin| will be used to unlock the SIM and
@@ -1105,10 +1040,11 @@ namespace networkingPrivate {
     // |pin|: The current SIM PIN, or the new PIN if PUK is provided.
     // |puk|: The operator provided PUK for unblocking a blocked SIM.
     // |callback|: Called when the operation has completed.
-    static void unlockCellularSim(DOMString networkGuid,
-                                  DOMString pin,
-                                  optional DOMString puk,
-                                  optional VoidCallback callback);
+    [supportsPromises] static void unlockCellularSim(
+        DOMString networkGuid,
+        DOMString pin,
+        optional DOMString puk,
+        optional VoidCallback callback);
 
     // Sets whether or not SIM locking is enabled (i.e a PIN will be required
     // when the device is powered) and changes the PIN if a new PIN is
@@ -1121,9 +1057,10 @@ namespace networkingPrivate {
     //     If empty, the default cellular device will be used.
     // |simState|: The SIM state to set.
     // |callback|: Called when the operation has completed.
-    static void setCellularSimState(DOMString networkGuid,
-                                    CellularSimState simState,
-                                    optional VoidCallback callback);
+    [supportsPromises] static void setCellularSimState(
+        DOMString networkGuid,
+        CellularSimState simState,
+        optional VoidCallback callback);
 
     // Selects which Cellular Mobile Network to use. |networkId| must be the
     // NetworkId property of a member of Cellular.FoundNetworks from the
@@ -1132,16 +1069,19 @@ namespace networkingPrivate {
     //     for. If empty, the default cellular device will be used.
     // |networkId|: The networkId to select.
     // |callback|: Called when the operation has completed.
-    static void selectCellularMobileNetwork(DOMString networkGuid,
-                                            DOMString networkId,
-                                            optional VoidCallback callback);
+    [supportsPromises] static void selectCellularMobileNetwork(
+        DOMString networkGuid,
+        DOMString networkId,
+        optional VoidCallback callback);
 
     // Gets the global policy properties. These properties are not expected to
     // change during a session.
-    static void getGlobalPolicy(GetGlobalPolicyCallback callback);
+    [supportsPromises] static void getGlobalPolicy(
+        GetGlobalPolicyCallback callback);
 
     // Gets the lists of certificates available for network configuration.
-    static void getCertificateLists(GetCertificateListsCallback callback);
+    [supportsPromises] static void getCertificateLists(
+        GetCertificateListsCallback callback);
   };
 
   interface Events {

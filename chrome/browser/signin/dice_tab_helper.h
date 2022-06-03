@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 #define CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -18,6 +17,9 @@ class NavigationHandle;
 class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
                       public content::WebContentsObserver {
  public:
+  DiceTabHelper(const DiceTabHelper&) = delete;
+  DiceTabHelper& operator=(const DiceTabHelper&) = delete;
+
   ~DiceTabHelper() override;
 
   signin_metrics::AccessPoint signin_access_point() const {
@@ -47,9 +49,24 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // Returns false if the user or the page has navigated away from |signin_url|.
   bool IsChromeSigninPage() const;
 
+  // Returns true if a signin flow was initialized with the reason
+  // kSigninPrimaryAccount and is not yet complete.
+  // Note that there is not guarantee that the flow would ever finish, and in
+  // some rare cases it is possible that a "non-sync" signin happens while this
+  // is true (if the user aborts the flow and then re-uses the same tab for a
+  // normal web signin).
+  bool IsSyncSigninInProgress() const;
+
+  // Called to notify that the sync signin is complete.
+  void OnSyncSigninFlowComplete();
+
  private:
   friend class content::WebContentsUserData<DiceTabHelper>;
   explicit DiceTabHelper(content::WebContents* web_contents);
+
+  // kStarted: a Sync signin flow was started and not completed.
+  // kNotStarted: there is no sync signin flow in progress.
+  enum class SyncSigninFlowStatus { kNotStarted, kStarted };
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -68,13 +85,13 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   signin_metrics::PromoAction signin_promo_action_ =
       signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
   signin_metrics::Reason signin_reason_ =
-      signin_metrics::Reason::REASON_UNKNOWN_REASON;
+      signin_metrics::Reason::kUnknownReason;
   bool is_chrome_signin_page_ = false;
   bool signin_page_load_recorded_ = false;
+  SyncSigninFlowStatus sync_signin_flow_status_ =
+      SyncSigninFlowStatus::kNotStarted;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(DiceTabHelper);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_DICE_TAB_HELPER_H_

@@ -12,9 +12,9 @@
 
   readonly attribute BluetoothDevice device;
   readonly attribute FrozenArray<UUID> uuids;
-  readonly attribute DOMString? name;
-  readonly attribute unsigned short? appearance;
-  readonly attribute byte? txPower;
+  [HighEntropy=Direct, MeasureAs=BluetoothAdvertisingEventName] readonly attribute DOMString? name;
+  [HighEntropy=Direct, MeasureAs=BluetoothAdvertisingEventAppearance] readonly attribute unsigned short? appearance;
+  [HighEntropy=Direct, MeasureAs=BluetoothAdvertisingEventTxPower] readonly attribute byte? txPower;
   readonly attribute byte? rssi;
   readonly attribute BluetoothManufacturerDataMap manufacturerData;
   readonly attribute BluetoothServiceDataMap serviceData;

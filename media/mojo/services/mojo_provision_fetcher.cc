@@ -17,7 +17,7 @@ MojoProvisionFetcher::MojoProvisionFetcher(
 MojoProvisionFetcher::~MojoProvisionFetcher() = default;
 
 // ProvisionFetcher implementation:
-void MojoProvisionFetcher::Retrieve(const std::string& default_url,
+void MojoProvisionFetcher::Retrieve(const GURL& default_url,
                                     const std::string& request_data,
                                     ResponseCB response_cb) {
   DVLOG(1) << __func__;

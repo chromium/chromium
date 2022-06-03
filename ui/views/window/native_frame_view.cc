@@ -5,6 +5,7 @@
 #include "ui/views/window/native_frame_view.h"
 
 #include "build/build_config.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/widget/native_widget.h"
 #include "ui/views/widget/widget.h"
 
@@ -16,9 +17,6 @@ namespace views {
 
 ////////////////////////////////////////////////////////////////////////////////
 // NativeFrameView, public:
-
-// static
-const char NativeFrameView::kViewClassName[] = "NativeFrameView";
 
 NativeFrameView::NativeFrameView(Widget* frame) : frame_(frame) {}
 
@@ -41,7 +39,7 @@ gfx::Rect NativeFrameView::GetWindowBoundsForClientBounds(
   // empty size.
   gfx::Rect window_bounds = client_bounds;
   if (window_bounds.IsEmpty())
-    window_bounds.set_size(gfx::Size(1,1));
+    window_bounds.set_size(gfx::Size(1, 1));
   return window_bounds;
 #endif
 }
@@ -80,8 +78,9 @@ gfx::Size NativeFrameView::CalculatePreferredSize() const {
   // |GetWindowBoundsForClientBounds()|.
   return client_preferred_size;
 #else
-  return frame_->non_client_view()->GetWindowBoundsForClientBounds(
-      gfx::Rect(client_preferred_size)).size();
+  return frame_->non_client_view()
+      ->GetWindowBoundsForClientBounds(gfx::Rect(client_preferred_size))
+      .size();
 #endif
 }
 
@@ -93,8 +92,7 @@ gfx::Size NativeFrameView::GetMaximumSize() const {
   return frame_->client_view()->GetMaximumSize();
 }
 
-const char* NativeFrameView::GetClassName() const {
-  return kViewClassName;
-}
+BEGIN_METADATA(NativeFrameView, NonClientFrameView)
+END_METADATA
 
 }  // namespace views

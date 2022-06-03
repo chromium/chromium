@@ -10,7 +10,10 @@
 
 #include "base/macros.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
 #include "net/base/net_export.h"
+#include "net/base/network_isolation_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -18,7 +21,44 @@ namespace net {
 
 // Identifies an endpoint group.
 struct NET_EXPORT ReportingEndpointGroupKey {
-  ReportingEndpointGroupKey(url::Origin origin, std::string group_name);
+  ReportingEndpointGroupKey();
+
+  ReportingEndpointGroupKey(const NetworkIsolationKey& network_isolation_key,
+                            const url::Origin& origin,
+                            const std::string& group_name);
+
+  ReportingEndpointGroupKey(
+      const NetworkIsolationKey& network_isolation_key,
+      absl::optional<base::UnguessableToken> reporting_source,
+      const url::Origin& origin,
+      const std::string& group_name);
+
+  ReportingEndpointGroupKey(
+      const ReportingEndpointGroupKey& other,
+      const absl::optional<base::UnguessableToken>& reporting_source);
+
+  ReportingEndpointGroupKey(const ReportingEndpointGroupKey& other);
+  ReportingEndpointGroupKey(ReportingEndpointGroupKey&& other);
+
+  ReportingEndpointGroupKey& operator=(const ReportingEndpointGroupKey&);
+  ReportingEndpointGroupKey& operator=(ReportingEndpointGroupKey&&);
+
+  ~ReportingEndpointGroupKey();
+
+  std::string ToString() const;
+
+  // True if this endpoint "group" is actually being used to represent a single
+  // V1 document endpoint.
+  bool IsDocumentEndpoint() const { return reporting_source.has_value(); }
+
+  // The NetworkIsolationKey the group is scoped to. Needed to prevent leaking
+  // third party contexts across sites.
+  NetworkIsolationKey network_isolation_key;
+
+  // Source token for the document or worker which configured this endpoint, if
+  // this was configured with the Reporting-Endpoints header. For endpoint
+  // groups configured with the Report-To header, this will be nullopt.
+  absl::optional<base::UnguessableToken> reporting_source;
 
   // Origin that configured this endpoint group.
   url::Origin origin;
@@ -37,8 +77,6 @@ NET_EXPORT bool operator>(const ReportingEndpointGroupKey& lhs,
                           const ReportingEndpointGroupKey& rhs);
 
 // The configuration by an origin to use an endpoint for report delivery.
-// TODO(crbug.com/921049): Rename to ReportingEndpoint because that's what it
-// actually represents.
 // TODO(crbug.com/912622): Track endpoint failures for garbage collection.
 struct NET_EXPORT ReportingEndpoint {
   struct NET_EXPORT EndpointInfo {
@@ -76,9 +114,8 @@ struct NET_EXPORT ReportingEndpoint {
   // Constructs an invalid ReportingEndpoint.
   ReportingEndpoint();
 
-  ReportingEndpoint(url::Origin origin,
-                    std::string group_name,
-                    EndpointInfo endpoint_info);
+  ReportingEndpoint(const ReportingEndpointGroupKey& group,
+                    const EndpointInfo& info);
 
   ReportingEndpoint(const ReportingEndpoint& other);
   ReportingEndpoint(ReportingEndpoint&& other);
@@ -114,8 +151,7 @@ struct NET_EXPORT ReportingEndpointGroup {
 
   ~ReportingEndpointGroup();
 
-  // Group name.
-  std::string name;
+  ReportingEndpointGroupKey group_key;
 
   // Whether this group applies to subdomains of its origin.
   OriginSubdomains include_subdomains = OriginSubdomains::DEFAULT;
@@ -130,16 +166,13 @@ struct NET_EXPORT ReportingEndpointGroup {
 // Representation of an endpoint group used for in-memory and persistent
 // storage.
 struct NET_EXPORT CachedReportingEndpointGroup {
-  CachedReportingEndpointGroup(url::Origin origin,
-                               std::string name,
+  CachedReportingEndpointGroup(const ReportingEndpointGroupKey& group_key,
                                OriginSubdomains include_subdomains,
                                base::Time expires,
                                base::Time last_used);
 
-  // |origin| is the origin that set |endpoint_group|, |now| is the time at
-  // which the header was processed.
-  CachedReportingEndpointGroup(url::Origin origin,
-                               const ReportingEndpointGroup& endpoint_group,
+  // |now| is the time at which the header was processed.
+  CachedReportingEndpointGroup(const ReportingEndpointGroup& endpoint_group,
                                base::Time now);
 
   // Origin and group name.

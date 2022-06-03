@@ -15,7 +15,7 @@ namespace ios {
 
 // static
 HostContentSettingsMap* HostContentSettingsMapFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<HostContentSettingsMap*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true).get());
 }
@@ -36,8 +36,8 @@ HostContentSettingsMapFactory::~HostContentSettingsMapFactory() {}
 scoped_refptr<RefcountedKeyedService>
 HostContentSettingsMapFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   if (browser_state->IsOffTheRecord()) {
     // If off-the-record, retrieve the host content settings map of the parent
     // browser state to ensure the preferences have been migrated.
@@ -46,7 +46,9 @@ HostContentSettingsMapFactory::BuildServiceInstanceFor(
   return base::MakeRefCounted<HostContentSettingsMap>(
       browser_state->GetPrefs(), browser_state->IsOffTheRecord(),
       false /* store_last_modified */,
-      false /* migrate_requesting_and_top_level_origin_settings */);
+      false /*restore_session*/);
+  // TODO(crbug.com/1081711): Set restore_session to whether or not the phone
+  // has been reset, which would mirror iOS's cookie store.
 }
 
 web::BrowserState* HostContentSettingsMapFactory::GetBrowserStateToUse(

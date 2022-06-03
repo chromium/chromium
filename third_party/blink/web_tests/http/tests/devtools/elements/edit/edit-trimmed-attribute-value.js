@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that user can mutate DOM by means of elements panel.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div>
@@ -21,7 +21,7 @@
     TestRunner.addResult('Original textContent');
     TestRunner.addResult(treeElement.title.textContent);
 
-    treeElement._startEditingTarget(textElement);
+    treeElement.startEditingTarget(textElement);
     TestRunner.addResult('textContent when editing \'href\'');
     TestRunner.addResult(treeElement.title.textContent);
 

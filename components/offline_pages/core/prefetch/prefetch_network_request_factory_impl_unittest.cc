@@ -4,7 +4,7 @@
 
 #include "components/offline_pages/core/prefetch/prefetch_network_request_factory_impl.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/test_simple_task_runner.h"
@@ -15,7 +15,6 @@
 #include "components/offline_pages/core/prefetch/prefetch_request_test_base.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/version_info/channel.h"
-#include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"

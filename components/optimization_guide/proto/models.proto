@@ -4,10 +4,12 @@
 
 syntax = "proto2";
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.optimization_guide.proto";
+option java_outer_classname = "ModelsProto";
 
 package optimization_guide.proto;
 
-import "common_types.proto";
+import "components/optimization_guide/proto/common_types.proto";
 
 // A generic handle for any type of model.
 message Model {
@@ -16,6 +18,10 @@ message Model {
   oneof model {
     DecisionTree decision_tree = 1;
     Ensemble ensemble = 2;
+    // When passed from the server, this is the URL that the model can be
+    // downloaded from. When used internally within Chrome, this contains the
+    // absolute file path where the model file is saved on disk.
+    string download_url = 5;
   }
   // The tag number is high to allow models to be added and an uncommon number
   // in case the proto this is generated from adds a similar functionality.
@@ -129,14 +135,6 @@ message Int32Value {
   optional int32 value = 1;
 }
 
-// Wrapper message for `string`.
-//
-// The JSON representation for `StringValue` is JSON string.
-message StringValue {
-  // The string value.
-  optional string value = 1;
-}
-
 // Wrapper message for `double`.
 //
 // The JSON representation for `DoubleValue` is JSON number.
@@ -147,16 +145,24 @@ message DoubleValue {
 
 // Requests prediction models to be used for a set of optimization targets.
 message GetModelsRequest {
+  reserved 2;
+
   // Information about the requested models.
   repeated ModelInfo requested_models = 1;
-  // The set of hosts to get additional metadata for, if applicable.
-  repeated string hosts = 2;
   // Context in which this request is made.
   //
   // If the context matches one that requires more urgency (i.e.
   // CONTEXT_PAGE_NAVIGATION), then no model updates will be returned for the
   // requested models.
   optional RequestContext request_context = 3;
+  // The field trials that are currently active when this request is made.
+  repeated FieldTrial active_field_trials = 4;
+  // The locale to associate with this request.
+  //
+  // It is the IETF language tag, defined in BCP 47. The region subtag is not
+  // included when it adds no distinguishing information to the language tag
+  // (e.g. both "en-US" and "fr" are correct here).
+  optional string locale = 5;
 }
 
 // Response to the GetModels request.
@@ -185,24 +191,45 @@ message PredictionModel {
   optional Model model = 2;
 }
 
-//  Metadata for a prediction model for a specific optimization target.
+message AdditionalModelFile {
+  // When sent by the server, this contains the basenames of the additional
+  // files that should be kept and sent to this model's consumers. When used
+  // only locally within Chrome, the full path is given.
+  optional string file_path = 1;
+}
+
+// Metadata for a prediction model for a specific optimization target.
+//
+// Next ID: 8
 message ModelInfo {
+  reserved 3;
+
   // The optimization target for which the model predicts.
   optional OptimizationTarget optimization_target = 1;
   // The version of the model, which is specific to the optimization target.
   optional int64 version = 2;
-  // The set of model features that are supported by the model.
-  //
-  // If in the request, this represents the set of features that the client
-  // understands how to evaluate. If in the response, this represents the set
-  // of features referenced by the model.
-  repeated ClientModelFeature supported_model_features = 3;
   // The set of model types the requesting client can use to make predictions.
   repeated ModelType supported_model_types = 4;
   // The set of host model features that are referenced by the model.
   //
   // Note that this should only be populated if part of the response.
   repeated string supported_host_model_features = 5;
+  // Additional files required by this model version.
+  //
+  // If populated, these files are included in the downloaded archive for this
+  // model and should be passed along to the consumer.
+  //
+  // This does not need to be sent to the server in the request for an update to
+  // this model. The server will ignore this if sent.
+  repeated AdditionalModelFile additional_files = 7;
+  // Mechanism used for model owners to attach metadata to the request or
+  // response.
+  //
+  // In practice, we expect this to be used as a way to negotiate capabilities.
+  // The client can provide the model features they can evaluate if this field
+  // is part of the request, and the server can provide the model features that
+  // are actually present in the model.
+  optional Any model_metadata = 6;
 }
 
 // The scenarios for which the optimization guide has models for.
@@ -210,37 +237,59 @@ enum OptimizationTarget {
   OPTIMIZATION_TARGET_UNKNOWN = 0;
   // Should only be applied when the page load is predicted to be painful.
   OPTIMIZATION_TARGET_PAINFUL_PAGE_LOAD = 1;
-}
-
-// The features that only the client can compute during prediction and also
-// knows how to evaluate.
-enum ClientModelFeature {
-  CLIENT_MODEL_FEATURE_UNKNOWN = 0;
-  // The effective connection type for the page load.
-  CLIENT_MODEL_FEATURE_EFFECTIVE_CONNECTION_TYPE = 1;
-  // How the current page load transitioned from the previous one.
-  CLIENT_MODEL_FEATURE_PAGE_TRANSITION = 2;
-  // The site engagement score of the main frame host for the page load.
-  CLIENT_MODEL_FEATURE_SITE_ENGAGEMENT_SCORE = 3;
-  // Whether the origin for the page load matches the origin of the previous
-  // page load.
-  CLIENT_MODEL_FEATURE_SAME_ORIGIN_NAVIGATION = 4;
-  // The mean of the duration from navigation to first contentful paint for the
-  // session.
-  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_SESSION_MEAN = 5;
-  // The standard deviation of the duration from navigation to first
-  // contentful paint for the session.
-  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_SESSION_STANDARD_DEVIATION = 6;
-  // The duration from navigation to first contentful paint for the previous
-  // page load, if applicable.
-  CLIENT_MODEL_FEATURE_FIRST_CONTENTFUL_PAINT_PREVIOUS_PAGE_LOAD = 7;
+  // Target for supplying the language detection model via the model downloader.
+  OPTIMIZATION_TARGET_LANGUAGE_DETECTION = 2;
+  // Target for determining topics present on a page.
+  OPTIMIZATION_TARGET_PAGE_TOPICS = 3;
+  // Target for segmentation: New tab page user.
+  OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB = 4;
+  // Target for segmentation: Share user.
+  OPTIMIZATION_TARGET_SEGMENTATION_SHARE = 5;
+  // Target for segmentation: Voice user.
+  OPTIMIZATION_TARGET_SEGMENTATION_VOICE = 6;
+  // Target for model validation.
+  OPTIMIZATION_TARGET_MODEL_VALIDATION = 7;
+  // Target for determining entities present on a page.
+  OPTIMIZATION_TARGET_PAGE_ENTITIES = 8;
+  // Target for Chrome Permissions Suggestions Service: Notification permission.
+  OPTIMIZATION_TARGET_NOTIFICATION_PERMISSION_PREDICTIONS = 9;
+  // Target that enables data collection on client side for various experiments.
+  OPTIMIZATION_TARGET_SEGMENTATION_DUMMY = 10;
+  // Target for segmentation: Chrome Android Start user.
+  OPTIMIZATION_TARGET_SEGMENTATION_CHROME_START_ANDROID = 11;
+  // Target for segmentation: Query Tiles user.
+  OPTIMIZATION_TARGET_SEGMENTATION_QUERY_TILES = 12;
+  // Target for determining the UI visibility of a page.
+  OPTIMIZATION_TARGET_PAGE_VISIBILITY = 13;
+  // Target for supplying the Autofill Assistant annotate DOM model via the
+  // model downloader.
+  OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT = 14;
+  // Target for determining topics present on a page.
+  // TODO(crbug/1266504): Remove PAGE_TOPICS in favor of this target.
+  OPTIMIZATION_TARGET_PAGE_TOPICS_V2 = 15;
 }
 
 // The types of models that can be evaluated.
+//
+// Please only update these enums when a new major version of TFLite rolls.
+//
+// For example: v1.2.3
+//                 ^
+//                 Change when this number increments.
 enum ModelType {
   MODEL_TYPE_UNKNOWN = 0;
   // A decision tree.
   MODEL_TYPE_DECISION_TREE = 1;
+  // A model using only operations that are supported by TensorflowLite 2.3.0.
+  MODEL_TYPE_TFLITE_2_3_0 = 2;
+  // A model using only operations that are supported by TensorflowLite 2.3.0
+  // with updated FULLY_CONNECTED and BATCH_MUL versions for quantized models.
+  MODEL_TYPE_TFLITE_2_3_0_1 = 3;
+  // TensorflowLite version 2.4.2, and a bit more up to internal rev number
+  // 381280669.
+  MODEL_TYPE_TFLITE_2_4 = 4;
+  // TensorflowLite version 2.7.*. This is where regular ~HEAD rolls started.
+  MODEL_TYPE_TFLITE_2_7 = 5;
 }
 
 // A set of model features and the host that it applies to.

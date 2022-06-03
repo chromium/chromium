@@ -4,7 +4,8 @@
 
 #include "content/browser/download/save_item.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "content/browser/download/save_file.h"
 #include "content/browser/download/save_file_manager.h"
@@ -16,9 +17,9 @@ namespace content {
 namespace {
 
 SaveItemId GetNextSaveItemId() {
-  static int g_next_save_item_id = 1;
+  static SaveItemId::Generator g_save_item_id_generator;
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  return SaveItemId::FromUnsafeValue(g_next_save_item_id++);
+  return g_save_item_id_generator.GenerateNextId();
 }
 
 }  // namespace

@@ -1,0 +1,39 @@
+<html>
+  <script>
+    async function accessStorage() {
+      // Set a cookie at the embedder level.
+      document.cookie = `embedder=embedder; max-age=3600;path=/`;
+
+      // Access local storage.
+      localStorage.setItem('bar', 'bar');
+
+      // Access web database.
+      window.openDatabase('bar', '1.0', 'bar DB', 1024);
+
+      // Access file system.
+      const file_system_promise = new Promise(function(resolve, reject) {
+        window.webkitRequestFileSystem(TEMPORARY, 1024, fs => {
+          fs.root.getFile("foo.txt");
+          resolve();
+        });
+      });
+      await file_system_promise;
+
+      // Access service worker.
+      await navigator.serviceWorker.register("empty.js");
+
+      // Access cache storage.
+      await caches.open('test');
+
+      // Access Indexed DB.
+      await indexedDB.open("bar");
+
+      return true;
+     }
+  </script>
+  <body>
+    <iframe src="
+        https://REPLACE_WITH_HOST_AND_PORT/browsing_data/storage_accessor.html">
+    </iframe>
+  </body>
+</html>

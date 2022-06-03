@@ -5,11 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_LOG_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_LOG_AGENT_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/Log.h"
+#include "third_party/blink/renderer/core/inspector/protocol/log.h"
 
 namespace v8_inspector {
 class V8InspectorSession;
@@ -23,14 +22,14 @@ class ConsoleMessageStorage;
 class CORE_EXPORT InspectorLogAgent
     : public InspectorBaseAgent<protocol::Log::Metainfo>,
       public PerformanceMonitor::Client {
-  USING_GARBAGE_COLLECTED_MIXIN(InspectorLogAgent);
-
  public:
   InspectorLogAgent(ConsoleMessageStorage*,
                     PerformanceMonitor*,
                     v8_inspector::V8InspectorSession*);
+  InspectorLogAgent(const InspectorLogAgent&) = delete;
+  InspectorLogAgent& operator=(const InspectorLogAgent&) = delete;
   ~InspectorLogAgent() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void Restore() override;
 
@@ -60,7 +59,6 @@ class CORE_EXPORT InspectorLogAgent
   v8_inspector::V8InspectorSession* v8_session_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::DoubleMap violation_thresholds_;
-  DISALLOW_COPY_AND_ASSIGN(InspectorLogAgent);
 };
 
 }  // namespace blink

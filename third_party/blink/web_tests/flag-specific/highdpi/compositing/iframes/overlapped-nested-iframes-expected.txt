@@ -1,0 +1,132 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 2475],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "transform": 1
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [420, 300],
+      "transform": 2
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [375, 255],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [315, 315],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 4
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [420, 300],
+      "transform": 5
+    },
+    {
+      "name": "LayoutView #document",
+      "bounds": [375, 255],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#C0C0C0",
+      "transform": 6
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='iframe-content' class='box'",
+      "bounds": [315, 315],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 7
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='banner'",
+      "bounds": [1178, 180],
+      "backgroundColor": "#00000080"
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -150, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [33, 228, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [14, 14, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 5,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [33, 564, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [14, 14, 0, 1]
+      ]
+    },
+    {
+      "id": 7,
+      "parent": 6,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [27, 15, 0, 1]
+      ]
+    }
+  ]
+}
+

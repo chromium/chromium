@@ -33,8 +33,8 @@ STATIC_ASSERT_ENUM(WebAXObjectAttribute::kAriaErrorMessage,
                    AXObjectAttribute::kAriaErrorMessage);
 STATIC_ASSERT_ENUM(WebAXObjectVectorAttribute::kAriaControls,
                    AXObjectVectorAttribute::kAriaControls);
-STATIC_ASSERT_ENUM(WebAXObjectAttribute::kAriaDetails,
-                   AXObjectAttribute::kAriaDetails);
+STATIC_ASSERT_ENUM(WebAXObjectVectorAttribute::kAriaDetails,
+                   AXObjectVectorAttribute::kAriaDetails);
 STATIC_ASSERT_ENUM(WebAXObjectVectorAttribute::kAriaFlowTo,
                    AXObjectVectorAttribute::kAriaFlowTo);
 }  // namespace blink

@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.preferences;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -29,17 +29,18 @@ public class ChromePreferenceKeyCheckerTest {
             new KeyPrefix("Chrome.Feature.KeyPrefix2.*");
     private static final KeyPrefix KEY_PREFIX3_NOT_IN_USE =
             new KeyPrefix("Chrome.Feature.KeyPrefix3.*");
-    private static final String GRANDFATHERED_KEY_IN_USE = "grandfatheredkey";
+    private static final String LEGACY_KEY_IN_USE = "legacykey";
+    private static final String LEGACY_PREFIX_IN_USE = "legacyprefix_";
 
     private ChromePreferenceKeyChecker mSubject;
 
     @Before
     public void setUp() {
-        List<String> keysInUse =
-                Arrays.asList(KEY1_IN_USE, KEY2_IN_USE, KEY_PREFIX1_IN_USE.pattern(),
-                        KEY_PREFIX2_IN_USE.pattern(), GRANDFATHERED_KEY_IN_USE);
-        List<String> grandfatheredKeys = Arrays.asList(GRANDFATHERED_KEY_IN_USE);
-        mSubject = new ChromePreferenceKeyChecker(keysInUse, grandfatheredKeys);
+        List<String> keysInUse = Arrays.asList(KEY1_IN_USE, KEY2_IN_USE,
+                KEY_PREFIX1_IN_USE.pattern(), KEY_PREFIX2_IN_USE.pattern());
+        List<String> legacyKeys = Arrays.asList(LEGACY_KEY_IN_USE);
+        List<KeyPrefix> legacyPrefixes = Arrays.asList(new KeyPrefix(LEGACY_PREFIX_IN_USE + "*"));
+        mSubject = new ChromePreferenceKeyChecker(keysInUse, legacyKeys, legacyPrefixes);
     }
 
     @Test
@@ -47,7 +48,8 @@ public class ChromePreferenceKeyCheckerTest {
     public void testRegularKeys_registered_noException() {
         mSubject.checkIsKeyInUse(KEY1_IN_USE);
         mSubject.checkIsKeyInUse(KEY2_IN_USE);
-        mSubject.checkIsKeyInUse(GRANDFATHERED_KEY_IN_USE);
+        mSubject.checkIsKeyInUse(LEGACY_KEY_IN_USE);
+        mSubject.checkIsKeyInUse(LEGACY_PREFIX_IN_USE + "restofkey");
     }
 
     @Test(expected = RuntimeException.class)
@@ -85,5 +87,17 @@ public class ChromePreferenceKeyCheckerTest {
     @SmallTest
     public void testPrefixedKeys_matchPattern_throwsException() {
         mSubject.checkIsKeyInUse(KEY_PREFIX1_IN_USE.createKey("*"));
+    }
+
+    @Test
+    @SmallTest
+    public void testPrefix_inUse_noException() {
+        mSubject.checkIsPrefixInUse(KEY_PREFIX2_IN_USE);
+    }
+
+    @Test(expected = RuntimeException.class)
+    @SmallTest
+    public void testPrefix_notInUse_throwsException() {
+        mSubject.checkIsPrefixInUse(KEY_PREFIX3_NOT_IN_USE);
     }
 }

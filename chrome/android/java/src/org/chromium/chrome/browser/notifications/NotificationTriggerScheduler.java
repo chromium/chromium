@@ -8,9 +8,10 @@ import android.text.format.DateUtils;
 
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 
 /**
  * The {@link NotificationTriggerScheduler} singleton is responsible for scheduling notification
@@ -18,7 +19,6 @@ import org.chromium.base.annotations.NativeMethods;
  * Thread model: This class is to be run on the UI thread only.
  */
 public class NotificationTriggerScheduler {
-    private static final String KEY_NEXT_TRIGGER = "notification_trigger_scheduler.next_trigger";
 
     /** Clock to use so we can mock time in tests. */
     public static interface Clock { public long currentTimeMillis(); }
@@ -110,15 +110,18 @@ public class NotificationTriggerScheduler {
     }
 
     private long getNextTrigger() {
-        return ContextUtils.getAppSharedPreferences().getLong(KEY_NEXT_TRIGGER, Long.MAX_VALUE);
+        return SharedPreferencesManager.getInstance().readLong(
+                ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER, Long.MAX_VALUE);
     }
 
     private void removeNextTrigger() {
-        ContextUtils.getAppSharedPreferences().edit().remove(KEY_NEXT_TRIGGER).apply();
+        SharedPreferencesManager.getInstance().removeKey(
+                ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER);
     }
 
     private void setNextTrigger(long timestamp) {
-        ContextUtils.getAppSharedPreferences().edit().putLong(KEY_NEXT_TRIGGER, timestamp).apply();
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.NOTIFICATIONS_NEXT_TRIGGER, timestamp);
     }
 
     @NativeMethods

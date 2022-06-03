@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
 #include "base/macros.h"
 #include "crypto/rsa_private_key.h"
 #include "net/base/net_errors.h"
@@ -28,6 +27,9 @@ class TestSSLPlatformKey : public ThreadedSSLPrivateKey::Delegate {
  public:
   explicit TestSSLPlatformKey(bssl::UniquePtr<EVP_PKEY> key)
       : key_(std::move(key)) {}
+
+  TestSSLPlatformKey(const TestSSLPlatformKey&) = delete;
+  TestSSLPlatformKey& operator=(const TestSSLPlatformKey&) = delete;
 
   ~TestSSLPlatformKey() override = default;
 
@@ -69,13 +71,15 @@ class TestSSLPlatformKey : public ThreadedSSLPrivateKey::Delegate {
 
  private:
   bssl::UniquePtr<EVP_PKEY> key_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSSLPlatformKey);
 };
 
 class FailingSSLPlatformKey : public ThreadedSSLPrivateKey::Delegate {
  public:
   FailingSSLPlatformKey() = default;
+
+  FailingSSLPlatformKey(const FailingSSLPlatformKey&) = delete;
+  FailingSSLPlatformKey& operator=(const FailingSSLPlatformKey&) = delete;
+
   ~FailingSSLPlatformKey() override = default;
 
   std::string GetProviderName() override { return "FailingSSLPlatformKey"; }
@@ -90,9 +94,6 @@ class FailingSSLPlatformKey : public ThreadedSSLPrivateKey::Delegate {
              std::vector<uint8_t>* signature) override {
     return ERR_SSL_CLIENT_AUTH_SIGNATURE_FAILED;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FailingSSLPlatformKey);
 };
 
 }  // namespace

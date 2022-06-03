@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/color_space_profile_data.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 struct bt709ColorProfile {
@@ -99,14 +99,16 @@ void Bt709ColorProfileData(Vector<char>& data) {
   DCHECK(WTF::IsMainThread());
   DCHECK(data.IsEmpty());
 
-  data.Append(bt709ColorProfile::data(), bt709ColorProfile::size());
+  data.Append(bt709ColorProfile::data(),
+              static_cast<wtf_size_t>(bt709ColorProfile::size()));
 }
 
 void Bt601ColorProfileData(Vector<char>& data) {
   DCHECK(WTF::IsMainThread());
   DCHECK(data.IsEmpty());
 
-  data.Append(bt601ColorProfile::data(), bt601ColorProfile::size());
+  data.Append(bt601ColorProfile::data(),
+              static_cast<wtf_size_t>(bt601ColorProfile::size()));
 }
 
 }  // namespace blink

@@ -103,6 +103,30 @@
       unit_type: "kViewportMax",
     },
     {
+      name: "qw",
+      unit_type: "kContainerWidth",
+    },
+    {
+      name: "qh",
+      unit_type: "kContainerHeight",
+    },
+    {
+      name: "qi",
+      unit_type: "kContainerInlineSize",
+    },
+    {
+      name: "qb",
+      unit_type: "kContainerBlockSize",
+    },
+    {
+      name: "qmin",
+      unit_type: "kContainerMin",
+    },
+    {
+      name: "qmax",
+      unit_type: "kContainerMax",
+    },
+    {
       name: "rem",
       unit_type: "kRems",
     },

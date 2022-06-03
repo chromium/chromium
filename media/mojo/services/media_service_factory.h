@@ -9,12 +9,12 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/build_config.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
 #include "media/base/android_overlay_mojo_factory.h"
-#include "media/cdm/cdm_proxy.h"
 #include "media/mojo/mojom/media_service.mojom.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/media_service.h"
@@ -29,16 +29,13 @@ namespace media {
 class MediaGpuChannelManager;
 
 // Creates a MediaService instance using the default MojoMediaClient on each
-// platform. Uses the TestMojoMediaClient if |enable_test_mojo_media_client| is
-// true.
+// platform.
 std::unique_ptr<MediaService> MEDIA_MOJO_EXPORT
 CreateMediaService(mojo::PendingReceiver<mojom::MediaService> receiver);
 
 // Creates a MediaService instance using the GpuMojoMediaClient.
 // |media_gpu_channel_manager| must only be used on |task_runner|, which is
 // expected to be the GPU main thread task runner.
-// |cdm_proxy_factory_cb| can be used to create a CdmProxy. May be null if
-// CdmProxy is not supported on the platform.
 std::unique_ptr<MediaService> MEDIA_MOJO_EXPORT CreateGpuMediaService(
     mojo::PendingReceiver<mojom::MediaService> receiver,
     const gpu::GpuPreferences& gpu_preferences,
@@ -47,8 +44,7 @@ std::unique_ptr<MediaService> MEDIA_MOJO_EXPORT CreateGpuMediaService(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     base::WeakPtr<MediaGpuChannelManager> media_gpu_channel_manager,
     gpu::GpuMemoryBufferFactory* gpu_memory_buffer_factory,
-    AndroidOverlayMojoFactoryCB android_overlay_factory_cb,
-    CdmProxyFactoryCB cdm_proxy_factory_cb);
+    AndroidOverlayMojoFactoryCB android_overlay_factory_cb);
 
 // Creates a MediaService instance using the TestMojoMediaClient.
 std::unique_ptr<MediaService> MEDIA_MOJO_EXPORT CreateMediaServiceForTesting(

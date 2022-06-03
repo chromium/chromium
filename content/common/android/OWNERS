@@ -10,5 +10,3 @@ per-file *_messages.cc=file://ipc/SECURITY_OWNERS
 
 per-file *_param_traits*.*=set noparent
 per-file *_param_traits*.*=file://ipc/SECURITY_OWNERS
-
-# COMPONENT: Content>Core

@@ -1,8 +1,10 @@
-Tests that Target.setAutoAttach(windowOpen=true) attaches to window.open targets.
+Tests that browser.Target.setAutoAttach() attaches to window.open targets.
 Opened the window
-Attached to window
+Attached to window, waitingForDebugger=true
+Resumed popup window
+Popup window URL changed to http://127.0.0.1:8000/inspector-protocol/resources/inspector-protocol-page.html
 Navigated the window
-Target info changed
+Target info changed, new URL is http://127.0.0.1:8000/inspector-protocol/resources/test-page.html
 Closed the window
 Detached from window
 

@@ -4,6 +4,6 @@
      found in the LICENSE file. -->
 
 <resources>
-  <color name="url_color">#080808</color>
+    <color name="url_color">#080808</color>
     <color name="url_error_color">#F20000</color>
 </resources>

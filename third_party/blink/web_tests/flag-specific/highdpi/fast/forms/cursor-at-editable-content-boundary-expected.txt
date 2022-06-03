@@ -1,0 +1,16 @@
+autowrap text area with dir=rtl. 
+
+nowrap text area with dir=rtl. 
+
+autowrap text area with dir=ltr. 
+
+vertical text.
+
+FAIL test id: textarea_rtl (text width: 102 != caretRange: 38), which means moving caret in the text, caret might be invisible or overlap with element.
+FAIL test id: textarea_rtl_no_wrap (text width: 102 != caretRange: 153), which means moving caret in the text, caret might be invisible or overlap with element.
+FAIL test id: textarea_ltr (text width: 26 != caretRange: 39), which means moving caret in the text, caret might be invisible or overlap with element.
+FAIL test id: vertical_rl (text width: 102 != caretRange: 38), which means moving caret in the text, caret might be invisible or overlap with element.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

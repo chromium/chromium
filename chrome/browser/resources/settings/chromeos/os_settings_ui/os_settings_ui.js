@@ -10,22 +10,53 @@
  *
  *    <settings-ui prefs="{{prefs}}"></settings-ui>
  */
-cr.exportPath('settings');
-assert(
-    !settings.defaultResourceLoaded,
-    'settings_ui.js run twice. You probably have an invalid import.');
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/cr_elements/cr_page_host_style_css.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import '../os_settings_menu/os_settings_menu.js';
+import '../os_settings_main/os_settings_main.js';
+import '../os_toolbar/os_toolbar.js';
+import '../../settings_shared_css.js';
+import '../../prefs/prefs.js';
+import '../../settings_vars_css.js';
+
+import {CrContainerShadowBehavior} from '//resources/cr_elements/cr_container_shadow_behavior.m.js';
+import {CrDrawerElement} from '//resources/cr_elements/cr_drawer/cr_drawer.js';
+import {CrToolbarSearchFieldElement} from '//resources/cr_elements/cr_toolbar/cr_toolbar_search_field.js';
+import {FindShortcutBehavior} from '//resources/cr_elements/find_shortcut_behavior.js';
+import {CrPolicyIndicatorType} from '//resources/cr_elements/policy/cr_policy_indicator_behavior.m.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {HTMLEscape, listenOnce} from '//resources/js/util.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {Route, Router} from '../../router.js';
+import {GlobalScrollTargetBehavior, setGlobalScrollTarget} from '../global_scroll_target_behavior.js';
+import {recordClick, recordNavigation, recordPageBlur, recordPageFocus, recordSearch, recordSettingChange, setUserActionRecorderForTesting} from '../metrics_recorder.m.js';
+import {OSPageVisibility, osPageVisibility} from '../os_page_visibility.m.js';
+import {routes} from '../os_route.m.js';
+import {PrefToSettingMetricConverter} from '../pref_to_setting_metric_converter.m.js';
+import {RouteObserverBehavior} from '../route_observer_behavior.js';
+
 /** Global defined when the main Settings script runs. */
-settings.defaultResourceLoaded = true;
+let defaultResourceLoaded = true;  // eslint-disable-line prefer-const
+
+assert(
+    !window.settings || !defaultResourceLoaded,
+    'settings_ui.js run twice. You probably have an invalid import.');
+
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-ui',
 
   behaviors: [
     CrContainerShadowBehavior,
     FindShortcutBehavior,
-    // Calls currentRouteChanged() in attached(), so ensure other behaviors run
-    // their attached() first.
-    settings.RouteObserverBehavior,
+    // Calls currentRouteChanged() in attached(), so ensure other behaviors
+    // run their attached() first.
+    RouteObserverBehavior,
   ],
 
   properties: {
@@ -57,18 +88,21 @@ Polymer({
     },
 
     /**
-     * Whether settings is in the narrow state (side nav hidden). Controlled by
-     * a binding in the os-toolbar element.
+     * Whether settings is in the narrow state (side nav hidden). Controlled
+     * by a binding in the os-toolbar element.
      */
     isNarrow: {
       type: Boolean,
+      value: false,
+      readonly: true,
+      notify: true,
       observer: 'onNarrowChanged_',
     },
 
     /**
-     * @private {!PageVisibility}
+     * @private {!OSPageVisibility}
      */
-    pageVisibility_: {type: Object, value: settings.pageVisibility},
+    pageVisibility_: {type: Object, value: osPageVisibility},
 
     /** @private */
     havePlayStoreApp_: Boolean,
@@ -77,13 +111,13 @@ Polymer({
     showAndroidApps_: Boolean,
 
     /** @private */
-    showAppManagement_: Boolean,
-
-    /** @private */
-    showApps_: Boolean,
-
-    /** @private */
     showCrostini_: Boolean,
+
+    /** @private */
+    showToolbar_: Boolean,
+
+    /** @private */
+    showNavMenu_: Boolean,
 
     /** @private */
     showPluginVm_: Boolean,
@@ -92,44 +126,53 @@ Polymer({
     showReset_: Boolean,
 
     /** @private */
-    lastSearchQuery_: {
-      type: String,
-      value: '',
+    showStartup_: Boolean,
+
+    /** @private */
+    showKerberosSection_: Boolean,
+
+    /**
+     * The threshold at which the toolbar will change from normal to narrow
+     * mode, in px.
+     * @private {boolean}
+     */
+    narrowThreshold_: {
+      type: Number,
+      value: 980,
     },
   },
 
   listeners: {
     'refresh-pref': 'onRefreshPref_',
+    'user-action-setting-change': 'onSettingChange_',
   },
 
   /**
-   * The route of the selected element in os-settings-menu. Stored here to defer
-   * navigation until drawer animation completes.
-   * @private {settings.Route}
+   * The route of the selected element in os-settings-menu. Stored here to
+   * defer navigation until drawer animation completes.
+   * @private {Route}
    */
   activeRoute_: null,
 
+  /**
+   * Converts prefs to settings metrics to help record pref changes.
+   * @private {PrefToSettingMetricConverter}
+   */
+  prefToSettingMetricConverter_: null,
+
   /** @override */
-  created: function() {
-    settings.initializeRouteFromUrl();
+  created() {
+    Router.getInstance().initializeRouteFromUrl();
+    this.prefToSettingMetricConverter_ = new PrefToSettingMetricConverter();
   },
 
   /**
    * @override
-   * @suppress {es5Strict} Object literals cannot contain duplicate keys in ES5
-   *     strict mode.
+   * @suppress {es5Strict} Object literals cannot contain duplicate keys in
+   * ES5 strict mode.
    */
-  ready: function() {
-    // Lazy-create the drawer the first time it is opened or swiped into view.
-    listenOnce(this.$.drawer, 'cr-drawer-opening', () => {
-      this.$.drawerTemplate.if = true;
-    });
-
-    window.addEventListener('popstate', e => {
-      this.$.drawer.cancel();
-    });
-
-    CrPolicyStrings = {
+  ready() {
+    window.CrPolicyStrings = {
       controlledSettingExtension:
           loadTimeData.getString('controlledSettingExtension'),
       controlledSettingExtensionWithoutName:
@@ -153,12 +196,16 @@ Polymer({
     };
 
     this.havePlayStoreApp_ = loadTimeData.getBoolean('havePlayStoreApp');
-    this.showAppManagement_ = loadTimeData.getBoolean('showAppManagement');
     this.showAndroidApps_ = loadTimeData.getBoolean('androidAppsVisible');
-    this.showApps_ = this.showAppManagement_ || this.showAndroidApps_;
     this.showCrostini_ = loadTimeData.getBoolean('showCrostini');
     this.showPluginVm_ = loadTimeData.getBoolean('showPluginVm');
+    this.showNavMenu_ = !loadTimeData.getBoolean('isKioskModeActive');
+    this.showToolbar_ = !loadTimeData.getBoolean('isKioskModeActive');
     this.showReset_ = loadTimeData.getBoolean('allowPowerwash');
+    this.showStartup_ = loadTimeData.getBoolean('showStartup');
+
+    this.showKerberosSection_ = loadTimeData.valueExists('isKerberosEnabled') &&
+        loadTimeData.getBoolean('isKerberosEnabled');
 
     this.addEventListener('show-container', () => {
       this.$.container.style.visibility = 'visible';
@@ -167,10 +214,29 @@ Polymer({
     this.addEventListener('hide-container', () => {
       this.$.container.style.visibility = 'hidden';
     });
+
+    // If navigation menu is not shown, do not listen to the drawer.
+    if (!this.showNavMenu_) {
+      return;
+    }
+
+    this.async(() => {
+      // Lazy-create the drawer the first time it is opened or swiped into
+      // view.
+      const drawer = /** @type {!CrDrawerElement} */ (this.$$('#drawer'));
+      assert(drawer);
+      listenOnce(drawer, 'cr-drawer-opening', () => {
+        this.$$('#drawerTemplate').if = true;
+      });
+
+      window.addEventListener('popstate', e => {
+        drawer.cancel();
+      });
+    });
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     document.documentElement.classList.remove('loading');
 
     setTimeout(function() {
@@ -181,7 +247,7 @@ Polymer({
 
     // Preload bold Roboto so it doesn't load and flicker the first time used.
     document.fonts.load('bold 12px Roboto');
-    settings.setGlobalScrollTarget(this.$.container);
+    setGlobalScrollTarget(this.$.container);
 
     const scrollToTop = top => new Promise(resolve => {
       if (this.$.container.scrollTop === top) {
@@ -205,16 +271,41 @@ Polymer({
       scrollToTop(e.detail.bottom - this.$.container.clientHeight)
           .then(e.detail.callback);
     });
+
+    // Window event listeners will not fire when settings first starts.
+    // Blur events before the first focus event do not matter.
+    if (document.hasFocus()) {
+      recordPageFocus();
+    }
+
+    window.addEventListener('focus', recordPageFocus);
+    window.addEventListener('blur', recordPageBlur);
+
+    // Clicks need to be captured because unlike focus/blur to the settings
+    // window, a click's propagation can be stopped by child elements.
+    window.addEventListener('click', recordClick, /*capture=*/ true);
   },
 
   /** @override */
-  detached: function() {
-    settings.resetRouteForTesting();
+  detached() {
+    window.removeEventListener('focus', recordPageFocus);
+    window.removeEventListener('blur', recordPageBlur);
+    window.removeEventListener('click', recordClick);
+    Router.getInstance().resetRouteForTesting();
   },
 
-  /** @param {!settings.Route} route */
-  currentRouteChanged: function(route) {
-    if (route.depth <= 1) {
+  /**
+   * @param {!Route} newRoute
+   * @param {!Route} oldRoute
+   */
+  currentRouteChanged(newRoute, oldRoute) {
+    if (oldRoute && newRoute !== oldRoute) {
+      // Search triggers route changes and currentRouteChanged() is called
+      // in attached() state which is extraneous for this metric.
+      recordNavigation();
+    }
+
+    if (newRoute.depth <= 1) {
       // Main page uses scroll visibility to determine shadow.
       this.enableShadowBehavior(true);
     } else {
@@ -222,40 +313,23 @@ Polymer({
       this.enableShadowBehavior(false);
       this.showDropShadows();
     }
-
-    const urlSearchQuery = settings.getQueryParameters().get('search') || '';
-    if (urlSearchQuery == this.lastSearchQuery_) {
-      return;
-    }
-
-    this.lastSearchQuery_ = urlSearchQuery;
-
-    const toolbar = /** @type {!OsToolbarElement} */ (this.$$('os-toolbar'));
-    const searchField =
-        /** @type {CrToolbarSearchFieldElement} */ (toolbar.getSearchField());
-
-    // If the search was initiated by directly entering a search URL, need to
-    // sync the URL parameter to the textbox.
-    if (urlSearchQuery != searchField.getValue()) {
-      // Setting the search box value without triggering a 'search-changed'
-      // event, to prevent an unnecessary duplicate entry in |window.history|.
-      searchField.setValue(urlSearchQuery, true /* noEvent */);
-    }
-
-    this.$.main.searchContents(urlSearchQuery);
   },
 
   // Override FindShortcutBehavior methods.
-  handleFindShortcut: function(modalContextOpen) {
-    if (modalContextOpen) {
+  handleFindShortcut(modalContextOpen) {
+    if (modalContextOpen || !this.showToolbar_) {
       return false;
     }
     this.$$('os-toolbar').getSearchField().showAndFocus();
+    this.$$('os-toolbar').getSearchField().getSearchInput().select();
     return true;
   },
 
   // Override FindShortcutBehavior methods.
-  searchInputHasFocus: function() {
+  searchInputHasFocus() {
+    if (!this.showToolbar_) {
+      return;
+    }
     return this.$$('os-toolbar').getSearchField().isSearchFocused();
   },
 
@@ -263,23 +337,31 @@ Polymer({
    * @param {!CustomEvent<string>} e
    * @private
    */
-  onRefreshPref_: function(e) {
+  onRefreshPref_(e) {
     return /** @type {SettingsPrefsElement} */ (this.$.prefs).refresh(e.detail);
   },
 
   /**
-   * Handles the 'search-changed' event fired from the toolbar.
-   * @param {!Event} e
+   * @param {!CustomEvent<!{prefKey: string, prefValue: *}>} e
    * @private
    */
-  onSearchChanged_: function(e) {
-    const query = e.detail;
-    settings.navigateTo(
-        settings.routes.BASIC,
-        query.length > 0 ?
-            new URLSearchParams('search=' + encodeURIComponent(query)) :
-            undefined,
-        /* removeSearch */ true);
+  onSettingChange_(e) {
+    const {prefKey, prefValue} = e.detail;
+    const settingMetric =
+        this.prefToSettingMetricConverter_.convertPrefToSettingMetric(
+            prefKey, prefValue);
+
+    // New metrics for this setting pref have not yet been implemented.
+    if (!settingMetric) {
+      recordSettingChange();
+      return;
+    }
+
+    const setting =
+        /** @type {!chromeos.settings.mojom.Setting} */ (settingMetric.setting);
+    const value = /** @type {!chromeos.settings.mojom.SettingChangeValue} */ (
+        settingMetric.value);
+    recordSettingChange(setting, value);
   },
 
   /**
@@ -287,53 +369,59 @@ Polymer({
    * @param {!Event} e
    * @private
    */
-  onIronActivate_: function(e) {
+  onIronActivate_(e) {
+    assert(this.showNavMenu_);
     const section = e.detail.selected;
     const path = new URL(section).pathname;
-    const route = settings.getRouteForPath(path);
+    const route = Router.getInstance().getRouteForPath(path);
     assert(route, 'os-settings-menu has an entry with an invalid route.');
     this.activeRoute_ = route;
 
     if (this.isNarrow) {
-      // If the onIronActivate event came from the drawer, close the drawer and
-      // wait for the menu to close before navigating to |activeRoute_|.
-      this.$.drawer.close();
+      // If the onIronActivate event came from the drawer, close the drawer
+      // and wait for the menu to close before navigating to |activeRoute_|.
+      this.$$('#drawer').close();
       return;
     }
     this.navigateToActiveRoute_();
   },
 
   /** @private */
-  onMenuButtonTap_: function() {
-    this.$.drawer.toggle();
+  onMenuButtonTap_() {
+    if (!this.showNavMenu_) {
+      return;
+    }
+    this.$$('#drawer').toggle();
   },
-
 
   /**
    * Navigates to |activeRoute_| if set. Used to delay navigation until after
    * animations complete to ensure focus ends up in the right place.
    * @private
    */
-  navigateToActiveRoute_: function() {
+  navigateToActiveRoute_() {
     if (this.activeRoute_) {
-      settings.navigateTo(
-          this.activeRoute_, /* dynamicParams */ null, /* removeSearch */ true);
+      Router.getInstance().navigateTo(
+          this.activeRoute_, /* dynamicParams */ null,
+          /* removeSearch */ true);
       this.activeRoute_ = null;
     }
   },
 
   /**
    * When this is called, The drawer animation is finished, and the dialog no
-   * longer has focus. The selected section will gain focus if one was selected.
-   * Otherwise, the drawer was closed due being canceled, and the main settings
-   * container is given focus. That way the arrow keys can be used to scroll
-   * the container, and pressing tab focuses a component in settings.
+   * longer has focus. The selected section will gain focus if one was
+   * selected. Otherwise, the drawer was closed due being canceled, and the
+   * main settings container is given focus. That way the arrow keys can be
+   * used to scroll the container, and pressing tab focuses a component in
+   * settings.
    * @private
    */
-  onMenuClose_: function() {
-    if (!this.$.drawer.wasCanceled()) {
-      // If a navigation happened, MainPageBehavior#currentRouteChanged handles
-      // focusing the corresponding section when we call settings.NavigateTo().
+  onMenuClose_() {
+    if (!this.$$('#drawer').wasCanceled()) {
+      // If a navigation happened, MainPageBehavior#currentRouteChanged
+      // handles focusing the corresponding section when we call
+      // settings.NavigateTo().
       this.navigateToActiveRoute_();
       return;
     }
@@ -348,7 +436,7 @@ Polymer({
   },
 
   /** @private */
-  onAdvancedOpenedInMainChanged_: function() {
+  onAdvancedOpenedInMainChanged_() {
     // Only sync value when opening, not closing.
     if (this.advancedOpenedInMain_) {
       this.advancedOpenedInMenu_ = true;
@@ -356,7 +444,7 @@ Polymer({
   },
 
   /** @private */
-  onAdvancedOpenedInMenuChanged_: function() {
+  onAdvancedOpenedInMenuChanged_() {
     // Only sync value when opening, not closing.
     if (this.advancedOpenedInMenu_) {
       this.advancedOpenedInMain_ = true;
@@ -364,9 +452,17 @@ Polymer({
   },
 
   /** @private */
-  onNarrowChanged_: function() {
-    if (this.$.drawer.open && !this.isNarrow) {
-      this.$.drawer.close();
+  onNarrowChanged_() {
+    if (this.showNavMenu_ && this.$$('#drawer').open && !this.isNarrow) {
+      this.$$('#drawer').close();
     }
+  },
+
+  /**
+   * Handles a tap on the drawer's icon.
+   * @private
+   */
+  onDrawerIconClick_() {
+    this.$$('#drawer').cancel();
   },
 });

@@ -17,6 +17,9 @@ namespace extensions {
 // control the lifetime of all ApiResources of a specific derived type.
 class ApiResource {
  public:
+  ApiResource(const ApiResource&) = delete;
+  ApiResource& operator=(const ApiResource&) = delete;
+
   virtual ~ApiResource();
 
   const std::string& owner_extension_id() const { return owner_extension_id_; }
@@ -34,8 +37,6 @@ class ApiResource {
  private:
   // The extension that owns this resource.
   const std::string owner_extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApiResource);
 };
 
 }  // namespace extensions

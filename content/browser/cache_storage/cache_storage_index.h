@@ -10,7 +10,6 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "content/browser/cache_storage/cache_storage.h"
 
 namespace content {
@@ -21,11 +20,8 @@ namespace content {
 class CONTENT_EXPORT CacheStorageIndex {
  public:
   struct CacheMetadata {
-    CacheMetadata(const std::string& name,
-                  int64_t size,
-                  int64_t padding,
-                  const std::string& padding_key)
-        : name(name), size(size), padding(padding), padding_key(padding_key) {}
+    CacheMetadata(const std::string& name, int64_t size, int64_t padding)
+        : name(name), size(size), padding(padding) {}
     std::string name;
     // The size (in bytes) of the cache. Set to CacheStorage::kSizeUnknown if
     // size not known.
@@ -35,14 +31,15 @@ class CONTENT_EXPORT CacheStorageIndex {
     // if padding not known.
     int64_t padding;
 
-    // The raw key used to calculate padding for some cache entries.
-    std::string padding_key;
-
     // The algorithm version used to calculate this padding.
     int32_t padding_version;
   };
 
   CacheStorageIndex();
+
+  CacheStorageIndex(const CacheStorageIndex&) = delete;
+  CacheStorageIndex& operator=(const CacheStorageIndex&) = delete;
+
   ~CacheStorageIndex();
 
   CacheStorageIndex& operator=(CacheStorageIndex&& rhs);
@@ -115,8 +112,6 @@ class CONTENT_EXPORT CacheStorageIndex {
   CacheMetadata doomed_cache_metadata_;
   std::list<CacheMetadata>::iterator after_doomed_cache_metadata_;
   bool has_doomed_cache_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(CacheStorageIndex);
 };
 
 }  // namespace content

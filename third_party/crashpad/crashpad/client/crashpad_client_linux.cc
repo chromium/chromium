@@ -14,8 +14,11 @@
 
 #include "client/crashpad_client.h"
 
+#include <errno.h>
 #include <fcntl.h>
+#include <pthread.h>
 #include <stdlib.h>
+#include <sys/mman.h>
 #include <sys/prctl.h>
 #include <sys/socket.h>
 #include <sys/syscall.h>
@@ -25,6 +28,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "build/chromeos_buildflags.h"
 #include "client/client_argv_handling.h"
 #include "third_party/lss/lss.h"
 #include "util/file/file_io.h"
@@ -34,8 +38,10 @@
 #include "util/linux/scoped_pr_set_dumpable.h"
 #include "util/linux/scoped_pr_set_ptracer.h"
 #include "util/linux/socket.h"
+#include "util/misc/address_sanitizer.h"
 #include "util/misc/from_pointer_cast.h"
 #include "util/posix/double_fork_and_exec.h"
+#include "util/posix/scoped_mmap.h"
 #include "util/posix/signals.h"
 
 namespace crashpad {
@@ -123,6 +129,9 @@ std::vector<std::string> BuildArgsToLaunchWithLinker(
 // A base class for Crashpad signal handler implementations.
 class SignalHandler {
  public:
+  SignalHandler(const SignalHandler&) = delete;
+  SignalHandler& operator=(const SignalHandler&) = delete;
+
   // Returns the currently installed signal hander. May be `nullptr` if no
   // handler has been installed.
   static SignalHandler* Get() { return handler_; }
@@ -164,12 +173,17 @@ class SignalHandler {
 
  protected:
   SignalHandler() = default;
+  ~SignalHandler() = default;
 
   bool Install(const std::set<int>* unhandled_signals) {
+    bool signal_stack_initialized =
+        CrashpadClient::InitializeSignalStackForThread();
+    DCHECK(signal_stack_initialized);
+
     DCHECK(!handler_);
     handler_ = this;
     return Signals::InstallCrashHandlers(
-        HandleOrReraiseSignal, 0, &old_actions_, unhandled_signals);
+        HandleOrReraiseSignal, SA_ONSTACK, &old_actions_, unhandled_signals);
   }
 
   const ExceptionInformation& GetExceptionInfo() {
@@ -197,8 +211,6 @@ class SignalHandler {
   static SignalHandler* handler_;
 
   static thread_local bool disabled_for_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(SignalHandler);
 };
 SignalHandler* SignalHandler::handler_ = nullptr;
 thread_local bool SignalHandler::disabled_for_thread_ = false;
@@ -206,6 +218,9 @@ thread_local bool SignalHandler::disabled_for_thread_ = false;
 // Launches a single use handler to snapshot this process.
 class LaunchAtCrashHandler : public SignalHandler {
  public:
+  LaunchAtCrashHandler(const LaunchAtCrashHandler&) = delete;
+  LaunchAtCrashHandler& operator=(const LaunchAtCrashHandler&) = delete;
+
   static LaunchAtCrashHandler* Get() {
     static LaunchAtCrashHandler* instance = new LaunchAtCrashHandler();
     return instance;
@@ -261,12 +276,13 @@ class LaunchAtCrashHandler : public SignalHandler {
   std::vector<std::string> envp_strings_;
   std::vector<const char*> envp_;
   bool set_envp_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(LaunchAtCrashHandler);
 };
 
 class RequestCrashDumpHandler : public SignalHandler {
  public:
+  RequestCrashDumpHandler(const RequestCrashDumpHandler&) = delete;
+  RequestCrashDumpHandler& operator=(const RequestCrashDumpHandler&) = delete;
+
   static RequestCrashDumpHandler* Get() {
     static RequestCrashDumpHandler* instance = new RequestCrashDumpHandler();
     return instance;
@@ -325,7 +341,7 @@ class RequestCrashDumpHandler : public SignalHandler {
     ExceptionHandlerProtocol::ClientInformation info = {};
     info.exception_information_address =
         FromPointerCast<VMAddress>(&GetExceptionInfo());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     info.crash_loop_before_time = crash_loop_before_time_;
 #endif
 
@@ -333,7 +349,7 @@ class RequestCrashDumpHandler : public SignalHandler {
     client.RequestCrashDump(info);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetCrashLoopBefore(uint64_t crash_loop_before_time) {
     crash_loop_before_time_ = crash_loop_before_time;
   }
@@ -347,15 +363,13 @@ class RequestCrashDumpHandler : public SignalHandler {
   ScopedFileHandle sock_to_handler_;
   pid_t handler_pid_ = -1;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // An optional UNIX timestamp passed to us from Chrome.
   // This will pass to crashpad_handler and then to Chrome OS crash_reporter.
   // This should really be a time_t, but it's basically an opaque value (we
   // don't anything with it except pass it along).
   uint64_t crash_loop_before_time_ = 0;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(RequestCrashDumpHandler);
 };
 
 }  // namespace
@@ -372,7 +386,8 @@ bool CrashpadClient::StartHandler(
     const std::map<std::string, std::string>& annotations,
     const std::vector<std::string>& arguments,
     bool restartable,
-    bool asynchronous_start) {
+    bool asynchronous_start,
+    const std::vector<base::FilePath>& attachments) {
   DCHECK(!asynchronous_start);
 
   ScopedFileHandle client_sock, handler_sock;
@@ -382,7 +397,7 @@ bool CrashpadClient::StartHandler(
   }
 
   std::vector<std::string> argv = BuildHandlerArgvStrings(
-      handler, database, metrics_dir, url, annotations, arguments);
+      handler, database, metrics_dir, url, annotations, arguments, attachments);
 
   argv.push_back(FormatArgumentInt("initial-client-fd", handler_sock.get()));
   argv.push_back("--shared-client-connection");
@@ -400,7 +415,7 @@ bool CrashpadClient::StartHandler(
       std::move(client_sock), handler_pid, &unhandled_signals_);
 }
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 // static
 bool CrashpadClient::GetHandlerSocket(int* sock, pid_t* pid) {
   auto signal_handler = RequestCrashDumpHandler::Get();
@@ -411,7 +426,100 @@ bool CrashpadClient::SetHandlerSocket(ScopedFileHandle sock, pid_t pid) {
   auto signal_handler = RequestCrashDumpHandler::Get();
   return signal_handler->Initialize(std::move(sock), pid, &unhandled_signals_);
 }
-#endif  // OS_ANDROID || OS_LINUX
+
+// static
+bool CrashpadClient::InitializeSignalStackForThread() {
+  stack_t stack;
+  if (sigaltstack(nullptr, &stack) != 0) {
+    PLOG(ERROR) << "sigaltstack";
+    return false;
+  }
+
+  DCHECK_EQ(stack.ss_flags & SS_ONSTACK, 0);
+
+  const size_t page_size = getpagesize();
+#if defined(ADDRESS_SANITIZER)
+  const size_t kStackSize = 2 * ((SIGSTKSZ + page_size - 1) & ~(page_size - 1));
+#else
+  const size_t kStackSize = (SIGSTKSZ + page_size - 1) & ~(page_size - 1);
+#endif  // ADDRESS_SANITIZER
+  if (stack.ss_flags & SS_DISABLE || stack.ss_size < kStackSize) {
+    const size_t kGuardPageSize = page_size;
+    const size_t kStackAllocSize = kStackSize + 2 * kGuardPageSize;
+
+    static void (*stack_destructor)(void*) = [](void* stack_mem) {
+      const size_t page_size = getpagesize();
+      const size_t kGuardPageSize = page_size;
+#if defined(ADDRESS_SANITIZER)
+      const size_t kStackSize =
+          2 * ((SIGSTKSZ + page_size - 1) & ~(page_size - 1));
+#else
+      const size_t kStackSize = (SIGSTKSZ + page_size - 1) & ~(page_size - 1);
+#endif  // ADDRESS_SANITIZER
+      const size_t kStackAllocSize = kStackSize + 2 * kGuardPageSize;
+
+      stack_t stack;
+      stack.ss_flags = SS_DISABLE;
+      if (sigaltstack(&stack, &stack) != 0) {
+        PLOG(ERROR) << "sigaltstack";
+      } else if (stack.ss_sp !=
+                 static_cast<char*>(stack_mem) + kGuardPageSize) {
+        PLOG_IF(ERROR, sigaltstack(&stack, nullptr) != 0) << "sigaltstack";
+      }
+
+      if (munmap(stack_mem, kStackAllocSize) != 0) {
+        PLOG(ERROR) << "munmap";
+      }
+    };
+
+    static pthread_key_t stack_key;
+    static int key_error = []() {
+      errno = pthread_key_create(&stack_key, stack_destructor);
+      PLOG_IF(ERROR, errno) << "pthread_key_create";
+      return errno;
+    }();
+    if (key_error) {
+      return false;
+    }
+
+    auto old_stack = static_cast<char*>(pthread_getspecific(stack_key));
+    if (old_stack) {
+      stack.ss_sp = old_stack + kGuardPageSize;
+    } else {
+      ScopedMmap stack_mem;
+      if (!stack_mem.ResetMmap(nullptr,
+                               kStackAllocSize,
+                               PROT_NONE,
+                               MAP_PRIVATE | MAP_ANONYMOUS,
+                               -1,
+                               0)) {
+        return false;
+      }
+
+      if (mprotect(stack_mem.addr_as<char*>() + kGuardPageSize,
+                   kStackSize,
+                   PROT_READ | PROT_WRITE) != 0) {
+        PLOG(ERROR) << "mprotect";
+        return false;
+      }
+
+      stack.ss_sp = stack_mem.addr_as<char*>() + kGuardPageSize;
+
+      errno = pthread_setspecific(stack_key, stack_mem.release());
+      PCHECK(errno == 0) << "pthread_setspecific";
+    }
+
+    stack.ss_size = kStackSize;
+    stack.ss_flags =
+        (stack.ss_flags & SS_DISABLE) ? 0 : stack.ss_flags & SS_AUTODISARM;
+    if (sigaltstack(&stack, nullptr) != 0) {
+      PLOG(ERROR) << "sigaltstack";
+      return false;
+    }
+  }
+  return true;
+}
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
 
 #if defined(OS_ANDROID)
 
@@ -507,9 +615,10 @@ bool CrashpadClient::StartHandlerAtCrash(
     const base::FilePath& metrics_dir,
     const std::string& url,
     const std::map<std::string, std::string>& annotations,
-    const std::vector<std::string>& arguments) {
+    const std::vector<std::string>& arguments,
+    const std::vector<base::FilePath>& attachments) {
   std::vector<std::string> argv = BuildHandlerArgvStrings(
-      handler, database, metrics_dir, url, annotations, arguments);
+      handler, database, metrics_dir, url, annotations, arguments, attachments);
 
   auto signal_handler = LaunchAtCrashHandler::Get();
   return signal_handler->Initialize(&argv, nullptr, &unhandled_signals_);
@@ -573,7 +682,7 @@ void CrashpadClient::SetUnhandledSignals(const std::set<int>& signals) {
   unhandled_signals_ = signals;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 void CrashpadClient::SetCrashLoopBefore(uint64_t crash_loop_before_time) {
   auto request_crash_dump_handler = RequestCrashDumpHandler::Get();

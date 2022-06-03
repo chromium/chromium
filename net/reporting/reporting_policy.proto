@@ -6,7 +6,7 @@
 
 syntax = "proto2";
 
-import "json.proto";
+import "testing/libfuzzer/proto/json.proto";
 
 package net_reporting_policy_proto;
 

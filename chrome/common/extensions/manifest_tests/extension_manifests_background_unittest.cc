@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "chrome/common/extensions/manifest_tests/chrome_manifest_test.h"
@@ -39,7 +40,7 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
   ASSERT_TRUE(manifest.is_dict());
 
   scoped_refptr<Extension> extension(
-      LoadAndExpectSuccess(ManifestData(&manifest, "")));
+      LoadAndExpectSuccess(ManifestData(manifest.Clone(), "")));
   ASSERT_TRUE(extension.get());
   const std::vector<std::string>& background_scripts =
       BackgroundInfo::GetBackgroundScripts(extension.get());
@@ -53,7 +54,25 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundScripts) {
       BackgroundInfo::GetBackgroundURL(extension.get()).path());
 
   manifest.SetPath({"background", "page"}, base::Value("monkey.html"));
-  LoadAndExpectError(ManifestData(&manifest, ""),
+  LoadAndExpectError(ManifestData(std::move(manifest), ""),
+                     errors::kInvalidBackgroundCombination);
+}
+
+TEST_F(ExtensionManifestBackgroundTest, BackgroundServiceWorkerScript) {
+  std::string error;
+  base::Value manifest = LoadManifest("background_script_sw.json", &error);
+  ASSERT_TRUE(manifest.is_dict());
+
+  scoped_refptr<Extension> extension(
+      LoadAndExpectSuccess(ManifestData(manifest.Clone(), "")));
+  ASSERT_TRUE(extension.get());
+  ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+  const std::string& service_worker_script =
+      BackgroundInfo::GetBackgroundServiceWorkerScript(extension.get());
+  EXPECT_EQ("service_worker.js", service_worker_script);
+
+  manifest.SetPath({"background", "page"}, base::Value("monkey.html"));
+  LoadAndExpectError(ManifestData(std::move(manifest), ""),
                      errors::kInvalidBackgroundCombination);
 }
 
@@ -67,8 +86,8 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPage) {
 }
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundAllowNoJsAccess) {
-  scoped_refptr<Extension> extension;
-  extension = LoadAndExpectSuccess("background_allow_no_js_access.json");
+  scoped_refptr<Extension> extension =
+      LoadAndExpectSuccess("background_allow_no_js_access.json");
   ASSERT_TRUE(extension.get());
   EXPECT_FALSE(BackgroundInfo::AllowJSAccess(extension.get()));
 
@@ -86,14 +105,14 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPageWebRequest) {
   manifest.SetPath({"background", "persistent"}, base::Value(false));
   manifest.SetKey(keys::kManifestVersion, base::Value(2));
   scoped_refptr<Extension> extension(
-      LoadAndExpectSuccess(ManifestData(&manifest, "")));
+      LoadAndExpectSuccess(ManifestData(manifest.Clone(), "")));
   ASSERT_TRUE(extension.get());
   EXPECT_TRUE(BackgroundInfo::HasLazyBackgroundPage(extension.get()));
 
   base::Value permissions(base::Value::Type::LIST);
   permissions.Append(base::Value("webRequest"));
   manifest.SetKey(keys::kPermissions, std::move(permissions));
-  LoadAndExpectError(ManifestData(&manifest, ""),
+  LoadAndExpectError(ManifestData(std::move(manifest), ""),
                      errors::kWebRequestConflictsWithLazyBackground);
 }
 
@@ -149,19 +168,17 @@ TEST_F(ExtensionManifestBackgroundTest, BackgroundPagePersistentPlatformApp) {
 }
 
 TEST_F(ExtensionManifestBackgroundTest, BackgroundPagePersistentInvalidKey) {
-  scoped_refptr<Extension> extension =
-      LoadAndExpectSuccess("background_page_invalid_persistent_key_app.json");
+  std::vector<std::string> expected_warnings = {
+      "'background' is only allowed for extensions, legacy packaged apps, "
+      "hosted apps, login screen extensions, and chromeos system extensions, "
+      "but this is a packaged app.",
+      "'background.persistent' is only allowed for extensions, legacy packaged "
+      "apps, and login screen extensions, but this is a packaged app."};
+  scoped_refptr<Extension> extension = LoadAndExpectWarnings(
+      "background_page_invalid_persistent_key_app.json", expected_warnings);
   ASSERT_TRUE(extension->is_platform_app());
   ASSERT_TRUE(BackgroundInfo::HasBackgroundPage(extension.get()));
   EXPECT_FALSE(BackgroundInfo::HasPersistentBackgroundPage(extension.get()));
-
-  std::string error;
-  std::vector<InstallWarning> warnings;
-  ManifestHandler::ValidateExtension(extension.get(), &error, &warnings);
-  // The key 'background.persistent' is not supported for packaged apps.
-  EXPECT_EQ(1U, warnings.size());
-  EXPECT_EQ(errors::kBackgroundPersistentInvalidForPlatformApps,
-            warnings[0].message);
 }
 
 // Tests channel restriction on "background.service_worker" key.
@@ -171,11 +188,19 @@ TEST_F(ExtensionManifestBackgroundTest, ServiceWorkerBasedBackgroundKey) {
   //   - specifying multiple files.
   //   - specifying invalid type (non-string) values.
   {
+    ScopedCurrentChannel stable(version_info::Channel::STABLE);
+    scoped_refptr<Extension> extension =
+        LoadAndExpectSuccess("service_worker_based_background.json");
+  }
+  {
+    ScopedCurrentChannel beta(version_info::Channel::BETA);
+    scoped_refptr<Extension> extension =
+        LoadAndExpectSuccess("service_worker_based_background.json");
+  }
+  {
     ScopedCurrentChannel dev(version_info::Channel::DEV);
     scoped_refptr<Extension> extension =
-        LoadAndExpectWarning("service_worker_based_background.json",
-                             "'background.service_worker' requires canary "
-                             "channel or newer, but this is the dev channel.");
+        LoadAndExpectSuccess("service_worker_based_background.json");
   }
   {
     ScopedCurrentChannel canary(version_info::Channel::CANARY);
@@ -255,6 +280,61 @@ TEST_F(ExtensionManifestBackgroundTest, ManifestV3Restrictions) {
         base::test::ParseJson(kManifestBackgroundPersistent);
     LoadAndExpectSuccess(
         ManifestData(std::move(manifest_value), "no background"));
+  }
+}
+
+TEST_F(ExtensionManifestBackgroundTest, ModuleServiceWorker) {
+  auto get_manifest = [](const char* background_value) {
+    constexpr char kManifestStub[] =
+        R"({
+           "name": "MV3 Test",
+           "manifest_version": 3,
+           "version": "0.1",
+           "background": { %s }
+         })";
+    std::string manifest_str =
+        base::StringPrintf(kManifestStub, background_value);
+    return base::test::ParseJson(manifest_str);
+  };
+
+  {
+    constexpr char kWorkerTypeClassic[] =
+        R"("service_worker": "worker.js", "type": "classic")";
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(ManifestData(
+        get_manifest(kWorkerTypeClassic), "classic service worker")));
+    ASSERT_TRUE(extension);
+    ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    const BackgroundServiceWorkerType service_worker_type =
+        BackgroundInfo::GetBackgroundServiceWorkerType(extension.get());
+    EXPECT_EQ(BackgroundServiceWorkerType::kClassic, service_worker_type);
+  }
+  {
+    constexpr char kWorkerTypeModule[] =
+        R"("service_worker": "worker.js", "type": "module")";
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(ManifestData(
+        get_manifest(kWorkerTypeModule), "module service worker")));
+    ASSERT_TRUE(extension);
+    ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    const BackgroundServiceWorkerType service_worker_type =
+        BackgroundInfo::GetBackgroundServiceWorkerType(extension.get());
+    EXPECT_EQ(BackgroundServiceWorkerType::kModule, service_worker_type);
+  }
+  {
+    constexpr char kWorkerTypeInvalid[] =
+        R"("service_worker": "worker.js", "type": "invalid")";
+    LoadAndExpectError(ManifestData(get_manifest(kWorkerTypeInvalid), ""),
+                       "Invalid value for 'background.type'.");
+  }
+  {
+    // An extension with no background.type key present should still be allowed.
+    constexpr char kWorkerTypeModule[] = R"("service_worker": "worker.js")";
+    scoped_refptr<Extension> extension(LoadAndExpectSuccess(
+        ManifestData(get_manifest(kWorkerTypeModule), "no background.type")));
+    ASSERT_TRUE(extension);
+    ASSERT_TRUE(BackgroundInfo::IsServiceWorkerBased(extension.get()));
+    const BackgroundServiceWorkerType service_worker_type =
+        BackgroundInfo::GetBackgroundServiceWorkerType(extension.get());
+    EXPECT_EQ(BackgroundServiceWorkerType::kClassic, service_worker_type);
   }
 }
 

@@ -6,10 +6,10 @@
 #define CONTENT_BROWSER_RENDERER_HOST_OVERSCROLL_CONTROLLER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
@@ -19,8 +19,13 @@ namespace content {
 // overscroll deltas maintained and reported by the controller.
 class CONTENT_EXPORT OverscrollControllerDelegate {
  public:
-  OverscrollControllerDelegate() {}
-  virtual ~OverscrollControllerDelegate() {}
+  OverscrollControllerDelegate();
+
+  OverscrollControllerDelegate(const OverscrollControllerDelegate&) = delete;
+  OverscrollControllerDelegate& operator=(const OverscrollControllerDelegate&) =
+      delete;
+
+  virtual ~OverscrollControllerDelegate();
 
   // Get the size of the display containing the view corresponding to the
   // delegate.
@@ -45,10 +50,12 @@ class CONTENT_EXPORT OverscrollControllerDelegate {
 
   // Returns the optional maximum amount allowed for the absolute value of
   // overscroll delta corresponding to the current overscroll mode.
-  virtual base::Optional<float> GetMaxOverscrollDelta() const = 0;
+  virtual absl::optional<float> GetMaxOverscrollDelta() const = 0;
+
+  base::WeakPtr<OverscrollControllerDelegate> GetWeakPtr();
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerDelegate);
+  base::WeakPtrFactory<OverscrollControllerDelegate> weak_factory_{this};
 };
 
 }  // namespace content

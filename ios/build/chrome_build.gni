@@ -2,20 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/apple/symbols.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/ios/ios_sdk.gni")
-import("//build/config/mac/symbols.gni")
+
+# Xcode 13.0 or higher is required to build Chromium on iOS. This file should
+# only be included when building Chromium, not other related projects (cronet,
+# webrtc, ...).
+assert(xcode_version_int >= 1300, "Xcode 13.0 or higher is required.")
 
 declare_args() {
   # Enable widget extensions.
   ios_enable_content_widget_extension = true
   ios_enable_search_widget_extension = true
 
+  # Enable iOS 14, WidgetKit extension.
+  ios_enable_widget_kit_extension = true
+
   # Enable share extension.
   ios_enable_share_extension = true
 
-  # Enable multi-window configuration in Info.plist
-  ios_enable_multi_window = false
+  # Enable credential provider extension.
+  ios_enable_credential_provider_extension = true
+
+  # Enable intents extension.
+  ios_enable_intents_extension = false
+
+  # Label of the target providing implementation for AccountVerificationProvider.
+  # Overridden when using the Google-internal repository to build Chrome on iOS.
+  ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
+
+  # The API key to query Google services in the Credential Provider Extension.
+  ios_credential_provider_extension_api_key = ""
+
+  # Controls whether ScreenTime API is used.
+  ios_enable_screen_time = true
 
   # Value of the encryption export compliance code. See "Cryptography and
   # U.S. Export Compliance" in "Submitting the App to App Review" in the
@@ -24,6 +45,10 @@ declare_args() {
 
   # List of plist templates to merge when generating chrome Info.plist.
   ios_chrome_info_plist_additions = []
+
+  # List of targets used to generate the plist listed in
+  # ios_chrome_info_plist_additions variable (if any).
+  ios_chrome_info_plist_addition_targets = []
 
   # List of plist templates to merge when generating chrome entitlements.
   ios_chrome_entitlements_additions = []
@@ -35,6 +60,22 @@ declare_args() {
   # Overridable list of dependencies that are forbidden for
   # //ios/chrome/app:chrome target.
   ios_chrome_extra_assert_no_deps = []
+
+  # List of plist templates to merge when generating chrome cpe entitlements.
+  ios_chrome_cpe_entitlements_additions = []
+}
+
+if (target_environment == "catalyst") {
+  # Some extensions uses API that are not available in "catalyst" environment.
+  ios_enable_content_widget_extension = false
+  ios_enable_search_widget_extension = false
+  ios_enable_credential_provider_extension = false
+  ios_enable_widget_kit_extension = false
+  ios_enable_prebuilt_widget_kit_extension = false
+
+  # ScreenTime framework is not available in the iOS support libraries provided
+  # by "catalyst" environment.
+  ios_enable_screen_time = false
 }
 
 # Configure whether breakpad support is enabled.
@@ -42,15 +83,16 @@ breakpad_enabled = is_official_build && is_chrome_branded
 
 if (breakpad_enabled) {
   breakpad_enabled_as_int = 1
-  is_official_release = enable_dsyms && !use_ios_simulator &&
+  is_official_release = enable_dsyms && target_environment == "device" &&
                         current_toolchain == default_toolchain
 } else {
   breakpad_enabled_as_int = 0
   is_official_release = false
 }
 
-chromium_bundle_id = "chrome.ios.herebedragons"
+chromium_bundle_id = "$ios_app_bundle_id_prefix.chrome.ios.dev"
 chromium_handoff_id = "$ios_app_bundle_id_prefix.chrome.handoff"
+ios_move_tab_activity_type = "$ios_app_bundle_id_prefix.chrome.move-tab"
 
 if (is_chrome_branded) {
   chromium_short_name = "Chrome"

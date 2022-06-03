@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 
 
+USE_PYTHON3 = True
+
 def CheckChangeOnUpload(input_api, output_api):
   return _CommonChecks(input_api, output_api)
 
@@ -71,9 +73,7 @@ def _CheckWebDevStyle(input_api, output_api):
     cwd = input_api.PresubmitLocalPath()
     sys.path += [input_api.os_path.join(cwd, '..', '..', '..', 'tools')]
     from web_dev_style import presubmit_support
-    BLACKLIST = ['ui/webui/resources/js/jstemplate_compiled.js']
-    file_filter = lambda f: f.LocalPath() not in BLACKLIST
-    results += presubmit_support.CheckStyle(input_api, output_api, file_filter)
+    results += presubmit_support.CheckStyle(input_api, output_api)
   finally:
     sys.path = old_sys_path
   return results
@@ -93,12 +93,27 @@ def _CheckJsModulizer(input_api, output_api):
   return results
 
 
+def _CheckGenerateGrd(input_api, output_api):
+  affected = input_api.AffectedFiles()
+  affected_files = [input_api.os_path.basename(f.LocalPath()) for f in affected]
+
+  results = []
+  if 'generate_grd.py' in affected_files:
+    presubmit_path = input_api.PresubmitLocalPath()
+    sources = [input_api.os_path.join('tools', 'generate_grd_test.py')]
+    tests = [input_api.os_path.join(presubmit_path, s) for s in sources]
+    results += input_api.canned_checks.RunUnitTests(
+        input_api, output_api, tests)
+  return results
+
+
 def _CommonChecks(input_api, output_api):
   results = []
   results += _CheckForTranslations(input_api, output_api)
   results += _CheckSvgsOptimized(input_api, output_api)
   results += _CheckWebDevStyle(input_api, output_api)
   results += _CheckJsModulizer(input_api, output_api)
+  results += _CheckGenerateGrd(input_api, output_api)
   results += input_api.canned_checks.CheckPatchFormatted(input_api, output_api,
                                                          check_js=True)
   return results

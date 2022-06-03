@@ -1,8 +1,7 @@
 [
-    Exposed=(Window,Worker),
-    MeasureAs=DecompressionStreamConstructor
+    Exposed=(Window,Worker)
 ] interface DecompressionStream {
-    [CallWith=ScriptState, RaisesException] constructor(DOMString format);
+    [CallWith=ScriptState, RaisesException, MeasureAs=DecompressionStreamConstructor] constructor(DOMString format);
     readonly attribute ReadableStream readable;
     readonly attribute WritableStream writable;
 };

@@ -12,17 +12,6 @@ namespace blink {
 void ResourceTimingInfo::AddRedirect(const ResourceResponse& redirect_response,
                                      const KURL& new_url) {
   redirect_chain_.push_back(redirect_response);
-  if (has_cross_origin_redirect_)
-    return;
-  bool cross_origin = !SecurityOrigin::AreSameOrigin(
-      redirect_response.CurrentRequestUrl(), new_url);
-  if (cross_origin) {
-    has_cross_origin_redirect_ = true;
-    transfer_size_ = 0;
-  } else {
-    DCHECK_GE(redirect_response.EncodedDataLength(), 0);
-    transfer_size_ += redirect_response.EncodedDataLength();
-  }
 }
 
 }  // namespace blink

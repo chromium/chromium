@@ -12,7 +12,7 @@ CFLAGS := -DUSE_ALLOCA $(CFLAGS)
 
 # These options affect performance
 # HAVE_LRINTF: Use C99 intrinsics to speed up float-to-int conversion
-#CFLAGS := -DHAVE_LRINTF $(CFLAGS)
+CFLAGS := -DHAVE_LRINTF $(CFLAGS)
 
 ###################### END OF OPTIONS ######################
 

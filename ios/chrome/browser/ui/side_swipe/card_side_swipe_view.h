@@ -11,7 +11,7 @@
 
 @class SideSwipeGestureRecognizer;
 @protocol SideSwipeToolbarSnapshotProviding;
-@class TabModel;
+class WebStateList;
 
 @interface CardSideSwipeView : UIView
 
@@ -27,7 +27,7 @@
 
 - (instancetype)initWithFrame:(CGRect)frame
                     topMargin:(CGFloat)margin
-                        model:(TabModel*)model;
+                 webStateList:(WebStateList*)webStateList;
 - (void)updateViewsForDirection:(UISwipeGestureRecognizerDirection)direction;
 - (void)handleHorizontalPan:(SideSwipeGestureRecognizer*)gesture;
 

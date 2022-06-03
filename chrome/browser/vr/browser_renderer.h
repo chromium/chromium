@@ -7,14 +7,13 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/graphics_delegate.h"
 #include "chrome/browser/vr/scheduler_browser_renderer_interface.h"
 #include "chrome/browser/vr/vr_export.h"
-#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
-#include "device/vr/public/mojom/vr_service.mojom.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
+#include "device/vr/public/mojom/vr_service.mojom-forward.h"
 #include "device/vr/util/sliding_average.h"
 
 namespace base {
@@ -50,6 +49,10 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
                   std::unique_ptr<InputDelegate> input_delegate,
                   BrowserRendererBrowserInterface* browser,
                   size_t sliding_time_size);
+
+  BrowserRenderer(const BrowserRenderer&) = delete;
+  BrowserRenderer& operator=(const BrowserRenderer&) = delete;
+
   ~BrowserRenderer() override;
 
   void OnPause();
@@ -136,8 +139,6 @@ class VR_EXPORT BrowserRenderer : public SchedulerBrowserRendererInterface {
   std::unique_ptr<UiInterface> ui_;
 
   base::WeakPtrFactory<BrowserRenderer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserRenderer);
 };
 
 }  // namespace vr

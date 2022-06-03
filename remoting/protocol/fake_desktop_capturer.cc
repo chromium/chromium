@@ -6,9 +6,12 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 
@@ -41,6 +44,9 @@ class DefaultFrameGenerator
         box_speed_y_(kSpeed),
         first_frame_(true) {}
 
+  DefaultFrameGenerator(const DefaultFrameGenerator&) = delete;
+  DefaultFrameGenerator& operator=(const DefaultFrameGenerator&) = delete;
+
   std::unique_ptr<webrtc::DesktopFrame> GenerateFrame(
       webrtc::SharedMemoryFactory* shared_memory_factory);
 
@@ -54,8 +60,6 @@ class DefaultFrameGenerator
   int box_speed_x_;
   int box_speed_y_;
   bool first_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultFrameGenerator);
 };
 
 std::unique_ptr<webrtc::DesktopFrame> DefaultFrameGenerator::GenerateFrame(
@@ -64,12 +68,12 @@ std::unique_ptr<webrtc::DesktopFrame> DefaultFrameGenerator::GenerateFrame(
   std::unique_ptr<webrtc::DesktopFrame> frame;
   if (shared_memory_factory) {
     int buffer_size = kWidth * kHeight * kBytesPerPixel;
-    frame.reset(new webrtc::SharedMemoryDesktopFrame(
+    frame = std::make_unique<webrtc::SharedMemoryDesktopFrame>(
         webrtc::DesktopSize(kWidth, kHeight), kWidth * kBytesPerPixel,
-        shared_memory_factory->CreateSharedMemory(buffer_size).release()));
+        shared_memory_factory->CreateSharedMemory(buffer_size).release());
   } else {
-    frame.reset(
-        new webrtc::BasicDesktopFrame(webrtc::DesktopSize(kWidth, kHeight)));
+    frame = std::make_unique<webrtc::BasicDesktopFrame>(
+        webrtc::DesktopSize(kWidth, kHeight));
   }
 
   // Move the box.
@@ -122,16 +126,16 @@ std::unique_ptr<webrtc::DesktopFrame> DefaultFrameGenerator::GenerateFrame(
 
 FakeDesktopCapturer::FakeDesktopCapturer()
     : callback_(nullptr) {
-  frame_generator_ = base::Bind(&DefaultFrameGenerator::GenerateFrame,
-                                base::MakeRefCounted<DefaultFrameGenerator>());
+  frame_generator_ =
+      base::BindRepeating(&DefaultFrameGenerator::GenerateFrame,
+                          base::MakeRefCounted<DefaultFrameGenerator>());
 }
 
 FakeDesktopCapturer::~FakeDesktopCapturer() = default;
 
-void FakeDesktopCapturer::set_frame_generator(
-    const FrameGenerator& frame_generator) {
+void FakeDesktopCapturer::set_frame_generator(FrameGenerator frame_generator) {
   DCHECK(!callback_);
-  frame_generator_ = frame_generator;
+  frame_generator_ = std::move(frame_generator);
 }
 
 void FakeDesktopCapturer::Start(Callback* callback) {

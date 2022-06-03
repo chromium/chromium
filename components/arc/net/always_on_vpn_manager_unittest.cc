@@ -5,13 +5,10 @@
 #include "components/arc/net/always_on_vpn_manager.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chromeos/dbus/dbus_method_call_status.h"
-#include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/arc/arc_prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -23,35 +20,31 @@ namespace {
 constexpr const char kVpnPackage[] = "com.android.vpn";
 const base::Value kVpnPackageValue(kVpnPackage);
 
-void OnGetProperties(chromeos::DBusMethodCallStatus* call_status_out,
+void OnGetProperties(bool* success_out,
                      std::string* package_name_out,
-                     const base::Closure& callback,
-                     chromeos::DBusMethodCallStatus call_status,
-                     const base::DictionaryValue& result) {
-  *call_status_out = call_status;
-  const base::Value* value = result.FindKeyOfType(
-      shill::kAlwaysOnVpnPackageProperty, base::Value::Type::STRING);
-  if (value != nullptr)
-    *package_name_out = value->GetString();
-  callback.Run();
-}
-
-void CheckStatus(chromeos::DBusMethodCallStatus call_status) {
-  ASSERT_EQ(chromeos::DBUS_METHOD_CALL_SUCCESS, call_status);
+                     base::OnceClosure callback,
+                     absl::optional<base::Value> result) {
+  *success_out = result.has_value();
+  if (result) {
+    const base::Value* value = result->FindKeyOfType(
+        shill::kAlwaysOnVpnPackageProperty, base::Value::Type::STRING);
+    if (value != nullptr)
+      *package_name_out = value->GetString();
+  }
+  std::move(callback).Run();
 }
 
 std::string GetAlwaysOnPackageName() {
-  chromeos::DBusMethodCallStatus call_status =
-      chromeos::DBUS_METHOD_CALL_FAILURE;
+  bool success = false;
   std::string package_name;
   chromeos::ShillManagerClient* shill_manager =
-      chromeos::DBusThreadManager::Get()->GetShillManagerClient();
+      chromeos::ShillManagerClient::Get();
   base::RunLoop run_loop;
   shill_manager->GetProperties(
-      base::Bind(&OnGetProperties, base::Unretained(&call_status),
-                 base::Unretained(&package_name), run_loop.QuitClosure()));
+      base::BindOnce(&OnGetProperties, base::Unretained(&success),
+                     base::Unretained(&package_name), run_loop.QuitClosure()));
   run_loop.Run();
-  CheckStatus(call_status);
+  EXPECT_TRUE(success);
   return package_name;
 }
 
@@ -64,26 +57,19 @@ class AlwaysOnVpnManagerTest : public testing::Test {
  public:
   AlwaysOnVpnManagerTest() = default;
 
-  void SetUp() override {
-    chromeos::DBusThreadManager::Initialize();
-    EXPECT_TRUE(chromeos::DBusThreadManager::Get()->IsUsingFakes());
-    chromeos::NetworkHandler::Initialize();
-    EXPECT_TRUE(chromeos::NetworkHandler::IsInitialized());
-    arc::prefs::RegisterProfilePrefs(pref_service()->registry());
-  }
+  AlwaysOnVpnManagerTest(const AlwaysOnVpnManagerTest&) = delete;
+  AlwaysOnVpnManagerTest& operator=(const AlwaysOnVpnManagerTest&) = delete;
 
-  void TearDown() override {
-    chromeos::NetworkHandler::Shutdown();
-    chromeos::DBusThreadManager::Shutdown();
+  void SetUp() override {
+    arc::prefs::RegisterProfilePrefs(pref_service()->registry());
   }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
+  chromeos::NetworkHandlerTestHelper network_handler_test_helper_;
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysOnVpnManagerTest);
 };
 
 TEST_F(AlwaysOnVpnManagerTest, SetPackageWhileLockdownUnset) {

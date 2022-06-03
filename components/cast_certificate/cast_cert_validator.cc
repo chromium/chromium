@@ -11,8 +11,13 @@
 #include <memory>
 #include <utility>
 
-#include "base/memory/singleton.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/logging.h"
+#include "base/no_destructor.h"
+#include "base/strings/string_piece.h"
+#include "base/synchronization/lock.h"
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "components/cast_certificate/cast_crl.h"
 #include "net/cert/internal/cert_issuer_source_static.h"
 #include "net/cert/internal/certificate_policies.h"
@@ -26,9 +31,17 @@
 #include "net/cert/internal/simple_path_builder_delegate.h"
 #include "net/cert/internal/trust_store_in_memory.h"
 #include "net/cert/internal/verify_signed_data.h"
+#include "net/cert/pem.h"
 #include "net/cert/x509_util.h"
 #include "net/der/encode_values.h"
 #include "net/der/input.h"
+
+// Used specifically when CAST_ALLOW_DEVELOPER_CERTIFICATE is true:
+#include "base/command_line.h"
+#include "base/memory/weak_ptr.h"
+#include "base/path_service.h"
+#include "components/cast_certificate/cast_cert_reader.h"
+#include "components/cast_certificate/switches.h"
 
 namespace cast_certificate {
 namespace {
@@ -51,22 +64,63 @@ namespace {
 #include "components/cast_certificate/cast_root_ca_cert_der-inc.h"
 #include "components/cast_certificate/eureka_root_ca_der-inc.h"
 
-// Singleton for the Cast trust store.
 class CastTrustStore {
  public:
-  static CastTrustStore* GetInstance() {
-    return base::Singleton<CastTrustStore,
-                           base::LeakySingletonTraits<CastTrustStore>>::get();
+  using AccessCallback = base::OnceCallback<void(net::TrustStore*)>;
+
+  CastTrustStore(const CastTrustStore&) = delete;
+  CastTrustStore& operator=(const CastTrustStore&) = delete;
+
+  static void AccessInstance(AccessCallback callback) {
+    CastTrustStore* instance = GetInstance();
+    const base::AutoLock guard(instance->lock_);
+    std::move(callback).Run(&instance->store_);
   }
 
-  static net::TrustStore& Get() { return GetInstance()->store_; }
-
  private:
-  friend struct base::DefaultSingletonTraits<CastTrustStore>;
+  friend class base::NoDestructor<CastTrustStore>;
+
+  static CastTrustStore* GetInstance() {
+    static base::NoDestructor<CastTrustStore> instance;
+    return instance.get();
+  }
 
   CastTrustStore() {
     AddAnchor(kCastRootCaDer);
     AddAnchor(kEurekaRootCaDer);
+
+    // Adding developer certificates must be done off of the IO thread due
+    // to blocking file access.
+#if defined(CAST_ALLOW_DEVELOPER_CERTIFICATE)
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        // NOTE: the singleton instance is never destroyed, so we can use
+        // Unretained here instead of a weak pointer.
+        base::BindOnce(&CastTrustStore::AddDeveloperCertificates,
+                       base::Unretained(this)));
+  }
+
+  // Check for custom root developer certificate and create a trust store
+  // from it if present and enabled.
+  void AddDeveloperCertificates() {
+    base::AutoLock guard(lock_);
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    std::string cert_path_arg = command_line->GetSwitchValueASCII(
+        switches::kCastDeveloperCertificatePath);
+    if (!cert_path_arg.empty()) {
+      base::FilePath cert_path(cert_path_arg);
+      if (!cert_path.IsAbsolute()) {
+        base::FilePath path;
+        base::PathService::Get(base::DIR_CURRENT, &path);
+        cert_path = path.Append(cert_path);
+      }
+      VLOG(1) << "Using cast developer certificate path " << cert_path;
+      if (!PopulateStoreWithCertsFromPath(&store_, cert_path)) {
+        LOG(WARNING) << "No developer certs added to store, only official"
+                        "Google root CA certificates will work.";
+      }
+    }
+#endif
   }
 
   // Adds a trust anchor given a DER-encoded certificate from static
@@ -74,16 +128,17 @@ class CastTrustStore {
   template <size_t N>
   void AddAnchor(const uint8_t (&data)[N]) {
     net::CertErrors errors;
-    scoped_refptr<net::ParsedCertificate> cert =
-        net::ParsedCertificate::CreateWithoutCopyingUnsafe(data, N, {},
-                                                           &errors);
+    scoped_refptr<net::ParsedCertificate> cert = net::ParsedCertificate::Create(
+        net::x509_util::CreateCryptoBufferFromStaticDataUnsafe(data), {},
+        &errors);
     CHECK(cert) << errors.ToDebugString();
     // Enforce pathlen constraints and policies defined on the root certificate.
+    base::AutoLock guard(lock_);
     store_.AddTrustAnchorWithConstraints(std::move(cert));
   }
 
-  net::TrustStoreInMemory store_;
-  DISALLOW_COPY_AND_ASSIGN(CastTrustStore);
+  base::Lock lock_;
+  net::TrustStoreInMemory store_ GUARDED_BY(lock_);
 };
 
 // Returns the OID for the Audio-Only Cast policy
@@ -116,7 +171,7 @@ class CertVerificationContextImpl : public CertVerificationContext {
   // Save a copy of the passed in public key (DER) and common name (text).
   CertVerificationContextImpl(const net::der::Input& spki,
                               const base::StringPiece& common_name)
-      : spki_(spki.AsString()), common_name_(common_name.as_string()) {}
+      : spki_(spki.AsString()), common_name_(common_name) {}
 
   bool VerifySignatureOverData(
       const base::StringPiece& signature,
@@ -213,8 +268,8 @@ WARN_UNUSED_RESULT bool CheckTargetCertificate(
   if (!GetCommonNameFromSubject(cert->tbs().subject_tlv, &common_name))
     return false;
 
-  context->reset(
-      new CertVerificationContextImpl(cert->tbs().spki_tlv, common_name));
+  *context = std::make_unique<CertVerificationContextImpl>(cert->tbs().spki_tlv,
+                                                           common_name);
   return true;
 }
 
@@ -258,8 +313,17 @@ CastCertError VerifyDeviceCert(
     CastDeviceCertPolicy* policy,
     const CastCRL* crl,
     CRLPolicy crl_policy) {
-  return VerifyDeviceCertUsingCustomTrustStore(
-      certs, time, context, policy, crl, crl_policy, &CastTrustStore::Get());
+  CastCertError verification_result;
+  CastTrustStore::AccessInstance(base::BindOnce(
+      [](const std::vector<std::string>& certs, const base::Time& time,
+         std::unique_ptr<CertVerificationContext>* context,
+         CastDeviceCertPolicy* policy, const CastCRL* crl, CRLPolicy crl_policy,
+         CastCertError* result, net::TrustStore* store) {
+        *result = VerifyDeviceCertUsingCustomTrustStore(
+            certs, time, context, policy, crl, crl_policy, store);
+      },
+      certs, time, context, policy, crl, crl_policy, &verification_result));
+  return verification_result;
 }
 
 CastCertError VerifyDeviceCertUsingCustomTrustStore(

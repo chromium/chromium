@@ -10,33 +10,36 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
-#include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
-#include "google_apis/gaia/gaia_oauth_client.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
-#include "services/network/public/mojom/network_change_manager.mojom.h"
+#include "services/network/public/mojom/network_change_manager.mojom-forward.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/network/public/cpp/network_connection_tracker.h"
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 class ForceSigninVerifier;
 #endif
 class Profile;
 
 class ChromeSigninClient
-    : public SigninClient,
-#if !defined(OS_CHROMEOS)
-      public network::NetworkConnectionTracker::NetworkConnectionObserver,
+    : public SigninClient
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+    ,
+      public network::NetworkConnectionTracker::NetworkConnectionObserver
 #endif
-      public gaia::GaiaOAuthClient::Delegate {
+{
  public:
   explicit ChromeSigninClient(Profile* profile);
+
+  ChromeSigninClient(const ChromeSigninClient&) = delete;
+  ChromeSigninClient& operator=(const ChromeSigninClient&) = delete;
+
   ~ChromeSigninClient() override;
 
   void DoFinalInit() override;
@@ -63,19 +66,15 @@ class ChromeSigninClient
       gaia::GaiaSource source) override;
   bool IsNonEnterpriseUser(const std::string& username) override;
 
-  // gaia::GaiaOAuthClient::Delegate implementation.
-  void OnGetTokenInfoResponse(
-      std::unique_ptr<base::DictionaryValue> token_info) override;
-  void OnOAuthError() override;
-  void OnNetworkError(int response_code) override;
-
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // network::NetworkConnectionTracker::NetworkConnectionObserver
   // implementation.
   void OnConnectionChanged(network::mojom::ConnectionType type) override;
 #endif
 
-  void SetDiceMigrationCompleted() override;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  absl::optional<account_manager::Account> GetInitialPrimaryAccount() override;
+#endif
 
   // Used in tests to override the URLLoaderFactory returned by
   // GetURLLoaderFactory().
@@ -87,41 +86,30 @@ class ChromeSigninClient
   virtual void LockForceSigninProfile(const base::FilePath& profile_path);
 
  private:
-  void MaybeFetchSigninTokenHandle();
   void VerifySyncToken();
   void OnCloseBrowsersSuccess(
       const signin_metrics::ProfileSignout signout_source_metric,
       const base::FilePath& profile_path);
   void OnCloseBrowsersAborted(const base::FilePath& profile_path);
 
-  // signin::PrimaryAccountAccessTokenFetcher callback
-  void OnAccessTokenAvailable(GoogleServiceAuthError error,
-                              signin::AccessTokenInfo access_token_info);
-
   Profile* profile_;
 
   // Stored callback from PreSignOut();
   base::OnceCallback<void(SignoutDecision)> on_signout_decision_reached_;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   std::list<base::OnceClosure> delayed_callbacks_;
 #endif
 
   bool should_display_user_manager_ = true;
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<ForceSigninVerifier> force_signin_verifier_;
 #endif
-
-  std::unique_ptr<gaia::GaiaOAuthClient> oauth_client_;
-  std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
-      access_token_fetcher_;
 
   scoped_refptr<network::SharedURLLoaderFactory>
       url_loader_factory_for_testing_;
 
   base::WeakPtrFactory<ChromeSigninClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeSigninClient);
 };
 
 #endif  // CHROME_BROWSER_SIGNIN_CHROME_SIGNIN_CLIENT_H_

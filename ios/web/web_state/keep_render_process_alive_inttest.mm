@@ -7,6 +7,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "ios/web/common/features.h"
+#import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
@@ -39,6 +40,10 @@ class KeepRenderProcessAliveTest : public WebTestWithWebState {
         web::features::kKeepsRenderProcessAlive);
   }
 
+  KeepRenderProcessAliveTest(const KeepRenderProcessAliveTest&) = delete;
+  KeepRenderProcessAliveTest& operator=(const KeepRenderProcessAliveTest&) =
+      delete;
+
   void SetUp() override {
     WebTestWithWebState::SetUp();
     ASSERT_EQ(0U, GetWebClient()->GetWindowedContainer().subviews.count);
@@ -56,13 +61,10 @@ class KeepRenderProcessAliveTest : public WebTestWithWebState {
     return view.superview == GetKeyWindow();
   }
 
-  UIWindow* GetKeyWindow() {
-    return [UIApplication sharedApplication].keyWindow;
-  }
+  UIWindow* GetKeyWindow() { return GetAnyKeyWindow(); }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(KeepRenderProcessAliveTest);
 };
 
 // Test's that nothing is added to the WindowedContainer when

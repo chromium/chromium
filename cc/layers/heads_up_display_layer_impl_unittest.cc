@@ -22,12 +22,12 @@ void CheckDrawLayer(HeadsUpDisplayLayerImpl* layer,
                     viz::ClientResourceProvider* resource_provider,
                     viz::ContextProvider* context_provider,
                     DrawMode draw_mode) {
-  std::unique_ptr<viz::RenderPass> render_pass = viz::RenderPass::Create();
+  auto render_pass = viz::CompositorRenderPass::Create();
   AppendQuadsData data;
   bool will_draw = layer->WillDraw(draw_mode, resource_provider);
   if (will_draw)
     layer->AppendQuads(render_pass.get(), &data);
-  viz::RenderPassList pass_list;
+  viz::CompositorRenderPassList pass_list;
   pass_list.push_back(std::move(render_pass));
   layer->UpdateHudTexture(draw_mode, frame_sink, resource_provider,
                           context_provider, pass_list);

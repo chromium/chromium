@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PREDICATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_PREDICATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 #include "third_party/blink/renderer/core/xml/xpath_value.h"
@@ -39,7 +38,7 @@ namespace xpath {
 class CORE_EXPORT Number final : public Expression {
  public:
   explicit Number(double);
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Value Evaluate(EvaluationContext&) const override;
@@ -51,7 +50,7 @@ class CORE_EXPORT Number final : public Expression {
 class CORE_EXPORT StringExpression final : public Expression {
  public:
   explicit StringExpression(const String&);
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Value Evaluate(EvaluationContext&) const override;
@@ -120,7 +119,9 @@ class Union final : public Expression {
 class Predicate final : public GarbageCollected<Predicate> {
  public:
   explicit Predicate(Expression*);
-  void Trace(blink::Visitor*);
+  Predicate(const Predicate&) = delete;
+  Predicate& operator=(const Predicate&) = delete;
+  void Trace(Visitor*) const;
 
   bool Evaluate(EvaluationContext&) const;
   bool IsContextPositionSensitive() const {
@@ -133,7 +134,6 @@ class Predicate final : public GarbageCollected<Predicate> {
 
  private:
   Member<Expression> expr_;
-  DISALLOW_COPY_AND_ASSIGN(Predicate);
 };
 
 }  // namespace xpath

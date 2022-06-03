@@ -85,6 +85,9 @@ namespace feedbackPrivate {
     // Whether or not to send bluetooth logs with this report.
     boolean? sendBluetoothLogs;
 
+    // Whether or not to send tab titles with this report.
+    boolean? sendTabTitles;
+
     // Whether or not to send Assistant feedback to Assistant server.
     boolean? assistantDebugInfoAllowed;
 
@@ -93,6 +96,10 @@ namespace feedbackPrivate {
 
     // Whether or not to include bluetooth logs.
     boolean? includeBluetoothLogs;
+
+    // Whether to show questionnaire in the report description based on detected
+    // domain-related keywords (crbug/1241169).
+    boolean? showQuestionnaire;
   };
 
   // Status of the sending of a feedback report.
@@ -194,7 +201,15 @@ namespace feedbackPrivate {
     static void getSystemInformation(GetSystemInformationCallback callback);
 
     // Sends a feedback report.
+    // |loadSystemInfo|: Optional flag when present and is true, the backend
+    // should load system information before sending the report. This is added
+    // to reduce user's wait time when sending reports because loading system
+    // information is slow.
+    // |formOpenTime|: The epoch time when the feedback form was opened. This is
+    // used for metrics.
     static void sendFeedback(FeedbackInfo feedback,
+                             optional boolean loadSystemInfo,
+                             optional double formOpenTime,
                              SendFeedbackCallback callback);
 
     // Gets localized translated strings for feedback. It returns the

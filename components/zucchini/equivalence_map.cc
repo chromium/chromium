@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "components/zucchini/encoded_view.h"
 #include "components/zucchini/patch_reader.h"
 #include "components/zucchini/suffix_array.h"
@@ -214,7 +214,7 @@ EquivalenceCandidate VisitEquivalenceSeed(
 
 /******** OffsetMapper ********/
 
-OffsetMapper::OffsetMapper(std::vector<Equivalence>&& equivalences,
+OffsetMapper::OffsetMapper(std::deque<Equivalence>&& equivalences,
                            offset_t old_image_size,
                            offset_t new_image_size)
     : equivalences_(std::move(equivalences)),
@@ -291,7 +291,7 @@ offset_t OffsetMapper::ExtendedForwardProject(offset_t offset) const {
                                                 : kOffsetBound - 1;
 }
 
-void OffsetMapper::ForwardProjectAll(std::vector<offset_t>* offsets) const {
+void OffsetMapper::ForwardProjectAll(std::deque<offset_t>* offsets) const {
   DCHECK(std::is_sorted(offsets->begin(), offsets->end()));
   auto current = equivalences_.begin();
   for (auto& src : *offsets) {
@@ -310,7 +310,7 @@ void OffsetMapper::ForwardProjectAll(std::vector<offset_t>* offsets) const {
 }
 
 void OffsetMapper::PruneEquivalencesAndSortBySource(
-    std::vector<Equivalence>* equivalences) {
+    std::deque<Equivalence>* equivalences) {
   std::sort(equivalences->begin(), equivalences->end(),
             [](const Equivalence& a, const Equivalence& b) {
               return a.src_offset < b.src_offset;
@@ -368,6 +368,7 @@ void OffsetMapper::PruneEquivalencesAndSortBySource(
   base::EraseIf(*equivalences, [](const Equivalence& equivalence) {
     return equivalence.length == 0;
   });
+  equivalences->shrink_to_fit();
 }
 
 /******** EquivalenceMap ********/

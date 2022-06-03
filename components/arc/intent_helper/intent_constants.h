@@ -9,6 +9,7 @@ namespace arc {
 
 // Well-known Android intent actions, e.g. "android.intent.action.VIEW"
 // (corresponding to Android's android.content.Intent.ACTION_VIEW constant).
+extern const char kIntentActionMain[];
 extern const char kIntentActionView[];
 extern const char kIntentActionSend[];
 extern const char kIntentActionSendMultiple[];

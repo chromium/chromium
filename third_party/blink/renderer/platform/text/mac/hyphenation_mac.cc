@@ -7,6 +7,7 @@
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/scoped_typeref.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
+#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
 
 namespace blink {
 
@@ -19,10 +20,13 @@ class HyphenationCF final : public Hyphenation {
 
   wtf_size_t LastHyphenLocation(const StringView& text,
                                 wtf_size_t before_index) const override {
+    if (!ShouldHyphenateWord(text))
+      return 0;
+
     CFIndex result = CFStringGetHyphenationLocationBeforeIndex(
         text.ToString().Impl()->CreateCFString(), before_index,
         CFRangeMake(0, text.length()), 0, locale_cf_, 0);
-    return result == kCFNotFound ? 0 : result;
+    return static_cast<wtf_size_t>(result == kCFNotFound ? 0 : result);
   }
 
   // While Hyphenation::FirstHyphenLocation() works good, it computes all
@@ -31,6 +35,9 @@ class HyphenationCF final : public Hyphenation {
   // LastHyphenLocation() but does not support HyphenLocations().
   wtf_size_t FirstHyphenLocation(const StringView& text,
                                  wtf_size_t after_index) const override {
+    if (!ShouldHyphenateWord(text))
+      return 0;
+
     after_index = std::max(after_index,
                            static_cast<wtf_size_t>(kMinimumPrefixLength - 1));
     wtf_size_t hyphen_location = text.length();
@@ -59,7 +66,11 @@ scoped_refptr<Hyphenation> Hyphenation::PlatformGetHyphenation(
       CFLocaleCreate(kCFAllocatorDefault, locale_cf_string));
   if (!CFStringIsHyphenationAvailableForLocale(locale_cf))
     return nullptr;
-  return base::AdoptRef(new HyphenationCF(locale_cf));
+  scoped_refptr<Hyphenation> hyphenation(
+      base::AdoptRef(new HyphenationCF(locale_cf)));
+  if (locale.StartsWithIgnoringASCIICase("de"))
+    hyphenation->hyphenate_capitalized_word_ = true;
+  return hyphenation;
 }
 
 }  // namespace blink

@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/animation/animation_test_api.h"
@@ -45,6 +44,10 @@ class InkDropRippleTest
     : public testing::TestWithParam<InkDropRippleTestTypes> {
  public:
   InkDropRippleTest();
+
+  InkDropRippleTest(const InkDropRippleTest&) = delete;
+  InkDropRippleTest& operator=(const InkDropRippleTest&) = delete;
+
   ~InkDropRippleTest() override;
 
  protected:
@@ -56,9 +59,6 @@ class InkDropRippleTest
 
   std::unique_ptr<base::AutoReset<gfx::Animation::RichAnimationRenderMode>>
       animation_mode_reset_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InkDropRippleTest);
 };
 
 InkDropRippleTest::InkDropRippleTest()
@@ -360,17 +360,14 @@ TEST_P(InkDropRippleTest, AnimateToVisibleFromHidden) {
 // the most recent value passed to AnimateToState() when notifying observers
 // that an animation has started within the AnimateToState() function call.
 TEST_P(InkDropRippleTest, TargetInkDropStateOnAnimationStarted) {
-  // TODO(bruthig): Re-enable! For some reason these tests fail on some win
-  // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
-    return;
-
   ink_drop_ripple_->AnimateToState(views::InkDropState::ACTION_PENDING);
 
   EXPECT_TRUE(observer_.AnimationHasStarted());
   EXPECT_EQ(views::InkDropState::ACTION_PENDING,
             observer_.target_state_at_last_animation_started());
-  EXPECT_FALSE(observer_.AnimationHasEnded());
+  // Animation would end if rich_animation_rendering_mode is disabled.
+  if (gfx::Animation::ShouldRenderRichAnimation())
+    EXPECT_FALSE(observer_.AnimationHasEnded());
 
   ink_drop_ripple_->AnimateToState(views::InkDropState::HIDDEN);
 
@@ -383,14 +380,11 @@ TEST_P(InkDropRippleTest, TargetInkDropStateOnAnimationStarted) {
 // the most recent value passed to AnimateToState() when notifying observers
 // that an animation has ended within the AnimateToState() function call.
 TEST_P(InkDropRippleTest, TargetInkDropStateOnAnimationEnded) {
-  // TODO(bruthig): Re-enable! For some reason these tests fail on some win
-  // trunk builds. See crbug.com/731811.
-  if (!gfx::Animation::ShouldRenderRichAnimation())
-    return;
-
   ink_drop_ripple_->AnimateToState(views::InkDropState::ACTION_PENDING);
 
-  EXPECT_FALSE(observer_.AnimationHasEnded());
+  // Animation would end if rich_animation_rendering_mode is disabled.
+  if (gfx::Animation::ShouldRenderRichAnimation())
+    EXPECT_FALSE(observer_.AnimationHasEnded());
 
   ink_drop_ripple_->AnimateToState(views::InkDropState::HIDDEN);
 

@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/resources/testdriver-actions.js"></script>
+<body>
+  <portal src="resources/simple-portal.html" style="cursor:pointer;"></portal>
+  <script>
+    promise_test(async () => {
+      await new Promise(r => window.onload = r);
+      let portal = document.querySelector('portal');
+      let actions = new test_driver.Actions()
+          .pointerMove(20, 20, {origin: portal});
+      actions.send();
+      await new Promise(r => portal.onpointermove = r);
+      assert_equals('type=Hand', internals.getCurrentCursorInfo());
+    }, 'test that cursor is updated over portal');
+  </script>
+</body>

@@ -6,7 +6,7 @@
 #define COMPONENTS_NTP_SNIPPETS_REMOTE_REMOTE_SUGGESTIONS_STATUS_SERVICE_H_
 
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/prefs/pref_change_registrar.h"
 
 namespace ntp_snippets {
@@ -25,8 +25,8 @@ enum class RemoteSuggestionsStatus : int {
 class RemoteSuggestionsStatusService {
  public:
   using StatusChangeCallback =
-      base::Callback<void(RemoteSuggestionsStatus old_status,
-                          RemoteSuggestionsStatus new_status)>;
+      base::RepeatingCallback<void(RemoteSuggestionsStatus old_status,
+                                   RemoteSuggestionsStatus new_status)>;
   virtual ~RemoteSuggestionsStatusService() = default;
 
   // Starts listening for changes from the dependencies. |callback| will be

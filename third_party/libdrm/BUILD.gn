@@ -1,7 +1,7 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-assert(is_linux)
+assert(is_linux || is_chromeos)
 
 config("libdrm_config") {
   # TODO(thomasanderson): Remove this hack once
@@ -78,7 +78,7 @@ executable("modetest") {
     "src/tests/modetest",
   ]
 
-  deps = [
-    ":libdrm",
-  ]
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
+  deps = [ ":libdrm" ]
 }

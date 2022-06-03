@@ -1,0 +1,429 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "cc/mojom/overscroll_behavior.mojom";
+import "cc/mojom/touch_action.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/input/gesture_event.mojom";
+import "third_party/blink/public/mojom/input/input_event.mojom";
+import "third_party/blink/public/mojom/input/input_event_result.mojom";
+import "third_party/blink/public/mojom/input/pointer_lock_context.mojom";
+import "third_party/blink/public/mojom/input/pointer_lock_result.mojom";
+import "third_party/blink/public/mojom/input/touch_event.mojom";
+import "third_party/blink/public/mojom/selection_menu/selection_menu_behavior.mojom";
+import "ui/base/ime/mojom/ime_types.mojom";
+import "ui/events/mojom/event.mojom";
+import "ui/events/mojom/event_constants.mojom";
+import "ui/events/mojom/scroll_granularity.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/range/mojom/range.mojom";
+import "ui/latency/mojom/latency_info.mojom";
+
+[EnableIf=is_android]
+import "third_party/blink/public/mojom/input/synchronous_compositor.mojom";
+
+// These structs are purposely duplicated from ui/events/mojom/event.mojom.
+// They map WebInputEvent <-> WebInputEvent across mojo.
+// We have to work at unifying them. The current problem is that the browser
+// uses WebInputEvents inside the render widget host and input router. Once
+// we move these to ui::Event's then we can get rid of these duplicated
+// mojom structs. Ideally the browser would use ui::Event up until we
+// pass the events into the renderer and just use a StructTraits to perform
+// conversion from ui::mojom::Event --> blink::WebInputEvent.
+struct KeyData {
+  int32 dom_key;
+  int32 dom_code;
+  int32 windows_key_code;
+  int32 native_key_code;
+  bool is_system_key;
+  bool is_browser_shortcut;
+  mojo_base.mojom.String16 text;
+  mojo_base.mojom.String16 unmodified_text;
+};
+
+struct PointerData {
+  int32 pointer_id;
+  float force;
+  int32 tilt_x;
+  int32 tilt_y;
+  float tangential_pressure;
+  int32 twist;
+  blink.mojom.Button button;
+  ui.mojom.EventPointerType pointer_type;
+  int32 movement_x;
+  int32 movement_y;
+  bool is_raw_movement_event;
+  gfx.mojom.PointF widget_position;
+  gfx.mojom.PointF screen_position;
+  MouseData? mouse_data;
+};
+
+struct WheelData {
+  float delta_x;
+  float delta_y;
+  float wheel_ticks_x;
+  float wheel_ticks_y;
+  float acceleration_ratio_x;
+  float acceleration_ratio_y;
+  uint8 phase;
+  uint8 momentum_phase;
+  blink.mojom.DispatchType cancelable;
+  uint8 event_action;
+  uint8 delta_units;
+};
+
+struct MouseData {
+  int32 click_count;
+  WheelData? wheel_data;
+};
+
+struct ScrollUpdate {
+  float velocity_x;
+  float velocity_y;
+};
+
+struct ScrollData {
+  float delta_x;
+  float delta_y;
+  ui.mojom.ScrollGranularity delta_units;
+  bool target_viewport;
+  blink.mojom.InertialPhaseState inertial_phase;
+  bool synthetic;
+  int32 pointer_count;
+  // Used for GestureScrollBegin type only. If this is true, we use the scroll
+  // sequence to do cursor control rather than scroll.
+  bool cursor_control;
+  ScrollUpdate? update_details;
+};
+
+struct PinchBeginData {
+  bool needs_wheel_event;
+};
+
+struct PinchUpdateData {
+  float scale;
+  bool zoom_disabled;
+  bool needs_wheel_event;
+};
+
+struct PinchEndData {
+  bool needs_wheel_event;
+};
+
+struct FlingData {
+  float velocity_x;
+  float velocity_y;
+  bool target_viewport;
+  bool prevent_boosting;
+};
+
+struct TapData {
+  int32 tap_count;
+  bool needs_wheel_event;
+};
+
+struct GestureData {
+  gfx.mojom.PointF screen_position;
+  gfx.mojom.PointF widget_position;
+  blink.mojom.GestureDevice source_device;
+  bool is_source_touch_event_set_blocking;
+  ui.mojom.EventPointerType primary_pointer_type;
+  int32 primary_unique_touch_event_id;
+  int32 unique_touch_event_id;
+  gfx.mojom.Size? contact_size;
+  ScrollData? scroll_data;
+  PinchBeginData? pinch_begin_data;
+  PinchUpdateData? pinch_update_data;
+  PinchEndData? pinch_end_data;
+  TapData? tap_data;
+  FlingData? fling_data;
+};
+
+struct TouchPoint {
+  blink.mojom.TouchState state;
+  float radius_x;
+  float radius_y;
+  float rotation_angle;
+  PointerData pointer_data;
+};
+
+struct TouchData {
+  blink.mojom.DispatchType cancelable;
+  bool moved_beyond_slop_region;
+  bool touch_start_or_first_move;
+  bool hovering;
+  uint32 unique_touch_event_id;
+  array<TouchPoint> touches;
+};
+
+struct Event {
+  blink.mojom.EventType type;
+  int32 modifiers;
+  mojo_base.mojom.TimeTicks timestamp;
+  ui.mojom.LatencyInfo latency;
+  KeyData? key_data;
+  PointerData? pointer_data;
+  GestureData? gesture_data;
+  TouchData? touch_data;
+};
+
+// Represents the current state of overscroll.
+struct DidOverscrollParams {
+  gfx.mojom.Vector2dF accumulated_overscroll;
+  gfx.mojom.Vector2dF latest_overscroll_delta;
+  gfx.mojom.Vector2dF current_fling_velocity;
+  gfx.mojom.PointF causal_event_viewport_point;
+  cc.mojom.OverscrollBehavior overscroll_behavior;
+};
+
+// A struct wrapper for the TouchAction enumeration because
+// enumerations cannot be optional.
+struct TouchActionOptional {
+  cc.mojom.TouchAction touch_action;
+};
+
+// Types related to sending edit commands to the renderer.
+struct EditCommand {
+  string name;
+  string value;
+};
+
+// Interface exposed by the browser to the renderer.
+interface WidgetInputHandlerHost {
+  // When the renderer's main thread computes the touch action, send this to the
+  // browser.
+  SetTouchActionFromMain(cc.mojom.TouchAction touch_action);
+
+  // Sent by the compositor when input scroll events are dropped due to bounds
+  // restrictions on the root scroll offset.
+  DidOverscroll(DidOverscrollParams params);
+
+  // Sent by the compositor when a GSB has started scrolling the viewport.
+  DidStartScrollingViewport();
+
+  // Required for cancelling an ongoing input method composition.
+  ImeCancelComposition();
+
+  // Sends the character bounds after every composition change
+  // to always have correct bound info.
+  ImeCompositionRangeChanged(gfx.mojom.Range range,
+                             array<gfx.mojom.Rect> bounds);
+
+  // Updates the mouse capture state of this widget. While capture is enabled,
+  // all mouse events, including those that don't hittest to this widget, will
+  // be targeted to this widget. This enables Blink to behave correctly when
+  // a scrollbar is being dragged, or text is being drag-highlighted, even
+  // when the mouse passes across different RenderWidget areas.
+  SetMouseCapture(bool capture);
+
+  // Requests locking the target of mouse events to a single element and
+  // removing the cursor from view.  Mostly used by the Pointer Lock API.
+  // See https://www.w3.org/TR/pointerlock/ for more info. This call is
+  // also used by Pepper Flash.
+  // |from_user_gesture| indicates whether this request came from a user
+  // gesture or not.
+  // |unadjusted_movement| indicates whether the request asked for raw mouse
+  // movement data or just what the operating system returns (often accelerated
+  // mouse movement).
+  // |result| kSuccess if the mouse has been locked or the appropriate error
+  // reason if not.
+  // |context| is one end of a mojo pipe that will stay connected as long as
+  // the mouse is locked. Is a NullRemote if |result| is not kSuccess.
+  RequestMouseLock(bool from_user_gesture,
+                   bool unadjusted_movement)
+      => (PointerLockResult result,
+          pending_remote<blink.mojom.PointerLockContext>? context);
+};
+
+// This interface provides the input actions associated with the FrameWidget.
+// Other input actions may also be dispatched via the WidgetInputHandler
+// interface. If frame input actions are dispatched the WidgetInputHandler
+// should be fetched via the associated interface request so that input calls
+// remain in order. See https://goo.gl/x4ee8A for more details.
+interface FrameWidgetInputHandler {
+  // Adds text decorations between a given valid start and end offsets in the
+  // currently focused editable field.
+  AddImeTextSpansToExistingText(
+    uint32 start, uint32 end, array<ui.mojom.ImeTextSpan> ime_text_spans);
+
+  // Clears text decorations type between a given valid start and end offsets
+  // in the currently focused editable field.
+  ClearImeTextSpansByType(
+    uint32 start, uint32 end, ui.mojom.ImeTextSpanType type);
+
+  // Sets the text composition to be between the given start and end offsets in
+  // the currently focused editable field.
+  SetCompositionFromExistingText(
+      int32 start, int32 end, array<ui.mojom.ImeTextSpan> ime_text_spans);
+
+  // Deletes the current selection plus the specified number of characters
+  // before and after the selection or caret.
+  ExtendSelectionAndDelete(int32 before, int32 after);
+
+  // Deletes text before and after the current cursor position, excluding the
+  // selection. The lengths are supplied in Java chars (UTF-16 Code Unit),
+  // not in code points or in glyphs.
+  DeleteSurroundingText(int32 before, int32 after);
+
+  // Deletes text before and after the current cursor position, excluding the
+  // selection. The lengths are supplied in code points, not in Java chars
+  // (UTF-16 Code Unit) or in glyphs. Does nothing if there are one or more
+  // invalid surrogate pairs in the requested range
+  DeleteSurroundingTextInCodePoints(int32 before, int32 after);
+
+  // Selects between the given start and end offsets in the currently focused
+  // editable field.
+  SetEditableSelectionOffsets(int32 start, int32 end);
+
+  // Message payload is the name/value of a WebCore edit command to execute.
+  ExecuteEditCommand(string command, mojo_base.mojom.String16? value);
+
+  // These messages are typically generated from context menus and request the
+  // renderer to apply the specified operation to the current selection.
+  Undo();
+  Redo();
+  Cut();
+  Copy();
+  CopyToFindPboard();
+  Paste();
+  PasteAndMatchStyle();
+  Delete();
+  SelectAll();
+  CollapseSelection();
+
+  // Replaces the selected region or a word around the cursor with the
+  // specified string.
+  Replace(mojo_base.mojom.String16 word);
+
+  // Replaces the misspelling in the selected region with the specified string.
+  ReplaceMisspelling(mojo_base.mojom.String16 word);
+
+  // Requests the renderer to select the region between two points.
+  // Expects a SelectRange_ACK message when finished.
+  SelectRange(gfx.mojom.Point base, gfx.mojom.Point extent);
+
+  // Sent by the browser to ask the renderer to adjust the selection start and
+  // end points by the given amounts. A negative amount moves the selection
+  // towards the beginning of the document, a positive amount moves the
+  // selection towards the end of the document. Will send show selection menu
+  // event when needed.
+  AdjustSelectionByCharacterOffset(
+      int32 start, int32 end, SelectionMenuBehavior behavior);
+
+  // Requests the renderer to select word around caret.
+  // Expects ack with new selection information when finished. |start_adjust|
+  // and |end_adjust| are the start and end offset difference between the
+  // current selection and the previous selection (which is a caret).
+  [EnableIf=is_android]
+  SelectWordAroundCaret()
+      => (bool did_select, int32 start_adjust, int32 end_adjust);
+
+  // Requests the renderer to move the selection extent point to a new position.
+  // Expects a MoveRangeSelectionExtent_ACK message when finished.
+  MoveRangeSelectionExtent(gfx.mojom.Point extent);
+
+  // Tells the renderer to scroll the currently focused node into rect only if
+  // the currently focused node is a Text node (textfield, text area or content
+  // editable divs).
+  ScrollFocusedEditableNodeIntoRect(gfx.mojom.Rect rect);
+
+  // Requests the renderer to move the caret selection toward the point.
+  MoveCaret(gfx.mojom.Point point);
+};
+
+// Interface exposed by the renderer to the browser. This class represents
+// an input interface for an associated Widget object. See FrameWidgetInputHandler
+// for an interface at the frame level.
+interface WidgetInputHandler {
+  // Tells widget focus has been changed.
+  SetFocus(bool focused);
+
+  // Tells widget mouse capture has been lost.
+  MouseCaptureLost();
+
+  // This message notifies the renderer that the next key event is bound to one
+  // or more pre-defined edit commands. If the next key event is not handled
+  // by blink, the specified edit commands shall be executed against current
+  // focused frame.
+  // Parameters
+  // * edit_commands
+  //   See t_p/b/renderer/core/editing/commands/editing_command_type.h
+  //   Contains one or more edit commands.
+  // See t_p/b/renderer/core/editing/commands/editor_command.cc for
+  // detailed definition of webkit edit commands.
+  //
+  // This message must be sent just before sending a key event.
+  SetEditCommandsForNextKeyEvent(array<EditCommand> commands);
+
+  // Sends the cursor visibility state to the render widget.
+  CursorVisibilityChanged(bool visible);
+
+  // This message sends a string being composed with an input method.
+  // Note, the response is specifically for Devtools to learn about completion
+  ImeSetComposition(mojo_base.mojom.String16 text,
+                    array<ui.mojom.ImeTextSpan> ime_text_spans,
+                    gfx.mojom.Range range, int32 start, int32 end) => ();
+
+  // This message deletes the current composition, inserts specified text, and
+  // moves the cursor.
+   // Note, the response is specifically for Devtools to learn about completion
+  ImeCommitText(mojo_base.mojom.String16 text,
+                array<ui.mojom.ImeTextSpan> ime_text_spans,
+                gfx.mojom.Range range, int32 relative_cursor_position) => ();
+
+  // This message inserts the ongoing composition.
+  ImeFinishComposingText(bool keep_selection);
+
+  // Request from browser to update text input state.
+  RequestTextInputStateUpdate();
+
+  // Request from browser to update the cursor and composition information which
+  // will be sent through ImeCompositionRangeChanged. Setting
+  // |immediate_request| to true  will lead to an immediate update. If
+  // |monitor_updates| is set to true then changes to text selection or regular
+  // updates in each compositor frame (when there is a change in composition
+  // info) will lead to updates being sent to the browser.
+  RequestCompositionUpdates(bool immediate_request, bool monitor_request);
+
+  // Sends an input event to the render widget. The browser should use this
+  // API if it wants to know about the result of the rendering handling
+  // the event. The callback may be delayed based on the event running on
+  // the main thread so DispatchNonBlockingEvent is always preferred if
+  // you don't require notification.
+  DispatchEvent(Event event)
+      => (blink.mojom.InputEventResultSource source,
+         ui.mojom.LatencyInfo updated_latency,
+         blink.mojom.InputEventResultState state,
+         DidOverscrollParams? overscroll,
+         TouchActionOptional? touch_action);
+
+  // Sends a non-blocking input event to the render widget. The behaviour
+  // of this API is the same as DispatchEvent just that there is no callback
+  // after the event is processed.
+  DispatchNonBlockingEvent(Event event);
+
+  // Forces input to be flushed and resolves the callback only once the input
+  // has been fully processed, meaning its effects are visible to the full
+  // system. In practice, this will force a redraw and wait until the new
+  // CompositorFrame (containing all changes caused by prior input) has been
+  // displayed.
+  WaitForInputProcessed() => ();
+
+  // Attach the synchronous compositor interface. This method only
+  // should be called for Android WebView.
+  [EnableIf=is_android]
+  AttachSynchronousCompositor(
+      pending_remote<SynchronousCompositorControlHost> control_host,
+      pending_associated_remote<SynchronousCompositorHost> host,
+      pending_associated_receiver<SynchronousCompositor> compositor_request);
+
+  // Return an associated FrameWidgetInputHandler interface so that input
+  // messages to the frame associated with this widget can be sent
+  // serially.
+  GetFrameWidgetInputHandler(
+      pending_associated_receiver<FrameWidgetInputHandler> interface_request);
+};

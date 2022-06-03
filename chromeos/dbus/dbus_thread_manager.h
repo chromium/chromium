@@ -10,29 +10,19 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
-
-namespace base {
-class Thread;
-}  // namespace base
-
-namespace dbus {
-class Bus;
-}  // namespace dbus
+#include "chromeos/dbus/init/dbus_thread_manager_base.h"
 
 namespace chromeos {
 
 // Style Note: Clients are sorted by names.
 class AnomalyDetectorClient;
 class ArcAppfuseProviderClient;
+class ArcDataSnapshotdClient;
 class ArcKeymasterClient;
 class ArcMidisClient;
 class ArcObbMounterClient;
-class ArcOemCryptoClient;
 class CecServiceClient;
-class CiceroneClient;
-class ConciergeClient;
+class ChunneldClient;
 class CrosDisksClient;
 class DBusClientsBrowser;
 class DBusThreadManagerSetter;
@@ -45,7 +35,6 @@ class LorgnetteManagerClient;
 class ModemMessagingClient;
 class OobeConfigurationClient;
 class RuntimeProbeClient;
-class SeneschalClient;
 class ShillDeviceClient;
 class ShillIPConfigClient;
 class ShillManagerClient;
@@ -61,40 +50,23 @@ class VmPluginDispatcherClient;
 // THIS CLASS IS BEING DEPRECATED. See README.md for guidelines and
 // https://crbug.com/647367 for details.
 //
-// DBusThreadManager manages the D-Bus thread, the thread dedicated to
-// handling asynchronous D-Bus operations.
-//
-// This class also manages D-Bus connections and D-Bus clients, which
-// depend on the D-Bus thread to ensure the right order of shutdowns for
-// the D-Bus thread, the D-Bus connections, and the D-Bus clients.
-class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager {
+// Ash implementation of DBusThreadManagerBase.
+class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager
+    : public DBusThreadManagerBase {
  public:
-  // Processes for which to create and initialize the D-Bus clients.
-  // TODO(jamescook): Move creation of clients into //ash and //chrome/browser.
-  // http://crbug.com/647367
-  enum ClientSet {
-    // Common clients needed by both ash and the browser.
-    kShared,
-
-    // Includes the client in |kShared| as well as the clients used only by
-    // the browser (and not ash).
-    kAll
-  };
   // Sets the global instance. Must be called before any calls to Get().
   // We explicitly initialize and shut down the global object, rather than
   // making it a Singleton, to ensure clean startup and shutdown.
   // This will initialize real or fake DBusClients depending on command-line
   // arguments and whether this process runs in a ChromeOS environment.
-  // Only D-Bus clients specified in |client_set| will be created.
-  static void Initialize(ClientSet client_set);
-
-  // Equivalent to Initialize(kAll).
   static void Initialize();
 
-  // Returns a DBusThreadManagerSetter instance that allows tests to
-  // replace individual D-Bus clients with their own implementations.
-  // Also initializes the main DBusThreadManager for testing if necessary.
-  static std::unique_ptr<DBusThreadManagerSetter> GetSetterForTesting();
+  // Returns a DBusThreadManagerSetter instance that allows tests to replace
+  // individual D-Bus clients with their own implementations. The returned
+  // object will be destroyed in DBusThreadManager::Shutdown(). This method
+  // can be called before calling DBusThreadManager::Initialize() which is
+  // useful for browser tests, but does NOT initialize the manager itself.
+  static DBusThreadManagerSetter* GetSetterForTesting();
 
   // Returns true if DBusThreadManager has been initialized. Call this to
   // avoid initializing + shutting down DBusThreadManager more than once.
@@ -106,25 +78,18 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager {
   // Gets the global instance. Initialize() must be called first.
   static DBusThreadManager* Get();
 
-  // Returns true if clients are faked.
-  bool IsUsingFakes();
-
-  // Returns various D-Bus bus instances, owned by DBusThreadManager.
-  dbus::Bus* GetSystemBus();
-
   // All returned objects are owned by DBusThreadManager.  Do not use these
   // pointers after DBusThreadManager has been shut down.
   // TODO(jamescook): Replace this with calls to FooClient::Get().
   // http://crbug.com/647367
   AnomalyDetectorClient* GetAnomalyDetectorClient();
   ArcAppfuseProviderClient* GetArcAppfuseProviderClient();
+  ArcDataSnapshotdClient* GetArcDataSnapshotdClient();
   ArcKeymasterClient* GetArcKeymasterClient();
   ArcMidisClient* GetArcMidisClient();
   ArcObbMounterClient* GetArcObbMounterClient();
-  ArcOemCryptoClient* GetArcOemCryptoClient();
   CecServiceClient* GetCecServiceClient();
-  CiceroneClient* GetCiceroneClient();
-  ConciergeClient* GetConciergeClient();
+  ChunneldClient* GetChunneldClient();
   CrosDisksClient* GetCrosDisksClient();
   DebugDaemonClient* GetDebugDaemonClient();
   EasyUnlockClient* GetEasyUnlockClient();
@@ -134,7 +99,6 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager {
   LorgnetteManagerClient* GetLorgnetteManagerClient();
   OobeConfigurationClient* GetOobeConfigurationClient();
   RuntimeProbeClient* GetRuntimeProbeClient();
-  SeneschalClient* GetSeneschalClient();
   SmbProviderClient* GetSmbProviderClient();
   UpdateEngineClient* GetUpdateEngineClient();
   VirtualFileProviderClient* GetVirtualFileProviderClient();
@@ -152,43 +116,27 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManager {
   ShillThirdPartyVpnDriverClient* GetShillThirdPartyVpnDriverClient();
 
  private:
-  friend class DBusThreadManagerSetter;
-
-  // Creates dbus clients based on |client_set|. Creates real clients if
-  // |use_real_clients| is set, otherwise creates fakes.
-  DBusThreadManager(ClientSet client_set, bool use_real_clients);
-  ~DBusThreadManager();
+  DBusThreadManager();
+  DBusThreadManager(const DBusThreadManager&) = delete;
+  const DBusThreadManager& operator=(const DBusThreadManager&) = delete;
+  ~DBusThreadManager() override;
 
   // Initializes all currently stored DBusClients with the system bus and
   // performs additional setup.
   void InitializeClients();
 
-  std::unique_ptr<base::Thread> dbus_thread_;
-  scoped_refptr<dbus::Bus> system_bus_;
-
-  // Whether to use real or fake dbus clients.
-  const bool use_real_clients_;
-
-  // Clients used only by the browser process. Null in other processes.
+  // Owns the clients.
   std::unique_ptr<DBusClientsBrowser> clients_browser_;
-
-  DISALLOW_COPY_AND_ASSIGN(DBusThreadManager);
 };
 
 // TODO(jamescook): Replace these with FooClient::InitializeForTesting().
 class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
  public:
-  ~DBusThreadManagerSetter();
-
-  void SetCiceroneClient(std::unique_ptr<CiceroneClient> client);
-  void SetConciergeClient(std::unique_ptr<ConciergeClient> client);
   void SetCrosDisksClient(std::unique_ptr<CrosDisksClient> client);
   void SetDebugDaemonClient(std::unique_ptr<DebugDaemonClient> client);
   void SetGnubbyClient(std::unique_ptr<GnubbyClient> client);
   void SetImageBurnerClient(std::unique_ptr<ImageBurnerClient> client);
   void SetImageLoaderClient(std::unique_ptr<ImageLoaderClient> client);
-  void SetSeneschalClient(std::unique_ptr<SeneschalClient> client);
-  void SetRuntimeProbeClient(std::unique_ptr<RuntimeProbeClient> client);
   void SetSmbProviderClient(std::unique_ptr<SmbProviderClient> client);
   void SetUpdateEngineClient(std::unique_ptr<UpdateEngineClient> client);
 
@@ -196,10 +144,25 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) DBusThreadManagerSetter {
   friend class DBusThreadManager;
 
   DBusThreadManagerSetter();
+  DBusThreadManagerSetter(const DBusThreadManagerSetter&) = delete;
+  const DBusThreadManagerSetter& operator=(const DBusThreadManagerSetter&) =
+      delete;
+  ~DBusThreadManagerSetter();
 
-  DISALLOW_COPY_AND_ASSIGN(DBusThreadManagerSetter);
+  std::unique_ptr<CrosDisksClient> cros_disks_client_;
+  std::unique_ptr<DebugDaemonClient> debug_daemon_client_;
+  std::unique_ptr<GnubbyClient> gnubby_client_;
+  std::unique_ptr<ImageBurnerClient> image_burner_client_;
+  std::unique_ptr<ImageLoaderClient> image_loader_client_;
+  std::unique_ptr<SmbProviderClient> smb_provider_client_;
+  std::unique_ptr<UpdateEngineClient> update_engine_client_;
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after moved to ash.
+namespace ash {
+using ::chromeos::DBusThreadManager;
+}
 
 #endif  // CHROMEOS_DBUS_DBUS_THREAD_MANAGER_H_

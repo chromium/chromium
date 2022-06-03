@@ -55,8 +55,8 @@ struct ResponseInfo {
 };
 
 using PendingResponseMap = std::map<int, std::unique_ptr<ResponseInfo>>;
-static base::LazyInstance<PendingResponseMap>::DestructorAtExit
-    pending_response_map = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<PendingResponseMap>::DestructorAtExit
+    g_pending_response_map = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -70,7 +70,7 @@ bool AppViewGuest::CompletePendingRequest(
     int guest_instance_id,
     const std::string& guest_extension_id,
     content::RenderProcessHost* guest_render_process_host) {
-  PendingResponseMap* response_map = pending_response_map.Pointer();
+  PendingResponseMap* response_map = g_pending_response_map.Pointer();
   auto it = response_map->find(guest_instance_id);
   // Kill the requesting process if it is not the real guest.
   if (it == response_map->end()) {
@@ -109,18 +109,24 @@ AppViewGuest::AppViewGuest(WebContents* owner_web_contents)
     : GuestView<AppViewGuest>(owner_web_contents),
       app_view_guest_delegate_(
           ExtensionsAPIClient::Get()->CreateAppViewGuestDelegate()) {
-  if (app_view_guest_delegate_)
-    app_delegate_.reset(app_view_guest_delegate_->CreateAppDelegate());
+  if (app_view_guest_delegate_) {
+    app_delegate_.reset(
+        app_view_guest_delegate_->CreateAppDelegate(owner_web_contents));
+  }
 }
 
 AppViewGuest::~AppViewGuest() {
 }
 
 bool AppViewGuest::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
+  DCHECK_EQ(web_contents(),
+            content::WebContents::FromRenderFrameHost(&render_frame_host));
+
   if (app_view_guest_delegate_) {
-    return app_view_guest_delegate_->HandleContextMenu(web_contents(), params);
+    return app_view_guest_delegate_->HandleContextMenu(render_frame_host,
+                                                       params);
   }
   return false;
 }
@@ -189,11 +195,6 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     std::move(callback).Run(nullptr);
     return;
   }
-
-  pending_response_map.Get().insert(std::make_pair(
-      guest_instance_id(), std::make_unique<ResponseInfo>(
-                               guest_extension, weak_ptr_factory_.GetWeakPtr(),
-                               std::move(callback))));
 
   const LazyContextId context_id(browser_context(), guest_extension->id());
   LazyContextTaskQueue* queue = context_id.GetTaskQueue();
@@ -267,15 +268,22 @@ void AppViewGuest::LaunchAppAndFireEvent(
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> embed_request(
-      new base::DictionaryValue());
-  embed_request->SetInteger(appview::kGuestInstanceID, guest_instance_id());
-  embed_request->SetString(appview::kEmbedderID, owner_host());
-  embed_request->Set(appview::kData, std::move(data));
   const Extension* const extension =
       extensions::ExtensionRegistry::Get(context_info->browser_context)
           ->enabled_extensions()
           .GetByID(context_info->extension_id);
+
+  g_pending_response_map.Get().insert(std::make_pair(
+      guest_instance_id(),
+      std::make_unique<ResponseInfo>(extension, weak_ptr_factory_.GetWeakPtr(),
+                                     std::move(callback))));
+
+  std::unique_ptr<base::DictionaryValue> embed_request(
+      new base::DictionaryValue());
+  embed_request->SetInteger(appview::kGuestInstanceID, guest_instance_id());
+  embed_request->SetString(appview::kEmbedderID, owner_host());
+  embed_request->SetKey(appview::kData,
+                        base::Value::FromUniquePtrValue(std::move(data)));
   AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(
       browser_context(), std::move(embed_request), extension);
 }
@@ -286,7 +294,7 @@ void AppViewGuest::SetAppDelegateForTest(AppDelegate* delegate) {
 
 std::vector<int> AppViewGuest::GetAllRegisteredInstanceIdsForTesting() {
   std::vector<int> instances;
-  for (const auto& key_value : pending_response_map.Get()) {
+  for (const auto& key_value : g_pending_response_map.Get()) {
     instances.push_back(key_value.first);
   }
   return instances;

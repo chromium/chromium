@@ -8,7 +8,7 @@ namespace blink {
 
 WorkerSettings::WorkerSettings(Settings* settings) {
   if (settings)
-    this->CopyFlagValuesFromSettings(settings);
+    CopyFlagValuesFromSettings(settings);
 }
 
 WorkerSettings::WorkerSettings(

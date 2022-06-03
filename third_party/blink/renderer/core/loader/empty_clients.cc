@@ -29,6 +29,7 @@
 
 #include <memory>
 #include "cc/layers/layer.h"
+#include "components/viz/common/surfaces/local_surface_id.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_provider.h"
@@ -45,15 +46,15 @@
 
 namespace blink {
 
-void FillWithEmptyClients(Page::PageClients& page_clients) {
-  DEFINE_STATIC_LOCAL(Persistent<ChromeClient>, dummy_chrome_client,
+ChromeClient& GetStaticEmptyChromeClientInstance() {
+  DEFINE_STATIC_LOCAL(Persistent<ChromeClient>, chrome_client,
                       (MakeGarbageCollected<EmptyChromeClient>()));
-  page_clients.chrome_client = dummy_chrome_client;
+  return *chrome_client;
 }
 
 class EmptyPopupMenu : public PopupMenu {
  public:
-  void Show() override {}
+  void Show(ShowEventType) override {}
   void Hide() override {}
   void UpdateFromElement(UpdateReason) override {}
   void DisconnectClient() override {}
@@ -88,38 +89,45 @@ String EmptyChromeClient::AcceptLanguages() {
   return String();
 }
 
+bool EmptyChromeClient::StartDeferringCommits(LocalFrame& main_frame,
+                                              base::TimeDelta timeout,
+                                              cc::PaintHoldingReason reason) {
+  return false;
+}
+
 void EmptyLocalFrameClient::BeginNavigation(
     const ResourceRequest&,
-    network::mojom::RequestContextFrameType,
-    Document* origin_document,
+    mojom::RequestContextFrameType,
+    LocalDOMWindow*,
     DocumentLoader*,
     WebNavigationType,
     NavigationPolicy,
-    bool,
     WebFrameLoadType,
     bool,
-    TriggeringEventInfo,
+    mojom::blink::TriggeringEventInfo,
     HTMLFormElement*,
-    ContentSecurityPolicyDisposition,
+    network::mojom::CSPDisposition,
     mojo::PendingRemote<mojom::blink::BlobURLToken>,
     base::TimeTicks,
     const String&,
-    WebContentSecurityPolicyList,
+    const absl::optional<WebImpression>&,
     network::mojom::IPAddressSpace,
-    mojo::PendingRemote<mojom::blink::NavigationInitiator>) {}
+    const LocalFrameToken* initiator_frame_token,
+    std::unique_ptr<SourceLocation>,
+    mojo::PendingRemote<mojom::blink::PolicyContainerHostKeepAliveHandle>) {}
 
 void EmptyLocalFrameClient::DispatchWillSendSubmitEvent(HTMLFormElement*) {}
 
 DocumentLoader* EmptyLocalFrameClient::CreateDocumentLoader(
     LocalFrame* frame,
     WebNavigationType navigation_type,
-    base::Optional<ContentSecurityPolicy*> content_security_policy,
     std::unique_ptr<WebNavigationParams> navigation_params,
+    std::unique_ptr<PolicyContainer> policy_container,
     std::unique_ptr<WebDocumentLoader::ExtraData> extra_data) {
   DCHECK(frame);
   return MakeGarbageCollected<DocumentLoader>(frame, navigation_type,
-                                              content_security_policy,
-                                              std::move(navigation_params));
+                                              std::move(navigation_params),
+                                              std::move(policy_container));
 }
 
 LocalFrame* EmptyLocalFrameClient::CreateFrame(const AtomicString&,
@@ -127,16 +135,20 @@ LocalFrame* EmptyLocalFrameClient::CreateFrame(const AtomicString&,
   return nullptr;
 }
 
-std::pair<RemoteFrame*, base::UnguessableToken>
-EmptyLocalFrameClient::CreatePortal(
+std::pair<RemoteFrame*, PortalToken> EmptyLocalFrameClient::CreatePortal(
     HTMLPortalElement*,
     mojo::PendingAssociatedReceiver<mojom::blink::Portal>,
     mojo::PendingAssociatedRemote<mojom::blink::PortalClient>) {
-  return std::pair<RemoteFrame*, base::UnguessableToken>(
-      nullptr, base::UnguessableToken());
+  return std::pair<RemoteFrame*, PortalToken>(nullptr, PortalToken());
 }
 
 RemoteFrame* EmptyLocalFrameClient::AdoptPortal(HTMLPortalElement*) {
+  return nullptr;
+}
+
+RemoteFrame* EmptyLocalFrameClient::CreateFencedFrame(
+    HTMLFencedFrameElement*,
+    mojo::PendingAssociatedReceiver<mojom::blink::FencedFrameOwnerHost>) {
   return nullptr;
 }
 
@@ -184,7 +196,5 @@ std::unique_ptr<WebServiceWorkerProvider>
 EmptyLocalFrameClient::CreateServiceWorkerProvider() {
   return nullptr;
 }
-
-EmptyRemoteFrameClient::EmptyRemoteFrameClient() = default;
 
 }  // namespace blink

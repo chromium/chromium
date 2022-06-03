@@ -38,45 +38,64 @@ public class ModuleDescriptor_{MODULE} implements ModuleDescriptor {{
     public String[] getPaks() {{
         return PAKS;
     }}
+
+    @Override
+    public boolean getLoadNativeOnGetImpl() {{
+        return {LOAD_NATIVE_ON_GET_IMPL};
+    }}
 }}
 """
 
 
 def main():
-  parser = argparse.ArgumentParser()
-  parser.add_argument('--module', required=True, help='The module name.')
-  parser.add_argument(
-      '--libraries', required=True, help='GN list of native library paths.')
-  parser.add_argument('--paks', help='GN list of PAK file paths')
-  parser.add_argument(
-      '--output', required=True, help='Path to the generated srcjar file.')
-  options = parser.parse_args(build_utils.ExpandFileArgs(sys.argv[1:]))
-  options.libraries = build_utils.ParseGnList(options.libraries)
-  options.paks = build_utils.ParseGnList(options.paks)
+    parser = argparse.ArgumentParser()
+    build_utils.AddDepfileOption(parser)
+    parser.add_argument('--module', required=True, help='The module name.')
+    parser.add_argument('--libraries-file',
+                        required=True,
+                        help='Path to file with GN list of library paths')
+    parser.add_argument('--paks', help='GN list of PAK file paths')
+    parser.add_argument(
+        '--output', required=True, help='Path to the generated srcjar file.')
+    parser.add_argument('--load-native-on-get-impl', action='store_true',
+        default=False,
+        help='Load module automatically on calling Module.getImpl().')
+    options = parser.parse_args()
+    options.paks = build_utils.ParseGnList(options.paks)
 
-  libraries = []
-  for path in options.libraries:
-    path = path.strip()
-    filename = os.path.split(path)[1]
-    assert filename.startswith('lib')
-    assert filename.endswith('.so')
-    # Remove lib prefix and .so suffix.
-    libraries += [filename[3:-3]]
-  paks = options.paks if options.paks else []
+    with open(options.libraries_file) as f:
+        libraries_list = build_utils.ParseGnList(f.read())
 
-  format_dict = {
-      'MODULE': options.module,
-      'LIBRARIES': ','.join(['"%s"' % l for l in libraries]),
-      'PAKS': ','.join(['"%s"' % os.path.basename(p) for p in paks]),
-  }
-  with build_utils.AtomicOutput(options.output) as f:
-    with zipfile.ZipFile(f.name, 'w') as srcjar_file:
-      build_utils.AddToZipHermetic(
-          srcjar_file,
-          'org/chromium/components/module_installer/builder/'
-          'ModuleDescriptor_%s.java' % options.module,
-          data=_TEMPLATE.format(**format_dict))
+    libraries = []
+    for path in libraries_list:
+        path = path.strip()
+        filename = os.path.split(path)[1]
+        assert filename.startswith('lib')
+        assert filename.endswith('.so')
+        # Remove lib prefix and .so suffix.
+        libraries += [filename[3:-3]]
+    paks = options.paks if options.paks else []
+
+    format_dict = {
+        'MODULE': options.module,
+        'LIBRARIES': ','.join(['"%s"' % l for l in libraries]),
+        'PAKS': ','.join(['"%s"' % os.path.basename(p) for p in paks]),
+        'LOAD_NATIVE_ON_GET_IMPL': (
+            'true' if options.load_native_on_get_impl else 'false'),
+    }
+    with build_utils.AtomicOutput(options.output) as f:
+        with zipfile.ZipFile(f.name, 'w') as srcjar_file:
+            build_utils.AddToZipHermetic(
+                srcjar_file,
+                'org/chromium/components/module_installer/builder/'
+                'ModuleDescriptor_%s.java' % options.module,
+                data=_TEMPLATE.format(**format_dict))
+
+    if options.depfile:
+        build_utils.WriteDepfile(options.depfile,
+                                 options.output,
+                                 inputs=[options.libraries_file])
 
 
 if __name__ == '__main__':
-  sys.exit(main())
+    sys.exit(main())

@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/browser_context_keyed_service_factories.h"
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/activity_log/activity_log.h"
 #include "chrome/browser/extensions/api/activity_log_private/activity_log_private_api.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_private_event_router_factory.h"
@@ -25,18 +26,20 @@
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/preference/preference_api.h"
 #include "chrome/browser/extensions/api/processes/processes_api.h"
+#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/sessions/sessions_api.h"
 #include "chrome/browser/extensions/api/settings_overrides/settings_overrides_api.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_event_router_factory.h"
 #include "chrome/browser/extensions/api/signed_in_devices/signed_in_devices_manager.h"
-#include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 #include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
+#include "chrome/browser/extensions/api/tab_groups/tab_groups_event_router_factory.h"
 #include "chrome/browser/extensions/api/tabs/tabs_windows_api.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api.h"
 #include "chrome/browser/extensions/api/webrtc_audio_private/webrtc_audio_private_api.h"
 #include "chrome/browser/extensions/chrome_extension_cookies_factory.h"
 #include "chrome/browser/extensions/extension_garbage_collector_factory.h"
 #include "chrome/browser/extensions/extension_gcm_app_handler.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/extension_system_factory.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/install_tracker_factory.h"
@@ -45,9 +48,7 @@
 #include "chrome/browser/extensions/plugin_manager.h"
 #include "chrome/browser/extensions/warning_badge_service_factory.h"
 #include "chrome/browser/speech/extension_api/tts_extension_api.h"
-#include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/common/buildflags.h"
-#include "components/spellcheck/spellcheck_buildflags.h"
 #include "extensions/browser/api/bluetooth_low_energy/bluetooth_low_energy_api.h"
 #include "extensions/browser/api/networking_private/networking_private_delegate_factory.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -56,12 +57,21 @@
 #include "chrome/browser/extensions/api/input_ime/input_ime_api.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
-#include "chrome/browser/extensions/api/mdns/mdns_api.h"
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
+#include "chrome/browser/extensions/api/system_indicator/system_indicator_manager_factory.h"
 #endif
 
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-#include "chrome/browser/extensions/api/spellcheck/spellcheck_api.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/extensions/api/platform_keys/verify_trust_api.h"
+#include "chrome/browser/extensions/api/terminal/terminal_private_api.h"
+#endif
+
+#if defined(OS_CHROMEOS)
+#include "chrome/browser/chromeos/extensions/login_screen/login_state/session_state_changed_event_dispatcher.h"
+#endif
+
+#if BUILDFLAG(ENABLE_SERVICE_DISCOVERY)
+#include "chrome/browser/extensions/api/mdns/mdns_api.h"
 #endif
 
 namespace chrome_extensions {
@@ -81,6 +91,8 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::DeveloperPrivateAPI::GetFactoryInstance();
   extensions::ExtensionActionAPI::GetFactoryInstance();
   extensions::ExtensionGarbageCollectorFactory::GetInstance();
+  extensions::ExtensionGCMAppHandler::GetFactoryInstance();
+  extensions::ExtensionManagementFactory::GetInstance();
   extensions::ExtensionSystemFactory::GetInstance();
   extensions::ExtensionWebUIOverrideRegistrar::GetFactoryInstance();
   extensions::FontSettingsAPI::GetFactoryInstance();
@@ -88,7 +100,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::IdentityAPI::GetFactoryInstance();
   extensions::InstallTrackerFactory::GetInstance();
   extensions::InstallVerifierFactory::GetInstance();
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   extensions::InputImeAPI::GetFactoryInstance();
 #endif
   extensions::LanguageSettingsPrivateDelegateFactory::GetInstance();
@@ -96,7 +108,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   extensions::MDnsAPI::GetFactoryInstance();
 #endif
   extensions::MenuManagerFactory::GetInstance();
-#if defined(OS_CHROMEOS) || defined(OS_WIN) || defined(OS_MACOSX)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN) || defined(OS_MAC)
   auto networking_private_ui_delegate_factory =
       std::make_unique<extensions::NetworkingPrivateUIDelegateFactoryImpl>();
   extensions::NetworkingPrivateDelegateFactory::GetInstance()
@@ -109,22 +121,30 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
 #endif
   extensions::PreferenceAPI::GetFactoryInstance();
   extensions::ProcessesAPI::GetFactoryInstance();
+  extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance();
   extensions::SessionsAPI::GetFactoryInstance();
+#if defined(OS_CHROMEOS)
+  extensions::SessionStateChangedEventDispatcher::GetFactoryInstance();
+#endif
   extensions::SettingsPrivateEventRouterFactory::GetInstance();
   extensions::SettingsOverridesAPI::GetFactoryInstance();
   extensions::SignedInDevicesManager::GetFactoryInstance();
-#if BUILDFLAG(ENABLE_SPELLCHECK)
-  extensions::SpellcheckAPI::GetFactoryInstance();
-#endif
+#if defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
   extensions::SystemIndicatorManagerFactory::GetInstance();
+#endif
+  extensions::TabGroupsEventRouterFactory::GetInstance();
   extensions::TabCaptureRegistry::GetFactoryInstance();
   extensions::TabsWindowsAPI::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  extensions::TerminalPrivateAPI::GetFactoryInstance();
+#endif
   extensions::TtsAPI::GetFactoryInstance();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  extensions::VerifyTrustAPI::GetFactoryInstance();
+#endif
   extensions::WarningBadgeServiceFactory::GetInstance();
   extensions::WebNavigationAPI::GetFactoryInstance();
   extensions::WebrtcAudioPrivateEventService::GetFactoryInstance();
-  ToolbarActionsModelFactory::GetInstance();
-  extensions::ExtensionGCMAppHandler::GetFactoryInstance();
 }
 
 }  // namespace chrome_extensions

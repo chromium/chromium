@@ -7,7 +7,6 @@
 
 #include <iosfwd>
 #include <iterator>
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
@@ -42,8 +41,10 @@ class CORE_EXPORT TextOffsetMapping final {
     // |first| and |last|(inclusive) represent inline layout object run, they
     // should be descendants of |block_flow|.
     InlineContents(const LayoutBlockFlow& block_flow,
+                   const LayoutObject* block_in_inline_before,
                    const LayoutObject& first,
-                   const LayoutObject& last);
+                   const LayoutObject& last,
+                   const LayoutObject* block_in_inline_after);
     // |block_flow| must be non-anonymous empty block or block containing only
     // anonymous object.
     InlineContents(const LayoutBlockFlow& block_flow);
@@ -75,8 +76,18 @@ class CORE_EXPORT TextOffsetMapping final {
     PositionInFlatTree LastPositionBeforeBlockFlow() const;
 
     const LayoutBlockFlow* block_flow_ = nullptr;
+    // The block-in-inline in |block_flow_| before |first_|, e.g.
+    //  <span><div>...</div>abc</span>
+    //  LayoutInline {SPAN}
+    //    LayoutNGBlockFlow (anonymous) <= block-in-inline
+    //      LayoutNGBlockFlow {DIV}
+    //        ...
+    //      LayoutNGBlockFlow (anonymous)
+    //        LayoutNGText "abc"
+    const LayoutObject* block_in_inline_before_ = nullptr;
     const LayoutObject* first_ = nullptr;
     const LayoutObject* last_ = nullptr;
+    const LayoutObject* block_in_inline_after_ = nullptr;
   };
 
   // |BackwardRange| class is used with range-for to traverse inline contents
@@ -155,6 +166,8 @@ class CORE_EXPORT TextOffsetMapping final {
 
   // Constructor |TextOffsetMapping| for the |inline_contents|.
   explicit TextOffsetMapping(const InlineContents& inline_contents);
+  TextOffsetMapping(const TextOffsetMapping&) = delete;
+  TextOffsetMapping& operator=(const TextOffsetMapping&) = delete;
 
   ~TextOffsetMapping() = default;
 
@@ -210,8 +223,6 @@ class CORE_EXPORT TextOffsetMapping final {
   const TextIteratorBehavior behavior_;
   const EphemeralRangeInFlatTree range_;
   const String text16_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextOffsetMapping);
 };
 
 CORE_EXPORT std::ostream& operator<<(std::ostream&,

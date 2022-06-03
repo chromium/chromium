@@ -11,4 +11,4 @@ enum class WebAutofillState { kNotFilled = 0, kPreviewed, kAutofilled };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_AUTOFILL_STATE_H_

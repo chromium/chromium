@@ -9,14 +9,16 @@
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
-#include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_type.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 
 namespace WTF {
 
@@ -26,23 +28,30 @@ class String;
 
 namespace blink {
 
-class ExecutionContext;
+class ExceptionState;
+class NavigatorBase;
 class ScriptState;
 class WakeLockManager;
 
 class MODULES_EXPORT WakeLock final : public ScriptWrappable,
-                                      public ContextLifecycleObserver,
+                                      public Supplement<NavigatorBase>,
+                                      public ExecutionContextLifecycleObserver,
                                       public PageVisibilityObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(WakeLock);
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit WakeLock(Document&);
-  explicit WakeLock(DedicatedWorkerGlobalScope&);
+  static const char kSupplementName[];
 
-  ScriptPromise request(ScriptState*, const WTF::String& type);
+  // Getter for navigator.wakelock
+  static WakeLock* wakeLock(NavigatorBase&);
 
-  void Trace(blink::Visitor*) override;
+  explicit WakeLock(NavigatorBase&);
+
+  ScriptPromise request(ScriptState*,
+                        const WTF::String& type,
+                        ExceptionState& exception_state);
+
+  void Trace(Visitor*) const override;
 
  private:
   // While this could be part of request() itself, having it as a separate
@@ -54,23 +63,20 @@ class MODULES_EXPORT WakeLock final : public ScriptWrappable,
                                     ScriptPromiseResolver*,
                                     mojom::blink::PermissionStatus);
 
-  // ContextLifecycleObserver implementation
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleObserver implementation
+  void ContextDestroyed() override;
 
   // PageVisibilityObserver implementation
   void PageVisibilityChanged() override;
 
   // Permission handling
-  void ObtainPermission(
-      WakeLockType,
-      base::OnceCallback<void(mojom::blink::PermissionStatus)> callback);
   mojom::blink::PermissionService* GetPermissionService();
 
-  mojo::Remote<mojom::blink::PermissionService> permission_service_;
+  HeapMojoRemote<mojom::blink::PermissionService> permission_service_;
 
-  // https://w3c.github.io/wake-lock/#concepts-and-state-record
-  // Each platform wake lock (one per wake lock type) has an associated state
-  // record per responsible document [...] internal slots.
+  // https://w3c.github.io/screen-wake-lock/#dfn-activelocks
+  // An ordered map of wake lock types to a list of WakeLockSentinel objects
+  // associated with this Document.
   Member<WakeLockManager> managers_[kWakeLockTypeCount];
 
   FRIEND_TEST_ALL_PREFIXES(WakeLockSentinelTest, ContextDestruction);

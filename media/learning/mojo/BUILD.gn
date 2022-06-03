@@ -23,9 +23,7 @@ component("impl") {
     "//mojo/public/cpp/bindings",
   ]
 
-  public_deps = [
-    "//media/learning/mojo/public/cpp",
-  ]
+  public_deps = [ "//media/learning/mojo/public/cpp" ]
 }
 
 # Unit Tests
@@ -33,9 +31,7 @@ component("impl") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "mojo_learning_task_controller_service_unittest.cc",
-  ]
+  sources = [ "mojo_learning_task_controller_service_unittest.cc" ]
 
   deps = [
     ":impl",

@@ -7,19 +7,11 @@ import("//testing/test.gni")
 
 cast_source_set("net") {
   sources = [
-    "connectivity_checker.cc",
-    "connectivity_checker.h",
-    "connectivity_checker_impl.cc",
-    "connectivity_checker_impl.h",
-    "fake_connectivity_checker.cc",
-    "fake_connectivity_checker.h",
-    "net_switches.cc",
-    "net_switches.h",
     "net_util_cast.cc",
     "net_util_cast.h",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     sources += [
       "network_change_notifier_factory_cast.cc",
       "network_change_notifier_factory_cast.h",
@@ -27,15 +19,11 @@ cast_source_set("net") {
   }
 
   deps = [
+    ":net_switches",
     "//base",
-    "//chromecast:chromecast_buildflags",
     "//chromecast/base:cast_sys_info_util",
-    "//chromecast/base/metrics",
     "//chromecast/public",
-    "//components/proxy_config",
     "//net",
-    "//services/network/public/cpp",
-    "//services/network/public/mojom",
   ]
 
   if (is_fuchsia) {
@@ -44,11 +32,62 @@ cast_source_set("net") {
       "network_change_notifier_factory_fuchsia.h",
     ]
 
-    deps += [
-      "//chromecast/base:chromecast_switches",
-      "//third_party/fuchsia-sdk/sdk:fuchsia-hardware-ethernet",
+    deps += [ "//chromecast/base:chromecast_switches" ]
+  }
+}
+
+cast_source_set("net_switches") {
+  sources = [
+    "net_switches.cc",
+    "net_switches.h",
+  ]
+}
+
+cast_source_set("time_sync_tracker") {
+  sources = [
+    "time_sync_tracker.cc",
+    "time_sync_tracker.h",
+  ]
+  deps = [ "//base" ]
+
+  if (is_fuchsia) {
+    sources += [
+      "time_sync_tracker_fuchsia.cc",
+      "time_sync_tracker_fuchsia.h",
     ]
   }
+}
+
+cast_source_set("connectivity_checker") {
+  sources = [
+    "connectivity_checker.cc",
+    "connectivity_checker.h",
+    "connectivity_checker_impl.cc",
+    "connectivity_checker_impl.h",
+    "fake_connectivity_checker.cc",
+    "fake_connectivity_checker.h",
+  ]
+  deps = [
+    ":net_switches",
+    ":time_sync_tracker",
+    "//base",
+    "//chromecast:chromecast_buildflags",
+    "//chromecast/base/metrics",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+  ]
+}
+
+cast_source_set("socket_util") {
+  sources = [
+    "socket_util.cc",
+    "socket_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//net",
+  ]
 }
 
 cast_source_set("io_buffer_pool") {
@@ -68,9 +107,7 @@ cast_source_set("small_message_socket") {
     "small_message_socket.cc",
     "small_message_socket.h",
   ]
-  public_deps = [
-    "//net",
-  ]
+  public_deps = [ "//net" ]
 
   deps = [
     ":io_buffer_pool",
@@ -82,37 +119,48 @@ cast_source_set("test_support") {
   testonly = true
 
   sources = [
+    "fake_shared_url_loader_factory.cc",
+    "fake_shared_url_loader_factory.h",
     "fake_stream_socket.cc",
     "fake_stream_socket.h",
     "mock_stream_socket.cc",
     "mock_stream_socket.h",
   ]
 
-  public_deps = [
-    "//testing/gmock",
-  ]
+  public_deps = [ "//testing/gmock" ]
 
   deps = [
     "//base",
+    "//mojo/public/cpp/bindings",
     "//net",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 }
 
 test("cast_net_unittests") {
   sources = [
+    "connectivity_checker_impl_unittest.cc",
     "fake_stream_socket_unittest.cc",
     "io_buffer_pool_unittest.cc",
     "small_message_socket_unittest.cc",
   ]
 
   deps = [
+    ":connectivity_checker",
     ":io_buffer_pool",
     ":small_message_socket",
     ":test_support",
     "//base",
-    "//base/test:run_all_unittests",
+    "//chromecast/base/metrics:test_support",
+    "//chromecast/mojo/test:run_all_unittests",
     "//net",
     "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gmock",
     "//testing/gtest",
   ]
 }

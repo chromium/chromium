@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL @keyframes in shadow tree applies to the slotted element assert_equals: expected 1 but got 0
+Harness: the test ran to completion.
+

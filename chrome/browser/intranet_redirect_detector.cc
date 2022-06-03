@@ -10,16 +10,21 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/rand_util.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
+#include "components/omnibox/browser/intranet_redirector_state.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -45,8 +50,7 @@ IntranetRedirectDetector::IntranetRedirectDetector()
   // Ideally, instead of this timer, we'd do something like "check if the
   // browser is starting up, and if so, come back later", but there is currently
   // no function to do this.
-  static constexpr base::TimeDelta kStartFetchDelay =
-      base::TimeDelta::FromSeconds(7);
+  static constexpr base::TimeDelta kStartFetchDelay = base::Seconds(7);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IntranetRedirectDetector::FinishSleep,
@@ -73,6 +77,7 @@ void IntranetRedirectDetector::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterStringPref(prefs::kLastKnownIntranetRedirectOrigin,
                                std::string());
   registry->RegisterBooleanPref(prefs::kDNSInterceptionChecksEnabled, true);
+  registry->RegisterIntegerPref(omnibox::kIntranetRedirectBehavior, 0);
 }
 
 void IntranetRedirectDetector::Restart() {
@@ -91,8 +96,7 @@ void IntranetRedirectDetector::Restart() {
   // Since presumably many programs open connections after network changes,
   // delay this a little bit.
   in_sleep_ = true;
-  static constexpr base::TimeDelta kRestartDelay =
-      base::TimeDelta::FromSeconds(1);
+  static constexpr base::TimeDelta kRestartDelay = base::Seconds(1);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&IntranetRedirectDetector::FinishSleep,
@@ -189,7 +193,7 @@ void IntranetRedirectDetector::OnSimpleLoaderComplete(
   // origin to that; otherwise we set it to nothing.
   if (response_body) {
     DCHECK(source->GetFinalURL().is_valid());
-    GURL origin(source->GetFinalURL().GetOrigin());
+    GURL origin(source->GetFinalURL().DeprecatedGetOriginAsURL());
     if (resulting_origins_.empty()) {
       resulting_origins_.push_back(origin);
       return;
@@ -248,7 +252,7 @@ void IntranetRedirectDetector::SetupDnsConfigClient() {
       manager_remote.BindNewPipeAndPassReceiver());
   manager_remote->RequestNotifications(
       dns_config_client_receiver_.BindNewPipeAndPassRemote());
-  dns_config_client_receiver_.set_disconnect_handler(base::BindRepeating(
+  dns_config_client_receiver_.set_disconnect_handler(base::BindOnce(
       &IntranetRedirectDetector::OnDnsConfigClientConnectionError,
       base::Unretained(this)));
 }
@@ -259,6 +263,24 @@ void IntranetRedirectDetector::OnDnsConfigClientConnectionError() {
 }
 
 bool IntranetRedirectDetector::IsEnabledByPolicy() {
-  return g_browser_process->local_state()->GetBoolean(
-      prefs::kDNSInterceptionChecksEnabled);
+  // The InterceptionChecksBehavior pref and the older
+  // DNSInterceptionChecksEnabled policy should each be able to disable
+  // interception checks. Therefore, we enable the redirect detector iff allowed
+  // by both policies.
+
+  // Check IntranetRedirectorBehavior pref.
+  auto behavior =
+      omnibox::GetInterceptionChecksBehavior(g_browser_process->local_state());
+  if (behavior == omnibox::IntranetRedirectorBehavior::DISABLE_FEATURE ||
+      behavior == omnibox::IntranetRedirectorBehavior::
+                      DISABLE_INTERCEPTION_CHECKS_ENABLE_INFOBARS) {
+    return false;
+  }
+
+  // Consult previous DNSInterceptionChecksEnabled policy.
+  if (!g_browser_process->local_state()->GetBoolean(
+          prefs::kDNSInterceptionChecksEnabled))
+    return false;
+
+  return true;
 }

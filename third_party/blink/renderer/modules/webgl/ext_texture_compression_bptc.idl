@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://www.khronos.org/registry/webgl/extensions/EXT_texture_compression_bptc/
+
+[
+    LegacyNoInterfaceObject,
+    DoNotCheckConstants
+] interface EXTTextureCompressionBPTC {
+    const unsigned long COMPRESSED_RGBA_BPTC_UNORM_EXT = 0x8E8C;
+    const unsigned long COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT = 0x8E8D;
+    const unsigned long COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT = 0x8E8E;
+    const unsigned long COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT = 0x8E8F;
+};

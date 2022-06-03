@@ -1,0 +1,11 @@
+{
+  "name" : "Content Settings API Test Extension",
+  "version" : "0.1",
+  "manifest_version": 2,
+  "description" : "Tries to set flash content settings, and ensures flash content settings are not set",
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": false
+  },
+  "permissions": [ "contentSettings" ]
+}

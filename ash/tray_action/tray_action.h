@@ -9,9 +9,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/mojom/tray_action.mojom.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -42,6 +41,10 @@ class ASH_EXPORT TrayAction : public mojom::TrayAction,
                               public ui::InputDeviceEventObserver {
  public:
   explicit TrayAction(BacklightsForcedOffSetter* backlights_forced_off_setter);
+
+  TrayAction(const TrayAction&) = delete;
+  TrayAction& operator=(const TrayAction&) = delete;
+
   ~TrayAction() override;
 
   LockScreenNoteDisplayStateHandler*
@@ -100,10 +103,8 @@ class ASH_EXPORT TrayAction : public mojom::TrayAction,
 
   mojo::Remote<mojom::TrayActionClient> tray_action_client_;
 
-  ScopedObserver<ui::DeviceDataManager, ui::InputDeviceEventObserver>
-      stylus_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrayAction);
+  base::ScopedObservation<ui::DeviceDataManager, ui::InputDeviceEventObserver>
+      stylus_observation_{this};
 };
 
 }  // namespace ash

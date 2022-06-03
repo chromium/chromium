@@ -17,7 +17,7 @@
 
 #if defined(OS_WIN)
 #include <windows.h>
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 #import <CoreFoundation/CoreFoundation.h>
 #endif  // OS_*
 
@@ -25,7 +25,7 @@ namespace base {
 
 #if defined(OS_WIN)
 using NativeLibrary = HMODULE;
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 enum NativeLibraryType {
   BUNDLE,
   DYNAMIC_LIB

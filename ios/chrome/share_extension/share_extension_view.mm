@@ -4,8 +4,8 @@
 
 #import "ios/chrome/share_extension/share_extension_view.h"
 
-#include "base/logging.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#include "base/check.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/share_extension/ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -104,6 +104,20 @@ const CGFloat kButtonFontSize = 17;
         [self buttonWithTitle:openInChromeTitle
                      selector:@selector(openInChromePressed:)];
 
+    for (UIButton* button in
+         @[ self.readingListButton, bookmarksButton, openButton ]) {
+      button.pointerInteractionEnabled = YES;
+      button.pointerStyleProvider = ^UIPointerStyle*(
+          UIButton* theButton, __unused UIPointerEffect* proposedEffect,
+          __unused UIPointerShape* proposedShape) {
+        UITargetedPreview* preview =
+            [[UITargetedPreview alloc] initWithView:theButton];
+        UIPointerHoverEffect* effect =
+            [UIPointerHoverEffect effectWithPreview:preview];
+        return [UIPointerStyle styleWithEffect:effect shape:nil];
+      };
+    }
+
     UIStackView* contentStack = [[UIStackView alloc] initWithArrangedSubviews:@[
       [self navigationBar], [self dividerView], [self sharedItemView],
       [self dividerView], self.readingListButton, [self dividerView],
@@ -195,7 +209,6 @@ const CGFloat kButtonFontSize = 17;
         constraintEqualToAnchor:_itemView.centerYAnchor],
     [_itemView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_titleURLContainer.heightAnchor
-                                  multiplier:1
                                     constant:2 * kShareExtensionPadding],
     [_titleURLContainer.leadingAnchor
         constraintEqualToAnchor:_itemView.leadingAnchor
@@ -205,7 +218,6 @@ const CGFloat kButtonFontSize = 17;
                        constant:-kShareExtensionPadding],
     [_itemView.heightAnchor
         constraintGreaterThanOrEqualToAnchor:_screenshotView.heightAnchor
-                                  multiplier:1
                                     constant:2 * kShareExtensionPadding],
     [_screenshotView.centerYAnchor
         constraintEqualToAnchor:_itemView.centerYAnchor],
@@ -281,7 +293,7 @@ const CGFloat kButtonFontSize = 17;
   return navigationBar;
 }
 
-// Called when "Read Later" button has been pressed.
+// Called when "Add to Reading List" button has been pressed.
 - (void)addToReadingListPressed:(UIButton*)sender {
   if (self.dismissed) {
     return;

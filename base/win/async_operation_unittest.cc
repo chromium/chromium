@@ -56,6 +56,19 @@ struct DECLSPEC_UUID("9e49373c-200c-4715-abd7-4214ba669c81")
   }
 };
 
+#ifdef NTDDI_WIN10_VB  // Windows 10.0.19041
+// Specialization templates that used to be in windows.foundation.h, removed in
+// the 10.0.19041.0 SDK, so placed here instead.
+template <>
+struct __declspec(uuid("968b9665-06ed-5774-8f53-8edeabd5f7b5"))
+    IAsyncOperation<int> : IAsyncOperation_impl<int> {};
+
+template <>
+struct __declspec(uuid("d60cae9d-88cb-59f1-8576-3fba44796be8"))
+    IAsyncOperationCompletedHandler<int>
+    : IAsyncOperationCompletedHandler_impl<int> {};
+#endif
+
 }  // namespace Foundation
 }  // namespace Windows
 }  // namespace ABI

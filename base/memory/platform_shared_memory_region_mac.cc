@@ -21,13 +21,6 @@ namespace subtle {
 
 namespace {
 
-void LogCreateError(PlatformSharedMemoryRegion::CreateError error,
-                    kern_return_t mac_error) {
-  UMA_HISTOGRAM_ENUMERATION("SharedMemory.CreateError", error);
-  if (mac_error != KERN_SUCCESS)
-    UmaHistogramSparse("SharedMemory.CreateMacError", mac_error);
-}
-
 }  // namespace
 
 // static
@@ -165,12 +158,10 @@ bool PlatformSharedMemoryRegion::MapAtInternal(off_t offset,
 PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
                                                               size_t size) {
   if (size == 0) {
-    LogCreateError(CreateError::SIZE_ZERO, KERN_SUCCESS);
     return {};
   }
 
   if (size > static_cast<size_t>(std::numeric_limits<int>::max())) {
-    LogCreateError(CreateError::SIZE_TOO_LARGE, KERN_SUCCESS);
     return {};
   }
 
@@ -185,14 +176,11 @@ PlatformSharedMemoryRegion PlatformSharedMemoryRegion::Create(Mode mode,
       MAP_MEM_NAMED_CREATE | VM_PROT_READ | VM_PROT_WRITE,
       mac::ScopedMachSendRight::Receiver(named_right).get(),
       MACH_PORT_NULL);  // Parent handle.
-  if (kr != KERN_SUCCESS)
-    LogCreateError(CreateError::CREATE_FILE_MAPPING_FAILURE, kr);
   // Crash as soon as shm allocation fails to debug the issue
   // https://crbug.com/872237.
   MACH_CHECK(kr == KERN_SUCCESS, kr) << "mach_make_memory_entry_64";
   DCHECK_GE(vm_size, size);
 
-  LogCreateError(CreateError::SUCCESS, KERN_SUCCESS);
   return PlatformSharedMemoryRegion(std::move(named_right), mode, size,
                                     UnguessableToken::Create());
 }

@@ -2,31 +2,32 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
-<include src="assistant_get_more.html">
 <include src="assistant_loading.html">
-<include src="assistant_third_party.html">
+<include src="assistant_related_info.html">
 <include src="assistant_value_prop.html">
 <include src="assistant_voice_match.html">
+<include src="icon.html">
 <include src="setting_zippy.html">
 <include src="voice_match_entry.html">
 
-<link rel="import" href="chrome://resources/cr_elements/cr_expand_button/cr_expand_button.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<dom-module id="assistant-optin-flow">
+<link rel="import" href="/components/common_styles/common_styles.html">
+<link rel="import" href="/components/behaviors/multi_step_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
+
+<dom-module id="assistant-optin-flow-element">
   <template>
-    <link rel="stylesheet" href="../login/oobe_flex_layout.css">
+    <style include="oobe-common-styles"></style>
     <link rel="stylesheet" href="../login/oobe_popup_overlay.css">
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="assistant_value_prop.css">
-    <assistant-loading id="loading" hidden>
+    <assistant-loading id="loading" for-step="loading">
     </assistant-loading>
-    <assistant-value-prop id="value-prop" hidden>
+    <assistant-value-prop id="valueProp" for-step="value-prop">
     </assistant-value-prop>
-    <assistant-third-party id="third-party" hidden>
-    </assistant-third-party>
-    <assistant-voice-match id="voice-match" hidden>
+    <assistant-related-info id="relatedInfo" for-step="related-info">
+    </assistant-related-info>
+    <assistant-voice-match id="voiceMatch" for-step="voice-match">
     </assistant-voice-match>
-    <assistant-get-more id="get-more" hidden>
-    </assistant-get-more>
   </template>
 </dom-module>

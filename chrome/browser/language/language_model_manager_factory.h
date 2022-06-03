@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_LANGUAGE_LANGUAGE_MODEL_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_LANGUAGE_LANGUAGE_MODEL_MANAGER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -17,10 +16,6 @@ namespace language {
 class LanguageModelManager;
 }
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 // Manages the language model for each profile. The particular language model
 // provided depends on feature flags.
 class LanguageModelManagerFactory : public BrowserContextKeyedServiceFactory {
@@ -28,6 +23,10 @@ class LanguageModelManagerFactory : public BrowserContextKeyedServiceFactory {
   static LanguageModelManagerFactory* GetInstance();
   static language::LanguageModelManager* GetForBrowserContext(
       content::BrowserContext* browser_context);
+
+  LanguageModelManagerFactory(const LanguageModelManagerFactory&) = delete;
+  LanguageModelManagerFactory& operator=(const LanguageModelManagerFactory&) =
+      delete;
 
  private:
   friend struct base::DefaultSingletonTraits<LanguageModelManagerFactory>;
@@ -40,10 +39,6 @@ class LanguageModelManagerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-  void RegisterProfilePrefs(
-      user_prefs::PrefRegistrySyncable* registry) override;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageModelManagerFactory);
 };
 
 #endif  // CHROME_BROWSER_LANGUAGE_LANGUAGE_MODEL_MANAGER_FACTORY_H_

@@ -1,0 +1,22 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module components.media_control.mojom;
+
+import "content/public/common/media_playback_renderer_type.mojom";
+
+// Receives messages from browser process to control media playback options
+// (block loading, background playback) for a specific RenderFrame.
+// Implemented by a RenderFrameObserver.
+interface MediaPlaybackOptions {
+  // Sets whether to block all HTMLMediaElements in the frame from fetching and
+  // loading media resources.
+  SetMediaLoadingBlocked(bool blocked);
+
+  // Sets whether video playback is allowed in the background
+  SetBackgroundVideoPlaybackEnabled(bool enabled);
+
+  // Set the renderer type that will be used in WebMediaPlayerImpl
+  SetRendererType(content.mojom.RendererType type);
+};

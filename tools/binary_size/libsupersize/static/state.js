@@ -10,13 +10,16 @@
  * Methods for manipulating the state and the DOM of the page
  */
 
-/** @type {HTMLFormElement} Form containing options and filters */
+/** @type {HTMLFormElement} Form with options and filters */
 const form = document.getElementById('options');
+
+/** @type {HTMLInputElement} */
+const methodCountInput = form.elements.namedItem('method_count');
 
 /** Utilities for working with the DOM */
 const dom = {
   /**
-   * Create a document fragment from the given nodes
+   * Creates a document fragment from the given nodes.
    * @param {Iterable<Node>} nodes
    * @returns {DocumentFragment}
    */
@@ -27,7 +30,7 @@ const dom = {
   },
   /**
    * Removes all the existing children of `parent` and inserts
-   * `newChild` in their place
+   * `newChild` in their place.
    * @param {Node} parent
    * @param {Node | null} newChild
    */
@@ -168,9 +171,7 @@ function _startListeners() {
   const _SHOW_OPTIONS_STORAGE_KEY = 'show-options';
 
   /** @type {HTMLFieldSetElement} */
-  const typesFilterContainer = document.getElementById('types-filter');
-  /** @type {HTMLInputElement} */
-  const methodCountInput = form.elements.namedItem('method_count');
+  const typesFilterElement = document.getElementById('types-filter');
   /** @type {HTMLFieldSetElement} */
   const byteunit = form.elements.namedItem('byteunit');
   /** @type {HTMLCollectionOf<HTMLInputElement>} */
@@ -200,11 +201,11 @@ function _startListeners() {
   function setMethodCountModeUI() {
     if (methodCountInput.checked) {
       byteunit.setAttribute('disabled', '');
-      typesFilterContainer.setAttribute('disabled', '');
+      typesFilterElement.setAttribute('disabled', '');
       sizeHeader.textContent = 'Methods';
     } else {
       byteunit.removeAttribute('disabled');
-      typesFilterContainer.removeAttribute('disabled');
+      typesFilterElement.removeAttribute('disabled');
       sizeHeader.textContent = 'Size';
     }
   }
@@ -349,8 +350,6 @@ function _makeIconTemplateGetter() {
 }
 
 function _makeSizeTextGetter() {
-  const _SIZE_CHANGE_CUTOFF = 50000;
-
   /**
    * Create the contents for the size element of a tree node.
    * The unit to use is selected from the current state.
@@ -411,8 +410,10 @@ function _makeSizeTextGetter() {
    * @param {number} value
    */
   function setSizeClasses(sizeElement, value) {
+    const cutOff = methodCountInput.checked ? 10 : 50000;
     const shouldHaveStyle =
-      state.has('diff_mode') && Math.abs(value) > _SIZE_CHANGE_CUTOFF;
+      state.has('diff_mode') && Math.abs(value) > cutOff;
+
     if (shouldHaveStyle) {
       if (value < 0) {
         sizeElement.classList.add('shrunk');

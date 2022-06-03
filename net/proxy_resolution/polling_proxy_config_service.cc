@@ -9,9 +9,10 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 
@@ -93,10 +94,10 @@ class PollingProxyConfigService::Core
     last_poll_time_ = base::TimeTicks::Now();
     poll_task_outstanding_ = true;
     poll_task_queued_ = false;
-    base::PostTask(FROM_HERE,
-                   {base::ThreadPool(), base::MayBlock(),
-                    base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-                   base::BindOnce(&Core::PollAsync, this, get_config_func_));
+    base::ThreadPool::PostTask(
+        FROM_HERE,
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+        base::BindOnce(&Core::PollAsync, this, get_config_func_));
   }
 
  private:

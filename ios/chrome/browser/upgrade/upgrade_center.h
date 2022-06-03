@@ -34,7 +34,7 @@ class InfoBarManager;
 // |dispatcher| are not retained, unregisterClient: must be called before
 // the object goes away.
 - (void)registerClient:(id<UpgradeCenterClient>)client
-        withDispatcher:(id<ApplicationCommands>)dispatcher;
+           withHandler:(id<ApplicationCommands>)handler;
 
 // Unregisters a client.
 - (void)unregisterClient:(id<UpgradeCenterClient>)client;

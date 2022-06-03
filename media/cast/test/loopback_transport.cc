@@ -6,8 +6,7 @@
 
 #include <utility>
 
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "media/cast/test/utility/udp_proxy.h"
 
@@ -17,11 +16,13 @@ namespace {
 
 // Shim that turns forwards packets from a test::PacketPipe to a
 // PacketReceiverCallback.
-class LoopBackPacketPipe : public test::PacketPipe {
+class LoopBackPacketPipe final : public test::PacketPipe {
  public:
-  LoopBackPacketPipe(
-      const PacketReceiverCallback& packet_receiver)
+  explicit LoopBackPacketPipe(const PacketReceiverCallback& packet_receiver)
       : packet_receiver_(packet_receiver) {}
+
+  LoopBackPacketPipe(const LoopBackPacketPipe&) = delete;
+  LoopBackPacketPipe& operator=(const LoopBackPacketPipe&) = delete;
 
   ~LoopBackPacketPipe() final = default;
 
@@ -32,22 +33,17 @@ class LoopBackPacketPipe : public test::PacketPipe {
 
  private:
   PacketReceiverCallback packet_receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoopBackPacketPipe);
 };
 
 }  // namespace
 
 LoopBackTransport::LoopBackTransport(
     scoped_refptr<CastEnvironment> cast_environment)
-    : cast_environment_(cast_environment),
-      bytes_sent_(0) {
-}
+    : cast_environment_(cast_environment), bytes_sent_(0) {}
 
 LoopBackTransport::~LoopBackTransport() = default;
 
-bool LoopBackTransport::SendPacket(PacketRef packet,
-                                   const base::Closure& cb) {
+bool LoopBackTransport::SendPacket(PacketRef packet, base::OnceClosure cb) {
   DCHECK(cast_environment_->CurrentlyOn(CastEnvironment::MAIN));
   std::unique_ptr<Packet> packet_copy(new Packet(packet->data));
   packet_pipe_->Send(std::move(packet_copy));

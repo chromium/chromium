@@ -53,7 +53,7 @@ void TestBluetoothAdapterObserver::Reset() {
   device_connected_state_changed_values_.clear();
 #endif
   device_removed_count_ = 0;
-  last_device_ = NULL;
+  last_device_ = nullptr;
   last_device_address_.clear();
   gatt_service_added_count_ = 0;
   gatt_service_removed_count_ = 0;
@@ -110,6 +110,18 @@ void TestBluetoothAdapterObserver::AdapterDiscoveringChanged(
 
   ++discovering_changed_count_;
   last_discovering_ = discovering;
+  if (discovering_changed_callback_)
+    discovering_changed_callback_.Run();
+}
+
+void TestBluetoothAdapterObserver::RegisterDiscoveringChangedWatcher(
+    base::RepeatingClosure callback) {
+  discovering_changed_callback_ = callback;
+}
+
+void TestBluetoothAdapterObserver::RegisterDiscoveryChangeCompletedWatcher(
+    base::RepeatingClosure callback) {
+  discovery_change_completed_callback_ = callback;
 }
 
 void TestBluetoothAdapterObserver::DeviceAdded(BluetoothAdapter* adapter,
@@ -121,6 +133,11 @@ void TestBluetoothAdapterObserver::DeviceAdded(BluetoothAdapter* adapter,
   last_device_address_ = device->GetAddress();
 
   QuitMessageLoop();
+}
+
+void TestBluetoothAdapterObserver::DiscoveryChangeCompletedForTesting() {
+  if (discovery_change_completed_callback_)
+    discovery_change_completed_callback_.Run();
 }
 
 void TestBluetoothAdapterObserver::DeviceChanged(BluetoothAdapter* adapter,
@@ -147,21 +164,24 @@ void TestBluetoothAdapterObserver::DeviceAddressChanged(
 
 void TestBluetoothAdapterObserver::DeviceAdvertisementReceived(
     const std::string& device_address,
-    const base::Optional<std::string>& device_name,
-    const base::Optional<std::string>& advertisement_name,
-    base::Optional<int8_t> rssi,
-    base::Optional<int8_t> tx_power,
-    base::Optional<uint16_t> appearance,
+    const absl::optional<std::string>& device_name,
+    const absl::optional<std::string>& advertisement_name,
+    absl::optional<int8_t> rssi,
+    absl::optional<int8_t> tx_power,
+    absl::optional<uint16_t> appearance,
     const device::BluetoothDevice::UUIDList& advertised_uuids,
     const device::BluetoothDevice::ServiceDataMap& service_data_map,
     const device::BluetoothDevice::ManufacturerDataMap& manufacturer_data_map) {
   ++device_advertisement_raw_received_count_;
-  last_device_name_ = device_address;
-  last_advertisement_name_ = device_name;
+  last_device_address_ = device_address;
+  last_device_name_ = device_name;
+  last_advertisement_name_ = advertisement_name;
   last_rssi_ = rssi;
   last_tx_power_ = tx_power;
   last_appearance_ = appearance;
-  // TODO(dougt): Test advertised_uuids, service_data_map, manufacturer_data_map
+  last_advertised_uuids_ = advertised_uuids;
+  last_service_data_map_ = service_data_map;
+  last_manufacturer_data_map_ = manufacturer_data_map;
 
   QuitMessageLoop();
 }

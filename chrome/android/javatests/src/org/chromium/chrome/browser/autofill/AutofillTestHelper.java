@@ -9,6 +9,7 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
@@ -110,6 +111,17 @@ public class AutofillTestHelper {
         int callCount = mOnPersonalDataChangedHelper.getCallCount();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> PersonalDataManager.getInstance().addServerCreditCardForTest(card));
+        mOnPersonalDataChangedHelper.waitForCallback(callCount);
+    }
+
+    public void addServerCreditCard(final CreditCard card, String nickname, int cardIssuer)
+            throws TimeoutException {
+        int callCount = mOnPersonalDataChangedHelper.getCallCount();
+        TestThreadUtils.runOnUiThreadBlocking(
+                ()
+                        -> PersonalDataManager.getInstance()
+                                   .addServerCreditCardForTestWithAdditionalFields(
+                                           card, nickname, cardIssuer));
         mOnPersonalDataChangedHelper.waitForCallback(callCount);
     }
 
@@ -246,6 +258,40 @@ public class AutofillTestHelper {
     public long getCurrentDateForTesting() {
         return TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> PersonalDataManager.getInstance().getCurrentDateForTesting());
+    }
+
+    /**
+     * Clears all local and server data, including server cards added via {@link
+     * #addServerCreditCard(CreditCard)}}.
+     */
+    public void clearAllDataForTesting() throws TimeoutException {
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> PersonalDataManager.getInstance().clearServerDataForTesting());
+        // Clear remaining local profiles and cards.
+        for (AutofillProfile profile : getProfilesForSettings()) {
+            if (profile.getIsLocal()) {
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> PersonalDataManager.getInstance().deleteProfile(profile.getGUID()));
+            }
+        }
+        for (CreditCard card : getCreditCardsForSettings()) {
+            if (card.getIsLocal()) {
+                TestThreadUtils.runOnUiThreadBlocking(
+                        () -> PersonalDataManager.getInstance().deleteCreditCard(card.getGUID()));
+            }
+        }
+        // Ensure all data is cleared. Waiting for a single callback for each operation is not
+        // enough since tests or production code can also trigger callbacks and not consume them.
+        int callCount = mOnPersonalDataChangedHelper.getCallCount();
+        while (getProfilesForSettings().size() > 0 || getCreditCardsForSettings().size() > 0) {
+            mOnPersonalDataChangedHelper.waitForCallback(callCount);
+            callCount = mOnPersonalDataChangedHelper.getCallCount();
+        }
+    }
+
+    /** Returns the YYYY value of the year after the current year. */
+    public static String nextYear() {
+        return String.valueOf(Calendar.getInstance().get(Calendar.YEAR) + 1);
     }
 
     private void registerDataObserver() {

@@ -1,0 +1,70 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
+
+struct PerContextV8MemoryUsage {
+  // TODO(ulan): Replace this with V8ContextToken once it is hooked up in
+  // PerformanceManager.
+  ExecutionContextToken token;
+  uint64 bytes_used = 0;
+  // TODO(906991): Remove this once PlzDedicatedWorker ships. Until then
+  // the browser does not know URLs of dedicated workers, so we pass them
+  // together with the measurement result.
+  // This field is filled only for dedicated workers and it may be empty
+  // if the URL is too long.
+  string? url;
+};
+
+struct PerContextCanvasMemoryUsage {
+  ExecutionContextToken token;
+  uint64 bytes_used = 0;
+};
+
+struct PerIsolateV8MemoryUsage {
+  // The number of V8 contexts not associated with an execution context,
+  // likely web application leaks, and their associated byte usage.
+  // Such contexts are known as detached contexts.
+  uint64 num_detached_contexts;
+  uint64 detached_bytes_used;
+
+  // Bytes shared across all V8 contexts. These bytes are not attributed
+  // to any particular V8 context.
+  uint64 shared_bytes_used;
+
+  // Bytes used on the Blink heap corresponding to this V8 isolate.
+  uint64 blink_bytes_used;
+
+  // The V8 memory usage by individual execution contexts in this process.
+  array<PerContextV8MemoryUsage> contexts;
+  // The memory used by canvas elements in individual execution contexts in
+  // this process.
+  array<PerContextCanvasMemoryUsage> canvas_contexts;
+};
+
+struct PerProcessV8MemoryUsage {
+  // The V8 memory usage by individual isolates in this process.
+  // Each isolate has its own heap.
+  array<PerIsolateV8MemoryUsage> isolates;
+};
+
+// Allows a browser to query the resource usage of sub-processes.
+interface V8DetailedMemoryReporter {
+  // The mode for performing memory measurement.
+  enum Mode {
+    DEFAULT, // Perform memory measurement on the next garbage collection
+             // and force garbage collection after some timeout.
+
+    EAGER,   // Force immediate garbage collection and memory measurement.
+
+    LAZY,    // Perform memory measurement on the next garbage collection.
+  };
+  // Requests a per-frame estimate of v8 heap byte usage on the next garbage
+  // collection. Note that this causes extra cost for the next garbage
+  // collection, which can be on the order of 10-20%.
+  GetV8MemoryUsage(Mode mode) => (PerProcessV8MemoryUsage memory_usage);
+};
+

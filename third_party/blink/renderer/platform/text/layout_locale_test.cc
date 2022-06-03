@@ -28,92 +28,130 @@ TEST(LayoutLocaleTest, GetCaseInsensitive) {
   EXPECT_EQ(en_us, LayoutLocale::Get("en-US"));
 }
 
-TEST(LayoutLocaleTest, ScriptTest) {
-  // Test combinations of BCP 47 locales.
-  // https://tools.ietf.org/html/bcp47
-  struct {
-    const char* locale;
-    UScriptCode script;
-    bool has_script_for_han;
-    UScriptCode script_for_han;
-  } tests[] = {
-      {"en-US", USCRIPT_LATIN},
+// Test combinations of BCP 47 locales.
+// https://tools.ietf.org/html/bcp47
+struct LocaleTestData {
+  const char* locale;
+  UScriptCode script;
+  const char* sk_font_mgr = nullptr;
+  absl::optional<UScriptCode> script_for_han;
+} locale_test_data[] = {
+    // Country is not relevant to |SkFontMgr|.
+    {"en-US", USCRIPT_LATIN, "en"},
 
-      // Common lang-script.
-      {"en-Latn", USCRIPT_LATIN},
-      {"ar-Arab", USCRIPT_ARABIC},
+    // Strip countries but keep scripts.
+    {"en-Latn-US", USCRIPT_LATIN, "en-Latn"},
 
-      // Common lang-region in East Asia.
-      {"ja-JP", USCRIPT_KATAKANA_OR_HIRAGANA, true},
-      {"ko-KR", USCRIPT_HANGUL, true},
-      {"zh", USCRIPT_SIMPLIFIED_HAN, true},
-      {"zh-CN", USCRIPT_SIMPLIFIED_HAN, true},
-      {"zh-HK", USCRIPT_TRADITIONAL_HAN, true},
-      {"zh-MO", USCRIPT_TRADITIONAL_HAN, true},
-      {"zh-SG", USCRIPT_SIMPLIFIED_HAN, true},
-      {"zh-TW", USCRIPT_TRADITIONAL_HAN, true},
+    // Common lang-script.
+    {"en-Latn", USCRIPT_LATIN, "en-Latn"},
+    {"ar-Arab", USCRIPT_ARABIC, "ar-Arab"},
 
-      // Encompassed languages within the Chinese macrolanguage.
-      // Both "lang" and "lang-extlang" should work.
-      {"nan", USCRIPT_TRADITIONAL_HAN, true},
-      {"wuu", USCRIPT_SIMPLIFIED_HAN, true},
-      {"yue", USCRIPT_TRADITIONAL_HAN, true},
-      {"zh-nan", USCRIPT_TRADITIONAL_HAN, true},
-      {"zh-wuu", USCRIPT_SIMPLIFIED_HAN, true},
-      {"zh-yue", USCRIPT_TRADITIONAL_HAN, true},
+    // Examples from `fonts.xml`.
+    // https://android.googlesource.com/platform/frameworks/base/+/master/data/fonts/fonts.xml
+    {"und-Arab", USCRIPT_ARABIC, "und-Arab"},
+    {"und-Thai", USCRIPT_THAI, "und-Thai"},
 
-      // Script has priority over other subtags.
-      {"zh-Hant", USCRIPT_TRADITIONAL_HAN, true},
-      {"en-Hans", USCRIPT_SIMPLIFIED_HAN, true},
-      {"en-Hant", USCRIPT_TRADITIONAL_HAN, true},
-      {"en-Hans-TW", USCRIPT_SIMPLIFIED_HAN, true},
-      {"en-Hant-CN", USCRIPT_TRADITIONAL_HAN, true},
-      {"wuu-Hant", USCRIPT_TRADITIONAL_HAN, true},
-      {"yue-Hans", USCRIPT_SIMPLIFIED_HAN, true},
-      {"zh-wuu-Hant", USCRIPT_TRADITIONAL_HAN, true},
-      {"zh-yue-Hans", USCRIPT_SIMPLIFIED_HAN, true},
+    // Common lang-region in East Asia.
+#define EXPECT_JAPANESE \
+  USCRIPT_KATAKANA_OR_HIRAGANA, "ja", USCRIPT_KATAKANA_OR_HIRAGANA
+#define EXPECT_KOREAN USCRIPT_HANGUL, "ko", USCRIPT_HANGUL
+#define EXPECT_SIMPLIFIED_CHINESE \
+  USCRIPT_SIMPLIFIED_HAN, "zh-Hans", USCRIPT_SIMPLIFIED_HAN
+#define EXPECT_TRADITIONAL_CHINESE \
+  USCRIPT_TRADITIONAL_HAN, "zh-Hant", USCRIPT_TRADITIONAL_HAN
+    {"ja-JP", EXPECT_JAPANESE},
+    {"ko-KR", EXPECT_KOREAN},
+    {"zh", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-CN", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-HK", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-MO", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-SG", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-TW", EXPECT_TRADITIONAL_CHINESE},
 
-      // Lang has priority over region.
-      // icu::Locale::getDefault() returns other combinations if, for instnace,
-      // English Windows with the display language set to Japanese.
-      {"ja", USCRIPT_KATAKANA_OR_HIRAGANA, true},
-      {"ja-US", USCRIPT_KATAKANA_OR_HIRAGANA, true},
-      {"ko", USCRIPT_HANGUL, true},
-      {"ko-US", USCRIPT_HANGUL, true},
-      {"wuu-TW", USCRIPT_SIMPLIFIED_HAN, true},
-      {"yue-CN", USCRIPT_TRADITIONAL_HAN, true},
-      {"zh-wuu-TW", USCRIPT_SIMPLIFIED_HAN, true},
-      {"zh-yue-CN", USCRIPT_TRADITIONAL_HAN, true},
+    // Encompassed languages within the Chinese macrolanguage.
+    // Both "lang" and "lang-extlang" should work.
+    {"nan", EXPECT_TRADITIONAL_CHINESE},
+    {"wuu", EXPECT_SIMPLIFIED_CHINESE},
+    {"yue", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-nan", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-wuu", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-yue", EXPECT_TRADITIONAL_CHINESE},
 
-      // Region should not affect script, but it can influence scriptForHan.
-      {"en-CN", USCRIPT_LATIN, false},
-      {"en-HK", USCRIPT_LATIN, true, USCRIPT_TRADITIONAL_HAN},
-      {"en-MO", USCRIPT_LATIN, true, USCRIPT_TRADITIONAL_HAN},
-      {"en-SG", USCRIPT_LATIN, false},
-      {"en-TW", USCRIPT_LATIN, true, USCRIPT_TRADITIONAL_HAN},
-      {"en-JP", USCRIPT_LATIN, true, USCRIPT_KATAKANA_OR_HIRAGANA},
-      {"en-KR", USCRIPT_LATIN, true, USCRIPT_HANGUL},
+    // Specified scripts is honored.
+    {"zh-Hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-Hant", EXPECT_TRADITIONAL_CHINESE},
 
-      // Multiple regions are invalid, but it can still give hints for the font
-      // selection.
-      {"en-US-JP", USCRIPT_LATIN, true, USCRIPT_KATAKANA_OR_HIRAGANA},
-  };
+    // Lowercase scripts should be capitalized.
+    // |SkFontMgr_Android| uses case-sensitive match, and `fonts.xml` has
+    // capitalized script names.
+    {"zh-hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-hant", EXPECT_TRADITIONAL_CHINESE},
 
-  for (const auto& test : tests) {
-    scoped_refptr<LayoutLocale> locale =
-        LayoutLocale::CreateForTesting(test.locale);
-    EXPECT_EQ(test.script, locale->GetScript()) << test.locale;
-    EXPECT_EQ(test.has_script_for_han, locale->HasScriptForHan())
-        << test.locale;
-    if (!test.has_script_for_han) {
-      EXPECT_EQ(USCRIPT_SIMPLIFIED_HAN, locale->GetScriptForHan())
-          << test.locale;
-    } else if (test.script_for_han) {
-      EXPECT_EQ(test.script_for_han, locale->GetScriptForHan()) << test.locale;
-    } else {
-      EXPECT_EQ(test.script, locale->GetScriptForHan()) << test.locale;
-    }
+    // Script has priority over other subtags.
+    {"en-Hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"en-Hant", EXPECT_TRADITIONAL_CHINESE},
+    {"en-Hans-TW", EXPECT_SIMPLIFIED_CHINESE},
+    {"en-Hant-CN", EXPECT_TRADITIONAL_CHINESE},
+    {"en-TW-Hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"en-CN-Hant", EXPECT_TRADITIONAL_CHINESE},
+    {"wuu-Hant", EXPECT_TRADITIONAL_CHINESE},
+    {"yue-Hans", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-wuu-Hant", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-yue-Hans", EXPECT_SIMPLIFIED_CHINESE},
+
+    // Lang has priority over region.
+    // icu::Locale::getDefault() returns other combinations if, for instance,
+    // English Windows with the display language set to Japanese.
+    {"ja", EXPECT_JAPANESE},
+    {"ja-US", EXPECT_JAPANESE},
+    {"ko", EXPECT_KOREAN},
+    {"ko-US", EXPECT_KOREAN},
+    {"wuu-TW", EXPECT_SIMPLIFIED_CHINESE},
+    {"yue-CN", EXPECT_TRADITIONAL_CHINESE},
+    {"zh-wuu-TW", EXPECT_SIMPLIFIED_CHINESE},
+    {"zh-yue-CN", EXPECT_TRADITIONAL_CHINESE},
+
+    // Region should not affect script, but it can influence scriptForHan.
+    {"en-CN", USCRIPT_LATIN, "en"},
+    {"en-HK", USCRIPT_LATIN, "en", USCRIPT_TRADITIONAL_HAN},
+    {"en-MO", USCRIPT_LATIN, "en", USCRIPT_TRADITIONAL_HAN},
+    {"en-SG", USCRIPT_LATIN, "en"},
+    {"en-TW", USCRIPT_LATIN, "en", USCRIPT_TRADITIONAL_HAN},
+    {"en-JP", USCRIPT_LATIN, "en", USCRIPT_KATAKANA_OR_HIRAGANA},
+    {"en-KR", USCRIPT_LATIN, "en", USCRIPT_HANGUL},
+
+    // Multiple regions are invalid, but it can still give hints for the font
+    // selection.
+    {"en-US-JP", USCRIPT_LATIN, "en", USCRIPT_KATAKANA_OR_HIRAGANA},
+};
+#undef EXPECT_JAPANESE
+#undef EXPECT_KOREAN
+#undef EXPECT_SIMPLIFIED_CHINESE
+#undef EXPECT_TRADITIONAL_CHINESE
+
+std::ostream& operator<<(std::ostream& os, const LocaleTestData& test) {
+  return os << test.locale;
+}
+class LocaleTestDataFixture : public testing::TestWithParam<LocaleTestData> {};
+
+INSTANTIATE_TEST_CASE_P(LayoutLocaleTest,
+                        LocaleTestDataFixture,
+                        testing::ValuesIn(locale_test_data));
+
+TEST_P(LocaleTestDataFixture, Script) {
+  const auto& test = GetParam();
+  scoped_refptr<LayoutLocale> locale =
+      LayoutLocale::CreateForTesting(test.locale);
+  EXPECT_EQ(test.script, locale->GetScript()) << test.locale;
+  EXPECT_EQ(test.script_for_han.has_value(), locale->HasScriptForHan())
+      << test.locale;
+  if (test.script_for_han) {
+    EXPECT_EQ(*test.script_for_han, locale->GetScriptForHan()) << test.locale;
+  } else {
+    EXPECT_EQ(USCRIPT_SIMPLIFIED_HAN, locale->GetScriptForHan()) << test.locale;
   }
+  if (test.sk_font_mgr)
+    EXPECT_STREQ(test.sk_font_mgr, locale->LocaleForSkFontMgr()) << test.locale;
 }
 
 TEST(LayoutLocaleTest, BreakKeyword) {
@@ -164,26 +202,26 @@ TEST(LayoutLocaleTest, AcceptLanguagesChanged) {
       {",en-US", USCRIPT_COMMON, nullptr},
 
       // Single value cases.
-      {"ja-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja-jp"},
-      {"ko-KR", USCRIPT_HANGUL, "ko-kr"},
+      {"ja-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja"},
+      {"ko-KR", USCRIPT_HANGUL, "ko"},
       {"zh-CN", USCRIPT_SIMPLIFIED_HAN, "zh-Hans"},
       {"zh-HK", USCRIPT_TRADITIONAL_HAN, "zh-Hant"},
       {"zh-TW", USCRIPT_TRADITIONAL_HAN, "zh-Hant"},
 
       // Language only.
-      {"ja", USCRIPT_KATAKANA_OR_HIRAGANA, "ja-jp"},
-      {"ko", USCRIPT_HANGUL, "ko-kr"},
+      {"ja", USCRIPT_KATAKANA_OR_HIRAGANA, "ja"},
+      {"ko", USCRIPT_HANGUL, "ko"},
       {"zh", USCRIPT_SIMPLIFIED_HAN, "zh-Hans"},
 
       // Unusual combinations.
-      {"en-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja-jp"},
+      {"en-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja"},
 
       // Han scripts not in the first item.
-      {"en-US,ja-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja-jp"},
-      {"en-US,en-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja-jp"},
+      {"en-US,ja-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja"},
+      {"en-US,en-JP", USCRIPT_KATAKANA_OR_HIRAGANA, "ja"},
 
       // Multiple Han scripts. The first one wins.
-      {"ja-JP,zh-CN", USCRIPT_KATAKANA_OR_HIRAGANA, "ja-jp"},
+      {"ja-JP,zh-CN", USCRIPT_KATAKANA_OR_HIRAGANA, "ja"},
       {"zh-TW,ja-JP", USCRIPT_TRADITIONAL_HAN, "zh-Hant"},
   };
 
@@ -198,7 +236,7 @@ TEST(LayoutLocaleTest, AcceptLanguagesChanged) {
 
     ASSERT_NE(nullptr, locale) << test.accept_languages;
     EXPECT_EQ(test.script, locale->GetScriptForHan()) << test.accept_languages;
-    EXPECT_STRCASEEQ(test.locale, locale->LocaleForHanForSkFontMgr())
+    EXPECT_STREQ(test.locale, locale->LocaleForHanForSkFontMgr())
         << test.accept_languages;
   }
 }

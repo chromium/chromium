@@ -48,22 +48,22 @@ Background = function() {
    * @type {!Array<string>}
    * @private
    */
-  this.whitelist_ = ['chromevox_next_test'];
+  this.allowlist_ = ['chromevox_next_test'];
 
   /**
-   * A list of site substring patterns to blacklist ChromeVox Classic,
+   * A list of site substring patterns to denylist ChromeVox Classic,
    * putting ChromeVox into Compat mode.
    * @type {!Set<string>}
    * @private
    */
-  this.classicBlacklist_ = new Set();
+  this.classicDenylist_ = new Set();
 
   /**
-   * Regular expression for blacklisting classic.
+   * Regular expression for denylisting classic.
    * @type {RegExp}
    * @private
    */
-  this.classicBlacklistRegExp_ = Background.globsToRegExp_(
+  this.classicDenylistRegExp_ = Background.globsToRegExp_(
       chrome.runtime.getManifest()['content_scripts'][0]['exclude_globs']);
 
   /**
@@ -225,9 +225,9 @@ Background.prototype = {
         AutomationUtil.getTopLevelRoot(/** @type {!AutomationNode} */ (target));
     if (!root)
       return ChromeVoxMode.COMPAT;
-    if (this.isWhitelistedForCompat_(root.docUrl))
+    if (this.isAllowlistedForCompat_(root.docUrl))
       return ChromeVoxMode.COMPAT;
-    else if (this.isWhitelistedForNext_(root.docUrl))
+    else if (this.isAllowlistedForNext_(root.docUrl))
       return ChromeVoxMode.NEXT;
     else
       return ChromeVoxMode.CLASSIC;
@@ -965,17 +965,17 @@ Background.prototype = {
    */
   shouldEnableClassicForUrl_: function(url) {
     return this.mode != ChromeVoxMode.FORCE_NEXT &&
-        !this.isBlacklistedForClassic_(url) && !this.isWhitelistedForNext_(url);
+        !this.isDenylistedForClassic_(url) && !this.isAllowlistedForNext_(url);
   },
 
   /**
    * Compat mode is on if any of the following are true:
-   * 1. a url is blacklisted for Classic.
+   * 1. a url is denylisted for Classic.
    * 2. the current range is not within web content.
    * @param {string} url
    */
-  isWhitelistedForCompat_: function(url) {
-    return this.isBlacklistedForClassic_(url) ||
+  isAllowlistedForCompat_: function(url) {
+    return this.isDenylistedForClassic_(url) ||
         (this.getCurrentRange() && !this.getCurrentRange().isWebRange() &&
          this.getCurrentRange().start.node.state.focused);
   },
@@ -985,20 +985,20 @@ Background.prototype = {
    * @return {boolean}
    * @private
    */
-  isBlacklistedForClassic_: function(url) {
-    if (this.classicBlacklistRegExp_.test(url))
+  isDenylistedForClassic_: function(url) {
+    if (this.classicDenylistRegExp_.test(url))
       return true;
     url = url.substring(0, url.indexOf('#')) || url;
-    return this.classicBlacklist_.has(url);
+    return this.classicDenylist_.has(url);
   },
 
   /**
    * @param {string} url
-   * @return {boolean} Whether the given |url| is whitelisted.
+   * @return {boolean} Whether the given |url| is allowlisted.
    * @private
    */
-  isWhitelistedForNext_: function(url) {
-    return this.whitelist_.some(function(item) {
+  isAllowlistedForNext_: function(url) {
+    return this.allowlist_.some(function(item) {
       return url.indexOf(item) != -1;
     });
   },
@@ -1072,7 +1072,7 @@ Background.prototype = {
               {target: 'next', isClassicEnabled: isClassicEnabled});
         } else if (action == 'enableCompatForUrl') {
           var url = msg['url'];
-          this.classicBlacklist_.add(url);
+          this.classicDenylist_.add(url);
           if (this.currentRange_ && this.currentRange_.start.node)
             this.setCurrentRange(this.currentRange_);
         } else if (action == 'onCommand') {

@@ -37,8 +37,6 @@
 #define THIRD_PARTY_SNAPPY_OPENSOURCE_SNAPPY_STUBS_PUBLIC_H_
 
 #include <cstddef>
-#include <cstdint>
-#include <string>
 
 #if 1  // HAVE_SYS_UIO_H
 #include <sys/uio.h>
@@ -46,22 +44,11 @@
 
 #define SNAPPY_MAJOR 1
 #define SNAPPY_MINOR 1
-#define SNAPPY_PATCHLEVEL 7
+#define SNAPPY_PATCHLEVEL 8
 #define SNAPPY_VERSION \
     ((SNAPPY_MAJOR << 16) | (SNAPPY_MINOR << 8) | SNAPPY_PATCHLEVEL)
 
 namespace snappy {
-
-using int8 = std::int8_t;
-using uint8 = std::uint8_t;
-using int16 = std::int16_t;
-using uint16 = std::uint16_t;
-using int32 = std::int32_t;
-using uint32 = std::uint32_t;
-using int64 = std::int64_t;
-using uint64 = std::uint64_t;
-
-using string = std::string;
 
 #if !1  // !HAVE_SYS_UIO_H
 // Windows does not have an iovec type, yet the concept is universally useful.

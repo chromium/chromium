@@ -5,9 +5,7 @@
 import("//testing/test.gni")
 
 group("rnnoise") {
-  deps = [
-    ":rnn_vad",
-  ]
+  deps = [ ":rnn_vad" ]
 }
 
 source_set("rnn_vad") {

@@ -8,16 +8,16 @@
 #include "base/command_line.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/chromeos/settings/cros_settings.h"
-#include "chrome/browser/chromeos/settings/scoped_testing_cros_settings.h"
-#include "chrome/browser/chromeos/settings/stub_cros_settings_provider.h"
-#include "chrome/browser/chromeos/ui/echo_dialog_view.h"
+#include "chrome/browser/ash/notifications/echo_dialog_view.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
+#include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "chromeos/constants/chromeos_switches.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace utils = extension_function_test_utils;
@@ -57,13 +57,10 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     ASSERT_TRUE(result.get());
     ASSERT_EQ(base::Value::Type::BOOLEAN, result->type());
 
-    bool result_as_boolean = false;
-    ASSERT_TRUE(result->GetAsBoolean(&result_as_boolean));
-
-    EXPECT_EQ(expected_result, result_as_boolean);
+    EXPECT_EQ(expected_result, result->GetBool());
   }
 
-  void OnDialogShown(chromeos::EchoDialogView* dialog) {
+  void OnDialogShown(ash::EchoDialogView* dialog) {
     dialog_invocation_count_++;
     ASSERT_LE(dialog_invocation_count_, 1);
 
@@ -84,12 +81,12 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
     if (dialog_action == DIALOG_TEST_ACTION_ACCEPT) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(base::IgnoreResult(&chromeos::EchoDialogView::Accept),
+          base::BindOnce(base::IgnoreResult(&ash::EchoDialogView::Accept),
                          base::Unretained(dialog)));
     } else if (dialog_action == DIALOG_TEST_ACTION_CANCEL) {
       base::ThreadTaskRunnerHandle::Get()->PostTask(
           FROM_HERE,
-          base::BindOnce(base::IgnoreResult(&chromeos::EchoDialogView::Cancel),
+          base::BindOnce(base::IgnoreResult(&ash::EchoDialogView::Cancel),
                          base::Unretained(dialog)));
     }
   }
@@ -131,7 +128,8 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
 };
 
 IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest, EchoTest) {
-  EXPECT_TRUE(RunComponentExtensionTest("echo/component_extension"))
+  EXPECT_TRUE(RunExtensionTest("echo/component_extension", {},
+                               {.load_as_component = true}))
       << message_;
 }
 
@@ -236,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
                        GetUserConsent_AllowRedeemPrefTrue) {
   const int tab_id = OpenAndActivateTab();
   scoped_testing_cros_settings_.device_settings()->Set(
-      kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
+      ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
 
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
   dialog_action_ = DIALOG_TEST_ACTION_ACCEPT;
@@ -250,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
                        GetUserConsent_ConsentDenied) {
   const int tab_id = OpenAndActivateTab();
   scoped_testing_cros_settings_.device_settings()->Set(
-      kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
+      ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(true));
 
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL | ui::DIALOG_BUTTON_OK;
   dialog_action_ = DIALOG_TEST_ACTION_CANCEL;
@@ -264,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionEchoPrivateApiTest,
                        GetUserConsent_AllowRedeemPrefFalse) {
   const int tab_id = OpenAndActivateTab();
   scoped_testing_cros_settings_.device_settings()->Set(
-      kAllowRedeemChromeOsRegistrationOffers, base::Value(false));
+      ash::kAllowRedeemChromeOsRegistrationOffers, base::Value(false));
 
   expected_dialog_buttons_ = ui::DIALOG_BUTTON_CANCEL;
   dialog_action_ = DIALOG_TEST_ACTION_CANCEL;

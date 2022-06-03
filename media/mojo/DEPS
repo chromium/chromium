@@ -9,9 +9,9 @@ include_rules = [
   # remove this dependency.
   "+sandbox/mac",
 
+  "+services/media_session",
   "+services/metrics",
   "+services/service_manager",
-
 
   # For converting GpuMemoryBufferHandle to GpuMemoryBuffer in
   # video_frame_mojom_traits.cc.

@@ -1,0 +1,13 @@
+Name: org.jetbrains.kotlinx:kotlinx-metadata-jvm
+Short Name: kotlinx-metadata-jvm
+URL: https://kotlinlang.org/
+Version: 0.1.0
+License: Apache Version 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Kotlin JVM metadata manipulation library
+
+Local Modifications:
+No modifications.

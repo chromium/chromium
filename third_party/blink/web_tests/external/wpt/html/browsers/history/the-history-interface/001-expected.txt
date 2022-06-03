@@ -36,7 +36,7 @@ PASS state data should cope with circular object references
 PASS state data should be a clone of the original object, not a reference to it
 PASS history.state should also reference a clone of the original object (2)
 PASS history.state should be a clone of the original object, not a reference to it (2)
-PASS history.state should be a separate clone of the object, not a reference to the object passed to the event handler
+PASS history.state should be identical to the object passed to the event handler unless history.state is updated
 PASS pushState should not actually load the new URL
 PASS reloading a pushed state should actually load the new URL
 Harness: the test ran to completion.

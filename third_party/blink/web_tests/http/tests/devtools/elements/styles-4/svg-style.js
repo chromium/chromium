@@ -4,15 +4,15 @@
 
 (async function() {
   TestRunner.addResult(`Tests that svg:style does not crash when the related element is inspected.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.navigatePromise('resources/svg-style.xhtml');
 
   ElementsTestRunner.selectNodeAndWaitForStyles('main', step1);
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('Main style:');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     TestRunner.completeTest();
   }
 })();

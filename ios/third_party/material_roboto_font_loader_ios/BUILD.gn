@@ -45,7 +45,5 @@ bundle_data("material_roboto_font_loader_bundle") {
     "src/src/MaterialRobotoFontLoader.bundle/Roboto-Thin.ttf",
     "src/src/MaterialRobotoFontLoader.bundle/Roboto-ThinItalic.ttf",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/MaterialRobotoFontLoader.bundle/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/MaterialRobotoFontLoader.bundle/{{source_file_part}}" ]
 }

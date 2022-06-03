@@ -39,7 +39,7 @@ class MojoInterfaceRequestEvent final : public Event {
     return event_interface_names::kMojoInterfaceRequestEvent;
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<MojoHandle> handle_;

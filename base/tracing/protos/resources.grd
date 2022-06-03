@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<grit base_dir="." latest_public_release="0" current_release="1">
+  <outputs>
+    <output filename="grit/tracing_proto_resources.h" type="rc_header">
+      <emit emit_type="prepend"></emit>
+    </output>
+    <output filename="tracing_proto_resources.pak" type="data_package" />
+  </outputs>
+  <release seq="1">
+    <includes>
+      <include
+          name="chrome_track_event_descriptor"
+          file="${root_gen_dir}/base/tracing/protos/chrome_track_event.descriptor"
+          type="BINDATA"
+          compress="gzip"
+          use_base_dir="false" />
+    </includes>
+  </release>
+</grit>

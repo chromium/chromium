@@ -38,9 +38,7 @@ typedef enum {
   /** Type for invalid file systems */
   PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_INVALID = 0,
   /** Type for CRX file systems */
-  PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX = 1,
-  /** Type for PluginPrivate file systems */
-  PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_PLUGINPRIVATE = 2
+  PP_ISOLATEDFILESYSTEMTYPE_PRIVATE_CRX = 1
 } PP_IsolatedFileSystemType_Private;
 PP_COMPILE_ASSERT_SIZE_IN_BYTES(PP_IsolatedFileSystemType_Private, 4);
 /**

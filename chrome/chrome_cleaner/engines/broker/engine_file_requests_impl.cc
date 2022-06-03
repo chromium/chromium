@@ -12,8 +12,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "chrome/chrome_cleaner/engines/broker/scanner_sandbox_interface.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace chrome_cleaner {
 
@@ -52,10 +52,11 @@ void EngineFileRequestsImpl::SandboxFindFirstFile(
     const base::FilePath& file_name,
     SandboxFindFirstFileCallback result_callback) {
   // Execute the request off of the Mojo thread to unblock it for other calls.
-  base::PostTask(FROM_HERE, {base::ThreadPool(), base::MayBlock()},
-                 base::BindOnce(&EngineFileRequestsImpl::FindFirstFile,
-                                base::Unretained(this), file_name,
-                                std::move(result_callback)));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&EngineFileRequestsImpl::FindFirstFile,
+                     base::Unretained(this), file_name,
+                     std::move(result_callback)));
 }
 
 void EngineFileRequestsImpl::FindFirstFile(
@@ -67,7 +68,7 @@ void EngineFileRequestsImpl::FindFirstFile(
       file_name, &find_file_data, &handle);
   if (metadata_observer_) {
     std::map<std::string, std::string> arguments = {
-        {"file_name", base::UTF16ToUTF8(file_name.value())},
+        {"file_name", base::WideToUTF8(file_name.value())},
         {"result", base::NumberToString(result)},
         {"handle", base::NumberToString(reinterpret_cast<size_t>(handle))},
     };
@@ -90,10 +91,11 @@ void EngineFileRequestsImpl::FindFirstFile(
 void EngineFileRequestsImpl::SandboxFindNextFile(
     mojom::FindHandlePtr handle_ptr,
     SandboxFindNextFileCallback result_callback) {
-  base::PostTask(FROM_HERE, {base::ThreadPool(), base::MayBlock()},
-                 base::BindOnce(&EngineFileRequestsImpl::FindNextFile,
-                                base::Unretained(this), std::move(handle_ptr),
-                                std::move(result_callback)));
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
+      base::BindOnce(&EngineFileRequestsImpl::FindNextFile,
+                     base::Unretained(this), std::move(handle_ptr),
+                     std::move(result_callback)));
 }
 
 void EngineFileRequestsImpl::FindNextFile(
@@ -122,8 +124,8 @@ void EngineFileRequestsImpl::FindNextFile(
 void EngineFileRequestsImpl::SandboxFindClose(
     mojom::FindHandlePtr handle_ptr,
     SandboxFindCloseCallback result_callback) {
-  base::PostTask(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&EngineFileRequestsImpl::FindClose, base::Unretained(this),
                      std::move(handle_ptr), std::move(result_callback)));
 }
@@ -150,8 +152,8 @@ void EngineFileRequestsImpl::SandboxOpenReadOnlyFile(
     const base::FilePath& file_name,
     uint32_t dwFlagsAndAttribute,
     SandboxOpenReadOnlyFileCallback result_callback) {
-  base::PostTask(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&EngineFileRequestsImpl::OpenReadOnlyFile,
                      base::Unretained(this), file_name, dwFlagsAndAttribute,
                      std::move(result_callback)));
@@ -166,10 +168,9 @@ void EngineFileRequestsImpl::OpenReadOnlyFile(
   base::win::ScopedHandle handle =
       chrome_cleaner_sandbox::SandboxOpenReadOnlyFile(file_name,
                                                       dwFlagsAndAttribute);
-
   mojo_task_runner_->PostTask(
       FROM_HERE, base::BindOnce(std::move(result_callback),
-                                mojo::WrapPlatformFile(handle.Take())));
+                                mojo::PlatformHandle(std::move(handle))));
 }
 
 }  // namespace chrome_cleaner

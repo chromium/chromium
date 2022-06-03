@@ -10,7 +10,7 @@
 #include <iterator>
 
 #include "base/containers/circular_deque.h"
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_piece.h"
 
 namespace {
@@ -137,8 +137,8 @@ bool DependencyGraph::BuildConstructionOrder() {
 
 std::string DependencyGraph::DumpAsGraphviz(
     const std::string& toplevel_name,
-    const base::Callback<std::string(DependencyNode*)>& node_name_callback)
-    const {
+    const base::RepeatingCallback<std::string(DependencyNode*)>&
+        node_name_callback) const {
   std::string result("digraph {\n");
   std::string escaped_toplevel_name = Escape(toplevel_name);
 

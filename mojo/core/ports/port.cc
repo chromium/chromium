@@ -21,7 +21,7 @@ Port::Port(uint64_t next_sequence_num_to_send,
       peer_closed(false),
       peer_lost_unexpectedly(false) {}
 
-Port::~Port() {}
+Port::~Port() = default;
 
 }  // namespace ports
 }  // namespace core

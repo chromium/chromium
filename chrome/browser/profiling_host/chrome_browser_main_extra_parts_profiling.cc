@@ -9,7 +9,7 @@
 #include "chrome/browser/profiling_host/chrome_client_connection_manager.h"
 #include "chrome/browser/profiling_host/profiling_process_host.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/heap_profiling/supervisor.h"
+#include "components/heap_profiling/multi_process/supervisor.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 
 namespace {

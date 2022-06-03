@@ -32,10 +32,8 @@ AXProgressIndicator::AXProgressIndicator(LayoutProgress* layout_object,
                                          AXObjectCacheImpl& ax_object_cache)
     : AXLayoutObject(layout_object, ax_object_cache) {}
 
-ax::mojom::Role AXProgressIndicator::DetermineAccessibilityRole() {
-  if ((aria_role_ = DetermineAriaRoleAttribute()) != ax::mojom::Role::kUnknown)
-    return aria_role_;
-  return ax::mojom::Role::kProgressIndicator;
+ax::mojom::blink::Role AXProgressIndicator::NativeRoleIgnoringAria() const {
+  return ax::mojom::blink::Role::kProgressIndicator;
 }
 
 bool AXProgressIndicator::ComputeAccessibilityIsIgnored(
@@ -51,7 +49,7 @@ bool AXProgressIndicator::ValueForRange(float* out_value) const {
   }
 
   if (GetProgressElement()->position() >= 0) {
-    *out_value = clampTo<float>(GetProgressElement()->value());
+    *out_value = ClampTo<float>(GetProgressElement()->value());
     return true;
   }
   // Indeterminate progress bar has no value.
@@ -65,7 +63,7 @@ bool AXProgressIndicator::MaxValueForRange(float* out_value) const {
     return true;
   }
 
-  *out_value = clampTo<float>(GetProgressElement()->max());
+  *out_value = ClampTo<float>(GetProgressElement()->max());
   return true;
 }
 
@@ -81,7 +79,7 @@ bool AXProgressIndicator::MinValueForRange(float* out_value) const {
 }
 
 HTMLProgressElement* AXProgressIndicator::GetProgressElement() const {
-  return ToLayoutProgress(layout_object_)->ProgressElement();
+  return To<LayoutProgress>(layout_object_.Get())->ProgressElement();
 }
 
 }  // namespace blink

@@ -4,7 +4,6 @@
   <script src=/resources/testharnessreport.js></script>
   <script src="resources/webxr_util.js"></script>
   <script src="resources/webxr_test_constants.js"></script>
-  <canvas></canvas>
 
   <script>
 
@@ -16,9 +15,12 @@
     };
 
     let testFunction = function(session, fakeDeviceController, t) {
+      let debug = xr_debug.bind(this, 'testFunction');
       return session.requestReferenceSpace('local')
         .then((referenceSpace) => new Promise((resolve, reject) => {
+          debug('refSpace promise');
           function CheckPositionNotEmulated(time, vrFrame){
+            debug('rAF 1: checkPositionNotEmulated');
             t.step(() => {
               let pose = vrFrame.getViewerPose(referenceSpace);
               assert_not_equals(pose, null);
@@ -30,6 +32,7 @@
           }
 
           function CheckPositionEmulated(time, vrFrame) {
+            debug('rAF 2: checkPositionEmulated');
             t.step(() => {
               let pose = vrFrame.getViewerPose(referenceSpace);
               assert_not_equals(pose, null);
@@ -37,10 +40,11 @@
             });
 
             // Finished.
+            debug('resolve');
             resolve();
           }
 
-          session.requestAnimationFrame(CheckPositionNotEmulated);
+          requestSkipAnimationFrame(session, CheckPositionNotEmulated);
         }));
     };
 

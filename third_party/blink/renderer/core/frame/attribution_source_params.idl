@@ -1,0 +1,12 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// An AttributionSourceParams object represents registration info for an attribution source for the Attribution Reporting API. These mirror the attribution attributes exposed HTML anchor elements. See https://github.com/WICG/conversion-measurement-api/blob/master/README.md for more information.
+dictionary AttributionSourceParams {
+  required USVString attributionDestination;
+  required DOMString attributionSourceEventId;
+  USVString attributionReportTo;
+  long long attributionExpiry;
+  long long attributionSourcePriority;
+};

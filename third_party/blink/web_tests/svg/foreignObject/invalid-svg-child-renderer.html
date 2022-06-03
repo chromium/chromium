@@ -15,7 +15,7 @@
        *   </svg>
        */
       function create_shadow() {
-        var root = document.getElementById('container').createShadowRoot();
+        var root = document.getElementById('container').attachShadow({mode: 'open'});
         var svg1 = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
         root.appendChild(svg1);
         var fo = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');

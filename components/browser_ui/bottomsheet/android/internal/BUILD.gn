@@ -1,0 +1,67 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  visibility = [
+    ":*",
+    "../test:*",
+    "//chrome/android:chrome_all_java",
+    "//weblayer/browser/java:java",
+  ]
+
+  sources = [
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerFactory.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetControllerImpl.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetSwipeDetector.java",
+    "java/src/org/chromium/components/browser_ui/bottomsheet/TouchRestrictingFrameLayout.java",
+  ]
+
+  deps = [
+    "..:java",
+    "..:java_resources",
+    "..:manager_java",
+    "//base:base_java",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+  resources_package = "org.chromium.components.browser_ui.bottomsheet.internal"
+}
+
+android_library("junit_tests") {
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetSwipeDetectorTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+
+  sources = [ "java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheetObserverTest.java" ]
+
+  deps = [
+    ":java",
+    "../:java",
+    "../test:java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//ui/android:ui_java_test_support",
+    "//ui/android:ui_utils_java",
+  ]
+}

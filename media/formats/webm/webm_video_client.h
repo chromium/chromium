@@ -10,12 +10,12 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
 #include "media/formats/webm/webm_colour_parser.h"
 #include "media/formats/webm/webm_parser.h"
+#include "media/formats/webm/webm_projection_parser.h"
 
 namespace media {
 class VideoDecoderConfig;
@@ -24,6 +24,10 @@ class VideoDecoderConfig;
 class MEDIA_EXPORT WebMVideoClient : public WebMParserClient {
  public:
   explicit WebMVideoClient(MediaLog* media_log);
+
+  WebMVideoClient(const WebMVideoClient&) = delete;
+  WebMVideoClient& operator=(const WebMVideoClient&) = delete;
+
   ~WebMVideoClient() override;
 
   // Reset this object's state so it can process a new video track element.
@@ -43,6 +47,7 @@ class MEDIA_EXPORT WebMVideoClient : public WebMParserClient {
 
  private:
   friend class WebMVideoClientTest;
+  friend class WebMProjectionParserTest;
 
   // WebMParserClient implementation.
   WebMParserClient* OnListStart(int id) override;
@@ -62,11 +67,13 @@ class MEDIA_EXPORT WebMVideoClient : public WebMParserClient {
   int64_t display_height_;
   int64_t display_unit_;
   int64_t alpha_mode_;
+  int64_t stereo_mode_;
 
   WebMColourParser colour_parser_;
   bool colour_parsed_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(WebMVideoClient);
+  WebMProjectionParser projection_parser_;
+  bool projection_parsed_ = false;
 };
 
 }  // namespace media

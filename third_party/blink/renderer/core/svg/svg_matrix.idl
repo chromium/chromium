@@ -25,6 +25,7 @@
 // TODO(foolip): SVGMatrix is gone from SVG 2, replaced by DOMMatrix.
 // https://crbug.com/709001
 [
+    Exposed=Window,
     ImplementedAs=SVGMatrixTearOff
 ] interface SVGMatrix {
     // FIXME: these attributes should all be floats but since we implement

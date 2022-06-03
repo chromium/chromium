@@ -82,12 +82,19 @@ inspectedElement1{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "inspectedElement1",
     "className": ".inspected",
     "nodeWidth": "250",
-    "nodeHeight": "250"
+    "nodeHeight": "250",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 inspectedElement2{
@@ -172,12 +179,19 @@ inspectedElement2{
   ],
   "showRulers": true,
   "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
   "elementInfo": {
     "tagName": "div",
     "idValue": "inspectedElement2",
     "className": ".inspected",
     "nodeWidth": "250",
-    "nodeHeight": "250"
+    "nodeHeight": "250",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGBlockFlow",
+    "showAccessibilityInfo": true
   }
 }
 

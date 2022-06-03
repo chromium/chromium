@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="date" id="date" value="2019-02-14">
+<script>
+
+promise_test(() => {
+  let dateElement = document.getElementById('date');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickTodayButton();
+
+    let splitDate = dateElement.value.split('-');
+    let actualTodayDateString = new Date(splitDate[0], splitDate[1] - 1, [splitDate[2]]).toDateString();
+    let expectedTodayDateString = new Date().toDateString();
+
+    assert_equals(actualTodayDateString, expectedTodayDateString, "Today button should have updated in-page control to today's date");
+    assert_equals(internals.pagePopupWindow, null, "Click on Today button should close popup.");
+  });
+}, "Date picker: Today button should select today's date");
+
+</script>
+</body>
+</html>

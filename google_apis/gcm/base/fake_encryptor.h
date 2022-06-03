@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef GOOGLE_APIS_GCM_BASE_ENCRYPTOR_H_
-#define GOOGLE_APIS_GCM_BASE_ENCRYPTOR_H_
+#ifndef GOOGLE_APIS_GCM_BASE_FAKE_ENCRYPTOR_H_
+#define GOOGLE_APIS_GCM_BASE_FAKE_ENCRYPTOR_H_
 
 #include "base/compiler_specific.h"
 #include "google_apis/gcm/base/encryptor.h"
@@ -25,4 +25,4 @@ class FakeEncryptor : public Encryptor {
 
 }  // namespace gcm
 
-#endif  // GOOGLE_APIS_GCM_BASE_ENCRYPTOR_H_
+#endif  // GOOGLE_APIS_GCM_BASE_FAKE_ENCRYPTOR_H_

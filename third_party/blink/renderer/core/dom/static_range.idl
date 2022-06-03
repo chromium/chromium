@@ -4,12 +4,7 @@
 
 // https://w3c.github.io/staticrange/#interface-staticrange
 
-[
-    Exposed=Window
-] interface StaticRange {
-    readonly attribute Node startContainer;
-    readonly attribute unsigned long startOffset;
-    readonly attribute Node endContainer;
-    readonly attribute unsigned long endOffset;
-    readonly attribute boolean collapsed;
+[Exposed=Window]
+interface StaticRange : AbstractRange {
+  [CallWith=Document, RaisesException] constructor(StaticRangeInit init);
 };

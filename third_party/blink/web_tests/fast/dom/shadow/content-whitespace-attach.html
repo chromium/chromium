@@ -1,9 +1,0 @@
-<!DOCTYPE html>
-<p>There should be a space between 'two' and 'words' below.</p>
-<div id="host"><span style="display:block">two</span></div>
-<script>
-  const root = host.createShadowRoot();
-  root.innerHTML = "<content></content> <!---->words";
-  document.body.offsetTop;
-  document.querySelector("span").style.display = "inline";
-</script>

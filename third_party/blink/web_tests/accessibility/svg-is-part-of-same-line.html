@@ -9,8 +9,7 @@
         <svg xmlns='http://www.w3.org/2000/svg'
             width='9' height='9'>
           <rect width='9' height='9' fill='green'/>
-        </svg>">
-    More text.
+        </svg>"> More text.
   </p>
 </div>
 
@@ -36,11 +35,7 @@
     let axInline2= axText2.childAtIndex(0);
     assert_not_equals(axInline2, undefined);
     assert_equals(axInline2.role, 'AXRole: AXInlineTextBox');
-    assert_equals(axInline2.name, ' ');
-    let axInline3 = axText2.childAtIndex(1);
-    assert_not_equals(axInline3, undefined);
-    assert_equals(axInline3.role, 'AXRole: AXInlineTextBox');
-    assert_equals(axInline3.name, 'More text.');
+    assert_equals(axInline2.name, ' More text.');
 
     assert_equals(axText1.previousOnLine(), undefined, 'axText1.previousOnLine()');
     assert_equals(axText1.nextOnLine(), axSvg, 'axText1.nextOnLine()');
@@ -51,8 +46,6 @@
     assert_equals(axText2.previousOnLine(), axSvg, 'axText2.previousOnLine()');
     assert_equals(axText2.nextOnLine(), undefined, 'axText2.nextOnLine()');
     assert_equals(axInline2.previousOnLine(), axSvg, 'axInline2.previousOnLine()');
-    assert_equals(axInline2.nextOnLine(), axInline3, 'axInline2.nextOnLine()');
-    assert_equals(axInline3.previousOnLine(), axInline2, 'axInline3.previousOnLine()');
-    assert_equals(axInline3.nextOnLine(), undefined, 'axInline3.nextOnLine()');
+    assert_equals(axInline2.nextOnLine(), undefined, 'axInline2.nextOnLine()');
   }, 'Test that the SVG is on the same line as the static text surrounding it.');
 </script>

@@ -1,0 +1,45 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("test_proto") {
+  testonly = true
+  sources = [ "test_proto.proto" ]
+}
+
+static_library("sqlite_proto") {
+  sources = [
+    "key_value_data.h",
+    "key_value_table.cc",
+    "key_value_table.h",
+    "proto_table_manager.cc",
+    "proto_table_manager.h",
+    "table_manager.cc",
+    "table_manager.h",
+  ]
+  deps = [
+    "//base",
+    "//sql",
+    "//third_party/protobuf:protobuf_lite",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "key_value_data_unittest.cc",
+    "key_value_table_unittest.cc",
+    "proto_table_manager_unittest.cc",
+  ]
+  deps = [
+    ":sqlite_proto",
+    ":test_proto",
+    "//base",
+    "//base/test:test_support",
+    "//sql",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

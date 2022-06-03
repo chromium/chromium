@@ -14,12 +14,11 @@
 #include "base/i18n/number_formatting.h"
 #include "base/i18n/time_formatting.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/escape.h"
 #include "net/base/net_errors.h"
@@ -30,8 +29,9 @@
 #include "storage/browser/blob/blob_storage_registry.h"
 #include "storage/browser/blob/shareable_blob_data_item.h"
 
+namespace storage {
+
 namespace {
-using storage::BlobStatus;
 
 const char kEmptyBlobStorageMessage[] = "No available blob data.";
 const char kContentType[] = "Content Type: ";
@@ -132,13 +132,7 @@ void AddHTMLListItem(const std::string& element_title,
   out->append("</li>\n");
 }
 
-void AddHorizontalRule(std::string* out) {
-  out->append("\n<hr>\n");
-}
-
 }  // namespace
-
-namespace storage {
 
 std::string ViewBlobInternalsJob::GenerateHTML(
     BlobStorageContext* blob_storage_context) {
@@ -155,15 +149,7 @@ std::string ViewBlobInternalsJob::GenerateHTML(
                               entry->content_disposition(), entry->refcount(),
                               &out);
     }
-    if (!blob_storage_context->registry().url_to_blob_.empty()) {
-      AddHorizontalRule(&out);
-      for (const auto& url_uuid_pair :
-           blob_storage_context->registry().url_to_blob_) {
-        AddHTMLBoldText(url_uuid_pair.first.spec(), &out);
-        // TODO(mek): Somehow include information on the blob the URL is mapped
-        // to.
-      }
-    }
+    // TODO(https://crbug.com/1112483): Bring back information about blob URLs.
   }
   EndHTML(&out);
   return out;
@@ -214,7 +200,7 @@ void ViewBlobInternalsJob::GenerateHTMLForBlobData(
         break;
       case BlobDataItem::Type::kFileFilesystem:
         AddHTMLListItem(kType, "filesystem", out);
-        AddHTMLListItem(kURL, item.filesystem_url().spec(), out);
+        AddHTMLListItem(kURL, item.filesystem_url().DebugString(), out);
         if (!item.expected_modification_time().is_null()) {
           AddHTMLListItem(kModificationTime, base::UTF16ToUTF8(
               TimeFormatFriendlyDateAndTime(item.expected_modification_time())),

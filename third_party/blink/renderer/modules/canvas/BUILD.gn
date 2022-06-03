@@ -9,8 +9,18 @@ blink_modules_sources("canvas") {
   sources = [
     "canvas2d/base_rendering_context_2d.cc",
     "canvas2d/base_rendering_context_2d.h",
+    "canvas2d/canvas_filter.cc",
+    "canvas2d/canvas_filter.h",
+    "canvas2d/canvas_filter_operation_resolver.cc",
+    "canvas2d/canvas_filter_operation_resolver.h",
+    "canvas2d/canvas_formatted_text.cc",
+    "canvas2d/canvas_formatted_text.h",
+    "canvas2d/canvas_formatted_text_run.cc",
+    "canvas2d/canvas_formatted_text_run.h",
     "canvas2d/canvas_gradient.cc",
     "canvas2d/canvas_gradient.h",
+    "canvas2d/canvas_image_source_util.cc",
+    "canvas2d/canvas_image_source_util.h",
     "canvas2d/canvas_path.cc",
     "canvas2d/canvas_path.h",
     "canvas2d/canvas_pattern.cc",
@@ -23,13 +33,16 @@ blink_modules_sources("canvas") {
     "canvas2d/canvas_style.h",
     "canvas2d/clip_list.cc",
     "canvas2d/clip_list.h",
-    "canvas2d/hit_region.cc",
-    "canvas2d/hit_region.h",
+    "canvas2d/identifiability_study_helper.cc",
+    "canvas2d/identifiability_study_helper.h",
+    "canvas2d/path_2d.cc",
     "canvas2d/path_2d.h",
     "htmlcanvas/canvas_context_creation_attributes_helpers.cc",
     "htmlcanvas/canvas_context_creation_attributes_helpers.h",
     "htmlcanvas/html_canvas_element_module.cc",
     "htmlcanvas/html_canvas_element_module.h",
+    "imagebitmap/image_bitmap_factories.cc",
+    "imagebitmap/image_bitmap_factories.h",
     "imagebitmap/image_bitmap_rendering_context.cc",
     "imagebitmap/image_bitmap_rendering_context.h",
     "imagebitmap/image_bitmap_rendering_context_base.cc",
@@ -39,15 +52,23 @@ blink_modules_sources("canvas") {
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.cc",
     "offscreencanvas2d/offscreen_canvas_rendering_context_2d.h",
   ]
+
+  deps = [ "//third_party/blink/renderer/modules/webcodecs" ]
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/modules/webcodecs" ]
 }
 
 fuzzer_test("canvas_fuzzer") {
-  sources = [
-    "canvas_fuzzer.cc",
-  ]
+  sources = [ "canvas_fuzzer.cc" ]
   seed_corpuses = [ "//third_party/blink/web_tests/fast/canvas" ]
   deps = [
     "../../platform:blink_fuzzer_test_support",
+    "//base/test:test_support",
     "//third_party/blink/renderer/core",
+    "//third_party/blink/renderer/core:testing",
+    "//third_party/blink/renderer/platform:test_support",
   ]
+
+  # Disabled due to many false positives (crbug.com/1124824).
+  additional_configs = [ "//testing/libfuzzer:no_clusterfuzz" ]
 }

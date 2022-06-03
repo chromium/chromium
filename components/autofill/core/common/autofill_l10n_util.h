@@ -6,9 +6,8 @@
 #define COMPONENTS_AUTOFILL_CORE_COMMON_AUTOFILL_L10N_UTIL_H_
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/i18n/unicode/coll.h"
 
@@ -25,14 +24,16 @@ class CaseInsensitiveCompare {
   CaseInsensitiveCompare();
   // Used for testing.
   explicit CaseInsensitiveCompare(const icu::Locale& locale);
+
+  CaseInsensitiveCompare(const CaseInsensitiveCompare&) = delete;
+  CaseInsensitiveCompare& operator=(const CaseInsensitiveCompare&) = delete;
+
   ~CaseInsensitiveCompare();
 
-  bool StringsEqual(const base::string16& lhs, const base::string16& rhs) const;
+  bool StringsEqual(const std::u16string& lhs, const std::u16string& rhs) const;
 
  private:
   std::unique_ptr<icu::Collator> collator_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaseInsensitiveCompare);
 };
 
 }  // namespace l10n

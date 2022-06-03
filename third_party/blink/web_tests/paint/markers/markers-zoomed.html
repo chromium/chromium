@@ -30,7 +30,7 @@ function addCompositionMarker(elem, start, end) {
     range.setStart(textNode, start);
     range.setEnd(textNode, end);
     if (typeof internals !== 'undefined')
-        internals.addCompositionMarker(range, 'orange', 'thin', 'lightBlue');
+        internals.addCompositionMarker(range, 'orange', 'thin', 'solid', 'transparent', 'lightBlue');
 };
 
 function addSpellingMarker(elem, start, end) {
@@ -54,9 +54,10 @@ function addTextMatchMarker(elem, start, end) {
 };
 
 onload = runAfterLayoutAndPaint(function() {
-    eventSender.setPageZoomFactor(2)
-    addCompositionMarker(markAllComposition, 0, 18);
-    addSpellingMarker(markAllSpelling, 0, 15);
-    addTextMatchMarker(markAllTextMatch, 0, 16);
+  if (window.testRunner)
+    testRunner.setPageZoomFactor(2)
+  addCompositionMarker(markAllComposition, 0, 18);
+  addSpellingMarker(markAllSpelling, 0, 15);
+  addTextMatchMarker(markAllTextMatch, 0, 16);
 }, true);
 </script>

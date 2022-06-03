@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
@@ -17,7 +16,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/skia/include/core/SkColor.h"
 
-namespace cc {
+namespace gfx {
 class KeyframedColorAnimationCurve;
 }
 
@@ -30,6 +29,9 @@ class PLATFORM_EXPORT CompositorColorAnimationCurve
     : public CompositorAnimationCurve {
  public:
   CompositorColorAnimationCurve();
+  CompositorColorAnimationCurve(const CompositorColorAnimationCurve&) = delete;
+  CompositorColorAnimationCurve& operator=(
+      const CompositorColorAnimationCurve&) = delete;
   ~CompositorColorAnimationCurve() override;
 
   void AddKeyframe(const CompositorColorKeyframe&);
@@ -38,21 +40,19 @@ class PLATFORM_EXPORT CompositorColorAnimationCurve
   SkColor GetValue(double time) const;
 
   // CompositorAnimationCurve implementation.
-  std::unique_ptr<cc::AnimationCurve> CloneToAnimationCurve() const override;
+  std::unique_ptr<gfx::AnimationCurve> CloneToAnimationCurve() const override;
 
   static std::unique_ptr<CompositorColorAnimationCurve> CreateForTesting(
-      std::unique_ptr<cc::KeyframedColorAnimationCurve>);
+      std::unique_ptr<gfx::KeyframedColorAnimationCurve>);
 
   using Keyframes = Vector<std::unique_ptr<CompositorColorKeyframe>>;
   Keyframes KeyframesForTesting() const;
 
  private:
   CompositorColorAnimationCurve(
-      std::unique_ptr<cc::KeyframedColorAnimationCurve>);
+      std::unique_ptr<gfx::KeyframedColorAnimationCurve>);
 
-  std::unique_ptr<cc::KeyframedColorAnimationCurve> curve_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorColorAnimationCurve);
+  std::unique_ptr<gfx::KeyframedColorAnimationCurve> curve_;
 };
 
 }  // namespace blink

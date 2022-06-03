@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta name='color-scheme' content="light dark">
+<body>
+<style>
+input {
+    margin: 4px;
+}
+
+.inputtext {
+    border: 1px solid #bdc7d8;
+    font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
+    font-size: 11px;
+    padding: 3px;
+}
+.inputsearch {
+    background:white url(../resources/green.jpg) no-repeat 3px 4px;
+    padding-left:17px;
+}
+</style>
+</style>
+
+<!-- no style for reference -->
+<input type="search" value="foo"> <input type="search" value="foo" id="hovered"><br>
+
+<input type="search" readonly value="foo">
+<input type="search" disabled value="foo"> <br>
+
+<!-- border -->
+<input type="search" value="foo" style="border: 3px solid lime;">
+<input type="search" value="foo" style="border-radius: 6px;"> <br>
+<div style="background-color: #888888; width: 163px; height: 45px; background-position: 100% 0;">
+  <input type="search" value="default text" style="margin-top: 9px; margin-left: 11px; border-radius: 9px; width: 133px;  background-color: #00FF00;">
+</div>
+
+<!-- background -->
+<input type="search" value="foo" style="background: linear-gradient(to bottom, #dea 0%,#9c7 44%,#494 100%);"> <br>
+
+<!-- shadow -->
+<input type="search" value="foo" style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);"> <br>
+ 
+<!-- font-size -->
+<input type="search" value="foo" style="font-size: 16px;">
+<input type="search" value="foo" style="font-size: 20px;">
+<input type="search" value="foo" style="font-size: 24px;"> <br>
+
+<!-- zoom -->
+<input type="search" value="foo" style="zoom: 1.5;">
+<input type="search" value="foo" style="zoom: 2;"> <br>
+<input type="search" results="0" value="foo" style="zoom: 1.5;">
+<input type="search" results="0" value="foo" style="zoom: 2;"> <br>
+
+<!-- various style -->
+<input type="search" class="inputtext inputsearch" title="Search for Events" placeholder="Search for Events" id="q_dashboard" name="q" value="" results="10" />
+
+<script>
+var input = document.getElementById('hovered');
+if (window.eventSender)
+    eventSender.mouseMoveTo(input.offsetLeft + input.offsetWidth / 2, input.offsetTop + input.offsetHeight / 2);
+document.querySelector('input[readonly]').focus();
+</script>
+</body>

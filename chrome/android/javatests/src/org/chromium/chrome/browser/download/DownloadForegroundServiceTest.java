@@ -9,23 +9,22 @@ import static android.app.Service.STOP_FOREGROUND_REMOVE;
 
 import static junit.framework.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.download.DownloadForegroundService.clearPersistedNotificationId;
 import static org.chromium.chrome.browser.download.DownloadSnackbarController.INVALID_NOTIFICATION_ID;
 
 import android.app.Notification;
-import android.support.test.filters.SmallTest;
-import android.support.v4.app.ServiceCompat;
 
 import androidx.annotation.IntDef;
+import androidx.core.app.ServiceCompat;
+import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.notifications.NotificationBuilderFactory;
-import org.chromium.chrome.browser.notifications.channels.ChannelDefinitions;
+import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
+import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 import java.lang.annotation.Retention;
@@ -38,6 +37,7 @@ import java.util.List;
  * Test for DownloadForegroundService.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Batch(Batch.UNIT_TESTS)
 public class DownloadForegroundServiceTest {
     private static final int FAKE_DOWNLOAD_ID1 = 1;
     private static final int FAKE_DOWNLOAD_ID2 = 2;
@@ -49,7 +49,7 @@ public class DownloadForegroundServiceTest {
      * Implementation of DownloadForegroundService for testing.
      * Mimics behavior of DownloadForegroundService except for calls to the actual service.
      */
-    public static class MockDownloadForegroundService extends DownloadForegroundService {
+    public static class MockDownloadForegroundService extends DownloadForegroundServiceImpl {
         @IntDef({MethodID.START_FOREGROUND, MethodID.STOP_FOREGROUND_FLAGS,
                 MethodID.RELAUNCH_NOTIFICATION})
         @Retention(RetentionPolicy.SOURCE)
@@ -66,6 +66,10 @@ public class DownloadForegroundServiceTest {
 
         // Used for saving MethodID values.
         List<Integer> mMethodCalls = new ArrayList<>();
+
+        public MockDownloadForegroundService() {
+            setService(new DownloadForegroundService());
+        }
 
         // Clears stored flags/boolean/id/method calls. Call between tests runs.
         void clearStoredState() {
@@ -106,20 +110,14 @@ public class DownloadForegroundServiceTest {
     @Before
     public void setUp() {
         mForegroundService = new MockDownloadForegroundService();
-        clearPersistedNotificationId();
         mNotification =
-                NotificationBuilderFactory
-                        .createChromeNotificationBuilder(
-                                true /* preferCompat */, ChannelDefinitions.ChannelId.DOWNLOADS)
+                NotificationWrapperBuilderFactory
+                        .createNotificationWrapperBuilder(
+                                ChromeChannelDefinitions.ChannelId.DOWNLOADS)
                         .setSmallIcon(org.chromium.chrome.R.drawable.ic_file_download_white_24dp)
                         .setContentTitle("fakeContentTitle")
                         .setContentText("fakeContentText")
                         .build();
-    }
-
-    @After
-    public void tearDown() {
-        clearPersistedNotificationId();
     }
 
     /**
@@ -222,7 +220,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.DETACH,
+                DownloadForegroundServiceImpl.StopForegroundNotification.DETACH,
                 INVALID_NOTIFICATION_ID, null);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
         assertEquals(STOP_FOREGROUND_DETACH, mForegroundService.mStopForegroundFlags);
@@ -233,7 +231,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.DETACH,
+                DownloadForegroundServiceImpl.StopForegroundNotification.DETACH,
                 INVALID_NOTIFICATION_ID, null);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
         assertEquals(STOP_FOREGROUND_DETACH, mForegroundService.mStopForegroundFlags);
@@ -244,8 +242,8 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.KILL, INVALID_NOTIFICATION_ID,
-                null);
+                DownloadForegroundServiceImpl.StopForegroundNotification.KILL,
+                INVALID_NOTIFICATION_ID, null);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
         assertEquals(STOP_FOREGROUND_REMOVE, mForegroundService.mStopForegroundFlags);
     }
@@ -268,7 +266,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
                 mNotification);
         List<Integer> expectedMethodCalls =
                 Arrays.asList(MockDownloadForegroundService.MethodID.STOP_FOREGROUND_FLAGS,
@@ -284,7 +282,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
                 mNotification);
         expectedMethodCalls =
                 Arrays.asList(MockDownloadForegroundService.MethodID.STOP_FOREGROUND_FLAGS,
@@ -299,7 +297,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.KILL, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.KILL, FAKE_DOWNLOAD_ID1,
                 mNotification);
         expectedMethodCalls =
                 Arrays.asList(MockDownloadForegroundService.MethodID.STOP_FOREGROUND_FLAGS);
@@ -324,7 +322,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
                 mNotification);
         List<Integer> expectedMethodCalls =
                 Arrays.asList(MockDownloadForegroundService.MethodID.RELAUNCH_NOTIFICATION,
@@ -339,7 +337,7 @@ public class DownloadForegroundServiceTest {
 
         mForegroundService.mNextNotificationId = FAKE_DOWNLOAD_ID2;
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
                 mNotification);
         expectedMethodCalls =
                 Arrays.asList(MockDownloadForegroundService.MethodID.RELAUNCH_NOTIFICATION,
@@ -355,7 +353,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.KILL, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.KILL, FAKE_DOWNLOAD_ID1,
                 mNotification);
         expectedMethodCalls =
                 Arrays.asList(MockDownloadForegroundService.MethodID.STOP_FOREGROUND_FLAGS);
@@ -379,7 +377,7 @@ public class DownloadForegroundServiceTest {
 
         mForegroundService.mNextNotificationId = FAKE_DOWNLOAD_ID2;
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
                 mNotification);
         List<Integer> expectedMethodCalls =
                 Arrays.asList(MockDownloadForegroundService.MethodID.RELAUNCH_NOTIFICATION,
@@ -396,7 +394,7 @@ public class DownloadForegroundServiceTest {
 
         mForegroundService.mNextNotificationId = FAKE_DOWNLOAD_ID2;
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.DETACH, FAKE_DOWNLOAD_ID1,
                 mNotification);
         assertEquals(expectedMethodCalls, mForegroundService.mMethodCalls);
         assertEquals(ServiceCompat.STOP_FOREGROUND_REMOVE, mForegroundService.mStopForegroundFlags);
@@ -409,7 +407,7 @@ public class DownloadForegroundServiceTest {
         mForegroundService.clearStoredState();
 
         mForegroundService.stopDownloadForegroundService(
-                DownloadForegroundService.StopForegroundNotification.KILL, FAKE_DOWNLOAD_ID1,
+                DownloadForegroundServiceImpl.StopForegroundNotification.KILL, FAKE_DOWNLOAD_ID1,
                 mNotification);
         expectedMethodCalls =
                 Arrays.asList(MockDownloadForegroundService.MethodID.STOP_FOREGROUND_FLAGS);

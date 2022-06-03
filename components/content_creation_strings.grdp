@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+
+<if expr="is_android">
+  <!-- Note Template Names, currently only used on Android. -->
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_CLASSIC" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Classic
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_FRIENDLY" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Friendly
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_FRESH" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Fresh
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_POWERFUL" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Powerful
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_IMPACTFUL" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Impactful
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_LOVELY" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Lovely
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_GROOVY" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Groovy
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_MONOCHROME" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Monochrome
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_BOLD" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Bold
+  </message>
+  <message name="IDS_CONTENT_CREATION_NOTE_TEMPLATE_NAME_DREAMY" desc="Name for a styled template which creates a nice looking note from text. The name is loosely connected with the font and color of the template. [CHAR_LIMIT=25]">
+    Dreamy
+  </message>
+</if>
+
+</grit-part>

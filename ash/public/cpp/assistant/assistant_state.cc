@@ -8,7 +8,6 @@
 #include <sstream>
 #include <utility>
 
-#include "ash/public/mojom/assistant_state_controller.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -36,27 +35,20 @@ AssistantState::~AssistantState() {
   g_assistant_state = nullptr;
 }
 
-void AssistantState::BindReceiver(
-    mojo::PendingReceiver<mojom::AssistantStateController> receiver) {
-  receivers_.Add(this, std::move(receiver));
-}
-
-void AssistantState::NotifyStatusChanged(mojom::AssistantState state) {
-  if (assistant_state_ == state)
+void AssistantState::NotifyStatusChanged(
+    chromeos::assistant::AssistantStatus status) {
+  if (assistant_status_ == status)
     return;
 
-  UpdateAssistantStatus(state);
-  for (auto& observer : remote_observers_)
-    observer->OnAssistantStatusChanged(state);
+  UpdateAssistantStatus(status);
 }
 
-void AssistantState::NotifyFeatureAllowed(mojom::AssistantAllowedState state) {
+void AssistantState::NotifyFeatureAllowed(
+    chromeos::assistant::AssistantAllowedState state) {
   if (allowed_state_ == state)
     return;
 
   UpdateFeatureAllowedState(state);
-  for (auto& observer : remote_observers_)
-    observer->OnAssistantFeatureAllowedChanged(state);
 }
 
 void AssistantState::NotifyLocaleChanged(const std::string& locale) {
@@ -64,8 +56,6 @@ void AssistantState::NotifyLocaleChanged(const std::string& locale) {
     return;
 
   UpdateLocale(locale);
-  for (auto& observer : remote_observers_)
-    observer->OnLocaleChanged(locale);
 }
 
 void AssistantState::NotifyArcPlayStoreEnabledChanged(bool enabled) {
@@ -73,8 +63,6 @@ void AssistantState::NotifyArcPlayStoreEnabledChanged(bool enabled) {
     return;
 
   UpdateArcPlayStoreEnabled(enabled);
-  for (auto& observer : remote_observers_)
-    observer->OnArcPlayStoreEnabledChanged(enabled);
 }
 
 void AssistantState::NotifyLockedFullScreenStateChanged(bool enabled) {
@@ -82,17 +70,6 @@ void AssistantState::NotifyLockedFullScreenStateChanged(bool enabled) {
     return;
 
   UpdateLockedFullScreenState(enabled);
-  for (auto& observer : remote_observers_)
-    observer->OnLockedFullScreenStateChanged(enabled);
-}
-
-void AssistantState::AddMojomObserver(
-    mojo::PendingRemote<mojom::AssistantStateObserver> pending_observer) {
-  auto remote =
-      mojo::Remote<mojom::AssistantStateObserver>(std::move(pending_observer));
-  mojom::AssistantStateObserver* observer = remote.get();
-  remote_observers_.Add(std::move(remote));
-  InitializeObserverMojom(observer);
 }
 
 }  // namespace ash

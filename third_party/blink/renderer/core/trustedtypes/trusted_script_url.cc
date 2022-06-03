@@ -6,9 +6,9 @@
 
 namespace blink {
 
-TrustedScriptURL::TrustedScriptURL(const String& url) : url_(url) {}
+TrustedScriptURL::TrustedScriptURL(String url) : url_(std::move(url)) {}
 
-String TrustedScriptURL::toString() const {
+const String& TrustedScriptURL::toString() const {
   return url_;
 }
 

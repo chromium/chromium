@@ -4,6 +4,7 @@
 
 #include "components/dom_distiller/core/distilled_content_store.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/threading/thread_task_runner_handle.h"
@@ -26,7 +27,7 @@ void InMemoryContentStore::SaveContent(
   InjectContent(entry, proto);
   if (!callback.is_null()) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(callback, true));
+        FROM_HERE, base::BindOnce(std::move(callback), true));
   }
 }
 
@@ -53,13 +54,13 @@ void InMemoryContentStore::LoadContent(
   }
   std::unique_ptr<DistilledArticleProto> distilled_article;
   if (success) {
-    distilled_article.reset(new DistilledArticleProto(*it->second));
+    distilled_article = std::make_unique<DistilledArticleProto>(*it->second);
   } else {
-    distilled_article.reset(new DistilledArticleProto());
+    distilled_article = std::make_unique<DistilledArticleProto>();
   }
   base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(callback, success, std::move(distilled_article)));
+      FROM_HERE, base::BindOnce(std::move(callback), success,
+                                std::move(distilled_article)));
 }
 
 void InMemoryContentStore::InjectContent(const ArticleEntry& entry,
@@ -94,7 +95,7 @@ void InMemoryContentStore::EraseUrlToIdMapping(
 InMemoryContentStore::CacheDeletor::CacheDeletor(InMemoryContentStore* store)
     : store_(store) {}
 
-InMemoryContentStore::CacheDeletor::~CacheDeletor() {}
+InMemoryContentStore::CacheDeletor::~CacheDeletor() = default;
 
 void InMemoryContentStore::CacheDeletor::operator()(
     DistilledArticleProto* proto) {

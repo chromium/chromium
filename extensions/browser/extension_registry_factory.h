@@ -15,9 +15,12 @@ namespace extensions {
 class ExtensionRegistry;
 
 // Factory for ExtensionRegistry objects. ExtensionRegistry objects are shared
-// between an incognito browser context and its master browser context.
+// between an incognito browser context and its original browser context.
 class ExtensionRegistryFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ExtensionRegistryFactory(const ExtensionRegistryFactory&) = delete;
+  ExtensionRegistryFactory& operator=(const ExtensionRegistryFactory&) = delete;
+
   static ExtensionRegistry* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -34,8 +37,6 @@ class ExtensionRegistryFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionRegistryFactory);
 };
 
 }  // namespace extensions

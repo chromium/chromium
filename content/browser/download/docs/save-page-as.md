@@ -40,12 +40,6 @@ are described by their code comments or by their code structure).
     * created and owned by `SaveFileManager`
     * download sequence object
 
-* SaveFileResourceHandler class
-    * tracks network downloads + forwards their status into `SaveFileManager`
-      (onto download sequence)
-    * created by `ResourceDispatcherHostImpl::BeginSaveFile`
-    * IO-thread object
-
 * SaveFileCreateInfo POD struct
     * short-lived object holding data passed to callbacks handling start of
       saving a file.

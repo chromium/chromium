@@ -13,10 +13,10 @@
 // tools/run_web_tests.py virtual/origin-trials-runtimeflags-disabled/http/tests/origin_trials/webexposed
 if (!self.internals.runtimeFlags.skipAdEnabled) {
   test(t => {
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       navigator.mediaSession.setActionHandler('skipad', function() {});
     });
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       navigator.mediaSession.setActionHandler('skipad', null);
     });
   }, 'skipad media session action in Origin-Trial disabled document.');

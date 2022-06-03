@@ -8,7 +8,20 @@
  * adjustments.
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '../os_icons.m.js';
+import '../../settings_shared_css.js';
+
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {BatteryStatus, DevicePageBrowserProxy, DevicePageBrowserProxyImpl, ExternalStorage, getDisplayApi, IdleBehavior, LidClosedBehavior, NoteAppInfo, NoteAppLockScreenSupport, PowerManagementSettings, PowerSource, StorageSpaceState} from './device_page_browser_proxy.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-display-overscan-dialog',
 
   properties: {
@@ -30,7 +43,7 @@ Polymer({
    */
   keyHandler_: null,
 
-  open: function() {
+  open() {
     this.keyHandler_ = this.handleKeyEvent_.bind(this);
     // We need to attach the event listener to |window|, not |this| so that
     // changing focus does not prevent key events from occurring.
@@ -41,7 +54,7 @@ Polymer({
     this.$$('#reset').blur();
   },
 
-  close: function() {
+  close() {
     window.removeEventListener('keydown', this.keyHandler_);
 
     this.displayId = '';  // Will trigger displayIdChanged_.
@@ -52,27 +65,26 @@ Polymer({
   },
 
   /** @private */
-  displayIdChanged_: function(newValue, oldValue) {
+  displayIdChanged_(newValue, oldValue) {
     if (oldValue && !this.committed_) {
-      settings.display.systemDisplayApi.overscanCalibrationReset(oldValue);
-      settings.display.systemDisplayApi.overscanCalibrationComplete(oldValue);
+      getDisplayApi().overscanCalibrationReset(oldValue);
+      getDisplayApi().overscanCalibrationComplete(oldValue);
     }
     if (!newValue) {
       return;
     }
     this.committed_ = false;
-    settings.display.systemDisplayApi.overscanCalibrationStart(newValue);
+    getDisplayApi().overscanCalibrationStart(newValue);
   },
 
   /** @private */
-  onResetTap_: function() {
-    settings.display.systemDisplayApi.overscanCalibrationReset(this.displayId);
+  onResetTap_() {
+    getDisplayApi().overscanCalibrationReset(this.displayId);
   },
 
   /** @private */
-  onSaveTap_: function() {
-    settings.display.systemDisplayApi.overscanCalibrationComplete(
-        this.displayId);
+  onSaveTap_() {
+    getDisplayApi().overscanCalibrationComplete(this.displayId);
     this.committed_ = true;
     this.close();
   },
@@ -81,7 +93,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  handleKeyEvent_: function(event) {
+  handleKeyEvent_(event) {
     if (event.altKey || event.ctrlKey || event.metaKey) {
       return;
     }
@@ -126,15 +138,14 @@ Polymer({
    * @param {number} y
    * @private
    */
-  move_: function(x, y) {
+  move_(x, y) {
     /** @type {!chrome.system.display.Insets} */ const delta = {
       left: x,
       top: y,
       right: x ? -x : 0,  // negating 0 will produce a double.
       bottom: y ? -y : 0,
     };
-    settings.display.systemDisplayApi.overscanCalibrationAdjust(
-        this.displayId, delta);
+    getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   },
 
   /**
@@ -142,14 +153,13 @@ Polymer({
    * @param {number} y
    * @private
    */
-  resize_: function(x, y) {
+  resize_(x, y) {
     /** @type {!chrome.system.display.Insets} */ const delta = {
       left: x,
       top: y,
       right: x,
       bottom: y,
     };
-    settings.display.systemDisplayApi.overscanCalibrationAdjust(
-        this.displayId, delta);
+    getDisplayApi().overscanCalibrationAdjust(this.displayId, delta);
   }
 });

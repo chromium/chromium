@@ -41,24 +41,15 @@ function createExpectedSender(tab, frameId, url, id) {
 }
 
 chrome.test.getConfig(function(config) {
+  const url =
+      `http://localhost:${config.testServer.port}/extensions/test_file.html`;
   chrome.test.runTests([
-    function setupTestTab() {
+    async function setupTestTab() {
       chrome.test.log("Creating tab...");
-      var newTab = null;
-      var doneListening = listenForever(chrome.tabs.onUpdated,
-        function(_, info, tab) {
-          if (newTab && tab.id == newTab.id && info.status == 'complete') {
-            chrome.test.log("Created tab: " + tab.url);
-            testTab = tab;
-            doneListening();
-          }
-        });
-      chrome.tabs.create({
-        url: "http://localhost:PORT/extensions/test_file.html"
-                 .replace(/PORT/, config.testServer.port)
-      }, function(tab) {
-        newTab = tab;
-      });
+      const {openTab} =
+          await import('/_test_resources/test_util/tabs_util.js');
+      testTab = await openTab(url);
+      chrome.test.succeed();
     },
 
     // Tests that postMessage to the tab and its response works.

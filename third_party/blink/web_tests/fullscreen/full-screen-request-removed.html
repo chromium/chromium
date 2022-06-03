@@ -4,11 +4,11 @@ Emit an error event when a request to enter full-screen is rejected.</p>
 <script src="full-screen-test.js"></script>
 <script>
 function runTest() {
-    waitForEventAndEnd(document, 'webkitfullscreenchange', function() { 
+    waitForEventOnceAndEnd(document, 'webkitfullscreenchange', function() {
             consoleWrite("FAIL - entered full screen!"); 
     });
 
-    waitForEventAndEnd(document, 'webkitfullscreenerror', function() {
+    waitForEventOnceAndEnd(document, 'webkitfullscreenerror', function() {
         consoleWrite("SUCCEED - did not enter full screen!");
     });
 

@@ -4,9 +4,13 @@
 
 #include "media/video/fake_gpu_memory_buffer.h"
 
+#include "base/atomic_sequence_num.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
+#include "media/base/format_utils.h"
+#include "media/base/video_frame.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -44,7 +48,7 @@ class FakeGpuMemoryBufferImpl : public gpu::GpuMemoryBufferImpl {
 
 }  // namespace
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 base::ScopedFD GetDummyFD() {
   base::ScopedFD fd(open("/dev/zero", O_RDWR));
   DCHECK(fd.is_valid());
@@ -54,29 +58,36 @@ base::ScopedFD GetDummyFD() {
 
 FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
                                          gfx::BufferFormat format)
-    : size_(size), format_(format) {
-  // We use only NV12 or R8 in unit tests.
-  CHECK(format == gfx::BufferFormat::YUV_420_BIPLANAR ||
-        format == gfx::BufferFormat::R_8);
+    : FakeGpuMemoryBuffer(size, format, gfx::NativePixmapHandle::kNoModifier) {}
 
-  size_t y_plane_size = size_.width() * size_.height();
-  size_t uv_plane_size = size_.width() * size_.height() / 2;
-  data_ = std::vector<uint8_t>(y_plane_size + uv_plane_size);
+FakeGpuMemoryBuffer::FakeGpuMemoryBuffer(const gfx::Size& size,
+                                         gfx::BufferFormat format,
+                                         uint64_t modifier)
+    : size_(size), format_(format) {
+  absl::optional<VideoPixelFormat> video_pixel_format =
+      GfxBufferFormatToVideoPixelFormat(format);
+  CHECK(video_pixel_format);
+  video_pixel_format_ = *video_pixel_format;
+
+  const size_t allocation_size =
+      VideoFrame::AllocationSize(video_pixel_format_, size_);
+  data_ = std::vector<uint8_t>(allocation_size);
 
   handle_.type = gfx::NATIVE_PIXMAP;
-  // Set a dummy id since this is for testing only.
-  handle_.id = gfx::GpuMemoryBufferId(0);
 
-#if defined(OS_LINUX)
-  // Set a dummy fd since this is for testing only.
-  handle_.native_pixmap_handle.planes.push_back(
-      gfx::NativePixmapPlane(size_.width(), 0, y_plane_size, GetDummyFD()));
-  if (format == gfx::BufferFormat::YUV_420_BIPLANAR) {
-    handle_.native_pixmap_handle.planes.push_back(gfx::NativePixmapPlane(
-        size_.width(), handle_.native_pixmap_handle.planes[0].size,
-        uv_plane_size, GetDummyFD()));
+  static base::AtomicSequenceNumber buffer_id_generator;
+  handle_.id = gfx::GpuMemoryBufferId(buffer_id_generator.GetNext());
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  for (size_t i = 0; i < VideoFrame::NumPlanes(video_pixel_format_); i++) {
+    const gfx::Size plane_size_in_bytes =
+        VideoFrame::PlaneSize(video_pixel_format_, i, size_);
+    handle_.native_pixmap_handle.planes.emplace_back(
+        plane_size_in_bytes.width(), 0, plane_size_in_bytes.GetArea(),
+        GetDummyFD());
   }
-#endif  // defined(OS_LINUX)
+  handle_.native_pixmap_handle.modifier = modifier;
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 }
 
 FakeGpuMemoryBuffer::~FakeGpuMemoryBuffer() = default;
@@ -86,17 +97,13 @@ bool FakeGpuMemoryBuffer::Map() {
 }
 
 void* FakeGpuMemoryBuffer::memory(size_t plane) {
+  DCHECK_LT(plane, VideoFrame::NumPlanes(video_pixel_format_));
   auto* data_ptr = data_.data();
-  size_t y_plane_size = size_.width() * size_.height();
-  switch (plane) {
-    case 0:
-      return reinterpret_cast<void*>(data_ptr);
-    case 1:
-      return reinterpret_cast<void*>(data_ptr + y_plane_size);
-    default:
-      NOTREACHED() << "Unsupported plane: " << plane;
-      return nullptr;
+  for (size_t i = 1; i <= plane; i++) {
+    data_ptr +=
+        VideoFrame::PlaneSize(video_pixel_format_, i - 1, size_).GetArea();
   }
+  return data_ptr;
 }
 
 void FakeGpuMemoryBuffer::Unmap() {}
@@ -110,15 +117,8 @@ gfx::BufferFormat FakeGpuMemoryBuffer::GetFormat() const {
 }
 
 int FakeGpuMemoryBuffer::stride(size_t plane) const {
-  switch (plane) {
-    case 0:
-      return size_.width();
-    case 1:
-      return size_.width();
-    default:
-      NOTREACHED() << "Unsupported plane: " << plane;
-      return 0;
-  }
+  DCHECK_LT(plane, VideoFrame::NumPlanes(video_pixel_format_));
+  return VideoFrame::PlaneSize(video_pixel_format_, plane, size_).width();
 }
 
 void FakeGpuMemoryBuffer::SetColorSpace(const gfx::ColorSpace& color_space) {}
@@ -135,7 +135,7 @@ gfx::GpuMemoryBufferHandle FakeGpuMemoryBuffer::CloneHandle() const {
   gfx::GpuMemoryBufferHandle handle;
   handle.type = gfx::NATIVE_PIXMAP;
   handle.id = handle_.id;
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   handle.native_pixmap_handle =
       gfx::CloneHandleForIPC(handle_.native_pixmap_handle);
 #endif
@@ -159,7 +159,9 @@ FakeGpuMemoryBufferSupport::CreateGpuMemoryBufferImplFromHandle(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
-    gpu::GpuMemoryBufferImpl::DestructionCallback callback) {
+    gpu::GpuMemoryBufferImpl::DestructionCallback callback,
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+    scoped_refptr<base::UnsafeSharedMemoryPool> pool) {
   return std::make_unique<FakeGpuMemoryBufferImpl>(size, format);
 }
 

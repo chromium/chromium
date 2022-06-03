@@ -1,3 +1,0 @@
-Test for bug 15707: Crash when manipulating document from within an iframe onload function.
-
-SUCCESS if no crash.

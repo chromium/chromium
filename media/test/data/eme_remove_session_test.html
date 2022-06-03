@@ -63,7 +63,7 @@
   // This test doesn't play any media, so no concern with specifying multiple
   // codecs. This is done to provide a set of codecs that should cover all
   // user agents.
-  const config = [{
+  config = [{
     initDataTypes: ['webm'],
     audioCapabilities: [
       {contentType: 'audio/mp4; codecs="mp4a.40.2"'},
@@ -123,15 +123,15 @@
         Utils.verifyKeyStatuses(
             mediaKeySession.keyStatuses, [{keyId: keyId, status: 'usable'}]);
 
+        promises = [];
         // Once remove() is called, another 'keystatuseschange' event will
         // happen.
-        const waitForKeyStatusChangePromise =
-            Utils.waitForEvent(mediaKeySession, 'keystatuseschange');
+        promises.push(Utils.waitForEvent(mediaKeySession, 'keystatuseschange'));
 
         Utils.timeLog('Calling remove()');
-        const removePromise = mediaKeySession.remove();
+        promises.push(mediaKeySession.remove());
 
-        return Promise.all([removePromise, waitForKeyStatusChangePromise]);
+        return Promise.all(promises);
       })
       .then(function() {
         // After remove() all keys should be 'released'.

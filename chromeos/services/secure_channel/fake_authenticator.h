@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_FAKE_AUTHENTICATOR_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/authenticator.h"
 
 namespace chromeos {
@@ -17,17 +16,19 @@ namespace secure_channel {
 class FakeAuthenticator : public Authenticator {
  public:
   FakeAuthenticator();
+
+  FakeAuthenticator(const FakeAuthenticator&) = delete;
+  FakeAuthenticator& operator=(const FakeAuthenticator&) = delete;
+
   ~FakeAuthenticator() override;
 
   // Authenticator:
-  void Authenticate(const AuthenticationCallback& callback) override;
+  void Authenticate(AuthenticationCallback callback) override;
 
-  AuthenticationCallback last_callback() { return last_callback_; }
+  AuthenticationCallback last_callback() { return std::move(last_callback_); }
 
  private:
   AuthenticationCallback last_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAuthenticator);
 };
 
 }  // namespace secure_channel

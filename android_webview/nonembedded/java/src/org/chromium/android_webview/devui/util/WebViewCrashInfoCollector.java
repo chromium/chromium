@@ -7,42 +7,72 @@ package org.chromium.android_webview.devui.util;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.crash.CrashInfo;
-import org.chromium.android_webview.common.crash.CrashInfo.UploadState;
 import org.chromium.android_webview.common.crash.SystemWideCrashDirectories;
+import org.chromium.base.Log;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Aggregates webview crash info from different sources into one single list.
  * This list may be used to be displayed in a Crash UI.
  */
 public class WebViewCrashInfoCollector {
+    private static final String TAG = "WebViewCrashCollect";
+
     private final CrashInfoLoader[] mCrashInfoLoaders;
 
+    /**
+     * Funcational interface to implement special filters to crashes.
+     */
+    public static interface Filter {
+        /**
+         * @return {@code true} to keep the {@link CrashInfo}, {@code false} to filter it out.
+         */
+        public boolean test(CrashInfo c);
+    }
+
+    /**
+     * A class that creates the CrashInfoLoaders that the collector uses. Allows mocking in tests.
+     */
+    @VisibleForTesting
+    public static class CrashInfoLoadersFactory {
+        public CrashInfoLoader[] create() {
+            CrashFileManager crashFileManager =
+                    new CrashFileManager(SystemWideCrashDirectories.getOrCreateWebViewCrashDir());
+
+            return new CrashInfoLoader[] {
+                    new UploadedCrashesInfoLoader(crashFileManager.getCrashUploadLogFile()),
+                    new UnuploadedFilesStateLoader(crashFileManager),
+                    new WebViewCrashLogParser(SystemWideCrashDirectories.getWebViewCrashLogDir())};
+        }
+    }
+
     public WebViewCrashInfoCollector() {
-        CrashFileManager crashFileManager =
-                new CrashFileManager(SystemWideCrashDirectories.getOrCreateWebViewCrashDir());
+        this(new CrashInfoLoadersFactory());
+    }
 
-        mCrashInfoLoaders = new CrashInfoLoader[] {
-                new UploadedCrashesInfoLoader(crashFileManager.getCrashUploadLogFile()),
-                new UnuploadedFilesStateLoader(crashFileManager),
-
-                new WebViewCrashLogParser(SystemWideCrashDirectories.getWebViewCrashLogDir())};
+    @VisibleForTesting
+    public WebViewCrashInfoCollector(CrashInfoLoadersFactory loadersFactory) {
+        mCrashInfoLoaders = loadersFactory.create();
     }
 
     /**
      * Aggregates crashes from different resources and removes duplicates.
      * Crashes are sorted by most recent (crash capture time).
      *
-     * @param limit the max size of crashes to be returned, if negative to return all crashes.
-     * @return list of size {@code limit} or less, sorted by the most recent.
+     * @return list of crashes, sorted by the most recent.
      */
-    public List<CrashInfo> loadCrashesInfo(int limit) {
+    public List<CrashInfo> loadCrashesInfo() {
         List<CrashInfo> allCrashes = new ArrayList<>();
         for (CrashInfoLoader loader : mCrashInfoLoaders) {
             allCrashes.addAll(loader.loadCrashesInfo());
@@ -50,25 +80,53 @@ public class WebViewCrashInfoCollector {
         allCrashes = mergeDuplicates(allCrashes);
         sortByMostRecent(allCrashes);
 
-        if (limit < 0 || limit >= allCrashes.size()) return allCrashes;
-        return allCrashes.subList(0, limit);
+        return allCrashes;
+    }
+
+    /**
+     * Aggregates crashes from different resources and removes duplicates.
+     * Crashes are sorted by most recent (crash capture time).
+     *
+     * @param filter {@link Filter} object to filter crashes from the list.
+     * @return list crashes after applying {@code filter} to each item, sorted by the most recent.
+     */
+    public List<CrashInfo> loadCrashesInfo(Filter filter) {
+        List<CrashInfo> filtered = new ArrayList<>();
+        for (CrashInfo info : loadCrashesInfo()) {
+            if (filter.test(info)) {
+                filtered.add(info);
+            }
+        }
+        return filtered;
     }
 
     /**
      * Merge duplicate crashes (crashes which have the same local-id) into one object.
+     * Removes crashes that have to be hidden.
      */
     @VisibleForTesting
     public static List<CrashInfo> mergeDuplicates(List<CrashInfo> crashesList) {
         Map<String, CrashInfo> crashInfoMap = new HashMap<>();
+        Set<String> hiddenCrashes = new HashSet<>();
         for (CrashInfo c : crashesList) {
+            if (c.isHidden) {
+                hiddenCrashes.add(c.localId);
+                continue;
+            }
             CrashInfo previous = crashInfoMap.get(c.localId);
             if (previous != null) {
-                mergeCrashInfo(previous, c);
-            } else {
-                crashInfoMap.put(c.localId, c);
+                c = new CrashInfo(previous, c);
+            }
+            crashInfoMap.put(c.localId, c);
+        }
+
+        List<CrashInfo> crashes = new ArrayList<>();
+        for (Map.Entry<String, CrashInfo> entry : crashInfoMap.entrySet()) {
+            if (!hiddenCrashes.contains(entry.getKey())) {
+                crashes.add(entry.getValue());
             }
         }
-        return new ArrayList<CrashInfo>(crashInfoMap.values());
+        return crashes;
     }
 
     /**
@@ -84,43 +142,35 @@ public class WebViewCrashInfoCollector {
         });
     }
 
-    private static <T> T getFirstNonNull(T a, T b) {
-        return a != null ? a : b;
+    /**
+     * Modify WebView crash JSON log file with the new crash info if the JSON file exists
+     */
+    public static void updateCrashLogFileWithNewCrashInfo(CrashInfo crashInfo) {
+        File logDir = SystemWideCrashDirectories.getOrCreateWebViewCrashLogDir();
+        File[] logFiles = logDir.listFiles();
+        for (File logFile : logFiles) {
+            // Ignore non-json files.
+            if (!logFile.isFile() || !logFile.getName().endsWith(".json")) continue;
+            // Ignore unrelated json files
+            if (!logFile.getName().contains(crashInfo.localId)) continue;
+            tryWritingCrashInfoToLogFile(crashInfo, logFile);
+            return;
+        }
+        // logfile does not exist, so creates and writes to a new logfile
+        File newLogFile = SystemWideCrashDirectories.createCrashJsonLogFile(crashInfo.localId);
+        tryWritingCrashInfoToLogFile(crashInfo, newLogFile);
     }
 
-    /**
-     * Merge values from the second object into the first object if the value in the first object is
-     * {@code null}.
-     */
-    @VisibleForTesting
-    public static void mergeCrashInfo(CrashInfo a, CrashInfo b) {
-        // localId is not merged since it's two CrashInfo objects should be only merged if they have
-        // the same localId.
-        a.captureTime = a.captureTime != -1 ? a.captureTime : b.captureTime;
-        a.uploadId = getFirstNonNull(a.uploadId, b.uploadId);
-        a.uploadTime = a.uploadTime != -1 ? a.uploadTime : b.uploadTime;
-        a.packageName = getFirstNonNull(a.packageName, b.packageName);
-        a.variations = getFirstNonNull(a.variations, b.variations);
-
-        // When merging two CrashInfos if one of the two UploadStates is UPLOADED then the merged
-        // object will have an UPLOADED state regardless of the order. Difference in UploadState my
-        // be caused by the file suffix not updated or deleted by the time
-        // UnuploadedFilesStateLoader parses the crash directory.
-        if (a.uploadState != null && b.uploadState != null) {
-            if (a.uploadState == UploadState.UPLOADED || b.uploadState == UploadState.UPLOADED) {
-                a.uploadState = UploadState.UPLOADED;
-            } else {
-                assert a.uploadState == b.uploadState;
+    private static void tryWritingCrashInfoToLogFile(CrashInfo crashInfo, File logFile) {
+        try {
+            FileWriter writer = new FileWriter(logFile);
+            try {
+                writer.write(crashInfo.serializeToJson());
+            } finally {
+                writer.close();
             }
-        } else {
-            a.uploadState = getFirstNonNull(a.uploadState, b.uploadState);
-        }
-        // Since capture time may be the last time the crash file is modified, the oldest capture
-        // time will be used regardless of the merging order.
-        if (a.captureTime != -1 && b.captureTime != -1) {
-            a.captureTime = Math.min(a.captureTime, b.captureTime);
-        } else {
-            a.captureTime = a.captureTime != -1 ? a.captureTime : b.captureTime;
+        } catch (IOException e) {
+            Log.e(TAG, "failed to modify JSON log entry for crash", e);
         }
     }
 }

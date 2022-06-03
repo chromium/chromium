@@ -30,8 +30,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
                                 bool anonymize,
                                 int toolbar_textbox_background_color,
                                 int url_bar_background_resource_id,
-                                float url_bar_alpha,
-                                float window_height,
+                                float x_offset,
                                 float y_offset,
                                 bool show_debug,
                                 bool clip_shadow) {
@@ -57,8 +56,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
       gfx::PointF(resource->toolbar_rect().origin()));
   toolbar_background_layer_->SetBackgroundColor(toolbar_background_color);
 
-  bool url_bar_visible =
-      (resource->location_bar_content_rect().width() != 0) && url_bar_alpha > 0;
+  bool url_bar_visible = resource->location_bar_content_rect().width() != 0;
   url_bar_background_layer_->SetHideLayerAndSubtree(!url_bar_visible);
   if (url_bar_visible) {
     ui::NinePatchResource* url_bar_background_resource;
@@ -79,7 +77,6 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
         url_bar_background_resource->aperture());
     url_bar_background_layer_->SetUIResourceId(
         url_bar_background_resource->ui_resource()->id());
-    url_bar_background_layer_->SetOpacity(url_bar_alpha);
   }
 
   bitmap_layer_->SetUIResourceId(resource->ui_resource()->id());
@@ -110,7 +107,7 @@ void ToolbarLayer::PushResource(int toolbar_resource_id,
   else if (!show_debug && debug_layer_->parent())
     debug_layer_->RemoveFromParent();
 
-  layer_->SetPosition(gfx::PointF(0, y_offset));
+  layer_->SetPosition(gfx::PointF(x_offset, y_offset));
 }
 
 int ToolbarLayer::GetIndexOfLayer(scoped_refptr<cc::Layer> layer) {

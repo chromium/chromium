@@ -1,0 +1,10 @@
+[document web] tag:#document
+++[section] class:svg-container tag:div
+++++[image] name='original' tag:svg
+++++[section] name='created' class:html-namespace tag:svg
+++++[section] name='created' class:custom-namespace tag:svg
+++[section] class:math-container tag:div
+++++[math] name='original' tag:math
+++++[section] name='created' class:html-namespace tag:math
+++++[section] name='created' class:custom-namespace tag:math
+++[static] name='Done'

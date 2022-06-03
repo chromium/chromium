@@ -4,7 +4,10 @@
 
 #include "chrome/browser/chromeos/extensions/printing_metrics/print_job_info_idl_conversions.h"
 
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "chrome/browser/extensions/api/printing/printing_api.h"
+#include "chrome/common/extensions/api/printing.h"
 
 namespace proto = chromeos::printing::proto;
 
@@ -63,9 +66,12 @@ idl::PrintJobSource PrintJobSourceProtoToIdl(
     proto::PrintJobInfo_PrintJobSource print_job_source_proto) {
   switch (print_job_source_proto) {
     case proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW:
+    case proto::PrintJobInfo_PrintJobSource_PRINT_PREVIEW_INCOGNITO:
       return idl::PRINT_JOB_SOURCE_PRINT_PREVIEW;
     case proto::PrintJobInfo_PrintJobSource_ARC:
       return idl::PRINT_JOB_SOURCE_ANDROID_APP;
+    case proto::PrintJobInfo_PrintJobSource_EXTENSION:
+      return idl::PRINT_JOB_SOURCE_EXTENSION;
     default:
       NOTREACHED();
   }
@@ -108,6 +114,41 @@ idl::Printer PrinterProtoToIdl(const proto::Printer& printer_proto) {
   return printer;
 }
 
+api::printing::PrinterStatus PrinterErrorCodeToIdl(
+    proto::PrintJobInfo_PrinterErrorCode error_code_proto) {
+  switch (error_code_proto) {
+    case proto::PrintJobInfo_PrinterErrorCode_NO_ERROR:
+      return api::printing::PRINTER_STATUS_AVAILABLE;
+    case proto::PrintJobInfo_PrinterErrorCode_PAPER_JAM:
+      return api::printing::PRINTER_STATUS_PAPER_JAM;
+    case proto::PrintJobInfo_PrinterErrorCode_OUT_OF_PAPER:
+      return api::printing::PRINTER_STATUS_OUT_OF_PAPER;
+    case proto::PrintJobInfo_PrinterErrorCode_OUT_OF_INK:
+      return api::printing::PRINTER_STATUS_OUT_OF_INK;
+    case proto::PrintJobInfo_PrinterErrorCode_DOOR_OPEN:
+      return api::printing::PRINTER_STATUS_DOOR_OPEN;
+    case proto::PrintJobInfo_PrinterErrorCode_PRINTER_UNREACHABLE:
+      return api::printing::PRINTER_STATUS_UNREACHABLE;
+    case proto::PrintJobInfo_PrinterErrorCode_TRAY_MISSING:
+      return api::printing::PRINTER_STATUS_TRAY_MISSING;
+    case proto::PrintJobInfo_PrinterErrorCode_OUTPUT_FULL:
+      return api::printing::PRINTER_STATUS_OUTPUT_FULL;
+    case proto::PrintJobInfo_PrinterErrorCode_STOPPED:
+      return api::printing::PRINTER_STATUS_STOPPED;
+    case proto::PrintJobInfo_PrinterErrorCode_FILTER_FAILED:
+    case proto::PrintJobInfo_PrinterErrorCode_UNKNOWN_ERROR:
+    case proto::PrintJobInfo_PrinterErrorCode_CLIENT_UNAUTHORIZED:
+      return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+    case proto::
+        PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MIN_SENTINEL_DO_NOT_USE_:
+    case proto::
+        PrintJobInfo_PrinterErrorCode_PrintJobInfo_PrinterErrorCode_INT_MAX_SENTINEL_DO_NOT_USE_:
+      NOTREACHED();
+      return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+  }
+  return api::printing::PRINTER_STATUS_GENERIC_ISSUE;
+}
+
 }  // namespace
 
 idl::PrintJobInfo PrintJobInfoProtoToIdl(
@@ -125,6 +166,8 @@ idl::PrintJobInfo PrintJobInfoProtoToIdl(
   print_job_info.completion_time =
       base::checked_cast<double>(print_job_info_proto.completion_time());
   print_job_info.printer = PrinterProtoToIdl(print_job_info_proto.printer());
+  print_job_info.printer_status =
+      PrinterErrorCodeToIdl(print_job_info_proto.printer_error_code());
   print_job_info.settings =
       PrintSettingsProtoToIdl(print_job_info_proto.settings());
   print_job_info.number_of_pages = print_job_info_proto.number_of_pages();

@@ -4,23 +4,20 @@
 
 package org.chromium.weblayer.test;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.weblayer.shell.InstrumentationActivity;
-
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Tests that embedding support works as expected.
  */
-@RunWith(BaseJUnit4ClassRunner.class)
+@RunWith(WebLayerJUnit4ClassRunner.class)
 public class RenderingTest {
     @Rule
     public InstrumentationActivityTestRule mActivityTestRule =
@@ -31,7 +28,7 @@ public class RenderingTest {
     public void testSetSupportEmbeddingFromCallback() {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
 
-        CountDownLatch latch = new CountDownLatch(1);
+        BoundedCountDownLatch latch = new BoundedCountDownLatch(1);
         String url = "data:text,foo";
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -44,11 +41,7 @@ public class RenderingTest {
             });
         });
 
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            Assert.fail(e.toString());
-        }
+        latch.timedAwait();
         mActivityTestRule.navigateAndWait(url);
     }
 
@@ -57,7 +50,7 @@ public class RenderingTest {
     public void testRepeatSetSupportEmbeddingGeneratesCallback() {
         InstrumentationActivity activity = mActivityTestRule.launchShellWithUrl("about:blank");
 
-        CountDownLatch latch = new CountDownLatch(2);
+        BoundedCountDownLatch latch = new BoundedCountDownLatch(2);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             activity.getBrowser().setSupportsEmbedding(true, (Boolean result) -> {
                 Assert.assertTrue(result);
@@ -69,10 +62,6 @@ public class RenderingTest {
             });
         });
 
-        try {
-            latch.await();
-        } catch (InterruptedException e) {
-            Assert.fail(e.toString());
-        }
+        latch.timedAwait();
     }
 }

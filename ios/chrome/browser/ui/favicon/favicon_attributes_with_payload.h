@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_FAVICON_FAVICON_ATTRIBUTES_WITH_PAYLOAD_H_
 #define IOS_CHROME_BROWSER_UI_FAVICON_FAVICON_ATTRIBUTES_WITH_PAYLOAD_H_
 
-#import "ios/chrome/common/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 
 #include "components/favicon_base/favicon_types.h"
 

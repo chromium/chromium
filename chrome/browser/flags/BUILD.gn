@@ -1,0 +1,113 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/flags/AllCachedFieldTrialParameters.java",
+    "android/java/src/org/chromium/chrome/browser/flags/BooleanCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
+    "android/java/src/org/chromium/chrome/browser/flags/DoubleCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtils.java",
+    "android/java/src/org/chromium/chrome/browser/flags/IntCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/chrome/browser/flags/StringCachedFieldTrialParameter.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ValuesOverridden.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ValuesReturned.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/version:java",
+    "//third_party/android_deps:guava_android_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+  srcjar_deps = [
+    ":chrome_android_java_switches_srcjar",
+    ":chrome_browser_flags_enums_srcjar",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("jni_headers") {
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlags.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureList.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeSessionState.java",
+  ]
+}
+
+static_library("flags_android") {
+  sources = [
+    "android/cached_feature_flags.cc",
+    "android/cached_feature_flags.h",
+    "android/chrome_session_state.cc",
+    "android/chrome_session_state.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//content/public/common",
+  ]
+}
+
+java_cpp_strings("chrome_android_java_switches_srcjar") {
+  sources = [ "//chrome/common/chrome_switches.cc" ]
+  template = "android/java_templates/ChromeSwitches.java.tmpl"
+}
+
+java_cpp_enum("chrome_browser_flags_enums_srcjar") {
+  sources = [ "android/chrome_session_state.h" ]
+}
+
+java_library("flags_junit_tests") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsAnnotationUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsSafeModeUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/CachedFeatureFlagsUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithProcessorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListWithoutProcessorUnitTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/FeatureParamUtilsUnitTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit",
+  ]
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [
+    "android/java/src/org/chromium/chrome/browser/flags/ChromeFeatureListInstrumentationTest.java",
+    "android/java/src/org/chromium/chrome/browser/flags/FieldTrialsInstrumentationTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//chrome/android:chrome_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//third_party/android_sdk:android_test_mock_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}

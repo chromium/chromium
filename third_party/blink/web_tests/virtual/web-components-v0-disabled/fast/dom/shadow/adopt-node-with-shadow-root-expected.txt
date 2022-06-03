@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 12: Uncaught TypeError: foreignDocument.getElementById(...).createShadowRoot is not a function
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

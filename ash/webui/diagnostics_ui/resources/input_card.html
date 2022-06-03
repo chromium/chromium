@@ -1,0 +1,45 @@
+<style include="diagnostics-shared">
+  .device {
+    border-bottom: 1px solid var(--google-grey-200);
+    display: flex;
+    padding: 16px 20px;
+  }
+
+  .device iron-icon {
+    @apply --diagnostics-card-icon;
+    margin-right: 20px;
+  }
+
+  .device-body {
+    align-self: center;
+    flex-grow: 1;
+    line-height: 140%;
+  }
+
+  .device-name {
+    color: var(--diagnostics-data-point-title-color);
+  }
+
+  .device-description {
+    color: var(--diagnostics-data-point-subtitle-color);
+  }
+</style>
+<diagnostics-card-frame>
+  <slot name="title" slot="title"></slot>
+  <div slot="contents">
+    <dom-repeat items="[[devices]]" as="device">
+      <template>
+        <div class="device" data-evdev-id$="[[device.id]]">
+          <iron-icon icon="[[deviceIcon_]]"></iron-icon>
+          <div class="device-body">
+            <div class="device-name">[[device.name]]</div>
+            <div class="device-description">[[getDeviceDescription_(device)]]</div>
+          </div>
+          <cr-button on-click="handleTestButtonClick_">
+            [[i18n('inputDeviceTest')]]
+          </cr-button>
+        </div>
+      </template>
+    </dom-repeat>
+  </div>
+</diagnostics-card-frame>

@@ -2,35 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":incompatible_application_item",
-    ":incompatible_applications_browser_proxy",
-    ":incompatible_applications_page",
-  ]
-}
+assert(is_win)
 
-js_library("incompatible_applications_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("incompatible_applications_page") {
-  deps = [
-    ":incompatible_applications_browser_proxy",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("incompatible_application_item") {
-  deps = [
-    ":incompatible_applications_browser_proxy",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:i18n_behavior",
+html_to_js("web_components") {
+  js_files = [
+    "incompatible_application_item.ts",
+    "incompatible_applications_page.ts",
   ]
 }

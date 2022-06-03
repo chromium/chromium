@@ -13,11 +13,9 @@ import org.chromium.base.annotations.JNINamespace;
 @JNINamespace("autofill_assistant")
 public class AssistantDetails {
     private final String mTitle;
-    private final int mTitleMaxLines;
     private final String mImageUrl;
     private final String mImageAccessibilityHint;
     private final ImageClickthroughData mImageClickthroughData;
-    private final boolean mShowImagePlaceholder;
     private final String mDescriptionLine1;
     private final String mDescriptionLine2;
     private final String mDescriptionLine3;
@@ -32,8 +30,6 @@ public class AssistantDetails {
     private boolean mHighlightLine2;
     /** Whether the third description line should be highlighted. */
     private boolean mHighlightLine3;
-    /** Whether empty fields should have the animated placeholder background. */
-    private final boolean mAnimatePlaceholders;
     /**
      * The correctly formatted price for the client locale, including the currency.
      * Example: '$20.50' or '20.50 €'.
@@ -41,21 +37,20 @@ public class AssistantDetails {
     private final String mTotalPrice;
     /** An optional price label, such as 'Estimated Total incl. VAT'. */
     private final String mTotalPriceLabel;
+    /** The configuration for the placeholders. */
+    private final AssistantPlaceholdersConfiguration mPlaceholdersConfiguration;
 
-    public AssistantDetails(String title, int titleMaxLines, String imageUrl,
-            String imageAccessibilityHint, ImageClickthroughData imageClickthroughData,
-            boolean showImagePlaceholder, String totalPriceLabel, String totalPrice,
+    public AssistantDetails(String title, String imageUrl, String imageAccessibilityHint,
+            ImageClickthroughData imageClickthroughData, String totalPriceLabel, String totalPrice,
             String descriptionLine1, String descriptionLine2, String descriptionLine3,
             String priceAttribution, boolean userApprovalRequired, boolean highlightTitle,
             boolean highlightLine1, boolean highlightLine2, boolean highlightLine3,
-            boolean animatePlaceholders) {
+            AssistantPlaceholdersConfiguration placeholdersConfiguration) {
         this.mTotalPriceLabel = totalPriceLabel;
         this.mTitle = title;
-        this.mTitleMaxLines = titleMaxLines;
         this.mImageUrl = imageUrl;
         this.mImageAccessibilityHint = imageAccessibilityHint;
         this.mImageClickthroughData = imageClickthroughData;
-        this.mShowImagePlaceholder = showImagePlaceholder;
         this.mTotalPrice = totalPrice;
         this.mDescriptionLine1 = descriptionLine1;
         this.mDescriptionLine2 = descriptionLine2;
@@ -67,15 +62,11 @@ public class AssistantDetails {
         this.mHighlightLine1 = highlightLine1;
         this.mHighlightLine2 = highlightLine2;
         this.mHighlightLine3 = highlightLine3;
-        this.mAnimatePlaceholders = animatePlaceholders;
+        this.mPlaceholdersConfiguration = placeholdersConfiguration;
     }
 
     String getTitle() {
         return mTitle;
-    }
-
-    int getTitleMaxLines() {
-        return mTitleMaxLines;
     }
 
     String getImageUrl() {
@@ -92,10 +83,6 @@ public class AssistantDetails {
 
     ImageClickthroughData getImageClickthroughData() {
         return mImageClickthroughData;
-    }
-
-    boolean getShowImagePlaceholder() {
-        return mShowImagePlaceholder;
     }
 
     String getDescriptionLine1() {
@@ -142,30 +129,29 @@ public class AssistantDetails {
         return mHighlightLine3;
     }
 
-    boolean getAnimatePlaceholders() {
-        return mAnimatePlaceholders;
+    public AssistantPlaceholdersConfiguration getPlaceholdersConfiguration() {
+        return mPlaceholdersConfiguration;
     }
 
     /**
      * Create details with the given values.
      */
     @CalledByNative
-    private static AssistantDetails create(String title, int titleMaxLines, String imageUrl,
+    private static AssistantDetails create(String title, String imageUrl,
             String imageAccessibilityHint, boolean allowImageClickthrough,
             String imageClickthroughDesc, String imageClickthroughPostiveText,
             String imageClickthroughNegativeText, String imageClickthroughUrl,
-            boolean showImagePlaceholder, String totalPriceLabel, String totalPrice,
-            String descriptionLine1, String descriptionLine2, String descriptionLine3,
-            String priceAttribution, boolean userApprovalRequired, boolean highlightTitle,
-            boolean highlightLine1, boolean highlightLine2, boolean highlightLine3,
-            boolean animatePlaceholders) {
-        return new AssistantDetails(title, titleMaxLines, imageUrl, imageAccessibilityHint,
+            String totalPriceLabel, String totalPrice, String descriptionLine1,
+            String descriptionLine2, String descriptionLine3, String priceAttribution,
+            boolean userApprovalRequired, boolean highlightTitle, boolean highlightLine1,
+            boolean highlightLine2, boolean highlightLine3,
+            AssistantPlaceholdersConfiguration placeholdersConfiguration) {
+        return new AssistantDetails(title, imageUrl, imageAccessibilityHint,
                 new ImageClickthroughData(allowImageClickthrough, imageClickthroughDesc,
                         imageClickthroughPostiveText, imageClickthroughNegativeText,
                         imageClickthroughUrl),
-                showImagePlaceholder, totalPriceLabel, totalPrice, descriptionLine1,
-                descriptionLine2, descriptionLine3, priceAttribution, userApprovalRequired,
-                highlightTitle, highlightLine1, highlightLine2, highlightLine3,
-                animatePlaceholders);
+                totalPriceLabel, totalPrice, descriptionLine1, descriptionLine2, descriptionLine3,
+                priceAttribution, userApprovalRequired, highlightTitle, highlightLine1,
+                highlightLine2, highlightLine3, placeholdersConfiguration);
     }
 }

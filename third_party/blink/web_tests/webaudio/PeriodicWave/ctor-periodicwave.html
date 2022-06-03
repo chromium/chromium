@@ -134,14 +134,14 @@
         verifyPeriodicWaveOutput(
             should, {real: [0, 1], imag: [0, 1], disableNormalization: false},
             generateReference(x => Math.SQRT1_2 * (Math.sin(x) + Math.cos(x))),
-            2.7165e-5)
+            2.7225e-5)
             .then(() => task.done());
       });
 
       audit.define('3: real/imag periodicwave test', (task, should) => {
         verifyPeriodicWaveOutput(
             should, {real: [0, 1], imag: [0, 1], disableNormalization: true},
-            generateReference(x => Math.sin(x) + Math.cos(x)), 3.8416e-5)
+            generateReference(x => Math.sin(x) + Math.cos(x)), 3.8501e-5)
             .then(() => task.done());
       });
 

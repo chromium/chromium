@@ -21,7 +21,7 @@ ITERABLE iterable
 LONG long
 MAPLIKE maplike
 MIXIN mixin
-NAN Nan
+NAN NaN
 NULL null
 OBJECT object
 OCTET octet

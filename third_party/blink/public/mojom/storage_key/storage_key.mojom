@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "services/network/public/mojom/schemeful_site.mojom";
+import "url/mojom/origin.mojom";
+
+// Represents a blink::StorageKey (third_party/blink/common/storage_key).
+struct StorageKey {
+  // The origin of the context using this storage key.
+  url.mojom.Origin origin;
+
+  // The "top-level site"/"top-level frame"/"main frame" of the context using
+  // this storage key. See storage_key.h for more details.
+  network.mojom.SchemefulSite top_level_site;
+
+  // An optional nonce, forcing a partitioned storage from anything else. Used
+  // by anonymous iframes:
+  // https://github.com/camillelamy/explainers/blob/master/anonymous_iframes.md
+  mojo_base.mojom.UnguessableToken? nonce;
+};

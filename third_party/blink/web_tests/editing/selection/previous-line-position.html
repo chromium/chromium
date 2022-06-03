@@ -1,31 +1,30 @@
-<html> 
-<head>
-
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
+// There was a workaround added to fix rdar://problem/4033202. A bug to remove
+// the workaround was filed as rdar://problem/4040763. The underlying problem
+// with VisiblePositions was fixed, and so I removed the workaround and added
+// this layout test.
+const kStyle = [
+    'margin-top: 0px;',
+    'margin-right: 0px;',
+    'margin-bottom: 0px;',
+    'margin-left: 0px;',
+    'min-height: 14px;'
+].join(' ');
 
-function editingTest() {
-    moveSelectionForwardByLineCommand();
-}
-
+selection_test(
+    [
+        '<div contenteditable>',
+            `<p style="${kStyle}">|hi<span></span></p><br>test`,
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+        '<div contenteditable>',
+            `<p style="${kStyle}">hi<span></span></p>|<br>test`,
+        '</div>',
+    ]);
 </script>
-
-<title>Editing Test</title> 
-</head>
-<body>
-
-<p>
-There was a workaround added to fix <a href="rdar://problem/4033202">rdar://problem/4033202</a>.  A bug to remove the workaround was filed as <a href="rdar://problem/4040763">rdar://problem/4040763</a>.  The underlying problem with VisiblePositions was fixed, and so I removed the workaround and added this layout test.
-</p>
-
-<div contenteditable id="test" style="border:1px solid blue;">
-<P style="margin-top: 0px; margin-right: 0px; margin-bottom: 0px; margin-left: 0px; min-height: 14px; ">hi<SPAN></SPAN></P><BR>test
-</div>
-
-<script>
-runEditingTest();
-</script>
-
-</body>
-</html>

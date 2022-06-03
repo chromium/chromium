@@ -1,4 +1,4 @@
 AXWebArea
 ++AXGroup
-++++AXLink AXTitle='normal link'
+++++AXLink AXDescription='normal link'
 ++++++AXStaticText AXValue='normal link'

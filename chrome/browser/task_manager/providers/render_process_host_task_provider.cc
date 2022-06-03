@@ -25,16 +25,9 @@ using content::ChildProcessData;
 
 namespace task_manager {
 
-RenderProcessHostTaskProvider::RenderProcessHostTaskProvider() {
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
-                 content::NotificationService::AllBrowserContextsAndSources());
-}
+RenderProcessHostTaskProvider::RenderProcessHostTaskProvider() = default;
 
-RenderProcessHostTaskProvider::~RenderProcessHostTaskProvider() {}
+RenderProcessHostTaskProvider::~RenderProcessHostTaskProvider() = default;
 
 Task* RenderProcessHostTaskProvider::GetTaskOfUrlRequest(int child_id,
                                                          int route_id) {
@@ -59,10 +52,19 @@ void RenderProcessHostTaskProvider::StartUpdating() {
       // from the notification service.
     }
   }
+
+  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CREATED,
+                 content::NotificationService::AllBrowserContextsAndSources());
+  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
+                 content::NotificationService::AllBrowserContextsAndSources());
+  registrar_.Add(this, content::NOTIFICATION_RENDERER_PROCESS_TERMINATED,
+                 content::NotificationService::AllBrowserContextsAndSources());
 }
 
 void RenderProcessHostTaskProvider::StopUpdating() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  registrar_.RemoveAll();
 
   // Then delete all tasks (if any).
   tasks_by_rph_id_.clear();
@@ -83,7 +85,8 @@ void RenderProcessHostTaskProvider::CreateTask(
   ChildProcessData data(content::PROCESS_TYPE_RENDERER);
   data.SetProcess(host->GetProcess().Duplicate());
   data.id = host->GetID();
-  task = std::make_unique<ChildProcessTask>(data);
+  task = std::make_unique<ChildProcessTask>(
+      data, ChildProcessTask::ProcessSubtype::kUnknownRenderProcess);
   NotifyObserverTaskAdded(task.get());
 }
 

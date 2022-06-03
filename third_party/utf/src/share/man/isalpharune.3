@@ -1,0 +1,36 @@
+.Dd $Mdocdate$
+.Dt ISALPHARUNE 3
+.Os
+.Sh NAME
+.Nm isalnumrune, isalpharune, isblankrune, iscntrlrune, isdigitrune, \
+    isgraphrune, islowerrune, isprintrune, ispunctrune, isspacerune, \
+    istitlerune, isupperrune, isxdigitrune
+.Nd Unicode rune classification
+.Sh SYNOPSIS
+.In utf.h
+.Fn "int isalnumrune" "Rune r"
+.Fn "int isalpharune" "Rune r"
+.Fn "int isblankrune" "Rune r"
+.Fn "int iscntrlrune" "Rune r"
+.Fn "int isdigitrune" "Rune r"
+.Fn "int isgraphrune" "Rune r"
+.Fn "int islowerrune" "Rune r"
+.Fn "int isprintrune" "Rune r"
+.Fn "int ispunctrune" "Rune r"
+.Fn "int isspacerune" "Rune r"
+.Fn "int istitlerune" "Rune r"
+.Fn "int isupperrune" "Rune r"
+.Fn "int isxdigitrune" "Rune r"
+.Sh DESCRIPTION
+These functions classify Unicode runes according to their properties defined
+in the Unicode standard, analogously to
+.Xr isalpha 3
+for ASCII.
+.Sh CONFORMING TO
+These functions are compatible with those defined in the Plan 9 C library, but
+are generated automatically from the Unicode $UNICODE Character Database, so
+classifications may differ.
+.Sh SEE ALSO
+.Xr isalpha 3 ,
+.Xr rune 3 ,
+The Unicode $UNICODE Standard

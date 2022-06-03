@@ -5,8 +5,9 @@
 package org.chromium.content.browser;
 
 import android.content.pm.ActivityInfo;
-import android.support.test.filters.MediumTest;
 import android.view.Surface;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -21,8 +22,8 @@ import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.content_public.common.ScreenOrientationValues;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
+import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroid.DisplayAndroidObserver;
 
@@ -33,7 +34,7 @@ import java.util.concurrent.Callable;
  *
  * rotation: Surface.ROTATION_*
  * orientation: ActivityInfo.SCREEN_ORIENTATION_*
- * orientation value: ScreenOrientationValues.*
+ * orientation value: ScreenOrientationLockType.*
  */
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ScreenOrientationListenerTest {
@@ -186,17 +187,17 @@ public class ScreenOrientationListenerTest {
     private int orientationValueToRotation(int orientationValue) {
         if (mNaturalOrientation == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
             switch (orientationValue) {
-                case ScreenOrientationValues.PORTRAIT_PRIMARY:
+                case ScreenOrientationLockType.PORTRAIT_PRIMARY:
                     return Surface.ROTATION_0;
-                case ScreenOrientationValues.LANDSCAPE_PRIMARY:
+                case ScreenOrientationLockType.LANDSCAPE_PRIMARY:
                     return Surface.ROTATION_90;
-                case ScreenOrientationValues.PORTRAIT:
+                case ScreenOrientationLockType.PORTRAIT:
                     return Surface.ROTATION_0;
-                case ScreenOrientationValues.LANDSCAPE:
+                case ScreenOrientationLockType.LANDSCAPE:
                     return Surface.ROTATION_90;
-                case ScreenOrientationValues.LANDSCAPE_SECONDARY:
+                case ScreenOrientationLockType.LANDSCAPE_SECONDARY:
                     return Surface.ROTATION_270;
-                case ScreenOrientationValues.PORTRAIT_SECONDARY:
+                case ScreenOrientationLockType.PORTRAIT_SECONDARY:
                     return Surface.ROTATION_180;
                 default:
                     Assert.fail("Can't requiest this orientation value " + orientationValue);
@@ -204,17 +205,17 @@ public class ScreenOrientationListenerTest {
             }
         } else { // mNaturalOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             switch (orientationValue) {
-                case ScreenOrientationValues.PORTRAIT_PRIMARY:
+                case ScreenOrientationLockType.PORTRAIT_PRIMARY:
                     return Surface.ROTATION_270;
-                case ScreenOrientationValues.LANDSCAPE_PRIMARY:
+                case ScreenOrientationLockType.LANDSCAPE_PRIMARY:
                     return Surface.ROTATION_0;
-                case ScreenOrientationValues.PORTRAIT:
+                case ScreenOrientationLockType.PORTRAIT:
                     return Surface.ROTATION_90;
-                case ScreenOrientationValues.LANDSCAPE:
+                case ScreenOrientationLockType.LANDSCAPE:
                     return Surface.ROTATION_0;
-                case ScreenOrientationValues.LANDSCAPE_SECONDARY:
+                case ScreenOrientationLockType.LANDSCAPE_SECONDARY:
                     return Surface.ROTATION_180;
-                case ScreenOrientationValues.PORTRAIT_SECONDARY:
+                case ScreenOrientationLockType.PORTRAIT_SECONDARY:
                     return Surface.ROTATION_90;
                 default:
                     Assert.fail("Can't requiest this orientation value " + orientationValue);
@@ -244,17 +245,18 @@ public class ScreenOrientationListenerTest {
     @Feature({"ScreenOrientation"})
     @DisabledTest(message = "crbug.com/807356")
     public void testBasicValues() throws Exception {
-        int rotation = lockOrientationValueAndWait(ScreenOrientationValues.LANDSCAPE_PRIMARY);
+        int rotation = lockOrientationValueAndWait(ScreenOrientationLockType.LANDSCAPE_PRIMARY);
         Assert.assertEquals(
-                orientationValueToRotation(ScreenOrientationValues.LANDSCAPE_PRIMARY), rotation);
+                orientationValueToRotation(ScreenOrientationLockType.LANDSCAPE_PRIMARY), rotation);
 
-        rotation = lockOrientationValueAndWait(ScreenOrientationValues.PORTRAIT_PRIMARY);
+        rotation = lockOrientationValueAndWait(ScreenOrientationLockType.PORTRAIT_PRIMARY);
         Assert.assertEquals(
-                orientationValueToRotation(ScreenOrientationValues.PORTRAIT_PRIMARY), rotation);
+                orientationValueToRotation(ScreenOrientationLockType.PORTRAIT_PRIMARY), rotation);
 
-        rotation = lockOrientationValueAndWait(ScreenOrientationValues.LANDSCAPE_SECONDARY);
+        rotation = lockOrientationValueAndWait(ScreenOrientationLockType.LANDSCAPE_SECONDARY);
         Assert.assertEquals(
-                orientationValueToRotation(ScreenOrientationValues.LANDSCAPE_SECONDARY), rotation);
+                orientationValueToRotation(ScreenOrientationLockType.LANDSCAPE_SECONDARY),
+                rotation);
 
         // The note in testOrientationChanges about REVERSE_PORTRAIT applies to PORTRAIT_SECONDARY.
     }

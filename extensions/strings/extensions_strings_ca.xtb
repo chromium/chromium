@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Error. No s'ha pogut generar la clau privada RSA aleatòria.</translation>
 <translation id="1445572445564823378">Aquesta extensió està alentint <ph name="PRODUCT_NAME" />. L'heu de desactivar per restaurar el rendiment de: <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL no és compatible.</translation>
-<translation id="149347756975725155">No s'ha pogut carregar la icona d'extensió "<ph name="ICON" />".</translation>
 <translation id="1803557475693955505">No s'ha pogut carregar la pàgina en segon pla "<ph name="BACKGROUND_PAGE" />".</translation>
 <translation id="2159915644201199628">No s'ha pogut descodificar la imatge: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">S'ha utilitzat localització, però no s'ha especificat default_locale al manifest.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">No s'ha pogut llegir la clau privada.</translation>
 <translation id="6391538222494443604">El directori d'entrada ha d'existir.</translation>
 <translation id="641087317769093025">No s'ha pogut descomprimir l'extensió</translation>
-<translation id="6413453408918378296">La icona <ph name="ICON" /> no és prou visible.</translation>
 <translation id="6542618148162044354"><ph name="APP_NAME" /> sol·licita accés a un o més dels teus dispositius:</translation>
 <translation id="657064425229075395">No s'ha pogut carregar l'script en segon pla "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> de <ph name="VENDOR_NAME" /> (número de sèrie <ph name="SERIAL_NUMBER" />)</translation>

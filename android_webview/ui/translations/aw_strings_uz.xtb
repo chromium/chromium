@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="uz">
-<translation id="6106989379647458772"><ph name="PAGE" /> veb-sahifasi vaqtincha ishlamayotgan yoki yangi veb-manzilga o‘tkazilgan bo‘lishi mumkin.</translation>
-<translation id="6312113039770857350">Veb-sahifa mavjud emas</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> veb-sahifasi quyidagi sabablarga ko‘ra yuklanmadi:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Takliflar:<ph name="MARKUP_2" />Internetga ulanishni tekshirib ko‘ring<ph name="MARKUP_3" />Keyinroq veb-sahifani yangilang<ph name="MARKUP_4" />Kiritlgan manzilni tekshirib ko‘ring<ph name="MARKUP_5" /></translation>
 </translationbundle>

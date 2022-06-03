@@ -1,0 +1,8 @@
+monorail {
+  component: "Blink>CSS"
+}
+team_email: "layout-dev@chromium.org"
+wpt {
+  notify: YES
+}
+

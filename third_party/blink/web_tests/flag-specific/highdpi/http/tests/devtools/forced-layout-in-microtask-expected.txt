@@ -1,0 +1,41 @@
+Tests that Layout record has correct locations of layout being invalidated and forced.
+
+Layout Properties:
+{
+    data : {
+        beginData : {
+            dirtyObjects : 4
+            frame : <string>
+            partialLayout : false
+            stackTrace : <object>
+            totalObjects : 4
+        }
+        endData : {
+            layoutRoots : [
+                {
+                    depth : 1
+                    nodeId : <number>
+                    quads : [
+                        [
+                            0
+                            0
+                            1200
+                            0
+                            1200
+                            900
+                            0
+                            900
+                        ]
+                    ]
+                }
+            ]
+        }
+    }
+    endTime : <number>
+    frameId : <string>
+    stackTrace : <object>
+    startTime : <number>
+    type : "Layout"
+}
+Text details for Layout: test://evaluations/0/forced-layout-in-microtask.js:21
+

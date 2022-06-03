@@ -1,0 +1,48 @@
+<!doctype html>
+<script src="../../resources/ahem.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+const kLineHeight = 20;
+const kStyle = `font: 10px/${kLineHeight}px Ahem;`;
+
+function checkHeight(content, expectedHeight = kLineHeight) {
+    const sample = [
+        `<div contenteditable id="target" style="${kStyle}">|`,
+        content,
+        '</div>',
+    ].join('');
+
+    selection_test(
+        sample,
+        selection => {
+            const target = selection.document.getElementById('target');
+            assert_equals(target.offsetHeight, expectedHeight);
+        },
+        sample,
+        `Height of <editable>${content}</editable> is ${expectedHeight}px.`);
+}
+
+
+checkHeight('');
+checkHeight('<div></div>', 0);
+checkHeight('<div style="display:inline-block"></div>', 0);
+checkHeight('<div style="display:inline-block; height: 10px;"></div>', 10);
+checkHeight('<div style="float:left"></div>');
+checkHeight('<div style="float:left">x</div>');
+checkHeight('<div style="position:absolute"></div>');
+checkHeight('<div style="position:absolute">x</div>');
+checkHeight('<div style="position:relative"></div>', 0);
+checkHeight('<div style="position:relative">x</div>');
+
+checkHeight('<span></span>');
+checkHeight('<span style="display:inline-block"></span>', 0);
+checkHeight('<span style="display:inline-block; height: 10px;"></span>', 10);
+checkHeight('<span style="float:left"></span>');
+checkHeight('<span style="float:left">x</span>');
+checkHeight('<span style="position:absolute"></span>');
+checkHeight('<span style="position:absolute">x</span>');
+checkHeight('<span style="position:relative"></span>');
+checkHeight('<span style="position:relative">x</span>');
+</script>

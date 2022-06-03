@@ -13,7 +13,7 @@
 
 <script>
 var host = document.createElement('div');
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = "Kotori Otonashi"
 
 var selection = shadowRoot.getSelection();

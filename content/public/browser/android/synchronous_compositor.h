@@ -13,9 +13,11 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/time/time.h"
 #include "components/viz/common/frame_timing_details_map.h"
+#include "components/viz/common/hit_test/hit_test_region_list.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -23,12 +25,12 @@ class SkCanvas;
 
 namespace gfx {
 class Point;
-class ScrollOffset;
 class Transform;
 }  // namespace gfx
 
 namespace viz {
 class CompositorFrame;
+class BeginFrameSource;
 }
 
 namespace content {
@@ -47,6 +49,10 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   struct Frame {
     Frame();
+
+    Frame(const Frame&) = delete;
+    Frame& operator=(const Frame&) = delete;
+
     ~Frame();
 
     // Movable type.
@@ -55,17 +61,16 @@ class CONTENT_EXPORT SynchronousCompositor {
 
     uint32_t layer_tree_frame_sink_id;
     std::unique_ptr<viz::CompositorFrame> frame;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Frame);
+    // Invalid if |frame| is nullptr.
+    viz::LocalSurfaceId local_surface_id;
+    absl::optional<viz::HitTestRegionList> hit_test_region_list;
   };
 
   class FrameFuture : public base::RefCountedThreadSafe<FrameFuture> {
    public:
-    explicit FrameFuture(viz::LocalSurfaceId local_surface_id);
+    FrameFuture();
     void SetFrame(std::unique_ptr<Frame> frame);
     std::unique_ptr<Frame> GetFrame();
-    const viz::LocalSurfaceId& local_surface_id() { return local_surface_id_; }
 
    private:
     friend class base::RefCountedThreadSafe<FrameFuture>;
@@ -73,7 +78,6 @@ class CONTENT_EXPORT SynchronousCompositor {
 
     base::WaitableEvent waitable_event_;
     std::unique_ptr<Frame> frame_;
-    viz::LocalSurfaceId local_surface_id_;
 #if DCHECK_IS_ON()
     bool waited_ = false;
 #endif
@@ -92,7 +96,7 @@ class CONTENT_EXPORT SynchronousCompositor {
   // Note that all resources must be returned before ReleaseHwDraw.
   virtual void ReturnResources(
       uint32_t layer_tree_frame_sink_id,
-      const std::vector<viz::ReturnedResource>& resources) = 0;
+      std::vector<viz::ReturnedResource> resources) = 0;
 
   virtual void DidPresentCompositorFrames(
       viz::FrameTimingDetailsMap timing_details,
@@ -100,7 +104,9 @@ class CONTENT_EXPORT SynchronousCompositor {
 
   // "On demand" SW draw, into the supplied canvas (observing the transform
   // and clip set there-in).
-  virtual bool DemandDrawSw(SkCanvas* canvas) = 0;
+  // `software canvas` being true means drawing happens immediately instead
+  // of being cached, which allows more efficient drawing.
+  virtual bool DemandDrawSw(SkCanvas* canvas, bool software_canvas) = 0;
 
   // Set the memory limit policy of this compositor.
   virtual void SetMemoryPolicy(size_t bytes_limit) = 0;
@@ -113,7 +119,7 @@ class CONTENT_EXPORT SynchronousCompositor {
   // scroll offset of the root layer. |root_offset| must be in physical pixel
   // scale if --use-zoom-for-dsf is enabled. Otherwise, it must be in DIP scale.
   virtual void DidChangeRootLayerScrollOffset(
-      const gfx::ScrollOffset& root_offset) = 0;
+      const gfx::Vector2dF& root_offset) = 0;
 
   // Allows embedder to synchronously update the zoom level, ie page scale
   // factor, around the anchor point.
@@ -124,8 +130,17 @@ class CONTENT_EXPORT SynchronousCompositor {
   // and if any input animation is active, it should tick now.
   virtual void OnComputeScroll(base::TimeTicks animation_time) = 0;
 
-  // Called when viz for webview enabled to drive browser-side fling
-  virtual void ProgressFling(base::TimeTicks frame_time) = 0;
+  // Sets BeginFrameSource to use
+  virtual void SetBeginFrameSource(
+      viz::BeginFrameSource* begin_frame_source) = 0;
+
+  // Called when client invalidated because it was necessary for drawing sub
+  // clients. Used with viz for webview only.
+  virtual void DidInvalidate() = 0;
+
+  // Called when embedder has evicted the previous compositor frame. So renderer
+  // needs to submit next frame with new LocalSurfaceId.
+  virtual void WasEvicted() = 0;
 
  protected:
   virtual ~SynchronousCompositor() {}

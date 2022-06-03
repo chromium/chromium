@@ -4,7 +4,7 @@
 
 #include "ui/gfx/sequential_id_generator.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace {
 

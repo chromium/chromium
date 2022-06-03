@@ -4,8 +4,19 @@
 
 import("//chrome/common/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
+import("//pdf/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
+
+grit("chrome_test_resources") {
+  source = "chrome_test_resources.grd"
+  defines = chrome_grit_defines
+  outputs = [
+    "test/data/grit/chrome_test_resources.h",
+    "chrome_test_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
 
 grit("webui_test_resources") {
   source = "webui_test_resources.grd"
@@ -15,39 +26,51 @@ grit("webui_test_resources") {
     "webui_test_resources.pak",
   ]
 
-  deps = [
-    ":web_ui_test_bindings_js",
-  ]
+  deps = [ ":web_ui_test_bindings_js" ]
 
-  grit_flags = [
-    "-E",
-    "root_gen_dir=" + rebase_path(root_gen_dir, root_build_dir),
-  ]
   output_dir = "$root_gen_dir/chrome"
 }
 
 mojom("web_ui_test_bindings") {
   sources = [
+    "webui/mojo/foobar.mojom",
     "webui/web_ui_test.mojom",
   ]
+  webui_module_path = "/"
 }
 
-js_type_check("closure_compile") {
+copy("web_ui_test_mojom_js_module") {
+  sources = [ "$root_gen_dir/mojom-webui/chrome/test/data/webui/web_ui_test.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/webui/web_ui_test.mojom-webui.js" ]
+  deps = [ ":web_ui_test_bindings_webui_js" ]
+}
+
+group("closure_compile") {
+  deps = [
+    ":closure_compile_local",
+    "cast:closure_compile",
+  ]
+
+  if (enable_pdf) {
+    deps += [ "pdf:closure_compile" ]
+  }
+  if (!is_android) {
+    deps += [ "webui:closure_compile" ]
+  }
+}
+
+js_type_check("closure_compile_local") {
   deps = [
     ":test_api_js",
+    "cast",
   ]
 }
 
 js_library("test_api_js") {
-  sources = [
-    "webui/test_api.js",
-  ]
+  sources = [ "webui/test_api.js" ]
   externs_list = [
-    "webui/mock4js_externs.js",
     "//third_party/chaijs/externs/chai-3.5.js",
     "//ui/webui/resources/js/dom_automation_controller.js",
   ]
-  deps = [
-    ":web_ui_test_bindings_js_library_for_compile",
-  ]
+  deps = [ ":web_ui_test_bindings_js_library_for_compile" ]
 }

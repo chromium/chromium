@@ -7,43 +7,31 @@
 
 #include "components/invalidation/public/invalidation_export.h"
 
-namespace syncer {
+namespace invalidation {
 
-// Used by UMA histogram, so entries shouldn't be reordered or removed.
 enum InvalidatorState {
   // Invalidations are fully working.
-  INVALIDATIONS_ENABLED = 0,
+  INVALIDATIONS_ENABLED,
 
   // Failure states
   // --------------
   // There is an underlying transient problem (e.g., network- or
   // XMPP-related).
-  TRANSIENT_INVALIDATION_ERROR = 1,
+  TRANSIENT_INVALIDATION_ERROR,
   DEFAULT_INVALIDATION_ERROR = TRANSIENT_INVALIDATION_ERROR,
   // Our credentials have been rejected.
-  INVALIDATION_CREDENTIALS_REJECTED = 2,
+  INVALIDATION_CREDENTIALS_REJECTED,
 
   // Called just before shutdown so handlers can unregister themselves.
-  INVALIDATOR_SHUTTING_DOWN = 3,
-
-  // The subscription to at least one topic has failed.
-  SUBSCRIPTION_FAILURE = 4,
+  INVALIDATOR_SHUTTING_DOWN,
 
   // Invalidator was stopped.
-  STOPPED = 5,
-
-  // Starting was attempted, but failed due to absence of active account.
-  NOT_STARTED_NO_ACTIVE_ACCOUNT = 6,
-
-  // Starting was attempted, but failed due to absence of active account.
-  NOT_STARTED_NO_REFRESH_TOKEN = 7,
-
-  kMaxValue = NOT_STARTED_NO_REFRESH_TOKEN,
+  STOPPED,
 };
 
 INVALIDATION_EXPORT const char* InvalidatorStateToString(
     InvalidatorState state);
 
-}  // namespace syncer
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_PUBLIC_INVALIDATOR_STATE_H_

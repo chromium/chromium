@@ -6,11 +6,7 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   generate_java = false
-  sources = [
-    "network_hints.mojom",
-  ]
+  sources = [ "network_hints.mojom" ]
 
-  public_deps = [
-    "//url/mojom:url_mojom_gurl",
-  ]
+  public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_UTILITY_THREAD_SAFE_THREAD_TRAITS_H_
-#define PPAPI_UTILITY_THREAD_SAFE_THREAD_TRAITS_H_
+#ifndef PPAPI_UTILITY_COMPLETION_CALLBACK_FACTORY_THREAD_TRAITS_H_
+#define PPAPI_UTILITY_COMPLETION_CALLBACK_FACTORY_THREAD_TRAITS_H_
 
 #include <stdint.h>
 
@@ -177,4 +177,4 @@ class NonThreadSafeThreadTraits {
 
 }  // namespace pp
 
-#endif  // PPAPI_UTILITY_THREAD_SAFE_THREAD_TRAITS_H_
+#endif  // PPAPI_UTILITY_COMPLETION_CALLBACK_FACTORY_THREAD_TRAITS_H_

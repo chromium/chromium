@@ -33,8 +33,10 @@ enum GamepadMappingType {
 };
 
 // https://w3c.github.io/gamepad/#gamepad-interface
-interface Gamepad {
-    readonly attribute DOMString id;
+[
+    Exposed=Window
+] interface Gamepad {
+    [HighEntropy=Direct, MeasureAs=GamepadId] readonly attribute DOMString id;
     readonly attribute long index;
     readonly attribute boolean connected;
     readonly attribute DOMHighResTimeStamp timestamp;

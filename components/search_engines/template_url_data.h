@@ -8,14 +8,10 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "base/time/time.h"
+#include "base/values.h"
 #include "components/search_engines/template_url_id.h"
 #include "url/gurl.h"
-
-namespace base {
-class ListValue;
-}
 
 // The data for the TemplateURL.  Separating this into its own class allows most
 // users to do SSA-style usage of TemplateURL: construct a TemplateURLData with
@@ -31,8 +27,8 @@ struct TemplateURLData {
   // value, instead of current time.
   // StringPiece in arguments is used to pass const char* pointer members
   // of PrepopulatedEngine structure which can be nullptr.
-  TemplateURLData(const base::string16& name,
-                  const base::string16& keyword,
+  TemplateURLData(const std::u16string& name,
+                  const std::u16string& keyword,
                   base::StringPiece search_url,
                   base::StringPiece suggest_url,
                   base::StringPiece image_url,
@@ -45,7 +41,8 @@ struct TemplateURLData {
                   base::StringPiece image_url_post_params,
                   base::StringPiece favicon_url,
                   base::StringPiece encoding,
-                  const base::ListValue& alternate_urls_list,
+                  const base::Value& alternate_urls_list,
+                  bool preconnect_to_search_url,
                   int prepopulate_id);
 
   ~TemplateURLData();
@@ -53,12 +50,12 @@ struct TemplateURLData {
   // A short description of the template. This is the name we show to the user
   // in various places that use TemplateURLs. For example, the location bar
   // shows this when the user selects a substituting match.
-  void SetShortName(const base::string16& short_name);
-  const base::string16& short_name() const { return short_name_; }
+  void SetShortName(const std::u16string& short_name);
+  const std::u16string& short_name() const { return short_name_; }
 
   // The shortcut for this TemplateURL.  |keyword| must be non-empty.
-  void SetKeyword(const base::string16& keyword);
-  const base::string16& keyword() const { return keyword_; }
+  void SetKeyword(const std::u16string& keyword);
+  const std::u16string& keyword() const { return keyword_; }
 
   // The raw URL for the TemplateURL, which may not be valid as-is (e.g. because
   // it requires substitutions first).  This must be non-empty.
@@ -154,11 +151,26 @@ struct TemplateURLData {
   // search terms from a URL.
   std::vector<std::string> alternate_urls;
 
+  // Whether a connection to |url_| should regularly be established when this is
+  // set as the "default search engine".
+  bool preconnect_to_search_url = false;
+
+  enum class ActiveStatus {
+    kUnspecified = 0,  // The default value when a search engine is auto-added.
+    kTrue,             // Search engine is active.
+    kFalse,            // SE has been manually deactivated by a user.
+  };
+
+  // Whether this entry is "active". Active entries can be invoked by keyword
+  // via the omnibox.  Inactive search engines do nothing until they have been
+  // activated.  A search engine is inactive if it's unspecified or false.
+  ActiveStatus is_active{ActiveStatus::kUnspecified};
+
  private:
   // Private so we can enforce using the setters and thus enforce that these
   // fields are never empty.
-  base::string16 short_name_;
-  base::string16 keyword_;
+  std::u16string short_name_;
+  std::u16string keyword_;
   std::string url_;
 };
 

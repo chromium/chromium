@@ -23,7 +23,8 @@ source_set("presentation") {
   deps = [
     "//base",
     "//ios/chrome/browser/ui/infobars/banners:public",
+    "//ios/chrome/browser/ui/overlays:presentation_controller",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui/colors",
   ]
 }

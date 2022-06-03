@@ -1,5 +1,8 @@
+from six.moves import range
+
 from mod_pywebsocket import common
 from mod_pywebsocket import msgutil
+from mod_pywebsocket import util
 
 
 def _retrieve_frame(stream):
@@ -17,7 +20,7 @@ def web_socket_do_extra_handshake(request):
 
 
 def web_socket_transfer_data(request):
-    expected_messages = ['Hello, world!']
+    expected_messages = [b'Hello, world!']
 
     for test_number, expected_message in enumerate(expected_messages):
         frame = _retrieve_frame(request.ws_stream)
@@ -33,4 +36,4 @@ def web_socket_transfer_data(request):
 
 
 def all_distinct_bytes():
-    return ''.join([chr(i) for i in xrange(256)])
+    return b''.join([util.pack_byte(i) for i in range(256)])

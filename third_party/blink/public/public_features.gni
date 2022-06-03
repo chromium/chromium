@@ -5,22 +5,36 @@
 import("//build/config/ui.gni")
 
 declare_args() {
-  # If debug_devtools is set to true, JavaScript files for DevTools are stored
-  # as is and loaded from disk. Otherwise, a concatenated file is stored in
-  # resources.pak. It is still possible to load JS files from disk by passing
-  # --debug-devtools cmdline switch.
-  debug_devtools = false
+  # Enables additional Oilpan heap verification instrumentation.
+  enable_blink_heap_verification = false
 
+  # Enables young generation collections in Oilpan.
+  enable_blink_heap_young_generation = false
+}
+
+declare_args() {
   # If enable_additional_blink_object_names is set to true, then blink provides
   # additional debug names of blink-internal (i.e. oilpan) object names at the
   # cost of additional memory. Many of these objects only show up in heap
   # snapshots if the parameter `treatGlobalObjectsAsRoots` of `takeHeapSnapshot`
   # is set.
-  enable_additional_blink_object_names = false
+  enable_additional_blink_object_names = enable_blink_heap_verification
 }
 
-# Unhandled Tap enable means Contextual Search aka Tap to Search.
+declare_args() {
+  # If true, adds support for JPEG XL image decoding.
+  enable_jxl_decoder = !is_ios
+}
+
+# Unhandled Tap enable means Contextual Search aka Touch to Search.
+# TODO(donnd): remove all unhandled-tap handling after the Long-press experiment
+#              is fully launched.
 enable_unhandled_tap = is_android
 
 # Use Minikin hyphenation engine.
-use_minikin_hyphenation = is_android
+use_minikin_hyphenation = !is_mac
+
+# Forward the request for naming to cppgc.
+if (enable_additional_blink_object_names) {
+  cppgc_enable_object_names = true
+}

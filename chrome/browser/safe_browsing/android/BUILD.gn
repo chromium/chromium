@@ -1,0 +1,122 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//components/safe_browsing/buildflags.gni")
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingBridge.java" ]
+}
+
+source_set("android") {
+  sources = [ "safe_browsing_bridge.cc" ]
+  deps = [
+    ":jni_headers",
+    "//components/password_manager/core/browser/leak_detection",
+    "//components/password_manager/core/common",
+    "//components/prefs",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
+    "//components/signin/public/identity_manager",
+
+    # NOTE: This target cannot depend on //chrome/browser as the latter
+    # indirectly depends on it. As a result, we need to add some dependencies
+    # explicitly here to avoid flaky build failures that otherwise can occur.
+    # TODO(crbug.com/1222101): Resolve the circular dependency structure so
+    # that workarounds aren't needed.
+    "//chrome/common",
+    "//content/public/browser",
+  ]
+
+  if (safe_browsing_mode != 0) {
+    deps += [ "//components/safe_browsing/content/common:file_type_policies" ]
+  }
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/safe_browsing/SafeBrowsingBridge.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/settings/EnhancedProtectionSettingsFragment.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/settings/NoProtectionConfirmationDialog.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/settings/RadioButtonGroupSafeBrowsingPreference.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragment.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentBase.java",
+    "java/src/org/chromium/chrome/browser/safe_browsing/settings/StandardProtectionSettingsFragment.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/feedback/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
+    "//ui/android:ui_full_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":safe_browsing_enums" ]
+  resources_package = "org.chromium.chrome.browser.safe_browsing.settings"
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [
+    "javatests/src/org/chromium/chrome/browser/safe_browsing/settings/SafeBrowsingSettingsFragmentTest.java",
+    "javatests/src/org/chromium/chrome/browser/safe_browsing/settings/StandardProtectionSettingsFragmentTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/feedback/android:java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/widget/android:java",
+    "//components/policy/android:policy_java_test_support",
+    "//components/prefs/android:java",
+    "//components/user_prefs/android:java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/radio_button_group_safe_browsing_preference.xml",
+    "java/res/xml/enhanced_protection_preferences.xml",
+    "java/res/xml/safe_browsing_preferences.xml",
+    "java/res/xml/standard_protection_preferences.xml",
+  ]
+  deps = [
+    "//chrome/browser/feedback/android:java_resources",
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
+  ]
+}
+
+java_cpp_enum("safe_browsing_enums") {
+  sources = [
+    "//components/safe_browsing/core/common/safe_browsing_prefs.h",
+    "//components/safe_browsing/core/common/safe_browsing_settings_metrics.h",
+  ]
+}

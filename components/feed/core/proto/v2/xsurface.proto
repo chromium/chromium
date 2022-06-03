@@ -1,0 +1,15 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// These are protos for driving the XSurface data store.
+
+syntax = "proto2";
+
+package feedxsurface;
+
+option optimize_for = LITE_RUNTIME;
+
+message OfflineBadgeContent {
+  optional bool available_offline = 1;
+}

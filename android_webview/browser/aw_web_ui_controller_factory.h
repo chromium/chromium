@@ -15,13 +15,14 @@ class AwWebUIControllerFactory : public content::WebUIControllerFactory {
  public:
   static AwWebUIControllerFactory* GetInstance();
 
+  AwWebUIControllerFactory(const AwWebUIControllerFactory&) = delete;
+  AwWebUIControllerFactory& operator=(const AwWebUIControllerFactory&) = delete;
+
   // content::WebUIControllerFactory overrides
   content::WebUI::TypeID GetWebUIType(content::BrowserContext* browser_context,
                                       const GURL& url) override;
   bool UseWebUIForURL(content::BrowserContext* browser_context,
                       const GURL& url) override;
-  bool UseWebUIBindingsForURL(content::BrowserContext* browser_context,
-                              const GURL& url) override;
   std::unique_ptr<content::WebUIController> CreateWebUIControllerForURL(
       content::WebUI* web_ui,
       const GURL& url) override;
@@ -31,8 +32,6 @@ class AwWebUIControllerFactory : public content::WebUIControllerFactory {
 
   AwWebUIControllerFactory();
   ~AwWebUIControllerFactory() override;
-
-  DISALLOW_COPY_AND_ASSIGN(AwWebUIControllerFactory);
 };
 
 }  // namespace android_webview

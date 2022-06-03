@@ -1,5 +1,7 @@
 include_rules = [
   "+services/metrics/public/cpp",
+  "+services/tracing/public/cpp",
+  "+third_party/perfetto/protos/perfetto/trace/track_event",
   "+ui/gfx",
 ]
 

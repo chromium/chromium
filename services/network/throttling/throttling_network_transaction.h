@@ -46,6 +46,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
   explicit ThrottlingNetworkTransaction(
       std::unique_ptr<net::HttpTransaction> network_transaction);
 
+  ThrottlingNetworkTransaction(const ThrottlingNetworkTransaction&) = delete;
+  ThrottlingNetworkTransaction& operator=(const ThrottlingNetworkTransaction&) =
+      delete;
+
   ~ThrottlingNetworkTransaction() override;
 
   // HttpTransaction methods:
@@ -78,14 +82,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
   void SetWebSocketHandshakeStreamCreateHelper(
       net::WebSocketHandshakeStreamBase::CreateHelper* create_helper) override;
   void SetBeforeNetworkStartCallback(
-      const BeforeNetworkStartCallback& callback) override;
-  void SetBeforeHeadersSentCallback(
-      const BeforeHeadersSentCallback& callback) override;
+      BeforeNetworkStartCallback callback) override;
+  void SetConnectedCallback(const ConnectedCallback& callback) override;
   void SetRequestHeadersCallback(net::RequestHeadersCallback callback) override;
   void SetResponseHeadersCallback(
       net::ResponseHeadersCallback callback) override;
+  void SetEarlyResponseHeadersCallback(
+      net::ResponseHeadersCallback callback) override;
   int ResumeNetworkStart() override;
   void GetConnectionAttempts(net::ConnectionAttempts* out) const override;
+  void CloseConnectionOnDestruction() override;
 
  protected:
   friend class ThrottlingControllerTestHelper;
@@ -120,8 +126,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ThrottlingNetworkTransaction
 
   // True if Fail was already invoked.
   bool failed_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThrottlingNetworkTransaction);
 };
 
 }  // namespace network

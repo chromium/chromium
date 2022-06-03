@@ -4,6 +4,7 @@
 
 #include "mojo/core/invitation_dispatcher.h"
 
+#include "base/strings/string_piece.h"
 #include "mojo/core/core.h"
 
 namespace mojo {
@@ -33,7 +34,7 @@ MojoResult InvitationDispatcher::AttachMessagePipe(
     base::StringPiece name,
     ports::PortRef remote_peer_port) {
   base::AutoLock lock(lock_);
-  auto result = attached_ports_.emplace(name.as_string(), remote_peer_port);
+  auto result = attached_ports_.emplace(std::string(name), remote_peer_port);
   if (!result.second) {
     Core::Get()->GetNodeController()->ClosePort(remote_peer_port);
     return MOJO_RESULT_ALREADY_EXISTS;
@@ -47,7 +48,7 @@ MojoResult InvitationDispatcher::ExtractMessagePipe(
   ports::PortRef remote_peer_port;
   {
     base::AutoLock lock(lock_);
-    auto it = attached_ports_.find(name.as_string());
+    auto it = attached_ports_.find(std::string(name));
     if (it == attached_ports_.end())
       return MOJO_RESULT_NOT_FOUND;
     remote_peer_port = std::move(it->second);

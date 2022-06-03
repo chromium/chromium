@@ -8,7 +8,17 @@
  * external storage device with a toggle switch. When the switch is ON,
  * the storage's uuid will be saved to a preference.
  */
+import '../../prefs/prefs.js';
+import '../../settings_shared_css.js';
+
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {PrefsBehavior} from '../prefs_behavior.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'storage-external-entry',
 
   behaviors: [WebUIListenerBehavior, PrefsBehavior],
@@ -27,7 +37,7 @@ Polymer({
     /** @private {chrome.settingsPrivate.PrefObject} */
     visiblePref_: {
       type: Object,
-      value: function() {
+      value() {
         return /** @type {chrome.settingsPrivate.PrefObject} */ ({});
       },
     },
@@ -42,7 +52,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onVisibleChange_: function(event) {
+  onVisibleChange_(event) {
     const visible = !!event.target.checked;
     if (visible) {
       this.appendPrefListItem('arc.visible_external_storages', this.uuid);
@@ -58,7 +68,7 @@ Polymer({
    * UUID of this storage.
    * @private
    */
-  updateVisible_: function() {
+  updateVisible_() {
     const uuids = /** @type {!Array<string>} */ (
         this.getPref('arc.visible_external_storages').value);
     const visible = uuids.some((id) => id === this.uuid);

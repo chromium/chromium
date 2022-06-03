@@ -9,9 +9,26 @@
  * If the update-value-on-input flag is set, value will be set to whatever is
  * in the input box. Otherwise, value will only be set when an element in items
  * is clicked.
+ *
+ * The |invalid| property tracks whether the user's current text input in the
+ * dropdown matches the previously saved dropdown value. This property can be
+ * used to disable certain user actions when the dropdown is invalid.
  */
+import '../cr_input/cr_input.m.js';
+import '../hidden_style_css.m.js';
+import '../icons.m.js';
+import '../shared_style_css.m.js';
+import '../shared_vars_css.m.js';
+import '//resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 Polymer({
   is: 'cr-searchable-drop-down',
+
+  _template: html`{__html_template__}`,
 
   properties: {
     autofocus: {
@@ -50,8 +67,11 @@ Polymer({
 
     /**
      * Used to track in real time if the |value| in cr-searchable-drop-down
-     * matches the value in the underlying cr-input.These values will differ
+     * matches the value in the underlying cr-input. These values will differ
      * after a user types in input that does not match a valid dropdown option.
+     * |invalid| is always false when |updateValueOnInput| is set to true. This
+     * is because when |updateValueOnInput| is set to true, we are not setting a
+     * restrictive set of valid options.
      */
     invalid: {
       type: Boolean,
@@ -69,6 +89,7 @@ Polymer({
     value: {
       type: String,
       notify: true,
+      observer: 'updateInvalid_',
     },
 
     /** @type {string} */
@@ -87,10 +108,7 @@ Polymer({
     },
 
     /** @private {string} */
-    searchTerm_: {
-      type: String,
-      observer: 'updateInvalid_',
-    },
+    searchTerm_: String,
 
     /** @private {boolean} */
     dropdownRefitPending_: Boolean,
@@ -114,22 +132,30 @@ Polymer({
   /** @private {number} */
   openDropdownTimeoutId_: 0,
 
+  /** @private {?ResizeObserver} */
+  resizeObserver_: null,
+
   /** @override */
-  attached: function() {
+  attached() {
     this.pointerDownListener_ = this.onPointerDown_.bind(this);
     document.addEventListener('pointerdown', this.pointerDownListener_);
+    this.resizeObserver_ = new ResizeObserver(() => {
+      this.resizeDropdown_();
+    });
+    this.resizeObserver_.observe(this.$.search);
   },
 
   /** @override */
-  detached: function() {
+  detached() {
     document.removeEventListener('pointerdown', this.pointerDownListener_);
+    this.resizeObserver_.unobserve(this.$.search);
   },
 
   /**
    * Enqueues a task to refit the iron-dropdown if it is open.
    * @private
    */
-  enqueueDropdownRefit_: function() {
+  enqueueDropdownRefit_() {
     const dropdown = this.$$('iron-dropdown');
     if (!this.dropdownRefitPending_ && dropdown.opened) {
       this.dropdownRefitPending_ = true;
@@ -140,14 +166,27 @@ Polymer({
     }
   },
 
+  /**
+   * Keeps the dropdown from expanding beyond the width of the search input when
+   * its width is specified as a percentage.
+   * @private
+   */
+  resizeDropdown_() {
+    const dropdown = this.$$('iron-dropdown').containedElement;
+    const dropdownWidth =
+        Math.max(dropdown.offsetWidth, this.$.search.offsetWidth);
+    dropdown.style.width = `${dropdownWidth}px`;
+    this.enqueueDropdownRefit_();
+  },
+
   /** @private */
-  openDropdown_: function() {
+  openDropdown_() {
     this.$$('iron-dropdown').open();
     this.opened_ = true;
   },
 
   /** @private */
-  closeDropdown_: function() {
+  closeDropdown_() {
     if (this.openDropdownTimeoutId_) {
       clearTimeout(this.openDropdownTimeoutId_);
     }
@@ -161,7 +200,7 @@ Polymer({
    * a new task is enqueued.
    * @private
    */
-  enqueueOpenDropdown_: function() {
+  enqueueOpenDropdown_() {
     if (this.opened_) {
       return;
     }
@@ -176,7 +215,7 @@ Polymer({
    * @param {!Array<string>} newValue
    * @private
    */
-  onItemsChanged_: function(oldValue, newValue) {
+  onItemsChanged_(oldValue, newValue) {
     // Refit the iron-dropdown so that it can expand as neccessary to
     // accommodate new items. Refitting is done on a new task because the change
     // notification might not yet have propagated to the iron-dropdown.
@@ -184,7 +223,7 @@ Polymer({
   },
 
   /** @private */
-  onFocus_: function() {
+  onFocus_() {
     if (this.readonly) {
       return;
     }
@@ -195,7 +234,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onMouseMove_: function(event) {
+  onMouseMove_(event) {
     const item = event.composedPath().find(
         elm => elm.classList && elm.classList.contains('list-item'));
     if (!item) {
@@ -206,7 +245,7 @@ Polymer({
     // keyboard, the selection will shift. But once the user moves the mouse,
     // selection should be updated based on the location of the mouse cursor.
     const selectedItem = this.findSelectedItem_();
-    if (item == selectedItem) {
+    if (item === selectedItem) {
       return;
     }
 
@@ -220,7 +259,7 @@ Polymer({
    * @param {!Event} event
    * @private
    */
-  onPointerDown_: function(event) {
+  onPointerDown_(event) {
     if (this.readonly) {
       return;
     }
@@ -254,13 +293,13 @@ Polymer({
    *   Element
    * @private
    */
-  onKeyDown_: function(event) {
+  onKeyDown_(event) {
     const dropdown = this.$$('iron-dropdown');
     if (!dropdown.opened) {
       if (this.readonly) {
         return;
       }
-      if (event.code == 'Enter') {
+      if (event.key === 'Enter') {
         this.openDropdown_();
         // Stop the default submit action.
         event.preventDefault();
@@ -269,7 +308,7 @@ Polymer({
     }
 
     event.stopPropagation();
-    switch (event.code) {
+    switch (event.key) {
       case 'Tab':
         // Pressing tab will cause the input field to lose focus. Since the
         // dropdown visibility is tied to focus, close the dropdown.
@@ -279,10 +318,10 @@ Polymer({
       case 'ArrowDown': {
         const selected = this.findSelectedItemIndex_();
         const items = dropdown.getElementsByClassName('list-item');
-        if (items.length == 0) {
+        if (items.length === 0) {
           break;
         }
-        this.updateSelected_(items, selected, event.code == 'ArrowDown');
+        this.updateSelected_(items, selected, event.key === 'ArrowDown');
         break;
       }
       case 'Enter': {
@@ -308,7 +347,7 @@ Polymer({
    *   if no item is selected.
    * @private
    */
-  findSelectedItem_: function() {
+  findSelectedItem_() {
     const dropdown = this.$$('iron-dropdown');
     const items = Array.from(dropdown.getElementsByClassName('list-item'));
     return items.find(item => item.hasAttribute('selected_'));
@@ -320,7 +359,7 @@ Polymer({
    *   no item is selected.
    * @private
    */
-  findSelectedItemIndex_: function() {
+  findSelectedItemIndex_() {
     const dropdown = this.$$('iron-dropdown');
     const items = Array.from(dropdown.getElementsByClassName('list-item'));
     return items.findIndex(item => item.hasAttribute('selected_'));
@@ -333,10 +372,10 @@ Polymer({
    * @param {boolean} moveDown
    * @private
    */
-  updateSelected_: function(items, currentIndex, moveDown) {
+  updateSelected_(items, currentIndex, moveDown) {
     const numItems = items.length;
     let nextIndex = 0;
-    if (currentIndex == -1) {
+    if (currentIndex === -1) {
       nextIndex = moveDown ? 0 : numItems - 1;
     } else {
       const delta = moveDown ? 1 : -1;
@@ -350,7 +389,7 @@ Polymer({
   },
 
   /** @private */
-  onInput_: function() {
+  onInput_() {
     this.searchTerm_ = this.$.search.value;
 
     if (this.updateValueOnInput) {
@@ -371,13 +410,16 @@ Polymer({
     // but scollable dropdown. Refitting the dropdown allows it to expand to
     // accommodate the new items.
     this.enqueueDropdownRefit_();
+
+    // Need check to if the input is valid when the user types.
+    this.updateInvalid_();
   },
 
   /*
    * @param {{model:Object}} event
    * @private
    */
-  onSelect_: function(event) {
+  onSelect_(event) {
     this.closeDropdown_();
 
     this.value = event.model.item;
@@ -391,7 +433,7 @@ Polymer({
   },
 
   /** @private */
-  filterItems_: function(searchTerm) {
+  filterItems_(searchTerm) {
     if (!searchTerm) {
       return null;
     }
@@ -406,7 +448,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  shouldShowErrorMessage_: function(errorMessage, errorMessageAllowed) {
+  shouldShowErrorMessage_(errorMessage, errorMessageAllowed) {
     return !!this.getErrorMessage_(errorMessage, errorMessageAllowed);
   },
 
@@ -416,7 +458,7 @@ Polymer({
    * @return {string}
    * @private
    */
-  getErrorMessage_: function(errorMessage, errorMessageAllowed) {
+  getErrorMessage_(errorMessage, errorMessageAllowed) {
     if (!errorMessageAllowed) {
       return '';
     }
@@ -431,11 +473,13 @@ Polymer({
    * leave the user's text in the dropdown search bar when focus is changed.
    * @private
    */
-  onBlur_ : function () {
+  onBlur_() {
     if (!this.updateValueOnInput) {
       this.$.search.value = this.value;
-      this.searchTerm_ = '';
     }
+
+    // Need check to if the input is valid when the dropdown loses focus.
+    this.updateInvalid_();
   },
 
   /**
@@ -443,8 +487,8 @@ Polymer({
    * |invalid| to false.
    * @private
    */
-  updateInvalid_: function () {
+  updateInvalid_() {
     this.invalid =
-        !this.updateValueOnInput && this.value != this.$.search.value;
-  }
+        !this.updateValueOnInput && (this.value !== this.$.search.value);
+  },
 });

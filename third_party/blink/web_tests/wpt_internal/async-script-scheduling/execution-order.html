@@ -1,0 +1,46 @@
+<!doctype html>
+<head>
+  <title>Async Script Execution Order</title>
+  <script src="/resources/testharness.js"></script>
+  <script src="/resources/testharnessreport.js"></script>
+  <link rel="preload" as="script" href="resources/async-script.js?preload">
+</head>
+<body>
+  <!-- Note: This test serves mainly to document the current scheduling behavior
+       of async scripts with respect to other scripts and events in the loading
+       pipeline. It does not represent the "ideal" or "desired" behavior, so
+       changing it is probably fine. -->
+  <script>
+    setup({single_test: true})
+
+    const logs = [];
+    function logScript(msg) {
+      logs.push(msg);
+    }
+    window.onload = e => {
+      const actualOrder = logs.join(";");
+      const expectedOrder = "Async;Async;Async;inline1;external;inline2;DOMContentLoaded";
+      scriptlog.textContent += actualOrder;
+      assert_equals(actualOrder, expectedOrder);
+      done();
+    };
+    document.addEventListener('DOMContentLoaded', e => { logScript('DOMContentLoaded'); });
+  </script>
+
+  <script async src="resources/async-script.js?1"></script>
+  <script async src="resources/async-script.js?2"></script>
+  <script async src="resources/async-script.js?preload"></script>
+  <link rel=stylesheet href=resources/main.css?pipe=trickle(d1)>
+  <pre id="scriptlog"></pre>
+  <script>
+    logScript('inline1');
+  </script>
+  <h1>
+    Fast finished parsing, slow first paint
+  </h1>
+
+  <script src="resources/external.js?first&pipe=trickle(d2)"></script>
+  <script>
+    logScript('inline2');
+  </script>
+</body>

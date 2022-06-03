@@ -10,12 +10,10 @@
 
 #include "base/command_line.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
-#include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/multiprocess_test.h"
 #include "base/test/test_reg_util_win.h"
+#include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
@@ -26,12 +24,10 @@ namespace browser_watcher {
 
 namespace {
 
-const base::char16 kRegistryPath[] = L"Software\\ExitCodeWatcherTest";
-
 MULTIPROCESS_TEST_MAIN(Sleeper) {
-  // Sleep forever - the test harness will kill this process to give it an
-  // exit code.
-  base::PlatformThread::Sleep(base::TimeDelta::FromMilliseconds(INFINITE));
+  // Sleep as long as possible - the test harness will kill this process to give
+  // it an exit code.
+  base::PlatformThread::Sleep(base::TimeDelta::Max());
   return 1;
 }
 
@@ -84,43 +80,20 @@ class ExitCodeWatcherTest : public testing::Test {
 
   void SetUp() override {
     Super::SetUp();
-
-    ASSERT_NO_FATAL_FAILURE(
-        override_manager_.OverrideRegistry(HKEY_CURRENT_USER));
   }
 
   base::Process OpenSelfWithAccess(uint32_t access) {
     return base::Process::OpenWithAccess(base::GetCurrentProcId(), access);
   }
 
-  void VerifyWroteExitCode(base::ProcessId proc_id, int exit_code) {
-    base::win::RegistryValueIterator it(
-          HKEY_CURRENT_USER, kRegistryPath);
-
-    ASSERT_EQ(1u, it.ValueCount());
-    base::win::RegKey key(HKEY_CURRENT_USER,
-                          kRegistryPath,
-                          KEY_QUERY_VALUE);
-
-    // The value name should encode the process id at the start.
-    EXPECT_TRUE(base::StartsWith(
-        it.Name(),
-        base::StringPrintf(L"%d-", proc_id),
-        base::CompareCase::SENSITIVE));
-    DWORD value = 0;
-    ASSERT_EQ(ERROR_SUCCESS, key.ReadValueDW(it.Name(), &value));
-    ASSERT_EQ(exit_code, static_cast<int>(value));
-  }
-
  protected:
   base::CommandLine cmd_line_;
-  registry_util::RegistryOverrideManager override_manager_;
 };
 
 }  // namespace
 
 TEST_F(ExitCodeWatcherTest, ExitCodeWatcherNoAccessHandleFailsInit) {
-  ExitCodeWatcher watcher(kRegistryPath);
+  ExitCodeWatcher watcher;
 
   // Open a SYNCHRONIZE-only handle to this process.
   base::Process self = OpenSelfWithAccess(SYNCHRONIZE);
@@ -131,7 +104,7 @@ TEST_F(ExitCodeWatcherTest, ExitCodeWatcherNoAccessHandleFailsInit) {
 }
 
 TEST_F(ExitCodeWatcherTest, ExitCodeWatcherSucceedsInit) {
-  ExitCodeWatcher watcher(kRegistryPath);
+  ExitCodeWatcher watcher;
 
   // Open a handle to this process with sufficient access for the watcher.
   base::Process self =
@@ -146,20 +119,40 @@ TEST_F(ExitCodeWatcherTest, ExitCodeWatcherOnExitedProcess) {
   ScopedSleeperProcess sleeper;
   ASSERT_NO_FATAL_FAILURE(sleeper.Launch());
 
-  ExitCodeWatcher watcher(kRegistryPath);
+  ExitCodeWatcher watcher;
 
   EXPECT_TRUE(watcher.Initialize(sleeper.process().Duplicate()));
 
-  // Verify that the watcher wrote a sentinel for the process.
-  VerifyWroteExitCode(sleeper.process().Pid(), STILL_ACTIVE);
+  EXPECT_TRUE(watcher.StartWatching());
 
   // Kill the sleeper, and make sure it's exited before we continue.
   ASSERT_NO_FATAL_FAILURE(sleeper.Kill(kExitCode, true));
 
-  watcher.WaitForExit();
-  EXPECT_EQ(kExitCode, watcher.exit_code());
+  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 
-  VerifyWroteExitCode(sleeper.process().Pid(), kExitCode);
+  // Verify we got the expected exit code
+  EXPECT_TRUE(watcher.exit_code() == kExitCode);
+}
+
+TEST_F(ExitCodeWatcherTest, ExitCodeWatcherStopWatching) {
+  ScopedSleeperProcess sleeper;
+  ASSERT_NO_FATAL_FAILURE(sleeper.Launch());
+
+  ExitCodeWatcher watcher;
+
+  EXPECT_TRUE(watcher.Initialize(sleeper.process().Duplicate()));
+
+  EXPECT_TRUE(watcher.StartWatching());
+
+  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
+  watcher.StopWatching();
+
+  // Verify we got the expected exit code
+  EXPECT_TRUE(watcher.exit_code() == STILL_ACTIVE);
+
+  // Cleanup the sleeper, and make sure it's exited before we continue.
+  ASSERT_NO_FATAL_FAILURE(sleeper.Kill(kExitCode, true));
+  base::PlatformThread::Sleep(TestTimeouts::tiny_timeout());
 }
 
 }  // namespace browser_watcher

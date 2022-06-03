@@ -54,12 +54,13 @@ const std::vector<uint8_t> kUserId = {10, 11, 12, 13, 14, 15};
 // credentials in the non-legacy keychain that are tagged with the keychain
 // access group used in this test.
 base::ScopedCFTypeRef<CFMutableDictionaryRef> BaseQuery() {
-  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(
-      CFDictionaryCreateMutable(kCFAllocatorDefault, 0, nullptr, nullptr));
+  base::ScopedCFTypeRef<CFMutableDictionaryRef> query(CFDictionaryCreateMutable(
+      kCFAllocatorDefault, 0, &kCFTypeDictionaryKeyCallBacks,
+      &kCFTypeDictionaryValueCallBacks));
   CFDictionarySetValue(query, kSecClass, kSecClassKey);
   base::ScopedCFTypeRef<CFStringRef> access_group_ref(
       base::SysUTF8ToCFStringRef(kKeychainAccessGroup));
-  CFDictionarySetValue(query, kSecAttrAccessGroup, access_group_ref.release());
+  CFDictionarySetValue(query, kSecAttrAccessGroup, access_group_ref);
   CFDictionarySetValue(query, kSecAttrNoLegacy, @YES);
   CFDictionarySetValue(query, kSecReturnAttributes, @YES);
   CFDictionarySetValue(query, kSecMatchLimit, kSecMatchLimitAll);
@@ -138,9 +139,10 @@ class BrowsingDataDeletionTest : public testing::Test {
 
   bool MakeCredential(TouchIdAuthenticator* authenticator) {
     TestCallbackReceiver<CtapDeviceResponseCode,
-                         base::Optional<AuthenticatorMakeCredentialResponse>>
+                         absl::optional<AuthenticatorMakeCredentialResponse>>
         callback_receiver;
-    authenticator->MakeCredential(MakeRequest(), callback_receiver.callback());
+    authenticator->MakeCredential(MakeRequest(), MakeCredentialOptions(),
+                                  callback_receiver.callback());
     callback_receiver.WaitForCallback();
     auto result = callback_receiver.TakeResult();
     return std::get<0>(result) == CtapDeviceResponseCode::kSuccess;

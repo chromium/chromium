@@ -14,7 +14,16 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+#include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
 
 using base::File;
 using base::FilePath;
@@ -142,9 +151,8 @@ TEST(FileTest, DeleteOpenFile) {
   FilePath file_path = temp_dir.GetPath().AppendASCII("create_file_1");
 
   // Create a file.
-  File file(file_path,
-            base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
-                base::File::FLAG_SHARE_DELETE);
+  File file(file_path, base::File::FLAG_OPEN_ALWAYS | base::File::FLAG_READ |
+                           base::File::FLAG_WIN_SHARE_DELETE);
   EXPECT_TRUE(file.IsValid());
   EXPECT_TRUE(file.created());
   EXPECT_EQ(base::File::FILE_OK, file.error_details());
@@ -356,6 +364,15 @@ TEST(FileTest, Length) {
   for (int i = 0; i < file_size; i++)
     EXPECT_EQ(data_to_write[i], data_read[i]);
 
+#if !defined(OS_FUCHSIA)  // Fuchsia doesn't seem to support big files.
+  // Expand the file past the 4 GB limit.
+  const int64_t kBigFileLength = 5'000'000'000;
+  EXPECT_TRUE(file.SetLength(kBigFileLength));
+  EXPECT_EQ(kBigFileLength, file.GetLength());
+  EXPECT_TRUE(GetFileSize(file_path, &file_size));
+  EXPECT_EQ(kBigFileLength, file_size);
+#endif
+
   // Close the file and reopen with base::File::FLAG_CREATE_ALWAYS, and make
   // sure the file is empty (old file was overridden).
   file.Close();
@@ -383,7 +400,7 @@ TEST(FileTest, DISABLED_TouchGetInfo) {
 
   // Add 2 seconds to account for possible rounding errors on
   // filesystems that use a 1s or 2s timestamp granularity.
-  base::Time now = base::Time::Now() + base::TimeDelta::FromSeconds(2);
+  base::Time now = base::Time::Now() + base::Seconds(2);
   EXPECT_EQ(0, info.size);
   EXPECT_FALSE(info.is_directory);
   EXPECT_FALSE(info.is_symbolic_link);
@@ -402,10 +419,8 @@ TEST(FileTest, DISABLED_TouchGetInfo) {
   // It's best to add values that are multiples of 2 (in seconds)
   // to the current last_accessed and last_modified times, because
   // FATxx uses a 2s timestamp granularity.
-  base::Time new_last_accessed =
-      info.last_accessed + base::TimeDelta::FromSeconds(234);
-  base::Time new_last_modified =
-      info.last_modified + base::TimeDelta::FromMinutes(567);
+  base::Time new_last_accessed = info.last_accessed + base::Seconds(234);
+  base::Time new_last_modified = info.last_modified + base::Minutes(567);
 
   EXPECT_TRUE(file.SetTimes(new_last_accessed, new_last_modified));
 
@@ -564,6 +579,22 @@ TEST(FileTest, DuplicateDeleteOnClose) {
   ASSERT_FALSE(base::PathExists(file_path));
 }
 
+#if BUILDFLAG(ENABLE_BASE_TRACING)
+TEST(FileTest, TracedValueSupport) {
+  base::ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath file_path = temp_dir.GetPath().AppendASCII("file");
+
+  File file(file_path,
+            (base::File::FLAG_CREATE | base::File::FLAG_READ |
+             base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE));
+  ASSERT_TRUE(file.IsValid());
+
+  EXPECT_EQ(perfetto::TracedValueToString(file),
+            "{is_valid:true,created:true,async:false,error_details:FILE_OK}");
+}
+#endif  // BUILDFLAG(ENABLE_BASE_TRACING)
+
 #if defined(OS_WIN)
 // Flakily times out on Windows, see http://crbug.com/846276.
 #define MAYBE_WriteDataToLargeOffset DISABLED_WriteDataToLargeOffset
@@ -667,11 +698,11 @@ TEST(FileTest, IrrevokableDeleteOnClose) {
   FilePath file_path = temp_dir.GetPath().AppendASCII("file");
 
   // DELETE_ON_CLOSE cannot be revoked by this opener.
-  File file(
-      file_path,
-      (base::File::FLAG_CREATE | base::File::FLAG_READ |
-       base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
-       base::File::FLAG_SHARE_DELETE | base::File::FLAG_CAN_DELETE_ON_CLOSE));
+  File file(file_path,
+            (base::File::FLAG_CREATE | base::File::FLAG_READ |
+             base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
+             base::File::FLAG_WIN_SHARE_DELETE |
+             base::File::FLAG_CAN_DELETE_ON_CLOSE));
   ASSERT_TRUE(file.IsValid());
   // https://msdn.microsoft.com/library/windows/desktop/aa364221.aspx says that
   // setting the dispositon has no effect if the handle was opened with
@@ -689,17 +720,17 @@ TEST(FileTest, IrrevokableDeleteOnCloseOther) {
   FilePath file_path = temp_dir.GetPath().AppendASCII("file");
 
   // DELETE_ON_CLOSE cannot be revoked by another opener.
-  File file(
-      file_path,
-      (base::File::FLAG_CREATE | base::File::FLAG_READ |
-       base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
-       base::File::FLAG_SHARE_DELETE | base::File::FLAG_CAN_DELETE_ON_CLOSE));
+  File file(file_path,
+            (base::File::FLAG_CREATE | base::File::FLAG_READ |
+             base::File::FLAG_WRITE | base::File::FLAG_DELETE_ON_CLOSE |
+             base::File::FLAG_WIN_SHARE_DELETE |
+             base::File::FLAG_CAN_DELETE_ON_CLOSE));
   ASSERT_TRUE(file.IsValid());
 
-  File file2(
-      file_path,
-      (base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE |
-       base::File::FLAG_SHARE_DELETE | base::File::FLAG_CAN_DELETE_ON_CLOSE));
+  File file2(file_path,
+             (base::File::FLAG_OPEN | base::File::FLAG_READ |
+              base::File::FLAG_WRITE | base::File::FLAG_WIN_SHARE_DELETE |
+              base::File::FLAG_CAN_DELETE_ON_CLOSE));
   ASSERT_TRUE(file2.IsValid());
 
   file2.DeleteOnClose(false);
@@ -737,7 +768,7 @@ TEST(FileTest, UnsharedDeleteOnClose) {
   File file2(
       file_path,
       (base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE |
-       base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_SHARE_DELETE));
+       base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_WIN_SHARE_DELETE));
   ASSERT_FALSE(file2.IsValid());
 
   file.Close();

@@ -11,7 +11,7 @@ namespace blink {
 
 class A : public GarbageCollected<A> {
  public:
-  virtual void Trace(Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 class B : public A {
@@ -20,7 +20,7 @@ class B : public A {
 
 class C : public B {
  public:
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     // B::Trace() is actually A::Trace(), and in certain cases we only get
     // limited information like "there is a function call that will be resolved
     // to A::Trace()". We still want to mark B as Traced.

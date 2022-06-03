@@ -4,12 +4,12 @@
 
 (async function() {
   TestRunner.addResult(`Test toolbar state when switching modes.\n`);
-  await TestRunner.loadModule('device_mode_test_runner');
+  await TestRunner.loadTestModule('device_mode_test_runner');
 
   var phoneA = DeviceModeTestRunner.buildFakePhone();
   var view = new Emulation.DeviceModeView();
-  var toolbar = view._toolbar;
-  var model = view._model;
+  var toolbar = view.toolbar;
+  var model = view.model;
   var viewportSize = new UI.Size(800, 600);
   model.setAvailableSize(viewportSize, viewportSize);
 
@@ -18,18 +18,18 @@
 
   model.emulate(Emulation.DeviceModeModel.Type.None, null, null);
   dumpType();
-  toolbar._switchToResponsive();
+  toolbar.switchToResponsive();
   dumpInfo();
 
   model.emulate(Emulation.DeviceModeModel.Type.None, null, null);
   dumpType();
-  toolbar._emulateDevice(phoneA);
+  toolbar.emulateDevice(phoneA);
   dumpInfo();
 
-  toolbar._switchToResponsive();
+  toolbar.switchToResponsive();
   dumpInfo();
 
-  toolbar._emulateDevice(phoneA);
+  toolbar.emulateDevice(phoneA);
   dumpInfo();
 
   function dumpType() {
@@ -38,7 +38,7 @@
 
   function dumpInfo() {
     dumpType();
-    TestRunner.addResult(`Rotate: ${toolbar._modeButton._enabled ? 'enabled': 'disabled'}, Width/Height: ${!toolbar._widthInput.disabled ? 'enabled': 'disabled'}`);
+    TestRunner.addResult(`Rotate: ${toolbar.modeButton.enabled ? 'enabled': 'disabled'}, Width/Height: ${!toolbar.widthInput.disabled ? 'enabled': 'disabled'}`);
   }
 
   TestRunner.completeTest();

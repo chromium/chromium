@@ -7,13 +7,10 @@
 #include <algorithm>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
 
 namespace chromeos {
 
@@ -24,37 +21,16 @@ const int kHungWaitSeconds = 20;
 
 }  // namespace
 
-class KioskSessionPluginHandler::Observer
-    : public content::WebContentsObserver {
- public:
-  Observer(content::WebContents* contents, KioskSessionPluginHandler* owner);
-  ~Observer() override;
-
- private:
-  void OnHungWaitTimer();
-
-  // content::WebContentsObserver
-  void PluginCrashed(const base::FilePath& plugin_path,
-                     base::ProcessId plugin_pid) override;
-  void PluginHungStatusChanged(int plugin_child_id,
-                               const base::FilePath& plugin_path,
-                               bool is_hung) override;
-  void WebContentsDestroyed() override;
-
-  KioskSessionPluginHandler* const owner_;
-  std::set<int> hung_plugins_;
-  base::OneShotTimer hung_wait_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
-};
-
 KioskSessionPluginHandler::Observer::Observer(content::WebContents* contents,
                                               KioskSessionPluginHandler* owner)
-    : content::WebContentsObserver(contents),
-      owner_(owner) {
-}
+    : content::WebContentsObserver(contents), owner_(owner) {}
 
 KioskSessionPluginHandler::Observer::~Observer() {}
+
+std::set<int> KioskSessionPluginHandler::Observer::GetHungPluginsForTesting()
+    const {
+  return hung_plugins_;
+}
 
 void KioskSessionPluginHandler::Observer::OnHungWaitTimer() {
   owner_->OnPluginHung(hung_plugins_);
@@ -84,7 +60,7 @@ void KioskSessionPluginHandler::Observer::PluginHungStatusChanged(
   if (!hung_plugins_.empty()) {
     if (!hung_wait_timer_.IsRunning()) {
       hung_wait_timer_.Start(
-          FROM_HERE, base::TimeDelta::FromSeconds(kHungWaitSeconds), this,
+          FROM_HERE, base::Seconds(kHungWaitSeconds), this,
           &KioskSessionPluginHandler::Observer::OnHungWaitTimer);
     }
   } else {
@@ -94,6 +70,14 @@ void KioskSessionPluginHandler::Observer::PluginHungStatusChanged(
 
 void KioskSessionPluginHandler::Observer::WebContentsDestroyed() {
   owner_->OnWebContentsDestroyed(this);
+}
+
+std::vector<KioskSessionPluginHandler::Observer*>
+KioskSessionPluginHandler::GetWatchersForTesting() const {
+  std::vector<KioskSessionPluginHandler::Observer*> observers;
+  for (const auto& watcher : watchers_)
+    observers.push_back(watcher.get());
+  return observers;
 }
 
 KioskSessionPluginHandler::KioskSessionPluginHandler(

@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGEllipse circle id='c1'",
-          "rect": [196, 196, 76, 76],
-          "reason": "full"
-        },
-        {
-          "object": "LayoutSVGEllipse circle id='c1'",
-          "rect": [46, 46, 76, 76],
-          "reason": "full"
-        }
+      "invalidations": [
+        [196, 196, 76, 76],
+        [46, 46, 76, 76]
       ]
     }
   ]

@@ -1,0 +1,3 @@
+Verifies that we can retrieve a request body consisting of blob in service worker.
+post data: Psychrolutes microporos
+

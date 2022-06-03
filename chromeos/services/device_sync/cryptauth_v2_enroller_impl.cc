@@ -153,7 +153,7 @@ CryptAuthKey::Status ConvertKeyCreationToKeyStatus(KeyCreation key_creation) {
 }
 
 // Return an error code if the SyncKeysResponse is invalid and null otherwise.
-base::Optional<CryptAuthEnrollmentResult::ResultCode> CheckSyncKeysResponse(
+absl::optional<CryptAuthEnrollmentResult::ResultCode> CheckSyncKeysResponse(
     const SyncKeysResponse& response,
     size_t expected_num_key_responses) {
   if (response.random_session_id().empty()) {
@@ -181,7 +181,7 @@ base::Optional<CryptAuthEnrollmentResult::ResultCode> CheckSyncKeysResponse(
         kErrorWrongNumberOfSyncSingleKeyResponses;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 // Given the key actions for the existing keys in the bundle, find the key to
@@ -194,10 +194,10 @@ base::Optional<CryptAuthEnrollmentResult::ResultCode> CheckSyncKeysResponse(
 // server wants to delete all keys currently held by the client). This is
 // because there must be exactly one 'active' key after processing these
 // actions."
-base::Optional<CryptAuthEnrollmentResult::ResultCode> ProcessKeyActions(
+absl::optional<CryptAuthEnrollmentResult::ResultCode> ProcessKeyActions(
     const google::protobuf::RepeatedField<int>& key_actions,
     const std::vector<std::string>& handle_order,
-    base::Optional<std::string>* handle_to_activate,
+    absl::optional<std::string>* handle_to_activate,
     std::vector<std::string>* handles_to_delete) {
   // Check that the number of key actions agrees with the number of key
   // handles sent in the SyncSingleKeysRequest.
@@ -249,7 +249,7 @@ base::Optional<CryptAuthEnrollmentResult::ResultCode> ProcessKeyActions(
         kErrorKeyActionsDoNotSpecifyAnActiveKey;
   }
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool IsSupportedKeyType(const cryptauthv2::KeyType& key_type) {
@@ -273,12 +273,12 @@ bool IsSupportedKeyType(const cryptauthv2::KeyType& key_type) {
 //
 // Returns an error code if the key-creation instructions are invalid and null
 // otherwise.
-base::Optional<CryptAuthEnrollmentResult::ResultCode>
+absl::optional<CryptAuthEnrollmentResult::ResultCode>
 ProcessNewUserKeyPairInstructions(
     CryptAuthKey::Status status,
     cryptauthv2::KeyType type,
     const CryptAuthKey* current_active_key,
-    base::Optional<CryptAuthKeyCreator::CreateKeyData>* new_key_to_create) {
+    absl::optional<CryptAuthKeyCreator::CreateKeyData>* new_key_to_create) {
   if (type != cryptauthv2::KeyType::P256) {
     PA_LOG(ERROR) << "User key pair must have KeyType P256.";
     return CryptAuthEnrollmentResult::ResultCode::
@@ -304,7 +304,7 @@ ProcessNewUserKeyPairInstructions(
         status, type, kCryptAuthFixedUserKeyPairHandle,
         current_active_key->public_key(), current_active_key->private_key());
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   // If there is no user key pair in the registry, then the user has never
@@ -312,7 +312,7 @@ ProcessNewUserKeyPairInstructions(
   *new_key_to_create = CryptAuthKeyCreator::CreateKeyData(
       status, type, kCryptAuthFixedUserKeyPairHandle);
 
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 void RecordSyncKeysMetrics(const base::TimeDelta& execution_time,
@@ -346,12 +346,17 @@ CryptAuthV2EnrollerImpl::Factory*
     CryptAuthV2EnrollerImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthV2EnrollerImpl::Factory* CryptAuthV2EnrollerImpl::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<CryptAuthV2Enroller> CryptAuthV2EnrollerImpl::Factory::Create(
+    CryptAuthKeyRegistry* key_registry,
+    CryptAuthClientFactory* client_factory,
+    std::unique_ptr<base::OneShotTimer> timer) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(key_registry, client_factory,
+                                         std::move(timer));
+  }
 
-  static base::NoDestructor<CryptAuthV2EnrollerImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthV2EnrollerImpl(
+      key_registry, client_factory, std::move(timer)));
 }
 
 // static
@@ -361,15 +366,6 @@ void CryptAuthV2EnrollerImpl::Factory::SetFactoryForTesting(
 }
 
 CryptAuthV2EnrollerImpl::Factory::~Factory() = default;
-
-std::unique_ptr<CryptAuthV2Enroller>
-CryptAuthV2EnrollerImpl::Factory::BuildInstance(
-    CryptAuthKeyRegistry* key_registry,
-    CryptAuthClientFactory* client_factory,
-    std::unique_ptr<base::OneShotTimer> timer) {
-  return base::WrapUnique(new CryptAuthV2EnrollerImpl(
-      key_registry, client_factory, std::move(timer)));
-}
 
 CryptAuthV2EnrollerImpl::CryptAuthV2EnrollerImpl(
     CryptAuthKeyRegistry* key_registry,
@@ -384,7 +380,7 @@ CryptAuthV2EnrollerImpl::CryptAuthV2EnrollerImpl(
 CryptAuthV2EnrollerImpl::~CryptAuthV2EnrollerImpl() = default;
 
 // static
-base::Optional<base::TimeDelta> CryptAuthV2EnrollerImpl::GetTimeoutForState(
+absl::optional<base::TimeDelta> CryptAuthV2EnrollerImpl::GetTimeoutForState(
     State state) {
   switch (state) {
     case State::kWaitingForSyncKeysResponse:
@@ -395,12 +391,12 @@ base::Optional<base::TimeDelta> CryptAuthV2EnrollerImpl::GetTimeoutForState(
       return kWaitingForEnrollKeysResponseTimeout;
     default:
       // Signifies that there should not be a timeout.
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
 // static
-base::Optional<CryptAuthEnrollmentResult::ResultCode>
+absl::optional<CryptAuthEnrollmentResult::ResultCode>
 CryptAuthV2EnrollerImpl::ResultCodeErrorFromTimeoutDuringState(State state) {
   switch (state) {
     case State::kWaitingForSyncKeysResponse:
@@ -413,14 +409,14 @@ CryptAuthV2EnrollerImpl::ResultCodeErrorFromTimeoutDuringState(State state) {
       return CryptAuthEnrollmentResult::ResultCode::
           kErrorTimeoutWaitingForEnrollKeysResponse;
     default:
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
 void CryptAuthV2EnrollerImpl::OnAttemptStarted(
     const cryptauthv2::ClientMetadata& client_metadata,
     const cryptauthv2::ClientAppMetadata& client_app_metadata,
-    const base::Optional<cryptauthv2::PolicyReference>&
+    const absl::optional<cryptauthv2::PolicyReference>&
         client_directive_policy_reference) {
   DCHECK(state_ == State::kNotStarted);
 
@@ -430,10 +426,10 @@ void CryptAuthV2EnrollerImpl::OnAttemptStarted(
   cryptauth_client_->SyncKeys(
       BuildSyncKeysRequest(client_metadata, client_app_metadata,
                            client_directive_policy_reference),
-      base::Bind(&CryptAuthV2EnrollerImpl::OnSyncKeysSuccess,
-                 base::Unretained(this)),
-      base::Bind(&CryptAuthV2EnrollerImpl::OnSyncKeysFailure,
-                 base::Unretained(this)));
+      base::BindOnce(&CryptAuthV2EnrollerImpl::OnSyncKeysSuccess,
+                     base::Unretained(this)),
+      base::BindOnce(&CryptAuthV2EnrollerImpl::OnSyncKeysFailure,
+                     base::Unretained(this)));
 }
 
 void CryptAuthV2EnrollerImpl::SetState(State state) {
@@ -443,12 +439,10 @@ void CryptAuthV2EnrollerImpl::SetState(State state) {
   state_ = state;
   last_state_change_timestamp_ = base::TimeTicks::Now();
 
-  base::Optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
+  absl::optional<base::TimeDelta> timeout_for_state = GetTimeoutForState(state);
   if (!timeout_for_state)
     return;
 
-  // TODO(https://crbug.com/936273): Add metrics to track failure rates due
-  // to async timeouts.
   timer_->Start(FROM_HERE, *timeout_for_state,
                 base::BindOnce(&CryptAuthV2EnrollerImpl::OnTimeout,
                                base::Unretained(this)));
@@ -456,7 +450,7 @@ void CryptAuthV2EnrollerImpl::SetState(State state) {
 
 void CryptAuthV2EnrollerImpl::OnTimeout() {
   // If there's a timeout specified, there should be a corresponding error code.
-  base::Optional<CryptAuthEnrollmentResult::ResultCode> error_code =
+  absl::optional<CryptAuthEnrollmentResult::ResultCode> error_code =
       ResultCodeErrorFromTimeoutDuringState(state_);
   DCHECK(error_code);
 
@@ -483,7 +477,7 @@ void CryptAuthV2EnrollerImpl::OnTimeout() {
 SyncKeysRequest CryptAuthV2EnrollerImpl::BuildSyncKeysRequest(
     const cryptauthv2::ClientMetadata& client_metadata,
     const cryptauthv2::ClientAppMetadata& client_app_metadata,
-    const base::Optional<cryptauthv2::PolicyReference>&
+    const absl::optional<cryptauthv2::PolicyReference>&
         client_directive_policy_reference) {
   SyncKeysRequest request;
   request.set_application_name(kCryptAuthGcmAppId);
@@ -560,7 +554,7 @@ void CryptAuthV2EnrollerImpl::OnSyncKeysSuccess(
     return;
   }
 
-  base::Optional<CryptAuthEnrollmentResult::ResultCode> error_code =
+  absl::optional<CryptAuthEnrollmentResult::ResultCode> error_code =
       CheckSyncKeysResponse(response, GetKeyBundleOrder().size());
   if (error_code) {
     FinishAttempt(*error_code);
@@ -571,7 +565,7 @@ void CryptAuthV2EnrollerImpl::OnSyncKeysSuccess(
 
   // Note: The server's Diffie-Hellman public key is only required if symmetric
   // keys need to be created.
-  base::Optional<CryptAuthKey> server_ephemeral_dh;
+  absl::optional<CryptAuthKey> server_ephemeral_dh;
   if (!response.server_ephemeral_dh().empty()) {
     server_ephemeral_dh = CryptAuthKey(
         response.server_ephemeral_dh(), std::string() /* private_key */,
@@ -598,7 +592,7 @@ void CryptAuthV2EnrollerImpl::OnSyncKeysSuccess(
 
   SetState(State::kWaitingForKeyCreation);
 
-  key_creator_ = CryptAuthKeyCreatorImpl::Factory::Get()->BuildInstance();
+  key_creator_ = CryptAuthKeyCreatorImpl::Factory::Create();
   key_creator_->CreateKeys(
       new_keys_to_create, server_ephemeral_dh,
       base::BindOnce(&CryptAuthV2EnrollerImpl::OnKeysCreated,
@@ -606,7 +600,7 @@ void CryptAuthV2EnrollerImpl::OnSyncKeysSuccess(
                      new_key_directives));
 }
 
-base::Optional<CryptAuthEnrollmentResult::ResultCode>
+absl::optional<CryptAuthEnrollmentResult::ResultCode>
 CryptAuthV2EnrollerImpl::ProcessSingleKeyResponses(
     const SyncKeysResponse& sync_keys_response,
     base::flat_map<CryptAuthKeyBundle::Name,
@@ -616,7 +610,7 @@ CryptAuthV2EnrollerImpl::ProcessSingleKeyResponses(
   // Starts as null but is overwritten with the ResultCode of the first error,
   // if any errors occur. If an error occurs for a single key bundle, proceed to
   // the next key bundle instead of exiting immediately.
-  base::Optional<CryptAuthEnrollmentResult::ResultCode> error_code;
+  absl::optional<CryptAuthEnrollmentResult::ResultCode> error_code;
 
   for (size_t i = 0; i < GetKeyBundleOrder().size(); ++i) {
     // Note: The SyncSingleKeyRequests were ordered according to
@@ -632,9 +626,9 @@ CryptAuthV2EnrollerImpl::ProcessSingleKeyResponses(
     // after the client receives SyncKeysResponse. These actions should not
     // wait for the end of the session, such as receiving a successful
     // EnrollKeysResponse."
-    base::Optional<std::string> handle_to_activate;
+    absl::optional<std::string> handle_to_activate;
     std::vector<std::string> handles_to_delete;
-    base::Optional<CryptAuthEnrollmentResult::ResultCode> error_code_actions =
+    absl::optional<CryptAuthEnrollmentResult::ResultCode> error_code_actions =
         ProcessKeyActions(single_response.key_actions(),
                           key_handle_orders_[bundle_name], &handle_to_activate,
                           &handles_to_delete);
@@ -656,9 +650,9 @@ CryptAuthV2EnrollerImpl::ProcessSingleKeyResponses(
       key_registry_->SetActiveKey(bundle_name, *handle_to_activate);
 
     // Process new-key data, if any.
-    base::Optional<CryptAuthKeyCreator::CreateKeyData> new_key_to_create;
-    base::Optional<cryptauthv2::KeyDirective> new_key_directive;
-    base::Optional<CryptAuthEnrollmentResult::ResultCode> error_code_creation =
+    absl::optional<CryptAuthKeyCreator::CreateKeyData> new_key_to_create;
+    absl::optional<cryptauthv2::KeyDirective> new_key_directive;
+    absl::optional<CryptAuthEnrollmentResult::ResultCode> error_code_creation =
         ProcessKeyCreationInstructions(bundle_name, single_response,
                                        sync_keys_response.server_ephemeral_dh(),
                                        &new_key_to_create, &new_key_directive);
@@ -683,15 +677,15 @@ CryptAuthV2EnrollerImpl::ProcessSingleKeyResponses(
   return error_code;
 }
 
-base::Optional<CryptAuthEnrollmentResult::ResultCode>
+absl::optional<CryptAuthEnrollmentResult::ResultCode>
 CryptAuthV2EnrollerImpl::ProcessKeyCreationInstructions(
     const CryptAuthKeyBundle::Name& bundle_name,
     const SyncSingleKeyResponse& single_key_response,
     const std::string& server_ephemeral_dh,
-    base::Optional<CryptAuthKeyCreator::CreateKeyData>* new_key_to_create,
-    base::Optional<cryptauthv2::KeyDirective>* new_key_directive) {
+    absl::optional<CryptAuthKeyCreator::CreateKeyData>* new_key_to_create,
+    absl::optional<cryptauthv2::KeyDirective>* new_key_directive) {
   if (single_key_response.key_creation() == SyncSingleKeyResponse::NONE)
-    return base::nullopt;
+    return absl::nullopt;
 
   CryptAuthKey::Status status =
       ConvertKeyCreationToKeyStatus(single_key_response.key_creation());
@@ -719,7 +713,7 @@ CryptAuthV2EnrollerImpl::ProcessKeyCreationInstructions(
   if (bundle_name != CryptAuthKeyBundle::Name::kUserKeyPair) {
     *new_key_to_create = CryptAuthKeyCreator::CreateKeyData(status, type);
 
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   DCHECK(bundle_name == CryptAuthKeyBundle::Name::kUserKeyPair);
@@ -740,8 +734,8 @@ void CryptAuthV2EnrollerImpl::OnKeysCreated(
     const base::flat_map<CryptAuthKeyBundle::Name, cryptauthv2::KeyDirective>&
         new_key_directives,
     const base::flat_map<CryptAuthKeyBundle::Name,
-                         base::Optional<CryptAuthKey>>& new_keys,
-    const base::Optional<CryptAuthKey>& client_ephemeral_dh) {
+                         absl::optional<CryptAuthKey>>& new_keys,
+    const absl::optional<CryptAuthKey>& client_ephemeral_dh) {
   DCHECK(state_ == State::kWaitingForKeyCreation);
 
   RecordKeyCreationMetrics(
@@ -754,9 +748,9 @@ void CryptAuthV2EnrollerImpl::OnKeysCreated(
     request.set_client_ephemeral_dh(client_ephemeral_dh->public_key());
 
   std::unique_ptr<CryptAuthKeyProofComputer> key_proof_computer =
-      CryptAuthKeyProofComputerImpl::Factory::Get()->BuildInstance();
+      CryptAuthKeyProofComputerImpl::Factory::Create();
 
-  for (const std::pair<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>&
+  for (const std::pair<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>&
            name_key_pair : new_keys) {
     if (!name_key_pair.second) {
       CryptAuthEnrollmentResult::ResultCode result_code;
@@ -765,9 +759,9 @@ void CryptAuthV2EnrollerImpl::OnKeysCreated(
           result_code = CryptAuthEnrollmentResult::ResultCode::
               kErrorUserKeyPairCreationFailed;
           break;
-        case CryptAuthKeyBundle::Name::kLegacyMasterKey:
+        case CryptAuthKeyBundle::Name::kLegacyAuthzenKey:
           result_code = CryptAuthEnrollmentResult::ResultCode::
-              kErrorLegacyMasterKeyCreationFailed;
+              kErrorLegacyAuthzenKeyCreationFailed;
           break;
         case CryptAuthKeyBundle::Name::kDeviceSyncBetterTogether:
           result_code = CryptAuthEnrollmentResult::ResultCode::
@@ -799,7 +793,7 @@ void CryptAuthV2EnrollerImpl::OnKeysCreated(
     // Compute key proofs for the new keys using the random_session_id from the
     // SyncKeysResponse as the payload and the particular salt specified by the
     // v2 Enrollment protocol.
-    base::Optional<std::string> key_proof = key_proof_computer->ComputeKeyProof(
+    absl::optional<std::string> key_proof = key_proof_computer->ComputeKeyProof(
         new_key, session_id, kCryptAuthKeyProofSalt, bundle_name_str);
     if (!key_proof || key_proof->empty()) {
       FinishAttempt(CryptAuthEnrollmentResult::ResultCode::
@@ -815,24 +809,24 @@ void CryptAuthV2EnrollerImpl::OnKeysCreated(
   cryptauth_client_ = client_factory_->CreateInstance();
   cryptauth_client_->EnrollKeys(
       request,
-      base::Bind(&CryptAuthV2EnrollerImpl::OnEnrollKeysSuccess,
-                 base::Unretained(this), new_key_directives, new_keys),
-      base::Bind(&CryptAuthV2EnrollerImpl::OnEnrollKeysFailure,
-                 base::Unretained(this)));
+      base::BindOnce(&CryptAuthV2EnrollerImpl::OnEnrollKeysSuccess,
+                     base::Unretained(this), new_key_directives, new_keys),
+      base::BindOnce(&CryptAuthV2EnrollerImpl::OnEnrollKeysFailure,
+                     base::Unretained(this)));
 }
 
 void CryptAuthV2EnrollerImpl::OnEnrollKeysSuccess(
     const base::flat_map<CryptAuthKeyBundle::Name, cryptauthv2::KeyDirective>&
         new_key_directives,
     const base::flat_map<CryptAuthKeyBundle::Name,
-                         base::Optional<CryptAuthKey>>& new_keys,
+                         absl::optional<CryptAuthKey>>& new_keys,
     const EnrollKeysResponse& response) {
   DCHECK(state_ == State::kWaitingForEnrollKeysResponse);
 
   RecordEnrollKeysMetrics(base::TimeTicks::Now() - last_state_change_timestamp_,
                           CryptAuthApiCallResult::kSuccess);
 
-  for (const std::pair<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>&
+  for (const std::pair<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>&
            new_key : new_keys) {
     DCHECK(new_key.second);
     key_registry_->AddKey(new_key.first, *new_key.second);

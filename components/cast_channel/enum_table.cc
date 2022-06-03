@@ -30,7 +30,7 @@ const GenericEnumTableEntry* GenericEnumTableEntry::FindByString(
 }
 
 // static
-base::Optional<base::StringPiece> GenericEnumTableEntry::FindByValue(
+absl::optional<base::StringPiece> GenericEnumTableEntry::FindByValue(
     const GenericEnumTableEntry data[],
     std::size_t size,
     int value) {
@@ -38,7 +38,7 @@ base::Optional<base::StringPiece> GenericEnumTableEntry::FindByValue(
     if (data[i].value == value && data[i].has_str())
       return data[i].str();
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 }  // namespace cast_util

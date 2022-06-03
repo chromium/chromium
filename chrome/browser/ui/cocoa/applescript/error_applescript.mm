@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 

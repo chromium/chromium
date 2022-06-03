@@ -6,17 +6,11 @@ import("//remoting/build/config/remoting_build.gni")
 
 if (icu_use_data_file) {
   bundle_data("icu_data") {
-    sources = [
-      "$root_out_dir/icudtl.dat",
-    ]
+    sources = [ "$root_out_dir/icudtl.dat" ]
 
-    outputs = [
-      "{{bundle_resources_dir}}/{{source_file_part}}",
-    ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 
-    public_deps = [
-      "//third_party/icu:icudata",
-    ]
+    public_deps = [ "//third_party/icu:icudata" ]
   }
 }
 
@@ -31,9 +25,7 @@ source_set("constants") {
     "constants_mac.h",
   ]
 
-  deps = [
-    "//remoting/host:remoting_version",
-  ]
+  deps = [ "//remoting/host:remoting_version" ]
 }
 
 source_set("permission_checking") {
@@ -48,49 +40,42 @@ source_set("permission_checking") {
     "permission_wizard.mm",
   ]
 
+  public_deps = [ "//base" ]
+
   deps = [
     ":constants",
+    "//remoting/host:remoting_version",
     "//remoting/resources",
+    "//ui/base:base",
   ]
+
+  frameworks = [ "AVFoundation.framework" ]
 }
 
 executable("remoting_me2me_host_service") {
-  sources = [
-    "host_service_main.cc",
-  ]
+  sources = [ "host_service_main.cc" ]
   configs += [ "//remoting/build/config:version" ]
   deps = [
     ":constants",
     "//base",
     "//remoting/base",
     "//remoting/host:base",
+    "//remoting/host:remoting_version",
   ]
 }
 
 bundle_data("remoting_me2me_host_service_bundle_data") {
-  sources = [
-    "$root_out_dir/remoting_me2me_host_service",
-  ]
-  outputs = [
-    "{{bundle_executable_dir}}/{{source_file_part}}",
-  ]
-  public_deps = [
-    ":remoting_me2me_host_service",
-  ]
+  sources = [ "$root_out_dir/remoting_me2me_host_service" ]
+  outputs = [ "{{bundle_executable_dir}}/{{source_file_part}}" ]
+  public_deps = [ ":remoting_me2me_host_service" ]
 }
 
 # remoting_me2me_host-InfoPlist.strings
 foreach(locale, remoting_locales_with_underscores) {
   bundle_data("remoting_me2me_host_strings_${locale}_bundle_data") {
-    sources = [
-      "$root_gen_dir/remoting/host/remoting_me2me_host-InfoPlist.strings/$locale.lproj/InfoPlist.strings",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}",
-    ]
-    deps = [
-      "//remoting/host:remoting_infoplist_strings",
-    ]
+    sources = [ "$root_gen_dir/remoting/host/remoting_me2me_host-InfoPlist.strings/$locale.lproj/InfoPlist.strings" ]
+    outputs = [ "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}" ]
+    deps = [ "//remoting/host:remoting_infoplist_strings" ]
   }
 }
 
@@ -100,13 +85,9 @@ bundle_data("remoting_host_resources") {
     "remoting_host.icns",
   ]
 
-  outputs = [
-    "{{bundle_resources_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 
-  public_deps = [
-    "//remoting/host/installer:credits",
-  ]
+  public_deps = [ "//remoting/host/installer:credits" ]
 }
 
 target("mac_app_bundle", "remoting_me2me_host") {
@@ -153,30 +134,18 @@ target("mac_app_bundle", "remoting_me2me_host") {
 
 foreach(locale, remoting_locales_with_underscores) {
   bundle_data("remoting_host_locale_${locale}_bundle_data") {
-    sources = [
-      "$root_build_dir/remoting/resources/$locale.lproj/locale.pak",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}",
-    ]
-    deps = [
-      "//remoting/resources:copy_locales",
-    ]
+    sources = [ "$root_build_dir/remoting/resources/$locale.lproj/locale.pak" ]
+    outputs = [ "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}" ]
+    deps = [ "//remoting/resources:copy_locales" ]
   }
 }
 
 # native_messaging_host-InfoPlist.strings
 foreach(locale, remoting_locales_with_underscores) {
   bundle_data("native_messaging_host_strings_${locale}_bundle_data") {
-    sources = [
-      "$root_gen_dir/remoting/host/native_messaging_host-InfoPlist.strings/$locale.lproj/InfoPlist.strings",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}",
-    ]
-    deps = [
-      "//remoting/host:remoting_infoplist_strings",
-    ]
+    sources = [ "$root_gen_dir/remoting/host/native_messaging_host-InfoPlist.strings/$locale.lproj/InfoPlist.strings" ]
+    outputs = [ "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}" ]
+    deps = [ "//remoting/host:remoting_infoplist_strings" ]
   }
 }
 
@@ -192,14 +161,10 @@ bundle_data("remoting_native_messaging_host_resources") {
     # uses. Also, Authorization Services can't deal with .icns files.
     "//remoting/resources/product_logo_32.png",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 
   if (icu_use_data_file) {
-    deps = [
-      ":icu_data",
-    ]
+    deps = [ ":icu_data" ]
   }
 }
 
@@ -224,12 +189,20 @@ target("mac_app_bundle", "remoting_native_messaging_host") {
   deps = [
     ":remoting_native_messaging_host_resources",
     "//base",
+    "//build:chromeos_buildflags",
+    "//mojo/core/embedder:embedder",
     "//net",
+    "//remoting/base:authorization",
+    "//remoting/base:base",
     "//remoting/base:breakpad",
     "//remoting/host",
+    "//remoting/host:base",
+    "//remoting/host:host_main_headers",
     "//remoting/host:remoting_infoplist_strings",
     "//remoting/host/native_messaging",
     "//remoting/host/setup",
+    "//services/network:network_service",
+    "//services/network/public/cpp:cpp",
     "//services/network/public/mojom",
   ]
   foreach(locale, remoting_locales_with_underscores) {

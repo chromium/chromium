@@ -1,0 +1,10 @@
+Document
+++Text Name='Start of test: striped should have selected state'
+++++Text Name='Start of test: striped should have selected state' IsControlElement=false
+++List IsEnabled=false Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false
+++++ListItem Name='Orange' IsEnabled=false SelectionItem.IsSelected=false
+++++ListItem Name='Striped' IsEnabled=false SelectionItem.IsSelected=true
+++++ListItem Name='Calico' IsEnabled=false SelectionItem.IsSelected=false
+++++ListItem Name='Black' IsEnabled=false SelectionItem.IsSelected=false
+++Group IsControlElement=false
+++++Text Name='End of test'

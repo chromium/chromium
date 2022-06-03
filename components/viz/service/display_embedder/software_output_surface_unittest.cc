@@ -7,8 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "components/viz/service/display/output_surface_frame.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +19,10 @@ namespace {
 class FakeVSyncProvider : public gfx::VSyncProvider {
  public:
   FakeVSyncProvider() = default;
+
+  FakeVSyncProvider(const FakeVSyncProvider&) = delete;
+  FakeVSyncProvider& operator=(const FakeVSyncProvider&) = delete;
+
   ~FakeVSyncProvider() override = default;
 
   int call_count() const { return call_count_; }
@@ -40,13 +43,16 @@ class FakeVSyncProvider : public gfx::VSyncProvider {
 
  private:
   int call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeVSyncProvider);
 };
 
 class VSyncSoftwareOutputDevice : public SoftwareOutputDevice {
  public:
   VSyncSoftwareOutputDevice() = default;
+
+  VSyncSoftwareOutputDevice(const VSyncSoftwareOutputDevice&) = delete;
+  VSyncSoftwareOutputDevice& operator=(const VSyncSoftwareOutputDevice&) =
+      delete;
+
   ~VSyncSoftwareOutputDevice() override = default;
 
   // SoftwareOutputDevice implementation.
@@ -54,8 +60,6 @@ class VSyncSoftwareOutputDevice : public SoftwareOutputDevice {
 
  private:
   FakeVSyncProvider vsync_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncSoftwareOutputDevice);
 };
 
 }  // namespace

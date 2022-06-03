@@ -39,10 +39,15 @@
 promise_test (async () => {
   await smoothScroll(1, x, y, mouse_input, 'down', SPEED_INSTANT, false, true);
   await smoothScroll(1, x, y, mouse_input, 'down', SPEED_INSTANT, false, true);
-  await waitFor(() => {
-    return document.scrollingElement.scrollTop >= window.innerHeight * 0.875 * 2; })
-});
+  await waitForAnimationEndTimeBased(() => {
+    return document.scrollingElement.scrollTop;
+  });
 
+  assert_greater_than_equal(
+    document.scrollingElement.scrollTop,
+    window.innerHeight * 2 * MIN_FRACTION_TO_STEP_WHEN_PAGING
+  );
+});
 </script>
 
 </body>

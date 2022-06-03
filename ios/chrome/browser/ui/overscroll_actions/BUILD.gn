@@ -27,21 +27,20 @@ source_set("overscroll_actions") {
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/fullscreen:feature_flags",
-    "//ios/chrome/browser/ui/location_bar:notifications",
-    "//ios/chrome/browser/ui/page_info:coordinator",
+    "//ios/chrome/browser/ui/ntp:logo",
+    "//ios/chrome/browser/ui/page_info:constants",
     "//ios/chrome/browser/ui/side_swipe",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/voice",
-    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui/colors",
     "//ios/public/provider/chrome/browser",
-    "//ios/public/provider/chrome/browser/ui",
     "//ios/web/common",
     "//ios/web/public",
     "//ui/base",
     "//ui/gfx",
   ]
-  libs = [
+  frameworks = [
     "QuartzCore.framework",
     "UIKit.framework",
   ]

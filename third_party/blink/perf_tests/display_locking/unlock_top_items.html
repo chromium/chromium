@@ -47,7 +47,7 @@ function construct(n) {
   for (let i = 0; i < n; ++i) {
     const clone = specimen.cloneNode(true);
     clone.id = "id" + i;
-    clone.renderSubtree = "invisible";
+    clone.style = "content-visibility: hidden-matchable";
     document.body.appendChild(clone);
   }
 }
@@ -56,7 +56,7 @@ let nextId = 0;
 function commitNextLock() {
   const element = document.getElementById("id" + nextId);
   ++nextId;
-  element.renderSubtree = "";
+  element.style = "";
 }
 
 let testDone = false;

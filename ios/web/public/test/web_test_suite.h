@@ -14,6 +14,10 @@ namespace web {
 class WebTestSuite : public base::TestSuite {
  public:
   WebTestSuite(int argc, char** argv);
+
+  WebTestSuite(const WebTestSuite&) = delete;
+  WebTestSuite& operator=(const WebTestSuite&) = delete;
+
   ~WebTestSuite() override;
 
  protected:
@@ -24,8 +28,6 @@ class WebTestSuite : public base::TestSuite {
  private:
   // Sets web client on construction and restores the original on destruction.
   ScopedTestingWebClient web_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebTestSuite);
 };
 
 }  // namespace web

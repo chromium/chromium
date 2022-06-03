@@ -25,23 +25,30 @@ class MouseShapePump : public webrtc::MouseCursorMonitor::Callback {
   MouseShapePump(
       std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor,
       protocol::CursorShapeStub* cursor_shape_stub);
+
+  MouseShapePump(const MouseShapePump&) = delete;
+  MouseShapePump& operator=(const MouseShapePump&) = delete;
+
   ~MouseShapePump() override;
+
+  // Sets or unsets the callback to which to delegate MouseCursorMonitor events
+  // after they have been processed.
+  void SetMouseCursorMonitorCallback(
+      webrtc::MouseCursorMonitor::Callback* callback);
 
  private:
   void Capture();
 
   // webrtc::MouseCursorMonitor::Callback implementation.
   void OnMouseCursor(webrtc::MouseCursor* mouse_cursor) override;
-  void OnMouseCursorPosition(webrtc::MouseCursorMonitor::CursorState state,
-                             const webrtc::DesktopVector& position) override;
+  void OnMouseCursorPosition(const webrtc::DesktopVector& position) override;
 
   base::ThreadChecker thread_checker_;
   std::unique_ptr<webrtc::MouseCursorMonitor> mouse_cursor_monitor_;
   protocol::CursorShapeStub* cursor_shape_stub_;
 
   base::RepeatingTimer capture_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseShapePump);
+  webrtc::MouseCursorMonitor::Callback* callback_ = nullptr;
 };
 
 }  // namespace remoting

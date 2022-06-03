@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color1' value='#000000' oninput='inputEventCount++;' onchange='changeEventCount++;'>
+<script>
+'use strict';
+
+var inputEventCount = 0;
+var changeEventCount = 0;
+
+promise_test(() => {
+  inputEventCount = 0;
+  changeEventCount = 0;
+  let colorControl = document.getElementById('color1');
+  return openPickerWithPromise(colorControl)
+  .then(() => {
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
+    const rValueContainer = popupDocument.getElementById('rValueContainer');
+    rValueContainer.focus();
+
+    assert_equals(rValueContainer.value, '0');
+    eventSender.keyDown('1');
+    assert_equals(rValueContainer.value, '1');
+    assert_equals(inputEventCount, 1, 'Input event should have fired after color value change.');
+    assert_equals(changeEventCount, 0, 'No change event should have fired before popup is closed.');
+
+    eventSender.keyDown('2');
+    assert_equals(rValueContainer.value, '12');
+    assert_equals(inputEventCount, 2, 'Additional input event should have fired after additional color value change.');
+    assert_equals(changeEventCount, 0, 'No change event should have fired before popup is closed.');
+
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Popup should have closed from Enter key");
+    assert_equals(inputEventCount, 2, 'No extra input event should fire when closing popup.');
+    assert_equals(changeEventCount, 0, 'Change event is fired asynchronously after closing popup.');
+    return new Promise((resolve) => {
+      window.setTimeout(() => {
+        assert_equals(changeEventCount, 1, 'Change event should have fired (once) asynchronously after closing popup.');
+        resolve();
+      }, 1)
+    });
+  });
+}, "Color picker: Test firing change and input events");
+
+</script>
+</body>
+</html>

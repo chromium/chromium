@@ -13,7 +13,7 @@ const HeapHashSet<Member<XRAnchor>>& XRAnchorSet::elements() const {
   return anchors_;
 }
 
-void XRAnchorSet::Trace(blink::Visitor* visitor) {
+void XRAnchorSet::Trace(Visitor* visitor) const {
   visitor->Trace(anchors_);
   ScriptWrappable::Trace(visitor);
 }

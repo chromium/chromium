@@ -25,6 +25,7 @@ public abstract class AwWebContentsDelegate extends WebContentsDelegateAndroid {
     public abstract void runFileChooser(int processId, int renderId, int modeFlags,
             String acceptTypes, String title, String defaultFilename,  boolean capture);
 
+    // See //android_webview/docs/how-does-on-create-window-work.md for more details.
     @CalledByNative
     public abstract boolean addNewContents(boolean isDialog, boolean isUserGesture);
 

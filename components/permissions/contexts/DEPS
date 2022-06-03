@@ -1,0 +1,12 @@
+include_rules = [
+  "+components/content_settings/browser",
+  "+components/location",
+  "+components/prefs",
+  "+components/webrtc",
+  "+device/bluetooth",
+  "+mojo/public",
+  "+services/device/public",
+  "+third_party/blink/public/common",
+  "+third_party/blink/public/mojom",
+  "+services/device/public/cpp/geolocation",
+]

@@ -6,6 +6,7 @@ include_rules = [
   "+google_apis/gaia",
   "+ios/web/public",
   "+net",
+  "+services/network/public/cpp/shared_url_loader_factory.h",
 
   # Do not allow inclusion of forwarding header in the provider code as the
   # provider is not allowed to depends on //ios/chrome.

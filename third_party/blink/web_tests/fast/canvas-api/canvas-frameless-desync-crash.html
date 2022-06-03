@@ -1,0 +1,11 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<canvas><canvas id="foo" width="65536" height="65536"></canvas>
+<script>
+test(function() {
+  window.addEventListener("load", () => {
+      document.implementation.createHTMLDocument().createElement("canvas").getContext("2d", {"desynchronized": true});
+  })
+}, "Trying to create a desynchronized frameless canvas should not crash.");
+</script>

@@ -13,7 +13,6 @@
 #include "media/base/limits.h"
 #include "ui/gfx/ipc/geometry/gfx_param_traits.h"
 #include "ui/gfx/ipc/gfx_param_traits.h"
-#include "ui/gfx/ipc/skia/gfx_skia_param_traits.h"
 
 using media::AudioParameters;
 using media::AudioLatency;
@@ -42,7 +41,7 @@ bool ParamTraits<AudioParameters>::Read(const base::Pickle* m,
   int sample_rate, frames_per_buffer, channels, effects;
   std::vector<media::Point> mic_positions;
   AudioLatency::LatencyType latency_tag;
-  base::Optional<media::AudioParameters::HardwareCapabilities>
+  absl::optional<media::AudioParameters::HardwareCapabilities>
       hardware_capabilities;
 
   if (!ReadParam(m, iter, &format) || !ReadParam(m, iter, &channel_layout) ||

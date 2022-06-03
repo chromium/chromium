@@ -1,12 +1,12 @@
 Tests that Debugger.getGeneratorObjectDetails command returns correct result.
 
 
-Running: testIterNotStarted
+Running: testiterNotStarted
 iterNotStarted: type = object, subtype = generator
 lineNumber = 17
 columnNumber = 19
 script is valid: yes
-[[GeneratorStatus]] = suspended
+[[GeneratorState]] = suspended
 [[GeneratorFunction]] = function* gen()
       {
           yield 1;
@@ -16,12 +16,12 @@ script is valid: yes
 [[GeneratorReceiver]] = Window
 [[Scopes]] = Scopes[2]
 
-Running: testIterSuspended
+Running: testiterSuspended
 iterSuspended: type = object, subtype = generator
 lineNumber = 19
 columnNumber = 10
 script is valid: yes
-[[GeneratorStatus]] = suspended
+[[GeneratorState]] = suspended
 [[GeneratorFunction]] = function* gen()
       {
           yield 1;
@@ -31,12 +31,12 @@ script is valid: yes
 [[GeneratorReceiver]] = Window
 [[Scopes]] = Scopes[2]
 
-Running: testIterClosed
+Running: testiterClosed
 iterClosed: type = object, subtype = generator
 lineNumber = 17
 columnNumber = 19
 script is valid: yes
-[[GeneratorStatus]] = closed
+[[GeneratorState]] = closed
 [[GeneratorFunction]] = function* gen()
       {
           yield 1;
@@ -45,12 +45,12 @@ script is valid: yes
       }
 [[GeneratorReceiver]] = Window
 
-Running: testIterObjGenerator
+Running: testiterObjGenerator
 iterObjGenerator: type = object, subtype = generator
 lineNumber = 28
 columnNumber = 14
 script is valid: yes
-[[GeneratorStatus]] = suspended
+[[GeneratorState]] = suspended
 [[GeneratorFunction]] = function*()
           {
               yield 11;
@@ -60,12 +60,12 @@ script is valid: yes
 [[GeneratorReceiver]] = Object
 [[Scopes]] = Scopes[2]
 
-Running: testAnonymousGenIter
+Running: testanonymousGenIter
 anonymousGenIter: type = object, subtype = generator
 lineNumber = 42
 columnNumber = 10
 script is valid: yes
-[[GeneratorStatus]] = suspended
+[[GeneratorState]] = suspended
 [[GeneratorFunction]] = function*() {
           yield 21;
           yield 22;

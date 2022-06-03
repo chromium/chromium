@@ -14,7 +14,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 
@@ -23,6 +22,10 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemUsageCache {
  public:
   FileSystemUsageCache(bool is_incognito);
+
+  FileSystemUsageCache(const FileSystemUsageCache&) = delete;
+  FileSystemUsageCache& operator=(const FileSystemUsageCache&) = delete;
+
   ~FileSystemUsageCache();
 
   // Gets the size described in the .usage file even if dirty > 0 or
@@ -100,10 +103,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemUsageCache {
   std::map<base::FilePath, std::vector<uint8_t>> incognito_usages_;
 
   std::map<base::FilePath, std::unique_ptr<base::File>> cache_files_;
-
-  base::WeakPtrFactory<FileSystemUsageCache> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemUsageCache);
 };
 
 }  // namespace storage

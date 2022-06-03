@@ -29,6 +29,5 @@ int main(int argc, char** argv) {
 
   return base::LaunchUnitTestsSerially(
       argc, argv,
-      base::BindRepeating(&base::TestSuite::Run,
-                          base::Unretained(&test_suite)));
+      base::BindOnce(&base::TestSuite::Run, base::Unretained(&test_suite)));
 }

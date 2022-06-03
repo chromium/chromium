@@ -6,14 +6,13 @@
 
 [
     ActiveScriptWrappable,
-    MeasureAs=ImageCaptureConstructor,
     Exposed=Window
 ] interface ImageCapture {
-    [CallWith=ExecutionContext, RaisesException] constructor(MediaStreamTrack track);
+    [CallWith=ExecutionContext, RaisesException, MeasureAs=ImageCaptureConstructor] constructor(MediaStreamTrack track);
     [ImplementedAs=videoStreamTrack] readonly attribute MediaStreamTrack track;
 
     [CallWith=ScriptState] Promise<PhotoCapabilities> getPhotoCapabilities();
     [CallWith=ScriptState] Promise<PhotoSettings> getPhotoSettings();
-    [CallWith=ScriptState] Promise<Blob> takePhoto(optional PhotoSettings photoSettings);
+    [CallWith=ScriptState] Promise<Blob> takePhoto(optional PhotoSettings photoSettings = {});
     [CallWith=ScriptState] Promise<ImageBitmap> grabFrame();
 };

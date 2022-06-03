@@ -148,6 +148,9 @@ class ForwardingProxyResolver : public ProxyResolver {
  public:
   explicit ForwardingProxyResolver(ProxyResolver* impl);
 
+  ForwardingProxyResolver(const ForwardingProxyResolver&) = delete;
+  ForwardingProxyResolver& operator=(const ForwardingProxyResolver&) = delete;
+
   // ProxyResolver overrides.
   int GetProxyForURL(const GURL& query_url,
                      const NetworkIsolationKey& network_isolation_key,
@@ -158,8 +161,6 @@ class ForwardingProxyResolver : public ProxyResolver {
 
  private:
   ProxyResolver* impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForwardingProxyResolver);
 };
 
 }  // namespace net

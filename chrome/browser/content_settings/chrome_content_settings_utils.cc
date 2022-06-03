@@ -12,15 +12,13 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/location_bar/location_bar.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/base/l10n/l10n_util.h"
 #endif
 
 namespace content_settings {
-
-void RecordMixedScriptAction(MixedScriptAction action) {
-  UMA_HISTOGRAM_ENUMERATION("ContentSettings.MixedScript", action,
-                            MIXED_SCRIPT_ACTION_COUNT);
-}
 
 void RecordPluginsAction(PluginsAction action) {
   UMA_HISTOGRAM_ENUMERATION("ContentSettings.Plugins", action,
@@ -46,5 +44,22 @@ void UpdateLocationBarUiForWebContents(content::WebContents* web_contents) {
     location_bar->UpdateContentSettingsIcons();
 #endif
 }
+
+#if !defined(OS_ANDROID)
+std::u16string GetPermissionDetailString(Profile* profile,
+                                         ContentSettingsType content_type,
+                                         const GURL& url) {
+  if (!url.is_valid())
+    return {};
+
+  switch (content_type) {
+    case ContentSettingsType::FILE_HANDLING:
+      return web_app::GetFileTypeAssociationsHandledByWebAppsForDisplay(profile,
+                                                                        url);
+    default:
+      return {};
+  }
+}
+#endif
 
 }  // namespace content_settings

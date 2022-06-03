@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
@@ -121,7 +120,7 @@ TEST_P(WaitableEventWatcherTest, CancelAfterSet) {
   event.Signal();
 
   // Let the background thread do its business
-  PlatformThread::Sleep(TimeDelta::FromMilliseconds(30));
+  PlatformThread::Sleep(Milliseconds(30));
 
   watcher.StopWatching();
 
@@ -204,7 +203,8 @@ TEST_P(WaitableEventWatcherTest, StartWatchingInCallback) {
   RunLoop().Run();
 }
 
-TEST_P(WaitableEventWatcherTest, MultipleWatchersManual) {
+// Disabled due to flakes; see https://crbug.com/1188547.
+TEST_P(WaitableEventWatcherTest, DISABLED_MultipleWatchersManual) {
   test::TaskEnvironment task_environment(GetParam());
 
   WaitableEvent event(WaitableEvent::ResetPolicy::MANUAL,
@@ -328,7 +328,7 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteUnder) {
       // and gives some time to run to a created background thread.
       // Unfortunately, that thread is under OS control and we can't
       // manipulate it directly.
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(30));
+      PlatformThread::Sleep(Milliseconds(30));
     }
 
     delete event;
@@ -362,7 +362,7 @@ TEST_P(WaitableEventWatcherDeletionTest, SignalAndDelete) {
       // and gives some time to run to a created background thread.
       // Unfortunately, that thread is under OS control and we can't
       // manipulate it directly.
-      PlatformThread::Sleep(TimeDelta::FromMilliseconds(30));
+      PlatformThread::Sleep(Milliseconds(30));
     }
 
     // Wait for the watcher callback.
@@ -409,8 +409,8 @@ TEST_P(WaitableEventWatcherDeletionTest, DeleteWatcherBeforeCallback) {
                         BindOnce(&WaitableEvent::Signal, Unretained(&event)));
   task_runner->DeleteSoon(FROM_HERE, std::move(watcher));
   if (delay_after_delete) {
-    task_runner->PostTask(FROM_HERE, BindOnce(&PlatformThread::Sleep,
-                                              TimeDelta::FromMilliseconds(30)));
+    task_runner->PostTask(FROM_HERE,
+                          BindOnce(&PlatformThread::Sleep, Milliseconds(30)));
   }
 
   RunLoop().RunUntilIdle();

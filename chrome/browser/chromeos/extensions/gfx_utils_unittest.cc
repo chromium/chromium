@@ -4,8 +4,7 @@
 
 #include "chrome/browser/chromeos/extensions/gfx_utils.h"
 
-#include "base/macros.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +32,10 @@ constexpr char kKeepExtensionId[] = "hmjkmjkepdijhoojdojkdfohbdgmmhki";
 class DualBadgeMapTest : public ExtensionServiceTestBase {
  public:
   DualBadgeMapTest() {}
+
+  DualBadgeMapTest(const DualBadgeMapTest&) = delete;
+  DualBadgeMapTest& operator=(const DualBadgeMapTest&) = delete;
+
   ~DualBadgeMapTest() override { profile_.reset(); }
 
   void SetUp() override {
@@ -95,8 +98,6 @@ class DualBadgeMapTest : public ExtensionServiceTestBase {
 
  private:
   ArcAppTest arc_test_;
-
-  DISALLOW_COPY_AND_ASSIGN(DualBadgeMapTest);
 };
 
 TEST_F(DualBadgeMapTest, ExtensionToArcAppMapTest) {

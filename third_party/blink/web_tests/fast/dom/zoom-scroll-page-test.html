@@ -11,17 +11,17 @@
         function zoomBy(zoomFactor)
         {
             while (zoomFactor > 0) {
-                eventSender.zoomPageIn();
+                testRunner.zoomPageIn();
                 zoomFactor--;
             }
             while (zoomFactor < 0) {
-                eventSender.zoomPageOut();
+                testRunner.zoomPageOut();
                 zoomFactor++;
             }
         }
         function testScroll(zoomFactor, scaleFactor) {
             debug('Testing at zoom ' + zoomFactor + ' and scale ' + scaleFactor);
-            if (window.testRunner && window.eventSender && window.internals) {
+            if (window.testRunner) {
                 var y = 221;
                 internals.setPageScaleFactor(scaleFactor);
                 zoomBy(zoomFactor);
@@ -31,7 +31,7 @@
                 zoomBy(-zoomFactor);
             }
             else
-                testFailed('This test only operates in DumpRenderTree.');
+                testFailed('This test only operates as a web test.');
         }
 
         function runTests() {

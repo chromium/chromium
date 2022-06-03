@@ -221,7 +221,7 @@ enum RecognitionState {
 - (void)endGestureWithEvent:(NSEvent*)event;
 
 // Designated initializer.
-- (id)initWithDelegate:(id<HistorySwiperDelegate>)delegate;
+- (instancetype)initWithDelegate:(id<HistorySwiperDelegate>)delegate;
 
 @property (nonatomic, assign) id<HistorySwiperDelegate> delegate;
 

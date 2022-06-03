@@ -94,7 +94,7 @@ Tests that AudioBufferSourceNode supports loop-points with .loopStart and .loopE
             label: 'initialize',
             description: 'Set up context and expected results'
           },
-          (task, should) => {
+          async (task, should) => {
             // Create offline audio context.
             should(
                 () => {context = new OfflineAudioContext(
@@ -102,19 +102,11 @@ Tests that AudioBufferSourceNode supports loop-points with .loopStart and .loopE
                 'Creating context for testing')
                 .notThrow();
 
-            should(
-                Audit
-                    .loadFileFromUrl(
-                        'resources/audiobuffersource-loop-points-expected.wav')
-                    .then(arrayBuffer => {
-                      context.decodeAudioData(arrayBuffer).then(audioBuffer => {
-                        expectedAudio = audioBuffer;
-                      });
-                    }),
-                'Fetching expected audio')
-                .beResolved()
-                .then(() => task.done());
-          });
+            const arrayBuffer = await Audit.loadFileFromUrl(
+              'resources/audiobuffersource-loop-points-expected.wav');
+            expectedAudio = await context.decodeAudioData(arrayBuffer);
+            task.done();
+         });
 
       audit.define(
           {

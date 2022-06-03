@@ -67,7 +67,7 @@ class CORE_EXPORT AutoscrollController final
  public:
   explicit AutoscrollController(Page&);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   // Selection and drag-and-drop autoscroll.
   void Animate();
@@ -84,10 +84,9 @@ class CORE_EXPORT AutoscrollController final
 
   // Middle-click autoscroll.
   void StartMiddleClickAutoscroll(LocalFrame*,
+                                  LayoutBox* scrollable,
                                   const FloatPoint& position,
-                                  const FloatPoint& position_global,
-                                  bool scroll_vert,
-                                  bool scroll_horiz);
+                                  const FloatPoint& position_global);
   void HandleMouseMoveForMiddleClickAutoscroll(
       LocalFrame*,
       const FloatPoint& position_global,
@@ -106,22 +105,27 @@ class CORE_EXPORT AutoscrollController final
 
   // Selection and drag-and-drop autoscroll.
   void ScheduleMainThreadAnimation();
-  LayoutBox* autoscroll_layout_object_ = nullptr;
-  LayoutBox* pressed_layout_object_ = nullptr;
+  Member<LayoutBox> autoscroll_layout_object_ = nullptr;
+  Member<LayoutBox> pressed_layout_object_ = nullptr;
+
   PhysicalOffset drag_and_drop_autoscroll_reference_position_;
   base::TimeTicks drag_and_drop_autoscroll_start_time_;
 
   // Middle-click autoscroll.
+  Member<LayoutBox> horizontal_autoscroll_layout_box_ = nullptr;
+  Member<LayoutBox> vertical_autoscroll_layout_box_ = nullptr;
   FloatPoint middle_click_autoscroll_start_pos_global_;
-  FloatSize last_velocity_;
+  gfx::Vector2dF last_velocity_;
   MiddleClickMode middle_click_mode_ = kMiddleClickInitial;
-  bool can_scroll_vertically_ = false;
-  bool can_scroll_horizontally_ = false;
 
   FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest,
                            CrashWhenLayoutStopAnimationBeforeScheduleAnimation);
   FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest,
                            ContinueAutoscrollAfterMouseLeaveEvent);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, StopAutoscrollOnResize);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest, AutoscrollIsNotPropagated);
+  FRIEND_TEST_ALL_PREFIXES(AutoscrollControllerTest,
+                           AutoscrollIsPropagatedInYDirection);
 };
 
 }  // namespace blink

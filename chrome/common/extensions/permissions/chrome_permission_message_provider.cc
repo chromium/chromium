@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/metrics/field_trial.h"
+#include "base/ranges/algorithm.h"
 #include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +18,8 @@
 #include "extensions/common/url_pattern.h"
 #include "extensions/common/url_pattern_set.h"
 #include "url/gurl.h"
+
+using extensions::mojom::APIPermissionID;
 
 namespace extensions {
 
@@ -85,20 +88,33 @@ PermissionIDSet ChromePermissionMessageProvider::GetAllPermissionIDs(
   return permission_ids;
 }
 
-PermissionMessages
-ChromePermissionMessageProvider::GetPowerfulPermissionMessages(
-    const PermissionIDSet& permissions) const {
-  std::vector<ChromePermissionMessageRule> rules =
-      ChromePermissionMessageRule::GetAllRules();
+PermissionIDSet ChromePermissionMessageProvider::GetManagementUIPermissionIDs(
+    const PermissionSet& permissions,
+    Manifest::Type extension_type) const {
+  PermissionIDSet permission_ids;
+  AddAPIPermissionsForManagementUIWarning(permissions, &permission_ids);
+  AddManifestPermissionsForManagementUIWarning(permissions, &permission_ids);
+  AddHostPermissions(permissions, &permission_ids, extension_type);
+  return permission_ids;
+}
 
-  // We pick only top N rules as they are considered as most sensitive ones.
-  // TODO(crbug.com/888981): Find a better way to get wanted rules. Maybe add a
-  // bool to each one telling if we should consider it here or not.
-  constexpr size_t rules_considered = 18;
-  rules.erase(rules.begin() + std::min(rules_considered, rules.size()),
-              rules.end());
+void ChromePermissionMessageProvider::AddAPIPermissionsForManagementUIWarning(
+    const PermissionSet& permissions,
+    PermissionIDSet* permission_ids) const {
+  for (const APIPermission* permission : permissions.apis()) {
+    if (permission->info()->requires_management_ui_warning())
+      permission_ids->InsertAll(permission->GetPermissions());
+  }
+}
 
-  return GetPermissionMessagesHelper(permissions, rules);
+void ChromePermissionMessageProvider::
+    AddManifestPermissionsForManagementUIWarning(
+        const PermissionSet& permissions,
+        PermissionIDSet* permission_ids) const {
+  for (const ManifestPermission* p : permissions.manifest_permissions()) {
+    if (p->RequiresManagementUIWarning())
+      permission_ids->InsertAll(p->GetPermissions());
+  }
 }
 
 void ChromePermissionMessageProvider::AddAPIPermissions(
@@ -106,18 +122,6 @@ void ChromePermissionMessageProvider::AddAPIPermissions(
     PermissionIDSet* permission_ids) const {
   for (const APIPermission* permission : permissions.apis())
     permission_ids->InsertAll(permission->GetPermissions());
-
-  // A special hack: The warning message for declarativeWebRequest
-  // permissions speaks about blocking parts of pages, which is a
-  // subset of what the "<all_urls>" access allows. Therefore we
-  // display only the "<all_urls>" warning message if both permissions
-  // are required.
-  // TODO(treib): The same should apply to other permissions that are implied by
-  // "<all_urls>" (aka APIPermission::kHostsAll), such as kTab. This would
-  // happen automatically if we didn't differentiate between API/Manifest/Host
-  // permissions here.
-  if (permissions.ShouldWarnAllHosts())
-    permission_ids->erase(APIPermission::kDeclarativeWebRequest);
 }
 
 void ChromePermissionMessageProvider::AddManifestPermissions(
@@ -139,7 +143,7 @@ void ChromePermissionMessageProvider::AddHostPermissions(
     return;
 
   if (permissions.ShouldWarnAllHosts()) {
-    permission_ids->insert(APIPermission::kHostsAll);
+    permission_ids->insert(APIPermissionID::kHostsAll);
   } else {
     URLPatternSet regular_hosts;
     ExtensionsClient::Get()->FilterHostPermissions(
@@ -148,7 +152,7 @@ void ChromePermissionMessageProvider::AddHostPermissions(
     std::set<std::string> hosts =
         permission_message_util::GetDistinctHosts(regular_hosts, true, true);
     for (const auto& host : hosts) {
-      permission_ids->insert(APIPermission::kHostReadWrite,
+      permission_ids->insert(APIPermissionID::kHostReadWrite,
                              base::UTF8ToUTF16(host));
     }
   }
@@ -161,18 +165,26 @@ bool ChromePermissionMessageProvider::IsAPIOrManifestPrivilegeIncrease(
   AddAPIPermissions(granted_permissions, &granted_ids);
   AddManifestPermissions(granted_permissions, &granted_ids);
 
+  // <all_urls> is processed as mojom::APIPermissionID::kHostsAll and should be
+  // included when checking permission messages.
+  if (granted_permissions.ShouldWarnAllHosts())
+    granted_ids.insert(APIPermissionID::kHostsAll);
+
   // We compare |granted_ids| against the set of permissions that would be
   // granted if the requested permissions are allowed.
   PermissionIDSet potential_total_ids = granted_ids;
   AddAPIPermissions(requested_permissions, &potential_total_ids);
   AddManifestPermissions(requested_permissions, &potential_total_ids);
 
+  if (requested_permissions.ShouldWarnAllHosts())
+    potential_total_ids.insert(APIPermissionID::kHostsAll);
+
   // For M62, we added a new permission ID for new tab page overrides. Consider
   // the addition of this permission to not result in a privilege increase for
   // the time being.
   // TODO(robertshield): Remove this once most of the population is on M62+
-  granted_ids.erase(APIPermission::kNewTabPageOverride);
-  potential_total_ids.erase(APIPermission::kNewTabPageOverride);
+  granted_ids.erase(APIPermissionID::kNewTabPageOverride);
+  potential_total_ids.erase(APIPermissionID::kNewTabPageOverride);
 
   // If all the IDs were already there, it's not a privilege increase.
   if (granted_ids.Includes(potential_total_ids))
@@ -197,7 +209,7 @@ bool ChromePermissionMessageProvider::IsAPIOrManifestPrivilegeIncrease(
   // significant difference - e.g., going from two lower warnings to a single
   // scarier warning because of adding a new permission). But let's be overly
   // conservative for now.
-  return !base::STLIncludes(granted_strings, total_strings);
+  return !base::ranges::includes(granted_strings, total_strings);
 }
 
 bool ChromePermissionMessageProvider::IsHostPrivilegeIncrease(
@@ -246,7 +258,7 @@ bool ChromePermissionMessageProvider::IsHostPrivilegeIncrease(
         // because we consider having access to "*.domain.com" as
         // granting access to "domain.com" then compare the string
         // with both the "*" and the "." removed.
-        if (unmatched.ends_with(stripped_granted) ||
+        if (base::EndsWith(unmatched, stripped_granted) ||
             unmatched == stripped_granted.substr(1)) {
           host_matched = true;
           break;

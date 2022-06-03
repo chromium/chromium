@@ -6,7 +6,9 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import android.content.Context;
 
-import org.chromium.base.LifetimeAssert;
+import androidx.annotation.Nullable;
+
+import org.chromium.base.supplier.Supplier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,13 +20,13 @@ import java.util.List;
  * {@link MessageService}.
  */
 public class MessageCardProviderCoordinator {
-    private final LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
     private final MessageCardProviderMediator mMediator;
     private final List<MessageService> mMessageServices = new ArrayList<>();
 
-    MessageCardProviderCoordinator(
-            Context context, MessageCardView.DismissActionProvider uiDismissActionProvider) {
-        mMediator = new MessageCardProviderMediator(context, uiDismissActionProvider);
+    MessageCardProviderCoordinator(Context context, Supplier<Boolean> isIncognitoSupplier,
+            MessageCardView.DismissActionProvider uiDismissActionProvider) {
+        mMediator = new MessageCardProviderMediator(
+                context, isIncognitoSupplier, uiDismissActionProvider);
     }
 
     /**
@@ -39,11 +41,30 @@ public class MessageCardProviderCoordinator {
 
     /**
      * Get all messages.
-     * @return a list of {@link
-     *         MessageCardProviderMediator.Message}.
+     * @return a list of {@link MessageCardProviderMediator.Message}.
      */
     public List<MessageCardProviderMediator.Message> getMessageItems() {
         return mMediator.getMessageItems();
+    }
+
+    /**
+     * @param messageType The {@link MessageService#mMessageType} associates with the message.
+     * @return The next {@link MessageCardProviderMediator.Message} for the given messageType, if
+     *         there is any. Otherwise returns null.
+     */
+    @Nullable
+    public MessageCardProviderMediator.Message getNextMessageItemForType(
+            @MessageService.MessageType int messageType) {
+        return mMediator.getNextMessageItemForType(messageType);
+    }
+
+    /**
+     * @param messageType The {@link MessageService.MessageType} associated with the message.
+     * @param identifier The identifier associated with the message.
+     * @return Whether the given message is shown.
+     */
+    boolean isMessageShown(@MessageService.MessageType int messageType, int identifier) {
+        return mMediator.isMessageShown(messageType, identifier);
     }
 
     /**
@@ -53,8 +74,5 @@ public class MessageCardProviderCoordinator {
         for (int i = 0; i < mMessageServices.size(); i++) {
             mMessageServices.get(i).removeObserver(mMediator);
         }
-        // If mLifetimeAssert is GC'ed before this is called, it will throw an exception
-        // with a stack trace showing the stack during LifetimeAssert.create().
-        LifetimeAssert.setSafeToGc(mLifetimeAssert, true);
     }
 }

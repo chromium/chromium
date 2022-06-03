@@ -22,7 +22,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OVERFLOW_MODEL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_OVERFLOW_MODEL_H_
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 
 namespace blink {
@@ -88,6 +89,9 @@ class SimpleLayoutOverflowModel {
  public:
   SimpleLayoutOverflowModel(const LayoutRect& layout_rect)
       : layout_overflow_(layout_rect) {}
+  SimpleLayoutOverflowModel(const SimpleLayoutOverflowModel&) = delete;
+  SimpleLayoutOverflowModel& operator=(const SimpleLayoutOverflowModel&) =
+      delete;
 
   const LayoutRect& LayoutOverflowRect() const { return layout_overflow_; }
   void SetLayoutOverflow(const LayoutRect& rect) { layout_overflow_ = rect; }
@@ -99,8 +103,6 @@ class SimpleLayoutOverflowModel {
 
  private:
   LayoutRect layout_overflow_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleLayoutOverflowModel);
 };
 
 class SimpleVisualOverflowModel {
@@ -109,7 +111,9 @@ class SimpleVisualOverflowModel {
  public:
   SimpleVisualOverflowModel(const LayoutRect& visual_rect)
       : visual_overflow_(visual_rect) {}
-
+  SimpleVisualOverflowModel(const SimpleVisualOverflowModel&) = delete;
+  SimpleVisualOverflowModel& operator=(const SimpleVisualOverflowModel&) =
+      delete;
   const LayoutRect& VisualOverflowRect() const { return visual_overflow_; }
   void SetVisualOverflow(const LayoutRect& rect) { visual_overflow_ = rect; }
   void AddVisualOverflow(const LayoutRect& rect) {
@@ -122,13 +126,11 @@ class SimpleVisualOverflowModel {
 
  private:
   LayoutRect visual_overflow_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleVisualOverflowModel);
 };
 
 struct SimpleOverflowModel {
-  base::Optional<SimpleLayoutOverflowModel> layout_overflow;
-  base::Optional<SimpleVisualOverflowModel> visual_overflow;
+  absl::optional<SimpleLayoutOverflowModel> layout_overflow;
+  absl::optional<SimpleVisualOverflowModel> visual_overflow;
 };
 
 // BoxModelOverflow tracks overflows of a LayoutBox. It separates visual
@@ -162,9 +164,10 @@ class BoxLayoutOverflowModel {
  public:
   BoxLayoutOverflowModel(const LayoutRect& layout_rect)
       : layout_overflow_(layout_rect) {}
+  BoxLayoutOverflowModel(const BoxLayoutOverflowModel&) = delete;
+  BoxLayoutOverflowModel& operator=(const BoxLayoutOverflowModel&) = delete;
 
   const LayoutRect& LayoutOverflowRect() const { return layout_overflow_; }
-  void SetLayoutOverflow(const LayoutRect& rect) { layout_overflow_ = rect; }
   void AddLayoutOverflow(const LayoutRect& rect) {
     UniteLayoutOverflowRect(layout_overflow_, rect);
   }
@@ -179,14 +182,14 @@ class BoxLayoutOverflowModel {
  private:
   LayoutRect layout_overflow_;
   LayoutUnit layout_client_after_edge_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoxLayoutOverflowModel);
 };
 
 class BoxVisualOverflowModel {
  public:
   BoxVisualOverflowModel(const LayoutRect& self_visual_overflow_rect)
       : self_visual_overflow_(self_visual_overflow_rect) {}
+  BoxVisualOverflowModel(const BoxVisualOverflowModel&) = delete;
+  BoxVisualOverflowModel& operator=(const BoxVisualOverflowModel&) = delete;
 
   void SetSelfVisualOverflow(const LayoutRect& rect) {
     self_visual_overflow_ = rect;
@@ -197,10 +200,6 @@ class BoxVisualOverflowModel {
   }
   void AddSelfVisualOverflow(const LayoutRect& rect) {
     self_visual_overflow_.Unite(rect);
-  }
-
-  void ClearContentsVisualOverflow() {
-    contents_visual_overflow_ = LayoutRect();
   }
 
   const LayoutRect& ContentsVisualOverflowRect() const {
@@ -226,13 +225,20 @@ class BoxVisualOverflowModel {
   LayoutRect self_visual_overflow_;
   LayoutRect contents_visual_overflow_;
   bool has_subpixel_visual_effect_outsets_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(BoxVisualOverflowModel);
 };
 
 struct BoxOverflowModel {
-  base::Optional<BoxLayoutOverflowModel> layout_overflow;
-  base::Optional<BoxVisualOverflowModel> visual_overflow;
+  absl::optional<BoxLayoutOverflowModel> layout_overflow;
+  absl::optional<BoxVisualOverflowModel> visual_overflow;
+
+  // Used by BoxPaintInvalidator. Stores the previous overflow data after the
+  // last paint invalidation.
+  struct PreviousOverflowData {
+    PhysicalRect previous_physical_layout_overflow_rect;
+    PhysicalRect previous_physical_visual_overflow_rect;
+    PhysicalRect previous_physical_self_visual_overflow_rect;
+  };
+  absl::optional<PreviousOverflowData> previous_overflow_data;
 
   USING_FAST_MALLOC(BoxOverflowModel);
 };

@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/location_bar/location_bar_model_delegate_ios.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -16,6 +16,8 @@
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/components/security_interstitials/ios_blocking_page_tab_helper.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/security/ssl_status.h"
@@ -42,10 +44,10 @@ web::NavigationItem* LocationBarModelDelegateIOS::GetNavigationItem() const {
   return navigation_manager ? navigation_manager->GetVisibleItem() : nullptr;
 }
 
-base::string16
+std::u16string
 LocationBarModelDelegateIOS::FormattedStringWithEquivalentMeaning(
     const GURL& url,
-    const base::string16& formatted_url) const {
+    const std::u16string& formatted_url) const {
   return AutocompleteInput::FormattedStringWithEquivalentMeaning(
       url, formatted_url, AutocompleteSchemeClassifierImpl(), nullptr);
 }
@@ -65,6 +67,15 @@ bool LocationBarModelDelegateIOS::GetURL(GURL* url) const {
 }
 
 bool LocationBarModelDelegateIOS::ShouldDisplayURL() const {
+  if (web::WebState* web_state = GetActiveWebState()) {
+    security_interstitials::IOSBlockingPageTabHelper* tab_helper =
+        security_interstitials::IOSBlockingPageTabHelper::FromWebState(
+            web_state);
+    if (tab_helper && tab_helper->GetCurrentBlockingPage()) {
+      return tab_helper->ShouldDisplayURL();
+    }
+  }
+
   web::NavigationItem* item = GetNavigationItem();
   if (item) {
     GURL url = item->GetURL();
@@ -113,7 +124,7 @@ bool LocationBarModelDelegateIOS::IsOfflinePage() const {
       ->presenting_offline_page();
 }
 
-bool LocationBarModelDelegateIOS::IsInstantNTP() const {
+bool LocationBarModelDelegateIOS::IsNewTabPage() const {
   // This is currently only called by the OmniboxEditModel to determine if the
   // Google landing page is showing.
   //
@@ -126,7 +137,7 @@ bool LocationBarModelDelegateIOS::IsInstantNTP() const {
   return currentURL == kChromeUINewTabURL;
 }
 
-bool LocationBarModelDelegateIOS::IsNewTabPage(const GURL& url) const {
+bool LocationBarModelDelegateIOS::IsNewTabPageURL(const GURL& url) const {
   return url.spec() == kChromeUINewTabURL;
 }
 

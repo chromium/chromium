@@ -43,14 +43,10 @@ ChromePrefModelAssociatorClient::MaybeMergePreferenceValues(
     const base::Value& local_value,
     const base::Value& server_value) const {
   if (pref_name == prefs::kNetworkEasterEggHighScore) {
-    uint32_t local_high_score;
-    if (!local_value.GetAsInteger(reinterpret_cast<int*>(&local_high_score)))
-      return nullptr;
-    uint32_t server_high_score;
-    if (!server_value.GetAsInteger(reinterpret_cast<int*>(&server_high_score)))
+    if (!local_value.is_int() || !server_value.is_int())
       return nullptr;
     return std::make_unique<base::Value>(
-        static_cast<int>(std::max(local_high_score, server_high_score)));
+        std::max(local_value.GetInt(), server_value.GetInt()));
   }
 
   return nullptr;

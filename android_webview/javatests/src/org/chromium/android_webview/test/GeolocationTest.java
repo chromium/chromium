@@ -6,8 +6,9 @@ package org.chromium.android_webview.test;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -21,7 +22,6 @@ import org.chromium.android_webview.AwGeolocationPermissions;
 import org.chromium.android_webview.AwSettings;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 import org.chromium.device.geolocation.LocationProviderOverrider;
@@ -175,7 +175,6 @@ public class GeolocationTest {
     @Test
     @MediumTest
     @Feature({"AndroidWebView"})
-    @RetryOnFailure
     public void testWatchPosition() throws Throwable {
         initAwContents(new GrantPermisionAwContentClient());
         mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
@@ -269,7 +268,6 @@ public class GeolocationTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    @RetryOnFailure
     public void testDenyAccessByDefault() throws Throwable {
         initAwContents(new DefaultPermisionAwContentClient());
         mActivityTestRule.loadDataWithBaseUrlSync(mAwContents,
@@ -292,7 +290,6 @@ public class GeolocationTest {
     @Test
     @Feature({"AndroidWebView"})
     @SmallTest
-    @RetryOnFailure
     public void testDenyOnInsecureOrigins() throws Throwable {
         mOverridenFactory = new GeolocationOnInsecureOriginsTestDependencyFactory(false);
         initAwContents(new GrantPermisionAwContentClient());

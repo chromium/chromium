@@ -11,21 +11,23 @@
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/extensions/api/processes.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
 
 class ProcessesApiTest : public extensions::ExtensionApiTest {
  public:
   ProcessesApiTest() {}
+
+  ProcessesApiTest(const ProcessesApiTest&) = delete;
+  ProcessesApiTest& operator=(const ProcessesApiTest&) = delete;
+
   ~ProcessesApiTest() override {}
 
   int GetListenersCount() {
     return extensions::ProcessesAPI::Get(profile())->
         processes_event_router()->listeners_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessesApiTest);
 };
 
 
@@ -113,8 +115,8 @@ IN_PROC_BROWSER_TEST_F(ProcessesApiTest, OnUpdatedWithMemoryRefreshTypes) {
   EXPECT_EQ(0, GetListenersCount());
 }
 
-// This test is flaky on Linux ASan LSan Tests bot. https://crbug.com/1028778
-#if defined(OS_LINUX) && defined(ADDRESS_SANITIZER)
+// This test is flaky on Linux and ChromeOS ASan LSan Tests bot. https://crbug.com/1028778
+#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(ADDRESS_SANITIZER)
 #define MAYBE_CannotTerminateBrowserProcess \
   DISABLED_CannotTerminateBrowserProcess
 #else

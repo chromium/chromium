@@ -43,9 +43,6 @@ static_library("ced") {
     "src/util/string_util.h",
     "src/util/varsetter.h",
   ]
-  public = [
-    "src/compact_enc_det/compact_enc_det.h",
-  ]
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [
     "//build/config/compiler:no_chromium_code",
@@ -99,9 +96,7 @@ test("ced_unittests") {
 }
 
 fuzzer_test("compact_enc_det_fuzzer") {
-  sources = [
-    "compact_enc_det_fuzzer.cc",
-  ]
+  sources = [ "compact_enc_det_fuzzer.cc" ]
   deps = [
     ":ced",
     "//base/test:test_support",

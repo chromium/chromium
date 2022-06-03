@@ -46,9 +46,9 @@ public class Promise<T> {
     /**
      * A function class for use when chaining Promises with {@link Promise#then(AsyncFunction)}.
      * @param <A> The type of the function input.
-     * @param <R> The type of the function output.
+     * @param <RT> The type of the function output.
      */
-    public interface AsyncFunction<A, R> extends Function<A, Promise<R>> {}
+    public interface AsyncFunction<A, RT> extends Function<A, Promise<RT>> {}
 
     /**
      * An exception class for when a rejected Promise is not handled and cannot pass the rejection
@@ -136,11 +136,11 @@ public class Promise<T> {
      * Queues a {@link Function} to be run when the Promise is fulfilled. When this Promise is
      * fulfilled, the function will be run and its result will be place in the returned Promise.
      */
-    public <R> Promise<R> then(final Function<T, R> function) {
+    public <RT> Promise<RT> then(final Function<T, RT> function) {
         checkThread();
 
         // Create a new Promise to store the result of the function.
-        final Promise<R> promise = new Promise<>();
+        final Promise<RT> promise = new Promise<>();
 
         // Once this Promise is fulfilled:
         // - Apply the given function to the result.
@@ -165,11 +165,11 @@ public class Promise<T> {
      * Promise is fulfilled, the AsyncFunction will be run. When the result of the AsyncFunction is
      * available, it will be placed in the returned Promise.
      */
-    public <R> Promise<R> then(final AsyncFunction<T, R> function) {
+    public <RT> Promise<RT> then(final AsyncFunction<T, RT> function) {
         checkThread();
 
         // Create a new Promise to be returned.
-        final Promise<R> promise = new Promise<>();
+        final Promise<RT> promise = new Promise<>();
 
         // Once this Promise is fulfilled:
         // - Apply the given function to the result (giving us an inner Promise).
@@ -271,6 +271,15 @@ public class Promise<T> {
         return promise;
     }
 
+    /**
+     * Convenience method to return a rejected Promise.
+     */
+    public static <T> Promise<T> rejected() {
+        Promise<T> promise = new Promise<>();
+        promise.reject();
+        return promise;
+    }
+
     private void checkThread() {
         assert mThread == Thread.currentThread() : "Promise must only be used on a single Thread.";
     }
@@ -279,6 +288,6 @@ public class Promise<T> {
     private <S> void postCallbackToLooper(final Callback<S> callback, final S result) {
         // Post the callbacks to the Thread looper so we don't get a long chain of callbacks
         // holding up the thread.
-        mHandler.post(() -> callback.onResult(result));
+        mHandler.post(callback.bind(result));
     }
 }

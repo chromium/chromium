@@ -30,7 +30,7 @@
 
 // https://www.w3.org/TR/2012/WD-file-system-api-20120417/#idl-def-DirectoryEntrySync
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface DirectoryEntrySync : EntrySync {
     DirectoryReaderSync createReader();
     [RaisesException] FileEntrySync getFile(DOMString? path, FileSystemFlags flags);

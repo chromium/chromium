@@ -6,14 +6,16 @@
 
 #include <algorithm>
 #include <cstdio>
+#include <memory>
 #include <utility>
 
 #include "base/auto_reset.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/debug/leak_annotations.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -97,6 +99,11 @@ class V8ExternalStringFromScriptData
       const scoped_refptr<net::PacFileData>& script_data)
       : script_data_(script_data) {}
 
+  V8ExternalStringFromScriptData(const V8ExternalStringFromScriptData&) =
+      delete;
+  V8ExternalStringFromScriptData& operator=(
+      const V8ExternalStringFromScriptData&) = delete;
+
   const uint16_t* data() const override {
     return reinterpret_cast<const uint16_t*>(script_data_->utf16().data());
   }
@@ -105,7 +112,6 @@ class V8ExternalStringFromScriptData
 
  private:
   const scoped_refptr<net::PacFileData> script_data_;
-  DISALLOW_COPY_AND_ASSIGN(V8ExternalStringFromScriptData);
 };
 
 // External string wrapper so V8 can access a string literal.
@@ -119,6 +125,9 @@ class V8ExternalASCIILiteral
     DCHECK(base::IsStringASCII(ascii));
   }
 
+  V8ExternalASCIILiteral(const V8ExternalASCIILiteral&) = delete;
+  V8ExternalASCIILiteral& operator=(const V8ExternalASCIILiteral&) = delete;
+
   const char* data() const override { return ascii_; }
 
   size_t length() const override { return length_; }
@@ -126,7 +135,6 @@ class V8ExternalASCIILiteral
  private:
   const char* ascii_;
   size_t length_;
-  DISALLOW_COPY_AND_ASSIGN(V8ExternalASCIILiteral);
 };
 
 // When creating a v8::String from a C++ string we have two choices: create
@@ -145,10 +153,10 @@ std::string V8StringToUTF8(v8::Isolate* isolate, v8::Local<v8::String> s) {
   return result;
 }
 
-// Converts a V8 String to a UTF16 base::string16.
-base::string16 V8StringToUTF16(v8::Isolate* isolate, v8::Local<v8::String> s) {
+// Converts a V8 String to a UTF16 std::u16string.
+std::u16string V8StringToUTF16(v8::Isolate* isolate, v8::Local<v8::String> s) {
   int len = s->Length();
-  base::string16 result;
+  std::u16string result;
   // Note that the reinterpret cast is because on Windows string16 is an alias
   // to wstring, and hence has character type wchar_t not uint16_t.
   if (len > 0) {
@@ -168,7 +176,7 @@ v8::Local<v8::String> ASCIIStringToV8String(v8::Isolate* isolate,
       .ToLocalChecked();
 }
 
-// Converts a UTF16 base::string16 (wrapped by a net::PacFileData) to a
+// Converts a UTF16 std::u16string (wrapped by a net::PacFileData) to a
 // V8 string.
 v8::Local<v8::String> ScriptDataToV8String(
     v8::Isolate* isolate,
@@ -201,7 +209,7 @@ v8::Local<v8::String> ASCIILiteralToV8String(v8::Isolate* isolate,
 // Stringizes a V8 object by calling its toString() method. Returns true
 // on success. This may fail if the toString() throws an exception.
 bool V8ObjectToUTF16String(v8::Local<v8::Value> object,
-                           base::string16* utf16_result,
+                           std::u16string* utf16_result,
                            v8::Isolate* isolate) {
   if (object.IsEmpty())
     return false;
@@ -222,7 +230,7 @@ bool GetHostnameArgument(const v8::FunctionCallbackInfo<v8::Value>& args,
   if (args.Length() == 0 || args[0].IsEmpty() || !args[0]->IsString())
     return false;
 
-  const base::string16 hostname_utf16 =
+  const std::u16string hostname_utf16 =
       V8StringToUTF16(args.GetIsolate(), v8::Local<v8::String>::Cast(args[0]));
 
   // If the hostname is already in ASCII, simply return it as is.
@@ -233,7 +241,7 @@ bool GetHostnameArgument(const v8::FunctionCallbackInfo<v8::Value>& args,
 
   // Otherwise try to convert it from IDN to punycode.
   const int kInitialBufferSize = 256;
-  url::RawCanonOutputT<base::char16, kInitialBufferSize> punycode_output;
+  url::RawCanonOutputT<char16_t, kInitialBufferSize> punycode_output;
   if (!url::IDNToASCII(hostname_utf16.data(), hostname_utf16.length(),
                        &punycode_output)) {
     return false;
@@ -363,6 +371,9 @@ class SharedIsolateFactory {
  public:
   SharedIsolateFactory() : has_initialized_v8_(false) {}
 
+  SharedIsolateFactory(const SharedIsolateFactory&) = delete;
+  SharedIsolateFactory& operator=(const SharedIsolateFactory&) = delete;
+
   // Lazily creates a v8::Isolate, or returns the already created instance.
   v8::Isolate* GetSharedIsolate() {
     base::AutoLock lock(lock_);
@@ -370,16 +381,24 @@ class SharedIsolateFactory {
     if (!holder_) {
       // Do one-time initialization for V8.
       if (!has_initialized_v8_) {
-#ifdef V8_USE_EXTERNAL_STARTUP_DATA
+#if defined(V8_USE_EXTERNAL_STARTUP_DATA)
+#if defined(USE_V8_CONTEXT_SNAPSHOT)
+        gin::V8Initializer::LoadV8Snapshot(
+            gin::V8SnapshotFileType::kWithAdditionalContext);
+#else
         gin::V8Initializer::LoadV8Snapshot();
+#endif
 #endif
 
         // The performance of the proxy resolver is limited by DNS resolution,
         // and not V8, so tune down V8 to use as little memory as possible.
         static const char kOptimizeForSize[] = "--optimize_for_size";
         v8::V8::SetFlagsFromString(kOptimizeForSize, strlen(kOptimizeForSize));
-        static const char kNoOpt[] = "--noopt";
-        v8::V8::SetFlagsFromString(kNoOpt, strlen(kNoOpt));
+
+        // Running v8 in jitless mode allows dynamic code to be disabled in the
+        // process.
+        static const char kJitless[] = "--jitless";
+        v8::V8::SetFlagsFromString(kJitless, strlen(kJitless));
 
         // WebAssembly isn't encountered during resolution, so reduce the
         // potential attack surface.
@@ -393,9 +412,9 @@ class SharedIsolateFactory {
         has_initialized_v8_ = true;
       }
 
-      holder_.reset(new gin::IsolateHolder(
+      holder_ = std::make_unique<gin::IsolateHolder>(
           base::ThreadTaskRunnerHandle::Get(), gin::IsolateHolder::kUseLocker,
-          gin::IsolateHolder::IsolateType::kUtility));
+          gin::IsolateHolder::IsolateType::kUtility);
     }
 
     return holder_->isolate();
@@ -410,8 +429,6 @@ class SharedIsolateFactory {
   base::Lock lock_;
   std::unique_ptr<gin::IsolateHolder> holder_;
   bool has_initialized_v8_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedIsolateFactory);
 };
 
 base::LazyInstance<SharedIsolateFactory>::Leaky g_isolate_factory =
@@ -473,12 +490,11 @@ class ProxyResolverV8::Context {
     }
 
     if (!ret->IsString()) {
-      js_bindings()->OnError(
-          -1, base::ASCIIToUTF16("FindProxyForURL() did not return a string."));
+      js_bindings()->OnError(-1, u"FindProxyForURL() did not return a string.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
-    base::string16 ret_str =
+    std::u16string ret_str =
         V8StringToUTF16(isolate_, v8::Local<v8::String>::Cast(ret));
 
     if (!base::IsStringASCII(ret_str)) {
@@ -486,10 +502,8 @@ class ProxyResolverV8::Context {
       //               could extend the parsing to handle IDNA hostnames by
       //               converting them to ASCII punycode.
       //               crbug.com/47234
-      base::string16 error_message =
-          base::ASCIIToUTF16(
-              "FindProxyForURL() returned a non-ASCII string "
-              "(crbug.com/47234): ") +
+      std::u16string error_message =
+          u"FindProxyForURL() returned a non-ASCII string (crbug.com/47234): " +
           ret_str;
       js_bindings()->OnError(-1, error_message);
       return net::ERR_PAC_SCRIPT_FAILED;
@@ -612,16 +626,14 @@ class ProxyResolverV8::Context {
     // defensively just in case.
     DCHECK_EQ(function->IsEmpty(), try_catch.HasCaught());
     if (function->IsEmpty() || try_catch.HasCaught()) {
-      js_bindings()->OnError(
-          -1,
-          base::ASCIIToUTF16("Accessing FindProxyForURL threw an exception."));
+      js_bindings()->OnError(-1,
+                             u"Accessing FindProxyForURL threw an exception.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
     if (!(*function)->IsFunction()) {
       js_bindings()->OnError(
-          -1, base::ASCIIToUTF16(
-                  "FindProxyForURL is undefined or not a function."));
+          -1, u"FindProxyForURL is undefined or not a function.");
       return net::ERR_PAC_SCRIPT_FAILED;
     }
 
@@ -632,7 +644,7 @@ class ProxyResolverV8::Context {
   void HandleError(v8::Local<v8::Message> message) {
     v8::Local<v8::Context> context =
         v8::Local<v8::Context>::New(isolate_, v8_context_);
-    base::string16 error_message;
+    std::u16string error_message;
     int line_number = -1;
 
     if (!message.IsEmpty()) {
@@ -653,8 +665,8 @@ class ProxyResolverV8::Context {
     v8::TryCatch try_catch(isolate_);
 
     // Compile the script.
-    v8::ScriptOrigin origin =
-        v8::ScriptOrigin(ASCIILiteralToV8String(isolate_, script_name));
+    v8::ScriptOrigin origin = v8::ScriptOrigin(
+        isolate_, ASCIILiteralToV8String(isolate_, script_name));
     v8::ScriptCompiler::Source script_source(script, origin);
     v8::Local<v8::Script> code;
     if (!v8::ScriptCompiler::Compile(
@@ -684,9 +696,9 @@ class ProxyResolverV8::Context {
 
     // Like firefox we assume "undefined" if no argument was specified, and
     // disregard any arguments beyond the first.
-    base::string16 message;
+    std::u16string message;
     if (args.Length() == 0) {
-      message = base::ASCIIToUTF16("undefined");
+      message = u"undefined";
     } else {
       if (!V8ObjectToUTF16String(args[0], &message, args.GetIsolate()))
         return;  // toString() threw an exception.

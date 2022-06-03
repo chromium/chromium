@@ -5,9 +5,9 @@
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/check_op.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
 #include "base/test/test_pending_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -17,11 +17,11 @@ namespace base {
 ScopedMockTimeMessageLoopTaskRunner::ScopedMockTimeMessageLoopTaskRunner()
     : task_runner_(new TestMockTimeTaskRunner),
       previous_task_runner_(ThreadTaskRunnerHandle::Get()) {
-  DCHECK(MessageLoopCurrent::Get());
+  DCHECK(CurrentThread::Get());
   // To ensure that we process any initialization tasks posted to the
   // MessageLoop by a test fixture before replacing its TaskRunner.
   RunLoop().RunUntilIdle();
-  MessageLoopCurrent::Get()->SetTaskRunner(task_runner_);
+  CurrentThread::Get()->SetTaskRunner(task_runner_);
 }
 
 ScopedMockTimeMessageLoopTaskRunner::~ScopedMockTimeMessageLoopTaskRunner() {
@@ -32,7 +32,7 @@ ScopedMockTimeMessageLoopTaskRunner::~ScopedMockTimeMessageLoopTaskRunner() {
         pending_task.location, std::move(pending_task.task),
         pending_task.GetTimeToRun() - task_runner_->NowTicks());
   }
-  MessageLoopCurrent::Get()->SetTaskRunner(std::move(previous_task_runner_));
+  CurrentThread::Get()->SetTaskRunner(std::move(previous_task_runner_));
 }
 
 }  // namespace base

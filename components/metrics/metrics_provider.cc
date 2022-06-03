@@ -4,6 +4,7 @@
 
 #include "components/metrics/metrics_provider.h"
 
+#include "base/notreached.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 
 namespace metrics {
@@ -17,8 +18,8 @@ MetricsProvider::~MetricsProvider() {
 void MetricsProvider::Init() {
 }
 
-void MetricsProvider::AsyncInit(const base::Closure& done_callback) {
-  done_callback.Run();
+void MetricsProvider::AsyncInit(base::OnceClosure done_callback) {
+  std::move(done_callback).Run();
 }
 
 void MetricsProvider::OnDidCreateMetricsLog() {
@@ -29,6 +30,8 @@ void MetricsProvider::OnRecordingEnabled() {
 
 void MetricsProvider::OnRecordingDisabled() {
 }
+
+void MetricsProvider::OnClientStateCleared() {}
 
 void MetricsProvider::OnAppEnterBackground() {
 }
@@ -69,6 +72,8 @@ void MetricsProvider::ProvideCurrentSessionData(
     ChromeUserMetricsExtension* uma_proto) {
   ProvideStabilityMetrics(uma_proto->mutable_system_profile());
 }
+
+void MetricsProvider::ProvideCurrentSessionUKMData() {}
 
 void MetricsProvider::ProvideStabilityMetrics(
     SystemProfileProto* system_profile_proto) {

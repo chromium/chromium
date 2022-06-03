@@ -24,7 +24,9 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.SpeechRecognitionErrorCode;
+import org.chromium.content.R;
 import org.chromium.content_public.browser.SpeechRecognition;
+import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +70,8 @@ public class SpeechRecognitionImpl {
 
         @Override
         public void onBeginningOfSpeech() {
+            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+
             mState = STATE_CAPTURING_SPEECH;
             SpeechRecognitionImplJni.get().onSoundStart(
                     mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
@@ -84,6 +88,7 @@ public class SpeechRecognitionImpl {
             // equivalent (onsoundend) event. Thus, the only way to provide a valid onsoundend
             // event is to trigger it when the last result is received or the session is aborted.
             if (!mContinuous) {
+                if (mNativeSpeechRecognizerImplAndroid == 0) return;
                 SpeechRecognitionImplJni.get().onSoundEnd(
                         mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
                 // Since Android doesn't have a dedicated event for when audio capture is finished,
@@ -139,6 +144,8 @@ public class SpeechRecognitionImpl {
 
         @Override
         public void onReadyForSpeech(Bundle bundle) {
+            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+
             mState = STATE_AWAITING_SPEECH;
             SpeechRecognitionImplJni.get().onAudioStart(
                     mNativeSpeechRecognizerImplAndroid, SpeechRecognitionImpl.this);
@@ -157,6 +164,8 @@ public class SpeechRecognitionImpl {
         public void onRmsChanged(float rms) { }
 
         private void handleResults(Bundle bundle, boolean provisional) {
+            if (mNativeSpeechRecognizerImplAndroid == 0) return;
+
             if (mContinuous && provisional) {
                 // In continuous mode, Android's recognizer sends final results as provisional.
                 provisional = false;
@@ -275,7 +284,14 @@ public class SpeechRecognitionImpl {
         mIntent.putExtra("android.speech.extra.DICTATION_MODE", continuous);
         mIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, language);
         mIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, interimResults);
-        mRecognizer.startListening(mIntent);
+        try {
+            mRecognizer.startListening(mIntent);
+        } catch (SecurityException e) {
+            Context context = ContextUtils.getApplicationContext();
+            String msg =
+                    context.getResources().getString(R.string.speech_recognition_service_not_found);
+            Toast.makeText(context, msg, Toast.LENGTH_SHORT).show();
+        }
     }
 
     @CalledByNative

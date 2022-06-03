@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "components/security_state/core/security_state.h"
 
 class AutocompleteClassifier;
@@ -29,25 +28,37 @@ class LocationBarModelDelegate {
  public:
   // Formats |url| using AutocompleteInput::FormattedStringWithEquivalentMeaning
   // providing an appropriate AutocompleteSchemeClassifier for the embedder.
-  virtual base::string16 FormattedStringWithEquivalentMeaning(
+  virtual std::u16string FormattedStringWithEquivalentMeaning(
       const GURL& url,
-      const base::string16& formatted_url) const = 0;
+      const std::u16string& formatted_url) const = 0;
 
   // Returns true and sets |url| to the current navigation entry URL if it
   // exists. Otherwise returns false and leaves |url| unmodified.
   virtual bool GetURL(GURL* url) const = 0;
 
-  // Returns whether we should prevent elision of the display URL and turn off
-  // query in omnibox. Based on whether user has a specified extension enabled.
-  virtual bool ShouldPreventElision() const;
+  // Returns whether to prevent elision of the display URL, based on whether
+  // user has a specified extension or pref enabled. If true, the only elisions
+  // should be username/password and trailing slash on bare hostname.
+  virtual bool ShouldPreventElision();
+
+  // Returns whether everything after the hostname should be trimmed from the
+  // display URL.
+  virtual bool ShouldTrimDisplayUrlAfterHostName() const;
 
   // Returns whether the URL for the current navigation entry should be
   // in the location bar.
   virtual bool ShouldDisplayURL() const;
 
+  // Returns whether the omnibox should use the new security indicators for
+  // secure HTTPS connections.
+  virtual bool ShouldUseUpdatedConnectionSecurityIndicators() const;
+
   // Returns the underlying security level of the page without regard to any
   // user edits that may be in progress.
   virtual security_state::SecurityLevel GetSecurityLevel() const;
+
+  // Returns the underlying cert status of the page.
+  virtual net::CertStatus GetCertStatus() const;
 
   // Returns the underlying security state of the page without regard to any
   // user edits that may be in progress. Should never return nullptr.
@@ -67,14 +78,19 @@ class LocationBarModelDelegate {
   // previously-downloaded content.
   virtual bool IsOfflinePage() const;
 
-  // Returns true if the current page is a New Tab Page rendered by Instant.
-  virtual bool IsInstantNTP() const;
+  // Returns true if the current page is the default new tab page, i.e., the
+  // page shown when Google is the DSP, NTP is not provided by an extension,
+  // the profile is not off-the-record, and the browser is not in Guest mode.
+  virtual bool IsNewTabPage() const;
 
   // Returns whether |url| corresponds to the new tab page.
-  virtual bool IsNewTabPage(const GURL& url) const;
+  virtual bool IsNewTabPageURL(const GURL& url) const;
 
   // Returns whether |url| corresponds to the user's home page.
   virtual bool IsHomePage(const GURL& url) const;
+
+  // Returns whether there is an accuracy tip shown for the active web contents.
+  virtual bool IsShowingAccuracyTip() const;
 
   // Returns the AutocompleteClassifier instance for the current page.
   virtual AutocompleteClassifier* GetAutocompleteClassifier();

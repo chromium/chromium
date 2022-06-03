@@ -43,7 +43,12 @@ function runTest(test, onPass) {
     }
   };
 
-  test(runner);
+  try {
+    test(runner);
+  } catch (error) {
+    window.CDCJStestRunStatus = "FAIL: " + error.stack;
+    throw error;
+  }
   if (shouldContinue)
     onPass();
 }
@@ -52,6 +57,7 @@ function runTest(test, onPass) {
  * Runs all tests and reports the results via the console.
  */
 function runTests() {
+  window.CDCJStestRunStatus;
   var tests = [];
   for (var i in window) {
     if (i.indexOf('test') == 0)
@@ -62,6 +68,7 @@ function runTests() {
   var testNo = 0;
   function runNextTest() {
     if (testNo >= tests.length) {
+      window.CDCJStestRunStatus = "PASS"
       console.log('All tests passed');
       return;
     }

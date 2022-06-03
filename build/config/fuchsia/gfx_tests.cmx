@@ -1,0 +1,31 @@
+{
+  "sandbox": {
+    "features": [
+      "deprecated-ambient-replace-as-executable",
+      "isolated-persistent-storage",
+      "isolated-temp",
+      "vulkan"
+    ],
+    "dev": [
+      "null",
+      "zero"
+    ],
+    "services": [
+      "fuchsia.accessibility.semantics.SemanticsManager",
+      "fuchsia.device.NameProvider",
+      "fuchsia.fonts.Provider",
+      "fuchsia.intl.PropertyProvider",
+      "fuchsia.logger.LogSink",
+      "fuchsia.media.ProfileProvider",
+      "fuchsia.memorypressure.Provider",
+      "fuchsia.process.Launcher",
+      "fuchsia.sys.Environment",
+      "fuchsia.sys.Loader",
+      "fuchsia.sysmem.Allocator",
+      "fuchsia.tracing.provider.Registry",
+      "fuchsia.ui.policy.Presenter",
+      "fuchsia.ui.scenic.Scenic",
+      "fuchsia.vulkan.loader.Loader"
+    ]
+  }
+}

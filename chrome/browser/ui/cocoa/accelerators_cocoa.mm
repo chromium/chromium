@@ -9,11 +9,12 @@
 
 #include <utility>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/cxx17_backports.h"
+#include "base/mac/mac_util.h"
 #include "base/memory/singleton.h"
-#include "base/stl_util.h"
+#include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/ui/commander/commander.h"
 #include "printing/buildflags/buildflags.h"
 #import "ui/base/accelerators/platform_accelerator_cocoa.h"
 #import "ui/events/cocoa/cocoa_event_utils.h"
@@ -35,7 +36,6 @@ const struct AcceleratorMapping {
     {IDC_DEV_TOOLS_CONSOLE, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::VKEY_J},
     {IDC_DEV_TOOLS_INSPECT, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN, ui::VKEY_C},
     {IDC_FIND, ui::EF_COMMAND_DOWN, ui::VKEY_F},
-    {IDC_FULLSCREEN, ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN, ui::VKEY_F},
     {IDC_NEW_INCOGNITO_WINDOW, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
      ui::VKEY_N},
     {IDC_NEW_TAB, ui::EF_COMMAND_DOWN, ui::VKEY_T},
@@ -104,7 +104,22 @@ const struct AcceleratorMapping {
      ui::VKEY_OEM_2},
     {IDC_TOGGLE_FULLSCREEN_TOOLBAR, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
      ui::VKEY_F},
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+    {IDC_FEEDBACK, ui::EF_COMMAND_DOWN | ui::EF_ALT_DOWN | ui::EF_SHIFT_DOWN,
+     ui::VKEY_I},
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 };
+
+ui::Accelerator enterFullscreenAccelerator() {
+  int modifiers = ui::EF_COMMAND_DOWN | ui::EF_CONTROL_DOWN;
+
+  // The default keyboard accelerator for Enter Full Screen changed in macOS 12.
+  if (base::mac::IsAtLeastOS12()) {
+    modifiers = ui::EF_FUNCTION_DOWN;
+  }
+
+  return ui::Accelerator(ui::VKEY_F, modifiers);
+}
 
 }  // namespace
 
@@ -112,7 +127,14 @@ AcceleratorsCocoa::AcceleratorsCocoa() {
   for (size_t i = 0; i < base::size(kAcceleratorMap); ++i) {
     const AcceleratorMapping& entry = kAcceleratorMap[i];
     ui::Accelerator accelerator(entry.key_code, entry.modifiers);
-    accelerators_.insert(std::make_pair(entry.command_id, accelerator));
+    accelerators_[entry.command_id] = accelerator;
+  }
+
+  accelerators_[IDC_FULLSCREEN] = enterFullscreenAccelerator();
+
+  if (commander::IsEnabled()) {
+    accelerators_[IDC_TOGGLE_COMMANDER] =
+        ui::Accelerator(ui::VKEY_SPACE, ui::EF_CONTROL_DOWN);
   }
 }
 
@@ -126,8 +148,5 @@ AcceleratorsCocoa* AcceleratorsCocoa::GetInstance() {
 const ui::Accelerator* AcceleratorsCocoa::GetAcceleratorForCommand(
     int command_id) {
   AcceleratorMap::iterator it = accelerators_.find(command_id);
-  if (it == accelerators_.end())
-    return NULL;
-  return &it->second;
+  return it != accelerators_.end() ? &it->second : NULL;
 }
-

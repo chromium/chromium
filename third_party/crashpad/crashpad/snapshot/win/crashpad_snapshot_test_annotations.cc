@@ -14,7 +14,7 @@
 
 #include <windows.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
 #include "client/crashpad_info.h"

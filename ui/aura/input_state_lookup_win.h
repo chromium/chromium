@@ -6,7 +6,6 @@
 #define UI_AURA_INPUT_STATE_LOOKUP_WIN_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ui/aura/input_state_lookup.h"
 
 namespace aura {
@@ -15,13 +14,14 @@ namespace aura {
 class AURA_EXPORT InputStateLookupWin : public InputStateLookup {
  public:
   InputStateLookupWin();
+
+  InputStateLookupWin(const InputStateLookupWin&) = delete;
+  InputStateLookupWin& operator=(const InputStateLookupWin&) = delete;
+
   ~InputStateLookupWin() override;
 
   // InputStateLookup overrides:
   bool IsMouseButtonDown() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InputStateLookupWin);
 };
 
 }  // namespace aura

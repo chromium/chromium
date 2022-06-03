@@ -2,7 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './track_info_panel.js';
+
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {AriaLabels} from './control_panel.js';
+import {TrackInfo} from './track_list.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
+
   is: 'audio-player',
 
   listeners: {
@@ -121,7 +130,7 @@ Polymer({
     this.$.audio.addEventListener('ended', this.onAudioEnded.bind(this));
     this.$.audio.addEventListener('error', this.onAudioError.bind(this));
 
-    var onAudioStatusUpdatedBound = this.onAudioStatusUpdate_.bind(this);
+    const onAudioStatusUpdatedBound = this.onAudioStatusUpdate_.bind(this);
     this.$.audio.addEventListener('timeupdate', onAudioStatusUpdatedBound);
     this.$.audio.addEventListener('ended', onAudioStatusUpdatedBound);
     this.$.audio.addEventListener('play', onAudioStatusUpdatedBound);
@@ -147,10 +156,10 @@ Polymer({
    * @param {number} oldValue old value.
    */
   currentTrackIndexChanged: function(newValue, oldValue) {
-    var currentTrackUrl = '';
+    let currentTrackUrl = '';
 
     if (oldValue != newValue) {
-      var currentTrack = this.$.trackList.getCurrentTrack();
+      const currentTrack = this.$.trackList.getCurrentTrack();
       if(currentTrack && currentTrack != this.$.trackInfo.track){
         this.$.trackInfo.track = currentTrack;
         this.$.trackInfo.artworkAvailable = !!currentTrack.artworkUrl;
@@ -176,7 +185,7 @@ Polymer({
   playingChanged: function(newValue, oldValue) {
     if (newValue) {
       if (!this.$.audio.src) {
-        var currentTrack = this.$.trackList.getCurrentTrack();
+        const currentTrack = this.$.trackList.getCurrentTrack();
         if (currentTrack && currentTrack.url != this.$.audio.src) {
           this.$.audio.src = currentTrack.url;
         }
@@ -284,13 +293,14 @@ Polymer({
   advance_: function(forward, repeat) {
     this.cancelAutoAdvance_();
 
-    var nextTrackIndex = this.$.trackList.getNextTrackIndex(forward, true);
-    var isNextTrackAvailable =
+    const nextTrackIndex = this.$.trackList.getNextTrackIndex(forward, true);
+    const isNextTrackAvailable =
         (this.$.trackList.getNextTrackIndex(forward, repeat) !== -1);
 
     this.playing = isNextTrackAvailable;
 
-    var shouldFireEvent = this.$.trackList.currentTrackIndex === nextTrackIndex;
+    const shouldFireEvent =
+        this.$.trackList.currentTrackIndex === nextTrackIndex;
     this.$.trackList.currentTrackIndex = nextTrackIndex;
     this.$.audio.currentTime = 0;
     this.time = 0;
@@ -319,29 +329,27 @@ Polymer({
    */
   scheduleAutoAdvance_: function(forward, repeat) {
     this.cancelAutoAdvance_();
-    var currentTrackIndex = this.currentTrackIndex;
+    const currentTrackIndex = this.currentTrackIndex;
 
-    var timerId = setTimeout(
-        function() {
-          // If the other timer is scheduled, do nothing.
-          if (this.autoAdvanceTimer_ !== timerId) {
-            return;
-          }
+    const timerId = setTimeout(() => {
+      // If the other timer is scheduled, do nothing.
+      if (this.autoAdvanceTimer_ !== timerId) {
+        return;
+      }
 
-          this.autoAdvanceTimer_ = null;
+      this.autoAdvanceTimer_ = null;
 
-          // If the track has been changed since the advance was scheduled, do
-          // nothing.
-          if (this.currentTrackIndex !== currentTrackIndex) {
-            return;
-          }
+      // If the track has been changed since the advance was scheduled, do
+      // nothing.
+      if (this.currentTrackIndex !== currentTrackIndex) {
+        return;
+      }
 
-          // We are advancing only if the next track is not known to be invalid.
-          // This prevents an endless auto-advancing in the case when all tracks
-          // are invalid (we will only visit each track once).
-          this.advance_(forward, repeat);
-        }.bind(this),
-        3000);
+      // We are advancing only if the next track is not known to be invalid.
+      // This prevents an endless auto-advancing in the case when all tracks
+      // are invalid (we will only visit each track once).
+      this.advance_(forward, repeat);
+    }, 3000);
 
     this.autoAdvanceTimer_ = timerId;
   },
@@ -376,7 +384,7 @@ Polymer({
     this.cancelAutoAdvance_();
 
     this.$.trackList.tracks = tracks;
-    var currentTrack = this.$.trackList.getCurrentTrack();
+    const currentTrack = this.$.trackList.getCurrentTrack();
     if (currentTrack && currentTrack.url != this.$.audio.src) {
       this.$.audio.src = currentTrack.url;
       this.$.audio.play();
@@ -402,7 +410,7 @@ Polymer({
         this.$.trackInfo.track.url === this.tracks[index].url){
       this.$.trackInfo.notifyPath('track.title', this.tracks[index].title);
       this.$.trackInfo.notifyPath('track.artist', this.tracks[index].artist);
-      var artworkUrl = this.tracks[index].artworkUrl;
+      const artworkUrl = this.tracks[index].artworkUrl;
       if (artworkUrl) {
         this.$.trackInfo.notifyPath('track.artworkUrl',
             this.tracks[index].artworkUrl);
@@ -423,10 +431,11 @@ Polymer({
 
   /**
    * Invoked when dragging state of seek bar on control panel is changed.
-   * During the user is dragging it, audio playback is paused temporalily.
-   * @param {!CustomEvent<{value: boolean}>} e
+   * During the user is dragging it, audio playback is paused temporarily.
+   * @param {!Event} e
    */
   onSeekingChanged_: function(e) {
+    e = /** @type {!CustomEvent<{value: boolean}>} */ (e);
     if (e.detail.value && this.playing) {
       this.$.audio.pause();
       this.wasPlayingOnDragStart_ = true;

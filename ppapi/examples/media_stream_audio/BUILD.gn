@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("media_stream_audio") {
   output_name = "ppapi_example_media_stream_audio"
-  sources = [
-    "media_stream_audio.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "media_stream_audio.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

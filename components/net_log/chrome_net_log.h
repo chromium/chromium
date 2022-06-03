@@ -9,27 +9,14 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 
 namespace base {
 class DictionaryValue;
-class Value;
 }
 
 namespace net_log {
 
-// Returns all the constants to include in NetLog files. This includes both
-// platform-specific details (GetPlatformConstantsForNetLog()) as well as the
-// basic src/net constants (net::GetNetConstants()) for things like symbolic
-// names of error codes.
-//
-// Safe to call on any thread.
-std::unique_ptr<base::Value> GetConstantsForNetLog(
-    const base::CommandLine::StringType& command_line_string,
-    const std::string& channel_string);
-
-// Returns constants to include in NetLog files for debugging purposes, which
-// includes information such as:
+// Returns constants to include in NetLog files including information such as:
 //
 //  * The version and build of Chrome
 //  * The command line arguments Chrome was launched with

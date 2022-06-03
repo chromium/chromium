@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Verify that breakpoints are moved appropriately in case of page reload.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function addFooJS() {
@@ -35,14 +35,14 @@
           .then(sourceCode => SourcesTestRunner.showUISourceCodePromise(sourceCode))
           .then(onSourceFrame);
 
-      function onSourceFrame(sourceFrame) {
-        SourcesTestRunner.setBreakpoint(sourceFrame, 0, '', true);
+      async function onSourceFrame(sourceFrame) {
+        await SourcesTestRunner.setBreakpoint(sourceFrame, 0, '', true);
         SourcesTestRunner.waitBreakpointSidebarPane(true).then(dumpBreakpointSidebarPane).then(next);
       }
     },
 
     async function reloadPageAndDumpBreakpoints(next) {
-      testMapping.removeBinding('foo.js');
+      await testMapping.removeBinding('foo.js');
       await Promise.all([SourcesTestRunner.waitBreakpointSidebarPane(), TestRunner.reloadPagePromise()]);
       testMapping.addBinding('foo.js');
       dumpBreakpointSidebarPane();
@@ -51,13 +51,12 @@
   ]);
 
   function dumpBreakpointSidebarPane() {
-    var paneElement = self.runtime.sharedInstance(Sources.JavaScriptBreakpointsSidebarPane).contentElement;
-    var empty = paneElement.querySelector('.gray-info-message');
-    if (empty)
-      return TestRunner.textContentWithLineBreaks(empty);
-    var entries = Array.from(paneElement.querySelectorAll('.breakpoint-entry'));
+    var pane = Sources.JavaScriptBreakpointsSidebarPane.instance();
+    if (!pane._emptyElement.classList.contains('hidden'))
+      return TestRunner.textContentWithLineBreaks(pane._emptyElement);
+    var entries = Array.from(pane.contentElement.querySelectorAll('.breakpoint-entry'));
     for (var entry of entries) {
-      var uiLocation = entry[Sources.JavaScriptBreakpointsSidebarPane._locationSymbol];
+      var uiLocation = Sources.JavaScriptBreakpointsSidebarPane.retrieveLocationForElement(entry)
       TestRunner.addResult('    ' + uiLocation.uiSourceCode.url() + ':' + uiLocation.lineNumber);
     }
   }

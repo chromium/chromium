@@ -5,17 +5,18 @@
 #ifndef CHROME_BROWSER_UI_APPS_DIRECTORY_ACCESS_CONFIRMATION_DIALOG_H_
 #define CHROME_BROWSER_UI_APPS_DIRECTORY_ACCESS_CONFIRMATION_DIALOG_H_
 
+#include <string>
+
 #include "base/callback_forward.h"
-#include "base/strings/string16.h"
 
 namespace content {
 class WebContents;
 }
 
 void CreateDirectoryAccessConfirmationDialog(bool writable,
-                                             const base::string16& app_name,
+                                             const std::u16string& app_name,
                                              content::WebContents* web_contents,
-                                             const base::Closure& on_accept,
-                                             const base::Closure& on_cancel);
+                                             base::OnceClosure on_accept,
+                                             base::OnceClosure on_cancel);
 
 #endif  // CHROME_BROWSER_UI_APPS_DIRECTORY_ACCESS_CONFIRMATION_DIALOG_H_

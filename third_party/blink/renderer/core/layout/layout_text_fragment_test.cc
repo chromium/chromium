@@ -17,7 +17,7 @@ class LayoutTextFragmentTest : public RenderingTest {
  protected:
   void SetUp() override {
     RenderingTest::SetUp();
-    GetDocument().head()->SetInnerHTMLFromString(
+    GetDocument().head()->setInnerHTML(
         "<style>#target::first-letter{color:red}</style>");
   }
 
@@ -33,12 +33,12 @@ class LayoutTextFragmentTest : public RenderingTest {
   }
 
   const LayoutTextFragment* GetRemainingText() const {
-    return ToLayoutTextFragment(
+    return To<LayoutTextFragment>(
         GetElementById("target")->firstChild()->GetLayoutObject());
   }
 
   const LayoutTextFragment* GetFirstLetter() const {
-    return ToLayoutTextFragment(
+    return To<LayoutTextFragment>(
         AssociatedLayoutObjectOf(*GetElementById("target")->firstChild(), 0));
   }
 };
@@ -52,7 +52,9 @@ class ParameterizedLayoutTextFragmentTest
   ParameterizedLayoutTextFragmentTest() : ScopedLayoutNGForTest(GetParam()) {}
 
  protected:
-  bool LayoutNGEnabled() const { return GetParam(); }
+  bool LayoutNGEnabled() const {
+    return RuntimeEnabledFeatures::LayoutNGEnabled();
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -406,7 +408,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
   Text& letter_x = *To<Text>(sample.firstChild());
   ASSERT_TRUE(letter_x.GetLayoutObject()->IsTextFragment());
   EXPECT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_TRUE(ToLayoutTextFragment(letter_x.GetLayoutObject())
+  EXPECT_TRUE(To<LayoutTextFragment>(letter_x.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
   EXPECT_EQ("a", letter_x.GetLayoutObject()->GetFirstLetterPart()->GetText());
@@ -418,12 +420,12 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
   EXPECT_TRUE(letter_a.GetLayoutObject()->IsTextFragment())
       << "'a' is still first-letter";
   EXPECT_TRUE(letter_a.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_TRUE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+  EXPECT_TRUE(To<LayoutTextFragment>(letter_a.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_a.GetLayoutObject()->GetFirstLetterPart());
   EXPECT_EQ("a", letter_a.GetLayoutObject()->GetFirstLetterPart()->GetText());
-  EXPECT_TRUE(letter_x.GetLayoutObject()->IsTextFragment());
-  EXPECT_FALSE(letter_x.GetLayoutObject()->GetFirstLetterPart());
+  EXPECT_FALSE(letter_x.GetLayoutObject())
+      << "We don't have layout text for empty Text node.";
 
   // Make <div>"x" "a"</div>
   letter_x.setTextContent("x");
@@ -434,13 +436,13 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SetTextWithFirstLetter) {
   EXPECT_TRUE(letter_a.GetLayoutObject()->IsTextFragment())
       << "We still use LayoutTextFragment for 'a'";
   EXPECT_FALSE(letter_a.GetLayoutObject()->GetFirstLetterPart());
-  EXPECT_FALSE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+  EXPECT_FALSE(To<LayoutTextFragment>(letter_a.GetLayoutObject())
                    ->IsRemainingTextLayoutObject());
-  EXPECT_FALSE(ToLayoutTextFragment(letter_a.GetLayoutObject())
+  EXPECT_FALSE(To<LayoutTextFragment>(letter_a.GetLayoutObject())
                    ->GetFirstLetterPseudoElement());
   ASSERT_TRUE(letter_x.GetLayoutObject()->IsTextFragment())
       << "'x' is first letter-part";
-  EXPECT_TRUE(ToLayoutTextFragment(letter_x.GetLayoutObject())
+  EXPECT_TRUE(To<LayoutTextFragment>(letter_x.GetLayoutObject())
                   ->IsRemainingTextLayoutObject());
   ASSERT_TRUE(letter_x.GetLayoutObject()->GetFirstLetterPart());
   EXPECT_EQ("x", letter_x.GetLayoutObject()->GetFirstLetterPart()->GetText());
@@ -465,7 +467,7 @@ TEST_P(ParameterizedLayoutTextFragmentTest, SplitTextWithZero) {
 
   Text& xy = To<Text>(*sample.lastChild());
   FirstLetterPseudoElement& first_letter_element =
-      *ToLayoutTextFragment(xy.GetLayoutObject())
+      *To<LayoutTextFragment>(xy.GetLayoutObject())
            ->GetFirstLetterPseudoElement();
   EXPECT_EQ(first_letter_element.GetLayoutObject(),
             xy.GetLayoutObject()->PreviousSibling())

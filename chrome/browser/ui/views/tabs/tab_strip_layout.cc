@@ -8,8 +8,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/geometry/rect.h"
@@ -21,7 +20,7 @@ namespace {
 TabSizer CalculateSpaceFractionAvailable(
     const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
-    base::Optional<int> width) {
+    absl::optional<int> width) {
   if (!width.has_value())
     return TabSizer(LayoutDomain::kInactiveWidthEqualsActiveWidth, 1);
 
@@ -46,18 +45,27 @@ TabSizer CalculateSpaceFractionAvailable(
   float space_fraction_available;
   if (width < crossover_width) {
     domain = LayoutDomain::kInactiveWidthBelowActiveWidth;
-    space_fraction_available =
-        (width.value() - minimum_width) / (crossover_width - minimum_width);
+    // |minimum_width| may equal |crossover_width| when there is only one tab,
+    // that tab is active, and the tabstrip width is smaller than that width,
+    // which will generally happen during startup of a new window. In this case
+    // the layout will always be replaced before we paint, so our return value
+    // is irrelevant.
+    space_fraction_available = minimum_width == crossover_width
+                                   ? 1
+                                   : (width.value() - minimum_width) /
+                                         (crossover_width - minimum_width);
   } else {
     domain = LayoutDomain::kInactiveWidthEqualsActiveWidth;
+    // |preferred_width| may equal |crossover_width| when all tabs are pinned.
+    // In this case tabs will have the same width regardless of the space
+    // available to them, so our return value is irrelevant.
     space_fraction_available = preferred_width == crossover_width
                                    ? 1
                                    : (width.value() - crossover_width) /
                                          (preferred_width - crossover_width);
   }
 
-  space_fraction_available =
-      base::ClampToRange(space_fraction_available, 0.0f, 1.0f);
+  space_fraction_available = base::clamp(space_fraction_available, 0.0f, 1.0f);
   return TabSizer(domain, space_fraction_available);
 }
 
@@ -100,7 +108,7 @@ bool TabSizer::IsAlreadyPreferredWidth() const {
 // use up that width.
 void AllocateExtraSpace(std::vector<gfx::Rect>* bounds,
                         const std::vector<TabWidthConstraints>& tabs,
-                        base::Optional<int> extra_space,
+                        absl::optional<int> extra_space,
                         TabSizer tab_sizer) {
   // Don't expand tabs if they are already at their preferred width.
   if (tab_sizer.IsAlreadyPreferredWidth() || !extra_space.has_value())
@@ -140,8 +148,8 @@ TabWidthOverride CalculateTabWidthOverride(
 std::vector<gfx::Rect> CalculateTabBounds(
     const TabLayoutConstants& layout_constants,
     const std::vector<TabWidthConstraints>& tabs,
-    base::Optional<int> width,
-    base::Optional<TabWidthOverride> tab_width_override) {
+    absl::optional<int> width,
+    absl::optional<TabWidthOverride> tab_width_override) {
   if (tabs.empty())
     return std::vector<gfx::Rect>();
 
@@ -159,21 +167,14 @@ std::vector<gfx::Rect> CalculateTabBounds(
     next_x += tab_width - layout_constants.tab_overlap;
   }
 
-  const base::Optional<int> calculated_extra_space =
+  const absl::optional<int> calculated_extra_space =
       width.has_value()
-          ? base::make_optional(width.value() - bounds.back().right())
-          : base::nullopt;
-  const base::Optional<int> extra_space = tab_width_override.has_value()
+          ? absl::make_optional(width.value() - bounds.back().right())
+          : absl::nullopt;
+  const absl::optional<int> extra_space = tab_width_override.has_value()
                                               ? tab_width_override->extra_space
                                               : calculated_extra_space;
   AllocateExtraSpace(&bounds, tabs, extra_space, tab_sizer);
 
   return bounds;
-}
-
-std::vector<gfx::Rect> CalculatePinnedTabBounds(
-    const TabLayoutConstants& layout_constants,
-    const std::vector<TabWidthConstraints>& pinned_tabs) {
-  // Pinned tabs are always the same size regardless of the available width.
-  return CalculateTabBounds(layout_constants, pinned_tabs, 0, base::nullopt);
 }

@@ -6,8 +6,10 @@
 
 #include <inttypes.h>
 #include <algorithm>
+#include <memory>
+#include <string>
+#include <utility>
 
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "cc/animation/animation_delegate.h"
 #include "cc/animation/animation_events.h"
@@ -15,7 +17,7 @@
 #include "cc/animation/animation_timeline.h"
 #include "cc/animation/keyframe_effect.h"
 #include "cc/animation/scroll_offset_animation_curve.h"
-#include "cc/animation/transform_operations.h"
+#include "cc/animation/scroll_timeline.h"
 #include "cc/trees/property_animation_state.h"
 
 namespace cc {
@@ -29,7 +31,7 @@ Animation::Animation(int id)
       animation_timeline_(),
       animation_delegate_(),
       id_(id),
-      ticking_keyframe_effects_count(0) {
+      keyframe_effect_(std::make_unique<KeyframeEffect>(this)) {
   DCHECK(id_);
 }
 
@@ -41,6 +43,10 @@ scoped_refptr<Animation> Animation::CreateImplInstance() const {
   return Animation::Create(id());
 }
 
+ElementId Animation::element_id() const {
+  return keyframe_effect_->element_id();
+}
+
 void Animation::SetAnimationHost(AnimationHost* animation_host) {
   animation_host_ = animation_host;
 }
@@ -49,234 +55,124 @@ void Animation::SetAnimationTimeline(AnimationTimeline* timeline) {
   if (animation_timeline_ == timeline)
     return;
 
-  // We need to unregister keyframe_effect to manage ElementAnimations and
+  // We need to unregister the animation to manage ElementAnimations and
   // observers properly.
-  if (!element_to_keyframe_effect_id_map_.empty() && animation_host_) {
-    // Destroy ElementAnimations or release it if it's still needed.
-    UnregisterKeyframeEffects();
+  if (keyframe_effect_->has_attached_element() &&
+      keyframe_effect_->has_bound_element_animations()) {
+    UnregisterAnimation();
   }
 
   animation_timeline_ = timeline;
 
-  // Register animation only if layer AND host attached. Unlike the
-  // SingleKeyframeEffectAnimation case, all keyframe_effects have been attached
-  // to their corresponding elements.
-  if (!element_to_keyframe_effect_id_map_.empty() && animation_host_) {
-    RegisterKeyframeEffects();
-  }
-}
-
-bool Animation::has_element_animations() const {
-  return !element_to_keyframe_effect_id_map_.empty();
-}
-
-scoped_refptr<ElementAnimations> Animation::element_animations(
-    KeyframeEffectId keyframe_effect_id) const {
-  return GetKeyframeEffectById(keyframe_effect_id)->element_animations();
-}
-
-void Animation::AttachElementForKeyframeEffect(
-    ElementId element_id,
-    KeyframeEffectId keyframe_effect_id) {
-  DCHECK(GetKeyframeEffectById(keyframe_effect_id));
-  GetKeyframeEffectById(keyframe_effect_id)->AttachElement(element_id);
-  element_to_keyframe_effect_id_map_[element_id].emplace(keyframe_effect_id);
   // Register animation only if layer AND host attached.
-  if (animation_host_) {
-    // Create ElementAnimations or re-use existing.
-    RegisterKeyframeEffect(element_id, keyframe_effect_id);
-  }
+  if (keyframe_effect_->has_attached_element() && animation_host_)
+    RegisterAnimation();
 }
 
-void Animation::DetachElementForKeyframeEffect(
-    ElementId element_id,
-    KeyframeEffectId keyframe_effect_id) {
-  DCHECK(GetKeyframeEffectById(keyframe_effect_id));
-  DCHECK_EQ(GetKeyframeEffectById(keyframe_effect_id)->element_id(),
-            element_id);
+scoped_refptr<ElementAnimations> Animation::element_animations() const {
+  return keyframe_effect_->element_animations();
+}
 
-  UnregisterKeyframeEffect(element_id, keyframe_effect_id);
-  GetKeyframeEffectById(keyframe_effect_id)->DetachElement();
-  element_to_keyframe_effect_id_map_[element_id].erase(keyframe_effect_id);
+void Animation::AttachElement(ElementId element_id) {
+  DCHECK_NE(element_id.GetStableId(), ElementId::kReservedElementId);
+  AttachElementInternal(element_id);
+}
+
+void Animation::AttachNoElement() {
+  AttachElementInternal(ElementId(ElementId::kReservedElementId));
+}
+
+void Animation::AttachElementInternal(ElementId element_id) {
+  keyframe_effect_->AttachElement(element_id);
+  // Register animation only if layer AND host attached.
+  if (animation_host_)
+    RegisterAnimation();
+}
+
+void Animation::SetKeyframeEffectForTesting(
+    std::unique_ptr<KeyframeEffect> effect) {
+  keyframe_effect_ = std::move(effect);
 }
 
 void Animation::DetachElement() {
-  if (animation_host_) {
-    // Destroy ElementAnimations or release it if it's still needed.
-    UnregisterKeyframeEffects();
-  }
+  DCHECK(keyframe_effect_->has_attached_element());
 
-  for (auto pair = element_to_keyframe_effect_id_map_.begin();
-       pair != element_to_keyframe_effect_id_map_.end();) {
-    for (auto keyframe_effect = pair->second.begin();
-         keyframe_effect != pair->second.end();) {
-      GetKeyframeEffectById(*keyframe_effect)->DetachElement();
-      keyframe_effect = pair->second.erase(keyframe_effect);
-    }
-    pair = element_to_keyframe_effect_id_map_.erase(pair);
-  }
-  DCHECK_EQ(element_to_keyframe_effect_id_map_.size(), 0u);
+  if (animation_host_)
+    UnregisterAnimation();
+
+  keyframe_effect_->DetachElement();
 }
 
-void Animation::RegisterKeyframeEffect(ElementId element_id,
-                                       KeyframeEffectId keyframe_effect_id) {
+void Animation::RegisterAnimation() {
   DCHECK(animation_host_);
-  KeyframeEffect* keyframe_effect = GetKeyframeEffectById(keyframe_effect_id);
-  DCHECK(!keyframe_effect->has_bound_element_animations());
+  DCHECK(keyframe_effect_->has_attached_element());
+  DCHECK(!keyframe_effect_->has_bound_element_animations());
 
-  if (!keyframe_effect->has_attached_element())
-    return;
-  animation_host_->RegisterKeyframeEffectForElement(element_id,
-                                                    keyframe_effect);
+  // Create ElementAnimations or re-use existing.
+  animation_host_->RegisterAnimationForElement(keyframe_effect_->element_id(),
+                                               this);
 }
 
-void Animation::UnregisterKeyframeEffect(ElementId element_id,
-                                         KeyframeEffectId keyframe_effect_id) {
+void Animation::UnregisterAnimation() {
   DCHECK(animation_host_);
-  KeyframeEffect* keyframe_effect = GetKeyframeEffectById(keyframe_effect_id);
-  DCHECK(keyframe_effect);
-  if (keyframe_effect->has_attached_element() &&
-      keyframe_effect->has_bound_element_animations()) {
-    animation_host_->UnregisterKeyframeEffectForElement(element_id,
-                                                        keyframe_effect);
-  }
-}
-void Animation::RegisterKeyframeEffects() {
-  for (auto& element_id_keyframe_effect_id :
-       element_to_keyframe_effect_id_map_) {
-    const ElementId element_id = element_id_keyframe_effect_id.first;
-    const std::unordered_set<KeyframeEffectId>& keyframe_effect_ids =
-        element_id_keyframe_effect_id.second;
-    for (auto& keyframe_effect_id : keyframe_effect_ids)
-      RegisterKeyframeEffect(element_id, keyframe_effect_id);
-  }
-}
+  DCHECK(keyframe_effect_->has_attached_element());
+  DCHECK(keyframe_effect_->has_bound_element_animations());
 
-void Animation::UnregisterKeyframeEffects() {
-  for (auto& element_id_keyframe_effect_id :
-       element_to_keyframe_effect_id_map_) {
-    const ElementId element_id = element_id_keyframe_effect_id.first;
-    const std::unordered_set<KeyframeEffectId>& keyframe_effect_ids =
-        element_id_keyframe_effect_id.second;
-    for (auto& keyframe_effect_id : keyframe_effect_ids)
-      UnregisterKeyframeEffect(element_id, keyframe_effect_id);
-  }
-  animation_host_->RemoveFromTicking(this);
-}
-
-void Animation::PushAttachedKeyframeEffectsToImplThread(
-    Animation* animation_impl) const {
-  for (auto& keyframe_effect : keyframe_effects_) {
-    KeyframeEffect* keyframe_effect_impl =
-        animation_impl->GetKeyframeEffectById(keyframe_effect->id());
-    if (keyframe_effect_impl)
-      continue;
-
-    std::unique_ptr<KeyframeEffect> to_add =
-        keyframe_effect->CreateImplInstance();
-    animation_impl->AddKeyframeEffect(std::move(to_add));
-  }
-}
-
-void Animation::PushPropertiesToImplThread(Animation* animation_impl) {
-  for (auto& keyframe_effect : keyframe_effects_) {
-    if (KeyframeEffect* keyframe_effect_impl =
-            animation_impl->GetKeyframeEffectById(keyframe_effect->id())) {
-      keyframe_effect->PushPropertiesTo(keyframe_effect_impl);
-    }
-  }
-}
-
-void Animation::AddKeyframeModelForKeyframeEffect(
-    std::unique_ptr<KeyframeModel> keyframe_model,
-    KeyframeEffectId keyframe_effect_id) {
-  DCHECK(GetKeyframeEffectById(keyframe_effect_id));
-  GetKeyframeEffectById(keyframe_effect_id)
-      ->AddKeyframeModel(std::move(keyframe_model));
-}
-
-void Animation::PauseKeyframeModelForKeyframeEffect(
-    int keyframe_model_id,
-    double time_offset,
-    KeyframeEffectId keyframe_effect_id) {
-  DCHECK(GetKeyframeEffectById(keyframe_effect_id));
-  GetKeyframeEffectById(keyframe_effect_id)
-      ->PauseKeyframeModel(keyframe_model_id, time_offset);
-}
-
-void Animation::RemoveKeyframeModelForKeyframeEffect(
-    int keyframe_model_id,
-    KeyframeEffectId keyframe_effect_id) {
-  DCHECK(GetKeyframeEffectById(keyframe_effect_id));
-  GetKeyframeEffectById(keyframe_effect_id)
-      ->RemoveKeyframeModel(keyframe_model_id);
-}
-
-void Animation::AbortKeyframeModelForKeyframeEffect(
-    int keyframe_model_id,
-    KeyframeEffectId keyframe_effect_id) {
-  DCHECK(GetKeyframeEffectById(keyframe_effect_id));
-  GetKeyframeEffectById(keyframe_effect_id)
-      ->AbortKeyframeModel(keyframe_model_id);
-}
-
-void Animation::AbortKeyframeModelsWithProperty(
-    TargetProperty::Type target_property,
-    bool needs_completion) {
-  for (auto& keyframe_effect : keyframe_effects_)
-    keyframe_effect->AbortKeyframeModelsWithProperty(target_property,
-                                                     needs_completion);
+  // Destroy ElementAnimations or release it if it's still needed.
+  animation_host_->UnregisterAnimationForElement(keyframe_effect_->element_id(),
+                                                 this);
 }
 
 void Animation::PushPropertiesTo(Animation* animation_impl) {
-  // In general when pushing proerties to impl thread we first push attached
-  // properties to impl followed by removing the detached ones. However, we
-  // never remove individual keyframe effect from an animation so there is no
-  // need to remove the detached ones.
-  PushAttachedKeyframeEffectsToImplThread(animation_impl);
-  PushPropertiesToImplThread(animation_impl);
+  keyframe_effect_->PushPropertiesTo(animation_impl->keyframe_effect_.get());
 }
 
-void Animation::Tick(base::TimeTicks monotonic_time) {
-  DCHECK(!monotonic_time.is_null());
-  for (auto& keyframe_effect : keyframe_effects_)
-    keyframe_effect->Tick(monotonic_time);
+void Animation::Tick(base::TimeTicks tick_time) {
+  DCHECK(!IsWorkletAnimation());
+  if (IsScrollLinkedAnimation()) {
+    // blink::Animation uses its start time to calculate local time for each of
+    // its keyframes. However, in cc the start time is stored at the Keyframe
+    // level so we have to delegate the tick time to a lower level to calculate
+    // the local time.
+    // With ScrollTimeline, the start time of the animation is calculated
+    // differently i.e. it is not the current time at the moment of start.
+    // To deal with this the scroll timeline pauses the animation at its desired
+    // time and then ticks it which side-steps the start time altogether. See
+    // crbug.com/1076012 for alternative design choices considered for future
+    // improvement.
+    keyframe_effect_->Pause(tick_time - base::TimeTicks(),
+                            PauseCondition::kAfterStart);
+    keyframe_effect_->Tick(base::TimeTicks());
+  } else {
+    DCHECK(!tick_time.is_null());
+    keyframe_effect_->Tick(tick_time);
+  }
+}
+
+bool Animation::IsScrollLinkedAnimation() const {
+  return animation_timeline_ && animation_timeline_->IsScrollTimeline();
 }
 
 void Animation::UpdateState(bool start_ready_animations,
                             AnimationEvents* events) {
-  for (auto& keyframe_effect : keyframe_effects_) {
-    keyframe_effect->UpdateState(start_ready_animations, events);
-    keyframe_effect->UpdateTickingState();
-  }
+  keyframe_effect_->UpdateState(start_ready_animations, events);
+  keyframe_effect_->UpdateTickingState();
 }
 
 void Animation::AddToTicking() {
-  ++ticking_keyframe_effects_count;
-  if (ticking_keyframe_effects_count > 1)
-    return;
   DCHECK(animation_host_);
   animation_host_->AddToTicking(this);
 }
 
 void Animation::RemoveFromTicking() {
-  DCHECK_GE(ticking_keyframe_effects_count, 0);
-  if (!ticking_keyframe_effects_count)
-    return;
-  --ticking_keyframe_effects_count;
   DCHECK(animation_host_);
-  DCHECK_GE(ticking_keyframe_effects_count, 0);
-  if (ticking_keyframe_effects_count)
-    return;
   animation_host_->RemoveFromTicking(this);
 }
 
 void Animation::DispatchAndDelegateAnimationEvent(const AnimationEvent& event) {
   if (event.ShouldDispatchToKeyframeEffectAndModel()) {
-    KeyframeEffect* keyframe_effect =
-        GetKeyframeEffectById(event.uid.effect_id);
-    if (!keyframe_effect ||
-        !keyframe_effect->DispatchAnimationEventToKeyframeModel(event)) {
+    if (!keyframe_effect_ ||
+        !keyframe_effect_->DispatchAnimationEventToKeyframeModel(event)) {
       // If we fail to dispatch the event, it is to clean up an obsolete
       // animation and should not notify the delegate.
       // TODO(gerchiko): Determine when we expect the referenced animations not
@@ -323,18 +219,12 @@ void Animation::DelegateAnimationEvent(const AnimationEvent& event) {
   }
 }
 
-size_t Animation::TickingKeyframeModelsCount() const {
-  size_t count = 0;
-  for (auto& keyframe_effect : keyframe_effects_)
-    count += keyframe_effect->TickingKeyframeModelsCount();
-  return count;
+bool Animation::RequiresInvalidation() const {
+  return keyframe_effect_->RequiresInvalidation();
 }
 
-bool Animation::AffectsCustomProperty() const {
-  for (const auto& keyframe_effect : keyframe_effects_)
-    if (keyframe_effect->AffectsCustomProperty())
-      return true;
-  return false;
+bool Animation::AffectsNativeProperty() const {
+  return keyframe_effect_->AffectsNativeProperty();
 }
 
 void Animation::SetNeedsCommit() {
@@ -348,50 +238,62 @@ void Animation::SetNeedsPushProperties() {
   animation_timeline_->SetNeedsPushProperties();
 }
 
-void Animation::ActivateKeyframeEffects() {
-  for (auto& keyframe_effect : keyframe_effects_) {
-    keyframe_effect->ActivateKeyframeEffects();
-    keyframe_effect->UpdateTickingState();
-  }
+void Animation::ActivateKeyframeModels() {
+  keyframe_effect_->ActivateKeyframeModels();
+  keyframe_effect_->UpdateTickingState();
 }
 
-KeyframeModel* Animation::GetKeyframeModelForKeyframeEffect(
-    TargetProperty::Type target_property,
-    KeyframeEffectId keyframe_effect_id) const {
-  DCHECK(GetKeyframeEffectById(keyframe_effect_id));
-  return GetKeyframeEffectById(keyframe_effect_id)
-      ->GetKeyframeModel(target_property);
+KeyframeModel* Animation::GetKeyframeModel(
+    TargetProperty::Type target_property) const {
+  return KeyframeModel::ToCcKeyframeModel(
+      keyframe_effect_->GetKeyframeModel(target_property));
 }
 
 std::string Animation::ToString() const {
-  std::string output = base::StringPrintf("Animation{id=%d", id_);
-  for (const auto& keyframe_effect : keyframe_effects_) {
-    output +=
-        base::StringPrintf(", element_id=%s, keyframe_models=[%s]",
-                           keyframe_effect->element_id().ToString().c_str(),
-                           keyframe_effect->KeyframeModelsToString().c_str());
-  }
-  return output + "}";
+  return base::StringPrintf(
+      "Animation{id=%d, element_id=%s, keyframe_models=[%s]}", id_,
+      keyframe_effect_->element_id().ToString().c_str(),
+      keyframe_effect_->KeyframeModelsToString().c_str());
 }
 
 bool Animation::IsWorkletAnimation() const {
   return false;
 }
 
-void Animation::AddKeyframeEffect(
-    std::unique_ptr<KeyframeEffect> keyframe_effect) {
-  keyframe_effect->SetAnimation(this);
-  keyframe_effects_.push_back(std::move(keyframe_effect));
-
-  SetNeedsPushProperties();
+void Animation::AddKeyframeModel(
+    std::unique_ptr<KeyframeModel> keyframe_model) {
+  keyframe_effect_->AddKeyframeModel(std::move(keyframe_model));
 }
 
-KeyframeEffect* Animation::GetKeyframeEffectById(
-    KeyframeEffectId keyframe_effect_id) const {
-  // May return nullptr when syncing keyframe_effects_ to impl.
-  return keyframe_effects_.size() > keyframe_effect_id
-             ? keyframe_effects_[keyframe_effect_id].get()
-             : nullptr;
+void Animation::PauseKeyframeModel(int keyframe_model_id,
+                                   base::TimeDelta time_offset) {
+  keyframe_effect_->PauseKeyframeModel(keyframe_model_id, time_offset);
+}
+
+void Animation::RemoveKeyframeModel(int keyframe_model_id) {
+  keyframe_effect_->RemoveKeyframeModel(keyframe_model_id);
+}
+
+void Animation::AbortKeyframeModel(int keyframe_model_id) {
+  keyframe_effect_->AbortKeyframeModel(keyframe_model_id);
+}
+
+void Animation::AbortKeyframeModelsWithProperty(
+    TargetProperty::Type target_property,
+    bool needs_completion) {
+  keyframe_effect_->AbortKeyframeModelsWithProperty(target_property,
+                                                    needs_completion);
+}
+
+void Animation::NotifyKeyframeModelFinishedForTesting(
+    int timeline_id,
+    int keyframe_model_id,
+    TargetProperty::Type target_property,
+    int group_id) {
+  AnimationEvent event(AnimationEvent::FINISHED,
+                       {timeline_id, id(), keyframe_model_id}, group_id,
+                       target_property, base::TimeTicks());
+  DispatchAndDelegateAnimationEvent(event);
 }
 
 }  // namespace cc

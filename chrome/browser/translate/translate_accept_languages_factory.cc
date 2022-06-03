@@ -4,7 +4,6 @@
 
 #include "chrome/browser/translate/translate_accept_languages_factory.h"
 
-#include "base/macros.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

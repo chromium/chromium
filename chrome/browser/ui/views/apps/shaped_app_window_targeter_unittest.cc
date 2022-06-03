@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "apps/ui/views/app_window_frame_view.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -17,7 +17,6 @@
 #include "ui/events/event_utils.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/views_test_base.h"
-#include "ui/wm/core/default_activation_client.h"
 #include "ui/wm/core/easy_resize_window_targeter.h"
 
 using extensions::AppWindow;
@@ -27,6 +26,10 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
   ShapedAppWindowTargeterTest()
       : web_view_(NULL) {
   }
+
+  ShapedAppWindowTargeterTest(const ShapedAppWindowTargeterTest&) = delete;
+  ShapedAppWindowTargeterTest& operator=(const ShapedAppWindowTargeterTest&) =
+      delete;
 
   ~ShapedAppWindowTargeterTest() override {}
 
@@ -38,7 +41,6 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
  protected:
   void SetUp() override {
     views::ViewsTestBase::SetUp();
-    new wm::DefaultActivationClient(root_window());
     widget_ = std::make_unique<views::Widget>();
     views::Widget::InitParams params(views::Widget::InitParams::TYPE_WINDOW);
     params.remove_standard_frame = true;
@@ -70,8 +72,6 @@ class ShapedAppWindowTargeterTest : public views::ViewsTestBase {
   views::WebView web_view_;
   std::unique_ptr<views::Widget> widget_;
   ChromeNativeAppWindowViewsAura app_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShapedAppWindowTargeterTest);
 };
 
 TEST_F(ShapedAppWindowTargeterTest, HitTestBasic) {
@@ -82,7 +82,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestBasic) {
     ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(40, 40),
                         gfx::Point(40, 40), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move.target());
   }
@@ -96,7 +96,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestBasic) {
     ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(40, 40),
                         gfx::Point(40, 40), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(root_window(), move.target());
   }
@@ -120,7 +120,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestBasic) {
     ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(40, 40),
                         gfx::Point(40, 40), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(root_window(), move.target());
 
@@ -128,7 +128,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestBasic) {
     ui::MouseEvent move2(ui::ET_MOUSE_MOVED, gfx::Point(80, 80),
                          gfx::Point(80, 80), ui::EventTimeForNow(), ui::EF_NONE,
                          ui::EF_NONE);
-    details = event_sink()->OnEventFromSource(&move2);
+    details = GetEventSink()->OnEventFromSource(&move2);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move2.target());
   }
@@ -150,7 +150,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestOnlyForShapedWindow) {
                                gfx::Point(40, 40), ui::EventTimeForNow(),
                                ui::EF_NONE, ui::EF_NONE);
     ui::EventDispatchDetails details =
-        event_sink()->OnEventFromSource(&move_inside);
+        GetEventSink()->OnEventFromSource(&move_inside);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move_inside.target());
   }
@@ -164,7 +164,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestOnlyForShapedWindow) {
     // bounds should also be targeted correctly to the root window (for
     // non-resizable windows).
     ui::MouseEvent move(move_outside);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(root_window(), move.target());
   }
@@ -175,7 +175,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestOnlyForShapedWindow) {
     // bounds should also be targeted correctly to the window, because of the
     // targeter installed on the root-window (for resizable windows).
     ui::MouseEvent move(move_outside);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move.target());
   }
@@ -188,7 +188,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestOnlyForShapedWindow) {
     // With the custom shape, the events that don't fall within the custom shape
     // will go through to the root window.
     ui::MouseEvent move(move_outside);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(root_window(), move.target());
   }
@@ -199,7 +199,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestOnlyForShapedWindow) {
   SetWindowResizable(true);
   {
     ui::MouseEvent move(move_outside);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move.target());
   }
@@ -209,7 +209,7 @@ TEST_F(ShapedAppWindowTargeterTest, HitTestOnlyForShapedWindow) {
   SetWindowResizable(false);
   {
     ui::MouseEvent move(move_outside);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(root_window(), move.target());
   }
@@ -225,7 +225,7 @@ TEST_F(ShapedAppWindowTargeterTest, ResizeInsetsWithinBounds) {
     ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(80, 80),
                         gfx::Point(80, 80), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move.target());
   }
@@ -236,12 +236,12 @@ TEST_F(ShapedAppWindowTargeterTest, ResizeInsetsWithinBounds) {
     ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(32, 37),
                         gfx::Point(32, 37), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move.target());
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   // The non standard app frame has a easy resize targetter installed.
   std::unique_ptr<views::NonClientFrameView> frame(
       app_window_views()->CreateNonStandardAppFrame());
@@ -264,7 +264,7 @@ TEST_F(ShapedAppWindowTargeterTest, ResizeInsetsWithinBounds) {
     ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(80, 80),
                         gfx::Point(80, 80), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move.target());
   }
@@ -275,7 +275,7 @@ TEST_F(ShapedAppWindowTargeterTest, ResizeInsetsWithinBounds) {
     ui::MouseEvent move(ui::ET_MOUSE_MOVED, gfx::Point(32, 37),
                         gfx::Point(32, 37), ui::EventTimeForNow(), ui::EF_NONE,
                         ui::EF_NONE);
-    ui::EventDispatchDetails details = event_sink()->OnEventFromSource(&move);
+    ui::EventDispatchDetails details = GetEventSink()->OnEventFromSource(&move);
     ASSERT_FALSE(details.dispatcher_destroyed);
     EXPECT_EQ(window, move.target());
   }

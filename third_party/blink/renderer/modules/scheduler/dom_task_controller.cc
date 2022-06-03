@@ -4,32 +4,28 @@
 
 #include "third_party/blink/renderer/modules/scheduler/dom_task_controller.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_task_controller_init.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/scheduler/dom_task_signal.h"
 
 namespace blink {
 
 // static
-DOMTaskController* DOMTaskController::Create(Document& document,
-                                             const AtomicString& priority) {
-  return MakeGarbageCollected<DOMTaskController>(
-      document, WebSchedulingPriorityFromString(priority));
+DOMTaskController* DOMTaskController::Create(ExecutionContext* context,
+                                             TaskControllerInit* init) {
+  return MakeGarbageCollected<DOMTaskController>(context, init->priority());
 }
 
-DOMTaskController::DOMTaskController(Document& document,
-                                     WebSchedulingPriority priority)
-    : AbortController(
-          MakeGarbageCollected<DOMTaskSignal>(&document, priority)) {
-  DCHECK(!document.IsContextDestroyed());
+DOMTaskController::DOMTaskController(ExecutionContext* context,
+                                     const AtomicString& priority)
+    : AbortController(MakeGarbageCollected<DOMTaskSignal>(context, priority)) {
+  DCHECK(!context->IsContextDestroyed());
 }
 
-void DOMTaskController::setPriority(const AtomicString& priority) {
-  GetTaskSignal()->SignalPriorityChange(
-      WebSchedulingPriorityFromString(priority));
-}
-
-DOMTaskSignal* DOMTaskController::GetTaskSignal() const {
-  return static_cast<DOMTaskSignal*>(signal());
+void DOMTaskController::setPriority(const AtomicString& priority,
+                                    ExceptionState& exception_state) {
+  static_cast<DOMTaskSignal*>(signal())->SignalPriorityChange(priority,
+                                                              exception_state);
 }
 
 }  // namespace blink

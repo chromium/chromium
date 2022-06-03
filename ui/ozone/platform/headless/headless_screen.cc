@@ -4,14 +4,59 @@
 
 #include "ui/ozone/platform/headless/headless_screen.h"
 
+#include <vector>
+
+#include "base/command_line.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_piece.h"
+#include "base/strings/string_split.h"
+#include "ui/ozone/public/ozone_switches.h"
+
 namespace ui {
 
+namespace {
+// Ozone/headless display defaults.
+constexpr int64_t kHeadlessDisplayId = 1;
+constexpr float kHeadlessDisplayScale = 1.0f;
+constexpr gfx::Size kHeadlessDisplaySize(1, 1);
+
+// Parse comma-separated screen width and height.
+bool ParseScreenSize(const std::string& screen_size, int* width, int* height) {
+  std::vector<base::StringPiece> width_and_height = base::SplitStringPiece(
+      screen_size, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  if (width_and_height.size() != 2)
+    return false;
+
+  if (!base::StringToInt(width_and_height[0], width) ||
+      !base::StringToInt(width_and_height[1], height)) {
+    return false;
+  }
+
+  return true;
+}
+
+gfx::Rect GetDisplayBounds() {
+  gfx::Rect bounds(kHeadlessDisplaySize);
+
+  const base::CommandLine& command_line =
+      *base::CommandLine::ForCurrentProcess();
+  if (command_line.HasSwitch(switches::kOzoneOverrideScreenSize)) {
+    int width, height;
+    std::string screen_size =
+        command_line.GetSwitchValueASCII(switches::kOzoneOverrideScreenSize);
+    if (ParseScreenSize(screen_size, &width, &height)) {
+      bounds.set_size(gfx::Size(width, height));
+    }
+  }
+
+  return bounds;
+}
+
+}  // namespace
+
 HeadlessScreen::HeadlessScreen() {
-  static constexpr int64_t kHeadlessDisplayId = 1;
-  static constexpr float kHeadlessDisplayScale = 1.0f;
-  static constexpr gfx::Rect kHeadlessDisplayBounds(gfx::Size(1, 1));
   display::Display display(kHeadlessDisplayId);
-  display.SetScaleAndBounds(kHeadlessDisplayScale, kHeadlessDisplayBounds);
+  display.SetScaleAndBounds(kHeadlessDisplayScale, GetDisplayBounds());
   display_list_.AddDisplay(display, display::DisplayList::Type::PRIMARY);
 }
 

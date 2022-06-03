@@ -6,7 +6,7 @@ PASS window is self
 PASS window is frames
 PASS parent is top
 PASS window is non-null.
-FAIL self should be non-null. Was null
-FAIL frames should be non-null. Was null
-PASS parent is null.
-PASS top is null.
+PASS self is non-null.
+PASS frames is non-null.
+PASS parent is non-null.
+PASS top is non-null.

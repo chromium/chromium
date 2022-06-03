@@ -9,9 +9,9 @@
 #include <utility>
 
 #include "base/mac/mac_logging.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace media {
 namespace core_audio_mac {
@@ -23,7 +23,7 @@ AudioObjectPropertyScope InputOutputScope(bool is_input) {
                   : kAudioObjectPropertyScopeOutput;
 }
 
-base::Optional<std::string> GetDeviceStringProperty(
+absl::optional<std::string> GetDeviceStringProperty(
     AudioObjectID device_id,
     AudioObjectPropertySelector property_selector) {
   CFStringRef property_value = nullptr;
@@ -39,11 +39,11 @@ base::Optional<std::string> GetDeviceStringProperty(
     OSSTATUS_DLOG(WARNING, result)
         << "Failed to read string property " << property_selector
         << " for device " << device_id;
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   if (!property_value)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string device_property = base::SysCFStringRefToUTF8(property_value);
   CFRelease(property_value);
@@ -51,7 +51,7 @@ base::Optional<std::string> GetDeviceStringProperty(
   return device_property;
 }
 
-base::Optional<uint32_t> GetDeviceUint32Property(
+absl::optional<uint32_t> GetDeviceUint32Property(
     AudioObjectID device_id,
     AudioObjectPropertySelector property_selector,
     AudioObjectPropertyScope property_scope) {
@@ -63,7 +63,7 @@ base::Optional<uint32_t> GetDeviceUint32Property(
       device_id, &property_address, 0 /* inQualifierDataSize */,
       nullptr /* inQualifierData */, &size, &property_value);
   if (result != noErr)
-    return base::nullopt;
+    return absl::nullopt;
 
   return property_value;
 }
@@ -123,11 +123,11 @@ std::vector<AudioObjectID> GetAudioObjectIDs(
   return device_ids;
 }
 
-base::Optional<std::string> GetDeviceName(AudioObjectID device_id) {
+absl::optional<std::string> GetDeviceName(AudioObjectID device_id) {
   return GetDeviceStringProperty(device_id, kAudioObjectPropertyName);
 }
 
-base::Optional<std::string> GetDeviceModel(AudioObjectID device_id) {
+absl::optional<std::string> GetDeviceModel(AudioObjectID device_id) {
   return GetDeviceStringProperty(device_id, kAudioDevicePropertyModelUID);
 }
 
@@ -178,7 +178,7 @@ std::string TransportTypeToString(uint32_t transport_type) {
   }
 }
 
-base::Optional<std::string> TranslateDeviceSource(AudioObjectID device_id,
+absl::optional<std::string> TranslateDeviceSource(AudioObjectID device_id,
                                                   UInt32 source_id,
                                                   bool is_input) {
   CFStringRef source_name = nullptr;
@@ -197,7 +197,7 @@ base::Optional<std::string> TranslateDeviceSource(AudioObjectID device_id,
       device_id, &property_address, 0 /* inQualifierDataSize */,
       nullptr /* inQualifierData */, &translation_size, &translation);
   if (result)
-    return base::nullopt;
+    return absl::nullopt;
 
   std::string ret = base::SysCFStringRefToUTF8(source_name);
   CFRelease(source_name);
@@ -216,14 +216,14 @@ std::vector<AudioObjectID> GetRelatedDeviceIDs(AudioObjectID device_id) {
   return GetAudioObjectIDs(device_id, kAudioDevicePropertyRelatedDevices);
 }
 
-base::Optional<std::string> GetDeviceUniqueID(AudioObjectID device_id) {
+absl::optional<std::string> GetDeviceUniqueID(AudioObjectID device_id) {
   return GetDeviceStringProperty(device_id, kAudioDevicePropertyDeviceUID);
 }
 
-base::Optional<std::string> GetDeviceLabel(AudioObjectID device_id,
+absl::optional<std::string> GetDeviceLabel(AudioObjectID device_id,
                                            bool is_input) {
-  base::Optional<std::string> device_label;
-  base::Optional<uint32_t> source = GetDeviceSource(device_id, is_input);
+  absl::optional<std::string> device_label;
+  absl::optional<uint32_t> source = GetDeviceSource(device_id, is_input);
   if (source) {
     device_label = TranslateDeviceSource(device_id, *source, is_input);
   }
@@ -231,14 +231,14 @@ base::Optional<std::string> GetDeviceLabel(AudioObjectID device_id,
   if (!device_label) {
     device_label = GetDeviceName(device_id);
     if (!device_label)
-      return base::nullopt;
+      return absl::nullopt;
   }
 
   std::string suffix;
-  base::Optional<uint32_t> transport_type = GetDeviceTransportType(device_id);
+  absl::optional<uint32_t> transport_type = GetDeviceTransportType(device_id);
   if (transport_type) {
     if (*transport_type == kAudioDeviceTransportTypeUSB) {
-      base::Optional<std::string> model = GetDeviceModel(device_id);
+      absl::optional<std::string> model = GetDeviceModel(device_id);
       if (model) {
         suffix = UsbVidPidFromModel(*model);
       }
@@ -259,13 +259,13 @@ uint32_t GetNumStreams(AudioObjectID device_id, bool is_input) {
                                InputOutputScope(is_input));
 }
 
-base::Optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
+absl::optional<uint32_t> GetDeviceSource(AudioObjectID device_id,
                                          bool is_input) {
   return GetDeviceUint32Property(device_id, kAudioDevicePropertyDataSource,
                                  InputOutputScope(is_input));
 }
 
-base::Optional<uint32_t> GetDeviceTransportType(AudioObjectID device_id) {
+absl::optional<uint32_t> GetDeviceTransportType(AudioObjectID device_id) {
   return GetDeviceUint32Property(device_id, kAudioDevicePropertyTransportType,
                                  kAudioObjectPropertyScopeGlobal);
 }

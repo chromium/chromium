@@ -6,8 +6,8 @@
 
 #include "dummy_classes.h"
 
-// This file provides samples for testing the extractor.py replacement script
-// for the clang tool.
+// This file provides samples for testing the extractor.py script.
+
 namespace {
 
 net::NetworkTrafficAnnotationTag kTrafficAnnotation =

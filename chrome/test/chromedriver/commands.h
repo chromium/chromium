@@ -28,12 +28,11 @@ void ExecuteGetStatus(
     const CommandCallback& callback);
 
 // Creates a new session.
-void ExecuteCreateSession(
-    SessionThreadMap* session_thread_map,
-    const Command& init_session_cmd,
-    const base::DictionaryValue& params,
-    const std::string& session_id,
-    const CommandCallback& callback);
+void ExecuteCreateSession(SessionThreadMap* session_thread_map,
+                          const Command& init_session_cmd,
+                          const base::DictionaryValue& params,
+                          const std::string& host,
+                          const CommandCallback& callback);
 
 // Gets all sessions
 void ExecuteGetSessions(
@@ -51,9 +50,9 @@ void ExecuteQuitAll(
     const std::string& session_id,
     const CommandCallback& callback);
 
-typedef base::Callback<Status(Session* session,
-                              const base::DictionaryValue&,
-                              std::unique_ptr<base::Value>*)>
+typedef base::RepeatingCallback<Status(Session* session,
+                                       const base::DictionaryValue&,
+                                       std::unique_ptr<base::Value>*)>
     SessionCommand;
 
 // Executes a given session command, after acquiring access to the appropriate

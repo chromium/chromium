@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/sensor/relative_orientation_sensor.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy_feature.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 
 using device::mojom::blink::SensorType;
 
@@ -34,10 +34,10 @@ RelativeOrientationSensor::RelativeOrientationSensor(
                         options,
                         exception_state,
                         SensorType::RELATIVE_ORIENTATION_QUATERNION,
-                        {mojom::FeaturePolicyFeature::kAccelerometer,
-                         mojom::FeaturePolicyFeature::kGyroscope}) {}
+                        {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
+                         mojom::blink::PermissionsPolicyFeature::kGyroscope}) {}
 
-void RelativeOrientationSensor::Trace(blink::Visitor* visitor) {
+void RelativeOrientationSensor::Trace(Visitor* visitor) const {
   OrientationSensor::Trace(visitor);
 }
 

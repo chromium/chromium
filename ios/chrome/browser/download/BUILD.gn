@@ -11,35 +11,46 @@ source_set("download") {
     "browser_download_service.mm",
     "browser_download_service_factory.h",
     "browser_download_service_factory.mm",
+    "confirm_download_closing_overlay.h",
+    "confirm_download_closing_overlay.mm",
+    "confirm_download_replacing_overlay.h",
+    "confirm_download_replacing_overlay.mm",
     "download_directory_util.h",
     "download_directory_util.mm",
     "download_manager_metric_names.h",
     "download_manager_tab_helper.h",
     "download_manager_tab_helper.mm",
     "download_manager_tab_helper_delegate.h",
-    "google_drive_app_util.h",
-    "google_drive_app_util.mm",
+    "external_app_util.h",
+    "external_app_util.mm",
+    "mobileconfig_tab_helper.h",
+    "mobileconfig_tab_helper.mm",
+    "mobileconfig_tab_helper_delegate.h",
     "pass_kit_tab_helper.h",
     "pass_kit_tab_helper.mm",
     "pass_kit_tab_helper_delegate.h",
   ]
 
-  public_deps = [
-    ":mime_types",
-  ]
+  public_deps = [ ":mime_types" ]
 
   deps = [
     "//base",
     "//components/keyed_service/core",
     "//components/keyed_service/ios",
+    "//components/strings:components_strings_grit",
+    "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/browser_state",
-    "//ios/chrome/browser/network_activity",
+    "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/common/confirmation",
+    "//ios/chrome/browser/overlays/public/common/confirmation:util",
+    "//ios/chrome/browser/ui/download:features",
     "//ios/web/common",
     "//ios/web/public",
     "//ios/web/public/download",
+    "//ui/base",
   ]
 
-  libs = [
+  frameworks = [
     "UIKit.framework",
     "PassKit.framework",
     "QuartzCore.framework",
@@ -51,15 +62,11 @@ source_set("download") {
 
 source_set("mime_types") {
   sources = [
-    "pass_kit_mime_type.cc",
-    "pass_kit_mime_type.h",
-    "usdz_mime_type.cc",
-    "usdz_mime_type.h",
+    "mime_type_util.cc",
+    "mime_type_util.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
 }
@@ -81,7 +88,6 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/download",
-    "//ios/chrome/browser/network_activity",
     "//ios/chrome/test/fakes",
     "//ios/web/public",
     "//ios/web/public/download",
@@ -100,7 +106,5 @@ source_set("test_support") {
     "download_test_util.cc",
     "download_test_util.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

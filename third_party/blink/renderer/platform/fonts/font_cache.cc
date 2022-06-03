@@ -33,7 +33,9 @@
 #include <memory>
 
 #include "base/debug/alias.h"
+#include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -44,17 +46,17 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
 #include "third_party/blink/renderer/platform/fonts/font_data_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/font_fallback_map.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
+#include "third_party/blink/renderer/platform/fonts/font_performance.h"
 #include "third_party/blink/renderer/platform/fonts/font_platform_data.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_cache.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/fonts/text_rendering_mode.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_memory_allocator_dump.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/web_process_memory_dump.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -69,10 +71,19 @@
 
 namespace blink {
 
-// Special locale for retrieving the color emoji font based on the proposed
-// changes in UTR #51 for introducing an Emoji script code:
-// https://unicode.org/reports/tr51/#Emoji_Script
-static const char kColorEmojiLocale[] = "und-Zsye";
+namespace {
+const base::Feature kFontCacheNoSizeInKey{"FontCacheNoSizeInKey",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+}
+
+const base::Feature kAsyncFontAccess{"AsyncFontAccess",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const char kColorEmojiLocale[] = "und-Zsye";
+
+#if defined(OS_ANDROID)
+extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
+#endif
 
 SkFontMgr* FontCache::static_font_manager_ = nullptr;
 
@@ -86,12 +97,13 @@ bool FontCache::lcd_text_enabled_ = false;
 bool FontCache::use_skia_font_fallback_ = false;
 #endif  // defined(OS_WIN)
 
-FontCache* FontCache::GetFontCache() {
-  return &FontGlobalContext::GetFontCache();
+FontCache* FontCache::GetFontCache(CreateIfNeeded create) {
+  return FontGlobalContext::GetFontCache(create);
 }
 
 FontCache::FontCache()
-    : purge_prevent_count_(0),
+    : no_size_in_key_(base::FeatureList::IsEnabled(kFontCacheNoSizeInKey)),
+      purge_prevent_count_(0),
       font_manager_(sk_ref_sp(static_font_manager_)),
       font_size_limit_(std::nextafter(
           (static_cast<float>(std::numeric_limits<unsigned>::max()) - 2.f) /
@@ -111,11 +123,11 @@ FontCache::FontCache()
 #endif
 }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 FontPlatformData* FontCache::SystemFontPlatformData(
     const FontDescription& font_description) {
   const AtomicString& family = FontCache::SystemFontFamily();
-#if defined(OS_LINUX) || defined(OS_FUCHSIA)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
   if (family.IsEmpty() || family == font_family_names::kSystemUi)
     return nullptr;
 #else
@@ -137,7 +149,7 @@ FontPlatformData* FontCache::GetFontPlatformData(
     PlatformInit();
   }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   if (creation_params.CreationType() == kCreateFontByFamily &&
       creation_params.Family() == font_family_names::kSystemUi) {
     return SystemFontPlatformData(font_description);
@@ -163,6 +175,12 @@ FontPlatformData* FontCache::GetFontPlatformData(
   FontCacheKey key =
       font_description.CacheKey(creation_params, is_unique_match);
   DCHECK(!key.IsHashTableDeletedValue());
+
+  if (no_size_in_key_) {
+    // Clear font size from they key. Size is not required in the primary key
+    // because per-size FontPlatformData are held in a nested map.
+    key.ClearFontSize();
+  }
 
   // Remove the font size from the cache key, and handle the font size
   // separately in the inner HashMap. So that different size of FontPlatformData
@@ -230,7 +248,7 @@ std::unique_ptr<FontPlatformData> FontCache::ScaleFontPlatformData(
     float font_size) {
   TRACE_EVENT0("fonts,ui", "FontCache::ScaleFontPlatformData");
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   return CreateFontPlatformData(font_description, creation_params, font_size);
 #else
   return std::make_unique<FontPlatformData>(font_platform_data, font_size);
@@ -341,8 +359,11 @@ scoped_refptr<SimpleFontData> FontCache::FallbackFontForCharacter(
   if (Character::IsPrivateUse(lookup_char) ||
       Character::IsNonCharacter(lookup_char))
     return nullptr;
-  return PlatformFallbackFontForCharacter(
+  base::ElapsedTimer timer;
+  scoped_refptr<SimpleFontData> result = PlatformFallbackFontForCharacter(
       description, lookup_char, font_data_to_substitute, fallback_priority);
+  FontPerformance::AddSystemFallbackFontTime(timer.Elapsed());
+  return result;
 }
 
 void FontCache::ReleaseFontData(const SimpleFontData* font_data) {
@@ -370,16 +391,7 @@ void FontCache::PurgePlatformFontDataCache() {
 
 void FontCache::PurgeFallbackListShaperCache() {
   TRACE_EVENT0("fonts,ui", "FontCache::PurgeFallbackListShaperCache");
-  unsigned items = 0;
-  FallbackListShaperCache::iterator iter;
-  for (iter = fallback_list_shaper_cache_.begin();
-       iter != fallback_list_shaper_cache_.end(); ++iter) {
-    items += iter->value->size();
-  }
   fallback_list_shaper_cache_.clear();
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(CustomCountHistogram, shape_cache_histogram,
-                                  ("Blink.Fonts.ShapeCache", 1, 1000000, 50));
-  shape_cache_histogram.Count(items);
 }
 
 void FontCache::InvalidateShapeCache() {
@@ -405,7 +417,7 @@ void FontCache::AddClient(FontCacheClient* client) {
   if (!font_cache_clients_) {
     font_cache_clients_ =
         MakeGarbageCollected<HeapHashSet<WeakMember<FontCacheClient>>>();
-    font_cache_clients_.RegisterAsStaticReference();
+    LEAK_SANITIZER_IGNORE_OBJECT(&font_cache_clients_);
   }
   DCHECK(!font_cache_clients_->Contains(client));
   font_cache_clients_->insert(client);
@@ -522,6 +534,14 @@ FontCache::Bcp47Vector FontCache::GetBcp47LocaleForRequest(
   if (fallback_priority == FontFallbackPriority::kEmojiEmoji)
     result.push_back(kColorEmojiLocale);
   return result;
+}
+
+FontFallbackMap& FontCache::GetFontFallbackMap() {
+  if (!font_fallback_map_) {
+    font_fallback_map_ = MakeGarbageCollected<FontFallbackMap>(nullptr);
+    AddClient(font_fallback_map_);
+  }
+  return *font_fallback_map_;
 }
 
 }  // namespace blink

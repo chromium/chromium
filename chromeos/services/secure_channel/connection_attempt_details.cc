@@ -4,7 +4,7 @@
 
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
 namespace chromeos {

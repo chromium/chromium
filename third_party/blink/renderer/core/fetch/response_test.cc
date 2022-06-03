@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/fetch/response.h"
 
 #include <memory>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
@@ -13,6 +14,8 @@
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_test_util.h"
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 #include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
@@ -35,7 +38,7 @@ TEST(ServiceWorkerResponseTest, FromFetchResponseData) {
   url_list.push_back(url);
   fetch_response_data->SetURLList(url_list);
   Response* response =
-      Response::Create(&page->GetDocument(), fetch_response_data);
+      Response::Create(page->GetFrame().DomWindow(), fetch_response_data);
   DCHECK(response);
   EXPECT_EQ(url, response->url());
 }
@@ -100,7 +103,8 @@ BodyStreamBuffer* CreateHelloWorldBuffer(ScriptState* script_state) {
   src->Add(Command(Command::kData, "Hello, "));
   src->Add(Command(Command::kData, "world"));
   src->Add(Command(Command::kDone));
-  return BodyStreamBuffer::Create(script_state, src, nullptr);
+  return BodyStreamBuffer::Create(script_state, src, nullptr,
+                                  /*cached_metadata_handler=*/nullptr);
 }
 
 TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneDefault) {
@@ -166,7 +170,8 @@ TEST(ServiceWorkerResponseTest, BodyStreamBufferCloneError) {
   V8TestingScope scope;
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
       scope.GetScriptState(),
-      BytesConsumer::CreateErrored(BytesConsumer::Error()), nullptr);
+      BytesConsumer::CreateErrored(BytesConsumer::Error()), nullptr,
+      /*cached_metadata_handler=*/nullptr);
   FetchResponseData* fetch_response_data =
       FetchResponseData::CreateWithBuffer(buffer);
   Vector<KURL> url_list;

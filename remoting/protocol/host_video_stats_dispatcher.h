@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_HOST_VIDEO_STATE_DISPATCHER_H_
-#define REMOTING_PROTOCOL_HOST_VIDEO_STATE_DISPATCHER_H_
+#ifndef REMOTING_PROTOCOL_HOST_VIDEO_STATS_DISPATCHER_H_
+#define REMOTING_PROTOCOL_HOST_VIDEO_STATS_DISPATCHER_H_
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
@@ -17,6 +17,10 @@ class HostVideoStatsDispatcher : public ChannelDispatcherBase,
                                  public VideoStatsStub {
  public:
   explicit HostVideoStatsDispatcher(const std::string& stream_name);
+
+  HostVideoStatsDispatcher(const HostVideoStatsDispatcher&) = delete;
+  HostVideoStatsDispatcher& operator=(const HostVideoStatsDispatcher&) = delete;
+
   ~HostVideoStatsDispatcher() override;
 
   // VideoStatsStub interface.
@@ -25,11 +29,9 @@ class HostVideoStatsDispatcher : public ChannelDispatcherBase,
 
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
-
-  DISALLOW_COPY_AND_ASSIGN(HostVideoStatsDispatcher);
 };
 
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_HOST_VIDEO_STATE_DISPATCHER_H_
+#endif  // REMOTING_PROTOCOL_HOST_VIDEO_STATS_DISPATCHER_H_

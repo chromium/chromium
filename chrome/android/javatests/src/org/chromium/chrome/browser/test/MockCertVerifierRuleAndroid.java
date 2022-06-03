@@ -6,25 +6,23 @@ package org.chromium.chrome.browser.test;
 
 import org.junit.rules.ExternalResource;
 
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 
 /** JUnit test rule which enables tests to force certificate verification results. */
 public class MockCertVerifierRuleAndroid extends ExternalResource {
-    private NativeLibraryTestRule mNativeLibraryTestRule;
 
     private long mNativePtr;
 
     // Certificate verification result to force.
     private int mResult;
 
-    public MockCertVerifierRuleAndroid(NativeLibraryTestRule nativeLibraryTestRule, int result) {
-        mNativeLibraryTestRule = nativeLibraryTestRule;
+    public MockCertVerifierRuleAndroid(int result) {
         mResult = result;
     }
 
     @Override
     protected void before() {
-        mNativeLibraryTestRule.loadNativeLibraryNoBrowserProcess();
+        NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         mNativePtr = nativeInit();
         nativeSetResult(mNativePtr, mResult);
         nativeSetUp(mNativePtr);

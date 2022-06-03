@@ -7,25 +7,18 @@
 
 #include <memory>
 
+#include "media/mojo/mojom/frame_interface_factory.mojom.h"
 #include "media/mojo/services/mojo_media_drm_storage.h"
 #include "media/mojo/services/mojo_provision_fetcher.h"
-
-namespace service_manager {
-namespace mojom {
-
-class InterfaceProvider;
-
-}  // namespace mojom
-}  // namespace service_manager
 
 namespace media {
 namespace android_mojo_util {
 
 std::unique_ptr<ProvisionFetcher> CreateProvisionFetcher(
-    service_manager::mojom::InterfaceProvider* host_interfaces);
+    media::mojom::FrameInterfaceFactory* frame_interfaces);
 
 std::unique_ptr<MediaDrmStorage> CreateMediaDrmStorage(
-    service_manager::mojom::InterfaceProvider* host_interfaces);
+    media::mojom::FrameInterfaceFactory* frame_interfaces);
 
 }  // namespace android_mojo_util
 }  // namespace media

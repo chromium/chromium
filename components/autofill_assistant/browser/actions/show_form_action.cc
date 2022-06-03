@@ -8,7 +8,9 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
+#include "components/autofill_assistant/browser/display_strings_util.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -41,15 +43,17 @@ void ShowFormAction::InternalProcessAction(ProcessActionCallback callback) {
 }
 
 void ShowFormAction::OnFormValuesChanged(const FormProto::Result* form_result) {
+  action_stopwatch_.StartActiveTime();
   // Copy the current values to the action result.
   *processed_action_proto_->mutable_form_result() = *form_result;
 
   // Show "Continue" chip.
   UserAction user_action =
-      UserAction(proto_.show_form().chip(), proto_.show_form().direct_action());
+      UserAction(proto_.show_form().chip(), /* enabled = */ true,
+                 /* identifier = */ std::string());
   if (user_action.chip().empty()) {
-    user_action.chip().text =
-        l10n_util::GetStringUTF8(IDS_AUTOFILL_ASSISTANT_PAYMENT_INFO_CONFIRM);
+    user_action.chip().text = GetDisplayStringUTF8(
+        ClientSettingsProto::PAYMENT_INFO_CONFIRM, delegate_->GetSettings());
     user_action.chip().type = HIGHLIGHTED_ACTION;
   }
   user_action.SetEnabled(IsFormValid(proto_.show_form().form(), *form_result));
@@ -58,7 +62,9 @@ void ShowFormAction::OnFormValuesChanged(const FormProto::Result* form_result) {
 
   auto user_actions = std::make_unique<std::vector<UserAction>>();
   user_actions->emplace_back(std::move(user_action));
-  delegate_->Prompt(std::move(user_actions));
+  delegate_->Prompt(std::move(user_actions),
+                    /* disable_force_expand_sheet = */ false);
+  action_stopwatch_.StartWaitTime();
 }
 
 void ShowFormAction::OnCancelForm(const ClientStatus& status) {
@@ -146,8 +152,9 @@ bool ShowFormAction::IsCounterValidationRuleSatisfied(
       // max_value].
       auto counters_sum_rule = rule.counters_sum();
       long sum = 0;
-      for (int value : result.values()) {
-        sum += value;
+      for (int i = 0; i < result.values_size(); ++i) {
+        DCHECK_LT(i, input.counters_size());
+        sum += result.values(i) * input.counters(i).size();
       }
       return sum >= counters_sum_rule.min_value() &&
              sum <= counters_sum_rule.max_value();
@@ -184,6 +191,8 @@ void ShowFormAction::OnButtonClicked() {
 }
 
 void ShowFormAction::EndAction(const ClientStatus& status) {
+  action_stopwatch_.StartActiveTime();
+  delegate_->CleanUpAfterPrompt();
   delegate_->SetForm(nullptr, base::DoNothing(), base::DoNothing());
   UpdateProcessedAction(status);
   std::move(callback_).Run(std::move(processed_action_proto_));

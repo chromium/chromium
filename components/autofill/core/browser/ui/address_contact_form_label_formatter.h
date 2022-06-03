@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/ui/label_formatter.h"
@@ -28,7 +27,7 @@ class AddressContactFormLabelFormatter : public LabelFormatter {
 
   ~AddressContactFormLabelFormatter() override;
 
-  base::string16 GetLabelForProfile(
+  std::u16string GetLabelForProfile(
       const AutofillProfile& profile,
       FieldTypeGroup focused_group) const override;
 

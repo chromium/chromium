@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body onload="loaded()">
+  <div role="dialog">Nonmodal</div>
+  <button id="outerButton">Outer Button</button>
+  <div role="dialog" aria-label="modal dialog" aria-modal="true">
+    <button id="innerButton">Inner Button</button>
+  </div>
+  <script>
+    // Test that when focus moves out of an active ARIA modal dialog, the dialog
+    // is no onger considered "active", and contet outside the dialog is no
+    // longer pruned from the accessibility tree.
+
+    // Note: This test checks an edge case in the aria-modal pruning logic. This
+    // logic currently only runs on Mac, so there are only mac expectations for
+    // this test. See aria-modal.html for more information on tree pruning.
+    function loaded() {
+      innerButton.focus();
+      outerButton.focus();
+    }
+  </script>
+</body>
+</html>

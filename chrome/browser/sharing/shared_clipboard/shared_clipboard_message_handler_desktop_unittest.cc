@@ -7,10 +7,11 @@
 #include "base/guid.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "chrome/browser/sharing/fake_device_info.h"
+#include "chrome/browser/sharing/mock_sharing_device_source.h"
 #include "chrome/browser/sharing/mock_sharing_service.h"
 #include "chrome/browser/sharing/proto/shared_clipboard_message.pb.h"
 #include "chrome/browser/sharing/shared_clipboard/shared_clipboard_test_base.h"
-#include "chrome/browser/sharing/sharing_device_source.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/protocol/sync_enums.pb.h"
@@ -24,27 +25,24 @@ namespace {
 const char kText[] = "clipboard text";
 const char kEmptyDeviceName[] = "";
 const char kDeviceNameInDeviceInfo[] = "DeviceNameInDeviceInfo";
+const char16_t kDeviceNameInDeviceInfo16[] = u"DeviceNameInDeviceInfo";
 const char kDeviceNameInMessage[] = "DeviceNameInMessage";
-
-class MockSharingDeviceSource : public SharingDeviceSource {
- public:
-  bool IsReady() override { return true; }
-
-  MOCK_METHOD1(GetDeviceByGuid,
-               std::unique_ptr<syncer::DeviceInfo>(const std::string& guid));
-
-  MOCK_METHOD0(GetAllDevices,
-               std::vector<std::unique_ptr<syncer::DeviceInfo>>());
-};
+const char16_t kDeviceNameInMessage16[] = u"DeviceNameInMessage";
 
 class SharedClipboardMessageHandlerTest : public SharedClipboardTestBase {
  public:
   SharedClipboardMessageHandlerTest() = default;
 
+  SharedClipboardMessageHandlerTest(const SharedClipboardMessageHandlerTest&) =
+      delete;
+  SharedClipboardMessageHandlerTest& operator=(
+      const SharedClipboardMessageHandlerTest&) = delete;
+
   ~SharedClipboardMessageHandlerTest() override = default;
 
   void SetUp() override {
     SharedClipboardTestBase::SetUp();
+    ON_CALL(device_source_, IsReady()).WillByDefault(testing::Return(true));
     message_handler_ = std::make_unique<SharedClipboardMessageHandlerDesktop>(
         &device_source_, &profile_);
   }
@@ -61,8 +59,6 @@ class SharedClipboardMessageHandlerTest : public SharedClipboardTestBase {
  protected:
   std::unique_ptr<SharedClipboardMessageHandlerDesktop> message_handler_;
   MockSharingDeviceSource device_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardMessageHandlerTest);
 };
 
 }  // namespace
@@ -94,15 +90,8 @@ TEST_F(SharedClipboardMessageHandlerTest,
     EXPECT_CALL(device_source_, GetDeviceByGuid(guid))
         .WillOnce(
             [](const std::string& guid) -> std::unique_ptr<syncer::DeviceInfo> {
-              return std::make_unique<syncer::DeviceInfo>(
-                  base::GenerateGUID(), kDeviceNameInDeviceInfo,
-                  /*chrome_version=*/"78.0.0.0",
-                  /*sync_user_agent=*/"Chrome", sync_pb::SyncEnums::TYPE_LINUX,
-                  /*signin_scoped_device_id=*/base::GenerateGUID(),
-                  base::SysInfo::HardwareInfo(),
-                  /*last_updated_timestamp=*/base::Time::Now(),
-                  /*send_tab_to_self_receiving_enabled=*/false,
-                  /*sharing_info=*/base::nullopt);
+              return CreateFakeDeviceInfo(base::GenerateGUID(),
+                                          kDeviceNameInDeviceInfo);
             });
     base::MockCallback<SharingMessageHandler::DoneCallback> done_callback;
     EXPECT_CALL(done_callback, Run(testing::Eq(nullptr))).Times(1);
@@ -112,7 +101,7 @@ TEST_F(SharedClipboardMessageHandlerTest,
   EXPECT_EQ(GetClipboardText(), kText);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE,
-                base::ASCIIToUTF16(kDeviceNameInDeviceInfo)),
+                kDeviceNameInDeviceInfo16),
             GetNotification().title());
 }
 
@@ -133,6 +122,6 @@ TEST_F(SharedClipboardMessageHandlerTest,
   EXPECT_EQ(GetClipboardText(), kText);
   EXPECT_EQ(l10n_util::GetStringFUTF16(
                 IDS_CONTENT_CONTEXT_SHARING_SHARED_CLIPBOARD_NOTIFICATION_TITLE,
-                base::ASCIIToUTF16(kDeviceNameInMessage)),
+                kDeviceNameInMessage16),
             GetNotification().title());
 }

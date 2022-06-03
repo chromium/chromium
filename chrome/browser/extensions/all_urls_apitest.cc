@@ -3,16 +3,16 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/search/local_ntp_test_utils.h"
+#include "chrome/browser/ui/search/ntp_test_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extensions_client.h"
@@ -22,10 +22,16 @@
 namespace extensions {
 
 namespace {
-const std::string kAllUrlsTarget = "/extensions/api_test/all_urls/index.html";
-}
+
+const char kAllUrlsTarget[] = "/extensions/api_test/all_urls/index.html";
+
+}  // namespace
 
 class AllUrlsApiTest : public ExtensionApiTest {
+ public:
+  AllUrlsApiTest(const AllUrlsApiTest&) = delete;
+  AllUrlsApiTest& operator=(const AllUrlsApiTest&) = delete;
+
  protected:
   AllUrlsApiTest() {}
   ~AllUrlsApiTest() override {}
@@ -33,13 +39,13 @@ class AllUrlsApiTest : public ExtensionApiTest {
   const Extension* content_script() const { return content_script_.get(); }
   const Extension* execute_script() const { return execute_script_.get(); }
 
-  void WhitelistExtensions() {
-    ExtensionsClient::ScriptingWhitelist whitelist;
-    whitelist.push_back(content_script_->id());
-    whitelist.push_back(execute_script_->id());
-    ExtensionsClient::Get()->SetScriptingWhitelist(whitelist);
+  void AllowlistExtensions() {
+    ExtensionsClient::ScriptingAllowlist allowlist;
+    allowlist.push_back(content_script_->id());
+    allowlist.push_back(execute_script_->id());
+    ExtensionsClient::Get()->SetScriptingAllowlist(allowlist);
     // Extensions will have certain permissions withheld at initialization if
-    // they aren't whitelisted, so we need to reload them.
+    // they aren't allowlisted, so we need to reload them.
     ExtensionTestMessageListener listener("execute: ready", false);
     extension_service()->ReloadExtension(content_script_->id());
     extension_service()->ReloadExtension(execute_script_->id());
@@ -50,13 +56,13 @@ class AllUrlsApiTest : public ExtensionApiTest {
     std::string expected_url = url;
     if (url == chrome::kChromeUINewTabURL) {
       expected_url =
-          local_ntp_test_utils::GetFinalNtpUrl(browser()->profile()).spec();
+          ntp_test_utils::GetFinalNtpUrl(browser()->profile()).spec();
     }
     ExtensionTestMessageListener listener_a("content script: " + expected_url,
                                             false);
     ExtensionTestMessageListener listener_b("execute: " + expected_url, false);
 
-    ui_test_utils::NavigateToURL(browser(), GURL(url));
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(url)));
     ASSERT_TRUE(listener_a.WaitUntilSatisfied());
     ASSERT_TRUE(listener_b.WaitUntilSatisfied());
   }
@@ -73,12 +79,10 @@ class AllUrlsApiTest : public ExtensionApiTest {
 
   scoped_refptr<const Extension> content_script_;
   scoped_refptr<const Extension> execute_script_;
-
-  DISALLOW_COPY_AND_ASSIGN(AllUrlsApiTest);
 };
 
-IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, WhitelistedExtension) {
-  WhitelistExtensions();
+IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, AllowlistedExtension) {
+  AllowlistExtensions();
 
   auto* bystander = LoadExtension(
       test_data_dir_.AppendASCII("all_urls").AppendASCII("bystander"));
@@ -97,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, WhitelistedExtension) {
     NavigateAndWait(test_url);
 }
 
-// Test that an extension NOT whitelisted for scripting can ask for <all_urls>
+// Test that an extension NOT allowlisted for scripting can ask for <all_urls>
 // and run scripts on non-restricted all pages.
 IN_PROC_BROWSER_TEST_F(AllUrlsApiTest, RegularExtensions) {
   // Now verify we can script a regular http page.

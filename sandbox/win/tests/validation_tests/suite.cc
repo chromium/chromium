@@ -144,6 +144,14 @@ TEST(ValidationSuite, TestAlternateDesktopLocalWinstation) {
 
 // Tests if the windows are correctly protected by the sandbox.
 TEST(ValidationSuite, TestWindows) {
+  // Due to a bug in Windows on builds based on the 19041 branch (20H1, 20H2 and
+  // 21H1) this test will fail on these versions. See crbug.com/1057656.
+  base::win::OSInfo* os_info = base::win::OSInfo::GetInstance();
+  if (os_info->version_number().build >= 19041 &&
+      os_info->version_number().build <= 19043) {
+    return;
+  }
+
   TestRunner runner;
   wchar_t command[1024] = {0};
 

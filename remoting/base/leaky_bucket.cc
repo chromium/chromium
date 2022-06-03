@@ -4,7 +4,6 @@
 
 #include "remoting/base/leaky_bucket.h"
 
-#include "base/logging.h"
 
 namespace remoting {
 
@@ -33,10 +32,10 @@ base::TimeTicks LeakyBucket::GetEmptyTime() {
   // WebrtcFrameSchedulerSimple does not need to handle any overflow isssues
   // caused by returning TimeDelta::Max().
   base::TimeDelta time_to_empty =
-      (rate_ != 0) ? base::TimeDelta::FromMicroseconds(
-                         base::TimeTicks::kMicrosecondsPerSecond *
-                         current_level_ / rate_)
-                   : base::TimeDelta::FromMinutes(1);
+      (rate_ != 0)
+          ? base::Microseconds(base::TimeTicks::kMicrosecondsPerSecond *
+                               current_level_ / rate_)
+          : base::Minutes(1);
   return level_updated_time_ + time_to_empty;
 }
 

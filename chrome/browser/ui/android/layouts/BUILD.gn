@@ -1,0 +1,77 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessor.java",
+    "java/src/org/chromium/chrome/browser/layouts/EventFilter.java",
+    "java/src/org/chromium/chrome/browser/layouts/FilterLayoutStateObserver.java",
+    "java/src/org/chromium/chrome/browser/layouts/LayoutManager.java",
+    "java/src/org/chromium/chrome/browser/layouts/LayoutManagerProvider.java",
+    "java/src/org/chromium/chrome/browser/layouts/LayoutStateProvider.java",
+    "java/src/org/chromium/chrome/browser/layouts/LayoutType.java",
+    "java/src/org/chromium/chrome/browser/layouts/SceneOverlay.java",
+    "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimationHandler.java",
+    "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimator.java",
+    "java/src/org/chromium/chrome/browser/layouts/components/VirtualView.java",
+    "java/src/org/chromium/chrome/browser/layouts/scene_layer/SceneLayer.java",
+    "java/src/org/chromium/chrome/browser/layouts/scene_layer/SceneOverlayLayer.java",
+  ]
+
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  deps = [
+    "third_party/float_property:java",
+    "//base:base_java",
+    "//components/browser_ui/widget/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//ui/android:ui_java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "scene_layer.cc",
+    "scene_layer.h",
+  ]
+  deps = [
+    ":layouts_jni_headers",
+    "//cc",
+    "//skia",
+  ]
+}
+
+generate_jni("layouts_jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/layouts/scene_layer/SceneLayer.java",
+  ]
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+
+  sources = [
+    "java/src/org/chromium/chrome/browser/layouts/CompositorModelChangeProcessorUnitTest.java",
+    "java/src/org/chromium/chrome/browser/layouts/FilterLayoutStateObserverTest.java",
+    "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimationHandlerTest.java",
+    "java/src/org/chromium/chrome/browser/layouts/animation/CompositorAnimatorTest.java",
+  ]
+
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java",
+  ]
+}

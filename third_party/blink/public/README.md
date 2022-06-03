@@ -21,10 +21,19 @@ Blink's needs change.
 Organization
 ------------
 
-The API is organized into two parts:
+The API is organized into three parts:
 
+  - public/common
   - public/platform
   - public/web
+
+The public/common directory contains public headers for the Web Platform stuff
+that can be referenced both from renderer-side and browser-side code, also
+from outside the Blink directory (e.g. from `//content` and `//chrome`).
+Anything in this directory should **NOT** depend on other Blink headers.
+Corresponding .cc code normally lives in `blink/common`, and public `.mojom`
+files live in `blink/public/mojom`.  See `DEPS` and `blink/common/README.md`
+for more details.
 
 The public/platform directory defines an abstract platform upon which Blink
 runs. Rather than communicating directly with the underlying operating system,
@@ -71,6 +80,13 @@ details of Blink, and consumers of the API should not rely upon these types.
 
 Similarly, the API uses STL types outside of the INSIDE_BLINK preprocessor
 macro, which is for the convenience of the consumer.
+
+Naming Conventions
+------------------
+
+The public/common directory doesn't need to use 'Web' prefix for their classes,
+structs, and enums. But, public/platform/ and public/web/ directories keep using
+'Web' prefix for the internal consistency.
 
 Contact Information
 -------------------

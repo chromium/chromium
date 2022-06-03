@@ -5,7 +5,9 @@
   "theme": {
     "colors": {
       "frame": [ 255, 0, 255 ],
-      "toolbar": [ 0, 255, 0 ]
+      "toolbar": [ 0, 255, 0 ],
+      "toolbar_button_icon": [ 0, 0, 255 ],
+      "tab_text": [ 255, 0, 0]
       }
   },
   "version": "0.0.1"

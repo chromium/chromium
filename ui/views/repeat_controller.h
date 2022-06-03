@@ -6,8 +6,12 @@
 #define UI_VIEWS_REPEAT_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/timer/timer.h"
+#include "ui/views/views_export.h"
+
+namespace base {
+class TickClock;
+}
 
 namespace views {
 
@@ -21,9 +25,14 @@ namespace views {
 //  associated action.
 //
 ///////////////////////////////////////////////////////////////////////////////
-class RepeatController {
+class VIEWS_EXPORT RepeatController {
  public:
-  explicit RepeatController(base::RepeatingClosure callback);
+  explicit RepeatController(base::RepeatingClosure callback,
+                            const base::TickClock* tick_clock = nullptr);
+
+  RepeatController(const RepeatController&) = delete;
+  RepeatController& operator=(const RepeatController&) = delete;
+
   virtual ~RepeatController();
 
   // Start repeating.
@@ -32,9 +41,22 @@ class RepeatController {
   // Stop repeating.
   void Stop();
 
+  static constexpr base::TimeDelta GetInitialWaitForTesting() {
+    return kInitialWait;
+  }
+  static constexpr base::TimeDelta GetRepeatingWaitForTesting() {
+    return kRepeatingWait;
+  }
+
   const base::OneShotTimer& timer_for_testing() const { return timer_; }
 
  private:
+  // Initial time required before the first callback occurs.
+  static constexpr base::TimeDelta kInitialWait = base::Milliseconds(250);
+
+  // Period of callbacks after the first callback.
+  static constexpr base::TimeDelta kRepeatingWait = base::Milliseconds(50);
+
   // Called when the timer expires.
   void Run();
 
@@ -42,8 +64,6 @@ class RepeatController {
   base::OneShotTimer timer_;
 
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RepeatController);
 };
 
 }  // namespace views

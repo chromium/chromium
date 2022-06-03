@@ -14,6 +14,12 @@
 
 namespace mojo {
 
+// DEPRECATED: Do not introduce new uses of this type. Instead use the
+// PendingAssociatedReceiver type defined in pending_associated_receiver.h.
+// Mojom files which pass associated interface requests (i.e.,
+// "associated Interface&" syntax) should be updated to instead pass a
+// "pending_associated_receiver<Interface>".
+//
 // AssociatedInterfaceRequest represents an associated interface request. It is
 // similar to InterfaceRequest except that it doesn't own a message pipe handle.
 template <typename Interface>
@@ -26,6 +32,10 @@ class AssociatedInterfaceRequest {
 
   explicit AssociatedInterfaceRequest(ScopedInterfaceEndpointHandle handle)
       : handle_(std::move(handle)) {}
+
+  AssociatedInterfaceRequest(const AssociatedInterfaceRequest&) = delete;
+  AssociatedInterfaceRequest& operator=(const AssociatedInterfaceRequest&) =
+      delete;
 
   // Takes the interface endpoint handle from another
   // AssociatedInterfaceRequest.
@@ -72,8 +82,6 @@ class AssociatedInterfaceRequest {
 
  private:
   ScopedInterfaceEndpointHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedInterfaceRequest);
 };
 
 }  // namespace mojo

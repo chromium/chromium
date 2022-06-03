@@ -96,7 +96,7 @@ EphemeralRange CalculateHotModeCheckingRange(const Element& editable,
 
 HotModeSpellCheckRequester::HotModeSpellCheckRequester(
     SpellCheckRequester& requester)
-    : requester_(requester) {}
+    : requester_(&requester) {}
 
 void HotModeSpellCheckRequester::CheckSpellingAt(const Position& position) {
   const Element* root_editable = RootEditableElementOf(position);

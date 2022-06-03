@@ -14,8 +14,8 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "chrome/browser/chromeos/login/screens/network_error.h"
-#include "chrome/browser/chromeos/login/ui/captive_portal_window_proxy.h"
+#include "chrome/browser/ash/login/screens/network_error.h"
+#include "chrome/browser/ash/login/ui/captive_portal_window_proxy.h"
 #include "chromeos/network/network_state_handler_observer.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 
@@ -68,7 +68,7 @@ class NetworkStateInformer
   // NetworkPortalDetector::Observer implementation:
   void OnPortalDetectionCompleted(
       const NetworkState* network,
-      const NetworkPortalDetector::CaptivePortalState& state) override;
+      const NetworkPortalDetector::CaptivePortalStatus status) override;
 
   // CaptivePortalWindowProxyDelegate implementation:
   void OnPortalDetected() override;
@@ -77,6 +77,11 @@ class NetworkStateInformer
   std::string network_path() const { return network_path_; }
 
   static const char* StatusString(State state);
+  static std::string GetNetworkName(const std::string& service_path);
+  static bool IsOnline(State state, NetworkError::ErrorReason reason);
+  static bool IsBehindCaptivePortal(State state,
+                                    NetworkError::ErrorReason reason);
+  static bool IsProxyError(State state, NetworkError::ErrorReason reason);
 
  private:
   friend class base::RefCounted<NetworkStateInformer>;
@@ -90,7 +95,7 @@ class NetworkStateInformer
 
   State state_;
   std::string network_path_;
-  std::unique_ptr<base::Value> proxy_config_;
+  base::Value proxy_config_;
 
   base::ObserverList<NetworkStateInformerObserver>::Unchecked observers_;
 
@@ -98,5 +103,10 @@ class NetworkStateInformer
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::NetworkStateInformer;
+}
 
 #endif  // CHROME_BROWSER_UI_WEBUI_CHROMEOS_LOGIN_NETWORK_STATE_INFORMER_H_

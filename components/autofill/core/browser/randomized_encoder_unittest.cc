@@ -3,16 +3,19 @@
 // found in the LICENSE file.
 
 #include "components/autofill/core/browser/randomized_encoder.h"
-
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
+#include "components/autofill/core/common/signatures.h"
+#include "components/unified_consent/pref_names.h"
 #include "net/base/hex_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
 constexpr size_t kBitsPerByte = 8;
-constexpr size_t kMaxLengthInBytes = 64;
-constexpr size_t kMaxLengthInBits = kMaxLengthInBytes * kBitsPerByte;
+constexpr size_t kEncodedChunkLengthInBytes = 64;
+constexpr size_t kEncodedChunkLengthInBits =
+    kEncodedChunkLengthInBytes * kBitsPerByte;
 
 // Get the |i|-th bit of |s| where |i| counts up from the 0-bit of the first
 // character in |s|. It is expected that the caller guarantees that |i| is a
@@ -31,17 +34,17 @@ std::string ReferenceEncodeImpl(base::StringPiece coins,
                                 size_t bit_offset,
                                 size_t bit_stride) {
   // Encode all of the bits.
-  std::string all_bits = noise.as_string();
-  size_t value_length = std::min(value.length(), kMaxLengthInBytes);
+  std::string all_bits(noise);
+  size_t value_length = std::min(value.length(), noise.length());
   for (size_t i = 0; i < value_length; ++i) {
     all_bits[i] = (value[i] & coins[i]) | (all_bits[i] & ~coins[i]);
   }
 
   // Select the only the ones matching bit_offset and bit_stride.
-  std::string output(kMaxLengthInBytes / bit_stride, 0);
+  std::string output(all_bits.length() / bit_stride, 0);
   size_t src_offset = bit_offset;
   size_t dst_offset = 0;
-  while (src_offset < kMaxLengthInBits) {
+  while (src_offset < all_bits.length() * kBitsPerByte) {
     bool bit_value = GetBit(all_bits, src_offset);
     output[dst_offset / kBitsPerByte] |=
         (bit_value << (dst_offset % kBitsPerByte));
@@ -54,9 +57,10 @@ std::string ReferenceEncodeImpl(base::StringPiece coins,
 // A test version of the RandomizedEncoder class. Exposes "ForTest" methods.
 class TestRandomizedEncoder : public autofill::RandomizedEncoder {
  public:
-  using RandomizedEncoder::RandomizedEncoder;
+  using RandomizedEncoder::GetChunkCount;
   using RandomizedEncoder::GetCoins;
   using RandomizedEncoder::GetNoise;
+  using RandomizedEncoder::RandomizedEncoder;
 };
 
 // Data structure used to drive the encoding test cases.
@@ -98,66 +102,93 @@ using RandomizedEncoderTest = ::testing::TestWithParam<EncodeParams>;
 
 }  // namespace
 
+// As described in randomized_encoder.cc
+// TODO(https://crbug.com/831123): resolve circular dependency and remove
+// hardcoded constant
+TEST(RandomizedEncoderTest, CorrectUrlConsentFlag) {
+  EXPECT_STREQ(
+      TestRandomizedEncoder::kUrlKeyedAnonymizedDataCollectionEnabled,
+      unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
+}
+
 TEST_P(RandomizedEncoderTest, Encode) {
-  const autofill::FormSignature form_signature = 0x1234567812345678;
-  const autofill::FieldSignature field_signature = 0xCAFEBABE;
-  const std::string data_type = "css_class";
+  const autofill::FormSignature form_signature(0x1234567812345678);
+  const autofill::FieldSignature field_signature(0xCAFEBABE);
+  const std::string data_type = TestRandomizedEncoder::FORM_CSS_CLASS;
   const EncodeParams& params = GetParam();
   const std::string value("This is some text for testing purposes.");
 
-  EXPECT_LT(value.length(), kMaxLengthInBytes);
+  TestRandomizedEncoder encoder("this is the seed", params.encoding_type, true);
 
-  TestRandomizedEncoder encoder("this is the seed", params.encoding_type);
+  size_t chunk_count = encoder.GetChunkCount(value, data_type);
+  size_t padded_input_length = chunk_count * kEncodedChunkLengthInBytes;
+  EXPECT_LE(value.length(), padded_input_length);
 
   // Encode the output string.
   std::string actual_result =
       encoder.Encode(form_signature, field_signature, data_type, value);
 
   // Capture the coin and noise bits used for the form, field and metadata type.
-  std::string coins =
-      encoder.GetCoins(form_signature, field_signature, data_type);
-  std::string noise =
-      encoder.GetNoise(form_signature, field_signature, data_type);
+  std::string coins = encoder.GetCoins(form_signature, field_signature,
+                                       data_type, padded_input_length);
+  std::string noise = encoder.GetNoise(form_signature, field_signature,
+                                       data_type, padded_input_length);
 
   // Use the reference encoder implementation to get the expected output.
   std::string expected_result = ReferenceEncodeImpl(
       coins, noise, value, params.bit_offset, params.bit_stride);
 
   // The results should be the same.
-  EXPECT_EQ(kMaxLengthInBytes / params.bit_stride, actual_result.length());
+  EXPECT_EQ(padded_input_length / params.bit_stride, actual_result.length());
   EXPECT_EQ(expected_result, actual_result);
 }
 
 TEST_P(RandomizedEncoderTest, EncodeLarge) {
-  const autofill::FormSignature form_signature = 0x8765432187654321;
-  const autofill::FieldSignature field_signature = 0xDEADBEEF;
-  const std::string data_type = "html_name";
-  const EncodeParams& params = GetParam();
-  const std::string value(
-      "This is some text for testing purposes. It exceeds the maximum encoding "
-      "size. This serves to validate that truncation is performed. Lots and "
-      "lots of text. Yay!");
-  EXPECT_GT(value.length(), kMaxLengthInBytes);
+  const std::string data_types[] = {TestRandomizedEncoder::FORM_NAME,
+                                    TestRandomizedEncoder::FORM_URL};
+  for (std::string data_type : data_types) {
+    const autofill::FormSignature form_signature(0x8765432187654321);
+    const autofill::FieldSignature field_signature(0xDEADBEEF);
+    const EncodeParams& params = GetParam();
+    const std::string value(
+        "This is some text for testing purposes. It exceeds the maximum "
+        "encoding "
+        "size. This serves to validate that truncation is performed. Lots and "
+        "lots of text. Yay!");
 
-  TestRandomizedEncoder encoder("this is the seed", params.encoding_type);
+    TestRandomizedEncoder encoder("this is the seed", params.encoding_type,
+                                  true);
 
-  // Encode the output string.
-  std::string actual_result =
-      encoder.Encode(form_signature, field_signature, data_type, value);
+    size_t chunk_count = encoder.GetChunkCount(value, data_type);
+    size_t padded_input_length = chunk_count * kEncodedChunkLengthInBytes;
 
-  // Capture the coin and noise bits used for the form, field and metadata type.
-  std::string coins =
-      encoder.GetCoins(form_signature, field_signature, data_type);
-  std::string noise =
-      encoder.GetNoise(form_signature, field_signature, data_type);
+    EXPECT_EQ(data_type == TestRandomizedEncoder::FORM_URL, chunk_count > 1);
 
-  // Use the reference encoder implementation to get the expected output.
-  std::string expected_result = ReferenceEncodeImpl(
-      coins, noise, value, params.bit_offset, params.bit_stride);
+    // Encode the output string.
+    std::string actual_result =
+        encoder.Encode(form_signature, field_signature, data_type, value);
 
-  // The results should be the same.
-  EXPECT_EQ(kMaxLengthInBytes / params.bit_stride, actual_result.length());
-  EXPECT_EQ(expected_result, actual_result);
+    if (data_type == TestRandomizedEncoder::FORM_URL) {
+      EXPECT_LE(value.length(), actual_result.length() * params.bit_stride);
+    } else {
+      EXPECT_GT(value.length(), actual_result.length() * params.bit_stride);
+    }
+
+    // Capture the coin and noise bits used for the form, field and metadata
+    // type.
+    std::string coins = encoder.GetCoins(form_signature, field_signature,
+                                         data_type, padded_input_length);
+    std::string noise = encoder.GetNoise(form_signature, field_signature,
+                                         data_type, padded_input_length);
+
+    // Use the reference encoder implementation to get the expected output.
+    std::string expected_result = ReferenceEncodeImpl(
+        coins, noise, value, params.bit_offset, params.bit_stride);
+
+    // The results should be the same.
+    EXPECT_EQ(padded_input_length / params.bit_stride, actual_result.length());
+    EXPECT_EQ(expected_result, actual_result);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -246,78 +277,119 @@ std::string Make128BitSeed(size_t i) {
 
 }  // namespace
 
+TEST(RandomizedEncoderTest, GetChunkCount) {
+  TestRandomizedEncoder encoder(
+      "secret", autofill::AutofillRandomizedValue_EncodingType_ALL_BITS, true);
+
+  base::StringPiece url_type = TestRandomizedEncoder::FORM_URL;
+  EXPECT_EQ(encoder.GetChunkCount("", url_type), 0);
+  EXPECT_EQ(encoder.GetChunkCount("1", url_type), 1);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(33, '-'), url_type), 1);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(64, '-'), url_type), 1);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(65, '-'), url_type), 2);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(512, '-'), url_type), 8);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(513, '-'), url_type), 8);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(1000, '-'), url_type), 8);
+
+  base::StringPiece name_type = TestRandomizedEncoder::FORM_NAME;
+  EXPECT_EQ(encoder.GetChunkCount("", name_type), 1);
+  EXPECT_EQ(encoder.GetChunkCount("1", name_type), 1);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(33, '-'), name_type), 1);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(70, '-'), name_type), 1);
+  EXPECT_EQ(encoder.GetChunkCount(std::string(1000, '-'), name_type), 1);
+}
+
 TEST_P(RandomizedDecoderTest, Decode) {
-  static const autofill::FormSignature form_signature = 0x8765432187654321;
-  static const autofill::FieldSignature field_signature = 0xDEADBEEF;
-  static const char data_type[] = "data_type";
-  static const base::StringPiece common_prefix(
-      "This is the common prefix to encode and recover ");
+  static const base::StringPiece prefixes[] = {
+      "This is the common prefix to encode and recover",
 
-  const size_t num_votes = GetParam().num_votes;
-  const double lower_bound = GetParam().lower_bound;
-  const double upper_bound = GetParam().upper_bound;
+      "This is the longer common prefix to encode and recover to test input "
+      "|data_type==FORM_URL| values can be up to 8 * 64 bytes.",
+  };
+  for (base::StringPiece common_prefix : prefixes) {
+    static const autofill::FormSignature form_signature(0x8765432187654321);
+    static const autofill::FieldSignature field_signature(0xDEADBEEF);
+    static const std::string data_type = TestRandomizedEncoder::FORM_URL;
 
-  // This vector represents the aggregate counts of the number of times a
-  // separate encoding of out sample string had a given bit encoded as a one.
-  std::vector<size_t> num_times_bit_is_1(/*count=*/kMaxLengthInBits,
-                                         /*value=*/0);
+    const size_t num_votes = GetParam().num_votes;
+    const double lower_bound = GetParam().lower_bound;
+    const double upper_bound = GetParam().upper_bound;
 
-  // Perform |num_votes| independent encoding operations, with seeds (somewhat)
-  // evenly spread out across a 128-bit space.
-  for (size_t i = 0; i < num_votes; ++i) {
-    // Create a new encoder with a different secret each time.
-    TestRandomizedEncoder encoder(
-        Make128BitSeed(i),
-        autofill::AutofillRandomizedValue_EncodingType_ALL_BITS);
+    size_t chunk_count =
+        TestRandomizedEncoder(
+            "secret", autofill::AutofillRandomizedValue_EncodingType_ALL_BITS,
+            true)
+            .GetChunkCount(
+                base::StringPrintf("%s%zu", common_prefix.data(), num_votes),
+                data_type);
+    SCOPED_TRACE(testing::Message() << "chunk_count=" << chunk_count);
 
-    // Encode the common prefix plus some non-constant data.
-    std::string encoded =
-        encoder.Encode(form_signature, field_signature, data_type,
-                       base::StringPrintf("%s%zu", common_prefix.data(), i));
+    // This vector represents the aggregate counts of the number of times a
+    // separate encoding of out sample string had a given bit encoded as a one.
+    std::vector<size_t> num_times_bit_is_1(
+        /*count=*/kEncodedChunkLengthInBits * chunk_count,
+        /*value=*/0);
 
-    // Update |num_times_bit_is_1| for each bit in the encoded string.
-    for (size_t b = 0; b < kMaxLengthInBits; ++b) {
-      num_times_bit_is_1[b] += GetBit(encoded, b);
+    // Perform |num_votes| independent encoding operations, with seeds
+    // (somewhat) evenly spread out across a 128-bit space.
+    for (size_t i = 0; i < num_votes; ++i) {
+      // Create a new encoder with a different secret each time.
+      TestRandomizedEncoder encoder(
+          Make128BitSeed(i),
+          autofill::AutofillRandomizedValue_EncodingType_ALL_BITS, true);
+
+      // Encode the common prefix plus some non-constant data.
+      std::string encoded =
+          encoder.Encode(form_signature, field_signature, data_type,
+                         base::StringPrintf("%s%zu", common_prefix.data(), i));
+
+      // Update |num_times_bit_is_1| for each bit in the encoded string.
+      for (size_t b = 0; b < kEncodedChunkLengthInBits * chunk_count; ++b) {
+        num_times_bit_is_1[b] += GetBit(encoded, b);
+      }
     }
-  }
 
-  // Use |num_times_bit_is_1| to reconstruct the encoded string, bit by bit,
-  // as well as a record of whether or not each bit in the reconstruction
-  // buffer was validated with sufficient confidence.
-  std::string output(kMaxLengthInBytes, static_cast<char>(0));
-  std::vector<bool> bit_is_valid(kMaxLengthInBits);
-  const double threshold_for_zero = lower_bound * num_votes;
-  const double threshold_for_one = upper_bound * num_votes;
-  for (size_t b = 0; b < kMaxLengthInBits; ++b) {
-    if (num_times_bit_is_1[b] < threshold_for_zero) {
-      // bit it already zero, just mark it as valid
-      bit_is_valid[b] = true;
-    } else if (num_times_bit_is_1[b] > threshold_for_one) {
-      output[b / kBitsPerByte] |= (1 << (b % kBitsPerByte));
-      bit_is_valid[b] = true;
+    // Use |num_times_bit_is_1| to reconstruct the encoded string, bit by bit,
+    // as well as a record of whether or not each bit in the reconstruction
+    // buffer was validated with sufficient confidence.
+    std::string output(kEncodedChunkLengthInBytes * chunk_count,
+                       static_cast<char>(0));
+    std::vector<bool> bit_is_valid(kEncodedChunkLengthInBits * chunk_count);
+    const double threshold_for_zero = lower_bound * num_votes;
+    const double threshold_for_one = upper_bound * num_votes;
+    for (size_t b = 0; b < kEncodedChunkLengthInBits * chunk_count; ++b) {
+      if (num_times_bit_is_1[b] < threshold_for_zero) {
+        // bit it already zero, just mark it as valid
+        bit_is_valid[b] = true;
+      } else if (num_times_bit_is_1[b] > threshold_for_one) {
+        output[b / kBitsPerByte] |= (1 << (b % kBitsPerByte));
+        bit_is_valid[b] = true;
+      }
     }
-  }
 
-  // Validation: All bits overlapping the constant prefix should be valid.
-  for (size_t b = 0; b < common_prefix.length() * kBitsPerByte; ++b) {
-    EXPECT_TRUE(bit_is_valid[b]) << "True bit found to be noise at " << b;
-  }
-
-  // Validation: All of the recovered prefix bits should match the prefix.
-  for (size_t i = 0; i < common_prefix.length(); ++i) {
-    EXPECT_EQ(common_prefix[i], output[i]) << "Incorrect char at offset " << i;
-  }
-
-  // Validation: Most noise bits should be invalid, but we may get some false
-  // positives. Instead, we expect that no noise byte will have all of its
-  // bits turn up as valid.
-  for (size_t i = common_prefix.length(); i < kMaxLengthInBytes; ++i) {
-    size_t num_valid_bits = 0;
-    for (size_t b = 0; b < kBitsPerByte; ++b) {
-      num_valid_bits += bit_is_valid[i * kBitsPerByte + b];
+    // Validation: All bits overlapping the constant prefix should be valid.
+    for (size_t b = 0; b < common_prefix.length() * kBitsPerByte; ++b) {
+      EXPECT_TRUE(bit_is_valid[b]) << "True bit found to be noise at " << b;
     }
-    EXPECT_LT(num_valid_bits, kBitsPerByte)
-        << "Noise byte at offset " << i << " decoded as " << output[i];
+
+    // Validation: All of the recovered prefix bits should match the prefix.
+    for (size_t i = 0; i < common_prefix.length(); ++i) {
+      EXPECT_EQ(common_prefix[i], output[i])
+          << "Incorrect char at offset " << i;
+    }
+
+    // Validation: Most noise bits should be invalid, but we may get some false
+    // positives. Instead, we expect that no noise byte will have all of its
+    // bits turn up as valid.
+    for (size_t i = common_prefix.length();
+         i < kEncodedChunkLengthInBytes * chunk_count; ++i) {
+      size_t num_valid_bits = 0;
+      for (size_t b = 0; b < kBitsPerByte; ++b) {
+        num_valid_bits += bit_is_valid[i * kBitsPerByte + b];
+      }
+      EXPECT_LT(num_valid_bits, kBitsPerByte)
+          << "Noise byte at offset " << i << " decoded as " << output[i];
+    }
   }
 }
 

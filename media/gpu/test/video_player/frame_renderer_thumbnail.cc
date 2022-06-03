@@ -6,12 +6,15 @@
 
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "media/gpu/test/video_decode_accelerator_unittest_helpers.h"
+#include "media/gpu/test/video_test_helpers.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/init/gl_factory.h"
@@ -198,7 +201,7 @@ void FrameRendererThumbnail::RenderFrame(
     scoped_refptr<VideoFrame> video_frame) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
 
-  if (video_frame->metadata()->IsTrue(VideoFrameMetadata::END_OF_STREAM))
+  if (video_frame->metadata().end_of_stream)
     return;
 
   if (!renderer_task_runner_)
@@ -206,6 +209,12 @@ void FrameRendererThumbnail::RenderFrame(
 
   if (thumbnails_texture_id_ == 0u)
     InitializeThumbnailImageTask();
+
+  if (video_frame->visible_rect().size().IsEmpty()) {
+    // This occurs in bitstream buffer in webrtc scenario.
+    DLOG(WARNING) << "Skipping rendering, because visible_rect is empty";
+    return;
+  }
 
   // Find the texture associated with the video frame's mailbox.
   const gpu::MailboxHolder& mailbox_holder = video_frame->mailbox_holder(0);
@@ -224,6 +233,9 @@ scoped_refptr<VideoFrame> FrameRendererThumbnail::CreateVideoFrame(
     uint32_t texture_target,
     uint32_t* texture_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(renderer_sequence_checker_);
+
+  // Make the GL context current in the case it's not currently yet.
+  AcquireGLContext();
 
   // Create a mailbox.
   gpu::Mailbox mailbox = gpu::Mailbox::Generate();
@@ -483,7 +495,7 @@ void FrameRendererThumbnail::ValidateThumbnailTask(bool* success,
   *success = base::Contains(thumbnail_checksums_, md5_string);
 
   // If validation failed, write the thumbnail image to disk.
-  if (!success)
+  if (!(*success))
     SaveThumbnailTask();
 
   done->Signal();

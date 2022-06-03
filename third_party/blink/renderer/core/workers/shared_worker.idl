@@ -33,12 +33,11 @@
 
 [
     ActiveScriptWrappable,
-    // TODO(foolip): Exposed=(Window,Worker),
+    // TODO(foolip): Exposed=(Window, Worker),
+    Exposed=Window,
     RuntimeEnabled=SharedWorker
 ] interface SharedWorker : EventTarget {
-    // TODO(nhiroki): The second argument should be |optional (DOMString or
-    // WorkerOptions) options)|.
-    [CallWith=ExecutionContext, RaisesException] constructor(DOMString scriptURL, optional DOMString name);
+    [CallWith=ExecutionContext, RaisesException] constructor(ScriptURLString scriptURL, optional (DOMString or WorkerOptions) options = {});
     readonly attribute MessagePort port;
 };
 

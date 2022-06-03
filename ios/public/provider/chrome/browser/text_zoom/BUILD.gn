@@ -1,0 +1,18 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("text_zoom_api") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "text_zoom_api.h" ]
+}
+
+source_set("test_text_zoom") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "test_text_zoom.mm" ]
+  deps = [
+    ":text_zoom_api",
+    "//ios/public/provider/chrome/browser:font_size_java_script_feature",
+  ]
+}

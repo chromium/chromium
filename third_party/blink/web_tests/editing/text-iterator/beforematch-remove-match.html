@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 2000px;
+}
+</style>
+<div id=spacer1 class="spacer"></div>
+<div id=spacer2 class="spacer"></div>
+
+<script>
+
+async_test(t => {
+  const match = document.createElement('div');
+  match.textContent = 'match';
+  document.body.appendChild(match);
+
+  match.addEventListener('beforematch', () => {
+    match.remove();
+  });
+
+  testRunner.findString('match', ['Async']);
+
+  requestAnimationFrame(t.step_func(() => {
+    requestAnimationFrame(t.step_func_done(() => {
+      assert_equals(window.pageYOffset, 0,
+        'find-in-page should not scroll if the target element is removed by the beforematch handler.');
+    }));
+  }));
+}, `Removing the target element in the beforematch handler should prevent any scrolling.`);
+
+</script>

@@ -15,10 +15,10 @@
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/json/json_common.h"
-#include "base/json/json_reader.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -44,17 +44,49 @@ class JSONParserTest;
 // of the next token.
 class BASE_EXPORT JSONParser {
  public:
-  JSONParser(int options, size_t max_depth = kAbsoluteMaxDepth);
+  // Error codes during parsing.
+  enum JsonParseError {
+    JSON_NO_ERROR = base::ValueDeserializer::kErrorCodeNoError,
+    JSON_SYNTAX_ERROR = base::ValueDeserializer::kErrorCodeInvalidFormat,
+    JSON_INVALID_ESCAPE,
+    JSON_UNEXPECTED_TOKEN,
+    JSON_TRAILING_COMMA,
+    JSON_TOO_MUCH_NESTING,
+    JSON_UNEXPECTED_DATA_AFTER_ROOT,
+    JSON_UNSUPPORTED_ENCODING,
+    JSON_UNQUOTED_DICTIONARY_KEY,
+    JSON_TOO_LARGE,
+    JSON_UNREPRESENTABLE_NUMBER,
+    JSON_PARSE_ERROR_COUNT
+  };
+
+  // String versions of parse error codes.
+  static const char kSyntaxError[];
+  static const char kInvalidEscape[];
+  static const char kUnexpectedToken[];
+  static const char kTrailingComma[];
+  static const char kTooMuchNesting[];
+  static const char kUnexpectedDataAfterRoot[];
+  static const char kUnsupportedEncoding[];
+  static const char kUnquotedDictionaryKey[];
+  static const char kInputTooLarge[];
+  static const char kUnrepresentableNumber[];
+
+  explicit JSONParser(int options, size_t max_depth = kAbsoluteMaxDepth);
+
+  JSONParser(const JSONParser&) = delete;
+  JSONParser& operator=(const JSONParser&) = delete;
+
   ~JSONParser();
 
   // Parses the input string according to the set options and returns the
   // result as a Value.
   // Wrap this in base::FooValue::From() to check the Value is of type Foo and
   // convert to a FooValue at the same time.
-  Optional<Value> Parse(StringPiece input);
+  absl::optional<Value> Parse(StringPiece input);
 
   // Returns the error code.
-  JSONReader::JsonParseError error_code() const;
+  JsonParseError error_code() const;
 
   // Returns the human-friendly error message.
   std::string GetErrorMessage() const;
@@ -125,22 +157,22 @@ class BASE_EXPORT JSONParser {
 
     // The copied string representation. Will be unset until Convert() is
     // called.
-    base::Optional<std::string> string_;
+    absl::optional<std::string> string_;
   };
 
   // Returns the next |count| bytes of the input stream, or nullopt if fewer
   // than |count| bytes remain.
-  Optional<StringPiece> PeekChars(size_t count);
+  absl::optional<StringPiece> PeekChars(size_t count);
 
   // Calls PeekChars() with a |count| of 1.
-  Optional<char> PeekChar();
+  absl::optional<char> PeekChar();
 
   // Returns the next |count| bytes of the input stream, or nullopt if fewer
   // than |count| bytes remain, and advances the parser position by |count|.
-  Optional<StringPiece> ConsumeChars(size_t count);
+  absl::optional<StringPiece> ConsumeChars(size_t count);
 
   // Calls ConsumeChars() with a |count| of 1.
-  Optional<char> ConsumeChar();
+  absl::optional<char> ConsumeChar();
 
   // Returns a pointer to the current character position.
   const char* pos();
@@ -157,22 +189,22 @@ class BASE_EXPORT JSONParser {
   bool EatComment();
 
   // Calls GetNextToken() and then ParseToken().
-  Optional<Value> ParseNextToken();
+  absl::optional<Value> ParseNextToken();
 
   // Takes a token that represents the start of a Value ("a structural token"
   // in RFC terms) and consumes it, returning the result as a Value.
-  Optional<Value> ParseToken(Token token);
+  absl::optional<Value> ParseToken(Token token);
 
   // Assuming that the parser is currently wound to '{', this parses a JSON
   // object into a Value.
-  Optional<Value> ConsumeDictionary();
+  absl::optional<Value> ConsumeDictionary();
 
   // Assuming that the parser is wound to '[', this parses a JSON list into a
   // Value.
-  Optional<Value> ConsumeList();
+  absl::optional<Value> ConsumeList();
 
   // Calls through ConsumeStringRaw and wraps it in a value.
-  Optional<Value> ConsumeString();
+  absl::optional<Value> ConsumeString();
 
   // Assuming that the parser is wound to a double quote, this parses a string,
   // decoding any escape sequences and converts UTF-16 to UTF-8. Returns true on
@@ -187,14 +219,14 @@ class BASE_EXPORT JSONParser {
 
   // Assuming that the parser is wound to the start of a valid JSON number,
   // this parses and converts it to either an int or double value.
-  Optional<Value> ConsumeNumber();
+  absl::optional<Value> ConsumeNumber();
   // Helper that reads characters that are ints. Returns true if a number was
   // read and false on error.
   bool ReadInt(bool allow_leading_zeros);
 
   // Consumes the literal values of |true|, |false|, and |null|, assuming the
   // parser is wound to the first character of any of those.
-  Optional<Value> ConsumeLiteral();
+  absl::optional<Value> ConsumeLiteral();
 
   // Helper function that returns true if the byte squence |match| can be
   // consumed at the current parser position. Returns false if there are fewer
@@ -205,7 +237,7 @@ class BASE_EXPORT JSONParser {
   // Sets the error information to |code| at the current column, based on
   // |index_| and |index_last_line_|, with an optional positive/negative
   // adjustment by |column_adjust|.
-  void ReportError(JSONReader::JsonParseError code, int column_adjust);
+  void ReportError(JsonParseError code, int column_adjust);
 
   // Given the line and column number of an error, formats one of the error
   // message contants from json_reader.h for human display.
@@ -234,7 +266,7 @@ class BASE_EXPORT JSONParser {
   int index_last_line_;
 
   // Error information.
-  JSONReader::JsonParseError error_code_;
+  JsonParseError error_code_;
   int error_line_;
   int error_column_;
 
@@ -246,10 +278,6 @@ class BASE_EXPORT JSONParser {
   FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeLiterals);
   FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ConsumeNumbers);
   FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ErrorMessages);
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ReplaceInvalidCharacters);
-  FRIEND_TEST_ALL_PREFIXES(JSONParserTest, ReplaceInvalidUTF16EscapeSequence);
-
-  DISALLOW_COPY_AND_ASSIGN(JSONParser);
 };
 
 // Used when decoding and an invalid utf-8 sequence is encountered.

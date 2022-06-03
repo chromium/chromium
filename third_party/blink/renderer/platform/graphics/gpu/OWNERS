@@ -1,4 +1,15 @@
 # The bulk of the files in this directory are related to WebGL, though
 # there are a couple used by accelerated 2D canvas as well.
 
-# COMPONENT: Blink>WebGL
+
+# WebGL, WebGPU, Dawn, etc.
+kainino@chromium.org
+enga@chromium.org
+cwallez@chromium.org
+
+# WebXR
+bajones@chromium.org
+klausw@chromium.org
+
+# SharedGpuContext, ImageLayerBridge, etc.
+sunnyps@chromium.org

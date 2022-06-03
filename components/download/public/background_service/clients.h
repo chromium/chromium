@@ -41,7 +41,10 @@ enum class DownloadClient {
 
   PLUGIN_VM_IMAGE = 5,
 
-  BOUNDARY = 6,
+  OPTIMIZATION_GUIDE_PREDICTION_MODELS = 6,
+
+  // New clients should be added above here.
+  BOUNDARY = 7,
 };
 
 using DownloadClientMap = std::map<DownloadClient, std::unique_ptr<Client>>;

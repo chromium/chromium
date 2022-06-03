@@ -12,11 +12,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/zucchini/disassembler.h"
 #include "components/zucchini/image_utils.h"
 #include "components/zucchini/type_ztf.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace zucchini {
 
@@ -81,6 +80,8 @@ enum : size_t { kMaxDigitCount = 3 };
 class ZtfTranslator {
  public:
   ZtfTranslator();
+  ZtfTranslator(const ZtfTranslator&) = delete;
+  const ZtfTranslator& operator=(const ZtfTranslator&) = delete;
   ~ZtfTranslator();
 
   // Initializes |line_starts_| with the contents of |image|.
@@ -97,8 +98,8 @@ class ZtfTranslator {
   offset_t LineColToOffset(ztf::LineCol line_col) const;
 
   // Returns the ztf::LineCol for an |offset| if it is valid. Otherwise returns
-  // base::nullopt.
-  base::Optional<ztf::LineCol> OffsetToLineCol(offset_t offset) const;
+  // absl::nullopt.
+  absl::optional<ztf::LineCol> OffsetToLineCol(offset_t offset) const;
 
  private:
   // Returns an iterator to the range containing |offset|. Which is represented
@@ -117,12 +118,13 @@ class ZtfTranslator {
   // |line_starts_| is a sorted list of each line's starting offset, along with
   // the image size as the sentinel; it looks like {0, ..., image.size}.
   std::vector<offset_t> line_starts_;
-  DISALLOW_COPY_AND_ASSIGN(ZtfTranslator);
 };
 
 // Disassembler for Zucchini Text Format (ZTF).
 class DisassemblerZtf : public Disassembler {
  public:
+  static constexpr uint16_t kVersion = 1;
+
   // Target Pools
   enum ReferencePool : uint8_t {
     kAngles,      // <>
@@ -162,6 +164,8 @@ class DisassemblerZtf : public Disassembler {
   };
 
   DisassemblerZtf();
+  DisassemblerZtf(const DisassemblerZtf&) = delete;
+  const DisassemblerZtf& operator=(const DisassemblerZtf&) = delete;
   ~DisassemblerZtf() override;
 
   // Applies quick checks to determine if |image| *may* point to the start of a
@@ -192,8 +196,6 @@ class DisassemblerZtf : public Disassembler {
   bool Parse(ConstBufferView image) override;
 
   ZtfTranslator translator_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisassemblerZtf);
 };
 
 }  // namespace zucchini

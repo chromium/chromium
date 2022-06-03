@@ -1,5 +1,5 @@
 AXWebArea AXRoleDescription='HTML content'
 ++AXGroup AXRoleDescription='group'
-++++AXGroup AXRoleDescription='group' AXDescription='pipe'
-++++++AXLink AXRoleDescription='link' AXDescription='pipe1'
-++++++AXLink AXRoleDescription='link' AXDescription='pipe2'
+++++AXGroup AXDescription='pipe' AXRoleDescription='group'
+++++++AXLink AXDescription='pipe1' AXRoleDescription='link'
+++++++AXStaticText AXRoleDescription='text' AXValue='pipe2'

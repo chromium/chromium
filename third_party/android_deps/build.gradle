@@ -1,0 +1,188 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+apply plugin: ChromiumPlugin
+
+buildscript {
+    repositories {
+        maven {
+            url 'https://plugins.gradle.org/m2/'
+        }
+    }
+    dependencies {
+        classpath 'org.owasp:dependency-check-gradle:6+'
+    }
+}
+
+apply plugin: 'org.owasp.dependencycheck'
+
+repositories {
+    google()
+    mavenCentral()
+}
+
+dependencyCheck {
+    // Any known vulnerability of any severity will cause the build to fail.
+    failBuildOnCVSS = 0
+    suppressionFile = file('vulnerability_supressions.xml')
+    // Libraries used in these configurations aren't shipped in Chrome.
+    // They are only used to aid in compiling or testing.
+    skipConfigurations = [
+        'buildCompile',
+        'buildCompileNoDeps',
+        'androidTestCompile',
+        'testCompile'
+    ]
+}
+
+dependencies {
+    // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
+
+    // Replacement for com.android.support:design
+    compile 'com.google.android.material:material:1.5.0-alpha05'
+
+    compile 'com.google.android.play:core:1.10.0'
+
+    // Architecture components
+    String archComponentsVersion = '1.1.1'
+    compile "android.arch.lifecycle:runtime:${archComponentsVersion}"
+    compile "android.arch.lifecycle:common:${archComponentsVersion}"
+    compile "android.arch.lifecycle:common-java8:${archComponentsVersion}"
+    compile "android.arch.lifecycle:viewmodel:${archComponentsVersion}"
+
+    // Play services libraries
+    // See https://developers.google.com/android/guides/releases for updates
+    // Starting from 15.0.0 these libraries are allowed to update independently
+    String gmsVersion = '17.0.0'
+    compile "com.google.android.gms:play-services-basement:${gmsVersion}"
+    compile "com.google.android.gms:play-services-tasks:${gmsVersion}"
+    compile "com.google.android.gms:play-services-base:${gmsVersion}"
+    compile "com.google.android.gms:play-services-auth-base:${gmsVersion}"
+    compile 'com.google.android.gms:play-services-auth-api-phone:17.5.0'
+    compile "com.google.android.gms:play-services-auth:${gmsVersion}"
+    compile "com.google.android.gms:play-services-cast:${gmsVersion}"
+    compile "com.google.android.gms:play-services-cast-framework:${gmsVersion}"
+    compile "com.google.android.gms:play-services-iid:${gmsVersion}"
+    compile "com.google.android.gms:play-services-instantapps:${gmsVersion}"
+    compile "com.google.android.gms:play-services-gcm:${gmsVersion}"
+    compile "com.google.android.gms:play-services-location:${gmsVersion}"
+    compile 'com.google.android.gms:play-services-vision-common:18.0.0'
+    compile 'com.google.android.gms:play-services-vision:18.0.0'
+    compile 'com.google.android.gms:play-services-fido:19.0.0-beta'
+
+    // TODO (bjoyce): Remove after androidx migration crbug.com/896775
+    // Support v4 libraries
+    String supportLibVersion = '28.0.0'
+    compile "com.android.support:support-v4:${supportLibVersion}"
+    compile "com.android.support:support-compat:${supportLibVersion}"
+    compile "com.android.support:support-core-ui:${supportLibVersion}"
+    compile "com.android.support:support-core-utils:${supportLibVersion}"
+    compile "com.android.support:support-fragment:${supportLibVersion}"
+
+    compile "com.android.support:support-annotations:${supportLibVersion}"
+    compile "com.android.support:design:${supportLibVersion}"
+
+    compile "com.android.support:asynclayoutinflater:${supportLibVersion}"
+    compile "com.android.support:collections:${supportLibVersion}"
+    compile "com.android.support:coordinatorlayout:${supportLibVersion}"
+    compile "com.android.support:customview:${supportLibVersion}"
+    compile "com.android.support:drawerlayout:${supportLibVersion}"
+    compile "com.android.support:interpolator:${supportLibVersion}"
+    compile 'com.android.support:localbroadcastmanager:1.1.0-SNAPSHOT'
+    compile "com.android.support:swiperefreshlayout:${supportLibVersion}"
+    compile "com.android.support:viewpager:${supportLibVersion}"
+
+    compile 'com.android.support:multidex:1.0.0'
+
+    compile 'com.google.code.findbugs:jsr305:3.0.2'
+    compile 'com.google.flatbuffers:flatbuffers-java:2.0.3'
+    compile 'com.google.firebase:firebase-iid:21.0.1'
+    compile 'com.google.firebase:firebase-messaging:21.0.1'
+    compile 'com.google.guava:failureaccess:1.0.1'
+    compile 'com.google.j2objc:j2objc-annotations:1.1'
+    compile 'com.google.protobuf:protobuf-javalite:3.13.0'
+    compile 'javax.annotation:javax.annotation-api:1.3.2'
+    compile 'javax.annotation:jsr250-api:1.0'
+    compile 'javax.inject:javax.inject:1'
+
+    // Used by R8 to desugar library functions.
+    // See instructions in //third_party/r8/README.chromium for how to
+    // update desugar_jdk_libs.json (needed when changing this version).
+    compile 'com.android.tools:desugar_jdk_libs:1.1.1'
+    compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.1'
+
+    // Needed by androidx.
+    String kotlinxVersion = '1.5.0'
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-android:${kotlinxVersion}"
+    compile "org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:${kotlinxVersion}"
+
+
+    // Upstream guava introduced versions with -android suffix starting with version
+    // 22 to remove incompatible code with android. Thus we keep two jars, one for
+    // the full guava and one that supports android.
+    String guavaVersion = '31.0'
+    compile "com.google.guava:guava:${guavaVersion}-android"
+    // buildCompile targets have supports_android = false.
+    buildCompile "com.google.guava:guava:${guavaVersion}-jre"
+
+    String daggerVersion = '2.30'
+    compile "com.google.dagger:dagger:${daggerVersion}"
+    buildCompile "com.google.dagger:dagger-compiler:${daggerVersion}"
+
+    // Matches version depended on by Dagger.
+    buildCompile 'com.squareup:javapoet:1.13.0'
+
+    String errorproneVersion = '2.10.0'
+    // Used by downstream targets.
+    compile "com.google.errorprone:error_prone_annotations:${errorproneVersion}"
+    compile 'org.checkerframework:checker-compat-qual:2.5.3'
+    compile 'org.codehaus.mojo:animal-sniffer-annotations:1.17'
+
+    // Dedicated configuration to avoid using higher version number. The 9999 version is empty.
+    compileListenableFuture 'com.google.guava:listenablefuture:1.0'
+
+    buildCompile "com.google.errorprone:error_prone_core:${errorproneVersion}"
+    buildCompile "com.google.errorprone:error_prone_check_api:${errorproneVersion}"
+    buildCompile "com.google.errorprone:error_prone_annotation:${errorproneVersion}"
+    buildCompile 'com.google.errorprone:javac:9+181-r4173-1'
+
+    buildCompile 'com.google.auto.service:auto-service:1.0-rc6'
+    buildCompile 'com.google.auto.service:auto-service-annotations:1.0-rc6'
+    buildCompile 'com.google.code.gson:gson:2.8.0'
+    buildCompile 'org.ow2.asm:asm:7.0'
+    buildCompile 'org.ow2.asm:asm-commons:7.0'
+    buildCompile 'org.ow2.asm:asm-tree:7.0'
+    buildCompile 'org.ow2.asm:asm-util:7.0'
+
+    // Used by resource shrinking.
+    // buildCompileNoDeps targets do not bring in any of their dependencies,
+    // this list of targets is carefully curated for the use of the resources
+    // shrinker. If these are needed for something other than the resources
+    // shrinker, use buildCompile instead.
+    String androidToolsVersion = '30.0.0-alpha10'
+    buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
+    buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
+    buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"
+    buildCompile 'org.jetbrains.kotlin:kotlin-stdlib:1.4.32'
+
+    androidTestCompile 'com.googlecode.java-diff-utils:diffutils:1.3.0'
+    // Version 1.2 is needed by espresso-web, but we'll newer 1.2.1.
+    androidTestCompile 'org.ccil.cowan.tagsoup:tagsoup:1.2.1'
+
+    String robolectricVersion = '4.3.1'
+    // Use testCompile to avoid having support_android = true set on
+    // robolectric dependencies.
+    testCompile "org.robolectric:robolectric:${robolectricVersion}"
+    testCompile "org.robolectric:shadows-multidex:${robolectricVersion}"
+    testCompile "org.robolectric:shadows-playservices:${robolectricVersion}"
+    testCompile "org.robolectric:utils:${robolectricVersion}"
+}
+
+task setUpRepository(type: BuildConfigGenerator) {
+    // Paths are relative to the chromium source root.
+    repositoryPath 'third_party/android_deps'
+    chromiumSourceRoot '../..'
+    cipdBucket 'chromium'
+    internalTargetVisibility = [ ':*', '//third_party/androidx:*' ]
+}

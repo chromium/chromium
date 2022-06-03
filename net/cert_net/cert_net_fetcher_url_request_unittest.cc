@@ -18,7 +18,10 @@
 #include "net/cert/mock_cert_verifier.h"
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_server_properties.h"
+#include "net/http/transport_security_state.h"
+#include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/gtest_util.h"
@@ -26,7 +29,8 @@
 #include "net/test/url_request/url_request_hanging_read_job.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "net/url_request/url_request_filter.h"
-#include "net/url_request/url_request_job_factory_impl.h"
+#include "net/url_request/url_request_interceptor.h"
+#include "net/url_request/url_request_job_factory.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,43 +47,44 @@ namespace {
 const base::FilePath::CharType kDocRoot[] =
     FILE_PATH_LITERAL("net/data/cert_net_fetcher_impl_unittest");
 
+const char kMockSecureDnsHostname[] = "mock.secure.dns.check";
+
 // A non-mock URLRequestContext which can access http:// urls.
 class RequestContext : public URLRequestContext {
  public:
   RequestContext() : storage_(this) {
     ProxyConfig no_proxy;
-    storage_.set_host_resolver(std::make_unique<MockHostResolver>());
+    storage_.set_host_resolver(std::make_unique<MockHostResolver>(
+        MockHostResolverBase::RuleResolver::GetLocalhostResult()));
     storage_.set_cert_verifier(std::make_unique<MockCertVerifier>());
     storage_.set_transport_security_state(
         std::make_unique<TransportSecurityState>());
-    storage_.set_cert_transparency_verifier(
-        std::make_unique<MultiLogCTVerifier>());
     storage_.set_ct_policy_enforcer(
         std::make_unique<DefaultCTPolicyEnforcer>());
-    storage_.set_proxy_resolution_service(ProxyResolutionService::CreateFixed(
-        ProxyConfigWithAnnotation(no_proxy, TRAFFIC_ANNOTATION_FOR_TESTS)));
+    storage_.set_proxy_resolution_service(
+        ConfiguredProxyResolutionService::CreateFixed(
+            ProxyConfigWithAnnotation(no_proxy, TRAFFIC_ANNOTATION_FOR_TESTS)));
     storage_.set_ssl_config_service(
         std::make_unique<SSLConfigServiceDefaults>());
     storage_.set_http_server_properties(
         std::make_unique<HttpServerProperties>());
     storage_.set_quic_context(std::make_unique<QuicContext>());
 
-    HttpNetworkSession::Context session_context;
+    HttpNetworkSessionContext session_context;
     session_context.host_resolver = host_resolver();
     session_context.cert_verifier = cert_verifier();
     session_context.transport_security_state = transport_security_state();
-    session_context.cert_transparency_verifier = cert_transparency_verifier();
     session_context.ct_policy_enforcer = ct_policy_enforcer();
     session_context.proxy_resolution_service = proxy_resolution_service();
     session_context.ssl_config_service = ssl_config_service();
     session_context.http_server_properties = http_server_properties();
     session_context.quic_context = quic_context();
     storage_.set_http_network_session(std::make_unique<HttpNetworkSession>(
-        HttpNetworkSession::Params(), session_context));
+        HttpNetworkSessionParams(), session_context));
     storage_.set_http_transaction_factory(std::make_unique<HttpCache>(
         storage_.http_network_session(), HttpCache::DefaultBackend::InMemory(0),
         false /* is_main_cache */));
-    storage_.set_job_factory(std::make_unique<URLRequestJobFactoryImpl>());
+    storage_.set_job_factory(std::make_unique<URLRequestJobFactory>());
   }
 
   ~RequestContext() override { AssertNoURLRequests(); }
@@ -183,9 +188,9 @@ class CertNetFetcherURLRequestTest : public PlatformTest {
 
   void StartNetworkThread() {
     // Start the network thread.
-    network_thread_.reset(new base::Thread("network thread"));
+    network_thread_ = std::make_unique<base::Thread>("network thread");
     base::Thread::Options options(base::MessagePumpType::IO, 0);
-    EXPECT_TRUE(network_thread_->StartWithOptions(options));
+    EXPECT_TRUE(network_thread_->StartWithOptions(std::move(options)));
 
     // Initialize the URLRequestContext (and wait till it has completed).
     base::WaitableEvent done(base::WaitableEvent::ResetPolicy::MANUAL,
@@ -198,7 +203,7 @@ class CertNetFetcherURLRequestTest : public PlatformTest {
   }
 
   void InitOnNetworkThread(base::WaitableEvent* done) {
-    state_.reset(new NetworkThreadState);
+    state_ = std::make_unique<NetworkThreadState>();
     state_->context.set_network_delegate(&state_->network_delegate);
     done->Signal();
   }
@@ -244,6 +249,46 @@ class CertNetFetcherURLRequestTestWithHangingReadHandler
   void SetUp() override { URLRequestHangingReadJob::AddUrlHandler(); }
 
   void TearDown() override { URLRequestFilter::GetInstance()->ClearHandlers(); }
+};
+
+// Interceptor to check that secure DNS has been disabled.
+class SecureDnsInterceptor : public net::URLRequestInterceptor {
+ public:
+  explicit SecureDnsInterceptor(bool* invoked_interceptor)
+      : invoked_interceptor_(invoked_interceptor) {}
+  ~SecureDnsInterceptor() override = default;
+
+ private:
+  // URLRequestInterceptor implementation:
+  std::unique_ptr<net::URLRequestJob> MaybeInterceptRequest(
+      net::URLRequest* request) const override {
+    EXPECT_EQ(SecureDnsPolicy::kDisable, request->secure_dns_policy());
+    *invoked_interceptor_ = true;
+    return nullptr;
+  }
+
+  bool* invoked_interceptor_;
+};
+
+class CertNetFetcherURLRequestTestWithSecureDnsInterceptor
+    : public CertNetFetcherURLRequestTest,
+      public WithTaskEnvironment {
+ public:
+  CertNetFetcherURLRequestTestWithSecureDnsInterceptor()
+      : invoked_interceptor_(false) {}
+
+  void SetUp() override {
+    URLRequestFilter::GetInstance()->AddHostnameInterceptor(
+        "http", kMockSecureDnsHostname,
+        std::make_unique<SecureDnsInterceptor>(&invoked_interceptor_));
+  }
+
+  void TearDown() override { URLRequestFilter::GetInstance()->ClearHandlers(); }
+
+  bool invoked_interceptor() { return invoked_interceptor_; }
+
+ private:
+  bool invoked_interceptor_;
 };
 
 // Helper to start an AIA fetch using default parameters.
@@ -650,6 +695,18 @@ TEST_F(CertNetFetcherURLRequestTestWithHangingReadHandler,
 
   ShutDownFetcher();
   VerifyFailure(ERR_ABORTED, request.get());
+}
+
+TEST_F(CertNetFetcherURLRequestTestWithSecureDnsInterceptor,
+       SecureDnsDisabled) {
+  CreateFetcher();
+  std::unique_ptr<net::CertNetFetcher::Request> request = StartRequest(
+      fetcher(),
+      GURL("http://" + std::string(kMockSecureDnsHostname) + "/cert.crt"));
+  Error actual_error;
+  std::vector<uint8_t> actual_body;
+  request->WaitForResult(&actual_error, &actual_body);
+  EXPECT_TRUE(invoked_interceptor());
 }
 
 }  // namespace

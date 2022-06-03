@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/offline_pages/android/offline_page_auto_fetcher_service.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -83,10 +84,10 @@ class StubTabFinder : public AutoFetchPageLoadWatcher::AndroidTabFinder {
     return result;
   }
 
-  base::Optional<TabInfo> FindNavigationTab(
+  absl::optional<TabInfo> FindNavigationTab(
       content::WebContents* web_contents) override {
     if (!tabs_.count(current_tab_id_))
-      return base::nullopt;
+      return absl::nullopt;
     return TabInfo{current_tab_id_, tabs_[current_tab_id_]};
   }
 

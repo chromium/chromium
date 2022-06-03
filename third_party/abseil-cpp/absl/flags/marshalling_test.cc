@@ -15,7 +15,12 @@
 
 #include "absl/flags/marshalling.h"
 
+#include <stdint.h>
+
 #include <cmath>
+#include <limits>
+#include <string>
+#include <vector>
 
 #include "gtest/gtest.h"
 

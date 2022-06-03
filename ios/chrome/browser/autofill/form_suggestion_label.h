@@ -5,19 +5,29 @@
 #ifndef IOS_CHROME_BROWSER_AUTOFILL_FORM_SUGGESTION_LABEL_H_
 #define IOS_CHROME_BROWSER_AUTOFILL_FORM_SUGGESTION_LABEL_H_
 
+// TODO(crbug.com/1115980): Move Autofill ui code to i/c/b/ui/autofill.
+
 #import <UIKit/UIKit.h>
 
 @class FormSuggestion;
-@protocol FormSuggestionClient;
+@class FormSuggestionLabel;
+
+// Delegate for actions happening in FormSuggestionLabel.
+@protocol FormSuggestionLabelDelegate
+
+// User tapped on the suggestion.
+- (void)didTapFormSuggestionLabel:(FormSuggestionLabel*)formSuggestionLabel;
+
+@end
 
 // Class for Autofill suggestion in the customized keyboard.
 @interface FormSuggestionLabel : UIView
 
-// Designated initializer. Initializes with |client| for |suggestion|.
+// Designated initializer. Initializes with |delegate| for |suggestion|.
 - (instancetype)initWithSuggestion:(FormSuggestion*)suggestion
                              index:(NSUInteger)index
                     numSuggestions:(NSUInteger)numSuggestions
-                            client:(id<FormSuggestionClient>)client
+                          delegate:(id<FormSuggestionLabelDelegate>)delegate
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;

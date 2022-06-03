@@ -2,37 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":a11y_page",
-    ":captions_browser_proxy",
-    ":captions_subpage",
-  ]
-}
-
-js_library("captions_subpage") {
-  deps = [
-    "../appearance_page:fonts_browser_proxy",
-    "../controls:settings_dropdown_menu",
-    "//ui/webui/resources/cr_elements/cr_slider:cr_slider",
-    "//ui/webui/resources/js:i18n_behavior",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("a11y_page") {
-  deps = [
-    "..:route",
-    "../settings_page:settings_animated_pages",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("captions_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/js:cr",
+html_to_js("web_components") {
+  js_files = [
+    "a11y_page.ts",
+    "captions_subpage.ts",
+    "live_caption_section.ts",
   ]
 }

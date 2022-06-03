@@ -31,11 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_QUOTA_DEPRECATED_STORAGE_QUOTA_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_QUOTA_DEPRECATED_STORAGE_QUOTA_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
-#include "third_party/blink/public/mojom/quota/quota_dispatcher_host.mojom-blink.h"
+#include "third_party/blink/public/mojom/quota/quota_manager_host.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
 
@@ -58,7 +60,7 @@ class DeprecatedStorageQuota final : public ScriptWrappable {
                                           V8StorageErrorCallback*,
                                           DOMExceptionCode);
 
-  explicit DeprecatedStorageQuota(Type);
+  DeprecatedStorageQuota(Type, ExecutionContext*);
 
   void queryUsageAndQuota(ScriptState*,
                           V8StorageUsageCallback*,
@@ -69,13 +71,15 @@ class DeprecatedStorageQuota final : public ScriptWrappable {
                     V8StorageQuotaCallback* = nullptr,
                     V8StorageErrorCallback* = nullptr);
 
+  void Trace(Visitor*) const override;
+
  private:
   // Binds the interface (if not already bound) with the given interface
   // provider, and returns it,
-  mojom::blink::QuotaDispatcherHost* GetQuotaHost(ExecutionContext*);
+  mojom::blink::QuotaManagerHost* GetQuotaHost(ExecutionContext*);
 
   Type type_;
-  mojo::Remote<mojom::blink::QuotaDispatcherHost> quota_host_;
+  HeapMojoRemote<mojom::blink::QuotaManagerHost> quota_host_;
 };
 
 }  // namespace blink

@@ -1,9 +1,0 @@
-<html manifest="quota-origin-continued-download-multiple-manifests-1.manifest">
-<script>
-// This is expected to succeed.
-applicationCache.oncached = function() { parent.postMessage("PASS - cached iframe", "*"); };
-applicationCache.onerror = function() { parent.postMessage("FAIL - error caching iframe, expected this to succeed by fitting in the quota", "*"); };
-applicationCache.onupdateready = function() { parent.postMessage("FAIL - update ready, all caches should have been deleted before this test", "*"); };
-applicationCache.onnoupdate = function() { parent.postMessage("FAIL - no update iframe, all caches should have been deleted before this test", "*"); };
-</script>
-</html>

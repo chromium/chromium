@@ -19,7 +19,7 @@ AnimatorDefinition::AnimatorDefinition(V8AnimatorConstructor* constructor,
   DCHECK(animate_);
 }
 
-void AnimatorDefinition::Trace(Visitor* visitor) {
+void AnimatorDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(constructor_);
   visitor->Trace(animate_);
   visitor->Trace(state_);

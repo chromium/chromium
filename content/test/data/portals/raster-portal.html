@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<!-- Load zoomed out to ensure natural page scale is correctly accounted for
+     even in the presence of an external page scale from the embedder -->
+<meta name="viewport" content="width=2000,initial-scale=0.5">
+<title>raster-portal.html</title>
+<style>
+  body {
+    margin: 0;
+  }
+
+  /* Creates a simple black-and-white checkerboard pattern */
+  div {
+    width:  100px;
+    height: 100px;
+    background: linear-gradient(90deg,#FFF 50%,#000 0)0/50px,
+                linear-gradient(#FFF 50%,#000 0)0/9% 50px;
+    background-blend-mode:exclusion
+  }
+</style>
+<div></div>

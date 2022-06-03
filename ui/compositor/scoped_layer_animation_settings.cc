@@ -26,6 +26,11 @@ class ScopedLayerAnimationObserver : public ui::ImplicitAnimationObserver,
     layer_->AddObserver(this);
     Trait::AddRequest(layer_);
   }
+
+  ScopedLayerAnimationObserver(const ScopedLayerAnimationObserver&) = delete;
+  ScopedLayerAnimationObserver& operator=(const ScopedLayerAnimationObserver&) =
+      delete;
+
   ~ScopedLayerAnimationObserver() override {
     if (layer_)
       layer_->RemoveObserver(this);
@@ -53,8 +58,6 @@ class ScopedLayerAnimationObserver : public ui::ImplicitAnimationObserver,
 
  private:
   ui::Layer* layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedLayerAnimationObserver);
 };
 
 struct RenderSurfaceCachingTrait {
@@ -115,12 +118,11 @@ ScopedLayerAnimationSettings::ScopedLayerAnimationSettings(
       old_transition_duration_(animator->GetTransitionDuration()),
       old_tween_type_(animator->tween_type()),
       old_preemption_strategy_(animator->preemption_strategy()) {
-  SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-      kScopedLayerAnimationDefaultTransitionDurationMs));
+  SetTransitionDuration(
+      base::Milliseconds(kScopedLayerAnimationDefaultTransitionDurationMs));
 }
 
 ScopedLayerAnimationSettings::~ScopedLayerAnimationSettings() {
-  animator_->set_animation_metrics_reporter(nullptr);
   animator_->is_transition_duration_locked_ =
       old_is_transition_duration_locked_;
   animator_->SetTransitionDuration(old_transition_duration_);
@@ -141,11 +143,6 @@ void ScopedLayerAnimationSettings::AddObserver(
     ImplicitAnimationObserver* observer) {
   observers_.insert(observer);
   animator_->AddObserver(observer);
-}
-
-void ScopedLayerAnimationSettings::SetAnimationMetricsReporter(
-    AnimationMetricsReporter* reporter) {
-  animator_->set_animation_metrics_reporter(reporter);
 }
 
 void ScopedLayerAnimationSettings::SetTransitionDuration(

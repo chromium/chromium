@@ -6,7 +6,7 @@
   TestRunner.addResult(`Tests that the contrast line algorithm produces good results and terminates.\n`);
 
 
-  await self.runtime.loadModulePromise('color_picker');
+  await TestRunner.loadLegacyModule('color_picker');
 
   var colorPairs = [
     // Boring black on white

@@ -1,0 +1,65 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+import("//components/captive_portal/core/features.gni")
+
+source_set("content") {
+  sources = []
+
+  if (enable_captive_portal_detection) {
+    sources += [
+      "captive_portal_login_detector.cc",
+      "captive_portal_login_detector.h",
+      "captive_portal_service.cc",
+      "captive_portal_service.h",
+      "captive_portal_tab_helper.cc",
+      "captive_portal_tab_helper.h",
+      "captive_portal_tab_reloader.cc",
+      "captive_portal_tab_reloader.h",
+      "captive_portal_url_loader_throttle.cc",
+      "captive_portal_url_loader_throttle.h",
+    ]
+  }
+
+  public_deps = [
+    "//base",
+    "//components/captive_portal/core",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//net",
+    "//services/network/public/cpp",
+    "//url",
+  ]
+
+  deps = [
+    "//components/embedder_support",
+    "//content/public/browser",
+    "//third_party/blink/public/common",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = []
+
+  if (enable_captive_portal_detection) {
+    sources += [
+      "captive_portal_service_unittest.cc",
+      "captive_portal_tab_helper_unittest.cc",
+      "captive_portal_tab_reloader_unittest.cc",
+    ]
+  }
+  deps = [
+    ":content",
+    "//base",
+    "//base/test:test_config",
+    "//base/test:test_support",
+    "//components/captive_portal/core",
+    "//components/captive_portal/core:test_support",
+    "//components/embedder_support",
+    "//components/prefs:test_support",
+    "//content/test:test_support",
+    "//net",
+    "//testing/gtest",
+  ]
+}

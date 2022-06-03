@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600">
+  <g font-size="32" text-decoration="underline overline" fill="rgba(0,0,255,0.5">
+<g>
+  <text x="10" y="38" fill="black" dominant-baseline="auto">auto: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 50)">
+  <text x="10" y="38" fill="black" dominant-baseline="use-script">use-script: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 100)">
+  <text x="10" y="38" fill="black" dominant-baseline="ideographic">ideographic: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 150)">
+  <text x="10" y="38" fill="black" dominant-baseline="alphabetic">alphabetic: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 200)">
+  <text x="10" y="38" fill="black" dominant-baseline="hanging">hanging: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 250)">
+  <text x="10" y="38" fill="black" dominant-baseline="mathematical">mathematical: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 300)">
+  <text x="10" y="38" fill="black" dominant-baseline="central">central: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 350)">
+  <text x="10" y="38" fill="black" dominant-baseline="middle">middle: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 400)">
+  <text x="10" y="38" fill="black" dominant-baseline="text-after-edge">text-after-edge: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+
+<g transform="translate(0 450)">
+  <text x="10" y="38" fill="black" dominant-baseline="text-before-edge">text-before-edge: This is a test</text>
+  <line x1="10" x2="512" y1="38" y2="38" stroke="rgba(255,0,0,0.5)"/>
+</g>
+</g>
+</svg>

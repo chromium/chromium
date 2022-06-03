@@ -4,17 +4,18 @@
 
 #include "remoting/protocol/pseudotcp_adapter.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/glue/thread_wrapper.h"
@@ -79,10 +80,7 @@ class LeakyBucket : public RateLimiter {
 
 class FakeSocket : public P2PDatagramSocket {
  public:
-  FakeSocket()
-      : rate_limiter_(NULL),
-        latency_ms_(0) {
-  }
+  FakeSocket() : rate_limiter_(nullptr), latency_ms_(0) {}
   ~FakeSocket() override = default;
 
   void AppendInputPacket(const std::vector<char>& data) {
@@ -143,7 +141,7 @@ class FakeSocket : public P2PDatagramSocket {
           base::BindOnce(&FakeSocket::AppendInputPacket,
                          base::Unretained(peer_socket_),
                          std::vector<char>(buf->data(), buf->data() + buf_len)),
-          base::TimeDelta::FromMilliseconds(latency_ms_));
+          base::Milliseconds(latency_ms_));
     }
 
     return buf_len;
@@ -253,9 +251,8 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
       input_buffer_->set_offset(input_buffer_->capacity() - kMessageSize);
 
       result = host_socket_->Read(
-          input_buffer_.get(),
-          kMessageSize,
-          base::Bind(&TCPChannelTester::OnRead, base::Unretained(this)));
+          input_buffer_.get(), kMessageSize,
+          base::BindOnce(&TCPChannelTester::OnRead, base::Unretained(this)));
       HandleReadResult(result);
     };
   }
@@ -306,9 +303,10 @@ class PseudoTcpAdapterTest : public testing::Test {
     host_socket_->Connect(client_socket_);
     client_socket_->Connect(host_socket_);
 
-    host_pseudotcp_.reset(new PseudoTcpAdapter(base::WrapUnique(host_socket_)));
-    client_pseudotcp_.reset(
-        new PseudoTcpAdapter(base::WrapUnique(client_socket_)));
+    host_pseudotcp_ =
+        std::make_unique<PseudoTcpAdapter>(base::WrapUnique(host_socket_));
+    client_pseudotcp_ =
+        std::make_unique<PseudoTcpAdapter>(base::WrapUnique(client_socket_));
   }
 
   FakeSocket* host_socket_;
@@ -323,15 +321,15 @@ TEST_F(PseudoTcpAdapterTest, DataTransfer) {
   net::TestCompletionCallback host_connect_cb;
   net::TestCompletionCallback client_connect_cb;
 
-  int rv1 = host_pseudotcp_->Connect(host_connect_cb.callback());
-  int rv2 = client_pseudotcp_->Connect(client_connect_cb.callback());
+  net::CompletionOnceCallback rv1 =
+      host_pseudotcp_->Connect(host_connect_cb.callback());
+  ASSERT_FALSE(rv1);
+  net::CompletionOnceCallback rv2 =
+      client_pseudotcp_->Connect(client_connect_cb.callback());
+  ASSERT_FALSE(rv2);
 
-  if (rv1 == net::ERR_IO_PENDING)
-    rv1 = host_connect_cb.WaitForResult();
-  if (rv2 == net::ERR_IO_PENDING)
-    rv2 = client_connect_cb.WaitForResult();
-  ASSERT_EQ(net::OK, rv1);
-  ASSERT_EQ(net::OK, rv2);
+  EXPECT_EQ(net::OK, host_connect_cb.WaitForResult());
+  EXPECT_EQ(net::OK, client_connect_cb.WaitForResult());
 
   scoped_refptr<TCPChannelTester> tester =
       new TCPChannelTester(base::ThreadTaskRunnerHandle::Get(),
@@ -358,15 +356,15 @@ TEST_F(PseudoTcpAdapterTest, LimitedChannel) {
   net::TestCompletionCallback host_connect_cb;
   net::TestCompletionCallback client_connect_cb;
 
-  int rv1 = host_pseudotcp_->Connect(host_connect_cb.callback());
-  int rv2 = client_pseudotcp_->Connect(client_connect_cb.callback());
+  net::CompletionOnceCallback rv1 =
+      host_pseudotcp_->Connect(host_connect_cb.callback());
+  ASSERT_FALSE(rv1);
+  net::CompletionOnceCallback rv2 =
+      client_pseudotcp_->Connect(client_connect_cb.callback());
+  ASSERT_FALSE(rv2);
 
-  if (rv1 == net::ERR_IO_PENDING)
-    rv1 = host_connect_cb.WaitForResult();
-  if (rv2 == net::ERR_IO_PENDING)
-    rv2 = client_connect_cb.WaitForResult();
-  ASSERT_EQ(net::OK, rv1);
-  ASSERT_EQ(net::OK, rv2);
+  EXPECT_EQ(net::OK, host_connect_cb.WaitForResult());
+  EXPECT_EQ(net::OK, client_connect_cb.WaitForResult());
 
   scoped_refptr<TCPChannelTester> tester =
       new TCPChannelTester(base::ThreadTaskRunnerHandle::Get(),
@@ -420,15 +418,15 @@ TEST_F(PseudoTcpAdapterTest, WriteWaitsForSendLetsDataThrough) {
   // enabled.
   host_pseudotcp_->SetNoDelay(true);
 
-  int rv1 = host_pseudotcp_->Connect(host_connect_cb.callback());
-  int rv2 = client_pseudotcp_->Connect(client_connect_cb.callback());
+  net::CompletionOnceCallback rv1 =
+      host_pseudotcp_->Connect(host_connect_cb.callback());
+  ASSERT_FALSE(rv1);
+  net::CompletionOnceCallback rv2 =
+      client_pseudotcp_->Connect(client_connect_cb.callback());
+  ASSERT_FALSE(rv2);
 
-  if (rv1 == net::ERR_IO_PENDING)
-    rv1 = host_connect_cb.WaitForResult();
-  if (rv2 == net::ERR_IO_PENDING)
-    rv2 = client_connect_cb.WaitForResult();
-  ASSERT_EQ(net::OK, rv1);
-  ASSERT_EQ(net::OK, rv2);
+  EXPECT_EQ(net::OK, host_connect_cb.WaitForResult());
+  EXPECT_EQ(net::OK, client_connect_cb.WaitForResult());
 
   scoped_refptr<TCPChannelTester> tester =
       new TCPChannelTester(base::ThreadTaskRunnerHandle::Get(),

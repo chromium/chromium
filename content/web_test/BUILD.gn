@@ -1,0 +1,331 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromecast_build.gni")
+import("//build/config/ui.gni")  # For the toolkit_views variables.
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ppapi/buildflags/buildflags.gni")  # For the enable_plugins variable.
+import("//printing/buildflags/buildflags.gni")
+
+if (is_android) {
+  import("//build/config/android/config.gni")
+} else if (is_mac) {
+  import("//build/apple/tweak_info_plist.gni")
+  import("//build/config/mac/rules.gni")
+  import("//content/public/app/mac_helpers.gni")
+  import("//third_party/icu/config.gni")
+  import("//ui/gl/features.gni")
+  import("//v8/gni/v8.gni")
+}
+
+mojom("web_test_common_mojom") {
+  sources = [
+    "common/fake_bluetooth_chooser.mojom",
+    "common/mojo_echo.mojom",
+    "common/web_test.mojom",
+    "common/web_test_bluetooth_fake_adapter_setter.mojom",
+  ]
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//skia/public/mojom",
+    "//third_party/blink/public/mojom:mojom_platform",
+    "//ui/accessibility:ax_enums_mojo",
+    "//ui/gfx/geometry/mojom",
+    "//url/mojom:url_mojom_gurl",
+    "//url/mojom:url_mojom_origin",
+  ]
+
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
+}
+
+static_library("web_test_common") {
+  testonly = true
+  sources = [
+    "common/tracked_dictionary.cc",
+    "common/tracked_dictionary.h",
+    "common/web_test_constants.cc",
+    "common/web_test_constants.h",
+    "common/web_test_runtime_flags.cc",
+    "common/web_test_runtime_flags.h",
+    "common/web_test_string_util.cc",
+    "common/web_test_string_util.h",
+    "common/web_test_switches.cc",
+    "common/web_test_switches.h",
+  ]
+  public_deps = [
+    # The mojoms used to support communication between browser and renderer
+    # for the web test harness.
+    ":web_test_common_mojom",
+
+    # The generated mojom JS bindings are used by web tests.
+    ":web_test_common_mojom_js",
+  ]
+  deps = [
+    "//base",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+    "//v8",
+  ]
+}
+
+static_library("web_test_browser") {
+  testonly = true
+
+  # This is to support our dependency on //content/browser.
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  sources = [
+    "browser/devtools_protocol_test_bindings.cc",
+    "browser/devtools_protocol_test_bindings.h",
+    "browser/fake_bluetooth_chooser.cc",
+    "browser/fake_bluetooth_chooser.h",
+    "browser/fake_bluetooth_chooser_factory.cc",
+    "browser/fake_bluetooth_chooser_factory.h",
+    "browser/fake_bluetooth_delegate.cc",
+    "browser/fake_bluetooth_delegate.h",
+    "browser/leak_detector.cc",
+    "browser/leak_detector.h",
+    "browser/mojo_echo.cc",
+    "browser/mojo_echo.h",
+    "browser/mojo_web_test_helper.cc",
+    "browser/mojo_web_test_helper.h",
+    "browser/test_info_extractor.cc",
+    "browser/test_info_extractor.h",
+    "browser/web_test_background_fetch_delegate.cc",
+    "browser/web_test_background_fetch_delegate.h",
+    "browser/web_test_bluetooth_adapter_provider.cc",
+    "browser/web_test_bluetooth_adapter_provider.h",
+    "browser/web_test_bluetooth_chooser_factory.cc",
+    "browser/web_test_bluetooth_chooser_factory.h",
+    "browser/web_test_bluetooth_fake_adapter_setter_impl.cc",
+    "browser/web_test_bluetooth_fake_adapter_setter_impl.h",
+    "browser/web_test_browser_context.cc",
+    "browser/web_test_browser_context.h",
+    "browser/web_test_browser_main_parts.cc",
+    "browser/web_test_browser_main_parts.h",
+    "browser/web_test_browser_main_platform_support.h",
+    "browser/web_test_browser_main_runner.cc",
+    "browser/web_test_browser_main_runner.h",
+    "browser/web_test_content_browser_client.cc",
+    "browser/web_test_content_browser_client.h",
+    "browser/web_test_control_host.cc",
+    "browser/web_test_control_host.h",
+    "browser/web_test_cookie_manager.cc",
+    "browser/web_test_cookie_manager.h",
+    "browser/web_test_devtools_bindings.cc",
+    "browser/web_test_devtools_bindings.h",
+    "browser/web_test_download_manager_delegate.cc",
+    "browser/web_test_download_manager_delegate.h",
+    "browser/web_test_first_device_bluetooth_chooser.cc",
+    "browser/web_test_first_device_bluetooth_chooser.h",
+    "browser/web_test_javascript_dialog_manager.cc",
+    "browser/web_test_javascript_dialog_manager.h",
+    "browser/web_test_permission_manager.cc",
+    "browser/web_test_permission_manager.h",
+    "browser/web_test_push_messaging_service.cc",
+    "browser/web_test_push_messaging_service.h",
+    "browser/web_test_shell_platform_delegate.cc",
+    "browser/web_test_shell_platform_delegate.h",
+    "browser/web_test_storage_access_manager.cc",
+    "browser/web_test_storage_access_manager.h",
+    "browser/web_test_tts_platform.cc",
+    "browser/web_test_tts_platform.h",
+  ]
+
+  if (is_mac) {
+    sources += [
+      "browser/web_test_browser_main_platform_support_mac.mm",
+      "browser/web_test_shell_platform_delegate_mac.mm",
+    ]
+  } else if (toolkit_views && !is_chromecast) {
+    sources += [ "browser/web_test_shell_platform_delegate_views.cc" ]
+  } else {
+    sources += [ "browser/web_test_shell_platform_delegate_aura.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "browser/web_test_browser_main_platform_support_win.cc" ]
+  }
+
+  if (is_linux || is_chromeos) {
+    sources += [ "browser/web_test_browser_main_platform_support_linux.cc" ]
+  }
+
+  deps = [
+    ":web_test_common",
+    "//base",
+    "//build:chromeos_buildflags",
+    "//cc/base",
+    "//cc/paint",
+    "//components/download/content/factory",
+    "//components/download/public/background_service:public",
+    "//components/download/public/common:public",
+    "//components/network_session_configurator/common",
+    "//content/browser:for_content_tests",  # For non-component builds.
+    "//content/public/browser",  # For component builds.
+    "//content/shell:content_shell_lib",
+    "//content/test:blink_test_browser_support",
+    "//content/test:mojo_bindings_web_test_mojom",
+    "//content/test:mojo_web_test_bindings",
+    "//content/test:test_support",
+    "//device/bluetooth:fake_bluetooth",
+    "//device/bluetooth:mocks",
+    "//device/bluetooth/public/mojom:fake_bluetooth_interfaces",
+    "//gpu",
+    "//media",
+    "//net",
+    "//net:net_resources",
+    "//net:test_support",
+    "//ppapi/buildflags",
+    "//sandbox",
+    "//services/device/public/cpp:test_support",
+    "//services/network/public/cpp",
+    "//services/service_manager/public/cpp",
+    "//storage/browser",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public:blink",
+    "//ui/base",
+    "//ui/base/ime/init",
+    "//ui/display",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+    "//ui/gl",
+    "//ui/shell_dialogs:shell_dialogs",
+    "//url",
+  ]
+
+  if (enable_plugins) {
+    deps += [
+      "//content/ppapi_plugin",
+      "//ppapi:blink_deprecated_test_plugin",
+      "//ppapi:blink_test_plugin",
+    ]
+  }
+}
+
+static_library("web_test_renderer") {
+  testonly = true
+
+  # This is to support our dependency on //content/renderer.
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
+  # We allow a circular include from blink's web_test implementation. This
+  # is an incremental step to moving the renderer web_test implementation
+  # into blink.
+  allow_circular_includes_from =
+      [ "//third_party/blink/renderer/core/web_test" ]
+
+  sources = [
+    "renderer/accessibility_controller.cc",
+    "renderer/accessibility_controller.h",
+    "renderer/app_banner_service.cc",
+    "renderer/app_banner_service.h",
+    "renderer/blink_test_helpers.cc",
+    "renderer/blink_test_helpers.h",
+    "renderer/event_sender.cc",
+    "renderer/event_sender.h",
+    "renderer/fake_screen_orientation_impl.cc",
+    "renderer/fake_screen_orientation_impl.h",
+    "renderer/fake_subresource_filter.cc",
+    "renderer/fake_subresource_filter.h",
+    "renderer/gamepad_controller.cc",
+    "renderer/gamepad_controller.h",
+    "renderer/gc_controller.cc",
+    "renderer/gc_controller.h",
+    "renderer/layout_dump.cc",
+    "renderer/layout_dump.h",
+    "renderer/spell_check_client.cc",
+    "renderer/spell_check_client.h",
+    "renderer/test_plugin.cc",
+    "renderer/test_plugin.h",
+    "renderer/test_preferences.cc",
+    "renderer/test_preferences.h",
+    "renderer/test_runner.cc",
+    "renderer/test_runner.h",
+    "renderer/test_websocket_handshake_throttle_provider.cc",
+    "renderer/test_websocket_handshake_throttle_provider.h",
+    "renderer/text_input_controller.cc",
+    "renderer/text_input_controller.h",
+    "renderer/web_ax_object_proxy.cc",
+    "renderer/web_ax_object_proxy.h",
+    "renderer/web_frame_test_proxy.cc",
+    "renderer/web_frame_test_proxy.h",
+    "renderer/web_test_content_renderer_client.cc",
+    "renderer/web_test_content_renderer_client.h",
+    "renderer/web_test_content_settings_client.cc",
+    "renderer/web_test_content_settings_client.h",
+    "renderer/web_test_grammar_checker.cc",
+    "renderer/web_test_grammar_checker.h",
+    "renderer/web_test_render_thread_observer.cc",
+    "renderer/web_test_render_thread_observer.h",
+    "renderer/web_test_spell_checker.cc",
+    "renderer/web_test_spell_checker.h",
+  ]
+  deps = [
+    "//components/plugins/renderer",
+    "//components/viz/common",
+    "//components/web_cache/renderer",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//gpu/command_buffer/client:gles2_interface",
+    "//media/capture",
+    "//printing/buildflags",
+
+    # TODO(crbug.com/1200443) Remove //printing/mojom requirement coming from
+    # //third_party/blink/public:blink_headers.
+    "//printing/mojom",
+    "//services/service_manager/public/cpp",
+    "//skia",
+    "//skia:test_fonts",
+    "//ui/base/ime:ime_types",
+    "//ui/events:dom_keycode_converter",
+    "//ui/events:events_base",
+    "//ui/events/blink",
+    "//ui/gfx",
+    "//ui/gfx:test_support",
+  ]
+
+  public_deps = [
+    ":web_test_common",
+    "//base",
+    "//cc",
+    "//cc/paint",
+    "//content/public/renderer",  # For component builds.
+    "//content/renderer:for_content_tests",  # For non-component builds.
+    "//content/shell:content_shell_lib",
+    "//device/gamepad/public/cpp:shared_with_blink",
+    "//device/gamepad/public/mojom",
+    "//gin",
+    "//gpu",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/mojom",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public:test_headers",
+    "//third_party/blink/renderer/core/web_test",
+    "//ui/accessibility:ax_base",
+    "//ui/base/dragdrop/mojom",
+    "//ui/display",
+    "//ui/gfx/geometry",
+    "//url",
+    "//v8",
+  ]
+
+  if (enable_basic_printing) {
+    sources += [
+      "renderer/pixel_dump.cc",
+      "renderer/pixel_dump.h",
+    ]
+    deps += [ "//printing" ]
+  }
+}

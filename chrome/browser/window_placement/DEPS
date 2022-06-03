@@ -1,0 +1,8 @@
+specific_include_rules = {
+  "window_placement_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
+  "window_placement_permission_context_browsertest\.cc": [
+    "+ash/shell.h",
+  ],
+}

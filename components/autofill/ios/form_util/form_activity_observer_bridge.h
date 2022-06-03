@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #include "components/autofill/ios/form_util/form_activity_observer.h"
 
 @protocol FormActivityObserver<NSObject>
@@ -25,6 +24,11 @@
                    formInMainFrame:(BOOL)formInMainFrame
                            inFrame:(web::WebFrame*)frame;
 
+// Invoked by FormActivityObserverBridge::FormRemoved.
+- (void)webState:(web::WebState*)webState
+    didRegisterFormRemoval:(const autofill::FormRemovalParams&)params
+                   inFrame:(web::WebFrame*)frame;
+
 @end
 
 namespace autofill {
@@ -41,6 +45,11 @@ class FormActivityObserverBridge : public FormActivityObserver {
   // |owner| will not be retained.
   FormActivityObserverBridge(web::WebState* web_state,
                              id<FormActivityObserver> owner);
+
+  FormActivityObserverBridge(const FormActivityObserverBridge&) = delete;
+  FormActivityObserverBridge& operator=(const FormActivityObserverBridge&) =
+      delete;
+
   ~FormActivityObserverBridge() override;
 
   // FormActivityObserver overrides:
@@ -55,11 +64,13 @@ class FormActivityObserverBridge : public FormActivityObserver {
                          bool has_user_gesture,
                          bool form_in_main_frame) override;
 
+  void FormRemoved(web::WebState* web_state,
+                   web::WebFrame* sender_frame,
+                   const FormRemovalParams& params) override;
+
  private:
   web::WebState* web_state_ = nullptr;
   __weak id<FormActivityObserver> owner_ = nil;
-
-  DISALLOW_COPY_AND_ASSIGN(FormActivityObserverBridge);
 };
 
 }  // namespace autofill

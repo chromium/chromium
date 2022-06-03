@@ -8,6 +8,7 @@
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_view_host.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "ui/base/test/ui_controls.h"
@@ -17,15 +18,16 @@ namespace {
 class ExtensionDialogUiTest : public extensions::ExtensionBrowserTest {
  public:
   ExtensionDialogUiTest() = default;
-  ~ExtensionDialogUiTest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionDialogUiTest);
+  ExtensionDialogUiTest(const ExtensionDialogUiTest&) = delete;
+  ExtensionDialogUiTest& operator=(const ExtensionDialogUiTest&) = delete;
+
+  ~ExtensionDialogUiTest() override = default;
 };
 
 }  // namespace
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 // Focusing or input is not completely working on Mac: http://crbug.com/824418
 #define MAYBE_TabFocusLoop DISABLED_TabFocusLoop
 #else
@@ -44,10 +46,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionDialogUiTest, MAYBE_TabFocusLoop) {
 
   // Open ExtensionDialog, whose initial page is the extension's main.html.
   // The main.html contains three buttons.
-  ExtensionDialog* dialog = ExtensionDialog::Show(
-      extension->url().Resolve("main.html"),
-      browser()->window()->GetNativeWindow(), browser()->profile(), nullptr,
-      true, 300, 300, 300, 300, base::string16(), nullptr);
+  ExtensionDialog::InitParams params(gfx::Size(300, 300));
+  params.is_modal = true;
+  params.min_size = {300, 300};
+  ExtensionDialog* dialog =
+      ExtensionDialog::Show(extension->url().Resolve("main.html"),
+                            browser()->window()->GetNativeWindow(),
+                            browser()->profile(), nullptr, nullptr, params);
   ASSERT_TRUE(dialog);
   ASSERT_TRUE(init_listener.WaitUntilSatisfied());
 

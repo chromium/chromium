@@ -7,17 +7,20 @@
 #include <memory>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/bindings/core/v8/unrestricted_double_or_keyframe_effect_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_effect_timing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_keyframe_effect_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_optional_effect_timing.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_double.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssnumericvalue_string_unrestricteddouble.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_keyframeeffectoptions_unrestricteddouble.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
-#include "third_party/blink/renderer/core/animation/animation_test_helper.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
-#include "third_party/blink/renderer/core/animation/effect_timing.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect_model.h"
-#include "third_party/blink/renderer/core/animation/optional_effect_timing.h"
 #include "third_party/blink/renderer/core/animation/timing.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -28,6 +31,13 @@
 #include "v8/include/v8.h"
 
 namespace blink {
+
+#define EXPECT_TIMEDELTA(expected, observed)                          \
+  EXPECT_NEAR(expected.InMillisecondsF(), observed.InMillisecondsF(), \
+              Animation::kTimeToleranceMs)
+
+using animation_test_helpers::SetV8ObjectPropertyAsNumber;
+using animation_test_helpers::SetV8ObjectPropertyAsString;
 
 class KeyframeEffectTest : public PageTestBase {
  protected:
@@ -80,7 +90,7 @@ class AnimationKeyframeEffectV8Test : public KeyframeEffectTest {
     NonThrowableExceptionState exception_state;
     return KeyframeEffect::Create(
         script_state, element, keyframe_object,
-        UnrestrictedDoubleOrKeyframeEffectOptions::FromUnrestrictedDouble(
+        MakeGarbageCollected<V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
             timing_input),
         exception_state);
   }
@@ -92,7 +102,7 @@ class AnimationKeyframeEffectV8Test : public KeyframeEffectTest {
     NonThrowableExceptionState exception_state;
     return KeyframeEffect::Create(
         script_state, element, keyframe_object,
-        UnrestrictedDoubleOrKeyframeEffectOptions::FromKeyframeEffectOptions(
+        MakeGarbageCollected<V8UnionKeyframeEffectOptionsOrUnrestrictedDouble>(
             const_cast<KeyframeEffectOptions*>(timing_input)),
         exception_state);
   }
@@ -163,9 +173,8 @@ TEST_F(AnimationKeyframeEffectV8Test, SetAndRetrieveEffectComposite) {
   SetV8ObjectPropertyAsString(scope.GetIsolate(), effect_options, "composite",
                               "add");
   KeyframeEffectOptions* effect_options_dictionary =
-      KeyframeEffectOptions::Create();
-  V8KeyframeEffectOptions::ToImpl(scope.GetIsolate(), effect_options,
-                                  effect_options_dictionary, exception_state);
+      NativeValueTraits<KeyframeEffectOptions>::NativeValue(
+          scope.GetIsolate(), effect_options, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
@@ -189,9 +198,8 @@ TEST_F(AnimationKeyframeEffectV8Test, KeyframeCompositeOverridesEffect) {
   SetV8ObjectPropertyAsString(scope.GetIsolate(), effect_options, "composite",
                               "add");
   KeyframeEffectOptions* effect_options_dictionary =
-      KeyframeEffectOptions::Create();
-  V8KeyframeEffectOptions::ToImpl(scope.GetIsolate(), effect_options,
-                                  effect_options_dictionary, exception_state);
+      NativeValueTraits<KeyframeEffectOptions>::NativeValue(
+          scope.GetIsolate(), effect_options, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   HeapVector<ScriptValue> blink_keyframes = {
@@ -226,8 +234,8 @@ TEST_F(AnimationKeyframeEffectV8Test, CanSetDuration) {
   KeyframeEffect* animation = CreateAnimationFromTiming(
       script_state, element.Get(), js_keyframes, duration);
 
-  EXPECT_EQ(duration / 1000,
-            animation->SpecifiedTiming().iteration_duration->InSecondsF());
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_MILLISECONDS(duration),
+                   animation->SpecifiedTiming().iteration_duration.value());
 }
 
 TEST_F(AnimationKeyframeEffectV8Test, CanOmitSpecifiedDuration) {
@@ -258,11 +266,10 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedGetters) {
                               "reverse");
   SetV8ObjectPropertyAsString(scope.GetIsolate(), timing_input, "easing",
                               "ease-in-out");
-  KeyframeEffectOptions* timing_input_dictionary =
-      KeyframeEffectOptions::Create();
   DummyExceptionStateForTesting exception_state;
-  V8KeyframeEffectOptions::ToImpl(scope.GetIsolate(), timing_input,
-                                  timing_input_dictionary, exception_state);
+  KeyframeEffectOptions* timing_input_dictionary =
+      NativeValueTraits<KeyframeEffectOptions>::NativeValue(
+          scope.GetIsolate(), timing_input, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   KeyframeEffect* animation = CreateAnimationFromOption(
@@ -287,12 +294,10 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedDurationGetter) {
       v8::Object::New(scope.GetIsolate());
   SetV8ObjectPropertyAsNumber(scope.GetIsolate(), timing_input_with_duration,
                               "duration", 2.5);
-  KeyframeEffectOptions* timing_input_dictionary_with_duration =
-      KeyframeEffectOptions::Create();
   DummyExceptionStateForTesting exception_state;
-  V8KeyframeEffectOptions::ToImpl(
-      scope.GetIsolate(), timing_input_with_duration,
-      timing_input_dictionary_with_duration, exception_state);
+  KeyframeEffectOptions* timing_input_dictionary_with_duration =
+      NativeValueTraits<KeyframeEffectOptions>::NativeValue(
+          scope.GetIsolate(), timing_input_with_duration, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   KeyframeEffect* animation_with_duration =
@@ -300,18 +305,16 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedDurationGetter) {
                                 timing_input_dictionary_with_duration);
 
   EffectTiming* specified_with_duration = animation_with_duration->getTiming();
-  UnrestrictedDoubleOrString duration = specified_with_duration->duration();
-  EXPECT_TRUE(duration.IsUnrestrictedDouble());
-  EXPECT_EQ(2.5, duration.GetAsUnrestrictedDouble());
-  EXPECT_FALSE(duration.IsString());
+  auto* duration = specified_with_duration->duration();
+  EXPECT_TRUE(duration->IsUnrestrictedDouble());
+  EXPECT_EQ(2.5, duration->GetAsUnrestrictedDouble());
+  EXPECT_FALSE(duration->IsString());
 
   v8::Local<v8::Object> timing_input_no_duration =
       v8::Object::New(scope.GetIsolate());
   KeyframeEffectOptions* timing_input_dictionary_no_duration =
-      KeyframeEffectOptions::Create();
-  V8KeyframeEffectOptions::ToImpl(scope.GetIsolate(), timing_input_no_duration,
-                                  timing_input_dictionary_no_duration,
-                                  exception_state);
+      NativeValueTraits<KeyframeEffectOptions>::NativeValue(
+          scope.GetIsolate(), timing_input_no_duration, exception_state);
   EXPECT_FALSE(exception_state.HadException());
 
   KeyframeEffect* animation_no_duration =
@@ -319,23 +322,25 @@ TEST_F(AnimationKeyframeEffectV8Test, SpecifiedDurationGetter) {
                                 timing_input_dictionary_no_duration);
 
   EffectTiming* specified_no_duration = animation_no_duration->getTiming();
-  UnrestrictedDoubleOrString duration2 = specified_no_duration->duration();
-  EXPECT_FALSE(duration2.IsUnrestrictedDouble());
-  EXPECT_TRUE(duration2.IsString());
-  EXPECT_EQ("auto", duration2.GetAsString());
+  auto* duration2 = specified_no_duration->duration();
+  EXPECT_FALSE(duration2->IsUnrestrictedDouble());
+  EXPECT_TRUE(duration2->IsString());
+  EXPECT_EQ("auto", duration2->GetAsString());
 }
 
 TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {
-  ScopedCSSAdditiveAnimationsForTest css_additive_animation(false);
+  // AnimationWorklet also needs to be disabled since it depends on
+  // WebAnimationsAPI and prevents us from turning it off if enabled.
+  ScopedAnimationWorkletForTest no_animation_worklet(false);
+  ScopedWebAnimationsAPIForTest no_web_animations(false);
   V8TestingScope scope;
   ScriptState* script_state = scope.GetScriptState();
   ScriptValue js_keyframes = ScriptValue::CreateNull(scope.GetIsolate());
   v8::Local<v8::Object> timing_input = v8::Object::New(scope.GetIsolate());
-  KeyframeEffectOptions* timing_input_dictionary =
-      KeyframeEffectOptions::Create();
   DummyExceptionStateForTesting exception_state;
-  V8KeyframeEffectOptions::ToImpl(scope.GetIsolate(), timing_input,
-                                  timing_input_dictionary, exception_state);
+  KeyframeEffectOptions* timing_input_dictionary =
+      NativeValueTraits<KeyframeEffectOptions>::NativeValue(
+          scope.GetIsolate(), timing_input, exception_state);
   ASSERT_FALSE(exception_state.HadException());
 
   // Since there are no CSS-targeting keyframes, we can create a KeyframeEffect
@@ -360,44 +365,51 @@ TEST_F(AnimationKeyframeEffectV8Test, SetKeyframesAdditiveCompositeOperation) {
 
 TEST_F(KeyframeEffectTest, TimeToEffectChange) {
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(100);
-  timing.start_delay = 100;
-  timing.end_delay = 100;
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
+  timing.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
+  timing.end_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(100);
   timing.fill_mode = Timing::FillMode::NONE;
   auto* keyframe_effect = MakeGarbageCollected<KeyframeEffect>(
       nullptr, CreateEmptyEffectModel(), timing);
   Animation* animation = GetDocument().Timeline().Play(keyframe_effect);
 
   // Beginning of the animation.
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(100),
-            keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(100),
+                   keyframe_effect->TimeToForwardsEffectChange());
   EXPECT_EQ(AnimationTimeDelta::Max(),
             keyframe_effect->TimeToReverseEffectChange());
 
   // End of the before phase.
-  animation->setCurrentTime(100000, false);
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(100),
-            keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(AnimationTimeDelta(), keyframe_effect->TimeToReverseEffectChange());
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(100000),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(100),
+                   keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_TIMEDELTA(AnimationTimeDelta(),
+                   keyframe_effect->TimeToReverseEffectChange());
 
   // Nearing the end of the active phase.
-  animation->setCurrentTime(199000, false);
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(1),
-            keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(AnimationTimeDelta(), keyframe_effect->TimeToReverseEffectChange());
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(199000),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(1),
+                   keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_TIMEDELTA(AnimationTimeDelta(),
+                   keyframe_effect->TimeToReverseEffectChange());
 
   // End of the active phase.
-  animation->setCurrentTime(200000, false);
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(100),
-            keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(AnimationTimeDelta(), keyframe_effect->TimeToReverseEffectChange());
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(200000),
+                            ASSERT_NO_EXCEPTION);
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(100),
+                   keyframe_effect->TimeToForwardsEffectChange());
+  EXPECT_TIMEDELTA(AnimationTimeDelta(),
+                   keyframe_effect->TimeToReverseEffectChange());
 
   // End of the animation.
-  animation->setCurrentTime(300000, false);
+  animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(300000),
+                            ASSERT_NO_EXCEPTION);
   EXPECT_EQ(AnimationTimeDelta::Max(),
             keyframe_effect->TimeToForwardsEffectChange());
-  EXPECT_EQ(AnimationTimeDelta::FromSecondsD(100),
-            keyframe_effect->TimeToReverseEffectChange());
+  EXPECT_TIMEDELTA(ANIMATION_TIME_DELTA_FROM_SECONDS(100),
+                   keyframe_effect->TimeToReverseEffectChange());
 }
 
 TEST_F(KeyframeEffectTest, CheckCanStartAnimationOnCompositorNoKeyframes) {
@@ -502,25 +514,27 @@ TEST_F(KeyframeEffectTest, TranslationTransformsPreserveAxisAlignment) {
   auto* effect =
       GetTwoFrameEffect(CSSPropertyID::kTransform, "translate(10px, 10px)",
                         "translate(20px, 20px)");
-  EXPECT_TRUE(effect->AnimationsPreserveAxisAlignment());
+  EXPECT_TRUE(effect->UpdateBoxSizeAndCheckTransformAxisAlignment(FloatSize()));
 }
 
 TEST_F(KeyframeEffectTest, ScaleTransformsPreserveAxisAlignment) {
   auto* effect =
       GetTwoFrameEffect(CSSPropertyID::kTransform, "scale(2)", "scale(3)");
-  EXPECT_TRUE(effect->AnimationsPreserveAxisAlignment());
+  EXPECT_TRUE(effect->UpdateBoxSizeAndCheckTransformAxisAlignment(FloatSize()));
 }
 
 TEST_F(KeyframeEffectTest, RotationTransformsDoNotPreserveAxisAlignment) {
   auto* effect = GetTwoFrameEffect(CSSPropertyID::kTransform, "rotate(10deg)",
                                    "rotate(20deg)");
 
-  EXPECT_FALSE(effect->AnimationsPreserveAxisAlignment());
+  EXPECT_FALSE(
+      effect->UpdateBoxSizeAndCheckTransformAxisAlignment(FloatSize()));
 }
 
 TEST_F(KeyframeEffectTest, RotationsDoNotPreserveAxisAlignment) {
   auto* effect = GetTwoFrameEffect(CSSPropertyID::kRotate, "10deg", "20deg");
-  EXPECT_FALSE(effect->AnimationsPreserveAxisAlignment());
+  EXPECT_FALSE(
+      effect->UpdateBoxSizeAndCheckTransformAxisAlignment(FloatSize()));
 }
 
 }  // namespace blink

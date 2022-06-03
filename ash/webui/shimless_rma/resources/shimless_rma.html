@@ -1,0 +1,62 @@
+<style include="cr-shared-style shimless-rma-shared">
+  #shimlessRMAContainer {
+    padding: 50px;
+  }
+
+  .shimless-footer {
+    text-align: right;
+    margin-top: 10px;
+  }
+
+  cr-button {
+    border-radius: 15px;
+  }
+
+  #back {
+    border: 0;
+    margin-left: -15px;
+  }
+
+  #back::before {
+    content: "<";
+    padding-right: 5px;
+  }
+
+  #cancel {
+    margin-right: 5px;
+  }
+
+  #next::after {
+    content: ">";
+    padding-left: 5px;
+  }
+</style>
+
+<div id="shimlessRMAContainer">
+  <div class="shimless-header">
+    <cr-button
+      id="back" on-click="onBackButtonClicked_"
+      disabled="[[isButtonDisabled_(currentPage_.buttonBack, allButtonsDisabled_)]]"
+      hidden$="[[isButtonHidden_(currentPage_.buttonBack)]]">
+      Back
+    </cr-button>
+  </div>
+  <!-- TODO(joonbug): i18n button labels -->
+  <div id="contentContainer"></div>
+  <div class="shimless-footer">
+    <cr-button
+      id="cancel" on-click="onCancelButtonClicked_"
+      disabled="[[isButtonDisabled_(currentPage_.buttonCancel, allButtonsDisabled_)]]"
+      hidden$="[[isButtonHidden_(currentPage_.buttonCancel)]]">
+      Cancel
+    </cr-button>
+    <cr-button
+      id="next" on-click="onNextButtonClicked_"
+      disabled="[[isButtonDisabled_(currentPage_.buttonNext, allButtonsDisabled_)]]"
+      hidden$="[[isButtonHidden_(currentPage_.buttonNext)]]">
+      Next
+    </cr-button>
+  </div>
+  <!-- TODO(gavindodd): Debug only. Remove this before shipping. -->
+  <p>[[errorMessage_]]</p>
+</div>

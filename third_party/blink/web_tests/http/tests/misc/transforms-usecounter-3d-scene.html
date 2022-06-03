@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="../resources/run-after-layout-and-paint.js"></script>
+<body>
+<script>
+const kTransform3dScene = 3867; // from web_feature.mojom
+
+const kScenes = [
+  { markup: "<div id='transform'></div>",
+    is_3d: false },
+  { markup: "<div style='transform: rotateX(30deg)'><div id='transform'></div></div>",
+    is_3d: false },
+  { markup: "<div style='transform-style: preserve-3d'><div id='transform'></div></div>",
+    is_3d: true },
+  { markup: "<div style='transform-style: preserve-3d'><div style='transform: rotateZ(30deg)'><div id='transform'></div></div></div>",
+    is_3d: false },
+  { markup: "<div style='transform-style: preserve-3d'><div style='transform-style: preserve-3d; transform: rotateZ(30deg)'><div id='transform'></div></div></div>",
+    is_3d: true }
+];
+
+const kTransforms = [
+  { value: "perspective(400px)", is_3d: false },
+  { value: "rotateX(30deg) perspective(400px)", is_3d: true },
+  { value: "perspective(400px) rotateX(30deg)", is_3d: true },
+  { value: "rotateY(30deg)", is_3d: true },
+  { value: "matrix3d(2, 2, 0, 2, 2, 2, 0, 2, 2, 2, 2, 2, 2, 2, 0, 2)", is_3d: false },
+  { value: "Translatez(20px)", is_3d: true },
+  { value: "matrix3d(0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)", is_3d: true },
+  { value: "matrix3d(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0)", is_3d: true },
+  { value: "matrix3d(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0)", is_3d: true },
+];
+
+let kCommonStyle = "<style>#transform { width: 50px; height: 50px; background: blue; }</style>";
+
+for (const scene of kScenes) {
+  for (const transform of kTransforms) {
+    let iframe, idoc;
+    promise_test((test) => {
+      return Promise.resolve(true).then(() => {
+        iframe = document.createElement("iframe");
+        document.body.appendChild(iframe);
+        idoc = iframe.contentDocument;
+        idoc.body.innerHTML = kCommonStyle + scene.markup;
+        idoc.getElementById("transform").style.transform = transform.value;
+        return new Promise((resolve, reject) => {
+          // wait for it to paint
+          runAfterLayoutAndPaint(() => { resolve(true); });
+        });
+      }).then(() => {
+        assert_equals(internals.isUseCounted(idoc, kTransform3dScene),
+                      scene.is_3d && transform.is_3d);
+        document.body.removeChild(iframe);
+        assert_equals(document.body.childNodes.length, 3);
+      });
+    }, `kTransform3dScene use counter with transform ${transform.value} and scene ${scene.markup}`);
+  }
+}
+
+// Test that it still works for an <iframe> that is scrolled offscreen.
+promise_test((test) => {
+  let k3DScene = kScenes.find(scene => scene.is_3d);
+  let k3DTransform = kTransforms.find(transform => transform.is_3d);
+  let iframe, idoc, div;
+  return Promise.resolve(true).then(() => {
+    div = document.createElement("div");
+    div.style.height = "10000px";
+    document.body.appendChild(div);
+    iframe = document.createElement("iframe");
+    document.body.appendChild(iframe);
+    idoc = iframe.contentDocument;
+    idoc.body.innerHTML = kCommonStyle + k3DScene.markup;
+    idoc.getElementById("transform").style.transform = k3DTransform.value;
+    return new Promise((resolve, reject) => {
+      // wait for it to paint
+      runAfterLayoutAndPaint(() => { resolve(true); });
+    });
+  }).then(() => {
+    assert_true(internals.isUseCounted(idoc, kTransform3dScene));
+    document.body.removeChild(iframe);
+    document.body.removeChild(div);
+    assert_equals(document.body.childNodes.length, 3);
+  });
+}, "use counter still works in offscreen iframe");
+
+// Test that it still works for a cross-origin <iframe> that is scrolled
+// offscreen.
+promise_test((test) => {
+  let iframe, div;
+  return Promise.resolve(true).then(() => {
+    div = document.createElement("div");
+    div.style.height = "10000px";
+    document.body.appendChild(div);
+    iframe = document.createElement("iframe");
+    iframe.src = "http://localhost:8080/misc/resources/transform-usecounter-3d-iframe.html";
+    document.body.appendChild(iframe);
+    return new Promise((resolve, reject) => {
+      iframe.addEventListener("load", function(event) {
+        // wait for it to paint
+        runAfterLayoutAndPaint(() => {
+          iframe.contentWindow.postMessage(kTransform3dScene, "*");
+          window.addEventListener("message", function(event) {
+            resolve(event.data);
+          });
+        });
+      });
+    });
+  }).then((data) => {
+    assert_equals(data, true);
+    document.body.removeChild(iframe);
+    document.body.removeChild(div);
+    assert_equals(document.body.childNodes.length, 3);
+  });
+}, "use counter still works in cross-origin offscreen iframe");
+
+</script>

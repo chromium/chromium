@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
 if (is_nacl) {
   import("//build/config/nacl/config.gni")
 }
@@ -11,7 +9,7 @@ if (is_nacl) {
 if (is_nacl && is_nacl_glibc) {
   cpp_target_type = "shared_library"
 } else {
-  cpp_target_type = "jumbo_static_library"
+  cpp_target_type = "static_library"
 }
 
 # Link to this target to get the PPAPI C++ wrapper objects and plugin startup
@@ -52,7 +50,7 @@ target(cpp_target_type, "cpp") {
 # Link to this target to get only the PPAPI C++ wrapper objects but not the
 # plugin startup code. Some plugins need special startup code that they supply
 # themselves.
-jumbo_source_set("objects") {
+source_set("objects") {
   sources = [
     "array_output.cc",
     "array_output.h",
@@ -62,8 +60,6 @@ jumbo_source_set("objects") {
     "audio_buffer.h",
     "audio_config.cc",
     "audio_config.h",
-    "audio_encoder.cc",
-    "audio_encoder.h",
     "completion_callback.h",
     "core.cc",
     "core.h",
@@ -181,8 +177,6 @@ jumbo_source_set("objects") {
     "dev/printing_dev.h",
     "dev/text_input_dev.cc",
     "dev/text_input_dev.h",
-    "dev/truetype_font_dev.cc",
-    "dev/truetype_font_dev.h",
     "dev/url_util_dev.cc",
     "dev/url_util_dev.h",
     "dev/video_capture_client_dev.cc",
@@ -211,22 +205,8 @@ jumbo_source_set("objects") {
     "private/file_io_private.h",
     "private/find_private.cc",
     "private/find_private.h",
-    "private/flash.cc",
-    "private/flash.h",
-    "private/flash_clipboard.cc",
-    "private/flash_clipboard.h",
-    "private/flash_drm.cc",
-    "private/flash_drm.h",
-    "private/flash_file.cc",
-    "private/flash_file.h",
     "private/flash_font_file.cc",
     "private/flash_font_file.h",
-    "private/flash_fullscreen.cc",
-    "private/flash_fullscreen.h",
-    "private/flash_menu.cc",
-    "private/flash_menu.h",
-    "private/flash_message_loop.cc",
-    "private/flash_message_loop.h",
     "private/host_resolver_private.cc",
     "private/host_resolver_private.h",
     "private/instance_private.cc",
@@ -277,9 +257,7 @@ jumbo_source_set("objects") {
 
   configs += [ "//build/config:precompiled_headers" ]
 
-  public_deps = [
-    "//ppapi/c",
-  ]
+  public_deps = [ "//ppapi/c" ]
 
   if (is_nacl) {
     public_deps += [ "//build/config/nacl:nacl_base" ]

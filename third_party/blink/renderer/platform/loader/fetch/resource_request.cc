@@ -30,6 +30,7 @@
 
 #include "base/unguessable_token.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
+#include "services/network/public/mojom/web_bundle_handle.mojom-blink.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
@@ -40,35 +41,69 @@
 
 namespace blink {
 
-const base::TimeDelta ResourceRequest::default_timeout_interval_ =
+ResourceRequestHead::WebBundleTokenParams&
+ResourceRequestHead::WebBundleTokenParams::operator=(
+    const WebBundleTokenParams& other) {
+  bundle_url = other.bundle_url;
+  token = other.token;
+  handle = other.CloneHandle();
+  return *this;
+}
+
+ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
+    const WebBundleTokenParams& other) {
+  *this = other;
+}
+
+ResourceRequestHead::WebBundleTokenParams::WebBundleTokenParams(
+    const KURL& bundle_url,
+    const base::UnguessableToken& web_bundle_token,
+    mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
+        web_bundle_handle)
+    : bundle_url(bundle_url),
+      token(web_bundle_token),
+      handle(std::move(web_bundle_handle)) {}
+
+mojo::PendingRemote<network::mojom::blink::WebBundleHandle>
+ResourceRequestHead::WebBundleTokenParams::CloneHandle() const {
+  if (!handle)
+    return mojo::NullRemote();
+  mojo::Remote<network::mojom::blink::WebBundleHandle> remote(std::move(
+      const_cast<mojo::PendingRemote<network::mojom::blink::WebBundleHandle>&>(
+          handle)));
+  mojo::PendingRemote<network::mojom::blink::WebBundleHandle> new_remote;
+  remote->Clone(new_remote.InitWithNewPipeAndPassReceiver());
+  const_cast<mojo::PendingRemote<network::mojom::blink::WebBundleHandle>&>(
+      handle) = remote.Unbind();
+  return new_remote;
+}
+
+const base::TimeDelta ResourceRequestHead::default_timeout_interval_ =
     base::TimeDelta::Max();
 
-ResourceRequest::ResourceRequest() : ResourceRequest(NullURL()) {}
+ResourceRequestHead::ResourceRequestHead() : ResourceRequestHead(NullURL()) {}
 
-ResourceRequest::ResourceRequest(const String& url_string)
-    : ResourceRequest(KURL(url_string)) {}
-
-ResourceRequest::ResourceRequest(const KURL& url)
+ResourceRequestHead::ResourceRequestHead(const KURL& url)
     : url_(url),
       timeout_interval_(default_timeout_interval_),
       http_method_(http_names::kGET),
       allow_stored_credentials_(true),
       report_upload_progress_(false),
-      report_raw_headers_(false),
       has_user_gesture_(false),
+      has_text_fragment_token_(false),
       download_to_blob_(false),
       use_stream_on_response_(false),
       keepalive_(false),
-      should_reset_app_cache_(false),
       allow_stale_response_(false),
       cache_mode_(mojom::FetchCacheMode::kDefault),
       skip_service_worker_(false),
       download_to_cache_only_(false),
+      site_for_cookies_set_(false),
+      initial_priority_(ResourceLoadPriority::kUnresolved),
       priority_(ResourceLoadPriority::kUnresolved),
       intra_priority_value_(0),
-      requestor_id_(0),
-      previews_state_(WebURLRequest::kPreviewsUnspecified),
-      request_context_(mojom::RequestContextType::UNSPECIFIED),
+      previews_state_(PreviewsTypes::kPreviewsUnspecified),
+      request_context_(mojom::blink::RequestContextType::UNSPECIFIED),
       destination_(network::mojom::RequestDestination::kEmpty),
       mode_(network::mojom::RequestMode::kNoCors),
       fetch_importance_mode_(mojom::FetchImportanceMode::kImportanceAuto),
@@ -78,25 +113,77 @@ ResourceRequest::ResourceRequest(const KURL& url)
       referrer_policy_(network::mojom::ReferrerPolicy::kDefault),
       is_external_request_(false),
       cors_preflight_policy_(
-          network::mojom::CorsPreflightPolicy::kConsiderPreflight),
-      redirect_status_(RedirectStatus::kNoRedirect) {}
+          network::mojom::CorsPreflightPolicy::kConsiderPreflight) {}
 
-ResourceRequest::ResourceRequest(const ResourceRequest&) = default;
+ResourceRequestHead::ResourceRequestHead(const ResourceRequestHead&) = default;
+
+ResourceRequestHead& ResourceRequestHead::operator=(
+    const ResourceRequestHead&) = default;
+
+ResourceRequestHead::ResourceRequestHead(ResourceRequestHead&&) = default;
+
+ResourceRequestHead& ResourceRequestHead::operator=(ResourceRequestHead&&) =
+    default;
+
+ResourceRequestHead::~ResourceRequestHead() = default;
+
+ResourceRequestBody::ResourceRequestBody() : ResourceRequestBody(nullptr) {}
+
+ResourceRequestBody::ResourceRequestBody(
+    scoped_refptr<EncodedFormData> form_body)
+    : form_body_(form_body) {}
+
+ResourceRequestBody::ResourceRequestBody(
+    mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
+        stream_body)
+    : stream_body_(std::move(stream_body)) {}
+
+ResourceRequestBody::ResourceRequestBody(ResourceRequestBody&& src)
+    : form_body_(std::move(src.form_body_)),
+      stream_body_(std::move(src.stream_body_)) {}
+
+ResourceRequestBody& ResourceRequestBody::operator=(ResourceRequestBody&& src) =
+    default;
+
+ResourceRequestBody::~ResourceRequestBody() = default;
+
+void ResourceRequestBody::SetStreamBody(
+    mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
+        stream_body) {
+  stream_body_ = std::move(stream_body);
+}
+
+ResourceRequest::ResourceRequest() : ResourceRequestHead(NullURL()) {}
+
+ResourceRequest::ResourceRequest(const String& url_string)
+    : ResourceRequestHead(KURL(url_string)) {}
+
+ResourceRequest::ResourceRequest(const KURL& url) : ResourceRequestHead(url) {}
+
+ResourceRequest::ResourceRequest(const ResourceRequestHead& head)
+    : ResourceRequestHead(head) {}
+
+ResourceRequest::ResourceRequest(ResourceRequest&&) = default;
+
+ResourceRequest& ResourceRequest::operator=(ResourceRequest&&) = default;
 
 ResourceRequest::~ResourceRequest() = default;
 
-ResourceRequest& ResourceRequest::operator=(const ResourceRequest&) = default;
+void ResourceRequest::CopyHeadFrom(const ResourceRequestHead& src) {
+  this->ResourceRequestHead::operator=(src);
+}
 
-std::unique_ptr<ResourceRequest> ResourceRequest::CreateRedirectRequest(
+std::unique_ptr<ResourceRequest> ResourceRequestHead::CreateRedirectRequest(
     const KURL& new_url,
     const AtomicString& new_method,
-    const KURL& new_site_for_cookies,
+    const net::SiteForCookies& new_site_for_cookies,
     const String& new_referrer,
     network::mojom::ReferrerPolicy new_referrer_policy,
     bool skip_service_worker) const {
   std::unique_ptr<ResourceRequest> request =
       std::make_unique<ResourceRequest>(new_url);
   request->SetRequestorOrigin(RequestorOrigin());
+  request->SetIsolatedWorldOrigin(IsolatedWorldOrigin());
   request->SetHttpMethod(new_method);
   request->SetSiteForCookies(new_site_for_cookies);
   String referrer =
@@ -104,20 +191,18 @@ std::unique_ptr<ResourceRequest> ResourceRequest::CreateRedirectRequest(
   request->SetReferrerString(referrer);
   request->SetReferrerPolicy(new_referrer_policy);
   request->SetSkipServiceWorker(skip_service_worker);
-  request->SetRedirectStatus(RedirectStatus::kFollowedRedirect);
+  request->redirect_info_ = RedirectInfo(
+      redirect_info_ ? redirect_info_->original_url : Url(), Url());
 
   // Copy from parameters for |this|.
   request->SetDownloadToBlob(DownloadToBlob());
   request->SetUseStreamOnResponse(UseStreamOnResponse());
   request->SetRequestContext(GetRequestContext());
-  request->SetShouldResetAppCache(ShouldResetAppCache());
   request->SetMode(GetMode());
   request->SetCredentialsMode(GetCredentialsMode());
   request->SetKeepalive(GetKeepalive());
   request->SetPriority(Priority());
 
-  if (request->HttpMethod() == HttpMethod())
-    request->SetHttpBody(HttpBody());
   request->SetCorsPreflightPolicy(CorsPreflightPolicy());
   if (IsAdResource())
     request->SetIsAdResource();
@@ -132,31 +217,25 @@ std::unique_ptr<ResourceRequest> ResourceRequest::CreateRedirectRequest(
   request->SetSignedExchangePrefetchCacheEnabled(
       IsSignedExchangePrefetchCacheEnabled());
   request->SetRecursivePrefetchToken(RecursivePrefetchToken());
+  request->SetFetchLikeAPI(IsFetchLikeAPI());
+  request->SetFavicon(IsFavicon());
 
   return request;
 }
 
-bool ResourceRequest::IsNull() const {
+bool ResourceRequestHead::IsNull() const {
   return url_.IsNull();
 }
 
-const KURL& ResourceRequest::Url() const {
+const KURL& ResourceRequestHead::Url() const {
   return url_;
 }
 
-void ResourceRequest::SetUrl(const KURL& url) {
+void ResourceRequestHead::SetUrl(const KURL& url) {
   url_ = url;
 }
 
-const KURL& ResourceRequest::GetInitialUrlForResourceTiming() const {
-  return initial_url_for_resource_timing_;
-}
-
-void ResourceRequest::SetInitialUrlForResourceTiming(const KURL& url) {
-  initial_url_for_resource_timing_ = url;
-}
-
-void ResourceRequest::RemoveUserAndPassFromURL() {
+void ResourceRequestHead::RemoveUserAndPassFromURL() {
   if (url_.User().IsEmpty() && url_.Pass().IsEmpty())
     return;
 
@@ -164,138 +243,152 @@ void ResourceRequest::RemoveUserAndPassFromURL() {
   url_.SetPass(String());
 }
 
-mojom::FetchCacheMode ResourceRequest::GetCacheMode() const {
+mojom::FetchCacheMode ResourceRequestHead::GetCacheMode() const {
   return cache_mode_;
 }
 
-void ResourceRequest::SetCacheMode(mojom::FetchCacheMode cache_mode) {
+void ResourceRequestHead::SetCacheMode(mojom::FetchCacheMode cache_mode) {
   cache_mode_ = cache_mode;
 }
 
-base::TimeDelta ResourceRequest::TimeoutInterval() const {
+base::TimeDelta ResourceRequestHead::TimeoutInterval() const {
   return timeout_interval_;
 }
 
-void ResourceRequest::SetTimeoutInterval(
+void ResourceRequestHead::SetTimeoutInterval(
     base::TimeDelta timout_interval_seconds) {
   timeout_interval_ = timout_interval_seconds;
 }
 
-const KURL& ResourceRequest::SiteForCookies() const {
+const net::SiteForCookies& ResourceRequestHead::SiteForCookies() const {
   return site_for_cookies_;
 }
 
-void ResourceRequest::SetSiteForCookies(const KURL& site_for_cookies) {
+void ResourceRequestHead::SetSiteForCookies(
+    const net::SiteForCookies& site_for_cookies) {
   site_for_cookies_ = site_for_cookies;
+  site_for_cookies_set_ = true;
 }
 
-const SecurityOrigin* ResourceRequest::TopFrameOrigin() const {
+const SecurityOrigin* ResourceRequestHead::TopFrameOrigin() const {
   return top_frame_origin_.get();
 }
 
-void ResourceRequest::SetTopFrameOrigin(
+void ResourceRequestHead::SetTopFrameOrigin(
     scoped_refptr<const SecurityOrigin> origin) {
   top_frame_origin_ = std::move(origin);
 }
 
-const AtomicString& ResourceRequest::HttpMethod() const {
+const AtomicString& ResourceRequestHead::HttpMethod() const {
   return http_method_;
 }
 
-void ResourceRequest::SetHttpMethod(const AtomicString& http_method) {
+void ResourceRequestHead::SetHttpMethod(const AtomicString& http_method) {
   http_method_ = http_method;
 }
 
-const HTTPHeaderMap& ResourceRequest::HttpHeaderFields() const {
+const HTTPHeaderMap& ResourceRequestHead::HttpHeaderFields() const {
   return http_header_fields_;
 }
 
-const AtomicString& ResourceRequest::HttpHeaderField(
+const AtomicString& ResourceRequestHead::HttpHeaderField(
     const AtomicString& name) const {
   return http_header_fields_.Get(name);
 }
 
-void ResourceRequest::SetHttpHeaderField(const AtomicString& name,
-                                         const AtomicString& value) {
+void ResourceRequestHead::SetHttpHeaderField(const AtomicString& name,
+                                             const AtomicString& value) {
   http_header_fields_.Set(name, value);
 }
 
-void ResourceRequest::SetHTTPOrigin(const SecurityOrigin* origin) {
+void ResourceRequestHead::SetHTTPOrigin(const SecurityOrigin* origin) {
   SetHttpHeaderField(http_names::kOrigin, origin->ToAtomicString());
 }
 
-void ResourceRequest::ClearHTTPOrigin() {
+void ResourceRequestHead::ClearHTTPOrigin() {
   http_header_fields_.Remove(http_names::kOrigin);
 }
 
-void ResourceRequest::SetHttpOriginIfNeeded(const SecurityOrigin* origin) {
+void ResourceRequestHead::SetHttpOriginIfNeeded(const SecurityOrigin* origin) {
   if (NeedsHTTPOrigin())
     SetHTTPOrigin(origin);
 }
 
-void ResourceRequest::SetHTTPOriginToMatchReferrerIfNeeded() {
+void ResourceRequestHead::SetHTTPOriginToMatchReferrerIfNeeded() {
   if (NeedsHTTPOrigin()) {
     SetHTTPOrigin(SecurityOrigin::CreateFromString(ReferrerString()).get());
   }
 }
 
-void ResourceRequest::ClearHTTPUserAgent() {
+void ResourceRequestHead::ClearHTTPUserAgent() {
   http_header_fields_.Remove(http_names::kUserAgent);
 }
 
-EncodedFormData* ResourceRequest::HttpBody() const {
-  return http_body_.get();
+void ResourceRequestBody::SetFormBody(
+    scoped_refptr<EncodedFormData> form_body) {
+  form_body_ = std::move(form_body);
+}
+
+const scoped_refptr<EncodedFormData>& ResourceRequest::HttpBody() const {
+  return body_.FormBody();
 }
 
 void ResourceRequest::SetHttpBody(scoped_refptr<EncodedFormData> http_body) {
-  http_body_ = std::move(http_body);
+  body_.SetFormBody(std::move(http_body));
 }
 
-bool ResourceRequest::AllowStoredCredentials() const {
+bool ResourceRequestHead::AllowStoredCredentials() const {
   return allow_stored_credentials_;
 }
 
-void ResourceRequest::SetAllowStoredCredentials(bool allow_credentials) {
+void ResourceRequestHead::SetAllowStoredCredentials(bool allow_credentials) {
   allow_stored_credentials_ = allow_credentials;
 }
 
-ResourceLoadPriority ResourceRequest::Priority() const {
+ResourceLoadPriority ResourceRequestHead::InitialPriority() const {
+  return initial_priority_;
+}
+
+ResourceLoadPriority ResourceRequestHead::Priority() const {
   return priority_;
 }
 
-int ResourceRequest::IntraPriorityValue() const {
+int ResourceRequestHead::IntraPriorityValue() const {
   return intra_priority_value_;
 }
 
-bool ResourceRequest::PriorityHasBeenSet() const {
+bool ResourceRequestHead::PriorityHasBeenSet() const {
   return priority_ != ResourceLoadPriority::kUnresolved;
 }
 
-void ResourceRequest::SetPriority(ResourceLoadPriority priority,
-                                  int intra_priority_value) {
+void ResourceRequestHead::SetPriority(ResourceLoadPriority priority,
+                                      int intra_priority_value) {
+  if (!PriorityHasBeenSet())
+    initial_priority_ = priority;
   priority_ = priority;
   intra_priority_value_ = intra_priority_value;
 }
 
-void ResourceRequest::AddHttpHeaderField(const AtomicString& name,
-                                         const AtomicString& value) {
+void ResourceRequestHead::AddHttpHeaderField(const AtomicString& name,
+                                             const AtomicString& value) {
   HTTPHeaderMap::AddResult result = http_header_fields_.Add(name, value);
   if (!result.is_new_entry)
     result.stored_value->value = result.stored_value->value + ", " + value;
 }
 
-void ResourceRequest::AddHTTPHeaderFields(const HTTPHeaderMap& header_fields) {
+void ResourceRequestHead::AddHTTPHeaderFields(
+    const HTTPHeaderMap& header_fields) {
   HTTPHeaderMap::const_iterator end = header_fields.end();
   for (HTTPHeaderMap::const_iterator it = header_fields.begin(); it != end;
        ++it)
     AddHttpHeaderField(it->key, it->value);
 }
 
-void ResourceRequest::ClearHttpHeaderField(const AtomicString& name) {
+void ResourceRequestHead::ClearHttpHeaderField(const AtomicString& name) {
   http_header_fields_.Remove(name);
 }
 
-void ResourceRequest::SetExternalRequestStateFromRequestorAddressSpace(
+void ResourceRequestHead::SetExternalRequestStateFromRequestorAddressSpace(
     network::mojom::IPAddressSpace requestor_space) {
   static_assert(network::mojom::IPAddressSpace::kLocal <
                     network::mojom::IPAddressSpace::kPrivate,
@@ -325,7 +418,7 @@ void ResourceRequest::SetExternalRequestStateFromRequestorAddressSpace(
   is_external_request_ = requestor_space > target_space;
 }
 
-bool ResourceRequest::IsConditional() const {
+bool ResourceRequestHead::IsConditional() const {
   return (http_header_fields_.Contains(http_names::kIfMatch) ||
           http_header_fields_.Contains(http_names::kIfModifiedSince) ||
           http_header_fields_.Contains(http_names::kIfNoneMatch) ||
@@ -333,11 +426,16 @@ bool ResourceRequest::IsConditional() const {
           http_header_fields_.Contains(http_names::kIfUnmodifiedSince));
 }
 
-void ResourceRequest::SetHasUserGesture(bool has_user_gesture) {
+void ResourceRequestHead::SetHasUserGesture(bool has_user_gesture) {
   has_user_gesture_ |= has_user_gesture;
 }
 
-bool ResourceRequest::CanDisplay(const KURL& url) const {
+void ResourceRequestHead::SetHasTextFragmentToken(
+    bool has_text_fragment_token) {
+  has_text_fragment_token_ = has_text_fragment_token;
+}
+
+bool ResourceRequestHead::CanDisplay(const KURL& url) const {
   if (RequestorOrigin()->CanDisplay(url))
     return true;
 
@@ -347,7 +445,7 @@ bool ResourceRequest::CanDisplay(const KURL& url) const {
   return false;
 }
 
-const CacheControlHeader& ResourceRequest::GetCacheControlHeader() const {
+const CacheControlHeader& ResourceRequestHead::GetCacheControlHeader() const {
   if (!cache_control_header_cache_.parsed) {
     cache_control_header_cache_ = ParseCacheControlDirectives(
         http_header_fields_.Get(http_names::kCacheControl),
@@ -356,20 +454,20 @@ const CacheControlHeader& ResourceRequest::GetCacheControlHeader() const {
   return cache_control_header_cache_;
 }
 
-bool ResourceRequest::CacheControlContainsNoCache() const {
+bool ResourceRequestHead::CacheControlContainsNoCache() const {
   return GetCacheControlHeader().contains_no_cache;
 }
 
-bool ResourceRequest::CacheControlContainsNoStore() const {
+bool ResourceRequestHead::CacheControlContainsNoStore() const {
   return GetCacheControlHeader().contains_no_store;
 }
 
-bool ResourceRequest::HasCacheValidatorFields() const {
+bool ResourceRequestHead::HasCacheValidatorFields() const {
   return !http_header_fields_.Get(http_names::kLastModified).IsEmpty() ||
          !http_header_fields_.Get(http_names::kETag).IsEmpty();
 }
 
-bool ResourceRequest::NeedsHTTPOrigin() const {
+bool ResourceRequestHead::NeedsHTTPOrigin() const {
   if (!HttpOrigin().IsEmpty())
     return false;  // Request already has an Origin header.
 

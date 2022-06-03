@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+FAIL Test getting align-content values previously set through CSS. assert_equals: alignContent is not what is should. expected "last baseline" but got "normal"
+PASS Test setting invalid values to align-content through CSS.
+PASS Test initial value of align-content through JS
+FAIL Test getting and setting align-content through JS assert_equals: alignContent specified value is not what it should. expected "last baseline" but got "baseline"
+PASS Test bad combinations of align-content
+PASS Test the value 'initial'
+PASS Test the value 'initial' for grid containers
+PASS Test the value 'initial' for flex containers
+PASS Test the value 'inherit'
+Harness: the test ran to completion.
+

@@ -34,6 +34,9 @@ class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
  public:
   TestCrosDisplayConfig() = default;
 
+  TestCrosDisplayConfig(const TestCrosDisplayConfig&) = delete;
+  TestCrosDisplayConfig& operator=(const TestCrosDisplayConfig&) = delete;
+
   mojo::PendingRemote<ash::mojom::CrosDisplayConfigController>
   CreateRemoteAndBind() {
     return receiver_.BindNewPipeAndPassRemote();
@@ -64,22 +67,27 @@ class TestCrosDisplayConfig : public ash::mojom::CrosDisplayConfigController {
   void SetUnifiedDesktopEnabled(bool enabled) override {}
   void OverscanCalibration(const std::string& display_id,
                            ash::mojom::DisplayConfigOperation op,
-                           const base::Optional<gfx::Insets>& delta,
+                           const absl::optional<gfx::Insets>& delta,
                            OverscanCalibrationCallback callback) override {}
   void TouchCalibration(const std::string& display_id,
                         ash::mojom::DisplayConfigOperation op,
                         ash::mojom::TouchCalibrationPtr calibration,
                         TouchCalibrationCallback callback) override {}
+  void HighlightDisplay(int64_t id) override {}
+  void DragDisplayDelta(int64_t display_id,
+                        int32_t delta_x,
+                        int32_t delta_y) override {}
 
  private:
   mojo::Receiver<ash::mojom::CrosDisplayConfigController> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestCrosDisplayConfig);
 };
 
 class OobeDisplayChooserTest : public ChromeAshTestBase {
  public:
   OobeDisplayChooserTest() : ChromeAshTestBase() {}
+
+  OobeDisplayChooserTest(const OobeDisplayChooserTest&) = delete;
+  OobeDisplayChooserTest& operator=(const OobeDisplayChooserTest&) = delete;
 
   int64_t GetPrimaryDisplay() {
     return display::Screen::GetScreen()->GetPrimaryDisplay().id();
@@ -102,11 +110,9 @@ class OobeDisplayChooserTest : public ChromeAshTestBase {
  private:
   std::unique_ptr<TestCrosDisplayConfig> cros_display_config_;
   std::unique_ptr<OobeDisplayChooser> display_chooser_;
-
-  DISALLOW_COPY_AND_ASSIGN(OobeDisplayChooserTest);
 };
 
-const uint16_t kWhitelistedId = 0x266e;
+const uint16_t kAllowlistedId = 0x266e;
 
 }  // namespace
 
@@ -127,7 +133,7 @@ TEST_F(OobeDisplayChooserTest, PreferTouchAsPrimary) {
   ui::TouchscreenDevice touchscreen =
       ui::TouchscreenDevice(1, ui::InputDeviceType::INPUT_DEVICE_USB,
                             "Touchscreen", gfx::Size(800, 600), 1);
-  touchscreen.vendor_id = kWhitelistedId;
+  touchscreen.vendor_id = kAllowlistedId;
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices({touchscreen});
   base::RunLoop().RunUntilIdle();
 
@@ -170,7 +176,7 @@ TEST_F(OobeDisplayChooserTest, DontSwitchFromTouch) {
   ui::TouchscreenDevice touchscreen =
       ui::TouchscreenDevice(1, ui::InputDeviceType::INPUT_DEVICE_USB,
                             "Touchscreen", gfx::Size(800, 600), 1);
-  touchscreen.vendor_id = kWhitelistedId;
+  touchscreen.vendor_id = kAllowlistedId;
   ui::DeviceDataManagerTestApi().SetTouchscreenDevices({touchscreen});
   base::RunLoop().RunUntilIdle();
 

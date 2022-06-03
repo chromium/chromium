@@ -13,8 +13,8 @@ PreloadCheck::PreloadCheck(scoped_refptr<const Extension> extension)
 
 PreloadCheck::~PreloadCheck() {}
 
-base::string16 PreloadCheck::GetErrorMessage() const {
-  return base::string16();
+std::u16string PreloadCheck::GetErrorMessage() const {
+  return std::u16string();
 }
 
 }  // namespace extensions

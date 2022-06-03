@@ -5,7 +5,7 @@
 #include "components/viz/service/display/overlay_processor_surface_control.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/test/gfx_util.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace viz {
 
@@ -13,14 +13,12 @@ TEST(OverlayCandidateValidatorSurfaceControlTest, NoClipOrNegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(10.f, 10.f);
   candidate.uv_rect = gfx::RectF(1.f, 1.f);
-  candidate.is_clipped = false;
-  candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  OverlayProcessorSurfaceControl processor(true);
+  OverlayProcessorSurfaceControl processor;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
   EXPECT_RECTF_EQ(candidates.at(0).display_rect, gfx::RectF(10.f, 10.f));
@@ -30,14 +28,13 @@ TEST(OverlayProcessorSurfaceControlTest, Clipped) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(10.f, 10.f);
   candidate.uv_rect = gfx::RectF(1.f, 1.f);
-  candidate.is_clipped = true;
   candidate.clip_rect = gfx::Rect(2, 2, 5, 5);
   candidate.overlay_handled = false;
 
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  OverlayProcessorSurfaceControl processor(true);
+  OverlayProcessorSurfaceControl processor;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
   EXPECT_RECTF_EQ(candidates.at(0).display_rect,
@@ -49,14 +46,12 @@ TEST(OverlayProcessorSurfaceControlTest, NegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(-2.f, -4.f, 10.f, 10.f);
   candidate.uv_rect = gfx::RectF(0.5f, 0.5f);
-  candidate.is_clipped = false;
-  candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  OverlayProcessorSurfaceControl processor(true);
+  OverlayProcessorSurfaceControl processor;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
   EXPECT_RECTF_EQ(candidates.at(0).display_rect,
@@ -68,14 +63,13 @@ TEST(OverlayProcessorSurfaceControlTest, ClipAndNegativeOffset) {
   OverlayCandidate candidate;
   candidate.display_rect = gfx::RectF(-5.0f, -5.0f, 10.0f, 10.0f);
   candidate.uv_rect = gfx::RectF(0.5f, 0.5f, 0.5f, 0.5f);
-  candidate.is_clipped = true;
   candidate.clip_rect = gfx::Rect(5, 5);
   candidate.overlay_handled = false;
 
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  OverlayProcessorSurfaceControl processor(true);
+  OverlayProcessorSurfaceControl processor;
   processor.CheckOverlaySupport(nullptr, &candidates);
   EXPECT_TRUE(candidates.at(0).overlay_handled);
   EXPECT_RECTF_EQ(candidates.at(0).display_rect,
@@ -92,7 +86,7 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOverlay) {
   OverlayCandidateList candidates;
   candidates.push_back(candidate);
 
-  OverlayProcessorSurfaceControl processor(true);
+  OverlayProcessorSurfaceControl processor;
   processor.SetViewportSize(gfx::Size(100, 200));
   processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_90);
 
@@ -113,10 +107,10 @@ TEST(OverlayProcessorSurfaceControlTest, DisplayTransformOutputSurfaceOverlay) {
   OverlayProcessorInterface::OutputSurfaceOverlayPlane candidate;
   candidate.display_rect = gfx::RectF(100, 200);
   candidate.transform = gfx::OVERLAY_TRANSFORM_NONE;
-  base::Optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
+  absl::optional<OverlayProcessorInterface::OutputSurfaceOverlayPlane>
       overlay_plane = candidate;
 
-  OverlayProcessorSurfaceControl processor(true);
+  OverlayProcessorSurfaceControl processor;
   processor.SetViewportSize(gfx::Size(100, 200));
   processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_90);
   processor.AdjustOutputSurfaceOverlay(&overlay_plane);
@@ -130,7 +124,7 @@ TEST(OverlayCandidateValidatorTest, OverlayDamageRectForOutputSurface) {
   candidate.transform = gfx::OVERLAY_TRANSFORM_ROTATE_90;
   candidate.overlay_handled = false;
 
-  OverlayProcessorSurfaceControl processor(true);
+  OverlayProcessorSurfaceControl processor;
   processor.SetViewportSize(gfx::Size(100, 200));
   processor.SetDisplayTransformHint(gfx::OVERLAY_TRANSFORM_ROTATE_90);
 

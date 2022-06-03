@@ -6,23 +6,21 @@
 
 namespace extensions {
 
+PortContext::PortContext() = default;
+PortContext::~PortContext() = default;
+PortContext::PortContext(const PortContext& other) = default;
+
+PortContext::FrameContext::FrameContext(int routing_id)
+    : routing_id(routing_id) {}
+PortContext::FrameContext::FrameContext() = default;
+
 PortContext::WorkerContext::WorkerContext(int thread_id,
                                           int64_t version_id,
                                           const std::string& extension_id)
     : thread_id(thread_id),
       version_id(version_id),
       extension_id(extension_id) {}
-
-PortContext::FrameContext::FrameContext(int routing_id)
-    : routing_id(routing_id) {}
-
 PortContext::WorkerContext::WorkerContext() = default;
-PortContext::FrameContext::FrameContext() = default;
-
-PortContext::PortContext() = default;
-PortContext::~PortContext() = default;
-
-PortContext::PortContext(const PortContext& other) = default;
 
 PortContext PortContext::ForFrame(int routing_id) {
   PortContext context;
@@ -36,6 +34,10 @@ PortContext PortContext::ForWorker(int thread_id,
   PortContext context;
   context.worker = WorkerContext(thread_id, version_id, extension_id);
   return context;
+}
+
+PortContext PortContext::ForNativeHost() {
+  return PortContext();
 }
 
 }  // namespace extensions

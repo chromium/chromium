@@ -10,9 +10,9 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/values.h"
 #include "components/ntp_snippets/category.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ntp_snippets {
 
@@ -37,16 +37,16 @@ struct RequestParams {
   bool interactive_request = false;
 
   // If set, only return results for this category.
-  base::Optional<Category> exclusive_category;
+  absl::optional<Category> exclusive_category;
 };
 
 // Callbacks for JSON parsing to allow injecting platform-dependent code.
 using SuccessCallback = base::OnceCallback<void(base::Value result)>;
 using ErrorCallback = base::OnceCallback<void(const std::string& error)>;
 using ParseJSONCallback =
-    base::Callback<void(const std::string& raw_json_string,
-                        SuccessCallback success_callback,
-                        ErrorCallback error_callback)>;
+    base::RepeatingCallback<void(const std::string& raw_json_string,
+                                 SuccessCallback success_callback,
+                                 ErrorCallback error_callback)>;
 
 }  // namespace ntp_snippets
 

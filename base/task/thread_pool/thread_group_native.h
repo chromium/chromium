@@ -14,6 +14,9 @@ namespace internal {
 
 class BASE_EXPORT ThreadGroupNative : public ThreadGroup {
  public:
+  ThreadGroupNative(const ThreadGroupNative&) = delete;
+  ThreadGroupNative& operator=(const ThreadGroupNative&) = delete;
+
   // Destroying a ThreadGroupNative is not allowed in
   // production; it is always leaked. In tests, it can only be destroyed after
   // JoinForTesting() has returned.
@@ -25,8 +28,8 @@ class BASE_EXPORT ThreadGroupNative : public ThreadGroup {
   // ThreadGroup:
   void JoinForTesting() override;
   size_t GetMaxConcurrentNonBlockedTasksDeprecated() const override;
-  void ReportHeartbeatMetrics() const override;
   void DidUpdateCanRunPolicy() override;
+  void OnShutdownStarted() override;
 
  protected:
   ThreadGroupNative(TrackedRef<TaskTracker> task_tracker,
@@ -74,8 +77,6 @@ class BASE_EXPORT ThreadGroupNative : public ThreadGroup {
   // Set once JoinForTesting() has returned.
   bool join_for_testing_returned_ = false;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadGroupNative);
 };
 
 }  // namespace internal

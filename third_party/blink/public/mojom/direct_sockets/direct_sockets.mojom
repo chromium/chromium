@@ -1,0 +1,78 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Explainer for the Direct Sockets API:
+// https://github.com/WICG/raw-sockets/blob/main/docs/explainer.md
+
+import "mojo/public/mojom/base/read_only_buffer.mojom";
+import "services/network/public/mojom/ip_endpoint.mojom";
+import "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom";
+import "services/network/public/mojom/tcp_socket.mojom";
+import "services/network/public/mojom/udp_socket.mojom";
+
+struct DirectSocketOptions {
+  string? local_hostname;
+  uint16 local_port = 0;
+
+  string? remote_hostname;
+  uint16 remote_port = 0;
+
+  int32 send_buffer_size = 0;
+  int32 receive_buffer_size = 0;
+
+  // Only relevant for TCP:
+  bool no_delay = false;
+};
+
+// This wraps network.mojom.NetworkContext and handles extra work such as
+// permission checking, chooser showing, etc.
+// The browser process implements the interface, and the renderer process
+// sends messages to it.
+interface DirectSocketsService {
+  // Creates a connected TCP socket.
+  // |result| is a net::Error code (net::OK on success).
+  // |observer| if non-null will be used to listen for any network connection
+  // error on the newly established connection.
+  // Caller is to use |send_stream| to send data and |receive_stream|
+  // to receive data over the connection.
+  OpenTcpSocket(
+      DirectSocketOptions options,
+      pending_receiver<network.mojom.TCPConnectedSocket> receiver,
+      pending_remote<network.mojom.SocketObserver>? observer)
+      => (int32 result,
+          network.mojom.IPEndPoint? local_addr,
+          network.mojom.IPEndPoint? peer_addr,
+          handle<data_pipe_consumer>? receive_stream,
+          handle<data_pipe_producer>? send_stream);
+
+  // Creates a 'connected' UDP socket.
+  // |result| is a net::Error code (net::OK on success).
+  // Caller can supply a |listener| to listen for incoming datagrams.
+  OpenUdpSocket(
+      DirectSocketOptions options,
+      pending_receiver<DirectUDPSocket> receiver,
+      pending_remote<network.mojom.UDPSocketListener>? listener)
+      => (int32 result,
+          network.mojom.IPEndPoint? local_addr,
+          network.mojom.IPEndPoint? peer_addr);
+};
+
+// This wraps network.mojom.UDPSocket, exposing only the functionality needed
+// after connection has occurred.
+interface DirectUDPSocket {
+  // Notifies that the listener is ready to accept datagrams. OnReceived() of
+  // the UDPSocketListener interface will be called |num_additional_datagrams|
+  // times (errors also count), unless the connection is closed before that.
+  ReceiveMore(uint32 num_additional_datagrams);
+
+  // Sends a UDP datagram. Upon successfully handing the data to the OS,
+  // |result| is net::OK. On failure, |result| is a network error code.
+  Send(mojo_base.mojom.ReadOnlyBuffer data)
+      => (int32 result);
+
+  // Closes the socket.
+  Close();
+};

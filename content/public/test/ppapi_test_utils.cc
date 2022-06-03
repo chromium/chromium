@@ -9,7 +9,6 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/pepper/pepper_tcp_server_socket_message_filter.h"
@@ -73,17 +72,17 @@ bool RegisterPluginWithDefaultMimeType(
   return RegisterPlugins(command_line, plugins);
 }
 
-bool RegisterFlashTestPluginLibrary(base::CommandLine* command_line,
-                                    const StringType& library_name) {
+bool RegisterFakePdfPluginLibrary(base::CommandLine* command_line,
+                                  const StringType& library_name) {
   std::vector<PluginInfo> plugins;
-  // Register a fake Flash with 100.0 version (to avoid outdated checks).
-  base::FilePath::StringType fake_flash_parameter =
-      base::FilePath::FromUTF8Unsafe(
-          std::string("#") + content::kFlashPluginName + "#Description#100.0")
+  // Register a fake PDF plugin with 100.0 version (to avoid outdated checks).
+  base::FilePath::StringType fake_pdf_parameter =
+      base::FilePath::FromUTF8Unsafe(std::string("#") + "Fake PDF" +
+                                     "#Description#100.0")
           .value();
   plugins.push_back(
-      PluginInfo(library_name, fake_flash_parameter,
-                 FILE_PATH_LITERAL("application/x-shockwave-flash")));
+      PluginInfo(library_name, fake_pdf_parameter,
+                 FILE_PATH_LITERAL("application/x-fake-pdf-for-testing")));
   return RegisterPlugins(command_line, plugins);
 }
 
@@ -99,7 +98,7 @@ bool RegisterTestPluginWithExtraParameters(
     const base::FilePath::StringType& extra_registration_parameters) {
 #if defined(OS_WIN)
   base::FilePath::StringType plugin_library = L"ppapi_tests.dll";
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   base::FilePath::StringType plugin_library = "ppapi_tests.plugin";
 #elif defined(OS_POSIX)
   base::FilePath::StringType plugin_library = "libppapi_tests.so";
@@ -111,21 +110,7 @@ bool RegisterTestPluginWithExtraParameters(
 bool RegisterCorbTestPlugin(base::CommandLine* command_line) {
   StringType library_name =
       base::FilePath::FromUTF8Unsafe(ppapi::kCorbTestPluginName).value();
-  return RegisterFlashTestPluginLibrary(command_line, library_name);
-}
-
-bool RegisterFlashTestPlugin(base::CommandLine* command_line) {
-  // Power Saver plugin requires Pepper testing API.
-  command_line->AppendSwitch(switches::kEnablePepperTesting);
-
-  // The Power Saver plugin ignores the data attribute and just draws a
-  // checkerboard pattern - while providing some Plugin Power Saver diagnostics.
-  //
-  // It was originally designed just for Plugin Power Saver tests, but is
-  // useful for testing as a fake Flash plugin in a variety of tests.
-  StringType library_name =
-      base::FilePath::FromUTF8Unsafe(ppapi::kPowerSaverTestPluginName).value();
-  return RegisterFlashTestPluginLibrary(command_line, library_name);
+  return RegisterFakePdfPluginLibrary(command_line, library_name);
 }
 
 bool RegisterBlinkTestPlugin(base::CommandLine* command_line) {
@@ -133,7 +118,7 @@ bool RegisterBlinkTestPlugin(base::CommandLine* command_line) {
   static const CharType kPluginLibrary[] = L"blink_test_plugin.dll";
   static const CharType kDeprecatedPluginLibrary[] =
       L"blink_deprecated_test_plugin.dll";
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   static const CharType kPluginLibrary[] = "blink_test_plugin.plugin";
   static const CharType kDeprecatedPluginLibrary[] =
       "blink_deprecated_test_plugin.plugin";

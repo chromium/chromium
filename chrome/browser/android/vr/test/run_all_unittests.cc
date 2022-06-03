@@ -11,6 +11,5 @@ int main(int argc, char** argv) {
 
   return base::LaunchUnitTests(
       argc, argv,
-      base::BindRepeating(&vr::ArTestSuite::Run,
-                          base::Unretained(&test_suite)));
+      base::BindOnce(&vr::ArTestSuite::Run, base::Unretained(&test_suite)));
 }

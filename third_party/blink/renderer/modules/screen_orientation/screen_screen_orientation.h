@@ -17,8 +17,6 @@ class Screen;
 class ScreenScreenOrientation final
     : public GarbageCollected<ScreenScreenOrientation>,
       public Supplement<Screen> {
-  USING_GARBAGE_COLLECTED_MIXIN(ScreenScreenOrientation);
-
  public:
   static const char kSupplementName[];
 
@@ -26,7 +24,9 @@ class ScreenScreenOrientation final
 
   static ScreenOrientation* orientation(Screen&);
 
-  void Trace(blink::Visitor*) override;
+  ScreenScreenOrientation();
+
+  void Trace(Visitor*) const override;
 
  private:
   Member<ScreenOrientation> orientation_;

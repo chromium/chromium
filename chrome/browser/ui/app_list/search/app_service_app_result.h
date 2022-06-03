@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "chrome/browser/ui/app_list/search/app_result.h"
-#include "chrome/services/app_service/public/cpp/icon_cache.h"
-#include "chrome/services/app_service/public/mojom/types.mojom.h"
 #include "components/favicon_base/favicon_types.h"
+#include "components/services/app_service/public/cpp/icon_cache.h"
+#include "components/services/app_service/public/mojom/types.mojom-forward.h"
 #include "url/gurl.h"
 
 class AppListControllerDelegate;
@@ -36,19 +36,22 @@ class AppServiceAppResult : public AppResult {
                       AppListControllerDelegate* controller,
                       bool is_recommendation,
                       apps::IconLoader* icon_loader);
+
+  AppServiceAppResult(const AppServiceAppResult&) = delete;
+  AppServiceAppResult& operator=(const AppServiceAppResult&) = delete;
+
   ~AppServiceAppResult() override;
 
  private:
   // ChromeSearchResult overrides:
   void Open(int event_flags) override;
   void GetContextMenuModel(GetMenuModelCallback callback) override;
-  void OnVisibilityChanged(bool visibility) override;
-  ash::SearchResultType GetSearchResultType() const override;
   AppContextMenu* GetAppContextMenu() override;
 
   // AppContextMenuDelegate overrides:
   void ExecuteLaunchCommand(int event_flags) override;
 
+  ash::SearchResultType GetSearchResultType() const;
   void Launch(int event_flags, apps::mojom::LaunchSource launch_source);
 
   void CallLoadIcon(bool chip, bool allow_placeholder_icon);
@@ -95,8 +98,6 @@ class AppServiceAppResult : public AppResult {
   favicon::LargeIconService* large_icon_service_ = nullptr;
 
   base::WeakPtrFactory<AppServiceAppResult> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AppServiceAppResult);
 };
 
 }  // namespace app_list

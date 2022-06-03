@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_HOST_WIN_RDP_HOST_WINDOW_H_
-#define REMOTING_HOST_WIN_RDP_HOST_WINDOW_H_
+#ifndef REMOTING_HOST_WIN_RDP_CLIENT_WINDOW_H_
+#define REMOTING_HOST_WIN_RDP_CLIENT_WINDOW_H_
 
 // Must be included before <atlapp.h>.
 #include "base/win/atl.h"  // NOLINT(build/include_order)
@@ -189,4 +189,4 @@ class RdpClientWindow
 
 }  // namespace remoting
 
-#endif  // REMOTING_HOST_WIN_RDP_HOST_WINDOW_H_
+#endif  // REMOTING_HOST_WIN_RDP_CLIENT_WINDOW_H_

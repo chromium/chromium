@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that pause on exception is muted when conditional breakpoint is set to "false".`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function throwAnException()
@@ -39,10 +39,10 @@
     SourcesTestRunner.showScriptSource('test.js', step2);
   }
 
-  function step2(sourceFrame) {
+  async function step2(sourceFrame) {
     TestRunner.addResult('Script source was shown.');
-    SourcesTestRunner.setBreakpoint(sourceFrame, 10, 'false', true);
-    SourcesTestRunner.setBreakpoint(sourceFrame, 14, 'false', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 10, 'false', true);
+    await SourcesTestRunner.setBreakpoint(sourceFrame, 14, 'false', true);
     TestRunner.evaluateInPage('setTimeout(handleClick, 0)');
     SourcesTestRunner.waitUntilPausedAndDumpStackAndResume(step3);
   }

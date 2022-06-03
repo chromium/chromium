@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 extensions_api_schema_files_ = [
   "alarms.idl",
   "app_current_window_internal.idl",
@@ -15,15 +17,11 @@ extensions_api_schema_files_ = [
   "bluetooth_low_energy.idl",
   "bluetooth_private.idl",
   "bluetooth_socket.idl",
-  "cast_channel.idl",
   "cec_private.idl",
   "clipboard.idl",
   "declarative_net_request.idl",
-  "display_source.idl",
   "dns.idl",
-  "document_scan.idl",
   "events.json",
-  "extensions_manifest_types.json",
   "extension_options_internal.idl",
   "extension_types.json",
   "feedback_private.idl",
@@ -51,7 +49,6 @@ extensions_api_schema_files_ = [
   "system_display.idl",
   "system_memory.idl",
   "system_network.idl",
-  "system_power_source.idl",
   "system_storage.idl",
   "test.json",
   "usb.idl",
@@ -61,13 +58,23 @@ extensions_api_schema_files_ = [
   "web_view_internal.json",
 ]
 
-if (is_chromeos) {
+extensions_manifest_only_schema_files_ = [
+  "content_scripts.idl",
+  "cross_origin_isolation.idl",
+  "extensions_manifest_types.json",
+  "incognito.json",
+  "oauth2.idl",
+  "requirements.json",
+  "shared_module.idl",
+  "web_accessible_resources.idl",
+  "web_accessible_resources_mv2.idl",
+]
+
+if (is_chromeos_ash) {
   extensions_api_schema_files_ += [
-    "crash_report_private.idl",
     "diagnostics.idl",
     "lock_screen_data.idl",
     "media_perception_private.idl",
-    "networking_config.idl",
     "vpn_provider.idl",
     "webcam_private.idl",
   ]
@@ -75,6 +82,9 @@ if (is_chromeos) {
 
 extensions_api_schema_files =
     get_path_info(extensions_api_schema_files_, "abspath")
+
+extensions_manifest_only_schema_files =
+    get_path_info(extensions_manifest_only_schema_files_, "abspath")
 
 extensions_api_uncompiled_sources =
     get_path_info([ "web_request_internal.json" ], "abspath")

@@ -69,7 +69,9 @@ from __future__ import print_function
 import collections
 import getopt
 import os
+import shutil
 import sys
+import tempfile
 
 from grit.tool import interface
 from grit.tool.update_resource_ids import assigner, common, parser, reader
@@ -106,30 +108,43 @@ def _MultiReplace(data, repl):
   return ''.join(res)
 
 
-def _CreateAndOutputResult(data, repl, output):
-  new_data = _MultiReplace(data, repl)
-  if output:
-    with open(output, 'wt') as fh:
-      fh.write(new_data)
-  else:
+def _WriteFileIfChanged(output, new_data):
+  if not output:
     sys.stdout.write(new_data)
+    return
+
+  # Avoid touching outputs if file contents has not changed so that ninja
+  # does not rebuild dependent when not necessary.
+  if os.path.exists(output) and _ReadData(output)[0] == new_data:
+    return
+
+  # Write to a temporary file to ensure atomic changes.
+  with tempfile.NamedTemporaryFile('wt', delete=False) as f:
+    f.write(new_data)
+  shutil.move(f.name, output)
 
 
 class _Args:
   """Encapsulated arguments for this module."""
   def __init__(self):
-    self.input = None
-    self.output = None
+    self.add_header = False
+    self.analyze_inputs = False
     self.count = False
+    self.depfile = None
     self.fake = False
+    self.input = None
     self.naive = False
+    self.output = None
     self.parse = False
     self.tokenize = False
 
   @staticmethod
   def Parse(raw_args):
     own_opts, raw_args = getopt.getopt(raw_args, 'o:cpt', [
+        'add-header',
+        'analyze-inputs',
         'count',
+        'depfile=',
         'fake',
         'naive',
         'parse',
@@ -144,8 +159,14 @@ class _Args:
     for (key, val) in own_opts:
       if key == '-o':
         args.output = val
+      elif key == '--add-header':
+        args.add_header = True
+      elif key == '--analyze-inputs':
+        args.analyze_inputs = True
       elif key in ('--count', '-c'):
         args.count = True
+      elif key == '--depfile':
+        args.depfile = val
       elif key == '--fake':
         args.fake = True
       elif key == '--naive':
@@ -164,7 +185,8 @@ start IDs while preserving structure.
 
 Usage: grit update_resource_ids [--parse|-p] [--read-grd|-r] [--tokenize|-t]
                                 [--naive] [--fake] [-o OUTPUT_FILE]
-                                RESOURCE_IDS_FILE
+                                [--analyze-inputs] [--depfile DEPFILE]
+                                [--add-header] RESOURCE_IDS_FILE
 
 RESOURCE_IDS_FILE is the path of the input resource_ids file.
 
@@ -188,6 +210,9 @@ Other options:
   --tokenize|-t     Tokenizes RESOURCE_IDS_FILE and reprints it as syntax-
                     highlighted output.
 
+  --depfile=DEPFILE Write out a depfile for ninja to know about dependencies.
+  --analyze-inputs  Writes dependencies to stdout.
+  --add-header      Adds a "THIS FILE IS GENERATED" header to the output.
 """
 
   def __init(self):
@@ -241,14 +266,40 @@ Other options:
       return self._DumpRootObj(root_obj)
     item_list = common.BuildItemList(root_obj)
 
-    src_dir = os.path.abspath(os.sep.join([file_dir, root_obj['SRCDIR'].val]))
-    usage_gen = reader.GenerateResourceUsages(item_list, src_dir, args.fake)
+    src_dir = os.path.normpath(os.path.join(file_dir, root_obj['SRCDIR'].val))
+    seen_files = set()
+    usage_gen = reader.GenerateResourceUsages(item_list, src_dir, args.fake,
+                                              seen_files)
     if args.count:
       return self._DumpResourceCounts(usage_gen)
     for item, tag_name_to_usage in usage_gen:
       item.SetUsages(tag_name_to_usage)
 
+    if args.analyze_inputs:
+      print('\n'.join(sorted(seen_files)))
+      return 0
+
     new_ids_gen = assigner.GenerateNewIds(item_list, args.naive)
     # Create replacement specs usable by _MultiReplace().
     repl = [(tag.lo, tag.hi, str(new_id)) for tag, new_id in new_ids_gen]
-    _CreateAndOutputResult(data, repl, args.output)
+    rel_input_dir = args.input
+    # Update "SRCDIR" entry if output is specified.
+    if args.output:
+      new_srcdir = os.path.relpath(src_dir, os.path.dirname(args.output))
+      repl.append((root_obj['SRCDIR'].lo, root_obj['SRCDIR'].hi,
+                   repr(new_srcdir)))
+      rel_input_dir = os.path.join('$SRCDIR',
+                                   os.path.relpath(rel_input_dir, new_srcdir))
+
+    new_data = _MultiReplace(data, repl)
+    if args.add_header:
+      header = []
+      header.append('# GENERATED FILE.')
+      header.append('# Edit %s instead.' % rel_input_dir)
+      header.append('#' * 80)
+      new_data = '\n'.join(header + ['']) + new_data
+    _WriteFileIfChanged(args.output, new_data)
+
+    if args.depfile:
+      deps_data = '{}: {}'.format(args.output, ' '.join(sorted(seen_files)))
+      _WriteFileIfChanged(args.depfile, deps_data)

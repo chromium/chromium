@@ -2,334 +2,44 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//ios/chrome/test/earl_grey/chrome_ios_eg_test.gni")
-
-group("all_tests") {
+# This target is only used in routinely device checks. Thus, the target name is
+# different from other EG2 tests.
+source_set("device_check_eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
   testonly = true
+  sources = [ "device_check_egtest.mm" ]
   deps = [
-    ":ios_chrome_autofill_automation_egtests",
-    ":ios_chrome_bookmarks_egtests",
-    ":ios_chrome_device_check_egtests",
-    ":ios_chrome_flaky_egtests",
-    ":ios_chrome_integration_egtests",
-    ":ios_chrome_multitasking_egtests",
-    ":ios_chrome_perf_egtests",
-    ":ios_chrome_reading_list_egtests",
-    ":ios_chrome_settings_egtests",
-    ":ios_chrome_smoke_egtests",
-    ":ios_chrome_translate_egtests",
-    ":ios_chrome_ui_egtests",
-    ":ios_chrome_web_egtests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_integration_egtests") {
-  deps = [
-    "//ios/chrome/browser/autofill:eg_tests",
-    "//ios/chrome/browser/context_menu:eg_tests",
-    "//ios/chrome/browser/device_sharing:eg_tests",
-    "//ios/chrome/browser/feature_engagement:eg_tests",
-    "//ios/chrome/browser/metrics:eg_tests",
-    "//ios/chrome/browser/net:eg_tests",
-    "//ios/chrome/browser/ntp_tiles:eg_tests",
-    "//ios/chrome/browser/passwords:eg_tests",
-    "//ios/chrome/browser/prerender:eg_tests",
-    "//ios/chrome/browser/ui/autofill:eg_tests",
-    "//ios/chrome/browser/ui/autofill/manual_fill:eg_tests",
-    "//ios/chrome/browser/ui/content_suggestions:eg_tests",
-    "//ios/chrome/browser/ui/payments:eg_tests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_autofill_automation_egtests") {
-  deps = [
-    "//ios/chrome/browser/autofill/automation:eg_tests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_reading_list_egtests") {
-  deps = [
-    ":test_support",
-    "//ios/chrome/browser/ui/reading_list:eg_tests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_bookmarks_egtests") {
-  deps = [
-    "//ios/chrome/browser/ui/bookmarks:eg_tests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_settings_egtests") {
-  deps = [
-    "//ios/chrome/browser/ui/settings:eg_tests",
-    "//ios/chrome/browser/ui/settings/autofill:eg_tests",
-    "//ios/chrome/browser/ui/settings/clear_browsing_data:eg_tests",
-    "//ios/chrome/browser/ui/settings/google_services:eg_tests",
-    "//ios/chrome/browser/ui/settings/language:eg_tests",
-    "//ios/chrome/browser/ui/settings/password:eg_tests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_ui_egtests") {
-  deps = [
-    "//ios/chrome/browser/ui/activity_services:eg_tests",
-    "//ios/chrome/browser/ui/browser_view:eg_tests",
-    "//ios/chrome/browser/ui/dialogs:eg_tests",
-    "//ios/chrome/browser/ui/download:eg_tests",
-    "//ios/chrome/browser/ui/find_bar:eg_tests",
-    "//ios/chrome/browser/ui/first_run:eg_tests",
-    "//ios/chrome/browser/ui/fullscreen:eg_tests",
-    "//ios/chrome/browser/ui/history:eg_tests",
-    "//ios/chrome/browser/ui/infobars:eg_tests",
-    "//ios/chrome/browser/ui/keyboard:eg_tests",
-    "//ios/chrome/browser/ui/ntp:eg_tests",
-    "//ios/chrome/browser/ui/omnibox:eg_tests",
-    "//ios/chrome/browser/ui/omnibox/popup:eg_tests",
-    "//ios/chrome/browser/ui/omnibox/popup/shortcuts:eg_tests",
-    "//ios/chrome/browser/ui/page_info:eg_tests",
-    "//ios/chrome/browser/ui/popup_menu:eg_tests",
-    "//ios/chrome/browser/ui/qr_scanner:eg_tests",
-    "//ios/chrome/browser/ui/recent_tabs:eg_tests",
-    "//ios/chrome/browser/ui/sad_tab:eg_tests",
-    "//ios/chrome/browser/ui/safe_mode:eg_tests",
-    "//ios/chrome/browser/ui/settings/sync/utils:eg_tests",
-    "//ios/chrome/browser/ui/side_swipe:eg_tests",
-    "//ios/chrome/browser/ui/signin_interaction:eg_tests",
-    "//ios/chrome/browser/ui/tab_grid:eg_tests",
-    "//ios/chrome/browser/ui/tabs:eg_tests",
-    "//ios/chrome/browser/ui/toolbar:eg_tests",
-    "//ios/chrome/browser/ui/webui:eg_tests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_web_egtests") {
-  deps = [
-    "//ios/chrome/browser/web:eg_tests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_multitasking_egtests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "//ios/chrome/app/multitasking_test_application_delegate.h",
-    "//ios/chrome/app/multitasking_test_application_delegate.mm",
-  ]
-
-  deps = [
-    ":test_support",
-    "//base",
-    "//ios/chrome/app:app_internal",
-    "//ios/chrome/app/application_delegate:application_delegate_internal",
-
-    # Depends on all EarlGrey test suites to create multitasking tests suite.
-    ":ios_chrome_bookmarks_egtests_deps_group",
-    ":ios_chrome_integration_egtests_deps_group",
-    ":ios_chrome_settings_egtests_deps_group",
-    ":ios_chrome_ui_egtests_deps_group",
-    ":ios_chrome_web_egtests_deps_group",
-  ]
-
-  eg_main_application_delegate = "MultitaskingTestApplicationDelegate"
-}
-
-chrome_ios_eg_test("ios_chrome_perf_egtests") {
-  deps = [
-    "//ios/chrome/test/perf:eg_tests",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_device_check_egtests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "device_check_egtest.mm",
-  ]
-  deps = [
-    ":test_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
+    ":eg_test_support+eg2",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
     "//url",
   ]
-}
-
-chrome_ios_eg_test("ios_chrome_flaky_egtests") {
-  deps = [
-    ":test_support",
-    "//base",
-
-    # Depends on all EarlGrey test suites to run all the FLAKY_ tests found.
-    # When adding a new test application, please follow the same pattern.
-    ":ios_chrome_bookmarks_egtests_deps_group",
-    ":ios_chrome_integration_egtests_deps_group",
-    ":ios_chrome_settings_egtests_deps_group",
-    ":ios_chrome_ui_egtests_deps_group",
-    ":ios_chrome_web_egtests_deps_group",
-  ]
-}
-
-chrome_ios_eg_test("ios_chrome_smoke_egtests") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "smoke_egtest.mm",
-  ]
-  deps = [
-    ":test_support",
-    "//ios/chrome/test/app:test_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-  ]
-  libs = [ "XCTest.framework" ]
-}
-
-chrome_ios_eg_test("ios_chrome_translate_egtests") {
-  deps = [
-    "//ios/chrome/browser/translate:eg_tests",
-  ]
-}
-
-source_set("test_support") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "accessibility_util.h",
-    "accessibility_util.mm",
-    "chrome_actions.h",
-    "chrome_actions.mm",
-    "chrome_actions_app_interface.h",
-    "chrome_actions_app_interface.mm",
-    "chrome_earl_grey.h",
-    "chrome_earl_grey.mm",
-    "chrome_earl_grey_app_interface.h",
-    "chrome_earl_grey_app_interface.mm",
-    "chrome_earl_grey_ui.h",
-    "chrome_earl_grey_ui.mm",
-    "chrome_matchers.h",
-    "chrome_matchers.mm",
-    "chrome_matchers_app_interface.h",
-    "chrome_matchers_app_interface.mm",
-    "chrome_test_case.h",
-    "chrome_test_case.mm",
-    "chrome_test_case_app_interface.h",
-    "chrome_test_case_app_interface.mm",
-    "earl_grey_scoped_block_swizzler.h",
-    "earl_grey_scoped_block_swizzler.mm",
-    "earl_grey_scoped_block_swizzler_app_interface.h",
-    "earl_grey_scoped_block_swizzler_app_interface.mm",
-    "scoped_block_popups_pref.h",
-    "scoped_block_popups_pref.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//components/autofill/core/browser",
-    "//components/content_settings/core/browser",
-    "//components/payments/core:core",
-    "//components/strings",
-    "//components/sync/base",
-    "//components/translate/core/browser",
-    "//components/ukm/ios:features",
-    "//components/unified_consent",
-    "//ios/chrome/app:app_internal",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/autofill",
-    "//ios/chrome/browser/content_settings:content_settings",
-    "//ios/chrome/browser/ntp:features",
-    "//ios/chrome/browser/passwords",
-    "//ios/chrome/browser/passwords:test_support",
-    "//ios/chrome/browser/ui:feature_flags",
-    "//ios/chrome/browser/ui/authentication:authentication",
-    "//ios/chrome/browser/ui/authentication/cells",
-    "//ios/chrome/browser/ui/autofill:autofill_ui",
-    "//ios/chrome/browser/ui/autofill/manual_fill",
-    "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
-    "//ios/chrome/browser/ui/bookmarks:bookmarks_ui",
-    "//ios/chrome/browser/ui/collection_view/cells",
-    "//ios/chrome/browser/ui/commands:commands",
-    "//ios/chrome/browser/ui/content_suggestions:constants",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
-    "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
-    "//ios/chrome/browser/ui/history:constants",
-    "//ios/chrome/browser/ui/history:history_ui",
-    "//ios/chrome/browser/ui/location_bar:location_bar",
-    "//ios/chrome/browser/ui/omnibox:omnibox_internal",
-    "//ios/chrome/browser/ui/payments:payments_ui",
-    "//ios/chrome/browser/ui/popup_menu:constants",
-    "//ios/chrome/browser/ui/qr_scanner:test_support",
-    "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",
-    "//ios/chrome/browser/ui/safe_mode",
-    "//ios/chrome/browser/ui/safe_mode:test_support",
-    "//ios/chrome/browser/ui/settings:constants",
-    "//ios/chrome/browser/ui/settings:settings",
-    "//ios/chrome/browser/ui/settings:settings_root_constants",
-    "//ios/chrome/browser/ui/settings/autofill",
-    "//ios/chrome/browser/ui/settings/autofill:constants",
-    "//ios/chrome/browser/ui/settings/autofill:feature_flags",
-    "//ios/chrome/browser/ui/settings/cells",
-    "//ios/chrome/browser/ui/settings/clear_browsing_data",
-    "//ios/chrome/browser/ui/settings/credit_card_scanner",
-    "//ios/chrome/browser/ui/settings/google_services",
-    "//ios/chrome/browser/ui/settings/password:eg_test_support",
-    "//ios/chrome/browser/ui/settings/password:password_constants",
-    "//ios/chrome/browser/ui/settings/sync",
-    "//ios/chrome/browser/ui/tab_grid:tab_grid_ui_constants",
-    "//ios/chrome/browser/ui/tab_grid/grid:grid_ui_constants",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
-    "//ios/chrome/browser/ui/table_view/cells",
-    "//ios/chrome/browser/ui/toolbar:test_support",
-    "//ios/chrome/browser/ui/toolbar:toolbar_ui",
-    "//ios/chrome/browser/ui/toolbar/buttons",
-    "//ios/chrome/browser/ui/toolbar/keyboard_assist",
-    "//ios/chrome/browser/ui/toolbar/public",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/web:tab_id_tab_helper",
-    "//ios/chrome/test/app:test_support",
-    "//ios/testing:block_swizzler",
-    "//ios/testing:verify_custom_webkit",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/third_party/material_components_ios",
-    "//ios/third_party/webkit",
-    "//ios/web",
-    "//ios/web:earl_grey_test_support",
-    "//ios/web/common",
-    "//ios/web/public/deprecated",
-    "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/http_server",
-    "//net:test_support",
-    "//services/metrics/public/cpp:metrics_cpp",
-    "//ui/base",
-    "//ui/base:test_support",
-    "//url",
-  ]
-
-  public_deps = [
-    "//build/config/ios:xctest",
-    "//ios/testing:nserror_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/third_party/gtx:gtx+link",
-    "//ios/web/public/test",
-    "//ios/web/public/test/fakes",
-  ]
-
-  libs = [
-    "OCHamcrest.framework",
-    "XCTest.framework",
-    "IOKit.framework",
-  ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("hooks") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "eg_tests_hook.mm",
-  ]
+  sources = [ "eg_tests_hook.mm" ]
   deps = [
+    ":switches",
+    "//base",
+    "//components/policy/core/common:test_support",
     "//ios/chrome/app:tests_hook",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/policy:test_support",
+    "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",
+    "//ios/chrome/test/app:test_support",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
+    "//ios/public/provider/chrome/browser/signin:test_support",
   ]
 }
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -351,84 +61,112 @@ source_set("eg_app_support+eg2") {
   ]
 
   deps = [
+    ":switches",
     "//base",
     "//base/test:test_support",
     "//components/autofill/core/browser",
+    "//components/browsing_data/core",
     "//components/content_settings/core/browser",
-    "//components/payments/core:core",
+    "//components/metrics/demographics",
+    "//components/prefs",
     "//components/strings",
     "//components/sync/base",
     "//components/translate/core/browser",
-    "//components/ukm/ios:features",
     "//components/unified_consent",
+    "//components/variations",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
     "//ios/chrome/browser/autofill",
     "//ios/chrome/browser/autofill/automation:eg_app_support+eg2",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/content_settings:content_settings",
     "//ios/chrome/browser/device_sharing:eg_app_support+eg2",
+    "//ios/chrome/browser/feature_engagement:eg_app_support+eg2",
     "//ios/chrome/browser/find_in_page",
     "//ios/chrome/browser/metrics:eg_app_support+eg2",
     "//ios/chrome/browser/ntp:features",
+    "//ios/chrome/browser/optimization_guide:eg_app_support+eg2",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/passwords:eg_app_support+eg2",
+    "//ios/chrome/browser/policy:eg_app_support+eg2",
+    "//ios/chrome/browser/translate:eg_app_support+eg2",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/authentication:eg_app_support+eg2",
     "//ios/chrome/browser/ui/authentication/cells",
+    "//ios/chrome/browser/ui/authentication/signin/advanced_settings_signin:constants",
     "//ios/chrome/browser/ui/autofill:autofill_ui",
     "//ios/chrome/browser/ui/autofill:eg_app_support+eg2",
     "//ios/chrome/browser/ui/autofill/manual_fill",
     "//ios/chrome/browser/ui/autofill/manual_fill:manual_fill_ui",
-    "//ios/chrome/browser/ui/bookmarks:bookmarks_ui",
+    "//ios/chrome/browser/ui/bookmarks:constants",
     "//ios/chrome/browser/ui/bookmarks:eg_app_support+eg2",
+    "//ios/chrome/browser/ui/collection_view/cells",
+    "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions:constants",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_constant",
     "//ios/chrome/browser/ui/content_suggestions:content_suggestions_ui",
     "//ios/chrome/browser/ui/content_suggestions:eg_app_support+eg2",
+    "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/find_bar:eg_app_support+eg2",
     "//ios/chrome/browser/ui/first_run:eg_app_support+eg2",
     "//ios/chrome/browser/ui/fullscreen/test:eg_app_support+eg2",
     "//ios/chrome/browser/ui/history:constants",
-    "//ios/chrome/browser/ui/infobars",
     "//ios/chrome/browser/ui/infobars:eg_app_support+eg2",
+    "//ios/chrome/browser/ui/location_bar:constants",
     "//ios/chrome/browser/ui/location_bar:location_bar",
+    "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/material_components",
+    "//ios/chrome/browser/ui/ntp",
+    "//ios/chrome/browser/ui/omnibox:eg_app_support+eg2",
     "//ios/chrome/browser/ui/omnibox:omnibox_internal",
-    "//ios/chrome/browser/ui/payments:payments_ui",
+    "//ios/chrome/browser/ui/omnibox/keyboard_assist",
+    "//ios/chrome/browser/ui/passwords:eg_app_support+eg2",
     "//ios/chrome/browser/ui/popup_menu:constants",
     "//ios/chrome/browser/ui/qr_scanner:eg_app_support+eg2",
     "//ios/chrome/browser/ui/reading_list:eg_app_support+eg2",
+    "//ios/chrome/browser/ui/recent_tabs:eg_app_support+eg2",
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",
     "//ios/chrome/browser/ui/safe_mode",
     "//ios/chrome/browser/ui/safe_mode:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings:constants",
     "//ios/chrome/browser/ui/settings:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings:settings",
+    "//ios/chrome/browser/ui/settings:settings_root",
     "//ios/chrome/browser/ui/settings:settings_root_constants",
     "//ios/chrome/browser/ui/settings/autofill",
     "//ios/chrome/browser/ui/settings/autofill:constants",
-    "//ios/chrome/browser/ui/settings/autofill:feature_flags",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
-    "//ios/chrome/browser/ui/settings/credit_card_scanner",
-    "//ios/chrome/browser/ui/settings/google_services",
+    "//ios/chrome/browser/ui/settings/google_services:constants",
+    "//ios/chrome/browser/ui/settings/google_services:eg_app_support+eg2",
+    "//ios/chrome/browser/ui/settings/language:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings/password:eg_app_support+eg2",
     "//ios/chrome/browser/ui/settings/password:password_constants",
+    "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
     "//ios/chrome/browser/ui/settings/sync",
-    "//ios/chrome/browser/ui/tab_grid:tab_grid_ui_constants",
-    "//ios/chrome/browser/ui/tab_grid/grid:grid_ui_constants",
-    "//ios/chrome/browser/ui/table_view:feature_flags",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/table_view/cells",
     "//ios/chrome/browser/ui/toolbar:eg_app_support+eg2",
     "//ios/chrome/browser/ui/toolbar:toolbar_ui",
-    "//ios/chrome/browser/ui/toolbar/keyboard_assist",
     "//ios/chrome/browser/ui/toolbar/public",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/ui/util:eg_app_support+eg2",
+    "//ios/chrome/browser/unified_consent",
+    "//ios/chrome/browser/variations:eg_app_support+eg2",
+    "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:eg_app_support+eg2",
     "//ios/chrome/browser/web:tab_id_tab_helper",
+    "//ios/chrome/browser/web_state_list",
     "//ios/chrome/test/app:test_support",
+    "//ios/chrome/test/variations_smoke_test:eg_app_support+eg2",
+    "//ios/public/provider/chrome/browser/signin:fake_chrome_identity",
     "//ios/testing:block_swizzler",
+    "//ios/testing:hardware_keyboarr_support",
     "//ios/testing:nserror_support",
+    "//ios/testing:open_url_context",
     "//ios/testing:verify_custom_webkit",
     "//ios/testing/earl_grey:eg_app_support+eg2",
     "//ios/third_party/earl_grey2:app_framework+link",
@@ -441,14 +179,16 @@ source_set("eg_app_support+eg2") {
     "//ios/web/public/test:element_selector",
     "//ios/web/public/test:util",
     "//services/metrics/public/cpp:metrics_cpp",
+    "//third_party/metrics_proto",
     "//ui/base",
     "//ui/base:test_support",
   ]
-  libs = [ "IOKit.framework" ]
+  frameworks = [ "IOKit.framework" ]
+
+  all_dependent_configs = [ "//third_party/protobuf:protobuf_config" ]
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -461,30 +201,41 @@ source_set("eg_test_support+eg2") {
     "chrome_actions.h",
     "chrome_actions.mm",
     "chrome_actions_app_interface.h",
+    "chrome_actions_app_interface_stub.mm",
     "chrome_earl_grey.h",
     "chrome_earl_grey.mm",
     "chrome_earl_grey_app_interface.h",
+    "chrome_earl_grey_app_interface_stub.mm",
     "chrome_earl_grey_ui.h",
     "chrome_earl_grey_ui.mm",
-    "chrome_egtest_bundle_main.h",
-    "chrome_egtest_bundle_main.mm",
     "chrome_matchers.h",
     "chrome_matchers.mm",
     "chrome_matchers_app_interface.h",
+    "chrome_matchers_app_interface_stub.mm",
     "chrome_test_case.h",
     "chrome_test_case.mm",
     "chrome_test_case_app_interface.h",
+    "chrome_test_case_app_interface_stub.mm",
+    "chrome_xcui_actions.h",
+    "chrome_xcui_actions.mm",
     "earl_grey_scoped_block_swizzler.h",
     "earl_grey_scoped_block_swizzler.mm",
     "earl_grey_scoped_block_swizzler_app_interface.h",
+    "earl_grey_scoped_block_swizzler_app_interface_stub.mm",
     "scoped_block_popups_pref.h",
     "scoped_block_popups_pref.mm",
+    "web_http_server_chrome_test_case.h",
+    "web_http_server_chrome_test_case.mm",
+  ]
+
+  public_deps = [
+    ":chrome_egtest_bundle_main+eg2",
+    "//components/content_settings/core/common",
   ]
 
   deps = [
     "//base",
     "//base/test:test_support",
-    "//components/content_settings/core/common:common",
     "//components/strings",
     "//components/sync/base",
     "//ios/chrome/app/strings",
@@ -492,9 +243,11 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui_constants",
     "//ios/chrome/browser/ui/safe_mode:eg_test_support+eg2",
     "//ios/chrome/browser/ui/settings/password:eg_test_support+eg2",
-    "//ios/chrome/browser/ui/tab_grid:tab_grid_ui_constants",
-    "//ios/chrome/browser/ui/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
+    "//ios/chrome/browser/ui/table_view:constants",
     "//ios/chrome/browser/ui/toolbar:eg_test_support+eg2",
+    "//ios/chrome/test:eg_test_support+eg2",
     "//ios/testing:http_server_bundle_data",
     "//ios/testing:nserror_support",
     "//ios/testing/earl_grey:eg_test_support+eg2",
@@ -503,7 +256,38 @@ source_set("eg_test_support+eg2") {
     "//ios/web/public/test:element_selector",
     "//ios/web/public/test/http_server",
     "//net:test_support",
+    "//third_party/metrics_proto",
     "//ui/base",
     "//url",
+  ]
+
+  all_dependent_configs = [ "//third_party/protobuf:protobuf_config" ]
+}
+
+source_set("chrome_egtest_bundle_main+eg2") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+
+  sources = [
+    "chrome_egtest_bundle_main.h",
+    "chrome_egtest_bundle_main.mm",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//ui/base",
+  ]
+}
+
+source_set("switches") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "test_switches.h",
+    "test_switches.mm",
   ]
 }

@@ -6,10 +6,9 @@
 
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/lap_timer.h"
+#include "cc/animation/animation.h"
 #include "cc/animation/animation_id_provider.h"
 #include "cc/animation/animation_timeline.h"
-#include "cc/animation/keyframe_effect.h"
-#include "cc/animation/single_keyframe_effect_animation.h"
 #include "cc/test/fake_impl_task_runner_provider.h"
 #include "cc/test/fake_layer_tree_host.h"
 #include "cc/test/fake_layer_tree_host_client.h"
@@ -70,14 +69,13 @@ class AnimationHostPerfTest : public testing::Test {
       root_layer_->AddChild(layer);
       layer->SetElementId(LayerIdToElementIdForTesting(layer->id()));
 
-      scoped_refptr<SingleKeyframeEffectAnimation> animation =
-          SingleKeyframeEffectAnimation::Create(last_animation_id_);
+      scoped_refptr<Animation> animation =
+          Animation::Create(last_animation_id_);
       last_animation_id_ = AnimationIdProvider::NextAnimationId();
 
       all_animations_timeline_->AttachAnimation(animation);
       animation->AttachElement(layer->element_id());
-      EXPECT_TRUE(
-          animation->element_animations(animation->keyframe_effect()->id()));
+      EXPECT_TRUE(animation->element_animations());
     }
 
     // Create impl animations.

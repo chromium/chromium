@@ -20,12 +20,10 @@ class AccountId;
 namespace cryptohome {
 
 enum AuthKeyPrivileges {
-  PRIV_MOUNT = 1 << 0,              // Can mount with this key.
   PRIV_ADD = 1 << 1,                // Can add new keys.
   PRIV_REMOVE = 1 << 2,             // Can remove other keys.
   PRIV_MIGRATE = 1 << 3,            // Destroy all keys and replace with new.
-  PRIV_AUTHORIZED_UPDATE = 1 << 4,  // Key can be updated in place.
-  PRIV_DEFAULT = PRIV_MOUNT | PRIV_ADD | PRIV_REMOVE | PRIV_MIGRATE
+  PRIV_DEFAULT = PRIV_ADD | PRIV_REMOVE | PRIV_MIGRATE
 };
 
 // Identification of the user calling cryptohome method.
@@ -80,42 +78,14 @@ struct COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) KeyDefinition {
     // challenged is stored in |challenge_response_keys|, while |secret| should
     // be empty.
     TYPE_CHALLENGE_RESPONSE = 1,
-  };
-
-  struct AuthorizationData {
-    enum Type {
-      TYPE_HMACSHA256 = 0,
-      TYPE_AES256CBC_HMACSHA256
-    };
-
-    struct Secret {
-      Secret();
-      Secret(bool encrypt,
-             bool sign,
-             const std::string& symmetric_key,
-             const std::string& public_key,
-             bool wrapped);
-
-      bool operator==(const Secret& other) const;
-
-      bool encrypt;
-      bool sign;
-      std::string symmetric_key;
-      std::string public_key;
-      bool wrapped;
-    };
-
-    AuthorizationData();
-    AuthorizationData(bool encrypt,
-                      bool sign,
-                      const std::string& symmetric_key);
-    AuthorizationData(const AuthorizationData& other);
-    ~AuthorizationData();
-
-    bool operator==(const AuthorizationData& other) const;
-
-    Type type;
-    std::vector<Secret> secrets;
+    // Fingerprint-based key. It doesn't carry secrets but indicates that
+    // cryptohome needs to query fingerprint scan results from biod and
+    // compare with the identity passed along with the key.
+    TYPE_FINGERPRINT = 2,
+    // Public mount is used by Kiosk sessions. This type of key does not have
+    // any secret, instead crypotohomed would generate a key based on user
+    // identity.
+    TYPE_PUBLIC_MOUNT = 3,
   };
 
   // This struct holds metadata that will be stored alongside the key. Each
@@ -174,7 +144,6 @@ struct COMPONENT_EXPORT(CHROMEOS_CRYPTOHOME) KeyDefinition {
   std::string secret;
   std::vector<chromeos::ChallengeResponseKey> challenge_response_keys;
 
-  std::vector<AuthorizationData> authorization_data;
   std::vector<ProviderData> provider_data;
 };
 

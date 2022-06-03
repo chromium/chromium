@@ -9,6 +9,8 @@
 
 #include "base/component_export.h"
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "base/observer_list_types.h"
 #include "google_apis/gaia/gaia_auth_consumer.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/net_errors.h"
@@ -31,7 +33,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthFailure {
     UNLOCK_FAILED = 6,
     NETWORK_AUTH_FAILED = 7,     // Could not authenticate against Google
     OWNER_REQUIRED = 8,          // Only the device owner can log-in.
-    WHITELIST_CHECK_FAILED = 9,  // Login attempt blocked by whitelist. This
+    ALLOWLIST_CHECK_FAILED = 9,  // Login attempt blocked by allowlist. This
     // value is synthesized by the ExistingUserController and passed to the
     // login_status_consumer_ in tests only. It is never generated or seen by
     // any of the other authenticator classes.
@@ -40,6 +42,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthFailure {
     FAILED_TO_INITIALIZE_TOKEN = 12,  // Could not get OAuth2 Token,
     MISSING_CRYPTOHOME = 13,          // cryptohome missing from disk.
     AUTH_DISABLED = 14,               // Authentication disabled for user.
+    TPM_UPDATE_REQUIRED = 15,         // TPM firmware update is required.
+    UNRECOVERABLE_CRYPTOHOME = 16,    // cryptohome is corrupted.
     NUM_FAILURE_REASONS,              // This has to be the last item.
   };
 
@@ -86,8 +90,8 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthFailure {
         return "Google authentication failed.";
       case OWNER_REQUIRED:
         return "Login is restricted to the owner's account only.";
-      case WHITELIST_CHECK_FAILED:
-        return "Login attempt blocked by whitelist.";
+      case ALLOWLIST_CHECK_FAILED:
+        return "Login attempt blocked by allowlist.";
       case FAILED_TO_INITIALIZE_TOKEN:
         return "OAuth2 token fetch failed.";
       case MISSING_CRYPTOHOME:
@@ -96,6 +100,10 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthFailure {
         return "Auth disabled for user.";
       case TPM_ERROR:
         return "Critical TPM error encountered.";
+      case TPM_UPDATE_REQUIRED:
+        return "TPM firmware update required.";
+      case UNRECOVERABLE_CRYPTOHOME:
+        return "Cryptohome is corrupted.";
       default:
         NOTREACHED();
         return std::string();
@@ -124,9 +132,10 @@ enum SuccessReason {
 // An interface that defines the callbacks for objects that the
 // Authenticator class will call to report the success/failure of
 // authentication for Chromium OS.
-class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthStatusConsumer {
+class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthStatusConsumer
+    : public base::CheckedObserver {
  public:
-  virtual ~AuthStatusConsumer() {}
+  ~AuthStatusConsumer() override = default;
   // The current login attempt has ended in failure, with error |error|.
   virtual void OnAuthFailure(const AuthFailure& error) = 0;
 
@@ -135,12 +144,19 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) AuthStatusConsumer {
   // The current guest login attempt has succeeded.
   virtual void OnOffTheRecordAuthSuccess() {}
   // The same password didn't work both online and offline.
-  virtual void OnPasswordChangeDetected();
+  virtual void OnPasswordChangeDetected(const UserContext& user_context);
   // The cryptohome is encrypted in old format and needs migration.
   virtual void OnOldEncryptionDetected(const UserContext& user_context,
                                        bool has_incomplete_migration);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::AuthFailure;
+using ::chromeos::AuthStatusConsumer;
+}  // namespace ash
 
 #endif  // CHROMEOS_LOGIN_AUTH_AUTH_STATUS_CONSUMER_H_

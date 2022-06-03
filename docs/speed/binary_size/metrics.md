@@ -14,7 +14,7 @@ This document lists metrics used to track binary size.
 
 ### Alerting
 
- * Alerts are sheriffed as part of the main perf sherif rotation.
+ * Alerts are sheriffed as part of the main perf sheriff rotation.
  * Alerts generally fire for ~100kb jumps.
 
 ## Metrics for Android
@@ -31,16 +31,24 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
 
 ### Normalized APK Size
 
- * [Telemetry Graph](https://chromeperf.appspot.com/report?sid=d6542096534166992e063320f8e1b7128e10ed53091e865eef3b5295644e60ce)
+ * [Telemetry Graph](https://chromeperf.appspot.com/report?sid=e55e2189727a5bc410196e8cb7492879f9a224dc1383c6cdf9409edc0a8a1050)
  * Monitored by [Binary Size Sheriffs](../apk_size_regressions.md).
    * Alerts fire for changes of 16kb or more.
  * Computed as:
    * The size of an APK
    * With all native code as the sum of section sizes (except .bss), uncompressed.
+     * Why: Removes effects of ELF section alignment.
    * With all dex code as if it were stored uncompressed.
+     * Why: Best practice is to store dex uncompressed on Android P and above.
+     * On prior versions, or when stored compressed, dex is extracted upon installation.
+   * With all zipalign padding removed.
+     * Why: Removes effects of file alignment (esp. relevant because native libraries are 4k-aligned).
+   * With size of apk signature block removed.
+     * Why: Size fluctuates by several KB based on how hash values turn out.
    * With all translations as if they were not missing (estimates size of missing translations based on size of english strings).
-     * Without translation-normalization, translation dumps cause jumps.
+     * Why: Without translation-normalization, translation dumps cause jumps.
      * Translation-normalization applies only to apks (not to Android App Bundles).
+ * For Android App Bundles, the normalized size is the sum of the normalized size of all splits that have onDemand="false" (those installed by default).
 
 ### Native Code Size Metrics
 
@@ -75,15 +83,19 @@ For Googlers, more information available at [go/chrome-apk-size](https://goto.go
  * Deflated apk size:
    * [Telemetry Graph](https://chromeperf.appspot.com/report?sid=c7dcbe09dee57f6dab19f9307acd97a044a150710357ad25bf217ce004b3b4bb)
    * Only relevant for non-patch updates of Chrome (new installs, or manual app updates)
- * Patch Size:
-   * Uses [https://github.com/googlesamples/apk-patch-size-estimator](https://github.com/googlesamples/apk-patch-size-estimator)
-   * No longer runs:
-     * Is too slow to be running on the Perf Builder
-     * Was found to be fairly unactionable
-     * Can be run manually: `build/android/resource_sizes.py --estimate-patch-size out/Release/apks/ChromePublic.apk`
+ * Patch Size (no longer available):
+   * Is too slow to be running on the Perf Builder
+   * Was found to be fairly unactionable
+   * Used to use [https://github.com/googlesamples/apk-patch-size-estimator](https://github.com/googlesamples/apk-patch-size-estimator)
+   * Functionality now exists in `//third_party/android_sdk/public/cmdline-tools/latest/bin/apkanalyzer download-size`
 
 ### Uncompressed Metrics
 
  * [Telemetry Graph](https://chromeperf.appspot.com/report?sid=33f59871f4e9fa3d155be3c13a068d35e6e621bcc98d9b7b103e0c8485e21097)
  * Uncompressed size of classes.dex, locale .pak files, etc
  * Reported only for things that are compressed within the .apk
+
+## Metrics for LaCrOS
+
+ * Sizes are collected by
+   [//build/lacros/lacros_resource_sizes.py](https://cs.chromium.org/chromium/src/build/lacros/lacros_resource_sizes.py).

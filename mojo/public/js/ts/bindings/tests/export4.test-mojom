@@ -1,0 +1,13 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module mojo.tstest.exported;
+
+import "mojo/public/js/ts/bindings/tests/export3.test-mojom";
+
+const uint8 kAlsoThree = mojo.tstest.exported.kThree;
+
+struct ExportedStructFour {
+  ExportedStructThree value;
+};

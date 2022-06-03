@@ -4,6 +4,8 @@
 
 #include "components/renderer_context_menu/views/toolkit_delegate_views.h"
 
+#include <memory>
+
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -28,11 +30,11 @@ void ToolkitDelegateViews::RunMenuAt(views::Widget* parent,
 }
 
 void ToolkitDelegateViews::Init(ui::SimpleMenuModel* menu_model) {
-  menu_adapter_.reset(new views::MenuModelAdapter(menu_model));
+  menu_adapter_ = std::make_unique<views::MenuModelAdapter>(menu_model);
   menu_view_ = menu_adapter_->CreateMenu();
-  menu_runner_.reset(new views::MenuRunner(
+  menu_runner_ = std::make_unique<views::MenuRunner>(
       menu_view_,
-      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU));
+      views::MenuRunner::HAS_MNEMONICS | views::MenuRunner::CONTEXT_MENU);
 }
 
 void ToolkitDelegateViews::Cancel() {

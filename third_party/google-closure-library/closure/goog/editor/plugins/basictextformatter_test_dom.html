@@ -1,0 +1,75 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<!-- This has to be created here so it is loaded when we need it -->
+<iframe id="iframe"></iframe>
+
+<div id="html">
+  <ul id="outerUL" type="1">
+    <li>foo</li>
+    <ul id="innerUL">
+      <li>foo</li>
+      <li>bar</li>
+      <li>baz</li>
+    </ul>
+    <li>bar</li>
+    <li>baz</li>
+  </ul>
+  ...
+  <ul id="outerUL2">
+    <li>foo</li>
+    <ul>
+      <li>foo</li>
+      <li>bar</li>
+      <li>baz</li>
+    </ul>
+    <ul>
+      <li>foo</li>
+      <li>bar</li>
+      <li>baz</li>
+    </ul>
+    <li>bar</li>
+    <li>baz</li>
+  </ul>
+
+  <ol id="ol">
+    <li>foo</li>
+    <li>bar</li>
+    <li>baz</li>
+  </ol>
+
+  <div>
+    <ol id="switchListType">
+      <li>switch</li>
+      <li>list</li>
+      <li>type</li>
+    </ol>
+  </div>
+
+  <p>before <span id="toQuote">Foo. Bar, baz.</span> after</p>
+  <p>before <div id="toQuote2">Foo.<p/>Bar,<p/>baz.</div> after</p>
+
+  <div id="divQuote"><div>lorem</div><div>ipsum</div><div>dolor</div></div>
+
+  <p id="geckolist"><font face="courier">test</font></p>
+
+  <table>
+    <tr> <th> head1</th>
+      <th id= "outerTh"><span id="emptyTh">head2</span></th> </tr>
+    <tr> <td> one </td> <td>two </td> </tr>
+    <tr>
+      <td> three</td>
+      <td id="outerTd"> <span id="emptyTd"><strong>four</strong></span></td>
+    </tr>
+    <tr id="outerTr"> <td><span id="emptyTr"> five </span></td></tr>
+  </table>
+
+  <div id="linkwrapper">Foo<span id="link">Pre<a href="http://www.google.com">Outside Span<span style="font-size:15pt">Inside Span</span></a></span></div>
+</div>
+
+<div id="root"></div>
+
+<div id="real-field"></div>

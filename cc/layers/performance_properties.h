@@ -5,7 +5,7 @@
 #ifndef CC_LAYERS_PERFORMANCE_PROPERTIES_H_
 #define CC_LAYERS_PERFORMANCE_PROPERTIES_H_
 
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 

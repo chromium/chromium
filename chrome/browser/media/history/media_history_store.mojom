@@ -1,0 +1,87 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media_history.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "services/media_session/public/mojom/media_session.mojom";
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+
+struct MediaHistoryStats {
+  // The row count of the different tables. The key is the table name and the
+  // value is the row count.
+  map<string, int32> table_row_counts;
+};
+
+struct MediaHistoryOriginRow {
+  url.mojom.Origin origin;
+
+  // The total audio+video watchtime for the origin. The cached value is cached
+  // on the origin row for speed and the actual is calculated by adding up
+  // the playback rows.
+  mojo_base.mojom.TimeDelta cached_audio_video_watchtime;
+  mojo_base.mojom.TimeDelta actual_audio_video_watchtime;
+
+  // The last updated time of the row in JS time.
+  double last_updated_time;
+};
+
+// A playback is recorded for each individual player on a page. Child frame
+// playbacks are recorded but we use the top frame url.
+struct MediaHistoryPlaybackRow {
+  // The top frame URL of the page that had the playback.
+  url.mojom.Url url;
+
+  // Whether the playback had audio/video tracks.
+  bool has_audio;
+  bool has_video;
+
+  // The watchtime for the playback.
+  mojo_base.mojom.TimeDelta watchtime;
+
+  // The last updated time of the row in JS time.
+  double last_updated_time;
+};
+
+// There is a single playback session for each web contents that plays videos
+// with audio tracks. It is not recorded for audio-only and video-only sessions.
+// It shares a 1:1 relationship with the media session of the page.
+struct MediaHistoryPlaybackSessionRow {
+  // The id of the session.
+  int64 id;
+
+  // The top frame URL of the page that had the playback session.
+  url.mojom.Url url;
+
+  // The duration and position of the playback session.
+  mojo_base.mojom.TimeDelta duration;
+  mojo_base.mojom.TimeDelta position;
+
+  // The metadata associated with the media session.
+  media_session.mojom.MediaMetadata metadata;
+
+  // The artwork associated with the media session.
+  array<media_session.mojom.MediaImage> artwork;
+
+  // The last updated time of the row in JS time.
+  double last_updated_time;
+};
+
+// MediaHistoryStore allows the Media History WebUI to access data from the
+// Media History database for diagnostic purposes.
+interface MediaHistoryStore {
+  // Gets stats about the Media History database.
+  GetMediaHistoryStats() => (MediaHistoryStats stats);
+
+  // Returns the origin rows from the origins table.
+  GetMediaHistoryOriginRows() => (array<MediaHistoryOriginRow> rows);
+
+  // Returns the playback from the playbacks table.
+  GetMediaHistoryPlaybackRows() => (array<MediaHistoryPlaybackRow> rows);
+
+  // Returns the playback sessions from the sessions table.
+  GetMediaHistoryPlaybackSessionRows() =>
+    (array<MediaHistoryPlaybackSessionRow> rows);
+};

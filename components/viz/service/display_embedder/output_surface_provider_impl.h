@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -47,14 +46,26 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
       bool headless);
   // Software compositing only.
   explicit OutputSurfaceProviderImpl(bool headless);
+
+  OutputSurfaceProviderImpl(const OutputSurfaceProviderImpl&) = delete;
+  OutputSurfaceProviderImpl& operator=(const OutputSurfaceProviderImpl&) =
+      delete;
+
   ~OutputSurfaceProviderImpl() override;
+
+  std::unique_ptr<DisplayCompositorMemoryAndTaskController> CreateGpuDependency(
+      bool gpu_compositing,
+      gpu::SurfaceHandle surface_handle,
+      const RendererSettings& renderer_settings) override;
 
   // OutputSurfaceProvider implementation.
   std::unique_ptr<OutputSurface> CreateOutputSurface(
       gpu::SurfaceHandle surface_handle,
       bool gpu_compositing,
       mojom::DisplayClient* display_client,
-      const RendererSettings& renderer_settings) override;
+      DisplayCompositorMemoryAndTaskController* gpu_dependency,
+      const RendererSettings& renderer_settings,
+      const DebugRendererSettings* debug_settings) override;
 
  private:
   std::unique_ptr<SoftwareOutputDevice> CreateSoftwareOutputDeviceForPlatform(
@@ -80,8 +91,6 @@ class VIZ_SERVICE_EXPORT OutputSurfaceProviderImpl
   std::unique_ptr<gpu::SyncPointManager> sync_point_manager_;
 
   const bool headless_;
-
-  DISALLOW_COPY_AND_ASSIGN(OutputSurfaceProviderImpl);
 };
 
 }  // namespace viz

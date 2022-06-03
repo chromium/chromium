@@ -13,8 +13,7 @@
 // A container object for any navigation information that is only available
 // during pre-commit delegate callbacks, and thus must be held until the
 // navigation commits and the information can be used.
-@interface CRWPendingNavigationInfo : NSObject {
-}
+@interface CRWPendingNavigationInfo : NSObject
 // The referrer for the page.
 @property(nonatomic, copy) NSString* referrer;
 // The MIME type for the page.
@@ -26,13 +25,17 @@
 // HTTP headers.
 @property(nonatomic, assign) scoped_refptr<net::HttpResponseHeaders>
     HTTPHeaders;
-// Whether the pending navigation has been directly cancelled before the
-// navigation is committed.
-// Cancelled navigations should be simply discarded without handling any
-// specific error.
+// Whether the pending navigation has been cancelled by an embedder before the
+// navigation is committed.  Cancelled navigations without a cancellation error
+// should simply be discarded.
 @property(nonatomic, assign) BOOL cancelled;
+// The error to display if the pending navigation was cancelled by an embedder
+// using PolicyDecision::CancelAndDisplayError().
+@property(nonatomic, copy) NSError* cancellationError;
 // Whether the navigation was initiated by a user gesture.
 @property(nonatomic, assign) BOOL hasUserGesture;
+// Whether the navigation had a server redirect.
+@property(nonatomic, assign) BOOL unsafeRedirect;
 
 @end
 

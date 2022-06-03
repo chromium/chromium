@@ -43,7 +43,8 @@
       assert_equals(viewport().scale, 2);
 
       // Apply browser zoom.
-      eventSender.setPageZoomFactor(browserZoomFactor);
+      if (window.testRunner)
+        testRunner.setPageZoomFactor(browserZoomFactor);
 
       requestAnimationFrame(function() {
         t.step(function() {
@@ -59,5 +60,5 @@
         });
       });
     });
-  }, 'Verify viewport dimensions under bowser zoom.');
+  }, 'Verify viewport dimensions under browser zoom.');
 </script>

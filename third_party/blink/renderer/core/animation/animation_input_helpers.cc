@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/animation/animation_input_helpers.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser.h"
@@ -79,7 +79,7 @@ CSSPropertyID AnimationInputHelpers::KeyframeAttributeToCSSProperty(
       builder.Append('-');
     builder.Append(property[i]);
   }
-  return cssPropertyID(builder.ToString());
+  return CssPropertyID(document.GetExecutionContext(), builder.ToString());
 }
 
 CSSPropertyID AnimationInputHelpers::KeyframeAttributeToPresentationAttribute(
@@ -91,9 +91,9 @@ CSSPropertyID AnimationInputHelpers::KeyframeAttributeToPresentationAttribute(
 
   String unprefixed_property = RemoveSVGPrefix(property);
   if (SVGElement::IsAnimatableCSSProperty(QualifiedName(
-          g_null_atom, AtomicString(unprefixed_property), g_null_atom)))
-    return cssPropertyID(unprefixed_property);
-
+          g_null_atom, AtomicString(unprefixed_property), g_null_atom))) {
+    return CssPropertyID(element->GetExecutionContext(), unprefixed_property);
+  }
   return CSSPropertyID::kInvalid;
 }
 
@@ -248,8 +248,9 @@ scoped_refptr<TimingFunction> AnimationInputHelpers::ParseTimingFunction(
   // Fallback to an insecure parsing mode if we weren't provided with a
   // document.
   SecureContextMode secure_context_mode =
-      document ? document->GetSecureContextMode()
-               : SecureContextMode::kInsecureContext;
+      document && document->GetExecutionContext()
+          ? document->GetExecutionContext()->GetSecureContextMode()
+          : SecureContextMode::kInsecureContext;
   const CSSValue* value = CSSParser::ParseSingleValue(
       CSSPropertyID::kTransitionTimingFunction, string,
       StrictCSSParserContext(secure_context_mode));

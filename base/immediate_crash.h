@@ -55,13 +55,13 @@
 // to continue after SIGTRAP.
 #define TRAP_SEQUENCE1_() asm volatile("int3")
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 // Intentionally empty: __builtin_unreachable() is always part of the sequence
 // (see IMMEDIATE_CRASH below) and already emits a ud2 on Mac.
 #define TRAP_SEQUENCE2_() asm volatile("")
 #else
 #define TRAP_SEQUENCE2_() asm volatile("ud2")
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
 
 #elif defined(ARCH_CPU_ARMEL)
 

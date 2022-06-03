@@ -1,4 +1,4 @@
-description("Tests that the following classes are not manipulable by JavaScript (NoInterfaceObject).");
+description("Tests that the following classes are not manipulable by JavaScript (LegacyNoInterfaceObject).");
 
 function shouldThrowReferenceError(expr)
 {

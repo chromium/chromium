@@ -28,7 +28,7 @@ test(() => {
     selection => {
       const document = selection.document;
       const host = document.getElementById('host');
-      const shadowRoot1 = host.createShadowRoot();
+      const shadowRoot1 = host.attachShadow({mode: 'open'});
       shadowRoot1.innerHTML = '<div id="target">abc</div>';
       const target = shadowRoot1.getElementById('target');
 
@@ -56,10 +56,10 @@ test(() => {
     selection => {
       const document = selection.document;
       const host = document.getElementById('host');
-      const shadowRoot1 = host.createShadowRoot();
+      const shadowRoot1 = host.attachShadow({mode: 'open'});
       shadowRoot1.innerHTML = '<div id="host2"></div>';
       const host2 = shadowRoot1.getElementById('host2');
-      const shadowRoot2 = host2.createShadowRoot();
+      const shadowRoot2 = host2.attachShadow({mode: 'open'});
       shadowRoot2.innerHTML = '<div id="target">abc</div>';
       const target = shadowRoot2.getElementById('target');
 

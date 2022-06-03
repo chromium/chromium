@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="color-scheme" content="light dark">
+<style>
+  meter.tall { width: 30px; height: 40px; }
+  ul, h2, p { margin: 0.2em; }
+  h2 { font-size: medium; }
+  li { margin: 0.2em; list-style-type: none; }
+  meter.barstyled::-webkit-meter-bar { background: gray; border-style: solid; border-width: 2px; border-color: black; }
+  meter.optimumvalstyled::-webkit-meter-optimum-value { background: cadetblue; border-style: solid; border-width: 2px; border-color: blue; }
+  meter.suboptimumvalstyled::-webkit-meter-suboptimum-value { background: cadetblue; border-style: solid; border-width: 2px; border-color: blue; }
+  meter.evenlessgoodvalstyled::-webkit-meter-even-less-good-value { background: cadetblue; border-style: solid; border-width: 2px; border-color: blue; }
+  meter#bar-paddings::-webkit-meter-bar { padding: 2px; }
+</style>
+</head>
+<body>
+<h2>No style for reference</h2>
+<ul>
+  <li><meter min="0" max="100" low="30" high="60" optimum="100" value="80"></meter>
+  <meter min="0" max="100" low="30" high="60" optimum="100" value="45"></meter>
+  <meter min="0" max="100" low="30" high="60" optimum="100" value="25"></meter></li>
+  <li><meter class="tall" min="0" max="100" low="30" high="60" optimum="100" value="75"></meter>
+  <meter class="tall" min="0" max="100" low="30" high="60" optimum="100" value="45"></meter>
+  <meter class="tall" min="0" max="100" low="30" high="60" optimum="100" value="25"></meter></li>
+</ul>
+<h2>Providing meter styles</h2>
+<ul>
+  <li>Check that border is created: <meter style="border-color: #000000; border-style: solid; border-width: 5px;" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter></li>
+  <li>Check that padding is created: <meter style="border-color: #000000; padding: 5px;" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter></li>
+  <li>Check that margin is created: <meter style="border-color: #000000; margin: 5px;" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter></li>
+  <li>Check that box shadow is drawn: <meter style="box-shadow: 4px 4px 10px rgba(255,0,0,0.5), inset 4px 4px 4px rgba(0,255,0,0.5);"></meter></li>
+  <li>Check that background CSS property disables -webkit-appearance: <meter style="background: blue; color: white;" min="0" max="100" low="30" high="60" optimum="100" value="80"></meter></li>
+</ul>
+<h2>Providing bar and/or value styles</h2>
+<ul>
+  <li>Check that optimum value is being styled: <meter class="optimumvalstyled" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter></li>
+  <li>Check that suboptimum value is being styled: <meter class="suboptimumvalstyled" min="0" max="100" low="30" high="60" optimum="100" value="45" ></meter></li>
+  <li>Check that even less good value is being styled: <meter class="evenlessgoodvalstyled" min="0" max="100" low="30" high="60" optimum="100" value="25" ></meter></li>
+  <li>Check that meter bar is being styled: <meter class="barstyled" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter></li>
+  <li>Check that meter bar and optimum value is being styled: <meter class="barstyled optimumvalstyled" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter></li>
+  <li>Check that meter bar and optimum value is being styled: <meter class="barstyled suboptimumvalstyled" min="0" max="100" low="30" high="60" optimum="100" value="45" ></meter></li>
+  <li>Check that meter bar and optimum value is being styled: <meter class="barstyled evenlessgoodvalstyled" min="0" max="100" low="30" high="60" optimum="100" value="25" ></meter></li>
+</ul>
+<h2>Providing appearance none</h2>
+<ul>
+  <li>Check that the meter disappears but the meters content is still present: <meter style="-webkit-appearance: none" min="0" max="100" low="30" high="60" optimum="100" value="80" >80</meter></li> 
+  <li>Check that the meter still disappears when meter is initially rendered with "meter" appearance: <meter id="appearanceNoneLater" min="0" max="100" low="30" high="60" optimum="100" value="80" >80%</meter></li>
+</ul>
+<h2>Providing bar paddings</h2>
+<ul>
+  <li>Check that meter bar gets padding: <meter id="bar-paddings" min="0" max="100" low="30" high="60" optimum="100" value="80" ></meter></li>
+</ul>
+<script>
+var noneLater = document.getElementById('appearanceNoneLater');
+noneLater.offsetLeft; // Force layout.
+noneLater.setAttribute('style', '-webkit-appearance:none');
+noneLater.offsetLeft; // Force layout.
+</script>
+</body>
+</html>

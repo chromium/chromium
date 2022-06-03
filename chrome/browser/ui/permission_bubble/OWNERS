@@ -1,7 +1,4 @@
 # Please use for OWNERS code reviews
+file://components/permissions/PERMISSIONS_OWNERS
 benwells@chromium.org
 estark@chromium.org
-felt@chromium.org
-raymes@chromium.org
-
-# COMPONENT: UI>Browser>Permissions>Prompts

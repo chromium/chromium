@@ -5,16 +5,9 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_DATABASE_FACTORY_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_DATABASE_FACTORY_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "components/sync/model/model_type_store.h"
 
 class Profile;
-
-namespace syncer {
-class ModelTypeStoreService;
-}  // namespace syncer
 
 namespace web_app {
 
@@ -27,17 +20,15 @@ class AbstractWebAppDatabaseFactory {
 class WebAppDatabaseFactory : public AbstractWebAppDatabaseFactory {
  public:
   explicit WebAppDatabaseFactory(Profile* profile);
+  WebAppDatabaseFactory(const WebAppDatabaseFactory&) = delete;
+  WebAppDatabaseFactory& operator=(const WebAppDatabaseFactory&) = delete;
   ~WebAppDatabaseFactory() override;
 
   // AbstractWebAppDatabaseFactory implementation.
   syncer::OnceModelTypeStoreFactory GetStoreFactory() override;
 
  private:
-  // TODO(loyso): Consider using shared ModelTypeStoreService from profile.
-  // crbug.com/902214.
-  std::unique_ptr<syncer::ModelTypeStoreService> model_type_store_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebAppDatabaseFactory);
+  Profile* const profile_;
 };
 
 }  // namespace web_app

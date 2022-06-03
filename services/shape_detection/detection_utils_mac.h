@@ -6,12 +6,14 @@
 #define SERVICES_SHAPE_DETECTION_DETECTION_UTILS_MAC_H_
 
 #import <CoreImage/CoreImage.h>
+#import <Foundation/Foundation.h>
+#import <Vision/Vision.h>
+#include <os/availability.h>
+
 #include <memory>
 
 #include "base/callback.h"
-#include "base/mac/availability.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "base/macros.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -34,6 +36,9 @@ class API_AVAILABLE(macos(10.13)) VisionAPIAsyncRequestMac {
   using Callback =
       base::RepeatingCallback<void(VNRequest* request, NSError* error)>;
 
+  VisionAPIAsyncRequestMac(const VisionAPIAsyncRequestMac&) = delete;
+  VisionAPIAsyncRequestMac& operator=(const VisionAPIAsyncRequestMac&) = delete;
+
   ~VisionAPIAsyncRequestMac();
 
   // Creates an VisionAPIAsyncRequestMac instance which sets |callback| to be
@@ -41,22 +46,20 @@ class API_AVAILABLE(macos(10.13)) VisionAPIAsyncRequestMac {
   static std::unique_ptr<VisionAPIAsyncRequestMac> Create(
       Class request_class,
       Callback callback,
-      NSSet<NSString*>* symbology_hints = nullptr);
+      NSArray<VNBarcodeSymbology>* symbology_hints = nullptr);
 
   // Processes asynchronously an image analysis request and returns results with
   // |callback_| when the asynchronous request completes, the callers should
-  // only enqueue one request at a timer.
+  // only enqueue one request at a time.
   bool PerformRequest(const SkBitmap& bitmap);
 
  private:
   VisionAPIAsyncRequestMac(Callback callback,
                            Class request_class,
-                           NSSet<NSString*>* symbology_hints);
+                           NSArray<VNBarcodeSymbology>* symbology_hints);
 
   base::scoped_nsobject<VNRequest> request_;
   const Callback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(VisionAPIAsyncRequestMac);
 };
 
 }  // namespace shape_detection

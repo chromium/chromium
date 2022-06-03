@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_BASE_IME_WIN_IMM32_MANAGER_H
-#define UI_BASE_IME_WIN_IMM32_MANAGER_H
+#ifndef UI_BASE_IME_WIN_IMM32_MANAGER_H_
+#define UI_BASE_IME_WIN_IMM32_MANAGER_H_
 
 #include <windows.h>
 
@@ -12,8 +12,6 @@
 
 #include "base/component_export.h"
 #include "base/i18n/rtl.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "ui/base/ime/text_input_mode.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -77,6 +75,10 @@ struct CompositionText;
 class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
  public:
   IMM32Manager();
+
+  IMM32Manager(const IMM32Manager&) = delete;
+  IMM32Manager& operator=(const IMM32Manager&) = delete;
+
   virtual ~IMM32Manager();
 
   // Retrieves whether or not there is an ongoing composition.
@@ -149,7 +151,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
   //     the same parameter of a WM_IME_COMPOSITION message handler.
   //     This parameter is used for checking if the ongoing composition has
   //     its result string,
-  //   * result [out] (base::string16)
+  //   * result [out] (std::u16string)
   //     Represents the object contains the composition result.
   // Return values
   //   * true
@@ -159,7 +161,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
   // Remarks
   //   This function is designed for being called from WM_IME_COMPOSITION
   //   message handlers.
-  bool GetResult(HWND window_handle, LPARAM lparam, base::string16* result);
+  bool GetResult(HWND window_handle, LPARAM lparam, std::u16string* result);
 
   // Retrieves the current composition status of the ongoing composition.
   // Parameters
@@ -262,7 +264,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
   bool GetString(HIMC imm_context,
                  WPARAM lparam,
                  int type,
-                 base::string16* result);
+                 std::u16string* result);
 
  private:
   // Represents whether or not there is an ongoing composition in a browser
@@ -302,10 +304,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) IMM32Manager {
 
   // Indicates whether or not we want IME to render composition text.
   bool use_composition_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(IMM32Manager);
 };
 
 }  // namespace ui
 
-#endif  // UI_BASE_IME_WIN_IMM32_MANAGER_H
+#endif  // UI_BASE_IME_WIN_IMM32_MANAGER_H_

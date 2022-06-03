@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+</script>
+<link rel=preload href="resources/empty.html">
+<link rel=preload href="resources/empty.html" as="document">
+<link rel=preload href="../../../media/content/test.mp4" as="audio">
+<link rel=preload href="../../../media/content/test.wav" as="video">
+<!--This test verifies that specific warnings are shown when preload
+    resources use unsupported (but valid) destinations. -->

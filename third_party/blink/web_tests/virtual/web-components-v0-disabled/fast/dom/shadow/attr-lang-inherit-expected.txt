@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 55: Uncaught TypeError: host.createShadowRoot is not a function
-This is a testharness.js-based test.
-FAIL attr-lang-inherit Uncaught TypeError: host.createShadowRoot is not a function
-Harness: the test ran to completion.
-

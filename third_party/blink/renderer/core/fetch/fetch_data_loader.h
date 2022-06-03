@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_DATA_LOADER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_FETCH_DATA_LOADER_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -66,10 +66,14 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
     // This function is called when an abort has been signalled.
     virtual void Abort() = 0;
 
-    void Trace(blink::Visitor* visitor) override {}
+    void Trace(Visitor* visitor) const override {}
   };
 
-  static FetchDataLoader* CreateLoaderAsBlobHandle(const String& mime_type);
+  // The task runner is used to post tasks necessary for creating a blob
+  // from certain kinds of consumers.
+  static FetchDataLoader* CreateLoaderAsBlobHandle(
+      const String& mime_type,
+      scoped_refptr<base::SingleThreadTaskRunner>);
   static FetchDataLoader* CreateLoaderAsArrayBuffer();
   static FetchDataLoader* CreateLoaderAsFailure();
   static FetchDataLoader* CreateLoaderAsFormData(
@@ -91,7 +95,7 @@ class CORE_EXPORT FetchDataLoader : public GarbageCollected<FetchDataLoader> {
 
   virtual void Cancel() = 0;
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 }  // namespace blink

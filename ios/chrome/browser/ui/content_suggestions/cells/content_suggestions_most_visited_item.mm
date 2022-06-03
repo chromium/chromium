@@ -4,12 +4,11 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_item.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_gesture_commands.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
-#import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestion_identifier.h"
-#import "ios/chrome/common/favicon/favicon_attributes.h"
-#import "ios/chrome/common/favicon/favicon_view.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
@@ -71,11 +70,12 @@
             target:self
           selector:@selector(removeMostVisited)];
 
-  NSArray* customActions =
-      [NSArray arrayWithObjects:openInNewTab, openInNewIncognitoTab,
-                                removeMostVisited, nil];
-
-  return customActions;
+  if (self.incognitoAvailable) {
+    return [NSArray arrayWithObjects:openInNewTab, openInNewIncognitoTab,
+                                     removeMostVisited, nil];
+  } else {
+    return [NSArray arrayWithObjects:openInNewTab, removeMostVisited, nil];
+  }
 }
 
 // Target for custom action.

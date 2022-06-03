@@ -3,315 +3,174 @@
 <translationbundle lang="sq">
 <translation id="1002108253973310084">U zbulua një version i papërputhshëm i protokollit. Sigurohu që të kesh instaluar versionin më të fundit të softuerit në të dy kompjuterët dhe provo përsëri.</translation>
 <translation id="1008557486741366299">Jo tani</translation>
-<translation id="1050693411695664090">E dobët</translation>
-<translation id="1152528166145813711">Zgjidh…</translation>
-<translation id="1199593201721843963">Çaktivizo lidhjet në largësi</translation>
-<translation id="1201402288615127009">Tjetra</translation>
-<translation id="1291443878853470558">Duhet të aktivizosh lidhjet në largësi nëse dëshiron të përdorësh Chromoting për qasjen te ky kompjuter.</translation>
+<translation id="1201402288615127009">Para</translation>
 <translation id="1297009705180977556">Gabim gjatë lidhjes me <ph name="HOSTNAME" /></translation>
-<translation id="1324095856329524885">(ky funksion nuk ofrohet ende për kompjuterin tënd)</translation>
-<translation id="1342297293546459414">Shiko dhe kontrollo një kompjuter të ndarë.</translation>
-<translation id="1389790901665088353">Shkarko instaluesin e strehuesit të desktopit në distancë të Chrome</translation>
 <translation id="1450760146488584666">Objekti i kërkuar nuk ekziston.</translation>
 <translation id="1480046233931937785">Bashkëpunëtorët</translation>
 <translation id="1520828917794284345">Rivendos përmasën e desktopit për ta përshtatur</translation>
-<translation id="154040539590487450">Nisja e shërbimit të qasjes në distancë dështoi.</translation>
 <translation id="1546934824884762070">Ka ndodhur një gabim i papritur. Raportoje këtë problem te zhvilluesit.</translation>
-<translation id="1624185583382384493">"Desktopi në distancë i Chrome" tani ofrohet në ueb. Provo <ph name="LINK_BEGIN" />aplikacionin tonë për ueb<ph name="LINK_END" />—është i shpejtë dhe falas, me edhe më shumë funksione, duke përfshirë mbështetje të përmirësuar për disa monitorë.</translation>
-<translation id="1643640058022401035">Largimi nga kjo faqe do të mbyllë sesionin tënd të Chromoting.</translation>
-<translation id="1654128982815600832">Po aktivizon lidhjet në largësi për këtë kompjuter...</translation>
 <translation id="1697532407822776718">Je gati!</translation>
-<translation id="170207782578677537">Regjistrimi i këtij kompjuteri dështoi.</translation>
-<translation id="174018511426417793">Nuk ke kompjuterë të regjistruar. Për të aktivizuar lidhjet në distancë me kompjuterin, instalo "Desktopin në distancë" të Chrome aty dhe kliko “<ph name="BUTTON_NAME" />”.</translation>
 <translation id="1742469581923031760">Po lidhet…</translation>
-<translation id="1770394049404108959">Nuk mund ta hap aplikacionin.</translation>
+<translation id="177040763384871009">Për të lejuar hapjen e lidhjeve të klikuara në pajisjen e telekomandës në shfletuesin e klientit, duhet të ndryshosh shfletuesin e uebit të sistemit në "<ph name="URL_FORWARDER_NAME" />".</translation>
 <translation id="177096447311351977">IP-ja e kanalit për klientin: <ph name="CLIENT_GAIA_IDENTIFIER" /> adresa IP="<ph name="CLIENT_IP_ADDRESS_AND_PORT" />" adresa IP e strehuesit="<ph name="HOST_IP_ADDRESS_AND_PORT" />" kanali="<ph name="CHANNEL_TYPE" />" lidhja="<ph name="CONNECTION_TYPE" />".</translation>
-<translation id="1779766957982586368">Mbyll dritaren</translation>
-<translation id="1841799852846221389">Po çaktivizon lidhjet në largësi për këtë kompjuter...</translation>
 <translation id="1897488610212723051">Fshi</translation>
-<translation id="195619862187186579">Strukturat e tastierës</translation>
-<translation id="1996161829609978754">Chrome po shkarkon instaluesin e strehuesit Chromoting. Sapo të mbarojë shkarkimi, vendos në punë instaluesin para se të vazhdosh.</translation>
 <translation id="2009755455353575666">Lidhja dështoi</translation>
-<translation id="2013884659108657024">Chrome po shkarkon instaluesin e strehuesit të "Desktopit në distancë" të Chrome. Sapo të mbarojë shkarkimi, vendos në punë instaluesin para se të vazhdosh.</translation>
-<translation id="2013996867038862849">Të gjithë klientët e çiftuar janë fshirë.</translation>
 <translation id="2038229918502634450">Strehuesi po riniset, për të pasur parasysh një ndryshim të politikës.</translation>
-<translation id="2046651113449445291">Klientët e mëposhtëm janë çiftuar me këtë kompjuter dhe nuk mund të lidhen pa dhënë një kod PIN. Mund ta anulosh këtë leje në çdo kohë, si individualisht, ashtu edhe për të gjithë klientët.</translation>
 <translation id="2078880767960296260">Procesi i strehuesit</translation>
 <translation id="20876857123010370">Modaliteti i bllokut të gjurmimit</translation>
-<translation id="2089514346391228378">Lidhjet në largësi për këtë kompjuter janë aktivizuar.</translation>
 <translation id="2198363917176605566">Për të përdorur <ph name="PRODUCT_NAME" />, duhet t'i japësh autorizim "Regjistrimit të ekranit" në mënyrë që përmbajtja e ekranit në këtë Mac të mund të dërgohet te makineria në distancë.
 
 Për të dhënë këtë autorizim, kliko "<ph name="BUTTON_NAME" />" më poshtë për të hapur panelin e preferencave të "Regjistrimit të ekranit" dhe më pas zgjidh kutinë pranë "<ph name="SERVICE_SCRIPT_NAME" />".
 
 Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgjedhjen e saj dhe më pas zgjidhe përsëri.</translation>
-<translation id="2208514473086078157">Cilësimet e politikës nuk e lejojnë ndarjen e këtij kompjuteri si një strehues të Desktopit në largësi të Chrome. Kontakto me administratorin e sistemit për ndihmë.</translation>
-<translation id="2220529011494928058">Raporto një problem</translation>
-<translation id="2221097377466213233">Përdor tastin Ctrl djathtas për tastin Win (⌘ në Mac)</translation>
-<translation id="2235518894410572517">Ndaje këtë kompjuter për t'u parë dhe kontrolluar nga një përdorues tjetër.</translation>
-<translation id="2246783206985865117">Ky cilësim menaxhohet nga politika e domenit tënd.</translation>
-<translation id="2256115617011615191">Rinise tani</translation>
 <translation id="225614027745146050">Mirë se erdhe</translation>
-<translation id="228809120910082333">Konfirmo llogarinë tënde dhe kodin PIN më poshtë për të lejuar qasjen nga Chromoting.</translation>
-<translation id="2314101195544969792">Sesioni yt i <ph name="APPLICATION_NAME" /> ka qenë joaktiv për pak kohë dhe do të shkëputet së shpejti.</translation>
-<translation id="2317666076142640974">Hidhi një vështrim të shpejtë <ph name="LINK_BEGIN" />aplikacionit të ri të uebit të "Desktopit në distancë të Chrome"<ph name="LINK_END" />. Do të dëshironim të dëgjonim komentet e tua.</translation>
 <translation id="2320166752086256636">Fshih tastierën</translation>
-<translation id="2353140552984634198">Mund të qasesh në mënyrë të sigurt në këtë kompjuter duke përdorur Chromoting.</translation>
+<translation id="2329392777730037872">Hapja e <ph name="URL" /> në pajisjen e klientit dështoi.</translation>
+<translation id="2333212046079545895">Të drejtat e autorit 2021 Google LLC. Të gjitha të drejtat të rezervuara.</translation>
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2366718077645204424">Strehuesi nuk mund të arrihet. Kjo ndodh ndoshta për shkak të konfigurimit të rrjetit që po përdor.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Parë për herë të fundit në linjë <ph name="RELATIVE_TIMESTAMP" />.</translation>
-<translation id="2405928220797050937">Ky aplikacion nuk mbështetet më. Për të siguruar që po merr funksionet më të fundit dhe përditësimet e sigurisë, përdor <ph name="LINK_BEGIN" />aplikacionin e uebit të "Desktopit në distancë të Chrome"<ph name="LINK_END" />.</translation>
-<translation id="2499160551253595098">Na ndihmo të përmirësojmë "Desktopin në distancë" të Chrome duke na lejuar të mbledhim statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
 <translation id="2504109125669302160">Jepi autorizim "Qasshmërisë" te <ph name="PRODUCT_NAME" /></translation>
 <translation id="2509394361235492552">U lidh me <ph name="HOSTNAME" /></translation>
-<translation id="2512228156274966424">SHËNIM. Për të siguruar që të gjitha shkurtoret e tastierës janë të të mundshme, mund të konfigurosh "Desktopin në distancë" të Chrome te "Hape si dritare".</translation>
 <translation id="2540992418118313681">Dëshiron ta ndash këtë kompjuter për t'u parë dhe kontrolluar nga një përdorues tjetër?</translation>
 <translation id="2579271889603567289">Pritësi u ndërpre aksidentalisht ose nisja e tij dështoi.</translation>
 <translation id="2599300881200251572">Ky shërbim bën të mundur lidhjet hyrëse nga klientët e "Desktopit në distancë" të Chrome.</translation>
 <translation id="2647232381348739934">Shërbimi i Chromoting</translation>
 <translation id="2676780859508944670">Po punon…</translation>
 <translation id="2699970397166997657">Chromoting</translation>
-<translation id="2747641796667576127">Përditësimet e softuerit zakonisht ndodhin automatikisht, por në disa raste të rralla mund të dështojnë. Përditësimi i softuerit nuk duhet të zgjasë më shumë se disa minuta dhe mund të kryhet në distancë ndërsa është i lidhur me kompjuterin tënd.</translation>
 <translation id="2758123043070977469">Ndodhi një gabim gjatë vërtetimit. Identifikohu sërish.</translation>
 <translation id="2803375539583399270">Fut kodin PIN</translation>
-<translation id="2841013758207633010">Koha</translation>
-<translation id="2851754573186462851">Transmetimi i aplikacionit të Chromium</translation>
-<translation id="2888969873284818612">Ndodhi një gabim me rrjetin. Do ta rinisim aplikacionin kur pajisja jote të jetë përsëri në linjë.</translation>
-<translation id="2891243864890517178">Për Mac (OS X Yosemite 10.10 e lart)</translation>
-<translation id="2894654864775534701">Ky kompjuter aktualisht ndahet me një llogari tjetër.</translation>
 <translation id="2919669478609886916">Aktualisht po e ndan këtë kompjuter me një përdorues tjetër. Dëshiron që të vazhdosh me ndarjen?</translation>
-<translation id="2921543551052660690">Mund të jesh identifikuar më parë si <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />). Për t'u qasur te kompjuterët e tu në atë llogari, <ph name="LINK_BEGIN" />identifikohu te Chromium<ph name="LINK_END" /> me atë llogari dhe instalo përsëri Chromoting.</translation>
-<translation id="2926340305933667314">Çaktivizimi i qasjes në largësi në këtë kompjuter dështoi. Provo përsëri më vonë.</translation>
-<translation id="2930135165929238380">Mungojnë disa përbërës të kërkuar. Shko te chrome://plugins dhe sigurohu që "Klienti origjinal" të jetë i aktivizuar.</translation>
 <translation id="2939145106548231838">Vërteto për të strehuar</translation>
-<translation id="3020807351229499221">Dështoi të përditësonte kodin PIN. Provo sërish më vonë.</translation>
-<translation id="3025388528294795783">Për të na ndihmuar të zgjidhim problemin tënd, na trego se çfarë gabimi ndodhi:</translation>
 <translation id="3027681561976217984">Modaliteti "me prekje"</translation>
 <translation id="3106379468611574572">Kompjuteri në largësi nuk po i përgjigjet kërkesave për lidhje. Verifiko që është në linjë dhe provo përsëri.</translation>
-<translation id="310979712355504754">Fshiji të gjitha</translation>
 <translation id="3150823315463303127">Strehuesi nuk arriti ta lexonte politikën.</translation>
 <translation id="3171922709365450819">Pajisja nuk mbështetet nga ky klient pasi kërkohet vërtetimi nga një palë e tretë.</translation>
 <translation id="3197730452537982411">Desktopi në distancë</translation>
 <translation id="324272851072175193">Dërgo me email këto udhëzime</translation>
-<translation id="3258789396564295715">Mund të hysh në mënyrë të sigurt në këtë kompjuter duke përdorur "Desktopin në distancë të Chrome".</translation>
-<translation id="3286521253923406898">Kontrolluesi i strehuesit të Chromoting</translation>
 <translation id="3305934114213025800"><ph name="PRODUCT_NAME" /> dëshiron të bëjë ndryshime.</translation>
-<translation id="332624996707057614">Redakto emrin e kompjuterit</translation>
 <translation id="3339299787263251426">Qasu në kompjuterin tënd në mënyrë të sigurt nga interneti</translation>
-<translation id="3360306038446926262">Dritaret</translation>
-<translation id="3362124771485993931">Shkruaj përsëri kodin PIN</translation>
-<translation id="337167041784729019">Shfaq statistikat</translation>
 <translation id="3385242214819933234">Zotërues i pavlefshëm strehimi.</translation>
-<translation id="3403830762023901068">Cilësimet e politikës nuk e lejojnë ndarjen e këtij kompjuteri si një strehues të Chromoting. Kontakto me administratorin e sistemit për ndihmë.</translation>
 <translation id="3423542133075182604">Procesi në largësi i çelësit të sigurisë</translation>
 <translation id="3581045510967524389">Nuk mund të lidhej me rrjetin. Kontrollo që pajisja jote të jetë në linjë.</translation>
 <translation id="3596628256176442606">Ky shërbim bën të mundur lidhjet hyrëse nga klientët e Chromoting.</translation>
-<translation id="3606997049964069799">Nuk je i identifikuar në Chromium. Identifikohu dhe provo sërish.</translation>
-<translation id="3649256019230929621">Minimizo dritaren</translation>
 <translation id="369442766917958684">Jashtë linje.</translation>
 <translation id="3695446226812920698">Mëso se si</translation>
-<translation id="3718805989288361841">Ka një gabim në cilësimet e politikës për "Desktopin në distancë" të Chrome. Kontakto me administratorin e sistemit për ndihmë.</translation>
 <translation id="3776024066357219166">Sesioni yt i "Desktopit në distancë të Chrome" ka përfunduar.</translation>
-<translation id="3870154837782082782">Google Inc.</translation>
-<translation id="3884839335308961732">Konfirmo llogarinë tënde dhe kodin PIN më poshtë për të lejuar qasjen në "Desktopin në distancë" të Chrome.</translation>
+<translation id="3858860766373142691">Emri</translation>
 <translation id="3897092660631435901">Menyja</translation>
 <translation id="3905196214175737742">Domen i pavlefshëm i zotëruesit të strehimit.</translation>
-<translation id="3908017899227008678">Zvogëloje për ta përshtatur</translation>
 <translation id="3931191050278863510">Strehuesi ndaloi.</translation>
-<translation id="3933246213702324812">Chromoting në <ph name="HOSTNAME" /> është i vjetruar dhe ka nevojë të përditësohet.</translation>
 <translation id="3950820424414687140">Identifikohu</translation>
-<translation id="3989511127559254552">Për të vazhduar, së pari duhet të japësh leje të zgjeruara qasjeje në kompjuterin tënd. Këtë duhet ta bësh vetëm një herë.</translation>
-<translation id="4006787130661126000">Duhet të aktivizosh lidhjet në largësi nëse dëshiron të përdorësh "Desktopin në distancë" të Chrome për qasjen te ky kompjuter.</translation>
 <translation id="405887016757208221">Kompjuteri në largësi nuk arriti të niste sesionin. Nëse problemi përsëritet, provo ta konfigurosh përsëri strehuesin.</translation>
 <translation id="4060747889721220580">Shkarko skedarin</translation>
-<translation id="4068946408131579958">Të gjitha lidhjet</translation>
-<translation id="409800995205263688">SHËNIM. Cilësimet e politikës lejojnë lidhje vetëm mes kompjuterëve brenda rrjetit tënd.</translation>
 <translation id="4126409073460786861">Pasi të përfundojë konfigurimi, rifreskoje këtë faqe dhe do të kesh qasje në kompjuter duke zgjedhur pajisjen tënde dhe duke futur kodin PIN</translation>
 <translation id="4145029455188493639">Identifikuar si <ph name="EMAIL_ADDRESS" />.</translation>
 <translation id="4155497795971509630">Mungojnë disa përbërës të kërkuar. Sigurohu që të kesh instaluar versionin më të fundit të softuerit dhe provo sërish.</translation>
-<translation id="4156740505453712750">Për të mbrojtur qasjen në këtë kompjuter, zgjidh një kod PIN prej <ph name="BOLD_START" />të paktën gjashtë shifrash<ph name="BOLD_END" />. Ky kod PIN do të kërkohet kur të lidhesh nga një tjetër vendndodhje.</translation>
-<translation id="4169432154993690151">Për të zgjedhur një fotografi profili, lejo që "Desktopi në distancë i Chrome" të ketë qasje te kamera jote</translation>
 <translation id="4176825807642096119">Kodi i qasjes</translation>
-<translation id="4207623512727273241">Vër në punë instaluesin para se të vazhdosh.</translation>
 <translation id="4227991223508142681">Mjeti i sigurimit të strehuesit</translation>
 <translation id="4240294130679914010">Çinstaluesi i strehuesit të Chromoting</translation>
-<translation id="4277463233460010382">Ky kompjuter është konfiguruar që të lejojë një ose më shumë klientë të lidhen pa futur një kod PIN.</translation>
+<translation id="4257751272692708833">Përcjellësi i URL së <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Kodi i qasjes është i pavlefshëm. Provo sërish.</translation>
 <translation id="4281844954008187215">Kushtet e shërbimit</translation>
-<translation id="4361728918881830843">Për të aktivizuar lidhjet në distancë me një kompjuter tjetër, instalo "Desktopin në distancë të Chrome" aty dhe kliko “<ph name="BUTTON_NAME" />”.</translation>
-<translation id="4394049700291259645">Çaktivizo</translation>
 <translation id="4405930547258349619">Biblioteka kryesore</translation>
-<translation id="4430435636878359009">Çaktivizo lidhjet në distancë me këtë kompjuter</translation>
-<translation id="4430915108080446161">Po krijon kodin e qasjes…</translation>
 <translation id="443560535555262820">Hap preferencat e "Qasshmërisë"</translation>
 <translation id="4450893287417543264">Mos e shfaq përsëri</translation>
-<translation id="4472575034687746823">Fillo</translation>
-<translation id="4481276415609939789">Nuk ke kompjuterë të regjistruar. Për të aktivizuar lidhjet në distancë me një kompjuter, instalo Chromoting aty dhe kliko “<ph name="BUTTON_NAME" />”.</translation>
+<translation id="4512952200932940229">Të drejtat e autorit 2021 të "Autorëve të Chromium". Të gjitha të drejtat të rezervuara.</translation>
 <translation id="4513946894732546136">Komente</translation>
-<translation id="4517233780764084060">SHËNIM. Për të siguruar që të gjitha shkurtoret e tastierës janë të disponueshme, mund të konfigurosh Chromoting te "Hape si dritare".</translation>
 <translation id="4563926062592110512">Klienti u shkëput: <ph name="CLIENT_USERNAME" />.</translation>
-<translation id="4572065712096155137">Qasja</translation>
-<translation id="4592037108270173918">Mund të zbatohen tarifa për të dhënat kur lidhesh me një pajisje përmes një rrjeti celular. Dëshiron të vazhdosh?</translation>
-<translation id="4619978527973181021">Prano dhe instalo</translation>
+<translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> nuk është konfiguruar saktë. Zgjidh një shfletues tjetër të parazgjedhur dhe aktivizo përsëri përcjelljen e URL-ve.</translation>
 <translation id="4635770493235256822">Pajisjet në distancë</translation>
 <translation id="4660011489602794167">Shfaq tastierën</translation>
-<translation id="4703302905453407178">Një përbërës i detyrueshëm ka ndaluar së funksionuari. Raportoje këtë problem te zhvilluesit.</translation>
 <translation id="4703799847237267011">Seanca jote e Chromoting ka përfunduar.</translation>
-<translation id="4736223761657662401">Historiku i lidhjeve</translation>
 <translation id="4741792197137897469">Vërtetimi dështoi. Identifikohu përsëri në Chrome.</translation>
-<translation id="477305884757156764">Aplikacioni është shumë i ngadaltë.</translation>
 <translation id="4784508858340177375">Serveri X u ndërpre aksidentalisht ose nisja e tij dështoi.</translation>
-<translation id="4795786176190567663">Nuk ke leje të kryesh këtë veprim.</translation>
 <translation id="4798680868612952294">Opsionet e miut</translation>
 <translation id="4804818685124855865">Shkëputu</translation>
 <translation id="4808503597364150972">Fut kodin PIN për <ph name="HOSTNAME" />.</translation>
 <translation id="4812684235631257312">Strehuesi</translation>
 <translation id="4867841927763172006">Dërgo PrtScn</translation>
-<translation id="4913529628896049296">po pret për lidhjen…</translation>
-<translation id="4918086044614829423">Prano</translation>
-<translation id="492843737083352574">Kam probleme me tastierën ose me miun.</translation>
-<translation id="4973800994433240357">Duke shkarkuar instaluesin e strehuesit të "Chromoting", pajtohesh  me <ph name="LINK_BEGIN" />Kushtet e shërbimit<ph name="LINK_END" /> të Google.</translation>
 <translation id="4974476491460646149">Lidhja u mbyll për <ph name="HOSTNAME" /></translation>
 <translation id="4985296110227979402">Në fillim duhet të konfigurosh kompjuterin për qasjen në largësi</translation>
+<translation id="4987330545941822761">"Desktopi në distancë i Chrome" nuk mund të përcaktojë shfletuesin për hapjen e URL-ve në nivel lokal. Zgjidhe atë nga lista më poshtë.</translation>
 <translation id="5064360042339518108"><ph name="HOSTNAME" /> (jashtë linje)</translation>
-<translation id="5070121137485264635">Strehuesi në distancë kërkon që të vërtetosh një faqe të palëve të treta. Për të vazhduar, duhet t'i japësh leje shtesë "Desktopit në distancë" të Chrome për t'u qasur në këtë adresë:</translation>
 <translation id="507204348399810022">A je i sigurt se dëshiron t'i çaktivizosh lidhjet me <ph name="HOSTNAME" />?</translation>
-<translation id="5081343395220691640">Dështoi të komunikojë me serverin: <ph name="ERROR" /></translation>
-<translation id="5156271271724754543">Fut të njëjtin kod PIN në të dyja kutitë.</translation>
 <translation id="5170982930780719864">ID e pavlefshme strehuesi.</translation>
-<translation id="518094545883702183">Ky informacion përdoret vetëm për diagnostikimin e problemit që po raporton. Ai ofrohet vetëm nëse dikush e heton raportin tënd, ndërkohë që ruhet për jo më shumë se 30 ditë.</translation>
 <translation id="5204575267916639804">Pyetjet më të shpeshta</translation>
 <translation id="5222676887888702881">Dil</translation>
-<translation id="5234764350956374838">Hiq dorë</translation>
-<translation id="5254120496627797685">Largimi nga kjo faqe do të mbyllë sesionin tënd "Desktopit në distancë" të Chrome.</translation>
+<translation id="5234764350956374838">Hiq</translation>
 <translation id="5308380583665731573">Lidh</translation>
-<translation id="5327248766486351172">Emri</translation>
 <translation id="533625276787323658">Nuk ka asnjë për t'u lidhur</translation>
-<translation id="5363265567587775042">Pyet përdoruesin se në kompjuterin e kujt dëshiron që ai të hyjë për të klikuar "<ph name="SHARE" />" dhe për të të ofruar ty kodin e qasjes.</translation>
-<translation id="5379087427956679853">"Desktopi në distancë" i Chrome të lejon të ndash në mënyrë të sigurt kompjuterin tënd në ueb. Të dy përdoruesit duhet të kenë në punë aplikacionin "Desktopi në distancë" të Chrome, i cili mund të gjendet në <ph name="URL" />.</translation>
 <translation id="5397086374758643919">Çinstaluesi i strehuesit të desktopit në distancë të Chrome</translation>
-<translation id="5419185025274123272">Nuk mund ta rivendoste aplikacionin. Gjithsesi mund të dërgosh një raport për defekt në kod.</translation>
 <translation id="5419418238395129586">Për herë të fundit në linjë: <ph name="DATE" /></translation>
 <translation id="544077782045763683">Strehuesi ka ndërprerë punën</translation>
-<translation id="5510035215749041527">Shkëputu tani</translation>
-<translation id="5593560073513909978">Shërbimi nuk ofrohet përkohësisht. Provo përsëri më vonë.</translation>
 <translation id="5601503069213153581">Kodi PIN</translation>
-<translation id="5619148062500147964">Në këtë kompjuter</translation>
-<translation id="5625493749705183369">Qasu në kompjuterët e tjerë ose lejo një përdorues tjetër të hyjë në mënyrë të sigurt në kompjuterin tënd nga interneti.</translation>
-<translation id="5702987232842159181">U lidh:</translation>
+<translation id="5690427481109656848">Google LLC</translation>
 <translation id="5708869785009007625">Desktopi yt është ndarë aktualisht me <ph name="USER" />.</translation>
 <translation id="5750083143895808682">Identifikuar si <ph name="EMAIL_ADDRESS" />.</translation>
-<translation id="5773590752998175013">Data e çiftimit</translation>
 <translation id="579702532610384533">Rilidhe</translation>
 <translation id="5810269635982033450">Ekrani vepron si bllok me prekje</translation>
+<translation id="5823554426827907568"><ph name="CLIENT_USERNAME" /> ka kërkuar qasje për të parë ekranin tënd dhe për të kontrolluar tastierën dhe miun tënd. Shtyp "<ph name="IDS_SHARE_CONFIRM_DIALOG_DECLINE" />" nëse nuk e prisje këtë kërkesë. Përndryshe zgjidh "<ph name="IDS_SHARE_CONFIRM_DIALOG_CONFIRM" />" për të lejuar lidhjen kur të jesh gati.</translation>
 <translation id="5823658491130719298">Në kompjuterin ku dëshiron të kesh qasje në distancë, hap Chrome dhe vizito <ph name="INSTALLATION_LINK" /></translation>
 <translation id="5841343754884244200">Opsionet e paraqitjes</translation>
-<translation id="5843054235973879827">Pse është kjo e sigurt?</translation>
-<translation id="5859141382851488196">Dritare e re...</translation>
-<translation id="6011539954251327702">Chromoting të lejon të ndash në mënyrë të sigurt kompjuterin tënd në ueb. Të dy përdoruesit duhet të kenë në punë aplikacionin Chromoting, i cili mund të gjendet në <ph name="URL" />.</translation>
 <translation id="6033507038939587647">Opsionet e tastierës</translation>
 <translation id="6040143037577758943">Mbyll</translation>
 <translation id="6062854958530969723">Fillimi i strehuesit dështoi.</translation>
-<translation id="6091564239975589852">Dërgo tastet</translation>
 <translation id="6099500228377758828">Shërbimi i "Desktopit në distancë të Chrome"</translation>
 <translation id="6122191549521593678">Në linjë</translation>
-<translation id="6167788864044230298">Transmetimi i aplikacionit të Chrome</translation>
-<translation id="6173536234069435147">Nuk mund t'i hap skedarët e mi të "Diskut të Google".</translation>
 <translation id="6178645564515549384">Strehuesi origjinal i mesazheve për ndihmë në distancë</translation>
 <translation id="618120821413932081">Përditëso rezolucionin në largësi për përputhjen e dritares</translation>
-<translation id="6193698048504518729">Lidhu me <ph name="HOSTNAME" /></translation>
-<translation id="6198252989419008588">Ndrysho kodin PIN</translation>
-<translation id="6204583485351780592"><ph name="HOSTNAME" /> (i vjetruar)</translation>
-<translation id="6221358653751391898">Nuk je i identifikuar në Chrome. Identifikohu dhe provo sërish.</translation>
 <translation id="6223301979382383752">Hap preferencat e "Regjistrimit të ekranit"</translation>
-<translation id="6227369581881558336">"Desktopi në distancë i Chrome" tani ofrohet në ueb me funksione të reja duke përfshirë transferimin e skedarëve! Kontrollo <ph name="LINK_BEGIN" />aplikacionin tonë për ueb<ph name="LINK_END" />.</translation>
 <translation id="6284412385303060032">Strehuesi që ekzekutohet në ekranin logjik të panelit është mbyllur për të mbështetur modalitetin "perde" duke kaluar të një strehues që ekzekutohet në një sesion specifik përdoruesi.</translation>
-<translation id="629730747756840877">Llogaria</translation>
-<translation id="6304318647555713317">Klienti</translation>
-<translation id="6381670701864002291">Diçka tjetër.</translation>
-<translation id="6398765197997659313">Dil nga ekrani i plotë</translation>
-<translation id="6411861157501911556">Për të përdorur <ph name="PRODUCT_NAME" />, duhet t'i japësh autorizim "Qasshmërisë" në mënyrë që të dhënat nga makineria në distancë të mund të injektohen në këtë Mac.
-
-Për të dhënë këtë autorizim, kliko "<ph name="BUTTON_NAME" />" më poshtë për të hapur panelin e preferencave të "Qasshmërisë" dhe më pas zgjidh kutinë pranë "<ph name="SERVICE_SCRIPT_NAME" />".
-
-Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgjedhjen e saj dhe më pas zgjidhe përsëri.</translation>
-<translation id="6441316101718669559">Integrimi në desktop nuk mbështetet në këtë platformë. Mund të vazhdosh të përdorësh aplikacionin, por përvoja e përdoruesit do të jetë e përkeqësuar.</translation>
-<translation id="652218476070540101">Kodi PIN për këtë kompjuter po përditësohet…</translation>
-<translation id="6527303717912515753">Ndaj</translation>
-<translation id="6541219117979389420">Ditarët e aplikacionit mund të përfshijnë informacione private, përfshirë identitetin tënd (adresë mail-i) si dhe emrat dhe karakteristikat e skedarëve në "Diskun e Google".</translation>
 <translation id="6542902059648396432">Raporto një problem…</translation>
-<translation id="6550675742724504774">Opsionet</translation>
-<translation id="6570205395680337606">Rivendose aplikacionin. Do të humbasësh çdo punë të paruajtur.</translation>
 <translation id="6583902294974160967">Mbështetja</translation>
 <translation id="6612717000975622067">Dërgo Ctrl-Alt-Del</translation>
 <translation id="6654753848497929428">Ndaj</translation>
-<translation id="6668065415969892472">Kodi PIN është përditësuar.</translation>
-<translation id="6681800064886881394">Të drejtat e autorit 2013 të Google Inc. Të gjitha të drejtat janë të rezervuara.</translation>
-<translation id="6705482892455291412">Pasi të futin kodin, do të të kërkohet të pranosh lidhjen dhe të fillosh sesionin e ndarjes.</translation>
-<translation id="6746493157771801606">Pastro historikun</translation>
-<translation id="6748108480210050150">Nga</translation>
 <translation id="677755392401385740">Strehuesi u nis për përdoruesin: <ph name="HOST_USERNAME" />.</translation>
-<translation id="6865175692670882333">Shiko/redakto</translation>
-<translation id="6913710942997637770">Për të zgjedhur një fotografi profili, lejo që "Desktopi në distancë i Chrome" të ketë qasje te fotografitë e tua</translation>
-<translation id="6930242544192836755">Kohëzgjatja</translation>
+<translation id="6902524959760471898">Aplikacion ndihmës për të hapur një URL te klienti <ph name="PRODUCT_NAME" /></translation>
 <translation id="6939719207673461467">Shfaq/fshih tastierën.</translation>
-<translation id="6944854424004126054">Restauro dritaren</translation>
-<translation id="6948905685698011662">"Desktopi në distancë i Chrome" është në ueb tani! Shiko <ph name="LINK_BEGIN" />aplikacionin tonë falas të uebit<ph name="LINK_END" />.</translation>
 <translation id="6963936880795878952">Lidhjet me kompjuterin në largësi janë të bllokuara përkohësisht sepse dikush po përpiqej të lidhej me të nëpërmjet një kodi PIN të pavlefshëm. Provo përsëri më vonë.</translation>
 <translation id="6965382102122355670">Në rregull</translation>
 <translation id="6985691951107243942">Je i sigurt se dëshiron të çaktivizosh lidhjet në distancë me <ph name="HOSTNAME" />? Nëse ndryshon mendje, do të të duhet të shkosh te ai kompjuter dhe të riaktivizosh lidhjet.</translation>
-<translation id="6998989275928107238">Për</translation>
 <translation id="7019153418965365059">Gabim i panjohur i strehuesit: <ph name="HOST_OFFLINE_REASON" />.</translation>
 <translation id="701976023053394610">Ndihma në largësi</translation>
 <translation id="7026930240735156896">Ndiq udhëzimet për konfigurimin e kompjuterit për qasje në distancë</translation>
-<translation id="7038683108611689168">Na ndihmo të përmirësojmë Chromoting duke na lejuar të mbledhim statistika përdorimi dhe raporte të ndërprerjeve aksidentale.</translation>
 <translation id="7067321367069083429">Ekrani vepron si ekran me prekje</translation>
 <translation id="7116737094673640201">Mirë se vjen te "Desktopi në distancë i Chrome"</translation>
 <translation id="7144878232160441200">Provo sërish</translation>
-<translation id="7149517134817561223">Aplikacioni do të lëshojë komanda për strehuesin e "Desktopit në distancë" të Chrome.</translation>
-<translation id="7215059001581613786">Fut një kod PIN të përbërë nga gjashtë ose më shumë shifra.</translation>
 <translation id="7312846573060934304">Strehuesi është jashtë linje.</translation>
 <translation id="7319983568955948908">Ndalo ndarjen</translation>
+<translation id="7359298090707901886">Shfletuesi i zgjedhur nuk mund të përdoret për të hapur URL-të në pajisjen lokale.</translation>
 <translation id="7401733114166276557">"Desktopi në distancë" i Chrome</translation>
 <translation id="7434397035092923453">Qasja u refuzua për klientin: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7444276978508498879">Klienti i lidhur: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="7526139040829362392">Ndrysho llogarinë</translation>
-<translation id="7606912958770842224">Aktivizo lidhjet në distancë</translation>
+<translation id="7535110896613603182">Hap cilësimet e aplikacioneve të parazgjedhura</translation>
 <translation id="7628469622942688817">Kujtoje kodin tim PIN në këtë pajisje.</translation>
 <translation id="7649070708921625228">Ndihma</translation>
 <translation id="7658239707568436148">Anulo</translation>
 <translation id="7665369617277396874">Shto një llogari</translation>
-<translation id="7672203038394118626">Lidhjet në distancë për këtë kompjuter janë çaktivizuar.</translation>
 <translation id="7678209621226490279">Staciono majtas</translation>
 <translation id="7693372326588366043">Rifresko listën e strehuesve</translation>
 <translation id="7714222945760997814">Raportoje këtë</translation>
-<translation id="7782471917492991422">Kontrollo cilësimet e menaxhimit të energjisë së kompjuterit tënd dhe sigurohu që nuk është i konfiguruar për të kaluar në gjendje gjumi kur nuk është në punë.</translation>
-<translation id="7810127880729796595">Shfaq statistikat (lidhja: <ph name="QUALITY" />)</translation>
-<translation id="7836926030608666805">Mungojnë disa përbërës të kërkuar. Sigurohu që po ekzekuton versionin më të fundit të Chrome dhe provo përsëri.</translation>
 <translation id="7868137160098754906">Fut kodin PIN për kompjuterin në distancë.</translation>
-<translation id="7869445566579231750">Nuk ke leje ta ekzekutosh këtë aplikacion.</translation>
 <translation id="7895403300744144251">Politikat e sigurisë në kompjuterin në distancë nuk lejojnë lidhje nga llogaria jote.</translation>
 <translation id="7936528439960309876">Staciono djathtas</translation>
-<translation id="7948001860594368197">Opsionet e ekranit</translation>
 <translation id="7970576581263377361">Verifikimi dështoi. Identifikohu përsëri në Chromium.</translation>
 <translation id="7981525049612125370">Sesioni në largësi ka skaduar.</translation>
 <translation id="8038111231936746805">(parazgjedhje)</translation>
 <translation id="8041089156583427627">Dërgo komentet</translation>
-<translation id="8041721485428375115">Duke shkarkuar instaluesin e strehuesit të desktopit në distancë të Chrome, pajtohesh  me <ph name="LINK_BEGIN" />Kushtet e shërbimit<ph name="LINK_END" /> të Google.</translation>
 <translation id="8060029310790625334">Qendra e ndihmës</translation>
 <translation id="806699900641041263">Po lidhet me <ph name="HOSTNAME" /></translation>
 <translation id="8073845705237259513">Për të përdorur "Desktopin në distancë" të Chrome, duhet të shtosh një llogari të Google në pajisjen tënde.</translation>
-<translation id="80739703311984697">Strehuesi në distancë kërkon që të vërtetosh një faqe të palëve të treta. Për të vazhduar, duhet t'i japësh leje shtesë Chromoting për t'u qasur në këtë adresë:</translation>
 <translation id="809687642899217504">Kompjuterët e mi</translation>
-<translation id="811307782653349804">Hyr në kompjuterin tënd kudo që të ndodhesh.</translation>
 <translation id="8116630183974937060">Ndodhi një gabim me rrjetin. Kontrollo që pajisja jote është në linjë dhe provo përsëri.</translation>
-<translation id="8178433417677596899">Ndarja e ekranit "përdorues me përdorues", e përsosur për mbështetjen teknike në largësi.</translation>
-<translation id="8187079423890319756">Të drejtat e autorit 2013 të "Autorët e Chromium". Të gjitha të drejtat janë të rezervuara.</translation>
-<translation id="8196755618196986400">Për të na lejuar të kontaktojmë me ty për informacione të mëtejshme, adresa jote e mail-it do të përfshihet në çdo reagim që ti dorëzon.</translation>
-<translation id="8244400547700556338">Mëso se si.</translation>
-<translation id="8261506727792406068">Fshi</translation>
-<translation id="8355326866731426344">Ky kod qasjeje do të skadojë më <ph name="TIMEOUT" /></translation>
-<translation id="8355485110405946777">Përfshi regjistrat e aplikacionit për të na ndihmuar të zgjidhim problemin tënd (regjistrat mund të përfshijnë informacione private).</translation>
-<translation id="837021510621780684">Nga ky kompjuter</translation>
+<translation id="8295077433896346116">Për të përdorur <ph name="PRODUCT_NAME" />, duhet t'i japësh autorizim "Qasshmërisë" në mënyrë që të dhënat nga makineria në distancë të mund të injektohen në këtë Mac.
+
+Për të dhënë këtë autorizim, kliko "<ph name="BUTTON_NAME" />" më poshtë. Në panelin e preferencave të "Qasshmërisë" që hapet, zgjidh kutinë pranë "<ph name="SERVICE_SCRIPT_NAME" />".
+
+Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgjedhjen e saj dhe më pas zgjidhe përsëri.</translation>
+<translation id="8305209735512572429">Procesi i lidhjes në distancë me vërtetim nga uebi</translation>
 <translation id="8383794970363966105">Për të përdorur Chromoting, duhet të shtosh një llogari të Google në pajisjen tënde.</translation>
 <translation id="8386846956409881180">Strehuesi është konfiguruar me kredenciale të pavlefshme OAuth.</translation>
 <translation id="8397385476380433240">Jep lejen për <ph name="PRODUCT_NAME" /></translation>
@@ -321,32 +180,16 @@ Nëse "<ph name="SERVICE_SCRIPT_NAME" />" është e zgjedhur tashmë, anulo zgje
 <translation id="8509907436388546015">Procesi i integrimit të desktopit</translation>
 <translation id="8513093439376855948">Strehuesi origjinal i mesazheve për menaxhimin në largësi të strehuesit</translation>
 <translation id="8525306231823319788">Ekrani i plotë</translation>
-<translation id="8548209692293300397">Më parë je identifikuar si <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />). Për t'u qasur në kompjuterët e tu në atë llogari, <ph name="LINK_BEGIN" />identifikohu në Google Chrome<ph name="LINK_END" /> me atë llogari dhe instalo nga e para "Desktopin në distancë" të Chrome.</translation>
 <translation id="858006550102277544">Komenti</translation>
-<translation id="8642984861538780905">Mesatare</translation>
-<translation id="8712909229180978490">Nuk mund t'i shikoj skedarët e mi të ruajtur në linjë në "Diskun e Google".</translation>
 <translation id="8743328882720071828">Dëshiron të lejosh që <ph name="CLIENT_USERNAME" /> të shohë dhe kontrollojë kompjuterin tënd?</translation>
 <translation id="8747048596626351634">Seanca u ndërpre aksidentalisht ose nisja e saj dështoi. Nëse ~/.chrome-remote-desktop-session ekziston në kompjuterin në distancë, sigurohu që të nisë një proces të gjatë në plan të parë të tillë si mjedis desktopi ose menaxher dritaresh.</translation>
-<translation id="8759753423332885148">Mëso më shumë.</translation>
-<translation id="8791202241915690908">Shkarko instaluesin e strehuesit të "Chromoting"</translation>
 <translation id="8804164990146287819">Politika e privatësisë</translation>
-<translation id="894763922177556086">E mirë</translation>
-<translation id="895780780740011433">Për Windows 7 dhe versione më të larta</translation>
-<translation id="897805526397249209">Për të aktivizuar lidhjet në largësi me një kompjuter tjetër, instalo atje Chromoting dhe kliko "<ph name="BUTTON_NAME" />".</translation>
-<translation id="8998327464021325874">Kontrolluesi i pritësit të desktopit në distancë të Chrome</translation>
-<translation id="9016232822027372900">Lidhu gjithsesi</translation>
-<translation id="906458777597946297">Zmadho dritaren</translation>
+<translation id="8906511416443321782">Nevojitet qasja në mikrofon për të regjistruar audion dhe për ta transmetuar atë te klienti i "Desktopit në distancë të Chrome"</translation>
 <translation id="9111855907838866522">Je lidhur me pajisjen tënde në largësi. Për të hapur menynë, trokit tek ekrani me katër gishta.</translation>
 <translation id="9126115402994542723">Mos kërko më për kod PIN kur lidhesh me këtë strehues nga kjo pajisje.</translation>
-<translation id="9149580767411232853">Mbaje të dukshëm të gjithë desktopin në distancë</translation>
-<translation id="9149992051684092333">Për të filluar ndarjen e desktopit, jepi kodin e qasjes personit që do të të asistojë.</translation>
 <translation id="916856682307586697">Nis XSession të parazgjedhur</translation>
 <translation id="9187628920394877737">Jepi autorizim "Regjistrimit të ekranit" në <ph name="PRODUCT_NAME" /></translation>
-<translation id="9188433529406846933">Autorizo</translation>
 <translation id="9213184081240281106">Konfigurim i pavlefshëm i strehuesit.</translation>
-<translation id="951991426597076286">Refuzo</translation>
-<translation id="962733587145768554">Zgjidh "<ph name="SHARE" />" në kutinë e dialogut të lidhjes për të përfunduar procesin.</translation>
-<translation id="979100198331752041">"Desktopi në distancë" i Chrome në <ph name="HOSTNAME" /> është i vjetruar dhe ka nevojë të përditësohet.</translation>
 <translation id="981121421437150478">Jashtë linje</translation>
 <translation id="985602178874221306">Autorët e Chromium</translation>
 <translation id="992215271654996353"><ph name="HOSTNAME" /> (për herë të fundit në linjë <ph name="DATE_OR_TIME" />)</translation>

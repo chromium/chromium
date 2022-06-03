@@ -23,7 +23,7 @@ AtomicString Id(const HTMLOptionElement* option) {
 class OptionListTest : public testing::Test {
  protected:
   void SetUp() override {
-    auto* document = MakeGarbageCollected<HTMLDocument>();
+    auto* document = HTMLDocument::CreateForTest();
     auto* select = MakeGarbageCollected<HTMLSelectElement>(*document);
     document->AppendChild(select);
     select_ = select;
@@ -41,12 +41,12 @@ TEST_F(OptionListTest, Empty) {
 }
 
 TEST_F(OptionListTest, OptionOnly) {
-  Select().SetInnerHTMLFromString(
+  Select().setInnerHTML(
       "text<input><option id=o1></option><input><option "
       "id=o2></option><input>");
   auto* div = To<HTMLElement>(
       Select().GetDocument().CreateRawElement(html_names::kDivTag));
-  div->SetInnerHTMLFromString("<option id=o3></option>");
+  div->setInnerHTML("<option id=o3></option>");
   Select().AppendChild(div);
   OptionList list = Select().GetOptionList();
   OptionList::Iterator iter = list.begin();
@@ -59,7 +59,7 @@ TEST_F(OptionListTest, OptionOnly) {
 }
 
 TEST_F(OptionListTest, Optgroup) {
-  Select().SetInnerHTMLFromString(
+  Select().setInnerHTML(
       "<optgroup><option id=g11></option><option id=g12></option></optgroup>"
       "<optgroup><option id=g21></option></optgroup>"
       "<optgroup></optgroup>"
@@ -80,7 +80,7 @@ TEST_F(OptionListTest, Optgroup) {
   EXPECT_EQ(list.end(), iter);
 
   To<HTMLElement>(Select().firstChild())
-      ->SetInnerHTMLFromString(
+      ->setInnerHTML(
           "<optgroup><option id=gg11></option></optgroup>"
           "<option id=g11></option>");
   list = Select().GetOptionList();

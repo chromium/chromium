@@ -2,10 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {dispatchSimpleEvent} from 'chrome://resources/js/cr.m.js';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {FileType} from '../../common/js/file_type.js';
+import {util} from '../../common/js/util.js';
+import {AllowedPaths} from '../../common/js/volume_manager_types.js';
+import {FileOperationManager} from '../../externs/background/file_operation_manager.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {constants} from './constants.js';
+import {DirectoryModel} from './directory_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {ListContainer} from './ui/list_container.js';
+
 /**
  * The current selection object.
  */
-class FileSelection {
+export class FileSelection {
   /**
    * @param {!Array<number>} indexes
    * @param {!Array<Entry>} entries
@@ -131,7 +146,7 @@ class FileSelection {
 /**
  * This object encapsulates everything related to current selection.
  */
-class FileSelectionHandler extends cr.EventTarget {
+export class FileSelectionHandler extends EventTarget {
   /**
    * @param {!DirectoryModel} directoryModel
    * @param {!FileOperationManager} fileOperationManager
@@ -180,9 +195,11 @@ class FileSelectionHandler extends cr.EventTarget {
     this.selectionUpdateTimer_ = 0;
 
     /**
+     * The time, in ms since the epoch, when it is OK to post next throttled
+     * selection event. Can be directly compared with Date.now().
      * @private {number}
      */
-    this.lastFileSelectionTime_ = Date.now();
+    this.nextThrottledEventTime_ = 0;
 
     /**
      * @private {AllowedPaths}
@@ -220,25 +237,22 @@ class FileSelectionHandler extends cr.EventTarget {
     let updateDelay = FileSelectionHandler.UPDATE_DELAY;
     const now = Date.now();
 
-    if (now > (this.lastFileSelectionTime_ || 0) + updateDelay &&
+    if (now >= this.nextThrottledEventTime_ &&
         indexes.length <
             FileSelectionHandler.NUMBER_OF_ITEMS_HEAVY_TO_COMPUTE) {
       // The previous selection change happened a while ago and there is few
-      // selected items, so computation is lightweight. Update the UI without
-      // delay.
-      updateDelay = 0;
+      // selected items, so computation is lightweight. Update the UI with
+      // 1 millisecond of delay.
+      updateDelay = 1;
     }
-    this.lastFileSelectionTime_ = now;
 
     const selection = this.selection;
     this.selectionUpdateTimer_ = setTimeout(() => {
       this.selectionUpdateTimer_ = null;
-      if (this.selection === selection) {
-        this.updateFileSelectionAsync_(selection);
-      }
+      this.updateFileSelectionAsync_(selection);
     }, updateDelay);
 
-    cr.dispatchSimpleEvent(this, FileSelectionHandler.EventType.CHANGE);
+    dispatchSimpleEvent(this, FileSelectionHandler.EventType.CHANGE);
   }
 
   /**
@@ -258,7 +272,9 @@ class FileSelectionHandler extends cr.EventTarget {
         return;
       }
 
-      cr.dispatchSimpleEvent(
+      this.nextThrottledEventTime_ =
+          Date.now() + FileSelectionHandler.UPDATE_DELAY;
+      dispatchSimpleEvent(
           this, FileSelectionHandler.EventType.CHANGE_THROTTLED);
     });
   }

@@ -8,7 +8,7 @@
 
 namespace blink {
 
-void ScrollStateCallbackV8Impl::Trace(blink::Visitor* visitor) {
+void ScrollStateCallbackV8Impl::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   ScrollStateCallback::Trace(visitor);
 }

@@ -4,6 +4,7 @@
 
 #include "components/download/internal/background_service/scheduler/device_status_listener.h"
 #include "base/bind.h"
+#include "build/build_config.h"
 
 namespace download {
 
@@ -24,11 +25,19 @@ NetworkStatus ToNetworkStatus(network::mojom::ConnectionType type) {
     case network::mojom::ConnectionType::CONNECTION_2G:
     case network::mojom::ConnectionType::CONNECTION_3G:
     case network::mojom::ConnectionType::CONNECTION_4G:
+    case network::mojom::ConnectionType::CONNECTION_5G:
+      // TODO(crbug.com/1127134): 5G networks may be unmetered. Find a way to
+      // detect this and make DeviceStatusListener aware of it.
       return NetworkStatus::METERED;
-    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
     case network::mojom::ConnectionType::CONNECTION_NONE:
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return NetworkStatus::DISCONNECTED;
+    case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
+#if defined(OS_ANDROID)
+      return NetworkStatus::DISCONNECTED;
+#else
+      return NetworkStatus::UNMETERED;
+#endif
   }
   NOTREACHED();
   return NetworkStatus::DISCONNECTED;
@@ -95,9 +104,6 @@ void DeviceStatusListener::StartAfterDelay() {
   pending_network_status_ = status_.network_status;
 
   listening_ = true;
-  is_valid_state_ = true;
-
-  NotifyStatusChange();
 }
 
 void DeviceStatusListener::Stop() {
@@ -115,6 +121,13 @@ void DeviceStatusListener::Stop() {
   status_ = DeviceStatus();
   listening_ = false;
   observer_ = nullptr;
+}
+
+void DeviceStatusListener::OnNetworkStatusReady(
+    network::mojom::ConnectionType type) {
+  status_.network_status = ToNetworkStatus(type);
+  is_valid_state_ = true;
+  NotifyStatusChange();
 }
 
 void DeviceStatusListener::OnNetworkChanged(

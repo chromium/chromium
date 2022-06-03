@@ -5,8 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_USER_ACTION_HANDLER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_SCHEDULER_PUBLIC_USER_ACTION_HANDLER_H_
 
-
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 namespace notifications {
@@ -17,13 +15,12 @@ class UserActionHandler {
   // Called when the user interacts with the notification.
   virtual void OnUserAction(const UserActionData& action_data) = 0;
 
+  UserActionHandler(const UserActionHandler&) = delete;
+  UserActionHandler& operator=(const UserActionHandler&) = delete;
   ~UserActionHandler() = default;
 
  protected:
   UserActionHandler() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UserActionHandler);
 };
 
 }  // namespace notifications

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
-#include "chrome/browser/chromeos/login/screens/recommend_apps_screen.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
@@ -19,7 +20,6 @@
 namespace {
 
 constexpr const char kUserActionSkip[] = "recommendAppsSkip";
-constexpr const char kUserActionRetry[] = "recommendAppsRetry";
 constexpr const char kUserActionInstall[] = "recommendAppsInstall";
 
 constexpr const int kMaxAppCount = 21;
@@ -89,17 +89,15 @@ void RecommendAppsScreenHandler::DeclareLocalizedValues(
                IDS_LOGIN_RECOMMEND_APPS_SCREEN_TITLE);
   builder->Add("recommendAppsScreenDescription",
                IDS_LOGIN_RECOMMEND_APPS_SCREEN_DESCRIPTION);
-  builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_SKIP);
-  builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_INSTALL);
-  builder->Add("recommendAppsRetry", IDS_LOGIN_RECOMMEND_APPS_RETRY);
+  builder->Add("recommendAppsSkip", IDS_LOGIN_RECOMMEND_APPS_DO_IT_LATER);
+  builder->Add("recommendAppsInstall", IDS_LOGIN_RECOMMEND_APPS_DONE);
   builder->Add("recommendAppsLoading", IDS_LOGIN_RECOMMEND_APPS_SCREEN_LOADING);
-  builder->Add("recommendAppsError", IDS_LOGIN_RECOMMEND_APPS_SCREEN_ERROR);
+  builder->Add("recommendAppsSelectAll", IDS_LOGIN_RECOMMEND_APPS_SELECT_ALL);
 }
 
 void RecommendAppsScreenHandler::RegisterMessages() {
   BaseScreenHandler::RegisterMessages();
   AddCallback(kUserActionSkip, &RecommendAppsScreenHandler::OnUserSkip);
-  AddCallback(kUserActionRetry, &RecommendAppsScreenHandler::HandleRetry);
   AddRawCallback(kUserActionInstall,
                  &RecommendAppsScreenHandler::HandleInstall);
 }
@@ -110,6 +108,10 @@ void RecommendAppsScreenHandler::Bind(RecommendAppsScreen* screen) {
 }
 
 void RecommendAppsScreenHandler::Show() {
+  if (!page_is_ready()) {
+    show_on_init_ = true;
+    return;
+  }
   ShowScreen(kScreenId);
 
   Profile* profile = ProfileManager::GetActiveUserProfile();
@@ -117,11 +119,6 @@ void RecommendAppsScreenHandler::Show() {
 }
 
 void RecommendAppsScreenHandler::Hide() {}
-
-void RecommendAppsScreenHandler::OnLoadError() {
-  RecordUmaScreenState(RecommendAppsScreenState::ERROR);
-  CallJS("login.RecommendAppsScreen.showError");
-}
 
 void RecommendAppsScreenHandler::OnLoadSuccess(const base::Value& app_list) {
   recommended_app_count_ = static_cast<int>(app_list.GetList().size());
@@ -133,21 +130,20 @@ void RecommendAppsScreenHandler::OnParseResponseError() {
   HandleSkip();
 }
 
-void RecommendAppsScreenHandler::Initialize() {}
+void RecommendAppsScreenHandler::Initialize() {
+  if (show_on_init_) {
+    Show();
+    show_on_init_ = false;
+  }
+}
 
 void RecommendAppsScreenHandler::LoadAppListInUI(const base::Value& app_list) {
-  if (!page_is_ready()) {
-    RecordUmaScreenState(RecommendAppsScreenState::ERROR);
-    CallJS("login.RecommendAppsScreen.showError");
-    return;
-  }
-
   RecordUmaScreenState(RecommendAppsScreenState::SHOW);
   const ui::ResourceBundle& resource_bundle =
       ui::ResourceBundle::GetSharedInstance();
-  base::StringPiece app_list_webview = resource_bundle.GetRawDataResource(
+  std::string app_list_webview = resource_bundle.LoadDataResourceString(
       IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML);
-  CallJS("login.RecommendAppsScreen.setWebview", app_list_webview.as_string());
+  CallJS("login.RecommendAppsScreen.setWebview", app_list_webview);
   CallJS("login.RecommendAppsScreen.loadAppList", app_list);
 }
 
@@ -166,15 +162,9 @@ void RecommendAppsScreenHandler::HandleSkip() {
     screen_->OnSkip();
 }
 
-void RecommendAppsScreenHandler::HandleRetry() {
-  RecordUmaScreenAction(RecommendAppsScreenAction::RETRIED);
-  if (screen_)
-    screen_->OnRetry();
-}
-
 void RecommendAppsScreenHandler::HandleInstall(const base::ListValue* args) {
   if (recommended_app_count_ != 0) {
-    int selected_app_count = static_cast<int>(args->GetSize());
+    int selected_app_count = static_cast<int>(args->GetList().size());
     int selected_recommended_percentage =
         100 * selected_app_count / recommended_app_count_;
     RecordUmaUserSelectionAppCount(selected_app_count);

@@ -5,21 +5,26 @@
 #ifndef CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_H_
 #define CHROME_APP_CHROME_CRASH_REPORTER_CLIENT_H_
 
+#include "build/chromeos_buildflags.h"
+
 #if !defined(OS_WIN)
 
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "build/build_config.h"
-#include "components/crash/content/app/crash_reporter_client.h"
+#include "components/crash/core/app/crash_reporter_client.h"
 
 class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
  public:
   static void Create();
 
-#if defined(OS_CHROMEOS)
+  ChromeCrashReporterClient(const ChromeCrashReporterClient&) = delete;
+  ChromeCrashReporterClient& operator=(const ChromeCrashReporterClient&) =
+      delete;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If true, processes of this type should pass crash-loop-before down to the
   // crash reporter and to their children (if the children's type is a process
   // type that wants crash-loop-before).
@@ -27,12 +32,12 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 #endif
 
   // crash_reporter::CrashReporterClient implementation.
-#if !defined(OS_MACOSX) && !defined(OS_ANDROID)
+#if !defined(OS_MAC) && !defined(OS_ANDROID)
   void SetCrashReporterClientIdFromGUID(
       const std::string& client_guid) override;
 #endif
 
-#if defined(OS_POSIX) && !defined(OS_MACOSX)
+#if defined(OS_POSIX) && !defined(OS_MAC)
   void GetProductNameAndVersion(const char** product_name,
                                 const char** version) override;
   void GetProductNameAndVersion(std::string* product_name,
@@ -43,7 +48,7 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override;
 
-#if defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool GetCrashMetricsLocation(base::FilePath* metrics_dir) override;
 #endif
 
@@ -51,7 +56,7 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   bool GetCollectStatsConsent() override;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   bool ReportingIsEnforcedByPolicy(bool* breakpad_enabled) override;
 #endif
 
@@ -59,7 +64,7 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
   int GetAndroidMinidumpDescriptor() override;
 #endif
 
-#if defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   bool ShouldMonitorCrashHandlerExpensively() override;
 #endif
 
@@ -70,8 +75,6 @@ class ChromeCrashReporterClient : public crash_reporter::CrashReporterClient {
 
   ChromeCrashReporterClient();
   ~ChromeCrashReporterClient() override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCrashReporterClient);
 };
 
 #endif  // OS_WIN

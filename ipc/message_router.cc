@@ -4,6 +4,7 @@
 
 #include "ipc/message_router.h"
 
+#include "base/logging.h"
 #include "ipc/ipc_message.h"
 
 namespace IPC {

@@ -12,22 +12,49 @@
 
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
+#include "base/callback_forward.h"
+#include "base/metrics/histogram_base.h"
+#include "base/strings/string_piece_forward.h"
 #include "base/time/time.h"
-#include "components/metrics/metrics_service_client.h"
+#include "components/metrics/metrics_reporting_default_state.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
+#include "third_party/metrics_proto/system_profile.pb.h"
 
 class PrefService;
 
 namespace base {
+class Clock;
 class HistogramFlattener;
 class HistogramSamples;
 class HistogramSnapshotManager;
-}
+}  // namespace base
+
+namespace network_time {
+class NetworkTimeTracker;
+}  // namespace network_time
 
 namespace metrics {
+
+// Holds optional metadata associated with a log to be stored.
+struct LogMetadata {
+  LogMetadata();
+  LogMetadata(absl::optional<base::HistogramBase::Count> samples_count,
+              absl::optional<uint64_t> user_id);
+  LogMetadata(const LogMetadata& other);
+  ~LogMetadata();
+
+  // Adds |sample_count| to |samples_count|. If |samples_count| is empty, then
+  // |sample_count| will populate |samples_count|.
+  void AddSampleCount(base::HistogramBase::Count sample_count);
+
+  // The total number of samples in this log if applicable.
+  absl::optional<base::HistogramBase::Count> samples_count;
+
+  // User id associated with the log.
+  absl::optional<uint64_t> user_id;
+};
 
 class MetricsProvider;
 class MetricsServiceClient;
@@ -37,6 +64,9 @@ namespace internal {
 // Maximum number of events before truncation.
 constexpr int kOmniboxEventLimit = 5000;
 constexpr int kUserActionEventLimit = 5000;
+
+SystemProfileProto::InstallerPackage ToInstallerPackage(
+    base::StringPiece installer_package_name);
 }  // namespace internal
 
 class MetricsLog {
@@ -53,6 +83,11 @@ class MetricsLog {
   class IndependentMetricsLoader {
    public:
     explicit IndependentMetricsLoader(std::unique_ptr<MetricsLog> log);
+
+    IndependentMetricsLoader(const IndependentMetricsLoader&) = delete;
+    IndependentMetricsLoader& operator=(const IndependentMetricsLoader&) =
+        delete;
+
     ~IndependentMetricsLoader();
 
     // Call ProvideIndependentMetrics (which may execute on a background thread)
@@ -70,8 +105,6 @@ class MetricsLog {
     std::unique_ptr<MetricsLog> log_;
     std::unique_ptr<base::HistogramFlattener> flattener_;
     std::unique_ptr<base::HistogramSnapshotManager> snapshot_manager_;
-
-    DISALLOW_COPY_AND_ASSIGN(IndependentMetricsLoader);
   };
 
   // Creates a new metrics log of the specified type.
@@ -86,6 +119,18 @@ class MetricsLog {
              int session_id,
              LogType log_type,
              MetricsServiceClient* client);
+  // As above, with a |clock| and |network_clock| to use to vend Now() calls. As
+  // with |client|, the caller must ensure both remain valid for the lifetime of
+  // this class.
+  MetricsLog(const std::string& client_id,
+             int session_id,
+             LogType log_type,
+             base::Clock* clock,
+             const network_time::NetworkTimeTracker* network_clock,
+             MetricsServiceClient* client);
+
+  MetricsLog(const MetricsLog&) = delete;
+  MetricsLog& operator=(const MetricsLog&) = delete;
   virtual ~MetricsLog();
 
   // Registers local state prefs used by this class.
@@ -106,20 +151,21 @@ class MetricsLog {
   // always incrementing for use in measuring time durations.
   static int64_t GetCurrentTime();
 
-  // Record core profile settings into the SystemProfileProto.
+  // Records core profile settings into the SystemProfileProto.
   static void RecordCoreSystemProfile(MetricsServiceClient* client,
                                       SystemProfileProto* system_profile);
 
-  // Record core profile settings into the SystemProfileProto without a client.
+  // Records core profile settings into the SystemProfileProto without a client.
   static void RecordCoreSystemProfile(
       const std::string& version,
       metrics::SystemProfileProto::Channel channel,
+      bool is_extended_stable_channel,
       const std::string& application_locale,
       const std::string& package_name,
       SystemProfileProto* system_profile);
 
   // Records a user-initiated action.
-  void RecordUserAction(const std::string& key);
+  void RecordUserAction(const std::string& key, base::TimeTicks action_time);
 
   // Record any changes in a given histogram for transmission.
   void RecordHistogramDelta(const std::string& histogram_name,
@@ -134,11 +180,13 @@ class MetricsLog {
       DelegatingProvider* delegating_provider);
 
   // Loads the environment proto that was saved by the last RecordEnvironment()
-  // call from prefs. On success, returns true and |app_version| contains the
-  // recovered version. Otherwise (if there was no saved environment in prefs
-  // or it could not be decoded), returns false and |app_version| is empty.
-  bool LoadSavedEnvironmentFromPrefs(PrefService* local_state,
-                                     std::string* app_version);
+  // call from prefs. On success, returns true. Otherwise, (if there was no
+  // saved environment in prefs or it could not be decoded), returns false.
+  bool LoadSavedEnvironmentFromPrefs(PrefService* local_state);
+
+  // Records the log_written_by_app_version system_profile field if the client's
+  // version is different from the system_profile's app_version.
+  void RecordLogWrittenByAppVersionIfNeeded();
 
   // Record data from providers about the previous session into the log.
   void RecordPreviousSessionData(DelegatingProvider* delegating_provider);
@@ -160,22 +208,21 @@ class MetricsLog {
   // record.  Must only be called after CloseLog() has been called.
   void GetEncodedLog(std::string* encoded_log);
 
-  const base::TimeTicks& creation_time() const {
-    return creation_time_;
-  }
-
   LogType log_type() const { return log_type_; }
+
+  const LogMetadata& log_metadata() const { return log_metadata_; }
+
+  // Exposed for the sake of mocking/accessing in test code.
+  ChromeUserMetricsExtension* UmaProtoForTest() { return &uma_proto_; }
 
  protected:
   // Exposed for the sake of mocking/accessing in test code.
-
+  // TODO(1034679): migrate to public UmaProtoForTest() method.
   ChromeUserMetricsExtension* uma_proto() { return &uma_proto_; }
 
   // Exposed to allow subclass to access to export the uma_proto. Can be used
   // by external components to export logs to Chrome.
-  const ChromeUserMetricsExtension* uma_proto() const {
-    return &uma_proto_;
-  }
+  const ChromeUserMetricsExtension* uma_proto() const { return &uma_proto_; }
 
  private:
   // Write the default state of the enable metrics checkbox.
@@ -210,7 +257,16 @@ class MetricsLog {
   // RecordEnvironment() or LoadSavedEnvironmentFromPrefs().
   bool has_environment_;
 
-  DISALLOW_COPY_AND_ASSIGN(MetricsLog);
+  // Optional metadata associated with the log.
+  LogMetadata log_metadata_;
+
+  // The clock used to vend Time::Now().  Note that this is not used for the
+  // static function MetricsLog::GetCurrentTime(). Can be overridden for tests.
+  base::Clock* clock_;
+
+  // The NetworkTimeTracker used to provide higher-quality wall clock times than
+  // |clock_| (when available). Can be overridden for tests.
+  const network_time::NetworkTimeTracker* network_clock_;
 };
 
 }  // namespace metrics

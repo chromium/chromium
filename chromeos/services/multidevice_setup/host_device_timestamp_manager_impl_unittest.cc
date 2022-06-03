@@ -19,11 +19,16 @@ namespace multidevice_setup {
 
 namespace {
 const base::Time kTestTime = base::Time::FromJavaTime(1500000000000);
-const base::Time kLaterTime =
-    kTestTime + base::TimeDelta::FromMilliseconds(123456789);
+const base::Time kLaterTime = kTestTime + base::Milliseconds(123456789);
 }  // namespace
 
 class HostDeviceTimestampManagerImplTest : public testing::Test {
+ public:
+  HostDeviceTimestampManagerImplTest(
+      const HostDeviceTimestampManagerImplTest&) = delete;
+  HostDeviceTimestampManagerImplTest& operator=(
+      const HostDeviceTimestampManagerImplTest&) = delete;
+
  protected:
   HostDeviceTimestampManagerImplTest() = default;
   ~HostDeviceTimestampManagerImplTest() override = default;
@@ -38,7 +43,7 @@ class HostDeviceTimestampManagerImplTest : public testing::Test {
     test_clock_ = std::make_unique<base::SimpleTestClock>();
     SetNow(kTestTime);
 
-    manager_ = HostDeviceTimestampManagerImpl::Factory::Get()->BuildInstance(
+    manager_ = HostDeviceTimestampManagerImpl::Factory::Create(
         fake_host_status_provider_.get(), test_pref_service_.get(),
         test_clock_.get());
   }
@@ -49,7 +54,7 @@ class HostDeviceTimestampManagerImplTest : public testing::Test {
     if (host_status == mojom::HostStatus::kNoEligibleHosts ||
         host_status == mojom::HostStatus::kEligibleHostExistsButNoHostSet) {
       fake_host_status_provider_->SetHostWithStatus(
-          host_status, base::nullopt /* host_device */);
+          host_status, absl::nullopt /* host_device */);
       return;
     }
     fake_host_status_provider_->SetHostWithStatus(
@@ -70,8 +75,6 @@ class HostDeviceTimestampManagerImplTest : public testing::Test {
   std::unique_ptr<base::SimpleTestClock> test_clock_;
 
   std::unique_ptr<HostDeviceTimestampManager> manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostDeviceTimestampManagerImplTest);
 };
 
 TEST_F(HostDeviceTimestampManagerImplTest,

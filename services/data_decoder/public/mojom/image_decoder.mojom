@@ -4,14 +4,15 @@
 
 module data_decoder.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "skia/public/mojom/bitmap.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 enum ImageCodec {
-  DEFAULT,
-  ROBUST_JPEG,
-  ROBUST_PNG,
+  kDefault,
+  // Only valid for Ash. Backed by libpng so requires that image is a PNG.
+  kPng,
 };
 
 struct AnimationFrame {
@@ -31,9 +32,11 @@ interface ImageDecoder {
   // If the total size of the decoded image data in bytes exceeds
   // |max_size_in_bytes| and |shrink_to_fit| is false, this is treated as a
   // decoding failure and the |decoded_image| response is null.
-  DecodeImage(array<uint8> encoded_data, ImageCodec codec, bool shrink_to_fit,
-              int64 max_size_in_bytes, gfx.mojom.Size desired_image_frame_size)
-      => (skia.mojom.Bitmap? decoded_image);
+  DecodeImage(mojo_base.mojom.BigBuffer encoded_data, ImageCodec codec,
+              bool shrink_to_fit, int64 max_size_in_bytes,
+              gfx.mojom.Size desired_image_frame_size)
+      => (mojo_base.mojom.TimeDelta decoding_duration,
+          skia.mojom.BitmapN32? decoded_image);
 
   // Decodes the image in |encoded_data|. This will return all frames in the
   // image and assumes it is an animation (instead of say, a multi-sized image).
@@ -45,7 +48,7 @@ interface ImageDecoder {
   // If the total size of the decoded image data in bytes exceeds
   // |max_size_in_bytes| and |shrink_to_fit| is false, this is treated as a
   // decoding failure and the |decoded_image| response is null.
-  DecodeAnimation(array<uint8> encoded_data, bool shrink_to_fit,
+  DecodeAnimation(mojo_base.mojom.BigBuffer encoded_data, bool shrink_to_fit,
                   int64 max_size_in_bytes)
       => (array<AnimationFrame> decoded_image);
 };

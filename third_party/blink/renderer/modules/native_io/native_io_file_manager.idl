@@ -1,0 +1,44 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/fivedots/nativeio-explainer
+
+[Exposed = (Window, Worker),
+ RuntimeEnabled = StorageFoundationAPI,
+ SecureContext] interface NativeIOFileManager {
+  [ CallWith = ScriptState, RaisesException, MeasureAs = StorageFoundationOpen ]
+      Promise<NativeIOFile> open(DOMString name);
+  [ Exposed = DedicatedWorker, RaisesException, MeasureAs = StorageFoundationOpen ]
+      NativeIOFileSync openSync(DOMString name);
+
+  [ CallWith = ScriptState, ImplementedAs = Delete,
+    RaisesException ] Promise<void> delete (DOMString name);
+  [ Exposed = DedicatedWorker, RaisesException ] void deleteSync(
+      DOMString name);
+
+  [ CallWith = ScriptState, RaisesException ] Promise<sequence<DOMString>>
+  getAll();
+  [ Exposed = DedicatedWorker, RaisesException ] sequence<DOMString>
+  getAllSync();
+
+  [ CallWith = ScriptState, RaisesException ] Promise<void> rename(
+      DOMString old_name, DOMString new_name);
+  [ Exposed = DedicatedWorker, RaisesException ] void renameSync(
+      DOMString old_name, DOMString new_name);
+
+  [ CallWith = ScriptState, RaisesException ] Promise<unsigned long long>
+  requestCapacity(unsigned long long requested_capacity);
+  [ Exposed = DedicatedWorker, RaisesException ] unsigned long long
+  requestCapacitySync(unsigned long long released_capacity);
+
+  [ CallWith = ScriptState, RaisesException ] Promise<unsigned long long>
+  releaseCapacity(unsigned long long released_capacity);
+  [ Exposed = DedicatedWorker, RaisesException ] unsigned long long
+  releaseCapacitySync(unsigned long long released_capacity);
+
+  [ CallWith = ScriptState, RaisesException ] Promise<unsigned long long>
+  getRemainingCapacity();
+  [ Exposed = DedicatedWorker, RaisesException ] unsigned long long
+  getRemainingCapacitySync();
+};

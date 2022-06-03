@@ -5,17 +5,17 @@
 #ifndef ASH_ASSISTANT_UI_MAIN_STAGE_SUGGESTION_CONTAINER_VIEW_H_
 #define ASH_ASSISTANT_UI_MAIN_STAGE_SUGGESTION_CONTAINER_VIEW_H_
 
-#include <map>
 #include <memory>
+#include <vector>
 
 #include "ash/assistant/model/assistant_suggestions_model_observer.h"
 #include "ash/assistant/model/assistant_ui_model_observer.h"
 #include "ash/assistant/ui/main_stage/animated_container_view.h"
 #include "ash/assistant/ui/main_stage/suggestion_chip_view.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "chromeos/services/libassistant/public/cpp/assistant_suggestion.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/scroll_view.h"
 
 namespace views {
@@ -32,73 +32,58 @@ class AssistantViewDelegate;
 class COMPONENT_EXPORT(ASSISTANT_UI) SuggestionContainerView
     : public AnimatedContainerView,
       public AssistantSuggestionsModelObserver,
-      public AssistantUiModelObserver,
-      public views::ButtonListener {
+      public AssistantUiModelObserver {
  public:
-  using AssistantSuggestion = chromeos::assistant::mojom::AssistantSuggestion;
-  using AssistantSuggestionPtr =
-      chromeos::assistant::mojom::AssistantSuggestionPtr;
+  using AssistantSuggestion = chromeos::assistant::AssistantSuggestion;
+
+  METADATA_HEADER(SuggestionContainerView);
 
   explicit SuggestionContainerView(AssistantViewDelegate* delegate);
+  SuggestionContainerView(const SuggestionContainerView&) = delete;
+  SuggestionContainerView& operator=(const SuggestionContainerView&) = delete;
   ~SuggestionContainerView() override;
 
   // AnimatedContainerView:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
   void OnContentsPreferredSizeChanged(views::View* content_view) override;
+  void OnAssistantControllerDestroying() override;
+  void OnCommittedQueryChanged(const AssistantQuery& query) override;
 
   // AssistantSuggestionsModelObserver:
   void OnConversationStartersChanged(
-      const std::map<int, const AssistantSuggestion*>& conversation_starters)
-      override;
+      const std::vector<AssistantSuggestion>& conversation_starters) override;
 
   // AssistantUiModelObserver:
   void OnUiVisibilityChanged(
       AssistantVisibility new_visibility,
       AssistantVisibility old_visibility,
-      base::Optional<AssistantEntryPoint> entry_point,
-      base::Optional<AssistantExitPoint> exit_point) override;
+      absl::optional<AssistantEntryPoint> entry_point,
+      absl::optional<AssistantExitPoint> exit_point) override;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
-
-  // The suggestion chip that was pressed by the user, or nullptr if no chip was
-  // pressed.
+  // The suggestion chip that was pressed by the user. May be |nullptr|.
   const SuggestionChipView* selected_chip() const { return selected_chip_; }
 
  private:
   void InitLayout();
 
   // AnimatedContainerView:
-  void HandleResponse(const AssistantResponse& response) override;
+  std::unique_ptr<ElementAnimator> HandleSuggestion(
+      const AssistantSuggestion& suggestion) override;
   void OnAllViewsRemoved() override;
 
-  void OnSuggestionsChanged(
-      const std::map<int, const AssistantSuggestion*>& suggestions);
-  void AddSuggestionChip(const AssistantSuggestion& suggestion, int id);
+  std::unique_ptr<ElementAnimator> AddSuggestionChip(
+      const AssistantSuggestion& suggestion);
 
-  // Invoked on suggestion chip icon downloaded event.
-  void OnSuggestionChipIconDownloaded(int id, const gfx::ImageSkia& icon);
+  void OnButtonPressed(SuggestionChipView* chip_view);
 
   views::BoxLayout* layout_manager_;  // Owned by view hierarchy.
 
-  // Cache of suggestion chip views owned by the view hierarchy. The key for the
-  // map is the unique identifier by which the Assistant interaction model
-  // identifies the view's underlying suggestion.
-  std::map<int, SuggestionChipView*> suggestion_chip_views_;
+  // Whether or not we have committed a query during this Assistant session.
+  bool has_committed_query_ = false;
 
-  // True if we have received a query response during this Assistant UI session,
-  // false otherwise.
-  bool has_received_response_ = false;
-
+  // The suggestion chip that was pressed by the user. May be |nullptr|.
   const SuggestionChipView* selected_chip_ = nullptr;
-
-  // Weak pointer factory used for image downloading requests.
-  base::WeakPtrFactory<SuggestionContainerView> download_request_weak_factory_{
-      this};
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionContainerView);
 };
 
 }  // namespace ash

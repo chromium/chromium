@@ -6,7 +6,6 @@
 
 #include "ios/chrome/common/app_group/app_group_utils.h"
 
-#include "base/logging.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

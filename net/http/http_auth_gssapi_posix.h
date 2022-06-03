@@ -17,7 +17,7 @@
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_mechanism.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <GSS/gssapi.h>
 #elif defined(OS_FREEBSD)
 #include <gssapi/gssapi.h>
@@ -203,6 +203,10 @@ class NET_EXPORT_PRIVATE GSSAPISharedLibrary : public GSSAPILibrary {
 class ScopedSecurityContext {
  public:
   explicit ScopedSecurityContext(GSSAPILibrary* gssapi_lib);
+
+  ScopedSecurityContext(const ScopedSecurityContext&) = delete;
+  ScopedSecurityContext& operator=(const ScopedSecurityContext&) = delete;
+
   ~ScopedSecurityContext();
 
   gss_ctx_id_t get() const { return security_context_; }
@@ -211,8 +215,6 @@ class ScopedSecurityContext {
  private:
   gss_ctx_id_t security_context_ = GSS_C_NO_CONTEXT;
   GSSAPILibrary* gssapi_lib_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedSecurityContext);
 };
 
 

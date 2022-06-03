@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/badges/badge_constants.h"
-#import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/showcase/badges/sc_badge_constants.h"
 #import "ios/showcase/test/showcase_eg_utils.h"
 #import "ios/showcase/test/showcase_test_case.h"

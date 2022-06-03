@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mac {
 namespace services {
@@ -19,7 +19,7 @@ struct JobInfo {
   ~JobInfo();
 
   std::string program;
-  base::Optional<int> pid;
+  absl::optional<int> pid;
 };
 
 struct JobCheckinInfo {

@@ -16,7 +16,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "preference_specifics.proto";
+import "components/sync/protocol/preference_specifics.proto";
 
 // Properties of a Chrome OS priority preference. Uses PreferenceSpecifics
 // instead of declaring name and value fields to allow more code sharing

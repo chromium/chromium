@@ -4,7 +4,9 @@
 
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_coordinator.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/notreached.h"
 #include "ios/chrome/browser/crash_report/crash_loop_detection_util.h"
 #import "ios/chrome/browser/ui/safe_mode/safe_mode_view_controller.h"
 
@@ -48,6 +50,7 @@ const int kStartupCrashLoopThreshold = 2;
   // method.
   SafeModeViewController* viewController =
       [[SafeModeViewController alloc] initWithDelegate:self];
+  DCHECK(self.window);
   [self.window setRootViewController:viewController];
 
   // Reset the crash count; the user may change something based on the recovery

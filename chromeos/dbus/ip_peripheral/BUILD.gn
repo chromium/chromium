@@ -1,0 +1,35 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+component("ip_peripheral") {
+  defines = [ "IS_DBUS_IP_PERIPHERAL_CLIENT_IMPL" ]
+
+  deps = [
+    "//base",
+    "//dbus",
+  ]
+
+  sources = [
+    "fake_ip_peripheral_service_client.cc",
+    "fake_ip_peripheral_service_client.h",
+    "ip_peripheral_service_client.cc",
+    "ip_peripheral_service_client.h",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  public_deps = [ ":ip_peripheral" ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//dbus:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "ip_peripheral_service_client_unittest.cc" ]
+}

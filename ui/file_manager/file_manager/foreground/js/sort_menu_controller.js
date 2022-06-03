@@ -2,14 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-class SortMenuController {
+import '../elements/files_toggle_ripple.js';
+
+import {queryRequiredElement} from 'chrome://resources/js/util.m.js';
+
+import {FileListModel} from './file_list_model.js';
+import {MultiMenuButton} from './ui/multi_menu_button.js';
+
+export class SortMenuController {
   /**
-   * @param {!cr.ui.MultiMenuButton} sortButton
-   * @param {!FilesToggleRipple} toggleRipple
+   * @param {!MultiMenuButton} sortButton
+   * @param {!FilesToggleRippleElement} toggleRipple
    * @param {!FileListModel} fileListModel
    */
   constructor(sortButton, toggleRipple, fileListModel) {
-    /** @private @const {!FilesToggleRipple} */
+    /** @private @const {!FilesToggleRippleElement} */
     this.toggleRipple_ = toggleRipple;
 
     /** @private @const {!FileListModel} */

@@ -1,0 +1,175 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child1' class='child composited'",
+      "bounds": [1, 1],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child2' class='child scale composited'",
+      "bounds": [1, 1],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child3' class='child'",
+      "bounds": [1, 1],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 6
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child4' class='child scale'",
+      "bounds": [1, 1],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 8
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child5' class='child composited'",
+      "bounds": [1, 1],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 10
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='child6' class='child scale composited'",
+      "bounds": [1, 1],
+      "contentsOpaque": true,
+      "backgroundColor": "#0000FF",
+      "transform": 12
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [40, 0, 0, 0],
+        [0, 40, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    },
+    {
+      "id": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [9, 58, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [40, 0, 0, 0],
+        [0, 40, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    },
+    {
+      "id": 5,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 108, 0, 1]
+      ]
+    },
+    {
+      "id": 6,
+      "parent": 5,
+      "transform": [
+        [40, 0, 0, 0],
+        [0, 40, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    },
+    {
+      "id": 7,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 158, 0, 1]
+      ]
+    },
+    {
+      "id": 8,
+      "parent": 7,
+      "transform": [
+        [40, 0, 0, 0],
+        [0, 40, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    },
+    {
+      "id": 9,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 208, 0, 1]
+      ]
+    },
+    {
+      "id": 10,
+      "parent": 9,
+      "transform": [
+        [40, 0, 0, 0],
+        [0, 40, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    },
+    {
+      "id": 11,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 258, 0, 1]
+      ]
+    },
+    {
+      "id": 12,
+      "parent": 11,
+      "transform": [
+        [40, 0, 0, 0],
+        [0, 40, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]
+      ],
+      "origin": [0, 0]
+    }
+  ]
+}
+

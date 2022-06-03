@@ -22,6 +22,10 @@ var NUMBER = '4111 1111 1111 1111';
 var EXP_MONTH = '02';
 var EXP_YEAR = '2999';
 
+var failOnceCalled = function() {
+  chrome.test.fail();
+};
+
 var availableTests = [
   function getCountryList() {
     var handler = function(countries) {
@@ -185,8 +189,8 @@ var availableTests = [
     function filterCardProperties(cards) {
       return cards.map(cards => {
         var filteredCards = {};
-        ['name', 'cardNumber', 'expirationMonth', 'expirationYear'].forEach(
-            property => {
+        ['name', 'cardNumber', 'expirationMonth', 'expirationYear', 'nickname']
+            .forEach(property => {
               filteredCards[property] = cards[property];
             });
         return filteredCards;
@@ -206,7 +210,8 @@ var availableTests = [
                       name: CARD_NAME,
                       cardNumber: NUMBER,
                       expirationMonth: EXP_MONTH,
-                      expirationYear: EXP_YEAR
+                      expirationYear: EXP_YEAR,
+                      nickname: undefined
                     }],
                     filterCardProperties(cardList));
               }));
@@ -220,14 +225,42 @@ var availableTests = [
         }));
   },
 
+  function noChangesToExistingCreditCard() {
+    chrome.autofillPrivate.getCreditCardList(chrome.test.callbackPass(function(
+        cardList) {
+      // The card from the addNewCreditCard function should still be there.
+      chrome.test.assertEq(1, cardList.length);
+      var cardGuid = cardList[0].guid;
+
+      // Set up the listener that verifies that onPersonalDataChanged shouldn't
+      // be called.
+      chrome.autofillPrivate.onPersonalDataChanged.addListener(failOnceCalled);
+
+      // Save the card with the same info, shouldn't invoke
+      // onPersonalDataChanged.
+      chrome.autofillPrivate.saveCreditCard({
+        guid: cardGuid,
+        name: CARD_NAME,
+        cardNumber: NUMBER,
+        expirationMonth: EXP_MONTH,
+        expirationYear: EXP_YEAR
+      });
+    }));
+  },
+
   function updateExistingCreditCard() {
+    // Reset onPersonalDataChanged.
+    chrome.autofillPrivate.onPersonalDataChanged.removeListener(failOnceCalled);
+
     var UPDATED_CARD_NAME = 'UpdatedCardName';
     var UPDATED_EXP_YEAR = '2888';
+    var UPDATED_NICKNAME = 'New nickname';
 
     function filterCardProperties(cards) {
       return cards.map(cards => {
         var filteredCards = {};
-        ['guid', 'name', 'cardNumber', 'expirationMonth', 'expirationYear']
+        ['guid', 'name', 'cardNumber', 'expirationMonth', 'expirationYear',
+         'nickname']
             .forEach(property => {
               filteredCards[property] = cards[property];
             });
@@ -241,7 +274,7 @@ var availableTests = [
           chrome.test.assertEq(1, cardList.length);
           var cardGuid = cardList[0].guid;
 
-          // Setup the callback that verifies that the address was correctly
+          // Set up the callback that verifies that the card was correctly
           // updated.
           chrome.test.listenOnce(
               chrome.autofillPrivate.onPersonalDataChanged,
@@ -252,7 +285,8 @@ var availableTests = [
                       name: UPDATED_CARD_NAME,
                       cardNumber: NUMBER,
                       expirationMonth: EXP_MONTH,
-                      expirationYear: UPDATED_EXP_YEAR
+                      expirationYear: UPDATED_EXP_YEAR,
+                      nickname: UPDATED_NICKNAME
                     }],
                     filterCardProperties(cardList));
               }));
@@ -262,7 +296,8 @@ var availableTests = [
           chrome.autofillPrivate.saveCreditCard({
             guid: cardGuid,
             name: UPDATED_CARD_NAME,
-            expirationYear: UPDATED_EXP_YEAR
+            expirationYear: UPDATED_EXP_YEAR,
+            nickname: UPDATED_NICKNAME
           });
         }));
   },
@@ -271,65 +306,80 @@ var availableTests = [
     var guid;
 
     var numCalls = 0;
-    var handler = function(creditCardList) {
+    var getCardsHandler = function(creditCardList) {
+      numCalls++;
+      chrome.test.assertEq(1, numCalls);
+    }
+
+    var personalDataChangedHandler = function(addressList, creditCardList) {
       numCalls++;
 
-      if (numCalls == 1) {
-        chrome.test.assertEq(creditCardList.length, 0);
-      } else if (numCalls == 2) {
+      if (numCalls == 2) {
         chrome.test.assertEq(creditCardList.length, 1);
         var creditCard = creditCardList[0];
         chrome.test.assertEq(creditCard.name, NAME);
 
         guid = creditCard.guid;
         chrome.autofillPrivate.removeEntry(guid);
-      } else {
+      } else if (numCalls == 3) {
         chrome.test.assertEq(creditCardList.length, 0);
         chrome.test.succeed();
+      } else {
+        // We should never receive such a call.
+        chrome.test.fail();
       }
     }
 
-    chrome.autofillPrivate.onPersonalDataChanged.addListener(handler);
-    chrome.autofillPrivate.getCreditCardList(handler);
+    chrome.autofillPrivate.onPersonalDataChanged.addListener(
+        personalDataChangedHandler);
+    chrome.autofillPrivate.getCreditCardList(getCardsHandler);
     chrome.autofillPrivate.saveCreditCard({name: NAME});
   },
 
   function validatePhoneNumbers() {
     var COUNTRY_CODE = 'US';
-    var ORIGINAL_NUMBERS = ['1-800-123-4567'];
+    var FAKE_NUMBER = '1-800-123-4567';
+    var ORIGINAL_NUMBERS = [FAKE_NUMBER];
     var FIRST_NUMBER_TO_ADD = '1-800-234-5768';
     // Same as original number, but without formatting.
     var SECOND_NUMBER_TO_ADD = '18001234567';
 
-    var handler1 = function(validateNumbers) {
+    var handler1 =
+        function(validateNumbers) {
       chrome.test.assertEq(validateNumbers.length, 1);
-      chrome.test.assertEq('1-800-123-4567', validateNumbers[0]);
+      chrome.test.assertEq(FAKE_NUMBER, validateNumbers[0]);
 
-      chrome.autofillPrivate.validatePhoneNumbers({
-        phoneNumbers: validatedNumbers.concat(FIRST_NUMBER_TO_ADD),
-        indexOfNewNumber: 0,
-        countryCode: COUNTRY_CODE
-      }, handler2);
+      chrome.autofillPrivate.validatePhoneNumbers(
+          {
+            phoneNumbers: validateNumbers.concat(FIRST_NUMBER_TO_ADD),
+            indexOfNewNumber: 1,  // A new number (FIRST_NUMBER_TO_ADD) is added
+                                  // at the end of the list.
+            countryCode: COUNTRY_CODE
+          },
+          handler2);
     }
 
-    var handler2 = function(validatedNumbers) {
+    var handler2 = function(validateNumbers) {
       chrome.test.assertEq(validateNumbers.length, 2);
-      chrome.test.assertEq('1-800-123-4567', validateNumbers[0]);
-      chrome.test.assertEq('1-800-234-5678', validateNumbers[1]);
+      chrome.test.assertEq(FAKE_NUMBER, validateNumbers[0]);
+      chrome.test.assertEq(FIRST_NUMBER_TO_ADD, validateNumbers[1]);
 
-      chrome.autofillPrivate.validatePhoneNumbers({
-        phoneNumbers: validatedNumbers.concat(SECOND_NUMBER_TO_ADD),
-        indexOfNewNumber: 0,
-        countryCode: COUNTRY_CODE
-      }, handler3);
+      chrome.autofillPrivate.validatePhoneNumbers(
+          {
+            phoneNumbers: validateNumbers.concat(SECOND_NUMBER_TO_ADD),
+            indexOfNewNumber: 2,  // A new number (SECOND_NUMBER_TO_ADD) is
+                                  // added at the end of the list.
+            countryCode: COUNTRY_CODE
+          },
+          handler3);
     };
 
     var handler3 = function(validateNumbers) {
       // Newly-added number should not appear since it was the same as an
       // existing number.
       chrome.test.assertEq(validateNumbers.length, 2);
-      chrome.test.assertEq('1-800-123-4567', validateNumbers[0]);
-      chrome.test.assertEq('1-800-234-5678', validateNumbers[1]);
+      chrome.test.assertEq(FAKE_NUMBER, validateNumbers[0]);
+      chrome.test.assertEq(FIRST_NUMBER_TO_ADD, validateNumbers[1]);
       chrome.test.succeed();
     }
 
@@ -344,11 +394,16 @@ var availableTests = [
 /** @const */
 var TESTS_FOR_CONFIG = {
   'addAndUpdateAddress': ['addNewAddress', 'updateExistingAddress'],
-  'addAndUpdateCreditCard': ['addNewCreditCard', 'updateExistingCreditCard']
+  'addAndUpdateCreditCard': [
+    'addNewCreditCard', 'noChangesToExistingCreditCard',
+    'updateExistingCreditCard'
+  ]
 };
 
-var testConfig = window.location.search.substring(1);
-var testsToRun = TESTS_FOR_CONFIG[testConfig] || [testConfig];
-chrome.test.runTests(availableTests.filter(function(op) {
-  return testsToRun.includes(op.name);
-}));
+chrome.test.getConfig(function(config) {
+  var testConfig = config.customArg;
+  var testsToRun = TESTS_FOR_CONFIG[testConfig] || [testConfig];
+  chrome.test.runTests(availableTests.filter(function(op) {
+    return testsToRun.includes(op.name);
+  }));
+});

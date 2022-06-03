@@ -5,13 +5,16 @@
 #include <vector>
 
 #include "base/strings/string_util.h"
-#include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "base/strings/stringprintf.h"
+#include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/host_zoom_map.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -85,32 +88,19 @@ namespace {
 const double kTolerance = 0.1;  // In CSS pixels.
 
 double GetMainframeWindowBorder(const ToRenderFrameHost& adapter) {
-  double border;
-  const char kGetMainframeBorder[] = "window.domAutomationController.send("
-      "window.outerWidth - window.innerWidth"
-      ");";
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractDouble(adapter, kGetMainframeBorder, &border));
-  return border;
+  return EvalJs(adapter, "window.outerWidth - window.innerWidth")
+      .ExtractDouble();
 }
 
 double GetMainFrameZoomFactor(const ToRenderFrameHost& adapter, double border) {
-  double zoom_factor;
-  EXPECT_TRUE(ExecuteScriptAndExtractDouble(
-      adapter,
-      JsReplace("window.domAutomationController.send("
-                "   (window.outerWidth - $1) / window.innerWidth);",
-                border),
-      &zoom_factor));
-  return zoom_factor;
+  return EvalJs(
+             adapter,
+             JsReplace("(window.outerWidth - $1) / window.innerWidth;", border))
+      .ExtractDouble();
 }
 
 double GetSubframeWidth(const ToRenderFrameHost& adapter) {
-  double width;
-  EXPECT_TRUE(ExecuteScriptAndExtractDouble(
-      adapter, "window.domAutomationController.send(window.innerWidth);",
-      &width));
-  return width;
+  return EvalJs(adapter, "window.innerWidth").ExtractDouble();
 }
 
 // This struct is used to track changes to subframes after a main frame zoom
@@ -135,7 +125,7 @@ struct FrameResizeObserver {
         "document.body.onresize = function(){"
         "  window.domAutomationController.send('%s ' + window.innerWidth);"
         "};";
-    EXPECT_TRUE(ExecuteScript(
+    EXPECT_TRUE(ExecJs(
         adapter, base::StringPrintf(kOnResizeCallbackSetup, label.c_str())));
   }
 
@@ -168,8 +158,7 @@ struct ResizeObserver {
         "document.body.onresize = function(){"
         "  window.domAutomationController.send('Resized');"
         "};";
-    EXPECT_TRUE(ExecuteScript(
-        adapter, kOnResizeCallbackSetup));
+    EXPECT_TRUE(ExecJs(adapter, kOnResizeCallbackSetup));
   }
 
   bool IsResizeCallback(const std::string& status_msg) {
@@ -212,7 +201,8 @@ void WaitAndCheckFrameZoom(
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, ZoomPreservedOnReload) {
+// Flaky. crbug.com/1055282
+IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, DISABLED_ZoomPreservedOnReload) {
   std::string top_level_host("a.com");
 
   GURL main_url(embedded_test_server()->GetURL(
@@ -224,8 +214,9 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, ZoomPreservedOnReload) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   double main_frame_window_border = GetMainframeWindowBorder(web_contents());
 
   HostZoomMap* host_zoom_map = HostZoomMap::GetForWebContents(web_contents());
@@ -271,7 +262,8 @@ IN_PROC_BROWSER_TEST_F(ZoomBrowserTest, ZoomPreservedOnReload) {
       0.01);
 }
 
-IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesZoomProperly) {
+// http://crbug.com/1174371
+IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, DISABLED_SubframesZoomProperly) {
   std::string top_level_host("a.com");
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b(a))"));
@@ -282,8 +274,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesZoomProperly) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -336,8 +329,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -375,7 +369,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframesDontZoomIndependently) {
       GetMainFrameZoomFactor(web_contents(), main_frame_window_border));
 }
 
-IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, AllFramesGetDefaultZoom) {
+// This test is flaky. https://crbug.com/1171748
+IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
+                       DISABLED_AllFramesGetDefaultZoom) {
   std::string top_level_host("a.com");
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b(a))"));
@@ -386,8 +382,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, AllFramesGetDefaultZoom) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* grandchild =
       root->child_at(0)->child_at(0)->current_frame_host();
@@ -432,7 +429,13 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, AllFramesGetDefaultZoom) {
   );
 }
 
-IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SiblingFramesZoom) {
+// Flaky on mac, https://crbug.com/1055282
+#if defined(OS_MAC)
+#define MAYBE_SiblingFramesZoom DISABLED_SiblingFramesZoom
+#else
+#define MAYBE_SiblingFramesZoom SiblingFramesZoom
+#endif
+IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, MAYBE_SiblingFramesZoom) {
   std::string top_level_host("a.com");
   GURL main_url(embedded_test_server()->GetURL(
       top_level_host, "/cross_site_iframe_factory.html?a(b,b)"));
@@ -443,8 +446,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SiblingFramesZoom) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child1 = root->child_at(0)->current_frame_host();
   RenderFrameHostImpl* child2 = root->child_at(1)->current_frame_host();
 
@@ -496,8 +500,9 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
   GURL loaded_url = HostZoomMap::GetURLFromEntry(entry);
   EXPECT_EQ(top_level_host, loaded_url.host());
 
-  FrameTreeNode* root =
-      static_cast<WebContentsImpl*>(web_contents())->GetFrameTree()->root();
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
   RenderFrameHostImpl* child = root->child_at(0)->current_frame_host();
 
   // The following calls must be made when the page's scale factor = 1.0.
@@ -537,7 +542,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest, SubframeRetainsZoomOnNavigation) {
   // Navigate child frame cross site, and make sure zoom is the same.
   TestNavigationObserver observer(web_contents());
   GURL url = embedded_test_server()->GetURL("c.com", "/title1.html");
-  NavigateFrameToURL(root->child_at(0), url);
+  EXPECT_TRUE(NavigateToURLFromRenderer(root->child_at(0), url));
   EXPECT_TRUE(observer.last_navigation_succeeded());
   EXPECT_EQ(url, observer.last_navigation_url());
 
@@ -615,20 +620,12 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
   // Navigate forward in the same RFH to a site with that host via a
   // renderer-initiated navigation.
   {
-    const char kReplacePortNumber[] =
-        "window.domAutomationController.send(setPortNumber(%d));";
     uint16_t port_number = embedded_test_server()->port();
-    bool success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), base::StringPrintf(kReplacePortNumber, port_number),
-        &success));
+    EXPECT_EQ(true, EvalJs(shell(), base::StringPrintf("setPortNumber(%d)",
+                                                       port_number)));
     TestNavigationObserver observer(shell()->web_contents());
     GURL url = embedded_test_server()->GetURL("foo.com", "/title2.html");
-    success = false;
-    EXPECT_TRUE(ExecuteScriptAndExtractBool(
-        shell(), "window.domAutomationController.send(clickCrossSiteLink());",
-        &success));
-    EXPECT_TRUE(success);
+    EXPECT_EQ(true, EvalJs(shell(), "clickCrossSiteLink();"));
     EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
     EXPECT_EQ(url, observer.last_navigation_url());
     EXPECT_TRUE(observer.last_navigation_succeeded());

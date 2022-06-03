@@ -29,18 +29,11 @@ class MockMDnsDatagramServerSocket : public DatagramServerSocket {
   // DatagramServerSocket implementation:
   MOCK_METHOD1(Listen, int(const IPEndPoint& address));
 
-  // GMock cannot handle move-only types like CompletionOnceCallback, so it
-  // needs to be converted into the copyable type CompletionRepeatingCallback.
-  int RecvFrom(IOBuffer* buffer,
-               int size,
-               IPEndPoint* address,
-               CompletionOnceCallback callback) override;
-
-  MOCK_METHOD4(RecvFromInternal,
+  MOCK_METHOD4(RecvFrom,
                int(IOBuffer* buffer,
                    int size,
                    IPEndPoint* address,
-                   CompletionRepeatingCallback callback));
+                   CompletionOnceCallback callback));
 
   int SendTo(IOBuffer* buf,
              int buf_len,
@@ -50,7 +43,7 @@ class MockMDnsDatagramServerSocket : public DatagramServerSocket {
   MOCK_METHOD3(SendToInternal,
                int(const std::string& packet,
                    const std::string address,
-                   CompletionRepeatingCallback callback));
+                   CompletionOnceCallback callback));
 
   MOCK_METHOD1(SetReceiveBufferSize, int(int32_t size));
   MOCK_METHOD1(SetSendBufferSize, int(int32_t size));
@@ -87,12 +80,12 @@ class MockMDnsDatagramServerSocket : public DatagramServerSocket {
   int HandleRecvNow(IOBuffer* buffer,
                     int size,
                     IPEndPoint* address,
-                    CompletionRepeatingCallback callback);
+                    CompletionOnceCallback callback);
 
   int HandleRecvLater(IOBuffer* buffer,
                       int size,
                       IPEndPoint* address,
-                      CompletionRepeatingCallback callback);
+                      CompletionOnceCallback callback);
 
  private:
   std::string response_packet_;
@@ -121,7 +114,7 @@ class MockMDnsSocketFactory : public MDnsSocketFactory {
   int RecvFromInternal(IOBuffer* buffer,
                        int size,
                        IPEndPoint* address,
-                       CompletionRepeatingCallback callback);
+                       CompletionOnceCallback callback);
 
   void CreateSocket(
       AddressFamily address_family,
@@ -129,7 +122,7 @@ class MockMDnsSocketFactory : public MDnsSocketFactory {
 
   scoped_refptr<IOBuffer> recv_buffer_;
   int recv_buffer_size_;
-  CompletionRepeatingCallback recv_callback_;
+  CompletionOnceCallback recv_callback_;
 };
 
 }  // namespace net

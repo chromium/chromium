@@ -1,0 +1,12 @@
+include_rules = [
+  "+chrome/browser/profiles/android/java/src/org/chromium/chrome/browser/profiles/Profile.java",
+]
+
+specific_include_rules = {
+  "TabPersistentStore.java": [
+    "+chrome/browser/tabpersistence/android/java",
+  ],
+  "TabbedModeTabPersistencePolicy.java": [
+    "+chrome/browser/tabpersistence/android/java",
+  ],
+}

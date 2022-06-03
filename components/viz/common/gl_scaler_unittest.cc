@@ -5,8 +5,8 @@
 #include "components/viz/common/gl_scaler.h"
 
 #include "cc/test/pixel_test.h"
-#include "components/viz/common/gl_scaler_test_util.h"
 #include "components/viz/common/gpu/context_provider.h"
+#include "components/viz/test/gl_scaler_test_util.h"
 #include "gpu/GLES2/gl2chromium.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
@@ -67,7 +67,7 @@ class MockContextProvider : public ContextProvider {
     NOTREACHED();
     return nullptr;
   }
-  class GrContext* GrContext() final {
+  class GrDirectContext* GrContext() final {
     NOTREACHED();
     return nullptr;
   }
@@ -83,7 +83,9 @@ class MockContextProvider : public ContextProvider {
 
 class GLScalerTest : public cc::PixelTest {
  protected:
-  void SetUp() final { cc::PixelTest::SetUpGLWithoutRenderer(false); }
+  void SetUp() final {
+    cc::PixelTest::SetUpGLWithoutRenderer(gfx::SurfaceOrigin::kBottomLeft);
+  }
 
   void TearDown() final { cc::PixelTest::TearDown(); }
 };
@@ -97,7 +99,7 @@ TEST_F(GLScalerTest, AddAndRemovesSelfAsContextLossObserver) {
       .WillOnce(SaveArg<0>(&registered_observer));
   EXPECT_CALL(provider, RemoveObserver(Eq(ByRef(registered_observer))))
       .InSequence(s);
-  GLScaler scaler(base::WrapRefCounted(&provider));
+  GLScaler scaler(&provider);
 }
 
 TEST_F(GLScalerTest, RemovesObserverWhenContextIsLost) {
@@ -109,7 +111,7 @@ TEST_F(GLScalerTest, RemovesObserverWhenContextIsLost) {
       .WillOnce(SaveArg<0>(&registered_observer));
   EXPECT_CALL(provider, RemoveObserver(Eq(ByRef(registered_observer))))
       .InSequence(s);
-  GLScaler scaler(base::WrapRefCounted(&provider));
+  GLScaler scaler(&provider);
   static_cast<ContextLostObserver&>(scaler).OnContextLost();
   // Verify RemoveObserver() was called before |scaler| goes out-of-scope.
   Mock::VerifyAndClearExpectations(&provider);

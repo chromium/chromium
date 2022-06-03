@@ -31,14 +31,20 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_HTTP_PARSERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_HTTP_PARSERS_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "services/network/public/mojom/content_security_policy.mojom-blink-forward.h"
+#include "services/network/public/mojom/parsed_headers.mojom-blink-forward.h"
+#include "services/network/public/mojom/timing_allow_origin.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/network/content_security_policy_response_headers.h"
 #include "third_party/blink/renderer/platform/network/parsed_content_type.h"
 #include "third_party/blink/renderer/platform/network/server_timing_header.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -49,6 +55,7 @@ namespace blink {
 
 class HTTPHeaderMap;
 class ResourceResponse;
+class KURL;
 
 enum ContentTypeOptionsDisposition {
   kContentTypeOptionsNone,
@@ -63,8 +70,8 @@ struct CacheControlHeader {
   bool contains_no_cache : 1;
   bool contains_no_store : 1;
   bool contains_must_revalidate : 1;
-  base::Optional<base::TimeDelta> max_age;
-  base::Optional<base::TimeDelta> stale_while_revalidate;
+  absl::optional<base::TimeDelta> max_age;
+  absl::optional<base::TimeDelta> stale_while_revalidate;
 
   CacheControlHeader()
       : parsed(false),
@@ -90,7 +97,7 @@ PLATFORM_EXPORT bool ParseHTTPRefresh(const String& refresh,
                                       WTF::CharacterMatchFunctionPtr matcher,
                                       base::TimeDelta& delay,
                                       String& url);
-PLATFORM_EXPORT base::Optional<base::Time> ParseDate(const String&);
+PLATFORM_EXPORT absl::optional<base::Time> ParseDate(const String&);
 
 // Given a Media Type (like "foo/bar; baz=gazonk" - usually from the
 // 'Content-Type' HTTP header), extract and return the "type/subtype" portion
@@ -141,6 +148,44 @@ PLATFORM_EXPORT bool ParseContentRangeHeaderFor206(const String& content_range,
 
 PLATFORM_EXPORT std::unique_ptr<ServerTimingHeaderVector>
 ParseServerTimingHeader(const String&);
+
+// Build ParsedHeaders from raw headers. This is the same as
+// network::PopulateParsedHeaders(headers, url) but using blink types.
+PLATFORM_EXPORT network::mojom::blink::ParsedHeadersPtr ParseHeaders(
+    const String& raw_headers,
+    const KURL& url);
+
+// Parses Content Security Policies. This is the same as
+// network::ParseContentSecurityPolicies but using blink types.
+PLATFORM_EXPORT
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicies(
+    const String& raw_policies,
+    network::mojom::blink::ContentSecurityPolicyType type,
+    network::mojom::blink::ContentSecurityPolicySource source,
+    const KURL& base_url);
+
+// Parses Content Security Policies. This is the same as
+// network::ParseContentSecurityPolicies but using blink types.
+PLATFORM_EXPORT
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicies(
+    const String& raw_policies,
+    network::mojom::blink::ContentSecurityPolicyType type,
+    network::mojom::blink::ContentSecurityPolicySource source,
+    const SecurityOrigin& self_origin);
+
+// Parses Content Security Policies headers. This uses
+// network::ParseContentSecurityPolicies and translates to blink types.
+PLATFORM_EXPORT
+Vector<network::mojom::blink::ContentSecurityPolicyPtr>
+ParseContentSecurityPolicyHeaders(
+    const ContentSecurityPolicyResponseHeaders& headers);
+
+PLATFORM_EXPORT
+network::mojom::blink::TimingAllowOriginPtr ParseTimingAllowOrigin(
+    const String& header_value);
+
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_NETWORK_HTTP_PARSERS_H_

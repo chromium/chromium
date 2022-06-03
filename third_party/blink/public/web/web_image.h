@@ -36,10 +36,13 @@
 #include "third_party/blink/public/platform/web_vector.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
+namespace gfx {
+class Size;
+}  // namespace gfx
+
 namespace blink {
 
 class WebData;
-struct WebSize;
 
 // APIs to decode an image from a string of data.
 class WebImage {
@@ -53,9 +56,11 @@ class WebImage {
 
   // Decodes the given image data. If the image has multiple frames,
   // then the frame whose size is desired_size is returned. Otherwise,
-  // the first frame is returned.
+  // the first frame is returned. If the image contains EXIF data that changes
+  // the orientation, the returned image will be rotated such that the result is
+  // top-left oriented.
   BLINK_EXPORT static SkBitmap FromData(const WebData&,
-                                        const WebSize& desired_size);
+                                        const gfx::Size& desired_size);
 
   // Decodes the given data as an SVG image. If the SVG is well-formed, an
   // image of the first frame is returned. If an error is encountered an empty
@@ -65,7 +70,7 @@ class WebImage {
   // specified to |desired_size| pixels. If empty, the intrinsic size (if any)
   // of the image will be used.
   BLINK_EXPORT static SkBitmap DecodeSVG(const WebData&,
-                                         const WebSize& desired_size);
+                                         const gfx::Size& desired_size);
 
   // Returns a list of all frames in the image. Only the first frame at each
   // pixel size will be returned.

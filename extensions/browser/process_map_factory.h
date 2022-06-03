@@ -15,9 +15,12 @@ namespace extensions {
 class ProcessMap;
 
 // Factory for ProcessMap objects. ProcessMap objects are shared between an
-// incognito browser context and its master browser context.
+// incognito browser context and its original browser context.
 class ProcessMapFactory : public BrowserContextKeyedServiceFactory {
  public:
+  ProcessMapFactory(const ProcessMapFactory&) = delete;
+  ProcessMapFactory& operator=(const ProcessMapFactory&) = delete;
+
   static ProcessMap* GetForBrowserContext(content::BrowserContext* context);
 
   static ProcessMapFactory* GetInstance();
@@ -33,9 +36,6 @@ class ProcessMapFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessMapFactory);
 };
 
 }  // namespace extensions

@@ -37,7 +37,8 @@ class CORE_EXPORT HTMLParserOptions {
   DISALLOW_NEW();
 
  public:
-  bool script_enabled = false;
+  // https://html.spec.whatwg.org/#scripting-flag
+  bool scripting_flag = false;
 
   // TODO(domfarolino): Remove this when Priority Hints is no longer in an
   // Origin Trial. See https://crbug.com/821464.
@@ -51,4 +52,4 @@ class CORE_EXPORT HTMLParserOptions {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_PARSER_HTML_PARSER_OPTIONS_H_

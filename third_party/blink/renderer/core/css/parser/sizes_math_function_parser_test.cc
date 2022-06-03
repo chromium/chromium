@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/css/parser/sizes_math_function_parser.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_to_length_conversion_data.h"
 #include "third_party/blink/renderer/core/css/media_values_cached.h"
@@ -12,7 +13,6 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
-#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
@@ -57,14 +57,13 @@ static void VerifyCSSCalc(String text,
                                                   1);
   CSSToLengthConversionData::ViewportSize viewport_size(viewport_width,
                                                         viewport_height);
+  CSSToLengthConversionData::ContainerSizes container_sizes;
   CSSToLengthConversionData conversion_data(nullptr, font_sizes, viewport_size,
-                                            1.0);
+                                            container_sizes, 1.0);
   EXPECT_APPROX_EQ(value, math_value->ComputeLength<float>(conversion_data));
 }
 
 TEST(SizesMathFunctionParserTest, Basic) {
-  ScopedCSSComparisonFunctionsForTest scope(true);
-
   SizesCalcTestCase test_cases[] = {
       {"calc(500px + 10em)", 660, true, false},
       {"calc(500px / 8)", 62.5, true, false},
@@ -96,13 +95,16 @@ TEST(SizesMathFunctionParserTest, Basic) {
       {"calc(500px/0.5)", 1000, true, false},
       {"calc(500px/.5)", 1000, true, false},
       {"calc(500/0)", 0, false, false},
-      {"calc(500px/0)", 0, false, false},
       {"calc(-500px/10)", 0, true,
        true},  // CSSCalculationValue does not clamp negative values to 0.
       {"calc(((4) * ((10px))))", 40, true, false},
-      {"calc(50px / 0)", 0, false, false},
+      // TODO(crbug.com/1133390): These test cases failed with Infinity and NaN
+      // parsing implementation. Below tests will be reactivated when the
+      // sizes_math function supports the infinity and NaN.
+      //{"calc(500px/0)", 0, false, false},
+      //{"calc(50px / 0)", 0, false, false},
+      //{"calc(50px / (10 - 10))", 0, false, false},
       {"calc(50px / (10 + 10))", 2.5, true, false},
-      {"calc(50px / (10 - 10))", 0, false, false},
       {"calc(50px / (10 * 10))", 0.5, true, false},
       {"calc(50px / (10 / 10))", 50, true, false},
       {"calc(200px*)", 0, false, false},
@@ -178,8 +180,7 @@ TEST(SizesMathFunctionParserTest, Basic) {
   data.device_pixel_ratio = 2.0;
   data.color_bits_per_component = 24;
   data.monochrome_bits_per_component = 0;
-  data.primary_pointer_type = kPointerTypeFine;
-  data.default_font_size = 16;
+  data.primary_pointer_type = mojom::blink::PointerType::kPointerFineType;
   data.three_d_enabled = true;
   data.media_type = media_type_names::kScreen;
   data.strict_mode = true;
@@ -199,8 +200,8 @@ TEST(SizesMathFunctionParserTest, Basic) {
     if (test_cases[i].dont_run_in_css_calc)
       continue;
     VerifyCSSCalc(test_cases[i].input, test_cases[i].output,
-                  test_cases[i].valid, data.default_font_size,
-                  data.viewport_width, data.viewport_height);
+                  test_cases[i].valid, data.em_size, data.viewport_width,
+                  data.viewport_height);
   }
 }
 

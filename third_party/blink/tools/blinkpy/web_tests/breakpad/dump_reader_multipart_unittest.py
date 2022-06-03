@@ -54,7 +54,9 @@ class TestDumpReaderMultipart(unittest.TestCase):
     def test_check_generate_breakpad_symbols_actually_exists(self):
         host = Host()
         dump_reader = DumpReaderMultipart(host, build_dir=None)
-        self.assertTrue(host.filesystem.exists(dump_reader._path_to_generate_breakpad_symbols()))
+        self.assertTrue(
+            host.filesystem.exists(
+                dump_reader._path_to_generate_breakpad_symbols()))
 
     def test_check_is_functional_breakpad_tools_not_found(self):
         host = MockHost()
@@ -72,7 +74,8 @@ class TestDumpReaderMultipart(unittest.TestCase):
 
         dump_file = '/crash-dumps/dump.dmp'
         expected_pid = '4711'
-        host.filesystem.write_text_file(dump_file, "\r\n".join(TestDumpReaderMultipart._MULTIPART_DUMP))
+        host.filesystem.write_text_file(
+            dump_file, "\r\n".join(TestDumpReaderMultipart._MULTIPART_DUMP))
         build_dir = "/mock-checkout/out/Debug"
         host.filesystem.maybe_make_directory(build_dir)
         host.filesystem.exists = lambda x: True
@@ -85,13 +88,15 @@ class TestDumpReaderMultipart(unittest.TestCase):
         dump_reader._binaries_to_symbolize = lambda: ['content_shell']
 
         self.assertTrue(dump_reader.check_is_functional())
-        self.assertEqual(expected_pid, dump_reader._get_pid_from_dump(dump_file))
+        self.assertEqual(expected_pid,
+                         dump_reader._get_pid_from_dump(dump_file))
 
     def test_get_stack_from_dump(self):
         host = MockHost()
 
         dump_file = '/crash-dumps/dump.dmp'
-        host.filesystem.write_text_file(dump_file, "\r\n".join(TestDumpReaderMultipart._MULTIPART_DUMP))
+        host.filesystem.write_text_file(
+            dump_file, "\r\n".join(TestDumpReaderMultipart._MULTIPART_DUMP))
         build_dir = "/mock-checkout/out/Debug"
         host.filesystem.maybe_make_directory(build_dir)
         host.filesystem.exists = lambda x: True
@@ -104,7 +109,8 @@ class TestDumpReaderMultipart(unittest.TestCase):
         dump_reader._binaries_to_symbolize = lambda: ['content_shell']
 
         self.assertTrue(dump_reader.check_is_functional())
-        self.assertEqual("MOCK output of child process", dump_reader._get_stack_from_dump(dump_file))
+        self.assertEqual("MOCK output of child process",
+                         dump_reader._get_stack_from_dump(dump_file))
         self.assertEqual(2, len(host.executive.calls))
         cmd_line = " ".join(host.executive.calls[0])
         self.assertIn('generate_breakpad_symbols.py', cmd_line)

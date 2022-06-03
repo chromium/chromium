@@ -11,10 +11,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
+
+class CombiningUploadList;
 
 // An UploadList is an abstraction over a list of client-side data files that
 // are uploaded to a server. The UploadList allows accessing the UploadInfo
@@ -41,7 +42,7 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
     UploadInfo(const std::string& local_id,
                const base::Time& capture_time,
                State state,
-               const base::string16& file_size);
+               const std::u16string& file_size);
     UploadInfo(const std::string& upload_id, const base::Time& upload_time);
     UploadInfo(const UploadInfo& upload_info);
     ~UploadInfo();
@@ -59,11 +60,17 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
     State state;
 
+    // Identifies where the crash comes from.
+    std::string source;
+
     // Formatted file size for locally stored data.
-    base::string16 file_size;
+    std::u16string file_size;
   };
 
   UploadList();
+
+  UploadList(const UploadList&) = delete;
+  UploadList& operator=(const UploadList&) = delete;
 
   // Starts loading the upload list. OnUploadListAvailable will be called when
   // loading is complete. If this is called twice, the second |callback| will
@@ -102,6 +109,9 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
 
  private:
   friend class base::RefCountedThreadSafe<UploadList>;
+  // CombiningUploadList needs to be able to call the callback functions
+  // (LoadUploadList, ClearUploadList) in its callback functions.
+  friend class CombiningUploadList;
 
   // When LoadUploadList() finishes, the results are reported in |uploads|
   // and the |load_callback_| is run.
@@ -118,8 +128,6 @@ class UploadList : public base::RefCountedThreadSafe<UploadList> {
   base::OnceClosure clear_callback_;
 
   std::vector<UploadInfo> uploads_;
-
-  DISALLOW_COPY_AND_ASSIGN(UploadList);
 };
 
 #endif  // COMPONENTS_UPLOAD_LIST_UPLOAD_LIST_H_

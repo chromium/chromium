@@ -110,7 +110,6 @@ about an HTTP proxy.
 
 When using an HTTP proxy in Chrome, name resolution is always deferred to the
 proxy. HTTP proxies can proxy `http://`, `https://`, `ws://` and `wss://` URLs.
-(Chrome's FTP support is deprecated, and HTTP proxies cannot proxy `ftp://` anymore)
 
 Communication to HTTP proxy servers is insecure, meaning proxied `http://`
 requests are sent in the clear. When proxying `https://` requests through an
@@ -469,7 +468,7 @@ implicitly](#Implicit-bypass-rules).
 
 *Subtracts* the [implicit proxy bypass rules](#Implicit-bypass-rules)
 (localhost and link local addresses). This is generally only needed for test
-setupe. Beware of the security implications to proxying localhost.
+setups. Beware of the security implications to proxying localhost.
 
 Whereas regular bypass rules instruct the browser about URLs that should *not*
 use the proxy, this rule has the opposite effect and tells the browser to
@@ -523,8 +522,7 @@ localhost
 ```
 
 The complete rules are slightly more complicated. For instance on
-Windows we will also recognize `loopback`, and there is special casing of
-`localhost6` and `localhost6.localdomain6` in Chrome's localhost matching.
+Windows we will also recognize `loopback`.
 
 This concept of implicit proxy bypass rules is consistent with the
 platform-level proxy support on Windows and macOS (albeit with some differences
@@ -540,8 +538,8 @@ proxy settings are externally controllable, as when using PAC scripts.
 
 Historical support in Chrome:
 
-* Prior to M71 there were no implicit proxy bypass rules (except if using
-  `--winhttp-proxy-resolver`)
+* Prior to M71 there were no implicit proxy bypass rules, except if using
+  [`--winhttp-proxy-resolver`](#winhttp_proxy_resolver-command-line-switch).
 * In M71 Chrome applied implicit proxy bypass rules to PAC scripts
 * In M72 Chrome generalized the implicit proxy bypass rules to manually
   configured proxies
@@ -722,16 +720,13 @@ favor of a consistent policy.
 PAC scripts can invoke `myIpAddress()` to obtain the client's IP address. This
 function returns a single IP literal, or `"127.0.0.1"` on failure.
 
-`myIpAddress()` is fundamentally broken for multi-homed hosts.
+This API is [inherently ambiguous when used on multi-homed
+hosts](#myIpAddress_myIpAddressEx_and-multi_homed-hosts), as such hosts can
+have multiple IP addresses and yet the browser can pick just one to return.
 
-Consider what happens when a machine has multiple network interfaces, each with
-its own IP address. Answering "what is my IP address" depends on what interface
-the request is sent out on. Which in turn depends on what the destination IP
-is. Which in turn depends on the result of proxy resolution + fallback, which
-is what we are currently blocked in!
-
-Chrome's algorithm uses these ordered steps to find an IP address
-(short-circuiting when a candidate is found).
+Chrome's algorithm for `myIpAddress()` favors returning the IP that would be
+used if we were to connect to the public internet, by executing the following
+ordered steps and short-circuiting once the first candidate IP is found:
 
 1. Select the IP of an interface that can route to public Internet:
     * Probe for route to `8.8.8.8`.
@@ -745,29 +740,15 @@ Chrome's algorithm uses these ordered steps to find an IP address
     * Probe for route to `192.168.0.0`.
     * Probe for route to `FC00::`.
 
-When searching for candidate IP addresses, link-local and loopback addresses
-are skipped over. Link-local or loopback address will only be returned as a
+Note that when searching for candidate IP addresses, link-local and loopback
+addresses are skipped over. Link-local or loopback address will only be returned as a
 last resort when no other IP address was found by following these steps.
 
-This sequence of steps explicitly favors IPv4 over IPv6 results.
+This sequence of steps explicitly favors IPv4 over IPv6 results, to match
+Internet Explorer's IPv6 support.
 
 *Historical note*: Prior to M72, Chrome's implementation of `myIpAddress()` was
 effectively just `getaddrinfo(gethostname)`. This is now step 2 of the heuristic.
-
-### What about pacUseMultihomedDNS?
-
-In Firefox, if you define a global variable named `pacUseMultihomedDNS` in your
-PAC script, it causes `myIpAddress()` to report the IP address of the interface
-that would (likely) have been used had we connected to it DIRECT.
-
-In particular, it will do a DNS resolution of the target host (the hostname of
-the URL that the proxy resolution is being done for), and then
-connect a datagram socket to get the source address.
-
-Chrome does not recognize the `pacUseMultihomedDNS` global as having special
-meaning. A PAC script is free to define such a global, and it won't have
-side-effects. Chrome has no APIs or settings to change `myIpAddress()`'s
-algorithm.
 
 ## Resolving client's IP address within a PAC script using myIpAddressEx()
 
@@ -784,13 +765,13 @@ There are some differences with Chrome's implementation:
 
 * In Chrome the function is unconditionally defined, whereas in Internet
   Explorer one must have used the `FindProxyForURLEx` entrypoint.
-* Chrome does not enumerate all of the host's network interfaces
+* Chrome [does not necessarily enumerate all of the host's network
+  interfaces](#myIpAddress_myIpAddressEx_and-multi_homed-hosts)
 * Chrome does not return link-local or loopback addresses (except if no other
   addresses were found).
 
 The algorithm that Chrome uses is nearly identical to that of `myIpAddress()`
-described earlier. The main difference is that we don't short-circuit
-after finding the first candidate IP, so multiple IPs may be returned.
+described earlier, but in certain cases may return multiple IPs.
 
 1. Select all the IPs of interfaces that can route to public Internet:
     * Probe for route to `8.8.8.8`.
@@ -808,6 +789,29 @@ after finding the first candidate IP, so multiple IPs may be returned.
 Note that short-circuiting happens whenever steps 1-3 find a candidate IP. So
 for example if at least one IP address was discovered by checking routes to
 public Internet, only those IPs will be returned, and steps 2-3 will not run.
+
+## myIpAddress() / myIpAddressEx() and multi-homed hosts
+
+`myIpAddress()` is a poor API for hosts that have multiple IP addresses, as it
+can only return a single IP, which may or may not be the one you wanted. Both
+`myIpAddress()` and `myIpAddressEx()` favor returning the IP for the interface
+that would be used to route to the public internet.
+
+As an API, `myIpAddressEx()` offers more flexibility since it can return
+multiple IP addresses. However Chrome's implementation restricts which IPs a
+PAC script can see [due to privacy
+concerns](https://bugs.chromium.org/p/chromium/issues/detail?id=905366). So
+using `myIpAddressEx()` is not as powerful as enumerating all the host's IPs,
+and may not address all use-cases.
+
+A more reliable strategy for PAC scripts to check which network(s) a user is on
+is to probe test domains using `dnsResolve()` / `dnsResolveEx()`.
+
+Moreover, note that Chrome does not support the Firefox-specific
+`pacUseMultihomedDNS` option, so adding that global to a PAC script has no
+special side-effect in Chrome. Whereas in Firefox it reconfigures
+`myIpAddress()` to be dependent on the target URL that `FindProxyForURL()` was
+called with.
 
 ## Android quirks
 
@@ -838,3 +842,227 @@ platforms:
   system's PAC implementation. This confusion can arise when users add
   `alert()` to debug PAC script logic, and then refer to output in `logcat` to
   try and diagnose a resolving issue in Android Chrome.
+
+## Downloading PAC scripts
+
+When a network context is configured to use a PAC script, proxy resolution will
+stall while downloading the PAC script.
+
+Fetches for PAC URLs are initiated by the network stack, and behave differently
+from ordinary web visible requests:
+
+* Must complete within 30 seconds.
+* Must complete with an HTTP response code of exactly 200.
+* Must have an uncompressed body smaller than 1 MB.
+* Do not follow ordinary HTTP caching semantics.
+* Are never fetched through a proxy
+* Are not visible to the WebRequest extension API, or to service workers.
+* Do not support HTTP authentication (ambient authentication may work, but
+  cannot prompt UI for credentials).
+* Do not support client certificates (including `AutoSelectCertificateForUrls`)
+* Do not support auxiliary certificate network fetches (will only used cached
+  OCSP, AIA, and CRL responses during certificate verification).
+
+### Caching of successful PAC fetches
+
+PAC URLs are always fetched from the network, and never from the HTTP cache.
+After a PAC URL is successfully fetched, its contents (which are used to create
+a long-lived Java Script context) will be assumed to be fresh until either:
+
+* The network changes (IP address changes, DNS configuration changes)
+* The response becomes older than 12 hours
+* A user explicitly invalidates PAC through `chrome://net-internals#proxy`
+
+Once considered stale, the PAC URL will be re-fetched the next time proxy
+resolution is requested.
+
+### Fallback for failed PAC fetches
+
+When the proxy settings are configured to use a PAC URL, and that PAC URL
+cannot be fetched, proxy resolution will fallback to the next option, which is
+often `DIRECT`:
+
+* If using system proxy settings, and the platform supports fallback to manual
+  proxy settings (e.g. Windows), the specified manual proxy servers will be
+  used after the PAC fetch fails.
+* If using Chrome's proxy settings, and the PAC script was marked as
+  [mandatory](https://developer.chrome.com/extensions/proxy), fallback to
+  `DIRECT` is not permitted. Subsequent network requests will fail proxy
+  resolution and complete with `ERR_MANDATORY_PROXY_CONFIGURATION_FAILED`.
+* Otherwise proxy resolution will silently fall back to `DIRECT`.
+
+### Recovering from failed PAC fetches
+
+When fetching an explicitly configured PAC URL fails, the browser will try to
+re-fetch it:
+
+* In exactly 8 seconds
+* 32 seconds after that
+* 2 minutes after that
+* Every 4 hours thereafter
+
+This background polling of the PAC URL is only initiated in response to an
+incoming proxy resolution request, so it will not trigger work when the browser
+is otherwise idle.
+
+Similarly to successful fetches, the PAC URL will be also be re-fetched
+whenever the network changes, the proxy settings change, or it was manually
+invalidated via `chrome://net-internals#proxy`.
+
+### Text encoding
+
+Note that UTF-8 is *not* the default interpretation of PAC response bodies.
+
+The priority for encoding is determined in this order:
+
+1. The `charset` property of the HTTP response's `Content-Type`
+2. Any BOM at the start of response body
+3. Otherwise defaults to ISO-8859-1.
+
+When setting the `Content-Type`, servers should prefer using a mime type of
+`application/x-ns-proxy-autoconfig` or `application/x-javascript-config`.
+However in practice, Chrome does not enforce the mime type.
+
+## Capturing a Net Log for debugging proxy resolution issues
+
+Issues in proxy resolution are best investigated using a Net Log.
+
+A good starting point is to follow the [general instructions for
+net-export](https://www.chromium.org/for-testers/providing-network-details),
+*and while the Net Log is being captured perform these steps*:
+
+1. Reproduce the failure (ex: load a URL that fails)
+2. If you can reproduce a success, do so (ex: load a different URL that succeeds).
+3. In a new tab, navigate to `chrome://net-internals/#proxy` and click both
+   buttons ("Re-apply settings" and "Clear bad proxies").
+4. Repeat step (1)
+5. Stop the Net Log and save the file.
+
+The resulting Net Log should have enough information to diagnose common
+problems. It can be attached to a bug report, or explored using the [Net Log
+Viewer](https://netlog-viewer.appspot.com/). See the next section for some tips
+on analyzing it.
+
+## Analyzing Net Logs for proxy issues
+
+Load saved Net Logs using [Net Log Viewer](https://netlog-viewer.appspot.com/).
+
+### Proxy overview tab
+
+Start by getting a big-picture view of the proxy settings by clicking to the
+"Proxy" tab on the left. This summarizes the proxy settings at the time the
+_capture ended_.
+
+* Does the _original_ proxy settings match expectation?
+  The proxy settings might be coming from:
+  * Managed Chrome policy (chrome://policy)
+  * Command line flags (ex: `--proxy-server`)
+  * (per-profile) Chrome extensions (ex: [chrome.proxy](https://developer.chrome.com/extensions/proxy))
+  * (per-network) System proxy settings
+
+* Was [proxy autodetect (WPAD)](#Web-Proxy-Auto_Discovery-WPAD) specified? In
+  this case the final URL probed will be reflected by the difference between
+  the "Effective" and "Original" settings.
+
+* Internally, proxy settings are per-NetworkContext. The proxy
+  overview tab shows settings for a *particular* NetworkContext, namely the
+  one associated with the Profile used to navigate to `chrome://net-export`. For
+  instance if the net-export was initiated from an Incognito window, it may
+  show different proxy settings here than a net-export capture initiated by a
+  non-Incognito window. When the net-export was triggered from command line
+  (`--log-net-log`) no particular NetworkContext is associated with the
+  capture and hence no proxy settings will be shown in this overview.
+
+* Were any proxies marked as bad?
+
+### Import tab
+
+Skim through the Import tab and look for relevant command line flags and active
+field trials. A find-in-page for `proxy` is a good starting point. Be on the lookout for
+[`--winhttp-proxy-resolver`](#winhttp_proxy_resolver-command-line-switch) which
+has [known problems](https://bugs.chromium.org/p/chromium/issues/detail?id=644030).
+
+### Events tab
+
+To deep dive into proxy resolution, switch to the Events tab.
+
+You can start by filtering on `type:URL_REQUEST` to see all the top level
+requests, and then keep click through the dependency links to
+trace the proxy resolution steps and outcome.
+
+The most relevant events have either `PROXY_`, `PAC_`, or
+`WPAD_` in their names. You can also try filtering for each of those.
+
+Documentation on specific events is available in
+[net_log_event_type_list.h](https://chromium.googlesource.com/chromium/src/+/HEAD/net/log/net_log_event_type_list.h).
+
+Network change events can also be key to understanding proxy issues. After
+switching networks (ex VPN), the effective proxy settings, as well as content
+of any PAC scripts/auto-detect can change.
+
+## Web Proxy Auto-Discovery (WPAD)
+
+When configured to use WPAD (aka "autotmaticaly detect proxy settings"), Chrome
+will prioritize:
+
+1. DHCP-based WPAD (option 252)
+2. DNS-based WPAD
+
+These are tried in order, however DHCP-based WPAD is only supported for Chrome
+on Windows and Chrome on Chrome OS.
+
+WPAD is the system default for many home and Enterprise users.
+
+### Chrome on macOS support for DHCP-based WPAD
+
+Chrome on macOS does not support DHCP-based WPAD when configured to use
+"autodetect".
+
+However, macOS might perform DHCP-based WPAD and embed this discovered PAC URL
+as part of the system proxy settings. So effectively when Chrome is configured
+to "use system proxy settings" it may behave as if it supports DHCP-based WPAD.
+
+### Dangers of DNS-based WPAD and DNS search suffix list
+
+DNS-based WPAD involves probing for the non-FQDN `wpad`. This means
+WPAD's performance and security is directly tied to the user's DNS search
+suffix list.
+
+When resolving `wpad`, the host's DNS resolver will complete the hostname using
+each of the suffixes in the search list:
+
+1. If the suffix list is long this process can very slow, as it triggers a
+   cascade of NXDOMAIN.
+2. If the suffix list includes domains *outside of the administrative domain*,
+   WPAD may select an attacker controlled PAC server, and can subsequently
+   funnel the user's traffic through a proxy server of their choice. The
+   evolution of TLDs further increases this risk, since what were previously
+   private suffixes used by an enterprise can become publicly registerable.
+   See also [WPAD Name Collision
+   Vulnerability](https://www.us-cert.gov/ncas/alerts/TA16-144A)
+
+## --winhttp-proxy-resolver command line switch
+
+Passing the `--winhttp-proxy-resolver` command line argument instructs Chrome
+to use the system libraries for *one narrow part of proxy resolution*: evaluating
+a given PAC script.
+
+Use of this flag is NOT a supported mode, and has [known
+problems](https://bugs.chromium.org/p/chromium/issues/detail?id=644030): It
+can break Chrome extensions (`chrome.proxy` API), the interpretation of
+Proxy policies, hurt performance, and doesn't ensure full fidelity
+interpretation of system proxy settings.
+
+Another oddity of this switch is that it actually gets interpreted with a
+smilar meaning on other platforms (macOS), despite its Windows-specific naming.
+
+This flag was historically exposed for debugging, and to mitigate unresolved
+policy differences in PAC execution. In the future this switch [will be
+removed](https://bugs.chromium.org/p/chromium/issues/detail?id=644030).
+
+Although Chrome would like full fidelity with Windows proxy settings, there are
+limits to those integrations. Dependencies like NRPT for proxy
+resolution necessitate using Windows proxy resolution libraries directly
+instead of Chrome's. We hope these less common use cases will be fully
+addressed by [this
+feature](https://bugs.chromium.org/p/chromium/issues/detail?id=1032820)

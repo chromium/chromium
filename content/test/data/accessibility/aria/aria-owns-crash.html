@@ -1,0 +1,27 @@
+<!--
+@WAIT-FOR:done
+-->
+
+<div class="container">
+  <div>
+    <div class="combo" role="combobox">
+      <input>
+    </div>
+  </div>
+
+  <div id="old-parent">
+    <ul role="listbox">
+      <li>Test</li>
+    </ul>
+  </div>
+</div>
+
+<script>
+requestAnimationFrame(() => {
+  document.querySelector('.container').style.visibility = 'hidden';
+  document.querySelector('[role=listbox]').id='listbox';
+  document.querySelector('.combo').parentElement.setAttribute('aria-label', 'cats');
+  document.querySelector('.combo').setAttribute('aria-owns', 'listbox');
+  document.title = 'done';
+});
+</script>

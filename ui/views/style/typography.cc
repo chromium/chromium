@@ -4,7 +4,7 @@
 
 #include "ui/views/style/typography.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/views/layout/layout_provider.h"
 #include "ui/views/style/typography_provider.h"
 
@@ -19,6 +19,12 @@ void ValidateContextAndStyle(int context, int style) {
 }
 
 }  // namespace
+
+ui::ResourceBundle::FontDetails GetFontDetails(int context, int style) {
+  ValidateContextAndStyle(context, style);
+  return LayoutProvider::Get()->GetTypographyProvider().GetFontDetails(context,
+                                                                       style);
+}
 
 const gfx::FontList& GetFont(int context, int style) {
   ValidateContextAndStyle(context, style);

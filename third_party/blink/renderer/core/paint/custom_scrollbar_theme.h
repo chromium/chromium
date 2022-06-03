@@ -30,29 +30,28 @@
 
 namespace blink {
 
-class CustomScrollbar;
 class LayoutCustomScrollbarPart;
 class WebMouseEvent;
-struct PhysicalOffset;
 struct PhysicalRect;
 
 class CustomScrollbarTheme final : public ScrollbarTheme {
  public:
   ~CustomScrollbarTheme() override = default;
 
-  int ScrollbarThickness(ScrollbarControlSize control_size) override {
-    return GetTheme().ScrollbarThickness(control_size);
+  int ScrollbarThickness(float scale_from_dip,
+                         EScrollbarWidth scrollbar_width) override {
+    return GetTheme().ScrollbarThickness(scale_from_dip, scrollbar_width);
   }
 
-  WebScrollbarButtonsPlacement ButtonsPlacement() const override {
-    return GetTheme().ButtonsPlacement();
+  bool NativeThemeHasButtons() override {
+    return GetTheme().NativeThemeHasButtons();
   }
 
   void PaintScrollCorner(GraphicsContext&,
                          const Scrollbar* vertical_scrollbar,
                          const DisplayItemClient&,
                          const IntRect& corner_rect,
-                         WebColorScheme color_scheme) override;
+                         mojom::blink::ColorScheme color_scheme) override;
 
   bool ShouldCenterOnThumb(const Scrollbar& scrollbar,
                            const WebMouseEvent& event) override {
@@ -84,21 +83,21 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
 
   static void PaintIntoRect(const LayoutCustomScrollbarPart&,
                             GraphicsContext&,
-                            const PhysicalOffset& paint_offset,
-                            const PhysicalRect&,
-                            const CustomScrollbar* = nullptr);
+                            const PhysicalRect&);
 
  protected:
+  ScrollbarPart HitTest(const Scrollbar&, const gfx::Point&) override;
+
   bool HasButtons(const Scrollbar&) override;
   bool HasThumb(const Scrollbar&) override;
 
-  IntRect BackButtonRect(const Scrollbar&, ScrollbarPart) override;
-  IntRect ForwardButtonRect(const Scrollbar&, ScrollbarPart) override;
+  IntRect BackButtonRect(const Scrollbar&) override;
+  IntRect ForwardButtonRect(const Scrollbar&) override;
   IntRect TrackRect(const Scrollbar&) override;
 
   void PaintTrackAndButtons(GraphicsContext&,
                             const Scrollbar&,
-                            const IntPoint&) override;
+                            const gfx::Vector2d&) override;
   void PaintButton(GraphicsContext&,
                    const Scrollbar&,
                    const IntRect&,
@@ -112,6 +111,7 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
                                           const IntRect&) override;
 
  private:
+  IntRect ButtonRect(const Scrollbar&, ScrollbarPart);
   void PaintScrollbarBackground(GraphicsContext&, const Scrollbar&);
   void PaintTrackBackground(GraphicsContext&, const Scrollbar&, const IntRect&);
   void PaintTrackPiece(GraphicsContext&,

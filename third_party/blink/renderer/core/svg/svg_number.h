@@ -31,14 +31,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_NUMBER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_NUMBER_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_listable_property.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
 class SVGNumberTearOff;
 
-class SVGNumber : public SVGPropertyHelper<SVGNumber> {
+class SVGNumber : public SVGListablePropertyBase {
  public:
   // SVGNumber has a tear-off type, but SVGAnimatedNumber uses primitive type.
   typedef SVGNumberTearOff TearOffType;
@@ -47,6 +48,7 @@ class SVGNumber : public SVGPropertyHelper<SVGNumber> {
   explicit SVGNumber(float = 0.0f);
 
   virtual SVGNumber* Clone() const;
+  SVGPropertyBase* CloneForAnimation(const String&) const override;
 
   float Value() const { return value_; }
   void SetValue(float value) { value_ = value; }
@@ -54,30 +56,37 @@ class SVGNumber : public SVGPropertyHelper<SVGNumber> {
   String ValueAsString() const override;
   virtual SVGParsingError SetValueAsString(const String&);
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from,
-                              SVGPropertyBase* to,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement* context_element) override;
-  float CalculateDistance(SVGPropertyBase* to,
-                          SVGElement* context_element) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement* context_element) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement* context_element) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedNumber; }
+  AnimatedPropertyType GetType() const override { return ClassType(); }
 
   void SetInitial(unsigned value) { SetValue(value); }
   static constexpr int kInitialValueBits = 2;
 
  protected:
   template <typename CharType>
-  SVGParsingError Parse(const CharType*& ptr, const CharType* end);
+  SVGParsingError Parse(const CharType* ptr, const CharType* end);
 
   float value_;
 };
 
-DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGNumber);
+template <>
+struct DowncastTraits<SVGNumber> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGNumber::ClassType();
+  }
+};
 
 // SVGNumber which also accepts percentage as its value.
 // This is used for <stop> "offset"

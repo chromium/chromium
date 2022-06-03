@@ -5,31 +5,31 @@
 package org.chromium.chrome.browser.keyboard_accessory;
 
 import android.content.Context;
-import android.content.DialogInterface;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ResourceId;
+import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.components.autofill.AutofillDelegate;
 import org.chromium.components.autofill.AutofillSuggestion;
 import org.chromium.ui.DropdownItem;
 import org.chromium.ui.base.WindowAndroid;
-
+import org.chromium.url.GURL;
 /**
  * JNI call glue for AutofillExternalDelagate C++ and Java objects.
  * This provides an alternative UI for Autofill suggestions, and replaces AutofillPopupBridge when
  * --enable-autofill-keyboard-accessory-view is passed on the command line.
  */
 @JNINamespace("autofill")
-public class AutofillKeyboardAccessoryViewBridge
-        implements AutofillDelegate, DialogInterface.OnClickListener {
+public class AutofillKeyboardAccessoryViewBridge implements AutofillDelegate {
     private long mNativeAutofillKeyboardAccessory;
-    private ManualFillingComponent mManualFillingComponent;
-    private Context mContext;
-    private PropertyProvider<AutofillSuggestion[]> mChipProvider =
+    private @Nullable ObservableSupplier<ManualFillingComponent> mManualFillingComponentSupplier;
+    private @Nullable ManualFillingComponent mManualFillingComponent;
+    private @Nullable Context mContext;
+    private final PropertyProvider<AutofillSuggestion[]> mChipProvider =
             new PropertyProvider<>(AccessoryAction.AUTOFILL_SUGGESTION);
 
     private AutofillKeyboardAccessoryViewBridge() {}
@@ -66,9 +66,7 @@ public class AutofillKeyboardAccessoryViewBridge
     @Override
     public void accessibilityFocusCleared() {}
 
-    @Override
-    public void onClick(DialogInterface dialog, int which) {
-        assert which == DialogInterface.BUTTON_POSITIVE;
+    private void onDeletionConfirmed() {
         if (mNativeAutofillKeyboardAccessory == 0) return;
         AutofillKeyboardAccessoryViewBridgeJni.get().deletionConfirmed(
                 mNativeAutofillKeyboardAccessory, AutofillKeyboardAccessoryViewBridge.this);
@@ -79,20 +77,17 @@ public class AutofillKeyboardAccessoryViewBridge
      * This function should be called at most one time.
      * @param nativeAutofillKeyboardAccessory Handle to the native counterpart.
      * @param windowAndroid The window on which to show the suggestions.
-     * @param animationDurationMillis If 0, do not animate. Otherwise, animation duration in each
-     *                                direction. We reverse animation to scroll the first suggestion
-     *                                (which is a hint to call attention to the accessory) out of
-     *                                the viewport at the end of the reversed animation.
-     * @param shouldLimitLabelWidth If true, limit suggestion label width to 1/2 device's width.
      */
     @CalledByNative
-    private void init(long nativeAutofillKeyboardAccessory, WindowAndroid windowAndroid,
-            int animationDurationMillis, boolean shouldLimitLabelWidth) {
+    private void init(long nativeAutofillKeyboardAccessory, WindowAndroid windowAndroid) {
         mContext = windowAndroid.getActivity().get();
         assert mContext != null;
-        if (mContext instanceof ChromeActivity) {
-            mManualFillingComponent = ((ChromeActivity) mContext).getManualFillingComponent();
-            mManualFillingComponent.registerAutofillProvider(mChipProvider, this);
+
+        mManualFillingComponentSupplier = ManualFillingComponentSupplier.from(windowAndroid);
+        if (mManualFillingComponentSupplier != null) {
+            ManualFillingComponent currentFillingComponent =
+                    mManualFillingComponentSupplier.addObserver(this::connectToFillingComponent);
+            connectToFillingComponent(currentFillingComponent);
         }
 
         mNativeAutofillKeyboardAccessory = nativeAutofillKeyboardAccessory;
@@ -111,6 +106,9 @@ public class AutofillKeyboardAccessoryViewBridge
      */
     @CalledByNative
     private void dismiss() {
+        if (mManualFillingComponentSupplier != null) {
+            mManualFillingComponentSupplier.removeObserver(this::connectToFillingComponent);
+        }
         mChipProvider.notifyObservers(new AutofillSuggestion[0]);
         mContext = null;
     }
@@ -124,14 +122,10 @@ public class AutofillKeyboardAccessoryViewBridge
         mChipProvider.notifyObservers(suggestions);
     }
 
-    // Helper methods for AutofillSuggestion. These are copied from AutofillPopupBridge (which
-    // should
-    // eventually disappear).
-
     @CalledByNative
-    private void confirmDeletion(String title, String body) throws Exception {
-        // TODO(fhorschig): If deletion is implemented, build a ModalDialogView!
-        throw new Exception("Not implemented yet!");
+    private void confirmDeletion(String title, String body) {
+        assert mManualFillingComponent != null;
+        mManualFillingComponent.confirmOperation(title, body, this::onDeletionConfirmed);
     }
 
     @CalledByNative
@@ -153,17 +147,45 @@ public class AutofillKeyboardAccessoryViewBridge
      * @param sublabel Hint for the suggested text. The text that's going to be filled in the
      *                 unfocused fields of the form. If {@see label} is empty, then this must be
      *                 empty too.
+     * @param itemTag Tag for the autofill suggestion. This text will be displayed as an IPH Bubble.
      * @param iconId The resource ID for the icon associated with the suggestion, or 0 for no icon.
      * @param suggestionId Identifier for the suggestion type.
      * @param isDeletable Whether the item can be deleted by the user.
+     * @param featureForIPH The In-Product-Help feature used for displaying the bubble for the
+     *         suggestion.
+     * @param customIconUrl The url used to fetch the custom icon to be displayed in the autofill
+     *         suggestion chip.
      */
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
-            String label, String sublabel, int iconId, int suggestionId, boolean isDeletable) {
-        int drawableId = iconId == 0 ? DropdownItem.NO_ICON : ResourceId.mapToDrawableId(iconId);
-        array[index] = new AutofillSuggestion(label, sublabel, drawableId,
-                false /* isIconAtStart */, suggestionId, isDeletable, false /* isMultilineLabel */,
-                false /* isBoldLabel */);
+            String label, String sublabel, String itemTag, int iconId, int suggestionId,
+            boolean isDeletable, String featureForIPH, GURL customIconUrl) {
+        int drawableId = iconId == 0 ? DropdownItem.NO_ICON : iconId;
+        array[index] = new AutofillSuggestion.Builder()
+                               .setLabel(label)
+                               .setSubLabel(sublabel)
+                               .setItemTag(itemTag)
+                               .setIconId(drawableId)
+                               .setIsIconAtStart(false)
+                               .setSuggestionId(suggestionId)
+                               .setIsDeletable(isDeletable)
+                               .setIsMultiLineLabel(false)
+                               .setIsBoldLabel(false)
+                               .setFeatureForIPH(featureForIPH)
+                               .setCustomIconUrl(customIconUrl)
+                               .build();
+    }
+
+    /**
+     * Used to register the filling component that receives and renders the autofill suggestions.
+     * Noop if the component hasn't changed or became null.
+     * @param fillingComponent The {@link ManualFillingComponent} displaying suggestions as chips.
+     */
+    private void connectToFillingComponent(@Nullable ManualFillingComponent fillingComponent) {
+        if (mManualFillingComponent == fillingComponent) return;
+        mManualFillingComponent = fillingComponent;
+        if (mManualFillingComponent == null) return;
+        mManualFillingComponent.registerAutofillProvider(mChipProvider, this);
     }
 
     @NativeMethods

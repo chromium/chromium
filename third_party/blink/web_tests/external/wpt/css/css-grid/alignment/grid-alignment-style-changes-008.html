@@ -16,6 +16,7 @@
   background: grey;
   justify-items: baseline;
   font-family: Ahem;
+  text-orientation: sideways;
   line-height: 1;
 }
 #container > div { writing-mode: vertical-lr; }
@@ -38,17 +39,18 @@
 <script src="/resources/check-layout-th.js"></script>
 <script src="support/style-change.js"></script>
 <script>
+setup({ explicit_done: true });
 function runTest() {
     let before = {
-        item1: {"data-offset-x": 5  },
+        item1: {"data-offset-x": 2  },
         item2: {"data-offset-x": 30 },
         item3: {"data-offset-x": 0  }
     };
 
     let after = {
-        item1: {"data-offset-x": 10 },
-        item2: {"data-offset-x": 0  },
-        item3: {"data-offset-x": 5  }
+        item1: {"data-offset-x": 4 },
+        item2: {"data-offset-x": 0 },
+        item3: {"data-offset-x": 2 }
     };
 
     evaluateStyleChangeMultiple("before", before);
@@ -57,7 +59,7 @@ function runTest() {
     done();
 }
 </script>
-<body onload="runTest()">
+<body onload="document.fonts.ready.then(() => { runTest(); })">
     <div id="container">
         <div id="item1" data-expected-width="20" data-expected-height="50" data-offset-y="0">É</div>
         <div id="item2" data-expected-width="40" data-expected-height="50" data-offset-y="50">É</div>

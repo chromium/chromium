@@ -1,0 +1,13 @@
+Name: reflector
+Short Name: utils-reflector
+URL: http://robolectric.org
+Version: 4.3.1
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+An alternative Android testing framework.
+
+Local Modifications:
+No modifications.

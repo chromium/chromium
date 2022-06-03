@@ -1,0 +1,23 @@
+[
+  {
+    "namespace": "crossref_enums",
+    "description": "The crossref API with only cross ref enums",
+    "dependencies": ["simple_api"],
+    "types": [
+      {
+        "id": "CrossrefType",
+        "type": "object",
+        "properties": {
+          "testEnumOptional": {
+            "$ref": "simple_api.TestEnum",
+            "optional": true
+          },
+          "testEnumOptionalExtra": {
+            "$ref": "simple_api.TestEnum",
+            "optional": true
+          }
+        }
+      }
+    ]
+  }
+]

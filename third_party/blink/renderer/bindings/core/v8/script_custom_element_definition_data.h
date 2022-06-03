@@ -29,22 +29,27 @@ class ScriptCustomElementDefinitionData {
  public:
   ScriptCustomElementDefinitionData() {}
 
-  Member<ScriptState> script_state_;
-  Member<CustomElementRegistry> registry_;
-  Member<V8CustomElementConstructor> constructor_;
-  Member<V8VoidFunction> connected_callback_;
-  Member<V8VoidFunction> disconnected_callback_;
-  Member<V8CustomElementAdoptedCallback> adopted_callback_;
-  Member<V8CustomElementAttributeChangedCallback> attribute_changed_callback_;
-  Member<V8CustomElementFormAssociatedCallback> form_associated_callback_;
-  Member<V8VoidFunction> form_reset_callback_;
-  Member<V8CustomElementFormDisabledCallback> form_disabled_callback_;
-  Member<V8CustomElementFormStateRestoreCallback> form_state_restore_callback_;
+  ScriptCustomElementDefinitionData(const ScriptCustomElementDefinitionData&) =
+      delete;
+  ScriptCustomElementDefinitionData& operator=(
+      const ScriptCustomElementDefinitionData&) = delete;
+
+  ScriptState* script_state_ = nullptr;
+  CustomElementRegistry* registry_ = nullptr;
+  V8CustomElementConstructor* constructor_ = nullptr;
+  V8VoidFunction* connected_callback_ = nullptr;
+  V8VoidFunction* disconnected_callback_ = nullptr;
+  V8CustomElementAdoptedCallback* adopted_callback_ = nullptr;
+  V8CustomElementAttributeChangedCallback* attribute_changed_callback_ =
+      nullptr;
+  V8CustomElementFormAssociatedCallback* form_associated_callback_ = nullptr;
+  V8VoidFunction* form_reset_callback_ = nullptr;
+  V8CustomElementFormDisabledCallback* form_disabled_callback_ = nullptr;
+  V8CustomElementFormStateRestoreCallback* form_state_restore_callback_ =
+      nullptr;
   HashSet<AtomicString> observed_attributes_;
   Vector<String> disabled_features_;
   bool is_form_associated_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptCustomElementDefinitionData);
 };
 
 }  // namespace blink

@@ -1,0 +1,8 @@
+Test that SVG-in-HTML attribute modifications are treated as HTML, not XML
+Original outerHTML:
+<svg></svg>
+Modified attribute:
+xlink:href=""
+Modified outerHTML:
+<svg xlink:href=""></svg>
+

@@ -15,14 +15,19 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/mojom/quota_client.mojom.h"
 #include "storage/browser/quota/quota_callbacks.h"
-#include "storage/browser/quota/quota_client.h"
+#include "storage/browser/quota/quota_client_type.h"
 #include "storage/browser/quota/quota_task.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
+
+namespace blink {
+class StorageKey;
+}  // namespace blink
 
 namespace storage {
 
@@ -31,76 +36,69 @@ class ClientUsageTracker;
 // A helper class that gathers and tracks the amount of data stored in
 // all quota clients.
 //
-// Ownership: Each QuotaManager instance owns 3 instances of this class (one per
-// storage type: Persistent, Temporary, Syncable).
-// Thread-safety: All methods except the constructor must be called on the same
-// sequence.
+// Ownership: Each QuotaManagerImpl instance owns 3 instances of this class (one
+// per storage type: Persistent, Temporary, Syncable). Thread-safety: All
+// methods except the constructor must be called on the same sequence.
 class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
     : public QuotaTaskObserver {
  public:
-  UsageTracker(const std::vector<scoped_refptr<QuotaClient>>& clients,
-               blink::mojom::StorageType type,
-               SpecialStoragePolicy* special_storage_policy);
+  // The caller must ensure that all mojo::QuotaClient instances outlive this
+  // instance.
+  UsageTracker(
+      const base::flat_map<mojom::QuotaClient*, QuotaClientType>& client_types,
+      blink::mojom::StorageType type,
+      scoped_refptr<SpecialStoragePolicy> special_storage_policy);
+
+  UsageTracker(const UsageTracker&) = delete;
+  UsageTracker& operator=(const UsageTracker&) = delete;
+
   ~UsageTracker() override;
 
   blink::mojom::StorageType type() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return type_;
   }
-  ClientUsageTracker* GetClientTracker(QuotaClient::ID client_id);
 
-  void GetGlobalLimitedUsage(UsageCallback callback);
   void GetGlobalUsage(GlobalUsageCallback callback);
-  void GetHostUsage(const std::string& host, UsageCallback callback);
   void GetHostUsageWithBreakdown(const std::string& host,
                                  UsageWithBreakdownCallback callback);
-  void UpdateUsageCache(QuotaClient::ID client_id,
-                        const url::Origin& origin,
+  void UpdateUsageCache(QuotaClientType client_type,
+                        const blink::StorageKey& storage_key,
                         int64_t delta);
   int64_t GetCachedUsage() const;
-  void GetCachedHostsUsage(std::map<std::string, int64_t>* host_usage) const;
-  void GetCachedOriginsUsage(
-      std::map<url::Origin, int64_t>* origin_usage) const;
-  void GetCachedOrigins(std::set<url::Origin>* origins) const;
+  std::map<std::string, int64_t> GetCachedHostsUsage() const;
+  std::map<blink::StorageKey, int64_t> GetCachedStorageKeysUsage() const;
+  std::set<blink::StorageKey> GetCachedStorageKeys() const;
   bool IsWorking() const {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     return !global_usage_callbacks_.empty() || !host_usage_callbacks_.empty();
   }
 
-  void SetUsageCacheEnabled(QuotaClient::ID client_id,
-                            const url::Origin& origin,
+  void SetUsageCacheEnabled(QuotaClientType client_type,
+                            const blink::StorageKey& storage_key,
                             bool enabled);
 
  private:
-  struct AccumulateInfo {
-    AccumulateInfo();
-    ~AccumulateInfo();
-    size_t pending_clients = 0;
-    int64_t usage = 0;
-    int64_t unlimited_usage = 0;
-    blink::mojom::UsageBreakdownPtr usage_breakdown =
-        blink::mojom::UsageBreakdown::New();
-  };
-
+  struct AccumulateInfo;
   friend class ClientUsageTracker;
-  void AccumulateClientGlobalLimitedUsage(AccumulateInfo* info,
-                                          int64_t limited_usage);
+
   void AccumulateClientGlobalUsage(AccumulateInfo* info,
                                    int64_t usage,
                                    int64_t unlimited_usage);
   void AccumulateClientHostUsage(base::OnceClosure callback,
                                  AccumulateInfo* info,
                                  const std::string& host,
-                                 QuotaClient::ID client,
+                                 QuotaClientType client,
                                  int64_t usage);
   void FinallySendHostUsageWithBreakdown(AccumulateInfo* info,
                                          const std::string& host);
 
   const blink::mojom::StorageType type_;
-  std::map<QuotaClient::ID, std::unique_ptr<ClientUsageTracker>>
+  base::flat_map<QuotaClientType,
+                 std::vector<std::unique_ptr<ClientUsageTracker>>>
       client_tracker_map_;
+  size_t client_count_;
 
-  std::vector<UsageCallback> global_limited_usage_callbacks_;
   std::vector<GlobalUsageCallback> global_usage_callbacks_;
   std::map<std::string, std::vector<UsageWithBreakdownCallback>>
       host_usage_callbacks_;
@@ -108,7 +106,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) UsageTracker
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<UsageTracker> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(UsageTracker);
 };
 
 }  // namespace storage

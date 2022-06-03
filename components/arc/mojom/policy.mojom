@@ -98,10 +98,10 @@ interface PolicyHost {
 // Next Method ID: 4
 interface PolicyInstance {
   // DEPRECATED: Please use Init@2 instead.
-  InitDeprecated@0(PolicyHost host_ptr);
+  InitDeprecated@0(pending_remote<PolicyHost> host_remote);
 
   // Establishes full-duplex communication with the host.
-  [MinVersion=2] Init@2(PolicyHost host_ptr) => ();
+  [MinVersion=2] Init@2(pending_remote<PolicyHost> host_remote) => ();
 
   // Indicates some policies have changed
   OnPolicyUpdated@1();

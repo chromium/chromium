@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ppapi/proxy/ppapi_messages.h"
 
 namespace ppapi {

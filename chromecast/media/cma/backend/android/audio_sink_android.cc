@@ -4,27 +4,12 @@
 
 #include "chromecast/media/cma/backend/android/audio_sink_android.h"
 
+#include "base/logging.h"
 #include "chromecast/media/cma/backend/android/audio_sink_android_audiotrack_impl.h"
 #include "chromecast/media/cma/backend/android/audio_sink_manager.h"
 
 namespace chromecast {
 namespace media {
-
-// static
-const char* GetAudioContentTypeName(const AudioContentType type) {
-  switch (type) {
-    case AudioContentType::kMedia:
-      return "kMedia";
-    case AudioContentType::kAlarm:
-      return "kAlarm";
-    case AudioContentType::kCommunication:
-      return "kCommunication";
-    case AudioContentType::kOther:
-      return "kOther";
-    default:
-      return "Unknown";
-  }
-}
 
 // static
 bool AudioSinkAndroid::GetSessionIds(SinkType sink_type,

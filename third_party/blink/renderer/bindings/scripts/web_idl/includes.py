@@ -3,15 +3,16 @@
 # found in the LICENSE file.
 
 from .composition_parts import Identifier
+from .composition_parts import WithCodeGeneratorInfo
 from .composition_parts import WithComponent
 from .composition_parts import WithDebugInfo
 from .ir_map import IRMap
 
 
-class Includes(WithComponent, WithDebugInfo):
-    """https://heycam.github.io/webidl/#include"""
+class Includes(object):
+    """https://webidl.spec.whatwg.org/#include"""
 
-    class IR(IRMap.IR, WithComponent, WithDebugInfo):
+    class IR(IRMap.IR, WithCodeGeneratorInfo, WithComponent, WithDebugInfo):
         def __init__(self,
                      interface_identifier,
                      mixin_identifier,
@@ -29,6 +30,7 @@ class Includes(WithComponent, WithDebugInfo):
                 self,
                 identifier=interface_identifier,
                 kind=IRMap.IR.Kind.INCLUDES)
+            WithCodeGeneratorInfo.__init__(self)
             WithComponent.__init__(self, component)
             WithDebugInfo.__init__(self, debug_info)
 

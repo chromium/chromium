@@ -5,9 +5,11 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIELD_INFO_TABLE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_FIELD_INFO_TABLE_H_
 
-#include "base/macros.h"
+#include <vector>
+
 #include "base/time/time.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/signatures.h"
 
 namespace sql {
 class Database;
@@ -16,8 +18,8 @@ class Database;
 namespace password_manager {
 
 struct FieldInfo {
-  uint64_t form_signature = 0u;
-  uint32_t field_signature = 0u;
+  autofill::FormSignature form_signature;
+  autofill::FieldSignature field_signature;
   autofill::ServerFieldType field_type = autofill::UNKNOWN_TYPE;
   // The date when the record was created.
   base::Time create_time;
@@ -25,9 +27,15 @@ struct FieldInfo {
 
 bool operator==(const FieldInfo& lhs, const FieldInfo& rhs);
 
+// Manages field types deduced from the user local actions. On Android these
+// types are not reliable, so this class does nothing.
 class FieldInfoTable {
  public:
   FieldInfoTable() = default;
+
+  FieldInfoTable(const FieldInfoTable&) = delete;
+  FieldInfoTable& operator=(const FieldInfoTable&) = delete;
+
   ~FieldInfoTable() = default;
 
   // Initializes |db_|.
@@ -36,6 +44,8 @@ class FieldInfoTable {
   // Creates the table if it doesn't exist. Returns true if the table already
   // exists or was created successfully.
   bool CreateTableIfNecessary();
+
+  bool DropTableIfExists();
 
   // Adds information about the field. Returns true if the SQL completed
   // successfully.
@@ -53,8 +63,6 @@ class FieldInfoTable {
 
  private:
   sql::Database* db_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(FieldInfoTable);
 };
 
 }  // namespace password_manager

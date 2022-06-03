@@ -24,53 +24,74 @@
 
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 
-#include "base/stl_util.h"  // for base::size()
+#include "base/cxx17_backports.h"  // for base::size()
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
-#include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
-namespace blink {
-{% for property in properties %}
-
-const StylePropertyShorthand& {{property.name.to_lower_camel_case()}}Shorthand() {
+{% macro define_shorthand(property, expansion) -%}
   static const CSSProperty* longhands[] = {
-    {% for longhand_id in property.longhand_property_ids %}
-    &Get{{longhand_id}}(),
+    {% for longhand in expansion.enabled_longhands %}
+    &Get{{longhand.property_id}}(),
     {% endfor %}
   };
 
-  DEFINE_STATIC_LOCAL(const StylePropertyShorthand, shorthand,
-        (CSSPropertyID::{{property.enum_key}}, longhands, base::size(longhands)));
+  static const StylePropertyShorthand shorthand(
+      CSSPropertyID::{{property.enum_key}}, longhands, base::size(longhands));
+{%- endmacro %}
+
+namespace blink {
+{% for property in properties %}
+  {% set function_prefix = property.name.to_lower_camel_case() %}
+  {% for expansion in property.expansions[1:] %}
+
+static const StylePropertyShorthand* {{function_prefix}}Shorthand{{expansion.index}}() {
+    {% for flag in expansion.flags %}
+  if ({{flag.enabled and '!' or ''}}RuntimeEnabledFeatures::{{flag.name}}Enabled())
+    return nullptr;
+    {% endfor %}
+
+  {{define_shorthand(property, expansion)}}
+  return &shorthand;
+}
+  {% endfor %}
+
+const StylePropertyShorthand& {{function_prefix}}Shorthand() {
+  {% if property.expansions|length > 1 %}
+    {% for expansion in property.expansions[1:] %}
+  if (const auto* s = {{function_prefix}}Shorthand{{expansion.index}}())
+    return *s;
+    {% endfor %}
+
+  {% endif %}
+  {% if property.expansions[0].flags %}
+    {% for flag in property.expansions[0].flags %}
+  DCHECK({{not flag.enabled and '!' or ''}}RuntimeEnabledFeatures::{{flag.name}}Enabled());
+    {% endfor %}
+
+  {% endif %}
+  {# Note: only expansions[0] can be empty #}
+  {% if property.expansions[0].is_empty %}
+  static StylePropertyShorthand empty_shorthand;
+  return empty_shorthand;
+  {% else %}
+  {{define_shorthand(property, property.expansions[0])}}
   return shorthand;
+  {% endif %}
 }
 {% endfor %}
-
-// TODO(ericwilligers): Retire this when offset-position and offset-anchor ship
-const StylePropertyShorthand& offsetShorthandWithoutPositionAnchor() {
-  static const CSSProperty* offsetProperties[] = {
-    &GetCSSPropertyOffsetPath(),
-    &GetCSSPropertyOffsetDistance(),
-    &GetCSSPropertyOffsetRotate(),
-  };
-  DEFINE_STATIC_LOCAL(const StylePropertyShorthand, offsetLonghands, (CSSPropertyID::kOffset, offsetProperties, base::size(offsetProperties)));
-  return offsetLonghands;
-}
 
 // Returns an empty list if the property is not a shorthand
 const StylePropertyShorthand& shorthandForProperty(CSSPropertyID propertyID) {
   // FIXME: We shouldn't switch between shorthand/not shorthand based on a runtime flag
-  static StylePropertyShorthand emptyShorthand;
+  static StylePropertyShorthand empty_shorthand;
 
-  if (propertyID == CSSPropertyID::kOffset &&
-      !RuntimeEnabledFeatures::CSSOffsetPositionAnchorEnabled())
-    return offsetShorthandWithoutPositionAnchor();
   switch (propertyID) {
     {% for property in properties %}
+      {% set function_prefix = property.name.to_lower_camel_case() %}
     case CSSPropertyID::{{property.enum_key}}:
-      return {{property.name.to_lower_camel_case()}}Shorthand();
+      return {{function_prefix}}Shorthand();
     {% endfor %}
     default: {
-      return emptyShorthand;
+      return empty_shorthand;
     }
   }
 }

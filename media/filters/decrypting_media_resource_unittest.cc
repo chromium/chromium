@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -24,6 +24,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::base::test::RunCallback;
+using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AnyNumber;
 using ::testing::Invoke;
@@ -33,8 +34,8 @@ using ::testing::StrictMock;
 namespace media {
 
 static constexpr int kFakeBufferSize = 16;
-static constexpr uint8_t kFakeKeyId[] = {0x4b, 0x65, 0x79, 0x20, 0x49, 0x44};
-static constexpr uint8_t kFakeIv[DecryptConfig::kDecryptionKeySize] = {0};
+static constexpr char kFakeKeyId[] = "Key ID";
+static constexpr char kFakeIv[] = "0123456789abcdef";
 
 // Use anonymous namespace here to prevent the actions to be defined multiple
 // times across multiple test files. Sadly we can't use static for them.
@@ -50,20 +51,15 @@ ACTION_P(ReturnBuffer, buffer) {
 class DecryptingMediaResourceTest : public testing::Test {
  public:
   DecryptingMediaResourceTest() {
-    encrypted_buffer_ =
-        scoped_refptr<DecoderBuffer>(new DecoderBuffer(kFakeBufferSize));
-    encrypted_buffer_->set_decrypt_config(DecryptConfig::CreateCencConfig(
-        std::string(reinterpret_cast<const char*>(kFakeKeyId),
-                    base::size(kFakeKeyId)),
-        std::string(reinterpret_cast<const char*>(kFakeIv),
-                    base::size(kFakeIv)),
-        {}));
+    encrypted_buffer_ = base::MakeRefCounted<DecoderBuffer>(kFakeBufferSize);
+    encrypted_buffer_->set_decrypt_config(
+        DecryptConfig::CreateCencConfig(kFakeKeyId, kFakeIv, {}));
 
+    EXPECT_CALL(cdm_context_, RegisterEventCB(_)).Times(AnyNumber());
     EXPECT_CALL(cdm_context_, GetDecryptor())
         .WillRepeatedly(Return(&decryptor_));
     EXPECT_CALL(decryptor_, CanAlwaysDecrypt()).WillRepeatedly(Return(true));
     EXPECT_CALL(decryptor_, CancelDecrypt(_)).Times(AnyNumber());
-    EXPECT_CALL(decryptor_, RegisterNewKeyCB(_, _)).Times(AnyNumber());
     EXPECT_CALL(demuxer_, GetAllStreams())
         .WillRepeatedly(
             Invoke(this, &DecryptingMediaResourceTest::GetAllStreams));
@@ -215,8 +211,8 @@ TEST_F(DecryptingMediaResourceTest, WaitingCallback) {
   EXPECT_CALL(*streams_.front(), OnRead(_))
       .WillRepeatedly(ReturnBuffer(encrypted_buffer_));
   EXPECT_CALL(decryptor_, Decrypt(_, encrypted_buffer_, _))
-      .WillRepeatedly(
-          RunCallback<2>(Decryptor::kNoKey, scoped_refptr<DecoderBuffer>()));
+      .WillRepeatedly(RunOnceCallback<2>(Decryptor::kNoKey,
+                                         scoped_refptr<DecoderBuffer>()));
   EXPECT_CALL(decrypting_media_resource_init_cb_, Run(true));
   EXPECT_CALL(waiting_cb_, Run(WaitingReason::kNoDecryptionKey));
 

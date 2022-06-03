@@ -4,7 +4,7 @@
 
 #include "sql/recover_module/integers.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace sql {
 namespace recover {

@@ -9,20 +9,16 @@
 
 #include <memory>
 
-#include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/base/session_options.h"
-#include "remoting/codec/webrtc_video_encoder.h"
-#include "remoting/codec/webrtc_video_encoder_selector.h"
 #include "remoting/protocol/host_video_stats_dispatcher.h"
+#include "remoting/protocol/video_channel_state_observer.h"
 #include "remoting/protocol/video_stream.h"
+#include "remoting/protocol/webrtc_video_track_source.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
-#include "third_party/webrtc/common_types.h"
+#include "third_party/webrtc/api/video_codecs/sdp_video_format.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace webrtc {
@@ -33,19 +29,25 @@ namespace remoting {
 namespace protocol {
 
 class HostVideoStatsDispatcher;
+class WebrtcVideoEncoderFactory;
 class WebrtcFrameScheduler;
 class WebrtcTransport;
 
 class WebrtcVideoStream : public VideoStream,
                           public webrtc::DesktopCapturer::Callback,
-                          public HostVideoStatsDispatcher::EventHandler {
+                          public HostVideoStatsDispatcher::EventHandler,
+                          public VideoChannelStateObserver {
  public:
   explicit WebrtcVideoStream(const SessionOptions& options);
+
+  WebrtcVideoStream(const WebrtcVideoStream&) = delete;
+  WebrtcVideoStream& operator=(const WebrtcVideoStream&) = delete;
+
   ~WebrtcVideoStream() override;
 
   void Start(std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer,
              WebrtcTransport* webrtc_transport,
-             scoped_refptr<base::SequencedTaskRunner> encode_task_runner);
+             WebrtcVideoEncoderFactory* video_encoder_factory);
 
   // VideoStream interface.
   void SetEventTimestampsSource(scoped_refptr<InputEventTimestampsSource>
@@ -55,6 +57,16 @@ class WebrtcVideoStream : public VideoStream,
   void SetLosslessColor(bool want_lossless) override;
   void SetObserver(Observer* observer) override;
   void SelectSource(int id) override;
+
+  // VideoChannelStateObserver interface.
+  void OnEncoderReady() override;
+  void OnKeyFrameRequested() override;
+  void OnTargetBitrateChanged(int bitrate_kbps) override;
+  void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
+                      const WebrtcVideoEncoder::EncodedFrame* frame) override;
+  void OnEncodedFrameSent(
+      webrtc::EncodedImageCallback::Result result,
+      const WebrtcVideoEncoder::EncodedFrame& frame) override;
 
  private:
   struct FrameStats;
@@ -70,23 +82,14 @@ class WebrtcVideoStream : public VideoStream,
   // Called by the |scheduler_|.
   void CaptureNextFrame();
 
-  void OnFrameEncoded(WebrtcVideoEncoder::EncodeResult encode_result,
-                      std::unique_ptr<WebrtcVideoEncoder::EncodedFrame> frame);
-
-  void OnEncoderCreated(webrtc::VideoCodecType codec_type);
-
-  // Helper functions to create software encoders that run on the encode thread.
-  std::unique_ptr<WebrtcVideoEncoder> CreateVP8Encoder();
-  std::unique_ptr<WebrtcVideoEncoder> CreateVP9Encoder();
+  // Called by |video_track_source_|.
+  void OnSinkAddedOrUpdated(const rtc::VideoSinkWants& wants);
 
   // Capturer used to capture the screen.
   std::unique_ptr<webrtc::DesktopCapturer> capturer_;
-  // Used to send across encoded frames.
-  WebrtcTransport* webrtc_transport_ = nullptr;
-  // Task runner used by software encoders.
-  scoped_refptr<base::SequencedTaskRunner> encode_task_runner_;
-  // Used to encode captured frames.
-  std::unique_ptr<WebrtcVideoEncoder> encoder_;
+
+  // Used to send captured frames to the encoder.
+  rtc::scoped_refptr<WebrtcVideoTrackSource> video_track_source_;
 
   scoped_refptr<InputEventTimestampsSource> event_timestamps_source_;
 
@@ -103,20 +106,11 @@ class WebrtcVideoStream : public VideoStream,
   webrtc::DesktopVector frame_dpi_;
   Observer* observer_ = nullptr;
 
-  WebrtcVideoEncoderSelector encoder_selector_;
-
   base::ThreadChecker thread_checker_;
 
   const SessionOptions session_options_;
 
-  // Settings that are received from video-control messages. These are stored
-  // here in case a message is received before the encoder is created.
-  bool lossless_encode_ = false;
-  bool lossless_color_ = false;
-
   base::WeakPtrFactory<WebrtcVideoStream> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebrtcVideoStream);
 };
 
 }  // namespace protocol

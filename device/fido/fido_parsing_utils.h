@@ -16,9 +16,10 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
+#include "components/cbor/values.h"
 #include "crypto/sha2.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 namespace fido_parsing_utils {
@@ -51,8 +52,8 @@ COMPONENT_EXPORT(DEVICE_FIDO) extern const char kEs256[];
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::vector<uint8_t> Materialize(base::span<const uint8_t> span);
 COMPONENT_EXPORT(DEVICE_FIDO)
-base::Optional<std::vector<uint8_t>> MaterializeOrNull(
-    base::Optional<base::span<const uint8_t>> span);
+absl::optional<std::vector<uint8_t>> MaterializeOrNull(
+    absl::optional<base::span<const uint8_t>> span);
 
 // Returns a materialized copy of the static |span|, that is, an array with the
 // same elements.
@@ -122,6 +123,33 @@ base::StringPiece ConvertToStringPiece(base::span<const uint8_t> data);
 // https://tools.ietf.org/html/rfc4122
 COMPONENT_EXPORT(DEVICE_FIDO)
 std::string ConvertBytesToUuid(base::span<const uint8_t, 16> bytes);
+
+// Copies the contents of the bytestring, keyed by |key|, from |map| into |out|.
+// Returns true on success or false if the key if not found, the value is not a
+// bytestring, or the value has the wrong length.
+template <size_t N>
+bool CopyCBORBytestring(std::array<uint8_t, N>* out,
+                        const cbor::Value::MapValue& map,
+                        int key) {
+  const auto it = map.find(cbor::Value(key));
+  if (it == map.end() || !it->second.is_bytestring()) {
+    return false;
+  }
+  const std::vector<uint8_t> bytestring = it->second.GetBytestring();
+  return ExtractArray(bytestring, /*pos=*/0, out);
+}
+
+constexpr std::array<uint8_t, 4> Uint32LittleEndian(uint32_t value) {
+  return {static_cast<uint8_t>(value), static_cast<uint8_t>(value >> 8),
+          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24)};
+}
+
+constexpr std::array<uint8_t, 8> Uint64LittleEndian(uint64_t value) {
+  return {static_cast<uint8_t>(value),       static_cast<uint8_t>(value >> 8),
+          static_cast<uint8_t>(value >> 16), static_cast<uint8_t>(value >> 24),
+          static_cast<uint8_t>(value >> 32), static_cast<uint8_t>(value >> 40),
+          static_cast<uint8_t>(value >> 48), static_cast<uint8_t>(value >> 56)};
+}
 
 }  // namespace fido_parsing_utils
 }  // namespace device

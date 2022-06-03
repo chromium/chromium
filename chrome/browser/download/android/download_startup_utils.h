@@ -5,21 +5,19 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_STARTUP_UTILS_H_
 #define CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_STARTUP_UTILS_H_
 
-#include "base/macros.h"
-
-class Profile;
 class ProfileKey;
 
 // Native side of DownloadStartupUtils.java.
 class DownloadStartupUtils {
  public:
-  // Ensures that the download system is initialized for the targeted profile.
-  // If |profile| is null, reduced mode will be assumed. The returned value is
-  // the ProfileKey that was used.
-  static ProfileKey* EnsureDownloadSystemInitialized(Profile* profile);
+  DownloadStartupUtils() = delete;
+  DownloadStartupUtils(const DownloadStartupUtils&) = delete;
+  DownloadStartupUtils& operator=(const DownloadStartupUtils&) = delete;
 
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DownloadStartupUtils);
+  // Ensures that the download system is initialized for the targeted profile.
+  // If |profile_key| is null, reduced mode will be assumed. The returned value
+  // is the ProfileKey that was used.
+  static ProfileKey* EnsureDownloadSystemInitialized(ProfileKey* profile_key);
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_ANDROID_DOWNLOAD_STARTUP_UTILS_H_

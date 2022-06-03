@@ -8,17 +8,22 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
+#include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/set_accounts_in_cookie_result.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth_multilogin_result.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
+
+namespace signin {
 
 namespace {
 
@@ -36,7 +41,7 @@ std::string FindTokenForAccount(
 }
 
 CoreAccountId FindAccountIdForGaiaId(
-    const std::vector<GaiaCookieManagerService::AccountIdGaiaIdPair>& accounts,
+    const std::vector<OAuthMultiloginHelper::AccountIdGaiaIdPair>& accounts,
     const std::string& gaia_id) {
   for (const auto& account : accounts) {
     if (gaia_id == account.second)
@@ -47,30 +52,33 @@ CoreAccountId FindAccountIdForGaiaId(
 
 }  // namespace
 
-namespace signin {
-
 OAuthMultiloginHelper::OAuthMultiloginHelper(
     SigninClient* signin_client,
+    AccountsCookieMutator::PartitionDelegate* partition_delegate,
     ProfileOAuth2TokenService* token_service,
     gaia::MultiloginMode mode,
-    const std::vector<GaiaCookieManagerService::AccountIdGaiaIdPair>& accounts,
+    const std::vector<AccountIdGaiaIdPair>& accounts,
     const std::string& external_cc_result,
+    const gaia::GaiaSource& gaia_source,
     base::OnceCallback<void(SetAccountsInCookieResult)> callback)
     : signin_client_(signin_client),
+      partition_delegate_(partition_delegate),
       token_service_(token_service),
       mode_(mode),
       accounts_(accounts),
       external_cc_result_(external_cc_result),
+      gaia_source_(gaia_source),
       callback_(std::move(callback)) {
   DCHECK(signin_client_);
+  DCHECK(partition_delegate_);
   DCHECK(token_service_);
   DCHECK(!accounts_.empty());
   DCHECK(callback_);
 
 #ifndef NDEBUG
   // Check that there is no duplicate accounts.
-  std::set<GaiaCookieManagerService::AccountIdGaiaIdPair>
-      accounts_no_duplicates(accounts_.begin(), accounts_.end());
+  std::set<AccountIdGaiaIdPair> accounts_no_duplicates(accounts_.begin(),
+                                                       accounts_.end());
   DCHECK_EQ(accounts_.size(), accounts_no_duplicates.size());
 #endif
 
@@ -124,8 +132,8 @@ void OAuthMultiloginHelper::OnAccessTokensFailure(
 
 void OAuthMultiloginHelper::StartFetchingMultiLogin() {
   DCHECK_EQ(gaia_id_token_pairs_.size(), accounts_.size());
-  gaia_auth_fetcher_ =
-      signin_client_->CreateGaiaAuthFetcher(this, gaia::GaiaSource::kChrome);
+  gaia_auth_fetcher_ = partition_delegate_->CreateGaiaAuthFetcherForPartition(
+      this, gaia_source_);
   gaia_auth_fetcher_->StartOAuthMultilogin(mode_, gaia_id_token_pairs_,
                                            external_cc_result_);
 }
@@ -179,7 +187,7 @@ void OAuthMultiloginHelper::StartSettingCookies(
     const OAuthMultiloginResult& result) {
   DCHECK(cookies_to_set_.empty());
   network::mojom::CookieManager* cookie_manager =
-      signin_client_->GetCookieManager();
+      partition_delegate_->GetCookieManagerForPartition();
   const std::vector<net::CanonicalCookie>& cookies = result.cookies();
 
   for (const net::CanonicalCookie& cookie : cookies) {
@@ -188,22 +196,22 @@ void OAuthMultiloginHelper::StartSettingCookies(
   for (const net::CanonicalCookie& cookie : cookies) {
     if (cookies_to_set_.find(std::make_pair(cookie.Name(), cookie.Domain())) !=
         cookies_to_set_.end()) {
-      base::OnceCallback<void(net::CanonicalCookie::CookieInclusionStatus)>
-          callback = base::BindOnce(&OAuthMultiloginHelper::OnCookieSet,
-                                    weak_ptr_factory_.GetWeakPtr(),
-                                    cookie.Name(), cookie.Domain());
+      base::OnceCallback<void(net::CookieAccessResult)> callback =
+          base::BindOnce(&OAuthMultiloginHelper::OnCookieSet,
+                         weak_ptr_factory_.GetWeakPtr(), cookie.Name(),
+                         cookie.Domain());
       net::CookieOptions options;
       options.set_include_httponly();
       // Permit it to set a SameSite cookie if it wants to.
       options.set_same_site_cookie_context(
-          net::CookieOptions::SameSiteCookieContext::SAME_SITE_STRICT);
+          net::CookieOptions::SameSiteCookieContext::MakeInclusive());
       cookie_manager->SetCanonicalCookie(
-          cookie, "https", options,
+          cookie, net::cookie_util::SimulatedCookieSource(cookie, "https"),
+          options,
           mojo::WrapCallbackWithDefaultInvokeIfNotRun(
               std::move(callback),
-              net::CanonicalCookie::CookieInclusionStatus(
-                  net::CanonicalCookie::CookieInclusionStatus::
-                      EXCLUDE_UNKNOWN_ERROR)));
+              net::CookieAccessResult(net::CookieInclusionStatus(
+                  net::CookieInclusionStatus::EXCLUDE_UNKNOWN_ERROR))));
     } else {
       LOG(ERROR) << "Duplicate cookie found: " << cookie.Name() << " "
                  << cookie.Domain();
@@ -211,12 +219,11 @@ void OAuthMultiloginHelper::StartSettingCookies(
   }
 }
 
-void OAuthMultiloginHelper::OnCookieSet(
-    const std::string& cookie_name,
-    const std::string& cookie_domain,
-    net::CanonicalCookie::CookieInclusionStatus status) {
+void OAuthMultiloginHelper::OnCookieSet(const std::string& cookie_name,
+                                        const std::string& cookie_domain,
+                                        net::CookieAccessResult access_result) {
   cookies_to_set_.erase(std::make_pair(cookie_name, cookie_domain));
-  bool success = status.IsInclude();
+  bool success = access_result.status.IsInclude();
   if (!success) {
     LOG(ERROR) << "Failed to set cookie " << cookie_name
                << " for domain=" << cookie_domain << ".";

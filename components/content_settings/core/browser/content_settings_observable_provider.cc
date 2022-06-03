@@ -27,11 +27,14 @@ void ObservableProvider::RemoveObserver(Observer* observer) {
 void ObservableProvider::NotifyObservers(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsType content_type) {
+  DCHECK(primary_pattern.IsValid());
+  DCHECK(secondary_pattern.IsValid());
   for (Observer& observer : observer_list_) {
     observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
-                                     content_type, resource_identifier);
+                                     ContentSettingsTypeSet(content_type));
+    observer.OnContentSettingChanged(primary_pattern, secondary_pattern,
+                                     content_type);
   }
 }
 

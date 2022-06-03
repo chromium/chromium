@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<title>Blob navigation in the same tab</title>
+<script>
+fetch('/pdf/test.pdf').then(response => response.blob()).then(blob => {
+  const url = URL.createObjectURL(blob);
+  window.location = url;
+  URL.revokeObjectURL(url);
+});
+</script>

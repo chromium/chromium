@@ -11,11 +11,12 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -247,8 +248,10 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
   EXPECT_TRUE(GetFirstAppWindow()->GetBaseWindow()->IsFullscreen());
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC) || defined(THREAD_SANITIZER) || defined(OS_LINUX)
 // http://crbug.com/404081
+// http://crbug.com/1263448 (tsan)
+// http://crbug.com/1263661 (linux)
 #define MAYBE_TestInnerBounds DISABLED_TestInnerBounds
 #else
 #define MAYBE_TestInnerBounds TestInnerBounds
@@ -341,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest,
 // Those tests should be disabled on Linux GTK when they are enabled on the
 // other platforms, see http://crbug.com/328829.
 // Flaky failures on Windows; see https://crbug.com/788283.
-#if (defined(OS_LINUX) && defined(USE_AURA)) || defined(OS_MACOSX) || \
-    defined(OS_WIN)
+#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_AURA)) || \
+    defined(OS_MAC) || defined(OS_WIN)
 #define MAYBE_TestCreate DISABLED_TestCreate
 #else
 #define MAYBE_TestCreate TestCreate
@@ -360,8 +363,8 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestCreate) {
 // ::Show() because of Cocoa conventions. See http://crbug.com/326987
 // Those tests should be disabled on Linux GTK when they are enabled on the
 // other platforms, see http://crbug.com/328829
-#if (defined(OS_LINUX) && defined(USE_AURA)) || defined(OS_WIN) || \
-    defined(OS_MACOSX)
+#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_AURA)) || \
+    defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_TestShow DISABLED_TestShow
 #else
 #define MAYBE_TestShow TestShow
@@ -411,28 +414,26 @@ IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, TestCreateHidden) {
   }
 }
 
-#if defined(OS_MACOSX)
 // http://crbug.com/502516
 #define MAYBE_TestFullscreen DISABLED_TestFullscreen
-#else
-#define MAYBE_TestFullscreen TestFullscreen
-#endif
 IN_PROC_BROWSER_TEST_F(AppWindowInteractiveTest, MAYBE_TestFullscreen) {
   ASSERT_TRUE(RunAppWindowInteractiveTest("testFullscreen")) << message_;
 }
 
 // Only Linux and Windows use keep-alive to determine when to shut down.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 
 // In general, hidden windows should not keep Chrome alive. The exception is
 // when windows are created hidden, we allow the app some time to show the
 // the window.
 class AppWindowHiddenKeepAliveTest : public extensions::PlatformAppBrowserTest {
- protected:
-  AppWindowHiddenKeepAliveTest() {}
+ public:
+  AppWindowHiddenKeepAliveTest(const AppWindowHiddenKeepAliveTest&) = delete;
+  AppWindowHiddenKeepAliveTest& operator=(const AppWindowHiddenKeepAliveTest&) =
+      delete;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppWindowHiddenKeepAliveTest);
+ protected:
+  AppWindowHiddenKeepAliveTest() = default;
 };
 
 // A window that becomes hidden should not keep Chrome alive.

@@ -1,0 +1,8 @@
+buganizer {
+  component_id: 562866
+}
+monorail {
+  component: "Platform>Apps>PhotoEditor"
+}
+os: CHROME_OS
+team_email: "cros-essential-apps-dev@chromium.org"

@@ -11,8 +11,11 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
+
+class Document;
+
 // Type checking.
-{% for tag in tags|sort if not tag.multipleTagNames and not tag.noTypeHelpers %}
+{% for tag in tags|sort(attribute='name') if not tag.multipleTagNames and not tag.noTypeHelpers %}
 class {{tag.interface}};
 template <>
 inline bool IsElementOfType<const {{tag.interface}}>(const Node& node) {
@@ -26,6 +29,9 @@ template <>
 struct DowncastTraits<{{tag.interface}}> {
   static bool AllowFrom(const Element& element) {
     {% if tag.runtimeEnabled %}
+    // If the following line doesn't compile, your feature may vary by context,
+    // in which case you'll need to write your own type helpers that can
+    // distinguish elements without relying solely on tag name.
     if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
       return false;
     {% endif %}
@@ -50,7 +56,9 @@ enum class HTMLElementType {
 // The corresponding HTMLElement type for the tag name will be returned
 // Do NOT use this function with SVG tag names and SVGElements
 // If tagName is an undefined html tag name HTMLUnknownElement is returned
-HTMLElementType htmlElementTypeForTag(const AtomicString& tagName);
+HTMLElementType htmlElementTypeForTag(const AtomicString& tagName, const Document*);
+
+bool IsKnownBuiltinTagName(const AtomicString& tag_name);
 
 {% endif %}
 }  // namespace blink

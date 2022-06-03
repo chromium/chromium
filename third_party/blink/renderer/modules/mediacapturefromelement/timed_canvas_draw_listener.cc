@@ -17,7 +17,7 @@ TimedCanvasDrawListener::TimedCanvasDrawListener(
     double frame_rate,
     ExecutionContext* context)
     : OnRequestCanvasDrawListener(std::move(handler)),
-      frame_interval_(base::TimeDelta::FromSecondsD(1 / frame_rate)),
+      frame_interval_(base::Seconds(1 / frame_rate)),
       request_frame_timer_(context->GetTaskRunner(TaskType::kInternalMedia),
                            this,
                            &TimedCanvasDrawListener::RequestFrameTimerFired) {}
@@ -42,7 +42,8 @@ void TimedCanvasDrawListener::RequestFrameTimerFired(TimerBase*) {
   frame_capture_requested_ = true;
 }
 
-void TimedCanvasDrawListener::Trace(blink::Visitor* visitor) {
+void TimedCanvasDrawListener::Trace(Visitor* visitor) const {
+  visitor->Trace(request_frame_timer_);
   OnRequestCanvasDrawListener::Trace(visitor);
 }
 

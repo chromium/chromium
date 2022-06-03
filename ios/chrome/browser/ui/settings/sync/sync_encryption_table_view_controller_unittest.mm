@@ -11,7 +11,8 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/test_sync_service.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/main/test_browser.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -37,27 +38,27 @@ class SyncEncryptionTableViewControllerTest
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
     test_cbs_builder.AddTestingFactory(
-        ProfileSyncServiceFactory::GetInstance(),
+        SyncServiceFactory::GetInstance(),
         base::BindRepeating(&CreateTestSyncService));
-    chrome_browser_state_ = test_cbs_builder.Build();
+    browser_ = std::make_unique<TestBrowser>();
     ChromeTableViewControllerTest::SetUp();
 
+    ChromeBrowserState* browserState = browser_.get()->GetBrowserState();
     syncer::TestSyncService* test_sync_service =
         static_cast<syncer::TestSyncService*>(
-            ProfileSyncServiceFactory::GetForBrowserState(
-                chrome_browser_state_.get()));
-    test_sync_service->SetIsUsingSecondaryPassphrase(true);
+            SyncServiceFactory::GetForBrowserState(browserState));
+    test_sync_service->SetIsUsingExplicitPassphrase(true);
 
     CreateController();
   }
 
   ChromeTableViewController* InstantiateController() override {
     return [[SyncEncryptionTableViewController alloc]
-        initWithBrowserState:chrome_browser_state_.get()];
+        initWithBrowser:browser_.get()];
   }
 
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<TestChromeBrowserState> chrome_browser_state_;
+  std::unique_ptr<Browser> browser_;
 };
 
 TEST_F(SyncEncryptionTableViewControllerTest, TestModel) {

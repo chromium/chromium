@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DYNAMICS_COMPRESSOR_KERNEL_H_
 
 #include <memory>
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -43,6 +42,8 @@ class PLATFORM_EXPORT DynamicsCompressorKernel {
 
  public:
   DynamicsCompressorKernel(float sample_rate, unsigned number_of_channels);
+  DynamicsCompressorKernel(const DynamicsCompressorKernel&) = delete;
+  DynamicsCompressorKernel& operator=(const DynamicsCompressorKernel&) = delete;
 
   void SetNumberOfChannels(unsigned);
 
@@ -102,10 +103,10 @@ class PLATFORM_EXPORT DynamicsCompressorKernel {
   float max_attack_compression_diff_db_;
 
   // Static compression curve.
-  float KneeCurve(float x, float k);
-  float Saturate(float x, float k);
-  float SlopeAt(float x, float k);
-  float KAtSlope(float desired_slope);
+  float KneeCurve(float x, float k) const;
+  float Saturate(float x, float k) const;
+  float SlopeAt(float x, float k) const;
+  float KAtSlope(float desired_slope) const;
 
   float UpdateStaticCurveParameters(float db_threshold,
                                     float db_knee,
@@ -134,9 +135,6 @@ class PLATFORM_EXPORT DynamicsCompressorKernel {
 
   // Internal parameter for the knee portion of the curve.
   float knee_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DynamicsCompressorKernel);
 };
 
 }  // namespace blink

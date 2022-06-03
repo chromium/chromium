@@ -6,40 +6,51 @@
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/data_driven_test.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/autofill_payments_features.h"
+#include "components/autofill/core/common/unique_ids.h"
 #import "components/autofill/ios/browser/autofill_agent.h"
 #include "components/autofill/ios/browser/autofill_driver_ios.h"
+#import "components/autofill/ios/form_util/form_util_java_script_feature.h"
+#include "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
 #include "ios/chrome/browser/autofill/address_normalizer_factory.h"
 #import "ios/chrome/browser/autofill/form_suggestion_controller.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_paths.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
+#import "ios/chrome/browser/passwords/password_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #include "ios/chrome/browser/web/chrome_web_client.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#include "testing/data_driven_testing/data_driven_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
+using base::test::ios::kWaitForJSCompletionTimeout;
+using base::test::ios::WaitUntilConditionOrTimeout;
+
 namespace autofill {
 
 namespace {
 
+const base::FilePath::CharType kFeatureName[] = FILE_PATH_LITERAL("autofill");
 const base::FilePath::CharType kTestName[] = FILE_PATH_LITERAL("heuristics");
 
 base::FilePath GetTestDataDir() {
@@ -55,7 +66,7 @@ base::FilePath GetIOSInputDirectory() {
   return dir.AppendASCII("components")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("autofill")
+      .Append(kFeatureName)
       .Append(kTestName)
       .AppendASCII("input");
 }
@@ -67,23 +78,25 @@ base::FilePath GetIOSOutputDirectory() {
   return dir.AppendASCII("components")
       .AppendASCII("test")
       .AppendASCII("data")
-      .AppendASCII("autofill")
+      .Append(kFeatureName)
       .Append(kTestName)
       .AppendASCII("output");
 }
 
 const std::vector<base::FilePath> GetTestFiles() {
   base::FilePath dir(GetIOSInputDirectory());
-  base::FileEnumerator input_files(dir, false, base::FileEnumerator::FILES);
-  std::vector<base::FilePath> files;
-  for (base::FilePath input_file = input_files.Next(); !input_file.empty();
-       input_file = input_files.Next()) {
-    files.push_back(input_file);
+  std::string input_list_string;
+  if (!base::ReadFileToString(dir.AppendASCII("autofill_test_files"),
+                              &input_list_string)) {
+    return {};
   }
-  std::sort(files.begin(), files.end());
-
-  base::mac::ClearAmIBundledCache();
-  return files;
+  std::vector<base::FilePath> result;
+  for (const base::StringPiece& piece :
+       base::SplitStringPiece(input_list_string, "\n", base::TRIM_WHITESPACE,
+                              base::SPLIT_WANT_NONEMPTY)) {
+    result.push_back(dir.AppendASCII(piece));
+  }
+  return result;
 }
 
 }  // namespace
@@ -95,8 +108,12 @@ const std::vector<base::FilePath> GetTestFiles() {
 // TODO(crbug.com/245246): Unify the tests.
 class FormStructureBrowserTest
     : public ChromeWebTest,
-      public DataDrivenTest,
-      public ::testing::WithParamInterface<base::FilePath> {
+      public testing::DataDrivenTest,
+      public testing::WithParamInterface<base::FilePath> {
+ public:
+  FormStructureBrowserTest(const FormStructureBrowserTest&) = delete;
+  FormStructureBrowserTest& operator=(const FormStructureBrowserTest&) = delete;
+
  protected:
   FormStructureBrowserTest();
   ~FormStructureBrowserTest() override {}
@@ -104,12 +121,14 @@ class FormStructureBrowserTest
   void SetUp() override;
   void TearDown() override;
 
+  bool LoadHtmlWithoutSubresourcesAndInitRendererIds(const std::string& html);
+
   // DataDrivenTest:
   void GenerateResults(const std::string& input, std::string* output) override;
 
   // Serializes the given |forms| into a string.
   std::string FormStructuresToString(
-      const AutofillManager::FormStructureMap& forms);
+      const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms);
 
   std::unique_ptr<autofill::ChromeAutofillClientIOS> autofill_client_;
   AutofillAgent* autofill_agent_;
@@ -117,24 +136,44 @@ class FormStructureBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  DISALLOW_COPY_AND_ASSIGN(FormStructureBrowserTest);
+  PasswordController* password_controller_;
 };
 
 FormStructureBrowserTest::FormStructureBrowserTest()
     : ChromeWebTest(std::make_unique<ChromeWebClient>()),
-      DataDrivenTest(GetTestDataDir()) {
+      DataDrivenTest(GetTestDataDir(), kFeatureName, kTestName) {
   feature_list_.InitWithFeatures(
       // Enabled
-      {},
+      {// TODO(crbug.com/1098943): Remove once experiment is over.
+       autofill::features::kAutofillEnableSupportForMoreStructureInNames,
+       // TODO(crbug.com/1125978): Remove once launched.
+       autofill::features::kAutofillEnableSupportForMoreStructureInAddresses,
+       // TODO(crbug.com/896689): Remove once launched.
+       autofill::features::kAutofillNameSectionsWithRendererIds,
+       // TODO(crbug.com/1076175) Remove once launched.
+       autofill::features::kAutofillUseNewSectioningMethod,
+       // TODO(crbug.com/1150890) Remove once launched
+       autofill::features::kAutofillEnableAugmentedPhoneCountryCode,
+       // TODO(crbug.com/1157405) Remove once launched.
+       autofill::features::kAutofillEnableDependentLocalityParsing,
+       // TODO(crbug/1165780): Remove once shared labels are launched.
+       autofill::features::kAutofillEnableSupportForParsingWithSharedLabels,
+       // TODO(crbug.com/1150895) Remove once launched.
+       autofill::features::kAutofillParsingPatternsLanguageDetection,
+       // TODO(crbug.com/1190334): Remove once launched.
+       autofill::features::kAutofillParseMerchantPromoCodeFields},
       // Disabled
-      {autofill::features::kAutofillEnforceMinRequiredFieldsForHeuristics,
-       autofill::features::kAutofillEnforceMinRequiredFieldsForQuery,
-       autofill::features::kAutofillEnforceMinRequiredFieldsForUpload,
-       autofill::features::kAutofillRestrictUnownedFieldsToFormlessCheckout});
+      {});
 }
 
 void FormStructureBrowserTest::SetUp() {
   ChromeWebTest::SetUp();
+
+  // Create a PasswordController instance that will handle set up for renderer
+  // ids.
+  UniqueIDDataTabHelper::CreateForWebState(web_state());
+  password_controller_ =
+      [[PasswordController alloc] initWithWebState:web_state()];
 
   // AddressNormalizerFactory must be initialized in a blocking allowed scoped.
   // Initialize it now as it may DCHECK if it is initialized during the test.
@@ -158,19 +197,47 @@ void FormStructureBrowserTest::SetUp() {
   std::string locale("en");
   autofill::AutofillDriverIOS::PrepareForWebStateWebFrameAndDelegate(
       web_state(), autofill_client_.get(), /*autofill_agent=*/nil, locale,
-      autofill::AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+      autofill::BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
 }
 
 void FormStructureBrowserTest::TearDown() {
   ChromeWebTest::TearDown();
 }
 
+bool FormStructureBrowserTest::LoadHtmlWithoutSubresourcesAndInitRendererIds(
+    const std::string& html) {
+  bool success = ChromeWebTest::LoadHtmlWithoutSubresources(html);
+  if (!success) {
+    return false;
+  }
+
+  __block web::WebFrame* main_frame = nullptr;
+  success = WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    main_frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
+    return main_frame != nullptr;
+  });
+  if (!success) {
+    return false;
+  }
+  DCHECK(main_frame);
+
+  uint32_t next_available_id = 1;
+  autofill::FormUtilJavaScriptFeature::GetInstance()
+      ->SetUpForUniqueIDsWithInitialState(main_frame, next_available_id);
+
+  // Wait for |SetUpForUniqueIDsWithInitialState| to complete.
+  return WaitUntilConditionOrTimeout(kWaitForJSCompletionTimeout, ^bool {
+    return [ExecuteJavaScript(@"document[__gCrWeb.fill.ID_SYMBOL]") intValue] ==
+           static_cast<int>(next_available_id);
+  });
+}
+
 void FormStructureBrowserTest::GenerateResults(const std::string& input,
                                                std::string* output) {
-  ASSERT_TRUE(LoadHtmlWithoutSubresources(input));
+  ASSERT_TRUE(LoadHtmlWithoutSubresourcesAndInitRendererIds(input));
   base::ThreadPoolInstance::Get()->FlushForTesting();
   web::WebFrame* frame = web_state()->GetWebFramesManager()->GetMainWebFrame();
-  AutofillManager* autofill_manager =
+  BrowserAutofillManager* autofill_manager =
       AutofillDriverIOS::FromWebStateAndWebFrame(web_state(), frame)
           ->autofill_manager();
   ASSERT_NE(nullptr, autofill_manager);
@@ -182,17 +249,13 @@ void FormStructureBrowserTest::GenerateResults(const std::string& input,
 }
 
 std::string FormStructureBrowserTest::FormStructuresToString(
-    const AutofillManager::FormStructureMap& forms) {
-  std::map<base::TimeTicks, const FormStructure*> sorted_forms;
+    const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& forms) {
+  std::string forms_string;
+  // The forms are sorted by their global ID, which should make the order
+  // deterministic.
   for (const auto& form_kv : forms) {
     const auto* form = form_kv.second.get();
-    EXPECT_TRUE(
-        sorted_forms.emplace(form->form_parsed_timestamp(), form).second);
-  }
-
-  std::string forms_string;
-  for (const auto& form_kv : sorted_forms) {
-    const auto* form = form_kv.second;
+    std::map<std::string, int> section_to_index;
     for (const auto& field : *form) {
       std::string name = base::UTF16ToUTF8(field->name);
       if (base::StartsWith(name, "gChrome~field~",
@@ -201,6 +264,7 @@ std::string FormStructureBrowserTest::FormStructuresToString(
         // to have a behavior similar to other platforms.
         name = "";
       }
+
       std::string section = field->section;
       if (base::StartsWith(section, "gChrome~field~",
                            base::CompareCase::SENSITIVE)) {
@@ -209,6 +273,26 @@ std::string FormStructureBrowserTest::FormStructuresToString(
         size_t first_underscore = section.find_first_of('_');
         section = section.substr(first_underscore);
       }
+
+      // Normalize the section by replacing the unique but platform-dependent
+      // integers in |field->section| with consecutive unique integers.
+      // The section string is of the form "fieldname_id1_id2-suffix", where
+      // id1, id2 are platform-dependent and thus need to be substituted.
+      size_t last_underscore = section.find_last_of('_');
+      size_t second_last_underscore =
+          section.find_last_of('_', last_underscore - 1);
+      size_t next_dash = section.find_first_of('-', last_underscore);
+      int new_section_index = static_cast<int>(section_to_index.size() + 1);
+      int section_index =
+          section_to_index.insert(std::make_pair(section, new_section_index))
+              .first->second;
+      if (second_last_underscore != std::string::npos &&
+          next_dash != std::string::npos) {
+        section = base::StringPrintf(
+            "%s%d%s", section.substr(0, second_last_underscore + 1).c_str(),
+            section_index, section.substr(next_dash).c_str());
+      }
+
       forms_string += field->Type().ToString();
       forms_string += " | " + name;
       forms_string += " | " + base::UTF16ToUTF8(field->label);
@@ -225,10 +309,14 @@ namespace {
 // To disable a data driven test, please add the name of the test file
 // (i.e., "NNN_some_site.html") as a literal to the initializer_list given
 // to the failing_test_names constructor.
-const std::set<std::string>& GetFailingTestNames() {
-  static std::set<std::string>* failing_test_names =
-      new std::set<std::string>{};
-  return *failing_test_names;
+const auto& GetFailingTestNames() {
+  static std::set<std::string> failing_test_names{
+      // TODO(crbug.com/1187842): This page contains iframes. Until filling
+      // across iframes is also supported on iOS, iOS has has different
+      // expectations compared to non-iOS platforms.
+      "049_register_ebay.com.html",
+  };
+  return failing_test_names;
 }
 
 }  // namespace

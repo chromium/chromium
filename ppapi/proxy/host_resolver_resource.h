@@ -21,6 +21,10 @@ class PPAPI_PROXY_EXPORT HostResolverResource
       public thunk::PPB_HostResolver_API {
  public:
   HostResolverResource(Connection connection, PP_Instance instance);
+
+  HostResolverResource(const HostResolverResource&) = delete;
+  HostResolverResource& operator=(const HostResolverResource&) = delete;
+
   ~HostResolverResource() override;
 
   // PluginResource overrides.
@@ -34,9 +38,6 @@ class PPAPI_PROXY_EXPORT HostResolverResource
   PP_Var GetCanonicalName() override;
   uint32_t GetNetAddressCount() override;
   PP_Resource GetNetAddress(uint32_t index) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HostResolverResource);
 };
 
 }  // namespace proxy

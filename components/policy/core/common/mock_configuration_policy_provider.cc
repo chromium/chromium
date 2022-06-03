@@ -8,8 +8,9 @@
 #include <string>
 #include <utility>
 
-#include "base/message_loop/message_loop_current.h"
 #include "base/run_loop.h"
+#include "base/task/current_thread.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
 
 using testing::Invoke;
@@ -23,10 +24,15 @@ MockConfigurationPolicyProvider::~MockConfigurationPolicyProvider() {}
 void MockConfigurationPolicyProvider::UpdateChromePolicy(
     const PolicyMap& policy) {
   std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
-      .CopyFrom(policy);
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())) =
+      policy.Clone();
   UpdatePolicy(std::move(bundle));
-  if (base::MessageLoopCurrent::IsSet())
+  bool spin_run_loop = base::CurrentThread::IsSet();
+#if defined(OS_IOS)
+  // On iOS, the UI message loop does not support RunUntilIdle().
+  spin_run_loop &= !base::CurrentUIThread::IsSet();
+#endif  // defined(OS_IOS)
+  if (spin_run_loop)
     base::RunLoop().RunUntilIdle();
 }
 
@@ -34,10 +40,10 @@ void MockConfigurationPolicyProvider::UpdateExtensionPolicy(
     const PolicyMap& policy,
     const std::string& extension_id) {
   std::unique_ptr<PolicyBundle> bundle = std::make_unique<PolicyBundle>();
-  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, extension_id))
-      .CopyFrom(policy);
+  bundle->Get(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, extension_id)) =
+      policy.Clone();
   UpdatePolicy(std::move(bundle));
-  if (base::MessageLoopCurrent::IsSet())
+  if (base::CurrentThread::IsSet())
     base::RunLoop().RunUntilIdle();
 }
 

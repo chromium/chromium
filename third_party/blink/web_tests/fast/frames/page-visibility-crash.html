@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <body>
+<script src="../../resources/visibility.js"></script>
 <script>
 if (window.testRunner) {
     testRunner.dumpAsText();
@@ -33,11 +34,7 @@ scriptElement.innerText = "function handleVisibilityChange() \
                            } \
                            document.addEventListener('visibilitychange', handleVisibilityChange, false);";
 
-if (window.testRunner)
-    testRunner.setPageVisibility("hidden");
-    
-// Many platforms don't support the page visibility api. For those, just bail out.
-setTimeout("finish()", 10);
+setMainWindowHidden(true);
 </script>
 </body>
 </html>

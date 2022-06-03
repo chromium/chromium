@@ -2,48 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_static_library("content") {
+static_library("content") {
   sources = [
     "content_utils.cc",
     "content_utils.h",
-    "ssl_status_input_event_data.cc",
-    "ssl_status_input_event_data.h",
   ]
 
-  public_deps = [
-    "//components/security_interstitials/core",
-    "//components/security_state/core",
-  ]
+  public_deps = [ "//components/security_state/core" ]
 
   deps = [
-    "//base",
-    "//components/strings",
+    "//components/dom_distiller/core",
     "//content/public/browser",
     "//content/public/common",
-    "//net",
-    "//third_party/blink/public:blink_headers",
-    "//ui/base",
-  ]
-}
-
-jumbo_source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "content_utils_unittest.cc",
-  ]
-
-  deps = [
-    ":content",
-    "//base",
-    "//base/test:test_support",
-    "//components/security_state/core",
-    "//components/strings",
-    "//content/public/browser",
-    "//content/test:test_support",
-    "//net",
-    "//net:test_support",
-    "//testing/gtest",
   ]
 }

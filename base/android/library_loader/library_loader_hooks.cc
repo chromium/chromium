@@ -32,13 +32,13 @@ const char* g_library_version_number = "";
 LibraryLoadedHook* g_registration_callback = nullptr;
 NativeInitializationHook* g_native_initialization_hook = nullptr;
 NonMainDexJniRegistrationHook* g_jni_registration_hook = nullptr;
-
-// The amount of time, in milliseconds, that it took to load the shared
-// libraries in the renderer. Set in
-// JNI_LibraryLoader_RecordRendererLibraryLoadTime().
-long g_renderer_library_load_time_ms = 0;
+LibraryProcessType g_library_process_type = PROCESS_UNINITIALIZED;
 
 }  // namespace
+
+LibraryProcessType GetLibraryProcessType() {
+  return g_library_process_type;
+}
 
 bool IsUsingOrderfileOptimization() {
 #if BUILDFLAG(SUPPORTS_CODE_ORDERING)
@@ -48,12 +48,6 @@ bool IsUsingOrderfileOptimization() {
 #endif
 }
 
-static void JNI_LibraryLoader_RecordRendererLibraryLoadTime(
-    JNIEnv* env,
-    jlong library_load_time_ms) {
-  g_renderer_library_load_time_ms = library_load_time_ms;
-}
-
 void SetNativeInitializationHook(
     NativeInitializationHook native_initialization_hook) {
   g_native_initialization_hook = native_initialization_hook;
@@ -61,17 +55,8 @@ void SetNativeInitializationHook(
 
 void SetNonMainDexJniRegistrationHook(
     NonMainDexJniRegistrationHook jni_registration_hook) {
+  DCHECK(!g_jni_registration_hook);
   g_jni_registration_hook = jni_registration_hook;
-}
-
-void RecordLibraryLoaderRendererHistograms() {
-  // Record how long it took to load the shared libraries.
-  UMA_HISTOGRAM_TIMES(
-      "ChromiumAndroidLinker.RendererLoadTime",
-      base::TimeDelta::FromMilliseconds(g_renderer_library_load_time_ms));
-
-  Java_LibraryLoader_onUmaRecordingReadyInRenderer(
-      base::android::AttachCurrentThread());
 }
 
 void SetLibraryLoadedHook(LibraryLoadedHook* func) {
@@ -81,6 +66,10 @@ void SetLibraryLoadedHook(LibraryLoadedHook* func) {
 static jboolean JNI_LibraryLoader_LibraryLoaded(
     JNIEnv* env,
     jint library_process_type) {
+  DCHECK_EQ(g_library_process_type, PROCESS_UNINITIALIZED);
+  g_library_process_type =
+      static_cast<LibraryProcessType>(library_process_type);
+
 #if BUILDFLAG(ORDERFILE_INSTRUMENTATION)
   orderfile::StartDelayedDump();
 #endif
@@ -122,10 +111,6 @@ void LibraryLoaderExitHook() {
 
 void SetVersionNumber(const char* version_number) {
   g_library_version_number = strdup(version_number);
-}
-
-ScopedJavaLocalRef<jstring> JNI_LibraryLoader_GetVersionNumber(JNIEnv* env) {
-  return ConvertUTF8ToJavaString(env, g_library_version_number);
 }
 
 void InitAtExitManager() {

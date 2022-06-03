@@ -1,0 +1,92 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/component_updater/android/loader_policies/trust_token_key_commitments_component_loader_policy.h"
+
+#include <stdint.h>
+#include <stdio.h>
+
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
+#include "base/logging.h"
+#include "base/values.h"
+#include "base/version.h"
+#include "components/component_updater/android/component_loader_policy.h"
+#include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace {
+
+// Persisted to logs, should never change.
+constexpr char kTrustTokenKeyCommitmentsComponentMetricsSuffix[] =
+    "TrustTokenKeyCommitments";
+
+// Attempts to load key commitments as raw JSON from their storage file,
+// returning the loaded commitments on success and nullopt on failure.
+// TODO(crbug.com/1180964) move reading string from fd to base/file_util.h
+absl::optional<std::string> LoadKeyCommitmentsFromDisk(base::ScopedFD fd) {
+  // Transfer the ownership of the file from `fd` to `file_stream`.
+  base::ScopedFILE file_stream(fdopen(fd.release(), "r"));
+  if (!file_stream.get()) {
+    return absl::nullopt;
+  }
+  std::string commitments;
+  if (!base::ReadStreamToString(file_stream.get(), &commitments))
+    return absl::nullopt;
+
+  return commitments;
+}
+
+}  // namespace
+
+namespace component_updater {
+
+TrustTokenKeyCommitmentsComponentLoaderPolicy::
+    TrustTokenKeyCommitmentsComponentLoaderPolicy(
+        base::RepeatingCallback<void(const std::string&)> on_commitments_ready)
+    : on_commitments_ready_(std::move(on_commitments_ready)) {}
+
+TrustTokenKeyCommitmentsComponentLoaderPolicy::
+    ~TrustTokenKeyCommitmentsComponentLoaderPolicy() = default;
+
+void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoaded(
+    const base::Version& version,
+    base::flat_map<std::string, base::ScopedFD>& fd_map,
+    std::unique_ptr<base::DictionaryValue> manifest) {
+  auto keys_fd_iterator = fd_map.find(kTrustTokenKeyCommitmentsFileName);
+  if (keys_fd_iterator == fd_map.end()) {
+    VLOG(1) << "TrustTokenKeyCommitmentsComponentLoaderPolicy#ComponentLoaded "
+               "failed because keys.json is not found in the fd map";
+    return;
+  }
+  component_updater::TrustTokenKeyCommitmentsComponentInstallerPolicy::
+      LoadTrustTokensFromString(
+          base::BindOnce(&LoadKeyCommitmentsFromDisk,
+                         std::move(keys_fd_iterator->second)),
+          on_commitments_ready_);
+}
+
+void TrustTokenKeyCommitmentsComponentLoaderPolicy::ComponentLoadFailed(
+    ComponentLoadResult /*error*/) {}
+
+void TrustTokenKeyCommitmentsComponentLoaderPolicy::GetHash(
+    std::vector<uint8_t>* hash) const {
+  component_updater::TrustTokenKeyCommitmentsComponentInstallerPolicy::
+      GetPublicKeyHash(hash);
+}
+
+std::string TrustTokenKeyCommitmentsComponentLoaderPolicy::GetMetricsSuffix()
+    const {
+  return kTrustTokenKeyCommitmentsComponentMetricsSuffix;
+}
+
+}  // namespace component_updater

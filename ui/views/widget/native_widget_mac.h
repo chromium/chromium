@@ -5,7 +5,10 @@
 #ifndef UI_VIEWS_WIDGET_NATIVE_WIDGET_MAC_H_
 #define UI_VIEWS_WIDGET_NATIVE_WIDGET_MAC_H_
 
-#include "base/macros.h"
+#include <memory>
+#include <string>
+
+#include "ui/base/ime/input_method_delegate.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/views/widget/native_widget_private.h"
@@ -22,21 +25,26 @@ class CreateWindowParams;
 class NativeWidgetNSWindow;
 class ValidateUserInterfaceItemResult;
 }  // namespace mojom
+
 class ApplicationHost;
 class NativeWidgetNSWindowBridge;
 }  // namespace remote_cocoa
 
 namespace views {
 namespace test {
-class HitTestNativeWidgetMac;
 class MockNativeWidgetMac;
-class WidgetTest;
-}
+class NativeWidgetMacTest;
+}  // namespace test
+
 class NativeWidgetMacNSWindowHost;
 
-class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
+class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate,
+                                     public FocusChangeListener,
+                                     public ui::internal::InputMethodDelegate {
  public:
   explicit NativeWidgetMac(internal::NativeWidgetDelegate* delegate);
+  NativeWidgetMac(const NativeWidgetMac&) = delete;
+  NativeWidgetMac& operator=(const NativeWidgetMac&) = delete;
   ~NativeWidgetMac() override;
 
   // Informs |delegate_| that the native widget is about to be destroyed.
@@ -49,6 +57,9 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
   // destroyed.
   void WindowDestroyed();
 
+  // Called when the backing NSWindow gains or loses key status.
+  void OnWindowKeyStatusChanged(bool is_key, bool is_content_first_responder);
+
   // The vertical position from which sheets should be anchored, from the top
   // of the content view.
   virtual int32_t SheetOffsetY();
@@ -58,8 +69,14 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
   virtual void GetWindowFrameTitlebarHeight(bool* override_titlebar_height,
                                             float* titlebar_height);
 
-  // Notifies that the widget starts to enter or exit fullscreen mode.
-  virtual void OnWindowFullscreenStateChange() {}
+  // Called when the window begins transitioning to or from being fullscreen.
+  virtual void OnWindowFullscreenTransitionStart() {}
+
+  // Called when the window has completed its transition to or from being
+  // fullscreen. Note that if there are multiple consecutive transitions
+  // (because a new transition was initiated before the previous one completed)
+  // then this will only be called when all transitions have competed.
+  virtual void OnWindowFullscreenTransitionComplete() {}
 
   // Handle "Move focus to the window toolbar" shortcut.
   virtual void OnFocusWindowToolbar() {}
@@ -87,7 +104,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
   // internal::NativeWidgetPrivate:
   void InitNativeWidget(Widget::InitParams params) override;
   void OnWidgetInitDone() override;
-  NonClientFrameView* CreateNonClientFrameView() override;
+  std::unique_ptr<NonClientFrameView> CreateNonClientFrameView() override;
   bool ShouldUseNativeFrame() const override;
   bool ShouldWindowContentsBeTransparent() const override;
   void FrameTypeChanged() override;
@@ -110,9 +127,11 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
   void CenterWindow(const gfx::Size& size) override;
   void GetWindowPlacement(gfx::Rect* bounds,
                           ui::WindowShowState* show_state) const override;
-  bool SetWindowTitle(const base::string16& title) override;
+  bool SetWindowTitle(const std::u16string& title) override;
   void SetWindowIcons(const gfx::ImageSkia& window_icon,
                       const gfx::ImageSkia& app_icon) override;
+  const gfx::ImageSkia* GetWindowIcon() override;
+  const gfx::ImageSkia* GetWindowAppIcon() override;
   void InitModalType(ui::ModalType modal_type) override;
   gfx::Rect GetWindowBoundsInScreen() const override;
   gfx::Rect GetClientAreaBoundsInScreen() const override;
@@ -142,7 +161,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
   bool IsMaximized() const override;
   bool IsMinimized() const override;
   void Restore() override;
-  void SetFullscreen(bool fullscreen) override;
+  void SetFullscreen(bool fullscreen, const base::TimeDelta& delay) override;
   bool IsFullscreen() const override;
   void SetCanAppearInExistingFullscreenSpaces(
       bool can_appear_in_existing_fullscreen_spaces) override;
@@ -153,7 +172,7 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
                     std::unique_ptr<ui::OSExchangeData> data,
                     const gfx::Point& location,
                     int operation,
-                    ui::DragDropTypes::DragEventSource source) override;
+                    ui::mojom::DragEventSource source) override;
   void SchedulePaintInRect(const gfx::Rect& rect) override;
   void ScheduleLayout() override;
   void SetCursor(gfx::NativeCursor cursor) override;
@@ -173,7 +192,10 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
       Widget::VisibilityTransition transition) override;
   bool IsTranslucentWindowOpacitySupported() const override;
   ui::GestureRecognizer* GetGestureRecognizer() override;
+  ui::GestureConsumer* GetGestureConsumer() override;
   void OnSizeConstraintsChanged() override;
+  void OnNativeViewHierarchyWillChange() override;
+  void OnNativeViewHierarchyChanged() override;
   std::string GetName() const override;
 
   // Calls |callback| with the newly created NativeWidget whenever a
@@ -182,6 +204,11 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
       base::RepeatingCallback<void(NativeWidgetMac*)> callback);
 
  protected:
+  // The argument to SetBounds is sometimes in screen coordinates and sometimes
+  // in parent window coordinates. This function will take that bounds argument
+  // and convert it to screen coordinates if needed.
+  gfx::Rect ConvertBoundsToScreenIfNeeded(const gfx::Rect& bounds) const;
+
   virtual void PopulateCreateWindowParams(
       const Widget::InitParams& widget_params,
       remote_cocoa::mojom::CreateWindowParams* params) {}
@@ -220,13 +247,21 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
     return ns_window_host_.get();
   }
 
+  // Unregister focus listeners from previous focus manager, and register them
+  // with the |new_focus_manager|. Updates |focus_manager_|.
+  void SetFocusManager(FocusManager* new_focus_manager);
+
+  // FocusChangeListener:
+  void OnWillChangeFocus(View* focused_before, View* focused_now) override;
+  void OnDidChangeFocus(View* focused_before, View* focused_now) override;
+
+  // ui::internal::InputMethodDelegate:
+  ui::EventDispatchDetails DispatchKeyEventPostIME(ui::KeyEvent* key) override;
+
  private:
   friend class test::MockNativeWidgetMac;
-  friend class test::HitTestNativeWidgetMac;
-  friend class views::test::WidgetTest;
-
+  friend class views::test::NativeWidgetMacTest;
   class ZoomFocusMonitor;
-  std::unique_ptr<ZoomFocusMonitor> zoom_focus_monitor_;
 
   internal::NativeWidgetDelegate* delegate_;
   std::unique_ptr<NativeWidgetMacNSWindowHost> ns_window_host_;
@@ -240,7 +275,13 @@ class VIEWS_EXPORT NativeWidgetMac : public internal::NativeWidgetPrivate {
 
   Widget::InitParams::Type type_;
 
-  DISALLOW_COPY_AND_ASSIGN(NativeWidgetMac);
+  // Weak pointer to the FocusManager with with |zoom_focus_monitor_| and
+  // |ns_window_host_| are registered.
+  FocusManager* focus_manager_ = nullptr;
+  std::unique_ptr<ui::InputMethod> input_method_;
+  std::unique_ptr<ZoomFocusMonitor> zoom_focus_monitor_;
+  // Held while this widget is active if it's a child.
+  std::unique_ptr<Widget::PaintAsActiveLock> parent_key_lock_;
 };
 
 }  // namespace views

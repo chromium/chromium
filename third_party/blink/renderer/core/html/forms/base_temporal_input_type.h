@@ -69,6 +69,7 @@ class BaseTemporalInputType : public InputType {
                              bool has_hour,
                              bool has_minute,
                              bool has_second) const = 0;
+  virtual String AriaLabelForPickerIndicator() const = 0;
 
  protected:
   BaseTemporalInputType(HTMLInputElement& element) : InputType(element) {}
@@ -85,7 +86,7 @@ class BaseTemporalInputType : public InputType {
   InputTypeView* CreateView() override;
   ValueMode GetValueMode() const override;
   double ValueAsDate() const override;
-  void SetValueAsDate(const base::Optional<base::Time>&,
+  void SetValueAsDate(const absl::optional<base::Time>&,
                       ExceptionState&) const override;
   double ValueAsDouble() const override;
   void SetValueAsDouble(double,
@@ -94,11 +95,14 @@ class BaseTemporalInputType : public InputType {
   bool TypeMismatchFor(const String&) const override;
   bool TypeMismatch() const override;
   bool ValueMissing(const String&) const override;
+  String ValueNotEqualText(const Decimal& value) const override;
   String RangeOverflowText(const Decimal& maximum) const override;
   String RangeUnderflowText(const Decimal& minimum) const override;
+  String RangeInvalidText(const Decimal& minimum,
+                          const Decimal& maximum) const override;
   Decimal DefaultValueForStepUp() const override;
   bool IsSteppable() const override;
-  virtual String SerializeWithDate(const base::Optional<base::Time>&) const;
+  virtual String SerializeWithDate(const absl::optional<base::Time>&) const;
   String LocalizeValue(const String&) const override;
   bool SupportsReadOnly() const override;
   bool ShouldRespectListAttribute() override;

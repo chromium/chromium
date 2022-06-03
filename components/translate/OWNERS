@@ -1,16 +1,18 @@
 # Subject matter experts:
 #   Componentization and iOS: droger@chromium.org
 #                             jzw@chromium.org
-#   "Bubble" UI and translate internals: groby@chromium.org
+#   "Bubble" UI and translate internals: megjablon@chromium.org
 #                                        hajimehoshi@chromium.org
 #   CSP and isolated worlds: toyoshim@chromium.org
 anthonyvd@chromium.org
 droger@chromium.org
-groby@chromium.org
-hajimehoshi@chromium.org
+jds@google.com
 jzw@chromium.org
-martis@chromium.org
-napper@chromium.org
+megjablon@chromium.org
+perrier@chromium.org
+sclittle@chromium.org
 toyoshim@chromium.org
 
-# COMPONENT: UI>Browser>Language>Translate
+# Specialized reviewers
+# UMA and UKM translate metrics
+curranmax@chromium.org

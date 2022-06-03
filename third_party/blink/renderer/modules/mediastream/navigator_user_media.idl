@@ -5,7 +5,7 @@
 // https://w3c.github.io/mediacapture-main/#navigatorusermedia
 
 [
-    ImplementedAs=NavigatorUserMedia
+    ImplementedAs=MediaDevices
 ] partial interface Navigator {
     [SameObject, SecureContext] readonly attribute MediaDevices mediaDevices;
 };

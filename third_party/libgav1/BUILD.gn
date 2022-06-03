@@ -1,0 +1,106 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/arm.gni")
+import("//third_party/libgav1/libgav1_srcs.gni")
+import("//third_party/libgav1/options.gni")
+
+config("public_libgav1_config") {
+  include_dirs = [
+    "src",
+    "src/src",
+  ]
+
+  defines = [
+    "LIBGAV1_MAX_BITDEPTH=10",
+    "LIBGAV1_THREADPOOL_USE_STD_MUTEX",  # to avoid abseil dependency.
+    "LIBGAV1_ENABLE_LOGGING=0",  # to avoid debug log of libgav1 in chromium
+                                 # debug build.
+
+    # Don't let libgav1 export any symbols. Otherwise the verify_order step on
+    # macOS can fail since these exports end up in the final Chromium binary.
+    "LIBGAV1_PUBLIC=",
+  ]
+}
+
+config("private_libgav1_config") {
+  configs = []
+
+  # dsp intrinsics will generate much better code when optimized for speed
+  # rather than size.
+  if (!is_debug) {
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
+  if (current_cpu == "arm64" ||
+      (current_cpu == "arm" && arm_version >= 7 && arm_use_neon)) {
+    # The default thumb mode will impact performance of dsp intrinsics.
+    configs += [ "//build/config/compiler:compiler_arm" ]
+  }
+}
+
+if (enable_libgav1_decoder || use_libgav1_parser) {
+  # Separate from libgav1 because utils/constants.cc and dsp/constants.cc
+  # generate the same object file, constants.o.
+  source_set("libgav1_utils") {
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":private_libgav1_config" ]
+
+    public_configs = [ ":public_libgav1_config" ]
+
+    sources = gav1_utils_sources
+  }
+
+  # Separate from libgav1 because film_grain.cc and dsp/film_grain.cc
+  # generate the same object file, film_grain.o.
+  source_set("libgav1_dsp") {
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":private_libgav1_config" ]
+
+    deps = [
+      ":libgav1_dsp_sse4",
+      ":libgav1_utils",
+    ]
+    public_configs = [ ":public_libgav1_config" ]
+
+    sources = gav1_dsp_sources + gav1_dsp_headers_sources
+    sources += gav1_dsp_avx2_sources + gav1_dsp_avx2_headers_sources
+  }
+
+  # SSE4 sources are split to their own target as Chrome is currently built
+  # with -msse3.
+  source_set("libgav1_dsp_sse4") {
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":private_libgav1_config" ]
+
+    deps = [ ":libgav1_utils" ]
+    public_configs = [ ":public_libgav1_config" ]
+
+    if (current_cpu == "x86" || current_cpu == "x64") {
+      cflags = [ "-msse4.1" ]
+    }
+
+    sources = gav1_dsp_sse4_sources + gav1_dsp_sse4_headers_sources +
+              gav1_dsp_headers_sources + gav1_dsp_avx2_headers_sources
+  }
+
+  static_library("libgav1") {
+    configs -= [ "//build/config/compiler:chromium_code" ]
+    configs += [ "//build/config/compiler:no_chromium_code" ]
+    configs += [ ":private_libgav1_config" ]
+
+    public_configs = [ ":public_libgav1_config" ]
+    public_deps = [
+      ":libgav1_dsp",
+      ":libgav1_utils",
+    ]
+
+    sources = gav1_common_sources
+    sources += gav1_gav1_sources
+    sources += gav1_post_filter_sources
+    sources += gav1_tile_sources
+  }
+}

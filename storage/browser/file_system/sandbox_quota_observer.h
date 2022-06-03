@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "storage/browser/file_system/file_observers.h"
@@ -22,8 +23,8 @@ namespace base {
 class SequencedTaskRunner;
 }
 
-namespace storage {
-class QuotaManagerProxy;
+namespace url {
+class Origin;
 }
 
 namespace storage {
@@ -31,14 +32,20 @@ namespace storage {
 class FileSystemUsageCache;
 class FileSystemURL;
 class ObfuscatedFileUtil;
+class QuotaManagerProxy;
 
 class SandboxQuotaObserver : public FileUpdateObserver,
                              public FileAccessObserver {
  public:
-  SandboxQuotaObserver(storage::QuotaManagerProxy* quota_manager_proxy,
-                       base::SequencedTaskRunner* update_notify_runner,
-                       ObfuscatedFileUtil* sandbox_file_util,
-                       FileSystemUsageCache* file_system_usage_cache_);
+  SandboxQuotaObserver(
+      scoped_refptr<QuotaManagerProxy> quota_manager_proxy,
+      scoped_refptr<base::SequencedTaskRunner> update_notify_runner,
+      ObfuscatedFileUtil* sandbox_file_util,
+      FileSystemUsageCache* file_system_usage_cache_);
+
+  SandboxQuotaObserver(const SandboxQuotaObserver&) = delete;
+  SandboxQuotaObserver& operator=(const SandboxQuotaObserver&) = delete;
+
   ~SandboxQuotaObserver() override;
 
   // FileUpdateObserver overrides.
@@ -49,7 +56,7 @@ class SandboxQuotaObserver : public FileUpdateObserver,
   // FileAccessObserver overrides.
   void OnAccess(const FileSystemURL& url) override;
 
-  void SetUsageCacheEnabled(const GURL& origin,
+  void SetUsageCacheEnabled(const url::Origin& origin,
                             FileSystemType type,
                             bool enabled);
 
@@ -60,19 +67,17 @@ class SandboxQuotaObserver : public FileUpdateObserver,
 
   base::FilePath GetUsageCachePath(const FileSystemURL& url);
 
-  scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy_;
-  scoped_refptr<base::SequencedTaskRunner> update_notify_runner_;
+  const scoped_refptr<QuotaManagerProxy> quota_manager_proxy_;
+  const scoped_refptr<base::SequencedTaskRunner> update_notify_runner_;
 
   // Not owned; sandbox_file_util_ should have identical lifetime with this.
-  ObfuscatedFileUtil* sandbox_file_util_;
+  ObfuscatedFileUtil* const sandbox_file_util_;
 
   // Not owned; file_system_usage_cache_ should have longer lifetime than this.
-  FileSystemUsageCache* file_system_usage_cache_;
+  FileSystemUsageCache* const file_system_usage_cache_;
 
   std::map<base::FilePath, int64_t> pending_update_notification_;
   base::OneShotTimer delayed_cache_update_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxQuotaObserver);
 };
 
 }  // namespace storage

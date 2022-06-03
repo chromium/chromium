@@ -14,12 +14,12 @@
 #include "base/callback.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/win_util.h"
+#include "ui/base/win/event_creation_utils.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/events/keycodes/keyboard_code_conversion_win.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -52,6 +52,9 @@ class InputDispatcher {
   // or if |screen_point| is not over a window owned by the test.
   static void CreateForMouseMove(base::OnceClosure callback,
                                  const gfx::Point& screen_point);
+
+  InputDispatcher(const InputDispatcher&) = delete;
+  InputDispatcher& operator=(const InputDispatcher&) = delete;
 
  private:
   // Generic message
@@ -128,8 +131,6 @@ class InputDispatcher {
   const gfx::Point expected_mouse_location_;
 
   base::WeakPtrFactory<InputDispatcher> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InputDispatcher);
 };
 
 // static
@@ -255,37 +256,14 @@ LRESULT CALLBACK InputDispatcher::MouseHook(int n_code,
 LRESULT CALLBACK InputDispatcher::KeyHook(int n_code,
                                           WPARAM w_param,
                                           LPARAM l_param) {
-  HHOOK next_hook = next_hook_;
-  if (n_code == HC_ACTION) {
+  if ((n_code == HC_ACTION) && (HIWORD(l_param) & KF_UP)) {
     DCHECK(current_dispatcher_);
-    // Only send when the key is transitioning from pressed to released. Note
-    // that the documentation for the bit state on KeyboardProc [1] can lead to
-    // confusion. The relevant information is that the transition state (bit 31
-    // -- zero-based) is always 1 for WM_KEYUP.
-    // [1]
-    // https://msdn.microsoft.com/en-us/library/windows/desktop/ms644984.aspx
-    //
-    // While this documentation states that the previous key state (bit 30) is
-    // always 1 on WM_KEYUP it has been observed to be 0 when the preceding
-    // WM_KEYDOWN is intercepted (e.g., by an extension hooking a keyboard
-    // shortcut).
-    //
-    // And to add to the confusion about bit 30, the documentation for WM_KEYUP
-    // [2] and for general keyboard input [3] contradict each other, one saying
-    // it's always set to 1, the other saying it's always set to 0 on
-    // WM_KEYUP...
-    // [2] https://docs.microsoft.com/en-us/windows/desktop/inputdev/wm-keyup
-    // [3]
-    // https://docs.microsoft.com/en-us/windows/desktop/inputdev/about-keyboard-input#keystroke-message-flags
-    if (l_param & (1 << 31)) {
-      base::ThreadTaskRunnerHandle::Get()->PostTask(
-          FROM_HERE,
-          base::BindOnce(&InputDispatcher::MatchingMessageProcessed,
-                         current_dispatcher_->weak_factory_.GetWeakPtr(),
-                         false));
-    }
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&InputDispatcher::MatchingMessageProcessed,
+                       current_dispatcher_->weak_factory_.GetWeakPtr(), false));
   }
-  return CallNextHookEx(next_hook, n_code, w_param, l_param);
+  return CallNextHookEx(next_hook_, n_code, w_param, l_param);
 }
 
 void InputDispatcher::DispatchedMessage(
@@ -517,51 +495,27 @@ bool SendKeyPressImpl(HWND window,
   return true;
 }
 
-bool SendMouseMoveImpl(long screen_x, long screen_y, base::OnceClosure task) {
+bool SendMouseMoveImpl(int screen_x, int screen_y, base::OnceClosure task) {
   gfx::Point screen_point =
       display::win::ScreenWin::DIPToScreenPoint({screen_x, screen_y});
-  screen_x = screen_point.x();
-  screen_y = screen_point.y();
-
-  // Get the max screen coordinate for use in computing the normalized absolute
-  // coordinates required by SendInput.
-  const int max_x = ::GetSystemMetrics(SM_CXSCREEN) - 1;
-  const int max_y = ::GetSystemMetrics(SM_CYSCREEN) - 1;
-
-  // Clamp the inputs.
-  if (screen_x < 0)
-    screen_x = 0;
-  else if (screen_x > max_x)
-    screen_x = max_x;
-  if (screen_y < 0)
-    screen_y = 0;
-  else if (screen_y > max_y)
-    screen_y = max_y;
 
   // Check if the mouse is already there.
   POINT current_pos;
   ::GetCursorPos(&current_pos);
-  if (screen_x == current_pos.x && screen_y == current_pos.y) {
+  if (screen_point.x() == current_pos.x && screen_point.y() == current_pos.y) {
     if (task)
       base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, std::move(task));
     return true;
   }
 
-  // Form the input data containing the normalized absolute coordinates. As of
-  // Windows 10 Fall Creators Update, moving to an absolute position of zero
-  // does not work. It seems that moving to 1,1 does, though.
-  INPUT input = {INPUT_MOUSE};
-  input.mi.dx =
-      static_cast<LONG>(std::max(1.0, std::ceil(screen_x * (65535.0 / max_x))));
-  input.mi.dy =
-      static_cast<LONG>(std::max(1.0, std::ceil(screen_y * (65535.0 / max_y))));
-  input.mi.dwFlags = MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE;
-
-  if (!::SendInput(1, &input, sizeof(input)))
+  if (!ui::SendMouseEvent(screen_point,
+                          MOUSEEVENTF_ABSOLUTE | MOUSEEVENTF_MOVE)) {
     return false;
+  }
 
   if (task)
-    InputDispatcher::CreateForMouseMove(std::move(task), {screen_x, screen_y});
+    InputDispatcher::CreateForMouseMove(std::move(task),
+                                        {screen_point.x(), screen_point.y()});
   return true;
 }
 

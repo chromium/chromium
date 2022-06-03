@@ -5,6 +5,8 @@
 <link rel="manifest" href="resources/push_manifest.json">
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src="../resources/testdriver.js"></script>
+<script src="../resources/testdriver-vendor.js"></script>
 <script src="../serviceworker/resources/test-helpers.js"></script>
 </head>
 <body>
@@ -19,10 +21,12 @@ async_test(function(test) {
             swRegistration = serviceWorkerRegistration;
             return wait_for_state(test, swRegistration.installing, 'activated');
         })
-        .then(function() {
+        .then(async function() {
             // If running manually, grant permission when prompted.
-            if (window.testRunner)
-                testRunner.setPermission('push-messaging', 'granted', location.origin, location.origin);
+            if (window.test_driver) {
+                await test_driver.set_permission(
+                    {name: 'push', userVisibleOnly: true}, 'granted', false);
+            }
             return swRegistration.pushManager.subscribe({ userVisibleOnly: true });
         })
         .then(function(subscription) {

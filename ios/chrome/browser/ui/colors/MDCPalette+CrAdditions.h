@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_COLORS_MDCPALETTE_CRADDITIONS_H_
 #define IOS_CHROME_BROWSER_UI_COLORS_MDCPALETTE_CRADDITIONS_H_
 
-#import "ios/third_party/material_components_ios/src/components/Palettes/src/MaterialPalettes.h"
+#import <MaterialComponents/MaterialPalettes.h>
 
 // Access to overridable palettes.
 @interface MDCPalette (CrAdditions)

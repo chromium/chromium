@@ -19,46 +19,46 @@
         android:layout_height="match_parent"
         android:layout_gravity="center_vertical"
         android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
         android:background="@null"
         android:hint="@string/hint_find_in_page"
         android:imeOptions="actionSearch|flagNoExtractUi"
         android:singleLine="true"
-        android:textAppearance="@style/TextAppearance.BlackTitle1" />
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary" />
     <TextView
         android:id="@+id/find_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="12dp"
         android:layout_marginEnd="16dp"
         android:background="@null"
         android:singleLine="true"
-        android:textAppearance="@style/TextAppearance.BlackDisabledText1" />
+        android:textAppearance="@style/TextAppearance.TextLarge.Secondary" />
     <View
         android:id="@+id/find_separator"
         android:layout_width="1dp"
         android:layout_height="match_parent"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        android:background="@color/divider_bg_color" />
+        android:background="@color/divider_line_bg_color" />
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/find_prev_button"
         style="@style/ToolbarButton"
         android:layout_height="match_parent"
         android:src="@drawable/ic_expand_less_black_24dp"
         android:contentDescription="@string/accessibility_find_toolbar_btn_prev"
-        app:tint="@color/standard_mode_tint" />
+        app:tint="@color/default_icon_color_tint_list" />
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/find_next_button"
         style="@style/ToolbarButton"
         android:layout_height="match_parent"
         android:src="@drawable/ic_expand_more_black_24dp"
         android:contentDescription="@string/accessibility_find_toolbar_btn_next"
-        app:tint="@color/standard_mode_tint" />
+        app:tint="@color/default_icon_color_tint_list" />
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/close_find_button"
         style="@style/ToolbarButton"
         android:layout_height="match_parent"
         android:src="@drawable/btn_close"
         android:contentDescription="@string/close"
-        app:tint="@color/standard_mode_tint" />
+        app:tint="@color/default_icon_color_tint_list" />
 </LinearLayout>

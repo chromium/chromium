@@ -10,11 +10,6 @@
 namespace blink {
 namespace {
 
-bool ForcesLegacyLayout(const Element& element) {
-  return element.ShouldForceLegacyLayout() &&
-         !element.GetLayoutObject()->IsLayoutNGMixin();
-}
-
 bool UsesNGLayout(const Element& element) {
   return !element.ShouldForceLegacyLayout() &&
          element.GetLayoutObject()->IsLayoutNGMixin();
@@ -23,9 +18,11 @@ bool UsesNGLayout(const Element& element) {
 }  // anonymous namespace
 
 class ForceLegacyLayoutTest : public RenderingTest {
- public:
+ protected:
   ForceLegacyLayoutTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()) {}
+
+  bool EditingNGEnabled() { return RuntimeEnabledFeatures::EditingNGEnabled(); }
 };
 
 TEST_F(ForceLegacyLayoutTest, ForceLegacyBfcRecalcAncestorStyle) {
@@ -74,19 +71,19 @@ TEST_F(ForceLegacyLayoutTest, ForceLegacyBfcRecalcAncestorStyle) {
   EXPECT_TRUE(UsesNGLayout(*bfc));
   EXPECT_TRUE(UsesNGLayout(*container));
   EXPECT_TRUE(UsesNGLayout(*middle));
-  EXPECT_TRUE(ForcesLegacyLayout(*inner));
-  EXPECT_TRUE(ForcesLegacyLayout(*child));
+  EXPECT_EQ(UsesNGLayout(*inner), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*child), EditingNGEnabled());
 
   // Remove overflow:hidden, so that the contenteditable element no longer
   // establishes a formatting context.
   inner->removeAttribute(html_names::kStyleAttr);
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesNGLayout(*body));
-  EXPECT_TRUE(ForcesLegacyLayout(*bfc));
-  EXPECT_TRUE(ForcesLegacyLayout(*container));
-  EXPECT_TRUE(ForcesLegacyLayout(*middle));
-  EXPECT_TRUE(ForcesLegacyLayout(*inner));
-  EXPECT_TRUE(ForcesLegacyLayout(*child));
+  EXPECT_EQ(UsesNGLayout(*bfc), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*container), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*middle), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*inner), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*child), EditingNGEnabled());
 
   // Change a non-inherited property. Legacy layout is triggered by #inner, but
   // should be propagated all the way up to #container (which is the node that
@@ -95,21 +92,47 @@ TEST_F(ForceLegacyLayoutTest, ForceLegacyBfcRecalcAncestorStyle) {
   middle->setAttribute(html_names::kStyleAttr, "background-color:blue;");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesNGLayout(*body));
-  EXPECT_TRUE(ForcesLegacyLayout(*bfc));
-  EXPECT_TRUE(ForcesLegacyLayout(*container));
-  EXPECT_TRUE(ForcesLegacyLayout(*middle));
-  EXPECT_TRUE(ForcesLegacyLayout(*inner));
-  EXPECT_TRUE(ForcesLegacyLayout(*child));
+  EXPECT_EQ(UsesNGLayout(*bfc), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*container), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*middle), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*inner), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*child), EditingNGEnabled());
 
   // Change a property that requires re-attachment.
   container->setAttribute(html_names::kStyleAttr, "display:block;");
   UpdateAllLifecyclePhasesForTest();
   EXPECT_TRUE(UsesNGLayout(*body));
-  EXPECT_TRUE(ForcesLegacyLayout(*bfc));
-  EXPECT_TRUE(ForcesLegacyLayout(*container));
-  EXPECT_TRUE(ForcesLegacyLayout(*middle));
-  EXPECT_TRUE(ForcesLegacyLayout(*inner));
-  EXPECT_TRUE(ForcesLegacyLayout(*child));
+  EXPECT_EQ(UsesNGLayout(*bfc), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*container), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*middle), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*inner), EditingNGEnabled());
+  EXPECT_EQ(UsesNGLayout(*child), EditingNGEnabled());
+}
+
+TEST_F(ForceLegacyLayoutTest, ForceLegacyMulticolSlot) {
+  if (!RuntimeEnabledFeatures::LayoutNGEnabled())
+    return;
+  if (RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled())
+    return;
+
+  SetBodyInnerHTML(R"HTML(
+    <div id="host">
+      <p id="slotted"></p>
+    </div>
+  )HTML");
+
+  Element* host = GetDocument().getElementById("host");
+  ShadowRoot& shadow_root =
+      host->AttachShadowRootInternal(ShadowRootType::kOpen);
+  shadow_root.setInnerHTML(R"HTML(
+    <style>
+      slot { columns: 2; display: block }
+    </style>
+    <slot></slot>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  EXPECT_FALSE(UsesNGLayout(*GetDocument().getElementById("slotted")));
 }
 
 }  // namespace blink

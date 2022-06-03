@@ -25,7 +25,9 @@
 
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFESpecularLightingElement
 
-interface SVGFESpecularLightingElement : SVGElement {
+[
+    Exposed=Window
+] interface SVGFESpecularLightingElement : SVGElement {
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedString in1;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber surfaceScale;
     [MeasureAs=SVG1DOMFilter] readonly attribute SVGAnimatedNumber specularConstant;

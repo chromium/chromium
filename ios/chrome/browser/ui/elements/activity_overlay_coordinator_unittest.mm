@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/elements/activity_overlay_coordinator.h"
 
+#include "base/test/task_environment.h"
+#include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/elements/activity_overlay_view_controller.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
@@ -18,12 +20,15 @@ using ActivityOverlayCoordinatorTest = PlatformTest;
 // Tests that invoking start and stop on the coordinator presents and dismisses
 // the activity overlay view, respectively.
 TEST_F(ActivityOverlayCoordinatorTest, StartAndStop) {
+  base::test::TaskEnvironment task_environment_;
   __weak UIView* overlay_view;
   @autoreleasepool {
     UIViewController* base_view_controller = [[UIViewController alloc] init];
+    std::unique_ptr<Browser> browser_ = std::make_unique<TestBrowser>();
     ActivityOverlayCoordinator* coordinator =
         [[ActivityOverlayCoordinator alloc]
-            initWithBaseViewController:base_view_controller];
+            initWithBaseViewController:base_view_controller
+                               browser:browser_.get()];
 
     EXPECT_EQ(0u, [base_view_controller.childViewControllers count]);
 

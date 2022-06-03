@@ -70,4 +70,4 @@ class CameraCapabilities_Private : public Resource {
 
 }  // namespace pp
 
-#endif  /* PPAPI_CPP_PRIVATE_CAMERA_CAPABILITIES_PRIVATE_H_ */
+#endif  // PPAPI_CPP_PRIVATE_CAMERA_CAPABILITIES_PRIVATE_H_

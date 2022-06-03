@@ -1,0 +1,28 @@
+<html>
+<!-- 
+This test checks to make sure that a prerendered page is loaded.
+-->
+<head>
+<title>Prerender Page</title>
+
+<script>
+var pageWasPrerendered = false;
+
+// function DidPrerenderPass() {
+//   pageWasPrerendered = true;
+//   return true;
+// }
+
+// Make sure DidPrerenderPass() was called first.  Otherwise, the page was
+// most likely reloaded instead of using the prerendered page.
+// function DidDisplayPass() {
+//   return pageWasPrerendered;
+// }
+</script>
+
+</head>
+<body>
+  Text that is necessary for a FirstContentfulPaint metric to be recorded.
+  <img src="/hung">
+</body>
+</html>

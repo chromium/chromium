@@ -2,37 +2,28 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/toolchain/win/midl.gni")
+import("//build/config/zip.gni")
+import("//build/util/process_version.gni")
 import("//chrome/process_version_rc_template.gni")
+import("//chrome/updater/branding.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
-
-midl("updater_idl_idl") {
-  sources = [
-    "com/updater_idl.idl",
-  ]
-
-  writes_tlb = true
-}
-
-# The COM server needs to work with Windows 7, so explicitly setting the defines
-# to reflect this. Otherwise, WRL uses APIs that are only available in later
-# Windows versions.
-config("winver") {
-  defines = [
-    "NTDDI_VERSION=NTDDI_WIN7",
-
-    # Hardcoding version 0x0601, since _WIN32_WINNT_WIN7 may not be defined.
-    "_WIN32_WINNT=0x0601",
-    "WINVER=0x0601",
-  ]
-}
 
 # This target builds the updater executable, its installer, and unittests.
 group("win") {
   deps = [
+    ":signing",
     ":updater",
+    ":updater_zip",
     "//chrome/updater/win/installer:installer",
   ]
+}
+
+config("wrl_strict") {
+  # This definition is used in <wrl/module.h> to specify that only COM
+  # support is provided by WRL, and thus, avoid a dependency on WinRT, which
+  # is not available in Windows 7.
+  defines = [ "__WRL_CLASSIC_COM_STRICT__" ]
 }
 
 executable("updater") {
@@ -41,189 +32,103 @@ executable("updater") {
     "updater.rc",
   ]
 
+  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
   configs += [ "//build/config/win:windowed" ]
 
   deps = [
-    ":com",
-    ":core",
-    ":install_app",
     ":version_resources",
     "//build/win:default_exe_manifest",
-    "//chrome/updater:common",
-    "//chrome/updater/win/ui:ui_resources",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_prod",
+    "//chrome/updater/win/ui/resources",
+  ]
+
+  data_deps = [ ":uninstall.cmd" ]
+}
+
+executable("updater_test") {
+  sources = [
+    "main.cc",
+    "updater.rc",
+  ]
+
+  configs -= [ "//build/config/compiler:cet_shadow_stack" ]
+  configs += [ "//build/config/win:windowed" ]
+
+  deps = [
+    ":version_resources",
+    "//build/win:default_exe_manifest",
+    "//chrome/updater:base",
+    "//chrome/updater:constants_test",
+    "//chrome/updater/win/ui/resources",
+  ]
+
+  data_deps = [ ":uninstall.cmd" ]
+}
+
+copy("signing") {
+  sources = [
+    "$root_out_dir/certificate_tag.exe",
+    "//chrome/tools/build/win/resedit.py",
+    "//third_party/lzma_sdk/7zr.exe",
+    "signing/sign.py",
+  ]
+
+  deps = [ "//chrome/updater/tools:certificate_tag" ]
+
+  outputs = [ "$root_out_dir/UpdaterSigning/{{source_file_part}}" ]
+}
+
+zip("updater_zip") {
+  output = "$root_build_dir/updater.zip"
+  inputs =
+      [ "$root_build_dir/UpdaterSetup.exe" ] + get_target_outputs(":signing")
+  deps = [
+    ":signing",
+    "//chrome/updater/win/installer",
   ]
 }
 
-copy("uninstall.cmd") {
-  sources = [
-    "setup/uninstall.cmd",
-  ]
-  outputs = [
-    "$target_gen_dir/uninstall.cmd",
+process_version("uninstall.cmd") {
+  template_file = "setup/uninstall.cmd"
+  output = "$target_gen_dir/uninstall.cmd"
+  process_only = true
+  extra_args = [
+    "-e",
+    "PRODUCT_FULLNAME=\"$updater_product_full_name\"",
+    "-e",
+    "COMPANY_SHORTNAME=\"$updater_company_short_name\"",
   ]
 }
 
 process_version_rc_template("version_resources") {
-  sources = [
-    "updater.ver",
-  ]
+  sources = [ "updater.ver" ]
   output = "$target_gen_dir/updater_exe.rc"
 }
 
-source_set("base") {
+source_set("tag_extractor") {
+  public = [ "tag_extractor.h" ]
+
   sources = [
-    "constants.cc",
-    "constants.h",
-    "scoped_handle.h",
-    "task_scheduler.cc",
-    "task_scheduler.h",
-    "user_info.cc",
-    "user_info.h",
-    "util.cc",
-    "util.h",
+    "tag_extractor.cc",
+    "tag_extractor_impl.h",
   ]
 
-  defines = [ "SECURITY_WIN32" ]
-
-  deps = [
-    "//base",
-    "//chrome/updater:common",
-    "//chrome/updater:version_header",
+  friend = [
+    "//chrome/updater:updater_test_sources",
+    ":updater_fuzzer",
   ]
 
-  libs = [
-    "secur32.lib",
-    "taskschd.lib",
-  ]
+  # In the future, we want to rely on the base numerics headers and
+  # PeImageReader directly, but right now that isn't possible due to the
+  # visibility of the lib, so we depend on the entire base temporarily.
+  deps = [ "//base" ]
 }
 
-source_set("com") {
-  sources = [
-    "com/com_server.cc",
-    "com/com_server.h",
-  ]
+fuzzer_test("updater_fuzzer") {
+  sources = [ "tag_extractor_fuzzer.cc" ]
 
-  configs -= [ "//build/config/win:winver" ]
-  configs += [ ":winver" ]
+  deps = [ ":tag_extractor" ]
 
-  deps = [
-    ":updater_idl_idl",
-    "//base",
-  ]
-}
-
-source_set("core") {
-  sources = [
-    "action_handler.cc",
-    "net/net_util.cc",
-    "net/net_util.h",
-    "net/network.h",
-    "net/network_fetcher.cc",
-    "net/network_fetcher.h",
-    "net/network_winhttp.cc",
-    "net/network_winhttp.h",
-    "net/scoped_hinternet.h",
-    "setup/setup.cc",
-    "setup/setup.h",
-    "setup/setup_util.cc",
-    "setup/setup_util.h",
-    "setup/uninstall.cc",
-    "setup/uninstall.h",
-  ]
-
-  libs = [ "winhttp.lib" ]
-
-  deps = [
-    ":base",
-    ":updater_idl_idl",
-    "//base",
-    "//chrome/installer/util:with_no_strings",
-    "//chrome/updater:common",
-    "//components/update_client",
-    "//url:url",
-  ]
-  allow_circular_includes_from = [ "//chrome/updater:common" ]
-}
-
-source_set("install_progress_observer") {
-  sources = [
-    "install_progress_observer.cc",
-    "install_progress_observer.h",
-  ]
-
-  deps = [
-    "//base",
-  ]
-}
-
-# This build target is defined to minimize the impact of -Wno-missing-braces
-# compiler switch. In the future it might be possible to isolate the
-# dependency of ATL in the UI so ATL headers are not visible in the
-# compilation units outside the UI itself.
-# TODO(sorin): https://crbug.com/1014311
-source_set("install_app") {
-  sources = [
-    "install_app.cc",
-    "install_app.h",
-  ]
-
-  deps = [
-    ":core",
-    ":install_progress_observer",
-    "//base",
-    "//base:i18n",
-    "//chrome/updater:common",
-    "//chrome/updater/win/ui",
-    "//components/prefs",
-    "//components/update_client",
-  ]
-  allow_circular_includes_from = [ "//chrome/updater:common" ]
-
-  cflags_cc = [ "-Wno-missing-braces" ]
-}
-
-# Tests built into Chrome's unit_tests.exe.
-source_set("updater_tests") {
-  testonly = true
-
-  sources = [
-    "net/network_unittest.cc",
-    "util_unittest.cc",
-  ]
-
-  deps = [
-    ":base",
-    ":core",
-    ":install_app",
-    "//base/test:test_support",
-    "//testing/gtest",
-  ]
-
-  data_deps = [
-    ":updater_unittests",
-    "//chrome/updater/win/installer:installer_unittest",
-  ]
-}
-
-# Specific tests which must run in their own process due to COM, security, or
-# test isolation requirements.
-test("updater_unittests") {
-  testonly = true
-
-  sources = [
-    "//chrome/updater/win/test/test_main.cc",
-    "task_scheduler_unittest.cc",
-  ]
-
-  deps = [
-    ":base",
-    ":core",
-    ":install_app",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/updater/win:com",
-    "//chrome/updater/win/test:test_executables",
-    "//chrome/updater/win/test:test_strings",
-    "//testing/gtest",
-  ]
+  seed_corpus = "../test/data/tag_extractor_corpus/"
 }

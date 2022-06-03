@@ -10,6 +10,8 @@
 
 #include <memory>
 
+#include "base/containers/span.h"
+
 namespace device {
 
 // An element of a HID report descriptor.
@@ -123,17 +125,17 @@ class HidReportDescriptorItem {
                 "incorrect report info size");
 
  private:
-  HidReportDescriptorItem(const uint8_t* bytes,
-                          size_t size,
+  HidReportDescriptorItem(base::span<const uint8_t> bytes,
                           HidReportDescriptorItem* previous);
 
  public:
   ~HidReportDescriptorItem() {}
 
-  static std::unique_ptr<HidReportDescriptorItem>
-  Create(const uint8_t* bytes, size_t size, HidReportDescriptorItem* previous) {
+  static std::unique_ptr<HidReportDescriptorItem> Create(
+      base::span<const uint8_t> bytes,
+      HidReportDescriptorItem* previous) {
     return std::unique_ptr<HidReportDescriptorItem>(
-        new HidReportDescriptorItem(bytes, size, previous));
+        new HidReportDescriptorItem(bytes, previous));
   }
 
   // Previous element in report descriptor.
@@ -159,10 +161,11 @@ class HidReportDescriptorItem {
   uint32_t GetShortData() const;
   // Size of this item in bytes, including the header.
   size_t GetSize() const;
+  // Size of this item in bytes, excluding the header.
+  size_t payload_size() const { return payload_size_; }
 
  private:
   size_t GetHeaderSize() const;
-  size_t payload_size() const { return payload_size_; }
 
   HidReportDescriptorItem* previous_;
   HidReportDescriptorItem* next_;

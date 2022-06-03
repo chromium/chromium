@@ -4,8 +4,9 @@
 
 #import "ios/chrome/browser/ui/util/i18n_string.h"
 
+#include <string>
+
 #include "base/i18n/rtl.h"
-#include "base/strings/string16.h"
 #include "base/strings/sys_string_conversions.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -13,7 +14,7 @@
 #endif
 
 NSString* AdjustStringForLocaleDirection(NSString* text) {
-  base::string16 converted_text = base::SysNSStringToUTF16(text);
+  std::u16string converted_text = base::SysNSStringToUTF16(text);
   bool has_changed =
       base::i18n::AdjustStringForLocaleDirection(&converted_text);
   if (has_changed) {

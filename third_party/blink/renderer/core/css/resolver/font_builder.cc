@@ -24,6 +24,8 @@
 
 #include "third_party/blink/renderer/core/css/resolver/font_builder.h"
 
+#include "third_party/blink/renderer/core/css/css_font_selector.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -35,8 +37,7 @@
 
 namespace blink {
 
-FontBuilder::FontBuilder(const Document* document)
-    : document_(document), flags_(0) {
+FontBuilder::FontBuilder(Document* document) : document_(document) {
   DCHECK(!document || document->GetFrame());
 }
 
@@ -47,6 +48,7 @@ void FontBuilder::SetInitial(float effective_zoom) {
 
   SetFamilyDescription(font_description_,
                        FontBuilder::InitialFamilyDescription());
+  SetFamilyTreeScope(nullptr);
   SetSize(font_description_, FontBuilder::InitialSize());
 }
 
@@ -64,7 +66,9 @@ void FontBuilder::DidChangeWritingMode() {
 
 FontFamily FontBuilder::StandardFontFamily() const {
   FontFamily family;
-  family.SetFamily(StandardFontFamilyName());
+  const AtomicString& standard_font_family = StandardFontFamilyName();
+  family.SetFamily(standard_font_family,
+                   FontFamily::InferredTypeFor(standard_font_family));
   return family;
 }
 
@@ -86,17 +90,15 @@ AtomicString FontBuilder::GenericFontFamilyName(
     case FontDescription::kStandardFamily:
       return StandardFontFamilyName();
     case FontDescription::kSerifFamily:
-      return font_family_names::kWebkitSerif;
+      return font_family_names::kSerif;
     case FontDescription::kSansSerifFamily:
-      return font_family_names::kWebkitSansSerif;
+      return font_family_names::kSansSerif;
     case FontDescription::kMonospaceFamily:
-      return font_family_names::kWebkitMonospace;
+      return font_family_names::kMonospace;
     case FontDescription::kCursiveFamily:
-      return font_family_names::kWebkitCursive;
+      return font_family_names::kCursive;
     case FontDescription::kFantasyFamily:
-      return font_family_names::kWebkitFantasy;
-    case FontDescription::kPictographFamily:
-      return font_family_names::kWebkitPictograph;
+      return font_family_names::kFantasy;
   }
 }
 
@@ -109,6 +111,10 @@ float FontBuilder::FontSizeForKeyword(unsigned keyword,
 void FontBuilder::SetFamilyDescription(
     const FontDescription::FamilyDescription& family_description) {
   SetFamilyDescription(font_description_, family_description);
+}
+
+void FontBuilder::SetFamilyTreeScope(const TreeScope* tree_scope) {
+  family_tree_scope_ = tree_scope;
 }
 
 void FontBuilder::SetWeight(FontSelectionValue weight) {
@@ -170,6 +176,27 @@ void FontBuilder::SetVariantNumeric(const FontVariantNumeric& variant_numeric) {
   font_description_.SetVariantNumeric(variant_numeric);
 }
 
+void FontBuilder::SetFontSynthesisWeight(
+    FontDescription::FontSynthesisWeight font_synthesis_weight) {
+  Set(PropertySetFlag::kFontSynthesisWeight);
+
+  font_description_.SetFontSynthesisWeight(font_synthesis_weight);
+}
+
+void FontBuilder::SetFontSynthesisStyle(
+    FontDescription::FontSynthesisStyle font_synthesis_style) {
+  Set(PropertySetFlag::kFontSynthesisStyle);
+
+  font_description_.SetFontSynthesisStyle(font_synthesis_style);
+}
+
+void FontBuilder::SetFontSynthesisSmallCaps(
+    FontDescription::FontSynthesisSmallCaps font_synthesis_small_caps) {
+  Set(PropertySetFlag::kFontSynthesisSmallCaps);
+
+  font_description_.SetFontSynthesisSmallCaps(font_synthesis_small_caps);
+}
+
 void FontBuilder::SetTextRendering(TextRenderingMode text_rendering_mode) {
   Set(PropertySetFlag::kTextRendering);
 
@@ -213,7 +240,7 @@ void FontBuilder::SetFamilyDescription(
 
   bool is_initial =
       family_description.generic_family == FontDescription::kStandardFamily &&
-      family_description.family.FamilyIsEmpty();
+      family_description.family.FamilyName().IsEmpty();
 
   font_description.SetGenericFamily(family_description.generic_family);
   font_description.SetFamily(is_initial ? StandardFontFamily()
@@ -255,18 +282,18 @@ float FontBuilder::GetComputedSizeFromSpecifiedSize(
 }
 
 void FontBuilder::CheckForGenericFamilyChange(
-    const FontDescription& old_description,
+    const FontDescription& parent_description,
     FontDescription& new_description) {
   DCHECK(document_);
   if (new_description.IsAbsoluteSize())
     return;
 
-  if (new_description.IsMonospace() == old_description.IsMonospace())
+  if (new_description.IsMonospace() == parent_description.IsMonospace())
     return;
 
   // For now, lump all families but monospace together.
   if (new_description.GenericFamily() != FontDescription::kMonospaceFamily &&
-      old_description.GenericFamily() != FontDescription::kMonospaceFamily)
+      parent_description.GenericFamily() != FontDescription::kMonospaceFamily)
     return;
 
   // We know the parent is monospace or the child is monospace, and that font
@@ -285,7 +312,7 @@ void FontBuilder::CheckForGenericFamilyChange(
             ? static_cast<float>(settings->GetDefaultFixedFontSize()) /
                   settings->GetDefaultFontSize()
             : 1;
-    size = old_description.IsMonospace()
+    size = parent_description.IsMonospace()
                ? new_description.SpecifiedSize() / fixed_scale_factor
                : new_description.SpecifiedSize() * fixed_scale_factor;
   }
@@ -294,7 +321,8 @@ void FontBuilder::CheckForGenericFamilyChange(
 }
 
 void FontBuilder::UpdateSpecifiedSize(FontDescription& font_description,
-                                      const ComputedStyle& style) {
+                                      const ComputedStyle& style,
+                                      const ComputedStyle* parent_style) {
   float specified_size = font_description.SpecifiedSize();
 
   if (!specified_size && font_description.KeywordSize())
@@ -303,24 +331,32 @@ void FontBuilder::UpdateSpecifiedSize(FontDescription& font_description,
 
   font_description.SetSpecifiedSize(specified_size);
 
-  CheckForGenericFamilyChange(style.GetFontDescription(), font_description);
+  // TODO(crbug.com/1086680): Avoid nullptr parent style.
+  const FontDescription& parent_description =
+      parent_style ? parent_style->GetFontDescription()
+                   : style.GetFontDescription();
+
+  CheckForGenericFamilyChange(parent_description, font_description);
 }
 
 void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
                                      const ComputedStyle& style,
                                      FontSelector* font_selector) {
-  const float specified_size = font_description.SpecifiedSize();
-  if (!font_description.HasSizeAdjust() || !specified_size)
+  // Note: the computed_size has scale/zooming applied as well as text auto-
+  // sizing and Android font scaling. That means we operate on the used value
+  // without font-size-adjust applied and apply the font-size-adjust to end up
+  // at a new adjusted_size.
+  const float computed_size = font_description.ComputedSize();
+  if (!font_description.HasSizeAdjust() || !computed_size)
     return;
 
   // We need to create a temporal Font to get xHeight of a primary font.
   // The aspect value is based on the xHeight of the font for the computed font
-  // size, so we need to reset the adjustedSize to computedSize. See
+  // size, so we need to reset the adjusted_size to computed_size. See
   // FontDescription::EffectiveFontSize.
-  font_description.SetAdjustedSize(font_description.ComputedSize());
+  font_description.SetAdjustedSize(computed_size);
 
-  Font font(font_description);
-  font.Update(font_selector);
+  Font font(font_description, font_selector);
 
   const SimpleFontData* font_data = font.PrimaryFont();
 
@@ -328,13 +364,8 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
     return;
 
   const float size_adjust = font_description.SizeAdjust();
-  float aspect_value = font_data->GetFontMetrics().XHeight() / specified_size;
-  float adjusted_size = (size_adjust / aspect_value) * specified_size;
-  adjusted_size = GetComputedSizeFromSpecifiedSize(
-      font_description, style.EffectiveZoom(), adjusted_size);
-
-  adjusted_size = TextAutosizer::ComputeAutosizedFontSize(
-      adjusted_size, style.TextAutosizingMultiplier(), style.EffectiveZoom());
+  float aspect_value = font_data->GetFontMetrics().XHeight() / computed_size;
+  float adjusted_size = (size_adjust / aspect_value) * computed_size;
   font_description.SetAdjustedSize(adjusted_size);
 }
 
@@ -382,6 +413,18 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
     description.SetVariantNumeric(font_description_.VariantNumeric());
   if (IsSet(PropertySetFlag::kVariationSettings))
     description.SetVariationSettings(font_description_.VariationSettings());
+  if (IsSet(PropertySetFlag::kFontSynthesisWeight)) {
+    description.SetFontSynthesisWeight(
+        font_description_.GetFontSynthesisWeight());
+  }
+  if (IsSet(PropertySetFlag::kFontSynthesisStyle)) {
+    description.SetFontSynthesisStyle(
+        font_description_.GetFontSynthesisStyle());
+  }
+  if (IsSet(PropertySetFlag::kFontSynthesisSmallCaps)) {
+    description.SetFontSynthesisSmallCaps(
+        font_description_.GetFontSynthesisSmallCaps());
+  }
   if (IsSet(PropertySetFlag::kTextRendering))
     description.SetTextRendering(font_description_.TextRendering());
   if (IsSet(PropertySetFlag::kKerning))
@@ -406,8 +449,27 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
     description.SetAdjustedSize(size);
 }
 
-void FontBuilder::CreateFont(FontSelector* font_selector,
-                             ComputedStyle& style) {
+FontSelector* FontBuilder::FontSelectorFromTreeScope(
+    const TreeScope* tree_scope) {
+  // TODO(crbug.com/437837): The tree_scope may be from a different Document in
+  // the case where we are resolving style for elements in a <svg:use> shadow
+  // tree.
+  DCHECK(!tree_scope || tree_scope->GetDocument() == document_ ||
+         tree_scope->GetDocument().IsSVGDocument());
+  // TODO(crbug.com/336876): Font selector should be based on tree_scope for
+  // tree-scoped references.
+  return document_->GetStyleEngine().GetFontSelector();
+}
+
+FontSelector* FontBuilder::ComputeFontSelector(const ComputedStyle& style) {
+  if (IsSet(PropertySetFlag::kFamily))
+    return FontSelectorFromTreeScope(family_tree_scope_);
+  else
+    return style.GetFont().GetFontSelector();
+}
+
+void FontBuilder::CreateFont(ComputedStyle& style,
+                             const ComputedStyle* parent_style) {
   DCHECK(document_);
 
   if (!flags_)
@@ -416,33 +478,33 @@ void FontBuilder::CreateFont(FontSelector* font_selector,
   FontDescription description = style.GetFontDescription();
 
   UpdateFontDescription(description, style.ComputeFontOrientation());
-
-  UpdateSpecifiedSize(description, style);
+  UpdateSpecifiedSize(description, style, parent_style);
   UpdateComputedSize(description, style);
+
+  FontSelector* font_selector = ComputeFontSelector(style);
   UpdateAdjustedSize(description, style, font_selector);
 
-  style.SetFontDescription(description);
-  style.GetFont().Update(font_selector);
+  style.SetFontInternal(Font(description, font_selector));
   flags_ = 0;
 }
 
-void FontBuilder::CreateFontForDocument(FontSelector* font_selector,
-                                        ComputedStyle& document_style) {
+void FontBuilder::CreateInitialFont(ComputedStyle& style) {
   DCHECK(document_);
   FontDescription font_description = FontDescription();
-  font_description.SetLocale(document_style.GetFontDescription().Locale());
+  font_description.SetLocale(style.GetFontDescription().Locale());
 
   SetFamilyDescription(font_description,
                        FontBuilder::InitialFamilyDescription());
   SetSize(font_description,
           FontDescription::Size(FontSizeFunctions::InitialKeywordSize(), 0.0f,
                                 false));
-  UpdateSpecifiedSize(font_description, document_style);
-  UpdateComputedSize(font_description, document_style);
+  UpdateSpecifiedSize(font_description, style, &style);
+  UpdateComputedSize(font_description, style);
 
-  font_description.SetOrientation(document_style.ComputeFontOrientation());
-  document_style.SetFontDescription(font_description);
-  document_style.GetFont().Update(font_selector);
+  font_description.SetOrientation(style.ComputeFontOrientation());
+
+  FontSelector* font_selector = document_->GetStyleEngine().GetFontSelector();
+  style.SetFontInternal(Font(font_description, font_selector));
 }
 
 }  // namespace blink

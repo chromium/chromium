@@ -11,15 +11,16 @@
 #include "base/strings/strcat.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_env.h"
-#include "url/origin.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace indexed_db {
 
 namespace {
 
-std::string OriginToCustomHistogramSuffix(const url::Origin& origin) {
-  if (origin.host() == "docs.google.com")
+std::string StorageKeyToCustomHistogramSuffix(
+    const blink::StorageKey& storage_key) {
+  if (storage_key.origin().host() == "docs.google.com")
     return ".Docs";
   return std::string();
 }
@@ -63,10 +64,10 @@ void ParseAndReportCorruptionDetails(const std::string& histogram_name,
 }  // namespace
 
 void ReportOpenStatus(IndexedDBBackingStoreOpenResult result,
-                      const url::Origin& origin) {
+                      const blink::StorageKey& storage_key) {
   base::UmaHistogramEnumeration("WebCore.IndexedDB.BackingStore.OpenStatus",
                                 result, INDEXED_DB_BACKING_STORE_OPEN_MAX);
-  const std::string suffix = OriginToCustomHistogramSuffix(origin);
+  const std::string suffix = StorageKeyToCustomHistogramSuffix(storage_key);
   // Data from the WebCore.IndexedDB.BackingStore.OpenStatus histogram is used
   // to generate a graph. So as not to alter the meaning of that graph,
   // continue to collect all stats there (above) but also now collect docs stats
@@ -90,10 +91,10 @@ void ReportInternalError(const char* type,
       ->Add(location);
 }
 
-void ReportSchemaVersion(int version, const url::Origin& origin) {
+void ReportSchemaVersion(int version, const blink::StorageKey& storage_key) {
   UMA_HISTOGRAM_ENUMERATION("WebCore.IndexedDB.SchemaVersion", version,
                             kLatestKnownSchemaVersion + 1);
-  const std::string suffix = OriginToCustomHistogramSuffix(origin);
+  const std::string suffix = StorageKeyToCustomHistogramSuffix(storage_key);
   if (!suffix.empty()) {
     base::LinearHistogram::FactoryGet(
         base::StrCat({"WebCore.IndexedDB.SchemaVersion", suffix}), 0,
@@ -104,10 +105,11 @@ void ReportSchemaVersion(int version, const url::Origin& origin) {
   }
 }
 
-void ReportV2Schema(bool has_broken_blobs, const url::Origin& origin) {
+void ReportV2Schema(bool has_broken_blobs,
+                    const blink::StorageKey& storage_key) {
   base::UmaHistogramBoolean("WebCore.IndexedDB.SchemaV2HasBlobs",
                             has_broken_blobs);
-  const std::string suffix = OriginToCustomHistogramSuffix(origin);
+  const std::string suffix = StorageKeyToCustomHistogramSuffix(storage_key);
   if (!suffix.empty()) {
     base::BooleanHistogram::FactoryGet(
         base::StrCat({"WebCore.IndexedDB.SchemaV2HasBlobs", suffix}),

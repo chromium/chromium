@@ -18,10 +18,9 @@ static const int64_t kWebHistoryTimeoutSeconds = 10;
 
 namespace browsing_data {
 
-HistoryCounter::HistoryCounter(
-    history::HistoryService* history_service,
-    const GetUpdatedWebHistoryServiceCallback& callback,
-    syncer::SyncService* sync_service)
+HistoryCounter::HistoryCounter(history::HistoryService* history_service,
+                               GetUpdatedWebHistoryServiceCallback callback,
+                               syncer::SyncService* sync_service)
     : history_service_(history_service),
       web_history_service_callback_(callback),
       sync_tracker_(this, sync_service),
@@ -31,14 +30,14 @@ HistoryCounter::HistoryCounter(
   DCHECK(history_service_);
 }
 
-HistoryCounter::~HistoryCounter() {}
+HistoryCounter::~HistoryCounter() = default;
 
 void HistoryCounter::OnInitialized() {
-  sync_tracker_.OnInitialized(base::Bind(&HistoryCounter::IsHistorySyncEnabled,
-                                         base::Unretained(this)));
+  sync_tracker_.OnInitialized(base::BindRepeating(
+      &HistoryCounter::IsHistorySyncEnabled, base::Unretained(this)));
 }
 
-bool HistoryCounter::HasTrackedTasks() {
+bool HistoryCounter::HasTrackedTasksForTesting() {
   return cancelable_task_tracker_.HasTrackedTasks();
 }
 
@@ -81,9 +80,9 @@ void HistoryCounter::Count() {
 
   web_counting_finished_ = false;
 
-  web_history_timeout_.Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kWebHistoryTimeoutSeconds), this,
-      &HistoryCounter::OnWebHistoryTimeout);
+  web_history_timeout_.Start(FROM_HERE,
+                             base::Seconds(kWebHistoryTimeoutSeconds), this,
+                             &HistoryCounter::OnWebHistoryTimeout);
 
   history::QueryOptions options;
   options.max_count = 1;
@@ -113,9 +112,9 @@ void HistoryCounter::Count() {
           }
         })");
   web_history_request_ = web_history->QueryHistory(
-      base::string16(), options,
-      base::Bind(&HistoryCounter::OnGetWebHistoryCount,
-                 weak_ptr_factory_.GetWeakPtr()),
+      std::u16string(), options,
+      base::BindOnce(&HistoryCounter::OnGetWebHistoryCount,
+                     weak_ptr_factory_.GetWeakPtr()),
       partial_traffic_annotation);
 
   // TODO(msramek): Include web history count when there is an API for it.
@@ -125,7 +124,7 @@ void HistoryCounter::OnGetLocalHistoryCount(
     history::HistoryCountResult result) {
   // Ensure that all callbacks are on the same thread, so that we do not need
   // a mutex for |MergeResults|.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!result.success) {
     return;
@@ -138,10 +137,10 @@ void HistoryCounter::OnGetLocalHistoryCount(
 
 void HistoryCounter::OnGetWebHistoryCount(
     history::WebHistoryService::Request* request,
-    const base::DictionaryValue* result) {
+    const base::Value* result) {
   // Ensure that all callbacks are on the same thread, so that we do not need
   // a mutex for |MergeResults|.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the timeout for this request already fired, ignore the result.
   if (!web_history_timeout_.IsRunning())
@@ -152,9 +151,12 @@ void HistoryCounter::OnGetWebHistoryCount(
   // If the query failed, err on the safe side and inform the user that they
   // may have history items stored in Sync. Otherwise, we expect at least one
   // entry in the "event" list.
-  const base::ListValue* events;
-  has_synced_visits_ =
-      !result || (result->GetList("event", &events) && !events->empty());
+  if (!result)
+    has_synced_visits_ = true;
+  else if (const base::Value* events = result->FindListKey("event"))
+    has_synced_visits_ = !events->GetList().empty();
+  else
+    has_synced_visits_ = false;
   web_counting_finished_ = true;
   MergeResults();
 }
@@ -162,7 +164,7 @@ void HistoryCounter::OnGetWebHistoryCount(
 void HistoryCounter::OnWebHistoryTimeout() {
   // Ensure that all callbacks are on the same thread, so that we do not need
   // a mutex for |MergeResults|.
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // If the query timed out, err on the safe side and inform the user that they
   // may have history items stored in Sync.

@@ -39,7 +39,7 @@ BOOL WaitForKeyboardToAppear() {
   GREYCondition* waitForKeyboard = [GREYCondition
       conditionWithName:@"Wait for keyboard"
                   block:^BOOL {
-                    return [ChromeEarlGrey isKeyboardShownWithError:nil];
+                    return [EarlGrey isKeyboardShownWithError:nil];
                   }];
   return [waitForKeyboard waitWithTimeout:kWaitForActionTimeout];
 }
@@ -69,7 +69,15 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the addresses view controller appears on screen.
-- (void)testAddressesViewControllerIsPresented {
+// TODO(crbug.com/1116274): Flaky on ios simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAddressesViewControllerIsPresented \
+  DISABLED_testAddressesViewControllerIsPresented
+#else
+#define MAYBE_testAddressesViewControllerIsPresented \
+  testAddressesViewControllerIsPresented
+#endif
+- (void)MAYBE_testAddressesViewControllerIsPresented {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
@@ -87,7 +95,15 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the addresses view controller contains the "Manage Addresses..."
 // action.
-- (void)testAddressesViewControllerContainsManageAddressesAction {
+// TODO(crbug.com/1116043): Flaky on ios simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAddressesViewControllerContainsManageAddressesAction \
+  DISABLED_testAddressesViewControllerContainsManageAddressesAction
+#else
+#define MAYBE_testAddressesViewControllerContainsManageAddressesAction \
+  testAddressesViewControllerContainsManageAddressesAction
+#endif
+- (void)MAYBE_testAddressesViewControllerContainsManageAddressesAction {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
@@ -130,7 +146,15 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that returning from "Manage Addresses..." leaves the icons and keyboard
 // in the right state.
-- (void)testAddressesStateAfterPresentingManageAddresses {
+// TODO(crbug.com/1111076): Flaky on iOS simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAddressesStateAfterPresentingManageAddresses \
+  DISABLED_testAddressesStateAfterPresentingManageAddresses
+#else
+#define MAYBE_testAddressesStateAfterPresentingManageAddresses \
+  testAddressesStateAfterPresentingManageAddresses
+#endif
+- (void)MAYBE_testAddressesStateAfterPresentingManageAddresses {
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
@@ -184,7 +208,6 @@ BOOL WaitForKeyboardToAppear() {
   if ([ChromeEarlGrey isIPadIdiom]) {
     // The keyboard icon is never present in iPads.
     EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPad");
-    ;
   }
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
@@ -214,7 +237,15 @@ BOOL WaitForKeyboardToAppear() {
 
 // Tests that the Address View Controller is dismissed when tapping the outside
 // the popover on iPad.
-- (void)testIPadTappingOutsidePopOverDismissAddressController {
+// TODO(crbug.com/1116887) Flaky on iOS simulator
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testIPadTappingOutsidePopOverDismissAddressController \
+  DISABLED_testIPadTappingOutsidePopOverDismissAddressController
+#else
+#define MAYBE_testIPadTappingOutsidePopOverDismissAddressController \
+  testIPadTappingOutsidePopOverDismissAddressController
+#endif
+- (void)MAYBE_testIPadTappingOutsidePopOverDismissAddressController {
   if (![ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Test is not applicable for iPhone");
   }
@@ -248,7 +279,15 @@ BOOL WaitForKeyboardToAppear() {
 }
 
 // Tests that the address icon is hidden when no addresses are available.
-- (void)testAddressIconIsNotVisibleWhenAddressStoreEmpty {
+// TODO(crbug.com/1116043): Flaky on ios simulator.
+#if TARGET_IPHONE_SIMULATOR
+#define MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty \
+  DISABLED_testAddressIconIsNotVisibleWhenAddressStoreEmpty
+#else
+#define MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty \
+  testAddressIconIsNotVisibleWhenAddressStoreEmpty
+#endif
+- (void)MAYBE_testAddressIconIsNotVisibleWhenAddressStoreEmpty {
   // Delete the profile that is added on |-setUp|.
   [AutofillAppInterface clearProfilesStore];
 

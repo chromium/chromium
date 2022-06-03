@@ -1,11 +1,11 @@
-# Metrics Changelogs
+# Web Vitals Changelogs
 
-This directory contains changelogs for our key performance metrics available via web performance APIs:
+This directory contains changelogs for [Web Vitals](https://web.dev/vitals/) available via web performance APIs:
 
- * [First Contentful Paint](fcp.md)
  * [Largest Contentful Paint](lcp.md)
  * [First Input Delay](fid.md)
  * [Cumulative Layout Shift](cls.md)
+ * [First Contentful Paint](fcp.md)
 
 See also:
 

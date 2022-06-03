@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:targetApi="21"
+    android:width="104dp"
+    android:height="104dp"
+    android:viewportWidth="104"
+    android:viewportHeight="104">
+  <path
+      android:pathData="m103.68,51.84c0,28.63 -23.21,51.84 -51.84,51.84s-51.84,-23.21 -51.84,-51.84 23.21,-51.84 51.84,-51.84 51.84,23.21 51.84,51.84"
+      android:fillColor="@color/camera_background"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="m51.84,12.96c21.473,0 38.88,17.407 38.88,38.88s-17.407,38.88 -38.88,38.88 -38.88,-17.407 -38.88,-38.88 17.407,-38.88 38.88,-38.88"
+      android:fillColor="#4285f4"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="m30.24,30.24h43.709v43.709h-43.709z"
+      android:strokeAlpha="0"
+      android:fillColor="#b8e986"
+      android:fillType="evenOdd"
+      android:fillAlpha="0"/>
+  <path
+      android:pathData="M52.094,52.094m-5.828,0a5.828,5.828 0,1 1,11.656 0a5.828,5.828 0,1 1,-11.656 0"
+      android:fillColor="#8ab4f8"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="m46.631,33.882 l-3.333,3.642h-5.773c-2.003,0 -3.642,1.639 -3.642,3.642v21.854c0,2.003 1.639,3.642 3.642,3.642h29.139c2.003,0 3.642,-1.639 3.642,-3.642v-21.854c0,-2.003 -1.639,-3.642 -3.642,-3.642h-5.773l-3.333,-3.642zM52.094,61.2c-5.026,0 -9.106,-4.079 -9.106,-9.106s4.079,-9.106 9.106,-9.106 9.106,4.079 9.106,9.106 -4.079,9.106 -9.106,9.106z"
+      android:fillColor="#aecbfa"
+      android:fillType="evenOdd"/>
+  <path
+      android:pathData="m57.515,33.84 l3.333,3.642h5.773c2.003,0 3.642,1.639 3.642,3.642l-0.001,13.266 -9.14,-3.147c-0.402,-4.562 -4.173,-8.162 -8.807,-8.294l-0.264,-0.004c-0.201,0 -0.4,0.007 -0.598,0.019l-1.713,-9.125z"
+      android:fillColor="#d2e3fc"
+      android:fillType="evenOdd"/>
+</vector>

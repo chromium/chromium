@@ -1,21 +1,15 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
-</script>
-<p>This tests copying plain text with tabs and pasting it into an editable region using paste and match tyle.  The tabs should be preserved.</p>
-<textarea id="textarea" style="resize: none;">Tab->	<-Tab</textarea>
-
-<div id="div" contenteditable="true"></div>
-
-<script>
-var textarea = document.getElementById("textarea");
-textarea.focus();
-textarea.setSelectionRange(0, 0);
-document.execCommand("SelectAll");
-document.execCommand("Copy");
-var div = document.getElementById("div");
-window.getSelection().collapse(div, 0);
-document.execCommand("PasteAndMatchStyle");
+// This tests copying plain text with tabs and pasting it into an editable
+// region using paste and match style. The tabs should be preserved.
+selection_test(
+    '<div contenteditable>|</div>',
+    selection => {
+        selection.setClipboardData('', 'AB\tYZ');
+        selection.document.execCommand('PasteAndMatchStyle');
+    },
+    '<div contenteditable>AB<span style="white-space:pre">\t</span>YZ|</div>');
 </script>

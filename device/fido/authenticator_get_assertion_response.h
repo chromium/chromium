@@ -7,26 +7,29 @@
 
 #include <stdint.h>
 
+#include <array>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/public_key_credential_descriptor.h"
 #include "device/fido/public_key_credential_user_entity.h"
-#include "device/fido/response_data.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
 // Represents response from authenticators for AuthenticatorGetAssertion and
 // AuthenticatorGetNextAssertion requests.
 // https://fidoalliance.org/specs/fido-v2.0-rd-20170927/fido-client-to-authenticator-protocol-v2.0-rd-20170927.html#authenticatorGetAssertion
-class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse
-    : public ResponseData {
+class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
  public:
-  static base::Optional<AuthenticatorGetAssertionResponse>
+  AuthenticatorGetAssertionResponse(const AuthenticatorGetAssertionResponse&) =
+      delete;
+  AuthenticatorGetAssertionResponse& operator=(
+      const AuthenticatorGetAssertionResponse&) = delete;
+
+  static absl::optional<AuthenticatorGetAssertionResponse>
   CreateFromU2fSignResponse(
       base::span<const uint8_t, kRpIdHashLength> relying_party_id_hash,
       base::span<const uint8_t> u2f_data,
@@ -37,37 +40,35 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse
   AuthenticatorGetAssertionResponse(AuthenticatorGetAssertionResponse&& that);
   AuthenticatorGetAssertionResponse& operator=(
       AuthenticatorGetAssertionResponse&& other);
-  ~AuthenticatorGetAssertionResponse() override;
+  ~AuthenticatorGetAssertionResponse();
 
-  // ResponseData:
-  const std::array<uint8_t, kRpIdHashLength>& GetRpIdHash() const override;
+  AuthenticatorData authenticator_data;
+  absl::optional<PublicKeyCredentialDescriptor> credential;
+  std::vector<uint8_t> signature;
+  absl::optional<PublicKeyCredentialUserEntity> user_entity;
+  absl::optional<uint8_t> num_credentials;
 
-  AuthenticatorGetAssertionResponse& SetCredential(
-      PublicKeyCredentialDescriptor credential);
-  AuthenticatorGetAssertionResponse& SetUserEntity(
-      PublicKeyCredentialUserEntity user_entity);
-  AuthenticatorGetAssertionResponse& SetNumCredentials(uint8_t num_credentials);
+  // hmac_secret contains the output of the hmac_secret extension.
+  absl::optional<std::vector<uint8_t>> hmac_secret;
 
-  const base::Optional<PublicKeyCredentialDescriptor>& credential() const {
-    return credential_;
-  }
-  const AuthenticatorData& auth_data() const { return authenticator_data_; }
-  const std::vector<uint8_t>& signature() const { return signature_; }
-  const base::Optional<PublicKeyCredentialUserEntity>& user_entity() const {
-    return user_entity_;
-  }
-  const base::Optional<uint8_t>& num_credentials() const {
-    return num_credentials_;
-  }
+  // hmac_secret_not_evaluated will be true in cases where the
+  // |FidoAuthenticator| was unable to process the extension, even though it
+  // supports hmac_secret in general. This is intended for a case of Windows,
+  // where some versions of webauthn.dll can only express the extension for
+  // makeCredential, not getAssertion.
+  bool hmac_secret_not_evaluated = false;
 
- private:
-  base::Optional<PublicKeyCredentialDescriptor> credential_;
-  AuthenticatorData authenticator_data_;
-  std::vector<uint8_t> signature_;
-  base::Optional<PublicKeyCredentialUserEntity> user_entity_;
-  base::Optional<uint8_t> num_credentials_;
+  // The large blob key associated to the credential. This value is only
+  // returned if the assertion request contains the largeBlobKey extension on a
+  // capable authenticator and the credential has an associated large blob key.
+  absl::optional<std::array<uint8_t, kLargeBlobKeyLength>> large_blob_key;
 
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorGetAssertionResponse);
+  // The large blob associated with the credential.
+  absl::optional<std::vector<uint8_t>> large_blob;
+
+  // Whether a large blob was successfully written as part of this GetAssertion
+  // request.
+  bool large_blob_written = false;
 };
 
 }  // namespace device

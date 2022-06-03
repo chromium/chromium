@@ -6,12 +6,17 @@
 
 namespace content {
 
-ServiceWorkerRunningInfo::ServiceWorkerRunningInfo(const GURL& script_url,
-                                                   const GURL& scope,
-                                                   int64_t render_process_id)
+ServiceWorkerRunningInfo::ServiceWorkerRunningInfo(
+    const GURL& script_url,
+    const GURL& scope,
+    const blink::StorageKey& key,
+    int64_t render_process_id,
+    const blink::ServiceWorkerToken& token)
     : script_url(script_url),
       scope(scope),
-      render_process_id(render_process_id) {}
+      key(key),
+      render_process_id(render_process_id),
+      token(token) {}
 
 ServiceWorkerRunningInfo::ServiceWorkerRunningInfo(
     ServiceWorkerRunningInfo&& other) noexcept = default;

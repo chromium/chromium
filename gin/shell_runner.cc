@@ -4,10 +4,13 @@
 
 #include "gin/shell_runner.h"
 
+#include <memory>
+
 #include "gin/converter.h"
 #include "gin/per_context_data.h"
 #include "gin/public/context_holder.h"
 #include "gin/try_catch.h"
+#include "v8/include/v8-script.h"
 
 using v8::Context;
 using v8::HandleScope;
@@ -49,7 +52,7 @@ ShellRunner::ShellRunner(ShellRunnerDelegate* delegate, Isolate* isolate)
   v8::Local<v8::Context> context =
       Context::New(isolate, NULL, delegate_->GetGlobalTemplate(this, isolate));
 
-  context_holder_.reset(new ContextHolder(isolate));
+  context_holder_ = std::make_unique<ContextHolder>(isolate);
   context_holder_->SetContext(context);
   PerContextData::From(context)->set_runner(this);
 
@@ -63,7 +66,7 @@ void ShellRunner::Run(const std::string& source,
                       const std::string& resource_name) {
   v8::Isolate* isolate = GetContextHolder()->isolate();
   TryCatch try_catch(isolate);
-  v8::ScriptOrigin origin(StringToV8(isolate, resource_name));
+  v8::ScriptOrigin origin(isolate, StringToV8(isolate, resource_name));
   auto maybe_script = Script::Compile(GetContextHolder()->context(),
                                       StringToV8(isolate, source), &origin);
   v8::Local<Script> script;

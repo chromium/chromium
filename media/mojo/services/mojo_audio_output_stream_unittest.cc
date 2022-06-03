@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/ptr_util.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/sync_socket.h"
@@ -43,18 +44,19 @@ class TestCancelableSyncSocket : public base::CancelableSyncSocket {
 
   void ExpectOwnershipTransfer() { expect_ownership_transfer_ = true; }
 
+  TestCancelableSyncSocket(const TestCancelableSyncSocket&) = delete;
+  TestCancelableSyncSocket& operator=(const TestCancelableSyncSocket&) = delete;
+
   ~TestCancelableSyncSocket() override {
     // When the handle is sent over mojo, mojo takes ownership over it and
     // closes it. We have to make sure we do not also retain the handle in the
     // sync socket, as the sync socket closes the handle on destruction.
     if (expect_ownership_transfer_)
-      EXPECT_EQ(handle(), kInvalidHandle);
+      EXPECT_FALSE(IsValid());
   }
 
  private:
   bool expect_ownership_transfer_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCancelableSyncSocket);
 };
 
 class MockDelegate : public AudioOutputDelegate {
@@ -103,10 +105,9 @@ class MockClient {
     ASSERT_TRUE(data_pipe->shared_memory.IsValid());
     ASSERT_TRUE(data_pipe->socket.is_valid());
 
-    base::PlatformFile fd;
-    mojo::UnwrapPlatformFile(std::move(data_pipe->socket), &fd);
-    socket_ = std::make_unique<base::CancelableSyncSocket>(fd);
-    EXPECT_NE(socket_->handle(), base::CancelableSyncSocket::kInvalidHandle);
+    socket_ = std::make_unique<base::CancelableSyncSocket>(
+        data_pipe->socket.TakePlatformFile());
+    EXPECT_TRUE(socket_->IsValid());
 
     shared_memory_region_ = std::move(data_pipe->shared_memory);
 

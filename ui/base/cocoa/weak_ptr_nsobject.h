@@ -5,8 +5,7 @@
 #ifndef UI_BASE_COCOA_WEAK_PTR_NSOBJECT_H_
 #define UI_BASE_COCOA_WEAK_PTR_NSOBJECT_H_
 
-#include "base/macros.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 #if defined(__OBJC__)
 @class WeakPtrNSObject;
@@ -20,7 +19,7 @@ namespace internal {
 // Non-templatized base for WeakPtrNSObjectFactory with utility functions. This
 // mainly serves to hide the objective-C code from the header, so it can be
 // included in cc files.
-class UI_BASE_EXPORT WeakPtrNSObjectFactoryBase {
+class COMPONENT_EXPORT(UI_BASE) WeakPtrNSObjectFactoryBase {
  protected:
   static WeakPtrNSObject* Create(void* owner);
   static void* UnWrap(WeakPtrNSObject* handle);
@@ -40,6 +39,10 @@ template <class T>
 class WeakPtrNSObjectFactory : public internal::WeakPtrNSObjectFactoryBase {
  public:
   explicit WeakPtrNSObjectFactory(T* owner) : handle_(Create(owner)) {}
+
+  WeakPtrNSObjectFactory(const WeakPtrNSObjectFactory&) = delete;
+  WeakPtrNSObjectFactory& operator=(const WeakPtrNSObjectFactory&) = delete;
+
   ~WeakPtrNSObjectFactory() { InvalidateAndRelease(handle_); }
 
   // Gets the original owner, if it hasn't been destroyed.
@@ -51,8 +54,6 @@ class WeakPtrNSObjectFactory : public internal::WeakPtrNSObjectFactoryBase {
 
  private:
   WeakPtrNSObject* handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakPtrNSObjectFactory);
 };
 
 }  // namespace ui

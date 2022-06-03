@@ -19,35 +19,27 @@ MockPersistentReportingStore::Command::Command(
 MockPersistentReportingStore::Command::Command(
     Type type,
     const ReportingEndpoint& endpoint)
-    : type(type), group_key(endpoint.group_key), url(endpoint.info.url) {
+    : Command(type, endpoint.group_key, endpoint.info.url) {}
+
+MockPersistentReportingStore::Command::Command(
+    Type type,
+    const ReportingEndpointGroupKey& group_key,
+    const GURL& endpoint_url)
+    : type(type), group_key(group_key), url(endpoint_url) {
   DCHECK(type == Type::ADD_REPORTING_ENDPOINT ||
          type == Type::UPDATE_REPORTING_ENDPOINT_DETAILS ||
          type == Type::DELETE_REPORTING_ENDPOINT);
 }
 
-MockPersistentReportingStore::Command::Command(Type type,
-                                               const GURL& origin,
-                                               const std::string& group,
-                                               const GURL& endpoint)
-    : MockPersistentReportingStore::Command(type,
-                                            url::Origin::Create(origin),
-                                            group,
-                                            endpoint) {}
-
-MockPersistentReportingStore::Command::Command(Type type,
-                                               const url::Origin& origin,
-                                               const std::string& group,
-                                               const GURL& endpoint)
-    : MockPersistentReportingStore::Command(
-          type,
-          ReportingEndpoint(origin,
-                            group,
-                            ReportingEndpoint::EndpointInfo{endpoint})) {}
-
 MockPersistentReportingStore::Command::Command(
     Type type,
     const CachedReportingEndpointGroup& group)
-    : type(type), group_key(group.group_key) {
+    : Command(type, group.group_key) {}
+
+MockPersistentReportingStore::Command::Command(
+    Type type,
+    const ReportingEndpointGroupKey& group_key)
+    : type(type), group_key(group_key) {
   DCHECK(type == Type::ADD_REPORTING_ENDPOINT_GROUP ||
          type == Type::UPDATE_REPORTING_ENDPOINT_GROUP_DETAILS ||
          type == Type::UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME ||
@@ -60,24 +52,6 @@ MockPersistentReportingStore::Command::Command(Type type) : type(type) {
 
 MockPersistentReportingStore::Command::Command(const Command& other)
     : type(other.type), group_key(other.group_key), url(other.url) {}
-
-MockPersistentReportingStore::Command::Command(Type type,
-                                               const GURL& origin,
-                                               const std::string& group)
-    : MockPersistentReportingStore::Command(type,
-                                            url::Origin::Create(origin),
-                                            group) {}
-
-MockPersistentReportingStore::Command::Command(Type type,
-                                               const url::Origin& origin,
-                                               const std::string& group)
-    : MockPersistentReportingStore::Command(
-          type,
-          CachedReportingEndpointGroup(origin,
-                                       group,
-                                       OriginSubdomains::DEFAULT /* unused */,
-                                       base::Time() /* unused */,
-                                       base::Time() /* unused */)) {}
 
 MockPersistentReportingStore::Command::Command(Command&& other) = default;
 
@@ -128,38 +102,52 @@ std::ostream& operator<<(std::ostream& out,
       return out << "FLUSH()";
     case MockPersistentReportingStore::Command::Type::ADD_REPORTING_ENDPOINT:
       return out << "ADD_REPORTING_ENDPOINT("
+                 << "NIK="
+                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ", "
                  << "endpoint=" << cmd.url << ")";
     case MockPersistentReportingStore::Command::Type::
         UPDATE_REPORTING_ENDPOINT_DETAILS:
       return out << "UPDATE_REPORTING_ENDPOINT_DETAILS("
+                 << "NIK="
+                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ", "
                  << "endpoint=" << cmd.url << ")";
     case MockPersistentReportingStore::Command::Type::DELETE_REPORTING_ENDPOINT:
       return out << "DELETE_REPORTING_ENDPOINT("
+                 << "NIK="
+                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ", "
                  << "endpoint=" << cmd.url << ")";
     case MockPersistentReportingStore::Command::Type::
         ADD_REPORTING_ENDPOINT_GROUP:
       return out << "ADD_REPORTING_ENDPOINT_GROUP("
+                 << "NIK="
+                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ")";
     case MockPersistentReportingStore::Command::Type::
         UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME:
       return out << "UPDATE_REPORTING_ENDPOINT_GROUP_ACCESS_TIME("
+                 << "NIK="
+                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ")";
     case MockPersistentReportingStore::Command::Type::
         UPDATE_REPORTING_ENDPOINT_GROUP_DETAILS:
       return out << "UPDATE_REPORTING_ENDPOINT_GROUP_DETAILS("
+                 << "NIK="
+                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ")";
     case MockPersistentReportingStore::Command::Type::
         DELETE_REPORTING_ENDPOINT_GROUP:
       return out << "DELETE_REPORTING_ENDPOINT_GROUP("
+                 << "NIK="
+                 << cmd.group_key.network_isolation_key.ToDebugString() << ", "
                  << "origin=" << cmd.group_key.origin << ", "
                  << "group=" << cmd.group_key.group_name << ")";
   }
@@ -293,6 +281,10 @@ int MockPersistentReportingStore::CountCommands(Command::Type t) {
       ++c;
   }
   return c;
+}
+
+void MockPersistentReportingStore::ClearCommands() {
+  command_list_.clear();
 }
 
 MockPersistentReportingStore::CommandList

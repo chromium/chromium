@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<sub id="sub">
-</sub>
+<span id="sub">
+</span>
 <del id="del">
     <i id="italic"></i>
 </del>
@@ -9,7 +9,7 @@
     text = document.createTextNode('Text'); 
     italic.appendChild(text); 
 
-    shadow = sub.createShadowRoot(); 
+    shadow = sub.attachShadow({mode: 'open'}); 
     shadow.appendChild(del); 
 
     // Take the text node out of the document

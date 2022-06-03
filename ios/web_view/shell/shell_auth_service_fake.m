@@ -37,4 +37,9 @@
   return [self identities];
 }
 
+- (CWVSyncError)syncErrorForNSError:(NSError*)error
+                           identity:(CWVIdentity*)identity {
+  return CWVSyncErrorUnexpectedServiceResponse;
+}
+
 @end

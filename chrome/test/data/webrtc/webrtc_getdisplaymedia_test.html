@@ -8,29 +8,61 @@
   <script>
   'use strict';
   var settings;
-  var has_audio_track = false;
+  var video_track;
+  var audio_track;
+  var stored_media_stream;
 
   function handleSuccess(stream) {
-    has_audio_track = stream.getAudioTracks().length == 1;
     settings = stream.getVideoTracks()[0].getSettings();
     var video = document.querySelector('video');
     video.srcObject = stream;
+    video_track = stream.getVideoTracks()[0];
+    if (stream.getAudioTracks().length > 0) {
+      audio_track = stream.getAudioTracks()[0];
+    }
     video.play();
-    returnToTest("getdisplaymedia-success");
+    returnToTest("capture-success");
   }
 
   function handleError(error) {
     console.log('getUserMedia error: ' + error.name, error);
-    returnToTest("getdisplaymedia-failure");
+    returnToTest("capture-failure");
   }
 
-  function runGetDisplayMedia(constraints) {
+  function runGetDisplayMedia(constraints, frame) {
+    if (frame == "allowedFrame" || frame == "disallowedFrame") {
+      document.getElementById(frame).contentWindow.postMessage(constraints);
+      // window.domAutomationController.send() called by embedded page.
+      return;
+    }
+
     navigator.mediaDevices.getDisplayMedia(constraints).
       then(handleSuccess).catch(handleError);
   }
 
   function hasAudioTrack() {
-    returnToTest(has_audio_track ? "true" : "false");
+    returnToTest(`${!!audio_track}`);
+  }
+
+  function getVideoTrackType() {
+    if (!video_track) {
+      returnToTest("error-no-video-track");
+    }
+    returnToTest(video_track.constructor.name);
+  }
+
+  function getVideoCloneTrackType() {
+    if (!video_track) {
+      returnToTest("error-no-video-track-to-clone");
+    }
+    returnToTest(video_track.clone().constructor.name);
+  }
+
+  function getAudioTrackType() {
+    if (!audio_track) {
+      returnToTest("error-no-audio-track");
+    }
+    returnToTest(audio_track.constructor.name);
   }
 
   function getDisplaySurfaceSetting() {
@@ -52,6 +84,33 @@
   function getFrameRateSetting() {
     returnToTest(settings.frameRate.toString());
   }
+
+  function waitVideoMuted() {
+    if (video_track.muted) {
+      returnToTest("muted");
+    }
+    video_track.onmute = function(evt) {
+      returnToTest("muted");
+    }
+  }
+
+  function waitVideoUnmuted() {
+    if (!video_track.muted) {
+      returnToTest("unmuted");
+    }
+    video_track.onunmute = function(evt) {
+      returnToTest("unmuted");
+    }
+  }
+
+  function waitVideoEnded() {
+    if (video_track.readyState == "ended") {
+      returnToTest("ended");
+    }
+    video_track.onended = function(evt) {
+      returnToTest("ended");
+    }
+  }
   </script>
 </head>
 <body>
@@ -65,6 +124,8 @@
       </td>
     </tr>
   </table>
+  <br/>
+    <iframe id="allowedFrame" src="webrtc_getdisplaymedia_embedded_document.html"></iframe>
+    <iframe id="disallowedFrame" src="webrtc_getdisplaymedia_embedded_document.html" allow="display-capture 'none'"></iframe>
 </body>
 </html>
-

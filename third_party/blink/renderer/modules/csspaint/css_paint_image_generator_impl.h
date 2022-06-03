@@ -54,7 +54,7 @@ class MODULES_EXPORT CSSPaintImageGeneratorImpl final
   }
   unsigned GetRegisteredDefinitionCountForTesting() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Used for main-thread CSS Paint.

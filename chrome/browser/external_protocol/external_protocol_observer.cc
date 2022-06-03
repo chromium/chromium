@@ -16,10 +16,10 @@ ExternalProtocolObserver::~ExternalProtocolObserver() {
 }
 
 void ExternalProtocolObserver::DidGetUserInteraction(
-    const blink::WebInputEvent::Type type) {
+    const blink::WebInputEvent& event) {
   // Ignore scroll events for allowing external protocol launch.
-  if (type != blink::WebInputEvent::kGestureScrollBegin)
+  if (event.GetType() != blink::WebInputEvent::Type::kGestureScrollBegin)
     ExternalProtocolHandler::PermitLaunchUrl();
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ExternalProtocolObserver)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ExternalProtocolObserver);

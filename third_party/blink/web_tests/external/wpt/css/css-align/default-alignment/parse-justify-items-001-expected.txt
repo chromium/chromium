@@ -1,0 +1,25 @@
+This is a testharness.js-based test.
+PASS Checking justify-items: normal
+PASS Checking justify-items: stretch
+PASS Checking justify-items: left
+PASS Checking justify-items: right
+PASS Checking justify-items: start
+PASS Checking justify-items: end
+PASS Checking justify-items: self-start
+PASS Checking justify-items: self-end
+PASS Checking justify-items: center
+PASS Checking justify-items: flex-start
+PASS Checking justify-items: flex-end
+PASS Checking justify-items: baseline
+PASS Checking justify-items: first baseline
+FAIL Checking justify-items: last baseline assert_equals: justify-items computed style is not what is should. expected "last baseline" but got "normal"
+PASS Checking justify-items: safe flex-end
+PASS Checking justify-items: unsafe end
+PASS Checking justify-items: safe end
+PASS Checking justify-items: unsafe flex-start
+PASS Checking justify-items: safe center
+PASS Checking justify-items: legacy left
+PASS Checking justify-items: legacy center
+PASS Checking justify-items: legacy right
+Harness: the test ran to completion.
+

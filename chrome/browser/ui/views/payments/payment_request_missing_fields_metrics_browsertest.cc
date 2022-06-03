@@ -11,6 +11,7 @@
 #include "components/payments/core/autofill_card_validation.h"
 #include "components/payments/core/journey_logger.h"
 #include "components/payments/core/payments_profile_comparator.h"
+#include "content/public/test/browser_test.h"
 
 namespace payments {
 
@@ -238,43 +239,6 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestMissingFieldsMetricsTest,
   // Even though the profile is incomplete, there should be no log for missing
   // shipping fields since shipping was not required.
   histogram_tester.ExpectTotalCount("PaymentRequest.MissingShippingFields", 0);
-}
-
-// Tests that proper UMA metrics are logged when the available card type does
-// not exactly match the specified type in payment request.
-IN_PROC_BROWSER_TEST_F(PaymentRequestMissingFieldsMetricsTest,
-                       TestCardWithMismatchedType) {
-  NavigateTo("/payment_request_debit_test.html");
-  base::HistogramTester histogram_tester;
-  // Add a profile for billing address with a visa card type.
-  autofill::AutofillProfile billing_address = autofill::test::GetFullProfile();
-  AddAutofillProfile(billing_address);
-  autofill::CreditCard visa_card = autofill::test::GetCreditCard2();
-  visa_card.set_billing_address_id(billing_address.guid());
-  AddCreditCard(visa_card);
-
-  // Show a Payment Request with debit card specified.
-  InvokePaymentRequestUI();
-
-  // Navigate away to abort the Payment Request and trigger the logs.
-  NavigateTo("/payment_request_email_test.html");
-
-  // Make sure the correct events were logged. EVENT_NEEDS_COMPLETION_PAYMENT is
-  // set since the type of the saved card does not match the specified type in
-  // payment request.
-  int32_t expected_event_bits =
-      JourneyLogger::EVENT_SHOWN | JourneyLogger::EVENT_USER_ABORTED |
-      JourneyLogger::EVENT_HAD_INITIAL_FORM_OF_PAYMENT |
-      JourneyLogger::EVENT_REQUEST_METHOD_BASIC_CARD |
-      JourneyLogger::EVENT_AVAILABLE_METHOD_BASIC_CARD |
-      JourneyLogger::EVENT_NEEDS_COMPLETION_PAYMENT;
-  histogram_tester.ExpectBucketCount("PaymentRequest.Events",
-                                     expected_event_bits, 1);
-
-  // Ensure that the card type does not exactly match the payment request
-  // network type.
-  histogram_tester.ExpectBucketCount("PaymentRequest.MissingPaymentFields",
-                                     CREDIT_CARD_TYPE_MISMATCH, 1);
 }
 
 }  // namespace payments

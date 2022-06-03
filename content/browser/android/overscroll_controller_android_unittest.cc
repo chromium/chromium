@@ -4,14 +4,13 @@
 
 #include "content/browser/android/overscroll_controller_android.h"
 #include <memory>
-#include "base/macros.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/layers/layer.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_gesture_event.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 #include "ui/android/overscroll_glow.h"
 #include "ui/android/overscroll_refresh.h"
 #include "ui/android/resources/resource_manager_impl.h"
@@ -19,14 +18,14 @@
 #include "ui/events/base_event_utils.h"
 #include "ui/events/blink/did_overscroll_params.h"
 
-using ui::EdgeEffectBase;
-using ui::ResourceManager;
+using ::testing::_;
+using ::testing::Return;
+using ui::EdgeEffect;
 using ui::OverscrollGlow;
 using ui::OverscrollGlowClient;
 using ui::OverscrollRefresh;
+using ui::ResourceManager;
 using ui::WindowAndroidCompositor;
-using ::testing::_;
-using ::testing::Return;
 
 namespace content {
 
@@ -35,7 +34,7 @@ namespace {
 class MockCompositor : public WindowAndroidCompositor {
  public:
   ~MockCompositor() override {}
-  void AttachLayerForReadback(scoped_refptr<cc::Layer>) override {}
+  std::unique_ptr<ReadbackRef> TakeReadbackRef() override { return nullptr; }
   void RequestCopyOfOutputOnRootLayer(
       std::unique_ptr<viz::CopyOutputRequest>) override {}
   void SetNeedsAnimate() override {}
@@ -52,7 +51,7 @@ class MockCompositor : public WindowAndroidCompositor {
 
 class MockGlowClient : public OverscrollGlowClient {
  public:
-  MOCK_METHOD0(CreateEdgeEffect, std::unique_ptr<EdgeEffectBase>());
+  MOCK_METHOD0(CreateEdgeEffect, std::unique_ptr<EdgeEffect>());
 };
 
 class MockGlow : public OverscrollGlow {
@@ -115,8 +114,7 @@ class OverscrollControllerAndroidUnitTest : public testing::Test {
 TEST_F(OverscrollControllerAndroidUnitTest,
        OverscrollBehaviorYAutoAllowsRefresh) {
   ui::DidOverscrollParams params = CreateVerticalOverscrollParams();
-  params.overscroll_behavior.y = cc::OverscrollBehavior::
-      OverscrollBehaviorType::kOverscrollBehaviorTypeAuto;
+  params.overscroll_behavior.y = cc::OverscrollBehavior::Type::kAuto;
 
   // Test that refresh is activated but glow is not rendered.
   EXPECT_CALL(*refresh_, IsActive()).WillOnce(Return(true));
@@ -130,8 +128,7 @@ TEST_F(OverscrollControllerAndroidUnitTest,
 TEST_F(OverscrollControllerAndroidUnitTest,
        OverscrollBehaviorYContainAllowsGlowOnly) {
   ui::DidOverscrollParams params = CreateVerticalOverscrollParams();
-  params.overscroll_behavior.y = cc::OverscrollBehavior::
-      OverscrollBehaviorType::kOverscrollBehaviorTypeContain;
+  params.overscroll_behavior.y = cc::OverscrollBehavior::Type::kContain;
 
   EXPECT_CALL(*refresh_, IsActive()).WillOnce(Return(false));
   EXPECT_CALL(*refresh_, IsAwaitingScrollUpdateAck()).WillOnce(Return(false));
@@ -144,10 +141,8 @@ TEST_F(OverscrollControllerAndroidUnitTest,
   testing::Mock::VerifyAndClearExpectations(glow_);
 
   // Test that the "contain" set on x-axis would not affect navigation.
-  params.overscroll_behavior.y = cc::OverscrollBehavior::
-      OverscrollBehaviorType::kOverscrollBehaviorTypeAuto;
-  params.overscroll_behavior.x = cc::OverscrollBehavior::
-      OverscrollBehaviorType::kOverscrollBehaviorTypeContain;
+  params.overscroll_behavior.y = cc::OverscrollBehavior::Type::kAuto;
+  params.overscroll_behavior.x = cc::OverscrollBehavior::Type::kContain;
 
   EXPECT_CALL(*refresh_, IsActive()).WillOnce(Return(true));
   EXPECT_CALL(*refresh_, IsAwaitingScrollUpdateAck()).Times(0);
@@ -161,8 +156,7 @@ TEST_F(OverscrollControllerAndroidUnitTest,
 TEST_F(OverscrollControllerAndroidUnitTest,
        OverscrollBehaviorYNonePreventsGlowAndRefresh) {
   ui::DidOverscrollParams params = CreateVerticalOverscrollParams();
-  params.overscroll_behavior.y = cc::OverscrollBehavior::
-      OverscrollBehaviorType::kOverscrollBehaviorTypeNone;
+  params.overscroll_behavior.y = cc::OverscrollBehavior::Type::kNone;
 
   EXPECT_CALL(*refresh_, IsActive()).WillOnce(Return(false));
   EXPECT_CALL(*refresh_, IsAwaitingScrollUpdateAck()).WillOnce(Return(false));
@@ -197,8 +191,7 @@ TEST_F(OverscrollControllerAndroidUnitTest,
 TEST_F(OverscrollControllerAndroidUnitTest,
        ConsumedUpdateDoesNotResetEnabledRefresh) {
   ui::DidOverscrollParams params = CreateVerticalOverscrollParams();
-  params.overscroll_behavior.y = cc::OverscrollBehavior::
-      OverscrollBehaviorType::kOverscrollBehaviorTypeAuto;
+  params.overscroll_behavior.y = cc::OverscrollBehavior::Type::kAuto;
 
   EXPECT_CALL(*refresh_, IsActive()).WillOnce(Return(true));
   EXPECT_CALL(*refresh_, IsAwaitingScrollUpdateAck()).WillOnce(Return(false));
@@ -207,10 +200,11 @@ TEST_F(OverscrollControllerAndroidUnitTest,
   controller_->OnOverscrolled(params);
 
   // Generate a consumed scroll update.
-  blink::WebGestureEvent event(blink::WebInputEvent::kGestureScrollUpdate,
+  blink::WebGestureEvent event(blink::WebInputEvent::Type::kGestureScrollUpdate,
                                blink::WebInputEvent::kNoModifiers,
                                ui::EventTimeForNow());
-  controller_->OnGestureEventAck(event, INPUT_EVENT_ACK_STATE_CONSUMED);
+  controller_->OnGestureEventAck(
+      event, blink::mojom::InputEventResultState::kConsumed);
 
   testing::Mock::VerifyAndClearExpectations(&refresh_);
 }

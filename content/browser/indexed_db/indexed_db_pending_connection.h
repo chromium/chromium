@@ -12,9 +12,7 @@
 #include "content/browser/indexed_db/indexed_db_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_data_loss_info.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
-#include "content/browser/indexed_db/indexed_db_execution_context_connection_tracker.h"
 #include "content/common/content_export.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -25,8 +23,6 @@ struct CONTENT_EXPORT IndexedDBPendingConnection {
   IndexedDBPendingConnection(
       scoped_refptr<IndexedDBCallbacks> callbacks,
       scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks,
-      IndexedDBExecutionContextConnectionTracker::Handle
-          execution_context_connection_handle,
       int64_t transaction_id,
       int64_t version,
       base::OnceCallback<void(base::WeakPtr<IndexedDBTransaction>)>
@@ -34,8 +30,6 @@ struct CONTENT_EXPORT IndexedDBPendingConnection {
   ~IndexedDBPendingConnection();
   scoped_refptr<IndexedDBCallbacks> callbacks;
   scoped_refptr<IndexedDBDatabaseCallbacks> database_callbacks;
-  IndexedDBExecutionContextConnectionTracker::Handle
-      execution_context_connection_handle;
   int64_t transaction_id;
   int64_t version;
   IndexedDBDataLossInfo data_loss_info;

@@ -14,7 +14,7 @@ if (window.internals)
 
 function doTest() {
     if (sizeIndex) {
-        repaintRects += internals.layerTreeAsText(document, window.internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        repaintRects += internals.layerTreeAsText(document, window.internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
     }
     ++sizeIndex;

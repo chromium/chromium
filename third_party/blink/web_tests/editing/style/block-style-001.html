@@ -1,35 +1,34 @@
-<html> 
-<head>
-
-<style>
-.editing { 
-    border: 2px solid red; 
-    padding: 12px; 
-    font-size: 24px; 
-}
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-    justifyCenterCommand();
-}
-
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>|abc</div>',
+            '<div>def</div>',
+        '</div>',
+    ],
+    'justifyCenter',
+    [
+        '<div contenteditable>',
+            '<div style="text-align: center;">|abc</div>',
+            '<div>def</div>',
+        '</div>',
+    ], 'left to center');
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div style="text-align: right;">|abc</div>',
+            '<div>def</div>',
+        '</div>',
+    ],
+    'justifyCenter',
+    [
+        '<div contenteditable>',
+            '<div style="text-align: center;">|abc</div>',
+            '<div>def</div>',
+        '</div>',
+    ], 'right to center');
 </script>
-
-<title>Editing Test</title> 
-</head> 
-<body id="root" contenteditable>
-<div id="test" class="editing">
-Here is some text. Should be <b>centered</b>.
-</div>
-<div id="test" class="editing">
-Here is some text. Should be <b>flush left</b>.
-</div>
-<script>
-runEditingTest();
-</script>
-
-</body>
-</html>

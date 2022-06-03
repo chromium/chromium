@@ -24,7 +24,6 @@
 
 .fixed {
   position: fixed;
-  opacity: 0.99; /* Using 99% opacity on fixed pos elements to ensure they are not automatically promoted. */
   top: 45px;
   left: 45px;
   background-color: lime;
@@ -35,11 +34,6 @@
 </style>
 
 <script>
-        if (window.internals) {
-            /* Note carefully, compositing for fixed position is _disabled_ here */
-            internals.settings.setPreferCompositingToLCDTextEnabled(false);
-        }
-
         function repaintTest() {
              window.scrollTo(0, 100);
         }

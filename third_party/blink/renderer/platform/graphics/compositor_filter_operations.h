@@ -7,14 +7,15 @@
 
 #include "cc/paint/filter_operations.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_point.h"
-#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkScalar.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace blink {
+
+class Color;
 
 // An ordered list of filter operations.
 class PLATFORM_EXPORT CompositorFilterOperations {
@@ -26,14 +27,16 @@ class PLATFORM_EXPORT CompositorFilterOperations {
   void AppendSepiaFilter(float amount);
   void AppendSaturateFilter(float amount);
   void AppendHueRotateFilter(float amount);
+  void AppendColorMatrixFilter(Vector<float> value);
   void AppendInvertFilter(float amount);
   void AppendBrightnessFilter(float amount);
   void AppendContrastFilter(float amount);
   void AppendOpacityFilter(float amount);
   void AppendBlurFilter(float amount,
-                        SkBlurImageFilter::TileMode tile_mode =
-                            SkBlurImageFilter::kClampToBlack_TileMode);
-  void AppendDropShadowFilter(IntPoint offset, float std_deviation, Color);
+                        SkTileMode tile_mode = SkTileMode::kDecal);
+  void AppendDropShadowFilter(gfx::Point offset,
+                              float std_deviation,
+                              const Color& color);
   void AppendColorMatrixFilter(const cc::FilterOperation::Matrix&);
   void AppendZoomFilter(float amount, int inset);
   void AppendSaturatingBrightnessFilter(float amount);
@@ -46,12 +49,13 @@ class PLATFORM_EXPORT CompositorFilterOperations {
 
   // Returns a rect covering the destination pixels that can be affected by
   // source pixels in |inputRect|.
-  FloatRect MapRect(const FloatRect& input_rect) const;
+  gfx::RectF MapRect(const gfx::RectF& input_rect) const;
 
   bool HasFilterThatMovesPixels() const;
+  bool HasReferenceFilter() const;
 
   void SetReferenceBox(const FloatRect& r) { reference_box_ = r; }
-  FloatRect ReferenceBox() const { return reference_box_; }
+  const FloatRect& ReferenceBox() const { return reference_box_; }
 
   // For reference filters, this equality operator compares pointers of the
   // image_filter fields instead of their values.

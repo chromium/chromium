@@ -4,16 +4,16 @@
 
 #include "chrome/browser/themes/theme_service.h"
 
-#include "base/macros.h"
-#include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/test/theme_service_changed_waiter.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 
 namespace {
@@ -30,15 +30,16 @@ class ThemeServiceBrowserTest : public extensions::ExtensionBrowserTest {
  public:
   ThemeServiceBrowserTest() {
   }
+
+  ThemeServiceBrowserTest(const ThemeServiceBrowserTest&) = delete;
+  ThemeServiceBrowserTest& operator=(const ThemeServiceBrowserTest&) = delete;
+
   ~ThemeServiceBrowserTest() override {}
 
   void SetUp() override {
     extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
     extensions::ExtensionBrowserTest::SetUp();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ThemeServiceBrowserTest);
 };
 
 // Test that the theme is recreated from the extension when the data pack is
@@ -58,11 +59,9 @@ IN_PROC_BROWSER_TEST_F(ThemeServiceBrowserTest, PRE_ThemeDataPackInvalid) {
   EXPECT_EQ(base::FilePath(),
             profile->GetPrefs()->GetFilePath(prefs::kCurrentThemePackFilename));
 
-  content::WindowedNotificationObserver theme_change_observer(
-      chrome::NOTIFICATION_BROWSER_THEME_CHANGED,
-      content::Source<ThemeService>(theme_service));
+  test::ThemeServiceChangedWaiter waiter(theme_service);
   InstallExtension(test_data_dir_.AppendASCII("theme"), 1);
-  theme_change_observer.Wait();
+  waiter.WaitForThemeChanged();
 
   // Check that the theme was installed.
   EXPECT_TRUE(UsingCustomTheme(*theme_service));

@@ -6,9 +6,10 @@ package org.chromium.content.browser;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Rule;

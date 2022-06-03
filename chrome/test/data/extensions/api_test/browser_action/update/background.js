@@ -3,26 +3,35 @@
 // found in the LICENSE file.
 
 function updateBrowserAction() {
-  chrome.browserAction.setTitle({title: 'Modified'});
-  chrome.browserAction.setIcon({path: 'icon2.png'});
-  chrome.browserAction.setBadgeText({text: 'badge'});
-  chrome.browserAction.setBadgeBackgroundColor({color: [255,255,255,255]});
+  chrome.browserAction.setTitle({title: 'Modified'}, function() {
+    chrome.browserAction.setIcon({path: 'icon2.png'}, function() {
+      chrome.browserAction.setBadgeText({text: 'badge'}, function() {
+        chrome.browserAction.setBadgeBackgroundColor({color: [255,255,255,255]},
+                                                     function() {
+          chrome.test.notifyPass();
+        });
+      });
+    });
+  });
 }
 
 chrome.extension.isAllowedIncognitoAccess(function(isAllowedAccess) {
-  if (isAllowedAccess == true) {
-    chrome.test.sendMessage('incognito ready', function(message) {
-      if (message == 'incognito update') {
-        updateBrowserAction();
-        chrome.test.notifyPass();
-      }
-    });
+  switch(isAllowedAccess) {
+    case false:
+      chrome.test.sendMessage('incognito not allowed');
+      break;
+    case true:
+      chrome.test.sendMessage('incognito allowed', function(message) {
+        if (message == 'incognito update') {
+          updateBrowserAction();
+        }
+      });
+      break;
   }
 });
 
 chrome.test.sendMessage('ready', function(message) {
   if (message == 'update') {
     updateBrowserAction();
-    chrome.test.notifyPass();
   }
 });

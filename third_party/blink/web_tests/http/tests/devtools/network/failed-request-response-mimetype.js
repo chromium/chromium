@@ -4,15 +4,16 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that network request response view generates a view if no mime type is set.`);
-  await TestRunner.loadModule('application_test_runner');
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   SDK.multitargetNetworkManager.setBlockingEnabled(true);
   TestRunner.networkManager.addEventListener(
     SDK.NetworkManager.Events.RequestFinished, (event) => {
       const request = event.data;
-      const networkRequests = NetworkTestRunner.networkRequests();
+      const networkRequests =
+          NetworkTestRunner.networkRequests().filter((e, i, a) => i % 2 == 0);
       const networkRequest = networkRequests[0];
 
       TestRunner.addResult('networkRequests.length: ' + networkRequests.length);
@@ -23,7 +24,7 @@
 
       const responseView = new Network.RequestResponseView(networkRequest);
       responseView.showPreview().then((emptyWidgetView) => {
-        TestRunner.addResult(emptyWidgetView._textElement.textContent);
+        TestRunner.addResult(emptyWidgetView.textElement.textContent);
         TestRunner.completeTest();
       });
     }

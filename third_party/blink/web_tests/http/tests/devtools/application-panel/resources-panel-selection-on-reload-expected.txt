@@ -4,7 +4,7 @@ Initial state:
 Application
   Manifest
   Service Workers
-  Clear storage
+  Storage
 Storage
   Local Storage
     http://127.0.0.1:8000
@@ -16,17 +16,20 @@ Storage
     database-for-test
   Cookies
     http://127.0.0.1:8000
+  Trust Tokens
 Cache
   Cache Storage
-  Application Cache
+  Back-Forward Cache
 Background Services
   Background Fetch
   Background Sync
   Notifications
   Payment Handler
+  Periodic Background Sync
   Push Messaging
 Frames
   top
+    inspected-page.html
 Selection: ["cookies://http://127.0.0.1:8000","category://Cookies"]
 Visible view is a cookie view: true
 Page reloaded.
@@ -34,7 +37,7 @@ After navigation:
 Application
   Manifest
   Service Workers
-  Clear storage
+  Storage
 Storage
   Local Storage
     http://127.0.0.1:8000
@@ -45,17 +48,20 @@ Storage
   Web SQL
   Cookies
     http://127.0.0.1:8000
+  Trust Tokens
 Cache
   Cache Storage
-  Application Cache
+  Back-Forward Cache
 Background Services
   Background Fetch
   Background Sync
   Notifications
   Payment Handler
+  Periodic Background Sync
   Push Messaging
 Frames
   top
+    inspected-page.html
 Selection: ["cookies://http://127.0.0.1:8000","category://Cookies"]
 Visible view is a cookie view: true
 

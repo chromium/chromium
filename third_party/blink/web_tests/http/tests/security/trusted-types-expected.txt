@@ -1,0 +1,10 @@
+ALERT: Case #1: Trigger TT error on main page.
+CONSOLE ERROR: This document requires 'TrustedHTML' assignment.
+ALERT: Case #2: Trigger TT error in main world, via test runner.
+CONSOLE ERROR: This document requires 'TrustedHTML' assignment.
+ALERT: Case #3: Trigger TT error in extension.
+ALERT: Case #4: Set default policy on main page. Trigger TT error in main 0page.
+CONSOLE ERROR: This document requires 'TrustedHTML' assignment.
+ALERT: Case #5: Default policy on main page. Trigger TT error in extension
+ALERT: Cleanup & done.
+The majority of Trusted Types-related tests can be found in the WPT test suite. This particular test tests the interaction of Trusted Types with isolated worlds, which is not accessible from WPT tests.

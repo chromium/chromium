@@ -5,7 +5,7 @@ var count = 0;
 
 if (window.testRunner) {
     testRunner.dumpAsText();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
     testRunner.waitUntilDone();
 }
 
@@ -33,8 +33,8 @@ function zoomPage()
               return;
             }
 
-            if (window.eventSender) {
-                eventSender.zoomPageIn();
+            if (window.testRunner) {
+                testRunner.zoomPageIn();
                 log("Size at zoom level" + (count) + " : "  + image.clientWidth + "x" + image.clientHeight);
                 ++count;
                 if (count == 10) {

@@ -13,30 +13,15 @@ const TransformPaintPropertyNode& TransformPaintPropertyNode::Root() {
       TransformPaintPropertyNode, root,
       base::AdoptRef(new TransformPaintPropertyNode(
           nullptr,
-          State{
-              FloatSize(), &ScrollPaintPropertyNode::Root(),
-              State::Flags{false /* flattens_inherited_transform */,
-                           false /* affected_by_outer_viewport_bounds_delta */,
-                           false /* in_subtree_of_page_scale */}},
-          true /* is_parent_alias */)));
+          State{gfx::Vector2dF(), &ScrollPaintPropertyNode::Root(), nullptr,
+                State::Flags{false /* flattens_inherited_transform */,
+                             false /* in_subtree_of_page_scale */}})));
   return *root;
 }
 
-const TransformPaintPropertyNode&
-TransformPaintPropertyNode::NearestScrollTranslationNode() const {
-  const auto* transform = this;
-  while (!transform->ScrollNode()) {
-    transform = transform->Parent();
-    // The transform should never be null because the root transform has an
-    // associated scroll node (see: TransformPaintPropertyNode::Root()).
-    DCHECK(transform);
-  }
-  return *transform;
-}
-
-bool TransformPaintPropertyNode::Changed(
+bool TransformPaintPropertyNodeOrAlias::Changed(
     PaintPropertyChangeType change,
-    const TransformPaintPropertyNode& relative_to_node) const {
+    const TransformPaintPropertyNodeOrAlias& relative_to_node) const {
   for (const auto* node = this; node; node = node->Parent()) {
     if (node == &relative_to_node)
       return false;
@@ -46,18 +31,26 @@ bool TransformPaintPropertyNode::Changed(
 
   // |this| is not a descendant of |relative_to_node|. We have seen no changed
   // flag from |this| to the root. Now check |relative_to_node| to the root.
-  return relative_to_node.Changed(change, Root());
+  return relative_to_node.Changed(change, TransformPaintPropertyNode::Root());
+}
+
+const TransformPaintPropertyNode&
+TransformPaintPropertyNode::NearestScrollTranslationNode() const {
+  const auto* transform = this;
+  while (!transform->ScrollNode()) {
+    transform = transform->UnaliasedParent();
+    // The transform should never be null because the root transform has an
+    // associated scroll node (see: TransformPaintPropertyNode::Root()).
+    DCHECK(transform);
+  }
+  return *transform;
 }
 
 std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
-  auto json = std::make_unique<JSONObject>();
-  if (Parent())
-    json->SetString("parent", String::Format("%p", Parent()));
-  if (NodeChanged() != PaintPropertyChangeType::kUnchanged)
-    json->SetString("changed", PaintPropertyChangeTypeToString(NodeChanged()));
+  auto json = ToJSONBase();
   if (IsIdentityOr2DTranslation()) {
     if (!Translation2D().IsZero())
-      json->SetString("translation2d", Translation2D().ToString());
+      json->SetString("translation2d", String(Translation2D().ToString()));
   } else {
     json->SetString("matrix", Matrix().ToString());
     json->SetString("origin", Origin().ToString());
@@ -87,16 +80,13 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
   }
   if (state_.scroll)
     json->SetString("scroll", String::Format("%p", state_.scroll.get()));
-  return json;
-}
 
-size_t TransformPaintPropertyNode::CacheMemoryUsageInBytes() const {
-  size_t total_bytes = sizeof(*this);
-  if (transform_cache_)
-    total_bytes += sizeof(*transform_cache_);
-  if (Parent())
-    total_bytes += Parent()->CacheMemoryUsageInBytes();
-  return total_bytes;
+  if (state_.scroll_translation_for_fixed) {
+    json->SetString(
+        "scroll_translation_for_fixed",
+        String::Format("%p", state_.scroll_translation_for_fixed.get()));
+  }
+  return json;
 }
 
 }  // namespace blink

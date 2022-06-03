@@ -19,8 +19,8 @@ import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 
+import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
-import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.test.WebApkTestHelper;
 
 import java.lang.annotation.Retention;

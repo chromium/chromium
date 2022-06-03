@@ -19,7 +19,7 @@ import org.chromium.chromecast.media.AudioContentType;
 
 /**
  * Implements the java-side of the volume control API that maps between volume levels ([0..100])
- * and dBFS values. It uses an Android Things specific system API.
+ * and dBFS values. It uses an Android API that was made public in SDK version 28.
  */
 @JNINamespace("chromecast::media")
 @TargetApi(Build.VERSION_CODES.N)
@@ -94,6 +94,9 @@ public final class VolumeMap {
 
     // Returns the current volume in dB for the given stream type and volume index.
     private static float getStreamVolumeDB(int streamType, int idx) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            return getAudioManager().getStreamVolumeDb(streamType, idx, DEVICE_TYPE);
+        }
         float db = 0;
         if (Build.VERSION.SDK_INT == Build.VERSION_CODES.O_MR1
                 || Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
@@ -106,10 +109,6 @@ public final class VolumeMap {
             } catch (Exception e) {
                 Log.e(TAG, "Can not call AudioManager.getStreamVolumeDb():", e);
             }
-            // TODO(ckuiper): when Android P becomes available add something like this to call the
-            // AudioManager.getStreamVolumeDb() directly as it is public in P.
-            //   } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-            //       db = sAudioManager.getStreamVolumeDb();
         } else {
             Log.e(TAG, "Unsupported Android SDK version:" + Build.VERSION.SDK_INT);
         }

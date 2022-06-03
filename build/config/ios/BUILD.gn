@@ -2,70 +2,74 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/coverage/coverage.gni")
-import("//build/config/ios/ios_sdk.gni")
-import("//build/config/sysroot.gni")
-import("//build/toolchain/toolchain.gni")
+# TODO(crbug.com/1259122): Remove //build/config/sanitizers/sanitizers.gni when
+# Chromium Clang ship with a catalyst version of the compiler runtime.
 
-declare_args() {
-  # Enabling this option makes clang compile to an intermediate
-  # representation ("bitcode"), and not to native code. This is preferred
-  # when including WebRTC in the apps that will be sent to Apple's App Store
-  # and mandatory for the apps that run on watchOS or tvOS.
-  # The option only works when building with Xcode (use_xcode_clang = true).
-  # Mimicking how Xcode handles it, the production builds (is_debug = false)
-  # get real bitcode sections added, while the debug builds (is_debug = true)
-  # only get bitcode-section "markers" added in them.
-  # NOTE: This option is ignored when building versions for the iOS simulator,
-  # where a part of libvpx is compiled from the assembly code written using
-  # Intel assembly syntax; Yasm / Nasm do not support emitting bitcode parts.
-  # That is not a limitation for now as Xcode mandates the presence of bitcode
-  # only when building bitcode-enabled projects for real devices (ARM CPUs).
-  enable_ios_bitcode = false
-}
+import("//build/config/ios/ios_sdk.gni")
+import("//build/config/sanitizers/sanitizers.gni")
+import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
+import("//build/toolchain/toolchain.gni")
+import("//build_overrides/build.gni")
 
 # This is included by reference in the //build/config/compiler config that
 # is applied to all targets. It is here to separate out the logic.
 config("compiler") {
   # These flags are shared between the C compiler and linker.
-  common_ios_flags = []
+  common_flags = []
 
   # CPU architecture.
   if (current_cpu == "x64") {
-    common_ios_flags += [
-      "-arch",
-      "x86_64",
-    ]
+    triplet_cpu = "x86_64"
   } else if (current_cpu == "x86") {
-    common_ios_flags += [
-      "-arch",
-      "i386",
-    ]
-  } else if (current_cpu == "armv7" || current_cpu == "arm") {
-    common_ios_flags += [
-      "-arch",
-      "armv7",
-    ]
+    triplet_cpu = "i386"
+  } else if (current_cpu == "arm" || current_cpu == "armv7") {
+    triplet_cpu = "armv7"
   } else if (current_cpu == "arm64") {
-    common_ios_flags += [
-      "-arch",
-      "arm64",
-    ]
+    triplet_cpu = "arm64"
+  } else {
+    assert(false, "unsupported cpu: $current_cpu")
   }
+
+  # Environment.
+  if (target_environment == "simulator") {
+    triplet_environment = "-simulator"
+  } else if (target_environment == "device") {
+    triplet_environment = ""
+  } else if (target_environment == "catalyst") {
+    triplet_environment = "-macabi"
+  } else {
+    assert(false, "unsupported environment: $target_environment")
+  }
+
+  # OS.
+  triplet_os = "apple-ios"
+
+  # Set target.
+  common_flags = [
+    "-target",
+    "$triplet_cpu-$triplet_os$ios_deployment_target$triplet_environment",
+  ]
 
   # This is here so that all files get recompiled after an Xcode update.
   # (defines are passed via the command line, and build system rebuild things
   # when their commandline changes). Nothing should ever read this define.
   defines = [ "CR_XCODE_VERSION=$xcode_version" ]
 
-  asmflags = common_ios_flags
-  cflags = common_ios_flags
+  asmflags = common_flags
+  cflags = common_flags
+  swiftflags = common_flags
+
+  swiftflags += [
+    "-swift-version",
+    "5",
+  ]
 
   # Without this, the constructors and destructors of a C++ object inside
   # an Objective C struct won't be called, which is very bad.
   cflags_objcc = [ "-fobjc-call-cxx-cdtors" ]
 
-  ldflags = common_ios_flags
+  ldflags = common_flags
 }
 
 # This is included by reference in the //build/config/compiler:runtime_library
@@ -73,20 +77,41 @@ config("compiler") {
 # that is iOS-only. Please see that target for advice on what should go in
 # :runtime_library vs. :compiler.
 config("runtime_library") {
-  common_flags = [
-    "-isysroot",
-    sysroot,
-
-    "-stdlib=libc++",
-  ]
-
-  if (use_ios_simulator) {
-    common_flags += [ "-mios-simulator-version-min=$ios_deployment_target" ]
-  } else {
-    common_flags += [ "-miphoneos-version-min=$ios_deployment_target" ]
+  # The variable ios_sdk_path is relative to root_build_dir when using Goma RBE
+  # and system Xcode (since Goma RBE only supports paths relative to source).
+  # Rebase the value in that case since gn does not convert paths in compiler
+  # flags (since it is not aware they are paths).
+  _sdk_root = ios_sdk_path
+  if (use_system_xcode && (use_goma || use_remoteexec)) {
+    _sdk_root = rebase_path(ios_sdk_path, root_build_dir)
   }
 
-  if (use_xcode_clang && enable_ios_bitcode && !use_ios_simulator) {
+  common_flags = [
+    "-isysroot",
+    _sdk_root,
+  ]
+  swiftflags = [
+    "-sdk",
+    _sdk_root,
+  ]
+
+  if (target_environment == "catalyst") {
+    common_flags += [
+      "-isystem",
+      "$_sdk_root/System/iOSSupport/usr/include",
+      "-iframework",
+      "$_sdk_root/System/iOSSupport/System/Library/Frameworks",
+    ]
+
+    swiftflags += [
+      "-isystem",
+      "$_sdk_root/System/iOSSupport/usr/include",
+      "-Fsystem",
+      "$_sdk_root/System/iOSSupport/System/Library/Frameworks",
+    ]
+  }
+
+  if (enable_ios_bitcode) {
     if (is_debug) {
       common_flags += [ "-fembed-bitcode-marker" ]
     } else {
@@ -98,28 +123,123 @@ config("runtime_library") {
   cflags = common_flags
   ldflags = common_flags
 
-  if (use_clang_coverage) {
-    configs = [ "//build/config/coverage:default_coverage" ]
+  # TODO(crbug.com/1223481): Temporarily use a different
+  # libclang_rt.iossim.a for arm64 simulator builds. This can be
+  # removed when an arm64 slice is added to upstream Clang.
+  if (target_environment == "simulator" && current_cpu == "arm64") {
+    assert(xcode_version_int == 1300)
+    ldflags += [
+      "-lSystem",
+      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                      "lib/darwin/libclang_rt.iossim.a",
+                  root_build_dir),
+      "-nodefaultlibs",
+    ]
+  }
+
+  # TODO(crbug.com/1259122): Temporarily use a different libclang_rt.osx.a
+  # for catalyst build. This can be removed when a catalyst slice is added
+  # to upstream Clang.
+  if (target_environment == "catalyst") {
+    assert(xcode_version_int == 1300)
+    ldflags += [
+      "-lSystem",
+      rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                      "lib/darwin/libclang_rt.osx.a",
+                  root_build_dir),
+      "-nodefaultlibs",
+    ]
+
+    # UBSAn runtime library is also required when using libfuzzer.
+    if (use_libfuzzer) {
+      ldflags += [ rebase_path("$ios_toolchains_path/usr/lib/clang/13.0.0/" +
+                                   "lib/darwin/libclang_rt.ubsan_osx.a",
+                               root_build_dir) ]
+    }
   }
 }
 
 config("ios_executable_flags") {
+  ldflags = []
+
+  # On "catalyst", the bundle structure is different (uses the same structure
+  # as a regular macOS app), so an additional -rpath is required.
+  if (target_environment == "catalyst") {
+    ldflags += [ "-Wl,-rpath,@loader_path/../Frameworks" ]
+  }
+
+  ldflags += [ "-Wl,-rpath,@executable_path/Frameworks" ]
+}
+
+config("ios_extension_executable_flags") {
+  configs = default_executable_configs
+
+  ldflags = [
+    "-e",
+    "_NSExtensionMain",
+    "-fapplication-extension",
+  ]
+
+  # On "catalyst", the bundle structure is different (uses the same structure
+  # as a regular macOS app), so an additional -rpath is required.
+  if (target_environment == "catalyst") {
+    ldflags += [ "-Wl,-rpath,@loader_path/../../../../Frameworks" ]
+  }
+
+  ldflags += [ "-Wl,-rpath,@executable_path/../../Frameworks" ]
 }
 
 config("ios_dynamic_flags") {
-  ldflags = [ "-Wl,-ObjC" ]  # Always load Objective-C categories and class.
+  ldflags = [
+    # Always load Objective-C categories and class.
+    "-Wl,-ObjC",
+  ]
+
+  # The path to the Swift compatibility libraries (required to run code built
+  # with version N of the SDK on older version of the OS) is relative to the
+  # toolchains directory and changes with the environment.
+  _swift_compatibility_libs_dir_prefix = "$ios_toolchains_path/usr/lib/swift"
+  if (target_environment == "simulator") {
+    _swift_compatibility_libs_dir =
+        "$_swift_compatibility_libs_dir_prefix/iphonesimulator"
+  } else if (target_environment == "device") {
+    _swift_compatibility_libs_dir =
+        "$_swift_compatibility_libs_dir_prefix/iphoneos"
+  } else if (target_environment == "catalyst") {
+    _swift_compatibility_libs_dir =
+        "$_swift_compatibility_libs_dir_prefix/maccatalyst"
+  }
+
+  lib_dirs = [
+    "$ios_sdk_path/usr/lib/swift",
+    _swift_compatibility_libs_dir,
+  ]
+}
+
+config("ios_shared_library_flags") {
+  ldflags = [
+    "-Wl,-rpath,@executable_path/Frameworks",
+    "-Wl,-rpath,@loader_path/Frameworks",
+  ]
+}
+
+config("disable_implicit_retain_self_warning") {
+  cflags_objc = [ "-Wno-implicit-retain-self" ]
+  cflags_objcc = cflags_objc
 }
 
 config("xctest_config") {
+  # Use -iframework for XCTest.framework so that the compiler will treat it as a
+  # system framework and ignore warnings in XCTest framework headers.
   common_flags = [
-    "-F",
-    "$ios_sdk_platform_path/Developer/Library/Frameworks",
+    "-iframework",
+    rebase_path("$ios_sdk_platform_path/Developer/Library/Frameworks",
+                root_build_dir),
   ]
-
   cflags = common_flags
   ldflags = common_flags
 
-  libs = [
+  frameworks = [
     "Foundation.framework",
     "XCTest.framework",
   ]
@@ -127,4 +247,53 @@ config("xctest_config") {
 
 group("xctest") {
   public_configs = [ ":xctest_config" ]
+}
+
+_xctrunner_path =
+    "$ios_sdk_platform_path/Developer/Library/Xcode/Agents/XCTRunner.app"
+
+# When building with Goma RBE, $ios_sdk_platform_path corresponds to a symlink
+# below $root_build_dir that points to the real SDK to use. Because the files
+# are below $root_build_dir, it is not possible to list them as a target input
+# without gn complaining (as it can't find a target creating those files).
+#
+# The symlinks are created by //build/config/apple/sdk_info.py script invoked
+# via exec_script() from //build/config/{ios/ios_sdk.gni,mac/mac_sdk.gni}.
+# As the invocation is done by exec_script, there is no target that can list
+# those files as output.
+#
+# To workaround this, add a target that pretends to create those files
+# (but does nothing). See https://crbug.com/1061487 for why this is needed.
+if (use_system_xcode && (use_goma || use_remoteexec)) {
+  action("copy_xctrunner_app") {
+    testonly = true
+    script = "//build/noop.py"
+    outputs = [
+      "$_xctrunner_path/Info.plist",
+      "$_xctrunner_path/PkgInfo",
+      "$_xctrunner_path/XCTRunner",
+    ]
+  }
+}
+
+# When creating the test runner for an XCUITest, the arm64e slice of the binary
+# must be removed (at least until the app ships with arm64e slice which is not
+# yet supported by Apple).
+action("xctest_runner_without_arm64e") {
+  testonly = true
+  script = "//build/config/ios/strip_arm64e.py"
+  sources = [ "$_xctrunner_path/XCTRunner" ]
+  outputs = [ "$target_out_dir/XCTRunner" ]
+  args = [
+    "--output",
+    rebase_path(outputs[0], root_build_dir),
+    "--input",
+    rebase_path(sources[0], root_build_dir),
+    "--xcode-version",
+    xcode_version,
+  ]
+
+  if (use_system_xcode && (use_goma || use_remoteexec)) {
+    deps = [ ":copy_xctrunner_app" ]
+  }
 }

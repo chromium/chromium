@@ -4,17 +4,21 @@
 
 #include "cc/layers/texture_layer.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/location.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/base/features.h"
 #include "cc/base/simple_enclosed_region.h"
 #include "cc/layers/texture_layer_client.h"
 #include "cc/layers/texture_layer_impl.h"
 #include "cc/trees/layer_tree_host.h"
-#include "components/viz/common/resources/single_release_callback.h"
 
 namespace cc {
 
@@ -28,13 +32,15 @@ TextureLayer::TextureLayer(TextureLayerClient* client) : client_(client) {}
 TextureLayer::~TextureLayer() = default;
 
 void TextureLayer::ClearClient() {
+  DCHECK(IsMutationAllowed());
   client_ = nullptr;
   ClearTexture();
   UpdateDrawsContent(HasDrawableContent());
 }
 
 void TextureLayer::ClearTexture() {
-  SetTransferableResource(viz::TransferableResource(), nullptr);
+  DCHECK(IsMutationAllowed());
+  SetTransferableResource(viz::TransferableResource(), viz::ReleaseCallback());
 }
 
 std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
@@ -43,6 +49,7 @@ std::unique_ptr<LayerImpl> TextureLayer::CreateLayerImpl(
 }
 
 void TextureLayer::SetFlipped(bool flipped) {
+  DCHECK(IsMutationAllowed());
   if (flipped_ == flipped)
     return;
   flipped_ = flipped;
@@ -50,6 +57,7 @@ void TextureLayer::SetFlipped(bool flipped) {
 }
 
 void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
+  DCHECK(IsMutationAllowed());
   if (nearest_neighbor_ == nearest_neighbor)
     return;
   nearest_neighbor_ = nearest_neighbor;
@@ -58,6 +66,7 @@ void TextureLayer::SetNearestNeighbor(bool nearest_neighbor) {
 
 void TextureLayer::SetUV(const gfx::PointF& top_left,
                          const gfx::PointF& bottom_right) {
+  DCHECK(IsMutationAllowed());
   if (uv_top_left_ == top_left && uv_bottom_right_ == bottom_right)
     return;
   uv_top_left_ = top_left;
@@ -65,27 +74,8 @@ void TextureLayer::SetUV(const gfx::PointF& top_left,
   SetNeedsCommit();
 }
 
-void TextureLayer::SetVertexOpacity(float bottom_left,
-                                    float top_left,
-                                    float top_right,
-                                    float bottom_right) {
-  // Indexing according to the quad vertex generation:
-  // 1--2
-  // |  |
-  // 0--3
-  if (vertex_opacity_[0] == bottom_left &&
-      vertex_opacity_[1] == top_left &&
-      vertex_opacity_[2] == top_right &&
-      vertex_opacity_[3] == bottom_right)
-    return;
-  vertex_opacity_[0] = bottom_left;
-  vertex_opacity_[1] = top_left;
-  vertex_opacity_[2] = top_right;
-  vertex_opacity_[3] = bottom_right;
-  SetNeedsCommit();
-}
-
 void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
+  DCHECK(IsMutationAllowed());
   if (premultiplied_alpha_ == premultiplied_alpha)
     return;
   premultiplied_alpha_ = premultiplied_alpha;
@@ -93,6 +83,7 @@ void TextureLayer::SetPremultipliedAlpha(bool premultiplied_alpha) {
 }
 
 void TextureLayer::SetBlendBackgroundColor(bool blend) {
+  DCHECK(IsMutationAllowed());
   if (blend_background_color_ == blend)
     return;
   blend_background_color_ = blend;
@@ -100,6 +91,7 @@ void TextureLayer::SetBlendBackgroundColor(bool blend) {
 }
 
 void TextureLayer::SetForceTextureToOpaque(bool opaque) {
+  DCHECK(IsMutationAllowed());
   if (force_texture_to_opaque_ == opaque)
     return;
   force_texture_to_opaque_ = opaque;
@@ -108,8 +100,9 @@ void TextureLayer::SetForceTextureToOpaque(bool opaque) {
 
 void TextureLayer::SetTransferableResourceInternal(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback,
+    viz::ReleaseCallback release_callback,
     bool requires_commit) {
+  DCHECK(IsMutationAllowed());
   DCHECK(resource.mailbox_holder.mailbox.IsZero() || !holder_ref_ ||
          resource != holder_ref_->holder()->resource());
   DCHECK_EQ(resource.mailbox_holder.mailbox.IsZero(), !release_callback);
@@ -129,24 +122,19 @@ void TextureLayer::SetTransferableResourceInternal(
     SetNeedsPushProperties();
 
   UpdateDrawsContent(HasDrawableContent());
-  // The active frame needs to be replaced and the mailbox returned before the
-  // commit is called complete.
-  SetNextCommitWaitsForActivation();
 }
 
 void TextureLayer::SetTransferableResource(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback) {
+    viz::ReleaseCallback release_callback) {
+  DCHECK(IsMutationAllowed());
   bool requires_commit = true;
   SetTransferableResourceInternal(resource, std::move(release_callback),
                                   requires_commit);
 }
 
-void TextureLayer::SetNeedsDisplayRect(const gfx::Rect& dirty_rect) {
-  Layer::SetNeedsDisplayRect(dirty_rect);
-}
-
 void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
+  DCHECK(IsMutationAllowed());
   if (layer_tree_host() == host) {
     Layer::SetLayerTreeHost(host);
     return;
@@ -155,14 +143,10 @@ void TextureLayer::SetLayerTreeHost(LayerTreeHost* host) {
   // If we're removed from the tree, the TextureLayerImpl will be destroyed, and
   // we will need to set the mailbox again on a new TextureLayerImpl the next
   // time we push.
-  if (!host && holder_ref_) {
+  if (!host && holder_ref_)
     needs_set_resource_ = true;
-    // The active frame needs to be replaced and the mailbox returned before the
-    // commit is called complete.
-    SetNextCommitWaitsForActivation();
-  }
   if (host) {
-    // When attached to a new LayerTreHost, all previously registered
+    // When attached to a new LayerTreeHost, all previously registered
     // SharedBitmapIds will need to be re-sent to the new TextureLayerImpl
     // representing this layer on the compositor thread.
     to_register_bitmaps_.insert(
@@ -181,7 +165,7 @@ bool TextureLayer::Update() {
   bool updated = Layer::Update();
   if (client_) {
     viz::TransferableResource resource;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+    viz::ReleaseCallback release_callback;
     if (client_->PrepareTransferableResource(this, &resource,
                                              &release_callback)) {
       // Already within a commit, no need to do another one immediately.
@@ -207,8 +191,9 @@ bool TextureLayer::IsSnappedToPixelGridInTarget() {
   return true;
 }
 
-void TextureLayer::PushPropertiesTo(LayerImpl* layer) {
-  Layer::PushPropertiesTo(layer);
+void TextureLayer::PushPropertiesTo(LayerImpl* layer,
+                                    const CommitState& commit_state) {
+  Layer::PushPropertiesTo(layer, commit_state);
   TRACE_EVENT0("cc", "TextureLayer::PushPropertiesTo");
 
   TextureLayerImpl* texture_layer = static_cast<TextureLayerImpl*>(layer);
@@ -216,13 +201,12 @@ void TextureLayer::PushPropertiesTo(LayerImpl* layer) {
   texture_layer->SetNearestNeighbor(nearest_neighbor_);
   texture_layer->SetUVTopLeft(uv_top_left_);
   texture_layer->SetUVBottomRight(uv_bottom_right_);
-  texture_layer->SetVertexOpacity(vertex_opacity_);
   texture_layer->SetPremultipliedAlpha(premultiplied_alpha_);
   texture_layer->SetBlendBackgroundColor(blend_background_color_);
   texture_layer->SetForceTextureToOpaque(force_texture_to_opaque_);
   if (needs_set_resource_) {
     viz::TransferableResource resource;
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback;
+    viz::ReleaseCallback release_callback;
     if (holder_ref_) {
       TransferableResourceHolder* holder = holder_ref_->holder();
       resource = holder->resource();
@@ -249,6 +233,7 @@ void TextureLayer::PushPropertiesTo(LayerImpl* layer) {
 SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
     const viz::SharedBitmapId& id,
     scoped_refptr<CrossThreadSharedBitmap> bitmap) {
+  DCHECK(IsMutationAllowed());
   DCHECK(to_register_bitmaps_.find(id) == to_register_bitmaps_.end());
   DCHECK(registered_bitmaps_.find(id) == registered_bitmaps_.end());
   to_register_bitmaps_[id] = std::move(bitmap);
@@ -263,6 +248,7 @@ SharedBitmapIdRegistration TextureLayer::RegisterSharedBitmapId(
 }
 
 void TextureLayer::UnregisterSharedBitmapId(viz::SharedBitmapId id) {
+  DCHECK(IsMutationAllowed());
   // If we didn't get to sending the registration to the compositor thread yet,
   // just remove it.
   to_register_bitmaps_.erase(id);
@@ -297,7 +283,7 @@ TextureLayer::TransferableResourceHolder::MainThreadReference::
 
 TextureLayer::TransferableResourceHolder::TransferableResourceHolder(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback)
+    viz::ReleaseCallback release_callback)
     : resource_(resource),
       release_callback_(std::move(release_callback)),
       sync_token_(resource.mailbox_holder.sync_token) {}
@@ -318,14 +304,14 @@ TextureLayer::TransferableResourceHolder::~TransferableResourceHolder() {
     // We run the ReleaseCallback in that case assuming the MessageLoop is being
     // destroyed on the main thread.
     DCHECK(main_thread_checker_.CalledOnValidThread());
-    release_callback_->Run(sync_token_, is_lost_);
+    std::move(release_callback_).Run(sync_token_, is_lost_);
   }
 }
 
 std::unique_ptr<TextureLayer::TransferableResourceHolder::MainThreadReference>
 TextureLayer::TransferableResourceHolder::Create(
     const viz::TransferableResource& resource,
-    std::unique_ptr<viz::SingleReleaseCallback> release_callback) {
+    viz::ReleaseCallback release_callback) {
   return std::make_unique<MainThreadReference>(
       new TransferableResourceHolder(resource, std::move(release_callback)));
 }
@@ -338,16 +324,16 @@ void TextureLayer::TransferableResourceHolder::Return(
   is_lost_ = is_lost;
 }
 
-std::unique_ptr<viz::SingleReleaseCallback>
+viz::ReleaseCallback
 TextureLayer::TransferableResourceHolder::GetCallbackForImplThread(
     scoped_refptr<base::SequencedTaskRunner> main_thread_task_runner) {
   // We can't call GetCallbackForImplThread if we released the main thread
   // reference.
   DCHECK_GT(internal_references_, 0);
   InternalAddRef();
-  return viz::SingleReleaseCallback::Create(
-      base::BindOnce(&TransferableResourceHolder::ReturnAndReleaseOnImplThread,
-                     this, std::move(main_thread_task_runner)));
+  return base::BindOnce(
+      &TransferableResourceHolder::ReturnAndReleaseOnImplThread, this,
+      std::move(main_thread_task_runner));
 }
 
 void TextureLayer::TransferableResourceHolder::InternalAddRef() {
@@ -363,9 +349,8 @@ void TextureLayer::TransferableResourceHolder::InternalRelease() {
   }
 #endif
   if (!--internal_references_) {
-    release_callback_->Run(sync_token_, is_lost_);
+    std::move(release_callback_).Run(sync_token_, is_lost_);
     resource_ = viz::TransferableResource();
-    release_callback_ = nullptr;
   }
 }
 

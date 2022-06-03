@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {CustomMarginsOrientation, Margins, MarginsType, MeasurementSystem, MeasurementSystemUnitType, Size, State} from 'chrome://print/print_preview.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {CustomMarginsOrientation, Margins, MarginsType, MeasurementSystem, MeasurementSystemUnitType, PrintPreviewMarginControlContainerElement, PrintPreviewMarginControlElement, PrintPreviewModelElement, Size, State} from 'chrome://print/print_preview.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise, fakeDataBind} from 'chrome://test/test_util.m.js';
+
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise, fakeDataBind} from 'chrome://webui-test/test_util.js';
 
 window.custom_margins_test = {};
+const custom_margins_test = window.custom_margins_test;
 custom_margins_test.suiteName = 'CustomMarginsTest';
 /** @enum {string} */
 custom_margins_test.TestNames = {
@@ -26,17 +29,17 @@ custom_margins_test.TestNames = {
 };
 
 suite(custom_margins_test.suiteName, function() {
-  /** @type {?PrintPreviewMarginControlContainerElement} */
-  let container = null;
+  /** @type {!PrintPreviewMarginControlContainerElement} */
+  let container;
 
-  /** @type {?PrintPreviewModelElement} */
-  let model = null;
+  /** @type {PrintPreviewModelElement} */
+  let model;
 
   /** @type {!Array<!CustomMarginsOrientation>} */
   let sides = [];
 
   /** @type {!MeasurementSystem} */
-  let measurementSystem = null;
+  let measurementSystem;
 
   /** @type {number} */
   const pixelsPerInch = 100;
@@ -52,10 +55,11 @@ suite(custom_margins_test.suiteName, function() {
 
   /** @override */
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     measurementSystem =
         new MeasurementSystem(',', '.', MeasurementSystemUnitType.IMPERIAL);
-    model = document.createElement('print-preview-model');
+    model = /** @type {!PrintPreviewModelElement} */ (
+        document.createElement('print-preview-model'));
     document.body.appendChild(model);
     model.set('settings.mediaSize.available', true);
 
@@ -64,8 +68,8 @@ suite(custom_margins_test.suiteName, function() {
       CustomMarginsOrientation.BOTTOM, CustomMarginsOrientation.LEFT
     ];
 
-    container =
-        document.createElement('print-preview-margin-control-container');
+    container = /** @type {!PrintPreviewMarginControlContainerElement} */ (
+        document.createElement('print-preview-margin-control-container'));
     container.previewLoaded = false;
     // 8.5 x 11, in points
     container.pageSize = new Size(612, 794);
@@ -74,10 +78,10 @@ suite(custom_margins_test.suiteName, function() {
     container.state = State.NOT_READY;
   });
 
-  /** @return {!Array<!PrintPreviewMarginControlElement>} */
+  /** @return {!NodeList<!PrintPreviewMarginControlElement>} */
   function getControls() {
-    return container.shadowRoot.querySelectorAll(
-        'print-preview-margin-control');
+    return /** @type {!NodeList<!PrintPreviewMarginControlElement>} */ (
+        container.shadowRoot.querySelectorAll('print-preview-margin-control'));
   }
 
   /*
@@ -166,7 +170,7 @@ suite(custom_margins_test.suiteName, function() {
    * Tests setting the margin control with its textbox.
    * @param {!PrintPreviewMarginControlElement} control The control.
    * @param {string} key The control's key in the custom margin setting.
-   * @param {number} currentValue The current margin value in points.
+   * @param {number} currentValuePts The current margin value in points.
    * @param {string} input The new textbox input for the margin.
    * @param {boolean} invalid Whether the new value is invalid.
    * @param {number=} newValuePts the new margin value in pts. If not
@@ -246,17 +250,17 @@ suite(custom_margins_test.suiteName, function() {
       container.setSetting(settingName, newValue);
       container.previewLoaded = false;
 
-      // Margins should be reset to default and custom margins values should
-      // be cleared.
-      expectEquals(MarginsType.DEFAULT, container.getSettingValue('margins'));
-      expectEquals(
+      // Custom margins values should be cleared.
+      assertEquals(
           '{}', JSON.stringify(container.getSettingValue('customMargins')));
+      // The margins-settings element will also set the margins type to DEFAULT.
+      model.set('settings.margins.value', MarginsType.DEFAULT);
 
       // When preview loads, custom margins should still be empty, since
       // custom margins are not selected. We do not want to set the sticky
       // values until the user has selected custom margins.
       container.previewLoaded = true;
-      expectEquals(
+      assertEquals(
           '{}', JSON.stringify(container.getSettingValue('customMargins')));
     });
   }
@@ -264,6 +268,11 @@ suite(custom_margins_test.suiteName, function() {
   // Test that controls correctly appear when custom margins are selected and
   // disappear when the preview is loading.
   test(assert(custom_margins_test.TestNames.ControlsCheck), function() {
+    /** @return {!MarginsSetting} */
+    const getCustomMarginsValue = function() {
+      return /** @type {!MarginsSetting} */ (
+          container.getSettingValue('customMargins'));
+    };
     return finishSetup()
         .then(() => {
           const controls = getControls();
@@ -283,18 +292,10 @@ suite(custom_margins_test.suiteName, function() {
         })
         .then(function() {
           // Verify margins are correctly set based on previous value.
-          assertEquals(
-              defaultMarginPts,
-              container.settings.customMargins.value.marginTop);
-          assertEquals(
-              defaultMarginPts,
-              container.settings.customMargins.value.marginLeft);
-          assertEquals(
-              defaultMarginPts,
-              container.settings.customMargins.value.marginRight);
-          assertEquals(
-              defaultMarginPts,
-              container.settings.customMargins.value.marginBottom);
+          assertEquals(defaultMarginPts, getCustomMarginsValue().marginTop);
+          assertEquals(defaultMarginPts, getCustomMarginsValue().marginLeft);
+          assertEquals(defaultMarginPts, getCustomMarginsValue().marginRight);
+          assertEquals(defaultMarginPts, getCustomMarginsValue().marginBottom);
 
           // Verify there is one control for each side and that controls are
           // visible and positioned correctly.
@@ -395,7 +396,7 @@ suite(custom_margins_test.suiteName, function() {
   });
 
   /**
-   * @param {!Array<!MarginControlElement>} controls
+   * @param {!NodeList<!PrintPreviewMarginControlElement>} controls
    * @param {number} currentValue Current margin value in pts
    * @param {string} input String to set in margin textboxes
    * @param {boolean} invalid Whether the string is invalid
@@ -454,6 +455,7 @@ suite(custom_margins_test.suiteName, function() {
                   () => testAllTextboxes(controls, newMargin1, '1.2abc', true))
               .then(
                   () => testAllTextboxes(controls, newMargin1, '1.   2', true))
+              .then(() => testAllTextboxes(controls, newMargin1, '.', true))
               .then(() => testAllTextboxes(controls, newMargin1, value2, false))
               .then(() => testAllTextboxes(controls, newMargin2, value3, false))
               .then(
@@ -510,6 +512,9 @@ suite(custom_margins_test.suiteName, function() {
               .then(
                   () => testAllTextboxes(
                       controls, newMargin1Pts, '10,   2', true, newMargin1Pts))
+              .then(
+                  () => testAllTextboxes(
+                      controls, newMargin1Pts, ',', true, newMargin1Pts))
               .then(
                   () => testAllTextboxes(
                       controls, newMargin1Pts, newMargin2, false,
@@ -666,7 +671,8 @@ suite(custom_margins_test.suiteName, function() {
               // Workaround for mac so that this does not need to be an
               // interactive test: manually fire the focus event from the
               // control.
-              bottomControl.fire('text-focus');
+              bottomControl.dispatchEvent(new CustomEvent(
+                  'text-focus', {bubbles: true, composed: true}));
               return whenEventFired;
             })
             .then((args) => {

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS Mixed-Content: Expects allowed for websocket to same-wss origin and no-redirect redirection from https context.
+FAIL Mixed-Content: Expects blocked for websocket to cross-ws origin and no-redirect redirection from https context. assert_equals: The resource request should be 'blocked'. expected "blocked" but got "allowed"
+FAIL Mixed-Content: Expects blocked for websocket to same-ws origin and no-redirect redirection from https context. assert_equals: The resource request should be 'blocked'. expected "blocked" but got "allowed"
+Harness: the test ran to completion.
+

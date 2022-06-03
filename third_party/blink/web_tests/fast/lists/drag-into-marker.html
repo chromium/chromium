@@ -1,49 +1,84 @@
-<body contenteditable="true">
-
-<ul id="ul" style="margin:1em; border:1px solid black;"><li id="li" contenteditable="true" style="list-style-type: square; font-size: 3em;">hello <span id="spanToDrag">world</span></a></div></li></ul>
-
-<p>This is an automated test for elementAtPoint for points over position:outside list markers.  The dictionary returned by elementAtPoint should contain the list item as the DOMNode, not the list, for points over position:outside list markers.  elementAtPoint is used to determine the drag operation that will occur when something is dropped over a given point.  So, this test drags a bit of text over the list marker and drops it.  It should be pasted into the list item, which is contenteditable.</p>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../editing/assert_selection.js"></script>
 <script>
+// This is an automated test for elementAtPoint for points over position:outside
+// list markers. The dictionary returned by elementAtPoint should contain the
+// list item as the DOMNode, not the list, for points over position:outside list
+// markers. elementAtPoint is used to determine the drag operation that will
+// occur when something is dropped over a given point.  So, this test drags a
+// bit of text over the list marker and drops it.  It should be pasted into the
+// list item, which is contenteditable.
+//
+// Note: Layout tree is:
+//    LayoutNGBlockFlow {BODY} at (8,8) size 784x584
+//      LayoutNGBlockFlow {UL} at (5,0) size 774x22 [border: (1px solid #000000)]
+//        LayoutNGListItem {LI} at (41,1) size 732x20
+//          LayoutNGOutsideListMarker {::marker} at (-18,0) size 7x20
+//            LayoutText (anonymous) at (0,0) size 7x19
+//              text run at (0,0) width 7: "\x{25A0} "
+//          LayoutText {#text} at (0,0) size 32x19
+//            text run at (0,0) width 32: "hello "
+//          LayoutInline {SPAN} at (32,0) size 35x19
+//            LayoutText {#text} at (32,0) size 35x19
+//              text run at (32,0) width 35: "world"
+//          LayoutText {#text} at (0,0) size 0x0
+selection_test(
+    [
+        '<div contenteditable>',
+            '<ul id="ul" style="margin:5px; border:1px solid black;">',
+                '<li id="li" style="list-style-type: square;">',
+                    'hello <span id="spanToDrag">world</span>',
+                '</li>',
+            '</ul>',
+        '</div>',
+    ],
+    selection => {
+        if (!window.eventSender)
+            throw 'This test requires eventSender.';
 
-function runTest() {
-    if (!window.testRunner)
-        return;
+        const spanToDrag = selection.document.getElementById('spanToDrag');
+        const ul = selection.document.getElementById('ul');
+        const li = selection.document.getElementById('li');
 
-    testRunner.waitUntilDone();
-    
-    var spanToDrag = document.getElementById("spanToDrag");
-    var x = spanToDrag.offsetLeft + spanToDrag.offsetWidth / 2;
-    var y = spanToDrag.offsetTop + spanToDrag.offsetHeight / 2;
+        eventSender.leapForward(9999); // reset mouse click state.
 
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-    eventSender.mouseDown();
-    eventSender.mouseUp();
-    
-    // Wait a moment so that the next mouseDown will kick off a drag, instead of a triple-click
-    eventSender.leapForward(1300);
-    eventSender.mouseDown();
-    // Wait a moment so that the mouseDown will kick off a drag instead of starting a new selection.
-    eventSender.leapForward(400);
-    
-    var li = document.getElementById("li");
-    var ul = document.getElementById("ul");
-    
-    // WebCore paints a position:outside list markers at an offset from the top left corner of the 
-    // bounds of the list item.  The offset is computed using a magic number and the
-    // fonts ascent, two values we can't get to.  This (x, y) *should* be over the list marker.
-    var x = ul.offsetLeft + 18;
-    var y = li.offsetTop + li.offsetHeight / 2 + 20;
+        // Double click at center of <span id="spanToDrag">world</span>
+        eventSender.mouseMoveTo(
+            selection.computeLeft(spanToDrag) + spanToDrag.offsetWidth / 2,
+            selection.computeTop(spanToDrag) + 3);
+        eventSender.mouseDown();
+        eventSender.mouseUp();
+        eventSender.mouseDown();
+        eventSender.mouseUp();
 
-    eventSender.mouseMoveTo(x, y);
-    eventSender.mouseUp();
+        // Drag to start of list item
 
-    testRunner.notifyDone();
-}
+        // Wait a moment so that the next mouseDown will kick off a drag,
+        // instead of a triple-click
+        eventSender.leapForward(1300);
+        eventSender.mouseDown();
+        // Wait a moment so that the mouseDown will kick off a drag instead of
+        // starting a new selection.
+        eventSender.leapForward(400);
 
-runTest();
+        // Blink paints a position:outside list markers at an offset from the
+        // top left corner of the bounds of the list item. The offset is
+        // computed using a magic number and the fonts ascent, two values we
+        // can't get to. This (x, y) *should* be over the list marker.
+        eventSender.mouseMoveTo(
+            selection.computeLeft(ul) + 18,
+            selection.computeTop(li) + li.offsetHeight / 2);
+        eventSender.mouseUp();
+    },
+    [
+        '<div contenteditable>',
+            '<ul id="ul" style="margin:5px; border:1px solid black;">',
+                '<li id="li" style="list-style-type: square;">',
+                    '^world |hello',
+                '</li>',
+            '</ul>',
+        '</div>',
+    ], 'Hit test over position outside list marker');
 </script>
-
-</body>

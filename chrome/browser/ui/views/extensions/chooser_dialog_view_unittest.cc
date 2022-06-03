@@ -5,49 +5,52 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
-#include "chrome/browser/chooser_controller/fake_bluetooth_chooser_controller.h"
 #include "chrome/browser/ui/views/device_chooser_content_view.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "components/permissions/fake_bluetooth_chooser_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/table/table_view.h"
 #include "ui/views/widget/widget.h"
 
+using permissions::FakeBluetoothChooserController;
+
 class ChooserDialogViewTest : public ChromeViewsTestBase {
  public:
   ChooserDialogViewTest() {}
 
+  ChooserDialogViewTest(const ChooserDialogViewTest&) = delete;
+  ChooserDialogViewTest& operator=(const ChooserDialogViewTest&) = delete;
+
   void SetUp() override {
     ChromeViewsTestBase::SetUp();
+
     auto controller = std::make_unique<FakeBluetoothChooserController>();
     controller_ = controller.get();
     dialog_ = new ChooserDialogView(std::move(controller));
-
-#if defined(OS_MACOSX)
-    // We need a native view parent for the dialog to avoid a DCHECK
-    // on Mac.
-    views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-    params.bounds = gfx::Rect(10, 11, 200, 200);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    parent_widget_.Init(std::move(params));
-
-    widget_ = views::DialogDelegate::CreateDialogWidget(
-        dialog_, GetContext(), parent_widget_.GetNativeView());
-    widget_->SetVisibilityChangedAnimationsEnabled(false);
-    // Necessary for Mac. On other platforms this happens in the focus
-    // manager, but it's disabled for Mac due to crbug.com/650859.
-    parent_widget_.Activate();
-    widget_->Activate();
-#else
-    widget_ = views::DialogDelegate::CreateDialogWidget(dialog_, GetContext(),
-                                                        nullptr);
-#endif
+    // Must be called after a view has registered itself with the controller.
     controller_->SetBluetoothStatus(
         FakeBluetoothChooserController::BluetoothStatus::IDLE);
+
+    gfx::NativeView parent = gfx::kNullNativeView;
+#if defined(OS_MAC)
+    // We need a native view parent for the dialog to avoid a DCHECK
+    // on Mac.
+    parent_widget_ = CreateTestWidget();
+    parent = parent_widget_->GetNativeView();
+#endif
+    widget_ = views::DialogDelegate::CreateDialogWidget(dialog_, GetContext(),
+                                                        parent);
+    widget_->SetVisibilityChangedAnimationsEnabled(false);
+    widget_->Show();
+#if defined(OS_MAC)
+    // Necessary for Mac. On other platforms this happens in the focus
+    // manager, but it's disabled for Mac due to crbug.com/650859.
+    parent_widget_->Activate();
+    widget_->Activate();
+#endif
 
     ASSERT_NE(nullptr, table_view());
     ASSERT_NE(nullptr, re_scan_button());
@@ -55,9 +58,7 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
 
   void TearDown() override {
     widget_->Close();
-#if defined(OS_MACOSX)
-    parent_widget_.Close();
-#endif
+    parent_widget_.reset();
     ChromeViewsTestBase::TearDown();
   }
 
@@ -83,12 +84,8 @@ class ChooserDialogViewTest : public ChromeViewsTestBase {
   FakeBluetoothChooserController* controller_ = nullptr;
 
  private:
-#if defined(OS_MACOSX)
-  views::Widget parent_widget_;
-#endif
+  std::unique_ptr<views::Widget> parent_widget_;
   views::Widget* widget_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ChooserDialogViewTest);
 };
 
 TEST_F(ChooserDialogViewTest, ButtonState) {

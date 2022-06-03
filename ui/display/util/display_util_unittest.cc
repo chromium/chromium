@@ -64,24 +64,24 @@ const unsigned char kEdidWithNoGamma[] =
     "\x02\x12\x01\x03\x80\x34\x21\xFF\xEE\xEF\x95\xA3\x54\x4C\x9B\x26"
     "\x0F\x50\x54\xA5\x6B\x80\x81\x40\x81\x80\x81\x99\x71\x00\xA9\x00";
 
-// A Samsung monitor that supports HDR metadata.
+// Chromebook Samsung Galaxy (kohaku) that supports HDR metadata.
 constexpr unsigned char kHDR[] =
-    "\x00\xff\xff\xff\xff\xff\xff\x00\x4c\x2d\xf6\x0d\x00\x0e\x00\x01"
-    "\x01\x1b\x01\x03\x80\x5f\x36\x78\x0a\x23\xad\xa4\x54\x4d\x99\x26"
-    "\x0f\x47\x4a\xbd\xef\x80\x71\x4f\x81\xc0\x81\x00\x81\x80\x95\x00"
-    "\xa9\xc0\xb3\x00\x01\x01\x04\x74\x00\x30\xf2\x70\x5a\x80\xb0\x58"
-    "\x8a\x00\x50\x1d\x74\x00\x00\x1e\x02\x3a\x80\x18\x71\x38\x2d\x40"
-    "\x58\x2c\x45\x00\x50\x1d\x74\x00\x00\x1e\x00\x00\x00\xfd\x00\x18"
-    "\x4b\x0f\x51\x1e\x00\x0a\x20\x20\x20\x20\x20\x20\x00\x00\x00\xfc"
-    "\x00\x53\x41\x4d\x53\x55\x4e\x47\x0a\x20\x20\x20\x20\x20\x01\x5a"
-    "\x02\x03\x4f\xf0\x53\x5f\x10\x1f\x04\x13\x05\x14\x20\x21\x22\x5d"
-    "\x5e\x62\x63\x64\x07\x16\x03\x12\x2c\x09\x07\x07\x15\x07\x50\x3d"
-    "\x04\xc0\x57\x07\x00\x83\x01\x00\x00\xe2\x00\x0f\xe3\x05\x83\x01"
-    "\x6e\x03\x0c\x00\x30\x00\xb8\x3c\x20\x00\x80\x01\x02\x03\x04\xe3"
-    "\x06\x0d\x01\xe5\x0e\x60\x61\x65\x66\xe5\x01\x8b\x84\x90\x01\x01"
-    "\x1d\x80\xd0\x72\x1c\x16\x20\x10\x2c\x25\x80\x50\x1d\x74\x00\x00"
-    "\x9e\x66\x21\x56\xaa\x51\x00\x1e\x30\x46\x8f\x33\x00\x50\x1d\x74"
-    "\x00\x00\x1e\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xbd";
+    "\x00\xff\xff\xff\xff\xff\xff\x00\x4c\x83\x42\x41\x00\x00\x00\x00"
+    "\x13\x1d\x01\x04\xb5\x1d\x11\x78\x02\x38\xd1\xae\x51\x3b\xb8\x23"
+    "\x0b\x50\x54\x00\x00\x00\x01\x01\x01\x01\x01\x01\x01\x01\x01\x01"
+    "\x01\x01\x01\x01\x01\x01\xb9\xd5\x00\x40\xf1\x70\x20\x80\x30\x20"
+    "\x88\x00\x26\xa5\x10\x00\x00\x1b\xb9\xd5\x00\x40\xf1\x70\x20\x80"
+    "\x30\x20\x88\x00\x26\xa5\x10\x00\x00\x1b\x00\x00\x00\x0f\x00\xff"
+    "\x09\x3c\xff\x09\x3c\x2c\x80\x00\x00\x00\x00\x00\x00\x00\x00\xfe"
+    "\x00\x41\x54\x4e\x41\x33\x33\x54\x50\x30\x34\x2d\x30\x20\x01\xba"
+    "\x02\x03\x0f\x00\xe3\x05\x80\x00\xe6\x06\x05\x01\x73\x6d\x07\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00"
+    "\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\xab";
 
 // EDID collected in the wild: valid but with primaries in the wrong order.
 const unsigned char kSST210[] =
@@ -119,16 +119,16 @@ const unsigned char kBrokenBluePrimaries[] =
 
 }  // namespace
 
-TEST(DisplayUtilTest, TestBlackListedDisplay) {
-  EXPECT_TRUE(IsDisplaySizeBlackListed(gfx::Size(10, 10)));
-  EXPECT_TRUE(IsDisplaySizeBlackListed(gfx::Size(40, 30)));
-  EXPECT_TRUE(IsDisplaySizeBlackListed(gfx::Size(50, 40)));
-  EXPECT_TRUE(IsDisplaySizeBlackListed(gfx::Size(160, 90)));
-  EXPECT_TRUE(IsDisplaySizeBlackListed(gfx::Size(160, 100)));
+TEST(DisplayUtilTest, TestValidDisplaySize) {
+  EXPECT_FALSE(IsDisplaySizeValid(gfx::Size(10, 10)));
+  EXPECT_FALSE(IsDisplaySizeValid(gfx::Size(40, 30)));
+  EXPECT_FALSE(IsDisplaySizeValid(gfx::Size(50, 40)));
+  EXPECT_FALSE(IsDisplaySizeValid(gfx::Size(160, 90)));
+  EXPECT_FALSE(IsDisplaySizeValid(gfx::Size(160, 100)));
 
-  EXPECT_FALSE(IsDisplaySizeBlackListed(gfx::Size(50, 60)));
-  EXPECT_FALSE(IsDisplaySizeBlackListed(gfx::Size(100, 70)));
-  EXPECT_FALSE(IsDisplaySizeBlackListed(gfx::Size(272, 181)));
+  EXPECT_TRUE(IsDisplaySizeValid(gfx::Size(50, 60)));
+  EXPECT_TRUE(IsDisplaySizeValid(gfx::Size(100, 70)));
+  EXPECT_TRUE(IsDisplaySizeValid(gfx::Size(272, 181)));
 }
 
 TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
@@ -185,22 +185,22 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kSuccess),
       2);
 
-  // Test with Chromebook Eve internal display.
-  constexpr SkColorSpacePrimaries expected_eve_primaries = {.fRX = 0.639648f,
-                                                            .fRY = 0.329102f,
-                                                            .fGX = 0.299805f,
-                                                            .fGY = 0.599609f,
-                                                            .fBX = 0.149414f,
-                                                            .fBY = 0.059570f,
-                                                            .fWX = 0.312500f,
-                                                            .fWY = 0.328125f};
-  skcms_Matrix3x3 expected_eve_toXYZ50_matrix;
-  expected_eve_primaries.toXYZD50(&expected_eve_toXYZ50_matrix);
+  // Test with Chromebook Eve internal display. The SkColorSpacePrimaries:
+  // SkColorSpacePrimaries expected_eve_primaries = {.fRX = 0.639648f,
+  //                                                 .fRY = 0.329102f,
+  //                                                 .fGX = 0.299805f,
+  //                                                 .fGY = 0.599609f,
+  //                                                 .fBX = 0.149414f,
+  //                                                 .fBY = 0.059570f,
+  //                                                 .fWX = 0.312500f,
+  //                                                 .fWY = 0.328125f};
+  // are very close to the BT.709/sRGB ones, so they'll be rounded to those.
+  const skcms_TransferFunction eve_transfer({2.2, 1, 0, 0, 0, 0, 0});
+  const gfx::ColorSpace expected_eve_color_space(
+      gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::CUSTOM,
+      gfx::ColorSpace::MatrixID::RGB, gfx::ColorSpace::RangeID::FULL,
+      /*custom_primary_matrix=*/nullptr, &eve_transfer);
   const std::vector<uint8_t> eve_edid(kEve, kEve + base::size(kEve) - 1);
-  const gfx::ColorSpace expected_eve_color_space =
-      gfx::ColorSpace::CreateCustom(
-          expected_eve_toXYZ50_matrix,
-          skcms_TransferFunction({2.2, 1, 0, 0, 0, 0, 0}));
   EXPECT_EQ(expected_eve_color_space.ToString(),
             GetColorSpaceFromEdid(display::EdidParser(eve_edid)).ToString());
   histogram_tester.ExpectBucketCount(
@@ -209,15 +209,15 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
           EdidColorSpaceChecksOutcome::kSuccess),
       3);
 
-  // Test with a display that supports HDR.
-  constexpr SkColorSpacePrimaries expected_hdr_primaries = {.fRX = 0.640625f,
-                                                            .fRY = 0.330078f,
-                                                            .fGX = 0.300781f,
-                                                            .fGY = 0.600586f,
-                                                            .fBX = 0.150391f,
-                                                            .fBY = 0.060547f,
-                                                            .fWX = 0.280273f,
-                                                            .fWY = 0.290039f};
+  // Test with a display that supports HDR: Chromebook Samsung Galaxy (kohaku).
+  constexpr SkColorSpacePrimaries expected_hdr_primaries = {.fRX = 0.67960f,
+                                                            .fRY = 0.31930f,
+                                                            .fGX = 0.23240f,
+                                                            .fGY = 0.71870f,
+                                                            .fBX = 0.13965f,
+                                                            .fBY = 0.04400f,
+                                                            .fWX = 0.31250f,
+                                                            .fWY = 0.32910f};
   skcms_Matrix3x3 expected_hdr_toXYZ50_matrix;
   expected_hdr_primaries.toXYZD50(&expected_hdr_toXYZ50_matrix);
   const std::vector<uint8_t> hdr_edid(kHDR, kHDR + base::size(kHDR) - 1);

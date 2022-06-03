@@ -1,4 +1,0 @@
-This tests that context menu events are sent to the correct frame when a page is scrolled. To test manually, scroll the page so that the top of the iframe is flush with the top of the web page area, then right-click just below the iframe. You should get a context menu that does not contain any mention of frames.
-
-PASS: main document received a context menu event
-

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_URL_DOWNLOADER_H_
 #define IOS_CHROME_BROWSER_READING_LIST_URL_DOWNLOADER_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
@@ -51,11 +53,14 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
     // The URL could not be downloaded because of an error. Client may want to
     // try again later.
     ERROR,
+    // The URL could not be downloaded because of an error. Client should not
+    // try again.
+    PERMANENT_ERROR,
   };
 
   // A completion callback that takes a GURL and a bool indicating the
   // outcome and returns void.
-  using SuccessCompletion = base::Callback<void(const GURL&, bool)>;
+  using SuccessCompletion = base::RepeatingCallback<void(const GURL&, bool)>;
 
   // A download completion callback that takes, in order, the GURL that was
   // downloaded, the GURL of the page that was downloaded after redirections, a
@@ -64,12 +69,12 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   // the url, and returns void.
   // The path to downloaded file and title should not be used in case of
   // failure.
-  using DownloadCompletion = base::Callback<void(const GURL&,
-                                                 const GURL&,
-                                                 SuccessState,
-                                                 const base::FilePath&,
-                                                 int64_t size,
-                                                 const std::string&)>;
+  using DownloadCompletion = base::RepeatingCallback<void(const GURL&,
+                                                          const GURL&,
+                                                          SuccessState,
+                                                          const base::FilePath&,
+                                                          int64_t size,
+                                                          const std::string&)>;
 
   // Create a URL downloader with completion callbacks for downloads and
   // deletions. The completion callbacks will be called with the original url
@@ -83,6 +88,10 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const DownloadCompletion& download_completion,
       const SuccessCompletion& delete_completion);
+
+  URLDownloader(const URLDownloader&) = delete;
+  URLDownloader& operator=(const URLDownloader&) = delete;
+
   ~URLDownloader() override;
 
   // Asynchronously download an offline version of the URL.
@@ -108,7 +117,7 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   // Calls callback with true if an offline path exists. |path| must be
   // absolute.
   void OfflinePathExists(const base::FilePath& url,
-                         base::Callback<void(bool)> callback);
+                         base::OnceCallback<void(bool)> callback);
   // Handles the next task in the queue, if no task is currently being handled.
   void HandleNextTask();
   // Callback for completed (or failed) download, handles calling
@@ -136,17 +145,10 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
 
   // HTML processing methods.
 
-  // Saves the |data| for image at |imageURL| to disk, for main URL |url|;
-  // puts path of saved file in |path| and returns whether save was successful.
-  bool SaveImage(const GURL& url,
-                 const GURL& imageURL,
-                 const std::string& data,
-                 std::string* image_name);
-  // Saves images in |images| array to disk and replaces references in |html| to
-  // local path. Returns updated html.
-  // If some images could not be saved, returns an empty string. It is the
-  // responsibility of the caller to clean the partial processing.
-  std::string SaveAndReplaceImagesInHTML(
+  // Injects script to replace images in |images| array with a data-uri
+  // of their contents. If the data does not represent an image, it is
+  // skipped.
+  std::string ReplaceImagesInHTML(
       const GURL& url,
       const std::string& html,
       const std::vector<dom_distiller::DistillerViewerInterface::ImageInfo>&
@@ -196,8 +198,6 @@ class URLDownloader : reading_list::ReadingListDistillerPageDelegate {
   std::unique_ptr<dom_distiller::DistillerViewerInterface> distiller_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::CancelableTaskTracker task_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(URLDownloader);
 };
 
 #endif  // IOS_CHROME_BROWSER_READING_LIST_URL_DOWNLOADER_H_

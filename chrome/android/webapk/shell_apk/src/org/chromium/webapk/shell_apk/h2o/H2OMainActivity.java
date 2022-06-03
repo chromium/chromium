@@ -11,6 +11,7 @@ import android.content.pm.PackageManager;
 import org.chromium.webapk.shell_apk.HostBrowserLauncher;
 import org.chromium.webapk.shell_apk.HostBrowserLauncherParams;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
+import org.chromium.webapk.shell_apk.R;
 import org.chromium.webapk.shell_apk.TransparentLauncherActivity;
 
 /**
@@ -22,11 +23,18 @@ public class H2OMainActivity extends TransparentLauncherActivity {
     private static final long MINIMUM_INTERVAL_BETWEEN_RELAUNCHES_MS = 20000;
 
     /** Returns whether {@link H2OMainActivity} is enabled. */
-    public static boolean checkComponentEnabled(Context context) {
+    public static boolean checkComponentEnabled(Context context, boolean isNewStyleWebApk) {
         PackageManager pm = context.getPackageManager();
         ComponentName component = new ComponentName(context, H2OMainActivity.class);
         int enabledSetting = pm.getComponentEnabledSetting(component);
-        // Component is disabled by default.
+
+        if (enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT) {
+            // H2OMainActivity is enabled by default for old-style WebAPKs.
+            // R.bool.transparent_main_activity_enabled_default is inaccurate for old-style WebAPKs.
+            return !isNewStyleWebApk
+                    || context.getResources().getBoolean(
+                            R.bool.transparent_main_activity_enabled_default);
+        }
         return enabledSetting == PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
     }
 

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Unhandled rejection: SFrameTransform is not defined
+FAIL Passing various key IDs promise_test: Unhandled rejection with value: object "ReferenceError: SFrameTransform is not defined"
+FAIL Audio exchange with SFrame setup promise_test: Unhandled rejection with value: "Test timed out"
+Harness: the test ran to completion.
+

@@ -18,6 +18,7 @@ namespace enterprise.hardwarePlatform {
     // Obtains the manufacturer and model for the hardware platform and, if
     // the extension is authorized, returns it via |callback|.
     // |callback|: Called with the hardware platform info.
-    static void getHardwarePlatformInfo(HardwarePlatformInfoCallback callback);
+    [supportsPromises] static void getHardwarePlatformInfo(
+        HardwarePlatformInfoCallback callback);
   };
 };

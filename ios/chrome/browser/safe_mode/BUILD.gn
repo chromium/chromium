@@ -16,32 +16,26 @@ source_set("safe_mode") {
   deps = [
     ":resources",
     "//base",
-    ios_packed_resources_target,
+    "//ios/chrome/app/resources:packed_resources",
   ]
 
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 bundle_data("resources") {
   visibility = [ ":safe_mode" ]
-  sources = [
-    "resources/SafeModeCrashingModules.plist",
-  ]
-  outputs = [
-    "{{bundle_resources_dir}}/{{source_file_part}}",
-  ]
+  sources = [ "resources/SafeModeCrashingModules.plist" ]
+  outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "safe_mode_util_unittest.cc",
-  ]
+  sources = [ "safe_mode_util_unittest.cc" ]
   deps = [
     ":safe_mode",
     "//base",
     "//testing/gtest",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

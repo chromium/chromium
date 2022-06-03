@@ -1,0 +1,115 @@
+<style>
+  :host {
+    --emoji-group-clear-recents-icon-size: 16px;
+    --emoji-group-heading-size: 32px;
+    --emoji-group-heading-padding-bottom: 10px;
+    --emoji-group-heading-padding-top: 16px;
+    margin-top: 10px;
+    position: relative;
+  }
+
+  #heading {
+    color: var(--cros-text-color-secondary);
+    display: flex;
+    font-size: 10pt;
+    padding-bottom: var(--emoji-group-heading-padding-bottom);
+    padding-top: var(--emoji-group-heading-padding-top);
+  }
+  #heading:focus,
+  #heading:active {
+    outline-color: var(--cros-toggle-color);
+    outline-width: 2px;
+  }
+
+  #heading-left {
+    height: var(--emoji-group-heading-size);
+    line-height: var(--emoji-group-heading-size);
+    user-select: none;
+    width: 100%;
+  }
+
+  #emoji {
+    display: grid;
+    gap: var(--emoji-spacing);
+    grid-auto-rows: max-content;
+    grid-template-columns: repeat(var(--emoji-per-row), 1fr);
+    justify-items: center;
+  }
+
+  #show-clear {
+    --cr-icon-button-fill-color: var(--cros-icon-color-primary);
+    height: var(--emoji-group-heading-size);
+    left: var(--emoji-picker-last-emoji-left);
+    margin: 0;
+    width: var(--emoji-group-heading-size);
+  }
+
+  #clear-recents {
+    background-color: var(--cros-bg-color);
+    border: 2px solid transparent;
+    border-radius: 4px;
+    box-shadow: var(--cr-elevation-1);
+    color: var(--cros-text-color-secondary);
+    cursor: pointer;
+    font-family: 'Roboto', sans-serif;
+    font-size: 12px;
+    height: var(--emoji-size);
+    outline: none;
+    padding: 0;
+    position: absolute;
+    right: calc(2px
+      + 2*var(--emoji-picker-side-padding) - var(--emoji-picker-width));
+    top: calc(var(--emoji-group-heading-padding-top)
+      + var(--emoji-group-heading-padding-bottom)
+      + var(--emoji-group-heading-size));
+    white-space: nowrap;
+    width: fit-content;
+    z-index: 200;
+  }
+
+  #clear-recents:focus,
+  #clear-recents:active {
+    border: 2px solid var(--cros-toggle-color);
+  }
+
+  #fake-focus-target {
+    position: absolute;
+  }
+
+  #clear-recents-hover {
+    border: 2px solid transparent;
+    margin: -2px;
+    /* Padding should be 6/10 not 7/11, but without adding 1 there is a weird
+     * border.*/
+    padding: 7px 11px 7px 11px;
+  }
+  #clear-recents-hover:hover {
+    background-color: var(--cros-button-background-color-secondary-hover);
+    border: 2px solid var(--cros-button-background-color-secondary-hover);
+  }
+</style>
+
+<div id="heading" role="heading" aria-level="2" tabindex="-1">
+<div id="heading-left">[[data.group]]</div>
+<template is="dom-if" if="[[clearable]]">
+  <cr-icon-button id="show-clear" iron-icon="emoji_picker:more_horizontal"
+    on-click="onClearClick">
+  </cr-icon-button>
+</template>
+</div>
+  <template is = "dom-if" if="[[showClearRecents]]">
+  <button id="clear-recents" on-click="onClearRecentsClick">
+    <div id="clear-recents-hover">
+    Clear recently used emojis
+    </div>
+  </button>
+  </template>
+<div id="emoji">
+  <div id="fake-focus-target" tabindex="-1"></div>
+  <template is="dom-repeat" items="[[data.emoji]]">
+    <emoji-button emoji="[[getDisplayEmojiForEmoji(item.base.string)]]"
+      variants="[[item.alternates]]" tooltip="[[getTooltipForEmoji(item.base)]]"
+    >
+    </emoji-button>
+  </template>
+</div>

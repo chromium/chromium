@@ -77,7 +77,7 @@ class CORE_EXPORT MediaControls : public GarbageCollectedMixin {
   virtual HTMLDivElement* PanelElement() = 0;
   virtual void OnMediaControlsEnabledChange() = 0;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<HTMLMediaElement> media_element_;

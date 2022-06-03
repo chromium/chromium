@@ -32,6 +32,7 @@
 #include "third_party/blink/public/platform/web_content_decryption_module.h"
 #include "third_party/blink/public/platform/web_encrypted_media_key_information.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_keys_policy.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
@@ -39,11 +40,10 @@
 #include "third_party/blink/renderer/modules/encryptedmedia/content_decryption_module_result_promise.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/encrypted_media_utils.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_key_session.h"
-#include "third_party/blink/renderer/modules/encryptedmedia/media_keys_policy.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 #define MEDIA_KEYS_LOG_LEVEL 3
@@ -54,7 +54,7 @@ namespace blink {
 class MediaKeys::PendingAction final
     : public GarbageCollected<MediaKeys::PendingAction> {
  public:
-  enum class Type { kSetServerCertificate, kGetStatusForPolicy };
+  using Type = EmeApiType;
 
   Type GetType() const { return type_; }
 
@@ -95,7 +95,7 @@ class MediaKeys::PendingAction final
                 const String& string_data)
       : type_(type), result_(result), data_(data), string_data_(string_data) {}
 
-  void Trace(blink::Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
     visitor->Trace(result_);
     visitor->Trace(data_);
   }
@@ -116,12 +116,11 @@ class SetCertificateResultPromise
     : public ContentDecryptionModuleResultPromise {
  public:
   SetCertificateResultPromise(ScriptState* script_state,
-                              MediaKeys* media_keys,
-                              const char* interface_name,
-                              const char* property_name)
+                              const MediaKeysConfig& config,
+                              MediaKeys* media_keys)
       : ContentDecryptionModuleResultPromise(script_state,
-                                             interface_name,
-                                             property_name),
+                                             config,
+                                             EmeApiType::kSetServerCertificate),
         media_keys_(media_keys) {}
 
   ~SetCertificateResultPromise() override = default;
@@ -153,7 +152,7 @@ class SetCertificateResultPromise
         exception_code, system_code, error_message);
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(media_keys_);
     ContentDecryptionModuleResultPromise::Trace(visitor);
   }
@@ -170,12 +169,11 @@ class GetStatusForPolicyResultPromise
     : public ContentDecryptionModuleResultPromise {
  public:
   GetStatusForPolicyResultPromise(ScriptState* script_state,
-                                  MediaKeys* media_keys,
-                                  const char* interface_name,
-                                  const char* property_name)
+                                  const MediaKeysConfig& config,
+                                  MediaKeys* media_keys)
       : ContentDecryptionModuleResultPromise(script_state,
-                                             interface_name,
-                                             property_name),
+                                             config,
+                                             EmeApiType::kGetStatusForPolicy),
         media_keys_(media_keys) {}
 
   ~GetStatusForPolicyResultPromise() override = default;
@@ -189,7 +187,7 @@ class GetStatusForPolicyResultPromise
     Resolve(EncryptedMediaUtils::ConvertKeyStatusToString(key_status));
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(media_keys_);
     ContentDecryptionModuleResultPromise::Trace(visitor);
   }
@@ -203,10 +201,12 @@ class GetStatusForPolicyResultPromise
 MediaKeys::MediaKeys(
     ExecutionContext* context,
     const WebVector<WebEncryptedMediaSessionType>& supported_session_types,
-    std::unique_ptr<WebContentDecryptionModule> cdm)
-    : ContextLifecycleObserver(context),
+    std::unique_ptr<WebContentDecryptionModule> cdm,
+    const MediaKeysConfig& config)
+    : ExecutionContextLifecycleObserver(context),
       supported_session_types_(supported_session_types),
       cdm_(std::move(cdm)),
+      config_(config),
       media_element_(nullptr),
       reserved_for_media_element_(false),
       timer_(context->GetTaskRunner(TaskType::kMiscPlatformAPI),
@@ -227,18 +227,10 @@ MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
   DVLOG(MEDIA_KEYS_LOG_LEVEL)
       << __func__ << "(" << this << ") " << session_type_string;
 
-  // [RuntimeEnabled] does not work with enum values. So we have to check it
-  // here. See https://crbug.com/871867 for details.
-  if (!RuntimeEnabledFeatures::
-          EncryptedMediaPersistentUsageRecordSessionEnabled() &&
-      session_type_string == "persistent-usage-record") {
-    DVLOG(MEDIA_KEYS_LOG_LEVEL)
-        << __func__ << ": 'persistent-usage-record' support not enabled.";
-    // The message here is carefully chosen to be exactly the same as what the
-    // generated bindings would generate for invalid enum values.
-    exception_state.ThrowTypeError(
-        "The provided value 'persistent-usage-record' is not a valid enum "
-        "value of type MediaKeySessionType.");
+  // If the context for MediaKeys has been destroyed, fail.
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The context provided is invalid.");
     return nullptr;
   }
 
@@ -265,13 +257,21 @@ MediaKeySession* MediaKeys::createSession(ScriptState* script_state,
   //    follows:
   //    (Initialization is performed in the constructor.)
   // 4. Return session.
-  return MakeGarbageCollected<MediaKeySession>(script_state, this,
-                                               session_type);
+  return MakeGarbageCollected<MediaKeySession>(script_state, this, session_type,
+                                               config_);
 }
 
 ScriptPromise MediaKeys::setServerCertificate(
     ScriptState* script_state,
-    const DOMArrayPiece& server_certificate) {
+    const DOMArrayPiece& server_certificate,
+    ExceptionState& exception_state) {
+  // If the context for MediaKeys has been destroyed, fail.
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The context provided is invalid.");
+    return ScriptPromise();
+  }
+
   // From https://w3c.github.io/encrypted-media/#setServerCertificate
   // The setServerCertificate(serverCertificate) method provides a server
   // certificate to be used to encrypt messages to the license server.
@@ -284,22 +284,20 @@ ScriptPromise MediaKeys::setServerCertificate(
   //
   // 2. If serverCertificate is an empty array, return a promise rejected
   //    with a new a newly created TypeError.
-  if (!server_certificate.ByteLengthAsSizeT()) {
-    return ScriptPromise::Reject(
-        script_state, V8ThrowException::CreateTypeError(
-                          script_state->GetIsolate(),
-                          "The serverCertificate parameter is empty."));
+  if (!server_certificate.ByteLength()) {
+    exception_state.ThrowTypeError("The serverCertificate parameter is empty.");
+    return ScriptPromise();
   }
 
   // 3. Let certificate be a copy of the contents of the serverCertificate
   //    parameter.
   DOMArrayBuffer* server_certificate_buffer = DOMArrayBuffer::Create(
-      server_certificate.Data(), server_certificate.ByteLengthAsSizeT());
+      server_certificate.Data(), server_certificate.ByteLength());
 
   // 4. Let promise be a new promise.
   SetCertificateResultPromise* result =
-      MakeGarbageCollected<SetCertificateResultPromise>(
-          script_state, this, "MediaKeys", "setServerCertificate");
+      MakeGarbageCollected<SetCertificateResultPromise>(script_state, config_,
+                                                        this);
   ScriptPromise promise = result->Promise();
 
   // 5. Run the following steps asynchronously. See SetServerCertificateTask().
@@ -317,13 +315,22 @@ void MediaKeys::SetServerCertificateTask(
     ContentDecryptionModuleResult* result) {
   DVLOG(MEDIA_KEYS_LOG_LEVEL) << __func__ << "(" << this << ")";
 
+  // If the context has been destroyed, don't proceed. Try to have the promise
+  // be rejected.
+  if (!GetExecutionContext()) {
+    result->CompleteWithError(
+        kWebContentDecryptionModuleExceptionInvalidStateError, 0,
+        "The context provided is invalid.");
+    return;
+  }
+
   // 5.1 Let cdm be the cdm during the initialization of this object.
   WebContentDecryptionModule* cdm = ContentDecryptionModule();
 
   // 5.2 Use the cdm to process certificate.
   cdm->SetServerCertificate(
       static_cast<unsigned char*>(server_certificate->Data()),
-      server_certificate->ByteLengthAsSizeT(), result->Result());
+      server_certificate->ByteLength(), result->Result());
 
   // 5.3 If any of the preceding steps failed, reject promise with a
   //     new DOMException whose name is the appropriate error name.
@@ -333,15 +340,23 @@ void MediaKeys::SetServerCertificateTask(
 
 ScriptPromise MediaKeys::getStatusForPolicy(
     ScriptState* script_state,
-    const MediaKeysPolicy* media_keys_policy) {
+    const MediaKeysPolicy* media_keys_policy,
+    ExceptionState& exception_state) {
+  // If the context for MediaKeys has been destroyed, fail.
+  if (!GetExecutionContext()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
+                                      "The context provided is invalid.");
+    return ScriptPromise();
+  }
+
   // TODO(xhwang): Pass MediaKeysPolicy classes all the way to Chromium when
   // we have more than one policy to check.
   String min_hdcp_version = media_keys_policy->minHdcpVersion();
 
   // Let promise be a new promise.
   GetStatusForPolicyResultPromise* result =
-      MakeGarbageCollected<GetStatusForPolicyResultPromise>(
-          script_state, this, "MediaKeys", "getStatusForPolicy");
+      MakeGarbageCollected<GetStatusForPolicyResultPromise>(script_state,
+                                                            config_, this);
   ScriptPromise promise = result->Promise();
 
   // Run the following steps asynchronously. See GetStatusForPolicyTask().
@@ -357,6 +372,15 @@ ScriptPromise MediaKeys::getStatusForPolicy(
 void MediaKeys::GetStatusForPolicyTask(const String& min_hdcp_version,
                                        ContentDecryptionModuleResult* result) {
   DVLOG(MEDIA_KEYS_LOG_LEVEL) << __func__ << ": " << min_hdcp_version;
+
+  // If the context has been destroyed, don't proceed. Try to have the promise
+  // be rejected.
+  if (!GetExecutionContext()) {
+    result->CompleteWithError(
+        kWebContentDecryptionModuleExceptionInvalidStateError, 0,
+        "The context provided is invalid.");
+    return;
+  }
 
   WebContentDecryptionModule* cdm = ContentDecryptionModule();
   cdm->GetStatusForPolicy(min_hdcp_version, result->Result());
@@ -415,6 +439,9 @@ void MediaKeys::TimerFired(TimerBase*) {
       case PendingAction::Type::kGetStatusForPolicy:
         GetStatusForPolicyTask(action->StringData(), action->Result());
         break;
+
+      default:
+        NOTREACHED();
     }
   }
 }
@@ -423,19 +450,20 @@ WebContentDecryptionModule* MediaKeys::ContentDecryptionModule() {
   return cdm_.get();
 }
 
-void MediaKeys::Trace(blink::Visitor* visitor) {
+void MediaKeys::Trace(Visitor* visitor) const {
   visitor->Trace(pending_actions_);
   visitor->Trace(media_element_);
+  visitor->Trace(timer_);
   ScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
-void MediaKeys::ContextDestroyed(ExecutionContext*) {
+void MediaKeys::ContextDestroyed() {
   timer_.Stop();
   pending_actions_.clear();
 
   // We don't need the CDM anymore. Only destroyed after all related
-  // ContextLifecycleObservers have been stopped.
+  // ExecutionContextLifecycleObservers have been stopped.
   cdm_.reset();
 }
 

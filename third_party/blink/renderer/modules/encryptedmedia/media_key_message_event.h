@@ -27,7 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_MESSAGE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_ENCRYPTEDMEDIA_MEDIA_KEY_MESSAGE_EVENT_H_
 
-#include "third_party/blink/renderer/modules/encryptedmedia/media_key_message_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_media_key_message_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 
 namespace blink {
@@ -58,7 +58,7 @@ class MediaKeyMessageEvent final : public Event {
   String messageType() const { return message_type_; }
   DOMArrayBuffer* message() const { return message_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String message_type_;

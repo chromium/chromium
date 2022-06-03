@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test that event listeners not user reachable from the root are still present in the class list.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
   await TestRunner.evaluateInPagePromise(`
       class EventListenerWrapperTest {
@@ -20,8 +20,8 @@
 
   var heapProfileType = Profiler.ProfileTypeRegistry.instance.heapSnapshotProfileType;
   heapProfileType.addEventListener(Profiler.HeapSnapshotProfileType.SnapshotReceived, finishHeapSnapshot);
-  TestRunner.addSniffer(heapProfileType, '_snapshotReceived', snapshotReceived);
-  heapProfileType._takeHeapSnapshot();
+  TestRunner.addSniffer(heapProfileType, 'snapshotReceived', snapshotReceived);
+  heapProfileType.takeHeapSnapshot();
 
   function finishHeapSnapshot(uid) {
     var profiles = heapProfileType.getProfiles();
@@ -37,7 +37,7 @@
   }
 
   async function snapshotReceived(profile) {
-    var snapshotProxy = profile._snapshotProxy;
+    var snapshotProxy = profile.snapshotProxy;
     var classNames = await snapshotProxy.aggregatesWithFilter(new HeapSnapshotModel.NodeFilter());
     var found = Object.keys(classNames).includes('EventListenerWrapperTest');
     if (found)

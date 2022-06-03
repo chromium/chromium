@@ -5,10 +5,6 @@
 loadable_module("ipc_message_dump") {
   testonly = true
   configs += [ "//tools/ipc_fuzzer:ipc_fuzzer_tool_config" ]
-  deps = [
-    "//tools/ipc_fuzzer/message_lib:ipc_message_lib",
-  ]
-  sources = [
-    "message_dump.cc",
-  ]
+  deps = [ "//tools/ipc_fuzzer/message_lib:ipc_message_lib" ]
+  sources = [ "message_dump.cc" ]
 }

@@ -6,6 +6,7 @@
 
 #include <map>
 
+#include "base/files/file_path.h"
 #import "ios/web/webui/url_fetcher_block_adapter.h"
 #include "ios/web/webui/web_ui_ios_controller_factory_registry.h"
 #import "net/base/mac/url_conversions.h"
@@ -52,14 +53,14 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
   NSInteger errorCode = GetErrorCodeForUrl(
       net::GURLWithNSURL(urlSchemeTask.request.mainDocumentURL));
   if (errorCode != 0) {
-    NSError* error =
-        [NSError errorWithDomain:NSURLErrorDomain
-                            code:errorCode
-                        userInfo:@{
-                          NSURLErrorKey : urlSchemeTask.request.URL,
-                          NSURLErrorFailingURLStringErrorKey :
-                              urlSchemeTask.request.URL.absoluteString
-                        }];
+    NSError* error = [NSError
+        errorWithDomain:NSURLErrorDomain
+                   code:errorCode
+               userInfo:@{
+                 NSURLErrorFailingURLErrorKey : urlSchemeTask.request.URL,
+                 NSURLErrorFailingURLStringErrorKey :
+                     urlSchemeTask.request.URL.absoluteString
+               }];
     [urlSchemeTask didFailWithError:error];
     return;
   }
@@ -74,11 +75,24 @@ NSInteger GetErrorCodeForUrl(const GURL& URL) {
                 strongSelf.map->find(urlSchemeTask) == strongSelf.map->end()) {
               return;
             }
-            NSURLResponse* response =
-                [[NSURLResponse alloc] initWithURL:urlSchemeTask.request.URL
-                                          MIMEType:@"text/html"
-                             expectedContentLength:0
-                                  textEncodingName:nil];
+            NSString* mimeType = @"text/html";
+            base::FilePath filePath =
+                base::FilePath(fetcher->getUrl().ExtractFileName());
+            if (filePath.Extension() == ".js") {
+              mimeType = @"text/javascript; charset=UTF-8";
+            } else if (filePath.Extension() == ".css") {
+              mimeType = @"text/css; charset=UTF-8";
+            } else if (filePath.Extension() == ".svg") {
+              mimeType = @"image/svg+xml";
+            }
+            NSHTTPURLResponse* response =
+                [[NSHTTPURLResponse alloc] initWithURL:urlSchemeTask.request.URL
+                                            statusCode:200
+                                           HTTPVersion:@"HTTP/1.1"
+                                          headerFields:@{
+                                            @"Content-Type" : mimeType,
+                                            @"Access-Control-Allow-Origin" : @"*"
+                                          }];
             [urlSchemeTask didReceiveResponse:response];
             [urlSchemeTask didReceiveData:data];
             [urlSchemeTask didFinish];

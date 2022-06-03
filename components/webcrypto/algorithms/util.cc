@@ -4,7 +4,7 @@
 
 #include "components/webcrypto/algorithms/util.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/webcrypto/crypto_data.h"
 #include "components/webcrypto/status.h"
 #include "crypto/openssl_util.h"

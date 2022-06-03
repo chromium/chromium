@@ -45,9 +45,7 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
 @implementation CWVCreditCardSaver {
   autofill::AutofillClient::SaveCreditCardOptions _saveOptions;
-  autofill::AutofillClient::UploadSaveCardPromptCallback
-      _uploadSaveCardCallback;
-  autofill::AutofillClient::LocalSaveCardPromptCallback _localSaveCardCallback;
+  autofill::AutofillClient::UploadSaveCardPromptCallback _saveCardCallback;
 
   // The callback to invoke for save completion results.
   void (^_Nullable _saveCompletionHandler)(BOOL);
@@ -62,28 +60,20 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
 @synthesize creditCard = _creditCard;
 @synthesize legalMessages = _legalMessages;
-@synthesize willUploadToCloud = _willUploadToCloud;
 
 - (instancetype)
-          initWithCreditCard:(const autofill::CreditCard&)creditCard
-                 saveOptions:(autofill::AutofillClient::SaveCreditCardOptions)
-                                 saveOptions
-           willUploadToCloud:(BOOL)willUploadToCloud
-           legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
-    uploadSavePromptCallback:
-        (autofill::AutofillClient::UploadSaveCardPromptCallback)
-            uploadSavePromptCallback
-     localSavePromptCallback:
-         (autofill::AutofillClient::LocalSaveCardPromptCallback)
-             localSavePromptCallback {
+    initWithCreditCard:(const autofill::CreditCard&)creditCard
+           saveOptions:
+               (autofill::AutofillClient::SaveCreditCardOptions)saveOptions
+     legalMessageLines:(autofill::LegalMessageLines)legalMessageLines
+    savePromptCallback:(autofill::AutofillClient::UploadSaveCardPromptCallback)
+                           savePromptCallback {
   self = [super init];
   if (self) {
     _creditCard = [[CWVCreditCard alloc] initWithCreditCard:creditCard];
     _saveOptions = saveOptions;
-    _willUploadToCloud = willUploadToCloud;
     _legalMessages = CWVLegalMessagesFromLegalMessageLines(legalMessageLines);
-    _uploadSaveCardCallback = std::move(uploadSavePromptCallback);
-    _localSaveCardCallback = std::move(localSavePromptCallback);
+    _saveCardCallback = std::move(savePromptCallback);
     _decisionMade = NO;
   }
   return self;
@@ -91,40 +81,36 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
 - (void)dealloc {
   // If the user did not choose, the decision should be marked as ignored.
-  if (_willUploadToCloud && _uploadSaveCardCallback) {
-    std::move(_uploadSaveCardCallback)
-        .Run(autofill::AutofillClient::IGNORED,
+  if (_saveCardCallback) {
+    std::move(_saveCardCallback)
+        .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kIgnored,
              /*user_provided_card_details=*/{});
-  } else if (!_willUploadToCloud && _localSaveCardCallback) {
-    std::move(_localSaveCardCallback).Run(autofill::AutofillClient::IGNORED);
   }
 }
 
 #pragma mark - Public Methods
 
-- (void)acceptWithRiskData:(nullable NSString*)riskData
-         completionHandler:(void (^_Nullable)(BOOL))completionHandler {
+- (void)acceptWithCardHolderFullName:(NSString*)cardHolderFullName
+                     expirationMonth:(NSString*)expirationMonth
+                      expirationYear:(NSString*)expirationYear
+                            riskData:(NSString*)riskData
+                   completionHandler:(void (^)(BOOL))completionHandler {
   DCHECK(!_decisionMade)
       << "You may only call -acceptWithRiskData:completionHandler: or "
          "-decline: once per instance.";
-  if (_willUploadToCloud) {
-    DCHECK(_riskDataCallback && riskData);
-    std::move(_riskDataCallback).Run(base::SysNSStringToUTF8(riskData));
+  DCHECK(_riskDataCallback && riskData);
+  std::move(_riskDataCallback).Run(base::SysNSStringToUTF8(riskData));
 
-    _saveCompletionHandler = completionHandler;
-    DCHECK(_uploadSaveCardCallback);
-    std::move(_uploadSaveCardCallback)
-        .Run(autofill::AutofillClient::ACCEPTED,
-             /*user_provided_card_details=*/{});
-  } else {
-    DCHECK(_localSaveCardCallback);
-    std::move(_localSaveCardCallback).Run(autofill::AutofillClient::ACCEPTED);
-    base::PostTask(FROM_HERE, {web::WebThread::UI}, base::BindOnce(^{
-                     if (completionHandler) {
-                       completionHandler(YES);
-                     }
-                   }));
-  }
+  _saveCompletionHandler = completionHandler;
+  DCHECK(_saveCardCallback);
+  std::move(_saveCardCallback)
+      .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kAccepted,
+           {
+               .cardholder_name = base::SysNSStringToUTF16(cardHolderFullName),
+               .expiration_date_month =
+                   base::SysNSStringToUTF16(expirationMonth),
+               .expiration_date_year = base::SysNSStringToUTF16(expirationYear),
+           });
   _decisionMade = YES;
 }
 
@@ -132,15 +118,10 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
   DCHECK(!_decisionMade)
       << "You may only call -acceptWithRiskData:completionHandler: or "
          "-decline: once per instance.";
-  if (_willUploadToCloud) {
-    DCHECK(_uploadSaveCardCallback);
-    std::move(_uploadSaveCardCallback)
-        .Run(autofill::AutofillClient::DECLINED,
-             /*user_provided_card_details=*/{});
-  } else {
-    DCHECK(_localSaveCardCallback);
-    std::move(_localSaveCardCallback).Run(autofill::AutofillClient::DECLINED);
-  }
+  DCHECK(_saveCardCallback);
+  std::move(_saveCardCallback)
+      .Run(autofill::AutofillClient::SaveCardOfferUserDecision::kDeclined,
+           /*user_provided_card_details=*/{});
   _decisionMade = YES;
 }
 

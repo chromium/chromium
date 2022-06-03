@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -26,7 +27,7 @@ namespace {
 
 int CountOffscreenButtons(const ui::AXTree* tree, const ui::AXNode* node) {
   int count = 0;
-  if (node->data().role == ax::mojom::Role::kButton) {
+  if (node->GetRole() == ax::mojom::Role::kButton) {
     bool offscreen = false;
     tree->GetTreeBounds(node, &offscreen, /* clip = */ true);
     if (offscreen)
@@ -53,6 +54,9 @@ class WebViewBrowserTest : public InProcessBrowserTest {
     https_server_.AddDefaultHandlers(base::FilePath(kDocRoot));
   }
 
+  WebViewBrowserTest(const WebViewBrowserTest&) = delete;
+  WebViewBrowserTest& operator=(const WebViewBrowserTest&) = delete;
+
  protected:
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
@@ -69,15 +73,12 @@ class WebViewBrowserTest : public InProcessBrowserTest {
 
  protected:
   net::EmbeddedTestServer https_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebViewBrowserTest);
 };
 
 // Flaky. https://crbug.com/1013805
 IN_PROC_BROWSER_TEST_F(WebViewBrowserTest, DISABLED_ResizeWebView) {
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_.GetURL("/fixed_size_document.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_.GetURL("/fixed_size_document.html")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

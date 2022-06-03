@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/android/chrome_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"

@@ -4,9 +4,10 @@
 
 #include "ppapi/shared_impl/resource.h"
 
-#include "base/logging.h"
-#include "ppapi/shared_impl/resource_tracker.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "ppapi/shared_impl/ppapi_globals.h"
+#include "ppapi/shared_impl/resource_tracker.h"
 
 namespace ppapi {
 

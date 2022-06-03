@@ -31,15 +31,35 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_THREADING_PRIMITIVES_H_
 
-#include "base/macros.h"
+#include "base/dcheck_is_on.h"
 #include "base/thread_annotations.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
+
+#include "base/win/windows_types.h"
+
+// Declare Chrome versions of some Windows structures. These are needed for
+// when we need a concrete type but don't want to pull in Windows.h. We can't
+// declare the Windows types so we declare our types and cast to the Windows
+// types in a few places. static_asserts in threading_win.cc are used to verify
+// that the sizes are correct.
+
+struct BLINK_CRITICAL_SECTION {
+  // The Windows CRITICAL_SECTION struct is 40 bytes on 64-bit and 24 bytes on
+  // 32-bit. The align member variable uses sizeof(void*) bytes so the buffer
+  // to fill out the size needs to be 32/20 bytes. This can be expressed as
+  // sizeof(void*) * 3 + 8.
+  char buffer[sizeof(void*) * 3 + 8];
+  ULONG_PTR align;  // Make sure the alignment requirements match.
+};
+
+struct BLINK_CONDITION_VARIABLE {
+  PVOID Ptr;
+};
+
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <pthread.h>
 #endif
@@ -48,10 +68,10 @@ namespace WTF {
 
 #if defined(OS_WIN)
 struct PlatformMutex {
-  CRITICAL_SECTION internal_mutex_;
+  BLINK_CRITICAL_SECTION internal_mutex_;
   size_t recursion_count_;
 };
-typedef CONDITION_VARIABLE PlatformCondition;
+typedef BLINK_CONDITION_VARIABLE PlatformCondition;
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 struct PlatformMutex {
   pthread_mutex_t internal_mutex_;
@@ -66,6 +86,8 @@ class WTF_EXPORT MutexBase {
   USING_FAST_MALLOC(MutexBase);
 
  public:
+  MutexBase(const MutexBase&) = delete;
+  MutexBase& operator=(const MutexBase&) = delete;
   ~MutexBase();
 
   void lock();
@@ -83,8 +105,6 @@ class WTF_EXPORT MutexBase {
   MutexBase(bool recursive);
 
   PlatformMutex mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexBase);
 };
 
 class LOCKABLE WTF_EXPORT Mutex : public MutexBase {
@@ -116,12 +136,12 @@ class SCOPED_LOCKABLE MutexLocker final {
   MutexLocker(Mutex& mutex) EXCLUSIVE_LOCK_FUNCTION(mutex) : mutex_(mutex) {
     mutex_.lock();
   }
+  MutexLocker(const MutexLocker&) = delete;
+  MutexLocker& operator=(const MutexLocker&) = delete;
   ~MutexLocker() UNLOCK_FUNCTION() { mutex_.unlock(); }
 
  private:
   Mutex& mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexLocker);
 };
 
 class MutexTryLocker final {
@@ -129,6 +149,8 @@ class MutexTryLocker final {
 
  public:
   MutexTryLocker(Mutex& mutex) : mutex_(mutex), locked_(mutex.TryLock()) {}
+  MutexTryLocker(const MutexTryLocker&) = delete;
+  MutexTryLocker& operator=(const MutexTryLocker&) = delete;
   ~MutexTryLocker() {
     if (locked_)
       mutex_.unlock();
@@ -139,8 +161,6 @@ class MutexTryLocker final {
  private:
   Mutex& mutex_;
   bool locked_;
-
-  DISALLOW_COPY_AND_ASSIGN(MutexTryLocker);
 };
 
 class WTF_EXPORT ThreadCondition final {
@@ -148,6 +168,8 @@ class WTF_EXPORT ThreadCondition final {
 
  public:
   explicit ThreadCondition(Mutex&);
+  ThreadCondition(const ThreadCondition&) = delete;
+  ThreadCondition& operator=(const ThreadCondition&) = delete;
   ~ThreadCondition();
 
   void Wait();
@@ -157,8 +179,6 @@ class WTF_EXPORT ThreadCondition final {
  private:
   PlatformCondition condition_;
   PlatformMutex& mutex_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCondition);
 };
 
 }  // namespace WTF

@@ -20,3 +20,4 @@ addScriptTag('clearkey_player.js');
 addScriptTag('widevine_player.js');
 addScriptTag('unit_test_player.js');
 addScriptTag('eme_app.js');
+addScriptTag('mse_player_utils.js');

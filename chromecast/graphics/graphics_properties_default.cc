@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/base/init_command_line_shlib.h"
 #include "chromecast/public/graphics_properties_shlib.h"

@@ -10,13 +10,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "chrome/common/url_constants.h"
 #include "content/public/common/url_constants.h"
-#include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/common/extensions/extension_constants.h"
-#include "extensions/common/constants.h"
-#endif
 
 namespace webui {
 
@@ -27,7 +21,7 @@ bool LogWebUIUrl(const GURL& web_ui_url) {
                     web_ui_url.SchemeIs(content::kChromeDevToolsScheme);
 
   if (should_log) {
-    uint32_t hash = base::Hash(web_ui_url.GetOrigin().spec());
+    uint32_t hash = base::Hash(web_ui_url.DeprecatedGetOriginAsURL().spec());
     base::UmaHistogramSparse(kWebUICreatedForUrl,
                              static_cast<base::HistogramBase::Sample>(hash));
   }

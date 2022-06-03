@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/line_box_list_painter.h"
 
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/layout/api/line_layout_box_model.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
@@ -12,8 +13,10 @@
 #include "third_party/blink/renderer/core/layout/line/line_box_list.h"
 #include "third_party/blink/renderer/core/layout/line/root_inline_box.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
+#include "third_party/blink/renderer/core/paint/url_metadata_utils.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
@@ -44,8 +47,8 @@ void BuildBackplate(const InlineFlowBox* box,
     if (layout_item.IsText() || layout_item.IsListMarker()) {
       if (layout_item.IsText()) {
         String child_text =
-            ToInlineTextBox(child)->GetLineLayoutItem().GetText();
-        if (ToInlineTextBox(child)->IsLineBreak() ||
+            To<InlineTextBox>(child)->GetLineLayoutItem().GetText();
+        if (To<InlineTextBox>(child)->IsLineBreak() ||
             child_text.StartsWith('\n'))
           (*consecutive_line_breaks)++;
       }
@@ -68,27 +71,13 @@ void BuildBackplate(const InlineFlowBox* box,
     } else if (child->IsInlineFlowBox()) {
       // If an inline flow box was reached, continue to recursively build up the
       // backplate.
-      BuildBackplate(ToInlineFlowBox(child), paint_offset, current_backplate,
+      BuildBackplate(To<InlineFlowBox>(child), paint_offset, current_backplate,
                      consecutive_line_breaks, paragraph_backplates);
     }
   }
 }
 
 }  // anonymous namespace
-
-static void AddURLRectsForInlineChildrenRecursively(
-    const LayoutObject& layout_object,
-    const PaintInfo& paint_info,
-    const PhysicalOffset& paint_offset) {
-  for (LayoutObject* child = layout_object.SlowFirstChild(); child;
-       child = child->NextSibling()) {
-    if (!child->IsLayoutInline() ||
-        ToLayoutBoxModelObject(child)->HasSelfPaintingLayer())
-      continue;
-    ObjectPainter(*child).AddURLRectIfNeeded(paint_info, paint_offset);
-    AddURLRectsForInlineChildrenRecursively(*child, paint_info, paint_offset);
-  }
-}
 
 bool LineBoxListPainter::ShouldPaint(const LayoutBoxModelObject& layout_object,
                                      const PaintInfo& paint_info,
@@ -99,12 +88,6 @@ bool LineBoxListPainter::ShouldPaint(const LayoutBoxModelObject& layout_object,
   // The only way an inline could paint like this is if it has a layer.
   DCHECK(layout_object.IsLayoutBlock() ||
          (layout_object.IsLayoutInline() && layout_object.HasLayer()));
-
-  if (paint_info.phase == PaintPhase::kForeground &&
-      paint_info.ShouldAddUrlMetadata()) {
-    AddURLRectsForInlineChildrenRecursively(layout_object, paint_info,
-                                            paint_offset);
-  }
 
   // If we have no lines then we have no work to do.
   if (!line_box_list_.First())
@@ -123,10 +106,16 @@ void LineBoxListPainter::Paint(const LayoutBoxModelObject& layout_object,
                                const PhysicalOffset& paint_offset) const {
   // Only paint during the foreground/selection phases.
   if (paint_info.phase != PaintPhase::kForeground &&
-      paint_info.phase != PaintPhase::kSelection &&
+      paint_info.phase != PaintPhase::kSelectionDragImage &&
       paint_info.phase != PaintPhase::kTextClip &&
       paint_info.phase != PaintPhase::kMask)
     return;
+
+  if (paint_info.phase == PaintPhase::kForeground &&
+      paint_info.ShouldAddUrlMetadata()) {
+    AddURLRectsForInlineChildrenRecursively(layout_object, paint_info,
+                                            paint_offset);
+  }
 
   if (!ShouldPaint(layout_object, paint_info, paint_offset))
     return;
@@ -148,8 +137,7 @@ void LineBoxListPainter::Paint(const LayoutBoxModelObject& layout_object,
                 const_cast<LayoutBoxModelObject*>(&layout_object)),
             curr, paint_info.GetCullRect(), paint_offset)) {
       RootInlineBox& root = curr->Root();
-      curr->Paint(paint_info, paint_offset.ToLayoutPoint(), root.LineTop(),
-                  root.LineBottom());
+      curr->Paint(paint_info, paint_offset, root.LineTop(), root.LineBottom());
     }
   }
 }
@@ -158,14 +146,17 @@ void LineBoxListPainter::PaintBackplate(
     const LayoutBoxModelObject& layout_object,
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
-  if (paint_info.phase != PaintPhase::kForcedColorsModeBackplate ||
-      !ShouldPaint(layout_object, paint_info, paint_offset))
+  DCHECK_EQ(paint_info.phase, PaintPhase::kForcedColorsModeBackplate);
+
+  if (!ShouldPaint(layout_object, paint_info, paint_offset))
     return;
 
-  // Only paint backplates behind text when forced-color-adjust is auto.
+  // Only paint backplates behind text when forced-color-adjust is auto and the
+  // element is visible.
   const ComputedStyle& style =
       line_box_list_.First()->GetLineLayoutItem().StyleRef();
-  if (style.ForcedColorAdjust() == EForcedColorAdjust::kNone)
+  if (style.ForcedColorAdjust() != EForcedColorAdjust::kAuto ||
+      style.Visibility() != EVisibility::kVisible)
     return;
 
   if (DrawingRecorder::UseCachedDrawingIfPossible(
@@ -173,12 +164,18 @@ void LineBoxListPainter::PaintBackplate(
           DisplayItem::kForcedColorsModeBackplate))
     return;
 
-  DrawingRecorder recorder(paint_info.context, layout_object,
-                           DisplayItem::kForcedColorsModeBackplate);
-  Color backplate_color = style.ForcedBackplateColor();
   const auto& backplates = GetBackplates(paint_offset);
-  for (const auto backplate : backplates)
-    paint_info.context.FillRect(FloatRect(backplate), backplate_color);
+  gfx::Rect visual_rect = ToGfxRect(EnclosingIntRect(UnionRect(backplates)));
+  DrawingRecorder recorder(paint_info.context, layout_object,
+                           DisplayItem::kForcedColorsModeBackplate,
+                           visual_rect);
+  Color backplate_color =
+      layout_object.GetDocument().GetStyleEngine().ForcedBackgroundColor();
+  for (const auto backplate : backplates) {
+    paint_info.context.FillRect(
+        FloatRect(backplate), backplate_color,
+        PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kBackground));
+  }
 }
 
 Vector<PhysicalRect> LineBoxListPainter::GetBackplates(

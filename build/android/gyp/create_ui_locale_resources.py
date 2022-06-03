@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -60,7 +60,6 @@ def main():
   parser = argparse.ArgumentParser(
       description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
 
-  build_utils.AddDepfileOption(parser)
   parser.add_argument(
       '--locale-list',
       required=True,
@@ -82,9 +81,6 @@ def main():
       for locale in locale_list:
         android_locale = resource_utils.ToAndroidLocaleName(locale)
         _AddLocaleResourceFileToZip(out_zip, android_locale, locale)
-
-  if args.depfile:
-    build_utils.WriteDepfile(args.depfile, args.output_zip)
 
 
 if __name__ == '__main__':

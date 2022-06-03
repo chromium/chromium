@@ -2,10 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {str, strf} from '../../common/js/util.js';
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {EntryLocation} from '../../externs/entry_location.js';
+import {VolumeManager} from '../../externs/volume_manager.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {TaskController} from './task_controller.js';
+import {FileManagerUI} from './ui/file_manager_ui.js';
+import {LocationLine} from './ui/location_line.js';
+import {SearchBox} from './ui/search_box.js';
+
 /**
  * Controller for searching.
  */
-class SearchController {
+export class SearchController {
   /**
    * @param {!SearchBox} searchBox Search box UI element.
    * @param {!LocationLine} locationLine Location line UI element.
@@ -84,6 +95,19 @@ class SearchController {
            opt_event.newDirEntry.rootType ===
                VolumeManagerCommon.RootType.MY_FILES);
       this.searchBox_.setHidden(isMyFiles);
+    }
+  }
+
+  /**
+   * Sets search query on the search box and performs a search.
+   * @param {string} searchQuery Search query string to be searched with.
+   */
+  setSearchQuery(searchQuery) {
+    this.searchBox_.inputElement.focus();
+    this.searchBox_.inputElement.value = searchQuery;
+    this.onTextChange_();
+    if (this.isOnDrive_) {
+      this.onItemSelect_();
     }
   }
 
@@ -219,7 +243,7 @@ class SearchController {
       if (!locationInfo ||
           (locationInfo.isRootEntry &&
            locationInfo.rootType ===
-               VolumeManagerCommon.RootType.DRIVE_OTHER)) {
+               VolumeManagerCommon.RootType.DRIVE_SHARED_WITH_ME)) {
         this.taskController_.executeEntryTask(entry);
         return;
       }

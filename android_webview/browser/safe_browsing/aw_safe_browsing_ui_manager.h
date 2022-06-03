@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "components/safe_browsing/base_ui_manager.h"
-#include "components/security_interstitials/content/unsafe_resource.h"
+#include "components/safe_browsing/content/browser/base_ui_manager.h"
+#include "components/security_interstitials/core/unsafe_resource.h"
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -46,6 +46,9 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   // Construction needs to happen on the UI thread.
   AwSafeBrowsingUIManager();
 
+  AwSafeBrowsingUIManager(const AwSafeBrowsingUIManager&) = delete;
+  AwSafeBrowsingUIManager& operator=(const AwSafeBrowsingUIManager&) = delete;
+
   // Gets the correct ErrorUiType for the web contents
   int GetErrorUiType(content::WebContents* web_contents) const;
 
@@ -54,7 +57,8 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
 
   // Called on the UI thread by the ThreatDetails with the serialized
   // protocol buffer, so the service can send it over.
-  void SendSerializedThreatDetails(const std::string& serialized) override;
+  void SendSerializedThreatDetails(content::BrowserContext* browser_context,
+                                   const std::string& serialized) override;
 
   // Called on the IO thread to get a SharedURLLoaderFactory that can be used on
   // the IO thread.
@@ -63,8 +67,6 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
 
  protected:
   ~AwSafeBrowsingUIManager() override;
-
-  void ShowBlockingPageForResource(const UnsafeResource& resource) override;
 
  private:
   safe_browsing::BaseBlockingPage* CreateBlockingPageForSubresource(
@@ -88,8 +90,6 @@ class AwSafeBrowsingUIManager : public safe_browsing::BaseUIManager {
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_on_io_;
   scoped_refptr<network::WeakWrapperSharedURLLoaderFactory>
       shared_url_loader_factory_on_io_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwSafeBrowsingUIManager);
 };
 
 }  // namespace android_webview

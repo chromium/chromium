@@ -11,15 +11,18 @@
 #include <set>
 #include <vector>
 
+#include "base/hash/legacy_hash.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/extensions/extension_management.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/metrics/metrics_log.h"
 #include "components/metrics/metrics_state_manager.h"
+#include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
@@ -29,12 +32,11 @@
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
-#include "extensions/common/manifest_url_handlers.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
-#include "third_party/smhasher/src/City.h"
 
 using extensions::Extension;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 using metrics::ExtensionInstallProto;
 
 namespace {
@@ -84,9 +86,9 @@ metrics::SystemProfileProto::ExtensionsState ExtensionStateAsProto(
 // webstore, we attempt to verify with |verifier| by checking if it has been
 // explicitly deemed invalid. If |verifier| is inactive or if the extension is
 // unknown to |verifier|, the local information is trusted.
-ExtensionState IsOffStoreExtension(
-    const extensions::Extension& extension,
-    const extensions::InstallVerifier& verifier) {
+ExtensionState IsOffStoreExtension(const extensions::Extension& extension,
+                                   const extensions::InstallVerifier& verifier,
+                                   content::BrowserContext* context) {
   if (!extension.is_extension() && !extension.is_legacy_packaged_app())
     return NO_EXTENSIONS;
 
@@ -97,7 +99,7 @@ ExtensionState IsOffStoreExtension(
   if (verifier.AllowedByEnterprisePolicy(extension.id()))
     return NO_EXTENSIONS;
 
-  if (!extensions::InstallVerifier::IsFromStore(extension))
+  if (!extensions::InstallVerifier::IsFromStore(extension, context))
     return OFF_STORE;
 
   // Local information about the extension implies it is from the store. We try
@@ -115,14 +117,15 @@ ExtensionState IsOffStoreExtension(
 // highest (as defined by the order of ExtensionState) value of each extension
 // in |extensions|.
 ExtensionState CheckForOffStore(const extensions::ExtensionSet& extensions,
-                                const extensions::InstallVerifier& verifier) {
+                                const extensions::InstallVerifier& verifier,
+                                content::BrowserContext* context) {
   ExtensionState state = NO_EXTENSIONS;
   for (extensions::ExtensionSet::const_iterator it = extensions.begin();
        it != extensions.end() && state < OFF_STORE;
        ++it) {
     // Combine the state of each extension, always favoring the higher state as
     // defined by the order of ExtensionState.
-    state = std::max(state, IsOffStoreExtension(**it, verifier));
+    state = std::max(state, IsOffStoreExtension(**it, verifier, context));
   }
   return state;
 }
@@ -147,6 +150,9 @@ ExtensionInstallProto::Type GetType(Manifest::Type type) {
       return ExtensionInstallProto::SHARED_MODULE;
     case Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
       return ExtensionInstallProto::LOGIN_SCREEN_EXTENSION;
+    case Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+      // TODO(mgawad): introduce new CHROMEOS_SYSTEM_EXTENSION type.
+      return ExtensionInstallProto::EXTENSION;
     case Manifest::NUM_LOAD_TYPES:
       NOTREACHED();
       // Fall through.
@@ -155,33 +161,30 @@ ExtensionInstallProto::Type GetType(Manifest::Type type) {
 }
 
 ExtensionInstallProto::InstallLocation GetInstallLocation(
-    Manifest::Location location) {
+    ManifestLocation location) {
   switch (location) {
-    case Manifest::INVALID_LOCATION:
+    case ManifestLocation::kInvalidLocation:
       return ExtensionInstallProto::UNKNOWN_LOCATION;
-    case Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       return ExtensionInstallProto::INTERNAL;
-    case Manifest::EXTERNAL_PREF:
+    case ManifestLocation::kExternalPref:
       return ExtensionInstallProto::EXTERNAL_PREF;
-    case Manifest::EXTERNAL_REGISTRY:
+    case ManifestLocation::kExternalRegistry:
       return ExtensionInstallProto::EXTERNAL_REGISTRY;
-    case Manifest::UNPACKED:
+    case ManifestLocation::kUnpacked:
       return ExtensionInstallProto::UNPACKED;
-    case Manifest::COMPONENT:
+    case ManifestLocation::kComponent:
       return ExtensionInstallProto::COMPONENT;
-    case Manifest::EXTERNAL_PREF_DOWNLOAD:
+    case ManifestLocation::kExternalPrefDownload:
       return ExtensionInstallProto::EXTERNAL_PREF_DOWNLOAD;
-    case Manifest::EXTERNAL_POLICY_DOWNLOAD:
+    case ManifestLocation::kExternalPolicyDownload:
       return ExtensionInstallProto::EXTERNAL_POLICY_DOWNLOAD;
-    case Manifest::COMMAND_LINE:
+    case ManifestLocation::kCommandLine:
       return ExtensionInstallProto::COMMAND_LINE;
-    case Manifest::EXTERNAL_POLICY:
+    case ManifestLocation::kExternalPolicy:
       return ExtensionInstallProto::EXTERNAL_POLICY;
-    case Manifest::EXTERNAL_COMPONENT:
+    case ManifestLocation::kExternalComponent:
       return ExtensionInstallProto::EXTERNAL_COMPONENT;
-    case Manifest::NUM_LOCATIONS:
-      NOTREACHED();
-      // Fall through.
   }
   return ExtensionInstallProto::UNKNOWN_LOCATION;
 }
@@ -204,14 +207,17 @@ ExtensionInstallProto::BackgroundScriptType GetBackgroundScriptType(
     return ExtensionInstallProto::PERSISTENT_BACKGROUND_PAGE;
   if (extensions::BackgroundInfo::HasLazyBackgroundPage(&extension))
     return ExtensionInstallProto::EVENT_PAGE;
+  if (extensions::BackgroundInfo::IsServiceWorkerBased(&extension))
+    return ExtensionInstallProto::SERVICE_WORKER;
 
-  // If an extension had neither a persistent nor lazy background page, it must
-  // not have a background page.
+  // If an extension had neither a persistent background page, a lazy
+  // background page nor a service worker based background script, it must not
+  // have a background script.
   DCHECK(!extensions::BackgroundInfo::HasBackgroundPage(&extension));
   return ExtensionInstallProto::NO_BACKGROUND_SCRIPT;
 }
 
-static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 17),
+static_assert(extensions::disable_reason::DISABLE_REASON_LAST == (1LL << 21),
               "Adding a new disable reason? Be sure to include the new reason "
               "below, update the test to exercise it, and then adjust this "
               "value for DISABLE_REASON_LAST");
@@ -232,8 +238,6 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::UNSUPPORTED_REQUIREMENT},
       {extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT,
        ExtensionInstallProto::SIDELOAD_WIPEOUT},
-      {extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC,
-       ExtensionInstallProto::UNKNOWN_FROM_SYNC},
       {extensions::disable_reason::DISABLE_NOT_VERIFIED,
        ExtensionInstallProto::NOT_VERIFIED},
       {extensions::disable_reason::DISABLE_GREYLIST,
@@ -250,9 +254,17 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
        ExtensionInstallProto::CUSTODIAN_APPROVAL_REQUIRED},
       {extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY,
        ExtensionInstallProto::BLOCKED_BY_POLICY},
+      {extensions::disable_reason::DISABLE_REINSTALL,
+       ExtensionInstallProto::REINSTALL},
+      {extensions::disable_reason::DISABLE_NOT_ALLOWLISTED,
+       ExtensionInstallProto::NOT_ALLOWLISTED},
   };
 
   int disable_reasons = prefs->GetDisableReasons(id);
+  DCHECK_EQ(
+      0, disable_reasons &
+             extensions::disable_reason::DEPRECATED_DISABLE_UNKNOWN_FROM_SYNC)
+      << "Encountered bad disable reason: " << disable_reasons;
   std::vector<ExtensionInstallProto::DisableReason> reasons;
   for (const auto& entry : disable_reason_map) {
     int mask = static_cast<int>(entry.disable_reason);
@@ -270,20 +282,19 @@ std::vector<ExtensionInstallProto::DisableReason> GetDisableReasons(
 ExtensionInstallProto::BlacklistState GetBlacklistState(
     const extensions::ExtensionId& id,
     extensions::ExtensionPrefs* prefs) {
-  extensions::BlacklistState state = prefs->GetExtensionBlacklistState(id);
+  extensions::BitMapBlocklistState state =
+      extensions::blocklist_prefs::GetExtensionBlocklistState(id, prefs);
   switch (state) {
-    case extensions::NOT_BLACKLISTED:
+    case extensions::BitMapBlocklistState::NOT_BLOCKLISTED:
       return ExtensionInstallProto::NOT_BLACKLISTED;
-    case extensions::BLACKLISTED_MALWARE:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_MALWARE:
       return ExtensionInstallProto::BLACKLISTED_MALWARE;
-    case extensions::BLACKLISTED_SECURITY_VULNERABILITY:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_SECURITY_VULNERABILITY:
       return ExtensionInstallProto::BLACKLISTED_SECURITY_VULNERABILITY;
-    case extensions::BLACKLISTED_CWS_POLICY_VIOLATION:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION:
       return ExtensionInstallProto::BLACKLISTED_CWS_POLICY_VIOLATION;
-    case extensions::BLACKLISTED_POTENTIALLY_UNWANTED:
+    case extensions::BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED:
       return ExtensionInstallProto::BLACKLISTED_POTENTIALLY_UNWANTED;
-    case extensions::BLACKLISTED_UNKNOWN:
-      return ExtensionInstallProto::BLACKLISTED_UNKNOWN;
   }
   NOTREACHED();
   return ExtensionInstallProto::BLACKLISTED_UNKNOWN;
@@ -295,7 +306,8 @@ ExtensionInstallProto::BlacklistState GetBlacklistState(
 metrics::ExtensionInstallProto ConstructInstallProto(
     const extensions::Extension& extension,
     extensions::ExtensionPrefs* prefs,
-    base::Time last_sample_time) {
+    base::Time last_sample_time,
+    extensions::ExtensionManagement* extension_management) {
   ExtensionInstallProto install;
   install.set_type(GetType(extension.manifest()->type()));
   install.set_install_location(GetInstallLocation(extension.location()));
@@ -306,7 +318,7 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   install.set_has_incognito_access(prefs->IsIncognitoEnabled(extension.id()));
   install.set_is_from_store(extension.from_webstore());
   install.set_updates_from_store(
-      extensions::ManifestURL::UpdatesFromGallery(&extension));
+      extension_management->UpdatesFromWebstore(extension));
   install.set_is_from_bookmark(extension.from_bookmark());
   install.set_is_converted_from_user_script(
       extension.converted_from_user_script());
@@ -334,9 +346,11 @@ std::vector<metrics::ExtensionInstallProto> GetInstallsForProfile(
           ->GenerateInstalledExtensionsSet();
   std::vector<ExtensionInstallProto> installs;
   installs.reserve(extensions->size());
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
   for (const auto& extension : *extensions) {
-    installs.push_back(
-        ConstructInstallProto(*extension, prefs, last_sample_time));
+    installs.push_back(ConstructInstallProto(
+        *extension, prefs, last_sample_time, extension_management));
   }
 
   return installs;
@@ -359,7 +373,8 @@ int ExtensionsMetricsProvider::HashExtension(const std::string& extension_id,
   DCHECK_LE(client_key, kExtensionListClientKeys);
   std::string message =
       base::StringPrintf("%u:%s", client_key, extension_id.c_str());
-  uint64_t output = CityHash64(message.data(), message.size());
+  uint64_t output =
+      base::legacy::CityHash64(base::as_bytes(base::make_span(message)));
   return output % kExtensionListBuckets;
 }
 
@@ -369,10 +384,10 @@ ExtensionsMetricsProvider::GetInstalledExtensions(Profile* profile) {
     return extensions::ExtensionRegistry::Get(profile)
         ->GenerateInstalledExtensionsSet();
   }
-  return std::unique_ptr<extensions::ExtensionSet>();
+  return nullptr;
 }
 
-uint64_t ExtensionsMetricsProvider::GetClientID() {
+uint64_t ExtensionsMetricsProvider::GetClientID() const {
   // TODO(blundell): Create a MetricsLog::ClientIDAsInt() API and call it
   // here as well as in MetricsLog's population of the client_id field of
   // the uma_proto.
@@ -391,8 +406,12 @@ metrics::ExtensionInstallProto
 ExtensionsMetricsProvider::ConstructInstallProtoForTesting(
     const extensions::Extension& extension,
     extensions::ExtensionPrefs* prefs,
-    base::Time last_sample_time) {
-  return ConstructInstallProto(extension, prefs, last_sample_time);
+    base::Time last_sample_time,
+    Profile* profile) {
+  extensions::ExtensionManagement* extension_management =
+      extensions::ExtensionManagementFactory::GetForBrowserContext(profile);
+  return ConstructInstallProto(extension, prefs, last_sample_time,
+                               extension_management);
 }
 
 // static
@@ -425,7 +444,8 @@ void ExtensionsMetricsProvider::ProvideOffStoreMetric(
 
     // Combine the state from each profile, always favoring the higher state as
     // defined by the order of ExtensionState.
-    state = std::max(state, CheckForOffStore(*extensions.get(), *verifier));
+    state = std::max(
+        state, CheckForOffStore(*extensions.get(), *verifier, profiles[i]));
   }
 
   system_profile->set_offstore_extensions_state(ExtensionStateAsProto(state));

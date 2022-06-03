@@ -5,7 +5,7 @@
 #include "fuchsia/engine/fake_context.h"
 
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 
 FakeFrame::FakeFrame(fidl::InterfaceRequest<fuchsia::web::Frame> request)
     : binding_(this, std::move(request)) {

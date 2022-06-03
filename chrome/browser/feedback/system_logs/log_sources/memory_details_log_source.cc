@@ -4,8 +4,8 @@
 
 #include "chrome/browser/feedback/system_logs/log_sources/memory_details_log_source.h"
 
-#include "base/macros.h"
 #include "chrome/browser/memory_details.h"
+#include "components/feedback/feedback_report.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace system_logs {
@@ -16,13 +16,18 @@ class SystemLogsMemoryHandler : public MemoryDetails {
   explicit SystemLogsMemoryHandler(SysLogsSourceCallback callback)
       : callback_(std::move(callback)) {}
 
+  SystemLogsMemoryHandler(const SystemLogsMemoryHandler&) = delete;
+  SystemLogsMemoryHandler& operator=(const SystemLogsMemoryHandler&) = delete;
+
   // Sends the data to the callback.
   // MemoryDetails override.
   void OnDetailsAvailable() override {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
     auto response = std::make_unique<SystemLogsResponse>();
-    (*response)["mem_usage"] = ToLogString();
+    (*response)["mem_usage"] = ToLogString(/*include_tab_title=*/false);
+    (*response)[feedback::FeedbackReport::kMemUsageWithTabTitlesKey] =
+        ToLogString(/*include_tab_title=*/true);
     DCHECK(!callback_.is_null());
     std::move(callback_).Run(std::move(response));
   }
@@ -30,8 +35,6 @@ class SystemLogsMemoryHandler : public MemoryDetails {
  private:
   ~SystemLogsMemoryHandler() override {}
   SysLogsSourceCallback callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemLogsMemoryHandler);
 };
 
 MemoryDetailsLogSource::MemoryDetailsLogSource()

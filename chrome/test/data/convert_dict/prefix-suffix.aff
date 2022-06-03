@@ -1,0 +1,28 @@
+# This file describes two rules for an affix class named VERB:
+# * Words in affix class VERB can be prefixed with "re"
+# * Words in affix class VERB can be suffixed with:
+#    * "ed" if they do not end in "y"
+#    * "ied", deleting the trailing y, if they do end in "y"
+
+# Define the affix class we're going to use:
+AF 1
+AF VERB
+
+# The fields of PFX and SFX are either:
+#    ?FX <class> <cross> <count>
+# or ?FX <class> <remove> <add> <match> [...]
+# where the ? may be either P (for prefix) or S (for suffix).
+# The first type of line is a header, which describes how many of this type of
+# ?FX there are for this class. The second type of line describes how to
+# construct a new word using this affix:
+#   For words in <class>, if they end in <match>, you can remove <remove> from
+#   the end being considered, then add <add> at that end.
+# Where the end being considered is the beginning for PFX and the end for SFX.
+# The meaning of <cross> and of the trailing stuff that is allowed in the second
+# type of line (the morphology) is obscure to me (ellyjones@).
+PFX VERB Y  1
+PFX VERB 0 re .
+
+SFX VERB Y   2
+SFX VERB 0  ed [^y]
+SFX VERB y ied y

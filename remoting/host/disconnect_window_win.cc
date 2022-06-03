@@ -10,10 +10,10 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -46,7 +46,7 @@ constexpr int kWindowBorderRadius = 14;
 constexpr int kWindowTextMargin = 8;
 
 // The amount of time to wait before hiding the disconnect window.
-constexpr base::TimeDelta kAutoHideTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kAutoHideTimeout = base::Seconds(10);
 
 // The length of the hide and show animations.
 constexpr DWORD kAnimationDurationMs = 200;
@@ -54,6 +54,10 @@ constexpr DWORD kAnimationDurationMs = 200;
 class DisconnectWindowWin : public HostWindow {
  public:
   DisconnectWindowWin();
+
+  DisconnectWindowWin(const DisconnectWindowWin&) = delete;
+  DisconnectWindowWin& operator=(const DisconnectWindowWin&) = delete;
+
   ~DisconnectWindowWin() override;
 
   // Allow dialog to auto-hide after a period of time.  The dialog will be
@@ -130,12 +134,10 @@ class DisconnectWindowWin : public HostWindow {
   webrtc::DesktopVector mouse_position_;
 
   base::WeakPtrFactory<DisconnectWindowWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DisconnectWindowWin);
 };
 
 // Returns the text for the given dialog control window.
-bool GetControlText(HWND control, base::string16* text) {
+bool GetControlText(HWND control, std::wstring* text) {
   // GetWindowText truncates the text if it is longer than can fit into
   // the buffer.
   WCHAR buffer[256];
@@ -148,9 +150,7 @@ bool GetControlText(HWND control, base::string16* text) {
 }
 
 // Returns width |text| rendered in |control| window.
-bool GetControlTextWidth(HWND control,
-                         const base::string16& text,
-                         LONG* width) {
+bool GetControlTextWidth(HWND control, const std::wstring& text, LONG* width) {
   RECT rect = {0, 0, 0, 0};
   base::win::ScopedGetDC dc(control);
   base::win::ScopedSelectObject font(
@@ -338,6 +338,9 @@ void DisconnectWindowWin::EndDialog() {
     hwnd_ = nullptr;
   }
 
+  // Disable auto-hide events since the window has been destroyed.
+  auto_hide_timer_.Stop();
+
   if (client_session_control_)
     client_session_control_->DisconnectSession(protocol::OK);
 }
@@ -361,7 +364,7 @@ void DisconnectWindowWin::ShowDialog() {
     PLOG(ERROR) << "AnimateWindow() failed to show dialog: ";
     ShowWindow(hwnd_, SW_SHOW);
 
-    // If the windows still isn't visible, then disconnect the session.
+    // If the window still isn't visible, then disconnect the session.
     if (!IsWindowVisible(hwnd_))
       client_session_control_->DisconnectSession(protocol::OK);
   }
@@ -369,11 +372,11 @@ void DisconnectWindowWin::ShowDialog() {
 }
 
 void DisconnectWindowWin::HideDialog() {
-  if (was_auto_hidden_ || !local_input_monitor_)
+  if (was_auto_hidden_ || !local_input_monitor_ || !hwnd_)
     return;
 
   if (!AnimateWindow(hwnd_, kAnimationDurationMs, AW_BLEND | AW_HIDE))
-    PLOG(ERROR) << "AnimateWindow() failed to show dialog: ";
+    PLOG(ERROR) << "AnimateWindow() failed to hide dialog: ";
   else
     was_auto_hidden_ = true;
 }
@@ -476,17 +479,16 @@ bool DisconnectWindowWin::SetStrings() {
   if (!hwnd_button || !hwnd_message)
     return false;
 
-  base::string16 button_text;
-  base::string16 message_text;
+  std::wstring button_text;
+  std::wstring message_text;
   if (!GetControlText(hwnd_button, &button_text) ||
       !GetControlText(hwnd_message, &message_text)) {
     return false;
   }
 
   // Format and truncate "Your desktop is shared with ..." message.
-  message_text = base::ReplaceStringPlaceholders(message_text,
-                                                 base::UTF8ToUTF16(username_),
-                                                 nullptr);
+  message_text = base::AsWString(base::ReplaceStringPlaceholders(
+      base::AsString16(message_text), base::UTF8ToUTF16(username_), nullptr));
   if (message_text.length() > kMaxSharingWithTextLength)
     message_text.erase(kMaxSharingWithTextLength);
 

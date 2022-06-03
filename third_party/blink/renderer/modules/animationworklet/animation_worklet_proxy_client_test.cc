@@ -12,8 +12,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
-#include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/modules/worklet/worklet_thread_test_common.h"
@@ -44,9 +44,9 @@ class AnimationWorkletProxyClientTest : public RenderingTest {
 
   void SetUp() override {
     RenderingTest::SetUp();
-    auto mutator =
-        std::make_unique<AnimationWorkletMutatorDispatcherImpl>(true);
     mutator_task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
+    auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
+        mutator_task_runner_);
 
     proxy_client_ = MakeGarbageCollected<AnimationWorkletProxyClient>(
         1, nullptr, nullptr, mutator->GetWeakPtr(), mutator_task_runner_);
@@ -148,7 +148,11 @@ class AnimationWorkletProxyClientTest : public RenderingTest {
   std::unique_ptr<WorkletAnimationEffectTimings> CreateEffectTimings() {
     auto timings = base::MakeRefCounted<base::RefCountedData<Vector<Timing>>>();
     timings->data.push_back(Timing());
-    return std::make_unique<WorkletAnimationEffectTimings>(std::move(timings));
+    auto normalized_timings = base::MakeRefCounted<
+        base::RefCountedData<Vector<Timing::NormalizedTiming>>>();
+    normalized_timings->data.push_back(Timing::NormalizedTiming());
+    return std::make_unique<WorkletAnimationEffectTimings>(
+        std::move(timings), std::move(normalized_timings));
   }
 
   void RunMigrateAnimatorsBetweenGlobalScopesOnWorklet(
@@ -174,10 +178,12 @@ class AnimationWorkletProxyClientTest : public RenderingTest {
           registerAnimator('stateless_animator', Stateless);
       )JS";
 
-    ASSERT_TRUE(first_global_scope->ScriptController()->Evaluate(
-        ScriptSourceCode(source_code), SanitizeScriptErrors::kDoNotSanitize));
-    ASSERT_TRUE(second_global_scope->ScriptController()->Evaluate(
-        ScriptSourceCode(source_code), SanitizeScriptErrors::kDoNotSanitize));
+    ASSERT_TRUE(
+        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
+            ->RunScriptOnWorkerOrWorklet(*first_global_scope));
+    ASSERT_TRUE(
+        ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source_code))
+            ->RunScriptOnWorkerOrWorklet(*second_global_scope));
 
     std::unique_ptr<AnimationWorkletInput> state =
         std::make_unique<AnimationWorkletInput>();
@@ -224,9 +230,10 @@ TEST_F(AnimationWorkletProxyClientTest,
                                                         nullptr, nullptr);
   EXPECT_TRUE(proxy_client->mutator_items_.IsEmpty());
 
-  auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(true);
   scoped_refptr<base::SingleThreadTaskRunner> mutator_task_runner =
-      mutator->GetTaskRunner();
+      base::ThreadTaskRunnerHandle::Get();
+  auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
+      mutator_task_runner);
 
   proxy_client = MakeGarbageCollected<AnimationWorkletProxyClient>(
       1, nullptr, nullptr, mutator->GetWeakPtr(), mutator_task_runner);

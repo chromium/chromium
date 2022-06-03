@@ -8,7 +8,7 @@
 #include <stdint.h>
 #include <string>
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace assist_ranker {
 class RankerExample;
@@ -44,11 +44,11 @@ struct TabFeatures {
   // page. Reset to 0 when a tab navigates.
   int32_t num_reactivations = 0;
   // Null if the value is not one of the core values logged to UKM.
-  base::Optional<int32_t> page_transition_core_type;
+  absl::optional<int32_t> page_transition_core_type;
   bool page_transition_from_address_bar = false;
   bool page_transition_is_redirect = false;
   // Null if the SiteEngagementService is disabled.
-  base::Optional<int32_t> site_engagement_score;
+  absl::optional<int32_t> site_engagement_score;
   // Time since tab was backgrounded, in milliseconds.
   int32_t time_from_backgrounded = 0;
   int32_t total_tab_count = 0;

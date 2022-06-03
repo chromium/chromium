@@ -22,7 +22,8 @@ struct MEDIA_EXPORT AudioType {
   static AudioType FromDecoderConfig(const AudioDecoderConfig& config);
 
   AudioCodec codec;
-  bool spatialRendering;
+  AudioCodecProfile profile;
+  bool spatial_rendering;
 };
 
 struct MEDIA_EXPORT VideoType {
@@ -32,6 +33,7 @@ struct MEDIA_EXPORT VideoType {
   VideoCodecProfile profile;
   int level;
   VideoColorSpace color_space;
+  gfx::HdrMetadataType hdr_metadata_type;
 };
 
 MEDIA_EXPORT bool operator==(const AudioType& x, const AudioType& y);

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/extension_keybinding_registry.h"
 #include "chrome/browser/extensions/global_shortcut_listener.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -43,6 +42,12 @@ class ExtensionCommandsGlobalRegistry
   static ExtensionCommandsGlobalRegistry* Get(content::BrowserContext* context);
 
   explicit ExtensionCommandsGlobalRegistry(content::BrowserContext* context);
+
+  ExtensionCommandsGlobalRegistry(const ExtensionCommandsGlobalRegistry&) =
+      delete;
+  ExtensionCommandsGlobalRegistry& operator=(
+      const ExtensionCommandsGlobalRegistry&) = delete;
+
   ~ExtensionCommandsGlobalRegistry() override;
 
   // Returns which non-global command registry is active (belonging to the
@@ -88,8 +93,6 @@ class ExtensionCommandsGlobalRegistry
   // and
   // NULL otherwise.
   ExtensionKeybindingRegistry* registry_for_active_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionCommandsGlobalRegistry);
 };
 
 }  // namespace extensions

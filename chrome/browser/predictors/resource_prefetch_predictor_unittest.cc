@@ -10,8 +10,8 @@
 #include <utility>
 
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_simple_task_runner.h"
@@ -44,9 +44,9 @@ using OriginDataMap = std::map<std::string, OriginData>;
 
 template <typename T>
 class FakeLoadingPredictorKeyValueTable
-    : public LoadingPredictorKeyValueTable<T> {
+    : public sqlite_proto::KeyValueTable<T> {
  public:
-  FakeLoadingPredictorKeyValueTable() : LoadingPredictorKeyValueTable<T>("") {}
+  FakeLoadingPredictorKeyValueTable() : sqlite_proto::KeyValueTable<T>("") {}
   void GetAllData(std::map<std::string, T>* data_map,
                   sql::Database* db) const override {
     *data_map = data_;
@@ -69,7 +69,9 @@ class FakeLoadingPredictorKeyValueTable
 class MockResourcePrefetchPredictorTables
     : public ResourcePrefetchPredictorTables {
  public:
-  MockResourcePrefetchPredictorTables(
+  using DBTask = base::OnceCallback<void(sql::Database*)>;
+
+  explicit MockResourcePrefetchPredictorTables(
       scoped_refptr<base::SequencedTaskRunner> db_task_runner)
       : ResourcePrefetchPredictorTables(std::move(db_task_runner)) {}
 
@@ -81,11 +83,11 @@ class MockResourcePrefetchPredictorTables
     std::move(task).Run(nullptr);
   }
 
-  LoadingPredictorKeyValueTable<RedirectData>* host_redirect_table() override {
+  sqlite_proto::KeyValueTable<RedirectData>* host_redirect_table() override {
     return &host_redirect_table_;
   }
 
-  LoadingPredictorKeyValueTable<OriginData>* origin_table() override {
+  sqlite_proto::KeyValueTable<OriginData>* origin_table() override {
     return &origin_table_;
   }
 
@@ -150,8 +152,7 @@ class ResourcePrefetchPredictorTest : public testing::Test {
 };
 
 ResourcePrefetchPredictorTest::ResourcePrefetchPredictorTest()
-    : profile_(std::make_unique<TestingProfile>()),
-      db_task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
+    : db_task_runner_(base::MakeRefCounted<base::TestSimpleTaskRunner>()),
       mock_tables_(
           base::MakeRefCounted<StrictMock<MockResourcePrefetchPredictorTables>>(
               db_task_runner_)) {}
@@ -161,7 +162,11 @@ ResourcePrefetchPredictorTest::~ResourcePrefetchPredictorTest() = default;
 void ResourcePrefetchPredictorTest::SetUp() {
   InitializeSampleData();
 
-  CHECK(profile_->CreateHistoryService(true, false));
+  TestingProfile::Builder profile_builder;
+  profile_builder.AddTestingFactory(HistoryServiceFactory::GetInstance(),
+                                    HistoryServiceFactory::GetDefaultFactory());
+  profile_ = profile_builder.Build();
+
   profile_->BlockUntilHistoryProcessesPendingRequests();
   CHECK(HistoryServiceFactory::GetForProfile(
       profile_.get(), ServiceAccessType::EXPLICIT_ACCESS));
@@ -182,9 +187,9 @@ void ResourcePrefetchPredictorTest::SetUp() {
 }
 
 void ResourcePrefetchPredictorTest::TearDown() {
-  EXPECT_EQ(*predictor_->host_redirect_data_->data_cache_,
+  EXPECT_EQ(predictor_->host_redirect_data_->GetAllCached(),
             mock_tables_->host_redirect_table_.data_);
-  EXPECT_EQ(*predictor_->origin_data_->data_cache_,
+  EXPECT_EQ(predictor_->origin_data_->GetAllCached(),
             mock_tables_->origin_table_.data_);
   loading_predictor_->Shutdown();
 }
@@ -252,30 +257,37 @@ TEST_F(ResourcePrefetchPredictorTest, LazilyInitializeWithData) {
 // Single navigation that will be recorded. Will check for duplicate
 // resources and also for number of resources saved.
 TEST_F(ResourcePrefetchPredictorTest, NavigationUrlNotInDB) {
-  std::vector<content::mojom::ResourceLoadInfoPtr> resources;
+  std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
   resources.push_back(CreateResourceLoadInfo("http://www.google.com"));
-  resources.push_back(CreateResourceLoadInfo(
-      "http://google.com/style1.css", content::ResourceType::kStylesheet));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/script1.js",
-                                             content::ResourceType::kScript));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/script2.js",
-                                             content::ResourceType::kScript));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/script1.js",
-                                             content::ResourceType::kScript));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/image1.png",
-                                             content::ResourceType::kImage));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/image2.png",
-                                             content::ResourceType::kImage));
-  resources.push_back(CreateResourceLoadInfo(
-      "http://google.com/style2.css", content::ResourceType::kStylesheet));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/style1.css",
+                             network::mojom::RequestDestination::kStyle));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script1.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script2.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script1.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/image1.png",
+                             network::mojom::RequestDestination::kImage));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/image2.png",
+                             network::mojom::RequestDestination::kImage));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/style2.css",
+                             network::mojom::RequestDestination::kStyle));
   resources.push_back(
       CreateResourceLoadInfo("http://static.google.com/style2-no-store.css",
-                             content::ResourceType::kStylesheet,
+                             network::mojom::RequestDestination::kStyle,
                              /* always_access_network */ true));
   resources.push_back(CreateResourceLoadInfoWithRedirects(
       {"http://reader.google.com/style.css",
        "http://dev.null.google.com/style.css"},
-      content::ResourceType::kStylesheet));
+      network::mojom::RequestDestination::kStyle));
   resources.back()->network_info->always_access_network = true;
 
   auto page_summary = CreatePageRequestSummary(
@@ -310,31 +322,112 @@ TEST_F(ResourcePrefetchPredictorTest, NavigationUrlNotInDB) {
                 {{host_redirect_data.primary_key(), host_redirect_data}}));
 }
 
+// Single navigation that will be recorded. Will check for duplicate
+// resources and also for number of resources saved.
+TEST_F(ResourcePrefetchPredictorTest,
+       NavigationUrlNotInDB_LoadingPredictorDisregardAlwaysAccessesNetwork) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      features::kLoadingPredictorDisregardAlwaysAccessesNetwork);
+
+  std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
+  resources.push_back(CreateResourceLoadInfo("http://www.google.com"));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/style1.css",
+                             network::mojom::RequestDestination::kStyle));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script1.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script2.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script1.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/image1.png",
+                             network::mojom::RequestDestination::kImage));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/image2.png",
+                             network::mojom::RequestDestination::kImage));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/style2.css",
+                             network::mojom::RequestDestination::kStyle));
+  resources.push_back(
+      CreateResourceLoadInfo("http://static.google.com/style2-no-store.css",
+                             network::mojom::RequestDestination::kStyle,
+                             /* always_access_network */ true));
+  resources.push_back(CreateResourceLoadInfoWithRedirects(
+      {"http://reader.google.com/style.css",
+       "http://dev.null.google.com/style.css"},
+      network::mojom::RequestDestination::kStyle));
+  resources.back()->network_info->always_access_network = true;
+
+  auto page_summary = CreatePageRequestSummary(
+      "http://www.google.com", "http://www.google.com", resources);
+
+  StrictMock<MockResourcePrefetchPredictorObserver> mock_observer(predictor_);
+  EXPECT_CALL(mock_observer, OnNavigationLearned(page_summary));
+
+  predictor_->RecordPageRequestSummary(
+      std::make_unique<PageRequestSummary>(page_summary));
+  profile_->BlockUntilHistoryProcessesPendingRequests();
+
+  OriginData origin_data = CreateOriginData("www.google.com");
+  InitializeOriginStat(origin_data.add_origins(), "http://www.google.com/", 1,
+                       0, 0, 1., false, true);
+  InitializeOriginStat(origin_data.add_origins(), "http://google.com/", 1, 0, 0,
+                       2., false, true);
+  InitializeOriginStat(origin_data.add_origins(), "http://static.google.com/",
+                       1, 0, 0, 3., true, true);
+  InitializeOriginStat(origin_data.add_origins(), "http://reader.google.com/",
+                       1, 0, 0, 4., false, true);
+  InitializeOriginStat(origin_data.add_origins(), "http://dev.null.google.com/",
+                       1, 0, 0, 5., true, true);
+  EXPECT_EQ(mock_tables_->origin_table_.data_,
+            OriginDataMap({{origin_data.host(), origin_data}}));
+
+  RedirectData host_redirect_data = CreateRedirectData("www.google.com");
+  InitializeRedirectStat(host_redirect_data.add_redirect_endpoints(),
+                         GURL("http://www.google.com"), 1, 0, 0);
+  EXPECT_EQ(mock_tables_->host_redirect_table_.data_,
+            RedirectDataMap(
+                {{host_redirect_data.primary_key(), host_redirect_data}}));
+}
+
 // Tests that navigation is recorded correctly for URL already present in
 // the database cache.
 TEST_F(ResourcePrefetchPredictorTest, NavigationUrlInDB) {
   ResetPredictor();
   InitializePredictor();
 
-  std::vector<content::mojom::ResourceLoadInfoPtr> resources;
+  std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
   resources.push_back(CreateResourceLoadInfo("http://www.google.com"));
-  resources.push_back(CreateResourceLoadInfo(
-      "http://google.com/style1.css", content::ResourceType::kStylesheet));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/script1.js",
-                                             content::ResourceType::kScript));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/script2.js",
-                                             content::ResourceType::kScript));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/script1.js",
-                                             content::ResourceType::kScript));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/image1.png",
-                                             content::ResourceType::kImage));
-  resources.push_back(CreateResourceLoadInfo("http://google.com/image2.png",
-                                             content::ResourceType::kImage));
-  resources.push_back(CreateResourceLoadInfo(
-      "http://google.com/style2.css", content::ResourceType::kStylesheet));
-  resources.push_back(CreateResourceLoadInfo(
-      "http://static.google.com/style2-no-store.css",
-      content::ResourceType::kStylesheet, /* always_access_network */ true));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/style1.css",
+                             network::mojom::RequestDestination::kStyle));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script1.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script2.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/script1.js",
+                             network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/image1.png",
+                             network::mojom::RequestDestination::kImage));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/image2.png",
+                             network::mojom::RequestDestination::kImage));
+  resources.push_back(
+      CreateResourceLoadInfo("http://google.com/style2.css",
+                             network::mojom::RequestDestination::kStyle));
+  resources.push_back(
+      CreateResourceLoadInfo("http://static.google.com/style2-no-store.css",
+                             network::mojom::RequestDestination::kStyle,
+                             /* always_access_network */ true));
 
   auto page_summary = CreatePageRequestSummary(
       "http://www.google.com", "http://www.google.com", resources);
@@ -371,12 +464,14 @@ TEST_F(ResourcePrefetchPredictorTest, NavigationUrlNotInDBAndDBFull) {
   ResetPredictor();
   InitializePredictor();
 
-  std::vector<content::mojom::ResourceLoadInfoPtr> resources;
+  std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
   resources.push_back(CreateResourceLoadInfo("http://www.nike.com"));
-  resources.push_back(CreateResourceLoadInfo(
-      "http://nike.com/style1.css", content::ResourceType::kStylesheet));
-  resources.push_back(CreateResourceLoadInfo("http://nike.com/image2.png",
-                                             content::ResourceType::kImage));
+  resources.push_back(
+      CreateResourceLoadInfo("http://nike.com/style1.css",
+                             network::mojom::RequestDestination::kStyle));
+  resources.push_back(
+      CreateResourceLoadInfo("http://nike.com/image2.png",
+                             network::mojom::RequestDestination::kImage));
 
   auto page_summary = CreatePageRequestSummary(
       "http://www.nike.com", "http://www.nike.com", resources);
@@ -408,7 +503,7 @@ TEST_F(ResourcePrefetchPredictorTest, NavigationUrlNotInDBAndDBFull) {
 
 TEST_F(ResourcePrefetchPredictorTest,
        NavigationManyResourcesWithDifferentOrigins) {
-  std::vector<content::mojom::ResourceLoadInfoPtr> resources;
+  std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
   resources.push_back(CreateResourceLoadInfo("http://www.google.com"));
 
   auto gen = [](int i) {
@@ -416,8 +511,8 @@ TEST_F(ResourcePrefetchPredictorTest,
   };
   const int num_resources = predictor_->config_.max_origins_per_entry + 10;
   for (int i = 1; i <= num_resources; ++i) {
-    resources.push_back(
-        CreateResourceLoadInfo(gen(i), content::ResourceType::kScript));
+    resources.push_back(CreateResourceLoadInfo(
+        gen(i), network::mojom::RequestDestination::kScript));
   }
 
   auto page_summary = CreatePageRequestSummary(
@@ -437,15 +532,15 @@ TEST_F(ResourcePrefetchPredictorTest,
        i <= static_cast<int>(predictor_->config_.max_origins_per_entry) - 1;
        ++i) {
     InitializeOriginStat(origin_data.add_origins(),
-                         GURL(gen(i)).GetOrigin().spec(), 1, 0, 0, i + 1, false,
-                         true);
+                         GURL(gen(i)).DeprecatedGetOriginAsURL().spec(), 1, 0,
+                         0, i + 1, false, true);
   }
   EXPECT_EQ(mock_tables_->origin_table_.data_,
             OriginDataMap({{origin_data.host(), origin_data}}));
 }
 
 TEST_F(ResourcePrefetchPredictorTest, RedirectUrlNotInDB) {
-  std::vector<content::mojom::ResourceLoadInfoPtr> resources;
+  std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
   resources.push_back(CreateResourceLoadInfoWithRedirects(
       {"http://fb.com/google", "https://facebook.com/google"}));
   auto page_summary = CreatePageRequestSummary(
@@ -474,7 +569,7 @@ TEST_F(ResourcePrefetchPredictorTest, RedirectUrlInDB) {
   ResetPredictor();
   InitializePredictor();
 
-  std::vector<content::mojom::ResourceLoadInfoPtr> resources;
+  std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
   resources.push_back(CreateResourceLoadInfoWithRedirects(
       {"http://fb.com/google", "https://facebook.com/google"}));
   auto page_summary = CreatePageRequestSummary(
@@ -508,7 +603,7 @@ TEST_F(ResourcePrefetchPredictorTest, RedirectUrlInDB_MultipleSchemes) {
   InitializePredictor();
 
   {
-    std::vector<content::mojom::ResourceLoadInfoPtr> resources_https;
+    std::vector<blink::mojom::ResourceLoadInfoPtr> resources_https;
     resources_https.push_back(CreateResourceLoadInfoWithRedirects(
         {"https://fb.com/google", "https://facebook.com/google"}));
     auto page_summary_https =
@@ -546,7 +641,7 @@ TEST_F(ResourcePrefetchPredictorTest, RedirectUrlInDB_MultipleSchemes) {
                        .url_port());
   }
   {
-    std::vector<content::mojom::ResourceLoadInfoPtr> resources_http;
+    std::vector<blink::mojom::ResourceLoadInfoPtr> resources_http;
     resources_http.push_back(CreateResourceLoadInfoWithRedirects(
         {"http://fb.com/google", "http://facebook.com/google"}));
     auto page_summary_http = CreatePageRequestSummary(

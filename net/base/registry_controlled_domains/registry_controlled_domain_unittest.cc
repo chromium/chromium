@@ -13,22 +13,22 @@
 namespace {
 
 namespace test1 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest1-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest1-reversed-inc.cc"
 }
 namespace test2 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest2-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest2-reversed-inc.cc"
 }
 namespace test3 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest3-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest3-reversed-inc.cc"
 }
 namespace test4 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest4-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest4-reversed-inc.cc"
 }
 namespace test5 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest5-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest5-reversed-inc.cc"
 }
 namespace test6 {
-#include "net/base/registry_controlled_domains/effective_tld_names_unittest6-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names_unittest6-reversed-inc.cc"
 }
 
 }  // namespace
@@ -37,10 +37,6 @@ namespace net {
 namespace registry_controlled_domains {
 
 namespace {
-
-std::string GetDomainFromURL(const std::string& url) {
-  return GetDomainAndRegistry(GURL(url), EXCLUDE_PRIVATE_REGISTRIES);
-}
 
 std::string GetDomainFromHost(const std::string& host) {
   return GetDomainAndRegistry(host, EXCLUDE_PRIVATE_REGISTRIES);
@@ -113,34 +109,47 @@ class RegistryControlledDomainTest : public testing::Test {
 TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistry) {
   UseDomainData(test1::kDafsa);
 
-  // Test GURL version of GetDomainAndRegistry().
-  EXPECT_EQ("baz.jp", GetDomainFromURL("http://a.baz.jp/file.html"));    // 1
-  EXPECT_EQ("baz.jp.", GetDomainFromURL("http://a.baz.jp./file.html"));  // 1
-  EXPECT_EQ("", GetDomainFromURL("http://ac.jp"));                       // 2
-  EXPECT_EQ("", GetDomainFromURL("http://a.bar.jp"));                    // 3
-  EXPECT_EQ("", GetDomainFromURL("http://bar.jp"));                      // 3
-  EXPECT_EQ("", GetDomainFromURL("http://baz.bar.jp"));                  // 3 4
-  EXPECT_EQ("a.b.baz.bar.jp", GetDomainFromURL("http://a.b.baz.bar.jp"));
-                                                                         // 4
-  EXPECT_EQ("pref.bar.jp", GetDomainFromURL("http://baz.pref.bar.jp"));  // 5
-  EXPECT_EQ("b.bar.baz.com.", GetDomainFromURL("http://a.b.bar.baz.com."));
-                                                                         // 6
-  EXPECT_EQ("a.d.c", GetDomainFromURL("http://a.d.c"));                  // 7
-  EXPECT_EQ("a.d.c", GetDomainFromURL("http://.a.d.c"));                 // 7
-  EXPECT_EQ("a.d.c", GetDomainFromURL("http://..a.d.c"));                // 7
-  EXPECT_EQ("b.c", GetDomainFromURL("http://a.b.c"));                    // 7 8
-  EXPECT_EQ("baz.com", GetDomainFromURL("http://baz.com"));              // none
-  EXPECT_EQ("baz.com.", GetDomainFromURL("http://baz.com."));            // none
+  struct {
+    std::string url;
+    std::string expected_domain_and_registry;
+  } kTestCases[] = {
+      {"http://a.baz.jp/file.html", "baz.jp"},
+      {"http://a.baz.jp./file.html", "baz.jp."},
+      {"http://ac.jp", ""},
+      {"http://a.bar.jp", ""},
+      {"http://bar.jp", ""},
+      {"http://baz.bar.jp", ""},
+      {"http://a.b.baz.bar.jp", "a.b.baz.bar.jp"},
 
-  EXPECT_EQ("", GetDomainFromURL(std::string()));
-  EXPECT_EQ("", GetDomainFromURL("http://"));
-  EXPECT_EQ("", GetDomainFromURL("file:///C:/file.html"));
-  EXPECT_EQ("", GetDomainFromURL("http://foo.com.."));
-  EXPECT_EQ("", GetDomainFromURL("http://..."));
-  EXPECT_EQ("", GetDomainFromURL("http://192.168.0.1"));
-  EXPECT_EQ("", GetDomainFromURL("http://localhost"));
-  EXPECT_EQ("", GetDomainFromURL("http://localhost."));
-  EXPECT_EQ("", GetDomainFromURL("http:////Comment"));
+      {"http://baz.pref.bar.jp", "pref.bar.jp"},
+      {"http://a.b.bar.baz.com.", "b.bar.baz.com."},
+
+      {"http://a.d.c", "a.d.c"},
+      {"http://.a.d.c", "a.d.c"},
+      {"http://..a.d.c", "a.d.c"},
+      {"http://a.b.c", "b.c"},
+      {"http://baz.com", "baz.com"},
+      {"http://baz.com.", "baz.com."},
+
+      {"", ""},
+      {"http://", ""},
+      {"file:///C:/file.html", ""},
+      {"http://foo.com..", ""},
+      {"http://...", ""},
+      {"http://192.168.0.1", ""},
+      {"http://[2001:0db8:85a3:0000:0000:8a2e:0370:7334]/", ""},
+      {"http://localhost", ""},
+      {"http://localhost.", ""},
+      {"http:////Comment", ""},
+  };
+  for (const auto& test_case : kTestCases) {
+    const GURL url(test_case.url);
+    EXPECT_EQ(test_case.expected_domain_and_registry,
+              GetDomainAndRegistry(url, EXCLUDE_PRIVATE_REGISTRIES));
+    EXPECT_EQ(test_case.expected_domain_and_registry,
+              GetDomainAndRegistry(url::Origin::Create(url),
+                                   EXCLUDE_PRIVATE_REGISTRIES));
+  }
 
   // Test std::string version of GetDomainAndRegistry().  Uses the same
   // underpinnings as the GURL version, so this is really more of a check of
@@ -165,6 +174,7 @@ TEST_F(RegistryControlledDomainTest, TestGetDomainAndRegistry) {
   EXPECT_EQ("", GetDomainFromHost("foo.com.."));
   EXPECT_EQ("", GetDomainFromHost("..."));
   EXPECT_EQ("", GetDomainFromHost("192.168.0.1"));
+  EXPECT_EQ("", GetDomainFromHost("[2001:0db8:85a3:0000:0000:8a2e:0370:7334]"));
   EXPECT_EQ("", GetDomainFromHost("localhost."));
   EXPECT_EQ("", GetDomainFromHost(".localhost."));
 }
@@ -617,8 +627,7 @@ TEST_F(RegistryControlledDomainTest, Permissive) {
   EXPECT_EQ(7U,
             PermissiveGetHostRegistryLength("foo.\xE4\xB8\xAD\xE5\x9B\xBD."));
   // UTF-16 IDN.
-  EXPECT_EQ(2U, PermissiveGetHostRegistryLength(
-                    base::WideToUTF16(L"foo.\x4e2d\x56fd")));
+  EXPECT_EQ(2U, PermissiveGetHostRegistryLength(u"foo.\x4e2d\x56fd"));
 
   // Fullwidth dot (u+FF0E) that will get canonicalized to a dot.
   EXPECT_EQ(2U, PermissiveGetHostRegistryLength("Www.Google\xEF\xBC\x8Ejp"));
@@ -631,7 +640,7 @@ TEST_F(RegistryControlledDomainTest, Permissive) {
                      "Www.Google%EF%BC%8E%EF%BC%AA%EF%BD%90%EF%BC%8E"));
   // UTF-16 (ending in a dot).
   EXPECT_EQ(3U, PermissiveGetHostRegistryLength(
-                    base::WideToUTF16(L"Www.Google\xFF0E\xFF2A\xFF50\xFF0E")));
+                    u"Www.Google\xFF0E\xFF2A\xFF50\xFF0E"));
 #endif
 }
 

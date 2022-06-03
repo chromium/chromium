@@ -17,15 +17,14 @@ BackgroundFetchRecord::BackgroundFetchRecord(Request* request,
   DCHECK(script_state_);
 
   response_ready_property_ = MakeGarbageCollected<ResponseReadyProperty>(
-      ExecutionContext::From(script_state), this,
-      ResponseReadyProperty::kResponseReady);
+      ExecutionContext::From(script_state));
 }
 
 BackgroundFetchRecord::~BackgroundFetchRecord() = default;
 
 void BackgroundFetchRecord::ResolveResponseReadyProperty(Response* response) {
   if (response_ready_property_->GetState() !=
-      ScriptPromisePropertyBase::State::kPending) {
+      ResponseReadyProperty::State::kPending) {
     return;
   }
 
@@ -104,7 +103,7 @@ const KURL& BackgroundFetchRecord::ObservedUrl() const {
   return request_->url();
 }
 
-void BackgroundFetchRecord::Trace(blink::Visitor* visitor) {
+void BackgroundFetchRecord::Trace(Visitor* visitor) const {
   visitor->Trace(request_);
   visitor->Trace(response_ready_property_);
   visitor->Trace(script_state_);

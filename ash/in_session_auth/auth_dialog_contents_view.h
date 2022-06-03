@@ -1,0 +1,180 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_IN_SESSION_AUTH_AUTH_DIALOG_CONTENTS_VIEW_H_
+#define ASH_IN_SESSION_AUTH_AUTH_DIALOG_CONTENTS_VIEW_H_
+
+#include <string>
+
+#include "ash/login/ui/login_palette.h"
+#include "ash/public/cpp/login_types.h"
+#include "ui/views/view.h"
+
+namespace views {
+class BoxLayout;
+class Label;
+class LabelButton;
+class MdTextButton;
+}  // namespace views
+
+namespace ash {
+
+class AnimatedRoundedImageView;
+class LoginPasswordView;
+class LoginPinView;
+class LoginPinInputView;
+
+// Contains the debug views that allows the developer to interact with the
+// AuthDialogController.
+class AuthDialogContentsView : public views::View {
+ public:
+  // Flags which describe the set of currently visible auth methods.
+  enum AuthMethods {
+    kAuthNone = 0,              // No auth methods.
+    kAuthPassword = 1 << 0,     // Display password.
+    kAuthPin = 1 << 1,          // Display PIN keyboard.
+    kAuthFingerprint = 1 << 2,  // Use fingerprint to unlock.
+  };
+
+  // Extra control parameters to be passed when setting the auth methods.
+  struct AuthMethodsMetadata {
+    // User's pin length to use for autosubmit.
+    size_t autosubmit_pin_length = 0;
+  };
+
+  AuthDialogContentsView(uint32_t auth_methods,
+                         const std::string& origin_name,
+                         const AuthMethodsMetadata& auth_metadata,
+                         const UserAvatar& avatar);
+  AuthDialogContentsView(const AuthDialogContentsView&) = delete;
+  AuthDialogContentsView& operator=(const AuthDialogContentsView&) = delete;
+  ~AuthDialogContentsView() override;
+
+  // views::Views:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
+  void RequestFocus() override;
+
+  uint32_t auth_methods() const { return auth_methods_; }
+
+ private:
+  class TitleLabel;
+  class FingerprintView;
+
+  // views::View:
+  void AddedToWidget() override;
+
+  // Add a view for user avatar.
+  void AddAvatarView(const UserAvatar& avatar);
+
+  // Add a view for dialog title.
+  void AddTitleView();
+
+  // Add a view that shows which website/app we are authenticating for.
+  void AddOriginNameView();
+
+  // Add a view for entering PIN (if autosubmit is off).
+  void AddPinTextInputView();
+
+  // Add a PIN pad view.
+  void AddPinPadView();
+
+  // Add a PIN input view that automatically submits PIN.
+  void AddPinDigitInputView();
+
+  // Initializes password input field functionality.
+  void InitPasswordView();
+
+  // Add a vertical spacing view.
+  void AddVerticalSpacing(int height);
+
+  // Add a view for action buttons.
+  void AddActionButtonsView();
+
+  // Called when the user taps a digit on the PIN pad.
+  void OnInsertDigitFromPinPad(int digit);
+
+  // Called when the user taps backspace on the PIN pad.
+  void OnBackspaceFromPinPad();
+
+  // Called when either:
+  // 1. the user inserts or deletes a character in
+  // |pin_text_input_view_| or |pin_digit_input_view_| without using the PIN
+  // pad, or
+  // 2. contents of |pin_text_input_view_| or |pin_digit_input_view_| are
+  // cleared by a Reset() call.
+  void OnPinTextChanged(bool is_empty);
+
+  // Called when the user submits password or PIN.
+  void OnAuthSubmit(const std::u16string& password);
+
+  // Called when PIN authentication of the user completes.
+  void OnPinAuthComplete(absl::optional<bool> success);
+
+  // Called when fingerprint authentication completes.
+  void OnFingerprintAuthComplete(bool success,
+                                 FingerprintState fingerprint_state);
+
+  // Called when the cancel button is pressed.
+  void OnCancelButtonPressed(const ui::Event& event);
+
+  // Called when the "Need help?" button is pressed.
+  void OnNeedHelpButtonPressed(const ui::Event& event);
+
+  // Debug container which holds the entire debug UI.
+  views::View* container_ = nullptr;
+
+  // Layout for |container_|.
+  views::BoxLayout* main_layout_ = nullptr;
+
+  // User avatar to indicate this is an OS dialog.
+  AnimatedRoundedImageView* avatar_view_ = nullptr;
+
+  // Title of the auth dialog, also used to show PIN auth error message..
+  TitleLabel* title_ = nullptr;
+
+  // Prompt message to the user.
+  views::Label* origin_name_view_ = nullptr;
+
+  // Whether PIN can be auto submitted.
+  bool pin_autosubmit_on_ = false;
+
+  // Number of PIN attempts so far.
+  int pin_attempts_ = 0;
+
+  // Text input field for PIN if PIN cannot be auto submitted.
+  LoginPasswordView* pin_text_input_view_ = nullptr;
+
+  // PIN input view that's shown if PIN can be auto submitted.
+  LoginPinInputView* pin_digit_input_view_ = nullptr;
+
+  // PIN pad view.
+  LoginPinView* pin_pad_view_ = nullptr;
+
+  FingerprintView* fingerprint_view_ = nullptr;
+
+  // A button to cancel authentication and close the dialog.
+  views::MdTextButton* cancel_button_ = nullptr;
+
+  // A button to show a help center article.
+  views::LabelButton* help_button_ = nullptr;
+
+  // Flags of auth methods that should be visible.
+  uint32_t auth_methods_ = 0u;
+
+  const std::string origin_name_;
+
+  // Extra parameters to control the UI.
+  AuthMethodsMetadata auth_metadata_;
+
+  LoginPalette palette_ = CreateInSessionAuthPalette();
+
+  // Container which holds action buttons.
+  views::View* action_view_container_ = nullptr;
+
+  base::WeakPtrFactory<AuthDialogContentsView> weak_factory_{this};
+};
+
+}  // namespace ash
+
+#endif  // ASH_IN_SESSION_AUTH_AUTH_DIALOG_CONTENTS_VIEW_H_

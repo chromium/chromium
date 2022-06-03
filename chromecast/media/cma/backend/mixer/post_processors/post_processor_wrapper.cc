@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/backend/mixer/post_processors/post_processor_wrapper.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chromecast/public/media/audio_post_processor_shlib.h"
 
 namespace chromecast {
@@ -43,11 +43,10 @@ const AudioPostProcessor2::Status& AudioPostProcessorWrapper::GetStatus() {
 
 void AudioPostProcessorWrapper::ProcessFrames(float* data,
                                               int frames,
-                                              float system_volume,
-                                              float volume_dbfs) {
+                                              Metadata* metadata) {
   status_.output_buffer = data;
-  status_.rendering_delay_frames =
-      pp_->ProcessFrames(data, frames, system_volume, volume_dbfs);
+  status_.rendering_delay_frames = pp_->ProcessFrames(
+      data, frames, metadata->system_volume, metadata->volume_dbfs);
 }
 
 bool AudioPostProcessorWrapper::UpdateParameters(const std::string& message) {

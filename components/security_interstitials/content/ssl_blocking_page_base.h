@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_BASE_H_
 #define COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_BASE_H_
 
-#include "base/callback_forward.h"
 #include "components/security_interstitials/content/cert_report_helper.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
@@ -33,20 +32,18 @@ class SSLBlockingPageBase
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
       bool overridable,
       const base::Time& time_triggered,
+      bool can_show_enhanced_protection_message,
       std::unique_ptr<
           security_interstitials::SecurityInterstitialControllerClient>
           controller_client);
+
+  SSLBlockingPageBase(const SSLBlockingPageBase&) = delete;
+  SSLBlockingPageBase& operator=(const SSLBlockingPageBase&) = delete;
+
   ~SSLBlockingPageBase() override;
 
   // security_interstitials::SecurityInterstitialPage:
   void OnInterstitialClosing() override;
-  void OverrideRendererPrefs(blink::mojom::RendererPreferences* prefs) override;
-
-  void set_renderer_pref_callback(
-      base::Callback<void(content::WebContents*,
-                          blink::mojom::RendererPreferences*)> callback) {
-    renderer_pref_callback_ = callback;
-  }
 
   CertReportHelper* cert_report_helper() { return cert_report_helper_.get(); }
 
@@ -54,11 +51,7 @@ class SSLBlockingPageBase
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter);
 
  private:
-  base::Callback<void(content::WebContents*,
-                      blink::mojom::RendererPreferences*)>
-      renderer_pref_callback_;
   const std::unique_ptr<CertReportHelper> cert_report_helper_;
-  DISALLOW_COPY_AND_ASSIGN(SSLBlockingPageBase);
 };
 
 #endif  // COMPONENTS_SECURITY_INTERSTITIALS_CONTENT_SSL_BLOCKING_PAGE_BASE_H_

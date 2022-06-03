@@ -6,15 +6,11 @@ import("//third_party/blink/renderer/modules/modules.gni")
 
 blink_modules_sources("permissions") {
   sources = [
-    "navigator_permissions.cc",
-    "navigator_permissions.h",
     "permission_status.cc",
     "permission_status.h",
     "permission_utils.cc",
     "permission_utils.h",
     "permissions.cc",
     "permissions.h",
-    "worker_navigator_permissions.cc",
-    "worker_navigator_permissions.h",
   ]
 }

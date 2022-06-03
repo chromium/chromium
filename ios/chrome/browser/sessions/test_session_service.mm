@@ -14,23 +14,23 @@
 
 @implementation TestSessionService
 
-@synthesize performIO = _performIO;
-
 - (instancetype)init {
   return [super initWithTaskRunner:base::ThreadTaskRunnerHandle::Get()];
 }
 
 - (void)saveSession:(__weak SessionIOSFactory*)factory
-          directory:(NSString*)directory
+          sessionID:(NSString*)sessionID
+          directory:(const base::FilePath&)directory
         immediately:(BOOL)immediately {
-  NSString* sessionPath = [[self class] sessionPathForDirectory:directory];
+  NSString* sessionPath = [[self class] sessionPathForSessionID:sessionID
+                                                      directory:directory];
   NSData* data =
       [NSKeyedArchiver archivedDataWithRootObject:[factory sessionForSaving]
                             requiringSecureCoding:NO
                                             error:nil];
-  if (self.performIO) {
+  if (self.performIO)
     [self performSaveSessionData:data sessionPath:sessionPath];
-  }
+  _saveSessionCallsCount++;
 }
 
 @end

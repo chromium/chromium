@@ -9,7 +9,7 @@
     SecureContext,
     Exposed=Window
 ] interface MerchantValidationEvent : Event {
-  [CallWith=ScriptState, RaisesException] constructor(DOMString type, optional MerchantValidationEventInit eventInitDict);
+  [CallWith=ScriptState, RaisesException] constructor(DOMString type, optional MerchantValidationEventInit eventInitDict = {});
   readonly attribute DOMString methodName;
   readonly attribute USVString validationURL;
   [CallWith=ScriptState,RaisesException] void complete(Promise<any> merchantSessionPromise);

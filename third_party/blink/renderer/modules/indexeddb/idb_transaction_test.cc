@@ -41,8 +41,9 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event_queue.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/testing/scoped_mock_overlay_scrollbars.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/idb_database_callbacks.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_key_path.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_metadata.h"
@@ -50,8 +51,11 @@
 #include "third_party/blink/renderer/modules/indexeddb/idb_test_helper.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/idb_value_wrapping.h"
-#include "third_party/blink/renderer/modules/indexeddb/mock_web_idb_database.h"
-#include "third_party/blink/renderer/modules/indexeddb/mock_web_idb_transaction.h"
+#include "third_party/blink/renderer/modules/indexeddb/mock_idb_database.h"
+#include "third_party/blink/renderer/modules/indexeddb/mock_idb_transaction.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_database.h"
+#include "third_party/blink/renderer/modules/indexeddb/web_idb_transaction.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -64,19 +68,11 @@ void DeactivateNewTransactions(v8::Isolate* isolate) {
   V8PerIsolateData::From(isolate)->RunEndOfScopeTasks();
 }
 
-class FakeIDBDatabaseCallbacks final : public IDBDatabaseCallbacks {
- public:
-  FakeIDBDatabaseCallbacks() = default;
-  void OnVersionChange(int64_t old_version, int64_t new_version) override {}
-  void OnForcedClose() override {}
-  void OnAbort(int64_t transaction_id, DOMException* error) override {}
-  void OnComplete(int64_t transaction_id) override {}
-};
-
-class IDBTransactionTest : public testing::Test {
+class IDBTransactionTest : public testing::Test,
+                           public ScopedMockOverlayScrollbars {
  protected:
   void SetUp() override {
-    url_loader_mock_factory_ = platform_->GetURLLoaderMockFactory();
+    url_loader_mock_factory_ = WebURLLoaderMockFactory::GetSingletonInstance();
     WebURLResponse response;
     response.SetCurrentRequestUrl(KURL("blob:"));
     url_loader_mock_factory_->RegisterURLProtocol(WebString("blob"), response,
@@ -87,13 +83,21 @@ class IDBTransactionTest : public testing::Test {
     url_loader_mock_factory_->UnregisterAllURLsAndClearMemoryCache();
   }
 
-  void BuildTransaction(
-      V8TestingScope& scope,
-      std::unique_ptr<MockWebIDBDatabase> database_backend,
-      std::unique_ptr<MockWebIDBTransaction> transaction_backend) {
+  void BuildTransaction(V8TestingScope& scope,
+                        MockIDBDatabase& mock_database,
+                        MockIDBTransaction& mock_transaction) {
+    auto database_backend = std::make_unique<WebIDBDatabase>(
+        mock_database.BindNewEndpointAndPassDedicatedRemote(),
+        /*task_runner=*/nullptr);
     db_ = MakeGarbageCollected<IDBDatabase>(
         scope.GetExecutionContext(), std::move(database_backend),
-        MakeGarbageCollected<FakeIDBDatabaseCallbacks>(), scope.GetIsolate());
+        mojo::NullAssociatedReceiver(), mojo::NullRemote());
+
+    auto transaction_backend = std::make_unique<WebIDBTransaction>(
+        /*task_runner=*/nullptr, kTransactionId);
+    auto transaction_receiver = transaction_backend->CreateReceiver();
+    transaction_receiver.EnableUnassociatedUsage();
+    mock_transaction.Bind(std::move(transaction_receiver));
 
     HashSet<String> transaction_scope = {"store"};
     transaction_ = IDBTransaction::CreateNonVersionChange(
@@ -117,20 +121,17 @@ class IDBTransactionTest : public testing::Test {
   static constexpr int64_t kStoreId = 5678;
 };
 
+const int64_t IDBTransactionTest::kTransactionId;
+
 TEST_F(IDBTransactionTest, ContextDestroyedEarlyDeath) {
   V8TestingScope scope;
-  const int64_t kTransactionId = 1234;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
-  auto transaction_backend = std::make_unique<MockWebIDBTransaction>(
-      scope.GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess),
-      kTransactionId);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend),
-                   std::move(transaction_backend));
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
       MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
-  ;
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -151,8 +152,10 @@ TEST_F(IDBTransactionTest, ContextDestroyedEarlyDeath) {
   scope.GetExecutionContext()->NotifyContextDestroyed();
   transaction_->OnAbort(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kAbortError, "Aborted"));
+  transaction_->transaction_backend()->FlushForTesting();
   transaction_.Clear();
   store_.Clear();
+  database_backend.Flush();
 
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(0U, live_transactions->size());
@@ -160,18 +163,13 @@ TEST_F(IDBTransactionTest, ContextDestroyedEarlyDeath) {
 
 TEST_F(IDBTransactionTest, ContextDestroyedAfterDone) {
   V8TestingScope scope;
-  const int64_t kTransactionId = 1234;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
-  auto transaction_backend = std::make_unique<MockWebIDBTransaction>(
-      scope.GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess),
-      kTransactionId);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend),
-                   std::move(transaction_backend));
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
       MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
-  ;
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -194,8 +192,10 @@ TEST_F(IDBTransactionTest, ContextDestroyedAfterDone) {
   scope.GetExecutionContext()->NotifyContextDestroyed();
   transaction_->OnAbort(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kAbortError, "Aborted"));
+  transaction_->transaction_backend()->FlushForTesting();
   transaction_.Clear();
   store_.Clear();
+  database_backend.Flush();
 
   // The request completed, so it has enqueued a success event. Discard the
   // event, so that the transaction can go away.
@@ -207,18 +207,13 @@ TEST_F(IDBTransactionTest, ContextDestroyedAfterDone) {
 
 TEST_F(IDBTransactionTest, ContextDestroyedWithQueuedResult) {
   V8TestingScope scope;
-  const int64_t kTransactionId = 1234;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
-  auto transaction_backend = std::make_unique<MockWebIDBTransaction>(
-      scope.GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess),
-      kTransactionId);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend),
-                   std::move(transaction_backend));
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
       MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
-  ;
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -240,8 +235,10 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithQueuedResult) {
   scope.GetExecutionContext()->NotifyContextDestroyed();
   transaction_->OnAbort(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kAbortError, "Aborted"));
+  transaction_->transaction_backend()->FlushForTesting();
   transaction_.Clear();
   store_.Clear();
+  database_backend.Flush();
 
   url_loader_mock_factory_->ServeAsynchronousRequests();
 
@@ -251,18 +248,13 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithQueuedResult) {
 
 TEST_F(IDBTransactionTest, ContextDestroyedWithTwoQueuedResults) {
   V8TestingScope scope;
-  const int64_t kTransactionId = 1234;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
-  auto transaction_backend = std::make_unique<MockWebIDBTransaction>(
-      scope.GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess),
-      kTransactionId);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend),
-                   std::move(transaction_backend));
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
       MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
-  ;
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -289,8 +281,10 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithTwoQueuedResults) {
   scope.GetExecutionContext()->NotifyContextDestroyed();
   transaction_->OnAbort(MakeGarbageCollected<DOMException>(
       DOMExceptionCode::kAbortError, "Aborted"));
+  transaction_->transaction_backend()->FlushForTesting();
   transaction_.Clear();
   store_.Clear();
+  database_backend.Flush();
 
   url_loader_mock_factory_->ServeAsynchronousRequests();
 
@@ -301,69 +295,68 @@ TEST_F(IDBTransactionTest, ContextDestroyedWithTwoQueuedResults) {
 TEST_F(IDBTransactionTest, DocumentShutdownWithQueuedAndBlockedResults) {
   // This test covers the conditions of https://crbug.com/733642
 
-  V8TestingScope scope;
-  const int64_t kTransactionId = 1234;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
-  auto transaction_backend = std::make_unique<MockWebIDBTransaction>(
-      scope.GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess),
-      kTransactionId);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend),
-                   std::move(transaction_backend));
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  EXPECT_CALL(database_backend, Close()).Times(1);
+  {
+    // The database isn't actually closed until `scope` is destroyed, so create
+    // this object in a nested scope to allow mock expectations to be verified.
+    V8TestingScope scope;
 
-  Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
-      MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
-  ;
-  live_transactions->insert(transaction_);
+    BuildTransaction(scope, database_backend, transaction_backend);
 
-  ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_EQ(1U, live_transactions->size());
+    Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
+        MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
+    live_transactions->insert(transaction_);
 
-  Persistent<IDBRequest> request1 =
-      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
-                         transaction_.Get(), IDBRequest::AsyncTraceState());
-  Persistent<IDBRequest> request2 =
-      IDBRequest::Create(scope.GetScriptState(), store_.Get(),
-                         transaction_.Get(), IDBRequest::AsyncTraceState());
-  DeactivateNewTransactions(scope.GetIsolate());
+    ThreadState::Current()->CollectAllGarbageForTesting();
+    EXPECT_EQ(1U, live_transactions->size());
 
-  request1->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), true));
-  request2->HandleResponse(CreateIDBValueForTesting(scope.GetIsolate(), false));
+    Persistent<IDBRequest> request1 =
+        IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                           transaction_.Get(), IDBRequest::AsyncTraceState());
+    Persistent<IDBRequest> request2 =
+        IDBRequest::Create(scope.GetScriptState(), store_.Get(),
+                           transaction_.Get(), IDBRequest::AsyncTraceState());
+    DeactivateNewTransactions(scope.GetIsolate());
 
-  request1.Clear();  // The transaction is holding onto the requests.
-  request2.Clear();
-  ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_EQ(1U, live_transactions->size());
+    request1->HandleResponse(
+        CreateIDBValueForTesting(scope.GetIsolate(), true));
+    request2->HandleResponse(
+        CreateIDBValueForTesting(scope.GetIsolate(), false));
 
-  // This will generate an Abort() call to the back end which is dropped by the
-  // fake proxy, so an explicit OnAbort call is made.
-  scope.GetDocument().Shutdown();
-  transaction_->OnAbort(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kAbortError, "Aborted"));
-  transaction_.Clear();
-  store_.Clear();
+    request1.Clear();  // The transaction is holding onto the requests.
+    request2.Clear();
+    ThreadState::Current()->CollectAllGarbageForTesting();
+    EXPECT_EQ(1U, live_transactions->size());
 
-  url_loader_mock_factory_->ServeAsynchronousRequests();
+    // This will generate an Abort() call to the back end which is dropped by
+    // the fake proxy, so an explicit OnAbort call is made.
+    scope.GetDocument().Shutdown();
+    transaction_->OnAbort(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError, "Aborted"));
+    transaction_->transaction_backend()->FlushForTesting();
+    transaction_.Clear();
+    store_.Clear();
 
-  ThreadState::Current()->CollectAllGarbageForTesting();
-  EXPECT_EQ(0U, live_transactions->size());
+    url_loader_mock_factory_->ServeAsynchronousRequests();
+
+    ThreadState::Current()->CollectAllGarbageForTesting();
+    EXPECT_EQ(0U, live_transactions->size());
+  }
+  database_backend.Flush();
 }
 
 TEST_F(IDBTransactionTest, TransactionFinish) {
   V8TestingScope scope;
-  const int64_t kTransactionId = 1234;
-  auto database_backend = std::make_unique<MockWebIDBDatabase>();
-  auto transaction_backend = std::make_unique<MockWebIDBTransaction>(
-      scope.GetExecutionContext()->GetTaskRunner(TaskType::kDatabaseAccess),
-      kTransactionId);
-  EXPECT_CALL(*transaction_backend, Commit(0)).Times(1);
-  EXPECT_CALL(*database_backend, Close()).Times(1);
-  BuildTransaction(scope, std::move(database_backend),
-                   std::move(transaction_backend));
+  MockIDBDatabase database_backend;
+  MockIDBTransaction transaction_backend;
+  EXPECT_CALL(transaction_backend, Commit(0)).Times(1);
+  EXPECT_CALL(database_backend, Close()).Times(1);
+  BuildTransaction(scope, database_backend, transaction_backend);
 
   Persistent<HeapHashSet<WeakMember<IDBTransaction>>> live_transactions =
       MakeGarbageCollected<HeapHashSet<WeakMember<IDBTransaction>>>();
-  ;
   live_transactions->insert(transaction_);
 
   ThreadState::Current()->CollectAllGarbageForTesting();
@@ -374,6 +367,7 @@ TEST_F(IDBTransactionTest, TransactionFinish) {
   ThreadState::Current()->CollectAllGarbageForTesting();
   EXPECT_EQ(1U, live_transactions->size());
 
+  transaction_->transaction_backend()->FlushForTesting();
   transaction_.Clear();
   store_.Clear();
 
@@ -386,8 +380,10 @@ TEST_F(IDBTransactionTest, TransactionFinish) {
 
   // Fire an abort to make sure this doesn't free the transaction during use.
   // The test will not fail if it is, but ASAN would notice the error.
-  db_->OnAbort(kTransactionId, MakeGarbageCollected<DOMException>(
-                                   DOMExceptionCode::kAbortError, "Aborted"));
+  db_->Abort(kTransactionId, mojom::blink::IDBException::kAbortError,
+             "Aborted");
+
+  database_backend.Flush();
 
   // OnAbort() should have cleared the transaction's reference to the database.
   ThreadState::Current()->CollectAllGarbageForTesting();

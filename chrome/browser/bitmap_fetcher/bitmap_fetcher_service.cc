@@ -5,15 +5,23 @@
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher_service.h"
 
 #include <stddef.h>
+
+#include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chrome/browser/bitmap_fetcher/bitmap_fetcher.h"
+#include "chrome/browser/image_decoder/image_decoder.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
+#include "components/omnibox/common/omnibox_features.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
+#include "services/data_decoder/public/cpp/data_decoder.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace {
@@ -24,22 +32,62 @@ const size_t kMaxRequests = 25;  // Maximum number of inflight requests allowed.
 // for few images like weather answers, but with rich entity suggestions showing
 // several images at once, even changing some while the user types, a larger
 // cache is necessary to avoid flickering. Each cache entry is expected to take
-// 16kb (64x64 @ 32bpp).  With 12, the total memory consumed would be ~192kb.
-// 12 is double the default number of maximum suggestions so this can
+// 16kb (64x64 @ 32bpp).  With 16, the total memory consumed would be ~256kb.
+// 16 is double the default number of maximum suggestions so this can
 // accommodate one match image plus one answer image for each result.
 #if defined(OS_ANDROID)
 // Android caches the images in the java layer.
 const int kMaxCacheEntries = 0;
 #else
-const int kMaxCacheEntries = 12;
+const int kMaxCacheEntries = 16;
 #endif
+
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("omnibox_result_change", R"(
+        semantics {
+          sender: "Omnibox"
+          description:
+            "Chromium provides answers in the suggestion list for "
+            "certain queries that user types in the omnibox. This request "
+            "retrieves a small image (for example, an icon illustrating "
+            "the current weather conditions) when this can add information "
+            "to an answer."
+          trigger:
+            "Change of results for the query typed by the user in the "
+            "omnibox."
+          data:
+            "The only data sent is the path to an image. No user data is "
+            "included, although some might be inferrable (e.g. whether the "
+            "weather is sunny or rainy in the user's current location) "
+            "from the name of the image in the path."
+          destination: WEBSITE
+        }
+        policy {
+          cookies_allowed: YES
+          cookies_store: "user"
+          setting:
+            "You can enable or disable this feature via 'Use a prediction "
+            "service to help complete searches and URLs typed in the "
+            "address bar.' in Chromium's settings under Advanced. The "
+            "feature is enabled by default."
+          chrome_policy {
+            SearchSuggestEnabled {
+                policy_options {mode: MANDATORY}
+                SearchSuggestEnabled: false
+            }
+          }
+        })");
 
 }  // namespace.
 
 class BitmapFetcherRequest {
  public:
   BitmapFetcherRequest(BitmapFetcherService::RequestId request_id,
-                       BitmapFetcherService::Observer* observer);
+                       BitmapFetcherService::BitmapFetchedCallback callback);
+
+  BitmapFetcherRequest(const BitmapFetcherRequest&) = delete;
+  BitmapFetcherRequest& operator=(const BitmapFetcherRequest&) = delete;
+
   ~BitmapFetcherRequest();
 
   void NotifyImageChanged(const SkBitmap* bitmap);
@@ -51,24 +99,21 @@ class BitmapFetcherRequest {
 
  private:
   const BitmapFetcherService::RequestId request_id_;
-  std::unique_ptr<BitmapFetcherService::Observer> observer_;
+  BitmapFetcherService::BitmapFetchedCallback callback_;
   const BitmapFetcher* fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(BitmapFetcherRequest);
 };
 
 BitmapFetcherRequest::BitmapFetcherRequest(
     BitmapFetcherService::RequestId request_id,
-    BitmapFetcherService::Observer* observer)
-    : request_id_(request_id), observer_(observer) {
-}
+    BitmapFetcherService::BitmapFetchedCallback callback)
+    : request_id_(request_id), callback_(std::move(callback)) {}
 
 BitmapFetcherRequest::~BitmapFetcherRequest() {
 }
 
 void BitmapFetcherRequest::NotifyImageChanged(const SkBitmap* bitmap) {
   if (bitmap && !bitmap->empty())
-    observer_->OnImageChanged(request_id_, *bitmap);
+    std::move(callback_).Run(*bitmap);
 }
 
 BitmapFetcherService::CacheEntry::CacheEntry() {
@@ -78,10 +123,24 @@ BitmapFetcherService::CacheEntry::~CacheEntry() {
 }
 
 BitmapFetcherService::BitmapFetcherService(content::BrowserContext* context)
-    : cache_(kMaxCacheEntries), current_request_id_(1), context_(context) {
-}
+    : shared_data_decoder_(
+          std::make_unique<data_decoder::DataDecoder>(base::Seconds(405))),
+      cache_(kMaxCacheEntries),
+      current_request_id_(1),
+      context_(context) {}
 
 BitmapFetcherService::~BitmapFetcherService() {
+  // |active_fetchers_|'s elements must be destructured before
+  // |shared_data_decoder_|, as the former contain unowned pointers to the
+  // latter.
+  requests_.clear();
+  active_fetchers_.clear();
+
+  // Need to delete |shared_data_decoder_| in the same IO thread in which it is
+  // used. This avoids the possibility of deleting it prior to decoding requests
+  // using it completing.
+  content::GetIOThreadTaskRunner({})->DeleteSoon(
+      FROM_HERE, std::move(shared_data_decoder_));
 }
 
 void BitmapFetcherService::CancelRequest(int request_id) {
@@ -94,13 +153,19 @@ void BitmapFetcherService::CancelRequest(int request_id) {
   }
 }
 
-BitmapFetcherService::RequestId BitmapFetcherService::RequestImage(
+BitmapFetcherService::RequestId BitmapFetcherService::RequestImageForTesting(
     const GURL& url,
-    Observer* observer,
+    BitmapFetchedCallback callback,
+    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
+  return RequestImageImpl(url, std::move(callback), traffic_annotation);
+}
+
+BitmapFetcherService::RequestId BitmapFetcherService::RequestImageImpl(
+    const GURL& url,
+    BitmapFetchedCallback callback,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
   // Reject invalid URLs and limit number of simultaneous in-flight requests.
   if (!url.is_valid() || requests_.size() > kMaxRequests) {
-    delete observer;
     return REQUEST_ID_INVALID;
   }
 
@@ -109,7 +174,8 @@ BitmapFetcherService::RequestId BitmapFetcherService::RequestImage(
   if (current_request_id_ == REQUEST_ID_INVALID)
     ++current_request_id_;
   int request_id = current_request_id_;
-  auto request = std::make_unique<BitmapFetcherRequest>(request_id, observer);
+  auto request =
+      std::make_unique<BitmapFetcherRequest>(request_id, std::move(callback));
 
   // Check for existing images first.
   auto iter = cache_.Get(url);
@@ -129,28 +195,35 @@ BitmapFetcherService::RequestId BitmapFetcherService::RequestImage(
   return request_id;
 }
 
-void BitmapFetcherService::Prefetch(
-    const GURL& url,
-    const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  if (url.is_valid())
-    EnsureFetcherForUrl(url, traffic_annotation);
+void BitmapFetcherService::Prefetch(const GURL& url) {
+  if (url.is_valid() && !IsCached(url))
+    EnsureFetcherForUrl(url, kTrafficAnnotation);
+}
+
+bool BitmapFetcherService::IsCached(const GURL& url) {
+  return cache_.Get(url) != cache_.end();
 }
 
 std::unique_ptr<BitmapFetcher> BitmapFetcherService::CreateFetcher(
     const GURL& url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
-  std::unique_ptr<BitmapFetcher> new_fetcher(
-      new BitmapFetcher(url, this, traffic_annotation));
+  std::unique_ptr<BitmapFetcher> new_fetcher = std::make_unique<BitmapFetcher>(
+      url, this, traffic_annotation, shared_data_decoder_.get());
 
   new_fetcher->Init(
       std::string(),
-      net::URLRequest::REDUCE_REFERRER_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
+      net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
-  new_fetcher->Start(
-      content::BrowserContext::GetDefaultStoragePartition(context_)
-          ->GetURLLoaderFactoryForBrowserProcess()
-          .get());
+  new_fetcher->Start(context_->GetDefaultStoragePartition()
+                         ->GetURLLoaderFactoryForBrowserProcess()
+                         .get());
   return new_fetcher;
+}
+
+BitmapFetcherService::RequestId BitmapFetcherService::RequestImage(
+    const GURL& url,
+    BitmapFetchedCallback callback) {
+  return RequestImageImpl(url, std::move(callback), kTrafficAnnotation);
 }
 
 const BitmapFetcher* BitmapFetcherService::EnsureFetcherForUrl(
@@ -203,7 +276,7 @@ void BitmapFetcherService::OnFetchComplete(const GURL& url,
 
   if (bitmap && !bitmap->isNull()) {
     std::unique_ptr<CacheEntry> entry(new CacheEntry);
-    entry->bitmap.reset(new SkBitmap(*bitmap));
+    entry->bitmap = std::make_unique<SkBitmap>(*bitmap);
     cache_.Put(fetcher->url(), std::move(entry));
   }
 

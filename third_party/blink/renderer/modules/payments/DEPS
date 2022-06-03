@@ -1,5 +1,6 @@
 include_rules = [
+    "+base/test/scoped_command_line.h",
     "+components/payments/mojom",
-    "+mojo/public/cpp/bindings/binding.h",
-    "+mojo/public/cpp/bindings/interface_request.h",
+    "+services/network/public/cpp/is_potentially_trustworthy.h",
+    "+services/network/public/cpp/network_switches.h",
 ]

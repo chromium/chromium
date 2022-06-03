@@ -1,0 +1,68 @@
+<style include="destination-dialog">
+  .form-row {
+    align-items: center;
+    column-gap: 18px;
+    display: flex;
+    line-height: calc(20 / 15 * 1em);
+    margin-bottom: 14px;
+  }
+
+  .server-search-box-input {
+    --cr-searchable-drop-down-width: 100%;
+    display: inline-block;
+    flex-grow: 1;
+    width: 100%;
+  }
+
+  .server-search-box-container {
+    width: 100%;
+  }
+</style>
+<cr-dialog id="dialog" on-close="onCloseOrCancel_">
+  <div slot="title" id="header">$i18n{destinationSearchTitle}</div>
+  <div slot="body">
+    <div class="form-row">
+      <div class="user-info" hidden$="[[!activeUser]]" hidden>
+        <label id="accountSelectLabel">$i18n{accountSelectTitle}</label>
+        <select class="md-select"
+            aria-labelledby="accountSelectLabel" on-change="onUserChange_">
+          <template is="dom-repeat" items="[[users]]">
+            <option value="[[item]]">[[item]]</option>
+          </template>
+          <option value="">$i18n{addAccountTitle}</option>
+        </select>
+      </div>
+      <div class="server-search-box-container">
+        <!-- TODO(crbug.com/1013408): Uses deprecated iron-dropdown. -->
+        <cr-searchable-drop-down class="server-search-box-input"
+            hidden$="[[!isSingleServerFetchingMode_]]"
+            placeholder="$i18n{serverSearchBoxPlaceholder}"
+            value="{{printServerSelected_}}"
+            items="[[printServerNames_]]">
+        </cr-searchable-drop-down>
+      </div>
+    </div>
+    <print-preview-search-box id="searchBox"
+        label="$i18n{searchBoxPlaceholder}" search-query="{{searchQuery_}}"
+        autofocus>
+    </print-preview-search-box>
+    <print-preview-destination-list id="printList"
+        destinations="[[destinations_]]"
+        loading-destinations="[[loadingAnyDestinations_]]"
+        search-query="[[searchQuery_]]"
+        on-destination-selected="onDestinationSelected_">
+    </print-preview-destination-list>
+    <print-preview-provisional-destination-resolver id="provisionalResolver"
+        destination-store="[[destinationStore]]">
+    </print-preview-provisional-destination-resolver>
+  </div>
+  <div slot="button-container">
+    <cr-button on-click="onManageButtonClick_">
+      $i18n{manage}
+      <iron-icon icon="cr:open-in-new" id="manageIcon"></iron-icon>
+    </cr-button>
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+  </div>
+</cr-dialog>

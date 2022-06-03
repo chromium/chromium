@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Multi-instance switcher dialog -->
+    <color name="current_item_bullet">@color/default_green</color>
+    <color name="checked_item">@color/default_bg_color_blue</color>
+</resources>

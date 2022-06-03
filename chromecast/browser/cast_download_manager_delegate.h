@@ -16,6 +16,11 @@ class CastDownloadManagerDelegate : public content::DownloadManagerDelegate,
                                     public base::SupportsUserData::Data {
  public:
   CastDownloadManagerDelegate();
+
+  CastDownloadManagerDelegate(const CastDownloadManagerDelegate&) = delete;
+  CastDownloadManagerDelegate& operator=(const CastDownloadManagerDelegate&) =
+      delete;
+
   ~CastDownloadManagerDelegate() override;
 
   // content::DownloadManagerDelegate implementation:
@@ -23,15 +28,11 @@ class CastDownloadManagerDelegate : public content::DownloadManagerDelegate,
   bool DetermineDownloadTarget(
       download::DownloadItem* item,
       content::DownloadTargetCallback* callback) override;
-  bool ShouldOpenFileBasedOnExtension(const base::FilePath& path) override;
   bool ShouldCompleteDownload(download::DownloadItem* item,
                               base::OnceClosure complete_callback) override;
   bool ShouldOpenDownload(
       download::DownloadItem* item,
       content::DownloadOpenDelayedCallback callback) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastDownloadManagerDelegate);
 };
 
 }  // namespace shell

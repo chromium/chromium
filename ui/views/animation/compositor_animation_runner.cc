@@ -11,8 +11,11 @@ namespace views {
 ////////////////////////////////////////////////////////////////////////////////
 // CompositorAnimationRunner
 //
-CompositorAnimationRunner::CompositorAnimationRunner(Widget* widget)
-    : widget_(widget) {
+
+CompositorAnimationRunner::CompositorAnimationRunner(
+    Widget* widget,
+    const base::Location& location)
+    : ui::CompositorAnimationObserver(location), widget_(widget) {
   widget_->AddObserver(this);
 }
 
@@ -21,14 +24,11 @@ CompositorAnimationRunner::~CompositorAnimationRunner() {
   if (widget_)
     OnWidgetDestroying(widget_);
   DCHECK(!compositor_ || !compositor_->HasAnimationObserver(this));
+  CHECK(!IsInObserverList());
 }
 
 void CompositorAnimationRunner::Stop() {
-  if (compositor_ && compositor_->HasAnimationObserver(this))
-    compositor_->RemoveAnimationObserver(this);
-
-  min_interval_ = base::TimeDelta::Max();
-  compositor_ = nullptr;
+  StopInternal();
 }
 
 void CompositorAnimationRunner::OnAnimationStep(base::TimeTicks timestamp) {
@@ -41,11 +41,11 @@ void CompositorAnimationRunner::OnAnimationStep(base::TimeTicks timestamp) {
 
 void CompositorAnimationRunner::OnCompositingShuttingDown(
     ui::Compositor* compositor) {
-  Stop();
+  StopInternal();
 }
 
 void CompositorAnimationRunner::OnWidgetDestroying(Widget* widget) {
-  Stop();
+  StopInternal();
   widget_->RemoveObserver(this);
   widget_ = nullptr;
 }
@@ -57,7 +57,7 @@ void CompositorAnimationRunner::OnStart(base::TimeDelta min_interval,
 
   ui::Compositor* current_compositor = widget_->GetCompositor();
   if (!current_compositor) {
-    Stop();
+    StopInternal();
     return;
   }
 
@@ -71,6 +71,14 @@ void CompositorAnimationRunner::OnStart(base::TimeDelta min_interval,
   min_interval_ = min_interval;
   DCHECK(!compositor_->HasAnimationObserver(this));
   compositor_->AddAnimationObserver(this);
+}
+
+void CompositorAnimationRunner::StopInternal() {
+  if (compositor_ && compositor_->HasAnimationObserver(this))
+    compositor_->RemoveAnimationObserver(this);
+
+  min_interval_ = base::TimeDelta::Max();
+  compositor_ = nullptr;
 }
 
 }  // namespace views

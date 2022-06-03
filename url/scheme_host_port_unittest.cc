@@ -5,7 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
@@ -16,13 +16,14 @@ namespace {
 class SchemeHostPortTest : public testing::Test {
  public:
   SchemeHostPortTest() = default;
-  ~SchemeHostPortTest() override {
-    // Reset any added schemes.
-    url::ResetForTests();
-  }
+
+  SchemeHostPortTest(const SchemeHostPortTest&) = delete;
+  SchemeHostPortTest& operator=(const SchemeHostPortTest&) = delete;
+
+  ~SchemeHostPortTest() override = default;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(SchemeHostPortTest);
+  url::ScopedSchemeRegistryForTests scoped_registry_;
 };
 
 void ExpectParsedUrlsEqual(const GURL& a, const GURL& b) {
@@ -52,12 +53,19 @@ TEST_F(SchemeHostPortTest, Invalid) {
   EXPECT_EQ("", invalid.scheme());
   EXPECT_EQ("", invalid.host());
   EXPECT_EQ(0, invalid.port());
-  EXPECT_TRUE(invalid.IsInvalid());
+  EXPECT_FALSE(invalid.IsValid());
   EXPECT_EQ(invalid, invalid);
 
   const char* urls[] = {
-      "data:text/html,Hello!", "javascript:alert(1)",
-      "file://example.com:443/etc/passwd",
+      // about:, data:, javascript: and other no-access schemes translate into
+      // an invalid SchemeHostPort
+      "about:blank", "about:blank#ref", "about:blank?query=123", "about:srcdoc",
+      "about:srcdoc#ref", "about:srcdoc?query=123", "data:text/html,Hello!",
+      "javascript:alert(1)",
+
+      // GURLs where GURL::is_valid returns false translate into an invalid
+      // SchemeHostPort.
+      "file://example.com:443/etc/passwd", "#!^%!$!&*",
 
       // These schemes do not follow the generic URL syntax, so make sure we
       // treat them as invalid (scheme, host, port) tuples (even though such
@@ -76,7 +84,7 @@ TEST_F(SchemeHostPortTest, Invalid) {
     EXPECT_EQ("", tuple.scheme());
     EXPECT_EQ("", tuple.host());
     EXPECT_EQ(0, tuple.port());
-    EXPECT_TRUE(tuple.IsInvalid());
+    EXPECT_FALSE(tuple.IsValid());
     EXPECT_EQ(tuple, tuple);
     EXPECT_EQ(tuple, invalid);
     EXPECT_EQ(invalid, tuple);
@@ -92,9 +100,10 @@ TEST_F(SchemeHostPortTest, ExplicitConstruction) {
   } cases[] = {
       {"http", "example.com", 80},
       {"http", "example.com", 123},
+      {"http", "example.com", 0},  // 0 is a valid port for http.
       {"https", "example.com", 443},
       {"https", "example.com", 123},
-      {"file", "", 0},
+      {"file", "", 0},  // 0 indicates "no port" for file: scheme.
       {"file", "example.com", 0},
   };
 
@@ -105,7 +114,7 @@ TEST_F(SchemeHostPortTest, ExplicitConstruction) {
     EXPECT_EQ(test.scheme, tuple.scheme());
     EXPECT_EQ(test.host, tuple.host());
     EXPECT_EQ(test.port, tuple.port());
-    EXPECT_FALSE(tuple.IsInvalid());
+    EXPECT_TRUE(tuple.IsValid());
     EXPECT_EQ(tuple, tuple);
     ExpectParsedUrlsEqual(GURL(tuple.Serialize()), tuple.GetURL());
   }
@@ -131,8 +140,7 @@ TEST_F(SchemeHostPortTest, InvalidConstruction) {
                {"http", "example.com\rnot-example.com", 80},
                {"http", "example.com\n", 80},
                {"http", "example.com\r", 80},
-               {"http", "example.com", 0},
-               {"file", "", 80}};
+               {"file", "", 80}};  // Can''t have a port for file: scheme.
 
   for (const auto& test : cases) {
     SCOPED_TRACE(testing::Message() << test.scheme << "://" << test.host << ":"
@@ -141,7 +149,7 @@ TEST_F(SchemeHostPortTest, InvalidConstruction) {
     EXPECT_EQ("", tuple.scheme());
     EXPECT_EQ("", tuple.host());
     EXPECT_EQ(0, tuple.port());
-    EXPECT_TRUE(tuple.IsInvalid());
+    EXPECT_FALSE(tuple.IsValid());
     EXPECT_EQ(tuple, tuple);
     ExpectParsedUrlsEqual(GURL(tuple.Serialize()), tuple.GetURL());
   }
@@ -170,7 +178,7 @@ TEST_F(SchemeHostPortTest, InvalidConstructionWithEmbeddedNulls) {
     EXPECT_EQ("", tuple.scheme());
     EXPECT_EQ("", tuple.host());
     EXPECT_EQ(0, tuple.port());
-    EXPECT_TRUE(tuple.IsInvalid());
+    EXPECT_FALSE(tuple.IsValid());
     ExpectParsedUrlsEqual(GURL(tuple.Serialize()), tuple.GetURL());
   }
 }
@@ -205,7 +213,7 @@ TEST_F(SchemeHostPortTest, GURLConstruction) {
     EXPECT_EQ(test.scheme, tuple.scheme());
     EXPECT_EQ(test.host, tuple.host());
     EXPECT_EQ(test.port, tuple.port());
-    EXPECT_FALSE(tuple.IsInvalid());
+    EXPECT_TRUE(tuple.IsValid());
     EXPECT_EQ(tuple, tuple);
     ExpectParsedUrlsEqual(GURL(tuple.Serialize()), tuple.GetURL());
   }
@@ -225,6 +233,7 @@ TEST_F(SchemeHostPortTest, Serialization) {
       {"https://example.com:123/", "https://example.com:123"},
       {"file:///etc/passwd", "file://"},
       {"file://example.com/etc/passwd", "file://example.com"},
+      {"https://example.com:0/", "https://example.com:0"},
   };
 
   for (const auto& test : cases) {

@@ -1,23 +1,8 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/cr.html">
-<link rel="import" href="../prefs/prefs.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-<link rel="import" href="../open_window_proxy.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_page/settings_animated_pages.html">
-<link rel="import" href="../settings_page/settings_subpage.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="./password_manager_proxy.html">
-
-<dom-module id="settings-autofill-page">
-  <template>
     <style include="settings-shared">
       cr-link-row {
         --cr-icon-button-margin-start: 20px;
       }
+
       cr-link-row:not([hidden]) + cr-link-row {
         border-top: var(--cr-separator-line);
       }
@@ -27,13 +12,16 @@
       <div route-path="default">
         <cr-link-row id="passwordManagerButton" start-icon="settings20:vpn-key"
             label="$i18n{passwords}" on-click="onPasswordsClick_"
-            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+            role-description="$i18n{subpageArrowRoleDescription}">
+          <span id="passwordManagerSubLabel" slot="sub-label">
+              [[passwordManagerSubLabel_]]</span>
+        </cr-link-row>
         <cr-link-row id="paymentManagerButton"
             start-icon="settings20:credit-card" label="$i18n{creditCards}"
             on-click="onPaymentsClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
         <cr-link-row id="addressesManagerButton"
-            start-icon="settings20:location-on" label="$i18n{addressesTitle}"
+            start-icon="settings:location-on" label="$i18n{addressesTitle}"
             on-click="onAddressesClick_"
             role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
       </div>
@@ -45,8 +33,28 @@
             search-label="$i18n{searchPasswords}"
             search-term="{{passwordFilter_}}">
           <passwords-section id="passwordSection" filter="[[passwordFilter_]]"
-              prefs="{{prefs}}">
+              focus-config="[[focusConfig_]]" prefs="{{prefs}}">
           </passwords-section>
+        </settings-subpage>
+      </template>
+      <!-- TODO(crbug.com/1102294): Add a learn-more-url, which will cause the
+      (?) button to appear. -->
+      <template is="dom-if" route-path="/passwords/device" no-search>
+        <settings-subpage
+            page-title="$i18n{passwordsDevice}"
+            search-label="$i18n{searchPasswords}"
+            search-term="{{passwordFilter_}}">
+          <passwords-device-section id="passwordDeviceSection"
+              filter="[[passwordFilter_]]">
+          </passwords-device-section>
+        </settings-subpage>
+      </template>
+      <template is="dom-if" route-path="/passwords/check">
+        <settings-subpage
+            associated-control="[[$$('#passwordManagerButton')]]"
+            page-title="$i18n{checkPasswords}"
+            learn-more-url="$i18n{passwordCheckLearnMoreURL}">
+          <settings-password-check prefs="{{prefs}}"></settings-password-check>
         </settings-subpage>
       </template>
       <template is="dom-if" route-path="/payments">
@@ -67,6 +75,3 @@
         </settings-subpage>
       </template>
     </settings-animated-pages>
-  </template>
-  <script src="autofill_page.js"></script>
-</dom-module>

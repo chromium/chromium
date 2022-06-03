@@ -30,7 +30,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_STYLED_MARKUP_ACCUMULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_SERIALIZERS_STYLED_MARKUP_ACCUMULATOR_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/editing/editing_style.h"
 #include "third_party/blink/renderer/core/editing/serializers/create_markup_options.h"
 #include "third_party/blink/renderer/core/editing/serializers/markup_formatter.h"
@@ -51,6 +50,8 @@ class StyledMarkupAccumulator final {
                           const TextOffset& end,
                           Document*,
                           const CreateMarkupOptions& options);
+  StyledMarkupAccumulator(const StyledMarkupAccumulator&) = delete;
+  StyledMarkupAccumulator& operator=(const StyledMarkupAccumulator&) = delete;
 
   void AppendEndTag(const Element&);
   void AppendInterchangeNewline();
@@ -92,12 +93,10 @@ class StyledMarkupAccumulator final {
   MarkupFormatter formatter_;
   const TextOffset start_;
   const TextOffset end_;
-  const Member<Document> document_;
+  Document* const document_;
   const CreateMarkupOptions options_;
   StringBuilder result_;
   Vector<String> reversed_preceding_markup_;
-
-  DISALLOW_COPY_AND_ASSIGN(StyledMarkupAccumulator);
 };
 
 }  // namespace blink

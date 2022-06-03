@@ -6,9 +6,8 @@
 #define CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_RECOMMENDED_TIMER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
-#include "chrome/browser/ui/views/relaunch_notification/wall_clock_timer.h"
+#include "base/timer/wall_clock_timer.h"
 
 // Timer that handles notification title refresh for relaunch recommended
 // notification. Created by RelaunchRecommendedBubbleView for Chrome desktop.
@@ -21,11 +20,14 @@ class RelaunchRecommendedTimer {
   RelaunchRecommendedTimer(base::Time upgrade_detected_time,
                            base::RepeatingClosure callback);
 
+  RelaunchRecommendedTimer(const RelaunchRecommendedTimer&) = delete;
+  RelaunchRecommendedTimer& operator=(const RelaunchRecommendedTimer&) = delete;
+
   ~RelaunchRecommendedTimer();
 
   // Returns current notification's title, composed depending on how much time
   // has passed since the update was detected (see above comment).
-  base::string16 GetWindowTitle() const;
+  std::u16string GetWindowTitle() const;
 
  private:
   // Schedules a timer to fire the next time the title text must be updated; for
@@ -41,12 +43,10 @@ class RelaunchRecommendedTimer {
   const base::Time upgrade_detected_time_;
 
   // A timer with which title refreshes are scheduled.
-  WallClockTimer refresh_timer_;
+  base::WallClockTimer refresh_timer_;
 
   // Callback which triggers the actual title update on Chrome desktop.
   base::RepeatingClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RelaunchRecommendedTimer);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_RELAUNCH_NOTIFICATION_RELAUNCH_RECOMMENDED_TIMER_H_

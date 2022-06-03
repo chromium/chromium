@@ -46,30 +46,22 @@ source_set("common") {
     "//sandbox/win:sandbox",
   ]
 
-  public_deps = [
-    "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
-  ]
+  public_deps = [ "//chrome/chrome_cleaner/logging/proto:shared_data_proto" ]
 }
 
 source_set("engine_delegate_factory_header") {
-  sources = [
-    "engine_delegate_factory.h",
-  ]
+  sources = [ "engine_delegate_factory.h" ]
 
   deps = [
     ":common",
     "//base",
   ]
 
-  public_deps = [
-    "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
-  ]
+  public_deps = [ "//chrome/chrome_cleaner/logging/proto:shared_data_proto" ]
 }
 
 source_set("dummy_engine_delegate_factory") {
-  sources = [
-    "dummy_engine_delegate_factory.cc",
-  ]
+  sources = [ "dummy_engine_delegate_factory.cc" ]
 
   deps = [
     ":engine_delegate_factory_header",

@@ -46,12 +46,12 @@ const char* kAPMExpectedPartitions[] = {
 
 struct UDIFTestCase {
   enum ExpectedResults : uint16_t {
-    ALL_FAIL       = 0,
-    UDIF_PARSE     = 1 << 1,
+    ALL_FAIL = 0,
+    UDIF_PARSE = 1 << 1,
     GET_HFS_STREAM = 1 << 2,
     READ_UDIF_DATA = 1 << 3,
 
-    ALL_PASS = ~static_cast<uint16_t>(0),
+    ALL_PASS = static_cast<uint16_t>(-1),  // All bits set.
   };
 
   // The disk image file to open.

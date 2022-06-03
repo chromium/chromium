@@ -5,8 +5,8 @@ FAIL webkitSpeechGrammarList interface should not exist assert_false: expected f
 FAIL webkitSpeechRecognition interface should not exist assert_false: expected false got true
 FAIL webkitSpeechRecognitionError interface should not exist assert_false: expected false got true
 FAIL webkitSpeechRecognitionEvent interface should not exist assert_false: expected false got true
-NOTRUN SpeechRecognition's serviceURI attribute should not exist SpeechRecognition exposed
-NOTRUN SpeechRecognitionEvent's interpretation attribute should not exist SpeechRecognitionEvent exposed
-NOTRUN SpeechRecognitionEvent's emma attribute should not exist SpeechRecognitionEvent exposed
+FAIL SpeechRecognition's serviceURI attribute should not exist assert_implements: SpeechRecognition exposed undefined
+FAIL SpeechRecognitionEvent's interpretation attribute should not exist assert_implements: SpeechRecognitionEvent exposed undefined
+FAIL SpeechRecognitionEvent's emma attribute should not exist assert_implements: SpeechRecognitionEvent exposed undefined
 Harness: the test ran to completion.
 

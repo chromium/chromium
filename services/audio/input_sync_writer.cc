@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/format_macros.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -232,8 +233,7 @@ void InputSyncWriter::Close() {
 
 void InputSyncWriter::CheckTimeSinceLastWrite() {
 #if !defined(OS_ANDROID)
-  static const base::TimeDelta kLogDelayThreadhold =
-      base::TimeDelta::FromMilliseconds(500);
+  static const base::TimeDelta kLogDelayThreadhold = base::Milliseconds(500);
 
   base::TimeTicks new_write_time = base::TimeTicks::Now();
   std::ostringstream oss;

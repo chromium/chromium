@@ -5,6 +5,9 @@
 #ifndef CC_TEST_FAKE_RASTER_BUFFER_PROVIDER_H_
 #define CC_TEST_FAKE_RASTER_BUFFER_PROVIDER_H_
 
+#include <memory>
+#include <vector>
+
 #include "cc/raster/raster_buffer_provider.h"
 
 namespace cc {
@@ -34,7 +37,6 @@ class FakeRasterBufferProviderImpl : public RasterBufferProvider {
       base::OnceClosure callback,
       uint64_t pending_callback_id) const override;
   void Shutdown() override;
-  bool CheckRasterFinishedQueries() override;
 };
 
 }  // namespace cc

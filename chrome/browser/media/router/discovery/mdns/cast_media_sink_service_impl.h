@@ -13,13 +13,13 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/dial_media_sink_service_impl.h"
 #include "chrome/browser/media/router/discovery/discovery_network_monitor.h"
 #include "chrome/browser/media/router/discovery/media_sink_discovery_metrics.h"
-#include "chrome/common/media_router/discovery/media_sink_service_base.h"
 #include "components/cast_channel/cast_channel_enum.h"
 #include "components/cast_channel/cast_socket.h"
+#include "components/media_router/common/discovery/media_sink_service_base.h"
 #include "net/base/backoff_entry.h"
 #include "third_party/openscreen/src/cast/common/channel/proto/cast_channel.pb.h"
 
@@ -55,7 +55,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // discovered devices.
   // |network_monitor|: DiscoveryNetworkMonitor to use to listen for network
   // changes.
-  // |dial_media_sink_service|: DialMediaSinkServiceImpl for dual discovery.
+  // |dial_media_sink_service|: Optional pointer to DialMediaSinkServiceImpl for
+  // |dual discovery.
   // |allow_all_ips|: If |true|, |this| will try to open channel to
   //     sinks on all IPs, and not just private IPs.
   CastMediaSinkServiceImpl(const OnSinksDiscoveredCallback& callback,
@@ -63,6 +64,10 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                            DiscoveryNetworkMonitor* network_monitor,
                            MediaSinkServiceBase* dial_media_sink_service,
                            bool allow_all_ips);
+
+  CastMediaSinkServiceImpl(const CastMediaSinkServiceImpl&) = delete;
+  CastMediaSinkServiceImpl& operator=(const CastMediaSinkServiceImpl&) = delete;
+
   ~CastMediaSinkServiceImpl() override;
 
   // Returns the SequencedTaskRunner that should be used to invoke methods on
@@ -92,6 +97,8 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   // Called by CastMediaSinkService to set |allow_all_ips_|.
   void SetCastAllowAllIPs(bool allow_all_ips);
+
+  void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote);
 
  private:
   friend class CastMediaSinkServiceImplTest;
@@ -147,7 +154,9 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            TestOnSinkAddedOrUpdatedSkipsIfNonCastDevice);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
-                           TestOnChannelErrorRetry);
+                           TestSuccessOnChannelErrorRetry);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
+                           TestFailureOnChannelErrorRetry);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            OpenChannelNewIPSameSink);
 
@@ -243,7 +252,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
   // |backoff_entry|: backoff entry holds failure count and calculates back-off
   // for next retry.
-  // |error_state|: erorr encountered when opending cast channel.
+  // |error_state|: error encountered when opending cast channel.
   void OnChannelErrorMayRetry(MediaSinkInternal cast_sink,
                               std::unique_ptr<net::BackoffEntry> backoff_entry,
                               cast_channel::ChannelError error_state,
@@ -322,8 +331,13 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   base::flat_map<MediaSink::Id, int> dial_sink_failure_count_;
 
   // Non-owned pointer to DIAL MediaSinkService. Observed by |this| for dual
-  // discovery.
+  // discovery.  May be nullptr if the DIAL Media Route Provider is disabled.
   MediaSinkServiceBase* const dial_media_sink_service_;
+
+  // Mojo Remote to the logger owned by the Media Router. The Remote is not
+  // bound until |BindLogger()| is called. Always check if |logger_.is_bound()|
+  // is true before using.
+  mojo::Remote<mojom::Logger> logger_;
 
   // The SequencedTaskRunner on which methods are run. This shares the
   // same SequencedTaskRunner as the one used by |cast_socket_service_|.
@@ -333,8 +347,6 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkServiceImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaSinkServiceImpl);
 };
 
 }  // namespace media_router

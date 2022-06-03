@@ -41,7 +41,7 @@ TEST(MotionEventGenericTest, Basic) {
   event.set_action(MotionEvent::Action::POINTER_DOWN);
   EXPECT_EQ(MotionEvent::Action::POINTER_DOWN, event.GetAction());
 
-  event_time += base::TimeDelta::FromMilliseconds(5);
+  event_time += base::Milliseconds(5);
   event.set_event_time(event_time);
   EXPECT_EQ(event_time, event.GetEventTime());
 
@@ -60,15 +60,15 @@ TEST(MotionEventGenericTest, Basic) {
   PointerProperties historical_pointer0(1.2f, 2.4f, 1.f);
   PointerProperties historical_pointer1(2.4f, 4.8f, 2.f);
   PointerProperties historical_pointer2(4.8f, 9.6f, 3.f);
-  MotionEventGeneric historical_event(
-      MotionEvent::Action::MOVE,
-      event_time - base::TimeDelta::FromMilliseconds(5), historical_pointer0);
+  MotionEventGeneric historical_event(MotionEvent::Action::MOVE,
+                                      event_time - base::Milliseconds(5),
+                                      historical_pointer0);
   historical_event.PushPointer(historical_pointer1);
   historical_event.PushPointer(historical_pointer2);
 
   event.PushHistoricalEvent(historical_event.Clone());
   EXPECT_EQ(1U, event.GetHistorySize());
-  EXPECT_EQ(event_time - base::TimeDelta::FromMilliseconds(5),
+  EXPECT_EQ(event_time - base::Milliseconds(5),
             event.GetHistoricalEventTime(0));
   EXPECT_EQ(1.2f, event.GetHistoricalX(0, 0));
   EXPECT_EQ(2.4f, event.GetHistoricalY(0, 0));
@@ -94,8 +94,7 @@ TEST(MotionEventGenericTest, Clone) {
 
 TEST(MotionEventGenericTest, CloneWithHistory) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  base::TimeTicks historical_event_time =
-      event_time - base::TimeDelta::FromMilliseconds(5);
+  base::TimeTicks historical_event_time = event_time - base::Milliseconds(5);
 
   PointerProperties pointer(8.3f, 4.7f, 10.1f);
   MotionEventGeneric event(MotionEvent::Action::MOVE, event_time, pointer);
@@ -223,10 +222,8 @@ TEST(MotionEventGenericTest, AxisAndOrientation) {
 
 TEST(MotionEventGenericTest, ToString) {
   base::TimeTicks event_time = base::TimeTicks::Now();
-  base::TimeTicks historical_event_time0 =
-      event_time - base::TimeDelta::FromMilliseconds(10);
-  base::TimeTicks historical_event_time1 =
-      event_time - base::TimeDelta::FromMilliseconds(5);
+  base::TimeTicks historical_event_time0 = event_time - base::Milliseconds(10);
+  base::TimeTicks historical_event_time1 = event_time - base::Milliseconds(5);
 
   PointerProperties pointer0(1, 2, 3);
   pointer0.id = 7;

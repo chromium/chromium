@@ -78,9 +78,8 @@ const Extension* GetExtensionOverridingHomepage(
 const Extension* GetExtensionOverridingNewTabPage(
     content::BrowserContext* browser_context) {
   GURL ntp_url(chrome::kChromeUINewTabURL);
-  bool ignored;
   content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
-      &ntp_url, browser_context, &ignored);
+      &ntp_url, browser_context);
   if (ntp_url.SchemeIs(kExtensionScheme)) {
     return ExtensionRegistry::Get(browser_context)->GetExtensionById(
         ntp_url.host(), ExtensionRegistry::ENABLED);

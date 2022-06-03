@@ -19,7 +19,10 @@ Running: testGetterAndSetter
         objectId : <string>
         type : "function"
     }
+    symbol : undefined
     synthetic : false
+    syntheticSetter : undefined
+    value : undefined
     wasThrown : false
     writable : false
 }
@@ -35,7 +38,11 @@ Running: testGetterOnly
     isOwn : true
     name : "foo"
     private : false
+    setter : undefined
+    symbol : undefined
     synthetic : false
+    syntheticSetter : undefined
+    value : undefined
     wasThrown : false
     writable : false
 }

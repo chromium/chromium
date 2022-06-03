@@ -4,6 +4,8 @@
 
 """Checks Java files for illegal imports."""
 
+
+
 import codecs
 import os
 import re
@@ -35,7 +37,7 @@ class JavaChecker(object):
 
   # This regular expression will be used to extract filenames from import
   # statements.
-  _EXTRACT_IMPORT_PATH = re.compile('^import\s+(?:static\s+)?([\w\.]+)\s*;')
+  _EXTRACT_IMPORT_PATH = re.compile(r'^import\s+(?:static\s+)?([\w\.]+)\s*;')
 
   def __init__(self, base_directory, verbose, added_imports=None,
                allow_multiple_definitions=None):
@@ -54,7 +56,7 @@ class JavaChecker(object):
     with codecs.open(filepath, encoding='utf-8') as f:
       short_class_name, _ = os.path.splitext(os.path.basename(filepath))
       for line in f:
-        for package in re.findall('^package\s+([\w\.]+);', line):
+        for package in re.findall(r'^package\s+([\w\.]+);', line):
           return package + '.' + short_class_name
 
   def _IgnoreDir(self, d):
@@ -75,10 +77,11 @@ class JavaChecker(object):
     return False
 
   def _PrescanFiles(self, added_classset):
-    for root, dirs, files in os.walk(self._base_directory.encode('utf-8')):
+    for root, dirs, files in os.walk(self._base_directory):
       # Skip unwanted subdirectories. TODO(husky): it would be better to do
       # this via the skip_child_includes flag in DEPS files. Maybe hoist this
       # prescan logic into checkdeps.py itself?
+      # Modify dirs in-place with slice assignment to avoid recursing into them.
       dirs[:] = [d for d in dirs if not self._IgnoreDir(d)]
       for f in files:
         if f.endswith('.java'):
@@ -112,21 +115,25 @@ class JavaChecker(object):
 
   def _PrescanFile(self, filepath, added_classset):
     if self._verbose:
-      print 'Prescanning: ' + filepath
+      print('Prescanning: ' + filepath)
     full_class_name = self._GetClassFullName(filepath)
     if full_class_name:
       if full_class_name in self._classmap:
         if self._verbose or full_class_name in added_classset:
           if not any(re.match(i, filepath) for i in
                      self._allow_multiple_definitions):
-            print 'WARNING: multiple definitions of %s:' % full_class_name
-            print '    ' + filepath
-            print '    ' + self._classmap[full_class_name]
-            print
+            print('WARNING: multiple definitions of %s:' % full_class_name)
+            print('    ' + filepath)
+            print('    ' + self._classmap[full_class_name])
+            print()
+        # Prefer the public repo when multiple matches are found.
+        if self._classmap[full_class_name].startswith(
+            os.path.join(self._base_directory, 'clank')):
+          self._classmap[full_class_name] = filepath
       else:
         self._classmap[full_class_name] = filepath
     elif self._verbose:
-      print 'WARNING: no package definition found in %s' % filepath
+      print('WARNING: no package definition found in %s' % filepath)
 
   def CheckLine(self, rules, line, filepath, fail_on_temp_allow=False):
     """Checks the given line with the given rule set.
@@ -157,7 +164,7 @@ class JavaChecker(object):
 
   def CheckFile(self, rules, filepath):
     if self._verbose:
-      print 'Checking: ' + filepath
+      print('Checking: ' + filepath)
 
     dependee_status = results.DependeeStatus(filepath)
     with codecs.open(filepath, encoding='utf-8') as f:

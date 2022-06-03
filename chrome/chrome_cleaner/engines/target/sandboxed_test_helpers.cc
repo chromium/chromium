@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/task/single_thread_task_executor.h"
 #include "chrome/chrome_cleaner/engines/common/engine_result_codes.h"
 #include "chrome/chrome_cleaner/os/early_exit.h"
@@ -112,7 +112,7 @@ SandboxChildProcess::SandboxChildProcess(
       FROM_HERE,
       base::BindOnce(&SandboxChildProcess::BindEngineCommandsReceiver,
                      base::Unretained(this),
-                     base::Passed(&engine_commands_receiver), &event));
+                     std::move(engine_commands_receiver), &event));
   event.Wait();
 }
 
@@ -143,7 +143,7 @@ SandboxChildProcess::GetCleanerEngineRequestsProxy() {
 void SandboxChildProcess::UnbindRequestsRemotes() {
   base::SingleThreadTaskExecutor main_task_executor;
   base::RunLoop run_loop;
-  if (GetCleanerEngineRequestsProxy() != nullptr) {
+  if (GetCleanerEngineRequestsProxy()) {
     mojo_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&CleanerEngineRequestsProxy::UnbindRequestsRemote,
@@ -167,7 +167,7 @@ SandboxChildProcess::~SandboxChildProcess() {
                      [](std::unique_ptr<EngineCommandsImpl> commands) {
                        commands.reset();
                      },
-                     base::Passed(&engine_commands_impl_)));
+                     std::move(engine_commands_impl_)));
 }
 
 }  // namespace chrome_cleaner

@@ -2,13 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 fuzzable_proto_library("proto") {
-  sources = [
-    "leak_detection_api.proto",
-  ]
+  sources = [ "leak_detection_api.proto" ]
 }
 
 source_set("leak_detection_interface_headers") {
@@ -23,16 +20,19 @@ source_set("leak_detection_interface_headers") {
   ]
 }
 
-jumbo_source_set("leak_detection") {
+source_set("leak_detection") {
   sources = [
-    "authenticated_leak_check.cc",
-    "authenticated_leak_check.h",
+    "bulk_leak_check.h",
+    "bulk_leak_check_impl.cc",
+    "bulk_leak_check_impl.h",
     "encryption_utils.cc",
     "encryption_utils.h",
     "leak_detection_check.h",
     "leak_detection_check_factory.h",
     "leak_detection_check_factory_impl.cc",
     "leak_detection_check_factory_impl.h",
+    "leak_detection_check_impl.cc",
+    "leak_detection_check_impl.h",
     "leak_detection_request.cc",
     "leak_detection_request.h",
     "leak_detection_request_factory.cc",
@@ -58,11 +58,15 @@ jumbo_source_set("leak_detection") {
   ]
 }
 
-jumbo_source_set("test_support") {
+source_set("test_support") {
   testonly = true
   sources = [
+    "mock_leak_detection_check_factory.cc",
+    "mock_leak_detection_check_factory.h",
     "mock_leak_detection_delegate.cc",
     "mock_leak_detection_delegate.h",
+    "mock_leak_detection_request_factory.cc",
+    "mock_leak_detection_request_factory.h",
   ]
   deps = [
     ":leak_detection",
@@ -72,12 +76,13 @@ jumbo_source_set("test_support") {
   ]
 }
 
-jumbo_source_set("unit_tests") {
+source_set("unit_tests") {
   testonly = true
   sources = [
-    "authenticated_leak_check_unittest.cc",
+    "bulk_leak_check_impl_unittest.cc",
     "encryption_utils_unittest.cc",
     "leak_detection_check_factory_impl_unittest.cc",
+    "leak_detection_check_impl_unittest.cc",
     "leak_detection_request_unittest.cc",
     "leak_detection_request_utils_unittest.cc",
   ]
@@ -97,7 +102,5 @@ jumbo_source_set("unit_tests") {
 }
 
 group("fuzzers") {
-  deps = [
-    "//components/password_manager/core/browser/leak_detection/fuzzer",
-  ]
+  deps = [ "//components/password_manager/core/browser/leak_detection/fuzzer" ]
 }

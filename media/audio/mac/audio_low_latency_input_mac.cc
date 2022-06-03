@@ -8,6 +8,7 @@
 #include <dlfcn.h>
 #include <mach-o/loader.h>
 #include <mach/mach.h>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -285,7 +286,7 @@ AUAudioInputStream::~AUAudioInputStream() {
 }
 
 // Obtain and open the AUHAL AudioOutputUnit for recording.
-bool AUAudioInputStream::Open() {
+AudioInputStream::OpenOutcome AUAudioInputStream::Open() {
   DCHECK(thread_checker_.CalledOnValidThread());
   DVLOG(1) << "Open";
   DCHECK(!audio_unit_);
@@ -295,7 +296,7 @@ bool AUAudioInputStream::Open() {
   if (input_device_id_ == kAudioObjectUnknown) {
     NOTREACHED() << "Device ID is unknown";
     HandleError(kAudioUnitErr_InvalidElement);
-    return false;
+    return OpenOutcome::kFailed;
   }
 
   // The requested sample-rate must match the hardware sample-rate.
@@ -310,7 +311,7 @@ bool AUAudioInputStream::Open() {
       use_voice_processing_ ? OpenVoiceProcessingAU() : OpenAUHAL();
 
   if (!success)
-    return false;
+    return OpenOutcome::kFailed;
 
   // The hardware latency is fixed and will not change during the call.
   hardware_latency_ = AudioManagerMac::GetHardwareLatency(
@@ -321,7 +322,7 @@ bool AUAudioInputStream::Open() {
   // And the master channel is not counted in |number_of_channels_in_frame_|.
   number_of_channels_in_frame_ = GetNumberOfChannelsFromStream();
 
-  return true;
+  return OpenOutcome::kSuccess;
 }
 
 bool AUAudioInputStream::OpenAUHAL() {
@@ -436,8 +437,9 @@ bool AUAudioInputStream::OpenAUHAL() {
   AudioStreamBasicDescription input_device_format = {0};
   GetInputDeviceStreamFormat(audio_unit_, &input_device_format);
   if (input_device_format.mSampleRate != format_.mSampleRate) {
-    LOG(ERROR)
-        << "Input device's sample rate does not match the client's sample rate";
+    LOG(ERROR) << "Input device's sample rate does not match the client's "
+                  "sample rate; input_device_format="
+               << input_device_format;
     result = kAudioUnitErr_FormatNotSupported;
     HandleError(result);
     return false;
@@ -685,8 +687,7 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
                                             base::Unretained(this), callback));
     manager_->GetTaskRunner()->PostDelayedTask(
         FROM_HERE, deferred_start_cb_.callback(),
-        base::TimeDelta::FromSeconds(
-            AudioManagerMac::kStartDelayInSecsForPowerEvents));
+        base::Seconds(AudioManagerMac::kStartDelayInSecsForPowerEvents));
     return;
   }
 
@@ -715,10 +716,9 @@ void AUAudioInputStream::Start(AudioInputCallback* callback) {
   // callbacks starts indicating if input audio recording starts as intended.
   // CheckInputStartupSuccess() will check if |input_callback_is_active_| is
   // true when the timer expires.
-  input_callback_timer_.reset(new base::OneShotTimer());
+  input_callback_timer_ = std::make_unique<base::OneShotTimer>();
   input_callback_timer_->Start(
-      FROM_HERE,
-      base::TimeDelta::FromSeconds(kInputCallbackStartTimeoutInSeconds), this,
+      FROM_HERE, base::Seconds(kInputCallbackStartTimeoutInSeconds), this,
       &AUAudioInputStream::CheckInputStartupSuccess);
   DCHECK(input_callback_timer_->IsRunning());
 }
@@ -1121,7 +1121,7 @@ OSStatus AUAudioInputStream::OnDataIsAvailable(
       base::TimeDelta time_since_last_success =
           base::TimeTicks::Now() - last_success_time_;
       if ((time_since_last_success >
-           base::TimeDelta::FromSeconds(kMaxErrorTimeoutInSeconds))) {
+           base::Seconds(kMaxErrorTimeoutInSeconds))) {
         const char* err = (result == kAudioUnitErr_TooManyFramesToProcess)
                               ? "kAudioUnitErr_TooManyFramesToProcess"
                               : "kAudioUnitErr_CannotDoInCurrentContext";
@@ -1428,14 +1428,12 @@ void AUAudioInputStream::ReportAndResetStats() {
 
   if (glitches_detected_ != 0) {
     UMA_HISTOGRAM_LONG_TIMES("Media.Audio.Capture.LostFramesInMs",
-                             base::TimeDelta::FromMilliseconds(lost_frames_ms));
+                             base::Milliseconds(lost_frames_ms));
     auto largest_glitch_ms =
         (largest_glitch_frames_ * 1000) / format_.mSampleRate;
-    UMA_HISTOGRAM_CUSTOM_TIMES(
-        "Media.Audio.Capture.LargestGlitchMs",
-        base::TimeDelta::FromMilliseconds(largest_glitch_ms),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromMinutes(1),
-        50);
+    UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.Capture.LargestGlitchMs",
+                               base::Milliseconds(largest_glitch_ms),
+                               base::Milliseconds(1), base::Minutes(1), 50);
     DLOG(WARNING) << log_message;
   }
 

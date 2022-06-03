@@ -10,6 +10,9 @@ namespace subresource_filter {
 // Represents the value returned by the DocumentSubresourceFilter corresponding
 // to a resource load. Ordered by in increasing severity.
 enum class LoadPolicy {
+  // Policy for resources that are specifically allowed by the filter. Should be
+  // treated the same as ALLOW.
+  EXPLICITLY_ALLOW,
   ALLOW,
   // Policy for disallowed resources when the filter is running in dry run mode.
   WOULD_DISALLOW,

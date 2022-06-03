@@ -69,9 +69,9 @@ SK_API std::unique_ptr<SkCanvas> CreatePlatformCanvasWithPixels(
     OnFailureType failure_type);
 #endif
 
-static inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
-                                                             int height,
-                                                             bool is_opaque) {
+inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
+                                                      int height,
+                                                      bool is_opaque) {
 #if defined(WIN32)
   return CreatePlatformCanvasWithSharedSection(width, height, is_opaque, 0,
                                                CRASH_ON_FAILURE);
@@ -81,9 +81,9 @@ static inline std::unique_ptr<SkCanvas> CreatePlatformCanvas(int width,
 #endif
 }
 
-static inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
-                                                              int height,
-                                                              bool is_opaque) {
+inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
+                                                       int height,
+                                                       bool is_opaque) {
 #if defined(WIN32)
   return CreatePlatformCanvasWithSharedSection(width, height, is_opaque, 0,
                                                RETURN_NULL_ON_FAILURE);
@@ -92,11 +92,6 @@ static inline std::unique_ptr<SkCanvas> TryCreateBitmapCanvas(int width,
                                         RETURN_NULL_ON_FAILURE);
 #endif
 }
-
-// Return the stride (length of a line in bytes) for the given width. Because
-// we use 32-bits per pixel, this will be roughly 4*width. However, for
-// alignment reasons we may wish to increase that.
-SK_API size_t PlatformCanvasStrideForWidth(unsigned width);
 
 // Copies pixels from the SkCanvas into an SkBitmap, fetching pixels from
 // GPU memory if necessary.

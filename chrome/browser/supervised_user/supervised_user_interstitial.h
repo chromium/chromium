@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "chrome/browser/supervised_user/supervised_user_error_page/supervised_user_error_page.h"
 #include "url/gurl.h"
 
@@ -21,11 +20,15 @@ class Profile;
 
 // This class is used by SupervisedUserNavigationObserver to handle requests
 // from supervised user error page. The error page is shown when a page is
-// blocked because it is on a blacklist (in "allow everything" mode), not on any
-// whitelist (in "allow only specified sites" mode), or doesn't pass safe
+// blocked because it is on a denylist (in "allow everything" mode), not on any
+// allowlist (in "allow only specified sites" mode), or doesn't pass safe
 // search.
 class SupervisedUserInterstitial {
  public:
+  SupervisedUserInterstitial(const SupervisedUserInterstitial&) = delete;
+  SupervisedUserInterstitial& operator=(const SupervisedUserInterstitial&) =
+      delete;
+
   ~SupervisedUserInterstitial();
 
   static std::unique_ptr<SupervisedUserInterstitial> Create(
@@ -37,10 +40,13 @@ class SupervisedUserInterstitial {
 
   static std::string GetHTMLContents(
       Profile* profile,
-      supervised_user_error_page::FilteringBehaviorReason reason);
+      supervised_user_error_page::FilteringBehaviorReason reason,
+      bool already_sent_request,
+      bool is_main_frame);
 
   void GoBack();
-  void RequestPermission(base::OnceCallback<void(bool)> callback);
+  void RequestUrlAccessRemote(base::OnceCallback<void(bool)> callback);
+  void RequestUrlAccessLocal(base::OnceCallback<void(bool)> callback);
   void ShowFeedback();
 
   // Getter methods.
@@ -78,8 +84,6 @@ class SupervisedUserInterstitial {
 
   // The Navigation ID of the navigation that last triggered the interstitial.
   int64_t interstitial_navigation_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SupervisedUserInterstitial);
 };
 
 #endif  // CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_INTERSTITIAL_H_

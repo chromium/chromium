@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#A8A8A8'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+let t = async_test('Color picker: Moving the color well\'s selection ring using accelerated keyboard movement.');
+t.step(() => {
+  let colorControl = document.getElementById('color');
+  openPicker(colorControl, t.step_func_done(() => {
+    popupWindow.focus();
+    const popupDocument = popupWindow.document;
+    const colorWell = popupDocument.querySelector('color-well');
+    const colorWellRect = colorWell.getBoundingClientRect();
+    eventSender.mouseMoveTo(Math.floor(colorWellRect.left),
+                            Math.floor(colorWellRect.bottom));
+    eventSender.mouseDown();
+    eventSender.mouseUp();
+    for (let i = 0; i < 5; i++) {
+      eventSender.keyDown('ArrowRight', ['ctrlKey']);
+    }
+    const rValueContainer = popupDocument.getElementById('rValueContainer');
+    const gValueContainer = popupDocument.getElementById('gValueContainer');
+    const bValueContainer = popupDocument.getElementById('bValueContainer');
+    assert_equals(rValueContainer.value, '0');
+    assert_equals(gValueContainer.value, '0');
+    assert_equals(bValueContainer.value, '0');
+  }));
+});
+</script>
+</body>
+</html>

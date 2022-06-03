@@ -2,8 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//ui/gl/features.gni")
+
+if (!is_nacl) {
+  import("//skia/features.gni")
+}
 
 declare_args() {
   # Enable GPU client logging without DCHECK being on.
@@ -15,53 +18,37 @@ declare_args() {
 # separate static libraries in non-component build.
 group("client") {
   if (is_component_build) {
-    public_deps = [
-      "//gpu",
-    ]
+    public_deps = [ "//gpu" ]
   } else {
-    public_deps = [
-      ":client_sources",
-    ]
+    public_deps = [ ":client_sources" ]
   }
 }
 
 group("gles2_cmd_helper") {
   if (is_component_build) {
-    public_deps = [
-      "//gpu:gles2",
-    ]
+    public_deps = [ "//gpu:gles2" ]
   } else {
-    public_deps = [
-      ":gles2_cmd_helper_sources",
-    ]
+    public_deps = [ ":gles2_cmd_helper_sources" ]
   }
 }
 
 group("raster") {
   if (is_component_build) {
-    public_deps = [
-      "//gpu:raster",
-    ]
+    public_deps = [ "//gpu:raster" ]
   } else {
-    public_deps = [
-      ":raster_sources",
-    ]
+    public_deps = [ ":raster_sources" ]
   }
 }
 
 group("webgpu") {
   if (is_component_build) {
-    public_deps = [
-      "//gpu:webgpu",
-    ]
+    public_deps = [ "//gpu:webgpu" ]
   } else {
-    public_deps = [
-      ":webgpu_sources",
-    ]
+    public_deps = [ ":webgpu_sources" ]
   }
 }
 
-jumbo_source_set("client_sources") {
+source_set("client_sources") {
   # External code should depend on this via //gpu/client above rather than
   # depending on this directly or the component build will break.
   visibility = [ "//gpu/*" ]
@@ -75,6 +62,10 @@ jumbo_source_set("client_sources") {
     "cmd_buffer_helper.h",
     "fenced_allocator.cc",
     "fenced_allocator.h",
+    "gl_helper.cc",
+    "gl_helper.h",
+    "gl_helper_scaling.cc",
+    "gl_helper_scaling.h",
     "gpu_control.h",
     "gpu_memory_buffer_manager.cc",
     "gpu_memory_buffer_manager.h",
@@ -83,12 +74,10 @@ jumbo_source_set("client_sources") {
     "mapped_memory.h",
     "ring_buffer.cc",
     "ring_buffer.h",
-    "shared_image_interface.h",
     "transfer_buffer.cc",
     "transfer_buffer.h",
     "transfer_buffer_cmd_copy_helpers.h",
   ]
-
   configs += [ "//gpu:gpu_implementation" ]
 
   all_dependent_configs = [ "//third_party/khronos:khronos_headers" ]
@@ -98,11 +87,24 @@ jumbo_source_set("client_sources") {
     "//components/viz/common:resource_format",
   ]
   deps = [
+    ":gles2_interface",
     "//gpu/command_buffer/common:common_sources",
     "//gpu/ipc/common:surface_handle_type",
     "//ui/gfx:memory_buffer",
     "//ui/gfx/geometry",
   ]
+
+  # These files now rely on Skia which isn't allowed as a dependency in nacl builds.
+  if (!is_nacl) {
+    sources += [
+      "shared_image_interface.cc",
+      "shared_image_interface.h",
+    ]
+
+    public_deps += [ "//skia" ]
+
+    deps += [ "//skia:buildflags" ]
+  }
 }
 
 source_set("gles2_cmd_helper_sources") {
@@ -114,7 +116,6 @@ source_set("gles2_cmd_helper_sources") {
   ]
 
   configs += [
-    "//build/config/compiler:no_shorten_64_warnings",
     "//gpu:gpu_gles2_implementation",
   ]
 
@@ -171,13 +172,9 @@ gles2_implementation_source_files = [
 ]
 
 source_set("interface_base") {
-  sources = [
-    "interface_base.h",
-  ]
+  sources = [ "interface_base.h" ]
   public_configs = [ "//third_party/khronos:khronos_headers" ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 # Provides GLES2 interface, but does not cause any implementation to be linked
@@ -206,6 +203,8 @@ source_set("raster_interface") {
     "//base",
     "//components/viz/common:resource_format",
     "//gpu/command_buffer/common",
+    "//gpu/command_buffer/common:raster",
+    "//skia:skia",
     "//ui/gfx:buffer_types",
   ]
 }
@@ -224,7 +223,7 @@ source_set("webgpu_interface") {
 }
 
 # Library emulates GLES2 using command_buffers.
-jumbo_component("gles2_implementation") {
+component("gles2_implementation") {
   sources = gles2_implementation_source_files
 
   defines = [ "GLES2_IMPL_IMPLEMENTATION" ]
@@ -300,10 +299,9 @@ source_set("webgpu_sources") {
     ":gles2_implementation",
     ":webgpu_interface",
     "//gpu/command_buffer/common:webgpu",
+    "//third_party/dawn/src/dawn:dawn_proc",
   ]
-  public_deps = [
-    "//third_party/dawn/src/dawn:dawn_headers",
-  ]
+  public_deps = [ "//third_party/dawn/src/dawn:dawn_headers" ]
   sources = [
     "webgpu_cmd_helper.cc",
     "webgpu_cmd_helper.h",
@@ -318,12 +316,14 @@ source_set("webgpu_sources") {
     sources += [
       "dawn_client_memory_transfer_service.cc",
       "dawn_client_memory_transfer_service.h",
+      "dawn_client_serializer.cc",
+      "dawn_client_serializer.h",
     ]
   }
 }
 
 # Library emulates GLES2 using command_buffers.
-jumbo_component("gles2_implementation_no_check") {
+component("gles2_implementation_no_check") {
   sources = gles2_implementation_source_files
 
   defines = [
@@ -369,7 +369,7 @@ component("gles2_c_lib") {
 
 # Same as gles2_c_lib except with no parameter checking. Required for
 # OpenGL ES 2.0 conformance tests.
-jumbo_component("gles2_c_lib_nocheck") {
+component("gles2_c_lib_nocheck") {
   sources = gles2_c_lib_source_files
 
   defines = [

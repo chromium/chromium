@@ -4,7 +4,7 @@
 
 #include "gpu/command_buffer/service/texture_base.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 
 namespace gpu {

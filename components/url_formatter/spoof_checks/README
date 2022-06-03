@@ -1,0 +1,4 @@
+Files related to spoof checking in internationalized domain names (IDN).
+
+Remember to update //docs/idn.md with the appropriate information if you
+modify the IDN spoof checking logic.

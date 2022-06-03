@@ -5,7 +5,6 @@
 #ifndef UI_EVENTS_EVENT_MODIFIERS_H_
 #define UI_EVENTS_EVENT_MODIFIERS_H_
 
-#include "base/macros.h"
 #include "ui/events/events_export.h"
 
 namespace ui {
@@ -45,6 +44,10 @@ enum {
 class EVENTS_EXPORT EventModifiers {
  public:
   EventModifiers();
+
+  EventModifiers(const EventModifiers&) = delete;
+  EventModifiers& operator=(const EventModifiers&) = delete;
+
   ~EventModifiers();
 
   // Record key press or release for regular modifier key (shift, alt, etc).
@@ -80,8 +83,6 @@ class EVENTS_EXPORT EventModifiers {
 
   // Update modifier_flags_ from modifiers_down_ and modifier_flags_locked_.
   void UpdateFlags(unsigned int modifier);
-
-  DISALLOW_COPY_AND_ASSIGN(EventModifiers);
 };
 
 }  // namespace ui

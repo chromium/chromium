@@ -13,14 +13,9 @@
 #include "net/cert/crl_set.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
-
-#if defined(OS_NACL)
-#include "base/logging.h"
-#else
 #include "net/cert/caching_cert_verifier.h"
 #include "net/cert/coalescing_cert_verifier.h"
 #include "net/cert/multi_threaded_cert_verifier.h"
-#endif
 
 namespace net {
 
@@ -31,12 +26,14 @@ CertVerifier::Config::~Config() = default;
 CertVerifier::Config& CertVerifier::Config::operator=(const Config&) = default;
 CertVerifier::Config& CertVerifier::Config::operator=(Config&&) = default;
 
+CertVerifier::RequestParams::RequestParams() = default;
+
 CertVerifier::RequestParams::RequestParams(
     scoped_refptr<X509Certificate> certificate,
-    const std::string& hostname,
+    base::StringPiece hostname,
     int flags,
-    const std::string& ocsp_response,
-    const std::string& sct_list)
+    base::StringPiece ocsp_response,
+    base::StringPiece sct_list)
     : certificate_(std::move(certificate)),
       hostname_(hostname),
       flags_(flags),
@@ -54,7 +51,7 @@ CertVerifier::RequestParams::RequestParams(
     SHA256_Update(&ctx, CRYPTO_BUFFER_data(cert_handle.get()),
                   CRYPTO_BUFFER_len(cert_handle.get()));
   }
-  SHA256_Update(&ctx, hostname_.data(), hostname.size());
+  SHA256_Update(&ctx, hostname.data(), hostname.size());
   SHA256_Update(&ctx, &flags, sizeof(flags));
   SHA256_Update(&ctx, ocsp_response.data(), ocsp_response.size());
   SHA256_Update(&ctx, sct_list.data(), sct_list.size());
@@ -78,14 +75,10 @@ bool CertVerifier::RequestParams::operator<(
 }
 
 // static
-std::unique_ptr<CertVerifier> CertVerifier::CreateDefault(
+std::unique_ptr<CertVerifier> CertVerifier::CreateDefaultWithoutCaching(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
-#if defined(OS_NACL)
-  NOTIMPLEMENTED();
-  return std::unique_ptr<CertVerifier>();
-#else
   scoped_refptr<CertVerifyProc> verify_proc;
-#if defined(OS_FUCHSIA)
+#if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   verify_proc =
       CertVerifyProc::CreateBuiltinVerifyProc(std::move(cert_net_fetcher));
 #elif BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
@@ -101,10 +94,15 @@ std::unique_ptr<CertVerifier> CertVerifier::CreateDefault(
       CertVerifyProc::CreateSystemVerifyProc(std::move(cert_net_fetcher));
 #endif
 
+  return std::make_unique<MultiThreadedCertVerifier>(std::move(verify_proc));
+}
+
+// static
+std::unique_ptr<CertVerifier> CertVerifier::CreateDefault(
+    scoped_refptr<CertNetFetcher> cert_net_fetcher) {
   return std::make_unique<CachingCertVerifier>(
       std::make_unique<CoalescingCertVerifier>(
-          std::make_unique<MultiThreadedCertVerifier>(std::move(verify_proc))));
-#endif
+          CreateDefaultWithoutCaching(std::move(cert_net_fetcher))));
 }
 
 bool operator==(const CertVerifier::Config& lhs,
@@ -112,11 +110,13 @@ bool operator==(const CertVerifier::Config& lhs,
   return std::tie(
              lhs.enable_rev_checking, lhs.require_rev_checking_local_anchors,
              lhs.enable_sha1_local_anchors, lhs.disable_symantec_enforcement,
-             lhs.crl_set, lhs.additional_trust_anchors) ==
+             lhs.crl_set, lhs.additional_trust_anchors,
+             lhs.additional_untrusted_authorities) ==
          std::tie(
              rhs.enable_rev_checking, rhs.require_rev_checking_local_anchors,
              rhs.enable_sha1_local_anchors, rhs.disable_symantec_enforcement,
-             rhs.crl_set, rhs.additional_trust_anchors);
+             rhs.crl_set, rhs.additional_trust_anchors,
+             rhs.additional_untrusted_authorities);
 }
 
 bool operator!=(const CertVerifier::Config& lhs,

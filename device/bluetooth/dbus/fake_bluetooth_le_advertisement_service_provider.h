@@ -5,8 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_LE_ADVERTISEMENT_SERVICE_PROVIDER_H_
 #define DEVICE_BLUETOOTH_DBUS_FAKE_BLUETOOTH_LE_ADVERTISEMENT_SERVICE_PROVIDER_H_
 
-#include <memory>
-
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/macros.h"
@@ -25,6 +23,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothLEAdvertisementServiceProvider
   FakeBluetoothLEAdvertisementServiceProvider(
       const dbus::ObjectPath& object_path,
       Delegate* delegate);
+
+  FakeBluetoothLEAdvertisementServiceProvider(
+      const FakeBluetoothLEAdvertisementServiceProvider&) = delete;
+  FakeBluetoothLEAdvertisementServiceProvider& operator=(
+      const FakeBluetoothLEAdvertisementServiceProvider&) = delete;
+
   ~FakeBluetoothLEAdvertisementServiceProvider() override;
 
   // Each of these calls the equivalent
@@ -41,8 +45,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothLEAdvertisementServiceProvider
   // passed to generate the reply. |delegate_| is generally the object that
   // owns this one, and must outlive it.
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothLEAdvertisementServiceProvider);
 };
 
 }  // namespace bluez

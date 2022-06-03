@@ -18,7 +18,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "snapshot/module_snapshot.h"
 
 namespace crashpad {
@@ -31,12 +30,15 @@ class ModuleSnapshotSanitized final : public ModuleSnapshot {
   //! \brief Constructs this object.
   //!
   //! \param[in] snapshot The ModuleSnapshot to sanitize.
-  //! \param[in] annotations_whitelist A list of annotation names to allow to be
+  //! \param[in] allowed_annotations A list of annotation names to allow to be
   //!     returned by AnnotationsSimpleMap() or AnnotationObjects(). If
   //!     `nullptr`, all annotations will be returned.
-  ModuleSnapshotSanitized(
-      const ModuleSnapshot* snapshot,
-      const std::vector<std::string>* annotations_whitelist);
+  ModuleSnapshotSanitized(const ModuleSnapshot* snapshot,
+                          const std::vector<std::string>* allowed_annotations);
+
+  ModuleSnapshotSanitized(const ModuleSnapshotSanitized&) = delete;
+  ModuleSnapshotSanitized& operator=(const ModuleSnapshotSanitized&) = delete;
+
   ~ModuleSnapshotSanitized() override;
 
   // ModuleSnapshot:
@@ -65,9 +67,7 @@ class ModuleSnapshotSanitized final : public ModuleSnapshot {
 
  private:
   const ModuleSnapshot* snapshot_;
-  const std::vector<std::string>* annotations_whitelist_;
-
-  DISALLOW_COPY_AND_ASSIGN(ModuleSnapshotSanitized);
+  const std::vector<std::string>* allowed_annotations_;
 };
 
 }  // namespace internal

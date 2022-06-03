@@ -1,0 +1,15 @@
+<groups>
+  <group name="Group A">
+    <sender name="Sender 1">
+      <traffic_annotation unique_id="unique_id_A"/>
+    </sender>
+    <sender name="Sender 2">
+      <traffic_annotation unique_id="unique_id_B"/>
+    </sender>
+  </group>
+  <group name="Group C">
+    <sender name="Sender 3">
+      <traffic_annotation unique_id="unique_id_C"/>
+    </sender>
+  </group>
+</groups>

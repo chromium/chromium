@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PAPPI_TESTS_TEST_FULLSCREEN_H_
-#define PAPPI_TESTS_TEST_FULLSCREEN_H_
+#ifndef PPAPI_TESTS_TEST_FULLSCREEN_H_
+#define PPAPI_TESTS_TEST_FULLSCREEN_H_
 
 #include <stdint.h>
 
@@ -64,4 +64,4 @@ class TestFullscreen : public TestCase {
   NestedEvent normal_event_;
 };
 
-#endif  // PAPPI_TESTS_TEST_FULLSCREEN_H_
+#endif  // PPAPI_TESTS_TEST_FULLSCREEN_H_

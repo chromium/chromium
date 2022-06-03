@@ -4,9 +4,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/browser_context.h"
@@ -474,6 +473,11 @@ class ExtensionsMockClientSocket : public net::MockTCPClientSocket {
         success_(success) {
     this->set_enable_read_if_ready(true);
   }
+
+  ExtensionsMockClientSocket(const ExtensionsMockClientSocket&) = delete;
+  ExtensionsMockClientSocket& operator=(const ExtensionsMockClientSocket&) =
+      delete;
+
   ~ExtensionsMockClientSocket() override {}
 
   bool SetNoDelay(bool no_delay) override { return success_; }
@@ -482,8 +486,6 @@ class ExtensionsMockClientSocket : public net::MockTCPClientSocket {
  private:
   // Whether to return success for SetNoDelay() and SetKeepAlive().
   const bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsMockClientSocket);
 };
 
 static const net::MockRead kMockReads[] = {net::MockRead(net::ASYNC, net::OK)};
@@ -493,6 +495,10 @@ static const net::MockRead kMockReads[] = {net::MockRead(net::ASYNC, net::OK)};
 class TestSocketFactory : public net::ClientSocketFactory {
  public:
   explicit TestSocketFactory(bool success) : success_(success) {}
+
+  TestSocketFactory(const TestSocketFactory&) = delete;
+  TestSocketFactory& operator=(const TestSocketFactory&) = delete;
+
   ~TestSocketFactory() override = default;
 
   std::unique_ptr<net::DatagramClientSocket> CreateDatagramClientSocket(
@@ -505,6 +511,7 @@ class TestSocketFactory : public net::ClientSocketFactory {
   std::unique_ptr<net::TransportClientSocket> CreateTransportClientSocket(
       const net::AddressList&,
       std::unique_ptr<net::SocketPerformanceWatcher>,
+      net::NetworkQualityEstimator* network_quality_estimator,
       net::NetLog*,
       const net::NetLogSource&) override {
     providers_.push_back(std::make_unique<net::StaticSocketDataProvider>(
@@ -540,8 +547,6 @@ class TestSocketFactory : public net::ClientSocketFactory {
   // Whether to return success for net::TransportClientSocket::SetNoDelay() and
   // SetKeepAlive().
   const bool success_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSocketFactory);
 };
 
 }  // namespace
@@ -640,7 +645,7 @@ TEST_F(TCPSocketServerTest, ListenAccept) {
       [&](int result,
           mojo::PendingRemote<network::mojom::TCPConnectedSocket>
               accepted_socket,
-          const base::Optional<net::IPEndPoint>& remote_addr,
+          const absl::optional<net::IPEndPoint>& remote_addr,
           mojo::ScopedDataPipeConsumerHandle receive_handle,
           mojo::ScopedDataPipeProducerHandle send_handle) {
         EXPECT_EQ(net::OK, result);
@@ -679,14 +684,16 @@ TEST_F(TCPSocketServerTest, ReadAndWrite) {
   // Create a server socket.
   std::unique_ptr<TCPSocket> socket = CreateSocket();
   net::TestCompletionCallback callback;
-  base::RunLoop run_loop;
-  socket->Listen(
-      "127.0.0.1", 0 /* port */, 1 /* backlog */,
-      base::BindLambdaForTesting([&](int result, const std::string& error_msg) {
-        EXPECT_EQ(net::OK, result);
-        run_loop.Quit();
-      }));
-  run_loop.Run();
+  {
+    base::RunLoop run_loop;
+    socket->Listen("127.0.0.1", 0 /* port */, 1 /* backlog */,
+                   base::BindLambdaForTesting(
+                       [&](int result, const std::string& error_msg) {
+                         EXPECT_EQ(net::OK, result);
+                         run_loop.Quit();
+                       }));
+    run_loop.Run();
+  }
   net::IPEndPoint server_addr;
   EXPECT_TRUE(socket->GetLocalAddress(&server_addr));
 
@@ -697,7 +704,7 @@ TEST_F(TCPSocketServerTest, ReadAndWrite) {
       [&](int result,
           mojo::PendingRemote<network::mojom::TCPConnectedSocket>
               connected_socket,
-          const base::Optional<net::IPEndPoint>& remote_addr,
+          const absl::optional<net::IPEndPoint>& remote_addr,
           mojo::ScopedDataPipeConsumerHandle receive_handle,
           mojo::ScopedDataPipeProducerHandle send_handle) {
         EXPECT_EQ(net::OK, result);

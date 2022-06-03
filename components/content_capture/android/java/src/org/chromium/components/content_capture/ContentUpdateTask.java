@@ -12,23 +12,24 @@ import org.chromium.components.content_capture.PlatformSession.PlatformSessionDa
  * The task to update the captured content in platform.
  */
 class ContentUpdateTask extends ProcessContentCaptureDataTask {
-    public ContentUpdateTask(FrameSession session, ContentCaptureData contentCaptureData,
+    public ContentUpdateTask(FrameSession session, ContentCaptureFrame contentCaptureFrame,
             PlatformSession platformSession) {
-        super(session, contentCaptureData, platformSession);
+        super(session, contentCaptureFrame, platformSession);
     }
 
     @Override
     protected AutofillId notifyPlatform(
-            PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {
-        return notifyViewTextChanged(parentPlatformSessionData, data);
+            PlatformSessionData parentPlatformSessionData, ContentCaptureDataBase data) {
+        return notifyViewTextChanged(parentPlatformSessionData, (ContentCaptureData) data);
     }
 
     private AutofillId notifyViewTextChanged(
             PlatformSessionData parentPlatformSessionData, ContentCaptureData data) {
-        AutofillId autofillId = parentPlatformSessionData.contentCaptureSession.newAutofillId(
+        AutofillId autofillId = PlatformAPIWrapper.getInstance().newAutofillId(
+                parentPlatformSessionData.contentCaptureSession,
                 mPlatformSession.getRootPlatformSessionData().autofillId, data.getId());
-        parentPlatformSessionData.contentCaptureSession.notifyViewTextChanged(
-                autofillId, data.getValue());
+        PlatformAPIWrapper.getInstance().notifyViewTextChanged(
+                parentPlatformSessionData.contentCaptureSession, autofillId, data.getValue());
         return autofillId;
     }
 }

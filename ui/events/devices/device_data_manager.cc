@@ -8,7 +8,7 @@
 
 #include "base/at_exit.h"
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #include "ui/events/devices/touch_device_transform.h"
@@ -286,6 +286,15 @@ void DeviceDataManager::AddObserver(InputDeviceEventObserver* observer) {
 
 void DeviceDataManager::RemoveObserver(InputDeviceEventObserver* observer) {
   observers_.RemoveObserver(observer);
+}
+
+void DeviceDataManager::ResetDeviceListsForTest() {
+  touchscreen_devices_.clear();
+  keyboard_devices_.clear();
+  mouse_devices_.clear();
+  touchpad_devices_.clear();
+  uncategorized_devices_.clear();
+  device_lists_complete_ = false;
 }
 
 void DeviceDataManager::SetTouchscreensEnabled(bool enabled) {

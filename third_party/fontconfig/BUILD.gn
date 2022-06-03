@@ -5,7 +5,7 @@
 import("//build/config/sanitizers/sanitizers.gni")
 import("//third_party/fontconfig/fontconfig.gni")
 
-assert(is_linux)
+assert(is_linux || is_chromeos)
 
 if (use_bundled_fontconfig) {
   config("fontconfig_config") {

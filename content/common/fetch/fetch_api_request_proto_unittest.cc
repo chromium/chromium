@@ -12,7 +12,6 @@ TEST(FetchAPIRequestProtoTest, SerialiazeDeserializeRoundTrip) {
   auto request = blink::mojom::FetchAPIRequest::New();
   request->mode = network::mojom::RequestMode::kSameOrigin;
   request->is_main_resource_load = true;
-  request->request_context_type = blink::mojom::RequestContextType::IFRAME;
   request->url = GURL("foo.com");
   request->method = "GET";
   request->headers = {{"User-Agent", "Chrome"}};

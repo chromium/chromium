@@ -5,13 +5,14 @@
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 
 #include "base/compiler_specific.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/text/hyphenation.h"
 #include "third_party/blink/renderer/platform/text/icu_error.h"
 #include "third_party/blink/renderer/platform/text/locale_to_script_mapping.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
-#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/case_folding_hash.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 #include <hb.h>
@@ -41,17 +42,18 @@ PerThreadData& GetPerThreadData() {
 static hb_language_t ToHarfbuzLanguage(const AtomicString& locale) {
   std::string locale_as_latin1 = locale.Latin1();
   return hb_language_from_string(locale_as_latin1.data(),
-                                 locale_as_latin1.length());
+                                 static_cast<int>(locale_as_latin1.length()));
 }
 
-// SkFontMgr requires script-based locale names, like "zh-Hant" and "zh-Hans",
-// instead of "zh-CN" and "zh-TW".
+// SkFontMgr uses two/three-letter language code with an optional ISO 15924
+// four-letter script code, in POSIX style (with '-' as the separator,) such as
+// "zh-Hant" and "zh-Hans". See `fonts.xml`.
 static const char* ToSkFontMgrLocale(UScriptCode script) {
   switch (script) {
     case USCRIPT_KATAKANA_OR_HIRAGANA:
-      return "ja-JP";
+      return "ja";
     case USCRIPT_HANGUL:
-      return "ko-KR";
+      return "ko";
     case USCRIPT_SIMPLIFIED_HAN:
       return "zh-Hans";
     case USCRIPT_TRADITIONAL_HAN:
@@ -62,13 +64,22 @@ static const char* ToSkFontMgrLocale(UScriptCode script) {
 }
 
 const char* LayoutLocale::LocaleForSkFontMgr() const {
-  if (string_for_sk_font_mgr_.empty()) {
-    const char* sk_font_mgr_locale = ToSkFontMgrLocale(script_);
-    string_for_sk_font_mgr_ =
-        sk_font_mgr_locale ? sk_font_mgr_locale : std::string();
-    if (string_for_sk_font_mgr_.empty())
-      string_for_sk_font_mgr_ = string_.Ascii();
+  if (!string_for_sk_font_mgr_.empty())
+    return string_for_sk_font_mgr_.c_str();
+
+  if (const char* sk_font_mgr_locale = ToSkFontMgrLocale(script_)) {
+    string_for_sk_font_mgr_ = sk_font_mgr_locale;
+    DCHECK(!string_for_sk_font_mgr_.empty());
+    return string_for_sk_font_mgr_.c_str();
   }
+
+  const icu::Locale locale(Ascii().c_str());
+  const char* language = locale.getLanguage();
+  string_for_sk_font_mgr_ = language && *language ? language : "und";
+  const char* script = locale.getScript();
+  if (script && *script)
+    string_for_sk_font_mgr_ = string_for_sk_font_mgr_ + "-" + script;
+  DCHECK(!string_for_sk_font_mgr_.empty());
   return string_for_sk_font_mgr_.c_str();
 }
 
@@ -222,7 +233,7 @@ AtomicString LayoutLocale::LocaleWithBreakKeyword(
     return string_;
 
   std::string utf8_locale = string_.Utf8();
-  Vector<char> buffer(utf8_locale.length() + 11, 0);
+  Vector<char> buffer(static_cast<wtf_size_t>(utf8_locale.length() + 11), 0);
   memcpy(buffer.data(), utf8_locale.c_str(), utf8_locale.length());
 
   const char* keyword_value = nullptr;

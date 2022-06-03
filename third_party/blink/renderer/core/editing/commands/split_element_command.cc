@@ -29,7 +29,6 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -102,7 +101,7 @@ void SplitElementCommand::DoReapply() {
   ExecuteApply();
 }
 
-void SplitElementCommand::Trace(Visitor* visitor) {
+void SplitElementCommand::Trace(Visitor* visitor) const {
   visitor->Trace(element1_);
   visitor->Trace(element2_);
   visitor->Trace(at_child_);

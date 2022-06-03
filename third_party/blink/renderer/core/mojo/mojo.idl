@@ -7,14 +7,16 @@
 typedef unsigned long MojoResult;
 
 enum MojoScope {
-  // Refers to the InterfaceProvider associated with the current execution
-  // context. Either a Document or WorkerGlobalScope.
+  // If MojoJS interface broker is provided to MojoBindingContext, refers to
+  // that BrowserInterfaceBroker. Otherwise, it refers to the
+  // BrowserInterfaceBroker associated with the current execution context.
+  // Either a Document or WorkerGlobalScope.
   "context",
-  // Refers to the InterfaceProvider of the current process.
+  // Refers to the BrowserInterfaceBroker of the current process.
   //
   // Note: A "process" is not a web concept. In some cases the browser process
   // concept of a "site instance" may be useful however there is currently no
-  // InterfaceProvider per site instance.
+  // BrowserInterfaceBroker per site instance.
   "process",
 };
 
@@ -46,5 +48,6 @@ enum MojoScope {
     static MojoCreateDataPipeResult createDataPipe(MojoCreateDataPipeOptions options);
     static MojoCreateSharedBufferResult createSharedBuffer(unsigned long numBytes);
 
-    [CallWith=ScriptState] static void bindInterface(DOMString interfaceName, MojoHandle request_handle, optional MojoScope scope = "context", optional boolean useBrowserInterfaceBroker = false);
+    [CallWith=ScriptState, RaisesException]
+    static void bindInterface(DOMString interfaceName, MojoHandle request_handle, optional MojoScope scope = "context");
 };

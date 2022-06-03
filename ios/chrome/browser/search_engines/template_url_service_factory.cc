@@ -27,20 +27,20 @@
 namespace ios {
 namespace {
 
-base::Closure GetDefaultSearchProviderChangedCallback() {
+base::RepeatingClosure GetDefaultSearchProviderChangedCallback() {
 #if BUILDFLAG(ENABLE_RLZ)
-  return base::Bind(base::IgnoreResult(&rlz::RLZTracker::RecordProductEvent),
-                    rlz_lib::CHROME, rlz::RLZTracker::ChromeOmnibox(),
-                    rlz_lib::SET_TO_GOOGLE);
+  return base::BindRepeating(
+      base::IgnoreResult(&rlz::RLZTracker::RecordProductEvent), rlz_lib::CHROME,
+      rlz::RLZTracker::ChromeOmnibox(), rlz_lib::SET_TO_GOOGLE);
 #else
-  return base::Closure();
+  return base::RepeatingClosure();
 #endif
 }
 
 std::unique_ptr<KeyedService> BuildTemplateURLService(
     web::BrowserState* context) {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<TemplateURLService>(
       browser_state->GetPrefs(),
       std::make_unique<ios::UIThreadSearchTermsData>(),
@@ -56,7 +56,7 @@ std::unique_ptr<KeyedService> BuildTemplateURLService(
 
 // static
 TemplateURLService* TemplateURLServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<TemplateURLService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }

@@ -31,6 +31,8 @@
 
 #include "third_party/blink/renderer/core/editing/commands/move_commands.h"
 
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/editing/editing_behavior.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
@@ -57,7 +59,7 @@ unsigned MoveCommands::VerticalScrollDistance(LocalFrame& frame) {
   LayoutObject* const layout_object = focused_element->GetLayoutObject();
   if (!layout_object || !layout_object->IsBox())
     return 0;
-  LayoutBox& layout_box = ToLayoutBox(*layout_object);
+  auto& layout_box = To<LayoutBox>(*layout_object);
   const ComputedStyle* const style = layout_box.Style();
   if (!style)
     return 0;
@@ -155,7 +157,8 @@ void MoveCommands::UpdateFocusForCaretBrowsing(LocalFrame& frame) {
 
   frame.GetDocument()->SetFocusedElement(
       new_focused_element,
-      FocusParams(SelectionBehaviorOnFocus::kNone, kWebFocusTypeNone, nullptr));
+      FocusParams(SelectionBehaviorOnFocus::kNone,
+                  mojom::blink::FocusType::kNone, nullptr));
 }
 
 void MoveCommands::UpdateSelectionForCaretBrowsing(LocalFrame& frame) {

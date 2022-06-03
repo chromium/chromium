@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="am">
-<translation id="6106989379647458772">በ<ph name="PAGE" /> ላይ ያለው ድረ-ገፅ ለጊዜው ተበላሽቶ ሊሆን ይችላል ወይም በቋሚነት ወደ አዲስ የድር አድራሻ ተንቀሳቅሶ ሊሆን ይችላል።</translation>
-<translation id="6312113039770857350">ድረ-ገጽ አይገኝም</translation>
-<translation id="8681531050781943054">በ<ph name="PAGE" /> ላይ ያለው ድረ-ገጽ ሊጫን አልቻለም ምክንያቱም፦</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />አስተያየቶች፦<ph name="MARKUP_2" /> የውሂብ ግንኙነት እንዳለዎት እርግጠኛ ይሁኑ<ph name="MARKUP_3" />ይህንን ድረ-ገጽ ቆይተው ዳግም ይጫኑት<ph name="MARKUP_4" /> ያስገቡትን አድራሻ ይፈትሹ<ph name="MARKUP_5" /></translation>
 </translationbundle>

@@ -1,7 +1,3 @@
-PASS successfullyParsed is true
-
-TEST COMPLETE
-
 ===== doubleClickAction with initial state=[] =====
 1. targetDiv received mouseover buttons: 0
 2. targetDiv received mouseenter buttons: 0
@@ -216,4 +212,8 @@ TEST COMPLETE
 23. targetDiv received mouseout buttons: 6
 24. targetDiv received mouseleave buttons: 6
 
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
 

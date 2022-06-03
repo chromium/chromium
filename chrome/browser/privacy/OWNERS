@@ -1,0 +1,7 @@
+per-file BUILD.gn=*
+
+per-file traffic_annotation.proto=file://tools/traffic_annotation/OWNERS
+
+# For changes to Secure DNS
+file://net/dns/OWNERS
+bemasc@chromium.org

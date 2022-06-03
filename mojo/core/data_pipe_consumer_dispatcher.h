@@ -8,8 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <memory>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -37,6 +35,10 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeConsumerDispatcher final
       base::UnsafeSharedMemoryRegion shared_ring_buffer,
       const MojoCreateDataPipeOptions& options,
       uint64_t pipe_id);
+
+  DataPipeConsumerDispatcher(const DataPipeConsumerDispatcher&) = delete;
+  DataPipeConsumerDispatcher& operator=(const DataPipeConsumerDispatcher&) =
+      delete;
 
   // Dispatcher:
   Type GetType() const override;
@@ -118,8 +120,6 @@ class MOJO_SYSTEM_IMPL_EXPORT DataPipeConsumerDispatcher final
 
   // Indicates whether any new data is available since the last read attempt.
   bool new_data_available_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(DataPipeConsumerDispatcher);
 };
 
 }  // namespace core

@@ -6,23 +6,26 @@
 #define MEDIA_FILTERS_DECRYPTING_DEMUXER_STREAM_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "media/base/audio_decoder_config.h"
+#include "media/base/callback_registry.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decryptor.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/waiting.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class SingleThreadTaskRunner;
+class SequencedTaskRunner;
 }
 
 namespace media {
 
+class CdmContext;
 class DecoderBuffer;
 class MediaLog;
 
@@ -33,9 +36,12 @@ class MediaLog;
 class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
  public:
   DecryptingDemuxerStream(
-      const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+      const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       MediaLog* media_log,
       const WaitingCB& waiting_cb);
+
+  DecryptingDemuxerStream(const DecryptingDemuxerStream&) = delete;
+  DecryptingDemuxerStream& operator=(const DecryptingDemuxerStream&) = delete;
 
   // Cancels all pending operations immediately and fires all pending callbacks.
   ~DecryptingDemuxerStream() override;
@@ -43,7 +49,7 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   // |stream| must be encrypted and |cdm_context| must be non-null.
   void Initialize(DemuxerStream* stream,
                   CdmContext* cdm_context,
-                  const PipelineStatusCB& status_cb);
+                  PipelineStatusCallback status_cb);
 
   // Cancels all pending operations and fires all pending callbacks. If in
   // kPendingDemuxerRead or kPendingDecrypt state, waits for the pending
@@ -56,13 +62,15 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
 
   // DemuxerStream implementation.
   void Read(ReadCB read_cb) override;
-  bool IsReadPending() const override;
   AudioDecoderConfig audio_decoder_config() override;
   VideoDecoderConfig video_decoder_config() override;
   Type type() const override;
   Liveness liveness() const override;
   void EnableBitstreamConverter() override;
   bool SupportsConfigChanges() override;
+
+  // Returns whether the stream has clear lead.
+  bool HasClearLead() const;
 
  private:
   // See this link for a detailed state diagram: http://shortn/_1nXgoVIrps
@@ -125,9 +133,8 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   void OnBufferDecrypted(Decryptor::Status status,
                          scoped_refptr<DecoderBuffer> decrypted_buffer);
 
-  // Callback for the |decryptor_| to notify this object that a new key has been
-  // added.
-  void OnKeyAdded();
+  // Callback for the CDM to notify |this|.
+  void OnCdmContextEvent(CdmContext::Event event);
 
   // Resets decoder and calls |reset_cb_|.
   void DoReset();
@@ -143,13 +150,16 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   void CompletePendingDecrypt(Decryptor::Status status);
   void CompleteWaitingForDecryptionKey();
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  void LogMetadata();
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
   MediaLog* const media_log_;
   WaitingCB waiting_cb_;
 
   State state_ = kUninitialized;
 
-  PipelineStatusCB init_cb_;
+  PipelineStatusCallback init_cb_;
   ReadCB read_cb_;
   base::OnceClosure reset_cb_;
 
@@ -161,6 +171,8 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
 
   Decryptor* decryptor_ = nullptr;
 
+  absl::optional<bool> has_clear_lead_;
+
   // The buffer returned by the demuxer that needs to be decrypted.
   scoped_refptr<media::DecoderBuffer> pending_buffer_to_decrypt_;
 
@@ -170,10 +182,10 @@ class MEDIA_EXPORT DecryptingDemuxerStream : public DemuxerStream {
   // decrypting again in case the newly added key is the correct decryption key.
   bool key_added_while_decrypt_pending_ = false;
 
-  base::WeakPtr<DecryptingDemuxerStream> weak_this_;
-  base::WeakPtrFactory<DecryptingDemuxerStream> weak_factory_{this};
+  // To keep the CdmContext event callback registered.
+  std::unique_ptr<CallbackRegistration> event_cb_registration_;
 
-  DISALLOW_COPY_AND_ASSIGN(DecryptingDemuxerStream);
+  base::WeakPtrFactory<DecryptingDemuxerStream> weak_factory_{this};
 };
 
 }  // namespace media

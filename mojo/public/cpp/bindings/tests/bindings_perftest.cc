@@ -34,19 +34,23 @@ double MojoTicksToSeconds(MojoTimeTicks ticks) {
 class PingServiceImpl : public test::PingService {
  public:
   PingServiceImpl() = default;
+
+  PingServiceImpl(const PingServiceImpl&) = delete;
+  PingServiceImpl& operator=(const PingServiceImpl&) = delete;
+
   ~PingServiceImpl() override = default;
 
   // |PingService| methods:
   void Ping(PingCallback callback) override { std::move(callback).Run(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PingServiceImpl);
 };
 
 class PingPongTest {
  public:
   explicit PingPongTest(PendingRemote<test::PingService> remote)
       : remote_(std::move(remote)) {}
+
+  PingPongTest(const PingPongTest&) = delete;
+  PingPongTest& operator=(const PingPongTest&) = delete;
 
   void Run(unsigned int iterations) {
     iterations_to_run_ = iterations;
@@ -76,8 +80,6 @@ class PingPongTest {
   unsigned int current_iterations_;
 
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(PingPongTest);
 };
 
 struct BoundPingService {
@@ -189,11 +191,11 @@ class PingPongPaddle : public MessageReceiverWithResponderStatus {
 TEST_F(MojoBindingsPerftest, MultiplexRouterPingPong) {
   MessagePipe pipe;
   scoped_refptr<internal::MultiplexRouter> router0(
-      new internal::MultiplexRouter(std::move(pipe.handle0),
-                                    internal::MultiplexRouter::SINGLE_INTERFACE,
-                                    true, base::ThreadTaskRunnerHandle::Get()));
+      internal::MultiplexRouter::CreateAndStartReceiving(
+          std::move(pipe.handle0), internal::MultiplexRouter::SINGLE_INTERFACE,
+          true, base::ThreadTaskRunnerHandle::Get()));
   scoped_refptr<internal::MultiplexRouter> router1(
-      new internal::MultiplexRouter(
+      internal::MultiplexRouter::CreateAndStartReceiving(
           std::move(pipe.handle1), internal::MultiplexRouter::SINGLE_INTERFACE,
           false, base::ThreadTaskRunnerHandle::Get()));
 
@@ -201,11 +203,13 @@ TEST_F(MojoBindingsPerftest, MultiplexRouterPingPong) {
   PingPongPaddle paddle1(nullptr);
 
   InterfaceEndpointClient client0(
-      router0->CreateLocalEndpointHandle(kMasterInterfaceId), &paddle0, nullptr,
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      router0->CreateLocalEndpointHandle(kPrimaryInterfaceId), &paddle0,
+      nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
+      kTestInterfaceName);
   InterfaceEndpointClient client1(
-      router1->CreateLocalEndpointHandle(kMasterInterfaceId), &paddle1, nullptr,
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      router1->CreateLocalEndpointHandle(kPrimaryInterfaceId), &paddle1,
+      nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
+      kTestInterfaceName);
 
   paddle0.set_sender(&client0);
   paddle1.set_sender(&client1);
@@ -245,13 +249,15 @@ class CounterReceiver : public MessageReceiverWithResponderStatus {
 
 TEST_F(MojoBindingsPerftest, MultiplexRouterDispatchCost) {
   MessagePipe pipe;
-  scoped_refptr<internal::MultiplexRouter> router(new internal::MultiplexRouter(
-      std::move(pipe.handle0), internal::MultiplexRouter::SINGLE_INTERFACE,
-      true, base::ThreadTaskRunnerHandle::Get()));
+  scoped_refptr<internal::MultiplexRouter> router =
+      internal::MultiplexRouter::Create(
+          std::move(pipe.handle0), internal::MultiplexRouter::SINGLE_INTERFACE,
+          true, base::ThreadTaskRunnerHandle::Get());
   CounterReceiver receiver;
   InterfaceEndpointClient client(
-      router->CreateLocalEndpointHandle(kMasterInterfaceId), &receiver, nullptr,
-      false, base::ThreadTaskRunnerHandle::Get(), 0u, kTestInterfaceName);
+      router->CreateLocalEndpointHandle(kPrimaryInterfaceId), &receiver,
+      nullptr, false, base::ThreadTaskRunnerHandle::Get(), 0u,
+      kTestInterfaceName);
 
   static const uint32_t kIterations[] = {1000, 3000000};
 

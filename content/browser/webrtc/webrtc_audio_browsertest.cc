@@ -11,11 +11,12 @@
 #include "content/browser/webrtc/webrtc_content_browsertest_base.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "media/base/media_switches.h"
-#include "media/webrtc/webrtc_switches.h"
+#include "media/webrtc/webrtc_features.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "third_party/blink/public/common/peerconnection/webrtc_ip_handling_policy.h"
 
@@ -76,7 +77,7 @@ class WebRtcAudioBrowserTest : public WebRtcContentBrowserTestBase {
   base::test::ScopedFeatureList audio_service_features_;
 };
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 
 // Flaky on MacOS: http://crbug.com/982421
 #define MAYBE_CanMakeVideoCallAndThenRenegotiateToAudio \
@@ -115,7 +116,7 @@ class WebRtcAudioBrowserTest : public WebRtcContentBrowserTestBase {
 #define MAYBE_EstablishAudioOnlyCallAndVerifyGetSynchronizationSourcesWorks \
   EstablishAudioOnlyCallAndVerifyGetSynchronizationSourcesWorks
 
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 IN_PROC_BROWSER_TEST_F(WebRtcAudioBrowserTest,
                        MAYBE_CanMakeVideoCallAndThenRenegotiateToAudio) {

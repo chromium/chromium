@@ -27,6 +27,7 @@ using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
+using chrome_test_util::TabGridEditButton;
 
 namespace {
 
@@ -86,6 +87,7 @@ NSString* GetTextFieldForID(int categoryId) {
 id<GREYMatcher> NavigationBarEditButton() {
   return grey_allOf(
       ButtonWithAccessibilityLabelId(IDS_IOS_NAVIGATION_BAR_EDIT_BUTTON),
+      grey_not(TabGridEditButton()),
       grey_not(grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)), nil);
 }
 
@@ -110,12 +112,8 @@ id<GREYMatcher> NavigationBarEditButton() {
 // Helper to open the settings page for Autofill profiles.
 - (void)openAutofillProfilesSettings {
   [ChromeEarlGreyUI openSettingsMenu];
-  id<GREYMatcher> addressesButton =
-      ButtonWithAccessibilityLabelId(IDS_AUTOFILL_ADDRESSES_SETTINGS_TITLE);
-  [[[EarlGrey selectElementWithMatcher:addressesButton]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
-      onElementWithMatcher:grey_kindOfClassName(@"UITableView")]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI
+      tapSettingsMenuButton:chrome_test_util::AddressesAndMoreButton()];
 }
 
 // Helper to open the settings page for the Autofill profile with |label|.
@@ -128,12 +126,12 @@ id<GREYMatcher> NavigationBarEditButton() {
 
 // Close the settings.
 - (void)exitSettingsMenu {
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
       performAction:grey_tap()];
   // Wait for UI components to finish loading.
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdle];
+  [ChromeEarlGreyUI waitForAppToIdle];
 }
 
 // Test that the page for viewing Autofill profile details is as expected.
@@ -147,22 +145,17 @@ id<GREYMatcher> NavigationBarEditButton() {
         stringWithFormat:@"%@, %@",
                          l10n_util::GetNSString(expectation.display_string_id),
                          expectation.expected_result]);
-    BOOL mustBePresent = YES;
-    if (expectation.display_string_id == IDS_IOS_AUTOFILL_COMPANY_NAME &&
-        ![ChromeEarlGrey isAutofillCompanyNameEnabled]) {
-      mustBePresent = NO;
-    }
     [[[EarlGrey
         selectElementWithMatcher:grey_allOf(elementMatcher,
                                             grey_sufficientlyVisible(), nil)]
            usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
         onElementWithMatcher:grey_accessibilityID(
                                  kAutofillProfileEditTableViewId)]
-        assertWithMatcher:mustBePresent ? grey_notNil() : grey_nil()];
+        assertWithMatcher:grey_notNil()];
   }
 
   // Go back to the list view page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
   [self exitSettingsMenu];
@@ -203,7 +196,7 @@ id<GREYMatcher> NavigationBarEditButton() {
   }
 
   // Go back to the list view page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
   [self exitSettingsMenu];
@@ -217,7 +210,7 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Go back to the list view page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
   [self exitSettingsMenu];
@@ -234,7 +227,7 @@ id<GREYMatcher> NavigationBarEditButton() {
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
 
   // Go back to the list view page.
-  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton()]
+  [[EarlGrey selectElementWithMatcher:SettingsMenuBackButton(0)]
       performAction:grey_tap()];
 
   [self exitSettingsMenu];
@@ -252,8 +245,10 @@ id<GREYMatcher> NavigationBarEditButton() {
       performAction:grey_tap()];
 
   // Check the Autofill profile switch is disabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", YES, NO)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/YES, /*is_enabled=*/NO)]
       assertWithMatcher:grey_notNil()];
 
   [self exitSettingsMenu];
@@ -266,8 +261,10 @@ id<GREYMatcher> NavigationBarEditButton() {
   [self openAutofillProfilesSettings];
 
   // Toggle the Autofill profiles switch off.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", YES, YES)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/YES, /*is_enabled=*/YES)]
       performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
 
   // Expect Autofill profiles to remain visible.
@@ -275,8 +272,10 @@ id<GREYMatcher> NavigationBarEditButton() {
       assertWithMatcher:grey_notNil()];
 
   // Toggle the Autofill profiles switch back on.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
-                                          @"addressItem_switch", NO, YES)]
+  [[EarlGrey
+      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+                                   kAutofillAddressSwitchViewId,
+                                   /*is_toggled_on=*/NO, /*is_enabled=*/YES)]
       performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
 
   // Expect Autofill profiles to remain visible.

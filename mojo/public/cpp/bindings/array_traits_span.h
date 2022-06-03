@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_CARRAY_H_
-#define MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_CARRAY_H_
+#ifndef MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_SPAN_H_
+#define MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_SPAN_H_
 
 #include <cstddef>
 
@@ -15,10 +15,6 @@ namespace mojo {
 template <typename T, size_t Extent>
 struct ArrayTraits<base::span<T, Extent>> {
   using Element = T;
-
-  // There is no concept of a null span, as it is indistinguishable from the
-  // empty span.
-  static bool IsNull(const base::span<T>& input) { return false; }
 
   static size_t GetSize(const base::span<T>& input) { return input.size(); }
 
@@ -44,4 +40,4 @@ struct ArrayTraits<base::span<T, Extent>> {
 
 }  // namespace mojo
 
-#endif  // MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_CARRAY_H_
+#endif  // MOJO_PUBLIC_CPP_BINDINGS_ARRAY_TRAITS_SPAN_H_

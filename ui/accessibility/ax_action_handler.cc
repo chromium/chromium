@@ -4,19 +4,12 @@
 
 #include "ui/accessibility/ax_action_handler.h"
 
-#include "ui/accessibility/ax_tree_id_registry.h"
+#include "ui/accessibility/ax_action_handler_registry.h"
 
 namespace ui {
 
-bool AXActionHandler::RequiresPerformActionPointInPixels() const {
-  return false;
-}
-
 AXActionHandler::AXActionHandler()
-    : tree_id_(AXTreeIDRegistry::GetInstance()->GetOrCreateAXTreeID(this)) {}
-
-AXActionHandler::~AXActionHandler() {
-  AXTreeIDRegistry::GetInstance()->RemoveAXTreeID(tree_id_);
-}
+    : AXActionHandlerBase(
+          AXActionHandlerRegistry::GetInstance()->GetOrCreateAXTreeID(this)) {}
 
 }  // namespace ui

@@ -8,8 +8,8 @@ var OTHER_HOST = 'c.com';
 
 var DOMContentLoadedEventsInFrame = [];
 
-chrome.test.getConfig(function(config) {
-  window.config = config;
+chrome.test.getConfig(function(testConfig) {
+  config = testConfig;
 
   var testUrl = 'http://' + MAIN_HOST + ':' + config.testServer.port +
     '/extensions/api_test/executescript/http204/page_with_204_frame.html';
@@ -46,8 +46,7 @@ chrome.test.getConfig(function(config) {
 });
 
 function startTest(tabId) {
-  // The default font color of any document.
-  var kDefaultColor = getComputedStyle(document.body).color;
+  var kDefaultColor = 'rgb(0, 0, 0)';
   var kExpectedFontFamily = '"expected font-family"';
   var kExpectedColor = 'rgb(123, 123, 123)';
 

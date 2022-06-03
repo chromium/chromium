@@ -6,10 +6,10 @@
 
 #include <limits>
 
+#include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
 #include "base/hash/sha1.h"
-#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"

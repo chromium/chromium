@@ -3,14 +3,23 @@
 // found in the LICENSE file.
 
 #include "components/signin/ios/browser/features.h"
+#include "components/signin/public/base/signin_switches.h"
 
 namespace signin {
 
-const base::Feature kForceStartupSigninPromo{"ForceStartupSigninPromo",
-                                             base::FEATURE_DISABLED_BY_DEFAULT};
-
 bool ForceStartupSigninPromo() {
-  return base::FeatureList::IsEnabled(kForceStartupSigninPromo);
+  return base::FeatureList::IsEnabled(switches::kForceStartupSigninPromo);
 }
+
+bool ForceDisableExtendedSyncPromos() {
+  return base::FeatureList::IsEnabled(
+      switches::kForceDisableExtendedSyncPromos);
+}
+
+const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
+    "minutes-delay-to-restore-gaia-cookies-if-deleted";
+
+const char kWaitThresholdMillisecondsForCapabilitiesApi[] =
+    "wait-threshold-milliseconds-for-capabilities-api";
 
 }  // namespace signin

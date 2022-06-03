@@ -10,8 +10,13 @@
  * *::after and *::before used to select pseudo-elements not selectable by *. */
 
 :root {
+  --google-blue-300: 138, 180, 248;
+  --google-blue-600: 26, 115, 232;
   --google-blue-700: 25, 103, 210;
   --google-brown-900: 62, 39, 35;
+  --google-grey-50: 248, 249, 250;
+  --google-grey-900: 32, 33, 36;
+  --google-purple-300: 197, 138, 249;
   --google-purple-700: 132, 48, 206;
   --google-yellow-50: 254, 247, 224;
   --google-yellow-100: 254, 239, 195;
@@ -111,13 +116,13 @@ body {
  * and with CSS class constants in viewer.cc */
 
 .light {
-  background-color: #FAFAFA;
-  color: #424242;
+  background-color: #FFF;
+  color: rgb(var(--google-grey-900));
 }
 
 .dark {
-  background-color: #212121;
-  color: #E0E0E0;
+  background-color: rgb(var(--google-grey-900));
+  color: #FFF;
 }
 
 .sepia {
@@ -126,7 +131,7 @@ body {
 }
 
 .light a:link {
-  color: rgb(85, 85, 255);
+  color: rgb(var(--google-blue-600));
 }
 
 .sepia a:link {
@@ -134,11 +139,11 @@ body {
 }
 
 .dark a:link {
-  color: rgb(136, 136, 255);
+  color: rgb(var(--google-blue-300));
 }
 
 .light a:visited {
-  color: rgb(144, 34, 144);
+  color: rgb(var(--google-purple-700));
 }
 
 .sepia a:visited {
@@ -146,13 +151,13 @@ body {
 }
 
 .dark a:visited {
-  color: rgb(216, 114, 216);
+  color: rgb(var(--google-purple-300));
 }
 
 .light code,
 .light pre {
-  background-color: #EEE;
-  border-color: #AAA;
+  background-color: rgb(var(--google-grey-50));
+  border-color: rgb(var(--google-grey-900));
 }
 
 .sepia code,
@@ -163,8 +168,8 @@ body {
 
 .dark code,
 .dark pre {
-  background-color: #333;
-  border-color: #555;
+  background-color: #000;
+  border-color: rgba(255, 255, 255, 0.5);
 }
 
 .light tbody tr:nth-child(odd) {
@@ -173,7 +178,7 @@ body {
 
 .light th,
 .light td {
-  border-left: 1px solid #AAA;
+  border-inline-start: 2px solid #AAA;
 }
 
 .sepia tbody tr:nth-child(odd) {
@@ -182,7 +187,7 @@ body {
 
 .sepia th,
 .sepia td {
-  border-left: 1px solid rgb(147, 125, 102);
+  border-inline-start: 1px solid rgb(147, 125, 102);
 }
 
 .dark tbody tr:nth-child(odd) {
@@ -191,16 +196,16 @@ body {
 
 .dark th,
 .dark td {
-  border-left: 1px solid #555;
+  border-inline-start: 1px solid #555;
 }
 
 /* #content-wrap is added to be more specific than the color theme rules */
 #content-wrap th:first-child {
-  border-left: none;
+  border-inline-start: none;
 }
 
 #content-wrap td:first-child {
-  border-left: none;
+  border-inline-start: none;
 }
 
 
@@ -295,8 +300,8 @@ video::-webkit-media-controls-fullscreen-button {
 }
 
 blockquote {
-  border-left: 4px solid #888;
-  padding-left: 1em;
+  border-inline-start: 4px solid #888;
+  padding-inline-start: 1em;
 }
 
 cite {
@@ -350,7 +355,7 @@ video+[class*='caption'] {
 
 ol,
 ul {
-  margin-left: 1.296rem;
+  margin-inline-start: 1.296rem;
 }
 
 code,
@@ -388,8 +393,8 @@ body .hidden {
 
 .youtubeIframe {
   height: 100%;
-  left: 0;
   position: absolute;
+  start: 0;
   top: 0;
   width: 100%;
 }

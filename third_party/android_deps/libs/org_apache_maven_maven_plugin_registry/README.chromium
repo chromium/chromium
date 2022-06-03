@@ -1,0 +1,13 @@
+Name: Maven Plugin Registry Model
+Short Name: maven-plugin-registry
+URL: https://maven.apache.org/
+Version: 2.2.1
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+
+
+Local Modifications:
+No modifications.

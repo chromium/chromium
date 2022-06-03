@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/common/content_export.h"
-#include "content/common/media/renderer_audio_input_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "third_party/blink/public/mojom/media/renderer_audio_input_stream_factory.mojom.h"
 
 namespace content {
 
@@ -26,17 +25,21 @@ class RenderFrameHost;
 class CONTENT_EXPORT RenderFrameAudioInputStreamFactory final {
  public:
   RenderFrameAudioInputStreamFactory(
-      mojo::PendingReceiver<mojom::RendererAudioInputStreamFactory> receiver,
+      mojo::PendingReceiver<blink::mojom::RendererAudioInputStreamFactory>
+          receiver,
       MediaStreamManager* media_stream_manager,
       RenderFrameHost* render_frame_host);
+
+  RenderFrameAudioInputStreamFactory(
+      const RenderFrameAudioInputStreamFactory&) = delete;
+  RenderFrameAudioInputStreamFactory& operator=(
+      const RenderFrameAudioInputStreamFactory&) = delete;
 
   ~RenderFrameAudioInputStreamFactory();
 
  private:
   class Core;
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderFrameAudioInputStreamFactory);
 };
 
 }  // namespace content

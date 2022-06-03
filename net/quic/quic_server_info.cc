@@ -6,6 +6,7 @@
 
 #include <limits>
 
+#include "base/logging.h"
 #include "base/pickle.h"
 #include "base/stl_util.h"
 

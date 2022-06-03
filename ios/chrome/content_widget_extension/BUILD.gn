@@ -2,14 +2,21 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/apple/compile_entitlements.gni")
+import("//build/apple/tweak_info_plist.gni")
 import("//build/config/ios/rules.gni")
 import("//build/config/locales.gni")
-import("//build/config/mac/base_rules.gni")
-import("//build/mac/tweak_info_plist.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
 import("//ios/chrome/tools/strings/generate_localizable_strings.gni")
 import("//tools/grit/repack.gni")
+
+assert(ios_deployment_target == "13.0",
+       "content_widget_extension must target iOS 13.0")
+
+assert(
+    ios_enable_content_widget_extension,
+    "ios_enable_content_widget_extension must be true to depend on //ios/chrome/content_widget_extension")
 
 tweak_info_plist("tweak_info_plist") {
   info_plist = "Info.plist"
@@ -31,13 +38,13 @@ ios_appex_bundle("content_widget_extension") {
   extra_substitutions = [
     "CHROME_CHANNEL_SCHEME=$url_channel_scheme",
     "CHROMIUM_SHORT_NAME=$chromium_short_name",
-    "WIDGET_EXTENSION_BUNDLE_ID=$chromium_bundle_id.ContentTodayExtension",
   ]
 
   assert_no_deps = ios_extension_assert_no_deps
 
   entitlements_target = ":entitlements"
   info_plist_target = ":tweak_info_plist"
+  bundle_identifier = "$chromium_bundle_id.ContentTodayExtension"
 }
 
 source_set("content_widget") {
@@ -52,15 +59,16 @@ source_set("content_widget") {
 
   deps = [
     "//base",
-    "//ios/chrome/common:common_extension",
     "//ios/chrome/common/app_group",
     "//ios/chrome/common/app_group:command",
-    "//ios/chrome/common/favicon",
+    "//ios/chrome/common/crash_report",
     "//ios/chrome/common/ntp_tile",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/elements",
+    "//ios/chrome/common/ui/favicon",
+    "//ios/chrome/common/ui/util",
   ]
 
-  libs = [
+  frameworks = [
     "Foundation.framework",
     "NotificationCenter.framework",
     "UIKit.framework",
@@ -71,27 +79,13 @@ source_set("content_widget") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "content_widget_view_controller_unittest.mm",
-  ]
-  deps = [
-    ":content_widget",
-    "//testing/gtest",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-}
-
 repack_locales("packed_resources") {
   input_locales = ios_packed_locales
   output_locales = ios_packed_locales_as_mac_outputs
 
   source_patterns = [ "$root_gen_dir/ios/content_widget_extension/ios_content_widget_extension_${branding_path_component}_strings_" ]
 
-  deps = [
-    "//ios/chrome/content_widget_extension/strings:ios_content_widget_extension_${branding_path_component}_strings",
-  ]
+  deps = [ "//ios/chrome/content_widget_extension/strings:ios_content_widget_extension_${branding_path_component}_strings" ]
 }
 
 generate_localizable_strings("system_strings") {

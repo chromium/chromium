@@ -15,15 +15,27 @@
 
 namespace extensions {
 
+namespace {
+const char kChromeUntrustedTestURL[] = "chrome-untrusted://test/";
+}  // namespace
+
 namespace errors = manifest_errors;
 
 typedef ChromeManifestTest ChromePermissionManifestTest;
 
 TEST_F(ChromePermissionManifestTest, ChromeURLPermissionInvalid) {
-  LoadAndExpectWarning("permission_chrome_url_invalid.json",
-                       ErrorUtils::FormatErrorMessage(
-                           errors::kInvalidPermissionScheme,
-                           chrome::kChromeUINewTabURL));
+  LoadAndExpectWarning(
+      "permission_chrome_url_invalid.json",
+      ErrorUtils::FormatErrorMessage(errors::kInvalidPermissionScheme,
+                                     manifest_keys::kPermissions,
+                                     chrome::kChromeUINewTabURL));
+}
+
+TEST_F(ChromePermissionManifestTest, ChromeUntrustedURLPermissionInvalid) {
+  LoadAndExpectWarning(
+      "permission_chrome_untrusted_url_invalid.json",
+      ErrorUtils::FormatErrorMessage(errors::kPermissionUnknownOrMalformed,
+                                     kChromeUntrustedTestURL));
 }
 
 TEST_F(ChromePermissionManifestTest, ChromeURLPermissionAllowedWithFlag) {
@@ -41,16 +53,29 @@ TEST_F(ChromePermissionManifestTest, ChromeURLPermissionAllowedWithFlag) {
       << error;
 }
 
+// Tests that extensions can't access chrome-untrusted:// even with the
+// kExtensionsOnChromeURLs flag enabled.
+TEST_F(ChromePermissionManifestTest,
+       ChromeUntrustedURLPermissionDisallowedWithFlag) {
+  // Ignore the policy delegate for this test.
+  PermissionsData::SetPolicyDelegate(nullptr);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kExtensionsOnChromeURLs);
+  LoadAndExpectWarning(
+      "permission_chrome_untrusted_url_invalid.json",
+      ErrorUtils::FormatErrorMessage(errors::kPermissionUnknownOrMalformed,
+                                     kChromeUntrustedTestURL));
+}
+
 TEST_F(ChromePermissionManifestTest,
        ChromeResourcesPermissionValidOnlyForComponents) {
   LoadAndExpectWarning("permission_chrome_resources_url.json",
                        ErrorUtils::FormatErrorMessage(
                            errors::kInvalidPermissionScheme,
-                           "chrome://resources/"));
+                           manifest_keys::kPermissions, "chrome://resources/"));
   std::string error;
-  LoadExtension(ManifestData("permission_chrome_resources_url.json"),
-                &error,
-                extensions::Manifest::COMPONENT,
+  LoadExtension(ManifestData("permission_chrome_resources_url.json"), &error,
+                extensions::mojom::ManifestLocation::kComponent,
                 Extension::NO_FLAGS);
   EXPECT_EQ("", error);
 }

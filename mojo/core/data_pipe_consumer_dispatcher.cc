@@ -14,6 +14,7 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
+#include "base/trace_event/trace_event.h"
 #include "mojo/core/core.h"
 #include "mojo/core/data_pipe_control_message.h"
 #include "mojo/core/node_controller.h"
@@ -58,15 +59,16 @@ class DataPipeConsumerDispatcher::PortObserverThunk
       scoped_refptr<DataPipeConsumerDispatcher> dispatcher)
       : dispatcher_(dispatcher) {}
 
+  PortObserverThunk(const PortObserverThunk&) = delete;
+  PortObserverThunk& operator=(const PortObserverThunk&) = delete;
+
  private:
-  ~PortObserverThunk() override {}
+  ~PortObserverThunk() override = default;
 
   // NodeController::PortObserver:
   void OnPortStatusChanged() override { dispatcher_->OnPortStatusChanged(); }
 
   scoped_refptr<DataPipeConsumerDispatcher> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortObserverThunk);
 };
 
 // static
@@ -366,6 +368,7 @@ DataPipeConsumerDispatcher::Deserialize(const void* data,
                                         size_t num_handles) {
   if (num_ports != 1 || num_handles != 1 ||
       num_bytes != sizeof(SerializedState)) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
   }
 
@@ -374,13 +377,16 @@ DataPipeConsumerDispatcher::Deserialize(const void* data,
       state->options.capacity_num_bytes < state->options.element_num_bytes ||
       state->read_offset >= state->options.capacity_num_bytes ||
       state->bytes_available > state->options.capacity_num_bytes) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
   }
 
   NodeController* node_controller = Core::Get()->GetNodeController();
   ports::PortRef port;
-  if (node_controller->node()->GetPort(ports[0], &port) != ports::OK)
+  if (node_controller->node()->GetPort(ports[0], &port) != ports::OK) {
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
+  }
 
   auto region_handle = CreateSharedMemoryRegionHandleFromPlatformHandles(
       std::move(handles[0]), PlatformHandle());
@@ -394,6 +400,7 @@ DataPipeConsumerDispatcher::Deserialize(const void* data,
       base::UnsafeSharedMemoryRegion::Deserialize(std::move(region));
   if (!ring_buffer.IsValid()) {
     DLOG(ERROR) << "Failed to deserialize shared buffer handle.";
+    AssertNotExtractingHandlesFromMessage();
     return nullptr;
   }
 
@@ -408,10 +415,13 @@ DataPipeConsumerDispatcher::Deserialize(const void* data,
     dispatcher->bytes_available_ = state->bytes_available;
     dispatcher->new_data_available_ = state->bytes_available > 0;
     dispatcher->peer_closed_ = state->flags & kFlagPeerClosed;
-    if (!dispatcher->InitializeNoLock())
+    if (!dispatcher->InitializeNoLock()) {
+      AssertNotExtractingHandlesFromMessage();
       return nullptr;
+    }
     if (state->options.capacity_num_bytes >
         dispatcher->ring_buffer_mapping_.mapped_size()) {
+      AssertNotExtractingHandlesFromMessage();
       return nullptr;
     }
     dispatcher->UpdateSignalsStateNoLock();
@@ -569,6 +579,9 @@ void DataPipeConsumerDispatcher::UpdateSignalsStateNoLock() {
           peer_closed_ = true;
           break;
         }
+
+        TRACE_EVENT0("ipc",
+                     "DataPipeConsumerDispatcher received DATA_WAS_WRITTEN");
 
         if (static_cast<size_t>(bytes_available_) + m->num_bytes >
             options_.capacity_num_bytes) {

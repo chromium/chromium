@@ -1,0 +1,247 @@
+<html>
+<script>
+    if (window.testRunner)
+        testRunner.dumpAsText();
+</script>
+<style>
+table {display: flex;}
+</style>
+<body id="body">
+
+    <h2 tabindex=0>
+        This should be a table because it has a thead.
+    </h2>
+    <table border=0>
+    <thead><tr><td>asdf</td><td>asdf</td></tr></thead>
+    <tr><td>asdf</td><td>asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should be a table because cells have borders.
+    </h2>
+    <table border=1>
+    <tr><td >asdf</td><td>asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should not be a table because its cells do not have borders.
+    </h2>
+    <table style='border: 1px solid black'>
+    <tr><td >asdf</td><td>asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should be a table because a cell has a special attribute
+    </h2>
+    <table border=0 cellpadding=0>
+    <tr><td abbr="abbr tag">asdf</td><td>asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should be a table because a cell has a special attribute.
+    </h2>
+    <table border=0 cellpadding=0>
+    <tr><td axis="abbr tag">asdf</td><td>asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should be a table because a cell has a special attribute.
+    </h2>
+    <table border=0 cellpadding=0>
+    <tr><td id="test">asdf</td><td>asdf</td></tr>
+    <tr><td headers="test">asdf</td><td>asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should be a table because cells have different colors.
+    </h2>
+    <table border=0 cellpadding=0>
+    <tr><td bgcolor="red">asdf</td><td bgcolor="blue">asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should not be a table because cells have different but no spacing.
+    </h2>
+    <table border=0 cellpadding=0 cellspacing=0>
+    <tr><td style="background-color: red;">asdf</td><td style="background-color: blue;">asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should not be a table because cells have the same colors even though there is spacing.
+    </h2>
+    <table border=0 cellpadding=0 bgcolor="green" cellspacing=3>
+    <tr><td style="background-color: green;">asdf</td><td style="background-color: green;">asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should be a table because it has the "rules" attr.
+    </h2>
+    <table rules="cols" border=0 cellpadding=0>
+    <tr><td>asdf</td><td>asdf</td></tr>
+    </table>
+
+    <style type="text/css">
+    .appPol_080915_Lehman_Contributions {  } .labelPol_080915_Lehman_Contributions { undefined } .hedPol_080915_Lehman_Contributions { font-size: 19px; font-family:arial; font-weight:bold;color:#26386b;border-top:1px solid #a4abc1;border-left:1px solid #a4abc1;border-right:1px solid #a4abc1;font-family: Arial, Helvetica, sans-serif; font-size: 100%;font-weight:bold;padding-left:4px;width:90%;height:25px; } .deckPol_080915_Lehman_Contributions { color:#666;font-weight:bold; font-family:verdana; font-size:11px;padding:5px 9px; } .subhedPol_080915_Lehman_Contributions { font-weight:bold;text-decoration:none;text-transform:uppercase;padding:3px 3px; } .colhdrPol_080915_Lehman_Contributions { color:ffffff; font-size:10px;font-weight:bold;background-color:999999; } .font1Pol_080915_Lehman_Contributions { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 70%; line-height: 140%; } .boxB_Pol_080915_Lehman_Contributions { font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 70%; line-height: 140%;;border-left:1px #a4abc1 solid;border-bottom:1px #a4abc1 solid;border-right:1px #a4abc1 solid;  ;width:100%; } .headlinePol_080915_Lehman_Contributions { font-weight:bold; } .headlinePol_080915_Lehman_Contributions:hover { } .headlinePol_080915_Lehman_Contributions:visited { font-weight:bold;} .captionPol_080915_Lehman_Contributions { undefined} #NoBg { background-color:transparent; } .navlinkPol_080915_Lehman_Contributions {  color:000000;font-size: 10px;font-family:verdana;line-height: 130%;text-decoration:none; } .navlinkPol_080915_Lehman_Contributions:hover { color:cc3333; } .navlinkPol_080915_Lehman_Contributions:active { color:#cc0000; } .navCellPol_080915_Lehman_Contributions { width:20px;text-align:center;background-color:#EEEEEE;border-left:1px #CCCCCC solid;border-top:1px #CCCCCC solid;padding:2px;cursor:hand;width:100%; } .bulletPol_080915_Lehman_Contributions { color:CC0000;font-family:verdana;font-size:11px;font-weight:bold;color:cc3333; }
+    </style>
+    <h2 tabindex=0>
+        This should not be a table because it only has one valid cell (need more than one).
+    </h2>
+    <table width=100% cellspacing=0 cellpadding=0>
+    <tr>
+    <td nowrap="1" class="hedPol_080915_Lehman_Contributions">Contributions</td>
+    </tr></table>
+
+    <style type="text/css">
+    .nmIS,.nmISH{padding-left:20px;padding-right:12px;cursor:pointer;}
+    .nmIP{padding-left:20px;padding-right:12px;font:60% Tahoma,sans-serif;color:#CC0000}
+    .nmIB,.nmIBH,.nmIBD,.nmIBDH,.nmIK,.nmIKH,.nmIKD,.nmIKDH{padding-left:12px;padding-right:12px;cursor:pointer;}
+    .nmIS,.nmISH,.nmIP{border-bottom:1px solid #CCCCCC}
+    .nmIS,.nmIBH,.nmIBDH,.nmIKH,.nmIP{background-color:#EEEEEE}
+    .nmIKD,.nmIKDH{background-color:#CC0000}
+    .nmISH,.nmIB,.nmIBD,.nmIK{background-color:white}
+    .nmLS,.nmLSH,.nmLB,.nmLBH,.nmLBD,.nmLBDH,.nmLK,.nmLKH,.nmLKD,.nmLKDH{font:70% Tahoma,sans-serif}
+    .nmLS,.nmLSH,.nmLBD,.nmLBDH,.nmLKD,.nmLKDH,.nmIP{font-weight:bold}
+    .nmLK,.nmLK:visited,.nmLKH,.nmLKH:visited{color:black;text-decoration:none}
+    .nmLS,.nmLS:visited,.nmLS:hover,.nmLS:active,.nmLSH,.nmLSH:visited,.nmLSH:hover,.nmLSH:active,.nmLB,.nmLB:visited,.nmLBH,.nmLBH:visited,.nmLBD,.nmLBD:visited,.nmLBD:hover,.nmLBD:active,.nmLBDH,.nmLBDH:visited,.nmLBDH:hover,.nmLBDH:active{color:black !important;text-decoration:none}
+    .nmLB:hover,.nmLBH:hover,nmLK:hover,.nmLKH:hover{color:#CC0000;text-decoration:underline}
+    .nmLB:active,.nmLBH:active,.nmLK:active,.nmLKH:active{color:#CC0000;text-decoration:none}
+    .nmLKD,.nmLKD:visited,.nmLKD:hover,.nmLKD:active,.nmLKDH,.nmLKDH:visited,.nmLKDH:hover,.nmLKDH:active{color:white;text-decoration:none}
+    .nmLKD:visited:hover,.nmLKDH:visited:hover{text-decoration:underline;color:white;}
+    .nmTB{border-top:1px solid #CCCCCC;border-left:1px solid #CCCCCC;border-bottom:1px solid #CCCCCC}
+    .nmTK{border-left:3px solid #CC0000;border-bottom:3px solid #CC0000}
+    .nmX{position:absolute;z-index: 100000000;left:0;top:0;height:0;line-height:0px}
+    .nmTB,.nmTK{margin-bottom:2px}
+    .nmTB,.nmTK,.nmTS{text-align:left;}
+    .nmTS {width: 130px;}
+    .nmTB {width: 130px; margin: 0px !important; border-left: 0px; border-top: 0px;}
+    .nmTB{margin-top:12px}
+    .nmCM{padding-top:2px;display:block;height:20px;}
+    .nmCM:visited:hover{text-decoration:none;color:#000000;}
+    </style>
+    <h2 tabindex=0>
+        This should not be a table because it does not have enough cell borders or background colors
+    </h2>
+    <table class="nmTB" cellpadding="0" cellspacing="0"><tr><td class="nmIBD" id="nmb" name="nmb" nm_sn="3032552" nm_suf="" CM_sf="Ex" CM="NewsMenuL1" pn="newsmenu" ct="nm0" cn="Politics"><a class="nmLBD" href="/id/3032553">Politics</a></td></tr><tr><td class="nmIB" id="nmb" name="nmb" nm_sn="18970411" nm_suf="" CM_sf="Ex" CM="NewsMenuL1" pn="newsmenu" ct="nxf" cn="Decision '08"><a class="nmLB" href="/id/18970417">Decision '08</a></td></tr><tr><td class="nmIB" id="nmb" name="nmb" nm_sn="18296896" nm_suf="" CM_sf="Ex" CM="NewsMenuL1" pn="newsmenu" ct="nxf" cn="The debates"><a class="nmLB" href="/id/18296908">The debates</a></td></tr><tr><td class="nmIB" id="nmb" name="nmb" nm_sn="21491043" nm_suf="" CM_sf="Ex" CM="NewsMenuL1" pn="newsmenu" ct="nxf" cn="The White House"><a class="nmLB" href="/id/21672863">The White House</a></td></tr><tr><td class="nmIB" id="nmb" name="nmb" nm_sn="21491571" nm_suf="" CM_sf="Ex" CM="NewsMenuL1" pn="newsmenu" ct="nxf" cn="Capitol Hill"><a class="nmLB" href="/id/21672985">Capitol Hill</a></td></tr><tr><td class="nmIB" id="nmb" name="nmb" nm_sn="14016004" nm_suf="" CM_sf="Ex" CM="NewsMenuL1" pn="newsmenu" ct="nxf" cn="National Journal"><a class="nmLB" href="/id/14016001">National Journal</a></td></tr><tr><td class="nmIB" id="nmb" name="nmb" nm_sn="19748467" nm_suf="" CM_sf="Ex" CM="NewsMenuL1" pn="newsmenu" ct="nxf" cn="New York Times"><a class="nmLB" href="/id/19747577">New York Times</a></td></tr></table>
+
+    <h2 tabindex=0>
+      This should be a table because it's editable.
+    </h2>
+    <table style='border: 1px solid black' contenteditable>
+      <tr><td >asdf</td><td>asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+      This should be a table because most cells have a top border.
+    </h2>
+    <table>
+      <tr>
+        <td style="border-top: 1px solid black">asdf</td>
+        <td style="border-top: 1px solid black">asdf</td>
+      </tr>
+      <tr>
+        <td style="border-top: 1px solid black">asdf</td>
+        <td>asdf</td>
+      </tr>
+    </table>
+
+    <h2 tabindex=0>
+      This should not be a table because cells have different borders.
+    </h2>
+    <table border=0>
+      <tr>
+        <td style="xborder-top: 1px solid black">asdf</td>
+        <td style="xborder-left: 1px solid black">asdf</td>
+      </tr>
+      <tr>
+        <td style="xborder-bottom: 1px solid black">asdf</td>
+        <td style="xborder-right: 1px solid black">asdf</td>
+      </tr>
+    </table>
+
+    <h2 tabindex=0>
+      This should be a table because it sets empty-cells: hide on the table.
+    </h2>
+    <table style="empty-cells: hide">
+      <tr>
+        <td>asdf</td><td>asdf</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid black"></td>
+        <td style="border: 1px solid black">asdf</td>
+      </tr>
+      <tr>
+        <td>asdf</td><td>asdf</td>
+      </tr>
+    </table>
+
+    <h2 tabindex=0>
+      This should be a table because it sets empty-cells: hide on a cell.
+    </h2>
+    <table>
+      <tr>
+        <td>asdf</td><td>asdf</td>
+      </tr>
+      <tr>
+        <td style="border: 1px solid black; empty-cells: hide"></td>
+        <td style="border: 1px solid black">asdf</td>
+      </tr>
+      <tr>
+        <td>asdf</td><td>asdf</td>
+      </tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should be a table because it has a col.
+    </h2>
+    <table border=0>
+    <colgroup>
+      <col span="2" style="background-color:#ccf">
+    </colgroup>
+    <tr><td>asdf</td><td>asdf</td></tr>
+    <tr><td>asdf</td><td>asdf</td></tr>
+    </table>
+
+    <h2 tabindex=0>
+        This should be a table because it has at least 20 rows
+    </h2>
+    <table border=0>
+    <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr>
+    <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr>
+    <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr>
+    <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr>
+    <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr>
+    <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr> <tr><td>asdf</td></tr>
+    </table>
+
+    <div id="result"></div>
+
+    <script>
+        if (window.accessibilityController) {
+            function nextAxSibling(axElement) {
+                var axParent = axElement.parentElement();
+                for (var i = 0; i < axParent.childrenCount - 1; i++) {
+                    if (axParent.childAtIndex(i).isEqual(axElement))
+                        return axParent.childAtIndex(i + 1);
+                }
+                return null;
+            }
+
+            var tableHeadings = document.getElementsByTagName('h2');
+            for (var i = 0; i < tableHeadings.length; i++) {
+                var tableHeading = tableHeadings[i];
+                tableHeading.focus();
+                var axTableHeading = accessibilityController.focusedElement;
+                var axTable = nextAxSibling(axTableHeading);
+                var output = axTable.allAttributes();
+
+                var spacerElement = document.createElement('br');
+                tableHeading.parentElement.insertBefore(spacerElement, tableHeading);
+
+                var outputElement = document.createElement('pre');
+                outputElement.innerText = output + '\n\n';
+                tableHeading.parentElement.insertBefore(outputElement, tableHeading.nextSibling);
+            }
+        }
+    </script>
+</body>
+</html>

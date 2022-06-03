@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// TODO(crbug.com/1110184): We have to mark this mojom as [Stable] before
+// lacros begins the process of launching.
+
 module device.mojom;
 
+[Stable, Extensible]
 enum HidBusType {
   kHIDBusTypeUSB = 0,
   kHIDBusTypeBluetooth = 1,
+  [MinVersion=1] kHIDBusTypeUnknown = 2,
 };
 
 // Usage pages.
@@ -131,9 +136,10 @@ const uint32 kHIDCollectionTypeUsageModifier = 0x06;
 const uint32 kHIDCollectionTypeVendorMin = 0x80;
 const uint32 kHIDCollectionTypeVendorMax = 0xff;
 
+[Stable]
 struct HidUsageAndPage {
-  uint16 usage;
-  uint16 usage_page;
+  uint16 usage@0;
+  uint16 usage_page@1;
 };
 
 // A HID report is a packet of data sent between a HID device and its host. The
@@ -146,53 +152,54 @@ struct HidUsageAndPage {
 // See section 6.2.2 of the Device Class Definition for HID for additional
 // information about the HID report descriptor and parser behavior.
 // https://www.usb.org/sites/default/files/documents/hid1_11.pdf
+[Stable]
 struct HidReportItem {
   // True if the usages for this item are defined by |usage_minimum| and
   // |usage_maximum|. False if the usages for this item are defined by |usages|.
-  bool is_range;
+  bool is_range@0;
 
   // Data associated with the Main item. See section 6.2.2.5 of the Device Class
   // Definition for HID.
   // https://www.usb.org/sites/default/files/documents/hid1_11.pdf
-  bool is_constant;         // Constant (true) or Data (false).
-  bool is_variable;         // Variable (true) or Array (false).
-  bool is_relative;         // Relative (true) or Absolute (false).
-  bool wrap;                // Wrap (true) or No Wrap (false).
-  bool is_non_linear;       // Non Linear (true) or Linear (false).
-  bool no_preferred_state;  // No Preferred (true) or Preferred State (false).
-  bool has_null_position;   // Null state (true) or No Null position (false).
-  bool is_volatile;         // Volatile (true) or Non Volatile (false).
-  bool is_buffered_bytes;   // Buffered Bytes (true) or Bit Field (false).
+  bool is_constant@1;         // Constant (true) or Data (false).
+  bool is_variable@2;         // Variable (true) or Array (false).
+  bool is_relative@3;         // Relative (true) or Absolute (false).
+  bool wrap@4;                // Wrap (true) or No Wrap (false).
+  bool is_non_linear@5;       // Non Linear (true) or Linear (false).
+  bool no_preferred_state@6;  // No Preferred (true) or Preferred State (false).
+  bool has_null_position@7;   // Null state (true) or No Null position (false).
+  bool is_volatile@8;         // Volatile (true) or Non Volatile (false).
+  bool is_buffered_bytes@9;   // Buffered Bytes (true) or Bit Field (false).
 
   // Local items. See section 6.2.2.8 of the Device Class Definition for HID.
   // https://www.usb.org/sites/default/files/documents/hid1_11.pdf
 
   // If |is_range| is false, usages for this item are listed in |usages| in the
   // order they were encountered in the report descriptor.
-  array<HidUsageAndPage> usages;
+  array<HidUsageAndPage> usages@10;
 
   // If |is_range| is true, usages for this item are assigned from a range of
   // usages starting at |usage_minimum| and incrementing until |usage_maximum|.
   // If this item is a Variable and |report_count| is larger than the number of
   // usages in this range, all remaining fields are also assigned
   // |usage_maximum|.
-  HidUsageAndPage usage_minimum;
-  HidUsageAndPage usage_maximum;
+  HidUsageAndPage usage_minimum@11;
+  HidUsageAndPage usage_maximum@12;
 
   // If this item has one or more entries in the Physical descriptor table,
   // |designator_minimum| and |designator_maximum| are set to the minimum and
   // maximum indices of these entries. If the item has no designators, both are
   // set to zero. A designator describes the body part intended to be used with
   // a particular control.
-  uint32 designator_minimum;
-  uint32 designator_maximum;
+  uint32 designator_minimum@13;
+  uint32 designator_maximum@14;
 
   // If this item has one or more entries in the String descriptor table,
   // |string_minimum| and |string_maximum| are set to the minimum and maximum
   // indices of these entries. If the item has no strings, both are set to zero.
   // The String descriptor contains a list of text strings for the device.
-  uint32 string_minimum;
-  uint32 string_maximum;
+  uint32 string_minimum@15;
+  uint32 string_maximum@16;
 
   // Global items. See section 6.2.2.7 of the Device Class Definition for HID.
   // https://www.usb.org/sites/default/files/documents/hid1_11.pdf
@@ -200,32 +207,32 @@ struct HidReportItem {
   // |logical_minimum| and |logical_maximum| define the extent of valid data
   // values for the item in logical units. If |has_null_position| is true,
   // values outside this range are interpreted as null input.
-  int32 logical_minimum;
-  int32 logical_maximum;
+  int32 logical_minimum@17;
+  int32 logical_maximum@18;
 
   // |physical_minimum| and |physical_maximum| define the extent of valid data
   // values after applying units to the logical extents.
-  int32 physical_minimum;
-  int32 physical_maximum;
+  int32 physical_minimum@19;
+  int32 physical_maximum@20;
 
   // The value of the unit exponent in base 10. Values between 0x0 and 0x7
   // represent positive exponents 0 to 7, values between 0x8 and 0xF represent
   // nevative exponents -8 to -1. Bits [4:31] are reserved and should be set to
   // zero.
-  uint32 unit_exponent;
+  uint32 unit_exponent@21;
 
   // The units to apply to this item. The |unit| value is coded as seven 4-bit
   // fields that define the unit system and the exponents on units of length,
   // mass, time, temperature, current, and luminous intensity. Bits [28:31] are
   // reserved and should be set to zero.
-  uint32 unit;
+  uint32 unit@22;
 
   // A single report item may define multiple same-sized fields within a report.
   // |report_size| and |report_count| define the size of one field (in bits) and
   // the number of fields within the item. The total size of this item in bits
   // is equal to the product of these values.
-  uint32 report_size;
-  uint32 report_count;
+  uint32 report_size@23;
+  uint32 report_count@24;
 };
 
 // Contains information collected from the HID report descriptor regarding a
@@ -234,13 +241,14 @@ struct HidReportItem {
 // (bi-directional). When a device requires multiple reports of a single
 // category, each report is assigned a unique 8-bit ID. Devices that do not use
 // more than one report of any type may omit report IDs.
+[Stable]
 struct HidReportDescription {
   // Report ID associated with this report, or zero if the device does not use
   // report IDs.
-  uint8 report_id;
+  uint8 report_id@0;
 
   // The sequence of report items that describe this report.
-  array<HidReportItem> items;
+  array<HidReportItem> items@1;
 };
 
 // Contains information collected from the HID report descriptor regarding a
@@ -252,73 +260,127 @@ struct HidReportDescription {
 // See section 6.2.2.6 of the Device Class Definition for HID for more
 // information about HID collections.
 // https://www.usb.org/sites/default/files/documents/hid1_11.pdf
+[Stable]
 struct HidCollectionInfo {
   // Collection's usage ID.
-  HidUsageAndPage usage;
+  HidUsageAndPage usage@0;
 
   // HID report IDs which belong to this collection or to its embedded
   // collections, in the order they appear in the report descriptor.
-  array<uint8> report_ids;
+  array<uint8> report_ids@1;
 
   // Collection type.
-  uint32 collection_type;
+  uint32 collection_type@2;
 
   // Reports described in the report descriptor.
-  array<HidReportDescription> input_reports;
-  array<HidReportDescription> output_reports;
-  array<HidReportDescription> feature_reports;
+  array<HidReportDescription> input_reports@3;
+  array<HidReportDescription> output_reports@4;
+  array<HidReportDescription> feature_reports@5;
 
   // The children of this collection in the order they appear in the report
   // descriptor. In child collections, the reports described in the
   // |input_reports|, |output_reports|, and |feature_reports| members include
   // only the subsequence of report items from the parent collection that appear
   // within the child collection.
-  array<HidCollectionInfo> children;
+  array<HidCollectionInfo> children@6;
 };
 
 // Contains information related to a single logical HID device. Note that a
 // single physical device may expose multiple logical devices, for instance a
 // keyboard/mouse combo device would expose separate logical HID devices for
 // keyboard and mouse functionality.
+[Stable]
 struct HidDeviceInfo {
-  string guid;
-  uint16 vendor_id;
-  uint16 product_id;
-  string product_name;
-  string serial_number;
-  HidBusType bus_type;
-  array<uint8> report_descriptor;
-  array<HidCollectionInfo> collections;
-  bool has_report_id;
-  uint64 max_input_report_size;
-  uint64 max_output_report_size;
-  uint64 max_feature_report_size;
-  string device_node;
+  // A random GUID assigned to the device during enumeration. The device GUID is
+  // stable as long as the application is running and the device remains
+  // connected to the system.
+  string guid@0;
+
+  // A platform-specific string identifier for the physical device. When a
+  // single physical device exposes multiple logical devices, the logical
+  // devices will have the same value for |physical_device_id|.
+  string physical_device_id@1;
+
+  // The vendor ID value reported by the device. Vendor IDs are 16-bit values
+  // assigned by the USB-IF or Bluetooth SIG to manufacturers of USB and
+  // Bluetooth devices.
+  // TODO(mattreynolds): Indicate whether the vendor ID was assigned by USB-IF
+  // or Bluetooth SIG.
+  uint16 vendor_id@2;
+
+  // The product ID reported by the device. Product IDs are 16-bit values
+  // assigned by the manufacturer to identify a particular device model.
+  uint16 product_id@3;
+
+  // The product name string reported by the device, or an empty string if no
+  // product name is available.
+  string product_name@4;
+
+  // The USB serial number string, or an empty string if the device is not a USB
+  // device or has no serial number.
+  string serial_number@5;
+
+  // The bus used to connect this device to the system.
+  HidBusType bus_type@6;
+
+  // An array of bytes representing the HID report descriptor reported by the
+  // device, or an empty array if the report descriptor could not be read.
+  array<uint8> report_descriptor@7;
+
+  // A structured representation of the information contained in the HID report
+  // descriptor.
+  array<HidCollectionInfo> collections@8;
+
+  // True if the device uses report IDs.
+  bool has_report_id@9;
+
+  // The maximum size in bytes of input, output, and feature reports supported
+  // by the device.
+  uint64 max_input_report_size@10;
+  uint64 max_output_report_size@11;
+  uint64 max_feature_report_size@12;
+
+  // A platform-specific string identifier for the logical device.
+  string device_node@13;
+
+  // Reports that should not be accessible from Javascript.
+  [MinVersion=1] array<uint8>? protected_input_report_ids@14;
+  [MinVersion=1] array<uint8>? protected_output_report_ids@15;
+  [MinVersion=1] array<uint8>? protected_feature_report_ids@16;
 };
 
 // A client interface for receiving a notification when HID devices are
 // physically connected or disconnected.
+[Stable, Uuid="1b9b8008-dcf3-4c2e-9d68-ca3c47778817"]
 interface HidManagerClient {
   // Notifies the client that a device is added.
-  DeviceAdded(HidDeviceInfo device_info);
+  DeviceAdded@0(HidDeviceInfo device_info);
 
   // Notifies the client that a device is being removed; called before
   // removing the device from HidService.
-  DeviceRemoved(HidDeviceInfo device_info);
+  DeviceRemoved@1(HidDeviceInfo device_info);
+
+  // Notifies the client that the device info has been changed.
+  // * New collections may be added.
+  // * The maximum report sizes may be increased.
+  // * The protected report ID lists may have additional report IDs added.
+  // Other device information is not modified.
+  [MinVersion=2] DeviceChanged@2(HidDeviceInfo device_info);
 };
 
 // Provides an interface for enumerating available HID devices, registering for
 // device connection and disconnection notifications, and opening a connection
 // for reading from and writing to a HID device.
+[Stable, Uuid="9e931765-42c9-4afd-9dc5-9086621b7bb6"]
 interface HidManager {
   // Enumerates available devices and set as a client of HidManager.
   // The implementation of HidManager guarantees that the returned callback
   // will always be posted earlier than DeviceAdded() and DeviceRemoved().
-  GetDevicesAndSetClient(pending_associated_remote<HidManagerClient> client) =>
-                       (array<HidDeviceInfo> devices);
+  GetDevicesAndSetClient@0(pending_associated_remote<HidManagerClient> client)
+      => (array<HidDeviceInfo> devices);
 
   // Enumerates available devices only.
-  GetDevices() => (array<HidDeviceInfo> devices);
+  GetDevices@1() => (array<HidDeviceInfo> devices);
 
   // Opens a connection to a device by given guid. The callback will be run
   // with null on failure.
@@ -330,39 +392,54 @@ interface HidManager {
   // open. When the HID connection is closed, the watcher is also closed. This
   // is useful when the connection closure should be handled somewhere other
   // than where the |connection| and |connection_client| are held.
-  Connect(string device_guid,
+  //
+  // If |allow_protected_reports| is true, this connection is exempted from
+  // the HID blocklist so that protected reports may be sent and received.
+  //
+  // If |allow_fido_reports| is true, this connection is allowed to send and
+  // receive protected reports contained within top-level collections with the
+  // kPageFido usage page even if those reports would be blocked by the HID
+  // blocklist.
+  Connect@2(string device_guid,
           pending_remote<HidConnectionClient>? connection_client,
-          pending_remote<HidConnectionWatcher>? watcher)
+          pending_remote<HidConnectionWatcher>? watcher,
+          [MinVersion=1] bool allow_protected_reports,
+          [MinVersion=2] bool allow_fido_reports)
       => (pending_remote<HidConnection>? connection);
+
+  // Binds a HidManager endpoint.
+  AddReceiver@3(pending_receiver<HidManager> receiver);
 };
 
 // Provides an interface for communication with a HID device. The HID spec
 // allows a device to define its own packet formats (reports) for sending or
 // receiving data. The methods in HidConnection send or receive data and specify
 // which report is used.
+[Stable, Uuid="1b9b8008-dcf3-4c2e-9d68-ca3c47778817"]
 interface HidConnection {
   // A |report_id| of 0 is returned via callback if report IDs are not
   // supported by the device.
-  Read() => (bool success, uint8 report_id, array<uint8>? buffer);
+  Read@0() => (bool success, uint8 report_id, array<uint8>? buffer);
 
   // Pass the |report_id| as 0 if not supported by the device.
-  Write(uint8 report_id, array<uint8> buffer) => (bool success);
+  Write@1(uint8 report_id, array<uint8> buffer) => (bool success);
 
   // The buffer will contain whatever report data was received from the device.
   // This may include the report ID. The report ID is not stripped because a
   // device may respond with other data in place of the report ID.
-  GetFeatureReport(uint8 report_id) => (bool success, array<uint8>? buffer);
+  GetFeatureReport@2(uint8 report_id) => (bool success, array<uint8>? buffer);
 
   // Pass the |report_id| as 0 if not supported by the device.
-  SendFeatureReport(uint8 report_id, array<uint8> buffer) => (bool success);
+  SendFeatureReport@3(uint8 report_id, array<uint8> buffer) => (bool success);
 };
 
 // A client interface for receiving a notification when input reports are
 // received.
+[Stable, Uuid="11f949ed-fa57-4a94-a433-90b72a2d2b63"]
 interface HidConnectionClient {
   // Notifies the client that an input report was received. A |report_id| of 0
   // is passed if report IDs are not used by the device.
-  OnInputReport(uint8 report_id, array<uint8> buffer);
+  OnInputReport@0(uint8 report_id, array<uint8> buffer);
 };
 
 // A client interface for observing whether a HID connection is still active.
@@ -375,5 +452,6 @@ interface HidConnectionClient {
 // itself as a watcher so it can be notified when the connection is closed. This
 // allows the service to keep track of whether there are open connections for
 // the purpose of drawing an indicator icon when a tab is using a HID device.
+[Stable, Uuid="8af071b5-0994-4af7-9c3f-6025d7f9e9d0"]
 interface HidConnectionWatcher {
 };

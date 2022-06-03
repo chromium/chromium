@@ -16,7 +16,7 @@ PASS list marker is 一.
 ethiopic-numeric
 PASS list marker is -1.
 PASS list marker is 0.
-PASS list marker is 1.
+PASS list marker is ፩.
 
 georgian
 PASS list marker is -1.
@@ -29,22 +29,22 @@ PASS list marker is 20001.
 
 hebrew
 PASS list marker is -1.
-PASS list marker is ספא.
+PASS list marker is אפס.
 PASS list marker is א.
 
-PASS list marker is טצקתת'טצקתת.
+PASS list marker is תתקצט׳תתקצט.
 PASS list marker is 1000000.
 PASS list marker is 1000001.
 
 japanese-formal
-PASS list marker is -1.
-PASS list marker is 0.
-PASS list marker is 1.
+PASS list marker is マイナス壱.
+PASS list marker is 零.
+PASS list marker is 壱.
 
 japanese-informal
-PASS list marker is -1.
-PASS list marker is 0.
-PASS list marker is 1.
+PASS list marker is マイナス一.
+PASS list marker is 〇.
+PASS list marker is 一.
 
 lower-armenian
 PASS list marker is -1.
@@ -75,9 +75,9 @@ PASS list marker is 0.
 PASS list marker is 1.
 
 tamil
-PASS list marker is -1.
-PASS list marker is 0.
-PASS list marker is 1.
+PASS list marker is -௧.
+PASS list marker is ௦.
+PASS list marker is ௧.
 
 trad-chinese-formal
 PASS list marker is 負壹.

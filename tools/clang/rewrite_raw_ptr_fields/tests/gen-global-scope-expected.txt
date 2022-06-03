@@ -1,0 +1,20 @@
+==== BEGIN EDITS ====
+include-user-header:::gen-global-scope-actual.cc:::-1:::-1:::base/memory/raw_ptr.h
+r:::gen-global-scope-actual.cc:::1715:::5:::raw_ptr<int>
+r:::gen-global-scope-actual.cc:::1865:::5:::raw_ptr<int>
+r:::gen-global-scope-actual.cc:::2091:::5:::raw_ptr<int>
+r:::gen-global-scope-actual.cc:::2343:::5:::raw_ptr<int>
+r:::gen-global-scope-actual.cc:::2639:::5:::raw_ptr<int>
+r:::gen-global-scope-actual.cc:::2935:::3:::raw_ptr<T>
+r:::gen-global-scope-actual.cc:::3351:::5:::raw_ptr<int>
+r:::gen-global-scope-actual.cc:::3493:::10:::raw_ptr<MyStruct>
+==== END EDITS ====
+==== BEGIN FIELD FILTERS ====
+global_variables_test::MyStruct::ptr  # global-scope
+global_variables_test::MyStruct::ptr2  # global-scope
+nested_in_array_test::MyStruct::ptr  # global-scope
+nested_struct_test::MyStruct::ptr  # global-scope
+nested_template_test::MyStruct::ptr  # global-scope
+pointer_nesting_test::MyOuterStruct::inner_struct  # global-scope
+static_variables_test::MyStruct::ptr  # global-scope
+==== END FIELD FILTERS ====

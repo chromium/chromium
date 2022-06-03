@@ -36,6 +36,10 @@ class LazyEventDispatcher {
 
   LazyEventDispatcher(content::BrowserContext* browser_context,
                       DispatchFunction dispatch_function);
+
+  LazyEventDispatcher(const LazyEventDispatcher&) = delete;
+  LazyEventDispatcher& operator=(const LazyEventDispatcher&) = delete;
+
   ~LazyEventDispatcher();
 
   // Dispatches the lazy |event| to |dispatch_context|.
@@ -71,8 +75,6 @@ class LazyEventDispatcher {
   DispatchFunction dispatch_function_;
 
   std::set<LazyContextId> dispatched_ids_;
-
-  DISALLOW_COPY_AND_ASSIGN(LazyEventDispatcher);
 };
 
 }  // namespace extensions

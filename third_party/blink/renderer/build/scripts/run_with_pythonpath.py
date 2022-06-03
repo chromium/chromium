@@ -19,9 +19,11 @@ def main():
 
     env = os.environ.copy()
     if len(python_paths) > 0:
-        existing_pp = (os.pathsep + env['PYTHONPATH']) if 'PYTHONPATH' in env else ''
+        existing_pp = (
+            os.pathsep + env['PYTHONPATH']) if 'PYTHONPATH' in env else ''
         env['PYTHONPATH'] = os.pathsep.join(python_paths) + existing_pp
     sys.exit(subprocess.call([sys.executable] + args, env=env))
+
 
 if __name__ == '__main__':
     main()

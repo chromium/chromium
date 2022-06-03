@@ -34,6 +34,10 @@ class JingleSessionManager : public SessionManager,
                              public SignalStrategy::Listener {
  public:
   explicit JingleSessionManager(SignalStrategy* signal_strategy);
+
+  JingleSessionManager(const JingleSessionManager&) = delete;
+  JingleSessionManager& operator=(const JingleSessionManager&) = delete;
+
   ~JingleSessionManager() override;
 
   // SessionManager interface.
@@ -73,8 +77,6 @@ class JingleSessionManager : public SessionManager,
   SessionsMap sessions_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(JingleSessionManager);
 };
 
 }  // namespace protocol

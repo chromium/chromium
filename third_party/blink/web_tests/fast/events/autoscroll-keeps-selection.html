@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script>
+function start() {
+  promise_test(async () => {
+    assert_equals(document.getSelection().type,"None");
+
+    var scrollable = document.getElementById('scrollable');
+    // Highlight some of the text
+    document.getSelection().setBaseAndExtent(scrollable,0,scrollable,2);
+    assert_equals(document.getSelection().toString(),
+        "This is highlightable and scrollable text");
+
+    const middle_click_autoscroll_radius = 15; // from middleClickAutoscroll.js
+    const middle_button = 1;
+    const waitTimeBeforeMoveInMilliseconds = 100;
+
+    // X can be the same for start and end because only vertical autoscrolling
+    // is being tested
+    var start_x = end_x = scrollable.offsetLeft + 5;
+    var start_y = scrollable.offsetTop + 5;
+    var end_y = scrollable.offsetTop + middle_click_autoscroll_radius + 6;
+    await mouseDragAndDrop(start_x, start_y, end_x, end_y, middle_button,
+        waitTimeBeforeMoveInMilliseconds);
+
+    // Confirm that scrolling did happen and the same text is selected.
+    assert_true(scrollable.scrollTop > 0);
+    assert_equals(document.getSelection().toString(),
+        "This is highlightable and scrollable text");
+  }, 'Holding middle button to autoscroll does not clear selected text');
+}
+</script>
+
+<style>
+  #scrollable {
+    height: 100px;
+    width: 400px;
+    overflow: scroll;
+  }
+</style>
+
+<body onload="start()">
+  <div id="scrollable">
+    <span>This is highlightable and scrollable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+    <span>Different scrollable and highlightable text</span>
+  </div>
+</body>

@@ -12,9 +12,9 @@ dependencies. Any such UI code should be moved to
 Example:
 
 * The Chrome OS network portal detection model lives in
-  `chrome/browser/chromeos/net/network_portal_detector_impl.cc`.
+  `chrome/browser/ash/net/network_portal_detector_impl.cc`.
 
 * The notification controller for network portal detection lives in:
   `chrome/browser/ui/ash/network/network_portal_notification_controller.cc`
   (which depends on *chrome/browser/ui*, and
-  *chrome/browser/chromeos/net/network_portal_detector_impl.h*.
+  *chrome/browser/ash/net/network_portal_detector_impl.h*.

@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "courgette/assembly_program.h"
 #include "courgette/courgette.h"
 #include "courgette/rel32_finder_x86.h"

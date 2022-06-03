@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.autofill;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.support.test.filters.SmallTest;
 import android.widget.EditText;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;

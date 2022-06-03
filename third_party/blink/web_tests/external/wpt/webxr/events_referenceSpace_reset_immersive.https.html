@@ -3,7 +3,6 @@
 <script src=/resources/testharnessreport.js></script>
 <script src="resources/webxr_util.js"></script>
 <script src="resources/webxr_test_constants.js"></script>
-<canvas id="webgl-canvas"></canvas>
 
 <script>
 let immersiveTestName = "XRSession resetpose from a device properly fires off " +
@@ -40,7 +39,7 @@ let testFunction = function(session, fakeDeviceController, t) {
   fakeDeviceController.simulateResetPose();
 
   // The triggered resetPose event should arrive after the next Animation Frame
-  session.requestAnimationFrame(() => {});
+  requestSkipAnimationFrame(session, () => {});
 
   return resetPromise;
 };

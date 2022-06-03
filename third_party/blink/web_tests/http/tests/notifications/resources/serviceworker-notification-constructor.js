@@ -3,7 +3,7 @@ importScripts('../../serviceworker/resources/worker-testharness.js');
 test(function() {
     assert_true('Notification' in self);
 
-    assert_throws({ name: 'TypeError' }, function() {
+    assert_throws_js(TypeError, function() {
         new Notification();
     });
 

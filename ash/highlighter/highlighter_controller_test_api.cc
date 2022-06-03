@@ -4,7 +4,7 @@
 
 #include "ash/highlighter/highlighter_controller_test_api.h"
 
-#include "ash/components/fast_ink/fast_ink_points.h"
+#include "ash/fast_ink/fast_ink_points.h"
 #include "ash/highlighter/highlighter_controller.h"
 #include "ash/highlighter/highlighter_view.h"
 #include "base/timer/timer.h"
@@ -18,20 +18,20 @@ HighlighterControllerTestApi::HighlighterControllerTestApi(
 }
 
 HighlighterControllerTestApi::~HighlighterControllerTestApi() {
-  if (scoped_observer_)
+  if (scoped_observation_)
     DetachClient();
-  if (instance_->enabled())
+  if (instance_->is_enabled())
     instance_->SetEnabled(false);
   instance_->DestroyPointerView();
 }
 
 void HighlighterControllerTestApi::AttachClient() {
-  scoped_observer_ = std::make_unique<ScopedObserver>(this);
-  scoped_observer_->Add(instance_);
+  scoped_observation_ = std::make_unique<ScopedObservation>(this);
+  scoped_observation_->Observe(instance_);
 }
 
 void HighlighterControllerTestApi::DetachClient() {
-  scoped_observer_.reset();
+  scoped_observation_.reset();
   instance_->CallExitCallback();
 }
 
@@ -53,15 +53,15 @@ void HighlighterControllerTestApi::SimulateInterruptedStrokeTimeout() {
 }
 
 bool HighlighterControllerTestApi::IsShowingHighlighter() const {
-  return instance_->highlighter_view_.get();
+  return !!instance_->highlighter_view_widget_;
 }
 
 bool HighlighterControllerTestApi::IsFadingAway() const {
-  return IsShowingHighlighter() && instance_->highlighter_view_->animating();
+  return IsShowingHighlighter() && instance_->GetHighlighterView()->animating();
 }
 
 bool HighlighterControllerTestApi::IsShowingSelectionResult() const {
-  return instance_->result_view_.get();
+  return !!instance_->result_view_widget_;
 }
 
 bool HighlighterControllerTestApi::IsWaitingToResumeStroke() const {
@@ -70,12 +70,12 @@ bool HighlighterControllerTestApi::IsWaitingToResumeStroke() const {
 }
 
 const fast_ink::FastInkPoints& HighlighterControllerTestApi::points() const {
-  return instance_->highlighter_view_->points_;
+  return instance_->GetHighlighterView()->points_;
 }
 
 const fast_ink::FastInkPoints& HighlighterControllerTestApi::predicted_points()
     const {
-  return instance_->highlighter_view_->predicted_points_;
+  return instance_->GetHighlighterView()->predicted_points_;
 }
 
 bool HighlighterControllerTestApi::HandleEnabledStateChangedCalled() {

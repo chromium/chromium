@@ -50,25 +50,11 @@ void TreeScopeStyleSheetCollection::AddStyleSheetCandidateNode(Node& node) {
     style_sheet_candidate_nodes_.Add(&node);
 }
 
-bool TreeScopeStyleSheetCollection::MediaQueryAffectingValueChanged() {
-  return ClearMediaQueryDependentRuleSets(active_author_style_sheets_);
-}
-
 void TreeScopeStyleSheetCollection::ApplyActiveStyleSheetChanges(
     StyleSheetCollection& new_collection) {
   GetDocument().GetStyleEngine().ApplyRuleSetChanges(
-      GetTreeScope(), ActiveAuthorStyleSheets(),
-      new_collection.ActiveAuthorStyleSheets());
+      GetTreeScope(), ActiveStyleSheets(), new_collection.ActiveStyleSheets());
   new_collection.Swap(*this);
-}
-
-bool TreeScopeStyleSheetCollection::HasStyleSheets() const {
-  for (Node* node : style_sheet_candidate_nodes_) {
-    StyleSheetCandidate candidate(*node);
-    if (candidate.Sheet() || candidate.IsEnabledAndLoading())
-      return true;
-  }
-  return false;
 }
 
 void TreeScopeStyleSheetCollection::UpdateStyleSheetList() {
@@ -79,8 +65,6 @@ void TreeScopeStyleSheetCollection::UpdateStyleSheetList() {
   for (Node* node : style_sheet_candidate_nodes_) {
     StyleSheetCandidate candidate(*node);
     DCHECK(!candidate.IsXSL());
-    if (candidate.IsImport())
-      continue;
     if (candidate.IsEnabledAndLoading())
       continue;
     if (StyleSheet* sheet = candidate.Sheet())
@@ -89,7 +73,7 @@ void TreeScopeStyleSheetCollection::UpdateStyleSheetList() {
   SwapSheetsForSheetList(new_list);
 }
 
-void TreeScopeStyleSheetCollection::Trace(blink::Visitor* visitor) {
+void TreeScopeStyleSheetCollection::Trace(Visitor* visitor) const {
   visitor->Trace(tree_scope_);
   visitor->Trace(style_sheet_candidate_nodes_);
   StyleSheetCollection::Trace(visitor);

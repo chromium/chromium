@@ -2,10 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/inspector/protocol/Protocol.h"
+#include "third_party/blink/renderer/core/inspector/protocol/protocol.h"
 
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "third_party/inspector_protocol/crdtp/json.h"
 
 namespace blink {
 
@@ -14,7 +16,18 @@ using protocol::ListValue;
 using protocol::Value;
 
 static std::unique_ptr<protocol::Value> ParseJSON(const String& string) {
-  return protocol::StringUtil::parseJSON(string);
+  std::vector<uint8_t> cbor;
+  if (string.Is8Bit()) {
+    crdtp::json::ConvertJSONToCBOR(
+        crdtp::span<uint8_t>(string.Characters8(), string.length()), &cbor);
+  } else {
+    crdtp::json::ConvertJSONToCBOR(
+        crdtp::span<uint16_t>(
+            reinterpret_cast<const uint16_t*>(string.Characters16()),
+            string.length()),
+        &cbor);
+  }
+  return protocol::Value::parseBinary(cbor.data(), cbor.size());
 }
 
 TEST(ProtocolParserTest, Reading) {
@@ -311,44 +324,40 @@ TEST(ProtocolParserTest, Reading) {
   ASSERT_TRUE(root.get());
   EXPECT_EQ(Value::TypeObject, root->type());
 
-  root = ParseJSON("{\"number\":9.87654321, \"null\":null , \"S\" : \"str\" }");
-  ASSERT_TRUE(root.get());
-  EXPECT_EQ(Value::TypeObject, root->type());
-  DictionaryValue* object_val = DictionaryValue::cast(root.get());
-  ASSERT_TRUE(object_val);
-  double_val = 0.0;
-  EXPECT_TRUE(object_val->getDouble("number", &double_val));
-  EXPECT_DOUBLE_EQ(9.87654321, double_val);
-  Value* null_val = object_val->get("null");
-  ASSERT_TRUE(null_val);
-  EXPECT_EQ(Value::TypeNull, null_val->type());
-  EXPECT_TRUE(object_val->getString("S", &str_val));
-  EXPECT_EQ("str", str_val);
-
-  // Test newline equivalence.
-  root2 = ParseJSON(
-      "{\n"
-      "  \"number\":9.87654321,\n"
-      "  \"null\":null,\n"
-      "  \"S\":\"str\"\n"
-      "}\n");
-  ASSERT_TRUE(root2.get());
-  EXPECT_EQ(root->toJSONString(), root2->toJSONString());
-
-  root2 = ParseJSON(
-      "{\r\n"
-      "  \"number\":9.87654321,\r\n"
-      "  \"null\":null,\r\n"
-      "  \"S\":\"str\"\r\n"
-      "}\r\n");
-  ASSERT_TRUE(root2.get());
-  EXPECT_EQ(root->toJSONString(), root2->toJSONString());
+  // The three test cases in the loop differ only by their newlines; therefore
+  // the same assertions are valid.
+  for (const char* test :
+       {"{\"number\":9.87654321, \"null\":null , \"S\" : \"str\" }",
+        "{\n"
+        "  \"number\":9.87654321,\n"
+        "  \"null\":null,\n"
+        "  \"S\":\"str\"\n"
+        "}\n",
+        "{\r\n"
+        "  \"number\":9.87654321,\r\n"
+        "  \"null\":null,\r\n"
+        "  \"S\":\"str\"\r\n"
+        "}\r\n"}) {
+    root = ParseJSON(String(test));
+    ASSERT_TRUE(root.get());
+    EXPECT_EQ(Value::TypeObject, root->type());
+    DictionaryValue* object_val = DictionaryValue::cast(root.get());
+    ASSERT_TRUE(object_val);
+    double_val = 0.0;
+    EXPECT_TRUE(object_val->getDouble("number", &double_val));
+    EXPECT_DOUBLE_EQ(9.87654321, double_val);
+    Value* null_val = object_val->get("null");
+    ASSERT_TRUE(null_val);
+    EXPECT_EQ(Value::TypeNull, null_val->type());
+    EXPECT_TRUE(object_val->getString("S", &str_val));
+    EXPECT_EQ("str", str_val);
+  }
 
   // Test nesting
   root = ParseJSON("{\"inner\":{\"array\":[true]},\"false\":false,\"d\":{}}");
   ASSERT_TRUE(root.get());
   EXPECT_EQ(Value::TypeObject, root->type());
-  object_val = DictionaryValue::cast(root.get());
+  DictionaryValue* object_val = DictionaryValue::cast(root.get());
   ASSERT_TRUE(object_val);
   DictionaryValue* inner_object = object_val->getObject("inner");
   ASSERT_TRUE(inner_object);
@@ -454,14 +463,14 @@ TEST(ProtocolParserTest, Reading) {
   EXPECT_EQ(Value::TypeString, root->type());
   EXPECT_TRUE(root->asString(&str_val));
   UChar tmp2[] = {0x20ac, 0x33, 0x2c, 0x31, 0x34};
-  EXPECT_EQ(String(tmp2, 5), str_val);
+  EXPECT_EQ(String(tmp2, 5u), str_val);
 
   root = ParseJSON("\"\\ud83d\\udca9\\ud83d\\udc6c\"");
   ASSERT_TRUE(root.get());
   EXPECT_EQ(Value::TypeString, root->type());
   EXPECT_TRUE(root->asString(&str_val));
   UChar tmp3[] = {0xd83d, 0xdca9, 0xd83d, 0xdc6c};
-  EXPECT_EQ(String(tmp3, 4), str_val);
+  EXPECT_EQ(String(tmp3, 4u), str_val);
 
   // Test literal root objects.
   root = ParseJSON("null");

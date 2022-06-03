@@ -1,0 +1,10 @@
+<!--
+@WIN-ALLOW:ia2_hypertext=*
+-->
+<iframe tabindex="-1" src="frame/empty.html"
+        style="position: absolute; width: 9em; height: 9em; top: -99em;">
+</iframe>
+<!-- Use a unique @src for code that ensures all iframes are loaded -->
+<iframe onload="iframeLoaded()" src="frame/empty.html#2"
+        style="position: absolute; width: 9em; height: 9em; top: -99em;">
+</iframe>

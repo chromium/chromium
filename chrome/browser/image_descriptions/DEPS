@@ -1,0 +1,4 @@
+include_rules = [
+  "+content/public/android/java/src/org/chromium/content_public/browser",
+  "+components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/AppModalPresenter.java",
+]

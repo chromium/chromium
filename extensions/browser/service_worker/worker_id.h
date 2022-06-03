@@ -20,6 +20,7 @@ struct WorkerId {
 
   bool operator<(const WorkerId& other) const;
   bool operator==(const WorkerId& other) const;
+  bool operator!=(const WorkerId& other) const;
 };
 
 }  // namespace extensions

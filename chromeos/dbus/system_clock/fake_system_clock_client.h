@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/system_clock/system_clock_client.h"
 #include "dbus/object_proxy.h"
@@ -21,6 +20,10 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
       public SystemClockClient::TestInterface {
  public:
   FakeSystemClockClient();
+
+  FakeSystemClockClient(const FakeSystemClockClient&) = delete;
+  FakeSystemClockClient& operator=(const FakeSystemClockClient&) = delete;
+
   ~FakeSystemClockClient() override;
 
   // TestInterface
@@ -46,8 +49,6 @@ class COMPONENT_EXPORT(SYSTEM_CLOCK) FakeSystemClockClient
   std::vector<dbus::ObjectProxy::WaitForServiceToBeAvailableCallback>
       callbacks_;
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeSystemClockClient);
 };
 
 }  // namespace chromeos

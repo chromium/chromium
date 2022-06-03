@@ -6,9 +6,7 @@
 #define MEDIA_BASE_SCOPED_ASYNC_TRACE_H_
 
 #include <memory>
-#include <string>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -26,6 +24,9 @@ class MEDIA_EXPORT ScopedAsyncTrace {
   // other words, use literal strings only.  See trace_event_common.h .
   static std::unique_ptr<ScopedAsyncTrace> CreateIfEnabled(const char* name);
 
+  ScopedAsyncTrace(const ScopedAsyncTrace&) = delete;
+  ScopedAsyncTrace& operator=(const ScopedAsyncTrace&) = delete;
+
   ~ScopedAsyncTrace();
 
   // TODO(liberato): Add StepInto / StepPast.
@@ -34,8 +35,6 @@ class MEDIA_EXPORT ScopedAsyncTrace {
   explicit ScopedAsyncTrace(const char* name);
 
   const char* name_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedAsyncTrace);
 };
 
 }  // namespace media

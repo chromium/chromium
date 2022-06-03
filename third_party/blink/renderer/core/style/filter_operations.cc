@@ -31,7 +31,7 @@ namespace blink {
 
 FilterOperations::FilterOperations() = default;
 
-void FilterOperations::Trace(blink::Visitor* visitor) {
+void FilterOperations::Trace(Visitor* visitor) const {
   visitor->Trace(operations_);
 }
 
@@ -70,16 +70,6 @@ bool FilterOperations::CanInterpolateWith(const FilterOperations& other) const {
   return true;
 }
 
-bool FilterOperations::HasBlurOrReferenceFilter() const {
-  for (const auto& operation : operations_) {
-    FilterOperation::OperationType type = operation->GetType();
-    if (type == FilterOperation::BLUR || type == FilterOperation::REFERENCE) {
-      return true;
-    }
-  }
-  return false;
-}
-
 FloatRect FilterOperations::MapRect(const FloatRect& rect) const {
   auto accumulate_mapped_rect = [](const FloatRect& rect,
                                    const Member<FilterOperation>& op) {
@@ -99,6 +89,13 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
   return std::any_of(
       operations_.begin(), operations_.end(),
       [](const auto& operation) { return operation->MovesPixels(); });
+}
+
+bool FilterOperations::HasReferenceFilter() const {
+  return std::any_of(
+      operations_.begin(), operations_.end(), [](const auto& operation) {
+        return operation->GetType() == FilterOperation::REFERENCE;
+      });
 }
 
 void FilterOperations::AddClient(SVGResourceClient& client) const {

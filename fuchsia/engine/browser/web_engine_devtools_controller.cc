@@ -6,20 +6,24 @@
 
 #include <fuchsia/web/cpp/fidl.h>
 #include <lib/fidl/cpp/interface_ptr_set.h>
+#include <lib/sys/cpp/component_context.h>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/optional.h"
+#include "base/fuchsia/process_context.h"
+#include "base/fuchsia/scoped_service_binding.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_socket_factory.h"
 #include "content/public/common/content_switches.h"
+#include "fuchsia/engine/fidl/chromium/internal/cpp/fidl.h"
 #include "fuchsia/engine/switches.h"
 #include "net/base/net_errors.h"
 #include "net/base/port_util.h"
 #include "net/socket/tcp_server_socket.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -85,8 +89,6 @@ class NoopController : public WebEngineDevToolsController {
   NoopController& operator=(const NoopController&) = delete;
 
   // WebEngineDevToolsController implementation:
-  void OnContextCreated() override {}
-  void OnContextDestroyed() override {}
   bool OnFrameCreated(content::WebContents* contents,
                       bool user_debugging) override {
     return !user_debugging;
@@ -102,23 +104,22 @@ class NoopController : public WebEngineDevToolsController {
 };
 
 // "User-mode" makes DevTools accessible to remote devices for Frames specified
-// by the Context owner. The controller, which starts DevTools when the first
-// Frame is created, and shuts it down when no debuggable Frames remain.
+// by the web_instance owner. The controller, which starts DevTools when the
+// first Frame is created, and shuts it down when no debuggable Frames remain.
 class UserModeController : public WebEngineDevToolsController {
  public:
   explicit UserModeController(uint16_t server_port)
       : ip_endpoint_(net::IPAddress::IPv6AllZeros(), server_port) {}
-  ~UserModeController() override { DCHECK(!is_remote_debugging_started_); }
+  ~UserModeController() override {
+    if (is_remote_debugging_started_) {
+      content::DevToolsAgentHost::StopRemoteDebuggingServer();
+    }
+  }
 
   UserModeController(const UserModeController&) = delete;
   UserModeController& operator=(const UserModeController&) = delete;
 
   // WebEngineDevToolsController implementation:
-  void OnContextCreated() override {}
-  void OnContextDestroyed() override {
-    if (is_remote_debugging_started_)
-      content::DevToolsAgentHost::StopRemoteDebuggingServer();
-  }
   bool OnFrameCreated(content::WebContents* contents,
                       bool user_debugging) override {
     if (user_debugging) {
@@ -185,7 +186,7 @@ class UserModeController : public WebEngineDevToolsController {
   bool is_remote_debugging_started_ = false;
 
   // Currently active DevTools port. Set to 0 on service startup error.
-  base::Optional<uint16_t> devtools_port_;
+  absl::optional<uint16_t> devtools_port_;
 
   // Set of Frames' content::WebContents which are remotely debuggable.
   base::flat_set<content::WebContents*> debuggable_contents_;
@@ -197,29 +198,20 @@ class UserModeController : public WebEngineDevToolsController {
 // for debugging by clients on the same device. DevTools is only reported when
 // the first Frame finishes loading its main document, so that the
 // DevToolsPerContextListeners can start interacting with it immediately.
-class DebugModeController : public WebEngineDevToolsController {
+class DebugModeController : public WebEngineDevToolsController,
+                            public chromium::internal::DevToolsConnector {
  public:
-  explicit DebugModeController(
-      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners) {
-    for (auto& listener : listeners) {
-      devtools_listeners_.AddInterfacePtr(std::move(listener));
-    }
+  DebugModeController()
+      : DebugModeController(
+            net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0)) {}
+  ~DebugModeController() override {
+    content::DevToolsAgentHost::StopRemoteDebuggingServer();
   }
-  ~DebugModeController() override = default;
 
   DebugModeController(const DebugModeController&) = delete;
   DebugModeController& operator=(const DebugModeController&) = delete;
 
   // DevToolsController implementation:
-  void OnContextCreated() override {
-    StartRemoteDebuggingServer(
-        base::BindOnce(&DebugModeController::OnDevToolsPortChanged,
-                       base::Unretained(this)),
-        net::IPEndPoint(net::IPAddress::IPv4Localhost(), 0));
-  }
-  void OnContextDestroyed() override {
-    content::DevToolsAgentHost::StopRemoteDebuggingServer();
-  }
   bool OnFrameCreated(content::WebContents* contents,
                       bool user_debugging) override {
     return !user_debugging;
@@ -236,94 +228,35 @@ class DebugModeController : public WebEngineDevToolsController {
     std::move(callback).Run(0);
   }
 
- private:
-  void OnDevToolsPortChanged(uint16_t port) {
-    devtools_port_ = port;
-    MaybeSendRemoteDebuggingCallbacks();
-  }
-
-  void MaybeSendRemoteDebuggingCallbacks() {
-    if (!frame_loaded_ || !devtools_port_)
-      return;
-
-    // If |devtools_port_| is valid then notify all listeners, otherwise
-    // disconnect them.
-    if (devtools_port_.value() == 0) {
-      devtools_listeners_.CloseAll();
-    } else {
-      for (const auto& listener : devtools_listeners_.ptrs()) {
-        listener->get()->OnHttpPortOpen(devtools_port_.value());
-      }
-    }
-  }
-
-  // Currently active DevTools port. Set to 0 on service startup error.
-  base::Optional<uint16_t> devtools_port_;
-
-  bool frame_loaded_ = false;
-
-  fidl::InterfacePtrSet<fuchsia::web::DevToolsPerContextListener>
-      devtools_listeners_;
-};
-
-// "Mixed-mode" is used when both user and debug remote debugging are active at
-// the same time. The service lifespan is tied to the Context and all Frames are
-// available for remote debugging.
-class MixedModeController : public WebEngineDevToolsController {
- public:
-  explicit MixedModeController(
-      std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners,
-      uint16_t server_port)
-      : ip_endpoint_(net::IPAddress::IPv6AllZeros(), server_port) {
-    for (auto& listener : listeners) {
-      devtools_listeners_.AddInterfacePtr(std::move(listener));
-    }
-  }
-  ~MixedModeController() override = default;
-
-  MixedModeController(const MixedModeController&) = delete;
-  MixedModeController& operator=(const MixedModeController&) = delete;
-
-  // WebEngineDevToolsController implementation:
-  void OnContextCreated() override {
+ protected:
+  explicit DebugModeController(net::IPEndPoint ip_endpoint)
+      : ip_endpoint_(std::move(ip_endpoint)),
+        connector_binding_(base::ComponentContextForProcess()->outgoing().get(),
+                           this) {
+    // Immediately start the service.
     StartRemoteDebuggingServer(
-        base::BindOnce(&MixedModeController::OnDevToolsPortChanged,
+        base::BindOnce(&DebugModeController::OnDevToolsPortChanged,
                        base::Unretained(this)),
         ip_endpoint_);
   }
-  void OnContextDestroyed() override {
-    content::DevToolsAgentHost::StopRemoteDebuggingServer();
-  }
-  bool OnFrameCreated(content::WebContents* contents,
-                      bool user_debugging) override {
-    return true;
-  }
-  void OnFrameLoaded(content::WebContents* contents) override {
-    frame_loaded_ = true;
+
+  virtual void OnDevToolsPortChanged(uint16_t port) {
+    devtools_port_ = port;
     MaybeSendRemoteDebuggingCallbacks();
   }
-  void OnFrameDestroyed(content::WebContents* contents) override {}
-  content::DevToolsAgentHost::List RemoteDebuggingTargets() override {
-    return content::DevToolsAgentHost::GetOrCreateAll();
-  }
-  void GetDevToolsPort(base::OnceCallback<void(uint16_t)> callback) override {
-    get_port_callbacks_.emplace_back(std::move(callback));
-    MaybeNotifyGetPortCallbacks();
-  }
+
+  // Currently active DevTools port. Set to 0 on service startup error.
+  absl::optional<uint16_t> devtools_port_;
 
  private:
-  void OnDevToolsPortChanged(uint16_t port) {
-    devtools_port_ = port;
-    MaybeNotifyGetPortCallbacks();
-    MaybeSendRemoteDebuggingCallbacks();
-  }
-
-  void MaybeNotifyGetPortCallbacks() {
-    if (!devtools_port_)
-      return;
-    for (auto& callback : get_port_callbacks_)
-      std::move(callback).Run(devtools_port_.value());
-    get_port_callbacks_.clear();
+  // chromium::internal::DevToolsConnector implementation.
+  void ConnectPerContextListener(
+      fuchsia::web::DevToolsPerContextListenerHandle listener_handle) override {
+    fuchsia::web::DevToolsPerContextListenerPtr listener;
+    listener.Bind(std::move(listener_handle));
+    if (frame_loaded_ && devtools_port_)
+      listener->OnHttpPortOpen(devtools_port_.value());
+    devtools_listeners_.AddInterfacePtr(std::move(listener));
   }
 
   void MaybeSendRemoteDebuggingCallbacks() {
@@ -343,15 +276,49 @@ class MixedModeController : public WebEngineDevToolsController {
 
   const net::IPEndPoint ip_endpoint_;
 
-  // Currently active DevTools port. Set to 0 on service startup error.
-  base::Optional<uint16_t> devtools_port_;
-
-  std::vector<base::OnceCallback<void(uint16_t)>> get_port_callbacks_;
-
   bool frame_loaded_ = false;
 
   fidl::InterfacePtrSet<fuchsia::web::DevToolsPerContextListener>
       devtools_listeners_;
+
+  const base::ScopedServiceBinding<chromium::internal::DevToolsConnector>
+      connector_binding_;
+};
+
+// "Mixed-mode" is used when both user and debug remote debugging are active at
+// the same time. The service is enabled for the lifespan of the web_instance.
+class MixedModeController : public DebugModeController {
+ public:
+  explicit MixedModeController(uint16_t server_port)
+      : DebugModeController(
+            net::IPEndPoint(net::IPAddress::IPv6AllZeros(), server_port)) {}
+  ~MixedModeController() override = default;
+
+  // WebEngineDevToolsController overrides:
+  bool OnFrameCreated(content::WebContents* contents,
+                      bool user_debugging) override {
+    return true;
+  }
+  void GetDevToolsPort(base::OnceCallback<void(uint16_t)> callback) override {
+    get_port_callbacks_.emplace_back(std::move(callback));
+    MaybeNotifyGetPortCallbacks();
+  }
+
+  // DebugModeController overrides:
+  void OnDevToolsPortChanged(uint16_t port) override {
+    DebugModeController::OnDevToolsPortChanged(port);
+    MaybeNotifyGetPortCallbacks();
+  }
+
+  void MaybeNotifyGetPortCallbacks() {
+    if (!devtools_port_)
+      return;
+    for (auto& callback : get_port_callbacks_)
+      std::move(callback).Run(devtools_port_.value());
+    get_port_callbacks_.clear();
+  }
+
+  std::vector<base::OnceCallback<void(uint16_t)>> get_port_callbacks_;
 };
 
 }  //  namespace
@@ -360,11 +327,11 @@ class MixedModeController : public WebEngineDevToolsController {
 std::unique_ptr<WebEngineDevToolsController>
 WebEngineDevToolsController::CreateFromCommandLine(
     const base::CommandLine& command_line) {
-  base::Optional<uint16_t> devtools_port;
+  absl::optional<uint16_t> devtools_port;
   if (command_line.HasSwitch(switches::kRemoteDebuggingPort)) {
     // Set up DevTools to listen on all network routes on the command-line
     // provided port.
-    base::StringPiece command_line_port_value =
+    std::string command_line_port_value =
         command_line.GetSwitchValueASCII(switches::kRemoteDebuggingPort);
     int parsed_port = 0;
 
@@ -382,34 +349,17 @@ WebEngineDevToolsController::CreateFromCommandLine(
     }
   }
 
-  std::vector<fuchsia::web::DevToolsPerContextListenerPtr> listeners;
-  if (command_line.HasSwitch(switches::kRemoteDebuggerHandles)) {
-    // Initialize the Debug devtools listeners.
-    std::string handle_ids_str =
-        command_line.GetSwitchValueASCII(switches::kRemoteDebuggerHandles);
-
-    // Extract individual handle IDs from the comma-separated list.
-    base::StringTokenizer tokenizer(handle_ids_str, ",");
-    while (tokenizer.GetNext()) {
-      uint32_t handle_id = 0;
-      if (!base::StringToUint(tokenizer.token(), &handle_id))
-        continue;
-      fuchsia::web::DevToolsPerContextListenerPtr listener;
-      listener.Bind(zx::channel(zx_take_startup_handle(handle_id)));
-      listeners.emplace_back(std::move(listener));
-    }
-  }
-
+  bool enable_debug_mode =
+      command_line.HasSwitch(switches::kEnableRemoteDebugMode);
   if (devtools_port) {
-    if (listeners.empty()) {
-      return std::make_unique<UserModeController>(devtools_port.value());
+    if (enable_debug_mode) {
+      return std::make_unique<MixedModeController>(devtools_port.value());
     } else {
-      return std::make_unique<MixedModeController>(std::move(listeners),
-                                                   devtools_port.value());
+      return std::make_unique<UserModeController>(devtools_port.value());
     }
-  } else if (listeners.empty()) {
-    return std::make_unique<NoopController>();
+  } else if (enable_debug_mode) {
+    return std::make_unique<DebugModeController>();
   } else {
-    return std::make_unique<DebugModeController>(std::move(listeners));
+    return std::make_unique<NoopController>();
   }
 }

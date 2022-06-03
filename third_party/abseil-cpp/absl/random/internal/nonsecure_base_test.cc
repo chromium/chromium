@@ -154,9 +154,10 @@ TEST(NonsecureURBGBase, CompatibleWithDistributionUtils) {
 TEST(NonsecureURBGBase, CompatibleWithStdDistributions) {
   ExampleNonsecureURBG rbg;
 
-  std::uniform_int_distribution<uint32_t>(0, 100)(rbg);
-  std::uniform_real_distribution<float>()(rbg);
-  std::bernoulli_distribution(0.2)(rbg);
+  // Cast to void to suppress [[nodiscard]] warnings
+  static_cast<void>(std::uniform_int_distribution<uint32_t>(0, 100)(rbg));
+  static_cast<void>(std::uniform_real_distribution<float>()(rbg));
+  static_cast<void>(std::bernoulli_distribution(0.2)(rbg));
 }
 
 TEST(NonsecureURBGBase, ConsecutiveDefaultInstancesYieldUniqueVariates) {

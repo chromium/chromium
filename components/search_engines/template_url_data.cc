@@ -4,9 +4,10 @@
 
 #include "components/search_engines/template_url_data.h"
 
+#include "base/check.h"
 #include "base/guid.h"
 #include "base/i18n/case_conversion.h"
-#include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -44,7 +45,7 @@ TemplateURLData::TemplateURLData()
       usage_count(0),
       prepopulate_id(0),
       sync_guid(base::GenerateGUID()),
-      keyword_(base::ASCIIToUTF16("dummy")),
+      keyword_(u"dummy"),
       url_("x") {}
 
 TemplateURLData::TemplateURLData(const TemplateURLData& other) = default;
@@ -52,8 +53,8 @@ TemplateURLData::TemplateURLData(const TemplateURLData& other) = default;
 TemplateURLData& TemplateURLData::operator=(const TemplateURLData& other) =
     default;
 
-TemplateURLData::TemplateURLData(const base::string16& name,
-                                 const base::string16& keyword,
+TemplateURLData::TemplateURLData(const std::u16string& name,
+                                 const std::u16string& keyword,
                                  base::StringPiece search_url,
                                  base::StringPiece suggest_url,
                                  base::StringPiece image_url,
@@ -66,7 +67,8 @@ TemplateURLData::TemplateURLData(const base::string16& name,
                                  base::StringPiece image_url_post_params,
                                  base::StringPiece favicon_url,
                                  base::StringPiece encoding,
-                                 const base::ListValue& alternate_urls_list,
+                                 const base::Value& alternate_urls_list,
+                                 bool preconnect_to_search_url,
                                  int prepopulate_id)
     : suggestions_url(suggest_url),
       image_url(image_url),
@@ -86,28 +88,34 @@ TemplateURLData::TemplateURLData(const base::string16& name,
       created_from_play_api(false),
       usage_count(0),
       prepopulate_id(prepopulate_id),
-      sync_guid(GenerateGUID(prepopulate_id)) {
+      sync_guid(GenerateGUID(prepopulate_id)),
+      preconnect_to_search_url(preconnect_to_search_url) {
   SetShortName(name);
   SetKeyword(keyword);
-  SetURL(search_url.as_string());
-  input_encodings.push_back(encoding.as_string());
-  for (size_t i = 0; i < alternate_urls_list.GetSize(); ++i) {
-    std::string alternate_url;
-    alternate_urls_list.GetString(i, &alternate_url);
-    DCHECK(!alternate_url.empty());
-    alternate_urls.push_back(alternate_url);
+  SetURL(std::string(search_url));
+  input_encodings.push_back(std::string(encoding));
+  if (alternate_urls_list.is_list()) {
+    auto alternate_urls_list_view = alternate_urls_list.GetList();
+    for (size_t i = 0; i < alternate_urls_list_view.size(); ++i) {
+      const std::string* alternate_url =
+          alternate_urls_list_view[i].GetIfString();
+      DCHECK(alternate_url && !alternate_url->empty());
+      if (alternate_url) {
+        alternate_urls.push_back(*alternate_url);
+      }
+    }
   }
 }
 
 TemplateURLData::~TemplateURLData() = default;
 
-void TemplateURLData::SetShortName(const base::string16& short_name) {
+void TemplateURLData::SetShortName(const std::u16string& short_name) {
   // Remove tabs, carriage returns, and the like, as they can corrupt
   // how the short name is displayed.
   short_name_ = base::CollapseWhitespace(short_name, true);
 }
 
-void TemplateURLData::SetKeyword(const base::string16& keyword) {
+void TemplateURLData::SetKeyword(const std::u16string& keyword) {
   DCHECK(!keyword.empty());
 
   // Case sensitive keyword matching is confusing. As such, we force all

@@ -1,0 +1,25 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Configuration for a generic x86 android-28 AVD.
+
+emulator_package {
+  package_name: "chromium/third_party/android_sdk/public/emulator"
+  version: "lnt2Oz8NS73mAJL389R1QwgbM2qDSKNIRWTUOdmywukC"
+  dest_path: ".emulator_sdk"
+}
+
+system_image_package {
+  package_name: "chromium/third_party/android_sdk/public/system-images/android-28/google_apis_playstore/x86"
+  version: "aHLrqkrOa04ksjgo_LhSRx9V9P_FKxFqEJohj9cYsBUC"
+  dest_path: ".emulator_sdk"
+}
+system_image_name: "system-images;android-28;google_apis_playstore;x86"
+
+avd_package {
+  package_name: "chromium/third_party/android_sdk/public/avds/android-28/google_apis_playstore/x86"
+  version: "bmg8zBF8218BBIET9QlBTJvCtf1Pn1KN4jqJNkp2JlcC"
+  dest_path: ".android"
+}
+avd_name: "android_28_google_apis_playstore_x86"

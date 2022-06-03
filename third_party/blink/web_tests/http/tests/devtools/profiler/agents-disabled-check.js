@@ -9,7 +9,7 @@
   function collectMessages(message) {
     messages.push(message);
   }
-  Protocol.test.dumpProtocol = collectMessages;
+  ProtocolClient.test.dumpProtocol = collectMessages;
   messages.push('--> SDK.targetManager.suspendAllTargets();');
   await SDK.targetManager.suspendAllTargets();
   messages.push('');
@@ -17,11 +17,12 @@
   await SDK.targetManager.resumeAllTargets();
   messages.push('');
   messages.push('--> done');
-  Protocol.test.dumpProtocol = null;
+  ProtocolClient.test.dumpProtocol = null;
   for (var i = 0; i < messages.length; ++i) {
     var message = messages[i];
-    if (message.startsWith('backend'))
+    if (message.startsWith('backend')) {
       continue;
+    }
     message = message.replace(/"id":\d+,/, '"id":<number>,');
     TestRunner.addResult(message);
   }

@@ -25,9 +25,12 @@ V4L2DevicePoller::V4L2DevicePoller(V4L2Device* const device,
 }
 
 V4L2DevicePoller::~V4L2DevicePoller() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
-
-  StopPolling();
+  // It's possible the V4L2 device poller gets destroyed on a different thread
+  // than expected if e.g. destroying a decoder immediately after creation. The
+  // check here is not thread-safe, but using a lock or atomic state doesn't
+  // make sense as destruction is never thread-safe.
+  if (poll_thread_.IsRunning())
+    StopPolling();
 }
 
 bool V4L2DevicePoller::StartPolling(EventCallback event_callback,
@@ -130,8 +133,8 @@ void V4L2DevicePoller::DevicePollTask() {
     }
 
     DVLOGF(4) << "Poll returned, calling event callback.";
-    client_task_runner_->PostTask(FROM_HERE,
-                                  base::Bind(event_callback_, event_pending));
+    client_task_runner_->PostTask(
+        FROM_HERE, base::BindRepeating(event_callback_, event_pending));
   }
 }
 

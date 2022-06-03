@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++heading name='[ Foo ]'
+++++++++genericContainer ignored
+++++++++++staticText name='[ '
+++++++++++++inlineTextBox name='[ '
+++++++++staticText name='Foo'
+++++++++++inlineTextBox name='Foo'
+++++++++genericContainer ignored
+++++++++++staticText name=' ]'
+++++++++++++inlineTextBox name=' ]'

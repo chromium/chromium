@@ -5,233 +5,201 @@
 #ifndef MEDIA_BASE_VIDEO_FRAME_METADATA_H_
 #define MEDIA_BASE_VIDEO_FRAME_METADATA_H_
 
-#include <memory>
-#include <string>
-
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "base/values.h"
 #include "build/build_config.h"
 #include "media/base/media_export.h"
 #include "media/base/video_transformation.h"
-
-namespace gfx {
-class Rect;
-}
+#include "media/gpu/buildflags.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace media {
 
-class MEDIA_EXPORT VideoFrameMetadata {
- public:
-  enum Key {
-    // Sources of VideoFrames use this marker to indicate that the associated
-    // VideoFrame can be overlayed, case in which its contents do not need to be
-    // further composited but displayed directly. Use Get/SetBoolean() for
-    // this Key.
-    ALLOW_OVERLAY,
+struct MEDIA_EXPORT VideoFrameMetadata {
+  VideoFrameMetadata();
+  ~VideoFrameMetadata() = default;
 
-    // Video capture begin/end timestamps.  Consumers can use these values for
-    // dynamic optimizations, logging stats, etc.  Use Get/SetTimeTicks() for
-    // these keys.
-    CAPTURE_BEGIN_TIME,
-    CAPTURE_END_TIME,
+  VideoFrameMetadata(const VideoFrameMetadata& other);
 
-    // A counter that is increased by the producer of video frames each time
-    // it pushes out a new frame. By looking for gaps in this counter, clients
-    // can determine whether or not any frames have been dropped on the way from
-    // the producer between two consecutively received frames. Note that the
-    // counter may start at arbitrary values, so the absolute value of it has no
-    // meaning.
-    CAPTURE_COUNTER,
+  enum CopyMode {
+    // Indicates that mailbox created in one context, is also being used in a
+    // different context belonging to another share group and video frames are
+    // using SurfaceTexture to render frames.
+    // Textures generated from SurfaceTexture can't be shared between contexts
+    // of different share group and hence this frame must be copied to a new
+    // texture before use, rather than being used directly.
+    kCopyToNewTexture = 0,
 
-    // A base::ListValue containing 4 integers representing x, y, width, height
-    // of the rectangular region of the frame that has changed since the frame
-    // with the directly preceding CAPTURE_COUNTER. If that frame was not
-    // received, typically because it was dropped during transport from the
-    // producer, clients must assume that the entire frame has changed.
-    // The rectangle is relative to the full frame data, i.e. [0, 0,
-    // coded_size().width(), coded_size().height()]. It does not have to be
-    // fully contained within visible_rect().
-    CAPTURE_UPDATE_RECT,
-
-    // Indicates that this frame must be copied to a new texture before use,
-    // rather than being used directly. Specifically this is required for
-    // WebView because of limitations about sharing surface textures between GL
-    // contexts.
-    COPY_REQUIRED,
-
-    // Indicates if the current frame is the End of its current Stream. Use
-    // Get/SetBoolean() for this Key.
-    END_OF_STREAM,
-
-    // The estimated duration of this frame (i.e., the amount of time between
-    // the media timestamp of this frame and the next).  Note that this is not
-    // the same information provided by FRAME_RATE as the FRAME_DURATION can
-    // vary unpredictably for every frame.  Consumers can use this to optimize
-    // playback scheduling, make encoding quality decisions, and/or compute
-    // frame-level resource utilization stats.  Use Get/SetTimeDelta() for this
-    // key.
-    FRAME_DURATION,
-
-    // Represents either the fixed frame rate, or the maximum frame rate to
-    // expect from a variable-rate source.  This value generally remains the
-    // same for all frames in the same session.  Use Get/SetDouble() for this
-    // key.
-    FRAME_RATE,
-
-    // This is a boolean that signals that the video capture engine detects
-    // interactive content. One possible optimization that this signal can help
-    // with is remote content: adjusting end-to-end latency down to help the
-    // user better coordinate their actions.
-    //
-    // Use Get/SetBoolean for this key.
-    INTERACTIVE_CONTENT,
-
-    // This field represents the local time at which either: 1) the frame was
-    // generated, if it was done so locally; or 2) the targeted play-out time
-    // of the frame, if it was generated from a remote source. This value is NOT
-    // a high-resolution timestamp, and so it should not be used as a
-    // presentation time; but, instead, it should be used for buffering playback
-    // and for A/V synchronization purposes.
-    // Use Get/SetTimeTicks() for this key.
-    REFERENCE_TIME,
-
-    // A feedback signal that indicates the fraction of the tolerable maximum
-    // amount of resources that were utilized to process this frame.  A producer
-    // can check this value after-the-fact, usually via a VideoFrame destruction
-    // observer, to determine whether the consumer can handle more or less data
-    // volume, and achieve the right quality versus performance trade-off.
-    //
-    // Use Get/SetDouble() for this key.  Values are interpreted as follows:
-    // Less than 0.0 is meaningless and should be ignored.  1.0 indicates a
-    // maximum sustainable utilization.  Greater than 1.0 indicates the consumer
-    // is likely to stall or drop frames if the data volume is not reduced.
-    //
-    // Example: In a system that encodes and transmits video frames over the
-    // network, this value can be used to indicate whether sufficient CPU
-    // is available for encoding and/or sufficient bandwidth is available for
-    // transmission over the network.  The maximum of the two utilization
-    // measurements would be used as feedback.
-    RESOURCE_UTILIZATION,
-
-    // Sources of VideoFrames use this marker to indicate that an instance of
-    // VideoFrameExternalResources produced from the associated video frame
-    // should use read lock fences.
-    READ_LOCK_FENCES_ENABLED,
-
-    // Indicates that the frame is rotated.
-    ROTATION,
-
-    // Android only: if set, then this frame is not suitable for overlay, even
-    // if ALLOW_OVERLAY is set.  However, it allows us to process the overlay
-    // to see if it would have been promoted, if it were backed by a SurfaceView
-    // instead.  This lets us figure out when SurfaceViews are appropriate.
-    TEXTURE_OWNER,
-
-    // Android only: if set, then this frame's resource would like to be
-    // notified about its promotability to an overlay.
-    WANTS_PROMOTION_HINT,
-
-    // This video frame comes from protected content.
-    PROTECTED_VIDEO,
-
-    // This video frame is protected by hardware. This option is valid only if
-    // PROTECTED_VIDEO is also set to true.
-    HW_PROTECTED,
-
-    // An UnguessableToken that identifies VideoOverlayFactory that created
-    // this VideoFrame. It's used by Cast to help with video hole punch.
-    // Use Get/SetUnguessableToken() for this key.
-    OVERLAY_PLANE_ID,
-
-    // Whether this frame was decoded in a power efficient way.
-    POWER_EFFICIENT,
-
-    // CompositorFrameMetadata variables associated with this frame. Used for
-    // remote debugging.
-    // Use Get/SetDouble() for these keys.
-    // TODO(crbug.com/832220): Use a customized dictionary value instead of
-    // using these keys directly.
-    DEVICE_SCALE_FACTOR,
-    PAGE_SCALE_FACTOR,
-    ROOT_SCROLL_OFFSET_X,
-    ROOT_SCROLL_OFFSET_Y,
-    TOP_CONTROLS_VISIBLE_HEIGHT,
-
-    // If present, this field represents the local time at which the VideoFrame
-    // was decoded from whichever format it was encoded in. Sometimes only
-    // DECODE_END_TIME will be present. Use Get/SetTimeTicks() for this key.
-    DECODE_BEGIN_TIME,
-    DECODE_END_TIME,
-
-    // If present, this field represents the elapsed time from the submission of
-    // the encoded packet with the same PTS as this frame to the decoder until
-    // the decoded frame was ready for presentation. Stored as base::TimeDelta.
-    PROCESSING_TIME,
-
-    // The RTP timestamp associated with this video frame. Stored as a double
-    // since base::DictionaryValue doesn't have a uint32_t type.
-    //
-    // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource
-    RTP_TIMESTAMP,
-
-    NUM_KEYS
+    // Indicates that mailbox created in one context, is also being used in a
+    // different context belonging to another share group and video frames are
+    // using AImageReader to render frames.
+    // AImageReader allows to render image data to AHardwareBuffer which can be
+    // shared between contexts of different share group. AHB from existing
+    // mailbox is wrapped into a new mailbox(AHB backed) which can then be used
+    // by another context.
+    kCopyMailboxesOnly = 1,
   };
 
-  VideoFrameMetadata();
-  ~VideoFrameMetadata();
-
-  bool HasKey(Key key) const;
-
-  void Clear() { dictionary_.Clear(); }
-
-  // Setters.  Overwrites existing value, if present.
-  void SetBoolean(Key key, bool value);
-  void SetInteger(Key key, int value);
-  void SetDouble(Key key, double value);
-  void SetRotation(Key key, VideoRotation value);
-  void SetString(Key key, const std::string& value);
-  void SetTimeDelta(Key key, const base::TimeDelta& value);
-  void SetTimeTicks(Key key, const base::TimeTicks& value);
-  void SetUnguessableToken(Key key, const base::UnguessableToken& value);
-  void SetRect(Key key, const gfx::Rect& value);
-  void SetValue(Key key, std::unique_ptr<base::Value> value);
-
-  // Getters.  Returns true if |key| is present, and its value has been set.
-  bool GetBoolean(Key key, bool* value) const WARN_UNUSED_RESULT;
-  bool GetInteger(Key key, int* value) const WARN_UNUSED_RESULT;
-  bool GetDouble(Key key, double* value) const WARN_UNUSED_RESULT;
-  bool GetRotation(Key key, VideoRotation* value) const WARN_UNUSED_RESULT;
-  bool GetString(Key key, std::string* value) const WARN_UNUSED_RESULT;
-  bool GetTimeDelta(Key key, base::TimeDelta* value) const WARN_UNUSED_RESULT;
-  bool GetTimeTicks(Key key, base::TimeTicks* value) const WARN_UNUSED_RESULT;
-  bool GetUnguessableToken(Key key, base::UnguessableToken* value) const
-      WARN_UNUSED_RESULT;
-  bool GetRect(Key key, gfx::Rect* value) const WARN_UNUSED_RESULT;
-  // Returns null if |key| was not present or value was not a ListValue.
-  const base::ListValue* GetList(Key key) const WARN_UNUSED_RESULT;
-  // Returns null if |key| was not present.
-  const base::Value* GetValue(Key key) const WARN_UNUSED_RESULT;
-
-  // Convenience method that returns true if |key| exists and is set to true.
-  bool IsTrue(Key key) const WARN_UNUSED_RESULT;
-
-  // For serialization.
-  std::unique_ptr<base::DictionaryValue> CopyInternalValues() const;
-  void MergeInternalValuesFrom(const base::Value& in);
-  const base::Value& GetInternalValues() const { return dictionary_; }
-
   // Merges internal values from |metadata_source|.
-  void MergeMetadataFrom(const VideoFrameMetadata* metadata_source);
+  void MergeMetadataFrom(const VideoFrameMetadata& metadata_source);
 
- private:
-  const base::Value* GetBinaryValue(Key key) const;
+  // Sources of VideoFrames use this marker to indicate that the associated
+  // VideoFrame can be overlaid, case in which its contents do not need to be
+  // further composited but displayed directly.
+  bool allow_overlay = false;
 
-  base::DictionaryValue dictionary_;
+  // Video capture begin/end timestamps.  Consumers can use these values for
+  // dynamic optimizations, logging stats, etc.
+  absl::optional<base::TimeTicks> capture_begin_time;
+  absl::optional<base::TimeTicks> capture_end_time;
 
-  DISALLOW_COPY_AND_ASSIGN(VideoFrameMetadata);
+  // A counter that is increased by the producer of video frames each time
+  // it pushes out a new frame. By looking for gaps in this counter, clients
+  // can determine whether or not any frames have been dropped on the way from
+  // the producer between two consecutively received frames. Note that the
+  // counter may start at arbitrary values, so the absolute value of it has no
+  // meaning.
+  absl::optional<int> capture_counter;
+
+  // The rectangular region of the frame that has changed since the frame
+  // with the directly preceding CAPTURE_COUNTER. If that frame was not
+  // received, typically because it was dropped during transport from the
+  // producer, clients must assume that the entire frame has changed.
+  // The rectangle is relative to the full frame data, i.e. [0, 0,
+  // coded_size().width(), coded_size().height()]. It does not have to be
+  // fully contained within visible_rect().
+  absl::optional<gfx::Rect> capture_update_rect;
+
+  // If not null, it indicates how video frame mailbox should be copied to a
+  // new mailbox.
+  absl::optional<CopyMode> copy_mode;
+
+  // Indicates if the current frame is the End of its current Stream.
+  bool end_of_stream = false;
+
+  // The estimated duration of this frame (i.e., the amount of time between
+  // the media timestamp of this frame and the next).  Note that this is not
+  // the same information provided by FRAME_RATE as the FRAME_DURATION can
+  // vary unpredictably for every frame.  Consumers can use this to optimize
+  // playback scheduling, make encoding quality decisions, and/or compute
+  // frame-level resource utilization stats.
+  absl::optional<base::TimeDelta> frame_duration;
+
+  // Represents either the fixed frame rate, or the maximum frame rate to
+  // expect from a variable-rate source.  This value generally remains the
+  // same for all frames in the same session.
+  absl::optional<double> frame_rate;
+
+  // This is a boolean that signals that the video capture engine detects
+  // interactive content. One possible optimization that this signal can help
+  // with is remote content: adjusting end-to-end latency down to help the
+  // user better coordinate their actions.
+  bool interactive_content = false;
+
+  // This field represents the local time at which either: 1) the frame was
+  // generated, if it was done so locally; or 2) the targeted play-out time
+  // of the frame, if it was generated from a remote source. This value is NOT
+  // a high-resolution timestamp, and so it should not be used as a
+  // presentation time; but, instead, it should be used for buffering playback
+  // and for A/V synchronization purposes.
+  absl::optional<base::TimeTicks> reference_time;
+
+  // Sources of VideoFrames use this marker to indicate that an instance of
+  // VideoFrameExternalResources produced from the associated video frame
+  // should use read lock fences.
+  bool read_lock_fences_enabled = false;
+
+  // Indicates that the frame has a rotation and/or flip.
+  absl::optional<VideoTransformation> transformation;
+
+  // Android only: if set, then this frame is not suitable for overlay, even
+  // if ALLOW_OVERLAY is set.  However, it allows us to process the overlay
+  // to see if it would have been promoted, if it were backed by a SurfaceView
+  // instead.  This lets us figure out when SurfaceViews are appropriate.
+  bool texture_owner = false;
+
+  // Android only: if set, then this frame's resource would like to be
+  // notified about its promotability to an overlay.
+  bool wants_promotion_hint = false;
+
+  // Windows only: set when frame is backed by a dcomp surface handle.
+  bool dcomp_surface = false;
+
+  // This video frame comes from protected content.
+  bool protected_video = false;
+
+  // This video frame is protected by hardware. This option is valid only if
+  // PROTECTED_VIDEO is also set to true.
+  bool hw_protected = false;
+
+#if BUILDFLAG(USE_VAAPI)
+  // The ID of the VA-API protected session used to decode this frame, if
+  // applicable. The proper type is VAProtectedSessionID. However, in order to
+  // avoid including the VA-API headers in this file, we use the underlying
+  // type. Users of this field are expected to have compile-time assertions to
+  // ensure it's safe to use this as a VAProtectedSessionID.
+  //
+  // Notes on IPC: this field should not be copied to the Mojo version of
+  // VideoFrameMetadata because it should not cross process boundaries.
+  absl::optional<unsigned int> hw_va_protected_session_id;
+#endif
+
+  // An UnguessableToken that identifies VideoOverlayFactory that created
+  // this VideoFrame. It's used by Cast to help with video hole punch.
+  absl::optional<base::UnguessableToken> overlay_plane_id;
+
+  // Whether this frame was decoded in a power efficient way.
+  bool power_efficient = false;
+
+  // Implemented only for single texture backed frames, true means the origin of
+  // the texture is top left and false means bottom left.
+  bool texture_origin_is_top_left = true;
+
+  // CompositorFrameMetadata variables associated with this frame. Used for
+  // remote debugging.
+  // TODO(crbug.com/832220): Use a customized dictionary value instead of
+  // using these keys directly.
+  absl::optional<double> device_scale_factor;
+  absl::optional<double> page_scale_factor;
+  absl::optional<double> root_scroll_offset_x;
+  absl::optional<double> root_scroll_offset_y;
+  absl::optional<double> top_controls_visible_height;
+
+  // If present, this field represents the local time at which the VideoFrame
+  // was decoded from whichever format it was encoded in. Sometimes only
+  // DECODE_END_TIME will be present.
+  absl::optional<base::TimeTicks> decode_begin_time;
+  absl::optional<base::TimeTicks> decode_end_time;
+
+  // If present, this field represents the elapsed time from the submission of
+  // the encoded packet with the same PTS as this frame to the decoder until
+  // the decoded frame was ready for presentation.
+  absl::optional<base::TimeDelta> processing_time;
+
+  // The RTP timestamp associated with this video frame. Stored as a double
+  // since base::DictionaryValue doesn't have a uint32_t type.
+  //
+  // https://w3c.github.io/webrtc-pc/#dom-rtcrtpcontributingsource-rtptimestamp
+  absl::optional<double> rtp_timestamp;
+
+  // For video frames coming from a remote source, this is the time the
+  // encoded frame was received by the platform, i.e., the time at
+  // which the last packet belonging to this frame was received over the
+  // network.
+  absl::optional<base::TimeTicks> receive_time;
+
+  // If present, this field represents the duration this frame is ideally
+  // expected to spend on the screen during playback. Unlike FRAME_DURATION
+  // this field takes into account current playback rate.
+  absl::optional<base::TimeDelta> wallclock_frame_duration;
+
+  // WebRTC streams only: if present, this field represents the maximum
+  // composition delay that is allowed for this frame. This is respected
+  // in a best effort manner.
+  // This is an experimental feature, see crbug.com/1138888 for more
+  // information.
+  absl::optional<int> maximum_composition_delay_in_frames;
 };
 
 }  // namespace media

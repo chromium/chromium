@@ -8,15 +8,14 @@
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/pp_var.h"
 
-#include <string>
-
 namespace ppapi {
 namespace proxy {
 
 // Encapsulates the rules for serializing and deserializing vars to and from
 // the local process. The renderer and the plugin process each have separate
 // bookkeeping rules.
-class VarSerializationRules : public base::RefCounted<VarSerializationRules> {
+class VarSerializationRules
+    : public base::RefCountedThreadSafe<VarSerializationRules> {
  public:
   // Caller-owned calls --------------------------------------------------------
   //
@@ -80,7 +79,7 @@ class VarSerializationRules : public base::RefCounted<VarSerializationRules> {
   virtual ~VarSerializationRules() {}
 
  private:
-  friend class base::RefCounted<VarSerializationRules>;
+  friend class base::RefCountedThreadSafe<VarSerializationRules>;
 };
 
 }  // namespace proxy

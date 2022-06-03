@@ -23,15 +23,6 @@ Issues
 
     None
 
-New Tokens
-
-    Accepted by the <color_space> parameter of glResizeCHROMIUM:
-    GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM               0x8AF1
-    GL_COLOR_SPACE_SCRGB_LINEAR_CHROMIUM              0x8AF2
-    GL_COLOR_SPACE_SRGB_CHROMIUM                      0x8AF3
-    GL_COLOR_SPACE_DISPLAY_P3_CHROMIUM                0x8AF4
-    GL_COLOR_SPACE_HDR10_CHROMIUM                     0x8AF5
-
 New Procedures and Functions
 
     The command
@@ -39,7 +30,7 @@ New Procedures and Functions
         glResizeCHROMIUM(GLint width,
                          GLint height,
                          GLfloat scale_factor,
-                         GLenum color_space,
+                         GLcolorSpace color_space,
                          GLboolean alpha);
 
     changes the current output surface to be changed.
@@ -47,22 +38,9 @@ New Procedures and Functions
     <scale_factor> specifies the device scale factor for the surface.
     <color_space> specifies the color space in which the pixels of the surface
     should be interpreted by the display system. Note that this value does not
-    impact blending. All blending will be done on the raw pixel values.
-    The values have the following interpretation:
-        GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM: Indicates that the display system
-        should use whatever its default interpretation of color values is.
-        GL_COLOR_SPACE_SRGB_CHROMIUM: Indicates that the display system should
-        interpret output colors as being sRGB values. On EGL-based systems this
-        corresponds to using the default value, EGL_GL_COLORSPACE_LINEAR_KHR,
-        for the EGL_GL_COLORSPACE_KHR property in EGL_KHR_gl_colorspace.
-        GL_COLOR_SPACE_DISPLAY_P3_CHROMIUM: Indicates that the display system
-        should interpret output colors as being in P3 D65 color space. As above,
-        this corresponds to the EGL_GL_COLORSPACE_DISPLAY_P3_LINEAR_EXT value
-        from EGL_EXT_gl_colorspace_display_p3_linear.
-        GL_COLOR_SPACE_SCRGB_LINEAR_CHROMIUM: Indicates that the display system
-        should interpret output colors as being in linear-gamma extended scRGB
-        color space. On Windows, this will result in HDR being enabled for the
-        surface, when possible.
+    impact blending. All blending will be done on the raw pixel values. It is
+    valid to specify nullptr for <color_space>, which will be interpreted as
+    the default (invalid) color space.
     <alpha> indicates whether or not the surface must allocate an alpha channel
 
 Errors

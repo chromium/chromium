@@ -7,19 +7,15 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/metrics/histogram_base.h"
-#include "base/metrics/histogram_delta_serialization.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -44,8 +40,7 @@ namespace {
 // to avoid inherent raciness in how the service process listens for incoming
 // connections, particularly on Windows.
 const size_t kMaxConnectionAttempts = 10;
-constexpr base::TimeDelta kInitialConnectionRetryDelay =
-    base::TimeDelta::FromMilliseconds(20);
+constexpr base::TimeDelta kInitialConnectionRetryDelay = base::Milliseconds(20);
 
 void ConnectAsyncWithBackoff(
     mojo::PendingReceiver<service_manager::mojom::InterfaceProvider>
@@ -63,10 +58,8 @@ void ConnectAsyncWithBackoff(
       response_task_runner->PostTask(
           FROM_HERE, base::BindOnce(std::move(response_callback), nullptr));
     } else {
-      base::PostDelayedTask(
-          FROM_HERE,
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::BEST_EFFORT},
+      base::ThreadPool::PostDelayedTask(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
           base::BindOnce(
               &ConnectAsyncWithBackoff, std::move(interface_provider_receiver),
               server_name, num_retries_left - 1, retry_delay * 2,
@@ -87,13 +80,9 @@ void ConnectAsyncWithBackoff(
 
 // ServiceProcessControl implementation.
 ServiceProcessControl::ServiceProcessControl()
-    : apply_changes_from_upgrade_observer_(false) {
-  UpgradeDetector::GetInstance()->AddObserver(this);
-}
+    : apply_changes_from_upgrade_observer_(false) {}
 
-ServiceProcessControl::~ServiceProcessControl() {
-  UpgradeDetector::GetInstance()->RemoveObserver(this);
-}
+ServiceProcessControl::~ServiceProcessControl() = default;
 
 void ServiceProcessControl::ConnectInternal() {
   // If the channel has already been established then we run the task
@@ -111,9 +100,8 @@ void ServiceProcessControl::ConnectInternal() {
   auto interface_provider_receiver =
       remote_interfaces.InitWithNewPipeAndPassReceiver();
   SetMojoHandle(std::move(remote_interfaces));
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(
           &ConnectAsyncWithBackoff, std::move(interface_provider_receiver),
           GetServiceProcessServerName(), kMaxConnectionAttempts,
@@ -132,7 +120,7 @@ void ServiceProcessControl::SetMojoHandle(
     mojo::PendingRemote<service_manager::mojom::InterfaceProvider> handle) {
   remote_interfaces_.Close();
   remote_interfaces_.Bind(std::move(handle));
-  remote_interfaces_.SetConnectionLostClosure(base::Bind(
+  remote_interfaces_.SetConnectionLostClosure(base::BindOnce(
       &ServiceProcessControl::OnChannelError, base::Unretained(this)));
 
   // TODO(hclam): Handle error connecting to channel.
@@ -194,15 +182,12 @@ void ServiceProcessControl::Launch(base::OnceClosure success_task,
     return;
   }
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents", SERVICE_EVENT_LAUNCH,
-                            SERVICE_EVENT_MAX);
-
   std::unique_ptr<base::CommandLine> cmd_line(
       CreateServiceProcessCommandLine());
   // And then start the process asynchronously.
   launcher_ = new Launcher(std::move(cmd_line));
-  launcher_->Run(base::Bind(&ServiceProcessControl::OnProcessLaunched,
-                            base::Unretained(this)));
+  launcher_->Run(base::BindOnce(&ServiceProcessControl::OnProcessLaunched,
+                                base::Unretained(this)));
 }
 
 void ServiceProcessControl::Disconnect() {
@@ -210,20 +195,17 @@ void ServiceProcessControl::Disconnect() {
   mojo_connection_.reset();
   remote_interfaces_.Close();
   service_process_.reset();
+  UpgradeDetector::GetInstance()->RemoveObserver(this);
 }
 
 void ServiceProcessControl::OnProcessLaunched() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   if (launcher_->launched()) {
     saved_pid_ = launcher_->saved_pid();
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                              SERVICE_EVENT_LAUNCHED, SERVICE_EVENT_MAX);
     // After we have successfully created the service process we try to connect
     // to it. The launch task is transfered to a connect task.
     ConnectInternal();
   } else {
-    UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                              SERVICE_EVENT_LAUNCH_FAILED, SERVICE_EVENT_MAX);
     // If we don't have process handle that means launching the service process
     // has failed.
     RunConnectDoneTasks();
@@ -241,8 +223,7 @@ void ServiceProcessControl::OnUpgradeRecommended() {
 void ServiceProcessControl::OnChannelConnected() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                            SERVICE_EVENT_CHANNEL_CONNECTED, SERVICE_EVENT_MAX);
+  UpgradeDetector::GetInstance()->AddObserver(this);
 
   // We just established a channel with the service process. Notify it if an
   // upgrade is available.
@@ -257,62 +238,8 @@ void ServiceProcessControl::OnChannelConnected() {
 void ServiceProcessControl::OnChannelError() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                            SERVICE_EVENT_CHANNEL_ERROR, SERVICE_EVENT_MAX);
-
   Disconnect();
   RunConnectDoneTasks();
-}
-
-void ServiceProcessControl::OnHistograms(
-    const std::vector<std::string>& pickled_histograms) {
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                            SERVICE_EVENT_HISTOGRAMS_REPLY, SERVICE_EVENT_MAX);
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  base::HistogramDeltaSerialization::DeserializeAndAddSamples(
-      pickled_histograms);
-  RunHistogramsCallback();
-}
-
-void ServiceProcessControl::RunHistogramsCallback() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  if (!histograms_callback_.is_null()) {
-    histograms_callback_.Run();
-    histograms_callback_.Reset();
-  }
-  histograms_timeout_callback_.Cancel();
-}
-
-bool ServiceProcessControl::GetHistograms(
-    const base::Closure& histograms_callback,
-    const base::TimeDelta& timeout) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  DCHECK(!histograms_callback.is_null());
-  histograms_callback_.Reset();
-
-  // If the service process is already running then connect to it.
-  if (!CheckServiceProcessReady())
-    return false;
-  ConnectInternal();
-
-  UMA_HISTOGRAM_ENUMERATION("CloudPrint.ServiceEvents",
-                            SERVICE_EVENT_HISTOGRAMS_REQUEST,
-                            SERVICE_EVENT_MAX);
-
-  if (!service_process_)
-    return false;
-
-  service_process_->GetHistograms(base::BindOnce(
-      &ServiceProcessControl::OnHistograms, base::Unretained(this)));
-
-  // Run timeout task to make sure |histograms_callback| is called.
-  histograms_timeout_callback_.Reset(base::Bind(
-      &ServiceProcessControl::RunHistogramsCallback, base::Unretained(this)));
-  base::PostDelayedTask(FROM_HERE, {BrowserThread::UI},
-                        histograms_timeout_callback_.callback(), timeout);
-
-  histograms_callback_ = histograms_callback;
-  return true;
 }
 
 bool ServiceProcessControl::Shutdown() {
@@ -336,9 +263,9 @@ ServiceProcessControl::Launcher::Launcher(
 // Execute the command line to start the process asynchronously.
 // After the command is executed, |task| is called with the process handle on
 // the UI thread.
-void ServiceProcessControl::Launcher::Run(const base::Closure& task) {
+void ServiceProcessControl::Launcher::Run(base::OnceClosure task) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  notify_task_ = task;
+  notify_task_ = std::move(task);
   content::GetProcessLauncherTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&Launcher::DoRun, this));
 }
@@ -349,11 +276,10 @@ ServiceProcessControl::Launcher::~Launcher() {
 
 void ServiceProcessControl::Launcher::Notify() {
   DCHECK(!notify_task_.is_null());
-  notify_task_.Run();
-  notify_task_.Reset();
+  std::move(notify_task_).Run();
 }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 void ServiceProcessControl::Launcher::DoDetectLaunched() {
   DCHECK(!notify_task_.is_null());
 
@@ -364,14 +290,14 @@ void ServiceProcessControl::Launcher::DoDetectLaunched() {
   if (launched_ || (retry_count_ >= kMaxLaunchDetectRetries) ||
       process_.WaitForExitWithTimeout(base::TimeDelta(), &exit_code)) {
     process_.Close();
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&Launcher::Notify, this));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&Launcher::Notify, this));
     return;
   }
   retry_count_++;
 
   // If the service process is not launched yet then check again in 2 seconds.
-  const base::TimeDelta kDetectLaunchRetry = base::TimeDelta::FromSeconds(2);
+  const base::TimeDelta kDetectLaunchRetry = base::Seconds(2);
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE, base::BindOnce(&Launcher::DoDetectLaunched, this),
       kDetectLaunchRetry);
@@ -387,11 +313,11 @@ void ServiceProcessControl::Launcher::DoRun() {
   process_ = base::LaunchProcess(*cmd_line_, options);
   if (process_.IsValid()) {
     saved_pid_ = process_.Pid();
-    base::PostTask(FROM_HERE, {BrowserThread::IO},
-                   base::BindOnce(&Launcher::DoDetectLaunched, this));
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&Launcher::DoDetectLaunched, this));
   } else {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&Launcher::Notify, this));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&Launcher::Notify, this));
   }
 }
-#endif  // !OS_MACOSX
+#endif  // !OS_MAC

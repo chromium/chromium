@@ -9,7 +9,6 @@
 #include "components/offline_pages/core/prefetch/prefetch_request_test_base.h"
 #include "components/offline_pages/core/prefetch/prefetch_types.h"
 #include "net/http/http_status_code.h"
-#include "net/url_request/url_request_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -19,11 +18,6 @@ using testing::Eq;
 using testing::SaveArg;
 
 namespace offline_pages {
-
-namespace {
-const GURL kTestURL("http://exmaple.org");
-const char kTestMessage[] = "Testing";
-}  // namespace
 
 class PrefetchRequestFetcherTest : public PrefetchRequestTestBase {
  public:
@@ -90,8 +84,8 @@ PrefetchRequestStatus PrefetchRequestFetcherTest::RunFetcher(
   base::MockCallback<PrefetchRequestFetcher::FinishedCallback> callback;
   std::unique_ptr<PrefetchRequestFetcher> fetcher =
       PrefetchRequestFetcher::CreateForPost(
-          kTestURL, kTestMessage, /*testing_header_value=*/"", empty_request_,
-          shared_url_loader_factory(), callback.Get());
+          GURL("http://example.org"), "Testing", /*testing_header_value=*/"",
+          empty_request_, shared_url_loader_factory(), callback.Get());
 
   PrefetchRequestStatus status;
   std::string data;

@@ -10,7 +10,7 @@ chrome.app.runtime.onLaunched.addListener(function() {
   chrome.test.runTests([
 
     function testGetAllNoWindows() {
-      chrome.test.assertEq({}, chrome.app.window.getAll());
+      chrome.test.assertEq([], chrome.app.window.getAll());
       chrome.test.succeed();
     },
 

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <ostream>
 
-#include "base/logging.h"
 #include "remoting/base/constants.h"
 
 namespace remoting {

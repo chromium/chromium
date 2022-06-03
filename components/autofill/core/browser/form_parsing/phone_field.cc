@@ -7,26 +7,46 @@
 #include <string.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
+#include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_field.h"
+#include "components/autofill/core/browser/autofill_regex_constants.h"
+#include "components/autofill/core/browser/autofill_regexes.h"
 #include "components/autofill/core/browser/form_parsing/autofill_scanner.h"
-#include "components/autofill/core/common/autofill_regex_constants.h"
+#include "components/autofill/core/common/autofill_features.h"
 
 namespace autofill {
 namespace {
 
+// Minimum limit on the number of the options of the select field for
+// determining the field to be of |PHONE_HOME_COUNTRY_CODE| type.
+constexpr int kMinSelectOptionsForCountryCode = 5;
+
+// Maximum limit on the number of the options of the select field for
+// determining the field to be of |PHONE_HOME_COUNTRY_CODE| type.
+// Currently, there are approximately 250 countries that have been assigned a
+// phone country code, therefore, 275 is taken as the upper bound.
+constexpr int kMaxSelectOptionsForCountryCode = 275;
+
+// Minimum percentage of options in select field that should look like a
+// country code in order to classify the field as a |PHONE_HOME_COUNTRY_CODE|.
+constexpr int kMinCandidatePercentageForCountryCode = 90;
+
+// If a <select> element has <= |kHeuristicThresholdForCountryCode| options,
+// all or all-but-one need to look like country code options. Otherwise,
+// |kMinCandidatePercentageForCountryCode| is used to check for a fraction
+// of country code like options.
+constexpr int kHeuristicThresholdForCountryCode = 10;
+
 // This string includes all area code separators, including NoText.
-std::string GetAreaRegex() {
-  std::string area_code = kAreaCodeRe;
-  area_code.append("|");  // Regexp separator.
-  area_code.append(kAreaCodeNotextRe);
-  return area_code;
+std::u16string GetAreaRegex() {
+  return base::StrCat({kAreaCodeRe, u"|", kAreaCodeNotextRe});
 }
 
 }  // namespace
@@ -130,7 +150,66 @@ const PhoneField::Parser PhoneField::kPhoneFieldGrammars[] = {
 };
 
 // static
+bool PhoneField::LikelyAugmentedPhoneCountryCode(
+    AutofillScanner* scanner,
+    AutofillField** matched_field) {
+  // If the experiment |kAutofillEnableAugmentedPhoneCountryCode| is not
+  // enabled, return false.
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillEnableAugmentedPhoneCountryCode))
+    return false;
+
+  AutofillField* field = scanner->Cursor();
+
+  // Return false if the field is not a selection box.
+  if (!MatchesFormControlType(field->form_control_type, MATCH_SELECT))
+    return false;
+
+  // If the number of the options is less than the minimum limit or more than
+  // the maximum limit, return false.
+  if (field->options.size() < kMinSelectOptionsForCountryCode ||
+      field->options.size() >= kMaxSelectOptionsForCountryCode)
+    return false;
+
+  // |total_covered_options| stores the count of the options that are
+  // compared with the regex.
+  int total_num_options = static_cast<int>(field->options.size());
+
+  // |total_positive_options| stores the count of the options that match the
+  // regex.
+  int total_positive_options = 0;
+
+  for (const auto& option : field->options) {
+    if (MatchesPattern(option.content, kAugmentedPhoneCountryCodeRe))
+      total_positive_options++;
+  }
+
+  // If the number of the options compared is less or equal to
+  // |kHeuristicThresholdForCountryCode|, then either all the options or all
+  // options but one should match the regex.
+  if (total_num_options <= kHeuristicThresholdForCountryCode &&
+      total_positive_options + 1 < total_num_options)
+    return false;
+
+  // If the number of the options compared is more than
+  // |kHeuristicThresholdForCountryCode|,
+  // |kMinCandidatePercentageForCountryCode|% of the options should match the
+  // regex.
+  if (total_num_options > kHeuristicThresholdForCountryCode &&
+      total_positive_options * 100 <
+          total_num_options * kMinCandidatePercentageForCountryCode)
+    return false;
+
+  // Assign the |matched_field| and advance the cursor.
+  if (matched_field)
+    *matched_field = field;
+  scanner->Advance();
+  return true;
+}
+
+// static
 std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
+                                             const LanguageCode& page_language,
                                              LogManager* log_manager) {
   if (scanner->IsEnd())
     return nullptr;
@@ -148,10 +227,23 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
     for (; i < base::size(kPhoneFieldGrammars) &&
            kPhoneFieldGrammars[i].regex != REGEX_SEPARATOR;
          ++i) {
+      const bool is_country_code_field =
+          kPhoneFieldGrammars[i].phone_part == FIELD_COUNTRY_CODE;
+
+      // The field length comparison with |kPhoneFieldGrammars[i].max_size| is
+      // not required in case of the selection boxes that are of phone country
+      // code type.
+      if (is_country_code_field &&
+          LikelyAugmentedPhoneCountryCode(scanner,
+                                          &parsed_fields[FIELD_COUNTRY_CODE]))
+        continue;
+
       if (!ParsePhoneField(
               scanner, GetRegExp(kPhoneFieldGrammars[i].regex),
               &parsed_fields[kPhoneFieldGrammars[i].phone_part],
-              {log_manager, GetRegExpName(kPhoneFieldGrammars[i].regex)}))
+              {log_manager, GetRegExpName(kPhoneFieldGrammars[i].regex)},
+              is_country_code_field,
+              GetJSONFieldType(kPhoneFieldGrammars[i].regex), page_language))
         break;
       if (kPhoneFieldGrammars[i].max_size &&
           (!parsed_fields[kPhoneFieldGrammars[i].phone_part]->max_length ||
@@ -195,10 +287,14 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
   if (!phone_field->parsed_phone_fields_[FIELD_SUFFIX]) {
     if (!ParsePhoneField(scanner, kPhoneSuffixRe,
                          &phone_field->parsed_phone_fields_[FIELD_SUFFIX],
-                         {log_manager, "kPhoneSuffixRe"})) {
+                         {log_manager, "kPhoneSuffixRe"},
+                         /*is_country_code_field=*/false, "PHONE_SUFFIX",
+                         page_language)) {
       ParsePhoneField(scanner, kPhoneSuffixSeparatorRe,
                       &phone_field->parsed_phone_fields_[FIELD_SUFFIX],
-                      {log_manager, "kPhoneSuffixSeparatorRe"});
+                      {log_manager, "kPhoneSuffixSeparatorRe"},
+                      /*is_country_code_field=*/false, "PHONE_SUFFIX_SEPARATOR",
+                      page_language);
     }
   }
 
@@ -207,7 +303,9 @@ std::unique_ptr<FormField> PhoneField::Parse(AutofillScanner* scanner,
   // parsers do not mistaken it for something else.
   ParsePhoneField(scanner, kPhoneExtensionRe,
                   &phone_field->parsed_phone_fields_[FIELD_EXTENSION],
-                  {log_manager, "kPhoneExtensionRe"});
+                  {log_manager, "kPhoneExtensionRe"},
+                  /*is_country_code_field=*/false, "PHONE_EXTENSION",
+                  page_language);
 
   return std::move(phone_field);
 }
@@ -263,7 +361,7 @@ PhoneField::PhoneField() {
 }
 
 // static
-std::string PhoneField::GetRegExp(RegexType regex_id) {
+std::u16string PhoneField::GetRegExp(RegexType regex_id) {
   switch (regex_id) {
     case REGEX_COUNTRY:
       return kCountryCodeRe;
@@ -287,7 +385,7 @@ std::string PhoneField::GetRegExp(RegexType regex_id) {
       NOTREACHED();
       break;
   }
-  return std::string();
+  return std::u16string();
 }
 
 // static
@@ -318,14 +416,54 @@ const char* PhoneField::GetRegExpName(RegexType regex_id) {
   return "";
 }
 
+// Returns the string representation of |phonetype_id| as it is used to key to
+// identify coressponding patterns.
+std::string PhoneField::GetJSONFieldType(RegexType phonetype_id) {
+  switch (phonetype_id) {
+    case REGEX_COUNTRY:
+      return "PHONE_COUNTRY_CODE";
+    case REGEX_AREA:
+      return "PHONE_AREA_CODE";
+    case REGEX_AREA_NOTEXT:
+      return "PHONE_AREA_CODE_NO_TEXT";
+    case REGEX_PHONE:
+      return "PHONE";
+    case REGEX_PREFIX_SEPARATOR:
+      return "PHONE_PREFIX_SEPARATOR";
+    case REGEX_PREFIX:
+      return "PHONE_PREFIX";
+    case REGEX_SUFFIX_SEPARATOR:
+      return "PHONE_SUFFIX_SEPARATOR";
+    case REGEX_SUFFIX:
+      return "PHONE_SUFFIX";
+    case REGEX_EXTENSION:
+      return "PHONE_EXTENSION";
+    default:
+      NOTREACHED();
+      break;
+  }
+  return std::string();
+}
+
 // static
 bool PhoneField::ParsePhoneField(AutofillScanner* scanner,
-                                 const std::string& regex,
+                                 base::StringPiece16 regex,
                                  AutofillField** field,
-                                 const RegExLogging& logging) {
-  return ParseFieldSpecifics(scanner, base::UTF8ToUTF16(regex),
-                             MATCH_DEFAULT | MATCH_TELEPHONE | MATCH_NUMBER,
-                             field, logging);
+                                 const RegExLogging& logging,
+                                 const bool is_country_code_field,
+                                 const std::string& json_field_type,
+                                 const LanguageCode& page_language) {
+  int match_type = MATCH_DEFAULT | MATCH_TELEPHONE | MATCH_NUMBER;
+  // Include the selection boxes too for the matching of the phone country code.
+  if (is_country_code_field)
+    match_type |= MATCH_SELECT;
+
+  const std::vector<MatchingPattern>& patterns =
+      PatternProvider::GetInstance().GetMatchPatterns(json_field_type,
+                                                      page_language);
+
+  return ParseFieldSpecifics(scanner, regex, match_type, patterns, field,
+                             logging);
 }
 
 }  // namespace autofill

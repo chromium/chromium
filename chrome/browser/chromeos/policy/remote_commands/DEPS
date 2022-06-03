@@ -1,6 +1,0 @@
-specific_include_rules = {
-  # TODO(mash): http://crbug.com/557397.
-  "device_command_screenshot_job\.cc": [
-    "+ash/shell.h",
-  ],
-}

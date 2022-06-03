@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_TEST_APP_BROWSING_DATA_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_BROWSING_DATA_TEST_UTIL_H_
 
+#import <Foundation/Foundation.h>
+
 #include "base/compiler_specific.h"
 
 namespace chrome_test_util {
@@ -30,6 +32,10 @@ bool ClearAllWebStateBrowsingData() WARN_UNUSED_RESULT;
 // Clears user decisions cache and returns whether clearing was successful or
 // timed out.
 bool ClearCertificatePolicyCache(bool off_the_record) WARN_UNUSED_RESULT;
+
+// Returns the number of entries in the history database. Returns -1 if there
+// was an error.
+int GetBrowsingHistoryEntryCount(NSError** error) WARN_UNUSED_RESULT;
 
 }  // namespace chrome_test_util
 

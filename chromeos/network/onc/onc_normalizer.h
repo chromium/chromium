@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "chromeos/network/onc/onc_mapper.h"
 
 namespace chromeos {
@@ -19,6 +18,10 @@ struct OncValueSignature;
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
  public:
   explicit Normalizer(bool remove_recommended_fields);
+
+  Normalizer(const Normalizer&) = delete;
+  Normalizer& operator=(const Normalizer&) = delete;
+
   ~Normalizer() override;
 
   // Removes all fields that are ignored/irrelevant because of the value of
@@ -32,13 +35,13 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
   // created and stored in the field "HexSSID".
   std::unique_ptr<base::DictionaryValue> NormalizeObject(
       const OncValueSignature* object_signature,
-      const base::DictionaryValue& onc_object);
+      const base::Value& onc_object);
 
  private:
   // Dispatch to the right normalization function according to |signature|.
   std::unique_ptr<base::DictionaryValue> MapObject(
       const OncValueSignature& signature,
-      const base::DictionaryValue& onc_object,
+      const base::Value& onc_object,
       bool* error) override;
 
   void NormalizeCertificate(base::DictionaryValue* cert);
@@ -53,8 +56,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) Normalizer : public Mapper {
   void NormalizeStaticIPConfigForNetwork(base::DictionaryValue* network);
 
   const bool remove_recommended_fields_;
-
-  DISALLOW_COPY_AND_ASSIGN(Normalizer);
 };
 
 }  // namespace onc

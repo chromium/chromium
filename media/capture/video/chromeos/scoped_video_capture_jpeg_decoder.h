@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/capture/capture_export.h"
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder.h"
 

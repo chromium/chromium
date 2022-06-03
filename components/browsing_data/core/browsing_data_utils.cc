@@ -7,7 +7,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -22,21 +21,48 @@
 
 namespace browsing_data {
 
+// Creates a string like "for a.com, b.com, and 4 more".
+std::u16string CreateDomainExamples(
+    int password_count,
+    const std::vector<std::string> domain_examples) {
+  DCHECK_GE(password_count,
+            base::checked_cast<browsing_data::BrowsingDataCounter::ResultInt>(
+                domain_examples.size()));
+  DCHECK_EQ(domain_examples.empty(), password_count == 0);
+  std::vector<std::u16string> replacements;
+
+  replacements.emplace_back(base::UTF8ToUTF16(domain_examples[0]));
+  if (domain_examples.size() > 1) {
+    replacements.emplace_back(base::UTF8ToUTF16(domain_examples[1]));
+  }
+  if (password_count > 2 && domain_examples.size() > 1) {
+    replacements.emplace_back(l10n_util::GetPluralStringFUTF16(
+        IDS_DEL_PASSWORDS_COUNTER_AND_X_MORE, password_count - 2));
+  }
+  std::u16string domains_list = base::ReplaceStringPlaceholders(
+      l10n_util::GetPluralStringFUTF16(IDS_DEL_PASSWORDS_DOMAINS_DISPLAY,
+                                       (domain_examples.size() > 1)
+                                           ? password_count
+                                           : domain_examples.size()),
+      replacements, nullptr);
+  return domains_list;
+}
+
 base::Time CalculateBeginDeleteTime(TimePeriod time_period) {
   base::TimeDelta diff;
   base::Time delete_begin_time = base::Time::Now();
   switch (time_period) {
     case TimePeriod::LAST_HOUR:
-      diff = base::TimeDelta::FromHours(1);
+      diff = base::Hours(1);
       break;
     case TimePeriod::LAST_DAY:
-      diff = base::TimeDelta::FromHours(24);
+      diff = base::Hours(24);
       break;
     case TimePeriod::LAST_WEEK:
-      diff = base::TimeDelta::FromHours(7 * 24);
+      diff = base::Hours(7 * 24);
       break;
     case TimePeriod::FOUR_WEEKS:
-      diff = base::TimeDelta::FromHours(4 * 7 * 24);
+      diff = base::Hours(4 * 7 * 24);
       break;
     case TimePeriod::ALL_TIME:
     case TimePeriod::OLDER_THAN_30_DAYS:
@@ -48,7 +74,7 @@ base::Time CalculateBeginDeleteTime(TimePeriod time_period) {
 
 base::Time CalculateEndDeleteTime(TimePeriod time_period) {
   if (time_period == TimePeriod::OLDER_THAN_30_DAYS) {
-    return base::Time::Now() - base::TimeDelta::FromDays(30);
+    return base::Time::Now() - base::Days(30);
   }
   return base::Time::Max();
 }
@@ -108,83 +134,93 @@ void RecordTimePeriodChange(TimePeriod period) {
   }
 }
 
-base::string16 GetCounterTextFromResult(
+std::u16string GetCounterTextFromResult(
     const BrowsingDataCounter::Result* result) {
-  base::string16 text;
   std::string pref_name = result->source()->GetPrefName();
 
   if (!result->Finished()) {
     // The counter is still counting.
-    text = l10n_util::GetStringUTF16(IDS_CLEAR_BROWSING_DATA_CALCULATING);
+    return l10n_util::GetStringUTF16(IDS_CLEAR_BROWSING_DATA_CALCULATING);
+  }
 
-  } else if (pref_name == prefs::kDeletePasswords) {
+  if (pref_name == prefs::kDeletePasswords) {
     const PasswordsCounter::PasswordsResult* password_result =
         static_cast<const PasswordsCounter::PasswordsResult*>(result);
 
-    BrowsingDataCounter::ResultInt password_count = password_result->Value();
-    const std::vector<std::string>& domain_examples =
-        password_result->domain_examples();
+    std::vector<std::u16string> parts;
+    BrowsingDataCounter::ResultInt profile_passwords = password_result->Value();
 
-    DCHECK_GE(password_count,
-              base::checked_cast<browsing_data::BrowsingDataCounter::ResultInt>(
-                  domain_examples.size()));
-    DCHECK_EQ(domain_examples.empty(), password_count == 0);
-
-    std::vector<base::string16> replacements;
-    if (domain_examples.size()) {
-      replacements.emplace_back(base::UTF8ToUTF16(domain_examples[0]));
-      if (domain_examples.size() > 1) {
-        replacements.emplace_back(base::UTF8ToUTF16(domain_examples[1]));
-      }
-      if (password_count > 2 && domain_examples.size() > 1) {
-        replacements.emplace_back(l10n_util::GetPluralStringFUTF16(
-            IDS_DEL_PASSWORDS_COUNTER_AND_X_MORE, password_count - 2));
-      }
-      const base::string16& domains_list = base::ReplaceStringPlaceholders(
-          l10n_util::GetPluralStringFUTF16(IDS_DEL_PASSWORDS_DOMAINS_DISPLAY,
-                                           (domain_examples.size() > 1)
-                                               ? password_count
-                                               : domain_examples.size()),
-          replacements, nullptr);
-      text = base::ReplaceStringPlaceholders(
+    if (profile_passwords) {
+      parts.emplace_back(base::ReplaceStringPlaceholders(
           l10n_util::GetPluralStringFUTF16(
               password_result->is_sync_enabled()
                   ? IDS_DEL_PASSWORDS_COUNTER_SYNCED
                   : IDS_DEL_PASSWORDS_COUNTER,
-              password_count),
-          {domains_list}, nullptr);
-    } else {
-      text = l10n_util::GetStringUTF16(
-          IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_NONE);
+              profile_passwords),
+          {CreateDomainExamples(profile_passwords,
+                                password_result->domain_examples())},
+          nullptr));
     }
 
-  } else if (pref_name == prefs::kDeleteDownloadHistory) {
+    if (password_result->account_passwords()) {
+      parts.emplace_back(base::ReplaceStringPlaceholders(
+          l10n_util::GetPluralStringFUTF16(
+              IDS_DEL_ACCOUNT_PASSWORDS_COUNTER,
+              password_result->account_passwords()),
+          {CreateDomainExamples(password_result->account_passwords(),
+                                password_result->account_domain_examples())},
+          nullptr));
+    }
+
+    switch (parts.size()) {
+      case 0:
+        return l10n_util::GetStringUTF16(
+            IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_NONE);
+      case 1:
+        return parts[0];
+      case 2:
+        return l10n_util::GetStringFUTF16(
+            IDS_DEL_PASSWORDS_AND_SIGNIN_DATA_COUNTER_COMBINATION, parts[0],
+            parts[1]);
+      default:
+        NOTREACHED();
+    }
+  }
+
+  if (pref_name == prefs::kDeleteDownloadHistory) {
     BrowsingDataCounter::ResultInt count =
         static_cast<const BrowsingDataCounter::FinishedResult*>(result)
             ->Value();
-    text = l10n_util::GetPluralStringFUTF16(IDS_DEL_DOWNLOADS_COUNTER, count);
-  } else if (pref_name == prefs::kDeleteSiteSettings) {
+    return l10n_util::GetPluralStringFUTF16(IDS_DEL_DOWNLOADS_COUNTER, count);
+  }
+
+  if (pref_name == prefs::kDeleteSiteSettings) {
     BrowsingDataCounter::ResultInt count =
         static_cast<const BrowsingDataCounter::FinishedResult*>(result)
             ->Value();
-    text =
-        l10n_util::GetPluralStringFUTF16(IDS_DEL_SITE_SETTINGS_COUNTER, count);
-  } else if (pref_name == prefs::kDeleteBrowsingHistoryBasic) {
+    return l10n_util::GetPluralStringFUTF16(IDS_DEL_SITE_SETTINGS_COUNTER,
+                                            count);
+  }
+
+  if (pref_name == prefs::kDeleteBrowsingHistoryBasic) {
     // The basic tab doesn't show history counter results.
     NOTREACHED();
-  } else if (pref_name == prefs::kDeleteBrowsingHistory) {
+  }
+
+  if (pref_name == prefs::kDeleteBrowsingHistory) {
     // History counter.
     const HistoryCounter::HistoryResult* history_result =
         static_cast<const HistoryCounter::HistoryResult*>(result);
     BrowsingDataCounter::ResultInt local_item_count = history_result->Value();
     bool has_synced_visits = history_result->has_synced_visits();
-    text = has_synced_visits
+    return has_synced_visits
                ? l10n_util::GetPluralStringFUTF16(
                      IDS_DEL_BROWSING_HISTORY_COUNTER_SYNCED, local_item_count)
                : l10n_util::GetPluralStringFUTF16(
                      IDS_DEL_BROWSING_HISTORY_COUNTER, local_item_count);
+  }
 
-  } else if (pref_name == prefs::kDeleteFormData) {
+  if (pref_name == prefs::kDeleteFormData) {
     // Autofill counter.
     const AutofillCounter::AutofillResult* autofill_result =
         static_cast<const AutofillCounter::AutofillResult*>(result);
@@ -193,7 +229,7 @@ base::string16 GetCounterTextFromResult(
         autofill_result->num_credit_cards();
     AutofillCounter::ResultInt num_addresses = autofill_result->num_addresses();
 
-    std::vector<base::string16> displayed_strings;
+    std::vector<std::u16string> displayed_strings;
 
     if (num_credit_cards) {
       displayed_strings.push_back(l10n_util::GetPluralStringFUTF16(
@@ -229,32 +265,29 @@ base::string16 GetCounterTextFromResult(
     // Construct the resulting string from the sections in |displayed_strings|.
     switch (displayed_strings.size()) {
       case 0:
-        text = l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
-        break;
+        return l10n_util::GetStringUTF16(IDS_DEL_AUTOFILL_COUNTER_EMPTY);
       case 1:
-        text = synced ? l10n_util::GetStringFUTF16(
+        return synced ? l10n_util::GetStringFUTF16(
                             IDS_DEL_AUTOFILL_COUNTER_ONE_TYPE_SYNCED,
                             displayed_strings[0])
                       : displayed_strings[0];
-        break;
       case 2:
-        text = l10n_util::GetStringFUTF16(
+        return l10n_util::GetStringFUTF16(
             synced ? IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES_SYNCED
                    : IDS_DEL_AUTOFILL_COUNTER_TWO_TYPES,
             displayed_strings[0], displayed_strings[1]);
-        break;
       case 3:
-        text = l10n_util::GetStringFUTF16(
+        return l10n_util::GetStringFUTF16(
             synced ? IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES_SYNCED
                    : IDS_DEL_AUTOFILL_COUNTER_THREE_TYPES,
             displayed_strings[0], displayed_strings[1], displayed_strings[2]);
-        break;
       default:
         NOTREACHED();
     }
   }
 
-  return text;
+  NOTREACHED();
+  return std::u16string();
 }
 
 const char* GetTimePeriodPreferenceName(

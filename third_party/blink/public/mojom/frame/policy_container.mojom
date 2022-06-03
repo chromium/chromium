@@ -1,0 +1,58 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/content_security_policy.mojom";
+import "services/network/public/mojom/ip_address_space.mojom";
+import "services/network/public/mojom/referrer_policy.mojom";
+
+struct PolicyContainerPolicies {
+  network.mojom.ReferrerPolicy referrer_policy = network.mojom.ReferrerPolicy.kDefault;
+  network.mojom.IPAddressSpace ip_address_space = network.mojom.IPAddressSpace.kUnknown;
+  array<network.mojom.ContentSecurityPolicy> content_security_policies;
+};
+
+// This interface is implemented in the browser process. It defines methods to
+// change the document's security policies. This is used for security policies
+// delivered in meta tags. When Blink parses those, it calls the methods of this
+// interface to synchronize the policy changes with the browser process.
+interface PolicyContainerHost {
+  // Set referrer policy to the given value.
+  SetReferrerPolicy(network.mojom.ReferrerPolicy referrer_policy);
+
+  // Append these content security policies.
+  AddContentSecurityPolicies(array<network.mojom.ContentSecurityPolicy> content_security_policies);
+
+  // Register the remote corresponding to |receiver| as a keep alive handle for
+  // this PolicyContainerHost.
+  IssueKeepAliveHandle(pending_receiver<PolicyContainerHostKeepAliveHandle> receiver);
+};
+
+// This is a dummy interface used only to keep alive a PolicyContainerHost via
+// the mojo disconnect handler mechanism.
+interface PolicyContainerHostKeepAliveHandle {
+};
+
+// Struct containing Blink's copy of the policy container together with a remote
+// to update policies in the browser process copy. This is needed for
+// initializing Blink's policy container, and is passed down from the browser to
+// Blink when the LocalFrame corresponding to a RenderFrameHostImpl is created.
+struct PolicyContainer {
+  // The document policies that need to be passed down to Blink.
+  PolicyContainerPolicies policies;
+
+  // A mojo handle to the PolicyContainerHost, used for policies parsed in Blink
+  // that need to trigger updates in the browser's policy container.
+  pending_associated_remote<PolicyContainerHost> remote;
+};
+
+// Helper struct used for binding the PolicyContainerHost when the remotes are
+// created in Blink. As opposed to |PolicyContainer| above, this is used when
+// the policy container is created in Blink directly, for passing up to the
+// Browser the mojo handles. At the moment, this is only needed for the
+// CreateChildFrame IPC call.
+struct PolicyContainerBindParams {
+  pending_associated_receiver<PolicyContainerHost> receiver;
+};

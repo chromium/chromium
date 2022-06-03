@@ -8,10 +8,14 @@
 #include <memory>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
-#include "content/public/renderer/browser_plugin_delegate.h"
+#include "base/memory/weak_ptr.h"
 #include "ipc/ipc_message.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
+#include "v8/include/v8-persistent-handle.h"
+
+namespace gfx {
+class Size;
+}
 
 namespace content {
 class RenderFrame;
@@ -21,9 +25,12 @@ namespace guest_view {
 
 class GuestViewRequest;
 
-class GuestViewContainer : public content::BrowserPluginDelegate {
+class GuestViewContainer {
  public:
   explicit GuestViewContainer(content::RenderFrame* render_frame);
+
+  GuestViewContainer(const GuestViewContainer&) = delete;
+  GuestViewContainer& operator=(const GuestViewContainer&) = delete;
 
   static GuestViewContainer* FromID(int element_instance_id);
 
@@ -56,23 +63,18 @@ class GuestViewContainer : public content::BrowserPluginDelegate {
   // handled by GuestViewContainer.
   virtual bool OnMessage(const IPC::Message& message);
 
-  // Called to perform actions when a GuestViewContainer gets a geometry.
-  virtual void OnReady() {}
-
   // Called to perform actions when a GuestViewContainer is about to be
   // destroyed.
   // Note that this should be called exactly once.
   virtual void OnDestroy(bool embedder_frame_destroyed) {}
 
-  // BrowserPluginGuestDelegate public implementation.
-  void SetElementInstanceID(int element_instance_id) final;
-  void DidResizeElement(const gfx::Size& new_size) override;
-  base::WeakPtr<BrowserPluginDelegate> GetWeakPtr() final;
+  void SetElementInstanceID(int element_instance_id);
+
+  // TODO(533069): Remove since BrowserPlugin has been removed.
+  void DidResizeElement(const gfx::Size& new_size);
 
  protected:
-  ~GuestViewContainer() override;
-
-  bool ready_;
+  virtual ~GuestViewContainer();
 
   void OnHandleCallback(const IPC::Message& message);
 
@@ -87,10 +89,6 @@ class GuestViewContainer : public content::BrowserPluginDelegate {
   void HandlePendingResponseCallback(const IPC::Message& message);
   void RunDestructionCallback(bool embedder_frame_destroyed);
   void CallElementResizeCallback(const gfx::Size& new_size);
-
-  // BrowserPluginDelegate implementation.
-  void Ready() final;
-  void DidDestroyElement() final;
 
   int element_instance_id_;
   content::RenderFrame* render_frame_;
@@ -108,8 +106,6 @@ class GuestViewContainer : public content::BrowserPluginDelegate {
   v8::Isolate* element_resize_isolate_;
 
   base::WeakPtrFactory<GuestViewContainer> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GuestViewContainer);
 };
 
 }  // namespace guest_view

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="es">
-<translation id="6106989379647458772">La página web <ph name="PAGE" /> podría estar temporalmente fuera de servicio o bien podría haberse trasladado a una dirección web nueva permanentemente.</translation>
-<translation id="6312113039770857350">Página web no disponible</translation>
-<translation id="8681531050781943054">No ha sido posible cargar la página web <ph name="PAGE" /> porque:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Sugerencias:<ph name="MARKUP_2" />Comprueba que tienes una conexión de datos<ph name="MARKUP_3" />Vuelve a cargar esta página web más tarde<ph name="MARKUP_4" />Comprueba la dirección que has introducido<ph name="MARKUP_5" /></translation>
 </translationbundle>

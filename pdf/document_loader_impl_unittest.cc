@@ -7,9 +7,14 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/test/scoped_feature_list.h"
+#include "pdf/pdf_features.h"
+#include "pdf/ppapi_migration/callback.h"
 #include "pdf/url_loader_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,9 +22,9 @@
 
 using ::testing::_;
 using ::testing::Mock;
-using ::testing::Sequence;
 using ::testing::NiceMock;
 using ::testing::Return;
+using ::testing::Sequence;
 
 namespace chrome_pdf {
 
@@ -33,6 +38,8 @@ class TestURLLoader : public URLLoaderWrapper {
   class LoaderData {
    public:
     LoaderData() = default;
+    LoaderData(const LoaderData&) = delete;
+    LoaderData& operator=(const LoaderData&) = delete;
     ~LoaderData() {
       // We should call callbacks to prevent memory leaks.
       // The callbacks don't do anything, because the objects that created the
@@ -86,38 +93,38 @@ class TestURLLoader : public URLLoaderWrapper {
       open_byte_range_ = open_byte_range;
     }
 
-    bool IsWaitRead() const { return !did_read_callback_.IsOptional(); }
-    bool IsWaitOpen() const { return !did_open_callback_.IsOptional(); }
+    bool IsWaitRead() const { return !did_read_callback_.is_null(); }
+    bool IsWaitOpen() const { return !did_open_callback_.is_null(); }
     char* buffer() const { return buffer_; }
     int buffer_size() const { return buffer_size_; }
 
-    void SetReadCallback(const pp::CompletionCallback& read_callback,
+    void SetReadCallback(ResultCallback read_callback,
                          char* buffer,
                          int buffer_size) {
-      did_read_callback_ = read_callback;
+      did_read_callback_ = std::move(read_callback);
       buffer_ = buffer;
       buffer_size_ = buffer_size;
     }
 
-    void SetOpenCallback(const pp::CompletionCallback& open_callback,
+    void SetOpenCallback(ResultCallback open_callback,
                          gfx::Range req_byte_range) {
-      did_open_callback_ = open_callback;
+      did_open_callback_ = std::move(open_callback);
       set_open_byte_range(req_byte_range);
     }
 
     void CallOpenCallback(int result) {
       DCHECK(IsWaitOpen());
-      did_open_callback_.RunAndClear(result);
+      std::move(did_open_callback_).Run(result);
     }
 
     void CallReadCallback(int result) {
       DCHECK(IsWaitRead());
-      did_read_callback_.RunAndClear(result);
+      std::move(did_read_callback_).Run(result);
     }
 
    private:
-    pp::CompletionCallback did_open_callback_;
-    pp::CompletionCallback did_read_callback_;
+    ResultCallback did_open_callback_;
+    ResultCallback did_read_callback_;
     char* buffer_ = nullptr;
     int buffer_size_ = 0;
 
@@ -132,14 +139,13 @@ class TestURLLoader : public URLLoaderWrapper {
     int status_code_ = 0;
     bool closed_ = true;
     gfx::Range open_byte_range_ = gfx::Range::InvalidRange();
-
-    DISALLOW_COPY_AND_ASSIGN(LoaderData);
   };
 
   explicit TestURLLoader(LoaderData* data) : data_(data) {
     data_->set_closed(false);
   }
-
+  TestURLLoader(const TestURLLoader&) = delete;
+  TestURLLoader& operator=(const TestURLLoader&) = delete;
   ~TestURLLoader() override { Close(); }
 
   int GetContentLength() const override { return data_->content_length(); }
@@ -171,34 +177,29 @@ class TestURLLoader : public URLLoaderWrapper {
                  const std::string& referrer_url,
                  uint32_t position,
                  uint32_t size,
-                 const pp::CompletionCallback& cc) override {
-    data_->SetOpenCallback(cc, gfx::Range(position, position + size));
+                 ResultCallback callback) override {
+    data_->SetOpenCallback(std::move(callback),
+                           gfx::Range(position, position + size));
   }
 
   void ReadResponseBody(char* buffer,
                         int buffer_size,
-                        const pp::CompletionCallback& cc) override {
-    data_->SetReadCallback(cc, buffer, buffer_size);
-  }
-
-  bool GetDownloadProgress(int64_t* bytes_received,
-                           int64_t* total_bytes_to_be_received) const override {
-    return false;
+                        ResultCallback callback) override {
+    data_->SetReadCallback(std::move(callback), buffer, buffer_size);
   }
 
  private:
   LoaderData* data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestURLLoader);
 };
 
 class TestClient : public DocumentLoader::Client {
  public:
   TestClient() { full_page_loader_data()->set_content_type("application/pdf"); }
+  TestClient(const TestClient&) = delete;
+  TestClient& operator=(const TestClient&) = delete;
   ~TestClient() override = default;
 
   // DocumentLoader::Client overrides:
-  pp::Instance* GetPluginInstance() override { return nullptr; }
   std::unique_ptr<URLLoaderWrapper> CreateURLLoader() override {
     return std::unique_ptr<URLLoaderWrapper>(
         new TestURLLoader(partial_loader_data()));
@@ -244,28 +245,65 @@ class TestClient : public DocumentLoader::Client {
  private:
   TestURLLoader::LoaderData full_page_loader_data_;
   TestURLLoader::LoaderData partial_loader_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestClient);
 };
 
 class MockClient : public TestClient {
  public:
   MockClient() = default;
+  MockClient(const MockClient&) = delete;
+  MockClient& operator=(const MockClient&) = delete;
 
-  MOCK_METHOD0(OnPendingRequestComplete, void());
-  MOCK_METHOD0(OnNewDataReceived, void());
-  MOCK_METHOD0(OnDocumentComplete, void());
-  MOCK_METHOD0(OnDocumentCanceled, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockClient);
+  MOCK_METHOD(void, OnPendingRequestComplete, (), (override));
+  MOCK_METHOD(void, OnNewDataReceived, (), (override));
+  MOCK_METHOD(void, OnDocumentComplete, (), (override));
+  MOCK_METHOD(void, OnDocumentCanceled, (), (override));
 };
 
 }  // namespace
 
-using DocumentLoaderImplTest = ::testing::Test;
+class DocumentLoaderImplTest : public testing::Test {
+ protected:
+  DocumentLoaderImplTest() {
+    scoped_feature_list_.InitAndEnableFeature(features::kPdfPartialLoading);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(DocumentLoaderImplTest, PartialLoadingFeatureDefault) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.Init();
+
+  // Test that partial loading is disabled when feature is defaulted.
+  TestClient client;
+  client.SetCanUsePartialLoading();
+  DocumentLoaderImpl loader(&client);
+  loader.Init(client.CreateFullPageLoader(), "http://url.com");
+  loader.RequestData(1000000, 1);
+  EXPECT_FALSE(loader.is_partial_loader_active());
+  // Always send initial data from FullPageLoader.
+  client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
+  EXPECT_FALSE(loader.is_partial_loader_active());
+}
+
+TEST_F(DocumentLoaderImplTest, PartialLoadingFeatureDisabled) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitAndDisableFeature(features::kPdfPartialLoading);
+
+  // Test that partial loading is disabled when feature is disabled.
+  TestClient client;
+  client.SetCanUsePartialLoading();
+  DocumentLoaderImpl loader(&client);
+  loader.Init(client.CreateFullPageLoader(), "http://url.com");
+  loader.RequestData(1000000, 1);
+  EXPECT_FALSE(loader.is_partial_loader_active());
+  // Always send initial data from FullPageLoader.
+  client.full_page_loader_data()->CallReadCallback(kDefaultRequestSize);
+  EXPECT_FALSE(loader.is_partial_loader_active());
+}
 
 TEST_F(DocumentLoaderImplTest, PartialLoadingEnabled) {
+  // Test that partial loading is enabled. (Fixture enables PdfPartialLoading.)
   TestClient client;
   client.SetCanUsePartialLoading();
   DocumentLoaderImpl loader(&client);

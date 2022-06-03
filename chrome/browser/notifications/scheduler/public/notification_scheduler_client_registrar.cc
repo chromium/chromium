@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_client.h"
 
 namespace notifications {

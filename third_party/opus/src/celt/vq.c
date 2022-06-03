@@ -39,6 +39,10 @@
 #include "rate.h"
 #include "pitch.h"
 
+#if defined(MIPSr1_ASM)
+#include "mips/vq_mipsr1.h"
+#endif
+
 #ifndef OVERRIDE_vq_exp_rotation1
 static void exp_rotation1(celt_norm *X, int len, int stride, opus_val16 c, opus_val16 s)
 {
@@ -230,12 +234,12 @@ opus_val16 op_pvq_search_c(celt_norm *X, int *iy, int K, int N, int arch)
          pulsesLeft -= iy[j];
       }  while (++j<N);
    }
-   celt_assert2(pulsesLeft>=0, "Allocated too many pulses in the quick pass");
+   celt_sig_assert(pulsesLeft>=0);
 
    /* This should never happen, but just in case it does (e.g. on silence)
       we fill the first bin with pulses. */
 #ifdef FIXED_POINT_DEBUG
-   celt_assert2(pulsesLeft<=N+3, "Not enough pulses in the quick pass");
+   celt_sig_assert(pulsesLeft<=N+3);
 #endif
    if (pulsesLeft > N+3)
    {

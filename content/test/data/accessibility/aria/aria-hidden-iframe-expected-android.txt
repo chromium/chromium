@@ -1,0 +1,8 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View
+++++android.widget.Button role_description='button' clickable focusable interesting name='Before'
+++++android.view.View invisible
+++++++android.view.View scrollable
+++++++++android.view.View
+++++++++++android.widget.Button role_description='button' clickable focusable name='Inner'
+++++android.widget.Button role_description='button' clickable focusable interesting name='After'

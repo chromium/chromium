@@ -5,17 +5,21 @@
 #include "net/socket/ssl_connect_job.h"
 
 #include <cstdlib>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/base/url_util.h"
+#include "net/cert/x509_util.h"
 #include "net/http/http_proxy_client_socket.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_source_type.h"
@@ -28,6 +32,8 @@
 #include "net/ssl/ssl_cert_request_info.h"
 #include "net/ssl/ssl_connection_status_flags.h"
 #include "net/ssl/ssl_info.h"
+#include "net/ssl/ssl_legacy_crypto_fallback.h"
+#include "third_party/boringssl/src/include/openssl/pool.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
 
 namespace net {
@@ -35,8 +41,7 @@ namespace net {
 namespace {
 
 // Timeout for the SSL handshake portion of the connect.
-constexpr base::TimeDelta kSSLHandshakeTimeout(
-    base::TimeDelta::FromSeconds(30));
+constexpr base::TimeDelta kSSLHandshakeTimeout(base::Seconds(30));
 
 }  // namespace
 
@@ -97,6 +102,18 @@ SSLSocketParams::GetHttpProxyConnectionParams() const {
   return http_proxy_params_;
 }
 
+std::unique_ptr<SSLConnectJob> SSLConnectJob::Factory::Create(
+    RequestPriority priority,
+    const SocketTag& socket_tag,
+    const CommonConnectJobParams* common_connect_job_params,
+    scoped_refptr<SSLSocketParams> params,
+    ConnectJob::Delegate* delegate,
+    const NetLogWithSource* net_log) {
+  return std::make_unique<SSLConnectJob>(priority, socket_tag,
+                                         common_connect_job_params,
+                                         std::move(params), delegate, net_log);
+}
+
 SSLConnectJob::SSLConnectJob(
     RequestPriority priority,
     const SocketTag& socket_tag,
@@ -117,7 +134,8 @@ SSLConnectJob::SSLConnectJob(
       params_(std::move(params)),
       callback_(base::BindRepeating(&SSLConnectJob::OnIOComplete,
                                     base::Unretained(this))),
-      ssl_negotiation_started_(false) {}
+      ssl_negotiation_started_(false),
+      disable_legacy_crypto_with_fallback_(true) {}
 
 SSLConnectJob::~SSLConnectJob() {
   // In the case the job was canceled, need to delete nested job first to
@@ -273,6 +291,7 @@ int SSLConnectJob::DoTransportConnectComplete(int result) {
     next_state_ = STATE_SSL_CONNECT;
     nested_socket_ = nested_connect_job_->PassSocket();
     nested_socket_->GetPeerAddress(&server_address_);
+    dns_aliases_ = nested_socket_->GetDnsAliases();
   }
 
   return result;
@@ -358,6 +377,7 @@ int SSLConnectJob::DoSSLConnect() {
   SSLConfig ssl_config = params_->ssl_config();
   ssl_config.network_isolation_key = params_->network_isolation_key();
   ssl_config.privacy_mode = params_->privacy_mode();
+  ssl_config.disable_legacy_crypto = disable_legacy_crypto_with_fallback_;
   ssl_socket_ = client_socket_factory()->CreateSSLClientSocket(
       ssl_client_context(), std::move(nested_socket_), params_->host_and_port(),
       ssl_config);
@@ -373,16 +393,33 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
     server_address_ = IPEndPoint();
   }
 
+  // Many servers which negotiate SHA-1 server signatures in TLS 1.2 actually
+  // support SHA-2 but preferentially sign SHA-1 if available.
+  //
+  // To get more accurate metrics, initially connect with SHA-1 disabled. If
+  // this fails, retry with them enabled. This keeps the legacy algorithms
+  // working for now, but they will only appear in metrics and DevTools if the
+  // site relies on them.
+  //
+  // See https://crbug.com/658905.
+  if (disable_legacy_crypto_with_fallback_ &&
+      (result == ERR_CONNECTION_CLOSED || result == ERR_CONNECTION_RESET ||
+       result == ERR_SSL_PROTOCOL_ERROR ||
+       result == ERR_SSL_VERSION_OR_CIPHER_MISMATCH)) {
+    ResetStateForRestart();
+    disable_legacy_crypto_with_fallback_ = false;
+    next_state_ = GetInitialState(params_->GetConnectionType());
+    return OK;
+  }
+
   const std::string& host = params_->host_and_port().host();
-  bool tls13_supported = IsTLS13ExperimentHost(host);
 
   if (result == OK) {
     DCHECK(!connect_timing_.ssl_start.is_null());
     base::TimeDelta connect_duration =
         connect_timing_.ssl_end - connect_timing_.ssl_start;
     UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_2", connect_duration,
-                               base::TimeDelta::FromMilliseconds(1),
-                               base::TimeDelta::FromMinutes(1), 100);
+                               base::Milliseconds(1), base::Minutes(1), 100);
 
     SSLInfo ssl_info;
     bool has_ssl_info = ssl_socket_->GetSSLInfo(&ssl_info);
@@ -410,22 +447,45 @@ int SSLConnectJob::DoSSLConnectComplete(int result) {
                                ssl_info.key_exchange_group);
     }
 
-    if (tls13_supported) {
-      UMA_HISTOGRAM_CUSTOM_TIMES("Net.SSL_Connection_Latency_TLS13Experiment",
-                                 connect_duration,
-                                 base::TimeDelta::FromMilliseconds(1),
-                                 base::TimeDelta::FromMinutes(1), 100);
+    // Classify whether the connection required the legacy crypto fallback.
+    SSLLegacyCryptoFallback fallback = SSLLegacyCryptoFallback::kNoFallback;
+    if (!disable_legacy_crypto_with_fallback_) {
+      // Some servers, though they do not negotiate SHA-1, still fail the
+      // connection when SHA-1 is not offered. We believe these are servers
+      // which match the sent certificates against the ClientHello and then
+      // are configured with a SHA-1 certificate.
+      //
+      // SHA-1 certificate chains are no longer accepted, however servers may
+      // send extra unused certificates, most commonly a copy of the trust
+      // anchor.
+      bool sent_sha1_cert =
+          ssl_info.unverified_cert &&
+          x509_util::HasSHA1Signature(ssl_info.unverified_cert->cert_buffer());
+      if (!sent_sha1_cert && ssl_info.unverified_cert) {
+        for (const auto& cert :
+             ssl_info.unverified_cert->intermediate_buffers()) {
+          if (x509_util::HasSHA1Signature(cert.get())) {
+            sent_sha1_cert = true;
+            break;
+          }
+        }
+      }
+      if (ssl_info.peer_signature_algorithm == SSL_SIGN_RSA_PKCS1_SHA1) {
+        fallback = sent_sha1_cert
+                       ? SSLLegacyCryptoFallback::kSentSHA1CertAndUsedSHA1
+                       : SSLLegacyCryptoFallback::kUsedSHA1;
+      } else {
+        fallback = sent_sha1_cert ? SSLLegacyCryptoFallback::kSentSHA1Cert
+                                  : SSLLegacyCryptoFallback::kUnknownReason;
+      }
     }
+    UMA_HISTOGRAM_ENUMERATION("Net.SSLLegacyCryptoFallback", fallback);
   }
 
   base::UmaHistogramSparse("Net.SSL_Connection_Error", std::abs(result));
-  if (tls13_supported) {
-    base::UmaHistogramSparse("Net.SSL_Connection_Error_TLS13Experiment",
-                             std::abs(result));
-  }
 
   if (result == OK || IsCertificateError(result)) {
-    SetSocket(std::move(ssl_socket_));
+    SetSocket(std::move(ssl_socket_), std::move(dns_aliases_));
   } else if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     ssl_cert_request_info_ = base::MakeRefCounted<SSLCertRequestInfo>();
     ssl_socket_->GetSSLCertRequestInfo(ssl_cert_request_info_.get());
@@ -451,6 +511,17 @@ SSLConnectJob::State SSLConnectJob::GetInitialState(
 int SSLConnectJob::ConnectInternal() {
   next_state_ = GetInitialState(params_->GetConnectionType());
   return DoLoop(OK);
+}
+
+void SSLConnectJob::ResetStateForRestart() {
+  ResetTimer(base::TimeDelta());
+  nested_connect_job_ = nullptr;
+  nested_socket_ = nullptr;
+  ssl_socket_ = nullptr;
+  ssl_cert_request_info_ = nullptr;
+  ssl_negotiation_started_ = false;
+  resolve_error_info_ = ResolveErrorInfo();
+  server_address_ = IPEndPoint();
 }
 
 void SSLConnectJob::ChangePriorityInternal(RequestPriority priority) {

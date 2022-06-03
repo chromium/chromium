@@ -1,21 +1,38 @@
 include_rules = [
   "+chrome/android/features/autofill_assistant/test_support_jni_headers",
   "+components/autofill",
+  "+components/google/core/common",
+  "+components/keyed_service/core",
+  "+components/password_manager/content/browser",
   "+components/password_manager/core/browser",
-  "+components/version_info/version_info.h",
+  "+components/password_manager/core/common",
+  "+components/ukm",
+  "+components/url_matcher",
+  "+components/version_info",
   "+content/public/browser",
   "+content/public/test",
   "+content/shell/browser/shell.h",
   "+components/signin/public/identity_manager",
   "+components/strings/grit/components_strings.h",
+  "+crypto",
   "+google_apis",
   "+net",
+  "+services/metrics/public",
   "+services/network/public/cpp",
+  "+services/network/public/mojom",
+  "+services/network/test",
+  "+third_party/blink/public/common/switches.h",
   "+third_party/blink/public/mojom/payments/payment_request.mojom.h",
   "+third_party/icu/source/common/unicode",
   "+third_party/libaddressinput/chromium/addressinput_util.h",
   "+third_party/libaddressinput/src/cpp/include/libaddressinput/address_data.h",
   "+third_party/re2",
   "+ui/base/l10n/l10n_util.h",
-  "+ui/events/keycodes/dom",
+  "+ui/events/keycodes",
 ]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+third_party/blink/public/common/features.h",
+  ]
+}

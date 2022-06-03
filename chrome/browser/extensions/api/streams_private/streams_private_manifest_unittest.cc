@@ -48,8 +48,7 @@ TEST_F(StreamsPrivateManifestTest, ValidMimeTypesHandlerMIMETypes) {
   EXPECT_TRUE(handler->CanHandleMIMEType("text/plain"));
 }
 
-TEST_F(StreamsPrivateManifestTest,
-       MimeTypesHandlerMIMETypesNotWhitelisted) {
+TEST_F(StreamsPrivateManifestTest, MimeTypesHandlerMIMETypesNotAllowlisted) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
           .SetManifest(

@@ -5,12 +5,10 @@
 #ifndef ANDROID_WEBVIEW_RENDERER_AW_SAFE_BROWSING_ERROR_PAGE_CONTROLLER_DELEGATE_IMPL_H_
 #define ANDROID_WEBVIEW_RENDERER_AW_SAFE_BROWSING_ERROR_PAGE_CONTROLLER_DELEGATE_IMPL_H_
 
-#include "base/memory/weak_ptr.h"
 #include "components/security_interstitials/content/renderer/security_interstitial_page_controller.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
-#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
 class RenderFrame;
@@ -21,9 +19,7 @@ namespace android_webview {
 class AwSafeBrowsingErrorPageControllerDelegateImpl
     : public content::RenderFrameObserver,
       public content::RenderFrameObserverTracker<
-          AwSafeBrowsingErrorPageControllerDelegateImpl>,
-      public security_interstitials::SecurityInterstitialPageController::
-          Delegate {
+          AwSafeBrowsingErrorPageControllerDelegateImpl> {
  public:
   explicit AwSafeBrowsingErrorPageControllerDelegateImpl(
       content::RenderFrame* render_frame);
@@ -39,14 +35,9 @@ class AwSafeBrowsingErrorPageControllerDelegateImpl
   // Notifies us that a navigation error has occurred and will be committed
   void PrepareForErrorPage();
 
-  // security_interstitials::SecurityInterstitialPageController::Delegate:
-  mojo::AssociatedRemote<security_interstitials::mojom::InterstitialCommands>
-  GetInterface() override;
-
   // content::RenderFrameObserver:
   void OnDestruct() override;
-  void ReadyToCommitNavigation(
-      blink::WebDocumentLoader* document_loader) override;
+  void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidFinishLoad() override;
 
  private:
@@ -55,9 +46,6 @@ class AwSafeBrowsingErrorPageControllerDelegateImpl
 
   // Whether the committed page is an error page.
   bool committed_error_ = false;
-
-  base::WeakPtrFactory<AwSafeBrowsingErrorPageControllerDelegateImpl>
-      weak_controller_delegate_factory_{this};
 };
 
 }  // namespace android_webview

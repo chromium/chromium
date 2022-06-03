@@ -8,15 +8,15 @@
 #include <stdint.h>
 
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/ref_counted.h"
 #include "content/browser/cache_storage/cache_storage_cache_handle.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/common/content_export.h"
+#include "net/base/io_buffer.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
-#include "url/origin.h"
 
 namespace content {
 
@@ -31,11 +31,9 @@ namespace content {
 // get cancelled in some circumstances.
 class CONTENT_EXPORT CacheStorageCache {
  public:
-  using CacheEntry = std::pair<blink::mojom::FetchAPIRequestPtr,
-                               blink::mojom::FetchAPIResponsePtr>;
   using CacheEntriesCallback =
       base::OnceCallback<void(blink::mojom::CacheStorageError,
-                              std::vector<CacheEntry>)>;
+                              std::vector<blink::mojom::CacheEntryPtr>)>;
   using ErrorCallback =
       base::OnceCallback<void(blink::mojom::CacheStorageError)>;
   using VerboseErrorCallback =

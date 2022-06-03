@@ -1,0 +1,17 @@
+<template is="dom-if" if="[[showChild_(status_)]]"
+    restamp>
+  <settings-safety-check-child
+      id="safetyCheckChild"
+      icon-status="[[getIconStatus_(status_)]]"
+      label="$i18n{safetyCheckChromeCleanerPrimaryLabel}"
+      sub-label="[[displayString_]]"
+      button-label="[[getButtonLabel_(status_)]]"
+      button-aria-label="[[getButtonAriaLabel_(status_)]]"
+      button-class="[[getButtonClass_(status_)]]"
+      on-button-click="onButtonClick_"
+      managed-icon="[[getManagedIcon_(status_)]]"
+      on-click="onRowClick_"
+      row-clickable="[[isRowClickable_(status_)]]"
+      role="presentation">
+  </settings-safety-check-child>
+</template>

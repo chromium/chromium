@@ -15,7 +15,6 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_download_manager.h"
 #include "content/public/test/test_web_ui.h"
-#include "mojo/public/cpp/bindings/binding.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -92,6 +91,7 @@ TEST_F(DownloadsDOMHandlerTest, ClearAll) {
   // Safe, in-progress items should be passed over.
   testing::StrictMock<download::MockDownloadItem> in_progress;
   EXPECT_CALL(in_progress, IsDangerous()).WillOnce(testing::Return(false));
+  EXPECT_CALL(in_progress, IsMixedContent()).WillOnce(testing::Return(false));
   EXPECT_CALL(in_progress, IsTransient()).WillOnce(testing::Return(false));
   EXPECT_CALL(in_progress, GetState())
       .WillOnce(testing::Return(download::DownloadItem::IN_PROGRESS));
@@ -106,6 +106,7 @@ TEST_F(DownloadsDOMHandlerTest, ClearAll) {
   // Completed items should be marked as hidden from the shelf.
   testing::StrictMock<download::MockDownloadItem> completed;
   EXPECT_CALL(completed, IsDangerous()).WillOnce(testing::Return(false));
+  EXPECT_CALL(completed, IsMixedContent()).WillOnce(testing::Return(false));
   EXPECT_CALL(completed, IsTransient()).WillRepeatedly(testing::Return(false));
   EXPECT_CALL(completed, GetState())
       .WillOnce(testing::Return(download::DownloadItem::COMPLETE));

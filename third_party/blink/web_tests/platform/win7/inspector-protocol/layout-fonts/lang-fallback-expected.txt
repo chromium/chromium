@@ -4,7 +4,7 @@
 
 ՀՁ
 #hy-am:
-"Sylfaen" : 2
+"Tahoma" : 2
 
 সম
 #bn:
@@ -16,7 +16,7 @@
 
 ᨀᨁ
 #bug:
-"Arial" : 2
+"Times New Roman" : 2
 
 ᐐᐑ
 #cans:
@@ -24,23 +24,23 @@
 
 𐊠𐊡
 #xcr:
-"Arial" : 2
+"Times New Roman" : 2
 
 ᎡᎢ
 #chr:
-"Plantagenet Cherokee" : 2
+"Times New Roman" : 2
 
 ⲁⲂ
 #copt:
-"Arial" : 2
+"Times New Roman" : 2
 
 𒀀𒀌
 #akk:
-"Arial" : 2
+"Times New Roman" : 2
 
 𐠀𐠁
 #ecy:
-"Arial" : 2
+"Times New Roman" : 2
 
 АБВ
 #ru:
@@ -48,7 +48,7 @@
 
 𐐀𐐁
 #en:
-"Segoe UI Symbol" : 2
+"Times New Roman" : 2
 
 अआ
 #hi:
@@ -60,7 +60,7 @@
 
 ႠႡ
 #ka:
-"Arial" : 2
+"Times New Roman" : 2
 
 ΑΒ
 #el:
@@ -88,7 +88,7 @@
 
 我
 #ja:
-"Meiryo UI" : 1
+"Meiryo" : 1
 
 ᄀᄁ
 #ko:
@@ -104,19 +104,19 @@
 
 𐡁𐡂
 #arc:
-"Arial" : 2
+"Times New Roman" : 2
 
 𐭡𐭢
 #pal:
-"Arial" : 2
+"Times New Roman" : 2
 
 𐭁𐭂
 #xpr:
-"Arial" : 2
+"Times New Roman" : 2
 
 ꦑꦒ
 #jv:
-"Arial" : 2
+"Times New Roman" : 2
 
 ಡಢ
 #kn:
@@ -124,7 +124,7 @@
 
 𐨐𐨑
 #sa:
-"Arial" : 2
+"Times New Roman" : 2
 
 ໐໑
 #lo:
@@ -132,15 +132,15 @@
 
 ꓐꓑ
 #lis:
-"Arial" : 2
+"Times New Roman" : 2
 
 𐊁𐊂
 #xlc:
-"Arial" : 2
+"Times New Roman" : 2
 
 𐤡𐤢
 #xld:
-"Arial" : 2
+"Times New Roman" : 2
 
 ഡഢ
 #ml:
@@ -148,11 +148,11 @@
 
 𐦡𐦢
 #script_meroitic:
-"Arial" : 2
+"Times New Roman" : 2
 
 ကခ
 #my:
-"Arial" : 2
+"Times New Roman" : 2
 
 ᦁᦂ
 #script_new_tai_lue:
@@ -168,19 +168,19 @@
 
 ᱑᱒
 #script_ol_chiki:
-"Arial" : 2
+"Times New Roman" : 2
 
 𐌁𐌂
 #script_old_italic:
-"Segoe UI Symbol" : 2
+"Times New Roman" : 2
 
 𐎡𐎢
 #peo:
-"Arial" : 2
+"Times New Roman" : 2
 
 𐩡𐩢
 #script_old_south_arabian:
-"Arial" : 2
+"Times New Roman" : 2
 
 ଡଢ
 #or:
@@ -196,7 +196,7 @@
 
 𐑑𐑒
 #script_shavian:
-"Arial" : 2
+"Times New Roman" : 2
 
 එඒ
 #si:
@@ -204,7 +204,7 @@
 
 𑃑𑃒
 #script_sora_sompeng:
-"Arial" : 2
+"Times New Roman" : 2
 
 ܑܒ
 #syr:
@@ -228,7 +228,7 @@
 
 กข
 #th:
-"Leelawadee" : 2
+"Tahoma" : 2
 
 ༁༂
 #bo:

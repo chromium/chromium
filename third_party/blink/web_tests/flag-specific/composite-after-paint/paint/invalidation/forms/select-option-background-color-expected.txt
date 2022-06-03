@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow OPTION id='option'",
-          "rect": [1, 37, 13, 17],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [1, 37, 13, 17]
       ]
     }
   ]

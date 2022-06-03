@@ -4,12 +4,14 @@
 
 #import "ios/web/web_state/ui/crw_wk_ui_handler.h"
 
+#include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/navigation/wk_navigation_action_util.h"
 #import "ios/web/navigation/wk_navigation_util.h"
+#import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/web_state/ui/crw_context_menu_controller.h"
+#import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -166,29 +168,34 @@
                        }];
 }
 
-- (BOOL)webView:(WKWebView*)webView
-    shouldPreviewElement:(WKPreviewElementInfo*)elementInfo {
-  return self.webStateImpl->ShouldPreviewLink(
-      net::GURLWithNSURL(elementInfo.linkURL));
-}
+- (void)webView:(WKWebView*)webView
+    contextMenuConfigurationForElement:(WKContextMenuElementInfo*)elementInfo
+                     completionHandler:
+                         (void (^)(UIContextMenuConfiguration* _Nullable))
+                             completionHandler {
+  web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
+  if (!delegate) {
+    completionHandler(nil);
+    return;
+  }
 
-- (UIViewController*)webView:(WKWebView*)webView
-    previewingViewControllerForElement:(WKPreviewElementInfo*)elementInfo
-                        defaultActions:
-                            (NSArray<id<WKPreviewActionItem>>*)previewActions {
-  // Prevent |_contextMenuController| from intercepting the default behavior for
-  // the current on-going touch. Otherwise it would cancel the on-going Peek&Pop
-  // action and show its own context menu instead (crbug.com/770619).
-  [self.contextMenuController allowSystemUIForCurrentGesture];
+  web::ContextMenuParams params;
+  params.link_url = net::GURLWithNSURL(elementInfo.linkURL);
 
-  return self.webStateImpl->GetPreviewingViewController(
-      net::GURLWithNSURL(elementInfo.linkURL));
+  delegate->ContextMenuConfiguration(self.webStateImpl, params,
+                                     completionHandler);
 }
 
 - (void)webView:(WKWebView*)webView
-    commitPreviewingViewController:(UIViewController*)previewingViewController {
-  return self.webStateImpl->CommitPreviewingViewController(
-      previewingViewController);
+     contextMenuForElement:(WKContextMenuElementInfo*)elementInfo
+    willCommitWithAnimator:
+        (id<UIContextMenuInteractionCommitAnimating>)animator {
+  web::WebStateDelegate* delegate = self.webStateImpl->GetDelegate();
+  if (!delegate) {
+    return;
+  }
+
+  delegate->ContextMenuWillCommitWithAnimator(self.webStateImpl, animator);
 }
 
 #pragma mark - Helper
@@ -206,6 +213,18 @@
   // the requesting page's URL.
   GURL requestURL = net::GURLWithNSURL(frame.request.URL);
   if (!requestURL.is_valid()) {
+    completionHandler(NO, nil);
+    return;
+  }
+
+  if (self.webStateImpl->GetVisibleURL().DeprecatedGetOriginAsURL() !=
+          requestURL.DeprecatedGetOriginAsURL() &&
+      frame.mainFrame) {
+    // Dialog was requested by web page's main frame, but visible URL has
+    // different origin. This could happen if the user has started a new
+    // browser initiated navigation. There is no value in showing dialogs
+    // requested by page, which this WebState is about to leave. But presenting
+    // the dialog can lead to phishing and other abusive behaviors.
     completionHandler(NO, nil);
     return;
   }

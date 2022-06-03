@@ -1,0 +1,5 @@
+monorail {
+  component: "Blink>Messaging"
+}
+
+team_email: "platform-architecture-dev@chromium.org"

@@ -4,19 +4,18 @@
 
 #include "content/browser/devtools/protocol/inspector_handler.h"
 
+#include <memory>
+
 #include "content/browser/devtools/devtools_agent_host_impl.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 
 namespace content {
 namespace protocol {
 
 InspectorHandler::InspectorHandler()
-    : DevToolsDomainHandler(Inspector::Metainfo::domainName),
-      host_(nullptr) {
-}
+    : DevToolsDomainHandler(Inspector::Metainfo::domainName) {}
 
-InspectorHandler::~InspectorHandler() {
-}
+InspectorHandler::~InspectorHandler() = default;
 
 // static
 std::vector<InspectorHandler*> InspectorHandler::ForAgentHost(
@@ -26,7 +25,7 @@ std::vector<InspectorHandler*> InspectorHandler::ForAgentHost(
 }
 
 void InspectorHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Inspector::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Inspector::Frontend>(dispatcher->channel());
   Inspector::Dispatcher::wire(dispatcher, this);
 }
 
@@ -36,10 +35,14 @@ void InspectorHandler::SetRenderer(int process_host_id,
 }
 
 void InspectorHandler::TargetCrashed() {
+  target_crashed_ = true;
   frontend_->TargetCrashed();
 }
 
 void InspectorHandler::TargetReloadedAfterCrash() {
+  // Only send the event if targetCrashed was previously sent in this session.
+  if (!target_crashed_)
+    return;
   frontend_->TargetReloadedAfterCrash();
 }
 
@@ -49,12 +52,12 @@ void InspectorHandler::TargetDetached(const std::string& reason) {
 
 Response InspectorHandler::Enable() {
   if (host_ && !host_->IsRenderFrameLive())
-    frontend_->TargetCrashed();
-  return Response::OK();
+    TargetCrashed();
+  return Response::Success();
 }
 
 Response InspectorHandler::Disable() {
-  return Response::OK();
+  return Response::Success();
 }
 
 }  // namespace protocol

@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/device_disabled_screen_handler.h"
 
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/device_disabled_screen.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/device_disabled_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
@@ -20,37 +20,30 @@ DeviceDisabledScreenHandler::DeviceDisabledScreenHandler(
 }
 
 DeviceDisabledScreenHandler::~DeviceDisabledScreenHandler() {
-  if (delegate_)
-    delegate_->OnViewDestroyed(this);
+  if (screen_)
+    screen_->OnViewDestroyed(this);
 }
 
-void DeviceDisabledScreenHandler::Show() {
-  if (!page_is_ready()) {
-    show_on_init_ = true;
-    return;
-  }
-
-  if (delegate_) {
-    CallJS("login.DeviceDisabledScreen.setSerialNumberAndEnrollmentDomain",
-           delegate_->GetSerialNumber(), delegate_->GetEnrollmentDomain());
-    CallJS("login.DeviceDisabledScreen.setMessage", delegate_->GetMessage());
-  }
-  ShowScreen(kScreenId);
+void DeviceDisabledScreenHandler::Show(const std::string& serial,
+                                       const std::string& domain,
+                                       const std::string& message) {
+  base::DictionaryValue screen_data;
+  screen_data.SetStringPath("serial", serial);
+  screen_data.SetStringPath("domain", domain);
+  screen_data.SetStringPath("message", message);
+  ShowScreenWithData(kScreenId, &screen_data);
 }
 
 void DeviceDisabledScreenHandler::Hide() {
-  show_on_init_ = false;
+  NOTREACHED() << "Device should reboot upon removing device disabled flag";
 }
 
-void DeviceDisabledScreenHandler::SetDelegate(DeviceDisabledScreen* delegate) {
-  delegate_ = delegate;
-  if (page_is_ready())
-    Initialize();
+void DeviceDisabledScreenHandler::Bind(DeviceDisabledScreen* screen) {
+  screen_ = screen;
 }
 
 void DeviceDisabledScreenHandler::UpdateMessage(const std::string& message) {
-  if (page_is_ready())
-    CallJS("login.DeviceDisabledScreen.setMessage", message);
+  CallJS("login.DeviceDisabledScreen.setMessage", message);
 }
 
 void DeviceDisabledScreenHandler::DeclareLocalizedValues(
@@ -63,13 +56,6 @@ void DeviceDisabledScreenHandler::DeclareLocalizedValues(
 }
 
 void DeviceDisabledScreenHandler::Initialize() {
-  if (!page_is_ready() || !delegate_)
-    return;
-
-  if (show_on_init_) {
-    Show();
-    show_on_init_ = false;
-  }
 }
 
 void DeviceDisabledScreenHandler::RegisterMessages() {

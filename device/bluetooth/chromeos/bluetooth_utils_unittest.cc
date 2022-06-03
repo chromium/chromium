@@ -4,14 +4,12 @@
 
 #include "device/bluetooth/chromeos/bluetooth_utils.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
@@ -35,6 +33,11 @@ const size_t kMaxDevicesForFilter = 5;
 class BluetoothUtilsTest : public testing::Test {
  protected:
   BluetoothUtilsTest() = default;
+
+  BluetoothUtilsTest(const BluetoothUtilsTest&) = delete;
+  BluetoothUtilsTest& operator=(const BluetoothUtilsTest&) = delete;
+
+  base::HistogramTester histogram_tester;
 
   void SetUp() override {
     BluetoothAdapterFactory::SetAdapterForTesting(adapter_);
@@ -71,24 +74,10 @@ class BluetoothUtilsTest : public testing::Test {
     EXPECT_EQ(num_expected_remaining_devices, filtered_device_list.size());
   }
 
-  void DisableAggressiveAppearanceFilter() {
-    feature_list_.InitAndDisableFeature(
-        chromeos::features::kBluetoothAggressiveAppearanceFilter);
-  }
-
-  void SetLongTermKeys(const std::string& keys) {
-    feature_list_.InitAndEnableFeatureWithParameters(
-        chromeos::features::kBlueZLongTermKeyBlocklist,
-        {{chromeos::features::kBlueZLongTermKeyBlocklistParamName, keys}});
-  }
-
  private:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<testing::NiceMock<MockBluetoothAdapter>>();
-  base::test::ScopedFeatureList feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothUtilsTest);
 };
 
 TEST_F(BluetoothUtilsTest,
@@ -123,6 +112,19 @@ TEST_F(BluetoothUtilsTest,
 }
 
 TEST_F(BluetoothUtilsTest,
+       TestFilterBluetoothDeviceList_FilterKnown_FilterPairedPhone) {
+  auto* mock_bluetooth_device =
+      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_INVALID);
+  EXPECT_CALL(*mock_bluetooth_device, IsPaired)
+      .WillRepeatedly(testing::Return(true));
+  ON_CALL(*mock_bluetooth_device, GetDeviceType)
+      .WillByDefault(testing::Return(BluetoothDeviceType::PHONE));
+
+  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
+                                  0u /* num_expected_remaining_devices */);
+}
+
+TEST_F(BluetoothUtilsTest,
        TestFilterBluetoothDeviceList_FilterKnown_RemoveInvalidDevices) {
   AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_INVALID);
 
@@ -144,7 +146,7 @@ TEST_F(
   auto* mock_bluetooth_device =
       AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_CLASSIC);
   EXPECT_CALL(*mock_bluetooth_device, GetName)
-      .WillOnce(testing::Return(base::nullopt));
+      .WillOnce(testing::Return(absl::nullopt));
 
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   0u /* num_expected_remaining_devices */);
@@ -191,36 +193,11 @@ TEST_F(
 
 TEST_F(
     BluetoothUtilsTest,
-    TestFilterBluetoothDeviceList_FilterKnown_DualDevicesWithoutAppearances_KeepWithFilterFlagDisabled) {
-  DisableAggressiveAppearanceFilter();
-
-  AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
-
-  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
-                                  1u /* num_expected_remaining_devices */);
-}
-
-TEST_F(
-    BluetoothUtilsTest,
     TestFilterBluetoothDeviceList_FilterKnown_DualDevicesWithoutAppearances_RemoveWithFilterFlagEnabled) {
   AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_DUAL);
 
   VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
                                   0u /* num_expected_remaining_devices */);
-}
-
-TEST_F(
-    BluetoothUtilsTest,
-    TestFilterBluetoothDeviceList_FilterKnown_AppearanceComputer_KeepWithFilterFlagDisabled) {
-  DisableAggressiveAppearanceFilter();
-
-  auto* mock_bluetooth_device =
-      AddMockBluetoothDeviceToAdapter(BLUETOOTH_TRANSPORT_CLASSIC);
-  ON_CALL(*mock_bluetooth_device, GetDeviceType)
-      .WillByDefault(testing::Return(BluetoothDeviceType::COMPUTER));
-
-  VerifyFilterBluetoothDeviceList(BluetoothFilterType::KNOWN,
-                                  1u /* num_expected_remaining_devices */);
 }
 
 TEST_F(
@@ -256,82 +233,36 @@ TEST_F(BluetoothUtilsTest,
                                   0u /* num_expected_remaining_devices */);
 }
 
-TEST_F(BluetoothUtilsTest, TestGetBlockedLongTermKeys_ListIncludesBadLtks) {
-  // One nibble too long, one nibble too short, and one nibble just right.
-  std::string hex_key_1 = "000000000000000000000000000012345";
-  std::string hex_key_2 = "0000000000000000000000000000123";
-  std::string hex_key_3 = "00000000000000000000000000001234";
-  SetLongTermKeys(hex_key_1 + ',' + hex_key_2 + ',' + hex_key_3);
+TEST_F(BluetoothUtilsTest, TestUiSurfaceDisplayedMetric) {
+  RecordUiSurfaceDisplayed(BluetoothUiSurface::kSettingsDeviceListSubpage);
 
-  std::vector<std::vector<uint8_t>> expected_array;
-  std::vector<uint8_t> expected_key = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                       0x00, 0x00, 0x12, 0x34};
-  expected_array.push_back(expected_key);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UiSurfaceDisplayed",
+      BluetoothUiSurface::kSettingsDeviceListSubpage, 1);
 
-  EXPECT_EQ(expected_array, device::GetBlockedLongTermKeys());
+  RecordUiSurfaceDisplayed(BluetoothUiSurface::kSettingsDeviceDetailSubpage);
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UiSurfaceDisplayed",
+      BluetoothUiSurface::kSettingsDeviceListSubpage, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UiSurfaceDisplayed",
+      BluetoothUiSurface::kSettingsDeviceDetailSubpage, 1);
 }
 
-TEST_F(BluetoothUtilsTest, TestGetBlockedLongTermKeys_ListIncludesNonHexInput) {
-  std::string hex_key_1 = "bad00input00but00correct00length";
-  std::string hex_key_2 = "00000000000000000000000000001234";
-  SetLongTermKeys(hex_key_1 + ',' + hex_key_2);
+TEST_F(BluetoothUtilsTest, TestUserAttemptedReconnectionMetric) {
+  RecordUserInitiatedReconnectionAttemptDuration(
+      device::ConnectionFailureReason::kFailed,
+      device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC,
+      base::Seconds(2));
 
-  std::vector<std::vector<uint8_t>> expected_array;
-  std::vector<uint8_t> expected_key = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                       0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-                                       0x00, 0x00, 0x12, 0x34};
-  expected_array.push_back(expected_key);
-
-  EXPECT_EQ(expected_array, device::GetBlockedLongTermKeys());
-}
-
-TEST_F(BluetoothUtilsTest, TestEmptyList) {
-  SetLongTermKeys("");
-
-  std::vector<std::vector<uint8_t>> expected_array;
-
-  EXPECT_EQ(expected_array, device::GetBlockedLongTermKeys());
-}
-
-TEST_F(BluetoothUtilsTest, TestGetBlockedLongTermKeys_OneElementList) {
-  std::string hex_key_1 = "012300004567000089ab0000cdef0000";
-  std::vector<uint8_t> expected_key_1 = {0x01, 0x23, 0x00, 0x00, 0x45, 0x67,
-                                         0x00, 0x00, 0x89, 0xab, 0x00, 0x00,
-                                         0xcd, 0xef, 0x00, 0x00};
-
-  SetLongTermKeys(hex_key_1);
-
-  std::vector<std::vector<uint8_t>> expected_array;
-  expected_array.push_back(expected_key_1);
-
-  EXPECT_EQ(expected_array, device::GetBlockedLongTermKeys());
-}
-
-TEST_F(BluetoothUtilsTest, TestGetBlockedLongTermKeys_MultipleElementList) {
-  std::string hex_key_1 = "012300004567000089ab0000cdef0000";
-  std::vector<uint8_t> expected_key_1 = {0x01, 0x23, 0x00, 0x00, 0x45, 0x67,
-                                         0x00, 0x00, 0x89, 0xab, 0x00, 0x00,
-                                         0xcd, 0xef, 0x00, 0x00};
-
-  std::string hex_key_2 = "00001111222233334444555566667777";
-  std::vector<uint8_t> expected_key_2 = {0x00, 0x00, 0x11, 0x11, 0x22, 0x22,
-                                         0x33, 0x33, 0x44, 0x44, 0x55, 0x55,
-                                         0x66, 0x66, 0x77, 0x77};
-
-  std::string hex_key_3 = "88889999aaaabbbbccccddddeeeeffff";
-  std::vector<uint8_t> expected_key_3 = {0x88, 0x88, 0x99, 0x99, 0xaa, 0xaa,
-                                         0xbb, 0xbb, 0xcc, 0xcc, 0xdd, 0xdd,
-                                         0xee, 0xee, 0xff, 0xff};
-
-  SetLongTermKeys(hex_key_1 + ',' + hex_key_2 + ',' + hex_key_3);
-
-  std::vector<std::vector<uint8_t>> expected_array;
-  expected_array.push_back(expected_key_1);
-  expected_array.push_back(expected_key_2);
-  expected_array.push_back(expected_key_3);
-
-  EXPECT_EQ(expected_array, device::GetBlockedLongTermKeys());
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure",
+      2000, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure."
+      "Classic",
+      2000, 1);
 }
 
 }  // namespace device

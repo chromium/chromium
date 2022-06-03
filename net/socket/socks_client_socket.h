@@ -21,6 +21,7 @@
 #include "net/base/net_export.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "net/dns/public/secure_dns_policy.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/stream_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -38,8 +39,11 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
                     const NetworkIsolationKey& network_isolation_key,
                     RequestPriority priority,
                     HostResolver* host_resolver,
-                    bool disable_secure_dns,
+                    SecureDnsPolicy secure_dns_policy,
                     const NetworkTrafficAnnotationTag& traffic_annotation);
+
+  SOCKSClientSocket(const SOCKSClientSocket&) = delete;
+  SOCKSClientSocket& operator=(const SOCKSClientSocket&) = delete;
 
   // On destruction Disconnect() is called.
   ~SOCKSClientSocket() override;
@@ -143,7 +147,7 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
 
   // Used to resolve the hostname to which the SOCKS proxy will connect.
   HostResolver* host_resolver_;
-  bool disable_secure_dns_;
+  SecureDnsPolicy secure_dns_policy_;
   std::unique_ptr<HostResolver::ResolveHostRequest> resolve_host_request_;
   const HostPortPair destination_;
   const NetworkIsolationKey network_isolation_key_;
@@ -154,8 +158,6 @@ class NET_EXPORT_PRIVATE SOCKSClientSocket : public StreamSocket {
 
   // Traffic annotation for socket control.
   NetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(SOCKSClientSocket);
 };
 
 }  // namespace net

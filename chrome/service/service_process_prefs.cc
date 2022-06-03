@@ -30,11 +30,10 @@ std::string ServiceProcessPrefs::GetString(
     const std::string& key,
     const std::string& default_value) const {
   const base::Value* value;
-  std::string result;
-  if (!prefs_->GetValue(key, &value) || !value->GetAsString(&result))
+  if (!prefs_->GetValue(key, &value))
     return default_value;
-
-  return result;
+  const std::string* result = value->GetIfString();
+  return result ? *result : default_value;
 }
 
 void ServiceProcessPrefs::SetString(const std::string& key,
@@ -46,11 +45,10 @@ void ServiceProcessPrefs::SetString(const std::string& key,
 bool ServiceProcessPrefs::GetBoolean(const std::string& key,
                                      bool default_value) const {
   const base::Value* value;
-  bool result = false;
-  if (!prefs_->GetValue(key, &value) || !value->GetAsBoolean(&result))
+  if (!prefs_->GetValue(key, &value) || !value->is_bool())
     return default_value;
 
-  return result;
+  return value->GetBool();
 }
 
 void ServiceProcessPrefs::SetBoolean(const std::string& key, bool value) {
@@ -61,11 +59,10 @@ void ServiceProcessPrefs::SetBoolean(const std::string& key, bool value) {
 int ServiceProcessPrefs::GetInt(const std::string& key,
                                 int default_value) const {
   const base::Value* value;
-  int result = default_value;
-  if (!prefs_->GetValue(key, &value) || !value->GetAsInteger(&result))
+  if (!prefs_->GetValue(key, &value))
     return default_value;
 
-  return result;
+  return value->GetIfInt().value_or(default_value);
 }
 
 void ServiceProcessPrefs::SetInt(const std::string& key, int value) {

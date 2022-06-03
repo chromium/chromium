@@ -14,6 +14,7 @@
 #include "extensions/browser/kiosk/kiosk_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 
 class PrefService;
 
@@ -37,6 +38,11 @@ class CastExtensionsBrowserClient : public ExtensionsBrowserClient {
       content::BrowserContext* context,
       PrefService* pref_service,
       chromecast::shell::CastNetworkContexts* cast_network_contexts);
+
+  CastExtensionsBrowserClient(const CastExtensionsBrowserClient&) = delete;
+  CastExtensionsBrowserClient& operator=(const CastExtensionsBrowserClient&) =
+      delete;
+
   ~CastExtensionsBrowserClient() override;
 
   // ExtensionsBrowserClient overrides:
@@ -68,17 +74,17 @@ class CastExtensionsBrowserClient : public ExtensionsBrowserClient {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       const base::FilePath& resource_relative_path,
       int resource_id,
-      const std::string& content_security_policy,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      bool send_cors_header) override;
-  bool AllowCrossRendererResourceLoad(const GURL& url,
-                                      content::ResourceType resource_type,
-                                      ui::PageTransition page_transition,
-                                      int child_id,
-                                      bool is_incognito,
-                                      const Extension* extension,
-                                      const ExtensionSet& extensions,
-                                      const ProcessMap& process_map) override;
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) override;
+  bool AllowCrossRendererResourceLoad(
+      const network::ResourceRequest& request,
+      network::mojom::RequestDestination destination,
+      ui::PageTransition page_transition,
+      int child_id,
+      bool is_incognito,
+      const Extension* extension,
+      const ExtensionSet& extensions,
+      const ProcessMap& process_map) override;
   PrefService* GetPrefServiceForContext(
       content::BrowserContext* context) override;
   void GetEarlyExtensionPrefsObservers(
@@ -95,8 +101,7 @@ class CastExtensionsBrowserClient : public ExtensionsBrowserClient {
   bool IsLoggedInAsPublicAccount() override;
   ExtensionSystemProvider* GetExtensionSystemFactory() override;
   void RegisterBrowserInterfaceBindersForFrame(
-      service_manager::BinderMapWithContext<content::RenderFrameHost*>*
-          binder_map,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
       content::RenderFrameHost* render_frame_host,
       const Extension* extension) const override;
   std::unique_ptr<RuntimeAPIDelegate> CreateRuntimeAPIDelegate(
@@ -133,7 +138,7 @@ class CastExtensionsBrowserClient : public ExtensionsBrowserClient {
   // Support for extension APIs.
   std::unique_ptr<ExtensionsAPIClient> api_client_;
 
-  DISALLOW_COPY_AND_ASSIGN(CastExtensionsBrowserClient);
+  std::unique_ptr<KioskDelegate> kiosk_delegate_;
 };
 
 }  // namespace extensions

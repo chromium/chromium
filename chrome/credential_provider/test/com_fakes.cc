@@ -6,7 +6,7 @@
 
 #include <sddl.h>  // For ConvertSidToStringSid()
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential.h"
 #include "chrome/credential_provider/gaiacp/gaia_credential_other_user.h"
 #include "chrome/credential_provider/gaiacp/os_user_manager.h"
@@ -232,6 +232,10 @@ HRESULT FakeCredentialProviderCredentialEvents::SetFieldString(
     ICredentialProviderCredential* pcpc,
     DWORD dwFieldID,
     LPCWSTR psz) {
+  if (psz != nullptr) {
+    std::wstring copy_wchart(psz);
+    field_string_[pcpc][dwFieldID] = copy_wchart;
+  }
   return S_OK;
 }
 
@@ -250,6 +254,15 @@ FakeCredentialProviderCredentialEvents::GetFieldState(
   DCHECK(field_states_[pcpc].count(dwFieldID));
 
   return field_states_[pcpc][dwFieldID];
+}
+
+LPCWSTR FakeCredentialProviderCredentialEvents::GetFieldString(
+    ICredentialProviderCredential* pcpc,
+    DWORD dwFieldID) {
+  DCHECK(field_string_.count(pcpc));
+  DCHECK(field_string_[pcpc].count(dwFieldID));
+
+  return field_string_[pcpc][dwFieldID].c_str();
 }
 
 IMPL_IUNKOWN_NOQI_WITH_REF(FakeCredentialProviderCredentialEvents)

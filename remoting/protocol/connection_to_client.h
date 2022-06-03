@@ -27,8 +27,10 @@ class ClientStub;
 class ClipboardStub;
 class HostStub;
 class InputStub;
+class PeerConnectionControls;
 class Session;
 class VideoStream;
+class WebrtcEventLogData;
 
 // This interface represents a remote viewer connection to the chromoting host.
 // It sets up all protocol channels and connects them to the stubs.
@@ -52,6 +54,10 @@ class ConnectionToClient {
 
     // Called when the network connection is closed or failed.
     virtual void OnConnectionClosed(ErrorCode error) = 0;
+
+    // Called when the transport protocol (TCP/UDP) changes and all channels are
+    // connected.
+    virtual void OnTransportProtocolChange(const std::string& protocol) = 0;
 
     // Called on notification of a route change event, which happens when a
     // channel is connected.
@@ -105,6 +111,15 @@ class ConnectionToClient {
   // experimental behaviors, implementations can ignore this function if no
   // control logic can be applied.
   virtual void ApplySessionOptions(const SessionOptions& options) {}
+
+  // Returns an interface for changing connection parameters after the
+  // connection is established. nullptr will be returned if the connection does
+  // not support changing parameters on the fly.
+  virtual PeerConnectionControls* peer_connection_controls() = 0;
+
+  // Returns an object holding the RTC event logs if supported by this
+  // connection type, or nullptr otherwise.
+  virtual WebrtcEventLogData* rtc_event_log() = 0;
 };
 
 }  // namespace protocol

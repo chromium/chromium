@@ -6,4 +6,5 @@
 
 dictionary KeyframeAnimationOptions : KeyframeEffectOptions {
     DOMString id = "";
+    AnimationTimeline? timeline;
 };

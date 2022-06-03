@@ -14,13 +14,13 @@
 #include <map>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -30,7 +30,7 @@ namespace api {
 
 namespace {
 
-typedef base::Callback<bool(const void* bytes, size_t size)>
+typedef base::RepeatingCallback<bool(const void* bytes, size_t size)>
     IsValidMacAddressCallback;
 
 const char kDiskByUuidDirectoryName[] = "/dev/disk/by-uuid";
@@ -98,9 +98,8 @@ std::string GetDiskUuid() {
 
 class MacAddressProcessor {
  public:
-  explicit MacAddressProcessor(
-      const IsValidMacAddressCallback& is_valid_mac_address)
-      : is_valid_mac_address_(is_valid_mac_address) {}
+  explicit MacAddressProcessor(IsValidMacAddressCallback is_valid_mac_address)
+      : is_valid_mac_address_(std::move(is_valid_mac_address)) {}
 
   bool ProcessInterface(struct ifaddrs* ifaddr,
                         const char* const prefixes[],
@@ -145,12 +144,11 @@ class MacAddressProcessor {
     return false;
   }
 
-  const IsValidMacAddressCallback& is_valid_mac_address_;
+  IsValidMacAddressCallback is_valid_mac_address_;
   std::string found_mac_address_;
 };
 
-std::string GetMacAddress(
-    const IsValidMacAddressCallback& is_valid_mac_address) {
+std::string GetMacAddress(IsValidMacAddressCallback is_valid_mac_address) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
 
@@ -161,7 +159,7 @@ std::string GetMacAddress(
     return "";
   }
 
-  MacAddressProcessor processor(is_valid_mac_address);
+  MacAddressProcessor processor(std::move(is_valid_mac_address));
   for (struct ifaddrs* ifa = ifaddrs; ifa; ifa = ifa->ifa_next) {
     bool keep_going = processor.ProcessInterface(
         ifa, kNetDeviceNamePrefixes, base::size(kNetDeviceNamePrefixes));
@@ -172,30 +170,31 @@ std::string GetMacAddress(
   return processor.mac_address();
 }
 
-void GetRawDeviceIdImpl(const IsValidMacAddressCallback& is_valid_mac_address,
-                        const DeviceId::IdCallback& callback) {
+void GetRawDeviceIdImpl(IsValidMacAddressCallback is_valid_mac_address,
+                        DeviceId::IdCallback callback) {
   std::string disk_id = GetDiskUuid();
-  std::string mac_address = GetMacAddress(is_valid_mac_address);
+  std::string mac_address = GetMacAddress(std::move(is_valid_mac_address));
 
   std::string raw_device_id;
   if (!mac_address.empty() && !disk_id.empty()) {
     raw_device_id = mac_address + disk_id;
   }
 
-  base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                 base::BindOnce(callback, raw_device_id));
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), raw_device_id));
 }
 
 }  // namespace
 
 // static
-void DeviceId::GetRawDeviceId(const IdCallback& callback) {
+void DeviceId::GetRawDeviceId(IdCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  base::PostTask(
+  base::ThreadPool::PostTask(
       FROM_HERE, traits(),
       base::BindOnce(&GetRawDeviceIdImpl,
-                     base::Bind(&DeviceId::IsValidMacAddress), callback));
+                     base::BindRepeating(&DeviceId::IsValidMacAddress),
+                     std::move(callback)));
 }
 
 }  // namespace api

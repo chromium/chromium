@@ -4,8 +4,12 @@
 
 (async function() {
   TestRunner.addResult(`Tests asynchronous network initiator for image loaded from JS.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources');
+  await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console');
+  await TestRunner.loadTestModule('console_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
+  await TestRunner.loadLegacyModule('components');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function testFunction()
@@ -19,14 +23,17 @@
   TestRunner.evaluateInPage('testFunction()');
   TestRunner.networkManager.addEventListener(SDK.NetworkManager.Events.RequestFinished, requestFinished);
 
-  function requestFinished(event) {
+  async function requestFinished(event) {
     if (!event.data.url().endsWith('resources/image.png'))
       return;
 
-    var initiatorInfo = SDK.networkLog.initiatorInfoForRequest(event.data);
+    var initiatorInfo =
+        NetworkTestRunner.networkLog().initiatorInfoForRequest(event.data);
     var element = new Components.Linkifier().linkifyScriptLocation(
         TestRunner.mainTarget, initiatorInfo.scriptId, initiatorInfo.url, initiatorInfo.lineNumber,
         initiatorInfo.columnNumber - 1);
+    // Linkified script locations may contain an unresolved live locations.
+    await TestRunner.waitForPendingLiveLocationUpdates();
     TestRunner.addResult(element.textContent);
     TestRunner.completeTest();
   }

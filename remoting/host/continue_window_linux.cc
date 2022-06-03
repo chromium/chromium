@@ -21,6 +21,10 @@ namespace remoting {
 class ContinueWindowGtk : public ContinueWindow {
  public:
   ContinueWindowGtk();
+
+  ContinueWindowGtk(const ContinueWindowGtk&) = delete;
+  ContinueWindowGtk& operator=(const ContinueWindowGtk&) = delete;
+
   ~ContinueWindowGtk() override;
 
  protected:
@@ -34,8 +38,6 @@ class ContinueWindowGtk : public ContinueWindow {
   CHROMEG_CALLBACK_1(ContinueWindowGtk, void, OnResponse, GtkDialog*, int);
 
   GtkWidget* continue_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindowGtk);
 };
 
 ContinueWindowGtk::ContinueWindowGtk()

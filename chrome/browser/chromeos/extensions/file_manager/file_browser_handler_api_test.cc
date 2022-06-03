@@ -12,10 +12,10 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -25,6 +25,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/browser/extension_function_registry.h"
 #include "extensions/common/extension.h"
@@ -85,6 +86,10 @@ class MockFileSelector : public file_manager::FileSelector {
         success_(success),
         selected_path_(selected_path) {
   }
+
+  MockFileSelector(const MockFileSelector&) = delete;
+  MockFileSelector& operator=(const MockFileSelector&) = delete;
+
   ~MockFileSelector() override = default;
 
   // file_manager::FileSelector implementation.
@@ -125,8 +130,6 @@ class MockFileSelector : public file_manager::FileSelector {
   bool success_;
   // File path that should be returned to the function.
   base::FilePath selected_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileSelector);
 };
 
 // Mocks file selector factory for the test.
@@ -140,6 +143,10 @@ class MockFileSelectorFactory : public file_manager::FileSelectorFactory {
         success_(test_case.success),
         selected_path_(test_case.selected_path) {
   }
+
+  MockFileSelectorFactory(const MockFileSelectorFactory&) = delete;
+  MockFileSelectorFactory& operator=(const MockFileSelectorFactory&) = delete;
+
   ~MockFileSelectorFactory() override = default;
 
   // file_manager::FileSelectorFactory implementation.
@@ -159,8 +166,6 @@ class MockFileSelectorFactory : public file_manager::FileSelectorFactory {
   bool success_;
   // File path that should be returned to the function.
   base::FilePath selected_path_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockFileSelectorFactory);
 };
 
 // Extension api test for the fileBrowserHandler extension API.
@@ -179,11 +184,9 @@ class FileBrowserHandlerExtensionTest : public extensions::ExtensionApiTest {
 
   // Creates new, test mount point.
   void AddTmpMountPoint(const std::string& extension_id) {
-    BrowserContext::GetMountPoints(browser()->profile())
-        ->RegisterFileSystem("tmp",
-                             storage::kFileSystemTypeNativeLocal,
-                             storage::FileSystemMountOption(),
-                             tmp_mount_point_);
+    browser()->profile()->GetMountPoints()->RegisterFileSystem(
+        "tmp", storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        tmp_mount_point_);
   }
 
   base::FilePath GetFullPathOnTmpMountPoint(
@@ -281,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, EndToEnd) {
   extensions::ResultCatcher catcher;
 
   GURL url = extension->GetResourceURL("test.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   ASSERT_TRUE(catcher.GetNextResult()) << message_;
 
@@ -296,9 +299,8 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, EndToEnd) {
   const std::string kExpectedContents = "hello from test extension.";
   base::RunLoop run_loop;
   std::string contents;
-  base::PostTaskAndReply(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
       base::BindOnce(base::IgnoreResult(base::ReadFileToString), selected_path,
                      &contents),
       run_loop.QuitClosure());

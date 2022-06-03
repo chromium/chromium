@@ -5,6 +5,6 @@
 chrome.test.sendMessage('ready', function() {
   chrome.browserAction.setIcon({path: 'rectangle.png'}, function() {
     chrome.test.assertNoLastError();
-    chrome.test.succeed();
+    chrome.test.notifyPass();
   });
 });

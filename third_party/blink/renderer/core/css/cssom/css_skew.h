@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_SKEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_SKEW_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_component.h"
 
@@ -31,6 +30,8 @@ class CORE_EXPORT CSSSkew final : public CSSTransformComponent {
   static CSSSkew* FromCSSValue(const CSSFunctionValue&);
 
   CSSSkew(CSSNumericValue* ax, CSSNumericValue* ay);
+  CSSSkew(const CSSSkew&) = delete;
+  CSSSkew& operator=(const CSSSkew&) = delete;
 
   // Getters and setters for the ax and ay attributes defined in the IDL.
   CSSNumericValue* ax() { return ax_.Get(); }
@@ -49,7 +50,7 @@ class CORE_EXPORT CSSSkew final : public CSSTransformComponent {
   TransformComponentType GetType() const override { return kSkewType; }
   const CSSFunctionValue* ToCSSValue() const override;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(ax_);
     visitor->Trace(ay_);
     CSSTransformComponent::Trace(visitor);
@@ -58,9 +59,8 @@ class CORE_EXPORT CSSSkew final : public CSSTransformComponent {
  private:
   Member<CSSNumericValue> ax_;
   Member<CSSNumericValue> ay_;
-  DISALLOW_COPY_AND_ASSIGN(CSSSkew);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_SKEW_H_

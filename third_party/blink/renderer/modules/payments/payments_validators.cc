@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/modules/payments/payments_validators.h"
 
+#include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_regexp.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/modules/payments/address_errors.h"
-#include "third_party/blink/renderer/modules/payments/payer_errors.h"
-#include "third_party/blink/renderer/modules/payments/payment_validation_errors.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_address_errors.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payer_errors.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_validation_errors.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -26,7 +27,9 @@ static constexpr size_t kMaximumStringLength = 2 * 1024;
 bool PaymentsValidators::IsValidCurrencyCodeFormat(
     const String& code,
     String* optional_error_message) {
-  if (ScriptRegexp("^[A-Z]{3}$", kTextCaseUnicodeInsensitive).Match(code) == 0)
+  auto* regexp = MakeGarbageCollected<ScriptRegexp>(
+      "^[A-Z]{3}$", kTextCaseUnicodeInsensitive);
+  if (regexp->Match(code) == 0)
     return true;
 
   if (optional_error_message) {
@@ -41,8 +44,9 @@ bool PaymentsValidators::IsValidCurrencyCodeFormat(
 bool PaymentsValidators::IsValidAmountFormat(const String& amount,
                                              const String& item_name,
                                              String* optional_error_message) {
-  if (ScriptRegexp("^-?[0-9]+(\\.[0-9]+)?$", kTextCaseSensitive)
-          .Match(amount) == 0)
+  auto* regexp = MakeGarbageCollected<ScriptRegexp>("^-?[0-9]+(\\.[0-9]+)?$",
+                                                    kTextCaseSensitive);
+  if (regexp->Match(amount) == 0)
     return true;
 
   if (optional_error_message) {
@@ -56,7 +60,9 @@ bool PaymentsValidators::IsValidAmountFormat(const String& amount,
 bool PaymentsValidators::IsValidCountryCodeFormat(
     const String& code,
     String* optional_error_message) {
-  if (ScriptRegexp("^[A-Z]{2}$", kTextCaseSensitive).Match(code) == 0)
+  auto* regexp =
+      MakeGarbageCollected<ScriptRegexp>("^[A-Z]{2}$", kTextCaseSensitive);
+  if (regexp->Match(code) == 0)
     return true;
 
   if (optional_error_message)
@@ -147,9 +153,9 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
   if (!url.IsValid()) {
     // Syntax for a valid standardized PMI:
     // https://www.w3.org/TR/payment-method-id/#dfn-syntax-of-a-standardized-payment-method-identifier
-    return ScriptRegexp("^[a-z]+[0-9a-z]*(-[a-z]+[0-9a-z]*)*$",
-                        kTextCaseSensitive)
-               .Match(identifier) == 0;
+    auto* regexp = MakeGarbageCollected<ScriptRegexp>(
+        "^[a-z]+[0-9a-z]*(-[a-z]+[0-9a-z]*)*$", kTextCaseSensitive);
+    return regexp->Match(identifier) == 0;
   }
 
   // URL PMI validation rules:
@@ -157,27 +163,13 @@ bool PaymentsValidators::IsValidMethodFormat(const String& identifier) {
   if (!url.User().IsEmpty() || !url.Pass().IsEmpty())
     return false;
 
-  if (url.Protocol() == "https")
-    return true;
-
-  if (url.Protocol() != "http")
-    return false;
-
-  // Allow http://localhost for local development.
-  if (SecurityOrigin::Create(url)->IsLocalhost())
-    return true;
-
-  // Allow http:// origins from
-  // --unsafely-treat-insecure-origin-as-secure=<origin> for local development.
-  if (SecurityPolicy::IsUrlTrustworthySafelisted(url))
-    return true;
-
-  return false;
+  // TODO(http://crbug.com/1200225): Align this with the specification.
+  return url.ProtocolIsInHTTPFamily() &&
+         network::IsUrlPotentiallyTrustworthy(url);
 }
 
 void PaymentsValidators::ValidateAndStringifyObject(
     v8::Isolate* isolate,
-    const String& input_name,
     const ScriptValue& input,
     String& output,
     ExceptionState& exception_state) {
@@ -186,8 +178,8 @@ void PaymentsValidators::ValidateAndStringifyObject(
       !v8::JSON::Stringify(isolate->GetCurrentContext(),
                            input.V8Value().As<v8::Object>())
            .ToLocal(&value)) {
-    exception_state.ThrowTypeError(input_name +
-                                   " should be a JSON-serializable object");
+    exception_state.ThrowTypeError(
+        "PaymentRequest objects should be JSON-serializable objects");
     return;
   }
 
@@ -197,9 +189,10 @@ void PaymentsValidators::ValidateAndStringifyObject(
   static constexpr size_t kMaxJSONStringLength = 1024 * 1024;
 
   if (output.length() > kMaxJSONStringLength) {
-    exception_state.ThrowTypeError(String::Format(
-        "JSON serialization of %s should be no longer than %zu characters",
-        input_name.Characters8(), kMaxJSONStringLength));
+    exception_state.ThrowTypeError(
+        String::Format("JSON serialization of PaymentRequest objects should be "
+                       "no longer than %zu characters",
+                       kMaxJSONStringLength));
   }
 }
 

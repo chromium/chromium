@@ -10,7 +10,7 @@
 
 #include "third_party/libjingle_xmpp/task_runner/task.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "third_party/libjingle_xmpp/task_runner/taskrunner.h"
 
 namespace jingle_xmpp {

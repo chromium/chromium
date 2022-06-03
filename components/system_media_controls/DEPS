@@ -1,6 +1,8 @@
 include_rules = [
   "+components/dbus",
   "+dbus",
+  "+services/media_session/public/cpp/media_position.h",
+  "+skia/ext",
   "+third_party/skia",
   "+ui/gfx",
 ]

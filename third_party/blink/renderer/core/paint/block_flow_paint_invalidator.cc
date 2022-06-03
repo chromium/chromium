@@ -6,8 +6,10 @@
 
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_items.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/paint/box_paint_invalidator.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
+#include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_invalidator.h"
 
 namespace blink {
@@ -45,30 +47,32 @@ void BlockFlowPaintInvalidator::InvalidateDisplayItemClients(
   ObjectPaintInvalidator object_paint_invalidator(block_flow_);
   object_paint_invalidator.InvalidateDisplayItemClient(block_flow_, reason);
 
-  const NGPaintFragment* paint_fragment = block_flow_.PaintFragment();
-  if (paint_fragment) {
-    object_paint_invalidator.InvalidateDisplayItemClient(*paint_fragment,
-                                                         reason);
-  }
+  NGInlineCursor cursor(block_flow_);
+  if (cursor) {
+    // Line boxes record hit test data (see NGBoxFragmentPainter::PaintLineBox)
+    // and should be invalidated if they change.
+    bool invalidate_all_lines = block_flow_.HasEffectiveAllowedTouchAction() ||
+                                block_flow_.InsideBlockingWheelEventHandler();
 
-  // PaintInvalidationRectangle happens when we invalidate the caret.
-  // The later conditions don't apply when we invalidate the caret or the
-  // selection.
-  if (reason == PaintInvalidationReason::kRectangle ||
-      reason == PaintInvalidationReason::kSelection)
-    return;
-
-  // It's the RootInlineBox that paints the ::first-line background. Note that
-  // since it may be expensive to figure out if the first line is affected by
-  // any ::first-line selectors at all, we just invalidate it unconditionally
-  // which is typically cheaper.
-  if (RootInlineBox* line = block_flow_.FirstRootBox()) {
-    if (line->IsFirstLineStyle()) {
-      object_paint_invalidator.InvalidateDisplayItemClient(*line, reason);
+    for (cursor.MoveToFirstLine(); cursor; cursor.MoveToNextLine()) {
+      // The first line NGLineBoxFragment paints the ::first-line background.
+      // Because it may be expensive to figure out if the first line is affected
+      // by any ::first-line selectors at all, we just invalidate
+      // unconditionally which is typically cheaper.
+      if (invalidate_all_lines || cursor.Current().UsesFirstLineStyle()) {
+        DCHECK(cursor.Current().GetDisplayItemClient());
+        object_paint_invalidator.InvalidateDisplayItemClient(
+            *cursor.Current().GetDisplayItemClient(), reason);
+      }
+      if (!invalidate_all_lines)
+        break;
     }
-  } else if (paint_fragment) {
-    NGPaintFragment* line = paint_fragment->FirstLineBox();
-    if (line && line->PhysicalFragment().UsesFirstLineStyle()) {
+  } else if (RootInlineBox* line = block_flow_.FirstRootBox()) {
+    // It's the RootInlineBox that paints the ::first-line background. Note that
+    // since it may be expensive to figure out if the first line is affected by
+    // any ::first-line selectors at all, we just invalidate it unconditionally
+    // which is typically cheaper.
+    if (line->IsFirstLineStyle()) {
       object_paint_invalidator.InvalidateDisplayItemClient(*line, reason);
     }
   }

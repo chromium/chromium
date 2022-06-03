@@ -9,104 +9,18 @@
 #include <utility>
 #include <vector>
 
-#include "base/base64.h"
 #include "content/browser/devtools/devtools_agent_host_impl.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/back_forward_cache_disable.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/security_style_explanations.h"
-#include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "net/cert/x509_certificate.h"
-#include "net/cert/x509_util.h"
-#include "third_party/blink/public/platform/web_mixed_content_context_type.h"
 
 namespace content {
 namespace protocol {
-
-using Explanations = protocol::Array<Security::SecurityStateExplanation>;
-
-namespace {
-
-std::string SecurityStyleToProtocolSecurityState(
-    blink::SecurityStyle security_style) {
-  switch (security_style) {
-    case blink::SecurityStyle::kUnknown:
-      return Security::SecurityStateEnum::Unknown;
-    case blink::SecurityStyle::kNeutral:
-      return Security::SecurityStateEnum::Neutral;
-    case blink::SecurityStyle::kInsecure:
-      return Security::SecurityStateEnum::Insecure;
-    case blink::SecurityStyle::kSecure:
-      return Security::SecurityStateEnum::Secure;
-    case blink::SecurityStyle::kInsecureBroken:
-      return Security::SecurityStateEnum::InsecureBroken;
-    default:
-      NOTREACHED();
-      return Security::SecurityStateEnum::Unknown;
-  }
-}
-
-std::string MixedContentTypeToProtocolMixedContentType(
-    blink::WebMixedContentContextType mixed_content_type) {
-  switch (mixed_content_type) {
-    case blink::WebMixedContentContextType::kNotMixedContent:
-      return Security::MixedContentTypeEnum::None;
-    case blink::WebMixedContentContextType::kBlockable:
-      return Security::MixedContentTypeEnum::Blockable;
-    case blink::WebMixedContentContextType::kOptionallyBlockable:
-      return Security::MixedContentTypeEnum::OptionallyBlockable;
-    case blink::WebMixedContentContextType::kShouldBeBlockable:
-      // kShouldBeBlockable is not used for explanations.
-      NOTREACHED();
-      return Security::MixedContentTypeEnum::OptionallyBlockable;
-    default:
-      NOTREACHED();
-      return Security::MixedContentTypeEnum::None;
-  }
-}
-
-void AddExplanations(
-    const std::string& security_style,
-    const std::vector<SecurityStyleExplanation>& explanations_to_add,
-    Explanations* explanations) {
-  for (const auto& it : explanations_to_add) {
-    auto certificate = std::make_unique<protocol::Array<String>>();
-    if (it.certificate) {
-      certificate->emplace_back();
-      base::Base64Encode(net::x509_util::CryptoBufferAsStringPiece(
-                             it.certificate->cert_buffer()),
-                         &certificate->back());
-
-      for (const auto& cert : it.certificate->intermediate_buffers()) {
-        certificate->emplace_back();
-        base::Base64Encode(
-            net::x509_util::CryptoBufferAsStringPiece(cert.get()),
-            &certificate->back());
-      }
-    }
-
-    auto recommendations =
-        std::make_unique<protocol::Array<String>>(it.recommendations);
-
-    explanations->emplace_back(
-        Security::SecurityStateExplanation::Create()
-            .SetSecurityState(security_style)
-            .SetTitle(it.title)
-            .SetSummary(it.summary)
-            .SetDescription(it.description)
-            .SetCertificate(std::move(certificate))
-            .SetMixedContentType(MixedContentTypeToProtocolMixedContentType(
-                it.mixed_content_type))
-            .SetRecommendations(std::move(recommendations))
-            .Build());
-  }
-}
-
-}  // namespace
 
 // static
 std::vector<SecurityHandler*> SecurityHandler::ForAgentHost(
@@ -120,11 +34,10 @@ SecurityHandler::SecurityHandler()
       host_(nullptr) {
 }
 
-SecurityHandler::~SecurityHandler() {
-}
+SecurityHandler::~SecurityHandler() = default;
 
 void SecurityHandler::Wire(UberDispatcher* dispatcher) {
-  frontend_.reset(new Security::Frontend(dispatcher->channel()));
+  frontend_ = std::make_unique<Security::Frontend>(dispatcher->channel());
   Security::Dispatcher::wire(dispatcher, this);
 }
 
@@ -145,61 +58,12 @@ void SecurityHandler::SetRenderer(int process_host_id,
     AttachToRenderFrameHost();
 }
 
-void SecurityHandler::DidChangeVisibleSecurityState() {
-  DCHECK(enabled_);
-  if (!web_contents()->GetDelegate())
-    return;
-
-  SecurityStyleExplanations security_style_explanations;
-  blink::SecurityStyle security_style =
-      web_contents()->GetDelegate()->GetSecurityStyle(
-          web_contents(), &security_style_explanations);
-
-  const std::string security_state =
-      SecurityStyleToProtocolSecurityState(security_style);
-
-  auto explanations = std::make_unique<Explanations>();
-  AddExplanations(Security::SecurityStateEnum::Insecure,
-                  security_style_explanations.insecure_explanations,
-                  explanations.get());
-  AddExplanations(Security::SecurityStateEnum::Neutral,
-                  security_style_explanations.neutral_explanations,
-                  explanations.get());
-  AddExplanations(Security::SecurityStateEnum::Secure,
-                  security_style_explanations.secure_explanations,
-                  explanations.get());
-  AddExplanations(Security::SecurityStateEnum::Info,
-                  security_style_explanations.info_explanations,
-                  explanations.get());
-
-  // We can set everything to default values because this field is ignored by
-  // the frontend, though it's still required by the protocol. Once the field is
-  // deleted in the protocol, we can delete it here.
-  std::unique_ptr<Security::InsecureContentStatus> insecure_status =
-      Security::InsecureContentStatus::Create()
-          .SetRanMixedContent(false)
-          .SetDisplayedMixedContent(false)
-          .SetContainedMixedForm(false)
-          .SetRanContentWithCertErrors(false)
-          .SetDisplayedContentWithCertErrors(false)
-          .SetRanInsecureContentStyle(Security::SecurityStateEnum::Unknown)
-          .SetDisplayedInsecureContentStyle(
-              Security::SecurityStateEnum::Unknown)
-          .Build();
-
-  frontend_->SecurityStateChanged(
-      security_state,
-      security_style_explanations.scheme_is_cryptographic,
-      std::move(explanations),
-      std::move(insecure_status),
-      Maybe<std::string>(security_style_explanations.summary));
-}
-
 void SecurityHandler::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (cert_error_override_mode_ == CertErrorOverrideMode::kHandleEvents) {
     BackForwardCache::DisableForRenderFrameHost(
         navigation_handle->GetPreviousRenderFrameHostId(),
-        "content::protocol::SecurityHandler");
+        BackForwardCacheDisable::DisabledReason(
+            BackForwardCacheDisable::DisabledReasonId::kSecurityHandler));
     FlushPendingCertificateErrorNotifications();
   }
 }
@@ -242,7 +106,7 @@ Response SecurityHandler::Enable() {
   if (host_)
     AttachToRenderFrameHost();
 
-  return Response::OK();
+  return Response::Success();
 }
 
 Response SecurityHandler::Disable() {
@@ -250,25 +114,25 @@ Response SecurityHandler::Disable() {
   cert_error_override_mode_ = CertErrorOverrideMode::kDisabled;
   WebContentsObserver::Observe(nullptr);
   FlushPendingCertificateErrorNotifications();
-  return Response::OK();
+  return Response::Success();
 }
 
 Response SecurityHandler::HandleCertificateError(int event_id,
                                                  const String& action) {
   if (cert_error_callbacks_.find(event_id) == cert_error_callbacks_.end()) {
-    return Response::Error(
+    return Response::ServerError(
         String("Unknown event id: " + std::to_string(event_id)));
   }
   content::CertificateRequestResultType type =
       content::CERTIFICATE_REQUEST_RESULT_TYPE_CANCEL;
-  Response response = Response::OK();
+  Response response = Response::Success();
   if (action == Security::CertificateErrorActionEnum::Continue) {
     type = content::CERTIFICATE_REQUEST_RESULT_TYPE_CONTINUE;
   } else if (action == Security::CertificateErrorActionEnum::Cancel) {
     type = content::CERTIFICATE_REQUEST_RESULT_TYPE_CANCEL;
   } else {
-    response =
-        Response::Error(String("Unknown Certificate Error Action: " + action));
+    response = Response::ServerError(
+        String("Unknown Certificate Error Action: " + action));
   }
   std::move(cert_error_callbacks_[event_id]).Run(type);
   cert_error_callbacks_.erase(event_id);
@@ -278,26 +142,28 @@ Response SecurityHandler::HandleCertificateError(int event_id,
 Response SecurityHandler::SetOverrideCertificateErrors(bool override) {
   if (override) {
     if (!enabled_)
-      return Response::Error("Security domain not enabled");
+      return Response::ServerError("Security domain not enabled");
     if (cert_error_override_mode_ == CertErrorOverrideMode::kIgnoreAll)
-      return Response::Error("Certificate errors are already being ignored.");
+      return Response::ServerError(
+          "Certificate errors are already being ignored.");
     cert_error_override_mode_ = CertErrorOverrideMode::kHandleEvents;
   } else {
     cert_error_override_mode_ = CertErrorOverrideMode::kDisabled;
     FlushPendingCertificateErrorNotifications();
   }
-  return Response::OK();
+  return Response::Success();
 }
 
 Response SecurityHandler::SetIgnoreCertificateErrors(bool ignore) {
   if (ignore) {
     if (cert_error_override_mode_ == CertErrorOverrideMode::kHandleEvents)
-      return Response::Error("Certificate errors are already overridden.");
+      return Response::ServerError(
+          "Certificate errors are already overridden.");
     cert_error_override_mode_ = CertErrorOverrideMode::kIgnoreAll;
   } else {
     cert_error_override_mode_ = CertErrorOverrideMode::kDisabled;
   }
-  return Response::OK();
+  return Response::Success();
 }
 
 }  // namespace protocol

@@ -6,15 +6,13 @@
 
 #include <memory>
 
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/threading/thread_checker.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
-#include "gpu/command_buffer/service/texture_manager.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/scoped_binders.h"
 
@@ -28,12 +26,12 @@ class GLES2DecoderHelperImpl : public GLES2DecoderHelper {
       : decoder_(decoder) {
     DCHECK(decoder_);
     gpu::gles2::ContextGroup* group = decoder_->GetContextGroup();
-    texture_manager_ = group->texture_manager();
     mailbox_manager_ = group->mailbox_manager();
-    // TODO(sandersd): Support GLES2DecoderPassthroughImpl.
-    DCHECK(texture_manager_);
     DCHECK(mailbox_manager_);
   }
+
+  GLES2DecoderHelperImpl(const GLES2DecoderHelperImpl&) = delete;
+  GLES2DecoderHelperImpl& operator=(const GLES2DecoderHelperImpl&) = delete;
 
   bool MakeContextCurrent() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -97,11 +95,8 @@ class GLES2DecoderHelperImpl : public GLES2DecoderHelper {
 
  private:
   gpu::DecoderContext* decoder_;
-  gpu::gles2::TextureManager* texture_manager_;
   gpu::MailboxManager* mailbox_manager_;
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(GLES2DecoderHelperImpl);
 };
 
 // static

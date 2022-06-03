@@ -4,6 +4,35 @@
 
 import("//testing/test.gni")
 
+component("ukm_recorder") {
+  output_name = "ukm_recorder"
+
+  defines = [ "IS_UKM_RECORDER_IMPL" ]
+
+  friend = [
+    ":test_support",
+    ":unit_tests",
+  ]
+
+  sources = [
+    "scheme_constants.cc",
+    "scheme_constants.h",
+    "ukm_entry_filter.h",
+    "ukm_recorder_impl.cc",
+    "ukm_recorder_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/variations",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/metrics/public/mojom",
+    "//third_party/metrics_proto",
+    "//url",
+  ]
+}
+
 # The Url-Keyed Metrics (UKM) service is responsible for gathering and
 # uploading reports that contain fine grained performance metrics including
 # URLs for top-level navigations.
@@ -11,12 +40,10 @@ static_library("ukm") {
   sources = [
     "app_source_url_recorder.cc",
     "app_source_url_recorder.h",
-    "scheme_constants.cc",
-    "scheme_constants.h",
+    "field_trials_provider_helper.cc",
+    "field_trials_provider_helper.h",
     "ukm_pref_names.cc",
     "ukm_pref_names.h",
-    "ukm_recorder_impl.cc",
-    "ukm_recorder_impl.h",
     "ukm_reporting_service.cc",
     "ukm_reporting_service.h",
     "ukm_rotation_scheduler.cc",
@@ -28,6 +55,7 @@ static_library("ukm") {
   ]
 
   public_deps = [
+    ":ukm_recorder",
     "//services/metrics/public/cpp:metrics_cpp",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
@@ -42,6 +70,9 @@ static_library("ukm") {
     "//components/variations",
     "//url",
   ]
+  if (is_ios) {
+    deps += [ "//components/ukm/ios:ukm_reporting_ios_util" ]
+  }
 }
 
 # Helper library for observing signals that we need to clear any local data.
@@ -56,13 +87,12 @@ static_library("observers") {
   deps = [
     "//base",
     "//components/history/core/browser",
-    "//components/sync",
+    "//components/sync/base",
+    "//components/sync/driver",
     "//google_apis",
   ]
 
-  public_deps = [
-    "//components/unified_consent",
-  ]
+  public_deps = [ "//components/unified_consent" ]
 }
 
 static_library("test_support") {
@@ -120,5 +150,20 @@ test("ukm_unittests") {
     "//base",
     "//base/test:test_support",
     "//components/test:run_all_unittests",
+  ]
+}
+
+static_library("ukm_test_helper") {
+  testonly = true
+  sources = [
+    "ukm_test_helper.cc",
+    "ukm_test_helper.h",
+  ]
+  deps = [
+    ":ukm",
+    "//base",
+    "//components/metrics",
+    "//services/metrics/public/cpp:metrics_cpp",
+    "//third_party/metrics_proto",
   ]
 }

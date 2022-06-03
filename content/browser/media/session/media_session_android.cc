@@ -38,9 +38,13 @@ MediaSessionAndroid::MediaSessionAndroid(MediaSessionImpl* session)
       Java_MediaSessionImpl_create(env, reinterpret_cast<intptr_t>(this));
   j_media_session_ = JavaObjectWeakGlobalRef(env, j_media_session);
 
-  WebContentsAndroid* contents_android = GetWebContentsAndroid();
-  if (contents_android)
-    contents_android->SetMediaSession(j_media_session);
+  WebContentsImpl* contents =
+      static_cast<WebContentsImpl*>(media_session_->web_contents());
+  if (contents) {
+    web_contents_android_ = contents->GetWebContentsAndroid();
+    DCHECK(web_contents_android_);
+    web_contents_android_->SetMediaSession(j_media_session);
+  }
 
   session->AddObserver(observer_receiver_.BindNewPipeAndPassRemote());
 }
@@ -54,10 +58,6 @@ MediaSessionAndroid::~MediaSessionAndroid() {
     Java_MediaSessionImpl_mediaSessionDestroyed(env, j_local_session);
 
   j_media_session_.reset();
-
-  WebContentsAndroid* contents_android = GetWebContentsAndroid();
-  if (contents_android)
-    contents_android->SetMediaSession(nullptr);
 }
 
 // static
@@ -71,7 +71,7 @@ ScopedJavaLocalRef<jobject> JNI_MediaSessionImpl_GetMediaSessionFromWebContents(
   MediaSessionImpl* session = MediaSessionImpl::Get(contents);
   DCHECK(session);
   return MediaSessionAndroid::JavaObjectGetter::GetJavaObject(
-      session->session_android());
+      session->GetMediaSessionAndroid());
 }
 
 void MediaSessionAndroid::MediaSessionInfoChanged(
@@ -80,15 +80,27 @@ void MediaSessionAndroid::MediaSessionInfoChanged(
   if (j_local_session.is_null())
     return;
 
+  bool is_paused = session_info->playback_state ==
+                   media_session::mojom::MediaPlaybackState::kPaused;
+
+  // The media session info changed event might be called more often than we
+  // need to notify Android since we only need a couple of bits of data.
+  // Therefore, we only notify Android if the bits have changed.
+  if (is_paused == is_paused_ &&
+      is_controllable_ == session_info->is_controllable) {
+    return;
+  }
+
+  is_paused_ = is_paused;
+  is_controllable_ = session_info->is_controllable;
+
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MediaSessionImpl_mediaSessionStateChanged(
-      env, j_local_session, session_info->is_controllable,
-      session_info->playback_state ==
-          media_session::mojom::MediaPlaybackState::kPaused);
+      env, j_local_session, session_info->is_controllable, is_paused);
 }
 
 void MediaSessionAndroid::MediaSessionMetadataChanged(
-    const base::Optional<media_session::MediaMetadata>& metadata) {
+    const absl::optional<media_session::MediaMetadata>& metadata) {
   ScopedJavaLocalRef<jobject> j_local_session = GetJavaObject();
   if (j_local_session.is_null())
     return;
@@ -145,7 +157,7 @@ void MediaSessionAndroid::MediaSessionImagesChanged(
 }
 
 void MediaSessionAndroid::MediaSessionPositionChanged(
-    const base::Optional<media_session::MediaPosition>& position) {
+    const absl::optional<media_session::MediaPosition>& position) {
   ScopedJavaLocalRef<jobject> j_local_session = GetJavaObject();
   if (j_local_session.is_null())
     return;
@@ -189,7 +201,7 @@ void MediaSessionAndroid::Seek(
   DCHECK(media_session_);
   DCHECK_NE(millis, 0)
       << "Attempted to seek by a missing number of milliseconds";
-  media_session_->Seek(base::TimeDelta::FromMilliseconds(millis));
+  media_session_->Seek(base::Milliseconds(millis));
 }
 
 void MediaSessionAndroid::SeekTo(
@@ -197,8 +209,8 @@ void MediaSessionAndroid::SeekTo(
     const base::android::JavaParamRef<jobject>& j_obj,
     const jlong millis) {
   DCHECK(media_session_);
-  DCHECK_GT(millis, 0) << "Attempted to seek to a negative position";
-  media_session_->SeekTo(base::TimeDelta::FromMilliseconds(millis));
+  DCHECK_GE(millis, 0) << "Attempted to seek to a negative position";
+  media_session_->SeekTo(base::Milliseconds(millis));
 }
 
 void MediaSessionAndroid::DidReceiveAction(JNIEnv* env,
@@ -214,14 +226,6 @@ void MediaSessionAndroid::RequestSystemAudioFocus(
   DCHECK(media_session_);
   media_session_->RequestSystemAudioFocus(
       media_session::mojom::AudioFocusType::kGain);
-}
-
-WebContentsAndroid* MediaSessionAndroid::GetWebContentsAndroid() {
-  WebContentsImpl* contents =
-      static_cast<WebContentsImpl*>(media_session_->web_contents());
-  if (!contents)
-    return nullptr;
-  return contents->GetWebContentsAndroid();
 }
 
 ScopedJavaLocalRef<jobject> MediaSessionAndroid::GetJavaObject() {

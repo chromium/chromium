@@ -17,7 +17,7 @@ android_apk("spnego_authenticator_apk") {
     "//net/android:net_java",
   ]
 
-  java_files = [
+  sources = [
     "src/org/chromium/tools/spnegoauthenticator/AccountData.java",
     "src/org/chromium/tools/spnegoauthenticator/Constants.java",
     "src/org/chromium/tools/spnegoauthenticator/SpnegoAuthenticator.java",
@@ -28,6 +28,15 @@ android_apk("spnego_authenticator_apk") {
 
 android_resources("spnego_authenticator_apk_assets") {
   testonly = true
-  resource_dirs = [ "res" ]
+  sources = [
+    "res/layout/activity_account_authenticator.xml",
+    "res/mipmap-hdpi/ic_launcher.png",
+    "res/mipmap-mdpi/ic_launcher.png",
+    "res/mipmap-xhdpi/ic_launcher.png",
+    "res/mipmap-xxhdpi/ic_launcher.png",
+    "res/values/strings.xml",
+    "res/xml/spnego_account_preferences.xml",
+    "res/xml/spnego_authenticator.xml",
+  ]
   android_manifest = "AndroidManifest.xml"
 }

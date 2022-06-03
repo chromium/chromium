@@ -32,9 +32,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SERVICE_WORKER_EXTENDABLE_EVENT_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_extendable_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/service_worker/extendable_event_init.h"
 
 namespace blink {
 
@@ -59,7 +59,7 @@ class MODULES_EXPORT ExtendableEvent : public Event {
   void waitUntil(ScriptState*, ScriptPromise, ExceptionState&);
 
   const AtomicString& InterfaceName() const override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   Member<WaitUntilObserver> observer_;

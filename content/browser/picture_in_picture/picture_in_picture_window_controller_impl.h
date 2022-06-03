@@ -10,59 +10,84 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "media/mojo/mojom/media_player.mojom.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "third_party/blink/public/mojom/picture_in_picture/picture_in_picture.mojom.h"
 
 namespace content {
 
-class MediaWebContentsObserver;
+class PictureInPictureServiceImpl;
 class PictureInPictureSession;
 class WebContents;
 class WebContentsImpl;
+enum class PictureInPictureResult;
 
-// TODO(thakis,mlamouri): PictureInPictureWindowControllerImpl isn't
-// CONTENT_EXPORT'd because it creates complicated build issues with
-// WebContentsUserData being a non-exported template. As a result, the class
-// uses CONTENT_EXPORT for methods that are being used from tests.
-// CONTENT_EXPORT should be moved back to the class when the Windows build will
-// work with it. https://crbug.com/589840.
-class PictureInPictureWindowControllerImpl
+// PictureInPictureWindowControllerImpl is the corner stone of the
+// Picture-in-Picture feature in the //content layer. It handles the session
+// creation requests (sent by the PictureInPictureServiceImpl), owns the session
+// object and therefore handles its lifetime, and communicate with the rest of
+// the browser. Requests to the WebContents are sent by the controller and it
+// gets notified when the browser needs it to update the Picture-in-Picture
+// session.
+// The PictureInPictureWindowControllerImpl is managing Picture-in-Picture at a
+// WebContents level. If multiple calls request a Picture-in-Picture session
+// either in the same frame or in different frames, the controller will handle
+// creating the new session, stopping the current one and making sure the window
+// is kept around when possible.
+class CONTENT_EXPORT PictureInPictureWindowControllerImpl
     : public PictureInPictureWindowController,
       public WebContentsUserData<PictureInPictureWindowControllerImpl>,
       public WebContentsObserver {
  public:
-  // Gets a reference to the controller associated with |initiator| and creates
-  // one if it does not exist. The returned pointer is guaranteed to be
+  // Gets a reference to the controller associated with |web_contents| and
+  // creates one if it does not exist. The returned pointer is guaranteed to be
   // non-null.
-  CONTENT_EXPORT static PictureInPictureWindowControllerImpl*
-  GetOrCreateForWebContents(WebContents* initiator);
+  static PictureInPictureWindowControllerImpl* GetOrCreateForWebContents(
+      WebContents* web_contents);
+
+  PictureInPictureWindowControllerImpl(
+      const PictureInPictureWindowControllerImpl&) = delete;
+  PictureInPictureWindowControllerImpl& operator=(
+      const PictureInPictureWindowControllerImpl&) = delete;
 
   ~PictureInPictureWindowControllerImpl() override;
 
   using PlayerSet = std::set<int>;
 
   // PictureInPictureWindowController:
-  CONTENT_EXPORT void Show() override;
-  CONTENT_EXPORT void Close(bool should_pause_video) override;
-  CONTENT_EXPORT void CloseAndFocusInitiator() override;
-  CONTENT_EXPORT void OnWindowDestroyed() override;
-  CONTENT_EXPORT OverlayWindow* GetWindowForTesting() override;
-  CONTENT_EXPORT void UpdateLayerBounds() override;
-  CONTENT_EXPORT bool IsPlayerActive() override;
-  CONTENT_EXPORT WebContents* GetInitiatorWebContents() override;
-  CONTENT_EXPORT bool TogglePlayPause() override;
-  CONTENT_EXPORT void UpdatePlaybackState(bool is_playing,
-                                          bool reached_end_of_stream) override;
-  CONTENT_EXPORT void SetAlwaysHidePlayPauseButton(bool is_visible) override;
-  CONTENT_EXPORT void SkipAd() override;
-  CONTENT_EXPORT void NextTrack() override;
-  CONTENT_EXPORT void PreviousTrack() override;
+  void Show() override;
+  void FocusInitiator() override;
+  void Close(bool should_pause_video) override;
+  void CloseAndFocusInitiator() override;
+  void OnWindowDestroyed(bool should_pause_video) override;
+  OverlayWindow* GetWindowForTesting() override;
+  void UpdateLayerBounds() override;
+  bool IsPlayerActive() override;
+  WebContents* GetWebContents() override;
+  bool TogglePlayPause() override;
+  void SkipAd() override;
+  void NextTrack() override;
+  void PreviousTrack() override;
+  void ToggleMicrophone() override;
+  void ToggleCamera() override;
+  void HangUp() override;
 
-  CONTENT_EXPORT void MediaSessionActionsChanged(
+  // Called by the MediaSessionImpl when the MediaSessionInfo changes.
+  void MediaSessionInfoChanged(
+      const media_session::mojom::MediaSessionInfoPtr& info);
+
+  void MediaSessionActionsChanged(
       const std::set<media_session::mojom::MediaSessionAction>& actions);
+
+  void MediaSessionPositionChanged(
+      const absl::optional<media_session::MediaPosition>& media_position);
 
   gfx::Size GetSize();
 
@@ -72,29 +97,49 @@ class PictureInPictureWindowControllerImpl
   void MediaStoppedPlaying(const MediaPlayerInfo&,
                            const MediaPlayerId&,
                            WebContentsObserver::MediaStoppedReason) override;
-
-  // TODO(mlamouri): temporary method used because of the media player id is
-  // stored in a different location from the one that is used to update the
-  // state of this object.
-  void UpdateMediaPlayerId();
+  void WebContentsDestroyed() override;
 
   // Embeds a surface in the Picture-in-Picture window.
   void EmbedSurface(const viz::SurfaceId& surface_id,
                     const gfx::Size& natural_size);
 
-  // Sets the active Picture-in-Picture session associated with the controller.
-  // This is different from the service's active session as there is one
-  // controller per WebContents and one service per RenderFrameHost.
-  // The current session may be shut down as a side effect of this.
-  void SetActiveSession(PictureInPictureSession* session);
+  void SetShowPlayPauseButton(bool show_play_pause_button);
+
+  // Called by PictureInPictureServiceImpl when a session request is received.
+  // The call should return the |session_remote| and |window_size| as out
+  // params. A failure to create the session should be expressed with an empty
+  // |window_size| and uninitialized |session_remote|.
+  // Returns whether the session creation was successful.
+  PictureInPictureResult StartSession(
+      PictureInPictureServiceImpl* service,
+      const MediaPlayerId&,
+      mojo::PendingAssociatedRemote<media::mojom::MediaPlayer> player_remote,
+      const viz::SurfaceId& surface_id,
+      const gfx::Size& natural_size,
+      bool show_play_pause_button,
+      mojo::PendingRemote<blink::mojom::PictureInPictureSessionObserver>,
+      mojo::PendingRemote<blink::mojom::PictureInPictureSession>*
+          session_remote,
+      gfx::Size* window_size);
+
+  // Called by PictureInPictureServiceImpl when the service is about to be
+  // destroyed. It allows |this| to close the |active_session_| if it is
+  // associated with the service.
+  void OnServiceDeleted(PictureInPictureServiceImpl* service);
+
+  PictureInPictureSession* active_session_for_testing() const {
+    return active_session_.get();
+  }
 
  private:
   friend class WebContentsUserData<PictureInPictureWindowControllerImpl>;
 
   // Use PictureInPictureWindowControllerImpl::GetOrCreateForWebContents() to
   // create an instance.
-  CONTENT_EXPORT explicit PictureInPictureWindowControllerImpl(
-      WebContents* initiator);
+  explicit PictureInPictureWindowControllerImpl(WebContents* web_contents);
+
+  // Recompute the playback state and update the window accordingly.
+  void UpdatePlaybackState();
 
   // Signal to the media player that |this| is leaving Picture-in-Picture mode.
   void OnLeavingPictureInPicture(bool should_pause_video);
@@ -112,15 +157,10 @@ class PictureInPictureWindowControllerImpl
   // always_hide_play_pause_button_ is false.
   void UpdatePlayPauseButtonVisibility();
 
+  // Returns the web_contents() as a WebContentsImpl*.
+  WebContentsImpl* GetWebContentsImpl();
+
   std::unique_ptr<OverlayWindow> window_;
-
-  // TODO(929156): remove this as it should be accessible via `web_contents()`.
-  WebContentsImpl* const initiator_;
-
-  // Used to determine the state of the media player and route messages to
-  // the corresponding media player with id |media_player_id_|.
-  MediaWebContentsObserver* media_web_contents_observer_;
-  base::Optional<MediaPlayerId> media_player_id_;
 
   viz::SurfaceId surface_id_;
 
@@ -131,21 +171,31 @@ class PictureInPictureWindowControllerImpl
   bool media_session_action_skip_ad_handled_ = false;
   bool media_session_action_next_track_handled_ = false;
   bool media_session_action_previous_track_handled_ = false;
+  bool media_session_action_toggle_microphone_handled_ = false;
+  bool media_session_action_toggle_camera_handled_ = false;
+  bool media_session_action_hang_up_handled_ = false;
+
+  // Tracks the current microphone state.
+  bool microphone_muted_ = false;
+
+  // Tracks the current camera state.
+  bool camera_turned_on_ = false;
 
   // Used to hide play/pause button if video is a MediaStream or has infinite
   // duration. Play/pause button visibility can be overridden by the Media
   // Session API in UpdatePlayPauseButtonVisibility().
-  bool always_hide_play_pause_button_ = false;
+  bool always_show_play_pause_button_ = false;
 
   // Session currently associated with the Picture-in-Picture window. The
   // session object makes the bridge with the renderer process by handling
   // requests and holding states such as the active player id.
   // The session will be nullptr when there is no active session.
-  PictureInPictureSession* active_session_ = nullptr;
+  std::unique_ptr<PictureInPictureSession> active_session_;
+
+  // The media position info as last reported to us by MediaSessionImpl.
+  absl::optional<media_session::MediaPosition> media_position_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(PictureInPictureWindowControllerImpl);
 };
 
 }  // namespace content

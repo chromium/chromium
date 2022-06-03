@@ -25,18 +25,6 @@
             "value": ["networkPredictionEnabled", {"type":"boolean"}],
             "description": "If enabled, Chrome attempts to speed up your web browsing experience by pre-resolving DNS entries and preemptively opening TCP and SSL connections to servers. This preference only affects actions taken by Chrome's internal prediction service. It does not affect webpage-initiated prefectches or preconnects. This preference's value is a boolean, defaulting to <code>true</code>."
           },
-          "webRTCMultipleRoutesEnabled": {
-            "$ref": "types.ChromeSetting",
-            "value": ["webRTCMultipleRoutesEnabled", {"type":"boolean"}],
-            "deprecated": "Please use privacy.network.webRTCIPHandlingPolicy. This remains for backward compatibility in this release and will be removed in the future.",
-            "description": "If enabled, Chrome will explore all possible routing options when using WebRTC to find the most performant path, possibly exposing user's private IP address. Otherwise, WebRTC traffic will be routed the same way as regular HTTP. This preference's value is a boolean, defaulting to <code>true</code>."
-          },
-          "webRTCNonProxiedUdpEnabled": {
-            "$ref": "types.ChromeSetting",
-            "value": ["webRTCNonProxiedUdpEnabled", {"type":"boolean"}],
-            "deprecated": "Please use privacy.network.webRTCIPHandlingPolicy. This remains for backward compatibility in this release and will be removed in the future.",
-            "description": "If enabled, Chrome is allowed to use non-proxied UDP to connect to peers or TURN servers when using WebRTC. Since most proxy servers don't handle UDP, using UDP possibly exposes user's IP address. Turning this off effectively forces WebRTC to only use TCP for now, until UDP proxy support is available in Chrome and such proxies are widely deployed. As a result, it also might hurt media performance and increase the load for proxy servers. This preference's value is a boolean, defaulting to <code>true</code>."
-          },
           "webRTCIPHandlingPolicy": {
             "$ref": "types.ChromeSetting",
             "value": ["webRTCIPHandlingPolicy", {"$ref":"IPHandlingPolicy"}],
@@ -111,6 +99,11 @@
             "$ref": "types.ChromeSetting",
             "value": ["thirdPartyCookiesAllowed", {"type": "boolean"}],
             "description": "If disabled, Chrome blocks third-party sites from setting cookies. The value of this preference is of type boolean, and the default value is <code>true</code>."
+          },
+          "privacySandboxEnabled": {
+            "$ref": "types.ChromeSetting",
+            "value": ["privacySandboxEnabled", {"type": "boolean"}],
+            "description": "If enabled, the experimental <a href=”https://www.chromium.org/Home/chromium-privacy/privacy-sandbox”>Privacy Sandbox</a> features are active. The value of this preference is of type boolean, and the default value is <code>true</code>. PLEASE NOTE: The schema of this API may change in the future as the Privacy Sandbox features crystallize. In that case, we will provide prior notice."
           },
           "hyperlinkAuditingEnabled": {
             "$ref": "types.ChromeSetting",

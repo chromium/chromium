@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'This should not be visible'",
-          "rect": [49, 109, 164, 21],
-          "reason": "disappeared"
-        },
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [0, 0, 21, 21],
-          "reason": "disappeared"
-        }
+      "invalidations": [
+        [49, 109, 164, 21],
+        [0, 0, 21, 21]
       ]
     }
   ]

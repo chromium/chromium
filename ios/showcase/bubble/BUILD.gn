@@ -11,21 +11,21 @@ source_set("bubble") {
     "//ios/chrome/browser/ui/bubble",
     "//ios/showcase/common",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
-source_set("eg_tests") {
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
   testonly = true
-  sources = [
-    "sc_bubble_egtest.mm",
-  ]
+  sources = [ "sc_bubble_egtest.mm" ]
   deps = [
-    "//ios/chrome/browser/ui/bubble",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/showcase/test",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ui/base",
+    "//ios/showcase/test:eg2_test",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
   ]
-  configs += [ "//build/config/compiler:enable_arc" ]
+  frameworks = [ "UIKit.framework" ]
 }

@@ -63,7 +63,6 @@ int main(int argc, char** argv) {
 
   {
     base::TestSuite testSuite(argc, argv);
-
     mojo::core::Init();
     base::TestIOThread testIoThread(base::TestIOThread::kAutoStart);
     mojo::core::ScopedIPCSupport ipcSupport(

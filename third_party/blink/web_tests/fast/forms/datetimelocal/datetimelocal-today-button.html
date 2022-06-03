@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="datetime-local" value="2019-02-14T13:02">
+<script>
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    clickTodayButton();
+
+    let actualTodayDateString = new Date(dateTimeElement.value).toDateString();
+    let expectedTodayDateString = new Date().toDateString();
+
+    assert_equals(actualTodayDateString, expectedTodayDateString, "Today button should have updated in-page control to today's date");
+    assert_not_equals(internals.pagePopupWindow, null, "Click on Today button should not close popup.");
+
+    eventSender.keyDown('Escape');
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "Double-Escape should dismiss popup.");
+  });
+}, "Datetimelocal picker: Today button should select today's date");
+
+</script>
+</body>
+</html>

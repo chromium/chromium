@@ -45,7 +45,7 @@ void ValidatingCombobox::OnComboboxModelChanged(ui::ComboboxModel* model) {
 }
 
 bool ValidatingCombobox::IsValid() {
-  base::string16 unused;
+  std::u16string unused;
   return delegate_->IsValidCombobox(this, &unused);
 }
 

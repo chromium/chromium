@@ -13,7 +13,7 @@ suite('I18nBehaviorModuleTest', function() {
     window.loadTimeData.data = {
       'allowedByDefault': allowedByDefault,
       'customAttr': '<a is="action-link">Take action!</a>',
-      'customTag': '<x-foo>I\'m an X, foo!</x-foo>',
+      'optionalTag': '<img>',
       'javascriptHref': '<a href="javascript:alert(1)">teh hax</a>',
       'script': '<script>alert(/xss/)</scr' +
           'ipt>',
@@ -30,7 +30,7 @@ suite('I18nBehaviorModuleTest', function() {
       I18nBehavior.i18n('customAttr');
     });
     assertThrows(function() {
-      I18nBehavior.i18n('customTag');
+      I18nBehavior.i18n('optionalTag');
     });
     assertThrows(function() {
       I18nBehavior.i18n('javascriptHref');
@@ -43,18 +43,12 @@ suite('I18nBehaviorModuleTest', function() {
   test('i18n advanced', function() {
     assertEquals(
         allowedByDefault, I18nBehavior.i18nAdvanced('allowedByDefault'));
-    I18nBehavior.i18nAdvanced('customAttr', {
-      attrs: {
-        is: function(el, val) {
-          return el.tagName == 'A' && val == 'action-link';
-        },
-      },
-    });
-    I18nBehavior.i18nAdvanced('customTag', {tags: ['X-FOO']});
+    I18nBehavior.i18nAdvanced('customAttr', {attrs: ['is']});
+    I18nBehavior.i18nAdvanced('optionalTag', {tags: ['img']});
   });
 
   test('i18n dynamic', function() {
-    var locale = 'en';
+    const locale = 'en';
     assertEquals(text, I18nBehavior.i18nDynamic(locale, 'text'));
   });
 

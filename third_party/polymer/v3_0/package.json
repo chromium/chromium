@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "author": "dpapad@chromium.org",
   "dependencies": {
-    "@polymer/font-roboto": "3.0.2",
-    "@polymer/iron-a11y-announcer": "3.0.2",
+    "@polymer/iron-a11y-announcer": "3.2.0",
     "@polymer/iron-a11y-keys": "3.0.1",
     "@polymer/iron-a11y-keys-behavior": "3.0.1",
     "@polymer/iron-behaviors": "3.0.1",
@@ -14,7 +13,6 @@
     "@polymer/iron-flex-layout": "3.0.1",
     "@polymer/iron-icon": "3.0.1",
     "@polymer/iron-iconset-svg": "3.0.1",
-    "@polymer/iron-input": "3.0.1",
     "@polymer/iron-list": "3.1.0",
     "@polymer/iron-location": "3.0.1",
     "@polymer/iron-media-query": "3.0.1",
@@ -27,10 +25,8 @@
     "@polymer/iron-scroll-threshold": "3.0.1",
     "@polymer/iron-selector": "3.0.1",
     "@polymer/iron-test-helpers": "3.0.1",
-    "@polymer/iron-validatable-behavior": "3.0.1",
     "@polymer/neon-animation": "3.0.1",
     "@polymer/paper-behaviors": "3.0.1",
-    "@polymer/paper-input": "3.0.2",
     "@polymer/paper-progress": "3.0.1",
     "@polymer/paper-ripple": "3.0.1",
     "@polymer/paper-spinner": "3.0.2",
@@ -40,7 +36,6 @@
     "@webcomponents/shadycss": "1.9.1"
   },
   "devDependencies": {
-    "acorn": "6.1.1",
-    "rollup": "1.12.4"
+    "acorn": "6.1.1"
   }
 }

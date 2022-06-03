@@ -75,9 +75,9 @@ PASS rect.bottom is rect.top + rect.height
 
 
 Test 10
-PASS rect.left.toFixed(3) is "8.000"
+PASS rect.left.toFixed(3) is "10.000"
 PASS rect.top.toFixed(3) is "2274.000"
-PASS rect.width.toFixed(3) is "300.000"
+PASS rect.width.toFixed(3) is "296.000"
 PASS rect.height.toFixed(3) is "34.000"
 PASS rect.right is rect.left + rect.width
 PASS rect.bottom is rect.top + rect.height

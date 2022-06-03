@@ -1,0 +1,197 @@
+Tests highlights for display locking in a frame.
+
+container{
+  "paths": [
+    {
+      "path": [
+        "M",
+        10,
+        10,
+        "L",
+        20,
+        10,
+        "L",
+        20,
+        20,
+        "L",
+        10,
+        20,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        10,
+        "L",
+        20,
+        10,
+        "L",
+        20,
+        20,
+        "L",
+        10,
+        20,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        22,
+        8,
+        "L",
+        22,
+        22,
+        "L",
+        8,
+        22,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        22,
+        8,
+        "L",
+        22,
+        22,
+        "L",
+        8,
+        22,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "iframe",
+    "idValue": "container",
+    "nodeWidth": "14",
+    "nodeHeight": "14",
+    "isKeyboardFocusable": true,
+    "accessibleName": "",
+    "accessibleRole": "",
+    "layoutObjectName": "LayoutIFrame",
+    "isLocked": true,
+    "showAccessibilityInfo": true
+  }
+}
+child{
+  "paths": [
+    {
+      "path": [
+        "M",
+        10,
+        10,
+        "L",
+        20,
+        10,
+        "L",
+        20,
+        20,
+        "L",
+        10,
+        20,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        10,
+        10,
+        "L",
+        20,
+        10,
+        "L",
+        20,
+        20,
+        "L",
+        10,
+        20,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        22,
+        8,
+        "L",
+        22,
+        22,
+        "L",
+        8,
+        22,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        22,
+        8,
+        "L",
+        22,
+        22,
+        "L",
+        8,
+        22,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "iframe",
+    "idValue": "container",
+    "nodeWidth": "14",
+    "nodeHeight": "14",
+    "isKeyboardFocusable": true,
+    "accessibleName": "",
+    "accessibleRole": "",
+    "layoutObjectName": "LayoutIFrame",
+    "isLockedAncestor": true,
+    "showAccessibilityInfo": true
+  }
+}
+

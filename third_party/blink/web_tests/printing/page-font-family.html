@@ -1,0 +1,20 @@
+<!doctype html>
+<title>Serialization of internals.pageProperty('font-family', ...).</title>
+<link rel="help" href="https://tc39.github.io/ecma262/#sec-boolean-literals">
+<link rel="help" href="https://drafts.csswg.org/cssom/#serialize-a-comma-separated-list">
+<link rel="help" href="https://drafts.csswg.org/cssom/#serialize-a-string">
+<link rel="help" href="https://drafts.csswg.org/cssom/#serialize-an-identifier">
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+  @page { font-family: cursive,fantasy,monospace,sans-serif,serif,UnquotedFont,"QuotedFont\","; }
+</style>
+</head>
+<script>
+  'use strict';
+  test(() => {
+      assert_own_property(window, "internals", "window.internals is available");
+      assert_equals(internals.pageProperty('font-family', 0),
+                    `cursive, fantasy, monospace, sans-serif, serif, UnquotedFont, "QuotedFont\\","`);
+  }, `<generic-family> keywords, unquoted <family-name> and quoted <family-name> with special characters.`);
+</script>

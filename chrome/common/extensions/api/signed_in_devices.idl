@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // Use the <code>chrome.signedInDevices</code> API to get a list of devices
-// signed into chrome with the same account as the current profile.
+// signed into Chrome with the same account as the current profile.
 namespace signedInDevices {
   enum OS {
     win,
@@ -38,7 +38,7 @@ namespace signedInDevices {
     // Device Type.
     DeviceType type;
 
-    // Version of chrome running in this device.
+    // Version of Chrome running on this device.
     DOMString chromeVersion;
   };
 
@@ -52,7 +52,8 @@ namespace signedInDevices {
     // device.
     // |callback|: The callback to be invoked with the array of DeviceInfo
     // objects.
-    static void get(optional boolean isLocal, DeviceInfoCallback callback);
+    [supportsPromises] static void get(optional boolean isLocal,
+                                       DeviceInfoCallback callback);
   };
 
   interface Events {

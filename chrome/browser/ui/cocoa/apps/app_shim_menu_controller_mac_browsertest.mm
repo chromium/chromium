@@ -10,17 +10,16 @@
 #import "base/mac/foundation_util.h"
 #import "base/mac/scoped_nsobject.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/apps/app_shim/extension_app_shim_handler_mac.h"
+#include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/launch_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/common/chrome_features.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
 #include "extensions/browser/uninstall_reason.h"
@@ -41,6 +40,11 @@ class AppShimMenuControllerBrowserTest
         app_2_(nullptr),
         hosted_app_(nullptr),
         initial_menu_item_count_(0) {}
+
+  AppShimMenuControllerBrowserTest(const AppShimMenuControllerBrowserTest&) =
+      delete;
+  AppShimMenuControllerBrowserTest& operator=(
+      const AppShimMenuControllerBrowserTest&) = delete;
 
   // Start testing apps and wait for them to launch. |flags| is a bitmask of
   // AvailableApps.
@@ -76,15 +80,15 @@ class AppShimMenuControllerBrowserTest
     ASSERT_EQ(initial_menu_item_count_ + kExtraTopLevelItems,
               [item_array count]);
     for (NSUInteger i = 0; i < initial_menu_item_count_; ++i)
-      EXPECT_TRUE([[item_array objectAtIndex:i] isHidden]);
-    NSMenuItem* app_menu = [item_array objectAtIndex:initial_menu_item_count_];
+      EXPECT_TRUE([item_array[i] isHidden]);
+    NSMenuItem* app_menu = item_array[initial_menu_item_count_];
     EXPECT_EQ(app->id(), base::SysNSStringToUTF8([app_menu title]));
     EXPECT_EQ(app->name(),
               base::SysNSStringToUTF8([[app_menu submenu] title]));
     for (NSUInteger i = initial_menu_item_count_;
          i < initial_menu_item_count_ + kExtraTopLevelItems;
          ++i) {
-      NSMenuItem* menu = [item_array objectAtIndex:i];
+      NSMenuItem* menu = item_array[i];
       EXPECT_GT([[menu submenu] numberOfItems], 0);
       EXPECT_FALSE([menu isHidden]);
     }
@@ -94,14 +98,13 @@ class AppShimMenuControllerBrowserTest
     NSArray* item_array = [[NSApp mainMenu] itemArray];
     EXPECT_EQ(initial_menu_item_count_, [item_array count]);
     for (NSUInteger i = 0; i < initial_menu_item_count_; ++i)
-      EXPECT_FALSE([[item_array objectAtIndex:i] isHidden]);
+      EXPECT_FALSE([item_array[i] isHidden]);
   }
 
   void CheckEditMenu(const extensions::Extension* app) const {
     const int edit_menu_index = initial_menu_item_count_ + 2;
 
-    NSMenuItem* edit_menu =
-        [[[NSApp mainMenu] itemArray] objectAtIndex:edit_menu_index];
+    NSMenuItem* edit_menu = [[NSApp mainMenu] itemArray][edit_menu_index];
     NSMenu* edit_submenu = [edit_menu submenu];
     NSMenuItem* paste_match_style_menu_item =
         [edit_submenu itemWithTag:IDC_CONTENT_CONTEXT_PASTE_AND_MATCH_STYLE];
@@ -127,9 +130,6 @@ class AppShimMenuControllerBrowserTest
   const extensions::Extension* app_2_;
   const extensions::Extension* hosted_app_;
   NSUInteger initial_menu_item_count_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AppShimMenuControllerBrowserTest);
 };
 
 // Test that focusing an app window changes the menu bar.
@@ -206,44 +206,6 @@ IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
   }
   app_1_app_window->GetBaseWindow()->Close();
   CheckNoAppMenus();
-}
-
-// Test to check that hosted apps have "Find" and "Paste and Match Style" menu
-// items under the "Edit" menu.
-// Disabled until tab versus window apps are properly tested
-// http://crbug.com/517744
-IN_PROC_BROWSER_TEST_F(AppShimMenuControllerBrowserTest,
-                       DISABLED_HostedAppHasAdditionalEditMenuItems) {
-  SetUpApps(HOSTED | PACKAGED_1);
-
-  // Find the first hosted app window.
-  Browser* hosted_app_browser = nullptr;
-  for (Browser* browser : *BrowserList::GetInstance()) {
-    const extensions::Extension* extension =
-        apps::ExtensionAppShimHandler::MaybeGetAppForBrowser(browser);
-    if (extension && extension->is_hosted_app()) {
-      hosted_app_browser = browser;
-      break;
-    }
-  }
-  EXPECT_TRUE(hosted_app_browser);
-
-  // Focus the hosted app.
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:hosted_app_browser->window()
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-  CheckEditMenu(hosted_app_);
-
-  // Now focus a platform app, the Edit menu should not have the additional
-  // options.
-  [[NSNotificationCenter defaultCenter]
-      postNotificationName:NSWindowDidBecomeMainNotification
-                    object:FirstWindowForApp(app_1_)
-                               ->GetNativeWindow()
-                               .GetNativeNSWindow()];
-  CheckEditMenu(app_1_);
 }
 
 // Test that uninstalling an app restores the main menu.

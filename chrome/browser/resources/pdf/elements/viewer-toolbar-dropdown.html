@@ -27,23 +27,17 @@
       #dropdown {
         background-color: var(--cr-menu-background-color);
         border-radius: 4px;
+        box-shadow: var(--cr-menu-shadow);
         color: var(--cr-primary-text-color);
         overflow-y: hidden;
         padding-bottom: 2px;
         width: var(--dropdown-width);
       }
 
-      @media (prefers-color-scheme: light) {
-        #dropdown {
-          @apply --shadow-elevation-2dp;
-        }
-      }
-
       @media (prefers-color-scheme: dark) {
         #dropdown {
           background-image: linear-gradient(var(--cr-menu-background-sheen),
                                             var(--cr-menu-background-sheen));
-          box-shadow: var(--cr-menu-shadow);
         }
       }
 
@@ -71,7 +65,7 @@
 
       }
       :host([dropdown-open]) #button {
-        background-color: rgba(255, 255, 255, 0.24);
+        background-color: var(--active-button-bg);
       }
 
       h1 {
@@ -89,7 +83,7 @@
     <div id="container">
       <div id="dropdown" style="display: none">
         <template is="dom-if" if="[[!hideHeader]]">
-          <h1>{{header}}</h1>
+          <h1>[[header]]</h1>
         </template>
         <div id="scroll-container">
           <slot></slot>

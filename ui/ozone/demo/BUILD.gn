@@ -39,7 +39,7 @@ source_set("ozone_demo_lib") {
   ]
 
   if (is_fuchsia) {
-    deps += [ "//third_party/fuchsia-sdk/sdk:fuchsia-ui-policy" ]
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy" ]
   }
 }
 
@@ -102,15 +102,17 @@ executable("skia_demo") {
 }
 
 if (is_fuchsia) {
-  fuchsia_package("ozone_demo_pkg") {
+  cr_fuchsia_package("ozone_demo_pkg") {
     testonly = true
     binary = ":ozone_demo"
-    package_name_override = "ozone_demo"
+    package_name = "ozone_demo"
+    manifest = "//build/config/fuchsia/gfx_tests.cmx"
+    deps = [ "//third_party/fuchsia-sdk/sdk/pkg/vulkan_layers:VkLayer_image_pipe_swapchain" ]
   }
 
-  fuchsia_package_runner("ozone_demo_fuchsia") {
+  fuchsia_package_installer("ozone_demo_fuchsia") {
     testonly = true
     package = ":ozone_demo_pkg"
-    package_name_override = "ozone_demo"
+    package_name = "ozone_demo"
   }
 }

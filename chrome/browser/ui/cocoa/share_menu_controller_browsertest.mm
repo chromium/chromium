@@ -11,12 +11,12 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/cocoa/test/cocoa_profile_test.h"
 #import "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "net/base/mac/url_conversions.h"
 #include "testing/gtest_mac.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -187,7 +187,7 @@ IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, SharingDelegate) {
 
 IN_PROC_BROWSER_TEST_F(ShareMenuControllerTest, Histograms) {
   base::HistogramTester tester;
-  const std::string histogram_name = "OSX.NativeShare";
+  const std::string histogram_name = "Mac.FileMenuNativeShare";
 
   tester.ExpectTotalCount(histogram_name, 0);
 

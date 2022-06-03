@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "content/public/browser/browser_context.h"
+#include "ui/views/examples/create_examples.h"
+#include "ui/views/examples/example_base.h"
 #include "ui/views/examples/webview_example.h"
 
 namespace views {
@@ -17,10 +19,10 @@ namespace examples {
 void ShowExamplesWindowWithContent(base::OnceClosure on_close,
                                    content::BrowserContext* browser_context,
                                    gfx::NativeWindow window_context) {
-  std::vector<std::unique_ptr<ExampleBase>> extra_examples;
-  extra_examples.push_back(std::make_unique<WebViewExample>(browser_context));
-  ShowExamplesWindow(std::move(on_close), window_context,
-                     std::move(extra_examples));
+  ExampleVector examples;
+  examples.push_back(std::make_unique<WebViewExample>(browser_context));
+  ShowExamplesWindow(std::move(on_close), CreateExamples(std::move(examples)),
+                     window_context);
 }
 
 }  // namespace examples

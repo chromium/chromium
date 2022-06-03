@@ -10,9 +10,11 @@
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/one_shot_accessibility_tree_search.h"
 #include "content/browser/accessibility/test_browser_accessibility_delegate.h"
+#include "content/public/test/browser_task_environment.h"
 
 struct Env {
   Env() { base::CommandLine::Init(0, nullptr); }
+  content::BrowserTaskEnvironment task_environment;
   base::AtExitManager at_exit;
 };
 
@@ -25,7 +27,7 @@ ax::mojom::Role GetInterestingRole(FuzzedDataProvider& fdp) {
   switch (fdp.ConsumeIntegralInRange(0, 12)) {
     default:
     case 0:
-      return ax::mojom::Role::kIgnored;
+      return ax::mojom::Role::kNone;
     case 1:
       return ax::mojom::Role::kStaticText;
     case 2:

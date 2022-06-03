@@ -44,7 +44,7 @@ typedef int (*functest) (const char *filename, const char *result,
 typedef struct testDesc testDesc;
 typedef testDesc *testDescPtr;
 struct testDesc {
-    const char *desc; /* descripton of the test */
+    const char *desc; /* description of the test */
     functest    func; /* function implementing the test */
     const char *in;   /* glob to path for input files */
     const char *out;  /* output directory */

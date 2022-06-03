@@ -11,7 +11,41 @@ The pipeline module orchestrates the entire signing process, which includes:
 
 import os.path
 
-from . import commands, model, modification, notarize, signing
+from . import commands, model, modification, notarize, parts, signing
+
+
+def _include_branding_code_in_app(dist):
+    """Returns whether to omit the branding code from the Chrome .app bundle.
+
+    If a distribution is packaged in a PKG (but is not also packaged in a DMG),
+    then the brand code is carried in the PKG script, and should not be added to
+    the .app bundle's Info.plist.
+
+    Args:
+        dist: The |model.Distribution|.
+
+    Returns:
+        Whether to include the branding code in the app bundle.
+    """
+    return dist.package_as_dmg or not dist.package_as_pkg
+
+
+def _binary_architectures(binary_path):
+    """Returns a comma-separated list of architectures of a binary.
+
+    Args:
+        binary_path: The path to the binary on disk.
+
+    Returns:
+        A comma-separated string of architectures.
+    """
+
+    command = ['lipo', '-archs', binary_path]
+    output = commands.run_command_output(command)
+    output = output.decode('utf-8').strip()
+    output = output.replace(' ', ',')
+
+    return output
 
 
 def _customize_and_sign_chrome(paths, dist_config, dest_dir, signed_frameworks):
@@ -37,8 +71,15 @@ def _customize_and_sign_chrome(paths, dist_config, dest_dir, signed_frameworks):
         os.path.join(paths.input, dist_config.base_config.app_dir), paths.work)
 
     # Customize the app bundle.
-    modification.customize_distribution(paths, dist_config.distribution,
-                                        dist_config)
+    customization_dist = dist_config.distribution
+    customization_dist_config = dist_config
+    if not _include_branding_code_in_app(customization_dist):
+        customization_dist = dist_config.distribution.brandless_copy()
+        customization_dist_config = customization_dist.to_config(
+            dist_config.base_config)
+
+    modification.customize_distribution(paths, customization_dist,
+                                        customization_dist_config)
 
     work_dir_framework_path = os.path.join(paths.work,
                                            dist_config.framework_dir)
@@ -74,13 +115,13 @@ def _customize_and_sign_chrome(paths, dist_config, dest_dir, signed_frameworks):
                         actual_framework_change_count,
                         signed_framework_change_count))
 
-        signing.sign_chrome(paths, dist_config, sign_framework=False)
+        parts.sign_chrome(paths, dist_config, sign_framework=False)
     else:
         unsigned_framework_path = os.path.join(paths.work,
                                                'modified_unsigned_framework')
         commands.copy_dir_overwrite_and_count_changes(
             work_dir_framework_path, unsigned_framework_path, dry_run=False)
-        signing.sign_chrome(paths, dist_config, sign_framework=True)
+        parts.sign_chrome(paths, dist_config, sign_framework=True)
         actual_framework_change_count = commands.copy_dir_overwrite_and_count_changes(
             work_dir_framework_path, unsigned_framework_path, dry_run=True)
         if signed_frameworks is not None:
@@ -101,21 +142,7 @@ def _staple_chrome(paths, dist_config):
         paths: A |model.Paths| object.
         dist_config: A |config.CodeSignConfig| for the customized product.
     """
-    parts = signing.get_parts(dist_config)
-    # Only staple the signed, bundled executables.
-    part_paths = [
-        part.path
-        for part in parts.values()
-        # TODO(https://crbug.com/979725): Reinstate .xpc bundle stapling once
-        # the signing environment is on a macOS release that supports
-        # Xcode 10.2 or newer.
-        if part.path[-4:] in ('.app',)
-    ]
-    # Reverse-sort the paths so that more nested paths are stapled before
-    # less-nested ones.
-    part_paths.sort(reverse=True)
-    for part_path in part_paths:
-        notarize.staple(os.path.join(paths.work, part_path))
+    notarize.staple_bundled_parts(parts.get_parts(dist_config).values(), paths)
 
 
 def _create_pkgbuild_scripts(paths, dist_config):
@@ -138,6 +165,7 @@ def _create_pkgbuild_scripts(paths, dist_config):
         substitutions = {
             '@APP_DIR@': dist_config.app_dir,
             '@APP_PRODUCT@': dist_config.app_product,
+            '@BRAND_CODE@': dist_config.distribution.branding_code or '',
             '@FRAMEWORK_DIR@': dist_config.framework_dir
         }
         for key, value in substitutions.items():
@@ -156,24 +184,69 @@ def _create_pkgbuild_scripts(paths, dist_config):
     return scripts_path
 
 
-def _productbuild_distribution_path(paths, dist_config, component_pkg_path):
-    """Creates a distribution XML file for use by `productbuild`. This specifies
-    that an x64 machine is required, and copies the OS requirement from the copy
-    of Chrome being packaged.
+def _component_property_path(paths, dist_config):
+    """Creates a component plist file for use by `pkgbuild`. The reason this
+    file is used is to ensure that the component package is not relocatable. See
+    https://scriptingosx.com/2017/05/relocatable-package-installers-and-quickpkg-update/
+    for information on why that's important.
 
     Args:
         paths: A |model.Paths| object.
+        dist_config: The |config.CodeSignConfig| object.
+
+    Returns:
+        The path to the component plist file.
+    """
+    component_property_path = os.path.join(
+        paths.work, '{}.plist'.format(dist_config.app_product))
+
+    commands.write_plist([{
+        'BundleHasStrictIdentifier': True,
+        'BundleIsRelocatable': False,
+        'BundleIsVersionChecked': True,
+        'BundleOverwriteAction': 'upgrade',
+        'RootRelativeBundlePath': dist_config.app_dir
+    }], component_property_path, 'xml1')
+
+    return component_property_path
+
+
+def _minimum_os_version(app_paths, dist_config):
+    """Returns the minimum OS requirement for the copy of Chrome being packaged.
+
+    Args:
+        app_paths: A |model.Paths| object for the app.
+        dist_config: The |config.CodeSignConfig| object.
+    Returns:
+        The minimum OS requirement.
+    """
+    app_plist_path = os.path.join(app_paths.work, dist_config.app_dir,
+                                  'Contents', 'Info.plist')
+    with commands.PlistContext(app_plist_path) as app_plist:
+        return app_plist['LSMinimumSystemVersion']
+
+
+def _productbuild_distribution_path(app_paths, pkg_paths, dist_config,
+                                    component_pkg_path):
+    """Creates a distribution XML file for use by `productbuild`. This copies
+    the OS and architecture requirements from the copy of Chrome being packaged.
+
+    Args:
+        app_paths: A |model.Paths| object for the app.
+        pkg_paths: A |model.Paths| object for the pkg files.
         dist_config: The |config.CodeSignConfig| object.
         component_pkg_path: The path to the existing component .pkg file.
 
     Returns:
         The path to the distribution file.
     """
-    distribution_path = os.path.join(paths.work,
+    distribution_path = os.path.join(pkg_paths.work,
                                      '{}.dist'.format(dist_config.app_product))
 
-    app_plist_path = os.path.join(paths.work, dist_config.app_dir, 'Contents',
-                                  'Info.plist')
+    app_binary_path = os.path.join(app_paths.work, dist_config.app_dir,
+                                   'Contents', 'MacOS', dist_config.app_product)
+    app_plist_path = os.path.join(app_paths.work, dist_config.app_dir,
+                                  'Contents', 'Info.plist')
     with commands.PlistContext(app_plist_path) as app_plist:
         # For now, restrict installation to only the boot volume (the <domains/>
         # tag) to simplify the Keystone installation.
@@ -182,7 +255,7 @@ def _productbuild_distribution_path(paths, dist_config, component_pkg_path):
 
     <!-- Top-level info about the distribution. -->
     <title>{app_product}</title>
-    <options customize="never" require-scripts="false" hostArchitectures="x86_64"/>
+    <options customize="never" require-scripts="false" hostArchitectures="{host_architectures}"/>
     <domains enable_anywhere="false" enable_currentUserHome="false" enable_localSystem="true"/>
     <volume-check>
         <allowed-os-versions>
@@ -200,7 +273,11 @@ def _productbuild_distribution_path(paths, dist_config, component_pkg_path):
     <!-- The individual choices. -->
     <choice id="default"/>
     <choice id="{bundle_id}" visible="false" title="{app_product}">
-        <pkg-ref id="{bundle_id}"/>
+        <pkg-ref id="{bundle_id}">
+            <must-close>
+                <app id="{bundle_id}"/>
+            </must-close>
+        </pkg-ref>
     </choice>
 
     <!-- The lone component package. -->
@@ -209,6 +286,7 @@ def _productbuild_distribution_path(paths, dist_config, component_pkg_path):
 </installer-gui-script>""".format(
             app_product=dist_config.app_product,
             bundle_id=dist_config.base_bundle_id,
+            host_architectures=_binary_architectures(app_binary_path),
             minimum_system=app_plist['LSMinimumSystemVersion'],
             component_pkg_filename=os.path.basename(component_pkg_path),
             version=dist_config.version)
@@ -230,51 +308,79 @@ def _package_and_sign_pkg(paths, dist_config):
     """
     assert dist_config.installer_identity
 
-    # There are two .pkg files to be built:
-    #   1. The inner component package (which is the one that can contain things
-    #      like postinstall scripts). This is built with `pkgbuild`.
-    #   2. The outer product archive (which is the installable thing that has
-    #      pre-install requirements). This is built with `productbuild`.
+    # Because several .pkg distributions might be built from the same underlying
+    # .app, separate the .pkg construction into its own work directory.
+    with commands.WorkDirectory(paths) as pkg_paths:
+        # There are two .pkg files to be built:
+        #   1. The inner component package (which is the one that can contain
+        #      things like postinstall scripts). This is built with `pkgbuild`.
+        #   2. The outer distribution package (which is the installable thing
+        #      that has pre-install requirements). This is built with
+        #      `productbuild`.
 
-    ## The component package.
+        ## The component package.
 
-    # The spaces are removed from |dist_config.app_product| for the component
-    # package path due to a bug in Installer.app that causes the "Show Files"
-    # window to be blank if there is a space in a component package name.
-    # https://stackoverflow.com/questions/43031272/
-    component_pkg_name = '{}.pkg'.format(dist_config.app_product).replace(
-        ' ', '')
-    component_pkg_path = os.path.join(paths.work, component_pkg_name)
-    app_path = os.path.join(paths.work, dist_config.app_dir)
+        # Because the component package is built using the --root option, copy
+        # the .app into a directory by itself, as `pkgbuild` archives the entire
+        # directory specified as the root directory.
+        root_directory = os.path.join(pkg_paths.work, 'payload')
+        commands.make_dir(root_directory)
+        app_path = os.path.join(paths.work, dist_config.app_dir)
+        new_app_path = os.path.join(root_directory, dist_config.app_dir)
+        commands.copy_files(app_path, root_directory)
 
-    scripts_path = _create_pkgbuild_scripts(paths, dist_config)
+        # The spaces are removed from |dist_config.app_product| for the
+        # component package path due to a bug in Installer.app that causes the
+        # "Show Files" window to be blank if there is a space in a component
+        # package name. https://stackoverflow.com/questions/43031272/
+        component_pkg_name = '{}.pkg'.format(dist_config.app_product).replace(
+            ' ', '')
+        component_pkg_path = os.path.join(pkg_paths.work, component_pkg_name)
+        component_property_path = _component_property_path(
+            pkg_paths, dist_config)
+        scripts_path = _create_pkgbuild_scripts(pkg_paths, dist_config)
 
-    commands.run_command([
-        'pkgbuild', '--identifier', dist_config.base_bundle_id, '--version',
-        dist_config.version, '--component', app_path, '--install-location',
-        '/Applications', '--scripts', scripts_path, component_pkg_path
-    ])
+        command = [
+            'pkgbuild', '--root', root_directory, '--component-plist',
+            component_property_path, '--identifier', dist_config.base_bundle_id,
+            '--version', dist_config.version, '--install-location',
+            '/Applications', '--scripts', scripts_path
+        ]
+        # The pkgbuild command on macOS 12 Monterey gained the ability to
+        # compress component packages based on the minimum OS requirement for
+        # their contents. If running under at least macOS 12, take advantage of
+        # this.
+        if commands.macos_version() >= [12, 0]:
+            command.append('--compression')
+            command.append('latest')
+            command.append('--min-os-version')
+            command.append(_minimum_os_version(paths, dist_config))
+        command.append(component_pkg_path)
+        commands.run_command(command)
 
-    ## The product archive.
+        ## The distribution package.
 
-    distribution_path = _productbuild_distribution_path(paths, dist_config,
-                                                        component_pkg_path)
+        distribution_path = _productbuild_distribution_path(
+            paths, pkg_paths, dist_config, component_pkg_path)
 
-    product_pkg_path = os.path.join(
-        paths.output, '{}.pkg'.format(dist_config.packaging_basename))
+        product_pkg_path = os.path.join(
+            pkg_paths.output, '{}.pkg'.format(dist_config.packaging_basename))
 
-    command = [
-        'productbuild', '--distribution', distribution_path, '--package-path',
-        paths.work, '--sign', dist_config.installer_identity
-    ]
-    if dist_config.notary_user:
-        # Assume if the config has notary authentication information that the
-        # products will be notarized, which requires a secure timestamp.
-        command.append('--timestamp')
-    command.append(product_pkg_path)
-    commands.run_command(command)
+        command = [
+            'productbuild', '--identifier', dist_config.base_bundle_id,
+            '--version', dist_config.version, '--distribution',
+            distribution_path, '--package-path', pkg_paths.work, '--sign',
+            dist_config.installer_identity
+        ]
+        if dist_config.notary_user:
+            # Assume if the config has notary authentication information that
+            # the products will be notarized, which requires a secure
+            # timestamp.
+            command.append('--timestamp')
+        command.append(product_pkg_path)
+        commands.run_command(command)
 
-    return product_pkg_path
+        return product_pkg_path
 
 
 def _package_and_sign_dmg(paths, dist_config):
@@ -340,7 +446,7 @@ def _package_dmg(paths, dist, config):
     # Don't put a name on the /Applications symbolic link because the same disk
     # image is used for all languages.
     # yapf: disable
-    commands.run_command([
+    pkg_dmg = [
         os.path.join(packaging_dir, 'pkg-dmg'),
         '--verbosity', '0',
         '--tempdir', paths.work,
@@ -348,18 +454,32 @@ def _package_dmg(paths, dist, config):
         '--target', dmg_path,
         '--format', 'UDBZ',
         '--volname', config.app_product,
-        '--icon', os.path.join(packaging_dir, icon_file),
         '--copy', '{}:/'.format(app_path),
-        '--copy',
-            '{}/keystone_install.sh:/.keystone_install'.format(packaging_dir),
-        '--mkdir', '.background',
-        '--copy',
-            '{}/chrome_dmg_background.png:/.background/background.png'.format(
-                packaging_dir),
-        '--copy', '{}/{}:/.DS_Store'.format(packaging_dir, dsstore_file),
         '--symlink', '/Applications:/ ',
-    ])
+    ]
     # yapf: enable
+
+    if dist.inflation_kilobytes:
+        pkg_dmg += [
+            '--copy',
+            '{}/inflation.bin:/.background/inflation.bin'.format(packaging_dir)
+        ]
+
+    if config.is_chrome_branded():
+        # yapf: disable
+        pkg_dmg += [
+            '--icon', os.path.join(packaging_dir, icon_file),
+            '--copy',
+                '{}/keystone_install.sh:/.keystone_install'.format(packaging_dir),
+            '--mkdir', '.background',
+            '--copy',
+                '{}/chrome_dmg_background.png:/.background/background.png'.format(
+                    packaging_dir),
+            '--copy', '{}/{}:/.DS_Store'.format(packaging_dir, dsstore_file),
+        ]
+        # yapf: enable
+
+    commands.run_command(pkg_dmg)
 
     return dmg_path
 
@@ -374,14 +494,15 @@ def _package_installer_tools(paths, config):
     """
     DIFF_TOOLS = 'diff_tools'
 
-    tools_to_sign = signing.get_installer_tools(config)
+    tools_to_sign = parts.get_installer_tools(config)
+    chrome_tools = (
+        'keystone_install.sh',) if config.is_chrome_branded() else ()
     other_tools = (
         'dirdiffer.sh',
         'dirpatcher.sh',
         'dmgdiffer.sh',
-        'keystone_install.sh',
         'pkg-dmg',
-    )
+    ) + chrome_tools
 
     with commands.WorkDirectory(paths) as paths:
         diff_tools_dir = os.path.join(paths.work, DIFF_TOOLS)
@@ -405,20 +526,42 @@ def _package_installer_tools(paths, config):
                              cwd=paths.work)
 
 
-def _intermediate_work_dir_name(dist_config):
+def _intermediate_work_dir_name(dist):
     """Returns the name of an intermediate work directory for a distribution.
+    All distributions that can share the same app bundle share the intermediate
+    work directory.
+
+    Just about any customization in the distribution will require it to have its
+    own app bundle. However, if a distribution is packaged in a PKG (but is not
+    also packaged in a DMG), then the brand code is carried in the PKG script,
+    and the distribution can share the app bundle of a different distribution
+    which is unbranded but for which all the other customizations match.
 
     Args:
-        dist_config: A |config.CodeSignConfig| for the |model.Distribution|.
+        dist: The |model.Distribution|.
 
     Returns:
         The work directory name to use.
     """
-    if dist_config.distribution.branding_code:
-        return '{}-{}'.format(dist_config.packaging_basename,
-                              dist_config.distribution.branding_code)
+    customizations = []
+    if dist.channel_customize:
+        customizations.append('sxs')
+    if dist.channel:
+        customizations.append(dist.channel)
+    else:
+        customizations.append('stable')
+    if dist.app_name_fragment:
+        customizations.append(dist.app_name_fragment)
+    if dist.product_dirname:
+        customizations.append(dist.product_dirname.replace('/', ' '))
+    if dist.creator_code:
+        customizations.append(dist.creator_code)
+    if dist.branding_code and _include_branding_code_in_app(dist):
+        customizations.append(dist.branding_code)
+    if dist.inflation_kilobytes:
+        customizations.append(str(dist.inflation_kilobytes))
 
-    return dist_config.packaging_basename
+    return '-'.join(customizations)
 
 
 def sign_all(orig_paths,
@@ -433,9 +576,10 @@ def sign_all(orig_paths,
     Args:
         orig_paths: A |model.Paths| object.
         config: The |config.CodeSignConfig| object.
-        package_dmg: If True, the signed application bundle will be packaged
-            into a DMG, which will also be signed. If False, the signed app
-            bundle will be copied to |paths.output|.
+        disable_packaging: Whether all packaging is disabled. If True, the
+            unpackaged signed app bundle will be copied to |paths.output|. If
+            False, the packaging specified in the distribution will be
+            performed.
         do_notarization: If True, the signed application bundle will be sent for
             notarization by Apple. The resulting notarization ticket will then
             be stapled. If |package_dmg| is also True, the stapled application
@@ -449,6 +593,7 @@ def sign_all(orig_paths,
         # notarization requests.
         uuids_to_config = {}
         signed_frameworks = {}
+        created_app_bundles = set()
         for dist in config.distributions:
             if dist.branding_code in skip_brands:
                 continue
@@ -465,8 +610,17 @@ def sign_all(orig_paths,
                 else:
                     dest_dir = notary_paths.work
 
-                dest_dir = os.path.join(
-                    dest_dir, _intermediate_work_dir_name(dist_config))
+                dest_dir = os.path.join(dest_dir,
+                                        _intermediate_work_dir_name(dist))
+
+                # Different distributions might share the same underlying app
+                # bundle, and if they do, then the _intermediate_work_dir_name
+                # function will return the same value. Skip creating another app
+                # bundle if that is the case.
+                if dest_dir in created_app_bundles:
+                    continue
+                created_app_bundles.add(dest_dir)
+
                 _customize_and_sign_chrome(paths, dist_config, dest_dir,
                                            signed_frameworks)
 
@@ -490,7 +644,8 @@ def sign_all(orig_paths,
                                                     config):
                 dist_config = uuids_to_config[result]
                 dest_dir = os.path.join(
-                    notary_paths.work, _intermediate_work_dir_name(dist_config))
+                    notary_paths.work,
+                    _intermediate_work_dir_name(dist_config.distribution))
                 _staple_chrome(notary_paths.replace_work(dest_dir), dist_config)
 
         # After all apps are optionally notarized, package as required.
@@ -502,8 +657,17 @@ def sign_all(orig_paths,
 
                 dist_config = dist.to_config(config)
                 paths = orig_paths.replace_work(
-                    os.path.join(notary_paths.work,
-                                 _intermediate_work_dir_name(dist_config)))
+                    os.path.join(
+                        notary_paths.work,
+                        _intermediate_work_dir_name(dist_config.distribution)))
+
+                if dist.inflation_kilobytes:
+                    inflation_path = os.path.join(
+                        paths.packaging_dir(config), 'inflation.bin')
+                    commands.run_command([
+                        'dd', 'if=/dev/urandom', 'of=' + inflation_path,
+                        'bs=1000', 'count={}'.format(dist.inflation_kilobytes)
+                    ])
 
                 if dist.package_as_dmg:
                     dmg_path = _package_and_sign_dmg(paths, dist_config)

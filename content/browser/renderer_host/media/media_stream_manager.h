@@ -34,27 +34,30 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/memory/weak_ptr.h"
-#include "base/message_loop/message_loop_current.h"
-#include "base/optional.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/current_thread.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
+#include "content/browser/media/capture_handle_manager.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/media_devices_manager.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/desktop_media_id.h"
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/media_request_state.h"
 #include "content/public/browser/media_stream_request.h"
+#include "content/public/browser/permission_controller.h"
 #include "media/base/video_facing.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 
 namespace media {
 class AudioSystem;
@@ -72,14 +75,16 @@ class FakeMediaStreamUIProxy;
 class MediaStreamUIProxy;
 class VideoCaptureManager;
 class VideoCaptureProvider;
+class PermissionControllerImpl;
 
 // MediaStreamManager is used to generate and close new media devices, not to
 // start the media flow. The classes requesting new media streams are answered
 // using callbacks.
 class CONTENT_EXPORT MediaStreamManager
     : public MediaStreamProviderListener,
-      public base::MessageLoopCurrent::DestructionObserver,
-      public base::PowerObserver {
+      public base::CurrentThread::DestructionObserver,
+      public base::PowerSuspendObserver,
+      public base::PowerThermalObserver {
  public:
   // Callback to deliver the result of a media access request.
   using MediaAccessRequestCallback =
@@ -90,7 +95,8 @@ class CONTENT_EXPORT MediaStreamManager
       base::OnceCallback<void(blink::mojom::MediaStreamRequestResult result,
                               const std::string& label,
                               const blink::MediaStreamDevices& audio_devices,
-                              const blink::MediaStreamDevices& video_devices)>;
+                              const blink::MediaStreamDevices& video_devices,
+                              bool pan_tilt_zoom_allowed)>;
 
   using OpenDeviceCallback =
       base::OnceCallback<void(bool success,
@@ -105,6 +111,15 @@ class CONTENT_EXPORT MediaStreamManager
       base::RepeatingCallback<void(const std::string& label,
                                    const blink::MediaStreamDevice& old_device,
                                    const blink::MediaStreamDevice& new_device)>;
+
+  using DeviceRequestStateChangeCallback = base::RepeatingCallback<void(
+      const std::string& label,
+      const blink::MediaStreamDevice& device,
+      const blink::mojom::MediaStreamStateChange new_state)>;
+
+  using DeviceCaptureHandleChangeCallback =
+      base::RepeatingCallback<void(const std::string& label,
+                                   const blink::MediaStreamDevice& device)>;
 
   // Callback for testing.
   using GenerateStreamTestCallback =
@@ -128,6 +143,9 @@ class CONTENT_EXPORT MediaStreamManager
       media::AudioSystem* audio_system,
       scoped_refptr<base::SingleThreadTaskRunner> audio_task_runner,
       std::unique_ptr<VideoCaptureProvider> video_capture_provider);
+
+  MediaStreamManager(const MediaStreamManager&) = delete;
+  MediaStreamManager& operator=(const MediaStreamManager&) = delete;
 
   ~MediaStreamManager() override;
 
@@ -170,12 +188,13 @@ class CONTENT_EXPORT MediaStreamManager
                                      const url::Origin& security_origin,
                                      MediaAccessRequestCallback callback);
 
-  // GenerateStream opens new media devices according to |components|.  It
-  // creates a new request which is identified by a unique string that's
-  // returned to the caller.  |render_process_id| and |render_frame_id| are used
-  // to determine where the infobar will appear to the user. |device_stopped_cb|
-  // is set to receive device stopped notifications. |device_change_cb| is set
-  // to receive device changed notifications.
+  // GenerateStream opens new media devices according to |controls|. It creates
+  // a new request which is identified by a unique string that's returned to the
+  // caller. |render_process_id| and |render_frame_id| are used to determine
+  // where the infobar will appear to the user. |device_stopped_cb| is set to
+  // receive device stopped notifications. |device_changed_cb| is set to receive
+  // device changed notifications. |device_request_state_change_cb| is used to
+  // notify clients about request state changes.
   void GenerateStream(
       int render_process_id,
       int render_frame_id,
@@ -187,7 +206,9 @@ class CONTENT_EXPORT MediaStreamManager
       blink::mojom::StreamSelectionInfoPtr audio_stream_selection_info_ptr,
       GenerateStreamCallback generate_stream_cb,
       DeviceStoppedCallback device_stopped_cb,
-      DeviceChangedCallback device_changed_cb);
+      DeviceChangedCallback device_changed_cb,
+      DeviceRequestStateChangeCallback device_request_state_change_cb,
+      DeviceCaptureHandleChangeCallback device_capture_handle_change_cb);
 
   // Cancel an open request identified by |page_request_id| for the given frame.
   // Must be called on the IO thread.
@@ -275,9 +296,14 @@ class CONTENT_EXPORT MediaStreamManager
   // webrtcLoggingPrivate API if requested.
   void AddLogMessageOnIOThread(const std::string& message);
 
-  // base::PowerObserver overrides.
+  // base::PowerSuspendObserver overrides.
   void OnSuspend() override;
   void OnResume() override;
+
+  // base::PowerThermalObserver overrides.
+  void OnThermalStateChange(
+      base::PowerThermalObserver::DeviceThermalState new_state) override;
+  void OnSpeedLimitChange(int new_limit) override;
 
   // Called by the tests to specify a factory for creating
   // FakeMediaStreamUIProxys to be used for generated streams.
@@ -316,7 +342,17 @@ class CONTENT_EXPORT MediaStreamManager
       url::Origin security_origin,
       std::string hmac_device_id,
       scoped_refptr<base::SequencedTaskRunner> task_runner,
-      base::OnceCallback<void(const base::Optional<std::string>&)> callback);
+      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
+  // Overload that allows for a blink::mojom::MediaDeviceType to be specified
+  // instead of a blink::mojom::MediaStreamType. This allows for getting the raw
+  // device ID from the HMAC of an audio output device.
+  static void GetMediaDeviceIDForHMAC(
+      blink::mojom::MediaDeviceType device_type,
+      std::string salt,
+      url::Origin security_origin,
+      std::string hmac_device_id,
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
+      base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
   // Returns true if the renderer process identified with |render_process_id|
   // is allowed to access |origin|.
@@ -332,13 +368,13 @@ class CONTENT_EXPORT MediaStreamManager
 
   // Helper for sending up-to-date device lists to media observer when a
   // capture device is plugged in or unplugged.
-  void NotifyDevicesChanged(blink::MediaDeviceType stream_type,
+  void NotifyDevicesChanged(blink::mojom::MediaDeviceType stream_type,
                             const blink::WebMediaDeviceInfoArray& devices);
 
   // This method is called when an audio or video device is removed. It makes
   // sure all MediaStreams that use a removed device are stopped and that the
   // render process is notified. Must be called on the IO thread.
-  void StopRemovedDevice(blink::MediaDeviceType type,
+  void StopRemovedDevice(blink::mojom::MediaDeviceType type,
                          const blink::WebMediaDeviceInfo& media_device_info);
 
   void SetGenerateStreamCallbackForTesting(
@@ -346,6 +382,23 @@ class CONTENT_EXPORT MediaStreamManager
 
   // This method is called when all tracks are started.
   void OnStreamStarted(const std::string& label);
+
+#if !defined(OS_ANDROID)
+  // Determines whether the captured surface (tab/window) should be focused.
+  // This can be called at most once, and only within the first 1s of the
+  // capture session being initiated. If a call with |focus=false| is not
+  // executed within this time period, the captured surface *is* focused.
+  //
+  // |is_from_microtask| and |is_from_timer| are used to distinguish:
+  // a. Explicit calls from the Web-application.
+  // b. Implicit calls resulting from the focusability-window-closing microtask.
+  // c. The browser-side timer.
+  // This distinction is reflected by UMA.
+  void SetCapturedDisplaySurfaceFocus(const std::string& label,
+                                      bool focus,
+                                      bool is_from_microtask,
+                                      bool is_from_timer);
+#endif
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MediaStreamManagerTest, DesktopCaptureDeviceStopped);
@@ -377,6 +430,10 @@ class CONTENT_EXPORT MediaStreamManager
   void StopMediaStreamFromBrowser(const std::string& label);
   void ChangeMediaStreamSourceFromBrowser(const std::string& label,
                                           const DesktopMediaID& media_id);
+  void RequestStateChangeFromBrowser(
+      const std::string& label,
+      const DesktopMediaID& media_id,
+      blink::mojom::MediaStreamStateChange new_state);
 
   // Helpers.
   // Checks if all devices that was requested in the request identififed by
@@ -444,7 +501,7 @@ class CONTENT_EXPORT MediaStreamManager
   void PostRequestToUI(
       const std::string& label,
       const MediaDeviceEnumeration& enumeration,
-      const base::Optional<media::AudioParameters>& output_parameters);
+      const absl::optional<media::AudioParameters>& output_parameters);
   // Returns true if a device with |device_id| has already been requested with
   // a render procecss_id and render_frame_id and type equal to the the values
   // in |request|. If it has been requested, |device_info| contain information
@@ -456,6 +513,10 @@ class CONTENT_EXPORT MediaStreamManager
       MediaRequestState* existing_request_state) const;
 
   void FinalizeGenerateStream(const std::string& label, DeviceRequest* request);
+  void PanTiltZoomPermissionChecked(const std::string& label,
+                                    blink::MediaStreamDevices audio_devices,
+                                    blink::MediaStreamDevices video_devices,
+                                    bool pan_tilt_zoom_allowed);
   void FinalizeRequestFailed(const std::string& label,
                              DeviceRequest* request,
                              blink::mojom::MediaStreamRequestResult result);
@@ -517,6 +578,81 @@ class CONTENT_EXPORT MediaStreamManager
   // Activate the specified tab and bring it to the front.
   void ActivateTabOnUIThread(const DesktopMediaID source);
 
+  // Get the permission controller for a particular RFH. Must be called on the
+  // UI thread.
+  static PermissionControllerImpl* GetPermissionController(
+      int requesting_process_id,
+      int requesting_frame_id);
+
+  // Subscribe to the permission controller in order to monitor camera/mic
+  // permission updates for a particular DeviceRequest. All the additional
+  // information is needed because `FindRequest` can't be called on the UI
+  // thread.
+  void SubscribeToPermissionControllerOnUIThread(const std::string& label,
+                                                 int requesting_process_id,
+                                                 int requesting_frame_id,
+                                                 int requester_id,
+                                                 int page_request_id,
+                                                 bool is_audio_request,
+                                                 bool is_video_request,
+                                                 const GURL& origin);
+
+  // Store the subscription ids on a DeviceRequest in order to allow
+  // unsubscribing when the request is deleted.
+  void SetPermissionSubscriptionIDs(
+      const std::string& label,
+      int requesting_process_id,
+      int requesting_frame_id,
+      PermissionController::SubscriptionId audio_subscription_id,
+      PermissionController::SubscriptionId video_subscription_id);
+
+  // Unsubscribe from following permission updates for the two specified
+  // subscription IDs. Called when a request is deleted.
+  static void UnsubscribeFromPermissionControllerOnUIThread(
+      int requesting_process_id,
+      int requesting_frame_id,
+      PermissionController::SubscriptionId audio_subscription_id,
+      PermissionController::SubscriptionId video_subscription_id);
+
+  // Callback that the PermissionController calls when a permission is updated.
+  void PermissionChangedCallback(int requesting_process_id,
+                                 int requesting_frame_id,
+                                 int requester_id,
+                                 int page_request_id,
+                                 blink::mojom::PermissionStatus status);
+
+  // Start tracking capture-handle changes for tab-capture.
+  void MaybeStartTrackingCaptureHandleConfig(
+      const std::string& label,
+      const blink::MediaStreamDevice& captured_device,
+      GlobalRenderFrameHostId capturer);
+
+  // Stop tracking capture-handle changes for tab-capture.
+  void MaybeStopTrackingCaptureHandleConfig(
+      const std::string& label,
+      const blink::MediaStreamDevice& captured_device);
+
+  // When device changes, update which tabs' capture-handles are tracked.
+  void MaybeUpdateTrackedCaptureHandleConfigs(
+      const std::string& label,
+      const blink::MediaStreamDevices& new_devices,
+      GlobalRenderFrameHostId capturer);
+
+  // Receive a new capture-handle from the CaptureHandleManager.
+  void OnCaptureHandleChange(const std::string& label,
+                             blink::mojom::MediaStreamType type,
+                             media::mojom::CaptureHandlePtr capture_handle);
+
+#if !defined(OS_ANDROID)
+  // Defines a window of opportunity for the Web-application to decide
+  // whether a display-surface which it's capturing should be focused.
+  // After |kConditionalFocusWindow| past the beginning of the capture,
+  // the browser makes its own decision and ignores further instructions
+  // from Web-applications, thereby preventing applications from changing
+  // focus at an arbitrary time.
+  const base::TimeDelta conditional_focus_window_;
+#endif
+
   media::AudioSystem* const audio_system_;  // not owned
   scoped_refptr<AudioInputDeviceManager> audio_input_device_manager_;
   scoped_refptr<VideoCaptureManager> video_capture_manager_;
@@ -525,7 +661,7 @@ class CONTENT_EXPORT MediaStreamManager
   // Always initialized on Windows.
   // On other platforms, initialized when no audio task runner is provided in
   // the constructor.
-  base::Optional<base::Thread> video_capture_thread_;
+  absl::optional<base::Thread> video_capture_thread_;
 
   std::unique_ptr<MediaDevicesManager> media_devices_manager_;
 
@@ -535,6 +671,11 @@ class CONTENT_EXPORT MediaStreamManager
   base::RepeatingCallback<std::unique_ptr<FakeMediaStreamUIProxy>(void)>
       fake_ui_factory_;
 
+  // Observes changes of captured tabs' CaptureHandleConfig and reports
+  // this changes back to their capturers. This object lives on the UI thread
+  // and must be accessed on it and torn down from it.
+  CaptureHandleManager capture_handle_manager_;
+
   // Maps render process hosts to log callbacks. Used on the IO thread.
   std::map<int, base::RepeatingCallback<void(const std::string&)>>
       log_callbacks_;
@@ -542,8 +683,6 @@ class CONTENT_EXPORT MediaStreamManager
   std::unique_ptr<AudioServiceListener> audio_service_listener_;
 
   GenerateStreamTestCallback generate_stream_test_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamManager);
 };
 
 }  // namespace content

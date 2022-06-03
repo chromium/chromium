@@ -25,18 +25,16 @@
 
 // Include FFmpeg header files.
 extern "C" {
-// Temporarily disable possible loss of data warning.
-MSVC_PUSH_DISABLE_WARNING(4244)
 #include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavformat/avio.h>
 #include <libavutil/avutil.h>
+#include <libavutil/channel_layout.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/log.h>
 #include <libavutil/mastering_display_metadata.h>
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
-MSVC_POP_WARNING()
 }  // extern "C"
 
 namespace media {
@@ -56,8 +54,7 @@ inline void ScopedPtrAVFree::operator()(void* x) const {
 
 inline void ScopedPtrAVFreePacket::operator()(void* x) const {
   AVPacket* packet = static_cast<AVPacket*>(x);
-  av_packet_unref(packet);
-  delete packet;
+  av_packet_free(&packet);
 }
 
 inline void ScopedPtrAVFreeContext::operator()(void* x) const {

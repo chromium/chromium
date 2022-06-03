@@ -15,11 +15,6 @@ div.foo { (inspector-stylesheet:1 -> inspector-stylesheet:1:10)
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 ===== Style sheet text: =====
 div.foo {}
 
@@ -36,11 +31,6 @@ div.foo { (inspector-stylesheet:1 -> inspector-stylesheet:1:10)
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
 
 ===== Style sheet text: =====
 div.foo {}
@@ -59,11 +49,6 @@ div.foo { (inspector-stylesheet:1 -> inspector-stylesheet:1:10)
 [expanded] 
 div { (user agent stylesheet)
     display: block;
-
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
 
 ===== Style sheet text: =====
 div.foo {}

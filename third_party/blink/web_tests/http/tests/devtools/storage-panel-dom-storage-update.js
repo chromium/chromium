@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Test that storage panel is present and that it contains correct data whenever localStorage is updated.\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
     // Note: every test that uses a storage API must manually clean-up state from previous tests.
   await ApplicationTestRunner.resetState();
 
@@ -39,8 +39,8 @@
     var rows = [];
     for (var i = 0; i < nodes.length; ++i) {
       var node = nodes[i];
-      if (typeof node._data.key === 'string')
-        rows.push(node._data.key + ' = ' + node._data.value);
+      if (typeof node.data.key === 'string')
+        rows.push(node.data.key + ' = ' + node.data.value);
     }
     rows.sort();
     TestRunner.addResult('Table rows: [' + rows.join(', ') + ']');
@@ -69,15 +69,15 @@
       TestRunner.assertTrue(!!storage, 'Local storage not found.');
 
       UI.panels.resources.showDOMStorage(storage);
-      view = UI.panels.resources._domStorageView;
-      TestRunner.addSniffer(view, '_showDOMStorageItems', viewUpdated);
+      view = UI.panels.resources.domStorageView;
+      TestRunner.addSniffer(view, 'showDOMStorageItems', viewUpdated);
     },
 
     function addItemTest(next) {
       var indicesToAdd = [1, 2, 3, 4, 5, 6];
 
       function itemAdded() {
-        dumpDataGrid(view._dataGrid.rootNode());
+        dumpDataGrid(view.dataGrid.rootNode());
         addItem();
       }
 
@@ -88,7 +88,7 @@
           return;
         }
         TestRunner.addResult('');
-        TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), '_domStorageItemAdded', itemAdded);
+        TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), 'domStorageItemAdded', itemAdded);
         var command = 'addItem(\'key' + index + '\', \'value' + index + '\');';
         TestRunner.addResult(command);
         TestRunner.evaluateInPage(command);
@@ -101,7 +101,7 @@
       var indicesToRemove = [1, 3, 5];
 
       function itemRemoved() {
-        dumpDataGrid(view._dataGrid.rootNode());
+        dumpDataGrid(view.dataGrid.rootNode());
         removeItem();
       }
 
@@ -112,7 +112,7 @@
           return;
         }
         TestRunner.addResult('');
-        TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), '_domStorageItemRemoved', itemRemoved);
+        TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), 'domStorageItemRemoved', itemRemoved);
         var command = 'removeItem(\'key' + index + '\');';
         TestRunner.addResult(command);
         TestRunner.evaluateInPage(command);
@@ -123,25 +123,25 @@
 
     function updateItemTest(next) {
       TestRunner.addResult('');
-      TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), '_domStorageItemUpdated', itemUpdated);
+      TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), 'domStorageItemUpdated', itemUpdated);
       var command = 'updateItem(\'key2\', \'VALUE2\');';
       TestRunner.addResult(command);
       TestRunner.evaluateInPage(command);
 
       function itemUpdated() {
-        dumpDataGrid(view._dataGrid.rootNode());
+        dumpDataGrid(view.dataGrid.rootNode());
         next();
       }
     },
 
     function clearTest(next) {
       function itemsCleared() {
-        dumpDataGrid(view._dataGrid.rootNode());
+        dumpDataGrid(view.dataGrid.rootNode());
         next();
       }
 
       TestRunner.addResult('');
-      TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), '_domStorageItemsCleared', itemsCleared);
+      TestRunner.addSniffer(ApplicationTestRunner.domStorageModel(), 'domStorageItemsCleared', itemsCleared);
       var command = 'clear()';
       TestRunner.addResult(command);
       TestRunner.evaluateInPage(command);

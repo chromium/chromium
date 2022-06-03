@@ -4,22 +4,17 @@
 
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 
-#include "base/logging.h"
 #include "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
-#import "ios/chrome/browser/ui/infobars/test/fake_infobar_ui_delegate.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-FakeInfobarIOS::FakeInfobarIOS()
-    : InfoBarIOS([[FakeInfobarUIDelegate alloc] init],
-                 std::make_unique<FakeInfobarDelegate>()),
-      fake_ui_delegate_(
-          static_cast<FakeInfobarUIDelegate*>(InfobarUIDelegate())),
-      fake_delegate_(static_cast<FakeInfobarDelegate*>(delegate())) {
-  DCHECK([fake_ui_delegate_ isKindOfClass:[FakeInfobarUIDelegate class]]);
-  DCHECK(fake_delegate_);
-}
+FakeInfobarIOS::FakeInfobarIOS(InfobarType type, std::u16string message_text)
+    : InfoBarIOS(type, std::make_unique<FakeInfobarDelegate>(message_text)) {}
+
+FakeInfobarIOS::FakeInfobarIOS(
+    std::unique_ptr<FakeInfobarDelegate> fake_delegate)
+    : InfoBarIOS(InfobarType::kInfobarTypeConfirm, std::move(fake_delegate)) {}
 
 FakeInfobarIOS::~FakeInfobarIOS() = default;

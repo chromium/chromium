@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="dark">
+<script src="../../../media/media-file.js"></script>
+<script src="../../../media/video-paint-test.js"></script>
+<script src="../../../media/media-controls.js"></script>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../../fast/forms/resources/common.js"></script>
+
+<body>
+  <li>Focus: <video controls></video></li> <br><br>
+  <li>Non-Focus: <video controls></video></li>
+  <script>
+    runAfterLayoutAndPaint(function () {
+      eventSender.keyDown('Tab');
+    }, true);
+  </script>
+</body>

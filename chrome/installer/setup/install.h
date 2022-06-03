@@ -7,19 +7,18 @@
 #ifndef CHROME_INSTALLER_SETUP_INSTALL_H_
 #define CHROME_INSTALLER_SETUP_INSTALL_H_
 
-#include "base/strings/string16.h"
 #include "chrome/installer/util/util_constants.h"
 
 namespace base {
 class FilePath;
 class Version;
-}
+}  // namespace base
 
 namespace installer {
 
-class InstallationState;
+struct InstallParams;
 class InstallerState;
-class MasterPreferences;
+class InitialPreferences;
 
 enum InstallShortcutOperation {
   // Create all shortcuts (potentially skipping those explicitly stated not to
@@ -61,47 +60,23 @@ bool CreateVisualElementsManifest(const base::FilePath& src_path,
 // created even if they don't exist.
 // If creating the Start menu shortcut is successful, it is also pinned to the
 // taskbar.
-void CreateOrUpdateShortcuts(
-    const base::FilePath& target,
-    const MasterPreferences& prefs,
-    InstallShortcutLevel install_level,
-    InstallShortcutOperation install_operation);
-
-// Registers Chrome on this machine.
-// If |make_chrome_default|, also attempts to make Chrome default where doing so
-// requires no more user interaction than a UAC prompt. In practice, this means
-// on versions of Windows prior to Windows 8.
-void RegisterChromeOnMachine(const InstallerState& installer_state,
-                             bool make_chrome_default);
+void CreateOrUpdateShortcuts(const base::FilePath& target,
+                             const InitialPreferences& prefs,
+                             InstallShortcutLevel install_level,
+                             InstallShortcutOperation install_operation);
 
 // This function installs or updates a new version of Chrome. It returns
 // install status (failed, new_install, updated etc).
 //
-// setup_path: Path to the executable (setup.exe) as it will be copied
-//           to Chrome install folder after install is complete
-// archive_path: Path to the archive (chrome.7z) as it will be copied
-//               to Chrome install folder after install is complete
-// install_temp_path: working directory used during install/update. It should
-//                    also has a sub dir source that contains a complete
-//                    and unpacked Chrome package.
-// src_path: the unpacked Chrome package (inside |install_temp_path|).
-// prefs: master preferences. See chrome/installer/util/master_preferences.h.
-// new_version: new Chrome version that needs to be installed
-// package: Represents the target installation folder and all distributions
-//          to be installed in that folder.
+// install_params: See install_params.h
+// prefs: initial preferences. See chrome/installer/util/initial_preferences.h.
 //
 // Note: since caller unpacks Chrome to install_temp_path\source, the caller
 // is responsible for cleaning up install_temp_path.
 InstallStatus InstallOrUpdateProduct(
-    const InstallationState& original_state,
-    const InstallerState& installer_state,
-    const base::FilePath& setup_path,
-    const base::FilePath& archive_path,
-    const base::FilePath& install_temp_path,
-    const base::FilePath& src_path,
+    const InstallParams& install_params,
     const base::FilePath& prefs_path,
-    const installer::MasterPreferences& prefs,
-    const base::Version& new_version);
+    const installer::InitialPreferences& prefs);
 
 // Launches a process that deletes files that belong to old versions of Chrome.
 // |setup_path| is the path to the setup.exe executable to use.

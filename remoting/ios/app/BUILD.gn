@@ -8,14 +8,14 @@ import("//remoting/ios/app/remoting_ios_tmpl.gni")
 group("all") {
   testonly = true
 
-  deps = [
-    ":ios_remoting_app",
-  ]
+  deps = [ ":ios_remoting_app" ]
 }
 
 # source set to be used by both external and internal app.
 source_set("common_source_set") {
   sources = [
+    "account_manager.h",
+    "account_manager.mm",
     "app_delegate.h",
     "app_delegate.mm",
     "app_initializer.h",
@@ -67,6 +67,12 @@ source_set("common_source_set") {
     "remoting_view_controller.mm",
     "session_reconnect_view.h",
     "session_reconnect_view.mm",
+    "settings/remoting_settings_view_controller.h",
+    "settings/remoting_settings_view_controller.mm",
+    "settings/setting_option.h",
+    "settings/setting_option.mm",
+    "settings/settings_view_cell.h",
+    "settings/settings_view_cell.mm",
     "side_menu_items.h",
     "side_menu_items.mm",
     "user_status_presenter.h",
@@ -79,13 +85,15 @@ source_set("common_source_set") {
 
   deps = [
     "//base",
+    "//base:i18n",
     "//google_apis",
     "//remoting/base",
+    "//remoting/base:authorization",
     "//remoting/client",
     "//remoting/client/input",
+    "//remoting/client/notification",
     "//remoting/ios:ios_core",
     "//remoting/ios/app/resources:assets",
-    "//remoting/ios/app/settings",
     "//remoting/ios/audio",
     "//remoting/ios/display",
     "//remoting/ios/domain",
@@ -98,7 +106,7 @@ source_set("common_source_set") {
     "//ui/resources",
   ]
 
-  libs = [
+  frameworks = [
     "UIKit.framework",
     "AVFoundation.framework",
     "Foundation.framework",
@@ -113,7 +121,7 @@ source_set("common_source_set") {
   }
 
   public_deps = [
-    "//ios/third_party/material_components_ios:material_components_ios+link",
+    "//ios/third_party/material_components_ios",
     "//remoting/ios/facade",
   ]
 
@@ -122,8 +130,9 @@ source_set("common_source_set") {
 
 source_set("app_source_set") {
   sources = [
+    "account_manager_chromium.h",
+    "account_manager_chromium.mm",
     "app_initializer_chromium.mm",
-    "app_view_controller_chromium.mm",
     "refresh_control_provider_chromium.h",
     "refresh_control_provider_chromium.mm",
     "remoting_menu_view_controller.h",
@@ -132,8 +141,11 @@ source_set("app_source_set") {
   deps = [
     ":common_source_set",
     "//base",
+    "//google_apis",
+    "//remoting/resources",
+    "//ui/base",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 
   # TODO(crbug.com/875022) fix for OpenGLES deprecation.
   defines = [ "GLES_SILENCE_DEPRECATION" ]
@@ -146,8 +158,12 @@ ios_remoting_app_tmpl("ios_remoting_app") {
   entitlements_path = "resources/Remoting.entitlements"
   deps = [
     ":app_source_set",
-    "//ios/third_party/material_components_ios:material_components_ios+bundle",
+    "//ios/third_party/material_components_ios:material_components_ios+link",
     "//remoting/ios/app/resources:launchscreen_assets",
     "//remoting/ios/app/resources:remoting_icons",
+  ]
+
+  bundle_deps = [
+    "//ios/third_party/material_components_ios:material_components_ios+bundle",
   ]
 }

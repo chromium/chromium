@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.permissions;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -12,20 +12,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule.PermissionUpdateWaiter;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
  * Test suite for quota permissions requests.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@RetryOnFailure
 public class QuotaTest {
     @Rule
     public PermissionTestRule mPermissionRule = new PermissionTestRule();
@@ -44,10 +42,10 @@ public class QuotaTest {
         Tab tab = mPermissionRule.getActivity().getActivityTab();
         PermissionUpdateWaiter updateWaiter =
                 new PermissionUpdateWaiter("Count: ", mPermissionRule.getActivity());
-        tab.addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(updateWaiter));
         mPermissionRule.runAllowTest(
                 updateWaiter, TEST_FILE, script, numUpdates, withGesture, isDialog);
-        tab.removeObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> tab.removeObserver(updateWaiter));
     }
 
     /**
@@ -57,8 +55,7 @@ public class QuotaTest {
     @Test
     @MediumTest
     @Feature({"QuotaPermissions"})
-    @DisabledTest(message = "Modals are now enabled and test needs to be reworked crbug.com/935900")
-    public void testQuotaShowsInfobar() throws Exception {
-        testQuotaPermissionsPlumbing("initiate_requestQuota(1024)", 1, false, false);
+    public void testQuotaPermissionRequestShowsModal() throws Exception {
+        testQuotaPermissionsPlumbing("initiate_requestQuota(1024)", 1, false, true);
     }
 }

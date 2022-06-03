@@ -132,6 +132,10 @@ class NET_EXPORT_PRIVATE DatagramClientSocket : public DatagramSocket,
   // ConnectUsingDefaultNetwork().
   // Returns a network error code.
   virtual int SetMulticastInterface(uint32_t interface_index) = 0;
+
+  // Set iOS Network Service Type for socket option SO_NET_SERVICE_TYPE.
+  // No-op by default.
+  virtual void SetIOSNetworkServiceType(int ios_network_service_type) {}
 };
 
 }  // namespace net

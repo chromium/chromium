@@ -4,7 +4,7 @@
 
 #include "chrome/browser/profiles/profile_key.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "build/build_config.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 

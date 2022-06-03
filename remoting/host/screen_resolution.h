@@ -27,8 +27,7 @@ class ScreenResolution {
   // The vertical and horizontal DPI of the screen.
   const webrtc::DesktopVector& dpi() const { return dpi_; }
 
-  // Returns true if |dimensions_| specifies an empty rectangle or when
-  // IsValid() returns false.
+  // Returns true if |dimensions_| specifies an empty rectangle.
   bool IsEmpty() const;
 
   // Returns true if the dimensions and DPI of the two resolutions match.

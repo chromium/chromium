@@ -20,11 +20,6 @@ class SequencedTaskRunner;
 struct LaunchOptions;
 }  // namespace base
 
-namespace extensions {
-class ExtensionRegistry;
-class ExtensionService;
-}  // namespace extensions
-
 namespace safe_browsing {
 
 class ChromeCleanerScannerResults;
@@ -103,13 +98,8 @@ class ChromeCleanerRunner
   // callbacks. Finally, when the Chrome Cleaner process terminates, a
   // ProcessStatus is passed along to |on_process_done|.
   //
-  // This IPC interface needs the |extension_service| in order to disable
-  // extensions that the Cleaner process wants to disable.
-  //
   // See ChromePromptChannel for more details of the IPC interface.
   static void RunChromeCleanerAndReplyWithExitCode(
-      extensions::ExtensionService* extension_service,
-      extensions::ExtensionRegistry* extension_registry,
       const base::FilePath& cleaner_executable_path,
       const SwReporterInvocation& reporter_invocation,
       ChromeMetricsStatus metrics_status,
@@ -144,9 +134,7 @@ class ChromeCleanerRunner
                       ProcessDoneCallback on_process_done,
                       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
-  ProcessStatus LaunchAndWaitForExitOnBackgroundThread(
-      extensions::ExtensionService* extension_service,
-      extensions::ExtensionRegistry* extension_registry);
+  ProcessStatus LaunchAndWaitForExitOnBackgroundThread();
 
   // Invokes the on_process_done_ callback, which should handle the results of
   // a full cleaner execution whose outcome is given by |launch_status|. This

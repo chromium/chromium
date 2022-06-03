@@ -4,7 +4,7 @@
 
 #include "remoting/host/test_echo_extension_session.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "remoting/proto/control.pb.h"
 #include "remoting/protocol/client_stub.h"
 

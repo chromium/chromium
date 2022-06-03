@@ -5,6 +5,9 @@
 #ifndef UI_COMPOSITOR_TEST_TEST_UTILS_H_
 #define UI_COMPOSITOR_TEST_TEST_UTILS_H_
 
+#include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace gfx {
 class Rect;
 class RoundedCornersF;
@@ -21,8 +24,11 @@ void CheckApproximatelyEqual(const gfx::Rect& lhs, const gfx::Rect& rhs);
 void CheckApproximatelyEqual(const gfx::RoundedCornersF& lhs,
                              const gfx::RoundedCornersF& rhs);
 
-// Runs a RunLoop until the next frame is presented.
-void WaitForNextFrameToBePresented(ui::Compositor* compositor);
+// Runs a RunLoop until the next frame is presented with an optional timeout.
+// Returns true if a frame is presented. Otherwise, returns false.
+bool WaitForNextFrameToBePresented(
+    ui::Compositor* compositor,
+    absl::optional<base::TimeDelta> timeout = absl::nullopt) WARN_UNUSED_RESULT;
 
 }  // namespace ui
 

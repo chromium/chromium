@@ -27,7 +27,7 @@ function getColor(element) {
 description('Test if @keyframes works for shadow host when using :host. i.e. crbug.com/332577');
 
 var host = document.getElementById('host');
-var sr = host.createShadowRoot();
+var sr = host.attachShadow({mode: 'open'});
 sr.innerHTML = '<style>@keyframes anim {'
     + 'from { color: red; } to { color: green; } }'
     + ':host { animation: anim 0.5s both; color: red; }</style>'

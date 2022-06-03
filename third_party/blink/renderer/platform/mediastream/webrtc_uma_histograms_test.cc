@@ -44,12 +44,13 @@ TEST_P(PerSessionWebRTCAPIMetricsTest, CallOngoing) {
   metrics.LogUsageOnlyOnce(api_name);
 }
 
-INSTANTIATE_TEST_SUITE_P(PerSessionWebRTCAPIMetricsTest,
-                         PerSessionWebRTCAPIMetricsTest,
-                         ::testing::ValuesIn({RTCAPIName::kGetUserMedia,
-                                              RTCAPIName::kGetDisplayMedia,
-                                              RTCAPIName::kEnumerateDevices,
-                                              RTCAPIName::kRTCPeerConnection}));
+INSTANTIATE_TEST_SUITE_P(
+    PerSessionWebRTCAPIMetricsTest,
+    PerSessionWebRTCAPIMetricsTest,
+    ::testing::ValuesIn({RTCAPIName::kGetUserMedia,
+                         RTCAPIName::kGetDisplayMedia,
+                         RTCAPIName::kEnumerateDevices,
+                         RTCAPIName::kRTCPeerConnection}));
 
 TEST(PerSessionWebRTCAPIMetrics, NoCallOngoingMultiplePC) {
   MockPerSessionWebRTCAPIMetrics metrics;

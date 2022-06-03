@@ -14,8 +14,6 @@ static_library("core") {
     "distilled_content_store.h",
     "distilled_page_prefs.cc",
     "distilled_page_prefs.h",
-    "distilled_page_prefs_android.cc",
-    "distilled_page_prefs_android.h",
     "distiller.cc",
     "distiller.h",
     "distiller_page.cc",
@@ -35,8 +33,6 @@ static_library("core") {
     "dom_distiller_switches.h",
     "experiments.cc",
     "experiments.h",
-    "feedback_reporter.cc",
-    "feedback_reporter.h",
     "page_features.cc",
     "page_features.h",
     "pref_names.cc",
@@ -47,7 +43,6 @@ static_library("core") {
     "url_constants.h",
     "url_utils.cc",
     "url_utils.h",
-    "url_utils_android.cc",
     "viewer.cc",
     "viewer.h",
   ]
@@ -59,6 +54,7 @@ static_library("core") {
   ]
   deps = [
     "//base",
+    "//components/dom_distiller/core/mojom",
     "//components/leveldb_proto",
     "//components/pref_registry",
     "//components/prefs",
@@ -74,10 +70,16 @@ static_library("core") {
 
   if (is_android) {
     sources += [
+      "distilled_page_prefs_android.cc",
+      "distilled_page_prefs_android.h",
       "dom_distiller_service_android.cc",
       "dom_distiller_service_android.h",
+      "url_utils_android.cc",
     ]
-    deps += [ ":jni_headers" ]
+    deps += [
+      ":jni_headers",
+      "//url:gurl_android",
+    ]
   }
 }
 
@@ -108,10 +110,8 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/dom_distiller/core_features.json",
     "//components/test/data/dom_distiller/derived_features.json",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {
@@ -162,8 +162,6 @@ if (is_android) {
   }
 
   java_cpp_enum("distiller_type_java") {
-    sources = [
-      "experiments.h",
-    ]
+    sources = [ "experiments.h" ]
   }
 }

@@ -13,7 +13,7 @@ void AssertDownloadDirectoryCommand(const Command& command,
                                     const std::string& download_directory) {
   std::string behavior;
   std::string download_path;
-  ASSERT_EQ("Page.setDownloadBehavior", command.method);
+  ASSERT_EQ("Browser.setDownloadBehavior", command.method);
   ASSERT_TRUE(command.params.GetString("behavior", &behavior));
   ASSERT_TRUE(command.params.GetString("downloadPath", &download_path));
   ASSERT_EQ(download_directory, download_path);

@@ -35,7 +35,7 @@ FakeCryptAuthEciesEncryptorFactory::~FakeCryptAuthEciesEncryptorFactory() =
     default;
 
 std::unique_ptr<CryptAuthEciesEncryptor>
-FakeCryptAuthEciesEncryptorFactory::BuildInstance() {
+FakeCryptAuthEciesEncryptorFactory::CreateInstance() {
   auto instance = std::make_unique<FakeCryptAuthEciesEncryptor>();
   instance_ = instance.get();
 

@@ -11,9 +11,10 @@
 #include <tuple>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "components/cbor/cbor_export.h"
 
@@ -31,10 +32,12 @@ class CBOR_EXPORT Value {
     // https://tools.ietf.org/html/rfc7049#section-3.9
     // TODO(808022): Clarify where this stands.
     bool operator()(const Value& a, const Value& b) const {
-      // The current implementation only supports integer, text string,
-      // and byte string keys.
-      DCHECK((a.is_integer() || a.is_string() || a.is_bytestring()) &&
-             (b.is_integer() || b.is_string() || b.is_bytestring()));
+      // The current implementation only supports integer, text string, byte
+      // string and invalid UTF8 keys.
+      DCHECK((a.is_integer() || a.is_string() || a.is_bytestring() ||
+              a.is_invalid_utf8()) &&
+             (b.is_integer() || b.is_string() || b.is_bytestring() ||
+              b.is_invalid_utf8()));
 
       // Below text from https://tools.ietf.org/html/rfc7049 errata 4409:
       // *  If the major types are different, the one with the lower value
@@ -66,6 +69,13 @@ class CBOR_EXPORT Value {
           const auto& a_str = a.GetBytestring();
           const size_t a_length = a_str.size();
           const auto& b_str = b.GetBytestring();
+          const size_t b_length = b_str.size();
+          return std::tie(a_length, a_str) < std::tie(b_length, b_str);
+        }
+        case Type::INVALID_UTF8: {
+          const auto& a_str = a.GetInvalidUTF8();
+          const size_t a_length = a_str.size();
+          const auto& b_str = b.GetInvalidUTF8();
           const size_t b_length = b_str.size();
           return std::tie(a_length, a_str) < std::tie(b_length, b_str);
         }
@@ -136,6 +146,9 @@ class CBOR_EXPORT Value {
 
   Value& operator=(Value&& that) noexcept;
 
+  Value(const Value&) = delete;
+  Value& operator=(const Value&) = delete;
+
   ~Value();
 
   // Value's copy constructor and copy assignment operator are deleted.
@@ -195,8 +208,6 @@ class CBOR_EXPORT Value {
 
   void InternalMoveConstructFrom(Value&& that);
   void InternalCleanup();
-
-  DISALLOW_COPY_AND_ASSIGN(Value);
 };
 
 }  // namespace cbor

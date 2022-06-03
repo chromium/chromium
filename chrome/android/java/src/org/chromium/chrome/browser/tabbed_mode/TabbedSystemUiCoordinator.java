@@ -9,10 +9,11 @@ import android.view.Window;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ObservableSupplier;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
+import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.ui.ImmersiveModeManager;
 
 /**
  * A UI coordinator that manages the system status bar and bottom navigation bar for
@@ -29,18 +30,27 @@ public class TabbedSystemUiCoordinator {
      *
      * @param window The {@link Window} associated with the containing activity.
      * @param tabModelSelector The {@link TabModelSelector} for the containing activity.
-     * @param immersiveModeManager The {@link ImmersiveModeManager} for the containing activity.
      * @param overviewModeBehaviorSupplier An {@link ObservableSupplier} for the
      *         {@link OverviewModeBehavior} associated with the containing activity.
+     * @param mFullscreenManager The {@link FullscreenManager} used for containing activity
      */
     public TabbedSystemUiCoordinator(Window window, TabModelSelector tabModelSelector,
-            @Nullable ImmersiveModeManager immersiveModeManager,
-            @Nullable ObservableSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier) {
+            @Nullable OneshotSupplier<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            FullscreenManager mFullscreenManager) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
             assert overviewModeBehaviorSupplier != null;
             mNavigationBarColorController = new TabbedNavigationBarColorController(
-                    window, tabModelSelector, immersiveModeManager, overviewModeBehaviorSupplier);
+                    window, tabModelSelector, overviewModeBehaviorSupplier, mFullscreenManager);
         }
+    }
+
+    /**
+     * Gets the {@link TabbedNavigationBarColorController}. Note that this returns null for version
+     * lower than {@link Build.VERSION_CODES#O_MR1}.
+     */
+    @Nullable
+    TabbedNavigationBarColorController getNavigationBarColorController() {
+        return mNavigationBarColorController;
     }
 
     public void destroy() {

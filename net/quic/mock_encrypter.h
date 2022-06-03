@@ -6,10 +6,10 @@
 #define NET_QUIC_MOCK_ENCRYPTER_H_
 
 #include <cstddef>
+#include <limits>
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_encrypter.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"
@@ -22,31 +22,32 @@ namespace net {
 class MockEncrypter : public quic::QuicEncrypter {
  public:
   explicit MockEncrypter(quic::Perspective perspective);
+
+  MockEncrypter(const MockEncrypter&) = delete;
+  MockEncrypter& operator=(const MockEncrypter&) = delete;
+
   ~MockEncrypter() override {}
 
   // QuicEncrypter implementation
-  bool SetKey(quiche::QuicheStringPiece key) override;
-  bool SetNoncePrefix(quiche::QuicheStringPiece nonce_prefix) override;
-  bool SetHeaderProtectionKey(quiche::QuicheStringPiece key) override;
-  bool SetIV(quiche::QuicheStringPiece iv) override;
+  bool SetKey(absl::string_view key) override;
+  bool SetNoncePrefix(absl::string_view nonce_prefix) override;
+  bool SetHeaderProtectionKey(absl::string_view key) override;
+  bool SetIV(absl::string_view iv) override;
   bool EncryptPacket(uint64_t packet_number,
-                     quiche::QuicheStringPiece associated_data,
-                     quiche::QuicheStringPiece plaintext,
+                     absl::string_view associated_data,
+                     absl::string_view plaintext,
                      char* output,
                      size_t* output_length,
                      size_t max_output_length) override;
-  std::string GenerateHeaderProtectionMask(
-      quiche::QuicheStringPiece sample) override;
+  std::string GenerateHeaderProtectionMask(absl::string_view sample) override;
   size_t GetKeySize() const override;
   size_t GetNoncePrefixSize() const override;
   size_t GetIVSize() const override;
   size_t GetMaxPlaintextSize(size_t ciphertext_size) const override;
   size_t GetCiphertextSize(size_t plaintext_size) const override;
-  quiche::QuicheStringPiece GetKey() const override;
-  quiche::QuicheStringPiece GetNoncePrefix() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockEncrypter);
+  quic::QuicPacketCount GetConfidentialityLimit() const override;
+  absl::string_view GetKey() const override;
+  absl::string_view GetNoncePrefix() const override;
 };
 
 }  // namespace net

@@ -7,9 +7,9 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/simple_menu_model.h"
 
 namespace gfx {
@@ -48,6 +48,10 @@ class StatusIconMenuModel
 
   // The Delegate can be NULL.
   explicit StatusIconMenuModel(Delegate* delegate);
+
+  StatusIconMenuModel(const StatusIconMenuModel&) = delete;
+  StatusIconMenuModel& operator=(const StatusIconMenuModel&) = delete;
+
   ~StatusIconMenuModel() override;
 
   // Methods for seting the state of specific command ids.
@@ -63,7 +67,7 @@ class StatusIconMenuModel
   // (see menu_model.h:IsItemDynamicAt) which many platforms take as a cue to
   // refresh the label and icon of the menu item each time the menu is
   // shown.
-  void ChangeLabelForCommandId(int command_id, const base::string16& label);
+  void ChangeLabelForCommandId(int command_id, const std::u16string& label);
   void ChangeIconForCommandId(int command_id, const gfx::Image& icon);
 
   void AddObserver(Observer* observer);
@@ -76,8 +80,8 @@ class StatusIconMenuModel
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
   bool IsItemForCommandIdDynamic(int command_id) const override;
-  base::string16 GetLabelForCommandId(int command_id) const override;
-  bool GetIconForCommandId(int command_id, gfx::Image* icon) const override;
+  std::u16string GetLabelForCommandId(int command_id) const override;
+  ui::ImageModel GetIconForCommandId(int command_id) const override;
 
  protected:
   // Overriden from ui::SimpleMenuModel:
@@ -102,8 +106,6 @@ class StatusIconMenuModel
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIconMenuModel);
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_MENU_MODEL_H_

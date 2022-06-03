@@ -20,8 +20,12 @@ namespace android {
 // Returns: The File Descriptor of the asset, or -1 upon failure.
 // Input arguments:
 // - |file_path|: Path to file within .apk. e.g.: assets/foo.pak
+// - |split_name|: If non-empty, refers to the split where the asset is located.
 // Output arguments:
 // - |region|: size & offset (in bytes) within the .apk of the asset.
+BASE_EXPORT int OpenApkAsset(const std::string& file_path,
+                             const std::string& split_name,
+                             base::MemoryMappedFile::Region* region);
 BASE_EXPORT int OpenApkAsset(
     const std::string& file_path,
     base::MemoryMappedFile::Region* region);

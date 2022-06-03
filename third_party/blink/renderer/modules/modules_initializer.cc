@@ -7,13 +7,17 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
 #include "third_party/blink/public/mojom/dom_storage/session_storage_namespace.mojom-blink.h"
 #include "third_party/blink/public/platform/interface_registry.h"
 #include "third_party/blink/public/platform/web_security_origin.h"
 #include "third_party/blink/public/platform/web_string.h"
+#include "third_party/blink/public/web/web_local_frame_client.h"
 #include "third_party/blink/public/web/web_view_client.h"
 #include "third_party/blink/renderer/bindings/modules/v8/module_bindings_initializer.h"
+#include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/clip_path_paint_image_generator.h"
 #include "third_party/blink/renderer/core/css/css_paint_image_generator.h"
 #include "third_party/blink/renderer/core/dom/context_features_client_impl.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -27,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/inspector/devtools_session.h"
 #include "third_party/blink/renderer/core/inspector/inspector_media_context_impl.h"
+#include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -38,12 +43,15 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/canvas/imagebitmap/image_bitmap_rendering_context.h"
 #include "third_party/blink/renderer/modules/canvas/offscreencanvas2d/offscreen_canvas_rendering_context_2d.h"
+#include "third_party/blink/renderer/modules/closewatcher/close_watcher.h"
 #include "third_party/blink/renderer/modules/csspaint/css_paint_image_generator_impl.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/background_color_paint_image_generator_impl.h"
+#include "third_party/blink/renderer/modules/csspaint/nativepaint/clip_path_paint_image_generator_impl.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_absolute_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_inspector_agent.h"
-#include "third_party/blink/renderer/modules/document_metadata/copyless_paste_server.h"
+#include "third_party/blink/renderer/modules/document_metadata/document_metadata_server.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/html_media_element_encrypted_media.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/media_keys_controller.h"
 #include "third_party/blink/renderer/modules/event_interface_modules_names.h"
@@ -51,29 +59,31 @@
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
 #include "third_party/blink/renderer/modules/exported/web_embedded_worker_impl.h"
 #include "third_party/blink/renderer/modules/filesystem/dragged_isolated_file_system_impl.h"
-#include "third_party/blink/renderer/modules/filesystem/local_file_system.h"
 #include "third_party/blink/renderer/modules/gamepad/navigator_gamepad.h"
 #include "third_party/blink/renderer/modules/image_downloader/image_downloader_impl.h"
 #include "third_party/blink/renderer/modules/indexed_db_names.h"
 #include "third_party/blink/renderer/modules/indexeddb/inspector_indexed_db_agent.h"
 #include "third_party/blink/renderer/modules/installation/installation_service_impl.h"
-#include "third_party/blink/renderer/modules/installedapp/installed_app_controller.h"
+#include "third_party/blink/renderer/modules/launch/file_handling_expiry_impl.h"
 #include "third_party/blink/renderer/modules/launch/web_launch_service_impl.h"
 #include "third_party/blink/renderer/modules/manifest/manifest_manager.h"
+#include "third_party/blink/renderer/modules/media/audio/audio_renderer_sink_cache.h"
+#include "third_party/blink/renderer/modules/media_capabilities_names.h"
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
+#include "third_party/blink/renderer/modules/mediasource/media_source_registry_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_client.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_tracker.h"
 #include "third_party/blink/renderer/modules/picture_in_picture/picture_in_picture_controller_impl.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
-#include "third_party/blink/renderer/modules/presentation/presentation_receiver.h"
+#include "third_party/blink/renderer/modules/presentation/presentation.h"
 #include "third_party/blink/renderer/modules/push_messaging/push_messaging_client.h"
-#include "third_party/blink/renderer/modules/remote_objects/remote_object_gateway_impl.h"
 #include "third_party/blink/renderer/modules/remoteplayback/html_media_element_remote_playback.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback.h"
-#include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller_impl.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/screen_details.h"
+#include "third_party/blink/renderer/modules/screen_enumeration/window_screens.h"
+#include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
-#include "third_party/blink/renderer/modules/speech/speech_recognition_controller.h"
+#include "third_party/blink/renderer/modules/storage/dom_window_storage.h"
 #include "third_party/blink/renderer/modules/storage/dom_window_storage_controller.h"
 #include "third_party/blink/renderer/modules/storage/inspector_dom_storage_agent.h"
 #include "third_party/blink/renderer/modules/storage/storage_namespace.h"
@@ -88,19 +98,68 @@
 #include "third_party/blink/renderer/modules/webgl/webgl_rendering_context.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_canvas_context.h"
 #include "third_party/blink/renderer/modules/worklet/animation_and_paint_worklet_thread.h"
-#include "third_party/blink/renderer/modules/xr/navigator_xr.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
-#include "third_party/blink/renderer/modules/webgl/webgl2_compute_rendering_context.h"
+#if defined(OS_ANDROID)
+#include "third_party/blink/public/platform/modules/video_capture/web_video_capture_impl_manager.h"
+#include "third_party/blink/public/platform/platform.h"
+#include "third_party/blink/public/web/modules/mediastream/web_media_stream_device_observer.h"
+#include "third_party/blink/renderer/core/page/page_visibility_observer.h"
+#include "third_party/blink/renderer/modules/remote_objects/remote_object_gateway_impl.h"
 #endif
 
 namespace blink {
+
+#if defined(OS_ANDROID)
+namespace {
+
+class SuspendCaptureObserver : public GarbageCollected<SuspendCaptureObserver>,
+                               public Supplement<Page>,
+                               public PageVisibilityObserver {
+ public:
+  static const char kSupplementName[];
+
+  explicit SuspendCaptureObserver(Page& page)
+      : Supplement<Page>(page), PageVisibilityObserver(&page) {}
+
+  // PageVisibilityObserver overrides:
+  void PageVisibilityChanged() override {
+    // TODO(crbug.com/487935): We don't yet suspend video capture devices for
+    // OOPIFs.
+    WebLocalFrameImpl* frame = WebLocalFrameImpl::FromFrame(
+        DynamicTo<LocalFrame>(GetPage()->MainFrame()));
+    if (!frame)
+      return;
+    WebMediaStreamDeviceObserver* media_stream_device_observer =
+        frame->Client()->MediaStreamDeviceObserver();
+    if (!media_stream_device_observer)
+      return;
+
+    bool suspend = !GetPage()->IsPageVisible();
+    MediaStreamDevices video_devices =
+        media_stream_device_observer->GetNonScreenCaptureDevices();
+    Platform::Current()->GetVideoCaptureImplManager()->SuspendDevices(
+        video_devices, suspend);
+  }
+
+  void Trace(Visitor* visitor) const override {
+    Supplement<Page>::Trace(visitor);
+    PageVisibilityObserver::Trace(visitor);
+  }
+};
+
+const char SuspendCaptureObserver::kSupplementName[] = "SuspendCaptureObserver";
+
+}  // namespace
+
+#endif  // OS_ANDROID
 
 void ModulesInitializer::Initialize() {
   // Strings must be initialized before calling CoreInitializer::init().
@@ -114,11 +173,16 @@ void ModulesInitializer::Initialize() {
   Document::RegisterEventFactory(EventModulesFactory::Create());
   ModuleBindingsInitializer::Init();
   indexed_db_names::Init();
+  media_capabilities_names::Init();
   AXObjectCache::Init(AXObjectCacheImpl::Create);
   DraggedIsolatedFileSystem::Init(
       DraggedIsolatedFileSystemImpl::PrepareForDataObject);
   CSSPaintImageGenerator::Init(CSSPaintImageGeneratorImpl::Create);
+  BackgroundColorPaintImageGenerator::Init(
+      BackgroundColorPaintImageGeneratorImpl::Create);
+  ClipPathPaintImageGenerator::Init(ClipPathPaintImageGeneratorImpl::Create);
   WebDatabaseHost::GetInstance().Init();
+  MediaSourceRegistryImpl::Init();
 
   CoreInitializer::Initialize();
 
@@ -129,10 +193,6 @@ void ModulesInitializer::Initialize() {
       std::make_unique<WebGLRenderingContext::Factory>());
   HTMLCanvasElement::RegisterRenderingContextFactory(
       std::make_unique<WebGL2RenderingContext::Factory>());
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
-  HTMLCanvasElement::RegisterRenderingContextFactory(
-      std::make_unique<WebGL2ComputeRenderingContext::Factory>());
-#endif
   HTMLCanvasElement::RegisterRenderingContextFactory(
       std::make_unique<ImageBitmapRenderingContext::Factory>());
   HTMLCanvasElement::RegisterRenderingContextFactory(
@@ -147,60 +207,45 @@ void ModulesInitializer::Initialize() {
       std::make_unique<WebGL2RenderingContext::Factory>());
   OffscreenCanvas::RegisterRenderingContextFactory(
       std::make_unique<ImageBitmapRenderingContext::Factory>());
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
   OffscreenCanvas::RegisterRenderingContextFactory(
-      std::make_unique<WebGL2ComputeRenderingContext::Factory>());
-#endif
+      std::make_unique<GPUCanvasContext::Factory>());
 }
 
 void ModulesInitializer::InitLocalFrame(LocalFrame& frame) const {
   if (frame.IsMainFrame()) {
     frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-        &CopylessPasteServer::BindMojoReceiver, WrapWeakPersistent(&frame)));
+        &DocumentMetadataServer::BindReceiver, WrapWeakPersistent(&frame)));
   }
-  if (RuntimeEnabledFeatures::FileHandlingEnabled(frame.GetDocument())) {
-    frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
-        &WebLaunchServiceImpl::Create, WrapWeakPersistent(&frame)));
-  }
+  frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
+      &WebLaunchServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
+  frame.GetInterfaceRegistry()->AddAssociatedInterface(WTF::BindRepeating(
+      &FileHandlingExpiryImpl::BindReceiver, WrapWeakPersistent(&frame)));
+
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &InstallationServiceImpl::Create, WrapWeakPersistent(&frame)));
+      &InstallationServiceImpl::BindReceiver, WrapWeakPersistent(&frame)));
   // TODO(dominickn): This interface should be document-scoped rather than
   // frame-scoped, as the resulting banner event is dispatched to
   // frame()->document().
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &AppBannerController::BindMojoRequest, WrapWeakPersistent(&frame)));
+      &AppBannerController::BindReceiver, WrapWeakPersistent(&frame)));
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &TextSuggestionBackendImpl::Create, WrapWeakPersistent(&frame)));
+      &TextSuggestionBackendImpl::Bind, WrapWeakPersistent(&frame)));
+#if defined(OS_ANDROID)
   frame.GetInterfaceRegistry()->AddInterface(WTF::BindRepeating(
-      &RemoteObjectGatewayFactoryImpl::Create, WrapWeakPersistent(&frame)));
+      &RemoteObjectGatewayFactoryImpl::Bind, WrapWeakPersistent(&frame)));
+#endif  // OS_ANDROID
+
+  frame.GetInterfaceRegistry()->AddInterface(
+      WTF::BindRepeating(&PeerConnectionTracker::BindToFrame,
+                         WrapCrossThreadWeakPersistent(&frame)));
 }
 
 void ModulesInitializer::InstallSupplements(LocalFrame& frame) const {
-  WebLocalFrameImpl* web_frame = WebLocalFrameImpl::FromFrame(&frame);
-  WebLocalFrameClient* client = web_frame->Client();
-  DCHECK(client);
-  ProvidePushMessagingClientTo(
-      frame, MakeGarbageCollected<PushMessagingClient>(frame));
-  ProvideUserMediaTo(frame);
-  ProvideLocalFileSystemTo(frame);
-
-  ScreenOrientationControllerImpl::ProvideTo(frame);
-  if (RuntimeEnabledFeatures::PresentationEnabled())
-    PresentationController::ProvideTo(frame);
-  ::blink::ProvideSpeechRecognitionTo(frame);
+  DCHECK(WebLocalFrameImpl::FromFrame(&frame)->Client());
   InspectorAccessibilityAgent::ProvideTo(&frame);
-  ManifestManager::ProvideTo(frame);
-  InstalledAppController::ProvideTo(frame);
-  if (frame.IsMainFrame()) {
-    // Only main frame has ImageDownloader service.
-    ImageDownloaderImpl::ProvideTo(frame);
-  }
-  MediaInspectorContextImpl::ProvideToLocalFrame(frame);
-}
-
-void ModulesInitializer::ProvideLocalFileSystemToWorker(
-    WorkerGlobalScope& worker_global_scope) const {
-  ::blink::ProvideLocalFileSystemToWorker(worker_global_scope);
+  ImageDownloaderImpl::ProvideTo(frame);
+  AudioRendererSinkCache::InstallWindowObserver(*frame.DomWindow());
+  CloseWatcher::InstallUserActivationObserver(*frame.DomWindow());
 }
 
 MediaControls* ModulesInitializer::CreateMediaControls(
@@ -239,25 +284,33 @@ void ModulesInitializer::InitInspectorAgentSession(
 void ModulesInitializer::OnClearWindowObjectInMainWorld(
     Document& document,
     const Settings& settings) const {
-  DeviceMotionController::From(document);
-  DeviceOrientationController::From(document);
-  DeviceOrientationAbsoluteController::From(document);
-  NavigatorGamepad::From(document);
-  NavigatorServiceWorker::From(document);
-  DOMWindowStorageController::From(document);
-  if (RuntimeEnabledFeatures::WebXREnabled(document.GetExecutionContext()))
-    NavigatorXR::From(document);
+  LocalDOMWindow& window = *document.domWindow();
+  DeviceMotionController::From(window);
+  DeviceOrientationController::From(window);
+  DeviceOrientationAbsoluteController::From(window);
+  NavigatorGamepad::From(*window.navigator());
+
+  // TODO(nhiroki): Figure out why ServiceWorkerContainer needs to be eagerly
+  // initialized.
+  if (!document.IsInitialEmptyDocument())
+    NavigatorServiceWorker::From(window);
+
+  DOMWindowStorageController::From(window);
   if (RuntimeEnabledFeatures::PresentationEnabled() &&
       settings.GetPresentationReceiver()) {
-    // We eagerly create PresentationReceiver so that the frame creating the
-    // presentation can offer a connection to the presentation receiver.
-    PresentationReceiver::From(document);
+    // We eagerly create Presentation and associated PresentationReceiver so
+    // that the frame creating the presentation can offer a connection to the
+    // presentation receiver.
+    Presentation::presentation(*window.navigator());
   }
+  ManifestManager::From(window);
 
-  LocalFrame* frame = document.GetFrame();
+#if defined(OS_ANDROID)
+  LocalFrame* frame = window.GetFrame();
   DCHECK(frame);
   if (auto* gateway = RemoteObjectGatewayImpl::From(*frame))
     gateway->OnClearWindowObjectInMainWorld();
+#endif  // OS_ANDROID
 }
 
 std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
@@ -269,11 +322,14 @@ std::unique_ptr<WebMediaPlayer> ModulesInitializer::CreateWebMediaPlayer(
       HTMLMediaElementEncryptedMedia::From(html_media_element);
   WebString sink_id(
       HTMLMediaElementAudioOutputDevice::sinkId(html_media_element));
-  MediaInspectorContextImpl* context_impl =
-      MediaInspectorContextImpl::FromHtmlMediaElement(html_media_element);
+  MediaInspectorContextImpl* context_impl = MediaInspectorContextImpl::From(
+      *To<LocalDOMWindow>(html_media_element.GetExecutionContext()));
+  FrameWidget* frame_widget =
+      html_media_element.GetDocument().GetFrame()->GetWidgetForLocalRoot();
   return base::WrapUnique(web_frame_client->CreateMediaPlayer(
       source, media_player_client, context_impl, &encrypted_media,
-      encrypted_media.ContentDecryptionModule(), sink_id));
+      encrypted_media.ContentDecryptionModule(), sink_id,
+      frame_widget->GetLayerTreeSettings()));
 }
 
 WebRemotePlaybackClient* ModulesInitializer::CreateWebRemotePlaybackClient(
@@ -281,15 +337,19 @@ WebRemotePlaybackClient* ModulesInitializer::CreateWebRemotePlaybackClient(
   return &RemotePlayback::From(html_media_element);
 }
 
-void ModulesInitializer::ProvideModulesToPage(Page& page,
-                                              WebViewClient* client) const {
+void ModulesInitializer::ProvideModulesToPage(
+    Page& page,
+    const SessionStorageNamespaceId& namespace_id) const {
   MediaKeysController::ProvideMediaKeysTo(page);
   ::blink::ProvideContextFeaturesTo(
       page, std::make_unique<ContextFeaturesClientImpl>());
   ::blink::ProvideDatabaseClientTo(page,
                                    MakeGarbageCollected<DatabaseClient>());
-  StorageNamespace::ProvideSessionStorageNamespaceTo(page, client);
+  StorageNamespace::ProvideSessionStorageNamespaceTo(page, namespace_id);
   AudioGraphTracer::ProvideAudioGraphTracerTo(page);
+#if defined(OS_ANDROID)
+  page.ProvideSupplement(MakeGarbageCollected<SuspendCaptureObserver>(page));
+#endif  // OS_ANDROID
 }
 
 void ModulesInitializer::ForceNextWebGLContextCreationToFail() const {
@@ -309,28 +369,57 @@ void ModulesInitializer::CloneSessionStorage(
     storage_namespace->CloneTo(WebString::FromLatin1(clone_to_namespace));
 }
 
-void ModulesInitializer::DidCommitLoad(LocalFrame& frame) {
-  ManifestManager* manifest_manager = ManifestManager::From(frame);
-  if (manifest_manager)
-    manifest_manager->DidCommitLoad();
+void ModulesInitializer::EvictSessionStorageCachedData(Page* page) {
+  StorageNamespace* storage_namespace = StorageNamespace::From(page);
+  if (storage_namespace)
+    storage_namespace->EvictSessionStorageCachedData();
 }
 
 void ModulesInitializer::DidChangeManifest(LocalFrame& frame) {
-  ManifestManager* manifest_manager = ManifestManager::From(frame);
-  if (manifest_manager)
-    manifest_manager->DidChangeManifest();
+  ManifestManager::From(*frame.DomWindow())->DidChangeManifest();
+}
+
+void ModulesInitializer::NotifyOrientationChanged(LocalFrame& frame) {
+  ScreenOrientationController::From(*frame.DomWindow())
+      ->NotifyOrientationChanged();
+}
+
+void ModulesInitializer::DidUpdateScreens(
+    LocalFrame& frame,
+    const display::ScreenInfos& screen_infos) {
+  auto* window = frame.DomWindow();
+  if (auto* supplement =
+          Supplement<LocalDOMWindow>::From<WindowScreens>(window)) {
+    // screen_details() may be null if permission has not been granted.
+    if (auto* screen_details = supplement->screen_details()) {
+      screen_details->UpdateScreenInfos(window, screen_infos);
+    }
+  }
+}
+
+void ModulesInitializer::SetLocalStorageArea(
+    LocalFrame& frame,
+    mojo::PendingRemote<mojom::blink::StorageArea> local_storage_area) {
+  if (!frame.DomWindow())
+    return;
+  DOMWindowStorage::From(*frame.DomWindow())
+      .InitLocalStorage(std::move(local_storage_area));
+}
+
+void ModulesInitializer::SetSessionStorageArea(
+    LocalFrame& frame,
+    mojo::PendingRemote<mojom::blink::StorageArea> session_storage_area) {
+  if (!frame.DomWindow())
+    return;
+  DOMWindowStorage::From(*frame.DomWindow())
+      .InitSessionStorage(std::move(session_storage_area));
 }
 
 void ModulesInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
   DCHECK(Platform::Current());
   binders.Add(ConvertToBaseRepeatingCallback(
-                  CrossThreadBindRepeating(&WebDatabaseImpl::Create)),
+                  CrossThreadBindRepeating(&WebDatabaseImpl::Bind)),
               Platform::Current()->GetIOTaskRunner());
-  binders.Add(
-      ConvertToBaseRepeatingCallback(CrossThreadBindRepeating(
-          &PeerConnectionTracker::Bind,
-          WTF::CrossThreadUnretained(PeerConnectionTracker::GetInstance()))),
-      Thread::MainThread()->GetTaskRunner());
 }
 
 }  // namespace blink

@@ -14,37 +14,38 @@
 
 import("../build/crashpad_buildconfig.gni")
 
-static_library("client") {
+crashpad_static_library("client") {
   sources = [
-    "annotation.cc",
-    "annotation.h",
-    "annotation_list.cc",
-    "annotation_list.h",
-    "crash_report_database.cc",
-    "crash_report_database.h",
     "crashpad_client.h",
-    "crashpad_info.cc",
-    "crashpad_info.h",
     "prune_crash_reports.cc",
     "prune_crash_reports.h",
-    "settings.cc",
-    "settings.h",
-    "simple_address_range_bag.h",
-    "simple_string_dictionary.h",
     "simulate_crash.h",
   ]
 
   if (crashpad_is_mac) {
     sources += [
-      "crash_report_database_mac.mm",
       "crashpad_client_mac.cc",
       "simulate_crash_mac.cc",
       "simulate_crash_mac.h",
     ]
   }
 
+  if (crashpad_is_ios) {
+    sources += [
+      "crashpad_client_ios.cc",
+      "ios_handler/exception_processor.h",
+      "ios_handler/exception_processor.mm",
+      "ios_handler/in_process_handler.cc",
+      "ios_handler/in_process_handler.h",
+      "ios_handler/in_process_intermediate_dump_handler.cc",
+      "ios_handler/in_process_intermediate_dump_handler.h",
+      "ios_handler/prune_intermediate_dumps_and_crash_reports_thread.cc",
+      "ios_handler/prune_intermediate_dumps_and_crash_reports_thread.h",
+      "simulate_crash_ios.h",
+    ]
+  }
+
   if (crashpad_is_linux || crashpad_is_android) {
-    set_sources_assignment_filter([])
     sources += [
       "crashpad_client_linux.cc",
       "simulate_crash_linux.h",
@@ -55,13 +56,11 @@ static_library("client") {
     sources += [
       "client_argv_handling.cc",
       "client_argv_handling.h",
-      "crashpad_info_note.S",
     ]
   }
 
   if (crashpad_is_win) {
     sources += [
-      "crash_report_database_win.cc",
       "crashpad_client_win.cc",
       "simulate_crash_win.h",
     ]
@@ -71,38 +70,79 @@ static_library("client") {
     sources += [ "crashpad_client_fuchsia.cc" ]
   }
 
-  if (crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) {
-    sources += [ "crash_report_database_generic.cc" ]
-  }
-
   public_configs = [ "..:crashpad_config" ]
 
   public_deps = [
-    "../third_party/mini_chromium:base",
+    ":common",
+    "$mini_chromium_source_parent:base",
     "../util",
   ]
 
-  deps = []
+  deps = [
+    ":common",
+    "$mini_chromium_source_parent:chromeos_buildflags",
+  ]
 
   if (crashpad_is_win) {
     libs = [ "rpcrt4.lib" ]
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
   }
 
-  if (crashpad_is_linux || crashpad_is_android) {
+  if (crashpad_is_ios) {
     deps += [
-      "../third_party/lss",
+      "../handler:common",
+      "../minidump",
+      "../snapshot",
     ]
   }
 
+  if (crashpad_is_linux || crashpad_is_android) {
+    deps += [ "../third_party/lss" ]
+  }
+
   if (crashpad_is_fuchsia) {
-    deps += [
-      "../third_party/fuchsia",
-    ]
+    deps += [ "../third_party/fuchsia" ]
     if (crashpad_is_in_fuchsia) {
-      deps += [ "//zircon/public/lib/fdio" ]
+      deps += [ "//sdk/lib/fdio" ]
     }
   }
+}
+
+static_library("common") {
+  sources = [
+    "annotation.cc",
+    "annotation.h",
+    "annotation_list.cc",
+    "annotation_list.h",
+    "crash_report_database.cc",
+    "crash_report_database.h",
+    "crashpad_info.cc",
+    "crashpad_info.h",
+    "settings.cc",
+    "settings.h",
+    "simple_address_range_bag.h",
+    "simple_string_dictionary.h",
+  ]
+
+  if (crashpad_is_mac || crashpad_is_ios) {
+    sources += [ "crash_report_database_mac.mm" ]
+  }
+  if (crashpad_is_win) {
+    sources += [ "crash_report_database_win.cc" ]
+  }
+  if (crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) {
+    sources += [
+      "crash_report_database_generic.cc",
+      "crashpad_info_note.S",
+    ]
+  }
+
+  public_configs = [ "..:crashpad_config" ]
+  public_deps = [
+    "$mini_chromium_source_parent:base",
+    "../util",
+  ]
+  deps = [ "../util" ]
 }
 
 source_set("client_test") {
@@ -126,26 +166,42 @@ source_set("client_test") {
     sources += [ "crashpad_client_win_test.cc" ]
   }
 
+  if (crashpad_is_ios) {
+    sources += [
+      "crashpad_client_ios_test.mm",
+      "ios_handler/exception_processor_test.mm",
+      "ios_handler/in_process_intermediate_dump_handler_test.cc",
+    ]
+  }
+
   if (crashpad_is_linux || crashpad_is_android) {
     sources += [ "crashpad_client_linux_test.cc" ]
   }
 
   deps = [
     ":client",
+    "$mini_chromium_source_parent:base",
     "../compat",
     "../snapshot",
     "../test",
-    "../third_party/gtest:gmock",
-    "../third_party/gtest:gtest",
-    "../third_party/mini_chromium:base",
+    "../third_party/googletest:googlemock",
+    "../third_party/googletest:googletest",
     "../util",
   ]
 
-  data_deps = [
-    "../handler:crashpad_handler",
-  ]
+  if (!crashpad_is_ios && !crashpad_is_fuchsia) {
+    data_deps = [ "../handler:crashpad_handler" ]
+  }
 
   if (crashpad_is_win) {
     data_deps += [ "../handler:crashpad_handler_console" ]
+  }
+}
+
+if (crashpad_is_linux || crashpad_is_android) {
+  source_set("pthread_create") {
+    sources = [ "pthread_create_linux.cc" ]
+
+    deps = [ ":client" ]
   }
 }

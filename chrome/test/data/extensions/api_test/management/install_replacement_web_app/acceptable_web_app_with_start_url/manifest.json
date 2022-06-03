@@ -1,0 +1,12 @@
+{
+  "name": "Installable web app",
+  "icons": [
+   {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "pwa_start_url.html",
+  "display": "browser"
+}

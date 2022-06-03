@@ -46,7 +46,7 @@ base::FilePath TestDataRootInternal() {
 #if defined(OS_FUCHSIA)
   base::FilePath asset_path("/pkg/data");
   if (!IsTestDataRoot(asset_path)) {
-    LOG(WARNING) << "Test data root seems invalid, continuing anyway";
+    LOG(WARNING) << "test data root seems invalid, continuing anyway";
   }
   return asset_path;
 #else  // defined(OS_FUCHSIA)
@@ -65,14 +65,23 @@ base::FilePath TestDataRootInternal() {
     return base::FilePath(environment_value);
   }
 
-  // In a standalone build, the test executable is usually at
-  // out/{Debug,Release} relative to the Crashpad root.
   base::FilePath executable_path;
   if (Paths::Executable(&executable_path)) {
+#if defined(OS_IOS) || defined(OS_ANDROID)
+    // On Android and iOS, test data is in a crashpad_test_data directory
+    // adjacent to the main executable. On iOS, this refers to the main
+    // executable file inside the .app bundle, so crashpad_test_data is also
+    // inside the bundle.
+    base::FilePath candidate = executable_path.DirName()
+                               .Append("crashpad_test_data");
+#else  // OS_IOS || OS_ANDRID
+    // In a standalone build, the test executable is usually at
+    // out/{Debug,Release} relative to the Crashpad root.
     base::FilePath candidate =
         base::FilePath(executable_path.DirName()
                            .Append(base::FilePath::kParentDirectory)
                            .Append(base::FilePath::kParentDirectory));
+#endif  // OS_IOS || OS_ANDROID
     if (IsTestDataRoot(candidate)) {
       return candidate;
     }

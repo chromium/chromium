@@ -11,19 +11,23 @@
 
 namespace blink {
 
-IdleDeadline::IdleDeadline(base::TimeTicks deadline, CallbackType callback_type)
+IdleDeadline::IdleDeadline(base::TimeTicks deadline,
+                           bool cross_origin_isolated_capability,
+                           CallbackType callback_type)
     : deadline_(deadline),
+      cross_origin_isolated_capability_(cross_origin_isolated_capability),
       callback_type_(callback_type),
       clock_(base::DefaultTickClock::GetInstance()) {}
 
 double IdleDeadline::timeRemaining() const {
   base::TimeDelta time_remaining = deadline_ - clock_->NowTicks();
-  if (time_remaining < base::TimeDelta() ||
+  if (time_remaining.is_negative() ||
       ThreadScheduler::Current()->ShouldYieldForHighPriorityWork()) {
     return 0;
   }
 
-  return 1000.0 * Performance::ClampTimeResolution(time_remaining.InSecondsF());
+  return Performance::ClampTimeResolution(time_remaining,
+                                          cross_origin_isolated_capability_);
 }
 
 }  // namespace blink

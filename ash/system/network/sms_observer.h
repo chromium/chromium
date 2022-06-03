@@ -7,10 +7,6 @@
 
 #include "chromeos/network/network_sms_handler.h"
 
-namespace base {
-class DictionaryValue;
-}
-
 namespace ash {
 
 // SmsObserver is called when a new sms message is received. Then it shows the
@@ -18,16 +14,18 @@ namespace ash {
 class SmsObserver : public chromeos::NetworkSmsHandler::Observer {
  public:
   SmsObserver();
+
+  SmsObserver(const SmsObserver&) = delete;
+  SmsObserver& operator=(const SmsObserver&) = delete;
+
   ~SmsObserver() override;
 
   // chromeos::NetworkSmsHandler::Observer:
-  void MessageReceived(const base::DictionaryValue& message) override;
+  void MessageReceived(const base::Value& message) override;
 
  private:
   // Used to create notification identifier.
   uint32_t message_id_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsObserver);
 };
 
 }  // namespace ash

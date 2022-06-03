@@ -5,22 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 0, 800, 600],
-          "reason": "background"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [0, 0, 577, 433],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [0, 0, 481, 361],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [0, 0, 800, 600]
       ]
     }
   ]

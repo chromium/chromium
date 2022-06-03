@@ -10,6 +10,16 @@ var callbackFail = chrome.test.callbackFail;
 var urlA = '';
 var urlB = '';
 
+function createTabAndWaitUntilLoaded(url, callback) {
+  chrome.tabs.create({"url": url}, function(tab) {
+    chrome.tabs.onUpdated.addListener(function(tabId, changeInfo) {
+      if (tabId == tab.id && changeInfo.status == 'complete') {
+        callback(tab);
+      }
+    });
+  });
+}
+
 var allTestsADomain = [
   function testSuccess() {
     chrome.automation.getTree(function(tree) {
@@ -34,13 +44,13 @@ chrome.test.getConfig(function(config) {
   urlA = 'http://a.com:PORT/index.html'
       .replace(/PORT/, config.testServer.port);
 
-  chrome.tabs.create({ 'url': urlA }, function() {
+  createTabAndWaitUntilLoaded(urlA, function(unused_tab) {
     chrome.test.runTests(allTestsADomain);
 
     urlB = 'http://b.com:PORT/index.html'
         .replace(/PORT/, config.testServer.port);
 
-    chrome.tabs.create({ 'url': urlB }, function() {
+    createTabAndWaitUntilLoaded(urlB, function(unused_tab) {
       chrome.test.runTests(allTestsBDomain);
     });
   });

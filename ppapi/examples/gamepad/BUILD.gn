@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("gamepad") {
   output_name = "ppapi_example_gamepad"
-  sources = [
-    "gamepad.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "gamepad.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

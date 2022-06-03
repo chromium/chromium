@@ -11,6 +11,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
@@ -29,11 +30,12 @@
 #include "net/socket/diff_serv_code_point.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/socket_tag.h"
+#include "net/socket/udp_socket_global_limits.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
 #if defined(__ANDROID__) && defined(__aarch64__)
 #define HAVE_SENDMMSG 1
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define HAVE_SENDMMSG 1
 #else
 #define HAVE_SENDMMSG 0
@@ -64,8 +66,7 @@ struct NET_EXPORT SendResult {
 };
 
 // Don't delay writes more than this.
-const base::TimeDelta kWriteAsyncMsThreshold =
-    base::TimeDelta::FromMilliseconds(1);
+const base::TimeDelta kWriteAsyncMsThreshold = base::Milliseconds(1);
 // Prefer local if number of writes is not more than this.
 const int kWriteAsyncMinBuffersThreshold = 2;
 // Don't allow more than this many outstanding async writes.
@@ -119,51 +120,41 @@ class NET_EXPORT UDPSocketPosixSender
 
 class NET_EXPORT UDPSocketPosix {
  public:
-  // Performance helper for NetworkActivityMonitor, it batches
+  // Performance helper for net::activity_monitor, it batches
   // throughput samples, subject to a byte limit threshold (64 KB) or
   // timer (100 ms), whichever comes first.  The batching is subject
   // to a minimum number of samples (2) required by NQE to update its
   // throughput estimate.
-  class ActivityMonitor {
+  class ReceivedActivityMonitor {
    public:
-    ActivityMonitor() : bytes_(0), increments_(0) {}
-    virtual ~ActivityMonitor() {}
+    ReceivedActivityMonitor() : bytes_(0), increments_(0) {}
+
+    ReceivedActivityMonitor(const ReceivedActivityMonitor&) = delete;
+    ReceivedActivityMonitor& operator=(const ReceivedActivityMonitor&) = delete;
+
+    ~ReceivedActivityMonitor() = default;
     // Provided by sent/received subclass.
-    // Update throughput, but batch to limit overhead of NetworkActivityMonitor.
+    // Update throughput, but batch to limit overhead of net::activity_monitor.
     void Increment(uint32_t bytes);
     // For flushing cached values.
     void OnClose();
 
    private:
-    virtual void NetworkActivityMonitorIncrement(uint32_t bytes) = 0;
     void Update();
     void OnTimerFired();
 
     uint32_t bytes_;
     uint32_t increments_;
     base::RepeatingTimer timer_;
-    DISALLOW_COPY_AND_ASSIGN(ActivityMonitor);
-  };
-
-  class SentActivityMonitor : public ActivityMonitor {
-   public:
-    ~SentActivityMonitor() override {}
-
-   private:
-    void NetworkActivityMonitorIncrement(uint32_t bytes) override;
-  };
-
-  class ReceivedActivityMonitor : public ActivityMonitor {
-   public:
-    ~ReceivedActivityMonitor() override {}
-
-   private:
-    void NetworkActivityMonitorIncrement(uint32_t bytes) override;
   };
 
   UDPSocketPosix(DatagramSocket::BindType bind_type,
                  net::NetLog* net_log,
                  const net::NetLogSource& source);
+
+  UDPSocketPosix(const UDPSocketPosix&) = delete;
+  UDPSocketPosix& operator=(const UDPSocketPosix&) = delete;
+
   virtual ~UDPSocketPosix();
 
   // Opens the socket.
@@ -386,6 +377,9 @@ class NET_EXPORT UDPSocketPosix {
     experimental_recv_optimization_enabled_ = true;
   }
 
+  // Sets iOS Network Service Type for option SO_NET_SERVICE_TYPE.
+  int SetIOSNetworkServiceType(int ios_network_service_type);
+
  protected:
   // WriteAsync batching etc. are to improve throughput of large high
   // bandwidth uploads.
@@ -395,6 +389,9 @@ class NET_EXPORT UDPSocketPosix {
    public:
     explicit WriteAsyncWatcher(UDPSocketPosix* socket)
         : socket_(socket), watching_(false) {}
+
+    WriteAsyncWatcher(const WriteAsyncWatcher&) = delete;
+    WriteAsyncWatcher& operator=(const WriteAsyncWatcher&) = delete;
 
     // MessagePumpForIO::FdWatcher methods
 
@@ -409,8 +406,6 @@ class NET_EXPORT UDPSocketPosix {
    private:
     UDPSocketPosix* const socket_;
     bool watching_;
-
-    DISALLOW_COPY_AND_ASSIGN(WriteAsyncWatcher);
   };
 
   void IncreaseWriteAsyncOutstanding(int increment) {
@@ -443,6 +438,9 @@ class NET_EXPORT UDPSocketPosix {
    public:
     explicit ReadWatcher(UDPSocketPosix* socket) : socket_(socket) {}
 
+    ReadWatcher(const ReadWatcher&) = delete;
+    ReadWatcher& operator=(const ReadWatcher&) = delete;
+
     // MessagePumpForIO::FdWatcher methods
 
     void OnFileCanReadWithoutBlocking(int /* fd */) override;
@@ -451,13 +449,14 @@ class NET_EXPORT UDPSocketPosix {
 
    private:
     UDPSocketPosix* const socket_;
-
-    DISALLOW_COPY_AND_ASSIGN(ReadWatcher);
   };
 
   class WriteWatcher : public base::MessagePumpForIO::FdWatcher {
    public:
     explicit WriteWatcher(UDPSocketPosix* socket) : socket_(socket) {}
+
+    WriteWatcher(const WriteWatcher&) = delete;
+    WriteWatcher& operator=(const WriteWatcher&) = delete;
 
     // MessagePumpForIO::FdWatcher methods
 
@@ -467,8 +466,6 @@ class NET_EXPORT UDPSocketPosix {
 
    private:
     UDPSocketPosix* const socket_;
-
-    DISALLOW_COPY_AND_ASSIGN(WriteWatcher);
   };
 
   int InternalWriteAsync(CompletionOnceCallback callback,
@@ -493,7 +490,7 @@ class NET_EXPORT UDPSocketPosix {
 
   // Same as SendTo(), except that address is passed by pointer
   // instead of by reference. It is called from Write() with |address|
-  // set to NULL.
+  // set to nullptr.
   int SendToOrWrite(IOBuffer* buf,
                     int buf_len,
                     const IPEndPoint* address,
@@ -615,8 +612,14 @@ class NET_EXPORT UDPSocketPosix {
   // Network that this socket is bound to via BindToNetwork().
   NetworkChangeNotifier::NetworkHandle bound_network_;
 
-  // These are used to lower the overhead updating activity monitor.
-  SentActivityMonitor sent_activity_monitor_;
+  // Whether net::activity_monitor should be updated every time bytes are
+  // received, without batching through |received_activity_monitor_|. This is
+  // initialized with the state of the "UdpSocketPosixAlwaysUpdateBytesReceived"
+  // feature. It is cached to avoid accessing the FeatureList every time bytes
+  // are received.
+  const bool always_update_bytes_received_;
+
+  // Used to lower the overhead updating activity monitor.
   ReceivedActivityMonitor received_activity_monitor_;
 
   // Current socket tag if |socket_| is valid, otherwise the tag to apply when
@@ -629,12 +632,14 @@ class NET_EXPORT UDPSocketPosix {
   // enable_experimental_recv_optimization() method.
   bool experimental_recv_optimization_enabled_;
 
+  // Manages decrementing the global open UDP socket counter when this
+  // UDPSocket is destroyed.
+  OwnedUDPSocketCount owned_socket_count_;
+
   THREAD_CHECKER(thread_checker_);
 
   // Used for alternate writes that are posted for concurrent execution.
   base::WeakPtrFactory<UDPSocketPosix> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UDPSocketPosix);
 };
 
 }  // namespace net

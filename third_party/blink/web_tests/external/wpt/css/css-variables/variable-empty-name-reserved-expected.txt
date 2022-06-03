@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL -- is a reserved property name assert_false: -- is a reserved property name expected false got true
+Harness: the test ran to completion.
+

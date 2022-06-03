@@ -8,11 +8,10 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/browser/renderer_host/input/timeout_monitor.h"
-#include "content/public/common/input_event_ack_state.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace content {
 
@@ -28,7 +27,7 @@ class TouchTimeoutHandler {
 
   void StartIfNecessary(const TouchEventWithLatencyInfo& event);
   bool ConfirmTouchEvent(uint32_t unique_touch_event_id,
-                         InputEventAckState ack_result,
+                         blink::mojom::InputEventResultState ack_result,
                          bool should_stop_timeout_monitor);
   bool FilterEvent(const blink::WebTouchEvent& event);
   void SetEnabled(bool enabled);
@@ -47,7 +46,8 @@ class TouchTimeoutHandler {
   void OnTimeOut();
   // Skip a cancel event if the timed-out event had no consumer and was the
   // initial event in the gesture.
-  bool AckedTimeoutEventRequiresCancel(InputEventAckState ack_result) const;
+  bool AckedTimeoutEventRequiresCancel(
+      blink::mojom::InputEventResultState ack_result) const;
   void SetPendingAckState(PendingAckState new_pending_ack_state);
   void LogSequenceStartForUMA();
   void LogSequenceEndForUMAIfNecessary(bool timed_out);

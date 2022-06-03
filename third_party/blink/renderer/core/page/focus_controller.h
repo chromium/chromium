@@ -26,9 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUS_CONTROLLER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAGE_FOCUS_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/platform/web_focus_type.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -54,6 +53,8 @@ class CORE_EXPORT FocusController final
   using OwnerMap = HeapHashMap<Member<ContainerNode>, Member<Element>>;
 
   explicit FocusController(Page*);
+  FocusController(const FocusController&) = delete;
+  FocusController& operator=(const FocusController&) = delete;
 
   void SetFocusedFrame(Frame*, bool notify_embedder = true);
   void FocusDocumentView(Frame*, bool notify_embedder = true);
@@ -73,23 +74,23 @@ class CORE_EXPORT FocusController final
   // http://www.w3.org/TR/html5/editing.html#dom-document-hasfocus
   bool IsDocumentFocused(const Document&) const;
 
-  bool SetInitialFocus(WebFocusType);
-  bool AdvanceFocus(WebFocusType type,
+  bool SetInitialFocus(mojom::blink::FocusType);
+  bool AdvanceFocus(mojom::blink::FocusType type,
                     InputDeviceCapabilities* source_capabilities = nullptr) {
     return AdvanceFocus(type, false, source_capabilities);
   }
   bool AdvanceFocusAcrossFrames(
-      WebFocusType,
+      mojom::blink::FocusType,
       RemoteFrame* from,
       LocalFrame* to,
       InputDeviceCapabilities* source_capabilities = nullptr);
   static Element* FindFocusableElementInShadowHost(const Element& shadow_host);
-  Element* NextFocusableElementInForm(Element*, WebFocusType);
-  Element* FindFocusableElementAfter(Element& element, WebFocusType);
+  Element* NextFocusableElementInForm(Element*, mojom::blink::FocusType);
+  Element* FindFocusableElementAfter(Element& element, mojom::blink::FocusType);
 
   bool SetFocusedElement(Element*, Frame*, const FocusParams&);
   // |setFocusedElement| variant with SelectionBehaviorOnFocus::None,
-  // |WebFocusTypeNone, and null InputDeviceCapabilities.
+  // |kFocusTypeNone, and null InputDeviceCapabilities.
   bool SetFocusedElement(Element*, Frame*);
 
   void SetActive(bool);
@@ -102,19 +103,18 @@ class CORE_EXPORT FocusController final
 
   void RegisterFocusChangedObserver(FocusChangedObserver*);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
+  Element* FindFocusableElement(mojom::blink::FocusType, Element&, OwnerMap&);
 
-  Element* FindFocusableElement(WebFocusType, Element&, OwnerMap&);
-
-  bool AdvanceFocus(WebFocusType,
+  bool AdvanceFocus(mojom::blink::FocusType,
                     bool initial_focus,
                     InputDeviceCapabilities* source_capabilities = nullptr);
   bool AdvanceFocusInDocumentOrder(
       LocalFrame*,
       Element* start,
-      WebFocusType,
+      mojom::blink::FocusType,
       bool initial_focus,
       InputDeviceCapabilities* source_capabilities);
 
@@ -130,7 +130,6 @@ class CORE_EXPORT FocusController final
   bool is_changing_focused_frame_;
   bool is_emulating_focus_;
   HeapHashSet<WeakMember<FocusChangedObserver>> focus_changed_observers_;
-  DISALLOW_COPY_AND_ASSIGN(FocusController);
 };
 
 }  // namespace blink

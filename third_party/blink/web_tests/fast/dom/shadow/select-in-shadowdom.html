@@ -15,7 +15,7 @@ function mouseMoveTo(element)
     eventSender.mouseMoveTo(x, y);
 }
 
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 shadowRoot.innerHTML = '<span>select form here</span><a href="javascript:alert(\'FAIL\');">select to here</a>';
 
 var lastClickTarget = null;

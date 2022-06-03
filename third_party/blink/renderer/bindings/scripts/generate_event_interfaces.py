@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #
 # Copyright (C) 2013 Google Inc. All rights reserved.
 #
@@ -27,7 +27,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Generate event interfaces .json5 file (EventInterfaces.json5).
 
 The event interfaces .json5 file contains a list of all Event interfaces, i.e.,
@@ -53,22 +52,30 @@ EXPORTED_EXTENDED_ATTRIBUTES = (
     'ImplementedAs',
     'RuntimeEnabled',
 )
-module_path = os.path.dirname(os.path.realpath(__file__))
-REPO_ROOT_DIR = os.path.normpath(os.path.join(module_path, os.pardir, os.pardir,
-                                              os.pardir, os.pardir, os.pardir))
+module_path = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT_DIR = os.path.normpath(
+    os.path.join(module_path, os.pardir, os.pardir, os.pardir, os.pardir,
+                 os.pardir))
 
 
 def parse_options():
     parser = OptionParser()
-    parser.add_option('--event-idl-files-list', help='file listing event IDL files')
+    parser.add_option(
+        '--event-idl-files-list', help='file listing event IDL files')
     parser.add_option('--event-interfaces-file', help='output file')
-    parser.add_option('--suffix', help='specify a suffix to the namespace, i.e., "Modules". Default is None.')
+    parser.add_option(
+        '--suffix',
+        help=
+        'specify a suffix to the namespace, i.e., "Modules". Default is None.')
 
     options, args = parser.parse_args()
     if options.event_idl_files_list is None:
-        parser.error('Must specify a file listing event IDL files using --event-idl-files-list.')
+        parser.error(
+            'Must specify a file listing event IDL files using --event-idl-files-list.'
+        )
     if options.event_interfaces_file is None:
-        parser.error('Must specify an output file using --event-interfaces-file.')
+        parser.error(
+            'Must specify an output file using --event-interfaces-file.')
     if args:
         parser.error('No arguments allowed, but %d given.' % len(args))
     return options
@@ -76,35 +83,30 @@ def parse_options():
 
 def write_event_interfaces_file(event_idl_files, destination_filename, suffix):
     def interface_line(full_path):
-        relative_dir_local = os.path.dirname(os.path.relpath(full_path, REPO_ROOT_DIR))
+        relative_dir_local = os.path.dirname(
+            os.path.relpath(full_path, REPO_ROOT_DIR))
         relative_dir_posix = relative_dir_local.replace(os.sep, posixpath.sep)
 
         idl_file_contents = get_file_contents(full_path)
         interface_name = get_first_interface_name_from_idl(idl_file_contents)
-        extended_attributes = get_interface_extended_attributes_from_idl(idl_file_contents)
-        extended_attributes_list = [
-            (name, extended_attributes[name])
-            for name in EXPORTED_EXTENDED_ATTRIBUTES
-            if name in extended_attributes]
+        extended_attributes = get_interface_extended_attributes_from_idl(
+            idl_file_contents)
+        extended_attributes_list = [(name, extended_attributes[name])
+                                    for name in EXPORTED_EXTENDED_ATTRIBUTES
+                                    if name in extended_attributes]
 
         return (relative_dir_posix, interface_name, extended_attributes_list)
 
-    lines = [
-        '{',
-        'metadata: {',
-        '  namespace: "event_interface_names",'
-    ]
+    lines = ['{', 'metadata: {', '  namespace: "event_interface_names",']
     if suffix:
         lines.append('  suffix: "' + suffix + '",')
         lines.append('  export: "%s_EXPORT",' % suffix.upper())
     else:
         lines.append('  export: "CORE_EXPORT",')
-    lines.extend([
-        '},',
-        'data: ['
-    ])
-    interface_lines = [interface_line(event_idl_file)
-                       for event_idl_file in event_idl_files]
+    lines.extend(['},', 'data: ['])
+    interface_lines = [
+        interface_line(event_idl_file) for event_idl_file in event_idl_files
+    ]
     interface_lines.sort()
     for relative_dir, name, attributes in interface_lines:
         lines.extend([
@@ -117,20 +119,17 @@ def write_event_interfaces_file(event_idl_files, destination_filename, suffix):
                 value += 'Enabled'
             lines.append('    %s: "%s",' % (param, value))
         lines.append('  },')
-    lines.extend([
-        ']',
-        '}'
-    ])
+    lines.extend([']', '}'])
     write_file('\n'.join(lines), destination_filename)
 
 
 ################################################################################
 
+
 def main():
     options = parse_options()
     event_idl_files = read_file_to_list(options.event_idl_files_list)
-    write_event_interfaces_file(event_idl_files,
-                                options.event_interfaces_file,
+    write_event_interfaces_file(event_idl_files, options.event_interfaces_file,
                                 options.suffix)
 
 

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/platform/graphics/animation_worklet_mutator_dispatcher_impl.h"
 
+#include <utility>
+
 #include "base/barrier_closure.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
@@ -66,16 +68,10 @@ struct AnimationWorkletMutatorDispatcherImpl::AsyncMutationRequest {
 };
 
 AnimationWorkletMutatorDispatcherImpl::AnimationWorkletMutatorDispatcherImpl(
-    bool main_thread_task_runner)
-    : client_(nullptr), outputs_(OutputVectorRef::Create()) {
-  // By default web tests run without threaded compositing. See
-  // https://crbug.com/770028. If threaded compositing is disabled or
-  // |main_thread_task_runner| is true we run on the main thread's compositor
-  // task runner otherwise we run tasks on the compositor thread's default
-  // task runner.
-  host_queue_ = main_thread_task_runner || !Thread::CompositorThread()
-                    ? Thread::MainThread()->Scheduler()->CompositorTaskRunner()
-                    : Thread::CompositorThread()->GetTaskRunner();
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
+    : host_queue_(task_runner),
+      client_(nullptr),
+      outputs_(OutputVectorRef::Create()) {
   tick_clock_ = std::make_unique<base::DefaultTickClock>();
 }
 
@@ -85,15 +81,13 @@ AnimationWorkletMutatorDispatcherImpl::
 // static
 template <typename ClientType>
 std::unique_ptr<ClientType> AnimationWorkletMutatorDispatcherImpl::CreateClient(
-    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>* weak_interface,
-    scoped_refptr<base::SingleThreadTaskRunner>* queue,
-    bool main_thread_client) {
+    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>& weak_interface,
+    scoped_refptr<base::SingleThreadTaskRunner> queue) {
   DCHECK(IsMainThread());
-  auto mutator = std::make_unique<AnimationWorkletMutatorDispatcherImpl>(
-      main_thread_client);
+  auto mutator =
+      std::make_unique<AnimationWorkletMutatorDispatcherImpl>(std::move(queue));
   // This is allowed since we own the class for the duration of creation.
-  *weak_interface = mutator->weak_factory_.GetWeakPtr();
-  *queue = mutator->GetTaskRunner();
+  weak_interface = mutator->weak_factory_.GetWeakPtr();
 
   return std::make_unique<ClientType>(std::move(mutator));
 }
@@ -101,17 +95,19 @@ std::unique_ptr<ClientType> AnimationWorkletMutatorDispatcherImpl::CreateClient(
 // static
 std::unique_ptr<CompositorMutatorClient>
 AnimationWorkletMutatorDispatcherImpl::CreateCompositorThreadClient(
-    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>* weak_interface,
-    scoped_refptr<base::SingleThreadTaskRunner>* queue) {
-  return CreateClient<CompositorMutatorClient>(weak_interface, queue, false);
+    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>& weak_interface,
+    scoped_refptr<base::SingleThreadTaskRunner> queue) {
+  return CreateClient<CompositorMutatorClient>(weak_interface,
+                                               std::move(queue));
 }
 
 // static
 std::unique_ptr<MainThreadMutatorClient>
 AnimationWorkletMutatorDispatcherImpl::CreateMainThreadClient(
-    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>* weak_interface,
-    scoped_refptr<base::SingleThreadTaskRunner>* queue) {
-  return CreateClient<MainThreadMutatorClient>(weak_interface, queue, true);
+    base::WeakPtr<AnimationWorkletMutatorDispatcherImpl>& weak_interface,
+    scoped_refptr<base::SingleThreadTaskRunner> queue) {
+  return CreateClient<MainThreadMutatorClient>(weak_interface,
+                                               std::move(queue));
 }
 
 void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(
@@ -139,8 +135,7 @@ void AnimationWorkletMutatorDispatcherImpl::MutateSynchronously(
 
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Animation.AnimationWorklet.Dispatcher.SynchronousMutateDuration",
-      timer.Elapsed(), base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromMilliseconds(100), 50);
+      timer.Elapsed(), base::Microseconds(1), base::Milliseconds(100), 50);
 }
 
 base::TimeTicks AnimationWorkletMutatorDispatcherImpl::NowTicks() const {
@@ -199,9 +194,9 @@ void AnimationWorkletMutatorDispatcherImpl::MutateAsynchronouslyInternal(
   DCHECK(host_queue_->BelongsToCurrentThread());
   on_async_mutation_complete_ = std::move(done_callback);
   int next_async_mutation_id = GetNextAsyncMutationId();
-  TRACE_EVENT_ASYNC_BEGIN0("cc",
-                           "AnimationWorkletMutatorDispatcherImpl::MutateAsync",
-                           next_async_mutation_id);
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
+      "cc", "AnimationWorkletMutatorDispatcherImpl::MutateAsync",
+      TRACE_ID_LOCAL(next_async_mutation_id));
 
   CrossThreadOnceClosure on_done = CrossThreadBindOnce(
       [](scoped_refptr<base::SingleThreadTaskRunner> host_queue,
@@ -228,9 +223,9 @@ void AnimationWorkletMutatorDispatcherImpl::AsyncMutationsDone(
   auto done_callback = std::move(on_async_mutation_complete_);
   std::unique_ptr<AsyncMutationRequest> queued_request;
   if (queued_priority_request.get()) {
-    queued_request.reset(queued_priority_request.release());
+    queued_request = std::move(queued_priority_request);
   } else if (queued_replaceable_request.get()) {
-    queued_request.reset(queued_replaceable_request.release());
+    queued_request = std::move(queued_replaceable_request);
   }
   if (queued_request.get()) {
     mutator_input_map_ = CreateInputMap(*queued_request->input_state);
@@ -239,15 +234,15 @@ void AnimationWorkletMutatorDispatcherImpl::AsyncMutationsDone(
   }
   // The trace event deos not include queuing time. It covers the interval
   // between dispatching the request and retrieving the results.
-  TRACE_EVENT_ASYNC_END0("cc",
-                         "AnimationWorkletMutatorDispatcherImpl::MutateAsync",
-                         async_mutation_id);
+  TRACE_EVENT_NESTABLE_ASYNC_END0(
+      "cc", "AnimationWorkletMutatorDispatcherImpl::MutateAsync",
+      TRACE_ID_LOCAL(async_mutation_id));
   // The Async mutation duration is the total time between request and
   // completion, and thus includes queuing time.
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Animation.AnimationWorklet.Dispatcher.AsynchronousMutateDuration",
-      NowTicks() - request_time, base::TimeDelta::FromMicroseconds(1),
-      base::TimeDelta::FromMilliseconds(100), 50);
+      NowTicks() - request_time, base::Microseconds(1), base::Milliseconds(100),
+      50);
 
   std::move(done_callback)
       .Run(update_applied ? MutateStatus::kCompletedWithUpdate
@@ -352,12 +347,11 @@ void AnimationWorkletMutatorDispatcherImpl::RequestMutations(
             // The mutator is created and destroyed on the worklet thread.
             WrapCrossThreadWeakPersistent(mutator),
             // The worklet input is not required after the Mutate call.
-            WTF::Passed(std::move(it->value)),
+            std::move(it->value),
             // The vector of outputs is wrapped in a scoped_refptr initialized
             // on the host thread. It can outlive the dispatcher during shutdown
             // of a process with a running animation.
-            outputs_, next_request_index++,
-            WTF::Passed(std::move(on_done_runner))));
+            outputs_, next_request_index++, std::move(on_done_runner)));
   }
 }
 

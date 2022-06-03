@@ -6,7 +6,7 @@
 
 #include <windows.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "sandbox/win/src/internal_types.h"
 
 namespace sandbox {

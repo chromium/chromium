@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -19,8 +19,6 @@ Bugs and feature requests should be given as bugs filed via
 https://bit.ly/cci-generic-bug.
 """
 
-from __future__ import print_function
-
 import argparse
 import base64
 import collections
@@ -31,7 +29,7 @@ import sys
 import subprocess
 import tempfile
 import traceback
-import urllib
+from urllib import parse
 
 
 # From vpython
@@ -114,7 +112,7 @@ def guess_host_dimensions():
   }
 
 
-class Build(object):
+class Build:
   """All relevant information for an already executed build.
 
   The constructor does several HTTP requests to get needed information from
@@ -122,7 +120,7 @@ class Build(object):
   """
   def __init__(self, build_address):
     # Build address of the build.
-    self.build_address = urllib.unquote_plus(build_address)
+    self.build_address = parse.unquote_plus(build_address)
     assert len(self.build_address.split('/')) == 3, (
       'Expected build address to look like <bucket>/<builder>/<buildnumber>, '
       'but got %s' % self.build_address
@@ -239,13 +237,14 @@ class Build(object):
   def _fetch_test_results(self, failed_suites):
     results = []
     for suite in failed_suites:
-      test_results_url = TEST_RESULTS_BASE + 'testfile?%s' % urllib.urlencode({
-          'builder': self.builder,
-          'name': 'full_results.json',
-          'master': self.mastername,
-          'testtype': '%s (with patch)' % suite,
-          'buildnumber': self.buildnumber,
-      })
+      test_results_url = TEST_RESULTS_BASE + 'testfile?%s' % parse.urlencode(
+          {
+              'builder': self.builder,
+              'name': 'full_results.json',
+              'master': self.mastername,
+              'testtype': '%s (with patch)' % suite,
+              'buildnumber': self.buildnumber,
+          })
       data = requests.get(test_results_url).json()
       results.append(data)
 
@@ -354,7 +353,7 @@ class Build(object):
             ' values of %r. Do you wish to proceed with running the test? '
             '(y/N)' % (
                 dimension, swarming_value, host_values))
-        response = raw_input('>> ').lower()
+        response = input('>> ').lower()
         if response != 'y':
           print('Not running test suite %s...' % suite_name)
           return 1
@@ -388,6 +387,8 @@ class Build(object):
     finally:
       if suite.is_isolated:
         os.unlink(temp_filename)
+
+    return 0
 
   def checkout_commands(self):
     cmd = [
@@ -494,7 +495,7 @@ def main():
     print()
 
     print('Would you like this script to run these commands? (Y/n)')
-    response = raw_input('>> ').lower().strip()
+    response = input('>> ').lower().strip()
     if response in ('y', ''):
       build.ensure_checkout()
     else:
@@ -515,7 +516,7 @@ def main():
     print('  ' + cmd)
   print('What would you like to do?')
 
-  response = raw_input('>> ').lower()
+  response = input('>> ').lower()
 
   try:
     num = int(response)
@@ -549,4 +550,3 @@ if __name__ == '__main__':
     print('If this exception is unexpected, please file a bug via '
           'https://bit.ly/cci-generic-bug.')
     sys.exit(1)
-

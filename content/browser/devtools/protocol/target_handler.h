@@ -8,27 +8,30 @@
 #include <map>
 #include <set>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/weak_ptr.h"
+#include "content/browser/devtools/devtools_throttle_handle.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/target.h"
 #include "content/browser/devtools/protocol/target_auto_attacher.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
+#include "net/proxy_resolution/proxy_config.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace content {
 
 class DevToolsAgentHostImpl;
-class DevToolsRendererChannel;
 class DevToolsSession;
 class NavigationHandle;
 class NavigationThrottle;
-class RenderFrameHostImpl;
 
 namespace protocol {
 
 class TargetHandler : public DevToolsDomainHandler,
                       public Target::Backend,
-                      public DevToolsAgentHostObserver {
+                      public DevToolsAgentHostObserver,
+                      public TargetAutoAttacher::Client {
  public:
   enum class AccessMode {
     // Only setAutoAttach is supported. Any non-related target are not
@@ -42,29 +45,37 @@ class TargetHandler : public DevToolsDomainHandler,
   };
   TargetHandler(AccessMode access_mode,
                 const std::string& owner_target_id,
-                DevToolsRendererChannel* renderer_channel,
+                TargetAutoAttacher* auto_attacher,
                 DevToolsSession* root_session);
+
+  TargetHandler(const TargetHandler&) = delete;
+  TargetHandler& operator=(const TargetHandler&) = delete;
+
   ~TargetHandler() override;
 
   static std::vector<TargetHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
   void Wire(UberDispatcher* dispatcher) override;
-  void SetRenderer(int process_host_id,
-                   RenderFrameHostImpl* frame_host) override;
   Response Disable() override;
 
-  void DidFinishNavigation();
-  std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
-      NavigationHandle* navigation_handle);
   void UpdatePortals();
+  bool ShouldThrottlePopups() const;
+
+  // This is to support legacy protocol, where an autoattacher on service worker
+  // targets would not auto-attach service workers.
+  // TODO(caseq): update front-end logic and get rid of this.
+  void DisableAutoAttachOfServiceWorkers();
 
   // Domain implementation.
   Response SetDiscoverTargets(bool discover) override;
   void SetAutoAttach(bool auto_attach,
                      bool wait_for_debugger_on_start,
                      Maybe<bool> flatten,
-                     Maybe<bool> window_open,
                      std::unique_ptr<SetAutoAttachCallback> callback) override;
+  void AutoAttachRelated(
+      const std::string& targetId,
+      bool wait_for_debugger_on_start,
+      std::unique_ptr<AutoAttachRelatedCallback> callback) override;
   Response SetRemoteLocations(
       std::unique_ptr<protocol::Array<Target::RemoteLocation>>) override;
   Response AttachToTarget(const std::string& target_id,
@@ -84,7 +95,11 @@ class TargetHandler : public DevToolsDomainHandler,
                        bool* out_success) override;
   Response ExposeDevToolsProtocol(const std::string& target_id,
                                   Maybe<std::string> binding_name) override;
-  Response CreateBrowserContext(std::string* out_context_id) override;
+  void CreateBrowserContext(
+      Maybe<bool> in_disposeOnDetach,
+      Maybe<String> in_proxyServer,
+      Maybe<String> in_proxyBypassList,
+      std::unique_ptr<CreateBrowserContextCallback> callback) override;
   void DisposeBrowserContext(
       const std::string& context_id,
       std::unique_ptr<DisposeBrowserContextCallback> callback) override;
@@ -102,12 +117,39 @@ class TargetHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Array<Target::TargetInfo>>* target_infos)
       override;
 
+  void ApplyNetworkContextParamsOverrides(
+      BrowserContext* browser_context,
+      network::mojom::NetworkContextParams* network_context_params);
+
+  // Adds a ServiceWorker or DedicatedWorker throttle for an auto attaching
+  // session. If none is known for this `agent_host`, is a no-op.
+  // TODO(crbug.com/1143100): support SharedWorker.
+  void AddWorkerThrottle(DevToolsAgentHost* agent_host,
+                         scoped_refptr<DevToolsThrottleHandle> throttle_handle);
+
  private:
   class Session;
   class Throttle;
+  class RequestThrottle;
+  class ResponseThrottle;
 
-  void AutoAttach(DevToolsAgentHost* host, bool waiting_for_debugger);
-  void AutoDetach(DevToolsAgentHost* host);
+  // TargetAutoAttacher::Delegate implementation.
+  bool AutoAttach(TargetAutoAttacher* source,
+                  DevToolsAgentHost* host,
+                  bool waiting_for_debugger) override;
+  void AutoDetach(TargetAutoAttacher* source, DevToolsAgentHost* host) override;
+  void SetAttachedTargetsOfType(
+      TargetAutoAttacher* source,
+      const base::flat_set<scoped_refptr<DevToolsAgentHost>>& new_hosts,
+      const std::string& type) override;
+  std::unique_ptr<NavigationThrottle> CreateThrottleForNavigation(
+      TargetAutoAttacher* auto_attacher,
+      NavigationHandle* navigation_handle) override;
+  void AutoAttacherDestroyed(TargetAutoAttacher* auto_attacher) override;
+
+  bool ShouldWaitForDebuggerOnStart(
+      NavigationRequest* navigation_request) const;
+
   Response FindSession(Maybe<std::string> session_id,
                        Maybe<std::string> target_id,
                        Session** session);
@@ -115,8 +157,8 @@ class TargetHandler : public DevToolsDomainHandler,
   void SetAutoAttachInternal(bool auto_attach,
                              bool wait_for_debugger_on_start,
                              bool flatten,
-                             bool window_open,
                              base::OnceClosure callback);
+  void UpdateAgentHostObserver();
 
   // DevToolsAgentHostObserver implementation.
   bool ShouldForceDevToolsAgentHostCreation() override;
@@ -128,21 +170,29 @@ class TargetHandler : public DevToolsDomainHandler,
   void DevToolsAgentHostCrashed(DevToolsAgentHost* agent_host,
                                 base::TerminationStatus status) override;
 
+  TargetAutoAttacher* const auto_attacher_;
   std::unique_ptr<Target::Frontend> frontend_;
-  TargetAutoAttacher auto_attacher_;
+
   bool flatten_auto_attach_ = false;
-  bool attach_to_window_open_ = false;
-  bool discover_;
-  std::map<std::string, std::unique_ptr<Session>> attached_sessions_;
+  bool auto_attach_ = false;
+  bool wait_for_debugger_on_start_ = false;
   std::map<DevToolsAgentHost*, Session*> auto_attached_sessions_;
+  base::flat_map<TargetAutoAttacher*, bool /* wait_for_debugger_on_start */>
+      auto_attach_related_targets_;
+  bool auto_attach_service_workers_ = true;
+
+  bool discover_;
+  bool observing_agent_hosts_ = false;
+  std::map<std::string, std::unique_ptr<Session>> attached_sessions_;
   std::set<DevToolsAgentHost*> reported_hosts_;
+  base::flat_set<std::string> dispose_on_detach_context_ids_;
+  base::flat_map<std::string, net::ProxyConfig> contexts_with_overridden_proxy_;
   AccessMode access_mode_;
   std::string owner_target_id_;
   DevToolsSession* root_session_;
   base::flat_set<Throttle*> throttles_;
+  absl::optional<net::ProxyConfig> pending_proxy_config_;
   base::WeakPtrFactory<TargetHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TargetHandler);
 };
 
 }  // namespace protocol

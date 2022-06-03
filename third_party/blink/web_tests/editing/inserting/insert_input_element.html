@@ -1,0 +1,11 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// Inserting <input> should not cause infinite loop.
+selection_test(
+    '<div contenteditable>abc|</div>',
+    'InsertHTML <div><input></div>',
+    '<div contenteditable>abc<input>|</div>');
+</script>

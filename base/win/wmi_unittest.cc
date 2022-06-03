@@ -6,7 +6,6 @@
 
 #include <windows.h>
 
-#include "base/strings/string16.h"
 #include "base/win/scoped_com_initializer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -60,8 +59,7 @@ TEST_F(WMITest, TestLaunchProcess) {
 
 TEST_F(WMITest, TestComputerSystemInfo) {
   WmiComputerSystemInfo info = WmiComputerSystemInfo::Get();
-  EXPECT_FALSE(info.manufacturer().empty());
-  EXPECT_FALSE(info.model().empty());
+  EXPECT_FALSE(info.serial_number().empty());
 }
 
 }  // namespace win

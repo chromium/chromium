@@ -17,14 +17,14 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
  public:
   static CSSMathFunctionValue* Create(const Length&, float zoom);
   static CSSMathFunctionValue* Create(const CSSMathExpressionNode*,
-                                      ValueRange = kValueRangeAll);
+                                      ValueRange = ValueRange::kAll);
 
   CSSMathFunctionValue(const CSSMathExpressionNode* expression,
                        ValueRange range);
 
   const CSSMathExpressionNode* ExpressionNode() const { return expression_; }
 
-  scoped_refptr<CalculationValue> ToCalcValue(
+  scoped_refptr<const CalculationValue> ToCalcValue(
       const CSSToLengthConversionData& conversion_data) const;
 
   bool MayHaveRelativeUnit() const;
@@ -38,10 +38,8 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
 
   bool IsPx() const;
 
-  bool IsInt() const { return expression_->IsInteger(); }
-  bool IsNegative() const { return expression_->DoubleValue() < 0; }
   ValueRange PermittedValueRange() const {
-    return IsNonNegative() ? kValueRangeNonNegative : kValueRangeAll;
+    return value_range_in_target_context_;
   }
 
   // When |false|, comparisons between percentage values can be resolved without
@@ -88,14 +86,15 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   String CustomCSSText() const;
   bool Equals(const CSSMathFunctionValue& other) const;
 
-  void TraceAfterDispatch(blink::Visitor* visitor);
+  bool HasComparisons() const { return expression_->HasComparisons(); }
+
+  void TraceAfterDispatch(blink::Visitor* visitor) const;
 
  private:
-  bool IsNonNegative() const { return is_non_negative_math_function_; }
-
   double ClampToPermittedRange(double) const;
 
   Member<const CSSMathExpressionNode> expression_;
+  ValueRange value_range_in_target_context_;
 };
 
 template <>

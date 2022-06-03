@@ -12,7 +12,7 @@
 <embed id="touch_plugin" type="application/x-webkit-test-webplugin" accepts-touch="synthetic" print-event-details="true"></embed><embed id="plugin" type="application/x-webkit-test-webplugin"></embed>
 <script>
 
-    if (!window.testRunner || !window.eventSender) {
+    if (!window.testRunner) {
         document.write("This test does not work in manual mode.");
     } else {
         testRunner.dumpAsText();
@@ -33,7 +33,7 @@
         eventSender.releaseTouchPoint(0);
         eventSender.touchEnd();
 
-        eventSender.zoomPageIn();
+        testRunner.zoomPageIn();
         eventSender.addTouchPoint(positionX, positionY);
         eventSender.touchStart();
         eventSender.updateTouchPoint(0, positionX + 10, positionY + 5);
@@ -41,7 +41,7 @@
         eventSender.releaseTouchPoint(0);
         eventSender.touchEnd();
 
-        eventSender.zoomPageOut();
+        testRunner.zoomPageOut();
         eventSender.addTouchPoint(positionX, positionY);
         eventSender.touchStart();
         eventSender.updateTouchPoint(0, positionX + 10, positionY + 5);

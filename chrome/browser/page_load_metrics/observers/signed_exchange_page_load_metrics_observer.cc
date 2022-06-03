@@ -5,7 +5,29 @@
 #include "chrome/browser/page_load_metrics/observers/signed_exchange_page_load_metrics_observer.h"
 
 #include "components/page_load_metrics/browser/page_load_metrics_util.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
+
+namespace {
+
+const char kAmpProjectCdnHost[] = "cdn.ampproject.org";
+const char kWebPkgCacheHost[] = "webpkgcache.com";
+
+bool IsServedFromGoogleCache(content::NavigationHandle* navigation_handle) {
+  DCHECK(navigation_handle->IsSignedExchangeInnerResponse());
+  const std::vector<GURL>& redirects = navigation_handle->GetRedirectChain();
+  if (redirects.size() <= 1)
+    return false;
+  const GURL& signed_exchange_outer_url = redirects[redirects.size() - 2];
+  // Note: GURL::DomainIs() doesn't check eTLD+1. So for example,
+  // GURL("example-com.cdn.ampproject.org").DomainIs("cdn.ampproject.org")
+  // returns true.
+  return signed_exchange_outer_url.DomainIs(kAmpProjectCdnHost) ||
+         signed_exchange_outer_url.DomainIs(kWebPkgCacheHost);
+}
+
+}  // namespace
 
 namespace internal {
 
@@ -85,6 +107,11 @@ SignedExchangePageLoadMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle,
     ukm::SourceId source_id) {
   if (navigation_handle->IsSignedExchangeInnerResponse()) {
+    ukm::builders::PageLoad_SignedExchange builder(source_id);
+    if (IsServedFromGoogleCache(navigation_handle))
+      builder.SetServedFromGoogleCache(1);
+    builder.Record(ukm::UkmRecorder::Get());
+
     was_cached_ = navigation_handle->WasResponseCached();
     had_prefetched_alt_sxg_ =
         navigation_handle->HasPrefetchedAlternativeSubresourceSignedExchange();
@@ -164,31 +191,27 @@ void SignedExchangePageLoadMetricsObserver::OnFirstInputInPage(
     return;
   }
 
-  // Copied from the CorePageLoadMetricsObserver implementation.
+  // Copied from the UmaPageLoadMetricsObserver implementation.
   UMA_HISTOGRAM_CUSTOM_TIMES(
       internal::kHistogramSignedExchangeFirstInputDelay,
       timing.interactive_timing->first_input_delay.value(),
-      base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-      50);
+      base::Milliseconds(1), base::Seconds(60), 50);
   if (was_cached_) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramCachedSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   } else {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramNotCachedSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
   if (had_prefetched_alt_sxg_) {
     UMA_HISTOGRAM_CUSTOM_TIMES(
         internal::kHistogramAltSubSxgSignedExchangeFirstInputDelay,
         timing.interactive_timing->first_input_delay.value(),
-        base::TimeDelta::FromMilliseconds(1), base::TimeDelta::FromSeconds(60),
-        50);
+        base::Milliseconds(1), base::Seconds(60), 50);
   }
 }
 

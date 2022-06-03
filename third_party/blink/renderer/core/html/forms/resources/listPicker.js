@@ -37,7 +37,6 @@ function handleArgumentsTimeout() {
  */
 function ListPicker(element, config) {
   Picker.call(this, element, config);
-  window.pagePopupController.selectFontsFromOwnerDocument(document);
   this._selectElement = createElement('select');
   this._selectElement.size = 20;
   this._element.appendChild(this._selectElement);
@@ -88,6 +87,7 @@ ListPicker.prototype._handleWindowMessage = function(event) {
   if (window.updateData.type === 'update') {
     this._config.baseStyle = window.updateData.baseStyle;
     this._config.children = window.updateData.children;
+    const prev_children_count = this._selectElement.children.length;
     this._update();
     if (this._config.anchorRectInScreen.x !==
             window.updateData.anchorRectInScreen.x ||
@@ -96,13 +96,10 @@ ListPicker.prototype._handleWindowMessage = function(event) {
         this._config.anchorRectInScreen.width !==
             window.updateData.anchorRectInScreen.width ||
         this._config.anchorRectInScreen.height !==
-            window.updateData.anchorRectInScreen.height) {
-      // TODO(tkent): Don't fix window size here due to a bug of Aura or
-      // compositor. crbug.com/863770
-      if (!navigator.platform.startsWith('Win')) {
-        this._config.anchorRectInScreen = window.updateData.anchorRectInScreen;
-        this._fixWindowSize();
-      }
+            window.updateData.anchorRectInScreen.height ||
+        prev_children_count !== window.updateData.children.length) {
+      this._config.anchorRectInScreen = window.updateData.anchorRectInScreen;
+      this._fixWindowSize();
     }
   }
   delete window.updateData;
@@ -312,10 +309,11 @@ ListPicker.prototype._layout = function() {
   this._selectElement.style.textTransform =
       this._config.baseStyle.textTransform;
   this._selectElement.style.fontSize = this._config.baseStyle.fontSize + 'px';
-  this._selectElement.style.fontFamily =
-      this._config.baseStyle.fontFamily.map(s => '"' + s + '"').join(',');
+  this._selectElement.style.fontFamily = this._config.baseStyle.fontFamily;
   this._selectElement.style.fontStyle = this._config.baseStyle.fontStyle;
   this._selectElement.style.fontVariant = this._config.baseStyle.fontVariant;
+  if (this._config.baseStyle.textAlign)
+    this._selectElement.style.textAlign = this._config.baseStyle.textAlign;
   this._updateChildren(this._selectElement, this._config);
 };
 
@@ -446,15 +444,15 @@ ListPicker.prototype._applyItemStyle = function(element, styleConfig) {
   style.color = styleConfig.color ? styleConfig.color : '';
   style.backgroundColor =
       styleConfig.backgroundColor ? styleConfig.backgroundColor : '';
-  style.fontSize = styleConfig.fontSize ? styleConfig.fontSize + 'px' : '';
+  style.fontSize =
+      styleConfig.fontSize !== undefined ? styleConfig.fontSize + 'px' : '';
   style.fontWeight = styleConfig.fontWeight ? styleConfig.fontWeight : '';
-  style.fontFamily = styleConfig.fontFamily ?
-      styleConfig.fontFamily.map(s => '"' + s + '"').join(',') :
-      '';
+  style.fontFamily = styleConfig.fontFamily ? styleConfig.fontFamily : '';
   style.fontStyle = styleConfig.fontStyle ? styleConfig.fontStyle : '';
   style.fontVariant = styleConfig.fontVariant ? styleConfig.fontVariant : '';
   style.textTransform =
       styleConfig.textTransform ? styleConfig.textTransform : '';
+  style.textAlign = styleConfig.textAlign ? styleConfig.textAlign : '';
 };
 
 ListPicker.prototype._configureItem = function(element, config, inGroup) {

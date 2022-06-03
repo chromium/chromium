@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_SUBFRAME_TASK_H_
 #define CHROME_BROWSER_TASK_MANAGER_PROVIDERS_WEB_CONTENTS_SUBFRAME_TASK_H_
 
-#include "base/macros.h"
 #include "chrome/browser/task_manager/providers/web_contents/renderer_task.h"
 
 namespace content {
@@ -21,8 +20,9 @@ namespace task_manager {
 class SubframeTask : public RendererTask {
  public:
   SubframeTask(content::RenderFrameHost* render_frame_host,
-               content::WebContents* web_contents,
                RendererTask* main_task);
+  SubframeTask(const SubframeTask&) = delete;
+  SubframeTask& operator=(const SubframeTask&) = delete;
   ~SubframeTask() override;
 
   // task_manager::RendererTask:
@@ -34,14 +34,12 @@ class SubframeTask : public RendererTask {
   Task* GetParentTask() const override;
 
  private:
-  base::string16 GetTitle();
+  std::u16string GetTitle();
 
   content::SiteInstance* site_instance_;
 
   // The task for the main frame of this WebContents.
   RendererTask* main_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(SubframeTask);
 };
 
 }  // namespace task_manager

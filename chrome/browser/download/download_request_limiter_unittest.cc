@@ -4,6 +4,8 @@
 
 #include "chrome/browser/download/download_request_limiter.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
@@ -11,24 +13,27 @@
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/download/download_permission_request.h"
-#include "chrome/browser/permissions/permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/permission_bubble/mock_permission_prompt_factory.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_request_manager.h"
+#include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_source.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/frame_navigate_params.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/input/web_gesture_event.h"
+#include "third_party/blink/public/common/input/web_keyboard_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 
 #if defined(OS_ANDROID)
-#include "chrome/browser/android/chrome_feature_list.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
 using content::WebContents;
@@ -46,11 +51,11 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
 
-    PermissionRequestManager::CreateForWebContents(web_contents());
-    PermissionRequestManager* manager =
-        PermissionRequestManager::FromWebContents(web_contents());
-    mock_permission_prompt_factory_.reset(
-        new MockPermissionPromptFactory(manager));
+    permissions::PermissionRequestManager::CreateForWebContents(web_contents());
+    permissions::PermissionRequestManager* manager =
+        permissions::PermissionRequestManager::FromWebContents(web_contents());
+    mock_permission_prompt_factory_ =
+        std::make_unique<permissions::MockPermissionPromptFactory>(manager);
 
     UpdateExpectations(ACCEPT);
     cancel_count_ = continue_count_ = 0;
@@ -67,17 +72,18 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   }
 
   void CanDownloadFor(WebContents* web_contents) {
-    CanDownloadFor(web_contents, base::nullopt);
+    CanDownloadFor(web_contents, absl::nullopt);
   }
 
   void CanDownloadFor(WebContents* web_contents,
-                      base::Optional<url::Origin> origin) {
+                      absl::optional<url::Origin> origin) {
     download_request_limiter_->CanDownloadImpl(
         web_contents,
         "GET",  // request method
         std::move(origin),
-        base::Bind(&DownloadRequestLimiterTest::ContinueDownload,
-                   base::Unretained(this)));
+        false,  // from_download_cross_origin_redirect
+        base::BindOnce(&DownloadRequestLimiterTest::ContinueDownload,
+                       base::Unretained(this)));
     base::RunLoop().RunUntilIdle();
   }
 
@@ -89,8 +95,27 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
                             blink::WebInputEvent::Type type) {
     DownloadRequestLimiter::TabDownloadState* state =
         download_request_limiter_->GetDownloadState(web_contents, false);
-    if (state)
-      state->DidGetUserInteraction(type);
+    if (!state)
+      return;
+    std::unique_ptr<blink::WebInputEvent> event;
+    switch (type) {
+      case blink::WebInputEvent::Type::kRawKeyDown:
+        event = std::make_unique<blink::WebKeyboardEvent>();
+        break;
+      case blink::WebInputEvent::Type::kGestureScrollBegin:
+        event = std::make_unique<blink::WebGestureEvent>();
+        break;
+      case blink::WebInputEvent::Type::kMouseDown:
+        event = std::make_unique<blink::WebMouseEvent>();
+        break;
+      case blink::WebInputEvent::Type::kTouchStart:
+        event = std::make_unique<blink::WebTouchEvent>();
+        break;
+      default:
+        NOTREACHED();
+    }
+    event->SetType(type);
+    state->DidGetUserInteraction(*event);
   }
 
   void ExpectAndResetCounts(
@@ -131,29 +156,29 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
     HostContentSettingsMapFactory::GetForProfile(
         Profile::FromBrowserContext(contents->GetBrowserContext()))
         ->SetContentSettingDefaultScope(
-            host, GURL(), ContentSettingsType::AUTOMATIC_DOWNLOADS,
-            std::string(), setting);
+            host, GURL(), ContentSettingsType::AUTOMATIC_DOWNLOADS, setting);
   }
 
   void LoadCompleted() {
-    mock_permission_prompt_factory_->DocumentOnLoadCompletedInMainFrame();
+    mock_permission_prompt_factory_->DocumentOnLoadCompletedInMainFrame(
+        main_rfh());
   }
 
   int AskAllowCount() { return mock_permission_prompt_factory_->show_count(); }
 
   void UpdateExpectations(TestingAction action) {
     // Set expectations for PermissionRequestManager.
-    PermissionRequestManager::AutoResponseType response_type =
-        PermissionRequestManager::DISMISS;
+    permissions::PermissionRequestManager::AutoResponseType response_type =
+        permissions::PermissionRequestManager::DISMISS;
     switch (action) {
       case ACCEPT:
-        response_type = PermissionRequestManager::ACCEPT_ALL;
+        response_type = permissions::PermissionRequestManager::ACCEPT_ALL;
         break;
       case CANCEL:
-        response_type = PermissionRequestManager::DENY_ALL;
+        response_type = permissions::PermissionRequestManager::DENY_ALL;
         break;
       case WAIT:
-        response_type = PermissionRequestManager::NONE;
+        response_type = permissions::PermissionRequestManager::NONE;
         break;
     }
     mock_permission_prompt_factory_->set_response_type(response_type);
@@ -167,7 +192,8 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   // Number of times CancelDownload was invoked.
   int cancel_count_;
 
-  std::unique_ptr<MockPermissionPromptFactory> mock_permission_prompt_factory_;
+  std::unique_ptr<permissions::MockPermissionPromptFactory>
+      mock_permission_prompt_factory_;
 };
 
 TEST_F(DownloadRequestLimiterTest, Allow) {
@@ -243,9 +269,18 @@ TEST_F(DownloadRequestLimiterTest, ResetOnNavigation) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
+  // After resetting the state, the first download will always change the
+  // state to prompt.
   CanDownload();
   ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
+  // Content settings will be checked for prompt status and change the UI state.
+  CanDownload();
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
   // Now we have triggered a download so the UI state reflects the
   // ALLOW_ALL_DOWNLOADS internal state.
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
@@ -253,12 +288,12 @@ TEST_F(DownloadRequestLimiterTest, ResetOnNavigation) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // Do a user gesture, because we're at allow all, this shouldn't change the
-  // state.
-  OnUserInteraction(blink::WebInputEvent::kRawKeyDown);
-  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
+  // Do a user gesture, that will reset all the state if current state is not
+  // DOWNLOADS_NOT_ALLOWED or content setting is not block.
+  OnUserInteraction(blink::WebInputEvent::Type::kRawKeyDown);
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Navigate to a completely different host, which should reset the state.
@@ -286,15 +321,21 @@ TEST_F(DownloadRequestLimiterTest, ResetOnNavigation) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // Navigate to a new URL with the same host, which shouldn't reset the not
-  // allowed state, but reset the UI state.
+  // Navigate to a new URL with the same host, which will reset the allowed
+  // state.
   NavigateAndCommit(GURL("http://fooey.com/bar2"));
   LoadCompleted();
 
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
+  CanDownload();
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // Try downloading and this should move to the blocked UI state.
+  // Try downloading again and this should move to the blocked UI state.
   CanDownload();
   ExpectAndResetCounts(0, 1, 0, __LINE__);
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
@@ -416,6 +457,8 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   UpdateExpectations(ACCEPT);
+  // Trigger 1 download, this causes all following renderer-intiated
+  // download to prompt for user approval.
   CanDownload();
   ExpectAndResetCounts(1, 0, 1, __LINE__);
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
@@ -451,15 +494,18 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiated) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // But a pending load to a different host in the main frame should reset the
-  // state.
+  // Even a pending load to a different host in the main frame should not
+  // reset the state.
   content::NavigationSimulator::NavigateAndCommitFromDocument(
       GURL("http://foo.com"), web_contents()->GetMainFrame());
   LoadCompleted();
-  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
+  // Since a download is allowed earlier, a new download will prompt user.
+  CanDownload();
+  ExpectAndResetCounts(1, 0, 1, __LINE__);
 }
 
 // Test that history back will not change the tab download state if all the
@@ -488,8 +534,8 @@ TEST_F(DownloadRequestLimiterTest, HistoryBack) {
 
   // History back shouldn't reset the state, either.
   auto backward_navigation =
-      content::NavigationSimulator::CreateHistoryNavigation(-1 /* Offset */,
-                                                            web_contents());
+      content::NavigationSimulator::CreateHistoryNavigation(
+          -1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   backward_navigation->Start();
   backward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -497,8 +543,8 @@ TEST_F(DownloadRequestLimiterTest, HistoryBack) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // Browser-initiated navigation to a different host, which should reset the
-  // state.
+  // Browser-initiated navigation to a different host, which will not reset the
+  // state either.
   NavigateAndCommit(GURL("http://foobar.com"));
   LoadCompleted();
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
@@ -512,12 +558,13 @@ TEST_F(DownloadRequestLimiterTest, HistoryBack) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // History back should reset the state as it is going to a different host.
+  // History back should use the old download state, as one of the origin
+  // is in a restricted state.
   backward_navigation = content::NavigationSimulator::CreateHistoryNavigation(
-      -1 /* Offset */, web_contents());
+      -1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   backward_navigation->Start();
   backward_navigation->Commit();
-  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
@@ -549,8 +596,8 @@ TEST_F(DownloadRequestLimiterTest, HistoryForwardBack) {
 
   // History back shouldn't reset the state, either.
   auto backward_navigation =
-      content::NavigationSimulator::CreateHistoryNavigation(-1 /* Offset */,
-                                                            web_contents());
+      content::NavigationSimulator::CreateHistoryNavigation(
+          -1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   backward_navigation->Start();
   backward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -561,8 +608,8 @@ TEST_F(DownloadRequestLimiterTest, HistoryForwardBack) {
   // History forward shouldn't reset the state, as the host is encountered
   // before.
   auto forward_navigation =
-      content::NavigationSimulator::CreateHistoryNavigation(1 /* Offset */,
-                                                            web_contents());
+      content::NavigationSimulator::CreateHistoryNavigation(
+          1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   forward_navigation->Start();
   forward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -572,7 +619,7 @@ TEST_F(DownloadRequestLimiterTest, HistoryForwardBack) {
 
   // History backward again, nothing should change.
   backward_navigation = content::NavigationSimulator::CreateHistoryNavigation(
-      -1 /* Offset */, web_contents());
+      -1 /* Offset */, web_contents(), false /* is_renderer_initiated */);
   backward_navigation->Start();
   backward_navigation->Commit();
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
@@ -594,13 +641,13 @@ TEST_F(DownloadRequestLimiterTest, DownloadRequestLimiter_ResetOnUserGesture) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Do a user gesture with scroll, which should be ignored.
-  OnUserInteraction(blink::WebInputEvent::kGestureScrollBegin);
+  OnUserInteraction(blink::WebInputEvent::Type::kGestureScrollBegin);
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
   // Do a user gesture with mouse click, which should reset back to allow one.
-  OnUserInteraction(blink::WebInputEvent::kMouseDown);
+  OnUserInteraction(blink::WebInputEvent::Type::kMouseDown);
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
@@ -615,7 +662,7 @@ TEST_F(DownloadRequestLimiterTest, DownloadRequestLimiter_ResetOnUserGesture) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Do a touch event, which should reset back to allow one.
-  OnUserInteraction(blink::WebInputEvent::kTouchStart);
+  OnUserInteraction(blink::WebInputEvent::Type::kTouchStart);
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
@@ -630,7 +677,7 @@ TEST_F(DownloadRequestLimiterTest, DownloadRequestLimiter_ResetOnUserGesture) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Do a user gesture with keyboard down, which should reset back to allow one.
-  OnUserInteraction(blink::WebInputEvent::kRawKeyDown);
+  OnUserInteraction(blink::WebInputEvent::Type::kRawKeyDown);
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
@@ -654,7 +701,7 @@ TEST_F(DownloadRequestLimiterTest, DownloadRequestLimiter_ResetOnUserGesture) {
   ExpectAndResetCounts(0, 1, 1, __LINE__);
 
   // A user gesture now should NOT change the state.
-  OnUserInteraction(blink::WebInputEvent::kMouseDown);
+  OnUserInteraction(blink::WebInputEvent::Type::kMouseDown);
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
@@ -707,6 +754,7 @@ TEST_F(DownloadRequestLimiterTest, ResetOnReload) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
+  // Reload the page again.
   content::NavigationSimulator::Reload(web_contents());
   LoadCompleted();
   base::RunLoop().RunUntilIdle();
@@ -734,24 +782,37 @@ TEST_F(DownloadRequestLimiterTest, ResetOnReload) {
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
   ExpectAndResetCounts(0, 1, 1, __LINE__);
 
+  // Reload should reset DOWNLOADS_NOT_ALLOWED status.
   content::NavigationSimulator::Reload(web_contents());
   LoadCompleted();
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
-
-  // Reset back to default after a reload even if downloads are explicitly
-  // blocked.
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   CanDownload();
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // Download again will fail as content setting is already set to block.
+  CanDownload();
   ExpectAndResetCounts(0, 1, 0, __LINE__);
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
             download_request_limiter_->GetDownloadStatus(web_contents()));
-
-  // After the failed download, show the blocked UI.
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // Renderer initiated reload will not reset download status.
+  content::NavigationSimulator::NavigateAndCommitFromDocument(
+      GURL("http://foo.com/bar"), web_contents()->GetMainFrame());
+  LoadCompleted();
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 }
 
@@ -779,7 +840,8 @@ TEST_F(DownloadRequestLimiterTest, RawWebContents) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents.get()));
 
-  OnUserInteractionFor(web_contents.get(), blink::WebInputEvent::kTouchStart);
+  OnUserInteractionFor(web_contents.get(),
+                       blink::WebInputEvent::Type::kTouchStart);
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents.get()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
@@ -799,7 +861,8 @@ TEST_F(DownloadRequestLimiterTest, RawWebContents) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
             download_request_limiter_->GetDownloadUiStatus(web_contents.get()));
 
-  OnUserInteractionFor(web_contents.get(), blink::WebInputEvent::kRawKeyDown);
+  OnUserInteractionFor(web_contents.get(),
+                       blink::WebInputEvent::Type::kRawKeyDown);
   EXPECT_EQ(DownloadRequestLimiter::ALLOW_ONE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents.get()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
@@ -917,12 +980,13 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiatedDownloadFromAnotherOrigin) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // The current tab is not affected, still allowing one download.
+  // The current tab is affected, will prompt for download. After accepting
+  // the prompt, the current tab should be able to download more files.
   CanDownloadFor(web_contents());
-  ExpectAndResetCounts(1, 0, 0, __LINE__);
-  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+  ExpectAndResetCounts(1, 0, 1, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
             download_request_limiter_->GetDownloadStatus(web_contents()));
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Change the content setting to allow for the other origin.
@@ -936,13 +1000,13 @@ TEST_F(DownloadRequestLimiterTest, RendererInitiatedDownloadFromAnotherOrigin) {
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // Trigger another download in the current tab, and cancel the prompt.
-  UpdateExpectations(CANCEL);
+  // Trigger another download in the current tab, since the tab is already
+  // prompted, the new download will go through.
   CanDownloadFor(web_contents());
-  ExpectAndResetCounts(0, 1, 1, __LINE__);
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
             download_request_limiter_->GetDownloadStatus(web_contents()));
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
   // Download should proceed for the other origin.
@@ -971,24 +1035,34 @@ TEST_F(DownloadRequestLimiterTest,
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // The current tab is not affected, still allowing one download.
+  // The current tab is affected, will prompt for download.
+  UpdateExpectations(CANCEL);
   CanDownloadFor(web_contents());
+  ExpectAndResetCounts(0, 1, 1, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // On user interaction, since the content setting for the main origin is to
+  // block, download is not allowed.
+  OnUserInteraction(blink::WebInputEvent::Type::kTouchStart);
+  CanDownloadFor(web_contents());
+  ExpectAndResetCounts(0, 1, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // Download status from the other origin should reset.
+  CanDownloadFor(web_contents(),
+                 url::Origin::Create(GURL("http://foobar.com")));
   ExpectAndResetCounts(1, 0, 0, __LINE__);
   EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 
-  // On user interaction, the current page should reset its download status.
-  OnUserInteraction(blink::WebInputEvent::kTouchStart);
-  CanDownloadFor(web_contents());
-  ExpectAndResetCounts(1, 0, 0, __LINE__);
-  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
-            download_request_limiter_->GetDownloadStatus(web_contents()));
-  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
-            download_request_limiter_->GetDownloadUiStatus(web_contents()));
-
-  // Download status from the other origin does not reset and should prompt.
   UpdateExpectations(CANCEL);
   CanDownloadFor(web_contents(),
                  url::Origin::Create(GURL("http://foobar.com")));
@@ -996,5 +1070,41 @@ TEST_F(DownloadRequestLimiterTest,
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
             download_request_limiter_->GetDownloadStatus(web_contents()));
   EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+}
+
+// Test that renderer initiated download from opaque origins are correctly
+// limited.
+TEST_F(DownloadRequestLimiterTest, OpaqueOrigins) {
+  // about:blank is an opaque origin.
+  NavigateAndCommit(GURL("about:blank"));
+  LoadCompleted();
+
+  // Create another opaque origin that will trigger all the download.
+  url::Origin origin;
+  // The first download should go through.
+  CanDownloadFor(web_contents(), origin);
+  ExpectAndResetCounts(1, 0, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_DEFAULT,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // The 2nd download will be canceled, there is no prompt since the origin
+  // is opaque.
+  CanDownloadFor(web_contents(), origin);
+  ExpectAndResetCounts(0, 1, 0, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOADS_NOT_ALLOWED,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_BLOCKED,
+            download_request_limiter_->GetDownloadUiStatus(web_contents()));
+
+  // Trigger another download from about:blank, that should prompt user
+  // as one download already takes place.
+  CanDownloadFor(web_contents());
+  ExpectAndResetCounts(1, 0, 1, __LINE__);
+  EXPECT_EQ(DownloadRequestLimiter::ALLOW_ALL_DOWNLOADS,
+            download_request_limiter_->GetDownloadStatus(web_contents()));
+  EXPECT_EQ(DownloadRequestLimiter::DOWNLOAD_UI_ALLOWED,
             download_request_limiter_->GetDownloadUiStatus(web_contents()));
 }

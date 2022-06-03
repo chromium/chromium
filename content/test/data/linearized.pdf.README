@@ -1,0 +1,14 @@
+linearized.pdf is a pdf test file that is:
+1) linearized (what some pdf generating apps call "web optimized" or "Fast Web
+   View")
+and
+2) big enough to trigger chunked/range http requests when rendering the pdf in
+   the browser (and in browser tests :-).
+
+linearized.pdf test file was generated around January 2020 with the
+following cmdlines:
+    $ find chromium/src/third_party/pdfium/core -name '*.h' -or -name '*.cc'
+        | sort | grep -v -i drm | grep -v -i priv \
+        | xargs enscript -Ecpp -o - \
+        | ps2pdf - tmp.pdf
+    $ qpdf --linearize tmp.pdf linearized.pdf

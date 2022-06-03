@@ -9,14 +9,15 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/i18n/case_conversion.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
-#include "base/task_runner_util.h"
-#include "chrome/browser/win/conflicts/module_blacklist_cache_util.h"
+#include "base/task/task_runner_util.h"
+#include "base/task/thread_pool.h"
+#include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
 #include "chrome/chrome_elf/third_party_dlls/public_api.h"
 
 namespace {
@@ -54,7 +55,7 @@ DrainLogOnBackgroundTask() {
       // No log path should be empty.
       DCHECK(entry->path_len);
       blocked_modules.emplace_back(
-          base::UTF8ToUTF16(base::StringPiece(entry->path, entry->path_len)),
+          base::UTF8ToWide(base::StringPiece(entry->path, entry->path_len)),
           entry->module_size, entry->time_date_stamp);
     }
 
@@ -69,8 +70,8 @@ DrainLogOnBackgroundTask() {
 ModuleLoadAttemptLogListener::ModuleLoadAttemptLogListener(
     OnModuleBlockedCallback on_module_blocked_callback)
     : on_module_blocked_callback_(std::move(on_module_blocked_callback)),
-      background_task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN,
            base::MayBlock()})),
       // The event starts signaled so that the logs are drained once when the
@@ -126,7 +127,7 @@ bool ModuleLoadAttemptLogListener::GetDriveLetterPath(
 
     for (const auto& element : device_to_letter_path_mapping_) {
       const base::FilePath& device_root = element.first;
-      const base::string16& drive_letter_root = element.second;
+      const std::wstring& drive_letter_root = element.second;
       if (device_root.IsParent(device_path)) {
         *drive_letter_path = base::FilePath(
             drive_letter_root +

@@ -1,7 +1,0 @@
-CONSOLE ERROR: line 19: Uncaught TypeError: div.createShadowRoot is not a function
-This test checks the object 'host.createShadowRoot()' and internals.shadowRoot(div) are the same.
-
-FAIL successfullyParsed should be true. Was false.
-
-TEST COMPLETE
-

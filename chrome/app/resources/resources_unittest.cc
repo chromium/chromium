@@ -13,7 +13,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
 
@@ -21,7 +20,6 @@ class ResourcesTest : public ::testing::Test {
  protected:
   ResourcesTest() {
     ui::RegisterPathProvider();
-    ui::MaterialDesignController::Initialize();
     ui::ResourceBundle::InitSharedInstanceWithLocale(
         "en-US", nullptr, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
   }
@@ -50,7 +48,7 @@ TEST_F(ResourcesTest, CriticalMessagesContainNoExtraWhitespaces) {
     ui::ResourceBundle::GetSharedInstance().ReloadLocaleResources("");
 
     for (int message : messages_to_check) {
-      base::string16 message_str = l10n_util::GetStringUTF16(message);
+      std::u16string message_str = l10n_util::GetStringUTF16(message);
       EXPECT_EQ(message_str, base::TrimWhitespace(message_str, base::TRIM_ALL));
     }
   }

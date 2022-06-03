@@ -1,0 +1,25 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: hidden-matchable and size contained</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<link rel="match" href="content-visibility-matchable-005-ref.html">
+<meta name="assert" content="content-visibility puts in size containment">
+
+<style>
+.hidden {
+  content-visibility: hidden-matchable;
+}
+div {
+  border: 1px solid black;
+}
+</style>
+
+Test passes if there is a empty div with border below.
+<div class=hidden>
+  This text is not visible, and neither should be the div below.
+  <div style="width: 100px; height: 100px; background: red"></div>
+</div>
+</html>
+

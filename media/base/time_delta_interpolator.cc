@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/tick_clock.h"
 #include "media/base/timestamp_constants.h"
 
@@ -69,8 +69,7 @@ base::TimeDelta TimeDeltaInterpolator::GetInterpolatedTime() {
 
   int64_t now_us = (tick_clock_->NowTicks() - reference_).InMicroseconds();
   now_us = static_cast<int64_t>(now_us * playback_rate_);
-  base::TimeDelta interpolated_time =
-      lower_bound_ + base::TimeDelta::FromMicroseconds(now_us);
+  base::TimeDelta interpolated_time = lower_bound_ + base::Microseconds(now_us);
 
   if (upper_bound_ == kNoTimestamp)
     return interpolated_time;

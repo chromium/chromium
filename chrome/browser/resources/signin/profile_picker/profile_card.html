@@ -1,0 +1,161 @@
+<style include="profile-picker-shared cr-hidden-style cr-shared-style">
+  #profileCardContainer {
+    border-radius: inherit;
+    height: 100%;
+    /* Allows descendants to be absolute positioned relatively to the
+       container */
+    position: relative;
+    width: 100%;
+  }
+
+  cr-button {
+    --hover-bg-color: none; /* Stick to the profile card hover color. */
+    border: none;
+    box-shadow: none;
+    flex-direction: column;
+    height: inherit;
+    padding: 0;
+    width: inherit;
+  }
+
+  #avatarContainer {
+    height: var(--profile-card-avatar-icon-size);
+    position: relative;
+  }
+
+  #iconContainer {
+    --iron-icon-height: 16px;
+    --iron-icon-width: 16px;
+    --domain-icon-size: 24px;
+    --domain-icon-border-size: 2px;
+    align-items: center;
+    background-color: white;
+    border:
+      var(--domain-icon-border-size) solid var(--profile-card-hover-color);
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px rgba(60, 64, 67, 0.15);
+    display: flex;
+    height: var(--domain-icon-size);
+    inset-inline-end: -6px;
+    justify-content: center;
+    position: absolute;
+    top: calc(var(--profile-card-avatar-icon-size) - var(--domain-icon-size)
+      - var(--domain-icon-border-size));
+    width: var(--domain-icon-size);
+  }
+
+  iron-icon {
+    --iron-icon-fill-color: var(--google-grey-refresh-700);
+  }
+
+  #forceSigninContainer {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  #forceSigninIcon {
+    height: 16px;
+    margin: 0 4px;
+    width: 16px;
+  }
+
+  div.profile-card-info {
+    bottom: 0;
+    font-weight: normal;
+  }
+
+  cr-input {
+    --cr-input-background-color: none;
+    --cr-input-padding-top: 0;
+    top: 0;
+  }
+
+  #hoverUnderline {
+    border-bottom: 2px solid var(--google-grey-refresh-300);
+    border-radius: 0;
+    height: 0;
+    left: 0;
+    margin: auto;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    top: 38px;
+    width: 0;
+  }
+
+  cr-input[focused_] + #hoverUnderline {
+    visibility: hidden;
+  }
+
+  #profileNameInputWrapper:hover #hoverUnderline {
+    opacity: 1;
+    transition: opacity 120ms ease-in, width 180ms ease-out;
+    width: 130px;
+  }
+
+  paper-tooltip {
+    --paper-tooltip-delay-in: 200ms;
+    --paper-tooltip-duration-in: 200ms;
+    --paper-tooltip-duration-out: 200ms;
+    --paper-tooltip-min-width: none;
+    overflow-wrap: break-word;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    #iconContainer {
+      background-color: var(--md-background-color);
+      box-shadow: 0 0 2px rgba(60, 64, 67, 0.12), 0 0 6px
+        rgba(60, 64, 67, 0.15);
+    }
+
+    iron-icon {
+      --iron-icon-fill-color: var(--google-grey-500);
+    }
+
+    #hoverUnderline {
+      border-color: var(--google-grey-refresh-700);
+    }
+  }
+</style>
+
+<div id="profileCardContainer">
+  <cr-button on-click="onProfileClick_"
+      aria-label="[[i18n(
+          'profileCardButtonLabel', profileState.localProfileName)]]">
+    <div id="avatarContainer">
+      <img class="profile-avatar" alt="" src="[[profileState.avatarIcon]]">
+      <div id="iconContainer" hidden="[[!profileState.isManaged]]">
+        <iron-icon icon="cr:domain"></iron-icon>
+      </div>
+    </div>
+    <div id="gaiaName" class="profile-card-info secondary-text"
+        hidden="[[profileState.needsSignin]]">
+      [[profileState.gaiaName]]
+    </div>
+    <div id="forceSigninContainer" class="profile-card-info secondary-text"
+        hidden="[[!profileState.needsSignin]]">
+      <div>$i18n{needsSigninPrompt}</div>
+      <iron-icon id="forceSigninIcon" icon="profiles:lock"></iron-icon>
+    </div>
+  </cr-button>
+  <div id="profileNameInputWrapper">
+    <cr-input class="profile-card-info prominent-text" id="nameInput"
+        aria-label="$i18n{profileCardInputLabel}"
+        value="[[profileState.localProfileName]]"
+        on-change="onProfileNameChanged_" on-keydown="onProfileNameKeydown_"
+        on-blur="onProfileNameInputBlur_" pattern="[[pattern_]]"
+        auto-validate spellcheck="false" required>
+    </cr-input>
+    <div id="hoverUnderline"></div>
+  </div>
+  <profile-card-menu profile-state="[[profileState]]"></profile-card-menu>
+</div>
+<paper-tooltip id="gaiaNameTooltip" for="gaiaName" manual-mode offset="0"
+    position="bottom" aria-hidden="true">
+  [[profileState.gaiaName]]
+</paper-tooltip>
+<paper-tooltip id="tooltip" for="nameInput" manual-mode offset="-10"
+    aria-hidden="true">
+  [[profileState.localProfileName]]
+</paper-tooltip>

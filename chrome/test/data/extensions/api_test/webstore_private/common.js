@@ -70,3 +70,22 @@ function installAndCleanUp(installOptions, whileInstalled) {
             }));
       }));
 }
+
+// Installs the extension with the given `installOptions`.
+function install(installOptions) {
+  // Begin installing.
+  chrome.webstorePrivate.beginInstallWithManifest3(
+      installOptions,
+      callbackPass(function(result) {
+        assertNoLastError();
+        assertEq("", result);
+
+        // Now complete the installation.
+        chrome.webstorePrivate.completeInstall(
+            extensionId,
+            callbackPass(function(result) {
+              assertNoLastError();
+              assertEq(undefined, result);
+            }));
+      }));
+}

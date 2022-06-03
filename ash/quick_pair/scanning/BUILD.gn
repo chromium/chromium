@@ -1,0 +1,86 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+source_set("scanning") {
+  sources = [
+    "fast_pair/fast_pair_discoverable_scanner.cc",
+    "fast_pair/fast_pair_discoverable_scanner.h",
+    "fast_pair/fast_pair_not_discoverable_scanner.cc",
+    "fast_pair/fast_pair_not_discoverable_scanner.h",
+    "fast_pair/fast_pair_scanner.h",
+    "fast_pair/fast_pair_scanner_impl.cc",
+    "fast_pair/fast_pair_scanner_impl.h",
+    "range_calculations.cc",
+    "range_calculations.h",
+    "range_tracker.cc",
+    "range_tracker.h",
+    "scanner_broker.h",
+    "scanner_broker_impl.cc",
+    "scanner_broker_impl.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/repository",
+    "//ash/services/quick_pair",
+    "//ash/services/quick_pair/public/cpp",
+    "//base",
+    "//device/bluetooth",
+    "//device/bluetooth/public/cpp",
+  ]
+}
+
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fast_pair/fake_fast_pair_scanner.cc",
+    "fast_pair/fake_fast_pair_scanner.h",
+    "fast_pair/fast_pair_scanner.h",
+    "mock_scanner_broker.cc",
+    "mock_scanner_broker.h",
+    "scanner_broker.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//base",
+    "//base/test:test_support",
+    "//device/bluetooth",
+    "//testing/gtest",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "fast_pair/fast_pair_discoverable_scanner_unittest.cc",
+    "fast_pair/fast_pair_not_discoverable_scanner_unittest.cc",
+    "fast_pair/fast_pair_scanner_unittest.cc",
+    "range_calculations_unittest.cc",
+    "range_tracker_unittest.cc",
+  ]
+
+  deps = [
+    ":scanning",
+    ":test_support",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/proto:fastpair_proto",
+    "//ash/quick_pair/repository:repository",
+    "//ash/quick_pair/repository:test_support",
+    "//ash/services/quick_pair",
+    "//ash/services/quick_pair:test_support",
+    "//base/test:test_support",
+    "//device/bluetooth",
+    "//device/bluetooth:mocks",
+    "//mojo/public/cpp/bindings",
+    "//testing/gtest",
+  ]
+}

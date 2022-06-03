@@ -22,6 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LINE_SVG_INLINE_FLOW_BOX_H_
 
 #include "third_party/blink/renderer/core/layout/line/inline_flow_box.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -34,7 +35,7 @@ class SVGInlineFlowBox final : public InlineFlowBox {
   void SetLogicalHeight(LayoutUnit h) { logical_height_ = h; }
 
   void Paint(const PaintInfo&,
-             const LayoutPoint&,
+             const PhysicalOffset&,
              LayoutUnit line_top,
              LayoutUnit line_bottom) const override;
 
@@ -42,7 +43,12 @@ class SVGInlineFlowBox final : public InlineFlowBox {
   LayoutUnit logical_height_;
 };
 
-DEFINE_INLINE_BOX_TYPE_CASTS(SVGInlineFlowBox);
+template <>
+struct DowncastTraits<SVGInlineFlowBox> {
+  static bool AllowFrom(const InlineBox& box) {
+    return box.IsSVGInlineFlowBox();
+  }
+};
 
 }  // namespace blink
 

@@ -18,6 +18,8 @@
     [RaisesException, CallWith=ScriptState, MeasureAs=WebBluetoothRemoteCharacteristicGetDescriptors] Promise<sequence<BluetoothRemoteGATTDescriptor>> getDescriptors(optional BluetoothDescriptorUUID descriptor);
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteCharacteristicReadValue] Promise<DataView> readValue();
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteCharacteristicWriteValue] Promise<void> writeValue(BufferSource value);
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteCharacteristicWriteValueWithResponse, RuntimeEnabled=WebBluetoothRemoteCharacteristicNewWriteValue] Promise<void> writeValueWithResponse(BufferSource value);
+    [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteCharacteristicWriteValueWithoutResponse, RuntimeEnabled=WebBluetoothRemoteCharacteristicNewWriteValue] Promise<void> writeValueWithoutResponse(BufferSource value);
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteCharacteristicStartNotifications] Promise<BluetoothRemoteGATTCharacteristic> startNotifications();
     [CallWith=ScriptState, RaisesException, MeasureAs=WebBluetoothRemoteCharacteristicStopNotifications] Promise<BluetoothRemoteGATTCharacteristic> stopNotifications();
 

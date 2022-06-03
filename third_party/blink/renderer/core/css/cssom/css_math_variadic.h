@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_VARIADIC_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_MATH_VARIADIC_H_
 
-#include "base/macros.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/cssom/css_math_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_array.h"
 
@@ -15,13 +15,16 @@ namespace blink {
 class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
 
  public:
+  CSSMathVariadic(const CSSMathVariadic&) = delete;
+  CSSMathVariadic& operator=(const CSSMathVariadic&) = delete;
+
   CSSNumericArray* values() { return values_.Get(); }
 
   const CSSNumericValueVector& NumericValues() const {
     return values_->Values();
   }
 
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(values_);
     CSSMathValue::Trace(visitor);
   }
@@ -59,9 +62,23 @@ class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
     return final_type;
   }
 
+  CSSMathExpressionNode* ToCalcExporessionNodeForVariadic(
+      CSSMathOperator op) const {
+    CSSMathExpressionNode* node = NumericValues()[0]->ToCalcExpressionNode();
+    if (!node)
+      return nullptr;
+    for (wtf_size_t i = 1; i < NumericValues().size(); i++) {
+      CSSMathExpressionNode* next_arg =
+          NumericValues()[i]->ToCalcExpressionNode();
+      if (!next_arg)
+        return nullptr;
+      node = CSSMathExpressionBinaryOperation::Create(node, next_arg, op);
+    }
+    return node;
+  }
+
  private:
   Member<CSSNumericArray> values_;
-  DISALLOW_COPY_AND_ASSIGN(CSSMathVariadic);
 };
 
 }  // namespace blink

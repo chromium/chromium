@@ -2,48 +2,37 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
 }
 
-# TODO(crbug.com/753619): Enable crash reporting on Fuchsia.
+# TODO(crbug.com/1226159): Complete crash reporting integration on Fuchsia.
 assert(!is_fuchsia)
 
 source_set("browser") {
-  sources = [
-    "child_exit_observer_android.cc",
-    "child_exit_observer_android.h",
-    "child_process_crash_observer_android.cc",
-    "child_process_crash_observer_android.h",
-    "crash_memory_metrics_collector_android.cc",
-    "crash_memory_metrics_collector_android.h",
-    "crash_metrics_reporter_android.cc",
-    "crash_metrics_reporter_android.h",
-  ]
+  sources = []
 
   deps = [
     "//base",
-    "//components/crash/content/app",
+    "//components/crash/core/app",
     "//content/public/browser",
     "//content/public/common",
   ]
 
-  if (is_linux || is_android) {
-    set_sources_assignment_filter([])
-
+  if (is_linux || is_chromeos || is_android) {
     # Want this file on both Linux and Android.
     sources += [
       "crash_handler_host_linux.cc",
       "crash_handler_host_linux.h",
     ]
+
+    deps += [ "//build:chromeos_buildflags" ]
   }
 
-  if (!is_chromeos) {
+  if (!is_chromeos_ash) {
     deps += [ "//third_party/crashpad/crashpad/client" ]
-  }
-
-  if (!is_android) {
-    deps += [ "//third_party/breakpad:client" ]
   }
 
   # This is not in the GYP build but this target includes breakpad client
@@ -54,18 +43,33 @@ source_set("browser") {
   }
 
   if (is_android) {
+    sources += [
+      "child_exit_observer_android.cc",
+      "child_exit_observer_android.h",
+      "child_process_crash_observer_android.cc",
+      "child_process_crash_observer_android.h",
+      "crash_memory_metrics_collector_android.cc",
+      "crash_memory_metrics_collector_android.h",
+      "crash_metrics_reporter_android.cc",
+      "crash_metrics_reporter_android.h",
+      "process_exit_reason_from_system_android.cc",
+      "process_exit_reason_from_system_android.h",
+    ]
     deps += [
       "//components/crash/android:jni_headers",
       "//mojo/public/cpp/bindings",
     ]
+  } else {
+    deps += [ "//third_party/breakpad:client" ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "crash_metrics_reporter_android_unittest.cc",
-  ]
+  sources = []
+  if (is_android) {
+    sources += [ "crash_metrics_reporter_android_unittest.cc" ]
+  }
   deps = [
     ":browser",
     "//base/test:test_support",

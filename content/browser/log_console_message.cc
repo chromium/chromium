@@ -7,37 +7,17 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "content/public/browser/console_message.h"
 #include "content/public/common/content_features.h"
 
 namespace content {
 
-logging::LogSeverity ConsoleMessageLevelToLogSeverity(
-    blink::mojom::ConsoleMessageLevel level) {
-  logging::LogSeverity log_severity = logging::LOG_VERBOSE;
-  switch (level) {
-    case blink::mojom::ConsoleMessageLevel::kVerbose:
-      log_severity = logging::LOG_VERBOSE;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kInfo:
-      log_severity = logging::LOG_INFO;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kWarning:
-      log_severity = logging::LOG_WARNING;
-      break;
-    case blink::mojom::ConsoleMessageLevel::kError:
-      log_severity = logging::LOG_ERROR;
-      break;
-  }
-
-  return log_severity;
-}
-
 void LogConsoleMessage(blink::mojom::ConsoleMessageLevel log_level,
-                       const base::string16& message,
+                       const std::u16string& message,
                        int32_t line_number,
                        bool is_builtin_component,
                        bool is_off_the_record,
-                       const base::string16& source_id) {
+                       const std::u16string& source_id) {
   const int32_t resolved_level =
       is_builtin_component ? ConsoleMessageLevelToLogSeverity(log_level)
                            : ::logging::LOG_INFO;
@@ -52,10 +32,8 @@ void LogConsoleMessage(blink::mojom::ConsoleMessageLevel log_level,
   if (is_off_the_record && !is_builtin_component)
     return;
 
-#if defined(OS_ANDROID)
   if (!base::FeatureList::IsEnabled(features::kLogJsConsoleMessages))
     return;
-#endif  // OS_ANDROID
 
   logging::LogMessage("CONSOLE", line_number, resolved_level).stream()
       << "\"" << message << "\", source: " << source_id << " (" << line_number

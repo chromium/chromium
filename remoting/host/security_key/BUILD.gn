@@ -7,7 +7,6 @@ import("//remoting/build/config/remoting_build.gni")
 source_set("security_key") {
   sources = [
     "security_key_auth_handler.h",
-    "security_key_auth_handler_win.cc",
     "security_key_extension.cc",
     "security_key_extension.h",
     "security_key_extension_session.cc",
@@ -38,12 +37,21 @@ source_set("security_key") {
     "//ipc",
     "//mojo/public/cpp/platform",
     "//mojo/public/cpp/system",
+    "//net:net",
+    "//net/traffic_annotation:traffic_annotation",
+    "//remoting/host:host_extension",
     "//remoting/proto",
+    "//remoting/protocol:protocol",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
+  public_deps = [ "//remoting/host:common_headers" ]
 
   if (is_posix) {
     sources += [ "security_key_auth_handler_posix.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "security_key_auth_handler_win.cc" ]
   }
 }
 
@@ -54,13 +62,14 @@ source_set("main") {
     defines += host_predefines
   }
 
-  sources = [
-    "remote_security_key_main.cc",
-    "remote_security_key_main.h",
-  ]
+  sources = [ "remote_security_key_main.cc" ]
   deps = [
+    ":remote_security_key_main_headers",
+    ":security_key",
     "//base:debugging_buildflags",
     "//mojo/core/embedder",
+    "//remoting/host:base",
+    "//remoting/host:common",
   ]
 }
 
@@ -72,6 +81,7 @@ if (is_win) {
         host_predefines + [ "REMOTING_HOST_BINARY=BINARY_REMOTE_SECURITY_KEY" ]
 
     deps = [
+      ":remote_security_key_main_headers",
       "//build/win:default_exe_manifest",
       "//remoting/host/win:remoting_core",
       "//remoting/host/win:remoting_windows_resources",
@@ -84,11 +94,15 @@ if (is_win) {
   }
 }
 
+source_set("remote_security_key_main_headers") {
+  sources = [ "remote_security_key_main.h" ]
+  deps = [ "//remoting/host:host_main_headers" ]
+}
+
 source_set("unit_tests") {
   testonly = true
 
   sources = [
-    "security_key_auth_handler_win_unittest.cc",
     "security_key_extension_session_unittest.cc",
     "security_key_ipc_client_unittest.cc",
     "security_key_ipc_server_unittest.cc",
@@ -97,16 +111,26 @@ source_set("unit_tests") {
     "security_key_message_writer_impl_unittest.cc",
   ]
 
-  public_deps = [
-    ":test_support",
-  ]
+  public_deps = [ ":test_support" ]
   deps = [
+    ":security_key",
     "//mojo/core/test:test_support",
+    "//net:net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
     "//remoting:test_support",
+    "//remoting/host:common",
+    "//remoting/host:test_support",
+    "//remoting/host/setup:common",
+    "//remoting/protocol:protocol",
   ]
 
   if (is_posix) {
     sources += [ "security_key_auth_handler_posix_unittest.cc" ]
+  }
+
+  if (is_win) {
+    sources += [ "security_key_auth_handler_win_unittest.cc" ]
   }
 }
 
@@ -125,7 +149,9 @@ static_library("test_support") {
   ]
 
   deps = [
+    ":security_key",
     "//ipc",
+    "//remoting/host:common",
     "//remoting/proto",
     "//testing/gtest",
   ]

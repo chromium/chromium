@@ -24,6 +24,10 @@ struct VIEWS_EXPORT MenuConfig {
   MenuConfig();
   ~MenuConfig();
 
+  // Menus are the only place using kGroupingPropertyKey, so any value (other
+  // than 0) is fine.
+  static constexpr int kMenuControllerGroupingId = 1001;
+
   static const MenuConfig& instance();
 
   // Helper methods to simplify access to MenuConfig:
@@ -34,13 +38,10 @@ struct VIEWS_EXPORT MenuConfig {
   // Returns whether |item_view| should show accelerator text. If so, returns
   // the text to show.
   bool ShouldShowAcceleratorText(const MenuItemView* item_view,
-                                 base::string16* text) const;
+                                 std::u16string* text) const;
 
   // Font list used by menus.
   gfx::FontList font_list;
-
-  // Color for the arrow to scroll bookmarks.
-  SkColor arrow_color = SK_ColorBLACK;
 
   // Menu border sizes. The vertical border size does not apply to menus with
   // rounded corners - those menus always use the corner radius as the vertical
@@ -166,16 +167,16 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Radius of the rounded corners of the menu border. Must be >= 0.
   int corner_radius =
-      LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_NONE);
+      LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kNone);
 
   // Radius of "auxiliary" rounded corners - comboboxes and context menus.
   // Must be >= 0.
   int auxiliary_corner_radius =
-      LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_NONE);
+      LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kNone);
 
   // Radius of the rounded corners of the touchable menu border
   int touchable_corner_radius =
-      LayoutProvider::Get()->GetCornerRadiusMetric(EMPHASIS_HIGH);
+      LayoutProvider::Get()->GetCornerRadiusMetric(Emphasis::kHigh);
 
   // Anchor offset for touchable menus created by a touch event.
   int touchable_anchor_offset = 8;
@@ -183,8 +184,11 @@ struct VIEWS_EXPORT MenuConfig {
   // Height of child MenuItemViews for touchable menus.
   int touchable_menu_height = 36;
 
-  // Width of touchable menus.
-  int touchable_menu_width = 256;
+  // Minimum width of touchable menus.
+  int touchable_menu_min_width = 256;
+
+  // Maximum width of touchable menus.
+  int touchable_menu_max_width = 352;
 
   // Shadow elevation of touchable menus.
   int touchable_menu_shadow_elevation = 12;
@@ -206,6 +210,11 @@ struct VIEWS_EXPORT MenuConfig {
 
   // Margins for footnotes (HIGHLIGHTED item at the end of a menu).
   int footnote_vertical_margin = 11;
+
+  // Should use Win11 style menus.
+  // TODO(kylixrd): This should not exist. Menus should be fully configurable
+  // without needing any platform specific metrics.
+  bool win11_style_menus = false;
 
  private:
   // Configures a MenuConfig as appropriate for the current platform.

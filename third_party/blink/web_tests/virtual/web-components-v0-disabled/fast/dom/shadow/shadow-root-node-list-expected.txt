@@ -1,2 +1,0 @@
-CONSOLE ERROR: line 11: Uncaught TypeError: host.createShadowRoot is not a function
-

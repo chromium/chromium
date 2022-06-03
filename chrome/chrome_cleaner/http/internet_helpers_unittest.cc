@@ -6,8 +6,7 @@
 
 #include <string>
 
-#include "base/stl_util.h"
-#include "base/strings/string16.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/chrome_cleaner/http/internet_unittest_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,11 +15,11 @@ namespace chrome_cleaner {
 
 TEST(InternetHelpersTest, ParseContentType) {
   const struct {
-    const base::char16* content_type;
-    const base::char16* expected_mime_type;
-    const base::char16* expected_charset;
+    const wchar_t* content_type;
+    const wchar_t* expected_mime_type;
+    const wchar_t* expected_charset;
     const bool expected_had_charset;
-    const base::char16* expected_boundary;
+    const wchar_t* expected_boundary;
   } tests[] = {
       {L"text/html; charset=utf-8", L"text/html", L"utf-8", true, L""},
       {L"text/html; charset=", L"text/html", L"", true, L""},
@@ -45,10 +44,10 @@ TEST(InternetHelpersTest, ParseContentType) {
        false, L"WebKit-ada-df-dsf-adsfadsfs"},
   };
   for (size_t i = 0; i < base::size(tests); ++i) {
-    base::string16 mime_type;
-    base::string16 charset;
+    std::wstring mime_type;
+    std::wstring charset;
     bool had_charset = false;
-    base::string16 boundary;
+    std::wstring boundary;
     ParseContentType(tests[i].content_type, &mime_type, &charset, &had_charset,
                      &boundary);
     EXPECT_EQ(tests[i].expected_mime_type, mime_type) << "i=" << i;
@@ -60,11 +59,11 @@ TEST(InternetHelpersTest, ParseContentType) {
 
 TEST(InternetHelpersTest, ComposeAndDecomposeUrl) {
   const struct {
-    const base::char16* url;
-    const base::char16* scheme;
-    const base::char16* host;
+    const wchar_t* url;
+    const wchar_t* scheme;
+    const wchar_t* host;
     uint16_t port;
-    const base::char16* path;
+    const wchar_t* path;
   } tests[] = {
       {L"http://example.com/", L"http", L"example.com", 80, L"/"},
       {L"https://example.com/", L"https", L"example.com", 443, L"/"},
@@ -73,7 +72,7 @@ TEST(InternetHelpersTest, ComposeAndDecomposeUrl) {
       {L"http://example.com/a/b/c", L"http", L"example.com", 80, L"/a/b/c"},
   };
   for (size_t i = 0; i < base::size(tests); ++i) {
-    base::string16 scheme, host, path;
+    std::wstring scheme, host, path;
     uint16_t port = 0;
     EXPECT_TRUE(DecomposeUrl(tests[i].url, &scheme, &host, &port, &path))
         << "i=" << i;
@@ -83,16 +82,16 @@ TEST(InternetHelpersTest, ComposeAndDecomposeUrl) {
     EXPECT_EQ(tests[i].path, path) << "i=" << i;
     EXPECT_EQ(tests[i].url,
               ComposeUrl(tests[i].host, tests[i].port, tests[i].path,
-                         tests[i].scheme == base::string16(L"https")));
+                         tests[i].scheme == std::wstring(L"https")));
   }
 
-  const base::char16* invalid_urls[] = {
+  const wchar_t* invalid_urls[] = {
       L"",         L"example.com",       L"example.com/foo",
       L"/foo/bar", L"example.com:80",    L"http://",
       L"http:",    L"http:/example.com", L"http:example.com"};
 
   for (size_t i = 0; i < base::size(invalid_urls); ++i) {
-    base::string16 scheme, host, path;
+    std::wstring scheme, host, path;
     uint16_t port = 0;
     EXPECT_FALSE(DecomposeUrl(invalid_urls[i], &scheme, &host, &port, &path))
         << "i=" << i;
@@ -100,27 +99,27 @@ TEST(InternetHelpersTest, ComposeAndDecomposeUrl) {
 }
 
 TEST(InternetHelpersTest, GenerateMultipartHttpRequestBoundary) {
-  base::string16 boundary1 = GenerateMultipartHttpRequestBoundary();
-  base::string16 boundary2 = GenerateMultipartHttpRequestBoundary();
+  std::wstring boundary1 = GenerateMultipartHttpRequestBoundary();
+  std::wstring boundary2 = GenerateMultipartHttpRequestBoundary();
   EXPECT_FALSE(boundary1.empty());
   EXPECT_FALSE(boundary2.empty());
   EXPECT_NE(boundary1, boundary2);
-  ASSERT_EQ(base::string16::npos,
+  ASSERT_EQ(std::wstring::npos,
             boundary1.find_first_not_of(L"-0123456789abcdefABCDEF"));
 }
 
 TEST(InternetHelpersTest, GenerateMultipartHttpRequestContentTypeHeader) {
-  base::string16 boundary = GenerateMultipartHttpRequestBoundary();
-  base::string16 content_type_header =
+  std::wstring boundary = GenerateMultipartHttpRequestBoundary();
+  std::wstring content_type_header =
       GenerateMultipartHttpRequestContentTypeHeader(boundary);
 
   size_t semicolon = content_type_header.find(L':');
-  ASSERT_NE(base::string16::npos, semicolon);
+  ASSERT_NE(std::wstring::npos, semicolon);
 
-  base::string16 mime_type, charset, parsed_boundary;
+  std::wstring mime_type, charset, parsed_boundary;
   bool had_charset = false;
-  ParseContentType(base::string16(content_type_header.begin() + semicolon + 1,
-                                  content_type_header.end()),
+  ParseContentType(std::wstring(content_type_header.begin() + semicolon + 1,
+                                content_type_header.end()),
                    &mime_type, &charset, &had_charset, &parsed_boundary);
   EXPECT_EQ(boundary, parsed_boundary);
   EXPECT_TRUE(charset.empty());
@@ -129,11 +128,11 @@ TEST(InternetHelpersTest, GenerateMultipartHttpRequestContentTypeHeader) {
 }
 
 TEST(InternetHelpersTest, GenerateMultipartHttpRequestBody) {
-  std::map<base::string16, base::string16> parameters;
+  std::map<std::wstring, std::wstring> parameters;
   parameters[L"param"] = L"value";
-  base::string16 boundary = GenerateMultipartHttpRequestBoundary();
+  std::wstring boundary = GenerateMultipartHttpRequestBoundary();
   std::string file = "file contents";
-  base::string16 file_part_name = L"file_name";
+  std::wstring file_part_name = L"file_name";
 
   std::string body = GenerateMultipartHttpRequestBody(parameters, file,
                                                       file_part_name, boundary);

@@ -6,23 +6,25 @@
 
 #include <algorithm>
 
-#include "base/allocator/partition_allocator/address_space_randomization.h"
-#include "base/allocator/partition_allocator/page_allocator.h"
-#include "base/allocator/partition_allocator/random.h"
 #include "base/bind.h"
 #include "base/bit_cast.h"
 #include "base/bits.h"
+#include "base/check_op.h"
 #include "base/debug/stack_trace.h"
 #include "base/location.h"
-#include "base/logging.h"
+#include "base/memory/nonscannable_memory.h"
 #include "base/rand_util.h"
 #include "base/system/sys_info.h"
+#include "base/task/post_job.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/trace_event/trace_event.h"
+#include "base/tracing_buildflags.h"
 #include "build/build_config.h"
 #include "gin/per_isolate_data.h"
+#include "v8_platform_page_allocator.h"
 
 namespace gin {
 
@@ -31,13 +33,13 @@ namespace {
 base::LazyInstance<V8Platform>::Leaky g_v8_platform = LAZY_INSTANCE_INITIALIZER;
 
 constexpr base::TaskTraits kLowPriorityTaskTraits = {
-    base::ThreadPool(), base::TaskPriority::BEST_EFFORT};
+    base::TaskPriority::BEST_EFFORT};
 
 constexpr base::TaskTraits kDefaultTaskTraits = {
-    base::ThreadPool(), base::TaskPriority::USER_VISIBLE};
+    base::TaskPriority::USER_VISIBLE};
 
 constexpr base::TaskTraits kBlockingTaskTraits = {
-    base::ThreadPool(), base::TaskPriority::USER_BLOCKING};
+    base::TaskPriority::USER_BLOCKING};
 
 void PrintStackTrace() {
   base::debug::StackTrace trace;
@@ -50,6 +52,10 @@ class ConvertableToTraceFormatWrapper final
   explicit ConvertableToTraceFormatWrapper(
       std::unique_ptr<v8::ConvertableToTraceFormat> inner)
       : inner_(std::move(inner)) {}
+  ConvertableToTraceFormatWrapper(const ConvertableToTraceFormatWrapper&) =
+      delete;
+  ConvertableToTraceFormatWrapper& operator=(
+      const ConvertableToTraceFormatWrapper&) = delete;
   ~ConvertableToTraceFormatWrapper() override = default;
   void AppendAsTraceFormat(std::string* out) const final {
     inner_->AppendAsTraceFormat(out);
@@ -57,8 +63,6 @@ class ConvertableToTraceFormatWrapper final
 
  private:
   std::unique_ptr<v8::ConvertableToTraceFormat> inner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConvertableToTraceFormatWrapper);
 };
 
 class EnabledStateObserverImpl final
@@ -67,6 +71,10 @@ class EnabledStateObserverImpl final
   EnabledStateObserverImpl() {
     base::trace_event::TraceLog::GetInstance()->AddEnabledStateObserver(this);
   }
+
+  EnabledStateObserverImpl(const EnabledStateObserverImpl&) = delete;
+
+  EnabledStateObserverImpl& operator=(const EnabledStateObserverImpl&) = delete;
 
   ~EnabledStateObserverImpl() override {
     base::trace_event::TraceLog::GetInstance()->RemoveEnabledStateObserver(
@@ -108,8 +116,6 @@ class EnabledStateObserverImpl final
  private:
   base::Lock mutex_;
   std::unordered_set<v8::TracingController::TraceStateObserver*> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(EnabledStateObserverImpl);
 };
 
 base::LazyInstance<EnabledStateObserverImpl>::Leaky g_trace_state_dispatcher =
@@ -127,6 +133,8 @@ class TimeClamper {
 #endif
 
   TimeClamper() : secret_(base::RandUint64()) {}
+  TimeClamper(const TimeClamper&) = delete;
+  TimeClamper& operator=(const TimeClamper&) = delete;
 
   double ClampTimeResolution(double time_seconds) const {
     bool was_negative = false;
@@ -172,102 +180,74 @@ class TimeClamper {
   }
 
   const uint64_t secret_;
-  DISALLOW_COPY_AND_ASSIGN(TimeClamper);
 };
 
 base::LazyInstance<TimeClamper>::Leaky g_time_clamper =
     LAZY_INSTANCE_INITIALIZER;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-base::PageAccessibilityConfiguration GetPageConfig(
-    v8::PageAllocator::Permission permission) {
-  switch (permission) {
-    case v8::PageAllocator::Permission::kRead:
-      return base::PageRead;
-    case v8::PageAllocator::Permission::kReadWrite:
-      return base::PageReadWrite;
-    case v8::PageAllocator::Permission::kReadWriteExecute:
-      return base::PageReadWriteExecute;
-    case v8::PageAllocator::Permission::kReadExecute:
-      return base::PageReadExecute;
-    default:
-      DCHECK_EQ(v8::PageAllocator::Permission::kNoAccess, permission);
-      return base::PageInaccessible;
-  }
-}
 
-class PageAllocator : public v8::PageAllocator {
- public:
-  ~PageAllocator() override = default;
-
-  size_t AllocatePageSize() override {
-    return base::kPageAllocationGranularity;
-  }
-
-  size_t CommitPageSize() override { return base::kSystemPageSize; }
-
-  void SetRandomMmapSeed(int64_t seed) override {
-    base::SetMmapSeedForTesting(seed);
-  }
-
-  void* GetRandomMmapAddr() override { return base::GetRandomPageBase(); }
-
-  void* AllocatePages(void* address,
-                      size_t length,
-                      size_t alignment,
-                      v8::PageAllocator::Permission permissions) override {
-    base::PageAccessibilityConfiguration config = GetPageConfig(permissions);
-    bool commit = (permissions != v8::PageAllocator::Permission::kNoAccess);
-    return base::AllocPages(address, length, alignment, config,
-                            base::PageTag::kV8, commit);
-  }
-
-  bool FreePages(void* address, size_t length) override {
-    base::FreePages(address, length);
-    return true;
-  }
-
-  bool ReleasePages(void* address, size_t length, size_t new_length) override {
-    DCHECK_LT(new_length, length);
-    uint8_t* release_base = reinterpret_cast<uint8_t*>(address) + new_length;
-    size_t release_size = length - new_length;
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
-    // On POSIX, we can unmap the trailing pages.
-    base::FreePages(release_base, release_size);
-#elif defined(OS_WIN)
-    // On Windows, we can only de-commit the trailing pages. FreePages() will
-    // still free all pages in the region including the released tail, so it's
-    // safe to just decommit the tail.
-    base::DecommitSystemPages(release_base, release_size);
-#else
-#error Unsupported platform
-#endif
-    return true;
-  }
-
-  bool SetPermissions(void* address,
-                      size_t length,
-                      Permission permissions) override {
-    // If V8 sets permissions to none, we can discard the memory.
-    if (permissions == v8::PageAllocator::Permission::kNoAccess) {
-      base::DecommitSystemPages(address, length);
-      return true;
-    } else {
-      return base::TrySetSystemPagesAccess(address, length,
-                                           GetPageConfig(permissions));
-    }
-  }
-
-  bool DiscardSystemPages(void* address, size_t size) override {
-    base::DiscardSystemPages(address, size);
-    return true;
-  }
-};
-
-base::LazyInstance<PageAllocator>::Leaky g_page_allocator =
+base::LazyInstance<gin::PageAllocator>::Leaky g_page_allocator =
     LAZY_INSTANCE_INITIALIZER;
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+
+class JobDelegateImpl : public v8::JobDelegate {
+ public:
+  explicit JobDelegateImpl(base::JobDelegate* delegate) : delegate_(delegate) {}
+  JobDelegateImpl() = default;
+
+  JobDelegateImpl(const JobDelegateImpl&) = delete;
+  JobDelegateImpl& operator=(const JobDelegateImpl&) = delete;
+
+  // v8::JobDelegate:
+  bool ShouldYield() override { return delegate_->ShouldYield(); }
+  void NotifyConcurrencyIncrease() override {
+    delegate_->NotifyConcurrencyIncrease();
+  }
+  uint8_t GetTaskId() override { return delegate_->GetTaskId(); }
+  bool IsJoiningThread() const override { return delegate_->IsJoiningThread(); }
+
+ private:
+  base::JobDelegate* delegate_;
+};
+
+class JobHandleImpl : public v8::JobHandle {
+ public:
+  explicit JobHandleImpl(base::JobHandle handle) : handle_(std::move(handle)) {}
+  ~JobHandleImpl() override = default;
+
+  JobHandleImpl(const JobHandleImpl&) = delete;
+  JobHandleImpl& operator=(const JobHandleImpl&) = delete;
+
+  // v8::JobHandle:
+  void NotifyConcurrencyIncrease() override {
+    handle_.NotifyConcurrencyIncrease();
+  }
+  bool UpdatePriorityEnabled() const override { return true; }
+  void UpdatePriority(v8::TaskPriority new_priority) override {
+    handle_.UpdatePriority(ToBaseTaskPriority(new_priority));
+  }
+  void Join() override { handle_.Join(); }
+  void Cancel() override { handle_.Cancel(); }
+  void CancelAndDetach() override { handle_.CancelAndDetach(); }
+  bool IsActive() override { return handle_.IsActive(); }
+  bool IsValid() override { return !!handle_; }
+
+ private:
+  static base::TaskPriority ToBaseTaskPriority(v8::TaskPriority priority) {
+    switch (priority) {
+      case v8::TaskPriority::kBestEffort:
+        return base::TaskPriority::BEST_EFFORT;
+      case v8::TaskPriority::kUserVisible:
+        return base::TaskPriority::USER_VISIBLE;
+      case v8::TaskPriority::kUserBlocking:
+        return base::TaskPriority::USER_BLOCKING;
+    }
+  }
+
+  base::JobHandle handle_;
+};
 
 }  // namespace
 
@@ -294,9 +274,12 @@ namespace gin {
 class V8Platform::TracingControllerImpl : public v8::TracingController {
  public:
   TracingControllerImpl() = default;
+  TracingControllerImpl(const TracingControllerImpl&) = delete;
+  TracingControllerImpl& operator=(const TracingControllerImpl&) = delete;
   ~TracingControllerImpl() override = default;
 
   // TracingController implementation.
+#if !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   const uint8_t* GetCategoryGroupEnabled(const char* name) override {
     return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(name);
   }
@@ -346,8 +329,7 @@ class V8Platform::TracingControllerImpl : public v8::TracingController {
         arg_convertables);
     DCHECK_LE(num_args, 2);
     base::TimeTicks timestamp =
-        base::TimeTicks() +
-        base::TimeDelta::FromMicroseconds(timestampMicroseconds);
+        base::TimeTicks() + base::Microseconds(timestampMicroseconds);
     base::trace_event::TraceEventHandle handle =
         TRACE_EVENT_API_ADD_TRACE_EVENT_WITH_THREAD_ID_AND_TIMESTAMP(
             phase, category_enabled_flag, name, scope, id, bind_id,
@@ -364,15 +346,13 @@ class V8Platform::TracingControllerImpl : public v8::TracingController {
     TRACE_EVENT_API_UPDATE_TRACE_EVENT_DURATION(category_enabled_flag, name,
                                                 traceEventHandle);
   }
+#endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   void AddTraceStateObserver(TraceStateObserver* observer) override {
     g_trace_state_dispatcher.Get().AddObserver(observer);
   }
   void RemoveTraceStateObserver(TraceStateObserver* observer) override {
     g_trace_state_dispatcher.Get().RemoveObserver(observer);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TracingControllerImpl);
 };
 
 // static
@@ -383,7 +363,7 @@ V8Platform::V8Platform() : tracing_controller_(new TracingControllerImpl) {}
 V8Platform::~V8Platform() = default;
 
 #if BUILDFLAG(USE_PARTITION_ALLOC)
-v8::PageAllocator* V8Platform::GetPageAllocator() {
+PageAllocator* V8Platform::GetPageAllocator() {
   return g_page_allocator.Pointer();
 }
 
@@ -393,6 +373,16 @@ void V8Platform::OnCriticalMemoryPressure() {
 #if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
   base::ReleaseReservation();
 #endif
+}
+
+v8::ZoneBackingAllocator* V8Platform::GetZoneBackingAllocator() {
+  static struct Allocator final : v8::ZoneBackingAllocator {
+    MallocFn GetMallocFn() const override {
+      return &base::AllocNonQuarantinable;
+    }
+    FreeFn GetFreeFn() const override { return &base::FreeNonQuarantinable; }
+  } allocator;
+  return &allocator;
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC)
 
@@ -417,27 +407,64 @@ int V8Platform::NumberOfWorkerThreads() {
 }
 
 void V8Platform::CallOnWorkerThread(std::unique_ptr<v8::Task> task) {
-  base::PostTask(FROM_HERE, kDefaultTaskTraits,
-                 base::BindOnce(&v8::Task::Run, std::move(task)));
+  base::ThreadPool::PostTask(FROM_HERE, kDefaultTaskTraits,
+                             base::BindOnce(&v8::Task::Run, std::move(task)));
 }
 
 void V8Platform::CallBlockingTaskOnWorkerThread(
     std::unique_ptr<v8::Task> task) {
-  base::PostTask(FROM_HERE, kBlockingTaskTraits,
-                 base::BindOnce(&v8::Task::Run, std::move(task)));
+  base::ThreadPool::PostTask(FROM_HERE, kBlockingTaskTraits,
+                             base::BindOnce(&v8::Task::Run, std::move(task)));
 }
 
 void V8Platform::CallLowPriorityTaskOnWorkerThread(
     std::unique_ptr<v8::Task> task) {
-  base::PostTask(FROM_HERE, kLowPriorityTaskTraits,
-                 base::BindOnce(&v8::Task::Run, std::move(task)));
+  base::ThreadPool::PostTask(FROM_HERE, kLowPriorityTaskTraits,
+                             base::BindOnce(&v8::Task::Run, std::move(task)));
 }
 
 void V8Platform::CallDelayedOnWorkerThread(std::unique_ptr<v8::Task> task,
                                            double delay_in_seconds) {
-  base::PostDelayedTask(FROM_HERE, kDefaultTaskTraits,
-                        base::BindOnce(&v8::Task::Run, std::move(task)),
-                        base::TimeDelta::FromSecondsD(delay_in_seconds));
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, kDefaultTaskTraits,
+      base::BindOnce(&v8::Task::Run, std::move(task)),
+      base::Seconds(delay_in_seconds));
+}
+
+std::unique_ptr<v8::JobHandle> V8Platform::PostJob(
+    v8::TaskPriority priority,
+    std::unique_ptr<v8::JobTask> job_task) {
+  base::TaskTraits task_traits;
+  switch (priority) {
+    case v8::TaskPriority::kBestEffort:
+      task_traits = kLowPriorityTaskTraits;
+      break;
+    case v8::TaskPriority::kUserVisible:
+      task_traits = kDefaultTaskTraits;
+      break;
+    case v8::TaskPriority::kUserBlocking:
+      task_traits = kBlockingTaskTraits;
+      break;
+  }
+  // Ownership of |job_task| is assumed by |worker_task|, while
+  // |max_concurrency_callback| uses an unretained pointer.
+  auto* job_task_ptr = job_task.get();
+  auto handle =
+      base::PostJob(FROM_HERE, task_traits,
+                    base::BindRepeating(
+                        [](const std::unique_ptr<v8::JobTask>& job_task,
+                           base::JobDelegate* delegate) {
+                          JobDelegateImpl delegate_impl(delegate);
+                          job_task->Run(&delegate_impl);
+                        },
+                        std::move(job_task)),
+                    base::BindRepeating(
+                        [](v8::JobTask* job_task, size_t worker_count) {
+                          return job_task->GetMaxConcurrency(worker_count);
+                        },
+                        base::Unretained(job_task_ptr)));
+
+  return std::make_unique<JobHandleImpl>(std::move(handle));
 }
 
 bool V8Platform::IdleTasksEnabled(v8::Isolate* isolate) {

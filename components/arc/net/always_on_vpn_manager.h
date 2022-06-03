@@ -5,9 +5,6 @@
 #ifndef COMPONENTS_ARC_NET_ALWAYS_ON_VPN_MANAGER_H_
 #define COMPONENTS_ARC_NET_ALWAYS_ON_VPN_MANAGER_H_
 
-#include <string>
-
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 
@@ -16,6 +13,10 @@ namespace arc {
 class AlwaysOnVpnManager {
  public:
   explicit AlwaysOnVpnManager(PrefService* pref_service);
+
+  AlwaysOnVpnManager(const AlwaysOnVpnManager&) = delete;
+  AlwaysOnVpnManager& operator=(const AlwaysOnVpnManager&) = delete;
+
   ~AlwaysOnVpnManager();
 
  private:
@@ -23,8 +24,6 @@ class AlwaysOnVpnManager {
   void OnPrefChanged();
 
   PrefChangeRegistrar registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(AlwaysOnVpnManager);
 };
 
 }  // namespace arc

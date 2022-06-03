@@ -10,8 +10,8 @@ AXWebArea
 ++++AXGroup AXTitle='<newline>'
 ++++AXGroup
 ++++++AXStaticText AXValue='Moo?:'
-++++AXRadioButton AXTitle='Mooooo!' AXValue='0'
-++++AXRadioButton AXTitle='Mooooo?' AXValue='0'
+++++AXRadioButton AXTitle='Mooooo!' AXValue=0
+++++AXRadioButton AXTitle='Mooooo?' AXValue=0
 ++++AXGroup AXTitle='<newline>'
 ++++AXGroup AXTitle='<newline>'
 ++++AXButton AXTitle='Submit'

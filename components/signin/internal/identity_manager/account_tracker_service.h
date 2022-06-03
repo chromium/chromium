@@ -12,12 +12,11 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -26,6 +25,7 @@
 #include "base/android/scoped_java_ref.h"
 #endif
 
+class AccountCapabilities;
 class PrefRegistrySimple;
 class PrefService;
 
@@ -50,6 +50,7 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager*,
                                           const std::string&);
 void SimulateAccountImageFetch(signin::IdentityManager*,
                                const CoreAccountId&,
+                               const std::string& image_url_with_size,
                                const gfx::Image&);
 }  // namespace signin
 
@@ -71,12 +72,14 @@ class AccountTrackerService {
   };
 
   AccountTrackerService();
+
+  AccountTrackerService(const AccountTrackerService&) = delete;
+  AccountTrackerService& operator=(const AccountTrackerService&) = delete;
+
   ~AccountTrackerService();
 
   // Registers the preferences used by AccountTrackerService.
   static void RegisterPrefs(PrefRegistrySimple* registry);
-
-  void Shutdown();
 
   // Initializes the list of accounts from |pref_service| and load images from
   // |user_data_dir|. If |user_data_dir| is empty, images will not be saved to
@@ -119,10 +122,6 @@ class AccountTrackerService {
 
   void RemoveAccount(const CoreAccountId& account_id);
 
-  // Is migration of the account id from normalized email to gaia id supported
-  // on the current platform?
-  static bool IsMigrationSupported();
-
   AccountIdMigrationState GetMigrationState() const;
   void SetMigrationDone();
 
@@ -135,11 +134,6 @@ class AccountTrackerService {
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& gaiaIds,
       const base::android::JavaParamRef<jobjectArray>& accountNames);
-
-  // Checks whether all the accounts with |accountNames| are seeded.
-  jboolean AreAccountsSeeded(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobjectArray>& accountNames) const;
 #endif
 
   // If set, this callback will be invoked whenever the details of a tracked
@@ -154,6 +148,10 @@ class AccountTrackerService {
   // this function does not block on disk IO.
   void CommitPendingAccountChanges();
 
+  // Only used in tests to simulate a restart of the service. Accounts are
+  // reloaded.
+  void ResetForTesting();
+
  protected:
   // Available to be called in tests.
   void SetAccountInfoFromUserInfo(const CoreAccountId& account_id,
@@ -162,7 +160,13 @@ class AccountTrackerService {
   // Updates the account image. Does nothing if |account_id| does not exist in
   // |accounts_|.
   void SetAccountImage(const CoreAccountId& account_id,
+                       const std::string& image_url_with_size,
                        const gfx::Image& image);
+
+  // Updates the account capabilities in AccountInfo for |account_id|. Does
+  // nothing if |account_id| does not exist in |accounts_|.
+  void SetAccountCapabilities(const CoreAccountId& account_id,
+                              const AccountCapabilities& account_capabilities);
 
  private:
   friend class AccountFetcherService;
@@ -178,6 +182,7 @@ class AccountTrackerService {
       const std::string&);
   friend void signin::SimulateAccountImageFetch(signin::IdentityManager*,
                                                 const CoreAccountId&,
+                                                const std::string&,
                                                 const gfx::Image&);
 
   void NotifyAccountUpdated(const AccountInfo& account_info);
@@ -196,7 +201,11 @@ class AccountTrackerService {
   void OnAccountImageLoaded(const CoreAccountId& account_id, gfx::Image image);
   void LoadAccountImagesFromDisk();
   void SaveAccountImageToDisk(const CoreAccountId& account_id,
-                              const gfx::Image& image);
+                              const gfx::Image& image,
+                              const std::string& image_url_with_size);
+  void OnAccountImageUpdated(const CoreAccountId& account_id,
+                             const std::string& image_url_with_size,
+                             bool success);
   void RemoveAccountImageFromDisk(const CoreAccountId& account_id);
 
   // Migrate accounts to be keyed by gaia id instead of normalized email.
@@ -205,7 +214,7 @@ class AccountTrackerService {
 
   // Returns whether the accounts are all keyed by gaia id. This should
   // be the case when the migration state is set to MIGRATION_DONE.
-  bool IsMigrationDone() const;
+  bool AreAllAccountsMigrated() const;
 
   // Computes the new migration state. The state is saved to preference
   // before performing the migration in order to support resuming the
@@ -239,8 +248,6 @@ class AccountTrackerService {
   // Used to pass weak pointers of |this| to tasks created by
   // |image_storage_task_runner_|.
   base::WeakPtrFactory<AccountTrackerService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccountTrackerService);
 };
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_TRACKER_SERVICE_H_

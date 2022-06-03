@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-PASS exercises ImageCapture.getPhotoCapabilities()
-FAIL getPhotoCapabilities() of an ended Track should throw "InvalidStateError" assert_unreached: Should have rejected: undefined Reached unreachable code
-FAIL throw "OperationError" when the MediaStreamTrack is stopped while getting photo capabilities assert_unreached: should throw "OperationError" Reached unreachable code
-Harness: the test ran to completion.
-

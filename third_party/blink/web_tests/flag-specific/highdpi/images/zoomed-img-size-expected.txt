@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+FAIL Zoom 1% should not affect width/height of images. assert_equals: zoom: 1% expected 37 but got 67
+PASS Zoom 2% should not affect width/height of images.
+PASS Zoom 3% should not affect width/height of images.
+PASS Zoom 4% should not affect width/height of images.
+PASS Zoom 5% should not affect width/height of images.
+PASS Zoom 30% should not affect width/height of images.
+PASS Zoom 33% should not affect width/height of images.
+PASS Zoom 50% should not affect width/height of images.
+PASS Zoom 70% should not affect width/height of images.
+PASS Zoom 100% should not affect width/height of images.
+PASS Zoom 111% should not affect width/height of images.
+PASS Zoom 150% should not affect width/height of images.
+PASS Zoom 333% should not affect width/height of images.
+PASS Zoom 400% should not affect width/height of images.
+PASS Zoom 1234% should not affect width/height of images.
+Harness: the test ran to completion.
+

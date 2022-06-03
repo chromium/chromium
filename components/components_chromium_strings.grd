@@ -8,6 +8,36 @@
     </output>
     <if expr="is_android">
       <output filename="components_chromium_strings_af.pak" type="data_package" lang="af" />
+      <output filename="components_chromium_strings_as.pak" type="data_package" lang="as" />
+      <output filename="components_chromium_strings_az.pak" type="data_package" lang="az" />
+      <output filename="components_chromium_strings_be.pak" type="data_package" lang="be" />
+      <output filename="components_chromium_strings_bs.pak" type="data_package" lang="bs" />
+      <output filename="components_chromium_strings_eu.pak" type="data_package" lang="eu" />
+      <output filename="components_chromium_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="components_chromium_strings_gl.pak" type="data_package" lang="gl" />
+      <output filename="components_chromium_strings_hy.pak" type="data_package" lang="hy" />
+      <output filename="components_chromium_strings_is.pak" type="data_package" lang="is" />
+      <output filename="components_chromium_strings_ka.pak" type="data_package" lang="ka" />
+      <output filename="components_chromium_strings_kk.pak" type="data_package" lang="kk" />
+      <output filename="components_chromium_strings_km.pak" type="data_package" lang="km" />
+      <output filename="components_chromium_strings_ky.pak" type="data_package" lang="ky" />
+      <output filename="components_chromium_strings_lo.pak" type="data_package" lang="lo" />
+      <output filename="components_chromium_strings_mk.pak" type="data_package" lang="mk" />
+      <output filename="components_chromium_strings_mn.pak" type="data_package" lang="mn" />
+      <output filename="components_chromium_strings_my.pak" type="data_package" lang="my" />
+      <output filename="components_chromium_strings_ne.pak" type="data_package" lang="ne" />
+      <output filename="components_chromium_strings_or.pak" type="data_package" lang="or" />
+      <output filename="components_chromium_strings_pa.pak" type="data_package" lang="pa" />
+      <output filename="components_chromium_strings_si.pak" type="data_package" lang="si" />
+      <output filename="components_chromium_strings_sq.pak" type="data_package" lang="sq" />
+      <output filename="components_chromium_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="components_chromium_strings_ur.pak" type="data_package" lang="ur" />
+      <output filename="components_chromium_strings_uz.pak" type="data_package" lang="uz" />
+      <output filename="components_chromium_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="components_chromium_strings_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="components_chromium_strings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="components_chromium_strings_am.pak" type="data_package" lang="am" />
     <output filename="components_chromium_strings_ar.pak" type="data_package" lang="ar" />
@@ -30,7 +60,6 @@
     </if>
     <output filename="components_chromium_strings_et.pak" type="data_package" lang="et" />
     <output filename="components_chromium_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="components_chromium_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="components_chromium_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="components_chromium_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="components_chromium_strings_fr.pak" type="data_package" lang="fr" />
@@ -77,6 +106,10 @@
     <output filename="components_chromium_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="components_chromium_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="components_chromium_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="components_chromium_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="components_chromium_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/components_chromium_strings_af.xtb" lang="af" />
@@ -145,6 +178,7 @@
     <file path="strings/components_chromium_strings_sl.xtb" lang="sl" />
     <file path="strings/components_chromium_strings_sq.xtb" lang="sq" />
     <file path="strings/components_chromium_strings_sr.xtb" lang="sr" />
+    <file path="strings/components_chromium_strings_sr-Latn.xtb" lang="sr-Latn" />
     <file path="strings/components_chromium_strings_sv.xtb" lang="sv" />
     <file path="strings/components_chromium_strings_sw.xtb" lang="sw" />
     <file path="strings/components_chromium_strings_ta.xtb" lang="ta" />
@@ -160,7 +194,7 @@
     <file path="strings/components_chromium_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/components_chromium_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- Network Error Pages -->
       <if expr="not is_android and not is_ios">
@@ -179,6 +213,9 @@
           settings.
         </message>
       </if>
+      <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_BY_CLIENT" desc="Summary in the error page when a request is blocked by the browser.">
+        This page has been blocked by Chromium
+      </message>
       <message name="IDS_ERRORPAGES_SUMMARY_BLOCKED_ENROLLMENT_CHECK_PENDING" desc="Summary in the error page when the user tries to browse before the forced enrollment check has finished.">
         Chromium OS hasn’t completed its initial setup.
       </message>
@@ -246,6 +283,10 @@
       </message>
 
       <!-- Version UI -->
+      <message name="IDS_SHORT_PRODUCT_LOGO_ALT_TEXT" desc="Alt text for the Chromium logo image.">
+        Chromium logo
+      </message>
+
       <message name="IDS_VERSION_UI_LICENSE" desc="The label below the copyright message, containing the URLs.">
         Chromium is made possible by the <ph name="BEGIN_LINK_CHROMIUM">&lt;a target="_blank" href="$1"&gt;</ph>Chromium<ph name="END_LINK_CHROMIUM">&lt;/a&gt;</ph> open source project and other <ph name="BEGIN_LINK_OSS">&lt;a target="_blank" href="$2"&gt;</ph>open source software<ph name="END_LINK_OSS">&lt;/a&gt;</ph>.
       </message>
@@ -254,13 +295,6 @@
       <message name="IDS_PAGE_INFO_INTERNAL_PAGE" desc="Message to display in the page info bubble when the page you are on is a chrome:// page or about:something.">
         You're viewing a secure Chromium page
       </message>
-
-      <if expr="is_android">
-      <!-- Only used in the dialog shown after tapping "Details" in page info -->
-      <message name="IDS_PAGE_INFO_SECURE_IDENTITY_VERIFIED" desc="The text of the identity section when the page is secure and uses a valid certificate">
-        Chromium verified that <ph name="ISSUER">$1<ex>VeriSign</ex></ph> issued this website's certificate.
-      </message>
-      </if>
 
       <!-- Session Crash -->
       <message name="IDS_SESSION_CRASHED_VIEW_MESSAGE" desc="Message shown when the last session didn't exit cleanly.">

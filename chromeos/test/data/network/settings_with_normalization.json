@@ -1,5 +1,5 @@
 {
-    "irrelevant-staticipconfig": {
+    "unnecessary-address-staticipconfig": {
         "GUID": "guid",
         "Type": "Ethernet",
         "Name": "name",
@@ -11,12 +11,38 @@
             "IPAddress": "127.0.0.1"
         }
     },
-    "irrelevant-staticipconfig-normalized": {
+    "unnecessary-address-staticipconfig-normalized": {
         "GUID": "guid",
         "Type": "Ethernet",
         "Name": "name",
         "Ethernet": {
             "Authentication": "None"
+        }
+    },
+    "retained-staticipconfig-fields": {
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        },
+        "StaticIPConfig": {
+            "IncludedRoutes": ["1.1.1.1/24", "2.2.2.2/24"],
+            "ExcludedRoutes": ["3.3.3.3/24"],
+            "SearchDomains": ["rick.roll.com"]
+        }
+    },
+    "retained-staticipconfig-fields-normalized": {
+        "GUID": "guid",
+        "Type": "Ethernet",
+        "Name": "name",
+        "Ethernet": {
+            "Authentication": "None"
+        },
+        "StaticIPConfig": {
+            "IncludedRoutes": ["1.1.1.1/24", "2.2.2.2/24"],
+            "ExcludedRoutes": ["3.3.3.3/24"],
+            "SearchDomains": ["rick.roll.com"]
         }
     },
     "irrelevant-staticipconfig-fields": {

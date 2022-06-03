@@ -7,7 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 
 namespace arc {
 
@@ -15,13 +15,16 @@ FakeWallpaperInstance::FakeWallpaperInstance() = default;
 
 FakeWallpaperInstance::~FakeWallpaperInstance() = default;
 
-void FakeWallpaperInstance::InitDeprecated(mojom::WallpaperHostPtr host_ptr) {
-  Init(std::move(host_ptr), base::DoNothing());
+void FakeWallpaperInstance::InitDeprecated(
+    mojo::PendingRemote<mojom::WallpaperHost> host_remote) {
+  Init(std::move(host_remote), base::DoNothing());
 }
 
-void FakeWallpaperInstance::Init(mojom::WallpaperHostPtr host_ptr,
-                                 InitCallback callback) {
-  host_ = std::move(host_ptr);
+void FakeWallpaperInstance::Init(
+    mojo::PendingRemote<mojom::WallpaperHost> host_remote,
+    InitCallback callback) {
+  host_remote_.reset();
+  host_remote_.Bind(std::move(host_remote));
   std::move(callback).Run();
 }
 

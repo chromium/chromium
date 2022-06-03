@@ -8,10 +8,11 @@
 #include <memory>
 
 #include "ash/ash_export.h"
-#include "ash/components/fast_ink/fast_ink_pointer_controller.h"
+#include "ash/fast_ink/fast_ink_pointer_controller.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "ui/views/widget/unique_widget_ptr.h"
 
 namespace base {
 class OneShotTimer;
@@ -23,7 +24,6 @@ class Rect;
 
 namespace ash {
 
-class HighlighterResultView;
 class HighlighterView;
 
 // Highlighter enabled state that is notified to observers.
@@ -40,7 +40,8 @@ enum class HighlighterEnabledState {
   kDisabledBySessionAbort,
 };
 
-// Controller for the highlighter functionality.
+// Controller for the highlighter functionality, which can be enabled/disabled
+// by switching "Assistant" tool under Stylus panel on/off.
 // Enables/disables highlighter as well as receives points
 // and passes them off to be rendered.
 class ASH_EXPORT HighlighterController
@@ -60,6 +61,10 @@ class ASH_EXPORT HighlighterController
   };
 
   HighlighterController();
+
+  HighlighterController(const HighlighterController&) = delete;
+  HighlighterController& operator=(const HighlighterController&) = delete;
+
   ~HighlighterController() override;
 
   HighlighterEnabledState enabled_state() { return enabled_state_; }
@@ -90,33 +95,38 @@ class ASH_EXPORT HighlighterController
                          aura::Window* root_window) override;
   void UpdatePointerView(ui::TouchEvent* event) override;
   void DestroyPointerView() override;
-  bool CanStartNewGesture(ui::TouchEvent* event) override;
+  bool CanStartNewGesture(ui::LocatedEvent* event) override;
+  bool ShouldProcessEvent(ui::LocatedEvent* event) override;
 
   // Performs gesture recognition, initiates appropriate visual effects,
   // notifies the observer if necessary.
   void RecognizeGesture();
 
-  // Destroys |highlighter_view_|, if it exists.
+  // Destroys |highlighter_view_widget_|, if it exists.
   void DestroyHighlighterView();
 
-  // Destroys |result_view_|, if it exists.
+  // Destroys |result_view_widget_|, if it exists.
   void DestroyResultView();
 
   // Calls and clears the mode exit callback, if it is set.
   void CallExitCallback();
 
+  // Returns the Widget contents view of the highlighter widget as
+  // HighlighterView*.
+  HighlighterView* GetHighlighterView();
+
   // Caches the highlighter enabled state.
   HighlighterEnabledState enabled_state_ =
       HighlighterEnabledState::kDisabledByUser;
 
-  // |highlighter_view_| will only hold an instance when the highlighter is
-  // enabled and activated (pressed or dragged) and until the fade out
+  // |highlighter_view_widget_| will only hold an instance when the highlighter
+  // is enabled and activated (pressed or dragged) and until the fade out
   // animation is done.
-  std::unique_ptr<HighlighterView> highlighter_view_;
+  views::UniqueWidgetPtr highlighter_view_widget_;
 
-  // |result_view_| will only hold an instance when the selection result
+  // |result_view_widget_| will only hold an instance when the selection result
   // animation is in progress.
-  std::unique_ptr<HighlighterResultView> result_view_;
+  views::UniqueWidgetPtr result_view_widget_;
 
   // Time of the session start (e.g. when the controller was enabled).
   base::TimeTicks session_start_;
@@ -144,8 +154,6 @@ class ASH_EXPORT HighlighterController
   base::ObserverList<Observer>::Unchecked observers_;
 
   base::WeakPtrFactory<HighlighterController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HighlighterController);
 };
 
 }  // namespace ash

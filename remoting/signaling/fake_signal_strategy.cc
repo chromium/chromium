@@ -9,9 +9,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/signaling/signaling_id_util.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
@@ -65,15 +64,15 @@ void FakeSignalStrategy::SetPeerCallback(const PeerCallback& peer_callback) {
 
 void FakeSignalStrategy::ConnectTo(FakeSignalStrategy* peer) {
   PeerCallback peer_callback =
-      base::Bind(&FakeSignalStrategy::DeliverMessageOnThread,
-                 main_thread_,
-                 weak_factory_.GetWeakPtr());
+      base::BindRepeating(&FakeSignalStrategy::DeliverMessageOnThread,
+                          main_thread_, weak_factory_.GetWeakPtr());
   if (peer->main_thread_->BelongsToCurrentThread()) {
-    peer->SetPeerCallback(peer_callback);
+    peer->SetPeerCallback(std::move(peer_callback));
   } else {
     peer->main_thread_->PostTask(
-        FROM_HERE, base::BindOnce(&FakeSignalStrategy::SetPeerCallback,
-                                  base::Unretained(peer), peer_callback));
+        FROM_HERE,
+        base::BindOnce(&FakeSignalStrategy::SetPeerCallback,
+                       base::Unretained(peer), std::move(peer_callback)));
   }
 }
 
@@ -166,6 +165,14 @@ bool FakeSignalStrategy::SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> sta
         send_delay_);
   }
   return true;
+}
+
+bool FakeSignalStrategy::SendMessage(
+    const SignalingAddress& destination_address,
+    const ftl::ChromotingMessage& message) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  NOTIMPLEMENTED();
+  return false;
 }
 
 std::string FakeSignalStrategy::GetNextId() {

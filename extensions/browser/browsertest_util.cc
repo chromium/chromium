@@ -35,8 +35,13 @@ std::string ExecuteScriptInBackgroundPage(
         host->host_contents(), script, &result);
   }
 
+  // The maximum script size for which to print on failure.
+  constexpr int kMaxFailingScriptSizeToLog = 1000;
   if (!success) {
-    ADD_FAILURE() << "Executing script failed: " << script;
+    std::string message_detail = script.length() < kMaxFailingScriptSizeToLog
+                                     ? script
+                                     : "<script too large>";
+    ADD_FAILURE() << "Executing script failed: " << message_detail;
     result.clear();
   }
   return result;

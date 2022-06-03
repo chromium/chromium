@@ -7,10 +7,19 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+namespace chromeos {
 namespace memory {
+class SystemMemoryPressureEvaluator;
+}
+}  // namespace chromeos
+#endif
+
+namespace memory {
+class MemoryAblationStudy;
 class EnterpriseMemoryLimitPrefObserver;
 }  // namespace memory
 
@@ -18,6 +27,12 @@ class EnterpriseMemoryLimitPrefObserver;
 class ChromeBrowserMainExtraPartsMemory : public ChromeBrowserMainExtraParts {
  public:
   ChromeBrowserMainExtraPartsMemory();
+
+  ChromeBrowserMainExtraPartsMemory(const ChromeBrowserMainExtraPartsMemory&) =
+      delete;
+  ChromeBrowserMainExtraPartsMemory& operator=(
+      const ChromeBrowserMainExtraPartsMemory&) = delete;
+
   ~ChromeBrowserMainExtraPartsMemory() override;
 
  private:
@@ -34,7 +49,12 @@ class ChromeBrowserMainExtraPartsMemory : public ChromeBrowserMainExtraParts {
   std::unique_ptr<memory::EnterpriseMemoryLimitPrefObserver>
       memory_limit_pref_observer_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsMemory);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<chromeos::memory::SystemMemoryPressureEvaluator>
+      cros_evaluator_;
+#endif
+
+  std::unique_ptr<memory::MemoryAblationStudy> memory_ablation_study_;
 };
 
 #endif  // CHROME_BROWSER_MEMORY_CHROME_BROWSER_MAIN_EXTRA_PARTS_MEMORY_H_

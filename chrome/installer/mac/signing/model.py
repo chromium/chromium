@@ -154,6 +154,12 @@ CodeSignOptions = make_enum(
         'KILL': 'kill',
     })
 
+# Specify the components of HARDENED_RUNTIME that are also available on
+# older macOS versions.
+CodeSignOptions.FULL_HARDENED_RUNTIME_OPTIONS = (
+    CodeSignOptions.HARDENED_RUNTIME + CodeSignOptions.RESTRICT +
+    CodeSignOptions.LIBRARY_VALIDATION + CodeSignOptions.KILL)
+
 
 class Distribution(object):
     """A Distribution represents a final, signed, and potentially channel-
@@ -172,7 +178,8 @@ class Distribution(object):
                  creator_code=None,
                  channel_customize=False,
                  package_as_dmg=True,
-                 package_as_pkg=False):
+                 package_as_pkg=False,
+                 inflation_kilobytes=0):
         """Creates a new Distribution object. All arguments are optional.
 
         Args:
@@ -202,7 +209,17 @@ class Distribution(object):
                 the product.
             package_as_pkg: If True, then a .pkg file will be created containing
                 the product.
+            inflation_kilobytes: If non-zero, a blob of this size will be
+                inserted into the DMG. Incompatible with package_as_pkg = True.
         """
+        if channel_customize:
+            # Side-by-side channels must have a distinct names and creator
+            # codes, as well as keep their user data in separate locations.
+            assert channel
+            assert app_name_fragment
+            assert product_dirname
+            assert creator_code
+
         self.channel = channel
         self.branding_code = branding_code
         self.app_name_fragment = app_name_fragment
@@ -212,6 +229,22 @@ class Distribution(object):
         self.channel_customize = channel_customize
         self.package_as_dmg = package_as_dmg
         self.package_as_pkg = package_as_pkg
+        self.inflation_kilobytes = inflation_kilobytes
+
+        # inflation_kilobytes are only inserted into DMGs
+        assert not self.inflation_kilobytes or self.package_as_dmg
+
+    def brandless_copy(self):
+        """Derives and returns a copy of this Distribution object, identical
+        except for not having a branding code.
+
+        This is useful in the case where a non-branded app bundle needs to be
+        created with otherwise the same configuration.
+        """
+        return Distribution(self.channel, None, self.app_name_fragment,
+                            self.packaging_name_fragment, self.product_dirname,
+                            self.creator_code, self.channel_customize,
+                            self.package_as_dmg, self.package_as_pkg)
 
     def to_config(self, base_config):
         """Produces a derived |config.CodeSignConfig| for the Distribution.
@@ -265,10 +298,11 @@ class Distribution(object):
                 return super(DistributionCodeSignConfig,
                              self).packaging_basename
 
-        return DistributionCodeSignConfig(
-            base_config.identity, base_config.installer_identity,
-            base_config.notary_user, base_config.notary_password,
-            base_config.notary_asc_provider)
+        return DistributionCodeSignConfig(base_config.identity,
+                                          base_config.installer_identity,
+                                          base_config.notary_user,
+                                          base_config.notary_password,
+                                          base_config.notary_asc_provider)
 
 
 class Paths(object):
@@ -280,9 +314,11 @@ class Paths(object):
     """
 
     def __init__(self, input, output, work):
-        self._input = input
-        self._output = output
+        self._input = os.path.abspath(input)
+        self._output = os.path.abspath(output)
         self._work = work
+        if self._work:
+            self._work = os.path.abspath(self._work)
 
     @property
     def input(self):

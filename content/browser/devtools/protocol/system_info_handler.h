@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/system_info.h"
 #include "content/public/browser/browser_thread.h"
@@ -21,6 +20,10 @@ class SystemInfoHandler : public DevToolsDomainHandler,
  public:
 
   SystemInfoHandler();
+
+  SystemInfoHandler(const SystemInfoHandler&) = delete;
+  SystemInfoHandler& operator=(const SystemInfoHandler&) = delete;
+
   ~SystemInfoHandler() override;
 
   void Wire(UberDispatcher* dispatcher) override;
@@ -31,8 +34,6 @@ class SystemInfoHandler : public DevToolsDomainHandler,
 
  private:
   friend class SystemInfoHandlerGpuObserver;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemInfoHandler);
 };
 
 }  // namespace protocol

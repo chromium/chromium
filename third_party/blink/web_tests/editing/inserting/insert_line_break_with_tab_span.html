@@ -1,0 +1,21 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests to make sure that a <br> isn't inserted into a tab <span> during
+// an // InsertLineBreak operation.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div><span style="white-space: pre;">^\t</span>foo</div>',
+            '<div>|<span style="white-space: pre;">\t</span>bar</div>',
+        '</div>',
+    ],
+    'InsertLineBreak',
+    [
+        '<div contenteditable>',
+            '<div><br><span style="white-space: pre;">|\t</span>bar</div>',
+        '</div>',
+    ]);
+</script>

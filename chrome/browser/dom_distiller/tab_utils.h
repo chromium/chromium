@@ -15,7 +15,7 @@ class WebContents;
 void DistillCurrentPageAndView(content::WebContents* old_web_contents);
 
 // Starts distillation in the |source_web_contents|. The viewer needs to be
-// created separatly.
+// created separately.
 void DistillCurrentPage(content::WebContents* source_web_contents);
 
 // Starts distillation in the |source_web_contents| while navigating the

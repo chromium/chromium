@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="date" id="date-0" value="2019-02-14">
+<input type="date" id="date-1" value="2019-02-14">
+<input type="date" id="date-2">
+<script>
+
+promise_test(() => {
+  let dateElement = document.getElementById('date-0');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickMonthPopupButton();
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    eventSender.keyDown('Enter');
+    assert_equals(dateElement.value, "2019-07-14", "Month chooser button should have changed month");
+
+    clickDayCellAt(2, 3);
+    assert_equals(dateElement.value, "2019-07-23", "Clicking date should have changed date");
+    assert_equals(internals.pagePopupWindow, null, "Clicking date should have dismissed popup.");
+  });
+}, "Date picker: Month chooser should allow user to chooser month");
+
+promise_test(() => {
+  let dateElement = document.getElementById('date-1');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickMonthPopupButton();
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    eventSender.keyDown('Escape');
+    clickDayCellAt(2, 3);
+
+    assert_equals(dateElement.value, "2019-02-19", "Escape key should have dismissed month chooser without changing month ");
+  });
+}, "Date picker: Month chooser should dismiss on Escape key");
+
+promise_test(() => {
+  let dateElement = document.getElementById('date-2');
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    clickMonthPopupButton();
+    eventSender.keyDown('Enter');
+
+    let splitDate = dateElement.value.split('-');
+    let actualTodayDateString = new Date(splitDate[0], splitDate[1] - 1, [splitDate[2]]).toDateString();
+    let expectedTodayDateString = new Date().toDateString();
+
+    assert_equals(actualTodayDateString, expectedTodayDateString, "Opening month switcher should push value to in-page control if it has no initial value.");
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+  });
+}, "Date picker: Opening month chooser should push value to in-page control -- no initial value");
+
+</script>
+</body>
+</html>

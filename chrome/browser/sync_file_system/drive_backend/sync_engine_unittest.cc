@@ -8,11 +8,12 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/drive_backend/callback_helper.h"
 #include "chrome/browser/sync_file_system/drive_backend/fake_sync_worker.h"
@@ -35,6 +36,10 @@ class SyncEngineTest : public testing::Test,
   typedef RemoteFileSyncService::OriginStatusMap RemoteOriginStatusMap;
 
   SyncEngineTest() {}
+
+  SyncEngineTest(const SyncEngineTest&) = delete;
+  SyncEngineTest& operator=(const SyncEngineTest&) = delete;
+
   ~SyncEngineTest() override {}
 
   void SetUp() override {
@@ -45,9 +50,8 @@ class SyncEngineTest : public testing::Test,
 
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner =
         base::ThreadTaskRunnerHandle::Get();
-    worker_task_runner_ = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
+    worker_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 
     sync_engine_.reset(new drive_backend::SyncEngine(
         ui_task_runner.get(), worker_task_runner_.get(),
@@ -128,8 +132,6 @@ class SyncEngineTest : public testing::Test,
   std::unique_ptr<drive_backend::SyncEngine> sync_engine_;
 
   scoped_refptr<base::SequencedTaskRunner> worker_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncEngineTest);
 };
 
 TEST_F(SyncEngineTest, OriginTest) {

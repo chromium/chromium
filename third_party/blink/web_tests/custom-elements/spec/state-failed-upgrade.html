@@ -35,7 +35,7 @@ test_with_window(w => {
   // Set element's custom element state to "failed".
   // https://html.spec.whatwg.org/multipage/scripting.html#upgrades
   let container = document.body;
-  assert_reports(window, error, () => container.appendChild(element));
+  assert_reports_exactly(window, error, () => container.appendChild(element));
   assert_equals(constructorCount, 1, 'constructor should be invoked once');
 
   // "failed" is not "defined"

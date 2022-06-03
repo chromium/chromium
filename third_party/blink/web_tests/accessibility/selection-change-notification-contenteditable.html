@@ -1,11 +1,7 @@
-<!DOCTYPE HTML>
-<html>
-<head>
+<!DOCTYPE html>
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
 <script src="../resources/run-after-layout-and-paint.js"></script>
-</head>
-<body id="static_eventTarget">
 
 <div id="contentEditable" contentEditable="true">
   <p>Before</p>
@@ -14,34 +10,35 @@
 </div>
 
 <script>
+'use strict';
+
 // Wait until layout has settled to avoid notification spam.
 async_test_after_layout_and_paint((t) => {
-    var element = document.getElementById('contentEditable');
-    element.focus();
+  const axElement = accessibilityController.accessibleElementById('contentEditable');
+  axElement.setNotificationListener(t.step_func((notification, intents) => {
+    // Focus notification will come asynchronously.
+    if (notification == 'Focus')
+      return;
 
-    var axElement = accessibilityController.accessibleElementById('contentEditable');
-    axElement.addNotificationListener(t.step_func((notification) => {
-        // Focus notification will come asynchronously after layout
-        if (notification == 'Focus')
-            return;
+    if (notification == 'SelectedTextChanged') {
+      assert_array_equals(intents,
+                          ['AXEventIntent(setSelection,none,character,forward)']);
+      axElement.unsetNotificationListener();
+      t.done();
+      return;
+    }
 
-        if (notification == 'SelectedTextChanged') {
-            axElement.removeNotificationListener();
-            t.done();
-            return;
-        }
-        assert_unreached('Unexpected notification: ' + notification);
-    }));
+    assert_unreached('Unexpected notification: ' + notification);
+  }));
 
-    var p = document.getElementById('p');
-    var range = document.createRange();
-    range.setStart(p.firstChild, 0);
-    range.setEnd(p.firstChild, 1);
-    window.getSelection().removeAllRanges();
-    window.getSelection().addRange(range);
-}, "Tests that a 'selected text changed' notification fires on a contentEditable element when the user moves the cursor within it.");
+  const element = document.getElementById('contentEditable');
+  element.focus();
+  const p = document.getElementById('p');
+  const range = document.createRange();
+  range.setStart(p.firstChild, 0);
+  range.setEnd(p.firstChild, 1);
+  window.getSelection().removeAllRanges();
+  window.getSelection().addRange(range);
+});
 
 </script>
-
-</body>
-</html>

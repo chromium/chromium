@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/fileapi/file_reader_loader_client.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"

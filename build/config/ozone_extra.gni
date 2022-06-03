@@ -1,0 +1,24 @@
+# Copyright 2016 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# This list contains the name of external platforms that are passed to the
+# --ozone-platform command line argument or used for the ozone_platform build
+# config. For example ozone_external_platforms = [ "foo1", "foo2", ... ]
+ozone_external_platforms = []
+
+# This list contains dependencies for external platforms. Typically, the Ozone
+# implementations are placed into ui/ozone/platform/ and so this will look
+# something like:
+# ozone_external_platform_deps = [ "platform/foo1", "platform/foo_2", ... ]
+ozone_external_platform_deps = []
+
+# If a platform has unit tests, the corresponding source_set can be listed here
+# so that they get included into ozone_unittests.
+# ozone_external_platform_test_deps = [ "platform/foo1:foo1_unitests", ... ]
+ozone_external_platform_test_deps = []
+
+# If a platform has test support files for ui, the corresponding source_set can
+# be listed here so that they get included into ui_test_support.
+# ozone_external_platform_ui_test_support_deps = [ "platform/foo1:ui_test_support", ... ]
+ozone_external_platform_ui_test_support_deps = []

@@ -25,7 +25,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """WebKit's Python module for interacting with patches."""
 
 import logging
@@ -34,8 +33,8 @@ import re
 _log = logging.getLogger(__name__)
 
 INDEX_PATTERN = re.compile(r'^diff --git \w/(.+) \w/(?P<FilePath>.+)')
-LINES_CHANGED_PATTERN = re.compile(r"^@@ -(?P<OldStartLine>\d+)(,\d+)? \+(?P<NewStartLine>\d+)(,\d+)? @@")
-
+LINES_CHANGED_PATTERN = re.compile(
+    r"^@@ -(?P<OldStartLine>\d+)(,\d+)? \+(?P<NewStartLine>\d+)(,\d+)? @@")
 
 _INITIAL_STATE = 1
 _DECLARED_FILE_PATH = 2
@@ -50,6 +49,7 @@ class DiffFile(object):
     If deleted_line_number is zero, it means this line is newly added.
     If new_line_number is zero, it means this line is deleted.
     """
+
     # FIXME: Tuples generally grow into classes.  We should consider
     # adding a DiffLine object.
 
@@ -110,7 +110,9 @@ class DiffParser(object):
             lines_changed = LINES_CHANGED_PATTERN.match(line)
             if lines_changed:
                 if state != _DECLARED_FILE_PATH and state != _PROCESSING_CHUNK:
-                    _log.error('Unexpected line change without file path declaration: %r', line)
+                    _log.error(
+                        'Unexpected line change without file path declaration: %r',
+                        line)
                 old_diff_line = int(lines_changed.group('OldStartLine'))
                 new_diff_line = int(lines_changed.group('NewStartLine'))
                 state = _PROCESSING_CHUNK
@@ -124,12 +126,15 @@ class DiffParser(object):
                     current_file.add_deleted_line(old_diff_line, line[1:])
                     old_diff_line += 1
                 elif line.startswith(' '):
-                    current_file.add_unchanged_line(old_diff_line, new_diff_line, line[1:])
+                    current_file.add_unchanged_line(old_diff_line,
+                                                    new_diff_line, line[1:])
                     old_diff_line += 1
                     new_diff_line += 1
                 elif line == '\\ No newline at end of file':
                     # Nothing to do.  We may still have some added lines.
                     pass
                 else:
-                    _log.error('Unexpected diff format when parsing a chunk: %r', line)
+                    _log.error(
+                        'Unexpected diff format when parsing a chunk: %r',
+                        line)
         return files

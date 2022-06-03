@@ -8,36 +8,40 @@ GEN_INCLUDE(['mock_tts.js']);
 /**
  * Browser tests for select-to-speak's feature to speak text
  * by holding down a key and clicking or dragging with the mouse.
- * @constructor
- * @extends {SelectToSpeakE2ETest}
  */
-function SelectToSpeakMouseSelectionTest() {
-  SelectToSpeakE2ETest.call(this);
-  this.mockTts = new MockTts();
-  chrome.tts = this.mockTts;
-}
+SelectToSpeakMouseSelectionTest = class extends SelectToSpeakE2ETest {
+  constructor() {
+    super();
+    this.mockTts = new MockTts();
+    chrome.tts = this.mockTts;
+  }
 
-SelectToSpeakMouseSelectionTest.prototype = {
-  __proto__: SelectToSpeakE2ETest.prototype,
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
 
-  /**
-   * Triggers speech using the search key and clicking with the mouse.
-   * @param {Object} downEvent The mouse-down event.
-   * @param {Object} upEvent The mouse-up event.
-   */
-  selectRangeForSpeech(downEvent, upEvent) {
-    selectToSpeak.fireMockKeyDownEvent(
-        {keyCode: SelectToSpeak.SEARCH_KEY_CODE});
-    selectToSpeak.fireMockMouseDownEvent(downEvent);
-    selectToSpeak.fireMockMouseUpEvent(upEvent);
-    selectToSpeak.fireMockKeyUpEvent({keyCode: SelectToSpeak.SEARCH_KEY_CODE});
-  },
+    window.EventType = chrome.automation.EventType;
+    window.SelectToSpeakState = chrome.accessibilityPrivate.SelectToSpeakState;
+
+    (async function() {
+      await importModule(
+          'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
+      await importModule(
+          'SELECT_TO_SPEAK_TRAY_CLASS_NAME', '/select_to_speak/ui_manager.js');
+      await importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js');
+      selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
+
+      runTest();
+    })();
+  }
 
   tapTrayButton(desktop, callback) {
-    let button = desktop.find({
-      roleType: 'button',
+    const button = desktop.find({
       attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME}
     });
+
     callback = this.newCallback(callback);
     selectToSpeak.onStateChangeRequestedCallbackForTest_ =
         this.newCallback(() => {
@@ -45,14 +49,14 @@ SelectToSpeakMouseSelectionTest.prototype = {
           callback();
         });
     button.doDefault();
-  },
+  }
 };
 
 TEST_F('SelectToSpeakMouseSelectionTest', 'SpeaksNodeWhenClicked', function() {
   this.runWithLoadedTree(
       'data:text/html;charset=utf-8,' +
           '<p>This is some text</p>',
-      function(desktop) {
+      function(root) {
         assertFalse(this.mockTts.currentlySpeaking());
         assertEquals(this.mockTts.pendingUtterances().length, 0);
         this.mockTts.setOnSpeechCallbacks(
@@ -63,12 +67,12 @@ TEST_F('SelectToSpeakMouseSelectionTest', 'SpeaksNodeWhenClicked', function() {
               this.assertEqualsCollapseWhitespace(
                   this.mockTts.pendingUtterances()[0], 'This is some text');
             })]);
-        let textNode = this.findTextNode(desktop, 'This is some text');
-        let event = {
+        const textNode = this.findTextNode(root, 'This is some text');
+        const event = {
           screenX: textNode.location.left + 1,
           screenY: textNode.location.top + 1
         };
-        this.selectRangeForSpeech(event, event);
+        this.triggerReadMouseSelectedText(event, event);
       });
 });
 
@@ -78,7 +82,7 @@ TEST_F(
       this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
               '<p>This is some text</p><p>This is some more text</p>',
-          function(desktop) {
+          function(root) {
             assertFalse(this.mockTts.currentlySpeaking());
             assertEquals(this.mockTts.pendingUtterances().length, 0);
             this.mockTts.setOnSpeechCallbacks([
@@ -87,23 +91,24 @@ TEST_F(
                 assertEquals(this.mockTts.pendingUtterances().length, 1);
                 this.assertEqualsCollapseWhitespace(
                     utterance, 'This is some text');
+                this.mockTts.finishPendingUtterance();
               }),
               this.newCallback(function(utterance) {
                 this.assertEqualsCollapseWhitespace(
                     utterance, 'This is some more text');
               })
             ]);
-            let firstNode = this.findTextNode(desktop, 'This is some text');
-            let downEvent = {
+            const firstNode = this.findTextNode(root, 'This is some text');
+            const downEvent = {
               screenX: firstNode.location.left + 1,
               screenY: firstNode.location.top + 1
             };
-            let lastNode = this.findTextNode(desktop, 'This is some more text');
-            let upEvent = {
+            const lastNode = this.findTextNode(root, 'This is some more text');
+            const upEvent = {
               screenX: lastNode.location.left + lastNode.location.width,
               screenY: lastNode.location.top + lastNode.location.height
             };
-            this.selectRangeForSpeech(downEvent, upEvent);
+            this.triggerReadMouseSelectedText(downEvent, upEvent);
           });
     });
 
@@ -114,7 +119,7 @@ TEST_F(
           'data:text/html;charset=utf-8,' +
               '<p style="width:200px">This is some text in a paragraph that wraps. ' +
               '<i>Italic text</i></p>',
-          function(desktop) {
+          function(root) {
             assertFalse(this.mockTts.currentlySpeaking());
             assertEquals(this.mockTts.pendingUtterances().length, 0);
             this.mockTts.setOnSpeechCallbacks(
@@ -126,18 +131,18 @@ TEST_F(
                       'This is some text in a paragraph that wraps. ' +
                           'Italic text');
                 })]);
-            let firstNode = this.findTextNode(
-                desktop, 'This is some text in a paragraph that wraps. ');
-            let downEvent = {
+            const firstNode = this.findTextNode(
+                root, 'This is some text in a paragraph that wraps. ');
+            const downEvent = {
               screenX: firstNode.location.left + 1,
               screenY: firstNode.location.top + 1
             };
-            let lastNode = this.findTextNode(desktop, 'Italic text');
-            let upEvent = {
+            const lastNode = this.findTextNode(root, 'Italic text');
+            const upEvent = {
               screenX: lastNode.location.left + lastNode.location.width,
               screenY: lastNode.location.top + lastNode.location.height
             };
-            this.selectRangeForSpeech(downEvent, upEvent);
+            this.triggerReadMouseSelectedText(downEvent, upEvent);
           });
     });
 
@@ -147,7 +152,7 @@ TEST_F(
       this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
               '<p>This is some text</p>',
-          function(desktop) {
+          function(root) {
             assertFalse(this.mockTts.currentlySpeaking());
             this.mockTts.setOnSpeechCallbacks(
                 [this.newCallback(function(utterance) {
@@ -158,13 +163,14 @@ TEST_F(
                       this.mockTts.pendingUtterances()[0], 'This is some text');
                 })]);
 
-            let textNode = this.findTextNode(desktop, 'This is some text');
-            let event = {
+            const textNode = this.findTextNode(root, 'This is some text');
+            const event = {
               screenX: textNode.location.left + 1,
               screenY: textNode.location.top + 1
             };
             // A state change request should shift us into 'selecting' state
             // from 'inactive'.
+            const desktop = root.parent.root;
             this.tapTrayButton(desktop, () => {
               selectToSpeak.fireMockMouseDownEvent(event);
               selectToSpeak.fireMockMouseUpEvent(event);
@@ -178,14 +184,15 @@ TEST_F(
       this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
               '<p>This is some text</p>',
-          function(desktop) {
-            let textNode = this.findTextNode(desktop, 'This is some text');
-            let event = {
+          function(root) {
+            const textNode = this.findTextNode(root, 'This is some text');
+            const event = {
               screenX: textNode.location.left + 1,
               screenY: textNode.location.top + 1
             };
             // A state change request should shift us into 'selecting' state
             // from 'inactive'.
+            const desktop = root.parent.root;
             this.tapTrayButton(desktop, () => {
               selectToSpeak.fireMockMouseDownEvent(event);
               assertEquals(SelectToSpeakState.SELECTING, selectToSpeak.state_);
@@ -203,7 +210,7 @@ TEST_F(
       this.runWithLoadedTree(
           'data:text/html;charset=utf-8,' +
               '<p>This is some text</p>',
-          function(desktop) {
+          function(root) {
             assertFalse(this.mockTts.currentlySpeaking());
             assertEquals(this.mockTts.pendingUtterances().length, 0);
             this.mockTts.setOnSpeechCallbacks(
@@ -215,6 +222,7 @@ TEST_F(
                       this.mockTts.pendingUtterances()[0], 'This is some text');
 
                   // Cancel speech and make sure state resets to INACTIVE.
+                  const desktop = root.parent.root;
                   this.tapTrayButton(desktop, () => {
                     assertFalse(this.mockTts.currentlySpeaking());
                     assertEquals(this.mockTts.pendingUtterances().length, 0);
@@ -222,17 +230,18 @@ TEST_F(
                         SelectToSpeakState.INACTIVE, selectToSpeak.state_);
                   });
                 })]);
-            let textNode = this.findTextNode(desktop, 'This is some text');
-            let event = {
+            const textNode = this.findTextNode(root, 'This is some text');
+            const event = {
               screenX: textNode.location.left + 1,
               screenY: textNode.location.top + 1
             };
-            this.selectRangeForSpeech(event, event);
+            this.triggerReadMouseSelectedText(event, event);
           });
     });
 
+// TODO(crbug.com/1177140) Re-enable test
 TEST_F(
-    'SelectToSpeakMouseSelectionTest', 'DoesNotSpeakOnlyTheTrayButton',
+    'SelectToSpeakMouseSelectionTest', 'DISABLED_DoesNotSpeakOnlyTheTrayButton',
     function() {
       // The tray button itself should not be spoken when clicked in selection
       // mode per UI review (but if more elements are being verbalized than just
@@ -240,11 +249,10 @@ TEST_F(
       // stylus may act as a laser pointer unless it taps on the stylus options
       // button, which always opens on a tap regardless of the stylus behavior
       // selected.
-      chrome.automation.getDesktop(this.newCallback((desktop) => {
+      this.runWithLoadedDesktop((desktop) => {
         this.tapTrayButton(desktop, () => {
           assertEquals(selectToSpeak.state_, SelectToSpeakState.SELECTING);
-          let button = desktop.find({
-            roleType: 'button',
+          const button = desktop.find({
             attributes: {className: SELECT_TO_SPEAK_TRAY_CLASS_NAME}
           });
 
@@ -262,12 +270,12 @@ TEST_F(
               }),
               true);
 
-          let event = {
+          const event = {
             screenX: button.location.left + 1,
             screenY: button.location.top + 1
           };
           selectToSpeak.fireMockMouseDownEvent(event);
           selectToSpeak.fireMockMouseUpEvent(event);
         });
-      }));
+      });
     });

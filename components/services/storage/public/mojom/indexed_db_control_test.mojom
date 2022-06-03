@@ -1,0 +1,95 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module storage.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "third_party/blink/public/mojom/storage_key/storage_key.mojom";
+
+enum V2SchemaCorruptionStatus {
+  CORRUPTION_UNKNOWN,
+  CORRUPTION_NO,
+  CORRUPTION_YES,
+};
+
+enum FailClass {
+  NOTHING,
+  LEVELDB_ITERATOR,
+  LEVELDB_DIRECT_TRANSACTION,
+  LEVELDB_TRANSACTION,
+  LEVELDB_DATABASE,
+};
+
+enum FailMethod {
+  NOTHING,
+  COMMIT,
+  COMMIT_DISK_FULL,
+  GET,
+  SEEK,
+  WRITE,
+};
+
+// A test-only interface for creating fake failures in IndexedDB methods.
+interface MockFailureInjector {
+  // Causes indexeddb to fail in a given way on a given call.
+  FailOperation(FailClass failure_class, FailMethod failure_method,
+                int32 instance_num, int32 call_num) => ();
+};
+
+// A test-only interface extending storage.mojom.IndexedDBControl.
+interface IndexedDBControlTest {
+  // Gets the root data path for storage.
+  GetBaseDataPathForTesting() => (mojo_base.mojom.FilePath path);
+
+  // Gets the file name of the local storage file for the given `storage_key`.
+  GetFilePathForTesting(blink.mojom.StorageKey storage_key) =>
+      (mojo_base.mojom.FilePath path);
+
+  // Forgets the storage keys and sizes read from disk.
+  ResetCachesForTesting() => ();
+
+  // Downgrades databases to V2.
+  ForceSchemaDowngradeForTesting(blink.mojom.StorageKey storage_key) =>
+    (bool downgraded);
+
+  // Returns the corruption status for a given database.
+  HasV2SchemaCorruptionForTesting(blink.mojom.StorageKey storage_key) =>
+      (V2SchemaCorruptionStatus status);
+
+  // Does a direct write to a database with a given key/value pair.
+  WriteToIndexedDBForTesting(blink.mojom.StorageKey storage_key, string key,
+                             string value) => ();
+
+  // Returns the number of blobs for a given `storage_key`.
+  GetBlobCountForTesting(blink.mojom.StorageKey storage_key) =>
+    (int64 num_blobs);
+
+  // Returns the next blob id for a given `storage_key`.
+  GetNextBlobNumberForTesting(blink.mojom.StorageKey storage_key,
+                              int64 database_id) => (int64 next_blob_number);
+
+  // Returns the path for a given key/database/blob.
+  GetPathForBlobForTesting(blink.mojom.StorageKey storage_key,
+                           int64 database_id, int64 blob_number) =>
+      (mojo_base.mojom.FilePath path);
+
+  // Compacts the backing store for a given `storage_key`.
+  CompactBackingStoreForTesting(blink.mojom.StorageKey storage_key) => ();
+
+  // Overrides IndexedDB with a mock class factory that can inject failures
+  // at specific points.  For now, because this is static, there can only
+  // be one of these bound at a single time.
+  //
+  // Note: in order for this not to be flaky, this should be called before
+  // using the IndexedDB system in any way to ensure that that the default
+  // class factory isn't used before the testing one is set.
+  BindMockFailureSingletonForTesting(
+      pending_receiver<MockFailureInjector> receiver);
+
+  // Return keys used in WriteToIndexedDBForTesting.
+  GetDatabaseKeysForTesting() =>
+      (string schema_version_key, string data_version_key);
+};

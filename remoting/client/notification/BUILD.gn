@@ -36,7 +36,11 @@ source_set("unit_tests") {
 
   deps = [
     ":notification",
+    "//base",
+    "//base/test:test_support",
     "//net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
     "//testing/gmock",
     "//testing/gtest",
   ]

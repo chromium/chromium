@@ -42,25 +42,27 @@ TEST(GoogleNewLogoApiTest, UsesHttps) {
 TEST(GoogleNewLogoApiTest, AppendPreliminaryParamsParsing) {
   const std::string base_url = "http://foo.bar/";
   EXPECT_EQ(GURL("http://foo.bar/?async=ntp:1"),
-            AppendPreliminaryParamsToDoodleURL(false, GURL(base_url)));
+            AppendPreliminaryParamsToDoodleURL(false, false, GURL(base_url)));
   EXPECT_EQ(GURL("http://foo.bar/?test=param&async=ntp:1"),
-            AppendPreliminaryParamsToDoodleURL(false,
+            AppendPreliminaryParamsToDoodleURL(false, false,
                                                GURL(base_url + "?test=param")));
   EXPECT_EQ(GURL("http://foo.bar/?async=inside,ntp:1&test=param"),
             AppendPreliminaryParamsToDoodleURL(
-                false, GURL(base_url + "?async=inside&test=param")));
+                false, false, GURL(base_url + "?async=inside&test=param")));
   EXPECT_EQ(GURL("http://foo.bar/?async=inside,ntp:1&async=param"),
             AppendPreliminaryParamsToDoodleURL(
-                false, GURL(base_url + "?async=inside&async=param")));
+                false, false, GURL(base_url + "?async=inside&async=param")));
 }
 
 TEST(GoogleNewLogoApiTest, AppendPreliminaryParams) {
   const GURL logo_url("https://base.doo/target");
 
   EXPECT_EQ(GURL("https://base.doo/target?async=ntp:1"),
-            AppendPreliminaryParamsToDoodleURL(false, logo_url));
+            AppendPreliminaryParamsToDoodleURL(false, false, logo_url));
   EXPECT_EQ(GURL("https://base.doo/target?async=ntp:1,graybg:1"),
-            AppendPreliminaryParamsToDoodleURL(true, logo_url));
+            AppendPreliminaryParamsToDoodleURL(true, false, logo_url));
+  EXPECT_EQ(GURL("https://base.doo/target?async=ntp:2"),
+            AppendPreliminaryParamsToDoodleURL(false, true, logo_url));
 }
 
 TEST(GoogleNewLogoApiTest, AppendFingerprintParam) {
@@ -392,7 +394,8 @@ TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
     },
     "dark_large_image": {
       "is_animated_gif": true,
-      "url": "https://www.doodle.com/dark_image.gif"
+      "url": "https://www.doodle.com/dark_image.gif",
+      "background_color": "#ABCDEF"
     },
     "cta_data_uri": "data:image/png;base64,YWJj",
     "dark_cta_data_uri": "data:image/png;base64,eHl6"
@@ -409,6 +412,7 @@ TEST(GoogleNewLogoApiTest, ParsesAnimatedImage) {
             logo->metadata.animated_url);
   EXPECT_EQ(GURL("https://www.doodle.com/dark_image.gif"),
             logo->metadata.dark_animated_url);
+  EXPECT_EQ("#ABCDEF", logo->metadata.dark_background_color);
   EXPECT_EQ("abc", logo->encoded_image->data());
   EXPECT_EQ("xyz", logo->dark_encoded_image->data());
   EXPECT_EQ(LogoType::ANIMATED, logo->metadata.type);
@@ -426,7 +430,9 @@ TEST(GoogleNewLogoApiTest, ParsesLoggingUrls) {
       "url": "https://www.doodle.com/image.gif"
     },
     "log_url": "/log?a=b",
-    "cta_log_url": "/ctalog?c=d"
+    "dark_log_url": "/log?a=dark",
+    "cta_log_url": "/ctalog?c=d",
+    "dark_cta_log_url": "/ctalog?c=dark"
   }
 })json";
 
@@ -437,7 +443,37 @@ TEST(GoogleNewLogoApiTest, ParsesLoggingUrls) {
   ASSERT_FALSE(failed);
   ASSERT_TRUE(logo);
   EXPECT_EQ(GURL("https://base.doo/log?a=b"), logo->metadata.log_url);
+  EXPECT_EQ(GURL("https://base.doo/log?a=dark"), logo->metadata.dark_log_url);
   EXPECT_EQ(GURL("https://base.doo/ctalog?c=d"), logo->metadata.cta_log_url);
+  EXPECT_EQ(GURL("https://base.doo/ctalog?c=dark"),
+            logo->metadata.dark_cta_log_url);
+}
+
+TEST(GoogleNewLogoApiTest, ParsesImageSize) {
+  const GURL base_url("https://base.doo/");
+  const std::string json = R"json()]}'
+{
+  "ddljson": {
+    "large_image": {
+      "width": 500,
+      "height": 200
+    },
+    "dark_large_image": {
+      "width": 600,
+      "height": 230
+    }
+  }
+})json";
+
+  bool failed = false;
+  std::unique_ptr<EncodedLogo> logo = ParseDoodleLogoResponse(
+      base_url, std::make_unique<std::string>(json), base::Time(), &failed);
+
+  ASSERT_FALSE(failed);
+  EXPECT_EQ(500, logo->metadata.width_px);
+  EXPECT_EQ(200, logo->metadata.height_px);
+  EXPECT_EQ(600, logo->metadata.dark_width_px);
+  EXPECT_EQ(230, logo->metadata.dark_height_px);
 }
 
 TEST(GoogleNewLogoApiTest, ParsesInteractiveDoodle) {

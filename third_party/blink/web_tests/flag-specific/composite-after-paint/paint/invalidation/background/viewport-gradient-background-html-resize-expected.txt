@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [0, 0, 800, 600],
-          "reason": "background"
-        }
+      "invalidations": [
+        [0, 0, 800, 600]
       ]
     }
   ]

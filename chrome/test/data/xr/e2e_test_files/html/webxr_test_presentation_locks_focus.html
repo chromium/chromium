@@ -13,6 +13,8 @@ focus, that the presenting frame still receives input.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
+      setup({single_test: true});
+
       var rafCount = 0;
 
       function stepSetupFocusLoss() {

@@ -6,7 +6,6 @@
 #define CONTENT_TEST_TEST_RENDER_WIDGET_HOST_H_
 
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/test/mock_widget_impl.h"
 #include "content/test/mock_widget_input_handler.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
@@ -18,26 +17,30 @@ namespace content {
 class TestRenderWidgetHost : public RenderWidgetHostImpl {
  public:
   static std::unique_ptr<RenderWidgetHostImpl> Create(
+      FrameTree* frame_tree,
       RenderWidgetHostDelegate* delegate,
-      RenderProcessHost* process,
+      AgentSchedulingGroupHost& agent_scheduling_group,
       int32_t routing_id,
       bool hidden);
   ~TestRenderWidgetHost() override;
 
   // RenderWidgetHostImpl overrides.
-  mojom::WidgetInputHandler* GetWidgetInputHandler() override;
+  blink::mojom::WidgetInputHandler* GetWidgetInputHandler() override;
 
   MockWidgetInputHandler* GetMockWidgetInputHandler();
 
- private:
-  TestRenderWidgetHost(RenderWidgetHostDelegate* delegate,
-                       RenderProcessHost* process,
-                       int32_t routing_id,
-                       std::unique_ptr<MockWidgetImpl> widget_impl,
-                       mojo::PendingRemote<mojom::Widget> widget,
-                       bool hidden);
+  static mojo::PendingAssociatedRemote<blink::mojom::Widget>
+  CreateStubWidgetRemote();
+  static mojo::PendingAssociatedRemote<blink::mojom::FrameWidget>
+  CreateStubFrameWidgetRemote();
 
-  std::unique_ptr<MockWidgetImpl> widget_impl_;
+ private:
+  TestRenderWidgetHost(FrameTree* frame_tree,
+                       RenderWidgetHostDelegate* delegate,
+                       AgentSchedulingGroupHost& agent_scheduling_group,
+                       int32_t routing_id,
+                       bool hidden);
+  MockWidgetInputHandler input_handler_;
 };
 
 }  // namespace content

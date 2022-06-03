@@ -6,17 +6,17 @@
 
 #include <algorithm>
 #include <map>
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -24,24 +24,26 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/autofill/core/browser/webdata/mock_autofill_webdata_backend.h"
 #include "components/sync/base/client_tag_hash.h"
+#include "components/sync/engine/data_type_activation_response.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/model/data_type_activation_request.h"
 #include "components/sync/model/metadata_batch.h"
-#include "components/sync/model/mock_model_type_change_processor.h"
 #include "components/sync/model/model_error.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
-#include "components/sync/test/test_matchers.h"
+#include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
+#include "components/sync/protocol/model_type_state.pb.h"
+#include "components/sync/test/model/mock_model_type_change_processor.h"
+#include "components/sync/test/model/test_matchers.h"
 #include "components/webdata/common/web_database.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ScopedTempDir;
 using base::Time;
-using base::TimeDelta;
 using base::UTF8ToUTF16;
 using sync_pb::AutofillSpecifics;
 using sync_pb::EntityMetadata;
-using sync_pb::EntitySpecifics;
 using sync_pb::ModelTypeState;
 using syncer::DataBatch;
 using syncer::EntityChange;
@@ -140,6 +142,11 @@ AutofillEntry CreateAutofillEntry(const AutofillSpecifics& autofill_specifics) {
 class AutocompleteSyncBridgeTest : public testing::Test {
  public:
   AutocompleteSyncBridgeTest() {}
+
+  AutocompleteSyncBridgeTest(const AutocompleteSyncBridgeTest&) = delete;
+  AutocompleteSyncBridgeTest& operator=(const AutocompleteSyncBridgeTest&) =
+      delete;
+
   ~AutocompleteSyncBridgeTest() override {}
 
   void SetUp() override {
@@ -154,14 +161,13 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   void ResetProcessor() {
     real_processor_ =
         std::make_unique<syncer::ClientTagBasedModelTypeProcessor>(
-            syncer::AUTOFILL, /*dump_stack=*/base::DoNothing(),
-            /*commit_only=*/false);
+            syncer::AUTOFILL, /*dump_stack=*/base::DoNothing());
     mock_processor_.DelegateCallsByDefaultTo(real_processor_.get());
   }
 
   void ResetBridge() {
-    bridge_.reset(new AutocompleteSyncBridge(
-        &backend_, mock_processor_.CreateForwardingProcessor()));
+    bridge_ = std::make_unique<AutocompleteSyncBridge>(
+        &backend_, mock_processor_.CreateForwardingProcessor());
   }
 
   void StartSyncing(const std::vector<AutofillSpecifics>& remote_data = {}) {
@@ -220,13 +226,13 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   }
 
   std::string GetClientTag(const AutofillSpecifics& specifics) {
-    std::string tag = bridge()->GetClientTag(*SpecificsToEntity(specifics));
+    std::string tag = bridge()->GetClientTag(SpecificsToEntity(specifics));
     EXPECT_FALSE(tag.empty());
     return tag;
   }
 
   std::string GetStorageKey(const AutofillSpecifics& specifics) {
-    std::string key = bridge()->GetStorageKey(*SpecificsToEntity(specifics));
+    std::string key = bridge()->GetStorageKey(SpecificsToEntity(specifics));
     EXPECT_FALSE(key.empty());
     return key;
   }
@@ -241,19 +247,18 @@ class AutocompleteSyncBridgeTest : public testing::Test {
     return changes;
   }
 
-  std::unique_ptr<EntityData> SpecificsToEntity(
-      const AutofillSpecifics& specifics) {
-    auto data = std::make_unique<EntityData>();
-    *data->specifics.mutable_autofill() = specifics;
-    data->client_tag_hash = syncer::ClientTagHash::FromUnhashed(
-        syncer::AUTOFILL, bridge()->GetClientTag(*data));
+  EntityData SpecificsToEntity(const AutofillSpecifics& specifics) {
+    EntityData data;
+    *data.specifics.mutable_autofill() = specifics;
+    data.client_tag_hash = syncer::ClientTagHash::FromUnhashed(
+        syncer::AUTOFILL, bridge()->GetClientTag(data));
     return data;
   }
 
-  std::unique_ptr<syncer::UpdateResponseData> SpecificsToUpdateResponse(
+  syncer::UpdateResponseData SpecificsToUpdateResponse(
       const AutofillSpecifics& specifics) {
-    auto data = std::make_unique<syncer::UpdateResponseData>();
-    data->entity = SpecificsToEntity(specifics);
+    syncer::UpdateResponseData data;
+    data.entity = SpecificsToEntity(specifics);
     return data;
   }
 
@@ -300,8 +305,6 @@ class AutocompleteSyncBridgeTest : public testing::Test {
   std::unique_ptr<AutocompleteSyncBridge> bridge_;
   testing::NiceMock<MockModelTypeChangeProcessor> mock_processor_;
   std::unique_ptr<syncer::ClientTagBasedModelTypeProcessor> real_processor_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteSyncBridgeTest);
 };
 
 TEST_F(AutocompleteSyncBridgeTest, GetClientTag) {

@@ -9,19 +9,21 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_io_data.h"
-#include "chrome/common/custom_handlers/protocol_handler.h"
 #include "chrome/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_prefs/user_prefs.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/common/custom_handlers/protocol_handler.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 using content::ChildProcessSecurityPolicy;
@@ -42,7 +44,7 @@ const ProtocolHandler& LookupHandler(
 // If true default protocol handlers will be removed if the OS level
 // registration for a protocol is no longer Chrome.
 bool ShouldRemoveHandlersNotInOS() {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   // We don't do this on Linux as the OS registration there is not reliable,
   // and Chrome OS doesn't have any notion of OS registration.
   // TODO(benwells): When Linux support is more reliable remove this
@@ -100,9 +102,8 @@ void ProtocolHandlerRegistry::Delegate::RegisterWithOSAsDefaultClient(
   // The worker pointer is reference counted. While it is running, the
   // sequence it runs on will hold references it will be automatically freed
   // once all its tasks have finished.
-  base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(
-      std::move(callback), protocol)
-      ->StartSetAsDefault();
+  base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(protocol)
+      ->StartSetAsDefault(std::move(callback));
 }
 
 void ProtocolHandlerRegistry::Delegate::CheckDefaultClientWithOS(
@@ -111,9 +112,8 @@ void ProtocolHandlerRegistry::Delegate::CheckDefaultClientWithOS(
   // The worker pointer is reference counted. While it is running, the
   // sequence it runs on will hold references it will be automatically freed
   // once all its tasks have finished.
-  base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(
-      std::move(callback), protocol)
-      ->StartCheckIsDefault();
+  base::MakeRefCounted<shell_integration::DefaultProtocolClientWorker>(protocol)
+      ->StartCheckIsDefault(std::move(callback));
 }
 
 // ProtocolHandlerRegistry -----------------------------------------------------
@@ -216,7 +216,7 @@ bool ProtocolHandlerRegistry::IsDefault(
 }
 
 void ProtocolHandlerRegistry::InstallDefaultsForChromeOS() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Only chromeos has default protocol handlers at this point.
   AddPredefinedHandler(
       ProtocolHandler::CreateProtocolHandler(
@@ -442,8 +442,7 @@ bool ProtocolHandlerRegistry::IsHandledProtocol(
   return enabled_ && !GetHandlerFor(scheme).IsEmpty();
 }
 
-void ProtocolHandlerRegistry::RemoveHandler(
-    const ProtocolHandler& handler) {
+void ProtocolHandlerRegistry::RemoveHandler(const ProtocolHandler& handler) {
   if (IsIgnored(handler)) {
     RemoveIgnoredHandler(handler);
     return;
@@ -689,12 +688,13 @@ ProtocolHandlerRegistry::GetHandlersFromPref(const char* pref_name) const {
 
   const base::ListValue* handlers = prefs->GetList(pref_name);
   if (handlers) {
-    for (size_t i = 0; i < handlers->GetSize(); ++i) {
-      const base::DictionaryValue* dict;
-      if (!handlers->GetDictionary(i, &dict))
+    for (const auto& dict : handlers->GetList()) {
+      if (!dict.is_dict())
         continue;
-      if (ProtocolHandler::IsValidDict(dict)) {
-        result.push_back(dict);
+      const base::DictionaryValue* dict_value =
+          static_cast<const base::DictionaryValue*>(&dict);
+      if (ProtocolHandler::IsValidDict(dict_value)) {
+        result.push_back(dict_value);
       }
     }
   }
@@ -789,7 +789,7 @@ void ProtocolHandlerRegistry::AddPredefinedHandler(
 shell_integration::DefaultWebClientWorkerCallback
 ProtocolHandlerRegistry::GetDefaultWebClientCallback(
     const std::string& protocol) {
-  return base::Bind(
+  return base::BindOnce(
       &ProtocolHandlerRegistry::OnSetAsDefaultProtocolClientFinished,
       weak_ptr_factory_.GetWeakPtr(), protocol);
 }

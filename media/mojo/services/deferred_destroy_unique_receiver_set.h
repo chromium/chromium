@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "media/base/bind_to_current_loop.h"
@@ -69,6 +69,11 @@ class DeferredDestroyUniqueReceiverSet {
   };
 
   DeferredDestroyUniqueReceiverSet() {}
+
+  DeferredDestroyUniqueReceiverSet(const DeferredDestroyUniqueReceiverSet&) =
+      delete;
+  DeferredDestroyUniqueReceiverSet& operator=(
+      const DeferredDestroyUniqueReceiverSet&) = delete;
 
   void AddReceiver(std::unique_ptr<DeferredDestroy<Interface>> impl,
                    mojo::PendingReceiver<Interface> receiver) {
@@ -129,8 +134,6 @@ class DeferredDestroyUniqueReceiverSet {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<DeferredDestroyUniqueReceiverSet> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DeferredDestroyUniqueReceiverSet);
 };
 
 }  // namespace media

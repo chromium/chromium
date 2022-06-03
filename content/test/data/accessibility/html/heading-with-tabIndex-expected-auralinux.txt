@@ -1,0 +1,9 @@
+[document web]
+++[heading] name='Heading 2, no tabIndex'
+++++[static] name='Heading 2, no tabIndex'
+++[heading] name='Heading 1, tabIndex of negative 1'
+++++[static] name='Heading 1, tabIndex of negative 1'
+++[heading] name='Heading 3, tabIndex of 0'
+++++[static] name='Heading 3, tabIndex of 0'
+++[heading] name='Heading 4, tabIndex of 1'
+++++[static] name='Heading 4, tabIndex of 1'

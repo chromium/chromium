@@ -5,9 +5,6 @@
 source_set("tracked") {
   sources = [
     "device_id.h",
-    "device_id_mac.cc",
-    "device_id_stub.cc",
-    "device_id_win.cc",
     "dictionary_hash_store_contents.cc",
     "dictionary_hash_store_contents.h",
     "hash_store_contents.h",
@@ -21,10 +18,6 @@ source_set("tracked") {
     "pref_hash_store_impl.cc",
     "pref_hash_store_impl.h",
     "pref_hash_store_transaction.h",
-    "registry_hash_store_contents_win.cc",
-    "registry_hash_store_contents_win.h",
-    "segregated_pref_store.cc",
-    "segregated_pref_store.h",
     "temp_scoped_dir_cleaner.h",
     "tracked_atomic_preference.cc",
     "tracked_atomic_preference.h",
@@ -39,12 +32,17 @@ source_set("tracked") {
     "tracked_split_preference.h",
   ]
 
-  if (is_win || is_mac) {
-    sources -= [ "device_id_stub.cc" ]
+  if (is_win) {
+    sources += [
+      "device_id_win.cc",
+      "registry_hash_store_contents_win.cc",
+      "registry_hash_store_contents_win.h",
+    ]
+  } else if (is_mac) {
+    sources += [ "device_id_mac.cc" ]
+  } else {
+    sources += [ "device_id_stub.cc" ]
   }
-
-  # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
 
   public_deps = [
     "//services/preferences/public/cpp/tracked",
@@ -59,7 +57,7 @@ source_set("tracked") {
   ]
 
   if (is_mac) {
-    libs = [ "IOKit.framework" ]
+    frameworks = [ "IOKit.framework" ]
   }
 }
 
@@ -71,10 +69,12 @@ source_set("unit_tests") {
     "pref_hash_calculator_unittest.cc",
     "pref_hash_filter_unittest.cc",
     "pref_hash_store_impl_unittest.cc",
-    "registry_hash_store_contents_win_unittest.cc",
-    "segregated_pref_store_unittest.cc",
     "tracked_preferences_migration_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [ "registry_hash_store_contents_win_unittest.cc" ]
+  }
 
   deps = [
     ":tracked",

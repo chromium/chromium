@@ -31,6 +31,10 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_access.h"
 
 #include <memory>
+#include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+#include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token_builder.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/document_load_timing.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -42,6 +46,7 @@
 #include "third_party/blink/renderer/modules/webmidi/midi_output_map.h"
 #include "third_party/blink/renderer/modules/webmidi/midi_port.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/privacy_budget/identifiability_digest_helpers.h"
 
 namespace blink {
 
@@ -60,12 +65,12 @@ PortState ToDeviceState(PortState state) {
 }  // namespace
 
 MIDIAccess::MIDIAccess(
-    std::unique_ptr<MIDIDispatcher> dispatcher,
+    MIDIDispatcher* dispatcher,
     bool sysex_enabled,
     const Vector<MIDIAccessInitializer::PortDescriptor>& ports,
     ExecutionContext* execution_context)
-    : ContextLifecycleObserver(execution_context),
-      dispatcher_(std::move(dispatcher)),
+    : ExecutionContextLifecycleObserver(execution_context),
+      dispatcher_(dispatcher),
       sysex_enabled_(sysex_enabled),
       has_pending_activity_(false) {
   dispatcher_->SetClient(this);
@@ -80,13 +85,25 @@ MIDIAccess::MIDIAccess(
           port.version, ToDeviceState(port.state)));
     }
   }
+  constexpr IdentifiableSurface surface = IdentifiableSurface::FromTypeAndToken(
+      IdentifiableSurface::Type::kWebFeature,
+      WebFeature::kRequestMIDIAccess_ObscuredByFootprinting);
+  if (IdentifiabilityStudySettings::Get()->ShouldSample(surface)) {
+    IdentifiableTokenBuilder builder;
+    for (const auto& port : ports) {
+      builder.AddToken(IdentifiabilityBenignStringToken(port.id));
+      builder.AddToken(IdentifiabilityBenignStringToken(port.name));
+      builder.AddToken(IdentifiabilityBenignStringToken(port.manufacturer));
+      builder.AddToken(IdentifiabilityBenignStringToken(port.version));
+      builder.AddToken(port.type);
+    }
+    IdentifiabilityMetricBuilder(execution_context->UkmSourceID())
+        .Add(surface, builder.GetToken())
+        .Record(execution_context->UkmRecorder());
+  }
 }
 
 MIDIAccess::~MIDIAccess() = default;
-
-void MIDIAccess::Dispose() {
-  dispatcher_.reset();
-}
 
 EventListener* MIDIAccess::onstatechange() {
   return GetAttributeEventListener(event_type_names::kStatechange);
@@ -202,15 +219,12 @@ void MIDIAccess::SendMIDIData(unsigned port_index,
   dispatcher_->SendMIDIData(port_index, data, length, time_stamp);
 }
 
-void MIDIAccess::ContextDestroyed(ExecutionContext*) {
-  dispatcher_.reset();
-}
-
-void MIDIAccess::Trace(blink::Visitor* visitor) {
+void MIDIAccess::Trace(Visitor* visitor) const {
+  visitor->Trace(dispatcher_);
   visitor->Trace(inputs_);
   visitor->Trace(outputs_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

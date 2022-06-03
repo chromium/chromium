@@ -8,8 +8,6 @@
 @interface OpenInController (TestingAditions)
 - (NSString*)suggestedFilename;
 - (void)startDownload;
-- (void)setDocumentInteractionController:
-    (UIDocumentInteractionController*)controller;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OPEN_IN_OPEN_IN_CONTROLLER_TESTING_H_

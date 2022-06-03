@@ -8,6 +8,7 @@
 #include <list>
 
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 
 namespace extensions {
 class DeferredStartRenderHost;
@@ -34,6 +35,10 @@ class ExtensionHostQueue {
   // having a chance to start)
   void Remove(DeferredStartRenderHost* host);
 
+  // Adds a delay before starting the next ExtensionHost. This can be used for
+  // testing purposes to help flush out flakes.
+  void SetCustomDelayForTesting(base::TimeDelta delay) { delay_ = delay; }
+
  private:
   // Queues up a delayed task to process the next DeferredStartRenderHost in
   // the queue.
@@ -45,6 +50,10 @@ class ExtensionHostQueue {
   // True if this queue is currently in the process of starting an
   // DeferredStartRenderHost.
   bool pending_create_;
+
+  // The delay before starting the next host. By default, this is 0, meaning we
+  // just wait until the event loop yields.
+  base::TimeDelta delay_;
 
   // The list of DeferredStartRenderHosts waiting to be started.
   std::list<DeferredStartRenderHost*> queue_;

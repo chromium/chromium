@@ -9,7 +9,8 @@ body { width: 800px; margin: 0; overflow: hidden; }
 </style>
 
 <script>
-    eventSender.setPageZoomFactor(2);
+  if (window.testRunner)
+    testRunner.setPageZoomFactor(2);
 </script>
 </head>
 <body>

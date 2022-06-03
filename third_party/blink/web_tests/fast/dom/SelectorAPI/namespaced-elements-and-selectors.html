@@ -1,15 +1,19 @@
 <!DOCTYPE html>
-<script src="../../../resources/js-test.js"></script>
+<title>querySelectorAll and namespaces</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
 <div id="sandbox">
     <span></span>
 </div>
 <script>
-description("querySelectorAll and namespaces");
+setup({ single_test: true });
+
 
 sandbox.appendChild(document.createElementNS("http://dummynamespace", "span"));
 sandbox.appendChild(document.createElementNS("", "span"));
 
-shouldBe("sandbox.querySelectorAll('span').length", "3");
-shouldBe("sandbox.querySelectorAll('*|span').length", "3");
-shouldBe("sandbox.querySelectorAll('|span').length", "1");
+assert_equals(sandbox.querySelectorAll('span').length, 3);
+assert_equals(sandbox.querySelectorAll('*|span').length, 3);
+assert_equals(sandbox.querySelectorAll('|span').length, 1);
+done();
 </script>

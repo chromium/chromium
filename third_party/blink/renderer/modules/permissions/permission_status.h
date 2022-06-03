@@ -5,12 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_PERMISSIONS_PERMISSION_STATUS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_PERMISSIONS_PERMISSION_STATUS_H_
 
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/permissions/permission.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -18,34 +18,35 @@ namespace blink {
 
 class ExecutionContext;
 class ScriptPromiseResolver;
+class Permissions;
 
 // Expose the status of a given permission type for the current
 // ExecutionContext.
 class PermissionStatus final : public EventTargetWithInlineData,
                                public ActiveScriptWrappable<PermissionStatus>,
-                               public ContextLifecycleStateObserver,
+                               public ExecutionContextLifecycleStateObserver,
                                public mojom::blink::PermissionObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(PermissionStatus);
   DEFINE_WRAPPERTYPEINFO();
-  USING_PRE_FINALIZER(PermissionStatus, Dispose);
 
   using MojoPermissionDescriptor = mojom::blink::PermissionDescriptorPtr;
   using MojoPermissionStatus = mojom::blink::PermissionStatus;
 
  public:
-  static PermissionStatus* Take(ScriptPromiseResolver*,
+  static PermissionStatus* Take(Permissions&,
+                                ScriptPromiseResolver*,
                                 MojoPermissionStatus,
                                 MojoPermissionDescriptor);
 
-  static PermissionStatus* CreateAndListen(ExecutionContext*,
+  static PermissionStatus* CreateAndListen(Permissions&,
+                                           ExecutionContext*,
                                            MojoPermissionStatus,
                                            MojoPermissionDescriptor);
 
-  PermissionStatus(ExecutionContext*,
+  PermissionStatus(Permissions&,
+                   ExecutionContext*,
                    MojoPermissionStatus,
                    MojoPermissionDescriptor);
   ~PermissionStatus() override;
-  void Dispose();
 
   // EventTarget implementation.
   const AtomicString& InterfaceName() const override;
@@ -54,15 +55,17 @@ class PermissionStatus final : public EventTargetWithInlineData,
   // ScriptWrappable implementation.
   bool HasPendingActivity() const final;
 
-  // ContextLifecycleStateObserver implementation.
+  // ExecutionContextLifecycleStateObserver implementation.
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
-  void ContextDestroyed(ExecutionContext*) override;
+  void ContextDestroyed() override {}
 
   String state() const;
 
+  String name() const;
+
   DEFINE_ATTRIBUTE_EVENT_LISTENER(change, kChange)
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void StartListening();
@@ -72,7 +75,8 @@ class PermissionStatus final : public EventTargetWithInlineData,
 
   MojoPermissionStatus status_;
   MojoPermissionDescriptor descriptor_;
-  mojo::Receiver<mojom::blink::PermissionObserver> receiver_{this};
+  HeapMojoReceiver<mojom::blink::PermissionObserver, PermissionStatus>
+      receiver_;
 };
 
 }  // namespace blink

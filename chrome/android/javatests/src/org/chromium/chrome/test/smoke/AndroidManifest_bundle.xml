@@ -13,12 +13,23 @@
 
     <!-- We add an application tag here just so that we can indicate that this
          package needs to link against the android.test library, which is
-         needed when building test cases. -->
-    <application>
+         needed when building test cases.
+
+         Explicitly set the attribute requestLegacyExternalStorage to "true"
+         since it is "false" by default on apps targeting Android Q. -->
+    <application android:requestLegacyExternalStorage="true">
         <uses-library android:name="android.test.runner" />
     </application>
 
     <instrumentation android:name="org.chromium.base.test.BaseChromiumAndroidJUnitRunner"
         android:targetPackage="org.chromium.chrome.test.smoke.bundle"
         android:label="Runner for org.chromium.chrome.test.smoke.bundle"/>
+
+    <!-- In Android-11 or newer, apks need to have the <queries> element when
+         querying and interfacting with other packages. See
+         https://developer.android.com/training/basics/intents/package-visibility#package-name
+         for more details. -->
+    <queries>
+      <package android:name="org.chromium.chrome" />
+    </queries>
 </manifest>

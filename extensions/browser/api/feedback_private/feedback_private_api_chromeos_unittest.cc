@@ -4,25 +4,37 @@
 
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api_unittest_base_chromeos.h"
+#include "extensions/browser/api/feedback_private/feedback_service.h"
 #include "extensions/browser/api/feedback_private/log_source_access_manager.h"
+#include "extensions/browser/api/feedback_private/mock_feedback_service.h"
+#include "extensions/common/value_builder.h"
 
 namespace extensions {
 
 namespace {
 
-using api::feedback_private::ReadLogSourceResult;
+using api::feedback_private::FeedbackInfo;
 using api::feedback_private::ReadLogSourceParams;
-using base::TimeDelta;
+using api::feedback_private::ReadLogSourceResult;
+using api::feedback_private::SendFeedback::Params;
+using feedback::FeedbackData;
+using testing::_;
+using testing::DoAll;
+using testing::Invoke;
+using testing::SaveArg;
 
 // Converts |params| to a string containing a JSON dictionary within an argument
 // list.
-std::string ParamsToJSON(const ReadLogSourceParams& params) {
+template <typename T>
+std::string ParamsToJSON(const T& params) {
   base::ListValue params_value;
   params_value.Append(params.ToValue());
   std::string params_json_string;
@@ -36,6 +48,11 @@ std::string ParamsToJSON(const ReadLogSourceParams& params) {
 class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
  public:
   FeedbackPrivateApiUnittest() = default;
+
+  FeedbackPrivateApiUnittest(const FeedbackPrivateApiUnittest&) = delete;
+  FeedbackPrivateApiUnittest& operator=(const FeedbackPrivateApiUnittest&) =
+      delete;
+
   ~FeedbackPrivateApiUnittest() override = default;
 
   // FeedbackPrivateApiUnittestBase:
@@ -44,6 +61,11 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
         ->Get(browser_context())
         ->GetLogSourceAccessManager()
         ->SetTickClockForTesting(nullptr);
+
+    FeedbackPrivateAPI::GetFactoryInstance()
+        ->Get(browser_context())
+        ->SetFeedbackServiceForTesting(
+            base::MakeRefCounted<FeedbackService>(browser_context()));
 
     FeedbackPrivateApiUnittestBase::TearDown();
   }
@@ -100,12 +122,63 @@ class FeedbackPrivateApiUnittest : public FeedbackPrivateApiUnittestBase {
     return RunFunctionAndReturnError(function.get(), ParamsToJSON(params));
   }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(FeedbackPrivateApiUnittest);
+  // Runs the feedbackPrivate.sendFeedback() function. See API function
+  // definition for argument descriptions.
+  scoped_refptr<FeedbackData> RunSendFeedbackFunction(
+      const std::string& args,  // The payload that comes from client
+      const FeedbackParams& expected_params) {
+    base::Value values = base::test::ParseJson(args);
+    EXPECT_TRUE(values.is_list());
+
+    std::unique_ptr<api::feedback_private::SendFeedback::Params> params =
+        api::feedback_private::SendFeedback::Params::Create(values.GetList());
+    EXPECT_TRUE(params);
+
+    scoped_refptr<FeedbackData> actual_feedback_data;
+    SetupMockFeedbackService(expected_params, actual_feedback_data);
+
+    auto function = base::MakeRefCounted<FeedbackPrivateSendFeedbackFunction>();
+
+    std::unique_ptr<base::Value> result_value =
+        RunFunctionAndReturnValue(function.get(), args);
+    EXPECT_TRUE(result_value);
+
+    return actual_feedback_data;
+  }
+
+  void SetupMockFeedbackService(
+      const FeedbackParams& expected_params,
+      scoped_refptr<FeedbackData>& actual_feedback_data) {
+    auto mock = base::MakeRefCounted<MockFeedbackService>(browser_context());
+
+    // scoped_refptr<FeedbackData> actual_feedback_data;
+    EXPECT_CALL(*mock, SendFeedback(_, _, _))
+        .WillOnce([&](const FeedbackParams& params,
+                      scoped_refptr<FeedbackData> feedback_data,
+                      SendFeedbackCallback callback) {
+          // Pass the feedback data out to verify its properties
+          actual_feedback_data = feedback_data;
+          // Verify that the flags in params are set correctly
+          EXPECT_EQ(expected_params.is_internal_email,
+                    params.is_internal_email);
+          EXPECT_EQ(expected_params.load_system_info, params.load_system_info);
+          EXPECT_EQ(expected_params.send_tab_titles, params.send_tab_titles);
+          EXPECT_EQ(expected_params.send_histograms, params.send_histograms);
+          EXPECT_EQ(expected_params.send_bluetooth_logs,
+                    params.send_bluetooth_logs);
+
+          std::move(callback).Run(true);
+        });
+
+    FeedbackPrivateAPI::GetFactoryInstance()
+        ->Get(browser_context())
+        ->SetFeedbackServiceForTesting(
+            static_cast<scoped_refptr<FeedbackService>>(std::move(mock)));
+  }
 };
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceInvalidId) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
@@ -117,7 +190,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceInvalidId) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceNonIncremental) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
@@ -148,7 +221,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceNonIncremental) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceIncremental) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
@@ -185,8 +258,8 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceIncremental) {
   EXPECT_NE("", RunReadLogSourceFunctionWithError(params));
 }
 
-TEST_F(FeedbackPrivateApiUnittest, Anonymize) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+TEST_F(FeedbackPrivateApiUnittest, Redact) {
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   ReadLogSourceParams params;
@@ -195,8 +268,8 @@ TEST_F(FeedbackPrivateApiUnittest, Anonymize) {
 
   int result_reader_id = 0;
   std::string result_string;
-  // Skip over all the alphabetic results, to test anonymization of the
-  // subsequent MAC address.
+  // Skip over all the alphabetic results, to test redaction of the subsequent
+  // MAC address.
   for (int i = 0; i < 26; ++i) {
     EXPECT_TRUE(
         RunReadLogSourceFunction(params, &result_reader_id, &result_string));
@@ -211,7 +284,7 @@ TEST_F(FeedbackPrivateApiUnittest, Anonymize) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(0));
+  const base::TimeDelta timeout(base::Milliseconds(0));
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
   int result_reader_id = 0;
@@ -279,7 +352,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceMultipleSources) {
 }
 
 TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
-  const TimeDelta timeout(TimeDelta::FromMilliseconds(100));
+  const base::TimeDelta timeout(base::Milliseconds(100));
   LogSourceAccessManager::SetMaxNumBurstAccessesForTesting(1);
   LogSourceAccessManager::SetRateLimitingTimeoutForTesting(&timeout);
 
@@ -297,7 +370,7 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
 
   // |test_clock| must start out at something other than 0, which is interpreted
   // as an invalid value.
-  test_clock.Advance(TimeDelta::FromMilliseconds(100));
+  test_clock.Advance(base::Milliseconds(100));
 
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
@@ -309,34 +382,246 @@ TEST_F(FeedbackPrivateApiUnittest, ReadLogSourceWithAccessTimeouts) {
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=120, but it will not be allowed. (empty result)
-  test_clock.Advance(TimeDelta::FromMilliseconds(20));
+  test_clock.Advance(base::Milliseconds(20));
   EXPECT_FALSE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=150, but still not allowed.
-  test_clock.Advance(TimeDelta::FromMilliseconds(30));
+  test_clock.Advance(base::Milliseconds(30));
   EXPECT_FALSE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=199, but still not allowed. (empty result)
-  test_clock.Advance(TimeDelta::FromMilliseconds(49));
+  test_clock.Advance(base::Milliseconds(49));
   EXPECT_FALSE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=210, annd the access is finally allowed.
-  test_clock.Advance(TimeDelta::FromMilliseconds(11));
+  test_clock.Advance(base::Milliseconds(11));
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Advance to t=309, but it will not be allowed. (empty result)
-  test_clock.Advance(TimeDelta::FromMilliseconds(99));
+  test_clock.Advance(base::Milliseconds(99));
   EXPECT_FALSE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
 
   // Another read is finally allowed at t=310.
-  test_clock.Advance(TimeDelta::FromMilliseconds(1));
+  test_clock.Advance(base::Milliseconds(1));
   EXPECT_TRUE(
       RunReadLogSourceFunction(params, &result_reader_id, &result_string));
+}
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithSysInfo) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name": "C:\\fakepath\\chrome_40px.svg"
+    },
+    "assistantDebugInfoAllowed": true,
+    "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+    "categoryTag": "test-tag",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "tester@test.com",
+    "flow": "regular",
+    "fromAssistant": true,
+    "includeBluetoothLogs": true,
+    "pageUrl": "https://test.com",
+    "productId": 1122,
+    "screenshot": {},
+    "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "sendBluetoothLogs": true,
+    "sendHistograms": true,
+    "sendTabTitles": true,
+    "systemInformation": [
+      {"key": "mem_usage_with_title", "value": "some sensitive info"}
+    ],
+    "traceId": 9966,
+    "useSystemWindowFrame": false
+  }
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/true,
+                                       /*send_histograms=*/true,
+                                       /*send_bluetooth_logs=*/true};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(9966, feedback_data->trace_id());
+  EXPECT_EQ(1122, feedback_data->product_id());
+  EXPECT_EQ("chrome_40px.svg", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("test-tag", feedback_data->category_tag());
+  EXPECT_EQ("tester@test.com", feedback_data->user_email());
+  EXPECT_EQ("2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+            feedback_data->attached_file_uuid());
+  EXPECT_EQ("3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+            feedback_data->screenshot_uuid());
+  EXPECT_EQ("https://test.com", feedback_data->page_url());
+
+  EXPECT_TRUE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+  EXPECT_TRUE(feedback_data->sys_info()->count("mem_usage_with_title"));
+}
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackWithoutSysInfo) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name":""
+    },
+    "assistantDebugInfoAllowed": false,
+    "categoryTag": "",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "",
+    "flow": "regular",
+    "fromAssistant": false,
+    "includeBluetoothLogs": false,
+    "pageUrl": "",
+    "screenshot": {},
+    "screenshotBlobUuid": "",
+    "sendBluetoothLogs": false,
+    "sendHistograms": false,
+    "sendTabTitles": false,
+    "systemInformation": [],
+    "useSystemWindowFrame": false
+  }
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(0, feedback_data->trace_id());
+  EXPECT_EQ(-1, feedback_data->product_id());
+  EXPECT_EQ("", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("", feedback_data->category_tag());
+  EXPECT_EQ("", feedback_data->user_email());
+  EXPECT_EQ("", feedback_data->attached_file_uuid());
+  EXPECT_EQ("", feedback_data->screenshot_uuid());
+  EXPECT_EQ("", feedback_data->page_url());
+
+  EXPECT_FALSE(feedback_data->from_assistant());
+  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+  EXPECT_FALSE(feedback_data->sys_info()->count("mem_usage_with_title"));
+}
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsTrue) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name": "C:\\fakepath\\chrome_40px.svg"
+    },
+    "assistantDebugInfoAllowed": true,
+    "attachedFileBlobUuid": "2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+    "categoryTag": "test-tag",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "tester@test.com",
+    "flow": "regular",
+    "fromAssistant": true,
+    "includeBluetoothLogs": true,
+    "pageUrl": "https://test.com",
+    "productId": 1122,
+    "screenshot": {},
+    "screenshotBlobUuid": "3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+    "sendBluetoothLogs": true,
+    "sendHistograms": true,
+    "sendTabTitles": true,
+    "systemInformation": [],
+    "traceId": 9966,
+    "useSystemWindowFrame": false
+  },
+  true,
+  1.625859975163e+12
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/true,
+                                       /*send_tab_titles=*/true,
+                                       /*send_histograms=*/true,
+                                       /*send_bluetooth_logs=*/true};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(9966, feedback_data->trace_id());
+  EXPECT_EQ(1122, feedback_data->product_id());
+  EXPECT_EQ("chrome_40px.svg", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("test-tag", feedback_data->category_tag());
+  EXPECT_EQ("tester@test.com", feedback_data->user_email());
+  EXPECT_EQ("2e3996de-db9e-4c3d-b62c-80d19b6418b9",
+            feedback_data->attached_file_uuid());
+  EXPECT_EQ("3e72cc3c-550f-49f0-b5d2-bf21f3fbab15",
+            feedback_data->screenshot_uuid());
+  EXPECT_EQ("https://test.com", feedback_data->page_url());
+
+  EXPECT_TRUE(feedback_data->from_assistant());
+  EXPECT_TRUE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+  EXPECT_TRUE(feedback_data->sys_info()->size() == 0);
+}
+
+TEST_F(FeedbackPrivateApiUnittest, SendFeedbackV2WithOptionsFalse) {
+  const std::string args = R"([
+  {
+    "attachedFile": {
+      "data": {},
+      "name":""
+    },
+    "assistantDebugInfoAllowed": false,
+    "categoryTag": "",
+    "description": "test-desc",
+    "descriptionPlaceholder": "",
+    "email": "",
+    "flow": "regular",
+    "fromAssistant": false,
+    "includeBluetoothLogs": false,
+    "pageUrl": "",
+    "screenshot": {},
+    "screenshotBlobUuid": "",
+    "sendBluetoothLogs": false,
+    "sendHistograms": false,
+    "sendTabTitles": false,
+    "systemInformation": [],
+    "useSystemWindowFrame": false
+  },
+  false,
+  1.625859975163e+12
+])";
+
+  const FeedbackParams expected_params{/*is_internal_email=*/false,
+                                       /*load_system_info=*/false,
+                                       /*send_tab_titles=*/false,
+                                       /*send_histograms=*/false,
+                                       /*send_bluetooth_logs=*/false};
+  auto feedback_data = RunSendFeedbackFunction(args, expected_params);
+
+  EXPECT_EQ(0, feedback_data->trace_id());
+  EXPECT_EQ(-1, feedback_data->product_id());
+  EXPECT_EQ("", feedback_data->attached_filename());
+  EXPECT_EQ("test-desc", feedback_data->description());
+  EXPECT_EQ("", feedback_data->category_tag());
+  EXPECT_EQ("", feedback_data->user_email());
+  EXPECT_EQ("", feedback_data->attached_file_uuid());
+  EXPECT_EQ("", feedback_data->screenshot_uuid());
+  EXPECT_EQ("", feedback_data->page_url());
+
+  EXPECT_FALSE(feedback_data->from_assistant());
+  EXPECT_FALSE(feedback_data->assistant_debug_info_allowed());
+  EXPECT_TRUE(feedback_data->sys_info());
+  EXPECT_TRUE(feedback_data->sys_info()->size() == 0);
 }
 
 }  // namespace extensions

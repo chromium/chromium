@@ -1,0 +1,35 @@
+This is a testharness.js-based test.
+PASS Missing arguments: get
+PASS Branding: get
+PASS Missing arguments: set
+PASS Branding: set
+PASS Basic
+PASS Growing
+PASS Setting out-of-bounds
+PASS Setting non-function
+PASS Setting non-wasm function
+PASS Setting non-wasm arrow function
+PASS Getting out-of-range argument: undefined
+PASS Setting out-of-range argument: undefined
+PASS Getting out-of-range argument: NaN
+PASS Setting out-of-range argument: NaN
+PASS Getting out-of-range argument: Infinity
+PASS Setting out-of-range argument: Infinity
+PASS Getting out-of-range argument: -Infinity
+PASS Setting out-of-range argument: -Infinity
+PASS Getting out-of-range argument: -1
+PASS Setting out-of-range argument: -1
+PASS Getting out-of-range argument: 4294967296
+PASS Setting out-of-range argument: 4294967296
+PASS Getting out-of-range argument: 68719476736
+PASS Setting out-of-range argument: 68719476736
+PASS Getting out-of-range argument: "0x100000000"
+PASS Setting out-of-range argument: "0x100000000"
+PASS Getting out-of-range argument: object "[object Object]"
+PASS Setting out-of-range argument: object "[object Object]"
+PASS Order of argument conversion
+PASS Stray argument
+FAIL Arguments for anyfunc table set WebAssembly.Table.set(): Argument 1 must be null or a WebAssembly function of type compatible to 'this'
+FAIL Arguments for externref table set WebAssembly.Table(): Descriptor property 'element' must be a WebAssembly reference type
+Harness: the test ran to completion.
+

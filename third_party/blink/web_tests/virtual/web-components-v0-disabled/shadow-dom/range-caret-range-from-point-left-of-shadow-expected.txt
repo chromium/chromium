@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 29: Uncaught TypeError: parent.createShadowRoot is not a function
-This is a testharness.js-based test.
-FAIL range-caret-range-from-point-left-of-shadow Uncaught TypeError: parent.createShadowRoot is not a function
-Harness: the test ran to completion.
-

@@ -28,7 +28,7 @@
 [
     Exposed=Window, SecureContext
 ] interface DeviceOrientationEvent : Event {
-    constructor(DOMString type, optional DeviceOrientationEventInit eventInitDict);
+    constructor(DOMString type, optional DeviceOrientationEventInit eventInitDict = {});
     readonly attribute double? alpha;
     readonly attribute double? beta;
     readonly attribute double? gamma;

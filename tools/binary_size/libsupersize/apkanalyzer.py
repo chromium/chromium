@@ -7,8 +7,11 @@
 Assumes that apk_path.mapping and apk_path.jar.info is available.
 """
 
+import collections
 import logging
 import os
+import posixpath
+import re
 import subprocess
 import zipfile
 
@@ -17,7 +20,7 @@ import path_util
 
 
 _TOTAL_NODE_NAME = '<TOTAL>'
-_DEX_PATH_COMPONENT = 'prebuilt'
+_OUTLINED_PREFIX = '$$Outlined$'
 
 
 def _ParseJarInfoFile(file_name):
@@ -29,20 +32,25 @@ def _ParseJarInfoFile(file_name):
   return source_map
 
 
-def _RunApkAnalyzer(apk_path, mapping_path, output_directory):
-  args = [path_util.GetApkAnalyzerPath(output_directory), 'dex', 'packages',
-          apk_path]
+def _RunApkAnalyzer(apk_path, mapping_path):
+  args = [path_util.GetApkAnalyzerPath(), 'dex', 'packages', apk_path]
   if mapping_path and os.path.exists(mapping_path):
     args.extend(['--proguard-mappings', mapping_path])
-  output = subprocess.check_output(args)
+  env = os.environ.copy()
+  env['JAVA_HOME'] = path_util.GetJavaHome()
+  output = subprocess.check_output(args, env=env).decode('ascii')
   data = []
   for line in output.splitlines():
-    vals = line.split()
-    # We want to name these columns so we know exactly which is which.
-    # pylint: disable=unused-variable
-    node_type, state, defined_methods, referenced_methods, size, name = (
-        vals[0], vals[1], vals[2], vals[3], vals[4], vals[5:])
-    data.append((node_type, ' '.join(name), int(size)))
+    try:
+      vals = line.split()
+      # We want to name these columns so we know exactly which is which.
+      # pylint: disable=unused-variable
+      node_type, state, defined_methods, referenced_methods, size, name = (
+          vals[0], vals[1], vals[2], vals[3], vals[4], vals[5:])
+      data.append((node_type, ' '.join(name), int(size)))
+    except Exception:
+      logging.error('Problem line was: %s', line)
+      raise
   return data
 
 
@@ -130,15 +138,149 @@ def UndoHierarchicalSizing(data):
   return nodes
 
 
-def CreateDexSymbols(apk_path, mapping_path, size_info_prefix,
-                     output_directory):
+def _TruncateFrom(value, delimiter, rfind=False):
+  idx = value.rfind(delimiter) if rfind else value.find(delimiter)
+  if idx != -1:
+    return value[:idx]
+  return value
+
+
+# Visible for testing.
+class LambdaNormalizer:
+  def __init__(self):
+    self._lambda_by_class_counter = collections.defaultdict(int)
+    self._lambda_name_to_nested_number = {}
+
+  def _GetLambdaName(self, class_path, base_name, prefix=''):
+    lambda_number = self._lambda_name_to_nested_number.get(class_path)
+    if lambda_number is None:
+      # First time we've seen this lambda, increment nested class count.
+      lambda_number = self._lambda_by_class_counter[base_name]
+      self._lambda_name_to_nested_number[class_path] = lambda_number
+      self._lambda_by_class_counter[base_name] = lambda_number + 1
+    return prefix + base_name + '$$Lambda$' + str(lambda_number)
+
+  def Normalize(self, class_path, full_name):
+    # Make d8 desugared lambdas look the same as Desugar ones.
+    # Desugar lambda: org.Promise$Nested1$$Lambda$0
+    # 1) Need to prefix with proper class name so that they will show as nested.
+    # 2) Need to suffix with number so that they diff better.
+    # Original name will be kept as "object_path".
+    # See tests for a more comprehensive list of what d8 currently generates.
+
+    # Map nested classes to outer class.
+    outer_class = _TruncateFrom(class_path, '$')
+
+    # $$ is the convention for a synthetic class and all known desugared lambda
+    # classes have 'Lambda' in the synthetic part of its name. If it doesn't
+    # then it's almost certainly not a desugared lambda class.
+    if 'Lambda' not in class_path[class_path.find('$$'):]:
+      return outer_class, full_name
+
+    # Example: package.AnimatedProgressBar$$InternalSyntheticLambda$3$81073ff6$0
+    # Example: package.Class$$Lambda$2$$InternalSyntheticOutline$8$cbe941dd782$0
+    match = re.fullmatch(
+        # The base_name group needs to be non-greedy/minimal (using +?) since we
+        # want it to not include $$Lambda$28 when present.
+        r'(?P<base_name>.+?)(\$\$Lambda\$\d+)?'
+        r'\$\$InternalSynthetic[a-zA-Z0-9_]+'
+        r'\$\d+\$[0-9a-f]+\$\d+',
+        class_path)
+    if match:
+      new_name = self._GetLambdaName(class_path=class_path,
+                                     base_name=match.group('base_name'))
+      return outer_class, full_name.replace(class_path, new_name)
+    # Example: AnimatedProgressBar$$ExternalSyntheticLambda0
+    # Example: AutofillAssistant$$Lambda$2$$ExternalSyntheticOutline0
+    # Example: ContextMenuCoord$$Lambda$2$$ExternalSyntheticThrowCCEIfNotNull0
+    match = re.fullmatch(
+        r'(?P<base_name>.+?)(\$\$Lambda\$\d+)?'
+        r'\$\$ExternalSynthetic[a-zA-Z0-9_]+', class_path)
+    if match:
+      new_name = self._GetLambdaName(class_path=class_path,
+                                     base_name=match.group('base_name'),
+                                     prefix=_OUTLINED_PREFIX)
+      return outer_class, full_name.replace(class_path, new_name)
+    # Example: package.FirebaseInstallationsRegistrar$$Lambda$1
+    match = re.fullmatch(r'(?P<base_name>.+)\$\$Lambda\$\d+', class_path)
+    if match:
+      # Although these are already valid names, re-number them to avoid name
+      # collisions with renamed InternalSyntheticLambdas.
+      new_name = self._GetLambdaName(class_path=class_path,
+                                     base_name=match.group('base_name'))
+      return outer_class, full_name.replace(class_path, new_name)
+    # Example: org.-$$Lambda$StackAnimation$Nested1$kjevdDQ8V2zqCrdieLqWLHzk
+    # Assume that the last portion of the name after $ is the hash identifier.
+    match = re.fullmatch(
+        r'(?P<package>.+)-\$\$Lambda\$(?P<class>[^$]+)(?P<nested>.*)\$[^$]+',
+        class_path)
+    if match:
+      package_name = match.group('package')
+      class_name = match.group('class')
+      nested_classes = match.group('nested')
+      base_name = package_name + class_name + nested_classes
+      new_name = self._GetLambdaName(class_path=class_path, base_name=base_name)
+      outer_class = package_name + class_name
+      return outer_class, full_name.replace(class_path, new_name)
+    assert False, (
+        'No valid match for new lambda name format: ' + class_path + '\n'
+        'Please update https://crbug.com/1208385 with this error so we can '
+        'update the lambda normalization code.')
+    return None
+
+
+# Visible for testing.
+def CreateDexSymbol(name, size, source_map, lambda_normalizer):
+  parts = name.split(' ')  # (class_name, return_type, method_name)
+  new_package = parts[0]
+
+  if new_package == _TOTAL_NODE_NAME:
+    return None
+
+  # Make d8 desugared lambdas look the same as Desugar ones.
+  outer_class, name = lambda_normalizer.Normalize(new_package, name)
+
+  # Look for class merging.
+  old_package = new_package
+  # len(parts) == 2 for class nodes.
+  if len(parts) > 2:
+    method = parts[2]
+    # last_idx == -1 for fields, which is fine.
+    last_idx = method.find('(')
+    last_idx = method.rfind('.', 0, last_idx)
+    if last_idx != -1:
+      old_package = method[:last_idx]
+      outer_class, name = lambda_normalizer.Normalize(old_package, name)
+
+  source_path = source_map.get(outer_class, '')
+  # Create a special meta-directory for outlined lambdas to easily monitor their
+  # total size and spot regressions.
+  if name.startswith(_OUTLINED_PREFIX):
+    object_path = posixpath.join(models.APK_PREFIX_PATH, 'Outlined',
+                                 *old_package.split('.'))
+  else:
+    object_path = posixpath.join(models.APK_PREFIX_PATH,
+                                 *old_package.split('.'))
+  if name.endswith(')'):
+    section_name = models.SECTION_DEX_METHOD
+  else:
+    section_name = models.SECTION_DEX
+
+  return models.Symbol(section_name,
+                       size,
+                       full_name=name,
+                       object_path=object_path,
+                       source_path=source_path)
+
+
+def CreateDexSymbols(apk_path, mapping_path, size_info_prefix):
   source_map = _ParseJarInfoFile(size_info_prefix + '.jar.info')
 
-  nodes = _RunApkAnalyzer(apk_path, mapping_path, output_directory)
+  nodes = _RunApkAnalyzer(apk_path, mapping_path)
   nodes = UndoHierarchicalSizing(nodes)
 
   dex_expected_size = _ExpectedDexTotalSize(apk_path)
-  total_node_size = sum(map(lambda x: x[2], nodes))
+  total_node_size = sum([x[2] for x in nodes])
   # TODO(agrieve): Figure out why this log is triggering for
   #     ChromeModernPublic.apk (https://crbug.com/851535).
   # Reporting: dex_expected_size=6546088 total_node_size=6559549
@@ -147,26 +289,15 @@ def CreateDexSymbols(apk_path, mapping_path, size_info_prefix,
       'Node size too large, check for node processing errors. '
       'dex_expected_size=%d total_node_size=%d', dex_expected_size,
       total_node_size)
-  # We have more than 100KB of ids for methods, strings
-  id_metadata_overhead_size = dex_expected_size - total_node_size
-  symbols = []
+  # Use (DEX_METHODS, DEX) buckets to speed up sorting.
+  symbols = ([], [])
+  lambda_normalizer = LambdaNormalizer()
   for _, name, node_size in nodes:
-    package = name.split(' ', 1)[0]
-    class_path = package.split('$')[0]
-    source_path = source_map.get(class_path, '')
-    if source_path:
-      object_path = package
-    elif package == _TOTAL_NODE_NAME:
-      name = '* Unattributed Dex'
-      object_path = ''  # Categorize in the anonymous section.
-      node_size += id_metadata_overhead_size
-    else:
-      object_path = os.path.join(models.APK_PREFIX_PATH, *package.split('.'))
-    if name.endswith(')'):
-      section_name = models.SECTION_DEX_METHOD
-    else:
-      section_name = models.SECTION_DEX
-    symbols.append(models.Symbol(
-        section_name, node_size, full_name=name, object_path=object_path,
-        source_path=source_path))
-  return symbols
+    symbol = CreateDexSymbol(name, node_size, source_map, lambda_normalizer)
+    if symbol:
+      symbols[int(symbol.section_name is models.SECTION_DEX)].append(symbol)
+
+  symbols[0].sort(key=lambda s: s.full_name)
+  symbols[1].sort(key=lambda s: s.full_name)
+  symbols[0].extend(symbols[1])
+  return symbols[0]

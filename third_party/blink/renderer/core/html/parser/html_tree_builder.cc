@@ -28,10 +28,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_control_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_token.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
 #include "third_party/blink/renderer/core/html_names.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/core/xlink_names.h"
@@ -55,6 +57,8 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
 namespace blink {
 
@@ -135,6 +139,9 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     DCHECK(!IsEmpty());
   }
 
+  CharacterTokenBuffer(const CharacterTokenBuffer&) = delete;
+  CharacterTokenBuffer& operator=(const CharacterTokenBuffer&) = delete;
+
   ~CharacterTokenBuffer() { DCHECK(IsEmpty()); }
 
   bool IsEmpty() const { return current_ == end_; }
@@ -163,10 +170,9 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
   }
 
   void GiveRemainingTo(StringBuilder& recipient) {
-    if (characters_->Is8Bit())
-      recipient.Append(characters_->Characters8() + current_, end_ - current_);
-    else
-      recipient.Append(characters_->Characters16() + current_, end_ - current_);
+    WTF::VisitCharacters(*characters_, [&](const auto* chars, unsigned length) {
+      recipient.Append(chars + current_, end_ - current_);
+    });
     current_ = end_;
   }
 
@@ -188,15 +194,16 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
     if (length == start - end_)  // It's all whitespace.
       return String(characters_->Substring(start, start - end_));
 
-    StringBuilder result;
-    result.ReserveCapacity(length);
+    // All HTML spaces are ASCII.
+    StringBuffer<LChar> result(length);
+    unsigned j = 0;
     for (unsigned i = start; i < end_; ++i) {
       UChar c = (*characters_)[i];
-      if (IsHTMLSpace<UChar>(c))
-        result.Append(c);
+      if (IsHTMLSpace(c))
+        result[j++] = static_cast<LChar>(c);
     }
-
-    return result.ToString();
+    DCHECK_EQ(j, length);
+    return String::Adopt(result);
   }
 
  private:
@@ -220,19 +227,19 @@ class HTMLTreeBuilder::CharacterTokenBuffer {
   scoped_refptr<StringImpl> characters_;
   unsigned current_;
   unsigned end_;
-
-  DISALLOW_COPY_AND_ASSIGN(CharacterTokenBuffer);
 };
 
 HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  Document& document,
                                  ParserContentPolicy parser_content_policy,
-                                 const HTMLParserOptions& options)
+                                 const HTMLParserOptions& options,
+                                 bool include_shadow_roots)
     : frameset_ok_(true),
       tree_(parser->ReentryPermit(), document, parser_content_policy),
       insertion_mode_(kInitialMode),
       original_insertion_mode_(kInitialMode),
       should_skip_leading_newline_(false),
+      include_shadow_roots_(include_shadow_roots),
       parser_(parser),
       script_to_process_start_position_(UninitializedPositionValue1()),
       options_(options) {}
@@ -241,11 +248,13 @@ HTMLTreeBuilder::HTMLTreeBuilder(HTMLDocumentParser* parser,
                                  DocumentFragment* fragment,
                                  Element* context_element,
                                  ParserContentPolicy parser_content_policy,
-                                 const HTMLParserOptions& options)
+                                 const HTMLParserOptions& options,
+                                 bool include_shadow_roots)
     : HTMLTreeBuilder(parser,
                       fragment->GetDocument(),
                       parser_content_policy,
-                      options) {
+                      options,
+                      include_shadow_roots) {
   DCHECK(IsMainThread());
   DCHECK(context_element);
   tree_.InitFragmentParsing(fragment, context_element);
@@ -275,12 +284,12 @@ void HTMLTreeBuilder::FragmentParsingContext::Init(DocumentFragment* fragment,
       context_element, HTMLStackItem::kItemForContextElement);
 }
 
-void HTMLTreeBuilder::FragmentParsingContext::Trace(Visitor* visitor) {
+void HTMLTreeBuilder::FragmentParsingContext::Trace(Visitor* visitor) const {
   visitor->Trace(fragment_);
   visitor->Trace(context_element_stack_item_);
 }
 
-void HTMLTreeBuilder::Trace(Visitor* visitor) {
+void HTMLTreeBuilder::Trace(Visitor* visitor) const {
   visitor->Trace(fragment_context_);
   visitor->Trace(tree_);
   visitor->Trace(parser_);
@@ -476,10 +485,11 @@ static void AdjustSVGTagNameCase(AtomicHTMLToken* token) {
     MapLoweredLocalNameToName(case_map, svg_tags.get(), svg_names::kTagsCount);
   }
 
-  const QualifiedName& cased_name = case_map->at(token->GetName());
-  if (cased_name.LocalName().IsNull())
-    return;
-  token->SetName(cased_name.LocalName());
+  const auto it = case_map->find(token->GetName());
+  if (it != case_map->end()) {
+    DCHECK(!it->value.LocalName().IsNull());
+    token->SetName(it->value.LocalName());
+  }
 }
 
 template <std::unique_ptr<const QualifiedName* []> getAttrs(), unsigned length>
@@ -492,9 +502,11 @@ static void AdjustAttributes(AtomicHTMLToken* token) {
   }
 
   for (auto& token_attribute : token->Attributes()) {
-    const QualifiedName& cased_name = case_map->at(token_attribute.LocalName());
-    if (!cased_name.LocalName().IsNull())
-      token_attribute.ParserSetName(cased_name);
+    const auto it = case_map->find(token_attribute.LocalName());
+    if (it != case_map->end()) {
+      DCHECK(!it->value.LocalName().IsNull());
+      token_attribute.ParserSetName(it->value);
+    }
   }
 }
 
@@ -541,9 +553,11 @@ static void AdjustForeignAttributes(AtomicHTMLToken* token) {
 
   for (unsigned i = 0; i < token->Attributes().size(); ++i) {
     Attribute& token_attribute = token->Attributes().at(i);
-    const QualifiedName& name = map->at(token_attribute.LocalName());
-    if (!name.LocalName().IsNull())
-      token_attribute.ParserSetName(name);
+    const auto it = map->find(token_attribute.LocalName());
+    if (it != map->end()) {
+      DCHECK(!it->value.LocalName().IsNull());
+      token_attribute.ParserSetName(it->value);
+    }
   }
 }
 
@@ -765,7 +779,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     Attribute* type_attribute = token->GetAttributeItem(html_names::kTypeAttr);
     bool disable_frameset =
         !type_attribute ||
-        !DeprecatedEqualIgnoringCase(type_attribute->Value(), "hidden");
+        !EqualIgnoringASCIICase(type_attribute->Value(), "hidden");
 
     tree_.ReconstructTheActiveFormattingElements();
     tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
@@ -812,7 +826,7 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
     ProcessGenericRawTextStartTag(token);
     return;
   }
-  if (token->GetName() == html_names::kNoscriptTag && options_.script_enabled) {
+  if (token->GetName() == html_names::kNoscriptTag && options_.scripting_flag) {
     ProcessGenericRawTextStartTag(token);
     return;
   }
@@ -889,9 +903,46 @@ void HTMLTreeBuilder::ProcessStartTagForInBody(AtomicHTMLToken* token) {
   tree_.InsertHTMLElement(token);
 }
 
+namespace {
+DeclarativeShadowRootType DeclarativeShadowRootTypeFromToken(
+    AtomicHTMLToken* token,
+    const Document& document,
+    bool include_shadow_roots) {
+  Attribute* type_attribute =
+      token->GetAttributeItem(html_names::kShadowrootAttr);
+  if (!type_attribute)
+    return DeclarativeShadowRootType::kNone;
+
+  if (!include_shadow_roots) {
+    document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::blink::ConsoleMessageSource::kOther,
+        mojom::blink::ConsoleMessageLevel::kWarning,
+        "Found declarative shadowroot attribute on a template, but declarative "
+        "Shadow DOM has not been enabled by includeShadowRoots."));
+    return DeclarativeShadowRootType::kNone;
+  }
+
+  String shadow_mode = type_attribute->Value();
+  if (EqualIgnoringASCIICase(shadow_mode, "open"))
+    return DeclarativeShadowRootType::kOpen;
+  if (EqualIgnoringASCIICase(shadow_mode, "closed"))
+    return DeclarativeShadowRootType::kClosed;
+
+  document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::blink::ConsoleMessageSource::kOther,
+      mojom::blink::ConsoleMessageLevel::kWarning,
+      "Invalid declarative shadowroot attribute value \"" + shadow_mode +
+          "\". Valid values include \"open\" and \"closed\"."));
+  return DeclarativeShadowRootType::kNone;
+}
+}  // namespace
+
 void HTMLTreeBuilder::ProcessTemplateStartTag(AtomicHTMLToken* token) {
   tree_.ActiveFormattingElements()->AppendMarker();
-  tree_.InsertHTMLElement(token);
+  tree_.InsertHTMLTemplateElement(
+      token,
+      DeclarativeShadowRootTypeFromToken(
+          token, tree_.OwnerDocumentForCurrentNode(), include_shadow_roots_));
   frameset_ok_ = false;
   template_insertion_modes_.push_back(kTemplateContentsMode);
   SetInsertionMode(kTemplateContentsMode);
@@ -909,10 +960,51 @@ bool HTMLTreeBuilder::ProcessTemplateEndTag(AtomicHTMLToken* token) {
   tree_.GenerateImpliedEndTags();
   if (!tree_.CurrentStackItem()->HasTagName(html_names::kTemplateTag))
     ParseError(token);
-  tree_.OpenElements()->PopUntilPopped(html_names::kTemplateTag);
+  tree_.OpenElements()->PopUntil(html_names::kTemplateTag.LocalName());
+  HTMLStackItem* template_stack_item =
+      tree_.OpenElements()->TopRecord()->StackItem();
+  tree_.OpenElements()->Pop();
+  HTMLStackItem* shadow_host_stack_item =
+      tree_.OpenElements()->TopRecord()->StackItem();
   tree_.ActiveFormattingElements()->ClearToLastMarker();
   template_insertion_modes_.pop_back();
   ResetInsertionModeAppropriately();
+  if (template_stack_item) {
+    DCHECK(template_stack_item->IsElementNode());
+    HTMLTemplateElement* template_element =
+        DynamicTo<HTMLTemplateElement>(template_stack_item->GetElement());
+    // 9. If the start tag for the declarative template element did not have an
+    // attribute with the name "shadowroot" whose value was an ASCII
+    // case-insensitive match for the strings "open" or "closed", then stop this
+    // algorithm.
+    if (template_element->IsDeclarativeShadowRoot()) {
+      if (shadow_host_stack_item->GetNode() ==
+          tree_.OpenElements()->RootNode()) {
+        // 10. If the adjusted current node is the topmost element in the stack
+        // of open elements, then stop this algorithm.
+        template_element->SetDeclarativeShadowRootType(
+            DeclarativeShadowRootType::kNone);
+      } else {
+        DCHECK(shadow_host_stack_item);
+        DCHECK(shadow_host_stack_item->IsElementNode());
+        bool delegates_focus = template_stack_item->GetAttributeItem(
+            html_names::kShadowrootdelegatesfocusAttr);
+        // TODO(crbug.com/1063157): Add an attribute for imperative slot
+        // assignment.
+        bool manual_slotting = false;
+        shadow_host_stack_item->GetElement()->AttachDeclarativeShadowRoot(
+            template_element,
+            template_element->GetDeclarativeShadowRootType() ==
+                    DeclarativeShadowRootType::kOpen
+                ? ShadowRootType::kOpen
+                : ShadowRootType::kClosed,
+            delegates_focus ? FocusDelegation::kDelegateFocus
+                            : FocusDelegation::kNone,
+            manual_slotting ? SlotAssignmentMode::kManual
+                            : SlotAssignmentMode::kNamed);
+      }
+    }
+  }
   return true;
 }
 
@@ -1012,7 +1104,7 @@ void HTMLTreeBuilder::ProcessStartTagForInTable(AtomicHTMLToken* token) {
   if (token->GetName() == html_names::kInputTag) {
     Attribute* type_attribute = token->GetAttributeItem(html_names::kTypeAttr);
     if (type_attribute &&
-        DeprecatedEqualIgnoringCase(type_attribute->Value(), "hidden")) {
+        EqualIgnoringASCIICase(type_attribute->Value(), "hidden")) {
       ParseError(token);
       tree_.InsertSelfClosingHTMLElementDestroyingToken(token);
       return;
@@ -1466,9 +1558,19 @@ void HTMLTreeBuilder::CallTheAdoptionAgency(AtomicHTMLToken* token) {
   // The adoption agency algorithm is N^2. We limit the number of iterations
   // to stop from hanging the whole browser. This limit is specified in the
   // adoption agency algorithm:
-  // http://www.whatwg.org/specs/web-apps/current-work/multipage/tree-construction.html#parsing-main-inbody
+  // https://html.spec.whatwg.org/multipage/parsing.html#adoption-agency-algorithm
   static const int kOuterIterationLimit = 8;
   static const int kInnerIterationLimit = 3;
+
+  // 2. If the current node is an HTML element whose tag name is subject,
+  // and the current node is not in the list of active formatting elements,
+  // then pop the current node off the stack of open elements and return.
+  if (!tree_.IsEmpty() && tree_.CurrentStackItem()->IsElementNode() &&
+      tree_.CurrentElement()->HasLocalName(token->GetName()) &&
+      !tree_.ActiveFormattingElements()->Contains(tree_.CurrentElement())) {
+    tree_.OpenElements()->Pop();
+    return;
+  }
 
   // 1, 2, 3 and 16 are covered by the for() loop.
   for (int i = 0; i < kOuterIterationLimit; ++i) {
@@ -2628,7 +2730,7 @@ bool HTMLTreeBuilder::ProcessStartTagForInHead(AtomicHTMLToken* token) {
     return true;
   }
   if (token->GetName() == html_names::kNoscriptTag) {
-    if (options_.script_enabled) {
+    if (options_.scripting_flag) {
       ProcessGenericRawTextStartTag(token);
       return true;
     }

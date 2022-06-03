@@ -8,22 +8,45 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
+#include "chrome/browser/extensions/api/image_writer_private/extraction_properties.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
-#include "chrome/browser/extensions/api/image_writer_private/unzip_helper.h"
+#include "chrome/browser/extensions/api/image_writer_private/tar_extractor.h"
+#include "chrome/browser/extensions/api/image_writer_private/xz_extractor.h"
+#include "chrome/browser/extensions/api/image_writer_private/zip_extractor.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace extensions {
 namespace image_writer {
 
-using content::BrowserThread;
-
 namespace {
 
 const int kMD5BufferSize = 1024;
+
+// Returns true if the file at |image_path| is an archived image.
+bool IsArchive(const base::FilePath& image_path) {
+  return ZipExtractor::IsZipFile(image_path) ||
+         TarExtractor::IsTarFile(image_path) ||
+         XzExtractor::IsXzFile(image_path);
+}
+
+// Extracts the archive at |image_path| using to |temp_dir_path| using a proper
+// extractor.
+void ExtractArchive(ExtractionProperties properties) {
+  if (ZipExtractor::IsZipFile(properties.image_path)) {
+    ZipExtractor::Extract(std::move(properties));
+  } else if (TarExtractor::IsTarFile(properties.image_path)) {
+    TarExtractor::Extract(std::move(properties));
+  } else if (XzExtractor::IsXzFile(properties.image_path)) {
+    XzExtractor::Extract(std::move(properties));
+  } else {
+    NOTREACHED();
+  }
+}
 
 }  // namespace
 
@@ -42,7 +65,8 @@ Operation::Operation(base::WeakPtr<OperationManager> manager,
       stage_(image_writer_api::STAGE_UNKNOWN),
       progress_(0),
       download_folder_(download_folder),
-      task_runner_(base::CreateSequencedTaskRunner(blocking_task_traits())) {
+      task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner(blocking_task_traits())) {
 }
 
 Operation::~Operation() {
@@ -79,7 +103,7 @@ void Operation::PostTask(base::OnceClosure task) {
 
 void Operation::Start() {
   DCHECK(IsRunningInCorrectSequence());
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (download_folder_.empty() ||
       !temp_dir_->CreateUniqueTempDirUnderPath(download_folder_)) {
 #else
@@ -96,30 +120,36 @@ void Operation::Start() {
   StartImpl();
 }
 
-void Operation::OnUnzipOpenComplete(const base::FilePath& image_path) {
+void Operation::OnExtractOpenComplete(const base::FilePath& image_path) {
   DCHECK(IsRunningInCorrectSequence());
   image_path_ = image_path;
 }
 
-void Operation::Unzip(const base::Closure& continuation) {
+void Operation::Extract(base::OnceClosure continuation) {
   DCHECK(IsRunningInCorrectSequence());
   if (IsCancelled()) {
     return;
   }
 
-  if (image_path_.Extension() != FILE_PATH_LITERAL(".zip")) {
-    PostTask(continuation);
-    return;
+  if (IsArchive(image_path_)) {
+    SetStage(image_writer_api::STAGE_UNZIP);
+
+    ExtractionProperties properties;
+    properties.image_path = image_path_;
+    properties.temp_dir_path = temp_dir_->GetPath();
+    properties.open_callback =
+        base::BindOnce(&Operation::OnExtractOpenComplete, this);
+    properties.complete_callback = base::BindOnce(
+        &Operation::CompleteAndContinue, this, std::move(continuation));
+    properties.failure_callback =
+        base::BindOnce(&Operation::OnExtractFailure, this);
+    properties.progress_callback =
+        base::BindRepeating(&Operation::OnExtractProgress, this);
+
+    ExtractArchive(std::move(properties));
+  } else {
+    PostTask(std::move(continuation));
   }
-
-  SetStage(image_writer_api::STAGE_UNZIP);
-
-  auto unzip_helper = base::MakeRefCounted<UnzipHelper>(
-      task_runner(), base::Bind(&Operation::OnUnzipOpenComplete, this),
-      base::Bind(&Operation::CompleteAndContinue, this, continuation),
-      base::Bind(&Operation::OnUnzipFailure, this),
-      base::Bind(&Operation::OnUnzipProgress, this));
-  unzip_helper->Unzip(image_path_, temp_dir_->GetPath());
 }
 
 void Operation::Finish() {
@@ -127,16 +157,16 @@ void Operation::Finish() {
 
   CleanUp();
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&OperationManager::OnComplete, manager_, extension_id_));
 }
 
 void Operation::Error(const std::string& error_message) {
   DCHECK(IsRunningInCorrectSequence());
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&OperationManager::OnError, manager_, extension_id_,
                      stage_, progress_, error_message));
 
@@ -156,8 +186,8 @@ void Operation::SetProgress(int progress) {
 
   progress_ = progress;
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&OperationManager::OnProgress, manager_,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OperationManager::OnProgress, manager_,
                                 extension_id_, stage_, progress_));
 }
 
@@ -170,8 +200,8 @@ void Operation::SetStage(image_writer_api::Stage stage) {
   stage_ = stage;
   progress_ = 0;
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&OperationManager::OnProgress, manager_,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&OperationManager::OnProgress, manager_,
                                 extension_id_, stage_, progress_));
 }
 
@@ -186,13 +216,13 @@ void Operation::AddCleanUpFunction(base::OnceClosure callback) {
   cleanup_functions_.push_back(std::move(callback));
 }
 
-void Operation::CompleteAndContinue(const base::Closure& continuation) {
+void Operation::CompleteAndContinue(base::OnceClosure continuation) {
   DCHECK(IsRunningInCorrectSequence());
   SetProgress(kProgressComplete);
-  PostTask(continuation);
+  PostTask(std::move(continuation));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 void Operation::StartUtilityClient() {
   DCHECK(IsRunningInCorrectSequence());
   if (!image_writer_client_.get()) {
@@ -301,12 +331,12 @@ void Operation::MD5Chunk(
   }
 }
 
-void Operation::OnUnzipFailure(const std::string& error) {
+void Operation::OnExtractFailure(const std::string& error) {
   DCHECK(IsRunningInCorrectSequence());
   Error(error);
 }
 
-void Operation::OnUnzipProgress(int64_t total_bytes, int64_t progress_bytes) {
+void Operation::OnExtractProgress(int64_t total_bytes, int64_t progress_bytes) {
   DCHECK(IsRunningInCorrectSequence());
 
   int progress_percent = kProgressComplete * progress_bytes / total_bytes;

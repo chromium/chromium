@@ -16,14 +16,14 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 
 UnifiedConsentServiceFactory::UnifiedConsentServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "UnifiedConsentService",
           BrowserStateDependencyManager::GetInstance()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-  DependsOn(ProfileSyncServiceFactory::GetInstance());
+  DependsOn(SyncServiceFactory::GetInstance());
 }
 
 UnifiedConsentServiceFactory::~UnifiedConsentServiceFactory() = default;
@@ -31,7 +31,7 @@ UnifiedConsentServiceFactory::~UnifiedConsentServiceFactory() = default;
 // static
 unified_consent::UnifiedConsentService*
 UnifiedConsentServiceFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<unified_consent::UnifiedConsentService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -39,7 +39,7 @@ UnifiedConsentServiceFactory::GetForBrowserState(
 // static
 unified_consent::UnifiedConsentService*
 UnifiedConsentServiceFactory::GetForBrowserStateIfExists(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<unified_consent::UnifiedConsentService*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }
@@ -53,15 +53,15 @@ UnifiedConsentServiceFactory* UnifiedConsentServiceFactory::GetInstance() {
 std::unique_ptr<KeyedService>
 UnifiedConsentServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   sync_preferences::PrefServiceSyncable* user_pref_service =
       browser_state->GetSyncablePrefs();
 
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state);
   syncer::SyncService* sync_service =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state);
+      SyncServiceFactory::GetForBrowserState(browser_state);
 
   // Record settings for pre- and post-UnifiedConsent users.
   unified_consent::metrics::RecordSettingsHistogram(user_pref_service);

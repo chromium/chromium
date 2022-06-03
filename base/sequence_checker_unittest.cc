@@ -8,15 +8,15 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/sequence_token.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
@@ -35,14 +35,14 @@ class RunCallbackThread : public SimpleThread {
     Start();
     Join();
   }
+  RunCallbackThread(const RunCallbackThread&) = delete;
+  RunCallbackThread& operator=(const RunCallbackThread&) = delete;
 
  private:
   // SimpleThread:
   void Run() override { std::move(callback_).Run(); }
 
   OnceClosure callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(RunCallbackThread);
 };
 
 void ExpectCalledOnValidSequence(SequenceCheckerImpl* sequence_checker) {
@@ -109,7 +109,7 @@ TEST(SequenceCheckerTest, CallsDisallowedOnSameThreadDifferentSequenceToken) {
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
-    sequence_checker.reset(new SequenceCheckerImpl);
+    sequence_checker = std::make_unique<SequenceCheckerImpl>();
   }
 
   {
@@ -129,7 +129,7 @@ TEST(SequenceCheckerTest, DetachFromSequence) {
   {
     ScopedSetSequenceTokenForCurrentThread
         scoped_set_sequence_token_for_current_thread(SequenceToken::Create());
-    sequence_checker.reset(new SequenceCheckerImpl);
+    sequence_checker = std::make_unique<SequenceCheckerImpl>();
   }
 
   sequence_checker->DetachFromSequence();
@@ -230,27 +230,27 @@ TEST(SequenceCheckerMacroTest, Macros) {
       SequenceToken::Create());
   SEQUENCE_CHECKER(my_sequence_checker);
 
-  // Don't expect a DCHECK death when a SequenceChecker is used on the right
-  // sequence.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker) << "Error message.";
-
+  {
+    // Don't expect a DCHECK death when a SequenceChecker is used on the right
+    // sequence.
+    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker);
+  }
   scope.reset();
 
 #if DCHECK_IS_ON()
   // Expect DCHECK death when used on a different sequence.
-  EXPECT_DCHECK_DEATH({
-    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker) << "Error message.";
-  });
+  EXPECT_DCHECK_DEATH(
+      { DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker); });
 #else
     // Happily no-ops on non-dcheck builds.
-    DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker) << "Error message.";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker);
 #endif
 
   DETACH_FROM_SEQUENCE(my_sequence_checker);
 
   // Don't expect a DCHECK death when a SequenceChecker is used for the first
   // time after having been detached.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker) << "Error message.";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(my_sequence_checker);
 }
 
 // Owns a SequenceCheckerImpl, and asserts that CalledOnValidSequence() is valid
@@ -258,21 +258,22 @@ TEST(SequenceCheckerMacroTest, Macros) {
 class SequenceCheckerOwner {
  public:
   SequenceCheckerOwner() = default;
+  SequenceCheckerOwner(const SequenceCheckerOwner&) = delete;
+  SequenceCheckerOwner& operator=(const SequenceCheckerOwner&) = delete;
   ~SequenceCheckerOwner() { EXPECT_TRUE(checker_.CalledOnValidSequence()); }
 
  private:
   SequenceCheckerImpl checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SequenceCheckerOwner);
 };
 
 // Verifies SequenceCheckerImpl::CalledOnValidSequence() returns true if called
 // during thread destruction.
 TEST(SequenceCheckerTest, CalledOnValidSequenceFromThreadDestruction) {
+  SequenceChecker::EnableStackLogging();
   ThreadLocalOwnedPointer<SequenceCheckerOwner> thread_local_owner;
   {
     test::TaskEnvironment task_environment;
-    auto task_runner = CreateSequencedTaskRunner({ThreadPool()});
+    auto task_runner = ThreadPool::CreateSequencedTaskRunner({});
     task_runner->PostTask(
         FROM_HERE, BindLambdaForTesting([&]() {
           thread_local_owner.Set(std::make_unique<SequenceCheckerOwner>());

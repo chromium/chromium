@@ -12,7 +12,8 @@ async_test(t => {
   var video = document.querySelector('video');
   enableTestMode(video);
 
-  video.oncanplaythrough = t.step_func(_ => {
+  video.onplaying = t.step_func(_ => {
+    video.onplaying = null;
     assert_true(isClosedCaptionsButtonEnabled(video));
 
     // The captions track should be listed in textTracks, but not yet loaded.
@@ -23,6 +24,9 @@ async_test(t => {
 
     var tracks = document.querySelectorAll('track');
     tracks[0].onload = t.step_func(_ => {
+      // Resume video
+      video.play();
+
       assert_equals(textTrackDisplayElement(video).innerText, 'Lorem');
 
       // Captions should not be visible after Off is clicked.
@@ -67,8 +71,13 @@ async_test(t => {
 
     // Captions track should load and captions should become visible after a track is selected.
     clickTextTrackAtIndex(video, 0);
+
+    // Pause the video until track is loaded
+    video.pause();
   });
 
   video.src = '../content/counting.ogv';
+  video.play();
 });
 </script>
+

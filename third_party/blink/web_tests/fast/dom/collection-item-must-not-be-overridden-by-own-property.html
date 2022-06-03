@@ -1,0 +1,33 @@
+<html>
+<head>
+    <style id="link1">span { margin: 1px; }</style>
+    <style id="link2"></style>
+    <script src="../../resources/js-test.js"></script>
+</head>
+<body style="margin: 1px">
+<div id="testElements">
+<input type="text" id="element0" name="foo">
+<input type="text" id="element1" name="bar">
+</div>
+<script>
+description("This test ensures the collection item obtained by named property getter is NOT overridden by object's own property.");
+
+shouldBe("document.all.foo", "document.getElementById('element0')");
+document.all.foo = 1;
+shouldBe("document.all.foo", "document.getElementById('element0')");
+
+shouldBe("document.styleSheets.link1", "document.styleSheets[0]");
+document.styleSheets.link1 = 1;
+shouldBe("document.styleSheets.link1", "document.styleSheets[0]");
+
+shouldBe("document.body.attributes.style", "document.body.attributes['style']");
+document.body.attributes.style = 1;
+shouldBe("document.body.attributes.style", "document.body.attributes['style']");
+
+document.getElementById('testElements').style.display = 'none';
+
+var successfullyParsed = true;
+
+</script>
+</body>
+</html>

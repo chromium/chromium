@@ -8,16 +8,16 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/pending_task.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
-#include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/thread_pool.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -39,7 +39,7 @@ TEST(TaskAnnotatorTest, QueueAndRunTask) {
   TaskAnnotator annotator;
   annotator.WillQueueTask("TaskAnnotatorTest::Queue", &pending_task, "?");
   EXPECT_EQ(0, result);
-  annotator.RunTask("TaskAnnotatorTest::Queue", &pending_task);
+  annotator.RunTask("TaskAnnotator::RunTask", pending_task);
   EXPECT_EQ(123, result);
 }
 
@@ -54,6 +54,11 @@ class TaskAnnotatorBacktraceIntegrationTest
   using ExpectedTrace = std::vector<const void*>;
 
   TaskAnnotatorBacktraceIntegrationTest() = default;
+
+  TaskAnnotatorBacktraceIntegrationTest(
+      const TaskAnnotatorBacktraceIntegrationTest&) = delete;
+  TaskAnnotatorBacktraceIntegrationTest& operator=(
+      const TaskAnnotatorBacktraceIntegrationTest&) = delete;
 
   ~TaskAnnotatorBacktraceIntegrationTest() override = default;
 
@@ -147,8 +152,6 @@ class TaskAnnotatorBacktraceIntegrationTest
       last_task_backtrace_ = {};
 
   uint32_t last_ipc_hash_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskAnnotatorBacktraceIntegrationTest);
 };
 
 // Ensure the task backtrace populates correctly.
@@ -165,7 +168,8 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedSimple) {
   RunLoop run_loop;
 
   // Task 0 executes with no IPC context. Task 1 executes under an explicitly
-  // set IPC context, and tasks 2-5 inherit that context.
+  // set IPC context. Tasks 2-5 don't necessarily inherit that context, as
+  // IPCs may spawn subtasks that aren't necessarily IPCs themselves.
 
   // Task 5 has tasks 4/3/2/1 as parents (task 0 isn't visible as only the
   // last 4 parents are kept).
@@ -174,7 +178,7 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedSimple) {
       Unretained(this), ThreadTaskRunnerHandle::Get(), location5, FROM_HERE,
       ExpectedTrace({location4.program_counter(), location3.program_counter(),
                      location2.program_counter(), location1.program_counter()}),
-      dummy_ipc_hash, run_loop.QuitClosure());
+      0, run_loop.QuitClosure());
 
   // Task i=4/3/2/1/0 have tasks [0,i) as parents.
   OnceClosure task4 = BindOnce(
@@ -182,13 +186,13 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedSimple) {
       Unretained(this), ThreadTaskRunnerHandle::Get(), location4, location5,
       ExpectedTrace({location3.program_counter(), location2.program_counter(),
                      location1.program_counter(), location0.program_counter()}),
-      dummy_ipc_hash, std::move(task5));
+      0, std::move(task5));
   OnceClosure task3 = BindOnce(
       &TaskAnnotatorBacktraceIntegrationTest::VerifyTraceAndPost,
       Unretained(this), ThreadTaskRunnerHandle::Get(), location3, location4,
       ExpectedTrace({location2.program_counter(), location1.program_counter(),
                      location0.program_counter()}),
-      dummy_ipc_hash, std::move(task4));
+      0, std::move(task4));
   OnceClosure task2 = BindOnce(
       &TaskAnnotatorBacktraceIntegrationTest::VerifyTraceAndPost,
       Unretained(this), ThreadTaskRunnerHandle::Get(), location2, location3,
@@ -218,9 +222,9 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, MultipleThreads) {
   // SingleThreadTaskRunner) to verify that TaskAnnotator can capture backtraces
   // for PostTasks back-and-forth between these.
   auto main_thread_a = ThreadTaskRunnerHandle::Get();
-  auto task_runner_b = CreateSingleThreadTaskRunner({ThreadPool()});
-  auto task_runner_c = CreateSequencedTaskRunner(
-      {ThreadPool(), base::MayBlock(), base::WithBaseSyncPrimitives()});
+  auto task_runner_b = ThreadPool::CreateSingleThreadTaskRunner({});
+  auto task_runner_c = ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives()});
 
   const Location& location_a0 = FROM_HERE;
   const Location& location_a1 = FROM_HERE;
@@ -359,19 +363,19 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedNested) {
       Unretained(this), ThreadTaskRunnerHandle::Get(), location5, FROM_HERE,
       ExpectedTrace({location4.program_counter(), location3.program_counter(),
                      location2.program_counter(), location1.program_counter()}),
-      dummy_ipc_hash, run_loop.QuitClosure());
+      0, run_loop.QuitClosure());
   OnceClosure task4 = BindOnce(
       &TaskAnnotatorBacktraceIntegrationTest::VerifyTraceAndPost,
       Unretained(this), ThreadTaskRunnerHandle::Get(), location4, location5,
       ExpectedTrace({location3.program_counter(), location2.program_counter(),
                      location1.program_counter(), location0.program_counter()}),
-      dummy_ipc_hash, std::move(task5));
+      0, std::move(task5));
   OnceClosure task3 = BindOnce(
       &TaskAnnotatorBacktraceIntegrationTest::VerifyTraceAndPost,
       Unretained(this), ThreadTaskRunnerHandle::Get(), location3, location4,
       ExpectedTrace({location2.program_counter(), location1.program_counter(),
                      location0.program_counter()}),
-      dummy_ipc_hash, std::move(task4));
+      0, std::move(task4));
 
   OnceClosure run_task_3_then_quit_nested_loop1 =
       BindOnce(&TaskAnnotatorBacktraceIntegrationTest::RunTwo, std::move(task3),
@@ -381,7 +385,7 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedNested) {
       &TaskAnnotatorBacktraceIntegrationTest::VerifyTraceAndPost,
       Unretained(this), ThreadTaskRunnerHandle::Get(), location2, location3,
       ExpectedTrace({location1.program_counter(), location0.program_counter()}),
-      dummy_ipc_hash, std::move(run_task_3_then_quit_nested_loop1));
+      0, std::move(run_task_3_then_quit_nested_loop1));
 
   // Task 1 is custom. It enters another nested RunLoop, has it do work and exit
   // before posting the next task. This confirms that |task1| is restored as the
@@ -413,7 +417,8 @@ TEST_F(TaskAnnotatorBacktraceIntegrationTest, SingleThreadedNested) {
   {
     TaskAnnotator::ScopedSetIpcHash scoped_ipc_hash(dummy_ipc_hash2);
     ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, BindOnce(&RunLoop::Run, Unretained(&nested_run_loop1)));
+        FROM_HERE,
+        BindOnce(&RunLoop::Run, Unretained(&nested_run_loop1), FROM_HERE));
   }
 
   run_loop.Run();

@@ -10,6 +10,8 @@
 //#include "Allocator.h"
 //#include "Forward.h"
 
+#include {{format_include(config.protocol.package, "Forward")}}
+
 {% for namespace in config.protocol.namespace %}
 namespace {{namespace}} {
 {% endfor %}
@@ -17,6 +19,11 @@ namespace {{namespace}} {
 class ListValue;
 class DictionaryValue;
 class Value;
+
+#define PROTOCOL_DISALLOW_COPY(ClassName) \
+ private:                                 \
+  ClassName(const ClassName&) = delete;   \
+  ClassName& operator=(const ClassName&) = delete
 
 class {{config.lib.export_macro}} Value : public Serializable {
     PROTOCOL_DISALLOW_COPY(Value);
@@ -39,7 +46,6 @@ public:
         TypeBinary,
         TypeObject,
         TypeArray,
-        TypeSerialized,
         TypeImported
     };
 
@@ -53,10 +59,8 @@ public:
     virtual bool asString(String* output) const;
     virtual bool asBinary(Binary* output) const;
 
-    virtual void writeJSON(StringBuilder* output) const;
     virtual void AppendSerialized(std::vector<uint8_t>* bytes) const override;
     virtual std::unique_ptr<Value> clone() const;
-    String toJSONString() const;
 
 protected:
     Value() : m_type(TypeNull) { }
@@ -89,7 +93,6 @@ public:
     bool asBoolean(bool* output) const override;
     bool asDouble(double* output) const override;
     bool asInteger(int* output) const override;
-    void writeJSON(StringBuilder* output) const override;
     void AppendSerialized(std::vector<uint8_t>* bytes) const override;
     std::unique_ptr<Value> clone() const override;
 
@@ -118,7 +121,6 @@ public:
     }
 
     bool asString(String* output) const override;
-    void writeJSON(StringBuilder* output) const override;
     void AppendSerialized(std::vector<uint8_t>* bytes) const override;
     std::unique_ptr<Value> clone() const override;
 
@@ -137,7 +139,6 @@ public:
     }
 
     bool asBinary(Binary* output) const override;
-    void writeJSON(StringBuilder* output) const override;
     void AppendSerialized(std::vector<uint8_t>* bytes) const override;
     std::unique_ptr<Value> clone() const override;
 
@@ -145,32 +146,6 @@ private:
     explicit BinaryValue(const Binary& value) : Value(TypeBinary), m_binaryValue(value) { }
 
     Binary m_binaryValue;
-};
-
-class {{config.lib.export_macro}} SerializedValue : public Value {
-public:
-    static std::unique_ptr<SerializedValue> fromJSON(const String& value)
-    {
-        return std::unique_ptr<SerializedValue>(new SerializedValue(value));
-    }
-
-    static std::unique_ptr<SerializedValue> fromBinary(std::vector<uint8_t> value)
-    {
-        return std::unique_ptr<SerializedValue>(new SerializedValue(std::move(value)));
-    }
-
-    void writeJSON(StringBuilder* output) const override;
-    std::vector<uint8_t> TakeSerialized() && override;
-    void AppendSerialized(std::vector<uint8_t>* bytes) const override;
-    std::unique_ptr<Value> clone() const override;
-
-private:
-    explicit SerializedValue(const String& json) : Value(TypeSerialized), m_serializedJSON(json) { }
-    explicit SerializedValue(std::vector<uint8_t> binary) : Value(TypeSerialized), m_serializedBinary(std::move(binary)) { }
-    SerializedValue(const String& json, const std::vector<uint8_t>& binary)
-        : Value(TypeSerialized), m_serializedJSON(json), m_serializedBinary(binary) { }
-    String m_serializedJSON;
-    std::vector<uint8_t> m_serializedBinary;
 };
 
 class {{config.lib.export_macro}} DictionaryValue : public Value {
@@ -193,7 +168,6 @@ public:
         return std::unique_ptr<DictionaryValue>(DictionaryValue::cast(value.release()));
     }
 
-    void writeJSON(StringBuilder* output) const override;
     void AppendSerialized(std::vector<uint8_t>* bytes) const override;
     std::unique_ptr<Value> clone() const override;
 
@@ -262,7 +236,6 @@ public:
 
     ~ListValue() override;
 
-    void writeJSON(StringBuilder* output) const override;
     void AppendSerialized(std::vector<uint8_t>* bytes) const override;
     std::unique_ptr<Value> clone() const override;
 
@@ -276,9 +249,6 @@ private:
     ListValue();
     std::vector<std::unique_ptr<Value>> m_data;
 };
-
-void escapeLatinStringForJSON(const uint8_t* str, unsigned len, StringBuilder* dst);
-void escapeWideStringForJSON(const uint16_t* str, unsigned len, StringBuilder* dst);
 
 {% for namespace in config.protocol.namespace %}
 } // namespace {{namespace}}

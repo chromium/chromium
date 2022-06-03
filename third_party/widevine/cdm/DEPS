@@ -1,4 +1,4 @@
 include_rules = [
   "+base/token.h",
-  "+media/media_buildflags.h",
+  "+build/build_config.h",
 ]

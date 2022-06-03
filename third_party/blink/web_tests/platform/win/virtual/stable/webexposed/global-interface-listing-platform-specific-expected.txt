@@ -42,6 +42,8 @@ interface BluetoothRemoteGATTCharacteristic : EventTarget
     method startNotifications
     method stopNotifications
     method writeValue
+    method writeValueWithResponse
+    method writeValueWithoutResponse
     setter oncharacteristicvaluechanged
 interface BluetoothRemoteGATTDescriptor
     attribute @@toStringTag
@@ -79,6 +81,7 @@ interface Navigator
     getter bluetooth
 interface Notification : EventTarget
     getter image
+[NAMESPACES]
 [GLOBAL OBJECT]
 PASS successfullyParsed is true
 

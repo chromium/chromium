@@ -4,9 +4,42 @@
 
 #import "ios/showcase/core/showcase_model.h"
 
+#include "base/check.h"
+#import "ios/showcase/core/showcase_model_buildflags.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+
+// Validates whether all classes referenced by name in |row| can be loaded
+// using Objective-C reflection.
+BOOL IsShowcaseModelRowValid(showcase::ModelRow* row) {
+  static NSArray<NSString*>* const keys =
+      @[ showcase::kClassForInstantiationKey ];
+
+  BOOL valid = YES;
+  for (NSString* key in keys) {
+    if (!NSClassFromString(row[key])) {
+      NSLog(@"Can't load class: %@", row[key]);
+      valid = NO;
+    }
+  }
+  return valid;
+}
+
+// Validates whether all row in |model| are valid.
+BOOL IsShowcaseModelValid(NSArray<showcase::ModelRow*>* model) {
+  BOOL valid = YES;
+  for (showcase::ModelRow* row in model) {
+    if (!IsShowcaseModelRowValid(row))
+      valid = NO;
+  }
+  return valid;
+}
+
+}  // namespace
 
 @implementation ShowcaseModel
 
@@ -15,27 +48,40 @@
 // |kShowcaseClassForDisplayKey| and |kShowcaseClassForInstantiationKey| are
 // required. |kShowcaseUseCaseKey| is optional.
 + (NSArray<showcase::ModelRow*>*)model {
-  return @[
+  NSArray<showcase::ModelRow*>* model = @[
     @{
-      showcase::kClassForDisplayKey : @"ContentSuggestionsViewController",
-      showcase::kClassForInstantiationKey : @"SCContentSuggestionsCoordinator",
-      showcase::kUseCaseKey : @"Content Suggestions UI",
+      showcase::kClassForDisplayKey : @"ConsentViewController",
+      showcase::kClassForInstantiationKey : @"ConsentViewController",
+      showcase::kUseCaseKey : @"Credential Provider Consent UI",
     },
     @{
-      showcase::kClassForDisplayKey : @"PaymentRequestEditViewController",
-      showcase::kClassForInstantiationKey : @"SCPaymentsEditorCoordinator",
-      showcase::kUseCaseKey : @"Generic payment request editor",
+      showcase::kClassForDisplayKey : @"ConsentLegacyViewController",
+      showcase::kClassForInstantiationKey : @"ConsentLegacyViewController",
+      showcase::kUseCaseKey : @"Legacy Credential Provider Consent UI",
     },
     @{
-      showcase::kClassForDisplayKey : @"PaymentRequestPickerViewController",
-      showcase::kClassForInstantiationKey : @"SCPaymentsPickerCoordinator",
-      showcase::kUseCaseKey : @"Payment request picker view",
+      showcase::kClassForDisplayKey : @"EnterpriseLoadScreenViewController",
+      showcase::
+      kClassForInstantiationKey : @"EnterpriseLoadScreenViewController",
+      showcase::kUseCaseKey : @"Enterprise loading screen",
     },
     @{
-      showcase::kClassForDisplayKey : @"PaymentRequestSelectorViewController",
-      showcase::kClassForInstantiationKey : @"SCPaymentsSelectorCoordinator",
-      showcase::kUseCaseKey : @"Payment request selector view",
+      showcase::kClassForDisplayKey : @"EmptyCredentialsViewController",
+      showcase::kClassForInstantiationKey : @"EmptyCredentialsViewController",
+      showcase::kUseCaseKey : @"Credential Provider Empty Credentials UI",
     },
+    @{
+      showcase::kClassForDisplayKey : @"StaleCredentialsViewController",
+      showcase::kClassForInstantiationKey : @"StaleCredentialsViewController",
+      showcase::kUseCaseKey : @"Credential Provider Stale Credentials UI",
+    },
+#if BUILDFLAG(SHOWCASE_CREDENTIAL_PROVIDER_ENABLED)
+    @{
+      showcase::kClassForDisplayKey : @"CredentialListViewController",
+      showcase::kClassForInstantiationKey : @"SCCredentialListCoordinator",
+      showcase::kUseCaseKey : @"Credential Provider Credentials List UI",
+    },
+#endif
     @{
       showcase::kClassForDisplayKey : @"SettingsViewController",
       showcase::kClassForInstantiationKey : @"SCSettingsCoordinator",
@@ -45,16 +91,6 @@
       showcase::kClassForDisplayKey : @"UITableViewCell",
       showcase::kClassForInstantiationKey : @"UIKitTableViewCellViewController",
       showcase::kUseCaseKey : @"UIKit Table Cells",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"SearchWidgetViewController",
-      showcase::kClassForInstantiationKey : @"SCSearchWidgetCoordinator",
-      showcase::kUseCaseKey : @"Search Widget",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"ContentWidgetViewController",
-      showcase::kClassForInstantiationKey : @"SCContentWidgetCoordinator",
-      showcase::kUseCaseKey : @"Content Widget",
     },
     @{
       showcase::kClassForDisplayKey : @"TextBadgeView",
@@ -86,11 +122,6 @@
       kClassForDisplayKey : @"TabGridTopToolbar, TabGridBottomToolbar",
       showcase::kClassForInstantiationKey : @"SCToolbarsViewController",
       showcase::kUseCaseKey : @"Toolbars for tab grid",
-    },
-    @{
-      showcase::kClassForDisplayKey : @"TableContainerViewController",
-      showcase::kClassForInstantiationKey : @"SCTableContainerCoordinator",
-      showcase::kUseCaseKey : @"Table View",
     },
     @{
       showcase::kClassForDisplayKey : @"TopAlignedImageView",
@@ -128,7 +159,49 @@
       showcase::kClassForInstantiationKey : @"SCBadgeCoordinator",
       showcase::kUseCaseKey : @"Badge View",
     },
+    @{
+      showcase::kClassForDisplayKey : @"SaveCardModalViewController",
+      showcase::
+      kClassForInstantiationKey : @"SCInfobarModalSaveCardCoordinator",
+      showcase::kUseCaseKey : @"Save Card Modal",
+    },
+    @{
+      showcase::kClassForDisplayKey : @"SCIncognitoReauthViewController",
+      showcase::kClassForInstantiationKey : @"SCIncognitoReauthViewController",
+      showcase::kUseCaseKey : @"Incognito Reauth Blocker",
+    },
+    @{
+      showcase::kClassForDisplayKey : @"DefaultBrowserPromoViewController",
+      showcase::
+      kClassForInstantiationKey : @"SCDefaultBrowserFullscreenPromoCoordinator",
+      showcase::kUseCaseKey : @"Default Browser Fullscreen Promo UI",
+    },
+    @{
+      showcase::kClassForDisplayKey : @"SCFirstRunHeroScreenViewController",
+      showcase::kClassForInstantiationKey : @"SCFirstRunHeroScreenCoordinator",
+      showcase::kUseCaseKey : @"New FRE hero screen example",
+    },
+    @{
+      showcase::kClassForDisplayKey : @"SCFirstRunDefaultScreenViewController",
+      showcase::
+      kClassForInstantiationKey : @"SCFirstRunDefaultScreenCoordinator",
+      showcase::kUseCaseKey : @"New FRE default screen example",
+    },
+    @{
+      showcase::
+      kClassForDisplayKey : @"SCFirstRunScrollingScreenViewController",
+      showcase::
+      kClassForInstantiationKey : @"SCFirstRunScrollingScreenCoordinator",
+      showcase::kUseCaseKey : @"New FRE screen with scrolling example",
+    },
+    @{
+      showcase::kClassForDisplayKey : @"LinkPreviewViewController",
+      showcase::kClassForInstantiationKey : @"SCLinkPreviewCoordinator",
+      showcase::kUseCaseKey : @"Link Preview",
+    },
   ];
+  DCHECK(IsShowcaseModelValid(model));
+  return model;
 }
 
 @end

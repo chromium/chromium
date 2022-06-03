@@ -7,7 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/common/highlight_button.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 
 @class FaviconView;
 

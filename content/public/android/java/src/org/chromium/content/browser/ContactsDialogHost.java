@@ -11,8 +11,9 @@ import android.text.TextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.ui.ContactsPickerListener;
-import org.chromium.ui.UiUtils;
+import org.chromium.content_public.browser.ContactsPicker;
+import org.chromium.content_public.browser.ContactsPickerListener;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.nio.ByteBuffer;
@@ -25,17 +26,16 @@ import java.util.List;
 @JNINamespace("content")
 public class ContactsDialogHost implements ContactsPickerListener {
     private long mNativeContactsProviderAndroid;
-    private final WindowAndroid mWindowAndroid;
+    private final WebContents mWebContents;
 
     @CalledByNative
-    static ContactsDialogHost create(
-            WindowAndroid windowAndroid, long nativeContactsProviderAndroid) {
-        return new ContactsDialogHost(windowAndroid, nativeContactsProviderAndroid);
+    static ContactsDialogHost create(WebContents webContents, long nativeContactsProviderAndroid) {
+        return new ContactsDialogHost(webContents, nativeContactsProviderAndroid);
     }
 
-    private ContactsDialogHost(WindowAndroid windowAndroid, long nativeContactsProviderAndroid) {
+    private ContactsDialogHost(WebContents webContents, long nativeContactsProviderAndroid) {
         mNativeContactsProviderAndroid = nativeContactsProviderAndroid;
-        mWindowAndroid = windowAndroid;
+        mWebContents = webContents;
     }
 
     @CalledByNative
@@ -47,33 +47,36 @@ public class ContactsDialogHost implements ContactsPickerListener {
     private void showDialog(boolean multiple, boolean includeNames, boolean includeEmails,
             boolean includeTel, boolean includeAddresses, boolean includeIcons,
             String formattedOrigin) {
-        if (mWindowAndroid.getActivity().get() == null) {
+        WindowAndroid windowAndroid = mWebContents.getTopLevelNativeWindow();
+        assert windowAndroid != null;
+
+        if (windowAndroid.getActivity().get() == null) {
             ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
             return;
         }
 
-        if (mWindowAndroid.hasPermission(Manifest.permission.READ_CONTACTS)) {
-            if (!UiUtils.showContactsPicker(mWindowAndroid.getActivity().get(), this, multiple,
-                        includeNames, includeEmails, includeTel, includeAddresses, includeIcons,
+        if (windowAndroid.hasPermission(Manifest.permission.READ_CONTACTS)) {
+            if (!ContactsPicker.showContactsPicker(mWebContents, this, multiple, includeNames,
+                        includeEmails, includeTel, includeAddresses, includeIcons,
                         formattedOrigin)) {
                 ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
             }
             return;
         }
 
-        if (!mWindowAndroid.canRequestPermission(Manifest.permission.READ_CONTACTS)) {
+        if (!windowAndroid.canRequestPermission(Manifest.permission.READ_CONTACTS)) {
             ContactsDialogHostJni.get().endWithPermissionDenied(mNativeContactsProviderAndroid);
             return;
         }
 
-        mWindowAndroid.requestPermissions(
+        windowAndroid.requestPermissions(
                 new String[] {Manifest.permission.READ_CONTACTS}, (permissions, grantResults) -> {
                     if (permissions.length == 1 && grantResults.length == 1
                             && TextUtils.equals(permissions[0], Manifest.permission.READ_CONTACTS)
                             && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                        if (!UiUtils.showContactsPicker(mWindowAndroid.getActivity().get(), this,
-                                    multiple, includeNames, includeEmails, includeTel,
-                                    includeAddresses, includeIcons, formattedOrigin)) {
+                        if (!ContactsPicker.showContactsPicker(mWebContents, this, multiple,
+                                    includeNames, includeEmails, includeTel, includeAddresses,
+                                    includeIcons, formattedOrigin)) {
                             ContactsDialogHostJni.get().endWithPermissionDenied(
                                     mNativeContactsProviderAndroid);
                         }

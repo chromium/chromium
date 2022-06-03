@@ -7,40 +7,40 @@
 #include <memory>
 #include <utility>
 
-#include "content/common/frame_messages.h"
-#include "content/public/common/navigation_policy.h"
+#include "base/memory/ptr_util.h"
+#include "content/common/frame_messages.mojom.h"
 #include "content/renderer/internal_document_state_data.h"
+#include "third_party/blink/public/common/navigation/navigation_params.h"
 #include "third_party/blink/public/mojom/commit_result/commit_result.mojom.h"
 
 namespace content {
 
 NavigationState::~NavigationState() {
-  RunCommitNavigationCallback(blink::mojom::CommitResult::Aborted);
   navigation_client_.reset();
 }
 
 // static
-std::unique_ptr<NavigationState> NavigationState::CreateBrowserInitiated(
-    mojom::CommonNavigationParamsPtr common_params,
-    mojom::CommitNavigationParamsPtr commit_params,
-    mojom::FrameNavigationControl::CommitNavigationCallback callback,
-    mojom::NavigationClient::CommitNavigationCallback
-        per_navigation_mojo_interface_callback,
+std::unique_ptr<NavigationState> NavigationState::Create(
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    blink::mojom::CommitNavigationParamsPtr commit_params,
+    mojom::NavigationClient::CommitNavigationCallback commit_callback,
     std::unique_ptr<NavigationClient> navigation_client,
     bool was_initiated_in_this_frame) {
   return base::WrapUnique(new NavigationState(
-      std::move(common_params), std::move(commit_params), false,
-      std::move(callback), std::move(per_navigation_mojo_interface_callback),
+      std::move(common_params), std::move(commit_params),
+      /*is_for_synchronous_commit=*/false, std::move(commit_callback),
       std::move(navigation_client), was_initiated_in_this_frame));
 }
 
 // static
-std::unique_ptr<NavigationState> NavigationState::CreateContentInitiated() {
+std::unique_ptr<NavigationState> NavigationState::CreateForSynchronousCommit() {
   return base::WrapUnique(new NavigationState(
-      CreateCommonNavigationParams(), CreateCommitNavigationParams(), true,
-      content::mojom::FrameNavigationControl::CommitNavigationCallback(),
-      content::mojom::NavigationClient::CommitNavigationCallback(), nullptr,
-      true));
+      blink::CreateCommonNavigationParams(),
+      blink::CreateCommitNavigationParams(),
+      /*is_for_synchronous_commit=*/true,
+      content::mojom::NavigationClient::CommitNavigationCallback(),
+      /*navigation_client=*/nullptr,
+      /*was_initiated_in_this_frame=*/true));
 }
 
 // static
@@ -54,41 +54,32 @@ bool NavigationState::WasWithinSameDocument() {
   return was_within_same_document_;
 }
 
-bool NavigationState::IsContentInitiated() {
-  return is_content_initiated_;
+bool NavigationState::IsForSynchronousCommit() {
+  return is_for_synchronous_commit_;
 }
 
 void NavigationState::RunCommitNavigationCallback(
-    blink::mojom::CommitResult result) {
-  if (commit_callback_)
-    std::move(commit_callback_).Run(result);
-}
-
-void NavigationState::RunPerNavigationInterfaceCommitNavigationCallback(
-    std::unique_ptr<::FrameHostMsg_DidCommitProvisionalLoad_Params> params,
+    mojom::DidCommitProvisionalLoadParamsPtr params,
     mojom::DidCommitProvisionalLoadInterfaceParamsPtr interface_params) {
-  if (per_navigation_mojo_interface_commit_callback_)
-    std::move(per_navigation_mojo_interface_commit_callback_)
+  if (commit_callback_) {
+    std::move(commit_callback_)
         .Run(std::move(params), std::move(interface_params));
+  }
   navigation_client_.reset();
 }
 
 NavigationState::NavigationState(
-    mojom::CommonNavigationParamsPtr common_params,
-    mojom::CommitNavigationParamsPtr commit_params,
-    bool is_content_initiated,
-    mojom::FrameNavigationControl::CommitNavigationCallback callback,
-    mojom::NavigationClient::CommitNavigationCallback
-        per_navigation_mojo_interface_commit_callback,
+    blink::mojom::CommonNavigationParamsPtr common_params,
+    blink::mojom::CommitNavigationParamsPtr commit_params,
+    bool is_for_synchronous_commit,
+    mojom::NavigationClient::CommitNavigationCallback commit_callback,
     std::unique_ptr<NavigationClient> navigation_client,
     bool was_initiated_in_this_frame)
     : was_within_same_document_(false),
       was_initiated_in_this_frame_(was_initiated_in_this_frame),
-      is_content_initiated_(is_content_initiated),
+      is_for_synchronous_commit_(is_for_synchronous_commit),
       common_params_(std::move(common_params)),
       commit_params_(std::move(commit_params)),
       navigation_client_(std::move(navigation_client)),
-      commit_callback_(std::move(callback)),
-      per_navigation_mojo_interface_commit_callback_(
-          std::move(per_navigation_mojo_interface_commit_callback)) {}
+      commit_callback_(std::move(commit_callback)) {}
 }  // namespace content

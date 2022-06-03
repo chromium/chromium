@@ -10,10 +10,6 @@
     <!-- The size of the bounding box for favicons. -->
     <dimen name="compositor_tab_title_favicon_size">16dp</dimen>
 
-    <!-- TabSwitcher -->
-    <dimen name="tabswitcher_border_frame_padding_left">5.333dp</dimen>
-    <dimen name="tabswitcher_border_frame_padding_top">49.333dp</dimen>
-
     <!-- Location bar -->
     <dimen name="location_bar_status_separator_width">0.5dp</dimen>
 </resources>

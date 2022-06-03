@@ -77,23 +77,25 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   // http://www.w3.org/TR/CSS2/visudet.html#inline-replaced-width
   static const int kDefaultWidth;
   static const int kDefaultHeight;
-  bool CanHaveChildren() const override { return false; }
+  bool CanHaveChildren() const override {
+    NOT_DESTROYED();
+    return false;
+  }
+  virtual bool DrawsBackgroundOntoContentLayer() const { return false; }
   virtual void PaintReplaced(const PaintInfo&,
-                             const PhysicalOffset& paint_offset) const {}
+                             const PhysicalOffset& paint_offset) const {
+    NOT_DESTROYED();
+  }
 
   PhysicalRect LocalSelectionVisualRect() const final;
 
   bool HasObjectFit() const {
+    NOT_DESTROYED();
     return StyleRef().GetObjectFit() !=
            ComputedStyleInitialValues::InitialObjectFit();
   }
 
   void Paint(const PaintInfo&) const override;
-
-  // Replaced objects often have contents to paint.
-  bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const override {
-    return false;
-  }
 
   // This function is public only so we can call it when computing
   // intrinsic size in LayoutNG.
@@ -113,10 +115,12 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   void UpdateLayout() override;
 
   LayoutSize IntrinsicSize() const final {
+    NOT_DESTROYED();
     return LayoutSize(IntrinsicWidth(), IntrinsicHeight());
   }
 
   LayoutUnit IntrinsicWidth() const {
+    NOT_DESTROYED();
     if (HasOverrideIntrinsicContentWidth())
       return OverrideIntrinsicContentWidth();
     else if (ShouldApplySizeContainment())
@@ -124,6 +128,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
     return intrinsic_size_.Width();
   }
   LayoutUnit IntrinsicHeight() const {
+    NOT_DESTROYED();
     if (HasOverrideIntrinsicContentHeight())
       return OverrideIntrinsicContentHeight();
     else if (ShouldApplySizeContainment())
@@ -136,8 +141,7 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   void ComputePositionedLogicalHeight(
       LogicalExtentComputedValues&) const override;
 
-  void ComputeIntrinsicLogicalWidths(LayoutUnit& min_logical_width,
-                                     LayoutUnit& max_logical_width) const final;
+  MinMaxSizes ComputeIntrinsicLogicalWidths() const final;
 
   // This function calculates the placement of the replaced contents. It takes
   // intrinsic size of the replaced contents, stretch to fit CSS content box
@@ -146,25 +150,31 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
       const LayoutSize* overridden_intrinsic_size = nullptr) const;
 
   LayoutUnit IntrinsicContentLogicalHeight() const override {
+    NOT_DESTROYED();
     return IntrinsicLogicalHeight();
   }
 
-  virtual LayoutUnit MinimumReplacedHeight() const { return LayoutUnit(); }
+  virtual LayoutUnit MinimumReplacedHeight() const {
+    NOT_DESTROYED();
+    return LayoutUnit();
+  }
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
   void SetIntrinsicSize(const LayoutSize& intrinsic_size) {
+    NOT_DESTROYED();
     intrinsic_size_ = intrinsic_size;
   }
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
   bool IsOfType(LayoutObjectType type) const override {
-    return type == kLayoutObjectLayoutReplaced || LayoutBox::IsOfType(type);
+    NOT_DESTROYED();
+    return type == kLayoutObjectReplaced || LayoutBox::IsOfType(type);
   }
 
  private:
-  void ComputePreferredLogicalWidths() final;
+  MinMaxSizes PreferredLogicalWidths() const final;
 
   void ComputeIntrinsicSizingInfoForReplacedContent(IntrinsicSizingInfo&) const;
   FloatSize ConstrainIntrinsicSizeToMinMax(const IntrinsicSizingInfo&) const;
@@ -174,8 +184,13 @@ class CORE_EXPORT LayoutReplaced : public LayoutBox {
   mutable LayoutSize intrinsic_size_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutReplaced, IsLayoutReplaced());
+template <>
+struct DowncastTraits<LayoutReplaced> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutReplaced();
+  }
+};
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_REPLACED_H_

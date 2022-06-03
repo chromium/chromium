@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2021 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<resources>
+    <dimen name="toolbar_tab_count_text_size_1_digit">12dp</dimen>
+    <dimen name="toolbar_tab_count_text_size_2_digit">10dp</dimen>
+
+    <!-- Tab Strip Dimensions -->
+    <dimen name="tab_strip_height">0dp</dimen>
+
+    <!-- Negative vertical inset added to the search box bounds when modern is enabled. 4dp is added
+         to both the top and bottom bounds to bring the 48dp modern_toolbar_background_size to 56dp
+         (matches toolbar_height_no_shadow). -->
+    <dimen name="ntp_search_box_bounds_vertical_inset_modern">-4dp</dimen>
+
+    <!-- Toolbar Phone - padding of the optional button when menu button is present -->
+    <dimen name="toolbar_phone_optional_button_padding">12dp</dimen>
+
+    <dimen name="menu_badge_translation_y">6dp</dimen>
+
+    <!-- Bottom controls dimensions -->
+    <dimen name="bottom_controls_height">@dimen/min_touch_target_size</dimen>
+
+    <!-- Custom Menu dimensions -->
+    <dimen name="tab_switcher_menu_width">222dp</dimen>
+    <dimen name="tab_switcher_menu_vertical_padding">8dp</dimen>
+    <dimen name="adaptive_button_menu_vertical_padding">8dp</dimen>
+
+    <!-- Custom Tabs dimensions -->
+    <dimen name="toolbar_icon_height">24dp</dimen>
+
+    <!-- Start surface toolbar dimensions -->
+    <dimen name="start_surface_toolbar_button_padding_to_button">8dp</dimen>
+    <dimen name="start_surface_toolbar_button_padding_to_edge">16dp</dimen>
+
+    <!-- Navigation history popup dimensions -->
+    <dimen name="navigation_popup_width">312dp</dimen>
+    <dimen name="navigation_popup_item_height">56dp</dimen>
+    <dimen name="navigation_popup_default_padding">16dp</dimen>
+    <dimen name="navigation_popup_top_padding">8dp</dimen>
+    <dimen name="navigation_popup_favicon_bg_size">36dp</dimen>
+
+</resources>

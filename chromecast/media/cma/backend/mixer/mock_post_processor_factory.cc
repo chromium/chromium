@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/backend/mixer/mock_post_processor_factory.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/values.h"
 
 namespace chromecast {
@@ -21,7 +21,7 @@ MockPostProcessor::MockPostProcessor(MockPostProcessorFactory* factory,
   DCHECK(factory_);
   CHECK(factory_->instances.insert({name_, this}).second);
 
-  ON_CALL(*this, ProcessFrames(_, _, _, _))
+  ON_CALL(*this, ProcessFrames(_, _, _, _, _))
       .WillByDefault(
           testing::Invoke(this, &MockPostProcessor::DoProcessFrames));
 

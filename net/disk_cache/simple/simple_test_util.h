@@ -24,7 +24,7 @@ class ImmutableArray {
  public:
   static const size_t size = Size;
 
-  ImmutableArray(const base::Callback<T (size_t index)>& initializer) {
+  ImmutableArray(const base::RepeatingCallback<T(size_t index)>& initializer) {
     for (size_t i = 0; i < size; ++i)
       data_[i] = initializer.Run(i);
   }

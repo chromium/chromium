@@ -1,11 +1,12 @@
 <!DOCTYPE HTML>
 <html>
 <head>
+<script src="../../../resources/user-gesture-utils.js"></script>
 <script>
 if (window.testRunner) {
     testRunner.dumpAsText();
     testRunner.waitUntilDone();
-    testRunner.setCanOpenWindows();
+    testRunner.setPopupBlockingEnabled(false);
 }
 
 var originatingWindow = self;
@@ -29,7 +30,7 @@ function focusShouldNotChange(action, nextTest) {
 
     action(w);
 
-    originatingWindow.setTimeout(function () {
+    roundTripToBrowser().then(() => {
         originatingWindow.removeEventListener('focus', failHandler, false);
         w.removeEventListener('blur', failHandler, false);
 
@@ -69,7 +70,7 @@ function test1() {
 }
 
 function test2() {
-    focusShouldNotChange(function () { originatingWindow.focus(); }, test3);
+  focusShouldNotChange(function () { focusWithUserGesture(originatingWindow); }, test3);
 }
 
 function test3() {
@@ -79,7 +80,7 @@ function test3() {
 function test4() {
     focusShouldNotChange2('resources/mozilla-focus-blur-popup-blur.html', test5);
 }
-
+  
 function test5()
 {
     var w = window.open('about:blank', '', 'foo');
@@ -89,16 +90,16 @@ function test5()
 
     w.addEventListener('focus', handler, false);
 
-    w.focus();
+    focusWithUserGesture(w);
 
-    originatingWindow.setTimeout(function () {
+    roundTripToBrowser().then(() => {
         w.removeEventListener('focus', handler, false);
 
         log(!fail, 'The last opened window should be able to get focus');
 
         w.close();
         originatingWindow.setTimeout(finished, 0);
-    }, 0);
+    });
 }
 
 function finished() {

@@ -24,9 +24,10 @@ per-file screen*=oshima@chromium.org
 per-file canvas*=danakj@chromium.org
 
 # Overlay transforms.
-per-file overlay*=alexst@chromium.org
-per-file overlay*=khushalsagar@chromium.org
 per-file overlay*=spang@chromium.org
+
+# Overlay plane data.
+per-file overlay_plane_data*=rjkroege@chromium.org
 
 # Transform, interpolated transform and transform util.
 per-file transform*=danakj@chromium.org
@@ -39,20 +40,16 @@ per-file skia_util*=danakj@chromium.org
 per-file skia_paint_util*=danakj@chromium.org
 
 # GPU memory buffer and GpuFence interfaces.
-per-file gpu_fence*=reveman@chromium.org
 per-file gpu_fence*=dcastagna@chromium.org
 per-file gpu_fence*=rjkroege@chromium.org
 per-file gpu_fence*=spang@chromium.org
-per-file gpu_memory_buffer*=reveman@chromium.org
 per-file gpu_memory_buffer*=dcastagna@chromium.org
 per-file gpu_memory_buffer*=rjkroege@chromium.org
 per-file gpu_memory_buffer*=spang@chromium.org
-per-file buffer_format*=reveman@chromium.org
 per-file buffer_format*=dcastagna@chromium.org
 per-file buffer_format*=rjkroege@chromium.org
 per-file buffer_format*=spang@chromium.org
 per-file buffer_usage*=rjkroege@chromium.org
-per-file *buffer_types.*=reveman@chromium.org
 per-file *buffer_types.*=dcastagna@chromium.org
 per-file *buffer_types.*=rjkroege@chromium.org
 per-file *buffer_types.*=spang@chromium.org
@@ -64,6 +61,3 @@ per-file *vector_icon*=estade@chromium.org
 
 # If you're doing structural changes get a review from one of the OWNERS.
 per-file BUILD.gn=*
-
-# COMPONENT: UI>GFX
-# TEAM: graphics-dev@chromium.org

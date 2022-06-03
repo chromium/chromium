@@ -41,7 +41,7 @@ void DeJellyState::AdvanceFrame(LayerTreeImpl* layer_tree_impl) {
   // Check to make sure the ToScreen transform of our scroll node is not a
   // complex transform (doesn't work well with de-jelly). Also make sure the
   // scale is not changing.
-  base::Optional<gfx::Transform> previous_scroll_transform =
+  absl::optional<gfx::Transform> previous_scroll_transform =
       new_scroll_node_transform_;
   new_scroll_node_transform_ =
       layer_tree_impl->property_trees()->transform_tree.ToScreen(
@@ -77,9 +77,10 @@ void DeJellyState::AdvanceFrame(LayerTreeImpl* layer_tree_impl) {
   should_de_jelly_ = true;
 }
 
-void DeJellyState::UpdateSharedQuadState(LayerTreeImpl* layer_tree_impl,
-                                         int transform_id,
-                                         viz::RenderPass* target_render_pass) {
+void DeJellyState::UpdateSharedQuadState(
+    LayerTreeImpl* layer_tree_impl,
+    int transform_id,
+    viz::CompositorRenderPass* target_render_pass) {
   if (!should_de_jelly_)
     return;
   DCHECK(layer_tree_impl->settings().allow_de_jelly_effect);

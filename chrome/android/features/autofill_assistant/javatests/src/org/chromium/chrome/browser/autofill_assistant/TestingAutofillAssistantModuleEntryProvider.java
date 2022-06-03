@@ -5,20 +5,23 @@
 package org.chromium.chrome.browser.autofill_assistant;
 
 import android.content.Context;
-import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 
 import org.chromium.base.Callback;
+import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.widget.ScrimView;
-import org.chromium.chrome.browser.widget.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.ui.base.ActivityKeyboardVisibilityDelegate;
+import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Implementation of {@link AutofillAssistantModuleEntryProvider} that can be manipulated to
@@ -36,9 +39,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
      */
     static class MockAutofillAssistantActionHandler extends AutofillAssistantActionHandlerImpl {
         public MockAutofillAssistantActionHandler(Context context,
-                BottomSheetController bottomSheetController, ScrimView scrimView,
-                GetCurrentTab getCurrentTab) {
-            super(context, bottomSheetController, scrimView, getCurrentTab);
+                BottomSheetController bottomSheetController,
+                BrowserControlsStateProvider browserControls,
+                CompositorViewHolder compositorViewHolder,
+                ActivityTabProvider activityTabProvider) {
+            super(new OnboardingCoordinatorFactory(
+                          context, bottomSheetController, browserControls, compositorViewHolder),
+                    activityTabProvider);
         }
 
         @Override
@@ -57,16 +64,24 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     /** Mock module entry. */
     static class MockAutofillAssistantModuleEntry implements AutofillAssistantModuleEntry {
         @Override
-        public void start(@NonNull Tab tab, @NonNull WebContents webContents,
-                boolean skipOnboarding, String initialUrl, Map<String, String> parameters,
-                String experimentIds, Bundle intentExtras) {}
+        public AssistantDependencies createDependencies(BottomSheetController bottomSheetController,
+                BrowserControlsStateProvider browserControls,
+                CompositorViewHolder compositorViewHolder, Context context,
+                @NonNull WebContents webContents,
+                ActivityKeyboardVisibilityDelegate keyboardVisibilityDelegate,
+                ApplicationViewportInsetSupplier bottomInsetProvider,
+                ActivityTabProvider activityTabProvider) {
+            return null;
+        }
 
         @Override
         public AutofillAssistantActionHandler createActionHandler(Context context,
-                BottomSheetController bottomSheetController, ScrimView scrimView,
-                GetCurrentTab getCurrentTab) {
-            return new MockAutofillAssistantActionHandler(
-                    context, bottomSheetController, scrimView, getCurrentTab);
+                BottomSheetController bottomSheetController,
+                BrowserControlsStateProvider browserControls,
+                CompositorViewHolder compositorViewHolder,
+                ActivityTabProvider activityTabProvider) {
+            return new MockAutofillAssistantActionHandler(context, bottomSheetController,
+                    browserControls, compositorViewHolder, activityTabProvider);
         }
     }
 
@@ -95,12 +110,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     }
 
     @Override
-    public void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback) {
+    public void getModuleEntry(
+            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
         if (mCannotInstall) {
             callback.onResult(null);
             return;
         }
         mNotInstalled = false;
-        super.getModuleEntry(tab, callback);
+        super.getModuleEntry(tab, callback, showUi);
     }
 }

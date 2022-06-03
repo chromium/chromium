@@ -45,7 +45,8 @@ TEST(OffscreenSurfaceTest, ResizeToZero) {
   }
 
   // Generates context loss and fails the test if the resize fails.
-  glResizeCHROMIUM(0, 0, 1.0f, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM, GL_TRUE);
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+  glResizeCHROMIUM(0, 0, 1.0f, color_space.AsGLColorSpace(), GL_TRUE);
 
   gl.Destroy();
 }
@@ -73,8 +74,8 @@ TEST(OffscreenSurfaceTest, ResizeOverflow) {
   // that no asserts or undefined behavior is triggered
   static const GLuint kLargeSize =
       static_cast<GLuint>(std::numeric_limits<int>::max()) + 10;
-  glResizeCHROMIUM(kLargeSize, 1, 1.0f, GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM,
-                   GL_TRUE);
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+  glResizeCHROMIUM(kLargeSize, 1, 1.0f, color_space.AsGLColorSpace(), GL_TRUE);
 
   gl.Destroy();
 }

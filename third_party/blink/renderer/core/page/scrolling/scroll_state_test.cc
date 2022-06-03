@@ -68,8 +68,8 @@ TEST_F(ScrollStateTest, ConsumeDeltaNative) {
 
 TEST_F(ScrollStateTest, CurrentNativeScrollingElement) {
   ScrollState* scroll_state = CreateScrollState(0, 0, false, false);
-  auto* element = MakeGarbageCollected<Element>(
-      QualifiedName::Null(), MakeGarbageCollected<Document>());
+  auto* element = MakeGarbageCollected<Element>(QualifiedName::Null(),
+                                                Document::CreateForTest());
   scroll_state->SetCurrentNativeScrollingNode(element);
 
   EXPECT_EQ(element, scroll_state->CurrentNativeScrollingNode());

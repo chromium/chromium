@@ -1,7 +1,5 @@
 include_rules = [
   "+services/network/public/cpp",
-  # Needed to support typemaps of core types for the Identity Service.
-  "+mojo/public/cpp/bindings/struct_traits.h",
 ]
 
 specific_include_rules = {

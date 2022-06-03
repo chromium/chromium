@@ -21,15 +21,16 @@ namespace chromecast {
 // CastWebContentsActivity.
 class CastContentWindowAndroid : public CastContentWindow {
  public:
-  explicit CastContentWindowAndroid(
-      const CastContentWindow::CreateParams& params);
+  explicit CastContentWindowAndroid(mojom::CastWebViewParamsPtr params);
+
+  CastContentWindowAndroid(const CastContentWindowAndroid&) = delete;
+  CastContentWindowAndroid& operator=(const CastContentWindowAndroid&) = delete;
+
   ~CastContentWindowAndroid() override;
 
   // CastContentWindow implementation:
-  void CreateWindowForWebContents(
-      CastWebContents* cast_web_contents,
-      mojom::ZOrder z_order,
-      VisibilityPriority visibility_priority) override;
+  void CreateWindow(mojom::ZOrder z_order,
+                    VisibilityPriority visibility_priority) override;
   void GrantScreenAccess() override;
   void RevokeScreenAccess() override;
   void EnableTouchInput(bool enabled) override;
@@ -42,21 +43,18 @@ class CastContentWindowAndroid : public CastContentWindow {
   // Called through JNI.
   void OnActivityStopped(JNIEnv* env,
                          const base::android::JavaParamRef<jobject>& jcaller);
-  bool ConsumeGesture(JNIEnv* env,
-                      const base::android::JavaParamRef<jobject>& jcaller,
-                      int gesture_type);
+  void ConsumeGesture(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      int gesture_type,
+      const base::android::JavaParamRef<jobject>& handled_callback);
   void OnVisibilityChange(JNIEnv* env,
                           const base::android::JavaParamRef<jobject>& jcaller,
                           int visibility_type);
-  base::android::ScopedJavaLocalRef<jstring> GetId(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcaller);
 
  private:
-  const std::string activity_id_;
+  bool web_contents_attached_;
   base::android::ScopedJavaGlobalRef<jobject> java_window_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastContentWindowAndroid);
 };
 
 }  // namespace chromecast

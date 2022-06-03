@@ -18,9 +18,7 @@ static_library("link_header_util") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "link_header_util_unittest.cc",
-  ]
+  sources = [ "link_header_util_unittest.cc" ]
 
   deps = [
     ":link_header_util",
@@ -31,9 +29,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("link_header_util_fuzzer") {
-  sources = [
-    "link_header_util_fuzzer.cc",
-  ]
+  sources = [ "link_header_util_fuzzer.cc" ]
   deps = [
     ":link_header_util",
     "//base",

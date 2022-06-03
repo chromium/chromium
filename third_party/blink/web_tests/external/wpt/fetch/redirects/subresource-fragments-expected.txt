@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS Control
+PASS Redirect with the original URL containing a fragment
+FAIL Redirect with the response Location header containing a fragment assert_approx_equals: Green channel of the pixel at (40, 40) expected 255 +/- 4 but got 0
+FAIL Redirect with both the original URL and response Location header containing a fragment assert_approx_equals: Red channel of the pixel at (40, 40) expected 0 +/- 4 but got 255
+Harness: the test ran to completion.
+

@@ -77,7 +77,7 @@ class XPathResult final : public ScriptWrappable {
 
   const xpath::Value& GetValue() const { return value_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   xpath::NodeSet& GetNodeSet() { return *node_set_; }

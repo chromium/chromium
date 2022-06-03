@@ -10,14 +10,14 @@
 #include "ash/tray_action/tray_action_observer.h"
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/events/devices/stylus_state.h"
 
 namespace ash {
 
 TrayAction::TrayAction(BacklightsForcedOffSetter* backlights_forced_off_setter)
     : backlights_forced_off_setter_(backlights_forced_off_setter) {
-  stylus_observer_.Add(ui::DeviceDataManager::GetInstance());
+  stylus_observation_.Observe(ui::DeviceDataManager::GetInstance());
 }
 
 TrayAction::~TrayAction() = default;

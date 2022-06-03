@@ -15,20 +15,11 @@ class DialogDelegateView;
 class View;
 }
 
-#if defined(OS_CHROMEOS)
-
-// Creates a new dialog containing |view| that can be displayed inside the app
-// list, covering the entire app list and adding a close button.
-views::DialogDelegateView* CreateAppListContainerForView(
-    std::unique_ptr<views::View> view);
-
-#endif  // defined(OS_CHROMEOS)
-
 // Creates a new native dialog of the given |size| containing |view| with a
 // close button and draggable titlebar.
 views::DialogDelegateView* CreateDialogContainerForView(
     std::unique_ptr<views::View> view,
     const gfx::Size& size,
-    const base::Closure& close_callback);
+    base::OnceClosure close_callback);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_APP_INFO_DIALOG_CONTAINER_H_

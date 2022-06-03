@@ -24,7 +24,7 @@ callback DecodeSuccessCallback = void (AudioBuffer decodedData);
     readonly attribute double currentTime;
 
     // All AudioNodes in the context run at this sample-rate (sample-frames per second).
-    readonly attribute float sampleRate;
+    [HighEntropy=Direct, Measure] readonly attribute float sampleRate;
 
     // All panning is relative to this listener.
     readonly attribute AudioListener listener;
@@ -56,7 +56,7 @@ callback DecodeSuccessCallback = void (AudioBuffer decodedData);
     [RaisesException, MeasureAs=AudioContextCreateScriptProcessor] ScriptProcessorNode createScriptProcessor(optional unsigned long bufferSize, optional unsigned long numberOfInputChannels, optional unsigned long numberOfOutputChannels);
     [RaisesException, MeasureAs=AudioContextCreateStereoPanner] StereoPannerNode createStereoPanner();
     [RaisesException, MeasureAs=AudioContextCreateOscillator] OscillatorNode createOscillator();
-    [RaisesException, MeasureAs=AudioContextCreatePeriodicWave] PeriodicWave createPeriodicWave(sequence<float> real, sequence<float> imag, optional PeriodicWaveConstraints options);
+    [RaisesException, MeasureAs=AudioContextCreatePeriodicWave] PeriodicWave createPeriodicWave(sequence<float> real, sequence<float> imag, optional PeriodicWaveConstraints constraints = {});
 
     // Channel splitting and merging
     [RaisesException, MeasureAs=AudioContextCreateChannelSplitter] ChannelSplitterNode createChannelSplitter(optional unsigned long numberOfOutputs);

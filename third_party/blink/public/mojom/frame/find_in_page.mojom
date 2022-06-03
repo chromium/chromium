@@ -7,9 +7,9 @@ module blink.mojom;
 import "ui/gfx/geometry/mojom/geometry.mojom";
 
 interface FindInPage {
-  // If |options.find_next| is false, this is a "Start Find" call.
+  // If |options.new_session| is true, this is a "Start Find" call.
   // It starts a new find-in-page session with id |request_id|.
-  // If |options.find_next| is true, this is a "Find Next" call.
+  // If |options.new_session| is false, this is a "Find Next" call.
   // It asks the active/highlighted match for session with id |request_id|
   // to be moved either forward if |options.forward| is true, or backwards
   // if |options.forward| is false.
@@ -106,7 +106,11 @@ struct FindOptions {
   bool match_case = false;
 
   // Whether this operation is the first request or a follow-up.
-  bool find_next = false;
+  bool new_session = true;
+
+  // This controls whether to find a match or to only do match counts and
+  // highlighting.
+  bool find_match = true;
 
   // Force a re-search of the frame: typically used when forcing a re-search
   // after the frame navigates.

@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hu">
-<translation id="6106989379647458772">Előfordulhat, hogy a(z) <ph name="PAGE" /> webhelyen található oldal ideiglenesen nem érhető el, vagy véglegesen új címre költözött.</translation>
-<translation id="6312113039770857350">A weboldal nem érhető el</translation>
-<translation id="8681531050781943054">A(z) <ph name="PAGE" /> webhelyen található oldal betöltése a következő okból nem sikerült:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Javaslatok:<ph name="MARKUP_2" />Ellenőrizze, hogy van-e adatkapcsolata<ph name="MARKUP_3" />Töltse be újra a weboldalt később<ph name="MARKUP_4" />Ellenőrizze a beírt internetcímet<ph name="MARKUP_5" /></translation>
 </translationbundle>

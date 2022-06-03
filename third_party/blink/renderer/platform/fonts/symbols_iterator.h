@@ -5,9 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SYMBOLS_ITERATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SYMBOLS_ITERATOR_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/fonts/font_fallback_priority.h"
 #include "third_party/blink/renderer/platform/fonts/utf16_ragel_iterator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -19,6 +16,8 @@ class PLATFORM_EXPORT SymbolsIterator {
 
  public:
   SymbolsIterator(const UChar* buffer, unsigned buffer_size);
+  SymbolsIterator(const SymbolsIterator&) = delete;
+  SymbolsIterator& operator=(const SymbolsIterator&) = delete;
 
   bool Consume(unsigned* symbols_limit, FontFallbackPriority*);
 
@@ -28,8 +27,6 @@ class PLATFORM_EXPORT SymbolsIterator {
 
   unsigned next_token_end_;
   bool next_token_emoji_;
-
-  DISALLOW_COPY_AND_ASSIGN(SymbolsIterator);
 };
 
 }  // namespace blink

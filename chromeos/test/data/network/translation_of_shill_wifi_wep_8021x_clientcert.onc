@@ -1,6 +1,8 @@
 {
   "GUID":"{77db0089-0bc8-4358-929c-123xcv}",
+  "IPAddressConfigType":"DHCP",
   "Name":"",
+  "NameServersConfigType":"DHCP",
   "ProxySettings": {
       "Type": "PAC",
       "PAC": "https://proxycfg.my.domain.com/proxy.dat"
@@ -8,8 +10,6 @@
   "Type":"WiFi",
   "WiFi":{
     "EAP": {
-      "ClientCertPKCS11Id": "",
-      "ClientCertType": "PKCS11Id",
       "Identity": "abc ${LOGIN_ID}@my.domain.com",
       "Outer": "EAP-TLS",
       "SaveCredentials": true,

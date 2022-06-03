@@ -12,7 +12,7 @@ video::cue(.green) { color:green }
 <script>
 async_test(function(t) {
     var host = document.getElementById('host');
-    var shadowRoot = host.createShadowRoot();
+    var shadowRoot = host.attachShadow({mode: 'open'});
     shadowRoot.innerHTML = '<video controls ><track src="captions-webvtt/styling-lifetime.vtt" kind="captions" default></video>';
     var video = shadowRoot.querySelector('video');
     video.src = '../content/test.ogv';

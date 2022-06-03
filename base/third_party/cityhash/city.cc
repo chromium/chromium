@@ -35,7 +35,14 @@
 using std::make_pair;
 using std::pair;
 
-#ifdef _MSC_VER
+#if defined(__clang__)
+
+// Use builtins where possible. On Windows for instance, this may prevent a
+// function call instead of emitting a single instruction.
+#define bswap_32(x) __builtin_bswap32(x)
+#define bswap_64(x) __builtin_bswap64(x)
+
+#elif _MSC_VER
 
 #include <stdlib.h>
 #define bswap_32(x) _byteswap_ulong(x)

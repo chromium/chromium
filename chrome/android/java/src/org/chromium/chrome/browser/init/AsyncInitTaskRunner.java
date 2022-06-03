@@ -15,8 +15,8 @@ import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ChromeActivitySessionTracker;
-import org.chromium.chrome.browser.ChromeVersionInfo;
-import org.chromium.chrome.browser.flags.FeatureUtilities;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.version.ChromeVersionInfo;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher;
 import org.chromium.content_public.browser.ChildProcessLauncherHelper;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
@@ -30,11 +30,13 @@ import java.util.concurrent.Executor;
  * - Fetching the variations seed on first run
  */
 public abstract class AsyncInitTaskRunner {
-    private boolean mFetchingVariations;
-    private boolean mLibraryLoaded;
     private boolean mAllocateChildConnection;
 
     private FetchSeedTask mFetchSeedTask;
+
+    // Barrier counter to determine when all tasks have completed and are
+    // successful. -1 indicates "terminal state".
+    private int mNumPendingSuccesses;
 
     @VisibleForTesting
     boolean shouldFetchVariationsSeedDuringFirstRun() {
@@ -50,7 +52,6 @@ public abstract class AsyncInitTaskRunner {
         private final String mRestrictMode;
         private final String mMilestone;
         private final String mChannel;
-        private boolean mShouldRun = true;
 
         public FetchSeedTask(String restrictMode) {
             mRestrictMode = restrictMode;
@@ -64,19 +65,9 @@ public abstract class AsyncInitTaskRunner {
             PostTask.postTask(UiThreadTaskTraits.BOOTSTRAP, new Runnable() {
                 @Override
                 public void run() {
-                    if (!shouldRun()) return;
-                    mFetchingVariations = false;
-                    tasksPossiblyComplete(true);
+                    tasksPossiblyComplete(null);
                 }
             });
-        }
-
-        public synchronized void cancel() {
-            mShouldRun = false;
-        }
-
-        private synchronized boolean shouldRun() {
-            return mShouldRun;
         }
 
         private String getChannelString() {
@@ -106,7 +97,7 @@ public abstract class AsyncInitTaskRunner {
     public void startBackgroundTasks(boolean allocateChildConnection, boolean fetchVariationSeed) {
         ThreadUtils.assertOnUiThread();
         if (fetchVariationSeed && shouldFetchVariationsSeedDuringFirstRun()) {
-            mFetchingVariations = true;
+            ++mNumPendingSuccesses;
 
             // Fetching variations restrict mode requires AccountManagerFacade to be initialized.
             ProcessInitializationHandler.getInstance().initializePreNative();
@@ -130,22 +121,21 @@ public abstract class AsyncInitTaskRunner {
         // Load the library on a background thread. Using a plain Thread instead of AsyncTask
         // because the latter would be throttled, and this task is on the critical path of the
         // browser initialization.
+        ++mNumPendingSuccesses;
         getTaskPerThreadExecutor().execute(() -> {
-            final boolean libraryLoaded = loadNativeLibrary();
-            ThreadUtils.postOnUiThread(() -> {
-                mLibraryLoaded = libraryLoaded;
-                tasksPossiblyComplete(mLibraryLoaded);
-            });
+            final ProcessInitException libraryLoadException = loadNativeLibrary();
+            ThreadUtils.postOnUiThread(() -> { tasksPossiblyComplete(libraryLoadException); });
         });
     }
 
     /**
      * Loads the native library. Can be run on any thread.
      *
-     * @return true iff loading succeeded.
+     * @return null if loading succeeds, or ProcessInitException if loading fails.
      */
-    private boolean loadNativeLibrary() {
+    private ProcessInitException loadNativeLibrary() {
         try {
+            LibraryLoader.getInstance().getMediator().ensureInitializedInMainProcess();
             LibraryLoader.getInstance().ensureInitialized();
             // The prefetch is done after the library load for two reasons:
             // - It is easier to know the library location after it has
@@ -159,27 +149,39 @@ public abstract class AsyncInitTaskRunner {
             // For experimental results, see http://crbug.com/460438.
             prefetchLibrary();
         } catch (ProcessInitException e) {
-            return false;
+            return e;
         }
-        return true;
+        return null;
     }
 
-    private void tasksPossiblyComplete(boolean result) {
+    private void tasksPossiblyComplete(Exception failureCause) {
         ThreadUtils.assertOnUiThread();
 
-        if (!result) {
-            if (mFetchSeedTask != null) mFetchSeedTask.cancel();
-            onFailure();
+        if (mNumPendingSuccesses < 0) {
+            // Terminal state: Have called onSuccess() or onFailure(). Tasks that complete after
+            // onFailure() was triggered by a previous failure would arrive here for no-op.
+            return;
         }
 
-        if (mLibraryLoaded && !mFetchingVariations) {
-            if (FeatureUtilities.isNetworkServiceWarmUpEnabled()) {
-                ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), false);
+        if (failureCause == null) {
+            // Task succeeded.
+            --mNumPendingSuccesses;
+            if (mNumPendingSuccesses == 0) {
+                // All tasks succeeded: Finish tasks, call onSuccess(), and reach terminal state.
+                if (CachedFeatureFlags.isNetworkServiceWarmUpEnabled()) {
+                    ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), false);
+                }
+                if (mAllocateChildConnection) {
+                    ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), true);
+                }
+                onSuccess();
+                mNumPendingSuccesses = -1;
             }
-            if (mAllocateChildConnection) {
-                ChildProcessLauncherHelper.warmUp(ContextUtils.getApplicationContext(), true);
-            }
-            onSuccess();
+
+        } else {
+            // Task failed: Call onFailure(), and reach terminal state.
+            onFailure(failureCause);
+            mNumPendingSuccesses = -1;
         }
     }
 
@@ -195,6 +197,7 @@ public abstract class AsyncInitTaskRunner {
 
     /**
      * Handle failed completion of the Async initialization tasks.
+     * @param failureCause The Exception from the original failure.
      */
-    protected abstract void onFailure();
+    protected abstract void onFailure(Exception failureCause);
 }

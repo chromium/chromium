@@ -7,8 +7,8 @@
 #include <algorithm>
 #include <cstring>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "content/public/common/content_constants.h"
 
@@ -30,8 +30,6 @@ const char* const kRealPlayerExtensions[] = {".ra",  ".ram", ".rm",
 
 const char* const kQuickTimeExtensions[] = {".moov", ".mov", ".qif",
                                             ".qt",   ".qti", ".qtif"};
-
-const char* const kShockwaveFlashExtensions[] = {".spl", ".swf"};
 
 }  // namespace.
 
@@ -142,12 +140,6 @@ PluginUMAReporter::PluginType PluginUMAReporter::SrcToPluginType(
     return REALPLAYER;
   }
 
-  if (CStringArrayContainsCString(kShockwaveFlashExtensions,
-                                  base::size(kShockwaveFlashExtensions),
-                                  file_extension.c_str())) {
-    return SHOCKWAVE_FLASH;
-  }
-
   return UNSUPPORTED_EXTENSION;
 }
 
@@ -172,11 +164,6 @@ PluginUMAReporter::PluginType PluginUMAReporter::MimeTypeToPluginType(
 
   if (mime_type == content::kBrowserPluginMimeType)
     return BROWSER_PLUGIN;
-
-  if (mime_type == content::kFlashPluginSwfMimeType ||
-      mime_type == content::kFlashPluginSplMimeType) {
-    return SHOCKWAVE_FLASH;
-  }
 
   return UNSUPPORTED_MIMETYPE;
 }

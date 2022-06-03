@@ -69,6 +69,7 @@
 #include "absl/strings/ascii.h"  // for absl::ascii_tolower
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace strings_internal {
 
 inline char* memcat(char* dest, size_t destlen, const char* src,
@@ -141,6 +142,7 @@ const char* memmatch(const char* phaystack, size_t haylen, const char* pneedle,
                      size_t neelen);
 
 }  // namespace strings_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_STRINGS_INTERNAL_MEMUTIL_H_

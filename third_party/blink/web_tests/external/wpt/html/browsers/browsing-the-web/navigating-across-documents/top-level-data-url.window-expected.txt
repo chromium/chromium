@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+FAIL Navigating a popup using window.open("data:text/html,...", "", "undefined") assert_true: expected true got false
+FAIL Navigating a popup using window.open("data:text/html,...", "", "opener") assert_true: expected true got false
+PASS Navigating a popup using window.open("data:text/html,...", "", "noopener")
+PASS Navigating a popup using window.open("data:text/html,...", "", "noreferrer")
+FAIL Navigating a popup using window.open("resources/redirect.py?location=data%3Atext%2Fhtml%2C...", "", "undefined") assert_true: expected true got false
+FAIL Navigating a popup using window.open("resources/redirect.py?location=data%3Atext%2Fhtml%2C...", "", "opener") assert_true: expected true got false
+PASS Navigating a popup using window.open("resources/redirect.py?location=data%3Atext%2Fhtml%2C...", "", "noopener")
+PASS Navigating a popup using window.open("resources/redirect.py?location=data%3Atext%2Fhtml%2C...", "", "noreferrer")
+Harness: the test ran to completion.
+

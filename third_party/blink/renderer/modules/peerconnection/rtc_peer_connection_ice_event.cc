@@ -24,9 +24,9 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_peer_connection_ice_event_init.h"
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_candidate.h"
-#include "third_party/blink/renderer/modules/peerconnection/rtc_peer_connection_ice_event_init.h"
 
 namespace blink {
 
@@ -45,10 +45,13 @@ RTCPeerConnectionIceEvent::RTCPeerConnectionIceEvent(RTCIceCandidate* candidate)
     : Event(event_type_names::kIcecandidate, Bubbles::kNo, Cancelable::kNo),
       candidate_(candidate) {}
 
+// TODO(crbug.com/1070871): Use candidateOr(nullptr).
 RTCPeerConnectionIceEvent::RTCPeerConnectionIceEvent(
     const AtomicString& type,
     const RTCPeerConnectionIceEventInit* initializer)
-    : Event(type, initializer), candidate_(initializer->candidate()) {}
+    : Event(type, initializer),
+      candidate_(initializer->hasCandidate() ? initializer->candidate()
+                                             : nullptr) {}
 
 RTCPeerConnectionIceEvent::~RTCPeerConnectionIceEvent() = default;
 
@@ -60,7 +63,7 @@ const AtomicString& RTCPeerConnectionIceEvent::InterfaceName() const {
   return event_interface_names::kRTCPeerConnectionIceEvent;
 }
 
-void RTCPeerConnectionIceEvent::Trace(blink::Visitor* visitor) {
+void RTCPeerConnectionIceEvent::Trace(Visitor* visitor) const {
   visitor->Trace(candidate_);
   Event::Trace(visitor);
 }

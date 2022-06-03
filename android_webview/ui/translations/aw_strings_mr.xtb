@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
-<translation id="6106989379647458772"><ph name="PAGE" /> वरील वेबपेज कदाचित तात्पुरते बंद आहे किंवा ते कदाचित कायमचे नवीन वेब पत्त्यावर हलवले आहे.</translation>
-<translation id="6312113039770857350">वेबपेज उपलब्ध नाही</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> वरील वेबपेज लोड केले जाऊ शकले नाही कारण:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />सूचना:<ph name="MARKUP_2" />आपल्याकडे डेटा कनेक्शन असल्याचे निश्चित करा<ph name="MARKUP_3" />हे वेबपेज नंतर रीलोड करा<ph name="MARKUP_4" />तुम्ही एंटर केलेला ॲड्रेस तपासा<ph name="MARKUP_5" /></translation>
 </translationbundle>

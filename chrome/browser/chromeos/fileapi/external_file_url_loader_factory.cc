@@ -8,10 +8,8 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/task/post_task.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/file_manager/fileapi_util.h"
 #include "chrome/browser/chromeos/fileapi/external_file_resolver.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -30,7 +28,9 @@
 #include "net/base/io_buffer.h"
 #include "net/http/http_byte_range.h"
 #include "net/http/http_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/file_system/file_stream_reader.h"
 #include "storage/browser/file_system/file_system_backend.h"
@@ -50,14 +50,14 @@ class MojoPipeIOBuffer : public net::IOBuffer {
   explicit MojoPipeIOBuffer(void* data)
       : net::IOBuffer(static_cast<char*>(data)) {}
 
+  MojoPipeIOBuffer(const MojoPipeIOBuffer&) = delete;
+  MojoPipeIOBuffer& operator=(const MojoPipeIOBuffer&) = delete;
+
  protected:
   ~MojoPipeIOBuffer() override {
     // Set data_ to null so ~IOBuffer won't try to delete it.
     data_ = nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MojoPipeIOBuffer);
 };
 
 // A helper class to read data from a FileStreamReader, and write it to a
@@ -84,6 +84,11 @@ class FileSystemReaderDataPipeProducer {
         base::BindRepeating(&FileSystemReaderDataPipeProducer::OnHandleReady,
                             weak_ptr_factory_.GetWeakPtr()));
   }
+
+  FileSystemReaderDataPipeProducer(const FileSystemReaderDataPipeProducer&) =
+      delete;
+  FileSystemReaderDataPipeProducer& operator=(
+      const FileSystemReaderDataPipeProducer&) = delete;
 
   void Write() {
     while (remaining_bytes_ > 0) {
@@ -192,8 +197,6 @@ class FileSystemReaderDataPipeProducer {
   base::OnceCallback<void(net::Error)> callback_;
   base::WeakPtrFactory<FileSystemReaderDataPipeProducer> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(FileSystemReaderDataPipeProducer);
 };
 
 class ExternalFileURLLoader : public network::mojom::URLLoader {
@@ -211,10 +214,15 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
     external_file_url_loader->Start(request);
   }
 
+  ExternalFileURLLoader(const ExternalFileURLLoader&) = delete;
+  ExternalFileURLLoader& operator=(const ExternalFileURLLoader&) = delete;
+
   // network::mojom::URLLoader:
-  void FollowRedirect(const std::vector<std::string>& removed_headers,
-                      const net::HttpRequestHeaders& modified_headers,
-                      const base::Optional<GURL>& new_url) override {}
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override {}
   void SetPriority(net::RequestPriority priority,
                    int32_t intra_priority_value) override {}
   void PauseReadingBodyFromNet() override {}
@@ -272,17 +280,19 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
     head_.content_length = size;
     isolated_file_system_scope_ = std::move(isolated_file_system_scope);
 
-    mojo::DataPipe pipe(kDefaultPipeSize);
-    if (!pipe.consumer_handle.is_valid() || !pipe.producer_handle.is_valid()) {
+    mojo::ScopedDataPipeProducerHandle producer_handle;
+    mojo::ScopedDataPipeConsumerHandle consumer_handle;
+    if (mojo::CreateDataPipe(kDefaultPipeSize, producer_handle,
+                             consumer_handle) != MOJO_RESULT_OK) {
       CompleteWithError(net::ERR_FAILED);
       return;
     }
     head_.response_start = base::TimeTicks::Now();
     client_->OnReceiveResponse(head_.Clone());
-    client_->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
+    client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
     data_producer_ = std::make_unique<FileSystemReaderDataPipeProducer>(
-        std::move(pipe.producer_handle), std::move(stream_reader), size,
+        std::move(producer_handle), std::move(stream_reader), size,
         base::BindOnce(&ExternalFileURLLoader::OnFileWritten,
                        weak_ptr_factory_.GetWeakPtr()));
     data_producer_->Write();
@@ -331,23 +341,22 @@ class ExternalFileURLLoader : public network::mojom::URLLoader {
   std::unique_ptr<FileSystemReaderDataPipeProducer> data_producer_;
 
   base::WeakPtrFactory<ExternalFileURLLoader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExternalFileURLLoader);
 };
 
 }  // namespace
 
 ExternalFileURLLoaderFactory::ExternalFileURLLoaderFactory(
     void* profile_id,
-    int render_process_host_id)
-    : profile_id_(profile_id),
+    int render_process_host_id,
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+    : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)),
+      profile_id_(profile_id),
       render_process_host_id_(render_process_host_id) {}
 
 ExternalFileURLLoaderFactory::~ExternalFileURLLoaderFactory() = default;
 
 void ExternalFileURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -361,15 +370,26 @@ void ExternalFileURLLoaderFactory::CreateLoaderAndStart(
     mojo::ReportBadMessage("Unauthorized externalfile request");
     return;
   }
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&ExternalFileURLLoader::CreateAndStart, profile_id_,
                      request, std::move(loader), std::move(client)));
 }
 
-void ExternalFileURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) {
-  receivers_.Add(this, std::move(loader));
+// static
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+ExternalFileURLLoaderFactory::Create(void* profile_id,
+                                     int render_process_host_id) {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+
+  // The ExternalFileURLLoaderFactory will delete itself when there are no more
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
+  new ExternalFileURLLoaderFactory(
+      profile_id, render_process_host_id,
+      pending_remote.InitWithNewPipeAndPassReceiver());
+
+  return pending_remote;
 }
 
 }  // namespace chromeos

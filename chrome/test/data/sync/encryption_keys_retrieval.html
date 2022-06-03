@@ -1,26 +1,15 @@
 <html>
 <head>
 <script>
-// This particular test page uses ASCII keys for simplicity. Real callers are
-// not expected to deal with strings and converting them via charCodeAt().
-// TODO(crbug.com/978430): Pass an actual binary (non-ASCII) key.
-function asciiToArrayBuffer(s) {
-  var buffer = new ArrayBuffer(s.length);
-  var view = new Uint8Array(buffer);
-  for (var i = 0; i < s.length; i++) {
-    view[i] = s.charCodeAt(i);
-  }
-  return buffer;
-}
-
 window.onload = function() {
-  if (typeof chrome.setSyncEncryptionKeys == "undefined") {
-    document.title = "UNDEFINED";
-  } else {
-    chrome.setSyncEncryptionKeys(() => { document.title = "OK"; },
-                                 location.search.substring(1),
-                                 [asciiToArrayBuffer(location.hash.substring(1))]);
-  }
+  setTimeout(function() {
+    // A second page is loaded during retrieval, such that Blink sees a
+    // non-empty navigation history when determining whether closing the tab via
+    // Javascript is allowed.
+    this.document.location.href =
+        "/sync/encryption_keys_retrieval_complete.html" +
+        location.search + location.hash;
+  }, 0);
 }
 </script>
 </head>

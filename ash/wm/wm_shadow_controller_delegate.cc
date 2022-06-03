@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/window_state.h"
@@ -39,12 +40,11 @@ bool WmShadowControllerDelegate::ShouldShowShadowForWindow(
     OverviewSession* overview_session = overview_controller->overview_session();
     // InOverviewSession() being true implies |overview_session| exists.
     DCHECK(overview_session);
-    // The window may be still in overview mode, but it belongs to a non-active
-    // desk, as it has just been dragged and dropped onto a non-active desk's
-    // mini_view. In this case, we shouldn't disable its shadow, so that it may
-    // restored properly.
+    // Windows in overview that are not moving out of the active desk should not
+    // have shadows.
+    auto* overview_item = overview_session->GetOverviewItemForWindow(window);
     if (desks_util::BelongsToActiveDesk(const_cast<aura::Window*>(window)) &&
-        overview_session->IsWindowInOverview(window)) {
+        overview_item && !overview_item->is_moving_to_another_desk()) {
       return false;
     }
   }

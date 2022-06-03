@@ -1,0 +1,13 @@
+Name: firebase-iid-interop
+Short Name: firebase-iid-interop
+URL: https://firebase.google.com
+Version: 17.0.0
+License: Android Software Development Kit License
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Interface library for Firebase IID SDK.
+
+Local Modifications:
+No modifications.

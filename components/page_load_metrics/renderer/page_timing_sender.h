@@ -13,15 +13,19 @@ namespace page_load_metrics {
 // timing through IPC.
 class PageTimingSender {
  public:
-  virtual ~PageTimingSender() {}
+  virtual ~PageTimingSender() = default;
   virtual void SendTiming(
       const mojom::PageLoadTimingPtr& timing,
-      const mojom::PageLoadMetadataPtr& metadata,
-      mojom::PageLoadFeaturesPtr new_features,
+      const mojom::FrameMetadataPtr& metadata,
+      const std::vector<blink::UseCounterFeature>& new_features,
       std::vector<mojom::ResourceDataUpdatePtr> resources,
       const mojom::FrameRenderDataUpdate& render_data,
       const mojom::CpuTimingPtr& cpu_timing,
-      mojom::DeferredResourceCountsPtr new_deferred_resource_data) = 0;
+      mojom::DeferredResourceCountsPtr new_deferred_resource_data,
+      mojom::InputTimingPtr input_timing_delta,
+      const absl::optional<blink::MobileFriendliness>& mobile_friendliness) = 0;
+  virtual void SetUpSmoothnessReporting(
+      base::ReadOnlySharedMemoryRegion shared_memory) = 0;
 };
 
 }  // namespace page_load_metrics

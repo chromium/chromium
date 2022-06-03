@@ -12,8 +12,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/usb/usb_host_ui_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -31,11 +29,12 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
  public:
   struct UsbDeviceEntry {
     UsbDeviceEntry(const std::string& guid,
-                   const base::string16& device_name,
-                   const base::string16& serial_number,
+                   const std::u16string& device_name,
+                   const std::u16string& serial_number,
                    uint16_t vendor_id,
                    uint16_t product_id);
     UsbDeviceEntry(const UsbDeviceEntry& other);
+    UsbDeviceEntry& operator=(const UsbDeviceEntry& other);
     // Returns if the device entry is considered as persistent. Granted
     // permission for persistent device will persist when device is
     // removed.
@@ -50,10 +49,10 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     // or it is owned by UsbPermissionRequest.
     std::string guid;
     // Device name which is shown in the permission dialog.
-    base::string16 device_name;
+    std::u16string device_name;
     // Serial_number of the device. If this field is null if device is
     // considered as non-persistent.
-    base::string16 serial_number;
+    std::u16string serial_number;
     // Vendor_id of the device.
     uint16_t vendor_id;
     // Product id of the device.
@@ -65,16 +64,20 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     UsbPermissionRequest(
         const std::string& package_name,
         bool is_scan_request,
-        base::Optional<UsbDeviceEntry> usb_device_entry,
-        base::Optional<ArcUsbHostUiDelegate::RequestPermissionCallback>
+        absl::optional<UsbDeviceEntry> usb_device_entry,
+        absl::optional<ArcUsbHostUiDelegate::RequestPermissionCallback>
             callback);
     UsbPermissionRequest(UsbPermissionRequest&& other);
     UsbPermissionRequest& operator=(UsbPermissionRequest&& other);
+
+    UsbPermissionRequest(const UsbPermissionRequest&) = delete;
+    UsbPermissionRequest& operator=(const UsbPermissionRequest&) = delete;
+
     ~UsbPermissionRequest();
 
     const std::string& package_name() const { return package_name_; }
     bool is_scan_request() const { return is_scan_request_; }
-    const base::Optional<UsbDeviceEntry>& usb_device_entry() const {
+    const absl::optional<UsbDeviceEntry>& usb_device_entry() const {
       return usb_device_entry_;
     }
 
@@ -89,15 +92,18 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
     bool is_scan_request_;
     // Device entry of targeting device access request. nullopt if this is a
     // scan device list request.
-    base::Optional<UsbDeviceEntry> usb_device_entry_;
+    absl::optional<UsbDeviceEntry> usb_device_entry_;
     // Callback of the device access reqeust. nullopt if this is a scan device
     // list request.
-    base::Optional<RequestPermissionCallback> callback_;
-
-    DISALLOW_COPY_AND_ASSIGN(UsbPermissionRequest);
+    absl::optional<RequestPermissionCallback> callback_;
   };
 
+  ArcUsbHostPermissionManager(const ArcUsbHostPermissionManager&) = delete;
+  ArcUsbHostPermissionManager& operator=(const ArcUsbHostPermissionManager&) =
+      delete;
+
   ~ArcUsbHostPermissionManager() override;
+
   static ArcUsbHostPermissionManager* GetForBrowserContext(
       content::BrowserContext* context);
 
@@ -108,15 +114,15 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   void RequestUsbAccessPermission(
       const std::string& package_name,
       const std::string& guid,
-      const base::string16& serial_number,
-      const base::string16& manufacturer_string,
-      const base::string16& product_string,
+      const std::u16string& serial_number,
+      const std::u16string& manufacturer_string,
+      const std::u16string& product_string,
       uint16_t vendor_id,
       uint16_t product_id,
       ArcUsbHostUiDelegate::RequestPermissionCallback callback) override;
   bool HasUsbAccessPermission(const std::string& package_name,
                               const std::string& guid,
-                              const base::string16& serial_number,
+                              const std::u16string& serial_number,
                               uint16_t vendor_id,
                               uint16_t product_id) const override;
   void GrantUsbAccessPermission(const std::string& package_name,
@@ -125,7 +131,7 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
                                 uint16_t product_id) override;
   std::unordered_set<std::string> GetEventPackageList(
       const std::string& guid,
-      const base::string16& serial_number,
+      const std::u16string& serial_number,
       uint16_t vendor_id,
       uint16_t product_id) const override;
   void DeviceRemoved(const std::string& guid) override;
@@ -210,8 +216,6 @@ class ArcUsbHostPermissionManager : public ArcAppListPrefs::Observer,
   ArcAppListPrefs* const arc_app_list_prefs_;
 
   base::WeakPtrFactory<ArcUsbHostPermissionManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ArcUsbHostPermissionManager);
 };
 
 }  // namespace arc

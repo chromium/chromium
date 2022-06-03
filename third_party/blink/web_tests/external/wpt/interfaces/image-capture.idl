@@ -1,11 +1,12 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: MediaStream Image Capture (https://w3c.github.io/mediacapture-image/)
 
-[Exposed=Window, Constructor(MediaStreamTrack videoTrack)]
+[Exposed=Window]
 interface ImageCapture {
-   Promise<Blob>              takePhoto(optional PhotoSettings photoSettings);
+   constructor(MediaStreamTrack videoTrack);
+   Promise<Blob>              takePhoto(optional PhotoSettings photoSettings = {});
    Promise<PhotoCapabilities> getPhotoCapabilities();
    Promise<PhotoSettings>     getPhotoSettings();
 
@@ -14,11 +15,11 @@ interface ImageCapture {
    readonly attribute MediaStreamTrack track;
 };
 
-[Exposed=Window] interface PhotoCapabilities {
-  readonly attribute RedEyeReduction            redEyeReduction;
-  readonly attribute MediaSettingsRange         imageHeight;
-  readonly attribute MediaSettingsRange         imageWidth;
-  readonly attribute FrozenArray<FillLightMode> fillLightMode;
+dictionary PhotoCapabilities {
+  RedEyeReduction         redEyeReduction;
+  MediaSettingsRange      imageHeight;
+  MediaSettingsRange      imageWidth;
+  sequence<FillLightMode> fillLightMode;
 };
 
 dictionary PhotoSettings {
@@ -28,10 +29,10 @@ dictionary PhotoSettings {
   boolean         redEyeReduction;
 };
 
-[Exposed=Window] interface MediaSettingsRange {
-    readonly attribute double max;
-    readonly attribute double min;
-    readonly attribute double step;
+dictionary MediaSettingsRange {
+    double max;
+    double min;
+    double step;
 };
 
 enum RedEyeReduction {
@@ -92,27 +93,27 @@ partial dictionary MediaTrackCapabilities {
 };
 
 partial dictionary MediaTrackConstraintSet {
-  ConstrainDOMString whiteBalanceMode;
-  ConstrainDOMString exposureMode;
-  ConstrainDOMString focusMode;
-  ConstrainPoint2D   pointsOfInterest;
+  ConstrainDOMString           whiteBalanceMode;
+  ConstrainDOMString           exposureMode;
+  ConstrainDOMString           focusMode;
+  ConstrainPoint2D             pointsOfInterest;
 
-  ConstrainDouble    exposureCompensation;
-  ConstrainDouble    exposureTime;
-  ConstrainDouble    colorTemperature;
-  ConstrainDouble    iso;
+  ConstrainDouble              exposureCompensation;
+  ConstrainDouble              exposureTime;
+  ConstrainDouble              colorTemperature;
+  ConstrainDouble              iso;
 
-  ConstrainDouble    brightness;
-  ConstrainDouble    contrast;
-  ConstrainDouble    saturation;
-  ConstrainDouble    sharpness;
+  ConstrainDouble              brightness;
+  ConstrainDouble              contrast;
+  ConstrainDouble              saturation;
+  ConstrainDouble              sharpness;
 
-  ConstrainDouble    focusDistance;
-  ConstrainDouble    pan;
-  ConstrainDouble    tilt;
-  ConstrainDouble    zoom;
+  ConstrainDouble              focusDistance;
+  (boolean or ConstrainDouble) pan;
+  (boolean or ConstrainDouble) tilt;
+  (boolean or ConstrainDouble) zoom;
 
-  ConstrainBoolean   torch;
+  ConstrainBoolean             torch;
 };
 
 partial dictionary MediaTrackSettings {

@@ -2,6 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+/* Script used to strip anchor links from webview */
+const webviewStripLinksContentScript = {
+  name: 'stripLinks',
+  matches: ['<all_urls>'],
+  js: {
+    code: 'document.querySelectorAll(\'a\').forEach(' +
+        'function(anchor){anchor.href=\'javascript:void(0)\';})'
+  },
+  run_at: 'document_end'
+};
+
 /**
  * Sanitizer which filters the html snippet with a set of whitelisted tags.
  */

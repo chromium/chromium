@@ -21,21 +21,27 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/prefs/persistent_pref_store.h"
 #include "components/prefs/pref_value_store.h"
 #include "components/prefs/prefs_export.h"
+
+#if defined(OS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
 
 class PrefNotifier;
 class PrefNotifierImpl;
 class PrefObserver;
 class PrefRegistry;
 class PrefStore;
+#if defined(OS_ANDROID)
+class PrefServiceAndroid;
+#endif
 
 namespace base {
 class FilePath;
@@ -173,6 +179,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
               base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
                   read_error_callback,
               bool async);
+
+  PrefService(const PrefService&) = delete;
+  PrefService& operator=(const PrefService&) = delete;
+
   virtual ~PrefService();
 
   // Lands pending writes to disk. This should only be used if we need to save
@@ -187,7 +197,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
       base::OnceClosure reply_callback = base::OnceClosure(),
       base::OnceClosure synchronous_done_callback = base::OnceClosure());
 
-  // Schedule a write if there is any lossy data pending. Unlike
+  // Schedules a write if there is any lossy data pending. Unlike
   // CommitPendingWrite() this does not immediately sync to disk, instead it
   // triggers an eventual write if there is lossy data pending and if there
   // isn't one scheduled already.
@@ -227,6 +237,9 @@ class COMPONENTS_PREFS_EXPORT PrefService {
 
   // Removes a user pref and restores the pref to its default value.
   void ClearPref(const std::string& path);
+
+  // Removes user prefs that start with |prefix|.
+  void ClearPrefsWithPrefixSilently(const std::string& prefix);
 
   // If the path is valid (i.e., registered), update the pref value in the user
   // prefs.
@@ -295,8 +308,7 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // If INCLUDE_DEFAULTS is requested, preferences set to their default values
   // will be included. Otherwise, these will be omitted from the returned
   // dictionary.
-  std::unique_ptr<base::DictionaryValue> GetPreferenceValues(
-      IncludeDefaults include_defaults) const;
+  base::Value GetPreferenceValues(IncludeDefaults include_defaults) const;
 
   bool ReadOnly() const;
 
@@ -366,6 +378,10 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // observation.
   void AddPrefObserverAllPrefs(PrefObserver* obs);
   void RemovePrefObserverAllPrefs(PrefObserver* obs);
+
+#if defined(OS_ANDROID)
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
+#endif
 
  protected:
   // The PrefNotifier handles registering and notifying preference observers.
@@ -459,9 +475,13 @@ class COMPONENTS_PREFS_EXPORT PrefService {
   // of registered preferences are.
   mutable PreferenceMap prefs_map_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
+#if defined(OS_ANDROID)
+  // Manage and fetch the java object that wraps this PrefService on
+  // android.
+  std::unique_ptr<PrefServiceAndroid> pref_service_android_;
+#endif
 
-  DISALLOW_COPY_AND_ASSIGN(PrefService);
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 #endif  // COMPONENTS_PREFS_PREF_SERVICE_H_

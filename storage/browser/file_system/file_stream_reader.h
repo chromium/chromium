@@ -13,6 +13,7 @@
 #include "base/component_export.h"
 #include "base/files/file.h"
 #include "base/memory/weak_ptr.h"
+#include "components/services/storage/public/cpp/filesystem/filesystem_proxy.h"
 #include "net/base/completion_once_callback.h"
 
 namespace base {
@@ -24,12 +25,6 @@ class Time;
 namespace net {
 class IOBuffer;
 }
-
-namespace storage {
-class FileSystemContext;
-class FileSystemURL;
-class ObfuscatedFileUtilMemoryDelegate;
-}  // namespace storage
 
 namespace storage {
 
@@ -47,36 +42,29 @@ class FileStreamReader {
   // ERR_UPLOAD_FILE_CHANGED error.
   COMPONENT_EXPORT(STORAGE_BROWSER)
   static std::unique_ptr<FileStreamReader> CreateForLocalFile(
-      base::TaskRunner* task_runner,
+      scoped_refptr<base::TaskRunner> task_runner,
       const base::FilePath& file_path,
       int64_t initial_offset,
       const base::Time& expected_modification_time);
 
-  // Creates a new FileReader for a memory file |file_path|.
-  // |initial_offset| specifies the offset in the file where the first read
-  // should start.  If the given offset is out of the file range any
-  // read operation may error out with net::ERR_REQUEST_RANGE_NOT_SATISFIABLE.
-  // |expected_modification_time| specifies the expected last modification
-  // If the value is non-null, the reader will check the underlying file's
-  // actual modification time to see if the file has been modified, and if
-  // it does any succeeding read operations should fail with
-  // ERR_UPLOAD_FILE_CHANGED error.
+  // Creates a new FileReader for a local file |file_path|, which is a
+  // relative path into |filesystem_proxy|.  This function's behavior
+  // is otherwise identical to CreateForLocalFile other than all file operations
+  // going through |filesystem_proxy|.
   COMPONENT_EXPORT(STORAGE_BROWSER)
-  static std::unique_ptr<FileStreamReader> CreateForMemoryFile(
-      base::WeakPtr<ObfuscatedFileUtilMemoryDelegate> memory_file_util,
+  static std::unique_ptr<FileStreamReader> CreateForFilesystemProxy(
+      scoped_refptr<base::TaskRunner> task_runner,
       const base::FilePath& file_path,
+      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       int64_t initial_offset,
       const base::Time& expected_modification_time);
 
-  // Creates a new reader for a filesystem URL |url| form |initial_offset|.
-  // |expected_modification_time| specifies the expected last modification if
-  // the value is non-null, the reader will check the underlying file's actual
-  // modification time to see if the file has been modified, and if it does any
-  // succeeding read operations should fail with ERR_UPLOAD_FILE_CHANGED error.
+  // The same as CreateForFilesystemProxy, but will emit diagnostic metrics.
   COMPONENT_EXPORT(STORAGE_BROWSER)
-  static std::unique_ptr<FileStreamReader> CreateForFileSystemFile(
-      storage::FileSystemContext* context,
-      const storage::FileSystemURL& url,
+  static std::unique_ptr<FileStreamReader> CreateForIndexedDBDataItemReader(
+      scoped_refptr<base::TaskRunner> task_runner,
+      const base::FilePath& file_path,
+      std::unique_ptr<storage::FilesystemProxy> filesystem_proxy,
       int64_t initial_offset,
       const base::Time& expected_modification_time);
 
@@ -87,7 +75,7 @@ class FileStreamReader {
 
   // It is valid to delete the reader at any time.  If the stream is deleted
   // while it has a pending read, its callback will not be called.
-  virtual ~FileStreamReader() {}
+  virtual ~FileStreamReader() = default;
 
   // Reads from the current cursor position asynchronously.
   //

@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "components/omnibox/browser/omnibox_navigation_observer.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
@@ -47,13 +48,6 @@ class OmniboxClient {
   virtual std::unique_ptr<AutocompleteProviderClient>
   CreateAutocompleteProviderClient() = 0;
 
-  // Returns an OmniboxNavigationObserver specific to the embedder context. May
-  // return null if the embedder has no need to observe omnibox navigations.
-  virtual std::unique_ptr<OmniboxNavigationObserver>
-  CreateOmniboxNavigationObserver(const base::string16& text,
-                                  const AutocompleteMatch& match,
-                                  const AutocompleteMatch& alternate_nav_match);
-
   // Returns whether there is any associated current page.  For example, during
   // startup or shutdown, the omnibox may exist but have no attached page.
   virtual bool CurrentPageExists() const;
@@ -62,7 +56,7 @@ class OmniboxClient {
   virtual const GURL& GetURL() const;
 
   // Returns the title of the current page.
-  virtual const base::string16& GetTitle() const;
+  virtual const std::u16string& GetTitle() const;
 
   // Returns the favicon of the current page.
   virtual gfx::Image GetFavicon() const;
@@ -84,6 +78,14 @@ class OmniboxClient {
   virtual TemplateURLService* GetTemplateURLService();
   virtual const AutocompleteSchemeClassifier& GetSchemeClassifier() const = 0;
   virtual AutocompleteClassifier* GetAutocompleteClassifier();
+  virtual bool ShouldDefaultTypedNavigationsToHttps() const = 0;
+  // Returns the port used by the embedded https server in tests. This is used
+  // to determine the correct port while upgrading typed URLs to https if the
+  // original URL has a non-default port. Only meaningful if
+  // ShouldDefaultTypedNavigationsToHttps() returns true.
+  // TODO(crbug.com/1168371): Remove when URLLoaderInterceptor can simulate
+  // redirects.
+  virtual int GetHttpsPortForTesting() const = 0;
 
   // Returns the icon corresponding to |match| if match is an extension match
   // and an empty icon otherwise.
@@ -103,10 +105,10 @@ class OmniboxClient {
   // that was created by CreateOmniboxNavigationObserver() for |match|; in some
   // embedding contexts, processing an extension keyword involves invoking
   // action on this observer.
-  virtual bool ProcessExtensionKeyword(const TemplateURL* template_url,
+  virtual bool ProcessExtensionKeyword(const std::u16string& text,
+                                       const TemplateURL* template_url,
                                        const AutocompleteMatch& match,
-                                       WindowOpenDisposition disposition,
-                                       OmniboxNavigationObserver* observer);
+                                       WindowOpenDisposition disposition);
 
   // Called to notify clients that the omnibox input state has changed.
   virtual void OnInputStateChanged() {}
@@ -137,13 +139,10 @@ class OmniboxClient {
       const TemplateURL* template_url,
       FaviconFetchedCallback on_favicon_fetched);
 
-  // Called when the current autocomplete match has changed.
-  virtual void OnCurrentMatchChanged(const AutocompleteMatch& match) {}
-
   // Called when the text may have changed in the edit.
   virtual void OnTextChanged(const AutocompleteMatch& current_match,
                              bool user_input_in_progress,
-                             const base::string16& user_text,
+                             const std::u16string& user_text,
                              const AutocompleteResult& result,
                              bool has_focus) {}
 
@@ -161,12 +160,6 @@ class OmniboxClient {
 
   // Discards the state for all pending and transient navigations.
   virtual void DiscardNonCommittedNavigations() {}
-
-  // Opens and shows a new incognito browser window.
-  virtual void NewIncognitoWindow() {}
-
-  // Presents translation prompt for current tab web contents.
-  virtual void PromptPageTranslation() {}
 
   // Presents prompt to update Chrome.
   virtual void OpenUpdateChromeDialog() {}

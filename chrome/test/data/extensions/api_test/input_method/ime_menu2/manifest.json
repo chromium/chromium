@@ -13,18 +13,13 @@
   ],
   "input_components": [{
     "name": "Test IME",
-    "type": "ime",
     "id": "test",
-    "description": "Test",
     "language": "en",
     "layouts": ["us::eng"]
   }, {
     "name": "Test IME2",
-    "type": "ime",
     "id": "test2",
-    "description": "Test",
     "language": "en",
     "layouts": ["us::eng"]
   }]
 }
-

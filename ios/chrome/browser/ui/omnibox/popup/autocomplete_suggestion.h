@@ -45,6 +45,15 @@ class GURL;
 
 - (id<OmniboxIcon>)icon;
 
+#pragma mark tail suggest
+
+// Yes if this is a tail suggestion. Used by the popup to display according to
+// tail suggest standards.
+- (BOOL)isTailSuggestion;
+
+// Common prefix for tail suggestions. Empty otherwise.
+- (NSString*)commonPrefix;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_POPUP_AUTOCOMPLETE_SUGGESTION_H_

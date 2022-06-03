@@ -10,17 +10,22 @@ source_set("infobars") {
     "sc_infobar_banner_no_modal_coordinator.mm",
     "sc_infobar_container_view_controller.h",
     "sc_infobar_container_view_controller.mm",
+    "sc_infobar_modal_save_card_coordinator.h",
+    "sc_infobar_modal_save_card_coordinator.mm",
   ]
   deps = [
     ":constants",
+    "//base",
     "//ios/chrome/browser/infobars:public",
+    "//ios/chrome/browser/ui/autofill:autofill_message",
     "//ios/chrome/browser/ui/infobars/banners",
     "//ios/chrome/browser/ui/infobars/coordinators",
     "//ios/chrome/browser/ui/infobars/modals",
     "//ios/chrome/browser/ui/infobars/presentation",
     "//ios/showcase/common",
+    "//url",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
@@ -34,7 +39,6 @@ source_set("constants") {
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -46,30 +50,12 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":constants",
+    "//base",
     "//ios/chrome/browser/ui/infobars/banners:public",
     "//ios/chrome/browser/ui/infobars/modals:public",
     "//ios/showcase/test:eg2_test",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
   ]
-  libs = [ "UIKit.framework" ]
-}
-
-source_set("eg_tests") {
-  testonly = true
-  defines = [ "CHROME_EARL_GREY_1" ]
-  sources = [
-    "sc_infobar_banner_coordinator_egtest.mm",
-    "sc_infobar_banner_no_modal_coordinator_egtest.mm",
-  ]
-  deps = [
-    ":constants",
-    "//ios/chrome/browser/ui/infobars/banners:public",
-    "//ios/chrome/browser/ui/infobars/modals:public",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/showcase/infobars",
-    "//ios/showcase/test",
-    "//ios/testing/earl_grey:earl_grey_support",
-  ]
-  configs += [ "//build/config/compiler:enable_arc" ]
+  frameworks = [ "UIKit.framework" ]
 }

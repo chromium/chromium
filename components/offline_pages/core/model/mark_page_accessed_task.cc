@@ -5,6 +5,7 @@
 #include "components/offline_pages/core/model/mark_page_accessed_task.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/offline_pages/core/client_namespace_constants.h"
@@ -27,7 +28,7 @@ void ReportAccessHistogram(int64_t offline_id,
   // Used as upper bound of PageAccessInterval histogram which is used for
   // evaluating how good the expiration period is. The expiration period of a
   // page will be longer than one year in extreme cases so it's good enough.
-  const int kMinutesPerYear = base::TimeDelta::FromDays(365).InMinutes();
+  const int kMinutesPerYear = base::Days(365).InMinutes();
 
   static const char kSql[] =
       "SELECT client_namespace, last_access_time FROM " OFFLINE_PAGES_TABLE_NAME

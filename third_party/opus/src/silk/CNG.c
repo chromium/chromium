@@ -118,6 +118,10 @@ void silk_CNG(
         /* Smooth gains */
         for( i = 0; i < psDec->nb_subfr; i++ ) {
             psCNG->CNG_smth_Gain_Q16 += silk_SMULWB( psDecCtrl->Gains_Q16[ i ] - psCNG->CNG_smth_Gain_Q16, CNG_GAIN_SMTH_Q16 );
+            /* If the smoothed gain is 3 dB greater than this subframe's gain, use this subframe's gain to adapt faster. */
+            if( silk_SMULWW( psCNG->CNG_smth_Gain_Q16, CNG_GAIN_SMTH_THRESHOLD_Q16 ) > psDecCtrl->Gains_Q16[ i ] ) {
+                psCNG->CNG_smth_Gain_Q16 = psDecCtrl->Gains_Q16[ i ];
+            }
         }
     }
 
@@ -146,8 +150,8 @@ void silk_CNG(
 
         /* Generate CNG signal, by synthesis filtering */
         silk_memcpy( CNG_sig_Q14, psCNG->CNG_synth_state, MAX_LPC_ORDER * sizeof( opus_int32 ) );
+        celt_assert( psDec->LPC_order == 10 || psDec->LPC_order == 16 );
         for( i = 0; i < length; i++ ) {
-            silk_assert( psDec->LPC_order == 10 || psDec->LPC_order == 16 );
             /* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */
             LPC_pred_Q10 = silk_RSHIFT( psDec->LPC_order, 1 );
             LPC_pred_Q10 = silk_SMLAWB( LPC_pred_Q10, CNG_sig_Q14[ MAX_LPC_ORDER + i -  1 ], A_Q12[ 0 ] );

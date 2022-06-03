@@ -10,14 +10,13 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 SigninStatusMetricsProvider::SigninStatusMetricsProvider(
     std::unique_ptr<SigninStatusMetricsProviderDelegate> delegate,
     bool is_test)
     : delegate_(std::move(delegate)),
-      scoped_observer_(this),
       is_test_(is_test) {
   DCHECK(delegate_ || is_test_);
   if (is_test_)
@@ -56,43 +55,49 @@ void SigninStatusMetricsProvider::OnIdentityManagerCreated(
   // Whenever a new profile is created, a new IdentityManager will be created
   // for it. This ensures that all sign-in or sign-out actions of all opened
   // profiles are being monitored.
-  scoped_observer_.Add(identity_manager);
+  scoped_observations_.AddObservation(identity_manager);
 
   // If the status is unknown, it means this is the first created
   // IdentityManager and the corresponding profile should be the only opened
   // profile.
   if (signin_status() == UNKNOWN_SIGNIN_STATUS) {
-    size_t signed_in_count = identity_manager->HasPrimaryAccount() ? 1 : 0;
+    size_t signed_in_count =
+        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync) ? 1
+                                                                         : 0;
     UpdateInitialSigninStatus(1, signed_in_count);
   }
 }
 
 void SigninStatusMetricsProvider::OnIdentityManagerShutdown(
     signin::IdentityManager* identity_manager) {
-  if (scoped_observer_.IsObserving(identity_manager))
-    scoped_observer_.Remove(identity_manager);
+  if (scoped_observations_.IsObservingSource(identity_manager))
+    scoped_observations_.RemoveObservation(identity_manager);
 }
 
-void SigninStatusMetricsProvider::OnPrimaryAccountSet(
-    const CoreAccountInfo& account_info) {
-  SigninStatus recorded_signin_status = signin_status();
-  if (recorded_signin_status == ALL_PROFILES_NOT_SIGNED_IN) {
-    UpdateSigninStatus(MIXED_SIGNIN_STATUS);
-  } else if (recorded_signin_status == UNKNOWN_SIGNIN_STATUS) {
-    // There should have at least one browser opened if the user can sign in, so
-    // signin_status_ value should not be unknown.
-    UpdateSigninStatus(ERROR_GETTING_SIGNIN_STATUS);
+void SigninStatusMetricsProvider::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  if (event.GetEventTypeFor(signin::ConsentLevel::kSync) ==
+      signin::PrimaryAccountChangeEvent::Type::kNone) {
+    return;
   }
-}
 
-void SigninStatusMetricsProvider::OnPrimaryAccountCleared(
-    const CoreAccountInfo& account_info) {
   SigninStatus recorded_signin_status = signin_status();
-  if (recorded_signin_status == ALL_PROFILES_SIGNED_IN) {
-    UpdateSigninStatus(MIXED_SIGNIN_STATUS);
-  } else if (recorded_signin_status == UNKNOWN_SIGNIN_STATUS) {
-    // There should have at least one browser opened if the user can sign out,
-    // so signin_status_ value should not be unknown.
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSync)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      if (recorded_signin_status == ALL_PROFILES_NOT_SIGNED_IN)
+        UpdateSigninStatus(MIXED_SIGNIN_STATUS);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      if (recorded_signin_status == ALL_PROFILES_SIGNED_IN)
+        UpdateSigninStatus(MIXED_SIGNIN_STATUS);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      NOTREACHED() << "See return statement above";
+      break;
+  }
+  if (recorded_signin_status == UNKNOWN_SIGNIN_STATUS) {
+    // There should have at least one browser opened if the user can sign in or
+    // out, so signin_status_ value should not be unknown.
     UpdateSigninStatus(ERROR_GETTING_SIGNIN_STATUS);
   }
 }
@@ -103,8 +108,8 @@ void SigninStatusMetricsProvider::Initialize() {
   // Start observing all already-created IdentityManagers.
   for (signin::IdentityManager* manager :
        delegate_->GetIdentityManagersForAllAccounts()) {
-    DCHECK(!scoped_observer_.IsObserving(manager));
-    scoped_observer_.Add(manager);
+    DCHECK(!scoped_observations_.IsObservingSource(manager));
+    scoped_observations_.AddObservation(manager);
   }
 
   // It is possible that when this object is created, no IdentityManager is

@@ -11,15 +11,8 @@
 namespace gl {
 
 namespace {
-
-bool g_ignore_egl_sync_failures = false;
-
+bool g_check_egl_fence_before_wait = false;
 }  // namespace
-
-// static
-void GLFenceEGL::SetIgnoreFailures() {
-  g_ignore_egl_sync_failures = true;
-}
 
 GLFenceEGL::GLFenceEGL() = default;
 
@@ -39,6 +32,11 @@ std::unique_ptr<GLFenceEGL> GLFenceEGL::Create(EGLenum type, EGLint* attribs) {
   if (!fence->InitializeInternal(type, attribs))
     return nullptr;
   return fence;
+}
+
+// static
+void GLFenceEGL::CheckEGLFenceBeforeWait() {
+  g_check_egl_fence_before_wait = true;
 }
 
 bool GLFenceEGL::InitializeInternal(EGLenum type, EGLint* attribs) {
@@ -66,7 +64,7 @@ bool GLFenceEGL::HasCompleted() {
 
 void GLFenceEGL::ClientWait() {
   EGLint result = ClientWaitWithTimeoutNanos(EGL_FOREVER_KHR);
-  DCHECK(g_ignore_egl_sync_failures || EGL_TIMEOUT_EXPIRED_KHR != result);
+  DCHECK_NE(EGL_TIMEOUT_EXPIRED_KHR, result);
 }
 
 EGLint GLFenceEGL::ClientWaitWithTimeoutNanos(EGLTimeKHR timeout) {
@@ -75,7 +73,7 @@ EGLint GLFenceEGL::ClientWaitWithTimeoutNanos(EGLTimeKHR timeout) {
   if (result == EGL_FALSE) {
     LOG(ERROR) << "Failed to wait for EGLSync. error:"
                << ui::GetLastEGLErrorString();
-    CHECK(g_ignore_egl_sync_failures);
+    CHECK(false);
   }
   return result;
 }
@@ -86,10 +84,19 @@ void GLFenceEGL::ServerWait() {
     return;
   }
   EGLint flags = 0;
-  if (eglWaitSyncKHR(display_, sync_, flags) == EGL_FALSE) {
+
+  bool completed = false;
+  if (g_check_egl_fence_before_wait) {
+    // The i965 driver ends up doing a bunch of flushing if an already
+    // signalled fence is waited on. This causes performance to suffer.
+    // Check whether the fence is signalled before waiting.
+    completed = HasCompleted();
+  }
+
+  if (!completed && eglWaitSyncKHR(display_, sync_, flags) == EGL_FALSE) {
     LOG(ERROR) << "Failed to wait for EGLSync. error:"
                << ui::GetLastEGLErrorString();
-    CHECK(g_ignore_egl_sync_failures);
+    CHECK(false);
   }
 }
 

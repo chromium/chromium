@@ -21,7 +21,7 @@ interface AudioInputStream {
 // An interface for receiving notifications of state changes of an
 // AudioInputStream.
 interface AudioInputStreamClient {
-  OnError();
+  OnError(InputStreamErrorCode code);
   OnMutedStateChanged(bool is_muted);
 };
 
@@ -42,6 +42,8 @@ interface AudioInputStreamObserver {
     kTerminatedByClient = 2,
     kStreamCreationFailed = 3,
     kDocumentDestroyed = 4,
+    kSystemPermissions = 5,
+    kDeviceInUse = 6,
   };
 
   // It will be called only once when input stream starts recording.

@@ -4,6 +4,10 @@
 
 import("//cc/cc.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 cc_component("base") {
   output_name = "cc_base"
   sources = [
@@ -43,7 +47,6 @@ cc_component("base") {
     "synced_property.h",
     "tiling_data.cc",
     "tiling_data.h",
-    "time_util.h",
     "unique_notifier.cc",
     "unique_notifier.h",
   ]
@@ -52,10 +55,25 @@ cc_component("base") {
     "//base",
     "//base/third_party/dynamic_annotations",
     "//skia",
-    "//ui/gfx:geometry_skia",
     "//ui/gfx/animation",
     "//ui/gfx/geometry",
+    "//ui/gfx/geometry:geometry_skia",
   ]
 
   defines = [ "CC_BASE_IMPLEMENTATION=1" ]
+}
+
+if (is_android) {
+  java_cpp_strings("java_switches_srcjar") {
+    # External code should depend on ":cc_base_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "switches.cc" ]
+    template = "android/java/src/org/chromium/cc/base/CcSwitches.java.tmpl"
+  }
+
+  android_library("cc_base_java") {
+    # Right now, this only includes the Java switches. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_switches_srcjar" ]
+  }
 }

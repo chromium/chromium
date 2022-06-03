@@ -1,3 +1,0 @@
-HTTP/1.1 302 Found
-Location: image.png
-Follow-Only-When-Prerender-Shown: 1

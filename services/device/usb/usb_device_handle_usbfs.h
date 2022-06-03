@@ -12,7 +12,7 @@
 
 #include "base/files/scoped_file.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "services/device/usb/usb_device_handle.h"
 
 struct usbdevfs_urb;
@@ -33,6 +33,7 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   UsbDeviceHandleUsbfs(
       scoped_refptr<UsbDevice> device,
       base::ScopedFD fd,
+      base::ScopedFD lifeline_fd,
       scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
 
   // UsbDeviceHandle implementation.
@@ -46,7 +47,9 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
                                     int alternate_setting,
                                     ResultCallback callback) override;
   void ResetDevice(ResultCallback callback) override;
-  void ClearHalt(uint8_t endpoint, ResultCallback callback) override;
+  void ClearHalt(mojom::UsbTransferDirection direction,
+                 uint8_t endpoint_number,
+                 ResultCallback callback) override;
   void ControlTransfer(mojom::UsbTransferDirection direction,
                        mojom::UsbControlTransferType request_type,
                        mojom::UsbControlTransferRecipient recipient,
@@ -101,6 +104,10 @@ class UsbDeviceHandleUsbfs : public UsbDeviceHandle {
   void SetConfigurationComplete(int configuration_value,
                                 bool success,
                                 ResultCallback callback);
+  void SetAlternateInterfaceSettingComplete(int interface_number,
+                                            int alternate_setting,
+                                            bool success,
+                                            ResultCallback callback);
   void ReleaseInterfaceComplete(int interface_number, ResultCallback callback);
   void IsochronousTransferInternal(uint8_t endpoint_address,
                                    scoped_refptr<base::RefCountedBytes> buffer,

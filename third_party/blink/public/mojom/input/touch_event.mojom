@@ -1,0 +1,23 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Enumerates the state of which the touch point can be in.
+enum TouchState {
+  kStateUndefined,
+  kStateReleased,
+  kStatePressed,
+  kStateMoved,
+  kStateStationary,
+  kStateCancelled,
+  kStateMax = kStateCancelled
+};
+
+// Describes which touch event consumers are present in the renderer, for use in
+// touch action and touch event filtering.
+struct TouchEventConsumers {
+  bool has_touch_event_handlers;
+  bool has_hit_testable_scrollbar;
+};

@@ -5,10 +5,10 @@
 package org.chromium.chrome.browser.ssl;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 import android.util.Base64;
 
 import androidx.annotation.IntDef;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -21,16 +21,14 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
-import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.components.security_interstitials.CaptivePortalHelper;
 import org.chromium.net.X509Util;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.net.test.ServerCertificate;
@@ -38,7 +36,6 @@ import org.chromium.net.test.util.CertTestUtil;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.concurrent.Callable;
 
 /** Tests for the Captive portal interstitial. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -101,15 +98,6 @@ public class CaptivePortalTest {
         mServer.stopAndDestroyServer();
     }
 
-    private void waitForInterstitial(final WebContents webContents, final boolean shouldBeShown) {
-        CriteriaHelper.pollUiThread(Criteria.equals(shouldBeShown, new Callable<Boolean>() {
-            @Override
-            public Boolean call() {
-                return webContents.isShowingInterstitialPage();
-            }
-        }));
-    }
-
     /** Navigate the tab to an interstitial with a name mismatch error and check if this
     /*  results in a captive portal interstitial.
      */
@@ -125,8 +113,9 @@ public class CaptivePortalTest {
             }
         }
                 .waitForTitleUpdate(INTERSTITIAL_TITLE_UPDATE_TIMEOUT_SECONDS);
-
-        Assert.assertEquals(0, tab.getTitle().indexOf(CAPTIVE_PORTAL_INTERSTITIAL_TITLE_PREFIX));
+        Assert.assertEquals(0,
+                ChromeTabUtils.getTitleOnUiThread(tab).indexOf(
+                        CAPTIVE_PORTAL_INTERSTITIAL_TITLE_PREFIX));
     }
 
     @Test

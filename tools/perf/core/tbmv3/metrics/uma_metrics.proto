@@ -1,0 +1,94 @@
+// Copyright 2020 Google LLC.
+// SPDX-License-Identifier: Apache-2.0
+
+syntax = "proto2";
+
+package perfetto.protos;
+
+import "protos/perfetto/metrics/metrics.proto";
+import "protos/perfetto/metrics/custom_options.proto";
+
+message UMAMetrics {
+  repeated double compositing_display_draw_to_swap = 1
+      [(unit) = "ms_smallerIsBetter"];
+  repeated double compositor_latency_total_latency = 2
+      [(unit) = "ms_smallerIsBetter"];
+  repeated double
+      event_latency_scroll_begin_touch_time_to_scroll_update_swap_begin4 = 3
+      [(unit) = "ms_smallerIsBetter"];
+  repeated double
+      event_latency_scroll_update_touch_time_to_scroll_update_swap_begin4 = 4
+      [(unit) = "ms_smallerIsBetter"];
+  repeated double
+      event_latency_scroll_begin_wheel_time_to_scroll_update_swap_begin4 = 5
+      [(unit) = "ms_smallerIsBetter"];
+  repeated double
+      event_latency_scroll_update_wheel_time_to_scroll_update_swap_begin4 = 6
+      [(unit) = "ms_smallerIsBetter"];
+  repeated double graphics_smoothness_checkerboarding_compositor_animation = 7
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_checkerboarding_main_thread_animation = 8
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_checkerboarding_pinch_zoom = 9
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_checkerboarding_raf = 10
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_checkerboarding_touch_scroll = 11
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_checkerboarding_video = 12
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_checkerboarding_wheel_scroll = 13
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_percent_dropped_frames_all_animations = 14
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_percent_dropped_frames_all_interactions =
+      15 [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_percent_dropped_frames_all_sequences = 16
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_main_thread_main_thread_animation =
+          17 [(unit) = "n%_smallerIsBetter"];
+  repeated double graphics_smoothness_percent_dropped_frames_main_thread_raf =
+      18 [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_main_thread_touch_scroll = 19
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_main_thread_wheel_scroll = 20
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_compositor_thread_compositor_animation =
+          21 [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_compositor_thread_pinch_zoom =
+          22 [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_compositor_thread_touch_scroll =
+          23 [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_compositor_thread_wheel_scroll =
+          24 [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_main_thread_universal = 25
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_compositor_thread_universal =
+          26 [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_slower_thread_universal = 27
+      [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_scrolling_thread_touch_scroll =
+          28 [(unit) = "n%_smallerIsBetter"];
+  repeated double
+      graphics_smoothness_percent_dropped_frames_scrolling_thread_wheel_scroll =
+          29 [(unit) = "n%_smallerIsBetter"];
+  repeated double memory_gpu_peak_memory_usage_scroll = 30
+      [(unit) = "sizeInBytes_smallerIsBetter"];
+  repeated double memory_gpu_peak_memory_usage_page_load = 31
+      [(unit) = "sizeInBytes_smallerIsBetter"];
+}
+
+extend TraceMetrics {
+  optional UMAMetrics uma_metrics = 462;
+}

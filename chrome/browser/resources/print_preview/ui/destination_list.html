@@ -8,15 +8,14 @@
   }
 
   #list {
-    max-height: 100%;
+    min-height: var(--destination-item-height);
   }
 
   .throbber-container {
     display: flex;
-    margin-inline-start: 14px;
+    margin-inline-start:
+        calc((var(--search-icon-size) - var(--throbber-size))/2);
     min-height: var(--destination-item-height);
-    padding-inline-end: 16px;
-    padding-inline-start: calc(10/13 * 1em);
   }
 
   .throbber {
@@ -24,7 +23,6 @@
   }
 
   .no-destinations-message {
-    color: #999;
     padding-bottom: 8px;
     padding-inline-start: 18px;
     padding-top: 8px;
@@ -52,13 +50,19 @@
 <div class="no-destinations-message" hidden$="[[hasDestinations_]]">
   $i18n{noDestinationsMessage}
 </div>
-<iron-list id="list" items="[[matchingDestinations_]]">
+<iron-list id="list" items="[[matchingDestinations_]]" role="grid"
+    aria-rowcount$="[[matchingDestinations_.length]]"
+    aria-label="$i18n{printDestinationsTitle}" hidden$="[[hideList_]]">
   <template>
-    <print-preview-destination-list-item class="list-item"
-        search-query="[[searchQuery]]" destination="[[item]]"
-        on-click="onDestinationSelected_" on-keydown="onKeydown_"
-        tabindex$="[[tabIndex]]">
-    </print-preview-destination-list-item>
+    <div role="row" id$="destination_[[index]]"
+        aria-rowindex$="[[getAriaRowindex_(index)]]">
+      <print-preview-destination-list-item class="list-item"
+          search-query="[[searchQuery]]" destination="[[item]]"
+          on-click="onDestinationSelected_" on-keydown="onKeydown_"
+          role="gridcell" tabindex$="[[tabIndex]]"
+          iron-list-tab-index="[[tabIndex]]">
+      </print-preview-destination-list-item>
+    </div>
   </template>
 </iron-list>
 <div class="throbber-container" hidden$="[[throbberHidden_]]">

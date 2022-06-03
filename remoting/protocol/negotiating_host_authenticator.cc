@@ -5,12 +5,14 @@
 #include "remoting/protocol/negotiating_host_authenticator.h"
 
 #include <algorithm>
+#include <memory>
 #include <sstream>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "remoting/base/rsa_key_pair.h"
 #include "remoting/protocol/channel_authenticator.h"
@@ -79,7 +81,7 @@ NegotiatingHostAuthenticator::~NegotiatingHostAuthenticator() = default;
 
 void NegotiatingHostAuthenticator::ProcessMessage(
     const jingle_xmpp::XmlElement* message,
-    const base::Closure& resume_callback) {
+    base::OnceClosure resume_callback) {
   DCHECK_EQ(state(), WAITING_MESSAGE);
   state_ = PROCESSING_MESSAGE;
 
@@ -95,7 +97,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
   if (current_method_ != Method::INVALID && method != current_method_) {
     state_ = REJECTED;
     rejection_reason_ = PROTOCOL_ERROR;
-    resume_callback.Run();
+    std::move(resume_callback).Run();
     return;
   }
 
@@ -112,7 +114,7 @@ void NegotiatingHostAuthenticator::ProcessMessage(
       // Message contains neither method nor supported-methods attributes.
       state_ = REJECTED;
       rejection_reason_ = PROTOCOL_ERROR;
-      resume_callback.Run();
+      std::move(resume_callback).Run();
       return;
     }
 
@@ -136,15 +138,16 @@ void NegotiatingHostAuthenticator::ProcessMessage(
       // Failed to find a common auth method.
       state_ = REJECTED;
       rejection_reason_ = PROTOCOL_ERROR;
-      resume_callback.Run();
+      std::move(resume_callback).Run();
       return;
     }
 
     // Drop the current message because we've chosen a different method.
     current_method_ = method;
-    CreateAuthenticator(MESSAGE_READY,
-                        base::Bind(&NegotiatingHostAuthenticator::UpdateState,
-                                   base::Unretained(this), resume_callback));
+    CreateAuthenticator(
+        MESSAGE_READY,
+        base::BindOnce(&NegotiatingHostAuthenticator::UpdateState,
+                       base::Unretained(this), std::move(resume_callback)));
     return;
   }
 
@@ -155,15 +158,15 @@ void NegotiatingHostAuthenticator::ProcessMessage(
     // Copy the message since the authenticator may process it asynchronously.
     CreateAuthenticator(
         WAITING_MESSAGE,
-        base::Bind(&NegotiatingAuthenticatorBase::ProcessMessageInternal,
-                   base::Unretained(this),
-                   base::Owned(new jingle_xmpp::XmlElement(*message)),
-                   resume_callback));
+        base::BindOnce(&NegotiatingAuthenticatorBase::ProcessMessageInternal,
+                       base::Unretained(this),
+                       base::Owned(new jingle_xmpp::XmlElement(*message)),
+                       std::move(resume_callback)));
     return;
   }
 
   // If the client is using the host's current method, just process the message.
-  ProcessMessageInternal(message, resume_callback);
+  ProcessMessageInternal(message, std::move(resume_callback));
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement>
@@ -173,7 +176,7 @@ NegotiatingHostAuthenticator::GetNextMessage() {
 
 void NegotiatingHostAuthenticator::CreateAuthenticator(
     Authenticator::State preferred_initial_state,
-    const base::Closure& resume_callback) {
+    base::OnceClosure resume_callback) {
   DCHECK(current_method_ != Method::INVALID);
 
   switch(current_method_) {
@@ -182,32 +185,33 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       break;
 
     case Method::THIRD_PARTY_SPAKE2_P224:
-      current_authenticator_.reset(new ThirdPartyHostAuthenticator(
-          base::Bind(&V2Authenticator::CreateForHost, local_cert_,
-                     local_key_pair_),
+      current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
+          base::BindRepeating(&V2Authenticator::CreateForHost, local_cert_,
+                              local_key_pair_),
           token_validator_factory_->CreateTokenValidator(local_id_,
-                                                         remote_id_)));
-      resume_callback.Run();
+                                                         remote_id_));
+      std::move(resume_callback).Run();
       break;
 
     case Method::THIRD_PARTY_SPAKE2_CURVE25519:
-      current_authenticator_.reset(new ThirdPartyHostAuthenticator(
-          base::Bind(&Spake2Authenticator::CreateForHost, local_id_, remote_id_,
-                     local_cert_, local_key_pair_),
+      current_authenticator_ = std::make_unique<ThirdPartyHostAuthenticator>(
+          base::BindRepeating(&Spake2Authenticator::CreateForHost, local_id_,
+                              remote_id_, local_cert_, local_key_pair_),
           token_validator_factory_->CreateTokenValidator(local_id_,
-                                                         remote_id_)));
-      resume_callback.Run();
+                                                         remote_id_));
+      std::move(resume_callback).Run();
       break;
 
     case Method::PAIRED_SPAKE2_P224: {
       PairingHostAuthenticator* pairing_authenticator =
           new PairingHostAuthenticator(
-              pairing_registry_, base::Bind(&V2Authenticator::CreateForHost,
-                                            local_cert_, local_key_pair_),
+              pairing_registry_,
+              base::BindRepeating(&V2Authenticator::CreateForHost, local_cert_,
+                                  local_key_pair_),
               shared_secret_hash_);
       current_authenticator_.reset(pairing_authenticator);
       pairing_authenticator->Initialize(client_id_, preferred_initial_state,
-                                        resume_callback);
+                                        std::move(resume_callback));
       break;
     }
 
@@ -215,12 +219,13 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       PairingHostAuthenticator* pairing_authenticator =
           new PairingHostAuthenticator(
               pairing_registry_,
-              base::Bind(&Spake2Authenticator::CreateForHost, local_id_,
-                         remote_id_, local_cert_, local_key_pair_),
+              base::BindRepeating(&Spake2Authenticator::CreateForHost,
+                                  local_id_, remote_id_, local_cert_,
+                                  local_key_pair_),
               shared_secret_hash_);
       current_authenticator_.reset(pairing_authenticator);
       pairing_authenticator->Initialize(client_id_, preferred_initial_state,
-                                        resume_callback);
+                                        std::move(resume_callback));
       break;
     }
 
@@ -228,7 +233,7 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       current_authenticator_ = Spake2Authenticator::CreateForHost(
           local_id_, remote_id_, local_cert_, local_key_pair_,
           shared_secret_hash_, preferred_initial_state);
-      resume_callback.Run();
+      std::move(resume_callback).Run();
       break;
 
     case Method::SHARED_SECRET_PLAIN_SPAKE2_P224:
@@ -236,7 +241,7 @@ void NegotiatingHostAuthenticator::CreateAuthenticator(
       current_authenticator_ = V2Authenticator::CreateForHost(
           local_cert_, local_key_pair_, shared_secret_hash_,
           preferred_initial_state);
-      resume_callback.Run();
+      std::move(resume_callback).Run();
       break;
   }
 }

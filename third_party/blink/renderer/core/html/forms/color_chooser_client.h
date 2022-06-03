@@ -42,12 +42,15 @@ namespace blink {
 
 class Element;
 
+// This class is the client for the ColorChooser.
 class CORE_EXPORT ColorChooserClient : public GarbageCollectedMixin {
  public:
   virtual ~ColorChooserClient();
-  void Trace(Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 
+  // Called when a color is chosen by the user in the ColorChooser UI.
   virtual void DidChooseColor(const Color&) = 0;
+  // Called when ColorChooser UI was closed by the user.
   virtual void DidEndChooser() = 0;
   virtual Element& OwnerElement() const = 0;
   virtual IntRect ElementRectRelativeToViewport() const = 0;

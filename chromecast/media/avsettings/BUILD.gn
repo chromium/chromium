@@ -19,17 +19,13 @@ cast_source_set("avsettings_dummy") {
     "avsettings_dummy.h",
   ]
 
-  deps = [
-    "//chromecast/public",
-  ]
+  deps = [ "//chromecast/public" ]
 }
 
 # Target for OEM partners to override avsettings shared library, i.e.
 # libcast_avsettings_1.0.so.
 cast_shared_library("libcast_avsettings_1.0") {
-  sources = [
-    "avsettings_shlib.cc",
-  ]
+  sources = [ "avsettings_shlib.cc" ]
 
   deps = [
     ":avsettings_buildflags",

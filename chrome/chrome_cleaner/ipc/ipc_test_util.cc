@@ -9,7 +9,7 @@
 
 #include "base/base_switches.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -70,9 +70,8 @@ ParentProcess::~ParentProcess() {}
 void ParentProcess::CreateImplOnIPCThread(
     mojo::ScopedMessagePipeHandle mojo_pipe) {
   mojo_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ParentProcess::CreateImpl, base::RetainedRef(this),
-                     base::Passed(&mojo_pipe)));
+      FROM_HERE, base::BindOnce(&ParentProcess::CreateImpl,
+                                base::RetainedRef(this), std::move(mojo_pipe)));
 }
 
 void ParentProcess::DestroyImplOnIPCThread() {
@@ -91,7 +90,7 @@ void ParentProcess::AppendSwitch(const std::string& switch_string,
 }
 
 void ParentProcess::AppendSwitchNative(const std::string& switch_string,
-                                       const base::string16& value) {
+                                       const std::wstring& value) {
   command_line_.AppendSwitchNative(switch_string, value);
 }
 
@@ -104,7 +103,7 @@ void ParentProcess::AppendSwitchHandleToShare(const std::string& switch_string,
                                               HANDLE handle) {
   extra_handles_to_inherit_.push_back(handle);
   command_line_.AppendSwitchNative(
-      switch_string, base::NumberToString16(base::win::HandleToUint32(handle)));
+      switch_string, base::NumberToWString(base::win::HandleToUint32(handle)));
 }
 
 bool ParentProcess::LaunchConnectedChildProcess(

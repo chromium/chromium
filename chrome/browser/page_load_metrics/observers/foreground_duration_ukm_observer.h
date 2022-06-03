@@ -7,6 +7,8 @@
 
 #include "base/time/time.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
+#include "components/page_load_metrics/common/page_load_metrics.mojom.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 
 // Observer responsible for appending previews information to the PLM UKM
@@ -15,6 +17,11 @@ class ForegroundDurationUKMObserver
     : public page_load_metrics::PageLoadMetricsObserver {
  public:
   ForegroundDurationUKMObserver();
+
+  ForegroundDurationUKMObserver(const ForegroundDurationUKMObserver&) = delete;
+  ForegroundDurationUKMObserver& operator=(
+      const ForegroundDurationUKMObserver&) = delete;
+
   ~ForegroundDurationUKMObserver() override;
 
   // page_load_metrics::PageLoadMetricsObserver:
@@ -35,9 +42,10 @@ class ForegroundDurationUKMObserver
   bool currently_in_foreground_ = false;
   base::TimeTicks last_time_shown_;
   ukm::SourceId source_id_ = ukm::kInvalidSourceId;
+  page_load_metrics::mojom::InputTimingPtr last_page_input_timing_;
   void RecordUkmIfInForeground(base::TimeTicks end_time);
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundDurationUKMObserver);
+  void RecordInputTimingMetrics(
+      ukm::builders::PageForegroundSession* ukm_builder);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_FOREGROUND_DURATION_UKM_OBSERVER_H_

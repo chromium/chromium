@@ -6,14 +6,16 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
-#include "content/browser/frame_host/debug_urls.h"
+#include "content/browser/renderer_host/debug_urls.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/common/url_utils.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -29,7 +31,6 @@ static bool HandleViewSource(GURL* url, BrowserContext* browser_context) {
     static const char* const default_allowed_sub_schemes[] = {
         url::kHttpScheme,
         url::kHttpsScheme,
-        url::kFtpScheme,
         kChromeUIScheme,
         url::kFileScheme,
         url::kFileSystemScheme
@@ -73,7 +74,7 @@ static bool ReverseViewSource(GURL* url, BrowserContext* browser_context) {
 
 static bool DebugURLHandler(GURL* url, BrowserContext* browser_context) {
   // Circumvent processing URLs that the renderer process will handle.
-  return IsRendererDebugURL(*url);
+  return blink::IsRendererDebugURL(*url);
 }
 
 // static
@@ -92,8 +93,7 @@ BrowserURLHandlerImpl* BrowserURLHandlerImpl::GetInstance() {
   return base::Singleton<BrowserURLHandlerImpl>::get();
 }
 
-BrowserURLHandlerImpl::BrowserURLHandlerImpl() :
-    fixup_handler_(nullptr) {
+BrowserURLHandlerImpl::BrowserURLHandlerImpl() {
   AddHandlerPair(&DebugURLHandler, BrowserURLHandlerImpl::null_handler());
 
   // view-source: should take precedence over other rewriters, so it's
@@ -106,11 +106,6 @@ BrowserURLHandlerImpl::BrowserURLHandlerImpl() :
 BrowserURLHandlerImpl::~BrowserURLHandlerImpl() {
 }
 
-void BrowserURLHandlerImpl::SetFixupHandler(URLHandler handler) {
-  DCHECK(fixup_handler_ == nullptr);
-  fixup_handler_ = handler;
-}
-
 void BrowserURLHandlerImpl::AddHandlerPair(URLHandler handler,
                                            URLHandler reverse_handler) {
   url_handlers_.push_back(HandlerPair(handler, reverse_handler));
@@ -118,31 +113,60 @@ void BrowserURLHandlerImpl::AddHandlerPair(URLHandler handler,
 
 void BrowserURLHandlerImpl::RewriteURLIfNecessary(
     GURL* url,
+    BrowserContext* browser_context) {
+  DCHECK(url);
+  DCHECK(browser_context);
+  bool ignored_reverse_on_redirect;
+  RewriteURLIfNecessary(url, browser_context, &ignored_reverse_on_redirect);
+}
+
+std::vector<GURL> BrowserURLHandlerImpl::GetPossibleRewrites(
+    const GURL& url,
+    BrowserContext* browser_context) {
+  std::vector<GURL> rewrites;
+  for (const auto& it : url_handlers_) {
+    const URLHandler& handler = it.first;
+    if (!handler)
+      continue;
+
+    GURL mutable_url(url);
+    if (handler(&mutable_url, browser_context))
+      rewrites.push_back(std::move(mutable_url));
+  }
+
+  return rewrites;
+}
+
+void BrowserURLHandlerImpl::RewriteURLIfNecessary(
+    GURL* url,
     BrowserContext* browser_context,
     bool* reverse_on_redirect) {
-  for (size_t i = 0; i < url_handlers_.size(); ++i) {
-    URLHandler handler = *url_handlers_[i].first;
+  DCHECK(url);
+  DCHECK(browser_context);
+  DCHECK(reverse_on_redirect);
+
+  if (!url->is_valid()) {
+    *reverse_on_redirect = false;
+    return;
+  }
+
+  for (const auto& it : url_handlers_) {
+    const URLHandler& handler = it.first;
+    bool has_reverse_rewriter = it.second;
     if (handler && handler(url, browser_context)) {
-      *reverse_on_redirect = (url_handlers_[i].second != NULL);
+      *reverse_on_redirect = has_reverse_rewriter;
       return;
     }
   }
 }
 
-void BrowserURLHandlerImpl::FixupURLBeforeRewrite(
-    GURL* url,
-    BrowserContext* browser_context) {
-  if (fixup_handler_)
-    fixup_handler_(url, browser_context);
-}
-
 bool BrowserURLHandlerImpl::ReverseURLRewrite(
     GURL* url, const GURL& original, BrowserContext* browser_context) {
-  for (size_t i = 0; i < url_handlers_.size(); ++i) {
-    URLHandler reverse_rewriter = *url_handlers_[i].second;
+  for (const auto& it : url_handlers_) {
+    const URLHandler& handler = it.first;
+    const URLHandler& reverse_rewriter = it.second;
     if (reverse_rewriter) {
       GURL test_url(original);
-      URLHandler handler = *url_handlers_[i].first;
       if (!handler) {
         if (reverse_rewriter(url, browser_context))
           return true;
@@ -154,8 +178,11 @@ bool BrowserURLHandlerImpl::ReverseURLRewrite(
   return false;
 }
 
-void BrowserURLHandlerImpl::SetFixupHandlerForTesting(URLHandler handler) {
-  fixup_handler_ = handler;
+void BrowserURLHandlerImpl::RemoveHandlerForTesting(URLHandler handler) {
+  const auto it =
+      base::ranges::find(url_handlers_, handler, &HandlerPair::first);
+  DCHECK(url_handlers_.end() != it);
+  url_handlers_.erase(it);
 }
 
 }  // namespace content

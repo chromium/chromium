@@ -1,22 +1,19 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutInline (relative positioned) SPAN",
+      "name": "LayoutNGBlockFlow (relative positioned) (floating) DIV id='float'",
       "position": [158, 158],
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) (floating) DIV id='float'",
-          "rect": [0, 0, 100, 100],
-          "reason": "background"
-        }
+      "backgroundColor": "#008000",
+      "invalidations": [
+        [0, 0, 100, 100]
       ]
     }
   ]

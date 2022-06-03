@@ -7,7 +7,7 @@
 // low-latency operations, such as in-line autocomplete.
 //
 // The in-memory cache provides the following guarantees:
-//  (1.) It will always contain URLRows that either have a |typed_count| > 0; or
+//  (1.) It will always contain URLRows that either have a `typed_count` > 0; or
 //       that have a corresponding search term, in which case information about
 //       the search term is also stored.
 //  (2.) It will be an actual subset, i.e., it will contain verbatim data, and
@@ -24,8 +24,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/history/core/browser/keyword_id.h"
@@ -44,10 +43,14 @@ class URLRow;
 class InMemoryHistoryBackend : public HistoryServiceObserver {
  public:
   InMemoryHistoryBackend();
+
+  InMemoryHistoryBackend(const InMemoryHistoryBackend&) = delete;
+  InMemoryHistoryBackend& operator=(const InMemoryHistoryBackend&) = delete;
+
   ~InMemoryHistoryBackend() override;
 
   // Initializes the backend from the history database pointed to by the
-  // full path in |history_filename|.
+  // full path in `history_filename`.
   bool Init(const base::FilePath& history_filename);
 
   // Does initialization work when this object is attached to the history
@@ -82,7 +85,7 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
   void OnKeywordSearchTermUpdated(HistoryService* history_service,
                                   const URLRow& row,
                                   KeywordID keyword_id,
-                                  const base::string16& term) override;
+                                  const std::u16string& term) override;
   void OnKeywordSearchTermDeleted(HistoryService* history_service,
                                   URLID url_id) override;
 
@@ -91,10 +94,8 @@ class InMemoryHistoryBackend : public HistoryServiceObserver {
 
   std::unique_ptr<InMemoryDatabase> db_;
 
-  ScopedObserver<HistoryService, HistoryServiceObserver>
-      history_service_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(InMemoryHistoryBackend);
+  base::ScopedObservation<HistoryService, HistoryServiceObserver>
+      history_service_observation_{this};
 };
 
 }  // namespace history

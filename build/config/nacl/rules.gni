@@ -50,13 +50,9 @@ template("generate_nmf") {
     }
 
     script = "//native_client_sdk/src/tools/create_nmf.py"
-    inputs = [
-      objdump,
-    ]
+    inputs = [ objdump ]
     sources = executables
-    outputs = [
-      nmf,
-    ]
+    outputs = [ nmf ]
     if (is_nacl_glibc) {
       if (defined(stage_dependencies)) {
         nmfflags += [ "--stage-dependencies=" +
@@ -159,12 +155,8 @@ template("generate_nonsfi_test_nmf") {
                            ])
 
     script = "//ppapi/tests/create_nonsfi_test_nmf.py"
-    sources = [
-      executable,
-    ]
-    outputs = [
-      nmf,
-    ]
+    sources = [ executable ]
+    outputs = [ nmf ]
 
     # NOTE: We use target_cpu rather than current_cpu on purpose because
     # current_cpu is always going to be pnacl for Non-SFI, but the Non-SFI

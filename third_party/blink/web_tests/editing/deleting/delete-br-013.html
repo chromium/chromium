@@ -1,17 +1,24 @@
-<html>
-    <head>
-        <script>
-            function test()
-            {
-                var sel = window.getSelection();
-                sel.collapse(document.getElementById('dv'), 0);
-                document.execCommand("Delete");
-            }
-        </script>
-    </head>
-    <body onload="test()">
-        <div>This tests that we only preserve an empty paragraph's style when moving paragraphs around if the selection is still in an empty paragraph after the move occurs.</div>
-        <div>The test passes if the text below is still underlined.</div><br>
-        <div contenteditable><span style="text-decoration: underline;">This text should be underlined</span><div id="dv"><br></div></div>
-    </body>
-</html>
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+// This tests that we only preserve an empty paragraph's style when moving
+// paragraphs around if the selection is still in an empty paragraph after the
+// move occurs.
+//
+// The test passes if the text below is still underlined.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<span style="text-decoration: underline;">abc</span>',
+            '<div>|<br></div>',
+        '</div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable>',
+            '<span style="text-decoration: underline;">abc|</span>',
+        '</div>',
+    ]);
+</script>

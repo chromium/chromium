@@ -4,7 +4,7 @@ Visual Studio Code is a free, lightweight and powerful code editor for Windows,
 Mac and Linux, based on Electron/Chromium. It has built-in support for
 JavaScript, TypeScript and Node.js and a rich extension ecosystem that adds
 intellisense, debugging, syntax highlighting etc. for many languages (C++,
-Python, Go). It works without too much setup. Get started
+Python, Go, Java). It works without too much setup. Get started
 [here](https://code.visualstudio.com/docs).
 
 It is NOT a full-fledged IDE like Visual Studio. The two are completely
@@ -25,11 +25,16 @@ Here's what works well:
     well, even though startup times can be fairly high (~40 seconds with
     gdb on Linux, much lower on Windows). You can step through code, inspect
     variables, view call stacks for multiple threads etc.
+    *   For more information on debugging Python code, see [here](vscode_python.md).
 *   Opening files and searching solution-wide works well now after having
     problems in earlier versions.
 *   Building works well. Build tools are easy to integrate. Warnings and errors
     are displayed on a separate page and you can click to jump to the
     corresponding line of code.
+*   VSCode Remote, which allows you to edit remotely-hosted code, and even run
+    computationally expensive plugins like vscode-clangd on the remote
+    server/workstation (see the [Remote section](#Remote)). Great for working-
+    from-home. (Googlers: See [go/vscode-remote](http://go/vscode-remote)].)
 
 [TOC]
 
@@ -38,8 +43,8 @@ Here's what works well:
 Please keep this doc up-to-date. VS Code is still in active development and
 subject to changes. This doc is checked into the Chromium git repo, so if you
 make changes, read the [documentation
-guidelines](https://chromium.googlesource.com/chromium/src/+/master/docs/documentation_guidelines.md)
-and [submit a change list](https://www.chromium.org/developers/contributing-code).
+guidelines](documentation_guidelines.md)
+and [submit a change list](contributing.md).
 
 All file paths and commands have been tested on Linux. Windows and Mac might
 require a slightly different setup (e.g. `Ctrl` -> `Cmd`). Please update this
@@ -50,7 +55,7 @@ page accordingly.
 ### Installation
 
 Follow the steps on https://code.visualstudio.com/docs/setup/setup-overview. To
-run it on Linux, just navigate to `chromium/src` folder and type `code .` in a
+run it on Linux, just navigate to Chromium's `src` folder and type `code .` in a
 terminal. The argument to `code` is the base directory of the workspace. VS
 Code does not require project or solution files. However, it does store
 workspace settings in a `.vscode` folder in your base directory.
@@ -70,24 +75,6 @@ integration to work:
 }
 ```
 
-#### Rendering of underscore on Linux
-
-As mentioned in [#35901](https://github.com/Microsoft/vscode/issues/35901), VS
-Code will not show underscore (`_`) properly on Linux by default. You can work
-around this issue by forcing another font such as the default `monospace` or
-changing the font size in your settings:
-
-```json
-{
-  // If you want to use the default "monospace" font:
-  //"terminal.integrated.fontFamily": "monospace"
-  // If you would rather just increase the size of the font:
-  //"terminal.integrated.fontSize": 15
-  // If you would rather decrease the size of the font:
-  //"terminal.integrated.fontSize": 13
-}
-```
-
 ### Useful Extensions
 
 Up to now, you have a basic version of VS Code without much language support.
@@ -96,7 +83,9 @@ Next, we will install some useful extensions. Jump to the extensions window
 every day:
 
 *   ***C/C++*** -
-    Code formatting, debugging, Intellisense.
+    Code formatting, debugging, Intellisense. Enables the use of clang-format
+    (via the `C_Cpp.clang_format_path` setting) and format-on-save (via the
+    `editor.formatOnSave` setting).
 *   ***Python*** -
     Linting, intellisense, code formatting, refactoring, debugging, snippets.
 *   ***Toggle Header/Source*** -
@@ -105,27 +94,23 @@ every day:
     multiple files in the workspace that have the same name.
 *   ***Protobuf support*** -
     Syntax highlighting for .proto files.
-*   ***you-complete-me*** -
-    YouCompleteMe code completion for VS Code. It works fairly well in Chromium.
+*   [***Mojom IDL support***](https://github.com/GoogleChromeLabs/mojom-language-support) -
+    Syntax highlighting and a
+    [language server](https://microsoft.github.io/language-server-protocol/)
+    for .mojom files.
+*   ***vscode-clangd*** -
+    If you do not plan to use VSCode for debugging, vscode-clangd is a great
+    alternative to C/C++ IntelliSense. It knows about how to compile Chromium,
+    enabling it to provide smarter autocomplete than C/C++ IntelliSense as well
+    as allowing you to jump from functions to their definitions. See
+    [clangd.md](clangd.md) for setup instructions.
+    If you need to debug, enable C/C++ extension but set "C_Cpp: Intelli Sense Engine" to disabled,
+    and restart VSCode.
 *   ***Rewrap*** -
     Wrap lines at 80 characters with `Alt+Q`.
-
-To install You-Complete-Me, enter these commands in a terminal:
-
-```
-$ git clone https://github.com/Valloric/ycmd.git ~/.ycmd
-$ cd ~/.ycmd
-$ git submodule update --init --recursive
-$ ./build.py --clang-completer
-```
-If it fails with "Your C++ compiler does NOT fully support C++11." but you know
-you have a good compiler, hack cpp/CMakeLists.txt to set CPP11_AVAILABLE true.
-
-On Mac, replace the last command above with the following.
-
-```
-$ ./build.py --clang-completer --system-libclang
-```
+*   ***Remote*** -
+    Remotely connect to your workstation through SSH using your laptop. See the
+    [Remote](#Remote) section for more information about how to set this up.
 
 The following extensions might be useful for you as well:
 
@@ -134,36 +119,18 @@ The following extensions might be useful for you as well:
 *   ***Git History (git log)*** -
     Git history view.
 *   ***chromium-codesearch*** -
-    Code search (CS) integration, see [Chromium Code
-    Search](https://cs.chromium.org/), in particular *open current line in CS*,
-    *show references* and *go to definition*. Very useful for existing code. By
-    design, won't work for code not checked in yet. Overrides default C/C++
-    functionality. Had some issues last time I tried (extensions stopped
-    working), so use with care.
+    Mac and Linux only: adds ability to open the current line in [Chromium Code
+    Search](https://cs.chromium.org/). All other functionality is deprecated, so
+    currently only of limited usefulness.
 *   ***change-case*** -
     Quickly change the case of the current selection or current word.
 *   ***Instant Markdown*** -
     Instant markdown (.md) preview in your browser as you type. This document
     was written with this extension!
-*   ***Clang-Format*** -
-    Format your code using clang-format. The C/C++ extension already supports
-    format-on-save (see `C_Cpp.clang_format_formatOnSave` setting). This
-    extension adds the ability to format a document or the current selection on
-    demand.
-*   ***vscode-clangd*** -
-    If you do not plan to use VSCode for debugging, vscode-clangd is a great
-    alternative to C/C++ IntelliSense. It knows about how to compile Chromium,
-    enabling it to provide smarter autocomplete than C/C++ IntelliSense as well
-    as allowing you to jump from functions to their definitions. See
-    [clangd.md](clangd.md) for details.
-
-    If you need to debug, disable the vscode-clangd extension, enable C/C++
-    Intellisense, and restart VSCode.
-
 
 Also be sure to take a look at the
-[VS Code marketplace](https://marketplace.visualstudio.com/VSCode) to check out other
-useful extensions.
+[VS Code marketplace](https://marketplace.visualstudio.com/VSCode) to check out
+other useful extensions.
 
 ### Color Scheme
 Press `Ctrl+Shift+P, color, Enter` to pick a color scheme for the editor. There
@@ -177,7 +144,7 @@ marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=
 *   `Ctrl+K, Ctrl+S` opens the key bindings editor.
 *   ``Ctrl+` `` toggles the built-in terminal.
 *   `Ctrl+Shift+M` toggles the problems view (linter warnings, compile errors
-    and warnings). You'll swicth a lot between terminal and problem view during
+    and warnings). You'll switch a lot between terminal and problem view during
     compilation.
 *   `Alt+O` switches between the source/header file.
 *   `Ctrl+G` jumps to a line.
@@ -193,6 +160,67 @@ marketplace](https://marketplace.visualstudio.com/search?target=VSCode&category=
     current editor visible.
 *   `Ctrl+X` without anything selected cuts the current line. `Ctrl+V` pastes
     the line.
+
+### Java/Android Support
+
+*Before anything*, add these to your settings.json.
+```
+// LightWeight is the language support, the feature we care about. The other
+// modes include build functionality with Maven and Gradle. They try to build
+// on their own and end up showing thousands of errors.
+"java.server.launchMode": "LightWeight",
+// Avoids overwriting the custom .classpath file (c.f. next section).
+"java.configuration.updateBuildConfiguration": "disabled",
+```
+Then install the "Language Support for Java" extension. If you installed it
+before setting the configs above, uninstall, delete the <project> folder (c.f.
+next section) and reinstall. You also don't need any of the remaining extensions
+in "Extension Pack for Java".
+
+#### Setting up code completion/reference finding/etc.
+You'll need to generate a placeholder .classpath file and locate it. In order
+to generate it, right click on any Java source folder in the left panel and
+choose "Add folder to java source path". Its location will depend on whether
+you're doing local or remote development. Local path on linux will look
+something like:
+
+`~/.vscode/data/User/workspaceStorage/<hash>/redhat.java/jdt_ws/<project>/.classpath`
+
+You might find multiple folders when looking for `<project>`. Choose anything except
+`jdt.ls-java-project`. If you only see `jdt.ls-java-project`, try using the
+"Add folder to java source path" option again.
+
+If doing remote development, the file will be under `~/.vscode-server/` on your
+remote machine.
+
+You'll need to replace all of the contents of that file with the contents of
+`tools/android/eclipse/.classpath` (external) or
+`clank/development/ide/eclipse/.classpath` (generated by gclient runhooks for
+Chrome developers), and then replace some paths as vscode interprets some paths
+differently from eclipse.
+*   Replace: `kind="src" path="` with `kind="src" path="_/`
+    * eg. `<classpathentry kind="src" path="_/android_webview/glue/java/src"/>`
+*   Replace: `kind="lib" path="../src` with `kind="lib" path="_`
+    * eg.
+`<classpathentry kind="lib" path="_/out/Debug/lib.java/base/base_java.jar"/>`
+*   Remove all nested paths (or exclude them from their parents). At time of
+writing:
+    * `third_party/android_protobuf/src/java/src/main/java`
+    * `third_party/junit/src/src/main/java`
+
+Also, make sure
+`export ANDROID_HOME=/usr/local/google/home/{your_ldap}/Android/Sdk` is in the
+remote machine's `~/.bashrc`.
+
+Then restart vscode, open a Java file, and wait for a bit.
+
+Debugging tips:
+*   Right clicking on a folder in vscode and clicking "Add folder to java source
+path" will error if there are syntax problems with your classpath. (Don't use
+this actually add new paths to your classpath as it won't work correctly)
+    * If there are no syntax errors, ensure the correct .classpath file is being
+    used by seeing if the folder was actually added to the .classpath file you
+    edited.
 
 ## Setup For Chromium
 
@@ -213,13 +241,17 @@ $ mkdir .vscode/
 $ cp tools/vscode/settings.json5 .vscode/settings.json
 ```
 
+Note: these settings assume that the workspace folder (the root folder displayed
+in the Explorer tab) is Chromium's `src/` directory. If this is not the case,
+replace any references to ${workspaceFolder} with the path to your `src/`.
+
 ### Tasks
-Next, we'll tell VS Code how to compile our code and how to read warnings and
-errors from the build output. Open the file
-[//tools/vscode/tasks.json5](/tools/vscode/tasks.json5). This will provide 5
-tasks to do basic things. You might have to adjust the commands to your
-situation and needs. To use these settings wholesale, enter the following
-command into your terminal:
+Next, we'll tell VS Code how to compile our code, run tests, and to read
+warnings and errors from the build output. Open the file
+[//tools/vscode/tasks.json5](/tools/vscode/tasks.json5). This will provide tasks
+to do basic things. You might have to adjust the commands to your situation and
+needs. To use these settings wholesale, enter the following command into your
+terminal:
 ```
 $ cp tools/vscode/tasks.json5 .vscode/tasks.json
 ```
@@ -229,8 +261,9 @@ Launch commands are the equivalent of `F5` in Visual Studio: They launch some
 program or a debugger. Optionally, they can run some task defined in
 `tasks.json`. Launch commands can be run from the debug view (`Ctrl+Shift+D`).
 Open the file at [//tools/vscode/launch.json5](/tools/vscode/launch.json5) and
-adjust the example launch commands to your situation and needs. To use these
-settings wholesale, enter the following command into your terminal:
+adjust the example launch commands to your situation and needs (e.g., the value
+of "type" needs adjustment for Windows). To use these settings wholesale, enter
+the following command into your terminal:
 ```
 $ cp tools/vscode/launch.json5 .vscode/launch.json
 ```
@@ -261,6 +294,48 @@ wholesale, enter the following command into your terminal:
 ```
 $ cp tools/vscode/keybindings.json5 .vscode/keybindings.json
 ```
+
+### Remote
+VSCode now has a
+[Remote](https://code.visualstudio.com/docs/remote/remote-overview) framework
+that allows you to use VSCode on your laptop while your code is hosted
+elsewhere. This really shines when used in conjunction with the vscode-clangd plugin,
+which allows clangd to run remotely as well.
+
+To get this to run, install the Remote pack extension, and then make sure your
+ssh config file has your remote connection:
+
+`~/.ssh/config`:
+```
+Host my-connection
+  HostName my-remote-host.corp.company.com
+```
+
+VSCode will then list this connection in the 'Remote Explorer' section on the
+left. To launch VSCode with this connection, click on the '+window' icon next
+to the listed hostname. It has you choose a folder - use the 'src' folder root.
+This will open a new VSCode window in 'Remote' mode. ***Now you can install
+extensions specifically for your remote connection, like vscode-clangd, etc.***
+
+#### Chromebooks
+
+For Googlers, [here](http://go/vscode/remote_development_via_web) are
+Google-specific instructions for setting up remote development on chromebooks
+without using Crostini.
+
+#### Windows & SSH
+
+VSCode remote tools requires 'sshd' which isn't installed on Windows by default.
+
+For Googlers, sshd should already be installed on your workstation, and VSCode
+should work remotely if you followed the setup instructions at
+[go/building-chrome-win](http://go/building-chrome-win). If you are still having
+problems, please refer to
+[go/vscode-remote#windows](http://go/vscode-remote#windows).
+
+Non-Googlers may follow may follow Microsoft's instructions for
+[installing the OpenSSH server](https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse).
+VSCode should work remotely after following this step.
 
 ### Snippets
 There are some useful snippets provided in
@@ -319,13 +394,30 @@ Keyboard Shortcuts` and add `{ "key": "ctrl+r", "command":
 sufficient to press `Ctrl+R` and enter `<n>`.
 
 #### Working on Laptop
-Because autocomplete is provided by the You-Complete-Me extension, consider
-disabling C/C++ autocomplete and indexing to save battery. In addition, you
-might want to disable git status autorefresh as well.
+You might want to disable git status autorefresh to save battery.
 
 ```
 "git.autorefresh": false,
-"C_Cpp.autocomplete": "Disabled",
+```
+
+#### Editing in multiple Git repositories
+If you frequently work in multiple Git repositories that are part of the Chromium repository, you might find that the built-in tooling does not work as expected for files that exist below folders that are part of a `.gitignore` file checked in to Chromium.
+
+To work around this, you can add the directories you edit as separate `folders` entries in your workspace configuration, and ensure that the directories that are ignored in Chromium are listed **before** the Chromium `src` path.
+
+To edit this, go to `Settings` -> Select the `Workspace` tab, and choose to open as JSON (button in the top right), and configure `folders` like this (change paths to match your local setup and usage):
+
+```
+{
+  "folders": [
+    {
+      "path": "chromium/src/third_party/perfetto"
+    },
+    {
+      "path": "chromium/src"
+    }
+  ]
+}
 ```
 
 ### Unable to open $File resource is not available when debugging Chromium on Linux
@@ -333,6 +425,11 @@ Chromium [recently changed](https://docs.google.com/document/d/1OX4jY_bOCeNK7PNj
 the file path to be relative to the output dir. Check
 `gn args out/$dir --list` if `strip_absolute_paths_from_debug_symbols` is true (which is the default),
 set `cwd` to the output dir. otherwise, set `cwd` to `${workspaceRoot}`.
+
+### You-Complete-Me
+The You-Complete-Me VS Code extension is now
+[deprecated](https://github.com/richard1122/vscode-youcompleteme#deprecated)
+with a suggestion to use clangd.
 
 ### More
 More tips and tricks can be found

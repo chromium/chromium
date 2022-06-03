@@ -19,6 +19,7 @@
 #include "absl/base/config.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 static constexpr const char kExceptionMessage[] =
     "Failed generating seed-material for URBG.";
@@ -41,4 +42,5 @@ void ThrowSeedGenException() {
 }
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl

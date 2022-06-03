@@ -33,7 +33,7 @@ void LiveNodeListBase::InvalidateCacheForAttribute(
   if (IsLiveNodeListType(GetType()))
     To<LiveNodeList>(this)->InvalidateCacheForAttribute(attr_name);
   else
-    ToHTMLCollection(this)->InvalidateCacheForAttribute(attr_name);
+    To<HTMLCollection>(this)->InvalidateCacheForAttribute(attr_name);
 }
 
 ContainerNode& LiveNodeListBase::RootNode() const {

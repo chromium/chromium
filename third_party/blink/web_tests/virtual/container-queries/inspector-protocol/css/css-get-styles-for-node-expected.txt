@@ -1,0 +1,62 @@
+The test verifies functionality of protocol method CSS.getMatchedStylesForNode and CSS.getInlineStylesForNode.
+{
+    error : {
+        code : -32000
+        message : Node is not an Element
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32000
+        message : Node is not an Element
+    }
+    id : <number>
+    sessionId : <string>
+}
+Dumping inline style: 
+{
+    padding-top: 55px; @[0:0-0:18]
+    margin-top: 33px !important; @[0:19-0:47]
+    padding-top: 55px; @[undefined-undefined]
+    margin-top: 33px !important; @[undefined-undefined]
+}
+Dumping matched rules: 
+*#inspected* {    regular
+    margin-left: 10px !important; @[1:4-1:33]
+    margin-left: 10px !important; @[undefined-undefined]
+}
+*#inspected* {    regular
+    padding: 10px 20px 30px 40px; @[6:4-6:33]
+    padding-top: 50px; @[7:4-7:22]
+    padding-right: 20px; @[undefined-undefined]
+    padding-bottom: 30px; @[undefined-undefined]
+    padding-left: 40px; @[undefined-undefined]
+    padding-top: 50px; @[undefined-undefined]
+}
+@media (min-width: 1px)
+    *#inspected* {    regular
+        padding-left: 5px; @[12:8-12:26]
+        margin-left: 20px; @[13:8-13:26]
+        padding-left: 10px; @[14:8-14:27]
+        margin-top: 15px !important; @[15:8-15:36]
+        margin-left: 20px; @[undefined-undefined]
+        padding-left: 10px; @[undefined-undefined]
+        margin-top: 15px !important; @[undefined-undefined]
+    }
+@container (min-width: 50px)
+    *#inspected* {    regular
+        padding-right: 10px; @[26:8-26:28]
+        padding-right: 10px; @[undefined-undefined]
+    }
+Dumping inherited rules: 
+    padding-top: 20px; @[0:0-0:18]
+    padding-top: 20px; @[undefined-undefined]
+*#parent-div* {    regular
+    width: 100px; @[20:4-20:17]
+    contain: size layout style; @[21:4-21:31]
+    width: 100px; @[undefined-undefined]
+    contain: size layout style; @[undefined-undefined]
+}
+

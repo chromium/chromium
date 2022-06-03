@@ -1,7 +1,6 @@
 <link rel="import" href="../../html/polymer.html">
 
 <link rel="import" href="../../html/assert.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-a11y-announcer/iron-a11y-announcer.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 <link rel="import" href="../hidden_style_css.html">
 <link rel="import" href="../shared_style_css.html">
@@ -13,21 +12,24 @@
     <style include="cr-hidden-style cr-input-style cr-shared-style">
       /*
         A 'suffix' element will be outside the underlined space, while a
-        'prefix' element will be inside the underlined space by default.
+        'inline-prefix' and 'inline-suffix' elements will be inside the
+        underlined space by default.
 
         Regarding cr-input's width:
-        When there's no element in the 'prefix' or 'suffix' slot, setting
-        the width of cr-input as follows will work as expected:
+        When there's no element in the 'inline-prefix', 'inline-suffix' or
+        'suffix' slot, setting the width of cr-input as follows will work as
+        expected:
 
           cr-input {
             width: 200px;
           }
 
-        However, when there's an element in the 'suffix' and/or 'prefix'
-        slot, setting the 'width' will dictate the total width of the input
-        field *plus* the 'prefix' and 'suffix' elements. To set the width
-        of the input field + 'prefix' when a 'suffix' is present, use
-        --cr-input-width.
+        However, when there's an element in the 'suffix', 'inline-suffix' and/or
+        'inline-prefix' slot, setting the 'width' will dictate the total width
+        of the input field *plus* the 'inline-prefix', 'inline-suffix' and
+        'suffix' elements. To set the width of the input field +
+        'inline-prefix' + 'inline-suffix' when a 'suffix' is present,
+        use --cr-input-width.
 
           cr-input {
             --cr-input-width: 200px;
@@ -51,10 +53,11 @@
 
       #input {
         border-bottom: var(--cr-input-border-bottom, none);
+        letter-spacing: var(--cr-input-letter-spacing);
       }
 
       #input::placeholder {
-        color: var(--cr-input-placeholder-color);
+        color: var(--cr-input-placeholder-color, var(--cr-secondary-text-color));
         letter-spacing: var(--cr-input-placeholder-letter-spacing);
       }
 
@@ -63,7 +66,7 @@
       }
 
       :host([readonly]) #input {
-        opacity: 0.6;
+        opacity: var(--cr-input-readonly-opacity, 0.6);
       }
 
       :host([invalid]) #underline {
@@ -78,7 +81,12 @@
            form with cr-inputs that can be invalid, this space is also desired
            in order to have consistent spacing.
 
-           If spacing is not needed, apply "--cr-input-error-display: none". */
+           If spacing is not needed, apply "--cr-input-error-display: none".
+
+           When grouping cr-inputs horizontally, it might be helpful to set
+           --cr-input-error-white-space to "nowrap" and set a fixed width for
+           each cr-input so that a long error label does not shift the inputs
+           forward. */
         color: var(--cr-input-error-color);
         display: var(--cr-input-error-display, block);
         font-size: var(--cr-form-field-label-font-size);
@@ -86,6 +94,7 @@
         line-height: var(--cr-form-field-label-line-height);
         margin: 8px 0;
         visibility: hidden;
+        white-space: var(--cr-input-error-white-space);
       }
 
       :host([invalid]) #error {
@@ -103,7 +112,7 @@
       }
 
       #input[type='search']::-webkit-search-cancel-button {
-        -webkit-appearance: none;
+        display: none;
       }
 
       :host-context([dir=rtl]) #input[type=url] {
@@ -121,7 +130,7 @@
     <div id="row-container" part="row-container">
       <div id="input-container">
         <div id="inner-input-container">
-          <slot name="prefix"></slot>
+          <slot name="inline-prefix"></slot>
           <!-- Only attributes that are named inconsistently between html and js
               need to use attr$="", such as |tabindex| vs .tabIndex and
               |readonly| vs .readOnly. -->
@@ -129,24 +138,21 @@
               value="{{value::input}}" tabindex$="[[tabindex]]" type="[[type]]"
               readonly$="[[readonly]]" maxlength$="[[maxlength]]"
               pattern$="[[pattern]]" required="[[required]]"
-              minlength$="[[minlength]]"
+              minlength$="[[minlength]]" inputmode$="[[inputmode]]"
+              aria-description$="[[ariaDescription]]"
               aria-label$="[[getAriaLabel_(ariaLabel, label, placeholder)]]"
               aria-invalid$="[[getAriaInvalid_(invalid)]]"
               max="[[max]]" min="[[min]]" on-focus="onInputFocus_"
               on-blur="onInputBlur_" on-change="onInputChange_"
-              on-keydown="onInputKeydown_" part="input">
+              on-keydown="onInputKeydown_" part="input"
+              autocomplete="off">
+          <slot name="inline-suffix"></slot>
         </div>
         <div id="underline"></div>
       </div>
       <slot name="suffix"></slot>
     </div>
-    <!--
-      Note: role="alert" is not working as expected because screen readers
-      expect live regions to be in the DOM at time of document loading.
-      cr-input will automatically fire iron-announce for the error message.
-      Also aria-hidden="true" to avoid noise for screen reader users.
-    -->
-    <div id="error" aria-hidden="true">[[errorMessage]]</div>
+    <div id="error" aria-live="assertive">[[displayErrorMessage_]]</div>
   </template>
   <script src="cr_input.js"></script>
 </dom-module>

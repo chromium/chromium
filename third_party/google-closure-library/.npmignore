@@ -1,0 +1,13 @@
+*.html
+*_test.*
+*_perf.js
+.*
+/*.js
+/*.json
+/closure/goog/demos/
+/closure/goog/deps_with_tests.js
+/closure/goog/promise/testsuiteadapter.js
+/closure-deps/
+/doc
+/scripts
+testdata

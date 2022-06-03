@@ -1,0 +1,28 @@
+<style include="settings-shared cr-shared-style iron-flex">
+  :host {
+    display: block;
+  }
+
+  paper-spinner-lite {
+    display: block;
+    height: 28px;
+    margin: 150px auto;
+    width: 28px;
+  }
+
+  iron-list > :focus {
+    background-color: var(--cr-focused-item-color);
+  }
+</style>
+<paper-spinner-lite active="[[!albums]]" hidden="[[albums]]">
+</paper-spinner-lite>
+
+<iron-list scroll-target="[[subpageScrollTarget]]"
+  grid items="{{albums}}">
+  <template>
+    <album-item album="{{item}}" checked="{{item.checked}}"
+        topic-source="[[topicSource]]" tabindex$="[[tabIndex]]"
+        role="checkbox">
+    </album-item>
+  </template>
+</iron-list>

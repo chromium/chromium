@@ -134,8 +134,16 @@ enum MetricEnrollment {
   kMetricEnrollmentRegisterConsumerAccountWithPackagedLicense = 58,
   // Device was not pre-provisioned for Zero-Touch.
   kMetricEnrollmentDeviceNotPreProvisioned = 59,
+  // Enrollment failed: Enterprise account is not eligible to enroll.
+  kMetricEnrollmentRegisterEnterpriseAccountIsNotEligibleToEnroll = 60,
+  // Enrollment failed: Enterprise TOS has not been accepted.
+  kMetricEnrollmentRegisterEnterpriseTosHasNotBeenAccepted = 61,
+  // Too many requests are uploadede within a short time.
+  kMetricEnrollmentTooManyRequests = 62,
+  // Enrollment failed: illegal account for packaged EDU license.
+  kMetricEnrollmentIllegalAccountForPackagedEDULicense = 63,
   // Max value for use with enumeration histogram UMA functions.
-  kMaxValue = kMetricEnrollmentDeviceNotPreProvisioned
+  kMaxValue = kMetricEnrollmentIllegalAccountForPackagedEDULicense
 };
 
 // Events related to policy refresh.
@@ -183,50 +191,93 @@ enum PolicyInvalidationType {
   POLICY_INVALIDATION_TYPE_SIZE  // Must be the last.
 };
 
-#if defined(OS_CHROMEOS)
-// Events related to Chrome OS user policy which cause session abort.
-// This enum is used to define the buckets for an enumerated UMA histogram.
-// Hence,
-//   (a) existing enumerated constants should never be deleted or reordered, and
-//   (b) new constants should only be appended at the end of the enumeration
-//       (update tools/metrics/histograms/enums.xml as well).
-enum class MetricUserPolicyChromeOSSessionAbortType {
-  // Abort of asynchronous user policy initialization when the user is managed
-  // with the Google cloud management.
-  kInitWithGoogleCloudManagement = 0,
-  // Abort of asynchronous user policy initialization when the user is managed
-  // with the Active Directory management.
-  kInitWithActiveDirectoryManagement = 1,
-  // Abort of blocking (synchronous) user policy initialization when the user is
-  // managed with the Google cloud management.
-  kBlockingInitWithGoogleCloudManagement = 2,
-  // Abort of blocking (synchronous) user policy initialization when the user is
-  // managed with the Active Directory management.
-  kBlockingInitWithActiveDirectoryManagement = 3,
-
-  kCount,  // Must be the last.
+// Result of the Device ID field validation in policy protobufs.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class PolicyDeviceIdValidity {
+  kValid = 0,
+  kActualIdUnknown = 1,
+  kMissing = 2,
+  kInvalid = 3,
+  kMaxValue = kInvalid,  // Must be the last.
 };
-#endif  // defined(OS_CHROMEOS)
 
 // Names for the UMA counters. They are shared from here since the events
 // from the same enum above can be triggered in different files, and must use
 // the same UMA histogram name.
+// Metrics name from UMA dashboard cloud be used in codesearch as is, so please
+// keep the names without format specifiers (e.g. %s) or add a comment how the
+// name could be expanded.
 POLICY_EXPORT extern const char kMetricUserPolicyRefresh[];
 POLICY_EXPORT extern const char kMetricUserPolicyRefreshFcm[];
-POLICY_EXPORT extern const char kMetricUserPolicyRefreshTicl[];
 POLICY_EXPORT extern const char kMetricUserPolicyInvalidations[];
 POLICY_EXPORT extern const char kMetricUserPolicyInvalidationsFcm[];
-POLICY_EXPORT extern const char kMetricUserPolicyInvalidationsTicl[];
-POLICY_EXPORT extern const char kMetricUserPolicyChromeOSSessionAbort[];
+
 POLICY_EXPORT extern const char kMetricDevicePolicyRefresh[];
 POLICY_EXPORT extern const char kMetricDevicePolicyRefreshFcm[];
-POLICY_EXPORT extern const char kMetricDevicePolicyRefreshTicl[];
 POLICY_EXPORT extern const char kMetricDevicePolicyInvalidations[];
 POLICY_EXPORT extern const char kMetricDevicePolicyInvalidationsFcm[];
-POLICY_EXPORT extern const char kMetricDevicePolicyInvalidationsTicl[];
+
+POLICY_EXPORT extern const char kMetricDeviceLocalAccountPolicyRefresh[];
+POLICY_EXPORT extern const char kMetricDeviceLocalAccountPolicyRefreshFcm[];
+POLICY_EXPORT extern const char kMetricDeviceLocalAccountPolicyInvalidations[];
+POLICY_EXPORT extern const char
+    kMetricDeviceLocalAccountPolicyInvalidationsFcm[];
+
+POLICY_EXPORT extern const char kMetricCBCMPolicyRefresh[];
+POLICY_EXPORT extern const char kMetricCBCMPolicyRefreshFcm[];
+POLICY_EXPORT extern const char kMetricCBCMPolicyInvalidations[];
+POLICY_EXPORT extern const char kMetricCBCMPolicyInvalidationsFcm[];
+
 POLICY_EXPORT extern const char kMetricPolicyInvalidationRegistration[];
 POLICY_EXPORT extern const char kMetricPolicyInvalidationRegistrationFcm[];
-POLICY_EXPORT extern const char kMetricPolicyInvalidationRegistrationTicl[];
+
+POLICY_EXPORT extern const char kMetricUserRemoteCommandInvalidations[];
+POLICY_EXPORT extern const char kMetricDeviceRemoteCommandInvalidations[];
+POLICY_EXPORT extern const char kMetricCBCMRemoteCommandInvalidations[];
+
+POLICY_EXPORT extern const char
+    kMetricRemoteCommandInvalidationsRegistrationResult[];
+
+POLICY_EXPORT extern const char kMetricUserRemoteCommandReceived[];
+POLICY_EXPORT extern const char kMetricUserUnsignedRemoteCommandReceived[];
+POLICY_EXPORT extern const char kMetricUserRemoteCommandExecutedTemplate[];
+POLICY_EXPORT extern const char
+    kMetricUserUnsignedRemoteCommandExecutedTemplate[];
+
+POLICY_EXPORT extern const char kMetricDeviceRemoteCommandReceived[];
+POLICY_EXPORT extern const char kMetricDeviceUnsignedRemoteCommandReceived[];
+POLICY_EXPORT extern const char kMetricDeviceRemoteCommandExecutedTemplate[];
+POLICY_EXPORT extern const char
+    kMetricDeviceUnsignedRemoteCommandExecutedTemplate[];
+
+POLICY_EXPORT extern const char kMetricCBCMRemoteCommandReceived[];
+POLICY_EXPORT extern const char kMetricCBCMUnsignedRemoteCommandReceived[];
+POLICY_EXPORT extern const char kMetricCBCMRemoteCommandExecutedTemplate[];
+POLICY_EXPORT extern const char
+    kMetricCBCMUnsignedRemoteCommandExecutedTemplate[];
+
+// Private set membership UMA histogram names.
+POLICY_EXPORT extern const char kUMAPsmSuccessTime[];
+POLICY_EXPORT extern const char kUMAPsmResult[];
+POLICY_EXPORT extern const char kUMAPsmNetworkErrorCode[];
+POLICY_EXPORT extern const char kUMAPsmDmServerRequestStatus[];
+
+// DeviceAutoEnrollmentRequest i.e. hash dance request UMA histogram names.
+POLICY_EXPORT extern const char kUMAHashDanceSuccessTime[];
+// The following histogram names where added before PSM (private set membership)
+// existed. They are only recorded for hash dance.
+POLICY_EXPORT extern const char kUMAHashDanceProtocolTime[];
+POLICY_EXPORT extern const char kUMAHashDanceBucketDownloadTime[];
+POLICY_EXPORT extern const char kUMAHashDanceExtraTime[];
+POLICY_EXPORT extern const char kUMAHashDanceRequestStatus[];
+POLICY_EXPORT extern const char kUMAHashDanceNetworkErrorCode[];
+
+// The following UMA suffixes are used by Hash dance and PSM protocols.
+// Suffix for initial enrollment.
+POLICY_EXPORT extern const char kUMASuffixInitialEnrollment[];
+// Suffix for Forced Re-Enrollment.
+POLICY_EXPORT extern const char kUMASuffixFRE[];
 
 }  // namespace policy
 

@@ -13,8 +13,9 @@
 namespace content {
 
 // Called near the beginning of startup to register URL schemes that should be
-// parsed as "standard" or "referrer" with the src/url/ library. The embedder
-// can add additional schemes by overriding the AddAdditionalSchemes method.
+// parsed as "standard" or "referrer" with the src/url/ library, then locks the
+// sets of schemes down. The embedder can add additional schemes by
+// overriding the ContentClient::AddAdditionalSchemes method.
 CONTENT_EXPORT void RegisterContentSchemes();
 
 // Re-initializes schemes for tests.

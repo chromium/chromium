@@ -1,0 +1,15 @@
+include_rules = [
+  "+components/google/core/common",
+  "+mojo/public/cpp/bindings",
+  "+mojo/public/cpp/system",
+  "+net",
+  "+services/network/public",
+  "+third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h",
+]
+
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+services/network/test",
+    "+mojo/core/embedder/embedder.h",
+  ],
+}

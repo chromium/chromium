@@ -52,7 +52,7 @@ class CORE_EXPORT CSSShadowValue : public CSSValue {
   Member<CSSIdentifierValue> style;
   Member<CSSValue> color;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 };
 
 template <>
@@ -62,4 +62,4 @@ struct DowncastTraits<CSSShadowValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_SHADOW_VALUE_H_

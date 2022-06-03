@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Accessibility"
+}
+team_email: "chromium-accessibility@chromium.org"

@@ -61,6 +61,7 @@
 
 <script src="../resources/testharness.js"></script>
 <script src="../resources/testharnessreport.js"></script>
+<script src='../resources/gesture-util.js'></script>
 
 <script>
   var rootScroller = document.querySelector('#rootscroller');
@@ -73,39 +74,35 @@
   var x = dialogRect.left + dialogRect.width / 2;
   var y = dialogRect.top + dialogRect.height / 2;
 
-  test(function() {
-      if (!window.eventSender)
-          return;
+  promise_test(async () => {
 
-          // Sanity check - there should be no initial scroll.
-          assert_equals(dialog.scrollLeft, 0);
-          assert_equals(dialog.scrollTop, 0);
-          assert_equals(rootscroller.scrollLeft, 0);
-          assert_equals(rootscroller.scrollTop, 0);
+      // Sanity check - there should be no initial scroll.
+      assert_equals(dialog.scrollLeft, 0);
+      assert_equals(dialog.scrollTop, 0);
+      assert_equals(rootscroller.scrollLeft, 0);
+      assert_equals(rootscroller.scrollTop, 0);
 
-          // This scroll should fully scroll the dialog
-          eventSender.gestureScrollBegin(x, y);
-          eventSender.gestureScrollUpdate(-3000, 0);
-          eventSender.gestureScrollUpdate(0, -3000);
-          eventSender.gestureScrollEnd(0, 0);
+      // This scroll should fully scroll the dialog
+      await smoothScrollWithXY(3000, 3000, x, y, GestureSourceType.TOUCH_INPUT, SPEED_INSTANT);
 
-          assert_equals(dialog.scrollLeft, dialog.scrollWidth - dialog.clientWidth);
-          assert_equals(dialog.scrollTop, dialog.scrollHeight - dialog.clientHeight);
-          assert_equals(rootscroller.scrollLeft, 0);
-          assert_equals(rootscroller.scrollTop, 0);
+      await waitFor( () => { return dialog.scrollLeft == dialog.scrollWidth - dialog.clientWidth; } );
 
-          // This scroll would normally chain up to the viewport but the "real"
-          // viewport has no scrolling. Make sure we don't scroll the
-          // document.rootScroller.
-          eventSender.gestureScrollBegin(x, y);
-          eventSender.gestureScrollUpdate(-3000, 0);
-          eventSender.gestureScrollUpdate(0, -3000);
-          eventSender.gestureScrollEnd(0, 0);
+      assert_equals(dialog.scrollLeft, dialog.scrollWidth - dialog.clientWidth);
+      assert_equals(dialog.scrollTop, dialog.scrollHeight - dialog.clientHeight);
+      assert_equals(rootscroller.scrollLeft, 0);
+      assert_equals(rootscroller.scrollTop, 0);
 
-          assert_equals(dialog.scrollLeft, dialog.scrollWidth - dialog.clientWidth);
-          assert_equals(dialog.scrollTop, dialog.scrollHeight - dialog.clientHeight);
-          assert_equals(rootscroller.scrollLeft, 0);
-          assert_equals(rootscroller.scrollTop, 0);
+      // This scroll would normally chain up to the viewport but the "real"
+      // viewport has no scrolling. Make sure we don't scroll the
+      // document.rootScroller.
+      await smoothScrollWithXY(3000, 3000, x, y, GestureSourceType.TOUCH_INPUT, SPEED_INSTANT);
+
+      await waitFor( () => { return dialog.scrollLeft == dialog.scrollWidth - dialog.clientWidth; } );
+
+      assert_equals(dialog.scrollLeft, dialog.scrollWidth - dialog.clientWidth);
+      assert_equals(dialog.scrollTop, dialog.scrollHeight - dialog.clientHeight);
+      assert_equals(rootscroller.scrollLeft, 0);
+      assert_equals(rootscroller.scrollTop, 0);
 
   }, 'Scrolls on the dialog should not chain to the sibling root scroller.');
 </script>

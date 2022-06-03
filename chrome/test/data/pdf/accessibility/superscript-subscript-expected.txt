@@ -6,3 +6,4 @@ simulated subscript.
 ¶
 This is some textabcdef with both
 superscript and subscript.
+¶

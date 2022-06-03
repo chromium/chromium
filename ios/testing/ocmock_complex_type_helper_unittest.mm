@@ -4,7 +4,6 @@
 
 #import "ios/testing/ocmock_complex_type_helper.h"
 
-#include "base/logging.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"

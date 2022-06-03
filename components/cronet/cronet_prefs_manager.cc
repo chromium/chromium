@@ -70,9 +70,9 @@ void InitializeStorageDirectory(const base::FilePath& dir) {
     return;
   }
   // Delete old directory recursively and create a new directory.
-  // base::DeleteFileRecursively() returns true if the directory does not exist,
+  // base::DeletePathRecursively() returns true if the directory does not exist,
   // so it is fine if there is nothing on disk.
-  if (!(base::DeleteFileRecursively(dir) && base::CreateDirectory(dir))) {
+  if (!(base::DeletePathRecursively(dir) && base::CreateDirectory(dir))) {
     DLOG(WARNING) << "Cannot purge directory.";
     return;
   }
@@ -107,14 +107,17 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
     pref_change_registrar_.Init(pref_service_);
   }
 
+  PrefServiceAdapter(const PrefServiceAdapter&) = delete;
+  PrefServiceAdapter& operator=(const PrefServiceAdapter&) = delete;
+
   ~PrefServiceAdapter() override {}
 
   // PrefDelegate implementation.
-  const base::DictionaryValue* GetServerProperties() const override {
-    return pref_service_->GetDictionary(path_);
+  const base::Value* GetServerProperties() const override {
+    return pref_service_->Get(path_);
   }
 
-  void SetServerProperties(const base::DictionaryValue& value,
+  void SetServerProperties(const base::Value& value,
                            base::OnceClosure callback) override {
     pref_service_->Set(path_, value);
     if (callback)
@@ -132,8 +135,6 @@ class PrefServiceAdapter : public net::HttpServerProperties::PrefDelegate {
   PrefService* pref_service_;
   const std::string path_;
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(PrefServiceAdapter);
 };  // class PrefServiceAdapter
 
 class NetworkQualitiesPrefDelegateImpl
@@ -144,6 +145,11 @@ class NetworkQualitiesPrefDelegateImpl
       : pref_service_(pref_service), lossy_prefs_writing_task_posted_(false) {
     DCHECK(pref_service_);
   }
+
+  NetworkQualitiesPrefDelegateImpl(const NetworkQualitiesPrefDelegateImpl&) =
+      delete;
+  NetworkQualitiesPrefDelegateImpl& operator=(
+      const NetworkQualitiesPrefDelegateImpl&) = delete;
 
   ~NetworkQualitiesPrefDelegateImpl() override {}
 
@@ -169,7 +175,7 @@ class NetworkQualitiesPrefDelegateImpl
         base::BindOnce(
             &NetworkQualitiesPrefDelegateImpl::SchedulePendingLossyWrites,
             weak_ptr_factory_.GetWeakPtr()),
-        base::TimeDelta::FromSeconds(kUpdatePrefsDelaySeconds));
+        base::Seconds(kUpdatePrefsDelaySeconds));
   }
   std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -197,8 +203,6 @@ class NetworkQualitiesPrefDelegateImpl
 
   base::WeakPtrFactory<NetworkQualitiesPrefDelegateImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesPrefDelegateImpl);
 };
 
 }  // namespace
@@ -282,8 +286,7 @@ void CronetPrefsManager::SetupHostCachePersistence(
   host_cache_persistence_manager_ =
       std::make_unique<HostCachePersistenceManager>(
           host_cache, pref_service_.get(), kHostCachePref,
-          base::TimeDelta::FromMilliseconds(host_cache_persistence_delay_ms),
-          net_log);
+          base::Milliseconds(host_cache_persistence_delay_ms), net_log);
 }
 
 void CronetPrefsManager::PrepareForShutdown() {

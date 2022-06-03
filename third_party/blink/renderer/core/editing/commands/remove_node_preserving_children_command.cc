@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -65,7 +64,7 @@ void RemoveNodePreservingChildrenCommand::DoApply(EditingState* editing_state) {
   RemoveNode(node_, editing_state, should_assume_content_is_always_editable_);
 }
 
-void RemoveNodePreservingChildrenCommand::Trace(Visitor* visitor) {
+void RemoveNodePreservingChildrenCommand::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
   CompositeEditCommand::Trace(visitor);
 }

@@ -19,6 +19,12 @@ CONTENT_EXPORT webrtc::DesktopCaptureOptions CreateDesktopCaptureOptions();
 CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateScreenCapturer();
 CONTENT_EXPORT std::unique_ptr<webrtc::DesktopCapturer> CreateWindowCapturer();
 
+// Returns whether we can use PipeWire capturer based on:
+// 1) We run Linux Wayland session
+// 2) WebRTC is built with PipeWire enabled
+// 3) Chromium has features::kWebRtcPipeWireCapturer enabled
+CONTENT_EXPORT bool CanUsePipeWire();
+
 }  // namespace desktop_capture
 }  // namespace content
 

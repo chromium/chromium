@@ -9,11 +9,21 @@
 
 #include <memory>
 
+#include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#import "base/test/ios/wait_util.h"
+#include "base/test/task_environment.h"
 #import "components/open_from_clipboard/clipboard_recent_content_impl_ios.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+using base::test::ios::WaitUntilConditionOrTimeout;
+using base::test::ios::kWaitForCookiesTimeout;
 
 namespace {
 
@@ -97,76 +107,112 @@ class ClipboardRecentContentIOSTest : public ::testing::Test {
  protected:
   ClipboardRecentContentIOSTest() {
     // By default, set that the device booted 10 days ago.
-    ResetClipboardRecentContent(kAppSpecificScheme,
-                                base::TimeDelta::FromDays(10));
+    ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
   }
 
   void SimulateDeviceRestart() {
-    ResetClipboardRecentContent(kAppSpecificScheme,
-                                base::TimeDelta::FromSeconds(0));
+    ResetClipboardRecentContent(kAppSpecificScheme, base::Seconds(0));
   }
 
   void ResetClipboardRecentContent(const std::string& application_scheme,
                                    base::TimeDelta time_delta) {
-    clipboard_content_implementation_ =
-        [[ClipboardRecentContentImplIOSWithFakeUptime alloc]
-               initWithMaxAge:kMaxAge
-            authorizedSchemes:@[
-              base::SysUTF8ToNSString(kRecognizedScheme),
-              base::SysUTF8ToNSString(application_scheme)
-            ]
-                 userDefaults:[NSUserDefaults standardUserDefaults]
-                       uptime:time_delta.InSecondsF()];
+    ClipboardRecentContentImplIOSWithFakeUptime*
+        clipboard_content_implementation =
+            [[ClipboardRecentContentImplIOSWithFakeUptime alloc]
+                   initWithMaxAge:kMaxAge
+                authorizedSchemes:@[
+                  base::SysUTF8ToNSString(kRecognizedScheme),
+                  base::SysUTF8ToNSString(application_scheme)
+                ]
+                     userDefaults:[NSUserDefaults standardUserDefaults]
+                           uptime:time_delta.InSecondsF()];
 
     clipboard_content_ =
         std::make_unique<ClipboardRecentContentIOSWithFakeUptime>(
-            clipboard_content_implementation_);
+            clipboard_content_implementation);
+
+    // Keep a weak pointer to the ClipboardRecentContentImplIOS to allow
+    // updating the fake pasteboard change date.
+    clipboard_content_implementation_ = clipboard_content_implementation;
   }
 
   void SetStoredPasteboardChangeDate(NSDate* change_date) {
-    clipboard_content_implementation_.lastPasteboardChangeDate =
-        [change_date copy];
+    clipboard_content_implementation_.lastPasteboardChangeDate = change_date;
     [clipboard_content_implementation_ saveToUserDefaults];
   }
 
  protected:
   std::unique_ptr<ClipboardRecentContentIOSWithFakeUptime> clipboard_content_;
-  ClipboardRecentContentImplIOSWithFakeUptime*
+  __weak ClipboardRecentContentImplIOSWithFakeUptime*
       clipboard_content_implementation_;
 
+  base::test::TaskEnvironment task_environment_;
+
+  void VerifyClipboardTypeExists(ClipboardContentType type, bool exists) {
+    __block BOOL callback_called = NO;
+    __block BOOL type_exists = NO;
+    std::set<ClipboardContentType> types;
+    types.insert(type);
+    clipboard_content_->HasRecentContentFromClipboard(
+        types, base::BindOnce(^(std::set<ClipboardContentType> found_types) {
+          callback_called = YES;
+          type_exists = found_types.find(type) != found_types.end();
+        }));
+
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
+      base::RunLoop().RunUntilIdle();
+      return callback_called;
+    }));
+    EXPECT_EQ(exists, type_exists);
+  }
+
   void VerifyClipboardURLExists(const char* expected_url) {
-    base::Optional<GURL> optional_gurl =
-        clipboard_content_->GetRecentURLFromClipboard();
+    VerifyClipboardTypeExists(ClipboardContentType::URL, true);
+
+    __block BOOL callback_called = NO;
+    __block absl::optional<GURL> optional_gurl;
+    clipboard_content_->GetRecentURLFromClipboard(
+        base::BindOnce(^(absl::optional<GURL> copied_url) {
+          optional_gurl = copied_url;
+          callback_called = YES;
+        }));
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
+      base::RunLoop().RunUntilIdle();
+      return callback_called;
+    }));
     ASSERT_TRUE(optional_gurl.has_value());
     EXPECT_STREQ(expected_url, optional_gurl.value().spec().c_str());
   }
 
-  void VerifyClipboardURLDoesNotExist() {
-    EXPECT_FALSE(clipboard_content_->GetRecentURLFromClipboard().has_value());
-  }
+  void VerifiyClipboardURLIsInvalid() {
+    // On iOS 13, the url can be instantly read and marked as "does not exist".
+    // On iOS 14, the URL will appear as "exists" until it is actually checked.
+    if (@available(iOS 14, *)) {
+      VerifyClipboardTypeExists(ClipboardContentType::URL, true);
+    } else {
+      VerifyClipboardTypeExists(ClipboardContentType::URL, false);
+      return;
+    }
 
-  void VerifyClipboardTextExists(const char* expected_text) {
-    base::Optional<base::string16> optional_text =
-        clipboard_content_->GetRecentTextFromClipboard();
-    ASSERT_TRUE(optional_text.has_value());
-    EXPECT_STREQ(expected_text,
-                 base::UTF16ToUTF8(optional_text.value()).c_str());
-  }
-
-  void VerifyClipboardTextDoesNotExist() {
-    EXPECT_FALSE(clipboard_content_->GetRecentTextFromClipboard().has_value());
-  }
-
-  void VerifyIfClipboardImageExists(bool exists) {
-    EXPECT_EQ(clipboard_content_->GetRecentImageFromClipboard().has_value(),
-              exists);
+    __block BOOL callback_called = NO;
+    __block absl::optional<GURL> optional_gurl;
+    clipboard_content_->GetRecentURLFromClipboard(
+        base::BindOnce(^(absl::optional<GURL> copied_url) {
+          optional_gurl = copied_url;
+          callback_called = YES;
+        }));
+    EXPECT_TRUE(WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
+      base::RunLoop().RunUntilIdle();
+      return callback_called;
+    }));
+    EXPECT_FALSE(optional_gurl.has_value());
   }
 };
 
 TEST_F(ClipboardRecentContentIOSTest, SchemeFiltering) {
   // Test unrecognized URL.
   SetPasteboardContent(kUnrecognizedURL);
-  VerifyClipboardURLDoesNotExist();
+  VerifiyClipboardURLIsInvalid();
 
   // Test recognized URL.
   SetPasteboardContent(kRecognizedURL);
@@ -177,10 +223,10 @@ TEST_F(ClipboardRecentContentIOSTest, SchemeFiltering) {
   VerifyClipboardURLExists(kAppSpecificURL);
 
   // Test URL without app specific scheme.
-  ResetClipboardRecentContent(std::string(), base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(std::string(), base::Days(10));
 
   SetPasteboardContent(kAppSpecificURL);
-  VerifyClipboardURLDoesNotExist();
+  VerifiyClipboardURLIsInvalid();
 }
 
 TEST_F(ClipboardRecentContentIOSTest, PasteboardURLObsolescence) {
@@ -188,95 +234,100 @@ TEST_F(ClipboardRecentContentIOSTest, PasteboardURLObsolescence) {
 
   // Test that recent pasteboard data is provided.
   VerifyClipboardURLExists(kRecognizedURL);
-  VerifyClipboardTextExists(kRecognizedURL);
 
   // Test that old pasteboard data is not provided.
   SetStoredPasteboardChangeDate(
       [NSDate dateWithTimeIntervalSinceNow:-kLongerThanMaxAge]);
-  VerifyClipboardURLDoesNotExist();
-  VerifyClipboardTextDoesNotExist();
+
+  VerifyClipboardTypeExists(ClipboardContentType::URL, false);
+  VerifyClipboardTypeExists(ClipboardContentType::Text, false);
 
   // Tests that if chrome is relaunched, old pasteboard data is still
   // not provided.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
-  VerifyClipboardURLDoesNotExist();
-  VerifyClipboardTextDoesNotExist();
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
+  VerifyClipboardTypeExists(ClipboardContentType::URL, false);
+  VerifyClipboardTypeExists(ClipboardContentType::Text, false);
 
   SimulateDeviceRestart();
   // Tests that if the device is restarted, old pasteboard data is still
   // not provided.
-  VerifyClipboardURLDoesNotExist();
-  VerifyClipboardTextDoesNotExist();
+  VerifyClipboardTypeExists(ClipboardContentType::URL, false);
+  VerifyClipboardTypeExists(ClipboardContentType::Text, false);
+}
+
+// Checks that if the pasteboard is marked as having confidential data, it is
+// not returned.
+TEST_F(ClipboardRecentContentIOSTest, ConfidentialPasteboardText) {
+  [[UIPasteboard generalPasteboard]
+      setItems:@[ @{
+        @"public.plain-text" : @"hunter2",
+        @"org.nspasteboard.ConcealedType" : @"hunter2"
+      } ]
+       options:@{}];
+
+  VerifyClipboardTypeExists(ClipboardContentType::Text, false);
 }
 
 // Checks that if the user suppresses content, no text will be returned,
 // and if the text changes, the new text will be returned again.
-TEST_F(ClipboardRecentContentIOSTest, SupressedPasteboardText) {
+TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardContent) {
   SetPasteboardContent(kRecognizedURL);
 
   // Test that recent pasteboard data is provided.
   VerifyClipboardURLExists(kRecognizedURL);
-  VerifyClipboardTextExists(kRecognizedURL);
 
   // Suppress the content of the pasteboard.
   clipboard_content_->SuppressClipboardContent();
 
   // Check that the pasteboard content is suppressed.
-  VerifyClipboardURLDoesNotExist();
-  VerifyClipboardTextDoesNotExist();
+  VerifyClipboardTypeExists(ClipboardContentType::URL, false);
 
   // Create a new clipboard content to test persistence.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
 
   // Check that the pasteboard content is still suppressed.
-  VerifyClipboardURLDoesNotExist();
-  VerifyClipboardTextDoesNotExist();
+  VerifyClipboardTypeExists(ClipboardContentType::URL, false);
 
   // Check that even if the device is restarted, pasteboard content is
   // still suppressed.
   SimulateDeviceRestart();
-  VerifyClipboardURLDoesNotExist();
-  VerifyClipboardTextDoesNotExist();
+  VerifyClipboardTypeExists(ClipboardContentType::URL, false);
 
   // Check that if the pasteboard changes, the new content is not
-  // supressed anymore.
+  // suppressed anymore.
   SetPasteboardContent(kRecognizedURL2);
   VerifyClipboardURLExists(kRecognizedURL2);
-  VerifyClipboardTextExists(kRecognizedURL2);
 }
 
 // Checks that if the user suppresses content, no image will be returned,
 // and if the image changes, the new image will be returned again.
-TEST_F(ClipboardRecentContentIOSTest, SupressedPasteboardImage) {
+TEST_F(ClipboardRecentContentIOSTest, SuppressedPasteboardImage) {
   SetPasteboardImage(TestUIImage());
 
   // Test that recent pasteboard data is provided.
-  VerifyIfClipboardImageExists(true);
+  VerifyClipboardTypeExists(ClipboardContentType::Image, true);
 
   // Suppress the content of the pasteboard.
   clipboard_content_->SuppressClipboardContent();
 
   // Check that the pasteboard content is suppressed.
-  VerifyIfClipboardImageExists(false);
+  VerifyClipboardTypeExists(ClipboardContentType::Image, false);
 
   // Create a new clipboard content to test persistence.
-  ResetClipboardRecentContent(kAppSpecificScheme,
-                              base::TimeDelta::FromDays(10));
+  ResetClipboardRecentContent(kAppSpecificScheme, base::Days(10));
 
   // Check that the pasteboard content is still suppressed.
-  VerifyIfClipboardImageExists(false);
+  VerifyClipboardTypeExists(ClipboardContentType::Image, false);
 
   // Check that even if the device is restarted, pasteboard content is
   // still suppressed.
   SimulateDeviceRestart();
-  VerifyIfClipboardImageExists(false);
+  VerifyClipboardTypeExists(ClipboardContentType::Image, false);
 
   // Check that if the pasteboard changes, the new content is not
-  // supressed anymore.
+  // suppressed anymore.
   SetPasteboardImage(TestUIImage([UIColor greenColor]));
-  VerifyIfClipboardImageExists(true);
+  VerifyClipboardTypeExists(ClipboardContentType::Image, true);
 }
 
 // Checks that if user copies something other than a string we don't cache the
@@ -284,25 +335,37 @@ TEST_F(ClipboardRecentContentIOSTest, SupressedPasteboardImage) {
 TEST_F(ClipboardRecentContentIOSTest, AddingNonStringRemovesCachedString) {
   SetPasteboardContent(kRecognizedURL);
 
-  // Test that recent pasteboard data is provided as text and url.
+  // Test that recent pasteboard data is provided as url.
   VerifyClipboardURLExists(kRecognizedURL);
-  VerifyClipboardTextExists(kRecognizedURL);
-  // Image pasteboard should be empty
-  VerifyIfClipboardImageExists(false);
+  // Because iOS 14 has to use a different API to detect clipboard contents, it
+  // is empty, while the clipboard type should exist on iOS 13.
+  if (@available(iOS 14, *)) {
+    VerifyClipboardTypeExists(ClipboardContentType::Text, false);
+  } else {
+    VerifyClipboardTypeExists(ClipboardContentType::Text, true);
+  }
+  // Image pasteboard should be empty.
+  VerifyClipboardTypeExists(ClipboardContentType::Image, false);
 
   // Overwrite pasteboard with an image.
   SetPasteboardImage(TestUIImage());
 
   // Url and text pasteboard should appear empty.
-  VerifyClipboardURLDoesNotExist();
-  VerifyClipboardTextDoesNotExist();
+  VerifyClipboardTypeExists(ClipboardContentType::URL, false);
+  VerifyClipboardTypeExists(ClipboardContentType::Text, false);
   // Image pasteboard should be full
-  VerifyIfClipboardImageExists(true);
+  VerifyClipboardTypeExists(ClipboardContentType::Image, true);
 
   // Tests that if URL is added again, pasteboard provides it normally.
   SetPasteboardContent(kRecognizedURL);
   VerifyClipboardURLExists(kRecognizedURL);
-  VerifyClipboardTextExists(kRecognizedURL);
-  // Image pasteboard should be empty
-  VerifyIfClipboardImageExists(false);
+  // Because iOS 14 has to use a different API to detect clipboard contents, it
+  // is empty, while the clipboard type should exist on iOS 13.
+  if (@available(iOS 14, *)) {
+    VerifyClipboardTypeExists(ClipboardContentType::Text, false);
+  } else {
+    VerifyClipboardTypeExists(ClipboardContentType::Text, true);
+  }
+  // Image pasteboard should be empty.
+  VerifyClipboardTypeExists(ClipboardContentType::Image, false);
 }

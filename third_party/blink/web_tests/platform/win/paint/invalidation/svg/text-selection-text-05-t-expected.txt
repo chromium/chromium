@@ -1,441 +1,54 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox '$Revision: 1.8 $'",
-          "rect": [0, 0, 800, 600],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text id='revision'",
-          "rect": [0, 0, 800, 600],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox 'text-anchor'",
-          "rect": [519, 12, 129, 36],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [519, 12, 129, 36],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'text-anchor'",
-          "rect": [352, 12, 129, 36],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [352, 12, 129, 36],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'text-anchor'",
-          "rect": [186, 12, 128, 36],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [186, 12, 128, 36],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [266, 485, 113, 29],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [266, 485, 113, 29],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [266, 201, 113, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [266, 201, 113, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [428, 485, 104, 29],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [428, 485, 104, 29],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [428, 201, 104, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [428, 201, 104, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [590, 485, 94, 29],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [590, 485, 94, 29],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [590, 201, 94, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [590, 201, 94, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox 'middle'",
-          "rect": [377, 36, 79, 35],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [377, 36, 79, 35],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '2.x 2.y'",
-          "rect": [16, 491, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 491, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '4.x 2.y'",
-          "rect": [16, 441, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 441, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '1.x 2.y'",
-          "rect": [16, 391, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 391, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '2.x 4.y'",
-          "rect": [16, 341, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 341, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '4.x 4.y'",
-          "rect": [16, 291, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 291, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '1.x 4.y'",
-          "rect": [16, 241, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 241, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '2.x 1.y'",
-          "rect": [16, 191, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 191, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '4.x 1.y'",
-          "rect": [16, 141, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 141, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '1.x 1.y'",
-          "rect": [16, 91, 76, 34],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [16, 91, 76, 34],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [428, 285, 61, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [428, 285, 61, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [266, 285, 61, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [266, 285, 61, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [428, 435, 61, 29],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [428, 435, 61, 29],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [266, 435, 61, 29],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [266, 435, 61, 29],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [428, 151, 61, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [428, 151, 61, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [266, 151, 61, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [266, 151, 61, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [590, 285, 60, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [590, 285, 60, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [590, 435, 60, 29],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [590, 435, 60, 29],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [590, 151, 60, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [590, 151, 60, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox 'start'",
-          "rect": [224, 36, 52, 35],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [224, 36, 52, 35],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [428, 335, 46, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [428, 335, 46, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [266, 335, 46, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [266, 335, 46, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [590, 335, 45, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [590, 335, 45, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox 'end'",
-          "rect": [562, 36, 42, 35],
-          "reason": "selection"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [562, 36, 42, 35],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [573, 235, 39, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [573, 235, 39, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [411, 235, 38, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [411, 235, 38, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1234'",
-          "rect": [546, 101, 38, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [546, 101, 38, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [250, 235, 37, 54],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [250, 235, 37, 54],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [250, 385, 37, 45],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [250, 385, 37, 45],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1234'",
-          "rect": [398, 101, 37, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [398, 101, 37, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1234'",
-          "rect": [250, 101, 37, 21],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [250, 101, 37, 21],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [565, 385, 29, 45],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [565, 385, 29, 45],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "InlineTextBox '1'",
-          "rect": [411, 385, 29, 45],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGText text",
-          "rect": [411, 385, 29, 45],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [14, 521, 447, 79],
+        [519, 12, 129, 36],
+        [352, 12, 129, 36],
+        [186, 12, 128, 36],
+        [265, 485, 114, 29],
+        [265, 201, 114, 21],
+        [428, 485, 104, 29],
+        [428, 201, 104, 21],
+        [590, 485, 95, 29],
+        [590, 201, 95, 21],
+        [377, 36, 79, 35],
+        [16, 491, 76, 34],
+        [16, 441, 76, 34],
+        [16, 391, 76, 34],
+        [16, 341, 76, 34],
+        [16, 291, 76, 34],
+        [16, 241, 76, 34],
+        [16, 191, 76, 34],
+        [16, 141, 76, 34],
+        [16, 91, 76, 34],
+        [265, 285, 62, 54],
+        [265, 435, 62, 29],
+        [265, 151, 62, 21],
+        [428, 285, 61, 54],
+        [428, 435, 61, 29],
+        [428, 151, 61, 21],
+        [590, 285, 60, 54],
+        [590, 435, 60, 29],
+        [590, 151, 60, 21],
+        [224, 36, 52, 35],
+        [265, 335, 47, 54],
+        [428, 335, 46, 54],
+        [590, 335, 45, 54],
+        [562, 36, 42, 35],
+        [573, 235, 39, 54],
+        [411, 235, 38, 54],
+        [546, 101, 38, 21],
+        [250, 235, 37, 54],
+        [250, 385, 37, 45],
+        [398, 101, 37, 21],
+        [250, 101, 37, 21],
+        [565, 385, 29, 45],
+        [411, 385, 29, 45]
       ]
     }
   ]

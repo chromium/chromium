@@ -1,0 +1,15 @@
+<style include="settings-shared"></style>
+<cr-dialog id="dialog" close-text="$i18n{close}">
+  <div slot="title">$i18n{aboutUpdateWarningTitle}</div>
+  <div slot="body">
+    <div id="update-warning-message"></div>
+  </div>
+  <div slot="button-container">
+    <cr-button id="cancel" class="cancel-button"
+        on-click="onCancelTap_">$i18n{cancel}</cr-button>
+    <cr-button id="continue" class="action-button"
+        on-click="onContinueTap_">
+      $i18n{continue}
+    </cr-button>
+  </div>
+</cr-dialog>

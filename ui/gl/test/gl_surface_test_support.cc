@@ -6,24 +6,20 @@
 
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_implementation.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "ui/platform_window/common/platform_window_defaults.h"  // nogncheck
 #endif
 
 #if defined(USE_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
-#endif
-
-#if defined(USE_X11)
-#include "ui/gfx/x/x11.h"
 #endif
 
 namespace gl {
@@ -32,17 +28,13 @@ namespace {
 void InitializeOneOffHelper(bool init_extensions) {
   DCHECK_EQ(kGLImplementationNone, GetGLImplementation());
 
-#if defined(USE_X11)
-  XInitThreads();
-#endif
-
 #if defined(USE_OZONE)
   ui::OzonePlatform::InitParams params;
   params.single_process = true;
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   ui::test::EnableTestConfigForPlatformWindows();
 #endif
 
@@ -55,20 +47,19 @@ void InitializeOneOffHelper(bool init_extensions) {
     use_software_gl = false;
   }
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if defined(OS_ANDROID)
   // On Android we always use hardware GL.
-  // On Fuchsia, we always use fake GL, but we don't want any software
-  // GLs, but rather a stub implementation.
   use_software_gl = false;
 #endif
 
-  std::vector<GLImplementation> allowed_impls =
+  std::vector<GLImplementationParts> allowed_impls =
       init::GetAllowedGLImplementations();
   DCHECK(!allowed_impls.empty());
 
-  GLImplementation impl = allowed_impls[0];
-  if (use_software_gl)
-    impl = gl::GetSoftwareGLImplementation();
+  GLImplementationParts impl = allowed_impls[0];
+  if (use_software_gl) {
+    impl = gl::init::GetSoftwareGLImplementationForPlatform();
+  }
 
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
       << "kUseGL has not effect in tests";
@@ -95,7 +86,7 @@ void GLSurfaceTestSupport::InitializeNoExtensionsOneOff() {
 
 // static
 void GLSurfaceTestSupport::InitializeOneOffImplementation(
-    GLImplementation impl,
+    GLImplementationParts impl,
     bool fallback_to_software_gl) {
   DCHECK(!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kUseGL))
       << "kUseGL has not effect in tests";
@@ -120,7 +111,8 @@ void GLSurfaceTestSupport::InitializeOneOffWithMockBindings() {
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  InitializeOneOffImplementation(kGLImplementationMockGL, false);
+  InitializeOneOffImplementation(GLImplementationParts(kGLImplementationMockGL),
+                                 false);
 }
 
 // static
@@ -131,7 +123,8 @@ void GLSurfaceTestSupport::InitializeOneOffWithStubBindings() {
   ui::OzonePlatform::InitializeForGPU(params);
 #endif
 
-  InitializeOneOffImplementation(kGLImplementationStubGL, false);
+  InitializeOneOffImplementation(GLImplementationParts(kGLImplementationStubGL),
+                                 false);
 }
 
 // static

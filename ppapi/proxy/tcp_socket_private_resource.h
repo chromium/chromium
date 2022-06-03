@@ -29,6 +29,9 @@ class PPAPI_PROXY_EXPORT TCPSocketPrivateResource
                            const PP_NetAddress_Private& local_addr,
                            const PP_NetAddress_Private& remote_addr);
 
+  TCPSocketPrivateResource(const TCPSocketPrivateResource&) = delete;
+  TCPSocketPrivateResource& operator=(const TCPSocketPrivateResource&) = delete;
+
   ~TCPSocketPrivateResource() override;
 
   // PluginResource overrides.
@@ -66,9 +69,6 @@ class PPAPI_PROXY_EXPORT TCPSocketPrivateResource
       int pending_host_id,
       const PP_NetAddress_Private& local_addr,
       const PP_NetAddress_Private& remote_addr) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TCPSocketPrivateResource);
 };
 
 }  // namespace proxy

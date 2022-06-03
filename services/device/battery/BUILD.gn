@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
@@ -17,21 +19,11 @@ if (!is_android) {
       "battery_monitor_impl.cc",
       "battery_monitor_impl.h",
       "battery_status_manager.h",
-      "battery_status_manager_chromeos.cc",
-      "battery_status_manager_default.cc",
-      "battery_status_manager_linux-inl.h",
-      "battery_status_manager_linux.cc",
-      "battery_status_manager_linux.h",
-      "battery_status_manager_mac.cc",
-      "battery_status_manager_win.cc",
-      "battery_status_manager_win.h",
       "battery_status_service.cc",
       "battery_status_service.h",
     ]
 
-    public_deps = [
-      "//services/device/public/mojom",
-    ]
+    public_deps = [ "//services/device/public/mojom" ]
 
     deps = [
       "//base",
@@ -39,38 +31,34 @@ if (!is_android) {
       "//mojo/public/cpp/bindings",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       configs += [ "//build/config/linux/dbus" ]
       deps += [
         "//chromeos/dbus/power",
         "//chromeos/dbus/power:power_manager_proto",
       ]
-      sources -= [
-        "battery_status_manager_default.cc",
+      sources += [ "battery_status_manager_chromeos.cc" ]
+    } else if ((is_linux || is_chromeos_lacros) && use_dbus) {
+      configs += [ "//build/config/linux/dbus" ]
+      deps += [ "//dbus" ]
+      sources += [
+        "battery_status_manager_linux-inl.h",
         "battery_status_manager_linux.cc",
+        "battery_status_manager_linux.h",
       ]
-    }
-
-    if (is_linux && !is_chromeos) {
-      if (use_dbus) {
-        configs += [ "//build/config/linux/dbus" ]
-        deps += [ "//dbus" ]
-        sources -= [ "battery_status_manager_default.cc" ]
-      } else {
-        sources -= [ "battery_status_manager_linux.cc" ]
-      }
-    }
-
-    if (is_mac) {
-      sources -= [ "battery_status_manager_default.cc" ]
-      libs = [
+    } else if (is_mac) {
+      sources += [ "battery_status_manager_mac.cc" ]
+      frameworks = [
         "CoreFoundation.framework",
         "IOKit.framework",
       ]
-    }
-
-    if (is_win) {
-      sources -= [ "battery_status_manager_default.cc" ]
+    } else if (is_win) {
+      sources += [
+        "battery_status_manager_win.cc",
+        "battery_status_manager_win.h",
+      ]
+    } else {
+      sources += [ "battery_status_manager_default.cc" ]
     }
   }
 }

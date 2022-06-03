@@ -28,6 +28,7 @@ const char kNoPiiDeviceNamePrefix[] = "no_pii_here";
 const char kPublicKeyPrefix[] = "public_key";
 const char kInstanceIdPrefix[] = "instance_id";
 const char kPskPlaceholder[] = "psk_placeholder";
+const char kBluetoothPublicAddressPrefix[] = "bluetooth_public_address";
 
 // The id of the user who the remote devices belong to.
 const char kUserId[] = "example@gmail.com";
@@ -53,8 +54,9 @@ const int64_t kLastUpdateTimeMs = 3000;
 // CryptAuthDevice.better_together_device_metadata.public_key is not set.
 CryptAuthDevice CreateCryptAuthDevice(const std::string& suffix,
                                       bool has_beto_metadata,
-                                      bool has_public_key) {
-  base::Optional<cryptauthv2::BetterTogetherDeviceMetadata> beto_metadata;
+                                      bool has_public_key,
+                                      bool has_bluetooth_address) {
+  absl::optional<cryptauthv2::BetterTogetherDeviceMetadata> beto_metadata;
 
   if (has_beto_metadata) {
     beto_metadata = cryptauthv2::BetterTogetherDeviceMetadata();
@@ -67,6 +69,11 @@ CryptAuthDevice CreateCryptAuthDevice(const std::string& suffix,
 
     if (has_public_key)
       beto_metadata->set_public_key(kPublicKeyPrefix + suffix);
+
+    if (has_bluetooth_address) {
+      beto_metadata->set_bluetooth_public_address(
+          kBluetoothPublicAddressPrefix + suffix);
+    }
   }
 
   return CryptAuthDevice(kInstanceIdPrefix + suffix, kDeviceNamePrefix + suffix,
@@ -85,12 +92,16 @@ CryptAuthDevice CreateCryptAuthDevice(const std::string& suffix,
 multidevice::RemoteDevice CreateRemoteDevice(const std::string& suffix,
                                              bool has_pii_free_name,
                                              bool has_public_key,
-                                             bool has_beacon_seeds) {
+                                             bool has_beacon_seeds,
+                                             bool has_bluetooth_address) {
   std::string pii_free_name =
       has_pii_free_name ? kNoPiiDeviceNamePrefix + suffix : std::string();
   std::string public_key =
       has_public_key ? kPublicKeyPrefix + suffix : std::string();
   std::string psk = has_public_key ? kPskPlaceholder : std::string();
+  std::string bluetooth_address = has_bluetooth_address
+                                      ? kBluetoothPublicAddressPrefix + suffix
+                                      : std::string();
 
   std::vector<multidevice::BeaconSeed> beacon_seeds;
   if (has_beacon_seeds) {
@@ -104,7 +115,7 @@ multidevice::RemoteDevice CreateRemoteDevice(const std::string& suffix,
       pii_free_name, public_key, psk, kLastUpdateTimeMs,
       {{multidevice::SoftwareFeature::kBetterTogetherHost,
         multidevice::SoftwareFeatureState::kSupported}},
-      beacon_seeds);
+      beacon_seeds, bluetooth_address);
 }
 
 }  // namespace
@@ -121,13 +132,13 @@ class DeviceSyncRemoteDeviceV2LoaderImplTest : public testing::Test {
 
   // testing::Test:
   void SetUp() override {
-    multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
+    multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         fake_secure_message_delegate_factory_.get());
   }
 
   // testing::Test:
   void TearDown() override {
-    multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
+    multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         nullptr);
   }
 
@@ -136,7 +147,7 @@ class DeviceSyncRemoteDeviceV2LoaderImplTest : public testing::Test {
     for (const auto& device : device_list)
       id_to_device_map.insert_or_assign(device.instance_id(), device);
 
-    loader_ = RemoteDeviceV2LoaderImpl::Factory::Get()->BuildInstance();
+    loader_ = RemoteDeviceV2LoaderImpl::Factory::Create();
     loader_->Load(
         id_to_device_map, kUserId, user_private_key_,
         base::BindOnce(&DeviceSyncRemoteDeviceV2LoaderImplTest::OnLoadFinished,
@@ -180,7 +191,7 @@ class DeviceSyncRemoteDeviceV2LoaderImplTest : public testing::Test {
 
  protected:
   // Null until Load() finishes.
-  base::Optional<multidevice::RemoteDeviceList> remote_devices_;
+  absl::optional<multidevice::RemoteDeviceList> remote_devices_;
 
   std::unique_ptr<multidevice::FakeSecureMessageDelegateFactory>
       fake_secure_message_delegate_factory_;
@@ -195,21 +206,25 @@ TEST_F(DeviceSyncRemoteDeviceV2LoaderImplTest, NoDevices) {
 
 TEST_F(DeviceSyncRemoteDeviceV2LoaderImplTest, Success) {
   CallLoad({CreateCryptAuthDevice("device1", true /* has_beto_metadata */,
-                                  true /* has_public_key */),
+                                  true /* has_public_key */,
+                                  true /* has_bluetooth_address */),
             CreateCryptAuthDevice("device2", true /* has_beto_metadata */,
-                                  false /* has_public_key */),
+                                  false /* has_public_key */,
+                                  false /* has_bluetooth_address */),
             CreateCryptAuthDevice("device3", false /* has_beto_metadata */,
-                                  false /* has_public_key */)});
+                                  false /* has_public_key */,
+                                  false /* has_bluetooth_address */)});
 
-  VerifyLoad({CreateRemoteDevice("device1", true /* has_pii_free_name */,
-                                 true /* has_public_key */,
-                                 true /* has_beacon_seeds */),
-              CreateRemoteDevice("device2", true /* has_pii_free_name */,
-                                 false /* has_public_key */,
-                                 true /* has_beacon_seeds */),
-              CreateRemoteDevice("device3", false /* has_pii_free_name */,
-                                 false /* has_public_key */,
-                                 false /* has_beacon_seeds */)});
+  VerifyLoad(
+      {CreateRemoteDevice(
+           "device1", true /* has_pii_free_name */, true /* has_public_key */,
+           true /* has_beacon_seeds */, true /* has_bluetooth_address */),
+       CreateRemoteDevice(
+           "device2", true /* has_pii_free_name */, false /* has_public_key */,
+           true /* has_beacon_seeds */, false /* has_bluetooth_address */),
+       CreateRemoteDevice(
+           "device3", false /* has_pii_free_name */, false /* has_public_key */,
+           false /* has_beacon_seeds */, false /* has_bluetooth_address */)});
 }
 
 }  // namespace device_sync

@@ -3,12 +3,14 @@
     "benchmark": "desktop",
     "tags": [
       {
-        "os": "mac-intel-stable",
-        "buildername": "Mac FYI Release (Intel)"
+        "buildername": "Mac Release (Intel)",
+        "builder_group": "chromium.gpu",
+        "os": "Mac-10.15.5"
       },
       {
-        "os": "mac-amd-stable",
-        "buildername": "Mac FYI Retina Release (AMD)"
+        "buildername": "Mac Retina Release (AMD)",
+        "builder_group": "chromium.gpu",
+        "os": "Mac-10.14.6"
       }
     ]
   },
@@ -16,12 +18,9 @@
     "benchmark": "desktop",
     "tags": [
       {
-        "os": "Windows-10",
-        "buildername": "Win10 FYI x64 Release (NVIDIA)"
-      },
-      {
-        "os": "Windows-10",
-        "buildername": "Win10 FYI x64 Release (Intel HD 630)"
+        "buildername": "Win10 x64 Release (NVIDIA)",
+        "builder_group": "chromium.gpu",
+        "os": "Windows-10-18363"
       }
     ]
   },
@@ -29,8 +28,9 @@
     "benchmark": "mobile",
     "tags": [
       {
-        "os": "Android",
-        "buildername": "Android FYI Release (Nexus 5X)"
+        "buildername": "Android FYI Release (Nexus 5X)",
+        "builder_group": "chromium.gpu.fyi",
+        "os": "Android"
       }
     ]
   }

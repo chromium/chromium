@@ -8,9 +8,7 @@ visibility = [ "//chrome/chrome_cleaner/*" ]
 # Targets used by tests.
 
 shared_library("empty_dll") {
-  sources = [
-    "empty_dll.cc",
-  ]
+  sources = [ "empty_dll.cc" ]
 
   configs += [
     # This is required to prevent this target from having to be rebuilt every
@@ -25,17 +23,13 @@ source_set("scoped_file") {
     "scoped_file.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 source_set("test_branding_header") {
   testonly = true
 
-  sources = [
-    "test_branding.h",
-  ]
+  sources = [ "test_branding.h" ]
 }
 
 source_set("test_component") {
@@ -112,6 +106,7 @@ source_set("test_uws_catalog") {
   ]
 
   deps = [
+    "//base",
     "//chrome/chrome_cleaner/pup_data:dynamic_pup",
     "//chrome/chrome_cleaner/pup_data:pup_data_base",
     "//chrome/chrome_cleaner/pup_data:test_uws",
@@ -230,6 +225,7 @@ source_set("integration_test_sources") {
     "//base/test:test_support",
     "//chrome/chrome_cleaner:buildflags",
     "//chrome/chrome_cleaner/constants:common_strings",
+    "//chrome/chrome_cleaner/ipc:chrome_prompt_test_util",
     "//chrome/chrome_cleaner/logging/proto:chrome_cleaner_report_proto",
     "//chrome/chrome_cleaner/logging/proto:reporter_logs_proto",
     "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
@@ -239,7 +235,9 @@ source_set("integration_test_sources") {
     "//chrome/chrome_cleaner/test:test_util",
     "//chrome/chrome_cleaner/zip_archiver:common",
     "//components/chrome_cleaner/public/constants",
+    "//components/chrome_cleaner/public/proto",
     "//components/chrome_cleaner/test:test_name_helper",
+    "//net:test_support",
     "//testing/gtest",
   ]
 
@@ -275,9 +273,7 @@ source_set("unittest_sources") {
 executable("test_process") {
   testonly = true
 
-  sources = [
-    "test_process_main.cc",
-  ]
+  sources = [ "test_process_main.cc" ]
 
   deps = [
     ":test_strings",
@@ -294,9 +290,7 @@ executable("test_process") {
 executable("test_service") {
   testonly = true
 
-  sources = [
-    "test_service_main.cc",
-  ]
+  sources = [ "test_service_main.cc" ]
 
   deps = [
     ":test_strings",

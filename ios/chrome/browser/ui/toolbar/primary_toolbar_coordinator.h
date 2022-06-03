@@ -9,9 +9,10 @@
 #import "ios/chrome/browser/ui/toolbar/public/fakebox_focuser.h"
 
 @protocol ActivityServicePositioner;
-@class CommandDispatcher;
 @protocol OmniboxPopupPresenterDelegate;
 @protocol ToolbarCoordinatorDelegate;
+@class ViewRevealingVerticalPanHandler;
+@protocol ViewRevealingAnimatee;
 
 // Coordinator for the primary part, the one containing the omnibox, of the
 // adaptive toolbar.
@@ -26,8 +27,9 @@
 @property(nonatomic, weak) id<OmniboxPopupPresenterDelegate>
     popupPresenterDelegate;
 
-// Command dispatcher.
-@property(nonatomic, strong) CommandDispatcher* commandDispatcher;
+// A reference to the view controller that implements the view revealing
+// vertical pan handler delegate methods.
+@property(nonatomic, weak, readonly) id<ViewRevealingAnimatee> animatee;
 
 // Positioner for activity services attached to the toolbar
 - (id<ActivityServicePositioner>)activityServicePositioner;
@@ -42,6 +44,10 @@
 // Coordinates the location bar focusing/defocusing. For example, initiates
 // transition to the expanded location bar state of the view controller.
 - (void)transitionToLocationBarFocusedState:(BOOL)focused;
+
+// Sets the pan gesture handler for the toolbar controller.
+- (void)setPanGestureHandler:
+    (ViewRevealingVerticalPanHandler*)panGestureHandler;
 
 @end
 

@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "media/learning/impl/distribution_reporter.h"
 #include "media/learning/impl/learning_task_controller_impl.h"
 
@@ -35,14 +35,13 @@ class WeakLearningTaskController : public LearningTaskController {
     // Cancel any outstanding observation, unless they have a default value.  In
     // that case, complete them.
     for (auto& id : outstanding_observations_) {
-      const base::Optional<TargetValue>& default_value = id.second;
+      const absl::optional<TargetValue>& default_value = id.second;
       if (default_value) {
-        controller_->Post(FROM_HERE,
-                          &LearningTaskController::CompleteObservation,
-                          id.first, *default_value);
+        controller_->AsyncCall(&LearningTaskController::CompleteObservation)
+            .WithArgs(id.first, *default_value);
       } else {
-        controller_->Post(FROM_HERE, &LearningTaskController::CancelObservation,
-                          id.first);
+        controller_->AsyncCall(&LearningTaskController::CancelObservation)
+            .WithArgs(id.first);
       }
     }
   }
@@ -50,7 +49,8 @@ class WeakLearningTaskController : public LearningTaskController {
   void BeginObservation(
       base::UnguessableToken id,
       const FeatureVector& features,
-      const base::Optional<TargetValue>& default_target) override {
+      const absl::optional<TargetValue>& default_target,
+      const absl::optional<ukm::SourceId>& source_id) override {
     if (!weak_session_)
       return;
 
@@ -58,8 +58,8 @@ class WeakLearningTaskController : public LearningTaskController {
     // We don't send along the default value because LearningTaskControllerImpl
     // doesn't support it.  Since all client calls eventually come through us
     // anyway, it seems okay to handle it here.
-    controller_->Post(FROM_HERE, &LearningTaskController::BeginObservation, id,
-                      features, base::nullopt);
+    controller_->AsyncCall(&LearningTaskController::BeginObservation)
+        .WithArgs(id, features, absl::nullopt, source_id);
   }
 
   void CompleteObservation(base::UnguessableToken id,
@@ -67,21 +67,21 @@ class WeakLearningTaskController : public LearningTaskController {
     if (!weak_session_)
       return;
     outstanding_observations_.erase(id);
-    controller_->Post(FROM_HERE, &LearningTaskController::CompleteObservation,
-                      id, completion);
+    controller_->AsyncCall(&LearningTaskController::CompleteObservation)
+        .WithArgs(id, completion);
   }
 
   void CancelObservation(base::UnguessableToken id) override {
     if (!weak_session_)
       return;
     outstanding_observations_.erase(id);
-    controller_->Post(FROM_HERE, &LearningTaskController::CancelObservation,
-                      id);
+    controller_->AsyncCall(&LearningTaskController::CancelObservation)
+        .WithArgs(id);
   }
 
   void UpdateDefaultTarget(
       base::UnguessableToken id,
-      const base::Optional<TargetValue>& default_target) override {
+      const absl::optional<TargetValue>& default_target) override {
     if (!weak_session_)
       return;
 
@@ -90,13 +90,21 @@ class WeakLearningTaskController : public LearningTaskController {
 
   const LearningTask& GetLearningTask() override { return task_; }
 
+  void PredictDistribution(const FeatureVector& features,
+                           PredictionCB callback) override {
+    if (!weak_session_)
+      return;
+    controller_->AsyncCall(&LearningTaskController::PredictDistribution)
+        .WithArgs(features, std::move(callback));
+  }
+
   base::WeakPtr<LearningSessionImpl> weak_session_;
   base::SequenceBound<LearningTaskController>* controller_;
   LearningTask task_;
 
   // Set of ids that have been started but not completed / cancelled yet, and
   // any default target value.
-  std::map<base::UnguessableToken, base::Optional<TargetValue>>
+  std::map<base::UnguessableToken, absl::optional<TargetValue>>
       outstanding_observations_;
 };
 

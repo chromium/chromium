@@ -4,9 +4,8 @@
 
 package org.chromium.base.task;
 
-import android.support.test.filters.SmallTest;
-
 import androidx.annotation.NonNull;
+import androidx.test.filters.SmallTest;
 
 import org.hamcrest.CoreMatchers;
 import org.junit.Rule;

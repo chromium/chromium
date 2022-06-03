@@ -7,7 +7,6 @@
 #include <string>
 
 #include "base/base64.h"
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "third_party/boringssl/src/include/openssl/sha.h"
 

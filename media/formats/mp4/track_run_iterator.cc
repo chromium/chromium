@@ -9,12 +9,13 @@
 #include <limits>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/stl_util.h"
 #include "build/chromecast_buildflags.h"
 #include "media/base/decrypt_config.h"
+#include "media/base/demuxer.h"
 #include "media/base/demuxer_memory_limit.h"
 #include "media/base/encryption_pattern.h"
 #include "media/base/encryption_scheme.h"
@@ -114,7 +115,7 @@ base::TimeDelta TimeDeltaFromRational(int64_t numer, int64_t denom) {
 
   const int64_t total_microseconds =
       base::Time::kMicrosecondsPerSecond * result_seconds + result_microseconds;
-  return base::TimeDelta::FromMicroseconds(total_microseconds);
+  return base::Microseconds(total_microseconds);
 }
 
 DecodeTimestamp DecodeTimestampFromRational(int64_t numer, int64_t denom) {
@@ -315,8 +316,8 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
     std::unique_ptr<BufferReader> sample_encryption_reader;
     uint32_t sample_encryption_entries_count = 0;
     if (!sample_encryption_data.empty()) {
-      sample_encryption_reader.reset(new BufferReader(
-          sample_encryption_data.data(), sample_encryption_data.size()));
+      sample_encryption_reader = std::make_unique<BufferReader>(
+          sample_encryption_data.data(), sample_encryption_data.size());
       RCHECK(sample_encryption_reader->Read4(&sample_encryption_entries_count));
     }
 
@@ -424,7 +425,8 @@ bool TrackRunIterator::Init(const MovieFragment& moof) {
 
       // Avoid allocating insane sample counts for invalid media.
       const size_t max_sample_count =
-          GetDemuxerMemoryLimit() / sizeof(decltype(tri.samples)::value_type);
+          GetDemuxerMemoryLimit(Demuxer::DemuxerTypes::kChunkDemuxer) /
+          sizeof(decltype(tri.samples)::value_type);
       RCHECK_MEDIA_LOGGED(
           base::strict_cast<size_t>(trun.sample_count) <= max_sample_count,
           media_log_, "Metadata overhead exceeds storage limit.");

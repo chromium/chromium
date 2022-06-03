@@ -6,8 +6,9 @@ package org.chromium.media;
 
 import android.content.Context;
 import android.graphics.ImageFormat;
+import android.hardware.display.DisplayManager;
+import android.view.Display;
 import android.view.Surface;
-import android.view.WindowManager;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -158,9 +159,9 @@ public abstract class VideoCapture {
 
     protected final int getDeviceRotation() {
         final int orientation;
-        WindowManager wm = (WindowManager) ContextUtils.getApplicationContext().getSystemService(
-                Context.WINDOW_SERVICE);
-        switch (wm.getDefaultDisplay().getRotation()) {
+        DisplayManager dm = (DisplayManager) ContextUtils.getApplicationContext().getSystemService(
+                Context.DISPLAY_SERVICE);
+        switch (dm.getDisplay(Display.DEFAULT_DISPLAY).getRotation()) {
             case Surface.ROTATION_90:
                 orientation = 90;
                 break;

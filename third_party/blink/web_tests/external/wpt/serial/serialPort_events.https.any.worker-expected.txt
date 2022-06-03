@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS stopPropagation() during capturing
+PASS Set cancelBubble during capturing
+PASS stopPropagation() during bubbling
+PASS Set cancelBubble during bubbling
+PASS An event dispatched in an event handler is propagated before continuing
+FAIL Capturing and bubbling events delivered to listeners in the expected order assert_array_equals: expected property 1 to be "capturing SerialPort" but got "bubbling SerialPort" (expected array ["capturing Serial", "capturing SerialPort", "bubbling SerialPort", "bubbling Serial"] got ["capturing Serial", "bubbling SerialPort", "capturing SerialPort", "bubbling Serial"])
+Harness: the test ran to completion.
+

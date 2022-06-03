@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/android/jni_weak_ref.h"
-#include "base/macros.h"
 
 namespace offline_pages {
 namespace android {
@@ -22,6 +21,11 @@ class OfflinePageDownloadBridge {
  public:
   OfflinePageDownloadBridge(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
+
+  OfflinePageDownloadBridge(const OfflinePageDownloadBridge&) = delete;
+  OfflinePageDownloadBridge& operator=(const OfflinePageDownloadBridge&) =
+      delete;
+
   ~OfflinePageDownloadBridge();
 
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& obj);
@@ -30,8 +34,6 @@ class OfflinePageDownloadBridge {
 
  private:
   JavaObjectWeakGlobalRef weak_java_ref_;
-
-  DISALLOW_COPY_AND_ASSIGN(OfflinePageDownloadBridge);
 };
 
 }  // namespace android

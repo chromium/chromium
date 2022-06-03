@@ -11,6 +11,7 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "storage/browser/blob/blob_url_registry.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "third_party/blink/public/mojom/blob/blob_registry.mojom.h"
 
@@ -32,11 +33,15 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
     virtual bool CanReadFile(const base::FilePath& file) = 0;
     virtual bool CanReadFileSystemFile(const FileSystemURL& url) = 0;
     virtual bool CanCommitURL(const GURL& url) = 0;
-    virtual bool IsProcessValid() = 0;
   };
 
   BlobRegistryImpl(base::WeakPtr<BlobStorageContext> context,
+                   base::WeakPtr<BlobUrlRegistry> url_registry,
                    scoped_refptr<FileSystemContext> file_system_context);
+
+  BlobRegistryImpl(const BlobRegistryImpl&) = delete;
+  BlobRegistryImpl& operator=(const BlobRegistryImpl&) = delete;
+
   ~BlobRegistryImpl() override;
 
   void Bind(mojo::PendingReceiver<blink::mojom::BlobRegistry> receiver,
@@ -77,6 +82,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
       mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::BlobURLStore>)>;
   static void SetURLStoreCreationHookForTesting(URLStoreCreationHook* hook);
 
+  BlobStorageContext* context() { return context_.get(); }
+
  private:
   class BlobUnderConstruction;
 
@@ -87,6 +94,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
                          std::unique_ptr<BlobDataHandle> result);
 
   base::WeakPtr<BlobStorageContext> context_;
+  base::WeakPtr<BlobUrlRegistry> url_registry_;
   scoped_refptr<FileSystemContext> file_system_context_;
 
   mojo::ReceiverSet<blink::mojom::BlobRegistry, std::unique_ptr<Delegate>>
@@ -99,7 +107,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobRegistryImpl
       blobs_being_streamed_;
 
   base::WeakPtrFactory<BlobRegistryImpl> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(BlobRegistryImpl);
 };
 
 }  // namespace storage

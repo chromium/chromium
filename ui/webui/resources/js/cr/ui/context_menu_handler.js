@@ -4,8 +4,20 @@
 
 // require: event_target.js
 
+// clang-format off
+// #import {assertInstanceof} from '../../assert.m.js';
+// #import {NativeEventTarget as EventTarget} from '../event_target.m.js'
+// #import {EventTracker} from '../../event_tracker.m.js'
+// #import {isWindows, isLinux, isMac, isLacros, dispatchPropertyChange} from '../../cr.m.js';
+// #import {decorate} from '../ui.m.js';
+// #import {Menu} from './menu.m.js';
+// #import {MenuItem} from './menu_item.m.js';
+// #import {HideType} from './menu_button.m.js';
+// #import {positionPopupAtPoint} from './position_util.m.js';
+// clang-format on
+
 cr.define('cr.ui', function() {
-  /** @const */ const Menu = cr.ui.Menu;
+  /* #ignore */ /** @const */ const Menu = cr.ui.Menu;
 
   /**
    * Handles context menus.
@@ -14,8 +26,8 @@ cr.define('cr.ui', function() {
   class ContextMenuHandler extends cr.EventTarget {
     constructor() {
       super();
-      /** @private {!EventTracker} */
-      this.showingEvents_ = new EventTracker();
+      /** @private {!cr.EventTracker} */
+      this.showingEvents_ = new cr.EventTracker();
 
       /**
        * The menu that we are currently showing.
@@ -82,7 +94,7 @@ cr.define('cr.ui', function() {
         return;
       }
 
-      if (opt_hideType == cr.ui.HideType.DELAYED) {
+      if (opt_hideType === cr.ui.HideType.DELAYED) {
         menu.classList.add('hide-delayed');
       } else {
         menu.classList.remove('hide-delayed');
@@ -144,7 +156,8 @@ cr.define('cr.ui', function() {
         case 'keydown':
           this.keyIsDown_ = !e.ctrlKey && !e.altKey &&
               // context menu key or Shift-F10
-              (e.keyCode == 93 && !e.shiftKey || e.key == 'F10' && e.shiftKey);
+              (e.keyCode === 93 && !e.shiftKey ||
+               e.key === 'F10' && e.shiftKey);
           break;
 
         case 'keyup':
@@ -153,7 +166,7 @@ cr.define('cr.ui', function() {
       }
 
       // Context menu is handled even when we have no menu.
-      if (e.type != 'contextmenu' && !this.menu) {
+      if (e.type !== 'contextmenu' && !this.menu) {
         return;
       }
 
@@ -161,7 +174,8 @@ cr.define('cr.ui', function() {
         case 'mousedown':
           if (!this.menu.contains(e.target)) {
             this.hideMenu();
-            if (e.button == 0 /* Left button */ && (cr.isLinux || cr.isMac)) {
+            if (e.button === 0 /* Left button */ &&
+                (cr.isLinux || cr.isMac || cr.isLacros)) {
               // Emulate Mac and Linux, which swallow native 'mousedown' events
               // that close menus.
               e.preventDefault();
@@ -179,7 +193,7 @@ cr.define('cr.ui', function() {
           break;
 
         case 'keydown':
-          if (e.key == 'Escape') {
+          if (e.key === 'Escape') {
             this.hideMenu();
             e.stopPropagation();
             e.preventDefault();
@@ -232,7 +246,7 @@ cr.define('cr.ui', function() {
      *     the contextMenu property to.
      */
     addContextMenuProperty(elementOrClass) {
-      const target = typeof elementOrClass == 'function' ?
+      const target = typeof elementOrClass === 'function' ?
           elementOrClass.prototype :
           elementOrClass;
 
@@ -244,7 +258,7 @@ cr.define('cr.ui', function() {
       target.__defineSetter__('contextMenu', function(menu) {
         const oldContextMenu = this.contextMenu;
 
-        if (typeof menu == 'string' && menu[0] == '#') {
+        if (typeof menu === 'string' && menu[0] === '#') {
           menu = this.ownerDocument.getElementById(menu.slice(1));
           cr.ui.decorate(menu, Menu);
         }
@@ -302,9 +316,11 @@ cr.define('cr.ui', function() {
    * The singleton context menu handler.
    * @type {!ContextMenuHandler}
    */
-  const contextMenuHandler = new ContextMenuHandler;
+  /* #export */ const contextMenuHandler = new ContextMenuHandler;
 
   // Export
+  // #cr_define_end
+  console.warn('crbug/1173575, non-JS module files deprecated.');
   return {
     contextMenuHandler: contextMenuHandler,
   };

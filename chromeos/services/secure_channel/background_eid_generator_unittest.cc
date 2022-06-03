@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/time.h"
@@ -24,9 +23,8 @@ namespace chromeos {
 namespace secure_channel {
 
 namespace {
-const int64_t kEidPeriodMs = base::TimeDelta::FromMinutes(15).InMilliseconds();
-const int64_t kBeaconSeedDurationMs =
-    base::TimeDelta::FromDays(14).InMilliseconds();
+const int64_t kEidPeriodMs = base::Minutes(15).InMilliseconds();
+const int64_t kBeaconSeedDurationMs = base::Days(14).InMilliseconds();
 
 // The number of nearest EIDs returned by GenerateNearestEids().
 const size_t kEidCount = 5;
@@ -68,6 +66,10 @@ DataWithTimestamp CreateDataWithTimestamp(
 class TestRawEidGenerator : public RawEidGeneratorImpl {
  public:
   TestRawEidGenerator() {}
+
+  TestRawEidGenerator(const TestRawEidGenerator&) = delete;
+  TestRawEidGenerator& operator=(const TestRawEidGenerator&) = delete;
+
   ~TestRawEidGenerator() override {}
 
   // RawEidGenerator:
@@ -78,9 +80,6 @@ class TestRawEidGenerator : public RawEidGeneratorImpl {
     return RawEidGeneratorImpl::GenerateEid(
         eid_seed, start_of_period_timestamp_ms, extra_entropy);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestRawEidGenerator);
 };
 
 }  //  namespace
@@ -119,8 +118,8 @@ class SecureChannelBackgroundEidGeneratorTest : public testing::Test {
   }
 
   void SetTestTime(int64_t timestamp_ms) {
-    base::Time time = base::Time::UnixEpoch() +
-                      base::TimeDelta::FromMilliseconds(timestamp_ms);
+    base::Time time =
+        base::Time::UnixEpoch() + base::Milliseconds(timestamp_ms);
     test_clock_.SetNow(time);
   }
 

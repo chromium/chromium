@@ -1,4 +1,3 @@
-CONSOLE ERROR: line 87: WebSocket connection to 'ws://127.0.0.1:8880/echo' failed: Failed to load Blob: error code = 1
 WebSocket should fail the connection if it has failed to read a Blob.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

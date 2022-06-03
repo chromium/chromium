@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "google_apis/gaia/core_account_id.h"
@@ -23,10 +22,11 @@ namespace invalidation {
 class ActiveAccountAccessTokenFetcher {
  public:
   ActiveAccountAccessTokenFetcher() = default;
+  ActiveAccountAccessTokenFetcher(
+      const ActiveAccountAccessTokenFetcher& other) = delete;
+  ActiveAccountAccessTokenFetcher& operator=(
+      const ActiveAccountAccessTokenFetcher& other) = delete;
   virtual ~ActiveAccountAccessTokenFetcher() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ActiveAccountAccessTokenFetcher);
 };
 
 using ActiveAccountAccessTokenCallback =
@@ -42,27 +42,28 @@ class IdentityProvider {
  public:
   class Observer {
    public:
+    Observer() = default;
+    Observer(const Observer& other) = delete;
+    Observer& operator=(const Observer& other) = delete;
+    virtual ~Observer() = default;
+
     // Called when a GAIA account logs in and becomes the active account. All
     // account information is available when this method is called and all
     // |IdentityProvider| methods will return valid data.
-    virtual void OnActiveAccountLogin() {}
+    virtual void OnActiveAccountLogin() = 0;
 
     // Called when the active GAIA account logs out. The account information may
     // have been cleared already when this method is called. The
     // |IdentityProvider| methods may return inconsistent or outdated
     // information if called from within OnLogout().
-    virtual void OnActiveAccountLogout() {}
+    virtual void OnActiveAccountLogout() = 0;
 
     // Called when the active GAIA account's refresh token is updated.
-    virtual void OnActiveAccountRefreshTokenUpdated() {}
-
-    // Called when the active GAIA account's refresh token is removed.
-    virtual void OnActiveAccountRefreshTokenRemoved() {}
-
-   protected:
-    virtual ~Observer();
+    virtual void OnActiveAccountRefreshTokenUpdated() = 0;
   };
 
+  IdentityProvider(const IdentityProvider& other) = delete;
+  IdentityProvider& operator=(const IdentityProvider& other) = delete;
   virtual ~IdentityProvider();
 
   // Gets the active account's account ID.
@@ -85,9 +86,6 @@ class IdentityProvider {
   virtual void InvalidateAccessToken(
       const OAuth2AccessTokenManager::ScopeSet& scopes,
       const std::string& access_token) = 0;
-
-  // Set the account id that should be registered for invalidations.
-  virtual void SetActiveAccountId(const CoreAccountId& account_id) = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -126,8 +124,6 @@ class IdentityProvider {
 
   Diagnostics diagnostic_info_;
   base::ObserverList<Observer, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdentityProvider);
 };
 
 }  // namespace invalidation

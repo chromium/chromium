@@ -6,25 +6,31 @@
 
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/public/web/web_ime_text_span.h"
 #include "third_party/blink/public/web/web_range.h"
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_edit_context_init.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/editing/ime/edit_context_init.h"
+#include "third_party/blink/renderer/core/editing/ime/character_bounds_update_event.h"
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
+#include "third_party/blink/renderer/core/editing/ime/text_format.h"
 #include "third_party/blink/renderer/core/editing/ime/text_format_update_event.h"
 #include "third_party/blink/renderer/core/editing/ime/text_update_event.h"
+#include "third_party/blink/renderer/core/editing/state_machines/backward_grapheme_boundary_state_machine.h"
+#include "third_party/blink/renderer/core/editing/state_machines/forward_grapheme_boundary_state_machine.h"
 #include "third_party/blink/renderer/core/events/composition_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/platform/geometry/double_rect.h"
+#include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/base/ime/ime_text_span.h"
 
 namespace blink {
 
 EditContext::EditContext(ScriptState* script_state, const EditContextInit* dict)
-    : ContextLifecycleObserver(ExecutionContext::From(script_state)) {
+    : ExecutionContextClient(ExecutionContext::From(script_state)) {
   DCHECK(IsMainThread());
 
   if (dict->hasText())
@@ -58,7 +64,7 @@ const AtomicString& EditContext::InterfaceName() const {
 }
 
 ExecutionContext* EditContext::GetExecutionContext() const {
-  return ContextLifecycleObserver::GetExecutionContext();
+  return ExecutionContextClient::GetExecutionContext();
 }
 
 bool EditContext::HasPendingActivity() const {
@@ -66,14 +72,25 @@ bool EditContext::HasPendingActivity() const {
 }
 
 InputMethodController& EditContext::GetInputMethodController() const {
-  return ContextLifecycleObserver::GetFrame()->GetInputMethodController();
+  return DomWindow()->GetFrame()->GetInputMethodController();
 }
 
 bool EditContext::IsEditContextActive() const {
   return true;
 }
 
-bool EditContext::IsInputPanelPolicyManual() const {
+ui::mojom::VirtualKeyboardVisibilityRequest
+EditContext::GetLastVirtualKeyboardVisibilityRequest() const {
+  return GetInputMethodController().GetLastVirtualKeyboardVisibilityRequest();
+}
+
+void EditContext::SetVirtualKeyboardVisibilityRequest(
+    ui::mojom::VirtualKeyboardVisibilityRequest vk_visibility_request) {
+  GetInputMethodController().SetVirtualKeyboardVisibilityRequest(
+      vk_visibility_request);
+}
+
+bool EditContext::IsVirtualKeyboardPolicyManual() const {
   return GetInputMethodController()
              .GetActiveEditContext()
              ->inputPanelPolicy() == "manual";
@@ -81,19 +98,22 @@ bool EditContext::IsInputPanelPolicyManual() const {
 
 void EditContext::DispatchCompositionEndEvent(const String& text) {
   auto* event = MakeGarbageCollected<CompositionEvent>(
-      event_type_names::kCompositionend,
-      ContextLifecycleObserver::GetFrame()->DomWindow(), text);
+      event_type_names::kCompositionend, DomWindow(), text);
   DispatchEvent(*event);
 }
 
 bool EditContext::DispatchCompositionStartEvent(const String& text) {
   auto* event = MakeGarbageCollected<CompositionEvent>(
-      event_type_names::kCompositionstart,
-      ContextLifecycleObserver::GetFrame()->DomWindow(), text);
+      event_type_names::kCompositionstart, DomWindow(), text);
   DispatchEvent(*event);
-  if (!ContextLifecycleObserver::GetFrame())
-    return false;
-  return true;
+  return DomWindow();
+}
+
+void EditContext::DispatchCharacterBoundsUpdateEvent(uint32_t range_start,
+                                                     uint32_t range_end) {
+  auto* event =
+      MakeGarbageCollected<CharacterBoundsUpdateEvent>(range_start, range_end);
+  DispatchEvent(*event);
 }
 
 void EditContext::DispatchTextUpdateEvent(const String& text,
@@ -108,47 +128,67 @@ void EditContext::DispatchTextUpdateEvent(const String& text,
 }
 
 void EditContext::DispatchTextFormatEvent(
-    const WebVector<WebImeTextSpan>& ime_text_spans) {
-  // Loop through the vector and fire textformatupdate event for individual text
-  // spans as there could be multiple formats in the spans.
-  // TODO(snianu): Try to accumulate the ranges with similar formats and fire
-  // one event.
+    const WebVector<ui::ImeTextSpan>& ime_text_spans) {
+  // Loop through IME text spans to prepare an array of TextFormat and
+  // fire textformateupdate event.
   DCHECK(has_composition_);
-  String underline_style;
-  for (const auto& ime_text_span : ime_text_spans) {
-    const int format_range_start =
-        ime_text_span.start_offset + composition_range_start_;
-    const int format_range_end =
-        ime_text_span.end_offset + composition_range_start_;
+  HeapVector<Member<TextFormat>> text_formats;
+  text_formats.ReserveCapacity(
+      static_cast<WTF::wtf_size_t>(ime_text_spans.size()));
 
+  for (const auto& ime_text_span : ime_text_spans) {
+    const int range_start =
+        ime_text_span.start_offset + composition_range_start_;
+    const int range_end = ime_text_span.end_offset + composition_range_start_;
+
+    String underline_thickness;
+    String underline_style;
     switch (ime_text_span.thickness) {
-      case ui::mojom::ImeTextSpanThickness::kNone:
-        underline_style = "None";
+      case ui::ImeTextSpan::Thickness::kNone:
+        underline_thickness = "None";
         break;
-      case ui::mojom::ImeTextSpanThickness::kThin:
-        underline_style = "Thin";
+      case ui::ImeTextSpan::Thickness::kThin:
+        underline_thickness = "Thin";
         break;
-      case ui::mojom::ImeTextSpanThickness::kThick:
-        underline_style = "Thick";
-        break;
-      default:
-        underline_style = "None";
+      case ui::ImeTextSpan::Thickness::kThick:
+        underline_thickness = "Thick";
         break;
     }
-    TextFormatUpdateEvent* event = MakeGarbageCollected<TextFormatUpdateEvent>(
-        format_range_start, format_range_end,
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.underline_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.background_color),
-        cssvalue::CSSColorValue::SerializeAsCSSComponentValue(
-            ime_text_span.suggestion_highlight_color),
-        underline_style);
-    DispatchEvent(*event);
+    switch (ime_text_span.underline_style) {
+      case ui::ImeTextSpan::UnderlineStyle::kNone:
+        underline_style = "None";
+        break;
+      case ui::ImeTextSpan::UnderlineStyle::kSolid:
+        underline_style = "Solid";
+        break;
+      case ui::ImeTextSpan::UnderlineStyle::kDot:
+        underline_style = "Dotted";
+        break;
+      case ui::ImeTextSpan::UnderlineStyle::kDash:
+        underline_style = "Dashed";
+        break;
+      case ui::ImeTextSpan::UnderlineStyle::kSquiggle:
+        underline_style = "Squiggle";
+        break;
+    }
+
+    text_formats.push_back(
+        TextFormat::Create(range_start, range_end,
+                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
+                               ime_text_span.text_color),
+                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
+                               ime_text_span.background_color),
+                           cssvalue::CSSColor::SerializeAsCSSComponentValue(
+                               ime_text_span.underline_color),
+                           underline_style, underline_thickness));
   }
+
+  TextFormatUpdateEvent* event =
+      MakeGarbageCollected<TextFormatUpdateEvent>(text_formats);
+  DispatchEvent(*event);
 }
 
-void EditContext::focus() {
+void EditContext::Focus() {
   EditContext* current_active_edit_context =
       GetInputMethodController().GetActiveEditContext();
   if (current_active_edit_context && current_active_edit_context != this) {
@@ -160,12 +200,12 @@ void EditContext::focus() {
   GetInputMethodController().SetActiveEditContext(this);
 }
 
-void EditContext::blur() {
+void EditContext::Blur() {
   if (GetInputMethodController().GetActiveEditContext() != this)
     return;
   // Clean up the state of the |this| EditContext.
   FinishComposingText(ConfirmCompositionBehavior::kKeepSelection);
-  GetInputMethodController().SetActiveEditContext(this);
+  GetInputMethodController().SetActiveEditContext(nullptr);
 }
 
 void EditContext::updateSelection(uint32_t start,
@@ -196,16 +236,32 @@ void EditContext::updateSelection(uint32_t start,
   }
 }
 
-void EditContext::updateLayout(DOMRect* control_bounds,
+void EditContext::updateCharacterBounds(
+    unsigned long range_start,
+    HeapVector<Member<DOMRect>>& character_bounds) {
+  character_bounds_range_start_ = static_cast<uint32_t>(range_start);
+
+  character_bounds_.Clear();
+  std::for_each(
+      character_bounds.begin(), character_bounds.end(),
+      [this](const auto& bound) {
+        const DoubleRect double_rect(bound->x(), bound->y(), bound->width(),
+                                     bound->height());
+        character_bounds_.push_back(ToGfxRect(EnclosingIntRect(double_rect)));
+      });
+}
+
+void EditContext::updateBounds(DOMRect* control_bounds,
                                DOMRect* selection_bounds) {
-  control_bounds_.x = control_bounds->x();
-  control_bounds_.y = control_bounds->y();
-  control_bounds_.width = control_bounds->width();
-  control_bounds_.height = control_bounds->height();
-  selection_bounds_.x = selection_bounds->x();
-  selection_bounds_.y = selection_bounds->y();
-  selection_bounds_.width = selection_bounds->width();
-  selection_bounds_.height = selection_bounds->height();
+  // Return the IntRect containing the given DOMRect.
+  const DoubleRect control_bounds_double_rect(
+      control_bounds->x(), control_bounds->y(), control_bounds->width(),
+      control_bounds->height());
+  control_bounds_ = ToGfxRect(EnclosingIntRect(control_bounds_double_rect));
+  const DoubleRect selection_bounds_double_rect(
+      selection_bounds->x(), selection_bounds->y(), selection_bounds->width(),
+      selection_bounds->height());
+  selection_bounds_ = ToGfxRect(EnclosingIntRect(selection_bounds_double_rect));
 }
 
 void EditContext::updateText(uint32_t start,
@@ -250,6 +306,10 @@ uint32_t EditContext::selectionEnd() const {
   return selection_end_;
 }
 
+uint32_t EditContext::characterBoundsRangeStart() const {
+  return character_bounds_range_start_;
+}
+
 void EditContext::setSelectionEnd(uint32_t selection_end,
                                   ExceptionState& exception_state) {
   // Following this spec:
@@ -261,6 +321,22 @@ String EditContext::inputPanelPolicy() const {
   if (input_panel_policy_ == EditContextInputPanelPolicy::kAuto)
     return "auto";
   return "manual";
+}
+
+const HeapVector<Member<Element>>& EditContext::attachedElements() {
+  return attached_elements_;
+}
+
+const HeapVector<Member<DOMRect>> EditContext::characterBounds() {
+  HeapVector<Member<DOMRect>> dom_rects;
+
+  std::for_each(character_bounds_.begin(), character_bounds_.end(),
+                [&dom_rects](const auto& bound) {
+                  dom_rects.push_back(DOMRect::Create(
+                      bound.x(), bound.y(), bound.width(), bound.height()));
+                });
+
+  return dom_rects;
 }
 
 void EditContext::setInputPanelPolicy(const String& input_policy) {
@@ -354,15 +430,15 @@ String EditContext::enterKeyHint() const {
   }
 }
 
-void EditContext::GetLayoutBounds(WebRect* web_control_bounds,
-                                  WebRect* web_selection_bounds) {
-  *web_control_bounds = control_bounds_;
-  *web_selection_bounds = selection_bounds_;
+void EditContext::GetLayoutBounds(gfx::Rect* control_bounds,
+                                  gfx::Rect* selection_bounds) {
+  *control_bounds = control_bounds_;
+  *selection_bounds = selection_bounds_;
 }
 
 bool EditContext::SetComposition(
     const WebString& text,
-    const WebVector<WebImeTextSpan>& ime_text_spans,
+    const WebVector<ui::ImeTextSpan>& ime_text_spans,
     const WebRange& replacement_range,
     int selection_start,
     int selection_end) {
@@ -380,33 +456,28 @@ bool EditContext::SetComposition(
   }
   // Update the selection and buffer if the composition range has changed.
   String update_text(text);
-  if (composition_range_start_ != selection_start_ &&
-      composition_range_end_ != selection_end_) {
-    selection_start_ = composition_range_end_;
-    selection_end_ = composition_range_end_;
-  }
-  text_ = text_.Substring(0, selection_start_) + update_text +
-          text_.Substring(selection_end_);
+  text_ = text_.Substring(0, composition_range_start_) + update_text +
+          text_.Substring(composition_range_end_);
 
   // Fire textupdate and textformatupdate events to JS.
   const uint32_t update_range_start = composition_range_start_;
   const uint32_t update_range_end = composition_range_end_;
-  if (has_composition_) {
-    // Replace the existing composition with empty string.
-    composition_range_start_ = selection_start_;
-    composition_range_end_ = selection_end_;
-  }
+  // Update the new selection.
+  selection_start_ = composition_range_start_ + selection_end;
+  selection_end_ = composition_range_start_ + selection_end;
   DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
                           selection_start_, selection_end_);
-  composition_range_end_ = composition_range_start_ + selection_end;
+  composition_range_end_ = composition_range_start_ + update_text.length();
   DispatchTextFormatEvent(ime_text_spans);
+  DispatchCharacterBoundsUpdateEvent(composition_range_start_,
+                                     composition_range_end_);
   return true;
 }
 
 bool EditContext::SetCompositionFromExistingText(
     int composition_start,
     int composition_end,
-    const WebVector<WebImeTextSpan>& ime_text_spans) {
+    const WebVector<ui::ImeTextSpan>& ime_text_spans) {
   if (composition_start < 0 || composition_end < 0)
     return false;
 
@@ -432,14 +503,94 @@ bool EditContext::SetCompositionFromExistingText(
                           composition_range_end_, composition_start,
                           composition_start);
   DispatchTextFormatEvent(ime_text_spans);
+  DispatchCharacterBoundsUpdateEvent(composition_range_start_,
+                                     composition_range_end_);
   // Update the selection range.
   selection_start_ = composition_start;
   selection_end_ = composition_start;
   return true;
 }
 
+bool EditContext::InsertText(const WebString& text) {
+  String update_text(text);
+  text_ = text_.Substring(0, selection_start_) + update_text +
+          text_.Substring(selection_end_);
+  uint32_t update_range_start = selection_start_;
+  uint32_t update_range_end = selection_end_;
+  selection_start_ = selection_start_ + update_text.length();
+  selection_end_ = selection_start_;
+
+  DispatchTextUpdateEvent(update_text, update_range_start, update_range_end,
+                          selection_start_, selection_end_);
+  return true;
+}
+
+void EditContext::DeleteCurrentSelection() {
+  if (selection_start_ == selection_end_)
+    return;
+
+  StringBuilder stringBuilder;
+  stringBuilder.Append(StringView(text_, 0, selection_start_));
+  stringBuilder.Append(StringView(text_, selection_end_));
+  text_ = stringBuilder.ToString();
+
+  DispatchTextUpdateEvent(String(), selection_start_, selection_end_,
+                          selection_start_, selection_start_);
+
+  selection_end_ = selection_start_;
+}
+
+template <typename StateMachine>
+int FindNextBoundaryOffset(const String& str, int current);
+
+void EditContext::DeleteBackward() {
+  // If the current selection is collapsed, delete one grapheme, otherwise,
+  // delete whole selection.
+  if (selection_start_ == selection_end_) {
+    selection_start_ =
+        FindNextBoundaryOffset<BackwardGraphemeBoundaryStateMachine>(
+            text_, selection_start_);
+  }
+
+  DeleteCurrentSelection();
+}
+
+void EditContext::DeleteForward() {
+  if (selection_start_ == selection_end_) {
+    selection_end_ =
+        FindNextBoundaryOffset<ForwardGraphemeBoundaryStateMachine>(
+            text_, selection_start_);
+  }
+
+  DeleteCurrentSelection();
+}
+
+void EditContext::DeleteWordBackward() {
+  if (selection_start_ == selection_end_) {
+    String text16bit(text_);
+    text16bit.Ensure16Bit();
+    // TODO(shihken): implement platform behaviors when the spec is finalized.
+    selection_start_ = FindNextWordBackward(text16bit.Characters16(),
+                                            text16bit.length(), selection_end_);
+  }
+
+  DeleteCurrentSelection();
+}
+
+void EditContext::DeleteWordForward() {
+  if (selection_start_ == selection_end_) {
+    String text16bit(text_);
+    text16bit.Ensure16Bit();
+    // TODO(shihken): implement platform behaviors when the spec is finalized.
+    selection_end_ = FindNextWordForward(text16bit.Characters16(),
+                                         text16bit.length(), selection_start_);
+  }
+
+  DeleteCurrentSelection();
+}
+
 bool EditContext::CommitText(const WebString& text,
-                             const WebVector<WebImeTextSpan>& ime_text_spans,
+                             const WebVector<ui::ImeTextSpan>& ime_text_spans,
                              const WebRange& replacement_range,
                              int relative_caret_position) {
   // Fire textupdate and textformatupdate events to JS.
@@ -454,8 +605,8 @@ bool EditContext::CommitText(const WebString& text,
   if (has_composition_) {
     text_ = text_.Substring(0, composition_range_start_) + update_text +
             text_.Substring(composition_range_end_);
-    selection_start_ = composition_range_start_ + text.length();
-    selection_end_ = composition_range_start_ + text.length();
+    selection_start_ = composition_range_start_ + update_text.length();
+    selection_end_ = composition_range_start_ + update_text.length();
     update_range_start = composition_range_start_;
     update_range_end = composition_range_end_;
   } else {
@@ -463,8 +614,8 @@ bool EditContext::CommitText(const WebString& text,
             text_.Substring(selection_end_);
     update_range_start = selection_start_;
     update_range_end = selection_end_;
-    selection_start_ = selection_start_ + text.length();
-    selection_end_ = selection_end_ + text.length();
+    selection_start_ = selection_start_ + update_text.length();
+    selection_end_ = selection_end_ + update_text.length();
   }
   new_selection_start = selection_start_;
   new_selection_end = selection_end_;
@@ -482,7 +633,7 @@ bool EditContext::CommitText(const WebString& text,
 
 bool EditContext::FinishComposingText(
     ConfirmCompositionBehavior selection_behavior) {
-  WebString text;
+  String text;
   if (has_composition_) {
     text = text_.Substring(composition_range_start_, composition_range_end_);
     // Fire composition end event.
@@ -513,6 +664,26 @@ void EditContext::ExtendSelectionAndDelete(int before, int after) {
   selection_end_ = selection_start_;
   DispatchTextUpdateEvent(text, update_range_start, update_range_end,
                           selection_start_, selection_end_);
+}
+
+void EditContext::AttachElement(Element* element_to_attach) {
+  if (std::any_of(attached_elements_.begin(), attached_elements_.end(),
+                  [element_to_attach](const auto& element) {
+                    return element.Get() == element_to_attach;
+                  }))
+    return;
+
+  attached_elements_.push_back(element_to_attach);
+}
+
+void EditContext::DetachElement(Element* element_to_detach) {
+  auto* it = std::find_if(attached_elements_.begin(), attached_elements_.end(),
+                          [element_to_detach](const auto& element) {
+                            return element.Get() == element_to_detach;
+                          });
+
+  if (it != attached_elements_.end())
+    attached_elements_.erase(it);
 }
 
 WebTextInputType EditContext::TextInputType() {
@@ -547,9 +718,15 @@ WebTextInputMode EditContext::GetInputModeOfEditContext() const {
 WebTextInputInfo EditContext::TextInputInfo() {
   WebTextInputInfo info;
   // Fetch all the text input info from edit context.
+  // TODO(crbug.com/1197325): Change this to refer to the "view" part of the
+  // EditContext once the EditContext spec adds this feature.
+  info.node_id = GetInputMethodController().NodeIdOfFocusedElement();
   info.action = GetEditContextEnterKeyHint();
   info.input_mode = GetInputModeOfEditContext();
   info.type = TextInputType();
+  info.virtual_keyboard_policy = IsVirtualKeyboardPolicyManual()
+                                     ? ui::mojom::VirtualKeyboardPolicy::MANUAL
+                                     : ui::mojom::VirtualKeyboardPolicy::AUTO;
   info.value = text();
   info.flags = TextInputFlags();
   info.selection_start = selection_start_;
@@ -574,22 +751,34 @@ int EditContext::TextInputFlags() const {
 }
 
 WebRange EditContext::CompositionRange() {
-  return WebRange(composition_range_start_, composition_range_end_);
+  return WebRange(composition_range_start_,
+                  composition_range_end_ - composition_range_start_);
 }
 
-bool EditContext::GetCompositionCharacterBounds(WebVector<WebRect>& bounds) {
-  bounds[0] = selection_bounds_;
+bool EditContext::GetCompositionCharacterBounds(WebVector<gfx::Rect>& bounds) {
+  WebRange composition_range = CompositionRange();
+  if (composition_range.IsEmpty())
+    return false;
+
+  // The number of character bounds provided by the authors has to be the same
+  // as the length of the composition (as we request in
+  // CompositionCharacterBoundsUpdate event).
+  if (static_cast<int>(character_bounds_.size()) != composition_range.length())
+    return false;
+
+  bounds = character_bounds_;
   return true;
 }
 
 WebRange EditContext::GetSelectionOffsets() const {
-  return WebRange(selection_start_, selection_end_);
+  return WebRange(selection_start_, selection_end_ - selection_start_);
 }
 
-void EditContext::Trace(Visitor* visitor) {
+void EditContext::Trace(Visitor* visitor) const {
   ActiveScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextClient::Trace(visitor);
   EventTargetWithInlineData::Trace(visitor);
+  visitor->Trace(attached_elements_);
 }
 
 }  // namespace blink

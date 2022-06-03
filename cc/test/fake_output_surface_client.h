@@ -14,7 +14,8 @@ class FakeOutputSurfaceClient : public viz::OutputSurfaceClient {
   FakeOutputSurfaceClient() = default;
 
   void SetNeedsRedrawRect(const gfx::Rect& damage_rect) override {}
-  void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings) override;
+  void DidReceiveSwapBuffersAck(const gfx::SwapTimings& timings,
+                                gfx::GpuFenceHandle release_fence) override;
   void DidReceiveTextureInUseResponses(
       const gpu::TextureInUseResponses& responses) override {}
   void DidReceiveCALayerParams(
@@ -22,6 +23,8 @@ class FakeOutputSurfaceClient : public viz::OutputSurfaceClient {
   void DidSwapWithSize(const gfx::Size& pixel_size) override {}
   void DidReceivePresentationFeedback(
       const gfx::PresentationFeedback& feedback) override {}
+  void DidReceiveReleasedOverlays(
+      const std::vector<gpu::Mailbox>& released_overlays) override {}
 
   int swap_count() { return swap_count_; }
 

@@ -11,7 +11,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -23,8 +23,8 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/model_type_store_service.h"
-#include "components/sync/model_impl/client_tag_based_model_type_processor.h"
 #include "components/version_info/version_info.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
@@ -34,7 +34,7 @@
 
 // static
 consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForBrowserState(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<consent_auditor::ConsentAuditor*>(
       GetInstance()->GetServiceForBrowserState(browser_state, true));
 }
@@ -42,7 +42,7 @@ consent_auditor::ConsentAuditor* ConsentAuditorFactory::GetForBrowserState(
 // static
 consent_auditor::ConsentAuditor*
 ConsentAuditorFactory::GetForBrowserStateIfExists(
-    ios::ChromeBrowserState* browser_state) {
+    ChromeBrowserState* browser_state) {
   return static_cast<consent_auditor::ConsentAuditor*>(
       GetInstance()->GetServiceForBrowserState(browser_state, false));
 }
@@ -64,8 +64,8 @@ ConsentAuditorFactory::~ConsentAuditorFactory() {}
 
 std::unique_ptr<KeyedService> ConsentAuditorFactory::BuildServiceInstanceFor(
     web::BrowserState* browser_state) const {
-  ios::ChromeBrowserState* ios_browser_state =
-      ios::ChromeBrowserState::FromBrowserState(browser_state);
+  ChromeBrowserState* ios_browser_state =
+      ChromeBrowserState::FromBrowserState(browser_state);
 
   std::unique_ptr<consent_auditor::ConsentSyncBridge> consent_sync_bridge;
   syncer::OnceModelTypeStoreFactory store_factory =

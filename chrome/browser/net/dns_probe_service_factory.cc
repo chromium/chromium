@@ -15,8 +15,12 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/dns_probe_runner.h"
 #include "chrome/browser/net/dns_probe_service.h"
+#include "chrome/browser/net/secure_dns_config.h"
+#include "chrome/browser/net/stub_resolver_config_reader.h"
+#include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "content/public/browser/browser_context.h"
@@ -26,7 +30,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/secure_dns_mode.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 namespace chrome_browser_net {
@@ -43,39 +49,6 @@ const int kMaxResultAgeMs = 5000;
 const uint8_t kGooglePublicDns1[] = {8, 8, 8, 8};
 const uint8_t kGooglePublicDns2[] = {8, 8, 4, 4};
 
-error_page::DnsProbeStatus EvaluateResults(
-    DnsProbeRunner::Result system_result,
-    DnsProbeRunner::Result public_result) {
-  // If the system DNS is working, assume the domain doesn't exist.
-  if (system_result == DnsProbeRunner::CORRECT)
-    return error_page::DNS_PROBE_FINISHED_NXDOMAIN;
-
-  // If the system DNS is unknown (e.g. on Android), but the public server is
-  // reachable, assume the domain doesn't exist.
-  if (system_result == DnsProbeRunner::UNKNOWN &&
-      public_result == DnsProbeRunner::CORRECT) {
-    return error_page::DNS_PROBE_FINISHED_NXDOMAIN;
-  }
-
-  // If the system DNS is not working but another public server is, assume the
-  // DNS config is bad (or perhaps the DNS servers are down or broken).
-  if (public_result == DnsProbeRunner::CORRECT)
-    return error_page::DNS_PROBE_FINISHED_BAD_CONFIG;
-
-  // If the system DNS is not working and another public server is unreachable,
-  // assume the internet connection is down (note that system DNS may be a
-  // router on the LAN, so it may be reachable but returning errors.)
-  if (public_result == DnsProbeRunner::UNREACHABLE)
-    return error_page::DNS_PROBE_FINISHED_NO_INTERNET;
-
-  // Otherwise: the system DNS is not working and another public server is
-  // responding but with errors or incorrect results.  This is an awkward case;
-  // an invasive captive portal or a restrictive firewall may be intercepting
-  // or rewriting DNS traffic, or the public server may itself be failing or
-  // down.
-  return error_page::DNS_PROBE_FINISHED_INCONCLUSIVE;
-}
-
 void HistogramProbe(error_page::DnsProbeStatus status,
                     base::TimeDelta elapsed) {
   DCHECK(error_page::DnsProbeStatusIsFinished(status));
@@ -87,8 +60,7 @@ void HistogramProbe(error_page::DnsProbeStatus status,
 
 network::mojom::NetworkContext* GetNetworkContextForProfile(
     content::BrowserContext* context) {
-  return content::BrowserContext::GetDefaultStoragePartition(context)
-      ->GetNetworkContext();
+  return context->GetDefaultStoragePartition()->GetNetworkContext();
 }
 
 mojo::Remote<network::mojom::DnsConfigChangeManager>
@@ -100,15 +72,7 @@ GetDnsConfigChangeManager() {
   return dns_config_change_manager_remote;
 }
 
-net::DnsConfigOverrides SystemOverrides() {
-  net::DnsConfigOverrides overrides;
-  overrides.search = {};
-  overrides.attempts = 1;
-  overrides.randomize_ports = false;
-  return overrides;
-}
-
-net::DnsConfigOverrides PublicOverrides() {
+net::DnsConfigOverrides GoogleConfigOverrides() {
   net::DnsConfigOverrides overrides =
       net::DnsConfigOverrides::CreateOverridingEverythingWithDefaults();
   overrides.nameservers = std::vector<net::IPEndPoint>{
@@ -117,7 +81,7 @@ net::DnsConfigOverrides PublicOverrides() {
       net::IPEndPoint(net::IPAddress(kGooglePublicDns2),
                       net::dns_protocol::kDefaultPort)};
   overrides.attempts = 1;
-  overrides.randomize_ports = false;
+  overrides.secure_dns_mode = net::SecureDnsMode::kOff;
   return overrides;
 }
 
@@ -134,10 +98,15 @@ class DnsProbeServiceImpl
       const NetworkContextGetter& network_context_getter,
       const DnsConfigChangeManagerGetter& dns_config_change_manager_getter,
       const base::TickClock* tick_clock);
+
+  DnsProbeServiceImpl(const DnsProbeServiceImpl&) = delete;
+  DnsProbeServiceImpl& operator=(const DnsProbeServiceImpl&) = delete;
+
   ~DnsProbeServiceImpl() override;
 
   // DnsProbeService implementation:
   void ProbeDns(DnsProbeService::ProbeCallback callback) override;
+  net::DnsConfigOverrides GetCurrentConfigOverridesForTesting() override;
 
   // mojom::network::DnsConfigChangeManagerClient implementation:
   void OnDnsConfigChanged() override;
@@ -149,9 +118,18 @@ class DnsProbeServiceImpl
     STATE_RESULT_CACHED,
   };
 
-  // Starts a probe (runs system and public probes).
+  // Create the current config runner using overrides that will mimic the
+  // current secure DNS mode and pre-specified DoH servers.
+  void SetUpCurrentConfigRunner();
+
+  // Starts a probe (runs probes for both the current config and google config)
   void StartProbes();
   void OnProbeComplete();
+  // Determine what error page should be shown given the results of the two
+  // probe runners.
+  error_page::DnsProbeStatus EvaluateResults(
+      DnsProbeRunner::Result current_config_result,
+      DnsProbeRunner::Result google_config_result);
   // Calls all |pending_callbacks_| with the |cached_result_|.
   void CallCallbacks();
   // Calls callback by posting a task to the same sequence. |pending_callbacks_|
@@ -173,16 +151,21 @@ class DnsProbeServiceImpl
   NetworkContextGetter network_context_getter_;
   DnsConfigChangeManagerGetter dns_config_change_manager_getter_;
   mojo::Receiver<network::mojom::DnsConfigChangeManagerClient> receiver_{this};
-  // DnsProbeRunners for the system DNS configuration and a public DNS server.
-  DnsProbeRunner system_runner_;
-  DnsProbeRunner public_runner_;
+  net::SecureDnsMode current_config_secure_dns_mode_ = net::SecureDnsMode::kOff;
+
+  // DnsProbeRunners for the current DNS configuration and a Google DNS
+  // configuration. Both runners will have the insecure async resolver enabled
+  // regardless of the platform. This is out of necessity for the Google config
+  // runner, where the nameservers are being changed. For the current config
+  // runner, the insecure async resolver will only be used when the runner is
+  // not operating in SECURE mode.
+  std::unique_ptr<DnsProbeRunner> current_config_runner_;
+  std::unique_ptr<DnsProbeRunner> google_config_runner_;
 
   // Time source for cache expiry.
   const base::TickClock* tick_clock_;  // Not owned.
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(DnsProbeServiceImpl);
 };
 
 DnsProbeServiceImpl::DnsProbeServiceImpl(content::BrowserContext* context)
@@ -198,10 +181,11 @@ DnsProbeServiceImpl::DnsProbeServiceImpl(
     : state_(STATE_NO_RESULT),
       network_context_getter_(network_context_getter),
       dns_config_change_manager_getter_(dns_config_change_manager_getter),
-      system_runner_(SystemOverrides(), network_context_getter),
-      public_runner_(PublicOverrides(), network_context_getter),
       tick_clock_(tick_clock) {
   SetupDnsConfigChangeNotifications();
+  google_config_runner_ = std::make_unique<DnsProbeRunner>(
+      GoogleConfigOverrides(), network_context_getter_);
+  SetUpCurrentConfigRunner();
 }
 
 DnsProbeServiceImpl::~DnsProbeServiceImpl() {
@@ -228,45 +212,120 @@ void DnsProbeServiceImpl::ProbeDns(ProbeCallback callback) {
   }
 }
 
+net::DnsConfigOverrides
+DnsProbeServiceImpl::GetCurrentConfigOverridesForTesting() {
+  DCHECK(current_config_runner_);
+  return current_config_runner_->GetConfigOverridesForTesting();
+}
+
 void DnsProbeServiceImpl::OnDnsConfigChanged() {
+  SetUpCurrentConfigRunner();
   ClearCachedResult();
+}
+
+void DnsProbeServiceImpl::SetUpCurrentConfigRunner() {
+  SecureDnsConfig secure_dns_config =
+      SystemNetworkContextManager::GetStubResolverConfigReader()
+          ->GetSecureDnsConfiguration(
+              false /* force_check_parental_controls_for_automatic_mode */);
+
+  current_config_secure_dns_mode_ = secure_dns_config.mode();
+
+  net::DnsConfigOverrides current_config_overrides;
+  current_config_overrides.search = std::vector<std::string>();
+  current_config_overrides.attempts = 1;
+
+  if (current_config_secure_dns_mode_ == net::SecureDnsMode::kSecure) {
+    if (!secure_dns_config.servers().empty()) {
+      current_config_overrides.dns_over_https_servers.emplace(
+          secure_dns_config.servers());
+    }
+    current_config_overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
+  } else {
+    // A DNS error that occurred in automatic mode must have had an insecure
+    // DNS failure. For efficiency, probe queries in this case can just be
+    // issued in OFF mode.
+    current_config_overrides.secure_dns_mode = net::SecureDnsMode::kOff;
+  }
+
+  current_config_runner_ = std::make_unique<DnsProbeRunner>(
+      current_config_overrides, network_context_getter_);
 }
 
 void DnsProbeServiceImpl::StartProbes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(STATE_NO_RESULT, state_);
 
-  DCHECK(!system_runner_.IsRunning());
-  DCHECK(!public_runner_.IsRunning());
+  DCHECK(!current_config_runner_->IsRunning());
+  DCHECK(!google_config_runner_->IsRunning());
 
   // Unretained safe because the callback will not be run if the DnsProbeRunner
   // is destroyed.
-  system_runner_.RunProbe(base::BindOnce(&DnsProbeServiceImpl::OnProbeComplete,
-                                         base::Unretained(this)));
-  public_runner_.RunProbe(base::BindOnce(&DnsProbeServiceImpl::OnProbeComplete,
-                                         base::Unretained(this)));
+  current_config_runner_->RunProbe(base::BindOnce(
+      &DnsProbeServiceImpl::OnProbeComplete, base::Unretained(this)));
+  google_config_runner_->RunProbe(base::BindOnce(
+      &DnsProbeServiceImpl::OnProbeComplete, base::Unretained(this)));
   probe_start_time_ = tick_clock_->NowTicks();
   state_ = STATE_PROBE_RUNNING;
 
-  DCHECK(system_runner_.IsRunning());
-  DCHECK(public_runner_.IsRunning());
+  DCHECK(current_config_runner_->IsRunning());
+  DCHECK(google_config_runner_->IsRunning());
 }
 
 void DnsProbeServiceImpl::OnProbeComplete() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(STATE_PROBE_RUNNING, state_);
-  DCHECK(!system_runner_.IsRunning() || !public_runner_.IsRunning());
+  DCHECK(!current_config_runner_->IsRunning() ||
+         !google_config_runner_->IsRunning());
 
-  if (system_runner_.IsRunning() || public_runner_.IsRunning())
+  if (current_config_runner_->IsRunning() || google_config_runner_->IsRunning())
     return;
 
-  cached_result_ =
-      EvaluateResults(system_runner_.result(), public_runner_.result());
+  cached_result_ = EvaluateResults(current_config_runner_->result(),
+                                   google_config_runner_->result());
   state_ = STATE_RESULT_CACHED;
 
   HistogramProbe(cached_result_, tick_clock_->NowTicks() - probe_start_time_);
 
   CallCallbacks();
+}
+
+error_page::DnsProbeStatus DnsProbeServiceImpl::EvaluateResults(
+    DnsProbeRunner::Result current_config_result,
+    DnsProbeRunner::Result google_config_result) {
+  // If the current DNS config is working, assume the domain doesn't exist.
+  if (current_config_result == DnsProbeRunner::CORRECT)
+    return error_page::DNS_PROBE_FINISHED_NXDOMAIN;
+
+  // If the current DNS config is unknown (e.g. on Android), but Google DNS is
+  // reachable, assume the domain doesn't exist.
+  if (current_config_result == DnsProbeRunner::UNKNOWN &&
+      google_config_result == DnsProbeRunner::CORRECT) {
+    return error_page::DNS_PROBE_FINISHED_NXDOMAIN;
+  }
+
+  // If the current DNS config is not working but Google DNS is, assume the DNS
+  // config is bad (or perhaps the DNS servers are down or broken). If the
+  // current DNS config is in secure mode, return an error indicating that this
+  // is a secure DNS config issue.
+  if (google_config_result == DnsProbeRunner::CORRECT) {
+    return (current_config_secure_dns_mode_ == net::SecureDnsMode::kSecure)
+               ? error_page::DNS_PROBE_FINISHED_BAD_SECURE_CONFIG
+               : error_page::DNS_PROBE_FINISHED_BAD_CONFIG;
+  }
+
+  // If the current DNS config is not working and Google DNS is unreachable,
+  // assume the internet connection is down (note that current DNS may be a
+  // router on the LAN, so it may be reachable but returning errors.)
+  if (google_config_result == DnsProbeRunner::UNREACHABLE)
+    return error_page::DNS_PROBE_FINISHED_NO_INTERNET;
+
+  // Otherwise: the current DNS config is not working and Google DNS is
+  // responding but with errors or incorrect results.  This is an awkward case;
+  // an invasive captive portal or a restrictive firewall may be intercepting
+  // or rewriting DNS traffic, or the public server may itself be failing or
+  // down.
+  return error_page::DNS_PROBE_FINISHED_INCONCLUSIVE;
 }
 
 void DnsProbeServiceImpl::CallCallbacks() {
@@ -310,8 +369,7 @@ bool DnsProbeServiceImpl::CachedResultIsExpired() const {
   if (state_ != STATE_RESULT_CACHED)
     return false;
 
-  const base::TimeDelta kMaxResultAge =
-      base::TimeDelta::FromMilliseconds(kMaxResultAgeMs);
+  const base::TimeDelta kMaxResultAge = base::Milliseconds(kMaxResultAgeMs);
   return tick_clock_->NowTicks() - probe_start_time_ > kMaxResultAge;
 }
 
@@ -319,7 +377,7 @@ void DnsProbeServiceImpl::SetupDnsConfigChangeNotifications() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   dns_config_change_manager_getter_.Run()->RequestNotifications(
       receiver_.BindNewPipeAndPassRemote());
-  receiver_.set_disconnect_handler(base::BindRepeating(
+  receiver_.set_disconnect_handler(base::BindOnce(
       &DnsProbeServiceImpl::OnDnsConfigChangeManagerConnectionError,
       base::Unretained(this)));
 }

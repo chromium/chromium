@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 /** @fileoverview Externs generated from namespace: activityLogPrivate */
 
-/**
- * @const
- */
+/** @const */
 chrome.activityLogPrivate = {};
 
 /**
@@ -102,7 +100,8 @@ chrome.activityLogPrivate.ActivityResultSet;
  * Retrieves activity from the ActivityLog that matches the specified filter.
  * @param {!chrome.activityLogPrivate.Filter} filter Fill out the fields that
  *     you want to search for in the database.
- * @param {function(!chrome.activityLogPrivate.ActivityResultSet):void} callback
+ * @param {function(!chrome.activityLogPrivate.ActivityResultSet): void}
+ *     callback
  */
 chrome.activityLogPrivate.getExtensionActivities = function(filter, callback) {};
 
@@ -111,14 +110,14 @@ chrome.activityLogPrivate.getExtensionActivities = function(filter, callback) {}
  * activity IDs.
  * @param {!Array<string>} activityIds Erases only the activities which IDs are
  *     listed in the array.
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  */
 chrome.activityLogPrivate.deleteActivities = function(activityIds, callback) {};
 
 /**
  * Deletes activities in the ActivityLog database specified by the extension ID.
  * @param {string} extensionId The ID of the extension to delete activities for.
- * @param {function():void=} callback
+ * @param {function(): void=} callback
  */
 chrome.activityLogPrivate.deleteActivitiesByExtension = function(extensionId, callback) {};
 
@@ -129,7 +128,7 @@ chrome.activityLogPrivate.deleteDatabase = function() {};
 
 /**
  * Delete URLs in the ActivityLog database.
- * @param {!Array<string>=} urls Erases only the URLs listed; if empty, erases
+ * @param {!Array<string>} urls Erases only the URLs listed; if empty, erases
  *     all URLs.
  */
 chrome.activityLogPrivate.deleteUrls = function(urls) {};

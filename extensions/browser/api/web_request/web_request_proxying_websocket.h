@@ -12,22 +12,24 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "components/keyed_service/core/keyed_service_shutdown_notifier.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_info.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace net {
 class IPEndPoint;
+class SiteForCookies;
 }  // namespace net
 
 namespace extensions {
@@ -37,7 +39,7 @@ namespace extensions {
 class WebRequestProxyingWebSocket
     : public WebRequestAPI::Proxy,
       public network::mojom::WebSocketHandshakeClient,
-      public network::mojom::AuthenticationHandler,
+      public network::mojom::WebSocketAuthenticationHandler,
       public network::mojom::TrustedHeaderClient {
  public:
   using WebSocketFactory = content::ContentBrowserClient::WebSocketFactory;
@@ -50,9 +52,15 @@ class WebRequestProxyingWebSocket
       bool has_extra_headers,
       int process_id,
       int render_frame_id,
+      ukm::SourceIdObj ukm_source_id,
       content::BrowserContext* browser_context,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       WebRequestAPI::ProxySet* proxies);
+
+  WebRequestProxyingWebSocket(const WebRequestProxyingWebSocket&) = delete;
+  WebRequestProxyingWebSocket& operator=(const WebRequestProxyingWebSocket&) =
+      delete;
+
   ~WebRequestProxyingWebSocket() override;
 
   void Start();
@@ -60,13 +68,15 @@ class WebRequestProxyingWebSocket
   // network::mojom::WebSocketHandshakeClient methods:
   void OnOpeningHandshakeStarted(
       network::mojom::WebSocketHandshakeRequestPtr request) override;
+  void OnFailure(const std::string&, int net_error, int response_code) override;
   void OnConnectionEstablished(
       mojo::PendingRemote<network::mojom::WebSocket> websocket,
       mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver,
       network::mojom::WebSocketHandshakeResponsePtr response,
-      mojo::ScopedDataPipeConsumerHandle readable) override;
+      mojo::ScopedDataPipeConsumerHandle readable,
+      mojo::ScopedDataPipeProducerHandle writable) override;
 
-  // network::mojom::AuthenticationHandler method:
+  // network::mojom::WebSocketAuthenticationHandler method:
   void OnAuthRequired(const net::AuthChallengeInfo& auth_info,
                       const scoped_refptr<net::HttpResponseHeaders>& headers,
                       const net::IPEndPoint& remote_endpoint,
@@ -82,13 +92,14 @@ class WebRequestProxyingWebSocket
   static void StartProxying(
       WebSocketFactory factory,
       const GURL& url,
-      const GURL& site_for_cookies,
-      const base::Optional<std::string>& user_agent,
+      const net::SiteForCookies& site_for_cookies,
+      const absl::optional<std::string>& user_agent,
       mojo::PendingRemote<network::mojom::WebSocketHandshakeClient>
           handshake_client,
       bool has_extra_headers,
       int process_id,
       int render_frame_id,
+      ukm::SourceIdObj ukm_source_id,
       WebRequestAPI::RequestIDGenerator* request_id_generator,
       const url::Origin& origin,
       content::BrowserContext* browser_context,
@@ -125,7 +136,7 @@ class WebRequestProxyingWebSocket
       forwarding_handshake_client_;
   mojo::Receiver<network::mojom::WebSocketHandshakeClient>
       receiver_as_handshake_client_{this};
-  mojo::Receiver<network::mojom::AuthenticationHandler>
+  mojo::Receiver<network::mojom::WebSocketAuthenticationHandler>
       receiver_as_auth_handler_{this};
   mojo::Receiver<network::mojom::TrustedHeaderClient>
       receiver_as_header_client_{this};
@@ -147,6 +158,7 @@ class WebRequestProxyingWebSocket
   mojo::PendingReceiver<network::mojom::WebSocketClient> client_receiver_;
   network::mojom::WebSocketHandshakeResponsePtr handshake_response_ = nullptr;
   mojo::ScopedDataPipeConsumerHandle readable_;
+  mojo::ScopedDataPipeProducerHandle writable_;
 
   WebRequestInfo info_;
 
@@ -154,11 +166,9 @@ class WebRequestProxyingWebSocket
   WebRequestAPI::ProxySet* const proxies_;
 
   // Notifies the proxy that the browser context has been shutdown.
-  std::unique_ptr<KeyedServiceShutdownNotifier::Subscription>
-      shutdown_notifier_;
+  base::CallbackListSubscription shutdown_notifier_subscription_;
 
   base::WeakPtrFactory<WebRequestProxyingWebSocket> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(WebRequestProxyingWebSocket);
 };
 
 }  // namespace extensions

@@ -1,0 +1,11 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x876
+      LayoutNGBlockFlow {DIV} at (0,0) size 1176x54
+        LayoutText {#text} at (0,0) size 1174x53
+          text run at (0,0) width 1174: "This tests that window.getSelection().clear() clears the selection correctly. If this test is successful, this text should not be"
+          text run at (0,27) width 85: "selected."

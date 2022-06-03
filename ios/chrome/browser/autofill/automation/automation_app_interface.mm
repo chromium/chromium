@@ -131,7 +131,7 @@ NSError* PrepareAutofillProfileWithValues(const base::Value* autofill_profile) {
   }
 
   // Save the profile and credit card generated to the personal data manager.
-  ios::ChromeBrowserState* browser_state =
+  ChromeBrowserState* browser_state =
       chrome_test_util::GetOriginalBrowserState();
   PersonalDataManager* personal_data_manager =
       PersonalDataManagerFactory::GetForBrowserState(browser_state);
@@ -147,7 +147,7 @@ NSError* PrepareAutofillProfileWithValues(const base::Value* autofill_profile) {
 @implementation AutomationAppInterface
 
 + (NSError*)setAutofillAutomationProfile:(NSString*)profileJSON {
-  base::Optional<base::Value> readResult =
+  absl::optional<base::Value> readResult =
       base::JSONReader::Read(base::SysNSStringToUTF8(profileJSON));
   if (!readResult.has_value()) {
     return testing::NSErrorWithLocalizedDescription(

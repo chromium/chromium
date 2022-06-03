@@ -6,13 +6,23 @@ import("//build/config/android/rules.gni")
 import("//chrome/android/modules/buildflags.gni")
 
 android_library("java") {
-  java_files = [ "java/src/org/chromium/chrome/modules/stack_unwinder/StackUnwinderProviderImpl.java" ]
+  sources = [ "java/src/org/chromium/chrome/modules/stack_unwinder/StackUnwinderModuleContentsImpl.java" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     "//base:base_java",
-    "//chrome/android/features/stack_unwinder/internal:java",
-    "//chrome/android/features/stack_unwinder/public:java",
     "//chrome/android/modules/stack_unwinder/public:java",
   ]
+}
+
+generate_jni("jni_headers") {
+  sources = [ "java/src/org/chromium/chrome/modules/stack_unwinder/StackUnwinderModuleContentsImpl.java" ]
+}
+
+generate_jni_registration("jni_registration") {
+  targets = [ ":java" ]
+  header_output = "$target_gen_dir/jni_registration.h"
+  namespace = "stack_unwinder"
+  no_transitive_deps = true
 }
 
 # This group is effectively an alias representing the module's native code,
@@ -20,19 +30,20 @@ android_library("java") {
 # component target must be named according to the feature, so that the component
 # build's .cr.co library is named properly (ie. libstack_unwinder.cr.so).
 group("native") {
-  deps = [
-    ":stack_unwinder",
-  ]
+  deps = [ ":stack_unwinder" ]
 }
 
 component("stack_unwinder") {
   sources = [
     "entrypoints.cc",
+    "stack_unwinder_module_contents_impl.cc",
   ]
   deps = [
+    ":jni_headers",
     ":jni_registration",
     "//base",
-    "//chrome/android/features/stack_unwinder/internal:native",
+    "//base:native_unwinder_android",
+    "//chrome/android/features/stack_unwinder/public:native",
   ]
 
   # stack unwinder native entrypoints belong in the partition.
@@ -41,17 +52,15 @@ component("stack_unwinder") {
   }
 }
 
-# TODO(https://crbug.com/1008109): Adapt JNI registration to point at a Java
-# target, instead of an APK/module target. This JNI registration target
-# points at ChromeModern's module, but it's used by Monochrome as well, since
-# both variants do explicit JNI registration in DFMs (for consistency).
-#
-# Alternatively, move to lazy JNI init for DFMs in Monochrome, by conditionally
-# including a registration stub, as Chrome's base library does. That requires
-# two sets of registration targets, so that the feature module template can
-# selectively pull in the real version or a stub.
-generate_jni_registration("jni_registration") {
-  targets = [ "//chrome/android:chrome_modern_public_bundle__stack_unwinder_bundle_module" ]
-  header_output = "$target_gen_dir/jni_registration.h"
-  namespace = "stack_unwinder"
+# Since loading of a partitioned library is not supported in an APK, a separate
+# target without partition is necessary for testing.
+source_set("stack_unwinder_for_testing") {
+  testonly = true
+  sources = [ "stack_unwinder_module_contents_impl.cc" ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//base:native_unwinder_android",
+    "//chrome/android/features/stack_unwinder/public:native",
+  ]
 }

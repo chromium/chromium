@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/list_model/list_item.h"
 
-#include "base/logging.h"
 #import "ios/chrome/browser/ui/list_model/list_item+Controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

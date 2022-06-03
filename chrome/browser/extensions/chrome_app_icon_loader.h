@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/chrome_app_icon_delegate.h"
 #include "chrome/browser/ui/app_icon_loader.h"
 
@@ -40,6 +39,10 @@ class ChromeAppIconLoader : public AppIconLoader, public ChromeAppIconDelegate {
   ChromeAppIconLoader(Profile* profile,
                       int icon_size_in_dip,
                       AppIconLoaderDelegate* delegate);
+
+  ChromeAppIconLoader(const ChromeAppIconLoader&) = delete;
+  ChromeAppIconLoader& operator=(const ChromeAppIconLoader&) = delete;
+
   ~ChromeAppIconLoader() override;
 
   // AppIconLoader overrides:
@@ -47,6 +50,9 @@ class ChromeAppIconLoader : public AppIconLoader, public ChromeAppIconDelegate {
   void FetchImage(const std::string& id) override;
   void ClearImage(const std::string& id) override;
   void UpdateImage(const std::string& id) override;
+
+  // Sets |extensions_only_| as true to load icons for extensions only.
+  void SetExtensionsOnly();
 
  private:
   using ExtensionIDToChromeAppIconMap =
@@ -62,7 +68,9 @@ class ChromeAppIconLoader : public AppIconLoader, public ChromeAppIconDelegate {
   // resize will be performed by ImageLoader.
   const ResizeFunction resize_function_;
 
-  DISALLOW_COPY_AND_ASSIGN(ChromeAppIconLoader);
+  // Loads icons for extensions only if true, otherwise loads icon for both
+  // Chrome apps and extensions.
+  bool extensions_only_ = false;
 };
 
 }  // namespace extensions

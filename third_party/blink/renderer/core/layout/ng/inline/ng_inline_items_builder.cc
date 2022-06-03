@@ -6,10 +6,12 @@
 
 #include <type_traits>
 
+#include "base/containers/adapters.h"
+#include "third_party/blink/renderer/core/html/html_area_element.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_text.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text.h"
-#include "third_party/blink/renderer/core/layout/ng/inline/ng_dirty_lines.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_item_span.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_node_data.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_offset_mapping_builder.h"
@@ -17,6 +19,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
 
 namespace blink {
+class HTMLAreaElement;
 
 // Returns true if items builder is used for other than offset mapping.
 template <typename OffsetMappingBuilder>
@@ -124,12 +127,12 @@ bool ShouldRemoveNewline(const StringBuilder& before,
                                  after_style);
 }
 
-void AppendItem(Vector<NGInlineItem>* items,
-                NGInlineItem::NGInlineItemType type,
-                unsigned start,
-                unsigned end,
-                LayoutObject* layout_object = nullptr) {
-  items->push_back(NGInlineItem(type, start, end, layout_object));
+inline NGInlineItem& AppendItem(HeapVector<NGInlineItem>* items,
+                                NGInlineItem::NGInlineItemType type,
+                                unsigned start,
+                                unsigned end,
+                                LayoutObject* layout_object) {
+  return items->emplace_back(type, start, end, layout_object);
 }
 
 inline bool ShouldIgnore(UChar c) {
@@ -141,11 +144,6 @@ inline bool ShouldIgnore(UChar c) {
   // in the line breaker (e.g., SOFT HYPHEN.) HarfBuzz ignores them while
   // shaping.
   return c == kCarriageReturnCharacter || c == kFormFeedCharacter;
-}
-
-inline bool IsCollapsibleSpace(UChar c) {
-  return c == kSpaceCharacter || c == kNewlineCharacter ||
-         c == kTabulationCharacter || c == kCarriageReturnCharacter;
 }
 
 // Characters needing a separate control item than other text items.
@@ -166,12 +164,12 @@ inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
                                          unsigned* offset,
                                          UChar* c) {
   DCHECK_EQ(*c, string[*offset]);
-  DCHECK(IsCollapsibleSpace(*c));
+  DCHECK(Character::IsCollapsibleSpace(*c));
   bool space_run_has_newline = *c == kNewlineCharacter;
   for ((*offset)++; *offset < string.length(); (*offset)++) {
     *c = string[*offset];
     space_run_has_newline |= *c == kNewlineCharacter;
-    if (!IsCollapsibleSpace(*c))
+    if (!Character::IsCollapsibleSpace(*c))
       break;
   }
   return space_run_has_newline;
@@ -180,9 +178,8 @@ inline bool MoveToEndOfCollapsibleSpaces(const StringView& string,
 // Find the last item to compute collapsing with. Opaque items such as
 // open/close or bidi controls are ignored.
 // Returns nullptr if there were no previous items.
-NGInlineItem* LastItemToCollapseWith(Vector<NGInlineItem>* items) {
-  for (auto it = items->rbegin(); it != items->rend(); it++) {
-    NGInlineItem& item = *it;
+NGInlineItem* LastItemToCollapseWith(HeapVector<NGInlineItem>* items) {
+  for (auto& item : base::Reversed(*items)) {
     if (item.EndCollapseType() != NGInlineItem::kOpaqueToCollapsing)
       return &item;
   }
@@ -198,7 +195,7 @@ NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::BoxInfo(
     : item_index(item_index),
       should_create_box_fragment(item.ShouldCreateBoxFragment()),
       may_have_margin_(item.Style()->MayHaveMargin()),
-      text_metrics(NGLineHeightMetrics(*item.Style())) {
+      text_metrics(item.Style()->GetFontHeight()) {
   DCHECK(item.Style());
 }
 
@@ -221,7 +218,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
 
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BoxInfo::
-    SetShouldCreateBoxFragment(Vector<NGInlineItem>* items) {
+    SetShouldCreateBoxFragment(HeapVector<NGInlineItem>* items) {
   DCHECK(!should_create_box_fragment);
   should_create_box_fragment = true;
   (*items)[item_index].SetShouldCreateBoxFragment();
@@ -237,7 +234,8 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
 }
 
 template <typename OffsetMappingBuilder>
-void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
+NGInlineItem&
+NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
     NGInlineItem::NGInlineItemType type,
     const StringView string,
     LayoutText* layout_object) {
@@ -245,11 +243,11 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextItem(
   unsigned start_offset = text_.length();
   text_.Append(string);
   mapping_builder_.AppendIdentityMapping(string.length());
-  AppendItem(items_, type, start_offset, text_.length(), layout_object);
-  DCHECK(!items_->back().IsEmptyItem());
-  // text item is not empty.
-  is_empty_inline_ = false;
+  NGInlineItem& item =
+      AppendItem(items_, type, start_offset, text_.length(), layout_object);
+  DCHECK(!item.IsEmptyItem());
   is_block_level_ = false;
+  return item;
 }
 
 // Empty text items are not needed for the layout purposes, but all LayoutObject
@@ -260,8 +258,8 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
     LayoutText* layout_object) {
   DCHECK(layout_object);
   unsigned offset = text_.length();
-  AppendItem(items_, NGInlineItem::kText, offset, offset, layout_object);
-  NGInlineItem& item = items_->back();
+  NGInlineItem& item =
+      AppendItem(items_, NGInlineItem::kText, offset, offset, layout_object);
   item.SetEndCollapseType(NGInlineItem::kOpaqueToCollapsing);
   item.SetIsEmptyItem(true);
   item.SetIsBlockLevel(true);
@@ -271,13 +269,14 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendEmptyTextItem(
 template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
     AppendGeneratedBreakOpportunity(LayoutObject* layout_object) {
+  if (block_flow_->IsNGSVGText())
+    return;
   DCHECK(layout_object);
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        nullptr);
-  AppendBreakOpportunity(layout_object);
-  NGInlineItem* item = &items_->back();
-  item->SetIsGeneratedForLineBreak();
-  item->SetEndCollapseType(NGInlineItem::kOpaqueToCollapsing);
+  NGInlineItem& item = AppendBreakOpportunity(layout_object);
+  item.SetIsGeneratedForLineBreak();
+  item.SetEndCollapseType(NGInlineItem::kOpaqueToCollapsing);
 }
 
 template <typename OffsetMappingBuilder>
@@ -285,7 +284,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     const NGInlineNodeData& original_data,
     LayoutText* layout_text) {
   DCHECK(layout_text);
-  const base::span<NGInlineItem>& items = layout_text->InlineItems();
+  const auto& items = layout_text->InlineItems();
   const NGInlineItem& old_item0 = items.front();
   if (!old_item0.Length())
     return false;
@@ -297,15 +296,25 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
   // TODO(layout-dev): This could likely be optimized further.
   // TODO(layout-dev): Handle cases where the old items are not consecutive.
   const ComputedStyle& new_style = layout_text->StyleRef();
-  bool collapse_spaces = new_style.CollapseWhiteSpace();
+  const bool collapse_spaces = new_style.CollapseWhiteSpace();
+  const bool preserve_newlines =
+      new_style.PreserveNewline() && LIKELY(!is_text_combine_);
   if (NGInlineItem* last_item = LastItemToCollapseWith(items_)) {
     if (collapse_spaces) {
       switch (last_item->EndCollapseType()) {
         case NGInlineItem::kCollapsible:
-          // If the original string starts with a collapsible space, it may be
-          // collapsed.
-          if (original_string[old_item0.StartOffset()] == kSpaceCharacter)
-            return false;
+          switch (original_string[old_item0.StartOffset()]) {
+            case kSpaceCharacter:
+              // If the original string starts with a collapsible space, it may
+              // be collapsed.
+              return false;
+            case kNewlineCharacter:
+              // Collapsible spaces immediately before a preserved newline
+              // should be removed to be consistent with
+              // AppendForcedBreakCollapseWhitespace.
+              if (preserve_newlines)
+                return false;
+          }
           // If the last item ended with a collapsible space run with segment
           // breaks, we need to run the full algorithm to apply segment break
           // rules. This may result in removal of the space in the last item.
@@ -321,7 +330,8 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
           break;
         case NGInlineItem::kNotCollapsible: {
           const String& source_text = layout_text->GetText();
-          if (source_text.length() && IsCollapsibleSpace(source_text[0])) {
+          if (source_text.length() &&
+              Character::IsCollapsibleSpace(source_text[0])) {
             // If the start of the original string was collapsed, it may be
             // restored.
             if (original_string[old_item0.StartOffset()] != kSpaceCharacter)
@@ -366,7 +376,7 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
       return false;
   }
 
-  if (new_style.PreserveNewline()) {
+  if (preserve_newlines) {
     // We exit and then re-enter all bidi contexts around a forced break. So, We
     // must go through the full pipeline to ensure that we exit and enter the
     // correct bidi contexts the re-layout.
@@ -397,7 +407,6 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
     // itself may be reused.
     if (item.StartOffset() == start) {
       items_->push_back(item);
-      is_empty_inline_ &= item.IsEmptyItem();
       is_block_level_ &= item.IsBlockLevel();
       continue;
     }
@@ -428,7 +437,6 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextReusing(
 #endif
 
     items_->push_back(adjusted_item);
-    is_empty_inline_ &= adjusted_item.IsEmptyItem();
     is_block_level_ &= adjusted_item.IsBlockLevel();
   }
   return true;
@@ -446,10 +454,6 @@ template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     LayoutText* layout_text,
     const NGInlineNodeData* previous_data) {
-  // Mark dirty lines. Clear if marked, only the first dirty line is relevant.
-  if (dirty_lines_ && dirty_lines_->HandleText(layout_text))
-    dirty_lines_ = nullptr;
-
   // If the LayoutText element hasn't changed, reuse the existing items.
   if (previous_data && layout_text->HasValidInlineItems()) {
     if (AppendTextReusing(*previous_data, layout_text)) {
@@ -461,6 +465,13 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
   if (UNLIKELY(layout_text->IsWordBreak())) {
     typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                          layout_text);
+    if (UNLIKELY(is_text_combine_)) {
+      // We don't break text runs in text-combine-upright:all.
+      // Note: Even if we have overflow-wrap:normal and word-break:keep-all,
+      // <wbr> causes line break.
+      Append(NGInlineItem::kText, kZeroWidthSpaceCharacter, layout_text);
+      return;
+    }
     AppendBreakOpportunity(layout_text);
     return;
   }
@@ -478,23 +489,75 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendText(
     AppendEmptyTextItem(layout_object);
     return;
   }
-  text_.ReserveCapacity(string.length());
+
+  const wtf_size_t estimated_length = text_.length() + string.length();
+  if (estimated_length > text_.Capacity()) {
+    // The reallocations may occur very frequently for large text such as log
+    // files. We use a more aggressive expansion strategy, the same as
+    // |Vector::ExpandCapacity| does for |Vector|s with inline storage.
+    // |ReserveCapacity| reserves only the requested size.
+    const wtf_size_t new_capacity =
+        std::max(estimated_length, text_.Capacity() * 2);
+    if (string.Is8Bit())
+      text_.ReserveCapacity(new_capacity);
+    else
+      text_.Reserve16BitCapacity(new_capacity);
+  }
 
   typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
                                                        layout_object);
 
   const ComputedStyle& style = layout_object->StyleRef();
   EWhiteSpace whitespace = style.WhiteSpace();
-  bool is_svg_text = layout_object && layout_object->IsSVGInlineText();
+  const bool should_not_preserve_newline =
+      (layout_object && layout_object->IsSVGInlineText()) ||
+      UNLIKELY(is_text_combine_);
 
   RestoreTrailingCollapsibleSpaceIfRemoved();
 
+  if (text_chunk_offsets_ && AppendTextChunks(string, *layout_object))
+    return;
   if (!ComputedStyle::CollapseWhiteSpace(whitespace))
     AppendPreserveWhitespace(string, &style, layout_object);
-  else if (ComputedStyle::PreserveNewline(whitespace) && !is_svg_text)
+  else if (ComputedStyle::PreserveNewline(whitespace) &&
+           !should_not_preserve_newline)
     AppendPreserveNewline(string, &style, layout_object);
   else
     AppendCollapseWhitespace(string, &style, layout_object);
+}
+
+template <typename OffsetMappingBuilder>
+bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendTextChunks(
+    const String& string,
+    LayoutText& layout_text) {
+  auto iter = text_chunk_offsets_->find(&layout_text);
+  if (iter == text_chunk_offsets_->end())
+    return false;
+  const ComputedStyle& style = layout_text.StyleRef();
+  EWhiteSpace whitespace = style.WhiteSpace();
+  unsigned start = 0;
+  for (unsigned offset : iter->value) {
+    DCHECK_LE(offset, string.length());
+    if (start < offset) {
+      if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
+        AppendPreserveWhitespace(string.Substring(start, offset - start),
+                                 &style, &layout_text);
+      } else {
+        AppendCollapseWhitespace(StringView(string, start, offset - start),
+                                 &style, &layout_text);
+      }
+    }
+    ExitAndEnterSvgTextChunk(layout_text);
+    start = offset;
+  }
+  if (start >= string.length())
+    return true;
+  if (!ComputedStyle::CollapseWhiteSpace(whitespace)) {
+    AppendPreserveWhitespace(string.Substring(start), &style, &layout_text);
+  } else {
+    AppendCollapseWhitespace(StringView(string, start), &style, &layout_text);
+  }
+  return true;
 }
 
 template <typename OffsetMappingBuilder>
@@ -521,14 +584,18 @@ void NGInlineItemsBuilderTemplate<
   unsigned i = 0;
   UChar c = string[i];
   bool space_run_has_newline = false;
-  if (IsCollapsibleSpace(c)) {
+  if (Character::IsCollapsibleSpace(c)) {
     // Find the end of the collapsible space run.
     space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 
     // LayoutBR does not set preserve_newline, but should be preserved.
     if (UNLIKELY(space_run_has_newline && string.length() == 1 &&
                  layout_object && layout_object->IsBR())) {
-      AppendForcedBreakCollapseWhitespace(layout_object);
+      if (UNLIKELY(is_text_combine_)) {
+        AppendTextItem(" ", layout_object);
+      } else {
+        AppendForcedBreakCollapseWhitespace(layout_object);
+      }
       return;
     }
 
@@ -626,11 +693,11 @@ void NGInlineItemsBuilderTemplate<
     while (true) {
       // Append the non-space text until we find a collapsible space.
       // |string[i]| is guaranteed not to be a space.
-      DCHECK(!IsCollapsibleSpace(string[i]));
+      DCHECK(!Character::IsCollapsibleSpace(string[i]));
       unsigned start_of_non_space = i;
       for (i++; i < string.length(); i++) {
         c = string[i];
-        if (IsCollapsibleSpace(c))
+        if (Character::IsCollapsibleSpace(c))
           break;
       }
       text_.Append(string, start_of_non_space, i - start_of_non_space);
@@ -643,7 +710,7 @@ void NGInlineItemsBuilderTemplate<
 
       // Process a collapsible space run. First, find the end of the run.
       DCHECK_EQ(c, string[i]);
-      DCHECK(IsCollapsibleSpace(c));
+      DCHECK(Character::IsCollapsibleSpace(c));
       unsigned start_of_spaces = i;
       space_run_has_newline = MoveToEndOfCollapsibleSpaces(string, &i, &c);
 
@@ -684,13 +751,10 @@ void NGInlineItemsBuilderTemplate<
     return;
   }
 
-  AppendItem(items_, NGInlineItem::kText, start_offset, text_.length(),
-             layout_object);
-  NGInlineItem& item = items_->back();
+  NGInlineItem& item = AppendItem(items_, NGInlineItem::kText, start_offset,
+                                  text_.length(), layout_object);
   item.SetEndCollapseType(end_collapse, space_run_has_newline);
   DCHECK(!item.IsEmptyItem());
-  // text item is not empty.
-  is_empty_inline_ = false;
   is_block_level_ = false;
 }
 
@@ -701,6 +765,8 @@ bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
         const ComputedStyle& style,
         unsigned index) const {
   DCHECK_LE(index, string.length());
+  if (UNLIKELY(is_text_combine_))
+    return false;
   // Check if we are at a preserved space character and auto-wrap is enabled.
   if (style.CollapseWhiteSpace() || !style.AutoWrap() || !string.length() ||
       index >= string.length() || string[index] != kSpaceCharacter)
@@ -756,6 +822,11 @@ void NGInlineItemsBuilderTemplate<
     UChar c = string[start];
     if (IsControlItemCharacter(c)) {
       if (c == kNewlineCharacter) {
+        if (UNLIKELY(is_text_combine_)) {
+          start++;
+          AppendTextItem(" ", layout_object);
+          continue;
+        }
         AppendForcedBreak(layout_object);
         start++;
         // A forced break is not a collapsible space, but following collapsible
@@ -770,14 +841,17 @@ void NGInlineItemsBuilderTemplate<
             [](UChar c) { return c != kTabulationCharacter; }, start + 1);
         if (end == kNotFound)
           end = string.length();
-        AppendTextItem(NGInlineItem::kControl,
-                       StringView(string, start, end - start), layout_object);
+        NGInlineItem& item = AppendTextItem(
+            NGInlineItem::kControl, StringView(string, start, end - start),
+            layout_object);
+        item.SetTextType(NGTextType::kFlowControl);
         start = end;
         continue;
       }
       // ZWNJ splits item, but it should be text.
       if (c != kZeroWidthNonJoinerCharacter) {
-        Append(NGInlineItem::kControl, c, layout_object);
+        NGInlineItem& item = Append(NGInlineItem::kControl, c, layout_object);
+        item.SetTextType(NGTextType::kFlowControl);
         start++;
         continue;
       }
@@ -817,6 +891,9 @@ template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
     LayoutObject* layout_object) {
   DCHECK(layout_object);
+  // Combined text should ignore force line break[1].
+  // [1] https://drafts.csswg.org/css-writing-modes-3/#text-combine-layout
+  DCHECK(!is_text_combine_);
   // At the forced break, add bidi controls to pop all contexts.
   // https://drafts.csswg.org/css-writing-modes-3/#bidi-embedding-breaks
   if (!bidi_context_.IsEmpty()) {
@@ -824,18 +901,20 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendForcedBreak(
                                                          nullptr);
     // These bidi controls need to be associated with the |layout_object| so
     // that items from a LayoutObject are consecutive.
-    for (auto it = bidi_context_.rbegin(); it != bidi_context_.rend(); ++it) {
-      AppendOpaque(NGInlineItem::kBidiControl, it->exit, layout_object);
+    for (const auto& bidi : base::Reversed(bidi_context_)) {
+      AppendOpaque(NGInlineItem::kBidiControl, bidi.exit, layout_object);
     }
   }
 
-  Append(NGInlineItem::kControl, kNewlineCharacter, layout_object);
+  NGInlineItem& item =
+      Append(NGInlineItem::kControl, kNewlineCharacter, layout_object);
+  item.SetTextType(NGTextType::kForcedLineBreak);
 
   // A forced break is not a collapsible space, but following collapsible spaces
   // are leading spaces and that they should be collapsed.
   // Pretend that this item ends with a collapsible space, so that following
   // collapsible spaces can be collapsed.
-  items_->back().SetEndCollapseType(NGInlineItem::kCollapsible, false);
+  item.SetEndCollapseType(NGInlineItem::kCollapsible, false);
 
   // Then re-add bidi controls to restore the bidi context.
   if (!bidi_context_.IsEmpty()) {
@@ -857,14 +936,50 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
 }
 
 template <typename OffsetMappingBuilder>
-void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBreakOpportunity(
+NGInlineItem&
+NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBreakOpportunity(
     LayoutObject* layout_object) {
   DCHECK(layout_object);
-  AppendOpaque(NGInlineItem::kControl, kZeroWidthSpaceCharacter, layout_object);
+  NGInlineItem& item = AppendOpaque(NGInlineItem::kControl,
+                                    kZeroWidthSpaceCharacter, layout_object);
+  item.SetTextType(NGTextType::kFlowControl);
+  return item;
+}
+
+// The logic is similar to AppendForcedBreak().
+template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<
+    OffsetMappingBuilder>::ExitAndEnterSvgTextChunk(LayoutText& layout_text) {
+  DCHECK(block_flow_->IsNGSVGText());
+  DCHECK(text_chunk_offsets_);
+
+  if (bidi_context_.IsEmpty())
+    return;
+  typename OffsetMappingBuilder::SourceNodeScope scope(&mapping_builder_,
+                                                       nullptr);
+  // These bidi controls need to be associated with the |layout_text| so
+  // that items from a LayoutObject are consecutive.
+  for (const auto& bidi : base::Reversed(bidi_context_))
+    AppendOpaque(NGInlineItem::kBidiControl, bidi.exit, &layout_text);
+
+  // Then re-add bidi controls to restore the bidi context.
+  for (const auto& bidi : bidi_context_)
+    AppendOpaque(NGInlineItem::kBidiControl, bidi.enter, &layout_text);
 }
 
 template <typename OffsetMappingBuilder>
-void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
+void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterSvgTextChunk(
+    const ComputedStyle* style) {
+  if (LIKELY(!block_flow_->IsNGSVGText() || !text_chunk_offsets_))
+    return;
+  EnterBidiContext(nullptr, style, kLeftToRightIsolateCharacter,
+                   kRightToLeftIsolateCharacter,
+                   kPopDirectionalIsolateCharacter);
+  // This context is automatically popped by Exit(nullptr) in ExitBlock().
+}
+
+template <typename OffsetMappingBuilder>
+NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
     NGInlineItem::NGInlineItemType type,
     UChar character,
     LayoutObject* layout_object) {
@@ -873,10 +988,10 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Append(
   text_.Append(character);
   mapping_builder_.AppendIdentityMapping(1);
   unsigned end_offset = text_.length();
-  AppendItem(items_, type, end_offset - 1, end_offset, layout_object);
-
-  is_empty_inline_ &= items_->back().IsEmptyItem();
-  is_block_level_ &= items_->back().IsBlockLevel();
+  NGInlineItem& item =
+      AppendItem(items_, type, end_offset - 1, end_offset, layout_object);
+  is_block_level_ &= item.IsBlockLevel();
+  return item;
 }
 
 template <typename OffsetMappingBuilder>
@@ -888,11 +1003,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendAtomicInline(
   RestoreTrailingCollapsibleSpaceIfRemoved();
   Append(NGInlineItem::kAtomicInline, kObjectReplacementCharacter,
          layout_object);
-
-  // Mark dirty lines. Clear if marked, only the first dirty line is relevant.
-  if (dirty_lines_ &&
-      dirty_lines_->HandleAtomicInline(ToLayoutBox(layout_object)))
-    dirty_lines_ = nullptr;
+  has_ruby_ = has_ruby_ || layout_object->IsRubyRun();
 
   // When this atomic inline is inside of an inline box, the height of the
   // inline box can be different from the height of the atomic inline. Ensure
@@ -906,15 +1017,23 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendAtomicInline(
 }
 
 template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendBlockInInline(
+    LayoutObject* layout_object) {
+  DCHECK(layout_object);
+  // Before a block-in-inline is like after a forced break.
+  RemoveTrailingCollapsibleSpaceIfExists();
+  NGInlineItem& item = Append(NGInlineItem::kBlockInInline,
+                              kObjectReplacementCharacter, layout_object);
+  // After a block-in-inline is like after a forced break. See
+  // |AppendForcedBreak|.
+  item.SetEndCollapseType(NGInlineItem::kCollapsible, false);
+}
+
+template <typename OffsetMappingBuilder>
 void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendFloating(
     LayoutObject* layout_object) {
   AppendOpaque(NGInlineItem::kFloating, kObjectReplacementCharacter,
                layout_object);
-
-  // Mark dirty lines. Clear if marked, only the first dirty line is relevant.
-  if (dirty_lines_ &&
-      dirty_lines_->HandleFloatingOrOutOfFlowPositioned(layout_object))
-    dirty_lines_ = nullptr;
 }
 
 template <typename OffsetMappingBuilder>
@@ -922,27 +1041,21 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::
     AppendOutOfFlowPositioned(LayoutObject* layout_object) {
   AppendOpaque(NGInlineItem::kOutOfFlowPositioned, kObjectReplacementCharacter,
                layout_object);
-
-  // Mark dirty lines. Clear if marked, only the first dirty line is relevant.
-  if (dirty_lines_ &&
-      dirty_lines_->HandleFloatingOrOutOfFlowPositioned(layout_object))
-    dirty_lines_ = nullptr;
 }
 
 template <typename OffsetMappingBuilder>
-void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
+NGInlineItem& NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
     NGInlineItem::NGInlineItemType type,
     UChar character,
     LayoutObject* layout_object) {
   text_.Append(character);
   mapping_builder_.AppendIdentityMapping(1);
   unsigned end_offset = text_.length();
-  AppendItem(items_, type, end_offset - 1, end_offset, layout_object);
-
-  NGInlineItem& item = items_->back();
+  NGInlineItem& item =
+      AppendItem(items_, type, end_offset - 1, end_offset, layout_object);
   item.SetEndCollapseType(NGInlineItem::kOpaqueToCollapsing);
-  is_empty_inline_ &= item.IsEmptyItem();
   is_block_level_ &= item.IsBlockLevel();
+  return item;
 }
 
 template <typename OffsetMappingBuilder>
@@ -950,11 +1063,9 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::AppendOpaque(
     NGInlineItem::NGInlineItemType type,
     LayoutObject* layout_object) {
   unsigned end_offset = text_.length();
-  AppendItem(items_, type, end_offset, end_offset, layout_object);
-
-  NGInlineItem& item = items_->back();
+  NGInlineItem& item =
+      AppendItem(items_, type, end_offset, end_offset, layout_object);
   item.SetEndCollapseType(NGInlineItem::kOpaqueToCollapsing);
-  is_empty_inline_ &= item.IsEmptyItem();
   is_block_level_ &= item.IsBlockLevel();
 }
 
@@ -978,9 +1089,11 @@ void NGInlineItemsBuilderTemplate<
 
   // A forced break pretends that it's a collapsible space, see
   // |AppendForcedBreak()|. It should not be removed.
-  if (item->Type() == NGInlineItem::kControl)
+  if (item->Type() != NGInlineItem::kText) {
+    DCHECK(item->Type() == NGInlineItem::kControl ||
+           item->Type() == NGInlineItem::kBlockInInline);
     return;
-  DCHECK_EQ(item->Type(), NGInlineItem::kText);
+  }
 
   DCHECK_GT(item->EndOffset(), item->StartOffset());
   unsigned space_offset = item->EndOffset() - 1;
@@ -988,15 +1101,9 @@ void NGInlineItemsBuilderTemplate<
   text_.erase(space_offset);
   mapping_builder_.CollapseTrailingSpace(space_offset);
 
-  // Mark dirty lines. Clear if marked, only the first dirty line is relevant.
-  if (dirty_lines_) {
-    dirty_lines_->MarkAtTextOffset(space_offset);
-    dirty_lines_ = nullptr;
-  }
-
   // Keep the item even if the length became zero. This is not needed for
   // the layout purposes, but needed to maintain LayoutObject states. See
-  // |AddEmptyTextItem()|.
+  // |AppendEmptyTextItem()|.
   item->SetEndOffset(item->EndOffset() - 1);
   item->SetEndCollapseType(NGInlineItem::kCollapsed);
 
@@ -1025,7 +1132,7 @@ void NGInlineItemsBuilderTemplate<
   DCHECK(item->EndCollapseType() == NGInlineItem::kCollapsed);
 
   mapping_builder_.RestoreTrailingCollapsibleSpace(
-      ToLayoutText(*item->GetLayoutObject()), item->EndOffset());
+      To<LayoutText>(*item->GetLayoutObject()), item->EndOffset());
 
   // TODO(kojii): Implement StringBuilder::insert().
   if (text_.length() == item->EndOffset()) {
@@ -1072,6 +1179,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
     const ComputedStyle* style) {
   // Handle bidi-override on the block itself.
   if (style->RtlOrdering() == EOrder::kLogical) {
+    EnterSvgTextChunk(style);
     switch (style->GetUnicodeBidi()) {
       case UnicodeBidi::kNormal:
       case UnicodeBidi::kEmbed:
@@ -1095,7 +1203,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
         has_bidi_controls_ = true;
         // It's not easy to compute which lines will change with `unicode-bidi:
         // plaintext`. Since it is quite uncommon that just disable line cache.
-        changes_may_affect_earlier_lines_ = true;
+        has_unicode_bidi_plain_text_ = true;
         break;
     }
   } else {
@@ -1105,11 +1213,8 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterBlock(
                      kPopDirectionalFormattingCharacter);
   }
 
-  if (style->Display() == EDisplay::kListItem &&
-      style->ListStyleType() != EListStyleType::kNone) {
-    is_empty_inline_ = false;
+  if (style->Display() == EDisplay::kListItem && style->ListStyleType())
     is_block_level_ = false;
-  }
 }
 
 template <typename OffsetMappingBuilder>
@@ -1139,7 +1244,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterInline(
                          kPopDirectionalIsolateCharacter);
         break;
       case UnicodeBidi::kPlaintext:
-        changes_may_affect_earlier_lines_ = true;
+        has_unicode_bidi_plain_text_ = true;
         EnterBidiContext(node, kFirstStrongIsolateCharacter,
                          kPopDirectionalIsolateCharacter);
         break;
@@ -1154,10 +1259,6 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::EnterInline(
   }
 
   AppendOpaque(NGInlineItem::kOpenTag, node);
-
-  // Mark dirty lines. Clear if marked, only the first dirty line is relevant.
-  if (dirty_lines_ && dirty_lines_->HandleInlineBox(node))
-    dirty_lines_ = nullptr;
 
   if (!NeedsBoxInfo())
     return;
@@ -1208,8 +1309,20 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::ExitInline(
           break;
         }
         DCHECK_GT(i, current_box->item_index);
-        if (!item.IsEmptyItem())
-          break;
+        if (item.IsEmptyItem()) {
+          // float, abspos, collapsed space(<div>ab <span> </span>).
+          // See editing/caret/empty_inlines.html
+          // See also [1] for empty line box.
+          // [1] https://drafts.csswg.org/css2/visuren.html#phantom-line-box
+          continue;
+        }
+        if (item.IsCollapsibleSpaceOnly()) {
+          // Because we can't collapse trailing spaces until next node, we
+          // create box fragment for it: <div>ab<span> </span></div>
+          // See editing/selection/mixed-editability-10.html
+          continue;
+        }
+        break;
       }
     }
 
@@ -1231,10 +1344,30 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::Exit(
 }
 
 template <typename OffsetMappingBuilder>
-void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::SetIsSymbolMarker(
-    bool b) {
+bool NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::MayBeBidiEnabled()
+    const {
+  return !text_.Is8Bit() || HasBidiControls();
+}
+
+template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<
+    OffsetMappingBuilder>::DidFinishCollectInlines(NGInlineNodeData* data) {
+  data->text_content = ToString();
+
+  // Set |is_bidi_enabled_| for all UTF-16 strings for now, because at this
+  // point the string may or may not contain RTL characters.
+  // |SegmentText()| will analyze the text and reset |is_bidi_enabled_| if it
+  // doesn't contain any RTL characters.
+  data->is_bidi_enabled_ = MayBeBidiEnabled();
+  data->has_ruby_ = has_ruby_;
+  data->is_block_level_ = IsBlockLevel();
+  data->changes_may_affect_earlier_lines_ = HasUnicodeBidiPlainText();
+}
+
+template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::SetIsSymbolMarker() {
   DCHECK(!items_->IsEmpty());
-  items_->back().SetIsSymbolMarker(b);
+  items_->back().SetIsSymbolMarker();
 }
 
 // Ensure this LayoutObject IsInLayoutNGInlineFormattingContext and does not
@@ -1258,7 +1391,7 @@ void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::ClearNeedsLayout(
   // for subsequent layouts. Items that can be reused have already been
   // added to the builder.
   if (object->IsText())
-    ToLayoutText(object)->ClearInlineItems();
+    To<LayoutText>(object)->ClearInlineItems();
 }
 
 template <typename OffsetMappingBuilder>
@@ -1281,6 +1414,12 @@ void NGInlineItemsBuilderTemplate<NGOffsetMappingBuilder>::ClearInlineFragment(
 template <>
 void NGInlineItemsBuilderTemplate<
     NGOffsetMappingBuilder>::UpdateShouldCreateBoxFragment(LayoutInline*) {}
+
+template <typename OffsetMappingBuilder>
+void NGInlineItemsBuilderTemplate<OffsetMappingBuilder>::BidiContext::Trace(
+    Visitor* visitor) const {
+  visitor->Trace(node);
+}
 
 template class CORE_TEMPLATE_EXPORT
     NGInlineItemsBuilderTemplate<EmptyOffsetMappingBuilder>;

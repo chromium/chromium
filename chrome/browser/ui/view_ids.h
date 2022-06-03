@@ -16,6 +16,7 @@ enum ViewID {
 
   // Views which make up the skyline. These are used only
   // on views.
+  VIEW_ID_TAB_SEARCH_BUTTON,
   VIEW_ID_MINIMIZE_BUTTON,
   VIEW_ID_MAXIMIZE_BUTTON,
   VIEW_ID_RESTORE_BUTTON,
@@ -23,6 +24,7 @@ enum ViewID {
   VIEW_ID_WINDOW_ICON,
   VIEW_ID_WINDOW_TITLE,
   VIEW_ID_WEB_APP_FRAME_TOOLBAR,
+  VIEW_ID_WEB_APP_ORIGIN_TEXT,
 
   // Tabs within a window/tab strip, counting from the left.
   VIEW_ID_TAB_0,
@@ -51,6 +53,7 @@ enum ViewID {
   VIEW_ID_RELOAD_BUTTON,
   VIEW_ID_HOME_BUTTON,
   VIEW_ID_STAR_BUTTON,
+  VIEW_ID_EXTENSIONS_MENU_BUTTON,
   VIEW_ID_APP_MENU,
   VIEW_ID_BROWSER_ACTION_TOOLBAR,
   VIEW_ID_BROWSER_ACTION,
@@ -61,6 +64,8 @@ enum ViewID {
   VIEW_ID_SAVE_CREDIT_CARD_BUTTON,
   VIEW_ID_MIGRATE_LOCAL_CREDIT_CARD_BUTTON,
   VIEW_ID_TRANSLATE_BUTTON,
+  VIEW_ID_AVATAR_BUTTON,
+  VIEW_ID_WEBAUTHN_BUTTON,
 
   // Location bar content settings icons.
   VIEW_ID_CONTENT_SETTING_JAVASCRIPT,
@@ -100,10 +105,6 @@ enum ViewID {
 
   // Plus button on location bar.
   VIEW_ID_ACTION_BOX_BUTTON,
-
-  // IDs for the WebUI-based tab strip. See https://crbug.com/989131.
-  VIEW_ID_WEBUI_TAB_STRIP_TAB_COUNTER,
-  VIEW_ID_WEBUI_TAB_STRIP_NEW_TAB_BUTTON,
 };
 
 #endif  // CHROME_BROWSER_UI_VIEW_IDS_H_

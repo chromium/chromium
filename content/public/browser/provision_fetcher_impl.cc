@@ -30,7 +30,7 @@ ProvisionFetcherImpl::ProvisionFetcherImpl(
 
 ProvisionFetcherImpl::~ProvisionFetcherImpl() {}
 
-void ProvisionFetcherImpl::Retrieve(const std::string& default_url,
+void ProvisionFetcherImpl::Retrieve(const GURL& default_url,
                                     const std::string& request_data,
                                     RetrieveCallback callback) {
   DVLOG(1) << __FUNCTION__ << ": " << default_url;

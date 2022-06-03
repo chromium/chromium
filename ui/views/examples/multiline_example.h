@@ -5,8 +5,6 @@
 #ifndef UI_VIEWS_EXAMPLES_MULTILINE_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_MULTILINE_EXAMPLE_H_
 
-#include "base/macros.h"
-#include "ui/views/controls/button/button.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/examples/example_base.h"
 
@@ -19,24 +17,24 @@ namespace examples {
 
 // An example that compares the multiline rendering of different controls.
 class VIEWS_EXAMPLES_EXPORT MultilineExample : public ExampleBase,
-                                               public TextfieldController,
-                                               public ButtonListener {
+                                               public TextfieldController {
  public:
   MultilineExample();
+
+  MultilineExample(const MultilineExample&) = delete;
+  MultilineExample& operator=(const MultilineExample&) = delete;
+
   ~MultilineExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
  private:
   class RenderTextView;
 
   // TextfieldController:
   void ContentsChanged(Textfield* sender,
-                       const base::string16& new_contents) override;
+                       const std::u16string& new_contents) override;
 
   RenderTextView* render_text_view_ = nullptr;
   Label* label_ = nullptr;
@@ -47,8 +45,6 @@ class VIEWS_EXAMPLES_EXPORT MultilineExample : public ExampleBase,
 
   // Checkbox to toggle text elision in |render_text_view_|.
   Checkbox* elision_checkbox_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(MultilineExample);
 };
 
 }  // namespace examples

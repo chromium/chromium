@@ -21,8 +21,6 @@ class MediaControlsImpl;
 class MODULES_EXPORT MediaControlLoadingPanelElement final
     : public MediaControlDivElement,
       public MediaControlAnimationEventListener::Observer {
-  USING_GARBAGE_COLLECTED_MIXIN(MediaControlLoadingPanelElement);
-
  public:
   explicit MediaControlLoadingPanelElement(MediaControlsImpl&);
 
@@ -34,7 +32,7 @@ class MODULES_EXPORT MediaControlLoadingPanelElement final
   // Inform the loading panel that the Media Controls have been shown.
   void OnControlsShown();
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class MediaControlLoadingPanelElementTest;

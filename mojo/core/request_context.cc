@@ -4,8 +4,8 @@
 
 #include "mojo/core/request_context.h"
 
+#include "base/check.h"
 #include "base/lazy_instance.h"
-#include "base/logging.h"
 #include "base/threading/thread_local.h"
 
 namespace mojo {
@@ -110,7 +110,7 @@ RequestContext::WatchNotifyFinalizer::WatchNotifyFinalizer(
 RequestContext::WatchNotifyFinalizer::WatchNotifyFinalizer(
     const WatchNotifyFinalizer& other) = default;
 
-RequestContext::WatchNotifyFinalizer::~WatchNotifyFinalizer() {}
+RequestContext::WatchNotifyFinalizer::~WatchNotifyFinalizer() = default;
 
 }  // namespace core
 }  // namespace mojo

@@ -11,14 +11,17 @@ namespace ash {
 
 ScopedAnimationDisabler::ScopedAnimationDisabler(aura::Window* window)
     : window_(window) {
+  DCHECK(window_);
   needs_disable_ = !window_->GetProperty(aura::client::kAnimationsDisabledKey);
   if (needs_disable_)
     window_->SetProperty(aura::client::kAnimationsDisabledKey, true);
 }
 
 ScopedAnimationDisabler::~ScopedAnimationDisabler() {
-  if (needs_disable_)
+  if (needs_disable_) {
+    DCHECK_EQ(window_->GetProperty(aura::client::kAnimationsDisabledKey), true);
     window_->ClearProperty(aura::client::kAnimationsDisabledKey);
+  }
 }
 
 }  // namespace ash

@@ -22,7 +22,7 @@ class ParserImpl : public mojom::Parser {
                  ParserImpl::ParseJsonCallback callback) override;
 
   // mojom:Parser
-  void ParseShortcut(mojo::ScopedHandle lnk_file_handle,
+  void ParseShortcut(mojo::PlatformHandle lnk_file_handle,
                      ParserImpl::ParseShortcutCallback callback) override;
 
  private:

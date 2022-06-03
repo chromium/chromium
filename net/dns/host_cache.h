@@ -15,12 +15,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/gtest_prod_util.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/numerics/clamped_math.h"
-#include "base/observer_list_types.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -32,10 +30,12 @@
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/dns_util.h"
-#include "net/dns/esni_content.h"
-#include "net/dns/host_resolver_source.h"
 #include "net/dns/public/dns_query_type.h"
+#include "net/dns/public/host_resolver_source.h"
 #include "net/log/net_log_capture_mode.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
+#include "url/scheme_host_port.h"
 
 namespace base {
 class ListValue;
@@ -48,7 +48,10 @@ namespace net {
 class NET_EXPORT HostCache {
  public:
   struct NET_EXPORT Key {
-    Key(const std::string& hostname,
+    // Hostnames in `host` must not be IP literals. IP literals should be
+    // resolved directly to the IP address and not be stored/queried in
+    // HostCache.
+    Key(absl::variant<url::SchemeHostPort, std::string> host,
         DnsQueryType dns_query_type,
         HostResolverFlags host_resolver_flags,
         HostResolverSource host_resolver_source,
@@ -56,26 +59,31 @@ class NET_EXPORT HostCache {
     Key();
     Key(const Key& key);
     Key(Key&& key);
+    ~Key();
 
     // This is a helper used in comparing keys. The order of comparisons of
-    // |Key| fields is arbitrary, but the tuple is constructed with
-    // |dns_query_type| and |host_resolver_flags| before |hostname| under the
+    // `Key` fields is arbitrary, but the tuple is constructed with
+    // `dns_query_type` and `host_resolver_flags` before `host` under the
     // assumption that integer comparisons are faster than string comparisons.
-    auto GetTuple(const Key* key) const {
-      return std::tie(key->dns_query_type, key->host_resolver_flags,
-                      key->hostname, key->host_resolver_source,
-                      key->network_isolation_key, key->secure);
+    static auto GetTuple(const Key* key) {
+      return std::tie(key->dns_query_type, key->host_resolver_flags, key->host,
+                      key->host_resolver_source, key->network_isolation_key,
+                      key->secure);
     }
 
     bool operator==(const Key& other) const {
       return GetTuple(this) == GetTuple(&other);
     }
 
+    bool operator!=(const Key& other) const {
+      return GetTuple(this) != GetTuple(&other);
+    }
+
     bool operator<(const Key& other) const {
       return GetTuple(this) < GetTuple(&other);
     }
 
-    std::string hostname;
+    absl::variant<url::SchemeHostPort, std::string> host;
     DnsQueryType dns_query_type = DnsQueryType::UNSPECIFIED;
     HostResolverFlags host_resolver_flags = 0;
     HostResolverSource host_resolver_source = HostResolverSource::ANY;
@@ -110,15 +118,15 @@ class NET_EXPORT HostCache {
       SOURCE_HOSTS,
     };
 
-    // |ttl=base::nullopt| for unknown TTL.
+    // |ttl=absl::nullopt| for unknown TTL.
     template <typename T>
     Entry(int error,
           T&& results,
           Source source,
-          base::Optional<base::TimeDelta> ttl)
+          absl::optional<base::TimeDelta> ttl)
         : error_(error),
           source_(source),
-          ttl_(ttl ? ttl.value() : base::TimeDelta::FromSeconds(-1)) {
+          ttl_(ttl ? ttl.value() : base::Seconds(-1)) {
       DCHECK(!ttl || ttl.value() >= base::TimeDelta());
       SetResult(std::forward<T>(results));
     }
@@ -126,11 +134,12 @@ class NET_EXPORT HostCache {
     // Use when |ttl| is unknown.
     template <typename T>
     Entry(int error, T&& results, Source source)
-        : Entry(error, std::forward<T>(results), source, base::nullopt) {}
+        : Entry(error, std::forward<T>(results), source, absl::nullopt) {}
 
     // For errors with no |results|.
-    Entry(int error, Source source, base::TimeDelta ttl);
-    Entry(int error, Source source);
+    Entry(int error,
+          Source source,
+          absl::optional<base::TimeDelta> ttl = absl::nullopt);
 
     Entry(const Entry& entry);
     Entry(Entry&& entry);
@@ -145,31 +154,37 @@ class NET_EXPORT HostCache {
              error_ != ERR_HOST_RESOLVER_QUEUE_TOO_LARGE;
     }
     void set_error(int error) { error_ = error; }
-    const base::Optional<AddressList>& addresses() const { return addresses_; }
-    void set_addresses(const base::Optional<AddressList>& addresses) {
+    const absl::optional<AddressList>& addresses() const { return addresses_; }
+    void set_addresses(const absl::optional<AddressList>& addresses) {
       addresses_ = addresses;
     }
-    const base::Optional<std::vector<std::string>>& text_records() const {
+    const absl::optional<std::vector<std::string>>& text_records() const {
       return text_records_;
     }
     void set_text_records(
-        base::Optional<std::vector<std::string>> text_records) {
+        absl::optional<std::vector<std::string>> text_records) {
       text_records_ = std::move(text_records);
     }
-    const base::Optional<std::vector<HostPortPair>>& hostnames() const {
+    const absl::optional<std::vector<HostPortPair>>& hostnames() const {
       return hostnames_;
     }
-    void set_hostnames(base::Optional<std::vector<HostPortPair>> hostnames) {
+    void set_hostnames(absl::optional<std::vector<HostPortPair>> hostnames) {
       hostnames_ = std::move(hostnames);
     }
-    const base::Optional<EsniContent>& esni_data() const { return esni_data_; }
-    void set_esni_data(base::Optional<EsniContent> esni_data) {
-      esni_data_ = std::move(esni_data);
+    const absl::optional<std::vector<bool>>& experimental_results() const {
+      return experimental_results_;
     }
+    void set_experimental_results(
+        absl::optional<std::vector<bool>> experimental_results) {
+      experimental_results_ = std::move(experimental_results);
+    }
+    absl::optional<bool> pinning() const { return pinning_; }
+    void set_pinning(absl::optional<bool> pinning) { pinning_ = pinning; }
+
     Source source() const { return source_; }
     bool has_ttl() const { return ttl_ >= base::TimeDelta(); }
     base::TimeDelta ttl() const { return ttl_; }
-    base::Optional<base::TimeDelta> GetOptionalTtl() const;
+    absl::optional<base::TimeDelta> GetOptionalTtl() const;
     void set_ttl(base::TimeDelta ttl) { ttl_ = ttl; }
 
     base::TimeTicks expires() const { return expires_; }
@@ -177,16 +192,14 @@ class NET_EXPORT HostCache {
     // Public for the net-internals UI.
     int network_changes() const { return network_changes_; }
 
-    // Merge |front| and |back|, representing results from multiple
-    // transactions for the same overall host resolution query.
+    // Merge |front| and |back|, representing results from multiple transactions
+    // for the same overall host resolution query.
     //
-    // - When merging result hostname and text record lists, result
-    // elements from |front| will be merged in front of elements from |back|.
-    // - Merging address lists deduplicates addresses and sorts them in a stable
-    // manner by (breaking ties by continuing down the list):
-    //   1. Addresses with associated ESNI keys precede addresses without
-    //   2. IPv6 addresses precede IPv4 addresses
-    // - Fields that cannot be merged take precedence from |front|.
+    // Merges lists, placing elements from |front| before elements from |back|.
+    // Further, dedupes address lists and moves IPv6 addresses before IPv4
+    // addresses (maintaining stable order otherwise).
+    //
+    // Fields that cannot be merged take precedence from |front|.
     static Entry MergeEntries(Entry front, Entry back);
 
     // Creates a value representation of the entry for use with NetLog.
@@ -205,13 +218,15 @@ class NET_EXPORT HostCache {
           int network_changes);
 
     Entry(int error,
-          const base::Optional<AddressList>& addresses,
-          base::Optional<std::vector<std::string>>&& text_results,
-          base::Optional<std::vector<HostPortPair>>&& hostnames,
-          base::Optional<EsniContent>&& esni_data,
+          const absl::optional<AddressList>& addresses,
+          absl::optional<std::vector<std::string>>&& text_results,
+          absl::optional<std::vector<HostPortPair>>&& hostnames,
+          absl::optional<std::vector<bool>>&& experimental_results,
           Source source,
           base::TimeTicks expires,
           int network_changes);
+
+    void PrepareForCacheInsertion();
 
     void SetResult(AddressList addresses) { addresses_ = std::move(addresses); }
     void SetResult(std::vector<std::string> text_records) {
@@ -220,7 +235,9 @@ class NET_EXPORT HostCache {
     void SetResult(std::vector<HostPortPair> hostnames) {
       hostnames_ = std::move(hostnames);
     }
-    void SetResult(EsniContent esni_data) { esni_data_ = std::move(esni_data); }
+    void SetResult(std::vector<bool> experimental_results) {
+      experimental_results_ = std::move(experimental_results);
+    }
 
     int total_hits() const { return total_hits_; }
     int stale_hits() const { return stale_hits_; }
@@ -231,34 +248,40 @@ class NET_EXPORT HostCache {
                       int network_changes,
                       EntryStaleness* out) const;
 
-    // Combines the addresses of |source| with those already stored,
-    // resulting in the following order:
+    // Merges addresses from |source| into the stored list of addresses and
+    // deduplicates. The address list can be accessed with |addresses()|. This
+    // method performs a stable sort to ensure IPv6 addresses precede IPv4
+    // addresses. IP versions being equal, addresses from |*this| will precede
+    // those from |source|.
     //
-    // 1. IPv6 addresses associated with ESNI keys
-    // 2. IPv4 addresses associated with ESNI keys
-    // 3. IPv6 addresses not associated with ESNI keys
-    // 4. IPv4 addresses not associated with ESNI keys
-    //
-    // - Conducts the merge in a stable fashion (other things equal, addresses
-    // from |*this| will precede those from |source|, and addresses earlier in
-    // one entry's list will precede other addresses from later in the same
-    // list).
-    // - Deduplicates the entries during the merge so that |*this|'s
-    // address list will not contain duplicates after the call.
+    // Only non-failure entries (`error_` is OK or ERR_NAME_NOT_RESOLVED) can be
+    // merged. Because an ERR_NAME_NOT_RESOLVED represents success without any
+    // results, merging an OK entry with an ERR_NAME_NOT_RESOLVED entry
+    // represents merging a non-empty entry with an empty entry, resulting in
+    // non-empty and therefore OK.
     void MergeAddressesFrom(const HostCache::Entry& source);
 
-    base::DictionaryValue GetAsValue(bool include_staleness) const;
+    // Merges DNS aliases from |source| into the stored list of DNS aliases and
+    // deduplicates.
+    void MergeDnsAliasesFrom(const HostCache::Entry& source);
+
+    base::Value GetAsValue(bool include_staleness) const;
 
     // The resolve results for this entry.
     int error_ = ERR_FAILED;
-    base::Optional<AddressList> addresses_;
-    base::Optional<std::vector<std::string>> text_records_;
-    base::Optional<std::vector<HostPortPair>> hostnames_;
-    base::Optional<EsniContent> esni_data_;
+    absl::optional<AddressList> addresses_;
+    absl::optional<std::vector<std::string>> text_records_;
+    absl::optional<std::vector<HostPortPair>> hostnames_;
+    absl::optional<std::vector<bool>> experimental_results_;
     // Where results were obtained (e.g. DNS lookup, hosts file, etc).
     Source source_ = SOURCE_UNKNOWN;
+    // If true, this entry cannot be evicted from the cache until after the next
+    // network change.  When an Entry is replaced by one whose pinning flag
+    // is not set, HostCache will copy this flag to the replacement.
+    // If this flag is null, HostCache will set it to false for simplicity.
+    absl::optional<bool> pinning_;
     // TTL obtained from the nameserver. Negative if unknown.
-    base::TimeDelta ttl_ = base::TimeDelta::FromSeconds(-1);
+    base::TimeDelta ttl_ = base::Seconds(-1);
 
     base::TimeTicks expires_;
     // Copied from the cache's network_changes_ when the entry is set; can
@@ -279,21 +302,28 @@ class NET_EXPORT HostCache {
     virtual void ScheduleWrite() = 0;
   };
 
-  // Delegate to receive cache invalidation notifications. Get the Invalidator
-  // for a HostCache via HostCache::invalidator() or override for testing via
-  // HostCache::set_invalidator_for_testing().
-  class Invalidator : public base::CheckedObserver {
-   public:
-    virtual void Invalidate() = 0;
-  };
-
   using EntryMap = std::map<Key, Entry>;
+
+  // The two ways to serialize the cache to a value.
+  enum class SerializationType {
+    // Entries with transient NetworkIsolationKeys are not serialized, and
+    // RestoreFromListValue() can load the returned value.
+    kRestorable,
+    // Entries with transient NetworkIsolationKeys are serialized, and
+    // RestoreFromListValue() cannot load the returned value, since the debug
+    // serialization of NetworkIsolationKeys is used instead of the
+    // deserializable representation.
+    kDebug,
+  };
 
   // A HostCache::EntryStaleness representing a non-stale (fresh) cache entry.
   static const HostCache::EntryStaleness kNotStale;
 
   // Constructs a HostCache that stores up to |max_entries|.
   explicit HostCache(size_t max_entries);
+
+  HostCache(const HostCache&) = delete;
+  HostCache& operator=(const HostCache&) = delete;
 
   ~HostCache();
 
@@ -321,20 +351,20 @@ class NET_EXPORT HostCache {
            base::TimeTicks now,
            base::TimeDelta ttl);
 
-  // Checks whether an entry exists for |hostname|.
+  // Checks whether an entry exists for `hostname`.
   // If so, returns the matching key and writes the source (e.g. DNS, HOSTS
-  // file, etc.) to |source_out| and the staleness to |stale_out| (if they are
-  // not null). It tries using two common address_family and host_resolver_flag
-  // combinations when performing lookups in the cache; this means false
-  // negatives are possible, but unlikely. It also ignores the secure field
-  // while searching for matches. If no entry exists, returns nullptr.
-  const HostCache::Key* GetMatchingKey(base::StringPiece hostname,
-                                       HostCache::Entry::Source* source_out,
-                                       HostCache::EntryStaleness* stale_out);
+  // file, etc.) to `source_out` and the staleness to `stale_out` (if they are
+  // not null). If no entry exists, returns nullptr.
+  //
+  // For testing use only and not very performant. Production code should only
+  // do lookups by precise Key.
+  const HostCache::Key* GetMatchingKeyForTesting(
+      base::StringPiece hostname,
+      HostCache::Entry::Source* source_out = nullptr,
+      HostCache::EntryStaleness* stale_out = nullptr) const;
 
   // Marks all entries as stale on account of a network change.
   void Invalidate();
-  Invalidator* invalidator() { return invalidator_; }
 
   void set_persistence_delegate(PersistenceDelegate* delegate);
 
@@ -347,19 +377,14 @@ class NET_EXPORT HostCache {
 
   // Clears hosts matching |host_filter| from the cache.
   void ClearForHosts(
-      const base::Callback<bool(const std::string&)>& host_filter);
+      const base::RepeatingCallback<bool(const std::string&)>& host_filter);
 
   // Fills the provided base::ListValue with the contents of the cache for
   // serialization. |entry_list| must be non-null and will be cleared before
-  // adding the cache contents. Entries with ephemeral NetworkIsolationKeys will
-  // not be written to the resulting list.
-  //
-  // TODO(mmenke): This is used both in combination with RestoreFromListValue()
-  // and for NetLog. Update the NetLogViewer's display to handle
-  // NetworkIsolationKeys, and add some way for to get a result with ephemeral
-  // NIKs included.
+  // adding the cache contents.
   void GetAsListValue(base::ListValue* entry_list,
-                      bool include_staleness) const;
+                      bool include_staleness,
+                      SerializationType serialization_type) const;
   // Takes a base::ListValue representing cache entries and stores them in the
   // cache, skipping any that already have entries. Returns true on success,
   // false on failure.
@@ -375,11 +400,6 @@ class NET_EXPORT HostCache {
   size_t max_entries() const;
   int network_changes() const { return network_changes_; }
   const EntryMap& entries() const { return entries_; }
-
-  void set_invalidator_for_testing(Invalidator* invalidator) {
-    owned_invalidator_ = nullptr;
-    invalidator_ = invalidator;
-  }
 
   // Creates a default cache.
   static std::unique_ptr<HostCache> CreateDefaultCache();
@@ -415,7 +435,10 @@ class NET_EXPORT HostCache {
   // Returns true if this HostCache can contain no entries.
   bool caching_is_disabled() const { return max_entries_ == 0; }
 
-  void EvictOneEntry(base::TimeTicks now);
+  // Returns true if an entry was removed.
+  bool EvictOneEntry(base::TimeTicks now);
+  // Helper to check if an Entry is currently pinned in the cache.
+  bool HasActivePin(const Entry& entry);
   // Helper to insert an Entry into the cache.
   void AddEntry(const Key& key, Entry&& entry);
 
@@ -432,12 +455,7 @@ class NET_EXPORT HostCache {
   // Shared tick clock, overridden for testing.
   const base::TickClock* tick_clock_;
 
-  std::unique_ptr<Invalidator> owned_invalidator_;
-  Invalidator* invalidator_;
-
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HostCache);
 };
 
 }  // namespace net

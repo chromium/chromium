@@ -16,13 +16,20 @@ interface BlobURLStore {
   // all URLs registered through it will be revoked.
   // TODO(kinuko,mek): This should probably create and return a new blob: URL rather
   // than letting the caller in the renderer provide one.
-  [Sync] Register(pending_remote<blink.mojom.Blob> blob, url.mojom.Url url) => ();
+  [Sync] Register(
+      pending_remote<blink.mojom.Blob> blob,
+      url.mojom.Url url,
+      // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+      mojo_base.mojom.UnguessableToken unsafe_agent_cluster_id) => ();
 
   // Revokes a public Blob URL.
   Revoke(url.mojom.Url url);
 
   // Resolves a public Blob URL.
-  Resolve(url.mojom.Url url) => (pending_remote<blink.mojom.Blob>? blob);
+  Resolve(url.mojom.Url url) => (
+    pending_remote<blink.mojom.Blob>? blob,
+    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+    mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id);
 
   // Resolves a public Blob URL to a URLLoaderFactory that can only load the
   // specified URL. The reason the API is shaped like this rather than just
@@ -32,14 +39,19 @@ interface BlobURLStore {
   // also be kept alive, so it is possible to start loading the blob long after
   // both the blob URL and all other references to the blob have been dropped.
   ResolveAsURLLoaderFactory(
-      url.mojom.Url url,
-      pending_receiver<network.mojom.URLLoaderFactory> factory);
+    url.mojom.Url url,
+    pending_receiver<network.mojom.URLLoaderFactory> factory) => (
+    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+    mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id);
 
   // Resolves a public Blob URL into a BlobURLToken. The BlobURLToken can be
   // used by the browser process to securely look up the blob a URL used to
   // refer to, even after the URL is revoked.
   // As long as the token is alive, the resolved blob will also be kept alive.
-  ResolveForNavigation(url.mojom.Url url, pending_receiver<BlobURLToken> token);
+  ResolveForNavigation(url.mojom.Url url,
+                       pending_receiver<BlobURLToken> token) => (
+    // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+    mojo_base.mojom.UnguessableToken? unsafe_agent_cluster_id);
 };
 
 // A token representing a Blob URL. The browser process can use this to look up

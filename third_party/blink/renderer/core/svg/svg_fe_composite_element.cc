@@ -21,6 +21,8 @@
 #include "third_party/blink/renderer/core/svg/svg_fe_composite_element.h"
 
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -74,7 +76,7 @@ SVGFECompositeElement::SVGFECompositeElement(Document& document)
   AddToPropertyMap(svg_operator_);
 }
 
-void SVGFECompositeElement::Trace(blink::Visitor* visitor) {
+void SVGFECompositeElement::Trace(Visitor* visitor) const {
   visitor->Trace(k1_);
   visitor->Trace(k2_);
   visitor->Trace(k3_);
@@ -90,7 +92,7 @@ bool SVGFECompositeElement::SetFilterEffectAttribute(
     const QualifiedName& attr_name) {
   FEComposite* composite = static_cast<FEComposite*>(effect);
   if (attr_name == svg_names::kOperatorAttr)
-    return composite->SetOperation(svg_operator_->CurrentValue()->EnumValue());
+    return composite->SetOperation(svg_operator_->CurrentEnumValue());
   if (attr_name == svg_names::kK1Attr)
     return composite->SetK1(k1_->CurrentValue()->Value());
   if (attr_name == svg_names::kK2Attr)
@@ -105,7 +107,8 @@ bool SVGFECompositeElement::SetFilterEffectAttribute(
 }
 
 void SVGFECompositeElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kOperatorAttr ||
       attr_name == svg_names::kK1Attr || attr_name == svg_names::kK2Attr ||
       attr_name == svg_names::kK3Attr || attr_name == svg_names::kK4Attr) {
@@ -120,7 +123,7 @@ void SVGFECompositeElement::SvgAttributeChanged(
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFECompositeElement::Build(SVGFilterBuilder* filter_builder,
@@ -133,9 +136,9 @@ FilterEffect* SVGFECompositeElement::Build(SVGFilterBuilder* filter_builder,
   DCHECK(input2);
 
   auto* effect = MakeGarbageCollected<FEComposite>(
-      filter, svg_operator_->CurrentValue()->EnumValue(),
-      k1_->CurrentValue()->Value(), k2_->CurrentValue()->Value(),
-      k3_->CurrentValue()->Value(), k4_->CurrentValue()->Value());
+      filter, svg_operator_->CurrentEnumValue(), k1_->CurrentValue()->Value(),
+      k2_->CurrentValue()->Value(), k3_->CurrentValue()->Value(),
+      k4_->CurrentValue()->Value());
   FilterEffectVector& input_effects = effect->InputEffects();
   input_effects.ReserveCapacity(2);
   input_effects.push_back(input1);

@@ -118,7 +118,7 @@
               assert_object_is_superset(notifications[0], options, 'The Notification object properties must be the same in getNotifications.');
 
               notifications[0].actions.foo = 'bar';
-              assert_throws(new TypeError, () => notifications[0].actions.push({ title: 'Foo' }));
+              assert_throws_js(TypeError, () => notifications[0].actions.push({ title: 'Foo' }));
 
               if (notifications[0].actions.length) {
                   notifications[0].actions[0].title = 'Changed';

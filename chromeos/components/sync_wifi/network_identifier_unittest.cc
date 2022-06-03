@@ -22,11 +22,12 @@ const char kHexSsid[] = "0123456789ABCDEF";
 }  // namespace
 
 class NetworkIdentifierTest : public testing::Test {
+ public:
+  NetworkIdentifierTest(const NetworkIdentifierTest&) = delete;
+  NetworkIdentifierTest& operator=(const NetworkIdentifierTest&) = delete;
+
  protected:
   NetworkIdentifierTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(NetworkIdentifierTest);
 };
 
 TEST_F(NetworkIdentifierTest, FromProto) {
@@ -39,7 +40,7 @@ TEST_F(NetworkIdentifierTest, FromProto) {
 }
 
 TEST_F(NetworkIdentifierTest, FromString) {
-  std::string string_id("0123456789ABCDEF_psk");
+  std::string string_id("0123456789ABCDEF<||>psk");
   NetworkIdentifier id = NetworkIdentifier::DeserializeFromString(string_id);
   EXPECT_EQ(kHexSsid, id.hex_ssid());
   EXPECT_EQ(shill::kSecurityPsk, id.security_type());
@@ -54,6 +55,34 @@ TEST_F(NetworkIdentifierTest, DifferentHexFormats) {
 
   id = NetworkIdentifier("2f", shill::kSecurityPsk);
   EXPECT_EQ("2F", id.hex_ssid());
+}
+
+TEST_F(NetworkIdentifierTest, Equality) {
+  NetworkIdentifier first_id("0x2f", shill::kSecurityPsk);
+  NetworkIdentifier second_id("0x2f", shill::kSecurityPsk);
+  EXPECT_EQ(first_id, second_id);
+
+  first_id = NetworkIdentifier("0x2f", shill::kSecurityPsk);
+  second_id = NetworkIdentifier("0xff", shill::kSecurityPsk);
+  EXPECT_NE(first_id, second_id);
+
+  first_id = NetworkIdentifier("0x2f", shill::kSecurityPsk);
+  second_id = NetworkIdentifier("0x2f", shill::kSecurityWep);
+  EXPECT_NE(first_id, second_id);
+}
+
+TEST_F(NetworkIdentifierTest, Equality_InvalidNetworks) {
+  NetworkIdentifier invalid_id("0x2f", "");
+  NetworkIdentifier similar_invalid_id("0x2f", "");
+  EXPECT_NE(invalid_id, similar_invalid_id);
+
+  invalid_id = NetworkIdentifier("", shill::kSecurityPsk);
+  similar_invalid_id = NetworkIdentifier("", shill::kSecurityPsk);
+  EXPECT_NE(invalid_id, similar_invalid_id);
+
+  invalid_id = NetworkIdentifier("", "");
+  similar_invalid_id = NetworkIdentifier("", "");
+  EXPECT_NE(invalid_id, similar_invalid_id);
 }
 
 }  // namespace sync_wifi

@@ -5,7 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_IIR_FILTER_NODE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBAUDIO_IIR_FILTER_NODE_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/memory/weak_ptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_basic_processor_handler.h"
@@ -18,7 +19,8 @@ class BaseAudioContext;
 class ExceptionState;
 class IIRFilterOptions;
 
-class IIRFilterHandler : public AudioBasicProcessorHandler {
+class IIRFilterHandler : public AudioBasicProcessorHandler,
+                         public base::SupportsWeakPtr<IIRFilterHandler> {
  public:
   static scoped_refptr<IIRFilterHandler> Create(
       AudioNode&,
@@ -64,7 +66,7 @@ class IIRFilterNode : public AudioNode {
                 const Vector<double>& numerator,
                 bool is_filter_stable);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // Get the magnitude and phase response of the filter at the given
   // set of frequencies (in Hz). The phase response is in radians.

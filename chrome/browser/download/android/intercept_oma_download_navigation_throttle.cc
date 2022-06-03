@@ -5,14 +5,15 @@
 #include "chrome/browser/download/android/intercept_oma_download_navigation_throttle.h"
 
 #include "base/bind.h"
-#include "chrome/browser/chrome_content_browser_client.h"
+#include "base/memory/ptr_util.h"
 #include "chrome/browser/download/android/download_controller_base.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "third_party/blink/public/mojom/referrer.mojom.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom.h"
 
 using content::BrowserThread;
 
@@ -55,6 +56,23 @@ InterceptOMADownloadNavigationThrottle::WillProcessResponse() {
     return content::NavigationThrottle::PROCEED;
   }
 
+  // Make the throttle prerender-aware. Prerender must not have any observable
+  // side effects so avoid calling InterceptDownload. The prerender should also
+  // be cancelled in this case but that requires a reference to the
+  // RenderFrameHost which isn't easily available for a download. Instead,
+  // proceed in this throttle; it will be cancelled from
+  // PrerenderNavigationThrottle eventually.
+  // TODO(robertlin): Find a way to port PrerenderHost status checks to Java,
+  // and add a test on Android to verify the cancellation of an OMA download.
+  content::RenderFrameHost* parent_render_frame_host =
+      navigation_handle()->GetParentFrame();
+  if ((parent_render_frame_host &&
+       content::RenderFrameHost::LifecycleState::kPrerendering ==
+           parent_render_frame_host->GetLifecycleState()) ||
+      navigation_handle()->IsInPrerenderedMainFrame()) {
+    return content::NavigationThrottle::PROCEED;
+  }
+
   InterceptDownload();
   return content::NavigationThrottle::CANCEL;
 }
@@ -87,10 +105,10 @@ void InterceptOMADownloadNavigationThrottle::InterceptDownload() {
       web_contents ? web_contents->GetRenderViewHost()->GetRoutingID() : 0;
 
   DownloadControllerBase::Get()->CreateAndroidDownload(
-      base::Bind(&GetWebContents, process_id, routing_id),
-      DownloadInfo(navigation_handle()->GetURL(), original_url,
-                   content_disposition, mime_type, GetUserAgent(),
-                   // TODO(qinmin): Get the cookie from cookie store.
-                   std::string(),
-                   navigation_handle()->GetReferrer().url.spec()));
+      base::BindRepeating(&GetWebContents, process_id, routing_id),
+      DownloadInfo(
+          navigation_handle()->GetURL(), original_url, content_disposition,
+          mime_type, embedder_support::GetUserAgent(),
+          // TODO(qinmin): Get the cookie from cookie store.
+          std::string(), navigation_handle()->GetReferrer().url.spec()));
 }

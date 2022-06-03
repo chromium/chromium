@@ -6,9 +6,10 @@
   {
     "namespace": "accessibilityPrivate",
     "compiler_options": {
-      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api.h"
+      "implemented_in": "chrome/browser/accessibility/accessibility_extension_api_chromeos.h"
     },
     "description": "none",
+    "platforms": ["chromeos"],
     "types": [
       {
         "id": "AlertInfo",
@@ -33,16 +34,63 @@
         }
       },
       {
+        "id": "ScreenPoint",
+        "type": "object",
+        "description": "Point in global screen coordinates.",
+        "properties": {
+          "x": {"type": "integer", "description": "X coordinate in global screen coordinates."},
+          "y": {"type": "integer", "description": "Y coordinate in global screen coordinates."}
+        }
+      },
+      {
         "id": "Gesture",
         "type": "string",
-        "enum": [ "click", "swipeLeft1", "swipeUp1", "swipeRight1", "swipeDown1", "swipeLeft2", "swipeUp2", "swipeRight2", "swipeDown2", "swipeLeft3", "swipeUp3", "swipeRight3", "swipeDown3", "swipeLeft4", "swipeUp4", "swipeRight4", "swipeDown4", "tap2", "tap3", "tap4" ],
+        "enum": [ "click", "swipeLeft1", "swipeUp1", "swipeRight1", "swipeDown1", "swipeLeft2", "swipeUp2", "swipeRight2", "swipeDown2", "swipeLeft3", "swipeUp3", "swipeRight3", "swipeDown3", "swipeLeft4", "swipeUp4", "swipeRight4", "swipeDown4", "tap2", "tap3", "tap4", "touchExplore" ],
         "description": "Accessibility gestures fired by the touch exploration controller."
+      },
+      {
+        "id": "MagnifierCommand",
+        "type": "string",
+        "enum": [ "moveStop", "moveUp", "moveDown", "moveLeft", "moveRight" ],
+        "description": "Commands for magnifier (e.g. move magnifier viewport up)."
       },
       {
         "id": "SwitchAccessCommand",
         "type": "string",
         "enum": [ "select", "next", "previous" ],
         "description": "Commands that can be triggered by switch activation."
+      },
+      {
+        "id": "PointScanState",
+        "type": "string",
+        "enum": ["start", "stop"],
+        "description" : "Point scanning states in Switch Access."
+      },
+      {
+        "id": "SwitchAccessBubble",
+        "type": "string",
+        "enum": [ "backButton", "menu" ],
+        "description": "Different Switch Access bubbles that can be shown or hidden."
+      },
+      {
+        "id": "PointScanPoint",
+        "type": "object",
+        "properties": {
+          "x": {
+            "type": "number",
+            "description": "X coordinate of the selected point in DIPs."
+          },
+          "y": {
+            "type": "number",
+            "description": "Y coordinate of the selected point in DIPs."
+          }
+        }
+      },
+      {
+        "id": "SwitchAccessMenuAction",
+        "type": "string",
+        "enum": [ "copy", "cut", "decrement", "dictation", "endTextSelection", "increment", "itemScan", "jumpToBeginningOfText", "jumpToEndOfText", "keyboard", "leftClick", "moveBackwardOneCharOfText", "moveBackwardOneWordOfText", "moveCursor", "moveDownOneLineOfText", "moveForwardOneCharOfText", "moveForwardOneWordOfText", "moveUpOneLineOfText", "paste", "pointScan", "rightClick", "scrollDown", "scrollLeft", "scrollRight", "scrollUp", "select", "settings", "startTextSelection", "shortcuts", "leaveGroup", "webMenu", "webBookmark", "webBottomOfPage", "webTopOfPage", "webFindInPage", "webDownloads", "webClearHistory", "systemMenu", "systemStatusBar", "systemLauncher", "systemTaskManager", "systemDiagnostics", "systemScreenshot", "systemHelp", "mediaMenu", "mediaMute", "mediaVolumeDown", "mediaVolumeUp", "mediaRewind", "mediaPlayPause", "mediaFastforward", "displayMenu", "displayMirror", "displayBrightnessDown", "displayBrightnessUp", "displayRotate", "displayZoomOut", "displayZoomIn", "userMenu", "userLock", "userPreviousUser", "userNextUser", "userSignOut", "actionRecorder", "startRecording", "stopRecording", "executeMacro"],
+        "description": "Available actions to be shown in the Switch Access menu. Must be kept in sync with the strings in ash/system/accessibility/switch_access/switch_access_menu_view.cc"
       },
       {
         "id": "SyntheticKeyboardEventType",
@@ -96,12 +144,28 @@
         "enum": ["press", "release", "drag", "move", "enter", "exit"]
       },
       {
+        "id": "SyntheticMouseEventButton",
+        "type": "string",
+        "description": "The button to send event on",
+        "enum": ["left", "middle", "right", "back", "foward"]
+      },
+      {
         "id": "SyntheticMouseEvent",
         "type": "object",
         "properties": {
           "type": {"$ref": "SyntheticMouseEventType"},
           "x": {"type": "integer", "description": "X coordinate for mouse event in global screen coordinates"},
-          "y": {"type": "integer", "description": "Y coordinate for mouse event in global screen coordinates"}
+          "y": {"type": "integer", "description": "Y coordinate for mouse event in global screen coordinates"},
+          "touchAccessibility": {
+            "type": "boolean",
+            "description": "True if the touch accessibility flag should be set.",
+            "optional": true
+          },
+          "mouseButton": {
+            "$ref": "SyntheticMouseEventButton",
+            "description": "The default mouse button is set to left if mouseButton is not specified.",
+            "optional": true
+          }
         }
       },
       {
@@ -115,6 +179,12 @@
         "type": "string",
         "description": "The type of visual appearance for the focus ring.",
         "enum": ["glow", "solid", "dashed"]
+      },
+      {
+        "id": "FocusRingStackingOrder",
+        "type": "string",
+        "description": "Whether to stack focus rings above or below accessibility bubble panels. Note: focus rings will be stacked above most other UI in either case",
+        "enum": ["aboveAccessibilityBubbles", "belowAccessibilityBubbles"]
       },
       {
         "id": "FocusRingInfo",
@@ -131,11 +201,21 @@
           },
           "color": {
             "type": "string",
-            "description": "A CSS-style color string (e.g. #3F8213) that describes the primary color of the focus ring."
+            "description": "A RGB hex-value color string (e.g. #3F8213) that describes the primary color of the focus ring."
           },
           "secondaryColor": {
             "type": "string",
-            "description": "A CSS-style color string (e.g. #3F82E4) that describes the secondary color of the focus ring, if there is one.",
+            "description": "A RGB hex-value color string (e.g. #3F82E4) that describes the secondary color of the focus ring, if there is one.",
+            "optional": true
+          },
+          "backgroundColor": {
+            "type": "string",
+            "description": "A RGB hex-value color string (e.g. #803F82E4) that describes the color drawn outside of the focus ring and over the rest of the display.",
+            "optional": true
+          },
+          "stackingOrder": {
+            "$ref": "FocusRingStackingOrder",
+            "description": "The FocusType for the ring.",
             "optional": true
           },
           "id": {
@@ -144,48 +224,69 @@
             "optional": true
           }
         }
+      },
+      {
+        "id": "AcceleratorAction",
+        "type": "string",
+        "enum": [ "focusPreviousPane", "focusNextPane" ],
+        "description": "A subset of accelerator actions used by accessibility."
+      },
+      {
+        "id": "AccessibilityFeature",
+        "type": "string",
+        "enum": [ "enhancedNetworkVoices", "dictationCommands" ],
+        "description": "Subset of accessibility features."
+      },
+      {
+        "id": "SelectToSpeakPanelAction",
+        "type": "string",
+        "enum": [ "previousParagraph", "previousSentence", "pause", "resume", "nextSentence", "nextParagraph", "exit", "changeSpeed" ],
+        "description": "Actions that can be performed in the Select-to-speak panel."
       }
     ],
+    "properties": {
+      "IS_DEFAULT_EVENT_SOURCE_TOUCH": {
+        "type": "integer",
+        "value": 0,
+        "description": "Property to indicate whether event source should default to touch."
+      }
+    },
     "functions": [
       {
-        "name": "getDisplayLanguage",
+        "name": "getDisplayNameForLocale",
         "type": "function",
         "nocompile": true,
-        "description": "Called to translate languageCodeToTranslate into human-readable string in the language specified by targetLanguageCode",
+        "description": "Called to translate localeCodeToTranslate into human-readable string in the locale specified by displayLocaleCode",
         "parameters": [
           {
-            "name": "languageCodeToTranslate",
+            "name": "localeCodeToTranslate",
             "type": "string"
           },
           {
-            "name": "targetLanguageCode",
+            "name": "displayLocaleCode",
             "type": "string"
           }
         ],
         "returns": {
           "type": "string",
-          "description": "The human-readable language string in the provided language."
-        },
-        "platforms": ["chromeos"]
+          "description": "The human-readable locale string in the provided locale."
+        }
       },
       {
         "name": "getBatteryDescription",
         "type": "function",
         "description": "Called to request battery status from Chrome OS system.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Returns battery description as a string.",
-            "parameters": [
-              {
-                "name": "batteryDescription",
-                "type": "string"
-              }
-            ]
-          }
-        ],
-        "platforms": ["chromeos"]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns battery description as a string.",
+          "parameters": [
+            {
+              "name": "batteryDescription",
+              "type": "string"
+            }
+          ]
+        }
       },
       {
         "name": "setNativeAccessibilityEnabled",
@@ -242,7 +343,6 @@
           },
           {
             "type": "boolean",
-
             "name": "capture",
             "description": "True if key events should be swallowed natively and not propagated if preventDefault() gets called by the extension's background page."
           }
@@ -261,29 +361,6 @@
         ]
       },
       {
-            "name": "setSwitchAccessMenuState",
-            "type": "function",
-            "description": "Shows or hides the Switch Access menu. If shown, it is at the indicated location.",
-            "parameters": [
-              {
-                "name": "show",
-                "type": "boolean",
-                "description": "If true, show the menu. If false, hide the menu."
-              },
-              {
-                "name": "element_bounds",
-                "$ref": "ScreenRect",
-                "description": "Position of an element, in global screen coordinates, to place the menu next to."
-              },
-              {
-                "name": "item_count",
-                "type": "integer",
-                "description": "The number of items that need to be shown in the menu."
-              }
-            ],
-            "platforms": ["chromeos"]
-      },
-      {
         "name": "forwardKeyEventsToSwitchAccess",
         "type": "function",
         "description": "When enabled, forwards key events to the Switch Access extension",
@@ -292,8 +369,49 @@
             "name": "shouldForward",
             "type": "boolean"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
+      },
+      {
+        "name": "updateSwitchAccessBubble",
+        "type": "function",
+        "description": "Shows the Switch Access menu next to the specified rectangle and with the given actions",
+        "parameters": [
+          {
+            "name": "bubble",
+            "$ref": "SwitchAccessBubble",
+            "description": "Which bubble to show/hide"
+          },
+          {
+            "name": "show",
+            "type": "boolean",
+            "description": "True if the bubble should be shown, false otherwise"
+          },
+          {
+            "name": "anchor",
+            "$ref": "ScreenRect",
+            "description": "A rectangle indicating the bounds of the object the menu should be displayed next to.",
+            "optional": true
+          },
+          {
+            "name": "actions",
+            "type": "array",
+            "items": { "$ref": "SwitchAccessMenuAction" },
+            "description": "The actions to be shown in the menu.",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "setPointScanState",
+        "type": "function",
+        "description": "Sets point scanning state Switch Access.",
+        "parameters": [
+          {
+            "name": "state",
+            "$ref": "PointScanState",
+            "description": "The point scanning state to set."
+          }
+        ]
       },
       {
         "name": "setNativeChromeVoxArcSupportForCurrentApp",
@@ -305,8 +423,7 @@
             "type": "boolean",
             "description": "True for ChromeVox (native), false for TalkBack."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "sendSyntheticKeyEvent",
@@ -318,21 +435,19 @@
             "$ref": "SyntheticKeyboardEvent",
             "description": "The event to send."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
-        "name": "enableChromeVoxMouseEvents",
+        "name": "enableMouseEvents",
         "type": "function",
-        "description": "Enables or disables mouse events in ChromeVox.",
+        "description": "Enables or disables mouse events in accessibility extensions",
         "parameters": [
           {
             "name": "enabled",
             "type": "boolean",
-            "description": "True if ChromeVox should receive mouse events."
+            "description": "True if accessibility component extensions should receive mouse events."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "sendSyntheticMouseEvent",
@@ -344,11 +459,10 @@
             "$ref": "SyntheticMouseEvent",
             "description": "The event to send."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
-        "name": "onSelectToSpeakStateChanged",
+        "name": "setSelectToSpeakState",
         "type": "function",
         "description": "Called by the Select-to-Speak extension when Select-to-Speak has changed states, between selecting with the mouse, speaking, and inactive.",
         "parameters": [
@@ -356,27 +470,47 @@
             "name": "state",
             "$ref": "SelectToSpeakState"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
-        "name": "onScrollableBoundsForPointFound",
+        "name": "handleScrollableBoundsForPointFound",
         "type": "function",
-        "description": "Called by the Autoclick extension when findScrollableBoundsForPoint has found a scrolling container. |rect| will be the bounds of the nearest scrollable ancestor of the node at the point requested using findScrollableBoundsForPoint.",
+        "description": "Called by the Accessibility Common extension when onScrollableBoundsForPointRequested has found a scrolling container. |rect| will be the bounds of the nearest scrollable ancestor of the node at the point requested using onScrollableBoundsForPointRequested.",
         "parameters": [
           {
             "name": "rect",
             "$ref": "ScreenRect"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
+      },
+      {
+        "name": "moveMagnifierToRect",
+        "type": "function",
+        "description": "Called by the Accessibility Common extension to move |rect| within the magnifier viewport (e.g. when focus has changed). If |rect| is already completely within the viewport, magnifier doesn't move. If any edge of |rect| is outside the viewport (e.g. if rect is larger than or extends partially beyond the viewport), magnifier will center the overflowing dimensions of the viewport on center of |rect| (e.g. center viewport vertically if |rect| extends beyond bottom of screen).",
+        "parameters": [
+          {
+            "name": "rect",
+            "$ref": "ScreenRect",
+            "description": "Rect to ensure visible in the magnified viewport."
+          }
+        ]
+      },
+      {
+        "name": "magnifierCenterOnPoint",
+        "type": "function",
+        "description": "Called by the Accessibility Common extension to center magnifier at |point|.",
+        "parameters": [
+          {
+            "name": "point",
+            "$ref": "ScreenPoint"
+          }
+        ]
       },
       {
         "name": "toggleDictation",
         "type": "function",
         "description": "Toggles dictation between active and inactive states.",
-        "parameters": [],
-        "platforms": ["chromeos"]
+        "parameters": []
       },
       {
         "name": "setVirtualKeyboardVisible",
@@ -387,8 +521,7 @@
             "name": "isVisible",
             "type": "boolean"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
         "name": "openSettingsSubpage",
@@ -399,8 +532,119 @@
             "name": "subpage",
             "type": "string"
           }
+        ]
+      },
+      {
+        "name": "performAcceleratorAction",
+        "type": "function",
+        "description": "Performs an accelerator action.",
+        "parameters": [
+          {
+            "name": "acceleratorAction",
+            "$ref": "AcceleratorAction"
+          }
+        ]
+      },
+      {
+        "name": "isFeatureEnabled",
+        "type": "function",
+        "description": "Checks to see if an accessibility feature is enabled.",
+        "parameters": [
+          {
+            "name": "feature",
+            "$ref": "AccessibilityFeature"
+          }
         ],
-        "platforms": ["chromeos"]
+        "returns_async": {
+          "name": "callback",
+          "description": "Returns whether feature is enabled.",
+          "parameters": [
+            {
+              "name": "featureEnabled",
+              "type": "boolean"
+            }
+          ]
+        }
+      },
+      {
+        "name": "updateSelectToSpeakPanel",
+        "type": "function",
+        "description": "Updates properties of the Select-to-speak panel.",
+        "parameters": [
+          {
+            "name": "show",
+            "type": "boolean",
+            "description": "True to show panel, false to hide it"
+          },
+          {
+            "name": "anchor",
+            "$ref": "ScreenRect",
+            "description": "A rectangle indicating the bounds of the object the panel should be displayed next to.",
+            "optional": true
+          },
+          {
+            "name": "isPaused",
+            "type": "boolean",
+            "description": "True if Select-to-speak playback is paused.",
+            "optional": true
+          },
+          {
+            "name": "speed",
+            "type": "number",
+            "description": "Current reading speed (TTS speech rate).",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "showConfirmationDialog",
+        "type": "function",
+        "description": "Shows a confirmation dialog.",
+        "parameters": [
+          {
+            "name": "title",
+            "type": "string",
+            "description": "The title of the confirmation dialog."
+          },
+          {
+            "name": "description",
+            "type": "string",
+            "description": "The description to show within the confirmation dialog."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the dialog is confirmed or cancelled.",
+          "parameters": [
+            {
+              "type": "boolean",
+              "name": "confirmed",
+              "description": "True if the dialog was confirmed, false if it was canceled or closed."
+            }
+          ]
+        }
+      },
+      {
+        "name": "getLocalizedDomKeyStringForKeyCode",
+        "type": "function",
+        "description": "Gets the DOM key string for the given key code, taking into account the current input method locale, and assuming the key code is for U.S. input. For example, the key code for '/' would return the string '!' if the current input method is French.",
+        "parameters": [
+          {
+            "name": "keyCode",
+            "type": "integer"
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called with the resulting Dom key string.",
+          "parameters": [
+            {
+              "type": "string",
+              "name": "domKeyString",
+              "description": "The dom key string localized for the current input method."
+            }
+          ]
+        }
       }
     ],
     "events": [
@@ -417,6 +661,14 @@
           {
             "name": "gesture",
             "$ref": "Gesture"
+          },
+          {
+            "name": "x",
+            "type": "integer"
+          },
+          {
+            "name": "y",
+            "type": "integer"
           }
         ]
       },
@@ -435,26 +687,62 @@
       {
         "name": "onSelectToSpeakStateChangeRequested",
         "type": "function",
-        "description": "Called when Chrome OS wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
-        "parameters": [],
-        "platforms": ["chromeos"]
+        "description": "Fired when Chrome OS wants to change the Select-to-Speak state, between selecting with the mouse, speaking, and inactive.",
+        "parameters": []
+      },
+      {
+        "name": "onSelectToSpeakPanelAction",
+        "type": "function",
+        "description": "Fired when an action is performed in the Select-to-speak panel.",
+        "parameters": [
+          {
+            "name": "action",
+            "$ref": "SelectToSpeakPanelAction"
+          },
+          {
+            "name": "value",
+            "type": "number",
+            "optional": true
+          }
+        ]
       },
       {
         "name": "onSwitchAccessCommand",
         "type": "function",
-        "description": "Called when Chrome OS has received a key event corresponding to a Switch Access command.",
+        "description": "Fired when Chrome OS has received a key event corresponding to a Switch Access command.",
         "parameters": [
           {
             "name": "command",
             "$ref": "SwitchAccessCommand"
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
+      },
+      {
+        "name": "onPointScanSet",
+        "type": "function",
+        "description": "Fired when Chrome OS has received the final point of point scanning.",
+        "parameters": [
+          {
+            "name": "point",
+            "$ref": "PointScanPoint"
+          }
+        ]
+      },
+      {
+        "name": "onMagnifierCommand",
+        "type": "function",
+        "description": "Fired when Chrome OS has received a key event corresponding to a Magnifier command.",
+        "parameters": [
+          {
+            "name": "command",
+            "$ref": "MagnifierCommand"
+          }
+        ]
       },
       {
         "name": "onAnnounceForAccessibility",
         "type": "function",
-        "description": "Called when an internal component within accessibility wants to force speech output for an accessibility extension. Do not use without approval from accessibility owners.",
+        "description": "Fired when an internal component within accessibility wants to force speech output for an accessibility extension. Do not use without approval from accessibility owners.",
         "parameters": [
           {
             "name": "announceText",
@@ -462,13 +750,12 @@
             "items": { "type": "string" },
             "description": "Text to be announced."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
       },
       {
-        "name": "findScrollableBoundsForPoint",
+        "name": "onScrollableBoundsForPointRequested",
         "type": "function",
-        "description": "Called when an internal component within accessibility wants to find the nearest scrolling container at a given screen coordinate. Used in Automatic Clicks.",
+        "description": "Fired when an internal component within accessibility wants to find the nearest scrolling container at a given screen coordinate. Used in Automatic Clicks.",
         "parameters": [
           {
             "name": "x",
@@ -480,8 +767,49 @@
             "type": "number",
             "description": "Y screen coordinate of the point."
           }
-        ],
-        "platforms": ["chromeos"]
+        ]
+      },
+      {
+        "name": "onMagnifierBoundsChanged",
+        "type": "function",
+        "description": "Fired when Chrome OS magnifier bounds are updated.",
+        "parameters": [
+          {
+            "name": "magnifierBounds",
+            "$ref": "ScreenRect",
+            "description": "Updated bounds of magnifier viewport."
+          }
+        ]
+      },
+      {
+        "name": "onCustomSpokenFeedbackToggled",
+        "type": "function",
+        "description": "Fired when a custom spoken feedback on the active window gets enabled or disabled. Called from ARC++ accessibility.",
+        "parameters": [
+          {
+            "name": "enabled",
+            "type": "boolean",
+            "description": "True if the active window implements custom spoken feedback features."
+          }
+        ]
+      },
+      {
+        "name": "onShowChromeVoxTutorial",
+        "type": "function",
+        "description": "Fired when ChromeVox should show its tutorial.",
+        "parameters": []
+      },
+      {
+        "name": "onToggleDictation",
+        "type": "function",
+        "description": "Fired when Dictation is activated or deactivated using a keyboard shortcut, the button in the tray, or after a call from accessibilityPrivate.toggleDictation",
+        "parameters": [
+          {
+            "name": "activated",
+            "type": "boolean",
+            "description": "True if Dictation was activated, false if it was deactivated."
+          }
+        ]
       }
     ]
   }

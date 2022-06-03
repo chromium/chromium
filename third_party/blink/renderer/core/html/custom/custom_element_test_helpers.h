@@ -5,10 +5,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_TEST_HELPERS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_TEST_HELPERS_H_
 
-#include "base/macros.h"
+#include <utility>
+
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
-#include "third_party/blink/renderer/core/dom/element_definition_options.h"
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/core/html/custom/ce_reactions_scope.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
@@ -18,8 +18,6 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-
-#include <utility>
 
 namespace blink {
 
@@ -31,16 +29,16 @@ class TestCustomElementDefinitionBuilder
 
  public:
   TestCustomElementDefinitionBuilder() = default;
+  TestCustomElementDefinitionBuilder(
+      const TestCustomElementDefinitionBuilder&) = delete;
+  TestCustomElementDefinitionBuilder& operator=(
+      const TestCustomElementDefinitionBuilder&) = delete;
 
   bool CheckConstructorIntrinsics() override { return true; }
   bool CheckConstructorNotRegistered() override { return true; }
   bool RememberOriginalProperties() override { return true; }
   CustomElementDefinition* Build(const CustomElementDescriptor&,
                                  CustomElementDefinition::Id) override;
-
- private:
-
-  DISALLOW_COPY_AND_ASSIGN(TestCustomElementDefinitionBuilder);
 };
 
 class TestCustomElementDefinition : public CustomElementDefinition {
@@ -55,6 +53,10 @@ class TestCustomElementDefinition : public CustomElementDefinition {
                                 std::move(observed_attributes),
                                 disabled_features,
                                 FormAssociationFlag::kNo) {}
+
+  TestCustomElementDefinition(const TestCustomElementDefinition&) = delete;
+  TestCustomElementDefinition& operator=(const TestCustomElementDefinition&) =
+      delete;
 
   ~TestCustomElementDefinition() override = default;
 
@@ -116,12 +118,10 @@ class TestCustomElementDefinition : public CustomElementDefinition {
   }
 
   void RunFormStateRestoreCallback(Element& element,
-                                   const FileOrUSVStringOrFormData& value,
+                                   const V8ControlValue* value,
                                    const String& mode) override {
     NOTREACHED() << "definition does not have restoreValueCallback";
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TestCustomElementDefinition);
 };
 
 class CreateElement {
@@ -153,9 +153,9 @@ class CreateElement {
   }
 
   operator Element*() const {
-    Document* document = document_.Get();
+    Document* document = document_;
     if (!document)
-      document = MakeGarbageCollected<HTMLDocument>();
+      document = HTMLDocument::CreateForTest();
     NonThrowableExceptionState no_exceptions;
     Element* element = document->CreateElement(
         QualifiedName(g_null_atom, local_name_, namespace_uri_),
@@ -166,7 +166,7 @@ class CreateElement {
   }
 
  private:
-  Member<Document> document_;
+  Document* document_ = nullptr;
   AtomicString namespace_uri_;
   AtomicString local_name_;
   AtomicString is_value_;

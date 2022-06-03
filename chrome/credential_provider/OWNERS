@@ -4,7 +4,4 @@ rakeshsoma@google.com
 yusufsn@google.com
 
 # Translation artifacts:
-per-file *.xtb=file://tools/translation/TRANSLATION_OWNERS
-
-# COMPONENT: Enterprise
-
+per-file ....xtb=file://tools/translation/TRANSLATION_OWNERS

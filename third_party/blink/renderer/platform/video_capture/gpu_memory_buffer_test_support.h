@@ -27,7 +27,9 @@ class FakeGpuMemoryBufferSupport : public gpu::GpuMemoryBufferSupport {
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,
-      gpu::GpuMemoryBufferImpl::DestructionCallback callback) override;
+      gpu::GpuMemoryBufferImpl::DestructionCallback callback,
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager = nullptr,
+      scoped_refptr<base::UnsafeSharedMemoryPool> pool = nullptr) override;
 };
 
 class TestingPlatformSupportForGpuMemoryBuffer

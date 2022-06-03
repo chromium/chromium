@@ -1,0 +1,8 @@
+include_rules = [
+  "+media/base",
+  "+media/mojo",
+  "+mojo/public",
+  "+sandbox",
+  "+sandbox/policy",
+  "+services/audio/public/cpp",
+]

@@ -5,7 +5,6 @@
 #include "chromeos/services/secure_channel/timer_factory_impl.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "base/timer/timer.h"
 
 namespace chromeos {
@@ -16,12 +15,11 @@ namespace secure_channel {
 TimerFactoryImpl::Factory* TimerFactoryImpl::Factory::test_factory_ = nullptr;
 
 // static
-TimerFactoryImpl::Factory* TimerFactoryImpl::Factory::Get() {
+std::unique_ptr<TimerFactory> TimerFactoryImpl::Factory::Create() {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance();
 
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new TimerFactoryImpl());
 }
 
 // static
@@ -30,10 +28,6 @@ void TimerFactoryImpl::Factory::SetFactoryForTesting(Factory* test_factory) {
 }
 
 TimerFactoryImpl::Factory::~Factory() = default;
-
-std::unique_ptr<TimerFactory> TimerFactoryImpl::Factory::BuildInstance() {
-  return base::WrapUnique(new TimerFactoryImpl());
-}
 
 TimerFactoryImpl::TimerFactoryImpl() = default;
 

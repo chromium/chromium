@@ -5,11 +5,12 @@
 #include "chrome/browser/apps/platform_apps/api/music_manager_private/device_id.h"
 
 #include <stdint.h>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "content/public/browser/browser_thread.h"
@@ -36,22 +37,22 @@ bool ComputeHmacSha256(const std::string& key,
 }
 
 void GetRawDeviceIdCallback(const std::string& extension_id,
-                            const DeviceId::IdCallback& callback,
+                            DeviceId::IdCallback callback,
                             const std::string& raw_device_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (raw_device_id.empty()) {
-    callback.Run("");
+    std::move(callback).Run("");
     return;
   }
 
   std::string device_id;
   if (!ComputeHmacSha256(raw_device_id, extension_id, &device_id)) {
     DLOG(ERROR) << "Error while computing HMAC-SHA256 of device id.";
-    callback.Run("");
+    std::move(callback).Run("");
     return;
   }
-  callback.Run(device_id);
+  std::move(callback).Run(device_id);
 }
 
 bool IsValidMacAddressImpl(const void* bytes, size_t size) {
@@ -178,13 +179,14 @@ bool IsValidMacAddressImpl(const void* bytes, size_t size) {
 
 // static
 void DeviceId::GetDeviceId(const std::string& extension_id,
-                           const IdCallback& callback) {
+                           IdCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!extension_id.empty());
 
   // Forward call to platform specific implementation, then compute the HMAC
   // in the callback.
-  GetRawDeviceId(base::Bind(&GetRawDeviceIdCallback, extension_id, callback));
+  GetRawDeviceId(base::BindOnce(&GetRawDeviceIdCallback, extension_id,
+                                std::move(callback)));
 }
 
 // static

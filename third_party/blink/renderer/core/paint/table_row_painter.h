@@ -13,7 +13,6 @@ namespace blink {
 class CellSpan;
 class LayoutTableRow;
 struct PaintInfo;
-struct PhysicalOffset;
 
 class TableRowPainter {
   STACK_ALLOCATED();
@@ -31,10 +30,6 @@ class TableRowPainter {
  private:
   void HandleChangedPartialPaint(const PaintInfo&,
                                  const CellSpan& dirtied_columns);
-  // Paint a hit test display item and record hit test data. This should be
-  // called in the background paint phase even if there is no other painted
-  // content.
-  void RecordHitTestData(const PaintInfo&, const PhysicalOffset& paint_offset);
 
   const LayoutTableRow& layout_table_row_;
 };

@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_STEP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_XPATH_STEP_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/xml/xpath_expression_node.h"
 #include "third_party/blink/renderer/core/xml/xpath_node_set.h"
 
@@ -85,7 +84,7 @@ class Step final : public ParseNode {
       DCHECK(o.merged_predicates_.IsEmpty());
       return *this;
     }
-    void Trace(blink::Visitor* visitor) { visitor->Trace(merged_predicates_); }
+    void Trace(Visitor* visitor) const { visitor->Trace(merged_predicates_); }
 
     Kind GetKind() const { return kind_; }
     const AtomicString& Data() const { return data_; }
@@ -109,8 +108,10 @@ class Step final : public ParseNode {
 
   Step(Axis, const NodeTest&);
   Step(Axis, const NodeTest&, HeapVector<Member<Predicate>>&);
+  Step(const Step&) = delete;
+  Step& operator=(const Step&) = delete;
   ~Step() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void Optimize();
 
@@ -131,7 +132,6 @@ class Step final : public ParseNode {
   Axis axis_;
   Member<NodeTest> node_test_;
   HeapVector<Member<Predicate>> predicates_;
-  DISALLOW_COPY_AND_ASSIGN(Step);
 };
 
 bool OptimizeStepPair(Step*, Step*);

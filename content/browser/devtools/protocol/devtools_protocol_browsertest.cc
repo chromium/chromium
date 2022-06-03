@@ -9,28 +9,31 @@
 
 #include "base/base64.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/download/public/common/download_file_factory.h"
 #include "components/download/public/common/download_file_impl.h"
 #include "components/download/public/common/download_task_runner.h"
 #include "content/browser/devtools/protocol/devtools_download_manager_delegate.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
+#include "content/browser/devtools/render_frame_devtools_agent_host.h"
 #include "content/browser/download/download_manager_impl.h"
-#include "content/browser/frame_host/interstitial_page_impl.h"
-#include "content/browser/frame_host/navigator.h"
+#include "content/browser/renderer_host/navigator.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
+#include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_manager.h"
-#include "content/public/browser/interstitial_page_delegate.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -38,11 +41,12 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host_view.h"
-#include "content/public/browser/security_style_explanations.h"
 #include "content/public/browser/ssl_status.h"
+#include "content/public/browser/tracing_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
@@ -53,7 +57,10 @@
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_content_browser_client.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
+#include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "services/tracing/public/cpp/tracing_features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
@@ -63,8 +70,14 @@
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/snapshot/snapshot.h"
+
+#if defined(OS_POSIX)
+#include "base/task/deferred_sequenced_task_runner.h"
+#include "base/tracing/perfetto_task_runner.h"
+#include "services/tracing/perfetto/system_test_utils.h"
+#endif
 
 #define EXPECT_SIZE_EQ(expected, actual)               \
   do {                                                 \
@@ -78,43 +91,20 @@ namespace content {
 
 namespace {
 
-// If |params| contains an explanation with a non-empty certificate list,
-// returns true and points |certificate| to the certificate list of the first
-// explanation that contains a nonempty certificate list. Otherwise returns
-// false. |params| is expected to be the parameters of a securityStateChanged
-// notification.
-bool GetCertificateFromNotificationParams(base::DictionaryValue* params,
-                                          const base::ListValue** certificate) {
-  const base::ListValue* explanations;
-  if (!params->GetList("explanations", &explanations)) {
-    return false;
-  }
-  for (const auto& explanation : *explanations) {
-    const base::DictionaryValue* explanation_dict;
-    if (explanation.GetAsDictionary(&explanation_dict) &&
-        explanation_dict->GetList("certificate", certificate) &&
-        (*certificate)->GetSize() > 0u) {
-      return true;
-    }
-  }
-  return false;
-}
-
-bool SecurityStateChangedHasCertificateExplanation(
-    base::DictionaryValue* params) {
-  const base::ListValue* unused;
-  return GetCertificateFromNotificationParams(params, &unused);
-}
-
 class TestJavaScriptDialogManager : public JavaScriptDialogManager,
                                     public WebContentsDelegate {
  public:
   TestJavaScriptDialogManager() {}
+
+  TestJavaScriptDialogManager(const TestJavaScriptDialogManager&) = delete;
+  TestJavaScriptDialogManager& operator=(const TestJavaScriptDialogManager&) =
+      delete;
+
   ~TestJavaScriptDialogManager() override {}
 
   void Handle() {
     if (!callback_.is_null()) {
-      std::move(callback_).Run(true, base::string16());
+      std::move(callback_).Run(true, std::u16string());
     } else {
       handle_ = true;
     }
@@ -130,13 +120,13 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
   void RunJavaScriptDialog(WebContents* web_contents,
                            RenderFrameHost* render_frame_host,
                            JavaScriptDialogType dialog_type,
-                           const base::string16& message_text,
-                           const base::string16& default_prompt_text,
+                           const std::u16string& message_text,
+                           const std::u16string& default_prompt_text,
                            DialogClosedCallback callback,
                            bool* did_suppress_message) override {
     if (handle_) {
       handle_ = false;
-      std::move(callback).Run(true, base::string16());
+      std::move(callback).Run(true, std::u16string());
     } else {
       callback_ = std::move(callback);
     }
@@ -149,7 +139,7 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
 
   bool HandleJavaScriptDialog(WebContents* web_contents,
                               bool accept,
-                              const base::string16* prompt_override) override {
+                              const std::u16string* prompt_override) override {
     is_handled_ = true;
     return true;
   }
@@ -163,16 +153,16 @@ class TestJavaScriptDialogManager : public JavaScriptDialogManager,
   DialogClosedCallback callback_;
   bool handle_ = false;
   bool is_handled_ = false;
-  DISALLOW_COPY_AND_ASSIGN(TestJavaScriptDialogManager);
 };
 
 }  // namespace
 
-
-class TestInterstitialDelegate : public InterstitialPageDelegate {
- private:
-  // InterstitialPageDelegate:
-  std::string GetHTMLContents() override { return "<p>Interstitial</p>"; }
+class SitePerProcessDevToolsProtocolTest : public DevToolsProtocolTest {
+ public:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DevToolsProtocolTest::SetUpCommandLine(command_line);
+    IsolateAllSitesForTesting(command_line);
+  }
 };
 
 class SyntheticKeyEventTest : public DevToolsProtocolTest {
@@ -215,7 +205,7 @@ class SyntheticMouseEventTest : public DevToolsProtocolTest {
 IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, KeyEventSynthesizeKey) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       shell()->web_contents(),
       "function handleKeyEvent(event) {"
       "domAutomationController.send(event.key);"
@@ -249,14 +239,17 @@ IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, KeyEventSynthesizeKey) {
 IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, DISABLED_KeyboardEventAck) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       shell()->web_contents(),
       "document.body.addEventListener('keydown', () => {debugger;});"));
 
   auto filter = std::make_unique<InputMsgWatcher>(
-      RenderWidgetHostImpl::From(
-          shell()->web_contents()->GetRenderViewHost()->GetWidget()),
-      blink::WebInputEvent::kRawKeyDown);
+      RenderWidgetHostImpl::From(shell()
+                                     ->web_contents()
+                                     ->GetMainFrame()
+                                     ->GetRenderViewHost()
+                                     ->GetWidget()),
+      blink::WebInputEvent::Type::kRawKeyDown);
 
   SendCommand("Debugger.enable", nullptr);
   SendKeyEvent("rawKeyDown", 0, 13, 13, "Enter", false);
@@ -272,17 +265,21 @@ IN_PROC_BROWSER_TEST_F(SyntheticKeyEventTest, DISABLED_KeyboardEventAck) {
   EXPECT_EQ(3u, result_ids_.size());
 }
 
-IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, MouseEventAck) {
+// Flaky: https://crbug.com/1263461
+IN_PROC_BROWSER_TEST_F(SyntheticMouseEventTest, DISABLED_MouseEventAck) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       shell()->web_contents(),
       "document.body.addEventListener('mousedown', () => {debugger;});"));
 
   auto filter = std::make_unique<InputMsgWatcher>(
-      RenderWidgetHostImpl::From(
-          shell()->web_contents()->GetRenderViewHost()->GetWidget()),
-      blink::WebInputEvent::kMouseDown);
+      RenderWidgetHostImpl::From(shell()
+                                     ->web_contents()
+                                     ->GetMainFrame()
+                                     ->GetRenderViewHost()
+                                     ->GetWidget()),
+      blink::WebInputEvent::Type::kMouseDown);
 
   SendCommand("Debugger.enable", nullptr);
   SendMouseEvent("mousePressed", 15, 15, "left", false);
@@ -318,7 +315,7 @@ std::unique_ptr<SkBitmap> DecodeJPEG(std::string base64_data) {
       jpeg_data.size());
 }
 
-bool ColorsMatchWithinLimit(SkColor color1, SkColor color2, int error_limit) {
+int ColorsSquareDiff(SkColor color1, SkColor color2) {
   auto a_diff = static_cast<int>(SkColorGetA(color1)) -
                 static_cast<int>(SkColorGetA(color2));
   auto r_diff = static_cast<int>(SkColorGetR(color1)) -
@@ -328,8 +325,11 @@ bool ColorsMatchWithinLimit(SkColor color1, SkColor color2, int error_limit) {
   auto b_diff = static_cast<int>(SkColorGetB(color1)) -
                 static_cast<int>(SkColorGetB(color2));
   return a_diff * a_diff + r_diff * r_diff + g_diff * g_diff +
-             b_diff * b_diff <=
-         error_limit * error_limit;
+             b_diff * b_diff;
+}
+
+bool ColorsMatchWithinLimit(SkColor color1, SkColor color2, int max_collor_diff) {
+  return ColorsSquareDiff(color1, color2) <= max_collor_diff * max_collor_diff;
 }
 
 // Adapted from cc::ExactPixelComparator.
@@ -337,7 +337,7 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
                    const SkBitmap& actual_bmp,
                    const gfx::Rect& matching_mask,
                    float device_scale_factor,
-                   int error_limit) {
+                   int max_collor_diff) {
   // Number of pixels with an error
   int error_pixels_count = 0;
 
@@ -347,10 +347,12 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
   device_scale_factor = device_scale_factor ? device_scale_factor : 1;
 
   // Check that bitmaps have identical dimensions.
-  EXPECT_EQ(expected_bmp.width() * device_scale_factor, actual_bmp.width());
-  EXPECT_EQ(expected_bmp.height() * device_scale_factor, actual_bmp.height());
-  if (expected_bmp.width() * device_scale_factor != actual_bmp.width() ||
-      expected_bmp.height() * device_scale_factor != actual_bmp.height()) {
+  int expected_width = round(expected_bmp.width() * device_scale_factor);
+  int expected_height = round(expected_bmp.height() * device_scale_factor);
+  EXPECT_EQ(expected_width, actual_bmp.width());
+  EXPECT_EQ(expected_height, actual_bmp.height());
+  if (expected_width != actual_bmp.width() ||
+      expected_height != actual_bmp.height()) {
     return false;
   }
 
@@ -361,10 +363,12 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
       SkColor actual_color =
           actual_bmp.getColor(x * device_scale_factor, y * device_scale_factor);
       SkColor expected_color = expected_bmp.getColor(x, y);
-      if (!ColorsMatchWithinLimit(actual_color, expected_color, error_limit)) {
+      if (!ColorsMatchWithinLimit(actual_color, expected_color, max_collor_diff)) {
         if (error_pixels_count < 10) {
-          LOG(ERROR) << "Pixel (" << x << "," << y << "): expected " << std::hex
-                     << expected_color << " actual " << actual_color;
+          LOG(ERROR) << "Pixel (" << x << "," << y
+                     << "). Expected: " << std::hex << expected_color
+                     << ", actual: " << actual_color << std::dec
+                     << ", square diff: " << ColorsSquareDiff(expected_color, actual_color);
         }
         error_pixels_count++;
         error_bounding_rect.Union(gfx::Rect(x, y, 1, 1));
@@ -382,44 +386,74 @@ bool MatchesBitmap(const SkBitmap& expected_bmp,
 }
 }  // namespace
 
+enum class ScreenshotEncoding { PNG, JPEG, WEBP };
+
+std::string EncodingEnumToString(ScreenshotEncoding encoding) {
+  switch (encoding) {
+    case ScreenshotEncoding::PNG:
+      return "png";
+    case ScreenshotEncoding::JPEG:
+      return "jpeg";
+    case ScreenshotEncoding::WEBP:
+      return "webp";
+    default:
+      return "";
+  }
+}
+
 class CaptureScreenshotTest : public DevToolsProtocolTest {
  protected:
-  enum ScreenshotEncoding { ENCODING_PNG, ENCODING_JPEG };
-  void CaptureScreenshotAndCompareTo(const SkBitmap& expected_bitmap,
-                                     ScreenshotEncoding encoding,
-                                     bool from_surface,
-                                     float device_scale_factor = 0,
-                                     const gfx::RectF& clip = gfx::RectF(),
-                                     float clip_scale = 0) {
+  std::unique_ptr<SkBitmap> CaptureScreenshot(
+      ScreenshotEncoding encoding,
+      bool from_surface,
+      const gfx::RectF& clip = gfx::RectF(),
+      float clip_scale = 0,
+      bool capture_beyond_viewport = false) {
     std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
-    params->SetString("format", encoding == ENCODING_PNG ? "png" : "jpeg");
+    params->SetString("format", EncodingEnumToString(encoding));
     params->SetInteger("quality", 100);
     params->SetBoolean("fromSurface", from_surface);
+    if (capture_beyond_viewport) {
+      params->SetBoolean("captureBeyondViewport", true);
+    }
     if (clip_scale) {
-      std::unique_ptr<base::DictionaryValue> clip_value(
-          new base::DictionaryValue());
-      clip_value->SetDouble("x", clip.x());
-      clip_value->SetDouble("y", clip.y());
-      clip_value->SetDouble("width", clip.width());
-      clip_value->SetDouble("height", clip.height());
-      clip_value->SetDouble("scale", clip_scale);
-      params->Set("clip", std::move(clip_value));
+      base::DictionaryValue clip_value;
+      clip_value.SetDouble("x", clip.x());
+      clip_value.SetDouble("y", clip.y());
+      clip_value.SetDouble("width", clip.width());
+      clip_value.SetDouble("height", clip.height());
+      clip_value.SetDouble("scale", clip_scale);
+      params->SetKey("clip", std::move(clip_value));
     }
     SendCommand("Page.captureScreenshot", std::move(params));
 
     std::string base64;
     EXPECT_TRUE(result_->GetString("data", &base64));
     std::unique_ptr<SkBitmap> result_bitmap;
-    if (encoding == ENCODING_PNG) {
-      result_bitmap.reset(new SkBitmap());
+    if (encoding == ScreenshotEncoding::PNG) {
+      result_bitmap = std::make_unique<SkBitmap>();
       EXPECT_TRUE(DecodePNG(base64, result_bitmap.get()));
-    } else {
+    } else if (encoding == ScreenshotEncoding::JPEG) {
       result_bitmap = DecodeJPEG(base64);
+    } else {
+      // Decode not implemented.
     }
     EXPECT_TRUE(result_bitmap);
+    return result_bitmap;
+  }
+
+  void CaptureScreenshotAndCompareTo(const SkBitmap& expected_bitmap,
+                                     ScreenshotEncoding encoding,
+                                     bool from_surface,
+                                     float device_scale_factor = 0,
+                                     const gfx::RectF& clip = gfx::RectF(),
+                                     float clip_scale = 0,
+                                     bool capture_beyond_viewport = false) {
+    std::unique_ptr<SkBitmap> result_bitmap = CaptureScreenshot(
+        encoding, from_surface, clip, clip_scale, capture_beyond_viewport);
 
     gfx::Rect matching_mask(gfx::SkIRectToRect(expected_bitmap.bounds()));
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     // Mask out the corners, which may be drawn differently on Mac because of
     // rounded corners.
     matching_mask.Inset(4, 4, 4, 4);
@@ -430,10 +464,10 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // Allow some error between actual and expected pixel values.
     // That assumes there is no shift in pixel positions, so it only works
     // reliably if all pixels have equal values.
-    int error_limit = 16;
+    int max_collor_diff = 20;
 
     EXPECT_TRUE(MatchesBitmap(expected_bitmap, *result_bitmap, matching_mask,
-                              device_scale_factor, error_limit));
+                              device_scale_factor, max_collor_diff));
   }
 
   // Takes a screenshot of a colored box that is positioned inside the frame.
@@ -451,7 +485,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
             << " ...";
 
     // Draw a blue box of provided size in the horizontal center of the page.
-    EXPECT_TRUE(content::ExecuteScript(
+    EXPECT_TRUE(content::ExecJs(
         shell()->web_contents(),
         base::StringPrintf(
             "var style = document.body.style;                             "
@@ -468,7 +502,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
     // change during screenshotting. This verifies that the page doesn't observe
     // a change in frame size as a side effect of screenshotting.
 
-    params.reset(new base::DictionaryValue());
+    params = std::make_unique<base::DictionaryValue>();
     params->SetInteger("width", frame_size.width());
     params->SetInteger("height", frame_size.height());
     params->SetDouble("deviceScaleFactor", device_scale_factor);
@@ -496,8 +530,9 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
                                 .device_scale_factor();
     }
 
-    CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_PNG, true,
-                                  device_scale_factor, clip, screenshot_scale);
+    CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG,
+                                  true, device_scale_factor, clip,
+                                  screenshot_scale);
 
     // Reset for next screenshot.
     SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
@@ -505,66 +540,166 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
 
  private:
 #if !defined(OS_ANDROID)
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kEnablePixelOutputInTests);
+  void SetUp() override {
+    EnablePixelOutput();
+    DevToolsProtocolTest::SetUp();
   }
 #endif
 };
 
-IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, CaptureScreenshot) {
-  // This test fails consistently on low-end Android devices.
-  // See crbug.com/653637.
-  // TODO(eseckler): Reenable with error limit if necessary.
-  if (base::SysInfo::IsLowEndDevice()) return;
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
+                       CaptureScreenshotBeyondViewport_OutOfView) {
+  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // devices.
+  if (base::SysInfo::IsLowEndDevice())
+    return;
+
+  // Load dummy page before getting the window size.
+  shell()->LoadURL(GURL("data:text/html,"));
+  gfx::Size window_size =
+      static_cast<RenderWidgetHostViewBase*>(
+          shell()->web_contents()->GetRenderWidgetHostView())
+          ->GetCompositorViewportPixelSize();
+
+  // Make a page a bit bigger than the view to force scrollbars to be shown.
+  float content_height = window_size.height() + 10;
+  float content_width = window_size.width() + 10;
 
   shell()->LoadURL(
-      GURL("data:text/html,<body style='background:%23123456'></body>"));
-  WaitForLoadStop(shell()->web_contents());
+      GURL("data:text/html,<body "
+           "style='background:%23123456;height:" +
+           base::NumberToString(content_height) +
+           "px;width:" + base::NumberToString(content_width) + "px'></body>"));
+
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
+
+  // Generate expected screenshot without any scrollbars.
   SkBitmap expected_bitmap;
+  expected_bitmap.allocN32Pixels(content_width, content_height);
+  expected_bitmap.eraseColor(SkColorSetRGB(0x12, 0x34, 0x56));
+
+  float device_scale_factor =
+      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+
+  // Verify there are no scrollbars on the screenshot.
+  CaptureScreenshotAndCompareTo(
+      expected_bitmap, ScreenshotEncoding::PNG, true, device_scale_factor,
+      gfx::RectF(0, 0, content_width, content_height), 1, true);
+}
+
+// ChromeOS and Android has fading out scrollbars, which makes the test flacky.
+// TODO(crbug.com/1150059) Android has a problem with changing scale.
+// TODO(crbug.com/1147911) Android Lollipop has a problem with capturing
+// screenshot.
+// TODO(crbug.com/1156767) Flaky on linux-lacros-tester-rel
+#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown \
+  DISABLED_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown
+#else
+#define MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown \
+  CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown
+#endif
+IN_PROC_BROWSER_TEST_F(
+    CaptureScreenshotTest,
+    MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown) {
+  // TODO(crbug.com/653637) This test fails consistently on low-end Android
+  // devices.
+  if (base::SysInfo::IsLowEndDevice())
+    return;
+
+  shell()->LoadURL(GURL(
+      "data:text/html,<body><div style='width: 50px; height: 50px; overflow: "
+      "scroll;'><h3>test</h3><h3>test</h3><h3>test</h3></div></body>"));
+
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+  Attach();
+
   // We compare against the actual physical backing size rather than the
   // view size, because the view size is stored adjusted for DPI and only in
   // integer precision.
   gfx::Size view_size = static_cast<RenderWidgetHostViewBase*>(
                             shell()->web_contents()->GetRenderWidgetHostView())
                             ->GetCompositorViewportPixelSize();
-  expected_bitmap.allocN32Pixels(view_size.width(), view_size.height());
-  expected_bitmap.eraseColor(SkColorSetRGB(0x12, 0x34, 0x56));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_PNG, false);
+
+  // Capture a screenshot not "form surface", meaning without emulation and
+  // without changing preferences, as-is.
+  std::unique_ptr<SkBitmap> expected_bitmap =
+      CaptureScreenshot(ScreenshotEncoding::PNG, false);
+
+  float device_scale_factor =
+      display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
+
+  // Compare the captured screenshot with one made "from_surface", where actual
+  // scrollbar magic happened, and verify it looks the same, meaning the
+  // internal scrollbars are rendered.
+  CaptureScreenshotAndCompareTo(
+      *expected_bitmap, ScreenshotEncoding::PNG, true, device_scale_factor,
+      gfx::RectF(0, 0, view_size.width(), view_size.height()), 1, true);
 }
 
-IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, CaptureScreenshotJpeg) {
+// ChromeOS and Android don't support software compositing.
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+
+class NoGPUCaptureScreenshotTest : public CaptureScreenshotTest {
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    CaptureScreenshotTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(switches::kDisableGpuCompositing);
+  }
+};
+
+// Tests that large screenshots are composited fine with software compositor.
+// Regression test for https://crbug.com/1137291.
+IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, LargeScreenshot) {
   // This test fails consistently on low-end Android devices.
   // See crbug.com/653637.
   // TODO(eseckler): Reenable with error limit if necessary.
   if (base::SysInfo::IsLowEndDevice())
     return;
-
+  // If disabling software compositing is disabled by the test caller,
+  // we're out of luck.
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kDisableSoftwareCompositingFallback)) {
+    return;
+  }
   shell()->LoadURL(
-      GURL("data:text/html,<body style='background:%23123456'></body>"));
-  WaitForLoadStop(shell()->web_contents());
+      GURL("data:text/html,"
+           "<style>body,html { padding: 0; margin: 0; }</style>"
+           "<div style='width: 1250px; height: 8440px; "
+           "     background: linear-gradient(red, blue)'></div>"));
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
-  SkBitmap expected_bitmap;
-  // We compare against the actual physical backing size rather than the
-  // view size, because the view size is stored adjusted for DPI and only in
-  // integer precision.
-  gfx::Size view_size = static_cast<RenderWidgetHostViewBase*>(
-                            shell()->web_contents()->GetRenderWidgetHostView())
-                            ->GetCompositorViewportPixelSize();
-  expected_bitmap.allocN32Pixels(view_size.width(), view_size.height());
-  expected_bitmap.eraseColor(SkColorSetRGB(0x12, 0x34, 0x56));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_JPEG, false);
+
+  auto params = std::make_unique<base::DictionaryValue>();
+  params->SetInteger("width", 1280);
+  params->SetInteger("height", 8440);
+  params->SetDouble("deviceScaleFactor", 1);
+  params->SetBoolean("mobile", false);
+  SendCommand("Emulation.setDeviceMetricsOverride", std::move(params));
+  auto bitmap = CaptureScreenshot(ScreenshotEncoding::PNG, true,
+                                  gfx::RectF(0, 0, 1280, 8440), 1);
+  SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
+
+  EXPECT_EQ(1280, bitmap->width());
+  EXPECT_EQ(8440, bitmap->height());
+
+  // Top-left is red-ish.
+  SkColor top_left = bitmap->getColor(0, 0);
+  EXPECT_GT(static_cast<int>(SkColorGetR(top_left)), 128);
+  EXPECT_LT(static_cast<int>(SkColorGetB(top_left)), 128);
+
+  // Bottom-left is blue-ish.
+  SkColor bottom_left = bitmap->getColor(0, 8339);
+  EXPECT_LT(static_cast<int>(SkColorGetR(bottom_left)), 128);
+  EXPECT_GT(static_cast<int>(SkColorGetB(bottom_left)), 128);
 }
 
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+
 // Setting frame size (through RWHV) is not supported on Android.
-// This test seems to be very flaky on windows: https://crbug.com/801173
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_WIN)
-#define MAYBE_CaptureScreenshotArea DISABLED_CaptureScreenshotArea
-#else
-#define MAYBE_CaptureScreenshotArea CaptureScreenshotArea
-#endif
-IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
-                       MAYBE_CaptureScreenshotArea) {
+// This test seems to be very flaky on all platforms: https://crbug.com/801173
+IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, DISABLED_CaptureScreenshotArea) {
   static const gfx::Size kFrameSize(800, 600);
 
   shell()->LoadURL(GURL("about:blank"));
@@ -589,17 +724,17 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
     return;
 
   shell()->LoadURL(GURL("about:blank"));
-  WaitForLoadStop(shell()->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
 
   // Override background to blue.
-  std::unique_ptr<base::DictionaryValue> color(new base::DictionaryValue());
-  color->SetInteger("r", 0x00);
-  color->SetInteger("g", 0x00);
-  color->SetInteger("b", 0xff);
-  color->SetDouble("a", 1.0);
+  base::DictionaryValue color;
+  color.SetInteger("r", 0x00);
+  color.SetInteger("g", 0x00);
+  color.SetInteger("b", 0xff);
+  color.SetDouble("a", 1.0);
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
-  params->Set("color", std::move(color));
+  params->SetKey("color", std::move(color));
   SendCommand("Emulation.setDefaultBackgroundColorOverride", std::move(params));
 
   SkBitmap expected_bitmap;
@@ -611,14 +746,14 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
                             ->GetCompositorViewportPixelSize();
   expected_bitmap.allocN32Pixels(view_size.width(), view_size.height());
   expected_bitmap.eraseColor(SkColorSetRGB(0x00, 0x00, 0xff));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_PNG, true);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
 
   // Tests that resetting Emulation.setDefaultBackgroundColorOverride
   // clears the background color override.
   SendCommand("Emulation.setDefaultBackgroundColorOverride",
               std::make_unique<base::DictionaryValue>());
   expected_bitmap.eraseColor(SK_ColorWHITE);
-  CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_PNG, true);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
 }
 
 // Verifies that setDefaultBackgroundColor and captureScreenshot support a fully
@@ -630,17 +765,19 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
 
   shell()->LoadURL(
       GURL("data:text/html,<body style='background:transparent'></body>"));
-  WaitForLoadStop(shell()->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
   Attach();
 
-  // Override background to fully transparent.
-  auto color = std::make_unique<base::DictionaryValue>();
-  color->SetInteger("r", 0);
-  color->SetInteger("g", 0);
-  color->SetInteger("b", 0);
-  color->SetDouble("a", 0);
   auto params = std::make_unique<base::DictionaryValue>();
-  params->Set("color", std::move(color));
+  {
+    // Override background to fully transparent.
+    base::DictionaryValue color;
+    color.SetInteger("r", 0);
+    color.SetInteger("g", 0);
+    color.SetInteger("b", 0);
+    color.SetDouble("a", 0);
+    params->SetKey("color", std::move(color));
+  }
   SendCommand("Emulation.setDefaultBackgroundColorOverride", std::move(params));
 
   SkBitmap expected_bitmap;
@@ -652,7 +789,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
                             ->GetCompositorViewportPixelSize();
   expected_bitmap.allocN32Pixels(view_size.width(), view_size.height());
   expected_bitmap.eraseColor(SK_ColorTRANSPARENT);
-  CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_PNG, true);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
 
 #if !defined(OS_ANDROID)
   float device_scale_factor =
@@ -666,23 +803,25 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   params->SetBoolean("mobile", false);
   params->SetBoolean("fitWindow", false);
   SendCommand("Emulation.setDeviceMetricsOverride", std::move(params));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_PNG, true,
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true,
                                 device_scale_factor);
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
 #endif  // !defined(OS_ANDROID)
 
-  // Override background to a semi-transparent color.
-  color = std::make_unique<base::DictionaryValue>();
-  color->SetInteger("r", 255);
-  color->SetInteger("g", 0);
-  color->SetInteger("b", 0);
-  color->SetDouble("a", 1.0 / 255 * 16);
-  params = std::make_unique<base::DictionaryValue>();
-  params->Set("color", std::move(color));
+  {
+    // Override background to a semi-transparent color.
+    base::DictionaryValue color;
+    color.SetInteger("r", 255);
+    color.SetInteger("g", 0);
+    color.SetInteger("b", 0);
+    color.SetDouble("a", 1.0 / 255 * 16);
+    params = std::make_unique<base::DictionaryValue>();
+    params->SetKey("color", std::move(color));
+  }
   SendCommand("Emulation.setDefaultBackgroundColorOverride", std::move(params));
 
   expected_bitmap.eraseColor(SkColorSetARGB(16, 255, 0, 0));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_PNG, true);
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
 
 #if !defined(OS_ANDROID)
   // Check that device emulation does not affect the transparency.
@@ -693,7 +832,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   params->SetBoolean("mobile", false);
   params->SetBoolean("fitWindow", false);
   SendCommand("Emulation.setDeviceMetricsOverride", std::move(params));
-  CaptureScreenshotAndCompareTo(expected_bitmap, ENCODING_PNG, true,
+  CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true,
                                 device_scale_factor);
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
 #endif  // !defined(OS_ANDROID)
@@ -706,14 +845,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizePinchGesture) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
   Attach();
 
-  int old_width;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(window.innerWidth)", &old_width));
+  int old_width = EvalJs(shell(), "window.innerWidth").ExtractInt();
 
-  int old_height;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(window.innerHeight)",
-      &old_height));
+  int old_height = EvalJs(shell(), "window.innerHeight").ExtractInt();
 
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetInteger("x", old_width / 2);
@@ -721,15 +855,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizePinchGesture) {
   params->SetDouble("scaleFactor", 2.0);
   SendCommand("Input.synthesizePinchGesture", std::move(params));
 
-  int new_width;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(window.innerWidth)", &new_width));
+  int new_width = EvalJs(shell(), "window.innerWidth").ExtractInt();
   ASSERT_DOUBLE_EQ(2.0, static_cast<double>(old_width) / new_width);
 
-  int new_height;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(window.innerHeight)",
-      &new_height));
+  int new_height = EvalJs(shell(), "window.innerHeight").ExtractInt();
   ASSERT_DOUBLE_EQ(2.0, static_cast<double>(old_height) / new_height);
 }
 
@@ -738,11 +867,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeScrollGesture) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
   Attach();
 
-  int scroll_top;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(document.body.scrollTop)",
-      &scroll_top));
-  ASSERT_EQ(0, scroll_top);
+  ASSERT_EQ(0, EvalJs(shell(), "document.body.scrollTop"));
 
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetInteger("x", 0);
@@ -751,10 +876,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeScrollGesture) {
   params->SetInteger("yDistance", -100);
   SendCommand("Input.synthesizeScrollGesture", std::move(params));
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(document.body.scrollTop)",
-      &scroll_top));
-  ASSERT_EQ(100, scroll_top);
+  ASSERT_EQ(100, EvalJs(shell(), "document.body.scrollTop"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
@@ -762,11 +884,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
   Attach();
 
-  int scroll_top;
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(document.body.scrollTop)",
-      &scroll_top));
-  ASSERT_EQ(0, scroll_top);
+  ASSERT_EQ(0, EvalJs(shell(), "document.body.scrollTop"));
 
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
   params->SetInteger("x", 16);
@@ -778,12 +896,131 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
   // new value of |document.body.scrollTop| will depend on the screen dimensions
   // of the device that we're testing on, but in any case it should be greater
   // than 0.
-  ASSERT_TRUE(content::ExecuteScriptAndExtractInt(
-      shell(), "domAutomationController.send(document.body.scrollTop)",
-      &scroll_top));
-  ASSERT_GT(scroll_top, 0);
+  ASSERT_GT(EvalJs(shell(), "document.body.scrollTop").ExtractInt(), 0);
 }
 #endif  // defined(OS_ANDROID)
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrash) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+
+  std::unique_ptr<base::DictionaryValue> command_params;
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetBoolean("discover", true);
+  SendCommand("Target.setDiscoverTargets", std::move(command_params));
+
+  std::string target_id;
+  std::unique_ptr<base::DictionaryValue> params;
+  std::string type;
+  params = WaitForNotification("Target.targetCreated", true);
+  ASSERT_TRUE(params->GetString("targetInfo.type", &type));
+  ASSERT_EQ(type, "page");
+  ASSERT_TRUE(params->GetString("targetInfo.targetId", &target_id));
+
+  ClearNotifications();
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    SendCommand("Page.crash", nullptr, false);
+    params = WaitForNotification("Target.targetCrashed", true);
+  }
+  ASSERT_TRUE(params);
+  std::string crashed_target_id;
+  ASSERT_TRUE(params->GetString("targetId", &crashed_target_id));
+  EXPECT_EQ(target_id, crashed_target_id);
+
+  ClearNotifications();
+  shell()->LoadURL(test_url);
+  WaitForNotification("Inspector.targetReloadedAfterCrash", true);
+}
+
+IN_PROC_BROWSER_TEST_F(SitePerProcessDevToolsProtocolTest, PageCrashInFrame) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url =
+      embedded_test_server()->GetURL("/devtools/page-with-oopif.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+
+  std::unique_ptr<base::DictionaryValue> command_params;
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetBoolean("discover", true);
+  SendCommand("Target.setDiscoverTargets", std::move(command_params));
+
+  std::string frame_target_id;
+  std::unique_ptr<base::DictionaryValue> params;
+  for (int targetCount = 1; true; targetCount++) {
+    params = WaitForNotification("Target.targetCreated", true);
+    std::string type;
+    ASSERT_TRUE(params->GetString("targetInfo.type", &type));
+    if (type == "iframe") {
+      ASSERT_TRUE(params->GetString("targetInfo.targetId", &frame_target_id));
+      break;
+    }
+    ASSERT_LT(targetCount, 2);
+  }
+
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetString("targetId", frame_target_id);
+  command_params->SetBoolean("flatten", true);
+  base::DictionaryValue* result =
+      SendCommand("Target.attachToTarget", std::move(command_params));
+  ASSERT_NE(nullptr, result);
+  std::string session_id;
+  ASSERT_TRUE(result->GetString("sessionId", &session_id));
+
+  ClearNotifications();
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    SendSessionCommand("Page.crash", nullptr, session_id, false);
+    params = WaitForNotification("Target.targetCrashed", true);
+  }
+  ASSERT_TRUE(params);
+  std::string crashed_target_id;
+  ASSERT_TRUE(params->GetString("targetId", &crashed_target_id));
+  EXPECT_EQ(frame_target_id, crashed_target_id);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrashClearsPendingCommands) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url = embedded_test_server()->GetURL("/devtools/navigation.html");
+  NavigateToURLBlockUntilNavigationsComplete(shell(), test_url, 1);
+  Attach();
+
+  std::unique_ptr<base::DictionaryValue> command_params;
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetBoolean("discover", true);
+
+  SendCommand("Target.setDiscoverTargets", std::move(command_params));
+
+  std::string target_id;
+  std::unique_ptr<base::DictionaryValue> params;
+  std::string type;
+  params = WaitForNotification("Target.targetCreated", true);
+  ASSERT_TRUE(params->GetString("targetInfo.type", &type));
+  ASSERT_EQ(type, "page");
+  ASSERT_TRUE(params->GetString("targetInfo.targetId", &target_id));
+
+  SendCommand("Debugger.enable", nullptr, true);
+
+  params = std::make_unique<base::DictionaryValue>();
+  params->SetString("expression", "console.log('first page'); debugger");
+  SendCommand("Runtime.evaluate", std::move(params), false);
+  WaitForNotification("Debugger.paused");
+
+  {
+    content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
+    params = WaitForNotification("Target.targetCrashed", true);
+  }
+  ClearNotifications();
+  SendCommand("Page.reload", std::move(params), false);
+  WaitForNotification("Inspector.targetReloadedAfterCrash", true);
+  params = std::make_unique<base::DictionaryValue>();
+  params->SetString("expression", "console.log('second page')");
+  SendCommand("Runtime.evaluate", std::move(params), true);
+  EXPECT_THAT(console_messages_, ElementsAre("first page", "second page"));
+}
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, NavigationPreservesMessages) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -887,7 +1124,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectorTargetCrashedNavigate) {
 
   {
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
-    shell()->LoadURL(GURL(content::kChromeUICrashURL));
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
     WaitForNotification("Inspector.targetCrashed");
   }
 
@@ -912,7 +1149,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   {
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
-    shell()->LoadURL(GURL(content::kChromeUICrashURL));
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
     WaitForNotification("Inspector.targetCrashed");
   }
 
@@ -936,7 +1173,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   {
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
-    shell()->LoadURL(GURL(content::kChromeUICrashURL));
+    shell()->LoadURL(GURL(blink::kChromeUICrashURL));
     WaitForNotification("Inspector.targetCrashed");
   }
 
@@ -970,7 +1207,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSitePauseInBeforeUnload) {
   Attach();
   SendCommand("Debugger.enable", nullptr);
 
-  ASSERT_TRUE(content::ExecuteScript(
+  ASSERT_TRUE(content::ExecJs(
       shell(),
       "window.onbeforeunload = function() { debugger; return null; }"));
 
@@ -991,7 +1228,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectDuringFrameSwap) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url1, 1);
 
   ShellAddedObserver new_shell_observer;
-  EXPECT_TRUE(ExecuteScript(shell(), "window.open('about:blank','foo');"));
+  EXPECT_TRUE(ExecJs(shell(), "window.open('about:blank','foo');"));
   Shell* new_shell = new_shell_observer.GetShell();
   EXPECT_TRUE(new_shell->web_contents()->HasOpener());
 
@@ -1013,12 +1250,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectDuringFrameSwap) {
   // regardless of whether it's a crash or not.  RenderProcessHostWatcher
   // should be fixed to support waiting on both WATCH_FOR_PROCESS_EXIT and
   // WATCH_FOR_HOST_DESTRUCTION, and then used here.
-  bool success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(shell(),
-                                          "window.domAutomationController.send("
-                                          "    !!window.open('', 'foo'));",
-                                          &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(shell(), "!!window.open('', 'foo');"));
 
   GURL test_url3 =
       embedded_test_server()->GetURL("A.com", "/devtools/navigation.html");
@@ -1028,12 +1260,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InspectDuringFrameSwap) {
 
   // Ensure that the A.com process is still alive by executing a script in the
   // original tab.
-  success = false;
-  EXPECT_TRUE(ExecuteScriptAndExtractBool(shell(),
-                                          "window.domAutomationController.send("
-                                          "    !!window.open('', 'foo'));",
-                                          &success));
-  EXPECT_TRUE(success);
+  EXPECT_EQ(true, EvalJs(shell(), "!!window.open('', 'foo');"));
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DoubleCrash) {
@@ -1111,15 +1338,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, JavaScriptDialogNotifications) {
   EXPECT_TRUE(params->GetString("defaultPrompt", &default_prompt));
   EXPECT_EQ("default", default_prompt);
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetBoolean("accept", true);
   params->SetString("promptText", "hi!");
   SendCommand("Page.handleJavaScriptDialog", std::move(params), false);
 
   params = WaitForNotification("Page.javascriptDialogClosed", true);
-  bool result = false;
-  EXPECT_TRUE(params->GetBoolean("result", &result));
+  absl::optional<bool> result = params->FindBoolPath("result");
   EXPECT_TRUE(result);
+  EXPECT_TRUE(*result);
 
   EXPECT_TRUE(dialog_manager.is_handled());
 
@@ -1173,7 +1400,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageDisableWithOpenedDialog) {
   dialog_manager.Handle();
   EXPECT_FALSE(wc->IsJavaScriptDialogShowing());
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetString("expression", "42");
   SendCommand("Runtime.evaluate", std::move(params), true);
 
@@ -1211,7 +1438,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BeforeUnloadDialog) {
 
   std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetString("expression",
                     "window.onbeforeunload=()=>{return 'prompt';}");
   params->SetBoolean("userGesture", true);
@@ -1229,7 +1456,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BeforeUnloadDialog) {
   EXPECT_TRUE(params->GetString("type", &type));
   EXPECT_EQ("beforeunload", type);
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetBoolean("accept", true);
   SendCommand("Page.handleJavaScriptDialog", std::move(params), false);
   WaitForNotification("Page.javascriptDialogClosed", true);
@@ -1250,12 +1477,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserCreateAndCloseTarget) {
 
   // TODO(eseckler): Since the RenderView is closed asynchronously, we currently
   // don't verify that the command actually closes the shell.
-  bool success;
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetString("targetId", target_id);
   SendCommand("Target.closeTarget", std::move(params), true);
-  EXPECT_TRUE(result_->GetBoolean("success", &success));
+
+  absl::optional<bool> success = result_->FindBoolPath("success");
   EXPECT_TRUE(success);
+  EXPECT_TRUE(*success);
 }
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
@@ -1264,14 +1492,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, BrowserGetTargets) {
   SendCommand("Target.getTargets", nullptr, true);
   base::ListValue* target_infos;
   EXPECT_TRUE(result_->GetList("targetInfos", &target_infos));
-  EXPECT_EQ(1u, target_infos->GetSize());
-  base::DictionaryValue* target_info;
-  EXPECT_TRUE(target_infos->GetDictionary(0u, &target_info));
+  EXPECT_EQ(1u, target_infos->GetList().size());
+  const base::Value& target_info_value = target_infos->GetList()[0u];
+  EXPECT_TRUE(target_info_value.is_dict());
+  const base::DictionaryValue& target_info =
+      base::Value::AsDictionaryValue(target_info_value);
   std::string target_id, type, title, url;
-  EXPECT_TRUE(target_info->GetString("targetId", &target_id));
-  EXPECT_TRUE(target_info->GetString("type", &type));
-  EXPECT_TRUE(target_info->GetString("title", &title));
-  EXPECT_TRUE(target_info->GetString("url", &url));
+  EXPECT_TRUE(target_info.GetString("targetId", &target_id));
+  EXPECT_TRUE(target_info.GetString("type", &type));
+  EXPECT_TRUE(target_info.GetString("title", &title));
+  EXPECT_TRUE(target_info.GetString("url", &url));
   EXPECT_EQ("page", type);
   EXPECT_EQ("about:blank", title);
   EXPECT_EQ("about:blank", url);
@@ -1285,7 +1515,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VirtualTimeTest) {
   params->SetString("policy", "pause");
   SendCommand("Emulation.setVirtualTimePolicy", std::move(params), true);
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetString("expression",
                     "setTimeout(function(){console.log('before')}, 999);"
                     "setTimeout(function(){console.log('at')}, 1000);"
@@ -1293,14 +1523,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VirtualTimeTest) {
   SendCommand("Runtime.evaluate", std::move(params), true);
 
   // Let virtual time advance for one second.
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetString("policy", "advance");
   params->SetInteger("budget", 1000);
   SendCommand("Emulation.setVirtualTimePolicy", std::move(params), true);
 
   WaitForNotification("Emulation.virtualTimeBudgetExpired");
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetString("expression", "console.log('done')");
   SendCommand("Runtime.evaluate", std::move(params), true);
 
@@ -1309,7 +1539,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, VirtualTimeTest) {
 
   // Let virtual time advance for another second, which should make the third
   // timer fire.
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetString("policy", "advance");
   params->SetInteger("budget", 1000);
   SendCommand("Emulation.setVirtualTimePolicy", std::move(params), true);
@@ -1327,15 +1557,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateError) {
   GURL test_url = https_server.GetURL("/devtools/navigation.html");
   std::unique_ptr<base::DictionaryValue> params;
   std::unique_ptr<base::DictionaryValue> command_params;
-  int eventId;
+  absl::optional<int> eventId;
 
   shell()->LoadURL(GURL("about:blank"));
-  WaitForLoadStop(shell()->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   Attach();
   SendCommand("Network.enable", nullptr, true);
   SendCommand("Security.enable", nullptr, false);
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetBoolean("override", true);
   SendCommand("Security.setOverrideCertificateErrors",
               std::move(command_params), true);
@@ -1350,9 +1580,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateError) {
   EXPECT_EQ(
       test_url,
       shell()->web_contents()->GetController().GetPendingEntry()->GetURL());
-  EXPECT_TRUE(params->GetInteger("eventId", &eventId));
-  command_params.reset(new base::DictionaryValue());
-  command_params->SetInteger("eventId", eventId);
+  eventId = params->FindIntKey("eventId");
+  ASSERT_TRUE(eventId);
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetInteger("eventId", *eventId);
   command_params->SetString("action", "cancel");
   SendCommand("Security.handleCertificateError", std::move(command_params),
               false);
@@ -1370,9 +1601,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateError) {
   TestNavigationObserver continue_observer(shell()->web_contents(), 1);
   shell()->LoadURL(test_url);
   params = WaitForNotification("Security.certificateError", false);
-  EXPECT_TRUE(params->GetInteger("eventId", &eventId));
-  command_params.reset(new base::DictionaryValue());
-  command_params->SetInteger("eventId", eventId);
+  eventId = params->FindIntKey("eventId");
+  EXPECT_TRUE(eventId);
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetInteger("eventId", *eventId);
   command_params->SetString("action", "continue");
   SendCommand("Security.handleCertificateError", std::move(command_params),
               false);
@@ -1388,7 +1620,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateError) {
   SendCommand("Security.disable", nullptr, true);
 
   // Test ignoring all certificate errors.
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetBoolean("ignore", true);
   SendCommand("Security.setIgnoreCertificateErrors", std::move(command_params),
               true);
@@ -1415,7 +1647,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   GURL test_url = https_server.GetURL("/devtools/navigation.html");
 
   shell()->LoadURL(GURL("about:blank"));
-  WaitForLoadStop(shell()->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   Attach();
   SendCommand("Network.enable", nullptr, true);
@@ -1458,7 +1690,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateErrorBrowserTarget) {
   std::unique_ptr<base::DictionaryValue> command_params;
 
   shell()->LoadURL(GURL("about:blank"));
-  WaitForLoadStop(shell()->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   // Clear cookies and cache to avoid interference with cert error events.
   Attach();
@@ -1469,7 +1701,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateErrorBrowserTarget) {
 
   // Test that browser target can ignore cert errors.
   AttachToBrowserTarget();
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetBoolean("ignore", true);
   SendCommand("Security.setIgnoreCertificateErrors", std::move(command_params),
               true);
@@ -1492,14 +1724,14 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SubresourceWithCertificateError) {
   GURL test_url = https_server.GetURL("/image.html");
   std::unique_ptr<base::DictionaryValue> params;
   std::unique_ptr<base::DictionaryValue> command_params;
-  int eventId;
+  absl::optional<int> eventId;
 
   shell()->LoadURL(GURL("about:blank"));
-  WaitForLoadStop(shell()->web_contents());
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
 
   Attach();
   SendCommand("Security.enable", nullptr, false);
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetBoolean("override", true);
   SendCommand("Security.setOverrideCertificateErrors",
               std::move(command_params), true);
@@ -1509,18 +1741,20 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SubresourceWithCertificateError) {
 
   // Expect certificateError event for main frame.
   params = WaitForNotification("Security.certificateError", false);
-  EXPECT_TRUE(params->GetInteger("eventId", &eventId));
-  command_params.reset(new base::DictionaryValue());
-  command_params->SetInteger("eventId", eventId);
+  eventId = params->FindIntKey("eventId");
+  ASSERT_TRUE(eventId);
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetInteger("eventId", *eventId);
   command_params->SetString("action", "continue");
   SendCommand("Security.handleCertificateError", std::move(command_params),
               false);
 
   // Expect certificateError event for image.
   params = WaitForNotification("Security.certificateError", false);
-  EXPECT_TRUE(params->GetInteger("eventId", &eventId));
-  command_params.reset(new base::DictionaryValue());
-  command_params->SetInteger("eventId", eventId);
+  eventId = params->FindIntKey("eventId");
+  ASSERT_TRUE(eventId);
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetInteger("eventId", *eventId);
   command_params->SetString("action", "continue");
   SendCommand("Security.handleCertificateError", std::move(command_params),
               false);
@@ -1538,7 +1772,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   std::set<std::string> ids;
   std::unique_ptr<base::DictionaryValue> command_params;
   std::unique_ptr<base::DictionaryValue> params;
-  bool is_attached;
+  absl::optional<bool> is_attached;
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL first_url = embedded_test_server()->GetURL("/devtools/navigation.html");
@@ -1550,22 +1784,24 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
 
   Attach();
   int attached_count = 0;
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetBoolean("discover", true);
   SendCommand("Target.setDiscoverTargets", std::move(command_params), true);
   params = WaitForNotification("Target.targetCreated", true);
   EXPECT_TRUE(params->GetString("targetInfo.type", &temp));
   EXPECT_EQ("page", temp);
-  EXPECT_TRUE(params->GetBoolean("targetInfo.attached", &is_attached));
-  attached_count += is_attached ? 1 : 0;
+  is_attached = params->FindBoolPath("targetInfo.attached");
+  EXPECT_TRUE(is_attached);
+  attached_count += *is_attached ? 1 : 0;
   EXPECT_TRUE(params->GetString("targetInfo.targetId", &temp));
   EXPECT_TRUE(ids.find(temp) == ids.end());
   ids.insert(temp);
   params = WaitForNotification("Target.targetCreated", true);
   EXPECT_TRUE(params->GetString("targetInfo.type", &temp));
   EXPECT_EQ("page", temp);
-  EXPECT_TRUE(params->GetBoolean("targetInfo.attached", &is_attached));
-  attached_count += is_attached ? 1 : 0;
+  is_attached = params->FindBoolPath("targetInfo.attached");
+  EXPECT_TRUE(is_attached);
+  attached_count += *is_attached ? 1 : 0;
   EXPECT_TRUE(params->GetString("targetInfo.targetId", &temp));
   EXPECT_TRUE(ids.find(temp) == ids.end());
   ids.insert(temp);
@@ -1581,8 +1817,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   EXPECT_EQ("page", temp);
   EXPECT_TRUE(params->GetString("targetInfo.targetId", &temp));
   EXPECT_TRUE(ids.find(temp) == ids.end());
-  EXPECT_TRUE(params->GetBoolean("targetInfo.attached", &is_attached));
-  EXPECT_FALSE(is_attached);
+  is_attached = params->FindBoolPath("targetInfo.attached");
+  EXPECT_TRUE(is_attached);
+  EXPECT_FALSE(*is_attached);
   std::string attached_id = temp;
   ids.insert(temp);
 
@@ -1603,14 +1840,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   ids.erase(temp);
   EXPECT_TRUE(notifications_.empty());
 
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetString("targetId", attached_id);
   SendCommand("Target.attachToTarget", std::move(command_params), true);
   params = WaitForNotification("Target.targetInfoChanged", true);
   EXPECT_TRUE(params->GetString("targetInfo.targetId", &temp));
   EXPECT_EQ(attached_id, temp);
-  EXPECT_TRUE(params->GetBoolean("targetInfo.attached", &is_attached));
+  is_attached = params->FindBoolPath("targetInfo.attached");
   EXPECT_TRUE(is_attached);
+  EXPECT_TRUE(*is_attached);
   params = WaitForNotification("Target.attachedToTarget", true);
   std::string session_id;
   EXPECT_TRUE(params->GetString("sessionId", &session_id));
@@ -1624,18 +1862,23 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
       content::WebContents::Create(create_params));
   EXPECT_TRUE(notifications_.empty());
 
+  NavigateToURLBlockUntilNavigationsComplete(web_contents.get(), first_url, 1);
+  // The notification does not come when there's no delegate.
+  EXPECT_FALSE(HasExistingNotification("Target.targetCreated"));
+
   web_contents->SetDelegate(this);
+  // Attaching a delegate causes the notification to be sent.
   params = WaitForNotification("Target.targetCreated", true);
   EXPECT_TRUE(params->GetString("targetInfo.type", &temp));
   EXPECT_EQ("page", temp);
   EXPECT_TRUE(notifications_.empty());
 
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetBoolean("discover", false);
   SendCommand("Target.setDiscoverTargets", std::move(command_params), true);
   EXPECT_TRUE(notifications_.empty());
 
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetString("sessionId", session_id);
   SendCommand("Target.detachFromTarget", std::move(command_params), true);
   params = WaitForNotification("Target.detachedFromTarget", true);
@@ -1646,37 +1889,6 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TargetDiscovery) {
   EXPECT_TRUE(notifications_.empty());
 }
 
-// Tests that an interstitialShown event is sent when an interstitial is showing
-// on attach.
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, InterstitialShownOnAttach) {
-  TestInterstitialDelegate* delegate = new TestInterstitialDelegate;
-  WebContentsImpl* web_contents =
-      static_cast<WebContentsImpl*>(shell()->web_contents());
-  GURL interstitial_url("https://example.test");
-  InterstitialPageImpl* interstitial = new InterstitialPageImpl(
-      web_contents, static_cast<RenderWidgetHostDelegate*>(web_contents), true,
-      interstitial_url, delegate);
-  interstitial->Show();
-  WaitForInterstitialAttach(web_contents);
-  Attach();
-  SendCommand("Page.enable", nullptr, false);
-  WaitForNotification("Page.interstitialShown", true);
-}
-
-class SitePerProcessDevToolsProtocolTest : public DevToolsProtocolTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    DevToolsProtocolTest::SetUpCommandLine(command_line);
-    IsolateAllSitesForTesting(command_line);
-  }
-
-  void SetUpOnMainThread() override {
-    DevToolsProtocolTest::SetUpOnMainThread();
-    content::SetupCrossSiteRedirector(embedded_test_server());
-    ASSERT_TRUE(embedded_test_server()->Start());
-  }
-};
-
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL test_url = embedded_test_server()->GetURL("/title1.html");
@@ -1686,13 +1898,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   // Set two cookies, one of which matches the loaded URL and another that
   // doesn't.
   std::unique_ptr<base::DictionaryValue> command_params;
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetString("url", test_url.spec());
   command_params->SetString("name", "cookie_for_this_url");
   command_params->SetString("value", "mendacious");
   SendCommand("Network.setCookie", std::move(command_params), false);
 
-  command_params.reset(new base::DictionaryValue());
+  command_params = std::make_unique<base::DictionaryValue>();
   command_params->SetString("url", "https://www.chromium.org");
   command_params->SetString("name", "cookie_for_another_url");
   command_params->SetString("value", "polyglottal");
@@ -1704,14 +1916,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
   base::ListValue* cookies;
   EXPECT_TRUE(result_->HasKey("cookies"));
   EXPECT_TRUE(result_->GetList("cookies", &cookies));
-  EXPECT_EQ(1u, cookies->GetSize());
+  EXPECT_EQ(1u, cookies->GetList().size());
 
-  base::DictionaryValue* cookie;
+  const base::Value& cookie_value = cookies->GetList()[0];
+  EXPECT_TRUE(cookie_value.is_dict());
+  const base::DictionaryValue& cookie =
+      base::Value::AsDictionaryValue(cookie_value);
   std::string name;
   std::string value;
-  EXPECT_TRUE(cookies->GetDictionary(0, &cookie));
-  EXPECT_TRUE(cookie->GetString("name", &name));
-  EXPECT_TRUE(cookie->GetString("value", &value));
+  EXPECT_TRUE(cookie.GetString("name", &name));
+  EXPECT_TRUE(cookie.GetString("value", &value));
   EXPECT_EQ("cookie_for_this_url", name);
   EXPECT_EQ("mendacious", value);
 
@@ -1720,19 +1934,21 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
 
   EXPECT_TRUE(result_->HasKey("cookies"));
   EXPECT_TRUE(result_->GetList("cookies", &cookies));
-  EXPECT_EQ(2u, cookies->GetSize());
+  EXPECT_EQ(2u, cookies->GetList().size());
 
   // Note: the cookies will be returned in unspecified order.
   size_t found = 0;
-  for (size_t i = 0; i < cookies->GetSize(); i++) {
-    EXPECT_TRUE(cookies->GetDictionary(i, &cookie));
-    EXPECT_TRUE(cookie->GetString("name", &name));
+  for (const base::Value& cookie_value : cookies->GetList()) {
+    EXPECT_TRUE(cookie_value.is_dict());
+    const base::DictionaryValue& cookie =
+        base::Value::AsDictionaryValue(cookie_value);
+    EXPECT_TRUE(cookie.GetString("name", &name));
     if (name == "cookie_for_this_url") {
-      EXPECT_TRUE(cookie->GetString("value", &value));
+      EXPECT_TRUE(cookie.GetString("value", &value));
       EXPECT_EQ("mendacious", value);
       found++;
     } else if (name == "cookie_for_another_url") {
-      EXPECT_TRUE(cookie->GetString("value", &value));
+      EXPECT_TRUE(cookie.GetString("value", &value));
       EXPECT_EQ("polyglottal", value);
       found++;
     } else {
@@ -1740,6 +1956,58 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, SetAndGetCookies) {
     }
   }
   EXPECT_EQ(2u, found);
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+                       AutoAttachToOOPIFAfterNavigationStarted) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  IsolateOriginsForTesting(embedded_test_server(), shell()->web_contents(),
+                           {"b.com"});
+  GURL a_url = embedded_test_server()->GetURL("a.com", "/title1.html");
+  EXPECT_TRUE(NavigateToURL(shell(), a_url));
+  RenderFrameHostImpl* main_frame = static_cast<RenderFrameHostImpl*>(
+      shell()->web_contents()->GetMainFrame());
+
+  // Create iframe and start navigation.
+  GURL b_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  TestNavigationManager navigation_manager(shell()->web_contents(), b_url);
+  EXPECT_TRUE(ExecJs(
+      main_frame, JsReplace("const iframe = document.createElement('iframe');\n"
+                            "iframe.src = $1;\n"
+                            "document.body.appendChild(iframe);\n",
+                            b_url)));
+  // Pause subframe navigation.
+  EXPECT_TRUE(navigation_manager.WaitForRequestStart());
+
+  // Attach to DevTools after subframe starts navigating (but before it
+  // finishes).
+  Attach();
+
+  DevToolsAgentHostImpl* main_frame_agent =
+      RenderFrameDevToolsAgentHost::GetFor(main_frame);
+  EXPECT_NE(main_frame_agent, nullptr);
+
+  // Start auto-attach.
+  std::unique_ptr<base::DictionaryValue> command_params;
+  command_params = std::make_unique<base::DictionaryValue>();
+  command_params->SetBoolean("autoAttach", true);
+  command_params->SetBoolean("waitForDebuggerOnStart", false);
+  command_params->SetBoolean("flatten", true);
+  SendCommand("Target.setAutoAttach", std::move(command_params));
+
+  // Child frame should be created at this point, but isn't an OOPIF yet, so
+  // shouldn't have its own DevToolsAgentHost yet.
+  FrameTreeNode* child = main_frame->child_at(0);
+  EXPECT_NE(child, nullptr);
+  EXPECT_EQ(RenderFrameDevToolsAgentHost::GetFor(child), main_frame_agent);
+
+  // Resume navigation.
+  navigation_manager.WaitForNavigationFinished();
+
+  // Target for OOPIF should get attached.
+  auto notification = WaitForNotification("Target.attachedToTarget", true);
+  EXPECT_NE(RenderFrameDevToolsAgentHost::GetFor(child), main_frame_agent);
+  EXPECT_FALSE(notification->FindBoolPath("waitingForDebugger").value());
 }
 
 class DevToolsProtocolDeviceEmulationTest : public DevToolsProtocolTest {
@@ -1817,7 +2085,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolDeviceEmulationTest,
   {
     ScopedAllowRendererCrashes scoped_allow_renderer_crashes(shell());
     NavigateToURLBlockUntilNavigationsComplete(
-        shell(), GURL(content::kChromeUICrashURL), 1);
+        shell(), GURL(blink::kChromeUICrashURL), 1);
   }
 
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
@@ -1837,7 +2105,6 @@ class DevToolsProtocolTouchTest : public DevToolsProtocolTest {
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTouchTest, EnableTouch) {
   std::unique_ptr<base::DictionaryValue> params;
-  bool result;
 
   content::SetupCrossSiteRedirector(embedded_test_server());
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1848,101 +2115,101 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTouchTest, EnableTouch) {
   NavigateToURLBlockUntilNavigationsComplete(shell(), test_url1, 1);
   Attach();
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   SendCommand("Page.enable", std::move(params), true);
 
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(false))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(false)"));
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetBoolean("enabled", true);
   SendCommand("Emulation.setTouchEmulationEnabled", std::move(params), true);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(false))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(false)"));
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetString("url", test_url2.spec());
   SendCommand("Page.navigate", std::move(params), false);
   WaitForNotification("Page.frameStoppedLoading");
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(true))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(true)"));
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   params->SetBoolean("enabled", false);
   SendCommand("Emulation.setTouchEmulationEnabled", std::move(params), true);
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(true))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(true)"));
 
-  params.reset(new base::DictionaryValue());
+  params = std::make_unique<base::DictionaryValue>();
   SendCommand("Page.reload", std::move(params), false);
   WaitForNotification("Page.frameStoppedLoading");
-  ASSERT_TRUE(content::ExecuteScriptAndExtractBool(
-      shell()->web_contents(),
-      "domAutomationController.send(checkProtos(false))", &result));
-  EXPECT_TRUE(result);
+  EXPECT_EQ(true, EvalJs(shell()->web_contents(), "checkProtos(false)"));
 }
 
-// Tests that when a security explanation contains a certificate, it is properly
-// serialized into the protocol message.
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CertificateExplanations) {
-  net::EmbeddedTestServer https_server(net::EmbeddedTestServer::TYPE_HTTPS);
-  https_server.AddDefaultHandlers(GetTestDataFilePath());
-  ASSERT_TRUE(https_server.Start());
-
-  shell()->LoadURL(GURL("about:blank"));
-  WaitForLoadStop(shell()->web_contents());
-
-  // Navigate to a page on the server in order to retrieve its certificate
-  // chain.
-  NavigateToURLBlockUntilNavigationsComplete(
-      shell(), https_server.GetURL("/title1.html"), 1);
-  WebContentsImpl* wc = static_cast<WebContentsImpl*>(shell()->web_contents());
-  NavigationEntry* entry = wc->GetController().GetLastCommittedEntry();
-  ASSERT_TRUE(entry);
-  scoped_refptr<net::X509Certificate> cert = entry->GetSSL().certificate;
-
-  // Provide |cert| as the certificate on the security style explanations. When
-  // the security handler is enabled, DidChangeVisibleSecurityState() is called
-  // and the explanations with |cert| are sent to DevTools.
-  SetSecurityExplanationCert(cert);
-  Attach();
-  SendCommand("Security.enable", nullptr, false);
-  std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
-  params = WaitForMatchingNotification(
-      "Security.securityStateChanged",
-      base::BindRepeating(&SecurityStateChangedHasCertificateExplanation));
-
-  // There should be one explanation containing the server's certificate chain.
-  net::SHA256HashValue cert_chain_fingerprint =
-      cert->CalculateChainFingerprint256();
-
-  // Read the certificate out of the first explanation.
-  const base::ListValue* certificate;
-  ASSERT_TRUE(GetCertificateFromNotificationParams(params.get(), &certificate));
-  std::vector<std::string> der_certs;
-  for (const auto& cert : *certificate) {
-    std::string decoded;
-    ASSERT_TRUE(base::Base64Decode(cert.GetString(), &decoded));
-    der_certs.push_back(decoded);
+class DevToolsProtocolBackForwardCacheTest : public DevToolsProtocolTest {
+ public:
+  DevToolsProtocolBackForwardCacheTest() {
+    feature_list_.InitWithFeaturesAndParameters(
+        {{features::kBackForwardCache,
+          {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
+        // Allow BackForwardCache for all devices regardless of their memory.
+        {features::kBackForwardCacheMemoryControls});
   }
-  std::vector<base::StringPiece> cert_string_piece;
-  for (const auto& str : der_certs)
-    cert_string_piece.push_back(str);
+  ~DevToolsProtocolBackForwardCacheTest() override = default;
 
-  // Check that the explanation certificate is correct.
-  scoped_refptr<net::X509Certificate> explanation_cert =
-      net::X509Certificate::CreateFromDERCertChain(cert_string_piece);
-  ASSERT_TRUE(explanation_cert);
-  EXPECT_EQ(cert_chain_fingerprint,
-            explanation_cert->CalculateChainFingerprint256());
+  // content::WebContentsDelegate:
+  bool IsBackForwardCacheSupported() override { return true; }
+
+  std::string Evaluate(std::string script, base::Location location) {
+    std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
+    params->SetString("expression", script);
+    SendCommand("Runtime.evaluate", std::move(params), true);
+    base::Value* result_value;
+    EXPECT_TRUE(result_->Get("result.value", &result_value));
+    DCHECK(result_value->is_string())
+        << "Valued to evaluate " << script << " from " << location.ToString();
+    return result_value->GetString();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// This test checks that the DevTools continue to work when the page is stored
+// in and restored from back-forward cache. In particular:
+// - that the session continues to be attached and the navigations are handled
+// correctly.
+// - when the old page is stored in the cache, the messages are still handled by
+// the new page.
+// - when the page is restored from the cache, it continues to handle protocol
+// messages.
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolBackForwardCacheTest, Basic) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+
+  // 1) Navigate to A and inject some state.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  EXPECT_TRUE(ExecJs(shell(), "var state = 'page1'"));
+
+  // 2) Attach DevTools session.
+  Attach();
+
+  // 3) Extract the state via the DevTools protocol.
+  EXPECT_EQ("page1", Evaluate("state", FROM_HERE));
+
+  // 3) Navigate to B and inject some different state.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  EXPECT_TRUE(ExecJs(shell(), "var state = 'page2'"));
+
+  // 4) Ensure that the DevTools protocol commands are handled by the new page
+  // (even though the old page is alive and is stored in the back-forward
+  // cache).
+  EXPECT_EQ("page2", Evaluate("state", FROM_HERE));
+
+  // 5) Go back.
+  shell()->web_contents()->GetController().GoBack();
+  EXPECT_TRUE(WaitForLoadStop(shell()->web_contents()));
+
+  // 6) Ensure that the page has been restored from the cache and responds to
+  // the DevTools commands.
+  EXPECT_EQ("page1", Evaluate("state", FROM_HERE));
 }
 
 // Download tests are flaky on Android: https://crbug.com/7546
@@ -1953,8 +2220,7 @@ static DownloadManagerImpl* DownloadManagerForShell(Shell* shell) {
   // We're in a content_browsertest; we know that the DownloadManager
   // is a DownloadManagerImpl.
   return static_cast<DownloadManagerImpl*>(
-      content::BrowserContext::GetDownloadManager(
-          shell->web_contents()->GetBrowserContext()));
+      shell->web_contents()->GetBrowserContext()->GetDownloadManager());
 }
 
 static void RemoveShellDelegate(Shell* shell) {
@@ -1984,15 +2250,15 @@ class CountingDownloadFile : public download::DownloadFileImpl {
     active_files_--;
   }
 
-  void Initialize(InitializeCallback callback,
-                  const CancelRequestCallback& cancel_request_callback,
-                  const download::DownloadItem::ReceivedSlices& received_slices,
-                  bool is_parallelizable) override {
+  void Initialize(
+      InitializeCallback callback,
+      CancelRequestCallback cancel_request_callback,
+      const download::DownloadItem::ReceivedSlices& received_slices) override {
     DCHECK(download::GetDownloadTaskRunner()->RunsTasksInCurrentSequence());
     active_files_++;
     download::DownloadFileImpl::Initialize(std::move(callback),
-                                           cancel_request_callback,
-                                           received_slices, is_parallelizable);
+                                           std::move(cancel_request_callback),
+                                           received_slices);
   }
 
   static void GetNumberActiveFiles(int* result) {
@@ -2102,11 +2368,11 @@ bool IsDownloadInState(download::DownloadItem::DownloadState state,
 class DevToolsDownloadContentTest : public DevToolsProtocolTest {
  protected:
   void SetUpOnMainThread() override {
-    base::ThreadRestrictions::SetIOAllowed(true);
+    base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(downloads_directory_.CreateUniqueTempDir());
 
     // Set shell default download manager to test proxy reset behavior.
-    test_delegate_.reset(new ShellDownloadManagerDelegate());
+    test_delegate_ = std::make_unique<ShellDownloadManagerDelegate>();
     test_delegate_->SetDownloadBehaviorForTesting(
         downloads_directory_.GetPath());
     DownloadManager* manager = DownloadManagerForShell(shell());
@@ -2214,7 +2480,7 @@ class DevToolsDownloadContentTest : public DevToolsProtocolTest {
 
 // Check that downloading a single file works.
 IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, SingleDownload) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   std::string download_path =
@@ -2230,14 +2496,13 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, SingleDownload) {
   download::DownloadItem* download = StartDownloadAndReturnItem(
       shell(), embedded_test_server()->GetURL("/download/download-test.lib"));
   ASSERT_EQ(download::DownloadItem::IN_PROGRESS, download->GetState());
-
   WaitForCompletion(download);
   ASSERT_EQ(download::DownloadItem::COMPLETE, download->GetState());
 }
 
 // Check that downloads can be cancelled gracefully.
 IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DownloadCancelled) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
   SetupEnsureNoPendingDownloads();
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
@@ -2261,7 +2526,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DownloadCancelled) {
 
 // Check that denying downloads works.
 IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DeniedDownload) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
   SetupEnsureNoPendingDownloads();
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
@@ -2278,7 +2543,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DeniedDownload) {
 
 // Check that defaulting downloads works as expected.
 IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DefaultDownload) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
   SetupEnsureNoPendingDownloads();
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
@@ -2300,10 +2565,10 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DefaultDownload) {
   EXPECT_TRUE(EnsureNoPendingDownloads());
 }
 
-// Check that defaulting downloads works as expected when there's no proxy
+// Check that defaulting downloads cancels when there's no proxy
 // download delegate.
 IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DefaultDownloadHeadless) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+  base::ScopedAllowBlockingForTesting allow_blocking;
   SetupEnsureNoPendingDownloads();
   NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
   Attach();
@@ -2316,40 +2581,15 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DefaultDownloadHeadless) {
   DownloadTestFlushObserver flush_observer(DownloadManagerForShell(shell()));
   flush_observer.WaitForFlush();
   EXPECT_TRUE(EnsureNoPendingDownloads());
-  // The download manager will intercept the download navigation and drop it
-  // since we have set the delegate to null.
-  EXPECT_EQ(nullptr, download);
+  ASSERT_EQ(download::DownloadItem::CANCELLED, download->GetState());
 }
 
-// Check that download logic is reset when creating a new target.
-IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, ResetDownloadState) {
-  base::ThreadRestrictions::SetIOAllowed(true);
-  SetupEnsureNoPendingDownloads();
-  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
-  Attach();
-
-  SetDownloadBehavior("deny");
-
-  Shell* new_window = CreateBrowser();
-  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
-  // Create a download, wait and confirm it wasn't cancelled.
-  download::DownloadItem* download = StartDownloadAndReturnItem(
-      new_window,
-      embedded_test_server()->GetURL("/download/download-test.lib"));
-  WaitForCompletion(download);
-  ASSERT_EQ(download::DownloadItem::COMPLETE, download->GetState());
-}
-
-// Flakly on ChromeOS https://crbug.com/860312
-#if defined(OS_CHROMEOS)
-#define MAYBE_MultiDownload DISABLED_MultiDownload
-#else
-#define MAYBE_MultiDownload MultiDownload
-#endif
+// Flaky on ChromeOS https://crbug.com/860312
+// Also flaky on Wndows and other platforms: http://crbug.com/1070302
 // Check that downloading multiple (in this case, 2) files does not result in
 // corrupted files.
-IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, MAYBE_MultiDownload) {
-  base::ThreadRestrictions::SetIOAllowed(true);
+IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, DISABLED_MultiDownload) {
+  base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   std::string download1_path =
@@ -2383,7 +2623,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, MAYBE_MultiDownload) {
   std::unique_ptr<DownloadTestObserver> observer2(CreateWaiter(shell(), 1));
   EXPECT_TRUE(NavigateToURL(
       shell(), embedded_test_server()->GetURL(
-                   content::SlowDownloadHttpResponse::kFinishDownloadUrl)));
+                   content::SlowDownloadHttpResponse::kFinishSlowResponseUrl)));
   observer2->WaitForFinished();  // Wait for the third request.
   EXPECT_EQ(
       1u, observer2->NumDownloadsSeenInState(download::DownloadItem::COMPLETE));
@@ -2397,8 +2637,9 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, MAYBE_MultiDownload) {
   // source file.
   base::FilePath file1(download1->GetTargetFilePath());
   ASSERT_EQ(file1.DirName().MaybeAsASCII(), download1_path);
-  size_t file_size1 = content::SlowDownloadHttpResponse::kFirstDownloadSize +
-                      content::SlowDownloadHttpResponse::kSecondDownloadSize;
+  size_t file_size1 =
+      content::SlowDownloadHttpResponse::kFirstResponsePartSize +
+      content::SlowDownloadHttpResponse::kSecondResponsePartSize;
   std::string expected_contents(file_size1, '*');
   ASSERT_TRUE(VerifyFile(file1, expected_contents, file_size1));
 
@@ -2408,4 +2649,224 @@ IN_PROC_BROWSER_TEST_F(DevToolsDownloadContentTest, MAYBE_MultiDownload) {
       file2, GetTestFilePath("download", "download-test.lib")));
 }
 #endif  // !defined(ANDROID)
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, UnsafeOperations) {
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+
+  base::Value params(base::Value::Type::DICTIONARY);
+  params.SetStringKey("url", "http://www.example.com/hello.js");
+  params.SetStringKey("data", "Tm90aGluZyB0byBzZWUgaGVyZSE=");
+
+  SendCommand("Page.addCompilationCache",
+              std::make_unique<base::Value>(params.Clone()));
+  EXPECT_TRUE(result_);
+  Detach();
+  SetAllowUnsafeOperations(false);
+  Attach();
+  SendCommand("Page.addCompilationCache",
+              std::make_unique<base::Value>(params.Clone()));
+  EXPECT_THAT(error_, base::test::DictionaryHasValue(
+                          "code", base::Value(static_cast<int>(
+                                      crdtp::DispatchCode::SERVER_ERROR))));
+}
+
+IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, TracingWithPerfettoConfig) {
+  std::unique_ptr<base::DictionaryValue> params(new base::DictionaryValue());
+  base::trace_event::TraceConfig chrome_config;
+  base::DictionaryValue* command_result;
+  perfetto::TraceConfig perfetto_config;
+  std::string perfetto_config_encoded;
+
+  chrome_config = base::trace_event::TraceConfig();
+  perfetto_config = tracing::GetDefaultPerfettoConfig(
+      chrome_config,
+      /*privacy_filtering_enabled=*/false,
+      /*convert_to_legacy_json=*/false,
+      perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+  base::Base64Encode(perfetto_config.SerializeAsString(),
+                     &perfetto_config_encoded);
+  params->SetKey("perfettoConfig", base::Value(perfetto_config_encoded));
+  params->SetString("transferMode", "ReturnAsStream");
+
+  NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+  Attach();
+
+  command_result = SendCommand("Tracing.start", std::move(params), true);
+  ASSERT_NE(command_result, nullptr);
+
+  command_result = SendCommand("Tracing.end", nullptr, true);
+  ASSERT_NE(command_result, nullptr);
+
+  WaitForNotification("Tracing.tracingComplete", true);
+}
+
+class SystemTracingDevToolsProtocolTest : public DevToolsProtocolTest {
+ protected:
+  base::DictionaryValue* StartSystemTrace() {
+    perfetto::TraceConfig perfetto_config = tracing::GetDefaultPerfettoConfig(
+        base::trace_event::TraceConfig(),
+        /*privacy_filtering_enabled=*/false,
+        /*convert_to_legacy_json=*/false,
+        perfetto::protos::gen::ChromeConfig::USER_INITIATED);
+
+    std::string perfetto_config_encoded;
+    base::Base64Encode(perfetto_config.SerializeAsString(),
+                       &perfetto_config_encoded);
+
+    auto params = std::make_unique<base::DictionaryValue>();
+    params->SetKey("perfettoConfig", base::Value(perfetto_config_encoded));
+    params->SetString("transferMode", "ReturnAsStream");
+    params->SetString("tracingBackend", "system");
+
+    NavigateToURLBlockUntilNavigationsComplete(shell(), GURL("about:blank"), 1);
+    Attach();
+
+    return SendCommand("Tracing.start", std::move(params), true);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(SystemTracingDevToolsProtocolTest,
+                       StartSystemTracingFailsWhenSystemConsumerDisabled) {
+  base::DictionaryValue* command_result = StartSystemTrace();
+  ASSERT_EQ(command_result, nullptr);
+}
+
+#if defined(OS_POSIX)
+class PosixSystemTracingDevToolsProtocolTest
+    : public SystemTracingDevToolsProtocolTest {
+ public:
+  PosixSystemTracingDevToolsProtocolTest() {
+    feature_list_.InitAndEnableFeature(features::kEnablePerfettoSystemTracing);
+    tracing::PerfettoTracedProcess::Get()
+        ->SetAllowSystemTracingConsumerForTesting(true);
+    const char* producer_sock = getenv("PERFETTO_PRODUCER_SOCK_NAME");
+    saved_producer_sock_name_ = producer_sock ? producer_sock : std::string();
+    const char* consumer_sock = getenv("PERFETTO_CONSUMER_SOCK_NAME");
+    saved_consumer_sock_name_ = consumer_sock ? consumer_sock : std::string();
+  }
+
+  ~PosixSystemTracingDevToolsProtocolTest() override {
+    if (!saved_producer_sock_name_.empty()) {
+      SetProducerSockEnvName(saved_producer_sock_name_);
+    } else {
+      EXPECT_EQ(0, unsetenv("PERFETTO_PRODUCER_SOCK_NAME"));
+    }
+    if (!saved_consumer_sock_name_.empty()) {
+      SetConsumerSockEnvName(saved_consumer_sock_name_);
+    } else {
+      EXPECT_EQ(0, unsetenv("PERFETTO_CONSUMER_SOCK_NAME"));
+    }
+  }
+
+ protected:
+  void SetProducerSockEnvName(const std::string& value) {
+    ASSERT_EQ(0, setenv("PERFETTO_PRODUCER_SOCK_NAME", value.c_str(),
+                        /*overwrite=*/true));
+  }
+  void SetConsumerSockEnvName(const std::string& value) {
+    ASSERT_EQ(0, setenv("PERFETTO_CONSUMER_SOCK_NAME", value.c_str(),
+                        /*overwrite=*/true));
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  std::string saved_producer_sock_name_;
+  std::string saved_consumer_sock_name_;
+};
+
+class InvalidSystemTracingDevToolsProtocolTest
+    : public PosixSystemTracingDevToolsProtocolTest {
+ public:
+  void SetUp() override {
+    // Use a non-existing backend.
+    SetProducerSockEnvName("non_existing");
+    SetConsumerSockEnvName("non_existing");
+
+    PosixSystemTracingDevToolsProtocolTest::SetUp();
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(InvalidSystemTracingDevToolsProtocolTest,
+                       StartTracingFailsWithInvalidSockets) {
+  base::DictionaryValue* command_result = StartSystemTrace();
+  ASSERT_EQ(command_result, nullptr);
+}
+
+class FakeSystemTracingDevToolsProtocolTest
+    : public PosixSystemTracingDevToolsProtocolTest {
+ public:
+  FakeSystemTracingDevToolsProtocolTest()
+      : deferred_task_runner_(new base::DeferredSequencedTaskRunner()) {}
+
+  void SetUp() override {
+    SetupService();
+    PosixSystemTracingDevToolsProtocolTest::SetUp();
+  }
+
+  void PreRunTestOnMainThread() override {
+    deferred_task_runner_->StartWithTaskRunner(
+        base::SequencedTaskRunnerHandle::Get());
+
+    PosixSystemTracingDevToolsProtocolTest::PreRunTestOnMainThread();
+  }
+
+ private:
+  void SetupService() {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
+
+    system_service_ = std::make_unique<tracing::MockSystemService>(
+        temp_dir_, std::make_unique<base::tracing::PerfettoTaskRunner>(
+                       deferred_task_runner_));
+
+    SetProducerSockEnvName(system_service_->producer());
+    SetConsumerSockEnvName(system_service_->consumer());
+  }
+
+  base::ScopedTempDir temp_dir_;
+  scoped_refptr<base::DeferredSequencedTaskRunner> deferred_task_runner_;
+  std::unique_ptr<tracing::MockSystemService> system_service_;
+};
+
+// No system consumer support on Android to reduce Chrome binary size.
+#if defined(OS_ANDROID)
+#define MAYBE_TracingWithFakeSystemBackend DISABLED_TracingWithFakeSystemBackend
+#else
+#define MAYBE_TracingWithFakeSystemBackend TracingWithFakeSystemBackend
+#endif
+IN_PROC_BROWSER_TEST_F(FakeSystemTracingDevToolsProtocolTest,
+                       MAYBE_TracingWithFakeSystemBackend) {
+  base::DictionaryValue* command_result = StartSystemTrace();
+  ASSERT_NE(command_result, nullptr);
+
+  command_result = SendCommand("Tracing.end", nullptr, true);
+  ASSERT_NE(command_result, nullptr);
+
+  WaitForNotification("Tracing.tracingComplete", true);
+}
+
+class FakeSystemTracingForbiddenDevToolsProtocolTest
+    : public PosixSystemTracingDevToolsProtocolTest {
+ public:
+  void SetUp() override {
+    tracing::PerfettoTracedProcess::Get()
+        ->SetAllowSystemTracingConsumerForTesting(false);
+    PosixSystemTracingDevToolsProtocolTest::SetUp();
+  }
+};
+
+// No system consumer support on Android to reduce Chrome binary size.
+#if defined(OS_ANDROID)
+#define MAYBE_SystemConsumerForbidden DISABLED_SystemConsumerForbidden
+#else
+#define MAYBE_SystemConsumerForbidden SystemConsumerForbidden
+#endif
+IN_PROC_BROWSER_TEST_F(FakeSystemTracingForbiddenDevToolsProtocolTest,
+                       MAYBE_SystemConsumerForbidden) {
+  base::DictionaryValue* command_result = StartSystemTrace();
+  ASSERT_EQ(command_result, nullptr);
+}
+#endif  // defined(OS_POSIX)
+
 }  // namespace content

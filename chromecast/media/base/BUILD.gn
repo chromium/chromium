@@ -22,13 +22,14 @@ cast_source_set("key_systems") {
     "//base",
     "//chromecast:chromecast_buildflags",
     "//chromecast/public/media",
-    "//media",
     "//third_party/widevine/cdm:buildflags",
   ]
 
   if (enable_widevine) {
     deps += [ "//third_party/widevine/cdm:headers" ]
   }
+
+  assert_no_deps = [ "//media" ]
 }
 
 cast_source_set("base") {
@@ -36,12 +37,12 @@ cast_source_set("base") {
     "aligned_buffer.h",
     "audio_device_ids.cc",
     "audio_device_ids.h",
+    "cast_decoder_buffer_impl.cc",
+    "cast_decoder_buffer_impl.h",
     "decrypt_context_impl.cc",
     "decrypt_context_impl.h",
     "media_caps.cc",
     "media_caps.h",
-    "slew_volume.cc",
-    "slew_volume.h",
     "supported_codec_profile_levels_memo.cc",
     "supported_codec_profile_levels_memo.h",
     "video_mode_switcher.cc",
@@ -57,30 +58,17 @@ cast_source_set("base") {
 
   public_deps = [
     ":key_systems",
-    ":media_codec_support",
     "//chromecast/public/media",
   ]
 
   deps = [
     "//base",
     "//chromecast/base",
-    "//media",
-    "//media:shared_memory_support",
+    "//chromecast/media/api",
     "//ui/gfx/geometry",
   ]
-}
 
-cast_source_set("media_resource_tracker") {
-  sources = [
-    "media_resource_tracker.cc",
-    "media_resource_tracker.h",
-  ]
-
-  deps = [
-    "//base",
-    "//chromecast/base",
-    "//chromecast/media:libcast_media",
-  ]
+  assert_no_deps = [ "//media" ]
 }
 
 cast_source_set("media_codec_support") {
@@ -89,8 +77,18 @@ cast_source_set("media_codec_support") {
     "media_codec_support.h",
   ]
 
-  public_deps = [
-    "//chromecast/public/media",
+  public_deps = [ "//chromecast/public/media" ]
+
+  deps = [
+    "//base",
+    "//media",
+  ]
+}
+
+cast_source_set("slew_volume") {
+  sources = [
+    "slew_volume.cc",
+    "slew_volume.h",
   ]
 
   deps = [
@@ -105,9 +103,7 @@ cast_source_set("video_plane_controller") {
     "video_plane_controller.h",
   ]
 
-  public_deps = [
-    "//chromecast/public",
-  ]
+  public_deps = [ "//chromecast/public" ]
 
   deps = [
     "//base",
@@ -119,11 +115,12 @@ cast_source_set("video_plane_controller") {
 
 cast_source_set("monotonic_clock") {
   sources = [
-    "monotonic_clock.cc",
-    "monotonic_clock.h",
+    "default_monotonic_clock.cc",
+    "default_monotonic_clock.h",
   ]
   deps = [
     ":buildflags",
     "//base",
+    "//chromecast/media/api:api",
   ]
 }

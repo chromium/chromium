@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body style='zoom: 2;'>
+<input type='color' id='color'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+openPickerAppearanceOnly(document.getElementById('color'), () => testRunner.notifyDone());
+</script>
+</body>
+</html>

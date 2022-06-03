@@ -20,7 +20,7 @@ Polymer({
   },
 
   /** @return {!Element} */
-  getFocusableElement: function() {
+  getFocusableElement() {
     return this.$.indicator;
   },
 });

@@ -19,9 +19,10 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.cc.input.BrowserControlsState;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.components.browser_ui.util.BrowserControlsVisibilityDelegate;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.common.BrowserControlsState;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -106,11 +107,12 @@ public class TabBrowserControlsConstraintsHelperTest {
         initHelper();
         Mockito.verify(mDelegateFactory, Mockito.never())
                 .createBrowserControlsVisibilityDelegate(mTab);
-        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, false);
+        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, null);
         Mockito.verify(mDelegateFactory, Mockito.never())
                 .createBrowserControlsVisibilityDelegate(mTab);
 
-        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, true);
+        WindowAndroid window = Mockito.mock(WindowAndroid.class);
+        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, window);
         Mockito.verify(mDelegateFactory, Mockito.times(1))
                 .createBrowserControlsVisibilityDelegate(mTab);
         verifyUpdateState(BrowserControlsState.BOTH);
@@ -138,7 +140,8 @@ public class TabBrowserControlsConstraintsHelperTest {
         Mockito.when(newDelegateFactory.createBrowserControlsVisibilityDelegate(Mockito.any()))
                 .thenReturn(newVisibilityDelegate);
 
-        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, true);
+        WindowAndroid window = Mockito.mock(WindowAndroid.class);
+        mRegisteredTabObserver.onActivityAttachmentChanged(mTab, window);
         Mockito.verify(newDelegateFactory).createBrowserControlsVisibilityDelegate(mTab);
 
         verifyUpdateState(BrowserControlsState.BOTH);
@@ -149,14 +152,50 @@ public class TabBrowserControlsConstraintsHelperTest {
                         Mockito.anyInt(), Mockito.anyBoolean());
     }
 
+    @Test
+    public void testWebContentsSwap() {
+        initHelper();
+        Mockito.verify(mDelegateFactory, Mockito.never())
+                .createBrowserControlsVisibilityDelegate(mTab);
+        mRegisteredTabObserver.onInitialized(mTab, null);
+        Mockito.verify(mDelegateFactory).createBrowserControlsVisibilityDelegate(mTab);
+        Mockito.verifyNoMoreInteractions(mDelegateFactory);
+        verifyUpdateState(BrowserControlsState.BOTH);
+
+        mRegisteredTabObserver.onWebContentsSwapped(mTab, true, true);
+        verifyUpdateState(BrowserControlsState.BOTH);
+    }
+
+    @Test
+    public void testWebContentsSwap_whenShown() {
+        initHelper();
+        Mockito.verify(mDelegateFactory, Mockito.never())
+                .createBrowserControlsVisibilityDelegate(mTab);
+        mRegisteredTabObserver.onInitialized(mTab, null);
+        Mockito.verify(mDelegateFactory).createBrowserControlsVisibilityDelegate(mTab);
+        Mockito.verifyNoMoreInteractions(mDelegateFactory);
+        verifyUpdateState(BrowserControlsState.BOTH);
+
+        mVisibilityDelegate.set(BrowserControlsState.SHOWN);
+        verifyUpdateState(BrowserControlsState.SHOWN);
+
+        mRegisteredTabObserver.onWebContentsSwapped(mTab, true, true);
+        verifyUpdateState(BrowserControlsState.SHOWN, BrowserControlsState.SHOWN, false);
+    }
+
     private void verifyUpdateState(@BrowserControlsState int constraints) {
-        verifyUpdateState(constraints, true);
+        verifyUpdateState(constraints, BrowserControlsState.BOTH, true);
     }
 
     private void verifyUpdateState(@BrowserControlsState int constraints, boolean animate) {
+        verifyUpdateState(constraints, BrowserControlsState.BOTH, animate);
+    }
+
+    private void verifyUpdateState(@BrowserControlsState int constraints,
+            @BrowserControlsState int current, boolean animate) {
         Mockito.verify(mJniMock).updateState(Mockito.anyLong(), Mockito.same(mHelper),
-                Mockito.same(mWebContents), Mockito.eq(constraints),
-                Mockito.eq(BrowserControlsState.BOTH), Mockito.eq(animate));
+                Mockito.same(mWebContents), Mockito.eq(constraints), Mockito.eq(current),
+                Mockito.eq(animate));
         Mockito.clearInvocations(mJniMock);
     }
 

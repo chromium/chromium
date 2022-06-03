@@ -20,17 +20,8 @@ chrome.runtime.onMessageExternal.addListener(function(
     if (!url) {
       return '';
     }
-    // Use the DOM to parse the URL. Since we don't add the anchor to
-    // the page, this is the only reference to it and it will be
-    // deleted once it's gone out of scope.
-    const a = document.createElement('a');
-    a.href = url;
-    let origin = a.protocol + '//' + a.hostname;
-    if (a.port != '') {
-      origin = origin + ':' + a.port;
-    }
-    origin = origin + '/';
-    return origin;
+    const origin = new URL(url).origin;
+    return `${origin}/`;
   }
 
   try {
@@ -232,9 +223,14 @@ function onChooseDesktopMediaPort(port) {
     if (method == 'chooseDesktopMedia') {
       const sources = message['sources'];
       let cancelId = null;
-      if (port.sender.tab) {
+      const tab = port.sender.tab;
+      if (tab) {
+        // Per crbug.com/425344, in order to allow an <iframe> on a different
+        // domain, to get desktop media, we need to set the tab.url to match
+        // the <iframe>, even though it doesn't really load the new url.
+        tab.url = port.sender.url;
         cancelId = chrome.desktopCapture.chooseDesktopMedia(
-            sources, port.sender.tab, sendResponse);
+            sources, tab, sendResponse);
       } else {
         const requestInfo = {};
         requestInfo['guestProcessId'] = port.sender.guestProcessId || 0;
@@ -246,7 +242,7 @@ function onChooseDesktopMediaPort(port) {
       port.onDisconnect.addListener(function() {
         // This method has no effect if called after the user has selected a
         // desktop media source, so it does not need to be conditional.
-        if (port.sender.tab) {
+        if (tab) {
           chrome.desktopCapture.cancelChooseDesktopMedia(cancelId);
         } else {
           chrome.webrtcDesktopCapturePrivate.cancelChooseDesktopMedia(cancelId);

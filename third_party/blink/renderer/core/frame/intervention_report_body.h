@@ -20,8 +20,8 @@ class CORE_EXPORT InterventionReportBody : public LocationReportBody {
 
   ~InterventionReportBody() override = default;
 
-  String id() const { return id_; }
-  String message() const { return message_; }
+  const String& id() const { return id_; }
+  const String& message() const { return message_; }
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
  private:

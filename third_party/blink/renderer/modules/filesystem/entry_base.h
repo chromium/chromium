@@ -56,7 +56,7 @@ class MODULES_EXPORT EntryBase : public ScriptWrappable {
 
   String toURL() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   EntryBase(DOMFileSystemBase*, const String& full_path);

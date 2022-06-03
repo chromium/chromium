@@ -21,6 +21,7 @@
 #include "absl/synchronization/mutex.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // A thread-safe class that holds a counter.
 class ThreadSafeCounter {
@@ -128,4 +129,5 @@ TEST(NotificationTest, SanityTest) {
   BasicTests(true, &local_notification2);
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl

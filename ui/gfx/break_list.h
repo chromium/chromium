@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/gfx/range/range.h"
 
 namespace gfx {

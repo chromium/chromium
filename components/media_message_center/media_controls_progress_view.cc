@@ -6,6 +6,7 @@
 
 #include "base/i18n/time_formatting.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/views/border.h"
@@ -20,7 +21,6 @@ namespace media_message_center {
 
 namespace {
 
-constexpr SkColor kTimeColor = gfx::kGoogleGrey200;
 constexpr int kProgressBarAndTimeSpacing = 8;
 constexpr int kProgressTimeFontSize = 11;
 constexpr int kProgressBarHeight = 4;
@@ -29,17 +29,24 @@ constexpr int kMaxClickHeight = 24;
 constexpr gfx::Size kTimeSpacingSize = gfx::Size(150, 10);
 constexpr gfx::Insets kProgressViewInsets = gfx::Insets(15, 0, 0, 0);
 
+constexpr int kModernProgressBarHeight = 2;
+constexpr gfx::Insets kModernProgressViewInsets = gfx::Insets(8, 0, 8, 0);
+
 }  // namespace
 
 MediaControlsProgressView::MediaControlsProgressView(
-    base::RepeatingCallback<void(double)> seek_callback)
-    : seek_callback_(std::move(seek_callback)) {
+    base::RepeatingCallback<void(double)> seek_callback,
+    bool is_modern_notification)
+    : is_modern_notification_(is_modern_notification),
+      seek_callback_(std::move(seek_callback)) {
   SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical, kProgressViewInsets,
+      views::BoxLayout::Orientation::kVertical,
+      is_modern_notification_ ? kModernProgressViewInsets : kProgressViewInsets,
       kProgressBarAndTimeSpacing));
 
-  progress_bar_ = AddChildView(
-      std::make_unique<views::ProgressBar>(kProgressBarHeight, false));
+  progress_bar_ = AddChildView(std::make_unique<views::ProgressBar>(
+      is_modern_notification_ ? kModernProgressBarHeight : kProgressBarHeight,
+      false));
 
   // Font list for text views.
   gfx::Font default_font;
@@ -58,24 +65,24 @@ MediaControlsProgressView::MediaControlsProgressView(
 
   auto progress_time = std::make_unique<views::Label>();
   progress_time->SetFontList(font_list);
-  progress_time->SetEnabledColor(kTimeColor);
   progress_time->SetAutoColorReadabilityEnabled(false);
   progress_time_ = time_view->AddChildView(std::move(progress_time));
 
   auto time_spacing = std::make_unique<views::View>();
   time_spacing->SetPreferredSize(kTimeSpacingSize);
-  time_spacing->SetProperty(views::kFlexBehaviorKey,
-                            views::FlexSpecification::ForSizeRule(
-                                views::MinimumFlexSizeRule::kPreferred,
-                                views::MaximumFlexSizeRule::kUnbounded));
+  time_spacing->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
   time_view->AddChildView(std::move(time_spacing));
 
   auto duration = std::make_unique<views::Label>();
   duration->SetFontList(font_list);
-  duration->SetEnabledColor(SK_ColorWHITE);
   duration->SetAutoColorReadabilityEnabled(false);
   duration_ = time_view->AddChildView(std::move(duration));
 
+  if (is_modern_notification_)
+    time_view->SetVisible(false);
   AddChildView(std::move(time_view));
 }
 
@@ -88,34 +95,30 @@ void MediaControlsProgressView::UpdateProgress(
   if (media_position.playback_rate() == 0 && update_progress_timer_.IsRunning())
     update_progress_timer_.Stop();
 
-  base::TimeDelta current_position = media_position.GetPosition();
-  base::TimeDelta duration = media_position.duration();
+  const base::TimeDelta current_position = media_position.GetPosition();
+  const base::TimeDelta duration = media_position.duration();
+  SetBarProgress(current_position / duration);
 
-  double progress = current_position.InSecondsF() / duration.InSecondsF();
-  SetBarProgress(progress);
+  // For durations greater than 24 hours, prefer base::DURATION_WIDTH_NARROW for
+  // better readability (e.g., 27h 23m 10s rather than 27:23:10).
+  base::DurationFormatWidth time_format = duration >= base::Days(1)
+                                              ? base::DURATION_WIDTH_NARROW
+                                              : base::DURATION_WIDTH_NUMERIC;
 
-  // Time formatting can't yet represent durations greater than 24 hours in
-  // base::DURATION_WIDTH_NUMERIC format.
-  base::DurationFormatWidth time_format =
-      duration >= base::TimeDelta::FromDays(1) ? base::DURATION_WIDTH_NARROW
-                                               : base::DURATION_WIDTH_NUMERIC;
-
-  base::string16 elapsed_time;
+  std::u16string elapsed_time;
   bool elapsed_time_received = base::TimeDurationFormatWithSeconds(
       current_position, time_format, &elapsed_time);
 
-  base::string16 total_time;
+  std::u16string total_time;
   bool total_time_received =
       base::TimeDurationFormatWithSeconds(duration, time_format, &total_time);
 
   if (elapsed_time_received && total_time_received) {
     // If |duration| is less than an hour, we don't want to show  "0:" hours on
     // the progress times.
-    if (duration < base::TimeDelta::FromHours(1)) {
-      base::ReplaceFirstSubstringAfterOffset(
-          &elapsed_time, 0, base::ASCIIToUTF16("0:"), base::ASCIIToUTF16(""));
-      base::ReplaceFirstSubstringAfterOffset(
-          &total_time, 0, base::ASCIIToUTF16("0:"), base::ASCIIToUTF16(""));
+    if (duration < base::Hours(1)) {
+      base::ReplaceFirstSubstringAfterOffset(&elapsed_time, 0, u"0:", u"");
+      base::ReplaceFirstSubstringAfterOffset(&total_time, 0, u"0:", u"");
     }
 
     SetProgressTime(elapsed_time);
@@ -123,8 +126,8 @@ void MediaControlsProgressView::UpdateProgress(
   }
 
   if (media_position.playback_rate() != 0) {
-    base::TimeDelta update_frequency = base::TimeDelta::FromSecondsD(
-        std::abs(1 / media_position.playback_rate()));
+    base::TimeDelta update_frequency =
+        base::Seconds(std::abs(1 / media_position.playback_rate()));
     update_progress_timer_.Start(
         FROM_HERE, update_frequency,
         base::BindRepeating(&MediaControlsProgressView::UpdateProgress,
@@ -140,9 +143,17 @@ void MediaControlsProgressView::SetBackgroundColor(SkColor color) {
   progress_bar_->SetBackgroundColor(color);
 }
 
+void MediaControlsProgressView::SetTextColor(SkColor color) {
+  progress_time_->SetEnabledColor(color);
+  duration_->SetEnabledColor(color);
+}
+
 bool MediaControlsProgressView::OnMousePressed(const ui::MouseEvent& event) {
-  if (!event.IsOnlyLeftMouseButton() || event.y() < kMinClickHeight ||
-      event.y() > kMaxClickHeight) {
+  if (!event.IsOnlyLeftMouseButton())
+    return false;
+
+  if (!is_modern_notification_ &&
+      (event.y() < kMinClickHeight || event.y() > kMaxClickHeight)) {
     return false;
   }
 
@@ -151,8 +162,11 @@ bool MediaControlsProgressView::OnMousePressed(const ui::MouseEvent& event) {
 }
 
 void MediaControlsProgressView::OnGestureEvent(ui::GestureEvent* event) {
-  if (event->type() != ui::ET_GESTURE_TAP || event->y() < kMinClickHeight ||
-      event->y() > kMaxClickHeight) {
+  if (event->type() != ui::ET_GESTURE_TAP)
+    return;
+
+  if (!is_modern_notification_ &&
+      (event->y() < kMinClickHeight || event->y() > kMaxClickHeight)) {
     return;
   }
 
@@ -165,12 +179,12 @@ const views::ProgressBar* MediaControlsProgressView::progress_bar_for_testing()
   return progress_bar_;
 }
 
-const base::string16& MediaControlsProgressView::progress_time_for_testing()
+const std::u16string& MediaControlsProgressView::progress_time_for_testing()
     const {
   return progress_time_->GetText();
 }
 
-const base::string16& MediaControlsProgressView::duration_for_testing() const {
+const std::u16string& MediaControlsProgressView::duration_for_testing() const {
   return duration_->GetText();
 }
 
@@ -178,11 +192,11 @@ void MediaControlsProgressView::SetBarProgress(double progress) {
   progress_bar_->SetValue(progress);
 }
 
-void MediaControlsProgressView::SetProgressTime(const base::string16& time) {
+void MediaControlsProgressView::SetProgressTime(const std::u16string& time) {
   progress_time_->SetText(time);
 }
 
-void MediaControlsProgressView::SetDuration(const base::string16& duration) {
+void MediaControlsProgressView::SetDuration(const std::u16string& duration) {
   duration_->SetText(duration);
 }
 
@@ -194,5 +208,8 @@ void MediaControlsProgressView::HandleSeeking(const gfx::Point& location) {
       static_cast<double>(location_in_bar.x()) / progress_bar_->width();
   seek_callback_.Run(seek_to_progress);
 }
+
+BEGIN_METADATA(MediaControlsProgressView, views::View)
+END_METADATA
 
 }  // namespace media_message_center

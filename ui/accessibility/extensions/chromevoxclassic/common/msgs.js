@@ -23,13 +23,6 @@ Msgs = function() {};
 Msgs.NAMESPACE_ = 'chromevox_';
 
 /**
- * Dictionary of locale names.
- * @type {Object<string>}
- * @private
- */
-Msgs.localeNameDict_ = null;
-
-/**
  * Return the current locale.
  * @return {string} The locale.
  */
@@ -93,26 +86,6 @@ Msgs.addTranslatedMessagesToDom = function(root) {
  */
 Msgs.getNumber = function(num) {
   return '' + num;
-};
-
-/**
- * Gets a localized display name for a locale.
- * NOTE: Only a subset of locale identifiers are supported.  See the
- * |CHROMEVOX_LOCALE_DICT| message.
- * @param {string} locale On the form |ll| or |ll_CC|, where |ll| is
- *     the language code and |CC| the country code.
- * @return {string} The display name.
- */
-Msgs.getLocaleDisplayName = function(locale) {
-  if (!Msgs.localeNameDict_) {
-    Msgs.localeNameDict_ = /** @type {!Object<string>} */(
-        JSON.parse(this.getMsg('locale_dict')));
-  }
-  var name = Msgs.localeNameDict_[locale];
-  if (!name) {
-    throw Error('Unsupported locale identifier: ' + locale);
-  }
-  return name;
 };
 
 /**

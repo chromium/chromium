@@ -6,67 +6,60 @@
 #define CHROME_UPDATER_TOOLS_CERTIFICATE_TAG_H_
 
 #include <cstdint>
-#include <memory>
-#include <tuple>
 #include <vector>
 
-namespace base {
-class Time;
-}
+#include "base/containers/span.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
 namespace tools {
 
-struct SignedData;
-
-// Binary represents a PE binary.
-struct Binary {
-  Binary();
+// Binary represents a Windows PE binary and provides functions to extract and
+// set data outside of the signed area (called a "tag"). This allows a binary to
+// contain arbitrary data without invalidating any Authenticode signature.
+class Binary {
+ public:
+  Binary(const Binary&);
   ~Binary();
-  Binary(const Binary&) = delete;
-  Binary& operator=(const Binary&) = delete;
 
-  // The full file.
-  std::vector<uint8_t> contents;
+  // Parse a signed, Windows PE binary. Note that the returned structure
+  // contains pointers into the given data.
+  static absl::optional<Binary> Parse(base::span<const uint8_t> binary);
 
-  // The offset to the attribute certificates table.
-  size_t attr_cert_offset = 0;
+  // tag returns the embedded tag, if any.
+  const absl::optional<base::span<const uint8_t>>& tag() const;
 
-  // The offset to the size of the attribute certificates table.
-  size_t cert_size_offset = 0;
+  // SetTag returns an updated version of the binary that contains the given
+  // tag, or |nullopt| on error. If the binary already contains a tag then it
+  // will be replaced.
+  absl::optional<std::vector<uint8_t>> SetTag(
+      base::span<const uint8_t> tag) const;
 
-  // The PKCS#7, SignedData in DER form.
-  std::vector<uint8_t> asn1_data;
+ private:
+  Binary();
 
-  // The appended tag, if any.
-  std::vector<uint8_t> appended_tag;
+  // ParseTag attempts to parse out the tag. It returns false on parse error or
+  // true on success. If successful, it sets |tag_|.
+  bool ParseTag();
 
-  // The parsed, SignedData structure.
-  SignedData* signed_data = nullptr;
+  // binary_ contains the whole input binary.
+  base::span<const uint8_t> binary_;
+
+  // content_info_ contains the |WIN_CERTIFICATE| structure.
+  base::span<const uint8_t> content_info_;
+
+  // tag_ contains the embedded tag, or |nullopt| if there isn't one.
+  absl::optional<base::span<const uint8_t>> tag_;
+
+  // attr_cert_offset_ is the offset in the file where the |WIN_CERTIFICATE|
+  // structure appears. (This is the last structure in the file.)
+  size_t attr_cert_offset_ = 0;
+
+  // certs_size_offset_ is the offset in the file where the u32le size of the
+  // |WIN_CERTIFICATE| structure is embedded in an |IMAGE_DATA_DIRECTORY|.
+  size_t certs_size_offset_ = 0;
 };
 
-bool ParseUnixTime(const char* time_string, base::Time* parsed_time);
-
-std::tuple<std::unique_ptr<Binary>, int /*err*/> NewBinary(
-    std::vector<uint8_t> contents);
-std::vector<uint8_t> BuildBinary(const Binary& bin,
-                                 const std::vector<uint8_t>& asn1_data,
-                                 const std::vector<uint8_t>& tag);
-
-int ProcessAttributeCertificates(
-    const std::vector<uint8_t>& attribute_certificates,
-    std::vector<uint8_t>* asn1_data,
-    std::vector<uint8_t>* appended_tag);
-
-std::vector<uint8_t> AppendedTag(const Binary& bin);
-std::vector<uint8_t> RemoveAppendedTag(const Binary& bin);
-std::vector<uint8_t> SetAppendedTag(const Binary& bin,
-                                    const std::vector<uint8_t>& tag_contents);
-
-// SetSuperfluousCertTag returns a PE binary based on bin, but where the
-// superfluous certificate contains the given tag data.
-std::vector<uint8_t> SetSuperfluousCertTag(const Binary& bin,
-                                           const std::vector<uint8_t>& tag);
 }  // namespace tools
 }  // namespace updater
 

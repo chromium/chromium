@@ -8,14 +8,14 @@
 
 #include "base/lazy_instance.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/accessibility/accessibility_manager.h"
-#include "chrome/browser/chromeos/login/lock/screen_locker.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
+#include "chrome/browser/ash/login/lock/screen_locker.h"
 #endif
 
 namespace OnDisplayStateChanged =
@@ -45,7 +45,6 @@ class BrailleDisplayPrivateAPI::DefaultEventDelegate
 BrailleDisplayPrivateAPI::BrailleDisplayPrivateAPI(
     content::BrowserContext* context)
     : profile_(Profile::FromBrowserContext(context)),
-      scoped_observer_(this),
       event_delegate_(new DefaultEventDelegate(this, profile_)) {}
 
 BrailleDisplayPrivateAPI::~BrailleDisplayPrivateAPI() {
@@ -85,12 +84,12 @@ void BrailleDisplayPrivateAPI::OnBrailleKeyEvent(const KeyEvent& key_event) {
 }
 
 bool BrailleDisplayPrivateAPI::IsProfileActive() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Since we are creating one instance per profile / user, we should be fine
   // comparing against the active user. That said - if we ever change that,
   // this code will need to be changed.
-  return profile_->IsSameProfile(ProfileManager::GetActiveUserProfile());
-#else  // !defined(OS_CHROMEOS)
+  return profile_->IsSameOrParent(ProfileManager::GetActiveUserProfile());
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   return true;
 #endif
 }
@@ -103,16 +102,16 @@ void BrailleDisplayPrivateAPI::SetEventDelegateForTest(
 void BrailleDisplayPrivateAPI::OnListenerAdded(
     const EventListenerInfo& details) {
   BrailleController* braille_controller = BrailleController::GetInstance();
-  if (!scoped_observer_.IsObserving(braille_controller))
-    scoped_observer_.Add(braille_controller);
+  if (!scoped_observation_.IsObservingSource(braille_controller))
+    scoped_observation_.Observe(braille_controller);
 }
 
 void BrailleDisplayPrivateAPI::OnListenerRemoved(
     const EventListenerInfo& details) {
   BrailleController* braille_controller = BrailleController::GetInstance();
   if (!event_delegate_->HasListener() &&
-      scoped_observer_.IsObserving(braille_controller)) {
-    scoped_observer_.Remove(braille_controller);
+      scoped_observation_.IsObservingSource(braille_controller)) {
+    scoped_observation_.Reset();
   }
 }
 
@@ -161,7 +160,7 @@ BrailleDisplayPrivateWriteDotsFunction::
 }
 
 bool BrailleDisplayPrivateWriteDotsFunction::Prepare() {
-  params_ = WriteDots::Params::Create(*args_);
+  params_ = WriteDots::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
   EXTENSION_FUNCTION_VALIDATE(
       params_->cells.size() >=
@@ -180,13 +179,14 @@ bool BrailleDisplayPrivateWriteDotsFunction::Respond() {
 
 ExtensionFunction::ResponseAction
 BrailleDisplayPrivateUpdateBluetoothBrailleDisplayAddressFunction::Run() {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   NOTREACHED();
   return RespondNow(Error("Unsupported on this platform."));
 #else
-  std::string address;
-  EXTENSION_FUNCTION_VALIDATE(args_->GetString(0, &address));
-  chromeos::AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(
+  EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
+  EXTENSION_FUNCTION_VALIDATE(args()[0].is_string());
+  const std::string& address = args()[0].GetString();
+  ash::AccessibilityManager::Get()->UpdateBluetoothBrailleDisplayAddress(
       address);
   return RespondNow(NoArguments());
 #endif

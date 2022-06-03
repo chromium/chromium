@@ -9,7 +9,6 @@
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/renderer/get_script_context.h"
 #include "extensions/renderer/script_context.h"
@@ -19,6 +18,9 @@
 #include "gin/converter.h"
 #include "gin/per_isolate_data.h"
 #include "third_party/blink/public/web/web_console_message.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
 
 namespace extensions {
 namespace console {
@@ -96,8 +98,8 @@ v8::Local<v8::Object> AsV8Object(v8::Isolate* isolate) {
     for (const auto& method : methods) {
       v8::Local<v8::FunctionTemplate> function = v8::FunctionTemplate::New(
           isolate, BoundLogMethodCallback,
-          v8::Integer::New(isolate, static_cast<int>(method.level)));
-      function->RemovePrototype();
+          v8::Integer::New(isolate, static_cast<int>(method.level)),
+          v8::Local<v8::Signature>(), 0, v8::ConstructorBehavior::kThrow);
       templ->Set(gin::StringToSymbol(isolate, method.name), function);
     }
     data->SetObjectTemplate(&kWrapperInfo, templ);

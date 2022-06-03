@@ -304,7 +304,7 @@ EXTERN_C const CLSID CLSID_RdpDesktopSession;
 
 #ifdef __cplusplus
 
-class DECLSPEC_UUID("7bf898db-ce6c-57a3-a473-3aa21bf8c4c4")
+class DECLSPEC_UUID("6741fd0a-6a8a-5838-a35e-8088697e2088")
 RdpDesktopSession;
 #endif
 #endif /* __ChromotingLib_LIBRARY_DEFINED__ */

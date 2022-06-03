@@ -7,16 +7,22 @@
 
 #include <stdint.h>
 
+#include <memory>
 #include <vector>
-#include "base/optional.h"
+
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
+#include "components/viz/common/quads/compositor_frame_transition_directive.h"
 #include "components/viz/common/quads/frame_deadline.h"
+#include "components/viz/common/surfaces/region_capture_bounds.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "components/viz/common/surfaces/surface_range.h"
 #include "components/viz/common/viz_common_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/delegated_ink_metadata.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 #include "ui/gfx/overlay_transform.h"
@@ -72,7 +78,11 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
 
   gfx::SizeF scrollable_viewport_size;
 
+  gfx::ContentColorUsage content_color_usage = gfx::ContentColorUsage::kSRGB;
+
   bool may_contain_video = false;
+
+  bool may_throttle_if_undrawn_frames = true;
 
   // WebView makes quality decisions for rastering resourceless software frames
   // based on information that a scroll or animation is active.
@@ -137,17 +147,38 @@ class VIZ_COMMON_EXPORT CompositorFrameMetadata {
   // The visible height of the top-controls. If the value is not set, then the
   // visible height should be the same as in the latest submitted frame with a
   // value set.
-  base::Optional<float> top_controls_visible_height;
+  absl::optional<float> top_controls_visible_height;
 
-  // The time at which the LocalSurfaceId used to submit this CompositorFrame
-  // was allocated.
-  base::TimeTicks local_surface_id_allocation_time;
-
-  base::Optional<base::TimeDelta> preferred_frame_interval;
+  absl::optional<base::TimeDelta> preferred_frame_interval;
 
   // Display transform hint when the frame is generated. Note this is only
   // applicable to frames of the root surface.
   gfx::OverlayTransform display_transform_hint = gfx::OVERLAY_TRANSFORM_NONE;
+
+  // Contains the metadata required for drawing a delegated ink trail onto the
+  // end of a rendered ink stroke. This should only be present when two
+  // conditions are met:
+  //   1. The JS API |updateInkTrailStartPoint| is used - This gathers the
+  //     metadata and puts it onto a compositor frame to be sent to viz.
+  //   2. This frame will not be submitted to the root surface - The browser UI
+  //     does not use this, and the frame must be contained within a
+  //     SurfaceDrawQuad.
+  // The ink trail created with this metadata will only last for a single frame
+  // before it disappears, regardless of whether or not the next frame contains
+  // delegated ink metadata.
+  std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
+
+  // This represents a list of directives to execute in order to support the
+  // document transitions.
+  std::vector<CompositorFrameTransitionDirective> transition_directives;
+
+  // A map of region capture crop ids associated with this frame to the
+  // gfx::Rect of the region that they represent.
+  RegionCaptureBounds capture_bounds;
+
+  // Indicates if this frame references shared element resources that need to
+  // be replaced with ResourceIds in the Viz process.
+  bool has_shared_element_resources = false;
 
  private:
   CompositorFrameMetadata(const CompositorFrameMetadata& other);

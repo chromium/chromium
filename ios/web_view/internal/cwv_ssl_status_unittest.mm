@@ -15,11 +15,12 @@
 namespace ios_web_view {
 
 class CWVSSLStatusTest : public PlatformTest {
+ public:
+  CWVSSLStatusTest(const CWVSSLStatusTest&) = delete;
+  CWVSSLStatusTest& operator=(const CWVSSLStatusTest&) = delete;
+
  protected:
   CWVSSLStatusTest() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CWVSSLStatusTest);
 };
 
 TEST_F(CWVSSLStatusTest, SecurityStyle) {

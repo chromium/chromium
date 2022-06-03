@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_handler.h"
 #include "net/http/http_auth_handler_basic.h"
@@ -23,8 +24,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   std::unique_ptr<net::HttpAuthHandler> basic;
 
   net::HttpAuthHandlerBasic::Factory factory;
-  factory.CreateAuthHandlerFromString(
-      challenge, net::HttpAuth::AUTH_SERVER, null_ssl_info, origin,
-      net::NetLogWithSource(), host_resolver.get(), &basic);
+  factory.CreateAuthHandlerFromString(challenge, net::HttpAuth::AUTH_SERVER,
+                                      null_ssl_info, net::NetworkIsolationKey(),
+                                      origin, net::NetLogWithSource(),
+                                      host_resolver.get(), &basic);
   return 0;
 }

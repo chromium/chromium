@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_FACTORY_H_
 #define CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -28,6 +27,12 @@ class BookmarkModelFactory : public BrowserContextKeyedServiceFactory {
 
   static BookmarkModelFactory* GetInstance();
 
+  BookmarkModelFactory(const BookmarkModelFactory&) = delete;
+  BookmarkModelFactory& operator=(const BookmarkModelFactory&) = delete;
+
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend struct base::DefaultSingletonTraits<BookmarkModelFactory>;
 
@@ -42,8 +47,6 @@ class BookmarkModelFactory : public BrowserContextKeyedServiceFactory {
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkModelFactory);
 };
 
 #endif  // CHROME_BROWSER_BOOKMARKS_BOOKMARK_MODEL_FACTORY_H_

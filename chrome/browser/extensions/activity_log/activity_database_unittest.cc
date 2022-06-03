@@ -7,11 +7,11 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/simple_test_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -27,7 +27,6 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/test/test_browser_thread.h"
 #include "extensions/common/dom_action_types.h"
 #include "sql/statement.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -111,8 +110,8 @@ class ActivityDatabaseTest : public ChromeRenderViewHostTestHarness {
   }
 
   void TearDown() override {
-    SetActivityLogTaskRunnerForTesting(nullptr);
     ChromeRenderViewHostTestHarness::TearDown();
+    SetActivityLogTaskRunnerForTesting(nullptr);
   }
 
   // Creates a test database and initializes the table schema.
@@ -263,7 +262,7 @@ TEST_F(ActivityDatabaseTest, InitFailure) {
   ActivityDatabase* activity_db = new ActivityDatabase(delegate);
   scoped_refptr<Action> action = new Action(
       "punky", base::Time::Now(), Action::ACTION_API_CALL, "brewster");
-  action->mutable_args()->AppendString("woof");
+  action->mutable_args()->Append("woof");
   delegate->Record(activity_db, action);
   activity_db->Close();
 }

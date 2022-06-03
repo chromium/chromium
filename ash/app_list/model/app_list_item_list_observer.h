@@ -8,12 +8,14 @@
 #include <stddef.h>
 
 #include "ash/app_list/model/app_list_model_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
 class AppListItem;
 
-class APP_LIST_MODEL_EXPORT AppListItemListObserver {
+class APP_LIST_MODEL_EXPORT AppListItemListObserver
+    : public base::CheckedObserver {
  public:
   // Triggered after |item| has been added to the list at |index|.
   virtual void OnListItemAdded(size_t index, AppListItem* item) {}
@@ -28,12 +30,8 @@ class APP_LIST_MODEL_EXPORT AppListItemListObserver {
                                size_t to_index,
                                AppListItem* item) {}
 
-  // Triggered after the item at the corresponding index in the top level has
-  // started or completed installing and should be highlighted.
-  virtual void OnAppListItemHighlight(size_t index, bool highlight) {}
-
  protected:
-  virtual ~AppListItemListObserver() {}
+  ~AppListItemListObserver() override;
 };
 
 }  // namespace ash

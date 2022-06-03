@@ -14,7 +14,6 @@
 #include "base/atomicops.h"
 #include "base/cancelable_callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "media/audio/audio_io.h"
@@ -32,10 +31,15 @@ class PCMQueueInAudioInputStream : public AudioInputStream {
   // Parameters as per AudioManager::MakeAudioInputStream.
   PCMQueueInAudioInputStream(AudioManagerMac* manager,
                              const AudioParameters& params);
+
+  PCMQueueInAudioInputStream(const PCMQueueInAudioInputStream&) = delete;
+  PCMQueueInAudioInputStream& operator=(const PCMQueueInAudioInputStream&) =
+      delete;
+
   ~PCMQueueInAudioInputStream() override;
 
   // Implementation of AudioInputStream.
-  bool Open() override;
+  AudioInputStream::OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;
@@ -111,8 +115,6 @@ class PCMQueueInAudioInputStream : public AudioInputStream {
   std::unique_ptr<base::OneShotTimer> input_callback_timer_;
 
   std::unique_ptr<media::AudioBus> audio_bus_;
-
-  DISALLOW_COPY_AND_ASSIGN(PCMQueueInAudioInputStream);
 };
 
 }  // namespace media

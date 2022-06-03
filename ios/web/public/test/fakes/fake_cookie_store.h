@@ -24,12 +24,14 @@ class FakeCookieStore : public net::CookieStore {
   // necessary.
 
   void SetCanonicalCookieAsync(std::unique_ptr<net::CanonicalCookie> cookie,
-                               std::string source_scheme,
+                               const GURL& source_url,
                                const net::CookieOptions& options,
                                SetCookiesCallback callback) override;
-  void GetCookieListWithOptionsAsync(const GURL& url,
-                                     const net::CookieOptions& options,
-                                     GetCookieListCallback callback) override;
+  void GetCookieListWithOptionsAsync(
+      const GURL& url,
+      const net::CookieOptions& options,
+      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      GetCookieListCallback callback) override;
   void DeleteCanonicalCookieAsync(const net::CanonicalCookie& cookie,
                                   DeleteCallback callback) override;
   void DeleteAllCreatedInTimeRangeAsync(
@@ -37,7 +39,9 @@ class FakeCookieStore : public net::CookieStore {
       DeleteCallback callback) override;
   void DeleteAllMatchingInfoAsync(net::CookieDeletionInfo delete_info,
                                   DeleteCallback callback) override;
-  void DeleteSessionCookiesAsync(DeleteCallback) override;
+  void DeleteSessionCookiesAsync(DeleteCallback callback) override;
+  void DeleteMatchingCookiesAsync(DeletePredicate predicate,
+                                  DeleteCallback callback) override;
   void FlushStore(base::OnceClosure callback) override;
   void SetCookieableSchemes(const std::vector<std::string>& schemes,
                             SetCookieableSchemesCallback callback) override;
@@ -45,7 +49,7 @@ class FakeCookieStore : public net::CookieStore {
 
  private:
   net::CookieList all_cookies_;
-  net::CookieStatusList excluded_list_;
+  net::CookieAccessResultList excluded_list_;
 };
 
 }  // namespace web

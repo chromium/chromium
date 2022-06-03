@@ -32,7 +32,6 @@ import os
 
 from blinkpy.web_tests.breakpad.dump_reader import DumpReader
 
-
 _log = logging.getLogger(__name__)
 
 
@@ -65,7 +64,10 @@ class DumpReaderWin(DumpReader):
 
     def _get_stack_from_dump(self, dump_file):
         minidump = dump_file[:-3] + 'dmp'
-        cmd = [self._cdb_path, '-y', self._build_dir, '-c', '.lines;.ecxr;k30;q', '-z', minidump]
+        cmd = [
+            self._cdb_path, '-y', self._build_dir, '-c', '.lines;.ecxr;k30;q',
+            '-z', minidump
+        ]
         try:
             stack = self._host.executive.run_command(cmd)
         except:
@@ -85,56 +87,15 @@ class DumpReaderWin(DumpReader):
         if self._cdb_available is not None:
             return self._cdb_available
 
-        CDB_LOCATION_TEMPLATES = [
-            '%s\\Debugging Tools For Windows',
-            '%s\\Debugging Tools For Windows (x86)',
-            '%s\\Debugging Tools For Windows (x64)',
-            '%s\\Windows Kits\\8.0\\Debuggers\\x86',
-            '%s\\Windows Kits\\8.0\\Debuggers\\x64',
-            '%s\\Windows Kits\\8.1\\Debuggers\\x86',
-            '%s\\Windows Kits\\8.1\\Debuggers\\x64',
-            '%s\\Windows Kits\\10\\Debuggers\\x86',
-            '%s\\Windows Kits\\10\\Debuggers\\x64',
-        ]
-
-        program_files_directories = ['C:\\Program Files']
-        program_files = self._host.environ.get('ProgramFiles')
-        if program_files:
-            program_files_directories.append(program_files)
-        program_files = self._host.environ.get('ProgramFiles(x86)')
-        if program_files:
-            program_files_directories.append(program_files)
-
-        possible_cdb_locations = []
-        for template in CDB_LOCATION_TEMPLATES:
-            for program_files in program_files_directories:
-                possible_cdb_locations.append(template % program_files)
-
-        # Look in depot_tools win_toolchain too.
-        depot_tools = self._find_depot_tools_path()
-        if depot_tools:
-            try:
-                vs_files = os.path.join(depot_tools, 'win_toolchain', 'vs_files')
-                for path in os.listdir(vs_files):
-                    win_sdk = os.path.join(vs_files, path, 'win_sdk')
-                    possible_cdb_locations.extend([
-                        '%s\\Debuggers\\x86' % win_sdk,
-                        '%s\\Debuggers\\x64' % win_sdk,
-                    ])
-            except OSError as error:
-                if error.errno != errno.ENOENT:
-                    raise
-
-        for cdb_path in possible_cdb_locations:
-            cdb = self._host.filesystem.join(cdb_path, 'cdb.exe')
-            try:
-                _ = self._host.executive.run_command([cdb, '-version'])
-            except:
-                pass
-            else:
-                self._cdb_path = cdb
-                self._cdb_available = True
-                return self._cdb_available
+        cdb = self._host.filesystem.join(self._build_dir, 'cdb', 'cdb.exe')
+        try:
+            _ = self._host.executive.run_command([cdb, '-version'])
+        except:
+            pass
+        else:
+            self._cdb_path = cdb
+            self._cdb_available = True
+            return self._cdb_available
 
         _log.warning("CDB is not installed; can't symbolize minidumps.")
         _log.warning('')

@@ -9,8 +9,9 @@
 #include "mojo/public/cpp/base/unguessable_token_mojom_traits.h"
 #include "mojo/public/cpp/bindings/array_traits_wtf_vector.h"
 #include "mojo/public/cpp/bindings/string_traits_wtf.h"
-#include "third_party/blink/public/mojom/messaging/cloneable_message.mojom-blink.h"
-#include "third_party/blink/public/mojom/native_file_system/native_file_system_transfer_token.mojom-blink.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_transfer_token.mojom-blink.h"
+#include "third_party/blink/public/mojom/messaging/cloneable_message.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/messaging/blink_cloneable_message.h"
@@ -20,7 +21,7 @@
 namespace mojo {
 
 template <>
-struct CORE_EXPORT StructTraits<blink::mojom::blink::CloneableMessage::DataView,
+struct CORE_EXPORT StructTraits<blink::mojom::CloneableMessageDataView,
                                 blink::BlinkCloneableMessage> {
   static mojo_base::BigBuffer encoded_message(
       blink::BlinkCloneableMessage& input) {
@@ -54,18 +55,18 @@ struct CORE_EXPORT StructTraits<blink::mojom::blink::CloneableMessage::DataView,
     return input.sender_stack_trace_id.should_pause;
   }
 
-  static const base::Optional<base::UnguessableToken>& locked_agent_cluster_id(
+  static const absl::optional<base::UnguessableToken>& locked_agent_cluster_id(
       const blink::BlinkCloneableMessage& input) {
     return input.locked_agent_cluster_id;
   }
 
   static Vector<
-      mojo::PendingRemote<blink::mojom::blink::NativeFileSystemTransferToken>>
-  native_file_system_tokens(blink::BlinkCloneableMessage& input) {
-    return std::move(input.message->NativeFileSystemTokens());
+      mojo::PendingRemote<blink::mojom::blink::FileSystemAccessTransferToken>>
+  file_system_access_tokens(blink::BlinkCloneableMessage& input) {
+    return std::move(input.message->FileSystemAccessTokens());
   }
 
-  static bool Read(blink::mojom::blink::CloneableMessage::DataView,
+  static bool Read(blink::mojom::CloneableMessageDataView,
                    blink::BlinkCloneableMessage* out);
 };
 

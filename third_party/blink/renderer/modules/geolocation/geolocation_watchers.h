@@ -16,7 +16,8 @@ class GeolocationWatchers final : public GarbageCollected<GeolocationWatchers>,
                                   public NameClient {
  public:
   GeolocationWatchers() = default;
-  void Trace(blink::Visitor*);
+  ~GeolocationWatchers() override = default;
+  void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {
     return "GeolocationWatchers";
   }

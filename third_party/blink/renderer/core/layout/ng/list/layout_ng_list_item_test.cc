@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_base_layout_algorithm_test.h"
 
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 
 namespace blink {
@@ -12,6 +13,27 @@ namespace blink {
 class LayoutNGListItemTest : public NGLayoutTest {};
 
 namespace {
+
+// http://crbug.com/1222633
+TEST_F(LayoutNGListItemTest, FindSymbolMarkerLayoutTextWithTextCombine) {
+  ScopedLayoutNGTextCombineForTest enable_layout_ng_text_combine(true);
+  InsertStyleElement(
+      "li { text-combine-upright: all; writing-mode: vertical-rl; }");
+  SetBodyInnerHTML("<li id=target>a</li>");
+  // LayoutNGListItem {LI}
+  //   LayoutNGOutsideListMarker {::marker}
+  //      LayoutNGTextCombine (anonymous)
+  //        LayoutText (anonymous) "\x{2022} "
+  //   LayoutNGTextCombine (anonymous)
+  //     LayoutText {#text} "a"
+  const auto& target = *GetElementById("target");
+  const auto* const marker_layout_text =
+      LayoutNGListItem::FindSymbolMarkerLayoutText(target.GetLayoutObject());
+  const auto* const text_combine =
+      To<LayoutNGTextCombine>(marker_layout_text->Parent());
+  EXPECT_EQ(marker_layout_text,
+            LayoutNGListItem::FindSymbolMarkerLayoutText(text_combine));
+}
 
 TEST_F(LayoutNGListItemTest, InsideWithFirstLine) {
   SetBodyInnerHTML(R"HTML(
@@ -36,8 +58,7 @@ TEST_F(LayoutNGListItemTest, InsideWithFirstLine) {
   GetDocument().UpdateStyleAndLayoutTree();
 
   // The list-item should have a marker.
-  LayoutNGListItem* list_item =
-      ToLayoutNGListItem(GetLayoutObjectByElementId("item"));
+  auto* list_item = To<LayoutNGListItem>(GetLayoutObjectByElementId("item"));
   LayoutObject* marker = list_item->Marker();
   EXPECT_TRUE(marker);
   // The marker should have only 1 child.

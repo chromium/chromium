@@ -6,6 +6,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -17,7 +18,8 @@ std::unique_ptr<DummyPageHolder> V8TestingScope::CreateDummyPageHolder(
   std::unique_ptr<DummyPageHolder> holder = std::make_unique<DummyPageHolder>();
   if (url.IsValid()) {
     holder->GetFrame().Loader().CommitNavigation(
-        WebNavigationParams::CreateWithHTMLBuffer(SharedBuffer::Create(), url),
+        WebNavigationParams::CreateWithHTMLBufferForTesting(
+            SharedBuffer::Create(), url),
         nullptr /* extra_data */);
     blink::test::RunPendingTasks();
   }
@@ -29,7 +31,9 @@ V8TestingScope::V8TestingScope(const KURL& url)
       handle_scope_(GetIsolate()),
       context_(GetScriptState()->GetContext()),
       context_scope_(GetContext()),
-      try_catch_(GetIsolate()) {
+      try_catch_(GetIsolate()),
+      microtasks_scope_(GetIsolate(),
+                        v8::MicrotasksScope::kDoNotRunMicrotasks) {
   GetFrame().GetSettings()->SetScriptEnabled(true);
 }
 
@@ -59,6 +63,10 @@ Page& V8TestingScope::GetPage() {
 
 LocalFrame& V8TestingScope::GetFrame() {
   return holder_->GetFrame();
+}
+
+LocalDOMWindow& V8TestingScope::GetWindow() {
+  return *GetFrame().DomWindow();
 }
 
 Document& V8TestingScope::GetDocument() {

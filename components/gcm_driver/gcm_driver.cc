@@ -29,9 +29,7 @@ void InstanceIDHandler::DeleteAllTokensForApp(const std::string& app_id,
 
 GCMDriver::GCMDriver(
     const base::FilePath& store_path,
-    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-    : web_push_sender_(std::move(url_loader_factory)) {
+    const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner) {
   // The |blocking_task_runner| can be nullptr for tests that do not need the
   // encryption capabilities of the GCMDriver class.
   if (blocking_task_runner)
@@ -128,25 +126,25 @@ void GCMDriver::UnregisterInternal(const std::string& app_id,
 void GCMDriver::Send(const std::string& app_id,
                      const std::string& receiver_id,
                      const OutgoingMessage& message,
-                     const SendCallback& callback) {
+                     SendCallback callback) {
   DCHECK(!app_id.empty());
   DCHECK(!receiver_id.empty());
   DCHECK(!callback.is_null());
 
   GCMClient::Result result = EnsureStarted(GCMClient::IMMEDIATE_START);
   if (result != GCMClient::SUCCESS) {
-    callback.Run(std::string(), result);
+    std::move(callback).Run(std::string(), result);
     return;
   }
 
   // If the message with send ID is still in progress, bail out.
   std::pair<std::string, std::string> key(app_id, message.id);
   if (send_callbacks_.find(key) != send_callbacks_.end()) {
-    callback.Run(message.id, GCMClient::INVALID_PARAMETER);
+    std::move(callback).Run(message.id, GCMClient::INVALID_PARAMETER);
     return;
   }
 
-  send_callbacks_[key] = callback;
+  send_callbacks_[key] = std::move(callback);
 
   SendImpl(app_id, receiver_id, message);
 }
@@ -180,8 +178,8 @@ void GCMDriver::RemoveEncryptionInfoAfterUnregister(const std::string& app_id,
                                                     GCMClient::Result result) {
   encryption_provider_.RemoveEncryptionInfo(
       app_id, "" /* authorized_entity */,
-      base::Bind(&GCMDriver::UnregisterFinished, weak_ptr_factory_.GetWeakPtr(),
-                 app_id, result));
+      base::BindOnce(&GCMDriver::UnregisterFinished,
+                     weak_ptr_factory_.GetWeakPtr(), app_id, result));
 }
 
 void GCMDriver::UnregisterFinished(const std::string& app_id,
@@ -205,9 +203,9 @@ void GCMDriver::SendFinished(const std::string& app_id,
     return;
   }
 
-  SendCallback callback = callback_iter->second;
+  SendCallback callback = std::move(callback_iter->second);
   send_callbacks_.erase(callback_iter);
-  callback.Run(message_id, result);
+  std::move(callback).Run(message_id, result);
 }
 
 void GCMDriver::Shutdown() {
@@ -266,13 +264,14 @@ void GCMDriver::ClearCallbacks() {
 void GCMDriver::DispatchMessage(const std::string& app_id,
                                 const IncomingMessage& message) {
   encryption_provider_.DecryptMessage(
-      app_id, message, base::Bind(&GCMDriver::DispatchMessageInternal,
-                                  weak_ptr_factory_.GetWeakPtr(), app_id));
+      app_id, message,
+      base::BindOnce(&GCMDriver::DispatchMessageInternal,
+                     weak_ptr_factory_.GetWeakPtr(), app_id));
 }
 
 void GCMDriver::DispatchMessageInternal(const std::string& app_id,
                                         GCMDecryptionResult result,
-                                        const IncomingMessage& message) {
+                                        IncomingMessage message) {
   UMA_HISTOGRAM_ENUMERATION("GCM.Crypto.DecryptMessageResult", result,
                             GCMDecryptionResult::ENUM_SIZE);
 
@@ -328,50 +327,47 @@ void GCMDriver::RegisterAfterUnregister(
   RegisterImpl(app_id, normalized_sender_ids);
 }
 
-void GCMDriver::SendWebPushMessage(const std::string& app_id,
-                                   const std::string& authorized_entity,
-                                   const std::string& p256dh,
-                                   const std::string& auth_secret,
-                                   const std::string& fcm_token,
-                                   crypto::ECPrivateKey* vapid_key,
-                                   WebPushMessage message,
-                                   WebPushCallback callback) {
-  std::string payload_copy = message.payload;
+void GCMDriver::EncryptMessage(const std::string& app_id,
+                               const std::string& authorized_entity,
+                               const std::string& p256dh,
+                               const std::string& auth_secret,
+                               const std::string& message,
+                               EncryptMessageCallback callback) {
   encryption_provider_.EncryptMessage(
-      app_id, authorized_entity, p256dh, auth_secret, payload_copy,
+      app_id, authorized_entity, p256dh, auth_secret, message,
       base::BindOnce(&GCMDriver::OnMessageEncrypted,
-                     weak_ptr_factory_.GetWeakPtr(), fcm_token, vapid_key,
-                     std::move(message), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void GCMDriver::OnMessageEncrypted(const std::string& fcm_token,
-                                   crypto::ECPrivateKey* vapid_key,
-                                   WebPushMessage message,
-                                   WebPushCallback callback,
+void GCMDriver::OnMessageEncrypted(EncryptMessageCallback callback,
                                    GCMEncryptionResult result,
-                                   std::string payload) {
+                                   std::string message) {
   UMA_HISTOGRAM_ENUMERATION("GCM.Crypto.EncryptMessageResult", result,
                             GCMEncryptionResult::ENUM_SIZE);
+  std::move(callback).Run(result, std::move(message));
+}
 
-  switch (result) {
-    case GCMEncryptionResult::ENCRYPTED_DRAFT_08: {
-      message.payload = std::move(payload);
-      web_push_sender_.SendMessage(fcm_token, vapid_key, std::move(message),
-                                   std::move(callback));
-      return;
-    }
-    case GCMEncryptionResult::NO_KEYS:
-    case GCMEncryptionResult::INVALID_SHARED_SECRET:
-    case GCMEncryptionResult::ENCRYPTION_FAILED: {
-      InvokeWebPushCallback(std::move(callback),
-                            SendWebPushMessageResult::kEncryptionFailed);
-      return;
-    }
-    case GCMEncryptionResult::ENUM_SIZE:
-      break;  // deliberate fall-through
-  }
+void GCMDriver::DecryptMessage(const std::string& app_id,
+                               const std::string& authorized_entity,
+                               const std::string& message,
+                               DecryptMessageCallback callback) {
+  IncomingMessage incoming_message;
+  incoming_message.sender_id = authorized_entity;
+  incoming_message.raw_data = message;
+  incoming_message.data[GCMEncryptionProvider::kContentEncodingProperty] =
+      GCMEncryptionProvider::kContentCodingAes128Gcm;
+  encryption_provider_.DecryptMessage(
+      app_id, incoming_message,
+      base::BindOnce(&GCMDriver::OnMessageDecrypted,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
 
-  NOTREACHED();
+void GCMDriver::OnMessageDecrypted(DecryptMessageCallback callback,
+                                   GCMDecryptionResult result,
+                                   IncomingMessage message) {
+  UMA_HISTOGRAM_ENUMERATION("GCM.Crypto.DecryptMessageResult", result,
+                            GCMDecryptionResult::ENUM_SIZE);
+  std::move(callback).Run(result, std::move(message.raw_data));
 }
 
 }  // namespace gcm

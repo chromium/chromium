@@ -1,0 +1,5 @@
+Breakpoint on Trusted Type violations with exception
+violation type: trustedtype-sink-violation
+paused reason: CSPViolation
+paused reason: exception
+

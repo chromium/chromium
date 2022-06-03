@@ -75,6 +75,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
 
   UDPSocket(mojo::PendingRemote<mojom::UDPSocketListener> listener,
             net::NetLog* net_log);
+
+  UDPSocket(const UDPSocket&) = delete;
+  UDPSocket& operator=(const UDPSocket&) = delete;
+
   ~UDPSocket() override;
 
   // UDPSocket implementation.
@@ -171,8 +175,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
   // The queue owns the PendingSendRequest instances.
   base::circular_deque<std::unique_ptr<PendingSendRequest>>
       pending_send_requests_;
-
-  DISALLOW_COPY_AND_ASSIGN(UDPSocket);
 };
 
 }  // namespace network

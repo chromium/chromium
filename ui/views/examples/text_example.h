@@ -5,47 +5,49 @@
 #ifndef UI_VIEWS_EXAMPLES_TEXT_EXAMPLE_H_
 #define UI_VIEWS_EXAMPLES_TEXT_EXAMPLE_H_
 
-#include <memory>
-#include <vector>
-
-#include "base/macros.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/controls/combobox/combobox_listener.h"
 #include "ui/views/examples/example_base.h"
 
 namespace views {
 class Checkbox;
-class GridLayout;
+class Combobox;
+class View;
 
 namespace examples {
 
-class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
-                                          public ButtonListener,
-                                          public ComboboxListener {
+class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase {
  public:
   TextExample();
+
+  TextExample(const TextExample&) = delete;
+  TextExample& operator=(const TextExample&) = delete;
+
   ~TextExample() override;
 
   // ExampleBase:
   void CreateExampleView(View* container) override;
 
  private:
-  // Creates and adds a check box to the layout.
-  Checkbox* AddCheckbox(GridLayout* layout, const char* name);
-
-  // Creates and adds a combobox to the layout.
-  Combobox* AddCombobox(GridLayout* layout,
-                        const char* name,
-                        const char* const* strings,
-                        int count);
-
-  // ButtonListener:
-  void ButtonPressed(Button* button, const ui::Event& event) override;
-
-  // ComboboxListener:
-  void OnPerformAction(Combobox* combobox) override;
-
   class TextExampleView;
+
+  // Creates and adds a check box to the layout.
+  Checkbox* AddCheckbox(View* parent, const char* name);
+
+  // Creates and adds a combobox to the layout. Sets |this|' instance of
+  // |combobox_callback| as the callback for the created combobox.
+  Combobox* AddCombobox(View* parent,
+                        std::u16string name,
+                        const char* const* strings,
+                        int count,
+                        void (TextExample::*combobox_callback)());
+
+  void AlignComboboxChanged();
+  void TextComboboxChanged();
+  void ElideComboboxChanged();
+  void PrefixComboboxChanged();
+  void WeightComboboxChanged();
+
+  void UpdateStyle();
+
   // The content of the scroll view.
   TextExampleView* text_view_;
 
@@ -75,8 +77,6 @@ class VIEWS_EXAMPLES_EXPORT TextExample : public ExampleBase,
 
   // Check box to enable/disable underline style.
   Checkbox* underline_checkbox_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextExample);
 };
 
 }  // namespace examples

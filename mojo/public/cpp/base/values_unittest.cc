@@ -8,6 +8,8 @@
 #include "base/test/gtest_util.h"
 #include "base/values.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
+#include "mojo/public/cpp/bindings/lib/validation_context.h"
+#include "mojo/public/cpp/bindings/lib/validation_errors.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "mojo/public/mojom/base/values.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,7 +19,7 @@ namespace mojo_base {
 TEST(ValuesStructTraitsTest, NullValue) {
   base::Value in;
   base::Value out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -26,7 +28,7 @@ TEST(ValuesStructTraitsTest, BoolValue) {
   for (auto& test_case : kTestCases) {
     base::Value in(test_case);
     base::Value out;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
     EXPECT_EQ(in, out);
   }
 }
@@ -38,7 +40,7 @@ TEST(ValuesStructTraitsTest, IntValue) {
   for (auto& test_case : kTestCases) {
     base::Value in(test_case);
     base::Value out;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
     EXPECT_EQ(in, out);
   }
 }
@@ -53,7 +55,7 @@ TEST(ValuesStructTraitsTest, DoubleValue) {
   for (auto& test_case : kTestCases) {
     base::Value in(test_case);
     base::Value out;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
     EXPECT_EQ(in, out);
   }
 }
@@ -67,7 +69,7 @@ TEST(ValuesStructTraitsTest, StringValue) {
   for (auto* test_case : kTestCases) {
     base::Value in(test_case);
     base::Value out;
-    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
     EXPECT_EQ(in, out);
   }
 }
@@ -76,7 +78,7 @@ TEST(ValuesStructTraitsTest, BinaryValue) {
   std::vector<char> kBinaryData = {'\x00', '\x80', '\xff', '\x7f', '\x01'};
   base::Value in(std::move(kBinaryData));
   base::Value out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -85,25 +87,22 @@ TEST(ValuesStructTraitsTest, DictionaryValue) {
   // move-only types and initializer lists don't mix. Initializer lists can't be
   // modified: thus it's not possible to move.
   std::vector<base::Value::DictStorage::value_type> storage;
-  storage.emplace_back("null", std::make_unique<base::Value>());
-  storage.emplace_back("bool", std::make_unique<base::Value>(false));
-  storage.emplace_back("int", std::make_unique<base::Value>(0));
-  storage.emplace_back("double", std::make_unique<base::Value>(0.0));
-  storage.emplace_back("string", std::make_unique<base::Value>("0"));
-  storage.emplace_back(
-      "binary", std::make_unique<base::Value>(base::Value::BlobStorage({0})));
-  storage.emplace_back(
-      "dictionary", std::make_unique<base::Value>(base::Value::DictStorage()));
-  storage.emplace_back(
-      "list", std::make_unique<base::Value>(base::Value::ListStorage()));
+  storage.emplace_back("null", base::Value());
+  storage.emplace_back("bool", false);
+  storage.emplace_back("int", 0);
+  storage.emplace_back("double", 0.0);
+  storage.emplace_back("string", "0");
+  storage.emplace_back("binary", base::Value::BlobStorage({0}));
+  storage.emplace_back("dictionary", base::Value::DictStorage());
+  storage.emplace_back("list", base::Value::ListStorage());
 
   base::Value in(base::Value::DictStorage(std::move(storage)));
   base::Value out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 
   ASSERT_TRUE(
-      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -113,7 +112,7 @@ TEST(ValuesStructTraitsTest, SerializeInvalidDictionaryValue) {
 
   base::Value out;
   EXPECT_DCHECK_DEATH(
-      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::DictionaryValue>(in, out));
 }
 
 TEST(ValuesStructTraitsTest, ListValue) {
@@ -128,10 +127,10 @@ TEST(ValuesStructTraitsTest, ListValue) {
   storage.emplace_back(base::Value::ListStorage());
   base::Value in(std::move(storage));
   base::Value out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
   EXPECT_EQ(in, out);
 
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ListValue>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::ListValue>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -141,19 +140,42 @@ TEST(ValuesStructTraitsTest, SerializeInvalidListValue) {
 
   base::Value out;
   EXPECT_DCHECK_DEATH(
-      mojo::test::SerializeAndDeserialize<mojom::ListValue>(&in, &out));
+      mojo::test::SerializeAndDeserialize<mojom::ListValue>(in, out));
 }
 
 // A deeply nested base::Value should trigger a deserialization error.
 TEST(ValuesStructTraitsTest, DeeplyNestedValue) {
   base::Value in;
-  for (int i = 0; i < 100; ++i) {
+  for (int i = 0; i < kMaxRecursionDepth; ++i) {
     base::Value::ListStorage storage;
     storage.emplace_back(std::move(in));
     in = base::Value(std::move(storage));
   }
-  base::Value out;
-  ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Value>(&in, &out));
+
+  // It should work if the depth is less than kMaxRecursionDepth.
+  {
+    mojo::internal::ValidationErrorObserverForTesting warning_observer{
+        base::DoNothing()};
+    base::Value out;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
+    EXPECT_EQ(mojo::internal::VALIDATION_ERROR_NONE,
+              warning_observer.last_error());
+  }
+
+  // Add one more depth.
+  base::Value::ListStorage storage;
+  storage.emplace_back(std::move(in));
+  in = base::Value(std::move(storage));
+
+  // It gets VALIDATION_ERROR_MAX_RECURSION_DEPTH error.
+  {
+    mojo::internal::ValidationErrorObserverForTesting warning_observer{
+        base::DoNothing()};
+    base::Value out;
+    ASSERT_FALSE(mojo::test::SerializeAndDeserialize<mojom::Value>(in, out));
+    EXPECT_EQ(mojo::internal::VALIDATION_ERROR_MAX_RECURSION_DEPTH,
+              warning_observer.last_error());
+  }
 }
 
 }  // namespace mojo_base

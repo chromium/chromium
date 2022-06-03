@@ -12,28 +12,42 @@ component("attestation") {
     "//base",
     "//chromeos/cryptohome",
     "//chromeos/dbus:common",
-    "//chromeos/dbus/cryptohome",
-    "//chromeos/dbus/cryptohome:cryptohome_proto",
+    "//chromeos/dbus/attestation",
+    "//chromeos/dbus/attestation:attestation_proto",
     "//components/account_id",
     "//crypto",
   ]
   sources = [
     "attestation_flow.cc",
     "attestation_flow.h",
+    "attestation_flow_adaptive.cc",
+    "attestation_flow_adaptive.h",
+    "attestation_flow_factory.cc",
+    "attestation_flow_factory.h",
+    "attestation_flow_integrated.cc",
+    "attestation_flow_integrated.h",
+    "attestation_flow_status_reporter.cc",
+    "attestation_flow_status_reporter.h",
+    "attestation_flow_type_decider.cc",
+    "attestation_flow_type_decider.h",
+    "attestation_flow_utils.cc",
+    "attestation_flow_utils.h",
   ]
 }
 
 source_set("test_support") {
   testonly = true
-  public_deps = [
-    ":attestation",
-  ]
+  public_deps = [ ":attestation" ]
   deps = [
     "//base/test:test_support",
+    "//chromeos/dbus/attestation:attestation_proto",
+    "//chromeos/dbus/constants:constants",
     "//components/account_id",
     "//testing/gmock",
   ]
   sources = [
+    "fake_attestation_flow.cc",
+    "fake_attestation_flow.h",
     "mock_attestation_flow.cc",
     "mock_attestation_flow.h",
   ]
@@ -44,13 +58,20 @@ source_set("unit_tests") {
   deps = [
     ":test_support",
     "//base/test:test_support",
-    "//chromeos/cryptohome:test_support",
+    "//chromeos/cryptohome:cryptohome",
     "//chromeos/dbus:test_support",
+    "//chromeos/dbus/attestation",
+    "//chromeos/dbus/attestation:attestation_proto",
     "//components/account_id",
     "//testing/gmock",
     "//testing/gtest",
   ]
   sources = [
+    "attestation_flow_adaptive_unittest.cc",
+    "attestation_flow_integrated_unittest.cc",
+    "attestation_flow_status_reporter_unittest.cc",
+    "attestation_flow_type_decider_unittest.cc",
     "attestation_flow_unittest.cc",
+    "attestation_flow_utils_unittest.cc",
   ]
 }

@@ -13,9 +13,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/web_navigation/frame_navigation_state.h"
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker_delegate.h"
@@ -24,6 +22,7 @@
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_function.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -33,18 +32,16 @@ class WebNavigationTabObserver
     : public content::WebContentsObserver,
       public content::WebContentsUserData<WebNavigationTabObserver> {
  public:
+  WebNavigationTabObserver(const WebNavigationTabObserver&) = delete;
+  WebNavigationTabObserver& operator=(const WebNavigationTabObserver&) = delete;
+
   ~WebNavigationTabObserver() override;
 
   // Returns the object for the given |web_contents|.
   static WebNavigationTabObserver* Get(content::WebContents* web_contents);
 
-  const FrameNavigationState& frame_navigation_state() const {
-    return navigation_state_;
-  }
-
   // content::WebContentsObserver implementation.
   void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
-  void FrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void RenderFrameHostChanged(content::RenderFrameHost* old_host,
                               content::RenderFrameHost* new_host) override;
   void DidStartNavigation(
@@ -56,8 +53,7 @@ class WebNavigationTabObserver
                      const GURL& validated_url) override;
   void DidFailLoad(content::RenderFrameHost* render_frame_host,
                    const GURL& validated_url,
-                   int error_code,
-                   const base::string16& error_description) override;
+                   int error_code) override;
   void DidOpenRequestedURL(content::WebContents* new_contents,
                            content::RenderFrameHost* source_render_frame_host,
                            const GURL& url,
@@ -66,7 +62,6 @@ class WebNavigationTabObserver
                            ui::PageTransition transition,
                            bool started_from_context_menu,
                            bool renderer_initiated) override;
-  void WebContentsDestroyed() override;
 
   // This method dispatches the already created onBeforeNavigate event.
   void DispatchCachedOnBeforeNavigate();
@@ -87,17 +82,12 @@ class WebNavigationTabObserver
   // and its children.
   void RenderFrameHostPendingDeletion(content::RenderFrameHost*);
 
-  // Tracks the state of the frames we are sending events for.
-  FrameNavigationState navigation_state_;
-
   // The latest onBeforeNavigate event this frame has generated. It is stored
   // as it might not be sent immediately, but delayed until the tab is added to
   // the tab strip and is ready to dispatch events.
   std::unique_ptr<Event> pending_on_before_navigate_event_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebNavigationTabObserver);
 };
 
 // Tracks new tab navigations and routes them as events to the extension system.
@@ -105,6 +95,10 @@ class WebNavigationEventRouter : public TabStripModelObserver,
                                  public BrowserTabStripTrackerDelegate {
  public:
   explicit WebNavigationEventRouter(Profile* profile);
+
+  WebNavigationEventRouter(const WebNavigationEventRouter&) = delete;
+  WebNavigationEventRouter& operator=(const WebNavigationEventRouter&) = delete;
+
   ~WebNavigationEventRouter() override;
 
   // Router level handler for the creation of WebContents. Stores information
@@ -124,6 +118,10 @@ class WebNavigationEventRouter : public TabStripModelObserver,
   class PendingWebContents : public content::WebContentsObserver {
    public:
     PendingWebContents();
+
+    PendingWebContents(const PendingWebContents&) = delete;
+    PendingWebContents& operator=(const PendingWebContents&) = delete;
+
     ~PendingWebContents() override;
 
     void Set(int source_tab_id,
@@ -154,8 +152,6 @@ class WebNavigationEventRouter : public TabStripModelObserver,
     content::WebContents* target_web_contents_ = nullptr;
     GURL target_url_;
     base::OnceCallback<void(content::WebContents*)> on_destroy_;
-
-    DISALLOW_COPY_AND_ASSIGN(PendingWebContents);
   };
 
   // BrowserTabStripTrackerDelegate implementation.
@@ -182,8 +178,6 @@ class WebNavigationEventRouter : public TabStripModelObserver,
   Profile* profile_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebNavigationEventRouter);
 };
 
 // API function that returns the state of a given frame.
@@ -205,6 +199,10 @@ class WebNavigationAPI : public BrowserContextKeyedAPI,
                          public extensions::EventRouter::Observer {
  public:
   explicit WebNavigationAPI(content::BrowserContext* context);
+
+  WebNavigationAPI(const WebNavigationAPI&) = delete;
+  WebNavigationAPI& operator=(const WebNavigationAPI&) = delete;
+
   ~WebNavigationAPI() override;
 
   // KeyedService implementation.
@@ -231,8 +229,6 @@ class WebNavigationAPI : public BrowserContextKeyedAPI,
 
   // Created lazily upon OnListenerAdded.
   std::unique_ptr<WebNavigationEventRouter> web_navigation_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebNavigationAPI);
 };
 
 }  // namespace extensions

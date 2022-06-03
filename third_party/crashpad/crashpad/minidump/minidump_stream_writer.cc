@@ -14,7 +14,7 @@
 
 #include "minidump/minidump_stream_writer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace crashpad {
 namespace internal {

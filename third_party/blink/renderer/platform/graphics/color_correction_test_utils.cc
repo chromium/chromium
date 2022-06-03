@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/platform/graphics/color_correction_test_utils.h"
 
+#include "base/notreached.h"
 #include "base/sys_byteorder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/third_party/skcms/skcms.h"
@@ -67,37 +68,10 @@ sk_sp<SkColorSpace> ColorCorrectionTestUtils::ColorSpinSkColorSpace() {
   return SkColorSpace::Make(colorspin_profile);
 }
 
-sk_sp<SkColorSpace>
-ColorCorrectionTestUtils::ColorSpaceConversionToSkColorSpace(
-    ColorSpaceConversion conversion) {
-  if (conversion == kColorSpaceConversion_Default ||
-      conversion == kColorSpaceConversion_SRGB) {
-    return SkColorSpace::MakeSRGB();
-  }
-  if (conversion == kColorSpaceConversion_LinearRGB)
-    return SkColorSpace::MakeSRGBLinear();
-  if (conversion == kColorSpaceConversion_P3) {
-    return SkColorSpace::MakeRGB(SkNamedTransferFn::kLinear,
-                                 SkNamedGamut::kDCIP3);
-  }
-  if (conversion == kColorSpaceConversion_Rec2020) {
-    return SkColorSpace::MakeRGB(SkNamedTransferFn::kLinear,
-                                 SkNamedGamut::kRec2020);
-  }
-  return nullptr;
-}
-
-String ColorCorrectionTestUtils::ColorSpaceConversionToString(
-    ColorSpaceConversion color_space_conversion) {
-  static const Vector<String> kConversions = {
-      "none", "default", "preserve", "srgb", "linear-rgb", "p3", "rec2020"};
-  return kConversions[static_cast<uint8_t>(color_space_conversion)];
-}
-
 void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
     const void* actual_pixels,
     const void* expected_pixels,
-    int num_pixels,
+    size_t num_pixels,
     PixelFormat pixel_format,
     PixelsAlphaMultiply alpha_multiplied,
     UnpremulRoundTripTolerance premul_unpremul_tolerance) {
@@ -120,12 +94,12 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
             static_cast<const uint8_t*>(actual_pixels);
         const uint8_t* expected_pixels_u8 =
             static_cast<const uint8_t*>(expected_pixels);
-        for (int i = 0; test_passed && i < num_pixels; i++) {
+        for (size_t i = 0; test_passed && i < num_pixels; i++) {
           test_passed &=
               (actual_pixels_u8[i * 4 + 3] == expected_pixels_u8[i * 4 + 3]);
           int alpha_multiplier =
               alpha_multiplied ? 1 : expected_pixels_u8[i * 4 + 3];
-          for (int j = 0; j < 3; j++) {
+          for (size_t j = 0; j < 3; j++) {
             test_passed &= IsNearlyTheSame(
                 actual_pixels_u8[i * 4 + j] * alpha_multiplier,
                 expected_pixels_u8[i * 4 + j] * alpha_multiplier,
@@ -144,7 +118,7 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
           static_cast<const uint16_t*>(actual_pixels);
       const uint16_t* expected_pixels_u16 =
           static_cast<const uint16_t*>(expected_pixels);
-      for (int i = 0; test_passed && i < num_pixels * 4; i++) {
+      for (size_t i = 0; test_passed && i < num_pixels * 4; i++) {
         test_passed &=
             IsNearlyTheSame(actual_pixels_u16[i], expected_pixels_u16[i],
                             _16161616_color_correction_tolerance);
@@ -166,7 +140,7 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
                           expected_pixels_f32, skcms_PixelFormat_BGRA_ffff,
                           skcms_AlphaFormat_Unpremul, nullptr, num_pixels));
 
-      for (int i = 0; test_passed && i < num_pixels * 4; i++) {
+      for (size_t i = 0; test_passed && i < num_pixels * 4; i++) {
         test_passed &=
             IsNearlyTheSame(actual_pixels_f32[i], expected_pixels_f32[i],
                             floating_point_color_correction_tolerance);
@@ -178,7 +152,7 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
       const float* actual_pixels_f32 = static_cast<const float*>(actual_pixels);
       const float* expected_pixels_f32 =
           static_cast<const float*>(expected_pixels);
-      for (int i = 0; test_passed && i < num_pixels * 4; i++) {
+      for (size_t i = 0; test_passed && i < num_pixels * 4; i++) {
         test_passed &=
             IsNearlyTheSame(actual_pixels_f32[i], expected_pixels_f32[i],
                             floating_point_color_correction_tolerance);
@@ -194,7 +168,7 @@ void ColorCorrectionTestUtils::CompareColorCorrectedPixels(
 
 bool ColorCorrectionTestUtils::ConvertPixelsToColorSpaceAndPixelFormatForTest(
     void* src_data,
-    int num_elements,
+    size_t num_elements,
     CanvasColorSpace src_color_space,
     ImageDataStorageFormat src_storage_format,
     CanvasColorSpace dst_color_space,
@@ -219,17 +193,16 @@ bool ColorCorrectionTestUtils::ConvertPixelsToColorSpaceAndPixelFormatForTest(
   src_sk_color_space =
       CanvasColorParams(src_color_space,
                         (src_storage_format == kUint8ClampedArrayStorageFormat)
-                            ? CanvasPixelFormat::kRGBA8
+                            ? CanvasPixelFormat::kUint8
                             : CanvasPixelFormat::kF16,
-                        kNonOpaque, CanvasForceRGBA::kNotForced)
-          .GetSkColorSpaceForSkSurfaces();
+                        kNonOpaque)
+          .GetSkColorSpace();
   if (!src_sk_color_space.get())
     src_sk_color_space = SkColorSpace::MakeSRGB();
 
   sk_sp<SkColorSpace> dst_sk_color_space =
-      CanvasColorParams(dst_color_space, dst_canvas_pixel_format, kNonOpaque,
-                        CanvasForceRGBA::kNotForced)
-          .GetSkColorSpaceForSkSurfaces();
+      CanvasColorParams(dst_color_space, dst_canvas_pixel_format, kNonOpaque)
+          .GetSkColorSpace();
   if (!dst_sk_color_space.get())
     dst_sk_color_space = SkColorSpace::MakeSRGB();
 

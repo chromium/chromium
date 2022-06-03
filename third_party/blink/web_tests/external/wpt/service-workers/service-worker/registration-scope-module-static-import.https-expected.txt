@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS imported-module-script.js works when used as top-level
+PASS static imports to outside path restriction should be allowed
+FAIL static imports redirecting to outside path restriction should be allowed promise_test: Unhandled rejection with value: object "TypeError: Failed to register a ServiceWorker for scope ('https://web-platform.test:8444/service-workers/service-worker/resources/scope1/') with script ('https://web-platform.test:8444/service-workers/service-worker/resources/scope1/module-worker-importing-redirect-to-scope2.js'): ServiceWorker cannot be started"
+Harness: the test ran to completion.
+

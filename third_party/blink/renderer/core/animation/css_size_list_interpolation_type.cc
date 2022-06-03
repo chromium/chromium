@@ -12,13 +12,14 @@
 #include "third_party/blink/renderer/core/animation/size_interpolation_functions.h"
 #include "third_party/blink/renderer/core/animation/size_list_property_functions.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
-class UnderlyingSizeListChecker
+class UnderlyingSizeListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   explicit UnderlyingSizeListChecker(const NonInterpolableList& underlying_list)
@@ -30,7 +31,7 @@ class UnderlyingSizeListChecker
   bool IsValid(const StyleResolverState&,
                const InterpolationValue& underlying) const final {
     const auto& underlying_list =
-        ToNonInterpolableList(*underlying.non_interpolable_value);
+        To<NonInterpolableList>(*underlying.non_interpolable_value);
     wtf_size_t underlying_length = underlying_list.length();
     if (underlying_length != underlying_list_->length())
       return false;
@@ -47,7 +48,7 @@ class UnderlyingSizeListChecker
   scoped_refptr<const NonInterpolableList> underlying_list_;
 };
 
-class InheritedSizeListChecker
+class InheritedSizeListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedSizeListChecker(const CSSProperty& property,
@@ -105,7 +106,7 @@ InterpolationValue CSSSizeListInterpolationType::MaybeConvertNeutral(
     const InterpolationValue& underlying,
     ConversionCheckers& conversion_checkers) const {
   const auto& underlying_list =
-      ToNonInterpolableList(*underlying.non_interpolable_value);
+      To<NonInterpolableList>(*underlying.non_interpolable_value);
   conversion_checkers.push_back(
       std::make_unique<UnderlyingSizeListChecker>(underlying_list));
   return ListInterpolationFunctions::CreateList(
@@ -116,10 +117,12 @@ InterpolationValue CSSSizeListInterpolationType::MaybeConvertNeutral(
 }
 
 InterpolationValue CSSSizeListInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers&) const {
   return ConvertSizeList(
-      SizeListPropertyFunctions::GetInitialSizeList(CssProperty()), 1);
+      SizeListPropertyFunctions::GetInitialSizeList(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle()),
+      1);
 }
 
 InterpolationValue CSSSizeListInterpolationType::MaybeConvertInherit(
@@ -175,9 +178,9 @@ void CSSSizeListInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  const auto& interpolable_list = ToInterpolableList(interpolable_value);
+  const auto& interpolable_list = To<InterpolableList>(interpolable_value);
   const auto& non_interpolable_list =
-      ToNonInterpolableList(*non_interpolable_value);
+      To<NonInterpolableList>(*non_interpolable_value);
   wtf_size_t length = interpolable_list.length();
   DCHECK_EQ(length, non_interpolable_list.length());
   DCHECK_EQ(length % 2, 0ul);

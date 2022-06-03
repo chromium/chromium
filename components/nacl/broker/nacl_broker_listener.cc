@@ -28,8 +28,10 @@
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "sandbox/win/src/sandbox_policy.h"
-#include "services/service_manager/embedder/switches.h"
+
+#include <windows.h>
 
 namespace {
 
@@ -52,8 +54,8 @@ void NaClBrokerListener::Listen() {
   run_loop_.Run();
 }
 
-service_manager::SandboxType NaClBrokerListener::GetSandboxType() {
-  return service_manager::SandboxType::kPpapi;
+sandbox::mojom::Sandbox NaClBrokerListener::GetSandboxType() {
+  return sandbox::mojom::Sandbox::kPpapi;
 }
 
 void NaClBrokerListener::OnChannelConnected(int32_t peer_pid) {
@@ -108,7 +110,7 @@ void NaClBrokerListener::OnLaunchLoaderThroughBroker(
 
     base::Process loader_process;
     sandbox::ResultCode result = content::StartSandboxedProcess(
-        this, cmd_line, handles, &loader_process);
+        this, *cmd_line, handles, &loader_process);
 
     if (result == sandbox::SBOX_ALL_OK) {
       mojo::OutgoingInvitation::Send(std::move(invitation),
@@ -142,7 +144,7 @@ void NaClBrokerListener::OnLaunchDebugExceptionHandler(
   NaClStartDebugExceptionHandlerThread(
       base::Process(process_handle), startup_info,
       base::ThreadTaskRunnerHandle::Get(),
-      base::Bind(SendReply, channel_.get(), pid));
+      base::BindRepeating(SendReply, channel_.get(), pid));
 }
 
 void NaClBrokerListener::OnStopBroker() {

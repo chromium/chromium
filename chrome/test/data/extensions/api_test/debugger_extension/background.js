@@ -10,13 +10,13 @@ var protocolVersion = "1.3";
 
 chrome.test.runTests([
 
-  function attachToWebUI() {
-    chrome.tabs.create({url:"chrome://version"}, function(tab) {
-      var debuggee = {tabId: tab.id};
-      chrome.debugger.attach(debuggee, protocolVersion,
-          fail("Cannot attach to this target."));
-      chrome.tabs.remove(tab.id);
-    });
+  async function attachToWebUI() {
+    const {openTab} = await import('/_test_resources/test_util/tabs_util.js');
+    const tab = await openTab('chrome://version');
+    const debuggee = {tabId: tab.id};
+    chrome.debugger.attach(debuggee, protocolVersion,
+                           fail("Cannot attach to this target."));
+    chrome.tabs.remove(tab.id);
   },
 
   function attach() {

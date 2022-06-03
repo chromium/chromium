@@ -5,6 +5,8 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_MAILBOX_MANAGER_FACTORY_H_
 #define GPU_COMMAND_BUFFER_SERVICE_MAILBOX_MANAGER_FACTORY_H_
 
+#include <memory>
+
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/gpu_gles2_export.h"
 

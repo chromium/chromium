@@ -25,10 +25,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_turbulence.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkPaintImageFilter.h"
-#include "third_party/skia/include/effects/SkPerlinNoiseShader.h"
 
 namespace blink {
 
@@ -114,23 +113,29 @@ bool FETurbulence::SetStitchTiles(bool stitch) {
 }
 
 sk_sp<PaintFilter> FETurbulence::CreateImageFilter() {
-  if (base_frequency_x_ < 0 || base_frequency_y_ < 0)
-    return CreateTransparentBlack();
+  float base_frequency_x = base_frequency_x_;
+  float base_frequency_y = base_frequency_y_;
+  if (base_frequency_x < 0 || base_frequency_y < 0) {
+    // Negative values are unsupported which means it should be treated as
+    // if they hadn't been specified. So, it implies "0 0"(the initial
+    // value).
+    base_frequency_x = base_frequency_y = 0;
+  }
 
-  PaintFilter::CropRect rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   TurbulencePaintFilter::TurbulenceType type =
       GetType() == FETURBULENCE_TYPE_FRACTALNOISE
           ? TurbulencePaintFilter::TurbulenceType::kFractalNoise
           : TurbulencePaintFilter::TurbulenceType::kTurbulence;
-  const SkISize size = SkISize::Make(FilterPrimitiveSubregion().Width(),
-                                     FilterPrimitiveSubregion().Height());
+  const SkISize size = SkISize::Make(FilterPrimitiveSubregion().width(),
+                                     FilterPrimitiveSubregion().height());
   // Frequency should be scaled by page zoom, but not by primitiveUnits.
   // So we apply only the transform scale (as Filter::apply*Scale() do)
   // and not the target bounding box scale (as SVGFilter::apply*Scale()
   // would do). Note also that we divide by the scale since this is
   // a frequency, not a period.
-  float base_frequency_x = base_frequency_x_ / GetFilter()->Scale();
-  float base_frequency_y = base_frequency_y_ / GetFilter()->Scale();
+  base_frequency_x /= GetFilter()->Scale();
+  base_frequency_y /= GetFilter()->Scale();
 
   // Cap the number of octaves to the maximum detectable when rendered with
   // 8 bits per pixel, plus one for higher bit depth.
@@ -138,7 +143,8 @@ sk_sp<PaintFilter> FETurbulence::CreateImageFilter() {
   return sk_make_sp<TurbulencePaintFilter>(
       type, SkFloatToScalar(base_frequency_x),
       SkFloatToScalar(base_frequency_y), capped_num_octaves,
-      SkFloatToScalar(Seed()), StitchTiles() ? &size : nullptr, &rect);
+      SkFloatToScalar(Seed()), StitchTiles() ? &size : nullptr,
+      base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

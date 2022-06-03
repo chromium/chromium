@@ -134,7 +134,10 @@ static HRESULT ExtractICCP(IWICImagingFactory* const factory,
   IWICColorContext** color_contexts;
 
   IFS(IWICBitmapFrameDecode_GetColorContexts(frame, 0, NULL, &count));
-  if (FAILED(hr) || count == 0) return hr;
+  if (FAILED(hr) || count == 0) {
+    // Treat unsupported operation as a non-fatal error. See crbug.com/webp/506.
+    return (hr == WINCODEC_ERR_UNSUPPORTEDOPERATION) ? S_OK : hr;
+  }
 
   color_contexts = (IWICColorContext**)calloc(count, sizeof(*color_contexts));
   if (color_contexts == NULL) return E_OUTOFMEMORY;
@@ -270,10 +273,15 @@ int ReadPictureWithWIC(const char* const filename,
   WICPixelFormatGUID src_pixel_format = GUID_WICPixelFormatUndefined;
   const WICFormatImporter* importer = NULL;
   GUID src_container_format = GUID_NULL_;
+  // From Windows Kits\10\Include\10.0.19041.0\um\wincodec.h
+  WEBP_DEFINE_GUID(GUID_ContainerFormatWebp_,
+                   0xe094b0e2, 0x67f2, 0x45b3,
+                   0xb0, 0xea, 0x11, 0x53, 0x37, 0xca, 0x7c, 0xf3);
   static const GUID* kAlphaContainers[] = {
     &GUID_ContainerFormatBmp,
     &GUID_ContainerFormatPng,
     &GUID_ContainerFormatTiff,
+    &GUID_ContainerFormatWebp_,
     NULL
   };
   int has_alpha = 0;
@@ -298,9 +306,15 @@ int ReadPictureWithWIC(const char* const filename,
           factory, stream, NULL,
           WICDecodeMetadataCacheOnDemand, &decoder));
   IFS(IWICBitmapDecoder_GetFrameCount(decoder, &frame_count));
-  if (SUCCEEDED(hr) && frame_count == 0) {
-    fprintf(stderr, "No frame found in input file.\n");
-    hr = E_FAIL;
+  if (SUCCEEDED(hr)) {
+    if (frame_count == 0) {
+      fprintf(stderr, "No frame found in input file.\n");
+      hr = E_FAIL;
+    } else if (frame_count > 1) {
+      // WIC will be tried before native WebP decoding so avoid duplicating the
+      // error message.
+      hr = E_FAIL;
+    }
   }
   IFS(IWICBitmapDecoder_GetFrame(decoder, 0, &frame));
   IFS(IWICBitmapFrameDecode_GetPixelFormat(frame, &src_pixel_format));

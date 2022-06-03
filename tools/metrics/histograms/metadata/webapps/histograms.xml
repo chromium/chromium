@@ -1,0 +1,726 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Simple histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<histogram name="AppBanners.BeforeInstallEvent"
+    enum="AppBannersBeforeInstallEvent" expires_after="2022-06-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks
+    usage of the BeforeInstallPromptEvent, which allows developers to control
+    when an app banner appears. The events in this histogram are not mutually
+    exclusive - for example, preventDefault() must be called if prompt() is
+    called.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.DismissEvent" enum="AppBannersDismissEvent"
+    expires_after="2021-12-05">
+  <owner>pjmclachlan@google.com</owner>
+  <owner>pcovell@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks the
+    different ways that an app banner left the screen, e.g. through an automatic
+    dismissal after navigation or an explicit user action.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.DisplayEvent" enum="AppBannersDisplayEvent"
+    expires_after="2022-03-20">
+  <owner>pjmclachlan@google.com</owner>
+  <owner>pcovell@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks
+    when an app banner was requested and how the request was handled, e.g. the
+    user blocked its appearance or the banner was ultimately created.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.InstallableStatusCode"
+    enum="AppBannersInstallableStatusCode" expires_after="2022-05-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks the
+    status code logged by the app banner system as it processes a site's
+    eligibility for an app banner. Every request for a banner will be logged in
+    a bucket of this histogram.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.InstallEvent" enum="AppBannersInstallEvent"
+    expires_after="2022-05-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <owner>pcovell@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks
+    when a user triggers an install dialog for the app promoted by the banner,
+    as well as whether or not the user ultimately decided to install the app.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.MinutesFromFirstVisitToBannerShown" units="minutes"
+    expires_after="2021-06-01">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <summary>
+    App banners promote an application related to the current website, and are
+    requested specifically through the current page's HTML. This stat tracks the
+    number of minutes between the first recorded visit to an origin and the time
+    when the banner is actually shown.
+  </summary>
+</histogram>
+
+<histogram name="AppBanners.UserResponse" enum="AppBannersUserResponse"
+    expires_after="2022-01-16">
+  <owner>dominickn@chromium.org</owner>
+  <owner>pjmclachlan@google.com</owner>
+  <summary>
+    This stat tracks the user reponse when the add-to-homescreen dialog is shown
+    either: (A) Via the website's JavaScript (B) Via the user tapping the app
+    banner which promotes the application related to the current site.
+  </summary>
+</histogram>
+
+<histogram name="Launch.HomeScreen" enum="LaunchFromHomeScreen"
+    expires_after="2022-04-24">
+  <owner>dominickn@chromium.org</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records how Chrome handled a launch from an Android Home screen shortcut.
+  </summary>
+</histogram>
+
+<histogram name="Launch.HomeScreenSource" enum="LaunchFromHomeScreenSource"
+    expires_after="2022-04-24">
+  <owner>dominickn@chromium.org</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records the source of an Android homescreen launch intent used to launch
+    Chrome.
+
+    The Menu item bucket is deprecated as of M57, and will only contain records
+    for shortcuts added to the homescreen until M56.
+
+    For M57+, the Menu item (standalone) bucket contains all launch intents
+    originating from the add to homescreen menu item that launch to standalone
+    mode and *are not* WebAPKs. These are sites which do not meet the PWA
+    eligibility criteria, but have an app manifest that specifies either
+    standalone or fullscreen display. This bucket also contains PWA *and*
+    non-PWA intents that were added to the homescreen *prior* to M57, as we
+    cannot distinguish between them after they are added.
+
+    For M57+, the Menu item (shortcut) bucket contains all launch intents
+    originating from the add to homescreen menu item that launch to a browser
+    tab, regardless of when the intent was added.
+  </summary>
+</histogram>
+
+<histogram name="Launch.WebAppDisplayMode" enum="WebAppDisplayMode"
+    expires_after="2022-04-17">
+  <owner>peter@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the display mode (as defined in the Web App Manifest spec) at the
+    launch of the Added to Home screen or installed Web App (including WebAPKs).
+  </summary>
+</histogram>
+
+<histogram name="Webapp.AddToHomescreenDialog.Timeout" units="ms"
+    expires_after="2022-04-17">
+  <owner>dominickn@chromium.org</owner>
+  <owner>peconn@chromium.org</owner>
+  <summary>
+    Records the number of milliseconds that the add to homescreen dialog
+    required to check installability eligibility.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.AddToHomescreenMediator.AppTypeToMenuEntry"
+    enum="AppTypeToMenuEntry" expires_after="2022-04-03">
+  <owner>finnur@chromium.org</owner>
+  <owner>beverloo@chromium.org</owner>
+  <summary>
+    Keeps track of what verbiage was shown in the App menu versus what was
+    actually installed.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.CheckServiceWorker.Status"
+    enum="ServiceWorkerOfflineCapability" expires_after="2022-04-17">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the result of the check if a PWA has a service worker with a fetch
+    event handler when the CheckOfflineCapability feature is disabled. When the
+    feature is enabled, records the result of the check if a PWA supports
+    offline pages with a service worker.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.CheckServiceWorker.Time" units="ms"
+    expires_after="2022-04-17">
+  <owner>asamidoi@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the time to complete the check if a PWA has a service worker with a
+    fetch event handler when the CheckOfflineCapability feature is disabled.
+    When the feature is enabled, records the time to complete the check if a PWA
+    supports offline pages with a service worker.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Database.WriteResult" enum="BooleanSuccess"
+    expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records if modifying data in the web app database was successful. Recorded
+    whenever the database is written to, which can happen on large events like
+    installing a web app, as well as small events like changing a the user
+    display preference for a web app.
+  </summary>
+</histogram>
+
+<histogram base="true" name="WebApp.Engagement"
+    enum="SiteEngagementServiceEngagementType" expires_after="2022-04-10">
+  <owner>calamity@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The type of engagement (navigation, user input, etc.) which led to an
+    accumulation in site engagement within a web app window or tab. Should be
+    collected for a subset of SiteEngagementService.EngagementType, which is
+    triggered for all browsing contexts. Recorded at the time of engagement
+    accumulation (e.g., when mouse is clicked).
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.HttpStatusCodeClassOnCreate"
+    enum="HttpStatusCodeClass" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The HTTP status code class returned for each icon loaded during a WebApp's
+    creation. See corresponding
+    Extensions.BookmarkApp.Icon.HttpStatusCodeClassOnCreate histogram for legacy
+    extension-based system. Recorded when WebAppDataRetriever starts downloading
+    icons.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.HttpStatusCodeClassOnSync"
+    enum="HttpStatusCodeClass" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The HTTP status code class returned for each icon loaded when syncing a
+    WebApp. See Extensions.BookmarkApp.Icon.HttpStatusCodeClassOnSync histogram
+    for legacy extension-based system. Recorded when WebAppDataRetriever starts
+    downloading icons.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.HttpStatusCodeClassOnUpdate"
+    enum="HttpStatusCodeClass" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>raymes@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The HTTP status code class returned for each icon loaded when updating a
+    WebApp. Recorded when WebAppDataRetriever starts downloading icons.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.Install.DisplayMode2" enum="WebAppDisplayMode"
+    expires_after="2022-04-10">
+  <owner>ericwilligers@chromium.org</owner>
+  <owner>peter@chromium.org</owner>
+  <owner>yfriedman@chromium.org</owner>
+  <summary>
+    Records the display mode (as defined in the Web App Manifest spec) at the
+    install time of a WebApp. Fixes a bug in the data collection for desktop web
+    apps.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.Install.InstallBounce" enum="WebappInstallSource"
+    expires_after="2022-04-03">
+  <owner>alancutter@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <summary>
+    Records when a web app install bounced for different install sources. A
+    bounce is when the user uninstalls the web app within 1 hour of installing
+    it.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.Install.InstallEvent" enum="WebappInstallSource"
+    expires_after="2022-03-20">
+  <owner>dominickn@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <owner>calamity@chromium.org</owner>
+  <summary>
+    Records the mechanism and source from which a web app installation was
+    triggered, regardless of whether the installation was successful.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.Install.UninstallEvent" enum="WebappUninstallSource"
+    expires_after="2022-04-12">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <owner>sunggch@microsoft.com</owner>
+  <summary>
+    Records the mechanism and source from which a web app uninstallation was
+    triggered, regardless of whether the uninstallation was successful.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.InstallConfirmation.CloseReason"
+    enum="WidgetClosedReason" expires_after="2022-05-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwa-team@google.com</owner>
+  <summary>
+    Records the reason that the WebApp install confirmation dialog is closed.
+    This dialog is shown when the user clicks on the 'install' icon in the
+    omnibox for websites that are installable. This metric is intended to give
+    data for an experiment to choose the best install icon.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.InstallIphPromo.Result" enum="WebAppInstallIphResult"
+    expires_after="2022-05-01">
+  <owner>phillis@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>
+    Records the result of user reaction to In Product Help promo for Web App
+    Install.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.InstallResult" enum="WebAppInstallResultCode"
+    expires_after="2022-03-20">
+<!-- Name completed by histogram_suffixes name="WebAppType" -->
+
+  <owner>calamity@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <summary>Records the result code of Web App installs.</summary>
+</histogram>
+
+<histogram base="true"
+    name="Webapp.InstallResultExtensionDisabledReason.System.Profiles"
+    enum="ExtensionDisableReason" expires_after="2020-12-31">
+  <obsolete>
+    Removed 11/2020, as the relevant code path is no longer executed after BMO
+    launch.
+  </obsolete>
+  <owner>calamity@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <summary>
+    Records why System Web App .crx extension is disabled during System Web App
+    installs. Certain properties of the profile might cause Extensions to be
+    disabled as soon as they are installed. For example, kiosk profile might set
+    policies to disable all Extensions, including System Web Apps which are
+    considered Extensions.
+  </summary>
+</histogram>
+
+<histogram base="true"
+    name="Webapp.InstallResultExtensionError.System.Profiles"
+    enum="ExtensionInstallationCrxInstallError" expires_after="2020-12-31">
+  <obsolete>
+    Removed 11/2020, as the relevant code path is no longer executed after BMO
+    launch.
+  </obsolete>
+  <owner>calamity@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <summary>
+    Records .crx extension error code when System Web App install fails.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Launcher.LaunchResult"
+    enum="WebAppLauncherLaunchResult" expires_after="2022-07-01">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    The result of a Progressive Web App (PWA) launcher's attempt to launch
+    Chrome. Windows-only.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Launcher.UpdateResult"
+    enum="WebAppLauncherUpdateResult" expires_after="2022-07-01">
+  <owner>davidbienvenu@chromium.org</owner>
+  <owner>jessemckenna@google.com</owner>
+  <summary>
+    The result of updating a single Progressive Web App (PWA) launcher with the
+    latest version of chrome_pwa_launcher.exe. Windows-only.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Migration.UserDisplayModeCleanUp"
+    enum="BooleanMigrated" expires_after="2021-01-01">
+  <obsolete>
+    Removed 12/2020.
+  </obsolete>
+  <owner>alancutter@chromium.org</owner>
+  <owner>dxie@google.com</owner>
+  <owner>loyso@google.com</owner>
+  <owner>mgiuca@google.com</owner>
+  <summary>
+    The result of deploying a follow up migration after a migration bug
+    (https://crbug.com/1125020) that caused users' web apps to open in a browser
+    tab instead of a standalone window. This follow up migration only runs once
+    at startup for all Chrome profiles. If it fails it will retry until
+    successful on subsequent start ups, metrics are only recorded on success.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Mover.Result" enum="WebAppMoverResult"
+    expires_after="2022-04-24">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of running the WebAppMover, which runs on Chrome startup.
+    It uninstalls a set of WebApps and then installs a single WebApp as a
+    replacement.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.NavigationStatus" enum="BooleanSuccess"
+    expires_after="2021-10-25">
+  <owner>peter@chromium.org</owner>
+  <owner>hartmanng@chromium.org</owner>
+  <summary>
+    Records whether the top-level navigations in standalone Web Apps result in
+    presenting the web content or showing the error page.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.AppToReplaceStillInstalledCount"
+    units="apps" expires_after="2022-04-17">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Preinstalled web app configs can specify a set of apps to uninstall after
+    the preinstalled web app is installed.
+
+    This records whether these apps that are meant to be uninstalled are still
+    installed. This could occur due to manual installation by the user or Chrome
+    app sync, see https://crbug.com/1266234.
+
+    This gets recorded at start up after preinstalled web apps configs have been
+    applied.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.ConfigErrorCount" units="apps"
+    expires_after="2022-04-03">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web app config files failed to parse as valid
+    JSON with valid fields. See preinstalled_web_app_utils.cc ParseConfig().
+    This is recorded at start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.DisabledCount" units="apps"
+    expires_after="2022-04-17">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web apps configs were disabled for the device.
+    This is recorded at start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.EnabledCount" units="apps"
+    expires_after="2022-05-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web apps configs were enabled for the device.
+    This is recorded at start up.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Preinstalled.UninstallAndReplaceCount" units="apps"
+    expires_after="2022-04-17">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records how many preinstalled web app installations uninstalled and replaced
+    an old default app (web app or Chrome app). This corresponds to the
+    &quot;uninstall_and_replace&quot; field in preinstalled web app configs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Shortcuts.Creation.Result"
+    enum="ShortcutsCreationResult" expires_after="2022-09-19">
+  <owner>phillis@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <summary>Records the result of shortcut creation for PWA.</summary>
+</histogram>
+
+<histogram name="WebApp.Shortcuts.Deletion.Success" enum="BooleanSuccess"
+    expires_after="M93">
+  <obsolete>
+    Removed on M93. Not needed anymore.
+  </obsolete>
+  <owner>phillis@chromium.org</owner>
+  <owner>dmurph@chromium.org</owner>
+  <owner>sunggch@microsoft.com</owner>
+  <summary>
+    Records the result of shortcut deletion for a PWA. This occurs when an
+    installed PWA is uninstalled, which can be triggered by user, policy admin,
+    or sync system depending on the situation.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.SyncInitiatedUninstallResult" enum="BooleanSuccess"
+    expires_after="2022-04-24">
+  <owner>alancutter@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    Records uninstallation result for sync initiated uninstalls in the new
+    USS-based web applications system.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.SystemApps.BackgroundTaskStartDelay" units="ms"
+    expires_after="2022-04-24">
+  <owner>dominicschulz@google.com</owner>
+  <owner>qjw@chromium.org</owner>
+  <summary>
+    Records how long the SWA background task waits for the system to become idle
+    before starting to run. Recorded in milliseconds, from 1 millisecond to 1
+    hour. This is logged when a SWA background task starts.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.SystemApps.BadNavigate.Type" units="App ID"
+    expires_after="2021-09-01">
+  <owner>calamity@chromium.org</owner>
+  <owner>qjw@chromium.org</owner>
+  <summary>
+    Records the type of System Web App that caused a bad navigation. This is
+    used to trigger a Perfetto trace to provide more debugging information. See
+    crbug.com/1201820 for more details.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.SystemApps.FreshInstallDuration" units="ms"
+    expires_after="2022-03-20">
+  <owner>calamity@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <summary>
+    Records the time taken to perform a fresh install of all system web apps. It
+    measures the time from when we dispatch a call to install them, until we get
+    all the installation results. This intentionally excludes the scenario where
+    we don't request to install all the apps for consistency. Recorded in
+    milliseconds, from 1 millisecond to 3 minutes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Uninstall.IconDataSuccess" enum="BooleanSuccess"
+    expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records if removing icon data from disk was successful during webapp
+    uninstall, before the webapp is removed from the database. Uninstall can
+    occur from the user, enterprise policy, device policy, or chrome sync.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Uninstall.NonSyncIncompleteCount"
+    units="Partially uninstalled webapps" expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the number of incomplete uninstalls that were found on startup.
+    These web apps are immediately scheduled for uninstall again. This does NOT
+    include webapps that uninstalled from sync - any incomplete uninstalls from
+    sync cannot be counted.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Uninstall.OsHookSuccess" enum="BooleanSuccess"
+    expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records if uninstalling OS hooks was successful during webapp uninstall,
+    before the webapp is removed from the database. Uninstall can occur from the
+    user, enterprise policy, device policy, or chrome sync.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Uninstall.Result" enum="BooleanSuccess"
+    expires_after="2022-09-01">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records if uninstallation was successful. Uninstall can occur from the user,
+    enterprise policy, device policy, or chrome sync.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.UninstallDialog.AppMenuUninstallSuccess" enum="Boolean"
+    expires_after="M95">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of uninstalling a WebApp when the user clicks on
+    &quot;Uninstall&quot; from the 3-dot menu of the respective WebApp window.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.UninstallDialog.AppsPageUninstallSuccess"
+    enum="Boolean" expires_after="M95">
+  <obsolete>
+    Removed in M92.
+  </obsolete>
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of uninstalling an app from the chrome://apps page. This
+    happens whena user right-clicks on a greyed out webapp icon in the
+    chrome://apps page and clicks &quot;Uninstall&quot;.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.UninstallDialogAction"
+    enum="WebappUninstallDialogAction" expires_after="2022-05-01">
+  <owner>benwells@chromium.org</owner>
+  <owner>dominickn@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    Records the user response to the dialog shown when uninstalling a web app.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.Update.ManifestUpdateResult"
+    enum="WebAppManifestUpdateResult" expires_after="2022-04-24">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <owner>raymes@chromium.org</owner>
+  <summary>
+    Records the result of web app manifest update checks during page
+    navigations. Note that &quot;No app in scope&quot; results are ignored due
+    to the expected several orders of magnitude higher volume than all other
+    update results.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.Update.ManifestUpdateResult.DefaultApp"
+    enum="WebAppManifestUpdateResult" expires_after="M96">
+  <owner>alancutter@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Identical to Webapp.Update.ManifestUpdateResult but restricted to just
+    default installed web apps.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.UrlHandling.DialogState"
+    enum="WebAppUrlHandlingDialogState" expires_after="2022-06-25">
+  <owner>mek@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the user action taken on the URL Handling intent picker dialog.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.UrlHandling.GetValidProfilesAtStartUp"
+    units="microseconds" expires_after="2022-06-20">
+  <owner>mek@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Measure the time it takes to collect (loading as needed) the set of profiles
+    eligible to handle a URL by a PWA at startup for URL Handling. Emitted for
+    users with high resolution clocks only.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.UrlHandling.LoadWebAppRegistrarsAtStartUp"
+    units="microseconds" expires_after="2022-06-20">
+  <owner>mek@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Measure the time it takes to load all the web app registrars for URL
+    Handling at startup. Emitted for users with high resolution clocks only.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.WebAppOriginAssociationFetchResult"
+    enum="WebAppOriginAssociationFetchResult" expires_after="2022-03-05">
+  <owner>mek@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of web app origin association file fetch when url
+    handlers are present. Happens when PWA is installed or updated.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.WebAppOriginAssociationParseResult"
+    enum="WebAppOriginAssociationParseResult" expires_after="2022-03-05">
+  <owner>mek@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of web app origin association file parsing. Happens after
+    an web app origin association file is fetched.
+  </summary>
+</histogram>
+
+<histogram name="Webapp.WebAppUrlLoaderPrepareForLoadResult"
+    enum="WebAppUrlLoaderResult" expires_after="2022-03-13">
+  <owner>qjw@chromium.org</owner>
+  <owner>ortuno@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>Records the result of WebAppUrlLoader::PrepareForLoad().</summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

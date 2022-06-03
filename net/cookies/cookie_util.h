@@ -13,19 +13,40 @@
 #include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/site_for_cookies.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 class GURL;
 
 namespace net {
+
+class IsolationInfo;
+class SchemefulSite;
+class CookieAccessDelegate;
+
 namespace cookie_util {
 
 // Constants for use in VLOG
 const int kVlogPerCookieMonster = 1;
 const int kVlogSetCookies = 7;
 const int kVlogGarbageCollection = 5;
+
+// This enum must match the numbering for StorageAccessResult in
+// histograms/enums.xml. Do not reorder or remove items, only add new items
+// at the end.
+enum class StorageAccessResult {
+  ACCESS_BLOCKED = 0,
+  ACCESS_ALLOWED = 1,
+  ACCESS_ALLOWED_STORAGE_ACCESS_GRANT = 2,
+  kMaxValue = ACCESS_ALLOWED_STORAGE_ACCESS_GRANT,
+};
+// Helper to fire telemetry indicating if a given request for storage was
+// allowed or not by the provided |result|.
+NET_EXPORT void FireStorageAccessHistogram(StorageAccessResult result);
 
 // Returns the effective TLD+1 for a given host. This only makes sense for http
 // and https schemes. For other schemes, the host will be returned unchanged
@@ -48,6 +69,13 @@ NET_EXPORT bool GetCookieDomainWithString(const GURL& url,
 // i.e. it doesn't begin with a leading '.' character.
 NET_EXPORT bool DomainIsHostOnly(const std::string& domain_string);
 
+// If |cookie_domain| is nonempty and starts with a "." character, this returns
+// the substring of |cookie_domain| without the leading dot. (Note only one
+// leading dot is stripped, if there are multiple.) Otherwise it returns
+// |cookie_domain|. This is useful for converting from CanonicalCookie's
+// representation of a cookie domain to the RFC's notion of a cookie's domain.
+NET_EXPORT std::string CookieDomainAsHost(const std::string& cookie_domain);
+
 // Parses the string with the cookie expiration time (very forgivingly).
 // Returns the "null" time on failure.
 //
@@ -56,11 +84,43 @@ NET_EXPORT bool DomainIsHostOnly(const std::string& domain_string);
 // Time::Max(), respectively.
 NET_EXPORT base::Time ParseCookieExpirationTime(const std::string& time_string);
 
+// Get a cookie's URL from it's domain, path, and source scheme.
+// The first field can be the combined domain-and-host-only-flag (e.g. the
+// string returned by CanonicalCookie::Domain()) as opposed to the domain
+// attribute per RFC6265bis. The GURL is constructed after stripping off any
+// leading dot.
+// Note: the GURL returned by this method is not guaranteed to be valid.
+NET_EXPORT GURL CookieDomainAndPathToURL(const std::string& domain,
+                                         const std::string& path,
+                                         const std::string& source_scheme);
+NET_EXPORT GURL CookieDomainAndPathToURL(const std::string& domain,
+                                         const std::string& path,
+                                         bool is_https);
+NET_EXPORT GURL CookieDomainAndPathToURL(const std::string& domain,
+                                         const std::string& path,
+                                         CookieSourceScheme source_scheme);
+
 // Convenience for converting a cookie origin (domain and https pair) to a URL.
 NET_EXPORT GURL CookieOriginToURL(const std::string& domain, bool is_https);
 
-// Returns true if the cookie |domain| matches the given |host| as described
-// in section 5.1.3 of RFC 6265.
+// Returns a URL that could have been the cookie's source.
+// Not guaranteed to actually be the URL that set the cookie. Not guaranteed to
+// be a valid GURL. Intended as a shim for SetCanonicalCookieAsync calls, where
+// a source URL is required but only a source scheme may be available.
+NET_EXPORT GURL SimulatedCookieSource(const CanonicalCookie& cookie,
+                                      const std::string& source_scheme);
+
+// Provisional evaluation of acceptability of setting secure cookies on
+// `source_url` based only on the `source_url`'s scheme and whether it
+// is a localhost URL.  If this returns kNonCryptographic, it may be upgraded to
+// kTrustworthy by a CookieAccessDelegate when the cookie operation is being
+// performed, as the delegate may have access to user settings like manually
+// configured test domains which declare additional things trustworthy.
+NET_EXPORT CookieAccessScheme ProvisionalAccessScheme(const GURL& source_url);
+
+// |domain| is the output of cookie.Domain() for some cookie. This returns true
+// if a |domain| indicates that the cookie can be accessed by |host|.
+// See comment on CanonicalCookie::IsDomainMatch().
 NET_EXPORT bool IsDomainMatch(const std::string& domain,
                               const std::string& host);
 
@@ -82,25 +142,35 @@ NET_EXPORT void ParseRequestCookieLine(const std::string& header_value,
 NET_EXPORT std::string SerializeRequestCookieLine(
     const ParsedRequestCookies& parsed_cookies);
 
-// Determines which of the cookies for |url| can be accessed, with respect to
-// the SameSite attribute. This applies to looking up existing cookies; for
-// setting new ones, see ComputeSameSiteContextForResponse and
-// ComputeSameSiteContextForScriptSet.
+// Determines which of the cookies for the request URL can be accessed, with
+// respect to the SameSite attribute. This applies to looking up existing
+// cookies for HTTP requests. For looking up cookies for non-HTTP APIs (i.e.,
+// JavaScript), see ComputeSameSiteContextForScriptGet. For setting new cookies,
+// see ComputeSameSiteContextForResponse and ComputeSameSiteContextForScriptSet.
 //
-// |site_for_cookies| is the currently navigated to site that should be
+// `url_chain` is a non-empty vector of URLs, the last of which is the current
+// request URL. It represents the redirect chain of the current request. The
+// redirect chain is used to calculate whether there has been a cross-site
+// redirect. In order for a context to be deemed strictly same-site, there must
+// not have been any cross-site redirects.
+//
+// `site_for_cookies` is the currently navigated to site that should be
 // considered "first-party" for cookies.
 //
-// |initiator| is the origin ultimately responsible for getting the request
-// issued; it may be different from |site_for_cookies| in that it may be some
-// other website that caused the navigation to |site_for_cookies| to occur.
+// `initiator` is the origin ultimately responsible for getting the request
+// issued. It may be different from `site_for_cookies`.
 //
-// base::nullopt for |initiator| denotes that the navigation was initiated by
+// absl::nullopt for `initiator` denotes that the navigation was initiated by
 // the user directly interacting with the browser UI, e.g. entering a URL
 // or selecting a bookmark.
 //
-// If |attach_same_site_cookies| is specified, all SameSite cookies will be
+// `is_main_frame_navigation` is whether the request is for a navigation that
+// targets the main frame or top-level browsing context. These requests may
+// sometimes send SameSite=Lax cookies but not SameSite=Strict cookies.
+//
+// If `force_ignore_site_for_cookies` is specified, all SameSite cookies will be
 // attached, i.e. this will return SAME_SITE_STRICT. This flag is set to true
-// when the |site_for_cookies| is a chrome:// URL embedding a secure origin,
+// when the `site_for_cookies` is a chrome:// URL embedding a secure origin,
 // among other scenarios.
 // This is *not* set when the *initiator* is chrome-extension://,
 // which is intentional, since it would be bad to let an extension arbitrarily
@@ -108,88 +178,119 @@ NET_EXPORT std::string SerializeRequestCookieLine(
 //
 // See also documentation for corresponding methods on net::URLRequest.
 //
-// |http_method| is used to enforce the requirement that, in a context that's
+// `http_method` is used to enforce the requirement that, in a context that's
 // lax same-site but not strict same-site, SameSite=lax cookies be only sent
 // when the method is "safe" in the RFC7231 section 4.2.1 sense.
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForRequest(const std::string& http_method,
-                                 const GURL& url,
+                                 const std::vector<GURL>& url_chain,
                                  const SiteForCookies& site_for_cookies,
-                                 const base::Optional<url::Origin>& initiator,
-                                 bool attach_same_site_cookies);
+                                 const absl::optional<url::Origin>& initiator,
+                                 bool is_main_frame_navigation,
+                                 bool force_ignore_site_for_cookies);
 
-// As above, but applying for scripts. |initiator| here should be the initiator
+// As above, but applying for scripts. `initiator` here should be the initiator
 // used when fetching the document.
-// If |attach_same_site_cookies| is true, this returns SAME_SITE_STRICT.
+// If `force_ignore_site_for_cookies` is true, this returns SAME_SITE_STRICT.
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptGet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
-                                   const base::Optional<url::Origin>& initiator,
-                                   bool attach_same_site_cookies);
+                                   const absl::optional<url::Origin>& initiator,
+                                   bool force_ignore_site_for_cookies);
 
-// Determines which of the cookies for |url| can be set from a network response,
-// with respect to the SameSite attribute. This will only return CROSS_SITE or
-// SAME_SITE_LAX (cookie sets of SameSite=strict cookies are permitted in same
-// contexts that sets of SameSite=lax cookies are).
-// If |attach_same_site_cookies| is true, this returns SAME_SITE_LAX.
+// Determines which of the cookies for the request URL can be set from a network
+// response, with respect to the SameSite attribute. This will only return
+// CROSS_SITE or SAME_SITE_LAX (cookie sets of SameSite=strict cookies are
+// permitted in same contexts that sets of SameSite=lax cookies are).
+// `url_chain` is a non-empty vector of URLs, the last of which is the current
+// request URL. It represents the redirect chain of the current request. The
+// redirect chain is used to calculate whether there has been a cross-site
+// redirect.
+// `is_main_frame_navigation` is whether the request was for a navigation that
+// targets the main frame or top-level browsing context. Both SameSite=Lax and
+// SameSite=Strict cookies may be set by any main frame navigation.
+// If `force_ignore_site_for_cookies` is true, this returns SAME_SITE_LAX.
 NET_EXPORT CookieOptions::SameSiteCookieContext
-ComputeSameSiteContextForResponse(const GURL& url,
+ComputeSameSiteContextForResponse(const std::vector<GURL>& url_chain,
                                   const SiteForCookies& site_for_cookies,
-                                  const base::Optional<url::Origin>& initiator,
-                                  bool attach_same_site_cookies);
+                                  const absl::optional<url::Origin>& initiator,
+                                  bool is_main_frame_navigation,
+                                  bool force_ignore_site_for_cookies);
 
-// Determines which of the cookies for |url| can be set from a script context,
+// Determines which of the cookies for `url` can be set from a script context,
 // with respect to the SameSite attribute. This will only return CROSS_SITE or
 // SAME_SITE_LAX (cookie sets of SameSite=strict cookies are permitted in same
 // contexts that sets of SameSite=lax cookies are).
-// If |attach_same_site_cookies| is true, this returns SAME_SITE_LAX.
+// If `force_ignore_site_for_cookies` is true, this returns SAME_SITE_LAX.
 NET_EXPORT CookieOptions::SameSiteCookieContext
 ComputeSameSiteContextForScriptSet(const GURL& url,
                                    const SiteForCookies& site_for_cookies,
-                                   bool attach_same_site_cookies);
+                                   bool force_ignore_site_for_cookies);
 
 // Determines which of the cookies for |url| can be accessed when fetching a
 // subresources. This is either CROSS_SITE or SAME_SITE_STRICT,
 // since the initiator for a subresource is the frame loading it.
 NET_EXPORT CookieOptions::SameSiteCookieContext
-// If |attach_same_site_cookies| is true, this returns SAME_SITE_STRICT.
+// If |force_ignore_site_for_cookies| is true, this returns SAME_SITE_STRICT.
 ComputeSameSiteContextForSubresource(const GURL& url,
                                      const SiteForCookies& site_for_cookies,
-                                     bool attach_same_site_cookies);
+                                     bool force_ignore_site_for_cookies);
 
-// Returns whether the respective SameSite feature is enabled.
-NET_EXPORT bool IsSameSiteByDefaultCookiesEnabled();
-NET_EXPORT bool IsCookiesWithoutSameSiteMustBeSecureEnabled();
-bool IsRecentHttpSameSiteAccessGrantsLegacyCookieSemanticsEnabled();
-bool IsRecentCreationTimeGrantsLegacyCookieSemanticsEnabled();
+// Returns whether the respective feature is enabled.
+NET_EXPORT bool IsSchemefulSameSiteEnabled();
+NET_EXPORT bool IsFirstPartySetsEnabled();
 
-// Determines whether the last same-site access to a cookie should grant legacy
-// access semantics to the current attempted cookies access, based on the state
-// of the feature kRecentSameSiteAccessGrantsLegacyCookieSemantics, the value of
-// the feature param, and the time since the last eligible same-site access.
-bool DoesLastHttpSameSiteAccessGrantLegacySemantics(
-    base::TimeTicks last_http_same_site_access);
+// Computes the SameParty context bundle, determining which of the cookies for
+// `request_site` can be accessed. `isolation_info` must be fully populated.  If
+// `force_ignore_top_frame_party` is true, the top frame from `isolation_info`
+// will be assumed to be same-party with `request_site`, regardless of what it
+// is.
+NET_EXPORT SamePartyContext
+ComputeSamePartyContext(const SchemefulSite& request_site,
+                        const IsolationInfo& isolation_info,
+                        const CookieAccessDelegate* cookie_access_delegate,
+                        bool force_ignore_top_frame_party);
 
-// Determines whether the creation time of a cookie should grant legacy
-// access semantics to the current attempted cookies access, based on the state
-// of the feature kRecentCreationTimeGrantsLegacyCookieSemantics, the value of
-// the feature param, and the creation time of the cookie.
-bool DoesCreationTimeGrantLegacySemantics(base::Time creation_date);
+NET_EXPORT FirstPartySetsContextType ComputeFirstPartySetsContextType(
+    const SchemefulSite& request_site,
+    const IsolationInfo& isolation_info,
+    const CookieAccessDelegate* cookie_access_delegate,
+    bool force_ignore_top_frame_party);
 
-// Takes a callback accepting a CookieInclusionStatus and returns a callback
+// Get the SameParty inclusion status. If the cookie is not SameParty, returns
+// kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
+// valid context, returns kEnforceSamePartyExclude.
+NET_EXPORT CookieSamePartyStatus
+GetSamePartyStatus(const CanonicalCookie& cookie, const CookieOptions& options);
+
+// Takes a callback accepting a CookieAccessResult and returns a callback
 // that accepts a bool, setting the bool to true if the CookieInclusionStatus
-// was set to "include", else sending false.
+// in CookieAccessResult was set to "include", else sending false.
 //
 // Can be used with SetCanonicalCookie when you don't need to know why a cookie
 // was blocked, only whether it was blocked.
-NET_EXPORT base::OnceCallback<void(CanonicalCookie::CookieInclusionStatus)>
-AdaptCookieInclusionStatusToBool(base::OnceCallback<void(bool)> callback);
+NET_EXPORT base::OnceCallback<void(CookieAccessResult)>
+AdaptCookieAccessResultToBool(base::OnceCallback<void(bool)> callback);
 
-// Turn a CookieStatusList into a CookieList by stripping out the statuses
-// (for callers who don't care about the statuses).
-NET_EXPORT CookieList StripStatuses(const CookieStatusList& cookie_status_list);
+// Turn a CookieAccessResultList into a CookieList by stripping out access
+// results (for callers who only care about cookies).
+NET_EXPORT CookieList
+StripAccessResults(const CookieAccessResultList& cookie_access_result_list);
+
+// Records port related metrics from Omnibox navigations.
+NET_EXPORT void RecordCookiePortOmniboxHistograms(const GURL& url);
+
+// Checks invariants that should be upheld w.r.t. the included and excluded
+// cookies. Namely: the included cookies should be elements of
+// `included_cookies`; excluded cookies should be elements of
+// `excluded_cookies`; and included cookies should be in the correct sorted
+// order.
+NET_EXPORT void DCheckIncludedAndExcludedCookieLists(
+    const CookieAccessResultList& included_cookies,
+    const CookieAccessResultList& excluded_cookies);
 
 }  // namespace cookie_util
+
 }  // namespace net
 
 #endif  // NET_COOKIES_COOKIE_UTIL_H_

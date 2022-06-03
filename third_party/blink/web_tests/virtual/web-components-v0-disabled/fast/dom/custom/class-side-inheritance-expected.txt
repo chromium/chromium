@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL should inherit from passed constructor document.registerElement is not a function
-Harness: the test ran to completion.
-

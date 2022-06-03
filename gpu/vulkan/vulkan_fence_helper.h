@@ -5,22 +5,31 @@
 #ifndef GPU_VULKAN_VULKAN_FENCE_HELPER_H_
 #define GPU_VULKAN_VULKAN_FENCE_HELPER_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
-#include "base/bind_helpers.h"
+#include <memory>
+#include <utility>
+#include <vector>
+
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "gpu/vulkan/vulkan_export.h"
+#include "gpu/vulkan/vma_wrapper.h"
 
 namespace gpu {
 
 class VulkanDeviceQueue;
 
-class VULKAN_EXPORT VulkanFenceHelper {
+class COMPONENT_EXPORT(VULKAN) VulkanFenceHelper {
  public:
   explicit VulkanFenceHelper(VulkanDeviceQueue* device_queue);
+
+  VulkanFenceHelper(const VulkanFenceHelper&) = delete;
+  VulkanFenceHelper& operator=(const VulkanFenceHelper&) = delete;
+
   ~VulkanFenceHelper();
 
   // Destroy the fence helper.
@@ -28,7 +37,7 @@ class VULKAN_EXPORT VulkanFenceHelper {
 
   // Class representing a fence registered with this system. Should be treated
   // as an opaque handle.
-  class FenceHandle {
+  class COMPONENT_EXPORT(VULKAN) FenceHandle {
    public:
     FenceHandle();
     FenceHandle(const FenceHandle& other);
@@ -100,7 +109,7 @@ class VULKAN_EXPORT VulkanFenceHelper {
   // executed in order they are enqueued.
   void EnqueueCleanupTaskForSubmittedWork(CleanupTask task);
   // Processes CleanupTasks for which a fence has passed.
-  void ProcessCleanupTasks();
+  void ProcessCleanupTasks(uint64_t retired_generation_id = 0);
   // Helpers for common types:
   void EnqueueSemaphoreCleanupForSubmittedWork(VkSemaphore semaphore);
   void EnqueueSemaphoresCleanupForSubmittedWork(
@@ -108,7 +117,7 @@ class VULKAN_EXPORT VulkanFenceHelper {
   void EnqueueImageCleanupForSubmittedWork(VkImage image,
                                            VkDeviceMemory memory);
   void EnqueueBufferCleanupForSubmittedWork(VkBuffer buffer,
-                                            VkDeviceMemory memory);
+                                            VmaAllocation allocation);
   // Helpers for VulkanCommandBuffer, VulkanCommandPool, etc
   template <typename T>
   void EnqueueVulkanObjectCleanupForSubmittedWork(std::unique_ptr<T> obj);
@@ -141,8 +150,6 @@ class VULKAN_EXPORT VulkanFenceHelper {
   base::circular_deque<TasksForFence> cleanup_tasks_;
 
   base::WeakPtrFactory<VulkanFenceHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanFenceHelper);
 };
 
 template <typename T>

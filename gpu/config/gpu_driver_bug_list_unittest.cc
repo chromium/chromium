@@ -75,7 +75,7 @@ TEST_F(GpuDriverBugListTest, AppendForceGPUWorkaround) {
 // Test for invariant "Assume the newly last added entry has the largest ID".
 // See GpuControlList::GpuControlList.
 // It checks gpu_driver_bug_list.json
-TEST_F(GpuDriverBugListTest, TestBlacklistIsValid) {
+TEST_F(GpuDriverBugListTest, TestBlocklistIsValid) {
   std::unique_ptr<GpuDriverBugList> list(GpuDriverBugList::Create());
   auto max_entry_id = list->max_entry_id();
 

@@ -54,6 +54,17 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   // point.
   bool heuristic_delay_start_if_palm = false;
 
+  // Maximum blank time within a session, in milliseconds.
+  // Two tracking_ids are considered in one session if they overlap with each
+  // other or the gap between them is less than max_blank_time.
+  base::TimeDelta max_blank_time;
+
+  // If true, uses tracking_id count within a session as a feature.
+  bool use_tracking_id_count = false;
+
+  // If true, uses current active tracking_id count as a feature.
+  bool use_active_tracking_id_count = false;
+
   // If empty, the radius by the device is left as is.
   // If non empty, the radius reported by device is re-sized in features by the
   // polynomial defined in this vector. E.g. if this vector is {0.5, 1.3,

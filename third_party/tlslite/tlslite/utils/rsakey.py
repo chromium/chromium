@@ -240,6 +240,13 @@ class RSAKey(object):
         prefixedBytes = prefixBytes + bytes
         return prefixedBytes
 
+    @staticmethod
+    def addPKCS1SHA256Prefix(bytes):
+        prefixBytes = bytearray([
+            0x30, 0x31, 0x30, 0x0d, 0x06, 0x09, 0x60, 0x86, 0x48, 0x01, 0x65,
+            0x03, 0x04, 0x02, 0x01, 0x05, 0x00, 0x04, 0x20])
+        return prefixBytes + bytes
+
     def _addPKCS1Padding(self, bytes, blockType):
         padLength = (numBytes(self.n) - (len(bytes)+3))
         if blockType == 1: #Signature padding

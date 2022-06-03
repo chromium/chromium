@@ -1,9 +1,0 @@
-This text should use the system font.
-#system-ui:
-".Helvetica Neue DeskInterface" : 37
-
-This text should use the system font.
-#system-ui-20pt:
-".Helvetica Neue DeskInterface" : 37
-
-

@@ -9,9 +9,9 @@
 
 namespace blink {
 
-void ConnectToQuotaDispatcherHost(
+void ConnectToQuotaManagerHost(
     ExecutionContext* execution_context,
-    mojo::PendingReceiver<mojom::blink::QuotaDispatcherHost> receiver) {
+    mojo::PendingReceiver<mojom::blink::QuotaManagerHost> receiver) {
   execution_context->GetBrowserInterfaceBroker().GetInterface(
       std::move(receiver));
 }

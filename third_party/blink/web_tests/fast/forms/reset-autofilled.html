@@ -23,11 +23,13 @@
         }
 
         shouldBe('countAutofilledElements()', '3');
+        shouldBe('document.querySelectorAll(\':autofill\').length', '3');
 
         var form = document.getElementById('form');
         form.reset();
 
         shouldBe('countAutofilledElements()', '0');
+        shouldBe('document.querySelectorAll(\':autofill\').length', '0');
     }
     </script>
 

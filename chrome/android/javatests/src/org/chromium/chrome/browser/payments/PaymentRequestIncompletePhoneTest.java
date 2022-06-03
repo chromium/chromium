@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.HAVE_INSTRUMENTS;
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.IMMEDIATE_RESPONSE;
-
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -17,10 +14,13 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.browser.payments.ui.PaymentRequestSection;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -47,17 +47,19 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has an invalid phone number on disk.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US",
-                "+++" /* invalid phone */, "jon.doe@gmail.com", "en-US"));
+        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "+++" /* invalid phone */, "jon.doe@gmail.com", "en-US"));
 
-        mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
     /** Attempt to update the phone number with invalid data and cancel the transaction. */
     @Test
     @MediumTest
     @Feature({"Payments"})
+    @FlakyTest(message = "https://crbug.com/1197578")
     public void testEditIncompletePhoneAndCancel() throws TimeoutException {
         // Not ready to pay since Contact phone is invalid.
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
@@ -88,6 +90,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     /** Attempt to add an invalid phone alongside the already invalid data and cancel. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddIncompletePhoneAndCancel() throws TimeoutException {
         // Not ready to pay since Contact phone is invalid.
@@ -120,6 +123,7 @@ public class PaymentRequestIncompletePhoneTest implements MainActivityStartCallb
     /** Update the phone with valid data and provide that to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testEditIncompletePhoneAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());

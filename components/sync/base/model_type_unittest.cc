@@ -3,13 +3,14 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "base/strings/string_util.h"
 #include "base/test/values_test_util.h"
 #include "base/values.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/protocol/sync.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace syncer {
@@ -18,21 +19,18 @@ namespace {
 class ModelTypeTest : public testing::Test {};
 
 TEST_F(ModelTypeTest, ModelTypeToValue) {
-  for (int i = FIRST_REAL_MODEL_TYPE; i < ModelType::NUM_ENTRIES; ++i) {
+  for (int i = 0; i < GetNumModelTypes(); ++i) {
     ModelType model_type = ModelTypeFromInt(i);
     base::ExpectStringValue(ModelTypeToString(model_type),
                             *ModelTypeToValue(model_type));
   }
-  base::ExpectStringValue("Top-level folder",
-                          *ModelTypeToValue(TOP_LEVEL_FOLDER));
-  base::ExpectStringValue("Unspecified", *ModelTypeToValue(UNSPECIFIED));
 }
 
 TEST_F(ModelTypeTest, ModelTypeSetToValue) {
   const ModelTypeSet model_types(BOOKMARKS, APPS);
 
   std::unique_ptr<base::ListValue> value(ModelTypeSetToValue(model_types));
-  EXPECT_EQ(2u, value->GetSize());
+  EXPECT_EQ(2u, value->GetList().size());
   std::string types[2];
   EXPECT_TRUE(value->GetString(0, &types[0]));
   EXPECT_TRUE(value->GetString(1, &types[1]));
@@ -42,20 +40,13 @@ TEST_F(ModelTypeTest, ModelTypeSetToValue) {
 
 TEST_F(ModelTypeTest, IsRealDataType) {
   EXPECT_FALSE(IsRealDataType(UNSPECIFIED));
-  EXPECT_FALSE(IsRealDataType(ModelType::NUM_ENTRIES));
-  EXPECT_FALSE(IsRealDataType(TOP_LEVEL_FOLDER));
   EXPECT_TRUE(IsRealDataType(FIRST_REAL_MODEL_TYPE));
+  EXPECT_TRUE(IsRealDataType(LAST_REAL_MODEL_TYPE));
   EXPECT_TRUE(IsRealDataType(BOOKMARKS));
   EXPECT_TRUE(IsRealDataType(APPS));
   EXPECT_TRUE(IsRealDataType(ARC_PACKAGE));
   EXPECT_TRUE(IsRealDataType(PRINTERS));
   EXPECT_TRUE(IsRealDataType(READING_LIST));
-}
-
-TEST_F(ModelTypeTest, IsProxyType) {
-  EXPECT_FALSE(IsProxyType(BOOKMARKS));
-  EXPECT_FALSE(IsProxyType(ModelType::NUM_ENTRIES));
-  EXPECT_TRUE(IsProxyType(PROXY_TABS));
 }
 
 // Make sure we can convert ModelTypes to and from specifics field
@@ -136,12 +127,9 @@ TEST_F(ModelTypeTest, DefaultFieldValues) {
 }
 
 TEST_F(ModelTypeTest, ModelTypeToRootTagValues) {
-  ModelTypeSet all_types = ModelTypeSet::All();
-  for (ModelType model_type : all_types) {
+  for (ModelType model_type : ProtocolTypes()) {
     std::string root_tag = ModelTypeToRootTag(model_type);
-    if (IsProxyType(model_type)) {
-      EXPECT_EQ(root_tag, std::string());
-    } else if (IsRealDataType(model_type)) {
+    if (IsRealDataType(model_type)) {
       EXPECT_TRUE(base::StartsWith(root_tag, "google_chrome_",
                                    base::CompareCase::INSENSITIVE_ASCII));
     } else {
@@ -168,10 +156,11 @@ TEST_F(ModelTypeTest, ModelTypeNotificationTypeMapping) {
     std::string notification_type;
     bool ret = RealModelTypeToNotificationType(model_type, &notification_type);
     if (ret) {
-      ModelType notified_model_type;
+      auto notified_model_type = ModelType::UNSPECIFIED;
+      ASSERT_NE(model_type, notified_model_type);
       EXPECT_TRUE(NotificationTypeToRealModelType(notification_type,
                                                   &notified_model_type));
-      EXPECT_EQ(notified_model_type, model_type);
+      EXPECT_EQ(model_type, notified_model_type);
     } else {
       EXPECT_FALSE(ProtocolTypes().Has(model_type));
       EXPECT_TRUE(notification_type.empty());

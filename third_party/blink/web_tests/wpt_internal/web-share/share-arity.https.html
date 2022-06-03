@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {callWithKeyDown, share_test} from './resources/share-test.js';
+import {ShareError} from '/gen/third_party/blink/public/mojom/webshare/share_error.mojom.m.js';
+
+share_test(mock => {
+  mock.pushShareResult('the title', 'the message', 'data:the url',
+                       ShareError.OK);
+  return callWithKeyDown(() => {
+    navigator.share({
+        title: 'the title',
+        text: 'the message',
+        url: 'data:the url',
+        unused: 'unexpected field'});
+  });
+}, 'extra ShareData field (extra field ignored)');
+
+share_test(mock => {
+  mock.pushShareResult('the title', 'the message', 'data:the url',
+                       ShareError.OK);
+  return callWithKeyDown(() => {
+    navigator.share({
+        title: 'the title',
+        text: 'the message',
+        url: 'data:the url'}, 'more than required');
+  });
+}, '2 arguments (extra argument ignored)');
+
+</script>

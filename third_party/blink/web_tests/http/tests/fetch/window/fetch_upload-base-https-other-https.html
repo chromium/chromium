@@ -1,0 +1,31 @@
+<!doctype html>
+<head>
+<meta name="timeout" content="long"></meta>
+<script src = "/resources/get-host-info.js?pipe=sub"></script>
+<script src = "/resources/testharness.js"></script>
+<script src = "/resources/testharnessreport.js"></script>
+<script src = "/serviceworker/resources/test-helpers.js"></script>
+<script src = "/fetch/resources/fetch-test-options.js"></script>
+<script src = "/fetch/resources/fetch-test-helpers.js"></script>
+<script src = "/streams/resources/rs-utils.js"></script>
+</head>
+<body>
+<script>
+var options = get_fetch_test_options();
+function start(t) {
+  var script = document.createElement('script');
+  script.src = '../script-tests/fetch_upload.js?-base-https-other-https';
+  script.addEventListener(
+    'error',
+    function() { unreached_rejection(t); });
+  script.addEventListener(
+    'load',
+    function() { t.done(); });
+  document.body.appendChild(script);
+}
+function init() {
+  return Promise.resolve();
+}
+</script>
+<script src = "../resources/init.js"></script>
+</body>

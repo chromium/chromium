@@ -12,11 +12,11 @@ namespace dex {
 // Contains types that models DEX executable format data structures.
 // See https://source.android.com/devices/tech/dalvik/dex-format
 
-// The supported versions are 035 and 037.
+// The supported versions are 035, 037, 038, and 039.
 
 enum class FormatId : uint8_t {
   b,  // 22b.
-  c,  // 21c, 22c, 31c, 35c, 3rc.
+  c,  // 21c, 22c, 31c, 35c, 3rc, 45cc, 4rcc.
   h,  // 21h.
   i,  // 31i.
   l,  // 51l.
@@ -110,6 +110,12 @@ constexpr Instruction kByteCode[] = {
     {0xD0, 2, FormatId::s, 8},
     {0xD8, 2, FormatId::b, 11},
     // {0xE3, 1, FormatId::x, 29}, unused
+    {0xFA, 4, FormatId::c},
+    {0xFB, 4, FormatId::c},
+    {0xFC, 3, FormatId::c},
+    {0xFD, 3, FormatId::c},
+    {0xFE, 2, FormatId::c},
+    {0xFF, 2, FormatId::c},
 };
 
 // Supported by MSVC, g++, and clang++. Ensures no gaps in packing.
@@ -185,6 +191,36 @@ struct ClassDefItem {
   uint32_t static_values_off;
 };
 
+// call_site_id_item: Call site identifiers list.
+struct CallSiteIdItem {
+  uint32_t call_site_off;
+};
+
+// method_handle_type: Determines the behavior of the MethodHandleItem.
+enum class MethodHandleType : uint16_t {
+  // FieldId
+  kStaticPut = 0x00,
+  kStaticGet = 0x01,
+  kInstancePut = 0x02,
+  kInstanceGet = 0x03,
+  // MethodId
+  kInvokeStatic = 0x04,
+  kInvokeInstance = 0x05,
+  kInvokeConstructor = 0x06,
+  kInvokeDirect = 0x07,
+  kInvokeInterface = 0x08,
+  // Sentinel. If new types are added put them before this and increment.
+  kMaxMethodHandleType = 0x09
+};
+
+// method_handle_item: Method handles referred within the Dex file.
+struct MethodHandleItem {
+  uint16_t method_handle_type;
+  uint16_t unused_1;
+  uint16_t field_or_method_id;
+  uint16_t unused_2;
+};
+
 // code_item: Header of a code item.
 struct CodeItem {
   uint16_t registers_size;
@@ -196,7 +232,31 @@ struct CodeItem {
   // Variable length data follow for complete code item.
 };
 
-constexpr uint32_t kMaxItemListSize = 18;
+// Number of valid type codes for map_item elements in map_list.
+// See: https://source.android.com/devices/tech/dalvik/dex-format#type-codes
+constexpr uint32_t kMaxItemListSize = 21;
+
+constexpr uint16_t kTypeHeaderItem = 0x0000;
+constexpr uint16_t kTypeStringIdItem = 0x0001;
+constexpr uint16_t kTypeTypeIdItem = 0x0002;
+constexpr uint16_t kTypeProtoIdItem = 0x0003;
+constexpr uint16_t kTypeFieldIdItem = 0x0004;
+constexpr uint16_t kTypeMethodIdItem = 0x0005;
+constexpr uint16_t kTypeClassDefItem = 0x0006;
+constexpr uint16_t kTypeCallSiteIdItem = 0x0007;
+constexpr uint16_t kTypeMethodHandleItem = 0x0008;
+constexpr uint16_t kTypeMapList = 0x1000;
+constexpr uint16_t kTypeTypeList = 0x1001;
+constexpr uint16_t kTypeAnnotationSetRefList = 0x1002;
+constexpr uint16_t kTypeAnnotationSetItem = 0x1003;
+constexpr uint16_t kTypeClassDataItem = 0x2000;
+constexpr uint16_t kTypeCodeItem = 0x2001;
+constexpr uint16_t kTypeStringDataItem = 0x2002;
+constexpr uint16_t kTypeDebugInfoItem = 0x2003;
+constexpr uint16_t kTypeAnnotationItem = 0x2004;
+constexpr uint16_t kTypeEncodedArrayItem = 0x2005;
+constexpr uint16_t kTypeAnnotationsDirectoryItem = 0x2006;
+constexpr uint16_t kTypeHiddenApiClassDataItem = 0xF000;
 
 // map_item
 struct MapItem {
@@ -263,25 +323,6 @@ struct TryItem {
   uint16_t insn_count;
   uint16_t handler_off;
 };
-
-constexpr uint16_t kTypeHeaderItem = 0x0000;
-constexpr uint16_t kTypeStringIdItem = 0x0001;
-constexpr uint16_t kTypeTypeIdItem = 0x0002;
-constexpr uint16_t kTypeProtoIdItem = 0x0003;
-constexpr uint16_t kTypeFieldIdItem = 0x0004;
-constexpr uint16_t kTypeMethodIdItem = 0x0005;
-constexpr uint16_t kTypeClassDefItem = 0x0006;
-constexpr uint16_t kTypeMapList = 0x1000;
-constexpr uint16_t kTypeTypeList = 0x1001;
-constexpr uint16_t kTypeAnnotationSetRefList = 0x1002;
-constexpr uint16_t kTypeAnnotationSetItem = 0x1003;
-constexpr uint16_t kTypeClassDataItem = 0x2000;
-constexpr uint16_t kTypeCodeItem = 0x2001;
-constexpr uint16_t kTypeStringDataItem = 0x2002;
-constexpr uint16_t kTypeDebugInfoItem = 0x2003;
-constexpr uint16_t kTypeAnnotationItem = 0x2004;
-constexpr uint16_t kTypeEncodedArrayItem = 0x2005;
-constexpr uint16_t kTypeAnnotationsDirectoryItem = 0x2006;
 
 #pragma pack(pop)
 

@@ -28,8 +28,10 @@ body {
 </div>
 <script>
 
-function run(zoom, scroll) {
-    eventSender.setPageZoomFactor(zoom);
+  function run(zoom, scroll) {
+    if (!window.testRunner)
+      return;
+    testRunner.setPageZoomFactor(zoom);
     scrollTo(0, scroll);
     var result;
     var target = document.querySelector("#target");

@@ -38,6 +38,7 @@ source_set("unittests") {
     "//ios/web/test:test_constants",
     "//net",
     "//testing/gtest",
+    "//third_party/ocmock",
     "//url",
   ]
 

@@ -6,29 +6,18 @@
 
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sync_sessions/synced_tab_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/page.h"
 #include "content/public/browser/render_frame_host.h"
 #include "ui/gfx/image/image_skia.h"
 
 namespace sync_sessions {
-
-// static
-void SyncSessionsRouterTabHelper::CreateForWebContents(
-    content::WebContents* web_contents,
-    SyncSessionsWebContentsRouter* router) {
-  DCHECK(web_contents);
-  if (!FromWebContents(web_contents)) {
-    web_contents->SetUserData(UserDataKey(),
-                              base::WrapUnique(new SyncSessionsRouterTabHelper(
-                                  web_contents, router)));
-  }
-}
 
 SyncSessionsRouterTabHelper::SyncSessionsRouterTabHelper(
     content::WebContents* web_contents,
@@ -38,7 +27,8 @@ SyncSessionsRouterTabHelper::SyncSessionsRouterTabHelper(
       ChromeTranslateClient::FromWebContents(web_contents);
   // A translate client is not always attached to web contents (e.g. tests).
   if (chrome_translate_client_)
-    chrome_translate_client_->translate_driver()->AddObserver(this);
+    chrome_translate_client_->GetTranslateDriver()
+        ->AddLanguageDetectionObserver(this);
 
   favicon_driver_ =
       favicon::ContentFaviconDriver::FromWebContents(web_contents);
@@ -50,7 +40,7 @@ SyncSessionsRouterTabHelper::~SyncSessionsRouterTabHelper() {}
 
 void SyncSessionsRouterTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (navigation_handle && navigation_handle->IsInMainFrame())
+  if (navigation_handle && navigation_handle->IsInPrimaryMainFrame())
     NotifyRouter();
 }
 
@@ -61,7 +51,8 @@ void SyncSessionsRouterTabHelper::TitleWasSet(content::NavigationEntry* entry) {
 void SyncSessionsRouterTabHelper::WebContentsDestroyed() {
   NotifyRouter();
   if (chrome_translate_client_)
-    chrome_translate_client_->translate_driver()->RemoveObserver(this);
+    chrome_translate_client_->GetTranslateDriver()
+        ->RemoveLanguageDetectionObserver(this);
   if (favicon_driver_)
     favicon_driver_->RemoveObserver(this);
 }
@@ -69,10 +60,10 @@ void SyncSessionsRouterTabHelper::WebContentsDestroyed() {
 void SyncSessionsRouterTabHelper::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  // Only notify when the main frame finishes loading; only the main frame
-  // doesn't have a parent.
-  if (render_frame_host && !render_frame_host->GetParent())
+  // Only notify when the primary main frame finishes loading.
+  if (render_frame_host && render_frame_host->IsInPrimaryMainFrame()) {
     NotifyRouter(true);
+  }
 }
 
 void SyncSessionsRouterTabHelper::DidOpenRequestedURL(
@@ -111,6 +102,6 @@ void SyncSessionsRouterTabHelper::OnFaviconUpdated(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncSessionsRouterTabHelper)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SyncSessionsRouterTabHelper);
 
 }  // namespace sync_sessions

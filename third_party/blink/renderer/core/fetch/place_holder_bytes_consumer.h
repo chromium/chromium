@@ -31,7 +31,7 @@ class CORE_EXPORT PlaceHolderBytesConsumer final : public BytesConsumer {
   // This function can be called at most once.
   void Update(BytesConsumer* consumer);
 
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   Member<BytesConsumer> underlying_;

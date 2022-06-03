@@ -7,7 +7,7 @@
 #include <tuple>
 #include <utility>
 
-#include "ash/public/cpp/ash_features.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/network_icon_image_source.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -16,19 +16,19 @@
 #include "ash/system/network/network_icon_animation_observer.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
-#include "base/numerics/ranges.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "components/onc/onc_constants.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
+#include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/paint_vector_icon.h"
-#include "ui/gfx/skia_util.h"
 #include "ui/gfx/vector_icon_types.h"
 
 using chromeos::network_config::mojom::ActivationStateType;
@@ -48,6 +48,9 @@ class NetworkIconImpl {
   NetworkIconImpl(const std::string& guid,
                   IconType icon_type,
                   NetworkType network_type);
+
+  NetworkIconImpl(const NetworkIconImpl&) = delete;
+  NetworkIconImpl& operator=(const NetworkIconImpl&) = delete;
 
   // Determines whether or not the associated network might be dirty and if so
   // updates and generates the icon. Does nothing if network no longer exists.
@@ -77,11 +80,10 @@ class NetworkIconImpl {
   Badge technology_badge_ = {};
   bool show_vpn_badge_ = false;
   bool is_roaming_ = false;
+  bool is_dark_themed_ = false;
 
   // Generated icon image.
   gfx::ImageSkia image_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkIconImpl);
 };
 
 //------------------------------------------------------------------------------
@@ -165,31 +167,16 @@ ImageType ImageTypeForNetworkType(NetworkType network_type) {
   return NONE;
 }
 
-gfx::Size GetSizeForIconType(IconType icon_type) {
-  int size = kMenuIconSize;
-  if (IsTrayIcon(icon_type)) {
-    size = kUnifiedTrayIconSize;
-  } else if (icon_type == ICON_TYPE_DEFAULT_VIEW) {
-    size = kUnifiedFeaturePodVectorIconSize;
-  }
-  return gfx::Size(size, size);
-}
-
-int GetPaddingForIconType(IconType icon_type) {
-  if (IsTrayIcon(icon_type))
-    return kUnifiedTrayNetworkIconPadding;
-  return kTrayNetworkIconPadding;
-}
-
 gfx::ImageSkia GetImageForIndex(ImageType image_type,
                                 IconType icon_type,
                                 int index) {
   return gfx::CanvasImageSource::MakeImageSkia<SignalStrengthImageSource>(
       image_type, GetDefaultColorForIconType(icon_type),
-      GetSizeForIconType(icon_type), index, GetPaddingForIconType(icon_type));
+      gfx::Size(kUnifiedTrayIconSize, kUnifiedTrayIconSize), index,
+      kUnifiedTrayNetworkIconPadding);
 }
 
-gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
+gfx::ImageSkia& ConnectingWirelessImage(ImageType image_type,
                                         IconType icon_type,
                                         double animation) {
   // Connecting icons animate by adjusting their signal strength up and down,
@@ -200,7 +187,7 @@ gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
   // the key is a tuple including a bool representing whether the icon displays
   // bars (as oppose to arcs), the IconType, and an int representing the index
   // of the image (with respect to GetImageForIndex()).
-  static base::flat_map<std::tuple<bool, IconType, int>, gfx::ImageSkia*>
+  static base::flat_map<std::tuple<bool, IconType, int>, gfx::ImageSkia>
       s_image_cache;
 
   // Note that if |image_type| is NONE, arcs are displayed by default.
@@ -208,7 +195,7 @@ gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
 
   int index =
       animation * nextafter(static_cast<float>(kNumConnectingImages), 0);
-  index = base::ClampToRange(index, 0, kNumConnectingImages - 1);
+  index = base::clamp(index, 0, kNumConnectingImages - 1);
 
   auto map_key = std::make_tuple(is_bars_image, icon_type, index);
 
@@ -217,7 +204,7 @@ gfx::ImageSkia* ConnectingWirelessImage(ImageType image_type,
     // TODO(estade): should the alpha be applied in SignalStrengthImageSource?
     gfx::ImageSkia source = GetImageForIndex(image_type, icon_type, index + 1);
     s_image_cache[map_key] =
-        new gfx::ImageSkia(gfx::ImageSkiaOperations::CreateTransparentImage(
+        gfx::ImageSkia(gfx::ImageSkiaOperations::CreateTransparentImage(
             source, kConnectingImageAlpha));
   }
 
@@ -228,8 +215,7 @@ gfx::ImageSkia ConnectingVpnImage(double animation) {
   float floored_animation_value =
       std::floor(animation * kNumFadeImages) / kNumFadeImages;
   const SkColor icon_color = AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconPrimary,
-      AshColorProvider::AshColorMode::kLight);
+      AshColorProvider::ContentLayerType::kIconColorPrimary);
   return gfx::CreateVectorIcon(
       kNetworkVpnIcon,
       gfx::Tween::ColorValueBetween(
@@ -314,7 +300,8 @@ gfx::ImageSkia GetConnectingVpnImage(IconType icon_type) {
 NetworkIconImpl::NetworkIconImpl(const std::string& guid,
                                  IconType icon_type,
                                  NetworkType network_type)
-    : icon_type_(icon_type) {
+    : icon_type_(icon_type),
+      is_dark_themed_(AshColorProvider::Get()->IsDarkModeEnabled()) {
   // Default image is null.
 }
 
@@ -343,6 +330,11 @@ void NetworkIconImpl::Update(const NetworkStateProperties* network,
   if (new_show_vpn_badge != show_vpn_badge_) {
     VLOG(2) << "Update VPN badge: " << new_show_vpn_badge;
     show_vpn_badge_ = new_show_vpn_badge;
+    dirty = true;
+  }
+
+  if (is_dark_themed_ != AshColorProvider::Get()->IsDarkModeEnabled()) {
+    is_dark_themed_ = AshColorProvider::Get()->IsDarkModeEnabled();
     dirty = true;
   }
 
@@ -400,12 +392,13 @@ void NetworkIconImpl::GetBadges(const NetworkStateProperties* network,
   } else if (type == NetworkType::kCellular) {
     // technology_badge_ is set in UpdateCellularState.
     if (is_connected && network->type_state->get_cellular()->roaming) {
-      badges->bottom_right = {&kNetworkBadgeRoamingIcon, icon_color};
+      badges->top_left = {&kNetworkBadgeRoamingIcon, icon_color};
+    } else if (is_connected && !features::IsSeparateNetworkIconsEnabled()) {
+      // Only show technology badge when connected and roaming is not active.
+      badges->top_left = technology_badge_;
     }
   }
-  // Only show technology badge when connected.
-  if (is_connected && !features::IsSeparateNetworkIconsEnabled())
-    badges->top_left = technology_badge_;
+
   if (show_vpn_badge_)
     badges->bottom_left = {&kUnifiedNetworkBadgeVpnIcon, icon_color};
   if (connection_state_ == ConnectionStateType::kPortal)
@@ -448,11 +441,25 @@ NetworkIconImpl* FindAndUpdateImageImpl(const NetworkStateProperties* network,
 // Public interface
 
 SkColor GetDefaultColorForIconType(IconType icon_type) {
-  const bool light_icon = icon_type == network_icon::ICON_TYPE_TRAY_OOBE;
-  return AshColorProvider::Get()->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kIconPrimary,
-      light_icon ? AshColorProvider::AshColorMode::kLight
-                 : AshColorProvider::AshColorMode::kDark);
+  auto* ash_color_provider = AshColorProvider::Get();
+  switch (icon_type) {
+    case ICON_TYPE_TRAY_OOBE:
+      return kIconColorInOobe;
+    case ICON_TYPE_FEATURE_POD:
+      return ash_color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor);
+    case ICON_TYPE_FEATURE_POD_TOGGLED:
+      return ash_color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
+    case ICON_TYPE_FEATURE_POD_DISABLED:
+      return color_utils::GetResultingPaintColor(
+          AshColorProvider::GetDisabledColor(
+              GetDefaultColorForIconType(ICON_TYPE_FEATURE_POD)),
+          ash_color_provider->GetBackgroundColor());
+    default:
+      return ash_color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kIconColorPrimary);
+  }
 }
 
 const gfx::ImageSkia GetBasicImage(IconType icon_type,
@@ -501,10 +508,14 @@ gfx::ImageSkia GetImageForVPN(const NetworkStateProperties* vpn,
   return icon->image();
 }
 
+gfx::ImageSkia GetImageForWiFiNoConnections(IconType icon_type) {
+  return gfx::CreateVectorIcon(kUnifiedMenuWifiNoConnectionIcon,
+                               GetDefaultColorForIconType(icon_type));
+}
+
 gfx::ImageSkia GetImageForWiFiEnabledState(bool enabled, IconType icon_type) {
   if (!enabled) {
-    return gfx::CreateVectorIcon(kUnifiedMenuWifiOffIcon,
-                                 GetSizeForIconType(icon_type).width(),
+    return gfx::CreateVectorIcon(kUnifiedMenuWifiOffIcon, kUnifiedTrayIconSize,
                                  GetDefaultColorForIconType(icon_type));
   }
 
@@ -525,7 +536,7 @@ gfx::ImageSkia GetConnectingImageForNetworkType(NetworkType network_type,
   double animation = NetworkIconAnimation::GetInstance()->GetAnimation();
 
   return CreateNetworkIconImage(
-      *ConnectingWirelessImage(image_type, icon_type, animation), Badges());
+      ConnectingWirelessImage(image_type, icon_type, animation), Badges());
 }
 
 gfx::ImageSkia GetConnectedNetworkWithConnectingVpnImage(
@@ -545,7 +556,7 @@ gfx::ImageSkia GetDisconnectedImageForNetworkType(NetworkType network_type) {
   return GetBasicImage(ICON_TYPE_LIST, network_type, false /* connected */);
 }
 
-base::string16 GetLabelForNetworkList(const NetworkStateProperties* network) {
+std::u16string GetLabelForNetworkList(const NetworkStateProperties* network) {
   if (network->type == NetworkType::kCellular) {
     ActivationStateType activation_state =
         network->type_state->get_cellular()->activation_state;
@@ -556,9 +567,7 @@ base::string16 GetLabelForNetworkList(const NetworkStateProperties* network) {
     }
     if (activation_state == ActivationStateType::kNotActivated ||
         activation_state == ActivationStateType::kPartiallyActivated) {
-      return l10n_util::GetStringFUTF16(
-          IDS_ASH_STATUS_TRAY_NETWORK_LIST_ACTIVATE,
-          base::UTF8ToUTF16(network->name));
+      return base::UTF8ToUTF16(network->name);
     }
   }
   // Otherwise just show the network name or 'Ethernet'.

@@ -1,22 +1,11 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+    <style include="cr-shared-style settings-shared">
+      :host {
+        padding: 0 var(--cr-section-padding);
+      }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_action_menu/cr_action_menu.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_row_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../site_favicon.html">
-<link rel="import" href="local_data_browser_proxy.html">
-<link rel="import" href="site_settings_behavior.html">
-
-<dom-module id="site-entry">
-  <template>
-    <style include="settings-shared">
       .row-aligned {
+        align-items: center;
         display: flex;
-        flex-direction: row;
       }
 
       #toggleButton {
@@ -30,6 +19,9 @@
 
       .second-line {
         margin-top: 0.1em;
+        /* 1.54em is the same as the line-height of 154%. Ensures the line is
+           always present when iron-list is calculating item sizes. */
+        min-height: 1.54em;
       }
 
       /* Data units such as "0 KB" should always read left-to-right. */
@@ -42,18 +34,24 @@
         padding-inline-end: 0;
       }
 
+      .origin-link {
+        overflow: hidden;
+      }
+
       .spacing {
         padding-inline-start: 1ch;
       }
     </style>
     <div id="collapseParent" focus-row-container>
-      <div class$="settings-box list-item [[getClassForIndex_(listIndex)]]">
-        <div id="toggleButton" class="start row-aligned two-line"
+      <div class$="list-item [[getClassForIndex_(listIndex)]]">
+        <div id="toggleButton" class="start row-aligned two-line text-elide"
             on-click="onSiteEntryTap_" actionable aria-expanded="false">
           <site-favicon url="[[getSiteGroupIcon_(siteGroup)]]"></site-favicon>
           <div class="middle text-elide" id="displayName">
             <div class="site-representation">
-              <span class="url-directionality">[[displayName_]]</span>
+              <span class="url-directionality text-elide">
+                [[displayName_]]
+              </span>
               <span class="secondary"
                   hidden$="[[!siteGroupScheme_(siteGroup)]]">
                 &nbsp;$i18nPolymer{siteSettingsSiteRepresentationSeparator}&nbsp;
@@ -79,11 +77,21 @@
               aria-describedby="displayName"
               focus-row-control focus-type="show-detail"></cr-icon-button>
         </div>
-        <div class="row-aligned" hidden$="[[shouldHideOverflow_(siteGroup)]]">
-          <div class="separator"></div>
-          <cr-icon-button class="icon-more-vert" id="overflowMenuButton"
-              title="$i18n{moreActions}" on-click="showOverflowMenu_"
-              focus-row-control focus-type="more-actions"></cr-icon-button>
+        <div class="row-aligned">
+          <template is="dom-if"
+              if="[[!enableConsolidatedSiteStorageControls_]]">
+            <div class="separator"></div>
+            <cr-icon-button class="icon-more-vert" id="overflowMenuButton"
+                title="$i18n{moreActions}" on-click="showOverflowMenu_"
+                focus-row-control focus-type="more-actions"></cr-icon-button>
+          </template>
+          <template is="dom-if" if="[[enableConsolidatedSiteStorageControls_]]">
+            <div class="separator"></div>
+            <cr-icon-button class="icon-delete-gray" id="removeSiteButton"
+                title$="[[i18n('siteSettingsCookieRemoveSite', displayName_)]]"
+                on-click="onRemove_" focus-row-control focus-type="remove">
+            </cr-icon-button>
+          </template>
         </div>
       </div>
 
@@ -92,42 +100,71 @@
           <iron-collapse id="collapseChild" no-animation>
             <div class="list-frame">
               <template is="dom-repeat" items="[[siteGroup.origins]]">
-                <div class="settings-box list-item" on-click="onOriginTap_"
-                    actionable>
-                  <site-favicon url="[[item.origin]]"></site-favicon>
-                  <div class="site-representation middle text-elide">
-                    <span id="originSiteRepresentation"
-                        class="url-directionality">
-                      [[originRepresentation_(item)]]
-                    </span>
-                    <span class="secondary"
-                        hidden$="[[!originScheme_(item)]]">
-                      &nbsp;
-                          $i18nPolymer{siteSettingsSiteRepresentationSeparator}
-                          &nbsp;
-                    </span>
-                    <span class="secondary"
-                        hidden$="[[!originScheme_(item)]]">
-                      [[originScheme_(item)]]
-                    </span>
-                    <!--Define a spacing span so that when the direction is rtl,
-                     the spacing is still showing correctly. This is because the
-                     data-unit class is set to be ltr so the padding will be in
-                     wrong place if we put padding in that span.-->
-                    <span class="spacing" hidden$="[[!item.usage]]"></span>
-                    <span class="secondary data-unit" hidden$="[[!item.usage]]">
-                      [[originUsagesItem_(originUsages_.*, index)]]
-                    </span>
-                    <span class="secondary" hidden$="[[!item.numCookies]]">
-                        &nbsp;&middot;
-                        [[originCookiesItem_(cookiesNum_.*, index)]]
-                    </span>
+                <div class="list-item hr">
+                  <div class="start row-aligned list-item origin-link"
+                       on-click="onOriginTap_" actionable>
+                    <site-favicon url="[[item.origin]]"></site-favicon>
+                    <div class="site-representation middle text-elide">
+                      <span id="originSiteRepresentation"
+                          class="url-directionality text-elide">
+                        [[originRepresentation(item.origin)]]
+                      </span>
+                      <span class="secondary"
+                          hidden$="[[!originScheme_(item)]]">
+                        &nbsp;
+                        $i18nPolymer{siteSettingsSiteRepresentationSeparator}
+                        &nbsp;
+                      </span>
+                      <span class="secondary"
+                          hidden$="[[!originScheme_(item)]]">
+                        [[originScheme_(item)]]
+                      </span>
+                      <!--Define a spacing span so that when the direction is
+                         rtl, the spacing is still showing correctly. This is
+                         because the data-unit class is set to be ltr so the
+                         padding will be in wrong place if we put padding in
+                         that span.-->
+                      <span class="spacing" hidden$="[[!item.usage]]"></span>
+                      <span class="secondary data-unit"
+                            hidden$="[[!item.usage]]">
+                        [[originUsagesItem_(originUsages_.*, index)]]
+                      </span>
+                      <span class="secondary" hidden$="[[!item.numCookies]]">
+                          &nbsp;&middot;
+                          [[originCookiesItem_(cookiesNum_.*, index)]]
+                      </span>
+                    </div>
+                    <cr-icon-button class="subpage-arrow"
+                        aria-labelledby$="originSiteRepresentation"
+                        aria-roledescription=
+                            "$i18n{subpageArrowRoleDescription}"
+                        focus-row-control focus-type="detailed-sites">
+                    </cr-icon-button>
                   </div>
-                  <cr-icon-button class="subpage-arrow"
-                      aria-labelledby$="originSiteRepresentation"
-                      aria-roledescription="$i18n{subpageArrowRoleDescription}"
-                      focus-row-control focus-type="detailed-sites">
-                  </cr-icon-button>
+                  <div class="row-aligned">
+                    <template is="dom-if"
+                        if="[[!enableConsolidatedSiteStorageControls_]]">
+                      <div class="separator"></div>
+                      <cr-icon-button class="icon-more-vert"
+                          id="originOverflowMenuButton"
+                          data-origin$="[[item.origin]]" data-context="origin"
+                          title="$i18n{moreActions}"
+                          on-click="showOverflowMenu_"
+                          focus-row-control focus-type="more-actions">
+                      </cr-icon-button>
+                    </template>
+                    <template is="dom-if"
+                        if="[[enableConsolidatedSiteStorageControls_]]">
+                      <div class="separator"></div>
+                      <cr-icon-button class="icon-delete-gray"
+                          id="removeOriginButton"
+                          title$="[[getRemoveOriginButtonTitle_(item.origin)]]"
+                          data-origin$="[[item.origin]]" data-context="origin"
+                          on-click="onRemove_" focus-row-control
+                          focus-type="remove">
+                      </cr-icon-button>
+                    </template>
+                  </div>
                 </div>
               </template>
             </div>
@@ -135,6 +172,3 @@
       </template>
     </cr-lazy-render>
     </div>
-  </template>
-  <script src="site_entry.js"></script>
-</dom-module>

@@ -31,6 +31,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_ANGLE_INSTANCED_ARRAYS_H_
 
 #include "third_party/blink/renderer/modules/webgl/webgl_extension.h"
+#include "third_party/khronos/GLES2/gl2.h"
 
 namespace blink {
 

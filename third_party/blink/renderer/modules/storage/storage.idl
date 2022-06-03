@@ -25,8 +25,10 @@
 
 // https://html.spec.whatwg.org/C/#the-storage-interface
 
-[ImplementedAs=StorageArea]
-interface Storage {
+[
+    Exposed=Window,
+    ImplementedAs=StorageArea
+] interface Storage {
     [RaisesException=Getter] readonly attribute unsigned long length;
     [RaisesException, MeasureAs=DOMStorageRead] DOMString? key(unsigned long index);
     [LogActivity, RaisesException, MeasureAs=DOMStorageRead] getter DOMString? getItem(DOMString key);

@@ -1,4 +1,4 @@
 [document web] focusable focused
 ++[section]
-++++[entry] editable focusable selectable-text
+++++[entry] editable focusable selectable-text text-input-type:text
 ++++[push button] name='Reset' focusable

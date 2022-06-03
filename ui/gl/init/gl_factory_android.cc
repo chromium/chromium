@@ -4,7 +4,8 @@
 
 #include "ui/gl/init/gl_factory.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_context.h"
@@ -29,12 +30,15 @@ class GLNonOwnedContext : public GLContextReal {
  public:
   explicit GLNonOwnedContext(GLShareGroup* share_group);
 
+  GLNonOwnedContext(const GLNonOwnedContext&) = delete;
+  GLNonOwnedContext& operator=(const GLNonOwnedContext&) = delete;
+
   // Implement GLContext.
   bool Initialize(GLSurface* compatible_surface,
                   const GLContextAttribs& attribs) override;
-  bool MakeCurrent(GLSurface* surface) override;
+  bool MakeCurrentImpl(GLSurface* surface) override;
   void ReleaseCurrent(GLSurface* surface) override {}
-  bool IsCurrent(GLSurface* surface) override { return true; }
+  bool IsCurrent(GLSurface* surface) override;
   void* GetHandle() override { return nullptr; }
 
  protected:
@@ -42,8 +46,6 @@ class GLNonOwnedContext : public GLContextReal {
 
  private:
   EGLDisplay display_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLNonOwnedContext);
 };
 
 GLNonOwnedContext::GLNonOwnedContext(GLShareGroup* share_group)
@@ -55,19 +57,23 @@ bool GLNonOwnedContext::Initialize(GLSurface* compatible_surface,
   return true;
 }
 
-bool GLNonOwnedContext::MakeCurrent(GLSurface* surface) {
+bool GLNonOwnedContext::MakeCurrentImpl(GLSurface* surface) {
   BindGLApi();
   SetCurrent(surface);
   InitializeDynamicBindings();
   return true;
 }
 
+bool GLNonOwnedContext::IsCurrent(GLSurface* surface) {
+  return GetRealCurrent() == this;
+}
+
 }  // namespace
 
-std::vector<GLImplementation> GetAllowedGLImplementations() {
-  std::vector<GLImplementation> impls;
-  impls.push_back(kGLImplementationEGLGLES2);
-  impls.push_back(kGLImplementationEGLANGLE);
+std::vector<GLImplementationParts> GetAllowedGLImplementations() {
+  std::vector<GLImplementationParts> impls;
+  impls.emplace_back(GLImplementationParts(kGLImplementationEGLGLES2));
+  impls.emplace_back(GLImplementationParts(kGLImplementationEGLANGLE));
   return impls;
 }
 

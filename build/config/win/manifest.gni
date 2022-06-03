@@ -41,6 +41,12 @@ as_invoker_manifest = "//build/win/as_invoker.manifest"
 # elevate.
 require_administrator_manifest = "//build/win/require_administrator.manifest"
 
+# Request the segment heap. See https://crbug.com/1014701 for details.
+declare_args() {
+  enable_segment_heap = false
+}
+segment_heap_manifest = "//build/win/segment_heap.manifest"
+
 # Construct a target to combine the given manifest files into a .rc file.
 #
 # Variables for the windows_manifest template:

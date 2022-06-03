@@ -7,13 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "net/url_request/redirect_info.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class RunLoop;
@@ -26,6 +24,12 @@ namespace content {
 class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
  public:
   TestNavigationURLLoaderDelegate();
+
+  TestNavigationURLLoaderDelegate(const TestNavigationURLLoaderDelegate&) =
+      delete;
+  TestNavigationURLLoaderDelegate& operator=(
+      const TestNavigationURLLoaderDelegate&) = delete;
+
   ~TestNavigationURLLoaderDelegate() override;
 
   const net::RedirectInfo& redirect_info() const { return redirect_info_; }
@@ -50,26 +54,29 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   void WaitForRequestRedirected();
   void WaitForResponseStarted();
   void WaitForRequestFailed();
-  void WaitForRequestStarted();
 
   void ReleaseURLLoaderClientEndpoints();
 
   // NavigationURLLoaderDelegate implementation.
   void OnRequestRedirected(
       const net::RedirectInfo& redirect_info,
+      const net::NetworkIsolationKey& network_isolation_key,
       network::mojom::URLResponseHeadPtr response) override;
   void OnResponseStarted(
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
-      const GlobalRequestID& request_id,
+      GlobalRequestID request_id,
       bool is_download,
-      NavigationDownloadPolicy download_policy,
-      base::Optional<SubresourceLoaderParams> subresource_loader_params)
-      override;
+      blink::NavigationDownloadPolicy download_policy,
+      net::NetworkIsolationKey network_isolation_key,
+      absl::optional<SubresourceLoaderParams> subresource_loader_params,
+      EarlyHints early_hints) override;
   void OnRequestFailed(
       const network::URLLoaderCompletionStatus& status) override;
-  void OnRequestStarted(base::TimeTicks timestamp) override;
+  absl::optional<NavigationEarlyHintsManagerParams>
+  CreateNavigationEarlyHintsManagerParams(
+      const network::mojom::EarlyHints& early_hints) override;
 
  private:
   net::RedirectInfo redirect_info_;
@@ -85,11 +92,8 @@ class TestNavigationURLLoaderDelegate : public NavigationURLLoaderDelegate {
   std::unique_ptr<base::RunLoop> request_redirected_;
   std::unique_ptr<base::RunLoop> response_started_;
   std::unique_ptr<base::RunLoop> request_failed_;
-  std::unique_ptr<base::RunLoop> request_started_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNavigationURLLoaderDelegate);
 };
 
 }  // namespace content
 
-#endif  // CONTENT_TEST_TEST_NAVIGATION_URL_LOADER_DELEGATE_H
+#endif  // CONTENT_TEST_TEST_NAVIGATION_URL_LOADER_DELEGATE_H_

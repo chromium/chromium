@@ -1,5 +1,4 @@
 specific_include_rules = {
-  # mash-ok
   "tab_drag_controller_interactive_uitest\.cc": [
     "+ash/shell.h",
     "+ash/wm/splitview/split_view_controller.h",

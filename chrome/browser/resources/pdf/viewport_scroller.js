@@ -2,12 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Creates a new ViewportScroller.
- * A ViewportScroller scrolls the page in response to drag selection with the
- * mouse.
- *
- */
+// Scrolls the page in response to drag selection with the mouse.
 export class ViewportScroller {
   /**
    * @param {Object} viewport The viewport info of the page.
@@ -27,7 +22,6 @@ export class ViewportScroller {
   /**
    * Start scrolling the page by |scrollVelocity_| every
    * |DRAG_TIMER_INTERVAL_MS_|.
-   *
    * @private
    */
   startDragScrollTimer_() {
@@ -41,7 +35,6 @@ export class ViewportScroller {
 
   /**
    * Stops the drag scroll timer if it is active.
-   *
    * @private
    */
   stopDragScrollTimer_() {
@@ -54,7 +47,6 @@ export class ViewportScroller {
 
   /**
    * Scrolls the viewport by the current scroll velocity.
-   *
    * @private
    */
   dragScrollPage_() {
@@ -64,14 +56,13 @@ export class ViewportScroller {
         ViewportScroller.DRAG_TIMER_INTERVAL_MS_;
     position.y += (this.scrollVelocity_.y * timeAdjustment);
     position.x += (this.scrollVelocity_.x * timeAdjustment);
-    this.viewport_.position = position;
+    this.viewport_.setPosition(position);
     this.lastFrameTime_ = currentFrameTime;
   }
 
   /**
    * Calculate the velocity to scroll while dragging using the distance of the
    * cursor outside the viewport.
-   *
    * @param {Object} event The mousemove event.
    * @return {Object} Object with x and y direction scroll velocity.
    * @private
@@ -95,7 +86,6 @@ export class ViewportScroller {
   /**
    * Handles mousemove events. It updates the scroll velocity and starts and
    * stops timer based on scroll velocity.
-   *
    * @param {Object} event The mousemove event.
    * @private
    */
@@ -111,7 +101,6 @@ export class ViewportScroller {
   /**
    * Sets whether to scroll the viewport when the mouse is outside the
    * viewport.
-   *
    * @param {boolean} isSelecting Represents selection status.
    */
   setEnableScrolling(isSelecting) {
@@ -134,14 +123,12 @@ export class ViewportScroller {
 /**
  * The period of time in milliseconds to wait between updating the viewport
  * position by the scroll velocity.
- *
  * @private
  */
 ViewportScroller.DRAG_TIMER_INTERVAL_MS_ = 100;
 
 /**
  * The maximum drag scroll distance per DRAG_TIMER_INTERVAL in pixels.
- *
  * @private
  */
 ViewportScroller.MAX_DRAG_SCROLL_DISTANCE_ = 100;

@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/video_codecs.h"
 #include "media/gpu/media_gpu_export.h"
@@ -24,6 +23,10 @@ namespace media {
 class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
  public:
   AcceleratedVideoDecoder() {}
+
+  AcceleratedVideoDecoder(const AcceleratedVideoDecoder&) = delete;
+  AcceleratedVideoDecoder& operator=(const AcceleratedVideoDecoder&) = delete;
+
   virtual ~AcceleratedVideoDecoder() {}
 
   // Set the buffer owned by |decoder_buffer| as the current source of encoded
@@ -69,13 +72,14 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   // we need a new set of them, or when an error occurs.
   virtual DecodeResult Decode() WARN_UNUSED_RESULT = 0;
 
-  // Return dimensions/visible rectangle/profile/required number of pictures
-  // that client should be ready to provide for the decoder to function properly
-  // (of which up to GetNumReferenceFrames() might be needed for internal
-  // decoding). To be used after Decode() returns kConfigChange.
+  // Return dimensions/visible rectangle/profile/bit depth/required number of
+  // pictures that client should be ready to provide for the decoder to function
+  // properly (of which up to GetNumReferenceFrames() might be needed for
+  // internal decoding). To be used after Decode() returns kConfigChange.
   virtual gfx::Size GetPicSize() const = 0;
   virtual gfx::Rect GetVisibleRect() const = 0;
   virtual VideoCodecProfile GetProfile() const = 0;
+  virtual uint8_t GetBitDepth() const = 0;
   virtual size_t GetRequiredNumOfPictures() const = 0;
   virtual size_t GetNumReferenceFrames() const = 0;
 
@@ -86,9 +90,6 @@ class MEDIA_GPU_EXPORT AcceleratedVideoDecoder {
   // The number is the sweet spot which the decoder can tolerate to handle the
   // missing keyframe by itself. In addition, this situation is exceptional.
   static constexpr size_t kVPxMaxNumOfSizeChangeFailures = 75;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AcceleratedVideoDecoder);
 };
 
 }  //  namespace media

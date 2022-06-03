@@ -28,6 +28,10 @@ class WindowManager : public display::NativeDisplayObserver {
  public:
   explicit WindowManager(std::unique_ptr<RendererFactory> renderer_factory,
                          base::OnceClosure quit_closure);
+
+  WindowManager(const WindowManager&) = delete;
+  WindowManager& operator=(const WindowManager&) = delete;
+
   ~WindowManager() override;
 
   void Quit();
@@ -36,9 +40,11 @@ class WindowManager : public display::NativeDisplayObserver {
   void RemoveWindow(DemoWindow* window);
 
  private:
-  void OnDisplaysAquired(
+  void OnDisplaysAcquired(
       const std::vector<display::DisplaySnapshot*>& displays);
-  void OnDisplayConfigured(const gfx::Rect& bounds, bool success);
+  void OnDisplayConfigured(const int64_t display_id,
+                           const gfx::Rect& bounds,
+                           bool config_success);
 
   // display::NativeDisplayDelegate:
   void OnConfigurationChanged() override;
@@ -59,8 +65,6 @@ class WindowManager : public display::NativeDisplayObserver {
   // happens, the event is deferred. This is set to true and a display
   // configuration will be scheduled after the current one finishes.
   bool should_configure_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowManager);
 };
 
 }  // namespace ui

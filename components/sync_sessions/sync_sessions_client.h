@@ -6,19 +6,11 @@
 #define COMPONENTS_SYNC_SESSIONS_SYNC_SESSIONS_CLIENT_H_
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
 #include "components/sync/model/model_type_store.h"
 
 class GURL;
-
-namespace favicon {
-class FaviconService;
-}
-
-namespace history {
-class HistoryService;
-}
 
 namespace sync_sessions {
 
@@ -31,13 +23,18 @@ class SyncedWindowDelegatesGetter;
 class SyncSessionsClient {
  public:
   SyncSessionsClient();
+
+  SyncSessionsClient(const SyncSessionsClient&) = delete;
+  SyncSessionsClient& operator=(const SyncSessionsClient&) = delete;
+
   virtual ~SyncSessionsClient();
 
   // Getters for services that sessions depends on.
-  virtual favicon::FaviconService* GetFaviconService() = 0;
-  virtual history::HistoryService* GetHistoryService() = 0;
   virtual SessionSyncPrefs* GetSessionSyncPrefs() = 0;
   virtual syncer::RepeatingModelTypeStoreFactory GetStoreFactory() = 0;
+
+  // Clears all on demand favicons (downloaded based on synced history data).
+  virtual void ClearAllOnDemandFavicons() = 0;
 
   // Checks if the given url is considered interesting enough to sync. Most urls
   // are considered interesting. Examples of ones that are not are invalid urls,
@@ -46,15 +43,16 @@ class SyncSessionsClient {
   // componentized.
   virtual bool ShouldSyncURL(const GURL& url) const = 0;
 
+  // Returns if the provided |cache_guid| is the local device's current cache\
+  // GUID or is known to have been used in the past as local device GUID.
+  virtual bool IsRecentLocalCacheGuid(const std::string& cache_guid) const = 0;
+
   // Returns the SyncedWindowDelegatesGetter for this client.
   virtual SyncedWindowDelegatesGetter* GetSyncedWindowDelegatesGetter() = 0;
 
   // Returns a LocalSessionEventRouter instance that is customized for the
   // embedder's context.
   virtual LocalSessionEventRouter* GetLocalSessionEventRouter() = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncSessionsClient);
 };
 
 }  // namespace sync_sessions

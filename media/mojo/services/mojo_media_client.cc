@@ -4,16 +4,12 @@
 
 #include "media/mojo/services/mojo_media_client.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_decoder.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_log.h"
 #include "media/base/renderer.h"
 #include "media/base/video_decoder.h"
-
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-#include "media/cdm/cdm_proxy.h"
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 namespace media {
 
@@ -28,23 +24,26 @@ std::unique_ptr<AudioDecoder> MojoMediaClient::CreateAudioDecoder(
   return nullptr;
 }
 
-SupportedVideoDecoderConfigMap
+SupportedVideoDecoderConfigs
 MojoMediaClient::GetSupportedVideoDecoderConfigs() {
   return {};
+}
+
+VideoDecoderType MojoMediaClient::GetDecoderImplementationType() {
+  return VideoDecoderType::kUnknown;
 }
 
 std::unique_ptr<VideoDecoder> MojoMediaClient::CreateVideoDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     MediaLog* media_log,
     mojom::CommandBufferIdPtr command_buffer_id,
-    VideoDecoderImplementation implementation,
     RequestOverlayInfoCB request_overlay_info_cb,
     const gfx::ColorSpace& target_color_space) {
   return nullptr;
 }
 
 std::unique_ptr<Renderer> MojoMediaClient::CreateRenderer(
-    service_manager::mojom::InterfaceProvider* host_interfaces,
+    mojom::FrameInterfaceFactory* frame_interfaces,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     MediaLog* media_log,
     const std::string& audio_device_id) {
@@ -53,7 +52,7 @@ std::unique_ptr<Renderer> MojoMediaClient::CreateRenderer(
 
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
 std::unique_ptr<Renderer> MojoMediaClient::CreateCastRenderer(
-    service_manager::mojom::InterfaceProvider* host_interfaces,
+    mojom::FrameInterfaceFactory* frame_interfaces,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     MediaLog* media_log,
     const base::UnguessableToken& overlay_plane_id) {
@@ -61,16 +60,20 @@ std::unique_ptr<Renderer> MojoMediaClient::CreateCastRenderer(
 }
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-std::unique_ptr<CdmFactory> MojoMediaClient::CreateCdmFactory(
-    service_manager::mojom::InterfaceProvider* host_interfaces) {
+#if defined(OS_WIN)
+std::unique_ptr<Renderer> MojoMediaClient::CreateMediaFoundationRenderer(
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner,
+    mojom::FrameInterfaceFactory* frame_interfaces,
+    mojo::PendingRemote<mojom::MediaLog> media_log_remote,
+    mojo::PendingReceiver<mojom::MediaFoundationRendererExtension>
+        renderer_extension_receiver) {
   return nullptr;
 }
+#endif  // defined(OS_WIN)
 
-#if BUILDFLAG(ENABLE_CDM_PROXY)
-std::unique_ptr<CdmProxy> MojoMediaClient::CreateCdmProxy(
-    const base::Token& cdm_guid) {
+std::unique_ptr<CdmFactory> MojoMediaClient::CreateCdmFactory(
+    mojom::FrameInterfaceFactory* frame_interfaces) {
   return nullptr;
 }
-#endif  // BUILDFLAG(ENABLE_CDM_PROXY)
 
 }  // namespace media

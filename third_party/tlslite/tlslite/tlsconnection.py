@@ -17,7 +17,7 @@ from .utils.compat import formatExceptionTrace
 from .tlsrecordlayer import TLSRecordLayer
 from .session import Session
 from .constants import *
-from .utils.cryptomath import getRandomBytes
+from .utils.cryptomath import getRandomBytes, MD5, SHA1, SHA256
 from .errors import *
 from .messages import *
 from .mathtls import *
@@ -51,6 +51,24 @@ class KeyExchange(object):
         """
         raise NotImplementedError()
 
+    def sign(self, inpBytes):
+        algorithm = None
+        if self.serverHello.server_version >= (3, 3):
+            # Negotiate a signature algorithm.
+            peerPrefs = self.clientHello.signature_algorithms
+            if (HashAlgorithm.sha256, SignatureAlgorithm.rsa) in peerPrefs:
+                algorithm = (HashAlgorithm.sha256, SignatureAlgorithm.rsa)
+                inpBytes = RSAKey.addPKCS1SHA256Prefix(SHA256(inpBytes))
+            elif (HashAlgorithm.sha1, SignatureAlgorithm.rsa) in peerPrefs:
+                algorithm = (HashAlgorithm.sha1, SignatureAlgorithm.rsa)
+                inpBytes = RSAKey.addPKCS1SHA1Prefix(SHA1(inpBytes))
+            else:
+                raise TLSLocalAlert(AlertDescription.handshake_failure,
+                                   "no common signature algorithms")
+        else:
+            inpBytes = MD5(inpBytes) + SHA1(inpBytes)
+        return algorithm, self.privateKey.sign(inpBytes)
+
 class RSAKeyExchange(KeyExchange):
     def makeServerKeyExchange(self):
         return None
@@ -78,7 +96,7 @@ def _hexStringToNumber(s):
     s = s.replace(" ", "").replace("\n", "")
     if len(s) % 2 != 0:
         raise ValueError("Length is not even")
-    return bytesToNumber(bytearray(s.decode("hex")))
+    return bytesToNumber(bytearray.fromhex(s))
 
 class DHE_RSAKeyExchange(KeyExchange):
     # 2048-bit MODP Group (RFC 3526, Section 3)
@@ -108,12 +126,9 @@ DE2BCBF6 95581718 3995497C EA956AE5 15D22618 98FA0510
         version = self.serverHello.server_version
         serverKeyExchange = ServerKeyExchange(self.cipherSuite, version)
         serverKeyExchange.createDH(self.dh_p, self.dh_g, dh_Ys)
-        hashBytes = serverKeyExchange.hash(self.clientHello.random,
-                                           self.serverHello.random)
-        if version >= (3,3):
-            # TODO: Signature algorithm negotiation not supported.
-            hashBytes = RSAKey.addPKCS1SHA1Prefix(hashBytes)
-        serverKeyExchange.signature = self.privateKey.sign(hashBytes)
+        serverKeyExchange.signature_algorithm, serverKeyExchange.signature = \
+            self.sign(serverKeyExchange.signingPayload(self.clientHello.random,
+                                                       self.serverHello.random))
         return serverKeyExchange
 
     def processClientKeyExchange(self, clientKeyExchange):
@@ -135,12 +150,9 @@ class ECDHE_RSAKeyExchange(KeyExchange):
         version = self.serverHello.server_version
         serverKeyExchange = ServerKeyExchange(self.cipherSuite, version)
         serverKeyExchange.createECDH(NamedCurve.secp256r1, bytearray(public))
-        hashBytes = serverKeyExchange.hash(self.clientHello.random,
-                                           self.serverHello.random)
-        if version >= (3,3):
-            # TODO: Signature algorithm negotiation not supported.
-            hashBytes = RSAKey.addPKCS1SHA1Prefix(hashBytes)
-        serverKeyExchange.signature = self.privateKey.sign(hashBytes)
+        serverKeyExchange.signature_algorithm, serverKeyExchange.signature = \
+            self.sign(serverKeyExchange.signingPayload(self.clientHello.random,
+                                                       self.serverHello.random))
         return serverKeyExchange
 
     def processClientKeyExchange(self, clientKeyExchange):
@@ -190,7 +202,7 @@ class TLSConnection(TLSRecordLayer):
 
     def handshakeClientAnonymous(self, session=None, settings=None, 
                                 checker=None, serverName="",
-                                async=False):
+                                is_async=False):
         """Perform an anonymous handshake in the role of client.
 
         This function performs an SSL or TLS handshake using an
@@ -224,8 +236,8 @@ class TLSConnection(TLSRecordLayer):
         @type serverName: string
         @param serverName: The ServerNameIndication TLS Extension.
 
-        @type async: bool
-        @param async: If False, this function will block until the
+        @type is_async: bool
+        @param is_async: If False, this function will block until the
         handshake is completed.  If True, this function will return a
         generator.  Successive invocations of the generator will
         return 0 if it is waiting to read from the socket, 1 if it is
@@ -233,7 +245,7 @@ class TLSConnection(TLSRecordLayer):
         the handshake operation is completed.
 
         @rtype: None or an iterable
-        @return: If 'async' is True, a generator object will be
+        @return: If 'is_async' is True, a generator object will be
         returned.
 
         @raise socket.error: If a socket error occurs.
@@ -248,7 +260,7 @@ class TLSConnection(TLSRecordLayer):
                                                 settings=settings,
                                                 checker=checker,
                                                 serverName=serverName)
-        if async:
+        if is_async:
             return handshaker
         for result in handshaker:
             pass
@@ -256,7 +268,7 @@ class TLSConnection(TLSRecordLayer):
     def handshakeClientSRP(self, username, password, session=None,
                            settings=None, checker=None, 
                            reqTack=True, serverName="",
-                           async=False):
+                           is_async=False):
         """Perform an SRP handshake in the role of client.
 
         This function performs a TLS/SRP handshake.  SRP mutually
@@ -301,8 +313,8 @@ class TLSConnection(TLSRecordLayer):
         @type serverName: string
         @param serverName: The ServerNameIndication TLS Extension.
 
-        @type async: bool
-        @param async: If False, this function will block until the
+        @type is_async: bool
+        @param is_async: If False, this function will block until the
         handshake is completed.  If True, this function will return a
         generator.  Successive invocations of the generator will
         return 0 if it is waiting to read from the socket, 1 if it is
@@ -310,7 +322,7 @@ class TLSConnection(TLSRecordLayer):
         the handshake operation is completed.
 
         @rtype: None or an iterable
-        @return: If 'async' is True, a generator object will be
+        @return: If 'is_async' is True, a generator object will be
         returned.
 
         @raise socket.error: If a socket error occurs.
@@ -328,9 +340,9 @@ class TLSConnection(TLSRecordLayer):
         # fashion, returning 1 when it is waiting to able to write, 0 when
         # it is waiting to read.
         #
-        # If 'async' is True, the generator is returned to the caller, 
-        # otherwise it is executed to completion here.  
-        if async:
+        # If 'is_async' is True, the generator is returned to the caller,
+        # otherwise it is executed to completion here.
+        if is_async:
             return handshaker
         for result in handshaker:
             pass
@@ -338,7 +350,7 @@ class TLSConnection(TLSRecordLayer):
     def handshakeClientCert(self, certChain=None, privateKey=None,
                             session=None, settings=None, checker=None,
                             nextProtos=None, reqTack=True, serverName="",
-                            async=False):
+                            is_async=False):
         """Perform a certificate-based handshake in the role of client.
 
         This function performs an SSL or TLS handshake.  The server
@@ -395,8 +407,8 @@ class TLSConnection(TLSRecordLayer):
         @type serverName: string
         @param serverName: The ServerNameIndication TLS Extension.
 
-        @type async: bool
-        @param async: If False, this function will block until the
+        @type is_async: bool
+        @param is_async: If False, this function will block until the
         handshake is completed.  If True, this function will return a
         generator.  Successive invocations of the generator will
         return 0 if it is waiting to read from the socket, 1 if it is
@@ -404,7 +416,7 @@ class TLSConnection(TLSRecordLayer):
         the handshake operation is completed.
 
         @rtype: None or an iterable
-        @return: If 'async' is True, a generator object will be
+        @return: If 'is_async' is True, a generator object will be
         returned.
 
         @raise socket.error: If a socket error occurs.
@@ -423,9 +435,9 @@ class TLSConnection(TLSRecordLayer):
         # fashion, returning 1 when it is waiting to able to write, 0 when
         # it is waiting to read.
         #
-        # If 'async' is True, the generator is returned to the caller, 
-        # otherwise it is executed to completion here.                        
-        if async:
+        # If 'is_async' is True, the generator is returned to the caller,
+        # otherwise it is executed to completion here.
+        if is_async:
             return handshaker
         for result in handshaker:
             pass
@@ -1356,10 +1368,10 @@ class TLSConnection(TLSRecordLayer):
         # See https://tools.ietf.org/html/rfc8446#section-4.1.3
         if settings.simulateTLS13Downgrade:
             serverRandom = serverRandom[:24] + \
-                bytearray("\x44\x4f\x57\x4e\x47\x52\x44\x01")
+                bytearray(b"\x44\x4f\x57\x4e\x47\x52\x44\x01")
         elif settings.simulateTLS12Downgrade:
             serverRandom = serverRandom[:24] + \
-                bytearray("\x44\x4f\x57\x4e\x47\x52\x44\x00")
+                bytearray(b"\x44\x4f\x57\x4e\x47\x52\x44\x00")
         serverHello = ServerHello()
         serverHello.create(self.version, serverRandom, sessionID, \
                             cipherSuite, CertificateType.x509, tackExt,
@@ -1817,7 +1829,7 @@ class TLSConnection(TLSRecordLayer):
         try:
             premasterSecret = \
                 keyExchange.processClientKeyExchange(clientKeyExchange)
-        except TLSLocalAlert, alert:
+        except alert as TLSLocalAlert:
             for result in self._sendError(alert.description, alert.message):
                 yield result
 

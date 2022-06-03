@@ -30,7 +30,7 @@ void PartNames::PushMap(const NamesMap& names_map) {
 void PartNames::ApplyMap(const NamesMap& names_map) {
   HashSet<AtomicString> new_names;
   for (const AtomicString& name : names_) {
-    if (base::Optional<SpaceSplitString> mapped_names = names_map.Get(name))
+    if (absl::optional<SpaceSplitString> mapped_names = names_map.Get(name))
       AddToSet(mapped_names.value(), &new_names);
   }
   std::swap(names_, new_names);

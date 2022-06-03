@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/strings/string16.h"
+#include "extensions/common/mojom/api_permission_id.mojom-shared.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/base_set_operators.h"
 
@@ -26,7 +26,7 @@ class APIPermissionSet;
 template<>
 struct BaseSetOperatorsTraits<APIPermissionSet> {
   typedef APIPermission ElementType;
-  typedef APIPermission::ID ElementIDType;
+  typedef mojom::APIPermissionID ElementIDType;
 };
 
 class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
@@ -41,7 +41,7 @@ class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
     kAllowInternalPermissions,
   };
 
-  void insert(APIPermission::ID id);
+  void insert(mojom::APIPermissionID id);
 
   // Inserts |permission| into the APIPermissionSet.
   void insert(std::unique_ptr<APIPermission> permission);
@@ -57,7 +57,7 @@ class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
   static bool ParseFromJSON(const base::Value* permissions,
                             ParseSource source,
                             APIPermissionSet* api_permissions,
-                            base::string16* error,
+                            std::u16string* error,
                             std::vector<std::string>* unhandled_permissions);
 };
 
@@ -77,14 +77,14 @@ class APIPermissionSet : public BaseSetOperators<APIPermissionSet> {
 //
 // TODO(sashab): Move this to the same file as PermissionIDSet once that moves
 // to its own file.
-class PermissionID : public std::pair<APIPermission::ID, base::string16> {
+class PermissionID : public std::pair<mojom::APIPermissionID, std::u16string> {
  public:
-  explicit PermissionID(APIPermission::ID id);
-  PermissionID(APIPermission::ID id, const base::string16& parameter);
+  explicit PermissionID(mojom::APIPermissionID id);
+  PermissionID(mojom::APIPermissionID id, const std::u16string& parameter);
   virtual ~PermissionID();
 
-  const APIPermission::ID& id() const { return this->first; }
-  const base::string16& parameter() const { return this->second; }
+  const mojom::APIPermissionID& id() const { return this->first; }
+  const std::u16string& parameter() const { return this->second; }
 };
 
 // A set of permissions for an app or extension. Used for passing around groups
@@ -101,53 +101,55 @@ class PermissionID : public std::pair<APIPermission::ID, base::string16> {
 //   // Create an empty PermissionIDSet.
 //   PermissionIDSet p;
 //   // Add a permission to the set.
-//   p.insert(APIPermission::kNetworkState);
+//   p.insert(mojom::APIPermissionID::kNetworkState);
 //   // Add a permission with a parameter to the set.
-//   p.insert(APIPermission::kHostReadOnly,
-//            base::ASCIIToUTF16("http://www.google.com"));
+//   p.insert(mojom::APIPermissionID::kHostReadOnly,
+//            u"http://www.google.com");
 //
 // TODO(sashab): Move this to its own file and rename it to PermissionSet after
 // APIPermission is removed, the current PermissionSet is no longer used, and
-// APIPermission::ID is the only type of Permission ID.
+// mojom::APIPermissionID is the only type of Permission ID.
 class PermissionIDSet {
  public:
   using const_iterator = std::set<PermissionID>::const_iterator;
 
   PermissionIDSet();
-  PermissionIDSet(std::initializer_list<APIPermission::ID> permissions);
+  PermissionIDSet(std::initializer_list<mojom::APIPermissionID> permissions);
   PermissionIDSet(const PermissionIDSet& other);
   virtual ~PermissionIDSet();
 
   // Adds the given permission, and an optional parameter, to the set.
-  void insert(APIPermission::ID permission_id);
-  void insert(APIPermission::ID permission_id,
-              const base::string16& permission_parameter);
+  void insert(mojom::APIPermissionID permission_id);
+  void insert(mojom::APIPermissionID permission_id,
+              const std::u16string& permission_parameter);
   void InsertAll(const PermissionIDSet& permission_set);
 
   // Erases all permissions with the given id.
-  void erase(APIPermission::ID permission_id);
+  void erase(mojom::APIPermissionID permission_id);
 
   // Returns the parameters for all PermissionIDs in this set.
-  std::vector<base::string16> GetAllPermissionParameters() const;
+  std::vector<std::u16string> GetAllPermissionParameters() const;
 
   // Check if the set contains a permission with the given ID.
   bool ContainsID(PermissionID permission_id) const;
-  bool ContainsID(APIPermission::ID permission_id) const;
+  bool ContainsID(mojom::APIPermissionID permission_id) const;
 
   // Check if the set contains permissions with all the given IDs.
-  bool ContainsAllIDs(const std::set<APIPermission::ID>& permission_ids) const;
+  bool ContainsAllIDs(
+      const std::set<mojom::APIPermissionID>& permission_ids) const;
 
   // Check if the set contains any permission with one of the given IDs.
-  bool ContainsAnyID(const std::set<APIPermission::ID>& permission_ids) const;
+  bool ContainsAnyID(
+      const std::set<mojom::APIPermissionID>& permission_ids) const;
   bool ContainsAnyID(const PermissionIDSet& other) const;
 
   // Returns all the permissions in this set with the given ID.
   PermissionIDSet GetAllPermissionsWithID(
-      APIPermission::ID permission_id) const;
+      mojom::APIPermissionID permission_id) const;
 
   // Returns all the permissions in this set with one of the given IDs.
   PermissionIDSet GetAllPermissionsWithIDs(
-      const std::set<APIPermission::ID>& permission_ids) const;
+      const std::set<mojom::APIPermissionID>& permission_ids) const;
 
   // Convenience functions for common set operations.
   bool Includes(const PermissionIDSet& subset) const;

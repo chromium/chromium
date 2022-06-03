@@ -6,7 +6,8 @@ package org.chromium.android_webview.test;
 
 import android.net.http.SslError;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -62,8 +63,10 @@ public class SslPreferencesTest {
             mActivityTestRule.loadUrlSync(
                     mAwContents, mContentsClient.getOnPageFinishedHelper(), pageUrl);
 
-            Assert.assertEquals("onReceivedSslError should not be called", onSslErrorCallCount,
-                    onReceivedSslErrorHelper.getCallCount());
+            if (onSslErrorCallCount != onReceivedSslErrorHelper.getCallCount()) {
+                Assert.fail("onReceivedSslError should not be called, but was called with error "
+                        + onReceivedSslErrorHelper.getError());
+            }
         } finally {
             mTestServer.stopAndDestroyServer();
         }

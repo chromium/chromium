@@ -46,7 +46,7 @@ View* ViewTargeterDelegate::TargetForRect(View* root, const gfx::Rect& rect) {
   View::Views children = root->GetChildrenInZOrder();
   DCHECK_EQ(root->children().size(), children.size());
   for (auto* child : base::Reversed(children)) {
-    if (!child->CanProcessEventsWithinSubtree())
+    if (!child->GetCanProcessEventsWithinSubtree() || !child->GetEnabled())
       continue;
 
     // Ignore any children which are invisible or do not intersect |rect|.
@@ -54,8 +54,8 @@ View* ViewTargeterDelegate::TargetForRect(View* root, const gfx::Rect& rect) {
       continue;
     gfx::RectF rect_in_child_coords_f(rect);
     View::ConvertRectToTarget(root, child, &rect_in_child_coords_f);
-    gfx::Rect rect_in_child_coords = gfx::ToEnclosingRect(
-        rect_in_child_coords_f);
+    gfx::Rect rect_in_child_coords =
+        gfx::ToEnclosingRect(rect_in_child_coords_f);
     if (!child->HitTestRect(rect_in_child_coords))
       continue;
 
@@ -66,8 +66,7 @@ View* ViewTargeterDelegate::TargetForRect(View* root, const gfx::Rect& rect) {
 
     gfx::RectF cur_view_bounds_f(cur_view->GetLocalBounds());
     View::ConvertRectToTarget(cur_view, root, &cur_view_bounds_f);
-    gfx::Rect cur_view_bounds = gfx::ToEnclosingRect(
-        cur_view_bounds_f);
+    gfx::Rect cur_view_bounds = gfx::ToEnclosingRect(cur_view_bounds_f);
     if (views::PercentCoveredBy(cur_view_bounds, rect) >= kRectTargetOverlap) {
       // |cur_view| is a suitable candidate for rect-based targeting.
       // Check to see if it is the closest suitable candidate so far.
@@ -89,17 +88,6 @@ View* ViewTargeterDelegate::TargetForRect(View* root, const gfx::Rect& rect) {
 
   if (views::UsePointBasedTargeting(rect) || (!rect_view && !point_view))
     return root;
-
-  // If |root| is a suitable candidate for rect-based targeting, check to
-  // see if it is closer than the current best suitable candidate so far.
-  gfx::Rect local_bounds(root->GetLocalBounds());
-  if (views::PercentCoveredBy(local_bounds, rect) >= kRectTargetOverlap) {
-    gfx::Point touch_center(rect.CenterPoint());
-    int cur_dist = views::DistanceSquaredFromCenterToPoint(touch_center,
-                                                           local_bounds);
-    if (!rect_view || cur_dist < rect_view_distance)
-      rect_view = root;
-  }
 
   return rect_view ? rect_view : point_view;
 }

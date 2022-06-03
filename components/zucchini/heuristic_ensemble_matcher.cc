@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "components/zucchini/binary_data_histogram.h"
@@ -25,9 +26,9 @@ namespace {
 /******** Helper Functions ********/
 
 // Uses |detector| to find embedded executables inside |image|, and returns the
-// result on success, or base::nullopt on failure,  which occurs if too many (>
+// result on success, or absl::nullopt on failure,  which occurs if too many (>
 // |kElementLimit|) elements are found.
-base::Optional<std::vector<Element>> FindEmbeddedElements(
+absl::optional<std::vector<Element>> FindEmbeddedElements(
     ConstBufferView image,
     const std::string& name,
     ElementDetector&& detector) {
@@ -45,7 +46,7 @@ base::Optional<std::vector<Element>> FindEmbeddedElements(
   }
   if (elements.size() >= kElementLimit) {
     LOG(WARNING) << name << ": Found too many elements.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   LOG(INFO) << name << ": Found " << elements.size() << " elements.";
   return elements;
@@ -82,6 +83,8 @@ std::ostream& operator<<(std::ostream& stream, const Element& elt) {
 class MatchingInfoOut {
  protected:
   MatchingInfoOut() = default;
+  MatchingInfoOut(const MatchingInfoOut&) = delete;
+  const MatchingInfoOut& operator=(const MatchingInfoOut&) = delete;
 
  public:
   virtual ~MatchingInfoOut() = default;
@@ -107,9 +110,6 @@ class MatchingInfoOut {
   virtual void OutputScores(const std::string& stats) {}
 
   virtual void OutputTextGrid() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MatchingInfoOut);
 };
 
 /******** MatchingInfoTerse ********/
@@ -118,14 +118,13 @@ class MatchingInfoOut {
 class MatchingInfoOutTerse : public MatchingInfoOut {
  public:
   MatchingInfoOutTerse() = default;
+  MatchingInfoOutTerse(const MatchingInfoOutTerse&) = delete;
+  const MatchingInfoOutTerse& operator=(const MatchingInfoOutTerse&) = delete;
   ~MatchingInfoOutTerse() override = default;
 
   void OutputScores(const std::string& stats) override {
     LOG(INFO) << "Best dists: " << stats;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MatchingInfoOutTerse);
 };
 
 /******** MatchingInfoOutVerbose ********/
@@ -136,6 +135,9 @@ class MatchingInfoOutTerse : public MatchingInfoOut {
 class MatchingInfoOutVerbose : public MatchingInfoOut {
  public:
   explicit MatchingInfoOutVerbose(std::ostream& out) : out_(out) {}
+  MatchingInfoOutVerbose(const MatchingInfoOutVerbose&) = delete;
+  const MatchingInfoOutVerbose& operator=(const MatchingInfoOutVerbose&) =
+      delete;
   ~MatchingInfoOutVerbose() override = default;
 
   // Outputs sizes and initializes |text_grid_|.
@@ -225,9 +227,6 @@ class MatchingInfoOutVerbose : public MatchingInfoOut {
 
   // For each "new" element, distance of best match. -1 denotes no match.
   std::vector<double> best_dist_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MatchingInfoOutVerbose);
 };
 
 }  // namespace
@@ -245,12 +244,12 @@ bool HeuristicEnsembleMatcher::RunMatch(ConstBufferView old_image,
   LOG(INFO) << "Start matching.";
 
   // Find all elements in "old" and "new".
-  base::Optional<std::vector<Element>> old_elements =
+  absl::optional<std::vector<Element>> old_elements =
       FindEmbeddedElements(old_image, "Old file",
                            base::BindRepeating(DetectElementFromDisassembler));
   if (!old_elements.has_value())
     return false;
-  base::Optional<std::vector<Element>> new_elements =
+  absl::optional<std::vector<Element>> new_elements =
       FindEmbeddedElements(new_image, "New file",
                            base::BindRepeating(DetectElementFromDisassembler));
   if (!new_elements.has_value())

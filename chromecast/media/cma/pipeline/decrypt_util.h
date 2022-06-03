@@ -7,7 +7,7 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "chromecast/media/cma/base/decoder_buffer_base.h"
+#include "chromecast/media/api/decoder_buffer_base.h"
 
 namespace chromecast {
 namespace media {
@@ -19,6 +19,9 @@ class DecoderBufferClear : public DecoderBufferBase {
  public:
   explicit DecoderBufferClear(scoped_refptr<DecoderBufferBase> buffer);
 
+  DecoderBufferClear(const DecoderBufferClear&) = delete;
+  DecoderBufferClear& operator=(const DecoderBufferClear&) = delete;
+
   // DecoderBufferBase implementation.
   StreamId stream_id() const override;
   int64_t timestamp() const override;
@@ -28,14 +31,11 @@ class DecoderBufferClear : public DecoderBufferBase {
   size_t data_size() const override;
   const CastDecryptConfig* decrypt_config() const override;
   bool end_of_stream() const override;
-  scoped_refptr<::media::DecoderBuffer> ToMediaBuffer() const override;
 
  private:
   ~DecoderBufferClear() override;
 
   const scoped_refptr<DecoderBufferBase> buffer_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecoderBufferClear);
 };
 
 using BufferDecryptedCB =

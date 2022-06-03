@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
 namespace base {
@@ -25,6 +24,9 @@ class JavaScriptDialogManager : public DevToolsEventListener {
  public:
   explicit JavaScriptDialogManager(DevToolsClient* client,
                                    const BrowserInfo* browser_info);
+
+  JavaScriptDialogManager(const JavaScriptDialogManager&) = delete;
+  JavaScriptDialogManager& operator=(const JavaScriptDialogManager&) = delete;
 
   ~JavaScriptDialogManager() override;
 
@@ -52,8 +54,6 @@ class JavaScriptDialogManager : public DevToolsEventListener {
   std::list<std::string> dialog_type_queue_;
 
   std::string prompt_text_;
-
-  DISALLOW_COPY_AND_ASSIGN(JavaScriptDialogManager);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_JAVASCRIPT_DIALOG_MANAGER_H_

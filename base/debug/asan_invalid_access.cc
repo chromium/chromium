@@ -8,8 +8,8 @@
 
 #include <memory>
 
+#include "base/check.h"
 #include "base/debug/alias.h"
-#include "base/logging.h"
 #include "build/build_config.h"
 
 #if defined(OS_WIN)

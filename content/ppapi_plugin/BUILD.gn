@@ -10,13 +10,9 @@ group("ppapi_plugin") {
   visibility = [ "//content/*" ]  # This is an internal content API.
 
   if (is_component_build) {
-    public_deps = [
-      "//content",
-    ]
+    public_deps = [ "//content" ]
   } else {
-    public_deps = [
-      ":ppapi_plugin_sources",
-    ]
+    public_deps = [ ":ppapi_plugin_sources" ]
   }
 }
 
@@ -31,13 +27,10 @@ source_set("ppapi_plugin_sources") {
   ]
 
   sources = [
-    "broker_process_dispatcher.cc",
-    "broker_process_dispatcher.h",
     "plugin_process_dispatcher.cc",
     "plugin_process_dispatcher.h",
     "ppapi_blink_platform_impl.cc",
     "ppapi_blink_platform_impl.h",
-    "ppapi_broker_main.cc",
     "ppapi_plugin_main.cc",
     "ppapi_thread.cc",
     "ppapi_thread.h",
@@ -50,6 +43,7 @@ source_set("ppapi_plugin_sources") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/discardable_memory/client",
     "//content:export",
     "//content/child",
@@ -71,7 +65,7 @@ source_set("ppapi_plugin_sources") {
     "//ui/gfx/geometry",
   ]
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [ "//components/services/font/public/cpp" ]
   }
 

@@ -4,9 +4,12 @@
 
 #include "content/browser/sms/sms_fetcher_impl.h"
 
+#include "base/memory/ptr_util.h"
+#include "base/test/mock_callback.h"
 #include "content/browser/sms/test/mock_sms_provider.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/test_renderer_host.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -19,185 +22,287 @@ using ::testing::StrictMock;
 
 namespace content {
 
-namespace {
+using UserConsent = SmsFetcher::UserConsent;
+using FailureType = SmsFetchFailureType;
 
-const url::Origin kTestOrigin = url::Origin::Create(GURL("https://a.com"));
+namespace {
 
 class MockContentBrowserClient : public ContentBrowserClient {
  public:
   MockContentBrowserClient() = default;
+
+  MockContentBrowserClient(const MockContentBrowserClient&) = delete;
+  MockContentBrowserClient& operator=(const MockContentBrowserClient&) = delete;
+
   ~MockContentBrowserClient() override = default;
 
-  MOCK_METHOD3(FetchRemoteSms,
-               void(BrowserContext*,
-                    const url::Origin&,
-                    base::OnceCallback<void(base::Optional<std::string>)>));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockContentBrowserClient);
+  MOCK_METHOD3(
+      FetchRemoteSms,
+      base::OnceClosure(WebContents*,
+                        const std::vector<url::Origin>&,
+                        base::OnceCallback<void(absl::optional<OriginList>,
+                                                absl::optional<std::string>,
+                                                absl::optional<FailureType>)>));
 };
 
 class MockSubscriber : public SmsFetcher::Subscriber {
  public:
   MockSubscriber() = default;
+
+  MockSubscriber(const MockSubscriber&) = delete;
+  MockSubscriber& operator=(const MockSubscriber&) = delete;
+
   ~MockSubscriber() override = default;
 
-  MOCK_METHOD2(OnReceive,
-               void(const std::string& one_time_code, const std::string& sms));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSubscriber);
+  MOCK_METHOD3(OnReceive,
+               void(const OriginList&,
+                    const std::string& one_time_code,
+                    UserConsent));
+  MOCK_METHOD1(OnFailure, void(FailureType failure_type));
 };
 
-class SmsFetcherImplTest : public testing::Test {
+class SmsFetcherImplTest : public RenderViewHostTestHarness {
  public:
   SmsFetcherImplTest() = default;
+
+  SmsFetcherImplTest(const SmsFetcherImplTest&) = delete;
+  SmsFetcherImplTest& operator=(const SmsFetcherImplTest&) = delete;
+
   ~SmsFetcherImplTest() override = default;
 
   void SetUp() override {
+    RenderViewHostTestHarness::SetUp();
     original_client_ = SetBrowserClientForTesting(&client_);
-    provider_ = new NiceMock<MockSmsProvider>();
   }
 
   void TearDown() override {
     if (original_client_)
       SetBrowserClientForTesting(original_client_);
+    RenderViewHostTestHarness::TearDown();
   }
 
  protected:
   MockContentBrowserClient* client() { return &client_; }
-  MockSmsProvider* provider() { return provider_; }
+  MockSmsProvider* provider() { return &provider_; }
 
  private:
   ContentBrowserClient* original_client_ = nullptr;
   NiceMock<MockContentBrowserClient> client_;
-  NiceMock<MockSmsProvider>* provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(SmsFetcherImplTest);
+  NiceMock<MockSmsProvider> provider_;
 };
 
 }  // namespace
 
 TEST_F(SmsFetcherImplTest, ReceiveFromLocalSmsProvider) {
-  StrictMock<MockSubscriber> subscriber;
-  SmsFetcherImpl fetcher(nullptr, base::WrapUnique(provider()));
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://a.com"));
 
-  EXPECT_CALL(*provider(), Retrieve()).WillOnce(Invoke([&]() {
-    provider()->NotifyReceive(kTestOrigin, "123", "hello");
+  StrictMock<MockSubscriber> subscriber;
+  SmsFetcherImpl fetcher(provider());
+
+  EXPECT_CALL(*provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+    provider()->NotifyReceive(OriginList{kOrigin}, "123",
+                              UserConsent::kObtained);
   }));
 
-  EXPECT_CALL(subscriber, OnReceive("123", "hello"));
+  EXPECT_CALL(subscriber, OnReceive(_, "123", UserConsent::kObtained));
 
-  fetcher.Subscribe(kTestOrigin, &subscriber);
+  fetcher.Subscribe(OriginList{kOrigin}, &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, ReceiveFromRemoteProvider) {
   StrictMock<MockSubscriber> subscriber;
-  SmsFetcherImpl fetcher(nullptr, base::WrapUnique(provider()));
-
-  const std::string& sms = "For: https://a.com?otp=123";
+  SmsFetcherImpl fetcher(provider());
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
       .WillOnce(Invoke(
-          [&](BrowserContext*, const url::Origin&,
-              base::OnceCallback<void(base::Optional<std::string>)> callback) {
-            std::move(callback).Run(sms);
+          [&](WebContents*, const OriginList&,
+              base::OnceCallback<void(absl::optional<OriginList>,
+                                      absl::optional<std::string>,
+                                      absl::optional<FailureType>)> callback) {
+            std::move(callback).Run(
+                OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
+                absl::nullopt);
+            return base::NullCallback();
           }));
 
-  EXPECT_CALL(subscriber, OnReceive("123", sms));
+  EXPECT_CALL(subscriber, OnReceive(_, "123", _));
 
-  fetcher.Subscribe(kTestOrigin, &subscriber);
+  fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
+                    &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, RemoteProviderTimesOut) {
   StrictMock<MockSubscriber> subscriber;
-  SmsFetcherImpl fetcher(nullptr, base::WrapUnique(provider()));
+  SmsFetcherImpl fetcher(provider());
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
       .WillOnce(Invoke(
-          [&](BrowserContext*, const url::Origin&,
-              base::OnceCallback<void(base::Optional<std::string>)> callback) {
-            std::move(callback).Run(base::nullopt);
+          [&](WebContents*, const OriginList&,
+              base::OnceCallback<void(absl::optional<OriginList>,
+                                      absl::optional<std::string>,
+                                      absl::optional<FailureType>)> callback) {
+            std::move(callback).Run(absl::nullopt, absl::nullopt,
+                                    absl::nullopt);
+            return base::NullCallback();
           }));
 
-  EXPECT_CALL(subscriber, OnReceive(_, _)).Times(0);
+  EXPECT_CALL(subscriber, OnReceive(_, _, _)).Times(0);
 
-  fetcher.Subscribe(kTestOrigin, &subscriber);
+  fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
+                    &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, ReceiveFromOtherOrigin) {
   StrictMock<MockSubscriber> subscriber;
-  const url::Origin origin = url::Origin::Create(GURL("https://a.com"));
-
-  SmsFetcherImpl fetcher(nullptr, base::WrapUnique(provider()));
+  SmsFetcherImpl fetcher(provider());
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
       .WillOnce(Invoke(
-          [&](BrowserContext*, const url::Origin&,
-              base::OnceCallback<void(base::Optional<std::string>)> callback) {
-            std::move(callback).Run("For: https://b.com?otp=123");
+          [&](WebContents*, const OriginList&,
+              base::OnceCallback<void(absl::optional<OriginList>,
+                                      absl::optional<std::string>,
+                                      absl::optional<FailureType>)> callback) {
+            std::move(callback).Run(
+                OriginList{url::Origin::Create(GURL("b.com"))}, "123",
+                absl::nullopt);
+            return base::NullCallback();
           }));
 
-  EXPECT_CALL(subscriber, OnReceive(_, _)).Times(0);
+  EXPECT_CALL(subscriber, OnReceive(_, _, _)).Times(0);
 
-  fetcher.Subscribe(origin, &subscriber);
+  fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
+                    &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, ReceiveFromBothProviders) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://a.com"));
   StrictMock<MockSubscriber> subscriber;
-  SmsFetcherImpl fetcher(nullptr, base::WrapUnique(provider()));
+  SmsFetcherImpl fetcher(provider());
 
-  const std::string& sms = "hello \nFor: https://a.com?otp=123";
+  const std::string& sms = "hello\n@a.com #123";
 
   EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
       .WillOnce(Invoke(
-          [&](BrowserContext*, const url::Origin&,
-              base::OnceCallback<void(base::Optional<std::string>)> callback) {
-            std::move(callback).Run(sms);
+          [&](WebContents*, const OriginList&,
+              base::OnceCallback<void(absl::optional<OriginList>,
+                                      absl::optional<std::string>,
+                                      absl::optional<FailureType>)> callback) {
+            std::move(callback).Run(
+                OriginList{url::Origin::Create(GURL("https://a.com"))}, "123",
+                absl::nullopt);
+            return base::NullCallback();
           }));
 
-  EXPECT_CALL(*provider(), Retrieve()).WillOnce(Invoke([&]() {
-    provider()->NotifyReceive(sms);
+  EXPECT_CALL(*provider(), Retrieve(_, _)).WillOnce(Invoke([&]() {
+    provider()->NotifyReceive(OriginList{kOrigin}, sms,
+                              UserConsent::kNotObtained);
   }));
 
   // Expects subscriber to be notified just once.
-  EXPECT_CALL(subscriber, OnReceive("123", sms));
+  EXPECT_CALL(subscriber, OnReceive(_, "123", UserConsent::kObtained));
 
-  fetcher.Subscribe(kTestOrigin, &subscriber);
+  fetcher.Subscribe(OriginList{kOrigin}, &subscriber, main_rfh());
 }
 
 TEST_F(SmsFetcherImplTest, OneOriginTwoSubscribers) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://a.com"));
+
   StrictMock<MockSubscriber> subscriber1;
   StrictMock<MockSubscriber> subscriber2;
 
-  SmsFetcherImpl fetcher(nullptr, base::WrapUnique(provider()));
+  SmsFetcherImpl fetcher(provider());
 
-  fetcher.Subscribe(kTestOrigin, &subscriber1);
-  fetcher.Subscribe(kTestOrigin, &subscriber2);
+  fetcher.Subscribe(OriginList{kOrigin}, &subscriber1, main_rfh());
+  fetcher.Subscribe(OriginList{kOrigin}, &subscriber2, main_rfh());
 
-  EXPECT_CALL(subscriber1, OnReceive("123", "foo"));
-  provider()->NotifyReceive(kTestOrigin, "123", "foo");
+  EXPECT_CALL(subscriber1, OnReceive(_, "123", UserConsent::kObtained));
+  provider()->NotifyReceive(OriginList{kOrigin}, "123", UserConsent::kObtained);
 
-  EXPECT_CALL(subscriber2, OnReceive("456", "bar"));
-  provider()->NotifyReceive(kTestOrigin, "456", "bar");
+  EXPECT_CALL(subscriber2, OnReceive(_, "456", UserConsent::kObtained));
+  provider()->NotifyReceive(OriginList{kOrigin}, "456", UserConsent::kObtained);
 }
 
 TEST_F(SmsFetcherImplTest, TwoOriginsTwoSubscribers) {
+  const url::Origin kOrigin1 = url::Origin::Create(GURL("https://a.com"));
+  const url::Origin kOrigin2 = url::Origin::Create(GURL("https://b.com"));
+
   StrictMock<MockSubscriber> subscriber1;
   StrictMock<MockSubscriber> subscriber2;
 
-  const url::Origin origin1 = url::Origin::Create(GURL("https://a.com"));
-  const url::Origin origin2 = url::Origin::Create(GURL("https://b.com"));
+  SmsFetcherImpl fetcher(provider());
+  fetcher.Subscribe(OriginList{kOrigin1}, &subscriber1, main_rfh());
+  fetcher.Subscribe(OriginList{kOrigin2}, &subscriber2, main_rfh());
 
-  SmsFetcherImpl fetcher(nullptr, base::WrapUnique(provider()));
-  fetcher.Subscribe(origin1, &subscriber1);
-  fetcher.Subscribe(origin2, &subscriber2);
+  EXPECT_CALL(subscriber2, OnReceive(_, "456", UserConsent::kObtained));
+  provider()->NotifyReceive(OriginList{kOrigin2}, "456",
+                            UserConsent::kObtained);
 
-  EXPECT_CALL(subscriber2, OnReceive("456", "bar"));
-  provider()->NotifyReceive(origin2, "456", "bar");
+  EXPECT_CALL(subscriber1, OnReceive(_, "123", UserConsent::kObtained));
+  provider()->NotifyReceive(OriginList{kOrigin1}, "123",
+                            UserConsent::kObtained);
+}
 
-  EXPECT_CALL(subscriber1, OnReceive("123", "foo"));
-  provider()->NotifyReceive(origin1, "123", "foo");
+TEST_F(SmsFetcherImplTest, OneOriginTwoSubscribersOnlyOneIsNotifiedFailed) {
+  const url::Origin kOrigin = url::Origin::Create(GURL("https://a.com"));
+
+  StrictMock<MockSubscriber> subscriber1;
+  StrictMock<MockSubscriber> subscriber2;
+
+  SmsFetcherImpl fetcher1(provider());
+  SmsFetcherImpl fetcher2(provider());
+
+  fetcher1.Subscribe(OriginList{kOrigin}, &subscriber1, main_rfh());
+  fetcher2.Subscribe(OriginList{kOrigin}, &subscriber2, main_rfh());
+
+  EXPECT_CALL(subscriber1, OnFailure(FailureType::kPromptTimeout));
+  EXPECT_CALL(subscriber2, OnFailure(FailureType::kPromptTimeout)).Times(0);
+  provider()->NotifyFailure(FailureType::kPromptTimeout);
+}
+
+TEST_F(SmsFetcherImplTest, FetchRemoteSmsFailed) {
+  StrictMock<MockSubscriber> subscriber;
+  SmsFetcherImpl fetcher(provider());
+
+  EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
+      .WillOnce(Invoke(
+          [&](WebContents*, const OriginList&,
+              base::OnceCallback<void(absl::optional<OriginList>,
+                                      absl::optional<std::string>,
+                                      absl::optional<FailureType>)> callback) {
+            std::move(callback).Run(
+                absl::nullopt, absl::nullopt,
+                static_cast<FailureType>(FailureType::kPromptCancelled));
+            return base::NullCallback();
+          }));
+
+  EXPECT_CALL(subscriber, OnFailure(_));
+
+  fetcher.Subscribe(OriginList{url::Origin::Create(GURL("https://a.com"))},
+                    &subscriber, main_rfh());
+}
+
+TEST_F(SmsFetcherImplTest, FetchRemoteSmsCancelled) {
+  StrictMock<MockSubscriber> subscriber;
+  SmsFetcherImpl fetcher(provider());
+
+  base::MockOnceClosure cancel_callback;
+  EXPECT_CALL(*client(), FetchRemoteSms(_, _, _))
+      .WillOnce(Invoke(
+          [&](WebContents*, const OriginList&,
+              base::OnceCallback<void(absl::optional<OriginList>,
+                                      absl::optional<std::string>,
+                                      absl::optional<FailureType>)> callback) {
+            return cancel_callback.Get();
+          }));
+
+  EXPECT_CALL(cancel_callback, Run).Times(0);
+  OriginList origin_list =
+      OriginList{url::Origin::Create(GURL("https://a.com"))};
+  fetcher.Subscribe(origin_list, &subscriber, main_rfh());
+
+  testing::Mock::VerifyAndClearExpectations(&cancel_callback);
+  EXPECT_CALL(cancel_callback, Run);
+  fetcher.Unsubscribe(origin_list, &subscriber);
 }
 
 }  // namespace content

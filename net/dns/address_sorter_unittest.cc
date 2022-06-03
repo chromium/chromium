@@ -4,6 +4,8 @@
 
 #include "net/dns/address_sorter.h"
 
+#include "build/build_config.h"
+
 #if defined(OS_WIN)
 #include <winsock2.h>
 #endif
@@ -11,7 +13,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/test/task_environment.h"
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
@@ -42,9 +44,9 @@ void OnSortComplete(AddressList* result_buf,
 }
 
 TEST(AddressSorterTest, Sort) {
+  base::test::TaskEnvironment task_environment;
   int expected_result = OK;
 #if defined(OS_WIN)
-  base::test::TaskEnvironment task_environment;
   EnsureWinsockInit();
   SOCKET sock = socket(AF_INET6, SOCK_DGRAM, IPPROTO_UDP);
   if (sock == INVALID_SOCKET) {

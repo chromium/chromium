@@ -32,12 +32,12 @@ class CopyTreeWorkItem : public WorkItem {
 
   // See comments on corresponding member variables for the semantics of
   // arguments.
-  // Notes on temp_path: to facilitate rollback, the caller needs to supply
+  // Notes on |temp_path|: to facilitate rollback, the caller needs to supply
   // a temporary directory to save the original files if they exist under
-  // dest_path.
+  // |dest_path|.
   CopyTreeWorkItem(const base::FilePath& source_path,
                    const base::FilePath& dest_path,
-                   const base::FilePath& temp_dir,
+                   const base::FilePath& temp_path,
                    CopyOverWriteOption overwrite_option,
                    const base::FilePath& alternative_path);
 
@@ -55,7 +55,7 @@ class CopyTreeWorkItem : public WorkItem {
   base::FilePath dest_path_;
 
   // Temporary directory that can be used.
-  base::FilePath temp_dir_;
+  base::FilePath temp_path_;
 
   // Controls the behavior for overwriting.
   CopyOverWriteOption overwrite_option_;

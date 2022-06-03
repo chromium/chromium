@@ -112,8 +112,8 @@ bool ExtensionCreator::ValidateManifest(const base::FilePath& extension_dir,
 
   scoped_refptr<Extension> extension(file_util::LoadExtension(
       extension_dir, extension_id,
-      run_flags & kSystemApp ? Manifest::EXTERNAL_COMPONENT
-                             : Manifest::INTERNAL,
+      run_flags & kSystemApp ? mojom::ManifestLocation::kExternalComponent
+                             : mojom::ManifestLocation::kInternal,
       create_flags, &error_message_));
   return !!extension.get();
 }
@@ -219,10 +219,19 @@ bool ExtensionCreator::CreateZip(const base::FilePath& extension_dir,
   return true;
 }
 
-bool ExtensionCreator::CreateCrx(const base::FilePath& zip_path,
-                                 crypto::RSAPrivateKey* private_key,
-                                 const base::FilePath& crx_path) {
-  switch (crx_file::Create(crx_path, zip_path, private_key)) {
+bool ExtensionCreator::CreateCrx(
+    const base::FilePath& zip_path,
+    crypto::RSAPrivateKey* private_key,
+    const base::FilePath& crx_path,
+    const absl::optional<std::string>& compressed_verified_contents) {
+  crx_file::CreatorResult result;
+  if (compressed_verified_contents.has_value()) {
+    result = crx_file::CreateCrxWithVerifiedContentsInHeader(
+        crx_path, zip_path, private_key, compressed_verified_contents.value());
+  } else {
+    result = crx_file::Create(crx_path, zip_path, private_key);
+  }
+  switch (result) {
     case crx_file::CreatorResult::OK:
       return true;
     case crx_file::CreatorResult::ERROR_SIGNING_FAILURE:
@@ -238,6 +247,37 @@ bool ExtensionCreator::CreateCrx(const base::FilePath& zip_path,
       return false;
   }
   return false;
+}
+
+bool ExtensionCreator::CreateCrxAndPerformCleanup(
+    const base::FilePath& extension_dir,
+    const base::FilePath& crx_path,
+    crypto::RSAPrivateKey* private_key,
+    const absl::optional<std::string>& compressed_verified_contents) {
+  base::ScopedTempDir temp_dir;
+  if (!temp_dir.CreateUniqueTempDir())
+    return false;
+
+  base::FilePath zip_path;
+  bool result =
+      CreateZip(extension_dir, temp_dir.GetPath(), &zip_path) &&
+      CreateCrx(zip_path, private_key, crx_path, compressed_verified_contents);
+  base::DeleteFile(zip_path);
+  return result;
+}
+
+bool ExtensionCreator::CreateCrxWithVerifiedContentsInHeaderForTesting(
+    const base::FilePath& extension_dir,
+    const base::FilePath& crx_path,
+    const std::string& compressed_verified_contents,
+    std::string* extension_id) {
+  auto signing_key = crypto::RSAPrivateKey::Create(kRSAKeySize);
+  std::vector<uint8_t> public_key;
+  signing_key->ExportPublicKey(&public_key);
+  const std::string public_key_str(public_key.begin(), public_key.end());
+  *extension_id = crx_file::id_util::GenerateId(public_key_str);
+  return CreateCrxAndPerformCleanup(extension_dir, crx_path, signing_key.get(),
+                                    compressed_verified_contents);
 }
 
 bool ExtensionCreator::Run(const base::FilePath& extension_dir,
@@ -268,20 +308,8 @@ bool ExtensionCreator::Run(const base::FilePath& extension_dir,
   if (!ValidateManifest(extension_dir, key_pair.get(), run_flags))
     return false;
 
-  base::ScopedTempDir temp_dir;
-  if (!temp_dir.CreateUniqueTempDir())
-    return false;
-
-  // Zip up the extension.
-  base::FilePath zip_path;
-  bool result = false;
-  if (CreateZip(extension_dir, temp_dir.GetPath(), &zip_path) &&
-      CreateCrx(zip_path, key_pair.get(), crx_path)) {
-    result = true;
-  }
-
-  base::DeleteFile(zip_path, false);
-  return result;
+  return CreateCrxAndPerformCleanup(extension_dir, crx_path, key_pair.get(),
+                                    absl::nullopt);
 }
 
 }  // namespace extensions

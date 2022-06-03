@@ -1,0 +1,13 @@
+EDITING DELEGATE: webViewDidChangeSelection:WebViewDidChangeSelectionNotification
+layer at (0,0) size 1200x900
+  LayoutView at (0,0) size 1200x900
+layer at (0,0) size 1200x900
+  LayoutNGBlockFlow {HTML} at (0,0) size 1200x900
+    LayoutNGBlockFlow {BODY} at (12,12) size 1176x864
+      LayoutNGBlockFlow {DIV} at (0,0) size 637.50x112.50 [bgcolor=#FFFF00]
+        LayoutNGBlockFlow {DIV} at (37.50,37.50) size 150x30 [bgcolor=#FFFFFF]
+      LayoutNGBlockFlow {P} at (0,136.50) size 1176x54
+        LayoutText {#text} at (0,0) size 1136x53
+          text run at (0,0) width 1136: "This test clicks inside an editable div element, and must result in the element receiving focus. If the test succeeds the"
+          text run at (0,27) width 326: "element should have a focus ring."
+caret: position 0 of child 0 {DIV} of child 0 {DIV} of body

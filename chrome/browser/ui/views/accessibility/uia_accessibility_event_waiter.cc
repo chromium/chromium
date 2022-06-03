@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/win/scoped_bstr.h"
@@ -169,14 +168,14 @@ void UiaAccessibilityEventWaiter::Thread::EventHandler::CleanUp() {
   root_.Reset();
 }
 
-STDMETHODIMP
+HRESULT
 UiaAccessibilityEventWaiter::Thread::EventHandler::HandleFocusChangedEvent(
     IUIAutomationElement* sender) {
   // Add focus changed event handling code here.
   return S_OK;
 }
 
-STDMETHODIMP
+HRESULT
 UiaAccessibilityEventWaiter::Thread::EventHandler::HandlePropertyChangedEvent(
     IUIAutomationElement* sender,
     PROPERTYID property_id,
@@ -190,7 +189,7 @@ UiaAccessibilityEventWaiter::Thread::EventHandler::HandlePropertyChangedEvent(
   return S_OK;
 }
 
-STDMETHODIMP
+HRESULT
 UiaAccessibilityEventWaiter::Thread::EventHandler::HandleStructureChangedEvent(
     IUIAutomationElement* sender,
     StructureChangeType change_type,
@@ -199,7 +198,7 @@ UiaAccessibilityEventWaiter::Thread::EventHandler::HandleStructureChangedEvent(
   return S_OK;
 }
 
-STDMETHODIMP
+HRESULT
 UiaAccessibilityEventWaiter::Thread::EventHandler::HandleAutomationEvent(
     IUIAutomationElement* sender,
     EVENTID event_id) {
@@ -219,9 +218,10 @@ bool UiaAccessibilityEventWaiter::Thread::EventHandler::MatchesNameRole(
   sender->get_CachedAriaRole(aria_role.Receive());
   sender->get_CachedName(name.Receive());
 
-  if (base::string16(aria_role, SysStringLen(aria_role)) ==
+  if (std::wstring(aria_role.Get(), SysStringLen(aria_role.Get())) ==
           owner_->info_.role &&
-      base::string16(name, SysStringLen(name)) == owner_->info_.name) {
+      std::wstring(name.Get(), SysStringLen(name.Get())) ==
+          owner_->info_.name) {
     return true;
   }
   return false;

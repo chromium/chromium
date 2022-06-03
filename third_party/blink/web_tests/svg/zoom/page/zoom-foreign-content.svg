@@ -1,5 +1,11 @@
 <?xml version="1.0"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" onload="runAfterLayoutAndPaint(repaintTest, true);">
+    <style>
+        /* This test is not concerned with scrollbar differences. */
+        :root {
+            overflow: hidden;
+        }
+    </style>
     <!-- This test verifies that foreignObject content does not have the zoom factor applied twice. -->
 
     <!-- After zooming, there should be exactly one pixel of blue in each dimension -->

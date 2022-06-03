@@ -10,7 +10,10 @@
 
 #include "components/exo/keyboard.h"
 #include "components/exo/keyboard_observer.h"
+#include "components/exo/wayland/serial_tracker.h"
 #include "components/exo/wayland/server_util.h"
+#include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
 
 namespace exo {
 namespace wayland {
@@ -22,11 +25,18 @@ namespace {
 
 class WaylandExtendedKeyboardImpl : public KeyboardObserver {
  public:
-  explicit WaylandExtendedKeyboardImpl(Keyboard* keyboard)
-      : keyboard_(keyboard) {
+  WaylandExtendedKeyboardImpl(wl_resource* resource,
+                              SerialTracker* serial_tracker,
+                              Keyboard* keyboard)
+      : resource_(resource),
+        serial_tracker_(serial_tracker),
+        keyboard_(keyboard) {
     keyboard_->AddObserver(this);
     keyboard_->SetNeedKeyboardKeyAcks(true);
   }
+  WaylandExtendedKeyboardImpl(const WaylandExtendedKeyboardImpl&) = delete;
+  WaylandExtendedKeyboardImpl& operator=(const WaylandExtendedKeyboardImpl&) =
+      delete;
   ~WaylandExtendedKeyboardImpl() override {
     if (keyboard_) {
       keyboard_->RemoveObserver(this);
@@ -40,15 +50,34 @@ class WaylandExtendedKeyboardImpl : public KeyboardObserver {
     keyboard_ = nullptr;
   }
 
+  void OnKeyboardKey(base::TimeTicks time_stamp,
+                     ui::DomCode code,
+                     bool pressed) override {
+    if (wl_resource_get_version(resource_) <
+        ZCR_EXTENDED_KEYBOARD_V1_PEEK_KEY_SINCE_VERSION) {
+      return;
+    }
+
+    uint32_t serial = serial_tracker_->MaybeNextKeySerial();
+    zcr_extended_keyboard_v1_send_peek_key(
+        resource_, serial, TimeTicksToMilliseconds(time_stamp),
+        ui::KeycodeConverter::DomCodeToEvdevCode(code),
+        pressed ? WL_KEYBOARD_KEY_STATE_PRESSED
+                : WL_KEYBOARD_KEY_STATE_RELEASED);
+    wl_client_flush(client());
+  }
+
   void AckKeyboardKey(uint32_t serial, bool handled) {
     if (keyboard_)
       keyboard_->AckKeyboardKey(serial, handled);
   }
 
  private:
-  Keyboard* keyboard_;
+  wl_client* client() const { return wl_resource_get_client(resource_); }
 
-  DISALLOW_COPY_AND_ASSIGN(WaylandExtendedKeyboardImpl);
+  wl_resource* const resource_;
+  SerialTracker* const serial_tracker_;
+  Keyboard* keyboard_;
 };
 
 void extended_keyboard_destroy(wl_client* client, wl_resource* resource) {
@@ -74,6 +103,9 @@ void keyboard_extension_get_extended_keyboard(wl_client* client,
                                               wl_resource* resource,
                                               uint32_t id,
                                               wl_resource* keyboard_resource) {
+  WaylandKeyboardExtension* keyboard_extension =
+      GetUserDataAs<WaylandKeyboardExtension>(resource);
+
   Keyboard* keyboard = GetUserDataAs<Keyboard>(keyboard_resource);
   if (keyboard->AreKeyboardKeyAcksNeeded()) {
     wl_resource_post_error(
@@ -83,11 +115,14 @@ void keyboard_extension_get_extended_keyboard(wl_client* client,
   }
 
   wl_resource* extended_keyboard_resource =
-      wl_resource_create(client, &zcr_extended_keyboard_v1_interface, 1, id);
+      wl_resource_create(client, &zcr_extended_keyboard_v1_interface,
+                         wl_resource_get_version(resource), id);
 
   SetImplementation(extended_keyboard_resource,
                     &extended_keyboard_implementation,
-                    std::make_unique<WaylandExtendedKeyboardImpl>(keyboard));
+                    std::make_unique<WaylandExtendedKeyboardImpl>(
+                        extended_keyboard_resource,
+                        keyboard_extension->serial_tracker, keyboard));
 }
 
 const struct zcr_keyboard_extension_v1_interface

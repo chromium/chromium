@@ -1,0 +1,31 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package remoting.protocol;
+
+// Composite message type for messages sent over the remote-webauthn data
+// channel.
+// Next ID: 4
+message RemoteWebAuthn {
+  // Requests the client to handle a call to
+  // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().
+  message IsUvpaaRequest {}
+
+  // Response for IsUvpaaRequest.
+  // Next ID: 2
+  message IsUvpaaResponse { optional bool is_available = 1; }
+
+  // Unique ID to pair a response with the request.
+  // Required for all message types.
+  optional uint64 id = 1;
+
+  oneof message {
+    IsUvpaaRequest is_uvpaa_request = 2;
+    IsUvpaaResponse is_uvpaa_response = 3;
+  }
+}

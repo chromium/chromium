@@ -6,16 +6,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
 mojom("mojom") {
-  sources = [
-    "discardable_shared_memory_manager.mojom",
-  ]
+  sources = [ "discardable_shared_memory_manager.mojom" ]
 
   import_dirs = [
     get_path_info("../../../..", "abspath"),
     "//mojo/services",
   ]
 
-  public_deps = [
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 }

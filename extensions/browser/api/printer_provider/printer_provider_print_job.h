@@ -9,7 +9,6 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/strings/string16.h"
 #include "base/values.h"
 
 namespace extensions {
@@ -19,8 +18,12 @@ namespace extensions {
 // TODO(tbarzic): This should probably be a class and have some methods.
 struct PrinterProviderPrintJob {
   PrinterProviderPrintJob();
+  PrinterProviderPrintJob(const PrinterProviderPrintJob&) = delete;
   PrinterProviderPrintJob(PrinterProviderPrintJob&& other);
+
+  PrinterProviderPrintJob& operator=(const PrinterProviderPrintJob&) = delete;
   PrinterProviderPrintJob& operator=(PrinterProviderPrintJob&& other);
+
   ~PrinterProviderPrintJob();
 
   // The id of the printer that should handle the print job. The id is
@@ -31,7 +34,7 @@ struct PrinterProviderPrintJob {
   std::string printer_id;
 
   // The print job title.
-  base::string16 job_title;
+  std::u16string job_title;
 
   // The print job ticket.
   base::Value ticket;
@@ -41,9 +44,6 @@ struct PrinterProviderPrintJob {
 
   // The document data that should be printed.
   scoped_refptr<base::RefCountedMemory> document_bytes;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrinterProviderPrintJob);
 };
 
 }  // namespace extensions

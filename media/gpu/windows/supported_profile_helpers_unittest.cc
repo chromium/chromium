@@ -10,9 +10,12 @@
 #include <map>
 #include <utility>
 
+#include "base/test/scoped_feature_list.h"
 #include "base/win/windows_version.h"
+#include "media/base/media_switches.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/d3d11_mocks.h"
+#include "media/gpu/windows/av1_guids.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
@@ -29,48 +32,50 @@ using ::testing::WithArgs;
       return;                                                \
   } while (0)
 
-HRESULT SetIfSizeLessThan(D3D11_VIDEO_DECODER_DESC* desc, UINT* count) {
-  *count = 1;
-  return S_OK;
-}
+namespace {
+
+using PciId = std::pair<uint16_t, uint16_t>;
+constexpr PciId kLegacyIntelGpu = {0x8086, 0x102};
+constexpr PciId kRecentIntelGpu = {0x8086, 0x100};
+constexpr PciId kLegacyAmdGpu = {0x1022, 0x130f};
+constexpr PciId kRecentAmdGpu = {0x1022, 0x130e};
+
+constexpr gfx::Size kMinResolution(64, 64);
+constexpr gfx::Size kFullHd(1920, 1088);
+constexpr gfx::Size kSquare4k(4096, 4096);
+constexpr gfx::Size kSquare8k(8192, 8192);
+
+}  // namespace
 
 namespace media {
 
+constexpr VideoCodecProfile kSupportedH264Profiles[] = {
+    H264PROFILE_BASELINE, H264PROFILE_MAIN, H264PROFILE_HIGH};
+
 class SupportedResolutionResolverTest : public ::testing::Test {
  public:
-  const std::pair<uint16_t, uint16_t> LegacyIntelGPU = {0x8086, 0x102};
-  const std::pair<uint16_t, uint16_t> RecentIntelGPU = {0x8086, 0x100};
-  const std::pair<uint16_t, uint16_t> LegacyAMDGPU = {0x1022, 0x130f};
-  const std::pair<uint16_t, uint16_t> RecentAMDGPU = {0x1022, 0x130e};
-
-  const ResolutionPair ten_eighty = {{1920, 1080}, {1080, 1920}};
-  const ResolutionPair zero = {{0, 0}, {0, 0}};
-  const ResolutionPair tall4k = {{4096, 2304}, {2304, 4096}};
-  const ResolutionPair eightKsquare = {{8192, 8192}, {8192, 8192}};
-
   void SetUp() override {
     gpu_workarounds_.disable_dxgi_zero_copy_video = false;
-    mock_d3d11_device_ = CreateD3D11Mock<NiceMock<D3D11DeviceMock>>();
+    mock_d3d11_device_ = MakeComPtr<NiceMock<D3D11DeviceMock>>();
 
-    mock_dxgi_device_ = CreateD3D11Mock<NiceMock<DXGIDeviceMock>>();
+    mock_dxgi_device_ = MakeComPtr<NiceMock<DXGIDeviceMock>>();
     ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_IDXGIDevice, _))
         .WillByDefault(SetComPointeeAndReturnOk<1>(mock_dxgi_device_.Get()));
 
-    mock_d3d11_video_device_ =
-        CreateD3D11Mock<NiceMock<D3D11VideoDeviceMock>>();
+    mock_d3d11_video_device_ = MakeComPtr<NiceMock<D3D11VideoDeviceMock>>();
     ON_CALL(*mock_d3d11_device_.Get(), QueryInterface(IID_ID3D11VideoDevice, _))
         .WillByDefault(
             SetComPointeeAndReturnOk<1>(mock_d3d11_video_device_.Get()));
 
-    mock_dxgi_adapter_ = CreateD3D11Mock<NiceMock<DXGIAdapterMock>>();
+    mock_dxgi_adapter_ = MakeComPtr<NiceMock<DXGIAdapterMock>>();
     ON_CALL(*mock_dxgi_device_.Get(), GetAdapter(_))
         .WillByDefault(SetComPointeeAndReturnOk<0>(mock_dxgi_adapter_.Get()));
 
-    SetGPUProfile(RecentIntelGPU);
-    SetMaxResolutionForGUID(D3D11_DECODER_PROFILE_H264_VLD_NOFGT, {4096, 4096});
+    SetGpuProfile(kRecentIntelGpu);
+    SetMaxResolution(D3D11_DECODER_PROFILE_H264_VLD_NOFGT, kSquare4k);
   }
 
-  void SetMaxResolutionForGUID(const GUID& g, const gfx::Size& max_res) {
+  void SetMaxResolution(const GUID& g, const gfx::Size& max_res) {
     max_size_for_guids_[g] = max_res;
     ON_CALL(*mock_d3d11_video_device_.Get(), GetVideoDecoderConfigCount(_, _))
         .WillByDefault(
@@ -108,13 +113,46 @@ class SupportedResolutionResolverTest : public ::testing::Test {
             })));
   }
 
-  void SetGPUProfile(std::pair<uint16_t, uint16_t> vendor_and_gpu) {
+  void SetGpuProfile(std::pair<uint16_t, uint16_t> vendor_and_gpu) {
     mock_adapter_desc_.DeviceId = static_cast<UINT>(vendor_and_gpu.second);
     mock_adapter_desc_.VendorId = static_cast<UINT>(vendor_and_gpu.first);
 
     ON_CALL(*mock_dxgi_adapter_.Get(), GetDesc(_))
         .WillByDefault(
             DoAll(SetArgPointee<0>(mock_adapter_desc_), Return(S_OK)));
+  }
+
+  void AssertDefaultSupport(
+      const SupportedResolutionRangeMap& supported_resolutions,
+      size_t expected_size = 3u) {
+    ASSERT_EQ(expected_size, supported_resolutions.size());
+    for (const auto profile : kSupportedH264Profiles) {
+      auto it = supported_resolutions.find(profile);
+      ASSERT_NE(it, supported_resolutions.end());
+      EXPECT_EQ(kMinResolution, it->second.min_resolution);
+      EXPECT_EQ(kFullHd, it->second.max_landscape_resolution);
+      EXPECT_EQ(gfx::Size(), it->second.max_portrait_resolution);
+    }
+  }
+
+  void TestDecoderSupport(const GUID& decoder,
+                          VideoCodecProfile profile,
+                          const gfx::Size& max_res = kSquare4k,
+                          const gfx::Size& max_landscape_res = kSquare4k,
+                          const gfx::Size& max_portrait_res = kSquare4k) {
+    EnableDecoders({decoder});
+    SetMaxResolution(decoder, max_res);
+
+    const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
+        mock_d3d11_device_, gpu_workarounds_);
+    AssertDefaultSupport(supported_resolutions,
+                         base::size(kSupportedH264Profiles) + 1);
+
+    auto it = supported_resolutions.find(profile);
+    ASSERT_NE(it, supported_resolutions.end());
+    EXPECT_EQ(kMinResolution, it->second.min_resolution);
+    EXPECT_EQ(max_landscape_res, it->second.max_landscape_resolution);
+    EXPECT_EQ(max_portrait_res, it->second.max_portrait_resolution);
   }
 
   Microsoft::WRL::ComPtr<D3D11DeviceMock> mock_d3d11_device_;
@@ -129,106 +167,159 @@ class SupportedResolutionResolverTest : public ::testing::Test {
       return memcmp(&a, &b, sizeof(GUID)) < 0;
     }
   };
-  std::map<GUID, gfx::Size, GUIDComparison> max_size_for_guids_;
+  base::flat_map<GUID, gfx::Size, GUIDComparison> max_size_for_guids_;
 };
 
-TEST_F(SupportedResolutionResolverTest, NoDeviceAllDefault) {
+TEST_F(SupportedResolutionResolverTest, CanDisableAV1) {
   DONT_RUN_ON_WIN_7();
 
-  ResolutionPair h264_res_expected = {{1, 2}, {3, 4}};
-  ResolutionPair h264_res = {{1, 2}, {3, 4}};
-  ResolutionPair vp9_0_res;
-  ResolutionPair vp9_2_res;
-  GetResolutionsForDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT}, nullptr,
-                            gpu_workarounds_, &h264_res, &vp9_0_res,
-                            &vp9_2_res);
+  // Do all the things to normally enable AV1:
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
 
-  ASSERT_EQ(h264_res, h264_res_expected);
-  ASSERT_EQ(vp9_0_res, zero);
-  ASSERT_EQ(vp9_0_res, zero);
+  // Enable the av1 decoder.
+  EnableDecoders({DXVA_ModeAV1_VLD_Profile0});
+  SetMaxResolution(DXVA_ModeAV1_VLD_Profile0, kSquare8k);
+
+  const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_, false);
+  auto av1_supported_res = supported_resolutions.find(AV1PROFILE_PROFILE_MAIN);
+
+  // There should be no supported av1 resolutions.
+  ASSERT_EQ(av1_supported_res, supported_resolutions.end());
 }
 
-TEST_F(SupportedResolutionResolverTest, LegacyGPUAllDefault) {
+TEST_F(SupportedResolutionResolverTest, HasH264SupportByDefault) {
   DONT_RUN_ON_WIN_7();
+  AssertDefaultSupport(
+      GetSupportedD3D11VideoDecoderResolutions(nullptr, gpu_workarounds_));
 
-  SetGPUProfile(LegacyIntelGPU);
+  SetGpuProfile(kLegacyIntelGpu);
+  AssertDefaultSupport(GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_));
 
-  ResolutionPair h264_res_expected = {{1, 2}, {3, 4}};
-  ResolutionPair h264_res = {{1, 2}, {3, 4}};
-  ResolutionPair vp9_0_res;
-  ResolutionPair vp9_2_res;
-  GetResolutionsForDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT},
-                            mock_d3d11_device_, gpu_workarounds_, &h264_res,
-                            &vp9_0_res, &vp9_2_res);
-
-  ASSERT_EQ(h264_res, h264_res_expected);
-  ASSERT_EQ(vp9_2_res, zero);
-  ASSERT_EQ(vp9_0_res, zero);
+  SetGpuProfile(kLegacyAmdGpu);
+  AssertDefaultSupport(GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_));
 }
 
 TEST_F(SupportedResolutionResolverTest, WorkaroundsDisableVpx) {
   DONT_RUN_ON_WIN_7();
 
-  gpu_workarounds_.disable_dxgi_zero_copy_video = true;
-  EnableDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT});
-
-  ResolutionPair h264_res;
-  ResolutionPair vp9_0_res;
-  ResolutionPair vp9_2_res;
-  GetResolutionsForDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT},
-                            mock_d3d11_device_, gpu_workarounds_, &h264_res,
-                            &vp9_0_res, &vp9_2_res);
-
-  ASSERT_EQ(h264_res, tall4k);
-
-  ASSERT_EQ(vp9_0_res, zero);
-
-  ASSERT_EQ(vp9_2_res, zero);
-}
-
-TEST_F(SupportedResolutionResolverTest, VP9_0Supports8k) {
-  DONT_RUN_ON_WIN_7();
-
-  EnableDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT,
-                  D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0});
-  SetMaxResolutionForGUID(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0, {8192, 8192});
-
-  ResolutionPair h264_res;
-  ResolutionPair vp9_0_res;
-  ResolutionPair vp9_2_res;
-  GetResolutionsForDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT},
-                            mock_d3d11_device_, gpu_workarounds_, &h264_res,
-                            &vp9_0_res, &vp9_2_res);
-
-  ASSERT_EQ(h264_res, tall4k);
-
-  ASSERT_EQ(vp9_0_res, eightKsquare);
-
-  ASSERT_EQ(vp9_2_res, zero);
-}
-
-TEST_F(SupportedResolutionResolverTest, BothVP9ProfilesSupported) {
-  DONT_RUN_ON_WIN_7();
-
-  EnableDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT,
+  gpu_workarounds_.disable_accelerated_vp8_decode = true;
+  gpu_workarounds_.disable_accelerated_vp9_decode = true;
+  EnableDecoders({D3D11_DECODER_PROFILE_VP8_VLD,
                   D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
                   D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2});
-  SetMaxResolutionForGUID(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0, {8192, 8192});
-  SetMaxResolutionForGUID(D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2,
-                          {8192, 8192});
 
-  ResolutionPair h264_res;
-  ResolutionPair vp9_0_res;
-  ResolutionPair vp9_2_res;
-  GetResolutionsForDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT},
-                            mock_d3d11_device_, gpu_workarounds_, &h264_res,
-                            &vp9_0_res, &vp9_2_res);
+  AssertDefaultSupport(GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_));
+}
 
-  ASSERT_EQ(h264_res, tall4k);
+TEST_F(SupportedResolutionResolverTest, H264Supports4k) {
+  DONT_RUN_ON_WIN_7();
 
-  ASSERT_EQ(vp9_0_res, eightKsquare);
+  EnableDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT});
+  const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_);
 
-  ASSERT_EQ(vp9_2_res, eightKsquare);
+  ASSERT_EQ(3u, supported_resolutions.size());
+  for (const auto profile : kSupportedH264Profiles) {
+    auto it = supported_resolutions.find(profile);
+    ASSERT_NE(it, supported_resolutions.end());
+    EXPECT_EQ(kMinResolution, it->second.min_resolution);
+    EXPECT_EQ(kSquare4k, it->second.max_landscape_resolution);
+    EXPECT_EQ(kSquare4k, it->second.max_portrait_resolution);
+  }
+}
+
+TEST_F(SupportedResolutionResolverTest, VP8Supports4k) {
+  DONT_RUN_ON_WIN_7();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kMediaFoundationVP8Decoding);
+
+  EnableDecoders({D3D11_DECODER_PROFILE_VP8_VLD});
+  SetMaxResolution(D3D11_DECODER_PROFILE_VP8_VLD, kSquare4k);
+
+  const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_);
+  auto it = supported_resolutions.find(VP8PROFILE_ANY);
+  ASSERT_NE(it, supported_resolutions.end());
+  EXPECT_EQ(kSquare4k, it->second.max_landscape_resolution);
+  EXPECT_EQ(kSquare4k, it->second.max_portrait_resolution);
+
+  constexpr gfx::Size kMinVp8Resolution = gfx::Size(640, 480);
+  EXPECT_EQ(kMinVp8Resolution, it->second.min_resolution);
+}
+
+TEST_F(SupportedResolutionResolverTest, VP9Profile0Supports8k) {
+  DONT_RUN_ON_WIN_7();
+  TestDecoderSupport(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0,
+                     VP9PROFILE_PROFILE0, kSquare8k, kSquare8k, kSquare8k);
+}
+
+TEST_F(SupportedResolutionResolverTest, VP9Profile2Supports8k) {
+  DONT_RUN_ON_WIN_7();
+  TestDecoderSupport(D3D11_DECODER_PROFILE_VP9_VLD_10BIT_PROFILE2,
+                     VP9PROFILE_PROFILE2, kSquare8k, kSquare8k, kSquare8k);
+}
+
+TEST_F(SupportedResolutionResolverTest, MultipleCodecs) {
+  DONT_RUN_ON_WIN_7();
+
+  SetGpuProfile(kRecentAmdGpu);
+
+  // H.264 and VP9.0 are the most common supported codecs.
+  EnableDecoders({D3D11_DECODER_PROFILE_H264_VLD_NOFGT,
+                  D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0});
+  SetMaxResolution(D3D11_DECODER_PROFILE_VP9_VLD_PROFILE0, kSquare8k);
+
+  const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
+      mock_d3d11_device_, gpu_workarounds_);
+
+  ASSERT_EQ(base::size(kSupportedH264Profiles) + 1,
+            supported_resolutions.size());
+  for (const auto profile : kSupportedH264Profiles) {
+    auto it = supported_resolutions.find(profile);
+    ASSERT_NE(it, supported_resolutions.end());
+    EXPECT_EQ(kMinResolution, it->second.min_resolution);
+    EXPECT_EQ(kSquare4k, it->second.max_landscape_resolution);
+    EXPECT_EQ(kSquare4k, it->second.max_portrait_resolution);
+  }
+
+  auto it = supported_resolutions.find(VP9PROFILE_PROFILE0);
+  ASSERT_NE(it, supported_resolutions.end());
+  EXPECT_EQ(kMinResolution, it->second.min_resolution);
+  EXPECT_EQ(kSquare8k, it->second.max_landscape_resolution);
+  EXPECT_EQ(kSquare8k, it->second.max_portrait_resolution);
+}
+
+TEST_F(SupportedResolutionResolverTest, AV1ProfileMainSupports8k) {
+  DONT_RUN_ON_WIN_7();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
+  TestDecoderSupport(DXVA_ModeAV1_VLD_Profile0, AV1PROFILE_PROFILE_MAIN,
+                     kSquare8k, kSquare8k, kSquare8k);
+}
+
+TEST_F(SupportedResolutionResolverTest, AV1ProfileHighSupports8k) {
+  DONT_RUN_ON_WIN_7();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
+  TestDecoderSupport(DXVA_ModeAV1_VLD_Profile1, AV1PROFILE_PROFILE_HIGH,
+                     kSquare8k, kSquare8k, kSquare8k);
+}
+
+TEST_F(SupportedResolutionResolverTest, AV1ProfileProSupports8k) {
+  DONT_RUN_ON_WIN_7();
+
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kMediaFoundationAV1Decoding);
+  TestDecoderSupport(DXVA_ModeAV1_VLD_Profile2, AV1PROFILE_PROFILE_PRO,
+                     kSquare8k, kSquare8k, kSquare8k);
 }
 
 }  // namespace media

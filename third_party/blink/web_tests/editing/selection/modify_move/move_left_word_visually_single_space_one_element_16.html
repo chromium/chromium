@@ -27,7 +27,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">שנב| abc סטז</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="rtl">\u05E9\u05E0\u05D1 abc |\u05E1\u05D8\u05D6</div>',
+  '<div contenteditable dir="rtl">\u05E9\u05E0\u05D1 |abc \u05E1\u05D8\u05D6</div>',
   '16-3 left word');
 
 selection_test(
@@ -51,7 +51,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">שנב abc| סטז</div>',
   selection => selection.modify('move', 'left', 'word'),
-  '<div contenteditable dir="rtl">\u05E9\u05E0\u05D1 abc \u05E1\u05D8\u05D6|</div>',
+  '<div contenteditable dir="rtl">\u05E9\u05E0\u05D1 abc |\u05E1\u05D8\u05D6</div>',
   '16-7 left word');
 
 selection_test(

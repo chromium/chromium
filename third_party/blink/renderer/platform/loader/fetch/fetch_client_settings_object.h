@@ -5,10 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CLIENT_SETTINGS_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_FETCH_FETCH_CLIENT_SETTINGS_OBJECT_H_
 
-#include "base/optional.h"
 #include "services/network/public/mojom/ip_address_space.mojom-blink-forward.h"
-#include "services/network/public/mojom/referrer_policy.mojom-blink.h"
-#include "third_party/blink/public/platform/web_insecure_request_policy.h"
+#include "services/network/public/mojom/referrer_policy.mojom-blink-forward.h"
+#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
@@ -81,14 +80,15 @@ class PLATFORM_EXPORT FetchClientSettingsObject
   virtual network::mojom::IPAddressSpace GetAddressSpace() const = 0;
 
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#insecure-requests-policy
-  virtual WebInsecureRequestPolicy GetInsecureRequestsPolicy() const = 0;
+  virtual mojom::blink::InsecureRequestPolicy GetInsecureRequestsPolicy()
+      const = 0;
 
   // https://w3c.github.io/webappsec-upgrade-insecure-requests/#upgrade-insecure-navigations-set
   using InsecureNavigationsSet = HashSet<unsigned, WTF::AlreadyHashed>;
   virtual const InsecureNavigationsSet& GetUpgradeInsecureNavigationsSet()
       const = 0;
 
-  virtual void Trace(Visitor*) {}
+  virtual void Trace(Visitor*) const {}
 };
 
 }  // namespace blink

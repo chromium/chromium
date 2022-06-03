@@ -23,9 +23,10 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/bindings/core/v8/html_collection_or_element.h"
-#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/html/html_all_collection.h"
+
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_element_htmlcollection.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 
 namespace blink {
 
@@ -43,19 +44,18 @@ Element* HTMLAllCollection::AnonymousIndexedGetter(unsigned index) {
   return HTMLCollection::item(index);
 }
 
-void HTMLAllCollection::NamedGetter(const AtomicString& name,
-                                    HTMLCollectionOrElement& return_value) {
+V8UnionElementOrHTMLCollection* HTMLAllCollection::NamedGetter(
+    const AtomicString& name) {
   HTMLCollection* items = GetDocument().DocumentAllNamedItems(name);
 
   if (!items->length())
-    return;
+    return nullptr;
 
   if (items->length() == 1) {
-    return_value.SetElement(items->item(0));
-    return;
+    return MakeGarbageCollected<V8UnionElementOrHTMLCollection>(items->item(0));
   }
 
-  return_value.SetHTMLCollection(items);
+  return MakeGarbageCollected<V8UnionElementOrHTMLCollection>(items);
 }
 
 }  // namespace blink

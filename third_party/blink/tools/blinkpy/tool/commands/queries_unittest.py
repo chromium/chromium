@@ -37,11 +37,19 @@ from blinkpy.tool.mock_tool import MockBlinkTool
 
 
 class PrintExpectationsTest(unittest.TestCase):
-
-    def run_test(self, tests, expected_stdout, platform='test-win-win7', **kwargs):
+    def run_test(self,
+                 tests,
+                 expected_stdout,
+                 platform='test-win-win7',
+                 **kwargs):
         options_defaults = {
-            'all': False, 'csv': False, 'full': False, 'platform': platform,
-            'include_keyword': [], 'exclude_keyword': [], 'paths': False,
+            'all': False,
+            'csv': False,
+            'full': False,
+            'platform': platform,
+            'include_keyword': [],
+            'exclude_keyword': [],
+            'paths': False,
         }
         options_defaults.update(kwargs)
         options = optparse.Values(dict(**options_defaults))
@@ -62,46 +70,52 @@ class PrintExpectationsTest(unittest.TestCase):
         self.assertMultiLineEqual(stdout, expected_stdout)
 
     def test_basic(self):
-        self.run_test(['failures/expected/text.html', 'failures/expected/timeout.html'],
-                      ('// For test-win-win7\n'
-                       'failures/expected/text.html [ Failure ]\n'
-                       'failures/expected/timeout.html [ Timeout ]\n'))
+        self.run_test(
+            ['failures/expected/text.html', 'failures/expected/timeout.html'],
+            ('// For test-win-win7\n'
+             'failures/expected/text.html [ Failure ]\n'
+             'failures/expected/timeout.html [ Timeout ]\n'))
 
     def test_multiple(self):
-        self.run_test(['failures/expected/text.html', 'failures/expected/timeout.html'],
-                      ('// For test-win-win10\n'
-                       'failures/expected/text.html [ Failure ]\n'
-                       'failures/expected/timeout.html [ Timeout ]\n'
-                       '\n'
-                       '// For test-win-win7\n'
-                       'failures/expected/text.html [ Failure ]\n'
-                       'failures/expected/timeout.html [ Timeout ]\n'),
+        self.run_test([
+            'failures/unexpected/*/text.html', 'failures/expected/timeout.html'
+        ], ('// For test-win-win10\n'
+            'failures/expected/timeout.html [ Timeout ]\n'
+            'failures/unexpected/\*/text.html [ Pass ]\n'
+            '\n'
+            '// For test-win-win7\n'
+            'failures/expected/timeout.html [ Timeout ]\n'
+            'failures/unexpected/\*/text.html [ Pass ]\n'),
                       platform='test-win-*')
 
     def test_full(self):
-        self.run_test(['failures/expected/text.html', 'failures/expected/timeout.html'],
-                      ('// For test-win-win7\n'
-                       'Bug(test) failures/expected/text.html [ Failure ]\n'
-                       'Bug(test) failures/expected/timeout.html [ Timeout ]\n'),
-                      full=True)
+        self.run_test(
+            ['failures/expected/text.html', 'failures/expected/timeout.html'],
+            ('// For test-win-win7\n'
+             'failures/expected/text.html [ Failure ]\n'
+             'failures/expected/timeout.html [ Timeout ]\n'),
+            full=True)
 
     def test_exclude(self):
-        self.run_test(['failures/expected/text.html', 'failures/expected/crash.html'],
-                      ('// For test-win-win7\n'
-                       'failures/expected/text.html [ Failure ]\n'),
-                      exclude_keyword=['crash'])
+        self.run_test(
+            ['failures/expected/text.html', 'failures/expected/crash.html'],
+            ('// For test-win-win7\n'
+             'failures/expected/text.html [ Failure ]\n'),
+            exclude_keyword=['crash'])
 
     def test_include(self):
-        self.run_test(['failures/expected/text.html', 'failures/expected/crash.html'],
-                      ('// For test-win-win7\n'
-                       'failures/expected/crash.html\n'),
-                      include_keyword=['crash'])
+        self.run_test(
+            ['failures/expected/text.html', 'failures/expected/crash.html'],
+            ('// For test-win-win7\n'
+             'failures/expected/crash.html [ Crash ]\n'),
+            include_keyword=['crash'])
 
     def test_csv(self):
-        self.run_test(['failures/expected/text.html', 'failures/expected/image.html'],
-                      ('test-win-win7,failures/expected/image.html,Bug(test),,FAIL\n'
-                       'test-win-win7,failures/expected/text.html,Bug(test),,FAIL\n'),
-                      csv=True)
+        self.run_test(
+            ['failures/expected/text.html', 'failures/expected/image.html'],
+            ('test-win-win7,failures/expected/image.html,,,FAIL\n'
+             'test-win-win7,failures/expected/text.html,,,FAIL\n'),
+            csv=True)
 
     def test_paths(self):
         self.run_test([],
@@ -114,7 +128,6 @@ class PrintExpectationsTest(unittest.TestCase):
 
 
 class PrintBaselinesTest(unittest.TestCase):
-
     def setUp(self):
         self.oc = None
         self.tool = MockBlinkTool()
@@ -142,35 +155,49 @@ class PrintBaselinesTest(unittest.TestCase):
     def test_basic(self):
         command = PrintBaselines()
         self.capture_output()
-        options = optparse.Values({'all': False, 'include_virtual_tests': False, 'csv': False, 'platform': None})
+        options = optparse.Values({
+            'all': False,
+            'include_virtual_tests': False,
+            'csv': False,
+            'platform': None
+        })
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
-        self.assertMultiLineEqual(stdout,
-                                  ('// For test-win-win7\n'
-                                   'passes/text-expected.png\n'
-                                   'passes/text-expected.txt\n'))
+        self.assertMultiLineEqual(stdout, ('// For test-win-win7\n'
+                                           'passes/text-expected.png\n'
+                                           'passes/text-expected.txt\n'))
 
     def test_multiple(self):
         command = PrintBaselines()
         self.capture_output()
-        options = optparse.Values({'all': False, 'include_virtual_tests': False, 'csv': False, 'platform': 'test-win-*'})
+        options = optparse.Values({
+            'all': False,
+            'include_virtual_tests': False,
+            'csv': False,
+            'platform': 'test-win-*'
+        })
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
-        self.assertMultiLineEqual(stdout,
-                                  ('// For test-win-win10\n'
-                                   'passes/text-expected.png\n'
-                                   'passes/text-expected.txt\n'
-                                   '\n'
-                                   '// For test-win-win7\n'
-                                   'passes/text-expected.png\n'
-                                   'passes/text-expected.txt\n'))
+        self.assertMultiLineEqual(stdout, ('// For test-win-win10\n'
+                                           'passes/text-expected.png\n'
+                                           'passes/text-expected.txt\n'
+                                           '\n'
+                                           '// For test-win-win7\n'
+                                           'passes/text-expected.png\n'
+                                           'passes/text-expected.txt\n'))
 
     def test_csv(self):
         command = PrintBaselines()
         self.capture_output()
-        options = optparse.Values({'all': False, 'platform': '*win7', 'csv': True, 'include_virtual_tests': False})
+        options = optparse.Values({
+            'all': False,
+            'platform': '*win7',
+            'csv': True,
+            'include_virtual_tests': False
+        })
         command.execute(options, ['passes/text.html'], self.tool)
         stdout, _, _ = self.restore_output()
-        self.assertMultiLineEqual(stdout,
-                                  ('test-win-win7,passes/text.html,None,png,passes/text-expected.png,None\n'
-                                   'test-win-win7,passes/text.html,None,txt,passes/text-expected.txt,None\n'))
+        self.assertMultiLineEqual(stdout, (
+            'test-win-win7,passes/text.html,None,png,passes/text-expected.png,None\n'
+            'test-win-win7,passes/text.html,None,txt,passes/text-expected.txt,None\n'
+        ))

@@ -7,14 +7,11 @@
 #include <iterator>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-
-using ::autofill::PasswordForm;
 
 namespace password_manager {
 
@@ -113,7 +110,7 @@ TEST(CSVPasswordSequenceTest, Iteration) {
     ASSERT_LT(order, base::size(kExpectedCredentials));
     PasswordForm parsed = pwd.ParseValid();
     const auto& expected = kExpectedCredentials[order];
-    EXPECT_EQ(GURL(expected.url), parsed.origin);
+    EXPECT_EQ(GURL(expected.url), parsed.url);
     EXPECT_EQ(base::ASCIIToUTF16(expected.username), parsed.username_value);
     EXPECT_EQ(base::ASCIIToUTF16(expected.password), parsed.password_value);
     ++order;
@@ -129,9 +126,9 @@ TEST(CSVPasswordSequenceTest, MissingEolAtEof) {
 
   ASSERT_EQ(1, std::distance(seq.begin(), seq.end()));
   PasswordForm parsed = seq.begin()->ParseValid();
-  EXPECT_EQ(GURL("http://a.com"), parsed.origin);
-  EXPECT_EQ(base::ASCIIToUTF16("l"), parsed.username_value);
-  EXPECT_EQ(base::ASCIIToUTF16("p"), parsed.password_value);
+  EXPECT_EQ(GURL("http://a.com"), parsed.url);
+  EXPECT_EQ(u"l", parsed.username_value);
+  EXPECT_EQ(u"p", parsed.password_value);
 }
 
 }  // namespace password_manager

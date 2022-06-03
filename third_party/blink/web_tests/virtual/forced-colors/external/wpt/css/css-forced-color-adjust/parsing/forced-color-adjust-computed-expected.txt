@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-PASS Property forced-color-adjust value 'auto'
-PASS Property forced-color-adjust value 'none'
-Harness: the test ran to completion.
-

@@ -5,9 +5,6 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_CLIENT_UTILS_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_CLIENT_UTILS_H_
 
-#include <string>
-#include <vector>
-
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
@@ -16,15 +13,20 @@
 
 class GURL;
 
+namespace blink {
+class StorageKey;
+}  // namespace blink
+
 namespace content {
 
+struct GlobalRenderFrameHostId;
 class ServiceWorkerContainerHost;
 class ServiceWorkerContextCore;
 class ServiceWorkerVersion;
 
 // TODO(crbug.com/824858): Many of these functions can return a synchronous
-// value instead of using a callback once the core thread moves to the UI
-// thread.
+// value instead of using a callback since ServiceWorkerContext now lives on the
+// UI thread.
 
 namespace service_worker_client_utils {
 
@@ -45,26 +47,27 @@ enum class WindowType {
 void FocusWindowClient(ServiceWorkerContainerHost* container_host,
                        ClientCallback callback);
 
-// Opens a new window and navigates it to |url|. |callback| is called with the
-// window's client information on completion. If |type| is NEW_TAB_WINDOW, we
-// will open a new app window, if there is an app installed that has |url| in
+// Opens a new window and navigates it to `url`. `callback` is called with the
+// window's client information on completion. If `type` is NEW_TAB_WINDOW, we
+// will open a new app window, if there is an app installed that has `url` in
 // its scope. What an "installed app" is depends on the embedder of content. In
 // Chrome's case, it is an installed Progressive Web App. If there is no such
 // app, we will open a new foreground tab instead.
 void OpenWindow(const GURL& url,
                 const GURL& script_url,
+                const blink::StorageKey& key,
                 int worker_id,
                 int worker_process_id,
                 const base::WeakPtr<ServiceWorkerContextCore>& context,
                 WindowType type,
                 NavigationCallback callback);
 
-// Navigates the client specified by |process_id| and |frame_id| to |url|.
-// |callback| is called with the client information on completion.
+// Navigates the client specified by `rfh_id` to `url`. `callback` is called
+// with the client information on completion.
 void NavigateClient(const GURL& url,
                     const GURL& script_url,
-                    int process_id,
-                    int frame_id,
+                    const blink::StorageKey& key,
+                    const GlobalRenderFrameHostId& rfh_id,
                     const base::WeakPtr<ServiceWorkerContextCore>& context,
                     NavigationCallback callback);
 
@@ -79,15 +82,22 @@ void GetClients(const base::WeakPtr<ServiceWorkerVersion>& controller,
                 blink::mojom::ServiceWorkerClientQueryOptionsPtr options,
                 blink::mojom::ServiceWorkerHost::GetClientsCallback callback);
 
-// Finds the provider host for |origin| in |context| then uses
-// |render_process_id| and |render_process_host| to create a relevant
-// blink::mojom::ServiceWorkerClientInfo struct and calls |callback| with it.
-// Must be called on the core thread.
+// Called after a navigation. Uses `rfh_id` to find the
+// ServiceWorkerContainerHost where the navigation occurred and calls
+// `callback` with its info once
+// ServiceWorkerContainerHost::is_execution_ready() is true. May call
+// the callback with OK status but nullptr if the host is already
+// destroyed, or call the callback with an error status on error.
+//
+// `origin` is only used for a CHECK_EQ check to ensure we don't accidentally
+// get a cross-origin ServiceWorkerContainerHost.
+// TODO(crbug.com/1199077): Remove `origin` once DidGetExecutionReadyClient
+// implements StorageKey.
 void DidNavigate(const base::WeakPtr<ServiceWorkerContextCore>& context,
                  const GURL& origin,
+                 const blink::StorageKey& key,
                  NavigationCallback callback,
-                 int render_process_id,
-                 int render_frame_id);
+                 GlobalRenderFrameHostId rfh_id);
 
 }  // namespace service_worker_client_utils
 

@@ -8,11 +8,17 @@
 
 #include "base/files/file_path.h"
 #include "base/process/launch.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
+#include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
 #include "chrome/grit/generated_resources.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "url/gurl.h"
 
 #include "third_party/re2/src/re2/re2.h"
@@ -21,13 +27,19 @@ namespace browser_switcher {
 
 namespace {
 
+using LaunchCallback = AlternativeBrowserDriver::LaunchCallback;
+
 const char kUrlVarName[] = "${url}";
 
-#if defined(OS_MACOSX)
+// TODO(crbug.com/1124758): add ${edge} on macOS/Linux once it's released on
+// those platforms.
+
+#if defined(OS_MAC)
 const char kChromeExecutableName[] = "Google Chrome";
 const char kFirefoxExecutableName[] = "Firefox";
 const char kOperaExecutableName[] = "Opera";
 const char kSafariExecutableName[] = "Safari";
+const char kEdgeExecutableName[] = "Microsoft Edge";
 #else
 const char kChromeExecutableName[] = "google-chrome";
 const char kFirefoxExecutableName[] = "firefox";
@@ -37,20 +49,26 @@ const char kOperaExecutableName[] = "opera";
 const char kChromeVarName[] = "${chrome}";
 const char kFirefoxVarName[] = "${firefox}";
 const char kOperaVarName[] = "${opera}";
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 const char kSafariVarName[] = "${safari}";
+const char kEdgeVarName[] = "${edge}";
 #endif
 
-const struct {
+struct BrowserVarMapping {
   const char* var_name;
   const char* executable_name;
   const char* browser_name;
-} kBrowserVarMappings[] = {
-    {kChromeVarName, kChromeExecutableName, ""},
-    {kFirefoxVarName, kFirefoxExecutableName, "Mozilla Firefox"},
-    {kOperaVarName, kOperaExecutableName, "Opera"},
-#if defined(OS_MACOSX)
-    {kSafariVarName, kSafariExecutableName, "Safari"},
+  BrowserType browser_type;
+};
+
+const BrowserVarMapping kBrowserVarMappings[] = {
+    {kChromeVarName, kChromeExecutableName, "", BrowserType::kChrome},
+    {kFirefoxVarName, kFirefoxExecutableName, "Mozilla Firefox",
+     BrowserType::kFirefox},
+    {kOperaVarName, kOperaExecutableName, "Opera", BrowserType::kOpera},
+#if defined(OS_MAC)
+    {kSafariVarName, kSafariExecutableName, "Safari", BrowserType::kSafari},
+    {kEdgeVarName, kEdgeExecutableName, "Microsoft Edge", BrowserType::kEdge},
 #endif
 };
 
@@ -81,8 +99,7 @@ void ExpandEnvironmentVariables(std::string* arg) {
       // Don't treat '${url}' as an environment variable, leave it as is.
       out.append(kUrlVarName);
     } else {
-      std::string var_name =
-          (submatch[1].empty() ? submatch[2] : submatch[1]).as_string();
+      std::string var_name((submatch[1].empty() ? submatch[2] : submatch[1]));
       const char* var_value = getenv(var_name.c_str());
       if (var_value != NULL)
         out.append(var_value);
@@ -96,14 +113,14 @@ void ExpandEnvironmentVariables(std::string* arg) {
   std::swap(out, *arg);
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 bool ContainsUrlVarName(const std::vector<std::string>& tokens) {
   return std::any_of(tokens.begin(), tokens.end(),
                      [](const std::string& token) {
                        return token.find(kUrlVarName) != std::string::npos;
                      });
 }
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_MAC)
 
 void AppendCommandLineArguments(base::CommandLine* cmd_line,
                                 const std::vector<std::string>& raw_args,
@@ -122,62 +139,8 @@ void AppendCommandLineArguments(base::CommandLine* cmd_line,
     cmd_line->AppendArg(url.spec());
 }
 
-void ExpandPresetBrowsers(std::string* str) {
-#if defined(OS_MACOSX)
-  // Unlike most POSIX platforms, MacOS always has another browser than Chrome,
-  // so admins don't have to explicitly configure one.
-  if (str->empty()) {
-    *str = kSafariExecutableName;
-    return;
-  }
-#endif
-  for (const auto& mapping : kBrowserVarMappings) {
-    if (!str->compare(mapping.var_name)) {
-      *str = mapping.executable_name;
-      return;
-    }
-  }
-}
-
-}  // namespace
-
-AlternativeBrowserDriver::~AlternativeBrowserDriver() {}
-
-AlternativeBrowserDriverImpl::AlternativeBrowserDriverImpl(
-    const BrowserSwitcherPrefs* prefs)
-    : prefs_(prefs) {}
-
-AlternativeBrowserDriverImpl::~AlternativeBrowserDriverImpl() {}
-
-bool AlternativeBrowserDriverImpl::TryLaunch(const GURL& url) {
-#if !defined(OS_MACOSX)
-  if (prefs_->GetAlternativeBrowserPath().empty()) {
-    LOG(ERROR) << "Alternative browser not configured. "
-               << "Aborting browser switch.";
-    return false;
-  }
-#endif
-
-  VLOG(2) << "Launching alternative browser...";
-  VLOG(2) << "  path = " << prefs_->GetAlternativeBrowserPath();
-  VLOG(2) << "  url = " << url.spec();
-
-  CHECK(url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile());
-
-  auto cmd_line = CreateCommandLine(url);
-  base::LaunchOptions options;
-  // Don't close the alternative browser when Chrome exits.
-  options.new_process_group = true;
-  if (!base::LaunchProcess(cmd_line, options).IsValid()) {
-    LOG(ERROR) << "Could not start the alternative browser!";
-    return false;
-  }
-  return true;
-}
-
-std::string AlternativeBrowserDriverImpl::GetBrowserName() const {
-  std::string path = prefs_->GetAlternativeBrowserPath();
-#if defined(OS_MACOSX)
+const BrowserVarMapping* FindBrowserMapping(base::StringPiece path) {
+#if defined(OS_MAC)
   // Unlike most POSIX platforms, MacOS always has another browser than Chrome,
   // so admins don't have to explicitly configure one.
   if (path.empty())
@@ -185,22 +148,26 @@ std::string AlternativeBrowserDriverImpl::GetBrowserName() const {
 #endif
   for (const auto& mapping : kBrowserVarMappings) {
     if (!path.compare(mapping.var_name))
-      return std::string(mapping.browser_name);
+      return &mapping;
   }
-  return std::string();
+  return nullptr;
 }
 
-base::CommandLine AlternativeBrowserDriverImpl::CreateCommandLine(
-    const GURL& url) {
-  std::string path = prefs_->GetAlternativeBrowserPath();
+void ExpandPresetBrowsers(std::string* str) {
+  const auto* mapping = FindBrowserMapping(*str);
+  if (mapping)
+    *str = mapping->executable_name;
+}
+
+base::CommandLine CreateCommandLine(const GURL& url,
+                                    const std::string& original_path,
+                                    const std::vector<std::string>& params) {
+  std::string path = original_path;
   ExpandPresetBrowsers(&path);
   ExpandTilde(&path);
   ExpandEnvironmentVariables(&path);
 
-  const std::vector<std::string>& params =
-      prefs_->GetAlternativeBrowserParameters();
-
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // On MacOS, if the path doesn't start with a '/', it's probably not an
   // executable path. It is probably a name for an application, e.g. "Safari" or
   // "Google Chrome". Those can be launched using the `open(1)' command.
@@ -233,6 +200,83 @@ base::CommandLine AlternativeBrowserDriverImpl::CreateCommandLine(
   AppendCommandLineArguments(&cmd_line, params, url,
                              /* always_append_url */ true);
   return cmd_line;
+}
+
+void TryLaunchBlocking(GURL url,
+                       std::string path,
+                       std::vector<std::string> params,
+                       LaunchCallback cb) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  CHECK(url.SchemeIsHTTPOrHTTPS() || url.SchemeIsFile());
+
+  auto cmd_line = CreateCommandLine(url, path, params);
+  base::LaunchOptions options;
+  // Don't close the alternative browser when Chrome exits.
+  options.new_process_group = true;
+  const bool success = base::LaunchProcess(cmd_line, options).IsValid();
+  if (!success)
+    LOG(ERROR) << "Could not start the alternative browser!";
+
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          [](bool success, LaunchCallback cb) { std::move(cb).Run(success); },
+          success, std::move(cb)));
+}
+
+}  // namespace
+
+AlternativeBrowserDriver::~AlternativeBrowserDriver() = default;
+
+AlternativeBrowserDriverImpl::AlternativeBrowserDriverImpl(
+    const BrowserSwitcherPrefs* prefs)
+    : prefs_(prefs) {}
+
+AlternativeBrowserDriverImpl::~AlternativeBrowserDriverImpl() = default;
+
+void AlternativeBrowserDriverImpl::TryLaunch(const GURL& url,
+                                             LaunchCallback cb) {
+#if !defined(OS_MAC)
+  if (prefs_->GetAlternativeBrowserPath().empty()) {
+    LOG(ERROR) << "Alternative browser not configured. "
+               << "Aborting browser switch.";
+    std::move(cb).Run(false);
+    return;
+  }
+#endif
+
+  VLOG(2) << "Launching alternative browser...";
+  VLOG(2) << "  path = " << prefs_->GetAlternativeBrowserPath();
+  VLOG(2) << "  url = " << url.spec();
+
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&TryLaunchBlocking, url,
+                     prefs_->GetAlternativeBrowserPath(),
+                     prefs_->GetAlternativeBrowserParameters(), std::move(cb)));
+}
+
+std::string AlternativeBrowserDriverImpl::GetBrowserName() const {
+  std::string path = prefs_->GetAlternativeBrowserPath();
+  const auto* mapping = FindBrowserMapping(path);
+  return mapping ? mapping->browser_name : std::string();
+}
+
+BrowserType AlternativeBrowserDriverImpl::GetBrowserType() const {
+  std::string path = prefs_->GetAlternativeBrowserPath();
+  const auto* mapping = FindBrowserMapping(path);
+  return mapping ? mapping->browser_type : BrowserType::kUnknown;
+}
+
+base::CommandLine AlternativeBrowserDriverImpl::CreateCommandLine(
+    const GURL& url) {
+  return browser_switcher::CreateCommandLine(
+      url, prefs_->GetAlternativeBrowserPath(),
+      prefs_->GetAlternativeBrowserParameters());
 }
 
 }  // namespace browser_switcher

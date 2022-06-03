@@ -5,118 +5,21 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TRACE_WRAPPER_V8_REFERENCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_TRACE_WRAPPER_V8_REFERENCE_H_
 
+#include <type_traits>
 #include <utility>
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/platform/heap/unified_heap_marking_visitor.h"
-#include "v8/include/v8.h"
+#include "base/compiler_specific.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/vector_traits.h"
+#include "v8/include/v8-cppgc.h"
+#include "v8/include/v8-traced-handle.h"
 
 namespace blink {
 
-/**
- * TraceWrapperV8Reference is used to hold references from Blink to V8 that are
- * known to both garbage collectors. The reference is a regular traced reference
- * for unified heap garbage collections.
- */
 template <typename T>
-class TraceWrapperV8Reference {
- public:
-  TraceWrapperV8Reference() = default;
-
-  TraceWrapperV8Reference(v8::Isolate* isolate, v8::Local<T> handle) {
-    InternalSet(isolate, handle);
-  }
-
-  bool operator==(const TraceWrapperV8Reference& other) const {
-    return handle_ == other.handle_;
-  }
-
-  void Set(v8::Isolate* isolate, v8::Local<T> handle) {
-    InternalSet(isolate, handle);
-  }
-
-  ALWAYS_INLINE v8::Local<T> NewLocal(v8::Isolate* isolate) const {
-    return handle_.Get(isolate);
-  }
-
-  bool IsEmpty() const { return handle_.IsEmpty(); }
-  void Clear() { handle_.Reset(); }
-  ALWAYS_INLINE const v8::TracedReference<T>& Get() const { return handle_; }
-  ALWAYS_INLINE v8::TracedReference<T>& Get() { return handle_; }
-
-  template <typename S>
-  const TraceWrapperV8Reference<S>& Cast() const {
-    static_assert(std::is_base_of<S, T>::value, "T must inherit from S");
-    return reinterpret_cast<const TraceWrapperV8Reference<S>&>(
-        const_cast<const TraceWrapperV8Reference<T>&>(*this));
-  }
-
-  template <typename S>
-  const TraceWrapperV8Reference<S>& UnsafeCast() const {
-    return reinterpret_cast<const TraceWrapperV8Reference<S>&>(
-        const_cast<const TraceWrapperV8Reference<T>&>(*this));
-  }
-
-  // Move support.
-  TraceWrapperV8Reference(TraceWrapperV8Reference&& other) noexcept {
-    *this = std::move(other);
-  }
-
-  template <class S>
-  TraceWrapperV8Reference(TraceWrapperV8Reference<S>&& other) noexcept {
-    *this = std::move(other);
-  }
-
-  TraceWrapperV8Reference& operator=(TraceWrapperV8Reference&& rhs) {
-    handle_ = std::move(rhs.handle_);
-    WriteBarrier();
-    return *this;
-  }
-
-  template <class S>
-  TraceWrapperV8Reference& operator=(TraceWrapperV8Reference<S>&& rhs) {
-    handle_ = std::move(rhs.handle_);
-    WriteBarrier();
-    return *this;
-  }
-
-  // Copy support.
-  TraceWrapperV8Reference(const TraceWrapperV8Reference& other) noexcept {
-    *this = other;
-  }
-
-  template <class S>
-  TraceWrapperV8Reference(const TraceWrapperV8Reference<S>& other) noexcept {
-    *this = other;
-  }
-
-  TraceWrapperV8Reference& operator=(const TraceWrapperV8Reference& rhs) {
-    DCHECK_EQ(0, rhs.handle_.WrapperClassId());
-    handle_ = rhs.handle_;
-    WriteBarrier();
-    return *this;
-  }
-
-  template <class S>
-  TraceWrapperV8Reference& operator=(const TraceWrapperV8Reference<S>& rhs) {
-    DCHECK_EQ(0, rhs.handle_.WrapperClassId());
-    handle_ = rhs.handle_;
-    WriteBarrier();
-    return *this;
-  }
-
- protected:
-  ALWAYS_INLINE void InternalSet(v8::Isolate* isolate, v8::Local<T> handle) {
-    handle_.Reset(isolate, handle);
-    UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>());
-  }
-
-  ALWAYS_INLINE void WriteBarrier() const {
-    UnifiedHeapMarkingVisitor::WriteBarrier(UnsafeCast<v8::Value>());
-  }
-
-  v8::TracedReference<T> handle_;
-};
+using TraceWrapperV8Reference = v8::TracedReference<T>;
 
 }  // namespace blink
 
@@ -132,11 +35,30 @@ template <typename T>
 struct VectorTraits<blink::TraceWrapperV8Reference<T>>
     : VectorTraitsBase<blink::TraceWrapperV8Reference<T>> {
   STATIC_ONLY(VectorTraits);
-  static const bool kNeedsDestruction = false;
-  static const bool kCanInitializeWithMemset = true;
-  static const bool kCanClearUnusedSlotsWithMemset = true;
-  static const bool kCanCopyWithMemcpy = false;
-  static const bool kCanMoveWithMemcpy = false;
+
+  static constexpr bool kNeedsDestruction =
+      !std::is_trivially_destructible<blink::TraceWrapperV8Reference<T>>::value;
+  // TraceWrapperV8Reference is not `is_trivially_default_constructible` as it
+  // requires initializing with zero.
+  static constexpr bool kCanInitializeWithMemset = true;
+  static constexpr bool kCanClearUnusedSlotsWithMemset =
+      std::is_trivially_destructible<blink::TraceWrapperV8Reference<T>>::value;
+  static constexpr bool kCanCopyWithMemcpy = std::is_trivially_copy_assignable<
+      blink::TraceWrapperV8Reference<T>>::value;
+  static constexpr bool kCanMoveWithMemcpy = std::is_trivially_move_assignable<
+      blink::TraceWrapperV8Reference<T>>::value;
+  static constexpr bool kCanTraceConcurrently = true;
+
+  // Wanted behavior that should not break for performance reasons.
+  static_assert(!kNeedsDestruction,
+                "TraceWrapperV8Reference should be trivially destructible.");
+};
+
+template <typename T>
+struct HashTraits<blink::TraceWrapperV8Reference<T>>
+    : GenericHashTraits<blink::TraceWrapperV8Reference<T>> {
+  STATIC_ONLY(HashTraits);
+  static constexpr bool kCanTraceConcurrently = true;
 };
 
 }  // namespace WTF

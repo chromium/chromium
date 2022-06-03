@@ -11,16 +11,17 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_currency_amount.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/payments/payment_currency_amount.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class ExceptionState;
 class PaymentAddress;
 class PaymentStateResolver;
 class PaymentValidationErrors;
@@ -28,10 +29,9 @@ class ScriptState;
 
 class MODULES_EXPORT PaymentResponse final
     : public EventTargetWithInlineData,
-      public ContextLifecycleObserver,
+      public ExecutionContextClient,
       public ActiveScriptWrappable<PaymentResponse> {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(PaymentResponse);
 
  public:
   PaymentResponse(ScriptState* script_state,
@@ -39,13 +39,16 @@ class MODULES_EXPORT PaymentResponse final
                   PaymentAddress* shipping_address,
                   PaymentStateResolver* payment_state_resolver,
                   const String& request_id);
+
+  PaymentResponse(const PaymentResponse&) = delete;
+  PaymentResponse& operator=(const PaymentResponse&) = delete;
+
   ~PaymentResponse() override;
 
   void Update(ScriptState* script_state,
               payments::mojom::blink::PaymentResponsePtr response,
               PaymentAddress* shipping_address);
   void UpdatePayerDetail(payments::mojom::blink::PayerDetailPtr);
-  void UpdateDetailsFromJSON(ScriptState* script_state, const String& json);
 
   ScriptValue toJSONForBinding(ScriptState*) const;
 
@@ -58,8 +61,10 @@ class MODULES_EXPORT PaymentResponse final
   const String& payerEmail() const { return payer_email_; }
   const String& payerPhone() const { return payer_phone_; }
 
-  ScriptPromise complete(ScriptState*, const String& result = "");
-  ScriptPromise retry(ScriptState*, const PaymentValidationErrors*);
+  ScriptPromise complete(ScriptState*, const String& result, ExceptionState&);
+  ScriptPromise retry(ScriptState*,
+                      const PaymentValidationErrors*,
+                      ExceptionState&);
 
   bool HasPendingActivity() const override;
 
@@ -68,7 +73,7 @@ class MODULES_EXPORT PaymentResponse final
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String request_id_;
@@ -80,8 +85,6 @@ class MODULES_EXPORT PaymentResponse final
   String payer_email_;
   String payer_phone_;
   Member<PaymentStateResolver> payment_state_resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentResponse);
 };
 
 }  // namespace blink

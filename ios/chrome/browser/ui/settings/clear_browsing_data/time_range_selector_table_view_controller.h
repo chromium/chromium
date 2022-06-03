@@ -15,10 +15,7 @@ class PrefService;
 
 - (instancetype)initWithPrefs:(PrefService*)prefs NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithTableViewStyle:(UITableViewStyle)style
-                           appBarStyle:
-                               (ChromeTableViewControllerStyle)appBarStyle
-    NS_UNAVAILABLE;
+- (instancetype)initWithStyle:(UITableViewStyle)style NS_UNAVAILABLE;
 
 // Returns the text for the current setting, based on the values of the
 // preference. Kept in this class, so that all of the code to translate from

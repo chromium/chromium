@@ -31,237 +31,114 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_HELPER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LIST_PROPERTY_HELPER_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
-#include "third_party/blink/renderer/platform/bindings/exception_messages.h"
-#include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_list_property.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
-// This is an implementation of the SVG*List property spec:
-// http://www.w3.org/TR/SVG/single-page.html#types-InterfaceSVGLengthList
+// Typed wrapper for SVG*List properties that adds type-dependent operations.
 template <typename Derived, typename ItemProperty>
-class SVGListPropertyHelper : public SVGPropertyHelper<Derived> {
+class SVGListPropertyHelper : public SVGListPropertyBase {
  public:
   typedef ItemProperty ItemPropertyType;
 
   SVGListPropertyHelper() = default;
-
   ~SVGListPropertyHelper() override = default;
 
-  // used from Blink C++ code:
+  class const_iterator {
+   public:
+    explicit const_iterator(SVGListPropertyBase::const_iterator wrapped)
+        : wrapped_(wrapped) {}
+
+    const_iterator& operator++() {
+      ++wrapped_;
+      return *this;
+    }
+    bool operator==(const const_iterator& other) const {
+      return wrapped_ == other.wrapped_;
+    }
+    bool operator!=(const const_iterator& other) const {
+      return !operator==(other);
+    }
+    const ItemPropertyType* operator->() const {
+      return To<ItemPropertyType>(wrapped_->Get());
+    }
+    const ItemPropertyType* operator*() const {
+      return To<ItemPropertyType>(wrapped_->Get());
+    }
+
+   private:
+    SVGListPropertyBase::const_iterator wrapped_;
+  };
+  const_iterator begin() const {
+    return const_iterator(SVGListPropertyBase::begin());
+  }
+  const_iterator end() const {
+    return const_iterator(SVGListPropertyBase::end());
+  }
+
+  using SVGListPropertyBase::IsEmpty;
+  using SVGListPropertyBase::length;
 
   ItemPropertyType* at(uint32_t index) {
-    DCHECK_LT(index, values_.size());
-    DCHECK_EQ(values_.at(index)->OwnerList(), this);
-    return values_.at(index).Get();
+    return To<ItemPropertyType>(SVGListPropertyBase::at(index));
   }
 
   const ItemPropertyType* at(uint32_t index) const {
-    return const_cast<SVGListPropertyHelper<Derived, ItemProperty>*>(this)->at(
-        index);
+    return To<ItemPropertyType>(SVGListPropertyBase::at(index));
   }
 
-  class ConstIterator {
-    STACK_ALLOCATED();
-
-   private:
-    typedef typename HeapVector<Member<ItemPropertyType>>::const_iterator
-        WrappedType;
-
-   public:
-    ConstIterator(WrappedType it) : it_(it) {}
-
-    ConstIterator& operator++() {
-      ++it_;
-      return *this;
-    }
-
-    bool operator==(const ConstIterator& o) const { return it_ == o.it_; }
-    bool operator!=(const ConstIterator& o) const { return it_ != o.it_; }
-
-    ItemPropertyType* operator*() { return *it_; }
-    ItemPropertyType* operator->() { return *it_; }
-
-   private:
-    WrappedType it_;
-  };
-
-  ConstIterator begin() const { return ConstIterator(values_.begin()); }
-  ConstIterator end() const { return ConstIterator(values_.end()); }
-
+  using SVGListPropertyBase::Clear;
+  void Insert(uint32_t index, ItemPropertyType* new_item) {
+    SVGListPropertyBase::Insert(index, new_item);
+  }
+  using SVGListPropertyBase::Remove;
   void Append(ItemPropertyType* new_item) {
-    DCHECK(new_item);
-    values_.push_back(new_item);
-    new_item->SetOwnerList(this);
+    SVGListPropertyBase::Append(new_item);
+  }
+  void Replace(uint32_t index, ItemPropertyType* new_item) {
+    SVGListPropertyBase::Replace(index, new_item);
   }
 
-  bool operator==(const Derived& other) const {
-    return values_ == other.values_;
-  }
-  bool operator!=(const Derived& other) const { return !(*this == other); }
-
-  bool IsEmpty() const { return !length(); }
-
-  virtual Derived* Clone() {
+  virtual Derived* Clone() const {
     auto* svg_list = MakeGarbageCollected<Derived>();
-    svg_list->DeepCopy(static_cast<Derived*>(this));
+    svg_list->DeepCopy(To<Derived>(this));
     return svg_list;
   }
 
-  // SVGList*Property DOM spec:
-
-  uint32_t length() const { return values_.size(); }
-
-  void Clear();
-
-  ItemPropertyType* Initialize(ItemPropertyType*);
-  ItemPropertyType* GetItem(uint32_t, ExceptionState&);
-  ItemPropertyType* InsertItemBefore(ItemPropertyType*, uint32_t);
-  ItemPropertyType* RemoveItem(uint32_t, ExceptionState&);
-  ItemPropertyType* AppendItem(ItemPropertyType*);
-  ItemPropertyType* ReplaceItem(ItemPropertyType*, uint32_t, ExceptionState&);
-
-  void Trace(blink::Visitor* visitor) override {
-    visitor->Trace(values_);
-    SVGPropertyHelper<Derived>::Trace(visitor);
+  SVGPropertyBase* CloneForAnimation(const String& value) const override {
+    auto* property = MakeGarbageCollected<Derived>();
+    property->SetValueAsString(value);
+    return property;
   }
 
+  AnimatedPropertyType GetType() const override { return Derived::ClassType(); }
+
  protected:
-  void DeepCopy(Derived*);
+  void DeepCopy(const Derived*);
 
-  bool AdjustFromToListValues(Derived* from_list,
-                              Derived* to_list,
-                              float percentage,
-                              bool is_to_animation);
-
-  String SerializeList() const;
+  bool AdjustFromToListValues(const Derived* from_list,
+                              const Derived* to_list,
+                              float percentage);
 
   virtual ItemPropertyType* CreatePaddingItem() const {
     return MakeGarbageCollected<ItemPropertyType>();
   }
-
- private:
-  inline bool CheckIndexBound(uint32_t, ExceptionState&);
-
-  HeapVector<Member<ItemPropertyType>> values_;
 };
 
 template <typename Derived, typename ItemProperty>
-void SVGListPropertyHelper<Derived, ItemProperty>::Clear() {
-  // Detach all list items as they are no longer part of this list.
-  for (auto& value : values_) {
-    DCHECK_EQ(value->OwnerList(), this);
-    value->SetOwnerList(nullptr);
-  }
-  values_.clear();
-}
-
-template <typename Derived, typename ItemProperty>
-ItemProperty* SVGListPropertyHelper<Derived, ItemProperty>::Initialize(
-    ItemProperty* new_item) {
-  // Spec: Clears all existing current items from the list and re-initializes
-  // the list to hold the single item specified by the parameter.
+void SVGListPropertyHelper<Derived, ItemProperty>::DeepCopy(
+    const Derived* from) {
   Clear();
-  Append(new_item);
-  return new_item;
-}
-
-template <typename Derived, typename ItemProperty>
-ItemProperty* SVGListPropertyHelper<Derived, ItemProperty>::GetItem(
-    uint32_t index,
-    ExceptionState& exception_state) {
-  if (!CheckIndexBound(index, exception_state))
-    return nullptr;
-  return at(index);
-}
-
-template <typename Derived, typename ItemProperty>
-ItemProperty* SVGListPropertyHelper<Derived, ItemProperty>::InsertItemBefore(
-    ItemProperty* new_item,
-    uint32_t index) {
-  // Spec: If the index is greater than or equal to length, then the new item is
-  // appended to the end of the list.
-  if (index > values_.size())
-    index = values_.size();
-
-  // Spec: Inserts a new item into the list at the specified position. The index
-  // of the item before which the new item is to be inserted. The first item is
-  // number 0. If the index is equal to 0, then the new item is inserted at the
-  // front of the list.
-  values_.insert(index, new_item);
-  new_item->SetOwnerList(this);
-  return new_item;
-}
-
-template <typename Derived, typename ItemProperty>
-ItemProperty* SVGListPropertyHelper<Derived, ItemProperty>::RemoveItem(
-    uint32_t index,
-    ExceptionState& exception_state) {
-  if (!CheckIndexBound(index, exception_state))
-    return nullptr;
-
-  DCHECK_EQ(values_.at(index)->OwnerList(), this);
-  ItemPropertyType* old_item = values_.at(index);
-  values_.EraseAt(index);
-  old_item->SetOwnerList(nullptr);
-  return old_item;
-}
-
-template <typename Derived, typename ItemProperty>
-ItemProperty* SVGListPropertyHelper<Derived, ItemProperty>::AppendItem(
-    ItemProperty* new_item) {
-  // Append the value and wrapper at the end of the list.
-  Append(new_item);
-  return new_item;
-}
-
-template <typename Derived, typename ItemProperty>
-ItemProperty* SVGListPropertyHelper<Derived, ItemProperty>::ReplaceItem(
-    ItemProperty* new_item,
-    uint32_t index,
-    ExceptionState& exception_state) {
-  if (!CheckIndexBound(index, exception_state))
-    return nullptr;
-
-  // Update the value at the desired position 'index'.
-  Member<ItemPropertyType>& position = values_[index];
-  DCHECK_EQ(position->OwnerList(), this);
-  position->SetOwnerList(nullptr);
-  position = new_item;
-  new_item->SetOwnerList(this);
-  return new_item;
-}
-
-template <typename Derived, typename ItemProperty>
-bool SVGListPropertyHelper<Derived, ItemProperty>::CheckIndexBound(
-    uint32_t index,
-    ExceptionState& exception_state) {
-  if (index >= values_.size()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kIndexSizeError,
-        ExceptionMessages::IndexExceedsMaximumBound("index", index,
-                                                    values_.size()));
-    return false;
-  }
-  return true;
-}
-
-template <typename Derived, typename ItemProperty>
-void SVGListPropertyHelper<Derived, ItemProperty>::DeepCopy(Derived* from) {
-  Clear();
-  for (const auto& from_value : from->values_)
+  for (const auto* from_value : *from)
     Append(from_value->Clone());
 }
 
 template <typename Derived, typename ItemProperty>
 bool SVGListPropertyHelper<Derived, ItemProperty>::AdjustFromToListValues(
-    Derived* from_list,
-    Derived* to_list,
-    float percentage,
-    bool is_to_animation) {
+    const Derived* from_list,
+    const Derived* to_list,
+    float percentage) {
   // If no 'to' value is given, nothing to animate.
   uint32_t to_list_size = to_list->length();
   if (!to_list_size)
@@ -271,12 +148,12 @@ bool SVGListPropertyHelper<Derived, ItemProperty>::AdjustFromToListValues(
   // list length, fallback to a discrete animation.
   uint32_t from_list_size = from_list->length();
   if (from_list_size != to_list_size && from_list_size) {
-    if (percentage < 0.5) {
-      if (!is_to_animation)
-        DeepCopy(from_list);
-    } else {
-      DeepCopy(to_list);
-    }
+    const Derived* result = percentage < 0.5 ? from_list : to_list;
+    // If this is a 'to' animation, the "from" value will be the same
+    // list as this list, so avoid the copy in that case since it
+    // would clobber the list.
+    if (result != this)
+      DeepCopy(result);
     return false;
   }
 
@@ -285,24 +162,6 @@ bool SVGListPropertyHelper<Derived, ItemProperty>::AdjustFromToListValues(
     Append(CreatePaddingItem());
 
   return true;
-}
-
-template <typename Derived, typename ItemProperty>
-String SVGListPropertyHelper<Derived, ItemProperty>::SerializeList() const {
-  if (values_.IsEmpty())
-    return String();
-
-  StringBuilder builder;
-
-  auto it = values_.begin();
-  auto it_end = values_.end();
-  while (it != it_end) {
-    builder.Append((*it)->ValueAsString());
-    ++it;
-    if (it != it_end)
-      builder.Append(' ');
-  }
-  return builder.ToString();
 }
 
 }  // namespace blink

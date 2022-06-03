@@ -1,4 +1,2 @@
-# COMPONENT: UI>Browser>TabStrip
 # Use the above COMPONENT in crbugs to to file bugs against issues in this folder
-
 file://chrome/browser/ui/tabs/OWNERS

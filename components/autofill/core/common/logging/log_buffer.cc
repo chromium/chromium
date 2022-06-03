@@ -76,7 +76,7 @@ bool TryCoalesceString(std::vector<base::Value>* buffer,
 
 base::Value CreateEmptyFragment() {
   base::Value::DictStorage storage;
-  storage.try_emplace("type", std::make_unique<base::Value>("fragment"));
+  storage.try_emplace("type", "fragment");
   return base::Value(storage);
 }
 
@@ -87,6 +87,7 @@ LogBuffer::LogBuffer() {
 }
 
 LogBuffer::LogBuffer(LogBuffer&& other) noexcept = default;
+LogBuffer& LogBuffer::operator=(LogBuffer&& other) = default;
 LogBuffer::~LogBuffer() = default;
 
 base::Value LogBuffer::RetrieveResult() {
@@ -104,7 +105,7 @@ base::Value LogBuffer::RetrieveResult() {
   // If the fragment has a single child, remove it from |children| and return
   // that directly.
   if (children->GetList().size() == 1) {
-    return std::move(children->TakeList().back());
+    return std::move(std::move(*children).TakeList().back());
   }
 
   return std::exchange(buffer_.back(), CreateEmptyFragment());
@@ -115,9 +116,8 @@ LogBuffer& operator<<(LogBuffer& buf, Tag&& tag) {
     return buf;
 
   base::Value::DictStorage storage;
-  storage.try_emplace("type", std::make_unique<base::Value>("element"));
-  storage.try_emplace("value",
-                      std::make_unique<base::Value>(std::move(tag.name)));
+  storage.try_emplace("type", "element");
+  storage.try_emplace("value", std::move(tag.name));
   buf.buffer_.emplace_back(std::move(storage));
   return buf;
 }
@@ -148,8 +148,7 @@ LogBuffer& operator<<(LogBuffer& buf, Attrib&& attrib) {
                        base::Value(std::move(attrib.value)));
   } else {
     base::Value::DictStorage dict;
-    dict.try_emplace(std::move(attrib.name),
-                     std::make_unique<base::Value>(std::move(attrib.value)));
+    dict.try_emplace(std::move(attrib.name), std::move(attrib.value));
     node.SetKey("attributes", base::Value(std::move(dict)));
   }
 
@@ -173,10 +172,10 @@ LogBuffer& operator<<(LogBuffer& buf, base::StringPiece text) {
     return buf;
 
   base::Value::DictStorage storage;
-  storage.try_emplace("type", std::make_unique<base::Value>("text"));
+  storage.try_emplace("type", "text");
   // This text is not HTML escaped because the rest of the frame work takes care
   // of that and it must not be escaped twice.
-  storage.try_emplace("value", std::make_unique<base::Value>(text));
+  storage.try_emplace("value", text);
   base::Value node_to_add(std::move(storage));
   AppendChildToLastNode(&buf.buffer_, std::move(node_to_add));
   return buf;
@@ -211,7 +210,7 @@ LogBuffer& operator<<(LogBuffer& buf, const GURL& url) {
     return buf;
   if (!url.is_valid())
     return buf << "Invalid URL";
-  return buf << url.GetOrigin().spec();
+  return buf << url.DeprecatedGetOriginAsURL().spec();
 }
 
 LogTableRowBuffer::LogTableRowBuffer(LogBuffer* parent) : parent_(parent) {
@@ -240,10 +239,9 @@ LogTableRowBuffer&& operator<<(LogTableRowBuffer&& buf, Attrib&& attrib) {
 
 namespace {
 // Highlights the first |needle| in |haystack| by wrapping it in <b> tags.
-template <typename STRING_TYPE>
-LogBuffer HighlightValueInternal(base::BasicStringPiece<STRING_TYPE> haystack,
-                                 base::BasicStringPiece<STRING_TYPE> needle) {
-  using StringPieceT = base::BasicStringPiece<STRING_TYPE>;
+template <typename T, typename CharT = typename T::value_type>
+LogBuffer HighlightValueInternal(T haystack, T needle) {
+  using StringPieceT = base::BasicStringPiece<CharT>;
   LogBuffer buffer;
   size_t pos = haystack.find(needle);
   if (pos == StringPieceT::npos || needle.empty()) {

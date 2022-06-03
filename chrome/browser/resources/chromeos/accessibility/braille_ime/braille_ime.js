@@ -51,111 +51,109 @@
  *   through the normal event handling pipeline.
  */
 
-/**
- * @constructor
- */
-var BrailleIme = function() {};
+class BrailleIme {
+  constructor() {
+    /**
+     * Whether to enable extra debug logging for the IME.
+     * @const {boolean}
+     * @private
+     */
+    this.DEBUG = false;
 
-BrailleIme.prototype = {
-  /**
-   * Whether to enable extra debug logging for the IME.
-   * @const {boolean}
-   * @private
-   */
-  DEBUG: false,
+    /**
+     * ChromeVox extension ID.
+     * @const {string}
+     * @private
+     */
+    this.CHROMEVOX_EXTENSION_ID_ = 'mndnfokpggljbaajbnioimlmbfngpief';
 
-  /**
-   * ChromeVox extension ID.
-   * @const {string}
-   * @private
-   */
-  CHROMEVOX_EXTENSION_ID_: 'mndnfokpggljbaajbnioimlmbfngpief',
+    /**
+     * Name of the port used for communication with ChromeVox.
+     * @const {string}
+     * @private
+     */
+    this.PORT_NAME = 'BrailleIme.Port';
 
-  /**
-   * Name of the port used for communication with ChromeVox.
-   * @const {string}
-   * @private
-   */
-  PORT_NAME: 'BrailleIme.Port',
+    /**
+     * Identifier for the use standard keyboard option used
+     * in the menu and
+     * {@code localStorage}.  This can be switched on to
+     * type braille using the standard keyboard, or off
+     * (default) for the usual keyboard behaviour.
+     * @const {string}
+     */
+    this.USE_STANDARD_KEYBOARD_ID = 'useStandardKeyboard';
 
-  /**
-   * Identifier for the use standard keyboard option used in the menu and
-   * {@code localStorage}.  This can be switched on to type braille using the
-   * standard keyboard, or off (default) for the usual keyboard behaviour.
-   * @const {string}
-   */
-  USE_STANDARD_KEYBOARD_ID: 'useStandardKeyboard',
+    /** @private {boolean} */
+    this.useStandardKeyboard_ = false;
 
-  // State related to the support for typing braille using a standrad
-  // (qwerty) keyboard.
+    /**
+     * Braille dots for keys that are currently pressed.
+     * @private {number}
+     */
+    this.pressed_ = 0;
 
-  /** @private {boolean} */
-  useStandardKeyboard_: false,
+    /**
+     * Dots that have been pressed at some point
+     * since {@code pressed_} was last
+     * {@code 0}.
+     * @private {number}
+     */
+    this.accumulated_ = 0;
 
-  /**
-   * Braille dots for keys that are currently pressed.
-   * @private {number}
-   */
-  pressed_: 0,
+    /**
+     * Bit in {@code pressed_} and {@code accumulated_} that
+     * represent the space key.
+     * @const {number}
+     */
+    this.SPACE = 0x100;
 
-  /**
-   * Dots that have been pressed at some point since {@code pressed_} was last
-   * {@code 0}.
-   * @private {number}
-   */
-  accumulated_: 0,
+    /**
+     * Maps key codes on a standard keyboard to the
+     * correspodning dots. Keys on the 'home row' correspond
+     * to the keys on a Perkins-style keyboard. Note that
+     * the mapping below is arranged like the dots in a
+     * braille cell. Only 6 dot input is supported.
+     * @private
+     * @const {Object<number>}
+     */
+    this.CODE_TO_DOT_ = {
+      'KeyF': 0x01,
+      'KeyJ': 0x08,
+      'KeyD': 0x02,
+      'KeyK': 0x10,
+      'KeyS': 0x04,
+      'KeyL': 0x20,
+      'Space': 0x100
+    };
 
-  /**
-   * Bit in {@code pressed_} and {@code accumulated_} that represent
-   * the space key.
-   * @const {number}
-   */
-  SPACE: 0x100,
+    /**
+     * The current engine ID as set by {@code onActivate}, or the empty string
+     * if the IME is not active.
+     * @type {string}
+     * @private
+     */
+    this.engineID_ = '';
 
-  /**
-   * Maps key codes on a standard keyboard to the correspodning dots.
-   * Keys on the 'home row' correspond to the keys on a Perkins-style keyboard.
-   * Note that the mapping below is arranged like the dots in a braille cell.
-   * Only 6 dot input is supported.
-   * @private
-   * @const {Object<number>}
-   */
-  CODE_TO_DOT_: {
-    'KeyF': 0x01,
-    'KeyJ': 0x08,
-    'KeyD': 0x02,
-    'KeyK': 0x10,
-    'KeyS': 0x04,
-    'KeyL': 0x20,
-    'Space': 0x100
-  },
+    /**
+     * The port used to communicate with ChromeVox.
+     * @type {Port} port_
+     * @private
+     */
+    this.port_ = null;
 
-  /**
-   * The current engine ID as set by {@code onActivate}, or the empty string if
-   * the IME is not active.
-   * @type {string}
-   * @private
-   */
-  engineID_: '',
-
-  /**
-   * The port used to communicate with ChromeVox.
-   * @type {Port} port_
-   * @private
-   */
-  port_: null,
-
-  /**
-   * Uncommitted text and context ID.
-   * @type {?{contextID: number, text: string}}
-   * @private
-   */
-  uncommitted_: null,
+    /**
+     * Uncommitted text and context ID.
+     * @type {?{contextID: number, text: string}}
+     * @private
+     */
+    this.uncommitted_ = null;
+  }
 
   /**
    * Registers event listeners in the chrome IME API.
    */
-  init: function() {
+  init() {
     chrome.input.ime.onActivate.addListener(this.onActivate_.bind(this));
     chrome.input.ime.onDeactivated.addListener(this.onDeactivated_.bind(this));
     chrome.input.ime.onFocus.addListener(this.onFocus_.bind(this));
@@ -168,14 +166,14 @@ BrailleIme.prototype = {
     chrome.input.ime.onMenuItemActivated.addListener(
         this.onMenuItemActivated_.bind(this));
     this.connectChromeVox_();
-  },
+  }
 
   /**
    * Called by the IME framework when this IME is activated.
    * @param {string} engineID Engine ID, should be 'braille'.
    * @private
    */
-  onActivate_: function(engineID) {
+  onActivate_(engineID) {
     this.log_('onActivate', engineID);
     this.engineID_ = engineID;
     if (!this.port_) {
@@ -187,72 +185,73 @@ BrailleIme.prototype = {
     this.pressed_ = 0;
     this.updateMenuItems_();
     this.sendActiveState_();
-  },
+  }
 
   /**
    * Called by the IME framework when this IME is deactivated.
    * @param {string} engineID Engine ID, should be 'braille'.
    * @private
    */
-  onDeactivated_: function(engineID) {
+  onDeactivated_(engineID) {
     this.log_('onDectivated', engineID);
     this.engineID_ = '';
     this.sendActiveState_();
-  },
+  }
 
   /**
    * Called by the IME framework when a text field receives focus.
    * @param {chrome.input.ime.InputContext} context Input field context.
    * @private
    */
-  onFocus_: function(context) {
+  onFocus_(context) {
     this.log_('onFocus', context);
     this.sendInputContext_(context);
-  },
+  }
 
   /**
    * Called by the IME framework when a text field looses focus.
    * @param {number} contextID Input field context ID.
    * @private
    */
-  onBlur_: function(contextID) {
+  onBlur_(contextID) {
     this.log_('onBlur', contextID + '');
     this.sendInputContext_(null);
-  },
+  }
 
   /**
    * Called by the IME framework when the current input context is updated.
    * @param {chrome.input.ime.InputContext} context Input field context.
    * @private
    */
-  onInputContextUpdate_: function(context) {
+  onInputContextUpdate_(context) {
     this.log_('onInputContextUpdate', context);
     this.sendInputContext_(context);
-  },
+  }
 
   /**
-   * Called by the system when this IME is active and a key event is generated.
+   * Called by the system when this IME is active and a key event is
+   * generated.
    * @param {string} engineID Engine ID, should be 'braille'.
    * @param {!ChromeKeyboardEvent} event The keyboard event.
    * @private
    */
-  onKeyEvent_: function(engineID, event) {
+  onKeyEvent_(engineID, event) {
     var result = this.processKey_(event);
     if (result !== undefined) {
       this.keyEventHandled_(event.requestId, event.type, result);
     }
-  },
+  }
 
   /**
    * Called when chrome ends the current text input session.
    * @param {string} engineID Engine ID, should be 'braille'.
    * @private
    */
-  onReset_: function(engineID) {
+  onReset_(engineID) {
     this.log_('onReset', engineID);
     this.engineID_ = engineID;
     this.sendToChromeVox_({type: 'reset'});
-  },
+  }
 
   /**
    * Called by the IME framework when a menu item is activated.
@@ -260,7 +259,7 @@ BrailleIme.prototype = {
    * @param {string} itemID Identifies the menu item.
    * @private
    */
-  onMenuItemActivated_: function(engineID, itemID) {
+  onMenuItemActivated_(engineID, itemID) {
     if (engineID === this.engineID_ &&
         itemID === this.USE_STANDARD_KEYBOARD_ID) {
       this.useStandardKeyboard_ = !this.useStandardKeyboard_;
@@ -272,7 +271,7 @@ BrailleIme.prototype = {
       }
       this.updateMenuItems_();
     }
-  },
+  }
 
   /**
    * Outputs a log message to the console, only if {@link BrailleIme.DEBUG}
@@ -281,14 +280,14 @@ BrailleIme.prototype = {
    * @param {Object|string=} message Message to output.
    * @private
    */
-  log_: function(func, message) {
+  log_(func, message) {
     if (this.DEBUG) {
       if (typeof (message) !== 'string') {
         message = JSON.stringify(message);
       }
       console.log('BrailleIme.' + func + ': ' + message);
     }
-  },
+  }
 
   /**
    * Handles a qwerty key on the home row as a braille key.
@@ -297,7 +296,7 @@ BrailleIme.prototype = {
    *     {@code undefined} if handling was delegated to ChromeVox.
    * @private
    */
-  processKey_: function(event) {
+  processKey_(event) {
     if (!this.useStandardKeyboard_) {
       return false;
     }
@@ -324,7 +323,7 @@ BrailleIme.prototype = {
         var dotsToSend = this.accumulated_;
         this.accumulated_ = 0;
         if (dotsToSend & this.SPACE) {
-          if (dotsToSend != this.SPACE) {
+          if (dotsToSend !== this.SPACE) {
             // Can't combine space and actual dot keys.
             return true;
           }
@@ -336,13 +335,13 @@ BrailleIme.prototype = {
       return true;
     }
     return false;
-  },
+  }
 
   /**
    * Connects to the ChromeVox extension for message passing.
    * @private
    */
-  connectChromeVox_: function() {
+  connectChromeVox_() {
     if (this.port_) {
       this.port_.disconnect();
       this.port_ = null;
@@ -351,14 +350,14 @@ BrailleIme.prototype = {
         this.CHROMEVOX_EXTENSION_ID_, {name: this.PORT_NAME});
     this.port_.onMessage.addListener(this.onChromeVoxMessage_.bind(this));
     this.port_.onDisconnect.addListener(this.onChromeVoxDisconnect_.bind(this));
-  },
+  }
 
   /**
    * Handles a message from the ChromeVox extension.
    * @param {*} message The message from the extension.
    * @private
    */
-  onChromeVoxMessage_: function(message) {
+  onChromeVoxMessage_(message) {
     message = /** @type {{type: string}} */ (message);
     this.log_('onChromeVoxMessage', message);
     switch (message.type) {
@@ -392,46 +391,47 @@ BrailleIme.prototype = {
             'Unknown message from ChromeVox: ' + JSON.stringify(message));
         break;
     }
-  },
+  }
 
   /**
    * Handles a disconnect event from the ChromeVox side.
    * @private
    */
-  onChromeVoxDisconnect_: function() {
+  onChromeVoxDisconnect_() {
     this.port_ = null;
     this.log_('onChromeVoxDisconnect', chrome.runtime.lastError);
-  },
+  }
 
   /**
    * Sends a message to the ChromeVox extension.
    * @param {Object} message The message to send.
    * @private
    */
-  sendToChromeVox_: function(message) {
+  sendToChromeVox_(message) {
     if (this.port_) {
       this.port_.postMessage(message);
     }
-  },
+  }
 
   /**
    * Sends the given input context to ChromeVox.
-   * @param {chrome.input.ime.InputContext} context Input context, or null when
+   * @param {chrome.input.ime.InputContext} context Input context, or null
+   *     when
    *    there's no input context.
    * @private
    */
-  sendInputContext_: function(context) {
-    this.sendToChromeVox_({type: 'inputContext', context: context});
-  },
+  sendInputContext_(context) {
+    this.sendToChromeVox_({type: 'inputContext', context});
+  }
 
   /**
    * Sends the active state to ChromeVox.
    * @private
    */
-  sendActiveState_: function() {
+  sendActiveState_() {
     this.sendToChromeVox_(
         {type: 'activeState', active: this.engineID_.length > 0});
-  },
+  }
 
   /**
    * Replaces text in the current text field.
@@ -441,14 +441,14 @@ BrailleIme.prototype = {
    *     cursor.
    * @param {string} toInsert Text to insert at the cursor.
    */
-  replaceText_: function(contextID, deleteBefore, toInsert) {
+  replaceText_(contextID, deleteBefore, toInsert) {
     var addText = chrome.input.ime.commitText.bind(
-        null, {contextID: contextID, text: toInsert}, function() {});
+        null, {contextID, text: toInsert}, function() {});
     if (deleteBefore > 0) {
       var deleteText = chrome.input.ime.deleteSurroundingText.bind(
           null, {
             engineID: this.engineID_,
-            contextID: contextID,
+            contextID,
             offset: -deleteBefore,
             length: deleteBefore
           },
@@ -456,17 +456,12 @@ BrailleIme.prototype = {
       // Make sure there's no non-zero length selection so that
       // deleteSurroundingText works correctly.
       chrome.input.ime.deleteSurroundingText(
-          {
-            engineID: this.engineID_,
-            contextID: contextID,
-            offset: 0,
-            length: 0
-          },
+          {engineID: this.engineID_, contextID, offset: 0, length: 0},
           deleteText);
     } else {
       addText();
     }
-  },
+  }
 
   /**
    * Responds to an asynchronous key event, indicating whether it was handled
@@ -476,13 +471,13 @@ BrailleIme.prototype = {
    * @param {string} type Type of key event being responded to.
    * @param {boolean} response Whether the IME handled the event.
    */
-  keyEventHandled_: function(requestId, type, response) {
+  keyEventHandled_(requestId, type, response) {
     if (!response && type === 'keydown' && this.uncommitted_) {
       this.commitUncommitted_(this.uncommitted_.contextID);
       this.sendToChromeVox_({type: 'reset'});
     }
     chrome.input.ime.keyEventHandled(requestId, response);
-  },
+  }
 
   /**
    * Stores uncommitted text that will be committed on any key press or
@@ -490,25 +485,25 @@ BrailleIme.prototype = {
    * @param {number} contextID of the current field.
    * @param {string} text to store.
    */
-  setUncommitted_: function(contextID, text) {
-    this.uncommitted_ = {contextID: contextID, text: text};
-  },
+  setUncommitted_(contextID, text) {
+    this.uncommitted_ = {contextID, text};
+  }
 
   /**
    * Commits the last set uncommitted text if it matches the given context id.
    * @param {number} contextID
    */
-  commitUncommitted_: function(contextID) {
+  commitUncommitted_(contextID) {
     if (this.uncommitted_ && contextID === this.uncommitted_.contextID) {
       chrome.input.ime.commitText(this.uncommitted_);
     }
     this.uncommitted_ = null;
-  },
+  }
 
   /**
    * Updates the menu items for this IME.
    */
-  updateMenuItems_: function() {
+  updateMenuItems_() {
     // TODO(plundblad): Localize when translations available.
     chrome.input.ime.setMenuItems({
       engineID: this.engineID_,
@@ -522,4 +517,4 @@ BrailleIme.prototype = {
       }]
     });
   }
-};
+}

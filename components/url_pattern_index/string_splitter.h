@@ -7,7 +7,7 @@
 
 #include <iterator>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/string_piece.h"
 
 namespace url_pattern_index {

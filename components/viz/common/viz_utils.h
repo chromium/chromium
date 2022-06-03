@@ -5,7 +5,10 @@
 #ifndef COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_
 #define COMPONENTS_VIZ_COMMON_VIZ_UTILS_H_
 
+#include "base/timer/elapsed_timer.h"
 #include "components/viz/common/viz_common_export.h"
+
+#include "build/build_config.h"
 
 namespace gfx {
 class Rect;
@@ -16,6 +19,11 @@ class QuadF;
 namespace viz {
 
 VIZ_COMMON_EXPORT bool PreferRGB565ResourcesForDisplay();
+
+#if defined(OS_ANDROID)
+VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
+#endif
+
 // This takes a gfx::Rect and a clip region quad in the same space,
 // and returns a quad with the same proportions in the space -0.5->0.5.
 VIZ_COMMON_EXPORT bool GetScaledRegion(const gfx::Rect& rect,
@@ -31,6 +39,14 @@ VIZ_COMMON_EXPORT bool GetScaledRRectF(const gfx::Rect& space,
 VIZ_COMMON_EXPORT bool GetScaledUVs(const gfx::Rect& rect,
                                     const gfx::QuadF* clip,
                                     float uvs[8]);
+
+// Returns File Descriptor (FD) stats for current process.
+// Rendering resources can consume FDs. This this function can be used to
+// determine if the process is low on FDs or find an FD leak.
+VIZ_COMMON_EXPORT bool GatherFDStats(base::TimeDelta* delta_time_taken,
+                                     int* fd_max,
+                                     int* active_fd_count,
+                                     int* rlim_cur);
 
 }  // namespace viz
 

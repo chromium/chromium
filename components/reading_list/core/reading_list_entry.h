@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/backoff_entry.h"
 #include "url/gurl.h"
@@ -64,6 +63,10 @@ class ReadingListEntry {
                    const base::Time& now,
                    std::unique_ptr<net::BackoffEntry> backoff);
   ReadingListEntry(ReadingListEntry&& entry);
+
+  ReadingListEntry(const ReadingListEntry&) = delete;
+  ReadingListEntry& operator=(const ReadingListEntry&) = delete;
+
   ~ReadingListEntry();
 
   // Entries are created in WAITING state. At some point they will be PROCESSING
@@ -84,6 +87,8 @@ class ReadingListEntry {
   const GURL& URL() const;
   // The title of the entry. Might be empty.
   const std::string& Title() const;
+  // The estimated time to read of the entry. Zero if none available.
+  base::TimeDelta EstimatedReadTime() const;
   // What state this entry is in.
   DistillationState DistilledState() const;
   // The local file path for the distilled version of the page. This should only
@@ -185,12 +190,15 @@ class ReadingListEntry {
   // Sets extra information about this entry used by Content Suggestions.
   void SetContentSuggestionsExtra(
       const reading_list::ContentSuggestionsExtra& extra);
+  // Sets the estimated time to read of this entry page.
+  void SetEstimatedReadTime(base::TimeDelta estimated_read_time);
 
  private:
   enum State { UNSEEN, UNREAD, READ };
   ReadingListEntry(
       const GURL& url,
       const std::string& title,
+      base::TimeDelta estimated_read_time,
       State state,
       int64_t creation_time,
       int64_t first_read_time,
@@ -206,6 +214,7 @@ class ReadingListEntry {
       const reading_list::ContentSuggestionsExtra& content_suggestions_extra);
   GURL url_;
   std::string title_;
+  base::TimeDelta estimated_read_time_;
   State state_;
   base::FilePath distilled_path_;
   GURL distilled_url_;
@@ -225,8 +234,6 @@ class ReadingListEntry {
   int64_t distillation_size_;
 
   reading_list::ContentSuggestionsExtra content_suggestions_extra_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReadingListEntry);
 };
 
 #endif  // COMPONENTS_READING_LIST_CORE_READING_LIST_ENTRY_H_

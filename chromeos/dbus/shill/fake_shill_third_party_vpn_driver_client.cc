@@ -8,7 +8,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/dbus/shill/shill_third_party_vpn_observer.h"
 #include "dbus/object_proxy.h"
@@ -42,7 +43,7 @@ void FakeShillThirdPartyVpnDriverClient::RemoveShillThirdPartyVpnObserver(
 
 void FakeShillThirdPartyVpnDriverClient::SetParameters(
     const std::string& object_path_value,
-    const base::DictionaryValue& parameters,
+    const base::Value& parameters,
     StringCallback callback,
     ErrorCallback error_callback) {
   base::ThreadTaskRunnerHandle::Get()->PostTask(

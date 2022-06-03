@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<title>Test that CSSTransformComponent's toMatrix method is accurate.</title>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<div id="translate-2d" style="transform: translate(20px, 10px)"></div>
+<script>
+  test(function() {
+    // A 2D CSSTranslate should return a DOMMatrix in the form of:
+
+    // 1 0 0 x
+    // 0 1 0 y
+    // 0 0 1 0
+    // 0 0 0 1
+
+    // where x is the pixel displacement in the x axis
+    //   and y is the pixel displacement in the y axis.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 1 0 0 20
+    // 0 1 0 10
+    // 0 0 1  0
+    // 0 0 0  1
+
+    const translate2D = document.getElementById("translate-2d")
+        .computedStyleMap().get('transform')[0];
+    assert_array_equals(translate2D.toMatrix().toFloat64Array(),
+        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 20, 10, 0, 1]);
+  }, "2D CSSTranslate to DOMMatrix");
+</script>
+<div id="translate-3d" style="transform: translate3d(20px, 10px, 5px)"></div>
+<script>
+  test(function() {
+    // A 3D CSSTranslate should return a DOMMatrix in the form of:
+
+    // 1 0 0 x
+    // 0 1 0 y
+    // 0 0 1 z
+    // 0 0 0 1
+
+    // where x is the pixel displacement in the x axis,
+    //       y is the pixel displacement in the y axis
+    //   and z is the pixel displacement in the z axis.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 1 0 0 20
+    // 0 1 0 10
+    // 0 0 1  5
+    // 0 0 0  1
+
+    const translate3D = document.getElementById("translate-3d")
+        .computedStyleMap().get('transform')[0];
+    assert_array_equals(translate3D.toMatrix().toFloat64Array(),
+        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 20, 10, 5, 1]);
+  }, "3D CSSTranslate to DOMMatrix");
+</script>
+<div id="rotate-2d" style="transform: rotate(30deg)"></div>
+<script>
+  test(function() {
+    // A 2D CSSRotate should return a DOMMatrix in the form of
+
+    // cos(θ) -sin(θ) 0 0
+    // sin(θ)  cos(θ) 0 0
+    // 0       0      1 0
+    // 0       0      0 1
+
+    // where θ is the provided angle.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // √(3)/2 -0.5    0.0 0.0
+    // 0.5     √(3)/2 0.0 0.0
+    // 0.0     0.0    1.0 0.0
+    // 0.0     0.0    0.0 1.0
+
+    const rotate2D = document.getElementById("rotate-2d")
+        .computedStyleMap().get('transform')[0];
+    assert_array_approx_equals(rotate2D.toMatrix().toFloat64Array(),
+        [Math.sqrt(0.75), 0.5, 0, 0, -0.5, Math.sqrt(0.75), 0, 0,
+        0, 0, 1, 0, 0, 0, 0, 1], Number.EPSILON);
+  }, "2D CSSRotate to DOMMatrix");
+</script>
+<div id="rotate-3d" style="transform: rotate3d(6, 3, 2, 30deg)"></div>
+<script>
+  test(function() {
+    // A 3D CSSRotate should return a DOMMatrix in the form of
+
+    // i² * (1 - cos(θ)) + 1 * cos(θ) | ij * (1 - cos(θ)) - k * sin(θ) | ik * (1 - cos(θ)) + j * sin(θ) | 0
+    // ij * (1 - cos(θ)) + k * sin(θ) | j² * (1 - cos(θ)) + 1 * cos(θ) | jk * (1 - cos(θ)) - i * sin(θ) | 0
+    // ik * (1 - cos(θ)) - j * sin(θ) | jk * (1 - cos(θ)) + i * sin(θ) | k² * (1 - cos(θ)) + 1 * cos(θ) | 0
+    // 0                              | 0                              | 0                              | 1
+
+    // where i is the normalized x component of the (x, y, z) vector,
+    //       j is the normalized y component of the (x, y, z) vector,
+    //       k is the normalized z component of the (x, y, z) vector,
+    //       such as i² + j² + k² = 1 and i ÷ x = j ÷ y = k ÷ z
+    //   and θ is provided angle.
+
+    // In this case, we’re expecting this matrix to be equal to:
+
+    // 36 / 49 + 13 * √(3) / 147 | 11 / 49 -  6 * √(3) /  49 |  45 / 98 -  4 * √(3) / 49 | 0
+    // 25 / 49 -  6 * √(3) /  49 |  9 / 49 + 40 * √(3) / 147 | -15 / 49 -  2 * √(3) / 49 | 0
+    //  3 / 98 -  4 * √(3) /  49 | 27 / 49 -  2 * √(3) /  49 |   4 / 49 + 15 * √(3) / 49 | 0
+    //  0                        |  0                        |  0                        | 1
+
+    const rotate3D = document.getElementById("rotate-3d")
+        .computedStyleMap().get('transform')[0];
+    assert_array_approx_equals(rotate3D.toMatrix().toFloat64Array(),
+        [36 / 49 * (1 - Math.sqrt(0.75)) + Math.sqrt(0.75),
+        18 / 49 * (1 - Math.sqrt(0.75)) + 1 / 7,
+        12 / 49 * (1 - Math.sqrt(0.75)) - 3 / 14, 0,
+        18 / 49 * (1 - Math.sqrt(0.75)) - 1 / 7,
+        9 / 49 * (1 - Math.sqrt(0.75)) + Math.sqrt(0.75),
+        6 / 49 * (1 - Math.sqrt(0.75)) + 3 / 7, 0,
+        12 / 49 * (1 - Math.sqrt(0.75)) + 3 / 14,
+        6 / 49 * (1 - Math.sqrt(0.75)) - 3 / 7,
+        4 / 49 * (1 - Math.sqrt(0.75)) + Math.sqrt(0.75), 0, 0, 0, 0, 1],
+        Number.EPSILON);
+  }, "3D CSSRotate to DOMMatrix");
+</script>
+<div id="scale-2d" style="transform: scale(0.5, 1.5)"></div>
+<script>
+  test(function() {
+    // A 2D CSSScale should return a DOMMatrix in the form of
+
+    // x 0 0 0
+    // 0 y 0 0
+    // 0 0 1 0
+    // 0 0 0 1
+
+    // where x is the scaling with respect to the x axis
+    //   and y is the scaling with respect to the y axis.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 0.5 0.0 0.0 0.0
+    // 0.0 1.5 0.0 0.0
+    // 0.0 0.0 1.0 0.0
+    // 0.0 0.0 0.0 1.0
+
+    const scale2D = document.getElementById("scale-2d")
+        .computedStyleMap().get('transform')[0];
+    assert_array_equals(scale2D.toMatrix().toFloat64Array(),
+        [0.5, 0, 0, 0, 0, 1.5, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1]);
+  }, "2D CSSScale to DOMMatrix");
+</script>
+<div id="scale-3d" style="transform: scale3d(0.5, 1.5, 2.5)"></div>
+<script>
+  test(function() {
+    // A 3D CSSScale should return a DOMMatrix in the form of
+
+    // x 0 0 0
+    // 0 y 0 0
+    // 0 0 z 0
+    // 0 0 0 1
+
+    // where x is the scaling with respect to the x axis,
+    //       y is the scaling with respect to the y axis
+    //   and z is the scaling with respect to the z axis.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 0.5 0.0 0.0 0.0
+    // 0.0 1.5 0.0 0.0
+    // 0.0 0.0 2.5 0.0
+    // 0.0 0.0 0.0 1.0
+
+    const scale3D = document.getElementById("scale-3d")
+        .computedStyleMap().get('transform')[0];
+    assert_array_equals(scale3D.toMatrix().toFloat64Array(),
+        [0.5, 0, 0, 0, 0, 1.5, 0, 0, 0, 0, 2.5, 0, 0, 0, 0, 1]);
+  }, "3D CSSScale to DOMMatrix");
+</script>
+<div id="skew" style="transform: skew(45deg, 30deg);"></div>
+<script>
+  test(function() {
+    // A CSSSkew should return a DOMMatrix in the form of
+
+    // 1       tan(ax) 0 0
+    // tan(ay) 1       0 0
+    // 0       0       1 0
+    // 0       0       0 1
+
+    // where ax is the skewing angle along the x axis
+    //   and ay is the skewing angle along the y axis.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 1      1 0 0
+    // √(3)/3 1 0 0
+    // 0      0 1 0
+    // 0      0 0 1
+
+    const skew = document.getElementById("skew")
+        .computedStyleMap().get('transform')[0];
+    assert_array_approx_equals(skew.toMatrix().toFloat64Array(),
+        [1, 3 ** -0.5, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        Number.EPSILON);
+  }, "CSSSkew to DOMMatrix");
+</script>
+<div id="skew-x" style="transform: skewX(45deg)"></div>
+<script>
+  test(function() {
+    // A CSSSkewX should return a DOMMatrix in the form of
+
+    // 1 tan(ax) 0 0
+    // 0 1       0 0
+    // 0 0       1 0
+    // 0 0       0 1
+
+    // where ax is the skewing angle along the x axis.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 1 1 0 0
+    // 0 1 0 0
+    // 0 0 1 0
+    // 0 0 0 1
+
+    const skewX = document.getElementById("skew-x")
+        .computedStyleMap().get('transform')[0];
+    assert_array_approx_equals(skewX.toMatrix().toFloat64Array(),
+        [1, 0, 0, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1], Number.EPSILON);
+  }, "CSSSkewX to DOMMatrix");
+</script>
+<div id="skew-y" style="transform: skewY(30deg)"></div>
+<script>
+  test(function() {
+    // A CSSSkewY should return a DOMMatrix in the form of
+
+    // 1       0 0 0
+    // tan(ay) 1 0 0
+    // 0       0 1 0
+    // 0       0 0 1
+
+    // where ay is the skewing angle along the y axis.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 1      0 0 0
+    // √(3)/3 1 0 0
+    // 0      0 1 0
+    // 0      0 0 1
+
+    const skewY = document.getElementById("skew-y")
+        .computedStyleMap().get('transform')[0];
+    assert_array_approx_equals(skewY.toMatrix().toFloat64Array(),
+        [1, 3 ** -0.5, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+        Number.EPSILON);
+  }, "CSSSkewY to DOMMatrix");
+</script>
+<div id="perspective" style="transform: perspective(50px)"></div>
+<script>
+  test(function() {
+    // A CSSPerspective should return a DOMMatrix in the form of
+
+    // 1 0 0        0
+    // 0 1 0        0
+    // 0 0 1        0
+    // 0 0 (-1 / d) 1
+
+    // where d is the length provided in pixels.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 1.00 0.00  0.00 0.00
+    // 0.00 1.00  0.00 0.00
+    // 0.00 0.00  1.00 0.00
+    // 0.00 0.00 -0.02 1.00
+
+    const perspective = document.getElementById("perspective")
+        .computedStyleMap().get('transform')[0];
+    assert_array_equals(perspective.toMatrix().toFloat64Array(),
+        [1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, -0.02, 0, 0, 0, 1]);
+  }, "CSSPerspective to DOMMatrix");
+</script>
+<div id="matrix-2d" style="transform: matrix(0, 1, -0.3, 1.5, 20, 10)"></div>
+<script>
+  test(function() {
+    // A 2D CSSMatrixComponent should return a DOMMatrix in the form of
+
+    // a c 0 e
+    // b d 0 f
+    // 0 0 1 0
+    // 0 0 0 1
+
+    // where a represent the a component of the matrix,
+    //       b represent the b component of the matrix,
+    //       c represent the c component of the matrix,
+    //       d represent the d component of the matrix,
+    //       e represent the e component of the matrix,
+    //   and f represent the f component of the matrix.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    // 0.0 -0.3 0.0 20.0
+    // 1.0  1.5 0.0 10.0
+    // 0.0  0.0 1.0  0.0
+    // 0.0  0.0 0.0  1.0
+
+    const matrix2D = document.getElementById("matrix-2d")
+        .computedStyleMap().get('transform')[0];
+    assert_array_equals(matrix2D.toMatrix().toFloat64Array(),
+        [0, 1, 0, 0, -0.3, 1.5, 0, 0, 0, 0, 1, 0, 20, 10, 0, 1]);
+  }, "2D CSSMatrixComponent to DOMMatrix");
+</script>
+<div id="matrix-3d" style="transform: matrix3d(0.5, 0.1, -0.1, 0,
+    -0.1, 1.3, 0.7, 0, 0.6, -1.0, 2.2, 0, 20, 10, 5, 0.9)"></div>
+<script>
+  test(function() {
+    // A 3D CSSMatrixComponent should return a DOMMatrix in the form of
+
+    // m11 m21 m31 m41
+    // m12 m22 m32 m42
+    // m13 m23 m33 m43
+    // m14 m24 m34 m44
+
+    // where mij represent the element on the i-th column
+    //                                 on the j-th row of the matrix.
+
+    // In this case, we’re expecting this matrix to be equal to:
+    //  0.5 -0.1  0.6 20.0
+    //  0.1  1.3 -1.0 10.0
+    // -0.1  0.7  2.2  5.0
+    //  0.0  0.0  0.0  0.9
+
+    const matrix3D = document.getElementById("matrix-3d")
+        .computedStyleMap().get('transform')[0];
+    assert_array_equals(matrix3D.toMatrix().toFloat64Array(), [0.5, 0.1, -0.1,
+        0, -0.1, 1.3, 0.7, 0, 0.6, -1, 2.2, 0, 20, 10, 5, 0.9]);
+  }, "3D CSSMatrixComponent to DOMMatrix");
+</script>

@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/modules/presentation/presentation_connection_callbacks.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_connection.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_error.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_request.h"
@@ -64,9 +63,10 @@ void PresentationConnectionCallbacks::OnSuccess(
         resolver_.Get(), presentation_info, request_);
   }
 
-  resolver_->Resolve(connection_);
   connection_->Init(std::move(connection_remote),
                     std::move(connection_receiver));
+
+  resolver_->Resolve(connection_);
 }
 
 void PresentationConnectionCallbacks::OnError(

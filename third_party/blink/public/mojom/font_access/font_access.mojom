@@ -1,0 +1,50 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+
+enum FontEnumerationStatus {
+  kOk,
+  // The functionality has not been implemented yet.
+  kUnimplemented,
+  // The service failed due to an unexpected error.
+  kUnexpectedError,
+  // Needs user activation to proceed.
+  kNeedsUserActivation,
+  // Page needs to be visible.
+  kNotVisible,
+  // The site doesn't have permission for the requested operation.
+  kPermissionDenied,
+  // The user canceled the operation.
+  kCanceled,
+};
+
+// Bag of data representing a font, used to pass structured data from
+// content to embedder and from browser to renderer.
+struct FontMetadata {
+  string postscript_name;
+  string full_name;
+  string family;
+  string style;
+  bool italic;
+  float stretch;
+  float weight;
+};
+
+// Implemented in the browser process to pass font data to windows
+// and workers in renderer processes.
+// Provides methods related to enumerating locally installed fonts.
+interface FontAccessManager {
+  // Enumerate locally installed fonts. Results will be gated by a permission
+  // check.
+  EnumerateLocalFonts() => (FontEnumerationStatus enumeration_status, mojo_base.mojom.ReadOnlySharedMemoryRegion? enumeration_table);
+  // Begins a UX that gives affordances for a user to choose fonts to be shared
+  // with the page.
+  // `selection`, if not empty, will limit the font selection to those matching
+  // the supplied list.
+  ChooseLocalFonts(array<string> selection) => (FontEnumerationStatus status, array<FontMetadata> chosen_fonts);
+};

@@ -127,7 +127,7 @@ called `TrichromeWebView.apk`, `TrichromeChrome.aab`, and
 ### Choosing a WebView version
 
 WebView follows the same branching and release model as the rest of the Chromium
-project: a beta version is branched from the master branch approximately every
+project: a beta version is branched from the main branch approximately every
 six weeks, and after approximately six weeks of beta testing it is released to
 stable. If critical security or functionality issues are discovered after the
 stable release, a new version may be released from the same stable branch at any
@@ -144,11 +144,11 @@ to check out the desired release tag.
 
 If you're intending to build WebView just in order to develop, modify, or
 customise it, it's usually best to work directly on the latest version of the
-master branch. Chromium's master branch is covered by a large number of
+main branch. Chromium's main branch is covered by a large number of
 automated build and test systems that ensure it is sufficiently stable for
 development purposes at almost all times.
 
-### Building WebView for a new or in-development version of Android
+### Building WebView for a new or in-development version of Android {#pre-release}
 
 If you want to build WebView for a version of Android which was recently
 released or currently in development, you may find that the current stable
@@ -188,6 +188,10 @@ target_cpu = "arm64"       # or "arm", "x86", or "x64"; see below
 is_debug = false
 is_official_build = true
 
+# Use the default production settings for field trials, instead of the testing
+# defaults.
+disable_fieldtrial_testing_config = true
+
 # WebView's efficient native library loading mechanism is not compatible with
 # component builds of Chromium.
 is_component_build = false
@@ -196,9 +200,9 @@ is_component_build = false
 is_chrome_branded = false
 use_official_google_api_keys = false
 
-# Significantly reduces binary size at the cost of preventing Android's native
-# crash handler from being able to produce useful stack unwindings.
-exclude_unwind_tables = true
+# May disable some experimental (unstable) features. Hides WebView DevTools
+# (a debugging tool most users won't need to access).
+android_channel = "stable"
 ```
 
 The `target_cpu` option must be set to
@@ -270,6 +274,24 @@ arguments:
 ffmpeg_branding = "Chrome"
 proprietary_codecs = true
 ```
+
+#### Crash stack unwinding
+
+By default, builds using `is_official_build = true` exclude unwind tables from
+the binaries, as they significantly increase binary size. Google's builds rely
+on crashes being reported using Crashpad, which can then be decoded server-side.
+If you don't intend to enable Crashpad and set up dedicated crash reporting
+infrastructure for your WebView, you may wish to re-enable the unwind tables
+with the following GN argument:
+
+``` gn
+exclude_unwind_tables = false
+```
+
+This will allow Android's debuggerd to produce meaningful stack traces for
+crashes that occur inside WebView's native code. We don't recommend using this
+setting in shipping builds due to the binary size impact, but it may be the only
+alternative if using Crashpad is impractical.
 
 #### Other build options
 

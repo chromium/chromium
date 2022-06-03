@@ -2,4 +2,4 @@
 ++[section]
 ++++[image map] name='pipe'
 ++++++[link] name='pipe1'
-++++++[link] name='pipe2'
+++++++[static] name='pipe2'

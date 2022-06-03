@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/scoped_observation.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/browsing_data/core/history_notice_utils.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -17,6 +18,8 @@
 #include "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/search_engines/template_url_service_observer.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/driver/sync_service.h"
@@ -31,18 +34,20 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
+#import "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
+#include "ios/chrome/browser/signin/authentication_service.h"
+#include "ios/chrome/browser/signin/authentication_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #import "ios/chrome/browser/ui/collection_view/collection_view_model.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_item.h"
-#import "ios/chrome/browser/ui/settings/cells/legacy/legacy_settings_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/search_engine_item.h"
 #import "ios/chrome/browser/ui/settings/cells/table_view_clear_browsing_data_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/browsing_data_counter_wrapper_producer.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_consumer.h"
@@ -52,13 +57,13 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_link_item.h"
+#include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/channel_info.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
-#import "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#import "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -91,8 +96,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
       @"clear_browsing_data_cookies",
   [NSNumber numberWithInteger:ItemTypeDataTypeCache] :
       @"clear_browsing_data_cached_images",
-  [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] :
-      @"clear_browsing_data_passwords",
+  [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] : @"password_key",
   [NSNumber numberWithInteger:ItemTypeDataTypeAutofill] :
       @"clear_browsing_data_autofill",
 };
@@ -106,38 +110,37 @@ static NSDictionary* _imageNamesByItemTypes = @{
   // Registrar for pref changes notifications.
   PrefChangeRegistrar _prefChangeRegistrar;
 
-  // Observer for browsing data removal events and associated ScopedObserver
-  // used to track registration with BrowsingDataRemover. They both may be
-  // null if the new Clear Browser Data UI is disabled.
+  // Observer for browsing data removal events and associated
+  // base::ScopedObservation used to track registration with
+  // BrowsingDataRemover.
   std::unique_ptr<BrowsingDataRemoverObserver> _observer;
   std::unique_ptr<
-      ScopedObserver<BrowsingDataRemover, BrowsingDataRemoverObserver>>
-      _scoped_observer;
+      base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemoverObserver>>
+      _scoped_observation;
 
   // Corresponds browsing data counters to their masks/flags. Items are inserted
-  // as clear data items are constructed. Remains empty if the new Clear Browser
-  // Data UI is disabled.
+  // as clear data items are constructed.
   std::map<BrowsingDataRemoveMask, std::unique_ptr<BrowsingDataCounterWrapper>>
       _countersByMasks;
 }
 
-@property(nonatomic, assign) ios::ChromeBrowserState* browserState;
+@property(nonatomic, assign) ChromeBrowserState* browserState;
 // Whether to show alert about other forms of browsing history.
 @property(nonatomic, assign)
     BOOL shouldShowNoticeAboutOtherFormsOfBrowsingHistory;
 // Whether to show popup other forms of browsing history.
 @property(nonatomic, assign)
     BOOL shouldPopupDialogAboutOtherFormsOfBrowsingHistory;
-// Whether the mediator is managing a TableViewController or a
-// CollectionsViewController.
-@property(nonatomic, assign) ClearBrowsingDataListType listType;
-
-// TODO(crbug.com/947456): Prune
-// ClearBrowsingDataCollectionViewController-related code when it is dropped.
-@property(nonatomic, strong)
-    LegacySettingsDetailItem* collectionViewTimeRangeItem;
 
 @property(nonatomic, strong) TableViewDetailIconItem* tableViewTimeRangeItem;
+
+@property(nonatomic, strong)
+    TableViewClearBrowsingDataItem* browsingHistoryItem;
+@property(nonatomic, strong)
+    TableViewClearBrowsingDataItem* cookiesSiteDataItem;
+@property(nonatomic, strong) TableViewClearBrowsingDataItem* cacheItem;
+@property(nonatomic, strong) TableViewClearBrowsingDataItem* savedPasswordsItem;
+@property(nonatomic, strong) TableViewClearBrowsingDataItem* autofillItem;
 
 @property(nonatomic, strong)
     BrowsingDataCounterWrapperProducer* counterWrapperProducer;
@@ -147,49 +150,51 @@ static NSDictionary* _imageNamesByItemTypes = @{
 @implementation ClearBrowsingDataManager
 @synthesize browserState = _browserState;
 @synthesize consumer = _consumer;
-@synthesize linkDelegate = _linkDelegate;
 @synthesize shouldShowNoticeAboutOtherFormsOfBrowsingHistory =
     _shouldShowNoticeAboutOtherFormsOfBrowsingHistory;
 @synthesize shouldPopupDialogAboutOtherFormsOfBrowsingHistory =
     _shouldPopupDialogAboutOtherFormsOfBrowsingHistory;
-@synthesize listType = _listType;
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                            listType:(ClearBrowsingDataListType)listType {
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState {
   return [self initWithBrowserState:browserState
-                                listType:listType
                      browsingDataRemover:BrowsingDataRemoverFactory::
                                              GetForBrowserState(browserState)
       browsingDataCounterWrapperProducer:[[BrowsingDataCounterWrapperProducer
                                              alloc] init]];
 }
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
-                              listType:(ClearBrowsingDataListType)listType
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                    browsingDataRemover:(BrowsingDataRemover*)remover
     browsingDataCounterWrapperProducer:
         (BrowsingDataCounterWrapperProducer*)producer {
   self = [super init];
   if (self) {
     _browserState = browserState;
-    _listType = listType;
     _counterWrapperProducer = producer;
 
     _timeRangePref.Init(browsing_data::prefs::kDeleteTimePeriod,
                         _browserState->GetPrefs());
 
-    if (IsNewClearBrowsingDataUIEnabled()) {
-      _observer = std::make_unique<BrowsingDataRemoverObserverBridge>(self);
-      _scoped_observer = std::make_unique<
-          ScopedObserver<BrowsingDataRemover, BrowsingDataRemoverObserver>>(
-          _observer.get());
-      _scoped_observer->Add(remover);
+    _observer = std::make_unique<BrowsingDataRemoverObserverBridge>(self);
+    _scoped_observation = std::make_unique<base::ScopedObservation<
+        BrowsingDataRemover, BrowsingDataRemoverObserver>>(_observer.get());
+    _scoped_observation->Observe(remover);
 
-      _prefChangeRegistrar.Init(_browserState->GetPrefs());
-      _prefObserverBridge.reset(new PrefObserverBridge(self));
-      _prefObserverBridge->ObserveChangesForPreference(
-          browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
-    }
+    _prefChangeRegistrar.Init(_browserState->GetPrefs());
+    _prefObserverBridge.reset(new PrefObserverBridge(self));
+    _prefObserverBridge->ObserveChangesForPreference(
+        browsing_data::prefs::kDeleteTimePeriod, &_prefChangeRegistrar);
+
+    _prefObserverBridge->ObserveChangesForPreference(
+        browsing_data::prefs::kDeleteBrowsingHistory, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        browsing_data::prefs::kDeleteCookies, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        browsing_data::prefs::kDeleteCache, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        browsing_data::prefs::kDeletePasswords, &_prefChangeRegistrar);
+    _prefObserverBridge->ObserveChangesForPreference(
+        browsing_data::prefs::kDeleteFormData, &_prefChangeRegistrar);
   }
   return self;
 }
@@ -197,26 +202,12 @@ static NSDictionary* _imageNamesByItemTypes = @{
 #pragma mark - Public Methods
 
 - (void)loadModel:(ListModel*)model {
-  // Time range section.
-  // Only implementing new UI for kListTypeCollectionView.
-  if (IsNewClearBrowsingDataUIEnabled()) {
-    [model addSectionWithIdentifier:SectionIdentifierTimeRange];
-    ListItem* timeRangeItem = [self timeRangeItem];
-    [model addItem:timeRangeItem
-        toSectionWithIdentifier:SectionIdentifierTimeRange];
-    if (self.listType == ClearBrowsingDataListType::kListTypeCollectionView) {
-      self.collectionViewTimeRangeItem =
-          base::mac::ObjCCastStrict<LegacySettingsDetailItem>(timeRangeItem);
-    } else {
-      DCHECK(self.listType == ClearBrowsingDataListType::kListTypeTableView);
-      self.tableViewTimeRangeItem =
-          base::mac::ObjCCastStrict<TableViewDetailIconItem>(timeRangeItem);
-      self.tableViewTimeRangeItem.useCustomSeparator = YES;
-    }
-  }
+  self.tableViewTimeRangeItem = [self timeRangeItem];
 
+  [model addSectionWithIdentifier:SectionIdentifierTimeRange];
+  [model addItem:self.tableViewTimeRangeItem
+      toSectionWithIdentifier:SectionIdentifierTimeRange];
   [self addClearBrowsingDataItemsToModel:model];
-  [self addClearDataButtonToModel:model];
   [self addSyncProfileItemsToModel:model];
 }
 
@@ -224,45 +215,46 @@ static NSDictionary* _imageNamesByItemTypes = @{
 - (void)addClearBrowsingDataItemsToModel:(ListModel*)model {
   // Data types section.
   [model addSectionWithIdentifier:SectionIdentifierDataTypes];
-  ListItem* browsingHistoryItem =
+  self.browsingHistoryItem =
       [self clearDataItemWithType:ItemTypeDataTypeBrowsingHistory
                           titleID:IDS_IOS_CLEAR_BROWSING_HISTORY
                              mask:BrowsingDataRemoveMask::REMOVE_HISTORY
                          prefName:browsing_data::prefs::kDeleteBrowsingHistory];
-  [model addItem:browsingHistoryItem
+  [model addItem:self.browsingHistoryItem
       toSectionWithIdentifier:SectionIdentifierDataTypes];
 
   // This data type doesn't currently have an associated counter, but displays
-  // an explanatory text instead, when the new UI is enabled.
-  ListItem* cookiesSiteDataItem =
+  // an explanatory text instead.
+  self.cookiesSiteDataItem =
       [self clearDataItemWithType:ItemTypeDataTypeCookiesSiteData
                           titleID:IDS_IOS_CLEAR_COOKIES
                              mask:BrowsingDataRemoveMask::REMOVE_SITE_DATA
                          prefName:browsing_data::prefs::kDeleteCookies];
-  [model addItem:cookiesSiteDataItem
+  [model addItem:self.cookiesSiteDataItem
       toSectionWithIdentifier:SectionIdentifierDataTypes];
 
-  ListItem* cacheItem =
+  self.cacheItem =
       [self clearDataItemWithType:ItemTypeDataTypeCache
                           titleID:IDS_IOS_CLEAR_CACHE
                              mask:BrowsingDataRemoveMask::REMOVE_CACHE
                          prefName:browsing_data::prefs::kDeleteCache];
-  [model addItem:cacheItem toSectionWithIdentifier:SectionIdentifierDataTypes];
+  [model addItem:self.cacheItem
+      toSectionWithIdentifier:SectionIdentifierDataTypes];
 
-  ListItem* savedPasswordsItem =
+  self.savedPasswordsItem =
       [self clearDataItemWithType:ItemTypeDataTypeSavedPasswords
                           titleID:IDS_IOS_CLEAR_SAVED_PASSWORDS
                              mask:BrowsingDataRemoveMask::REMOVE_PASSWORDS
                          prefName:browsing_data::prefs::kDeletePasswords];
-  [model addItem:savedPasswordsItem
+  [model addItem:self.savedPasswordsItem
       toSectionWithIdentifier:SectionIdentifierDataTypes];
 
-  ListItem* autofillItem =
+  self.autofillItem =
       [self clearDataItemWithType:ItemTypeDataTypeAutofill
                           titleID:IDS_IOS_CLEAR_AUTOFILL
                              mask:BrowsingDataRemoveMask::REMOVE_FORM_DATA
                          prefName:browsing_data::prefs::kDeleteFormData];
-  [model addItem:autofillItem
+  [model addItem:self.autofillItem
       toSectionWithIdentifier:SectionIdentifierDataTypes];
 }
 
@@ -297,9 +289,8 @@ static NSDictionary* _imageNamesByItemTypes = @{
                              (~NSByteCountFormatterUseKB);
     formatter.countStyle = NSByteCountFormatterCountStyleMemory;
     NSString* formattedSize = [formatter stringFromByteCount:cacheSizeBytes];
-    return (!IsNewClearBrowsingDataUIEnabled() ||
-            _timeRangePref.GetValue() ==
-                static_cast<int>(browsing_data::TimePeriod::ALL_TIME))
+    return _timeRangePref.GetValue() ==
+                   static_cast<int>(browsing_data::TimePeriod::ALL_TIME)
                ? formattedSize
                : l10n_util::GetNSStringF(
                      IDS_DEL_CACHE_COUNTER_UPPER_ESTIMATE,
@@ -314,39 +305,32 @@ static NSDictionary* _imageNamesByItemTypes = @{
         (BrowsingDataRemoveMask)dataTypeMaskToRemove
                              baseViewController:
                                  (UIViewController*)baseViewController
-                                     sourceRect:(CGRect)sourceRect
-                                     sourceView:(UIView*)sourceView {
-  return [self actionSheetCoordinatorWithDataTypesToRemove:dataTypeMaskToRemove
-                                        baseViewController:baseViewController
-                                                sourceRect:sourceRect
-                                                sourceView:sourceView
-                                       sourceBarButtonItem:nil];
-}
-
-- (ActionSheetCoordinator*)
-    actionSheetCoordinatorWithDataTypesToRemove:
-        (BrowsingDataRemoveMask)dataTypeMaskToRemove
-                             baseViewController:
-                                 (UIViewController*)baseViewController
+                                        browser:(Browser*)browser
                             sourceBarButtonItem:
                                 (UIBarButtonItem*)sourceBarButtonItem {
-  return [self actionSheetCoordinatorWithDataTypesToRemove:dataTypeMaskToRemove
-                                        baseViewController:baseViewController
-                                                sourceRect:CGRectNull
-                                                sourceView:nil
-                                       sourceBarButtonItem:sourceBarButtonItem];
-}
-
-- (void)addClearDataButtonToModel:(ListModel*)model {
-  if (self.listType == ClearBrowsingDataListType::kListTypeTableView &&
-      IsNewClearBrowsingDataUIEnabled()) {
-    return;
+  if (dataTypeMaskToRemove == BrowsingDataRemoveMask::REMOVE_NOTHING) {
+    // Nothing to clear (no data types selected).
+    return nil;
   }
-  // Clear Browsing Data button.
-  ListItem* clearButtonItem = [self clearButtonItem];
-  [model addSectionWithIdentifier:SectionIdentifierClearBrowsingDataButton];
-  [model addItem:clearButtonItem
-      toSectionWithIdentifier:SectionIdentifierClearBrowsingDataButton];
+  __weak ClearBrowsingDataManager* weakSelf = self;
+
+  ActionSheetCoordinator* actionCoordinator = [[ActionSheetCoordinator alloc]
+      initWithBaseViewController:baseViewController
+                         browser:browser
+                           title:l10n_util::GetNSString(
+                                     IDS_IOS_CONFIRM_CLEAR_BUTTON_TITLE)
+                         message:nil
+                   barButtonItem:sourceBarButtonItem];
+  actionCoordinator.popoverArrowDirection =
+      UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
+  [actionCoordinator
+      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)
+                action:^{
+                  [weakSelf clearDataForDataTypes:dataTypeMaskToRemove];
+                  [weakSelf signOutIfNotSyncing];
+                }
+                 style:UIAlertActionStyleDestructive];
+  return actionCoordinator;
 }
 
 // Add footers about user's account data.
@@ -354,32 +338,53 @@ static NSDictionary* _imageNamesByItemTypes = @{
   // Google Account footer.
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(self.browserState);
-  if (identityManager->HasPrimaryAccount()) {
-    // TODO(crbug.com/650424): Footer items must currently go into a separate
-    // section, to work around a drawing bug in MDC.
-    [model addSectionWithIdentifier:SectionIdentifierGoogleAccount];
-    [model addItem:[self footerForGoogleAccountSectionItem]
-        toSectionWithIdentifier:SectionIdentifierGoogleAccount];
+
+  if (base::FeatureList::IsEnabled(kSearchHistoryLinkIOS)) {
+    const BOOL loggedIn =
+        identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin) ||
+        identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+    const TemplateURLService* templateURLService =
+        ios::TemplateURLServiceFactory::GetForBrowserState(_browserState);
+    const TemplateURL* defaultSearchEngine =
+        templateURLService->GetDefaultSearchProvider();
+    const BOOL isDefaultSearchEngineGoogle =
+        defaultSearchEngine->GetEngineType(
+            templateURLService->search_terms_data()) ==
+        SearchEngineType::SEARCH_ENGINE_GOOGLE;
+    // If the user has their DSE set to Google and is logged out
+    // there is no additional data to delete, so omit this section.
+    if (isDefaultSearchEngineGoogle && !loggedIn) {
+      // Nothing to do.
+    } else {
+      // Show additional instructions for deleting data.
+      [model addSectionWithIdentifier:SectionIdentifierGoogleAccount];
+      [model setFooter:[self footerGoogleAccountDSEBasedItem:loggedIn
+                                         defaultSearchEngine:defaultSearchEngine
+                                 isDefaultSearchEngineGoogle:
+                                     isDefaultSearchEngineGoogle]
+          forSectionWithIdentifier:SectionIdentifierGoogleAccount];
+    }
+  } else {
+    if (identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+      [model addSectionWithIdentifier:SectionIdentifierGoogleAccount];
+      [model setFooter:[self footerForGoogleAccountSectionItem]
+          forSectionWithIdentifier:SectionIdentifierGoogleAccount];
+    }
   }
 
+  [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
   syncer::SyncService* syncService =
-      ProfileSyncServiceFactory::GetForBrowserState(self.browserState);
+      SyncServiceFactory::GetForBrowserState(self.browserState);
   if (syncService && syncService->IsSyncFeatureActive()) {
-    // TODO(crbug.com/650424): Footer items must currently go into a separate
-    // section, to work around a drawing bug in MDC.
-    [model addSectionWithIdentifier:SectionIdentifierClearSyncAndSavedSiteData];
-    [model addItem:[self footerClearSyncAndSavedSiteDataItem]
-        toSectionWithIdentifier:SectionIdentifierClearSyncAndSavedSiteData];
+    [model setFooter:[self footerClearSyncAndSavedSiteDataItem]
+        forSectionWithIdentifier:SectionIdentifierSavedSiteData];
   } else {
-    // TODO(crbug.com/650424): Footer items must currently go into a separate
-    // section, to work around a drawing bug in MDC.
-    [model addSectionWithIdentifier:SectionIdentifierSavedSiteData];
-    [model addItem:[self footerSavedSiteDataItem]
-        toSectionWithIdentifier:SectionIdentifierSavedSiteData];
+    [model setFooter:[self footerSavedSiteDataItem]
+        forSectionWithIdentifier:SectionIdentifierSavedSiteData];
   }
 
   // If not signed in, no need to continue with profile syncing.
-  if (!identityManager->HasPrimaryAccount()) {
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
 
@@ -387,18 +392,24 @@ static NSDictionary* _imageNamesByItemTypes = @{
       ios::WebHistoryServiceFactory::GetForBrowserState(_browserState);
 
   __weak ClearBrowsingDataManager* weakSelf = self;
-  browsing_data::ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
-      syncService, historyService,
-      base::BindRepeating(^(bool shouldShowNotice) {
-        ClearBrowsingDataManager* strongSelf = weakSelf;
-        [strongSelf
-            setShouldShowNoticeAboutOtherFormsOfBrowsingHistory:shouldShowNotice
-                                                       forModel:model];
-      }));
+
+  // The text notice at the bottom of the CBD selector is not needed when
+  // the Search History Link feature is enabled. However, the popup notice
+  // will be left for now.
+  if (!base::FeatureList::IsEnabled(kSearchHistoryLinkIOS)) {
+    browsing_data::ShouldShowNoticeAboutOtherFormsOfBrowsingHistory(
+        syncService, historyService, base::BindOnce(^(bool shouldShowNotice) {
+          ClearBrowsingDataManager* strongSelf = weakSelf;
+          [strongSelf
+              setShouldShowNoticeAboutOtherFormsOfBrowsingHistory:
+                  shouldShowNotice
+                                                         forModel:model];
+        }));
+  }
 
   browsing_data::ShouldPopupDialogAboutOtherFormsOfBrowsingHistory(
       syncService, historyService, GetChannel(),
-      base::BindRepeating(^(bool shouldShowPopup) {
+      base::BindOnce(^(bool shouldShowPopup) {
         ClearBrowsingDataManager* strongSelf = weakSelf;
         [strongSelf setShouldPopupDialogAboutOtherFormsOfBrowsingHistory:
                         shouldShowPopup];
@@ -418,170 +429,121 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
 #pragma mark Items
 
-- (ListItem*)clearButtonItem {
-  ListItem* clearButtonItem;
-  // Create a SettingsTextItem for CollectionView models and a
-  // TableViewTextButtonItem for TableView models.
-  if (self.listType == ClearBrowsingDataListType::kListTypeCollectionView) {
-    SettingsTextItem* collectionClearButtonItem =
-        [[SettingsTextItem alloc] initWithType:ItemTypeClearBrowsingDataButton];
-    collectionClearButtonItem.text =
-        l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON);
-    collectionClearButtonItem.accessibilityTraits |= UIAccessibilityTraitButton;
-    collectionClearButtonItem.textColor = [UIColor colorNamed:kRedColor];
-    collectionClearButtonItem.accessibilityIdentifier =
-        kClearBrowsingDataButtonIdentifier;
-    clearButtonItem = collectionClearButtonItem;
-  } else {
-    TableViewTextButtonItem* tableViewClearButtonItem =
-        [[TableViewTextButtonItem alloc]
-            initWithType:ItemTypeClearBrowsingDataButton];
-    tableViewClearButtonItem.buttonText =
-        l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON);
-    tableViewClearButtonItem.buttonBackgroundColor =
-        [UIColor colorNamed:kRedColor];
-    tableViewClearButtonItem.buttonAccessibilityIdentifier =
-        kClearBrowsingDataButtonIdentifier;
-    clearButtonItem = tableViewClearButtonItem;
-  }
-  return clearButtonItem;
-}
-
 // Creates item of type |itemType| with |mask| of data to be cleared if
 // selected, |prefName|, and |titleId| of item.
-- (ListItem*)clearDataItemWithType:(ClearBrowsingDataItemType)itemType
-                           titleID:(int)titleMessageID
-                              mask:(BrowsingDataRemoveMask)mask
-                          prefName:(const char*)prefName {
+- (TableViewClearBrowsingDataItem*)
+    clearDataItemWithType:(ClearBrowsingDataItemType)itemType
+                  titleID:(int)titleMessageID
+                     mask:(BrowsingDataRemoveMask)mask
+                 prefName:(const char*)prefName {
   PrefService* prefs = self.browserState->GetPrefs();
-  ListItem* clearDataItem;
-  // Create a ClearBrowsingDataItem for a CollectionView model and a
-  // TableViewClearBrowsingDataItem for a TableView model.
-  if (self.listType == ClearBrowsingDataListType::kListTypeCollectionView) {
-    ClearBrowsingDataItem* collectionClearDataItem =
-        [[ClearBrowsingDataItem alloc] initWithType:itemType counter:nullptr];
-    collectionClearDataItem.text = l10n_util::GetNSString(titleMessageID);
-    if (prefs->GetBoolean(prefName)) {
-      collectionClearDataItem.accessoryType =
-          MDCCollectionViewCellAccessoryCheckmark;
-    }
-    collectionClearDataItem.dataTypeMask = mask;
-    collectionClearDataItem.prefName = prefName;
-    collectionClearDataItem.accessibilityIdentifier =
-        [self accessibilityIdentifierFromItemType:itemType];
-    if (IsNewClearBrowsingDataUIEnabled()) {
-      if (itemType == ItemTypeDataTypeCookiesSiteData) {
-        // Because there is no counter for cookies, an explanatory text is
-        // displayed.
-        collectionClearDataItem.detailText =
-            l10n_util::GetNSString(IDS_DEL_COOKIES_COUNTER);
-      } else {
-        __weak ClearBrowsingDataManager* weakSelf = self;
-        __weak ClearBrowsingDataItem* weakCollectionClearDataItem =
-            collectionClearDataItem;
-        BrowsingDataCounterWrapper::UpdateUICallback callback =
-            base::BindRepeating(
-                ^(const browsing_data::BrowsingDataCounter::Result& result) {
-                  weakCollectionClearDataItem.detailText =
-                      [weakSelf counterTextFromResult:result];
-                  [weakSelf.consumer
-                      updateCellsForItem:weakCollectionClearDataItem];
-                });
-        std::unique_ptr<BrowsingDataCounterWrapper> counter =
-            [self.counterWrapperProducer
-                createCounterWrapperWithPrefName:prefName
-                                    browserState:self.browserState
-                                     prefService:prefs
-                                updateUiCallback:callback];
-        _countersByMasks.emplace(mask, std::move(counter));
-      }
-    }
-    clearDataItem = collectionClearDataItem;
+  TableViewClearBrowsingDataItem* clearDataItem =
+      [[TableViewClearBrowsingDataItem alloc] initWithType:itemType];
+  clearDataItem.text = l10n_util::GetNSString(titleMessageID);
+  clearDataItem.checked = prefs->GetBoolean(prefName);
+  clearDataItem.accessibilityIdentifier =
+      [self accessibilityIdentifierFromItemType:itemType];
+  clearDataItem.dataTypeMask = mask;
+  clearDataItem.prefName = prefName;
+  clearDataItem.checkedBackgroundColor = [[UIColor colorNamed:kBlueColor]
+      colorWithAlphaComponent:kSelectedBackgroundColorAlpha];
+  clearDataItem.imageName = [_imageNamesByItemTypes
+      objectForKey:[NSNumber numberWithInteger:itemType]];
+  if (itemType == ItemTypeDataTypeCookiesSiteData) {
+    // Because there is no counter for cookies, an explanatory text is
+    // displayed.
+    clearDataItem.detailText = l10n_util::GetNSString(IDS_DEL_COOKIES_COUNTER);
   } else {
-    TableViewClearBrowsingDataItem* tableViewClearDataItem =
-        [[TableViewClearBrowsingDataItem alloc] initWithType:itemType];
-    tableViewClearDataItem.text = l10n_util::GetNSString(titleMessageID);
-    tableViewClearDataItem.checked = prefs->GetBoolean(prefName);
-    tableViewClearDataItem.accessibilityIdentifier =
-        [self accessibilityIdentifierFromItemType:itemType];
-    tableViewClearDataItem.dataTypeMask = mask;
-    tableViewClearDataItem.prefName = prefName;
-    if (IsNewClearBrowsingDataUIEnabled()) {
-      tableViewClearDataItem.useCustomSeparator = YES;
-      tableViewClearDataItem.checkedBackgroundColor =
-          [[UIColor colorNamed:kBlueColor]
-              colorWithAlphaComponent:kSelectedBackgroundColorAlpha];
-      tableViewClearDataItem.imageName = [_imageNamesByItemTypes
-          objectForKey:[NSNumber numberWithInteger:itemType]];
-      if (itemType == ItemTypeDataTypeCookiesSiteData) {
-        // Because there is no counter for cookies, an explanatory text is
-        // displayed.
-        tableViewClearDataItem.detailText =
-            l10n_util::GetNSString(IDS_DEL_COOKIES_COUNTER);
-      } else {
-        // Having a placeholder |detailText| helps reduce the observable
-        // row-height changes induced by the counter callbacks.
-        tableViewClearDataItem.detailText = @"\u00A0";
-        __weak ClearBrowsingDataManager* weakSelf = self;
-        __weak TableViewClearBrowsingDataItem* weakTableClearDataItem =
-            tableViewClearDataItem;
-        BrowsingDataCounterWrapper::UpdateUICallback callback =
-            base::BindRepeating(
-                ^(const browsing_data::BrowsingDataCounter::Result& result) {
-                  weakTableClearDataItem.detailText =
-                      [weakSelf counterTextFromResult:result];
-                  [weakSelf.consumer updateCellsForItem:weakTableClearDataItem];
-                });
-        std::unique_ptr<BrowsingDataCounterWrapper> counter =
-            [self.counterWrapperProducer
-                createCounterWrapperWithPrefName:prefName
-                                    browserState:self.browserState
-                                     prefService:prefs
-                                updateUiCallback:callback];
-        _countersByMasks.emplace(mask, std::move(counter));
-      }
-    }
-    clearDataItem = tableViewClearDataItem;
+    // Having a placeholder |detailText| helps reduce the observable
+    // row-height changes induced by the counter callbacks.
+    clearDataItem.detailText = @"\u00A0";
+    __weak ClearBrowsingDataManager* weakSelf = self;
+    __weak TableViewClearBrowsingDataItem* weakTableClearDataItem =
+        clearDataItem;
+    BrowsingDataCounterWrapper::UpdateUICallback callback = base::BindRepeating(
+        ^(const browsing_data::BrowsingDataCounter::Result& result) {
+          weakTableClearDataItem.detailText =
+              [weakSelf counterTextFromResult:result];
+          [weakSelf.consumer updateCellsForItem:weakTableClearDataItem
+                                         reload:YES];
+        });
+    std::unique_ptr<BrowsingDataCounterWrapper> counter =
+        [self.counterWrapperProducer
+            createCounterWrapperWithPrefName:prefName
+                                browserState:self.browserState
+                                 prefService:prefs
+                            updateUiCallback:callback];
+    _countersByMasks.emplace(mask, std::move(counter));
   }
   return clearDataItem;
 }
 
-- (ListItem*)footerForGoogleAccountSectionItem {
+- (TableViewLinkHeaderFooterItem*)footerForGoogleAccountSectionItem {
   return _shouldShowNoticeAboutOtherFormsOfBrowsingHistory
              ? [self footerGoogleAccountAndMyActivityItem]
              : [self footerGoogleAccountItem];
 }
 
-- (ListItem*)footerGoogleAccountItem {
-  ListItem* footerItem;
-  // Use CollectionViewFooterItem for CollectionView models and
-  // TableViewTextLinkItem for TableView models.
-  if (self.listType == ClearBrowsingDataListType::kListTypeCollectionView) {
-    CollectionViewFooterItem* collectionFooterItem =
-        [[CollectionViewFooterItem alloc]
-            initWithType:ItemTypeFooterGoogleAccount];
-    collectionFooterItem.cellStyle = CollectionViewCellStyle::kUIKit;
-    collectionFooterItem.text =
-        l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT);
-    UIImage* image = ios::GetChromeBrowserProvider()
-                         ->GetBrandedImageProvider()
-                         ->GetClearBrowsingDataAccountActivityImage();
-    collectionFooterItem.image = image;
-    footerItem = collectionFooterItem;
+- (TableViewLinkHeaderFooterItem*)
+    footerGoogleAccountDSEBasedItem:(const BOOL)loggedIn
+                defaultSearchEngine:(const TemplateURL*)defaultSearchEngine
+        isDefaultSearchEngineGoogle:(const BOOL)isDefaultSearchEngineGoogle {
+  TableViewLinkHeaderFooterItem* footerItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemTypeFooterGoogleAccountDSEBased];
+  if (loggedIn) {
+    if (isDefaultSearchEngineGoogle) {
+      footerItem.text =
+          l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_GOOGLE_DSE);
+      footerItem.urls = std::vector<GURL>{
+          google_util::AppendGoogleLocaleParam(
+              GURL(kClearBrowsingDataDSESearchUrlInFooterURL),
+              GetApplicationContext()->GetApplicationLocale()),
+          google_util::AppendGoogleLocaleParam(
+              GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
+              GetApplicationContext()->GetApplicationLocale())};
+    } else if (defaultSearchEngine->prepopulate_id() > 0) {
+      footerItem.text = l10n_util::GetNSStringF(
+          IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_KNOWN_DSE_SIGNED_IN,
+          defaultSearchEngine->short_name());
+      footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
+          GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
+          GetApplicationContext()->GetApplicationLocale())};
+    } else {
+      footerItem.text = l10n_util::GetNSString(
+          IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_UNKOWN_DSE_SIGNED_IN);
+      footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
+          GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
+          GetApplicationContext()->GetApplicationLocale())};
+    }
   } else {
-    TableViewTextLinkItem* tableViewFooterItem = [[TableViewTextLinkItem alloc]
-        initWithType:ItemTypeFooterGoogleAccount];
-    tableViewFooterItem.text =
-        l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT);
-    footerItem = tableViewFooterItem;
+    // Logged Out with Google DSE is handled in calling function since there
+    // should be no account footer section in this case.
+    if (defaultSearchEngine->prepopulate_id() > 0) {
+      footerItem.text = l10n_util::GetNSStringF(
+          IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_KNOWN_DSE_SIGNED_OUT,
+          defaultSearchEngine->short_name());
+    } else {
+      footerItem.text = l10n_util::GetNSString(
+          IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_UNKOWN_DSE_SIGNED_OUT);
+    }
   }
   return footerItem;
 }
 
-- (ListItem*)footerGoogleAccountAndMyActivityItem {
-  UIImage* image = ios::GetChromeBrowserProvider()
-                       ->GetBrandedImageProvider()
-                       ->GetClearBrowsingDataAccountActivityImage();
+- (TableViewLinkHeaderFooterItem*)footerGoogleAccountItem {
+  TableViewLinkHeaderFooterItem* footerItem =
+      [[TableViewLinkHeaderFooterItem alloc]
+          initWithType:ItemTypeFooterGoogleAccount];
+  footerItem.text =
+      l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT);
+  return footerItem;
+}
+
+- (TableViewLinkHeaderFooterItem*)footerGoogleAccountAndMyActivityItem {
+  UIImage* image = ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kClearBrowsingDataAccountActivity);
+
   return [self
       footerItemWithType:ItemTypeFooterGoogleAccountAndMyActivity
                  titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_ACCOUNT_AND_HISTORY
@@ -589,10 +551,10 @@ static NSDictionary* _imageNamesByItemTypes = @{
                    image:image];
 }
 
-- (ListItem*)footerSavedSiteDataItem {
-  UIImage* image = ios::GetChromeBrowserProvider()
-                       ->GetBrandedImageProvider()
-                       ->GetClearBrowsingDataSiteDataImage();
+- (TableViewLinkHeaderFooterItem*)footerSavedSiteDataItem {
+  UIImage* image = ios::provider::GetBrandedImage(
+      ios::provider::BrandedImage::kClearBrowsingDataSiteData);
+
   return [self
       footerItemWithType:ItemTypeFooterSavedSiteData
                  titleID:IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_SAVED_SITE_DATA
@@ -600,7 +562,7 @@ static NSDictionary* _imageNamesByItemTypes = @{
                    image:image];
 }
 
-- (ListItem*)footerClearSyncAndSavedSiteDataItem {
+- (TableViewLinkHeaderFooterItem*)footerClearSyncAndSavedSiteDataItem {
   UIImage* infoIcon = [ChromeIcon infoIcon];
   UIImage* image = TintImage(infoIcon, [[MDCPalette greyPalette] tint500]);
   return [self
@@ -611,66 +573,30 @@ static NSDictionary* _imageNamesByItemTypes = @{
                    image:image];
 }
 
-- (ListItem*)footerItemWithType:(ClearBrowsingDataItemType)itemType
-                        titleID:(int)titleMessageID
-                            URL:(const char[])URL
-                          image:(UIImage*)image {
-  ListItem* footerItem;
-  // Use CollectionViewFooterItem for CollectionView models and
-  // TableViewTextLinkItem for TableView models.
-  if (self.listType == ClearBrowsingDataListType::kListTypeCollectionView) {
-    CollectionViewFooterItem* collectionFooterItem =
-        [[CollectionViewFooterItem alloc] initWithType:itemType];
-    collectionFooterItem.cellStyle = CollectionViewCellStyle::kUIKit;
-    collectionFooterItem.text = l10n_util::GetNSString(titleMessageID);
-    collectionFooterItem.linkURL = google_util::AppendGoogleLocaleParam(
-        GURL(URL), GetApplicationContext()->GetApplicationLocale());
-    collectionFooterItem.linkDelegate = self.linkDelegate;
-    collectionFooterItem.image = image;
-    footerItem = collectionFooterItem;
-  } else {
-    TableViewTextLinkItem* tableViewFooterItem =
-        [[TableViewTextLinkItem alloc] initWithType:itemType];
-    tableViewFooterItem.text = l10n_util::GetNSString(titleMessageID);
-    tableViewFooterItem.linkURL = google_util::AppendGoogleLocaleParam(
-        GURL(URL), GetApplicationContext()->GetApplicationLocale());
-    footerItem = tableViewFooterItem;
-  }
-
+- (TableViewLinkHeaderFooterItem*)footerItemWithType:
+                                      (ClearBrowsingDataItemType)itemType
+                                             titleID:(int)titleMessageID
+                                                 URL:(const char[])URL
+                                               image:(UIImage*)image {
+  TableViewLinkHeaderFooterItem* footerItem =
+      [[TableViewLinkHeaderFooterItem alloc] initWithType:itemType];
+  footerItem.text = l10n_util::GetNSString(titleMessageID);
+  footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
+      GURL(URL), GetApplicationContext()->GetApplicationLocale())};
   return footerItem;
 }
 
-- (ListItem*)timeRangeItem {
-  ListItem* timeRangeItem;
-  if (self.listType == ClearBrowsingDataListType::kListTypeCollectionView) {
-    LegacySettingsDetailItem* collectionTimeRangeItem =
-        [[LegacySettingsDetailItem alloc] initWithType:ItemTypeTimeRange];
-    collectionTimeRangeItem.text = l10n_util::GetNSString(
-        IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE);
-    NSString* detailText = [TimeRangeSelectorTableViewController
-        timePeriodLabelForPrefs:self.browserState->GetPrefs()];
-    DCHECK(detailText);
-    collectionTimeRangeItem.detailText = detailText;
-    collectionTimeRangeItem.accessoryType =
-        MDCCollectionViewCellAccessoryDisclosureIndicator;
-    collectionTimeRangeItem.accessibilityTraits |= UIAccessibilityTraitButton;
-    timeRangeItem = collectionTimeRangeItem;
-  } else {
-    DCHECK(self.listType == ClearBrowsingDataListType::kListTypeTableView);
-    TableViewDetailIconItem* tableTimeRangeItem =
-        [[TableViewDetailIconItem alloc] initWithType:ItemTypeTimeRange];
-    tableTimeRangeItem.text = l10n_util::GetNSString(
-        IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE);
-    NSString* detailText = [TimeRangeSelectorTableViewController
-        timePeriodLabelForPrefs:self.browserState->GetPrefs()];
-    DCHECK(detailText);
-
-    tableTimeRangeItem.detailText = detailText;
-    tableTimeRangeItem.accessoryType =
-        UITableViewCellAccessoryDisclosureIndicator;
-    tableTimeRangeItem.accessibilityTraits |= UIAccessibilityTraitButton;
-    timeRangeItem = tableTimeRangeItem;
-  }
+- (TableViewDetailIconItem*)timeRangeItem {
+  TableViewDetailIconItem* timeRangeItem =
+      [[TableViewDetailIconItem alloc] initWithType:ItemTypeTimeRange];
+  timeRangeItem.text = l10n_util::GetNSString(
+      IDS_IOS_CLEAR_BROWSING_DATA_TIME_RANGE_SELECTOR_TITLE);
+  NSString* detailText = [TimeRangeSelectorTableViewController
+      timePeriodLabelForPrefs:self.browserState->GetPrefs()];
+  DCHECK(detailText);
+  timeRangeItem.detailText = detailText;
+  timeRangeItem.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  timeRangeItem.accessibilityTraits |= UIAccessibilityTraitButton;
   return timeRangeItem;
 }
 
@@ -695,13 +621,27 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
 #pragma mark - Private Methods
 
+// Signs the user out of Chrome if the sign-in state is |ConsentLevel::kSignin|.
+- (void)signOutIfNotSyncing {
+  DCHECK(self.browserState);
+  signin::IdentityManager* identityManager =
+      IdentityManagerFactory::GetForBrowserState(self.browserState);
+  DCHECK(identityManager);
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    AuthenticationService* authenticationService =
+        AuthenticationServiceFactory::GetForBrowserState(_browserState);
+    DCHECK(authenticationService);
+    authenticationService->SignOut(
+        signin_metrics::ProfileSignout::USER_DELETED_ACCOUNT_COOKIES,
+        /*force_clear_browsing_data=*/false, nil);
+  }
+}
+
 - (void)clearDataForDataTypes:(BrowsingDataRemoveMask)mask {
   DCHECK(mask != BrowsingDataRemoveMask::REMOVE_NOTHING);
 
   browsing_data::TimePeriod timePeriod =
-      IsNewClearBrowsingDataUIEnabled()
-          ? static_cast<browsing_data::TimePeriod>(_timeRangePref.GetValue())
-          : browsing_data::TimePeriod::ALL_TIME;
+      static_cast<browsing_data::TimePeriod>(_timeRangePref.GetValue());
   [self.consumer removeBrowsingDataForBrowserState:_browserState
                                         timePeriod:timePeriod
                                         removeMask:mask
@@ -740,57 +680,6 @@ static NSDictionary* _imageNamesByItemTypes = @{
   }
 }
 
-// Internal helper method which constructs an ActionSheetCoordinator for the two
-// |actionSheetCoordinatorWithDataTypesToRemove:...| in the interface.
-- (ActionSheetCoordinator*)
-    actionSheetCoordinatorWithDataTypesToRemove:
-        (BrowsingDataRemoveMask)dataTypeMaskToRemove
-                             baseViewController:
-                                 (UIViewController*)baseViewController
-                                     sourceRect:(CGRect)sourceRect
-                                     sourceView:(UIView*)sourceView
-                            sourceBarButtonItem:
-                                (UIBarButtonItem*)sourceBarButtonItem {
-  if (dataTypeMaskToRemove == BrowsingDataRemoveMask::REMOVE_NOTHING) {
-    // Nothing to clear (no data types selected).
-    return nil;
-  }
-  __weak ClearBrowsingDataManager* weakSelf = self;
-
-  ActionSheetCoordinator* actionCoordinator;
-  if (sourceBarButtonItem) {
-    DCHECK(!sourceView);
-    actionCoordinator = [[ActionSheetCoordinator alloc]
-        initWithBaseViewController:baseViewController
-                             title:l10n_util::GetNSString(
-                                       IDS_IOS_CONFIRM_CLEAR_BUTTON_TITLE)
-                           message:nil
-                     barButtonItem:sourceBarButtonItem];
-  } else {
-    DCHECK(!sourceBarButtonItem);
-    actionCoordinator = [[ActionSheetCoordinator alloc]
-        initWithBaseViewController:baseViewController
-                             title:l10n_util::GetNSString(
-                                       IDS_IOS_CONFIRM_CLEAR_BUTTON_TITLE)
-                           message:nil
-                              rect:sourceRect
-                              view:sourceView];
-  }
-
-  actionCoordinator.popoverArrowDirection =
-      UIPopoverArrowDirectionDown | UIPopoverArrowDirectionUp;
-  [actionCoordinator
-      addItemWithTitle:l10n_util::GetNSString(IDS_IOS_CLEAR_BUTTON)
-                action:^{
-                  [weakSelf clearDataForDataTypes:dataTypeMaskToRemove];
-                }
-                 style:UIAlertActionStyleDestructive];
-  [actionCoordinator addItemWithTitle:l10n_util::GetNSString(IDS_CANCEL)
-                               action:nil
-                                style:UIAlertActionStyleCancel];
-  return actionCoordinator;
-}
-
 #pragma mark Properties
 
 - (void)setShouldShowNoticeAboutOtherFormsOfBrowsingHistory:(BOOL)showNotice
@@ -806,43 +695,40 @@ static NSDictionary* _imageNamesByItemTypes = @{
 
   signin::IdentityManager* identityManager =
       IdentityManagerFactory::GetForBrowserState(_browserState);
-  if (!identityManager->HasPrimaryAccount()) {
+  if (!identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     return;
   }
 
-  ListItem* footerItem = [self footerForGoogleAccountSectionItem];
-  // TODO(crbug.com/650424): Simplify with setFooter:inSection: when the bug in
-  // MDC is fixed.
-  // Remove the footer if there is one in that section.
-  if ([model hasSectionForSectionIdentifier:SectionIdentifierGoogleAccount]) {
-    if ([model hasItemForItemType:ItemTypeFooterGoogleAccount
-                sectionIdentifier:SectionIdentifierGoogleAccount]) {
-      [model removeItemWithType:ItemTypeFooterGoogleAccount
-          fromSectionWithIdentifier:SectionIdentifierGoogleAccount];
-    } else {
-      [model removeItemWithType:ItemTypeFooterGoogleAccountAndMyActivity
-          fromSectionWithIdentifier:SectionIdentifierGoogleAccount];
-    }
-  }
-  // Add the new footer.
-  [model addItem:footerItem
-      toSectionWithIdentifier:SectionIdentifierGoogleAccount];
-  [self.consumer updateCellsForItem:footerItem];
+  [model setFooter:[self footerForGoogleAccountSectionItem]
+      forSectionWithIdentifier:SectionIdentifierGoogleAccount];
 }
 
 #pragma mark - PrefObserverDelegate
 
 - (void)onPreferenceChanged:(const std::string&)preferenceName {
-  DCHECK(preferenceName == browsing_data::prefs::kDeleteTimePeriod);
-  NSString* detailText = [TimeRangeSelectorTableViewController
-      timePeriodLabelForPrefs:self.browserState->GetPrefs()];
-  if (self.listType == ClearBrowsingDataListType::kListTypeCollectionView) {
-    self.collectionViewTimeRangeItem.detailText = detailText;
-    [self.consumer updateCellsForItem:self.collectionViewTimeRangeItem];
-  } else {
-    DCHECK(self.listType == ClearBrowsingDataListType::kListTypeTableView);
+  PrefService* prefs = self.browserState->GetPrefs();
+  if (preferenceName == browsing_data::prefs::kDeleteTimePeriod) {
+    NSString* detailText =
+        [TimeRangeSelectorTableViewController timePeriodLabelForPrefs:prefs];
     self.tableViewTimeRangeItem.detailText = detailText;
-    [self.consumer updateCellsForItem:self.tableViewTimeRangeItem];
+    [self.consumer updateCellsForItem:self.tableViewTimeRangeItem reload:YES];
+  } else if (preferenceName == browsing_data::prefs::kDeleteBrowsingHistory) {
+    self.browsingHistoryItem.checked = prefs->GetBoolean(preferenceName);
+    [self.consumer updateCellsForItem:self.browsingHistoryItem reload:NO];
+  } else if (preferenceName == browsing_data::prefs::kDeleteCookies) {
+    self.cookiesSiteDataItem.checked = prefs->GetBoolean(preferenceName);
+    [self.consumer updateCellsForItem:self.cookiesSiteDataItem reload:NO];
+  } else if (preferenceName == browsing_data::prefs::kDeleteCache) {
+    self.cacheItem.checked = prefs->GetBoolean(preferenceName);
+    [self.consumer updateCellsForItem:self.cacheItem reload:NO];
+  } else if (preferenceName == browsing_data::prefs::kDeletePasswords) {
+    self.savedPasswordsItem.checked = prefs->GetBoolean(preferenceName);
+    [self.consumer updateCellsForItem:self.savedPasswordsItem reload:NO];
+  } else if (preferenceName == browsing_data::prefs::kDeleteFormData) {
+    self.autofillItem.checked = prefs->GetBoolean(preferenceName);
+    [self.consumer updateCellsForItem:self.autofillItem reload:NO];
+  } else {
+    DCHECK(false) << "Unxpected clear browsing data item type.";
   }
 }
 

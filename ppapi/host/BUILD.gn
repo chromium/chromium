@@ -2,9 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
-
-jumbo_component("host") {
+component("host") {
   output_name = "ppapi_host"
 
   sources = [
@@ -34,6 +32,7 @@ jumbo_component("host") {
   deps = [
     "//base",
     "//media:shared_memory_support",
+    "//net",
     "//ppapi/c",
     "//ppapi/proxy:ipc",
     "//ppapi/shared_impl",
@@ -42,7 +41,5 @@ jumbo_component("host") {
     "//url",
   ]
 
-  public_deps = [
-    "//ipc",
-  ]
+  public_deps = [ "//ipc" ]
 }

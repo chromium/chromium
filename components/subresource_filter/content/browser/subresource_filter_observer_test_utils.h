@@ -6,18 +6,18 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_SUBRESOURCE_FILTER_OBSERVER_TEST_UTILS_H_
 
 #include <map>
+#include <set>
 #include <utility>
 
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/scoped_observer.h"
-#include "components/safe_browsing/db/util.h"
-#include "components/safe_browsing/db/v4_protocol_manager_util.h"
+#include "base/scoped_observation.h"
+#include "components/safe_browsing/core/browser/db/util.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer.h"
 #include "components/subresource_filter/content/browser/subresource_filter_observer_manager.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -34,6 +34,11 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
                                       public content::WebContentsObserver {
  public:
   explicit TestSubresourceFilterObserver(content::WebContents* web_contents);
+
+  TestSubresourceFilterObserver(const TestSubresourceFilterObserver&) = delete;
+  TestSubresourceFilterObserver& operator=(
+      const TestSubresourceFilterObserver&) = delete;
+
   ~TestSubresourceFilterObserver() override;
 
   // SubresourceFilterObserver:
@@ -43,40 +48,43 @@ class TestSubresourceFilterObserver : public SubresourceFilterObserver,
       const mojom::ActivationState& activation_state) override;
   void OnSubframeNavigationEvaluated(
       content::NavigationHandle* navigation_handle,
-      LoadPolicy load_policy,
-      bool is_ad_subframe) override;
-  void OnAdSubframeDetected(
-      content::RenderFrameHost* render_frame_host) override;
+      LoadPolicy load_policy) override;
+  void OnIsAdSubframeChanged(content::RenderFrameHost* render_frame_host,
+                             bool is_ad_subframe) override;
 
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
-  base::Optional<mojom::ActivationLevel> GetPageActivation(
+  absl::optional<mojom::ActivationLevel> GetPageActivation(
       const GURL& url) const;
-  base::Optional<LoadPolicy> GetSubframeLoadPolicy(const GURL& url) const;
-  base::Optional<bool> GetIsAdSubframe(int frame_tree_node_id) const;
-  base::Optional<mojom::ActivationLevel> GetPageActivationForLastCommittedLoad()
+  absl::optional<LoadPolicy> GetSubframeLoadPolicy(const GURL& url) const;
+
+  bool GetIsAdSubframe(int frame_tree_node_id) const;
+
+  absl::optional<mojom::ActivationLevel> GetPageActivationForLastCommittedLoad()
       const;
 
   using SafeBrowsingCheck =
       std::pair<safe_browsing::SBThreatType, safe_browsing::ThreatMetadata>;
-  base::Optional<SafeBrowsingCheck> GetSafeBrowsingResult(
+  absl::optional<SafeBrowsingCheck> GetSafeBrowsingResult(
       const GURL& url) const;
 
  private:
   std::map<GURL, LoadPolicy> subframe_load_evaluations_;
-  std::map<int, bool> ad_subframe_evaluations_;
+
+  // Set of FrameTreeNode IDs representing frames tagged as ads.
+  std::set<int> ad_frames_;
 
   std::map<GURL, mojom::ActivationLevel> page_activations_;
   std::map<GURL, SafeBrowsingCheck> safe_browsing_checks_;
   std::map<content::NavigationHandle*, mojom::ActivationLevel>
       pending_activations_;
-  base::Optional<mojom::ActivationLevel> last_committed_activation_;
+  absl::optional<mojom::ActivationLevel> last_committed_activation_;
 
-  ScopedObserver<SubresourceFilterObserverManager, SubresourceFilterObserver>
-      scoped_observer_;
-  DISALLOW_COPY_AND_ASSIGN(TestSubresourceFilterObserver);
+  base::ScopedObservation<SubresourceFilterObserverManager,
+                          SubresourceFilterObserver>
+      scoped_observation_{this};
 };
 
 }  // namespace subresource_filter

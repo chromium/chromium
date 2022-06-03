@@ -1,4 +1,4 @@
-// Copyright 2015 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -6,10 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_HEAP_BLINK_GC_MEMORY_DUMP_PROVIDER_H_
 
 #include "base/trace_event/memory_dump_provider.h"
-#include "third_party/blink/renderer/platform/heap/blink_gc.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -27,10 +25,9 @@ class PLATFORM_EXPORT BlinkGCMemoryDumpProvider final
   enum class HeapType { kBlinkMainThread, kBlinkWorkerThread };
 
   ~BlinkGCMemoryDumpProvider() final;
-  BlinkGCMemoryDumpProvider(
-      ThreadState* thread_state,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner,
-      HeapType heap_type);
+  BlinkGCMemoryDumpProvider(ThreadState*,
+                            scoped_refptr<base::SingleThreadTaskRunner>,
+                            HeapType);
 
   // MemoryDumpProvider implementation.
   bool OnMemoryDump(const base::trace_event::MemoryDumpArgs&,

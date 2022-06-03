@@ -25,6 +25,7 @@ component("model") {
     "assistant_query_history.h",
     "assistant_response.cc",
     "assistant_response.h",
+    "assistant_response_observer.h",
     "assistant_screen_context_model.cc",
     "assistant_screen_context_model.h",
     "assistant_screen_context_model_observer.h",
@@ -36,16 +37,21 @@ component("model") {
     "assistant_ui_model_observer.h",
     "ui/assistant_card_element.cc",
     "ui/assistant_card_element.h",
+    "ui/assistant_error_element.cc",
+    "ui/assistant_error_element.h",
     "ui/assistant_text_element.cc",
     "ui/assistant_text_element.h",
+    "ui/assistant_ui_element.cc",
     "ui/assistant_ui_element.h",
   ]
 
   deps = [
     "//ash/assistant/ui:constants",
     "//ash/public/cpp",
+    "//chromeos/services/assistant/public/cpp",
     "//chromeos/services/assistant/public/mojom",
-    "//services/content/public/cpp",
+    "//chromeos/services/libassistant/public/cpp:structs",
+    "//ui/accessibility/mojom:ax_assistant_mojom",
     "//ui/gfx/geometry",
   ]
 }

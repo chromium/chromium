@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
@@ -14,6 +14,7 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/ntp/features.h"
 #include "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
+#include "ios/web/common/features.h"
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -36,35 +37,32 @@ static const size_t kMaximumIgnoreLoadRequestsTime = 10;
 }  // namespace
 
 // static
-void NewTabPageTabHelper::CreateForWebState(
-    web::WebState* web_state,
-    id<NewTabPageTabHelperDelegate> delegate) {
+void NewTabPageTabHelper::CreateForWebState(web::WebState* web_state) {
   DCHECK(web_state);
   if (!FromWebState(web_state)) {
     web_state->SetUserData(
-        UserDataKey(),
-        base::WrapUnique(new NewTabPageTabHelper(web_state, delegate)));
+        UserDataKey(), base::WrapUnique(new NewTabPageTabHelper(web_state)));
   }
 }
 
 NewTabPageTabHelper::~NewTabPageTabHelper() = default;
 
-NewTabPageTabHelper::NewTabPageTabHelper(
-    web::WebState* web_state,
-    id<NewTabPageTabHelperDelegate> delegate)
-    : delegate_(delegate), web_state_(web_state) {
-  DCHECK(delegate);
-
+NewTabPageTabHelper::NewTabPageTabHelper(web::WebState* web_state)
+    : web_state_(web_state) {
   web_state->AddObserver(this);
+}
 
-  active_ = IsNTPURL(web_state->GetVisibleURL());
+void NewTabPageTabHelper::SetDelegate(
+    id<NewTabPageTabHelperDelegate> delegate) {
+  delegate_ = delegate;
+  active_ = IsNTPURL(web_state_->GetVisibleURL());
   if (active_) {
     UpdateItem(web_state_->GetNavigationManager()->GetPendingItem());
     [delegate_ newTabPageHelperDidChangeVisibility:this forWebState:web_state_];
 
     // If about://newtab is currently loading but has not yet committed, block
     // loads until it does commit.
-    if (!IsNTPURL(web_state->GetLastCommittedURL())) {
+    if (!IsNTPURL(web_state_->GetLastCommittedURL())) {
       EnableIgnoreLoadRequests();
     }
   }
@@ -83,6 +81,14 @@ bool NewTabPageTabHelper::IgnoreLoadRequests() const {
   return ignore_load_requests_;
 }
 
+// static
+void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
+  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
+    item->SetVirtualURL(GURL(kChromeUINewTabURL));
+    item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
+  }
+}
+
 void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
   if (!base::FeatureList::IsEnabled(kBlockNewTabPagePendingLoad))
     return;
@@ -93,7 +99,7 @@ void NewTabPageTabHelper::EnableIgnoreLoadRequests() {
   // it's safe to use Unretained here.
   ignore_load_requests_timer_.reset(new base::OneShotTimer());
   ignore_load_requests_timer_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(kMaximumIgnoreLoadRequestsTime),
+      FROM_HERE, base::Seconds(kMaximumIgnoreLoadRequestsTime),
       base::BindOnce(&NewTabPageTabHelper::DisableIgnoreLoadRequests,
                      base::Unretained(this)));
 }
@@ -138,6 +144,19 @@ void NewTabPageTabHelper::DidFinishNavigation(
   SetActive(IsNTPURL(web_state->GetLastCommittedURL()));
 }
 
+void NewTabPageTabHelper::DidStartLoading(web::WebState* web_state) {
+  // This is needed to avoid flashing the NTP when loading error pages.
+  if (!IsNTPURL(web_state->GetVisibleURL())) {
+    SetActive(false);
+  }
+}
+
+void NewTabPageTabHelper::DidStopLoading(web::WebState* web_state) {
+  if (IsNTPURL(web_state->GetVisibleURL())) {
+    SetActive(true);
+  }
+}
+
 #pragma mark - Private
 
 void NewTabPageTabHelper::SetActive(bool active) {
@@ -150,19 +169,12 @@ void NewTabPageTabHelper::SetActive(bool active) {
   }
 }
 
-void NewTabPageTabHelper::UpdateItem(web::NavigationItem* item) {
-  if (item && item->GetURL() == GURL(kChromeUIAboutNewTabURL)) {
-    item->SetVirtualURL(GURL(kChromeUINewTabURL));
-    item->SetTitle(l10n_util::GetStringUTF16(IDS_NEW_TAB_TITLE));
-  }
-}
-
 bool NewTabPageTabHelper::IsNTPURL(const GURL& url) {
   // |url| can be chrome://newtab/ or about://newtab/ depending on where |url|
   // comes from (the VisibleURL chrome:// from a navigation item or the actual
   // webView url about://).  If the url is about://newtab/, there is no origin
   // to match, so instead check the scheme and the path.
-  return url.GetOrigin() == kChromeUINewTabURL ||
+  return url.DeprecatedGetOriginAsURL() == kChromeUINewTabURL ||
          (url.SchemeIs(url::kAboutScheme) && url.path() == kAboutNewTabPath);
 }
 

@@ -4,9 +4,7 @@
 
 /** @fileoverview Externs generated from namespace: mediaPlayerPrivate */
 
-/**
- * @const
- */
+/** @const */
 chrome.mediaPlayerPrivate = {};
 
 /** @type {!ChromeEvent} */

@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
+#include "components/download/internal/background_service/constants.h"
 #include "components/download/internal/background_service/log_sink.h"
 #include "components/download/public/background_service/download_params.h"
 #include "components/download/public/background_service/logger.h"
@@ -28,6 +28,10 @@ struct Entry;
 class LoggerImpl : public Logger, public LogSink {
  public:
   LoggerImpl();
+
+  LoggerImpl(const LoggerImpl&) = delete;
+  LoggerImpl& operator=(const LoggerImpl&) = delete;
+
   ~LoggerImpl() override;
 
   void SetLogSource(LogSource* log_source);
@@ -51,8 +55,6 @@ class LoggerImpl : public Logger, public LogSink {
 
   LogSource* log_source_;
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggerImpl);
 };
 
 }  // namespace download

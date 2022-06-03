@@ -24,13 +24,13 @@ function runTests() {
   assertEqual(
       "stringify",
       JSON.stringify(window.location),
-      '{"href":"http://127.0.0.1:8000/dom/location-stringify.html","ancestorOrigins":{},"origin":"http://127.0.0.1:8000","protocol":"http:","host":"127.0.0.1:8000","hostname":"127.0.0.1","port":"8000","pathname":"/dom/location-stringify.html","search":"","hash":""}');
+      '{"ancestorOrigins":{},"href":"http://127.0.0.1:8000/dom/location-stringify.html","origin":"http://127.0.0.1:8000","protocol":"http:","host":"127.0.0.1:8000","hostname":"127.0.0.1","port":"8000","pathname":"/dom/location-stringify.html","search":"","hash":""}');
 }
 </script>
 </head>
 <body onload="runTests();">
 <p>
-Tests that Location interface is [Unforgeable], thus JSON.stringify() works well for Location objects.
+Tests that Location interface is [LegacyUnforgeable], thus JSON.stringify() works well for Location objects.
 </p>
 <ul id="console" dir=ltr></ul>
 </body>

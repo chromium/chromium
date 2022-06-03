@@ -223,7 +223,7 @@ cvox.ChromeVox.executeUserCommand = function(commandName) {};
 
 /**
  * True if the document body has aria-hidden='true' when we first load.
- * ChromeVox will disallow any navigation and not eat any keystrokes.
+ * ChromeVox will deny any navigation and not eat any keystrokes.
  * @type {boolean}
  */
 cvox.ChromeVox.entireDocumentIsHidden = false;

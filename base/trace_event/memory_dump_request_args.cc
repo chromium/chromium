@@ -4,7 +4,7 @@
 
 #include "base/trace_event/memory_dump_request_args.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace base {
 namespace trace_event {

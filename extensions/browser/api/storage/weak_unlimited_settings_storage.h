@@ -12,17 +12,21 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "extensions/browser/value_store/value_store.h"
+#include "components/value_store/value_store.h"
 
 namespace extensions {
 
 // A ValueStore decorator which makes calls through |Set| ignore quota.
 // "Weak" because ownership of the delegate isn't taken; this is designed to be
 // temporarily attached to storage areas.
-class WeakUnlimitedSettingsStorage : public ValueStore {
+class WeakUnlimitedSettingsStorage : public value_store::ValueStore {
  public:
   // Ownership of |delegate| NOT taken.
-  explicit WeakUnlimitedSettingsStorage(ValueStore* delegate);
+  explicit WeakUnlimitedSettingsStorage(value_store::ValueStore* delegate);
+
+  WeakUnlimitedSettingsStorage(const WeakUnlimitedSettingsStorage&) = delete;
+  WeakUnlimitedSettingsStorage& operator=(const WeakUnlimitedSettingsStorage&) =
+      delete;
 
   ~WeakUnlimitedSettingsStorage() override;
 
@@ -44,9 +48,7 @@ class WeakUnlimitedSettingsStorage : public ValueStore {
 
  private:
   // The delegate storage area, NOT OWNED.
-  ValueStore* const delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(WeakUnlimitedSettingsStorage);
+  value_store::ValueStore* const delegate_;
 };
 
 }  // namespace extensions

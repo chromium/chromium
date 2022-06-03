@@ -22,20 +22,20 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
 
   @before_all
   def setup(self):
-    self.InstallChrome('client2012')
-    self.InstallWebDriver('client2012')
+    self.InstallChrome(self.win_config['client'])
+    self.InstallWebDriver(self.win_config['client'])
 
   @test
   def test_RestoreTheLastSession(self):
     logging.info('RestoreOnStartup is set to RestoreTheLastSession')
 
-    self.SetPolicy('win2012-dc', 'RestoreOnStartup', 1, 'DWORD')
-    self.RunCommand('client2012', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], 'RestoreOnStartup', 1, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     # delete the user data directory to make sure we start from a clean slate.
     user_data_dir = r'c:\temp\user1'
     self.RunCommand(
-        'client2012',
+        self.win_config['client'],
         'cmd /C if exist %s rmdir /s /q %s' % (user_data_dir, user_data_dir))
     dir = os.path.dirname(os.path.abspath(__file__))
     user_data_dir_arg = '--user_data_dir=%s' % user_data_dir
@@ -44,8 +44,8 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
 
     # create a session: start Chrome and open several URLs.
     output = self.RunWebDriverTest(
-        'client2012', os.path.join(dir, 'restore_on_startup_webdriver_test.py'),
-        [
+        self.win_config['client'],
+        os.path.join(dir, 'restore_on_startup_webdriver_test.py'), [
             '--action=open_urls',
             user_data_dir_arg,
         ] + ['--urls=%s' % url for url in urls])
@@ -54,8 +54,8 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
 
     # start Chrome. The last session should be restored.
     output = self.RunWebDriverTest(
-        'client2012', os.path.join(dir, 'restore_on_startup_webdriver_test.py'),
-        [
+        self.win_config['client'],
+        os.path.join(dir, 'restore_on_startup_webdriver_test.py'), [
             '--action=start_chrome',
             user_data_dir_arg,
         ])
@@ -66,8 +66,8 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
   def test_OpenNewTabPage(self):
     logging.info('RestoreOnStartup is set to Open New Tab Page')
 
-    self.SetPolicy('win2012-dc', 'RestoreOnStartup', 5, 'DWORD')
-    self.RunCommand('client2012', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], 'RestoreOnStartup', 5, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
     dir = os.path.dirname(os.path.abspath(__file__))
     user_data_dir_arg = r'--user_data_dir=c:\temp\user2'
     urls = ['https://www.cnn.com/', 'https://www.youtube.com/']
@@ -75,8 +75,8 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
 
     # create a session: start Chrome and open several URLs.
     output = self.RunWebDriverTest(
-        'client2012', os.path.join(dir, 'restore_on_startup_webdriver_test.py'),
-        [
+        self.win_config['client'],
+        os.path.join(dir, 'restore_on_startup_webdriver_test.py'), [
             '--action=open_urls',
             user_data_dir_arg,
         ] + ['--urls=%s' % url for url in urls])
@@ -85,8 +85,8 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
 
     # start Chrome. There should be just one New Tab page.
     output = self.RunWebDriverTest(
-        'client2012', os.path.join(dir, 'restore_on_startup_webdriver_test.py'),
-        [
+        self.win_config['client'],
+        os.path.join(dir, 'restore_on_startup_webdriver_test.py'), [
             '--action=start_chrome',
             user_data_dir_arg,
         ])
@@ -94,23 +94,22 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
     self.assertEqual(len(output_urls), 1)
 
     # The URL of the new tab can be one of the following:
-    # - https://www.google.com/_/chrome/newtab?ie=UTF-8
-    # - chrome://newtab
-    # - chrome-search://local-ntp/local-ntp.html
-    self.assertTrue('/newtab' in output_urls[0] or
-                    'local-ntp.html' in output_urls[0])
+    # - chrome://new-tab-page/
+    # - chrome://new-tab-page-third-party/
+    self.assertTrue('new-tab-page' in output_urls[0])
 
   @test
   def test_OpenListOfUrls(self):
     logging.info('RestoreOnStartup is set to Open a list of URLs')
 
-    self.SetPolicy('win2012-dc', 'RestoreOnStartup', 4, 'DWORD')
+    self.SetPolicy(self.win_config['dc'], 'RestoreOnStartup', 4, 'DWORD')
     urls_to_open = ['https://www.wikipedia.org/']
     for i in range(len(urls_to_open)):
-      self.SetPolicy('win2012-dc', r'RestoreOnStartupURLs\%s' % (i + 1),
+      self.SetPolicy(self.win_config['dc'],
+                     r'RestoreOnStartupURLs\%s' % (i + 1),
                      '"%s"' % urls_to_open[i], 'String')
 
-    self.RunCommand('client2012', 'gpupdate /force')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
     dir = os.path.dirname(os.path.abspath(__file__))
     user_data_dir_arg = r'--user_data_dir=c:\temp\user3'
     urls = ['https://www.cnn.com/', 'https://www.youtube.com/']
@@ -118,8 +117,8 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
 
     # start Chrome and open several URLs.
     output = self.RunWebDriverTest(
-        'client2012', os.path.join(dir, 'restore_on_startup_webdriver_test.py'),
-        [
+        self.win_config['client'],
+        os.path.join(dir, 'restore_on_startup_webdriver_test.py'), [
             '--action=open_urls',
             user_data_dir_arg,
         ] + ['--urls=%s' % url for url in urls])
@@ -128,8 +127,8 @@ class RestoreOnStartupTest(ChromeEnterpriseTestCase):
 
     # start Chrome. Urls specified by RestoreOnStartupURLs should be opened
     output = self.RunWebDriverTest(
-        'client2012', os.path.join(dir, 'restore_on_startup_webdriver_test.py'),
-        [
+        self.win_config['client'],
+        os.path.join(dir, 'restore_on_startup_webdriver_test.py'), [
             '--action=start_chrome',
             user_data_dir_arg,
         ])

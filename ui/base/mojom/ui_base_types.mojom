@@ -26,3 +26,20 @@ enum ModalType {
   // Window is modal to all other windows.
   SYSTEM
 };
+
+// It's mapped to ui::MenuSourceType. Any new type here needs to be synced
+// with ui::MenuSourceType in ui_base_types.h.
+[Stable, Extensible, Default=NONE]
+enum MenuSourceType {
+  NONE,
+  MOUSE,
+  KEYBOARD,
+  TOUCH,
+  TOUCH_EDIT_MENU,
+  LONG_PRESS,
+  LONG_TAP,
+  TOUCH_HANDLE,
+  STYLUS,
+  ADJUST_SELECTION,
+  ADJUST_SELECTION_RESET
+};

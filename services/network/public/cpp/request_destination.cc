@@ -6,11 +6,13 @@
 
 namespace network {
 
+// These strings are used in histograms, so do not change the values without
+// updating/deprecating histograms which use RequestDestination.
 const char* RequestDestinationToString(
     network::mojom::RequestDestination dest) {
   switch (dest) {
     case network::mojom::RequestDestination::kEmpty:
-      return "empty";
+      return "";
     case network::mojom::RequestDestination::kAudio:
       return "audio";
     case network::mojom::RequestDestination::kAudioWorklet:
@@ -47,13 +49,24 @@ const char* RequestDestinationToString(
       return "track";
     case network::mojom::RequestDestination::kVideo:
       return "video";
+    case network::mojom::RequestDestination::kWebBundle:
+      return "webbundle";
     case network::mojom::RequestDestination::kWorker:
       return "worker";
     case network::mojom::RequestDestination::kXslt:
       return "xslt";
+    case network::mojom::RequestDestination::kFencedframe:
+      return "fencedframe";
   }
   NOTREACHED();
   return "empty";
+}
+
+bool IsRequestDestinationEmbeddedFrame(
+    network::mojom::RequestDestination dest) {
+  return dest == network::mojom::RequestDestination::kFrame ||
+         dest == network::mojom::RequestDestination::kIframe ||
+         dest == network::mojom::RequestDestination::kFencedframe;
 }
 
 }  // namespace network

@@ -61,7 +61,7 @@ void MockNetworkChangeNotifier::NotifyNetworkMadeDefault(
 void MockNetworkChangeNotifier::QueueNetworkMadeDefault(
     NetworkChangeNotifier::NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeNotifier::MADE_DEFAULT, network);
+      NetworkChangeNotifier::NetworkChangeType::kMadeDefault, network);
 }
 
 void MockNetworkChangeNotifier::NotifyNetworkDisconnected(
@@ -74,15 +74,30 @@ void MockNetworkChangeNotifier::NotifyNetworkDisconnected(
 void MockNetworkChangeNotifier::QueueNetworkDisconnected(
     NetworkChangeNotifier::NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeNotifier::DISCONNECTED, network);
+      NetworkChangeNotifier::NetworkChangeType::kDisconnected, network);
 }
 
 void MockNetworkChangeNotifier::NotifyNetworkConnected(
     NetworkChangeNotifier::NetworkHandle network) {
   NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
-      NetworkChangeNotifier::CONNECTED, network);
+      NetworkChangeNotifier::NetworkChangeType::kConnected, network);
   // Spin the message loop so the notification is delivered.
   base::RunLoop().RunUntilIdle();
+}
+
+void MockNetworkChangeNotifier::SetConnectionTypeAndNotifyObservers(
+    ConnectionType connection_type) {
+  SetConnectionType(connection_type);
+  NetworkChangeNotifier::NotifyObserversOfConnectionTypeChange();
+  // Spin the message loop so the notification is delivered.
+  base::RunLoop().RunUntilIdle();
+}
+
+MockNetworkChangeNotifier::ConnectionCost
+MockNetworkChangeNotifier::GetCurrentConnectionCost() {
+  if (use_default_connection_cost_implementation_)
+    return NetworkChangeNotifier::GetCurrentConnectionCost();
+  return connection_cost_;
 }
 
 MockNetworkChangeNotifier::MockNetworkChangeNotifier(
@@ -91,6 +106,7 @@ MockNetworkChangeNotifier::MockNetworkChangeNotifier(
                             dns_config_notifier.get()),
       force_network_handles_supported_(false),
       connection_type_(CONNECTION_UNKNOWN),
+      connection_cost_(CONNECTION_COST_UNKNOWN),
       dns_config_notifier_(std::move(dns_config_notifier)) {}
 
 ScopedMockNetworkChangeNotifier::ScopedMockNetworkChangeNotifier()

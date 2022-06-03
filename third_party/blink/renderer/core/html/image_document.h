@@ -25,14 +25,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_HTML_IMAGE_DOCUMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_IMAGE_DOCUMENT_H_
 
-#include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
-#include "third_party/blink/renderer/core/html/html_image_element.h"
 
 namespace blink {
 
-class ImageResource;
+class HTMLDivElement;
+class HTMLImageElement;
+class ImageResourceContent;
+class IntSize;
 
 class CORE_EXPORT ImageDocument final : public HTMLDocument {
  public:
@@ -40,25 +41,26 @@ class CORE_EXPORT ImageDocument final : public HTMLDocument {
 
   ImageResourceContent* CachedImage();
 
-  // TODO(hiroshige): Remove this.
-  ImageResource* CachedImageResourceDeprecated();
-
   HTMLImageElement* ImageElement() const { return image_element_.Get(); }
   IntSize ImageSize() const;
 
+  void CreateDocumentStructure(ImageResourceContent*);
   void WindowSizeChanged();
   void ImageUpdated();
   void ImageClicked(int x, int y);
   void ImageLoaded();
   void UpdateImageStyle();
+  void UpdateTitle();
   bool ShouldShrinkToFit() const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   DocumentParser* CreateParser() override;
 
-  void CreateDocumentStructure();
+  enum MouseCursorMode { kDefault, kZoomIn, kZoomOut };
+  // Compute the state of the mouse cursor in the image style.
+  MouseCursorMode ComputeMouseCursorMode() const;
 
   // Calculates how large the div needs to be to properly center the image.
   int CalculateDivWidth();
@@ -86,10 +88,6 @@ class CORE_EXPORT ImageDocument final : public HTMLDocument {
   // Whether the image has finished loading or not
   bool image_is_loaded_;
 
-  // Desktop: State of the mouse cursor in the image style
-  enum MouseCursorMode { kDefault, kZoomIn, kZoomOut };
-  MouseCursorMode style_mouse_cursor_mode_;
-
   enum ShrinkToFitMode { kViewport, kDesktop };
   ShrinkToFitMode shrink_to_fit_mode_;
 
@@ -97,7 +95,12 @@ class CORE_EXPORT ImageDocument final : public HTMLDocument {
   FRIEND_TEST_ALL_PREFIXES(ImageDocumentViewportTest, DivWidthWithZoomForDSF);
 };
 
-DEFINE_DOCUMENT_TYPE_CASTS(ImageDocument);
+template <>
+struct DowncastTraits<ImageDocument> {
+  static bool AllowFrom(const Document& document) {
+    return document.IsImageDocument();
+  }
+};
 
 }  // namespace blink
 

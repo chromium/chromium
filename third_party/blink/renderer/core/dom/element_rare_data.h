@@ -23,8 +23,10 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_RARE_DATA_H_
 
 #include <memory>
+#include "base/token.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
+#include "third_party/blink/renderer/core/css/container_query_data.h"
 #include "third_party/blink/renderer/core/css/cssom/inline_style_property_map.h"
 #include "third_party/blink/renderer/core/css/inline_css_style_declaration.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_context.h"
@@ -39,25 +41,27 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
-#include "third_party/blink/renderer/core/html/custom/v0_custom_element_definition.h"
 #include "third_party/blink/renderer/core/intersection_observer/element_intersection_observer_data.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
+class ContainerQueryData;
 class Element;
 class HTMLElement;
 class ResizeObservation;
 class ResizeObserver;
 
-class ElementRareData : public NodeRareData {
+class ElementRareData final : public NodeRareData {
  public:
   explicit ElementRareData(NodeRenderingData*);
   ~ElementRareData();
 
   void SetPseudoElement(PseudoId, PseudoElement*);
   PseudoElement* GetPseudoElement(PseudoId) const;
+  PseudoElementData::PseudoElementVector GetPseudoElements() const;
 
   void SetTabIndexExplicitly() {
     SetElementFlag(ElementFlags::kTabIndexWasSetExplicitly, true);
@@ -78,6 +82,11 @@ class ElementRareData : public NodeRareData {
   void SetShadowRoot(ShadowRoot& shadow_root) {
     DCHECK(!shadow_root_);
     shadow_root_ = &shadow_root;
+  }
+
+  EditContext* GetEditContext() const { return edit_context_.Get(); }
+  void SetEditContext(EditContext* edit_context) {
+    edit_context_ = edit_context;
   }
 
   NamedNodeMap* AttributeMap() const { return attribute_map_.Get(); }
@@ -125,13 +134,6 @@ class ElementRareData : public NodeRareData {
   bool HasPseudoElements() const;
   void ClearPseudoElements();
 
-  void V0SetCustomElementDefinition(V0CustomElementDefinition* definition) {
-    v0_custom_element_definition_ = definition;
-  }
-  V0CustomElementDefinition* GetV0CustomElementDefinition() const {
-    return v0_custom_element_definition_.Get();
-  }
-
   void SetCustomElementDefinition(CustomElementDefinition* definition) {
     custom_element_definition_ = definition;
   }
@@ -143,6 +145,23 @@ class ElementRareData : public NodeRareData {
   void SetDidAttachInternals() { did_attach_internals_ = true; }
   bool DidAttachInternals() const { return did_attach_internals_; }
   ElementInternals& EnsureElementInternals(HTMLElement& target);
+  const ElementInternals* GetElementInternals() const {
+    return element_internals_;
+  }
+
+  // Returns the crop-ID if one was set, or nullptr otherwise.
+  const RegionCaptureCropId* GetRegionCaptureCropId() const {
+    return region_capture_crop_id_.get();
+  }
+
+  // Sets a crop-ID on the item. Must be called at most once. Cannot be used
+  // to unset a previously set crop-ID.
+  void SetRegionCaptureCropId(std::unique_ptr<RegionCaptureCropId> crop_id) {
+    DCHECK(!GetRegionCaptureCropId());
+    DCHECK(crop_id);
+    DCHECK(!crop_id->value().is_zero());
+    region_capture_crop_id_ = std::move(crop_id);
+  }
 
   void SetStyleShouldForceLegacyLayout(bool force) {
     style_should_force_legacy_layout_ = force;
@@ -156,6 +175,8 @@ class ElementRareData : public NodeRareData {
   bool ShouldForceLegacyLayoutForChild() const {
     return should_force_legacy_layout_for_child_;
   }
+  bool HasUndoStack() const { return has_undo_stack_; }
+  void SetHasUndoStack(bool value) { has_undo_stack_ = value; }
 
   AccessibleNode* GetAccessibleNode() const { return accessible_node_.Get(); }
   AccessibleNode* EnsureAccessibleNode(Element* owner_element) {
@@ -191,11 +212,9 @@ class ElementRareData : public NodeRareData {
   }
   ResizeObserverDataMap& EnsureResizeObserverData();
 
-  DisplayLockContext* EnsureDisplayLockContext(Element* element,
-                                               ExecutionContext* context) {
+  DisplayLockContext* EnsureDisplayLockContext(Element* element) {
     if (!display_lock_context_) {
-      display_lock_context_ =
-          MakeGarbageCollected<DisplayLockContext>(element, context);
+      display_lock_context_ = MakeGarbageCollected<DisplayLockContext>(element);
     }
     return display_lock_context_.Get();
   }
@@ -203,10 +222,32 @@ class ElementRareData : public NodeRareData {
     return display_lock_context_;
   }
 
+  ContainerQueryData& EnsureContainerQueryData() {
+    DCHECK(RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
+    if (!container_query_data_)
+      container_query_data_ = MakeGarbageCollected<ContainerQueryData>();
+    return *container_query_data_;
+  }
+  ContainerQueryData* GetContainerQueryData() const {
+    return container_query_data_;
+  }
+
+  ContainerQueryEvaluator* GetContainerQueryEvaluator() const {
+    if (!container_query_data_)
+      return nullptr;
+    return container_query_data_->GetContainerQueryEvaluator();
+  }
+  void SetContainerQueryEvaluator(ContainerQueryEvaluator* evaluator) {
+    if (container_query_data_)
+      container_query_data_->SetContainerQueryEvaluator(evaluator);
+    else if (evaluator)
+      EnsureContainerQueryData().SetContainerQueryEvaluator(evaluator);
+  }
+
   const AtomicString& GetNonce() const { return nonce_; }
   void SetNonce(const AtomicString& nonce) { nonce_ = nonce; }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
  private:
   ScrollOffset saved_layer_scroll_offset_;
@@ -214,6 +255,7 @@ class ElementRareData : public NodeRareData {
 
   Member<DatasetDOMStringMap> dataset_;
   Member<ShadowRoot> shadow_root_;
+  Member<EditContext> edit_context_;
   Member<DOMTokenList> class_list_;
   Member<DOMTokenList> part_;
   std::unique_ptr<NamesMap> part_names_map_;
@@ -226,8 +268,6 @@ class ElementRareData : public NodeRareData {
   Member<ElementIntersectionObserverData> intersection_observer_data_;
   Member<ResizeObserverDataMap> resize_observer_data_;
 
-  // TODO(davaajav):remove this field when v0 custom elements are deprecated
-  Member<V0CustomElementDefinition> v0_custom_element_definition_;
   Member<CustomElementDefinition> custom_element_definition_;
   AtomicString is_value_;
   Member<ElementInternals> element_internals_;
@@ -237,9 +277,15 @@ class ElementRareData : public NodeRareData {
   Member<AccessibleNode> accessible_node_;
 
   Member<DisplayLockContext> display_lock_context_;
+  Member<ContainerQueryData> container_query_data_;
+  std::unique_ptr<RegionCaptureCropId> region_capture_crop_id_;
+
+  // NOTE: Booleans should be contiguous since the compiler will optimize them
+  // into a single memory address.
   bool did_attach_internals_ = false;
   bool should_force_legacy_layout_for_child_ = false;
   bool style_should_force_legacy_layout_ = false;
+  bool has_undo_stack_ = false;
 };
 
 inline LayoutSize DefaultMinimumSizeForResizing() {
@@ -272,6 +318,13 @@ inline PseudoElement* ElementRareData::GetPseudoElement(
   if (!pseudo_element_data_)
     return nullptr;
   return pseudo_element_data_->GetPseudoElement(pseudo_id);
+}
+
+inline PseudoElementData::PseudoElementVector
+ElementRareData::GetPseudoElements() const {
+  if (!pseudo_element_data_)
+    return {};
+  return pseudo_element_data_->GetPseudoElements();
 }
 
 }  // namespace blink

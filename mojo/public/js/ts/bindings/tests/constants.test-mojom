@@ -42,3 +42,6 @@ const float kFloatNegativeInfinity = float.NEGATIVE_INFINITY;
 const float kFloatNaN = float.NAN;
 
 const string kStringValue = "test string contents";
+
+const uint8 kNamedValue1 = kUint8Value;
+const double kNamedValue2 = kDoubleInfinity;

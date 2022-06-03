@@ -36,5 +36,5 @@ typedef unsigned long long Milliseconds;
     [MeasureAs=NetInfoEffectiveType] readonly attribute EffectiveConnectionType effectiveType;
     [MeasureAs=NetInfoRtt] readonly attribute Milliseconds rtt;
     [MeasureAs=NetInfoDownlink] readonly attribute Megabit downlink;
-    [MeasureAs=NetInfoSaveData] readonly attribute boolean saveData;
+    [HighEntropy=Direct, MeasureAs=NetInfoSaveData] readonly attribute boolean saveData;
 };

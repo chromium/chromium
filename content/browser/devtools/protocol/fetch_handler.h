@@ -5,19 +5,23 @@
 #ifndef CONTENT_BROWSER_DEVTOOLS_PROTOCOL_FETCH_HANDLER_H_
 #define CONTENT_BROWSER_DEVTOOLS_PROTOCOL_FETCH_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/unguessable_token.h"
 #include "content/browser/devtools/protocol/devtools_domain_handler.h"
 #include "content/browser/devtools/protocol/fetch.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
+namespace network {
+namespace mojom {
+class URLLoaderFactoryOverride;
+}
+}  // namespace network
+
 namespace content {
 class DevToolsAgentHostImpl;
 class DevToolsIOContext;
 class DevToolsURLLoaderInterceptor;
-class RenderProcessHost;
+class StoragePartition;
 struct InterceptedRequestInfo;
 
 namespace protocol {
@@ -29,17 +33,21 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
 
   FetchHandler(DevToolsIOContext* io_context,
                UpdateLoaderFactoriesCallback update_loader_factories_callback);
+
+  FetchHandler(const FetchHandler&) = delete;
+  FetchHandler& operator=(const FetchHandler&) = delete;
+
   ~FetchHandler() override;
 
   static std::vector<FetchHandler*> ForAgentHost(DevToolsAgentHostImpl* host);
 
   bool MaybeCreateProxyForInterception(
-      RenderProcessHost* rph,
+      int process_id,
+      StoragePartition* storage_partition,
       const base::UnguessableToken& frame_token,
       bool is_navigation,
       bool is_download,
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory>*
-          target_factory_receiver);
+      network::mojom::URLLoaderFactoryOverride* intercepting_factory);
 
  private:
   // DevToolsDomainHandler
@@ -66,14 +74,22 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
       const String& fetchId,
       Maybe<String> url,
       Maybe<String> method,
-      Maybe<String> postData,
+      Maybe<protocol::Binary> postData,
       Maybe<Array<Fetch::HeaderEntry>> headers,
+      Maybe<bool> interceptResponse,
       std::unique_ptr<ContinueRequestCallback> callback) override;
   void ContinueWithAuth(
       const String& fetchId,
       std::unique_ptr<protocol::Fetch::AuthChallengeResponse>
           authChallengeResponse,
       std::unique_ptr<ContinueWithAuthCallback> callback) override;
+  void ContinueResponse(
+      const String& fetchId,
+      Maybe<int> responseCode,
+      Maybe<String> responsePhrase,
+      Maybe<Array<Fetch::HeaderEntry>> responseHeaders,
+      Maybe<Binary> binaryResponseHeaders,
+      std::unique_ptr<ContinueResponseCallback> callback) override;
   void GetResponseBody(
       const String& fetchId,
       std::unique_ptr<GetResponseBodyCallback> callback) override;
@@ -94,8 +110,6 @@ class FetchHandler : public DevToolsDomainHandler, public Fetch::Backend {
   std::unique_ptr<DevToolsURLLoaderInterceptor> interceptor_;
   UpdateLoaderFactoriesCallback update_loader_factories_callback_;
   base::WeakPtrFactory<FetchHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FetchHandler);
 };
 
 }  // namespace protocol

@@ -8,6 +8,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/process/internal_linux.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"

@@ -26,6 +26,9 @@ _JSCOMP_ERRORS = [
     'missingProperties', 'undefinedNames', 'undefinedVars', 'visibility'
 ]
 
+# List of compilation groups to turn off with the --jscomp_off flag.
+_JSCOMP_OFF = ['duplicate']
+
 _java_executable = 'java'
 
 
@@ -46,25 +49,12 @@ def _ExecuteCommand(args, ignore_exit_status=False):
     _Error('Error executing %s: %s' % (_java_executable, str(e)))
 
 
-def _CheckJava():
-  global _java_executable
-  java_home = os.environ.get('JAVAHOME')
-  if java_home is not None:
-    _java_executable = os.path.join(java_home, 'bin', 'java')
-  output = _ExecuteCommand([_java_executable, '-version'])
-  match = re.search(r'version "(?:\d+)\.(\d+)', output)
-  if match is None or int(match.group(1)) < 7:
-    _Error('Java 7 or later is required: \n%s' % output)
-
-
-_CheckJava()
-
-
 def RunCompiler(js_files, externs=[]):
   args = [_java_executable, '-jar', _CLOSURE_COMPILER_JAR]
   args.extend(['--compilation_level', 'SIMPLE_OPTIMIZATIONS'])
   args.extend(['--jscomp_error=%s' % error for error in _JSCOMP_ERRORS])
-  args.extend(['--language_in', 'ECMASCRIPT6'])
+  args.extend(['--jscomp_off=%s' % off for off in _JSCOMP_OFF])
+  args.extend(['--language_in', 'ECMASCRIPT_NEXT'])
   args.extend(['--externs=%s' % extern for extern in externs])
   args.extend(['--js=%s' % js for js in js_files])
   args.extend(['--js_output_file', '/dev/null'])

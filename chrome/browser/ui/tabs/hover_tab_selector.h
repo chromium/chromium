@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TABS_HOVER_TAB_SELECTOR_H_
 #define CHROME_BROWSER_UI_TABS_HOVER_TAB_SELECTOR_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 
 class TabStripModel;
@@ -15,6 +14,8 @@ class TabStripModel;
 class HoverTabSelector {
  public:
   explicit HoverTabSelector(TabStripModel* tab_strip_model);
+  HoverTabSelector(const HoverTabSelector&) = delete;
+  HoverTabSelector& operator=(const HoverTabSelector&) = delete;
   ~HoverTabSelector();
 
   // Begin a delayed tab transition to the tab at |index|. Only starts
@@ -38,8 +39,6 @@ class HoverTabSelector {
 
   // Factory for creating tab transition tasks.
   base::WeakPtrFactory<HoverTabSelector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HoverTabSelector);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_HOVER_TAB_SELECTOR_H_

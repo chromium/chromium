@@ -8,19 +8,16 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "build/build_config.h"
 
 namespace local_discovery {
 
 namespace {
-#if defined(OS_MACOSX)
-const int kMacServiceResolvingIntervalSecs = 60;
-#endif
 
 class ServiceDiscoveryDeviceListerImpl : public ServiceDiscoveryDeviceLister {
  public:
@@ -95,19 +92,6 @@ class ServiceDiscoveryDeviceListerImpl : public ServiceDiscoveryDeviceLister {
             << ", service_name: " << service_name << ", status: " << status;
     if (status == ServiceResolver::STATUS_SUCCESS) {
       delegate_->OnDeviceChanged(service_type_, added, service_description);
-
-#if defined(OS_MACOSX)
-      // On Mac, the Bonjour service does not seem to ever evict a service if a
-      // device is unplugged, so we need to continuously try to resolve the
-      // service to detect non-graceful shutdowns.
-      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&ServiceDiscoveryDeviceListerImpl::OnServiceUpdated,
-                         weak_factory_.GetWeakPtr(),
-                         ServiceWatcher::UPDATE_CHANGED,
-                         service_description.service_name),
-          base::TimeDelta::FromSeconds(kMacServiceResolvingIntervalSecs));
-#endif
     } else {
       // TODO(noamsml): Add retry logic.
     }

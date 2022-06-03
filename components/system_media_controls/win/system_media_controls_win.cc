@@ -10,6 +10,7 @@
 #include <wrl/event.h>
 
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/scoped_hstring.h"
 #include "components/system_media_controls/system_media_controls_observer.h"
@@ -19,11 +20,11 @@
 namespace system_media_controls {
 
 // static
-SystemMediaControls* SystemMediaControls::GetInstance() {
-  internal::SystemMediaControlsWin* service =
-      internal::SystemMediaControlsWin::GetInstance();
+std::unique_ptr<SystemMediaControls> SystemMediaControls::Create(
+    const std::string& product_name) {
+  auto service = std::make_unique<internal::SystemMediaControlsWin>();
   if (service->Initialize())
-    return service;
+    return std::move(service);
   return nullptr;
 }
 
@@ -43,12 +44,16 @@ using ABI::Windows::Storage::Streams::IRandomAccessStreamReferenceStatics;
 
 // static
 SystemMediaControlsWin* SystemMediaControlsWin::GetInstance() {
-  // We use a base::Singleton here instead of a base::NoDestruct so that we can
-  // clean up external listeners against the Windows platform at exit.
-  return base::Singleton<SystemMediaControlsWin>::get();
+  return instance_;
 }
 
-SystemMediaControlsWin::SystemMediaControlsWin() = default;
+// static
+SystemMediaControlsWin* SystemMediaControlsWin::instance_ = nullptr;
+
+SystemMediaControlsWin::SystemMediaControlsWin() {
+  DCHECK(!instance_);
+  instance_ = this;
+}
 
 SystemMediaControlsWin::~SystemMediaControlsWin() {
   if (has_valid_registration_token_) {
@@ -56,6 +61,9 @@ SystemMediaControlsWin::~SystemMediaControlsWin() {
     system_media_controls_->remove_ButtonPressed(registration_token_);
     ClearMetadata();
   }
+
+  DCHECK_EQ(instance_, this);
+  instance_ = nullptr;
 }
 
 bool SystemMediaControlsWin::Initialize() {
@@ -171,18 +179,20 @@ void SystemMediaControlsWin::SetPlaybackStatus(PlaybackStatus status) {
   DCHECK(SUCCEEDED(hr));
 }
 
-void SystemMediaControlsWin::SetTitle(const base::string16& title) {
+void SystemMediaControlsWin::SetTitle(const std::u16string& title) {
   DCHECK(initialized_);
   DCHECK(display_properties_);
-  base::win::ScopedHString h_title = base::win::ScopedHString::Create(title);
+  base::win::ScopedHString h_title =
+      base::win::ScopedHString::Create(base::UTF16ToWide(title));
   HRESULT hr = display_properties_->put_Title(h_title.get());
   DCHECK(SUCCEEDED(hr));
 }
 
-void SystemMediaControlsWin::SetArtist(const base::string16& artist) {
+void SystemMediaControlsWin::SetArtist(const std::u16string& artist) {
   DCHECK(initialized_);
   DCHECK(display_properties_);
-  base::win::ScopedHString h_artist = base::win::ScopedHString::Create(artist);
+  base::win::ScopedHString h_artist =
+      base::win::ScopedHString::Create(base::UTF16ToWide(artist));
   HRESULT hr = display_properties_->put_Artist(h_artist.get());
   DCHECK(SUCCEEDED(hr));
 }
@@ -241,21 +251,22 @@ void SystemMediaControlsWin::SetThumbnail(const SkBitmap& bitmap) {
             status == ABI::Windows::Foundation::AsyncStatus::Completed) {
           Microsoft::WRL::ComPtr<IRandomAccessStreamReferenceStatics>
               reference_statics;
-          HRESULT hr = base::win::GetActivationFactory<
+          HRESULT result = base::win::GetActivationFactory<
               IRandomAccessStreamReferenceStatics,
               RuntimeClass_Windows_Storage_Streams_RandomAccessStreamReference>(
               &reference_statics);
-          DCHECK(SUCCEEDED(hr));
+          DCHECK(SUCCEEDED(result));
 
-          hr = reference_statics->CreateFromStream(icon_stream_.Get(),
-                                                   &icon_stream_reference_);
-          DCHECK(SUCCEEDED(hr));
+          result = reference_statics->CreateFromStream(icon_stream_.Get(),
+                                                       &icon_stream_reference_);
+          DCHECK(SUCCEEDED(result));
 
-          hr = display_updater_->put_Thumbnail(icon_stream_reference_.Get());
-          DCHECK(SUCCEEDED(hr));
+          result =
+              display_updater_->put_Thumbnail(icon_stream_reference_.Get());
+          DCHECK(SUCCEEDED(result));
 
-          hr = display_updater_->Update();
-          DCHECK(SUCCEEDED(hr));
+          result = display_updater_->Update();
+          DCHECK(SUCCEEDED(result));
         }
         return hr;
       });

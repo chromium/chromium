@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_CRX_FILE_CRX_CREATOR_H_
 #define COMPONENTS_CRX_FILE_CRX_CREATOR_H_
 
+#include <string>
+
 namespace base {
 class FilePath;
 }  // namespace base
@@ -22,6 +24,14 @@ enum class CreatorResult {
   ERROR_FILE_NOT_WRITABLE,
   ERROR_FILE_WRITE_FAILURE,
 };
+
+// Similar to `Create` method but also injects `verified_contents` into the
+// header.
+CreatorResult CreateCrxWithVerifiedContentsInHeader(
+    const base::FilePath& output_path,
+    const base::FilePath& zip_path,
+    crypto::RSAPrivateKey* signing_key,
+    const std::string& verified_contents);
 
 // Create a CRX3 file at |output_path|, using the contents of the ZIP archive
 // located at |zip_path| and signing with (and deriving the CRX ID from)

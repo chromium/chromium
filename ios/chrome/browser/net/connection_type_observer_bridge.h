@@ -20,6 +20,11 @@ class ConnectionTypeObserverBridge
  public:
   explicit ConnectionTypeObserverBridge(
       id<CRConnectionTypeObserverBridge> delegate);
+
+  ConnectionTypeObserverBridge(const ConnectionTypeObserverBridge&) = delete;
+  ConnectionTypeObserverBridge& operator=(const ConnectionTypeObserverBridge&) =
+      delete;
+
   ~ConnectionTypeObserverBridge() override;
 
  private:
@@ -28,7 +33,6 @@ class ConnectionTypeObserverBridge
       net::NetworkChangeNotifier::ConnectionType type) override;
 
   __weak id<CRConnectionTypeObserverBridge> delegate_;
-  DISALLOW_COPY_AND_ASSIGN(ConnectionTypeObserverBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_NET_CONNECTION_TYPE_OBSERVER_BRIDGE_H_

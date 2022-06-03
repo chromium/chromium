@@ -9,14 +9,13 @@
 #include <string>
 
 #include "ash/public/cpp/app_list/app_list_metrics.h"
-#include "base/macros.h"
 #include "chrome/browser/ui/app_icon_loader_delegate.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_icon_loader.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "components/arc/mojom/app.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
 class AppListControllerDelegate;
+class AppServiceAppIconLoader;
 class Profile;
 
 namespace arc {
@@ -29,16 +28,22 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
                                    public AppIconLoaderDelegate {
  public:
   // Constructor for ArcAppShortcutSearchResult. |is_recommendation|
-  // defines the display type of search results.
+  // defines the display type of search results. |query| will take on the
+  // default value for zero state results.
   ArcAppShortcutSearchResult(arc::mojom::AppShortcutItemPtr data,
                              Profile* profile,
                              AppListControllerDelegate* list_controller,
-                             bool is_recommendation);
+                             bool is_recommendation,
+                             const std::u16string& query);
+
+  ArcAppShortcutSearchResult(const ArcAppShortcutSearchResult&) = delete;
+  ArcAppShortcutSearchResult& operator=(const ArcAppShortcutSearchResult&) =
+      delete;
+
   ~ArcAppShortcutSearchResult() override;
 
   // ChromeSearchResult:
   void Open(int event_flags) override;
-  ash::SearchResultType GetSearchResultType() const override;
 
  private:
   // AppIconLoaderDelegate:
@@ -49,17 +54,20 @@ class ArcAppShortcutSearchResult : public ChromeSearchResult,
   std::string GetAppId() const;
 
   // Gets accessible name for this app shortcut.
-  base::string16 ComputeAccessibleName() const;
+  std::u16string ComputeAccessibleName() const;
+
+  // Callback passed to |icon_decode_request_|.
+  void OnIconDecoded(const gfx::ImageSkia&);
 
   arc::mojom::AppShortcutItemPtr data_;
   std::unique_ptr<arc::IconDecodeRequest> icon_decode_request_;
 
-  std::unique_ptr<ArcAppIconLoader> badge_icon_loader_;
+  std::unique_ptr<AppServiceAppIconLoader> badge_icon_loader_;
 
   Profile* const profile_;                            // Owned by ProfileInfo.
   AppListControllerDelegate* const list_controller_;  // Owned by AppListClient.
 
-  DISALLOW_COPY_AND_ASSIGN(ArcAppShortcutSearchResult);
+  base::WeakPtrFactory<ArcAppShortcutSearchResult> weak_ptr_factory_{this};
 };
 
 }  // namespace app_list

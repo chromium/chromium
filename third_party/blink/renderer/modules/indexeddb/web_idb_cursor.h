@@ -1,43 +1,37 @@
-/*
- * Copyright (C) 2010 Google Inc. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * 1.  Redistributions of source code must retain the above copyright
- *     notice, this list of conditions and the following disclaimer.
- * 2.  Redistributions in binary form must reproduce the above copyright
- *     notice, this list of conditions and the following disclaimer in the
- *     documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY APPLE AND ITS CONTRIBUTORS "AS IS" AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL APPLE OR ITS CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+// Copyright 2013 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
 
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CURSOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_WEB_IDB_CURSOR_H_
 
-#include "third_party/blink/public/common/indexeddb/web_idb_types.h"
+#include <stdint.h>
+
+#include <memory>
+
+#include "base/gtest_prod_util.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom-blink.h"
+#include "third_party/blink/renderer/modules/indexeddb/idb_value.h"
 #include "third_party/blink/renderer/modules/indexeddb/web_idb_callbacks.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 
 namespace blink {
 
-class MODULES_EXPORT WebIDBCursor {
+class MODULES_EXPORT WebIDBCursor final {
  public:
-  virtual ~WebIDBCursor() = default;
+  WebIDBCursor(mojo::PendingAssociatedRemote<mojom::blink::IDBCursor> cursor,
+               int64_t transaction_id,
+               scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  ~WebIDBCursor();
+
+  // Disallow copy and assign.
+  WebIDBCursor(const WebIDBCursor&) = delete;
+  WebIDBCursor& operator=(const WebIDBCursor&) = delete;
 
   // Used to implement IDBCursor.advance().
-  virtual void Advance(uint32_t count, WebIDBCallbacks*) = 0;
+  void Advance(uint32_t count, std::unique_ptr<WebIDBCallbacks> callback);
 
   // Used to implement IDBCursor.continue() and IDBCursor.continuePrimaryKey().
   //
@@ -47,18 +41,72 @@ class MODULES_EXPORT WebIDBCursor {
   //
   // The keys pointed to by IDBKey* are only guaranteed to be alive for
   // the duration of the call.
-  virtual void CursorContinue(const IDBKey*,
-                              const IDBKey* primary_key,
-                              WebIDBCallbacks*) = 0;
+  void CursorContinue(const IDBKey* key,
+                      const IDBKey* primary_key,
+                      std::unique_ptr<WebIDBCallbacks> callback);
+  void CursorContinueCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+                              mojom::blink::IDBCursorResultPtr result);
+
+  void PrefetchCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+                        mojom::blink::IDBCursorResultPtr result);
 
   // Called after a cursor request's success handler is executed.
   //
   // This is only used by the cursor prefetching logic, and does not result in
   // an IPC.
-  virtual void PostSuccessHandlerCallback() = 0;
+  void PostSuccessHandlerCallback();
 
- protected:
-  WebIDBCursor() = default;
+  void SetPrefetchData(Vector<std::unique_ptr<IDBKey>> keys,
+                       Vector<std::unique_ptr<IDBKey>> primary_keys,
+                       Vector<std::unique_ptr<IDBValue>> values);
+
+  void CachedAdvance(uint32_t count, WebIDBCallbacks* callbacks);
+  void CachedContinue(WebIDBCallbacks* callbacks);
+
+  void ResetPrefetchCache();
+
+  int64_t transaction_id() const { return transaction_id_; }
+
+ private:
+  void AdvanceCallback(std::unique_ptr<WebIDBCallbacks> callbacks,
+                       mojom::blink::IDBCursorResultPtr result);
+  mojo::PendingAssociatedRemote<mojom::blink::IDBCallbacks> GetCallbacksProxy(
+      std::unique_ptr<WebIDBCallbacks> callbacks);
+
+  FRIEND_TEST_ALL_PREFIXES(WebIDBCursorTest, AdvancePrefetchTest);
+  FRIEND_TEST_ALL_PREFIXES(WebIDBCursorTest, PrefetchReset);
+  FRIEND_TEST_ALL_PREFIXES(WebIDBCursorTest, PrefetchTest);
+
+  static constexpr int kPrefetchContinueThreshold = 2;
+  static constexpr int kMinPrefetchAmount = 5;
+  static constexpr int kMaxPrefetchAmount = 100;
+
+  int64_t transaction_id_;
+
+  mojo::AssociatedRemote<mojom::blink::IDBCursor> cursor_;
+
+  // Prefetch cache. Keys and values are stored in reverse order so that a
+  // cache'd continue can pop a value off of the back and prevent new memory
+  // allocations.
+  Vector<std::unique_ptr<IDBKey>> prefetch_keys_;
+  Vector<std::unique_ptr<IDBKey>> prefetch_primary_keys_;
+  Vector<std::unique_ptr<IDBValue>> prefetch_values_;
+
+  // Number of continue calls that would qualify for a pre-fetch.
+  int continue_count_;
+
+  // Number of items used from the last prefetch.
+  int used_prefetches_;
+
+  // Number of onsuccess handlers we are waiting for.
+  int pending_onsuccess_callbacks_;
+
+  // Number of items to request in next prefetch.
+  int prefetch_amount_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+
+  base::WeakPtrFactory<WebIDBCursor> weak_factory_{this};
 };
 
 }  // namespace blink

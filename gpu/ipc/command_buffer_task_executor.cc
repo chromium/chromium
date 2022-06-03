@@ -18,7 +18,6 @@ CommandBufferTaskExecutor::CommandBufferTaskExecutor(
     const GpuFeatureInfo& gpu_feature_info,
     SyncPointManager* sync_point_manager,
     MailboxManager* mailbox_manager,
-    scoped_refptr<gl::GLShareGroup> share_group,
     gl::GLSurfaceFormat share_group_surface_format,
     SharedImageManager* shared_image_manager,
     gles2::ProgramCache* program_cache)
@@ -26,9 +25,10 @@ CommandBufferTaskExecutor::CommandBufferTaskExecutor(
       gpu_feature_info_(gpu_feature_info),
       sync_point_manager_(sync_point_manager),
       mailbox_manager_(mailbox_manager),
-      share_group_(share_group),
       share_group_surface_format_(share_group_surface_format),
       program_cache_(program_cache),
+      discardable_manager_(gpu_preferences_),
+      passthrough_discardable_manager_(gpu_preferences_),
       shader_translator_cache_(gpu_preferences_),
       shared_image_manager_(shared_image_manager) {
   DCHECK(mailbox_manager_);
@@ -36,12 +36,6 @@ CommandBufferTaskExecutor::CommandBufferTaskExecutor(
 }
 
 CommandBufferTaskExecutor::~CommandBufferTaskExecutor() = default;
-
-scoped_refptr<gl::GLShareGroup> CommandBufferTaskExecutor::share_group() {
-  if (!share_group_)
-    share_group_ = base::MakeRefCounted<gl::GLShareGroup>();
-  return share_group_;
-}
 
 gles2::Outputter* CommandBufferTaskExecutor::outputter() {
   if (!outputter_) {

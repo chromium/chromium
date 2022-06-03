@@ -13,10 +13,12 @@
 #include "components/navigation_interception/jni_headers/InterceptNavigationDelegate_jni.h"
 #include "components/navigation_interception/navigation_params_android.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
+#include "net/base/escape.h"
 #include "url/gurl.h"
 
 using base::android::ConvertUTF8ToJavaString;
@@ -67,24 +69,48 @@ InterceptNavigationDelegate* InterceptNavigationDelegate::Get(
 
 // static
 std::unique_ptr<content::NavigationThrottle>
-InterceptNavigationDelegate::CreateThrottleFor(
+InterceptNavigationDelegate::MaybeCreateThrottleFor(
     content::NavigationHandle* handle,
     navigation_interception::SynchronyMode mode) {
+  // Navigations in a subframe or non-primary frame tree should not be
+  // intercepted. As examples of a non-primary frame tree, a navigation
+  // occurring in a Portal element or an unactivated prerendering page should
+  // not launch an app.
+  // TODO(bokan): This is a bit of a stopgap approach since we won't run
+  // throttles again when the prerender is activated which means links that are
+  // prerendered will avoid launching an app intent that a regular navigation
+  // would have. Longer term we'll want prerender activation to check for app
+  // intents, or have this throttle cancel the prerender if an intent would
+  // have been launched (without launching the intent). It's also not clear
+  // what the right behavior for <portal> elements is.
+  // https://crbug.com/1227659.
+  if (!handle->IsInPrimaryMainFrame())
+    return nullptr;
+
   return std::make_unique<InterceptNavigationThrottle>(
-      handle, base::Bind(&CheckIfShouldIgnoreNavigationOnUIThread), mode);
+      handle, base::BindRepeating(&CheckIfShouldIgnoreNavigationOnUIThread),
+      mode);
 }
 
 InterceptNavigationDelegate::InterceptNavigationDelegate(
-    JNIEnv* env, jobject jdelegate)
-    : weak_jdelegate_(env, jdelegate) {
-}
+    JNIEnv* env,
+    jobject jdelegate,
+    bool escape_external_handler_value)
+    : weak_jdelegate_(env, jdelegate),
+      escape_external_handler_value_(escape_external_handler_value) {}
 
 InterceptNavigationDelegate::~InterceptNavigationDelegate() {
 }
 
 bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
     const NavigationParams& navigation_params) {
-  if (!navigation_params.url().is_valid())
+  NavigationParams navigation_params_to_use(navigation_params);
+  if (escape_external_handler_value_) {
+    navigation_params_to_use.url() =
+        GURL(net::EscapeExternalHandlerValue(navigation_params.url().spec()));
+  }
+
+  if (!navigation_params_to_use.url().is_valid())
     return false;
 
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -94,13 +120,12 @@ bool InterceptNavigationDelegate::ShouldIgnoreNavigation(
     return false;
 
   bool has_user_gesture_carryover =
-      !navigation_params.has_user_gesture() &&
+      !navigation_params_to_use.has_user_gesture() &&
       base::TimeTicks::Now() - last_user_gesture_carryover_timestamp_ <=
-          base::TimeDelta::FromSeconds(
-              kMaxValidityOfUserGestureCarryoverInSeconds);
+          base::Seconds(kMaxValidityOfUserGestureCarryoverInSeconds);
 
   ScopedJavaLocalRef<jobject> jobject_params = CreateJavaNavigationParams(
-      env, navigation_params, has_user_gesture_carryover);
+      env, navigation_params_to_use, has_user_gesture_carryover);
 
   return Java_InterceptNavigationDelegate_shouldIgnoreNavigation(
       env, jdelegate, jobject_params);

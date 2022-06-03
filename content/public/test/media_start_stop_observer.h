@@ -5,7 +5,6 @@
 #ifndef CONTENT_PUBLIC_TEST_MEDIA_START_STOP_OBSERVER_H_
 #define CONTENT_PUBLIC_TEST_MEDIA_START_STOP_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -16,9 +15,18 @@ class WebContents;
 // Used in tests to wait for media in a WebContents to start or stop playing.
 class MediaStartStopObserver : public WebContentsObserver {
  public:
-  enum class Type { kStart, kStop };
+  enum class Type {
+    kStart,
+    kStop,
+    kEnterPictureInPicture,
+    kExitPictureInPicture
+  };
 
   MediaStartStopObserver(WebContents* web_contents, Type type);
+
+  MediaStartStopObserver(const MediaStartStopObserver&) = delete;
+  MediaStartStopObserver& operator=(const MediaStartStopObserver&) = delete;
+
   ~MediaStartStopObserver() override;
 
   // WebContentsObserver implementation.
@@ -29,13 +37,13 @@ class MediaStartStopObserver : public WebContentsObserver {
       const MediaPlayerId& id,
       WebContentsObserver::MediaStoppedReason reason) override;
 
+  void MediaPictureInPictureChanged(bool is_picture_in_picture) override;
+
   void Wait();
 
  private:
   base::RunLoop run_loop_;
   const Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStartStopObserver);
 };
 
 }  // namespace content

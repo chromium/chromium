@@ -23,9 +23,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/fe_color_matrix.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 
 namespace blink {
@@ -34,8 +34,8 @@ static const unsigned kColorMatrixSize = 20;
 
 FEColorMatrix::FEColorMatrix(Filter* filter,
                              ColorMatrixType type,
-                             const Vector<float>& values)
-    : FilterEffect(filter), type_(type), values_(values) {}
+                             Vector<float> values)
+    : FilterEffect(filter), type_(type), values_(std::move(values)) {}
 
 ColorMatrixType FEColorMatrix::GetType() const {
   return type_;
@@ -52,10 +52,10 @@ const Vector<float>& FEColorMatrix::Values() const {
   return values_;
 }
 
-bool FEColorMatrix::SetValues(const Vector<float>& values) {
+bool FEColorMatrix::SetValues(Vector<float> values) {
   if (values_ == values)
     return false;
-  values_ = values;
+  values_ = std::move(values);
   return true;
 }
 
@@ -78,8 +78,9 @@ static void SaturateMatrix(float s, float matrix[kColorMatrixSize]) {
 }
 
 static void HueRotateMatrix(float hue, float matrix[kColorMatrixSize]) {
-  float cos_hue = cosf(hue * kPiFloat / 180);
-  float sin_hue = sinf(hue * kPiFloat / 180);
+  const float hue_radians = Deg2rad(hue);
+  const float cos_hue = cosf(hue_radians);
+  const float sin_hue = sinf(hue_radians);
   matrix[0] = 0.213f + cos_hue * 0.787f - sin_hue * 0.213f;
   matrix[1] = 0.715f - cos_hue * 0.715f - sin_hue * 0.715f;
   matrix[2] = 0.072f - cos_hue * 0.072f + sin_hue * 0.928f;
@@ -146,9 +147,9 @@ sk_sp<PaintFilter> FEColorMatrix::CreateImageFilter() {
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
   sk_sp<SkColorFilter> filter = CreateColorFilter(type_, values_);
-  PaintFilter::CropRect rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<ColorFilterPaintFilter>(std::move(filter), std::move(input),
-                                            &rect);
+                                            base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,

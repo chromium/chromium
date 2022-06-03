@@ -134,4 +134,8 @@ bool DateInputType::IsValidFormat(bool has_year,
   return has_year && has_month && has_day;
 }
 
+String DateInputType::AriaLabelForPickerIndicator() const {
+  return GetLocale().QueryString(IDS_AX_CALENDAR_SHOW_DATE_PICKER);
+}
+
 }  // namespace blink

@@ -13,6 +13,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.params.ParameterizedCommandLineFlags;
 import org.chromium.base.test.params.ParameterizedCommandLineFlags.Switches;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 
 import java.util.Arrays;
@@ -31,9 +32,8 @@ public class TestListInstrumentationRunListenerTest {
         public void testB() {}
     }
 
-    @CommandLineFlags.Remove("hello")
-    private static class ChildClass extends ParentClass {
-    }
+    @Batch("foo")
+    private static class ChildClass extends ParentClass {}
 
     private static class Groups {
         // clang-format off
@@ -141,8 +141,8 @@ public class TestListInstrumentationRunListenerTest {
             " 'CommandLineFlags$Add': {",
             "  'value': ['hello']",
             " },",
-            " 'CommandLineFlags$Remove': {",
-            "  'value': ['hello']",
+            " 'Batch': {",
+            "  'value': 'foo'",
             " }",
             "}"
         );
@@ -201,4 +201,3 @@ public class TestListInstrumentationRunListenerTest {
         Assert.assertEquals(expectedJsonString, json.toString());
     }
 }
-

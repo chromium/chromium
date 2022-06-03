@@ -1,11 +1,1 @@
-# Preferred reviewer.
-mmenke@chromium.org
-
-# If changing network error strings, please visit go/chrome-neterror-strings
-# (Google internal) or contact edwardjung@chromium.org and rachelis@chromium.org
-per-file error_page_strings.grdp=edwardjung@chromium.org
-
 file://net/OWNERS
-
-# COMPONENT: Internals>Network
-# TEAM: net-dev@chromium.org

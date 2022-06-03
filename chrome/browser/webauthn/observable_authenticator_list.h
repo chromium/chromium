@@ -7,10 +7,8 @@
 
 #include <stddef.h>
 
-#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "chrome/browser/webauthn/authenticator_reference.h"
 
@@ -22,15 +20,16 @@ class AuthenticatorListObserver;
 class ObservableAuthenticatorList {
  public:
   ObservableAuthenticatorList();
+
+  ObservableAuthenticatorList(const ObservableAuthenticatorList&) = delete;
+  ObservableAuthenticatorList& operator=(const ObservableAuthenticatorList&) =
+      delete;
+
   ~ObservableAuthenticatorList();
 
   void AddAuthenticator(AuthenticatorReference authenticator);
   void RemoveAuthenticator(base::StringPiece authenticator_id);
   void RemoveAllAuthenticators();
-  void ChangeAuthenticatorId(base::StringPiece previous_id, std::string new_id);
-  void ChangeAuthenticatorPairingMode(base::StringPiece authenticator_id,
-                                      bool is_in_pairing_mode,
-                                      base::string16 display_name);
   AuthenticatorReference* GetAuthenticator(base::StringPiece authenticator_id);
 
   void SetObserver(AuthenticatorListObserver* observer);
@@ -51,8 +50,6 @@ class ObservableAuthenticatorList {
 
   std::vector<AuthenticatorReference> authenticator_list_;
   AuthenticatorListObserver* observer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ObservableAuthenticatorList);
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_OBSERVABLE_AUTHENTICATOR_LIST_H_

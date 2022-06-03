@@ -4,7 +4,7 @@
 
 #import "chrome/browser/ui/cocoa/history_overlay_controller.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "chrome/grit/theme_resources.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -39,16 +39,14 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
   base::scoped_nsobject<CAShapeLayer> _shapeLayer;
 }
 @property(nonatomic) CGFloat shieldAlpha;
-- (id)initWithMode:(HistoryOverlayMode)mode
-             image:(NSImage*)image;
+- (instancetype)initWithMode:(HistoryOverlayMode)mode image:(NSImage*)image;
 @end
 
 @implementation HistoryOverlayView
 
 @synthesize shieldAlpha = _shieldAlpha;
 
-- (id)initWithMode:(HistoryOverlayMode)mode
-             image:(NSImage*)image {
+- (instancetype)initWithMode:(HistoryOverlayMode)mode image:(NSImage*)image {
   NSRect frame = NSMakeRect(0, 0, kShieldWidth, kShieldHeight);
   if ((self = [super initWithFrame:frame])) {
     _mode = mode;
@@ -101,7 +99,7 @@ const CGFloat kShieldHeightCompletionAdjust = 10;
 
 @implementation HistoryOverlayController
 
-- (id)initForMode:(HistoryOverlayMode)mode {
+- (instancetype)initForMode:(HistoryOverlayMode)mode {
   if ((self = [super init])) {
     _mode = mode;
     DCHECK(mode == kHistoryOverlayModeBack ||

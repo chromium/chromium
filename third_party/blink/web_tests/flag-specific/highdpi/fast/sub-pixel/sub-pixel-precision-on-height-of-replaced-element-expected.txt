@@ -1,0 +1,18 @@
+crbug.com/573055: There should be no scrollbars below.
+
+Text
+FAIL:
+Expected 16 for height, but got 17. 
+
+<div id="container" data-expected-height="16">
+    <div id="replaced" style="padding: 3.23px">Text</div>
+</div>
+Text
+PASS
+Text
+FAIL:
+Expected 18 for height, but got 17. 
+
+<div id="container" data-expected-height="18">
+    <div id="replaced" style="padding: 3.77px">Text</div>
+</div>

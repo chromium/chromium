@@ -21,7 +21,5 @@ static_library("ppapi_stub_lib") {
   configs -= [ "//build/config/gcc:symbol_visibility_hidden" ]
   configs += [ "//build/config/gcc:symbol_visibility_default" ]
   cflags = [ "-fPIC" ]
-  deps = [
-    "//build/config/nacl:nacl_base",
-  ]
+  deps = [ "//build/config/nacl:nacl_base" ]
 }

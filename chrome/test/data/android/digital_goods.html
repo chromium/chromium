@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<title>Digital Goods Test</title>
+<script>
+
+// This must be kept in sync with third_party/blink/renderer/modules/payments\
+// /goods/dom_window_digital_goods.cc
+const PAYMENT_METHOD = "https://play.google.com/billing";
+
+let digitalGoodsService = null;
+
+async function populateDigitalGoodsService() {
+    digitalGoodsService = await window.getDigitalGoodsService(PAYMENT_METHOD);
+}
+
+let itemDetails = null;
+
+async function populateItemDetails(ids) {
+    itemDetails = await digitalGoodsService.getDetails(ids);
+}
+
+let consumeFlag = null;
+let consumeError = null;
+
+async function callConsume(id) {
+    try {
+        await digitalGoodsService.consume(id);
+        consumeFlag = "done";
+    } catch (error) {
+        consumeError = error;
+    }
+}
+
+</script>
+<body>
+</body>
+</html>

@@ -1,0 +1,15 @@
+<!--
+@WAIT-FOR:done
+-->
+<style>
+li::first-letter {
+  content: "10";
+}
+</style>
+<li aria-label="@NO_DUMP"><a>abc</a></li>
+<script>
+setTimeout(() => {
+  document.querySelector('li').setAttribute("role", "menuitem");
+  document.title = 'done';
+}, 150);
+</script>

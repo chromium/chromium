@@ -1,0 +1,26 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/features.gni")
+
+source_set("qrcode_generator") {
+  sources = [
+    "qrcode_generator_service_impl.cc",
+    "qrcode_generator_service_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//chrome:strings",
+    "//components/qr_code_generator",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//ui/gfx",
+  ]
+
+  public_deps = [
+    "//chrome/services/qrcode_generator/public/mojom",
+    "//mojo/public/mojom/base",
+  ]
+}

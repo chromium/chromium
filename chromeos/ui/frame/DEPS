@@ -1,0 +1,13 @@
+include_rules = [
+  "+ui/aura",
+  "+chromeos/strings/grit/chromeos_strings.h",
+  "+ui/base",
+  "+ui/compositor",
+  "+ui/display",
+  "+ui/events",
+  "+ui/gfx",
+  "+ui/strings/grit/ui_strings.h",
+  "+ui/views",
+  "+ui/wm/public",
+  "+third_party/skia",
+]

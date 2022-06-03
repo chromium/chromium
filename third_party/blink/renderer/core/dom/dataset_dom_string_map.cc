@@ -200,7 +200,7 @@ bool DatasetDOMStringMap::DeleteItem(const String& name) {
   return false;
 }
 
-void DatasetDOMStringMap::Trace(Visitor* visitor) {
+void DatasetDOMStringMap::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   DOMStringMap::Trace(visitor);
 }

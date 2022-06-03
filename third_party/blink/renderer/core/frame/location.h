@@ -33,7 +33,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_string_list.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
-#include "third_party/blink/renderer/core/frame/fragment_directive.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -82,8 +81,6 @@ class CORE_EXPORT Location final : public ScriptWrappable {
 
   DOMStringList* ancestorOrigins() const;
 
-  FragmentDirective* fragmentDirective() const;
-
   // Just return the |this| object the way the normal valueOf function on the
   // Object prototype would.  The valueOf function is only added to make sure
   // that it cannot be overwritten on location objects, since that would provide
@@ -92,7 +89,7 @@ class CORE_EXPORT Location final : public ScriptWrappable {
 
   String toString() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Note: it is only valid to call this if this is a Location object for a
@@ -106,7 +103,7 @@ class CORE_EXPORT Location final : public ScriptWrappable {
   // ensure we use the correct Javascript world for CSP checks.
   enum class SetLocationPolicy { kNormal, kReplaceThisFrame };
   void SetLocation(const String&,
-                   LocalDOMWindow* current_window,
+                   LocalDOMWindow* incumbent_window,
                    LocalDOMWindow* entered_window,
                    ExceptionState* = nullptr,
                    SetLocationPolicy = SetLocationPolicy::kNormal);
@@ -114,8 +111,6 @@ class CORE_EXPORT Location final : public ScriptWrappable {
   const KURL& Url() const;
 
   const Member<DOMWindow> dom_window_;
-
-  Member<FragmentDirective> fragment_directive_;
 };
 
 }  // namespace blink

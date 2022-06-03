@@ -17,6 +17,7 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.browserservices.intents.WebApkShareTarget;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import java.util.List;
         shadows = {WebApkShareTargetUtilTest.WebApkShareTargetUtilShadow.class})
 public class WebApkShareTargetUtilTest {
     /**
-     * Builder class for {@link WebApkInfo.ShareTarget}
+     * Builder class for {@link WebApkShareTarget}
      */
     public class ShareTargetBuilder {
         private String mAction;
@@ -70,7 +71,7 @@ public class WebApkShareTargetUtilTest {
             mParamFileAccepts = accepts;
         }
 
-        WebApkInfo.ShareTarget build() {
+        WebApkShareTarget build() {
             String[] paramFileNames = null;
             if (mParamFileNames != null) {
                 paramFileNames = mParamFileNames.toArray(new String[0]);
@@ -79,7 +80,7 @@ public class WebApkShareTargetUtilTest {
             if (mParamFileAccepts != null) {
                 paramFileAccepts = mParamFileAccepts.toArray(new String[0][]);
             }
-            return new WebApkInfo.ShareTarget(mAction, mParamTitle, mParamText,
+            return new WebApkShareTarget(mAction, mParamTitle, mParamText,
                     ShareTarget.METHOD_POST.equalsIgnoreCase(mMethod),
                     ShareTarget.ENCODING_TYPE_MULTIPART.equalsIgnoreCase(mEncodingType),
                     paramFileNames, paramFileAccepts);
@@ -507,14 +508,7 @@ public class WebApkShareTargetUtilTest {
     }
 
     private WebApkShareTargetUtil.PostData computePostData(
-            WebApkInfo.ShareTarget shareTarget, ShareData shareData) {
-        WebApkInfo.ShareData webApkShareData = new WebApkInfo.ShareData();
-        webApkShareData.subject = shareData.title;
-        webApkShareData.text = shareData.text;
-        if (shareData.uris != null) {
-            webApkShareData.files = new ArrayList(shareData.uris);
-        }
-
-        return WebApkShareTargetUtil.computePostData(shareTarget, webApkShareData);
+            WebApkShareTarget shareTarget, ShareData shareData) {
+        return WebApkShareTargetUtil.computePostData(shareTarget, shareData);
     }
 }

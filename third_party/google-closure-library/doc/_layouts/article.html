@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+
+<!-- Documentation licensed under CC BY 4.0 -->
+<!-- License available at https://creativecommons.org/licenses/by/4.0/ -->
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% include favicon.html %}
+<link rel="stylesheet" type="text/css"
+      href="https://fonts.googleapis.com/css?family=Roboto:500,400,300,100">
+<link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/article.css">
+<link rel="stylesheet" type="text/css" href="{{site.baseurl}}/css/syntax.css">
+
+<title>{{page.title}}</title>
+
+<body>
+  <header>
+    <a href="{{site.baseurl}}" class="closurelogo"><div></div></a>
+    <h1><a href="{{site.baseurl}}">
+        {{page.product_name}}
+    </a></h1>
+    <nav>
+      {% capture navbar %}{% include navbar.md %}{% endcapture %}
+      {{navbar|markdownify}}
+    </nav>
+  </header>
+
+  <div>
+    <nav class="side vertical">
+      {% if page.section %}
+        {% capture sidenav %}{% include {{page.section}}/sitemap.md %}{% endcapture %}
+        {{sidenav|markdownify}}
+      {% endif %}
+    </nav>
+    <nav class="toc vertical float">
+      <ul>
+        <li class="heading"><a href="#top_of_page">Contents</a>
+      </ul>
+    </nav>
+    <div id="_toc">
+      <p>[TOC]</p>
+    </div>
+
+    <article>
+      <h1 id="top_of_page">{{page.heading}}</h1>
+      <nav class="toc vertical inline">
+        <ul>
+         <li class="heading"><a href="#top_of_page">Contents</a>
+        </ul>
+      </nav>
+      {{content}}
+    </article>
+  </div>
+
+  <footer>
+    <!-- TODO(sdh): abstract this out if we add more buttons. -->
+    <a class="edit">
+      <div><div></div><div><div>Edit on GitHub</div></div></div>
+    </a>
+  </footer>
+
+  <script>
+    window['_JEKYLL_DATA'] = {
+      'page.ga': '{{page.ga}}',
+      'page.section': '{{page.section}}',
+      {% if page.toc.max %}'page.toc.max': {{page.toc.max}},{% endif %}
+      {% if page.toc.min %}'page.toc.min': {{page.toc.min}},{% endif %}
+      'site.baseurl': '{{site.baseurl}}',
+      '': ''
+    };
+  </script>
+  <script src="{{site.baseurl}}/js/article.js"></script>
+  <script>closure.docs.initialize();</script>
+</body>

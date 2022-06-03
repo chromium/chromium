@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,14 +16,13 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/message_loop/message_pump_type.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -54,7 +54,7 @@
 #include "base/android/build_info.h"
 #endif
 
-#if !defined(OS_FUCHSIA)
+#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
 #include "content/browser/devtools/grit/devtools_resources.h"  // nogncheck
 #endif
 
@@ -112,8 +112,8 @@ bool RequestIsSafeToServe(const net::HttpServerRequestInfo& info) {
   std::string header = info.GetHeaderValue("host");
   if (header.empty())
     return true;
-  GURL url = GURL("http://" + header);
-  return url.HostIsIPAddress() || net::IsLocalHostname(url.host(), nullptr);
+  GURL url = GURL("https://" + header);
+  return url.HostIsIPAddress() || net::IsLocalHostname(url.host());
 }
 
 }  // namespace
@@ -131,7 +131,7 @@ class ServerWrapper : net::HttpServer::Delegate {
 
   void AcceptWebSocket(int connection_id,
                        const net::HttpServerRequestInfo& request);
-  void SendOverWebSocket(int connection_id, const std::string& message);
+  void SendOverWebSocket(int connection_id, std::string message);
   void SendResponse(int connection_id,
                     const net::HttpServerResponseInfo& response);
   void Send200(int connection_id,
@@ -180,9 +180,8 @@ void ServerWrapper::AcceptWebSocket(int connection_id,
                            kDevtoolsHttpHandlerTrafficAnnotation);
 }
 
-void ServerWrapper::SendOverWebSocket(int connection_id,
-                                      const std::string& message) {
-  server_->SendOverWebSocket(connection_id, message,
+void ServerWrapper::SendOverWebSocket(int connection_id, std::string message) {
+  server_->SendOverWebSocket(connection_id, std::move(message),
                              kDevtoolsHttpHandlerTrafficAnnotation);
 }
 
@@ -224,10 +223,9 @@ void TerminateOnUI(std::unique_ptr<base::Thread> thread,
   if (socket_factory)
     thread->task_runner()->DeleteSoon(FROM_HERE, std::move(socket_factory));
   if (thread) {
-    base::PostTask(
+    base::ThreadPool::PostTask(
         FROM_HERE,
-        {base::ThreadPool(), base::WithBaseSyncPrimitives(),
-         base::TaskPriority::BEST_EFFORT},
+        {base::WithBaseSyncPrimitives(), base::TaskPriority::BEST_EFFORT},
         BindOnce([](std::unique_ptr<base::Thread>) {}, std::move(thread)));
   }
 }
@@ -265,9 +263,9 @@ void StartServerOnHandlerThread(
       socket_factory->CreateForHttpServer();
   std::unique_ptr<net::IPEndPoint> ip_address(new net::IPEndPoint);
   if (server_socket) {
-    server_wrapper.reset(new ServerWrapper(handler, std::move(server_socket),
-                                           debug_frontend_dir,
-                                           bundles_resources));
+    server_wrapper =
+        std::make_unique<ServerWrapper>(handler, std::move(server_socket),
+                                        debug_frontend_dir, bundles_resources);
     if (server_wrapper->GetLocalAddress(ip_address.get()) != net::OK)
       ip_address.reset();
   } else {
@@ -300,8 +298,8 @@ void StartServerOnHandlerThread(
 #endif
   }
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&ServerStartedOnUI, std::move(handler), thread.release(),
                      server_wrapper.release(), socket_factory.release(),
                      std::move(ip_address)));
@@ -336,10 +334,11 @@ class DevToolsAgentHostClientImpl : public DevToolsAgentHostClient {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(agent_host == agent_host_.get());
 
-    std::string message =
-        "{ \"method\": \"Inspector.detached\", "
-        "\"params\": { \"reason\": \"target_closed\"} }";
-    DispatchProtocolMessage(agent_host, message);
+    constexpr char kMsg[] =
+        "{\"method\":\"Inspector.detached\","
+        "\"params\":{\"reason\":\"target_closed\"}}";
+    DispatchProtocolMessage(
+        agent_host, base::as_bytes(base::make_span(kMsg, strlen(kMsg))));
 
     agent_host_ = nullptr;
     task_runner_->PostTask(
@@ -349,16 +348,17 @@ class DevToolsAgentHostClientImpl : public DevToolsAgentHostClient {
   }
 
   void DispatchProtocolMessage(DevToolsAgentHost* agent_host,
-                               const std::string& message) override {
+                               base::span<const uint8_t> message) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(agent_host == agent_host_.get());
-    task_runner_->PostTask(FROM_HERE,
-                           base::BindOnce(&ServerWrapper::SendOverWebSocket,
-                                          base::Unretained(server_wrapper_),
-                                          connection_id_, message));
+    task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ServerWrapper::SendOverWebSocket,
+                       base::Unretained(server_wrapper_), connection_id_,
+                       std::string(message.begin(), message.end())));
   }
 
-  void OnMessage(const std::string& message) {
+  void OnMessage(base::span<const uint8_t> message) {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (agent_host_)
       agent_host_->DispatchProtocolMessage(this, message);
@@ -402,7 +402,7 @@ static std::string GetMimeType(const std::string& filename) {
     return "text/css";
   } else if (base::EndsWith(filename, ".js",
                             base::CompareCase::INSENSITIVE_ASCII)) {
-    return "application/javascript";
+    return "text/javascript";
   } else if (base::EndsWith(filename, ".png",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/png";
@@ -415,6 +415,9 @@ static std::string GetMimeType(const std::string& filename) {
   } else if (base::EndsWith(filename, ".svg",
                             base::CompareCase::INSENSITIVE_ASCII)) {
     return "image/svg+xml";
+  } else if (base::EndsWith(filename, ".avif",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    return "image/avif";
   }
   LOG(ERROR) << "GetMimeType doesn't know mime type for: "
              << filename
@@ -433,16 +436,16 @@ void ServerWrapper::OnHttpRequest(int connection_id,
   server_->SetSendBufferSize(connection_id, kSendBufferSizeForDevTools);
 
   if (base::StartsWith(info.path, "/json", base::CompareCase::SENSITIVE)) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&DevToolsHttpHandler::OnJsonRequest, handler_,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DevToolsHttpHandler::OnJsonRequest, handler_,
                                   connection_id, info));
     return;
   }
 
   if (info.path.empty() || info.path == "/") {
     // Discovery page request.
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&DevToolsHttpHandler::OnDiscoveryPageRequest,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&DevToolsHttpHandler::OnDiscoveryPageRequest,
                                   handler_, connection_id));
     return;
   }
@@ -466,8 +469,8 @@ void ServerWrapper::OnHttpRequest(int connection_id,
   }
 
   if (bundles_resources_) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&DevToolsHttpHandler::OnFrontendResourceRequest,
                        handler_, connection_id, filename));
     return;
@@ -478,20 +481,20 @@ void ServerWrapper::OnHttpRequest(int connection_id,
 void ServerWrapper::OnWebSocketRequest(
     int connection_id,
     const net::HttpServerRequestInfo& request) {
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&DevToolsHttpHandler::OnWebSocketRequest,
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DevToolsHttpHandler::OnWebSocketRequest,
                                 handler_, connection_id, request));
 }
 
 void ServerWrapper::OnWebSocketMessage(int connection_id, std::string data) {
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&DevToolsHttpHandler::OnWebSocketMessage,
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DevToolsHttpHandler::OnWebSocketMessage,
                                 handler_, connection_id, std::move(data)));
 }
 
 void ServerWrapper::OnClose(int connection_id) {
-  base::PostTask(
-      FROM_HERE, {BrowserThread::UI},
+  GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&DevToolsHttpHandler::OnClose, handler_, connection_id));
 }
 
@@ -507,8 +510,9 @@ std::string DevToolsHttpHandler::GetFrontendURLInternal(
     bool is_worker = type == DevToolsAgentHost::kTypeServiceWorker ||
                      type == DevToolsAgentHost::kTypeSharedWorker;
     frontend_url = base::StringPrintf(
-        "http://chrome-devtools-frontend.appspot.com/serve_rev/%s/%s.html",
-        GetWebKitRevision().c_str(), is_worker ? "worker_app" : "inspector");
+        "https://chrome-devtools-frontend.appspot.com/serve_rev/%s/%s.html",
+        GetChromiumGitRevision().c_str(),
+        is_worker ? "worker_app" : "inspector");
   }
   return base::StringPrintf("%s?ws=%s%s%s", frontend_url.c_str(), host.c_str(),
                             kPageUrlPrefix, id.c_str());
@@ -606,17 +610,16 @@ void DevToolsHttpHandler::OnJsonRequest(
     GURL url(net::UnescapeBinaryURLComponent(query));
     if (!url.is_valid())
       url = GURL(url::kAboutBlankURL);
-    scoped_refptr<DevToolsAgentHost> agent_host = nullptr;
-    agent_host = delegate_->CreateNewTarget(url);
+    scoped_refptr<DevToolsAgentHost> agent_host =
+        delegate_->CreateNewTarget(url);
     if (!agent_host) {
       SendJson(connection_id, net::HTTP_INTERNAL_SERVER_ERROR, nullptr,
                "Could not create new page");
       return;
     }
     std::string host = info.GetHeaderValue("host");
-    std::unique_ptr<base::DictionaryValue> dictionary(
-        SerializeDescriptor(agent_host, host));
-    SendJson(connection_id, net::HTTP_OK, dictionary.get(), std::string());
+    base::Value descriptor = SerializeDescriptor(agent_host, host);
+    SendJson(connection_id, net::HTTP_OK, &descriptor, std::string());
     return;
   }
 
@@ -654,7 +657,7 @@ void DevToolsHttpHandler::OnJsonRequest(
 }
 
 void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
-#if defined(OS_FUCHSIA)
+#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
   NOTREACHED();
 #else
   scoped_refptr<base::RefCountedMemory> bytes =
@@ -669,7 +672,7 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
       FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
                                 base::Unretained(server_wrapper_.get()),
                                 connection_id, response));
-#endif  // defined(OS_FUCHSIA)
+#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
 }
 
 void DevToolsHttpHandler::RespondToJsonList(
@@ -685,8 +688,15 @@ void DevToolsHttpHandler::RespondToJsonList(
 }
 
 void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
-  std::string response = delegate_->GetDiscoveryPageHTML();
-  Send200(connection_id, response, "text/html; charset=UTF-8");
+  net::HttpServerResponseInfo response(net::HTTP_OK);
+  response.AddHeader("X-Frame-Options", "DENY");
+  response.SetBody(delegate_->GetDiscoveryPageHTML(),
+                   "text/html; charset=UTF-8");
+
+  thread_->task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
+                                base::Unretained(server_wrapper_.get()),
+                                connection_id, response));
 }
 
 void DevToolsHttpHandler::OnFrontendResourceRequest(
@@ -713,9 +723,10 @@ void DevToolsHttpHandler::OnWebSocketRequest(
             thread_->task_runner(),
             base::BindRepeating(&DevToolsSocketFactory::CreateForTethering,
                                 base::Unretained(socket_factory_.get())));
-    connection_to_client_[connection_id].reset(new DevToolsAgentHostClientImpl(
-        thread_->task_runner(), server_wrapper_.get(), connection_id,
-        browser_agent));
+    connection_to_client_[connection_id] =
+        std::make_unique<DevToolsAgentHostClientImpl>(
+            thread_->task_runner(), server_wrapper_.get(), connection_id,
+            browser_agent);
     AcceptWebSocket(connection_id, request);
     return;
   }
@@ -734,18 +745,19 @@ void DevToolsHttpHandler::OnWebSocketRequest(
     return;
   }
 
-  connection_to_client_[connection_id].reset(new DevToolsAgentHostClientImpl(
-      thread_->task_runner(), server_wrapper_.get(), connection_id, agent));
+  connection_to_client_[connection_id] =
+      std::make_unique<DevToolsAgentHostClientImpl>(
+          thread_->task_runner(), server_wrapper_.get(), connection_id, agent);
 
   AcceptWebSocket(connection_id, request);
 }
 
-void DevToolsHttpHandler::OnWebSocketMessage(
-    int connection_id,
-    const std::string& data) {
+void DevToolsHttpHandler::OnWebSocketMessage(int connection_id,
+                                             std::string data) {
   auto it = connection_to_client_.find(connection_id);
-  if (it != connection_to_client_.end())
-    it->second->OnMessage(data);
+  if (it != connection_to_client_.end()) {
+    it->second->OnMessage(base::as_bytes(base::make_span(data)));
+  }
 }
 
 void DevToolsHttpHandler::OnClose(int connection_id) {
@@ -766,7 +778,7 @@ DevToolsHttpHandler::DevToolsHttpHandler(
       new base::Thread(kDevToolsHandlerThreadName));
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  if (thread->StartWithOptions(options)) {
+  if (thread->StartWithOptions(std::move(options))) {
     auto task_runner = thread->task_runner();
     task_runner->PostTask(
         FROM_HERE,
@@ -854,33 +866,35 @@ void DevToolsHttpHandler::AcceptWebSocket(
                                 connection_id, request));
 }
 
-std::unique_ptr<base::DictionaryValue> DevToolsHttpHandler::SerializeDescriptor(
+base::Value DevToolsHttpHandler::SerializeDescriptor(
     scoped_refptr<DevToolsAgentHost> agent_host,
     const std::string& host) {
-  std::unique_ptr<base::DictionaryValue> dictionary(new base::DictionaryValue);
+  base::Value dictionary(base::Value::Type::DICTIONARY);
   std::string id = agent_host->GetId();
-  dictionary->SetString(kTargetIdField, id);
+  dictionary.SetStringKey(kTargetIdField, id);
   std::string parent_id = agent_host->GetParentId();
   if (!parent_id.empty())
-    dictionary->SetString(kTargetParentIdField, parent_id);
-  dictionary->SetString(kTargetTypeField, agent_host->GetType());
-  dictionary->SetString(kTargetTitleField,
-                        net::EscapeForHTML(agent_host->GetTitle()));
-  dictionary->SetString(kTargetDescriptionField, agent_host->GetDescription());
+    dictionary.SetStringKey(kTargetParentIdField, parent_id);
+  dictionary.SetStringKey(kTargetTypeField, agent_host->GetType());
+  dictionary.SetStringKey(kTargetTitleField,
+                          net::EscapeForHTML(agent_host->GetTitle()));
+  dictionary.SetStringKey(kTargetDescriptionField,
+                          agent_host->GetDescription());
 
   GURL url = agent_host->GetURL();
-  dictionary->SetString(kTargetUrlField, url.spec());
+  dictionary.SetStringKey(kTargetUrlField, url.spec());
 
   GURL favicon_url = agent_host->GetFaviconURL();
   if (favicon_url.is_valid())
-    dictionary->SetString(kTargetFaviconUrlField, favicon_url.spec());
+    dictionary.SetStringKey(kTargetFaviconUrlField, favicon_url.spec());
 
-  dictionary->SetString(kTargetWebSocketDebuggerUrlField,
-                        base::StringPrintf("ws://%s%s%s", host.c_str(),
-                                           kPageUrlPrefix, id.c_str()));
+  dictionary.SetStringKey(kTargetWebSocketDebuggerUrlField,
+                          base::StringPrintf("ws://%s%s%s", host.c_str(),
+                                             kPageUrlPrefix, id.c_str()));
   std::string devtools_frontend_url =
       GetFrontendURLInternal(agent_host, id, host);
-  dictionary->SetString(kTargetDevtoolsFrontendUrlField, devtools_frontend_url);
+  dictionary.SetStringKey(kTargetDevtoolsFrontendUrlField,
+                          devtools_frontend_url);
 
   return dictionary;
 }

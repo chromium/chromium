@@ -1398,7 +1398,7 @@ Gansterer),
       on Windows (Igor Zlatkovic), htmlCtxtReset fix (Michael Day), XPath
       principal node of axis bug, HTML serialization of some codepoint
       (Steven Rainwater), user data propagation in XInclude (Michael Day),
-      standalone and XML decl detection (Michael Day), Python id ouptut
+      standalone and XML decl detection (Michael Day), Python id output
       for some id, fix the big python string memory leak, URI parsing fixes
       (StÃ©phane Bidoul and William), long comments parsing bug (William),
       concurrent threads initialization (Ted Phelps), invalid char
@@ -1410,7 +1410,7 @@ Gansterer),
       min occurs of 0 (William), HTML script/style parsing (Mike Day)
    - Improvement: make xmlTextReaderSetup() public
    - Compilation and postability: fix a missing include problem (William),
-      __ss_familly on AIX again (BjÃ¶rn Wiberg), compilation without zlib
+      __ss_family on AIX again (BjÃ¶rn Wiberg), compilation without zlib
       (Michael Day), catalog patch for Win32 (Christian Ehrlicher),
       Windows CE fixes (Andreas Stricke)
    - Various CVS to SVN infrastructure changes
@@ -1449,7 +1449,7 @@ Gansterer),
       fix attribute serialization in writer (Rob Richards), PHP4 DTD validation
       crasher, parser safety patch (Ben Darnell), _private context propagation
       when parsing entities (with Michael Day), fix entities behaviour when 
-      using SAX, URI to file path fix (Mikhail Zabaluev), disapearing validity
+      using SAX, URI to file path fix (Mikhail Zabaluev), disappearing validity
       context, arg error in SAX callback (Mike Hommey), fix mixed-content
       autodetect when using --noblanks, fix xmlIOParseDTD error handling,
       fix bug in xmlSplitQName on special Names, fix Relax-NG element content
@@ -1533,7 +1533,7 @@ Do not use or package 2.6.25
     split problem (William), issues with non-namespaced attributes in
     xmlAddChild() xmlAddNextSibling() and xmlAddPrevSibling() (Rob Richards),
     HTML parsing of script, Python must not output to stdout (Nic Ferrier),
-    exclusive C14N namespace visibility (Aleksey Sanin), XSD dataype
+    exclusive C14N namespace visibility (Aleksey Sanin), XSD datatype
     totalDigits bug (Kasimier Buchcik), error handling when writing to an
     xmlBuffer (Rob Richards), runtest schemas error not reported (Hisashi
     Fujinaka), signed/unsigned problem in date/time code (Albert Chin), fix
@@ -1542,7 +1542,7 @@ Do not use or package 2.6.25
     (Gary Coady), regexp bug affecting schemas (Kasimier), configuration of
     runtime debugging (Kasimier), xmlNodeBufGetContent bug on entity refs
     (Oleksandr Kononenko), xmlRegExecPushString2 bug (Sreeni Nair),
-    compilation and build fixes (Michael Day), removed dependancies on
+    compilation and build fixes (Michael Day), removed dependencies on
     xmlSchemaValidError (Kasimier), bug with <xml:foo/>, more XPath
     pattern based evaluation fixes (Kasimier)
    - improvements: XSD Schemas redefinitions/restrictions (Kasimier
@@ -1587,7 +1587,7 @@ Do not use or package 2.6.25
     foreign namespaces handling, XML Schemas facet comparison (Kupriyanov
     Anatolij), xmlSchemaPSimpleTypeErr error report (Kasimier Buchcik), xml:
     namespace ahndling in Schemas (Kasimier), empty model group in Schemas
-    (Kasimier), wilcard in Schemas (Kasimier), URI composition (William),
+    (Kasimier), wildcard in Schemas (Kasimier), URI composition (William),
     xs:anyType in Schemas (Kasimier), Python resolver emmitting error
     messages directly, Python xmlAttr.parent (Jakub Piotr Clapa), trying to
     fix the file path/URI conversion, xmlTextReaderGetAttribute fix (Rob
@@ -1761,7 +1761,7 @@ Do not use or package 2.6.25
     Buchcik), XInclude testing, Notation serialization, UTF8ToISO8859x
     transcoding (Mark Itzcovitz), lots of XML Schemas cleanup and fixes
     (Kasimier), ChangeLog cleanup (Stepan Kasal), memory fixes (Mark Vakoc),
-    handling of failed realloc(), out of bound array adressing in Schemas
+    handling of failed realloc(), out of bound array addressing in Schemas
     date handling, Python space/tabs cleanups (Malcolm Tredinnick), NMTOKENS
     E20 validation fix (Malcolm),
    - improvements: added W3C XML Schemas testsuite (Kasimier Buchcik), add
@@ -1778,7 +1778,7 @@ Do not use or package 2.6.25
     (Kasimier Buchcik), Schemas validation crash, xmlCheckUTF8 (William Brack
     and Julius Mittenzwei), Schemas facet check (Kasimier), default namespace
     problem (William), Schemas hexbinary empty values, encoding error could
-    genrate a serialization loop.
+    generate a serialization loop.
    - Improvements: Schemas validity improvements (Kasimier), added --path
     and --load-trace options to xmllint
    - documentation: tutorial update (John Fleck)
@@ -1936,7 +1936,7 @@ Do not use or package 2.6.25
     --with-minimum configuration.
    - XInclude: allow the 2001 namespace without warning.
    - Documentation: missing example/index.html (John Fleck), version
-    dependancies (John Fleck)
+    dependencies (John Fleck)
    - reader API: structured error reporting (Steve Ball)
    - Windows compilation: mingw, msys (Mikhail Grushinskiy), function
     prototype (Cameron Johnson), MSVC6 compiler warnings, _WINSOCKAPI_
@@ -2070,7 +2070,7 @@ Do not use or package 2.6.25
     intercepted at a structured level, with precise information
   available.
    - New simpler and more generic XML and HTML parser APIs, allowing to
-    easilly modify the parsing options and reuse parser context for multiple
+    easily modify the parsing options and reuse parser context for multiple
     consecutive documents.
    - Similar new APIs for the xmlReader, for options and reuse, provided new
     functions to access content as const strings, use them for Python

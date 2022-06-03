@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that editing media text updates element styles.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -28,9 +28,9 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step1);
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('=== Before media text modification ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     var section = ElementsTestRunner.firstMatchedStyleSection();
     var mediaTextElement = ElementsTestRunner.firstMediaTextElementInSection(section);
     mediaTextElement.click();
@@ -39,9 +39,9 @@
     mediaTextElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('=== After valid media text modification ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     var section = ElementsTestRunner.firstMatchedStyleSection();
     var mediaTextElement = ElementsTestRunner.firstMediaTextElementInSection(section);
     mediaTextElement.click();
@@ -50,9 +50,9 @@
     mediaTextElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
   }
 
-  function step3() {
+  async function step3() {
     TestRunner.addResult('=== After invalid media text modification ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

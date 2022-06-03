@@ -8,11 +8,14 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
+import android.graphics.drawable.GradientDrawable;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
 
-import org.chromium.chrome.browser.ui.widget.text.TemplatePreservingTextView;
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.widget.text.TemplatePreservingTextView;
 import org.chromium.ui.widget.ButtonCompat;
 import org.chromium.ui.widget.ChromeImageView;
 
@@ -123,5 +126,82 @@ class MessageCardView extends LinearLayout {
      */
     void setDismissButtonOnClickListener(OnClickListener listener) {
         mCloseButton.setOnClickListener(listener);
+    }
+
+    /**
+     * Modify the view based on the visibility of the icon. For messages that doesn't have an icon,
+     * remove the icon and update the margin of the description text field.
+     * @param visible  Whether icon is visible.
+     */
+    void setIconVisibility(boolean visible) {
+        MarginLayoutParams params = (MarginLayoutParams) mDescription.getLayoutParams();
+        if (visible) {
+            if (indexOfChild(mIcon) == -1) {
+                addView(mIcon, 0);
+                params.setMargins(0, 0, 0, 0);
+            }
+        } else {
+            int margin = (int) getContext().getResources().getDimension(
+                    R.dimen.tab_grid_iph_item_description_margin);
+            removeView(mIcon);
+            params.setMargins(margin, 0, 0, 0);
+        }
+    }
+
+    /**
+     * Set background resource.
+     * @param isIncognito Whether the resource is used for incognito mode.
+     */
+    private void setBackground(boolean isIncognito) {
+        setBackgroundResource(TabUiThemeProvider.getMessageCardBackgroundResourceId(isIncognito));
+        // Incognito colors should follow baseline.
+        // Use the color defined in drawable.
+        if (isIncognito) {
+            return;
+        }
+        // Set dynamic color.
+        GradientDrawable gradientDrawable = (GradientDrawable) getBackground();
+        gradientDrawable.setColor(
+                ChromeColors.getSurfaceColor(getContext(), R.dimen.card_elevation));
+    }
+
+    /**
+     * Set text appearance for description.
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     */
+    private void setDescriptionTextAppearance(boolean isIncognito) {
+        ApiCompatibilityUtils.setTextAppearance(mDescription,
+                TabUiThemeProvider.getMessageCardDescriptionTextAppearance(isIncognito));
+    }
+
+    /**
+     * Set text appearance for action button.
+     * @param isIncognito Whether the text appearance is used for incognito mode.
+     */
+    private void setActionButtonTextAppearance(boolean isIncognito) {
+        ApiCompatibilityUtils.setTextAppearance(mActionButton,
+                TabUiThemeProvider.getMessageCardActionButtonTextAppearance(isIncognito));
+    }
+
+    /**
+     * Set tint for close button.
+     * @param isIncognito Whether the tint is used for incognito mode.
+     */
+    private void setCloseButtonTint(boolean isIncognito) {
+        ApiCompatibilityUtils.setImageTintList(mCloseButton,
+                TabUiThemeProvider.getMessageCardCloseButtonTintList(
+                        mCloseButton.getContext(), isIncognito));
+    }
+
+    /**
+     * Update Message Card when switching between normal mode and incognito mode.
+     * @param isIncognito Whether it is in the incognito mode.
+     */
+    void updateMessageCardColor(boolean isIncognito) {
+        setBackground(isIncognito);
+        setDescriptionTextAppearance(isIncognito);
+        setActionButtonTextAppearance(isIncognito);
+        // TODO(crbug.com/1139194): Set action button ripple color.
+        setCloseButtonTint(isIncognito);
     }
 }

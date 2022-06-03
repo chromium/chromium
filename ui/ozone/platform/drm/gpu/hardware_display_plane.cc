@@ -8,38 +8,14 @@
 #include <drm_mode.h>
 
 #include "base/logging.h"
+#include "base/trace_event/traced_value.h"
+#include "ui/ozone/platform/drm/common/drm_util.h"
 #include "ui/ozone/platform/drm/gpu/drm_device.h"
 #include "ui/ozone/platform/drm/gpu/drm_gpu_util.h"
-
-#ifndef DRM_PLANE_TYPE_OVERLAY
-#define DRM_PLANE_TYPE_OVERLAY 0
-#endif
-
-#ifndef DRM_PLANE_TYPE_PRIMARY
-#define DRM_PLANE_TYPE_PRIMARY 1
-#endif
-
-#ifndef DRM_PLANE_TYPE_CURSOR
-#define DRM_PLANE_TYPE_CURSOR 2
-#endif
 
 namespace ui {
 
 namespace {
-
-HardwareDisplayPlane::Type GetPlaneType(int value) {
-  switch (value) {
-    case DRM_PLANE_TYPE_CURSOR:
-      return HardwareDisplayPlane::kCursor;
-    case DRM_PLANE_TYPE_PRIMARY:
-      return HardwareDisplayPlane::kPrimary;
-    case DRM_PLANE_TYPE_OVERLAY:
-      return HardwareDisplayPlane::kOverlay;
-    default:
-      NOTREACHED();
-      return HardwareDisplayPlane::kDummy;
-  }
-}
 
 void ParseSupportedFormatsAndModifiers(
     drmModePropertyBlobPtr blob,
@@ -60,6 +36,8 @@ void ParseSupportedFormatsAndModifiers(
 }
 
 }  // namespace
+HardwareDisplayPlane::Properties::Properties() = default;
+HardwareDisplayPlane::Properties::~Properties() = default;
 
 HardwareDisplayPlane::HardwareDisplayPlane(uint32_t id) : id_(id) {}
 
@@ -67,6 +45,13 @@ HardwareDisplayPlane::~HardwareDisplayPlane() {}
 
 bool HardwareDisplayPlane::CanUseForCrtc(uint32_t crtc_index) const {
   return crtc_mask_ & (1 << crtc_index);
+}
+
+void HardwareDisplayPlane::AsValueInto(
+    base::trace_event::TracedValue* value) const {
+  value->SetInteger("plane_id", id_);
+  value->SetInteger("owning_crtc", owning_crtc_);
+  value->SetBoolean("in_use", in_use_);
 }
 
 bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
@@ -90,7 +75,15 @@ bool HardwareDisplayPlane::Initialize(DrmDevice* drm) {
   }
 
   if (properties_.type.id)
-    type_ = GetPlaneType(properties_.type.value);
+    type_ = properties_.type.value;
+
+  if (properties_.plane_color_encoding.id) {
+    color_encoding_bt601_ =
+        GetEnumValueForName(drm->get_fd(), properties_.plane_color_encoding.id,
+                            "ITU-R BT.601 YCbCr");
+    color_range_limited_ = GetEnumValueForName(
+        drm->get_fd(), properties_.plane_color_range.id, "YCbCr limited range");
+  }
 
   VLOG(3) << "Initialized plane=" << id_ << " crtc_mask=" << std::hex << "0x"
           << crtc_mask_ << std::dec
@@ -126,11 +119,12 @@ std::vector<uint64_t> HardwareDisplayPlane::ModifiersForFormat(
     uint32_t format) const {
   std::vector<uint64_t> modifiers;
 
-  uint32_t format_index =
-      std::find(supported_formats_.begin(), supported_formats_.end(), format) -
-      supported_formats_.begin();
-  DCHECK_LT(format_index, supported_formats_.size());
+  auto it =
+      std::find(supported_formats_.begin(), supported_formats_.end(), format);
+  if (it == supported_formats_.end())
+    return modifiers;
 
+  uint32_t format_index = it - supported_formats_.begin();
   for (const auto& modifier : supported_format_modifiers_) {
     // modifier.formats is a bitmask of the formats the modifier
     // applies to, starting at format modifier.offset. That is, if bit
@@ -167,6 +161,10 @@ void HardwareDisplayPlane::InitializeProperties(DrmDevice* drm) {
   GetDrmPropertyForName(drm, props.get(), "IN_FENCE_FD",
                         &properties_.in_fence_fd);
   GetDrmPropertyForName(drm, props.get(), "PLANE_CTM", &properties_.plane_ctm);
+  GetDrmPropertyForName(drm, props.get(), "COLOR_ENCODING",
+                        &properties_.plane_color_encoding);
+  GetDrmPropertyForName(drm, props.get(), "COLOR_RANGE",
+                        &properties_.plane_color_range);
 }
 
 }  // namespace ui

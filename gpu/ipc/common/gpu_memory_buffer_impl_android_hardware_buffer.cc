@@ -8,12 +8,12 @@
 
 #include "base/android/android_hardware_buffer_compat.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
+#include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gl/android/android_surface_control_compat.h"
 
 namespace gpu {
 
@@ -39,6 +39,12 @@ AHardwareBuffer_Desc GetBufferDescription(const gfx::Size& size,
     case gfx::BufferFormat::BGR_565:
       desc.format = AHARDWAREBUFFER_FORMAT_R5G6B5_UNORM;
       break;
+    case gfx::BufferFormat::RGBA_F16:
+      desc.format = AHARDWAREBUFFER_FORMAT_R16G16B16A16_FLOAT;
+      break;
+    case gfx::BufferFormat::RGBA_1010102:
+      desc.format = AHARDWAREBUFFER_FORMAT_R10G10B10A2_UNORM;
+      break;
     default:
       NOTREACHED();
   }
@@ -49,7 +55,7 @@ AHardwareBuffer_Desc GetBufferDescription(const gfx::Size& size,
       desc.usage = AHARDWAREBUFFER_USAGE_GPU_SAMPLED_IMAGE |
                    AHARDWAREBUFFER_USAGE_GPU_COLOR_OUTPUT;
       if (usage == gfx::BufferUsage::SCANOUT)
-        desc.usage |= gl::SurfaceControl::RequiredUsage();
+        desc.usage |= gfx::SurfaceControl::RequiredUsage();
       break;
     default:
       NOTREACHED();

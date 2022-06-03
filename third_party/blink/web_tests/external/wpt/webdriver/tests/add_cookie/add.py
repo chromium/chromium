@@ -1,9 +1,12 @@
+import pytest
+
 from datetime import datetime, timedelta
 
 from webdriver.transport import Response
 
 from tests.support.asserts import assert_error, assert_success
 from tests.support.helpers import clear_all_cookies
+
 
 def add_cookie(session, cookie):
     return session.transport.send(
@@ -31,7 +34,7 @@ def test_null_response_value(session, url):
     assert value is None
 
 
-def test_no_browsing_context(session, closed_window):
+def test_no_top_browsing_context(session, closed_window):
     new_cookie = {
         "name": "hello",
         "value": "world",
@@ -39,6 +42,53 @@ def test_no_browsing_context(session, closed_window):
 
     response = add_cookie(session, new_cookie)
     assert_error(response, "no such window")
+
+
+def test_no_browsing_context(session, closed_frame):
+    new_cookie = {
+        "name": "hello",
+        "value": "world",
+    }
+
+    response = add_cookie(session, new_cookie)
+    assert_error(response, "no such window")
+
+
+@pytest.mark.parametrize(
+    "page",
+    [
+        "about:blank",
+        "blob:foo/bar",
+        "data:text/html;charset=utf-8,<p>foo</p>",
+        "file:///foo/bar",
+        "ftp://example.org",
+        "javascript:foo",
+        "ws://example.org",
+        "wss://example.org",
+    ],
+    ids=[
+        "about",
+        "blob",
+        "data",
+        "file",
+        "ftp",
+        "javascript",
+        "websocket",
+        "secure websocket",
+    ],
+)
+def test_cookie_unsupported_scheme(session, page):
+    new_cookie = {
+        "name": "hello",
+        "value": "world",
+        "domain": page,
+        "path": "/",
+        "httpOnly": False,
+        "secure": False
+    }
+
+    result = add_cookie(session, new_cookie)
+    assert_error(result, "invalid cookie domain")
 
 
 def test_add_domain_cookie(session, url, server_config):
@@ -59,11 +109,11 @@ def test_add_domain_cookie(session, url, server_config):
 
     cookie = session.cookies("hello")
     assert "domain" in cookie
-    assert isinstance(cookie["domain"], basestring)
+    assert isinstance(cookie["domain"], str)
     assert "name" in cookie
-    assert isinstance(cookie["name"], basestring)
+    assert isinstance(cookie["name"], str)
     assert "value" in cookie
-    assert isinstance(cookie["value"], basestring)
+    assert isinstance(cookie["value"], str)
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"
@@ -89,11 +139,11 @@ def test_add_cookie_for_ip(session, url, server_config, configuration):
 
     cookie = session.cookies("hello")
     assert "name" in cookie
-    assert isinstance(cookie["name"], basestring)
+    assert isinstance(cookie["name"], str)
     assert "value" in cookie
-    assert isinstance(cookie["value"], basestring)
+    assert isinstance(cookie["value"], str)
     assert "domain" in cookie
-    assert isinstance(cookie["domain"], basestring)
+    assert isinstance(cookie["domain"], str)
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"
@@ -118,9 +168,9 @@ def test_add_non_session_cookie(session, url):
 
     cookie = session.cookies("hello")
     assert "name" in cookie
-    assert isinstance(cookie["name"], basestring)
+    assert isinstance(cookie["name"], str)
     assert "value" in cookie
-    assert isinstance(cookie["value"], basestring)
+    assert isinstance(cookie["value"], str)
     assert "expiry" in cookie
     assert isinstance(cookie["expiry"], int)
 
@@ -143,9 +193,9 @@ def test_add_session_cookie(session, url):
 
     cookie = session.cookies("hello")
     assert "name" in cookie
-    assert isinstance(cookie["name"], basestring)
+    assert isinstance(cookie["name"], str)
     assert "value" in cookie
-    assert isinstance(cookie["value"], basestring)
+    assert isinstance(cookie["value"], str)
     if "expiry" in cookie:
         assert cookie.get("expiry") is None
 
@@ -168,13 +218,69 @@ def test_add_session_cookie_with_leading_dot_character_in_domain(session, url, s
 
     cookie = session.cookies("hello")
     assert "name" in cookie
-    assert isinstance(cookie["name"], basestring)
+    assert isinstance(cookie["name"], str)
     assert "value" in cookie
-    assert isinstance(cookie["value"], basestring)
+    assert isinstance(cookie["value"], str)
     assert "domain" in cookie
-    assert isinstance(cookie["domain"], basestring)
+    assert isinstance(cookie["domain"], str)
 
     assert cookie["name"] == "hello"
     assert cookie["value"] == "world"
     assert cookie["domain"] == server_config["browser_host"] or \
         cookie["domain"] == ".%s" % server_config["browser_host"]
+
+
+@pytest.mark.parametrize("same_site", ["None", "Lax", "Strict"])
+def test_add_cookie_with_valid_samesite_flag(session, url, same_site):
+    new_cookie = {
+        "name": "hello",
+        "value": "world",
+        "sameSite": same_site
+    }
+
+    session.url = url("/common/blank.html")
+    clear_all_cookies(session)
+
+    result = add_cookie(session, new_cookie)
+    assert_success(result)
+
+    cookie = session.cookies("hello")
+    assert "name" in cookie
+    assert isinstance(cookie["name"], str)
+    assert "value" in cookie
+    assert isinstance(cookie["value"], str)
+    assert "sameSite" in cookie
+    assert isinstance(cookie["sameSite"], str)
+
+    assert cookie["name"] == "hello"
+    assert cookie["value"] == "world"
+    assert cookie["sameSite"] == same_site
+
+
+def test_add_cookie_with_invalid_samesite_flag(session, url):
+    new_cookie = {
+        "name": "hello",
+        "value": "world",
+        "sameSite": "invalid"
+    }
+
+    session.url = url("/common/blank.html")
+    clear_all_cookies(session)
+
+    response = add_cookie(session, new_cookie)
+    assert_error(response, "invalid argument")
+
+
+@pytest.mark.parametrize("same_site", [False, 12, dict()])
+def test_add_cookie_with_invalid_samesite_type(session, url, same_site):
+    new_cookie = {
+        "name": "hello",
+        "value": "world",
+        "sameSite": same_site
+    }
+
+    session.url = url("/common/blank.html")
+    clear_all_cookies(session)
+
+    response = add_cookie(session, new_cookie)
+    assert_error(response, "invalid argument")

@@ -21,7 +21,7 @@
 namespace remoting {
 
 FakeSecurityKeyIpcClient::FakeSecurityKeyIpcClient(
-    const base::Closure& channel_event_callback)
+    const base::RepeatingClosure& channel_event_callback)
     : channel_event_callback_(channel_event_callback) {
   DCHECK(!channel_event_callback_.is_null());
 }
@@ -37,18 +37,18 @@ bool FakeSecurityKeyIpcClient::CheckForSecurityKeyIpcServerChannel() {
 }
 
 void FakeSecurityKeyIpcClient::EstablishIpcConnection(
-    const ConnectedCallback& connected_callback,
-    const base::Closure& connection_error_callback) {
+    ConnectedCallback connected_callback,
+    base::OnceClosure connection_error_callback) {
   if (establish_ipc_connection_should_succeed_) {
-    connected_callback.Run(/*connection_usable=*/true);
+    std::move(connected_callback).Run(/*connection_usable=*/true);
   } else {
-    connection_error_callback.Run();
+    std::move(connection_error_callback).Run();
   }
 }
 
 bool FakeSecurityKeyIpcClient::SendSecurityKeyRequest(
     const std::string& request_payload,
-    const ResponseCallback& response_callback) {
+    ResponseCallback response_callback) {
   if (send_security_request_should_succeed_) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
@@ -116,7 +116,7 @@ void FakeSecurityKeyIpcClient::OnChannelConnected(int32_t peer_pid) {
   // We don't always want to fire this event as only a subset of tests care
   // about the channel being connected.  Tests that do care can register for it.
   if (on_channel_connected_callback_) {
-    on_channel_connected_callback_.Run();
+    std::move(on_channel_connected_callback_).Run();
   }
 }
 

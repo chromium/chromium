@@ -7,10 +7,9 @@
 #include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/test_support_android.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "mojo/core/embedder/embedder.h"
@@ -61,7 +60,7 @@ static void JNI_MojoTestRule_RunLoop(JNIEnv* env,
   if (timeout_ms) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop.QuitWhenIdleClosure(),
-        base::TimeDelta::FromMilliseconds(timeout_ms));
+        base::Milliseconds(timeout_ms));
     run_loop.Run();
   } else {
     run_loop.RunUntilIdle();

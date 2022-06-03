@@ -14,6 +14,10 @@ class Vp9CompressedHeaderParser {
  public:
   Vp9CompressedHeaderParser();
 
+  Vp9CompressedHeaderParser(const Vp9CompressedHeaderParser&) = delete;
+  Vp9CompressedHeaderParser& operator=(const Vp9CompressedHeaderParser&) =
+      delete;
+
   // Parses VP9 compressed header in |stream| with |frame_size| into |fhdr|.
   // Returns true if no error.
   bool Parse(const uint8_t* stream, off_t frame_size, Vp9FrameHeader* fhdr);
@@ -42,8 +46,6 @@ class Vp9CompressedHeaderParser {
 
   // Bool decoder for compressed frame header.
   Vp9BoolDecoder reader_;
-
-  DISALLOW_COPY_AND_ASSIGN(Vp9CompressedHeaderParser);
 };
 
 }  // namespace media

@@ -8,9 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/time/time.h"
-#include "base/timer/mock_timer.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 
 namespace task_manager {
@@ -20,6 +18,8 @@ namespace task_manager {
 class TestTaskManager : public TaskManagerInterface {
  public:
   TestTaskManager();
+  TestTaskManager(const TestTaskManager&) = delete;
+  TestTaskManager& operator=(const TestTaskManager&) = delete;
   ~TestTaskManager() override;
 
   // task_manager::TaskManagerInterface:
@@ -44,9 +44,8 @@ class TestTaskManager : public TaskManagerInterface {
                       int64_t* peak) const override;
   int GetOpenFdCount(TaskId task_id) const override;
   bool IsTaskOnBackgroundedProcess(TaskId task_id) const override;
-  const base::string16& GetTitle(TaskId task_id) const override;
-  const std::string& GetTaskNameForRappor(TaskId task_id) const override;
-  base::string16 GetProfileName(TaskId task_id) const override;
+  const std::u16string& GetTitle(TaskId task_id) const override;
+  std::u16string GetProfileName(TaskId task_id) const override;
   const gfx::ImageSkia& GetIcon(TaskId task_id) const override;
   const base::ProcessHandle& GetProcessHandle(TaskId task_id) const override;
   const base::ProcessId& GetProcessId(TaskId task_id) const override;
@@ -85,13 +84,9 @@ class TestTaskManager : public TaskManagerInterface {
 
   base::ProcessHandle handle_;
   base::ProcessId pid_;
-  base::string16 title_;
-  std::string rappor_sample_;
+  std::u16string title_;
   gfx::ImageSkia icon_;
   TaskIdList ids_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestTaskManager);
 };
 
 }  // namespace task_manager

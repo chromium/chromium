@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/views/payments/payment_request_sheet_controller.h"
 
 namespace views {
@@ -25,20 +24,26 @@ class PaymentRequestDialogView;
 class ErrorMessageViewController : public PaymentRequestSheetController {
  public:
   // Does not take ownership of the arguments, which should outlive this object.
-  ErrorMessageViewController(PaymentRequestSpec* spec,
-                             PaymentRequestState* state,
-                             PaymentRequestDialogView* dialog);
+  ErrorMessageViewController(base::WeakPtr<PaymentRequestSpec> spec,
+                             base::WeakPtr<PaymentRequestState> state,
+                             base::WeakPtr<PaymentRequestDialogView> dialog);
+
+  ErrorMessageViewController(const ErrorMessageViewController&) = delete;
+  ErrorMessageViewController& operator=(const ErrorMessageViewController&) =
+      delete;
+
   ~ErrorMessageViewController() override;
 
  private:
   // PaymentRequestSheetController:
-  std::unique_ptr<views::Button> CreatePrimaryButton() override;
+  std::u16string GetPrimaryButtonLabel() override;
+  ButtonCallback GetPrimaryButtonCallback() override;
+  int GetPrimaryButtonId() override;
+  bool GetPrimaryButtonEnabled() override;
   bool ShouldShowHeaderBackArrow() override;
   bool ShouldShowSecondaryButton() override;
-  base::string16 GetSheetTitle() override;
+  std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ErrorMessageViewController);
 };
 
 }  // namespace payments

@@ -13,7 +13,7 @@
 
 namespace remoting {
 
-typedef base::Callback<void(int)> SignalHandler;
+typedef base::RepeatingCallback<void(int)> SignalHandler;
 
 // Register for signal notifications on the current thread, which must have
 // an associated MessageLoopForIO.  Multiple calls to RegisterSignalHandler

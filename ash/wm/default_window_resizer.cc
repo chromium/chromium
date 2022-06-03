@@ -16,14 +16,15 @@ DefaultWindowResizer::~DefaultWindowResizer() {
 }
 
 // static
-DefaultWindowResizer* DefaultWindowResizer::Create(WindowState* window_state) {
-  return new DefaultWindowResizer(window_state);
+std::unique_ptr<DefaultWindowResizer> DefaultWindowResizer::Create(
+    WindowState* window_state) {
+  return base::WrapUnique(new DefaultWindowResizer(window_state));
 }
 
-void DefaultWindowResizer::Drag(const gfx::Point& location, int event_flags) {
+void DefaultWindowResizer::Drag(const gfx::PointF& location, int event_flags) {
   gfx::Rect bounds(CalculateBoundsForDrag(location));
   if (bounds != GetTarget()->bounds()) {
-    if (!did_move_or_resize_ && !details().restore_bounds.IsEmpty())
+    if (!did_move_or_resize_ && !details().restore_bounds_in_parent.IsEmpty())
       window_state_->ClearRestoreBounds();
     did_move_or_resize_ = true;
     SetBoundsDuringResize(bounds);
@@ -38,14 +39,14 @@ void DefaultWindowResizer::RevertDrag() {
 
   GetTarget()->SetBounds(details().initial_bounds_in_parent);
 
-  if (!details().restore_bounds.IsEmpty())
-    window_state_->SetRestoreBoundsInScreen(details().restore_bounds);
+  if (!details().restore_bounds_in_parent.IsEmpty())
+    window_state_->SetRestoreBoundsInParent(details().restore_bounds_in_parent);
 }
 
 void DefaultWindowResizer::FlingOrSwipe(ui::GestureEvent* event) {}
 
 DefaultWindowResizer::DefaultWindowResizer(WindowState* window_state)
-    : WindowResizer(window_state), did_move_or_resize_(false) {
+    : WindowResizer(window_state) {
   DCHECK(details().is_resizable);
   Shell::Get()->cursor_manager()->LockCursor();
 }

@@ -11,17 +11,17 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/run_loop.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/media_session/audio_focus_request.h"
-#include "services/media_session/media_session_service.h"
+#include "services/media_session/media_session_service_impl.h"
 #include "services/media_session/public/cpp/test/audio_focus_test_util.h"
 #include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
-#include "services/media_session/public/mojom/media_session_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media_session {
@@ -41,19 +41,17 @@ class AudioFocusManagerTest
  public:
   AudioFocusManagerTest() = default;
 
-  void SetUp() override {
-    auto power_source = std::make_unique<base::PowerMonitorTestSource>();
-    power_source_ = power_source.get();
-    base::PowerMonitor::Initialize(std::move(power_source));
+  AudioFocusManagerTest(const AudioFocusManagerTest&) = delete;
+  AudioFocusManagerTest& operator=(const AudioFocusManagerTest&) = delete;
 
+  void SetUp() override {
     // Create an instance of the MediaSessionService.
-    service_ = std::make_unique<MediaSessionService>(
-        service_remote_.BindNewPipeAndPassReceiver());
-    service_remote_->BindAudioFocusManager(
+    service_ = std::make_unique<MediaSessionServiceImpl>();
+    service_->BindAudioFocusManager(
         audio_focus_remote_.BindNewPipeAndPassReceiver());
-    service_remote_->BindAudioFocusManagerDebug(
+    service_->BindAudioFocusManagerDebug(
         audio_focus_debug_remote_.BindNewPipeAndPassReceiver());
-    service_remote_->BindMediaControllerManager(
+    service_->BindMediaControllerManager(
         controller_manager_remote_.BindNewPipeAndPassReceiver());
 
     audio_focus_remote_->SetEnforcementMode(GetParam());
@@ -65,8 +63,6 @@ class AudioFocusManagerTest
     base::RunLoop().RunUntilIdle();
 
     service_.reset();
-    service_remote_.reset();
-    base::PowerMonitor::ShutdownForTesting();
   }
 
   AudioFocusManager::RequestId GetAudioFocusedSession() {
@@ -183,7 +179,7 @@ class AudioFocusManagerTest
 
   mojo::Remote<mojom::AudioFocusManager> CreateAudioFocusManagerRemote() {
     mojo::Remote<mojom::AudioFocusManager> remote;
-    service_remote_->BindAudioFocusManager(remote.BindNewPipeAndPassReceiver());
+    service_->BindAudioFocusManager(remote.BindNewPipeAndPassReceiver());
     return remote;
   }
 
@@ -194,7 +190,7 @@ class AudioFocusManagerTest
   }
 
   bool IsEnforcementEnabled() const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Enforcement is enabled by default on Chrome OS.
     if (GetParam() == mojom::EnforcementMode::kDefault)
       return true;
@@ -208,7 +204,7 @@ class AudioFocusManagerTest
     return GetParam() != mojom::EnforcementMode::kSingleSession;
   }
 
-  base::PowerMonitorTestSource& GetTestPowerSource() { return *power_source_; }
+  void GenerateSuspendEvent() { power_source_.GenerateSuspendEvent(); }
 
   mojo::Remote<mojom::MediaControllerManager>& controller_manager() {
     return controller_manager_remote_;
@@ -281,16 +277,13 @@ class AudioFocusManagerTest
 
   base::test::TaskEnvironment task_environment_;
 
-  std::unique_ptr<MediaSessionService> service_;
-  mojo::Remote<mojom::MediaSessionService> service_remote_;
+  std::unique_ptr<MediaSessionServiceImpl> service_;
 
   mojo::Remote<mojom::AudioFocusManager> audio_focus_remote_;
   mojo::Remote<mojom::AudioFocusManagerDebug> audio_focus_debug_remote_;
   mojo::Remote<mojom::MediaControllerManager> controller_manager_remote_;
 
-  base::PowerMonitorTestSource* power_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioFocusManagerTest);
+  base::test::ScopedPowerMonitorTestSource power_source_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1470,7 +1463,7 @@ TEST_P(AudioFocusManagerTest, SuspendAllSessionOnPowerSuspend) {
   test::MockMediaSessionMojoObserver observer_1(media_session_1);
   test::MockMediaSessionMojoObserver observer_2(media_session_2);
 
-  GetTestPowerSource().GenerateSuspendEvent();
+  GenerateSuspendEvent();
 
   observer_1.WaitForState(mojom::MediaSessionInfo::SessionState::kSuspended);
   observer_2.WaitForState(mojom::MediaSessionInfo::SessionState::kSuspended);

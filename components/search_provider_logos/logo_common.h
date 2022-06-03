@@ -13,8 +13,8 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "url/gurl.h"
 
@@ -79,12 +79,21 @@ struct LogoMetadata {
 
   // The URL to ping when the CTA image is clicked. May be empty.
   GURL cta_log_url;
+  GURL dark_cta_log_url;
   // The URL to ping when the main image is clicked (i.e. the animated image if
   // there is one, or the only image otherwise). May be empty.
   GURL log_url;
+  GURL dark_log_url;
 
   // The URL used for sharing doodles.
   GURL short_link;
+
+  // SIMPLE, ANIMATED: original dimensions of the image.
+  // INTERACTIVE: not used.
+  int width_px = 0;
+  int height_px = 0;
+  int dark_width_px = 0;
+  int dark_height_px = 0;
 
   // SIMPLE, ANIMATED: ignored
   // INTERACTIVE: appropriate dimensions for the iframe.
@@ -169,7 +178,7 @@ struct EncodedLogo {
 };
 using EncodedLogoCallback =
     base::OnceCallback<void(LogoCallbackReason type,
-                            const base::Optional<EncodedLogo>& logo)>;
+                            const absl::optional<EncodedLogo>& logo)>;
 
 struct Logo {
   Logo();
@@ -183,7 +192,7 @@ struct Logo {
   LogoMetadata metadata;
 };
 using LogoCallback = base::OnceCallback<void(LogoCallbackReason type,
-                                             const base::Optional<Logo>& logo)>;
+                                             const absl::optional<Logo>& logo)>;
 
 struct LogoCallbacks {
   EncodedLogoCallback on_cached_encoded_logo_available;

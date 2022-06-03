@@ -6,10 +6,9 @@
 
 #include "base/auto_reset.h"
 #include "base/logging.h"
-#include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <mach/thread_policy.h>
 
 #include "base/mac/mach_logging.h"
@@ -32,11 +31,11 @@ void MessagePumpDefault::Run(Delegate* delegate) {
   AutoReset<bool> auto_reset_keep_running(&keep_running_, true);
 
   for (;;) {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     mac::ScopedNSAutoreleasePool autorelease_pool;
 #endif
 
-    Delegate::NextWorkInfo next_work_info = delegate->DoSomeWork();
+    Delegate::NextWorkInfo next_work_info = delegate->DoWork();
     bool has_more_immediate_work = next_work_info.is_immediate();
     if (!keep_running_)
       break;
@@ -80,7 +79,7 @@ void MessagePumpDefault::ScheduleDelayedWork(
   // this way (bit.ly/merge-message-pump-do-work).
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 void MessagePumpDefault::SetTimerSlack(TimerSlack timer_slack) {
   thread_latency_qos_policy_data_t policy{};
   policy.thread_latency_qos_tier = timer_slack == TIMER_SLACK_MAXIMUM

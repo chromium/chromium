@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/synchronization/waitable_event.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace chrome_cleaner {
 
@@ -51,13 +50,8 @@ void SaveFindCloseCallback(uint32_t* out_result,
 
 void SaveOpenReadOnlyFileCallback(base::win::ScopedHandle* result_holder,
                                   base::WaitableEvent* async_call_done_event,
-                                  mojo::ScopedHandle handle) {
-  HANDLE raw_handle = INVALID_HANDLE_VALUE;
-  MojoResult mojo_result =
-      mojo::UnwrapPlatformFile(std::move(handle), &raw_handle);
-  LOG_IF(ERROR, mojo_result != MOJO_RESULT_OK)
-      << "UnwrapPlatformFile failed " << mojo_result;
-  result_holder->Set(raw_handle);
+                                  mojo::PlatformHandle handle) {
+  *result_holder = handle.TakeHandle();
   async_call_done_event->Signal();
 }
 

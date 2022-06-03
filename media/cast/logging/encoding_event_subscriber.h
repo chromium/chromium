@@ -11,7 +11,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "media/cast/logging/logging_defines.h"
 #include "media/cast/logging/proto/raw_events.pb.h"
@@ -45,7 +44,7 @@ using PacketEventList =
 // to a storage vector. This helps keep the size of the map small and
 // lookup times fast. The storage itself is a circular buffer that will
 // overwrite old entries once it has reached the size configured by user.
-class EncodingEventSubscriber : public RawEventSubscriber {
+class EncodingEventSubscriber final : public RawEventSubscriber {
  public:
   // |event_media_type|: The subscriber will only process events that
   // corresponds to this type.
@@ -56,6 +55,9 @@ class EncodingEventSubscriber : public RawEventSubscriber {
   // If so, it will remove the oldest aggregated entry (ordered by RTP
   // timestamp).
   EncodingEventSubscriber(EventMediaType event_media_type, size_t max_frames);
+
+  EncodingEventSubscriber(const EncodingEventSubscriber&) = delete;
+  EncodingEventSubscriber& operator=(const EncodingEventSubscriber&) = delete;
 
   ~EncodingEventSubscriber() final;
 
@@ -126,8 +128,6 @@ class EncodingEventSubscriber : public RawEventSubscriber {
 
   // Set to RTP timestamp of first event encountered after a |Reset()|.
   RtpTimeTicks first_rtp_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(EncodingEventSubscriber);
 };
 
 }  // namespace cast

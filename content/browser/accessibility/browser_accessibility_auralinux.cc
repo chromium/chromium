@@ -11,16 +11,21 @@ namespace content {
 
 BrowserAccessibilityAuraLinux* ToBrowserAccessibilityAuraLinux(
     BrowserAccessibility* obj) {
-  DCHECK(!obj || obj->IsNative());
   return static_cast<BrowserAccessibilityAuraLinux*>(obj);
 }
 
 // static
-BrowserAccessibility* BrowserAccessibility::Create() {
-  return new BrowserAccessibilityAuraLinux();
+std::unique_ptr<BrowserAccessibility> BrowserAccessibility::Create(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node) {
+  return std::unique_ptr<BrowserAccessibilityAuraLinux>(
+      new BrowserAccessibilityAuraLinux(manager, node));
 }
 
-BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux() {
+BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux(
+    BrowserAccessibilityManager* manager,
+    ui::AXNode* node)
+    : BrowserAccessibility(manager, node) {
   node_ = static_cast<ui::AXPlatformNodeAuraLinux*>(
       ui::AXPlatformNode::Create(this));
 }
@@ -28,6 +33,7 @@ BrowserAccessibilityAuraLinux::BrowserAccessibilityAuraLinux() {
 BrowserAccessibilityAuraLinux::~BrowserAccessibilityAuraLinux() {
   DCHECK(node_);
   node_->Destroy();
+  node_ = nullptr;
 }
 
 ui::AXPlatformNodeAuraLinux* BrowserAccessibilityAuraLinux::GetNode() const {
@@ -51,21 +57,10 @@ void BrowserAccessibilityAuraLinux::OnDataChanged() {
 }
 
 ui::AXPlatformNode* BrowserAccessibilityAuraLinux::GetAXPlatformNode() const {
-  if (!instance_active())
-    return nullptr;
-
   return GetNode();
 }
 
-bool BrowserAccessibilityAuraLinux::IsNative() const {
-  return true;
-}
-
-base::string16 BrowserAccessibilityAuraLinux::GetText() const {
-  return GetHypertext();
-}
-
-base::string16 BrowserAccessibilityAuraLinux::GetHypertext() const {
+std::u16string BrowserAccessibilityAuraLinux::GetHypertext() const {
   return GetNode()->AXPlatformNodeAuraLinux::GetHypertext();
 }
 

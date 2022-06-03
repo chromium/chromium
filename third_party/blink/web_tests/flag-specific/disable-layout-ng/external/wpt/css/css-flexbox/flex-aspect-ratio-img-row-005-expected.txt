@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS img 1
+FAIL img 2 assert_equals: 
+<img style="height: 150px; box-sizing: border-box;" src="support/200x200-green.png" data-expected-client-width="100" data-expected-client-height="100">
+clientWidth expected 100 but got 150
+PASS img 3
+PASS img 4
+Harness: the test ran to completion.
+

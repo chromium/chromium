@@ -8,10 +8,8 @@ onload = runRepaintAndPixelTest;
 </script>
 <body style="height: 2000px">
   Tests invalidation of fixed element when scrolled in a page with empty root layer. Passes if there is no red.
-  <!-- Using 99% opacity on fixed pos element to ensure it is not automatically promoted. -->
   <div style="
     position: fixed;
-    opacity: 0.99;
     top: 50px;
     left: 0;
     width: 100px;

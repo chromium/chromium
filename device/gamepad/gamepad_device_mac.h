@@ -32,6 +32,7 @@ class GamepadDeviceMac final : public AbstractHapticGamepad {
  public:
   GamepadDeviceMac(int location_id,
                    IOHIDDeviceRef device_ref,
+                   base::StringPiece product_name,
                    int vendor_id,
                    int product_id);
   ~GamepadDeviceMac() override;

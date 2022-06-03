@@ -7,9 +7,9 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/perf/perf_result_reporter.h"
 #include "ui/accessibility/ax_node_position.h"
-#include "ui/accessibility/ax_serializable_tree.h"
-#include "ui/accessibility/ax_tree_serializer.h"
+#include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/accessibility/test_ax_tree_manager.h"
 
 namespace ui {
 
@@ -21,24 +21,23 @@ constexpr int kLaps = 5000;
 constexpr int kWarmupLaps = 5;
 constexpr char kMetricCallsPerSecondRunsPerS[] = "calls_per_second";
 
-class AXPositionPerfTest : public testing::Test {
+class AXPositionPerfTest : public ::testing::Test, public TestAXTreeManager {
  public:
   AXPositionPerfTest() = default;
+
+  AXPositionPerfTest(const AXPositionPerfTest&) = delete;
+  AXPositionPerfTest& operator=(const AXPositionPerfTest&) = delete;
+
   ~AXPositionPerfTest() override = default;
 
  protected:
   void SetUp() override;
-  void TearDown() override;
 
   perf_test::PerfResultReporter SetUpReporter(const std::string& story) {
     perf_test::PerfResultReporter reporter("AXPositionPerfTest.", story);
     reporter.RegisterImportantMetric(kMetricCallsPerSecondRunsPerS, "runs/s");
     return reporter;
   }
-
-  AXTree tree_;
-
-  DISALLOW_COPY_AND_ASSIGN(AXPositionPerfTest);
 };
 
 void AXPositionPerfTest::SetUp() {
@@ -70,7 +69,7 @@ void AXPositionPerfTest::SetUp() {
   constexpr int kStaticTextNodesStartIndex =
       kGroupNodesStartIndex + kNumberOfGroups;
 
-  AXNode::AXID current_id = 0;
+  AXNodeID current_id = 0;
   std::vector<AXNodeData> nodes;
   nodes.resize(1 + kNumberOfGroups + kNumberOfStaticTextNodes);
 
@@ -102,27 +101,15 @@ void AXPositionPerfTest::SetUp() {
   initial_state.has_tree_data = true;
   initial_state.tree_data.tree_id = AXTreeID::CreateNewAXTreeID();
   initial_state.tree_data.title = "Perftest title";
-  AXSerializableTree src_tree(initial_state);
 
-  std::unique_ptr<AXTreeSource<const AXNode*, AXNodeData, AXTreeData>>
-      tree_source(src_tree.CreateTreeSource());
-  AXTreeSerializer<const AXNode*, AXNodeData, AXTreeData> serializer(
-      tree_source.get());
-  AXTreeUpdate update;
-  serializer.SerializeChanges(src_tree.root(), &update);
-  ASSERT_TRUE(tree_.Unserialize(update));
-  AXNodePosition::SetTree(&tree_);
-}
-
-void AXPositionPerfTest::TearDown() {
-  AXNodePosition::SetTree(nullptr);
+  SetTree(std::make_unique<AXTree>(initial_state));
 }
 
 }  // namespace
 
 TEST_F(AXPositionPerfTest, AsTreePositionFromTextPosition) {
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
-      tree_.data().tree_id, /*anchor_id=*/1, /*text_offset=*/103,
+      GetTreeID(), /*anchor_id=*/1, /*text_offset=*/103,
       ax::mojom::TextAffinity::kDownstream);
 
   // The time limit is unused. Use kLaps for the check interval so the time is
@@ -139,7 +126,7 @@ TEST_F(AXPositionPerfTest, AsTreePositionFromTextPosition) {
 
 TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTextPosition) {
   TestPositionType text_position = AXNodePosition::CreateTextPosition(
-      tree_.data().tree_id, /*anchor_id=*/1, /*text_offset=*/103,
+      GetTreeID(), /*anchor_id=*/1, /*text_offset=*/103,
       ax::mojom::TextAffinity::kDownstream);
 
   // The time limit is unused. Use kLaps for the check interval so the time is
@@ -156,7 +143,7 @@ TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTextPosition) {
 
 TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTreePosition) {
   TestPositionType tree_position = AXNodePosition::CreateTreePosition(
-      tree_.data().tree_id, /*anchor_id=*/1, /*child_index=*/4);
+      GetTreeID(), /*anchor_id=*/1, /*child_index=*/4);
 
   base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
   for (int i = 0; i < kLaps + kWarmupLaps; ++i) {
@@ -165,6 +152,25 @@ TEST_F(AXPositionPerfTest, AsLeafTextPositionFromTreePosition) {
   }
 
   auto reporter = SetUpReporter("AsLeafTextPositionFromTreePosition");
+  reporter.AddResult(kMetricCallsPerSecondRunsPerS, timer.LapsPerSecond());
+}
+
+TEST_F(AXPositionPerfTest, CompareTextPositions) {
+  TestPositionType text_position_1 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), /*anchor_id=*/7, /*text_offset=*/1,
+      ax::mojom::TextAffinity::kDownstream);
+
+  TestPositionType text_position_2 = AXNodePosition::CreateTextPosition(
+      GetTreeID(), /*anchor_id=*/27, /*text_offset=*/1,
+      ax::mojom::TextAffinity::kDownstream);
+
+  base::LapTimer timer(kWarmupLaps, base::TimeDelta(), kLaps);
+  for (int i = 0; i < kLaps + kWarmupLaps; ++i) {
+    text_position_1->CompareTo(*text_position_2);
+    timer.NextLap();
+  }
+
+  auto reporter = SetUpReporter("CompareTextPositions");
   reporter.AddResult(kMetricCallsPerSecondRunsPerS, timer.LapsPerSecond());
 }
 

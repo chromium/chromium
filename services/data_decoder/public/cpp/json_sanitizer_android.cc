@@ -35,7 +35,7 @@ namespace data_decoder {
 // static
 void JsonSanitizer::Sanitize(const std::string& json, Callback callback) {
   // The JSON parser only accepts wellformed UTF-8.
-  if (!base::IsStringUTF8(json)) {
+  if (!base::IsStringUTF8AllowingNoncharacters(json)) {
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   Result::Error("Unsupported encoding")));

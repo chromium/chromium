@@ -4,12 +4,14 @@
 
 #include "media/video/h264_parser.h"
 
+#include <cstring>
 #include <limits>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "media/base/subsample_entry.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -106,7 +108,7 @@ H264SPS::H264SPS() {
 
 // Based on T-REC-H.264 7.4.2.1.1, "Sequence parameter set data semantics",
 // available from http://www.itu.int/rec/T-REC-H.264.
-base::Optional<gfx::Size> H264SPS::GetCodedSize() const {
+absl::optional<gfx::Size> H264SPS::GetCodedSize() const {
   // Interlaced frames are twice the height of each field.
   const int mb_unit = 16;
   int map_unit = frame_mbs_only_flag ? 16 : 32;
@@ -120,7 +122,7 @@ base::Optional<gfx::Size> H264SPS::GetCodedSize() const {
   if (pic_width_in_mbs_minus1 > max_mb_minus1 ||
       pic_height_in_map_units_minus1 > max_map_units_minus1) {
     DVLOG(1) << "Coded size is too large.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return gfx::Size(mb_unit * (pic_width_in_mbs_minus1 + 1),
@@ -128,10 +130,10 @@ base::Optional<gfx::Size> H264SPS::GetCodedSize() const {
 }
 
 // Also based on section 7.4.2.1.1.
-base::Optional<gfx::Rect> H264SPS::GetVisibleRect() const {
-  base::Optional<gfx::Size> coded_size = GetCodedSize();
+absl::optional<gfx::Rect> H264SPS::GetVisibleRect() const {
+  absl::optional<gfx::Size> coded_size = GetCodedSize();
   if (!coded_size)
-    return base::nullopt;
+    return absl::nullopt;
 
   if (!frame_cropping_flag)
     return gfx::Rect(coded_size.value());
@@ -160,7 +162,7 @@ base::Optional<gfx::Rect> H264SPS::GetVisibleRect() const {
       coded_size->height() / crop_unit_y < frame_crop_top_offset ||
       coded_size->height() / crop_unit_y < frame_crop_bottom_offset) {
     DVLOG(1) << "Frame cropping exceeds coded size.";
-    return base::nullopt;
+    return absl::nullopt;
   }
   int crop_left = crop_unit_x * frame_crop_left_offset;
   int crop_right = crop_unit_x * frame_crop_right_offset;
@@ -173,7 +175,7 @@ base::Optional<gfx::Rect> H264SPS::GetVisibleRect() const {
   if (coded_size->width() - crop_left <= crop_right ||
       coded_size->height() - crop_top <= crop_bottom) {
     DVLOG(1) << "Frame cropping excludes entire frame.";
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return gfx::Rect(crop_left, crop_top,
@@ -305,7 +307,7 @@ H264Parser::H264Parser() {
 H264Parser::~H264Parser() = default;
 
 void H264Parser::Reset() {
-  stream_ = NULL;
+  stream_ = nullptr;
   bytes_left_ = 0;
   encrypted_ranges_.clear();
   previous_nalu_range_.clear();

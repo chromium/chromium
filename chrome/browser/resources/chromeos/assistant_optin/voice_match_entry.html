@@ -4,9 +4,12 @@
 
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+
+<link rel="import" href="/components/common_styles/common_styles.html">
+
 <dom-module id="voice-match-entry">
   <template>
-    <link rel="stylesheet" href="../login/oobe_flex_layout.css">
+    <style include="oobe-common-styles"></style>
     <link rel="stylesheet" href="assistant_shared_styles.css">
     <link rel="stylesheet" href="voice_match_entry.css">
     <div class="flex layout horizontal center" id="container">
@@ -20,10 +23,11 @@
       </div>
       <div id="entry-text" class="content">
         <div id="active-text" active$="[[active]]">
-          <content select=".entry-content"></content>
+          <slot name="entry-content"></slot>
         </div>
-        <div id="completed-text" completed$="[[completed]]"
-            i18n-content=assistantVoiceMatchComplete></div>
+        <div id="completed-text" completed$="[[completed]]">
+          [[i18nDynamic(locale, 'assistantVoiceMatchComplete')]]
+        </div>
       </div>
     </div>
   </template>

@@ -7,6 +7,8 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/logging.h"
+
 namespace media {
 namespace cast {
 

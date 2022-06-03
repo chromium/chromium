@@ -18,7 +18,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
 
   static void SetToNull(base::File* file) { *file = base::File(); }
 
-  static mojo::ScopedHandle fd(base::File& file);
+  static mojo::PlatformHandle fd(base::File& file);
   static bool async(base::File& file) { return file.async(); }
   static bool Read(mojo_base::mojom::FileDataView data, base::File* file);
 };

@@ -4,18 +4,19 @@
 
 (async function() {
   TestRunner.addResult(`Tests the load event.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
-  UI.panels.timeline._disableCaptureJSProfileSetting.set(true);
+  UI.panels.timeline.disableCaptureJSProfileSetting.set(true);
   await PerformanceTestRunner.startTimeline();
   await TestRunner.reloadPagePromise();
   await TestRunner.evaluateInPagePromise(`
     function display() {
       return new Promise(resolve => {
-        testRunner.setCanOpenWindows(true);
+        testRunner.setPopupBlockingEnabled(false);
         var popup = window.open("resources/hello.html");
-        popup.onload = () => requestAnimationFrame(() => testRunner.capturePixelsAsyncThen(resolve));
+        popup.onload = () => requestAnimationFrame(
+            () => testRunner.updateAllLifecyclePhasesAndCompositeThen(resolve));
       });
     }
   `);

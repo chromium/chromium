@@ -30,7 +30,7 @@ class CORE_EXPORT CSSInterpolationTypesMap : public InterpolationTypesMap {
       const PropertyRegistration&);
 
  private:
-  Member<const PropertyRegistry> registry_;
+  const PropertyRegistry* registry_;
   bool allow_all_animations_;
 };
 

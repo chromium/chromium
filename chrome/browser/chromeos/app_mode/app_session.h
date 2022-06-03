@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_session_plugin_handler_delegate.h"
 
 class Profile;
@@ -31,19 +30,32 @@ class KioskSessionPluginHandler;
 class AppSession : public KioskSessionPluginHandlerDelegate {
  public:
   AppSession();
+  explicit AppSession(base::OnceClosure attempt_user_exit);
+  AppSession(const AppSession&) = delete;
+  AppSession& operator=(const AppSession&) = delete;
   ~AppSession() override;
 
   // Initializes an app session.
-  void Init(Profile* profile, const std::string& app_id);
+  virtual void Init(Profile* profile, const std::string& app_id);
 
   // Initializes an app session for Web kiosk.
-  void InitForWebKiosk(Browser* browser);
+  virtual void InitForWebKiosk(Browser* browser);
 
   // Invoked when GuestViewManager adds a guest web contents.
   void OnGuestAdded(content::WebContents* guest_web_contents);
 
   // Replaces chrome::AttemptUserExit() by |closure|.
   void SetAttemptUserExitForTesting(base::OnceClosure closure);
+
+  Browser* GetSettingsBrowserForTesting() { return settings_browser_; }
+  void SetOnHandleBrowserCallbackForTesting(base::RepeatingClosure closure);
+
+ protected:
+  // Set the |profile_| object.
+  void SetProfile(Profile* profile);
+
+  // Create a |browser_window_handler_| object.
+  void CreateBrowserWindowHandler(Browser* browser);
 
  private:
   // AppWindowHandler watches for app window and exits the session when the
@@ -69,9 +81,16 @@ class AppSession : public KioskSessionPluginHandlerDelegate {
   std::unique_ptr<BrowserWindowHandler> browser_window_handler_;
   std::unique_ptr<KioskSessionPluginHandler> plugin_handler_;
 
-  base::OnceClosure attempt_user_exit_;
+  // Browser in which settings are shown, restricted by
+  // KioskSettingsNavigationThrottle.
+  Browser* settings_browser_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(AppSession);
+  Profile* profile_ = nullptr;
+
+  base::OnceClosure attempt_user_exit_;
+  // Is called whenever a new browser creation was handled by the
+  // BrowserWindowHandler.
+  base::RepeatingClosure on_handle_browser_callback_;
 };
 
 }  // namespace chromeos

@@ -5,7 +5,8 @@
 #ifndef UI_VIEWS_CONTROLS_BUTTON_BUTTON_CONTROLLER_H_
 #define UI_VIEWS_CONTROLS_BUTTON_BUTTON_CONTROLLER_H_
 
-#include "base/macros.h"
+#include <memory>
+
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
 
@@ -17,6 +18,10 @@ class VIEWS_EXPORT ButtonController {
  public:
   ButtonController(Button* button,
                    std::unique_ptr<ButtonControllerDelegate> delegate);
+
+  ButtonController(const ButtonController&) = delete;
+  ButtonController& operator=(const ButtonController&) = delete;
+
   virtual ~ButtonController();
 
   // An enum describing the events on which a button should notify its listener.
@@ -48,7 +53,6 @@ class VIEWS_EXPORT ButtonController {
   virtual void UpdateAccessibleNodeData(ui::AXNodeData* node_data);
 
   // Methods that parallel respective methods in Button:
-  virtual void OnStateChanged(Button::ButtonState old_state);
   virtual bool IsTriggerableEvent(const ui::Event& event);
 
  protected:
@@ -64,8 +68,6 @@ class VIEWS_EXPORT ButtonController {
 
   // The event on which the button's listener should be notified.
   NotifyAction notify_action_ = NotifyAction::kOnRelease;
-
-  DISALLOW_COPY_AND_ASSIGN(ButtonController);
 };
 
 }  // namespace views

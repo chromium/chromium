@@ -19,7 +19,6 @@
 # ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
 # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit tests for filter.py."""
 
 import unittest
@@ -51,7 +50,6 @@ from blinkpy.style.filter import FilterConfiguration
 
 
 class ValidateFilterRulesTest(unittest.TestCase):
-
     """Tests validate_filter_rules() function."""
 
     def test_validate_filter_rules(self):
@@ -66,11 +64,7 @@ class ValidateFilterRulesTest(unittest.TestCase):
             "+xxx",
         ]
 
-        good_rules = [
-            "+tabs",
-            "-tabs",
-            "+build"
-        ]
+        good_rules = ["+tabs", "-tabs", "+build"]
 
         for rule in bad_rules:
             with self.assertRaises(ValueError):
@@ -82,7 +76,6 @@ class ValidateFilterRulesTest(unittest.TestCase):
 
 
 class CategoryFilterTest(unittest.TestCase):
-
     """Tests CategoryFilter class."""
 
     def test_init(self):
@@ -144,14 +137,14 @@ class CategoryFilterTest(unittest.TestCase):
 
 
 class FilterConfigurationTest(unittest.TestCase):
-
     """Tests FilterConfiguration class."""
 
     def _config(self, base_rules, path_specific, user_rules):
         """Return a FilterConfiguration instance."""
-        return FilterConfiguration(base_rules=base_rules,
-                                   path_specific=path_specific,
-                                   user_rules=user_rules)
+        return FilterConfiguration(
+            base_rules=base_rules,
+            path_specific=path_specific,
+            user_rules=user_rules)
 
     def test_init(self):
         """Test __init__ method."""
@@ -189,12 +182,12 @@ class FilterConfigurationTest(unittest.TestCase):
         path_specific = [(["path"], ["+a"])]
         user_rules = ["+"]
 
-        self.assertFalse(config.__eq__(FilterConfiguration(
-            base_rules=base_rules)))
-        self.assertFalse(config.__eq__(FilterConfiguration(
-            path_specific=path_specific)))
-        self.assertFalse(config.__eq__(FilterConfiguration(
-            user_rules=user_rules)))
+        self.assertFalse(
+            config.__eq__(FilterConfiguration(base_rules=base_rules)))
+        self.assertFalse(
+            config.__eq__(FilterConfiguration(path_specific=path_specific)))
+        self.assertFalse(
+            config.__eq__(FilterConfiguration(user_rules=user_rules)))
 
     def test_ne(self):
         """Test __ne__ method."""
@@ -220,8 +213,7 @@ class FilterConfigurationTest(unittest.TestCase):
     def test_path_specific(self):
         """Test effect of path_rules_specifier on should_check()."""
         base_rules = ["-"]
-        path_specific = [(["path1"], ["+b"]),
-                         (["path2"], ["+c"])]
+        path_specific = [(["path1"], ["+b"]), (["path2"], ["+c"])]
         user_rules = []
 
         config = self._config(base_rules, path_specific, user_rules)

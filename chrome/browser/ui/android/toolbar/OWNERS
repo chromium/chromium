@@ -1,0 +1,5 @@
+mdjones@chromium.org
+tedchoc@chromium.org
+twellington@chromium.org
+
+per-file TabSwitcher*=file://chrome/android/java/src/org/chromium/chrome/browser/tasks/OWNERS

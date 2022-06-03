@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace content {
@@ -26,15 +25,15 @@ class CrossThreadProtocolCallback {
 
   template <typename... Args>
   void sendSuccess(Args&&... args) {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&ProtocolCallback::sendSuccess, std::move(callback_),
                        std::forward<Args>(args)...));
   }
 
   void sendFailure(protocol::DispatchResponse response) {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&ProtocolCallback::sendFailure,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ProtocolCallback::sendFailure,
                                   std::move(callback_), std::move(response)));
   }
 

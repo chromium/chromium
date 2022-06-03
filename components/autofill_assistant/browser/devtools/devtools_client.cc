@@ -10,14 +10,15 @@
 #include "components/autofill_assistant/browser/devtools/devtools_client.h"
 
 #include "base/bind.h"
-#include "base/callback_forward.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/task/post_task.h"
+#include "base/strings/strcat.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace autofill_assistant {
+// Error code indicating that a session-id lookup has failed.
+constexpr long kSessionIdLookupFailedError = -10;
 
 DevtoolsClient::DevtoolsClient(
     scoped_refptr<content::DevToolsAgentHost> agent_host)
@@ -25,14 +26,11 @@ DevtoolsClient::DevtoolsClient(
       input_domain_(this),
       dom_domain_(this),
       runtime_domain_(this),
-      network_domain_(this),
       target_domain_(this),
-      renderer_crashed_(false),
       next_message_id_(0),
       frame_tracker_(this) {
-  browser_main_thread_ =
-      base::CreateSingleThreadTaskRunner({content::BrowserThread::UI});
-  agent_host_->AttachClient(this);
+  browser_main_thread_ = content::GetUIThreadTaskRunner({});
+  agent_host_->AttachClientWithoutWakeLock(this);
   frame_tracker_.Start();
 }
 
@@ -53,10 +51,6 @@ runtime::Domain* DevtoolsClient::GetRuntime() {
   return &runtime_domain_;
 }
 
-network::Domain* DevtoolsClient::GetNetwork() {
-  return &network_domain_;
-}
-
 target::ExperimentalDomain* DevtoolsClient::GetTarget() {
   return &target_domain_;
 }
@@ -66,7 +60,22 @@ void DevtoolsClient::SendMessage(
     std::unique_ptr<base::Value> params,
     const std::string& optional_node_frame_id,
     base::OnceCallback<void(const ReplyStatus&, const base::Value&)> callback) {
-  SendMessageWithParams(method, std::move(params), optional_node_frame_id,
+  std::string optional_session_id =
+      GetSessionIdForFrame(optional_node_frame_id);
+  if (!optional_node_frame_id.empty() && optional_session_id.empty()) {
+    // Early-fail now to avoid sending the message to the main frame instead.
+    ReplyStatus status;
+    status.error_code = kSessionIdLookupFailedError;
+    status.error_message =
+        base::StrCat({"Failed to look up session-id for node-frame-id ",
+                      optional_node_frame_id,
+                      ". This indicates either that the frame crashed, or a "
+                      "bug in session handling."});
+    std::move(callback).Run(status, base::Value());
+    return;
+  }
+
+  SendMessageWithParams(method, std::move(params), optional_session_id,
                         std::move(callback));
 }
 
@@ -74,7 +83,15 @@ void DevtoolsClient::SendMessage(const char* method,
                                  std::unique_ptr<base::Value> params,
                                  const std::string& optional_node_frame_id,
                                  base::OnceClosure callback) {
-  SendMessageWithParams(method, std::move(params), optional_node_frame_id,
+  std::string optional_session_id =
+      GetSessionIdForFrame(optional_node_frame_id);
+  if (!optional_node_frame_id.empty() && optional_session_id.empty()) {
+    // Early-fail now to avoid sending the message to the main frame instead.
+    std::move(callback).Run();
+    return;
+  }
+
+  SendMessageWithParams(method, std::move(params), optional_session_id,
                         std::move(callback));
 }
 
@@ -82,20 +99,16 @@ template <typename CallbackType>
 void DevtoolsClient::SendMessageWithParams(
     const char* method,
     std::unique_ptr<base::Value> params,
-    const std::string& optional_node_frame_id,
+    const std::string& optional_session_id,
     CallbackType callback) {
   base::DictionaryValue message;
   message.SetString("method", method);
   message.Set("params", std::move(params));
 
-  std::string optional_session_id =
-      GetSessionIdForFrame(optional_node_frame_id);
   if (!optional_session_id.empty()) {
     message.SetString("sessionId", optional_session_id);
   }
 
-  if (renderer_crashed_)
-    return;
   int id = next_message_id_;
   next_message_id_ += 2;  // We only send even numbered messages.
   message.SetInteger("id", id);
@@ -104,8 +117,8 @@ void DevtoolsClient::SendMessageWithParams(
   std::string json_message;
   base::JSONWriter::Write(message, &json_message);
 
-  bool success = agent_host_->DispatchProtocolMessage(this, json_message);
-  DCHECK(success);
+  agent_host_->DispatchProtocolMessage(
+      this, base::as_bytes(base::make_span(json_message)));
 }
 
 void DevtoolsClient::RegisterEventHandler(
@@ -122,11 +135,13 @@ void DevtoolsClient::UnregisterEventHandler(const char* method) {
 
 void DevtoolsClient::DispatchProtocolMessage(
     content::DevToolsAgentHost* agent_host,
-    const std::string& json_message) {
+    base::span<const uint8_t> json_message) {
   DCHECK_EQ(agent_host, agent_host_.get());
 
+  base::StringPiece str_message(
+      reinterpret_cast<const char*>(json_message.data()), json_message.size());
   std::unique_ptr<base::Value> message =
-      base::JSONReader::ReadDeprecated(json_message, base::JSON_PARSE_RFC);
+      base::JSONReader::ReadDeprecated(str_message, base::JSON_PARSE_RFC);
   DCHECK(message && message->is_dict());
 
   const base::DictionaryValue* message_dict;
@@ -137,7 +152,7 @@ void DevtoolsClient::DispatchProtocolMessage(
                 ? DispatchMessageReply(std::move(message), *message_dict)
                 : DispatchEvent(std::move(message), *message_dict);
   if (!success)
-    DVLOG(2) << "Unhandled protocol message: " << json_message;
+    DVLOG(2) << "Unhandled protocol message: " << str_message;
 }
 
 bool DevtoolsClient::DispatchMessageReply(
@@ -220,8 +235,6 @@ bool DevtoolsClient::DispatchEvent(std::unique_ptr<base::Value> owning_message,
   if (!method_value)
     return false;
   const std::string& method = method_value->GetString();
-  if (method == "Inspector.targetCrashed")
-    renderer_crashed_ = true;
   EventHandlerMap::const_iterator it = event_handlers_.find(method);
   if (it == event_handlers_.end()) {
     if (method != "Inspector.targetCrashed")
@@ -276,7 +289,6 @@ void DevtoolsClient::FillReplyStatusFromErrorDict(
 
 void DevtoolsClient::AgentHostClosed(content::DevToolsAgentHost* agent_host) {
   // Agent host is not expected to be closed when this object is alive.
-  renderer_crashed_ = true;
 }
 
 std::string DevtoolsClient::GetSessionIdForFrame(

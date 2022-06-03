@@ -15,7 +15,5 @@ source_set("7zS2_source") {
     ".",
     "../..",
   ]
-  public_deps = [
-    "//third_party/lzma_sdk:lzma_sdk",
-  ]
+  public_deps = [ "//third_party/lzma_sdk:lzma_sdk" ]
 }

@@ -7,6 +7,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "media/capture/capture_export.h"
+#include "media/capture/mojom/video_capture_buffer.mojom.h"
 #include "media/capture/mojom/video_capture_types.mojom.h"
 #include "media/capture/video/video_capture_device.h"
 #include "media/capture/video_capture_types.h"
@@ -87,6 +88,15 @@ class CAPTURE_EXPORT VideoCaptureBufferPool
   // pool without passing on to the consumer. This effectively is the opposite
   // of ReserveForProducer().
   virtual void RelinquishProducerReservation(int buffer_id) = 0;
+
+  // Reserve a buffer id to use for a buffer specified by |handle| (which was
+  // allocated by some external source). This call cannot fail (no allocation is
+  // done). It may return a new id, or may reuse an existing id, if the buffer
+  // represented by |handle| is already being tracked. The behavior of
+  // |buffer_id_to_drop| is the same as ReserveForProducer.
+  virtual int ReserveIdForExternalBuffer(
+      const gfx::GpuMemoryBufferHandle& handle,
+      int* buffer_id_to_drop) = 0;
 
   // Returns a snapshot of the current number of buffers in-use divided by the
   // maximum |count_|.

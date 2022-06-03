@@ -21,6 +21,8 @@
 #include "base/threading/thread_checker.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
 
@@ -44,7 +46,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
 
   BluetoothGattDiscovererWinrt(
       Microsoft::WRL::ComPtr<
-          ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice> ble_device);
+          ABI::Windows::Devices::Bluetooth::IBluetoothLEDevice> ble_device,
+      absl::optional<BluetoothUUID> service_uuid);
+
+  BluetoothGattDiscovererWinrt(const BluetoothGattDiscovererWinrt&) = delete;
+  BluetoothGattDiscovererWinrt& operator=(const BluetoothGattDiscovererWinrt&) =
+      delete;
+
   ~BluetoothGattDiscovererWinrt();
 
   // Note: In order to avoid running |callback| multiple times on errors,
@@ -94,6 +102,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
       service_to_characteristics_map_;
   base::flat_map<uint16_t, GattDescriptorList>
       characteristic_to_descriptors_map_;
+  absl::optional<BluetoothUUID> service_uuid_;
   size_t num_services_ = 0;
   size_t num_characteristics_ = 0;
 
@@ -102,8 +111,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattDiscovererWinrt {
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothGattDiscovererWinrt> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattDiscovererWinrt);
 };
 
 }  // namespace device

@@ -8,7 +8,8 @@
 #include <time.h>
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "components/webdata/common/web_database.h"
 #include "sql/statement.h"
@@ -139,8 +140,7 @@ bool WebAppManifestSectionTable::AddWebAppManifest(
     s2.BindInt64(index++, section.min_version);
     std::unique_ptr<std::vector<uint8_t>> serialized_fingerprints =
         SerializeFingerPrints(section.fingerprints);
-    s2.BindBlob(index, serialized_fingerprints->data(),
-                serialized_fingerprints->size());
+    s2.BindBlob(index, *serialized_fingerprints);
     if (!s2.Run())
       return false;
     s2.Reset(true);

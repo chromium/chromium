@@ -31,8 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_INSPECTOR_INDEXED_DB_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_INDEXEDDB_INSPECTOR_INDEXED_DB_AGENT_H_
 
+#include <memory>
+
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
-#include "third_party/blink/renderer/core/inspector/protocol/IndexedDB.h"
+#include "third_party/blink/renderer/core/inspector/protocol/indexed_db.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -47,7 +49,7 @@ class MODULES_EXPORT InspectorIndexedDBAgent final
  public:
   InspectorIndexedDBAgent(InspectedFrames*, v8_inspector::V8InspectorSession*);
   ~InspectorIndexedDBAgent() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void Restore() override;
   void DidCommitLoadForLocalFrame(LocalFrame*) override;

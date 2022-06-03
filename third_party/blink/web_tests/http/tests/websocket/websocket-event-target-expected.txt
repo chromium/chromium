@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 13: WebSocket connection to 'ws://127.0.0.1:8880/simple' failed: WebSocket is closed before the connection is established.
 Make sure WebSocket object acts as EventTarget.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".

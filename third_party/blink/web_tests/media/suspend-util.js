@@ -63,7 +63,7 @@ function preloadMetadataSuspendTest(t, video, src, expectSuspend) {
   });
 
   if (expectSuspend == UPON_VISIBILITY) {
-    video.requestAnimationFrame(t.step_func(function() {
+    video.requestVideoFrameCallback(t.step_func(function() {
       assert_false(
           internals.isMediaElementSuspended(video),
           'Element should not have been suspended by the first frame.');

@@ -7,7 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "base/mac/mac_util.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/task/current_thread.h"
 
 // Only available since 10.12.
 @interface NSWorkspace (AvailableSinceSierra)
@@ -25,8 +25,7 @@ bool Animation::ShouldRenderRichAnimationImpl() {
 bool Animation::ScrollAnimationsEnabledBySystem() {
   // Because of sandboxing, OS settings should only be queried from the browser
   // process.
-  DCHECK(base::MessageLoopCurrentForUI::IsSet() ||
-         base::MessageLoopCurrentForIO::IsSet());
+  DCHECK(base::CurrentUIThread::IsSet() || base::CurrentIOThread::IsSet());
 
   bool enabled = false;
   id value = nil;

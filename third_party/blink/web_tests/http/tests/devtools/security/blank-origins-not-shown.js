@@ -4,13 +4,14 @@
 
 (async function() {
   TestRunner.addResult(`Tests that blank origins aren't shown in the security panel origins list.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
-  var request1 = new SDK.NetworkRequest(0, 'https://foo.test/foo.jpg', 'https://foo.test', 0, 0, null);
+  var request1 = SDK.NetworkRequest.create(
+      0, 'https://foo.test/foo.jpg', 'https://foo.test', 0, 0, null);
   SecurityTestRunner.dispatchRequestFinished(request1);
 
-  var request2 = new SDK.NetworkRequest(
+  var request2 = SDK.NetworkRequest.create(
       0,
       'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAkAAAAKCAYAAABmBXS+AAAAPElEQVR42mNgQAMZGRn/GfABkIIdO3b8x6kQpgAEsCpEVgADKAqxKcBQCCLwARRFIBodYygiyiSCighhAO4e2jskhrm3AAAAAElFTkSuQmCC',
       'https://foo.test', 0, 0, null);

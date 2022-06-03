@@ -27,10 +27,11 @@ class BookmarkNode;
 
 // Does not actually create a folder/item but just sets its ID, the folder is
 // created in insertInBookmarksFolder: in the corresponding bookmarks folder.
-- (id)init;
+- (instancetype)init;
 
 // Does not make a folder/item but instead uses an existing one.
-- (id)initWithBookmarkNode:(const bookmarks::BookmarkNode*)aBookmarkNode;
+- (instancetype)initWithBookmarkNode:
+    (const bookmarks::BookmarkNode*)aBookmarkNode;
 
 // Assigns a node, sets its unique ID and also copies temporary values.
 - (void)setBookmarkNode:(const bookmarks::BookmarkNode*)aBookmarkNode;

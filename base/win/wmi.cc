@@ -36,9 +36,9 @@ bool CreateLocalWmiConnection(bool set_blanket,
     return false;
 
   ComPtr<IWbemServices> wmi_services_r;
-  hr =
-      wmi_locator->ConnectServer(ScopedBstr(L"ROOT\\CIMV2"), nullptr, nullptr,
-                                 nullptr, 0, nullptr, nullptr, &wmi_services_r);
+  hr = wmi_locator->ConnectServer(ScopedBstr(L"ROOT\\CIMV2").Get(), nullptr,
+                                  nullptr, nullptr, 0, nullptr, nullptr,
+                                  &wmi_services_r);
   if (FAILED(hr))
     return false;
 
@@ -64,13 +64,13 @@ bool CreateWmiClassMethodObject(IWbemServices* wmi_services,
   ScopedBstr b_method_name(method_name);
   ComPtr<IWbemClassObject> class_object;
   HRESULT hr;
-  hr =
-      wmi_services->GetObject(b_class_name, 0, nullptr, &class_object, nullptr);
+  hr = wmi_services->GetObject(b_class_name.Get(), 0, nullptr, &class_object,
+                               nullptr);
   if (FAILED(hr))
     return false;
 
   ComPtr<IWbemClassObject> params_def;
-  hr = class_object->GetMethod(b_method_name, 0, &params_def, nullptr);
+  hr = class_object->GetMethod(b_method_name.Get(), 0, &params_def, nullptr);
   if (FAILED(hr))
     return false;
 
@@ -80,7 +80,7 @@ bool CreateWmiClassMethodObject(IWbemServices* wmi_services,
     return false;
   }
 
-  hr = params_def->SpawnInstance(0, class_instance->GetAddressOf());
+  hr = params_def->SpawnInstance(0, &(*class_instance));
   return SUCCEEDED(hr);
 }
 
@@ -112,7 +112,7 @@ bool WmiLaunchProcess(const std::wstring& command_line, int* process_id) {
 
   ComPtr<IWbemClassObject> out_params;
   HRESULT hr = wmi_local->ExecMethod(
-      ScopedBstr(class_name), ScopedBstr(method_name), 0, nullptr,
+      ScopedBstr(class_name).Get(), ScopedBstr(method_name).Get(), 0, nullptr,
       process_create.Get(), &out_params, nullptr);
   if (FAILED(hr))
     return false;
@@ -143,44 +143,9 @@ WmiComputerSystemInfo WmiComputerSystemInfo::Get() {
   if (!CreateLocalWmiConnection(true, &services))
     return info;
 
-  info.PopulateModelAndManufacturer(services);
   info.PopulateSerialNumber(services);
 
   return info;
-}
-
-void WmiComputerSystemInfo::PopulateModelAndManufacturer(
-    const ComPtr<IWbemServices>& services) {
-  static constexpr WStringPiece query_computer_system =
-      L"SELECT Manufacturer,Model FROM Win32_ComputerSystem";
-
-  ComPtr<IEnumWbemClassObject> enumerator_computer_system;
-  HRESULT hr =
-      services->ExecQuery(ScopedBstr(L"WQL"), ScopedBstr(query_computer_system),
-                          WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-                          nullptr, &enumerator_computer_system);
-  if (FAILED(hr) || !enumerator_computer_system.Get())
-    return;
-
-  ComPtr<IWbemClassObject> class_object;
-  ULONG items_returned = 0;
-  hr = enumerator_computer_system->Next(WBEM_INFINITE, 1, &class_object,
-                                        &items_returned);
-  if (FAILED(hr) || !items_returned)
-    return;
-
-  ScopedVariant manufacturer;
-  hr = class_object->Get(L"Manufacturer", 0, manufacturer.Receive(), nullptr,
-                         nullptr);
-  if (SUCCEEDED(hr) && manufacturer.type() == VT_BSTR) {
-    manufacturer_.assign(V_BSTR(manufacturer.ptr()),
-                         ::SysStringLen(V_BSTR(manufacturer.ptr())));
-  }
-  ScopedVariant model;
-  hr = class_object->Get(L"Model", 0, model.Receive(), nullptr, nullptr);
-  if (SUCCEEDED(hr) && model.type() == VT_BSTR) {
-    model_.assign(V_BSTR(model.ptr()), ::SysStringLen(V_BSTR(model.ptr())));
-  }
 }
 
 void WmiComputerSystemInfo::PopulateSerialNumber(
@@ -189,10 +154,10 @@ void WmiComputerSystemInfo::PopulateSerialNumber(
       L"SELECT SerialNumber FROM Win32_Bios";
 
   ComPtr<IEnumWbemClassObject> enumerator_bios;
-  HRESULT hr =
-      services->ExecQuery(ScopedBstr(L"WQL"), ScopedBstr(query_bios),
-                          WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY,
-                          nullptr, &enumerator_bios);
+  HRESULT hr = services->ExecQuery(
+      ScopedBstr(L"WQL").Get(), ScopedBstr(query_bios).Get(),
+      WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr,
+      &enumerator_bios);
   if (FAILED(hr) || !enumerator_bios.Get())
     return;
 

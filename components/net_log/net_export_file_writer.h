@@ -13,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -78,12 +77,15 @@ class NetExportFileWriter {
     bool log_exists;
   };
 
-  using FilePathCallback = base::Callback<void(const base::FilePath&)>;
-  using DirectoryGetter = base::Callback<bool(base::FilePath*)>;
+  using FilePathCallback = base::OnceCallback<void(const base::FilePath&)>;
+  using DirectoryGetter = base::RepeatingCallback<bool(base::FilePath*)>;
 
   // Constructs a NetExportFileWriter. Only one instance is created in browser
   // process.
   NetExportFileWriter();
+
+  NetExportFileWriter(const NetExportFileWriter&) = delete;
+  NetExportFileWriter& operator=(const NetExportFileWriter&) = delete;
 
   ~NetExportFileWriter();
 
@@ -136,7 +138,7 @@ class NetExportFileWriter {
   //
   // |path_callback| will be executed at the end of GetFilePathToCompletedLog()
   // asynchronously.
-  void GetFilePathToCompletedLog(const FilePathCallback& path_callback) const;
+  void GetFilePathToCompletedLog(FilePathCallback path_callback) const;
 
   // Converts to/from the string representation of a capture mode used by
   // net_export.js.
@@ -224,10 +226,8 @@ class NetExportFileWriter {
   DirectoryGetter default_log_base_dir_getter_;
 
   base::WeakPtrFactory<NetExportFileWriter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(NetExportFileWriter);
 };
 
 }  // namespace net_log
 
-#endif  // COMPONENTS_NET_LOG_NET_LOG_FILE_WRITER_H_
+#endif  // COMPONENTS_NET_LOG_NET_EXPORT_FILE_WRITER_H_

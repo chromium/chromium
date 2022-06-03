@@ -12,12 +12,12 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "extensions/browser/api/declarative_net_request/ruleset_install_pref.h"
 #include "extensions/browser/preload_check.h"
 #include "extensions/common/manifest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Profile;
 
@@ -38,6 +38,9 @@ class UnpackedInstaller
   using CompletionCallback = base::OnceCallback<void(const Extension* extension,
                                                      const base::FilePath&,
                                                      const std::string&)>;
+
+  UnpackedInstaller(const UnpackedInstaller&) = delete;
+  UnpackedInstaller& operator=(const UnpackedInstaller&) = delete;
 
   static scoped_refptr<UnpackedInstaller> Create(
       ExtensionService* extension_service);
@@ -76,6 +79,14 @@ class UnpackedInstaller
   void set_completion_callback(CompletionCallback callback) {
     callback_ = std::move(callback);
   }
+
+  void set_allow_file_access(bool allow) { allow_file_access_ = allow; }
+
+  void set_allow_incognito_access(bool allow) {
+    allow_incognito_access_ = allow;
+  }
+
+  void set_install_param(const std::string& param) { install_param_ = param; }
 
  private:
   friend class base::RefCountedThreadSafe<UnpackedInstaller>;
@@ -120,14 +131,14 @@ class UnpackedInstaller
   // is allowed. Loads the extension, validates extension locales and persists
   // the ruleset for the Declarative Net Request API, if needed. In case of an
   // error, returns false and populates |error|.
-  bool LoadExtension(Manifest::Location location,
+  bool LoadExtension(mojom::ManifestLocation location,
                      int flags,
                      std::string* error);
 
-  // Reads the Declarative Net Request JSON ruleset for the extension, if it
-  // provided one, and persists the indexed ruleset. Returns false and populates
-  // |error| in case of an error. Should be called on a sequence where file IO
-  // is allowed.
+  // Reads the Declarative Net Request JSON rulesets for the extension, if it
+  // provided any, and persists the indexed rulesets. Returns false and
+  // populates |error| in case of an error. Should be called on a sequence where
+  // file IO is allowed.
   bool IndexAndPersistRulesIfNeeded(std::string* error);
 
   const Extension* extension() { return extension_.get(); }
@@ -159,13 +170,19 @@ class UnpackedInstaller
   // Runs the above checks.
   std::unique_ptr<PreloadCheckGroup> check_group_;
 
-  // The checksum for the indexed ruleset corresponding to the Declarative Net
-  // Request API.
-  base::Optional<int> dnr_ruleset_checksum_;
+  // Install prefs needed for the Declarative Net Request API.
+  declarative_net_request::RulesetInstallPrefs ruleset_install_prefs_;
 
   CompletionCallback callback_;
 
-  DISALLOW_COPY_AND_ASSIGN(UnpackedInstaller);
+  // Override default file access.
+  absl::optional<bool> allow_file_access_;
+
+  // Override default incognito access.
+  absl::optional<bool> allow_incognito_access_;
+
+  // Specify an install param.
+  absl::optional<std::string> install_param_;
 };
 
 }  // namespace extensions

@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Module to get random numbers, strings, etc.
 
    The values returned by the various functions can be replaced in
@@ -22,7 +21,6 @@ from resources import fuzzy_types
 
 import gatt_aliases
 import wbt_fakes
-
 
 # Strings that are used to generate the beginning of a test. The replacement
 # fields are replaced by Get*Base() functions below to generate valid test
@@ -102,8 +100,8 @@ def _get_array_of_random_ints(max_length, max_value):
     length = utils.UniformExpoInteger(0, math.log(max_length, 2))
     exp_max_value = math.log(max_value, 2)
     return '[{}]'.format(', '.join(
-        str(utils.UniformExpoInteger(0, exp_max_value)) for _ in xrange(length))
-    )
+        str(utils.UniformExpoInteger(0, exp_max_value))
+        for _ in xrange(length)))
 
 
 def _get_typed_array():
@@ -133,10 +131,10 @@ def _get_typed_array():
       A string made up of a randomly chosen type and argument type from the
       lists above.
     """
-    array_type = random.choice(['Int8Array', 'Int16Array', 'Int32Array',
-                                'Uint8Array', 'Uint16Array', 'Uint32Array',
-                                'Uint8ClampedArray', 'Float32Array',
-                                'Float64Array'])
+    array_type = random.choice([
+        'Int8Array', 'Int16Array', 'Int32Array', 'Uint8Array', 'Uint16Array',
+        'Uint32Array', 'Uint8ClampedArray', 'Float32Array', 'Float64Array'
+    ])
 
     # Choose an argument type at random.
     arguments = random.choice([
@@ -147,13 +145,13 @@ def _get_typed_array():
         # typedArray e.g. new Uint8Array([1,2,3])
         _get_typed_array,
         # object e.g. [1,2,3]
-        lambda: _get_array_of_random_ints(max_length=1000, max_value=2 ** 64),
+        lambda: _get_array_of_random_ints(max_length=1000, max_value=2**64),
         # buffer e.g. new Uint8Array(10).buffer
         lambda: _get_typed_array() + '.buffer',
     ])
 
-    return 'new {array_type}({arguments})'.format(array_type=array_type,
-                                                  arguments=arguments())
+    return 'new {array_type}({arguments})'.format(
+        array_type=array_type, arguments=arguments())
 
 
 def GetAdvertisedServiceUUIDFromFakes():
@@ -343,8 +341,8 @@ def get_characteristics_retrieved_base():
     optional_service_uuid = random.choice(['', service_uuid])
     optional_characteristic_uuid = random.choice(['', characteristic_uuid])
 
-    services_base = random.choice([SERVICE_RETRIEVED_BASE,
-                                   SERVICES_RETRIEVED_BASE])
+    services_base = random.choice(
+        [SERVICE_RETRIEVED_BASE, SERVICES_RETRIEVED_BASE])
 
     characteristics_base = services_base + random.choice([
         CHARACTERISTIC_RETRIEVED_BASE,
@@ -360,8 +358,10 @@ def get_characteristics_retrieved_base():
 
 
 def get_get_primary_services_call():
-    call = random.choice([u'getPrimaryService({service_uuid})',
-                          u'getPrimaryServices({optional_service_uuid})'])
+    call = random.choice([
+        u'getPrimaryService({service_uuid})',
+        u'getPrimaryServices({optional_service_uuid})'
+    ])
 
     return call.format(
         service_uuid=get_service_uuid(),
@@ -410,7 +410,7 @@ def get_reload_id():
 
 def get_buffer_source():
     """Returns a new BufferSource.
-    https://heycam.github.io/webidl/#BufferSource
+    https://webidl.spec.whatwg.org/#BufferSource
     """
 
     choice = random.choice(['ArrayBuffer', 'DataView', 'TypedArray'])

@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gfx/geometry/quad_f.h"
 
 namespace viz {

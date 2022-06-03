@@ -4,8 +4,8 @@
 
 #include "chromeos/components/sync_wifi/fake_pending_network_configuration_tracker.h"
 
+#include "base/containers/contains.h"
 #include "base/guid.h"
-#include "base/stl_util.h"
 #include "chromeos/components/sync_wifi/pending_network_configuration_update.h"
 
 namespace chromeos {
@@ -20,7 +20,7 @@ FakePendingNetworkConfigurationTracker::
 
 std::string FakePendingNetworkConfigurationTracker::TrackPendingUpdate(
     const NetworkIdentifier& id,
-    const base::Optional<sync_pb::WifiConfigurationSpecificsData>& specifics) {
+    const absl::optional<sync_pb::WifiConfigurationSpecifics>& specifics) {
   std::string change_id = base::GenerateGUID();
   id_to_pending_update_map_.emplace(
       id, PendingNetworkConfigurationUpdate(id, change_id, specifics,
@@ -40,14 +40,13 @@ void FakePendingNetworkConfigurationTracker::MarkComplete(
 }
 
 void FakePendingNetworkConfigurationTracker::IncrementCompletedAttempts(
-    const std::string& change_id,
+    const std::string& change_guid,
     const NetworkIdentifier& id) {
-  base::Optional<PendingNetworkConfigurationUpdate> existing_update =
-      GetPendingUpdate(change_id, id);
-  id_to_pending_update_map_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(id),
-      std::forward_as_tuple(id, change_id, existing_update->specifics(),
-                            existing_update->completed_attempts() + 1));
+  PendingNetworkConfigurationUpdate& existing_update =
+      id_to_pending_update_map_.at(id);
+  existing_update.SetCompletedAttemptsForTesting(
+      existing_update.completed_attempts() + 1);
+
   id_to_completed_attempts_map_[id]++;
 }
 
@@ -59,13 +58,13 @@ FakePendingNetworkConfigurationTracker::GetPendingUpdates() {
   return list;
 }
 
-base::Optional<PendingNetworkConfigurationUpdate>
+absl::optional<PendingNetworkConfigurationUpdate>
 FakePendingNetworkConfigurationTracker::GetPendingUpdate(
     const std::string& change_guid,
     const NetworkIdentifier& id) {
   if (!base::Contains(id_to_pending_update_map_, id) ||
       id_to_pending_update_map_.at(id).change_guid() != change_guid) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return id_to_pending_update_map_.at(id);

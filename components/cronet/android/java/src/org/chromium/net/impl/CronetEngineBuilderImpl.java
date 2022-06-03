@@ -93,12 +93,12 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
     private int mThreadPriority = INVALID_THREAD_PRIORITY;
 
     /**
-     * Default config enables SPDY, disables QUIC, SDCH and HTTP cache.
+     * Default config enables SPDY and QUIC, disables SDCH and HTTP cache.
      * @param context Android {@link Context} for engine to use.
      */
     public CronetEngineBuilderImpl(Context context) {
         mApplicationContext = context.getApplicationContext();
-        enableQuic(false);
+        enableQuic(true);
         enableHttp2(true);
         enableBrotli(false);
         enableHttpCache(CronetEngine.Builder.HTTP_CACHE_DISABLED, 0);

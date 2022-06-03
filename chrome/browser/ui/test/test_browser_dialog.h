@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TEST_TEST_BROWSER_DIALOG_H_
 #define CHROME_BROWSER_UI_TEST_TEST_BROWSER_DIALOG_H_
 
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
@@ -13,11 +13,13 @@
 #include "ui/views/widget/widget.h"
 #endif
 
-class BrowserSkiaGoldPixelDiff;
-
 // A dialog-specific subclass of TestBrowserUi, which will verify that a test
 // showed a single dialog.
 class TestBrowserDialog : public TestBrowserUi {
+ public:
+  TestBrowserDialog(const TestBrowserDialog&) = delete;
+  TestBrowserDialog& operator=(const TestBrowserDialog&) = delete;
+
  protected:
   TestBrowserDialog();
   ~TestBrowserDialog() override;
@@ -31,6 +33,22 @@ class TestBrowserDialog : public TestBrowserUi {
   bool VerifyUi() override;
   void WaitForUserDismissal() override;
   void DismissUi() override;
+
+  // Verify UI.
+  // When pixel verifcation is enabled(--browser-ui-tests-verify-pixels),
+  // this function will also verify pixels using Skia Gold. Call set_baseline()
+  // and SetPixelMatchAlgorithm() to adjust parameters used for verification.
+  void ShowAndVerifyUi();
+
+  // Only useful when pixel verification is enabled.
+  // Set pixel test baseline so previous gold images become invalid.
+  // Call this method before ShowAndVerifyUi().
+  // For example, a cl changes a dialog's text, and all previously approved
+  // gold images become invalid. Then in the same cl you should set a new
+  // baseline. Or else the previous gold image are still valid (which they
+  // should not be because they have wrong text).
+  // Consider using the cl number as baseline.
+  void set_baseline(const std::string& baseline) { baseline_ = baseline; }
 
   // Whether to close asynchronously using Widget::Close(). This covers
   // codepaths relying on DialogDelegate::Close(), which isn't invoked by
@@ -52,16 +70,14 @@ class TestBrowserDialog : public TestBrowserUi {
   views::Widget::Widgets widgets_;
 #endif  // defined(TOOLKIT_VIEWS)
 
+  // The baseline to use for the next pixel verification.
+  std::string baseline_;
+
   // If set to true, the dialog bounds will be verified to fit inside the
   // display's work area.
   // This should always be true, but some dialogs don't yet size themselves
   // properly. https://crbug.com/893292.
   bool should_verify_dialog_bounds_ = true;
-  // If this variable is set, VerifyUi will verify pixel correctness for
-  // the dialog.
-  std::unique_ptr<BrowserSkiaGoldPixelDiff> pixel_diff_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestBrowserDialog);
 };
 
 template <class Base>

@@ -9,6 +9,7 @@
 
 #include <windows.h>
 
+#include <cguid.h>
 #include <evntrace.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -22,11 +23,11 @@
 namespace base {
 namespace win {
 
-typedef GUID EtwEventClass;
-typedef UCHAR EtwEventType;
-typedef UCHAR EtwEventLevel;
-typedef USHORT EtwEventVersion;
-typedef ULONG EtwEventFlags;
+using EtwEventClass = GUID;
+using EtwEventType = UCHAR;
+using EtwEventLevel = UCHAR;
+using EtwEventVersion = USHORT;
+using EtwEventFlags = ULONG;
 
 // Base class is a POD for correctness.
 template <size_t N>
@@ -39,7 +40,7 @@ struct EtwMofEventBase {
 template <size_t N>
 class EtwMofEvent : public EtwMofEventBase<N> {
  public:
-  typedef EtwMofEventBase<N> Super;
+  using Super = EtwMofEventBase<N>;
 
   // Clang and the C++ standard don't allow unqualified lookup into dependent
   // bases, hence these using decls to explicitly pull the names out.
@@ -72,6 +73,9 @@ class EtwMofEvent : public EtwMofEventBase<N> {
     header.Flags = WNODE_FLAG_TRACED_GUID | WNODE_FLAG_USE_MOF_PTR;
   }
 
+  EtwMofEvent(const EtwMofEvent&) = delete;
+  EtwMofEvent& operator=(const EtwMofEvent&) = delete;
+
   void SetField(size_t field, size_t size, const void* data) {
     // DCHECK(field < N);
     if ((field < N) && (size <= std::numeric_limits<uint32_t>::max())) {
@@ -81,9 +85,6 @@ class EtwMofEvent : public EtwMofEventBase<N> {
   }
 
   EVENT_TRACE_HEADER* get() { return &header; }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EtwMofEvent);
 };
 
 // Trace provider with Event Tracing for Windows. The trace provider
@@ -103,6 +104,10 @@ class BASE_EXPORT EtwTraceProvider {
   // Creates an unnamed event trace provider, the provider must be given
   // a name before registration.
   EtwTraceProvider();
+
+  EtwTraceProvider(const EtwTraceProvider&) = delete;
+  EtwTraceProvider& operator=(const EtwTraceProvider&) = delete;
+
   virtual ~EtwTraceProvider();
 
   // Registers the trace provider with Event Tracing for Windows.
@@ -175,17 +180,15 @@ class BASE_EXPORT EtwTraceProvider {
                                       ULONG* reserved,
                                       PVOID buffer);
 
-  GUID provider_name_;
-  TRACEHANDLE registration_handle_;
-  TRACEHANDLE session_handle_;
-  EtwEventFlags enable_flags_;
-  EtwEventLevel enable_level_;
+  GUID provider_name_ = GUID_NULL;
+  TRACEHANDLE registration_handle_ = NULL;
+  TRACEHANDLE session_handle_ = NULL;
+  EtwEventFlags enable_flags_ = 0;
+  EtwEventLevel enable_level_ = 0;
 
   // We don't use this, but on XP we're obliged to pass one in to
   // RegisterTraceGuids. Non-const, because that's how the API needs it.
   static TRACE_GUID_REGISTRATION obligatory_guid_registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(EtwTraceProvider);
 };
 
 }  // namespace win

@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/stringprintf.h"
 #include "courgette/assembly_program.h"
 #include "courgette/courgette.h"
 #include "courgette/encoded_program.h"

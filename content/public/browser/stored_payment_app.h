@@ -33,9 +33,6 @@ struct CONTENT_EXPORT StoredCapabilities {
 
   // A list of ::payments::mojom::BasicCardNetwork.
   std::vector<int32_t> supported_card_networks;
-
-  // A list of ::payments::mojom::BasicCardType.
-  std::vector<int32_t> supported_card_types;
 };
 
 // This class represents the stored payment app.

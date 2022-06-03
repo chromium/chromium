@@ -5,8 +5,9 @@
 #import "ui/base/test/scoped_fake_full_keyboard_access.h"
 
 #import <Cocoa/Cocoa.h>
+#include <ostream>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "base/mac/scoped_objc_class_swizzler.h"
 
 namespace {

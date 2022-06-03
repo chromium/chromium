@@ -19,7 +19,7 @@ void RecordNTPImpression(IOSNTPImpression impression_type) {
 }  // namespace ntp_home
 
 @interface NTPHomeMetrics ()
-@property(nonatomic, assign) ios::ChromeBrowserState* browserState;
+@property(nonatomic, assign) ChromeBrowserState* browserState;
 @property(nonatomic, assign) web::WebState* webState;
 @end
 
@@ -27,7 +27,7 @@ void RecordNTPImpression(IOSNTPImpression impression_type) {
 
 @synthesize browserState = _browserState;
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                             webState:(web::WebState*)webState {
   self = [super init];
   if (self) {

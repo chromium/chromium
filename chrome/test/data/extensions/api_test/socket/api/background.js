@@ -2,13 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// net/tools/testserver/testserver.py is picky about the format of what it
-// calls its "echo" messages. One might go so far as to mutter to oneself that
-// it isn't an echo server at all.
-//
-// The response is based on the request but obfuscated using a random key.
-const request = "0100000005320000005hello";
-var expectedResponsePattern = /0100000005320000005.{11}/;
+// TCP tests use an HTTP server configured to echo back the request body
+// as the response body.
+const tcpRequest = "POST /echo HTTP/1.1\r\n" +
+    "Content-Length: 19\r\n\r\n" +
+    "0100000005320000005";
+    const tcpExpectedResponsePattern = /\n0100000005320000005$/;
+
+// UDP tests use a server that just echoes back the request.
+const udpRequest = "0100000005320000005";
+const udpExpectedResponsePattern = /^0100000005320000005$/;
 
 const socket = chrome.socket;
 var address;
@@ -20,6 +23,8 @@ var protocol = "none";
 var socketId = 0;
 var succeeded = false;
 var waitCount = 0;
+var request = "<this should be set based on protocol>";
+var expectedResponsePattern = "<this, too>";
 
 // Many thanks to Dennis for his StackOverflow answer: http://goo.gl/UDanx
 // Since amended to handle BlobBuilder deprecation.
@@ -416,7 +421,7 @@ var onMessageReply = function(message) {
   var test_type = parts[0];
   address = parts[1];
   port = parseInt(parts[2]);
-  console.log("Running tests, protocol " + protocol + ", echo server " +
+  console.log("Running tests, protocol " + test_type + ", echo server " +
               address + ":" + port);
   if (test_type == 'tcp_server') {
     chrome.test.runTests([
@@ -428,6 +433,13 @@ var onMessageReply = function(message) {
     chrome.test.runTests([ testMulticast ]);
   } else {
     protocol = test_type;
+    if (protocol == "udp") {
+      request = udpRequest;
+      expectedResponsePattern = udpExpectedResponsePattern;
+    } else {
+      request = tcpRequest;
+      expectedResponsePattern = tcpExpectedResponsePattern;
+    }
     chrome.test.runTests([
         testSocketCreation,
         testSending,

@@ -1,0 +1,11 @@
+include_rules = [
+  "+components/paint_preview/common",
+  "+components/optimization_guide",
+  "+cc/paint",
+  "+crypto",
+  "+skia/ext",
+  "+third_party/skia/include",
+  "+third_party/smhasher",
+  "+ui/base/page_transition_types.h",
+  "+ui/gfx/geometry",
+]

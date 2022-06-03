@@ -1,17 +1,22 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
-</script>
-<p>This tests deletion of a selection that spans multiple cells.  Just table content should be removed, not table structure.</p>
-<div id="test" contenteditable="true"><table border="1"><tr><td><div>These two pieces of text<span id="start">blah</span></div></td><td><div><span id="end">blah</span> should be in different cells.</div></td></tr></table>
-
-<script>
-var start = document.getElementById("start").firstChild;
-var end = document.getElementById("end").firstChild;
-
-var s = window.getSelection();
-s.setBaseAndExtent(start, 0, end, end.length);
-document.execCommand("Delete");
+// This tests deletion of a selection that spans multiple cells. Just table
+// content should be removed, not table structure == should not merge cells.
+selection_test(
+    [
+        '<div contenteditable><table><tbody><tr>',
+            '<td><div>abc def^GHI</div></td>',
+            '<td><div>JKL| mno</div></td>',
+        '</tr></tbody></table></div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable><table><tbody><tr>',
+            '<td><div>abc def|</div></td>',
+            '<td><div>\u00A0mno</div></td>',
+        '</tr></tbody></table></div>',
+    ]);
 </script>

@@ -38,6 +38,12 @@ constexpr char kExtensionId[] = "extensionid";
 class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
  public:
   SoundContentSettingObserverTest() = default;
+
+  SoundContentSettingObserverTest(const SoundContentSettingObserverTest&) =
+      delete;
+  SoundContentSettingObserverTest& operator=(
+      const SoundContentSettingObserverTest&) = delete;
+
   ~SoundContentSettingObserverTest() override = default;
 
   void SetUp() override {
@@ -57,7 +63,7 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
   void ChangeSoundContentSettingTo(ContentSetting setting) {
     GURL url = web_contents()->GetLastCommittedURL();
     host_content_settings_map_->SetContentSettingDefaultScope(
-        url, url, ContentSettingsType::SOUND, std::string(), setting);
+        url, url, ContentSettingsType::SOUND, setting);
   }
 
   void ChangeDefaultSoundContentSettingTo(ContentSetting setting) {
@@ -99,8 +105,6 @@ class SoundContentSettingObserverTest : public ChromeRenderViewHostTestHarness {
  private:
   HostContentSettingsMap* host_content_settings_map_;
   std::unique_ptr<ukm::TestUkmRecorder> test_ukm_recorder_;
-
-  DISALLOW_COPY_AND_ASSIGN(SoundContentSettingObserverTest);
 };
 
 TEST_F(SoundContentSettingObserverTest, AudioMutingUpdatesWithContentSetting) {

@@ -1,0 +1,137 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Sync protocol datatype extension for desks on Chrome OS.
+
+// If you change or add any fields in this file, update proto_visitors.h and
+// potentially proto_enum_conversions.{h, cc}.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package sync_pb;
+
+// A workspace desk entry. This proto contains the fields synced to represent
+// a saved desk in user's workspace.
+message WorkspaceDeskSpecifics {
+  reserved "created_time_usec";
+
+  // A random unique identifier for each desk.
+  // Required.
+  optional string uuid = 1;
+  // The name of the desk being saved.
+  optional string name = 2;
+  // The time this snapshot of desk was created.
+  optional int64 created_time_windows_epoch_micros = 3;
+
+  // The time this snapshot of desk was updated.
+  optional int64 updated_time_windows_epoch_micros = 5;
+
+  optional Desk desk = 4;
+
+  // Represent a snapshot of the information on a desk.
+  message Desk {
+    // The apps in this template.
+    repeated App apps = 1;
+  }
+
+  // A Launchable app in template.
+  message App {
+    // The on-display location of this window.
+    optional WindowBound window_bound = 1;
+    optional WindowState window_state = 2;
+    // The z-index of this app relative to other apps in this template.
+    // App with larger z-index appears in front of app with smaller z-index.
+    optional int32 z_index = 3;
+
+    optional AppOneOf app = 4;
+
+    // window_id used to instantiate proto as a restore_data object.  The
+    // restore_data object in question can be found at:
+    // //components/app_restore/restore_data.h
+    optional int32 window_id = 5;
+
+    // Display ID this app is on.
+    optional int64 display_id = 6;
+
+    // State of a window before it was minimized. Empty/unset for non-minimized
+    // windows.
+    optional WindowState pre_minimized_window_state = 7;
+  }
+
+  message AppOneOf {
+    oneof app {
+      BrowserAppWindow browser_app_window = 1;
+      ChromeApp chrome_app = 2;
+      ProgressiveWebApp progress_web_app = 3;
+    }
+  }
+
+  // A Chrome Browser app window.
+  message BrowserAppWindow {
+    message BrowserAppTab {
+      // The last committed URL of the main frame of the tab.
+      optional string url = 1;
+      // The title of the tab.
+      optional string title = 2;
+    }
+
+    // The tabs in this browser window.
+    repeated BrowserAppTab tabs = 1;
+
+    // The index of the currently active tab.
+    optional int32 active_tab_index = 2;
+  }
+
+  // A Chrome App window.
+  message ChromeApp {
+    // The Chrome App's App ID.
+    optional string app_id = 1;
+    // App window title.
+    optional string title = 2;
+  }
+
+  // A PWA window.
+  message ProgressiveWebApp {
+    // The PWA's App ID.
+    optional string app_id = 1;
+    // App window title.
+    optional string title = 2;
+  }
+
+  message WindowBound {
+    // The offset of the window from the top edge of the screen in pixels.
+    optional int32 top = 1;
+    // The offset of the window from the left edge of the screen in pixels.
+    optional int32 left = 2;
+    // The width of the window, including the frame, in pixels.
+    optional int32 width = 3;
+    // The height of the window, including the frame, in pixels.
+    optional int32 height = 4;
+  }
+
+  // The state of a generic window.
+  enum WindowState {
+    UNKNOWN_WINDOW_STATE = 0;
+    // Normal window state (not minimized, maximized, or fullscreen).
+    NORMAL = 1;
+    // Minimized window state.
+    MINIMIZED = 2;
+    // Maximized window state.
+    MAXIMIZED = 3;
+    // Fullscreen window state.
+    FULLSCREEN = 4;
+    // Snapped to primary half of the screen. Primary half is on the left in
+    // landscape screen orientation and top in portrait screen orientation.
+    PRIMARY_SNAPPED = 5;
+    // Snapped to secondary half of the screen. Secondary half is on the right
+    // in landscape screen orientation and bottom in portrait screen
+    // orientation.
+    SECONDARY_SNAPPED = 6;
+  }
+}

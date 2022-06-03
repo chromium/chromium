@@ -22,7 +22,7 @@ class UrlLanguageHistogramFactoryTest : public PlatformTest {
 
   ~UrlLanguageHistogramFactoryTest() override { chrome_browser_state_.reset(); }
 
-  ios::ChromeBrowserState* chrome_browser_state() {
+  ChromeBrowserState* chrome_browser_state() {
     return chrome_browser_state_.get();
   }
 
@@ -36,7 +36,7 @@ TEST_F(UrlLanguageHistogramFactoryTest, NotCreatedInIncognito) {
       UrlLanguageHistogramFactory::GetForBrowserState(chrome_browser_state()),
       Not(IsNull()));
 
-  ios::ChromeBrowserState* otr_browser_state =
+  ChromeBrowserState* otr_browser_state =
       chrome_browser_state()->GetOffTheRecordChromeBrowserState();
   language::UrlLanguageHistogram* language_histogram =
       UrlLanguageHistogramFactory::GetForBrowserState(otr_browser_state);

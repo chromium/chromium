@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "ui/gl/gl_context.h"
@@ -247,9 +247,7 @@ GLApi::GLApi() {
 GLApi::~GLApi() {
 }
 
-GLApiBase::GLApiBase()
-    : driver_(NULL) {
-}
+GLApiBase::GLApiBase() : driver_(nullptr) {}
 
 GLApiBase::~GLApiBase() {
 }
@@ -352,6 +350,33 @@ void RealGLApi::glTexStorage2DEXTFn(GLenum target,
   GLenum gl_internal_format = GetInternalFormat(version_.get(), internalformat);
   GLApiBase::glTexStorage2DEXTFn(target, levels, gl_internal_format, width,
                                  height);
+}
+
+void RealGLApi::glTexStorageMem2DEXTFn(GLenum target,
+                                       GLsizei levels,
+                                       GLenum internalformat,
+                                       GLsizei width,
+                                       GLsizei height,
+                                       GLuint memory,
+                                       GLuint64 offset) {
+  internalformat = GetInternalFormat(version_.get(), internalformat);
+  GLApiBase::glTexStorageMem2DEXTFn(target, levels, internalformat, width,
+                                    height, memory, offset);
+}
+
+void RealGLApi::glTexStorageMemFlags2DANGLEFn(GLenum target,
+                                              GLsizei levels,
+                                              GLenum internalformat,
+                                              GLsizei width,
+                                              GLsizei height,
+                                              GLuint memory,
+                                              GLuint64 offset,
+                                              GLbitfield createFlags,
+                                              GLbitfield usageFlags) {
+  internalformat = GetInternalFormat(version_.get(), internalformat);
+  GLApiBase::glTexStorageMemFlags2DANGLEFn(target, levels, internalformat,
+                                           width, height, memory, offset,
+                                           createFlags, usageFlags);
 }
 
 void RealGLApi::glRenderbufferStorageEXTFn(GLenum target,

@@ -9,13 +9,14 @@
 #include <algorithm>
 
 #include "base/logging.h"
-#include "build/build_config.h"
 #include "media/base/bit_reader.h"
 #include "media/formats/mp4/rcheck.h"
 #include "media/formats/mpeg/adts_constants.h"
 
 namespace media {
 namespace mp4 {
+
+constexpr uint8_t kXHeAAcType = 42;
 
 AAC::AAC()
     : profile_(0), frequency_index_(0), channel_config_(0), frequency_(0),
@@ -27,9 +28,8 @@ AAC::AAC(const AAC& other) = default;
 AAC::~AAC() = default;
 
 bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
-#if defined(OS_ANDROID)
   codec_specific_data_ = data;
-#endif
+
   if (data.empty())
     return false;
 
@@ -46,6 +46,14 @@ bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
 
   // Read base configuration
   RCHECK(reader.ReadBits(5, &profile_));
+
+  // Signals that we need more than 5 bits for profile.
+  if (profile_ == 31) {
+    uint8_t tmp;
+    RCHECK(reader.ReadBits(6, &tmp));
+    profile_ = 32 + tmp;
+  }
+
   RCHECK(reader.ReadBits(4, &frequency_index_));
   if (frequency_index_ == 0xf)
     RCHECK(reader.ReadBits(24, &frequency_));
@@ -68,10 +76,10 @@ bool AAC::Parse(const std::vector<uint8_t>& data, MediaLog* media_log) {
   // value of profile_ must now reflect the the underlying profile being used
   // with those extensions (these extensions are supported).
   // 1 = AAC main, 2 = AAC LC, 3 = AAC SSR, 4 = AAC LTP
-  if (profile_ < 1 || profile_ > 4) {
-    MEDIA_LOG(ERROR, media_log) << "Audio codec(mp4a.40."
-                                << static_cast<int>(profile_)
-                                << ") is not supported.";
+  if ((profile_ < 1 || profile_ > 4) && profile_ != kXHeAAcType) {
+    MEDIA_LOG(ERROR, media_log)
+        << "Audio codec(mp4a.40." << static_cast<int>(profile_)
+        << ") is not supported.";
     return false;
   }
 
@@ -176,6 +184,11 @@ ChannelLayout AAC::GetChannelLayout(bool sbr_in_mimetype) const {
 }
 
 bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer) const {
+  // Don't append ADTS header for XHE-AAC; it doesn't have enough bits to signal
+  // the correct profile.
+  if (profile_ == kXHeAAcType)
+    return true;
+
   size_t size = buffer->size() + kADTSHeaderMinSize;
 
   DCHECK(profile_ >= 1 && profile_ <= 4 && frequency_index_ != 0xf &&
@@ -190,14 +203,19 @@ bool AAC::ConvertEsdsToADTS(std::vector<uint8_t>* buffer) const {
   adts.insert(buffer->begin(), kADTSHeaderMinSize, 0);
   adts[0] = 0xff;
   adts[1] = 0xf1;
-  adts[2] = ((profile_ - 1) << 6) + (frequency_index_ << 2) +
-      (channel_config_ >> 2);
+  adts[2] =
+      ((profile_ - 1) << 6) + (frequency_index_ << 2) + (channel_config_ >> 2);
   adts[3] = static_cast<uint8_t>(((channel_config_ & 0x3) << 6) + (size >> 11));
   adts[4] = static_cast<uint8_t>((size & 0x7ff) >> 3);
   adts[5] = ((size & 7) << 5) + 0x1f;
   adts[6] = 0xfc;
 
   return true;
+}
+
+AudioCodecProfile AAC::GetProfile() const {
+  return profile_ == kXHeAAcType ? AudioCodecProfile::kXHE_AAC
+                                 : AudioCodecProfile::kUnknown;
 }
 
 // Currently this function only support GASpecificConfig defined in
@@ -216,6 +234,7 @@ bool AAC::SkipDecoderGASpecificConfig(BitReader* bit_reader) const {
     case 21:
     case 22:
     case 23:
+    case kXHeAAcType:
       return SkipGASpecificConfig(bit_reader);
     default:
       break;

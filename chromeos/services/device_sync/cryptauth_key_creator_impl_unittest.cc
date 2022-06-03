@@ -10,8 +10,6 @@
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/fake_secure_message_delegate.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
 #include "chromeos/services/device_sync/cryptauth_enrollment_constants.h"
@@ -21,6 +19,7 @@
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "crypto/hkdf.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -51,6 +50,12 @@ size_t NumBytesForSymmetricKeyType(cryptauthv2::KeyType key_type) {
 }  // namespace
 
 class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthKeyCreatorImplTest(
+      const DeviceSyncCryptAuthKeyCreatorImplTest&) = delete;
+  DeviceSyncCryptAuthKeyCreatorImplTest& operator=(
+      const DeviceSyncCryptAuthKeyCreatorImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthKeyCreatorImplTest()
       : fake_secure_message_delegate_factory_(
@@ -65,21 +70,21 @@ class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
   ~DeviceSyncCryptAuthKeyCreatorImplTest() override = default;
 
   void SetUp() override {
-    multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
+    multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         fake_secure_message_delegate_factory_.get());
 
-    key_creator_ = CryptAuthKeyCreatorImpl::Factory::Get()->BuildInstance();
+    key_creator_ = CryptAuthKeyCreatorImpl::Factory::Create();
   }
 
   void TearDown() override {
-    multidevice::SecureMessageDelegateImpl::Factory::SetInstanceForTesting(
+    multidevice::SecureMessageDelegateImpl::Factory::SetFactoryForTesting(
         nullptr);
   }
 
   void CallCreateKeys(
       const base::flat_map<CryptAuthKeyBundle::Name,
                            CryptAuthKeyCreator::CreateKeyData>& keys_to_create,
-      const base::Optional<CryptAuthKey>& server_ephemeral_dh) {
+      const absl::optional<CryptAuthKey>& server_ephemeral_dh) {
     key_creator_->CreateKeys(
         keys_to_create, server_ephemeral_dh,
         base::BindOnce(&DeviceSyncCryptAuthKeyCreatorImplTest::OnKeysCreated,
@@ -88,8 +93,8 @@ class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
 
   void VerifyKeyCreation(
       const base::flat_map<CryptAuthKeyBundle::Name,
-                           base::Optional<CryptAuthKey>>& expected_new_keys,
-      const base::Optional<CryptAuthKey>& expected_client_ephemeral_dh) {
+                           absl::optional<CryptAuthKey>>& expected_new_keys,
+      const absl::optional<CryptAuthKey>& expected_client_ephemeral_dh) {
     EXPECT_TRUE(new_keys_);
     EXPECT_TRUE(client_ephemeral_dh_);
     EXPECT_EQ(expected_new_keys, *new_keys_);
@@ -101,9 +106,9 @@ class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
     std::string derived_key;
     fake_secure_message_delegate()->DeriveKey(
         client_ephemeral_dh.private_key(), server_ephemeral_dh.public_key(),
-        base::Bind([](std::string* derived_key,
-                      const std::string& key) { *derived_key = key; },
-                   &derived_key));
+        base::BindOnce([](std::string* derived_key,
+                          const std::string& key) { *derived_key = key; },
+                       &derived_key));
     return derived_key;
   }
 
@@ -134,8 +139,8 @@ class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
  private:
   void OnKeysCreated(
       const base::flat_map<CryptAuthKeyBundle::Name,
-                           base::Optional<CryptAuthKey>>& new_keys,
-      const base::Optional<CryptAuthKey>& client_ephemeral_dh) {
+                           absl::optional<CryptAuthKey>>& new_keys,
+      const absl::optional<CryptAuthKey>& client_ephemeral_dh) {
     new_keys_ = new_keys;
     client_ephemeral_dh_ = client_ephemeral_dh;
   }
@@ -147,12 +152,10 @@ class DeviceSyncCryptAuthKeyCreatorImplTest : public testing::Test {
   CryptAuthKey fake_server_ephemeral_dh_;
 
   // A null value indicates that OnKeysCreated() was not called.
-  base::Optional<
-      base::flat_map<CryptAuthKeyBundle::Name, base::Optional<CryptAuthKey>>>
+  absl::optional<
+      base::flat_map<CryptAuthKeyBundle::Name, absl::optional<CryptAuthKey>>>
       new_keys_;
-  base::Optional<base::Optional<CryptAuthKey>> client_ephemeral_dh_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthKeyCreatorImplTest);
+  absl::optional<absl::optional<CryptAuthKey>> client_ephemeral_dh_;
 };
 
 TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, AsymmetricKeyCreation) {
@@ -172,11 +175,11 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, AsymmetricKeyCreation) {
 
   fake_secure_message_delegate()->set_next_public_key(kFakePublicKeyMaterial);
 
-  CallCreateKeys(keys_to_create, base::nullopt /* fake_server_ephemeral_dh */);
+  CallCreateKeys(keys_to_create, absl::nullopt /* fake_server_ephemeral_dh */);
   VerifyKeyCreation(
       {{CryptAuthKeyBundle::Name::kUserKeyPair,
-        base::make_optional(expected_asymmetric_key)}} /* expected_new_keys */,
-      base::nullopt /* expected_client_ephemeral_dh */);
+        absl::make_optional(expected_asymmetric_key)}} /* expected_new_keys */,
+      absl::nullopt /* expected_client_ephemeral_dh */);
 }
 
 TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, SymmetricKeyCreation) {
@@ -185,7 +188,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, SymmetricKeyCreation) {
       kFakeSymmetricKeyHandle);
 
   base::flat_map<CryptAuthKeyBundle::Name, CryptAuthKeyCreator::CreateKeyData>
-      keys_to_create = {{CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      keys_to_create = {{CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          symmetric_key_to_create}};
 
   CryptAuthKey expected_client_ephemeral_dh(
@@ -195,7 +198,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, SymmetricKeyCreation) {
       CryptAuthKey::Status::kActive, cryptauthv2::KeyType::P256);
 
   CryptAuthKey expected_symmetric_key =
-      DeriveSymmetricKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      DeriveSymmetricKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          symmetric_key_to_create, expected_client_ephemeral_dh);
 
   fake_secure_message_delegate()->set_next_public_key(
@@ -203,8 +206,8 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, SymmetricKeyCreation) {
 
   CallCreateKeys(keys_to_create, fake_server_ephemeral_dh());
   VerifyKeyCreation(
-      {{CryptAuthKeyBundle::Name::kLegacyMasterKey,
-        base::make_optional(expected_symmetric_key)}} /* expected_new_keys */,
+      {{CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
+        absl::make_optional(expected_symmetric_key)}} /* expected_new_keys */,
       expected_client_ephemeral_dh);
 }
 
@@ -221,7 +224,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
                CryptAuthKey::Status::kActive, cryptauthv2::KeyType::P256,
                kFakeAsymmetricKeyHandle, kFakeProvidedPublicKeyMaterial,
                kFakeProvidedPrivateKeyMaterial)},
-          {CryptAuthKeyBundle::Name::kLegacyMasterKey,
+          {CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
            symmetric_key_to_create}};
 
   CryptAuthKey expected_client_ephemeral_dh(
@@ -236,7 +239,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
       kFakeAsymmetricKeyHandle);
 
   CryptAuthKey expected_symmetric_key =
-      DeriveSymmetricKey(CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      DeriveSymmetricKey(CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          symmetric_key_to_create, expected_client_ephemeral_dh);
 
   // There is no need to generate an asymmetric key for kUserKeyPair since we
@@ -247,9 +250,9 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
   CallCreateKeys(keys_to_create, fake_server_ephemeral_dh());
   VerifyKeyCreation(
       {{CryptAuthKeyBundle::Name::kUserKeyPair,
-        base::make_optional(expected_asymmetric_key)},
-       {CryptAuthKeyBundle::Name::kLegacyMasterKey,
-        base::make_optional(expected_symmetric_key)}} /* expected_new_keys */,
+        absl::make_optional(expected_asymmetric_key)},
+       {CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
+        absl::make_optional(expected_symmetric_key)}} /* expected_new_keys */,
       expected_client_ephemeral_dh);
 }
 
@@ -264,10 +267,10 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest, AsymmetricKeyCreation_Failure) {
   // An empty key string returned by SecureMessage is considered a failure.
   fake_secure_message_delegate()->set_next_public_key(std::string());
 
-  CallCreateKeys(keys_to_create, base::nullopt /* fake_server_ephemeral_dh */);
+  CallCreateKeys(keys_to_create, absl::nullopt /* fake_server_ephemeral_dh */);
   VerifyKeyCreation({{CryptAuthKeyBundle::Name::kUserKeyPair,
-                      base::nullopt}} /* expected_new_keys */,
-                    base::nullopt /* expected_client_ephemeral_dh */);
+                      absl::nullopt}} /* expected_new_keys */,
+                    absl::nullopt /* expected_client_ephemeral_dh */);
 }
 
 TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
@@ -277,7 +280,7 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
       kFakeSymmetricKeyHandle);
 
   base::flat_map<CryptAuthKeyBundle::Name, CryptAuthKeyCreator::CreateKeyData>
-      keys_to_create = {{CryptAuthKeyBundle::Name::kLegacyMasterKey,
+      keys_to_create = {{CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
                          symmetric_key_to_create}};
 
   // Fail to create the client's ephemeral Diffie-Hellman key. An empty key
@@ -285,9 +288,9 @@ TEST_F(DeviceSyncCryptAuthKeyCreatorImplTest,
   fake_secure_message_delegate()->set_next_public_key(std::string());
 
   CallCreateKeys(keys_to_create, fake_server_ephemeral_dh());
-  VerifyKeyCreation({{CryptAuthKeyBundle::Name::kLegacyMasterKey,
-                      base::nullopt}} /* expected_new_keys */,
-                    base::nullopt /* expected_client_ephemeral_dh */);
+  VerifyKeyCreation({{CryptAuthKeyBundle::Name::kLegacyAuthzenKey,
+                      absl::nullopt}} /* expected_new_keys */,
+                    absl::nullopt /* expected_client_ephemeral_dh */);
 }
 
 }  // namespace device_sync

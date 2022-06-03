@@ -17,22 +17,16 @@ var cr = cr || function(global) {
    * example:
    * "a.b.c" -> a = {};a.b={};a.b.c={};
    * @param {string} name Name of the object that this file defines.
-   * @param {*=} opt_object The object to expose at the end of the path.
-   * @param {Object=} opt_objectToExportTo The object to add the path to;
-   *     default is {@code global}.
    * @return {!Object} The last object exported (i.e. exportPath('cr.ui')
    *     returns a reference to the ui property of window.cr).
    * @private
    */
-  function exportPath(name, opt_object, opt_objectToExportTo) {
+  function exportPath(name) {
     const parts = name.split('.');
-    let cur = opt_objectToExportTo || global;
+    let cur = global;
 
     for (let part; parts.length && (part = parts.shift());) {
-      if (!parts.length && opt_object !== undefined) {
-        // last part and we have an object; use it
-        cur[part] = opt_object;
-      } else if (part in cur) {
+      if (part in cur) {
         cur = cur[part];
       } else {
         cur = cur[part] = {};
@@ -157,7 +151,7 @@ var cr = cr || function(global) {
         return function(value) {
           const oldValue = this[name];
           if (value !== oldValue) {
-            if (value == undefined) {
+            if (value === undefined) {
               this.removeAttribute(attributeName);
             } else {
               this.setAttribute(attributeName, value);
@@ -206,7 +200,7 @@ var cr = cr || function(global) {
    * @suppress {deprecated}
    */
   function defineProperty(obj, name, opt_kind, opt_setHook) {
-    if (typeof obj == 'function') {
+    if (typeof obj === 'function') {
       obj = obj.prototype;
     }
 
@@ -226,6 +220,25 @@ var cr = cr || function(global) {
       // eslint-disable-next-line no-restricted-properties
       obj.__defineSetter__(name, getSetter(name, kind, opt_setHook));
     }
+  }
+
+  /**
+   * Returns a getter and setter to be used as property descriptor in
+   * Object.defineProperty(). When the setter changes the value a property
+   * change event with the type {@code name + 'Change'} is fired.
+   * @param {string} name The name of the property.
+   * @param {PropertyKind=} opt_kind What kind of underlying storage to use.
+   * @param {function(*, *):void=} opt_setHook A function to run after the
+   *     property is set, but before the propertyChange event is fired.
+   */
+  function getPropertyDescriptor(name, opt_kind, opt_setHook) {
+    const kind = /** @type {PropertyKind} */ (opt_kind || PropertyKind.JS);
+
+    const desc = {
+      get: getGetter(name, kind),
+      set: getSetter(name, kind, opt_setHook),
+    };
+    return desc;
   }
 
   /**
@@ -421,9 +434,9 @@ var cr = cr || function(global) {
     addSingletonGetter: addSingletonGetter,
     define: define,
     defineProperty: defineProperty,
+    getPropertyDescriptor: getPropertyDescriptor,
     dispatchPropertyChange: dispatchPropertyChange,
     dispatchSimpleEvent: dispatchSimpleEvent,
-    exportPath: exportPath,
     PropertyKind: PropertyKind,
 
     // C++ <-> JS communication related methods.
@@ -443,9 +456,26 @@ var cr = cr || function(global) {
       return /Win/.test(navigator.platform);
     },
 
-    /** Whether this is on chromeOS or not. */
+    /** Whether this is the ChromeOS/ash web browser. */
     get isChromeOS() {
-      return /CrOS/.test(navigator.userAgent);
+      let returnValue = false;
+      // TODO(https://crbug.com/1118190): grit conditionals do not work in many
+      // WebUI tests.
+      // <if expr="chromeos">
+      returnValue = true;
+      // </if>
+      return returnValue;
+    },
+
+    /** Whether this is the ChromeOS/Lacros web browser. */
+    get isLacros() {
+      let returnValue = false;
+      // TODO(https://crbug.com/1118190): grit conditionals do not work in many
+      // WebUI tests.
+      // <if expr="lacros">
+      returnValue = true;
+      // </if>
+      return returnValue;
     },
 
     /** Whether this is on vanilla Linux (not chromeOS). */

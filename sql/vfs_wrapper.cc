@@ -8,15 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -191,7 +192,7 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
   // NOTE(shess): Any early exit from here needs to call xClose() on
   // |wrapped_file|.
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
   // When opening journal files, propagate time-machine exclusion from db.
   static int kJournalFlags =
       SQLITE_OPEN_MAIN_JOURNAL | SQLITE_OPEN_TEMP_JOURNAL |

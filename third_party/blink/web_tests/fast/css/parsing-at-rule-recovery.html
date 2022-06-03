@@ -89,7 +89,7 @@ Tests error recovery in @-rules.
 <style>@media all {@supports;} #test28{display: none}</style>
 <div id="test28"></div>
 
-<style>@media all {@viewport;} #test29{display: none}</style>
+<style>@media all {@property;} #test29{display: none}</style>
 <div id="test29"></div>
 
 <style>@media all {@-webkit-filter;} #test30{display: none}</style>
@@ -110,7 +110,7 @@ Tests error recovery in @-rules.
 <style>@-webkit-region x {@supports;} #test35{display: none}</style>
 <div id="test35"></div>
 
-<style>@-webkit-region x {@viewport;} #test36{display: none}</style>
+<style>@-webkit-region x {@property;} #test36{display: none}</style>
 <div id="test36"></div>
 
 <style>@-webkit-region x {@-webkit-filter;} #test37{display: none}</style>
@@ -131,7 +131,7 @@ Tests error recovery in @-rules.
 <style>@media all {@supports not (display: none)} #test42{display: none}</style>
 <div id="test42"></div>
 
-<style>@media all {@viewport ?} #test43{display: none}</style>
+<style>@media all {@property ?} #test43{display: none}</style>
 <div id="test43"></div>
 
 <style>@media all {x {} @-webkit-filter} #test44{display: none}</style>
@@ -152,7 +152,7 @@ Tests error recovery in @-rules.
 <style>@-webkit-region x {@supports not (display: none)} #test49{display: none}</style>
 <div id="test49"></div>
 
-<style>@-webkit-region x {@viewport ?} #test50{display: none}</style>
+<style>@-webkit-region x {@property ?} #test50{display: none}</style>
 <div id="test50"></div>
 
 <style>@-webkit-region x {x {} @-webkit-filter} #test51{display: none}</style>

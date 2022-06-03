@@ -4,7 +4,6 @@
 
 #include "ppapi/proxy/plugin_var_serialization_rules.h"
 
-#include "base/logging.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/proxy/plugin_resource_tracker.h"

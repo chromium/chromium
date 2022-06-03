@@ -78,7 +78,7 @@ TEST_F(SystemCookieStoreUtilTest, CreateSystemCookieStore) {
   net::ScopedTestingCookieStoreIOSClient scoped_cookie_store_ios_client(
       std::make_unique<net::TestCookieStoreIOSClient>());
 
-  web::TestBrowserState browser_state;
+  web::FakeBrowserState browser_state;
   browser_state.SetOffTheRecord(true);
   NSURL* test_cookie_url = [NSURL URLWithString:@"http://foo.google.com/bar"];
   NSHTTPCookie* test_cookie = [NSHTTPCookie cookieWithProperties:@{

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/test/base/chrome_render_view_test.h"
@@ -50,7 +49,7 @@ const char kElementJs[] =
     "  return {"
     "    isAvailable: function() { return true; },"
     "    restore: function() {},"
-    "    translatePage: function(originalLang, targetLang, cb) {"
+    "    translatePage: function(sourceLang, targetLang, cb) {"
     "      if (window['throwUnexpectedScriptError']) {"
     "        throw 'all your base are belong to us';"
     "      }"
@@ -76,6 +75,10 @@ std::string GenerateSetCallbackErrorCodeScript(int code) {
 class TranslateScriptBrowserTest : public ChromeRenderViewTest {
  public:
   TranslateScriptBrowserTest() {}
+
+  TranslateScriptBrowserTest(const TranslateScriptBrowserTest&) = delete;
+  TranslateScriptBrowserTest& operator=(const TranslateScriptBrowserTest&) =
+      delete;
 
  protected:
   void InjectElementLibrary() {
@@ -114,7 +117,7 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
     if (result.IsEmpty() || !result->IsNumber()) {
       NOTREACHED();
       // TODO(toyoshim): Return NaN here and the real implementation in
-      // TranslateHelper::ExecuteScriptAndGetDoubleResult().
+      // TranslateAgent::ExecuteScriptAndGetDoubleResult().
       return 0.0;
     }
     return result.As<v8::Number>()->Value();
@@ -132,8 +135,6 @@ class TranslateScriptBrowserTest : public ChromeRenderViewTest {
     }
     return result.As<v8::Boolean>()->Value();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateScriptBrowserTest);
 };
 
 // Test if onTranslateElementLoad() succeeds to initialize the element library.

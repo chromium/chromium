@@ -37,17 +37,33 @@ class SharingHandlerRegistryImpl : public SharingHandlerRegistry {
       chrome_browser_sharing::SharingMessage::PayloadCase payload_case)
       override;
 
+  // Register SharingMessageHandler for |payload_case|.
+  void RegisterSharingHandler(
+      std::unique_ptr<SharingMessageHandler> handler,
+      chrome_browser_sharing::SharingMessage::PayloadCase payload_case)
+      override;
+
+  // Unregister SharingMessageHandler for |payload_case|.
+  void UnregisterSharingHandler(
+      chrome_browser_sharing::SharingMessage::PayloadCase payload_case)
+      override;
+
  private:
-  // Registers |handler| for handling |payload_cases| SharingMessages.
+  // Registers |handler| for handling |payload_cases| SharingMessages. No
+  // handlers should have been registered with |payload_cases|.
   void AddSharingHandler(
       std::unique_ptr<SharingMessageHandler> handler,
       std::set<chrome_browser_sharing::SharingMessage::PayloadCase>
           payload_cases);
 
+ private:
   std::vector<std::unique_ptr<SharingMessageHandler>> handlers_;
   std::map<chrome_browser_sharing::SharingMessage::PayloadCase,
            SharingMessageHandler*>
       handler_map_;
+  std::map<chrome_browser_sharing::SharingMessage::PayloadCase,
+           std::unique_ptr<SharingMessageHandler>>
+      extra_handler_map_;
 };
 
 #endif  // CHROME_BROWSER_SHARING_SHARING_HANDLER_REGISTRY_IMPL_H_

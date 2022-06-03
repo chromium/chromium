@@ -6,11 +6,11 @@
 <script>
 description('Check if we have no crash in a case that the input type is changed by selecting a day in the calendar picker.');
 
-openPicker(document.getElementById('date1'), selectToday);
+openPicker(document.getElementById('date1'), selectDay);
 
-function selectToday() {
-    eventSender.keyDown('t');
-    eventSender.keyDown('\n');
+function selectDay() {
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('Enter');
 }
 
 function changeType(input) {

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<title>Cross-Origin-Opener-Policy and a "javascript:" URL popup</title>
+<meta charset="utf-8">
+<meta name="timeout" content="long">
+<meta name="variant" content="?0-3">
+<meta name="variant" content="?4-7">
+<meta name="variant" content="?8-11">
+<meta name="variant" content="?12-15">
+<meta name="variant" content="?16-last">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/common/subset-tests.js"></script>
+<script src="/common/utils.js"></script>
+<script src="resources/common.js"></script>
+
+<p>According to HTML's navigate algorithm, requests to <code>javascript:</code>
+URLs should inherit the cross-origin opener policy of the active document. To
+observe this, each subtest uses the following procedure.</p>
+
+<ol>
+  <li>create popup with a given COOP (the <code>parentCOOP</code>)</li>
+  <li>navigate the popup to a <code>javascript:</code> URL (the new document is
+  expected to inherit the <code>parentCOOP</code>)</li>
+  <li>from the popup, create a second popup window with a given COOP (the
+  <code>childCOOP</code>)</li>
+</ol>
+
+<p>Both popup windows inspect state and report back to the test context using
+BroadcastChannels.</p>
+
+<pre>
+    .---- test ----.
+    | open(https:) |
+    |  parentCOOP  |   .----- subject -------.
+    |      '---------> | --------.           |
+    |              |   |         v           |
+    |              |   | assign(javascript:) |
+    |              |   |  (COOP under test)  |
+    |              |   |         |           |
+    |              |   |    open(https:)     |
+    |              |   |     childCOOP       |    .- child -.
+    |              |   |         '--------------> |         |
+    |              |   '---------------------'    '---------'
+    |              |             |                     |
+    |  validate    | <--status---+---------------------'
+    '--------------'
+</pre>
+
+<script>
+'use strict';
+
+function run(t, parentCOOP, childCOOP, origin, name) {
+  const bc = new BroadcastChannel(name);
+  const childURL = encodeURIComponent(`${origin}/html/cross-origin-opener-policy/resources/coop-coep.py?coop=${childCOOP}&coep=&channel=${name}`);
+
+  open(
+    `/html/cross-origin-opener-policy/resources/javascript-url-same-origin.https.html` +
+      `?pipe=header(cross-origin-opener-policy,${parentCOOP})` +
+      `&childURL=${childURL}` +
+      `&childName=${name}`
+  );
+
+  t.add_cleanup(() => {
+    bc.postMessage('close');
+  });
+
+  return new Promise((resolve) => {
+    bc.addEventListener('message', ({data}) => {
+      resolve(data);
+    }, {once: true});
+  }).then(({name: childName, opener: childOpener}) => {
+    return new Promise((resolve) => {
+      bc.postMessage('inspectChild');
+
+      bc.addEventListener('message', function handle({data}) {
+        if (typeof data !== 'object' || !('childClosed' in data)) { return; }
+
+        bc.removeEventListener('message', handle);
+
+        resolve({
+          childName,
+          childOpener,
+          childClosed: data.childClosed
+        });
+      });
+    });
+  });
+}
+
+function assert_isolated(results) {
+  assert_equals(results.childName, '', 'child name');
+  assert_false(results.childOpener, 'child opener');
+  // The test subject's reference to the  "child" window must report "closed"
+  // when COOP enforces isolation because the document initially created during
+  // the window open steps must be discarded when a new document object is
+  // created at the end of the navigation.
+  assert_true(results.childClosed, 'child closed');
+}
+
+function assert_not_isolated(results, expectedName) {
+  assert_equals(results.childName, expectedName, 'child name');
+  assert_true(results.childOpener, 'child opener');
+  assert_false(results.childClosed, 'child closed');
+}
+
+function run_javascript_url_tests(testArray) {
+  testArray.forEach(([parentCOOP, childCOOP, origin, expectation], i) => {
+    // Only run specified variants
+    if (!shouldRunSubTest(i)) {
+      return;
+    }
+
+    async_test((t) => {
+      const name = token();
+      run(t, parentCOOP, childCOOP, origin.origin, name)
+      .then(results => { expectation(results, name); })
+      .then(t.step_func_done(), t.step_func((e) => { throw e; }));
+    }, `navigation: ${origin.name}; ` +
+       `parentCOOP: ${parentCOOP}; ` +
+       `childCOOP: ${childCOOP}`);
+  });
+}
+
+const tests = [
+  ['unsafe-none', 'unsafe-none', SAME_ORIGIN, assert_not_isolated],
+  ['unsafe-none', 'unsafe-none', SAME_SITE, assert_not_isolated],
+  ['unsafe-none', 'same-origin-allow-popups', SAME_ORIGIN, assert_isolated],
+  ['unsafe-none', 'same-origin-allow-popups', SAME_SITE, assert_isolated],
+  ['unsafe-none', 'same-origin', SAME_ORIGIN, assert_isolated],
+  ['unsafe-none', 'same-origin', SAME_SITE, assert_isolated],
+  ['same-origin-allow-popups', 'unsafe-none', SAME_ORIGIN, assert_not_isolated],
+  ['same-origin-allow-popups', 'unsafe-none', SAME_SITE, assert_not_isolated],
+  ['same-origin-allow-popups', 'same-origin-allow-popups', SAME_ORIGIN, assert_not_isolated],
+  ['same-origin-allow-popups', 'same-origin-allow-popups', SAME_SITE, assert_isolated],
+  ['same-origin-allow-popups', 'same-origin', SAME_ORIGIN, assert_isolated],
+  ['same-origin-allow-popups', 'same-origin', SAME_SITE, assert_isolated],
+  ['same-origin', 'unsafe-none', SAME_ORIGIN, assert_isolated],
+  ['same-origin', 'unsafe-none', SAME_SITE, assert_isolated],
+  ['same-origin', 'same-origin-allow-popups', SAME_ORIGIN, assert_isolated],
+  ['same-origin', 'same-origin-allow-popups', SAME_SITE, assert_isolated],
+  ['same-origin', 'same-origin', SAME_ORIGIN, assert_not_isolated],
+  ['same-origin', 'same-origin', SAME_SITE, assert_isolated],
+];
+
+run_javascript_url_tests(tests);
+
+</script>

@@ -8,12 +8,12 @@
 // automatically for use in initializing a ReadableStream.
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ]
 interface UnderlyingSourceBase {
     [CallWith=ScriptState, ImplementedAs=startWrapper] Promise<void> start(any stream);
     [CallWith=ScriptState] Promise<void> pull();
-    [CallWith=ScriptState, ImplementedAs=cancelWrapper] Promise<void> cancel([DefaultValue=Undefined] optional any reason);
+    [CallWith=ScriptState, ImplementedAs=cancelWrapper] Promise<void> cancel(optional any reason);
 
     // This only exists to prevent Object.prototype.type being accessed.
     [CallWith=ScriptState] readonly attribute any type;

@@ -2,19 +2,33 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-  // The following variables are initialized by 'initialize'.
-  // Points to the DiscardsDetailsProviderRemote.
-  let discardsDetailsProvider;
+import {DetailsProvider, DetailsProviderRemote} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
+import {SiteDataProvider, SiteDataProviderRemote} from './chrome/browser/ui/webui/discards/site_data.mojom-webui.js';
+
+// The following variables are initialized by 'initialize'.
+// Points to the DiscardsDetailsProviderRemote.
+let discardsDetailsProvider;
+
+/**
+ * @return {!DetailsProviderRemote} Provides discards details.
+ */
+export function getOrCreateDetailsProvider() {
+  if (!discardsDetailsProvider) {
+    discardsDetailsProvider = DetailsProvider.getRemote();
+  }
+  return discardsDetailsProvider;
+}
+
+  let siteDataProvider;
 
   /**
-   * @return {!discards.mojom.DetailsProviderRemote} Provides discards details.
+   * @return {!SiteDataProviderRemote} Provides site data info.
    */
-  export function getOrCreateDetailsProvider() {
-    if (!discardsDetailsProvider) {
-      discardsDetailsProvider = discards.mojom.DetailsProvider.getRemote(
-          /*useBrowserInterfaceBroker=*/ true);
+  export function getOrCreateSiteDataProvider() {
+    if (!siteDataProvider) {
+      siteDataProvider = SiteDataProvider.getRemote();
     }
-    return discardsDetailsProvider;
+    return siteDataProvider;
   }
 
   /**
@@ -22,10 +36,10 @@
    * 's' is sufficient to make a string plural.
    * @param {string} s The string to be made plural if necessary.
    * @param {number} n The count of the number of ojects.
-   * @return {string} The plural version of |s| if n != 1, otherwise |s|.
+   * @return {string} The plural version of |s| if n !== 1, otherwise |s|.
    */
   export function maybeMakePlural(s, n) {
-    return n == 1 ? s : s + 's';
+    return n === 1 ? s : s + 's';
   }
 
   /**

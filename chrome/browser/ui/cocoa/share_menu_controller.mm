@@ -7,7 +7,6 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -19,6 +18,7 @@
 #import "chrome/browser/ui/cocoa/accelerators_cocoa.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/omnibox/browser/location_bar_model.h"
 #include "net/base/mac/url_conversions.h"
 #include "ui/base/accelerators/platform_accelerator_cocoa.h"
 #include "ui/base/l10n/l10n_util_mac.h"
@@ -48,6 +48,17 @@ NSString* const kOpenSharingSubpaneProtocolValue = @"com.apple.share-services";
 // constant.
 NSString* const kRemindersSharingServiceName =
     @"com.apple.reminders.RemindersShareExtension";
+
+bool CanShare() {
+  Browser* last_active_browser = chrome::FindLastActive();
+  return last_active_browser &&
+         last_active_browser->location_bar_model()->ShouldDisplayURL() &&
+         last_active_browser->tab_strip_model()->GetActiveWebContents() &&
+         last_active_browser->tab_strip_model()
+             ->GetActiveWebContents()
+             ->GetLastCommittedURL()
+             .is_valid();
+}
 
 }  // namespace
 
@@ -83,12 +94,7 @@ NSString* const kRemindersSharingServiceName =
   [menu removeAllItems];
   [menu setAutoenablesItems:NO];
 
-  Browser* lastActiveBrowser = chrome::FindLastActive();
-  BOOL canShare =
-      lastActiveBrowser != nullptr &&
-      // Avoid |CanEmailPageLocation| segfault in interactive UI tests
-      lastActiveBrowser->tab_strip_model()->GetActiveWebContents() != nullptr &&
-      chrome::CanEmailPageLocation(lastActiveBrowser);
+  bool canShare = CanShare();
   // Using a real URL instead of empty string to avoid system log about relative
   // URLs in the pasteboard. This URL will not actually be shared to, just used
   // to fetch sharing services that can handle the NSURL type.
@@ -116,14 +122,14 @@ NSString* const kRemindersSharingServiceName =
 
 - (void)sharingService:(NSSharingService*)service
          didShareItems:(NSArray*)items {
-  UMA_HISTOGRAM_BOOLEAN("OSX.NativeShare", true);
+  UMA_HISTOGRAM_BOOLEAN("Mac.FileMenuNativeShare", true);
   [self clearTransitionData];
 }
 
 - (void)sharingService:(NSSharingService*)service
     didFailToShareItems:(NSArray*)items
                   error:(NSError*)error {
-  UMA_HISTOGRAM_BOOLEAN("OSX.NativeShare", false);
+  UMA_HISTOGRAM_BOOLEAN("Mac.FileMenuNativeShare", false);
   [self clearTransitionData];
 }
 
@@ -181,6 +187,7 @@ NSString* const kRemindersSharingServiceName =
 
 // Performs the share action using the sharing service represented by |sender|.
 - (void)performShare:(NSMenuItem*)sender {
+  DCHECK(CanShare());
   Browser* browser = chrome::FindLastActive();
   DCHECK(browser);
   [self saveTransitionDataFromBrowser:browser];

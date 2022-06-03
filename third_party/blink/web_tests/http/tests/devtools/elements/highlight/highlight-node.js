@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `This test verifies the position and size of the highlight rectangles overlaid on an inspected node.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -41,6 +41,8 @@
 
   const div = await ElementsTestRunner.nodeWithIdPromise('inspectedElement');
   await nodeResolved(div, 'inspectedElement');
+  await nodeResolved(div, 'inspectedElement with RGB format', 'rgb');
+  await nodeResolved(div, 'inspectedElement with HSL format', 'hsl');
 
   let textNode = await ElementsTestRunner.findNodePromise(node => {
       return node.nodeType() === Node.TEXT_NODE && node.parentNode && node.parentNode.nodeName() === 'P' && node.parentNode.children()[0] === node;
@@ -57,10 +59,11 @@
   /**
    * @param {!Node} node
    * @param {string} name
+   * @param {string=} colorFormat
    * @param {!Promise}
    */
-  async function nodeResolved(node, name) {
-    const result = await TestRunner.OverlayAgent.getHighlightObjectForTest(node.id);
+  async function nodeResolved(node, name, colorFormat = 'hex') {
+    const result = await TestRunner.OverlayAgent.getHighlightObjectForTest(node.id, undefined, undefined, colorFormat);
     TestRunner.addResult(name + JSON.stringify(result, null, 2));
   }
 

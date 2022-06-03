@@ -67,6 +67,31 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
   int candidate_offset = position.ComputeEditingOffset();
 
   Node* previous_node_iterator = start_node;
+  auto previousNodeSkippingChildren = [&]() -> Node* {
+    // Like Strategy::PreviousPostOrder(*previous_node_iterator, start_block),
+    // but skipping children.
+    for (const Node* parent = previous_node_iterator; parent;
+         parent = Strategy::Parent(*parent)) {
+      if (parent == start_block)
+        return nullptr;
+      if (Node* previous_sibling = Strategy::PreviousSibling(*parent))
+        return previous_sibling;
+    }
+    return nullptr;
+  };
+  auto previousNode = [&]() -> Node* {
+    DCHECK(previous_node_iterator);
+    if (previous_node_iterator == start_node) {
+      // For the first iteration, take the anchor type and offset into account.
+      Node* before_position = position.ComputeNodeBeforePosition();
+      if (!before_position)
+        return previousNodeSkippingChildren();
+      if (before_position != previous_node_iterator)
+        return before_position;
+    }
+    return Strategy::PreviousPostOrder(*previous_node_iterator, start_block);
+  };
+
   while (previous_node_iterator) {
     if (boundary_crossing_rule == kCannotCrossEditingBoundary &&
         !NodeIsUserSelectAll(previous_node_iterator) &&
@@ -76,8 +101,7 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
       while (previous_node_iterator &&
              HasEditableStyle(*previous_node_iterator) !=
                  start_node_is_editable) {
-        previous_node_iterator =
-            Strategy::PreviousPostOrder(*previous_node_iterator, start_block);
+        previous_node_iterator = previousNode();
       }
       if (!previous_node_iterator ||
           !previous_node_iterator->IsDescendantOf(highest_root))
@@ -87,14 +111,12 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
     const LayoutObject* layout_object =
         previous_node_iterator->GetLayoutObject();
     if (!layout_object) {
-      previous_node_iterator =
-          Strategy::PreviousPostOrder(*previous_node_iterator, start_block);
+      previous_node_iterator = previousNode();
       continue;
     }
     const ComputedStyle& style = layout_object->StyleRef();
     if (style.Visibility() != EVisibility::kVisible) {
-      previous_node_iterator =
-          Strategy::PreviousPostOrder(*previous_node_iterator, start_block);
+      previous_node_iterator = previousNode();
       continue;
     }
 
@@ -102,11 +124,9 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
       break;
 
     if (layout_object->IsText() &&
-        ToLayoutText(previous_node_iterator->GetLayoutObject())
-            ->ResolvedTextLength()) {
+        To<LayoutText>(layout_object)->ResolvedTextLength()) {
       if (style.PreserveNewline()) {
-        LayoutText* text =
-            ToLayoutText(previous_node_iterator->GetLayoutObject());
+        auto* text = To<LayoutText>(layout_object);
         int index = text->TextLength();
         if (previous_node_iterator == start_node && candidate_offset < index)
           index = max(0, candidate_offset);
@@ -120,19 +140,14 @@ PositionTemplate<Strategy> StartOfParagraphAlgorithm(
       candidate_node = previous_node_iterator;
       candidate_type = PositionAnchorType::kOffsetInAnchor;
       candidate_offset = 0;
-      previous_node_iterator =
-          Strategy::PreviousPostOrder(*previous_node_iterator, start_block);
+      previous_node_iterator = previousNode();
     } else if (EditingIgnoresContent(*previous_node_iterator) ||
                IsDisplayInsideTable(previous_node_iterator)) {
       candidate_node = previous_node_iterator;
       candidate_type = PositionAnchorType::kBeforeAnchor;
-      previous_node_iterator = previous_node_iterator->previousSibling()
-                                   ? previous_node_iterator->previousSibling()
-                                   : Strategy::PreviousPostOrder(
-                                         *previous_node_iterator, start_block);
+      previous_node_iterator = previousNodeSkippingChildren();
     } else {
-      previous_node_iterator =
-          Strategy::PreviousPostOrder(*previous_node_iterator, start_block);
+      previous_node_iterator = previousNode();
     }
   }
 
@@ -147,8 +162,13 @@ VisiblePositionTemplate<Strategy> StartOfParagraphAlgorithm(
     const VisiblePositionTemplate<Strategy>& visible_position,
     EditingBoundaryCrossingRule boundary_crossing_rule) {
   DCHECK(visible_position.IsValid()) << visible_position;
-  return CreateVisiblePosition(StartOfParagraphAlgorithm(
-      visible_position.DeepEquivalent(), boundary_crossing_rule));
+  const PositionTemplate<Strategy>& start = StartOfParagraphAlgorithm(
+      visible_position.DeepEquivalent(), boundary_crossing_rule);
+#if DCHECK_IS_ON()
+  if (start.IsNotNull() && visible_position.IsNotNull())
+    DCHECK_LE(start, visible_position.DeepEquivalent());
+#endif
+  return CreateVisiblePosition(start);
 }
 
 template <typename Strategy>
@@ -174,6 +194,19 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
   int candidate_offset = position.ComputeEditingOffset();
 
   Node* next_node_iterator = start_node;
+  auto nextNode = [&]() -> Node* {
+    DCHECK(next_node_iterator);
+    if (next_node_iterator == start_node) {
+      // For the first iteration, take the anchor type and offset into account.
+      Node* after_position = position.ComputeNodeAfterPosition();
+      if (!after_position)
+        return Strategy::NextSkippingChildren(*next_node_iterator, start_block);
+      if (after_position != candidate_node)
+        return after_position;
+    }
+    return Strategy::Next(*next_node_iterator, start_block);
+  };
+
   while (next_node_iterator) {
     if (boundary_crossing_rule == kCannotCrossEditingBoundary &&
         !NodeIsUserSelectAll(next_node_iterator) &&
@@ -182,7 +215,7 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
     if (boundary_crossing_rule == kCanSkipOverEditingBoundary) {
       while (next_node_iterator &&
              HasEditableStyle(*next_node_iterator) != start_node_is_editable)
-        next_node_iterator = Strategy::Next(*next_node_iterator, start_block);
+        next_node_iterator = nextNode();
       if (!next_node_iterator ||
           !next_node_iterator->IsDescendantOf(highest_root))
         break;
@@ -190,12 +223,12 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
 
     LayoutObject* const layout_object = next_node_iterator->GetLayoutObject();
     if (!layout_object) {
-      next_node_iterator = Strategy::Next(*next_node_iterator, start_block);
+      next_node_iterator = nextNode();
       continue;
     }
     const ComputedStyle& style = layout_object->StyleRef();
     if (style.Visibility() != EVisibility::kVisible) {
-      next_node_iterator = Strategy::Next(*next_node_iterator, start_block);
+      next_node_iterator = nextNode();
       continue;
     }
 
@@ -205,10 +238,10 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
     // TODO(editing-dev): We avoid returning a position where the layoutObject
     // can't accept the caret.
     if (layout_object->IsText() &&
-        ToLayoutText(layout_object)->ResolvedTextLength()) {
-      LayoutText* const text = ToLayoutText(layout_object);
+        To<LayoutText>(layout_object)->ResolvedTextLength()) {
+      auto* const text = To<LayoutText>(layout_object);
       if (style.PreserveNewline()) {
-        const int length = ToLayoutText(layout_object)->TextLength();
+        const int length = text->TextLength();
         for (int i = (next_node_iterator == start_node ? candidate_offset : 0);
              i < length; ++i) {
           if ((*text)[i] == '\n') {
@@ -220,9 +253,8 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
 
       candidate_node = next_node_iterator;
       candidate_type = PositionAnchorType::kOffsetInAnchor;
-      candidate_offset =
-          layout_object->CaretMaxOffset() + text->TextStartOffset();
-      next_node_iterator = Strategy::Next(*next_node_iterator, start_block);
+      candidate_offset = text->CaretMaxOffset() + text->TextStartOffset();
+      next_node_iterator = nextNode();
     } else if (EditingIgnoresContent(*next_node_iterator) ||
                IsDisplayInsideTable(next_node_iterator)) {
       candidate_node = next_node_iterator;
@@ -230,7 +262,7 @@ PositionTemplate<Strategy> EndOfParagraphAlgorithm(
       next_node_iterator =
           Strategy::NextSkippingChildren(*next_node_iterator, start_block);
     } else {
-      next_node_iterator = Strategy::Next(*next_node_iterator, start_block);
+      next_node_iterator = nextNode();
     }
   }
 
@@ -245,8 +277,13 @@ VisiblePositionTemplate<Strategy> EndOfParagraphAlgorithm(
     const VisiblePositionTemplate<Strategy>& visible_position,
     EditingBoundaryCrossingRule boundary_crossing_rule) {
   DCHECK(visible_position.IsValid()) << visible_position;
-  return CreateVisiblePosition(EndOfParagraphAlgorithm(
-      visible_position.DeepEquivalent(), boundary_crossing_rule));
+  const PositionTemplate<Strategy>& end = EndOfParagraphAlgorithm(
+      visible_position.DeepEquivalent(), boundary_crossing_rule);
+#if DCHECK_IS_ON()
+  if (visible_position.IsNotNull() && end.IsNotNull())
+    DCHECK_LE(visible_position.DeepEquivalent(), end);
+#endif
+  return CreateVisiblePosition(end);
 }
 
 template <typename Strategy>
@@ -290,6 +327,11 @@ VisiblePosition EndOfParagraph(
   return EndOfParagraphAlgorithm<EditingStrategy>(c, boundary_crossing_rule);
 }
 
+Position EndOfParagraph(const Position& c,
+                        EditingBoundaryCrossingRule boundary_crossing_rule) {
+  return EndOfParagraphAlgorithm<EditingStrategy>(c, boundary_crossing_rule);
+}
+
 VisiblePositionInFlatTree EndOfParagraph(
     const VisiblePositionInFlatTree& c,
     EditingBoundaryCrossingRule boundary_crossing_rule) {
@@ -301,16 +343,26 @@ VisiblePositionInFlatTree EndOfParagraph(
 // always true
 VisiblePosition StartOfNextParagraph(const VisiblePosition& visible_position) {
   DCHECK(visible_position.IsValid()) << visible_position;
-  VisiblePosition paragraph_end(
-      EndOfParagraph(visible_position, kCanSkipOverEditingBoundary));
+  Position paragraph_end(EndOfParagraph(visible_position.DeepEquivalent(),
+                                        kCanSkipOverEditingBoundary));
+  // EndOfParagraph preserves the candidate_type, so if we are already at the
+  // end node we must ensure we get the next position to avoid infinite loops.
+  if (paragraph_end == visible_position.DeepEquivalent()) {
+    paragraph_end =
+        Position::AfterNode(*visible_position.DeepEquivalent().AnchorNode());
+  }
+  DCHECK(!paragraph_end.IsBeforeAnchor());
+  DCHECK(visible_position.DeepEquivalent() < paragraph_end ||
+         visible_position.DeepEquivalent() == paragraph_end &&
+             paragraph_end.IsAfterAnchor());
   VisiblePosition after_paragraph_end(
       NextPositionOf(paragraph_end, kCannotCrossEditingBoundary));
   // It may happen that an element's next visually equivalent candidate is set
   // to such element when creating the VisualPosition. This may cause infinite
   // loops when we are iterating over parapgrahs.
-  if (after_paragraph_end.DeepEquivalent() == paragraph_end.DeepEquivalent()) {
-    after_paragraph_end = VisiblePosition::AfterNode(
-        *paragraph_end.DeepEquivalent().AnchorNode());
+  if (after_paragraph_end.DeepEquivalent() == paragraph_end) {
+    after_paragraph_end =
+        VisiblePosition::AfterNode(*paragraph_end.AnchorNode());
   }
   // The position after the last position in the last cell of a table
   // is not the start of the next paragraph.

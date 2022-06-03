@@ -35,6 +35,11 @@ struct CC_EXPORT BrowserControlsParams {
   // URL-bar (always false on platforms where URL-bar hiding isn't supported).
   bool browser_controls_shrink_blink_size = false;
 
+  // Whether or not the top controls should only expand at the top of the page
+  // contents. If true, collapsed top controls won't begin scrolling into view
+  // until the page is scrolled to the top.
+  bool only_expand_top_controls_at_page_top = false;
+
   bool operator==(const BrowserControlsParams& other) const;
   bool operator!=(const BrowserControlsParams& other) const;
 };

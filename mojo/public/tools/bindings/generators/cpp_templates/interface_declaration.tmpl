@@ -16,9 +16,20 @@ class {{export_attribute}} {{interface.name}}
     : public {{interface.name}}InterfaceBase {
  public:
   static const char Name_[];
+{%-  if interface.uuid %}
+  static constexpr base::Token Uuid_{ {{interface.uuid[0]}}ULL,
+                                      {{interface.uuid[1]}}ULL };
+{%-  endif %}
+{%- if interface.service_sandbox %}
+{%- set sandbox_enum = "%s"|format(interface.service_sandbox|replace(".","::")) %}
+  static constexpr auto kServiceSandbox = {{ sandbox_enum }};
+{%- endif %}
   static constexpr uint32_t Version_ = {{interface.version}};
   static constexpr bool PassesAssociatedKinds_ = {% if interface|passes_associated_kinds %}true{% else %}false{% endif %};
   static constexpr bool HasSyncMethods_ = {% if interface|has_sync_methods %}true{% else %}false{% endif %};
+  static constexpr bool HasUninterruptableMethods_ =
+      {%- if interface|has_uninterruptable_methods %} true
+      {%- else %} false{% endif %};
 
   using Base_ = {{interface.name}}InterfaceBase;
   using Proxy_ = {{interface.name}}Proxy;
@@ -53,7 +64,7 @@ class {{export_attribute}} {{interface.name}}
 {%- endfor %}
 
 {#--- Methods #}
-  virtual ~{{interface.name}}() {}
+  virtual ~{{interface.name}}() = default;
 
 {%- for method in interface.methods %}
 {%    if method.response_parameters != None %}

@@ -10,11 +10,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "chromeos/services/device_sync/network_request_error.h"
 #include "google_apis/gaia/oauth2_api_call_flow.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -30,11 +29,15 @@ namespace device_sync {
 
 class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
  public:
-  typedef base::Callback<void(const std::string& serialized_response)>
+  typedef base::OnceCallback<void(const std::string& serialized_response)>
       ResultCallback;
-  typedef base::Callback<void(NetworkRequestError error)> ErrorCallback;
+  typedef base::OnceCallback<void(NetworkRequestError error)> ErrorCallback;
 
   CryptAuthApiCallFlow();
+
+  CryptAuthApiCallFlow(const CryptAuthApiCallFlow&) = delete;
+  CryptAuthApiCallFlow& operator=(const CryptAuthApiCallFlow&) = delete;
+
   ~CryptAuthApiCallFlow() override;
 
   // Starts the API POST request call.
@@ -49,8 +52,8 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
       const std::string& serialized_request,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
-      const ResultCallback& result_callback,
-      const ErrorCallback& error_callback);
+      ResultCallback result_callback,
+      ErrorCallback error_callback);
 
   // Starts the API GET request call.
   //   |request_url|: The URL endpoint of the API request.
@@ -67,8 +70,8 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
           request_as_query_parameters,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const std::string& access_token,
-      const ResultCallback& result_callback,
-      const ErrorCallback& error_callback);
+      ResultCallback result_callback,
+      ErrorCallback error_callback);
 
   void SetPartialNetworkTrafficAnnotation(
       const net::PartialNetworkTrafficAnnotationTag&
@@ -102,12 +105,12 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
 
   // Serialized request message proto that will be sent in the API POST request.
   // Null if request type is not POST.
-  base::Optional<std::string> serialized_request_;
+  absl::optional<std::string> serialized_request_;
 
   // The request message proto represented as key-value pairs that will be sent
   // as query parameters in the API GET request. Note: A key can have multiple
   // values. Null if request type is not GET.
-  base::Optional<std::vector<std::pair<std::string, std::string>>>
+  absl::optional<std::vector<std::pair<std::string, std::string>>>
       request_as_query_parameters_;
 
   // Callback invoked with the serialized response message proto when the flow
@@ -119,8 +122,6 @@ class CryptAuthApiCallFlow : public OAuth2ApiCallFlow {
 
   std::unique_ptr<net::PartialNetworkTrafficAnnotationTag>
       partial_network_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthApiCallFlow);
 };
 
 }  // namespace device_sync

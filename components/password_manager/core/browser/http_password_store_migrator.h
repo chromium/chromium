@@ -8,19 +8,27 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "components/password_manager/core/browser/hsts_query.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
-#include "url/gurl.h"
-
-namespace autofill {
-struct PasswordForm;
-}
+#include "url/origin.h"
 
 namespace password_manager {
 
-class PasswordManagerClient;
+class PasswordStoreInterface;
+struct PasswordForm;
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// Needs to stay in sync with HttpPasswordMigrationMode in enums.xml.
+enum class HttpPasswordMigrationMode {
+  // HTTP credentials are deleted after migration to HTTPS.
+  kMove = 0,
+  // HTTP credentials are kept after migration to HTTPS.
+  kCopy = 1,
+  kMaxValue = kCopy,
+};
 
 // The class is responsible for migrating the passwords saved on HTTP to HTTPS
 // origin. It automatically determines whether HTTP passwords should be moved or
@@ -41,35 +49,35 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
     // Notify the embedder that |forms| were migrated to HTTPS. |forms| contain
     // the updated HTTPS scheme.
     virtual void ProcessMigratedForms(
-        std::vector<std::unique_ptr<autofill::PasswordForm>> forms) = 0;
+        std::vector<std::unique_ptr<PasswordForm>> forms) = 0;
   };
 
   // |https_origin| should specify a valid HTTPS URL.
-  HttpPasswordStoreMigrator(const GURL& https_origin,
-                            const PasswordManagerClient* client,
+  HttpPasswordStoreMigrator(const url::Origin& https_origin,
+                            PasswordStoreInterface* store,
+                            network::mojom::NetworkContext* network_context,
                             Consumer* consumer);
+
+  HttpPasswordStoreMigrator(const HttpPasswordStoreMigrator&) = delete;
+  HttpPasswordStoreMigrator& operator=(const HttpPasswordStoreMigrator&) =
+      delete;
+
   ~HttpPasswordStoreMigrator() override;
 
   // Creates HTTPS version of |http_form|.
-  static autofill::PasswordForm MigrateHttpFormToHttps(
-      const autofill::PasswordForm& http_form);
+  static PasswordForm MigrateHttpFormToHttps(const PasswordForm& http_form);
 
   // PasswordStoreConsumer:
   void OnGetPasswordStoreResults(
-      std::vector<std::unique_ptr<autofill::PasswordForm>> results) override;
+      std::vector<std::unique_ptr<PasswordForm>> results) override;
 
-  // Callback for |PasswordManagerClient::PostHSTSQueryForHost|.
+  // Callback for PostHSTSQueryForHostAndNetworkContext.
   void OnHSTSQueryResult(HSTSResult is_hsts);
 
  private:
-  enum class MigrationMode {
-    MOVE,  // HTTP credentials are deleted after migration to HTTPS.
-    COPY,  // HTTP credentials are kept after migration to HTTPS.
-  };
-
   void ProcessPasswordStoreResults();
 
-  const PasswordManagerClient* const client_;
+  PasswordStoreInterface* const store_;
   Consumer* consumer_;
 
   // |ProcessPasswordStoreResults| requires that both |OnHSTSQueryResult| and
@@ -78,12 +86,10 @@ class HttpPasswordStoreMigrator : public PasswordStoreConsumer {
   // if both are set to true |ProcessPasswordStoreResults| gets called.
   bool got_hsts_query_result_ = false;
   bool got_password_store_results_ = false;
-  MigrationMode mode_;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> results_;
-  GURL http_origin_domain_;
+  HttpPasswordMigrationMode mode_ = HttpPasswordMigrationMode::kMove;
+  std::vector<std::unique_ptr<PasswordForm>> results_;
+  url::Origin http_origin_domain_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(HttpPasswordStoreMigrator);
 };
 
 }  // namespace password_manager

@@ -6,6 +6,7 @@
 <script src="full-screen-test.js"></script>
 <script>
     var initialized = false;
+    var fullscreened = false;
     window.onmessage = function(messageEvent) {
         if (!initialized) {
             // video has been loaded and messaged us.
@@ -19,10 +20,18 @@
                 eventSender.mouseUp();
             }
             initialized = true;
-        } else {
-            consoleWrite(messageEvent.data);
-            endTest();
+            return;
         }
+
+        if (!fullscreened) {
+            // The video has been fullscreened.
+            consoleWrite(messageEvent.data);
+            fullscreened = true;
+            return;
+        }
+
+        // A third message is received when the video has painted a frame.
+        endTest();
     }
 </script>
 Video inside an iframe is allowed to enter fullscreen</p>

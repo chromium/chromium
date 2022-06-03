@@ -1,7 +1,7 @@
 AXWebArea
 ++AXGroup
-++++AXGroup
+++++AXGroup AXDescription='To get missing image descriptions, open the context menu.'
 ++++++AXStaticText AXValue='Static fallback'
 ++++AXGroup
-++++++AXLink AXTitle='Interactive fallback'
+++++++AXLink AXDescription='Interactive fallback'
 ++++++++AXStaticText AXValue='Interactive fallback'

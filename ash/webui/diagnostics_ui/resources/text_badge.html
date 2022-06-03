@@ -1,0 +1,39 @@
+<style include="diagnostics-shared">
+  .error {
+    background-color: var(--google-red-50);
+    color: var(--google-red-600);
+  }
+
+  .queued, .stopped, .skipped {
+    background-color: var(--google-grey-200);
+    color: var(--google-grey-700);
+  }
+
+  .running {
+    background-color: var(--google-blue-50);
+    color: var(--google-blue-600);
+  }
+
+  .success {
+    background-color: var(--google-green-50);
+    color: var(--google-green-600);
+  }
+
+  .warning {
+    background-color: #FEF7E0;
+    color: #F9AB00;
+  }
+
+  #textBadge {
+    @apply --diagnostics-text-badge-font;
+    border-radius: 4px;
+    height: 20px;
+    letter-spacing: .8px;
+    line-height: 16px;
+    padding: 2px 6px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+</style>
+
+<span id="textBadge" class$="[[badgeType]]" hidden$="[[hidden]]">[[value]]</span>

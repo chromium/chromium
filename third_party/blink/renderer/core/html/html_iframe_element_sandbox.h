@@ -22,4 +22,4 @@ class HTMLIFrameElementSandbox final : public DOMTokenList {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_HTML_IFRAME_ELEMENT_SANDBOX_H_

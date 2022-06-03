@@ -33,6 +33,12 @@ class DummyScreenAndroid : public display::Screen {
     return NULL;
   }
 
+  gfx::NativeWindow GetLocalProcessWindowAtPoint(
+      const gfx::Point& point,
+      const std::set<gfx::NativeWindow>& ignore) override {
+    return nullptr;
+  }
+
   int GetNumDisplays() const override { return 1; }
 
   const std::vector<Display>& GetAllDisplays() const override {

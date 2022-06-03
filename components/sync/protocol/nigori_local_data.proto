@@ -14,10 +14,10 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "encryption.proto";
-import "entity_metadata.proto";
-import "model_type_state.proto";
-import "nigori_specifics.proto";
+import "components/sync/protocol/encryption.proto";
+import "components/sync/protocol/entity_metadata.proto";
+import "components/sync/protocol/model_type_state.proto";
+import "components/sync/protocol/nigori_specifics.proto";
 
 message CryptographerData {
   // Contains all known Nigori keys.
@@ -90,6 +90,14 @@ message NigoriModel {
   // Encryptor keystore decryptor token. Used for decryption of keystore Nigori
   // in case keystore keys arrived after NigoriSpecifics.
   optional EncryptedData pending_keystore_decryptor_token = 11;
+
+  // Contains the name of the latest available trusted vault key that was used
+  // as the default encryption key. Resets when the client go out of pending
+  // decryption state and transits to other passphrase types.
+  optional string last_default_trusted_vault_key_name = 12;
+
+  // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.
+  optional NigoriSpecifics.TrustedVaultDebugInfo trusted_vault_debug_info = 13;
 }
 
 // Sync proto to store Nigori data in storage. Proto should be encrypted with

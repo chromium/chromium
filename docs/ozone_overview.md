@@ -56,7 +56,6 @@ Ozone moves platform-specific code behind the following interfaces:
   access to IPC between the browser & GPU processes. Some platforms need this
   to provide additional services in the GPU process such as display
   configuration.
-* `CursorFactoryOzone` is used to load & set platform cursors.
 * `OverlayManagerOzone` is used to manage overlays.
 * `InputController` allows to control input devices such as keyboard, mouse or
   touchpad.
@@ -91,7 +90,7 @@ Users of the Ozone abstraction need to do the following, at minimum:
   invoke `PlatformWindowDelegate::DispatchEvent` to dispatch each event.
 * Write a subclass of `SurfaceFactoryOzone` that handles allocating accelerated
   surfaces. I'll call this `SurfaceFactoryOzoneImpl`.
-* Write a subclass of `CursorFactoryOzone` to manage cursors, or use the
+* Write a subclass of `CursorFactory` to manage cursors, or use the
   `BitmapCursorFactoryOzone` implementation if only bitmap cursors need to be
   supported.
 * Write a subclass of `OverlayManagerOzone` or just use `StubOverlayManager` if
@@ -156,23 +155,29 @@ Then to run for example the headless platform:
                                   --ozone-dump-file=/tmp/
 ```
 
-### Linux Desktop - ([waterfall](https://build.chromium.org/p/chromium.fyi/builders/Ozone%20Linux/))
+### Linux Desktop - ([X11 waterfall](https://ci.chromium.org/p/chromium/builders/try/linux-rel) &&
+[Wayland waterfall](https://ci.chromium.org/p/chromium/builders/try/linux-wayland-rel))
 
-**Warning: Experimental support for Linux Desktop is available since m57 and still under
-  development. The work is purely done in the upstream, but you can still find some Ozone/X11
-  patches in the the old [ozone-wayland-dev](https://github.com/Igalia/chromium/tree/ozone-wayland-dev) branch.**
+By default, Linux enables the following Ozone backends - X11, Wayland and Headless.
 
-To build `chrome`, do this from the `src` directory:
+If you want to disable Ozone/X11 in the build, do this from the `src` directory:
 
 ``` shell
-gn args out/OzoneLinuxDesktop --args="use_ozone=true use_system_minigbm=true use_system_libdrm=true"
+gn args out/OzoneLinuxDesktop --args="ozone_platform_x11=false"
 ninja -C out/OzoneLinuxDesktop chrome
 ```
 
-Then to run for example the X11 platform:
+If you want to disable all, but Wayland Ozone backend, do this from the `src` directory:
 
 ``` shell
-./out/OzoneLinuxDesktop/chrome --ozone-platform=x11
+gn args out/OzoneLinuxDesktop --args="ozone_auto_platforms=false ozone_platform_wayland=true"
+ninja -C out/OzoneLinuxDesktop chrome
+```
+
+Chrome/Linux uses X11 Ozone backend by default. Thus, simply start the browser without any parameters:
+
+``` shell
+./out/OzoneLinuxDesktop/chrome
 ```
 
 Or run for example the Wayland platform:
@@ -181,12 +186,17 @@ Or run for example the Wayland platform:
 ./out/OzoneLinuxDesktop/chrome --ozone-platform=wayland
 ```
 
+It is also possible to choose an Ozone backend via the chrome://flags/#ozone-platform-hint.
+The following options are available - Default, X11, Wayland, and Auto. The default one is
+"X11". "Auto" selects Wayland if possible, X11 otherwise.
+
+
 ### GN Configuration notes
 
 You can turn properly implemented ozone platforms on and off by setting the
 corresponding flags in your GN configuration. For example
-`ozone_platform_headless=false ozone_platform_gbm=false` will turn off the
-headless and DRM/GBM platforms.
+`ozone_platform_headless=false ozone_platform_drm=false` will turn off the
+headless and DRM (GBM) platforms.
 This will result in a smaller binary and faster builds. To turn ALL platforms
 off by default, set `ozone_auto_platforms=false`.
 
@@ -199,19 +209,19 @@ by default.
 ## Running with Ozone
 
 Specify the platform you want to use at runtime using the `--ozone-platform`
-flag. For example, to run `content_shell` with the GBM platform:
+flag. For example, to run `content_shell` with the DRM (GBM) platform:
 
 ``` shell
-content_shell --ozone-platform=gbm
+content_shell --ozone-platform=drm
 ```
 
 Caveats:
 
 * `content_shell` always runs at 800x600 resolution.
-* For the GBM platform, you may need to terminate your X server (or any other
+* For the DRM (GBM) platform, you may need to terminate your X server (or any other
   display server) prior to testing.
 * During development, you may need to configure
-  [sandboxing](linux_sandboxing.md) or to disable it.
+  [sandboxing](linux/sandboxing.md) or to disable it.
 
 ## Ozone Platforms
 
@@ -247,15 +257,13 @@ This platform is used for
 
 This platform provides support for the [X window system](https://www.x.org/).
 
-The support for X11 is being actively developed by Igalia and the chromium
-community and is intended to replace the current legacy X11 path.
-
-You can try to compile and run it with the following configuration:
+X11 is the default Ozone backend. You can try to compile and run it with the following
+configuration:
 
 ``` shell
-gn args out/OzoneX11 --args="use_ozone=true"
+gn args out/OzoneX11
 ninja -C out/OzoneX11 chrome
-./out/OzoneX11/chrome --ozone-platform=x11
+./out/OzoneX11/chrome
 ```
 
 ### Wayland
@@ -275,8 +283,11 @@ launching `chrome` from a Wayland environment such as `weston`. Execute the
 following commands (make sure a system version of gbm and drm is used, which
 are required by Ozone/Wayland by design, when running on Linux platforms.):
 
+Please note that the Wayland Ozone backend is built by default unless
+`ozone_auto_platforms=false` is set (the same as the X11 Ozone backend).
+
 ``` shell
-gn args out/OzoneWayland --args="use_ozone=true use_system_minigbm=true use_system_libdrm=true use_xkbcommon=true"
+gn args out/OzoneWayland
 ninja -C out/OzoneWayland chrome
 ./out/OzoneWayland/chrome --ozone-platform=wayland
 ```
@@ -292,6 +303,23 @@ use_system_libdrm=true
 use_xkbcommon=true
 use_glib=true
 use_gtk=true
+```
+
+Running some test suites requires a Wayland server. If you're not
+running one you can use a locally compiled version of Weston. This is
+what the build bots do. Please note that this is required for
+interactive_ui_tests, as those tests use a patched version of Weston's
+test plugin. Add this to your gn args:
+
+``` shell
+use_bundled_weston = true
+```
+
+Then run the xvfb.py wrapper script and tell it to start Weston:
+
+``` shell
+cd out/debug  # or your out directory
+../../testing/xvfb.py --use-weston --no-xvfb ./views_unittests --ozone-platform=wayland
 ```
 
 Feel free to discuss with us on freenode.net, `#ozone-wayland` channel or on

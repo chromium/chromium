@@ -1,0 +1,17 @@
+<!--
+@BLINK-DENY:descri*
+-->
+<!doctype html>
+<html>
+<body>
+<style type="text/css">
+  label:before { content: "foo"; }
+  label:after { content: "baz"; }
+</style>
+<form>
+<label for="test">
+<input id="test" type="checkbox" name="test" title=" bar ">
+</label>
+</form>
+</body>
+</html>

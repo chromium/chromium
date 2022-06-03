@@ -17,10 +17,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
-#include "chrome/browser/android/feature_utilities.h"
-#endif
-
 using search_provider_logos::LogoService;
 using search_provider_logos::LogoServiceImpl;
 
@@ -60,12 +56,11 @@ KeyedService* LogoServiceFactory::BuildServiceInstanceFor(
     content::BrowserContext* context) const {
   Profile* profile = static_cast<Profile*>(context);
   DCHECK(!profile->IsOffTheRecord());
-  return new LogoServiceImpl(
-      profile->GetPath().Append(kCachedLogoDirectory),
-      IdentityManagerFactory::GetForProfile(profile),
-      TemplateURLServiceFactory::GetForProfile(profile),
-      std::make_unique<ImageDecoderImpl>(),
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess(),
-      base::BindRepeating(&UseGrayLogo));
+  return new LogoServiceImpl(profile->GetPath().Append(kCachedLogoDirectory),
+                             IdentityManagerFactory::GetForProfile(profile),
+                             TemplateURLServiceFactory::GetForProfile(profile),
+                             std::make_unique<ImageDecoderImpl>(),
+                             profile->GetDefaultStoragePartition()
+                                 ->GetURLLoaderFactoryForBrowserProcess(),
+                             base::BindRepeating(&UseGrayLogo));
 }

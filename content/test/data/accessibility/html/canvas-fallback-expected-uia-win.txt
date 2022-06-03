@@ -1,21 +1,21 @@
-document
-++group IsControlElement=false
-++++img
-++++++description Name='Static fallback'
-++++img
-++++++description Name='<newline>    '
-++++++group Name='Aria hidden paragraph in fallback content'
-++++++++description Name='Line breaking content in a fallback'
-++++++description Name='<newline>    '
-++++++group Name='Visibility hidden paragraph in fallback content'
-++++++++description Name='This is another paragraph in fallback'
-++++++description Name='<newline>    '
-++++++heading Name='Aria hidden paragraph in fallback content'
-++++++++description Name='Aria hidden paragraph in fallback content' IsControlElement=false
-++++++description Name='<newline>    '
-++++++heading IsControlElement=false
-++++++++description Name='Display none text in fallback content ' IsControlElement=false
-++++++description Name='<newline>    '
-++++++heading IsControlElement=false
-++++++++description Name='Visibility hidden paragraph in fallback content' IsControlElement=false
-++++++description Name='<newline>  '
+Document
+++Group IsControlElement=false
+++++Image Name='To get missing image descriptions, open the context menu.'
+++++++Text Name='Static fallback'
+++++Image
+++++++Text Name='<newline>    '
+++++++Group
+++++++++Text Name='Line breaking content in a fallback'
+++++++Text Name='<newline>    '
+++++++Group
+++++++++Text Name='This is another paragraph in fallback'
+++++++Text Name='<newline>    '
+++++++Text Name='Aria hidden paragraph in fallback content' IsControlElement=false
+++++++++Text Name='Aria hidden paragraph in fallback content' IsControlElement=false
+++++++Text Name='<newline>    '
+++++++Text IsControlElement=false
+++++++++Text Name='Display none text in fallback content ' IsControlElement=false
+++++++Text Name='<newline>    '
+++++++Text IsControlElement=false
+++++++++Text Name='Visibility hidden paragraph in fallback content' IsControlElement=false
+++++++Text Name='<newline>  '

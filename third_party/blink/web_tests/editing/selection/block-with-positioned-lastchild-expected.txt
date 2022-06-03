@@ -1,4 +1,0 @@
-Click on the left of this line.
-Caret should NOT be placed in this line,
-PASS
-

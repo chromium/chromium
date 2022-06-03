@@ -14,56 +14,45 @@
 #error "This file requires ARC support."
 #endif
 
-const char kFindActionName[] = "Find";
-const char kFindNextActionName[] = "FindNext";
-const char kFindPreviousActionName[] = "FindPrevious";
-
 FindTabHelper::FindTabHelper(web::WebState* web_state) {
-  web_state->AddObserver(this);
-  controller_ = [[FindInPageController alloc] initWithWebState:web_state];
+  DCHECK(web_state);
+  observation_.Observe(web_state);
+
+  if (web_state->IsRealized()) {
+    CreateFindInPageController(web_state);
+  }
 }
 
 FindTabHelper::~FindTabHelper() {}
 
 void FindTabHelper::SetResponseDelegate(
     id<FindInPageResponseDelegate> response_delegate) {
-  controller_.responseDelegate = response_delegate;
+  if (!controller_) {
+    response_delegate_ = response_delegate;
+  } else {
+    controller_.responseDelegate = response_delegate;
+  }
 }
 
-void FindTabHelper::StartFinding(NSString* search_term,
-                                 FindInPageCompletionBlock completion) {
-  base::RecordAction(base::UserMetricsAction(kFindActionName));
-  [controller_ findStringInPage:search_term
-              completionHandler:^{
-                FindInPageModel* model = controller_.findInPageModel;
-                completion(model);
-              }];
+void FindTabHelper::StartFinding(NSString* search_term) {
+  [controller_ findStringInPage:search_term];
 }
 
-void FindTabHelper::ContinueFinding(FindDirection direction,
-                                    FindInPageCompletionBlock completion) {
-  FindInPageModel* model = controller_.findInPageModel;
-
+void FindTabHelper::ContinueFinding(FindDirection direction) {
   if (direction == FORWARD) {
-    base::RecordAction(base::UserMetricsAction(kFindNextActionName));
-    [controller_ findNextStringInPageWithCompletionHandler:^{
-      completion(model);
-    }];
+    [controller_ findNextStringInPage];
 
   } else if (direction == REVERSE) {
-    base::RecordAction(base::UserMetricsAction(kFindPreviousActionName));
-    [controller_ findPreviousStringInPageWithCompletionHandler:^{
-      completion(model);
-    }];
+    [controller_ findPreviousStringInPage];
 
   } else {
     NOTREACHED();
   }
 }
 
-void FindTabHelper::StopFinding(ProceduralBlock completion) {
+void FindTabHelper::StopFinding() {
   SetFindUIActive(false);
-  [controller_ disableFindInPageWithCompletionHandler:completion];
+  [controller_ disableFindInPage];
 }
 
 FindInPageModel* FindTabHelper::GetFindResult() const {
@@ -90,15 +79,32 @@ void FindTabHelper::RestoreSearchTerm() {
   [controller_ restoreSearchTerm];
 }
 
-void FindTabHelper::DidFinishNavigation(
-    web::WebState* web_state,
-    web::NavigationContext* navigation_context) {
-  StopFinding(nil);
+void FindTabHelper::CreateFindInPageController(web::WebState* web_state) {
+  DCHECK(!controller_);
+  controller_ = [[FindInPageController alloc] initWithWebState:web_state];
+  if (response_delegate_) {
+    controller_.responseDelegate = response_delegate_;
+    response_delegate_ = nil;
+  }
+}
+
+void FindTabHelper::WebStateRealized(web::WebState* web_state) {
+  CreateFindInPageController(web_state);
 }
 
 void FindTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  observation_.Reset();
+
   [controller_ detachFromWebState];
-  web_state->RemoveObserver(this);
+  controller_ = nil;
+}
+
+void FindTabHelper::DidFinishNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  if (IsFindUIActive()) {
+    StopFinding();
+  }
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(FindTabHelper)

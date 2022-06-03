@@ -3,7 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//build/config/linux/gtk/gtk.gni")
+import("//build/config/ozone.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/config/ui.gni")
 import("//build/config/win/console_app.gni")
@@ -18,18 +21,21 @@ import("//tools/v8_context_snapshot/v8_context_snapshot.gni")
 if (is_android) {
   import("//build/config/android/config.gni")
 } else if (is_mac) {
+  import("//build/apple/tweak_info_plist.gni")
   import("//build/config/mac/rules.gni")
-  import("//build/mac/tweak_info_plist.gni")
   import("//content/public/app/mac_helpers.gni")
   import("//third_party/icu/config.gni")
   import("//ui/gl/features.gni")
   import("//v8/gni/v8.gni")
 }
 
+# TODO(spang): Investigate using shell_views with is_chromecast=true.
+shell_use_toolkit_views = toolkit_views && !is_chromecast
+
 declare_args() {
   content_shell_product_name = "Content Shell"
-  content_shell_version = "99.77.34.5"
-  content_shell_major_version = "99"
+  content_shell_version = "999.77.34.5"
+  content_shell_major_version = "999"
 }
 
 config("content_shell_lib_warnings") {
@@ -39,91 +45,84 @@ config("content_shell_lib_warnings") {
   }
 }
 
+# Web test support not built on android, but is everywhere else.
+support_web_tests = !is_android
+
 source_set("android_shell_descriptors") {
   testonly = true
-  sources = [
-    "android/shell_descriptors.h",
-  ]
-  public_deps = [
-    "//content/public/common:content_descriptors",
-  ]
+  sources = []
+  public_deps = [ "//content/public/common:content_descriptors" ]
+  if (is_android) {
+    sources += [ "android/shell_descriptors.h" ]
+  }
 }
 
-source_set("web_test_messages") {
+# This component provides a ContentMainDelegate for Content Shell and derived
+# applications. This delegate is the central place that creates interfaces for
+# each type of process (browser, renderer, etc). This implementation of
+# ContentMainDelegate will create either production or test-based
+# implementations.
+#
+# This component needs to be linked into every process in a Content Shell-based
+# application that wants to use ShellMainDelegate.
+#
+# TODO(danakj): This component will depend on {renderer,browser}/web_test. The
+# content_shell_lib component will not, to avoid circular deps, as web_test
+# inherits from things in content_shell_lib.
+static_library("content_shell_app") {
   testonly = true
   sources = [
-    # Note that if this target becomes jumbofied, it should use
-    # jumbo_excluded_sources to exclude the messages.cc files.
-    # IPC uses multiple inclusions in different macro contexts to
-    # generate the code. This is not compatible with jumbo
-    # compilations since all other files need the "clean" version of
-    # the message headers.
-    "common/web_test/blink_test_messages.cc",
-    "common/web_test/blink_test_messages.h",
-    "common/web_test/web_test_messages.cc",
-    "common/web_test/web_test_messages.h",
-  ]
-
-  deps = [
-    "//content/public/common",
-    "//ipc",
-    "//net",
-    "//skia",
-    "//url/ipc:url_ipc",
-  ]
-}
-
-source_set("web_test_switches") {
-  testonly = true
-  sources = [
-    "common/web_test/web_test_switches.cc",
-    "common/web_test/web_test_switches.h",
-  ]
-}
-
-source_set("web_test_utils") {
-  testonly = true
-  sources = [
-    "common/web_test/web_test_utils.cc",
-    "common/web_test/web_test_utils.h",
-  ]
-  deps = [
-    "//cc/paint:paint",
-    "//skia",
-    "//third_party/blink/public:blink_headers",
-  ]
-}
-
-jumbo_static_library("content_shell_lib") {
-  testonly = true
-  sources = [
-    "android/shell_manager.cc",
-    "android/shell_manager.h",
-    "app/blink_test_platform_support.h",
-    "app/blink_test_platform_support_mac.mm",
-    "app/blink_test_platform_support_win.cc",
-    "app/paths_mac.h",
-    "app/paths_mac.mm",
     "app/shell_crash_reporter_client.cc",
     "app/shell_crash_reporter_client.h",
     "app/shell_main_delegate.cc",
     "app/shell_main_delegate.h",
-    "app/shell_main_delegate_mac.h",
-    "app/shell_main_delegate_mac.mm",
-    "browser/renderer_host/shell_render_widget_host_view_mac_delegate.h",
-    "browser/renderer_host/shell_render_widget_host_view_mac_delegate.mm",
+  ]
+  deps = [
+    ":content_shell_lib",
+    "//components/crash/core/common:crash_key",
+    "//content/public/app",
+    "//v8",
+  ]
+  if (support_web_tests) {
+    deps += [
+      "//content/web_test:web_test_browser",
+      "//content/web_test:web_test_common",
+      "//content/web_test:web_test_renderer",
+    ]
+  }
+  if (!is_fuchsia) {
+    deps += [
+      "//components/crash/core/app",
+      "//components/crash/core/app:test_support",
+    ]
+  }
+  if (is_mac) {
+    sources += [
+      "app/paths_mac.h",
+      "app/paths_mac.mm",
+      "app/shell_main_delegate_mac.h",
+      "app/shell_main_delegate_mac.mm",
+    ]
+  }
+  defines = [
+    "CONTENT_SHELL_VERSION=\"$content_shell_version\"",
+    "CONTENT_SHELL_MAJOR_VERSION=\"$content_shell_major_version\"",
+  ]
+}
+
+static_library("content_shell_lib") {
+  testonly = true
+  sources = [
     "browser/shell.cc",
     "browser/shell.h",
-    "browser/shell_android.cc",
-    "browser/shell_application_mac.h",
-    "browser/shell_application_mac.mm",
     "browser/shell_browser_context.cc",
     "browser/shell_browser_context.h",
     "browser/shell_browser_main_parts.cc",
     "browser/shell_browser_main_parts.h",
-    "browser/shell_browser_main_parts_mac.mm",
     "browser/shell_content_browser_client.cc",
     "browser/shell_content_browser_client.h",
+    "browser/shell_content_index_provider.cc",
+    "browser/shell_content_index_provider.h",
     "browser/shell_devtools_bindings.cc",
     "browser/shell_devtools_bindings.h",
     "browser/shell_devtools_frontend.cc",
@@ -133,81 +132,22 @@ jumbo_static_library("content_shell_lib") {
     "browser/shell_download_manager_delegate.cc",
     "browser/shell_download_manager_delegate.h",
     "browser/shell_javascript_dialog.h",
-    "browser/shell_javascript_dialog_mac.mm",
     "browser/shell_javascript_dialog_manager.cc",
     "browser/shell_javascript_dialog_manager.h",
-    "browser/shell_javascript_dialog_win.cc",
-    "browser/shell_mac.mm",
+    "browser/shell_paths.cc",
+    "browser/shell_paths.h",
     "browser/shell_permission_manager.cc",
     "browser/shell_permission_manager.h",
     "browser/shell_platform_data_aura.cc",
     "browser/shell_platform_data_aura.h",
-    "browser/shell_plugin_service_filter.cc",
-    "browser/shell_plugin_service_filter.h",
+    "browser/shell_platform_delegate.cc",
+    "browser/shell_platform_delegate.h",
     "browser/shell_quota_permission_context.cc",
     "browser/shell_quota_permission_context.h",
     "browser/shell_speech_recognition_manager_delegate.cc",
     "browser/shell_speech_recognition_manager_delegate.h",
     "browser/shell_web_contents_view_delegate.h",
-    "browser/shell_web_contents_view_delegate_android.cc",
     "browser/shell_web_contents_view_delegate_creator.h",
-    "browser/shell_web_contents_view_delegate_mac.mm",
-    "browser/web_test/blink_test_controller.cc",
-    "browser/web_test/blink_test_controller.h",
-    "browser/web_test/devtools_protocol_test_bindings.cc",
-    "browser/web_test/devtools_protocol_test_bindings.h",
-    "browser/web_test/fake_bluetooth_chooser.cc",
-    "browser/web_test/fake_bluetooth_chooser.h",
-    "browser/web_test/fake_bluetooth_chooser_factory.cc",
-    "browser/web_test/fake_bluetooth_chooser_factory.h",
-    "browser/web_test/fake_bluetooth_scanning_prompt.cc",
-    "browser/web_test/fake_bluetooth_scanning_prompt.h",
-    "browser/web_test/leak_detector.cc",
-    "browser/web_test/leak_detector.h",
-    "browser/web_test/mock_client_hints_controller_delegate.cc",
-    "browser/web_test/mock_client_hints_controller_delegate.h",
-    "browser/web_test/mojo_web_test_helper.cc",
-    "browser/web_test/mojo_web_test_helper.h",
-    "browser/web_test/secondary_test_window_observer.cc",
-    "browser/web_test/secondary_test_window_observer.h",
-    "browser/web_test/test_info_extractor.cc",
-    "browser/web_test/test_info_extractor.h",
-    "browser/web_test/web_test_background_fetch_delegate.cc",
-    "browser/web_test/web_test_background_fetch_delegate.h",
-    "browser/web_test/web_test_bluetooth_adapter_provider.cc",
-    "browser/web_test/web_test_bluetooth_adapter_provider.h",
-    "browser/web_test/web_test_bluetooth_chooser_factory.cc",
-    "browser/web_test/web_test_bluetooth_chooser_factory.h",
-    "browser/web_test/web_test_bluetooth_fake_adapter_setter_impl.cc",
-    "browser/web_test/web_test_bluetooth_fake_adapter_setter_impl.h",
-    "browser/web_test/web_test_browser_context.cc",
-    "browser/web_test/web_test_browser_context.h",
-    "browser/web_test/web_test_browser_main.cc",
-    "browser/web_test/web_test_browser_main.h",
-    "browser/web_test/web_test_browser_main_parts.cc",
-    "browser/web_test/web_test_browser_main_parts.h",
-    "browser/web_test/web_test_content_browser_client.cc",
-    "browser/web_test/web_test_content_browser_client.h",
-    "browser/web_test/web_test_content_index_provider.cc",
-    "browser/web_test/web_test_content_index_provider.h",
-    "browser/web_test/web_test_devtools_bindings.cc",
-    "browser/web_test/web_test_devtools_bindings.h",
-    "browser/web_test/web_test_download_manager_delegate.cc",
-    "browser/web_test/web_test_download_manager_delegate.h",
-    "browser/web_test/web_test_first_device_bluetooth_chooser.cc",
-    "browser/web_test/web_test_first_device_bluetooth_chooser.h",
-    "browser/web_test/web_test_javascript_dialog_manager.cc",
-    "browser/web_test/web_test_javascript_dialog_manager.h",
-    "browser/web_test/web_test_message_filter.cc",
-    "browser/web_test/web_test_message_filter.h",
-    "browser/web_test/web_test_permission_manager.cc",
-    "browser/web_test/web_test_permission_manager.h",
-    "browser/web_test/web_test_push_messaging_service.cc",
-    "browser/web_test/web_test_push_messaging_service.h",
-    "browser/web_test/web_test_tts_controller_delegate.cc",
-    "browser/web_test/web_test_tts_controller_delegate.h",
-    "browser/web_test/web_test_tts_platform.cc",
-    "browser/web_test/web_test_tts_platform.h",
     "common/power_monitor_test_impl.cc",
     "common/power_monitor_test_impl.h",
     "common/shell_content_client.cc",
@@ -220,30 +160,41 @@ jumbo_static_library("content_shell_lib") {
     "gpu/shell_content_gpu_client.h",
     "renderer/shell_content_renderer_client.cc",
     "renderer/shell_content_renderer_client.h",
-    "renderer/shell_render_view_observer.cc",
-    "renderer/shell_render_view_observer.h",
-    "renderer/web_test/blink_test_helpers.cc",
-    "renderer/web_test/blink_test_helpers.h",
-    "renderer/web_test/blink_test_runner.cc",
-    "renderer/web_test/blink_test_runner.h",
-    "renderer/web_test/test_websocket_handshake_throttle_provider.cc",
-    "renderer/web_test/test_websocket_handshake_throttle_provider.h",
-    "renderer/web_test/web_test_content_renderer_client.cc",
-    "renderer/web_test/web_test_content_renderer_client.h",
-    "renderer/web_test/web_test_render_frame_observer.cc",
-    "renderer/web_test/web_test_render_frame_observer.h",
-    "renderer/web_test/web_test_render_thread_observer.cc",
-    "renderer/web_test/web_test_render_thread_observer.h",
+    "renderer/shell_render_frame_observer.cc",
+    "renderer/shell_render_frame_observer.h",
     "utility/shell_content_utility_client.cc",
     "utility/shell_content_utility_client.h",
   ]
 
+  if (is_android) {
+    sources += [
+      "android/shell_manager.cc",
+      "android/shell_manager.h",
+      "browser/shell_platform_delegate_android.cc",
+      "browser/shell_web_contents_view_delegate_android.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "browser/renderer_host/shell_render_widget_host_view_mac_delegate.h",
+      "browser/renderer_host/shell_render_widget_host_view_mac_delegate.mm",
+      "browser/shell_application_mac.h",
+      "browser/shell_application_mac.mm",
+      "browser/shell_browser_main_parts_mac.mm",
+      "browser/shell_javascript_dialog_mac.mm",
+      "browser/shell_platform_delegate_mac.mm",
+      "browser/shell_web_contents_view_delegate_mac.mm",
+    ]
+  }
+
+  if (is_win) {
+    sources += [ "browser/shell_javascript_dialog_win.cc" ]
+  }
+
   configs += [
     ":content_shell_lib_warnings",
     "//build/config:precompiled_headers",
-
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    "//build/config/compiler:no_size_t_to_int_warning",
   ]
 
   defines = [
@@ -251,17 +202,18 @@ jumbo_static_library("content_shell_lib") {
     "CONTENT_SHELL_MAJOR_VERSION=\"$content_shell_major_version\"",
   ]
 
+  # This is to support our dependency on //content/browser.
+  # See comment at the top of //content/BUILD.gn for why this is disabled in
+  # component builds.
+  if (is_component_build) {
+    check_includes = false
+  }
+
   public_deps = [
     ":android_shell_descriptors",
 
-    # #include'ed by renderer/web_test/blink_test_runner.h
-    ":mojo_bindings",
-
-    # The generated mojom JS bindings are used by web tests.
-    ":mojo_bindings_js",
-
-    # This exposes all public content APIs.
-    "//content/public/app:both",
+    # content_shell_lib also exposes all public content APIs.
+    "//content/public/app",
     "//content/public/browser",
     "//content/public/child",
     "//content/public/common",
@@ -271,113 +223,73 @@ jumbo_static_library("content_shell_lib") {
     "//services/network:network_service",
   ]
   deps = [
-    ":client_hints_util",
+    ":content_browsertests_mojom",
     ":resources",
-    ":web_test_messages",
-    ":web_test_switches",
-    ":web_test_utils",
+    ":shell_controller_mojom",
     "//base",
     "//base:base_static",
     "//base/third_party/dynamic_annotations",
-    "//cc",
+    "//build:chromeos_buildflags",
+    "//cc/base",
     "//components/cdm/renderer",
-    "//components/crash/content/app",
-    "//components/crash/content/app:test_support",
-    "//components/crash/content/browser",
-    "//components/crash/core/common:crash_key",
-    "//components/download/content/factory",
-    "//components/download/public/background_service:public",
-    "//components/download/public/common:public",
     "//components/keyed_service/content",
-    "//components/network_session_configurator/browser",
-    "//components/plugins/renderer",
+    "//components/metrics",
+    "//components/metrics:net",
+    "//components/metrics:test_support",
+    "//components/network_session_configurator/common",
+    "//components/performance_manager",
+    "//components/permissions",
+    "//components/prefs",
+    "//components/services/storage/test_api",
     "//components/url_formatter",
+    "//components/variations",
+    "//components/variations/service",
     "//components/web_cache/renderer",
-    "//content:resources",
+    "//content:content_resources",
+    "//content:dev_ui_content_resources",
     "//content/app/resources",
-    "//content/gpu",
     "//content/public/common",
-    "//content/public/common:service_names",
-    "//content/shell/test_runner:test_runner",
     "//content/test:content_test_mojo_bindings",
-    "//content/test:mojo_web_test_bindings",
     "//content/test:test_support",
-    "//content/test:web_test_support",
     "//device/bluetooth",
-    "//device/bluetooth:fake_bluetooth",
-    "//device/bluetooth:mocks",
-    "//device/bluetooth/public/mojom:fake_bluetooth_interfaces",
-    "//gin",
-    "//gpu",
     "//media",
-    "//media/capture",
     "//media/mojo:buildflags",
     "//net",
     "//net:net_resources",
-    "//net:test_support",
     "//ppapi/buildflags",
-    "//sandbox",
     "//services/device/public/cpp:test_support",
-    "//services/device/public/mojom",
     "//services/network/public/cpp",
-    "//services/service_manager/embedder:embedder_result_codes",
-    "//services/service_manager/public/cpp",
     "//services/test/echo:lib",
     "//services/test/echo/public/mojom",
-    "//skia",
-    "//skia:test_fonts",
-    "//storage/browser",
-    "//testing/gmock",
-    "//testing/gtest",
     "//third_party/blink/public:blink",
-    "//third_party/blink/public:buildflags",
     "//third_party/blink/public:image_resources",
     "//third_party/blink/public:resources",
-    "//third_party/blink/public:test_support",
     "//third_party/blink/public/strings",
-    "//third_party/icu",
     "//ui/base",
     "//ui/base/clipboard",
     "//ui/base/ime/init",
-    "//ui/display",
-    "//ui/events:events_base",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/gfx/ipc",
-    "//ui/gfx/ipc/geometry",
-    "//ui/gfx/ipc/skia",
-    "//ui/gl",
     "//ui/platform_window",
     "//url",
     "//v8",
   ]
 
   if (is_fuchsia) {
-    deps -= [
-      "//components/crash/content/app",
-      "//components/crash/content/app:test_support",
+    deps += [ "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.ui.policy" ]
+  } else {
+    deps += [
       "//components/crash/content/browser",
+      "//components/crash/core/app",
     ]
-    deps += [ "//third_party/fuchsia-sdk/sdk:fuchsia-ui-policy" ]
   }
-
-  # Annoyingly, this target and web_test_support have circular includes.
-  allow_circular_includes_from = [ "//content/test:web_test_support" ]
 
   if (enable_plugins) {
-    deps += [
-      "//cc/paint",
-      "//content/ppapi_plugin",
-      "//ppapi:blink_deprecated_test_plugin",
-      "//ppapi:blink_test_plugin",
-      "//ppapi/shared_impl",
+    sources += [
+      "browser/shell_plugin_service_filter.cc",
+      "browser/shell_plugin_service_filter.h",
     ]
-  }
-  if (enable_vulkan) {
-    deps += [
-      "//gpu/vulkan:test_support",
-      "//gpu/vulkan/init",
-    ]
+    deps += [ "//ppapi/shared_impl" ]
   }
   if (enable_cast_renderer) {
     deps += [ "//media/mojo/services" ]
@@ -388,34 +300,28 @@ jumbo_static_library("content_shell_lib") {
       "common/v8_crashpad_support_win.cc",
       "common/v8_crashpad_support_win.h",
     ]
+    deps += [ "//gin" ]
   }
 
-  if (is_linux) {
-    deps += [
-      "//third_party/fontconfig",
-      "//ui/gfx:test_support",
-    ]
-  }
-
-  if (use_x11) {
-    # Some tests rely on this tool at runtime. Note: it might be better if
-    # the tests that needed it had this as a dep instead of adding it here.
-    deps += [ "//ui/events/devices/x11" ]
+  if (use_gtk) {
+    deps += [ "//ui/gtk" ]
   }
 
   if (is_android) {
     deps += [
-      "//base/test:test_support",
       "//components/embedder_support/android:view",
       "//content/shell/android:content_shell_jni_headers",
-      "//content/test:android_test_message_pump_support",
       "//mojo/public/java/system:test_support",
       "//ui/android",
     ]
   }
 
-  # TODO(spang): Investigate using shell_views with is_chromecast=true.
-  if (toolkit_views && !is_chromecast) {
+  if (shell_use_toolkit_views) {
+    # All content_shell code should use this define instead of TOOLKIT_VIEWS,
+    # since any transitive dependency on //ui/views from another component will
+    # cause TOOLKIT_VIEWS to be defined, even when content_shell does not want
+    # to use it internally. See https://crbug.com/1218907.
+    defines += [ "SHELL_USE_TOOLKIT_VIEWS=1" ]
     deps += [ "//ui/views" ]
   }
 
@@ -424,16 +330,17 @@ jumbo_static_library("content_shell_lib") {
       "//ui/aura",
       "//ui/aura:test_support",
       "//ui/events",
-      "//ui/strings",
       "//ui/wm",
     ]
 
-    if (toolkit_views && !is_chromecast) {
+    if (shell_use_toolkit_views) {
       sources += [
-        "browser/shell_views.cc",
+        "browser/shell_platform_delegate_views.cc",
         "browser/shell_web_contents_view_delegate_views.cc",
       ]
       deps += [
+        "//ui/color:color_headers",
+        "//ui/native_theme",
         "//ui/resources",
         "//ui/views:test_support",
         "//ui/views/controls/webview",
@@ -441,7 +348,7 @@ jumbo_static_library("content_shell_lib") {
       ]
     } else {
       sources += [
-        "browser/shell_aura.cc",
+        "browser/shell_platform_delegate_aura.cc",
         "browser/shell_web_contents_view_delegate_aura.cc",
       ]
     }
@@ -452,41 +359,24 @@ jumbo_static_library("content_shell_lib") {
     ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
+    deps += [ "//chromeos/dbus" ]
+  }
+
+  if (is_chromeos_lacros) {
     deps += [
-      "//chromeos/dbus",
-      "//ui/wm:test_support",
+      "//chromeos/dbus/constants",
+      "//chromeos/lacros",
     ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [ "//build/config/freetype" ]
   }
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
-
-  if (!enable_plugins) {
-    sources -= [
-      "browser/shell_plugin_service_filter.cc",
-      "browser/shell_plugin_service_filter.h",
-    ]
-  }
-}
-
-static_library("client_hints_util") {
-  testonly = true
-
-  sources = [
-    "utility/mock_client_hints_utils.cc",
-    "utility/mock_client_hints_utils.h",
-  ]
-
-  deps = [
-    "//content/public/common",
-    "//third_party/blink/public:blink",
-  ]
 }
 
 grit("content_shell_resources_grit") {
@@ -504,24 +394,16 @@ grit("content_shell_resources_grit") {
 copy("copy_shell_resources") {
   testonly = true
 
-  sources = [
-    "$target_gen_dir/shell_resources.pak",
-  ]
-  outputs = [
-    "$root_out_dir/shell_resources.pak",
-  ]
+  sources = [ "$target_gen_dir/shell_resources.pak" ]
+  outputs = [ "$root_out_dir/shell_resources.pak" ]
 
-  public_deps = [
-    ":content_shell_resources_grit",
-  ]
+  public_deps = [ ":content_shell_resources_grit" ]
 }
 
 group("resources") {
   testonly = true
 
-  public_deps = [
-    ":copy_shell_resources",
-  ]
+  public_deps = [ ":copy_shell_resources" ]
 }
 
 repack("pak") {
@@ -530,16 +412,19 @@ repack("pak") {
   sources = [
     "$root_gen_dir/content/app/resources/content_resources_100_percent.pak",
     "$root_gen_dir/content/browser/resources/media/media_internals_resources.pak",
-    "$root_gen_dir/content/browser/tracing/tracing_resources.pak",
     "$root_gen_dir/content/browser/webrtc/resources/webrtc_internals_resources.pak",
     "$root_gen_dir/content/content_resources.pak",
+    "$root_gen_dir/content/dev_ui_content_resources.pak",
     "$root_gen_dir/content/shell/shell_resources.pak",
+    "$root_gen_dir/content/test/web_ui_mojo_test_resources.pak",
     "$root_gen_dir/mojo/public/js/mojo_bindings_resources.pak",
     "$root_gen_dir/net/net_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_resources.pak",
     "$root_gen_dir/third_party/blink/public/resources/blink_scaled_resources_100_percent.pak",
+    "$root_gen_dir/third_party/blink/public/resources/inspector_overlay_resources.pak",
     "$root_gen_dir/third_party/blink/public/strings/blink_strings_en-US.pak",
     "$root_gen_dir/ui/resources/ui_resources_100_percent.pak",
+    "$root_gen_dir/ui/resources/webui_generated_resources.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
@@ -547,13 +432,15 @@ repack("pak") {
 
   deps = [
     ":resources",
-    "//content:resources",
+    "//content:content_resources",
+    "//content:dev_ui_content_resources",
     "//content/app/resources",
-    "//content/browser/resources/media:media_internals_resources",
-    "//content/browser/tracing:resources",
+    "//content/browser/resources/media:resources",
     "//content/browser/webrtc/resources",
+    "//content/test:web_ui_mojo_test_resources",
     "//mojo/public/js:resources",
     "//net:net_resources",
+    "//third_party/blink/public:devtools_inspector_resources",
     "//third_party/blink/public:resources",
     "//third_party/blink/public:scaled_resources_100_percent",
     "//third_party/blink/public/strings",
@@ -561,15 +448,20 @@ repack("pak") {
     "//ui/strings",
   ]
 
-  if (toolkit_views && !is_chromecast) {
+  if (!is_android) {
+    deps += [ "//content/browser/tracing:resources" ]
+    sources += [ "$root_gen_dir/content/browser/tracing/tracing_resources.pak" ]
+  }
+
+  if (shell_use_toolkit_views) {
     deps += [ "//ui/views/resources" ]
     sources +=
         [ "$root_gen_dir/ui/views/resources/views_resources_100_percent.pak" ]
   }
-  if (!is_android) {
+  if (!is_android && !is_fuchsia) {
     sources +=
         [ "$root_gen_dir/content/browser/devtools/devtools_resources.pak" ]
-    deps += [ "//content/browser/devtools:resources" ]
+    deps += [ "//content/browser/devtools:devtools_resources" ]
   }
   output = "$root_out_dir/content_shell.pak"
 }
@@ -577,9 +469,7 @@ repack("pak") {
 if (is_android) {
   group("content_shell") {
     testonly = true
-    deps = [
-      "//content/shell/android:content_shell_apk",
-    ]
+    deps = [ "//content/shell/android:content_shell_apk" ]
   }
 } else if (is_mac) {
   tweak_info_plist("content_shell_plist") {
@@ -594,26 +484,25 @@ if (is_android) {
   mac_app_bundle("content_shell") {
     testonly = true
     output_name = content_shell_product_name
-    sources = [
-      "app/shell_main_mac.cc",
-    ]
+    sources = [ "app/shell_main_mac.cc" ]
     defines = [ "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"" ]
     deps = [
       ":content_shell_framework_bundle_data",
       ":content_shell_resources_bundle_data",
+      "//sandbox",
     ]
     info_plist_target = ":content_shell_plist"
-    data_deps = [
-      ":content_shell_lib",
-    ]
+    data_deps = [ ":content_shell_app" ]
+
+    if (is_component_build) {
+      ldflags = [ "-Wl,-rpath,@executable_path/../Frameworks" ]
+    }
   }
 } else {
   executable("content_shell") {
     testonly = true
 
-    sources = [
-      "app/shell_main.cc",
-    ]
+    sources = [ "app/shell_main.cc" ]
 
     if (is_win) {
       sources += [ "app/shell.rc" ]
@@ -622,9 +511,11 @@ if (is_android) {
     defines = []
 
     deps = [
-      ":content_shell_lib",
+      ":content_shell_app",
       ":pak",
       "//build/win:default_exe_manifest",
+      "//content/public/app",
+      "//sandbox",
     ]
 
     data_deps = [
@@ -633,12 +524,10 @@ if (is_android) {
     ]
 
     if (is_win) {
-      deps += [ "//sandbox" ]
-
-      # This is a large module that can't do incremental linking in some cases.
-      configs -= [ "//build/config/win:default_incremental_linking" ]
-      configs +=
-          [ "//build/config/win:default_large_module_incremental_linking" ]
+      deps += [
+        "//base",
+        "//sandbox",
+      ]
       if (win_console_app) {
         defines += [ "WIN_CONSOLE_APP" ]
       } else {
@@ -646,28 +535,33 @@ if (is_android) {
         configs -= [ "//build/config/win:console" ]
         configs += [ "//build/config/win:windowed" ]
       }
-
-      data_deps +=
-          [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
     }
 
-    if (is_linux && !is_component_build) {
+    if (is_win) {
+      data_deps +=
+          [ "//third_party/crashpad/crashpad/handler:crashpad_handler" ]
+    } else if (is_linux || is_chromeos) {
+      data_deps += [ "//components/crash/core/app:chrome_crashpad_handler" ]
+    }
+
+    if ((is_linux || is_chromeos) && !is_component_build) {
       # Set rpath to find our own libfreetype even in a non-component build.
       configs += [ "//build/config/gcc:rpath_for_built_shared_libraries" ]
     }
   }
 
   if (is_fuchsia) {
-    fuchsia_package("content_shell_pkg") {
+    cr_fuchsia_package("content_shell_pkg") {
       testonly = true
       binary = ":content_shell"
-      package_name_override = "content_shell"
+      package_name = "content_shell"
+      manifest = "fuchsia/content_shell.cmx"
     }
 
-    fuchsia_package_runner("content_shell_fuchsia") {
+    fuchsia_package_installer("content_shell_fuchsia") {
       testonly = true
       package = ":content_shell_pkg"
-      package_name_override = "content_shell"
+      package_name = "content_shell"
     }
   }
 }
@@ -675,34 +569,26 @@ if (is_android) {
 if (is_mac) {
   bundle_data("content_shell_framework_resources") {
     testonly = true
-    sources = [
-      "$root_out_dir/content_shell.pak",
-    ]
+    sources = [ "$root_out_dir/content_shell.pak" ]
 
-    public_deps = [
-      ":pak",
-    ]
+    public_deps = [ ":pak" ]
 
     if (icu_use_data_file) {
       sources += [ "$root_out_dir/icudtl.dat" ]
-      deps = [
-        "//third_party/icu:icudata",
-      ]
+      deps = [ "//third_party/icu:icudata" ]
     }
 
     if (v8_use_external_startup_data) {
       public_deps += [ "//v8" ]
       if (use_v8_context_snapshot) {
-        sources += [ "$root_out_dir/v8_context_snapshot.bin" ]
+        sources += [ "$root_out_dir/$v8_context_snapshot_filename" ]
         public_deps += [ "//tools/v8_context_snapshot" ]
       } else {
         sources += [ "$root_out_dir/snapshot_blob.bin" ]
       }
     }
 
-    outputs = [
-      "{{bundle_resources_dir}}/{{source_file_part}}",
-    ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 
   if (enable_plugins) {
@@ -712,9 +598,7 @@ if (is_mac) {
         "$root_out_dir/blink_test_plugin.plugin",
       ]
 
-      outputs = [
-        "{{bundle_contents_dir}}/{{source_file_part}}",
-      ]
+      outputs = [ "{{bundle_contents_dir}}/{{source_file_part}}" ]
 
       public_deps = [
         "//ppapi:blink_deprecated_test_plugin",
@@ -728,15 +612,9 @@ if (is_mac) {
 
   bundle_data("content_shell_framework_helpers") {
     testonly = true
-    sources = [
-      "$root_out_dir/chrome_crashpad_handler",
-    ]
-    outputs = [
-      "{{bundle_contents_dir}}/Helpers/{{source_file_part}}",
-    ]
-    public_deps = [
-      "//components/crash/content/app:chrome_crashpad_handler",
-    ]
+    sources = [ "$root_out_dir/chrome_crashpad_handler" ]
+    outputs = [ "{{bundle_contents_dir}}/Helpers/{{source_file_part}}" ]
+    public_deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
     foreach(helper_params, content_mac_helpers) {
       sources += [
         "$root_out_dir/${content_shell_helper_name}${helper_params[2]}.app",
@@ -777,38 +655,43 @@ if (is_mac) {
       "app/shell_content_main.h",
     ]
 
-    public_deps = [
-      ":content_shell_lib",
-    ]
     deps = [
       ":content_shell_angle_library",
+      ":content_shell_app",
+      "//content/public/app",
+      "//content/public/common",
+      "//third_party/icu:icudata",
+    ]
+
+    bundle_deps = [
       ":content_shell_framework_helpers",
       ":content_shell_framework_resources",
       ":content_shell_swiftshader_library",
-      "//third_party/icu:icudata",
     ]
 
     if (enable_plugins) {
       deps += [ ":content_shell_framework_plugins" ]
     }
 
-    # Both the main :content_shell and :content_shell_helper_app executables
-    # need to link the framework. Because they are at different directory
-    # depths, using @executable_path as the install_name would require using
-    # install_name_tool on one of the executables. However install_name_tool
-    # only operates in-place, which is problematic to express in GN. Instead,
-    # use rpath-based loading.
-    ldflags = [ "-Wl,-install_name,@executable_path/../Frameworks/$output_name.framework/$output_name" ]
+    if (!is_component_build) {
+      # Specify a sensible install_name for static builds. The library is
+      # dlopen()ed so this is not used to resolve the module.
+      ldflags = [ "-Wl,-install_name,@executable_path/../Frameworks/$output_name.framework/$output_name" ]
+    } else {
+      # Both the main :content_shell and :content_shell_helper_app executables
+      # need to link the framework. Because they are at different directory
+      # depths, using @executable_path as the install_name would require using
+      # install_name_tool on one of the executables. However install_name_tool
+      # only operates in-place, which is problematic to express in GN. Instead,
+      # use rpath-based loading.
+      ldflags =
+          [ "-Wl,-install_name,@rpath/$output_name.framework/$output_name" ]
 
-    if (is_component_build) {
       # Set up the rpath for the framework so that it can find dylibs in the
       # root output directory. The framework is at
       # Content Shell.app/Contents/Frameworks/Content Shell Framework.framework/Versions/C/Content Shell Framework
       # so use loader_path to go back to the root output directory.
-      ldflags += [
-        "-rpath",
-        "@loader_path/../../../../../..",
-      ]
+      ldflags += [ "-Wl,-rpath,@loader_path/../../../../../.." ]
     }
 
     info_plist_target = ":content_shell_framework_plist"
@@ -835,9 +718,7 @@ if (is_mac) {
 
       output_name = content_shell_helper_name + invoker.helper_name_suffix
 
-      sources = [
-        "app/shell_main_mac.cc",
-      ]
+      sources = [ "app/shell_main_mac.cc" ]
       defines = [
         "HELPER_EXECUTABLE",
         "SHELL_PRODUCT_NAME=\"$content_shell_product_name\"",
@@ -846,18 +727,27 @@ if (is_mac) {
         "CONTENT_SHELL_HELPER_SUFFIX=${invoker.helper_name_suffix}",
         "CONTENT_SHELL_HELPER_BUNDLE_ID_SUFFIX=${invoker.helper_bundle_id_suffix}",
       ]
-      deps = [
-        "//sandbox/mac:seatbelt",
-      ]
-      ldflags = [
-        # The helper is in Content Shell.app/Contents/Frameworks/
-        #     Content Shell Framework.framework/Versions/C/Helpers/
-        #     Content Shell Helper.app/Contents/MacOS/
-        # so set rpath up to the base.
-        "-rpath",
-        "@executable_path/../../../../../../../../../..",
-      ]
+      deps = [ "//sandbox/mac:seatbelt" ]
+
       info_plist_target = ":content_shell_helper_plist"
+
+      if (is_component_build) {
+        ldflags = [
+          # The helper is in Content Shell.app/Contents/Frameworks/
+          #     Content Shell Framework.framework/Versions/C/Helpers/
+          #     Content Shell Helper.app/Contents/MacOS/
+          # so set rpath up to the base.
+          "-Wl,-rpath,@executable_path/../../../../../../../../../..",
+
+          # ... and up to Contents/Frameworks.
+          "-Wl,-rpath,@executable_path/../../../../../../..",
+        ]
+
+        # In a component build, the framework is directly linked to the
+        # executable because dlopen() and loading all the dependent dylibs
+        # is time-consuming, see https://crbug.com/1197495.
+        deps += [ ":content_shell_framework+link_nested" ]
+      }
     }
   }
 
@@ -873,25 +763,22 @@ if (is_mac) {
 
   bundle_data("content_shell_framework_bundle_data") {
     testonly = true
-    sources = [
-      "$root_out_dir/$content_shell_framework_name.framework",
-    ]
-    outputs = [
-      "{{bundle_contents_dir}}/Frameworks/{{source_file_part}}",
-    ]
-    public_deps = [
-      ":content_shell_framework",
-    ]
+    sources = [ "$root_out_dir/$content_shell_framework_name.framework" ]
+    outputs = [ "{{bundle_contents_dir}}/Frameworks/{{source_file_part}}" ]
+    if (is_component_build) {
+      # In a component build, the framework is directly linked to the
+      # executable because dlopen() and loading all the dependent dylibs
+      # is time-consuming, see https://crbug.com/1197495.
+      public_deps = [ ":content_shell_framework+link" ]
+    } else {
+      public_deps = [ ":content_shell_framework" ]
+    }
   }
 
   bundle_data("content_shell_resources_bundle_data") {
     testonly = true
-    sources = [
-      "app/app.icns",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/{{source_file_part}}",
-    ]
+    sources = [ "app/app.icns" ]
+    outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
   }
 
   if (use_egl) {
@@ -901,12 +788,8 @@ if (is_mac) {
         "$root_out_dir/egl_intermediates/libEGL.dylib",
         "$root_out_dir/egl_intermediates/libGLESv2.dylib",
       ]
-      outputs = [
-        "{{bundle_contents_dir}}/Libraries/{{source_file_part}}",
-      ]
-      public_deps = [
-        "//ui/gl:angle_library_copy",
-      ]
+      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
+      public_deps = [ "//ui/gl:angle_library_copy" ]
     }
 
     # Add the SwiftShader .dylibs in the Libraries directory of the Framework.
@@ -914,68 +797,55 @@ if (is_mac) {
       sources = [
         "$root_out_dir/egl_intermediates/libswiftshader_libEGL.dylib",
         "$root_out_dir/egl_intermediates/libswiftshader_libGLESv2.dylib",
+        "$root_out_dir/vk_intermediates/libvk_swiftshader.dylib",
+        "$root_out_dir/vk_intermediates/vk_swiftshader_icd.json",
       ]
-      outputs = [
-        "{{bundle_contents_dir}}/Libraries/{{source_file_part}}",
-      ]
+      outputs = [ "{{bundle_contents_dir}}/Libraries/{{source_file_part}}" ]
       public_deps = [
-        "//ui/gl:swiftshader_library_copy",
+        "//ui/gl:swiftshader_egl_library_copy",
+        "//ui/gl:swiftshader_vk_library_copy",
       ]
     }
   }
 
   group("content_shell_angle_library") {
     if (use_egl) {
-      deps = [
-        ":content_shell_angle_binaries",
-      ]
+      deps = [ ":content_shell_angle_binaries" ]
     }
   }
 
   group("content_shell_swiftshader_library") {
     if (use_egl) {
-      deps = [
-        ":content_shell_swiftshader_binaries",
-      ]
+      deps = [ ":content_shell_swiftshader_binaries" ]
     }
   }
 }
 
-mojom("mojo_bindings") {
-  sources = [
-    "common/power_monitor_test.mojom",
-    "common/web_test.mojom",
-    "common/web_test/fake_bluetooth_chooser.mojom",
-    "common/web_test/web_test_bluetooth_fake_adapter_setter.mojom",
-  ]
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//skia/public/mojom",
-    "//ui/gfx/geometry/mojom",
-    "//url/mojom:url_mojom_gurl",
-    "//url/mojom:url_mojom_origin",
-  ]
+mojom("content_browsertests_mojom") {
+  sources = [ "common/power_monitor_test.mojom" ]
+  public_deps = [ "//sandbox/policy/mojom" ]
 }
 
 group("content_shell_crash_test") {
   testonly = true
   data_deps = [
     ":content_shell",
+    "//testing:test_scripts_shared",
     "//third_party/mesa_headers",
   ]
   data = [
     "//content/shell/tools/breakpad_integration_test.py",
-    "//testing/scripts/common.py",
     "//testing/scripts/content_shell_crash_test.py",
-    "//testing/xvfb.py",
   ]
   if (is_mac && !use_system_xcode) {
     data += [
-      # Scripts call otool, which is a symlink to llvm-otool, so we need both.
+      # Scripts call otool, which calls either llvm-otool or otool-classic,
+      # so we need all three.
       # llvm-otool shells out to llvm-objdump, so that's needed as well.
       mac_bin_path + "llvm-objdump",
       mac_bin_path + "llvm-otool",
       mac_bin_path + "otool",
+      mac_bin_path + "otool-classic",
     ]
   }
   if (is_posix) {
@@ -1003,4 +873,10 @@ group("content_shell_crash_test") {
       "//tools/android/forwarder2",
     ]
   }
+}
+
+mojom("shell_controller_mojom") {
+  testonly = true
+  sources = [ "common/shell_controller.test-mojom" ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 }

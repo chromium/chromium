@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow div id='div2'",
-          "rect": [129, 200, 142, 142],
-          "reason": "background"
-        },
-        {
-          "object": "LayoutBlockFlow div id='div1'",
-          "rect": [50, 50, 100, 100],
-          "reason": "background"
-        }
+      "invalidations": [
+        [129, 200, 142, 142],
+        [50, 50, 100, 100]
       ]
     }
   ]

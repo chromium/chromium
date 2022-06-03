@@ -1,6 +1,18 @@
 <!DOCTYPE html>
 <script>
-var mediaFile = '../content/test.ogv';
+if (window.testRunner)
+  testRunner.waitUntilDone();
+
+function waitForVideoPresentation(video) {
+  return new Promise(resolve => {
+    video.requestVideoFrameCallback(resolve);
+  });
+}
+function loadAndQueueVideoPresentation(video) {
+  video.src = '../content/test.ogv';
+  videoPresentations.push(waitForVideoPresentation(video));
+}
+let videoPresentations = [];
 </script>
 <style>
 .container {
@@ -34,14 +46,31 @@ var mediaFile = '../content/test.ogv';
 }
 </style>
 <div class="container">
-  <video preload="auto"><script>document.currentScript.parentNode.src = mediaFile;</script></video>
+  <video preload="auto">
+    <script>
+      loadAndQueueVideoPresentation(document.currentScript.parentNode);
+    </script>
+  </video>
   <div class=video><div class="cue start"><span>XXX</span></div></div>
 </div>
 <div class="container">
-  <video preload="auto"><script>document.currentScript.parentNode.src = mediaFile;</script></video>
+  <video preload="auto">
+    <script>
+      loadAndQueueVideoPresentation(document.currentScript.parentNode);
+    </script>
+  </video>
   <div class=video><div class="cue middle"><span>XXX</span></div></div>
 </div>
 <div class="container">
-  <video preload="auto"><script>document.currentScript.parentNode.src = mediaFile;</script></video>
+  <video preload="auto">
+    <script>
+      loadAndQueueVideoPresentation(document.currentScript.parentNode);
+    </script>
+  </video>
   <div class=video><div class="cue end"><span>XXX</span></div></div>
 </div>
+<script>
+  Promise.all(videoPresentations).then(() => {
+    testRunner.notifyDone();
+  });
+</script>

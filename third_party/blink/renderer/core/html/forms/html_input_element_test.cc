@@ -6,11 +6,13 @@
 
 #include <memory>
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_keyboard_event_init.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
-#include "third_party/blink/renderer/core/events/keyboard_event_init.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/html/forms/date_time_chooser.h"
@@ -20,10 +22,25 @@
 #include "third_party/blink/renderer/core/html/html_body_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
+using ::testing::Truly;
+
 namespace blink {
+
+namespace {
+
+class MockChromeClient : public EmptyChromeClient {
+ public:
+  MOCK_METHOD(void,
+              PasswordFieldReset,
+              (HTMLInputElement & element),
+              (override));
+};
+
+}  // namespace
 
 class HTMLInputElementTest : public PageTestBase {
  protected:
@@ -35,16 +52,16 @@ class HTMLInputElementTest : public PageTestBase {
 };
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsNoList) {
-  GetDocument().documentElement()->SetInnerHTMLFromString("<input id=test>");
+  GetDocument().documentElement()->setInnerHTML("<input id=test>");
   EXPECT_TRUE(TestElement().FilteredDataListOptions().IsEmpty());
 
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<input id=test list=dl1><datalist id=dl1></datalist>");
   EXPECT_TRUE(TestElement().FilteredDataListOptions().IsEmpty());
 }
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsContain) {
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<input id=test value=BC list=dl2>"
       "<datalist id=dl2>"
       "<option>AbC DEF</option>"
@@ -56,7 +73,7 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsContain) {
   EXPECT_EQ("AbC DEF", options[0]->value().Utf8());
   EXPECT_EQ("ghi", options[1]->value().Utf8());
 
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<input id=test value=i list=dl2>"
       "<datalist id=dl2>"
       "<option>I</option>"
@@ -70,7 +87,7 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsContain) {
 }
 
 TEST_F(HTMLInputElementTest, FilteredDataListOptionsForMultipleEmail) {
-  GetDocument().documentElement()->SetInnerHTMLFromString(R"HTML(
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
     <input id=test value='foo@example.com, tkent' list=dl3 type=email
     multiple>
     <datalist id=dl3>
@@ -83,20 +100,51 @@ TEST_F(HTMLInputElementTest, FilteredDataListOptionsForMultipleEmail) {
   EXPECT_EQ("tkent@chromium.org", options[0]->value().Utf8());
 }
 
+TEST_F(HTMLInputElementTest, FilteredDataListOptionsDynamicContain) {
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <input id=test value='40m auto reel' list=dl4>
+    <datalist id=dl4>
+    <option>Hozelock 10m Mini Auto Reel - 2485</option>
+    <option>Hozelock Auto Reel 20m - 2401</option>
+    <option>Hozelock Auto Reel 30m - 2403</option>
+    <option>Hozelock Auto Reel 40m - 2595</option>
+    </datalist>
+  )HTML");
+  auto options = TestElement().FilteredDataListOptions();
+  EXPECT_EQ(1u, options.size());
+  EXPECT_EQ("Hozelock Auto Reel 40m - 2595", options[0]->value().Utf8());
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <input id=test value='autoreel' list=dl4>
+    <datalist id=dl4>
+    <option>Hozelock 10m Mini Auto Reel - 2485</option>
+    <option>Hozelock Auto Reel 20m - 2401</option>
+    <option>Hozelock Auto Reel 30m - 2403</option>
+    <option>Hozelock Auto Reel 40m - 2595</option>
+    </datalist>
+  )HTML");
+  options = TestElement().FilteredDataListOptions();
+  EXPECT_EQ(4u, options.size());
+  EXPECT_EQ("Hozelock 10m Mini Auto Reel - 2485", options[0]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 20m - 2401", options[1]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 30m - 2403", options[2]->value().Utf8());
+  EXPECT_EQ("Hozelock Auto Reel 40m - 2595", options[3]->value().Utf8());
+}
+
 TEST_F(HTMLInputElementTest, create) {
   auto* input = MakeGarbageCollected<HTMLInputElement>(
       GetDocument(), CreateElementFlags::ByCreateElement());
   EXPECT_NE(nullptr, input->UserAgentShadowRoot());
 
   input = MakeGarbageCollected<HTMLInputElement>(
-      GetDocument(), CreateElementFlags::ByParser());
+      GetDocument(), CreateElementFlags::ByParser(&GetDocument()));
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->ParserSetAttributes(Vector<Attribute>());
   EXPECT_NE(nullptr, input->UserAgentShadowRoot());
 }
 
 TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
-  auto* document_without_frame = MakeGarbageCollected<Document>();
+  auto* document_without_frame = Document::CreateForTest();
   EXPECT_EQ(nullptr, document_without_frame->GetPage());
   auto* html = MakeGarbageCollected<HTMLHtmlElement>(*document_without_frame);
   html->AppendChild(
@@ -104,7 +152,7 @@ TEST_F(HTMLInputElementTest, NoAssertWhenMovedInNewDocument) {
 
   // Create an input element with type "range" inside a document without frame.
   To<HTMLBodyElement>(html->firstChild())
-      ->SetInnerHTMLFromString("<input type='range' />");
+      ->setInnerHTML("<input type='range' />");
   document_without_frame->AppendChild(html);
 
   auto page_holder = std::make_unique<DummyPageHolder>();
@@ -154,7 +202,7 @@ TEST_F(HTMLInputElementTest, ImageTypeCrash) {
 
 TEST_F(HTMLInputElementTest, RadioKeyDownDCHECKFailure) {
   // crbug.com/697286
-  GetDocument().body()->SetInnerHTMLFromString(
+  GetDocument().body()->setInnerHTML(
       "<input type=radio name=g><input type=radio name=g>");
   auto& radio1 = To<HTMLInputElement>(*GetDocument().body()->firstChild());
   auto& radio2 = To<HTMLInputElement>(*radio1.nextSibling());
@@ -171,7 +219,7 @@ TEST_F(HTMLInputElementTest, RadioKeyDownDCHECKFailure) {
 TEST_F(HTMLInputElementTest, DateTimeChooserSizeParamRespectsScale) {
   GetDocument().SetCompatibilityMode(Document::kQuirksMode);
   GetDocument().View()->GetFrame().GetPage()->GetVisualViewport().SetScale(2.f);
-  GetDocument().body()->SetInnerHTMLFromString(
+  GetDocument().body()->setInnerHTML(
       "<input type='date' style='width:200px;height:50px' />");
   UpdateAllLifecyclePhasesForTest();
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
@@ -195,13 +243,13 @@ TEST_F(HTMLInputElementTest, StepDownOverflow) {
 }
 
 TEST_F(HTMLInputElementTest, CheckboxHasNoShadowRoot) {
-  GetDocument().body()->SetInnerHTMLFromString("<input type='checkbox' />");
+  GetDocument().body()->setInnerHTML("<input type='checkbox' />");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
 }
 
 TEST_F(HTMLInputElementTest, ChangingInputTypeCausesShadowRootToBeCreated) {
-  GetDocument().body()->SetInnerHTMLFromString("<input type='checkbox' />");
+  GetDocument().body()->setInnerHTML("<input type='checkbox' />");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
   EXPECT_EQ(nullptr, input->UserAgentShadowRoot());
   input->setAttribute(html_names::kTypeAttr, "text");
@@ -209,7 +257,7 @@ TEST_F(HTMLInputElementTest, ChangingInputTypeCausesShadowRootToBeCreated) {
 }
 
 TEST_F(HTMLInputElementTest, RepaintAfterClearingFile) {
-  GetDocument().body()->SetInnerHTMLFromString("<input type='file' />");
+  GetDocument().body()->setInnerHTML("<input type='file' />");
   auto* input = To<HTMLInputElement>(GetDocument().body()->firstChild());
 
   FileChooserFileInfoList files;
@@ -243,5 +291,56 @@ TEST_F(HTMLInputElementTest, UpdateTypeDcheck) {
   // Test succeeds if the above setAttribute() didn't trigger a DCHECK failure
   // in Document::UpdateFocusAppearanceAfterLayout().
 }
+
+struct PasswordFieldResetParam {
+  const char* new_type;
+  const char* temporary_value;
+  bool expected_call = true;
+};
+
+class HTMLInputElementPasswordFieldResetTest
+    : public HTMLInputElementTest,
+      public ::testing::WithParamInterface<PasswordFieldResetParam> {
+ protected:
+  void SetUp() override {
+    chrome_client_ = MakeGarbageCollected<MockChromeClient>();
+    SetupPageWithClients(chrome_client_);
+  }
+
+  MockChromeClient& chrome_client() { return *chrome_client_; }
+
+ private:
+  Persistent<MockChromeClient> chrome_client_;
+};
+
+// Tests that PasswordFieldReset() is (only) called for empty fields. This is
+// particularly relevant for field types where setValue("") does not imply
+// value().IsEmpty(), such as <input type="range"> (see crbug.com/1265130).
+TEST_P(HTMLInputElementPasswordFieldResetTest, PasswordFieldReset) {
+  GetDocument().documentElement()->setInnerHTML(
+      "<input id=test type=password>");
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  TestElement().setType(GetParam().new_type);
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  TestElement().setValue(GetParam().temporary_value);
+  GetDocument().UpdateStyleAndLayoutTree();
+
+  EXPECT_CALL(chrome_client(),
+              PasswordFieldReset(Truly([this](const HTMLInputElement& e) {
+                return e.isSameNode(&TestElement()) && e.value().IsEmpty();
+              })))
+      .Times(GetParam().expected_call ? 1 : 0);
+  TestElement().setValue("");
+  GetDocument().UpdateStyleAndLayoutTree();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HTMLInputElementTest,
+    HTMLInputElementPasswordFieldResetTest,
+    ::testing::Values(PasswordFieldResetParam{"password", "some_value", true},
+                      PasswordFieldResetParam{"text", "some_value", true},
+                      PasswordFieldResetParam{"range", "51", false}));
 
 }  // namespace blink

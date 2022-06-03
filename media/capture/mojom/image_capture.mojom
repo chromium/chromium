@@ -7,6 +7,7 @@ module media.mojom;
 // Equivalent to idl MediaSettingsRange, arbitrary range representing the
 // allowed variations of a Capability or an Option.
 // https://w3c.github.io/mediacapture-image/#mediasettingsrange-section
+[Stable]
 struct Range {
   double max;
   double min;
@@ -15,16 +16,20 @@ struct Range {
 };
 
 // https://w3c.github.io/mediacapture-image/#meteringmode-section
+[Stable, Extensible]
 enum MeteringMode { NONE, MANUAL, SINGLE_SHOT, CONTINUOUS };
 
 // https://w3c.github.io/mediacapture-image/#redeyereduction-section
+[Stable, Extensible]
 enum RedEyeReduction { NEVER, ALWAYS, CONTROLLABLE };
 
 //  https://www.w3.org/TR/image-capture/#FillLightMode
+[Stable, Extensible]
 enum FillLightMode { OFF, AUTO, FLASH };
 
 // Equivalent to idl's MediaTrackCapabilities plus PhotoCapabilities and their
 // associated settings.
+[Stable]
 struct PhotoState {
   // https://w3c.github.io/mediacapture-image/#mediatrackcapabilities-section
   // and https://w3c.github.io/mediacapture-image/#mediatracksettings-section
@@ -66,6 +71,7 @@ struct PhotoState {
 // Equivalent to idl Point2D.
 // https://w3c.github.io/mediacapture-image/#point2d-section
 // TODO(mcasas): use gfx::mojom::PointF after https://crbug.com/640049.
+[Stable]
 struct Point2D {
   double x;
   double y;
@@ -73,6 +79,7 @@ struct Point2D {
 
 // Equivalent to idl PhotoSettings + MediaTrackSettings/MediaTrackConstraintSet.
 // PODs cannot be nullable, i.e. uint32? bla doesn't work, use |has_bla| flags.
+[Stable]
 struct PhotoSettings {
   // https://w3c.github.io/mediacapture-image/#mediatracksettings-section and
   // https://w3c.github.io/mediacapture-image/#mediatrackconstraintset-section
@@ -127,6 +134,7 @@ struct PhotoSettings {
 };
 
 // This is a mojo move-only equivalent of a Blob, i.e. MIME type and Data.
+[Stable]
 struct Blob {
   string mime_type;
   array<uint8> data;

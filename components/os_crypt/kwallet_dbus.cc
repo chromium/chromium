@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <components/os_crypt/kwallet_dbus.h>
+#include "components/os_crypt/kwallet_dbus.h"
 
 #include <algorithm>
 #include <memory>
@@ -373,11 +373,12 @@ KWalletDBus::Error KWalletDBus::WritePassword(const int handle,
   return SUCCESS;
 }
 
-KWalletDBus::Error KWalletDBus::ReadPassword(const int handle,
-                                             const std::string& folder_name,
-                                             const std::string& key,
-                                             const std::string& app_name,
-                                             std::string* const password_ptr) {
+KWalletDBus::Error KWalletDBus::ReadPassword(
+    const int handle,
+    const std::string& folder_name,
+    const std::string& key,
+    const std::string& app_name,
+    absl::optional<std::string>* const password_ptr) {
   dbus::MethodCall method_call(kKWalletInterface, "readPassword");
   dbus::MessageWriter builder(&method_call);
   builder.AppendInt32(handle);
@@ -391,11 +392,14 @@ KWalletDBus::Error KWalletDBus::ReadPassword(const int handle,
     return CANNOT_CONTACT;
   }
   dbus::MessageReader reader(response.get());
-  if (!reader.PopString(password_ptr)) {
+  std::string password;
+  if (!reader.PopString(&password)) {
     LOG(ERROR) << "Error reading response from " << kwalletd_name_
                << " (readPassword): " << response->ToString();
+    *password_ptr = absl::nullopt;
     return CANNOT_READ;
   }
+  *password_ptr = std::move(password);
   return SUCCESS;
 }
 

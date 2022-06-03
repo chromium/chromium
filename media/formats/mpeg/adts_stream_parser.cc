@@ -13,10 +13,10 @@
 
 namespace media {
 
-static const uint32_t kADTSStartCodeMask = 0xfff00000;
+constexpr uint32_t kADTSStartCodeMask = 0xfff00000;
 
 ADTSStreamParser::ADTSStreamParser()
-    : MPEGAudioStreamParserBase(kADTSStartCodeMask, kCodecAAC, 0) {}
+    : MPEGAudioStreamParserBase(kADTSStartCodeMask, AudioCodec::kAAC, 0) {}
 
 ADTSStreamParser::~ADTSStreamParser() = default;
 
@@ -27,7 +27,7 @@ int ADTSStreamParser::ParseFrameHeader(const uint8_t* data,
                                        ChannelLayout* channel_layout,
                                        int* sample_count,
                                        bool* metadata_frame,
-                                       std::vector<uint8_t>* extra_data) const {
+                                       std::vector<uint8_t>* extra_data) {
   DCHECK(data);
   DCHECK_GE(size, 0);
 
@@ -62,11 +62,8 @@ int ADTSStreamParser::ParseFrameHeader(const uint8_t* data,
     return -1;
   }
 
-  DVLOG(2) << "Header data :" << std::hex
-           << " sync 0x" << sync
-           << " version 0x" << version
-           << " layer 0x" << layer
-           << " profile 0x" << profile
+  DVLOG(2) << "Header data :" << std::hex << " sync 0x" << sync << " version 0x"
+           << version << " layer 0x" << layer << " profile 0x" << profile
            << " sample_rate_index 0x" << sample_rate_index
            << " channel_layout_index 0x" << channel_layout_index;
 
@@ -75,7 +72,7 @@ int ADTSStreamParser::ParseFrameHeader(const uint8_t* data,
       sample_rate_index >= kADTSFrequencyTableSize ||
       channel_layout_index >= kADTSChannelLayoutTableSize) {
     if (media_log()) {
-      MEDIA_LOG(DEBUG, media_log())
+      LIMITED_MEDIA_LOG(DEBUG, media_log(), adts_parse_error_limit_, 5)
           << "Invalid header data :" << std::hex << " sync 0x" << sync
           << " version 0x" << version << " layer 0x" << layer
           << " sample_rate_index 0x" << sample_rate_index

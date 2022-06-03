@@ -26,7 +26,7 @@ namespace {
 
 class NonBlockingPushClientTest : public testing::Test {
  protected:
-  NonBlockingPushClientTest() : fake_push_client_(NULL) {}
+  NonBlockingPushClientTest() : fake_push_client_(nullptr) {}
 
   ~NonBlockingPushClientTest() override {}
 

@@ -4,7 +4,7 @@ if (window.testRunner)
 
 var n = document.createElement('fieldset');
 document.documentElement.appendChild(n);
-try { n.createShadowRoot(); } catch(e) {}
+try { n.attachShadow({mode: 'open'}); } catch(e) {}
 n.appendChild(document.createElement('div'));
 
 onload = function() {

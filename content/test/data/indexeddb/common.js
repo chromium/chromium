@@ -155,14 +155,14 @@ function promiseDeleteThenOpenDb(dbName, upgradeCallback) {
     };
     deleteRequest.onsuccess = () => {
       const openRequest = indexedDB.open(dbName);
-      openRequest.onerror = () => {
+      openRequest.onerror = (event) => {
         reject(new Error('An error occurred on opening database ${dbName}'));
       };
       openRequest.onblocked = () => {
         reject(new Error('Opening database ${dbName} was blocked'));
       };
-      openRequest.onupgradeneeded = () => {
-        upgradeCallback();
+      openRequest.onupgradeneeded = (event) => {
+        upgradeCallback(event.target.result);
       };
       openRequest.onsuccess = () => {
         resolve(event.target.result);
@@ -185,7 +185,7 @@ function promiseOpenDb(dbName, optionalUpgradeCallback) {
       reject(e);
     };
     if (optionalUpgradeCallback) {
-      openRequest.onupgradeneeded = () => {
+      openRequest.onupgradeneeded = (event) => {
         const db = event.target.result;
         optionalUpgradeCallback(db);
       };

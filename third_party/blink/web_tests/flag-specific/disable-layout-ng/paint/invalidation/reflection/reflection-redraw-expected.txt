@@ -1,71 +1,21 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'The color of this'",
-          "rect": [380, 267, 286, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'should be green'",
-          "rect": [380, 267, 286, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'text in the reflection'",
-          "rect": [380, 267, 286, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'The color of this'",
-          "rect": [70, 267, 286, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'should be green'",
-          "rect": [70, 267, 286, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'text in the reflection'",
-          "rect": [70, 267, 286, 59],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'The color of this'",
-          "rect": [305, 34, 126, 182],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'should be green'",
-          "rect": [305, 34, 126, 182],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'text in the reflection'",
-          "rect": [305, 34, 126, 182],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'The color of this'",
-          "rect": [305, 377, 126, 156],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'should be green'",
-          "rect": [305, 377, 126, 156],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'text in the reflection'",
-          "rect": [305, 377, 126, 156],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [380, 287, 286, 19],
+        [70, 287, 286, 19],
+        [391, 267, 264, 19],
+        [81, 267, 264, 19],
+        [393, 307, 260, 19],
+        [83, 307, 260, 19],
+        [305, 54, 126, 142],
+        [305, 397, 126, 116],
+        [316, 377, 104, 156],
+        [318, 34, 100, 182]
       ]
     }
   ]

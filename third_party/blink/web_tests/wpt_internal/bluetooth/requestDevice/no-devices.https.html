@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
+<script src="/bluetooth/resources/bluetooth-test.js"></script>
+<script src="/bluetooth/resources/bluetooth-fake-devices.js"></script>
+<script>
+'use strict';
+bluetooth_test(() => {
+  return setBluetoothFakeAdapter('EmptyAdapter')
+      .then(
+          () => assert_promise_rejects_with_message(
+              requestDeviceWithTrustedClick(
+                  {filters: [{services: ['generic_access']}]}),
+              new DOMException(
+                  'User cancelled the requestDevice() chooser.',
+                  'NotFoundError'),
+              'No Bluetooth devices in range.'));
+}, 'Reject with NotFoundError if there are no devices around.');
+</script>

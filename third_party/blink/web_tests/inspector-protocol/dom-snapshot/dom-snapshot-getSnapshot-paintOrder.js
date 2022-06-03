@@ -33,7 +33,7 @@
     });
   }
 
-  var response = await dp.DOMSnapshot.getSnapshot({'computedStyleWhitelist': [], 'includePaintOrder': true});
+  const response = await dp.DOMSnapshot.getSnapshot({'computedStyleWhitelist': [], 'includePaintOrder': true});
   if (response.error)
     testRunner.log(response);
   else

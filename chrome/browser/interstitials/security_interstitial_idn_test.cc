@@ -5,25 +5,22 @@
 #include "chrome/browser/interstitials/security_interstitial_idn_test.h"
 
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/interstitials/security_interstitial_page_test_utils.h"
-#include "chrome/browser/profiles/profile.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/prefs/pref_service.h"
+#include "chrome/test/base/ui_test_utils.h"
 #include "components/security_interstitials/content/security_interstitial_page.h"
-#include "components/security_interstitials/core/controller_client.h"
-#include "content/public/browser/interstitial_page.h"
+#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/test_navigation_observer.h"
+#include "net/base/net_errors.h"
 #include "url/gurl.h"
 
 namespace chrome_browser_interstitials {
 
 testing::AssertionResult SecurityInterstitialIDNTest::VerifyIDNDecoded() const {
   const char kHostname[] = "xn--d1abbgf6aiiy.xn--p1ai";
-  const char kHostnameJSUnicode[] =
-      "\\u043f\\u0440\\u0435\\u0437\\u0438\\u0434\\u0435\\u043d\\u0442."
-      "\\u0440\\u0444";
+  const char16_t kHostnameUnicode[] = u"президент.рф";
   std::string request_url_spec = base::StringPrintf("https://%s/", kHostname);
   GURL request_url(request_url_spec);
 
@@ -32,15 +29,15 @@ testing::AssertionResult SecurityInterstitialIDNTest::VerifyIDNDecoded() const {
   DCHECK(contents);
   security_interstitials::SecurityInterstitialPage* blocking_page =
       CreateInterstitial(contents, request_url);
-  blocking_page->Show();
-
-  WaitForInterstitialAttach(contents);
-  if (!WaitForRenderFrameReady(contents->GetInterstitialPage()->GetMainFrame()))
-    return testing::AssertionFailure() << "Render frame not ready";
-
-  if (IsInterstitialDisplayingText(
-          contents->GetInterstitialPage()->GetMainFrame(),
-          kHostnameJSUnicode)) {
+  content::TestNavigationObserver observer(contents);
+  contents->GetController().LoadPostCommitErrorPage(
+      contents->GetMainFrame(), request_url, blocking_page->GetHTMLContents(),
+      net::ERR_BLOCKED_BY_CLIENT);
+  observer.Wait();
+  delete blocking_page;
+  if (ui_test_utils::FindInPage(contents, kHostnameUnicode, true /*forward*/,
+                                true /*case_sensitive*/, nullptr,
+                                nullptr) == 1) {
     return testing::AssertionSuccess();
   }
   return testing::AssertionFailure() << "Interstitial not displaying text";

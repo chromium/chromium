@@ -13,18 +13,18 @@ namespace viz {
 class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
     : public OverlayProcessorUsingStrategy {
  public:
-  explicit OverlayProcessorSurfaceControl(bool enable_overlay);
+  OverlayProcessorSurfaceControl();
   ~OverlayProcessorSurfaceControl() override;
 
   bool IsOverlaySupported() const override;
 
-  bool NeedsSurfaceOccludingDamageRect() const override;
+  bool NeedsSurfaceDamageRectList() const override;
 
   // Override OverlayProcessorUsingStrategy.
   void SetDisplayTransformHint(gfx::OverlayTransform transform) override;
   void SetViewportSize(const gfx::Size& size) override;
   void AdjustOutputSurfaceOverlay(
-      base::Optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
+      absl::optional<OutputSurfaceOverlayPlane>* output_surface_plane) override;
   void CheckOverlaySupport(
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidates) override;
@@ -32,7 +32,9 @@ class VIZ_SERVICE_EXPORT OverlayProcessorSurfaceControl
       const OverlayCandidate& overlay) const override;
 
  private:
-  const bool overlay_enabled_;
+  // Historically, android media was hardcoding color space to srgb. This
+  // indicates that we going to use real one.
+  const bool use_real_color_space_;
   gfx::OverlayTransform display_transform_ = gfx::OVERLAY_TRANSFORM_NONE;
   gfx::Size viewport_size_;
 };

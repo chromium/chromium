@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Checks that script evaluated twice with different source and the same sourceURL won't be diverged from VM.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
 
   const scriptSource = '239\n//# sourceURL=test.js';
@@ -19,7 +19,7 @@
   }
 
   function step2(uiSourceCode) {
-    TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, '_mappingCheckedForTest')
+    TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, 'mappingCheckedForTest')
         .then(() => step3(uiSourceCode));
     SourcesTestRunner.showScriptSource('test.js');
   }
@@ -40,9 +40,9 @@
 
     TestRunner
         .addSnifferPromise(
-            Sources.DebuggerPlugin.prototype, '_didDivergeFromVM')
+            Sources.DebuggerPlugin.prototype, 'didDivergeFromVM')
         .then(dumpDivergeFromVM);
-    TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, '_mappingCheckedForTest')
+    TestRunner.addSnifferPromise(Bindings.ResourceScriptFile.prototype, 'mappingCheckedForTest')
         .then(() => SourcesTestRunner.completeDebuggerTest());
     TestRunner.evaluateInPage(changedScriptSource);
   }

@@ -8,17 +8,17 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
-#include "components/signin/internal/identity_manager/android/jni_headers/ProfileOAuth2TokenServiceDelegate_jni.h"
+#include "components/signin/public/android/jni_headers/ProfileOAuth2TokenServiceDelegate_jni.h"
 #include "components/signin/public/base/account_consistency_method.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 using base::android::AttachCurrentThread;
 using base::android::ConvertJavaStringToUTF8;
@@ -28,6 +28,8 @@ using base::android::JavaRef;
 using base::android::ScopedJavaLocalRef;
 
 namespace {
+
+using TokenResponseBuilder = OAuth2AccessTokenConsumer::TokenResponse::Builder;
 
 // Callback from FetchOAuth2TokenWithUsername().
 // Arguments:
@@ -45,6 +47,11 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
       ProfileOAuth2TokenServiceDelegateAndroid* oauth2_token_service_delegate,
       OAuth2AccessTokenConsumer* consumer,
       const std::string& account_id);
+
+  AndroidAccessTokenFetcher(const AndroidAccessTokenFetcher&) = delete;
+  AndroidAccessTokenFetcher& operator=(const AndroidAccessTokenFetcher&) =
+      delete;
+
   ~AndroidAccessTokenFetcher() override;
 
   // Overrides from OAuth2AccessTokenFetcher:
@@ -65,8 +72,6 @@ class AndroidAccessTokenFetcher : public OAuth2AccessTokenFetcher {
   std::string account_id_;
   bool request_was_cancelled_;
   base::WeakPtrFactory<AndroidAccessTokenFetcher> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidAccessTokenFetcher);
 };
 
 AndroidAccessTokenFetcher::AndroidAccessTokenFetcher(
@@ -86,7 +91,7 @@ void AndroidAccessTokenFetcher::Start(const std::string& client_id,
                                       const std::vector<std::string>& scopes) {
   JNIEnv* env = AttachCurrentThread();
   std::string scope = CombineScopes(scopes);
-  ScopedJavaLocalRef<jstring> j_username =
+  ScopedJavaLocalRef<jstring> j_email =
       ConvertUTF8ToJavaString(env, account_id_);
   ScopedJavaLocalRef<jstring> j_scope = ConvertUTF8ToJavaString(env, scope);
   std::unique_ptr<FetchOAuth2TokenCallback> heap_callback(
@@ -96,7 +101,7 @@ void AndroidAccessTokenFetcher::Start(const std::string& client_id,
 
   // Call into Java to get a new token.
   signin::Java_ProfileOAuth2TokenServiceDelegate_getAccessTokenFromNative(
-      env, oauth2_token_service_delegate_->GetJavaObject(), j_username, j_scope,
+      env, oauth2_token_service_delegate_->GetJavaObject(), j_email, j_scope,
       reinterpret_cast<intptr_t>(heap_callback.release()));
 }
 
@@ -113,8 +118,10 @@ void AndroidAccessTokenFetcher::OnAccessTokenResponse(
     return;
   }
   if (error.state() == GoogleServiceAuthError::NONE) {
-    FireOnGetTokenSuccess(OAuth2AccessTokenConsumer::TokenResponse(
-        access_token, expiration_time, std::string()));
+    FireOnGetTokenSuccess(TokenResponseBuilder()
+                              .WithAccessToken(access_token)
+                              .WithExpirationTime(expiration_time)
+                              .build());
   } else {
     FireOnGetTokenFailure(error);
   }
@@ -137,15 +144,9 @@ std::string AndroidAccessTokenFetcher::CombineScopes(
 
 }  // namespace
 
-// TODO(crbug.com/1009957) Remove disable_interation_with_system_accounts_
-// from ProfileOAuth2TokenServiceDelegateAndroid
-bool ProfileOAuth2TokenServiceDelegateAndroid::
-    disable_interaction_with_system_accounts_ = false;
-
 ProfileOAuth2TokenServiceDelegateAndroid::
     ProfileOAuth2TokenServiceDelegateAndroid(
-        AccountTrackerService* account_tracker_service,
-        const base::android::JavaRef<jobject>& account_manager_facade)
+        AccountTrackerService* account_tracker_service)
     : account_tracker_service_(account_tracker_service),
       fire_refresh_token_loaded_(RT_LOAD_NOT_START) {
   DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::ctor";
@@ -153,9 +154,9 @@ ProfileOAuth2TokenServiceDelegateAndroid::
 
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> local_java_ref =
-      signin::Java_ProfileOAuth2TokenServiceDelegate_create(
+      signin::Java_ProfileOAuth2TokenServiceDelegate_Constructor(
           env, reinterpret_cast<intptr_t>(this),
-          account_tracker_service_->GetJavaObject(), account_manager_facade);
+          account_tracker_service_->GetJavaObject());
   java_ref_.Reset(env, local_java_ref.obj());
 
   if (account_tracker_service_->GetMigrationState() ==
@@ -183,10 +184,6 @@ ProfileOAuth2TokenServiceDelegateAndroid::GetJavaObject() {
 
 bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
     const CoreAccountId& account_id) const {
-  DCHECK(!disable_interaction_with_system_accounts_)
-      << __FUNCTION__
-      << " needs to interact with system accounts and cannot be used with "
-         "disable_interaction_with_system_accounts_";
   DVLOG(1)
       << "ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable"
       << " account= " << account_id;
@@ -200,11 +197,11 @@ bool ProfileOAuth2TokenServiceDelegateAndroid::RefreshTokenIsAvailable(
     return false;
   }
   JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jstring> j_account_id =
+  ScopedJavaLocalRef<jstring> j_account_name =
       ConvertUTF8ToJavaString(env, account_name);
   jboolean refresh_token_is_available =
       signin::Java_ProfileOAuth2TokenServiceDelegate_hasOAuth2RefreshToken(
-          env, java_ref_, j_account_id);
+          env, java_ref_, j_account_name);
   return refresh_token_is_available == JNI_TRUE;
 }
 
@@ -239,54 +236,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAuthError(
 
 std::vector<CoreAccountId>
 ProfileOAuth2TokenServiceDelegateAndroid::GetAccounts() const {
-  std::vector<std::string> accounts;
-  JNIEnv* env = AttachCurrentThread();
-
-  // TODO(crbug.com/1028580) Pass |j_accounts| as a list of
-  // org.chromium.components.signin.identitymanager.CoreAccountId and convert it
-  // to CoreAccountId using ConvertFromJavaCoreAccountId.
-  ScopedJavaLocalRef<jobjectArray> j_accounts =
-      signin::Java_ProfileOAuth2TokenServiceDelegate_getAccounts(env);
-  ;
-  // TODO(fgorski): We may decide to filter out some of the accounts.
-  base::android::AppendJavaStringArrayToStringVector(env, j_accounts,
-                                                     &accounts);
-  std::vector<CoreAccountId> account_ids;
-  for (auto& account : accounts)
-    account_ids.push_back(CoreAccountId::FromString(account));
-
-  return account_ids;
-}
-
-std::vector<std::string>
-ProfileOAuth2TokenServiceDelegateAndroid::GetSystemAccountNames() {
-  DCHECK(!disable_interaction_with_system_accounts_)
-      << __FUNCTION__
-      << " needs to interact with system accounts and cannot be used with "
-         "disable_interaction_with_system_accounts_";
-  std::vector<std::string> account_names;
-  JNIEnv* env = AttachCurrentThread();
-
-  // TODO(crbug.com/1028580) Pass |j_accounts| as a list of
-  // org.chromium.components.signin.identitymanager.CoreAccountId and convert it
-  // to CoreAccountId using ConvertFromJavaCoreAccountId.
-  ScopedJavaLocalRef<jobjectArray> j_accounts =
-      signin::Java_ProfileOAuth2TokenServiceDelegate_getSystemAccountNames(
-          env, java_ref_);
-  base::android::AppendJavaStringArrayToStringVector(env, j_accounts,
-                                                     &account_names);
-  return account_names;
-}
-
-std::vector<CoreAccountId>
-ProfileOAuth2TokenServiceDelegateAndroid::GetSystemAccounts() {
-  std::vector<CoreAccountId> ids;
-  for (const std::string& name : GetSystemAccountNames()) {
-    CoreAccountId id(MapAccountNameToAccountId(name));
-    if (!id.empty())
-      ids.push_back(std::move(id));
-  }
-  return ids;
+  return accounts_;
 }
 
 std::vector<CoreAccountId>
@@ -301,11 +251,7 @@ ProfileOAuth2TokenServiceDelegateAndroid::GetValidAccounts() {
 
 void ProfileOAuth2TokenServiceDelegateAndroid::SetAccounts(
     const std::vector<CoreAccountId>& accounts) {
-  JNIEnv* env = AttachCurrentThread();
-  ScopedJavaLocalRef<jobjectArray> java_accounts(
-      base::android::ToJavaArrayOfStrings(env, ToStringList(accounts)));
-  signin::Java_ProfileOAuth2TokenServiceDelegate_setAccounts(env,
-                                                             java_accounts);
+  accounts_ = accounts;
 }
 
 std::unique_ptr<OAuth2AccessTokenFetcher>
@@ -329,10 +275,6 @@ void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
     const std::string& client_id,
     const OAuth2AccessTokenManager::ScopeSet& scopes,
     const std::string& access_token) {
-  DCHECK(!disable_interaction_with_system_accounts_)
-      << __FUNCTION__
-      << " needs to interact with system accounts and cannot be used with "
-         "disable_interaction_with_system_accounts_";
   ValidateAccountId(account_id);
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jstring> j_access_token =
@@ -343,7 +285,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::OnAccessTokenInvalidated(
 
 void ProfileOAuth2TokenServiceDelegateAndroid::
     ReloadAllAccountsFromSystemWithPrimaryAccount(
-        const base::Optional<CoreAccountId>& primary_account_id) {
+        const absl::optional<CoreAccountId>& primary_account_id) {
   JNIEnv* env = AttachCurrentThread();
 
   ScopedJavaLocalRef<jstring> j_account_id =
@@ -358,17 +300,28 @@ void ProfileOAuth2TokenServiceDelegateAndroid::
 void ProfileOAuth2TokenServiceDelegateAndroid::
     ReloadAllAccountsWithPrimaryAccountAfterSeeding(
         JNIEnv* env,
-        const base::android::JavaParamRef<jstring>& account_id) {
-  base::Optional<CoreAccountId> core_account_id;
-  if (account_id) {
-    core_account_id =
-        CoreAccountId::FromString(ConvertJavaStringToUTF8(env, account_id));
+        const base::android::JavaParamRef<jstring>& j_primary_account_id,
+        const base::android::JavaParamRef<jobjectArray>&
+            j_device_account_names) {
+  absl::optional<CoreAccountId> primary_account_id;
+  if (j_primary_account_id) {
+    primary_account_id = CoreAccountId::FromString(
+        ConvertJavaStringToUTF8(env, j_primary_account_id));
   }
-  UpdateAccountList(core_account_id, GetValidAccounts(), GetSystemAccounts());
+  std::vector<std::string> device_account_names;
+  base::android::AppendJavaStringArrayToStringVector(
+      env, j_device_account_names, &device_account_names);
+  std::vector<CoreAccountId> account_ids;
+  for (const std::string& name : device_account_names) {
+    CoreAccountId id(MapAccountNameToAccountId(name));
+    if (!id.empty())
+      account_ids.push_back(std::move(id));
+  }
+  UpdateAccountList(primary_account_id, GetValidAccounts(), account_ids);
 }
 
 void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
-    const base::Optional<CoreAccountId>& signed_in_account_id,
+    const absl::optional<CoreAccountId>& signed_in_account_id,
     const std::vector<CoreAccountId>& prev_ids,
     const std::vector<CoreAccountId>& curr_ids) {
   DVLOG(1) << "ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList:"
@@ -418,23 +371,16 @@ void ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
       !signed_in_account_id.has_value()) {
     account_tracker_service_->SetMigrationDone();
   }
-
-  if (!last_update_accounts_time_.is_null()) {
-    base::TimeDelta sample = base::Time::Now() - last_update_accounts_time_;
-    UmaHistogramLongTimes("Signin.AndroidTimeBetweenUpdateAccountList", sample);
-  }
-  last_update_accounts_time_ = base::Time::Now();
 }
 
 bool ProfileOAuth2TokenServiceDelegateAndroid::UpdateAccountList(
-    const base::Optional<CoreAccountId>& signed_in_id,
+    const absl::optional<CoreAccountId>& signed_in_id,
     const std::vector<CoreAccountId>& prev_ids,
     const std::vector<CoreAccountId>& curr_ids,
     std::vector<CoreAccountId>* refreshed_ids,
     std::vector<CoreAccountId>* revoked_ids) {
   bool keep_accounts =
-      base::FeatureList::IsEnabled(signin::kMiceFeature) ||
-      (signed_in_id.has_value() && base::Contains(curr_ids, *signed_in_id));
+      signed_in_id.has_value() && base::Contains(curr_ids, *signed_in_id);
   if (keep_accounts) {
     // Revoke token for ids that have been removed from the device.
     for (const CoreAccountId& prev_id : prev_ids) {
@@ -508,8 +454,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::LoadCredentials(
             load_credentials_state());
   set_load_credentials_state(
       signin::LoadCredentialsState::LOAD_CREDENTIALS_IN_PROGRESS);
-  if (primary_account_id.empty() &&
-      !base::FeatureList::IsEnabled(signin::kMiceFeature)) {
+  if (primary_account_id.empty()) {
     FireRefreshTokensLoaded();
     return;
   }
@@ -537,11 +482,16 @@ ProfileOAuth2TokenServiceDelegateAndroid::MapAccountNameToAccountId(
 }
 
 namespace signin {
+
 // Called from Java when fetching of an OAuth2 token is finished. The
 // |authToken| param is only valid when |result| is true.
+// |expiration_time_secs| param is the number of seconds (NOT milliseconds)
+// after the Unix epoch when the token is scheduled to expire.
+// It is set to 0 if there's no known expiration time.
 void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
     JNIEnv* env,
     const JavaParamRef<jstring>& authToken,
+    const jlong expiration_time_secs,
     jboolean isTransientError,
     jlong nativeCallback) {
   std::string token;
@@ -558,6 +508,12 @@ void JNI_ProfileOAuth2TokenServiceDelegate_OnOAuth2TokenFetched(
                   GoogleServiceAuthError::InvalidGaiaCredentialsReason::
                       CREDENTIALS_REJECTED_BY_SERVER);
   }
-  std::move(*heap_callback).Run(err, token, base::Time());
+
+  const base::Time expiration_time =
+      expiration_time_secs == 0
+          ? base::Time()
+          : base::Time::FromJavaTime(expiration_time_secs * 1000);
+
+  std::move(*heap_callback).Run(err, token, expiration_time);
 }
 }  // namespace signin

@@ -7,11 +7,12 @@
 #include <stddef.h>
 #include <utility>
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/format_macros.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -23,11 +24,13 @@
 #include "net/http/http_status_code.h"
 #include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
-#include "net/url_request/url_request_status.h"
 #include "services/network/public/cpp/constants.h"
+#include "services/network/public/cpp/features.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "storage/browser/blob/blob_data_handle.h"
 #include "storage/browser/blob/mojo_blob_reader.h"
+#include "third_party/blink/public/common/blob/blob_utils.h"
 
 namespace storage {
 
@@ -45,34 +48,30 @@ scoped_refptr<net::HttpResponseHeaders> GenerateHeaders(
   status.append(net::GetHttpReasonPhrase(status_code));
   status.append("\0\0", 2);
   scoped_refptr<net::HttpResponseHeaders> headers =
-      new net::HttpResponseHeaders(status);
+      base::MakeRefCounted<net::HttpResponseHeaders>(status);
 
   if (status_code == net::HTTP_OK || status_code == net::HTTP_PARTIAL_CONTENT) {
-    std::string content_length_header(net::HttpRequestHeaders::kContentLength);
-    content_length_header.append(": ");
-    content_length_header.append(base::NumberToString(content_size));
-    headers->AddHeader(content_length_header);
+    headers->SetHeader(net::HttpRequestHeaders::kContentLength,
+                       base::NumberToString(content_size));
     if (status_code == net::HTTP_PARTIAL_CONTENT) {
       DCHECK(byte_range->IsValid());
-      std::string content_range_header(net::HttpResponseHeaders::kContentRange);
-      content_range_header.append(": bytes ");
+      std::string content_range_header;
+      content_range_header.append("bytes ");
       content_range_header.append(base::StringPrintf(
           "%" PRId64 "-%" PRId64, byte_range->first_byte_position(),
           byte_range->last_byte_position()));
       content_range_header.append("/");
       content_range_header.append(base::StringPrintf("%" PRId64, total_size));
-      headers->AddHeader(content_range_header);
+      headers->SetHeader(net::HttpResponseHeaders::kContentRange,
+                         content_range_header);
     }
     if (!blob_handle->content_type().empty()) {
-      std::string content_type_header(net::HttpRequestHeaders::kContentType);
-      content_type_header.append(": ");
-      content_type_header.append(blob_handle->content_type());
-      headers->AddHeader(content_type_header);
+      headers->SetHeader(net::HttpRequestHeaders::kContentType,
+                         blob_handle->content_type());
     }
     if (!blob_handle->content_disposition().empty()) {
-      std::string content_disposition_header("Content-Disposition: ");
-      content_disposition_header.append(blob_handle->content_disposition());
-      headers->AddHeader(content_disposition_header);
+      headers->SetHeader("Content-Disposition",
+                         blob_handle->content_disposition());
     }
   }
 
@@ -87,15 +86,27 @@ void BlobURLLoader::CreateAndStart(
     const network::ResourceRequest& request,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     std::unique_ptr<BlobDataHandle> blob_handle) {
-  new BlobURLLoader(std::move(url_loader_receiver), request, std::move(client),
-                    std::move(blob_handle));
+  new BlobURLLoader(std::move(url_loader_receiver), request.method,
+                    request.headers, std::move(client), std::move(blob_handle));
+}
+
+// static
+void BlobURLLoader::CreateAndStart(
+    mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
+    const std::string& method,
+    const net::HttpRequestHeaders& headers,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client,
+    std::unique_ptr<BlobDataHandle> blob_handle) {
+  new BlobURLLoader(std::move(url_loader_receiver), method, headers,
+                    std::move(client), std::move(blob_handle));
 }
 
 BlobURLLoader::~BlobURLLoader() = default;
 
 BlobURLLoader::BlobURLLoader(
     mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-    const network::ResourceRequest& request,
+    const std::string& method,
+    const net::HttpRequestHeaders& headers,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client,
     std::unique_ptr<BlobDataHandle> blob_handle)
     : receiver_(this, std::move(url_loader_receiver)),
@@ -104,10 +115,11 @@ BlobURLLoader::BlobURLLoader(
   // PostTask since it might destruct.
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(&BlobURLLoader::Start,
-                                weak_factory_.GetWeakPtr(), request));
+                                weak_factory_.GetWeakPtr(), method, headers));
 }
 
-void BlobURLLoader::Start(const network::ResourceRequest& request) {
+void BlobURLLoader::Start(const std::string& method,
+                          const net::HttpRequestHeaders& headers) {
   if (!blob_handle_) {
     OnComplete(net::ERR_FILE_NOT_FOUND, 0);
     delete this;
@@ -115,15 +127,14 @@ void BlobURLLoader::Start(const network::ResourceRequest& request) {
   }
 
   // We only support GET request per the spec.
-  if (request.method != "GET") {
+  if (method != "GET") {
     OnComplete(net::ERR_METHOD_NOT_SUPPORTED, 0);
     delete this;
     return;
   }
 
   std::string range_header;
-  if (request.headers.GetHeader(net::HttpRequestHeaders::kRange,
-                                &range_header)) {
+  if (headers.GetHeader(net::HttpRequestHeaders::kRange, &range_header)) {
     // We only care about "Range" header here.
     std::vector<net::HttpByteRange> ranges;
     if (net::HttpUtil::ParseRangeHeader(range_header, &ranges)) {
@@ -146,8 +157,9 @@ void BlobURLLoader::Start(const network::ResourceRequest& request) {
   options.struct_size = sizeof(MojoCreateDataPipeOptions);
   options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
   options.element_num_bytes = 1;
-  options.capacity_num_bytes = network::kDataPipeDefaultAllocationSize;
-  if (mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle) !=
+  options.capacity_num_bytes =
+      blink::BlobUtils::GetDataPipeCapacity(blob_handle_->size());
+  if (mojo::CreateDataPipe(&options, producer_handle, consumer_handle) !=
       MOJO_RESULT_OK) {
     OnComplete(net::ERR_INSUFFICIENT_RESOURCES, 0);
     delete this;
@@ -162,7 +174,8 @@ void BlobURLLoader::Start(const network::ResourceRequest& request) {
 void BlobURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
-    const base::Optional<GURL>& new_url) {
+    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    const absl::optional<GURL>& new_url) {
   NOTREACHED();
 }
 
@@ -183,11 +196,11 @@ MojoBlobReader::Delegate::RequestSideData BlobURLLoader::DidCalculateSize(
     return REQUEST_SIDE_DATA;
   }
 
-  HeadersCompleted(status_code, content_size, base::nullopt);
+  HeadersCompleted(status_code, content_size, absl::nullopt);
   return DONT_REQUEST_SIDE_DATA;
 }
 
-void BlobURLLoader::DidReadSideData(base::Optional<mojo_base::BigBuffer> data) {
+void BlobURLLoader::DidReadSideData(absl::optional<mojo_base::BigBuffer> data) {
   HeadersCompleted(net::HTTP_OK, total_size_, std::move(data));
 }
 
@@ -204,7 +217,7 @@ void BlobURLLoader::OnComplete(net::Error error_code,
 void BlobURLLoader::HeadersCompleted(
     net::HttpStatusCode status_code,
     uint64_t content_size,
-    base::Optional<mojo_base::BigBuffer> metadata) {
+    absl::optional<mojo_base::BigBuffer> metadata) {
   auto response = network::mojom::URLResponseHead::New();
   response->content_length = 0;
   if (status_code == net::HTTP_OK || status_code == net::HTTP_PARTIAL_CONTENT)
@@ -214,10 +227,10 @@ void BlobURLLoader::HeadersCompleted(
 
   std::string mime_type;
   response->headers->GetMimeType(&mime_type);
-  // Match logic in StreamURLRequestJob::HeadersCompleted.
   if (mime_type.empty())
     mime_type = "text/plain";
   response->mime_type = mime_type;
+  response->headers->GetCharset(&response->charset);
 
   // TODO(jam): some of this code can be shared with
   // services/network/url_loader.h

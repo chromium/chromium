@@ -1,0 +1,32 @@
+{%- from 'macros' import input with context -%}
+{{ hash_bang }}
+
+-- Copyright 2021 The Chromium Authors. All rights reserved.
+-- Use of this source code is governed by a BSD-style license that can be
+-- found in the LICENSE file.
+
+-- This script will navigate to about:blank and then close the browser window.
+-- This lets the browser open and only present in the doc with now visible
+-- window.
+
+tell application "{{ browser }}"
+    -- If {{ browser }} is already started then just bring
+    -- it to the forefront otherwise open it.
+    if it is running then
+      reopen
+    else
+      activate
+    end if
+
+    set bounds of front window to {0, 0, 1920, 1080}
+
+    open location "about:blank"
+    delay 10
+
+    close every window
+
+    delay {{ delay }}
+
+    activate
+
+end tell

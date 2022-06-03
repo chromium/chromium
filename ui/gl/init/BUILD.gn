@@ -2,11 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//ui/gl/features.gni")
 
-jumbo_component("init") {
+component("init") {
   output_name = "gl_init"
 
   public = [
@@ -26,23 +25,24 @@ jumbo_component("init") {
 
   deps = [
     "//base",
+    "//mojo/public/cpp/bindings",
+    "//ui/base:features",
     "//ui/gfx",
     "//ui/gl:buildflags",
   ]
 
-  public_deps = [
-    "//ui/gl",
-  ]
+  public_deps = [ "//ui/gl" ]
+
+  if (use_static_angle) {
+    sources += [ "gl_initializer_angle.cc" ]
+    deps += [ "//third_party/angle:libEGL_static" ]
+  }
 
   if (is_android) {
     sources += [
       "gl_factory_android.cc",
       "gl_initializer_android.cc",
     ]
-
-    if (use_static_angle) {
-      deps += [ "//third_party/angle:libEGL_static" ]
-    }
   } else if (is_win && !use_ozone) {
     sources += [
       "gl_factory_win.cc",
@@ -57,21 +57,15 @@ jumbo_component("init") {
       "gl_initializer_mac.cc",
     ]
 
-    libs = [ "OpenGL.framework" ]
-  } else if (use_x11) {
-    sources += [
-      "gl_factory_x11.cc",
-      "gl_initializer_x11.cc",
-    ]
-
-    deps += [ "//ui/gfx/x" ]
+    frameworks = [ "OpenGL.framework" ]
   } else if (use_ozone) {
     sources += [
+      "gl_display_egl_util_ozone.cc",
+      "gl_display_egl_util_ozone.h",
       "gl_factory_ozone.cc",
       "gl_initializer_ozone.cc",
       "ozone_util.h",
     ]
-
     deps += [ "//ui/ozone" ]
   }
 }

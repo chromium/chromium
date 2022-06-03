@@ -1,0 +1,323 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module content.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/values.mojom";
+import "skia/public/mojom/bitmap.mojom";
+import "third_party/blink/public/mojom/permissions/permission_status.mojom";
+import "third_party/blink/public/mojom/webpreferences/web_preferences.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+
+struct WebTestRunTestConfiguration {
+  // The current working directory.
+  mojo_base.mojom.FilePath current_working_directory;
+
+  // The temporary directory of the system.
+  mojo_base.mojom.FilePath temp_path;
+
+  // The URL of the current web test.
+  url.mojom.Url test_url;
+
+  // True if tests can open external URLs.
+  bool allow_external_pages;
+
+  // The expected MD5 hash of the pixel results.
+  string expected_pixel_hash;
+
+  // Whether the test is running in protocol mode.
+  // See TestInfo::protocol_mode in browser/web_test/test_info_extractor.h.
+  bool protocol_mode;
+};
+
+// Renderer-side generated test results.
+struct WebTestRendererDumpResult {
+  // Audio dump.
+  array<uint8>? audio;
+
+  // Layout dump.
+  string? layout;
+
+  // Image dump.
+  skia.mojom.BitmapN32? pixels;
+  string actual_pixel_hash;
+
+  // Selection rect dump.
+  gfx.mojom.Rect selection_rect;
+};
+
+// Tasks in the work queue. TestRunner on the main window's process manages
+// the queue, but TestRunner can migrate processes on navigations, so the queue
+// is stored on the browser side.
+// The work queue can be populated in the first page's loading on the main
+// window's main frame, and gets frozen at the end of the loading.
+// Work queues on non-main windows are frozen from the beginning, and can't
+// add work items.
+
+// Navigates backward/forward in history
+struct WorkItemBackForward {
+  // Navigation distance. If |distance| is negative, navigates to backward.
+  int32 distance;
+};
+
+// Navigates a frame named |target| to |url|
+struct WorkItemLoad {
+  string url;
+  // If |target| is empty, it means the main frame.
+  string target;
+};
+
+// Reloads
+struct WorkItemReload {};
+
+// Runs JavaScript code |script| which may trigger a navigation
+struct WorkItemLoadingScript {
+  string script;
+};
+
+// Runs JavaScript code |script| which does not trigger navigations
+struct WorkItemNonLoadingScript {
+  string script;
+};
+
+union WorkItem {
+  WorkItemBackForward back_forward;
+  WorkItemLoad load;
+  WorkItemReload reload;
+  WorkItemLoadingScript loading_script;
+  WorkItemNonLoadingScript non_loading_script;
+};
+
+// Web test messages sent from the browser process to the renderer. This
+// interface is associated with RenderFrameHost.
+interface WebTestRenderFrame {
+  // Performs the complete set of document lifecycle phases, including updates
+  // to the compositor state and rasterization, then calling the given callback.
+  SynchronouslyCompositeAfterTest() => ();
+
+  // Dumps the frame's contents into a string.
+  DumpFrameLayout() => (string frame_layout_dump);
+
+  // Sets the test config for a web test that is being started.  This message
+  // is sent once to each RenderView that hosts parts of the main test window.
+  // The `starting_test` indicates if this is the first call to this IPC method
+  // for the given test. After the initial call, this may be called for new
+  // RenderViews created to host frames for the main window, either as OOPIFs or
+  // to handle cross-site navigations.
+  SetTestConfiguration(WebTestRunTestConfiguration config, bool starting_test);
+
+  // Notifies a frame that has been navigated away. This is called only on main
+  // frames to remove the frame from TestRunner's management list.
+  OnDeactivated();
+
+  // Notifies a frame that has been restored from backward/forward cache.
+  // This is called on main frames to add them to TestRunner's management list.
+  OnReactivated();
+};
+
+// Web test messages related runtime flags sent from the browser process to the
+// renderer. This interface is associated with RenderProcessHost.
+interface WebTestRenderThread {
+  // Sets up a renderer in a window other than the main test window. This may
+  // be for a window opened by javascript (window.open()) or by the test harness
+  // (devtools inspector). This should be called as early as possible (as soon
+  // as a RenderFrame has been created for this interface to be available) after
+  // the renderer process is created, for each process not tied to the main
+  // window.
+  SetupRendererProcessForNonTestWindow();
+
+  // Used send flag changes to renderers - either when
+  // 1) broadcasting change happening in one renderer to all other renderers, or
+  // 2) sending accumulated changes to a single new renderer.
+  ReplicateWebTestRuntimeFlagsChanges(
+      mojo_base.mojom.DictionaryValue changed_layout_test_runtime_flags);
+
+  // Called on the renderer process with the main window's local main frame to
+  // conclude the test. Used to bounce this request from another renderer.
+  TestFinishedFromSecondaryRenderer();
+
+  // Reset all state in preparation for the next test. This happens before
+  // leak detection in order for the test harness to drop anything that tests
+  // passed in and which could cause a leak otherwise.
+  // The flow is:
+  // - browser process detects test is finished
+  // - browser process initiates navigation to about:blank and waits for the
+  //   document to commit.
+  // - browser process calls ResetRendererAfterWebTest() for the renderer
+  //   process that about:blank committed in.
+  ResetRendererAfterWebTest();
+
+  // Processes a work item. This is called for the process with the main
+  // window's main frame.
+  ProcessWorkItem(WorkItem work_item);
+
+  // Syncs the work queue states to the new renderer.
+  ReplicateWorkQueueStates(mojo_base.mojom.DictionaryValue work_queue_states);
+};
+
+// Web test messages sent from the renderer process to the browser. This
+// provides a message pipe from each renderer to the global WebTestControlHost
+// in the browser.
+interface WebTestControlHost {
+  // Initialize to dump the main window's navigation history to text, and/or
+  // capture a text dump and/or a pixel dump of the main window's content.
+  // Includes any results generated by the renderer process.
+  InitiateCaptureDump(WebTestRendererDumpResult result,
+                      bool capture_navigation_history,
+                      bool capture_pixels);
+
+  // Sent by secondary test window to notify the test has finished.
+  TestFinishedInSecondaryRenderer();
+
+  // Add a message to stderr (not saved to expected output files, for debugging
+  // only).
+  PrintMessageToStderr(string message);
+
+  // Add a message.
+  PrintMessage(string message);
+
+  // Update changed WebKit preferences.
+  OverridePreferences(blink.mojom.WebPreferences web_preferences);
+
+  // Trigger a reload navigation on the main WebView.
+  Reload();
+
+  // If the test will be closing its windows explicitly, and wants to look for
+  // leaks due to those windows closing incorrectly, it can specify this to
+  // avoid having them closed at the end of the test before the leak checker.
+  CheckForLeakedWindows();
+
+  // Show or hide the window. This mimics the user switching tabs in a
+  // multi-tab window, or occluding the window.
+  SetMainWindowHidden(bool hidden);
+
+  // Trigger a GoToOffset navigation on the main WebView.
+  GoToOffset(int32 offset);
+
+  // Calls the BluetoothChooser::EventHandler with the arguments here. Valid
+  // event strings are:
+  //  * "cancel" - simulates the user canceling the chooser.
+  //  * "select" - simulates the user selecting a device whose device ID is in
+  //               |argument|.
+  SendBluetoothManualChooserEvent(string event, string argument);
+
+  // If |enable| is true makes the Bluetooth chooser record its input and wait
+  // for instructions from the test program on how to proceed. Otherwise
+  // fall backs to the browser's default chooser.
+  SetBluetoothManualChooser(bool enable);
+
+  // Returns the events recorded since the last call to this function.
+  GetBluetoothManualChooserEvents() => (array<string> events);
+
+  // Manages the popup blocking setting to used for web tests.
+  SetPopupBlockingEnabled(bool block_popups);
+
+  // Trigger a loadURL navigation on the main WebView.
+  LoadURLForFrame(url.mojom.Url url, string frame_name);
+
+  // Mark the orientation changed in the browser process for the layout tests
+  // that request fullscreen on screen orientation change.
+  SetScreenOrientationChanged();
+
+  // Sets the permission for |name| to |status| when queried or requested in
+  // |origin| from |embedding_origin|.
+  SetPermission(string name,
+               blink.mojom.PermissionStatus status,
+               url.mojom.Url origin,
+               url.mojom.Url embedding_origin);
+
+  // Sets the cookie policy to:
+  // - allow all cookies when |block| is false
+  // - block only third-party cookies when |block| is true
+  BlockThirdPartyCookies(bool block);
+
+  // Returns the absolute path to a directory this test can write data in. This
+  // returns the path to a fresh empty directory for each test that calls this
+  // method, but repeatedly calling this from the same test will return the same
+  // directory.
+  [Sync]
+  GetWritableDirectory() => (mojo_base.mojom.FilePath path);
+
+  // For the duration of the current test this causes all file choosers to
+  // return the passed in |path|.
+  SetFilePathForMockFileDialog(mojo_base.mojom.FilePath path);
+
+  // Moves focus and active state to the secondary devtools window, which exists
+  // only in devtools JS tests.
+  FocusDevtoolsSecondaryWindow();
+
+  // Sets the network service-global Trust Tokens key commitments.
+  // |raw_commitments| should be JSON-encoded according to the format expected
+  // by NetworkService::SetTrustTokenKeyCommitments.
+  SetTrustTokenKeyCommitments(string raw_commitments) => ();
+
+  // Clears all persistent Trust Tokens state.
+  ClearTrustTokenState() => ();
+
+  // Sets WebSQL quota size. If |quota| is the same to kDefaultDatabaseQuota,
+  // this resets quota to settings with a zero refresh interval to force
+  // QuotaManager to refresh settings immediately.
+  SetDatabaseQuota(int32 quota);
+
+  // Clears all WebSQL databases.
+  ClearAllDatabases();
+
+  // Simulates a click on the notification.
+  //   - |title|: the title of the notification.
+  //   - |action_index|: indicates which action was clicked.
+  //   - |reply|: indicates the user reply.
+  SimulateWebNotificationClick(
+      string title, int32 action_index, mojo_base.mojom.String16? reply);
+
+  // Simulates closing a titled web notification depending on the user
+  // click.
+  //   - |title|: the title of the notification.
+  //   - |by_user|: whether the user clicks the notification.
+  SimulateWebNotificationClose(string title, bool by_user);
+
+  // Simulates a user deleting a content index entry.
+  SimulateWebContentIndexDelete(string id);
+
+  // Notifies the browser that one of renderers has changed web test runtime
+  // flags (i.e. has set dump_as_text).
+  WebTestRuntimeFlagsChanged(
+      mojo_base.mojom.DictionaryValue changed_web_test_runtime_flags);
+
+  // Registers a new isolated filesystem with the given files, and returns the
+  // new filesystem id.
+  [Sync]
+  RegisterIsolatedFileSystem(
+      array<mojo_base.mojom.FilePath> file_paths) => (string filesystem_id);
+
+  // Drop pointer lock, or disallow a pending request.
+  DropPointerLock();
+
+  // Set that the next pointer lock request will fail.
+  SetPointerLockWillFail();
+
+  // Set that the next pointer lock request will not be processed immediately.
+  // A subsequent call for DropPointerLock or AllowPointerLock will come
+  // from the test at a later point.
+  SetPointerLockWillRespondAsynchronously();
+
+  // Allow a pending pointer lock request.
+  AllowPointerLock();
+
+  // Notifies the browser that a work item is enqueued.
+  WorkItemAdded(WorkItem work_item);
+
+  // Requests the browser to send a work item. If the work queue has N items,
+  // there will be N+1 calls to RequestWorkItem and N replies via
+  // WebTestRenderThread.ProcessWorkItem. The last RequestWorkItem sets
+  // |has_items| bit false, and is replied via
+  // WebTestRenderThread.ReplicateWorkQueueStates.
+  RequestWorkItem();
+
+  // Notifies the browser that the work queue states changed.
+  WorkQueueStatesChanged(
+      mojo_base.mojom.DictionaryValue changed_work_queue_states);
+};

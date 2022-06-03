@@ -21,6 +21,6 @@ enum MediaStreamDevicePolicy {
 MediaStreamDevicePolicy GetDevicePolicy(const Profile* profile,
                                         const GURL& security_origin,
                                         const char* policy_name,
-                                        const char* whitelist_policy_name);
+                                        const char* allowed_urls_pref_name);
 
 #endif  // CHROME_BROWSER_MEDIA_WEBRTC_MEDIA_STREAM_DEVICE_PERMISSIONS_H_

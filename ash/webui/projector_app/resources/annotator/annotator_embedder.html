@@ -1,0 +1,20 @@
+<!--
+Copyright 2021 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!DOCTYPE html>
+<html>
+<head>
+    <link rel="stylesheet" href="annotator_embedder.css">
+    <script type="module" src="annotator_embedder_impl.js"></script>
+  </head>
+  <body>
+    <iframe
+      class="marker-iframe"
+      src="chrome-untrusted://projector/annotator/annotator.html">
+    </iframe>
+    <annotator-embedder-impl></annotator-embedder-impl>
+  </body>
+</html>

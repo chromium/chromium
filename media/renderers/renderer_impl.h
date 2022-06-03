@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -24,6 +23,7 @@
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer.h"
+#include "media/base/tuneable.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/waiting.h"
 #include "ui/gfx/geometry/size.h"
@@ -40,7 +40,7 @@ class TimeSource;
 class VideoRenderer;
 class WallClockTimeSource;
 
-class MEDIA_EXPORT RendererImpl : public Renderer {
+class MEDIA_EXPORT RendererImpl final : public Renderer {
  public:
   // Renders audio/video streams using |audio_renderer| and |video_renderer|
   // provided. All methods except for GetMediaTime() run on the |task_runner|.
@@ -50,6 +50,9 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
                std::unique_ptr<AudioRenderer> audio_renderer,
                std::unique_ptr<VideoRenderer> video_renderer);
 
+  RendererImpl(const RendererImpl&) = delete;
+  RendererImpl& operator=(const RendererImpl&) = delete;
+
   ~RendererImpl() final;
 
   // Renderer implementation.
@@ -57,7 +60,9 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
                   RendererClient* client,
                   PipelineStatusCallback init_cb) final;
   void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb) final;
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) final;
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) final;
+  void SetPreservesPitch(bool preserves_pitch) final;
+  void SetAutoplayInitiated(bool autoplay_initiated) final;
   void Flush(base::OnceClosure flush_cb) final;
   void StartPlayingFrom(base::TimeDelta time) final;
   void SetPlaybackRate(double playback_rate) final;
@@ -77,7 +82,7 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
     time_source_ = time_source;
   }
   void set_video_underflow_threshold_for_testing(base::TimeDelta threshold) {
-    video_underflow_threshold_ = threshold;
+    video_underflow_threshold_.set_for_testing(threshold);
   }
 
  private:
@@ -149,7 +154,7 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
                             base::OnceClosure restart_completed_cb);
 
   // Fix state booleans after the stream switching is finished.
-  void CleanUpTrackChange(base::RepeatingClosure on_finished,
+  void CleanUpTrackChange(base::OnceClosure on_finished,
                           bool* ended,
                           bool* playing);
 
@@ -196,6 +201,7 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
   void OnAudioConfigChange(const AudioDecoderConfig& config);
   void OnVideoConfigChange(const VideoDecoderConfig& config);
   void OnVideoOpacityChange(bool opaque);
+  void OnVideoFrameRateChange(absl::optional<int> fps);
 
   void OnStreamRestartCompleted();
 
@@ -243,14 +249,17 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
   bool clockless_video_playback_enabled_for_testing_;
 
   // Used to defer underflow for video when audio is present.
-  base::CancelableClosure deferred_video_underflow_cb_;
+  base::CancelableOnceClosure deferred_video_underflow_cb_;
 
-  // Used to defer underflow for audio when restarting audio playback.
-  base::CancelableClosure deferred_audio_restart_underflow_cb_;
+  // We cannot use `!deferred_video_underflow_cb_.IsCancelled()` as that changes
+  // when the callback is run, even if not explicitly cancelled.
+  bool has_deferred_buffering_state_change_ = false;
 
   // The amount of time to wait before declaring underflow if the video renderer
   // runs out of data but the audio renderer still has enough.
-  base::TimeDelta video_underflow_threshold_;
+  Tuneable<base::TimeDelta> video_underflow_threshold_ = {
+      "MediaVideoUnderflowThreshold", base::Milliseconds(1000),
+      base::Milliseconds(3000), base::Milliseconds(8000)};
 
   // Lock used to protect access to the |restarting_audio_| flag and
   // |restarting_audio_time_|.
@@ -264,8 +273,6 @@ class MEDIA_EXPORT RendererImpl : public Renderer {
 
   base::WeakPtr<RendererImpl> weak_this_;
   base::WeakPtrFactory<RendererImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RendererImpl);
 };
 
 }  // namespace media

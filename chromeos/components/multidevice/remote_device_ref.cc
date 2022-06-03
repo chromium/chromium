@@ -4,8 +4,10 @@
 
 #include "chromeos/components/multidevice/remote_device_ref.h"
 
+#include <sstream>
+
 #include "base/base64.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 namespace chromeos {
 
@@ -43,6 +45,16 @@ std::string RemoteDeviceRef::GetDeviceId() const {
 
 std::string RemoteDeviceRef::GetTruncatedDeviceIdForLogs() const {
   return RemoteDeviceRef::TruncateDeviceIdForLogs(GetDeviceId());
+}
+
+std::string RemoteDeviceRef::GetInstanceIdDeviceIdForLogs() const {
+  std::stringstream ss;
+  ss << "{Instance ID: " << (instance_id().empty() ? "[empty]" : instance_id())
+     << ", Device ID: "
+     << (GetTruncatedDeviceIdForLogs().empty() ? "[empty]"
+                                               : GetTruncatedDeviceIdForLogs())
+     << "}";
+  return ss.str();
 }
 
 bool RemoteDeviceRef::operator==(const RemoteDeviceRef& other) const {

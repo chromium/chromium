@@ -19,16 +19,16 @@ class ContentRemovedTask extends NotificationTask {
     }
 
     @Override
-    protected Boolean doInBackground() {
+    protected void runTask() {
         removeContent();
-        return true;
     }
 
     private void removeContent() {
         log("ContentRemovedTask.removeContent");
         PlatformSessionData platformSessionData = buildCurrentSession();
         if (platformSessionData == null) return;
-        platformSessionData.contentCaptureSession.notifyViewsDisappeared(
+        PlatformAPIWrapper.getInstance().notifyViewsDisappeared(
+                platformSessionData.contentCaptureSession,
                 mPlatformSession.getRootPlatformSessionData().autofillId, mRemovedIds);
     }
 }

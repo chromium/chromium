@@ -9,7 +9,9 @@
 
 #include <string>
 
+#include "base/strings/string_util.h"
 #include "components/sync/test/fake_server/bookmark_entity_builder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace fake_server {
@@ -28,13 +30,13 @@ class EntityBuilderFactory {
   explicit EntityBuilderFactory(const std::string& cache_guid);
   virtual ~EntityBuilderFactory();
 
-  const BookmarkEntityBuilder NewBookmarkEntityBuilder(
+  BookmarkEntityBuilder NewBookmarkEntityBuilder(
       const std::string& title,
-      base::Optional<std::string> originator_client_item_id = base::nullopt);
+      absl::optional<std::string> originator_client_item_id = absl::nullopt);
 
  private:
   // An identifier used when creating entities. This value is used similarly to
-  // the value in the Sync directory code.
+  // the value in the legacy Sync Directory code.
   const std::string cache_guid_;
 };
 

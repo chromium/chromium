@@ -12,14 +12,22 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/strings/string16.h"
+#include "base/containers/span.h"
 #include "base/strings/string_piece.h"
 #include "content/common/content_export.h"
+#include "services/network/public/mojom/content_security_policy.mojom-forward.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "url/gurl.h"
 
 namespace base {
 class DictionaryValue;
 class RefCountedMemory;
-}
+}  // namespace base
+
+namespace webui {
+struct LocalizedString;
+struct ResourcePath;
+}  // namespace webui
 
 namespace content {
 class BrowserContext;
@@ -46,7 +54,7 @@ class WebUIDataSource {
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(base::StringPiece name,
-                         const base::string16& value) = 0;
+                         const std::u16string& value) = 0;
 
   // Adds a string keyed to its name to our dictionary.
   virtual void AddString(base::StringPiece name, const std::string& value) = 0;
@@ -54,6 +62,11 @@ class WebUIDataSource {
   // Adds a localized string with resource |ids| keyed to its name to our
   // dictionary.
   virtual void AddLocalizedString(base::StringPiece name, int ids) = 0;
+
+  // Calls AddLocalizedString() in a for-loop for |strings|. Reduces code size
+  // vs. reimplementing the same for-loop.
+  virtual void AddLocalizedStrings(
+      base::span<const webui::LocalizedString> strings) = 0;
 
   // Add strings from |localized_strings| to our dictionary.
   virtual void AddLocalizedStrings(
@@ -67,12 +80,20 @@ class WebUIDataSource {
   // MAX_SAFE_INTEGER in /v8/src/globals.h.
   virtual void AddInteger(base::StringPiece name, int32_t value) = 0;
 
+  // Adds a double keyed to its name  to our dictionary.
+  virtual void AddDouble(base::StringPiece name, double value) = 0;
+
   // Call this to enable a virtual "strings.js" (or "strings.m.js" for modules)
   // URL that provides translations and dynamic data when requested.
   virtual void UseStringsJs() = 0;
 
   // Adds a mapping between a path name and a resource to return.
   virtual void AddResourcePath(base::StringPiece path, int resource_id) = 0;
+
+  // Calls AddResourcePath() in a for-loop for |paths|. Reduces code size vs.
+  // reimplementing the same for-loop.
+  virtual void AddResourcePaths(
+      base::span<const webui::ResourcePath> paths) = 0;
 
   // Sets the resource to returned when no other paths match.
   virtual void SetDefaultResource(int resource_id) = 0;
@@ -110,15 +131,23 @@ class WebUIDataSource {
   // Currently only used by embedders for WebUIs with multiple instances.
   virtual void DisableReplaceExistingSource() = 0;
   virtual void DisableContentSecurityPolicy() = 0;
-  virtual void OverrideContentSecurityPolicyScriptSrc(
-      const std::string& data) = 0;
-  virtual void OverrideContentSecurityPolicyObjectSrc(
-      const std::string& data) = 0;
-  virtual void OverrideContentSecurityPolicyChildSrc(
-      const std::string& data) = 0;
-  virtual void OverrideContentSecurityPolicyWorkerSrc(
-      const std::string& data) = 0;
+
+  // Overrides the content security policy for a certain directive.
+  virtual void OverrideContentSecurityPolicy(
+      network::mojom::CSPDirectiveName directive,
+      const std::string& value) = 0;
+
+  // Adds cross origin opener, embedder, and resource policy headers.
+  virtual void OverrideCrossOriginOpenerPolicy(const std::string& value) = 0;
+  virtual void OverrideCrossOriginEmbedderPolicy(const std::string& value) = 0;
+  virtual void OverrideCrossOriginResourcePolicy(const std::string& value) = 0;
+
+  // Removes directives related to Trusted Types from the CSP header.
+  virtual void DisableTrustedTypesCSP() = 0;
+
+  // This method is deprecated and AddFrameAncestors should be used instead.
   virtual void DisableDenyXFrameOptions() = 0;
+  virtual void AddFrameAncestor(const GURL& frame_ancestor) = 0;
 
   // Replace i18n template strings in JS files. Needed for Web UIs that are
   // using Polymer 3.

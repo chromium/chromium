@@ -2,8 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//ios/web/js_compile.gni")
+
 source_set("find_in_page") {
   deps = [
+    ":find_in_page_event_listeners_js",
+    ":find_in_page_js",
     "//base",
     "//ios/web/js_messaging",
     "//ios/web/public/",
@@ -15,6 +19,8 @@ source_set("find_in_page") {
   sources = [
     "find_in_page_constants.h",
     "find_in_page_constants.mm",
+    "find_in_page_java_script_feature.h",
+    "find_in_page_java_script_feature.mm",
     "find_in_page_manager_delegate_bridge.mm",
     "find_in_page_manager_impl.h",
     "find_in_page_manager_impl.mm",
@@ -25,21 +31,40 @@ source_set("find_in_page") {
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
+js_compile_bundle("find_in_page_js") {
+  visibility = [ ":find_in_page" ]
+  closure_entry_point = "__crWeb.findInPage"
+
+  sources = [ "resources/find_in_page.js" ]
+}
+
+js_compile_bundle("find_in_page_event_listeners_js") {
+  visibility = [ ":find_in_page" ]
+  closure_entry_point = "__crWeb.findInPageEventListeners"
+
+  sources = [ "resources/find_in_page_event_listeners.js" ]
+}
+
 source_set("find_in_page_unittests") {
   testonly = true
   deps = [
     ":find_in_page",
     "//base",
     "//base/test:test_support",
+    "//ios/web/js_messaging",
+    "//ios/web/js_messaging:java_script_feature",
     "//ios/web/public",
     "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
+    "//ios/web/test/fakes",
+    "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",
     "//testing/gtest",
   ]
 
   sources = [
+    "find_in_page_js_unittest.mm",
     "find_in_page_manager_delegate_bridge_unittest.mm",
     "find_in_page_manger_impl_unittest.mm",
     "find_in_page_request_unittest.mm",

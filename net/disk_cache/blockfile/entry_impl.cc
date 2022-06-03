@@ -5,6 +5,7 @@
 #include "net/disk_cache/blockfile/entry_impl.h"
 
 #include <limits>
+#include <memory>
 
 #include "base/hash/hash.h"
 #include "base/macros.h"
@@ -27,7 +28,6 @@
 #define CACHE_UMA_BACKEND_IMPL_OBJ backend_
 
 using base::Time;
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace {
@@ -52,6 +52,10 @@ class SyncCallback: public disk_cache::FileIOCallback {
         end_event_type_(end_event_type) {
     entry_->IncrementIoCount();
   }
+
+  SyncCallback(const SyncCallback&) = delete;
+  SyncCallback& operator=(const SyncCallback&) = delete;
+
   ~SyncCallback() override = default;
 
   void OnFileIOComplete(int bytes_copied) override;
@@ -63,8 +67,6 @@ class SyncCallback: public disk_cache::FileIOCallback {
   scoped_refptr<net::IOBuffer> buf_;
   TimeTicks start_;
   const net::NetLogEventType end_event_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyncCallback);
 };
 
 void SyncCallback::OnFileIOComplete(int bytes_copied) {
@@ -105,6 +107,10 @@ class EntryImpl::UserBuffer {
       : backend_(backend->GetWeakPtr()), offset_(0), grow_allowed_(true) {
     buffer_.reserve(kMaxBlockSize);
   }
+
+  UserBuffer(const UserBuffer&) = delete;
+  UserBuffer& operator=(const UserBuffer&) = delete;
+
   ~UserBuffer() {
     if (backend_.get())
       backend_->BufferDeleted(capacity() - kMaxBlockSize);
@@ -144,7 +150,6 @@ class EntryImpl::UserBuffer {
   int offset_;
   std::vector<char> buffer_;
   bool grow_allowed_;
-  DISALLOW_COPY_AND_ASSIGN(UserBuffer);
 };
 
 bool EntryImpl::UserBuffer::PreWrite(int offset, int len) {
@@ -404,12 +409,12 @@ int EntryImpl::WriteSparseDataImpl(int64_t offset,
   return result;
 }
 
-int EntryImpl::GetAvailableRangeImpl(int64_t offset, int len, int64_t* start) {
+RangeResult EntryImpl::GetAvailableRangeImpl(int64_t offset, int len) {
   int result = InitSparseData();
   if (net::OK != result)
-    return result;
+    return RangeResult(static_cast<net::Error>(result));
 
-  return sparse_->GetAvailableRange(offset, len, start);
+  return sparse_->GetAvailableRange(offset, len);
 }
 
 void EntryImpl::CancelSparseIOImpl() {
@@ -431,7 +436,6 @@ uint32_t EntryImpl::GetHash() {
 bool EntryImpl::CreateEntry(Addr node_address,
                             const std::string& key,
                             uint32_t hash) {
-  Trace("Create entry In");
   EntryStore* entry_store = entry_.Data();
   RankingsNode* node = node_.Data();
   memset(entry_store, 0, sizeof(EntryStore) * entry_.address().num_blocks());
@@ -472,7 +476,6 @@ bool EntryImpl::CreateEntry(Addr node_address,
   backend_->ModifyStorageSize(0, static_cast<int32_t>(key.size()));
   CACHE_UMA(COUNTS, "KeySize", 0, static_cast<int32_t>(key.size()));
   node->dirty = backend_->GetCurrentEntryId();
-  Log("Create Entry ");
   return true;
 }
 
@@ -923,24 +926,21 @@ int EntryImpl::WriteSparseData(int64_t offset,
   return net::ERR_IO_PENDING;
 }
 
-int EntryImpl::GetAvailableRange(int64_t offset,
-                                 int len,
-                                 int64_t* start,
-                                 CompletionOnceCallback callback) {
+RangeResult EntryImpl::GetAvailableRange(int64_t offset,
+                                         int len,
+                                         RangeResultCallback callback) {
   if (!background_queue_.get())
-    return net::ERR_UNEXPECTED;
+    return RangeResult(net::ERR_UNEXPECTED);
 
-  background_queue_->GetAvailableRange(this, offset, len, start,
-                                       std::move(callback));
-  return net::ERR_IO_PENDING;
+  background_queue_->GetAvailableRange(this, offset, len, std::move(callback));
+  return RangeResult(net::ERR_IO_PENDING);
 }
 
 bool EntryImpl::CouldBeSparse() const {
   if (sparse_.get())
     return true;
 
-  std::unique_ptr<SparseControl> sparse;
-  sparse.reset(new SparseControl(const_cast<EntryImpl*>(this)));
+  auto sparse = std::make_unique<SparseControl>(const_cast<EntryImpl*>(this));
   return sparse->CouldBeSparse();
 }
 
@@ -976,7 +976,6 @@ EntryImpl::~EntryImpl() {
     node_.clear_modified();
     return;
   }
-  Log("~EntryImpl in");
 
   // Save the sparse info to disk. This will generate IO for this entry and
   // maybe for a child entry, so it is important to do it before deleting this
@@ -1018,7 +1017,6 @@ EntryImpl::~EntryImpl() {
     }
   }
 
-  Trace("~EntryImpl out 0x%p", reinterpret_cast<void*>(this));
   net_log_.EndEvent(net::NetLogEventType::DISK_CACHE_ENTRY_IMPL);
   backend_->OnEntryDestroyEnd();
 }
@@ -1068,7 +1066,6 @@ int EntryImpl::InternalReadData(int index,
   }
 
   address.set_value(entry_.Data()->data_addr[index]);
-  DCHECK(address.is_initialized());
   if (!address.is_initialized()) {
     DoomImpl();
     return net::ERR_FAILED;
@@ -1151,11 +1148,9 @@ int EntryImpl::InternalWriteData(int index,
   int entry_size = entry_.Data()->data_size[index];
   bool extending = entry_size < offset + buf_len;
   truncate = truncate && entry_size > offset + buf_len;
-  Trace("To PrepareTarget 0x%x", entry_.address().value());
   if (!PrepareTarget(index, offset, buf_len, truncate))
     return net::ERR_FAILED;
 
-  Trace("From PrepareTarget 0x%x", entry_.address().value());
   if (extending || truncate)
     UpdateSize(index, entry_size, offset + buf_len);
 
@@ -1356,7 +1351,7 @@ bool EntryImpl::PrepareTarget(int index, int offset, int buf_len,
   }
 
   if (!user_buffers_[index].get())
-    user_buffers_[index].reset(new UserBuffer(backend_.get()));
+    user_buffers_[index] = std::make_unique<UserBuffer>(backend_.get());
 
   return PrepareBuffer(index, offset, buf_len);
 }
@@ -1442,7 +1437,7 @@ bool EntryImpl::CopyToLocalBuffer(int index) {
   DCHECK(address.is_initialized());
 
   int len = std::min(entry_.Data()->data_size[index], kMaxBlockSize);
-  user_buffers_[index].reset(new UserBuffer(backend_.get()));
+  user_buffers_[index] = std::make_unique<UserBuffer>(backend_.get());
   user_buffers_[index]->Write(len, nullptr, 0);
 
   File* file = GetBackingFile(address, index);
@@ -1612,21 +1607,6 @@ void EntryImpl::GetData(int index, char** buffer, Addr* address) {
     entry_.Data()->data_addr[index] = 0;
     entry_.Data()->data_size[index] = 0;
   }
-}
-
-void EntryImpl::Log(const char* msg) {
-  int dirty = 0;
-  if (node_.HasData()) {
-    dirty = node_.Data()->dirty;
-  }
-
-  Trace("%s 0x%p 0x%x 0x%x", msg, reinterpret_cast<void*>(this),
-        entry_.address().value(), node_.address().value());
-
-  Trace("  data: 0x%x 0x%x 0x%x", entry_.Data()->data_addr[0],
-        entry_.Data()->data_addr[1], entry_.Data()->long_key);
-
-  Trace("  doomed: %d 0x%x", doomed_, dirty);
 }
 
 }  // namespace disk_cache

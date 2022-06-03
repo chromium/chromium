@@ -17,8 +17,8 @@ of the configuration. Some examples:
 
 * *android_compile_dbg* is a compile-only [no tests] build of Chromium for
   Android, using the *debug* configuration.
-* *android-kitkat-arm-rel* builds and runs tests for Chromium for Android,
-  using the *release* configuration on a kitkat device.
+* *android-lollipop-arm-rel* builds and runs tests for Chromium for Android,
+  using the *release* configuration on a lollipop device.
 * *win7-rel* builds and runs tests for Chromium on Windows, using
   the release configuration on a Windows 7 device. *ng* stands for next
   generation, but this has no meaning as the previous generation was already
@@ -41,7 +41,7 @@ effectively a Python script. Each recipe is divided into *steps*. Each *step*
 represents a well-defined action, such as updating the repository to point to
 tip of tree, or compiling the necessary build artifacts.
 
-[recipe]: https://chromium.googlesource.com/external/github.com/luci/recipes-py/+/master/doc/user_guide.md
+[recipe]: https://chromium.googlesource.com/external/github.com/luci/recipes-py/+/main/doc/user_guide.md
 
 ![Example 1 Build Results UI](images/parsing_test_results_build_results_1.png)
 
@@ -60,10 +60,10 @@ Most builds follow a similar pattern. The key *steps* are listed here.
   suites are affected by the patch.
 * **compile (with patch)** Builds test suites and associated artifacts.
 * **isolate tests** Archives test suite binaries and artifacts.
-* **test_pre_run.[trigger] webkit_layout_tests (with patch)** Triggers a test
+* **test_pre_run.[trigger] blink_web_tests (with patch)** Triggers a test
   suite on swarming [remote execution framework] -- in this case,
-  webkit_layout_tests.
-* **webkit_layout_tests (with patch)** Collects the results from swarming for a
+  blink_web_tests.
+* **blink_web_tests (with patch)** Collects the results from swarming for a
   test suite.
 
 If all test suites pass, then the *build* is marked as a success and no further
@@ -74,9 +74,9 @@ test failure is due to the CL or due to a problem with tip of tree.
 * **bot_update [without patch]** Deapplies the CL patch.
 * **compile [without patch]** Compiles test suites.
 * **isolate tests (2)** Archives test suite binaries and artifacts.
-* **test_pre_run.[trigger] webkit_layout_tests (without patch)** Triggers test
+* **test_pre_run.[trigger] blink_web_tests (without patch)** Triggers test
   suite on swarming. Only failing tests are rerun.
-* **webkit_layout_tests (without patch)** Collects results from swarming.
+* **blink_web_tests (without patch)** Collects results from swarming.
 
 **Important safety notice**. When test suites are run with the patch applied,
 each test is run up to N times -- any success will mark the test as a success.

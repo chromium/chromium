@@ -1,0 +1,59 @@
+<!DOCTYPE HTML>
+
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>WebGL Low to High Power alpha:false Transition Test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+</style>
+<script src="pixel_webgl_fullscreen_quad.js"></script>
+
+<script>
+function ready() {
+  sendResult("READY", "Ready for initialize() to be called");
+}
+
+function initialize(runningOnDualGPUMacBookPro) {
+  if (runningOnDualGPUMacBookPro)
+    setRunningOnDualGpuSystem();
+  if (setup({ alpha: false }))
+    drawSomeFrames(allocateHighPowerContext);
+}
+
+function allocateHighPowerContext() {
+  assertRunningOnLowPowerGpu();
+  c2.getContext("webgl", { powerPreference: "high-performance" });
+  // On macOS there is an approximately two second delay between activating the
+  // discrete GPU and applications receiving a notification of its activation.
+  // Avoid a race condition, and test flakiness, by waiting for twice as long as
+  // this delay.
+  setTimeout(() => {
+    assertRunningOnHighPerformanceGpu();
+    drawSomeFrames(waitForFinish);
+  }, 4000);
+}
+
+function waitForFinish()
+{
+  let numFramesBeforeEnd = 15;
+
+  function waitForFinishImpl() {
+    if (--numFramesBeforeEnd == 0) {
+      sendResult("SUCCESS", "Test complete");
+    } else {
+      window.requestAnimationFrame(waitForFinishImpl);
+    }
+  }
+
+  window.requestAnimationFrame(waitForFinishImpl);
+}
+</script>
+</head>
+<body onload="ready()">
+<canvas id="c" width="300" height="300" class="nomargin" style="position:absolute; top:0px; left:0px;"></canvas>
+<canvas id="c2" width="1" height="1" class="nomargin"></canvas>
+</body>
+</html>

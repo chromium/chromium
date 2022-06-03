@@ -1,33 +1,200 @@
-<html> 
-<head>
-
-<style>
-.editing { 
-    border: 2px solid red; 
-    padding: 12px; 
-    font-size: 24px; 
-}
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
+const kStyle = [
+    '<style>',
+    '#target {',
+        'direction: rtl;',
+        'font-family: Lucida Grande;',
+        'font-size: 40px;',
+        'width: 200px',
+    '}',
+    '</style>',
+].join('');
 
-function editingTest() {
-    for (i = 0; i < 12; i++) {
-        moveSelectionForwardByCharacterCommand();
-    }
-}
-
+// Soft line wrap at \u05D9
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            '|before \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'b|efore \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '1');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'b|efore \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'be|fore \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '2');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'be|fore \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'bef|ore \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '3');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'bef|ore \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'befo|re \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '4');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'befo|re \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'befor|e \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '5');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'befor|e \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before| \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '6');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before| \u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before |\u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '7');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before |\u05d0\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0|\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '8');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0|\u05d7\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7|\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '9');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7|\u05e8\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7\u05e8|\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '10');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7\u05e8|\u05d9 \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7\u05e8\u05d9| \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '11');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7\u05e8\u05d9| \u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7\u05e8\u05d9 |\u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '12');
+selection_test(
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7\u05e8\u05d9 |\u05d0\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ],
+    selection => selection.modify('move', 'forward', 'character'),
+    [
+        kStyle,
+        '<div contenteditable id="target">',
+            'before \u05d0\u05d7\u05e8\u05d9 \u05d0|\u05e0\u05e6\u05d9\u05e7\u05dc\u05d5\u05e4\u05d3\u05d9\u05d4',
+        '</div>',
+    ], '13');
 </script>
-</head> 
-<body>
-<div id="root" class="editing" style="-webkit-user-modify: read-write; -webkit-line-break: normal; width: 200px; direction: rtl; font-family: Lucida Grande;">
-<span id="test">before &#x05d0;&#x05d7;&#x05e8;&#x05d9; &#x05d0;&#x05e0;&#x05e6;&#x05d9;&#x05e7;&#x05dc;&#x05d5;&#x05e4;&#x05d3;&#x05d9;&#x05d4;</span>
-</div>
-
-<script>
-runEditingTest();
-</script>
-
-</body>
-</html>

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Testing emHeights for OffscreenCanvas assert_equals: ctx.measureText('A').emHeightAscent === 37.5 (got 38.984375[number], expected 37.5[number]) expected 37.5 but got 38.984375
-Harness: the test ran to completion.
-

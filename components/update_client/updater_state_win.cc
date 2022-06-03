@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/enterprise_util.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
@@ -66,13 +65,13 @@ std::string UpdaterState::GetUpdaterName() {
 
 base::Version UpdaterState::GetUpdaterVersion(bool is_machine) {
   const HKEY root_key = is_machine ? HKEY_LOCAL_MACHINE : HKEY_CURRENT_USER;
-  base::string16 version;
+  std::wstring version;
   base::win::RegKey key;
 
   if (key.Open(root_key, kRegPathClientsGoogleUpdate,
                KEY_QUERY_VALUE | KEY_WOW64_32KEY) == ERROR_SUCCESS &&
       key.ReadValue(kRegValueGoogleUpdatePv, &version) == ERROR_SUCCESS) {
-    return base::Version(base::UTF16ToUTF8(version));
+    return base::Version(base::WideToUTF8(version));
   }
 
   return base::Version();

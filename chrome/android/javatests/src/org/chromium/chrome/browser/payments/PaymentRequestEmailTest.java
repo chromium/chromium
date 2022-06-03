@@ -4,10 +4,7 @@
 
 package org.chromium.chrome.browser.payments;
 
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.HAVE_INSTRUMENTS;
-import static org.chromium.chrome.browser.payments.PaymentRequestTestRule.IMMEDIATE_RESPONSE;
-
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.ClassRule;
@@ -18,12 +15,16 @@ import org.junit.runner.RunWith;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.AppPresence;
+import org.chromium.chrome.browser.payments.PaymentRequestTestRule.FactorySpeed;
 import org.chromium.chrome.browser.payments.PaymentRequestTestRule.MainActivityStartCallback;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.components.payments.Event;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
@@ -46,36 +47,38 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
     public void onMainActivityStarted() throws TimeoutException {
         AutofillTestHelper helper = new AutofillTestHelper();
         // The user has a valid email address on disk.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "555-555-5555",
-                "jon.doe@google.com", "en-US"));
+        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
 
         // Add the same profile but with a different address.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true, "", "Google",
-                "999 Main St", "CA", "Los Angeles", "", "90291", "", "US", "555-555-5555",
-                "jon.doe@google.com", "en-US"));
+        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "", "Google", "999 Main St", "CA", "Los Angeles", "",
+                "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
 
         // Add the same profile but without a phone number.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "" /* phone_number */,
-                "jon.doe@google.com", "en-US"));
+        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "" /* phone_number */, "jon.doe@google.com", "en-US"));
 
         // Add the same profile but without an email.
-        helper.setProfile(new AutofillProfile("", "https://example.com", true, "Jon Doe", "Google",
-                "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "555-555-5555",
-                "" /* emailAddress */, "en-US"));
+        helper.setProfile(new AutofillProfile("", "https://example.com", true,
+                "" /* honorific prefix */, "Jon Doe", "Google", "340 Main St", "CA", "Los Angeles",
+                "", "90291", "", "US", "555-555-5555", "" /* emailAddress */, "en-US"));
 
         // Add the same profile but without a name.
-        helper.setProfile(new AutofillProfile("" /* name */, "https://example.com", true, "",
-                "Google", "340 Main St", "CA", "Los Angeles", "", "90291", "", "US", "555-555-5555",
-                "jon.doe@google.com", "en-US"));
+        helper.setProfile(new AutofillProfile("" /* name */, "https://example.com", true,
+                "" /* honorific prefix */, "", "Google", "340 Main St", "CA", "Los Angeles", "",
+                "90291", "", "US", "555-555-5555", "jon.doe@google.com", "en-US"));
 
-        mPaymentRequestTestRule.installPaymentApp(HAVE_INSTRUMENTS, IMMEDIATE_RESPONSE);
+        mPaymentRequestTestRule.addPaymentAppFactory(
+                AppPresence.HAVE_APPS, FactorySpeed.FAST_FACTORY);
     }
 
     /** Provide the existing valid email address to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -87,6 +90,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
     /** Attempt to add an invalid email address and cancel the transaction. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddInvalidEmailAndCancel() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -109,6 +113,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
     /** Add a new email address and provide that to the merchant. */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testAddEmailAndPay() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -132,6 +137,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testSuggestionsDeduped() throws TimeoutException {
         mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyToPay());
@@ -146,6 +152,7 @@ public class PaymentRequestEmailTest implements MainActivityStartCallback {
      */
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1182234")
     @Feature({"Payments"})
     public void testPaymentRequestEventsMetric() throws TimeoutException {
         // Start and complete the Payment Request.

@@ -37,18 +37,14 @@ function addOverlay() {
 }
 
 window.onload = async () => {
-  if (window.internals) {
-    internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
-  }
-
   promise_test (async () => {
     document.addEventListener('click', addOverlay);
     var target = document.getElementById('target');
     var rect = target.getBoundingClientRect();
     await mouseMoveTo(rect.left + 3, rect.top + 3);
-    assert_equals(internals.getCurrentCursorInfo(), 'type=IBeam hotSpot=0,0', 'wait for move to target');
+    assert_equals(internals.getCurrentCursorInfo(), 'type=IBeam', 'wait for move to target');
     await mouseClickOn(rect.left + 3, rect.top + 3);
-    assert_equals(internals.getCurrentCursorInfo(), 'type=Wait hotSpot=0,0', 'wait for mouse cursor change');
+    assert_equals(internals.getCurrentCursorInfo(), 'type=Wait', 'wait for mouse cursor change');
   }, 'Tests that there is mouse cursor update when the element underneath the mouse cursor is changed.');
 }
 </script>

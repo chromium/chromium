@@ -49,9 +49,9 @@ void FocusCycler::RotateFocus(Direction direction) {
     // we're done.
     if (widget &&
         widget->GetFocusManager()->RotatePaneFocus(
-            direction == BACKWARD ? views::FocusManager::kBackward
-                                  : views::FocusManager::kForward,
-            views::FocusManager::kNoWrap)) {
+            direction == BACKWARD ? views::FocusManager::Direction::kBackward
+                                  : views::FocusManager::Direction::kForward,
+            views::FocusManager::FocusCycleWrapping::kDisabled)) {
       return;
     }
   }
@@ -94,10 +94,10 @@ void FocusCycler::RotateFocus(Direction direction) {
         break;
       views::FocusManager* focus_manager = widget->GetFocusManager();
       focus_manager->ClearFocus();
-      focus_manager->RotatePaneFocus(direction == BACKWARD
-                                         ? views::FocusManager::kBackward
-                                         : views::FocusManager::kForward,
-                                     views::FocusManager::kWrap);
+      focus_manager->RotatePaneFocus(
+          direction == BACKWARD ? views::FocusManager::Direction::kBackward
+                                : views::FocusManager::Direction::kForward,
+          views::FocusManager::FocusCycleWrapping::kEnabled);
       break;
     } else {
       if (FocusWidget(widgets_[index]))

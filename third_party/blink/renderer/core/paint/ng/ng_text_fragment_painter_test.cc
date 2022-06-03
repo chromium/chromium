@@ -6,9 +6,9 @@
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
-#include "third_party/blink/renderer/core/paint/ng/ng_paint_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
@@ -35,34 +35,67 @@ TEST_P(NGTextFragmentPainterTest, TestTextStyle) {
   )HTML");
 
   LayoutObject& container = *GetLayoutObjectByElementId("container");
-
-  const LayoutNGBlockFlow& block_flow = ToLayoutNGBlockFlow(container);
-
-  InvalidateAll(RootPaintController());
-  GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint();
-  Paint(IntRect(0, 0, 640, 480));
-
-  const NGPaintFragment& root_fragment = *block_flow.PaintFragment();
-  EXPECT_EQ(1u, root_fragment.Children().size());
-  const NGPaintFragment& line_box_fragment = *root_fragment.FirstChild();
-  EXPECT_EQ(1u, line_box_fragment.Children().size());
-  const NGPaintFragment& text_fragment = *line_box_fragment.FirstChild();
-
-  EXPECT_THAT(RootPaintController().GetDisplayItemList(),
-              ElementsAre(IsSameId(&ViewScrollingBackgroundClient(),
-                                   DisplayItem::kDocumentBackground),
-                          IsSameId(&text_fragment, kForegroundType)));
+  const auto& block_flow = To<LayoutNGBlockFlow>(container);
+  NGInlineCursor cursor;
+  cursor.MoveTo(*block_flow.FirstChild());
+  const DisplayItemClient& text_fragment =
+      *cursor.Current().GetDisplayItemClient();
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(text_fragment.Id(), kForegroundType)));
 }
 
 TEST_P(NGTextFragmentPainterTest, LineBreak) {
   SetBodyInnerHTML("<span style='font-size: 20px'>A<br>B<br>C</span>");
   // 0: view background, 1: A, 2: B, 3: C
-  EXPECT_EQ(4u, RootPaintController().GetDisplayItemList().size());
+  EXPECT_EQ(4u, ContentDisplayItems().size());
 
   GetDocument().GetFrame()->Selection().SelectAll();
   UpdateAllLifecyclePhasesForTest();
   // 0: view background, 1: A, 2: <br>, 3: B, 4: <br>, 5: C
-  EXPECT_EQ(6u, RootPaintController().GetDisplayItemList().size());
+  EXPECT_EQ(6u, ContentDisplayItems().size());
+}
+
+TEST_P(NGTextFragmentPainterTest, DegenerateUnderlineIntercepts) {
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+      span {
+        font-size: 20px;
+        text-decoration: underline;
+      }
+    </style>
+    <span style="letter-spacing: -1e9999em;">a|b|c d{e{f{</span>
+    <span style="letter-spacing: 1e9999em;">a|b|c d{e{f{</span>
+  )HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Test for https://crbug.com/1043753: the underline intercepts are infinite
+  // due to letter spacing and this test passes if that does not cause a crash.
+}
+
+TEST_P(NGTextFragmentPainterTest, SvgTextWithFirstLineTextDecoration) {
+  SetBodyInnerHTML(R"HTML(
+<!DOCTYPE html>
+<style>
+*::first-line {
+  text-decoration: underline dashed;
+}
+</style>
+<svg xmlns="http://www.w3.org/2000/svg">
+  <text y="30">vX7 Image 2</text>
+</svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Test passes if no crashes.
+}
+
+TEST_P(NGTextFragmentPainterTest, SvgTextWithTextDecorationNotInFirstLine) {
+  SetBodyInnerHTML(R"HTML(
+    <style>text:first-line { fill: lime; }</style>
+    <svg xmlns="http://www.w3.org/2000/svg">
+    <text text-decoration="overline">foo</text>
+    </svg>)HTML");
+  UpdateAllLifecyclePhasesForTest();
+  // Test passes if no crashes.
 }
 
 }  // namespace blink

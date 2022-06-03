@@ -6,7 +6,9 @@ let link = document.createElement('a');
 link.download = '';
 link.href = url_params.get('download_url');
 document.body.appendChild(link);
-link.click();
-link.click();
-link.click();
+num_downloads = url_params.get('num_downloads');
+let i;
+for (i = 0; i < num_downloads; i++) {
+  link.click();
+}
 </script>

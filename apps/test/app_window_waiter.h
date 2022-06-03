@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 
@@ -26,6 +25,8 @@ class AppWindowWaiter : public extensions::AppWindowRegistry::Observer {
  public:
   AppWindowWaiter(extensions::AppWindowRegistry* registry,
                   const std::string& app_id);
+  AppWindowWaiter(const AppWindowWaiter&) = delete;
+  AppWindowWaiter& operator=(const AppWindowWaiter&) = delete;
   ~AppWindowWaiter() override;
 
   // Waits for an AppWindow of the app to be added.
@@ -60,8 +61,6 @@ class AppWindowWaiter : public extensions::AppWindowRegistry::Observer {
   std::unique_ptr<base::RunLoop> run_loop_;
   WaitType wait_type_ = WAIT_FOR_NONE;
   extensions::AppWindow* window_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AppWindowWaiter);
 };
 
 }  // namespace apps

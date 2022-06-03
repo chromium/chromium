@@ -33,6 +33,11 @@ aura::Window* GetContainer(ShellWindowId container_id) {
 class TestActionBackgroundObserver : public LockScreenActionBackgroundObserver {
  public:
   TestActionBackgroundObserver() = default;
+
+  TestActionBackgroundObserver(const TestActionBackgroundObserver&) = delete;
+  TestActionBackgroundObserver& operator=(const TestActionBackgroundObserver&) =
+      delete;
+
   ~TestActionBackgroundObserver() override = default;
 
   // LockScreenActionBackgroundObserver:
@@ -49,8 +54,6 @@ class TestActionBackgroundObserver : public LockScreenActionBackgroundObserver {
 
  private:
   std::vector<LockScreenActionBackgroundState> state_changes_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestActionBackgroundObserver);
 };
 
 }  // namespace
@@ -58,6 +61,12 @@ class TestActionBackgroundObserver : public LockScreenActionBackgroundObserver {
 class LockScreenActionBackgroundControllerImplTest : public AshTestBase {
  public:
   LockScreenActionBackgroundControllerImplTest() = default;
+
+  LockScreenActionBackgroundControllerImplTest(
+      const LockScreenActionBackgroundControllerImplTest&) = delete;
+  LockScreenActionBackgroundControllerImplTest& operator=(
+      const LockScreenActionBackgroundControllerImplTest&) = delete;
+
   ~LockScreenActionBackgroundControllerImplTest() override = default;
 
   void SetUp() override {
@@ -146,8 +155,6 @@ class LockScreenActionBackgroundControllerImplTest : public AshTestBase {
 
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode>
       test_animation_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundControllerImplTest);
 };
 
 TEST_F(LockScreenActionBackgroundControllerImplTest, NormalFlow) {

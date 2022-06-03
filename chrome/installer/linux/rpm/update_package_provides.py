@@ -27,7 +27,6 @@ LIBRARY_FILTER = set([
     "libXrender.so",
     "libXss.so",
     "libXtst.so",
-    "libappindicator3.so",
     "libasound.so",
     "libatk-1.0.so",
     "libatk-bridge-2.0.so",
@@ -42,12 +41,10 @@ LIBRARY_FILTER = set([
     "libgbm.so.1",
     "libgcc_s.so",
     "libgdk-3.so",
-    "libgdk_pixbuf-2.0.so",
     "libgio-2.0.so",
     "libglib-2.0.so",
     "libgmodule-2.0.so",
     "libgobject-2.0.so",
-    "libgtk-3.so",
     "libm.so",
     "libnspr4.so",
     "libnss3.so",
@@ -61,11 +58,13 @@ LIBRARY_FILTER = set([
     "libuuid.so",
     "libxcb.so",
     "libxcb-dri3.so.0",
+    "libxkbcommon.so.0",
+    "libxshmfence.so.1",
     "rtld(GNU_HASH)",
 ])
 
-SUPPORTED_FEDORA_RELEASES = ['30', '31']
-SUPPORTED_OPENSUSE_LEAP_RELEASES = ['15.1', '15.2']
+SUPPORTED_FEDORA_RELEASES = ['32', '33', '34']
+SUPPORTED_OPENSUSE_LEAP_RELEASES = ['15.2', '15.3']
 
 COMMON_NS = "http://linux.duke.edu/metadata/common"
 RPM_NS = "http://linux.duke.edu/metadata/rpm"

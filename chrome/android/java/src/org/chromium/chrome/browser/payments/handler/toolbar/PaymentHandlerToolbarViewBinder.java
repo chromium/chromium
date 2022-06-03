@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.payments.handler.toolbar;
 
 import android.view.View;
 
+import org.chromium.components.url_formatter.SchemeDisplay;
+import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -16,8 +18,11 @@ import org.chromium.ui.modelutil.PropertyModel;
 /* package */ class PaymentHandlerToolbarViewBinder {
     /* package */ static void bind(
             PropertyModel model, PaymentHandlerToolbarView view, PropertyKey propertyKey) {
-        if (PaymentHandlerToolbarProperties.ORIGIN == propertyKey) {
-            view.mOriginView.setText(model.get(PaymentHandlerToolbarProperties.ORIGIN).toString());
+        if (PaymentHandlerToolbarProperties.URL == propertyKey) {
+            String origin = UrlFormatter.formatUrlForSecurityDisplay(
+                    model.get(PaymentHandlerToolbarProperties.URL),
+                    SchemeDisplay.OMIT_HTTP_AND_HTTPS);
+            view.mOriginView.setText(origin);
         } else if (PaymentHandlerToolbarProperties.TITLE == propertyKey) {
             view.mTitleView.setText(model.get(PaymentHandlerToolbarProperties.TITLE));
         } else if (PaymentHandlerToolbarProperties.LOAD_PROGRESS == propertyKey) {
@@ -27,8 +32,21 @@ import org.chromium.ui.modelutil.PropertyModel;
             boolean visible = model.get(PaymentHandlerToolbarProperties.PROGRESS_VISIBLE);
             view.mProgressBar.setVisibility(visible ? View.VISIBLE : View.INVISIBLE);
         } else if (PaymentHandlerToolbarProperties.SECURITY_ICON == propertyKey) {
-            int securityIconResource = model.get(PaymentHandlerToolbarProperties.SECURITY_ICON);
-            view.mSecurityIconView.setImageResource(securityIconResource);
+            int iconRes = model.get(PaymentHandlerToolbarProperties.SECURITY_ICON);
+            view.mSecurityIconView.setImageResource(iconRes);
+        } else if (PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION
+                == propertyKey) {
+            String description =
+                    model.get(PaymentHandlerToolbarProperties.SECURITY_ICON_CONTENT_DESCRIPTION);
+            view.mSecurityIconView.setContentDescription(description);
+        } else if (PaymentHandlerToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK == propertyKey) {
+            view.mSecurityIconView.setOnClickListener((v) -> {
+                model.get(PaymentHandlerToolbarProperties.SECURITY_ICON_ON_CLICK_CALLBACK).run();
+            });
+        } else if (PaymentHandlerToolbarProperties.CLOSE_BUTTON_ON_CLICK_CALLBACK == propertyKey) {
+            view.mCloseButton.setOnClickListener((v) -> {
+                model.get(PaymentHandlerToolbarProperties.CLOSE_BUTTON_ON_CLICK_CALLBACK).run();
+            });
         }
     }
 }

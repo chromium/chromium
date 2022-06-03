@@ -24,12 +24,12 @@ source_set("bluetooth") {
   ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//content/public/browser",
+    "//extensions/common",
     "//extensions/common/api",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

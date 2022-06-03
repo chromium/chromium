@@ -11,6 +11,7 @@
 #include "base/guid.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "google_apis/google_api_keys.h"
@@ -26,10 +27,12 @@ namespace remoting {
 HostStarter::HostStarter(
     std::unique_ptr<gaia::GaiaOAuthClient> oauth_client,
     std::unique_ptr<remoting::ServiceClient> service_client,
-    scoped_refptr<remoting::DaemonController> daemon_controller)
+    scoped_refptr<remoting::DaemonController> daemon_controller,
+    std::unique_ptr<remoting::HostStopper> host_stopper)
     : oauth_client_(std::move(oauth_client)),
       service_client_(std::move(service_client)),
       daemon_controller_(daemon_controller),
+      host_stopper_(std::move(host_stopper)),
       consent_to_data_collection_(false),
       unregistering_host_(false) {
   weak_ptr_ = weak_ptr_factory_.GetWeakPtr();
@@ -39,28 +42,33 @@ HostStarter::HostStarter(
 HostStarter::~HostStarter() = default;
 
 std::unique_ptr<HostStarter> HostStarter::Create(
-    const std::string& remoting_server_endpoint,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
+  auto controller = remoting::DaemonController::Create();
   return base::WrapUnique(new HostStarter(
       std::make_unique<gaia::GaiaOAuthClient>(url_loader_factory),
-      std::make_unique<remoting::ServiceClient>(remoting_server_endpoint),
-      remoting::DaemonController::Create()));
+      std::make_unique<remoting::ServiceClient>(url_loader_factory), controller,
+      std::make_unique<remoting::HostStopper>(
+          std::make_unique<remoting::ServiceClient>(url_loader_factory),
+          controller)));
 }
 
-void HostStarter::StartHost(
-    const std::string& host_name,
-    const std::string& host_pin,
-    bool consent_to_data_collection,
-    const std::string& auth_code,
-    const std::string& redirect_url,
-    CompletionCallback on_done) {
+void HostStarter::StartHost(const std::string& host_id,
+                            const std::string& host_name,
+                            const std::string& host_pin,
+                            const std::string& host_owner,
+                            bool consent_to_data_collection,
+                            const std::string& auth_code,
+                            const std::string& redirect_url,
+                            CompletionCallback on_done) {
   DCHECK(main_task_runner_->BelongsToCurrentThread());
-  DCHECK(on_done_.is_null());
+  DCHECK(!on_done_);
 
+  host_id_ = host_id;
   host_name_ = host_name;
   host_pin_ = host_pin;
+  host_owner_ = host_owner;
   consent_to_data_collection_ = consent_to_data_collection;
-  on_done_ = on_done;
+  on_done_ = std::move(on_done);
   oauth_client_info_.client_id =
       google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING);
   oauth_client_info_.client_secret =
@@ -73,10 +81,9 @@ void HostStarter::StartHost(
                                        kMaxGetTokensRetries, this);
 }
 
-void HostStarter::OnGetTokensResponse(
-    const std::string& refresh_token,
-    const std::string& access_token,
-    int expires_in_seconds) {
+void HostStarter::OnGetTokensResponse(const std::string& refresh_token,
+                                      const std::string& access_token,
+                                      int expires_in_seconds) {
   if (!main_task_runner_->BelongsToCurrentThread()) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -100,9 +107,8 @@ void HostStarter::OnGetTokensResponse(
   oauth_client_->GetUserEmail(access_token, 1, this);
 }
 
-void HostStarter::OnRefreshTokenResponse(
-    const std::string& access_token,
-    int expires_in_seconds) {
+void HostStarter::OnRefreshTokenResponse(const std::string& access_token,
+                                         int expires_in_seconds) {
   // We never request a refresh token, so this call is not expected.
   NOTREACHED();
 }
@@ -117,20 +123,30 @@ void HostStarter::OnGetUserEmailResponse(const std::string& user_email) {
     return;
   }
 
-  if (host_owner_.empty()) {
-    // This is the first callback, with the host owner credentials. Store the
-    // owner's email, and register the host.
-    host_owner_ = user_email;
-    host_id_ = base::GenerateGUID();
-    key_pair_ = RsaKeyPair::Generate();
+  if (!auth_code_exchanged_) {
+    // This is the first callback, with the host owner credentials.
+    auth_code_exchanged_ = true;
 
-    std::string host_client_id;
-    host_client_id = google_apis::GetOAuth2ClientID(
-        google_apis::CLIENT_REMOTING_HOST);
-
-    service_client_->RegisterHost(host_id_, host_name_,
-                                  key_pair_->GetPublicKey(), host_client_id,
-                                  directory_access_token_, this);
+    // If a host owner was not provided via the command line, then we just use
+    // the user_email for the account which generated the auth_code.
+    // Otherwise we want to verify user_email matches the host_owner provided.
+    // Note that the auth_code has been exchanged at this point so the user
+    // can't just re-run the command with the same nonce and a different
+    // host_owner to get the command to succeed.
+    if (host_owner_.empty()) {
+      host_owner_ = user_email;
+    } else if (!base::EqualsCaseInsensitiveASCII(host_owner_, user_email)) {
+      LOG(ERROR) << "User email from auth_code (" << user_email << ") does not "
+                 << "match the host owner provided (" << host_owner_ << ")";
+      std::move(on_done_).Run(OAUTH_ERROR);
+      return;
+    }
+    // If the host is already running, stop it; then register a new host with
+    // with the directory.
+    host_stopper_->StopLocalHost(
+        directory_access_token_,
+        base::BindOnce(&HostStarter::OnLocalHostStopped,
+                       base::Unretained(this)));
   } else {
     // This is the second callback, with the service account credentials.
     // This email is the service account's email, used to login to XMPP.
@@ -148,9 +164,8 @@ void HostStarter::OnHostRegistered(const std::string& authorization_code) {
   }
 
   if (authorization_code.empty()) {
-    // No service account code, start the host with the owner's credentials.
-    xmpp_login_ = host_owner_;
-    StartHostProcess();
+    NOTREACHED() << "No authorization code returned by the Directory.";
+    std::move(on_done_).Run(START_ERROR);
     return;
   }
 
@@ -160,23 +175,19 @@ void HostStarter::OnHostRegistered(const std::string& authorization_code) {
   pending_get_tokens_ = GET_TOKENS_HOST;
 
   oauth_client_info_.client_id =
-      google_apis::GetOAuth2ClientID(
-          google_apis::CLIENT_REMOTING_HOST);
+      google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
   oauth_client_info_.client_secret =
-      google_apis::GetOAuth2ClientSecret(
-          google_apis::CLIENT_REMOTING_HOST);
+      google_apis::GetOAuth2ClientSecret(google_apis::CLIENT_REMOTING_HOST);
   oauth_client_info_.redirect_uri = "oob";
-  oauth_client_->GetTokensFromAuthCode(
-      oauth_client_info_, authorization_code, kMaxGetTokensRetries, this);
+  oauth_client_->GetTokensFromAuthCode(oauth_client_info_, authorization_code,
+                                       kMaxGetTokensRetries, this);
 }
 
 void HostStarter::StartHostProcess() {
   // Start the host.
   std::string host_secret_hash = remoting::MakeHostPinHash(host_id_, host_pin_);
   std::unique_ptr<base::DictionaryValue> config(new base::DictionaryValue());
-  if (host_owner_ != xmpp_login_) {
-    config->SetString("host_owner", host_owner_);
-  }
+  config->SetString("host_owner", host_owner_);
   config->SetString("xmpp_login", xmpp_login_);
   config->SetString("oauth_refresh_token", host_refresh_token_);
   config->SetString("host_id", host_id_);
@@ -185,7 +196,20 @@ void HostStarter::StartHostProcess() {
   config->SetString("host_secret_hash", host_secret_hash);
   daemon_controller_->SetConfigAndStart(
       std::move(config), consent_to_data_collection_,
-      base::Bind(&HostStarter::OnHostStarted, base::Unretained(this)));
+      base::BindOnce(&HostStarter::OnHostStarted, base::Unretained(this)));
+}
+
+void HostStarter::OnLocalHostStopped() {
+  if (host_id_.empty())
+    host_id_ = base::GenerateGUID();
+  key_pair_ = RsaKeyPair::Generate();
+
+  std::string host_client_id;
+  host_client_id =
+      google_apis::GetOAuth2ClientID(google_apis::CLIENT_REMOTING_HOST);
+
+  service_client_->RegisterHost(host_id_, host_name_, key_pair_->GetPublicKey(),
+                                host_client_id, directory_access_token_, this);
 }
 
 void HostStarter::OnHostStarted(DaemonController::AsyncResult result) {

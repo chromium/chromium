@@ -10,11 +10,11 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.support.v7.app.AlertDialog;
 import android.view.View;
 import android.widget.CheckBox;
 
 import androidx.annotation.IntDef;
+import androidx.appcompat.app.AlertDialog;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;

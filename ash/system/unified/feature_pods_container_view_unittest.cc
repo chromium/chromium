@@ -4,7 +4,6 @@
 
 #include "ash/system/unified/feature_pods_container_view.h"
 
-#include "ash/public/cpp/ash_features.h"
 #include "ash/public/cpp/pagination/pagination_controller.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/system/tray/tray_constants.h"
@@ -13,7 +12,8 @@
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/scoped_feature_list.h"
+#include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/accessibility/ax_node_data.h"
 #include "ui/views/view_observer.h"
 
 namespace ash {
@@ -23,6 +23,11 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
                                      public views::ViewObserver {
  public:
   FeaturePodsContainerViewTest() = default;
+
+  FeaturePodsContainerViewTest(const FeaturePodsContainerViewTest&) = delete;
+  FeaturePodsContainerViewTest& operator=(const FeaturePodsContainerViewTest&) =
+      delete;
+
   ~FeaturePodsContainerViewTest() override = default;
 
   // AshTestBase:
@@ -34,8 +39,6 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
         controller_.get(), true /* initially_expanded */);
     container_->AddObserver(this);
     preferred_size_changed_count_ = 0;
-
-    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   }
 
   void TearDown() override {
@@ -58,16 +61,14 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
   }
 
  protected:
-  void EnablePagination() {
-    scoped_feature_list_->InitAndEnableFeature(
-        features::kUnifiedMessageCenterRefactor);
+  void AddButton(FeaturePodButton* button) {
+    buttons_.push_back(button);
+    container()->AddChildView(button);
   }
 
   void AddButtons(int count) {
-    for (int i = 0; i < count; ++i) {
-      buttons_.push_back(new FeaturePodButton(this));
-      container()->AddChildView(buttons_.back());
-    }
+    for (int i = 0; i < count; ++i)
+      AddButton(new FeaturePodButton(this));
     container()->SetBoundsRect(gfx::Rect(container_->GetPreferredSize()));
     container()->Layout();
   }
@@ -85,13 +86,10 @@ class FeaturePodsContainerViewTest : public NoSessionAshTestBase,
   std::vector<FeaturePodButton*> buttons_;
 
  private:
-  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
   std::unique_ptr<FeaturePodsContainerView> container_;
   std::unique_ptr<UnifiedSystemTrayModel> model_;
   std::unique_ptr<UnifiedSystemTrayController> controller_;
   int preferred_size_changed_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FeaturePodsContainerViewTest);
 };
 
 TEST_F(FeaturePodsContainerViewTest, ExpandedAndCollapsed) {
@@ -196,7 +194,6 @@ TEST_F(FeaturePodsContainerViewTest, SizeChangeByVisibility) {
 TEST_F(FeaturePodsContainerViewTest, NumberOfPagesChanged) {
   const int kNumberOfPages = 8;
 
-  EnablePagination();
   AddButtons(kUnifiedFeaturePodItemsInRow * kUnifiedFeaturePodMaxRows *
              kNumberOfPages);
 
@@ -212,7 +209,6 @@ TEST_F(FeaturePodsContainerViewTest, NumberOfPagesChanged) {
 TEST_F(FeaturePodsContainerViewTest, PaginationTransition) {
   const int kNumberOfPages = 8;
 
-  EnablePagination();
   AddButtons(kUnifiedFeaturePodItemsInRow * kUnifiedFeaturePodMaxRows *
              kNumberOfPages);
 
@@ -257,7 +253,6 @@ TEST_F(FeaturePodsContainerViewTest, PaginationDynamicRows) {
   int min_height_for_three_rows = kUnifiedFeaturePodMaxRows * row_height +
                                   padding + kMessageCenterCollapseThreshold;
 
-  EnablePagination();
   AddButtons(kNumberOfFeaturePods);
 
   // Expect 1 row of feature pods even if there is 0 height.
@@ -290,7 +285,6 @@ TEST_F(FeaturePodsContainerViewTest, PaginationDynamicRows) {
 TEST_F(FeaturePodsContainerViewTest, PaginationGestureHandling) {
   const int kNumberOfPages = 8;
 
-  EnablePagination();
   AddButtons(kUnifiedFeaturePodItemsInRow * kUnifiedFeaturePodMaxRows *
              kNumberOfPages);
 
@@ -358,7 +352,6 @@ TEST_F(FeaturePodsContainerViewTest, PaginationScrollHandling) {
   const int kNumberOfPages = 8;
   const int num_fingers = 2;
 
-  EnablePagination();
   AddButtons(kUnifiedFeaturePodItemsInRow * kUnifiedFeaturePodMaxRows *
              kNumberOfPages);
 
@@ -409,7 +402,6 @@ TEST_F(FeaturePodsContainerViewTest, PaginationScrollHandling) {
 TEST_F(FeaturePodsContainerViewTest, PaginationMouseWheelHandling) {
   const int kNumberOfPages = 8;
 
-  EnablePagination();
   AddButtons(kUnifiedFeaturePodItemsInRow * kUnifiedFeaturePodMaxRows *
              kNumberOfPages);
 
@@ -449,7 +441,7 @@ TEST_F(FeaturePodsContainerViewTest, PaginationMouseWheelHandling) {
 
 TEST_F(FeaturePodsContainerViewTest, NonTogglableButton) {
   // Add one togglable and one non-tobblable button.
-  buttons_.push_back(new FeaturePodButton(this, /*is_togglable=*/false));
+  AddButton(new FeaturePodButton(this, /*is_togglable=*/false));
   AddButtons(1);
 
   // Non-togglable buttons should be labelled as a regular button for

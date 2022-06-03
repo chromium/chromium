@@ -10,6 +10,7 @@
 namespace views {
 
 class Widget;
+enum class CloseRequestResult;
 
 ///////////////////////////////////////////////////////////////////////////////
 // ClientView
@@ -29,11 +30,11 @@ class VIEWS_EXPORT ClientView : public View {
   ClientView(Widget* widget, View* contents_view);
   ~ClientView() override = default;
 
-  // Returns true to signal that the Widget can be closed. Specialized
+  // Returned value signals whether the Widget can be closed. Specialized
   // ClientView subclasses can override this default behavior to allow the
   // close to be blocked until the user corrects mistakes, accepts a warning
   // dialog, etc.
-  virtual bool CanClose();
+  virtual CloseRequestResult OnWindowCloseRequested();
 
   // Notification that the widget is closing.
   virtual void WidgetClosing();
@@ -51,6 +52,7 @@ class VIEWS_EXPORT ClientView : public View {
 
   // Overridden from View:
   gfx::Size CalculatePreferredSize() const override;
+  int GetHeightForWidth(int width) const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
 

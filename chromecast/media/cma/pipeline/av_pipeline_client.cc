@@ -10,7 +10,9 @@ namespace media {
 AvPipelineClient::AvPipelineClient() {
 }
 
-AvPipelineClient::AvPipelineClient(const AvPipelineClient& other) = default;
+AvPipelineClient::AvPipelineClient(AvPipelineClient&& other) = default;
+AvPipelineClient& AvPipelineClient::operator=(AvPipelineClient&& other) =
+    default;
 
 AvPipelineClient::~AvPipelineClient() {
 }

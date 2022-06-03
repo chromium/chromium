@@ -44,6 +44,9 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // Init().
   GuardedPageAllocator();
 
+  GuardedPageAllocator(const GuardedPageAllocator&) = delete;
+  GuardedPageAllocator& operator=(const GuardedPageAllocator&) = delete;
+
   // Configures this allocator to allocate up to max_alloced_pages pages at a
   // time, holding metadata for up to num_metadata allocations, from a pool of
   // total_pages pages, where:
@@ -111,7 +114,7 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // SimpleFreeList is specifically designed to pre-allocate data in Initialize
   // so that it never recurses into malloc/free during Allocate/Free.
   template <typename T>
-  class SimpleFreeList : public FreeList<T> {
+  class SimpleFreeList final : public FreeList<T> {
    public:
     ~SimpleFreeList() final = default;
     void Initialize(T max_entries) final;
@@ -139,7 +142,8 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   // first-come first-serve basis, this makes it likely that all slots will be
   // used up by common types first. Set aside a fixed amount of slots (~5%) for
   // one-off partitions so that we make sure to sample rare types as well.
-  class PartitionAllocSlotFreeList : public FreeList<AllocatorState::SlotIdx> {
+  class PartitionAllocSlotFreeList final
+      : public FreeList<AllocatorState::SlotIdx> {
    public:
     PartitionAllocSlotFreeList();
     ~PartitionAllocSlotFreeList() final;
@@ -233,8 +237,6 @@ class GWP_ASAN_EXPORT GuardedPageAllocator {
   friend class CrashAnalyzerTest;
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, InternalError);
   FRIEND_TEST_ALL_PREFIXES(CrashAnalyzerTest, StackTraceCollection);
-
-  DISALLOW_COPY_AND_ASSIGN(GuardedPageAllocator);
 };
 
 }  // namespace internal

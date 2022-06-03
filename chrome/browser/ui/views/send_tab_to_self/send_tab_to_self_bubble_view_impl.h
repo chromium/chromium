@@ -10,37 +10,40 @@
 #include <string>
 #include <vector>
 
-#include "base/memory/weak_ptr.h"
-#include "base/observer_list.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_view.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
-#include "ui/views/controls/button/button.h"
-
-namespace gfx {
-class Canvas;
-}  // namespace gfx
 
 namespace content {
 class WebContents;
 }  // namespace content
 
+namespace ui {
+class Event;
+}  // namespace ui
+
+namespace views {
+class GridLayout;
+}  // namespace views
+
 namespace send_tab_to_self {
 
 class SendTabToSelfBubbleController;
 class SendTabToSelfBubbleDeviceButton;
-struct TargetDeviceInfo;
 
 // View component of the send tab to self bubble that allows users to choose
 // target device to send tab to.
 class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
-                                    public views::ButtonListener,
                                     public LocationBarBubbleDelegateView {
  public:
   // Bubble will be anchored to |anchor_view|.
   SendTabToSelfBubbleViewImpl(views::View* anchor_view,
                               content::WebContents* web_contents,
                               SendTabToSelfBubbleController* controller);
+
+  SendTabToSelfBubbleViewImpl(const SendTabToSelfBubbleViewImpl&) = delete;
+  SendTabToSelfBubbleViewImpl& operator=(const SendTabToSelfBubbleViewImpl&) =
+      delete;
 
   ~SendTabToSelfBubbleViewImpl() override;
 
@@ -49,65 +52,37 @@ class SendTabToSelfBubbleViewImpl : public SendTabToSelfBubbleView,
 
   // views::WidgetDelegateView:
   bool ShouldShowCloseButton() const override;
-  base::string16 GetWindowTitle() const override;
+  std::u16string GetWindowTitle() const override;
   void WindowClosing() override;
 
-  // views::DialogDelegate:
-  bool Close() override;
+  void BackButtonPressed();
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  void DeviceButtonPressed(SendTabToSelfBubbleDeviceButton* device_button);
 
-  // views::View:
-  gfx::Size CalculatePreferredSize() const override;
-  void OnPaint(gfx::Canvas* canvas) override;
+  void OnManageDevicesClicked(const ui::Event& event);
 
-  // Shows the bubble view.
-  void Show(DisplayReason reason);
-
-  // Called by tests.
-  const std::vector<SendTabToSelfBubbleDeviceButton*>&
-  GetDeviceButtonsForTest();
+  const views::View* GetButtonContainerForTesting() const;
 
  private:
-  friend class SendTabToSelfBubbleViewImplTest;
-  FRIEND_TEST_ALL_PREFIXES(SendTabToSelfBubbleViewImplTest, PopulateScrollView);
-  FRIEND_TEST_ALL_PREFIXES(SendTabToSelfBubbleViewImplTest, DevicePressed);
-
   // views::BubbleDialogDelegateView:
   void Init() override;
+  void AddedToWidget() override;
 
-  // Creates the scroll view.
-  void CreateScrollView();
+  // Creates the subtitle / hint text used in V2.
+  void CreateHintTextLabel(views::GridLayout* layout);
 
-  // Populates the scroll view containing valid devices.
-  void PopulateScrollView(const std::vector<TargetDeviceInfo>& devices);
+  // Creates the scroll view containing target devices.
+  void CreateDevicesScrollView(views::GridLayout* layout);
 
-  // Handles the action when a target device has been pressed.
-  void DevicePressed(size_t index);
+  // Creates the link leading to a page where the user can manage their known
+  // target devices.
+  void CreateManageDevicesLink(views::GridLayout* layout);
 
-  // Resizes and potentially moves the bubble to fit the content's preferred
-  // size.
-  void MaybeSizeToContents();
-
-  content::WebContents* web_contents_;         // Weak reference.
   SendTabToSelfBubbleController* controller_;  // Weak reference.
 
-  // Title shown at the top of the bubble.
-  base::string16 bubble_title_;
-
-  // Contains references to device buttons in the order they appear.
-  std::vector<SendTabToSelfBubbleDeviceButton*> device_buttons_;
-
   // ScrollView containing the list of device buttons.
+  // Only kept for GetButtonContainerForTesting().
   views::ScrollView* scroll_view_ = nullptr;
-
-  // The device that the user has selected to share tab to.
-  base::Optional<size_t> selected_device_index_;
-
-  base::WeakPtrFactory<SendTabToSelfBubbleViewImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfBubbleViewImpl);
 };
 
 }  // namespace send_tab_to_self

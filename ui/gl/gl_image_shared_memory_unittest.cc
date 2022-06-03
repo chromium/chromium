@@ -51,12 +51,17 @@ using GLImageTestTypes = testing::Types<
     GLImageSharedMemoryTestDelegate<gfx::BufferFormat::RGBX_8888>,
     GLImageSharedMemoryTestDelegate<gfx::BufferFormat::RGBA_8888>,
     GLImageSharedMemoryTestDelegate<gfx::BufferFormat::BGRX_8888>,
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     // Fails on Win nVidia and linux android: the test writes nothing (we read
     // back the color used to clear the buffer).
     // TODO(mcasas): enable those paltforms https://crbug.com/803451.
-    GLImageSharedMemoryTestDelegate<gfx::BufferFormat::BGRX_1010102>,
     GLImageSharedMemoryTestDelegate<gfx::BufferFormat::RGBA_1010102>,
+
+// https://crbug.com/830653
+#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
+    !defined(THREAD_SANITIZER)
+    GLImageSharedMemoryTestDelegate<gfx::BufferFormat::BGRA_1010102>,
+#endif
 #endif
     GLImageSharedMemoryTestDelegate<gfx::BufferFormat::BGRA_8888>>;
 
@@ -68,13 +73,9 @@ INSTANTIATE_TYPED_TEST_SUITE_P(GLImageSharedMemory,
                                GLImageOddSizeTest,
                                GLImageTestTypes);
 
-// https://crbug.com/830653
-#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
-    !defined(THREAD_SANITIZER)
 INSTANTIATE_TYPED_TEST_SUITE_P(GLImageSharedMemory,
                                GLImageCopyTest,
                                GLImageTestTypes);
-#endif
 
 class GLImageSharedMemoryPoolTestDelegate : public GLImageTestDelegateBase {
  public:
@@ -113,9 +114,8 @@ class GLImageSharedMemoryPoolTestDelegate : public GLImageTestDelegateBase {
   int GetAdmissibleError() const { return 0; }
 };
 
-// https://crbug.com/830653
-#if !defined(ADDRESS_SANITIZER) && !defined(MEMORY_SANITIZER) && \
-    !defined(THREAD_SANITIZER)
+// Disabled on Windows, see crbug.com/1036138
+#if !defined(OS_WIN)
 INSTANTIATE_TYPED_TEST_SUITE_P(GLImageSharedMemoryPool,
                                GLImageCopyTest,
                                GLImageSharedMemoryPoolTestDelegate);

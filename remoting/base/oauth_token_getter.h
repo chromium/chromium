@@ -34,10 +34,6 @@ class OAuthTokenGetter {
                                        const std::string& refresh_token)>
       CredentialsUpdatedCallback;
 
-  // Called if the current refresh token is exchanged for one with new scopes.
-  typedef base::RepeatingCallback<void(const std::string& refresh_token)>
-      RefreshTokenUpdatedCallback;
-
   // This structure contains information required to perform authorization
   // with the authorization server.
   struct OAuthAuthorizationCredentials {
@@ -86,6 +82,10 @@ class OAuthTokenGetter {
   };
 
   OAuthTokenGetter() {}
+
+  OAuthTokenGetter(const OAuthTokenGetter&) = delete;
+  OAuthTokenGetter& operator=(const OAuthTokenGetter&) = delete;
+
   virtual ~OAuthTokenGetter() {}
 
   // Call |on_access_token| with an access token, or the failure status.
@@ -95,8 +95,6 @@ class OAuthTokenGetter {
   // Invalidates the cache, so the next CallWithToken() will get a fresh access
   // token.
   virtual void InvalidateCache() = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(OAuthTokenGetter);
 };
 
 }  // namespace remoting

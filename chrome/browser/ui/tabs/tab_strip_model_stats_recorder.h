@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
@@ -45,6 +44,9 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
   };
 
   TabStripModelStatsRecorder();
+  TabStripModelStatsRecorder(const TabStripModelStatsRecorder&) = delete;
+  TabStripModelStatsRecorder& operator=(const TabStripModelStatsRecorder&) =
+      delete;
   ~TabStripModelStatsRecorder() override;
 
  private:
@@ -67,8 +69,6 @@ class TabStripModelStatsRecorder : public TabStripModelObserver {
   std::vector<content::WebContents*> active_tab_history_;
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabStripModelStatsRecorder);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_STATS_RECORDER_H_

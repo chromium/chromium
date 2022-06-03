@@ -8,42 +8,77 @@
 
 #include "ash/events/keyboard_driven_event_rewriter.h"
 #include "base/compiler_specific.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event.h"
+#include "ui/events/test/test_event_rewriter_continuation.h"
 
 namespace ash {
 
+class TestEventRewriterContinuation
+    : public ui::test::TestEventRewriterContinuation {
+ public:
+  TestEventRewriterContinuation() = default;
+
+  TestEventRewriterContinuation(const TestEventRewriterContinuation&) = delete;
+  TestEventRewriterContinuation& operator=(
+      const TestEventRewriterContinuation&) = delete;
+
+  ~TestEventRewriterContinuation() override = default;
+
+  ui::EventDispatchDetails SendEvent(const ui::Event* event) override {
+    passthrough_event = ui::Event::Clone(*event);
+    return ui::EventDispatchDetails();
+  }
+
+  ui::EventDispatchDetails SendEventFinally(const ui::Event* event) override {
+    rewritten_event = ui::Event::Clone(*event);
+    return ui::EventDispatchDetails();
+  }
+
+  ui::EventDispatchDetails DiscardEvent() override {
+    return ui::EventDispatchDetails();
+  }
+
+  std::unique_ptr<ui::Event> passthrough_event;
+  std::unique_ptr<ui::Event> rewritten_event;
+
+  base::WeakPtrFactory<TestEventRewriterContinuation> weak_ptr_factory_{this};
+};
+
 class KeyboardDrivenEventRewriterTest : public testing::Test {
  public:
-  KeyboardDrivenEventRewriterTest() {}
+  KeyboardDrivenEventRewriterTest() = default;
 
-  ~KeyboardDrivenEventRewriterTest() override {}
+  KeyboardDrivenEventRewriterTest(const KeyboardDrivenEventRewriterTest&) =
+      delete;
+  KeyboardDrivenEventRewriterTest& operator=(
+      const KeyboardDrivenEventRewriterTest&) = delete;
+
+  ~KeyboardDrivenEventRewriterTest() override = default;
 
  protected:
   std::string GetRewrittenEventAsString(ui::KeyboardCode ui_keycode,
                                         int ui_flags,
                                         ui::EventType ui_type) {
+    TestEventRewriterContinuation continuation;
     ui::KeyEvent keyevent(ui_type, ui_keycode, ui_flags);
-    std::unique_ptr<ui::Event> rewritten_event;
-    ui::EventRewriteStatus status =
-        rewriter_.RewriteForTesting(keyevent, &rewritten_event);
-    return base::StringPrintf(
-        "ui_flags=%d status=%d",
-        rewritten_event ? rewritten_event->flags() : keyevent.flags(),
-        status);
-  }
+    rewriter_.RewriteForTesting(keyevent,
+                                continuation.weak_ptr_factory_.GetWeakPtr());
 
-  std::string GetExpectedResultAsString(int ui_flags,
-                                        ui::EventRewriteStatus status) {
-    return base::StringPrintf("ui_flags=%d status=%u", ui_flags, status);
+    std::string result = "No event is sent by RewriteEvent.";
+    if (continuation.passthrough_event) {
+      result = base::StringPrintf("PassThrough ui_flags=%d",
+                                  continuation.passthrough_event->flags());
+    } else if (continuation.rewritten_event) {
+      result = base::StringPrintf("Rewritten ui_flags=%d",
+                                  continuation.rewritten_event->flags());
+    }
+    return result;
   }
 
   KeyboardDrivenEventRewriter rewriter_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeyboardDrivenEventRewriterTest);
 };
 
 TEST_F(KeyboardDrivenEventRewriterTest, PassThrough) {
@@ -80,12 +115,10 @@ TEST_F(KeyboardDrivenEventRewriterTest, PassThrough) {
   };
 
   for (size_t i = 0; i < base::size(kTests); ++i) {
-    EXPECT_EQ(GetExpectedResultAsString(kTests[i].ui_flags,
-                                        ui::EVENT_REWRITE_CONTINUE),
+    EXPECT_EQ(base::StringPrintf("PassThrough ui_flags=%d", kTests[i].ui_flags),
               GetRewrittenEventAsString(kTests[i].ui_keycode,
-                                        kTests[i].ui_flags,
-                                        ui::ET_KEY_PRESSED))
-    << "Test case " << i;
+                                        kTests[i].ui_flags, ui::ET_KEY_PRESSED))
+        << "Test case " << i;
   }
 }
 
@@ -105,12 +138,10 @@ TEST_F(KeyboardDrivenEventRewriterTest, Rewrite) {
   };
 
   for (size_t i = 0; i < base::size(kTests); ++i) {
-    EXPECT_EQ(GetExpectedResultAsString(ui::EF_NONE,
-                                        ui::EVENT_REWRITE_REWRITTEN),
+    EXPECT_EQ("Rewritten ui_flags=0",
               GetRewrittenEventAsString(kTests[i].ui_keycode,
-                                        kTests[i].ui_flags,
-                                        ui::ET_KEY_PRESSED))
-    << "Test case " << i;
+                                        kTests[i].ui_flags, ui::ET_KEY_PRESSED))
+        << "Test case " << i;
   }
 }
 

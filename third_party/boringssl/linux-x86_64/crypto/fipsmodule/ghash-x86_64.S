@@ -1,5 +1,5 @@
-# This file is generated from a similarly-named Perl script in the BoringSSL
-# source tree. Do not edit by hand.
+// This file is generated from a similarly-named Perl script in the BoringSSL
+// source tree. Do not edit by hand.
 
 #if defined(__has_feature)
 #if __has_feature(memory_sanitizer) && !defined(OPENSSL_NO_ASM)
@@ -1119,8 +1119,6 @@ gcm_ghash_avx:
 .byte	1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0xc2
 .L7_mask:
 .long	7,0,7,0
-.L7_mask_poly:
-.long	7,0,450,0
 .align	64
 
 .byte	71,72,65,83,72,32,102,111,114,32,120,56,54,95,54,52,44,32,67,82,89,80,84,79,71,65,77,83,32,98,121,32,60,97,112,112,114,111,64,111,112,101,110,115,115,108,46,111,114,103,62,0

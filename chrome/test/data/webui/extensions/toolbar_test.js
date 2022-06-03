@@ -7,10 +7,10 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isChromeOS, isMac} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {eventToPromise} from '../test_util.m.js';
+import {eventToPromise} from '../test_util.js';
 
 import {TestService} from './test_service.js';
-import {testVisible} from './test_util.js';
+import {createExtensionInfo, testVisible} from './test_util.js';
 
 /** @fileoverview Suite of tests for extension-toolbar. */
 window.extension_toolbar_tests = {};
@@ -20,7 +20,8 @@ extension_toolbar_tests.TestNames = {
   Layout: 'layout',
   ClickHandlers: 'click handlers',
   DevModeToggle: 'dev mode toggle',
-  KioskMode: 'kiosk mode button'
+  KioskMode: 'kiosk mode button',
+  FailedUpdateFiresLoadError: 'failed local extension update files load error'
 };
 
 suite(extension_toolbar_tests.suiteName, function() {
@@ -31,7 +32,7 @@ suite(extension_toolbar_tests.suiteName, function() {
   let toolbar;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     toolbar = document.createElement('extensions-toolbar');
     document.body.appendChild(toolbar);
     toolbar.inDevMode = false;
@@ -96,7 +97,7 @@ suite(extension_toolbar_tests.suiteName, function() {
   test(assert(extension_toolbar_tests.TestNames.ClickHandlers), function() {
     toolbar.set('inDevMode', true);
     flush();
-
+    const toastManager = getToastManager();
     toolbar.$.devMode.click();
     return mockDelegate.whenCalled('setProfileInDevMode')
         .then(function(arg) {
@@ -107,11 +108,22 @@ suite(extension_toolbar_tests.suiteName, function() {
         })
         .then(function(arg) {
           assertTrue(arg);
+          mockDelegate.setLoadUnpackedSuccess(true);
           toolbar.$.loadUnpacked.click();
-          return mockDelegate.whenCalled('loadUnpacked');
+          return mockDelegate.whenCalled('loadUnpacked').then(() => {
+            assertTrue(toastManager.isToastOpen);
+          });
         })
         .then(function() {
-          const toastManager = getToastManager();
+          // Hide toast since it is open for 3000ms in previous Promise.
+          toastManager.hide();
+          mockDelegate.setLoadUnpackedSuccess(false);
+          toolbar.$.loadUnpacked.click();
+          return mockDelegate.whenCalled('loadUnpacked').then(() => {
+            assertFalse(toastManager.isToastOpen);
+          });
+        })
+        .then(function() {
           assertFalse(toastManager.isToastOpen);
           toolbar.$.updateNow.click();
           // Simulate user rapidly clicking update button multiple times.
@@ -121,10 +133,12 @@ suite(extension_toolbar_tests.suiteName, function() {
         })
         .then(function() {
           assertEquals(1, mockDelegate.getCallCount('updateAllExtensions'));
-          assertFalse(!!toolbar.$$('extensions-pack-dialog'));
+          assertFalse(
+              !!toolbar.shadowRoot.querySelector('extensions-pack-dialog'));
           toolbar.$.packExtensions.click();
           flush();
-          const dialog = toolbar.$$('extensions-pack-dialog');
+          const dialog =
+              toolbar.shadowRoot.querySelector('extensions-pack-dialog');
           assertTrue(!!dialog);
 
           if (!isMac) {
@@ -135,6 +149,54 @@ suite(extension_toolbar_tests.suiteName, function() {
           }
         });
   });
+
+  /** Tests that the update button properly fires the load-error event. */
+  test(
+      assert(extension_toolbar_tests.TestNames.FailedUpdateFiresLoadError),
+      function() {
+        let item = document.createElement('extensions-item');
+        item.data = createExtensionInfo();
+        item.delegate = mockDelegate;
+        document.body.appendChild(item);
+        item.set('inDevMode', true);
+        item.set('data.location', chrome.developerPrivate.Location.UNPACKED);
+
+        toolbar.set('inDevMode', true);
+        flush();
+
+        const proxyDelegate = new TestService();
+        toolbar.delegate = proxyDelegate;
+
+        let firedLoadError = false;
+        toolbar.addEventListener('load-error', () => {
+          firedLoadError = true;
+        }, {once: true});
+
+        const verifyLoadErrorFired = function(expectCalled) {
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              expectEquals(expectCalled, firedLoadError);
+              resolve();
+            });
+          });
+        };
+
+        toolbar.$.devMode.click();
+        toolbar.$.updateNow.click();
+        return proxyDelegate.whenCalled('updateAllExtensions')
+            .then(function() {
+              return verifyLoadErrorFired(false);
+            })
+            .then(function() {
+              proxyDelegate.resetResolver('updateAllExtensions');
+              proxyDelegate.setForceReloadItemError(true);
+              toolbar.$.updateNow.click();
+              return proxyDelegate.whenCalled('updateAllExtensions');
+            })
+            .then(function() {
+              return verifyLoadErrorFired(true);
+            });
+      });
 
   if (isChromeOS) {
     test(assert(extension_toolbar_tests.TestNames.KioskMode), function() {

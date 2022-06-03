@@ -15,7 +15,7 @@
 #include "components/crash/core/common/crash_key_base_support.h"
 #include "components/crash/core/common/crash_key_internal.h"
 
-#if defined(OS_MACOSX) || defined(OS_IOS) || defined(OS_WIN)
+#if defined(OS_APPLE) || defined(OS_WIN)
 #error "This file should not be used when Crashpad is available, nor on iOS."
 #endif
 
@@ -50,6 +50,10 @@ void ResetCrashKeyStorageForTesting() {
 }
 
 void CrashKeyStringImpl::Set(base::StringPiece value) {
+  // This check cannot be in the constructor because it is constexpr. Use _LT
+  // rather than _LE to account for the terminating \0.
+  DCHECK_LT(strlen(name_), kCrashKeyStorageKeySize);
+
   const size_t kValueMaxLength = index_array_count_ * kCrashKeyStorageValueSize;
 
   TransitionalCrashKeyStorage* storage = GetCrashKeyStorage();
@@ -58,7 +62,7 @@ void CrashKeyStringImpl::Set(base::StringPiece value) {
 
   // If there is only one slot for the value, then handle it directly.
   if (index_array_count_ == 1) {
-    std::string value_string = value.as_string();
+    std::string value_string(value);
     if (is_set()) {
       storage->SetValueAtIndex(index_array_[0], value_string.c_str());
     } else {

@@ -4,33 +4,42 @@
 
 #include "content/browser/media/session/media_session_controllers_manager.h"
 
+#include <set>
+
 #include "base/command_line.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/media/session/media_session_controller.h"
+#include "content/browser/media/session/media_session_impl.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
 #include "media/base/media_content_type.h"
 #include "media/base/media_switches.h"
 #include "services/media_session/public/cpp/features.h"
-#include "testing/gmock/include/gmock/gmock.h"
+#include "services/media_session/public/cpp/test/mock_media_session.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using testing::StrictMock;
+#include "third_party/blink/public/mojom/mediasession/media_session.mojom.h"
 
 namespace content {
 
 namespace {
 
-class MockMediaSessionController : public MediaSessionController {
- public:
-  MockMediaSessionController(
-      const MediaPlayerId& id,
-      MediaWebContentsObserver* media_web_contents_observer)
-      : MediaSessionController(id, media_web_contents_observer) {}
+std::set<media_session::mojom::MediaSessionAction> GetDefaultActions() {
+  return {media_session::mojom::MediaSessionAction::kPlay,
+          media_session::mojom::MediaSessionAction::kPause,
+          media_session::mojom::MediaSessionAction::kStop,
+          media_session::mojom::MediaSessionAction::kSeekTo,
+          media_session::mojom::MediaSessionAction::kScrubTo};
+}
 
-  MOCK_METHOD0(OnPlaybackPaused, void());
-};
+std::set<media_session::mojom::MediaSessionAction>
+AppendPictureInPictureActionsTo(
+    std::set<media_session::mojom::MediaSessionAction> actions) {
+  actions.insert(
+      {media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
+       media_session::mojom::MediaSessionAction::kExitPictureInPicture});
+  return actions;
+}
 
 }  // namespace
 
@@ -43,10 +52,10 @@ class MediaSessionControllersManagerTest
   static const int kIsAudioFocusEnabled = 1;
 
   void SetUp() override {
-    RenderViewHostImplTestHarness::SetUp();
-
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
+
+    enabled_features.push_back(media::kGlobalMediaControlsPictureInPicture);
 
     // Based on the parameters, switch them on.
     if (IsInternalMediaSessionEnabled()) {
@@ -68,13 +77,17 @@ class MediaSessionControllersManagerTest
 
     scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
-    media_player_id_ = MediaPlayerId(contents()->GetMainFrame(), 1);
-    mock_media_session_controller_ =
-        std::make_unique<StrictMock<MockMediaSessionController>>(
-            media_player_id_, contents()->media_web_contents_observer());
-    mock_media_session_controller_ptr_ = mock_media_session_controller_.get();
-    manager_ = std::make_unique<MediaSessionControllersManager>(
-        contents()->media_web_contents_observer());
+    RenderViewHostImplTestHarness::SetUp();
+
+    GlobalRenderFrameHostId frame_routing_id =
+        contents()->GetMainFrame()->GetGlobalId();
+    media_player_id_ = MediaPlayerId(frame_routing_id, 1);
+    media_player_id2_ = MediaPlayerId(frame_routing_id, 2);
+    manager_ = std::make_unique<MediaSessionControllersManager>(contents());
+  }
+
+  MediaSessionImpl* media_session() {
+    return MediaSessionImpl::Get(contents());
   }
 
   bool IsInternalMediaSessionEnabled() const {
@@ -89,135 +102,77 @@ class MediaSessionControllersManagerTest
     return IsInternalMediaSessionEnabled() || IsAudioFocusEnabled();
   }
 
-  MediaSessionControllersManager::ControllersMap* GetControllersMap() {
-    return &manager_->controllers_map_;
-  }
-
-  base::Optional<media_session::MediaPosition> GetPosition(
-      const MediaPlayerId& id) {
-    auto it = manager_->controllers_map_.find(id);
-    DCHECK(it != manager_->controllers_map_.end());
-
-    auto* controller = it->second.get();
-    return controller->GetPosition(controller->get_player_id_for_testing());
-  }
-
   void TearDown() override {
-    mock_media_session_controller_.reset();
-    mock_media_session_controller_ptr_ = nullptr;
     manager_.reset();
     RenderViewHostImplTestHarness::TearDown();
   }
 
  protected:
   MediaPlayerId media_player_id_ = MediaPlayerId::CreateMediaPlayerIdForTests();
-  std::unique_ptr<StrictMock<MockMediaSessionController>>
-      mock_media_session_controller_;
-  StrictMock<MockMediaSessionController>* mock_media_session_controller_ptr_ =
-      nullptr;
+  MediaPlayerId media_player_id2_ =
+      MediaPlayerId::CreateMediaPlayerIdForTests();
   std::unique_ptr<MediaSessionControllersManager> manager_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_P(MediaSessionControllersManagerTest, RequestPlayAddsSessionsToMap) {
-  EXPECT_TRUE(GetControllersMap()->empty());
+TEST_P(MediaSessionControllersManagerTest, ActivateDeactivateSession) {
+  ASSERT_FALSE(media_session()->IsActive());
 
-  EXPECT_TRUE(manager_->RequestPlay(media_player_id_, true, false,
-                                    media::MediaContentType::Transient));
-  if (!IsMediaSessionEnabled()) {
-    EXPECT_TRUE(GetControllersMap()->empty());
-  } else {
-    EXPECT_EQ(1U, GetControllersMap()->size());
-    EXPECT_TRUE(
-        manager_->RequestPlay(MediaPlayerId(contents()->GetMainFrame(), 2),
-                              true, false, media::MediaContentType::Transient));
-    EXPECT_EQ(2U, GetControllersMap()->size());
-  }
-}
+  manager_->OnMetadata(media_player_id_, true, false,
+                       media::MediaContentType::Transient);
+  manager_->OnMetadata(media_player_id2_, true, false,
+                       media::MediaContentType::Transient);
+  EXPECT_FALSE(media_session()->IsActive());
 
-TEST_P(MediaSessionControllersManagerTest, RepeatAddsOfInitializablePlayer) {
-  // If not enabled, no adds will occur, as RequestPlay returns early.
-  if (!IsMediaSessionEnabled())
-    return;
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  EXPECT_EQ(media_session()->IsActive(), IsMediaSessionEnabled());
 
-  EXPECT_TRUE(GetControllersMap()->empty());
+  // RequestPlay() for the same player has no effect.
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  EXPECT_EQ(media_session()->IsActive(), IsMediaSessionEnabled());
 
-  EXPECT_TRUE(manager_->RequestPlay(media_player_id_, true, false,
-                                    media::MediaContentType::Transient));
-  EXPECT_EQ(1U, GetControllersMap()->size());
+  // RequestPlay() for another player should keep the session active until both
+  // are stopped.
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id2_));
+  EXPECT_EQ(media_session()->IsActive(), IsMediaSessionEnabled());
 
-  EXPECT_TRUE(manager_->RequestPlay(media_player_id_, true, false,
-                                    media::MediaContentType::Transient));
-  EXPECT_EQ(1U, GetControllersMap()->size());
+  manager_->OnPause(media_player_id_, true);
+  EXPECT_EQ(media_session()->IsActive(), IsMediaSessionEnabled());
+
+  manager_->OnEnd(media_player_id2_);
+  EXPECT_FALSE(media_session()->IsActive());
 }
 
 TEST_P(MediaSessionControllersManagerTest, RenderFrameDeletedRemovesHost) {
-  EXPECT_TRUE(GetControllersMap()->empty());
+  manager_->OnMetadata(media_player_id_, true, false,
+                       media::MediaContentType::Transient);
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  ASSERT_EQ(media_session()->IsActive(), IsMediaSessionEnabled());
 
-  // Nothing should be removed if not enabled.
-  if (!IsMediaSessionEnabled()) {
-    // Artifically add controller to show early return.
-    GetControllersMap()->insert(std::make_pair(
-        media_player_id_, std::move(mock_media_session_controller_)));
-    EXPECT_EQ(1U, GetControllersMap()->size());
-
-    manager_->RenderFrameDeleted(contents()->GetMainFrame());
-    EXPECT_EQ(1U, GetControllersMap()->size());
-  } else {
-    EXPECT_TRUE(manager_->RequestPlay(media_player_id_, true, false,
-                                      media::MediaContentType::Transient));
-    EXPECT_EQ(1U, GetControllersMap()->size());
-
-    manager_->RenderFrameDeleted(contents()->GetMainFrame());
-    EXPECT_TRUE(GetControllersMap()->empty());
-  }
+  manager_->RenderFrameDeleted(contents()->GetMainFrame());
+  EXPECT_FALSE(media_session()->IsActive());
 }
 
-TEST_P(MediaSessionControllersManagerTest, OnPauseCallsPlaybackPaused) {
-  // Artifically add controller to show early return.
-  GetControllersMap()->insert(std::make_pair(
-      media_player_id_, std::move(mock_media_session_controller_)));
-  if (IsMediaSessionEnabled())
-    EXPECT_CALL(*mock_media_session_controller_ptr_, OnPlaybackPaused());
+TEST_P(MediaSessionControllersManagerTest, OnPauseSuspends) {
+  manager_->OnMetadata(media_player_id_, true, false,
+                       media::MediaContentType::Transient);
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  ASSERT_FALSE(media_session()->IsSuspended());
 
-  manager_->OnPause(media_player_id_);
+  manager_->OnPause(media_player_id_, false);
+  EXPECT_EQ(media_session()->IsSuspended(), IsMediaSessionEnabled());
 }
 
 TEST_P(MediaSessionControllersManagerTest, OnPauseIdNotFound) {
-  // If MediaSession is not enabled, we don't remove anything, nothing to check.
-  if (!IsMediaSessionEnabled())
-    return;
+  manager_->OnMetadata(media_player_id_, true, false,
+                       media::MediaContentType::Transient);
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  ASSERT_FALSE(media_session()->IsSuspended());
 
-  // Artifically add controller to show early return.
-  GetControllersMap()->insert(std::make_pair(
-      media_player_id_, std::move(mock_media_session_controller_)));
-
-  MediaPlayerId id2 = MediaPlayerId(contents()->GetMainFrame(), 2);
-  manager_->OnPause(id2);
-}
-
-TEST_P(MediaSessionControllersManagerTest, OnEndRemovesMediaPlayerId) {
-  EXPECT_TRUE(GetControllersMap()->empty());
-
-  // No op if not enabled.
-  if (!IsMediaSessionEnabled()) {
-    // Artifically add controller to show early return.
-    GetControllersMap()->insert(std::make_pair(
-        media_player_id_, std::move(mock_media_session_controller_)));
-    EXPECT_EQ(1U, GetControllersMap()->size());
-
-    manager_->OnEnd(media_player_id_);
-    EXPECT_EQ(1U, GetControllersMap()->size());
-  } else {
-    EXPECT_TRUE(manager_->RequestPlay(media_player_id_, true, false,
-                                      media::MediaContentType::Transient));
-    EXPECT_EQ(1U, GetControllersMap()->size());
-
-    manager_->OnEnd(media_player_id_);
-    EXPECT_TRUE(GetControllersMap()->empty());
-  }
+  manager_->OnPause(media_player_id2_, false);
+  EXPECT_FALSE(media_session()->IsSuspended());
 }
 
 TEST_P(MediaSessionControllersManagerTest, PositionState) {
@@ -225,42 +180,50 @@ TEST_P(MediaSessionControllersManagerTest, PositionState) {
   if (!IsMediaSessionEnabled())
     return;
 
+  manager_->OnMetadata(media_player_id_, true, false,
+                       media::MediaContentType::Transient);
+
   {
-    media_session::MediaPosition expected_position(1.0, base::TimeDelta(),
-                                                   base::TimeDelta());
+    media_session::test::MockMediaSessionMojoObserver observer(
+        *media_session());
+
+    const media_session::MediaPosition expected_position(
+        /*playback_rate=*/1.0, /*duration=*/base::TimeDelta(),
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
     manager_->OnMediaPositionStateChanged(media_player_id_, expected_position);
 
-    EXPECT_TRUE(manager_->RequestPlay(media_player_id_, true, false,
-                                      media::MediaContentType::Transient));
-    EXPECT_EQ(1U, GetControllersMap()->size());
+    EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
 
-    // The controller should be created with the last received position for
-    // that player.
-    EXPECT_EQ(expected_position, GetPosition(media_player_id_));
+    // Media session should be updated with the last received position for that
+    // player.
+    observer.WaitForExpectedPosition(expected_position);
   }
 
   {
+    auto observer =
+        std::make_unique<media_session::test::MockMediaSessionMojoObserver>(
+            *media_session());
+
     media_session::MediaPosition expected_position(
-        0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+        /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
+        /*position=*/base::TimeDelta(), /*end_of_media=*/false);
 
     manager_->OnMediaPositionStateChanged(media_player_id_, expected_position);
 
-    // The controller should be updated with the new position.
-    EXPECT_EQ(expected_position, GetPosition(media_player_id_));
+    // Media session should be updated with the new position.
+    observer->WaitForExpectedPosition(expected_position);
 
-    // Destroy the current controller.
-    manager_->OnEnd(media_player_id_);
-    EXPECT_TRUE(GetControllersMap()->empty());
+    // Replay the current player.
+    manager_->OnPause(media_player_id_, true);
+    observer =
+        std::make_unique<media_session::test::MockMediaSessionMojoObserver>(
+            *media_session());
+    EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
 
-    // Recreate the current controller.
-    EXPECT_TRUE(manager_->RequestPlay(media_player_id_, true, false,
-                                      media::MediaContentType::Transient));
-    EXPECT_EQ(1U, GetControllersMap()->size());
-
-    // The controller should be created with the last received position for
-    // that player.
-    EXPECT_EQ(expected_position, GetPosition(media_player_id_));
+    // Media session should still see the last received position for that
+    // player.
+    observer->WaitForExpectedPosition(expected_position);
   }
 }
 
@@ -269,36 +232,100 @@ TEST_P(MediaSessionControllersManagerTest, MultiplePlayersWithPositionState) {
   if (!IsMediaSessionEnabled())
     return;
 
-  MediaPlayerId media_player_id_2 =
-      MediaPlayerId(contents()->GetMainFrame(), 2);
+  manager_->OnMetadata(media_player_id_, true, false,
+                       media::MediaContentType::Transient);
+  manager_->OnMetadata(media_player_id2_, true, false,
+                       media::MediaContentType::Transient);
 
-  media_session::MediaPosition expected_position1(1.0, base::TimeDelta(),
-                                                  base::TimeDelta());
+  media_session::MediaPosition expected_position1(
+      /*playback_rate=*/1.0, /*duration=*/base::TimeDelta(),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
   media_session::MediaPosition expected_position2(
-      0.0, base::TimeDelta::FromSeconds(10), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(10),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
+
+  media_session::test::MockMediaSessionMojoObserver observer(*media_session());
 
   manager_->OnMediaPositionStateChanged(media_player_id_, expected_position1);
-  manager_->OnMediaPositionStateChanged(media_player_id_2, expected_position2);
+  manager_->OnMediaPositionStateChanged(media_player_id2_, expected_position2);
 
-  EXPECT_TRUE(manager_->RequestPlay(media_player_id_, true, false,
-                                    media::MediaContentType::Transient));
-  EXPECT_TRUE(manager_->RequestPlay(media_player_id_2, true, false,
-                                    media::MediaContentType::Transient));
+  // If there is exactly one player, media session uses its position.
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  observer.WaitForExpectedPosition(expected_position1);
 
-  EXPECT_EQ(2U, GetControllersMap()->size());
+  // If there is more than one player, media session doesn't know about
+  // position.
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id2_));
+  observer.WaitForEmptyPosition();
 
-  // The controllers should have been created with the correct positions.
-  EXPECT_EQ(expected_position1, GetPosition(media_player_id_));
-  EXPECT_EQ(expected_position2, GetPosition(media_player_id_2));
-
+  // Change the position of the second player.
   media_session::MediaPosition new_position(
-      0.0, base::TimeDelta::FromSeconds(20), base::TimeDelta());
+      /*playback_rate=*/0.0, /*duration=*/base::Seconds(20),
+      /*position=*/base::TimeDelta(), /*end_of_media=*/false);
+  manager_->OnMediaPositionStateChanged(media_player_id2_, new_position);
 
-  manager_->OnMediaPositionStateChanged(media_player_id_, new_position);
+  // Stop the first player.
+  manager_->OnPause(media_player_id_, true);
 
-  // The controller should be updated with the new position.
-  EXPECT_EQ(new_position, GetPosition(media_player_id_));
-  EXPECT_EQ(expected_position2, GetPosition(media_player_id_2));
+  // There is exactly one player again (the second one). Media session should
+  // use its updated position.
+  observer.WaitForExpectedPosition(new_position);
+}
+
+TEST_P(MediaSessionControllersManagerTest, PictureInPictureAvailability) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  manager_->OnMetadata(media_player_id_, true, false,
+                       media::MediaContentType::Transient);
+
+  media_session::test::MockMediaSessionMojoObserver observer(*media_session());
+
+  manager_->OnPictureInPictureAvailabilityChanged(media_player_id_, true);
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+
+  observer.WaitForExpectedActions(AppendPictureInPictureActionsTo({}));
+
+  manager_->OnPictureInPictureAvailabilityChanged(media_player_id_, false);
+
+  observer.WaitForEmptyActions();
+}
+
+TEST_P(MediaSessionControllersManagerTest,
+       PictureInPictureAvailabilityMultiplePlayers) {
+  if (!IsMediaSessionEnabled())
+    return;
+
+  manager_->OnMetadata(media_player_id_, true, false,
+                       media::MediaContentType::Persistent);
+  manager_->OnMetadata(media_player_id2_, true, false,
+                       media::MediaContentType::Persistent);
+
+  media_session::test::MockMediaSessionMojoObserver observer(*media_session());
+
+  manager_->OnPictureInPictureAvailabilityChanged(media_player_id_, true);
+  manager_->OnPictureInPictureAvailabilityChanged(media_player_id2_, true);
+
+  // If there is exactly one player, media session uses its Picture-In-Picture
+  // availability.
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id_));
+  observer.WaitForExpectedActions(
+      AppendPictureInPictureActionsTo(GetDefaultActions()));
+
+  // If there is more than one player, media session doesn't know about
+  // Picture-In-Picture availability.
+  EXPECT_TRUE(manager_->RequestPlay(media_player_id2_));
+  observer.WaitForExpectedActions(GetDefaultActions());
+
+  // Change the Picture-In-Picture availability of the first player.
+  manager_->OnPictureInPictureAvailabilityChanged(media_player_id_, false);
+
+  // Stop the second player.
+  manager_->OnPause(media_player_id2_, true);
+
+  // There is exactly one player again (the second one). Media session should
+  // use its updated Picture-In-Picture availability.
+  observer.WaitForExpectedActions(GetDefaultActions());
 }
 
 // First bool is to indicate whether InternalMediaSession is enabled.

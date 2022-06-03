@@ -6,7 +6,6 @@
 #define BASE_MEMORY_PTR_UTIL_H_
 
 #include <memory>
-#include <utility>
 
 namespace base {
 

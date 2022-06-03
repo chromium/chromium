@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -39,14 +38,14 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
     manifest.SetString("app.launch.web_url", launch_url);
 
   if (!extent.empty()) {
-    auto urls = std::make_unique<base::ListValue>();
-    urls->AppendString(extent);
-    manifest.Set("app.urls", std::move(urls));
+    base::Value urls(base::Value::Type::LIST);
+    urls.Append(extent);
+    manifest.SetPath("app.urls", std::move(urls));
   }
 
   std::string error;
   scoped_refptr<Extension> extension(
-      Extension::Create(path, Manifest::INTERNAL, manifest,
+      Extension::Create(path, mojom::ManifestLocation::kInternal, manifest,
                         Extension::NO_FLAGS, &error));
   EXPECT_TRUE(extension.get()) << error;
   return extension;

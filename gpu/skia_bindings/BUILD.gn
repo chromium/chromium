@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//skia/features.gni")
+
 source_set("skia_bindings") {
   sources = [
     "gl_bindings_skia_cmd_buffer.cc",
@@ -18,4 +20,16 @@ source_set("skia_bindings") {
     "//gpu/ipc/common:interfaces",
     "//skia",
   ]
+  if (skia_use_dawn) {
+    sources += [
+      "grcontext_for_webgpu_interface.cc",
+      "grcontext_for_webgpu_interface.h",
+    ]
+    deps += [
+      "//gpu/command_buffer/client:webgpu_interface",
+      "//third_party/dawn/src/dawn:dawn_proc",
+      "//third_party/dawn/src/dawn:dawncpp",
+      "//third_party/dawn/src/dawn_native",
+    ]
+  }
 }

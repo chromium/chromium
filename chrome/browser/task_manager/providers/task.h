@@ -9,10 +9,8 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/process/kill.h"
 #include "base/process/process_handle.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
 #include "third_party/blink/public/common/web_cache/web_cache_resource_type_stats.h"
@@ -50,27 +48,31 @@ class Task {
     EXTENSION, /* An extension or app process. */
 
     /* Plugin processes last.*/
-    GUEST,          /* A browser plugin guest process. */
-    PLUGIN,         /* A plugin process. */
-    WORKER,         /* A web worker process. */
-    NACL,           /* A NativeClient loader or broker process. */
-    SANDBOX_HELPER, /* A sandbox helper process. */
-    SERVICE_WORKER, /* A service worker running on the renderer process. */
+    GUEST,            /* A browser plugin guest process. */
+    PLUGIN,           /* A plugin process. */
+    NACL,             /* A NativeClient loader or broker process. */
+    SANDBOX_HELPER,   /* A sandbox helper process. */
+    DEDICATED_WORKER, /* A dedicated worker running on the renderer process. */
+    SHARED_WORKER,    /* A shared worker running on the renderer process. */
+    SERVICE_WORKER,   /* A service worker running on the renderer process. */
+
+    /* Lacros task. */
+    LACROS, /* A task from lacros-chrome */
   };
 
   // Create a task with the given |title| and the given favicon |icon|. This
-  // task runs on a process whose handle is |handle|. |rappor_sample| is the
-  // name of the sample to be recorded if this task needs to be reported by
-  // Rappor. If |process_id| is not supplied, it will be determined by |handle|.
-  Task(const base::string16& title,
-       const std::string& rappor_sample,
+  // task runs on a process whose handle is |handle|.
+  // If |process_id| is not supplied, it will be determined by |handle|.
+  Task(const std::u16string& title,
        const gfx::ImageSkia* icon,
        base::ProcessHandle handle,
        base::ProcessId process_id = base::kNullProcessId);
+  Task(const Task&) = delete;
+  Task& operator=(const Task&) = delete;
   virtual ~Task();
 
   // Gets the name of the given |profile| from the ProfileAttributesStorage.
-  static base::string16 GetProfileNameFromProfile(Profile* profile);
+  static std::u16string GetProfileNameFromProfile(Profile* profile);
 
   // Activates this TaskManager's task by bringing its container to the front
   // (if possible).
@@ -122,7 +124,7 @@ class Task {
                                     int* out_error_code) const;
 
   // The name of the profile owning this task.
-  virtual base::string16 GetProfileName() const;
+  virtual std::u16string GetProfileName() const;
 
   // Returns the unique ID of the tab if this task represents a renderer
   // WebContents used for a tab. Returns SessionID::InvalidValue() if this task
@@ -143,8 +145,6 @@ class Task {
 
   // Getting the allocated and used V8 memory (in bytes). Not all tasks reports
   // V8 memory, in this case a default invalid value of -1 will be returned.
-  // Check for whether the task reports it or not first.
-  bool ReportsV8Memory() const;
   virtual int64_t GetV8MemoryAllocated() const;
   virtual int64_t GetV8MemoryUsed() const;
 
@@ -159,24 +159,18 @@ class Task {
   // Returns true if the task is running inside a VM.
   virtual bool IsRunningInVM() const;
 
-  int64_t task_id() const { return task_id_; }
-
   // Returns the instantaneous rate, in bytes per second, of network usage
   // (sent and received), as measured over the last refresh cycle.
-  int64_t network_usage_rate() const {
-    return network_sent_rate_ + network_read_rate_;
-  }
+  virtual int64_t GetNetworkUsageRate() const;
 
   // Returns the cumulative number of bytes of network use (sent and received)
   // over the tasks lifetime. It is calculated independently of refreshes and
   // is based on the current |cumulative_bytes_read_| and
   // |cumulative_bytes_sent_|.
-  int64_t cumulative_network_usage() const {
-    return cumulative_bytes_sent_ + cumulative_bytes_read_;
-  }
+  virtual int64_t GetCumulativeNetworkUsage() const;
 
-  const base::string16& title() const { return title_; }
-  const std::string& rappor_sample_name() const { return rappor_sample_name_; }
+  int64_t task_id() const { return task_id_; }
+  const std::u16string& title() const { return title_; }
   const gfx::ImageSkia& icon() const { return icon_; }
   const base::ProcessHandle& process_handle() const { return process_handle_; }
   const base::ProcessId& process_id() const { return process_id_; }
@@ -186,10 +180,7 @@ class Task {
   // |id| from the resource database and put in |*result_image|.
   // Returns |*result_image|.
   static gfx::ImageSkia* FetchIcon(int id, gfx::ImageSkia** result_image);
-  void set_title(const base::string16& new_title) { title_ = new_title; }
-  void set_rappor_sample_name(const std::string& sample) {
-    rappor_sample_name_ = sample;
-  }
+  void set_title(const std::u16string& new_title) { title_ = new_title; }
   void set_icon(const gfx::ImageSkia& new_icon) { icon_ = new_icon; }
 
  private:
@@ -223,11 +214,7 @@ class Task {
   int64_t network_read_rate_;
 
   // The title of the task.
-  base::string16 title_;
-
-  // The name of the sample representing this task when a Rappor sample needs to
-  // be recorded for it.
-  std::string rappor_sample_name_;
+  std::u16string title_;
 
   // The favicon.
   gfx::ImageSkia icon_;
@@ -237,8 +224,6 @@ class Task {
 
   // The PID of the process on which this task is running.
   base::ProcessId process_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(Task);
 };
 
 }  // namespace task_manager

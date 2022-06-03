@@ -1,19 +1,9 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-pdf-documents">
-  <template>
     <style include="settings-shared">
     .secondary {
       margin-top: 0;  /* Cancel separation between main and secondary text. */
     }
     </style>
-    <settings-toggle-button id="toggle" class="first two-line"
+    <settings-toggle-button id="toggle" class="two-line"
         label="$i18n{siteSettingsPdfDownloadPdfs}"
         pref="{{prefs.plugins.always_open_pdf_externally}}">
     </settings-toggle-button>
-  </template>
-  <script src="pdf_documents.js"></script>
-</dom-module>

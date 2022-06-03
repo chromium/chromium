@@ -1,6 +1,0 @@
-CACHE MANIFEST
-
-# This should succeed. This is ~15kb and the quota should be 20kb.
-
-CACHE:
-abe.png

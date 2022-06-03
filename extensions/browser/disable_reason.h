@@ -44,8 +44,15 @@ enum DisableReason {
   DISABLE_CUSTODIAN_APPROVAL_REQUIRED = 1 << 15,
   // Blocked due to management policy.
   DISABLE_BLOCKED_BY_POLICY = 1 << 16,
+  // DISABLE_BLOCKED_MATURE = 1 << 17, // Deprecated.
+  // TODO(crbug.com/1193695): Replaced by kPrefOmahaBlocklistState. Remove this
+  // entirely once clients are migrated over, around M99.
+  DEPRECATED_DISABLE_REMOTELY_FOR_MALWARE = 1 << 18,
+  DISABLE_REINSTALL = 1 << 19,
+  // Disabled by Safe Browsing extension allowlist enforcement.
+  DISABLE_NOT_ALLOWLISTED = 1 << 20,
   // This should always be the last value.
-  DISABLE_REASON_LAST = 1LL << 17,
+  DISABLE_REASON_LAST = 1LL << 21,
 };
 
 static_assert(DISABLE_REASON_LAST - 1 <= std::numeric_limits<int>::max(),

@@ -25,10 +25,10 @@ config("runtime_library") {
   defines = []
   ldflags = []
 
-  if (!is_mac && !is_ios && sysroot != "") {
+  if (!is_apple && sysroot != "" && current_os != "zos") {
     # Pass the sysroot to all C compiler variants, the assembler, and linker.
     sysroot_flags = [ "--sysroot=" + rebase_path(sysroot, root_build_dir) ]
-    if (is_linux) {
+    if (is_linux || is_chromeos) {
       # This is here so that all files get recompiled after a sysroot roll and
       # when turning the sysroot on or off. (defines are passed via the command
       # line, and build system rebuilds things when their commandline
@@ -55,18 +55,5 @@ config("runtime_library") {
     cflags_cc += sysroot_flags
     cflags_objc += sysroot_flags
     cflags_objcc += sysroot_flags
-
-    # Need to get some linker flags out of the sysroot.
-    ld_paths = exec_script("sysroot_ld_path.py",
-                           [
-                             rebase_path("//build/linux/sysroot_ld_path.sh",
-                                         root_build_dir),
-                             rebase_path(sysroot),
-                           ],
-                           "list lines")
-    foreach(ld_path, ld_paths) {
-      ld_path = rebase_path(ld_path, root_build_dir)
-      ldflags += [ "-L" + ld_path ]
-    }
   }
 }

@@ -27,5 +27,5 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.BlackCaptionDefault" />
+        android:textAppearance="@style/TextAppearance.TextSmall.Primary" />
 </org.chromium.chrome.browser.explore_sites.ExperimentalExploreSitesCategoryTileView>

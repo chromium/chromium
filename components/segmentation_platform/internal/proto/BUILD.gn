@@ -1,0 +1,20 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/protobuf/proto_library.gni")
+
+proto_library("proto") {
+  proto_in_dir = "//"
+  sources = [
+    "aggregation.proto",
+    "model_metadata.proto",
+    "model_prediction.proto",
+    "signal.proto",
+    "signal_storage_config.proto",
+    "types.proto",
+  ]
+
+  link_deps =
+      [ "//components/optimization_guide/proto:optimization_guide_proto" ]
+}

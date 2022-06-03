@@ -5,15 +5,13 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_DEVTOOLS_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_DEVTOOLS_H_
 
-#include <memory>
-
-#include "headless/public/headless_browser.h"
+#include "headless/lib/browser/headless_browser_impl.h"
 
 namespace headless {
 
 // Starts a DevTools HTTP handler on the loopback interface on the port
 // configured by HeadlessBrowser::Options.
-void StartLocalDevToolsHttpHandler(HeadlessBrowser::Options* options);
+void StartLocalDevToolsHttpHandler(HeadlessBrowserImpl* browser);
 void StopLocalDevToolsHttpHandler();
 
 }  // namespace headless

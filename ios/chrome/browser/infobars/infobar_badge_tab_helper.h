@@ -5,10 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_INFOBAR_BADGE_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_INFOBARS_INFOBAR_BADGE_TAB_HELPER_H_
 
-#include <unordered_map>
+#include <map>
 
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
+#include "ios/chrome/browser/infobars/infobar_ios.h"
 #import "ios/chrome/browser/infobars/infobar_type.h"
 #import "ios/chrome/browser/ui/badges/badge_item.h"
 #import "ios/web/public/web_state_user_data.h"
@@ -24,19 +26,15 @@ class WebState;
 // TabHelper that observes InfoBarManager. It updates an InfobarBadge delegate
 // for relevant Infobar changes.
 class InfobarBadgeTabHelper
-    : public infobars::InfoBarManager::Observer,
-      public web::WebStateUserData<InfobarBadgeTabHelper> {
+    : public web::WebStateUserData<InfobarBadgeTabHelper> {
  public:
-  // Creates the tab helper for |web_state| if it does not exist.
-  static void CreateForWebState(web::WebState* web_state);
+  InfobarBadgeTabHelper(const InfobarBadgeTabHelper&) = delete;
+  InfobarBadgeTabHelper& operator=(const InfobarBadgeTabHelper&) = delete;
+
+  ~InfobarBadgeTabHelper() override;
+
   // Sets the InfobarBadgeTabHelperDelegate to |delegate|.
   void SetDelegate(id<InfobarBadgeTabHelperDelegate> delegate);
-  // Updates Infobar badge for the case where Infobar of |infobar_type| was
-  // accepted.
-  void UpdateBadgeForInfobarAccepted(InfobarType infobar_type);
-  // Updates Infobar badge for the case where Infobar action of |infobar_type|
-  // was reverted. This will negate the accepted state of the badge.
-  void UpdateBadgeForInfobarReverted(InfobarType infobar_type);
   // Updates Infobar badge for the case where an Infobar banner of
   // |infobar_type| was presented.
   void UpdateBadgeForInfobarBannerPresented(InfobarType infobar_type);
@@ -47,33 +45,87 @@ class InfobarBadgeTabHelper
   // Returns all BadgeItems for the TabHelper Webstate.
   NSArray<id<BadgeItem>>* GetInfobarBadgeItems();
 
-  ~InfobarBadgeTabHelper() override;
-
- protected:
-  // Constructor.
-  explicit InfobarBadgeTabHelper(web::WebState* web_state);
-  // Delegate which displays the Infobar badge.
-  __weak id<InfobarBadgeTabHelperDelegate> delegate_ = nil;
-  // Holds the state of each displaying badge keyed by its InfobarType.
-  NSMutableDictionary<NSNumber*, InfobarBadgeModel*>* infobar_badge_models_;
+  // DEPRECATED: The accept state of an infobar is now stored directly in
+  // InfoBarIOS, and should be updated there rather than using these functions.
+  void UpdateBadgeForInfobarAccepted(InfobarType infobar_type);
+  void UpdateBadgeForInfobarReverted(InfobarType infobar_type);
 
  private:
   friend class web::WebStateUserData<InfobarBadgeTabHelper>;
-  // Helper method to get Obj-C key for InfobarType.
-  NSNumber* GetNumberKeyForInfobarType(InfobarType infobar_type);
-  // InfoBarManagerObserver implementation.
-  void OnInfoBarAdded(infobars::InfoBar* infobar) override;
-  void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
-  void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
-  // Updates the badge delegate for |infobar|.
-  void UpdateBadgeForInfobar(infobars::InfoBar* infobar, bool display);
+  explicit InfobarBadgeTabHelper(web::WebState* web_state);
 
-  // Manages this object as an observer of infobars.
-  ScopedObserver<infobars::InfoBarManager, infobars::InfoBarManager::Observer>
-      infobar_observer_;
+  // Notifies the tab helper to reset state for added or removed infobars with
+  // |infobar_type|.  Only called for infobars that support badges.
+  void ResetStateForAddedInfobar(InfobarType infobar_type);
+  void ResetStateForRemovedInfobar(InfobarType infobar_type);
+  // Notifies the tab helper that an infobar with |type| was accepted or
+  // reverted.
+  void OnInfobarAcceptanceStateChanged(InfobarType infobar_type, bool accepted);
+
+  // Helper object that listens for accept and revert events for an InfoBarIOS.
+  class InfobarAcceptanceObserver : public InfoBarIOS::Observer {
+   public:
+    explicit InfobarAcceptanceObserver(InfobarBadgeTabHelper* tab_helper);
+    ~InfobarAcceptanceObserver() override;
+
+    // Returns a reference to the scoped observations.
+    base::ScopedMultiSourceObservation<InfoBarIOS, InfoBarIOS::Observer>&
+    scoped_observations() {
+      return scoped_observations_;
+    }
+
+   private:
+    // InfoBarIOS::Observer:
+    void DidUpdateAcceptedState(InfoBarIOS* infobar) override;
+    void InfobarDestroyed(InfoBarIOS* infobar) override;
+
+    // The owning tab helper.
+    InfobarBadgeTabHelper* tab_helper_ = nullptr;
+    // Scoped observer that facilitates observing InfoBarIOS objects.
+    base::ScopedMultiSourceObservation<InfoBarIOS, InfoBarIOS::Observer>
+        scoped_observations_{this};
+  };
+
+  // Helper object that updates state and adds an InfobarAcceptanceObserver
+  // when each infobar is added or removed.
+  class InfobarManagerObserver : public infobars::InfoBarManager::Observer {
+   public:
+    InfobarManagerObserver(InfobarBadgeTabHelper* tab_helper,
+                           web::WebState* web_state,
+                           InfobarAcceptanceObserver* infobar_accept_observer);
+    ~InfobarManagerObserver() override;
+
+   private:
+    // InfoBarManagerObserver:
+    void OnInfoBarAdded(infobars::InfoBar* infobar) override;
+    void OnInfoBarRemoved(infobars::InfoBar* infobar, bool animate) override;
+    void OnInfoBarReplaced(infobars::InfoBar* old_infobar,
+                           infobars::InfoBar* new_infobar) override;
+    void OnManagerShuttingDown(infobars::InfoBarManager* manager) override;
+
+    // The owning tab helper.
+    InfobarBadgeTabHelper* tab_helper_ = nullptr;
+    // The infobar acceptance observer for |tab_helper_|.  Added to each infobar
+    // in the observed manager.
+    InfobarAcceptanceObserver* infobar_accept_observer_ = nullptr;
+    // Scoped observer that facilitates observing an InfoBarManager.
+    base::ScopedObservation<infobars::InfoBarManager,
+                            infobars::InfoBarManager::Observer>
+        scoped_observation_{this};
+  };
+
+  // Delegate which displays the Infobar badge.
+  __weak id<InfobarBadgeTabHelperDelegate> delegate_ = nil;
+  // The infobar accept/revert observer.
+  InfobarAcceptanceObserver infobar_accept_observer_;
+  // The infobar manager observer.
+  InfobarManagerObserver infobar_manager_observer_;
+  // The WebState this TabHelper is scoped to.
+  web::WebState* web_state_;
+  // Map storing the badge models for each InfobarType.
+  std::map<InfobarType, InfobarBadgeModel*> infobar_badge_models_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-  DISALLOW_COPY_AND_ASSIGN(InfobarBadgeTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_INFOBAR_BADGE_TAB_HELPER_H_

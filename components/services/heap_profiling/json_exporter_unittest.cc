@@ -26,7 +26,8 @@ static constexpr int kNoParent = -1;
 #if !defined(ADDRESS_SANITIZER)
 // Finds the first vm region in the given periodic interval. Returns null on
 // failure.
-const base::Value* FindFirstRegionWithAnyName(const base::Value* root) {
+const base::Value* FindFirstRegionWithAnyName(
+    const absl::optional<base::Value>& root) {
   const base::Value* found_mmaps =
       root->FindKeyOfType("process_mmaps", base::Value::Type::DICTIONARY);
   if (!found_mmaps)
@@ -154,10 +155,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  base::JSONReader reader(base::JSON_PARSE_RFC);
-  std::unique_ptr<base::Value> root = reader.ReadToValueDeprecated(json);
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, reader.error_code())
-      << reader.GetErrorMessage();
+  absl::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
   // Validate the allocators summary.
@@ -294,13 +292,10 @@ TEST(ProfilingJsonExporterTest, MemoryMaps) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  base::JSONReader reader(base::JSON_PARSE_RFC);
-  std::unique_ptr<base::Value> root = reader.ReadToValueDeprecated(json);
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, reader.error_code())
-      << reader.GetErrorMessage();
+  absl::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
-  const base::Value* region = FindFirstRegionWithAnyName(root.get());
+  const base::Value* region = FindFirstRegionWithAnyName(root);
   ASSERT_TRUE(region) << "Array contains no named vm regions";
 
   const base::Value* start_address =
@@ -345,10 +340,7 @@ TEST(ProfilingJsonExporterTest, Context) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  base::JSONReader reader(base::JSON_PARSE_RFC);
-  std::unique_ptr<base::Value> root = reader.ReadToValueDeprecated(json);
-  ASSERT_EQ(base::JSONReader::JSON_NO_ERROR, reader.error_code())
-      << reader.GetErrorMessage();
+  absl::optional<base::Value> root = base::JSONReader::Read(json);
   ASSERT_TRUE(root);
 
   // Retrieve the allocations.
@@ -433,13 +425,13 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
   std::string json = ExportMemoryMapsAndV2StackTraceToJSON(&params);
 
   // JSON should parse.
-  base::JSONReader json_reader(base::JSON_PARSE_RFC);
-  base::Optional<base::Value> result = json_reader.ReadToValue(json);
-  ASSERT_TRUE(result.has_value()) << json_reader.GetErrorMessage();
+  base::JSONReader::ValueWithError parsed_json =
+      base::JSONReader::ReadAndReturnValueWithError(json);
+  ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
   // Validate the allocators summary.
   const base::Value* malloc_summary =
-      result.value().FindPath({"allocators", "malloc"});
+      parsed_json.value->FindPath({"allocators", "malloc"});
   ASSERT_TRUE(malloc_summary);
   const base::Value* malloc_size =
       malloc_summary->FindPath({"attrs", "size", "value"});
@@ -453,7 +445,7 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
   // Validate allocators details.
   // heaps_v2.allocators.malloc.sizes.reduce((a,s)=>a+s,0).
   const base::Value* malloc =
-      result.value().FindPath({"heaps_v2", "allocators", "malloc"});
+      parsed_json.value->FindPath({"heaps_v2", "allocators", "malloc"});
   const base::Value* malloc_sizes = malloc->FindKey("sizes");
   EXPECT_EQ(1u, malloc_sizes->GetList().size());
   EXPECT_EQ(0x9876543210ul, malloc_sizes->GetList()[0].GetDouble());

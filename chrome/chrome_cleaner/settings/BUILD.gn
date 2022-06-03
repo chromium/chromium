@@ -6,9 +6,7 @@
 visibility = [ "//chrome/chrome_cleaner/*" ]
 
 source_set("engine_settings_header") {
-  sources = [
-    "engine_settings.h",
-  ]
+  sources = [ "engine_settings.h" ]
 
   public_deps = [
     "//chrome/chrome_cleaner/logging/proto:shared_data_proto",
@@ -17,19 +15,13 @@ source_set("engine_settings_header") {
 }
 
 source_set("dummy_engine_settings") {
-  sources = [
-    "dummy_engine_settings.cc",
-  ]
+  sources = [ "dummy_engine_settings.cc" ]
 
-  deps = [
-    ":engine_settings_header",
-  ]
+  deps = [ ":engine_settings_header" ]
 }
 
 source_set("settings_types") {
-  sources = [
-    "settings_types.h",
-  ]
+  sources = [ "settings_types.h" ]
 }
 
 source_set("settings") {
@@ -55,42 +47,28 @@ source_set("settings") {
 }
 
 source_set("settings_definitions") {
-  sources = [
-    "settings_definitions.h",
-  ]
+  sources = [ "settings_definitions.h" ]
 }
 
 # Settings definitions that must only by linked into the cleaner executable.
 source_set("cleaner_settings_definitions") {
-  sources = [
-    "cleaner_settings_definitions.cc",
-  ]
+  sources = [ "cleaner_settings_definitions.cc" ]
 
-  deps = [
-    ":settings_definitions",
-  ]
+  deps = [ ":settings_definitions" ]
 }
 
 # Settings definitions that must only by linked into the reporter executable.
 source_set("reporter_settings_definitions") {
-  sources = [
-    "reporter_settings_definitions.cc",
-  ]
+  sources = [ "reporter_settings_definitions.cc" ]
 
-  deps = [
-    ":settings_definitions",
-  ]
+  deps = [ ":settings_definitions" ]
 }
 
 # Settings definitions that are linked into all other executables.
 source_set("other_settings_definitions") {
-  sources = [
-    "other_settings_definitions.cc",
-  ]
+  sources = [ "other_settings_definitions.cc" ]
 
-  deps = [
-    ":settings_definitions",
-  ]
+  deps = [ ":settings_definitions" ]
 }
 
 source_set("matching_options") {
@@ -106,13 +84,9 @@ source_set("default_matching_options") {
     "default_matching_options.h",
   ]
 
-  deps = [
-    ":settings",
-  ]
+  deps = [ ":settings" ]
 
-  public_deps = [
-    ":matching_options",
-  ]
+  public_deps = [ ":matching_options" ]
 }
 
 source_set("unittest_sources") {

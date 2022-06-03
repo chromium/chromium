@@ -55,11 +55,10 @@ void SimpleDownloadManagerCoordinator::SetSimpleDownloadManager(
 }
 
 void SimpleDownloadManagerCoordinator::AddObserver(Observer* observer) {
+  DCHECK(observer);
   observers_.AddObserver(observer);
-  if (initialized_) {
-    for (auto& observer : observers_)
-      observer.OnDownloadsInitialized(!has_all_history_downloads_);
-  }
+  if (initialized_)
+    observer->OnDownloadsInitialized(!has_all_history_downloads_);
 }
 
 void SimpleDownloadManagerCoordinator::RemoveObserver(Observer* observer) {

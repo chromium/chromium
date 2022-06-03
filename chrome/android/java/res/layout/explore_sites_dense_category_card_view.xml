@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
-        android:textAppearance="@style/TextAppearance.BlackTitle2"
+        android:textAppearance="@style/TextAppearance.TextMediumThick.Primary"
         android:minHeight="@dimen/explore_sites_dense_category_title_height"
         tools:text="Category" />
 

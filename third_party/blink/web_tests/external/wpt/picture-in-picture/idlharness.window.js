@@ -4,6 +4,7 @@
 // META: script=/resources/testdriver.js
 // META: script=/resources/testdriver-vendor.js
 // META: script=resources/picture-in-picture-helpers.js
+// META: timeout=long
 
 'use strict';
 
@@ -18,6 +19,7 @@ idl_test(
       DocumentOrShadowRoot: ['document'],
       HTMLVideoElement: ['video'],
       PictureInPictureWindow: ['pipw'],
+      PictureInPictureEvent: ['new PictureInPictureEvent("type", { pictureInPictureWindow: pipw })'],
     });
 
     self.video = await loadVideo();

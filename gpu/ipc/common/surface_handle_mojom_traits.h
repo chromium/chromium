@@ -5,13 +5,15 @@
 #ifndef GPU_IPC_COMMON_SURFACE_HANDLE_MOJOM_TRAITS_H_
 #define GPU_IPC_COMMON_SURFACE_HANDLE_MOJOM_TRAITS_H_
 
+#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "gpu/ipc/common/surface_handle.mojom-shared.h"
 
 namespace mojo {
 
 template <>
-struct StructTraits<gpu::mojom::SurfaceHandleDataView, gpu::SurfaceHandle> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::SurfaceHandleDataView, gpu::SurfaceHandle> {
   static uint64_t surface_handle(const gpu::SurfaceHandle& handle) {
 #if defined(OS_WIN)
     return reinterpret_cast<uint64_t>(handle);

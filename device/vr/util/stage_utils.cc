@@ -4,7 +4,6 @@
 
 #include "device/vr/util/stage_utils.h"
 
-#include "base/logging.h"
 #include "ui/gfx/geometry/point3_f.h"
 
 namespace device {

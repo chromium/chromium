@@ -22,10 +22,10 @@ class WorkerInternalsFetch {
 
  public:
   static Vector<String> getInternalResponseURLList(WorkerInternals&, Response*);
-  static ScriptPromise getResourcePriority(ScriptState*,
-                                           WorkerInternals&,
-                                           const String& url,
-                                           WorkerGlobalScope*);
+  static ScriptPromise getInitialResourcePriority(ScriptState*,
+                                                  WorkerInternals&,
+                                                  const String& url,
+                                                  WorkerGlobalScope*);
 
  private:
   static void ResolveResourcePriority(ScriptPromiseResolver*,

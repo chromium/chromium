@@ -1,0 +1,11 @@
+<h1>Tutorials</h1>
+<div>
+  <p>Start a tutorial</p>
+  <ul>
+    <template is="dom-repeat" items="[[tutorials_]]">
+      <li>
+        <button id="[[item]]" on-click="startTutorial_">[[item]]</button>
+      </li>
+    </template>
+  </ul>
+</div>

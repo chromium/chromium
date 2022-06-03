@@ -1,12 +1,10 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
 """Parses /proc/[pid]/smaps on a device and shows the total amount of swap used.
 """
-
-from __future__ import print_function
 
 import argparse
 import collections
@@ -250,18 +248,22 @@ def _CreateArgumentParser():
                       help='Show the footprint from a given allocator',
                       choices=['v8', 'libc_malloc', 'partition_alloc'],
                       nargs='+')
+  parser.add_argument(
+      '--device', help='Device to use', type=str, default='default')
   return parser
 
 
 def main():
   parser = _CreateArgumentParser()
   args = parser.parse_args()
-  devices = device_utils.DeviceUtils.HealthyDevices()
+  devices = device_utils.DeviceUtils.HealthyDevices(device_arg=args.device)
   if not devices:
     logging.error('No connected devices')
     return
+
   device = devices[0]
-  device.EnableRoot()
+  if not device.HasRoot():
+    device.EnableRoot()
   # Enable logging after device handling as devil is noisy at INFO level.
   logging.basicConfig(level=logging.INFO)
   mappings = ParseProcSmaps(device, args.pid, args.store_smaps)

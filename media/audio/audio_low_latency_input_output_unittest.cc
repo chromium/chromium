@@ -11,11 +11,11 @@
 #include "base/bind.h"
 #include "base/environment.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -73,6 +73,12 @@ void OnLogMessage(const std::string& message) {}
 
 // Test fixture class.
 class AudioLowLatencyInputOutputTest : public testing::Test {
+ public:
+  AudioLowLatencyInputOutputTest(const AudioLowLatencyInputOutputTest&) =
+      delete;
+  AudioLowLatencyInputOutputTest& operator=(
+      const AudioLowLatencyInputOutputTest&) = delete;
+
  protected:
   AudioLowLatencyInputOutputTest() {
     audio_manager_ =
@@ -90,8 +96,6 @@ class AudioLowLatencyInputOutputTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
   std::unique_ptr<AudioManager> audio_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioLowLatencyInputOutputTest);
 };
 
 // This audio source/sink implementation should be used for manual tests
@@ -118,11 +122,11 @@ class FullDuplexAudioSinkSource
 
     // Start with the smallest possible buffer size. It will be increased
     // dynamically during the test if required.
-    buffer_.reset(
-        new media::SeekableBuffer(0, samples_per_packet_ * frame_size_));
+    buffer_ = std::make_unique<media::SeekableBuffer>(
+        0, samples_per_packet_ * frame_size_);
 
     frames_to_ms_ = static_cast<double>(1000.0 / sample_rate_);
-    delay_states_.reset(new AudioDelayState[kMaxDelayMeasurements]);
+    delay_states_ = std::make_unique<AudioDelayState[]>(kMaxDelayMeasurements);
   }
 
   ~FullDuplexAudioSinkSource() override {
@@ -209,8 +213,12 @@ class FullDuplexAudioSinkSource
       EXPECT_EQ(channels_, dest->channels());
       size = std::min(dest->frames() * frame_size_, size);
       EXPECT_EQ(static_cast<size_t>(size) % sizeof(*dest->channel(0)), 0U);
-      dest->FromInterleaved(source, size / frame_size_,
-                            frame_size_ / channels_);
+
+      // We should only have 16 bits per sample.
+      DCHECK_EQ(frame_size_ / channels_, 2);
+      dest->FromInterleaved<SignedInt16SampleTypeTraits>(
+          reinterpret_cast<const int16_t*>(source), size / channels_);
+
       buffer_->Seek(size);
       return size / frame_size_;
     }
@@ -373,7 +381,7 @@ TEST_F(AudioLowLatencyInputOutputTest, DISABLED_FullDuplexDelayMeasurement) {
     return;
   }
 
-  EXPECT_TRUE(ais->Open());
+  EXPECT_EQ(ais->Open(), AudioInputStream::OpenOutcome::kSuccess);
   EXPECT_TRUE(aos->Open());
 
   FullDuplexAudioSinkSource full_duplex(
@@ -390,10 +398,10 @@ TEST_F(AudioLowLatencyInputOutputTest, DISABLED_FullDuplexDelayMeasurement) {
   // Wait for approximately 10 seconds. The user will hear their own voice
   // in loop back during this time. At the same time, delay recordings are
   // performed and stored in the output text file.
+  base::RunLoop run_loop;
   task_runner()->PostDelayedTask(
-      FROM_HERE, base::RunLoop::QuitCurrentWhenIdleClosureDeprecated(),
-      TestTimeouts::action_timeout());
-  base::RunLoop().Run();
+      FROM_HERE, run_loop.QuitClosure(), TestTimeouts::action_timeout());
+  run_loop.Run();
 
   aos->Stop();
   ais->Stop();

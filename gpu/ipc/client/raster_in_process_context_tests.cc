@@ -28,7 +28,7 @@ constexpr gfx::Size kBufferSize(100, 100);
 class RasterInProcessCommandBufferTest : public ::testing::Test {
  public:
   RasterInProcessCommandBufferTest() {
-    // Always enable gpu and oop raster, regardless of platform and blacklist.
+    // Always enable gpu and oop raster, regardless of platform and blocklist.
     auto* gpu_feature_info = gpu_thread_holder_.GetGpuFeatureInfo();
     gpu_feature_info->status_values[gpu::GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
         gpu::kGpuFeatureStatusEnabled;
@@ -85,8 +85,7 @@ class RasterInProcessCommandBufferTest : public ::testing::Test {
 
 }  // namespace
 
-TEST_F(RasterInProcessCommandBufferTest,
-       WhitelistBetweenBeginEndRasterCHROMIUM) {
+TEST_F(RasterInProcessCommandBufferTest, AllowedBetweenBeginEndRasterCHROMIUM) {
   if (!RasterInProcessContext::SupportedInTest())
     return;
 
@@ -100,14 +99,16 @@ TEST_F(RasterInProcessCommandBufferTest,
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
   uint32_t flags = gpu::SHARED_IMAGE_USAGE_RASTER |
                    gpu::SHARED_IMAGE_USAGE_OOP_RASTERIZATION;
-  gpu::Mailbox mailbox =
-      sii->CreateSharedImage(kResourceFormat, kBufferSize, color_space, flags);
+  gpu::Mailbox mailbox = sii->CreateSharedImage(
+      kResourceFormat, kBufferSize, color_space, kTopLeft_GrSurfaceOrigin,
+      kPremul_SkAlphaType, flags, kNullSurfaceHandle);
   ri_->WaitSyncTokenCHROMIUM(sii->GenUnverifiedSyncToken().GetConstData());
 
   // Call BeginRasterCHROMIUM.
-  ri_->BeginRasterCHROMIUM(/*sk_color=*/0, /*msaa_sample_count=*/0,
-                           /*can_use_lcd_text=*/false, color_space,
-                           mailbox.name);
+  ri_->BeginRasterCHROMIUM(
+      /*sk_color=*/0, /*needs_clear=*/true, /*msaa_sample_count=*/0,
+      gpu::raster::kNoMSAA, /*can_use_lcd_text=*/false, color_space,
+      mailbox.name);
   EXPECT_EQ(static_cast<GLenum>(GL_NO_ERROR), ri_->GetError());
 
   // Should flag an error this command is not allowed between a Begin and

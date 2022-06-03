@@ -1,4 +1,4 @@
-Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo elements.
+Tests DOMSnapshot.captureSnapshot exports layout tree nodes associated with pseudo elements.
 {
     documents : [
         [0] : {
@@ -27,7 +27,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                         [0] : 8
                         [1] : 8
                         [2] : 784
-                        [3] : 584
+                        [3] : 582
                     ]
                     [3] : [
                         [0] : 8
@@ -137,6 +137,108 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                         [2] : 190
                         [3] : 30
                     ]
+                    [21] : [
+                        [0] : 8
+                        [1] : 8
+                        [2] : 784
+                        [3] : 40
+                    ]
+                    [22] : [
+                        [0] : 48
+                        [1] : 8
+                        [2] : 744
+                        [3] : 10
+                    ]
+                    [23] : [
+                        [0] : 35
+                        [1] : 8
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [24] : [
+                        [0] : 35
+                        [1] : 8
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [25] : [
+                        [0] : 48
+                        [1] : 8
+                        [2] : 50
+                        [3] : 10
+                    ]
+                    [26] : [
+                        [0] : 48
+                        [1] : 18
+                        [2] : 744
+                        [3] : 10
+                    ]
+                    [27] : [
+                        [0] : 35
+                        [1] : 18
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [28] : [
+                        [0] : 35
+                        [1] : 18
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [29] : [
+                        [0] : 48
+                        [1] : 18
+                        [2] : 40
+                        [3] : 10
+                    ]
+                    [30] : [
+                        [0] : 48
+                        [1] : 28
+                        [2] : 744
+                        [3] : 10
+                    ]
+                    [31] : [
+                        [0] : 35
+                        [1] : 28
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [32] : [
+                        [0] : 35
+                        [1] : 28
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [33] : [
+                        [0] : 48
+                        [1] : 28
+                        [2] : 40
+                        [3] : 10
+                    ]
+                    [34] : [
+                        [0] : 48
+                        [1] : 38
+                        [2] : 744
+                        [3] : 10
+                    ]
+                    [35] : [
+                        [0] : 35
+                        [1] : 38
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [36] : [
+                        [0] : 35
+                        [1] : 38
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [37] : [
+                        [0] : 48
+                        [1] : 38
+                        [2] : 50
+                        [3] : 10
+                    ]
                 ]
                 nodeIndex : [
                     [0] : 0
@@ -160,6 +262,23 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [18] : 21
                     [19] : 21
                     [20] : 22
+                    [21] : 24
+                    [22] : 25
+                    [23] : 26
+                    [24] : 26
+                    [25] : 27
+                    [26] : 28
+                    [27] : 29
+                    [28] : 29
+                    [29] : 30
+                    [30] : 31
+                    [31] : 32
+                    [32] : 32
+                    [33] : 33
+                    [34] : 34
+                    [35] : 35
+                    [36] : 35
+                    [37] : 36
                 ]
                 stackingContexts : {
                     index : [
@@ -169,8 +288,6 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                 }
                 styles : [
                     [0] : [
-                        [0] : -1
-                        [1] : -1
                     ]
                     [1] : [
                         [0] : 5
@@ -252,6 +369,74 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                         [0] : 5
                         [1] : 6
                     ]
+                    [21] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [22] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [23] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [24] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [25] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [26] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [27] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [28] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [29] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [30] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [31] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [32] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [33] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [34] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [35] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [36] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
+                    [37] : [
+                        [0] : 5
+                        [1] : 6
+                    ]
                 ]
                 text : [
                     [0] : -1
@@ -275,6 +460,23 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [18] : -1
                     [19] : 37
                     [20] : 39
+                    [21] : -1
+                    [22] : -1
+                    [23] : -1
+                    [24] : 43
+                    [25] : 45
+                    [26] : -1
+                    [27] : -1
+                    [28] : 43
+                    [29] : 46
+                    [30] : -1
+                    [31] : -1
+                    [32] : 43
+                    [33] : 47
+                    [34] : -1
+                    [35] : -1
+                    [36] : 43
+                    [37] : 48
                 ]
             }
             nodes : {
@@ -335,6 +537,34 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     ]
                     [23] : [
                     ]
+                    [24] : [
+                    ]
+                    [25] : [
+                    ]
+                    [26] : [
+                    ]
+                    [27] : [
+                    ]
+                    [28] : [
+                    ]
+                    [29] : [
+                    ]
+                    [30] : [
+                    ]
+                    [31] : [
+                    ]
+                    [32] : [
+                    ]
+                    [33] : [
+                    ]
+                    [34] : [
+                    ]
+                    [35] : [
+                    ]
+                    [36] : [
+                    ]
+                    [37] : [
+                    ]
                 ]
                 backendNodeId : <object>
                 contentDocumentIndex : {
@@ -388,6 +618,20 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [21] : 34
                     [22] : 9
                     [23] : 9
+                    [24] : 40
+                    [25] : 41
+                    [26] : 42
+                    [27] : 9
+                    [28] : 41
+                    [29] : 42
+                    [30] : 9
+                    [31] : 41
+                    [32] : 42
+                    [33] : 9
+                    [34] : 41
+                    [35] : 42
+                    [36] : 9
+                    [37] : 9
                 ]
                 nodeType : [
                     [0] : 9
@@ -414,6 +658,20 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [21] : 1
                     [22] : 3
                     [23] : 3
+                    [24] : 1
+                    [25] : 1
+                    [26] : 1
+                    [27] : 3
+                    [28] : 1
+                    [29] : 1
+                    [30] : 3
+                    [31] : 1
+                    [32] : 1
+                    [33] : 3
+                    [34] : 1
+                    [35] : 1
+                    [36] : 3
+                    [37] : 3
                 ]
                 nodeValue : [
                     [0] : -1
@@ -439,7 +697,21 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [20] : -1
                     [21] : -1
                     [22] : 39
-                    [23] : 40
+                    [23] : 16
+                    [24] : -1
+                    [25] : -1
+                    [26] : -1
+                    [27] : 45
+                    [28] : -1
+                    [29] : -1
+                    [30] : 46
+                    [31] : -1
+                    [32] : -1
+                    [33] : 47
+                    [34] : -1
+                    [35] : -1
+                    [36] : 48
+                    [37] : 49
                 ]
                 optionSelected : {
                     index : [
@@ -476,6 +748,20 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [21] : 19
                     [22] : 19
                     [23] : 8
+                    [24] : 8
+                    [25] : 24
+                    [26] : 25
+                    [27] : 25
+                    [28] : 24
+                    [29] : 28
+                    [30] : 28
+                    [31] : 24
+                    [32] : 31
+                    [33] : 31
+                    [34] : 24
+                    [35] : 34
+                    [36] : 34
+                    [37] : 8
                 ]
                 pseudoType : {
                     index : [
@@ -483,14 +769,23 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                         [1] : 15
                         [2] : 20
                         [3] : 21
+                        [4] : 26
+                        [5] : 29
+                        [6] : 32
+                        [7] : 35
                     ]
                     value : [
                         [0] : 24
                         [1] : 24
                         [2] : 24
                         [3] : 38
+                        [4] : 44
+                        [5] : 44
+                        [6] : 44
+                        [7] : 44
                     ]
                 }
+                shadowRootType : <object>
                 textValue : {
                     index : [
                     ]
@@ -588,6 +883,54 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                         [2] : 130
                         [3] : 10
                     ]
+                    [14] : [
+                        [0] : 35
+                        [1] : 8
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [15] : [
+                        [0] : 48
+                        [1] : 8
+                        [2] : 50
+                        [3] : 10
+                    ]
+                    [16] : [
+                        [0] : 35
+                        [1] : 18
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [17] : [
+                        [0] : 48
+                        [1] : 18
+                        [2] : 40
+                        [3] : 10
+                    ]
+                    [18] : [
+                        [0] : 35
+                        [1] : 28
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [19] : [
+                        [0] : 48
+                        [1] : 28
+                        [2] : 40
+                        [3] : 10
+                    ]
+                    [20] : [
+                        [0] : 35
+                        [1] : 38
+                        [2] : 5
+                        [3] : 10
+                    ]
+                    [21] : [
+                        [0] : 48
+                        [1] : 38
+                        [2] : 50
+                        [3] : 10
+                    ]
                 ]
                 layoutIndex : [
                     [0] : 5
@@ -604,6 +947,14 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [11] : 20
                     [12] : 20
                     [13] : 20
+                    [14] : 24
+                    [15] : 25
+                    [16] : 28
+                    [17] : 29
+                    [18] : 32
+                    [19] : 33
+                    [20] : 36
+                    [21] : 37
                 ]
                 length : [
                     [0] : 1
@@ -620,6 +971,14 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [11] : 19
                     [12] : 16
                     [13] : 13
+                    [14] : 2
+                    [15] : 5
+                    [16] : 2
+                    [17] : 4
+                    [18] : 2
+                    [19] : 4
+                    [20] : 2
+                    [21] : 5
                 ]
                 start : [
                     [0] : 0
@@ -636,6 +995,14 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
                     [11] : 0
                     [12] : 20
                     [13] : 37
+                    [14] : 0
+                    [15] : 0
+                    [16] : 0
+                    [17] : 0
+                    [18] : 0
+                    [19] : 0
+                    [20] : 0
+                    [21] : 0
                 ]
             }
             title : -1
@@ -652,7 +1019,7 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
         [7] : HEAD
         [8] : STYLE
         [9] : #text
-        [10] :      p {       position: absolute;       height: 200px;       width: 200px;       font: 10px Ahem;     }     .c1::first-letter { font-weight: lighter; color: green; }     .c2::first-letter { font-weight: bold; color: blue; }     .c2::before { counter-increment: square; content: 'square: ' counter(square) url(square.png) '! '; }   
+        [10] :      p {       position: absolute;       height: 200px;       width: 200px;       font: 10px Ahem;     }     .c1::first-letter { font-weight: lighter; color: green; }     .c2::first-letter { font-weight: bold; color: blue; }     .c2::before { counter-increment: square; content: 'square: ' counter(square) url(square.png) '! '; }     ul { font: 10px Ahem; }   
         [11] :    
         [12] : SCRIPT
         [13] : src
@@ -682,7 +1049,16 @@ Tests DOMSnapshot.getSnapshot exports layout tree nodes associated with pseudo e
         [37] : ! 
         [38] : before
         [39] : I have some content before me with a first letter.
-        [40] :      
+        [40] : UL
+        [41] : LI
+        [42] : ::marker
+        [43] : • 
+        [44] : marker
+        [45] : water
+        [46] : malt
+        [47] : hops
+        [48] : yeast
+        [49] :      
     ]
 }
 

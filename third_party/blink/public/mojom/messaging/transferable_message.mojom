@@ -4,11 +4,12 @@
 
 module blink.mojom;
 
+import "skia/public/mojom/bitmap.mojom";
 import "third_party/blink/public/mojom/array_buffer/array_buffer_contents.mojom";
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
 import "third_party/blink/public/mojom/messaging/cloneable_message.mojom";
+import "third_party/blink/public/mojom/messaging/message_port_descriptor.mojom";
 import "third_party/blink/public/mojom/messaging/user_activation_snapshot.mojom";
-import "skia/public/mojom/bitmap.mojom";
 
 // A MessagePort is represented as a raw mojo message pipe, as such no interface
 // definition exists for it here. Messages on this pipe are serialized versions
@@ -23,18 +24,17 @@ import "skia/public/mojom/bitmap.mojom";
 struct TransferableMessage {
   CloneableMessage message;
   // Any ports being transferred as part of this message.
-  array<handle<message_pipe>> ports;
+  array<MessagePortDescriptor> ports;
   // Channels used to transfer WHATWG streams (eg. ReadableStream).
-  array<handle<message_pipe>> stream_channels;
+  array<MessagePortDescriptor> stream_channels;
   // Any ArrayBuffers being transferred as part of this message.
   array<SerializedArrayBufferContents> array_buffer_contents_array;
   // Any ImageBitmaps being transferred as part of this message.
-  array<skia.mojom.Bitmap> image_bitmap_contents_array;
+  array<skia.mojom.BitmapN32> image_bitmap_contents_array;
   // The user activation state, null if the frame isn't providing it.
   UserActivationSnapshot? user_activation;
-  // Whether the state of user activation should be transferred to the
-  // destination frame.
-  bool transfer_user_activation;
-  // Whether the destination frame is allowed to autoplay.  See transferable_message.h.
-  bool allow_autoplay;
+  // Whether payment request capability is delegated to the destination frame.
+  //
+  // TODO(mustaq): Replace this with a structure for capability-specific bits.
+  bool delegate_payment_request;
 };

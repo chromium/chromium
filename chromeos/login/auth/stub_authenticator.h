@@ -9,17 +9,12 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromeos/login/auth/auth_status_consumer.h"
 #include "chromeos/login/auth/authenticator.h"
 #include "chromeos/login/auth/user_context.h"
 
 class AccountId;
-
-namespace content {
-class BrowserContext;
-}
 
 namespace chromeos {
 
@@ -41,17 +36,15 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
   StubAuthenticator(AuthStatusConsumer* consumer,
                     const UserContext& expected_user_context);
 
+  StubAuthenticator(const StubAuthenticator&) = delete;
+  StubAuthenticator& operator=(const StubAuthenticator&) = delete;
+
   // Authenticator:
-  void CompleteLogin(content::BrowserContext* context,
-                     const UserContext& user_context) override;
-  void AuthenticateToLogin(content::BrowserContext* context,
-                           const UserContext& user_context) override;
-  void AuthenticateToUnlock(const UserContext& user_context) override;
-  void LoginAsSupervisedUser(const UserContext& user_context) override;
+  void CompleteLogin(const UserContext& user_context) override;
+  void AuthenticateToLogin(const UserContext& user_context) override;
   void LoginOffTheRecord() override;
   void LoginAsPublicSession(const UserContext& user_context) override;
-  void LoginAsKioskAccount(const AccountId& app_account_id,
-                           bool use_guest_mount) override;
+  void LoginAsKioskAccount(const AccountId& app_account_id) override;
   void LoginAsArcKioskAccount(const AccountId& app_account_id) override;
   void LoginAsWebKioskAccount(const AccountId& app_account_id) override;
   void OnAuthSuccess() override;
@@ -99,10 +92,14 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) StubAuthenticator
 
   // For requests that report auth failure, the reason for the failure.
   AuthFailure::FailureReason failure_reason_ = AuthFailure::NONE;
-
-  DISALLOW_COPY_AND_ASSIGN(StubAuthenticator);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+using ::chromeos::StubAuthenticator;
+}
 
 #endif  // CHROMEOS_LOGIN_AUTH_STUB_AUTHENTICATOR_H_

@@ -1,0 +1,23 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_HEADING name='Accordion Section #1'
+++++ROLE_SYSTEM_PUSHBUTTON name='Accordion Section #1' EXPANDED FOCUSABLE
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='Accordion Section #1'
+++IA2_ROLE_LANDMARK name='Accordion Section #1'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='Content for first section of accordion element.'
+++IA2_ROLE_HEADING name='Accordion Section #2'
+++++ROLE_SYSTEM_PUSHBUTTON name='Accordion Section #2' COLLAPSED FOCUSABLE
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='Accordion Section #2'
+++IA2_ROLE_HEADING name='Accordion Section #3'
+++++ROLE_SYSTEM_PUSHBUTTON name='Accordion Section #3' COLLAPSED FOCUSABLE
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='Accordion Section #3'
+++IA2_ROLE_HEADING name='Accordion Section #4'
+++++ROLE_SYSTEM_PUSHBUTTON name='Accordion Section #4' UNAVAILABLE EXPANDED FOCUSABLE
+++++++IA2_ROLE_PARAGRAPH
+++++++++ROLE_SYSTEM_STATICTEXT name='Accordion Section #4'
+++IA2_ROLE_LANDMARK name='Accordion Section #4'
+++++IA2_ROLE_PARAGRAPH
+++++++ROLE_SYSTEM_STATICTEXT name='Content for forth section of accordion element. This section will always be visible but disabled.'

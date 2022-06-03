@@ -3,15 +3,20 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
-// #import {Polymer, html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrContainerShadowBehavior} from 'chrome://resources/cr_elements/cr_container_shadow_behavior.m.js';
+import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {assertFalse, assertTrue} from '../chai_assert.js';
 // clang-format on
 
 suite('CrContainerShadowBehavior', function() {
   suiteSetup(function() {
-    document.body.innerHTML = `
-      <dom-module id="test-element">
-        <template>
+    if (window.location.origin === 'chrome://test') {
+      // Polymer 3 setup
+      Polymer({
+        is: 'test-element',
+
+        _template: html`
           <style>
             #container {
               height: 50px;
@@ -20,27 +25,50 @@ suite('CrContainerShadowBehavior', function() {
           <div id="before"></div>
           <div id="container" show-bottom-shadow$="[[showBottomShadow]]"></div>
           <div id="after"></div>
-        </template>
-      </dom-module>
-    `;
+        `,
 
-    Polymer({
-      is: 'test-element',
+        properties: {
+          showBottomShadow: Boolean,
+        },
 
-      properties: {
-        showBottomShadow: Boolean,
-      },
+        behaviors: [CrContainerShadowBehavior],
+      });
+    } else {
+      document.body.innerHTML = `
+        <dom-module id="test-element">
+          <template>
+            <style>
+              #container {
+                height: 50px;
+              }
+            </style>
+            <div id="before"></div>
+            <div id="container" show-bottom-shadow$="[[showBottomShadow]]">
+            </div>
+            <div id="after"></div>
+          </template>
+        </dom-module>
+      `;
 
-      behaviors: [CrContainerShadowBehavior],
-    });
+      Polymer({
+        is: 'test-element',
+
+        properties: {
+          showBottomShadow: Boolean,
+        },
+
+        behaviors: [CrContainerShadowBehavior],
+      });
+    }
   });
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   test('no bottom shadow', function() {
-    const element = document.createElement('test-element');
+    const element = /** @type {TestElementElement} */ (
+        document.createElement('test-element'));
     document.body.appendChild(element);
 
     // Should not have a bottom shadow div.
@@ -55,7 +83,8 @@ suite('CrContainerShadowBehavior', function() {
   });
 
   test('show bottom shadow', function() {
-    const element = document.createElement('test-element');
+    const element = /** @type {TestElementElement} */ (
+        document.createElement('test-element'));
     element.showBottomShadow = true;
     document.body.appendChild(element);
 

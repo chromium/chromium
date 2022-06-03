@@ -8,10 +8,6 @@
 #include <stddef.h>
 #include <memory>
 
-#include "base/macros.h"
-
-#include "mojo/public/cpp/bindings/binding.h"
-
 #include "net/third_party/quiche/src/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/quic/core/quic_packet_writer.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
@@ -51,6 +47,11 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
       Delegate* delegate,
       const scoped_refptr<base::SingleThreadTaskRunner>& task_runner);
 
+  NetworkServiceQuicPacketWriter(const NetworkServiceQuicPacketWriter&) =
+      delete;
+  NetworkServiceQuicPacketWriter& operator=(
+      const NetworkServiceQuicPacketWriter&) = delete;
+
   ~NetworkServiceQuicPacketWriter() override;
 
   // quic::QuicPacketWriter
@@ -61,7 +62,7 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
 
   quic::QuicByteCount GetMaxPacketSize(
       const quic::QuicSocketAddress& peer_address) const override;
-  char* GetNextWriteLocation(
+  quic::QuicPacketBuffer GetNextWriteLocation(
       const quic::QuicIpAddress& self_address,
       const quic::QuicSocketAddress& peer_address) override;
 
@@ -114,7 +115,6 @@ class NetworkServiceQuicPacketWriter : quic::QuicPacketWriter {
   bool writable_ = true;
 
   base::WeakPtrFactory<NetworkServiceQuicPacketWriter> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceQuicPacketWriter);
 };
 
 }  // namespace media_router

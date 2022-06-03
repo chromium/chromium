@@ -8,11 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/dbus/shill/shill_clients.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/services/cellular_setup/cellular_setup_base.h"
 #include "chromeos/services/cellular_setup/cellular_setup_impl.h"
 #include "chromeos/services/cellular_setup/fake_ota_activator.h"
@@ -30,6 +28,10 @@ namespace {
 class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
  public:
   FakeOtaActivatorFactory() = default;
+
+  FakeOtaActivatorFactory(const FakeOtaActivatorFactory&) = delete;
+  FakeOtaActivatorFactory& operator=(const FakeOtaActivatorFactory&) = delete;
+
   ~FakeOtaActivatorFactory() override = default;
 
   std::vector<FakeOtaActivator*>& created_instances() {
@@ -38,7 +40,7 @@ class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
 
  private:
   // OtaActivatorImpl::Factory:
-  std::unique_ptr<OtaActivator> BuildInstance(
+  std::unique_ptr<OtaActivator> CreateInstance(
       mojo::PendingRemote<mojom::ActivationDelegate> activation_delegate,
       base::OnceClosure on_finished_callback,
       NetworkStateHandler* network_state_handler,
@@ -59,13 +61,15 @@ class FakeOtaActivatorFactory : public OtaActivatorImpl::Factory {
   }
 
   std::vector<FakeOtaActivator*> created_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeOtaActivatorFactory);
 };
 
 }  // namespace
 
 class CellularSetupImplTest : public testing::Test {
+ public:
+  CellularSetupImplTest(const CellularSetupImplTest&) = delete;
+  CellularSetupImplTest& operator=(const CellularSetupImplTest&) = delete;
+
  protected:
   CellularSetupImplTest() = default;
   ~CellularSetupImplTest() override = default;
@@ -74,15 +78,9 @@ class CellularSetupImplTest : public testing::Test {
   void SetUp() override {
     OtaActivatorImpl::Factory::SetFactoryForTesting(
         &fake_ota_activator_factory_);
-    shill_clients::InitializeFakes();
-    NetworkHandler::Initialize();
-    cellular_setup_ = std::make_unique<CellularSetupImpl>();
   }
 
   void TearDown() override {
-    cellular_setup_.reset();
-    NetworkHandler::Shutdown();
-    shill_clients::Shutdown();
     OtaActivatorImpl::Factory::SetFactoryForTesting(nullptr);
   }
 
@@ -92,7 +90,7 @@ class CellularSetupImplTest : public testing::Test {
               fake_ota_activator_factory_.created_instances().size());
 
     base::RunLoop run_loop;
-    cellular_setup_->StartActivation(
+    cellular_setup_.StartActivation(
         fake_activation_delegate->GenerateRemote(),
         base::BindOnce(&CellularSetupImplTest::OnCarrierPortalHandlerReceived,
                        base::Unretained(this), run_loop.QuitClosure()));
@@ -115,13 +113,12 @@ class CellularSetupImplTest : public testing::Test {
   }
 
   base::test::TaskEnvironment task_environment_;
+  NetworkHandlerTestHelper network_handler_test_helper_;
   FakeOtaActivatorFactory fake_ota_activator_factory_;
 
-  std::unique_ptr<CellularSetupBase> cellular_setup_;
+  CellularSetupImpl cellular_setup_;
 
   size_t num_carrier_portal_handlers_received_ = 0u;
-
-  DISALLOW_COPY_AND_ASSIGN(CellularSetupImplTest);
 };
 
 TEST_F(CellularSetupImplTest, StartActivation_SingleAttempt) {

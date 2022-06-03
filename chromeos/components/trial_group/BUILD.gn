@@ -1,0 +1,39 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+
+component("trial_group") {
+  sources = [
+    "trial_group_checker.cc",
+    "trial_group_checker.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/cpp:cpp_base",
+    "//url",
+  ]
+
+  defines = [ "IS_TRIAL_GROUP_CHECKER_IMPL" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "trial_group_checker_unittest.cc",
+  ]
+
+  deps = [
+    ":trial_group",
+    "//base",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//testing/gtest",
+  ]
+}

@@ -6,7 +6,6 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_COMMON_RULESET_DEALER_H_
 
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -33,6 +32,10 @@ class MemoryMappedRuleset;
 class RulesetDealer {
  public:
   RulesetDealer();
+
+  RulesetDealer(const RulesetDealer&) = delete;
+  RulesetDealer& operator=(const RulesetDealer&) = delete;
+
   virtual ~RulesetDealer();
 
   // Sets the |ruleset_file| to memory map and distribute from now on.
@@ -66,10 +69,8 @@ class RulesetDealer {
   base::WeakPtr<MemoryMappedRuleset> weak_cached_ruleset_;
 
   base::SequenceChecker sequence_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(RulesetDealer);
 };
 
 }  // namespace subresource_filter
 
-#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_RENDERER_RULESET_DEALER_H_
+#endif  // COMPONENTS_SUBRESOURCE_FILTER_CONTENT_COMMON_RULESET_DEALER_H_

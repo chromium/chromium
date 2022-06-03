@@ -14,6 +14,7 @@
 
 #include "snapshot/mac/mach_o_image_segment_reader.h"
 
+#include <Availability.h>
 #include <mach-o/loader.h>
 #include <string.h>
 
@@ -21,6 +22,7 @@
 
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "snapshot/mac/process_reader_mac.h"
 #include "util/mac/checked_mach_address_range.h"
 #include "util/mac/mac_util.h"
@@ -39,12 +41,14 @@ std::string SizeLimitedCString(const char* c_string, size_t max_length) {
 bool IsMalformedCLKernelsModule(uint32_t mach_o_file_type,
                                 const std::string& module_name,
                                 bool* has_timestamp) {
+#if defined(ARCH_CPU_X86_FAMILY)
   if (mach_o_file_type != MH_BUNDLE) {
     return false;
   }
 
   if (module_name == "cl_kernels") {
-    if (MacOSXMinorVersion() >= 10) {
+    if (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_10 ||
+        MacOSVersionNumber() >= 10'10'00) {
       if (has_timestamp) {
         *has_timestamp = false;
       }
@@ -57,12 +61,14 @@ bool IsMalformedCLKernelsModule(uint32_t mach_o_file_type,
       "/private/var/db/CVMS/cvmsCodeSignObj";
   if (module_name.compare(
           0, strlen(kCvmsObjectPathPrefix), kCvmsObjectPathPrefix) == 0 &&
-      MacOSXMinorVersion() >= 14) {
+      (__MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_10_14 ||
+       MacOSVersionNumber() >= 10'14'00)) {
     if (has_timestamp) {
       *has_timestamp = true;
     }
     return true;
   }
+#endif  // ARCH_CPU_X86_FAMILY
 
   return false;
 }

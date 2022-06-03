@@ -5,14 +5,16 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_WIN_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_WIN_H_
 
-#include <string>
-
 #include <windows.ui.notifications.h>
 #include <wrl/client.h>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include <string>
+
+#include "base/gtest_prod_util.h"
 #include "chrome/browser/notifications/notification_platform_bridge.h"
+#include "chrome/browser/notifications/win/notification_launch_id.h"
+#include "chrome/common/notifications/notification_operation.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class CommandLine;
@@ -27,6 +29,9 @@ class NotificationTemplateBuilder;
 class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
  public:
   NotificationPlatformBridgeWin();
+  NotificationPlatformBridgeWin(const NotificationPlatformBridgeWin&) = delete;
+  NotificationPlatformBridgeWin& operator=(
+      const NotificationPlatformBridgeWin&) = delete;
   ~NotificationPlatformBridgeWin() override;
 
   // NotificationPlatformBridge implementation.
@@ -46,8 +51,20 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   // notification-launch-id switch.
   static bool HandleActivation(const base::CommandLine& command_line);
 
-  // Checks if native notification is enabled.
-  static bool NativeNotificationEnabled();
+  // Checks if system notifications are enabled.
+  static bool SystemNotificationEnabled();
+
+  // Struct used to build the key to identify the notifications.
+  struct NotificationKeyType {
+    std::string profile_id;
+    std::string notification_id;
+
+    bool operator<(const NotificationKeyType& key) const {
+      return profile_id < key.profile_id ||
+             (profile_id == key.profile_id &&
+              notification_id < key.notification_id);
+    }
+  };
 
  private:
   friend class NotificationPlatformBridgeWinImpl;
@@ -58,14 +75,25 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest, HandleSettings);
   FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
                            DisplayWithFakeAC);
+  FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
+                           SynchronizeNotifications);
+  FRIEND_TEST_ALL_PREFIXES(NotificationPlatformBridgeWinUITest,
+                           SynchronizeNotificationsAfterClose);
+
+  void SynchronizeNotificationsForTesting();
 
   // Simulates a click/dismiss event. Only for use in testing.
   // Note: Ownership of |notification| and |args| is retained by the caller.
   void ForwardHandleEventForTesting(
-      NotificationCommon::Operation operation,
+      NotificationOperation operation,
       ABI::Windows::UI::Notifications::IToastNotification* notification,
       ABI::Windows::UI::Notifications::IToastActivatedEventArgs* args,
-      const base::Optional<bool>& by_user);
+      const absl::optional<bool>& by_user);
+
+  // Initializes the expected displayed notification map. For testing use only.
+  void SetExpectedDisplayedNotificationsForTesting(
+      std::map<NotificationKeyType, NotificationLaunchId>*
+          expected_displayed_notification);
 
   // Initializes the displayed notification vector. Only for use in testing.
   void SetDisplayedNotificationsForTesting(
@@ -76,20 +104,23 @@ class NotificationPlatformBridgeWin : public NotificationPlatformBridge {
   void SetNotifierForTesting(
       ABI::Windows::UI::Notifications::IToastNotifier* notifier);
 
+  // Returns the map of notifications which should be currently displayed. For
+  // testing use only.
+  std::map<NotificationKeyType, NotificationLaunchId>
+  GetExpectedDisplayedNotificationForTesting() const;
+
   // Obtain an IToastNotification interface from a given XML (provided by the
   // NotificationTemplateBuilder). For testing use only.
   Microsoft::WRL::ComPtr<ABI::Windows::UI::Notifications::IToastNotification>
   GetToastNotificationForTesting(
       const message_center::Notification& notification,
-      const base::string16& xml_template,
+      const std::wstring& xml_template,
       const std::string& profile_id,
       bool incognito);
 
   scoped_refptr<NotificationPlatformBridgeWinImpl> impl_;
 
   scoped_refptr<base::SequencedTaskRunner> notification_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(NotificationPlatformBridgeWin);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NOTIFICATION_PLATFORM_BRIDGE_WIN_H_

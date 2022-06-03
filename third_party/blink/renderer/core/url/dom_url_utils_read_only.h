@@ -36,10 +36,11 @@ namespace blink {
 class CORE_EXPORT DOMURLUtilsReadOnly {
  public:
   virtual KURL Url() const = 0;
-  virtual String Input() const = 0;
   virtual ~DOMURLUtilsReadOnly() = default;
 
+  // href() returns Url() if it is non-null, or Input() otherwise.
   String href();
+  virtual String Input() const = 0;
 
   static String origin(const KURL&);
   String origin() { return origin(Url()); }

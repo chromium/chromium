@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/testharness-adapter.js"></script>
+</head>
+<body>
+<script type="module">
+import {GeolocationMock} from './resources/geolocation-mock.js';
+
+description("Tests that Geolocation correctly handles multiple concurrent requests.");
+
+const mockLatitude = 51.478;
+const mockLongitude = -0.166;
+const mockAccuracy = 100;
+
+let position;
+let watchCallbackInvoked = false;
+let oneShotCallbackInvoked = false;
+
+const mock = new GeolocationMock();
+mock.setGeolocationPermission(true);
+mock.setGeolocationPosition(mockLatitude, mockLongitude, mockAccuracy);
+
+navigator.geolocation.watchPosition(function(p) {
+    assert_false(watchCallbackInvoked);
+    watchCallbackInvoked = true;
+    maybeFinishTest(p);
+}, function() {
+    testFailed('Error callback invoked unexpectedly');
+    finishJSTest();
+});
+
+navigator.geolocation.getCurrentPosition(function(p) {
+    assert_false(oneShotCallbackInvoked);
+    oneShotCallbackInvoked = true;
+    maybeFinishTest(p);
+}, function() {
+    testFailed('Error callback invoked unexpectedly');
+    finishJSTest();
+});
+
+function maybeFinishTest(p) {
+    position = p;
+    assert_equals(position.coords.latitude, mockLatitude);
+    assert_equals(position.coords.longitude, mockLongitude);
+    assert_equals(position.coords.accuracy, mockAccuracy);
+    if (watchCallbackInvoked && oneShotCallbackInvoked)
+        finishJSTest();
+}
+</script>
+</body>
+</html>

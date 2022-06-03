@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 #include "chrome/browser/safe_browsing/certificate_reporting_service.h"
 
+#include <memory>
+
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/clock.h"
@@ -12,7 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "components/prefs/pref_service.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/certificate_error_report.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -147,8 +149,8 @@ CertificateReportingService::Reporter::GetQueueForTesting() const {
 }
 
 void CertificateReportingService::Reporter::
-    SetClosureWhenNoInflightReportsForTesting(const base::Closure& closure) {
-  no_in_flight_reports_ = closure;
+    SetClosureWhenNoInflightReportsForTesting(base::OnceClosure closure) {
+  no_in_flight_reports_ = std::move(closure);
 }
 
 void CertificateReportingService::Reporter::SendInternal(
@@ -176,14 +178,14 @@ void CertificateReportingService::Reporter::ErrorCallback(
   }
   CHECK_GT(inflight_reports_.erase(report_id), 0u);
   if (inflight_reports_.empty() && no_in_flight_reports_)
-    no_in_flight_reports_.Run();
+    std::move(no_in_flight_reports_).Run();
 }
 
 void CertificateReportingService::Reporter::SuccessCallback(int report_id) {
   RecordUMAEvent(ReportOutcome::SUCCESSFUL);
   CHECK_GT(inflight_reports_.erase(report_id), 0u);
   if (inflight_reports_.empty() && no_in_flight_reports_)
-    no_in_flight_reports_.Run();
+    std::move(no_in_flight_reports_).Run();
 }
 
 CertificateReportingService::CertificateReportingService(
@@ -195,7 +197,7 @@ CertificateReportingService::CertificateReportingService(
     size_t max_queued_report_count,
     base::TimeDelta max_report_age,
     base::Clock* clock,
-    const base::Callback<void()>& reset_callback)
+    const base::RepeatingClosure& reset_callback)
     : pref_service_(*profile->GetPrefs()),
       url_loader_factory_(url_loader_factory),
       max_queued_report_count_(max_queued_report_count),
@@ -210,8 +212,8 @@ CertificateReportingService::CertificateReportingService(
   // Subscribe to SafeBrowsing preference change notifications.
   safe_browsing_state_subscription_ =
       safe_browsing_service->RegisterStateCallback(
-          base::Bind(&CertificateReportingService::OnPreferenceChanged,
-                     base::Unretained(this)));
+          base::BindRepeating(&CertificateReportingService::OnPreferenceChanged,
+                              base::Unretained(this)));
 
   Reset(true);
   reset_callback_.Run();
@@ -261,18 +263,17 @@ void CertificateReportingService::Reset(bool enabled) {
   }
   std::unique_ptr<CertificateErrorReporter> error_reporter;
   if (server_public_key_) {
-    error_reporter.reset(new CertificateErrorReporter(
+    error_reporter = std::make_unique<CertificateErrorReporter>(
         url_loader_factory_, GURL(kExtendedReportingUploadUrl),
-        server_public_key_, server_public_key_version_));
+        server_public_key_, server_public_key_version_);
   } else {
-    error_reporter.reset(new CertificateErrorReporter(
-        url_loader_factory_, GURL(kExtendedReportingUploadUrl)));
+    error_reporter = std::make_unique<CertificateErrorReporter>(
+        url_loader_factory_, GURL(kExtendedReportingUploadUrl));
   }
-  reporter_.reset(
-      new Reporter(std::move(error_reporter),
-                   std::unique_ptr<BoundedReportList>(
-                       new BoundedReportList(max_queued_report_count_)),
-                   clock_, max_report_age_, true /* retries_enabled */));
+  reporter_ = std::make_unique<Reporter>(
+      std::move(error_reporter),
+      std::make_unique<BoundedReportList>(max_queued_report_count_), clock_,
+      max_report_age_, true /* retries_enabled */);
 }
 
 void CertificateReportingService::OnPreferenceChanged() {

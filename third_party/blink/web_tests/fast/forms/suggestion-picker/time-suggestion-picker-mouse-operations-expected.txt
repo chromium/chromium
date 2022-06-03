@@ -2,8 +2,6 @@ Check that page popup doesn't exist at first.
 PASS $("mock-page-popup") is null
 Check that page popup exists.
 PASS popupWindow.pagePopupController.toString() is "[object PagePopupController]"
-Check that page popup exists.
-PASS popupWindow.pagePopupController.toString() is "[object PagePopupController]"
 Check that hovering over an entry highlights it.
 PASS highlightedEntry() is "01:02"
 Check that moving the mouse outside the popup de-highlights entries.

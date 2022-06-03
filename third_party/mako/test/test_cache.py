@@ -1,4 +1,5 @@
 import time
+import unittest
 
 from mako import lookup
 from mako.cache import CacheImpl
@@ -9,7 +10,6 @@ from mako.lookup import TemplateLookup
 from mako.template import Template
 from test import eq_
 from test import module_base
-from test import SkipTest
 from test import TemplateTest
 from test.util import result_lines
 
@@ -649,9 +649,9 @@ class BeakerCacheTest(RealBackendTest, CacheTest):
 
     def setUp(self):
         if not beaker_cache.has_beaker:
-            raise SkipTest("Beaker is required for these tests.")
+            raise unittest.SkipTest("Beaker is required for these tests.")
         if not py27:
-            raise SkipTest("newer beakers not working w/ py26")
+            raise unittest.SkipTest("newer beakers not working w/ py26")
 
     def _install_mock_cache(self, template, implname=None):
         template.cache_args["manager"] = self._regions()
@@ -676,7 +676,9 @@ class DogpileCacheTest(RealBackendTest, CacheTest):
         try:
             import dogpile.cache  # noqa
         except ImportError:
-            raise SkipTest("dogpile.cache is required to run these tests")
+            raise unittest.SkipTest(
+                "dogpile.cache is required to run these tests"
+            )
 
     def _install_mock_cache(self, template, implname=None):
         template.cache_args["regions"] = self._regions()

@@ -16,7 +16,7 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
-#include "base/strings/string16.h"
+#include "base/strings/string_util.h"
 #include "services/device/usb/usb_descriptors.h"
 #include "url/gurl.h"
 
@@ -46,6 +46,9 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
     virtual void OnDeviceRemoved(scoped_refptr<UsbDevice> device);
   };
 
+  UsbDevice(const UsbDevice&) = delete;
+  UsbDevice& operator=(const UsbDevice&) = delete;
+
   const mojom::UsbDeviceInfo& device_info() const { return *device_info_; }
 
   // A unique identifier which remains stable for the lifetime of this device
@@ -64,19 +67,19 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   uint16_t usb_version() const;
   uint16_t device_version() const;
 
-  const base::string16& manufacturer_string() const {
+  const std::u16string& manufacturer_string() const {
     if (device_info_->manufacturer_name)
       return *device_info_->manufacturer_name;
 
     return base::EmptyString16();
   }
-  const base::string16& product_string() const {
+  const std::u16string& product_string() const {
     if (device_info_->product_name)
       return *device_info_->product_name;
 
     return base::EmptyString16();
   }
-  const base::string16& serial_number() const {
+  const std::u16string& serial_number() const {
     if (device_info_->serial_number)
       return *device_info_->serial_number;
 
@@ -124,9 +127,9 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
             uint16_t vendor_id,
             uint16_t product_id,
             uint16_t device_version,
-            const base::string16& manufacturer_string,
-            const base::string16& product_string,
-            const base::string16& serial_number,
+            const std::u16string& manufacturer_string,
+            const std::u16string& product_string,
+            const std::u16string& serial_number,
             uint32_t bus_number,
             uint32_t port_number);
   virtual ~UsbDevice();
@@ -144,11 +147,13 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
  private:
   friend class base::RefCountedThreadSafe<UsbDevice>;
   friend class UsbDeviceHandleImpl;
+  friend class UsbDeviceHandleMac;
   friend class UsbDeviceHandleUsbfs;
   friend class UsbDeviceHandleWin;
   friend class UsbServiceAndroid;
   friend class UsbServiceImpl;
   friend class UsbServiceLinux;
+  friend class UsbServiceMac;
   friend class UsbServiceWin;
 
   void OnDisconnect();
@@ -159,8 +164,6 @@ class UsbDevice : public base::RefCountedThreadSafe<UsbDevice> {
   std::list<UsbDeviceHandle*> handles_;
 
   base::ObserverList<Observer, true>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbDevice);
 };
 
 }  // namespace device

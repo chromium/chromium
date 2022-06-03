@@ -4,7 +4,7 @@
 
 #include "remoting/host/host_extension_session_manager.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "remoting/base/capabilities.h"
 #include "remoting/host/client_session_details.h"
 #include "remoting/host/host_extension.h"

@@ -9,8 +9,8 @@
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
 #include "components/security_interstitials/content/ssl_blocking_page.h"
 #include "components/security_interstitials/core/controller_client.h"
-#include "content/public/browser/interstitial_page.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -58,7 +58,7 @@ class InterstitialAccessibilityBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(InterstitialAccessibilityBrowserTest,
                        TestSSLInterstitialAccessibility) {
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -67,8 +67,8 @@ IN_PROC_BROWSER_TEST_F(InterstitialAccessibilityBrowserTest,
   ASSERT_TRUE(https_server_mismatched_.Start());
 
   // Navigate to a page with an SSL error on it.
-  ui_test_utils::NavigateToURL(
-      browser(), https_server_mismatched_.GetURL("/ssl/blank_page.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_mismatched_.GetURL("/ssl/blank_page.html")));
 
   // Ensure that we got an interstitial page.
   ASSERT_FALSE(web_contents->IsCrashed());

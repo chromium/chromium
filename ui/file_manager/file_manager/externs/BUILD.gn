@@ -1,0 +1,106 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_library("file_manager_private") {
+  sources = []
+
+  # The file_manager_private extern depends on file_system_provider and
+  # extension APIs. Ensure they're pulled in together.
+  externs_list = [
+    "$externs_path/chrome.js",
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/file_manager_private.js",
+    "$externs_path/file_system_provider.js",
+  ]
+}
+
+js_library("background_window") {
+  deps = [ "//ui/file_manager/file_manager/externs/background:background_base" ]
+}
+
+js_library("banner") {
+  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
+}
+
+js_library("command_handler_deps") {
+  deps = [
+    ":files_app_entry_interfaces",
+    ":volume_manager",
+    "background:crostini",
+    "background:file_operation_manager",
+    "background:progress_center",
+    "//ui/file_manager/file_manager/common/js:dialog_type",
+    "//ui/file_manager/file_manager/common/js:files_app_state",
+    "//ui/file_manager/file_manager/foreground/js:actions_controller",
+    "//ui/file_manager/file_manager/foreground/js:directory_contents",
+    "//ui/file_manager/file_manager/foreground/js:directory_model",
+    "//ui/file_manager/file_manager/foreground/js:directory_tree_naming_controller",
+    "//ui/file_manager/file_manager/foreground/js:file_selection",
+    "//ui/file_manager/file_manager/foreground/js:file_transfer_controller",
+    "//ui/file_manager/file_manager/foreground/js:naming_controller",
+    "//ui/file_manager/file_manager/foreground/js:providers_model",
+    "//ui/file_manager/file_manager/foreground/js:spinner_controller",
+    "//ui/file_manager/file_manager/foreground/js:task_controller",
+    "//ui/file_manager/file_manager/foreground/js/metadata:metadata_model",
+    "//ui/file_manager/file_manager/foreground/js/ui:directory_tree",
+    "//ui/file_manager/file_manager/foreground/js/ui:file_manager_ui",
+  ]
+}
+
+js_library("directory_change_event") {
+  deps = [ ":files_app_entry_interfaces" ]
+}
+
+js_library("drive_dialog_controller") {
+}
+
+js_library("entries_changed_event") {
+  deps = [ "//ui/file_manager/file_manager/common/js:util" ]
+}
+
+js_library("entry_location") {
+  deps = [
+    ":volume_info",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+  ]
+}
+
+js_library("exif_entry") {
+  deps =
+      [ "//ui/file_manager/file_manager/foreground/js/metadata:exif_constants" ]
+}
+
+js_library("files_app_entry_interfaces") {
+  deps = [ "//ui/file_manager/file_manager/common/js:volume_manager_types" ]
+}
+
+js_library("metadata_worker_window") {
+}
+
+js_library("progress_center_panel") {
+  deps = [ "//ui/file_manager/file_manager/common/js:progress_center_common" ]
+}
+
+js_library("volume_manager") {
+  deps = [
+    ":entry_location",
+    ":files_app_entry_interfaces",
+    ":volume_info",
+    ":volume_info_list",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+  ]
+}
+
+js_library("volume_info") {
+  deps = [
+    ":files_app_entry_interfaces",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+  ]
+}
+
+js_library("volume_info_list") {
+  deps = [ ":volume_info" ]
+}

@@ -7,10 +7,11 @@
 
 #include "base/memory/singleton.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "printing/buildflags/buildflags.h"
 
-#if !BUILDFLAG(ENABLE_PRINT_PREVIEW) || defined(OS_CHROMEOS)
+#if !BUILDFLAG(ENABLE_PRINT_PREVIEW) || BUILDFLAG(IS_CHROMEOS_ASH)
 #error "Print Preview must be enabled / Not supported on ChromeOS"
 #endif
 

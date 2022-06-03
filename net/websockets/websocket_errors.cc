@@ -4,7 +4,6 @@
 
 #include "net/websockets/websocket_errors.h"
 
-#include "base/logging.h"
 
 namespace net {
 

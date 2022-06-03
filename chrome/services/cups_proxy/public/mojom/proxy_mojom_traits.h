@@ -5,8 +5,7 @@
 #ifndef CHROME_SERVICES_CUPS_PROXY_PUBLIC_MOJOM_PROXY_MOJOM_TRAITS_H_
 #define CHROME_SERVICES_CUPS_PROXY_PUBLIC_MOJOM_PROXY_MOJOM_TRAITS_H_
 
-#include "build/build_config.h"
-#include "chrome/services/cups_proxy/public/mojom/proxy.mojom.h"
+#include "chrome/services/cups_proxy/public/mojom/proxy.mojom-shared.h"
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
 
 namespace mojo {

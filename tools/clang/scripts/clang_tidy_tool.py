@@ -107,8 +107,7 @@ def RunClangTidy(checks, header_filter, auto_fix, clang_src_dir,
   subprocess.check_call(args)
 
 
-def RunClangTidyDiff(checks, header_filter, auto_fix, clang_src_dir,
-                     clang_build_dir, out_dir):
+def RunClangTidyDiff(checks, auto_fix, clang_src_dir, clang_build_dir, out_dir):
   """Invoke the |clang-tidy-diff.py| script over the diff from stdin."""
   clang_tidy_diff_script = os.path.join(
       clang_src_dir, 'clang-tools-extra', 'clang-tidy', 'tool',
@@ -128,9 +127,6 @@ def RunClangTidyDiff(checks, header_filter, auto_fix, clang_src_dir,
 
   if checks:
     args.append('-checks={}'.format(checks))
-
-  if header_filter:
-    args.append('-header-filter={}'.format(header_filter))
 
   if auto_fix:
     args.append('-fix')
@@ -202,11 +198,9 @@ def main():
     ]
   if args.diff:
     steps += [
-        ('Running clang-tidy on diff',
-         lambda: RunClangTidyDiff(args.checks, args.header_filter,
-                                  args.auto_fix, args.clang_src_dir,
-                                  args.clang_build_dir, args.OUT_DIR,
-                                  args.NINJA_TARGET)),
+        ('Running clang-tidy on diff', lambda: RunClangTidyDiff(
+            args.checks, args.auto_fix, args.clang_src_dir, args.
+            clang_build_dir, args.OUT_DIR)),
     ]
   else:
     steps += [

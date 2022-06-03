@@ -5,10 +5,9 @@
 #ifndef CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_VIEW_H_
 #define CHROME_BROWSER_TOUCH_TO_FILL_TOUCH_TO_FILL_VIEW_H_
 
-#include "base/callback_forward.h"
 #include "base/containers/span.h"
 #include "base/strings/string_piece_forward.h"
-#include "base/util/type_safety/strong_alias.h"
+#include "base/types/strong_alias.h"
 #include "url/gurl.h"
 
 namespace password_manager {
@@ -19,7 +18,7 @@ class UiCredential;
 // To Fill controller with the Android frontend.
 class TouchToFillView {
  public:
-  using IsOriginSecure = util::StrongAlias<class IsOriginSecureTag, bool>;
+  using IsOriginSecure = base::StrongAlias<class IsOriginSecureTag, bool>;
 
   TouchToFillView() = default;
   TouchToFillView(const TouchToFillView&) = delete;

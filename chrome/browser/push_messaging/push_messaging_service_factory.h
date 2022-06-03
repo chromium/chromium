@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_SERVICE_FACTORY_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -17,6 +16,10 @@ class PushMessagingServiceFactory : public BrowserContextKeyedServiceFactory {
   static PushMessagingServiceImpl* GetForProfile(
       content::BrowserContext* profile);
   static PushMessagingServiceFactory* GetInstance();
+
+  PushMessagingServiceFactory(const PushMessagingServiceFactory&) = delete;
+  PushMessagingServiceFactory& operator=(const PushMessagingServiceFactory&) =
+      delete;
 
   // Undo a previous call to SetTestingFactory, such that subsequent calls to
   // GetForProfile get a real push service.
@@ -33,8 +36,6 @@ class PushMessagingServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(PushMessagingServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_PUSH_MESSAGING_PUSH_MESSAGING_SERVICE_FACTORY_H_

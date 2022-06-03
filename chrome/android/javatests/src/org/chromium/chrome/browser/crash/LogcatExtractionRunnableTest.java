@@ -14,7 +14,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -111,9 +112,9 @@ public class LogcatExtractionRunnableTest {
             Assert.assertEquals(1, mNumServiceStarts);
             Assert.assertEquals(
                     MinidumpUploadService.class.getName(), intent.getComponent().getClassName());
-            Assert.assertEquals(MinidumpUploadService.ACTION_UPLOAD, intent.getAction());
+            Assert.assertEquals(MinidumpUploadServiceImpl.ACTION_UPLOAD, intent.getAction());
             Assert.assertEquals(new File(mCrashDir, "test.dmp.try0").getAbsolutePath(),
-                    intent.getStringExtra(MinidumpUploadService.FILE_TO_UPLOAD_KEY));
+                    intent.getStringExtra(MinidumpUploadServiceImpl.FILE_TO_UPLOAD_KEY));
             return super.startService(intent);
         }
 

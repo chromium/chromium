@@ -9,11 +9,11 @@
 #include <vector>
 
 #include "base/files/file_util.h"
-#include "base/optional.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/service/display/software_output_device.h"
 #include "components/viz/service/display_embedder/software_output_surface.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/encode/SkPngEncoder.h"
 #include "ui/gfx/codec/png_codec.h"
 
@@ -80,23 +80,32 @@ class PNGSoftwareOutputDevice : public SoftwareOutputDevice {
 }  // namespace
 
 FuzzerSoftwareOutputSurfaceProvider::FuzzerSoftwareOutputSurfaceProvider(
-    base::Optional<base::FilePath> png_dir_path)
+    absl::optional<base::FilePath> png_dir_path)
     : png_dir_path_(png_dir_path) {}
 
 FuzzerSoftwareOutputSurfaceProvider::~FuzzerSoftwareOutputSurfaceProvider() =
     default;
+
+std::unique_ptr<DisplayCompositorMemoryAndTaskController>
+FuzzerSoftwareOutputSurfaceProvider::CreateGpuDependency(
+    bool gpu_compositing,
+    gpu::SurfaceHandle surface_handle,
+    const RendererSettings& renderer_settings) {
+  return nullptr;
+}
 
 std::unique_ptr<OutputSurface>
 FuzzerSoftwareOutputSurfaceProvider::CreateOutputSurface(
     gpu::SurfaceHandle surface_handle,
     bool gpu_compositing,
     mojom::DisplayClient* display_client,
-    const RendererSettings& renderer_settings) {
+    DisplayCompositorMemoryAndTaskController* gpu_dependency,
+    const RendererSettings& renderer_settings,
+    const DebugRendererSettings* debug_settings) {
   std::unique_ptr<SoftwareOutputDevice> software_output_device =
       png_dir_path_ ? std::make_unique<PNGSoftwareOutputDevice>(*png_dir_path_)
                     : std::make_unique<SoftwareOutputDevice>();
   return std::make_unique<SoftwareOutputSurface>(
       std::move(software_output_device));
 }
-
 }  // namespace viz

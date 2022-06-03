@@ -6,12 +6,17 @@
 
 #include <utility>
 
-#include "base/task/post_task.h"
+#include "base/task/bind_post_task.h"
+#include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager.h"
 #include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
+#include "chrome/browser/printing/print_preview_sticky_settings.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 namespace chromeos {
 
@@ -25,7 +30,13 @@ CupsProxyServiceDelegateImpl::CupsProxyServiceDelegateImpl()
 
 CupsProxyServiceDelegateImpl::~CupsProxyServiceDelegateImpl() = default;
 
-base::Optional<Printer> CupsProxyServiceDelegateImpl::GetPrinter(
+bool CupsProxyServiceDelegateImpl::IsPrinterAccessAllowed() const {
+  const PrefService* prefs = profile_->GetPrefs();
+  return prefs->GetBoolean(prefs::kPrintingEnabled) &&
+         prefs->GetBoolean(plugin_vm::prefs::kPluginVmPrintersAllowed);
+}
+
+absl::optional<Printer> CupsProxyServiceDelegateImpl::GetPrinter(
     const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return printers_manager_->GetPrinter(id);
@@ -40,6 +51,15 @@ std::vector<Printer> CupsProxyServiceDelegateImpl::GetPrinters(
   return printers_manager_->GetPrinters(printer_class);
 }
 
+std::vector<std::string>
+CupsProxyServiceDelegateImpl::GetRecentlyUsedPrinters() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto* sticky_settings = printing::PrintPreviewStickySettings::GetInstance();
+  CHECK(sticky_settings);
+  sticky_settings->RestoreFromPrefs(profile_->GetPrefs());
+  return sticky_settings->GetRecentlyUsedPrinters();
+}
+
 bool CupsProxyServiceDelegateImpl::IsPrinterInstalled(const Printer& printer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return printers_manager_->IsPrinterInstalled(printer);
@@ -49,13 +69,12 @@ bool CupsProxyServiceDelegateImpl::IsPrinterInstalled(const Printer& printer) {
 void CupsProxyServiceDelegateImpl::PrinterInstalled(const Printer& printer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(GetPrinter(printer.id()));
-  printers_manager_->PrinterInstalled(
-      printer, false /* unused */, PrinterSetupSource::kMaxValue /* unused */);
+  printers_manager_->PrinterInstalled(printer, false /* unused */);
 }
 
 scoped_refptr<base::SingleThreadTaskRunner>
 CupsProxyServiceDelegateImpl::GetIOTaskRunner() {
-  return base::CreateSingleThreadTaskRunner({content::BrowserThread::IO});
+  return content::GetIOThreadTaskRunner({});
 }
 
 void CupsProxyServiceDelegateImpl::SetupPrinter(
@@ -65,17 +84,16 @@ void CupsProxyServiceDelegateImpl::SetupPrinter(
 
   // Grab current runner to post |cb| to.
   auto cb_runner = base::SequencedTaskRunnerHandle::Get();
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindOnce(&CupsProxyServiceDelegateImpl::SetupPrinterOnThread,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&CupsProxyServiceDelegateImpl::SetupPrinterOnUIThread,
                      weak_factory_.GetWeakPtr(), printer,
-                     base::Passed(&cb_runner), std::move(cb)));
+                     base::BindPostTask(std::move(cb_runner), std::move(cb))));
 }
 
 // Runs on UI thread.
-void CupsProxyServiceDelegateImpl::SetupPrinterOnThread(
+void CupsProxyServiceDelegateImpl::SetupPrinterOnUIThread(
     const Printer& printer,
-    scoped_refptr<base::SequencedTaskRunner> cb_runner,
     cups_proxy::SetupPrinterCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -86,19 +104,14 @@ void CupsProxyServiceDelegateImpl::SetupPrinterOnThread(
 
   printer_configurer_->SetUpPrinter(
       printer, base::BindOnce(&CupsProxyServiceDelegateImpl::OnSetupPrinter,
-                              weak_factory_.GetWeakPtr(),
-                              base::Passed(&cb_runner), std::move(cb)));
+                              weak_factory_.GetWeakPtr(), std::move(cb)));
 }
 
-// |printer_configurer| unused but ensures this callback outlives it.
 void CupsProxyServiceDelegateImpl::OnSetupPrinter(
-    scoped_refptr<base::SequencedTaskRunner> cb_runner,
     cups_proxy::SetupPrinterCallback cb,
     PrinterSetupResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  cb_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(cb), result == PrinterSetupResult::kSuccess));
+  std::move(cb).Run(result == PrinterSetupResult::kSuccess);
 }
 
 }  // namespace chromeos

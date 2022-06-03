@@ -4,8 +4,9 @@
 
 #include "ios/chrome/browser/search_engines/ui_thread_search_terms_data.h"
 
-#include "base/logging.h"
-#include "base/strings/string16.h"
+#include <string>
+
+#include "base/check.h"
 #include "components/google/core/common/google_util.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/version_info/version_info.h"
@@ -13,6 +14,7 @@
 #include "ios/chrome/browser/google/google_brand.h"
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/common/channel_info.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "net/base/escape.h"
 #include "rlz/buildflags/buildflags.h"
@@ -45,16 +47,14 @@ std::string UIThreadSearchTermsData::GetApplicationLocale() const {
   return GetApplicationContext()->GetApplicationLocale();
 }
 
-base::string16 UIThreadSearchTermsData::GetRlzParameterValue(
+std::u16string UIThreadSearchTermsData::GetRlzParameterValue(
     bool from_app_list) const {
   DCHECK(!from_app_list);
   DCHECK(thread_checker_.CalledOnValidThread());
-  base::string16 rlz_string;
+  std::u16string rlz_string;
 #if BUILDFLAG(ENABLE_RLZ)
   // For organic brandcode do not use rlz at all.
-  std::string brand;
-  if (ios::google_brand::GetBrand(&brand) &&
-      !ios::google_brand::IsOrganic(brand)) {
+  if (!ios::google_brand::IsOrganic(ios::provider::GetBrandCode())) {
     // This call will may return false until the value has been cached. This
     // normally would mean that a few omnibox searches might not send the RLZ
     // data but this is not really a problem (as the value will eventually be

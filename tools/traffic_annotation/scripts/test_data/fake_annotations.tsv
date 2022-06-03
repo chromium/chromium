@@ -1,0 +1,3 @@
+unique_id_A		sender_A	description_A	trigger_A	data_A	destination_A	cookies_allowed_A	cookies_store_A	settings_A	chrome_policy_A		source_file_A	id_hash_code_A	content_hash_code_A
+unique_id_B		sender_B	description_B	trigger_B	data_B	destination_B	cookies_allowed_B	cookies_store_B	settings_B	chrome_policy_B		source_file_B	id_hash_code_B	content_hash_code_B
+unique_id_C		sender_C	description_C	trigger_C	data_C	destination_C	cookies_allowed_C	cookies_store_C	settings_C	chrome_policy_C		source_file_C	id_hash_code_C	content_hash_code_C

@@ -6,6 +6,7 @@
 
 #include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/services/font/font_service_app.h"
 
 namespace content {
@@ -14,8 +15,8 @@ namespace {
 
 base::SequencedTaskRunner* GetServiceTaskRunner() {
   static base::NoDestructor<scoped_refptr<base::SequencedTaskRunner>>
-      task_runner{base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(), base::WithBaseSyncPrimitives(),
+      task_runner{base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::WithBaseSyncPrimitives(),
            base::TaskPriority::USER_BLOCKING})};
   return task_runner->get();
 }

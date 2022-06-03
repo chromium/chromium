@@ -2,7 +2,7 @@
 ++[link] name='InnerText0'
 ++++[static] name='InnerText0'
 ++[static] name=' '
-++[link] name='InnerText1' description='Title1'
+++[link] name='InnerText1' description='Title1' description-from:tooltip
 ++++[static] name='InnerText1'
 ++[static] name=' '
 ++[link] name='Title2' explicit-name:true

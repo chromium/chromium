@@ -51,4 +51,4 @@ class BLINK_PLATFORM_EXPORT WebURLLoaderTestDelegate {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_URL_LOADER_TEST_DELEGATE_H_

@@ -12,17 +12,13 @@ static_library("feature_list") {
     "invalidation_switches.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }
 
 static_library("impl") {
   sources = [
     "channels_states.cc",
     "channels_states.h",
-    "deprecated_invalidator_registrar.cc",
-    "deprecated_invalidator_registrar.h",
     "fcm_invalidation_listener.cc",
     "fcm_invalidation_listener.h",
     "fcm_invalidation_service.cc",
@@ -40,20 +36,14 @@ static_library("impl") {
     "invalidation_prefs.h",
     "invalidation_service_util.cc",
     "invalidation_service_util.h",
-    "invalidation_state_tracker.cc",
-    "invalidation_state_tracker.h",
-    "invalidator.cc",
-    "invalidator.h",
     "invalidator_registrar_with_memory.cc",
     "invalidator_registrar_with_memory.h",
-    "invalidator_storage.cc",
-    "invalidator_storage.h",
     "mock_ack_handler.cc",
     "mock_ack_handler.h",
-    "per_user_topic_registration_manager.cc",
-    "per_user_topic_registration_manager.h",
-    "per_user_topic_registration_request.cc",
-    "per_user_topic_registration_request.h",
+    "per_user_topic_subscription_manager.cc",
+    "per_user_topic_subscription_manager.h",
+    "per_user_topic_subscription_request.cc",
+    "per_user_topic_subscription_request.h",
     "profile_identity_provider.cc",
     "profile_identity_provider.h",
     "profile_invalidation_provider.cc",
@@ -67,6 +57,7 @@ static_library("impl") {
   public_deps = [
     ":feature_list",
     "//components/invalidation/public",
+    "//services/data_decoder/public/cpp",
   ]
   deps = [
     "//base",
@@ -83,51 +74,10 @@ static_library("impl") {
     # metrics" bit should be part of a Topic.
     "//components/sync/base",
     "//google_apis",
-    "//jingle:notifier",
     "//net:net",
-    "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-
-    # TODO(sync): Remove this (http://crbug.com/133352);
-    "//third_party/protobuf:protobuf_lite",
   ]
-
-  if (!is_android) {
-    sources += [
-      "gcm_invalidation_bridge.cc",
-      "gcm_invalidation_bridge.h",
-      "gcm_network_channel.cc",
-      "gcm_network_channel.h",
-      "gcm_network_channel_delegate.h",
-      "invalidation_notifier.cc",
-      "invalidation_notifier.h",
-      "network_channel.h",
-      "non_blocking_invalidator.cc",
-      "non_blocking_invalidator.h",
-      "notifier_reason_util.cc",
-      "notifier_reason_util.h",
-      "push_client_channel.cc",
-      "push_client_channel.h",
-      "registration_manager.cc",
-      "registration_manager.h",
-      "state_writer.h",
-      "sync_invalidation_listener.cc",
-      "sync_invalidation_listener.h",
-      "sync_system_resources.cc",
-      "sync_system_resources.h",
-      "ticl_invalidation_service.cc",
-      "ticl_invalidation_service.h",
-    ]
-  }
-
-  if (is_android) {
-    sources += [
-      "invalidation_service_android.cc",
-      "invalidation_service_android.h",
-    ]
-    deps += [ ":jni_headers" ]
-  }
 }
 
 source_set("unit_tests") {
@@ -138,8 +88,8 @@ source_set("unit_tests") {
     "fcm_network_handler_unittests.cc",
     "invalidation_logger_unittest.cc",
     "invalidator_registrar_with_memory_unittest.cc",
-    "per_user_topic_registration_manager_unittest.cc",
-    "per_user_topic_registration_request_unittest.cc",
+    "per_user_topic_subscription_manager_unittest.cc",
+    "per_user_topic_subscription_request_unittest.cc",
   ]
   deps = [
     ":impl",
@@ -162,26 +112,11 @@ source_set("unit_tests") {
     "//testing/gtest",
   ]
 
-  if (is_android) {
-    sources += [ "invalidation_service_android_unittest.cc" ]
-    deps += [ ":jni_headers" ]
-  } else {
+  if (!is_android) {
     # Non-Android tests.
     sources += [
-      "deprecated_invalidator_registrar_unittest.cc",
-      "fake_invalidator_unittest.cc",
-      "gcm_invalidation_bridge_unittest.cc",
-      "gcm_network_channel_unittest.cc",
-      "invalidation_notifier_unittest.cc",
-      "invalidator_storage_unittest.cc",
-      "non_blocking_invalidator_unittest.cc",
-      "object_id_invalidation_map_unittest.cc",
-      "push_client_channel_unittest.cc",
-      "registration_manager_unittest.cc",
-      "single_object_invalidation_set_unittest.cc",
-      "sync_invalidation_listener_unittest.cc",
-      "sync_system_resources_unittest.cc",
-      "ticl_invalidation_service_unittest.cc",
+      "single_topic_invalidation_set_unittest.cc",
+      "topic_invalidation_map_unittest.cc",
       "unacked_invalidation_set_unittest.cc",
     ]
   }
@@ -194,114 +129,22 @@ static_library("test_support") {
     "fake_invalidation_handler.h",
     "fake_invalidation_service.cc",
     "fake_invalidation_service.h",
-    "fake_invalidation_state_tracker.cc",
-    "fake_invalidation_state_tracker.h",
-    "fake_invalidator.cc",
-    "fake_invalidator.h",
-    "fake_system_resources.cc",
-    "fake_system_resources.h",
     "invalidation_service_test_template.cc",
     "invalidation_service_test_template.h",
     "invalidation_test_util.cc",
     "invalidation_test_util.h",
-    "invalidator_test_template.cc",
-    "invalidator_test_template.h",
-    "object_id_invalidation_map_test_util.cc",
-    "object_id_invalidation_map_test_util.h",
-    "unacked_invalidation_set_test_util.cc",
-    "unacked_invalidation_set_test_util.h",
+    "topic_invalidation_map_test_util.cc",
+    "topic_invalidation_map_test_util.h",
   ]
 
-  public_deps = [
-    ":impl",
-    "//jingle:notifier_test_util",
-    "//third_party/cacheinvalidation",
-  ]
+  public_deps = [ ":impl" ]
   deps = [
     "//base",
     "//components/gcm_driver:test_support",
     "//components/keyed_service/core",
-    "//jingle:notifier",
+    "//components/prefs:test_support",
     "//net",
     "//testing/gmock",
     "//testing/gtest",
-
-    # TODO(sync): Remove this (http://crbug.com/133352);
-    "//third_party/protobuf:protobuf_lite",
-
-    # "//third_party/cacheinvalidation/src/google/cacheinvalidation:cacheinvalidation_proto_cpp",
   ]
-
-  if (is_android) {
-    deps += [ ":jni_headers" ]
-  }
-}
-
-if (is_android) {
-  android_library("java") {
-    deps = [
-      ":proto_java",
-      "//base:base_java",
-      "//base:jni_java",
-      "//components/signin/core/browser/android:java",
-      "//components/signin/public/identity_manager/android:java",
-      "//components/sync/android:sync_java",
-      "//third_party/android_deps:com_google_protobuf_protobuf_lite_java",
-      "//third_party/cacheinvalidation:cacheinvalidation_javalib",
-      "//third_party/cacheinvalidation:cacheinvalidation_proto_java",
-      "//third_party/jsr-305:jsr_305_javalib",
-    ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-    java_files = [
-      "android/java/src/org/chromium/components/invalidation/InvalidationClientService.java",
-      "android/java/src/org/chromium/components/invalidation/InvalidationService.java",
-      "android/java/src/org/chromium/components/invalidation/PendingInvalidation.java",
-    ]
-  }
-  proto_java_library("proto_java") {
-    proto_path = "android/proto"
-    sources = [
-      "$proto_path/serialized_invalidation.proto",
-    ]
-  }
-  android_resources("javatests__resources") {
-    testonly = true
-    resource_dirs = []
-    android_manifest = "android/javatests/AndroidManifest.xml"
-  }
-  android_library("javatests") {
-    testonly = true
-    deps = [
-      ":java",
-      ":javatests__resources",
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//components/signin/core/browser/android:java",
-      "//components/sync/android:sync_java",
-      "//third_party/android_sdk:android_test_base_java",
-      "//third_party/android_sdk:android_test_runner_java",
-      "//third_party/android_support_test_runner:runner_java",
-      "//third_party/cacheinvalidation:cacheinvalidation_javalib",
-      "//third_party/cacheinvalidation:cacheinvalidation_proto_java",
-      "//third_party/junit",
-    ]
-    java_files = [
-      "android/javatests/src/org/chromium/components/invalidation/InvalidationClientServiceTest.java",
-      "android/javatests/src/org/chromium/components/invalidation/TestableInvalidationClientService.java",
-    ]
-  }
-  junit_binary("components_invalidation_impl_junit_tests") {
-    java_files = [ "android/junit/src/org/chromium/components/invalidation/PendingInvalidationTest.java" ]
-    deps = [
-      ":java",
-      "//base:base_java",
-      "//base:base_java_test_support",
-      "//base:base_junit_test_support",
-    ]
-  }
-  generate_jni("jni_headers") {
-    sources = [
-      "android/java/src/org/chromium/components/invalidation/InvalidationService.java",
-    ]
-  }
 }

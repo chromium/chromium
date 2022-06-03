@@ -43,6 +43,11 @@ class CORE_EXPORT CSSNumberInterpolationType : public CSSInterpolationType {
                                        const StyleResolverState*,
                                        ConversionCheckers&) const final;
 
+  CSSPrimitiveValue::UnitType UnitType() const {
+    return round_to_integer_ ? CSSPrimitiveValue::UnitType::kInteger
+                             : CSSPrimitiveValue::UnitType::kNumber;
+  }
+
   const bool round_to_integer_;
 };
 

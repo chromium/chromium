@@ -7,17 +7,21 @@
 #include <memory>
 #include <string>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/test_extension_environment.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/test/base/testing_profile.h"
+#include "content/public/test/browser_test.h"
 
 class AppInfoDialogBrowserTest : public DialogBrowserTest {
  public:
   AppInfoDialogBrowserTest() {}
+
+  AppInfoDialogBrowserTest(const AppInfoDialogBrowserTest&) = delete;
+  AppInfoDialogBrowserTest& operator=(const AppInfoDialogBrowserTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -38,8 +42,6 @@ class AppInfoDialogBrowserTest : public DialogBrowserTest {
  private:
   std::unique_ptr<extensions::TestExtensionEnvironment> extension_environment_;
   scoped_refptr<const extensions::Extension> extension_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppInfoDialogBrowserTest);
 };
 
 // Invokes a dialog that shows details of an installed extension.

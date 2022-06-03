@@ -79,13 +79,44 @@ enum SearchResultType {
   // A zero-state result representing a local file.
   ZERO_STATE_FILE,
   // A result from the Drive QuickAccess provider.
-  DRIVE_QUICK_ACCESS,
+  ZERO_STATE_DRIVE,
+  // A result from the Assistant provider.
+  ASSISTANT,
+  // An OsSettingsResult.
+  OS_SETTINGS,
+  // A Plugin VM App Result.
+  PLUGIN_VM_APP,
+  // LaCrOS binary.
+  LACROS,
+  // A Remote App Result.
+  REMOTE_APP,
+  // A Borealis App Result.
+  BOREALIS_APP,
+  // A Help App (aka Explore) Result. For default or help results. There are
+  // different search result types for Updates and Discover.
+  HELP_APP_DEFAULT,
+  // A result from omnibox for query suggestion.
+  OMNIBOX_SEARCH_SUGGEST_ENTITY,
+  // A result from omnibox for suggested navigation.
+  OMNIBOX_NAVSUGGEST,
+  // An answer result from Omnibox.
+  OMNIBOX_ANSWER,
+  // A calculator result from Omnibox.
+  OMNIBOX_CALCULATOR,
+  // A local file search result.
+  FILE_SEARCH,
+  // A Drive file search result.
+  DRIVE_SEARCH,
+  // A Help App result about the "What's new" (Updates) page.
+  HELP_APP_UPDATES,
+  // A Help App result about the "Discover" page.
+  HELP_APP_DISCOVER,
   // Boundary is always last.
   SEARCH_RESULT_TYPE_BOUNDARY
 };
 
 ASH_PUBLIC_EXPORT void RecordSearchResultOpenTypeHistogram(
-    ash::AppListLaunchedFrom launch_location,
+    AppListLaunchedFrom launch_location,
     SearchResultType type,
     bool is_tablet_mode);
 
@@ -97,8 +128,10 @@ ASH_PUBLIC_EXPORT void RecordZeroStateSuggestionOpenTypeHistogram(
 
 ASH_PUBLIC_EXPORT void RecordLauncherIssuedSearchQueryLength(int query_length);
 
+ASH_PUBLIC_EXPORT void RecordLauncherClickedSearchQueryLength(int query_length);
+
 ASH_PUBLIC_EXPORT void RecordSuccessfulAppLaunchUsingSearch(
-    ash::AppListLaunchedFrom launched_from,
+    AppListLaunchedFrom launched_from,
     int query_length);
 
 }  // namespace ash

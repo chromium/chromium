@@ -13,7 +13,6 @@
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/api_resource.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -31,6 +30,10 @@ using content::BrowserThread;
 
 namespace extensions {
 
+namespace api {
+class SerialPortManager;
+}
+
 // Encapsulates an mojo interface ptr of device::mojom::SerialPort, which
 // corresponds with an open serial port in remote side(Device Service). NOTE:
 // Instances of this object should only be constructed on the IO thread, and all
@@ -38,7 +41,7 @@ namespace extensions {
 class SerialConnection : public ApiResource,
                          public device::mojom::SerialPortClient {
  public:
-  using OpenCompleteCallback = device::mojom::SerialPort::OpenCallback;
+  using OpenCompleteCallback = base::OnceCallback<void(bool)>;
   using GetInfoCompleteCallback =
       base::OnceCallback<void(bool,
                               std::unique_ptr<api::serial::ConnectionInfo>)>;
@@ -67,8 +70,7 @@ class SerialConnection : public ApiResource,
   using SetControlSignalsCompleteCallback =
       device::mojom::SerialPort::SetControlSignalsCallback;
 
-  SerialConnection(const std::string& owner_extension_id,
-                   mojo::PendingRemote<device::mojom::SerialPort> serial_port);
+  explicit SerialConnection(const std::string& owner_extension_id);
   ~SerialConnection() override;
 
   // ApiResource override.
@@ -97,20 +99,22 @@ class SerialConnection : public ApiResource,
   // Initiates an asynchronous Open of the device. It is the caller's
   // responsibility to ensure that this SerialConnection stays alive
   // until |callback| is run.
-  virtual void Open(const api::serial::ConnectionOptions& options,
+  virtual void Open(api::SerialPortManager* port_manager,
+                    const std::string& path,
+                    const api::serial::ConnectionOptions& options,
                     OpenCompleteCallback callback);
 
   // Begins an asynchronous send operation. Calling this while a Send
-  // is already pending is a no-op and returns |false| without calling
-  // |callback|.
-  virtual bool Send(const std::vector<uint8_t>& data,
+  // is already pending will result in a serial::SEND_ERROR_PENDING error.
+  virtual void Send(const std::vector<uint8_t>& data,
                     SendCompleteCallback callback);
 
   // Start to the polling process from |receive_pipe_|.
   virtual void StartPolling(const ReceiveEventCallback& callback);
 
   // Flushes input and output buffers.
-  void Flush(FlushCompleteCallback callback) const;
+  void Flush(device::mojom::SerialPortFlushMode mode,
+             FlushCompleteCallback callback) const;
 
   // Configures some subset of port options for this connection.
   // Omitted options are unchanged.
@@ -137,6 +141,11 @@ class SerialConnection : public ApiResource,
 
   static const BrowserThread::ID kThreadId = BrowserThread::UI;
 
+ protected:
+  // Initializes |serial_port_| with a disconnected Mojo pipe for testing
+  // purposes.
+  void InitSerialPortForTesting();
+
  private:
   friend class ApiResourceManager<SerialConnection>;
   static const char* service_name() { return "SerialConnectionManager"; }
@@ -146,11 +155,9 @@ class SerialConnection : public ApiResource,
   void OnSendError(device::mojom::SerialSendError error) override;
 
   void OnOpen(
-      mojo::ScopedDataPipeConsumerHandle consumer,
-      mojo::ScopedDataPipeProducerHandle producer,
       mojo::PendingReceiver<device::mojom::SerialPortClient> client_receiver,
       OpenCompleteCallback callback,
-      bool success);
+      mojo::PendingRemote<device::mojom::SerialPort> serial_port);
 
   // Read data from |receive_pipe_| when the data is ready or dispatch error
   // events in error cases.
@@ -160,8 +167,8 @@ class SerialConnection : public ApiResource,
 
   void CreatePipe(mojo::ScopedDataPipeProducerHandle* producer,
                   mojo::ScopedDataPipeConsumerHandle* consumer);
-  void SetUpReceiveDataPipe(mojo::ScopedDataPipeConsumerHandle producer);
-  void SetUpSendDataPipe(mojo::ScopedDataPipeProducerHandle consumer);
+  void SetUpReceiveDataPipe();
+  void SetUpSendDataPipe();
 
   void SetTimeoutCallback();
 
@@ -205,7 +212,7 @@ class SerialConnection : public ApiResource,
 
   // Callback to handle the completion of a pending Receive() request.
   ReceiveEventCallback receive_event_cb_;
-  base::Optional<device::mojom::SerialReceiveError> read_error_;
+  absl::optional<device::mojom::SerialReceiveError> read_error_;
 
   // Callback to handle the completion of a pending Send() request.
   SendCompleteCallback send_complete_;
@@ -216,11 +223,11 @@ class SerialConnection : public ApiResource,
 
   // Closure which will trigger a receive timeout unless cancelled. Reset on
   // initialization and after every successful Receive().
-  base::CancelableClosure receive_timeout_task_;
+  base::CancelableOnceClosure receive_timeout_task_;
 
   // Write timeout closure. Reset on initialization and after every successful
   // Send().
-  base::CancelableClosure send_timeout_task_;
+  base::CancelableOnceClosure send_timeout_task_;
 
   // Mojo interface remote corresponding with remote asynchronous I/O handler.
   mojo::Remote<device::mojom::SerialPort> serial_port_;

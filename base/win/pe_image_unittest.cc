@@ -4,7 +4,6 @@
 
 // This file contains unit tests for PEImage.
 #include <algorithm>
-#include <vector>
 
 #include "base/files/file_path.h"
 #include "base/path_service.h"

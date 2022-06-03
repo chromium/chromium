@@ -1,4 +1,7 @@
+set noparent
 halliwell@chromium.org
+juke@chromium.org
+seantopping@chromium.org
 servolk@chromium.org
 yucliu@chromium.org
 
@@ -6,9 +9,9 @@ yucliu@chromium.org
 per-file *android*=file://chromecast/android/OWNERS
 per-file *.java=file://chromecast/android/OWNERS
 
+# Fuchsia integration owners:
+per-file ...fuchsia*=file://build/fuchsia/OWNERS
+
 # For major changes, please use one of the reviewers above!
-alexst@chromium.org
 dnicoara@chromium.org
 spang@chromium.org
-
-# COMPONENT: Chromecast

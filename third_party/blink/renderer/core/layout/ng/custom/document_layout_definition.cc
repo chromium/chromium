@@ -33,7 +33,7 @@ bool DocumentLayoutDefinition::IsEqual(const CSSLayoutDefinition& other) {
              other.ChildCustomInvalidationProperties();
 }
 
-void DocumentLayoutDefinition::Trace(blink::Visitor* visitor) {
+void DocumentLayoutDefinition::Trace(Visitor* visitor) const {
   visitor->Trace(layout_definition_);
 }
 

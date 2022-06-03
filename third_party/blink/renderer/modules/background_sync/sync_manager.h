@@ -5,10 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_SYNC_SYNC_MANAGER_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BACKGROUND_SYNC_SYNC_MANAGER_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -23,13 +24,6 @@ class SyncManager final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static SyncManager* Create(
-      ServiceWorkerRegistration* registration,
-      scoped_refptr<base::SequencedTaskRunner> task_runner) {
-    return MakeGarbageCollected<SyncManager>(registration,
-                                             std::move(task_runner));
-  }
-
   SyncManager(ServiceWorkerRegistration*,
               scoped_refptr<base::SequencedTaskRunner>);
 
@@ -38,18 +32,11 @@ class SyncManager final : public ScriptWrappable {
                                  ExceptionState& exception_state);
   ScriptPromise getTags(ScriptState*);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   enum { kUnregisteredSyncID = -1 };
 
  private:
-  // Returns an initialized
-  // mojo::Remote<mojom::blink::OneShotBackgroundSyncService>. A connection with
-  // the browser's OneShotBackgroundSyncService is created the first time this
-  // method is called.
-  const mojo::Remote<mojom::blink::OneShotBackgroundSyncService>&
-  GetBackgroundSyncServiceRemote();
-
   // Callbacks
   void RegisterCallback(ScriptPromiseResolver*,
                         mojom::blink::BackgroundSyncError,
@@ -60,8 +47,7 @@ class SyncManager final : public ScriptWrappable {
       WTF::Vector<mojom::blink::SyncRegistrationOptionsPtr> registrations);
 
   Member<ServiceWorkerRegistration> registration_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
-  mojo::Remote<mojom::blink::OneShotBackgroundSyncService>
+  HeapMojoRemote<mojom::blink::OneShotBackgroundSyncService>
       background_sync_service_;
 };
 

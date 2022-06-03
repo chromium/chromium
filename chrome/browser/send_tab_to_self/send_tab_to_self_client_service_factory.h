@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_CLIENT_SERVICE_FACTORY_H_
 #define CHROME_BROWSER_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_CLIENT_SERVICE_FACTORY_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 class Profile;
@@ -29,6 +26,11 @@ class SendTabToSelfClientServiceFactory
       Profile* profile);
   static SendTabToSelfClientServiceFactory* GetInstance();
 
+  SendTabToSelfClientServiceFactory(const SendTabToSelfClientServiceFactory&) =
+      delete;
+  SendTabToSelfClientServiceFactory& operator=(
+      const SendTabToSelfClientServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<SendTabToSelfClientServiceFactory>;
 
@@ -42,8 +44,6 @@ class SendTabToSelfClientServiceFactory
   bool ServiceIsCreatedWithBrowserContext() const override;
 
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfClientServiceFactory);
 };
 
 }  // namespace send_tab_to_self

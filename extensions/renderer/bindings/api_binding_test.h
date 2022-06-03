@@ -24,6 +24,10 @@ namespace extensions {
 // A common unit test class for testing API bindings. Creates an isolate and an
 // initial v8 context, and checks for v8 leaks at the end of the test.
 class APIBindingTest : public testing::Test {
+ public:
+  APIBindingTest(const APIBindingTest&) = delete;
+  APIBindingTest& operator=(const APIBindingTest&) = delete;
+
  protected:
   APIBindingTest();
   ~APIBindingTest() override;
@@ -84,8 +88,6 @@ class APIBindingTest : public testing::Test {
   std::unique_ptr<gin::ContextHolder> main_context_holder_;
   std::unique_ptr<TestJSRunner::Scope> test_js_runner_;
   std::vector<std::unique_ptr<gin::ContextHolder>> additional_context_holders_;
-
-  DISALLOW_COPY_AND_ASSIGN(APIBindingTest);
 };
 
 }  // namespace extensions

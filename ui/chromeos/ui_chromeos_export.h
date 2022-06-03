@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_CHROMEOS_CHROMEOS_EXPORT_H_
-#define UI_CHROMEOS_CHROMEOS_EXPORT_H_
+#ifndef UI_CHROMEOS_UI_CHROMEOS_EXPORT_H_
+#define UI_CHROMEOS_UI_CHROMEOS_EXPORT_H_
 
 #if defined(COMPONENT_BUILD)
 #if defined(UI_CHROMEOS_IMPLEMENTATION)
@@ -16,4 +16,4 @@
 #define UI_CHROMEOS_EXPORT
 #endif
 
-#endif  // UI_CHROMEOS_CHROMEOS_EXPORT_H_
+#endif  // UI_CHROMEOS_UI_CHROMEOS_EXPORT_H_

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+'use strict';
+
+function createIframe() {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  return iframe;
+}
+
+promise_test(async (t) => {
+  const iframe = createIframe();
+  const chunk = new Uint8Array([100, 101, 102]);
+  assert_array_equals(chunk, [100, 101, 102]);
+  const rs = new ReadableStream({
+    start(controller) {
+      controller.enqueue(chunk.buffer);
+      controller.close();
+    }
+  });
+  internals.setAllowPerChunkTransferring(rs);
+
+  iframe.contentWindow.postMessage(rs, '*', [rs]);
+  const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+
+  const reader = ev.data.getReader();
+  const {value: value1, done: done1} = await reader.read();
+
+  assert_false(done1);
+  assert_array_equals(new Uint8Array(value1), [100, 101, 102]);
+  // `chunk` has been detached.
+  assert_array_equals(chunk, []);
+
+  const {value: value2, done: done2} = await reader.read();
+
+  assert_equals(value2, undefined);
+  assert_true(done2);
+}, 'per-chunk transferring on ReadableStream');
+
+</script>
+</body>
+</html>

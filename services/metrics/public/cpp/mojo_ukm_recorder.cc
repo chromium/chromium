@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace ukm {
 
@@ -23,7 +23,9 @@ void MojoUkmRecorder::UpdateSourceURL(SourceId source_id, const GURL& url) {
   interface_->UpdateSourceURL(source_id, url.spec());
 }
 
-void MojoUkmRecorder::UpdateAppURL(SourceId source_id, const GURL& url) {
+void MojoUkmRecorder::UpdateAppURL(SourceId source_id,
+                                   const GURL& url,
+                                   const AppType app_type) {
   NOTREACHED();
 }
 

@@ -2,15 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserService} from 'chrome://history/history.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
+import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
+import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+import {flushTasks} from 'chrome://test/test_util.js';
+
 suite('<history-toolbar>', function() {
   let app;
   let toolbar;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     window.history.replaceState({}, '', '/');
-    testService = new TestBrowserService();
-    history.BrowserService.instance_ = testService;
+    BrowserService.setInstance(new TestBrowserService());
 
     app = document.createElement('history-app');
     document.body.appendChild(app);
@@ -21,7 +26,7 @@ suite('<history-toolbar>', function() {
   test('search bar is focused on load in wide mode', async () => {
     toolbar.$['main-toolbar'].narrow = false;
 
-    await test_util.flushTasks();
+    await flushTasks();
 
     // Ensure the search bar is focused on load.
     assertTrue(
@@ -31,7 +36,7 @@ suite('<history-toolbar>', function() {
   test('search bar is not focused on load in narrow mode', async () => {
     toolbar.$['main-toolbar'].narrow = true;
 
-    await test_util.flushTasks();
+    await flushTasks();
     // Ensure the search bar is focused on load.
     assertFalse(toolbar.$['main-toolbar'].getSearchField().isSearchFocused());
   });
@@ -41,13 +46,12 @@ suite('<history-toolbar>', function() {
     field.blur();
     assertFalse(field.showingSearch);
 
-    const modifier = cr.isMac ? 'meta' : 'ctrl';
-    MockInteractions.pressAndReleaseKeyOn(document.body, 70, modifier, 'f');
+    const modifier = isMac ? 'meta' : 'ctrl';
+    pressAndReleaseKeyOn(document.body, 70, modifier, 'f');
     assertTrue(field.showingSearch);
     assertEquals(field.$.searchInput, field.root.activeElement);
 
-    MockInteractions.pressAndReleaseKeyOn(
-        field.$.searchInput, 27, '', 'Escape');
+    pressAndReleaseKeyOn(field.$.searchInput, 27, '', 'Escape');
     assertFalse(field.showingSearch, 'Pressing escape closes field.');
     assertNotEquals(field.$.searchInput, field.root.activeElement);
   });

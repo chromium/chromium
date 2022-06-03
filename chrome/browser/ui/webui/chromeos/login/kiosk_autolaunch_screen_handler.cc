@@ -8,21 +8,17 @@
 
 #include "base/command_line.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
+#include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/chromeos/app_mode/kiosk_app_manager.h"
-#include "chrome/browser/chromeos/login/oobe_screen.h"
-#include "chrome/browser/chromeos/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/constants/chromeos_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/login/localized_values_builder.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
 #include "ui/base/webui/web_ui_util.h"
 
 namespace chromeos {
@@ -115,11 +111,6 @@ void KioskAutolaunchScreenHandler::HandleOnCancel() {
   KioskAppManager::Get()->SetEnableAutoLaunch(false);
   if (delegate_)
     delegate_->OnExit(false);
-
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_COMPLETED,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
 }
 
 void KioskAutolaunchScreenHandler::HandleOnConfirm() {
@@ -127,11 +118,6 @@ void KioskAutolaunchScreenHandler::HandleOnConfirm() {
   KioskAppManager::Get()->SetEnableAutoLaunch(true);
   if (delegate_)
     delegate_->OnExit(true);
-
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_COMPLETED,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
 }
 
 void KioskAutolaunchScreenHandler::HandleOnVisible() {
@@ -140,10 +126,6 @@ void KioskAutolaunchScreenHandler::HandleOnVisible() {
 
   is_visible_ = true;
   UpdateKioskApp();
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_KIOSK_AUTOLAUNCH_WARNING_VISIBLE,
-      content::NotificationService::AllSources(),
-      content::NotificationService::NoDetails());
 }
 
 void KioskAutolaunchScreenHandler::OnKioskAppsSettingsChanged() {

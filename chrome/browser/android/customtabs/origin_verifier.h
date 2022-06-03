@@ -5,10 +5,18 @@
 #ifndef CHROME_BROWSER_ANDROID_CUSTOMTABS_ORIGIN_VERIFIER_H_
 #define CHROME_BROWSER_ANDROID_CUSTOMTABS_ORIGIN_VERIFIER_H_
 
+#include <memory>
+
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "net/url_request/url_fetcher.h"
 #include "net/url_request/url_fetcher_delegate.h"
 #include "net/url_request/url_request_context_getter.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace digital_asset_links {
 enum class RelationshipCheckResult;
@@ -24,6 +32,10 @@ class OriginVerifier {
                  const base::android::JavaRef<jobject>& obj,
                  const base::android::JavaRef<jobject>& jweb_contents,
                  const base::android::JavaRef<jobject>& jprofile);
+
+  OriginVerifier(const OriginVerifier&) = delete;
+  OriginVerifier& operator=(const OriginVerifier&) = delete;
+
   ~OriginVerifier();
 
   // Verify origin with the given parameters. No network requests can be made
@@ -41,16 +53,16 @@ class OriginVerifier {
   static int GetClearBrowsingDataCallCountForTesting();
  private:
   void OnRelationshipCheckComplete(
+      std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler> handler,
+      const std::string& origin,
       digital_asset_links::RelationshipCheckResult result);
 
-  std::unique_ptr<digital_asset_links::DigitalAssetLinksHandler>
-      asset_link_handler_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  content::WebContents* web_contents_;
 
   base::android::ScopedJavaGlobalRef<jobject> jobject_;
 
   static int clear_browsing_data_call_count_for_tests_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginVerifier);
 };
 
 }  // namespace customtabs

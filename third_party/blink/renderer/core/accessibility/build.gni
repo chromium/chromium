@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_accessibility = [
+  "ax_context.cc",
+  "ax_context.h",
+  "ax_object_cache.cc",
+  "ax_object_cache.h",
+  "ax_object_cache_base.h",
+  "axid.h",
+  "blink_ax_event_intent.cc",
+  "blink_ax_event_intent.h",
+  "scoped_blink_ax_event_intent.cc",
+  "scoped_blink_ax_event_intent.h",
+]
+
+blink_core_tests_accessibility = [
+  "blink_ax_event_intent_test.cc",
+  "scoped_blink_ax_event_intent_test.cc",
+]

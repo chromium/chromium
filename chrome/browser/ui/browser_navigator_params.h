@@ -10,16 +10,19 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/site_instance.h"
+#include "content/public/common/child_process_host.h"
 #include "content/public/common/referrer.h"
-#include "content/public/common/was_activated_option.mojom.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/navigation/impression.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
+#include "third_party/blink/public/mojom/navigation/was_activated_option.mojom.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
@@ -76,7 +79,12 @@ struct NavigateParams {
   NavigateParams(Profile* profile,
                  const GURL& a_url,
                  ui::PageTransition a_transition);
+
+  NavigateParams(const NavigateParams&) = delete;
+  NavigateParams& operator=(const NavigateParams&) = delete;
+
   NavigateParams(NavigateParams&& params);
+
   ~NavigateParams();
 
   // Copies fields from |params| struct to |nav_params| struct.
@@ -87,15 +95,27 @@ struct NavigateParams {
   GURL url;
   content::Referrer referrer;
 
+  // The frame token of the initiator of the navigation. This is best effort: it
+  // is only defined for some renderer-initiated navigations (e.g., not drag and
+  // drop), and the frame with the corresponding frame token may have been
+  // deleted before the navigation begins. It is defined if and only if
+  // |initiator_process_id| below is.
+  absl::optional<blink::LocalFrameToken> initiator_frame_token;
+
+  // ID of the renderer process of the frame host that initiated the navigation.
+  // This is defined if and only if |initiator_frame_token| above is, and it is
+  // only valid in conjunction with it.
+  int initiator_process_id = content::ChildProcessHost::kInvalidUniqueID;
+
   // The origin of the initiator of the navigation.
-  base::Optional<url::Origin> initiator_origin;
+  absl::optional<url::Origin> initiator_origin;
 
   // The frame name to be used for the main frame.
   std::string frame_name;
 
   // The browser-global ID of the frame to navigate, or
   // content::RenderFrameHost::kNoFrameTreeNodeId for the main frame.
-  int frame_tree_node_id = -1;
+  int frame_tree_node_id = content::RenderFrameHost::kNoFrameTreeNodeId;
 
   // Any redirect URLs that occurred for this navigation before |url|.
   // Usually empty.
@@ -175,7 +195,7 @@ struct NavigateParams {
   int tabstrip_index = -1;
 
   // If non-empty, the new tab is an app tab.
-  std::string extension_app_id;
+  std::string app_id;
 
   // If non-empty, specifies the desired initial position and size of the
   // window if |disposition| == NEW_POPUP.
@@ -198,6 +218,10 @@ struct NavigateParams {
   // If disposition is NEW_WINDOW or NEW_POPUP, and |window_action| is set to
   // NO_ACTION, |window_action| will be set to SHOW_WINDOW.
   WindowAction window_action = NO_ACTION;
+
+  // Whether the browser is being created for captive portal resolution. If
+  // true, |disposition| should be NEW_POPUP.
+  bool is_captive_portal_popup = false;
 
   // If false then the navigation was not initiated by a user gesture.
   bool user_gesture = true;
@@ -227,7 +251,7 @@ struct NavigateParams {
   Browser* browser = nullptr;
 
   // The group the caller would like the tab to be added to.
-  base::Optional<tab_groups::TabGroupId> group;
+  absl::optional<tab_groups::TabGroupId> group;
 
   // A bitmask of values defined in TabStripModel::AddTabTypes. Helps
   // determine where to insert a new tab and whether or not it should be
@@ -243,9 +267,10 @@ struct NavigateParams {
   // navigation entry.
   bool should_replace_current_entry = false;
 
-  // Indicates whether |contents_to_insert| is being created with a
-  // window.opener.
-  bool created_with_opener = false;
+  // Indicates whether |contents_to_insert| is being created by another window,
+  // and thus can be closed via window.close(). This may be true even when
+  // "noopener" was used.
+  bool opened_by_another_window = false;
 
   // Whether or not the related navigation was started in the context menu.
   bool started_from_context_menu = false;
@@ -274,8 +299,8 @@ struct NavigateParams {
   // outside of the page and pass it to the page as if it happened on a prior
   // page. For example, if the assistant opens a page we should treat the
   // user's interaction with the assistant as a previous user activation.
-  content::mojom::WasActivatedOption was_activated =
-      content::mojom::WasActivatedOption::kUnknown;
+  blink::mojom::WasActivatedOption was_activated =
+      blink::mojom::WasActivatedOption::kUnknown;
 
   // If this navigation was initiated from a link that specified the
   // hrefTranslate attribute, this contains the attribute's value (a BCP47
@@ -285,9 +310,20 @@ struct NavigateParams {
   // Indicates the reload type of this navigation.
   content::ReloadType reload_type = content::ReloadType::NONE;
 
+  // Optional impression associated with this navigation. Only set on
+  // navigations that originate from links with impression attributes. Used for
+  // conversion measurement.
+  absl::optional<blink::Impression> impression;
+
+  // True if the navigation was initiated by typing in the omnibox but the typed
+  // text didn't have a scheme such as http or https (e.g. google.com), and
+  // https was used as the default scheme for the navigation. This is used by
+  // TypedNavigationUpgradeThrottle to determine if the navigation should be
+  // observed and fall back to using http scheme if necessary.
+  bool is_using_https_as_default_scheme = false;
+
  private:
   NavigateParams();
-  DISALLOW_COPY_AND_ASSIGN(NavigateParams);
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_NAVIGATOR_PARAMS_H_

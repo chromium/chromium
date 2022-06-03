@@ -1,0 +1,133 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
+<script>
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a href="#">^test|</a>',
+        '</div>',
+    ],
+    'insertText c',
+    [
+        '<div contenteditable>',
+            'c|',
+        '</div>',
+    ],
+    'InsertText replacing the hyperlink');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a href="#">^test|</a>',
+        '</div>',
+    ],
+    'insertText new',
+    [
+        '<div contenteditable>',
+            '<a href="#">new|</a>',
+        '</div>',
+    ],
+    'InsertText not replacing the hyperlink');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a href="#">t^es|t</a>',
+        '</div>',
+    ],
+    'insertText c',
+    [
+        '<div contenteditable>',
+            '<a href="#">tc|t</a>',
+        '</div>',
+    ],
+    'InsertText replacing content inside the hyperlink');
+
+selection_test(
+    [
+        '<div contenteditable>^',
+            '<a href="#">test</a>|',
+        '</div>',
+    ],
+    'insertText c',
+    [
+        '<div contenteditable>',
+            'c|',
+        '</div>',
+    ],
+    'InsertText replacing content inside the editable block');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a href="#">test|</a>',
+        '</div>',
+    ],
+    'insertText c',
+    [
+        '<div contenteditable>',
+            '<a href="#">test</a>c|',
+        '</div>',
+    ],
+    'InsertText after hyperlink');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a href="#">|test</a>',
+        '</div>',
+    ],
+    'insertText c',
+    [
+        '<div contenteditable>',
+            'c|<a href="#">test</a>',
+        '</div>',
+    ],
+    'InsertText before hyperlink');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a href="#"><i>^test|</i></a>',
+        '</div>',
+    ],
+    'insertText c',
+    [
+        '<div contenteditable>',
+            '<i>c|</i>',
+        '</div>',
+    ],
+    'InsertText replacing the hyperlink where text is wrapped inside inline');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a href="#"><i>t^est|</i></a>',
+        '</div>',
+    ],
+    'insertText \t',
+    [
+        '<div contenteditable>',
+            '<a href="#"><i>t<span style="white-space:pre">\t|</span></i></a>',
+        '</div>',
+    ],
+    'InsertText tab not replacing the hyperlink where text is wrapped inside inline');
+
+selection_test(
+    [
+        '<div contenteditable>',
+            '<a><i>test|</i></a>',
+        '</div>',
+    ],
+    'insertText c',
+    [
+        '<div contenteditable>',
+            '<a><i>testc|</i></a>',
+        '</div>',
+    ],
+    'InsertText after hyperlink where text is wrapped inside inline');
+
+</script>

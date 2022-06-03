@@ -26,27 +26,49 @@ ScriptValue PerformanceServerTiming::toJSONForBinding(
   return builder.GetScriptValue();
 }
 
-WebVector<WebServerTimingInfo> PerformanceServerTiming::ParseServerTiming(
+Vector<mojom::blink::ServerTimingInfoPtr>
+PerformanceServerTiming::ParseServerTimingToMojo(
     const ResourceTimingInfo& info) {
-  WebVector<WebServerTimingInfo> result;
+  const ResourceResponse& response = info.FinalResponse();
+  return ParseServerTimingFromHeaderValueToMojo(
+      response.HttpHeaderField(http_names::kServerTiming));
+}
+
+Vector<mojom::blink::ServerTimingInfoPtr>
+PerformanceServerTiming::ParseServerTimingFromHeaderValueToMojo(
+    const String& value) {
+  std::unique_ptr<ServerTimingHeaderVector> headers =
+      ParseServerTimingHeader(value);
+  Vector<mojom::blink::ServerTimingInfoPtr> result;
+  result.ReserveCapacity(headers->size());
+  for (const auto& header : *headers) {
+    result.emplace_back(mojom::blink::ServerTimingInfo::New(
+        header->Name(), header->Duration(), header->Description()));
+  }
+  return result;
+}
+
+HeapVector<Member<PerformanceServerTiming>>
+PerformanceServerTiming::ParseServerTiming(const ResourceTimingInfo& info) {
+  HeapVector<Member<PerformanceServerTiming>> result;
   const ResourceResponse& response = info.FinalResponse();
   std::unique_ptr<ServerTimingHeaderVector> headers = ParseServerTimingHeader(
       response.HttpHeaderField(http_names::kServerTiming));
-  result.reserve(headers->size());
+  result.ReserveCapacity(headers->size());
   for (const auto& header : *headers) {
-    result.emplace_back(header->Name(), header->Duration(),
-                        header->Description());
+    result.push_back(MakeGarbageCollected<PerformanceServerTiming>(
+        header->Name(), header->Duration(), header->Description()));
   }
   return result;
 }
 
 HeapVector<Member<PerformanceServerTiming>>
 PerformanceServerTiming::FromParsedServerTiming(
-    const WebVector<WebServerTimingInfo>& entries) {
+    const Vector<mojom::blink::ServerTimingInfoPtr>& entries) {
   HeapVector<Member<PerformanceServerTiming>> result;
   for (const auto& entry : entries) {
     result.push_back(MakeGarbageCollected<PerformanceServerTiming>(
-        entry.name, entry.duration, entry.description));
+        entry->name, entry->duration, entry->description));
   }
   return result;
 }

@@ -22,18 +22,21 @@ class MediaStreamInternalFrameWrapper {
                                WebLocalFrame::ToCoreFrame(*web_frame))
                          : nullptr) {}
 
+  MediaStreamInternalFrameWrapper(const MediaStreamInternalFrameWrapper&) =
+      delete;
+  MediaStreamInternalFrameWrapper& operator=(
+      const MediaStreamInternalFrameWrapper&) = delete;
+
   LocalFrame* frame() { return frame_.Get(); }
   WebLocalFrame* web_frame() {
     if (!frame_)
       return nullptr;
 
-    return static_cast<WebLocalFrame*>(WebFrame::FromFrame(frame()));
+    return static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(frame()));
   }
 
  private:
   WeakPersistent<LocalFrame> frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaStreamInternalFrameWrapper);
 };
 
 }  // namespace blink

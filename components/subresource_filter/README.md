@@ -78,7 +78,7 @@ redirect URL speculatively, but makes an activation decision based on the last
 URL.
 
 ##### Document-level activation
-The ruleset has rules for whitelisting documents in specific ways. How a given
+The ruleset has rules for allowlisting documents in specific ways. How a given
 document is activated is codified in the `ActivationState` struct.
 
 In order to notify a document in the renderer about how it should be activated,

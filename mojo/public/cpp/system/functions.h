@@ -11,7 +11,11 @@
 #ifndef MOJO_PUBLIC_CPP_SYSTEM_FUNCTIONS_H_
 #define MOJO_PUBLIC_CPP_SYSTEM_FUNCTIONS_H_
 
+#include <string>
+
+#include "base/callback_forward.h"
 #include "mojo/public/c/system/functions.h"
+#include "mojo/public/cpp/system/system_export.h"
 
 namespace mojo {
 
@@ -20,6 +24,17 @@ namespace mojo {
 inline MojoTimeTicks GetTimeTicksNow() {
   return MojoGetTimeTicksNow();
 }
+
+// Sets a callback to handle communication errors regarding peer processes whose
+// identity is not explicitly known by this process, i.e. processes that are
+// part of the same Mojo process network but which were not invited by this
+// process.
+//
+// This can be used to globally listen for reports of bad incoming IPCs.
+using DefaultProcessErrorHandler =
+    base::RepeatingCallback<void(const std::string& error)>;
+void MOJO_CPP_SYSTEM_EXPORT
+SetDefaultProcessErrorHandler(DefaultProcessErrorHandler handler);
 
 }  // namespace mojo
 

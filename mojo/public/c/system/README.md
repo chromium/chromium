@@ -356,6 +356,13 @@ from user-supplied buffers -- as well as two-phase I/O, allowing callers to
 temporarily lock some portion of the data pipe in order to read or write its
 contents directly.
 
+Under the hood, data pipes use shared memory. Rather than being one big buffer
+to hold all the data, it's a configurable fixed-size ring buffer shared by the
+**producer** and **consumer**. Compared to using Shared Buffers directly data
+pipes provide convenience about messaging when data is available etc. In general
+the performance advantage when compared to message pipes comes in the form of
+fewer memory allocations and fewer copies throughout the transfer process.
+
 See [//mojo/public/c/system/data_pipe.h](https://cs.chromium.org/chromium/src/mojo/public/c/system/data_pipe.h)
 for detailed data pipe API documentation.
 
@@ -375,8 +382,9 @@ MojoResult result = MojoCreateDataPipe(NULL, &producer, &consumer);
 ### Immediate I/O
 
 Data can be written into or read out of a data pipe using buffers provided by
-the caller. This is generally more convenient than two-phase I/O but is
-also less efficient due to extra copying.
+the caller. This is generally more convenient than two-phase I/O but less
+flexible. The APIs themselves are slower than two-phase I/O APIs since the
+latter provide the buffer directly to the caller without copying any data.
 
 ``` c
 uint32_t num_bytes = 12;
@@ -415,6 +423,8 @@ Otherwise such a request will fail with `MOJO_READ_DATA_OUT_OF_RANGE`.
 
 Data pipes also support two-phase I/O operations, allowing a caller to
 temporarily lock a portion of the data pipe's storage for direct memory access.
+This can be more efficient in cases where data can be generated to or consumed
+from the data pipe's storage directly.
 
 ``` c
 void* buffer;

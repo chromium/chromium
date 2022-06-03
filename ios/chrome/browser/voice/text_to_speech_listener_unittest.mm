@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/voice/text_to_speech_listener.h"
 
 #include "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/public/test/web_view_content_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
 
@@ -70,6 +71,13 @@ class TextToSpeechListenerTest : public web::WebTestWithWebState {
  public:
   void SetUp() override {
     web::WebTestWithWebState::SetUp();
+    // Load Html is triggering several callbacks when called the first time.
+    // Call it a first time before setting the |delegate_| to make sure that it
+    // is working as expected in tests.
+    LoadHtml(@"<html><body>Page loaded</body></html>");
+    ASSERT_TRUE(
+        web::test::WaitForWebViewContainingText(web_state(), "Page loaded"));
+
     delegate_ = [[TestTTSListenerDelegate alloc] init];
     listener_ = [[TextToSpeechListener alloc] initWithWebState:web_state()
                                                       delegate:delegate_];

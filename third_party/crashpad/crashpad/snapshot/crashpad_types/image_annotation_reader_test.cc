@@ -20,7 +20,6 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
 #include "build/build_config.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
@@ -32,6 +31,10 @@
 #include "util/misc/as_underlying_type.h"
 #include "util/misc/from_pointer_cast.h"
 #include "util/process/process_memory_native.h"
+
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#include "test/linux/fake_ptrace_connection.h"
+#endif
 
 namespace crashpad {
 namespace test {
@@ -91,8 +94,14 @@ void ExpectAnnotations(ProcessType process,
                        bool is_64_bit,
                        VMAddress simple_map_address,
                        VMAddress annotation_list_address) {
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+  FakePtraceConnection connection;
+  ASSERT_TRUE(connection.Initialize(process));
+  ProcessMemoryLinux memory(&connection);
+#else
   ProcessMemoryNative memory;
   ASSERT_TRUE(memory.Initialize(process));
+#endif
 
   ProcessMemoryRange range;
   ASSERT_TRUE(range.Initialize(&memory, is_64_bit));
@@ -154,6 +163,9 @@ class ReadFromChildTest : public MultiprocessExec {
     SetChildTestMainFunction("ReadAnnotationsFromChildTestMain");
   }
 
+  ReadFromChildTest(const ReadFromChildTest&) = delete;
+  ReadFromChildTest& operator=(const ReadFromChildTest&) = delete;
+
   ~ReadFromChildTest() = default;
 
  private:
@@ -173,8 +185,6 @@ class ReadFromChildTest : public MultiprocessExec {
     ExpectAnnotations(
         ChildProcess(), am_64_bit, simple_map_address, annotations_address);
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ReadFromChildTest);
 };
 
 TEST(ImageAnnotationReader, ReadFromChild) {

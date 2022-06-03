@@ -34,7 +34,7 @@ shouldBe("a.href", "'https://www.mydomain.com:4/path/testurl.html?key=value'");
 debug("Set port to null");
 a.href = "https://www.mydomain.com:8080/path/testurl.html?key=value";
 a.port = null;
-shouldBe("a.href", "'https://www.mydomain.com:0/path/testurl.html?key=value'");
+shouldBe("a.href", "'https://www.mydomain.com:8080/path/testurl.html?key=value'");
 
 // Firefox 3.5.2 does not accept the port if it is null.
 debug("Set port to empty string");
@@ -45,7 +45,7 @@ shouldBe("a.href", "'https://www.mydomain.com/path/testurl.html?key=value'");
 debug("Set port to undefined");
 a.href = "https://www.mydomain.com:8080/path/testurl.html?key=value";
 a.port = undefined;
-shouldBe("a.href", "'https://www.mydomain.com:0/path/testurl.html?key=value'");
+shouldBe("a.href", "'https://www.mydomain.com:8080/path/testurl.html?key=value'");
 
 // Firefox 3.5.2 does not allow setting the port on a URL with protocol foo: .
 debug("Set port to URL with foo: protocol");

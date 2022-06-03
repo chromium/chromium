@@ -4,12 +4,15 @@
 
 #include "google_apis/gaia/oauth_multilogin_result.h"
 
+#include <algorithm>
+
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/optional.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -58,11 +61,12 @@ OAuthMultiloginResult::OAuthMultiloginResult(
 base::StringPiece OAuthMultiloginResult::StripXSSICharacters(
     const std::string& raw_data) {
   base::StringPiece body(raw_data);
-  return body.substr(body.find('\n'));
+  return body.substr(std::min(body.find('\n'), body.size()));
 }
 
 void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
     base::Value* json_value) {
+  DCHECK(json_value);
   base::Value* failed_accounts = json_value->FindListKey("failed_accounts");
   if (failed_accounts == nullptr) {
     VLOG(1) << "No invalid accounts found in the response but error is set to "
@@ -81,6 +85,7 @@ void OAuthMultiloginResult::TryParseFailedAccountsFromValue(
 }
 
 void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
+  DCHECK(json_value);
   base::Value* cookie_list = json_value->FindListKey("cookies");
   if (cookie_list == nullptr) {
     VLOG(1) << "No cookies found in the response.";
@@ -93,14 +98,15 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
     const std::string* domain = cookie.FindStringKey("domain");
     const std::string* host = cookie.FindStringKey("host");
     const std::string* path = cookie.FindStringKey("path");
-    base::Optional<bool> is_secure = cookie.FindBoolKey("isSecure");
-    base::Optional<bool> is_http_only = cookie.FindBoolKey("isHttpOnly");
+    absl::optional<bool> is_secure = cookie.FindBoolKey("isSecure");
+    absl::optional<bool> is_http_only = cookie.FindBoolKey("isHttpOnly");
     const std::string* priority = cookie.FindStringKey("priority");
-    base::Optional<double> expiration_delta = cookie.FindDoubleKey("maxAge");
+    absl::optional<double> expiration_delta = cookie.FindDoubleKey("maxAge");
     const std::string* same_site = cookie.FindStringKey("sameSite");
+    const std::string* same_party = cookie.FindStringKey("sameParty");
 
     base::TimeDelta before_expiration =
-        base::TimeDelta::FromSecondsD(expiration_delta.value_or(0.0));
+        base::Seconds(expiration_delta.value_or(0.0));
     std::string cookie_domain = domain ? *domain : "";
     std::string cookie_host = host ? *host : "";
     if (cookie_domain.empty() && !cookie_host.empty() &&
@@ -116,15 +122,23 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
       samesite_mode = net::StringToCookieSameSite(*same_site, &samesite_string);
     }
     net::RecordCookieSameSiteAttributeValueHistogram(samesite_string);
-    net::CanonicalCookie new_cookie(
-        name ? *name : "", value ? *value : "", cookie_domain,
-        path ? *path : "", /*creation=*/base::Time::Now(),
-        base::Time::Now() + before_expiration,
-        /*last_access=*/base::Time::Now(), is_secure.value_or(true),
-        is_http_only.value_or(true), samesite_mode,
-        net::StringToCookiePriority(priority ? *priority : "medium"));
-    if (new_cookie.IsCanonical()) {
-      cookies_.push_back(std::move(new_cookie));
+    bool same_party_bool = same_party && (*same_party == "1");
+    // TODO(crbug.com/1155648) Consider using CreateSanitizedCookie instead.
+    std::unique_ptr<net::CanonicalCookie> new_cookie =
+        net::CanonicalCookie::FromStorage(
+            name ? *name : "", value ? *value : "", cookie_domain,
+            path ? *path : "", /*creation=*/base::Time::Now(),
+            base::Time::Now() + before_expiration,
+            /*last_access=*/base::Time::Now(), is_secure.value_or(true),
+            is_http_only.value_or(true), samesite_mode,
+            net::StringToCookiePriority(priority ? *priority : "medium"),
+            same_party_bool, /*partition_key=*/absl::nullopt,
+            net::CookieSourceScheme::kUnset, url::PORT_UNSPECIFIED);
+    // If the unique_ptr is null, it means the cookie was not canonical.
+    // FromStorage() also uses a less strict version of IsCanonical(), we need
+    // to check the stricter version as well here.
+    if (new_cookie && new_cookie->IsCanonical()) {
+      cookies_.push_back(std::move(*new_cookie));
     } else {
       LOG(ERROR) << "Non-canonical cookie found.";
     }
@@ -134,7 +148,7 @@ void OAuthMultiloginResult::TryParseCookiesFromValue(base::Value* json_value) {
 OAuthMultiloginResult::OAuthMultiloginResult(const std::string& raw_data) {
   base::StringPiece data = StripXSSICharacters(raw_data);
   status_ = OAuthMultiloginResponseStatus::kUnknownStatus;
-  base::Optional<base::Value> json_data = base::JSONReader::Read(data);
+  absl::optional<base::Value> json_data = base::JSONReader::Read(data);
   if (!json_data) {
     RecordMultiloginResponseStatus(status_);
     return;

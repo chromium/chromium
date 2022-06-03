@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/token.h"
 
 namespace base {

@@ -1,0 +1,46 @@
+<link rel="import" href="chrome://resources/html/polymer.html">
+<link rel="import" href="chrome://resources/cr_elements/shared_style_css.html">
+<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
+<link rel="import" href="chrome://resources/html/i18n_behavior.html">
+<link rel="import" href="nearby_share_settings_behavior.html">
+<link rel="import" href="nearby_contact_visibility.html">
+<link rel="import" href="nearby_metrics_logger.html">
+
+<dom-module id="nearby-visibility-page">
+  <template>
+    <style include="cr-icons cr-shared-style"></style>
+    <style>
+      #center-content {
+        box-sizing: border-box;
+        display: flex;
+        flex-grow: 1;
+        justify-content: center;
+        margin-inline-end: 24px;
+        margin-inline-start: 24px;
+        overflow: hidden;
+      }
+
+      nearby-contact-visibility {
+        width: 100%;
+      }
+    </style>
+    <nearby-page-template title="$i18n{nearbyShareVisibilityPageTitle}"
+        sub-title="$i18n{nearbyShareVisibilityPageSubtitle}"
+        action-button-label="$i18n{nearbyShareActionsConfirm}"
+        action-button-event-name="next"
+        action-disabled="[[!isVisibilitySelected_]]"
+        cancel-button-label="$i18n{nearbyShareActionsCancel}"
+        cancel-button-event-name="close"
+        utility-button-label="$i18n{nearbyShareVisibilityPageManageContacts}"
+        utility-button-open-in-new=true
+        utility-button-event-name="manage-contacts">
+      <div id=center-content slot="content">
+        <nearby-contact-visibility id="contactVisibility"
+            is-visibility-selected="{{isVisibilitySelected_}}"
+            settings="{{settings}}">
+        </nearby-contact-visibility>
+      </div>
+    </nearby-page-template>
+  </template>
+  <script src="nearby_visibility_page.js"></script>
+</dom-module>

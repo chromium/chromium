@@ -32,6 +32,9 @@ class NET_EXPORT SSLKeyLoggerImpl : public SSLKeyLogger {
   // operations in the background.
   explicit SSLKeyLoggerImpl(base::File file);
 
+  SSLKeyLoggerImpl(const SSLKeyLoggerImpl&) = delete;
+  SSLKeyLoggerImpl& operator=(const SSLKeyLoggerImpl&) = delete;
+
   ~SSLKeyLoggerImpl() override;
 
   void WriteLine(const std::string& line) override;
@@ -39,8 +42,6 @@ class NET_EXPORT SSLKeyLoggerImpl : public SSLKeyLogger {
  private:
   class Core;
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLKeyLoggerImpl);
 };
 
 }  // namespace net

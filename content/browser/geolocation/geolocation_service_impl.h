@@ -27,23 +27,26 @@ class GeolocationServiceImplContext {
  public:
   explicit GeolocationServiceImplContext(
       PermissionControllerImpl* permission_controller);
+
+  GeolocationServiceImplContext(const GeolocationServiceImplContext&) = delete;
+  GeolocationServiceImplContext& operator=(
+      const GeolocationServiceImplContext&) = delete;
+
   ~GeolocationServiceImplContext();
-  void RequestPermission(
-      RenderFrameHost* render_frame_host,
-      bool user_gesture,
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback);
+  using PermissionCallback =
+      base::OnceCallback<void(blink::mojom::PermissionStatus)>;
+  void RequestPermission(RenderFrameHost* render_frame_host,
+                         bool user_gesture,
+                         PermissionCallback callback);
 
  private:
   PermissionControllerImpl* permission_controller_;
-  int request_id_;
+  bool has_pending_permission_request_ = false;
 
-  void HandlePermissionStatus(
-      base::OnceCallback<void(blink::mojom::PermissionStatus)> callback,
-      blink::mojom::PermissionStatus permission_status);
+  void HandlePermissionStatus(PermissionCallback callback,
+                              blink::mojom::PermissionStatus permission_status);
 
   base::WeakPtrFactory<GeolocationServiceImplContext> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationServiceImplContext);
 };
 
 class CONTENT_EXPORT GeolocationServiceImpl
@@ -51,6 +54,10 @@ class CONTENT_EXPORT GeolocationServiceImpl
  public:
   GeolocationServiceImpl(device::mojom::GeolocationContext* geolocation_context,
                          RenderFrameHost* render_frame_host);
+
+  GeolocationServiceImpl(const GeolocationServiceImpl&) = delete;
+  GeolocationServiceImpl& operator=(const GeolocationServiceImpl&) = delete;
+
   ~GeolocationServiceImpl() override;
 
   // Binds to the GeolocationService.
@@ -81,8 +88,6 @@ class CONTENT_EXPORT GeolocationServiceImpl
   mojo::ReceiverSet<blink::mojom::GeolocationService,
                     std::unique_ptr<GeolocationServiceImplContext>>
       receiver_set_;
-
-  DISALLOW_COPY_AND_ASSIGN(GeolocationServiceImpl);
 };
 
 }  // namespace content

@@ -11,7 +11,7 @@ namespace notifications {
 ClientOverview::ClientOverview() : num_scheduled_notifications(0) {}
 
 ClientOverview::ClientOverview(ImpressionDetail impression_detail,
-                               int num_scheduled_notifications)
+                               size_t num_scheduled_notifications)
     : impression_detail(std::move(impression_detail)),
       num_scheduled_notifications(num_scheduled_notifications) {}
 

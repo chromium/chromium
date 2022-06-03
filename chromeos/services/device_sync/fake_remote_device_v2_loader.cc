@@ -30,7 +30,7 @@ FakeRemoteDeviceV2LoaderFactory::FakeRemoteDeviceV2LoaderFactory() = default;
 FakeRemoteDeviceV2LoaderFactory::~FakeRemoteDeviceV2LoaderFactory() = default;
 
 std::unique_ptr<RemoteDeviceV2Loader>
-FakeRemoteDeviceV2LoaderFactory::BuildInstance() {
+FakeRemoteDeviceV2LoaderFactory::CreateInstance() {
   auto instance = std::make_unique<FakeRemoteDeviceV2Loader>();
   instances_.push_back(instance.get());
 

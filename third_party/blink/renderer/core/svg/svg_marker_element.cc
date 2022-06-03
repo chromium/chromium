@@ -24,6 +24,10 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_marker.h"
 #include "third_party/blink/renderer/core/svg/svg_angle_tear_off.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_preserve_aspect_ratio.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_rect.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -79,7 +83,11 @@ SVGMarkerElement::SVGMarkerElement(Document& document)
   AddToPropertyMap(marker_units_);
 }
 
-void SVGMarkerElement::Trace(blink::Visitor* visitor) {
+SVGAnimatedEnumeration<SVGMarkerOrientType>* SVGMarkerElement::orientType() {
+  return orient_angle_->OrientType();
+}
+
+void SVGMarkerElement::Trace(Visitor* visitor) const {
   visitor->Trace(ref_x_);
   visitor->Trace(ref_y_);
   visitor->Trace(marker_width_);
@@ -91,14 +99,15 @@ void SVGMarkerElement::Trace(blink::Visitor* visitor) {
 }
 
 AffineTransform SVGMarkerElement::ViewBoxToViewTransform(
-    float view_width,
-    float view_height) const {
+    const gfx::SizeF& viewport_size) const {
   return SVGFitToViewBox::ViewBoxToViewTransform(
-      viewBox()->CurrentValue()->Value(), preserveAspectRatio()->CurrentValue(),
-      view_width, view_height);
+      viewBox()->CurrentValue()->Rect(), preserveAspectRatio()->CurrentValue(),
+      viewport_size);
 }
 
-void SVGMarkerElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGMarkerElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   bool viewbox_attribute_changed = SVGFitToViewBox::IsKnownAttribute(attr_name);
   bool length_attribute_changed = attr_name == svg_names::kRefXAttr ||
                                   attr_name == svg_names::kRefYAttr ||
@@ -111,7 +120,8 @@ void SVGMarkerElement::SvgAttributeChanged(const QualifiedName& attr_name) {
       attr_name == svg_names::kMarkerUnitsAttr ||
       attr_name == svg_names::kOrientAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
-    auto* resource_container = ToLayoutSVGResourceContainer(GetLayoutObject());
+    auto* resource_container =
+        To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (resource_container) {
       // The marker transform depends on both viewbox attributes, and the marker
       // size attributes (width, height).
@@ -123,13 +133,13 @@ void SVGMarkerElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 void SVGMarkerElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
-  if (change.by_parser)
+  if (change.ByParser())
     return;
 
   if (LayoutObject* object = GetLayoutObject()) {
@@ -150,7 +160,7 @@ void SVGMarkerElement::setOrientToAngle(SVGAngleTearOff* angle) {
 
 LayoutObject* SVGMarkerElement::CreateLayoutObject(const ComputedStyle&,
                                                    LegacyLayout) {
-  return new LayoutSVGResourceMarker(this);
+  return MakeGarbageCollected<LayoutSVGResourceMarker>(this);
 }
 
 bool SVGMarkerElement::SelfHasRelativeLengths() const {

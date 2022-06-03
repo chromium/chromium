@@ -19,7 +19,7 @@
 #include <algorithm>
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "util/misc/implicit_cast.h"
 
 namespace crashpad {

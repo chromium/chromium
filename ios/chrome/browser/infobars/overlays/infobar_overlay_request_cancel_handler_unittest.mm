@@ -8,14 +8,15 @@
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/fake_infobar_overlay_request_factory.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
+#include "ios/chrome/browser/infobars/overlays/infobar_overlay_util.h"
 #include "ios/chrome/browser/infobars/test/fake_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/test/fake_infobar_ios.h"
 #import "ios/chrome/browser/overlays/public/common/infobars/infobar_overlay_request_config.h"
 #include "ios/chrome/browser/overlays/public/overlay_request.h"
 #include "ios/chrome/browser/overlays/public/overlay_request_queue.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_user_data.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_navigation_manager.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -29,39 +30,33 @@ using infobars::InfoBarManager;
 // Test fixture for InfobarOverlayRequestCancelHandler.
 class InfobarOverlayRequestCancelHandlerTest : public PlatformTest {
  public:
-  InfobarOverlayRequestCancelHandlerTest()
-      : inserter_(&web_state_,
-                  std::make_unique<FakeInfobarOverlayRequestFactory>()) {
-    // Set up WebState and InfoBarManager.
+  InfobarOverlayRequestCancelHandlerTest() {
     web_state_.SetNavigationManager(
-        std::make_unique<web::TestNavigationManager>());
+        std::make_unique<web::FakeNavigationManager>());
+    InfobarOverlayRequestInserter::CreateForWebState(
+        &web_state_, &FakeInfobarOverlayRequestFactory);
     InfoBarManagerImpl::CreateForWebState(&web_state_);
   }
 
   OverlayRequestQueue* queue() {
     return OverlayRequestQueue::FromWebState(&web_state_,
-                                             OverlayModality::kInfobarBanner);
+                                             OverlayModality::kInfobarModal);
   }
   InfoBarManager* manager() {
     return InfoBarManagerImpl::FromWebState(&web_state_);
   }
-  InfobarOverlayRequestInserter* inserter() { return &inserter_; }
+  InfobarOverlayRequestInserter* inserter() {
+    return InfobarOverlayRequestInserter::FromWebState(&web_state_);
+  }
 
   // Returns the InfoBar used to create the front request in queue().
   InfoBar* GetFrontRequestInfobar() {
     OverlayRequest* front_request = queue()->front_request();
-    if (!front_request)
-      return nullptr;
-    InfobarOverlayRequestConfig* config =
-        front_request->GetConfig<InfobarOverlayRequestConfig>();
-    if (!config)
-      return nullptr;
-    return config->infobar();
+    return front_request ? GetOverlayRequestInfobar(front_request) : nullptr;
   }
 
  private:
-  web::TestWebState web_state_;
-  InfobarOverlayRequestInserter inserter_;
+  web::FakeWebState web_state_;
 };
 
 // Tests that the request is cancelled when its corresponding InfoBar is removed
@@ -70,7 +65,11 @@ TEST_F(InfobarOverlayRequestCancelHandlerTest, CancelForInfobarRemoval) {
   std::unique_ptr<InfoBar> added_infobar = std::make_unique<FakeInfobarIOS>();
   InfoBar* infobar = added_infobar.get();
   manager()->AddInfoBar(std::move(added_infobar));
-  inserter()->AddOverlayRequest(infobar, InfobarOverlayType::kBanner);
+  InsertParams params(static_cast<InfoBarIOS*>(infobar));
+  params.overlay_type = InfobarOverlayType::kModal;
+  params.insertion_index = 0;
+  params.source = InfobarOverlayInsertionSource::kBanner;
+  inserter()->InsertOverlayRequest(params);
   ASSERT_EQ(infobar, GetFrontRequestInfobar());
   // Remove the InfoBar from its manager and verify that the request has been
   // removed from the queue.
@@ -78,20 +77,20 @@ TEST_F(InfobarOverlayRequestCancelHandlerTest, CancelForInfobarRemoval) {
   EXPECT_FALSE(queue()->front_request());
 }
 
-// Tests that the request is replaced if its corresponding InfoBar is replaced
+// Tests that the request is cancelled if its corresponding InfoBar is replaced
 // in its manager.
 TEST_F(InfobarOverlayRequestCancelHandlerTest, CancelForInfobarReplacement) {
   std::unique_ptr<InfoBar> first_passed_infobar =
       std::make_unique<FakeInfobarIOS>();
   InfoBar* first_infobar = first_passed_infobar.get();
   manager()->AddInfoBar(std::move(first_passed_infobar));
-  inserter()->AddOverlayRequest(first_infobar, InfobarOverlayType::kBanner);
+  InsertParams params(static_cast<InfoBarIOS*>(first_infobar));
+  params.overlay_type = InfobarOverlayType::kModal;
+  params.insertion_index = 0;
+  params.source = InfobarOverlayInsertionSource::kBanner;
+  inserter()->InsertOverlayRequest(params);
   ASSERT_EQ(first_infobar, GetFrontRequestInfobar());
-  // Replace with a new infobar and verify that the request has been replaced.
-  std::unique_ptr<InfoBar> second_passed_infobar =
-      std::make_unique<FakeInfobarIOS>();
-  InfoBar* second_infobar = second_passed_infobar.get();
-  manager()->ReplaceInfoBar(first_infobar, std::move(second_passed_infobar));
-  EXPECT_EQ(second_infobar, GetFrontRequestInfobar());
-  EXPECT_EQ(1U, queue()->size());
+  // Replace with a new infobar and verify that the request has been cancelled.
+  manager()->ReplaceInfoBar(first_infobar, std::make_unique<FakeInfobarIOS>());
+  EXPECT_FALSE(queue()->front_request());
 }

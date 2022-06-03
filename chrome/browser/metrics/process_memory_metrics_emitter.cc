@@ -4,24 +4,32 @@
 
 #include "chrome/browser/metrics/process_memory_metrics_emitter.h"
 
+#include <set>
+#include <string>
+#include <utility>
+
+#include "base/allocator/buildflags.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/tab_footprint_aggregator.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "components/metrics/metrics_data_validation.h"
 #include "components/performance_manager/public/graph/frame_node.h"
 #include "components/performance_manager/public/graph/graph.h"
 #include "components/performance_manager/public/graph/graph_operations.h"
 #include "components/performance_manager/public/graph/page_node.h"
 #include "components/performance_manager/public/graph/process_node.h"
 #include "components/performance_manager/public/performance_manager.h"
+#include "components/services/paint_preview_compositor/public/mojom/paint_preview_compositor.mojom.h"
 #include "content/public/browser/audio_service_info.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_switches.h"
@@ -53,14 +61,27 @@ const char kEffectiveSize[] = "effective_size";
 const char kSize[] = "size";
 const char kAllocatedObjectsSize[] = "allocated_objects_size";
 
+constexpr int kKiB = 1024;
+constexpr int kMiB = 1024 * 1024;
+
+struct MetricRange {
+  const int min;
+  const int max;
+};
+
+const MetricRange ImageSizeMetricRange = {1, 500 * kMiB /*500 MiB*/};
+
+// Prefer predefined ranges kLarge, kSmall and kTiny over custom ranges.
 enum class MetricSize {
-  kLarge,  // 1MB - 64GB
-  kSmall,  // 10KB - 500MB
-  kTiny,   // 1B - 500KB
+  kLarge,   // 1MiB - 64,000MiB
+  kSmall,   // 10 - 500,000KiB
+  kTiny,    // 1 - 500,000B
+  kCustom,  // custom range, in bytes
 };
 
 enum class EmitTo {
   kCountsInUkmOnly,
+  kCountsInUkmAndSizeInUma,
   kSizeInUkmAndUma,
   kSizeInUmaOnly,
   kIgnored
@@ -80,6 +101,9 @@ struct Metric {
   const EmitTo target;
   // The setter method for the metric in UKM recorder.
   Memory_Experimental& (Memory_Experimental::*ukm_setter)(int64_t);
+  // Size range for the kCustom |metric_size|. Represents the min and max of the
+  // size range, in bytes.
+  const MetricRange range;
 };
 
 const Metric kAllocatorDumpNamesForMetrics[] = {
@@ -88,91 +112,97 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"blink_gc", "BlinkGC.AllocatedObjects", MetricSize::kLarge,
      kAllocatedObjectsSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetBlinkGC_AllocatedObjects},
-    {"blink_objects/Document", "NumberOfDocuments", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
+    {"blink_objects/Document", "NumberOfDocuments", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmAndSizeInUma,
      &Memory_Experimental::SetNumberOfDocuments},
-    {"blink_objects/AdSubframe", "NumberOfAdSubframes", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
+    {"blink_objects/ArrayBufferContents", "NumberOfArrayBufferContents",
+     MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kCountsInUkmAndSizeInUma,
+     &Memory_Experimental::SetNumberOfArrayBufferContents},
+    {"blink_objects/AdSubframe", "NumberOfAdSubframes", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmAndSizeInUma,
      &Memory_Experimental::SetNumberOfAdSubframes},
     {"blink_objects/DetachedScriptState", "NumberOfDetachedScriptStates",
-     MetricSize::kSmall, MemoryAllocatorDump::kNameObjectCount,
-     EmitTo::kCountsInUkmOnly,
+     MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kCountsInUkmAndSizeInUma,
      &Memory_Experimental::SetNumberOfDetachedScriptStates},
-    {"blink_objects/V8CallInDetachedWindowByNavigation",
-     "NumberOfCallsInDetachedWindowByNavigation", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::SetNumberOfCallsInDetachedWindowByNavigation},
-    {"blink_objects/V8CallInDetachedWindowByNavigationAfter10s",
-     "NumberOfCallsInDetachedWindowByNavigationAfter10s", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::
-         SetNumberOfCallsInDetachedWindowByNavigation_After10sSinceDetaching},
-    {"blink_objects/V8CallInDetachedWindowByNavigationAfter1min",
-     "NumberOfCallsInDetachedWindowByNavigationAfter1min", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::
-         SetNumberOfCallsInDetachedWindowByNavigation_After1minSinceDetaching},
-    {"blink_objects/V8CallInDetachedWindowByClosing",
-     "NumberOfCallsInDetachedWindowByClosing", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::SetNumberOfCallsInDetachedWindowByClosing},
-    {"blink_objects/V8CallInDetachedWindowByClosingAfter10s",
-     "NumberOfCallsInDetachedWindowByClosingAfter10s", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::
-         SetNumberOfCallsInDetachedWindowByClosing_After10sSinceDetaching},
-    {"blink_objects/V8CallInDetachedWindowByClosingAfter1min",
-     "NumberOfCallsInDetachedWindowByClosingAfter1min", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::
-         SetNumberOfCallsInDetachedWindowByClosing_After1minSinceDetaching},
-    {"blink_objects/V8CallInDetachedWindowByOtherReason",
-     "NumberOfCallsInDetachedWindowByOtherReason", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::SetNumberOfCallsInDetachedWindowByOtherReason},
-    {"blink_objects/V8CallInDetachedWindowByOtherReasonAfter10s",
-     "NumberOfCallsInDetachedWindowByOtherReasonAfter10s", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::
-         SetNumberOfCallsInDetachedWindowByOtherReason_After10sSinceDetaching},
-    {"blink_objects/V8CallInDetachedWindowByOtherReasonAfter1min",
-     "NumberOfCallsInDetachedWindowByOtherReasonAfter1min", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
-     &Memory_Experimental::
-         SetNumberOfCallsInDetachedWindowByOtherReason_After1minSinceDetaching},
-    {"blink_objects/Frame", "NumberOfFrames", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
+    {"blink_objects/Frame", "NumberOfFrames", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmAndSizeInUma,
      &Memory_Experimental::SetNumberOfFrames},
-    {"blink_objects/LayoutObject", "NumberOfLayoutObjects", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
+    {"blink_objects/LayoutObject", "NumberOfLayoutObjects", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmAndSizeInUma,
      &Memory_Experimental::SetNumberOfLayoutObjects},
     {"blink_objects/Node", "NumberOfNodes", MetricSize::kSmall,
-     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmAndSizeInUma,
      &Memory_Experimental::SetNumberOfNodes},
+    {"blink_objects/AudioHandler", "NumberOfAudioHandler", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/JSEventListener", "NumberOfJSEventListener",
+     MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/MediaKeySession", "NumberOfMediaKeySession",
+     MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/MediaKeys", "NumberOfMediaKeys", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/Resource", "NumberOfResources", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/ContextLifecycleStateObserver",
+     "NumberOfContextLifecycleStateObserver", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/V8PerContextData", "NumberOfV8PerContextData",
+     MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/WorkerGlobalScope", "NumberOfWorkerGlobalScope",
+     MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/UACSSResource", "NumberOfUACSSResource", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/RTCPeerConnection", "NumberOfRTCPeerConnection",
+     MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"blink_objects/ResourceFetcher", "NumberOfResourceFetcher",
+     MetricSize::kTiny, MemoryAllocatorDump::kNameObjectCount,
+     EmitTo::kSizeInUmaOnly, nullptr},
+    {"canvas/ResourceProvider/SkSurface", "CanvasResourceProvider.SkSurface",
+     MetricSize::kSmall, kSize, EmitTo::kCountsInUkmOnly,
+     &Memory_Experimental::SetCanvasResourceProvider_SkSurface},
     {"components/download", "DownloadService", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetDownloadService},
     {"discardable", "Discardable", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetDiscardable},
+    {"discardable", "Discardable.FreelistSize", MetricSize::kSmall,
+     "freelist_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"discardable", "Discardable.FreelistSize.Dirty", MetricSize::kSmall,
+     "freelist_size_dirty", EmitTo::kSizeInUmaOnly, nullptr},
+    {"discardable", "Discardable.ResidentSize", MetricSize::kSmall,
+     "resident_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"discardable", "Discardable.VirtualSize", MetricSize::kSmall,
+     "virtual_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"extensions/functions", "ExtensionFunctions", MetricSize::kLarge,
+     kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"extensions/value_store", "Extensions.ValueStore", MetricSize::kLarge,
      kEffectiveSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetExtensions_ValueStore},
     {"font_caches", "FontCaches", MetricSize::kSmall, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetFontCaches},
-    {"gpu/discardable_cache", "ServiceDiscardableManager", MetricSize::kTiny,
-     kSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/discardable_cache", "ServiceDiscardableManager", MetricSize::kCustom,
+     kSize, EmitTo::kSizeInUmaOnly, nullptr, ImageSizeMetricRange},
     {"gpu/discardable_cache", "ServiceDiscardableManager.AvgImageSize",
-     MetricSize::kTiny, "average_size", EmitTo::kSizeInUmaOnly, nullptr},
+     MetricSize::kCustom, "average_size", EmitTo::kSizeInUmaOnly, nullptr,
+     ImageSizeMetricRange},
     {"gpu/gl", "CommandBuffer", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetCommandBuffer},
     {"gpu/gr_shader_cache", "Gpu.GrShaderCache", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kSizeInUmaOnly, nullptr},
     {"gpu/shared_images", "gpu::SharedImageStub", MetricSize::kSmall,
      kEffectiveSize, EmitTo::kIgnored, nullptr},
-    {"gpu/transfer_cache", "ServiceTransferCache", MetricSize::kTiny, kSize,
-     EmitTo::kSizeInUmaOnly, nullptr},
+    {"gpu/transfer_cache", "ServiceTransferCache", MetricSize::kCustom, kSize,
+     EmitTo::kSizeInUmaOnly, nullptr, ImageSizeMetricRange},
     {"gpu/transfer_cache", "ServiceTransferCache.AvgImageSize",
-     MetricSize::kTiny, "average_size", EmitTo::kSizeInUmaOnly, nullptr},
+     MetricSize::kCustom, "average_size", EmitTo::kSizeInUmaOnly, nullptr,
+     ImageSizeMetricRange},
     {"history", "History", MetricSize::kSmall, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetHistory},
     {"java_heap", "JavaHeap", MetricSize::kLarge, kEffectiveSize,
@@ -184,16 +214,48 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"malloc/allocated_objects", "Malloc.AllocatedObjects", MetricSize::kLarge,
      kEffectiveSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetMalloc_AllocatedObjects},
+#if BUILDFLAG(USE_BACKUP_REF_PTR)
+    // TODO(keishi): Add brp_quarantined metrics for the Blink partitions.
+    {"malloc/partitions/allocator", "Malloc.BRPQuarantined", MetricSize::kSmall,
+     "brp_quarantined_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.BRPQuarantinedCount",
+     MetricSize::kTiny, "brp_quarantined_count", EmitTo::kSizeInUmaOnly,
+     nullptr},
+#endif
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    {"malloc/partitions/allocator/thread_cache", "Malloc.ThreadCache",
+     MetricSize::kSmall, kSize, EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.MaxAllocatedSize",
+     MetricSize::kLarge, "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.MaxCommittedSize",
+     MetricSize::kLarge, "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+#endif
     {"mojo", "NumberOfMojoHandles", MetricSize::kSmall,
      MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
      &Memory_Experimental::SetNumberOfMojoHandles},
-    {"net", "Net", MetricSize::kSmall, kEffectiveSize, EmitTo::kSizeInUkmAndUma,
-     &Memory_Experimental::SetNet},
-    {"net/url_request_context", "Net.UrlRequestContext", MetricSize::kSmall,
-     kEffectiveSize, EmitTo::kSizeInUkmAndUma,
-     &Memory_Experimental::SetNet_UrlRequestContext},
+    {"media/webmediaplayer/audio", "WebMediaPlayer.Audio", MetricSize::kSmall,
+     kSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetWebMediaPlayer_Audio},
+    {"media/webmediaplayer/video", "WebMediaPlayer.Video", MetricSize::kLarge,
+     kSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetWebMediaPlayer_Video},
+    {"media/webmediaplayer/data_source", "WebMediaPlayer.DataSource",
+     MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetWebMediaPlayer_DataSource},
+    {"media/webmediaplayer/demuxer", "WebMediaPlayer.Demuxer",
+     MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetWebMediaPlayer_Demuxer},
+    {"media/webmediaplayer", "WebMediaPlayer.Instances", MetricSize::kTiny,
+     MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
+     &Memory_Experimental::SetNumberOfWebMediaPlayers},
     {"omnibox", "OmniboxSuggestions", MetricSize::kSmall, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetOmniboxSuggestions},
+    {"parkable_images", "ParkableImage.OnDiskSize", MetricSize::kSmall,
+     "on_disk_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"parkable_images", "ParkableImage.UnparkedSize", MetricSize::kSmall,
+     "unparked_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"parkable_images", "ParkableImage.TotalSize", MetricSize::kSmall,
+     "total_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc", "PartitionAlloc", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetPartitionAlloc},
     {"partition_alloc/allocated_objects", "PartitionAlloc.AllocatedObjects",
@@ -203,16 +265,47 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      "PartitionAlloc.Partitions.ArrayBuffer", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_ArrayBuffer},
+    {"partition_alloc/partitions/array_buffer",
+     "PartitionAlloc.MaxCommittedSize.ArrayBuffer", MetricSize::kLarge,
+     "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/array_buffer",
+     "PartitionAlloc.MaxAllocatedSize.ArrayBuffer", MetricSize::kLarge,
+     "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/buffer", "PartitionAlloc.Partitions.Buffer",
      MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_Buffer},
+    {"partition_alloc/partitions/buffer",
+     "PartitionAlloc.MaxCommittedSize.Buffer", MetricSize::kLarge,
+     "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/buffer",
+     "PartitionAlloc.MaxAllocatedSize.Buffer", MetricSize::kLarge,
+     "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/fast_malloc",
      "PartitionAlloc.Partitions.FastMalloc", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_FastMalloc},
+    {"partition_alloc/partitions/fast_malloc",
+     "PartitionAlloc.MaxCommittedSize.FastMalloc", MetricSize::kLarge,
+     "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/fast_malloc",
+     "PartitionAlloc.MaxAllocatedSize.FastMalloc", MetricSize::kLarge,
+     "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+#if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    {"partition_alloc/partitions/fast_malloc/thread_cache",
+     "PartitionAlloc.Partitions.FastMalloc.ThreadCache", MetricSize::kSmall,
+     kSize, EmitTo::kSizeInUmaOnly, nullptr},
+#endif
     {"partition_alloc/partitions/layout", "PartitionAlloc.Partitions.Layout",
      MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_Layout},
+    {"partition_alloc/partitions/layout",
+     "PartitionAlloc.MaxCommittedSize.Layout", MetricSize::kLarge,
+     "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/layout",
+     "PartitionAlloc.MaxAllocatedSize.Layout", MetricSize::kLarge,
+     "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"passwords", "ManualFillingCache", MetricSize::kSmall, kEffectiveSize,
+     EmitTo::kSizeInUmaOnly, nullptr},
     {"site_storage", "SiteStorage", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetSiteStorage},
     {"site_storage/blob_storage", "SiteStorage.BlobStorage", MetricSize::kLarge,
@@ -256,6 +349,12 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"v8/main", "V8.Main.AllocatedObjects", MetricSize::kLarge,
      kAllocatedObjectsSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetV8_Main_AllocatedObjects},
+    {"v8/main/global_handles", "V8.Main.GlobalHandles", MetricSize::kLarge,
+     kEffectiveSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetV8_Main_GlobalHandles},
+    {"v8/main/global_handles", "V8.Main.GlobalHandles.AllocatedObjects",
+     MetricSize::kLarge, kAllocatedObjectsSize, EmitTo::kSizeInUkmAndUma,
+     &Memory_Experimental::SetV8_Main_GlobalHandles_AllocatedObjects},
     {"v8/main/heap", "V8.Main.Heap", MetricSize::kLarge, kEffectiveSize,
      EmitTo::kSizeInUkmAndUma, &Memory_Experimental::SetV8_Main_Heap},
     {"v8/main/heap", "V8.Main.Heap.AllocatedObjects", MetricSize::kLarge,
@@ -356,21 +455,26 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
 #define VERSION_SUFFIX_NORMAL "2."
 #define VERSION_SUFFIX_SMALL "2.Small."
 #define VERSION_SUFFIX_TINY "2.Tiny."
-
-// Used to measure KB-granularity memory stats. Range is from 10KB to 500,000KB
-// (500MB).
-#define MEMORY_METRICS_HISTOGRAM_KB(name, value) \
-  base::UmaHistogramCustomCounts(name, value, 10, 500000, 100)
-// Used to measure byte granularity memory stats. Range is from 1 byte to
-// 500,000 bytes (500KB).
-#define MEMORY_METRICS_HISTOGRAM_BYTE(name, value) \
-  base::UmaHistogramCustomCounts(name, value, 1, 500000, 100)
+#define VERSION_SUFFIX_CUSTOM "2.Custom."
 
 void EmitProcessUkm(const Metric& item,
                     uint64_t value,
                     Memory_Experimental* builder) {
   DCHECK(item.ukm_setter) << "UKM metrics must provide a setter";
   (builder->*(item.ukm_setter))(value);
+}
+
+const char* MetricSizeToVersionSuffix(MetricSize size) {
+  switch (size) {
+    case MetricSize::kLarge:
+      return VERSION_SUFFIX_NORMAL;
+    case MetricSize::kSmall:
+      return VERSION_SUFFIX_SMALL;
+    case MetricSize::kTiny:
+      return VERSION_SUFFIX_TINY;
+    case MetricSize::kCustom:
+      return VERSION_SUFFIX_CUSTOM;
+  }
 }
 
 void EmitProcessUma(HistogramProcessType process_type,
@@ -385,35 +489,35 @@ void EmitProcessUma(HistogramProcessType process_type,
         EXPERIMENTAL_UMA_PREFIX "Gpu" VERSION_SUFFIX_NORMAL "CommandBuffer";
     DCHECK(item.metric_size == MetricSize::kLarge);
   } else {
-    const char* version_suffix =
-        item.metric_size == MetricSize::kLarge ? VERSION_SUFFIX_NORMAL:
-        item.metric_size == MetricSize::kTiny  ? VERSION_SUFFIX_TINY:
-                                                 VERSION_SUFFIX_SMALL;
     uma_name = std::string(EXPERIMENTAL_UMA_PREFIX) +
-               HistogramProcessTypeToString(process_type) + version_suffix +
-               item.uma_name;
+               HistogramProcessTypeToString(process_type) +
+               MetricSizeToVersionSuffix(item.metric_size) + item.uma_name;
   }
 
   switch (item.metric_size) {
-    case MetricSize::kLarge:
-      MEMORY_METRICS_HISTOGRAM_MB(uma_name, value / 1024 / 1024);
+    case MetricSize::kLarge:  // 1 - 64,000 MiB
+      MEMORY_METRICS_HISTOGRAM_MB(uma_name, value / kMiB);
       break;
-    case MetricSize::kSmall:
-      MEMORY_METRICS_HISTOGRAM_KB(uma_name, value / 1024);
+    case MetricSize::kSmall:  // 10 - 500,000 KiB
+      base::UmaHistogramCustomCounts(uma_name, value / kKiB, 10, 500000, 100);
       break;
-    case MetricSize::kTiny:
-      MEMORY_METRICS_HISTOGRAM_BYTE(uma_name, value);
+    case MetricSize::kTiny:  // 1 - 500,000 bytes
+      base::UmaHistogramCustomCounts(uma_name, value, 1, 500000, 100);
+      break;
+    case MetricSize::kCustom:
+      base::UmaHistogramCustomCounts(uma_name, value, item.range.min,
+                                     item.range.max, 100);
       break;
   }
 }
 
 void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
                           HistogramProcessType process_type,
-                          const base::Optional<base::TimeDelta>& uptime,
+                          const absl::optional<base::TimeDelta>& uptime,
                           bool record_uma,
                           Memory_Experimental* builder) {
   for (const auto& item : kAllocatorDumpNamesForMetrics) {
-    base::Optional<uint64_t> value = pmd.GetMetric(item.dump_name, item.metric);
+    absl::optional<uint64_t> value = pmd.GetMetric(item.dump_name, item.metric);
     if (!value)
       continue;
 
@@ -421,13 +525,18 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
       case EmitTo::kCountsInUkmOnly:
         EmitProcessUkm(item, value.value(), builder);
         break;
+      case EmitTo::kCountsInUkmAndSizeInUma:
+        EmitProcessUkm(item, value.value(), builder);
+        if (record_uma)
+          EmitProcessUma(process_type, item, value.value());
+        break;
       case EmitTo::kSizeInUmaOnly:
         if (record_uma)
           EmitProcessUma(process_type, item, value.value());
         break;
       case EmitTo::kSizeInUkmAndUma:
         // For each 'size' metric, emit size as MB.
-        EmitProcessUkm(item, value.value() / 1024 / 1024, builder);
+        EmitProcessUkm(item, value.value() / kMiB, builder);
         if (record_uma)
           EmitProcessUma(process_type, item, value.value());
         break;
@@ -438,16 +547,16 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
     }
   }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   // Resident set is not populated on Mac.
-  builder->SetResident(pmd.os_dump().resident_set_kb / 1024);
+  builder->SetResident(pmd.os_dump().resident_set_kb / kKiB);
 #endif
 
-  builder->SetPrivateMemoryFootprint(pmd.os_dump().private_footprint_kb / 1024);
-  builder->SetSharedMemoryFootprint(pmd.os_dump().shared_footprint_kb / 1024);
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+  builder->SetPrivateMemoryFootprint(pmd.os_dump().private_footprint_kb / kKiB);
+  builder->SetSharedMemoryFootprint(pmd.os_dump().shared_footprint_kb / kKiB);
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   builder->SetPrivateSwapFootprint(pmd.os_dump().private_footprint_swap_kb /
-                                   1024);
+                                   kKiB);
 #endif
   if (uptime)
     builder->SetUptime(uptime.value().InSeconds());
@@ -455,23 +564,23 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
     return;
 
   const char* process_name = HistogramProcessTypeToString(process_type);
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Resident set is not populated on Mac.
   DCHECK_EQ(pmd.os_dump().resident_set_kb, 0U);
 #else
   MEMORY_METRICS_HISTOGRAM_MB(
       std::string(kMemoryHistogramPrefix) + process_name + ".ResidentSet",
-      pmd.os_dump().resident_set_kb / 1024);
+      pmd.os_dump().resident_set_kb / kKiB);
 #endif
   MEMORY_METRICS_HISTOGRAM_MB(GetPrivateFootprintHistogramName(process_type),
-                              pmd.os_dump().private_footprint_kb / 1024);
+                              pmd.os_dump().private_footprint_kb / kKiB);
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
                                   process_name + ".SharedMemoryFootprint",
-                              pmd.os_dump().shared_footprint_kb / 1024);
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+                              pmd.os_dump().shared_footprint_kb / kKiB);
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
                                   process_name + ".PrivateSwapFootprint",
-                              pmd.os_dump().private_footprint_swap_kb / 1024);
+                              pmd.os_dump().private_footprint_swap_kb / kKiB);
 #endif
 }
 
@@ -513,7 +622,7 @@ void EmitSummedGpuMemory(const GlobalMemoryDump::ProcessDump& pmd,
 void EmitBrowserMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
                               ukm::SourceId ukm_source_id,
                               ukm::UkmRecorder* ukm_recorder,
-                              const base::Optional<base::TimeDelta>& uptime,
+                              const absl::optional<base::TimeDelta>& uptime,
                               bool record_uma) {
   Memory_Experimental builder(ukm_source_id);
   builder.SetProcessType(static_cast<int64_t>(
@@ -530,7 +639,7 @@ void EmitRendererMemoryMetrics(
     const ProcessMemoryMetricsEmitter::PageInfo* page_info,
     ukm::UkmRecorder* ukm_recorder,
     int number_of_extensions,
-    const base::Optional<base::TimeDelta>& uptime,
+    const absl::optional<base::TimeDelta>& uptime,
     bool record_uma) {
   ukm::SourceId ukm_source_id =
       page_info ? page_info->ukm_source_id : ukm::UkmRecorder::GetNewSourceID();
@@ -558,7 +667,7 @@ void EmitRendererMemoryMetrics(
 void EmitGpuMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
                           ukm::SourceId ukm_source_id,
                           ukm::UkmRecorder* ukm_recorder,
-                          const base::Optional<base::TimeDelta>& uptime,
+                          const absl::optional<base::TimeDelta>& uptime,
                           bool record_uma) {
   Memory_Experimental builder(ukm_source_id);
   builder.SetProcessType(
@@ -569,46 +678,16 @@ void EmitGpuMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
   builder.Record(ukm_recorder);
 }
 
-void EmitUtilityMemoryMetrics(const GlobalMemoryDump::ProcessDump& pmd,
+void EmitUtilityMemoryMetrics(HistogramProcessType ptype,
+                              const GlobalMemoryDump::ProcessDump& pmd,
                               ukm::SourceId ukm_source_id,
                               ukm::UkmRecorder* ukm_recorder,
-                              const base::Optional<base::TimeDelta>& uptime,
+                              const absl::optional<base::TimeDelta>& uptime,
                               bool record_uma) {
   Memory_Experimental builder(ukm_source_id);
   builder.SetProcessType(static_cast<int64_t>(
       memory_instrumentation::mojom::ProcessType::UTILITY));
-  EmitProcessUmaAndUkm(pmd, HistogramProcessType::kUtility, uptime, record_uma,
-                       &builder);
-
-  builder.Record(ukm_recorder);
-}
-
-void EmitAudioServiceMemoryMetrics(
-    const GlobalMemoryDump::ProcessDump& pmd,
-    ukm::SourceId ukm_source_id,
-    ukm::UkmRecorder* ukm_recorder,
-    const base::Optional<base::TimeDelta>& uptime,
-    bool record_uma) {
-  Memory_Experimental builder(ukm_source_id);
-  builder.SetProcessType(static_cast<int64_t>(
-      memory_instrumentation::mojom::ProcessType::UTILITY));
-  EmitProcessUmaAndUkm(pmd, HistogramProcessType::kAudioService, uptime,
-                       record_uma, &builder);
-
-  builder.Record(ukm_recorder);
-}
-
-void EmitNetworkServiceMemoryMetrics(
-    const GlobalMemoryDump::ProcessDump& pmd,
-    ukm::SourceId ukm_source_id,
-    ukm::UkmRecorder* ukm_recorder,
-    const base::Optional<base::TimeDelta>& uptime,
-    bool record_uma) {
-  Memory_Experimental builder(ukm_source_id);
-  builder.SetProcessType(static_cast<int64_t>(
-      memory_instrumentation::mojom::ProcessType::UTILITY));
-  EmitProcessUmaAndUkm(pmd, HistogramProcessType::kNetworkService, uptime,
-                       record_uma, &builder);
+  EmitProcessUmaAndUkm(pmd, ptype, uptime, record_uma, &builder);
 
   builder.Record(ukm_recorder);
 }
@@ -627,18 +706,23 @@ void ProcessMemoryMetricsEmitter::FetchAndEmitProcessMemoryMetrics() {
 
   MarkServiceRequestsInProgress();
 
-  // The callback keeps this object alive until the callback is invoked.
-  auto callback =
-      base::Bind(&ProcessMemoryMetricsEmitter::ReceivedMemoryDump, this);
-  std::vector<std::string> mad_list;
-  for (const auto& metric : kAllocatorDumpNamesForMetrics)
-    mad_list.push_back(metric.dump_name);
-  if (pid_scope_ != base::kNullProcessId) {
-    memory_instrumentation::MemoryInstrumentation::GetInstance()
-        ->RequestGlobalDumpForPid(pid_scope_, mad_list, callback);
-  } else {
-    memory_instrumentation::MemoryInstrumentation::GetInstance()
-        ->RequestGlobalDump(mad_list, callback);
+  auto* instrumentation =
+      memory_instrumentation::MemoryInstrumentation::GetInstance();
+  // nullptr means content layer is not initialized yet (there's no memory
+  // metrics to log in this case)
+  if (instrumentation) {
+    // The callback keeps this object alive until the callback is invoked.
+    auto callback =
+        base::BindOnce(&ProcessMemoryMetricsEmitter::ReceivedMemoryDump, this);
+    std::vector<std::string> mad_list;
+    for (const auto& metric : kAllocatorDumpNamesForMetrics)
+      mad_list.push_back(metric.dump_name);
+    if (pid_scope_ != base::kNullProcessId) {
+      instrumentation->RequestGlobalDumpForPid(pid_scope_, mad_list,
+                                               std::move(callback));
+    } else {
+      instrumentation->RequestGlobalDump(mad_list, std::move(callback));
+    }
   }
 
   // Use a lambda adapter to post the results back to this sequence.
@@ -746,7 +830,7 @@ int ProcessMemoryMetricsEmitter::GetNumberOfExtensions(base::ProcessId pid) {
   return number_of_extensions;
 }
 
-base::Optional<base::TimeDelta> ProcessMemoryMetricsEmitter::GetProcessUptime(
+absl::optional<base::TimeDelta> ProcessMemoryMetricsEmitter::GetProcessUptime(
     const base::Time& now,
     base::ProcessId pid) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -756,7 +840,7 @@ base::Optional<base::TimeDelta> ProcessMemoryMetricsEmitter::GetProcessUptime(
     if (!process_info->second.launch_time.is_null())
       return now - process_info->second.launch_time;
   }
-  return base::Optional<base::TimeDelta>();
+  return absl::optional<base::TimeDelta>();
 }
 
 void ProcessMemoryMetricsEmitter::CollateResults() {
@@ -764,6 +848,9 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 
   if (memory_dump_in_progress_ || get_process_urls_in_progress_)
     return;
+  // The memory dump can be done, yet |global_dump_| not set if:
+  // - Process metrics collection fails first.
+  // - Process Infos arrive later.
   if (!global_dump_)
     return;
 
@@ -836,20 +923,22 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         break;
       }
       case memory_instrumentation::mojom::ProcessType::UTILITY: {
+        HistogramProcessType ptype;
         if (pmd.pid() == content::GetProcessIdForAudioService()) {
-          EmitAudioServiceMemoryMetrics(
-              pmd, ukm::UkmRecorder::GetNewSourceID(), GetUkmRecorder(),
-              GetProcessUptime(now, pmd.pid()), emit_metrics_for_all_processes);
+          ptype = HistogramProcessType::kAudioService;
         } else if (pmd.service_name() ==
                    network::mojom::NetworkService::Name_) {
-          EmitNetworkServiceMemoryMetrics(
-              pmd, ukm::UkmRecorder::GetNewSourceID(), GetUkmRecorder(),
-              GetProcessUptime(now, pmd.pid()), emit_metrics_for_all_processes);
+          ptype = HistogramProcessType::kNetworkService;
+        } else if (pmd.service_name() ==
+                   paint_preview::mojom::PaintPreviewCompositorCollection::
+                       Name_) {
+          ptype = HistogramProcessType::kPaintPreviewCompositor;
         } else {
-          EmitUtilityMemoryMetrics(
-              pmd, ukm::UkmRecorder::GetNewSourceID(), GetUkmRecorder(),
-              GetProcessUptime(now, pmd.pid()), emit_metrics_for_all_processes);
+          ptype = HistogramProcessType::kUtility;
         }
+        EmitUtilityMemoryMetrics(
+            ptype, pmd, ukm::UkmRecorder::GetNewSourceID(), GetUkmRecorder(),
+            GetProcessUptime(now, pmd.pid()), emit_metrics_for_all_processes);
         break;
       }
       case memory_instrumentation::mojom::ProcessType::PLUGIN:
@@ -875,7 +964,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
       // Size of the native library on android is ~40MB.
       // More precision is needed in the middle buckets, hence the range.
       base::UmaHistogramCustomCounts(
-          "Memory.NativeLibrary.MappedAndResidentMemoryFootprint2",
+          "Memory.NativeLibrary.MappedAndResidentMemoryFootprint3",
           native_resident_kb, 1000, 100000, 100);
       if (native_library_not_resident_ordered_kb != metrics.kInvalid) {
         base::UmaHistogramCustomCounts(
@@ -891,31 +980,39 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 
     UMA_HISTOGRAM_MEMORY_LARGE_MB(
         "Memory.Experimental.Total2.PrivateMemoryFootprint",
-        private_footprint_total_kb / 1024);
-#if defined(OS_MACOSX)
+        private_footprint_total_kb / kKiB);
+#if defined(OS_MAC)
     // Resident set is not populated on Mac.
     DCHECK_EQ(resident_set_total_kb, 0U);
 #else
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.ResidentSet",
-                                  resident_set_total_kb / 1024);
+                                  resident_set_total_kb / kKiB);
 
 #endif
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateMemoryFootprint",
-                                  private_footprint_total_kb / 1024);
+                                  private_footprint_total_kb / kKiB);
+    // The pseudo metric of Memory.Total.PrivateMemoryFootprint. Only used to
+    // assess field trial data quality.
+    UMA_HISTOGRAM_MEMORY_LARGE_MB(
+        "UMA.Pseudo.Memory.Total.PrivateMemoryFootprint",
+        metrics::GetPseudoMetricsSample(
+            static_cast<double>(private_footprint_total_kb) / kKiB));
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererPrivateMemoryFootprint",
-                                  renderer_private_footprint_total_kb / 1024);
+                                  renderer_private_footprint_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.SharedMemoryFootprint",
-                                  shared_footprint_total_kb / 1024);
+                                  shared_footprint_total_kb / kKiB);
 
     Memory_Experimental(ukm::UkmRecorder::GetNewSourceID())
-        .SetTotal2_PrivateMemoryFootprint(private_footprint_total_kb / 1024)
-        .SetTotal2_SharedMemoryFootprint(shared_footprint_total_kb / 1024)
+        .SetTotal2_PrivateMemoryFootprint(private_footprint_total_kb / kKiB)
+        .SetTotal2_SharedMemoryFootprint(shared_footprint_total_kb / kKiB)
         .Record(GetUkmRecorder());
 
     // Renderer metrics-by-tab only make sense if we're visiting all render
     // processes.
     per_tab_metrics.RecordPmfs(GetUkmRecorder());
   }
+
+  global_dump_ = nullptr;
 }
 
 namespace {
@@ -941,6 +1038,8 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
   std::vector<ProcessInfo> process_infos;
   std::vector<const performance_manager::ProcessNode*> process_nodes =
       graph->GetAllProcessNodes();
+  // Assign page nodes unique IDs within this lookup only.
+  base::flat_map<const performance_manager::PageNode*, uint64_t> page_id_map;
   for (auto* process_node : process_nodes) {
     if (process_node->GetProcessId() == base::kNullProcessId)
       continue;
@@ -956,10 +1055,14 @@ void ProcessMemoryMetricsEmitter::GetProcessToPageInfoMap(
       if (page_node->GetUkmSourceID() == ukm::kInvalidSourceId)
         continue;
 
+      if (page_id_map.find(page_node) == page_id_map.end())
+        page_id_map.insert(std::make_pair(page_node, page_id_map.size() + 1));
+
       PageInfo page_info;
       page_info.ukm_source_id = page_node->GetUkmSourceID();
-      page_info.tab_id =
-          performance_manager::Node::GetSerializationId(page_node);
+
+      DCHECK(page_id_map.find(page_node) != page_id_map.end());
+      page_info.tab_id = page_id_map[page_node];
       page_info.hosts_main_frame = HostsMainFrame(process_node, page_node);
       page_info.is_visible = page_node->IsVisible();
       page_info.time_since_last_visibility_change =

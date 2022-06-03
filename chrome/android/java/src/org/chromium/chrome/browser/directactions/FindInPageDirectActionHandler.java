@@ -56,6 +56,6 @@ public class FindInPageDirectActionHandler implements DirectActionHandler {
     /** Returns {@code true} if the action is currently available. */
     private final boolean isAvailable() {
         Tab tab = mTabModelSelector.getCurrentTab();
-        return !tab.isNativePage() && tab.getWebContents() != null;
+        return tab != null && !tab.isNativePage() && tab.getWebContents() != null;
     }
 }

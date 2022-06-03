@@ -14,15 +14,17 @@ namespace chromeos {
 namespace multidevice {
 
 class RemoteDeviceCacheTest : public testing::Test {
+ public:
+  RemoteDeviceCacheTest(const RemoteDeviceCacheTest&) = delete;
+  RemoteDeviceCacheTest& operator=(const RemoteDeviceCacheTest&) = delete;
+
  protected:
   RemoteDeviceCacheTest()
       : test_remote_device_list_(CreateRemoteDeviceListForTest(5)),
         test_remote_device_ref_list_(CreateRemoteDeviceRefListForTest(5)) {}
 
   // testing::Test:
-  void SetUp() override {
-    cache_ = RemoteDeviceCache::Factory::Get()->BuildInstance();
-  }
+  void SetUp() override { cache_ = RemoteDeviceCache::Factory::Create(); }
 
   void VerifyCacheRemoteDevices(
       RemoteDeviceRefList expected_remote_device_ref_list) {
@@ -35,16 +37,15 @@ class RemoteDeviceCacheTest : public testing::Test {
     EXPECT_EQ(expected_remote_device_ref_list, remote_device_ref_list);
   }
 
-  const RemoteDeviceList test_remote_device_list_;
+  RemoteDeviceList test_remote_device_list_;
   const RemoteDeviceRefList test_remote_device_ref_list_;
   std::unique_ptr<RemoteDeviceCache> cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceCacheTest);
 };
 
 TEST_F(RemoteDeviceCacheTest, TestNoRemoteDevices) {
   VerifyCacheRemoteDevices(RemoteDeviceRefList());
-  EXPECT_EQ(base::nullopt, cache_->GetRemoteDevice(
+  EXPECT_EQ(absl::nullopt, cache_->GetRemoteDevice(
+                               test_remote_device_ref_list_[0].instance_id(),
                                test_remote_device_ref_list_[0].GetDeviceId()));
 }
 
@@ -54,7 +55,36 @@ TEST_F(RemoteDeviceCacheTest, TestSetAndGetRemoteDevices) {
   VerifyCacheRemoteDevices(test_remote_device_ref_list_);
   EXPECT_EQ(
       test_remote_device_ref_list_[0],
-      cache_->GetRemoteDevice(test_remote_device_ref_list_[0].GetDeviceId()));
+      cache_->GetRemoteDevice(test_remote_device_ref_list_[0].instance_id(),
+                              test_remote_device_ref_list_[0].GetDeviceId()));
+}
+
+TEST_F(RemoteDeviceCacheTest,
+       TestSetAndGetRemoteDevices_LookupByInstanceIdOrPublicKey) {
+  test_remote_device_list_[0].instance_id.clear();
+  test_remote_device_list_[1].public_key.clear();
+  cache_->SetRemoteDevices(test_remote_device_list_);
+
+  GetMutableRemoteDevice(test_remote_device_ref_list_[0])->instance_id.clear();
+  GetMutableRemoteDevice(test_remote_device_ref_list_[1])->public_key.clear();
+  VerifyCacheRemoteDevices(test_remote_device_ref_list_);
+
+  EXPECT_EQ(
+      test_remote_device_ref_list_[0],
+      cache_->GetRemoteDevice(absl::nullopt /* instance_id */,
+                              test_remote_device_ref_list_[0].GetDeviceId()));
+  EXPECT_EQ(
+      test_remote_device_ref_list_[1],
+      cache_->GetRemoteDevice(test_remote_device_ref_list_[1].instance_id(),
+                              absl::nullopt /* legacy_device_id */));
+  EXPECT_EQ(
+      test_remote_device_ref_list_[2],
+      cache_->GetRemoteDevice(absl::nullopt /* instance_id */,
+                              test_remote_device_ref_list_[2].GetDeviceId()));
+  EXPECT_EQ(
+      test_remote_device_ref_list_[2],
+      cache_->GetRemoteDevice(test_remote_device_ref_list_[2].instance_id(),
+                              absl::nullopt /* legacy_device_id */));
 }
 
 TEST_F(RemoteDeviceCacheTest,
@@ -75,8 +105,8 @@ TEST_F(RemoteDeviceCacheTest,
   remote_device.last_update_time_millis = 1000;
   cache_->SetRemoteDevices({remote_device});
 
-  RemoteDeviceRef remote_device_ref =
-      *cache_->GetRemoteDevice(remote_device.GetDeviceId());
+  RemoteDeviceRef remote_device_ref = *cache_->GetRemoteDevice(
+      remote_device.instance_id, remote_device.GetDeviceId());
   EXPECT_EQ(remote_device.name, remote_device_ref.name());
 
   // Update the device's name and update time. Since the incoming remote device
@@ -98,8 +128,8 @@ TEST_F(
   remote_device.last_update_time_millis = 1000;
   cache_->SetRemoteDevices({remote_device});
 
-  RemoteDeviceRef remote_device_ref =
-      *cache_->GetRemoteDevice(remote_device.GetDeviceId());
+  RemoteDeviceRef remote_device_ref = *cache_->GetRemoteDevice(
+      remote_device.instance_id, remote_device.GetDeviceId());
   EXPECT_EQ(remote_device.name, remote_device_ref.name());
 
   // Update the device's name and update time, this time reducing the

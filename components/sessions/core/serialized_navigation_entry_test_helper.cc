@@ -16,11 +16,8 @@ namespace test_data {
 
 const int kIndex = 3;
 const int kUniqueID = 50;
-const GURL kReferrerURL = GURL("http://www.referrer.com");
 const int kReferrerPolicy = 0;
-const GURL kURL = GURL("http://www.url.com");
-const GURL kVirtualURL = GURL("http://www.virtual-url.com");
-const base::string16 kTitle = base::ASCIIToUTF16("title");
+const std::u16string kTitle = u"title";
 const std::string kEncodedPageState = "page state";
 const ui::PageTransition kTransitionType =
     ui::PageTransitionFromInt(
@@ -29,15 +26,9 @@ const ui::PageTransition kTransitionType =
         ui::PAGE_TRANSITION_CLIENT_REDIRECT);
 const bool kHasPostData = true;
 const int64_t kPostID = 100;
-const GURL kOriginalRequestURL = GURL("http://www.original-request.com");
 const bool kIsOverridingUserAgent = true;
-const base::Time kTimestamp =
-    base::Time::UnixEpoch() + base::TimeDelta::FromMilliseconds(100);
-const GURL kFaviconURL = GURL("http://virtual-url.com/favicon.ico");
+const base::Time kTimestamp = base::Time::UnixEpoch() + base::Milliseconds(100);
 const int kHttpStatusCode = 404;
-const GURL kRedirectURL0 = GURL("http://go/redirect0");
-const GURL kRedirectURL1 = GURL("http://go/redirect1");
-const GURL kOtherURL = GURL("http://other.com");
 const SerializedNavigationEntry::PasswordState kPasswordState =
     SerializedNavigationEntry::HAS_PASSWORD_FIELD;
 const std::string kExtendedInfoKey1 = "key 1";
@@ -47,7 +38,6 @@ const std::string kExtendedInfoValue2 = "value 2";
 const int64_t kTaskId = 2;
 const int64_t kParentTaskId = 1;
 const int64_t kRootTaskId = 0;
-const std::vector<int64_t> kChildrenTaskIds{3, 4, 5};
 
 }  // namespace test_data
 
@@ -74,18 +64,18 @@ SerializedNavigationEntryTestHelper::CreateNavigationForTest() {
   SerializedNavigationEntry navigation;
   navigation.index_ = test_data::kIndex;
   navigation.unique_id_ = test_data::kUniqueID;
-  navigation.referrer_url_ = test_data::kReferrerURL;
+  navigation.referrer_url_ = GURL("http://www.referrer.com");
   navigation.referrer_policy_ = test_data::kReferrerPolicy;
-  navigation.virtual_url_ = test_data::kVirtualURL;
+  navigation.virtual_url_ = GURL("http://www.virtual-url.com");
   navigation.title_ = test_data::kTitle;
   navigation.encoded_page_state_ = test_data::kEncodedPageState;
   navigation.transition_type_ = test_data::kTransitionType;
   navigation.has_post_data_ = test_data::kHasPostData;
   navigation.post_id_ = test_data::kPostID;
-  navigation.original_request_url_ = test_data::kOriginalRequestURL;
+  navigation.original_request_url_ = GURL("http://www.original-request.com");
   navigation.is_overriding_user_agent_ = test_data::kIsOverridingUserAgent;
   navigation.timestamp_ = test_data::kTimestamp;
-  navigation.favicon_url_ = test_data::kFaviconURL;
+  navigation.favicon_url_ = GURL("http://virtual-url.com/favicon.ico");
   navigation.http_status_code_ = test_data::kHttpStatusCode;
   navigation.password_state_ = test_data::kPasswordState;
 
@@ -94,13 +84,12 @@ SerializedNavigationEntryTestHelper::CreateNavigationForTest() {
   navigation.extended_info_map_[test_data::kExtendedInfoKey2] =
       test_data::kExtendedInfoValue2;
 
-  navigation.redirect_chain_.push_back(test_data::kRedirectURL0);
-  navigation.redirect_chain_.push_back(test_data::kRedirectURL1);
-  navigation.redirect_chain_.push_back(test_data::kVirtualURL);
+  navigation.redirect_chain_.emplace_back("http://go/redirect0");
+  navigation.redirect_chain_.emplace_back("http://go/redirect1");
+  navigation.redirect_chain_.push_back(navigation.virtual_url_);
   navigation.task_id_ = test_data::kTaskId;
   navigation.parent_task_id_ = test_data::kParentTaskId;
   navigation.root_task_id_ = test_data::kRootTaskId;
-  navigation.children_task_ids_ = test_data::kChildrenTaskIds;
   return navigation;
 }
 

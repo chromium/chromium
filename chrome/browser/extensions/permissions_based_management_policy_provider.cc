@@ -4,7 +4,8 @@
 
 #include "chrome/browser/extensions/permissions_based_management_policy_provider.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
 #include "extensions/common/extension.h"
@@ -36,7 +37,7 @@ PermissionsBasedManagementPolicyProvider::GetDebugPolicyProviderName() const {
 
 bool PermissionsBasedManagementPolicyProvider::UserMayLoad(
     const Extension* extension,
-    base::string16* error) const {
+    std::u16string* error) const {
   // Component extensions are always allowed.
   if (Manifest::IsComponentLocation(extension->location()))
     return true;

@@ -9,14 +9,8 @@ namespace re2 {
 class RE2;
 }  // namespace re2
 
-// Phone number regex to use to detect numbers from text selections.
-enum class PhoneNumberRegexVariant {
-  kSimple = 0,
-  kLowConfidenceModified = 1,
-};
-
-// Returns an RE2 instance for the given |variant| to detect phone numbers.
-const re2::RE2& GetPhoneNumberRegex(PhoneNumberRegexVariant variant);
+// Returns an RE2 instance to detect phone numbers.
+const re2::RE2& GetPhoneNumberRegex();
 
 // Precompile regexes on a best effort task 15 seconds after startup.
 void PrecompilePhoneNumberRegexesAsync();

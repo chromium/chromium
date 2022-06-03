@@ -9,8 +9,14 @@ include_rules = [
     "+base/metrics/field_trial_params.h",  # for fetch/ResourceLoadScheduler.cpp
     "+base/strings/string_number_conversions.h",  # for fetch/ResourceLoadScheduler.cpp
     "+components/link_header_util",  # for LinkHeader.cpp
+    "+net/base/load_flags.h",
+    "+net/base/net_errors.h",
+    "+net/traffic_annotation/network_traffic_annotation_test_helper.h",
+    "+net/url_request/redirect_info.h",
     "+services/metrics/public", # for UKM API
     "+services/network/public",  # for Fetch API and CORS
+    "+third_party/blink/renderer/platform/back_forward_cache_utils.h",
+    "+third_party/blink/renderer/platform/bindings/dom_wrapper_world.h",
     "+third_party/blink/renderer/platform/bindings/parkable_string.h",
     "+third_party/blink/renderer/platform/bindings/script_forbidden_scope.h",
     "+third_party/blink/renderer/platform/bindings/trace_wrapper_member.h",
@@ -25,6 +31,7 @@ include_rules = [
     "+third_party/blink/renderer/platform/loader/fetch/cross_origin_attribute_value.h",
     "+third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h",
     "+third_party/blink/renderer/platform/mhtml",
+    "+third_party/blink/renderer/platform/mojo/mojo_binding_context.h",
     "+third_party/blink/renderer/platform/network",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/platform_probe_sink.h",
@@ -37,7 +44,6 @@ include_rules = [
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/web_task_runner.h",
     "+third_party/blink/renderer/platform/wtf",
-    "+third_party/boringssl/src/include/openssl/curve25519.h",  # for SubresourceIntegrity.cpp
 ]
 
 specific_include_rules = {
@@ -63,4 +69,13 @@ specific_include_rules = {
   "replaying_web_data_consumer_handle.h": [
       "+third_party/blink/renderer/platform/waitable_event.h",
   ],
+  "request_conversion.cc": [
+     # This file consists of conversion functions and hence needs to access
+     # both the blink and chromium mojom variants.
+     "+net/base/request_priority.h",
+     "+net/http/http_request_headers.h",
+     "+net/http/http_util.h",
+     "+third_party/blink/public/mojom/blob/blob.mojom.h",
+     "+services/network/public/mojom/data_pipe_getter.mojom.h",
+  ]
 }

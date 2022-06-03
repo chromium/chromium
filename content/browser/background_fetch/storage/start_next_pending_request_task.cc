@@ -9,6 +9,7 @@
 #include "content/browser/background_fetch/storage/database_helpers.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/common/fetch/fetch_api_request_proto.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 namespace background_fetch {
@@ -75,12 +76,12 @@ void StartNextPendingRequestTask::DidGetPendingRequests(
 
   service_worker_context()->StoreRegistrationUserData(
       registration_id_.service_worker_registration_id(),
-      registration_id_.origin().GetURL(),
+      registration_id_.storage_key(),
       {{ActiveRequestKey(active_request_.unique_id(),
                          active_request_.request_index()),
         active_request_.SerializeAsString()}},
-      base::BindRepeating(&StartNextPendingRequestTask::DidStoreActiveRequest,
-                          weak_factory_.GetWeakPtr()));
+      base::BindOnce(&StartNextPendingRequestTask::DidStoreActiveRequest,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void StartNextPendingRequestTask::DidStoreActiveRequest(

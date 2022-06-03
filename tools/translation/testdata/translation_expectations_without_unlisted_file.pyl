@@ -1,0 +1,36 @@
+# Copyright 2018 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+#
+# This file is used in TranslationExpectationsTest in PRESUBMIT_test.py
+#
+# This is a .pyl, or "Python Literal", file. You can treat it just like a
+# .json file, with the following exceptions:
+# * all keys must be quoted (use single quotes, please);
+# * comments are allowed, using '#' syntax; and
+# * trailing commas are allowed.
+#
+# Specifies which grd files should be translated and into which languages they
+# should be translated. Used by the internal translation process.
+{
+  "desktop_grds": {
+    "languages": [
+      "en-GB"
+    ],
+    "files": [
+      "test.grd",
+      # Missing unlisted.grd.
+    ],
+  },
+  # Grd files that contain <message> or <translations> elements, but that
+  # shouldn't be translated as part of the normal translation process. Each
+  # entry needs an explanation for why it shouldn't be translated.
+  "untranslated_grds": {
+    "not_translated.grd": "Not translated"
+  },
+  # Grd files that should not be processed, since they might contain parts not
+  # available publicly.
+  "internal_grds": [
+    "internal.grd",
+  ],
+}

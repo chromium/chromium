@@ -8,7 +8,5 @@ source_set("base") {
     "session_manager_types.h",
   ]
 
-  public_deps = [
-    "//components/account_id",
-  ]
+  public_deps = [ "//components/account_id" ]
 }

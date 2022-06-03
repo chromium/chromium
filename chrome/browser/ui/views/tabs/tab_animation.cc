@@ -7,25 +7,23 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/numerics/ranges.h"
+#include "base/cxx17_backports.h"
 #include "chrome/browser/ui/views/tabs/tab_width_constraints.h"
 #include "ui/gfx/animation/tween.h"
 
 namespace {
 
-constexpr base::TimeDelta kZeroDuration = base::TimeDelta::FromMilliseconds(0);
+constexpr base::TimeDelta kZeroDuration = base::Milliseconds(0);
 
 }  // namespace
 
 constexpr base::TimeDelta TabAnimation::kAnimationDuration;
 
-TabAnimation::TabAnimation(TabAnimationState static_state,
-                           base::OnceClosure tab_removed_callback)
+TabAnimation::TabAnimation(TabAnimationState static_state)
     : initial_state_(static_state),
       target_state_(static_state),
       start_time_(base::TimeTicks::Now()),
-      duration_(kZeroDuration),
-      tab_removed_callback_(std::move(tab_removed_callback)) {}
+      duration_(kZeroDuration) {}
 
 TabAnimation::~TabAnimation() = default;
 
@@ -59,10 +57,6 @@ void TabAnimation::CompleteAnimation() {
   duration_ = kZeroDuration;
 }
 
-void TabAnimation::NotifyCloseCompleted() {
-  std::move(tab_removed_callback_).Run();
-}
-
 base::TimeDelta TabAnimation::GetTimeRemaining() const {
   return std::max(start_time_ + duration_ - base::TimeTicks::Now(),
                   kZeroDuration);
@@ -79,8 +73,8 @@ TabAnimationState TabAnimation::GetCurrentState() const {
     return target_state_;
 
   const base::TimeDelta elapsed_time = base::TimeTicks::Now() - start_time_;
-  const double normalized_elapsed_time = base::ClampToRange(
-      elapsed_time.InMillisecondsF() / duration_.InMillisecondsF(), 0.0, 1.0);
+  const double normalized_elapsed_time =
+      base::clamp(elapsed_time / duration_, 0.0, 1.0);
   const double interpolation_value = gfx::Tween::CalculateValue(
       gfx::Tween::Type::EASE_OUT, normalized_elapsed_time);
   return TabAnimationState::Interpolate(interpolation_value, initial_state_,

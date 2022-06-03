@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_TEST_BASE_UI_CONTROLS_AURA_H_
-#define UI_TEST_BASE_UI_CONTROLS_AURA_H_
+#ifndef UI_BASE_TEST_UI_CONTROLS_AURA_H_
+#define UI_BASE_TEST_UI_CONTROLS_AURA_H_
 
 #include "base/callback_forward.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_widget_types.h"
@@ -33,9 +34,9 @@ class UIControlsAura {
                                           base::OnceClosure task) = 0;
 
   // Simulate a mouse move. (x,y) are absolute screen coordinates.
-  virtual bool SendMouseMove(long x, long y) = 0;
-  virtual bool SendMouseMoveNotifyWhenDone(long x,
-                                           long y,
+  virtual bool SendMouseMove(int x, int y) = 0;
+  virtual bool SendMouseMoveNotifyWhenDone(int x,
+                                           int y,
                                            base::OnceClosure task) = 0;
 
   // Sends a mouse down and/or up message. The click will be sent to wherever
@@ -53,7 +54,7 @@ class UIControlsAura {
 
 #if defined(OS_WIN)
   virtual bool SendTouchEvents(int action, int num, int x, int y) = 0;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
   virtual bool SendTouchEvents(int action, int id, int x, int y) = 0;
   virtual bool SendTouchEventsNotifyWhenDone(int action,
                                              int id,
@@ -65,4 +66,4 @@ class UIControlsAura {
 
 }  // namespace ui_controls
 
-#endif  // UI_TEST_BASE_UI_CONTROLS_AURA_H_
+#endif  // UI_BASE_TEST_UI_CONTROLS_AURA_H_

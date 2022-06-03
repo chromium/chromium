@@ -32,6 +32,11 @@ class HostExtensionSessionManager {
   // Creates an extension manager for the specified |extensions|.
   HostExtensionSessionManager(const HostExtensions& extensions,
                               ClientSessionDetails* client_session_details);
+
+  HostExtensionSessionManager(const HostExtensionSessionManager&) = delete;
+  HostExtensionSessionManager& operator=(const HostExtensionSessionManager&) =
+      delete;
+
   virtual ~HostExtensionSessionManager();
 
   // Returns the union of all capabilities supported by registered extensions.
@@ -62,8 +67,6 @@ class HostExtensionSessionManager {
 
   // The instantiated HostExtensionSessions, used to handle extension messages.
   HostExtensionSessions extension_sessions_;
-
-  DISALLOW_COPY_AND_ASSIGN(HostExtensionSessionManager);
 };
 
 }  // namespace remoting

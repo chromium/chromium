@@ -57,12 +57,12 @@ class SVGFEBlendElement final : public SVGFilterPrimitiveStandardAttributes {
   SVGAnimatedString* in2() { return in2_.Get(); }
   SVGAnimatedEnumeration<Mode>* mode() { return mode_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool SetFilterEffectAttribute(FilterEffect*,
                                 const QualifiedName& attr_name) override;
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override { return false; }
 

@@ -5,10 +5,12 @@
 #include "third_party/blink/renderer/core/frame/performance_monitor.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/location.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "v8/include/v8.h"
 
 #include <memory>
 
@@ -25,13 +27,13 @@ class PerformanceMonitorTest : public testing::Test {
     return page_holder_->GetDocument().GetFrame();
   }
   ExecutionContext* GetExecutionContext() const {
-    return &page_holder_->GetDocument();
+    return page_holder_->GetFrame().DomWindow();
   }
   LocalFrame* AnotherFrame() const {
     return another_page_holder_->GetDocument().GetFrame();
   }
   ExecutionContext* AnotherExecutionContext() const {
-    return &another_page_holder_->GetDocument();
+    return another_page_holder_->GetFrame().DomWindow();
   }
 
   void WillExecuteScript(ExecutionContext* execution_context) {
@@ -65,7 +67,7 @@ class PerformanceMonitorTest : public testing::Test {
   int NumUniqueFrameContextsSeen();
 
   static base::TimeTicks SecondsToTimeTicks(double seconds) {
-    return base::TimeTicks() + base::TimeDelta::FromSecondsD(seconds);
+    return base::TimeTicks() + base::Seconds(seconds);
   }
 
   Persistent<PerformanceMonitor> monitor_;
@@ -76,7 +78,8 @@ class PerformanceMonitorTest : public testing::Test {
 void PerformanceMonitorTest::SetUp() {
   page_holder_ = std::make_unique<DummyPageHolder>(IntSize(800, 600));
   page_holder_->GetDocument().SetURL(KURL("https://example.com/foo"));
-  monitor_ = MakeGarbageCollected<PerformanceMonitor>(GetFrame());
+  monitor_ = MakeGarbageCollected<PerformanceMonitor>(
+      GetFrame(), v8::Isolate::GetCurrent());
 
   // Create another dummy page holder and pretend this is the iframe.
   another_page_holder_ = std::make_unique<DummyPageHolder>(IntSize(400, 300));
@@ -91,7 +94,7 @@ String PerformanceMonitorTest::FrameContextURL() {
   // This is reported only if there is a single frameContext URL.
   if (monitor_->task_has_multiple_contexts_)
     return g_empty_string;
-  return To<Document>(monitor_->task_execution_context_.Get())
+  return To<LocalDOMWindow>(monitor_->task_execution_context_.Get())
       ->location()
       ->toString();
 }

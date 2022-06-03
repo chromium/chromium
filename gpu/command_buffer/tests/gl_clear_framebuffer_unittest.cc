@@ -146,9 +146,17 @@ TEST_P(GLClearFramebufferTest, ClearColorWithMask) {
 }
 
 // crbug.com/434094
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 TEST_P(GLClearFramebufferTest, ClearColorWithScissor) {
   if (!IsApplicable()) {
+    return;
+  }
+
+  // TODO(jonahr): Test fails on Linux with ANGLE/passthrough
+  // (crbug.com/1099770)
+  gpu::GPUTestBotConfig bot_config;
+  if (bot_config.LoadCurrentConfig(nullptr) &&
+      bot_config.Matches("linux passthrough")) {
     return;
   }
 

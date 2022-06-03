@@ -18,10 +18,10 @@
 #include <memory>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/logging.h"
 #include "sandbox/linux/services/proc_util.h"
 #include "sandbox/linux/services/syscall_wrappers.h"
 #include "sandbox/linux/system_headers/capability.h"
@@ -47,8 +47,22 @@ typedef std::unique_ptr<std::remove_reference<decltype(*((cap_t)0))>::type,
 bool WorkingDirectoryIsRoot() {
   char current_dir[PATH_MAX];
   char* cwd = getcwd(current_dir, sizeof(current_dir));
-  PCHECK(cwd);
-  if (strcmp("/", cwd)) return false;
+
+  // Kernel commit 7bc3e6e55acf ("proc: Use a list of inodes to flush from
+  // proc"), present in 5.6 and later, changed how procfs inodes are cleaned up
+  // when a process exits. Credentials::DropFileSystemAccess() relies forking a
+  // child process which shares the same file system information (using
+  // clone(CLONE_FS)), and chroot()'ing to /proc/self/fdinfo/ in that process.
+  // However, when that child process exits, its procfs directories are
+  // unlinked, causing getcwd() to return ENOENT. getcwd() has been documented
+  // as returning ENOENT when the directory has been unlinked since at least
+  // 2004 (man-pages commit fea681daf).
+  if (cwd) {
+    if (strcmp("/", cwd))
+      return false;
+  } else {
+    PCHECK(errno == ENOENT);
+  }
 
   // The current directory is the root. Add a few paranoid checks.
   struct stat current;
@@ -146,7 +160,9 @@ SANDBOX_TEST(Credentials, CanDetectRoot) {
 }
 
 // Disabled on ASAN because of crbug.com/451603.
-SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(DropFileSystemAccessIsSafe)) {
+// Disabled on MSAN due to crbug.com/1180105
+SANDBOX_TEST_ALLOW_NOISE(Credentials,
+                         DISABLE_ON_SANITIZERS(DropFileSystemAccessIsSafe)) {
   CHECK(Credentials::HasFileSystemAccess());
   CHECK(Credentials::DropAllCapabilities());
   // Probably missing kernel support.
@@ -162,7 +178,8 @@ SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(DropFileSystemAccessIsSafe)) {
 
 // Check that after dropping filesystem access and dropping privileges
 // it is not possible to regain capabilities.
-SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(CannotRegainPrivileges)) {
+// Disabled on MSAN due to crbug.com/1180105
+SANDBOX_TEST(Credentials, DISABLE_ON_SANITIZERS(CannotRegainPrivileges)) {
   base::ScopedFD proc_fd(ProcUtil::OpenProc());
   CHECK(Credentials::DropAllCapabilities(proc_fd.get()));
   // Probably missing kernel support.
@@ -251,7 +268,9 @@ void SignalHandler(int sig) {
 // glibc (and some other libcs) caches the PID and TID in TLS. This test
 // verifies that these values are correct after DropFilesystemAccess.
 // Disabled on ASAN because of crbug.com/451603.
-SANDBOX_TEST(Credentials, DISABLE_ON_ASAN(DropFileSystemAccessPreservesTLS)) {
+// Disabled on MSAN due to crbug.com/1180105
+SANDBOX_TEST(Credentials,
+             DISABLE_ON_SANITIZERS(DropFileSystemAccessPreservesTLS)) {
   // Probably missing kernel support.
   if (!Credentials::MoveToNewUserNS()) return;
   CHECK(Credentials::DropFileSystemAccess(ProcUtil::OpenProc().get()));

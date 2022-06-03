@@ -8,10 +8,9 @@
 #include "base/macros.h"
 #include "components/omnibox/browser/autocomplete_provider_client.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
+#include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
 
-namespace ios {
 class ChromeBrowserState;
-}
 
 namespace unified_consent {
 class UrlKeyedDataCollectionConsentHelper;
@@ -25,13 +24,19 @@ class ComponentUpdateService;
 // AutocompleteProviderClient interface.
 class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
  public:
-  explicit AutocompleteProviderClientImpl(
-      ios::ChromeBrowserState* browser_state);
+  explicit AutocompleteProviderClientImpl(ChromeBrowserState* browser_state);
+
+  AutocompleteProviderClientImpl(const AutocompleteProviderClientImpl&) =
+      delete;
+  AutocompleteProviderClientImpl& operator=(
+      const AutocompleteProviderClientImpl&) = delete;
+
   ~AutocompleteProviderClientImpl() override;
 
   // AutocompleteProviderClient implementation.
   scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory() override;
-  PrefService* GetPrefs() override;
+  PrefService* GetPrefs() const override;
+  PrefService* GetLocalState() override;
   const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
   AutocompleteClassifier* GetAutocompleteClassifier() override;
   history::HistoryService* GetHistoryService() override;
@@ -50,19 +55,23 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
   scoped_refptr<ShortcutsBackend> GetShortcutsBackendIfExists() override;
   std::unique_ptr<KeywordExtensionsDelegate> GetKeywordExtensionsDelegate(
       KeywordProvider* keyword_provider) override;
+  query_tiles::TileService* GetQueryTileService() const override;
+  OmniboxTriggeredFeatureService* GetOmniboxTriggeredFeatureService()
+      const override;
   std::string GetAcceptLanguages() const override;
   std::string GetEmbedderRepresentationOfAboutScheme() const override;
-  std::vector<base::string16> GetBuiltinURLs() override;
-  std::vector<base::string16> GetBuiltinsToProvideAsUserTypes() override;
+  std::vector<std::u16string> GetBuiltinURLs() override;
+  std::vector<std::u16string> GetBuiltinsToProvideAsUserTypes() override;
   component_updater::ComponentUpdateService* GetComponentUpdateService()
       override;
+  signin::IdentityManager* GetIdentityManager() const override;
   bool IsOffTheRecord() const override;
   bool SearchSuggestEnabled() const override;
   bool IsPersonalizedUrlDataCollectionActive() const override;
   bool IsAuthenticated() const override;
   bool IsSyncActive() const override;
   void Classify(
-      const base::string16& text,
+      const std::u16string& text,
       bool prefer_keyword,
       bool allow_exact_keyword_match,
       metrics::OmniboxEventProto::PageClassification page_classification,
@@ -70,18 +79,25 @@ class AutocompleteProviderClientImpl : public AutocompleteProviderClient {
       GURL* alternate_nav_url) override;
   void DeleteMatchingURLsForKeywordFromHistory(
       history::KeywordID keyword_id,
-      const base::string16& term) override;
+      const std::u16string& term) override;
   void PrefetchImage(const GURL& url) override;
-  bool IsTabOpenWithURL(const GURL& url,
-                        const AutocompleteInput* input) override;
+  const TabMatcher& GetTabMatcher() const override;
+
+  // OmniboxAction::Client implementation.
+  void OpenSharingHub() override {}
+  void NewIncognitoWindow() override {}
+  void OpenIncognitoClearBrowsingDataDialog() override {}
+  void CloseIncognitoWindows() override {}
+  void PromptPageTranslation() override {}
 
  private:
-  ios::ChromeBrowserState* browser_state_;
+  ChromeBrowserState* browser_state_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
       url_consent_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteProviderClientImpl);
+  std::unique_ptr<OmniboxTriggeredFeatureService>
+      omnibox_triggered_feature_service_;
+  TabMatcherImpl tab_matcher_;
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOCOMPLETE_AUTOCOMPLETE_PROVIDER_CLIENT_IMPL_H_

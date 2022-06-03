@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/string_split.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -52,7 +52,7 @@ const char* kTestPpd = R"PPD(*PPD-Adobe: "4.3"
 
 // This is the exact same contents as kTestPpd, but gzipped
 // with gzip --best.
-const char kTestPpdGzipped[] = {
+const uint8_t kTestPpdGzipped[] = {
     0x1f, 0x8b, 0x08, 0x08, 0xd9, 0x8c, 0xef, 0x59, 0x02, 0x03, 0x70, 0x70,
     0x64, 0x67, 0x7a, 0x69, 0x70, 0x70, 0x65, 0x64, 0x2e, 0x70, 0x70, 0x64,
     0x00, 0x7d, 0x93, 0x51, 0x6f, 0xda, 0x30, 0x10, 0xc7, 0xdf, 0xf9, 0x14,
@@ -135,7 +135,8 @@ TEST(PpdLineReaderTest, SimplePpd) {
 TEST(PpdLineReaderTest, SimplePpdGzipped) {
   std::vector<std::string> expected = base::SplitString(
       kTestPpd, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-  RunTest(std::string(kTestPpdGzipped, sizeof(kTestPpdGzipped)),
+  RunTest(std::string(reinterpret_cast<const char*>(kTestPpdGzipped),
+                      sizeof(kTestPpdGzipped)),
           kPpdMaxLineLength, expected);
 }
 
@@ -159,13 +160,15 @@ TEST(PpdLineReaderTest, SkipLongLinesGzipped) {
   base::EraseIf(expected, [](const std::string& entry) -> bool {
     return entry.size() > kMaxLineLength;
   });
-  RunTest(std::string(kTestPpdGzipped, sizeof(kTestPpdGzipped)), kMaxLineLength,
-          expected);
+  RunTest(std::string(reinterpret_cast<const char*>(kTestPpdGzipped),
+                      sizeof(kTestPpdGzipped)),
+          kMaxLineLength, expected);
 }
 
 // Test that we get a reasonable error if we try to process corrupt gzip data.
 TEST(PpdLineReaderTest, CorruptGzipData) {
-  std::string gzipped_contents(kTestPpdGzipped, sizeof(kTestPpdGzipped));
+  std::string gzipped_contents(reinterpret_cast<const char*>(kTestPpdGzipped),
+                               sizeof(kTestPpdGzipped));
   // Corrupt the contents by zeroing out most of it after the header.
 
   for (unsigned int i = 50; i < sizeof(kTestPpdGzipped); ++i) {
@@ -192,7 +195,8 @@ TEST(PpdLineReaderTest, SimplePpdContainsMagicNumber) {
 
 // Tests that the Gzipped version of the PPD file begins with the magic number.
 TEST(PpdLineReaderTest, GzippedPpdContainsMagicNumber) {
-  const std::string gzipped_contents(kTestPpdGzipped, sizeof(kTestPpdGzipped));
+  const std::string gzipped_contents(
+      reinterpret_cast<const char*>(kTestPpdGzipped), sizeof(kTestPpdGzipped));
   EXPECT_TRUE(
       PpdLineReader::ContainsMagicNumber(gzipped_contents, kPpdMaxLineLength));
 }

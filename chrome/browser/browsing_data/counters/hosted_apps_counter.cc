@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <string>
 
+#include "chrome/browser/extensions/extension_special_storage_policy.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/browsing_data/core/pref_names.h"
 #include "extensions/browser/extension_registry.h"
@@ -16,30 +17,30 @@
 HostedAppsCounter::HostedAppsCounter(Profile* profile)
     : profile_(profile) {}
 
-HostedAppsCounter::~HostedAppsCounter() {}
+HostedAppsCounter::~HostedAppsCounter() = default;
 
 const char* HostedAppsCounter::GetPrefName() const {
   return browsing_data::prefs::kDeleteHostedAppsData;
 }
 
 void HostedAppsCounter::Count() {
-  int count = 0;
   std::vector<std::string> names;
 
   std::unique_ptr<extensions::ExtensionSet> extensions =
       extensions::ExtensionRegistry::Get(profile_)
           ->GenerateInstalledExtensionsSet();
+  auto* special_storage_policy = profile_->GetExtensionSpecialStoragePolicy();
 
   for (const auto& extension : *extensions) {
     // Exclude kChromeAppId because this is not a proper hosted app. It is just
     // a shortcut to launch Chrome on Chrome OS.
-    if (extension->is_hosted_app() &&
+    if (special_storage_policy->NeedsProtection(extension.get()) &&
         extension->id() != extension_misc::kChromeAppId) {
       names.push_back(extension->short_name());
     }
   }
 
-  count = names.size();
+  int count = names.size();
 
   // Give the first two names (alphabetically) as examples.
   std::sort(names.begin(), names.end());

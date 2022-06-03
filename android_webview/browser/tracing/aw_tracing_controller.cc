@@ -9,9 +9,8 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted_memory.h"
-#include "base/task/post_task.h"
+#include "base/trace_event/trace_config.h"
 #include "content/public/browser/browser_task_traits.h"
-
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/tracing_controller.h"
 
@@ -42,13 +41,13 @@ class AwTraceDataEndpoint
   }
 
   void ReceivedTraceFinalContents() override {
-    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                   std::move(completed_callback_));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, std::move(completed_callback_));
   }
 
   void ReceiveTraceChunk(std::unique_ptr<std::string> chunk) override {
-    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                   base::BindOnce(received_chunk_callback_, std::move(chunk)));
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(received_chunk_callback_, std::move(chunk)));
   }
 
   explicit AwTraceDataEndpoint(ReceivedChunkCallback received_chunk_callback,
@@ -56,13 +55,14 @@ class AwTraceDataEndpoint
       : received_chunk_callback_(std::move(received_chunk_callback)),
         completed_callback_(std::move(completed_callback)) {}
 
+  AwTraceDataEndpoint(const AwTraceDataEndpoint&) = delete;
+  AwTraceDataEndpoint& operator=(const AwTraceDataEndpoint&) = delete;
+
  private:
   ~AwTraceDataEndpoint() override {}
 
   ReceivedChunkCallback received_chunk_callback_;
   base::OnceClosure completed_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AwTraceDataEndpoint);
 };
 
 }  // namespace

@@ -7,6 +7,8 @@ import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 
 config("common_config") {
+  cflags = [ "-Wno-shadow" ]
+
   if (is_win) {
     defines = [
       # Required to use math constants from math.h.
@@ -14,8 +16,10 @@ config("common_config") {
     ]
   }
 
-  # PFFFT doesn't support SIMD on mipsel, so build a scalar version.
-  if ((current_cpu == "arm" && !arm_use_neon) || current_cpu == "mipsel") {
+  # PFFFT doesn't support SIMD on some cpus, so build a scalar version.
+  if ((current_cpu == "arm" && !arm_use_neon) || current_cpu == "mipsel" ||
+      current_cpu == "mips64el" || current_cpu == "ppc64" ||
+      current_cpu == "s390x") {
     defines = [ "PFFFT_SIMD_DISABLE" ]
   }
 }
@@ -42,35 +46,23 @@ fuzzer_testdata_dir = "$target_gen_dir/testdata"
 
 action("generate_pffft_fuzzer_corpus") {
   script = "generate_seed_corpus.py"
-  sources = [
-    "generate_seed_corpus.py",
-  ]
+  sources = [ "generate_seed_corpus.py" ]
   args = [ rebase_path(fuzzer_testdata_dir, root_build_dir) ]
-  outputs = [
-    fuzzer_testdata_dir,
-  ]
+  outputs = [ fuzzer_testdata_dir ]
 }
 
 fuzzer_test("pffft_complex_fuzzer") {
-  sources = [
-    "pffft_fuzzer.cc",
-  ]
+  sources = [ "pffft_fuzzer.cc" ]
   cflags = [ "-DTRANSFORM_COMPLEX" ]
-  deps = [
-    ":pffft",
-  ]
+  deps = [ ":pffft" ]
   seed_corpus = fuzzer_testdata_dir
   seed_corpus_deps = [ ":generate_pffft_fuzzer_corpus" ]
 }
 
 fuzzer_test("pffft_real_fuzzer") {
-  sources = [
-    "pffft_fuzzer.cc",
-  ]
+  sources = [ "pffft_fuzzer.cc" ]
   cflags = [ "-DTRANSFORM_REAL" ]
-  deps = [
-    ":pffft",
-  ]
+  deps = [ ":pffft" ]
   seed_corpus = fuzzer_testdata_dir
   seed_corpus_deps = [ ":generate_pffft_fuzzer_corpus" ]
 }
@@ -88,12 +80,20 @@ static_library("fftpack") {
   visibility = [ ":*" ]
 }
 
+config("pffft_benchmark_internal_config") {
+  cflags = [
+    # test_pffft.c contains an `exit(1)` following a `break` statement.
+    "-Wno-unreachable-code",
+  ]
+}
+
 executable("pffft_benchmark") {
   testonly = true
-  configs += [ ":common_config" ]
-  sources = [
-    "src/test_pffft.c",
+  configs += [
+    ":common_config",
+    ":pffft_benchmark_internal_config",
   ]
+  sources = [ "src/test_pffft.c" ]
   deps = [
     ":fftpack",
     ":pffft",
@@ -102,9 +102,7 @@ executable("pffft_benchmark") {
 
 test("pffft_unittest") {
   testonly = true
-  sources = [
-    "pffft_unittest.cc",
-  ]
+  sources = [ "pffft_unittest.cc" ]
   deps = [
     ":fftpack",
     ":pffft",

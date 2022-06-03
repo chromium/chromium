@@ -6,8 +6,11 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/process/process.h"
+#include "base/process/process_metrics.h"
 #include "base/time/time_override.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
@@ -19,6 +22,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 
 namespace blink {
+
+namespace TimeDomain = protocol::Performance::SetTimeDomain::TimeDomainEnum;
 
 using protocol::Response;
 
@@ -33,6 +38,23 @@ static constexpr const char* kInstanceCounterNames[] = {
     INSTANCE_COUNTERS_LIST(INSTANCE_COUNTER_NAME)
 #undef INSTANCE_COUNTER_NAME
 };
+
+std::unique_ptr<base::ProcessMetrics> GetCurrentProcessMetrics() {
+  base::ProcessHandle handle = base::Process::Current().Handle();
+#if defined(OS_MAC)
+  // Port provider can be null if querying the current process.
+  return base::ProcessMetrics::CreateProcessMetrics(handle, nullptr);
+#else
+  return base::ProcessMetrics::CreateProcessMetrics(handle);
+#endif
+}
+
+base::TimeDelta GetCurrentProcessTime() {
+  std::unique_ptr<base::ProcessMetrics> process_metrics =
+      GetCurrentProcessMetrics();
+  base::TimeDelta process_time = process_metrics->GetCumulativeCPUUsage();
+  return process_time;
+}
 
 }  // namespace
 
@@ -57,24 +79,38 @@ void InspectorPerformanceAgent::InnerEnable() {
   task_start_ticks_ = base::TimeTicks();
   script_start_ticks_ = base::TimeTicks();
   v8compile_start_ticks_ = base::TimeTicks();
+  devtools_command_start_ticks_ = base::TimeTicks();
   thread_time_origin_ = GetThreadTimeNow();
 }
 
-protocol::Response InspectorPerformanceAgent::enable() {
-  if (enabled_.Get())
-    return Response::OK();
+protocol::Response InspectorPerformanceAgent::enable(
+    Maybe<String> optional_time_domain) {
+  String time_domain = optional_time_domain.fromMaybe(TimeDomain::TimeTicks);
+  if (enabled_.Get()) {
+    if (!HasTimeDomain(time_domain)) {
+      return Response::ServerError(
+          "Cannot change time domain while performance metrics collection is "
+          "enabled.");
+    }
+    return Response::Success();
+  }
+
+  Response response = InnerSetTimeDomain(time_domain);
+  if (!response.IsSuccess())
+    return response;
+
   enabled_.Set(true);
   InnerEnable();
-  return Response::OK();
+  return Response::Success();
 }
 
 protocol::Response InspectorPerformanceAgent::disable() {
   if (!enabled_.Get())
-    return Response::OK();
+    return Response::Success();
   enabled_.Clear();
   instrumenting_agents_->RemoveInspectorPerformanceAgent(this);
   Thread::Current()->RemoveTaskTimeObserver(this);
-  return Response::OK();
+  return Response::Success();
 }
 
 namespace {
@@ -88,28 +124,19 @@ void AppendMetric(protocol::Array<protocol::Performance::Metric>* container,
 }
 }  // namespace
 
+// TODO(crbug.com/1056306): remove this redundant API.
 Response InspectorPerformanceAgent::setTimeDomain(const String& time_domain) {
   if (enabled_.Get()) {
-    return Response::Error(
+    return Response::ServerError(
         "Cannot set time domain while performance metrics collection"
         " is enabled.");
   }
 
-  if (time_domain ==
-      protocol::Performance::SetTimeDomain::TimeDomainEnum::TimeTicks) {
-    use_thread_ticks_.Clear();
-  } else if (time_domain == protocol::Performance::SetTimeDomain::
-                                TimeDomainEnum::ThreadTicks) {
-    if (!base::ThreadTicks::IsSupported()) {
-      return Response::Error("Thread time is not supported on this platform.");
-    }
-    base::ThreadTicks::WaitUntilInitialized();
-    use_thread_ticks_.Set(true);
-  } else {
-    return Response::Error("Invalid time domain specification.");
-  }
+  // Prevent this devtools command duration from being collected to avoid
+  // using start and end time from different time domains.
+  devtools_command_start_ticks_ = base::TimeTicks();
 
-  return Response::OK();
+  return InnerSetTimeDomain(time_domain);
 }
 
 base::TimeTicks InspectorPerformanceAgent::GetTimeTicksNow() {
@@ -119,8 +146,35 @@ base::TimeTicks InspectorPerformanceAgent::GetTimeTicksNow() {
 
 base::TimeTicks InspectorPerformanceAgent::GetThreadTimeNow() {
   return base::TimeTicks() +
-         base::TimeDelta::FromMicroseconds(
+         base::Microseconds(
              base::ThreadTicks::Now().since_origin().InMicroseconds());
+}
+
+bool InspectorPerformanceAgent::HasTimeDomain(const String& time_domain) {
+  return use_thread_ticks_.Get() ? time_domain == TimeDomain::ThreadTicks
+                                 : time_domain == TimeDomain::TimeTicks;
+}
+
+Response InspectorPerformanceAgent::InnerSetTimeDomain(
+    const String& time_domain) {
+  DCHECK(!enabled_.Get());
+
+  if (time_domain == TimeDomain::TimeTicks) {
+    use_thread_ticks_.Clear();
+    return Response::Success();
+  }
+
+  if (time_domain == TimeDomain::ThreadTicks) {
+    if (!base::ThreadTicks::IsSupported()) {
+      return Response::ServerError(
+          "Thread time is not supported on this platform.");
+    }
+    base::ThreadTicks::WaitUntilInitialized();
+    use_thread_ticks_.Set(true);
+    return Response::Success();
+  }
+
+  return Response::ServerError("Invalid time domain specification.");
 }
 
 Response InspectorPerformanceAgent::getMetrics(
@@ -129,7 +183,7 @@ Response InspectorPerformanceAgent::getMetrics(
   if (!enabled_.Get()) {
     *out_result =
         std::make_unique<protocol::Array<protocol::Performance::Metric>>();
-    return Response::OK();
+    return Response::Success();
   }
 
   auto result =
@@ -154,6 +208,12 @@ Response InspectorPerformanceAgent::getMetrics(
   AppendMetric(result.get(), "RecalcStyleDuration",
                recalc_style_duration_.InSecondsF());
 
+  base::TimeDelta devtools_command_duration = devtools_command_duration_;
+  if (!devtools_command_start_ticks_.is_null())
+    devtools_command_duration += now - devtools_command_start_ticks_;
+  AppendMetric(result.get(), "DevToolsCommandDuration",
+               devtools_command_duration.InSecondsF());
+
   base::TimeDelta script_duration = script_duration_;
   if (!script_start_ticks_.is_null())
     script_duration += now - script_start_ticks_;
@@ -171,14 +231,18 @@ Response InspectorPerformanceAgent::getMetrics(
   AppendMetric(result.get(), "TaskDuration", task_duration.InSecondsF());
 
   // Compute task time not accounted for by other metrics.
-  base::TimeDelta other_tasks_duration =
-      task_duration -
-      (script_duration + recalc_style_duration_ + layout_duration_);
+  base::TimeDelta known_tasks_duration =
+      script_duration + v8compile_duration + recalc_style_duration_ +
+      layout_duration_ + devtools_command_duration;
+  base::TimeDelta other_tasks_duration = task_duration - known_tasks_duration;
   AppendMetric(result.get(), "TaskOtherDuration",
                other_tasks_duration.InSecondsF());
 
   base::TimeDelta thread_time = GetThreadTimeNow() - thread_time_origin_;
   AppendMetric(result.get(), "ThreadTime", thread_time.InSecondsF());
+
+  base::TimeDelta process_time = GetCurrentProcessTime();
+  AppendMetric(result.get(), "ProcessTime", process_time.InSecondsF());
 
   v8::HeapStatistics heap_statistics;
   V8PerIsolateData::MainThreadIsolate()->GetHeapStatistics(&heap_statistics);
@@ -209,7 +273,7 @@ Response InspectorPerformanceAgent::getMetrics(
   }
 
   *out_result = std::move(result);
-  return Response::OK();
+  return Response::Success();
 }
 
 void InspectorPerformanceAgent::ConsoleTimeStamp(const String& title) {
@@ -228,8 +292,13 @@ void InspectorPerformanceAgent::ScriptStarts() {
 void InspectorPerformanceAgent::ScriptEnds() {
   if (--script_call_depth_)
     return;
-  script_duration_ += GetTimeTicksNow() - script_start_ticks_;
+  base::TimeDelta delta = GetTimeTicksNow() - script_start_ticks_;
+  script_duration_ += delta;
   script_start_ticks_ = base::TimeTicks();
+
+  // Exclude nested script execution from devtools command duration.
+  if (!devtools_command_start_ticks_.is_null())
+    devtools_command_start_ticks_ += delta;
 }
 
 void InspectorPerformanceAgent::Will(const probe::CallFunction& probe) {
@@ -253,16 +322,22 @@ void InspectorPerformanceAgent::Will(const probe::RecalculateStyle& probe) {
 }
 
 void InspectorPerformanceAgent::Did(const probe::RecalculateStyle& probe) {
+  if (recalc_style_start_ticks_.is_null())
+    return;
+
   base::TimeDelta delta = GetTimeTicksNow() - recalc_style_start_ticks_;
   recalc_style_duration_ += delta;
   recalc_style_count_++;
   recalc_style_start_ticks_ = base::TimeTicks();
 
-  // Exclude nested style re-calculations from script and layout duration.
+  // Exclude nested style re-calculations from script, layout and devtools
+  // command durations.
   if (!script_start_ticks_.is_null())
     script_start_ticks_ += delta;
   if (!layout_start_ticks_.is_null())
     layout_start_ticks_ += delta;
+  if (!devtools_command_start_ticks_.is_null())
+    devtools_command_start_ticks_ += delta;
 }
 
 void InspectorPerformanceAgent::Will(const probe::UpdateLayout& probe) {
@@ -271,19 +346,22 @@ void InspectorPerformanceAgent::Will(const probe::UpdateLayout& probe) {
 }
 
 void InspectorPerformanceAgent::Did(const probe::UpdateLayout& probe) {
-  if (--layout_depth_)
+  if (--layout_depth_ || layout_start_ticks_.is_null())
     return;
+
   base::TimeDelta delta = GetTimeTicksNow() - layout_start_ticks_;
   layout_duration_ += delta;
   layout_count_++;
   layout_start_ticks_ = base::TimeTicks();
 
-  // Exclude nested layout update from script and style re-calculations
-  // duration.
+  // Exclude nested layout update from script, style re-calculations and
+  // devtools command durations.
   if (!script_start_ticks_.is_null())
     script_start_ticks_ += delta;
   if (!recalc_style_start_ticks_.is_null())
     recalc_style_start_ticks_ += delta;
+  if (!devtools_command_start_ticks_.is_null())
+    devtools_command_start_ticks_ += delta;
 }
 
 void InspectorPerformanceAgent::Will(const probe::V8Compile& probe) {
@@ -292,8 +370,29 @@ void InspectorPerformanceAgent::Will(const probe::V8Compile& probe) {
 }
 
 void InspectorPerformanceAgent::Did(const probe::V8Compile& probe) {
-  v8compile_duration_ += GetTimeTicksNow() - v8compile_start_ticks_;
+  if (v8compile_start_ticks_.is_null())
+    return;
+
+  base::TimeDelta delta = GetTimeTicksNow() - v8compile_start_ticks_;
+  v8compile_duration_ += delta;
   v8compile_start_ticks_ = base::TimeTicks();
+
+  // Exclude nested script compilation from devtools command duration.
+  if (!devtools_command_start_ticks_.is_null())
+    devtools_command_start_ticks_ += delta;
+}
+
+void InspectorPerformanceAgent::WillStartDebuggerTask() {
+  devtools_command_start_ticks_ = GetTimeTicksNow();
+}
+
+void InspectorPerformanceAgent::DidFinishDebuggerTask() {
+  if (devtools_command_start_ticks_.is_null())
+    return;
+
+  devtools_command_duration_ +=
+      GetTimeTicksNow() - devtools_command_start_ticks_;
+  devtools_command_start_ticks_ = base::TimeTicks();
 }
 
 // Will/DidProcessTask() ignore caller provided times to ensure time domain
@@ -304,12 +403,14 @@ void InspectorPerformanceAgent::WillProcessTask(base::TimeTicks start_time) {
 
 void InspectorPerformanceAgent::DidProcessTask(base::TimeTicks start_time,
                                                base::TimeTicks end_time) {
-  if (!task_start_ticks_.is_null())
-    task_duration_ += GetTimeTicksNow() - task_start_ticks_;
+  if (task_start_ticks_.is_null())
+    return;
+
+  task_duration_ += GetTimeTicksNow() - task_start_ticks_;
   task_start_ticks_ = base::TimeTicks();
 }
 
-void InspectorPerformanceAgent::Trace(blink::Visitor* visitor) {
+void InspectorPerformanceAgent::Trace(Visitor* visitor) const {
   visitor->Trace(inspected_frames_);
   InspectorBaseAgent<protocol::Performance::Metainfo>::Trace(visitor);
 }

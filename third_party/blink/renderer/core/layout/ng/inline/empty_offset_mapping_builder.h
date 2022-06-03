@@ -26,15 +26,15 @@ class EmptyOffsetMappingBuilder {
   };
 
   EmptyOffsetMappingBuilder() = default;
+  EmptyOffsetMappingBuilder(const EmptyOffsetMappingBuilder&) = delete;
+  EmptyOffsetMappingBuilder& operator=(const EmptyOffsetMappingBuilder&) =
+      delete;
   void AppendIdentityMapping(unsigned) {}
   void AppendCollapsedMapping(unsigned) {}
   void CollapseTrailingSpace(unsigned) {}
   void Composite(const EmptyOffsetMappingBuilder&) {}
   void Concatenate(const EmptyOffsetMappingBuilder&) {}
   void RestoreTrailingCollapsibleSpace(const LayoutText&, unsigned) {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(EmptyOffsetMappingBuilder);
 };
 
 }  // namespace blink

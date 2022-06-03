@@ -4,10 +4,7 @@
 
 """An interactive console for looking analyzing .size files."""
 
-from __future__ import print_function
-
 import argparse
-import atexit
 import code
 import contextlib
 import itertools
@@ -20,6 +17,7 @@ import types
 
 import archive
 import canned_queries
+import data_quality
 import describe
 import diff
 import file_format
@@ -27,18 +25,22 @@ import html_report
 import match_util
 import models
 import path_util
+import readelf
 import string_extract
 
 
 # Number of lines before using less for Print().
 _THRESHOLD_FOR_PAGER = 50
 
-
 @contextlib.contextmanager
 def _LessPipe():
   """Output to `less`. Yields a file object to write to."""
   try:
-    proc = subprocess.Popen(['less'], stdin=subprocess.PIPE, stdout=sys.stdout)
+    # pylint: disable=unexpected-keyword-arg
+    proc = subprocess.Popen(['less'],
+                            stdin=subprocess.PIPE,
+                            stdout=sys.stdout,
+                            encoding='utf-8')
     yield proc.stdin
     proc.stdin.close()
     proc.wait()
@@ -67,13 +69,25 @@ def _WriteToStream(lines, use_pager=None, to_file=None):
     describe.WriteLines(lines, sys.stdout.write)
 
 
-class _Session(object):
-  _readline_initialized = False
+@contextlib.contextmanager
+def _ReadlineSession():
+  history_file = os.path.join(os.path.expanduser('~'),
+                              '.binary_size_query_history')
+  # Without initializing readline, arrow keys don't even work!
+  readline.parse_and_bind('tab: complete')
+  if os.path.exists(history_file):
+    readline.read_history_file(history_file)
+  yield
+  readline.write_history_file(history_file)
+
+
+class _Session:
 
   def __init__(self, size_infos, output_directory_finder, tool_prefix_finder):
     self._printed_variables = []
     self._variables = {
         'Print': self._PrintFunc,
+        'CheckDataQuality': self._CheckDataQuality,
         'Csv': self._CsvFunc,
         'Diff': self._DiffFunc,
         'SaveSizeInfo': self._SaveSizeInfo,
@@ -123,9 +137,10 @@ class _Session(object):
     if not first_sym:
       return []
     size_info = self._SizeInfoForSymbol(first_sym)
+    container = first_sym.container
     tool_prefix = self._ToolPrefixForSymbol(size_info)
-    elf_path = self._ElfPathForSymbol(
-        size_info, tool_prefix, elf_path)
+    elf_path = self._ElfPathForSymbol(size_info, container, tool_prefix,
+                                      elf_path)
 
     return string_extract.ReadStringLiterals(
         thing, elf_path, tool_prefix, all_rodata=all_rodata)
@@ -141,6 +156,26 @@ class _Session(object):
     before = before if before is not None else self._size_infos[0]
     after = after if after is not None else self._size_infos[1]
     return diff.Diff(before, after, sort=sort)
+
+  def _PrintUploadCommand(self, file_to_upload, is_internal=False):
+    oneoffs_dir = 'oneoffs'
+    visibility = '-a public-read '
+    if is_internal:
+      oneoffs_dir = 'private-oneoffs'
+      visibility = ''
+
+    shortname = os.path.basename(os.path.normpath(file_to_upload))
+    msg = (
+        'Saved locally to {local}. To share, run:\n'
+        '> gsutil.py cp {visibility}{local} gs://chrome-supersize/'
+        '{oneoffs_dir}\n'
+        '  Then view it at https://chrome-supersize.firebaseapp.com/viewer.html'
+        '?load_url=https://storage.googleapis.com/chrome-supersize/'
+        '{oneoffs_dir}/{shortname}')
+    print(msg.format(local=file_to_upload,
+                     shortname=shortname,
+                     oneoffs_dir=oneoffs_dir,
+                     visibility=visibility))
 
   def _SaveSizeInfo(self, filtered_symbols=None, size_info=None, to_file=None):
     """Saves a .size file containing only filtered_symbols into to_file.
@@ -160,14 +195,8 @@ class _Session(object):
         include_padding=filtered_symbols is not None,
         sparse_symbols=filtered_symbols)
 
-    shortname = os.path.basename(os.path.normpath(to_file))
-    msg = (
-        'Saved locally to {local}. To share, run:\n'
-        '> gsutil.py cp {local} gs://chrome-supersize/oneoffs && gsutil.py -m '
-        'acl ch -u AllUsers:R gs://chrome-supersize/oneoffs/{shortname}\n'
-        '  Then view it at https://storage.googleapis.com/chrome-supersize'
-        '/viewer.html?load_url=oneoffs%2F{shortname}')
-    print(msg.format(local=to_file, shortname=shortname))
+    is_internal = len(size_info.symbols.WherePathMatches('^clank')) > 0
+    self._PrintUploadCommand(to_file, is_internal)
 
   def _SaveDeltaSizeInfo(self, size_info, to_file=None):
     """Saves a .sizediff file containing only filtered_symbols into to_file.
@@ -180,15 +209,8 @@ class _Session(object):
     assert to_file.endswith('.sizediff'), 'to_file should end with .sizediff'
 
     file_format.SaveDeltaSizeInfo(size_info, to_file)
-
-    shortname = os.path.basename(os.path.normpath(to_file))
-    msg = (
-        'Saved locally to {local}. To share, run:\n'
-        '> gsutil.py cp {local} gs://chrome-supersize/oneoffs && gsutil.py -m '
-        'acl ch -u AllUsers:R gs://chrome-supersize/oneoffs/{shortname}\n'
-        '  Then view it at https://storage.googleapis.com/chrome-supersize'
-        '/viewer.html?load_url=oneoffs%2F{shortname}')
-    print(msg.format(local=to_file, shortname=shortname))
+    is_internal = len(size_info.symbols.WherePathMatches('^clank')) > 0
+    self._PrintUploadCommand(to_file, is_internal)
 
   def _SizeStats(self, size_info=None):
     """Prints some statistics for the given size info.
@@ -197,8 +219,13 @@ class _Session(object):
       size_info: Defaults to size_infos[0].
     """
     size_info = size_info or self._size_infos[0]
-    describe.WriteLines(
-        describe.DescribeSizeInfoCoverage(size_info), sys.stdout.write)
+    describe.WriteLines(data_quality.DescribeSizeInfoCoverage(size_info),
+                        sys.stdout.write)
+
+  def _CheckDataQuality(self, size_info=None, track_string_literals=True):
+    """Performs checks that run as part of --check-data-quality."""
+    size_info = size_info or self._size_infos[0]
+    data_quality.CheckDataQuality(size_info, track_string_literals)
 
   def _PrintFunc(self, obj=None, verbose=False, summarize=True, recursive=False,
                  use_pager=None, to_file=None):
@@ -241,9 +268,10 @@ class _Session(object):
 
   def _ToolPrefixForSymbol(self, size_info):
     tool_prefix = self._tool_prefix_finder.Tentative()
-    orig_tool_prefix = size_info.metadata.get(models.METADATA_TOOL_PREFIX)
+    orig_tool_prefix = size_info.build_config.get(
+        models.BUILD_CONFIG_TOOL_PREFIX)
     if orig_tool_prefix:
-      orig_tool_prefix = path_util.FromSrcRootRelative(orig_tool_prefix)
+      orig_tool_prefix = path_util.FromToolsSrcRootRelative(orig_tool_prefix)
       if os.path.exists(path_util.GetObjDumpPath(orig_tool_prefix)):
         tool_prefix = orig_tool_prefix
 
@@ -254,13 +282,13 @@ class _Session(object):
         '--tool-prefix, or setting --output-directory')
     return tool_prefix
 
-  def _ElfPathForSymbol(self, size_info, tool_prefix, elf_path):
+  def _ElfPathForSymbol(self, size_info, container, tool_prefix, elf_path):
     def build_id_matches(elf_path):
-      found_build_id = archive.BuildIdFromElf(elf_path, tool_prefix)
-      expected_build_id = size_info.metadata.get(models.METADATA_ELF_BUILD_ID)
+      found_build_id = readelf.BuildIdFromElf(elf_path, tool_prefix)
+      expected_build_id = container.metadata.get(models.METADATA_ELF_BUILD_ID)
       return found_build_id == expected_build_id
 
-    filename = size_info.metadata.get(models.METADATA_ELF_FILENAME)
+    filename = container.metadata.get(models.METADATA_ELF_FILENAME)
     paths_to_try = []
     if elf_path:
       paths_to_try.append(elf_path)
@@ -281,9 +309,9 @@ class _Session(object):
 
     paths_to_try = [p for p in paths_to_try if os.path.exists(p)]
 
-    for i, elf_path in enumerate(paths_to_try):
-      if build_id_matches(elf_path):
-        return elf_path
+    for i, path in enumerate(paths_to_try):
+      if build_id_matches(path):
+        return path
 
       # Show an error only once all paths are tried.
       if i + 1 == len(paths_to_try):
@@ -294,12 +322,14 @@ class _Session(object):
         '--output-directory is set. If output directory is unavailable, '
         'ensure {} is located beside {}, or pass its path explicitly using '
         'elf_path=').format(os.path.basename(filename), size_info.size_path)
+    return None
 
   def _SizeInfoForSymbol(self, symbol):
     for size_info in self._size_infos:
       if symbol in size_info.raw_symbols:
         return size_info
     assert False, 'Symbol does not belong to a size_info.'
+    return None
 
   def _DisassembleFunc(self, symbol, elf_path=None, use_pager=None,
                        to_file=None):
@@ -315,30 +345,59 @@ class _Session(object):
     assert not symbol.IsDelta(), ('Cannot disasseble a Diff\'ed symbol. Try '
                                   'passing .before_symbol or .after_symbol.')
     size_info = self._SizeInfoForSymbol(symbol)
+    container = symbol.container
     tool_prefix = self._ToolPrefixForSymbol(size_info)
-    elf_path = self._ElfPathForSymbol(size_info, tool_prefix, elf_path)
-    # Always use Android NDK's objdump because llvm-objdump does not seem to
-    # correctly disassemble.
+    elf_path = self._ElfPathForSymbol(size_info, container, tool_prefix,
+                                      elf_path)
+    # Always use Android NDK's objdump because llvm-objdump does not print
+    # the target of jump instructions, which is really useful.
     output_directory_finder = self._output_directory_finder
     if not output_directory_finder.Tentative():
       output_directory_finder = path_util.OutputDirectoryFinder(
           any_path_within_output_directory=elf_path)
-    tool_prefix = path_util.ToolPrefixFinder(
-        output_directory_finder=output_directory_finder,
-        linker_name='ld').Finalized()
+    if output_directory_finder.Tentative():
+      tool_prefix = path_util.ToolPrefixFinder(
+          output_directory=output_directory_finder.Finalized(),
+          linker_name='ld').Finalized()
+      # Running objdump from an output directory means that objdump can
+      # interleave source file lines in the disassembly.
+      objdump_pwd = output_directory_finder.Finalized()
+    else:
+      # Output directory is not set, so we cannot load tool_prefix from
+      # build_vars.json, nor resolve the output directory-relative path stored
+      # size_info.metadata.
+      is_android = next(
+          filter(None, (m.get(models.METADATA_APK_FILENAME)
+                        for m in size_info.metadata)), None)
+      arch = next(
+          filter(None, (m.get(models.METADATA_ELF_ARCHITECTURE)
+                        for m in size_info.metadata)), None)
+      # Hardcode path for arm32.
+      if is_android and arch == 'arm':
+        tool_prefix = path_util.ANDROID_ARM_NDK_TOOL_PREFIX
+      # If we do not know/guess the output directory, run from any directory 2
+      # levels below src since it is better than a random cwd (because usually
+      # source file paths are relative to an output directory two levels below
+      # src and start with ../../).
+      objdump_pwd = os.path.join(path_util.TOOLS_SRC_ROOT, 'tools',
+                                 'binary_size')
 
     args = [
-        path_util.GetObjDumpPath(tool_prefix),
+        os.path.relpath(path_util.GetObjDumpPath(tool_prefix), objdump_pwd),
         '--disassemble',
         '--source',
         '--line-numbers',
         '--demangle',
         '--start-address=0x%x' % symbol.address,
         '--stop-address=0x%x' % symbol.end_address,
-        elf_path,
+        os.path.relpath(elf_path, objdump_pwd),
     ]
 
-    proc = subprocess.Popen(args, stdout=subprocess.PIPE)
+    # pylint: disable=unexpected-keyword-arg
+    proc = subprocess.Popen(args,
+                            stdout=subprocess.PIPE,
+                            encoding='utf-8',
+                            cwd=objdump_pwd)
     lines = itertools.chain(('Showing disassembly for %r' % symbol,
                              'Command: %s' % ' '.join(args)),
                             (l.rstrip() for l in proc.stdout))
@@ -430,34 +489,20 @@ class _Session(object):
         'Variables:',
         '  printed: List of objects passed to Print().',
     ]
-    for key, value in self._variables.iteritems():
+    for key, value in self._variables.items():
       if isinstance(value, types.ModuleType):
         continue
       if key.startswith('size_info'):
-        lines.append('  {}: Loaded from {}'.format(key, value.size_path))
+        lines.append('  {}: Loaded from {}'.format(key, value.size_path))  # pylint: disable=no-member
     lines.append('*' * 80)
     return '\n'.join(lines)
 
-
-  @classmethod
-  def _InitReadline(cls):
-    if cls._readline_initialized:
-      return
-    cls._readline_initialized = True
-    # Without initializing readline, arrow keys don't even work!
-    readline.parse_and_bind('tab: complete')
-    history_file = os.path.join(os.path.expanduser('~'),
-                                '.binary_size_query_history')
-    if os.path.exists(history_file):
-      readline.read_history_file(history_file)
-    atexit.register(lambda: readline.write_history_file(history_file))
-
   def Eval(self, query):
-    exec query in self._variables
+    exec (query, self._variables)
 
   def GoInteractive(self):
-    _Session._InitReadline()
-    code.InteractiveConsole(self._variables).interact(self._CreateBanner())
+    with _ReadlineSession():
+      code.InteractiveConsole(self._variables).interact(self._CreateBanner())
 
 
 def AddArguments(parser):
@@ -477,19 +522,25 @@ def AddArguments(parser):
                            'Disassemble().')
 
 
-def Run(args, parser):
+def Run(args, on_config_error):
+  # Up-front check for faster error-checking.
   for path in args.inputs:
-    if not path.endswith('.size'):
-      parser.error('All inputs must end with ".size"')
+    if not path.endswith('.size') and not path.endswith('.sizediff'):
+      on_config_error('All inputs must end with ".size" or ".sizediff"')
 
-  size_infos = [archive.LoadAndPostProcessSizeInfo(p) for p in args.inputs]
+  size_infos = []
+  for path in args.inputs:
+    if path.endswith('.sizediff'):
+      size_infos.extend(archive.LoadAndPostProcessDeltaSizeInfo(path))
+    else:
+      size_infos.append(archive.LoadAndPostProcessSizeInfo(path))
   output_directory_finder = path_util.OutputDirectoryFinder(
       value=args.output_directory,
       any_path_within_output_directory=args.inputs[0])
-  linker_name = size_infos[-1].metadata.get(models.METADATA_LINKER_NAME)
+  linker_name = size_infos[-1].build_config.get(models.BUILD_CONFIG_LINKER_NAME)
   tool_prefix_finder = path_util.ToolPrefixFinder(
       value=args.tool_prefix,
-      output_directory_finder=output_directory_finder,
+      output_directory=output_directory_finder.Tentative(),
       linker_name=linker_name)
   session = _Session(size_infos, output_directory_finder, tool_prefix_finder)
 
@@ -499,3 +550,10 @@ def Run(args, parser):
   else:
     logging.info('Entering interactive console.')
     session.GoInteractive()
+
+  # Exit without running GC, which can save multiple seconds due the large
+  # number of objects created. It meants atexit and __del__ calls are not
+  # made, but this shouldn't matter for console.
+  sys.stdout.flush()
+  sys.stderr.flush()
+  os._exit(0)

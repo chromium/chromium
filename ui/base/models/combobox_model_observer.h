@@ -5,15 +5,16 @@
 #ifndef UI_BASE_MODELS_COMBOBOX_MODEL_OBSERVER_H_
 #define UI_BASE_MODELS_COMBOBOX_MODEL_OBSERVER_H_
 
+#include "base/component_export.h"
 #include "base/observer_list_types.h"
-#include "ui/base/ui_base_export.h"
 
 namespace ui {
 
 class ComboboxModel;
 
 // Observer for the ComboboxModel.
-class UI_BASE_EXPORT ComboboxModelObserver : public base::CheckedObserver {
+class COMPONENT_EXPORT(UI_BASE) ComboboxModelObserver
+    : public base::CheckedObserver {
  public:
   // Invoked when |model| has changed in some way. The observer should assume
   // everything changed.

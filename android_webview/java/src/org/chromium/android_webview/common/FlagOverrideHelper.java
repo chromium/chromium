@@ -73,7 +73,10 @@ public class FlagOverrideHelper {
                     disabledFeatures.add(flag.getName());
                 }
             } else {
-                if (enabled) {
+                if (enabled && flag.getEnabledStateValue() != null) {
+                    CommandLine.getInstance().appendSwitchWithValue(
+                            flag.getName(), flag.getEnabledStateValue());
+                } else if (enabled) {
                     CommandLine.getInstance().appendSwitch(flag.getName());
                 } else {
                     CommandLine.getInstance().removeSwitch(flag.getName());
@@ -93,7 +96,7 @@ public class FlagOverrideHelper {
      * @return the desired {@link Flag}.
      * @throws RuntimeException if this cannot find {@code name} in the list.
      */
-    private Flag getFlagForName(@NonNull String name) {
+    public Flag getFlagForName(@NonNull String name) {
         if (mFlagMap.containsKey(name)) {
             return mFlagMap.get(name);
         }

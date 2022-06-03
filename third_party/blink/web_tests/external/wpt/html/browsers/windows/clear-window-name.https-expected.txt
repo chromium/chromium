@@ -1,0 +1,13 @@
+This is a testharness.js-based test.
+PASS Window.name is not reset when there is an opener around
+PASS Window.name is not reset when there is an opener around (cross-origin)
+PASS Window.name is not reset at the first navigation away from initial about:blank with noopener
+FAIL Window.name is reset at the first cross-origin navigation with noopener assert_unreached: Stash result does not equal expected result. Reached unreachable code
+PASS Window.name is not reset at the first navigation away from initial about:blank with window.opener set to null
+PASS Window.name is not reset at the same-origin navigation with window.opener set to null
+FAIL Window.name is reset at the first first cross-origin navigation with window.opener set to null assert_unreached: Stash result does not equal expected result. Reached unreachable code
+PASS Window.name is set by the window
+FAIL Window.name is reset at the first cross-origin navigation assert_unreached: Stash result does not equal expected result. Reached unreachable code
+PASS window.name is not reset after navigating to an about:blank page from a non-about:blank page
+Harness: the test ran to completion.
+

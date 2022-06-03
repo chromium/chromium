@@ -13,24 +13,21 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks_notifier.h"
-#include "chrome/browser/chromeos/file_manager/file_tasks_observer.h"
+#include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
+#include "chrome/browser/ash/file_manager/file_tasks_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_event_logger.h"
 #include "chrome/browser/ui/app_list/search/search_result_ranker/recurrence_ranker_util.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/search_ranking_event_logger.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 
 namespace app_list {
 
 class RecurrenceRanker;
+class SearchController;
 enum class RankingItemType;
 
 // SearchResultRanker re-ranks launcher search and zero-state results using a
@@ -39,11 +36,9 @@ enum class RankingItemType;
 // FetchRankings queries each model for ranking results. Rank modifies the
 // scores of provided search results, which are intended to be the output of a
 // search provider.
-class SearchResultRanker : file_manager::file_tasks::FileTasksObserver,
-                           history::HistoryServiceObserver {
+class SearchResultRanker : file_manager::file_tasks::FileTasksObserver {
  public:
-  SearchResultRanker(Profile* profile,
-                     history::HistoryService* history_service);
+  explicit SearchResultRanker(Profile* profile);
   ~SearchResultRanker() override;
 
   // Performs all setup of rankers. This is separated from the constructor for
@@ -55,7 +50,7 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver,
   // be used as a feature for ranking search results provided to Rank(), but is
   // not used to create new search results. If this is a zero-state scenario,
   // the query should be empty.
-  void FetchRankings(const base::string16& query);
+  void FetchRankings(const std::u16string& query);
 
   // Modifies the scores of |results| using the saved rankings. This should be
   // called after rankings have been queried with a call to FetchRankings().
@@ -65,14 +60,10 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver,
 
   // Forwards the given training signal to the relevant models contained within
   // the SearchResultRanker.
-  void Train(const AppLaunchData& app_launch_data);
+  void Train(const LaunchData& launch_data);
 
   // file_manager::file_tasks::FileTaskObserver:
   void OnFilesOpened(const std::vector<FileOpenEvent>& file_opens) override;
-
-  // history::HistoryServiceObserver:
-  void OnURLsDeleted(history::HistoryService* history_service,
-                     const history::DeletionInfo& deletion_info) override;
 
   // Sets a testing-only closure to inform tests when a JSON config has been
   // parsed.
@@ -85,11 +76,6 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver,
   void ZeroStateResultsDisplayed(
       const ash::SearchResultIdWithPositionIndices& results);
 
-  // Called when impressions need to be logged.
-  void LogSearchResults(const base::string16& trimmed_query,
-                        const ash::SearchResultIdWithPositionIndices& results,
-                        int launched_index);
-
   // Given a search results list containing zero-state results, ensure that at
   // least one result from each result group will be displayed if that group has
   // a result shown to the user only a few times.
@@ -97,15 +83,7 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver,
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SearchResultRankerTest,
-                           QueryMixedModelConfigDeployment);
-  FRIEND_TEST_ALL_PREFIXES(SearchResultRankerTest,
-                           QueryMixedModelDeletesURLCorrectly);
-  FRIEND_TEST_ALL_PREFIXES(SearchResultRankerTest,
                            ZeroStateGroupRankerUsesFinchConfig);
-
-  // Saves |query_based_mixed_types_ranker_| to disk. Called after a delay when
-  // URLs get deleted.
-  void SaveQueryMixedRankerAfterDelete();
 
   // Calculates the final score for the given zero state |result|, sets
   // |result.score|, and increments the related entry in the  |type_counts| map.
@@ -123,30 +101,7 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver,
   base::Time time_of_last_fetch_;
 
   // The query last provided to FetchRankings.
-  base::string16 last_query_;
-
-  // How much the scores produced by |results_list_group_ranker_| affect the
-  // final scores. Controlled by Finch.
-  float results_list_boost_coefficient_ = 0.0f;
-
-  // The |results_list_group_ranker_| and |query_based_mixed_types_ranker_| are
-  // models for two different experiments. Only one will be constructed. Each
-  // has an associated map used for caching its results.
-
-  // A model that ranks groups (eg. 'file' and 'omnibox'), which is used to
-  // tweak the results shown in the search results list only. This does not
-  // affect apps.
-  std::unique_ptr<RecurrenceRanker> results_list_group_ranker_;
-  std::map<std::string, float> group_ranks_;
-
-  // Ranks items shown in the results list after a search query. Currently
-  // these are local files and omnibox results.
-  std::unique_ptr<RecurrenceRanker> query_based_mixed_types_ranker_;
-  std::map<std::string, float> query_mixed_ranks_;
-  std::unique_ptr<JsonConfigConverter> query_mixed_config_converter_;
-  // Flag set when a delayed task to save the model is created. This is used to
-  // prevent several delayed tasks from being created.
-  bool query_mixed_ranker_save_queued_ = false;
+  std::u16string last_query_;
 
   // Ranks the kinds of results possible in the zero state results list.
   std::unique_ptr<RecurrenceRanker> zero_state_group_ranker_;
@@ -173,11 +128,6 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver,
 
   // Logs launch events and stores feature data for aggregated model.
   std::unique_ptr<AppLaunchEventLogger> app_launch_event_logger_;
-  bool using_aggregated_app_inference_ = false;
-
-  // Logs impressions and stores feature data for aggregated model.
-  std::unique_ptr<SearchRankingEventLogger> search_ranking_event_logger_;
-  bool use_aggregated_search_ranking_inference_ = false;
 
   // Stores the time of the last histogram logging event for each zero state
   // search provider. Used to prevent scores from being logged multiple times
@@ -186,9 +136,6 @@ class SearchResultRanker : file_manager::file_tasks::FileTasksObserver,
   base::Time time_of_last_omnibox_log_;
   base::Time time_of_last_local_file_log_;
   base::Time time_of_last_drive_log_;
-
-  ScopedObserver<history::HistoryService, history::HistoryServiceObserver>
-      history_service_observer_;
 
   Profile* profile_;
 

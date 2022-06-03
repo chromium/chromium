@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/macros.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_factory.h"
 #include "third_party/blink/renderer/modules/webgl/webgl2_rendering_context_base.h"
 
@@ -15,8 +16,13 @@ namespace blink {
 
 class CanvasContextCreationAttributesCore;
 class EXTColorBufferFloat;
+class EXTColorBufferHalfFloat;
 class EXTFloatBlend;
+class EXTTextureCompressionBPTC;
+class EXTTextureCompressionRGTC;
 class EXTTextureFilterAnisotropic;
+class EXTTextureNorm16;
+class OESDrawBuffersIndexed;
 class OESTextureFloatLinear;
 class OVRMultiview2;
 class WebGLDebugRendererInfo;
@@ -26,6 +32,7 @@ class WebGLMultiDraw;
 class WebGLMultiDrawInstancedBaseVertexBaseInstance;
 class KHRParallelShaderCompile;
 class WebGLVideoTexture;
+class WebGLWebCodecsVideoFrame;
 
 class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   DEFINE_WRAPPERTYPEINFO();
@@ -34,43 +41,47 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   class Factory : public CanvasRenderingContextFactory {
    public:
     Factory() = default;
+
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
     ~Factory() override = default;
 
     CanvasRenderingContext* Create(
         CanvasRenderingContextHost*,
         const CanvasContextCreationAttributesCore&) override;
-    CanvasRenderingContext::ContextType GetContextType() const override {
-      return CanvasRenderingContext::kContextWebgl2;
+    CanvasRenderingContext::CanvasRenderingAPI GetRenderingAPI()
+        const override {
+      return CanvasRenderingContext::CanvasRenderingAPI::kWebgl2;
     }
     void OnError(HTMLCanvasElement*, const String& error) override;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   WebGL2RenderingContext(
       CanvasRenderingContextHost*,
       std::unique_ptr<WebGraphicsContext3DProvider>,
-      bool using_gpu_compositing,
+      const Platform::GraphicsInfo&,
       const CanvasContextCreationAttributesCore& requested_attributes);
 
-  CanvasRenderingContext::ContextType GetContextType() const override {
-    return CanvasRenderingContext::kContextWebgl2;
-  }
   ImageBitmap* TransferToImageBitmap(ScriptState*) final;
   String ContextName() const override { return "WebGL2RenderingContext"; }
   void RegisterContextExtensions() override;
-  void SetCanvasGetContextResult(RenderingContext&) final;
-  void SetOffscreenCanvasGetContextResult(OffscreenRenderingContext&) final;
+  V8RenderingContext* AsV8RenderingContext() final;
+  V8OffscreenRenderingContext* AsV8OffscreenRenderingContext() final;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   Member<EXTColorBufferFloat> ext_color_buffer_float_;
+  Member<EXTColorBufferHalfFloat> ext_color_buffer_half_float_;
   Member<EXTDisjointTimerQueryWebGL2> ext_disjoint_timer_query_web_gl2_;
   Member<EXTFloatBlend> ext_float_blend_;
+  Member<EXTTextureCompressionBPTC> ext_texture_compression_bptc_;
+  Member<EXTTextureCompressionRGTC> ext_texture_compression_rgtc_;
   Member<EXTTextureFilterAnisotropic> ext_texture_filter_anisotropic_;
+  Member<EXTTextureNorm16> ext_texture_norm16_;
   Member<KHRParallelShaderCompile> khr_parallel_shader_compile_;
+  Member<OESDrawBuffersIndexed> oes_draw_buffers_indexed_;
   Member<OESTextureFloatLinear> oes_texture_float_linear_;
   Member<OVRMultiview2> ovr_multiview2_;
   Member<WebGLCompressedTextureASTC> webgl_compressed_texture_astc_;
@@ -88,18 +99,9 @@ class WebGL2RenderingContext : public WebGL2RenderingContextBase {
   Member<WebGLMultiDrawInstancedBaseVertexBaseInstance>
       webgl_multi_draw_instanced_base_vertex_base_instance_;
   Member<WebGLVideoTexture> webgl_video_texture_;
+  Member<WebGLWebCodecsVideoFrame> webgl_webcodecs_video_frame_;
 };
-
-DEFINE_TYPE_CASTS(WebGL2RenderingContext,
-                  CanvasRenderingContext,
-                  context,
-                  context->Is3d() &&
-                      WebGLRenderingContextBase::GetWebGLVersion(context) ==
-                          Platform::kWebGL2ContextType,
-                  context.Is3d() &&
-                      WebGLRenderingContextBase::GetWebGLVersion(&context) ==
-                          Platform::kWebGL2ContextType);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_WEBGL_WEBGL2_RENDERING_CONTEXT_H_

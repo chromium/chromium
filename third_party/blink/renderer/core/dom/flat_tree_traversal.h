@@ -27,21 +27,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_TRAVERSAL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_FLAT_TREE_TRAVERSAL_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/traversal_range.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 class ContainerNode;
 class Node;
-
-bool CanBeDistributedToV0InsertionPoint(const Node& node);
 
 // Flat tree version of |NodeTraversal|.
 //
@@ -54,7 +52,6 @@ class CORE_EXPORT FlatTreeTraversal {
   STATIC_ONLY(FlatTreeTraversal);
 
  public:
-  typedef LayoutTreeBuilderTraversal::ParentDetails ParentTraversalDetails;
   using TraversalNodeType = Node;
 
 #if DCHECK_IS_ON()
@@ -75,7 +72,7 @@ class CORE_EXPORT FlatTreeTraversal {
   static Node* LastChild(const Node&);
   static bool HasChildren(const Node&);
 
-  static ContainerNode* Parent(const Node&, ParentTraversalDetails* = nullptr);
+  static ContainerNode* Parent(const Node&);
   static Element* ParentElement(const Node&);
 
   static Node* NextSibling(const Node&);
@@ -85,17 +82,38 @@ class CORE_EXPORT FlatTreeTraversal {
   // the children, this function returns |nullptr|.
   static Node* ChildAt(const Node&, unsigned index);
 
-  // Flat tree version of |NodeTraversal::nextSkippingChildren()|. This
-  // function is similar to |next()| but skips child nodes of a specified
-  // node.
+  // Flat tree version of |NodeTraversal::NextSkippingChildren()|. This
+  // function is similar to |Next()| but skips the child nodes of the specified
+  // node. E.g. for this tree:
+  //        0
+  //      /   \
+  //     1     4
+  //    / \   / \
+  //   2   3 5   6
+  // NextSkippingChildren(1) will return 4.
+  // NextSkippingChildren(3) will return 4.
+  // NextSkippingChildren(2) will return 3.
+  // NextSkippingChildren(4) will return nullptr.
   static Node* NextSkippingChildren(const Node&);
   static Node* NextSkippingChildren(const Node&, const Node* stay_within);
 
   static Node* FirstWithin(const Node& current) { return FirstChild(current); }
 
-  // Flat tree version of |NodeTraversal::previousSkippingChildren()|
-  // similar to |previous()| but skipping child nodes of the specified node.
-  static Node* PreviousSkippingChildren(const Node&);
+  // Flat tree version of |NodeTraversal::PreviousAbsoluteSibling()|. This
+  // function returns the previous direct sibling of the node, if there is one.
+  // If not, it will traverse up the ancestor chain until it finds an ancestor
+  // that has a previous sibling, returning that sibling. Or nullptr if none.
+  // E.g. for this tree:
+  //        0
+  //      /   \
+  //     1     4
+  //    / \   / \
+  //   2   3 5   6
+  // PreviousAbsoluteSibling(5) will return 1.
+  // PreviousAbsoluteSibling(4) will return 1.
+  // PreviousAbsoluteSibling(6) will return 5.
+  // PreviousAbsoluteSibling(2) will return nullptr.
+  static Node* PreviousAbsoluteSibling(const Node&);
 
   // Like previous, but visits parents before their children.
   static Node* PreviousPostOrder(const Node&,
@@ -152,8 +170,7 @@ class CORE_EXPORT FlatTreeTraversal {
 
   static void AssertPrecondition(const Node& node) {
     DCHECK(!node.GetDocument().IsFlatTreeTraversalForbidden());
-    DCHECK(!node.NeedsDistributionRecalc());
-    DCHECK(node.CanParticipateInFlatTree());
+    DCHECK(!node.IsShadowRoot());
   }
 
   static void AssertPostcondition(const Node* node) {
@@ -164,7 +181,6 @@ class CORE_EXPORT FlatTreeTraversal {
   }
 
   static Node* ResolveDistributionStartingAt(const Node*, TraversalDirection);
-  static Node* V0ResolveDistributionStartingAt(const Node&, TraversalDirection);
 
   static Node* TraverseNext(const Node&);
   static Node* TraverseNext(const Node&, const Node* stay_within);
@@ -176,20 +192,14 @@ class CORE_EXPORT FlatTreeTraversal {
   static Node* TraverseLastChild(const Node&);
   static Node* TraverseChild(const Node&, TraversalDirection);
 
-  static ContainerNode* TraverseParent(const Node&,
-                                       ParentTraversalDetails* = nullptr);
-  // TODO(hayato): Make ParentTraversalDetails be aware of slot elements too.
-  static ContainerNode* TraverseParentForV0(const Node&,
-                                            ParentTraversalDetails* = nullptr);
+  static ContainerNode* TraverseParent(const Node&);
   static ContainerNode* TraverseParentOrHost(const Node&);
 
   static Node* TraverseNextSibling(const Node&);
   static Node* TraversePreviousSibling(const Node&);
 
   static Node* TraverseSiblings(const Node&, TraversalDirection);
-  static Node* TraverseSiblingsForV1HostChild(const Node&, TraversalDirection);
-  static Node* TraverseSiblingsForV0Distribution(const Node&,
-                                                 TraversalDirection);
+  static Node* TraverseSiblingsForHostChild(const Node&, TraversalDirection);
 
   static Node* TraverseNextAncestorSibling(const Node&);
   static Node* TraversePreviousAncestorSibling(const Node&);
@@ -197,11 +207,9 @@ class CORE_EXPORT FlatTreeTraversal {
                                                 const Node* stay_within);
 };
 
-inline ContainerNode* FlatTreeTraversal::Parent(
-    const Node& node,
-    ParentTraversalDetails* details) {
+inline ContainerNode* FlatTreeTraversal::Parent(const Node& node) {
   AssertPrecondition(node);
-  ContainerNode* result = TraverseParent(node, details);
+  ContainerNode* result = TraverseParent(node);
   AssertPostcondition(result);
   return result;
 }

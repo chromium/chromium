@@ -20,21 +20,21 @@ extern "C" {
  *
  * the version string like "1.2.3"
  */
-#define LIBXSLT_DOTTED_VERSION "1.1.33"
+#define LIBXSLT_DOTTED_VERSION "1.1.34"
 
 /**
  * LIBXSLT_VERSION:
  *
  * the version number: 1.2.3 value is 10203
  */
-#define LIBXSLT_VERSION 10133
+#define LIBXSLT_VERSION 10134
 
 /**
  * LIBXSLT_VERSION_STRING:
  *
  * the version number string, 1.2.3 value is "10203"
  */
-#define LIBXSLT_VERSION_STRING "10133"
+#define LIBXSLT_VERSION_STRING "10134"
 
 /**
  * LIBXSLT_VERSION_EXTRA:
@@ -111,6 +111,19 @@ extern "C" {
 #endif
 
 /**
+ * WITH_PROFILER:
+ *
+ * Activate the compilation of the profiler. Speed penalty
+ * is insignifiant.
+ * On by default unless --without-profiler is passed to configure
+ */
+#if 1
+#ifndef WITH_PROFILER
+#define WITH_PROFILER
+#endif
+#endif
+
+/**
  * WITH_MODULES:
  *
  * Whether module support is configured into libxslt
@@ -120,7 +133,7 @@ extern "C" {
 #ifndef WITH_MODULES
 #define WITH_MODULES
 #endif
-#define LIBXSLT_DEFAULT_PLUGINS_PATH() "NULL"
+#define LIBXSLT_DEFAULT_PLUGINS_PATH() "/usr/local/lib/libxslt-plugins"
 #endif
 
 /**

@@ -33,6 +33,9 @@ enum NGBreakAppeal {
   kBreakAppealPerfect,
 };
 
+// Keep this one in sync with the above enum.
+const int kNGBreakAppealBitsNeeded = 2;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_NG_BREAK_APPEAL_H_

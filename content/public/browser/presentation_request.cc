@@ -7,7 +7,7 @@
 namespace content {
 
 PresentationRequest::PresentationRequest(
-    const GlobalFrameRoutingId& render_frame_host_id,
+    const GlobalRenderFrameHostId& render_frame_host_id,
     const std::vector<GURL>& presentation_urls,
     const url::Origin& frame_origin)
     : render_frame_host_id(render_frame_host_id),
@@ -21,5 +21,11 @@ PresentationRequest::PresentationRequest(const PresentationRequest& other) =
 
 PresentationRequest& PresentationRequest::operator=(
     const PresentationRequest& other) = default;
+
+bool PresentationRequest::operator==(const PresentationRequest& other) const {
+  return render_frame_host_id == other.render_frame_host_id &&
+         presentation_urls == other.presentation_urls &&
+         frame_origin == other.frame_origin;
+}
 
 }  // namespace content

@@ -1,40 +1,54 @@
-<html> 
-<head>
-
-<style>
-.editing { 
-    border: 2px solid red; 
-    padding: 12px; 
-    font-size: 24px; 
-}
-.cell { 
-    padding: 12px; 
-    font-size: 24px;
-    height: 48px; 
-}
-</style>
-<script src=../editing.js language="JavaScript" type="text/JavaScript" ></script>
-
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-
-function editingTest() {
-    for (i = 0; i < 2; i++)
-    	moveSelectionForwardByLineCommand();    
-}
-
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li>|one</li><li>two</li><li><br></li><li>four</li>',
+        '</ol></div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li><li>|two</li><li><br></li><li>four</li>',
+        '</ol></div>',
+    ]);
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li><li>|two</li><li><br></li><li>four</li>',
+        '</ol></div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li><li>two</li><li>|<br></li><li>four</li>',
+        '</ol></div>',
+    ]);
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li><li>two</li><li>|<br></li><li>four</li>',
+        '</ol></div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li><li>two</li><li><br></li><li>|four</li>',
+        '</ol></div>',
+    ]);
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li><li>two</li><li><br></li><li>|four</li>',
+        '</ol></div>',
+    ],
+    selection => selection.modify('move', 'forward', 'line'),
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li><li>two</li><li><br></li><li>four|</li>',
+        '</ol></div>',
+    ]);
 </script>
-
-<title>Editing Test</title> 
-</head> 
-<body>
-<div contenteditable id="root" class="editing">
-<div id="test">
-<ol><li>one</li><li>two</li><li><br></li><li>four</li><li>five</li></ol>
-</div>
-
-<script>
-runEditingTest();
-</script>
-
-</body>
-</html>

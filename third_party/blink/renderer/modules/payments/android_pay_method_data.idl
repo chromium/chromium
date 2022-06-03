@@ -7,10 +7,6 @@
 
 dictionary AndroidPayMethodData {
     DOMString environment;
-    DOMString merchantName;
-    DOMString merchantId;
-    sequence<DOMString> allowedCardNetworks;
-    AndroidPayTokenization paymentMethodTokenizationParameters;
     DOMString minGooglePlayServicesVersion;
     long apiVersion;
 };

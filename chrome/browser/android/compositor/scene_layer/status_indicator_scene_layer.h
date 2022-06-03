@@ -8,8 +8,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_weak_ref.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
-#include "chrome/browser/android/compositor/scene_layer/scene_layer.h"
+#include "chrome/browser/ui/android/layouts/scene_layer.h"
 #include "ui/android/resources/resource_manager_impl.h"
 
 namespace cc {
@@ -23,6 +22,11 @@ class StatusIndicatorSceneLayer : public SceneLayer {
  public:
   StatusIndicatorSceneLayer(JNIEnv* env,
                             const base::android::JavaRef<jobject>& jobj);
+
+  StatusIndicatorSceneLayer(const StatusIndicatorSceneLayer&) = delete;
+  StatusIndicatorSceneLayer& operator=(const StatusIndicatorSceneLayer&) =
+      delete;
+
   ~StatusIndicatorSceneLayer() override;
 
   // Update the compositor version of the view.
@@ -30,7 +34,8 @@ class StatusIndicatorSceneLayer : public SceneLayer {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object,
       const base::android::JavaParamRef<jobject>& jresource_manager,
-      jint view_resource_id);
+      jint view_resource_id,
+      jint y_offset);
 
   void SetContentTree(
       JNIEnv* env,
@@ -45,8 +50,6 @@ class StatusIndicatorSceneLayer : public SceneLayer {
   SkColor background_color_;
   scoped_refptr<cc::Layer> view_container_;
   scoped_refptr<cc::UIResourceLayer> view_layer_;
-
-  DISALLOW_COPY_AND_ASSIGN(StatusIndicatorSceneLayer);
 };
 
 }  // namespace android

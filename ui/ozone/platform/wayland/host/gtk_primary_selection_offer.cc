@@ -6,12 +6,8 @@
 
 #include <gtk-primary-selection-client-protocol.h>
 
-#include <fcntl.h>
-#include <algorithm>
-
+#include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 
 namespace ui {
@@ -19,8 +15,7 @@ namespace ui {
 GtkPrimarySelectionOffer::GtkPrimarySelectionOffer(
     gtk_primary_selection_offer* data_offer)
     : data_offer_(data_offer) {
-  static const struct gtk_primary_selection_offer_listener kListener = {
-      GtkPrimarySelectionOffer::OnOffer};
+  static constexpr gtk_primary_selection_offer_listener kListener = {&OnOffer};
   gtk_primary_selection_offer_add_listener(data_offer, &kListener, this);
 }
 

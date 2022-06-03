@@ -20,6 +20,10 @@ class ExtensionOptionsGuest
     : public guest_view::GuestView<ExtensionOptionsGuest> {
  public:
   static const char Type[];
+
+  ExtensionOptionsGuest(const ExtensionOptionsGuest&) = delete;
+  ExtensionOptionsGuest& operator=(const ExtensionOptionsGuest&) = delete;
+
   static guest_view::GuestViewBase* Create(
       content::WebContents* owner_web_contents);
 
@@ -40,6 +44,7 @@ class ExtensionOptionsGuest
   // content::WebContentsDelegate implementation.
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
@@ -48,7 +53,7 @@ class ExtensionOptionsGuest
       content::WebContents* source,
       const content::OpenURLParams& params) final;
   void CloseContents(content::WebContents* source) final;
-  bool HandleContextMenu(content::RenderFrameHost* render_frame_host,
+  bool HandleContextMenu(content::RenderFrameHost& render_frame_host,
                          const content::ContextMenuParams& params) final;
   bool IsWebContentsCreationOverridden(
       content::SiteInstance* source_site_instance,
@@ -63,7 +68,7 @@ class ExtensionOptionsGuest
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const std::string& partition_id,
+      const content::StoragePartitionId& partition_id,
       content::SessionStorageNamespace* session_storage_namespace) final;
 
   // content::WebContentsObserver implementation.
@@ -72,8 +77,6 @@ class ExtensionOptionsGuest
   std::unique_ptr<extensions::ExtensionOptionsGuestDelegate>
       extension_options_guest_delegate_;
   GURL options_page_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionOptionsGuest);
 };
 
 }  // namespace extensions

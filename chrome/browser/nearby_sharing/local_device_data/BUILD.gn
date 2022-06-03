@@ -1,0 +1,80 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Nearby Share is CrOS only")
+
+source_set("local_device_data") {
+  sources = [
+    "nearby_share_device_data_updater.cc",
+    "nearby_share_device_data_updater.h",
+    "nearby_share_device_data_updater_impl.cc",
+    "nearby_share_device_data_updater_impl.h",
+    "nearby_share_local_device_data_manager.cc",
+    "nearby_share_local_device_data_manager.h",
+    "nearby_share_local_device_data_manager_impl.cc",
+    "nearby_share_local_device_data_manager_impl.h",
+  ]
+
+  public_deps = [ "//chrome/browser/ui/webui/nearby_share/public/mojom" ]
+
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/nearby_sharing/client",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/logging",
+    "//chrome/browser/nearby_sharing/proto",
+    "//chrome/browser/nearby_sharing/scheduling",
+    "//components/prefs",
+    "//ui/base",
+    "//ui/chromeos",
+  ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_nearby_share_device_data_updater.cc",
+    "fake_nearby_share_device_data_updater.h",
+    "fake_nearby_share_local_device_data_manager.cc",
+    "fake_nearby_share_local_device_data_manager.h",
+  ]
+
+  deps = [
+    ":local_device_data",
+    "//base",
+    "//chrome/browser/nearby_sharing/proto",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "nearby_share_device_data_updater_impl_unittest.cc",
+    "nearby_share_local_device_data_manager_impl_unittest.cc",
+  ]
+
+  deps = [
+    ":local_device_data",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/app:generated_resources",
+    "//chrome/app:generated_resources_grit",
+    "//chrome/browser/nearby_sharing/client",
+    "//chrome/browser/nearby_sharing/client:test_support",
+    "//chrome/browser/nearby_sharing/common",
+    "//chrome/browser/nearby_sharing/common:test_support",
+    "//chrome/browser/nearby_sharing/proto",
+    "//chrome/browser/nearby_sharing/scheduling",
+    "//chrome/browser/nearby_sharing/scheduling:test_support",
+    "//components/sync_preferences:test_support",
+    "//testing/gtest",
+    "//ui/base",
+    "//ui/chromeos",
+  ]
+}

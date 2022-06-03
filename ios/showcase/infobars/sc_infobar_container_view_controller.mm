@@ -38,7 +38,7 @@
 #pragma mark InfobarModalPositioner
 
 - (CGFloat)modalHeightForWidth:(CGFloat)width {
-  return 200;
+  return 350;
 }
 
 @end

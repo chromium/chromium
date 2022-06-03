@@ -14,21 +14,15 @@ namespace ash {
 // This class adds ripple effects for touch targets in the lockscreen.
 class ASH_EXPORT LoginButton : public views::ImageButton {
  public:
-  explicit LoginButton(views::ButtonListener* listener);
-  ~LoginButton() override;
+  explicit LoginButton(PressedCallback callback);
 
-  // views::InkDropHost:
-  std::unique_ptr<views::InkDrop> CreateInkDrop() override;
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override;
-  std::unique_ptr<views::InkDropRipple> CreateInkDropRipple() const override;
-  std::unique_ptr<views::InkDropHighlight> CreateInkDropHighlight()
-      const override;
+  LoginButton(const LoginButton&) = delete;
+  LoginButton& operator=(const LoginButton&) = delete;
+
+  ~LoginButton() override;
 
  protected:
   virtual int GetInkDropRadius() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginButton);
 };
 
 }  // namespace ash

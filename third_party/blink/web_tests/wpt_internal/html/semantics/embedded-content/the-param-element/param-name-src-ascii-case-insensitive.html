@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="help" href="https://html.spec.whatwg.org/#attr-object-data">
+<link rel="help" href="https://html.spec.whatwg.org/#the-param-element">
+<link rel="match" href="param-name-src-ascii-case-insensitive-ref.html">
+<meta name="assert" content="special param@name value “src” is ASCII case-insensitive">
+<!--
+  Blink accepts <param name="src" value="..."> as an alternative to <object
+  data="..."> for compatibility, along with <param> names "code", "data",
+  "movie", and "url".
+
+  Note that while the specification currently requires these tags to be <object
+  type="image/png"> [#the-object-element:attr-object-type-2], doing so seems to
+  break that behaviour.
+-->
+<p>You should see two green squares:
+<object><param name="src" value="/images/green-16x16.png"></object>
+<object><param name="SrC" value="/images/green-16x16.png"></object>
+<object><param name="ſrc" value="/images/green-16x16.png"></object>

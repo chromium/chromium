@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "content/browser/web_package/signed_exchange_consts.h"
 #include "content/browser/web_package/signed_exchange_envelope.h"
@@ -16,22 +15,25 @@
 #include "content/browser/web_package/signed_exchange_prologue.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "net/base/io_buffer.h"
+#include "net/base/ip_endpoint.h"
+#include "net/base/network_isolation_key.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/log/net_log_with_source.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
-class SignedExchangeRequestMatcher;
+class WebPackageRequestMatcher;
 }  // namespace blink
 
 namespace net {
 class CertVerifyResult;
 class DrainableIOBuffer;
-struct SHA256HashValue;
 class SourceStream;
 struct OCSPVerifyResult;
 }  // namespace net
@@ -44,6 +46,7 @@ class NetworkContext;
 
 namespace content {
 
+class PrefetchedSignedExchangeCacheEntry;
 class SignedExchangeCertFetcher;
 class SignedExchangeCertFetcherFactory;
 class SignedExchangeCertificateChain;
@@ -93,24 +96,30 @@ class CONTENT_EXPORT SignedExchangeHandler {
       std::unique_ptr<net::SourceStream> body,
       ExchangeHeadersCallback headers_callback,
       std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory,
+      const net::NetworkIsolationKey& network_isolation_key,
       int load_flags,
-      std::unique_ptr<blink::SignedExchangeRequestMatcher> request_matcher,
+      const net::IPEndPoint& remote_endpoint,
+      std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher,
       std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy,
       SignedExchangeReporter* reporter,
       int frame_tree_node_id);
+
+  SignedExchangeHandler(const SignedExchangeHandler&) = delete;
+  SignedExchangeHandler& operator=(const SignedExchangeHandler&) = delete;
+
   virtual ~SignedExchangeHandler();
 
   int64_t GetExchangeHeaderLength() const { return exchange_header_length_; }
 
-  // Returns the header integrity value of the loaded signed exchange if
-  // available. This is available after |headers_callback| is called.
-  // Otherwise returns nullopt.
-  virtual base::Optional<net::SHA256HashValue> ComputeHeaderIntegrity() const;
-
-  // Returns the signature expire time of the loaded signed exchange if
-  // available. This is available after |headers_callback| is called.
-  // Otherwise returns a null Time.
-  virtual base::Time GetSignatureExpireTime() const;
+  // Called to get the following information about the loaded signed exchange:
+  //   - Header integrity value
+  //   - Signature expire time
+  //   - Cert URL
+  //   - Cert server IP address
+  // If failed to parse the signed exchange, this method fails and returns
+  // false. Otherwise, returns true.
+  virtual bool GetSignedExchangeInfoForPrefetchCache(
+      PrefetchedSignedExchangeCacheEntry& entry) const;
 
  protected:
   SignedExchangeHandler();
@@ -136,20 +145,19 @@ class CONTENT_EXPORT SignedExchangeHandler {
 
   void OnCertReceived(
       SignedExchangeLoadResult result,
-      std::unique_ptr<SignedExchangeCertificateChain> cert_chain);
+      std::unique_ptr<SignedExchangeCertificateChain> cert_chain,
+      net::IPAddress cert_server_ip_address);
   SignedExchangeLoadResult CheckCertRequirements(
       const net::X509Certificate* verified_cert);
   bool CheckOCSPStatus(const net::OCSPVerifyResult& ocsp_result);
 
-  void OnVerifyCert(int32_t error_code,
-                    const net::CertVerifyResult& cv_result,
-                    const net::ct::CTVerifyResult& ct_result);
+  void OnVerifyCert(int32_t error_code, const net::CertVerifyResult& cv_result);
   std::unique_ptr<net::SourceStream> CreateResponseBodyStream();
 
   const bool is_secure_transport_;
   const bool has_nosniff_;
   ExchangeHeadersCallback headers_callback_;
-  base::Optional<SignedExchangeVersion> version_;
+  absl::optional<SignedExchangeVersion> version_;
   std::unique_ptr<net::SourceStream> source_;
 
   State state_ = State::kReadingPrologueBeforeFallbackUrl;
@@ -162,15 +170,17 @@ class CONTENT_EXPORT SignedExchangeHandler {
   signed_exchange_prologue::BeforeFallbackUrl prologue_before_fallback_url_;
   signed_exchange_prologue::FallbackUrlAndAfter
       prologue_fallback_url_and_after_;
-  base::Optional<SignedExchangeEnvelope> envelope_;
+  absl::optional<SignedExchangeEnvelope> envelope_;
 
   std::unique_ptr<SignedExchangeCertFetcherFactory> cert_fetcher_factory_;
   std::unique_ptr<SignedExchangeCertFetcher> cert_fetcher_;
-  const int load_flags_;
+  const net::NetworkIsolationKey network_isolation_key_;
+  const int load_flags_ = 0;
+  const net::IPEndPoint remote_endpoint_;
 
   std::unique_ptr<SignedExchangeCertificateChain> unverified_cert_chain_;
 
-  std::unique_ptr<blink::SignedExchangeRequestMatcher> request_matcher_;
+  std::unique_ptr<blink::WebPackageRequestMatcher> request_matcher_;
 
   std::unique_ptr<SignedExchangeDevToolsProxy> devtools_proxy_;
 
@@ -180,10 +190,9 @@ class CONTENT_EXPORT SignedExchangeHandler {
   const int frame_tree_node_id_;
 
   base::TimeTicks cert_fetch_start_time_;
+  net::IPAddress cert_server_ip_address_;
 
   base::WeakPtrFactory<SignedExchangeHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SignedExchangeHandler);
 };
 
 // Used only for testing.

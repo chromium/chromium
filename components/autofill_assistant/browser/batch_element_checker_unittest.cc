@@ -4,14 +4,15 @@
 
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 
-#include <map>
-#include <set>
-
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/flat_map.h"
+#include "base/containers/flat_set.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "components/autofill_assistant/browser/actions/action_test_utils.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
 #include "components/autofill_assistant/browser/web/mock_web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -20,10 +21,9 @@ using ::testing::_;
 using ::testing::Contains;
 using ::testing::ElementsAre;
 using ::testing::Eq;
-using ::testing::InSequence;
-using ::testing::Key;
 using ::testing::Not;
 using ::testing::Pair;
+using ::testing::WithArgs;
 
 namespace autofill_assistant {
 
@@ -33,15 +33,11 @@ class BatchElementCheckerTest : public testing::Test {
  protected:
   BatchElementCheckerTest() : checks_() {}
 
-  void SetUp() override {
-    ON_CALL(mock_web_controller_, OnElementCheck(_, _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus()));
-    ON_CALL(mock_web_controller_, OnGetFieldValue(_, _))
-        .WillByDefault(RunOnceCallback<1>(ClientStatus(), ""));
-  }
+  void SetUp() override { test_util::MockFindAnyElement(mock_web_controller_); }
 
   void OnElementExistenceCheck(const std::string& name,
-                               const ClientStatus& result) {
+                               const ClientStatus& result,
+                               const ElementFinder::Result& ignored_element) {
     element_exists_results_[name] = result.ok();
   }
 
@@ -49,18 +45,6 @@ class BatchElementCheckerTest : public testing::Test {
       const std::string& name) {
     return base::BindOnce(&BatchElementCheckerTest::OnElementExistenceCheck,
                           base::Unretained(this), name);
-  }
-
-  void OnVisibilityRequirementCheck(const std::string& name,
-                                    const ClientStatus& result) {
-    element_visible_results_[name] = result.ok();
-  }
-
-  BatchElementChecker::ElementCheckCallback VisibilityRequirementCallback(
-      const std::string& name) {
-    return base::BindOnce(
-        &BatchElementCheckerTest::OnVisibilityRequirementCheck,
-        base::Unretained(this), name);
   }
 
   void OnFieldValueCheck(const std::string& name,
@@ -89,15 +73,14 @@ class BatchElementCheckerTest : public testing::Test {
 
   MockWebController mock_web_controller_;
   BatchElementChecker checks_;
-  std::map<std::string, bool> element_exists_results_;
-  std::map<std::string, bool> element_visible_results_;
-  std::map<std::string, std::string> get_field_value_results_;
-  std::set<std::string> all_done_;
+  base::flat_map<std::string, bool> element_exists_results_;
+  base::flat_map<std::string, std::string> get_field_value_results_;
+  base::flat_set<std::string> all_done_;
 };
 
 TEST_F(BatchElementCheckerTest, Empty) {
   EXPECT_TRUE(checks_.empty());
-  checks_.AddElementCheck(Selector({"exists"}),
+  checks_.AddElementCheck(Selector({"exists"}), /* strict= */ false,
                           ElementExistenceCallback("exists"));
   EXPECT_FALSE(checks_.empty());
   Run("all_done");
@@ -105,9 +88,9 @@ TEST_F(BatchElementCheckerTest, Empty) {
 }
 
 TEST_F(BatchElementCheckerTest, OneElementFound) {
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"exists"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-  checks_.AddElementCheck(Selector({"exists"}),
+  Selector expected_selector({"exists"});
+  test_util::MockFindElement(mock_web_controller_, expected_selector);
+  checks_.AddElementCheck(expected_selector, /* strict= */ false,
                           ElementExistenceCallback("exists"));
   Run("was_run");
 
@@ -116,10 +99,12 @@ TEST_F(BatchElementCheckerTest, OneElementFound) {
 }
 
 TEST_F(BatchElementCheckerTest, OneElementNotFound) {
+  Selector expected_notexists_selector({"does_not_exist"});
   EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"does_not_exist"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
-  checks_.AddElementCheck(Selector({"does_not_exist"}),
+              FindElement(expected_notexists_selector, /* strict= */ false, _))
+      .WillOnce(
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  checks_.AddElementCheck(expected_notexists_selector, /* strict= */ false,
                           ElementExistenceCallback("does_not_exist"));
   Run("was_run");
 
@@ -127,10 +112,27 @@ TEST_F(BatchElementCheckerTest, OneElementNotFound) {
   EXPECT_THAT(all_done_, Contains("was_run"));
 }
 
+TEST_F(BatchElementCheckerTest, TooManyElementsForStrict) {
+  Selector expected_multiple_selector({"multiple"});
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_multiple_selector, /* strict= */ true, _))
+      .WillOnce(RunOnceCallback<2>(ClientStatus(TOO_MANY_ELEMENTS), nullptr));
+  checks_.AddElementCheck(expected_multiple_selector, /* strict= */ true,
+                          ElementExistenceCallback("multiple"));
+  Run("was_run");
+
+  EXPECT_THAT(element_exists_results_, Contains(Pair("multiple", false)));
+  EXPECT_THAT(all_done_, Contains("was_run"));
+}
+
 TEST_F(BatchElementCheckerTest, OneFieldValueFound) {
-  EXPECT_CALL(mock_web_controller_, OnGetFieldValue(Eq(Selector({"field"})), _))
+  Selector expected_selector({"field"});
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, expected_selector)),
+                            _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "some value"));
-  checks_.AddFieldValueCheck(Selector({"field"}), FieldValueCallback("field"));
+  checks_.AddFieldValueCheck(expected_selector, FieldValueCallback("field"));
   Run("was_run");
 
   EXPECT_THAT(get_field_value_results_, Contains(Pair("field", "some value")));
@@ -138,9 +140,13 @@ TEST_F(BatchElementCheckerTest, OneFieldValueFound) {
 }
 
 TEST_F(BatchElementCheckerTest, OneFieldValueNotFound) {
-  EXPECT_CALL(mock_web_controller_, OnGetFieldValue(Eq(Selector({"field"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(), ""));
-  checks_.AddFieldValueCheck(Selector({"field"}), FieldValueCallback("field"));
+  Selector expected_selector({"field"});
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_selector, /* strict= */ true, _))
+      .WillOnce(
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  EXPECT_CALL(mock_web_controller_, GetFieldValue(_, _)).Times(0);
+  checks_.AddFieldValueCheck(expected_selector, FieldValueCallback("field"));
   Run("was_run");
 
   EXPECT_THAT(get_field_value_results_, Contains(Pair("field", "")));
@@ -148,86 +154,112 @@ TEST_F(BatchElementCheckerTest, OneFieldValueNotFound) {
 }
 
 TEST_F(BatchElementCheckerTest, OneFieldValueEmpty) {
-  EXPECT_CALL(mock_web_controller_, OnGetFieldValue(Eq(Selector({"field"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus(), ""));
-  checks_.AddFieldValueCheck(Selector({"field"}), FieldValueCallback("field"));
+  Selector expected_selector({"field"});
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, expected_selector)),
+                            _))
+      .WillOnce(RunOnceCallback<1>(OkClientStatus(), std::string()));
+  checks_.AddFieldValueCheck(expected_selector, FieldValueCallback("field"));
   Run("was_run");
 
-  EXPECT_THAT(get_field_value_results_, Contains(Pair("field", "")));
+  EXPECT_THAT(get_field_value_results_, Contains(Pair("field", std::string())));
   EXPECT_THAT(all_done_, Contains("was_run"));
 }
 
 TEST_F(BatchElementCheckerTest, MultipleElements) {
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"1"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"2"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"3"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus()));
-  EXPECT_CALL(mock_web_controller_, OnGetFieldValue(Eq(Selector({"4"})), _))
+  Selector expected_selector_1({"1"});
+  test_util::MockFindElement(mock_web_controller_, expected_selector_1);
+  Selector expected_selector_2({"2"});
+  test_util::MockFindElement(mock_web_controller_, expected_selector_2);
+  Selector expected_selector_3({"3"});
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_selector_3, /* strict= */ false, _))
+      .WillOnce(
+          RunOnceCallback<2>(ClientStatus(ELEMENT_RESOLUTION_FAILED), nullptr));
+  Selector expected_selector_4({"4"});
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_selector_4, /* strict= */ true, _))
+      .WillOnce(RunOnceCallback<2>(ClientStatus(TOO_MANY_ELEMENTS), nullptr));
+  Selector expected_selector_5({"5"});
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, expected_selector_5)),
+                            _))
       .WillOnce(RunOnceCallback<1>(OkClientStatus(), "value"));
-  EXPECT_CALL(mock_web_controller_, OnGetFieldValue(Eq(Selector({"5"})), _))
-      .WillOnce(RunOnceCallback<1>(ClientStatus(), ""));
+  Selector expected_selector_6({"6"});
+  EXPECT_CALL(mock_web_controller_,
+              GetFieldValue(EqualsElement(test_util::MockFindElement(
+                                mock_web_controller_, expected_selector_6)),
+                            _))
+      .WillOnce(RunOnceCallback<1>(ClientStatus(ELEMENT_RESOLUTION_FAILED),
+                                   std::string()));
 
-  checks_.AddElementCheck(Selector({"1"}), ElementExistenceCallback("1"));
-  checks_.AddElementCheck(Selector({"2"}), ElementExistenceCallback("2"));
-  checks_.AddElementCheck(Selector({"3"}), ElementExistenceCallback("3"));
-  checks_.AddFieldValueCheck(Selector({"4"}), FieldValueCallback("4"));
-  checks_.AddFieldValueCheck(Selector({"5"}), FieldValueCallback("5"));
+  checks_.AddElementCheck(expected_selector_1, /* strict= */ false,
+                          ElementExistenceCallback("1"));
+  checks_.AddElementCheck(expected_selector_2, /* strict= */ false,
+                          ElementExistenceCallback("2"));
+  checks_.AddElementCheck(expected_selector_3, /* strict= */ false,
+                          ElementExistenceCallback("3"));
+  checks_.AddElementCheck(expected_selector_4, /* strict= */ true,
+                          ElementExistenceCallback("4"));
+  checks_.AddFieldValueCheck(expected_selector_5, FieldValueCallback("5"));
+  checks_.AddFieldValueCheck(expected_selector_6, FieldValueCallback("6"));
   Run("was_run");
 
   EXPECT_THAT(element_exists_results_, Contains(Pair("1", true)));
   EXPECT_THAT(element_exists_results_, Contains(Pair("2", true)));
   EXPECT_THAT(element_exists_results_, Contains(Pair("3", false)));
-  EXPECT_THAT(get_field_value_results_, Contains(Pair("4", "value")));
-  EXPECT_THAT(get_field_value_results_, Contains(Pair("5", "")));
+  EXPECT_THAT(element_exists_results_, Contains(Pair("4", false)));
+  EXPECT_THAT(get_field_value_results_, Contains(Pair("5", "value")));
+  EXPECT_THAT(get_field_value_results_, Contains(Pair("6", std::string())));
   EXPECT_THAT(all_done_, Contains("was_run"));
 }
 
 TEST_F(BatchElementCheckerTest, DeduplicateElementExists) {
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"1"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(mock_web_controller_, OnElementCheck(Eq(Selector({"2"})), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
+  Selector expected_selector_1({"1"});
+  test_util::MockFindElement(mock_web_controller_, expected_selector_1);
+  Selector expected_selector_2({"2"});
+  test_util::MockFindElement(mock_web_controller_, expected_selector_2);
+  Selector expected_selector_3({"3"});
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_selector_3, /* strict= */ true, _))
+      .WillOnce(WithArgs<2>([](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
+  EXPECT_CALL(mock_web_controller_,
+              FindElement(expected_selector_3, /* strict= */ false, _))
+      .WillOnce(WithArgs<2>([](auto&& callback) {
+        auto element_result = std::make_unique<ElementFinder::Result>();
+        std::move(callback).Run(OkClientStatus(), std::move(element_result));
+      }));
 
-  checks_.AddElementCheck(Selector({"1"}), ElementExistenceCallback("first 1"));
-  checks_.AddElementCheck(Selector({"1"}),
+  checks_.AddElementCheck(expected_selector_1, /* strict= */ false,
+                          ElementExistenceCallback("first 1"));
+  checks_.AddElementCheck(expected_selector_1, /* strict= */ false,
                           ElementExistenceCallback("second 1"));
-  checks_.AddElementCheck(Selector({"2"}), ElementExistenceCallback("2"));
+  checks_.AddElementCheck(expected_selector_2, /* strict= */ false,
+                          ElementExistenceCallback("2"));
+  checks_.AddElementCheck(expected_selector_3, /* strict= */ true,
+                          ElementExistenceCallback("first 3"));
+  checks_.AddElementCheck(expected_selector_3, /* strict= */ false,
+                          ElementExistenceCallback("second 3"));
 
   Run("was_run");
 
   EXPECT_THAT(element_exists_results_, Contains(Pair("first 1", true)));
   EXPECT_THAT(element_exists_results_, Contains(Pair("second 1", true)));
   EXPECT_THAT(element_exists_results_, Contains(Pair("2", true)));
-  EXPECT_THAT(all_done_, Contains("was_run"));
-}
-
-TEST_F(BatchElementCheckerTest, DeduplicateElementVisible) {
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"1"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-  EXPECT_CALL(mock_web_controller_,
-              OnElementCheck(Eq(Selector({"2"}).MustBeVisible()), _))
-      .WillOnce(RunOnceCallback<1>(OkClientStatus()));
-
-  checks_.AddElementCheck(Selector({"1"}).MustBeVisible(),
-                          VisibilityRequirementCallback("first 1"));
-  checks_.AddElementCheck(Selector({"1"}).MustBeVisible(),
-                          VisibilityRequirementCallback("second 1"));
-  checks_.AddElementCheck(Selector({"2"}).MustBeVisible(),
-                          VisibilityRequirementCallback("2"));
-
-  Run("was_run");
-
-  EXPECT_THAT(element_visible_results_, Contains(Pair("first 1", true)));
-  EXPECT_THAT(element_visible_results_, Contains(Pair("second 1", true)));
-  EXPECT_THAT(element_visible_results_, Contains(Pair("2", true)));
+  EXPECT_THAT(element_exists_results_, Contains(Pair("first 3", true)));
+  EXPECT_THAT(element_exists_results_, Contains(Pair("second 3", true)));
   EXPECT_THAT(all_done_, Contains("was_run"));
 }
 
 TEST_F(BatchElementCheckerTest, CallMultipleAllDoneCallbacks) {
-  checks_.AddElementCheck(Selector({"exists"}),
+  Selector expected_selector({"exists"});
+  test_util::MockFindElement(mock_web_controller_, expected_selector);
+  checks_.AddElementCheck(expected_selector, /* strict= */ false,
                           ElementExistenceCallback("exists"));
   checks_.AddAllDoneCallback(DoneCallback("1"));
   checks_.AddAllDoneCallback(DoneCallback("2"));

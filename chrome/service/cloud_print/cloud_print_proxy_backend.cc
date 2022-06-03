@@ -7,13 +7,13 @@
 #include <stddef.h>
 
 #include <map>
+#include <memory>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
@@ -84,6 +84,9 @@ class CloudPrintProxyBackend::Core
        const gaia::OAuthClientInfo& oauth_client_info,
        bool enable_job_poll,
        network::NetworkConnectionTracker* network_connection_tracker);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   // Note:
   //
@@ -219,8 +222,6 @@ class CloudPrintProxyBackend::Core
   std::unique_ptr<CloudPrintTokenStore> token_store_;
 
   base::WeakPtrFactory<Core> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 CloudPrintProxyBackend::CloudPrintProxyBackend(
@@ -537,7 +538,7 @@ void CloudPrintProxyBackend::Core::PollForJobs() {
 
 void CloudPrintProxyBackend::Core::ScheduleJobPoll() {
   if (!job_poll_scheduled_) {
-    base::TimeDelta interval = base::TimeDelta::FromSeconds(
+    base::TimeDelta interval = base::Seconds(
         base::RandInt(kMinJobPollIntervalSecs, kMaxJobPollIntervalSecs));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
@@ -562,7 +563,7 @@ void CloudPrintProxyBackend::Core::PingXmppServer() {
         FROM_HERE,
         base::BindOnce(&CloudPrintProxyBackend::Core::CheckXmppPingStatus,
                        this),
-        base::TimeDelta::FromSeconds(kXmppPingCheckIntervalSecs));
+        base::Seconds(kXmppPingCheckIntervalSecs));
   }
 
   // Schedule next ping if needed.
@@ -574,9 +575,9 @@ void CloudPrintProxyBackend::Core::ScheduleXmppPing() {
   // settings_.xmpp_ping_enabled() is obsolete, we are now control
   // XMPP pings from Cloud Print server.
   if (!xmpp_ping_scheduled_) {
-    base::TimeDelta interval = base::TimeDelta::FromSeconds(
-      base::RandInt(settings_.xmpp_ping_timeout_sec() * 0.9,
-                    settings_.xmpp_ping_timeout_sec() * 1.1));
+    base::TimeDelta interval =
+        base::Seconds(base::RandInt(settings_.xmpp_ping_timeout_sec() * 0.9,
+                                    settings_.xmpp_ping_timeout_sec() * 1.1));
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&CloudPrintProxyBackend::Core::PingXmppServer, this),
@@ -598,7 +599,7 @@ void CloudPrintProxyBackend::Core::CheckXmppPingStatus() {
 CloudPrintTokenStore* CloudPrintProxyBackend::Core::GetTokenStore() {
   DCHECK(CurrentlyOnCoreThread());
   if (!token_store_.get())
-    token_store_.reset(new CloudPrintTokenStore);
+    token_store_ = std::make_unique<CloudPrintTokenStore>();
   return token_store_.get();
 }
 

@@ -97,8 +97,7 @@ class ListenerLeakTest : public testing::Test {
         WebString::FromUTF8(base_url), blink::test::CoreTestDataPath(),
         WebString::FromUTF8(file_name));
     web_view_helper.InitializeAndLoad(base_url + file_name);
-    V8GCController::CollectAllGarbageForTesting(
-        isolate(), v8::EmbedderHeapTracer::EmbedderStackState::kEmpty);
+    ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
   v8::Isolate* isolate() const {

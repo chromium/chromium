@@ -5,14 +5,14 @@
 #include "chrome/browser/ui/webui/chromeos/cellular_setup/mobile_setup_dialog.h"
 
 #include "base/strings/utf_string_conversions.h"
-#include "chrome/browser/chromeos/mobile/mobile_activator.h"
+#include "chrome/browser/ash/mobile/mobile_activator.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "components/device_event_log/device_event_log.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/geometry/size.h"
@@ -54,7 +54,7 @@ void MobileSetupDialog::ShowByNetworkId(const std::string& network_id) {
     NET_LOG(ERROR) << "MobileSetupDialog: Network ID not found: " << network_id;
     return;
   }
-  NET_LOG(EVENT) << "Opening MobileSetupDialog, ID: " << network_id;
+  NET_LOG(EVENT) << "Opening MobileSetupDialog, ID: " << NetworkId(network);
   dialog_instance = new MobileSetupDialog(*network);
   dialog_instance->ShowSystemDialog();
 }
@@ -62,7 +62,9 @@ void MobileSetupDialog::ShowByNetworkId(const std::string& network_id) {
 MobileSetupDialog::MobileSetupDialog(const NetworkState& network)
     : SystemWebDialogDelegate(
           GetURL(network),
-          l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE)) {}
+          l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE)) {
+  set_can_resize(true);
+}
 
 MobileSetupDialog::~MobileSetupDialog() {
   dialog_instance = nullptr;
@@ -70,10 +72,6 @@ MobileSetupDialog::~MobileSetupDialog() {
 
 void MobileSetupDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(kMobileSetupDialogWidth, kMobileSetupDialogHeight);
-}
-
-bool MobileSetupDialog::CanResizeDialog() const {
-  return true;
 }
 
 std::string MobileSetupDialog::GetDialogArgs() const {
@@ -86,7 +84,8 @@ void MobileSetupDialog::OnCloseContents(content::WebContents* source,
   // crash. Note: IsTryingToQuit can be cancelled on other platforms by the
   // onbeforeunload handler, except on ChromeOS. So IsTryingToQuit is the
   // appropriate check to use here.
-  bool running_activation = MobileActivator::GetInstance()->RunningActivation();
+  bool running_activation =
+      ash::MobileActivator::GetInstance()->RunningActivation();
   NET_LOG(EVENT) << "Closing MobileSetupDialog. Activation running = "
                  << running_activation;
   if (!dialog_window() || !running_activation ||
@@ -95,7 +94,7 @@ void MobileSetupDialog::OnCloseContents(content::WebContents* source,
     return;
   }
 
-  *out_close_dialog = chrome::ShowQuestionMessageBox(
+  *out_close_dialog = chrome::ShowQuestionMessageBoxSync(
       dialog_window(), l10n_util::GetStringUTF16(IDS_MOBILE_SETUP_TITLE),
       l10n_util::GetStringUTF16(IDS_MOBILE_CANCEL_ACTIVATION));
 }

@@ -13,6 +13,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -56,6 +57,7 @@ pid_t ProcDirSlotToPid(const char* d_name) {
 }
 
 bool ReadProcFile(const FilePath& file, std::string* buffer) {
+  DCHECK(FilePath(kProcDir).IsParent(file));
   buffer->clear();
   // Synchronously reading files in /proc is safe.
   ThreadRestrictions::ScopedAllowIO allow_io;
@@ -223,8 +225,7 @@ TimeDelta ClockTicksToTimeDelta(int clock_ticks) {
   // It may be the case that this value is always 100.
   static const int kHertz = sysconf(_SC_CLK_TCK);
 
-  return TimeDelta::FromMicroseconds(
-      Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
+  return Microseconds(Time::kMicrosecondsPerSecond * clock_ticks / kHertz);
 }
 
 }  // namespace internal

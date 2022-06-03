@@ -1,0 +1,120 @@
+From 547dcecf54197d5beee0e1c1b5ce908b23b61042 Mon Sep 17 00:00:00 2001
+From: Olabode Anise <anise@chromium.org>
+Date: Mon, 14 Jun 2021 16:19:57 +0000
+Subject: [PATCH] correcting include paths
+
+---
+ third_party/maldoca/src/maldoca/base/logging.h    | 15 ++++++++++++---
+ third_party/maldoca/src/maldoca/ole/mso.cc        |  4 ++++
+ third_party/maldoca/src/maldoca/ole/oss_utils.h   |  4 ++++
+ third_party/maldoca/src/maldoca/ole/ppt.cc        |  4 ++++
+ .../src/third_party/zlibwrapper/gzipheader.cc     |  4 ++++
+ 5 files changed, 28 insertions(+), 3 deletions(-)
+
+diff --git a/third_party/maldoca/src/maldoca/base/logging.h b/third_party/maldoca/src/maldoca/base/logging.h
+index 518d96661888..b863e44bf9e3 100644
+--- a/third_party/maldoca/src/maldoca/base/logging.h
++++ b/third_party/maldoca/src/maldoca/base/logging.h
+@@ -15,9 +15,18 @@
+ #ifndef MALDOCA_BASE_LOGGING_H_
+ #define MALDOCA_BASE_LOGGING_H_
+ 
+-#ifdef MALDOCA_CHROME
++#if defined(MALDOCA_IN_CHROMIUM)
++#include "base/check.h"
++#include "base/check_op.h"
++#include "base/logging.h"
++
++#elif defined(MALDOCA_CHROME)
+ #include "mini_chromium/base/logging.h"
+ 
++#endif
++
++#if defined(MALDOCA_CHROME) || defined(MALDOCA_IN_CHROMIUM)
++
+ namespace maldoca {
+ 
+ inline bool InitLogging() {
+@@ -26,7 +35,7 @@ inline bool InitLogging() {
+ }
+ }  // namespace maldoca
+ 
+-#else  // MALDOCA_CHROME
++#else  // defined(MALDOCA_CHROME) || defined(MALDOCA_IN_CHROMIUM)
+ 
+ #include "zetasql/base/logging.h"
+ 
+@@ -38,5 +47,5 @@ using ::zetasql_base::get_vlog_level;
+ using ::zetasql_base::InitLogging;
+ }  // namespace maldoca
+ 
+-#endif  // MALDOCA_CHROME
++#endif
+ #endif  // MALDOCA_BASE_LOGGING_H_
+diff --git a/third_party/maldoca/src/maldoca/ole/mso.cc b/third_party/maldoca/src/maldoca/ole/mso.cc
+index 6b422199718b..7b0943285061 100644
+--- a/third_party/maldoca/src/maldoca/ole/mso.cc
++++ b/third_party/maldoca/src/maldoca/ole/mso.cc
+@@ -27,7 +27,11 @@
+ #include "libxml/xpath.h"
+ #include "maldoca/ole/endian_reader.h"
+ #include "maldoca/ole/oss_utils.h"
++#ifdef MALDOCA_IN_CHROMIUM
++#include "third_party/zlib/zlib.h"
++#else
+ #include "zlib/include/zlib.h"
++#endif
+ 
+ ABSL_FLAG(int32_t, mso_deflated_max_file_size, 2 << 20,
+           "The maximum deflated MSO file size (in bytes) we are willing to "
+diff --git a/third_party/maldoca/src/maldoca/ole/oss_utils.h b/third_party/maldoca/src/maldoca/ole/oss_utils.h
+index 14df9a893c5c..41594fbe78c6 100644
+--- a/third_party/maldoca/src/maldoca/ole/oss_utils.h
++++ b/third_party/maldoca/src/maldoca/ole/oss_utils.h
+@@ -30,7 +30,11 @@
+ #include "absl/strings/escaping.h"
+ #include "absl/strings/string_view.h"
+ #include "google/protobuf/io/tokenizer.h"
++#ifdef MALDOCA_IN_CHROMIUM
++#include "third_party/libxml/src/include/libxml/tree.h"
++#else
+ #include "libxml/tree.h"
++#endif
+ #include "maldoca/base/file.h"
+ #include "maldoca/base/logging.h"
+ 
+diff --git a/third_party/maldoca/src/maldoca/ole/ppt.cc b/third_party/maldoca/src/maldoca/ole/ppt.cc
+index 5302366bd759..5ff55eeb3289 100644
+--- a/third_party/maldoca/src/maldoca/ole/ppt.cc
++++ b/third_party/maldoca/src/maldoca/ole/ppt.cc
+@@ -25,7 +25,11 @@
+ #include "maldoca/ole/fat.h"
+ #include "maldoca/ole/header.h"
+ #include "maldoca/ole/oss_utils.h"
++#ifdef MALDOCA_IN_CHROMIUM
++#include "third_party/zlib/zlib.h"
++#else
+ #include "zlib/include/zlib.h"
++#endif
+ #include "zlibwrapper/zlibwrapper.h"
+ 
+ ABSL_FLAG(
+diff --git a/third_party/maldoca/src/third_party/zlibwrapper/gzipheader.cc b/third_party/maldoca/src/third_party/zlibwrapper/gzipheader.cc
+index cd3df3e2d840..ed27503f3175 100644
+--- a/third_party/maldoca/src/third_party/zlibwrapper/gzipheader.cc
++++ b/third_party/maldoca/src/third_party/zlibwrapper/gzipheader.cc
+@@ -22,7 +22,11 @@
+ 
+ #include "base/compiler_specific.h"
+ #include "maldoca/base/logging.h"
++#ifdef MALDOCA_IN_CHROMIUM
++#include "third_party/zlib/zlib.h"  // for Z_DEFAULT_COMPRESSION
++#else
+ #include "zlib/include/zlib.h"  // for Z_DEFAULT_COMPRESSION
++#endif
+ 
+ const uint8_t GZipHeader::magic[] = {0x1f, 0x8b};
+ 
+-- 
+2.32.0.272.g935e593368-goog
+

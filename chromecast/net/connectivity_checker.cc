@@ -4,7 +4,7 @@
 
 #include "chromecast/net/connectivity_checker.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/net/connectivity_checker_impl.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -41,10 +41,12 @@ scoped_refptr<ConnectivityChecker> ConnectivityChecker::Create(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
         pending_url_loader_factory,
-    network::NetworkConnectionTracker* network_connection_tracker) {
+    network::NetworkConnectionTracker* network_connection_tracker,
+    TimeSyncTracker* time_sync_tracker) {
   return ConnectivityCheckerImpl::Create(task_runner,
                                          std::move(pending_url_loader_factory),
-                                         network_connection_tracker);
+                                         network_connection_tracker,
+                                         time_sync_tracker);
 }
 
 }  // namespace chromecast

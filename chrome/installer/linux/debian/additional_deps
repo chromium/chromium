@@ -10,8 +10,8 @@ ca-certificates
 # Make sure users have compatible fonts for viewing PDFs.
 fonts-liberation
 
-# Temporary entry for systray icons.
-libappindicator3-1
+# GTK is dlopen()'ed.  Versions 3 or 4 are supported.
+libgtk-3-0 (>= 3.9.10) | libgtk-4-1
 
 # Pull a more recent version of NSS than required by runtime linking, for
 # security and stability updates in NSS.
@@ -19,6 +19,7 @@ libnss3 (>= 3.26)
 
 # For uploading crash reports with Breakpad.
 wget
+libcurl3-gnutls | libcurl3-nss | libcurl4 | libcurl3
 
 # For OS integration.
 xdg-utils (>= 1.0.2)

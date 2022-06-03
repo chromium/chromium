@@ -41,7 +41,7 @@ function annotateDate(date) {
  */
 function verifyImageURI(uri) {
   // The URI is specified by a user, so the type may be incorrect.
-  if (typeof uri != 'string' && !(uri instanceof String))
+  if (typeof uri !== 'string' && !(uri instanceof String))
     return false;
 
   return METADATA_THUMBNAIL_FORMAT.test(uri);

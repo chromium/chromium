@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+PASS [shared_worker] unsafe-none => unsafe-none
+FAIL [shared_worker] unsafe-none => credentialless assert_equals: expected "error" but got "retrieved"
+PASS [shared_worker] unsafe-none => credentialless (omit)
+PASS [shared_worker] unsafe-none => credentialless + CORP
+FAIL [shared_worker] unsafe-none => require-corp assert_equals: expected "error" but got "retrieved"
+FAIL [shared_worker] unsafe-none => require-corp (omit) assert_equals: expected "error" but got "retrieved"
+PASS [shared_worker] unsafe-none => require-corp + CORP
+PASS [shared_worker] credentialless => unsafe-none
+PASS [shared_worker] credentialless => credentialless
+FAIL [shared_worker] credentialless => require-corp assert_equals: expected "error" but got "retrieved"
+PASS [shared_worker] credentialless => require-corp + CORP
+PASS [shared_worker] require_corp => unsafe-none
+PASS [shared_worker] require_corp => credentialless
+PASS [shared_worker] require_corp => require-corp
+Harness: the test ran to completion.
+

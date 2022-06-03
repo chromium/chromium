@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_ADOPTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_ADOPTER_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 
 namespace blink {
@@ -63,16 +64,16 @@ class CORE_EXPORT TreeScopeAdopter {
   TreeScope& OldScope() const { return *old_scope_; }
   TreeScope& NewScope() const { return *new_scope_; }
 
-  Member<Node> to_adopt_;
-  Member<TreeScope> new_scope_;
-  Member<TreeScope> old_scope_;
+  Node* to_adopt_;
+  TreeScope* new_scope_;
+  TreeScope* old_scope_;
 };
 
 inline TreeScopeAdopter::TreeScopeAdopter(Node& to_adopt, TreeScope& new_scope)
-    : to_adopt_(to_adopt),
-      new_scope_(new_scope),
-      old_scope_(to_adopt.GetTreeScope()) {}
+    : to_adopt_(&to_adopt),
+      new_scope_(&new_scope),
+      old_scope_(&to_adopt.GetTreeScope()) {}
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_TREE_SCOPE_ADOPTER_H_

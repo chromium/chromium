@@ -6,7 +6,7 @@
 
 #include "ash/wm/window_state.h"
 #include "ash/wm/wm_event.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/aura/window.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -18,12 +18,9 @@ namespace ash {
 OverlayLayoutManager::OverlayLayoutManager(aura::Window* overlay_container)
     : overlay_container_(overlay_container) {
   DCHECK(overlay_container_);
-  Screen::GetScreen()->AddObserver(this);
 }
 
-OverlayLayoutManager::~OverlayLayoutManager() {
-  Screen::GetScreen()->RemoveObserver(this);
-}
+OverlayLayoutManager::~OverlayLayoutManager() = default;
 
 void OverlayLayoutManager::OnDisplayMetricsChanged(
     const display::Display& display,

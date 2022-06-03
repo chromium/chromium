@@ -65,14 +65,8 @@ class MODULES_EXPORT DirectoryEntry final : public Entry {
   void removeRecursively(V8VoidCallback* success_callback = nullptr,
                          V8ErrorCallback* = nullptr) const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 };
-
-DEFINE_TYPE_CASTS(DirectoryEntry,
-                  Entry,
-                  entry,
-                  entry->isDirectory(),
-                  entry.isDirectory());
 
 }  // namespace blink
 

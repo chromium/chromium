@@ -8,51 +8,39 @@
 
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "content/public/browser/context_factory.h"
+#include "content/public/common/result_codes.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "ui/base/ime/init/input_method_initializer.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/views/test/desktop_test_views_delegate.h"
 #include "ui/views_content_client/views_content_client.h"
 
 namespace ui {
 
 ViewsContentClientMainParts::ViewsContentClientMainParts(
-    const content::MainFunctionParams& content_params,
+    content::MainFunctionParams content_params,
     ViewsContentClient* views_content_client)
-    : views_content_client_(views_content_client) {
-}
+    : views_content_client_(views_content_client) {}
 
 ViewsContentClientMainParts::~ViewsContentClientMainParts() {
 }
 
-#if !defined(OS_MACOSX)
-void ViewsContentClientMainParts::PreCreateMainMessageLoop() {}
+#if !defined(OS_APPLE)
+void ViewsContentClientMainParts::PreBrowserMain() {}
 #endif
 
-void ViewsContentClientMainParts::PreMainMessageLoopRun() {
-  ui::MaterialDesignController::Initialize();
+int ViewsContentClientMainParts::PreMainMessageLoopRun() {
   ui::InitializeInputMethodForTesting();
   browser_context_ = std::make_unique<content::ShellBrowserContext>(false);
 
-  std::unique_ptr<views::TestViewsDelegate> test_views_delegate(
-      new views::DesktopTestViewsDelegate);
-  test_views_delegate->set_context_factory(content::GetContextFactory());
-  test_views_delegate->set_context_factory_private(
-      content::GetContextFactoryPrivate());
-  views_delegate_ = std::move(test_views_delegate);
+  views_delegate_ = std::make_unique<views::DesktopTestViewsDelegate>();
   run_loop_ = std::make_unique<base::RunLoop>();
   views_content_client()->set_quit_closure(run_loop_->QuitClosure());
+  return content::RESULT_CODE_NORMAL_EXIT;
 }
 
 void ViewsContentClientMainParts::PostMainMessageLoopRun() {
   browser_context_.reset();
   views_delegate_.reset();
-}
-
-bool ViewsContentClientMainParts::MainMessageLoopRun(int* result_code) {
-  run_loop_->Run();
-  return true;
 }
 
 }  // namespace ui

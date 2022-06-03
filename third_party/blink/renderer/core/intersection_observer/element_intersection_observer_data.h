@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INTERSECTION_OBSERVER_ELEMENT_INTERSECTION_OBSERVER_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INTERSECTION_OBSERVER_ELEMENT_INTERSECTION_OBSERVER_DATA_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_high_res_time_stamp.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -13,31 +14,40 @@ namespace blink {
 
 class IntersectionObservation;
 class IntersectionObserver;
+class IntersectionObserverController;
 
-class ElementIntersectionObserverData final
+class CORE_EXPORT ElementIntersectionObserverData final
     : public GarbageCollected<ElementIntersectionObserverData>,
       public NameClient {
  public:
   ElementIntersectionObserverData();
+  ~ElementIntersectionObserverData() final = default;
 
+  // If the argument observer is observing this Element, this method will return
+  // the observation.
   IntersectionObservation* GetObservationFor(IntersectionObserver&);
+
+  // Add an implicit-root observation with this element as target.
   void AddObservation(IntersectionObservation&);
+  // Add an explicit-root observer with this element as root.
   void AddObserver(IntersectionObserver&);
-  void RemoveObservation(IntersectionObserver&);
-  bool IsTarget() const { return !intersection_observations_.IsEmpty(); }
-  bool IsTargetOfImplicitRootObserver() const;
-  bool IsRoot() const { return !intersection_observers_.IsEmpty(); }
+  void RemoveObservation(IntersectionObservation&);
+  void RemoveObserver(IntersectionObserver&);
+  bool IsEmpty() const {
+    return observations_.IsEmpty() && observers_.IsEmpty();
+  }
+  void TrackWithController(IntersectionObserverController&);
+  void StopTrackingWithController(IntersectionObserverController&);
+
   // Run the IntersectionObserver algorithm for all observations for which this
   // element is target.
   bool ComputeIntersectionsForTarget(unsigned flags);
-  // Run the IntersectionObserver algorithm for all implicit-root observations
-  // for which this element is target; and all explicit-root observers for which
-  // this element is root. Returns true if any observer needs occlusion
-  // tracking.
-  bool ComputeIntersectionsForLifecycleUpdate(unsigned flags);
   bool NeedsOcclusionTracking() const;
+  // Indicates that geometry information cached during the previous run of the
+  // algorithm is invalid and must be recomputed.
+  void InvalidateCachedRects();
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override {
     return "ElementIntersectionObserverData";
   }
@@ -45,11 +55,11 @@ class ElementIntersectionObserverData final
  private:
   // IntersectionObservations for which the Node owning this data is target.
   HeapHashMap<Member<IntersectionObserver>, Member<IntersectionObservation>>
-      intersection_observations_;
+      observations_;
   // IntersectionObservers for which the Node owning this data is root.
   // Weak because once an observer is unreachable from javascript and has no
   // active observations, it should be allowed to die.
-  HeapHashSet<WeakMember<IntersectionObserver>> intersection_observers_;
+  HeapHashSet<WeakMember<IntersectionObserver>> observers_;
 };
 
 }  // namespace blink

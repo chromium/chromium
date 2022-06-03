@@ -7,8 +7,8 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/shared_impl/proxy_lock.h"
 #include "ppapi/shared_impl/tracked_callback.h"

@@ -5,19 +5,13 @@
 <link rel="import" href="chrome://resources/html/polymer.html">
 
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
+<link rel="import" href="chrome://resources/html/action_link.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-iconset-svg/iron-iconset-svg.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
 
-<iron-iconset-svg name="notification-card" size="24">
-  <svg>
-    <defs>
-      <g id="done">
-        <path d="M9 16.2L4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4L9 16.2z"></path>
-      </g>
-    </defs>
-  </svg>
-</iron-iconset-svg>
+<link rel="import" href="/components/oobe_icons.html">
+<link rel="import" href="/components/common_styles/common_styles.html">
+
 <!--
   A simple notification card with a button, link (optional) and icon (optional).
   Example:
@@ -38,10 +32,9 @@
 
 -->
 <dom-module id="notification-card">
-  <link rel="stylesheet" href="notification_card.css">
-  <link rel="stylesheet" href="oobe_flex_layout.css">
-
   <template>
+    <style include="oobe-common-styles"></style>
+    <link rel="stylesheet" href="notification_card.css">
     <div id="container" class="vertical layout center fit">
       <div class="flex vertical layout center center-justified">
         <template is="dom-if" if="[[type]]">
@@ -59,7 +52,8 @@
             hidden$="[[!buttonLabel]]">
           <span>[[buttonLabel]]</span>
         </gaia-button>
-        <a href="#" on-click="linkClicked_" hidden$="{{!linkLabel}}">
+        <a on-click="linkClicked_" hidden$="{{!linkLabel}}" is="action-link"
+            class="oobe-local-link">
           <span>[[linkLabel]]</span>
         </a>
       </div>

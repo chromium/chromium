@@ -9,25 +9,59 @@
 
 namespace paint_preview {
 
+namespace {
+
+bool ShouldWrite(size_t current_size, size_t max_size, size_t added_size) {
+  // If |current_size| + |added_size| overflow then don't write.
+  if (std::numeric_limits<size_t>::max() - current_size < added_size)
+    return false;
+  return max_size >= current_size + added_size;
+}
+
+}  // namespace
+
 // FileWStream
 
 FileWStream::FileWStream(base::File file)
-    : file_(std::move(file)), bytes_written_(0) {
+    : file_(std::move(file)),
+      max_size_(0),
+      bytes_written_(0),
+      fake_bytes_written_(0),
+      has_write_failed_(false) {
   DCHECK(file_.IsValid());
 }
+
+FileWStream::FileWStream(base::File file, size_t max_size)
+    : file_(std::move(file)),
+      max_size_(max_size),
+      bytes_written_(0),
+      fake_bytes_written_(0),
+      has_write_failed_(false) {
+  DCHECK(file_.IsValid());
+}
+
 // Close() is called in the destructor of |file_|.
 FileWStream::~FileWStream() = default;
 
 bool FileWStream::write(const void* buffer, size_t size) {
-  if (!file_.IsValid())
+  fake_bytes_written_ += size;
+  if (!file_.IsValid() || has_write_failed_)
     return false;
+  if (max_size_ && !ShouldWrite(bytes_written_, max_size_, size)) {
+    has_write_failed_ = true;
+    return false;
+  }
   int bytes =
       file_.WriteAtCurrentPos(reinterpret_cast<const char*>(buffer), size);
-  if (bytes < 0)
+  if (bytes < 0) {
+    has_write_failed_ = true;
     return false;
+  }
   bytes_written_ += bytes;
-  if (static_cast<size_t>(bytes) != size)
+  if (static_cast<size_t>(bytes) != size) {
+    has_write_failed_ = true;
     return false;
+  }
   return true;
 }
 
@@ -38,7 +72,7 @@ void FileWStream::flush() {
 }
 
 size_t FileWStream::bytesWritten() const {
-  return bytes_written_;
+  return fake_bytes_written_;
 }
 
 void FileWStream::Close() {

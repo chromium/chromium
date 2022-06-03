@@ -11,12 +11,16 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/bind_post_task.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_features_unittest.h"
@@ -26,6 +30,7 @@
 #include "extensions/common/features/simple_feature.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
+#include "extensions/common/mojom/feature_session_type.mojom.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -34,8 +39,8 @@ namespace extensions {
 namespace {
 
 const char* const kTestFeatures[] = {
-    "test1", "test2", "test3",   "test4",   "test5",
-    "test6", "test7", "parent1", "parent2", "parent3",
+    "test1", "test2", "test3",  "test4",  "test5",   "test6",   "test7",
+    "test8", "test9", "test10", "test11", "parent1", "parent2", "parent3",
 };
 
 const char* const kAliasTestApis[] = {"alias_api_source"};
@@ -47,12 +52,16 @@ const char* const kSessionTypeTestFeatures[] = {
 struct FeatureSessionTypesTestData {
   std::string api_name;
   bool expect_available;
-  FeatureSessionType current_session_type;
+  mojom::FeatureSessionType current_session_type;
 };
 
 class TestExtensionAPI : public ExtensionAPI {
  public:
   TestExtensionAPI() {}
+
+  TestExtensionAPI(const TestExtensionAPI&) = delete;
+  TestExtensionAPI& operator=(const TestExtensionAPI&) = delete;
+
   ~TestExtensionAPI() override {}
 
   void add_fake_schema(const std::string& name) { fake_schemas_.insert(name); }
@@ -63,7 +72,6 @@ class TestExtensionAPI : public ExtensionAPI {
   }
 
   std::set<std::string> fake_schemas_;
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionAPI);
 };
 
 }  // namespace
@@ -157,6 +165,26 @@ TEST(ExtensionAPITest, APIFeatures) {
     { "test7.foo", true, Feature::WEB_PAGE_CONTEXT, GURL("http://foo.com") },
     { "test7.bar", false, Feature::WEB_PAGE_CONTEXT, GURL("http://bar.com") },
     { "test7.bar", false, Feature::WEB_PAGE_CONTEXT, GURL("http://foo.com") },
+    { "test8", true, Feature::WEBUI_CONTEXT, GURL("chrome://test/") },
+    { "test8", true, Feature::WEBUI_CONTEXT, GURL("chrome://other-test/") },
+    { "test8", false, Feature::WEBUI_CONTEXT, GURL("chrome://dangerous/") },
+    { "test8", false, Feature::WEBUI_CONTEXT,
+        GURL("chrome-untrusted://test/") },
+    { "test8", false, Feature::WEBUI_UNTRUSTED_CONTEXT,
+        GURL("chrome-untrusted://test/") },
+    { "test8", false, Feature::WEBUI_UNTRUSTED_CONTEXT,
+      GURL("chrome://test/*") },
+    { "test9", true, Feature::WEBUI_UNTRUSTED_CONTEXT,
+        GURL("chrome-untrusted://test/") },
+    { "test9", true, Feature::WEBUI_UNTRUSTED_CONTEXT,
+        GURL("chrome-untrusted://other-test/") },
+    { "test9", false, Feature::WEBUI_UNTRUSTED_CONTEXT,
+        GURL("chrome-untrusted://dangerous/") },
+    { "test9", false, Feature::WEBUI_UNTRUSTED_CONTEXT,
+        GURL("chrome://test/") },
+    { "test9", false, Feature::WEBUI_CONTEXT, GURL("chrome://test/") },
+    { "test9", false, Feature::WEBUI_CONTEXT,
+      GURL("chrome-untrusted://test/*") },
 
     // Test parent/child.
     { "parent1", true, Feature::CONTENT_SCRIPT_CONTEXT, GURL() },
@@ -315,7 +343,19 @@ TEST(ExtensionAPITest, IsAnyFeatureAvailableToContext) {
       {"test7", true, Feature::WEB_PAGE_CONTEXT, nullptr,
        GURL("http://foo.com")},
       {"test7", false, Feature::WEB_PAGE_CONTEXT, nullptr,
-       GURL("http://bar.com")}};
+       GURL("http://bar.com")},
+      {"test10", true, Feature::WEBUI_CONTEXT, nullptr, GURL("chrome://test/")},
+      {"test10", true, Feature::WEBUI_CONTEXT, nullptr,
+       GURL("chrome://other-test/")},
+      {"test10", false, Feature::WEBUI_UNTRUSTED_CONTEXT, nullptr,
+       GURL("chrome-untrusted://test/")},
+      {"test11", true, Feature::WEBUI_UNTRUSTED_CONTEXT, nullptr,
+       GURL("chrome-untrusted://test/")},
+      {"test11", true, Feature::WEBUI_UNTRUSTED_CONTEXT, nullptr,
+       GURL("chrome-untrusted://other-test/")},
+      {"test11", false, Feature::WEBUI_CONTEXT, nullptr,
+       GURL("chrome://test/")},
+  };
 
   FeatureProvider api_feature_provider;
   AddUnittestAPIFeatures(&api_feature_provider);
@@ -359,24 +399,25 @@ TEST(ExtensionAPITest, SessionTypeFeature) {
           .Build();
 
   const std::vector<FeatureSessionTypesTestData> kTestData(
-      {{"kiosk_only", true, FeatureSessionType::KIOSK},
-       {"kiosk_only", true, FeatureSessionType::AUTOLAUNCHED_KIOSK},
-       {"kiosk_only", false, FeatureSessionType::REGULAR},
-       {"kiosk_only", false, FeatureSessionType::UNKNOWN},
-       {"non_kiosk", false, FeatureSessionType::KIOSK},
-       {"non_kiosk", true, FeatureSessionType::REGULAR},
-       {"non_kiosk", false, FeatureSessionType::UNKNOWN},
-       {"autolaunched_kiosk", true, FeatureSessionType::AUTOLAUNCHED_KIOSK},
-       {"autolaunched_kiosk", false, FeatureSessionType::KIOSK},
-       {"autolaunched_kiosk", false, FeatureSessionType::REGULAR},
-       {"multiple_session_types", true, FeatureSessionType::KIOSK},
-       {"multiple_session_types", true, FeatureSessionType::REGULAR},
-       {"multiple_session_types", false, FeatureSessionType::UNKNOWN},
+      {{"kiosk_only", true, mojom::FeatureSessionType::kKiosk},
+       {"kiosk_only", true, mojom::FeatureSessionType::kAutolaunchedKiosk},
+       {"kiosk_only", false, mojom::FeatureSessionType::kRegular},
+       {"kiosk_only", false, mojom::FeatureSessionType::kUnknown},
+       {"non_kiosk", false, mojom::FeatureSessionType::kKiosk},
+       {"non_kiosk", true, mojom::FeatureSessionType::kRegular},
+       {"non_kiosk", false, mojom::FeatureSessionType::kUnknown},
+       {"autolaunched_kiosk", true,
+        mojom::FeatureSessionType::kAutolaunchedKiosk},
+       {"autolaunched_kiosk", false, mojom::FeatureSessionType::kKiosk},
+       {"autolaunched_kiosk", false, mojom::FeatureSessionType::kRegular},
+       {"multiple_session_types", true, mojom::FeatureSessionType::kKiosk},
+       {"multiple_session_types", true, mojom::FeatureSessionType::kRegular},
+       {"multiple_session_types", false, mojom::FeatureSessionType::kUnknown},
        // test6.foo is available to apps and has no session type restrictions.
-       {"test6.foo", true, FeatureSessionType::KIOSK},
-       {"test6.foo", true, FeatureSessionType::AUTOLAUNCHED_KIOSK},
-       {"test6.foo", true, FeatureSessionType::REGULAR},
-       {"test6.foo", true, FeatureSessionType::UNKNOWN}});
+       {"test6.foo", true, mojom::FeatureSessionType::kKiosk},
+       {"test6.foo", true, mojom::FeatureSessionType::kAutolaunchedKiosk},
+       {"test6.foo", true, mojom::FeatureSessionType::kRegular},
+       {"test6.foo", true, mojom::FeatureSessionType::kUnknown}});
 
   FeatureProvider api_feature_provider;
   AddUnittestAPIFeatures(&api_feature_provider);
@@ -388,7 +429,7 @@ TEST(ExtensionAPITest, SessionTypeFeature) {
       api.add_fake_schema(key);
     ExtensionAPI::OverrideSharedInstanceForTest scope(&api);
 
-    std::unique_ptr<base::AutoReset<FeatureSessionType>> current_session(
+    std::unique_ptr<base::AutoReset<mojom::FeatureSessionType>> current_session(
         ScopedCurrentFeatureSessionType(test.current_session_type));
     EXPECT_EQ(test.expect_available,
               api.IsAvailable(test.api_name, app.get(),
@@ -428,17 +469,17 @@ scoped_refptr<Extension> CreateExtensionWithPermissions(
   manifest.SetString("version", "1.0");
   manifest.SetInteger("manifest_version", 2);
   {
-    std::unique_ptr<base::ListValue> permissions_list(new base::ListValue());
+    base::Value permissions_list(base::Value::Type::LIST);
     for (auto i = permissions.begin(); i != permissions.end(); ++i) {
-      permissions_list->AppendString(*i);
+      permissions_list.Append(*i);
     }
-    manifest.Set("permissions", std::move(permissions_list));
+    manifest.SetKey("permissions", std::move(permissions_list));
   }
 
   std::string error;
-  scoped_refptr<Extension> extension(Extension::Create(
-      base::FilePath(), Manifest::UNPACKED,
-      manifest, Extension::NO_FLAGS, &error));
+  scoped_refptr<Extension> extension(
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kUnpacked,
+                        manifest, Extension::NO_FLAGS, &error));
   CHECK(extension.get());
   CHECK(error.empty());
 
@@ -513,13 +554,13 @@ scoped_refptr<Extension> CreateHostedApp() {
   base::DictionaryValue values;
   values.SetString(manifest_keys::kName, "test");
   values.SetString(manifest_keys::kVersion, "0.1");
-  values.Set(manifest_keys::kWebURLs, std::make_unique<base::ListValue>());
+  values.SetPath(manifest_keys::kWebURLs, base::Value(base::Value::Type::LIST));
   values.SetString(manifest_keys::kLaunchWebURL,
                    "http://www.example.com");
   std::string error;
-  scoped_refptr<Extension> extension(Extension::Create(
-      base::FilePath(), Manifest::INTERNAL, values, Extension::NO_FLAGS,
-      &error));
+  scoped_refptr<Extension> extension(
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                        values, Extension::NO_FLAGS, &error));
   CHECK(extension.get());
   return extension;
 }
@@ -532,25 +573,25 @@ scoped_refptr<Extension> CreatePackagedAppWithPermissions(
   values.SetString(manifest_keys::kPlatformAppBackground,
       "http://www.example.com");
 
-  auto app = std::make_unique<base::DictionaryValue>();
-  auto background = std::make_unique<base::DictionaryValue>();
-  auto scripts = std::make_unique<base::ListValue>();
-  scripts->AppendString("test.js");
-  background->Set("scripts", std::move(scripts));
-  app->Set("background", std::move(background));
-  values.Set(manifest_keys::kApp, std::move(app));
+  base::Value app(base::Value::Type::DICTIONARY);
+  base::DictionaryValue background;
+  base::ListValue scripts;
+  scripts.Append("test.js");
+  background.SetKey("scripts", std::move(scripts));
+  app.SetKey("background", std::move(background));
+  values.SetKey(manifest_keys::kApp, std::move(app));
   {
-    auto permissions_list = std::make_unique<base::ListValue>();
+    base::Value permissions_list(base::Value::Type::LIST);
     for (auto i = permissions.begin(); i != permissions.end(); ++i) {
-      permissions_list->AppendString(*i);
+      permissions_list.Append(*i);
     }
-    values.Set("permissions", std::move(permissions_list));
+    values.SetKey("permissions", std::move(permissions_list));
   }
 
   std::string error;
-  scoped_refptr<Extension> extension(Extension::Create(
-      base::FilePath(), Manifest::INTERNAL, values, Extension::NO_FLAGS,
-      &error));
+  scoped_refptr<Extension> extension(
+      Extension::Create(base::FilePath(), mojom::ManifestLocation::kInternal,
+                        values, Extension::NO_FLAGS, &error));
   CHECK(extension.get()) << error;
   return extension;
 }
@@ -801,7 +842,7 @@ TEST(ExtensionAPITest, TypesHaveNamespace) {
       const base::ListValue* list, const std::string& key,
       const std::string& value) -> const base::DictionaryValue* {
     const base::DictionaryValue* ret = nullptr;
-    for (const auto& val : *list) {
+    for (const auto& val : list->GetList()) {
       const base::DictionaryValue* dict = nullptr;
       if (!val.GetAsDictionary(&dict))
         continue;
@@ -948,6 +989,40 @@ TEST(ExtensionAPITest, ManifestKeys) {
                                  Feature::BLESSED_EXTENSION_CONTEXT, GURL(),
                                  CheckAliasStatus::NOT_ALLOWED)
                    .is_available());
+}
+
+// (TSAN) Tests that ExtensionAPI are able to handle GetSchema from different
+// threads.
+TEST(ExtensionAPITest, GetSchemaFromDifferentThreads) {
+  ExtensionAPI* shared_instance = ExtensionAPI::GetSharedInstance();
+  ASSERT_TRUE(shared_instance);
+  base::test::TaskEnvironment task_environment;
+
+  base::Thread t("test_thread");
+  ASSERT_TRUE(t.Start());
+
+  base::RunLoop run_loop;
+  const base::DictionaryValue* another_thread_schema = nullptr;
+
+  auto result_cb =
+      base::BindLambdaForTesting([&](const base::DictionaryValue* res) {
+        another_thread_schema = res;
+        run_loop.Quit();
+      });
+  auto task =
+      base::BindOnce(&ExtensionAPI::GetSchema,
+                     base::Unretained(shared_instance), "storage")
+          .Then(base::BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                                   std::move(result_cb)));
+  t.task_runner()->PostTask(FROM_HERE, std::move(task));
+
+  const auto* current_thread_schema = shared_instance->GetSchema("storage");
+  EXPECT_TRUE(current_thread_schema);
+
+  run_loop.Run();
+
+  // The pointers (not only the values) must be the same.
+  EXPECT_EQ(another_thread_schema, current_thread_schema);
 }
 
 }  // namespace extensions

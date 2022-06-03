@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 #include <string>
-#include <vector>
 
 #include "base/strings/string_piece.h"
 #include "net/http/http_util.h"

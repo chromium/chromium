@@ -1,0 +1,67 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("interstitials") {
+  public = [ "interstitial_ui.h" ]
+  sources = [
+    "interstitial_ui.mm",
+    "interstitial_ui_util.h",
+    "interstitial_ui_util.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+
+  deps = [
+    ":constants",
+    "//base",
+    "//components/resources",
+    "//components/safe_browsing/core/browser/db:v4_protocol_manager_util",
+    "//components/safe_browsing/ios/browser:allow_list",
+    "//components/security_interstitials/core",
+    "//components/security_interstitials/core:unsafe_resource",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/safe_browsing",
+    "//ios/chrome/browser/ssl",
+    "//ios/components/security_interstitials",
+    "//ios/web/public/security",
+    "//ios/web/public/webui",
+    "//net",
+    "//ui/base",
+    "//url",
+  ]
+}
+
+source_set("constants") {
+  sources = [
+    "interstitial_ui_constants.h",
+    "interstitial_ui_constants.mm",
+  ]
+
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("eg2_tests") {
+  configs += [
+    "//build/config/compiler:enable_arc",
+    "//build/config/ios:xctest_config",
+  ]
+  testonly = true
+  sources = [ "interstitial_ui_egtest.mm" ]
+  deps = [
+    ":constants",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser:chrome_url_constants",
+    "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/components/webui:url_constants",
+    "//ios/testing/earl_grey:eg_test_support+eg2",
+    "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/public/test:element_selector",
+    "//net:test_support",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}

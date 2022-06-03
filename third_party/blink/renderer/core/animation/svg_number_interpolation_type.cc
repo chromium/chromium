@@ -32,14 +32,14 @@ InterpolationValue SVGNumberInterpolationType::MaybeConvertSVGValue(
   if (svg_value.GetType() != kAnimatedNumber)
     return nullptr;
   return InterpolationValue(
-      std::make_unique<InterpolableNumber>(ToSVGNumber(svg_value).Value()));
+      std::make_unique<InterpolableNumber>(To<SVGNumber>(svg_value).Value()));
 }
 
 SVGPropertyBase* SVGNumberInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
   float value =
-      clampTo<float>(ToInterpolableNumber(interpolable_value).Value());
+      ClampTo<float>(To<InterpolableNumber>(interpolable_value).Value());
   return MakeGarbageCollected<SVGNumber>(is_non_negative_ && value < 0 ? 0
                                                                        : value);
 }

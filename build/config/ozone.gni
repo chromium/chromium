@@ -1,0 +1,152 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/toolchain/toolchain.gni")
+
+declare_args() {
+  # Indicates if Ozone is enabled. Ozone is a low-level library layer for Linux
+  # that does not require X11.
+  use_ozone =
+      is_chromeos || (is_chromecast && !is_android) || is_fuchsia || is_linux
+}
+
+declare_args() {
+  # Ozone extra platforms file path. Can be overridden to build out of
+  # tree ozone platforms.
+  ozone_extra_path = "//build/config/ozone_extra.gni"
+
+  # Select platforms automatically. Turn this off for manual control.
+  ozone_auto_platforms = use_ozone
+
+  # TODO(petermcneeley): Backwards compatiblity support for VM images.
+  # Remove when deprecated. (https://crbug.com/1122009)
+  ozone_platform_gbm = -1
+
+  # Enable explicit apitrace (https://apitrace.github.io) loading.
+  # This requires apitrace library with additional bindings.
+  # See ChromeOS package for details:
+  # https://chromium-review.googlesource.com/c/chromiumos/overlays/chromiumos-overlay/+/2659419
+  # Chrome will not start without an apitrace.so library.
+  # Trace will be saved to /tmp/gltrace.dat file by default. You can
+  # override it at run time with TRACE_FILE=<path> environment variable.
+  enable_opengl_apitrace = false
+}
+
+declare_args() {
+  # The platform that will used at runtime by default. This can be overridden
+  # with the command line flag --ozone-platform=<platform>.
+  ozone_platform = ""
+
+  # Compile the 'cast' platform.
+  ozone_platform_cast = false
+
+  # Compile the 'drm' platform.
+  ozone_platform_drm = false
+
+  # Compile the 'headless' platform.
+  ozone_platform_headless = false
+
+  # Compile the 'scenic' platform.
+  ozone_platform_scenic = false
+
+  # Compile the 'flatland' platform.
+  ozone_platform_flatland = false
+
+  # Compile the 'x11' platform.
+  ozone_platform_x11 = false
+
+  # Compile the 'wayland' platform.
+  ozone_platform_wayland = false
+
+  # Compile the 'windows' platform.
+  ozone_platform_windows = false
+
+  if (ozone_auto_platforms) {
+    # Use headless as the default platform unless modified below.
+    ozone_platform = "headless"
+    ozone_platform_headless = true
+
+    if (is_cast_audio_only) {
+      # Just use headless for audio-only Cast platforms.
+    } else if (is_chromecast && !is_fuchsia) {
+      # Enable the Cast ozone platform on all A/V Cast builds except Fuchsia.
+      ozone_platform_cast = true
+
+      # For visual desktop Chromecast builds, override the default "headless"
+      # platform with --ozone-platform=x11.
+      # TODO(halliwell): Create a libcast_graphics implementation for desktop
+      # using X11, and disable this platform.
+      if (is_cast_desktop_build && !is_cast_audio_only) {
+        ozone_platform_x11 = true
+      } else {
+        ozone_platform = "cast"
+      }
+    } else if (is_chromeos_ash) {
+      ozone_platform = "x11"
+      ozone_platform_drm = true
+      ozone_platform_x11 = true
+    } else if (is_chromeos_lacros) {
+      ozone_platform = "wayland"
+      ozone_platform_wayland = true
+    } else if (is_linux) {
+      ozone_platform = "x11"
+      ozone_platform_wayland = true
+      ozone_platform_x11 = true
+    } else if (is_win) {
+      ozone_platform = "windows"
+      ozone_platform_windows = true
+    } else if (is_fuchsia) {
+      ozone_platform = "scenic"
+      ozone_platform_scenic = true
+      ozone_platform_flatland = true
+    }
+  }
+
+  # TODO(petermcneeley): Backwards compatiblity support for VM images.
+  # Remove when deprecated. (https://crbug.com/1122009)
+  if (ozone_platform_gbm != -1) {
+    ozone_platform_drm = ozone_platform_gbm
+  }
+}
+
+declare_args() {
+  # Deprecated. Ozone/X11 is default path on Linux now. However, there are still
+  # some components like remoting, angle, webrtc (desktop capture) that relies
+  # on this gn arg and on the USE_X11 define. This will be gradually removed
+  # once all the other places are fixed.
+  # TODO(1096425): remove use_x11.
+  use_x11 =
+      ozone_platform_x11 && is_linux && !is_chromecast && !is_chromeos_lacros
+}
+
+import(ozone_extra_path)
+
+_ozone_extra_directory = get_path_info(ozone_extra_path, "dir")
+
+# Extra paths to add to targets visibility list.
+ozone_external_platform_visibility = [ "$_ozone_extra_directory/*" ]
+
+if (is_a_target_toolchain) {
+  assert(
+      use_ozone || !(ozone_platform_cast || ozone_platform_drm ||
+                         ozone_platform_flatland || ozone_platform_headless ||
+                         ozone_platform_x11 || ozone_platform_wayland ||
+                         ozone_platform_windows || ozone_platform_scenic),
+      "Must set use_ozone to select ozone platforms")
+}
+
+# TODO(petermcneeley): Backwards compatiblity support for VM images.
+# Remove when deprecated. (https://crbug.com/1122009)
+
+assert(ozone_platform_gbm == -1 || ozone_platform_drm == ozone_platform_gbm)
+
+ozone_platform_gbm = ozone_platform_drm
+
+if (ozone_platform == "gbm") {
+  ozone_platform = "drm"
+}
+
+assert(use_x11 == ozone_platform_x11 || !is_linux || is_chromecast)

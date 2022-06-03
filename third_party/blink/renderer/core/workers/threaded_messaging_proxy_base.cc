@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/workers/threaded_messaging_proxy_base.h"
 
+#include "base/feature_list.h"
 #include "base/synchronization/waitable_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -16,6 +18,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/workers/global_scope_creation_params.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 
 namespace blink {
@@ -35,10 +38,12 @@ ThreadedMessagingProxyBase::ThreadedMessagingProxyBase(
           base::WaitableEvent::ResetPolicy::MANUAL,
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       feature_handle_for_scheduler_(
-          execution_context->GetScheduler()->RegisterFeature(
-              SchedulingPolicy::Feature::kDedicatedWorkerOrWorklet,
-              {SchedulingPolicy::RecordMetricsForBackForwardCache()})),
-      keep_alive_(PERSISTENT_FROM_HERE, this) {
+          base::FeatureList::IsEnabled(
+              features::kBackForwardCacheDedicatedWorker)
+              ? FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle()
+              : execution_context->GetScheduler()->RegisterFeature(
+                    SchedulingPolicy::Feature::kDedicatedWorkerOrWorklet,
+                    {SchedulingPolicy::DisableBackForwardCache()})) {
   DCHECK(IsParentContextThread());
   g_live_messaging_proxy_count++;
 }
@@ -52,13 +57,14 @@ int ThreadedMessagingProxyBase::ProxyCount() {
   return g_live_messaging_proxy_count;
 }
 
-void ThreadedMessagingProxyBase::Trace(blink::Visitor* visitor) {
+void ThreadedMessagingProxyBase::Trace(Visitor* visitor) const {
   visitor->Trace(execution_context_);
 }
 
 void ThreadedMessagingProxyBase::InitializeWorkerThread(
     std::unique_ptr<GlobalScopeCreationParams> global_scope_creation_params,
-    const base::Optional<WorkerBackingThreadStartupData>& thread_startup_data) {
+    const absl::optional<WorkerBackingThreadStartupData>& thread_startup_data,
+    const absl::optional<const blink::DedicatedWorkerToken>& token) {
   DCHECK(IsParentContextThread());
 
   KURL script_url = global_scope_creation_params->script_url.Copy();
@@ -72,7 +78,7 @@ void ThreadedMessagingProxyBase::InitializeWorkerThread(
 
   auto devtools_params = DevToolsAgent::WorkerThreadCreated(
       execution_context_.Get(), worker_thread_.get(), script_url,
-      global_scope_creation_params->global_scope_name.IsolatedCopy());
+      global_scope_creation_params->global_scope_name.IsolatedCopy(), token);
 
   worker_thread_->Start(std::move(global_scope_creation_params),
                         thread_startup_data, std::move(devtools_params));
@@ -87,11 +93,6 @@ void ThreadedMessagingProxyBase::CountFeature(WebFeature feature) {
   UseCounter::Count(execution_context_, feature);
 }
 
-void ThreadedMessagingProxyBase::CountDeprecation(WebFeature feature) {
-  DCHECK(IsParentContextThread());
-  Deprecation::CountDeprecation(execution_context_, feature);
-}
-
 void ThreadedMessagingProxyBase::ReportConsoleMessage(
     mojom::ConsoleMessageSource source,
     mojom::ConsoleMessageLevel level,
@@ -100,7 +101,7 @@ void ThreadedMessagingProxyBase::ReportConsoleMessage(
   DCHECK(IsParentContextThread());
   if (asked_to_terminate_)
     return;
-  execution_context_->AddConsoleMessage(ConsoleMessage::CreateFromWorker(
+  execution_context_->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
       level, message, std::move(location), worker_thread_.get()));
 }
 

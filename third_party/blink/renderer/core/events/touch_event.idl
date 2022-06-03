@@ -28,7 +28,7 @@
 [
     Exposed=Window
 ] interface TouchEvent : UIEvent {
-    constructor(DOMString type, optional TouchEventInit eventInitDict);
+    constructor(DOMString type, optional TouchEventInit eventInitDict = {});
     readonly attribute TouchList touches;
     readonly attribute TouchList targetTouches;
     readonly attribute TouchList changedTouches;

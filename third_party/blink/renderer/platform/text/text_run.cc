@@ -25,13 +25,13 @@
 
 #include "third_party/blink/renderer/platform/text/text_run.h"
 
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/character.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_buffer.h"
 
 namespace blink {
 
-struct ExpectedTextRunSize {
+struct SameSizeAsTextRun {
   DISALLOW_NEW();
   const void* pointer;
   int integers[2];
@@ -40,8 +40,7 @@ struct ExpectedTextRunSize {
   TabSize tab_size;
 };
 
-static_assert(sizeof(TextRun) == sizeof(ExpectedTextRunSize),
-              "TextRun should have expected size");
+ASSERT_SIZE(TextRun, SameSizeAsTextRun);
 
 void TextRun::SetText(const String& string) {
   len_ = string.length();

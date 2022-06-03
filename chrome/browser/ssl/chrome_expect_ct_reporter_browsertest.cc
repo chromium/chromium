@@ -15,11 +15,14 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/test/browser_test.h"
 #include "net/cert/mock_cert_verifier.h"
 #include "net/http/transport_security_state.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+#include "net/test/test_data_directory.h"
 #include "services/network/public/cpp/features.h"
 
 namespace {
@@ -40,9 +43,12 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
         true);
   }
 
+  ExpectCTBrowserTest(const ExpectCTBrowserTest&) = delete;
+  ExpectCTBrowserTest& operator=(const ExpectCTBrowserTest&) = delete;
+
   ~ExpectCTBrowserTest() override {
     SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
-        base::nullopt);
+        absl::nullopt);
   }
 
   void SetUpOnMainThread() override {
@@ -118,23 +124,21 @@ class ExpectCTBrowserTest : public CertVerifierBrowserTest {
   // The report-uri value to use in the Expect-CT header for requests handled by
   // ExpectCTHeaderRequestHandler.
   GURL report_uri_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpectCTBrowserTest);
 };
 
 // Tests that an Expect-CT reporter is properly set up and used for violations
 // of Expect-CT HTTP headers.
 IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest, TestDynamicExpectCTReporting) {
   net::EmbeddedTestServer report_server;
-  report_server.RegisterRequestHandler(base::Bind(
+  report_server.RegisterRequestHandler(base::BindRepeating(
       &ExpectCTBrowserTest::ReportRequestHandler, base::Unretained(this)));
   ASSERT_TRUE(report_server.Start());
   GURL report_url = report_server.GetURL("/");
 
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   test_server.RegisterRequestHandler(
-      base::Bind(&ExpectCTBrowserTest::TestRequestHandler,
-                 base::Unretained(this), report_url));
+      base::BindRepeating(&ExpectCTBrowserTest::TestRequestHandler,
+                          base::Unretained(this), report_url));
   ASSERT_TRUE(test_server.Start());
 
   // Set up the mock cert verifier to accept |test_server|'s certificate as
@@ -143,16 +147,21 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest, TestDynamicExpectCTReporting) {
   scoped_refptr<net::X509Certificate> cert(test_server.GetCertificate());
   net::CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
-  verify_result.verified_cert = cert;
+  // TODO(https://crbug.com/848277): Until CT is unified with cert
+  // verification, the CertVerifier needs to simulate a publicly trusted
+  // certificate that was issued prior to CT being required, so that the
+  // connection is successfully made, but an Expect-CT report is triggered.
+  verify_result.verified_cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "expired_cert.pem");
   verify_result.cert_status = 0;
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
 
   // Fire off a request so that |test_server| sets a valid Expect-CT header.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
 
   // Navigate to a test server URL, which should trigger an Expect-CT report
   // because the test server doesn't serve SCTs.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
   WaitForReport();
   // WaitForReport() does not return util ReportRequestHandler runs, and the
   // handler does all the assertions, so there are no more assertions needed
@@ -164,12 +173,12 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest,
                        TestDynamicExpectCTHeaderProcessing) {
   net::EmbeddedTestServer test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   test_server.RegisterRequestHandler(
-      base::Bind(&ExpectCTBrowserTest::ExpectCTHeaderRequestHandler,
-                 base::Unretained(this)));
+      base::BindRepeating(&ExpectCTBrowserTest::ExpectCTHeaderRequestHandler,
+                          base::Unretained(this)));
   ASSERT_TRUE(test_server.Start());
 
   net::EmbeddedTestServer report_server;
-  report_server.RegisterRequestHandler(base::Bind(
+  report_server.RegisterRequestHandler(base::BindRepeating(
       &ExpectCTBrowserTest::ReportRequestHandler, base::Unretained(this)));
   ASSERT_TRUE(report_server.Start());
 
@@ -183,13 +192,18 @@ IN_PROC_BROWSER_TEST_F(ExpectCTBrowserTest,
   scoped_refptr<net::X509Certificate> cert(test_server.GetCertificate());
   net::CertVerifyResult verify_result;
   verify_result.is_issued_by_known_root = true;
-  verify_result.verified_cert = cert;
+  // TODO(https://crbug.com/848277): Until CT is unified with cert
+  // verification, the CertVerifier needs to simulate a publicly trusted
+  // certificate that was issued prior to CT being required, so that the
+  // connection is successfully made, but an Expect-CT report is triggered.
+  verify_result.verified_cert =
+      net::ImportCertFromFile(net::GetTestCertsDirectory(), "expired_cert.pem");
   verify_result.cert_status = 0;
   mock_cert_verifier()->AddResultForCert(cert, verify_result, net::OK);
 
   // Navigate to a test server URL, whose header should trigger an Expect-CT
   // report because the test server doesn't serve SCTs.
-  ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_server.GetURL("/")));
   WaitForReport();
   // WaitForReport() does not return util ReportRequestHandler runs, and the
   // handler does all the assertions, so there are no more assertions needed

@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/layout/subtree_layout_scope.h"
 
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 
@@ -40,14 +41,31 @@ SubtreeLayoutScope::SubtreeLayoutScope(LayoutObject& root) : root_(root) {
 }
 
 SubtreeLayoutScope::~SubtreeLayoutScope() {
-  CHECK(!root_.SelfNeedsLayout() ||
-        root_.LayoutBlockedByDisplayLock(DisplayLockLifecycleTarget::kSelf));
-  CHECK(!root_.NeedsLayout() || root_.LayoutBlockedByDisplayLock(
-                                    DisplayLockLifecycleTarget::kChildren));
+  CHECK(!root_.SelfNeedsLayout());
+  CHECK(!root_.NeedsLayout() || root_.ChildLayoutBlockedByDisplayLock());
 
 #if DCHECK_IS_ON()
-  for (auto* layout_object : layout_objects_to_layout_)
-    layout_object->AssertLaidOut();
+  for (const auto& layout_object : layout_objects_to_layout_) {
+    // When CSS Container Queries are enabled, style recalc and layout tree
+    // rebuild for a container during layout may detach LayoutObjects which
+    // have been marked for layout. Skip such LayoutObject to avoid that
+    // NOT_DESTROYED() triggers a DCHECK failure in AssertLaidOut() or
+    // AssertFragmentTree().
+    if (layout_object->IsDestroyed()) {
+      DCHECK(RuntimeEnabledFeatures::CSSContainerQueriesEnabled());
+      continue;
+    }
+    // There are situations where the object to layout was never laid out, such
+    // as if there was a display-locked descendant of the root and ancestor of
+    // the object which prevented layout. This can happen in quirks mode, where
+    // an ancestor can mark a descendant as dirty through its
+    // PercentHeightDescendants() list, which will not get cleared because
+    // traversal is blocked by a display lock. This finds such cases and allows
+    // these objects to be dirty.
+    if (!DisplayLockUtilities::LockedAncestorPreventingLayout(*layout_object))
+      layout_object->AssertLaidOut();
+    layout_object->AssertFragmentTree();
+  }
 #endif
 }
 

@@ -3,17 +3,18 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/ax_platform_node_unittest.h"
+
 #include "ui/accessibility/ax_constants.mojom.h"
 #include "ui/accessibility/platform/test_ax_node_wrapper.h"
 
 namespace ui {
 
-AXPlatformNodeTest::AXPlatformNodeTest() {}
+AXPlatformNodeTest::AXPlatformNodeTest() = default;
 
-AXPlatformNodeTest::~AXPlatformNodeTest() {}
+AXPlatformNodeTest::~AXPlatformNodeTest() = default;
 
 void AXPlatformNodeTest::Init(const AXTreeUpdate& initial_state) {
-  tree_ = std::make_unique<AXTree>(initial_state);
+  SetTree(std::make_unique<AXTree>(initial_state));
 }
 
 void AXPlatformNodeTest::Init(
@@ -59,35 +60,13 @@ void AXPlatformNodeTest::Init(
   Init(update);
 }
 
-AXNode* AXPlatformNodeTest::GetNodeFromTree(const ui::AXTreeID tree_id,
-                                            const int32_t node_id) const {
-  if (GetTreeID() == tree_id)
-    return tree_->GetFromId(node_id);
-
-  return nullptr;
-}
-
-AXTreeID AXPlatformNodeTest::GetTreeID() const {
-  return tree_->data().tree_id;
-}
-
-AXTreeID AXPlatformNodeTest::GetParentTreeID() const {
-  return GetTreeID();
-}
-
-ui::AXNode* AXPlatformNodeTest::GetRootAsAXNode() const {
-  return GetRootNode();
-}
-
-ui::AXNode* AXPlatformNodeTest::GetParentNodeFromParentTreeAsAXNode() const {
-  return nullptr;
-}
-
 AXTreeUpdate AXPlatformNodeTest::BuildTextField() {
   AXNodeData text_field_node;
   text_field_node.id = 1;
   text_field_node.role = ax::mojom::Role::kTextField;
   text_field_node.AddState(ax::mojom::State::kEditable);
+  text_field_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "input");
   text_field_node.SetValue("How now brown cow.");
 
   AXTreeUpdate update;
@@ -103,6 +82,8 @@ AXTreeUpdate AXPlatformNodeTest::BuildTextFieldWithSelectionRange(
   text_field_node.id = 1;
   text_field_node.role = ax::mojom::Role::kTextField;
   text_field_node.AddState(ax::mojom::State::kEditable);
+  text_field_node.AddStringAttribute(ax::mojom::StringAttribute::kHtmlTag,
+                                     "input");
   text_field_node.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
   text_field_node.AddIntAttribute(ax::mojom::IntAttribute::kTextSelStart,
                                   start);
@@ -119,9 +100,10 @@ AXTreeUpdate AXPlatformNodeTest::BuildContentEditable() {
   AXNodeData content_editable_node;
   content_editable_node.id = 1;
   content_editable_node.role = ax::mojom::Role::kGroup;
+  content_editable_node.AddState(ax::mojom::State::kEditable);
   content_editable_node.AddState(ax::mojom::State::kRichlyEditable);
   content_editable_node.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kEditableRoot, true);
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
   content_editable_node.SetValue("How now brown cow.");
 
   AXTreeUpdate update;
@@ -136,11 +118,12 @@ AXTreeUpdate AXPlatformNodeTest::BuildContentEditableWithSelectionRange(
   AXNodeData content_editable_node;
   content_editable_node.id = 1;
   content_editable_node.role = ax::mojom::Role::kGroup;
+  content_editable_node.AddState(ax::mojom::State::kEditable);
   content_editable_node.AddState(ax::mojom::State::kRichlyEditable);
   content_editable_node.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected,
                                          true);
   content_editable_node.AddBoolAttribute(
-      ax::mojom::BoolAttribute::kEditableRoot, true);
+      ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot, true);
   content_editable_node.SetValue("How now brown cow.");
 
   AXTreeUpdate update;
@@ -379,34 +362,34 @@ AXTreeUpdate AXPlatformNodeTest::BuildListBox(
     bool option_1_is_selected,
     bool option_2_is_selected,
     bool option_3_is_selected,
-    ax::mojom::State additional_state /* ax::mojom::State::kNone */) {
+    const std::vector<ax::mojom::State>& additional_state) {
   AXNodeData listbox;
   listbox.id = 1;
-  listbox.SetName("ListBox");
   listbox.role = ax::mojom::Role::kListBox;
-  if (additional_state != ax::mojom::State::kNone)
-    listbox.AddState(additional_state);
+  listbox.SetName("ListBox");
+  for (auto state : additional_state)
+    listbox.AddState(state);
 
   AXNodeData option_1;
   option_1.id = 2;
-  option_1.SetName("Option1");
   option_1.role = ax::mojom::Role::kListBoxOption;
+  option_1.SetName("Option1");
   if (option_1_is_selected)
     option_1.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
   listbox.child_ids.push_back(option_1.id);
 
   AXNodeData option_2;
   option_2.id = 3;
-  option_2.SetName("Option2");
   option_2.role = ax::mojom::Role::kListBoxOption;
+  option_2.SetName("Option2");
   if (option_2_is_selected)
     option_2.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
   listbox.child_ids.push_back(option_2.id);
 
   AXNodeData option_3;
   option_3.id = 4;
-  option_3.SetName("Option3");
   option_3.role = ax::mojom::Role::kListBoxOption;
+  option_3.SetName("Option3");
   if (option_3_is_selected)
     option_3.AddBoolAttribute(ax::mojom::BoolAttribute::kSelected, true);
   listbox.child_ids.push_back(option_3.id);

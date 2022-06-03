@@ -4,10 +4,11 @@
 
 #include "chrome/browser/media/webrtc/desktop_media_list_ash.h"
 
+#include <memory>
+
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
@@ -23,18 +24,21 @@ using testing::DoDefault;
 
 class MockDesktopMediaListObserver : public DesktopMediaListObserver {
  public:
-  MOCK_METHOD2(OnSourceAdded, void(DesktopMediaList* list, int index));
-  MOCK_METHOD2(OnSourceRemoved, void(DesktopMediaList* list, int index));
-  MOCK_METHOD3(OnSourceMoved,
-               void(DesktopMediaList* list, int old_index, int new_index));
-  MOCK_METHOD2(OnSourceNameChanged, void(DesktopMediaList* list, int index));
-  MOCK_METHOD2(OnSourceThumbnailChanged,
-               void(DesktopMediaList* list, int index));
+  MOCK_METHOD1(OnSourceAdded, void(int index));
+  MOCK_METHOD1(OnSourceRemoved, void(int index));
+  MOCK_METHOD2(OnSourceMoved, void(int old_index, int new_index));
+  MOCK_METHOD1(OnSourceNameChanged, void(int index));
+  MOCK_METHOD1(OnSourceThumbnailChanged, void(int index));
+  MOCK_METHOD1(OnSourcePreviewChanged, void(size_t index));
 };
 
 class DesktopMediaListAshTest : public ChromeAshTestBase {
  public:
   DesktopMediaListAshTest() {}
+
+  DesktopMediaListAshTest(const DesktopMediaListAshTest&) = delete;
+  DesktopMediaListAshTest& operator=(const DesktopMediaListAshTest&) = delete;
+
   ~DesktopMediaListAshTest() override {}
 
   void TearDown() override {
@@ -43,18 +47,17 @@ class DesktopMediaListAshTest : public ChromeAshTestBase {
     ChromeAshTestBase::TearDown();
   }
 
-  void CreateList(content::DesktopMediaID::Type type) {
-    list_.reset(new DesktopMediaListAsh(type));
+  void CreateList(DesktopMediaList::Type type) {
+    list_ = std::make_unique<DesktopMediaListAsh>(type);
     list_->SetThumbnailSize(gfx::Size(kThumbnailSize, kThumbnailSize));
 
     // Set update period to reduce the time it takes to run tests.
-    list_->SetUpdatePeriod(base::TimeDelta::FromMilliseconds(1));
+    list_->SetUpdatePeriod(base::Milliseconds(1));
   }
 
  protected:
   MockDesktopMediaListObserver observer_;
   std::unique_ptr<DesktopMediaListAsh> list_;
-  DISALLOW_COPY_AND_ASSIGN(DesktopMediaListAshTest);
 };
 
 ACTION(QuitMessageLoop) {
@@ -63,12 +66,12 @@ ACTION(QuitMessageLoop) {
 }
 
 TEST_F(DesktopMediaListAshTest, ScreenOnly) {
-  CreateList(content::DesktopMediaID::TYPE_SCREEN);
+  CreateList(DesktopMediaList::Type::kScreen);
 
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
 
-  EXPECT_CALL(observer_, OnSourceAdded(list_.get(), 0));
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceAdded(0));
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
       .WillOnce(QuitMessageLoop())
       .WillRepeatedly(DoDefault());
 
@@ -77,16 +80,15 @@ TEST_F(DesktopMediaListAshTest, ScreenOnly) {
 }
 
 TEST_F(DesktopMediaListAshTest, WindowOnly) {
-  CreateList(content::DesktopMediaID::TYPE_WINDOW);
+  CreateList(DesktopMediaList::Type::kWindow);
 
   std::unique_ptr<aura::Window> window(CreateTestWindowInShellWithId(0));
 
-  EXPECT_CALL(observer_, OnSourceAdded(list_.get(), 0));
-  EXPECT_CALL(observer_, OnSourceThumbnailChanged(list_.get(), 0))
+  EXPECT_CALL(observer_, OnSourceAdded(0));
+  EXPECT_CALL(observer_, OnSourceThumbnailChanged(0))
       .WillOnce(QuitMessageLoop())
       .WillRepeatedly(DoDefault());
-  EXPECT_CALL(observer_, OnSourceRemoved(list_.get(), 0))
-      .WillOnce(QuitMessageLoop());
+  EXPECT_CALL(observer_, OnSourceRemoved(0)).WillOnce(QuitMessageLoop());
 
   list_->StartUpdating(&observer_);
   base::RunLoop().Run();

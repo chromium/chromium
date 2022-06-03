@@ -4,7 +4,7 @@
 
 #import "ios/web/public/session/serializable_user_data_manager.h"
 
-#import "ios/web/public/test/fakes/test_web_state.h"
+#import "ios/web/public/test/fakes/fake_web_state.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 
@@ -25,7 +25,7 @@ class SerializableUserDataManagerTest : public PlatformTest {
     return web::SerializableUserDataManager::FromWebState(&web_state_);
   }
 
-  web::TestWebState web_state_;
+  web::FakeWebState web_state_;
 };
 
 // Tests that serializable data can be successfully added and read.
@@ -58,7 +58,7 @@ TEST_F(SerializableUserDataManagerTest, EncodeDecode) {
   decoded_data->Decode(unarchiver);
 
   // Add the decoded user data to a new WebState and verify its contents.
-  web::TestWebState decoded_web_state;
+  web::FakeWebState decoded_web_state;
   web::SerializableUserDataManager* decoded_manager =
       web::SerializableUserDataManager::FromWebState(&decoded_web_state);
   decoded_manager->AddSerializableUserData(decoded_data.get());
@@ -84,7 +84,7 @@ TEST_F(SerializableUserDataManagerTest, DecodeNoData) {
   unarchiver.requiresSecureCoding = NO;
   user_data->Decode(unarchiver);
 
-  web::TestWebState web_state;
+  web::FakeWebState web_state;
   web::SerializableUserDataManager* user_data_manager =
       web::SerializableUserDataManager::FromWebState(&web_state);
   user_data_manager->AddSerializableUserData(user_data.get());

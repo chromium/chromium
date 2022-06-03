@@ -6,9 +6,7 @@
 
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
-#include "chrome/common/chrome_switches.h"
 #include "content/public/browser/browser_url_handler.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -19,7 +17,6 @@
 #include "extensions/browser/extension_registry.h"
 #endif
 
-using content::RenderFrameHost;
 using content::RenderViewHost;
 using content::SiteInstance;
 using content::WebContents;
@@ -35,24 +32,14 @@ content::WebContents* GetWebContentsByID(int render_process_id,
   return WebContents::FromRenderViewHost(render_view_host);
 }
 
-content::WebContents* GetWebContentsByFrameID(int render_process_id,
-                                              int render_frame_id) {
-  RenderFrameHost* render_frame_host =
-      RenderFrameHost::FromID(render_process_id, render_frame_id);
-  if (!render_frame_host)
-    return NULL;
-  return WebContents::FromRenderFrameHost(render_frame_host);
-}
-
 scoped_refptr<SiteInstance> GetSiteInstanceForNewTab(Profile* profile,
                                                      GURL url) {
   // Rewrite the |url| if necessary, to ensure that the SiteInstance is
   // associated with a |url| that will actually be loaded.  For example,
   // |url| set to chrome://newtab/ might actually result in a navigation to a
-  // different URL like chrome-search://local-ntp/local-ntp.html
-  bool reverse_on_redirect;
-  content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(
-      &url, profile, &reverse_on_redirect);
+  // different URL like chrome://new-tab-page.
+  content::BrowserURLHandler::GetInstance()->RewriteURLIfNecessary(&url,
+                                                                   profile);
 
   // If |url| is a WebUI or extension, we set the SiteInstance up front so that
   // we don't end up with an extra process swap on the first navigation.

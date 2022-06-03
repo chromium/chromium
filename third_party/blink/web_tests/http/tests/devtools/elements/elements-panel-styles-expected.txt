@@ -13,7 +13,6 @@ color: rgb(0, 0, 255);
     OVERLOADED black - .foo elements-panel-styles.css:21 -> elements-panel-styles.css:21:7
     OVERLOADED red - #container elements-panel-styles.css:10 -> elements-panel-styles.css:10:13
     OVERLOADED magenta !important - html elements-panel-styles.css:67 -> elements-panel-styles.css:67:7
-    OVERLOADED -internal-root-color - html user agent stylesheet
 content: "[before Foo]";
     "[before Foo]" - .foo, .foo::before elements-panel-styles.css:35 -> elements-panel-styles.css:35:21
 display: block;
@@ -34,7 +33,7 @@ font-weight: 400;
 margin-bottom: 2px;
     2px - .foo elements-panel-styles.css:21 -> elements-panel-styles.css:21:7
 margin-left: 0px;
-    1px - .foo elements-panel-styles.css:21 -> elements-panel-styles.css:21:7
+    0px - .foo elements-panel-styles.css:21 -> elements-panel-styles.css:21:7
 margin-right: 0px;
     0px - .foo elements-panel-styles.css:21 -> elements-panel-styles.css:21:7
 margin-top: 10px;
@@ -81,12 +80,12 @@ body .foo { (elements-pa…tyles.css:6 -> elements-panel-styles.css:6:12)
 .foo { (elements-pa…yles.css:21 -> elements-panel-styles.css:21:7)
 /-- overloaded --/     display: list-item;
 /-- overloaded --/     color: black;
-    margin-left: 1px;
+/-- overloaded --/     margin-left: 1px;
     margin: 10px 0 2px;
         margin-top: 10px;
         margin-right: 0px;
         margin-bottom: 2px;
-        margin-left: 1px;
+        margin-left: 0px;
     border-radius: 5px;
         border-top-left-radius: 5px;
         border-top-right-radius: 5px;
@@ -97,7 +96,7 @@ body .foo { (elements-pa…tyles.css:6 -> elements-panel-styles.css:6:12)
 /-- overloaded --/     font-weight: bold;
     padding: 4px;
         padding-top: 4px;
-        padding-right: 1px;
+    /-- overloaded --/     padding-right: 1px;
         padding-bottom: 4px;
         padding-left: 4px;
     padding-right: 1px;
@@ -128,10 +127,6 @@ body { (elements-pa…tyles.css:1 -> elements-panel-styles.css:1:7)
 [expanded] 
 html { (elements-pa…yles.css:67 -> elements-panel-styles.css:67:7)
 /-- overloaded --/     color: magenta !important;
-
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
 
 ======== Pseudo ::before element ========
 [expanded] 

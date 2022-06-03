@@ -6,39 +6,41 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/content_settings/tab_specific_content_settings.h"
 #include "chrome/browser/engagement/important_sites_util.h"
-#include "chrome/browser/permissions/permission_request_id.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
+#include "components/permissions/permission_request_id.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/common/origin_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 #include "url/gurl.h"
 
 using bookmarks::BookmarkModel;
 
 DurableStoragePermissionContext::DurableStoragePermissionContext(
-    Profile* profile)
-    : PermissionContextBase(profile,
+    content::BrowserContext* browser_context)
+    : PermissionContextBase(browser_context,
                             ContentSettingsType::DURABLE_STORAGE,
-                            blink::mojom::FeaturePolicyFeature::kNotFound) {}
+                            blink::mojom::PermissionsPolicyFeature::kNotFound) {
+}
 
 void DurableStoragePermissionContext::DecidePermission(
     content::WebContents* web_contents,
-    const PermissionRequestID& id,
+    const permissions::PermissionRequestID& id,
     const GURL& requesting_origin,
     const GURL& embedding_origin,
     bool user_gesture,
-    BrowserPermissionCallback callback) {
+    permissions::BrowserPermissionCallback callback) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   DCHECK_NE(CONTENT_SETTING_ALLOW,
             GetPermissionStatus(nullptr /* render_frame_host */,
@@ -53,29 +55,25 @@ void DurableStoragePermissionContext::DecidePermission(
   // origin is the last committed navigation origin to the web contents.
   if (requesting_origin != embedding_origin) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                        std::move(callback), false /* persist */,
-                        CONTENT_SETTING_DEFAULT);
+                        std::move(callback), /*persist=*/false,
+                        CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
     return;
   }
 
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
-      CookieSettingsFactory::GetForProfile(profile());
+      CookieSettingsFactory::GetForProfile(
+          Profile::FromBrowserContext(browser_context()));
 
   // Don't grant durable for session-only storage, since it won't be persisted
   // anyway. Don't grant durable if we can't write cookies.
   if (cookie_settings->IsCookieSessionOnly(requesting_origin) ||
-      !cookie_settings->IsCookieAccessAllowed(requesting_origin,
-                                              requesting_origin)) {
+      !cookie_settings->IsFullCookieAccessAllowed(requesting_origin,
+                                                  requesting_origin)) {
     NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                        std::move(callback), false /* persist */,
-                        CONTENT_SETTING_DEFAULT);
+                        std::move(callback), /*persist=*/false,
+                        CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
     return;
   }
-
-  const size_t kMaxImportantResults = 10;
-  std::vector<ImportantSitesUtil::ImportantDomainInfo> important_sites =
-      ImportantSitesUtil::GetImportantRegisterableDomains(profile(),
-                                                          kMaxImportantResults);
 
   std::string registerable_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
@@ -84,33 +82,53 @@ void DurableStoragePermissionContext::DecidePermission(
   if (registerable_domain.empty() && requesting_origin.HostIsIPAddress())
     registerable_domain = requesting_origin.host();
 
+  std::set<std::string> installed_registerable_domains =
+      site_engagement::ImportantSitesUtil::GetInstalledRegisterableDomains(
+          Profile::FromBrowserContext(browser_context()));
+  if (base::Contains(installed_registerable_domains, registerable_domain)) {
+    NotifyPermissionSet(id, requesting_origin, embedding_origin,
+                        std::move(callback), /*persist=*/true,
+                        CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
+    return;
+  }
+
+  const size_t kMaxImportantResults = 10;
+  std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>
+      important_sites =
+          site_engagement::ImportantSitesUtil::GetImportantRegisterableDomains(
+              Profile::FromBrowserContext(browser_context()),
+              kMaxImportantResults);
+
   for (const auto& important_site : important_sites) {
     if (important_site.registerable_domain == registerable_domain) {
       NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                          std::move(callback), true /* persist */,
-                          CONTENT_SETTING_ALLOW);
+                          std::move(callback), /*persist=*/true,
+                          CONTENT_SETTING_ALLOW, /*is_one_time=*/false);
       return;
     }
   }
 
   NotifyPermissionSet(id, requesting_origin, embedding_origin,
-                      std::move(callback), false /* persist */,
-                      CONTENT_SETTING_DEFAULT);
+                      std::move(callback), /*persist=*/false,
+                      CONTENT_SETTING_DEFAULT, /*is_one_time=*/false);
 }
 
 void DurableStoragePermissionContext::UpdateContentSetting(
     const GURL& requesting_origin,
     const GURL& embedding_origin_ignored,
-    ContentSetting content_setting) {
-  DCHECK_EQ(requesting_origin, requesting_origin.GetOrigin());
-  DCHECK_EQ(embedding_origin_ignored, embedding_origin_ignored.GetOrigin());
+    ContentSetting content_setting,
+    bool is_one_time) {
+  DCHECK(!is_one_time);
+  DCHECK_EQ(requesting_origin, requesting_origin.DeprecatedGetOriginAsURL());
+  DCHECK_EQ(embedding_origin_ignored,
+            embedding_origin_ignored.DeprecatedGetOriginAsURL());
   DCHECK(content_setting == CONTENT_SETTING_ALLOW ||
          content_setting == CONTENT_SETTING_BLOCK);
 
-  HostContentSettingsMapFactory::GetForProfile(profile())
+  HostContentSettingsMapFactory::GetForProfile(browser_context())
       ->SetContentSettingDefaultScope(requesting_origin, GURL(),
                                       ContentSettingsType::DURABLE_STORAGE,
-                                      std::string(), content_setting);
+                                      content_setting);
 }
 
 bool DurableStoragePermissionContext::IsRestrictedToSecureOrigins() const {

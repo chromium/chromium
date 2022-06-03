@@ -9,7 +9,7 @@
 #include <stdint.h>
 
 #include <limits>
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace gpu {
 

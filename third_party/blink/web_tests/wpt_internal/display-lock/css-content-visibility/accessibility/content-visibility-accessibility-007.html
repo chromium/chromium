@@ -1,0 +1,51 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: accessibility with forced layout</title>
+<link rel="author" title="Vladimir Levin" href="mailto:vmpstr@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<meta name="assert" content="content-visibility auto subtrees are exposed not exposed by layout-inducing functions">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+
+<div style="height:10000px;">
+  spacer so that everything below will be offscreen (and won't get viewport-activated)
+</div>
+<div id="hidden" style="content-visibility: auto">
+  foo
+  <div id="child" tabindex="0">
+    bar
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test((t) => {
+  let axHidden = axElementById("hidden");
+  // #hidden is locked, and thus is saved as an AXNodeObject instead of an AXLayoutObject,
+  // and has 3 child nodes: "foo" text, "<newline>" text, and #child node.
+  // Note that we have the separate <newline> text because it's an AXNodeObject and does
+  // not do whitespace collapsing (though this might change in the future).
+  t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count when locked"); });
+
+  // getBoundingClientRect forces layout to ensure we can get correct values.
+  // This, however, should not be exposing new information to accessibility.
+  // content-visibility: hidden means that the contents of the element are not
+  // exposed in any way, but respond to script layout information requests. See
+  // https://github.com/WICG/display-locking for more information.
+  child.getBoundingClientRect();
+  // Wait a few frames.
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      axHidden = axElementById("hidden");
+      // #hidden should still be locked with the same 3 child nodes.
+      t.step(() => { assert_equals(axHidden.childrenCount, 3, "Children count after layout"); });
+      t.done();
+    });
+  });
+}, "Accessiblility with forced layout does not recreate subtree");
+</script>

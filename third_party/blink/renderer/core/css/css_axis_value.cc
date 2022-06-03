@@ -70,7 +70,7 @@ String CSSAxisValue::CustomCSSText() const {
   } else {
     result.Append(CSSValueList::CustomCSSText());
   }
-  return result.ToString();
+  return result.ReleaseString();
 }
 
 double CSSAxisValue::X() const {

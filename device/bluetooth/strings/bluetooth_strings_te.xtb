@@ -16,6 +16,7 @@
 <translation id="4986357476502426173"><ph name="DEVICE_NAME" />, వీడియో పరికరం</translation>
 <translation id="5271696982761495740">టాబ్లెట్ (<ph name="ADDRESS" />)</translation>
 <translation id="5376363957846771741">తెలియని లేదా మద్దతు లేని పరికరం (<ph name="ADDRESS" />)</translation>
+<translation id="571460437990229974"><ph name="DEVICE_NAME_AND_TYPE" /> <ph name="CONNECTION_STATUS" /></translation>
 <translation id="5716052956047449618"><ph name="DEVICE_NAME" />, మోడెమ్</translation>
 <translation id="6459740836740815150"><ph name="DEVICE_NAME" />, కారు ఆడియో పరికరం</translation>
 <translation id="6542922424766292144"><ph name="DEVICE_NAME" />, కీబోర్డ్</translation>

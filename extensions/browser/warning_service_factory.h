@@ -15,6 +15,9 @@ class WarningService;
 
 class WarningServiceFactory : public BrowserContextKeyedServiceFactory {
  public:
+  WarningServiceFactory(const WarningServiceFactory&) = delete;
+  WarningServiceFactory& operator=(const WarningServiceFactory&) = delete;
+
   static WarningService* GetForBrowserContext(content::BrowserContext* context);
   static WarningServiceFactory* GetInstance();
 
@@ -29,8 +32,6 @@ class WarningServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WarningServiceFactory);
 };
 
 }  // namespace extensions

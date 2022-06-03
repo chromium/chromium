@@ -42,5 +42,5 @@ interface EngineFileRequests {
   // FILE_FLAG_SEQUENTIAL_SCAN, FILE_FLAG_RANDOM_ACCESS, and
   // FILE_FLAG_OPEN_REPARSE_POINT.
   SandboxOpenReadOnlyFile(FilePath file_name, uint32 dwFlagsAndAttributes) =>
-    (handle result);
+    (handle<platform> result);
 };

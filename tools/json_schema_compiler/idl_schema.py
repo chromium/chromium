@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -106,7 +106,7 @@ class Callspec(object):
   '''
   Given a Callspec node representing an IDL function declaration, converts into
   a tuple:
-      (name, list of function parameters, return type)
+      (name, list of function parameters, return type, async return)
   '''
   def __init__(self, callspec_node, comment):
     self.node = callspec_node
@@ -115,6 +115,7 @@ class Callspec(object):
   def process(self, callbacks):
     parameters = []
     return_type = None
+    returns_async = None
     if self.node.GetProperty('TYPEREF') not in ('void', None):
       return_type = Typeref(self.node.GetProperty('TYPEREF'),
                             self.node.parent,
@@ -129,7 +130,21 @@ class Callspec(object):
       if parameter['name'] in self.comment:
         parameter['description'] = self.comment[parameter['name']]
       parameters.append(parameter)
-    return (self.node.GetName(), parameters, return_type)
+    # For promise supporting functions, pull off the callback from the final
+    # parameter and put it into the separate returns async field.
+    if self.node.GetProperty('supportsPromises'):
+      assert len(parameters) > 0, (
+          'Callspec "%s" is marked as supportsPromises '
+          'but has no existing callback defined.' % self.node.GetName())
+      returns_async = parameters.pop()
+      assert returns_async.get('type') == 'function', (
+          'Callspec "%s" is marked as supportsPromises '
+          'but the final parameter is not a function.' % self.node.GetName())
+      # The returns_async field is inherently a function, so doesn't need type
+      # specified on it.
+      returns_async.pop('type')
+
+    return (self.node.GetName(), parameters, return_type, returns_async)
 
 
 class Param(object):
@@ -163,8 +178,6 @@ class Dictionary(object):
     result = {'id': self.node.GetName(),
               'properties': properties,
               'type': 'object'}
-    if self.node.GetProperty('nodefine'):
-      result['nodefine'] = True
     if self.node.GetProperty('nodoc'):
       result['nodoc'] = True
     elif self.node.GetProperty('inline_doc'):
@@ -191,12 +204,16 @@ class Member(object):
       properties['deprecated'] = self.node.GetProperty('deprecated')
 
     for property_name in ['allowAmbiguousOptionalArguments',
-                          'nodoc', 'nocompile', 'nodart', 'nodefine']:
+                          'nodoc', 'nocompile', 'nodart',
+                          'serializableFunction']:
       if self.node.GetProperty(property_name):
         properties[property_name] = True
 
     if self.node.GetProperty('OPTIONAL'):
       properties['optional'] = True
+
+    if self.node.GetProperty('platforms'):
+      properties['platforms'] = list(self.node.GetProperty('platforms'))
 
     for option_name, sanitizer in [
         ('maxListeners', int),
@@ -217,8 +234,8 @@ class Member(object):
         properties['description'] = parent_comment
         properties['jsexterns'] = jsexterns
       elif node.cls == 'Callspec':
-        name, parameters, return_type = (Callspec(node, parameter_comments)
-                                         .process(callbacks))
+        name, parameters, return_type, returns_async = (
+            Callspec(node, parameter_comments).process(callbacks))
         if functions_are_properties:
           # If functions are treated as properties (which will happen if the
           # interface is named Properties) then this isn't a function, it's a
@@ -240,6 +257,12 @@ class Member(object):
           properties['parameters'] = parameters
           if return_type is not None:
             properties['returns'] = return_type
+          if returns_async is not None:
+            assert return_type is None, (
+                'Function "%s" cannot support promises and also have a '
+                'return value.' % name)
+            properties['returns_async'] = returns_async
+
     properties['name'] = name
     if type_override is not None:
       properties['type'] = type_override
@@ -385,8 +408,8 @@ class Enum(object):
               'description': self.description,
               'type': 'string',
               'enum': enum}
-    for property_name in ('cpp_enum_prefix_override', 'inline_doc',
-                          'noinline_doc', 'nodefine', 'nodoc',):
+    for property_name in ['cpp_enum_prefix_override', 'inline_doc',
+                          'noinline_doc', 'nodoc']:
       if self.node.GetProperty(property_name):
         result[property_name] = self.node.GetProperty(property_name)
     if self.node.GetProperty('deprecated'):
@@ -417,6 +440,7 @@ class Namespace(object):
     self.events = []
     self.functions = []
     self.properties = OrderedDict()
+    self.manifest_keys = None
     self.types = []
     self.callbacks = OrderedDict()
     self.description = description
@@ -425,7 +449,10 @@ class Namespace(object):
 
   def process(self):
     for node in self.namespace.GetChildren():
-      if node.cls == 'Dictionary':
+      if node.cls == 'Dictionary' and node.GetName() == 'ManifestKeys':
+        self.manifest_keys = Dictionary(node).process(
+            self.callbacks)['properties']
+      elif node.cls == 'Dictionary':
         self.types.append(Dictionary(node).process(self.callbacks))
       elif node.cls == 'Callback':
         k, v = Member(node).process(self.callbacks)
@@ -450,18 +477,21 @@ class Namespace(object):
         sys.exit('Did not process %s %s' % (node.cls, node))
     compiler_options = self.compiler_options or {}
     documentation_options = self.documentation_options or {}
-    return {'namespace': self.namespace.GetName(),
-            'description': self.description,
-            'nodoc': self.nodoc,
-            'types': self.types,
-            'functions': self.functions,
-            'properties': self.properties,
-            'internal': self.internal,
-            'events': self.events,
-            'platforms': self.platforms,
-            'compiler_options': compiler_options,
-            'deprecated': self.deprecated,
-            'documentation_options': documentation_options}
+    return {
+      'namespace': self.namespace.GetName(),
+      'description': self.description,
+      'nodoc': self.nodoc,
+      'types': self.types,
+      'functions': self.functions,
+      'properties': self.properties,
+      'manifest_keys': self.manifest_keys,
+      'internal': self.internal,
+      'events': self.events,
+      'platforms': self.platforms,
+      'compiler_options': compiler_options,
+      'deprecated': self.deprecated,
+      'documentation_options': documentation_options
+    }
 
   def process_interface(self, node, functions_are_properties=False):
     members = []
@@ -522,8 +552,6 @@ class IDLSchema(object):
           platforms = list(node.value)
         elif node.name == 'implemented_in':
           compiler_options['implemented_in'] = node.value
-        elif node.name == 'camel_case_enum_to_string':
-          compiler_options['camel_case_enum_to_string'] = node.value
         elif node.name == 'generate_error_messages':
           compiler_options['generate_error_messages'] = True
         elif node.name == 'deprecated':
@@ -547,9 +575,8 @@ def Load(filename):
   Python dictionary in a format that the JSON schema compiler expects to see.
   '''
 
-  f = open(filename, 'r')
-  contents = f.read()
-  f.close()
+  with open(filename, 'rb') as handle:
+    contents = handle.read().decode('utf-8')
 
   return Process(contents, filename)
 

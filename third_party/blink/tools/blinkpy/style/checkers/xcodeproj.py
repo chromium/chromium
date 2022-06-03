@@ -20,21 +20,20 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Checks Xcode project files."""
 
 import re
 
 
 class XcodeProjectFileChecker(object):
-
     """Processes Xcode project file lines for checking style."""
 
     def __init__(self, file_path, handle_style_error):
         self.file_path = file_path
         self.handle_style_error = handle_style_error
         self.handle_style_error.turn_off_line_filtering()
-        self._development_region_regex = re.compile('developmentRegion = (?P<region>.+);')
+        self._development_region_regex = re.compile(
+            'developmentRegion = (?P<region>.+);')
 
     def _check_development_region(self, line_index, line):
         """Returns True when developmentRegion is detected."""
@@ -42,8 +41,7 @@ class XcodeProjectFileChecker(object):
         if not matched:
             return False
         if matched.group('region') != 'English':
-            self.handle_style_error(line_index,
-                                    'xcodeproj/settings', 5,
+            self.handle_style_error(line_index, 'xcodeproj/settings', 5,
                                     'developmentRegion is not English.')
         return True
 
@@ -54,6 +52,6 @@ class XcodeProjectFileChecker(object):
                 development_region_is_detected = True
 
         if not development_region_is_detected:
-            self.handle_style_error(len(lines),
-                                    'xcodeproj/settings', 5,
-                                    'Missing "developmentRegion = English".')
+            self.handle_style_error(
+                len(lines), 'xcodeproj/settings', 5,
+                'Missing "developmentRegion = English".')

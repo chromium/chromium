@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_TETHER_KEEP_ALIVE_OPERATION_H_
 #define CHROMEOS_COMPONENTS_TETHER_KEEP_ALIVE_OPERATION_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/observer_list.h"
 #include "base/time/clock.h"
 #include "chromeos/components/tether/message_transfer_operation.h"
@@ -27,18 +28,19 @@ class KeepAliveOperation : public MessageTransferOperation {
  public:
   class Factory {
    public:
-    static std::unique_ptr<KeepAliveOperation> NewInstance(
+    static std::unique_ptr<KeepAliveOperation> Create(
         multidevice::RemoteDeviceRef device_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client);
 
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
-    virtual std::unique_ptr<KeepAliveOperation> BuildInstance(
+    virtual ~Factory();
+    virtual std::unique_ptr<KeepAliveOperation> CreateInstance(
         multidevice::RemoteDeviceRef device_to_connect,
         device_sync::DeviceSyncClient* device_sync_client,
-        secure_channel::SecureChannelClient* secure_channel_client);
+        secure_channel::SecureChannelClient* secure_channel_client) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -52,6 +54,9 @@ class KeepAliveOperation : public MessageTransferOperation {
         multidevice::RemoteDeviceRef remote_device,
         std::unique_ptr<DeviceStatus> device_status) = 0;
   };
+
+  KeepAliveOperation(const KeepAliveOperation&) = delete;
+  KeepAliveOperation& operator=(const KeepAliveOperation&) = delete;
 
   ~KeepAliveOperation() override;
 
@@ -88,8 +93,6 @@ class KeepAliveOperation : public MessageTransferOperation {
   base::ObserverList<Observer>::Unchecked observer_list_;
 
   base::Time keep_alive_tickle_request_start_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveOperation);
 };
 
 }  // namespace tether

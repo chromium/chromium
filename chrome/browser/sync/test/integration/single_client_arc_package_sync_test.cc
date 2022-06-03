@@ -2,17 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/constants/ash_features.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sync/test/integration/os_sync_test.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sync_arc_package_helper.h"
+#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "chrome/browser/ui/app_list/arc/arc_package_syncable_service.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service.h"
+#include "components/sync/protocol/arc_package_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/test/fake_server/fake_server.h"
+#include "content/public/test/browser_test.h"
 
 namespace arc {
 
@@ -26,11 +29,12 @@ bool AllProfilesHaveSameArcPackageDetails() {
 class SingleClientArcPackageSyncTest : public SyncTest {
  public:
   SingleClientArcPackageSyncTest() : SyncTest(SINGLE_CLIENT) {}
+  ~SingleClientArcPackageSyncTest() override = default;
 
-  ~SingleClientArcPackageSyncTest() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientArcPackageSyncTest);
+  bool UseVerifier() override {
+    // TODO(crbug.com/1137774): rewrite tests to not use verifier.
+    return true;
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, ArcPackageEmpty) {
@@ -87,24 +91,25 @@ IN_PROC_BROWSER_TEST_F(SingleClientArcPackageSyncTest, DisableAndReenable) {
   ASSERT_TRUE(AllProfilesHaveSameArcPackageDetails());
 }
 
-class SingleClientArcPackageOsSyncTest : public OsSyncTest {
+class SingleClientArcPackageOsSyncTest : public SyncConsentOptionalSyncTest {
  public:
-  SingleClientArcPackageOsSyncTest() : OsSyncTest(SINGLE_CLIENT) {}
+  SingleClientArcPackageOsSyncTest()
+      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
   ~SingleClientArcPackageOsSyncTest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientArcPackageOsSyncTest,
                        DisablingOsSyncFeatureDisablesDataType) {
-  ASSERT_TRUE(chromeos::features::IsSplitSettingsSyncEnabled());
+  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
   ASSERT_TRUE(SetupSync());
   syncer::SyncService* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
 
-  EXPECT_TRUE(settings->GetOsSyncFeatureEnabled());
+  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::ARC_PACKAGE));
 
   settings->SetOsSyncFeatureEnabled(false);
-  EXPECT_FALSE(settings->GetOsSyncFeatureEnabled());
+  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::ARC_PACKAGE));
 }
 

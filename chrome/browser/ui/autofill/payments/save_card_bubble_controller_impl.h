@@ -7,19 +7,17 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "chrome/browser/ui/autofill/autofill_bubble_controller_base.h"
 #include "chrome/browser/ui/autofill/payments/save_card_bubble_controller.h"
 #include "chrome/browser/ui/autofill/payments/save_card_ui.h"
+#include "chrome/browser/ui/autofill/payments/save_payment_icon_controller.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/legal_message_line.h"
 #include "components/autofill/core/browser/sync_utils.h"
 #include "components/security_state/core/security_state.h"
-#include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
-
-class PrefService;
 
 namespace autofill {
 
@@ -28,8 +26,9 @@ enum class BubbleType;
 // Implementation of per-tab class to control the save credit card bubble and
 // Omnibox icon.
 class SaveCardBubbleControllerImpl
-    : public SaveCardBubbleController,
-      public content::WebContentsObserver,
+    : public AutofillBubbleControllerBase,
+      public SaveCardBubbleController,
+      public SavePaymentIconController,
       public content::WebContentsUserData<SaveCardBubbleControllerImpl> {
  public:
   // An observer class used by browsertests that gets notified whenever
@@ -37,9 +36,12 @@ class SaveCardBubbleControllerImpl
   class ObserverForTest {
    public:
     virtual void OnBubbleShown() = 0;
-    virtual void OnBubbleClosed() = 0;
+    virtual void OnIconShown() = 0;
   };
 
+  SaveCardBubbleControllerImpl(const SaveCardBubbleControllerImpl&) = delete;
+  SaveCardBubbleControllerImpl& operator=(const SaveCardBubbleControllerImpl&) =
+      delete;
   ~SaveCardBubbleControllerImpl() override;
 
   // Sets up the controller and offers to save the |card| locally.
@@ -76,11 +78,6 @@ class SaveCardBubbleControllerImpl
       AutofillClient::SaveCreditCardOptions options,
       AutofillClient::UploadSaveCardPromptCallback save_card_prompt_callback);
 
-  // Sets up the controller for the sign in promo and shows the bubble.
-  // This bubble is only shown after a local save is accepted and if
-  // |ShouldShowSignInPromo()| returns true.
-  void MaybeShowBubbleForSignInPromo();
-
   // Exists for testing purposes only. (Otherwise shown through ReshowBubble())
   // Sets up the controller for the Manage Cards view. This displays the card
   // just saved and links the user to manage their other cards.
@@ -99,53 +96,39 @@ class SaveCardBubbleControllerImpl
   // save card failure bubble.
   void ShowBubbleForSaveCardFailureForTesting();
 
-  void HideBubble();
-  // TODO(crbug.com/932818): Maybe move sign in promo completely out of this
-  // class, and merge with password sign in promo.
-  void HideBubbleForSignInPromo();
-
   void ReshowBubble();
 
   // SaveCardBubbleController:
-  base::string16 GetWindowTitle() const override;
-  base::string16 GetExplanatoryMessage() const override;
-  base::string16 GetAcceptButtonText() const override;
-  base::string16 GetDeclineButtonText() const override;
-  base::string16 GetSaveCardIconTooltipText() const override;
+  std::u16string GetWindowTitle() const override;
+  std::u16string GetExplanatoryMessage() const override;
+  std::u16string GetAcceptButtonText() const override;
+  std::u16string GetDeclineButtonText() const override;
   const AccountInfo& GetAccountInfo() const override;
   Profile* GetProfile() const override;
   const CreditCard& GetCard() const override;
-  SaveCardBubbleView* GetSaveCardBubbleView() const override;
+  AutofillBubbleBase* GetSaveCardBubbleView() const override;
   bool ShouldRequestNameFromUser() const override;
   bool ShouldRequestExpirationDateFromUser() const override;
 
-  // Returns true only if at least one of the following cases is true:
-  // 1) The user is signed out.
-  // 2) The user is signed in through DICe, but did not turn on syncing.
-  // Consequently returns false in the following cases:
-  // 1) The user has paused syncing (Auth Error).
-  // 2) The user is not required to be syncing in order to upload cards
-  //    to the server -- this should change.
-  // TODO(crbug.com/864702): Don't show promo if user is a butter user.
-  bool ShouldShowSignInPromo() const override;
-  bool ShouldShowSavingCardAnimation() const override;
-  bool ShouldShowCardSavedLabelAnimation() const override;
-  bool ShouldShowSaveFailureBadge() const override;
-  void OnSyncPromoAccepted(const AccountInfo& account,
-                           signin_metrics::AccessPoint access_point,
-                           bool is_default_promo_account) override;
   void OnSaveButton(const AutofillClient::UserProvidedCardDetails&
                         user_provided_card_details) override;
   void OnCancelButton() override;
   void OnLegalMessageLinkClicked(const GURL& url) override;
   void OnManageCardsClicked() override;
-  void OnBubbleClosed() override;
-  void OnAnimationEnded() override;
+  void OnBubbleClosed(PaymentsBubbleClosedReason closed_reason) override;
   const LegalMessageLines& GetLegalMessageLines() const override;
-  bool IsIconVisible() const override;
   bool IsUploadSave() const override;
   BubbleType GetBubbleType() const override;
   AutofillSyncSigninState GetSyncState() const override;
+
+  // SavePaymentIconController:
+  std::u16string GetSavePaymentIconTooltipText() const override;
+  bool ShouldShowSavingCardAnimation() const override;
+  bool ShouldShowCardSavedLabelAnimation() const override;
+  bool ShouldShowSaveFailureBadge() const override;
+  void OnAnimationEnded() override;
+  bool IsIconVisible() const override;
+  AutofillBubbleBase* GetSaveBubbleView() const override;
 
  protected:
   explicit SaveCardBubbleControllerImpl(content::WebContents* web_contents);
@@ -153,11 +136,9 @@ class SaveCardBubbleControllerImpl
   // Opens the Payments settings page.
   virtual void ShowPaymentsSettingsPage();
 
-  // content::WebContentsObserver:
-  void DidFinishNavigation(
-      content::NavigationHandle* navigation_handle) override;
-  void OnVisibilityChanged(content::Visibility visibility) override;
-  void WebContentsDestroyed() override;
+  // AutofillBubbleControllerBase::
+  PageActionIconType GetPageActionIconType() override;
+  void DoShowBubble() override;
 
   // Gets the security level of the page.
   virtual security_state::SecurityLevel GetSecurityLevel() const;
@@ -189,15 +170,9 @@ class SaveCardBubbleControllerImpl
   // Is true only if the [Card saved] label animation should be shown.
   bool should_show_card_saved_label_animation_ = false;
 
-  // Weak reference. Will be nullptr if no bubble is currently shown.
-  SaveCardBubbleView* save_card_bubble_view_ = nullptr;
-
   // The type of bubble that is either currently being shown or would
   // be shown when the save card icon is clicked.
   BubbleType current_bubble_type_ = BubbleType::INACTIVE;
-
-  // Weak reference to read & write |kAutofillAcceptSaveCreditCardPromptState|.
-  PrefService* pref_service_;
 
   // Callback to run once the user makes a decision with respect to the credit
   // card upload offer-to-save prompt. Will return the cardholder name
@@ -238,10 +213,6 @@ class SaveCardBubbleControllerImpl
   // If no legal message should be shown then this variable is an empty vector.
   LegalMessageLines legal_message_lines_;
 
-  // The time at which the bubble was shown. If it has been visible for less
-  // time than some reasonable limit, don't close the bubble upon navigation.
-  base::Time bubble_shown_timestamp_;
-
   // The security level for the current context.
   security_state::SecurityLevel security_level_;
 
@@ -249,8 +220,6 @@ class SaveCardBubbleControllerImpl
   ObserverForTest* observer_for_testing_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(SaveCardBubbleControllerImpl);
 };
 
 }  // namespace autofill

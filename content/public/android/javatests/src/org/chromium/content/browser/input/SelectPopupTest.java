@@ -5,20 +5,21 @@
 package org.chromium.content.browser.input;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
 
+import androidx.test.filters.LargeTest;
+
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer.OnPageFinishedHelper;
@@ -51,26 +52,11 @@ public class SelectPopupTest {
             + "</select>"
             + "</body></html>");
 
-    private class PopupShowingCriteria extends Criteria {
-        public PopupShowingCriteria() {
-            super("The select popup is not showing as expected.");
-        }
-
-        @Override
-        public boolean isSatisfied() {
-            return mActivityTestRule.getSelectPopup().isVisibleForTesting();
-        }
-    }
-
-    private class PopupHiddenCriteria extends Criteria {
-        public PopupHiddenCriteria() {
-            super("The select popup is not hidden as expected.");
-        }
-
-        @Override
-        public boolean isSatisfied() {
-            return !mActivityTestRule.getSelectPopup().isVisibleForTesting();
-        }
+    private void verifyPopupShownState(boolean shown) {
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(
+                    mActivityTestRule.getSelectPopup().isVisibleForTesting(), Matchers.is(shown));
+        });
     }
 
     @Before
@@ -87,10 +73,9 @@ public class SelectPopupTest {
     @LargeTest
     @Feature({"Browser"})
     @RerunWithUpdatedContainerView
-    @RetryOnFailure
     public void testReloadWhilePopupShowing() throws Exception, Throwable {
         // The popup should be hidden before the click.
-        CriteriaHelper.pollUiThread(new PopupHiddenCriteria());
+        verifyPopupShownState(false);
 
         final WebContents webContents = mActivityTestRule.getWebContents();
         final TestCallbackHelperContainer viewClient = new TestCallbackHelperContainer(webContents);
@@ -98,7 +83,7 @@ public class SelectPopupTest {
 
         // Once clicked, the popup should show up.
         DOMUtils.clickNode(webContents, "select");
-        CriteriaHelper.pollInstrumentationThread(new PopupShowingCriteria());
+        verifyPopupShownState(true);
 
         // Reload the test page.
         int currentCallCount = onPageFinishedHelper.getCallCount();
@@ -111,10 +96,10 @@ public class SelectPopupTest {
                 WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
 
         // The popup should be hidden after the page reload.
-        CriteriaHelper.pollUiThread(new PopupHiddenCriteria());
+        verifyPopupShownState(false);
 
         // Click the select and wait for the popup to show.
         DOMUtils.clickNode(webContents, "select");
-        CriteriaHelper.pollUiThread(new PopupShowingCriteria());
+        verifyPopupShownState(true);
     }
 }

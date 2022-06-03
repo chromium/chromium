@@ -9,62 +9,44 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
-#include "ppapi/c/pp_errors.h"
-#include "ppapi/cpp/instance.h"
-#include "ppapi/cpp/module.h"
+#include "base/auto_reset.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
+#include "base/location.h"
+#include "base/time/time.h"
+#include "pdf/paint_ready_rect.h"
+#include "pdf/ppapi_migration/callback.h"
+#include "pdf/ppapi_migration/geometry_conversions.h"
+#include "pdf/ppapi_migration/graphics.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/vector2d.h"
 
-PaintManager::ReadyRect::ReadyRect() = default;
+namespace chrome_pdf {
 
-PaintManager::ReadyRect::ReadyRect(const pp::Rect& r,
-                                   const pp::ImageData& i,
-                                   bool f)
-    : rect(r), image_data(i), flush_now(f) {}
-
-PaintManager::ReadyRect::ReadyRect(const ReadyRect& that) = default;
-
-PaintManager::PaintManager(pp::Instance* instance,
-                           Client* client,
-                           bool is_always_opaque)
-    : instance_(instance),
-      client_(client),
-      is_always_opaque_(is_always_opaque),
-      callback_factory_(nullptr),
-      manual_callback_pending_(false),
-      flush_pending_(false),
-      flush_requested_(false),
-      has_pending_resize_(false),
-      graphics_need_to_be_bound_(false),
-      pending_device_scale_(1.0),
-      device_scale_(1.0),
-      in_paint_(false),
-      first_paint_(true),
-      view_size_changed_waiting_for_paint_(false) {
-  // Set the callback object outside of the initializer list to avoid a
-  // compiler warning about using "this" in an initializer list.
-  callback_factory_.Initialize(this);
-
-  // You can not use a NULL client pointer.
-  DCHECK(client);
+PaintManager::PaintManager(Client* client) : client_(client) {
+  DCHECK(client_);
 }
 
 PaintManager::~PaintManager() = default;
 
 // static
-pp::Size PaintManager::GetNewContextSize(const pp::Size& current_context_size,
-                                         const pp::Size& plugin_size) {
+gfx::Size PaintManager::GetNewContextSize(const gfx::Size& current_context_size,
+                                          const gfx::Size& plugin_size) {
   // The amount of additional space in pixels to allocate to the right/bottom of
   // the context.
   constexpr int kBufferSize = 50;
 
   // Default to returning the same size.
-  pp::Size result = current_context_size;
+  gfx::Size result = current_context_size;
 
   // The minimum size of the plugin before resizing the context to ensure we
   // aren't wasting too much memory. We deduct twice the kBufferSize from the
   // current context size which gives a threshhold that is kBufferSize below
   // the plugin size when the context size was last computed.
-  pp::Size min_size(
+  gfx::Size min_size(
       std::max(current_context_size.width() - 2 * kBufferSize, 0),
       std::max(current_context_size.height() - 2 * kBufferSize, 0));
 
@@ -78,26 +60,18 @@ pp::Size PaintManager::GetNewContextSize(const pp::Size& current_context_size,
       plugin_size.height() < min_size.height()) {
     // Create a larger context than needed so that if we only resize by a
     // small margin, we don't need a new context.
-    result = pp::Size(plugin_size.width() + kBufferSize,
-                      plugin_size.height() + kBufferSize);
+    result = gfx::Size(plugin_size.width() + kBufferSize,
+                       plugin_size.height() + kBufferSize);
   }
 
   return result;
 }
 
-void PaintManager::Initialize(pp::Instance* instance,
-                              Client* client,
-                              bool is_always_opaque) {
-  DCHECK(!instance_ && !client_);  // Can't initialize twice.
-  instance_ = instance;
-  client_ = client;
-  is_always_opaque_ = is_always_opaque;
-}
-
-void PaintManager::SetSize(const pp::Size& new_size, float device_scale) {
+void PaintManager::SetSize(const gfx::Size& new_size, float device_scale) {
   if (GetEffectiveSize() == new_size &&
-      GetEffectiveDeviceScale() == device_scale)
+      GetEffectiveDeviceScale() == device_scale) {
     return;
+  }
 
   has_pending_resize_ = true;
   pending_size_ = new_size;
@@ -109,13 +83,13 @@ void PaintManager::SetSize(const pp::Size& new_size, float device_scale) {
 }
 
 void PaintManager::SetTransform(float scale,
-                                const pp::Point& origin,
-                                const pp::Point& translate,
+                                const gfx::Point& origin,
+                                const gfx::Vector2d& translate,
                                 bool schedule_flush) {
-  if (graphics_.is_null())
+  if (!graphics_)
     return;
 
-  graphics_.SetLayerTransform(scale, origin, translate);
+  graphics_->SetLayerTransform(scale, origin, translate);
 
   if (!schedule_flush)
     return;
@@ -128,25 +102,26 @@ void PaintManager::SetTransform(float scale,
 }
 
 void PaintManager::ClearTransform() {
-  SetTransform(1.f, pp::Point(), pp::Point(), false);
+  SetTransform(1.f, gfx::Point(), gfx::Vector2d(), false);
 }
 
 void PaintManager::Invalidate() {
-  if (graphics_.is_null() && !has_pending_resize_)
+  if (!graphics_ && !has_pending_resize_)
     return;
 
   EnsureCallbackPending();
-  aggregator_.InvalidateRect(pp::Rect(GetEffectiveSize()));
+  aggregator_.InvalidateRect(gfx::Rect(GetEffectiveSize()));
 }
 
-void PaintManager::InvalidateRect(const pp::Rect& rect) {
+void PaintManager::InvalidateRect(const gfx::Rect& rect) {
   DCHECK(!in_paint_);
 
-  if (graphics_.is_null() && !has_pending_resize_)
+  if (!graphics_ && !has_pending_resize_)
     return;
 
   // Clip the rect to the device area.
-  pp::Rect clipped_rect = rect.Intersect(pp::Rect(GetEffectiveSize()));
+  gfx::Rect clipped_rect =
+      gfx::IntersectRects(rect, gfx::Rect(GetEffectiveSize()));
   if (clipped_rect.IsEmpty())
     return;  // Nothing to do.
 
@@ -154,11 +129,11 @@ void PaintManager::InvalidateRect(const pp::Rect& rect) {
   aggregator_.InvalidateRect(clipped_rect);
 }
 
-void PaintManager::ScrollRect(const pp::Rect& clip_rect,
-                              const pp::Point& amount) {
+void PaintManager::ScrollRect(const gfx::Rect& clip_rect,
+                              const gfx::Vector2d& amount) {
   DCHECK(!in_paint_);
 
-  if (graphics_.is_null() && !has_pending_resize_)
+  if (!graphics_ && !has_pending_resize_)
     return;
 
   EnsureCallbackPending();
@@ -166,7 +141,7 @@ void PaintManager::ScrollRect(const pp::Rect& clip_rect,
   aggregator_.ScrollRect(clip_rect, amount);
 }
 
-pp::Size PaintManager::GetEffectiveSize() const {
+gfx::Size PaintManager::GetEffectiveSize() const {
   return has_pending_resize_ ? pending_size_ : plugin_size_;
 }
 
@@ -186,17 +161,19 @@ void PaintManager::EnsureCallbackPending() {
   if (manual_callback_pending_)
     return;
 
-  pp::Module::Get()->core()->CallOnMainThread(
-      0, callback_factory_.NewCallback(&PaintManager::OnManualCallbackComplete),
-      0);
+  client_->ScheduleTaskOnMainThread(
+      FROM_HERE,
+      base::BindOnce(&PaintManager::OnManualCallbackComplete,
+                     weak_factory_.GetWeakPtr()),
+      /*result=*/0, base::TimeDelta());
   manual_callback_pending_ = true;
 }
 
 void PaintManager::DoPaint() {
-  in_paint_ = true;
+  base::AutoReset<bool> auto_reset_in_paint(&in_paint_, true);
 
-  std::vector<ReadyRect> ready_rects;
-  std::vector<pp::Rect> pending_rects;
+  std::vector<PaintReadyRect> ready_rects;
+  std::vector<gfx::Rect> pending_rects;
 
   DCHECK(aggregator_.HasPendingUpdate());
 
@@ -205,62 +182,63 @@ void PaintManager::DoPaint() {
   // However, the bind must not happen until afterward since we don't want to
   // have an unpainted device bound. The needs_binding flag tells us whether to
   // do this later.
+  //
+  // Note that `has_pending_resize_` will always be set on the first DoPaint().
+  DCHECK(graphics_ || has_pending_resize_);
   if (has_pending_resize_) {
     plugin_size_ = pending_size_;
     // Only create a new graphics context if the current context isn't big
     // enough or if it is far too big. This avoids creating a new context if
     // we only resize by a small amount.
-    pp::Size new_size = GetNewContextSize(graphics_.size(), pending_size_);
-    if (graphics_.size() != new_size) {
-      graphics_ = pp::Graphics2D(instance_, new_size, is_always_opaque_);
+    gfx::Size old_size = graphics_ ? graphics_->size() : gfx::Size();
+    gfx::Size new_size = GetNewContextSize(old_size, pending_size_);
+    if (old_size != new_size || !graphics_) {
+      graphics_ = client_->CreatePaintGraphics(new_size);
       graphics_need_to_be_bound_ = true;
+      device_scale_ = 1.0f;
 
       // Since we're binding a new one, all of the callbacks have been canceled.
       manual_callback_pending_ = false;
       flush_pending_ = false;
-      callback_factory_.CancelAll();
+      weak_factory_.InvalidateWeakPtrs();
     }
 
-    if (pending_device_scale_ != 1.0)
-      graphics_.SetScale(1.0 / pending_device_scale_);
+    if (pending_device_scale_ != device_scale_)
+      graphics_->SetScale(1.0 / pending_device_scale_);
     device_scale_ = pending_device_scale_;
 
     // This must be cleared before calling into the plugin since it may do
     // additional invalidation or sizing operations.
     has_pending_resize_ = false;
-    pending_size_ = pp::Size();
+    pending_size_ = gfx::Size();
   }
 
   PaintAggregator::PaintUpdate update = aggregator_.GetPendingUpdate();
-  client_->OnPaint(update.paint_rects, &ready_rects, &pending_rects);
+  client_->OnPaint(update.paint_rects, ready_rects, pending_rects);
 
-  if (ready_rects.empty() && pending_rects.empty()) {
-    in_paint_ = false;
+  if (ready_rects.empty() && pending_rects.empty())
     return;  // Nothing was painted, don't schedule a flush.
-  }
 
-  std::vector<PaintAggregator::ReadyRect> ready_now;
+  std::vector<PaintReadyRect> ready_now;
   if (pending_rects.empty()) {
-    std::vector<PaintAggregator::ReadyRect> temp_ready;
-    temp_ready.insert(temp_ready.end(), ready_rects.begin(), ready_rects.end());
-    aggregator_.SetIntermediateResults(temp_ready, pending_rects);
+    aggregator_.SetIntermediateResults(ready_rects, pending_rects);
     ready_now = aggregator_.GetReadyRects();
     aggregator_.ClearPendingUpdate();
 
     // Apply any scroll first.
     if (update.has_scroll)
-      graphics_.Scroll(update.scroll_rect, update.scroll_delta);
+      graphics_->Scroll(update.scroll_rect, update.scroll_delta);
 
     view_size_changed_waiting_for_paint_ = false;
   } else {
-    std::vector<PaintAggregator::ReadyRect> ready_later;
+    std::vector<PaintReadyRect> ready_later;
     for (const auto& ready_rect : ready_rects) {
       // Don't flush any part (i.e. scrollbars) if we're resizing the browser,
       // as that'll lead to flashes.  Until we flush, the browser will use the
       // previous image, but if we flush, it'll revert to using the blank image.
       // We make an exception for the first paint since we want to show the
       // default background color instead of the pepper default of black.
-      if (ready_rect.flush_now &&
+      if (ready_rect.flush_now() &&
           (!view_size_changed_waiting_for_paint_ || first_paint_)) {
         ready_now.push_back(ready_rect);
       } else {
@@ -272,50 +250,30 @@ void PaintManager::DoPaint() {
     aggregator_.SetIntermediateResults(ready_later, pending_rects);
 
     if (ready_now.empty()) {
-      in_paint_ = false;
       EnsureCallbackPending();
       return;
     }
   }
 
   for (const auto& ready_rect : ready_now) {
-    graphics_.PaintImageData(ready_rect.image_data, ready_rect.offset,
-                             ready_rect.rect);
+    graphics_->PaintImage(ready_rect.image(), ready_rect.rect());
   }
 
   Flush();
 
-  in_paint_ = false;
   first_paint_ = false;
 
   if (graphics_need_to_be_bound_) {
-    instance_->BindGraphics(graphics_);
+    client_->BindPaintGraphics(*graphics_);
     graphics_need_to_be_bound_ = false;
   }
 }
 
 void PaintManager::Flush() {
   flush_requested_ = false;
-
-  int32_t result = graphics_.Flush(
-      callback_factory_.NewCallback(&PaintManager::OnFlushComplete));
-
-  // If you trigger this assertion, then your plugin has called Flush()
-  // manually. When using the PaintManager, you should not call Flush, it will
-  // handle that for you because it needs to know when it can do the next paint
-  // by implementing the flush callback.
-  //
-  // Another possible cause of this assertion is re-using devices. If you
-  // use one device, swap it with another, then swap it back, we won't know
-  // that we've already scheduled a Flush on the first device. It's best to not
-  // re-use devices in this way.
-  DCHECK(result != PP_ERROR_INPROGRESS);
-
-  if (result == PP_OK_COMPLETIONPENDING) {
-    flush_pending_ = true;
-  } else {
-    DCHECK(result == PP_OK);  // Catch all other errors in debug mode.
-  }
+  flush_pending_ = graphics_->Flush(base::BindOnce(
+      &PaintManager::OnFlushComplete, weak_factory_.GetWeakPtr()));
+  DCHECK(flush_pending_);
 }
 
 void PaintManager::OnFlushComplete(int32_t) {
@@ -344,3 +302,5 @@ void PaintManager::OnManualCallbackComplete(int32_t) {
   if (aggregator_.HasPendingUpdate())
     DoPaint();
 }
+
+}  // namespace chrome_pdf

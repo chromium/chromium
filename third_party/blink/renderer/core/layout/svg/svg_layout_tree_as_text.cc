@@ -47,7 +47,6 @@
 #include "third_party/blink/renderer/core/layout/svg/line/svg_root_inline_box.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
 #include "third_party/blink/renderer/core/layout/svg/svg_resources.h"
-#include "third_party/blink/renderer/core/layout/svg/svg_resources_cache.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/reference_clip_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
@@ -55,6 +54,9 @@
 #include "third_party/blink/renderer/core/svg/linear_gradient_attributes.h"
 #include "third_party/blink/renderer/core/svg/pattern_attributes.h"
 #include "third_party/blink/renderer/core/svg/radial_gradient_attributes.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_angle.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_point_list.h"
 #include "third_party/blink/renderer/core/svg/svg_circle_element.h"
 #include "third_party/blink/renderer/core/svg/svg_ellipse_element.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
@@ -124,16 +126,6 @@ static void WriteNameAndQuotedValue(WTF::TextStream& ts,
                                     const char* name,
                                     ValueType value) {
   ts << " [" << name << "=\"" << value << "\"]";
-}
-
-static void WriteQuotedSVGResource(WTF::TextStream& ts,
-                                   const char* name,
-                                   const StyleSVGResource* value,
-                                   TreeScope& tree_scope) {
-  DCHECK(value);
-  AtomicString id = SVGURIReference::FragmentIdentifierFromIRIString(
-      value->Url(), tree_scope);
-  WriteNameAndQuotedValue(ts, name, id);
 }
 
 template <typename ValueType>
@@ -228,35 +220,56 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   return ts;
 }
 
-static void WriteSVGPaintingResource(
-    WTF::TextStream& ts,
-    const SVGPaintDescription& paint_description) {
-  DCHECK(paint_description.is_valid);
-  if (!paint_description.resource) {
-    ts << "[type=SOLID] [color=" << paint_description.color << "]";
-    return;
+static void WriteSVGPaintingResource(WTF::TextStream& ts,
+                                     const SVGResource& resource) {
+  const LayoutSVGResourceContainer* container =
+      resource.ResourceContainerNoCycleCheck();
+  DCHECK(container);
+  switch (container->ResourceType()) {
+    case kPatternResourceType:
+      ts << "[type=PATTERN]";
+      break;
+    case kLinearGradientResourceType:
+      ts << "[type=LINEAR-GRADIENT]";
+      break;
+    case kRadialGradientResourceType:
+      ts << "[type=RADIAL-GRADIENT]";
+      break;
+    default:
+      NOTREACHED();
+      break;
   }
+  ts << " [id=\"" << resource.Target()->GetIdAttribute() << "\"]";
+}
 
-  LayoutSVGResourcePaintServer* paint_server_container =
-      paint_description.resource;
-  SVGElement* element = paint_server_container->GetElement();
-  DCHECK(element);
-
-  if (paint_server_container->ResourceType() == kPatternResourceType)
-    ts << "[type=PATTERN]";
-  else if (paint_server_container->ResourceType() ==
-           kLinearGradientResourceType)
-    ts << "[type=LINEAR-GRADIENT]";
-  else if (paint_server_container->ResourceType() ==
-           kRadialGradientResourceType)
-    ts << "[type=RADIAL-GRADIENT]";
-
-  ts << " [id=\"" << element->GetIdAttribute() << "\"]";
+static bool WriteSVGPaint(WTF::TextStream& ts,
+                          const LayoutObject& object,
+                          const SVGPaint& paint,
+                          const CSSProperty& property,
+                          const char* paint_name) {
+  TextStreamSeparator s(" ");
+  const ComputedStyle& style = object.StyleRef();
+  if (const StyleSVGResource* resource = paint.Resource()) {
+    const SVGResource* paint_resource = resource->Resource();
+    SVGResourceClient* client = SVGResources::GetClient(object);
+    if (GetSVGResourceAsType<LayoutSVGResourcePaintServer>(*client,
+                                                           paint_resource)) {
+      ts << " [" << paint_name << "={" << s;
+      WriteSVGPaintingResource(ts, *paint_resource);
+      return true;
+    }
+  }
+  if (paint.HasColor()) {
+    Color color = style.VisitedDependentColor(property);
+    ts << " [" << paint_name << "={" << s;
+    ts << "[type=SOLID] [color=" << color << "]";
+    return true;
+  }
+  return false;
 }
 
 static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   const ComputedStyle& style = object.StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
 
   if (!object.LocalSVGTransform().IsIdentity())
     WriteNameValuePair(ts, "transform", object.LocalSVGTransform());
@@ -266,30 +279,22 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
   WriteIfNotDefault(ts, "opacity", style.Opacity(),
                     ComputedStyleInitialValues::InitialOpacity());
   if (object.IsSVGShape()) {
-    const LayoutSVGShape& shape = static_cast<const LayoutSVGShape&>(object);
-    DCHECK(shape.GetElement());
-
-    SVGPaintDescription stroke_paint_description =
-        LayoutSVGResourcePaintServer::RequestPaintDescription(
-            shape, shape.StyleRef(), kApplyToStrokeMode);
-    if (stroke_paint_description.is_valid) {
-      TextStreamSeparator s(" ");
-      ts << " [stroke={" << s;
-      WriteSVGPaintingResource(ts, stroke_paint_description);
-
+    if (WriteSVGPaint(ts, object, style.StrokePaint(), GetCSSPropertyStroke(),
+                      "stroke")) {
+      const LayoutSVGShape& shape = static_cast<const LayoutSVGShape&>(object);
+      DCHECK(shape.GetElement());
       SVGLengthContext length_context(shape.GetElement());
       double dash_offset =
-          length_context.ValueForLength(svg_style.StrokeDashOffset(), style);
-      double stroke_width =
-          length_context.ValueForLength(svg_style.StrokeWidth());
+          length_context.ValueForLength(style.StrokeDashOffset(), style);
+      double stroke_width = length_context.ValueForLength(style.StrokeWidth());
       DashArray dash_array = SVGLayoutSupport::ResolveSVGDashArray(
-          *svg_style.StrokeDashArray(), style, length_context);
+          *style.StrokeDashArray(), style, length_context);
 
-      WriteIfNotDefault(ts, "opacity", svg_style.StrokeOpacity(), 1.0f);
+      WriteIfNotDefault(ts, "opacity", style.StrokeOpacity(), 1.0f);
       WriteIfNotDefault(ts, "stroke width", stroke_width, 1.0);
-      WriteIfNotDefault(ts, "miter limit", svg_style.StrokeMiterLimit(), 4.0f);
-      WriteIfNotDefault(ts, "line cap", svg_style.CapStyle(), kButtCap);
-      WriteIfNotDefault(ts, "line join", svg_style.JoinStyle(), kMiterJoin);
+      WriteIfNotDefault(ts, "miter limit", style.StrokeMiterLimit(), 4.0f);
+      WriteIfNotDefault(ts, "line cap", style.CapStyle(), kButtCap);
+      WriteIfNotDefault(ts, "line join", style.JoinStyle(), kMiterJoin);
       WriteIfNotDefault(ts, "dash offset", dash_offset, 0.0);
       if (!dash_array.IsEmpty())
         WriteNameValuePair(ts, "dash array", dash_array);
@@ -297,27 +302,21 @@ static void WriteStyle(WTF::TextStream& ts, const LayoutObject& object) {
       ts << "}]";
     }
 
-    SVGPaintDescription fill_paint_description =
-        LayoutSVGResourcePaintServer::RequestPaintDescription(
-            shape, shape.StyleRef(), kApplyToFillMode);
-    if (fill_paint_description.is_valid) {
-      TextStreamSeparator s(" ");
-      ts << " [fill={" << s;
-      WriteSVGPaintingResource(ts, fill_paint_description);
-
-      WriteIfNotDefault(ts, "opacity", svg_style.FillOpacity(), 1.0f);
-      WriteIfNotDefault(ts, "fill rule", svg_style.FillRule(), RULE_NONZERO);
+    if (WriteSVGPaint(ts, object, style.FillPaint(), GetCSSPropertyFill(),
+                      "fill")) {
+      WriteIfNotDefault(ts, "opacity", style.FillOpacity(), 1.0f);
+      WriteIfNotDefault(ts, "fill rule", style.FillRule(), RULE_NONZERO);
       ts << "}]";
     }
-    WriteIfNotDefault(ts, "clip rule", svg_style.ClipRule(), RULE_NONZERO);
+    WriteIfNotDefault(ts, "clip rule", style.ClipRule(), RULE_NONZERO);
   }
 
   TreeScope& tree_scope = object.GetDocument();
-  WriteSVGResourceIfNotNull(ts, "start marker", svg_style.MarkerStartResource(),
+  WriteSVGResourceIfNotNull(ts, "start marker", style.MarkerStartResource(),
                             tree_scope);
-  WriteSVGResourceIfNotNull(ts, "middle marker", svg_style.MarkerMidResource(),
+  WriteSVGResourceIfNotNull(ts, "middle marker", style.MarkerMidResource(),
                             tree_scope);
-  WriteSVGResourceIfNotNull(ts, "end marker", svg_style.MarkerEndResource(),
+  WriteSVGResourceIfNotNull(ts, "end marker", style.MarkerEndResource(),
                             tree_scope);
 }
 
@@ -336,14 +335,13 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
   DCHECK(svg_element);
   SVGLengthContext length_context(svg_element);
   const ComputedStyle& style = shape.StyleRef();
-  const SVGComputedStyle& svg_style = style.SvgStyle();
 
   if (IsA<SVGRectElement>(*svg_element)) {
-    WriteNameValuePair(ts, "x",
-                       length_context.ValueForLength(svg_style.X(), style,
-                                                     SVGLengthMode::kWidth));
+    WriteNameValuePair(
+        ts, "x",
+        length_context.ValueForLength(style.X(), style, SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "y",
-                       length_context.ValueForLength(svg_style.Y(), style,
+                       length_context.ValueForLength(style.Y(), style,
                                                      SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "width",
                        length_context.ValueForLength(style.Width(), style,
@@ -362,34 +360,33 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
                        element->y2()->CurrentValue()->Value(length_context));
   } else if (IsA<SVGEllipseElement>(*svg_element)) {
     WriteNameValuePair(ts, "cx",
-                       length_context.ValueForLength(svg_style.Cx(), style,
+                       length_context.ValueForLength(style.Cx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "cy",
-                       length_context.ValueForLength(svg_style.Cy(), style,
+                       length_context.ValueForLength(style.Cy(), style,
                                                      SVGLengthMode::kHeight));
     WriteNameValuePair(ts, "rx",
-                       length_context.ValueForLength(svg_style.Rx(), style,
+                       length_context.ValueForLength(style.Rx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "ry",
-                       length_context.ValueForLength(svg_style.Ry(), style,
+                       length_context.ValueForLength(style.Ry(), style,
                                                      SVGLengthMode::kHeight));
   } else if (IsA<SVGCircleElement>(*svg_element)) {
     WriteNameValuePair(ts, "cx",
-                       length_context.ValueForLength(svg_style.Cx(), style,
+                       length_context.ValueForLength(style.Cx(), style,
                                                      SVGLengthMode::kWidth));
     WriteNameValuePair(ts, "cy",
-                       length_context.ValueForLength(svg_style.Cy(), style,
+                       length_context.ValueForLength(style.Cy(), style,
                                                      SVGLengthMode::kHeight));
-    WriteNameValuePair(ts, "r",
-                       length_context.ValueForLength(svg_style.R(), style,
-                                                     SVGLengthMode::kOther));
+    WriteNameValuePair(
+        ts, "r",
+        length_context.ValueForLength(style.R(), style, SVGLengthMode::kOther));
   } else if (auto* svg_poly_element = DynamicTo<SVGPolyElement>(svg_element)) {
     WriteNameAndQuotedValue(
         ts, "points",
         svg_poly_element->Points()->CurrentValue()->ValueAsString());
   } else if (IsA<SVGPathElement>(*svg_element)) {
-    const StylePath& path =
-        svg_style.D() ? *svg_style.D() : *StylePath::EmptyPath();
+    const StylePath& path = style.D() ? *style.D() : *StylePath::EmptyPath();
     WriteNameAndQuotedValue(
         ts, "data",
         BuildStringFromByteStream(path.ByteStream(), kNoTransformation));
@@ -408,7 +405,7 @@ static WTF::TextStream& operator<<(WTF::TextStream& ts,
 
 static void WriteLayoutSVGTextBox(WTF::TextStream& ts,
                                   const LayoutSVGText& text) {
-  SVGRootInlineBox* box = ToSVGRootInlineBox(text.FirstRootBox());
+  auto* box = To<SVGRootInlineBox>(text.FirstRootBox());
   if (!box)
     return;
 
@@ -434,7 +431,7 @@ static inline void WriteSVGInlineTextBox(WTF::TextStream& ts,
   LineLayoutSVGInlineText text_line_layout =
       LineLayoutSVGInlineText(text_box->GetLineLayoutItem());
 
-  const SVGComputedStyle& svg_style = text_line_layout.StyleRef().SvgStyle();
+  const ComputedStyle& style = text_line_layout.StyleRef();
   String text = text_box->GetLineLayoutItem().GetText();
 
   unsigned fragments_size = fragments.size();
@@ -448,15 +445,14 @@ static inline void WriteSVGInlineTextBox(WTF::TextStream& ts,
     // FIXME: Remove this hack, once the new text layout engine is completly
     // landed. We want to preserve the old web test results for now.
     ts << "chunk 1 ";
-    ETextAnchor anchor = svg_style.TextAnchor();
-    bool is_vertical_text =
-        !text_line_layout.StyleRef().IsHorizontalWritingMode();
-    if (anchor == TA_MIDDLE) {
+    ETextAnchor anchor = style.TextAnchor();
+    bool is_vertical_text = !style.IsHorizontalWritingMode();
+    if (anchor == ETextAnchor::kMiddle) {
       ts << "(middle anchor";
       if (is_vertical_text)
         ts << ", vertical";
       ts << ") ";
-    } else if (anchor == TA_END) {
+    } else if (anchor == ETextAnchor::kEnd) {
       ts << "(end anchor";
       if (is_vertical_text)
         ts << ", vertical";
@@ -493,10 +489,11 @@ static inline void WriteSVGInlineTextBoxes(WTF::TextStream& ts,
                                            const LayoutText& text,
                                            int indent) {
   for (InlineTextBox* box : text.TextBoxes()) {
-    if (!box->IsSVGInlineTextBox())
+    auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(box);
+    if (!svg_inline_text_box)
       continue;
 
-    WriteSVGInlineTextBox(ts, ToSVGInlineTextBox(box), indent);
+    WriteSVGInlineTextBox(ts, svg_inline_text_box, indent);
   }
 }
 
@@ -546,17 +543,17 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
   const AtomicString& id = element->GetIdAttribute();
   WriteNameAndQuotedValue(ts, "id", id);
 
-  LayoutSVGResourceContainer* resource =
-      ToLayoutSVGResourceContainer(const_cast<LayoutObject*>(&object));
+  auto* resource =
+      To<LayoutSVGResourceContainer>(const_cast<LayoutObject*>(&object));
   DCHECK(resource);
 
   if (resource->ResourceType() == kMaskerResourceType) {
-    LayoutSVGResourceMasker* masker = ToLayoutSVGResourceMasker(resource);
+    auto* masker = To<LayoutSVGResourceMasker>(resource);
     WriteNameValuePair(ts, "maskUnits", masker->MaskUnits());
     WriteNameValuePair(ts, "maskContentUnits", masker->MaskContentUnits());
     ts << "\n";
   } else if (resource->ResourceType() == kFilterResourceType) {
-    LayoutSVGResourceFilter* filter = ToLayoutSVGResourceFilter(resource);
+    auto* filter = To<LayoutSVGResourceFilter>(resource);
     WriteNameValuePair(ts, "filterUnits", filter->FilterUnits());
     WriteNameValuePair(ts, "primitiveUnits", filter->PrimitiveUnits());
     ts << "\n";
@@ -571,10 +568,10 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
       last_effect->ExternalRepresentation(ts, indent + 1);
   } else if (resource->ResourceType() == kClipperResourceType) {
     WriteNameValuePair(ts, "clipPathUnits",
-                       ToLayoutSVGResourceClipper(resource)->ClipPathUnits());
+                       To<LayoutSVGResourceClipper>(resource)->ClipPathUnits());
     ts << "\n";
   } else if (resource->ResourceType() == kMarkerResourceType) {
-    LayoutSVGResourceMarker* marker = ToLayoutSVGResourceMarker(resource);
+    auto* marker = To<LayoutSVGResourceMarker>(resource);
     WriteNameValuePair(ts, "markerUnits", marker->MarkerUnits());
     ts << " [ref at " << marker->ReferencePoint() << "]";
     ts << " [angle=";
@@ -618,8 +615,7 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
     ts << " [start=" << gradient->StartPoint(attributes)
        << "] [end=" << gradient->EndPoint(attributes) << "]\n";
   } else if (resource->ResourceType() == kRadialGradientResourceType) {
-    LayoutSVGResourceRadialGradient* gradient =
-        ToLayoutSVGResourceRadialGradient(resource);
+    auto* gradient = To<LayoutSVGResourceRadialGradient>(resource);
 
     // Dump final results that are used for layout. No use in asking
     // SVGGradientElement for its gradientUnits(), as it may link to other
@@ -646,9 +642,6 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
 void WriteSVGContainer(WTF::TextStream& ts,
                        const LayoutObject& container,
                        int indent) {
-  // Currently LayoutSVGResourceFilterPrimitive has no meaningful output.
-  if (container.IsSVGResourceFilterPrimitive())
-    return;
   WriteStandardPrefix(ts, container, indent);
   WritePositionAndStyle(ts, container);
   ts << "\n";
@@ -687,7 +680,6 @@ void WriteSVGInlineText(WTF::TextStream& ts,
   WriteStandardPrefix(ts, text, indent);
   WritePositionAndStyle(ts, text);
   ts << "\n";
-  WriteResources(ts, text, indent);
   WriteSVGInlineTextBoxes(ts, text, indent);
 }
 
@@ -706,53 +698,80 @@ void Write(WTF::TextStream& ts, const LayoutSVGShape& shape, int indent) {
   WriteResources(ts, shape, indent);
 }
 
+// Get the LayoutSVGResourceFilter from the 'filter' property iff the 'filter'
+// is a single url(...) reference.
+static LayoutSVGResourceFilter* GetFilterResourceForSVG(
+    SVGResourceClient& client,
+    const ComputedStyle& style) {
+  if (!style.HasFilter())
+    return nullptr;
+  const FilterOperations& operations = style.Filter();
+  if (operations.size() != 1)
+    return nullptr;
+  const auto* reference_filter =
+      DynamicTo<ReferenceFilterOperation>(*operations.at(0));
+  if (!reference_filter)
+    return nullptr;
+  return GetSVGResourceAsType<LayoutSVGResourceFilter>(
+      client, reference_filter->Resource());
+}
+
+static void WriteSVGResourceReferencePrefix(
+    WTF::TextStream& ts,
+    const char* resource_name,
+    const LayoutSVGResourceContainer* resource_object,
+    const AtomicString& url,
+    const TreeScope& tree_scope,
+    int indent) {
+  AtomicString id =
+      SVGURIReference::FragmentIdentifierFromIRIString(url, tree_scope);
+  WriteIndent(ts, indent);
+  ts << " ";
+  WriteNameAndQuotedValue(ts, resource_name, id);
+  ts << " ";
+  WriteStandardPrefix(ts, *resource_object, 0);
+}
+
 void WriteResources(WTF::TextStream& ts,
                     const LayoutObject& object,
                     int indent) {
-  SVGResources* resources =
-      SVGResourcesCache::CachedResourcesForLayoutObject(object);
-  if (!resources)
-    return;
-  const FloatRect reference_box = object.ObjectBoundingBox();
+  const gfx::RectF reference_box = object.ObjectBoundingBox();
   const ComputedStyle& style = object.StyleRef();
   TreeScope& tree_scope = object.GetDocument();
-  if (LayoutSVGResourceMasker* masker = resources->Masker()) {
-    WriteIndent(ts, indent);
-    ts << " ";
-    WriteQuotedSVGResource(ts, "masker", style.SvgStyle().MaskerResource(),
-                           tree_scope);
-    ts << " ";
-    WriteStandardPrefix(ts, *masker, 0);
-    ts << " " << masker->ResourceBoundingBox(reference_box) << "\n";
+  SVGResourceClient* client = SVGResources::GetClient(object);
+  if (!client)
+    return;
+  if (auto* masker = GetSVGResourceAsType<LayoutSVGResourceMasker>(
+          *client, style.MaskerResource())) {
+    WriteSVGResourceReferencePrefix(ts, "masker", masker,
+                                    style.MaskerResource()->Url(), tree_scope,
+                                    indent);
+    ts << " " << masker->ResourceBoundingBox(reference_box, 1) << "\n";
   }
-  if (LayoutSVGResourceClipper* clipper = resources->Clipper()) {
-    DCHECK(style.ClipPath());
-    DCHECK_EQ(style.ClipPath()->GetType(), ClipPathOperation::REFERENCE);
-    const ReferenceClipPathOperation& clip_path_reference =
-        To<ReferenceClipPathOperation>(*style.ClipPath());
-    AtomicString id = SVGURIReference::FragmentIdentifierFromIRIString(
-        clip_path_reference.Url(), tree_scope);
-    WriteIndent(ts, indent);
-    ts << " ";
-    WriteNameAndQuotedValue(ts, "clipPath", id);
-    ts << " ";
-    WriteStandardPrefix(ts, *clipper, 0);
-    ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
+  if (const ClipPathOperation* clip_path = style.ClipPath()) {
+    if (LayoutSVGResourceClipper* clipper =
+            GetSVGResourceAsType(*client, clip_path)) {
+      DCHECK_EQ(clip_path->GetType(), ClipPathOperation::REFERENCE);
+      const auto& clip_path_reference =
+          To<ReferenceClipPathOperation>(*clip_path);
+      WriteSVGResourceReferencePrefix(ts, "clipPath", clipper,
+                                      clip_path_reference.Url(), tree_scope,
+                                      indent);
+      ts << " " << clipper->ResourceBoundingBox(reference_box) << "\n";
+    }
   }
-  if (LayoutSVGResourceFilter* filter = resources->Filter()) {
+  // TODO(fs): Only handles the single url(...) case. Do we care?
+  if (LayoutSVGResourceFilter* filter =
+          GetFilterResourceForSVG(*client, style)) {
     DCHECK(style.HasFilter());
     DCHECK_EQ(style.Filter().size(), 1u);
     const FilterOperation& filter_operation = *style.Filter().at(0);
     DCHECK_EQ(filter_operation.GetType(), FilterOperation::REFERENCE);
     const auto& reference_filter_operation =
         To<ReferenceFilterOperation>(filter_operation);
-    AtomicString id = SVGURIReference::FragmentIdentifierFromIRIString(
-        reference_filter_operation.Url(), tree_scope);
-    WriteIndent(ts, indent);
-    ts << " ";
-    WriteNameAndQuotedValue(ts, "filter", id);
-    ts << " ";
-    WriteStandardPrefix(ts, *filter, 0);
+    WriteSVGResourceReferencePrefix(ts, "filter", filter,
+                                    reference_filter_operation.Url(),
+                                    tree_scope, indent);
     ts << " " << filter->ResourceBoundingBox(reference_box) << "\n";
   }
 }

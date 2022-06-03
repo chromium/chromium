@@ -27,12 +27,12 @@ AuthenticatorGetInfoResponse DefaultAuthenticatorInfo() {
 
 // static
 std::unique_ptr<MockFidoDevice> MockFidoDevice::MakeU2f() {
-  return std::make_unique<MockFidoDevice>(ProtocolVersion::kU2f, base::nullopt);
+  return std::make_unique<MockFidoDevice>(ProtocolVersion::kU2f, absl::nullopt);
 }
 
 // static
 std::unique_ptr<MockFidoDevice> MockFidoDevice::MakeCtap(
-    base::Optional<AuthenticatorGetInfoResponse> device_info) {
+    absl::optional<AuthenticatorGetInfoResponse> device_info) {
   if (!device_info) {
     device_info = DefaultAuthenticatorInfo();
   }
@@ -50,13 +50,13 @@ MockFidoDevice::MakeU2fWithGetInfoExpectation() {
   device->StubGetDisplayName();
   device->ExpectWinkedAtLeastOnce();
   device->ExpectCtap2CommandAndRespondWith(
-      CtapRequestCommand::kAuthenticatorGetInfo, base::nullopt);
+      CtapRequestCommand::kAuthenticatorGetInfo, absl::nullopt);
   return device;
 }
 
 // static
 std::unique_ptr<MockFidoDevice> MockFidoDevice::MakeCtapWithGetInfoExpectation(
-    base::Optional<base::span<const uint8_t>> get_info_response) {
+    absl::optional<base::span<const uint8_t>> get_info_response) {
   if (!get_info_response) {
     get_info_response = test_data::kTestAuthenticatorGetInfoResponse;
   }
@@ -72,11 +72,11 @@ std::unique_ptr<MockFidoDevice> MockFidoDevice::MakeCtapWithGetInfoExpectation(
 }
 
 std::vector<uint8_t> MockFidoDevice::EncodeCBORRequest(
-    std::pair<CtapRequestCommand, base::Optional<cbor::Value>> request) {
+    std::pair<CtapRequestCommand, absl::optional<cbor::Value>> request) {
   std::vector<uint8_t> request_bytes;
 
   if (request.second) {
-    base::Optional<std::vector<uint8_t>> cbor_bytes =
+    absl::optional<std::vector<uint8_t>> cbor_bytes =
         cbor::Writer::Write(*request.second);
     DCHECK(cbor_bytes);
     request_bytes = std::move(*cbor_bytes);
@@ -86,15 +86,15 @@ std::vector<uint8_t> MockFidoDevice::EncodeCBORRequest(
   return request_bytes;
 }
 
-// Matcher to compare the fist byte of the incoming requests.
+// Matcher to compare the first byte of the incoming requests.
 MATCHER_P(IsCtap2Command, expected_command, "") {
   return !arg.empty() && arg[0] == base::strict_cast<uint8_t>(expected_command);
 }
 
-MockFidoDevice::MockFidoDevice() {}
+MockFidoDevice::MockFidoDevice() = default;
 MockFidoDevice::MockFidoDevice(
     ProtocolVersion protocol_version,
-    base::Optional<AuthenticatorGetInfoResponse> device_info)
+    absl::optional<AuthenticatorGetInfoResponse> device_info)
     : MockFidoDevice() {
   set_supported_protocol(protocol_version);
   if (device_info) {
@@ -137,15 +137,18 @@ void MockFidoDevice::StubGetId() {
 
 void MockFidoDevice::ExpectCtap2CommandAndRespondWith(
     CtapRequestCommand command,
-    base::Optional<base::span<const uint8_t>> response,
-    base::TimeDelta delay) {
+    absl::optional<base::span<const uint8_t>> response,
+    base::TimeDelta delay,
+    testing::Matcher<base::span<const uint8_t>> request_matcher) {
   auto data = fido_parsing_utils::MaterializeOrNull(response);
   auto send_response = [ data(std::move(data)), delay ](DeviceCallback & cb) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, base::BindOnce(std::move(cb), std::move(data)), delay);
   };
 
-  EXPECT_CALL(*this, DeviceTransactPtr(IsCtap2Command(command), ::testing::_))
+  EXPECT_CALL(*this,
+              DeviceTransactPtr(AllOf(IsCtap2Command(command), request_matcher),
+                                ::testing::_))
       .WillOnce(::testing::DoAll(
           ::testing::WithArg<1>(::testing::Invoke(send_response)),
           ::testing::Return(0)));
@@ -161,7 +164,7 @@ void MockFidoDevice::ExpectCtap2CommandAndRespondWithError(
 
 void MockFidoDevice::ExpectRequestAndRespondWith(
     base::span<const uint8_t> request,
-    base::Optional<base::span<const uint8_t>> response,
+    absl::optional<base::span<const uint8_t>> response,
     base::TimeDelta delay) {
   auto data = fido_parsing_utils::MaterializeOrNull(response);
   auto send_response = [ data(std::move(data)), delay ](DeviceCallback & cb) {
@@ -198,7 +201,7 @@ void MockFidoDevice::SetDeviceTransport(
 
 void MockFidoDevice::StubGetDisplayName() {
   EXPECT_CALL(*this, GetDisplayName())
-      .WillRepeatedly(testing::Return(base::string16()));
+      .WillRepeatedly(testing::Return(std::string()));
 }
 
 }  // namespace device

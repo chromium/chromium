@@ -6,8 +6,9 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/strings/string_util.h"
 #include "base/trace_event/trace_event.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scope.h"
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
@@ -72,8 +73,9 @@ leveldb::Status TransactionalLevelDBTransaction::Get(const StringPiece& key,
 #if DCHECK_IS_ON()
   DCHECK(!finished_);
   const std::vector<uint8_t>& prefix = db_->scopes()->metadata_key_prefix();
-  DCHECK(!key.starts_with(base::StringPiece(
-      reinterpret_cast<const char*>(prefix.data()), prefix.size())));
+  DCHECK(!base::StartsWith(
+      key, base::StringPiece(reinterpret_cast<const char*>(prefix.data()),
+                             prefix.size())));
 #endif
   leveldb::Status s = scope_->WriteChangesAndUndoLog();
   if (!s.ok() && !s.IsNotFound())
@@ -97,10 +99,12 @@ leveldb::Status TransactionalLevelDBTransaction::Rollback() {
 }
 
 std::unique_ptr<TransactionalLevelDBIterator>
-TransactionalLevelDBTransaction::CreateIterator() {
-  leveldb::Status s = scope_->WriteChangesAndUndoLog();
+TransactionalLevelDBTransaction::CreateIterator(leveldb::Status& s) {
+  s = scope_->WriteChangesAndUndoLog();
   if (!s.ok() && !s.IsNotFound())
     return nullptr;
+  // Only return a "not ok" if the returned iterator is null.
+  s = leveldb::Status::OK();
   std::unique_ptr<TransactionalLevelDBIterator> it = db_->CreateIterator(
       weak_factory_.GetWeakPtr(), db_->DefaultReadOptions());
   loaded_iterators_.insert(it.get());
@@ -172,8 +176,9 @@ leveldb::Status LevelDBDirectTransaction::Get(const StringPiece& key,
 #if DCHECK_IS_ON()
   DCHECK(!IsFinished());
   const std::vector<uint8_t>& prefix = db_->scopes()->metadata_key_prefix();
-  DCHECK(!key.starts_with(base::StringPiece(
-      reinterpret_cast<const char*>(prefix.data()), prefix.size())));
+  DCHECK(!base::StartsWith(
+      key, base::StringPiece(reinterpret_cast<const char*>(prefix.data()),
+                             prefix.size())));
 #endif
   leveldb::Status s = db_->Get(key, value, found);
   DCHECK(s.ok() || !*found);

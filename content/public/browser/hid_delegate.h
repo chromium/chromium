@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/hid_chooser.h"
 #include "services/device/public/mojom/hid.mojom-forward.h"
@@ -20,44 +21,67 @@ class Origin;
 namespace content {
 
 class RenderFrameHost;
-class WebContents;
 
 class CONTENT_EXPORT HidDelegate {
  public:
   virtual ~HidDelegate() = default;
 
+  class Observer : public base::CheckedObserver {
+   public:
+    // Events forwarded from HidChooserContext::DeviceObserver:
+    virtual void OnDeviceAdded(const device::mojom::HidDeviceInfo&) = 0;
+    virtual void OnDeviceRemoved(const device::mojom::HidDeviceInfo&) = 0;
+    virtual void OnDeviceChanged(const device::mojom::HidDeviceInfo&) = 0;
+    virtual void OnHidManagerConnectionError() = 0;
+
+    // Event forwarded from permissions::ChooserContextBase::PermissionObserver:
+    virtual void OnPermissionRevoked(const url::Origin& origin) = 0;
+  };
+
   // Shows a chooser for the user to select a HID device. |callback| will be
   // run when the prompt is closed. Deleting the returned object will cancel the
   // prompt.
   virtual std::unique_ptr<HidChooser> RunChooser(
-      RenderFrameHost* frame,
+      RenderFrameHost* render_frame_host,
       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
       HidChooser::Callback callback) = 0;
 
-  // Returns whether the main frame owned by |web_contents| has permission to
-  // request access to a device. |requesting_origin| is the origin of the
-  // frame that would make the request.
+  // Returns whether the main frame of |render_frame_host| has permission to
+  // request access to a device.
   virtual bool CanRequestDevicePermission(
-      WebContents* web_contents,
-      const url::Origin& requesting_origin) = 0;
+      RenderFrameHost* render_frame_host) = 0;
 
-  // Returns whether the main frame owned by |web_contents| has permission to
-  // access |device|. |requesting_origin| is the origin of the frame making
-  // the request.
+  // Returns whether the main frame of |render_frame_host| has permission to
+  // access |device|.
   virtual bool HasDevicePermission(
-      WebContents* web_contents,
-      const url::Origin& requesting_origin,
+      RenderFrameHost* render_frame_host,
       const device::mojom::HidDeviceInfo& device) = 0;
 
   // Returns an open connection to the HidManager interface owned by the
-  // embedder and being used to serve requests from |web_contents|.
+  // embedder and being used to serve requests from |render_frame_host|.
   //
   // Content and the embedder must use the same connection so that the embedder
   // can process connect/disconnect events for permissions management purposes
   // before they are delivered to content. Otherwise race conditions are
   // possible.
   virtual device::mojom::HidManager* GetHidManager(
-      WebContents* web_contents) = 0;
+      RenderFrameHost* render_frame_host) = 0;
+
+  // Functions to manage the set of Observer instances registered to this
+  // object.
+  virtual void AddObserver(RenderFrameHost* render_frame_host,
+                           Observer* observer) = 0;
+  virtual void RemoveObserver(RenderFrameHost* render_frame_host,
+                              Observer* observer) = 0;
+
+  // Returns true if |origin| is allowed to bypass the HID blocklist and
+  // access reports contained in FIDO collections.
+  virtual bool IsFidoAllowedForOrigin(const url::Origin& origin) = 0;
+
+  // Gets the device info for a particular device, identified by its guid.
+  virtual const device::mojom::HidDeviceInfo* GetDeviceInfo(
+      RenderFrameHost* render_frame_host,
+      const std::string& guid) = 0;
 };
 
 }  // namespace content

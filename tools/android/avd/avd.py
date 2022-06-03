@@ -1,4 +1,4 @@
-#! /usr/bin/env vpython
+#! /usr/bin/env vpython3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -69,23 +69,66 @@ def main(raw_args):
       metavar='PATH',
       help='Path to which `cipd create` should dump json output '
            'via -json-output.')
+  create_parser.add_argument(
+      '--dry-run',
+      action='store_true',
+      help='Skip the CIPD package creation after creating the AVD.')
 
   def create_cmd(args):
     avd.AvdConfig(args.avd_config).Create(
-        force=args.force, snapshot=args.snapshot, keep=args.keep,
-        cipd_json_output=args.cipd_json_output)
+        force=args.force,
+        snapshot=args.snapshot,
+        keep=args.keep,
+        cipd_json_output=args.cipd_json_output,
+        dry_run=args.dry_run)
     return 0
 
   create_parser.set_defaults(func=create_cmd)
 
   start_parser = subparsers.add_parser(
       'start',
-      help='Start an AVD instance with the given config.')
+      help='Start an AVD instance with the given config.',
+      formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+  start_parser.add_argument(
+      '--no-read-only',
+      action='store_false',
+      dest='read_only',
+      default=True,
+      help='Run a modifiable emulator. Will save snapshots on exit.')
+  start_parser.add_argument(
+      '--writable-system',
+      action='store_true',
+      default=False,
+      help='Makes system & vendor image writable after adb remount.')
+  start_parser.add_argument(
+      '--emulator-window',
+      action='store_true',
+      default=False,
+      help='Enable graphical window display on the emulator.')
+  start_parser.add_argument(
+      '--gpu-mode',
+      default='swiftshader_indirect',
+      help='Override the mode of hardware OpenGL ES emulation indicated by the '
+      'AVD. See "emulator -help-gpu" for a full list of modes. Note when set '
+      'to "host", it needs a valid DISPLAY env, even if "--emulator-window" is '
+      'false, and it will not work under remote sessions like chrome remote '
+      'desktop.')
+  start_parser.add_argument(
+      '--debug-tags',
+      help='Comma-separated list of debug tags. This can be used to enable or '
+      'disable debug messages from specific parts of the emulator, e.g. '
+      'init, snapshot. See "emulator -help-debug-tags" '
+      'for a full list of tags.')
   add_common_arguments(start_parser)
 
   def start_cmd(args):
     inst = avd.AvdConfig(args.avd_config).CreateInstance()
-    inst.Start(read_only=False, snapshot_save=True)
+    inst.Start(read_only=args.read_only,
+               snapshot_save=not args.read_only,
+               window=args.emulator_window,
+               writable_system=args.writable_system,
+               gpu_mode=args.gpu_mode,
+               debug_tags=args.debug_tags)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
 

@@ -5,12 +5,11 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "quarantine.mojom",
-  ]
+  sources = [ "quarantine.mojom" ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
     "//url/mojom:url_mojom_gurl",
   ]
 }

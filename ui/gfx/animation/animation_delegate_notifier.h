@@ -5,7 +5,7 @@
 #ifndef UI_GFX_ANIMATION_ANIMATION_DELEGATE_NOTIFIER_H_
 #define UI_GFX_ANIMATION_ANIMATION_DELEGATE_NOTIFIER_H_
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gfx/animation/animation_delegate.h"
 
 namespace gfx {

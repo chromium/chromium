@@ -10,7 +10,7 @@
 
 #include <limits>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace base {
 

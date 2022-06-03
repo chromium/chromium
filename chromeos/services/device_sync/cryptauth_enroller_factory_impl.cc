@@ -23,7 +23,7 @@ std::unique_ptr<CryptAuthEnroller>
 CryptAuthEnrollerFactoryImpl::CreateInstance() {
   return std::make_unique<CryptAuthEnrollerImpl>(
       cryptauth_client_factory_,
-      multidevice::SecureMessageDelegateImpl::Factory::NewInstance());
+      multidevice::SecureMessageDelegateImpl::Factory::Create());
 }
 
 }  // namespace device_sync

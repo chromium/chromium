@@ -17,7 +17,6 @@ import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInf
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.util.Date;
 
 /**
  * VariationsSeedHolder is a singleton which manages the local copy of the variations seed - both
@@ -27,7 +26,6 @@ import java.util.Date;
  * concurrent access to the seed by serializing all operations onto mSeedThread.
  * VariationsSeedHolder is not meant to be used outside the variations service.
  */
-@VisibleForTesting
 public class VariationsSeedHolder {
     private static final String TAG = "VariationsSeedHolder";
 
@@ -79,6 +77,7 @@ public class VariationsSeedHolder {
                 if (VariationsSeedHolder.this.mSeed == null) return;
 
                 if (mDestinationDate < VariationsSeedHolder.this.mSeed.date) {
+                    VariationsUtils.debugLog("Writing new seed to app's data directory");
                     writeSeedWithoutClosing(VariationsSeedHolder.this.mSeed, mDestination);
                 }
             } finally {
@@ -136,19 +135,17 @@ public class VariationsSeedHolder {
         return sInstance;
     }
 
-    @VisibleForTesting
     public void writeSeedIfNewer(ParcelFileDescriptor destination, long date) {
         mSeedHandler.post(new SeedWriter(destination, date));
     }
 
-    @VisibleForTesting
     public void updateSeed(SeedInfo newSeed, Runnable onFinished) {
         mSeedHandler.post(new SeedUpdater(newSeed, onFinished));
     }
 
     @VisibleForTesting
     public void scheduleFetchIfNeeded() {
-        AwVariationsSeedFetcher.scheduleIfNeeded(new Date().getTime());
+        AwVariationsSeedFetcher.scheduleIfNeeded();
     }
 
     // overridden by tests

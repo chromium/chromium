@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_TEST_APP_PASSWORD_TEST_UTIL_H_
 #define IOS_CHROME_TEST_APP_PASSWORD_TEST_UTIL_H_
 
-#import "ios/chrome/browser/ui/settings/password/reauthentication_module.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
 
 @interface MockReauthenticationModule : NSObject<ReauthenticationProtocol>
 
@@ -17,14 +17,14 @@
 
 // Indicates whether (mock) authentication should succeed or not. Setting
 // |shouldSucceed| to any value sets |canAttempt| to YES.
-@property(nonatomic, assign) BOOL shouldSucceed;
+@property(nonatomic, assign) ReauthenticationResult expectedResult;
 
 @end
 
 namespace chrome_test_util {
 
 // Replace the reauthentication module in
-// PasswordDetailsCollectionViewController with a fake one to avoid being
+// PasswordDetailsTableViewController with a fake one to avoid being
 // blocked with a reauth prompt, and return the fake reauthentication module.
 MockReauthenticationModule* SetUpAndReturnMockReauthenticationModule();
 

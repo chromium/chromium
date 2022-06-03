@@ -16,7 +16,7 @@
 #include "ppapi/cpp/logging.h"
 #include "ppapi/cpp/module.h"
 #include "ppapi/cpp/mouse_lock.h"
-#include "ppapi/cpp/private/flash_fullscreen.h"
+#include "ppapi/cpp/fullscreen.h"
 #include "ppapi/cpp/rect.h"
 #include "ppapi/cpp/var.h"
 #include "ppapi/utility/completion_callback_factory.h"
@@ -33,7 +33,7 @@ class MyInstance : public pp::Instance, public pp::MouseLock {
         waiting_for_flush_completion_(false),
         callback_factory_(this),
         console_(NULL),
-        flash_fullscreen_(this) {
+        fullscreen_(this) {
   }
   virtual ~MyInstance() {}
 
@@ -78,8 +78,8 @@ class MyInstance : public pp::Instance, public pp::MouseLock {
           return true;
         } else if (key_event.GetKeyCode() == 70) {
           // Enter Flash fullscreen mode when the 'f' key is pressed.
-          if (!flash_fullscreen_.IsFullscreen())
-            flash_fullscreen_.SetFullscreen(true);
+          if (!fullscreen_.IsFullscreen())
+            fullscreen_.SetFullscreen(true);
           return true;
         }
         return false;
@@ -252,7 +252,7 @@ class MyInstance : public pp::Instance, public pp::MouseLock {
 
   const PPB_Console* console_;
 
-  pp::FlashFullscreen flash_fullscreen_;
+  pp::Fullscreen fullscreen_;
 
   pp::Graphics2D device_context_;
 };

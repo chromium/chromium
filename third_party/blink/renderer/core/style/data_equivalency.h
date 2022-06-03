@@ -7,13 +7,9 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
-
-template <typename T>
-class Persistent;
-template <typename T>
-class Member;
 
 template <typename T>
 bool DataEquivalent(const T* a, const T* b) {

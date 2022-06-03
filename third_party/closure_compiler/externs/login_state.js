@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,13 +7,11 @@
 // NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.loginState.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 
 /** @fileoverview Externs generated from namespace: loginState */
 
-/**
- * @const
- */
+/** @const */
 chrome.loginState = {};
 
 /**
@@ -39,14 +37,14 @@ chrome.loginState.SessionState = {
 
 /**
  * Gets the type of the profile the extension is in.
- * @param {function(!chrome.loginState.ProfileType):void} callback
+ * @param {function(!chrome.loginState.ProfileType): void} callback
  * @see https://developer.chrome.com/extensions/loginState#method-getProfileType
  */
 chrome.loginState.getProfileType = function(callback) {};
 
 /**
  * Gets the current session state.
- * @param {function(!chrome.loginState.SessionState):void} callback
+ * @param {function(!chrome.loginState.SessionState): void} callback
  * @see https://developer.chrome.com/extensions/loginState#method-getSessionState
  */
 chrome.loginState.getSessionState = function(callback) {};

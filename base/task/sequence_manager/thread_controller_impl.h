@@ -8,15 +8,14 @@
 #include <memory>
 
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
-#include "base/single_thread_task_runner.h"
 #include "base/task/common/task_annotator.h"
 #include "base/task/sequence_manager/associated_thread_id.h"
 #include "base/task/sequence_manager/thread_controller.h"
 #include "base/task/sequence_manager/work_deduplicator.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 
 namespace base {
@@ -32,16 +31,14 @@ class SequenceManagerImpl;
 class BASE_EXPORT ThreadControllerImpl : public ThreadController,
                                          public RunLoop::NestingObserver {
  public:
+  ThreadControllerImpl(const ThreadControllerImpl&) = delete;
+  ThreadControllerImpl& operator=(const ThreadControllerImpl&) = delete;
   ~ThreadControllerImpl() override;
 
   // TODO(https://crbug.com/948051): replace |funneled_sequence_manager| with
   // |funneled_task_runner| when we sort out the workers
   static std::unique_ptr<ThreadControllerImpl> Create(
       SequenceManagerImpl* funneled_sequence_manager,
-      const TickClock* time_source);
-
-  static std::unique_ptr<ThreadControllerImpl> CreateSequenceFunneled(
-      scoped_refptr<SingleThreadTaskRunner> task_runner,
       const TickClock* time_source);
 
   // ThreadController:
@@ -54,7 +51,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   void SetSequencedTaskSource(SequencedTaskSource* sequence) override;
   void SetTimerSlack(TimerSlack timer_slack) override;
   bool RunsTasksInCurrentSequence() override;
-  const TickClock* GetClock() override;
+  void SetTickClock(const TickClock* clock) override;
   void SetDefaultTaskRunner(scoped_refptr<SingleThreadTaskRunner>) override;
   scoped_refptr<SingleThreadTaskRunner> GetDefaultTaskRunner() override;
   void RestoreDefaultTaskRunner() override;
@@ -70,6 +67,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
 #if defined(OS_IOS)
   void DetachFromMessagePump() override;
 #endif
+  void PrioritizeYieldingToNative(base::TimeTicks prioritize_until) override;
   bool ShouldQuitRunLoopWhenIdle() override;
 
   // RunLoop::NestingObserver:
@@ -99,10 +97,12 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
     MainSequenceOnly();
     ~MainSequenceOnly();
 
-    int nesting_depth = 0;
     int work_batch_size_ = 1;
 
     TimeTicks next_delayed_do_work = TimeTicks::Max();
+
+    // Tracks the number and state of each run-level managed by this instance.
+    RunLevelTracker run_level_tracker;
   };
 
   scoped_refptr<AssociatedThreadId> associated_thread_;
@@ -121,7 +121,7 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
   const TickClock* time_source_;
   RepeatingClosure immediate_do_work_closure_;
   RepeatingClosure delayed_do_work_closure_;
-  CancelableClosure cancelable_delayed_do_work_closure_;
+  CancelableRepeatingClosure cancelable_delayed_do_work_closure_;
   SequencedTaskSource* sequence_ = nullptr;  // Not owned.
   TaskAnnotator task_annotator_;
   WorkDeduplicator work_deduplicator_;
@@ -131,8 +131,6 @@ class BASE_EXPORT ThreadControllerImpl : public ThreadController,
 #endif
 
   WeakPtrFactory<ThreadControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadControllerImpl);
 };
 
 }  // namespace internal

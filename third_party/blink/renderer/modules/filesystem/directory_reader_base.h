@@ -49,7 +49,7 @@ class DirectoryReaderBase : public ScriptWrappable {
 
   ~DirectoryReaderBase() override = default;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(file_system_);
     ScriptWrappable::Trace(visitor);
   }

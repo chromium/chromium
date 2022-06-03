@@ -1,5 +1,5 @@
 {
-  "name": "unit_tests --gtest_filter=AutomationManifestTest.AllHostsInteractTrue",
+  "name": "unit_tests --gtest_filter=AutomationManifestTest.AllHostsInteractTrue:ChromePermissionMessageProviderUnittest.PowerfulPermissions",
   "version": "1",
   "manifest_version": 2,
   "automation": {

@@ -4,7 +4,7 @@
 
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 
-import {beforeNextRender, html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {beforeNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const colors = [
   // row 1
@@ -52,81 +52,105 @@ const sizes = [
   {name: 'annotationSize20', size: 1},
 ];
 
-/**
- * Displays a set of radio buttons to select from
- * a predefined list of colors and sizes.
- */
-Polymer({
-  is: 'viewer-pen-options',
+// Displays a set of radio buttons to select from a predefined list of colors
+// and sizes.
+class ViewerPenOptionsElement extends PolymerElement {
+  static get is() {
+    return 'viewer-pen-options';
+  }
 
-  _template: html`{__html_template__}`,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-  properties: {
-    expanded_: {
-      type: Boolean,
-      value: false,
-    },
-    selectedSize: {
-      type: Number,
-      value: 0.250,
-      notify: true,
-    },
-    selectedColor: {
-      type: String,
-      value: '#000000',
-      notify: true,
-    },
-    sizes_: {
-      type: Array,
-      value: sizes,
-    },
-    colors_: {
-      type: Array,
-      value: colors,
-    },
-    strings: Object,
-  },
+  static get properties() {
+    return {
+      /** @private */
+      expanded_: {
+        type: Boolean,
+        value: false,
+      },
 
-  /** @type {Array<!Animation>} */
-  expandAnimations_: null,
+      selectedSize: {
+        type: Number,
+        value: 0.250,
+        notify: true,
+      },
 
-  /** @param {Event} e */
-  sizeChanged_: function(e) {
+      selectedColor: {
+        type: String,
+        value: '#000000',
+        notify: true,
+      },
+
+      /** @private */
+      sizes_: {
+        type: Array,
+        value: sizes,
+      },
+
+      /** @private */
+      colors_: {
+        type: Array,
+        value: colors,
+      },
+
+      strings: Object,
+    };
+  }
+
+  constructor() {
+    super();
+
+    /** @private {Array<!Animation>} */
+    this.expandAnimations_ = null;
+  }
+
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  sizeChanged_(e) {
     this.selectedSize = Number(e.target.value);
-  },
+  }
 
-  /** @param {Event} e */
-  colorChanged_: function(e) {
+  /**
+   * @param {!Event} e
+   * @private
+   */
+  colorChanged_(e) {
     this.selectedColor = e.target.value;
-  },
+  }
 
   /** @private */
-  toggleExpanded_: function() {
+  toggleExpanded_() {
     this.expanded_ = !this.expanded_;
     this.updateExpandedState_();
-  },
+  }
 
   /** @private */
-  updateExpandedStateAndFinishAnimations_: function() {
+  updateExpandedStateAndFinishAnimations_() {
     this.updateExpandedState_();
     for (const animation of /** @type {!Array<!Animation>} */ (
              this.expandAnimations_)) {
       animation.finish();
     }
-  },
+  }
 
   /** @override */
-  attached: function() {
+  connectedCallback() {
+    super.connectedCallback();
     beforeNextRender(this, () => {
       this.updateExpandedStateAndFinishAnimations_();
     });
-  },
+  }
 
   /**
    * Updates the state of the UI to reflect the current value of `expanded`.
    * Starts or reverses animations and enables/disable controls.
+   * @private
    */
-  updateExpandedState_: function() {
+  updateExpandedState_() {
     const colors = this.$.colors;
     if (!this.expandAnimations_) {
       const separator = this.$.separator;
@@ -176,42 +200,42 @@ Polymer({
       animation.play();
     }
     for (const input of colors.querySelectorAll('input:nth-child(n+8)')) {
-      if (this.expanded_) {
-        input.removeAttribute('disabled');
-      } else {
-        input.setAttribute('disabled', '');
-      }
+      input.toggleAttribute('disabled', !this.expanded_);
     }
-  },
+  }
 
   /**
    * Used to determine equality in computed bindings.
-   *
    * @param {*} a
    * @param {*} b
+   * @return {boolean} Whether a === b
+   * @private
    */
-  equal_: function(a, b) {
-    return a == b;
-  },
+  equal_(a, b) {
+    return a === b;
+  }
 
   /**
    * Used to lookup a string in a computed binding.
-   *
    * @param {Object} strings
    * @param {string} name
    * @return {string}
+   * @private
    */
-  lookup_: function(strings, name) {
+  lookup_(strings, name) {
     return strings ? strings[name] : '';
-  },
+  }
 
   /**
    * Used to remove focus when clicking or tapping on a styled input
    * element. This is a workaround until we can use the :focus-visible
    * pseudo selector.
+   * @param {!Event} e
    */
   blurOnPointerDown(e) {
     const target = e.target;
     setTimeout(() => target.blur(), 0);
-  },
-});
+  }
+}
+
+customElements.define(ViewerPenOptionsElement.is, ViewerPenOptionsElement);

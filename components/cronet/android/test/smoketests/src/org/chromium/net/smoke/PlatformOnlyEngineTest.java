@@ -8,8 +8,9 @@ import static org.chromium.net.smoke.CronetSmokeTestRule.assertJavaEngine;
 import static org.chromium.net.smoke.CronetSmokeTestRule.assertSuccessfulNonEmptyResponse;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;

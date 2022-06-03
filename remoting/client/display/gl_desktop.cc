@@ -4,7 +4,7 @@
 
 #include "remoting/client/display/gl_desktop.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "remoting/client/display/canvas.h"
 #include "remoting/client/display/gl_math.h"

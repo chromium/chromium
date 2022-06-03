@@ -4,6 +4,9 @@
 
 #include "ash/touch/touch_hud_renderer.h"
 
+#include <memory>
+
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
 #include "ui/compositor/layer.h"
@@ -12,7 +15,7 @@
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
@@ -24,8 +27,7 @@ constexpr int kPointRadius = 20;
 constexpr SkColor kProjectionFillColor = SkColorSetRGB(0xF5, 0xF5, 0xDC);
 constexpr SkColor kProjectionStrokeColor = SK_ColorGRAY;
 constexpr int kProjectionAlpha = 0xB0;
-constexpr base::TimeDelta kFadeoutDuration =
-    base::TimeDelta::FromMilliseconds(250);
+constexpr base::TimeDelta kFadeoutDuration = base::Milliseconds(250);
 constexpr int kFadeoutFrameRate = 60;
 
 // TouchPointView draws a single touch point.
@@ -35,15 +37,16 @@ class TouchPointView : public views::View,
  public:
   explicit TouchPointView(views::Widget* parent_widget)
       : views::AnimationDelegateViews(this) {
-    set_owned_by_client();
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
 
     SetSize(gfx::Size(2 * kPointRadius + 2, 2 * kPointRadius + 2));
 
-    parent_widget->GetContentsView()->AddChildView(this);
-    widget_observer_.Add(parent_widget);
+    widget_observation_.Observe(parent_widget);
   }
+
+  TouchPointView(const TouchPointView&) = delete;
+  TouchPointView& operator=(const TouchPointView&) = delete;
 
   ~TouchPointView() override = default;
 
@@ -53,8 +56,8 @@ class TouchPointView : public views::View,
   void FadeOut(std::unique_ptr<TouchPointView> self) {
     DCHECK_EQ(this, self.get());
     owned_self_reference_ = std::move(self);
-    fadeout_.reset(
-        new gfx::LinearAnimation(kFadeoutDuration, kFadeoutFrameRate, this));
+    fadeout_ = std::make_unique<gfx::LinearAnimation>(kFadeoutDuration,
+                                                      kFadeoutFrameRate, this);
     fadeout_->Start();
   }
 
@@ -120,9 +123,8 @@ class TouchPointView : public views::View,
   // itself. This should be non-null when fading out, and null otherwise.
   std::unique_ptr<TouchPointView> owned_self_reference_;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TouchPointView);
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 };
 
 TouchHudRenderer::TouchHudRenderer(views::Widget* parent_widget)
@@ -133,6 +135,7 @@ TouchHudRenderer::TouchHudRenderer(views::Widget* parent_widget)
 TouchHudRenderer::~TouchHudRenderer() {
   if (parent_widget_)
     parent_widget_->RemoveObserver(this);
+  CHECK(!IsInObserverList());
 }
 
 void TouchHudRenderer::Clear() {
@@ -143,12 +146,16 @@ void TouchHudRenderer::HandleTouchEvent(const ui::TouchEvent& event) {
   int id = event.pointer_details().id;
   auto iter = points_.find(id);
   if (event.type() == ui::ET_TOUCH_PRESSED) {
-    if (iter != points_.end())
+    if (iter != points_.end()) {
+      TouchPointView* view = iter->second;
+      view->parent()->RemoveChildViewT(view);
       points_.erase(iter);
+    }
 
-    auto point = std::make_unique<TouchPointView>(parent_widget_);
+    TouchPointView* point = parent_widget_->GetContentsView()->AddChildView(
+        std::make_unique<TouchPointView>(parent_widget_));
     point->UpdateLocation(event);
-    auto result = points_.insert(std::make_pair(id, std::move(point)));
+    auto result = points_.insert(std::make_pair(id, point));
     DCHECK(result.second);
     return;
   }
@@ -158,8 +165,8 @@ void TouchHudRenderer::HandleTouchEvent(const ui::TouchEvent& event) {
 
   if (event.type() == ui::ET_TOUCH_RELEASED ||
       event.type() == ui::ET_TOUCH_CANCELLED) {
-    TouchPointView* view = iter->second.get();
-    view->FadeOut(std::move(iter->second));
+    TouchPointView* view = iter->second;
+    view->FadeOut(view->parent()->RemoveChildViewT(view));
     points_.erase(iter);
   } else {
     iter->second->UpdateLocation(event);

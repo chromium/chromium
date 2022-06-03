@@ -5,9 +5,11 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
-  java_files = [ "java/src/org/chromium/chrome/modules/image_editor/ImageEditorModuleProvider.java" ]
+  sources = [ "java/src/org/chromium/chrome/modules/image_editor/ImageEditorModuleProvider.java" ]
 
   deps = [
-    "//chrome/android/modules/image_editor/public:java",
+    "//chrome/browser/image_editor/public:java",
+    "//components/module_installer/android:module_installer_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

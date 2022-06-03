@@ -1,0 +1,38 @@
+This is a testharness.js-based test.
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1\r200 OK
+
+BODY) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200\rOK
+
+BODY) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200 OK
+\rHeader: Value
+
+BODY) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200 OK
+Header\r: Value
+
+BODY) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200 OK
+Header:\r Value
+
+BODY) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200 OK
+Header: Value\r
+
+Body) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200 OK
+Header: Value\r\r
+BODY) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200 OK
+Header: Value\rHeader2: Value2
+
+BODY) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200 OK
+Header: Value
+\rBODY) assert_unreached: Should have rejected: undefined Reached unreachable code
+FAIL Parsing response with a lone CR before message-body (HTTP/1.1 200 OK
+Header: Value
+\r) assert_unreached: Should have rejected: undefined Reached unreachable code
+Harness: the test ran to completion.
+

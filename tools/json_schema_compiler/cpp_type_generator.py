@@ -32,7 +32,7 @@ class CppTypeGenerator(object):
     """
     self._default_namespace = default_namespace
     if self._default_namespace is None:
-      self._default_namespace = model.namespaces.values()[0]
+      self._default_namespace = list(model.namespaces.values())[0]
     self._namespace_resolver = namespace_resolver
 
   def GetEnumNoneValue(self, type_):
@@ -104,10 +104,14 @@ class CppTypeGenerator(object):
     elif type_.property_type == PropertyType.ANY:
       cpp_type = 'base::Value'
     elif type_.property_type == PropertyType.FUNCTION:
-      # Functions come into the json schema compiler as empty objects. We can
-      # record these as empty DictionaryValues so that we know if the function
-      # was passed in or not.
-      cpp_type = 'base::DictionaryValue'
+      if type_.is_serializable_function:
+        # Serializable functions get transformed into strings.
+        cpp_type = 'std::string'
+      else:
+        # Non-serializable functions come into the json schema compiler as
+        # empty objects. We can record these as empty DictionaryValues so that
+        # we know if the function was passed in or not.
+        cpp_type = 'base::DictionaryValue'
     elif type_.property_type == PropertyType.ARRAY:
       item_cpp_type = self.GetCppType(type_.item_type, is_in_container=True)
       cpp_type = 'std::vector<%s>' % item_cpp_type
@@ -162,11 +166,19 @@ class CppTypeGenerator(object):
     """Returns the #include lines for self._default_namespace.
     """
     c = Code()
+    if self._default_namespace.manifest_keys:
+      c.Append('#include "base/strings/string_piece.h"')
+
+    # Note: It's possible that there are multiple dependencies from the same
+    # API. Make sure to only include them once.
+    added_paths = set()
     for namespace, dependencies in self._NamespaceTypeDependencies().items():
       for dependency in dependencies:
         if dependency.hard or include_soft:
-          c.Append('#include "%s/%s.h"' % (namespace.source_file_dir,
-                                           namespace.unix_name))
+          path = '%s/%s.h' % (namespace.source_file_dir, namespace.unix_name)
+          if path not in added_paths:
+            added_paths.add(path)
+            c.Append('#include "%s"' % cpp_util.ToPosixPath(path))
     return c
 
   def _FindType(self, full_name):
@@ -200,8 +212,8 @@ class CppTypeGenerator(object):
       for param in function.params:
         dependencies |= self._TypeDependencies(param.type_,
                                                hard=not param.optional)
-      if function.callback:
-        for param in function.callback.params:
+      if function.returns_async:
+        for param in function.returns_async.params:
           dependencies |= self._TypeDependencies(param.type_,
                                                  hard=not param.optional)
     for type_ in self._default_namespace.types.values():
@@ -230,7 +242,13 @@ class CppTypeGenerator(object):
     """
     deps = set()
     if type_.property_type == PropertyType.REF:
-      deps.add(_TypeDependency(self._FindType(type_.ref_type), hard=hard))
+      underlying_type = self._FindType(type_.ref_type)
+      # Enums from other namespaces are always hard dependencies, since
+      # optional enums are represented via the _NONE value instead of a
+      # pointer.
+      dep_is_hard = (True if underlying_type.property_type == PropertyType.ENUM
+                     else hard)
+      deps.add(_TypeDependency(underlying_type, hard=dep_is_hard))
     elif type_.property_type == PropertyType.ARRAY:
       # Types in containers are hard dependencies because they are stored
       # directly and use move semantics.

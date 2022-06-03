@@ -17,7 +17,10 @@
 
 #include <system_error>  // NOLINT(build/c++11)
 
+#include "absl/base/config.h"
+
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // Workalike compatibilty version of std::chars_format from C++17.
 //
@@ -61,8 +64,9 @@ struct from_chars_result {
 // the result in `value`.
 //
 // The matching pattern format is almost the same as that of strtod(), except
-// that C locale is not respected, and an initial '+' character in the input
-// range will never be matched.
+// that (1) C locale is not respected, (2) an initial '+' character in the
+// input range will never be matched, and (3) leading whitespaces are not
+// ignored.
 //
 // If `fmt` is set, it must be one of the enumerator values of the chars_format.
 // (This is despite the fact that chars_format is a bitmask type.)  If set to
@@ -110,6 +114,7 @@ inline chars_format& operator^=(chars_format& lhs, chars_format rhs) {
   return lhs;
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_STRINGS_CHARCONV_H_

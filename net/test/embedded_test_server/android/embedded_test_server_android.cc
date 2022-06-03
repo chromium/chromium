@@ -26,9 +26,11 @@ EmbeddedTestServerAndroid::ConnectionListener::ConnectionListener(
 
 EmbeddedTestServerAndroid::ConnectionListener::~ConnectionListener() = default;
 
-void EmbeddedTestServerAndroid::ConnectionListener::AcceptedSocket(
-    const StreamSocket& socket) {
-  test_server_android_->AcceptedSocket(static_cast<const void*>(&socket));
+std::unique_ptr<StreamSocket>
+EmbeddedTestServerAndroid::ConnectionListener::AcceptedSocket(
+    std::unique_ptr<StreamSocket> socket) {
+  test_server_android_->AcceptedSocket(static_cast<const void*>(socket.get()));
+  return socket;
 }
 
 void EmbeddedTestServerAndroid::ConnectionListener::ReadFromSocket(
@@ -36,6 +38,9 @@ void EmbeddedTestServerAndroid::ConnectionListener::ReadFromSocket(
     int rv) {
   test_server_android_->ReadFromSocket(static_cast<const void*>(&socket));
 }
+
+void EmbeddedTestServerAndroid::ConnectionListener::
+    OnResponseCompletedSuccessfully(std::unique_ptr<StreamSocket> socket) {}
 
 EmbeddedTestServerAndroid::EmbeddedTestServerAndroid(
     JNIEnv* env,
@@ -118,7 +123,7 @@ void EmbeddedTestServerAndroid::RegisterRequestHandler(
     const JavaParamRef<jobject>& jobj,
     jlong handler) {
   HandleRequestPtr handler_ptr = reinterpret_cast<HandleRequestPtr>(handler);
-  test_server_.RegisterRequestHandler(base::Bind(handler_ptr));
+  test_server_.RegisterRequestHandler(base::BindRepeating(handler_ptr));
 }
 
 void EmbeddedTestServerAndroid::ServeFilesFromDirectory(

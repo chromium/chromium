@@ -74,6 +74,9 @@ class EventListener {
       int worker_thread_id,
       std::unique_ptr<base::DictionaryValue> filter);
 
+  EventListener(const EventListener&) = delete;
+  EventListener& operator=(const EventListener&) = delete;
+
   ~EventListener();
 
   bool Equals(const EventListener* other) const;
@@ -124,7 +127,7 @@ class EventListener {
 
   const bool is_for_service_worker_ = false;
 
-  const int64_t service_worker_version_id_ =
+  int64_t service_worker_version_id_ =
       blink::mojom::kInvalidServiceWorkerVersionId;
 
   // If this listener is for a service worker (i.e.
@@ -135,8 +138,6 @@ class EventListener {
 
   std::unique_ptr<base::DictionaryValue> filter_;
   EventFilter::MatcherID matcher_id_;  // -1 if unset.
-
-  DISALLOW_COPY_AND_ASSIGN(EventListener);
 };
 
 // Holds listeners for extension events and can answer questions about which
@@ -155,6 +156,10 @@ class EventListenerMap {
   };
 
   explicit EventListenerMap(Delegate* delegate);
+
+  EventListenerMap(const EventListenerMap&) = delete;
+  EventListenerMap& operator=(const EventListenerMap&) = delete;
+
   ~EventListenerMap();
 
   // Add a listener for a particular event. GetEventListeners() will include a
@@ -238,8 +243,6 @@ class EventListenerMap {
   std::map<EventFilter::MatcherID, EventListener*> listeners_by_matcher_id_;
 
   EventFilter event_filter_;
-
-  DISALLOW_COPY_AND_ASSIGN(EventListenerMap);
 };
 
 }  // namespace extensions

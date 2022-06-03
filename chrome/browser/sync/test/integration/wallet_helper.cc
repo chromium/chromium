@@ -21,6 +21,7 @@
 #include "components/autofill/core/browser/webdata/autofill_table.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/protocol/data_type_progress_marker.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 
 using autofill::AutofillMetadata;
@@ -40,7 +41,9 @@ namespace {
 const int kDefaultCardExpMonth = 8;
 const int kDefaultCardExpYear = 2087;
 const char kDefaultCardLastFour[] = "1234";
+const char16_t kDefaultCardLastFour16[] = u"1234";
 const char kDefaultCardName[] = "Patrick Valenzuela";
+const char16_t kDefaultCardName16[] = u"Patrick Valenzuela";
 const sync_pb::WalletMaskedCreditCard_WalletCardType kDefaultCardType =
     sync_pb::WalletMaskedCreditCard::AMEX;
 
@@ -213,13 +216,13 @@ void GetServerAddressesMetadataOnDBSequence(
       ->GetServerAddressesMetadata(addresses_metadata);
 }
 
-void GetWalletDataModelTypeStateOnDBSequence(
-    AutofillWebDataService* wds,
-    sync_pb::ModelTypeState* model_type_state) {
+void GetModelTypeStateOnDBSequence(syncer::ModelType model_type,
+                                   AutofillWebDataService* wds,
+                                   sync_pb::ModelTypeState* model_type_state) {
   DCHECK(wds->GetDBTaskRunner()->RunsTasksInCurrentSequence());
   syncer::MetadataBatch metadata_batch;
   AutofillTable::FromWebDatabase(wds->GetDatabase())
-      ->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_DATA, &metadata_batch);
+      ->GetAllSyncMetadata(model_type, &metadata_batch);
   *model_type_state = metadata_batch.GetModelTypeState();
 }
 
@@ -321,11 +324,14 @@ std::map<std::string, AutofillMetadata> GetServerAddressesMetadata(
   return addresses_metadata;
 }
 
-sync_pb::ModelTypeState GetWalletDataModelTypeState(int profile) {
+sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType model_type,
+                                                int profile) {
+  DCHECK(model_type == syncer::AUTOFILL_WALLET_DATA ||
+         model_type == syncer::AUTOFILL_WALLET_OFFER);
   sync_pb::ModelTypeState result;
   scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
   wds->GetDBTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&GetWalletDataModelTypeStateOnDBSequence,
+      FROM_HERE, base::BindOnce(&GetModelTypeStateOnDBSequence, model_type,
                                 base::Unretained(wds.get()), &result));
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
   return result;
@@ -333,7 +339,7 @@ sync_pb::ModelTypeState GetWalletDataModelTypeState(int profile) {
 
 void UnmaskServerCard(int profile,
                       const CreditCard& credit_card,
-                      const base::string16& full_number) {
+                      const std::u16string& full_number) {
   scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
   wds->UnmaskServerCreditCard(credit_card, full_number);
   WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
@@ -344,10 +350,11 @@ sync_pb::SyncEntity CreateDefaultSyncWalletCard() {
                               kDefaultBillingAddressID);
 }
 
-sync_pb::SyncEntity CreateSyncWalletCard(
-    const std::string& name,
-    const std::string& last_four,
-    const std::string& billing_address_id) {
+sync_pb::SyncEntity CreateSyncWalletCard(const std::string& name,
+                                         const std::string& last_four,
+                                         const std::string& billing_address_id,
+                                         const std::string& nickname,
+                                         int64_t instrument_id) {
   sync_pb::SyncEntity entity;
   entity.set_name(name);
   entity.set_id_string(name);
@@ -366,10 +373,13 @@ sync_pb::SyncEntity CreateSyncWalletCard(
   credit_card->set_exp_year(kDefaultCardExpYear);
   credit_card->set_last_four(last_four);
   credit_card->set_name_on_card(kDefaultCardName);
-  credit_card->set_status(sync_pb::WalletMaskedCreditCard::VALID);
   credit_card->set_type(kDefaultCardType);
+  credit_card->set_instrument_id(instrument_id);
   if (!billing_address_id.empty()) {
     credit_card->set_billing_address_id(billing_address_id);
+  }
+  if (!nickname.empty()) {
+    credit_card->set_nickname(nickname);
   }
   return entity;
 }
@@ -397,20 +407,12 @@ sync_pb::SyncEntity CreateDefaultSyncPaymentsCustomerData() {
 }
 
 CreditCard GetDefaultCreditCard() {
-  return GetCreditCard(kDefaultCardID, kDefaultCardLastFour);
-}
-
-autofill::CreditCard GetCreditCard(const std::string& name,
-                                   const std::string& last_four) {
-  CreditCard card(CreditCard::MASKED_SERVER_CARD, name);
+  CreditCard card(CreditCard::MASKED_SERVER_CARD, kDefaultCardID);
   card.SetExpirationMonth(kDefaultCardExpMonth);
   card.SetExpirationYear(kDefaultCardExpYear);
-  card.SetNumber(base::UTF8ToUTF16(last_four));
-  card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL,
-                  base::UTF8ToUTF16(kDefaultCardName));
-  card.SetServerStatus(CreditCard::OK);
+  card.SetNumber(kDefaultCardLastFour16);
+  card.SetRawInfo(autofill::CREDIT_CARD_NAME_FULL, kDefaultCardName16);
   card.SetNetworkForMaskedCard(autofill::kAmericanExpressCard);
-  card.set_card_type(CreditCard::CARD_TYPE_CREDIT);
   card.set_billing_address_id(kDefaultBillingAddressID);
   return card;
 }
@@ -482,11 +484,11 @@ sync_pb::SyncEntity CreateDefaultSyncCreditCardCloudTokenData() {
 void ExpectDefaultCreditCardValues(const CreditCard& card) {
   EXPECT_EQ(CreditCard::MASKED_SERVER_CARD, card.record_type());
   EXPECT_EQ(kDefaultCardID, card.server_id());
-  EXPECT_EQ(base::UTF8ToUTF16(kDefaultCardLastFour), card.LastFourDigits());
+  EXPECT_EQ(kDefaultCardLastFour16, card.LastFourDigits());
   EXPECT_EQ(autofill::kAmericanExpressCard, card.network());
   EXPECT_EQ(kDefaultCardExpMonth, card.expiration_month());
   EXPECT_EQ(kDefaultCardExpYear, card.expiration_year());
-  EXPECT_EQ(base::UTF8ToUTF16(kDefaultCardName),
+  EXPECT_EQ(kDefaultCardName16,
             card.GetRawInfo(autofill::ServerFieldType::CREDIT_CARD_NAME_FULL));
   EXPECT_EQ(kDefaultBillingAddressID, card.billing_address_id());
 }
@@ -664,4 +666,54 @@ bool AutofillWalletMetadataSizeChecker::IsExitConditionSatisfiedImpl() {
     return false;
   }
   return true;
+}
+
+FullUpdateTypeProgressMarkerChecker::FullUpdateTypeProgressMarkerChecker(
+    base::Time min_required_progress_marker_timestamp,
+    syncer::SyncService* service,
+    syncer::ModelType model_type)
+    : min_required_progress_marker_timestamp_(
+          min_required_progress_marker_timestamp),
+      service_(service),
+      model_type_(model_type) {
+  scoped_observation_.Observe(service);
+}
+
+FullUpdateTypeProgressMarkerChecker::~FullUpdateTypeProgressMarkerChecker() =
+    default;
+
+bool FullUpdateTypeProgressMarkerChecker::IsExitConditionSatisfied(
+    std::ostream* os) {
+  // GetLastCycleSnapshot() returns by value, so make sure to capture it for
+  // iterator use.
+  const syncer::SyncCycleSnapshot snap =
+      service_->GetLastCycleSnapshotForDebugging();
+  const syncer::ProgressMarkerMap& progress_markers =
+      snap.download_progress_markers();
+  auto marker_it = progress_markers.find(model_type_);
+  if (marker_it == progress_markers.end()) {
+    *os << "Waiting for an updated progress marker timestamp "
+        << min_required_progress_marker_timestamp_
+        << "; actual: no progress marker in last sync cycle";
+    return false;
+  }
+
+  sync_pb::DataTypeProgressMarker progress_marker;
+  bool success = progress_marker.ParseFromString(marker_it->second);
+  DCHECK(success);
+
+  const base::Time actual_timestamp =
+      fake_server::FakeServer::GetProgressMarkerTimestamp(progress_marker);
+
+  *os << "Waiting for an updated progress marker timestamp "
+      << min_required_progress_marker_timestamp_ << "; actual "
+      << actual_timestamp;
+
+  return actual_timestamp >= min_required_progress_marker_timestamp_;
+}
+
+// syncer::SyncServiceObserver implementation.
+void FullUpdateTypeProgressMarkerChecker::OnSyncCycleCompleted(
+    syncer::SyncService* sync) {
+  CheckExitCondition();
 }

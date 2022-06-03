@@ -10,12 +10,7 @@ source_set("device_monitors") {
   # should be using //media and not directly DEP this roll-up target.
   visibility = [ "//media" ]
 
-  sources = [
-    "device_monitor_mac.h",
-    "device_monitor_mac.mm",
-    "system_message_window_win.cc",
-    "system_message_window_win.h",
-  ]
+  sources = []
 
   configs += [ "//media:subcomponent_config" ]
 
@@ -34,15 +29,24 @@ source_set("device_monitors") {
   }
 
   if (is_mac) {
-    libs = [ "Foundation.framework" ]
+    sources += [
+      "device_monitor_mac.h",
+      "device_monitor_mac.mm",
+    ]
+    frameworks = [ "Foundation.framework" ]
+  }
+
+  if (is_win) {
+    sources += [
+      "system_message_window_win.cc",
+      "system_message_window_win.h",
+    ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "system_message_window_win_unittest.cc",
-  ]
+  sources = []
 
   deps = [
     "//base",
@@ -51,4 +55,8 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
+
+  if (is_win) {
+    sources += [ "system_message_window_win_unittest.cc" ]
+  }
 }

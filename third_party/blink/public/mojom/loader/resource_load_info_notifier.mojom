@@ -1,0 +1,45 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "services/network/public/mojom/fetch_api.mojom";
+import "services/network/public/mojom/url_loader.mojom";
+import "services/network/public/mojom/url_loader_completion_status.mojom";
+import "services/network/public/mojom/url_request.mojom";
+import "services/network/public/mojom/url_response_head.mojom";
+import "third_party/blink/public/mojom/loader/resource_load_info.mojom";
+import "url/mojom/url.mojom";
+
+// This interface is used to notify loading stats of the resource.
+interface ResourceLoadInfoNotifier {
+  // Called to update information to determine whether a user gesture should
+  // carryover to future navigations, when a request is initiated.
+  [EnableIf=is_android]
+  NotifyUpdateUserGestureCarryoverInfo();
+
+  // Called to notify the request has been redirected.
+  NotifyResourceRedirectReceived(network.mojom.URLRequestRedirectInfo redirect_info,
+                                 network.mojom.URLResponseHead redirect_response);
+
+  // Called to notify the response has been received.
+  NotifyResourceResponseReceived(int64 request_id,
+                                 url.mojom.Url response_url,
+                                 network.mojom.URLResponseHead head,
+                                 network.mojom.RequestDestination request_destination,
+                                 int32 previews_state);
+
+  // Called to notify the transfer size is updated.
+  NotifyResourceTransferSizeUpdated(int64 request_id, int32 transfer_size_diff);
+
+  // Called to notify the request has been completed.
+  NotifyResourceLoadCompleted(ResourceLoadInfo resource_load_info,
+                              network.mojom.URLLoaderCompletionStatus status);
+
+  // Called to notify the request has been canceled.
+  NotifyResourceLoadCanceled(int64 request_id);
+
+  // Makes a new endpoint to this ResourceLoadInfoNotifier.
+  Clone(pending_receiver<ResourceLoadInfoNotifier> pending_resource_load_info_notifier);
+};

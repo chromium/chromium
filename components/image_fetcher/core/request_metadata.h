@@ -7,17 +7,13 @@
 
 #include <string>
 
-#include "net/url_request/url_fetcher.h"
-
 namespace image_fetcher {
 
 // Metadata for a URL request.
 struct RequestMetadata {
   // Impossible http response code. Used to signal that no http response code
   // was received.
-  enum ResponseCode {
-    RESPONSE_CODE_INVALID = net::URLFetcher::RESPONSE_CODE_INVALID
-  };
+  enum ResponseCode { RESPONSE_CODE_INVALID = -1 };
 
   RequestMetadata();
 

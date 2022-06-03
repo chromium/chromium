@@ -11,17 +11,25 @@ void TestLoginScreenModel::SetUserList(
     const std::vector<ash::LoginUserInfo>& users) {}
 void TestLoginScreenModel::SetPinEnabledForUser(const AccountId& account_id,
                                                 bool is_enabled) {}
-void TestLoginScreenModel::SetFingerprintState(const AccountId& account_id,
-                                               ash::FingerprintState state) {}
 void TestLoginScreenModel::SetAvatarForUser(const AccountId& account_id,
                                             const ash::UserAvatar& avatar) {}
+void TestLoginScreenModel::SetFingerprintState(const AccountId& account_id,
+                                               ash::FingerprintState state) {}
 void TestLoginScreenModel::NotifyFingerprintAuthResult(
+    const AccountId& account_id,
+    bool successful) {}
+void TestLoginScreenModel::SetSmartLockState(const AccountId& account_id,
+                                             ash::SmartLockState state) {}
+void TestLoginScreenModel::NotifySmartLockAuthResult(
     const AccountId& account_id,
     bool successful) {}
 void TestLoginScreenModel::EnableAuthForUser(const AccountId& account_id) {}
 void TestLoginScreenModel::DisableAuthForUser(
     const AccountId& account_id,
     const ash::AuthDisabledData& auth_disabled_data) {}
+void TestLoginScreenModel::SetTpmLockedState(const AccountId& user,
+                                             bool is_locked,
+                                             base::TimeDelta time_left) {}
 void TestLoginScreenModel::SetTapToUnlockEnabledForUser(
     const AccountId& account_id,
     bool enabled) {}
@@ -29,11 +37,11 @@ void TestLoginScreenModel::ForceOnlineSignInForUser(
     const AccountId& account_id) {}
 void TestLoginScreenModel::ShowEasyUnlockIcon(
     const AccountId& account_id,
-    const ash::EasyUnlockIconOptions& icon) {}
+    const ash::EasyUnlockIconInfo& icon_info) {}
 void TestLoginScreenModel::SetChallengeResponseAuthEnabledForUser(
     const AccountId& user,
     bool enabled) {}
-void TestLoginScreenModel::UpdateWarningMessage(const base::string16& message) {
+void TestLoginScreenModel::UpdateWarningMessage(const std::u16string& message) {
 }
 void TestLoginScreenModel::SetSystemInfo(
     bool show,

@@ -20,11 +20,19 @@ namespace sandbox {
 
 namespace {
 
-void TestDefaultDalc(bool restricted_required) {
+void TestDefaultDalc(bool restricted_required, bool additional_sid_required) {
   RestrictedToken token;
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS), token.Init(nullptr));
   if (!restricted_required)
     token.SetLockdownDefaultDacl();
+  ATL::CSid additional_sid = ATL::Sids::Guests();
+  ATL::CSid additional_sid2 = ATL::Sids::Batch();
+  if (additional_sid_required) {
+    token.AddDefaultDaclSid(Sid(additional_sid.GetPSID()), GRANT_ACCESS,
+                            READ_CONTROL);
+    token.AddDefaultDaclSid(Sid(additional_sid2.GetPSID()), DENY_ACCESS,
+                            GENERIC_ALL);
+  }
 
   ASSERT_EQ(static_cast<DWORD>(ERROR_SUCCESS),
             token.AddRestrictingSid(ATL::Sids::World().GetPSID()));
@@ -44,20 +52,31 @@ void TestDefaultDalc(bool restricted_required) {
 
   bool restricted_found = false;
   bool logon_sid_found = false;
+  bool additional_sid_found = false;
+  bool additional_sid2_found = false;
 
   unsigned int ace_count = dacl.GetAceCount();
   for (unsigned int i = 0; i < ace_count; ++i) {
     ATL::CSid sid;
     ACCESS_MASK mask = 0;
-    dacl.GetAclEntry(i, &sid, &mask);
+    BYTE ace_type = 0;
+    dacl.GetAclEntry(i, &sid, &mask, &ace_type);
     if (sid == ATL::Sids::RestrictedCode() && mask == GENERIC_ALL) {
       restricted_found = true;
     } else if (sid == logon_sid) {
       logon_sid_found = true;
+    } else if (sid == additional_sid && mask == READ_CONTROL &&
+               ace_type == ACCESS_ALLOWED_ACE_TYPE) {
+      additional_sid_found = true;
+    } else if (sid == additional_sid2 && mask == GENERIC_ALL &&
+               ace_type == ACCESS_DENIED_ACE_TYPE) {
+      additional_sid2_found = true;
     }
   }
 
   ASSERT_EQ(restricted_required, restricted_found);
+  ASSERT_EQ(additional_sid_required, additional_sid_found);
+  ASSERT_EQ(additional_sid_required, additional_sid2_found);
   if (!restricted_required)
     ASSERT_FALSE(logon_sid_found);
 }
@@ -325,13 +344,24 @@ TEST(RestrictedTokenTest, ResultToken) {
 
 // Verifies that the token created has "Restricted" in its default dacl.
 TEST(RestrictedTokenTest, DefaultDacl) {
-  TestDefaultDalc(true);
+  TestDefaultDalc(true, false);
 }
 
 // Verifies that the token created does not have "Restricted" in its default
 // dacl.
 TEST(RestrictedTokenTest, DefaultDaclLockdown) {
-  TestDefaultDalc(false);
+  TestDefaultDalc(false, false);
+}
+
+// Verifies that the token created has an additional SID in its default dacl.
+TEST(RestrictedTokenTest, DefaultDaclWithAddition) {
+  TestDefaultDalc(true, true);
+}
+
+// Verifies that the token created does not have "Restricted" in its default
+// dacl and also has an additional SID.
+TEST(RestrictedTokenTest, DefaultDaclLockdownWithAddition) {
+  TestDefaultDalc(false, true);
 }
 
 // Tests the method "AddSidForDenyOnly".
@@ -824,6 +854,24 @@ TEST(RestrictedTokenTest, LowBoxToken) {
   ASSERT_EQ(DWORD{ERROR_ALREADY_EXISTS},
             CreateLowBoxObjectDirectory(caps_for_handles.AppContainerSid, false,
                                         &object_handle));
+}
+
+// Checks the functionality of CanLowIntegrityAccessDesktop
+TEST(RestrictedTokenTest, MediumIlDesktop) {
+  ASSERT_TRUE(CanLowIntegrityAccessDesktop());
+
+  // Create a desktop using the default security descriptor (the last parameter)
+  // which doesn't allow low IL to access it in practice.
+  HDESK hdesk = ::CreateDesktopW(L"medium_il_desktop", nullptr, nullptr, 0,
+                                 GENERIC_ALL, nullptr);
+  ASSERT_TRUE(hdesk);
+
+  HDESK old_hdesk = ::GetThreadDesktop(::GetCurrentThreadId());
+  ASSERT_TRUE(hdesk);
+  ASSERT_TRUE(::SetThreadDesktop(hdesk));
+  ASSERT_FALSE(CanLowIntegrityAccessDesktop());
+  ASSERT_TRUE(::SetThreadDesktop(old_hdesk));
+  ASSERT_TRUE(::CloseDesktop(hdesk));
 }
 
 }  // namespace sandbox

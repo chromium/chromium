@@ -10,6 +10,7 @@ namespace blink {
 
 CSSAnimationData::CSSAnimationData() {
   name_list_.push_back(InitialName());
+  timeline_list_.push_back(InitialTimeline());
   iteration_count_list_.push_back(InitialIterationCount());
   direction_list_.push_back(InitialDirection());
   fill_mode_list_.push_back(InitialFillMode());
@@ -23,9 +24,15 @@ const AtomicString& CSSAnimationData::InitialName() {
   return name;
 }
 
+const StyleNameOrKeyword& CSSAnimationData::InitialTimeline() {
+  DEFINE_STATIC_LOCAL(const StyleNameOrKeyword, name, (CSSValueID::kAuto));
+  return name;
+}
+
 bool CSSAnimationData::AnimationsMatchForStyleRecalc(
     const CSSAnimationData& other) const {
   return name_list_ == other.name_list_ &&
+         timeline_list_ == other.timeline_list_ &&
          play_state_list_ == other.play_state_list_ &&
          iteration_count_list_ == other.iteration_count_list_ &&
          direction_list_ == other.direction_list_ &&
@@ -42,6 +49,11 @@ Timing CSSAnimationData::ConvertToTiming(size_t index) const {
   timing.fill_mode = GetRepeated(fill_mode_list_, index);
   timing.AssertValid();
   return timing;
+}
+
+const StyleNameOrKeyword& CSSAnimationData::GetTimeline(size_t index) const {
+  DCHECK_LT(index, name_list_.size());
+  return GetRepeated(timeline_list_, index);
 }
 
 }  // namespace blink

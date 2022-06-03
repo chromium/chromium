@@ -30,7 +30,7 @@ class CORE_EXPORT RemotePlaybackController
   virtual void AvailabilityChangedForTesting(bool screen_is_available) = 0;
   virtual void StateChangedForTesting(bool is_connected) = 0;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   explicit RemotePlaybackController(HTMLMediaElement&);

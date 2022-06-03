@@ -5,43 +5,36 @@
 #ifndef IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_MANAGER_H_
 #define IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_MANAGER_H_
 
-#import <Foundation/Foundation.h>
+#include <string>
 
+#include "components/keyed_service/core/keyed_service.h"
+
+class Browser;
 class GURL;
-@class HandoffManager;
-
-namespace ios {
-class ChromeBrowserState;
-}
 
 // This manager maintains all state related to sharing the active URL to other
 // devices. It has the role of a dispatcher that shares the active URL to
 // various internal sharing services (e.g. handoff).
-@interface DeviceSharingManager : NSObject
+class DeviceSharingManager : public KeyedService {
+ public:
+  DeviceSharingManager() = default;
 
-// Updates the internal browser state to |browserState|.
-// If the browser state is already |browserState|, then this is a no-op.
-// Otherwise, this method cleans up the active URL and updates the internal
-// state to reflect the new browser state.
-//
-// Note that this method keep a weak reference to |browserState|. It
-// expects its owner to clear the browser state via a call to
-// |-updateBrowserState:nullptr| before |browserState| is destroyed.
-//
-// |browserState| must not be off the record.
-- (void)updateBrowserState:(ios::ChromeBrowserState*)browserState;
+  // Set |browser| as the active browser. It will remain the active browser
+  // until another active browser is set.
+  virtual void SetActiveBrowser(Browser* browser) = 0;
 
-// Updates the active URL to be shared with other devices. This method is
-// a no-op if the active browser state was never set previously.
-- (void)updateActiveURL:(const GURL&)activeURL;
+  // If |browser| is the active browser, set |active_url| as the active URL.
+  // If |browser| is not the active browser, do nothing.
+  virtual void UpdateActiveUrl(Browser* browser, const GURL& active_url) = 0;
 
-@end
+  // If |browser| is the active browser, set |active_title| as the active
+  // page title. If |browser| is not the active browser, do nothing.
+  virtual void UpdateActiveTitle(Browser* browser,
+                                 const std::u16string& active_title) = 0;
 
-@interface DeviceSharingManager (TestingOnly)
-
-// Exposing Handoff feature for testing.
-@property(nonatomic, readonly) HandoffManager* handoffManager;
-
-@end
+  // If |browser| is the active browser, clear the active URL and title.
+  // If |browser| is not the active browser, do nothing.
+  virtual void ClearActiveUrl(Browser* browser) = 0;
+};
 
 #endif  // IOS_CHROME_BROWSER_DEVICE_SHARING_DEVICE_SHARING_MANAGER_H_

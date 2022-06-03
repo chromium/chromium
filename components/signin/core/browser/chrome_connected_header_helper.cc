@@ -12,11 +12,18 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/google/core/common/google_util.h"
 #include "components/signin/core/browser/cookie_settings_util.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/crosapi.mojom.h"
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 namespace signin {
 
@@ -32,6 +39,12 @@ const char kIsSameTabAttrName[] = "is_same_tab";
 const char kIsSamlAttrName[] = "is_saml";
 const char kProfileModeAttrName[] = "mode";
 const char kServiceTypeAttrName[] = "action";
+const char kSupervisedAttrName[] = "supervised";
+const char kSourceAttrName[] = "source";
+#if defined(OS_ANDROID)
+const char kEligibleForConsistency[] = "eligible_for_consistency";
+const char kShowConsistencyPromo[] = "show_consistency_promo";
+#endif
 
 // Determines the service type that has been passed from Gaia in the header.
 GAIAServiceType GetGAIAServiceTypeFromHeader(const std::string& header_value) {
@@ -51,6 +64,8 @@ GAIAServiceType GetGAIAServiceTypeFromHeader(const std::string& header_value) {
 
 }  // namespace
 
+const char kChromeConnectedCookieName[] = "CHROME_CONNECTED";
+
 ChromeConnectedHeaderHelper::ChromeConnectedHeaderHelper(
     AccountConsistencyMethod account_consistency)
     : account_consistency_(account_consistency) {}
@@ -65,8 +80,13 @@ std::string ChromeConnectedHeaderHelper::BuildRequestCookieIfPossible(
   ChromeConnectedHeaderHelper chrome_connected_helper(account_consistency);
   if (!chrome_connected_helper.ShouldBuildRequestHeader(url, cookie_settings))
     return "";
+
+  // Child accounts are not supported on iOS, so it is preferred to not include
+  // this information in the ChromeConnected cookie.
   return chrome_connected_helper.BuildRequestHeader(
-      false /* is_header_request */, url, gaia_id, profile_mode_mask);
+      /*is_header_request=*/false, url, gaia_id,
+      /*is_child_account=*/Tribool::kUnknown, profile_mode_mask,
+      /*source=*/std::string(), /*force_account_consistency=*/false);
 }
 
 // static
@@ -90,6 +110,10 @@ ManageAccountsParams ChromeConnectedHeaderHelper::BuildManageAccountsParams(
       params.continue_url = value;
     } else if (key_name == kIsSameTabAttrName) {
       params.is_same_tab = value == "true";
+#if defined(OS_ANDROID)
+    } else if (key_name == kShowConsistencyPromo) {
+      params.show_consistency_promo = value == "true";
+#endif
     } else {
       DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";
     }
@@ -114,20 +138,13 @@ bool ChromeConnectedHeaderHelper::ShouldBuildRequestHeader(
 bool ChromeConnectedHeaderHelper::IsUrlEligibleToIncludeGaiaId(
     const GURL& url,
     bool is_header_request) {
-  if (is_header_request) {
-    // Gaia ID is only necessary for Drive. Don't set it otherwise.
-    return IsDriveOrigin(url.GetOrigin());
-  }
-
-  // Cookie requests don't have the granularity to only include the Gaia ID for
-  // Drive origin. Set it on all google.com instead.
-  if (!url.SchemeIsCryptographic())
-    return false;
-
-  const std::string kGoogleDomain = "google.com";
-  std::string domain = net::registry_controlled_domains::GetDomainAndRegistry(
-      url, net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
-  return domain == kGoogleDomain;
+  // Gaia ID is only used by Google Drive on desktop to auto-enable offline
+  // mode. As Gaia ID  is personal identifiable information, we restrict its
+  // usage:
+  // * Avoid sending it in the cookie as not needed on iOS.
+  // * Only send it in the header to Drive URLs.
+  return is_header_request ? IsDriveOrigin(url.DeprecatedGetOriginAsURL())
+                           : false;
 }
 
 bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
@@ -141,53 +158,69 @@ bool ChromeConnectedHeaderHelper::IsDriveOrigin(const GURL& url) {
 
 bool ChromeConnectedHeaderHelper::IsUrlEligibleForRequestHeader(
     const GURL& url) {
-  // Only set the header for Drive and Gaia always, and other Google properties
-  // if account consistency is enabled. Vasquette, which is integrated with most
-  // Google properties, needs the header to redirect certain user actions to
-  // Chrome native UI. Drive and Gaia need the header to tell if the current
-  // user is connected.
-
   // Consider the account ID sensitive and limit it to secure domains.
   if (!url.SchemeIsCryptographic())
     return false;
 
-  GURL origin(url.GetOrigin());
-  bool is_google_url =
-      google_util::IsGoogleDomainUrl(
-          url, google_util::ALLOW_SUBDOMAIN,
-          google_util::DISALLOW_NON_STANDARD_PORTS) ||
-      google_util::IsYoutubeDomainUrl(url, google_util::ALLOW_SUBDOMAIN,
-                                      google_util::DISALLOW_NON_STANDARD_PORTS);
-  bool is_mirror_enabled =
-      account_consistency_ == AccountConsistencyMethod::kMirror;
-  return (is_mirror_enabled && is_google_url) || IsDriveOrigin(origin) ||
-         gaia::IsGaiaSignonRealm(origin);
+  switch (account_consistency_) {
+    case AccountConsistencyMethod::kDisabled:
+      return false;
+    case AccountConsistencyMethod::kDice:
+      // Google Drive uses the sync account ID present in the X-Chrome-Connected
+      // header to automatically turn on offline mode. So Chrome needs to send
+      // this header to Google Drive when Dice is enabled.
+      return IsDriveOrigin(url.DeprecatedGetOriginAsURL());
+    case AccountConsistencyMethod::kMirror: {
+      // Set the X-Chrome-Connected header for all Google web properties if
+      // Mirror account consistency is enabled. Vasquette, which is integrated
+      // with most Google properties, needs the header to redirect certain user
+      // actions to Chrome native UI.
+      return google_util::IsGoogleDomainUrl(
+                 url, google_util::ALLOW_SUBDOMAIN,
+                 google_util::DISALLOW_NON_STANDARD_PORTS) ||
+             google_util::IsYoutubeDomainUrl(
+                 url, google_util::ALLOW_SUBDOMAIN,
+                 google_util::DISALLOW_NON_STANDARD_PORTS) ||
+             gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL());
+    }
+  }
 }
 
 std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
     bool is_header_request,
     const GURL& url,
     const std::string& gaia_id,
-    int profile_mode_mask) {
-#if defined(OS_ANDROID)
-  bool is_mice_enabled = base::FeatureList::IsEnabled(kMiceFeature);
-#else
-  bool is_mice_enabled = false;
-#endif
-
+    Tribool is_child_account,
+    int profile_mode_mask,
+    const std::string& source,
+    bool force_account_consistency) {
+  std::vector<std::string> parts;
+  if (!source.empty()) {
+    parts.push_back(
+        base::StringPrintf("%s=%s", kSourceAttrName, source.c_str()));
+  }
 // If we are on mobile or desktop, an empty |account_id| corresponds to the user
 // not signed into Sync. Do not enforce account consistency, unless Mice is
-// enabled on Android.
+// enabled on mobile (Android or iOS).
 // On Chrome OS, an empty |account_id| corresponds to Public Sessions, Guest
 // Sessions and Active Directory logins. Guest Sessions have already been
 // filtered upstream and we want to enforce account consistency in Public
 // Sessions and Active Directory logins.
-#if !defined(OS_CHROMEOS)
-  if (gaia_id.empty() && !is_mice_enabled)
-    return std::string();
-#endif  // !defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  force_account_consistency = true;
+#endif
 
-  std::vector<std::string> parts;
+  if (!force_account_consistency && gaia_id.empty()) {
+#if defined(OS_ANDROID)
+    if (gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL())) {
+      parts.push_back(
+          base::StringPrintf("%s=%s", kEligibleForConsistency, "true"));
+      return base::JoinString(parts, is_header_request ? "," : ":");
+    }
+#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+    return std::string();
+  }
+
   if (!gaia_id.empty() &&
       IsUrlEligibleToIncludeGaiaId(url, is_header_request)) {
     // Only set the Gaia ID on domains that actually require it.
@@ -201,9 +234,20 @@ std::string ChromeConnectedHeaderHelper::BuildRequestHeader(
       account_consistency_ == AccountConsistencyMethod::kMirror;
   parts.push_back(base::StringPrintf("%s=%s", kEnableAccountConsistencyAttrName,
                                      is_mirror_enabled ? "true" : "false"));
-  parts.push_back(base::StringPrintf("%s=%s",
-                                     kConsistencyEnabledByDefaultAttrName,
-                                     is_mice_enabled ? "true" : "false"));
+  switch (is_child_account) {
+    case Tribool::kTrue:
+      parts.push_back(base::StringPrintf("%s=%s", kSupervisedAttrName, "true"));
+      break;
+    case Tribool::kFalse:
+      parts.push_back(
+          base::StringPrintf("%s=%s", kSupervisedAttrName, "false"));
+      break;
+    case Tribool::kUnknown:
+      // Do not add the supervised parameter.
+      break;
+  }
+  parts.push_back(base::StringPrintf(
+      "%s=%s", kConsistencyEnabledByDefaultAttrName, "false"));
 
   return base::JoinString(parts, is_header_request ? "," : ":");
 }

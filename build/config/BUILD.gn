@@ -103,11 +103,6 @@ config("feature_flags") {
     defines += [ "OFFICIAL_BUILD" ]
   }
 
-  if (is_chrome_branded) {
-    # TODO(thakis): Remove this in favor of build/branding_buildflags.h.
-    defines += [ "GOOGLE_CHROME_BUILD" ]
-  }
-
   # ==============================================
   #   PLEASE DO NOT ADD MORE THINGS TO THIS LIST
   # ==============================================
@@ -133,7 +128,8 @@ config("debug") {
       # builds, and we have to tell it to turn it off.
       defines += [ "_HAS_ITERATOR_DEBUGGING=0" ]
     }
-  } else if (is_linux && current_cpu == "x64" && enable_iterator_debugging) {
+  } else if ((is_linux || is_chromeos) && current_cpu == "x64" &&
+             enable_iterator_debugging) {
     # Enable libstdc++ debugging facilities to help catch problems early, see
     # http://crbug.com/65151 .
     # TODO(phajdan.jr): Should we enable this for all of POSIX?
@@ -223,13 +219,13 @@ config("default_libs") {
   } else if (is_ios) {
     # The libraries listed here will be specified for both the target and the
     # host. Only the common ones should be listed here.
-    libs = [
+    frameworks = [
       "CoreFoundation.framework",
       "CoreGraphics.framework",
       "CoreText.framework",
       "Foundation.framework",
     ]
-  } else if (is_linux) {
+  } else if (is_linux || is_chromeos) {
     libs = [
       "dl",
       "pthread",
@@ -265,20 +261,15 @@ group("common_deps") {
     public_deps += [ "//base/android/orderfile:orderfile_instrumentation" ]
   }
 
-  if (is_win && generate_order_files && !is_nacl) {
-    public_deps += [ "//tools/cygprofile_win" ]
-  }
-
   if (is_fuchsia) {
-    public_deps += [ "//third_party/fuchsia-sdk:runtime_library" ]
+    public_deps +=
+        [ "//third_party/fuchsia-sdk/sdk/build/config:runtime_library_group" ]
   }
 }
 
 # Only the executable template in BUILDCONFIG.gn should reference this.
 group("executable_deps") {
-  public_deps = [
-    ":common_deps",
-  ]
+  public_deps = [ ":common_deps" ]
   if (export_libcxxabi_from_executables) {
     public_deps += [ "//buildtools/third_party/libc++abi" ]
   }
@@ -286,16 +277,12 @@ group("executable_deps") {
 
 # Only the loadable_module template in BUILDCONFIG.gn should reference this.
 group("loadable_module_deps") {
-  public_deps = [
-    ":common_deps",
-  ]
+  public_deps = [ ":common_deps" ]
 }
 
 # Only the shared_library template in BUILDCONFIG.gn should reference this.
 group("shared_library_deps") {
-  public_deps = [
-    ":common_deps",
-  ]
+  public_deps = [ ":common_deps" ]
 }
 
 # Executable configs -----------------------------------------------------------
@@ -321,7 +308,7 @@ config("executable_config") {
       "//build/config/ios:ios_dynamic_flags",
       "//build/config/ios:ios_executable_flags",
     ]
-  } else if (is_linux || is_android || current_os == "aix") {
+  } else if (is_linux || is_chromeos || is_android || current_os == "aix") {
     configs += [ "//build/config/gcc:executable_config" ]
     if (is_chromecast) {
       configs += [ "//build/config/chromecast:executable_config" ]
@@ -352,10 +339,13 @@ config("shared_library_config") {
   } else if (is_mac) {
     configs += [ "//build/config/mac:mac_dynamic_flags" ]
   } else if (is_ios) {
-    configs += [ "//build/config/ios:ios_dynamic_flags" ]
+    configs += [
+      "//build/config/ios:ios_dynamic_flags",
+      "//build/config/ios:ios_shared_library_flags",
+    ]
   } else if (is_chromecast) {
     configs += [ "//build/config/chromecast:shared_library_config" ]
-  } else if (is_linux || current_os == "aix") {
+  } else if (is_linux || is_chromeos || current_os == "aix") {
     configs += [ "//build/config/gcc:shared_library_config" ]
   }
 
@@ -393,7 +383,7 @@ config("precompiled_headers") {
 
       # Force include the header.
       cflags = [ "/FI$precompiled_header" ]
-    } else if (is_mac) {
+    } else if (is_mac || is_linux) {
       precompiled_source = "//build/precompile.h"
     }
   }

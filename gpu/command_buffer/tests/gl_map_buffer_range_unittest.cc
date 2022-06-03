@@ -8,9 +8,11 @@
 #include <GLES3/gl3.h>
 #include <stdint.h>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
+#include "gpu/config/gpu_test_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -291,6 +293,10 @@ TEST_F(ES3MapBufferRangeTest, ReadPixels) {
   if (ShouldSkipTest())
     return;
 
+  // TODO(crbug.com/angleproject/5213) consistent driver errors on this config.
+  if (GPUTestBotConfig::CurrentConfigMatches("Linux AMD"))
+    return;
+
   GLuint buffer = 0;
   glGenBuffers(1, &buffer);
   EXPECT_LT(0u, buffer);
@@ -309,6 +315,12 @@ TEST_F(ES3MapBufferRangeTest, ReadPixels) {
 
   glUnmapBuffer(GL_PIXEL_PACK_BUFFER);
   GLTestHelper::CheckGLError("no errors", __LINE__);
+
+#if defined(OS_MAC)
+  // TODO(crbug.com/1230038): This step causes a crash on mac intel-uhd bot.
+  if (GPUTestBotConfig::CurrentConfigMatches("Mac Intel 0x3e9b"))
+    return;
+#endif
 
   glReadPixels(0, 0, kCanvasSize, kCanvasSize, GL_RGBA, GL_UNSIGNED_BYTE, 0);
   GLTestHelper::CheckGLError("no errors", __LINE__);

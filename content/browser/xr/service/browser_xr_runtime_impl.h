@@ -1,0 +1,141 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CONTENT_BROWSER_XR_SERVICE_BROWSER_XR_RUNTIME_IMPL_H_
+#define CONTENT_BROWSER_XR_SERVICE_BROWSER_XR_RUNTIME_IMPL_H_
+
+#include <set>
+#include <vector>
+
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
+#include "build/build_config.h"
+#include "content/browser/xr/service/vr_service_impl.h"
+#include "content/public/browser/browser_xr_runtime.h"
+#include "content/public/browser/render_frame_host.h"
+#include "device/vr/public/mojom/isolated_xr_service.mojom.h"
+#include "device/vr/public/mojom/vr_service.mojom-forward.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
+
+struct CHROME_LUID;
+
+namespace content {
+class XrInstallHelper;
+}  // namespace content
+
+namespace content {
+// This class wraps a physical device's interfaces, and registers for events.
+// There is one BrowserXRRuntimeImpl per physical device runtime.  It manages
+// browser-side handling of state, like which VRServiceImpl is listening for
+// device activation.
+class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
+                             public device::mojom::XRRuntimeEventListener {
+ public:
+  using RequestSessionCallback =
+      base::OnceCallback<void(device::mojom::XRRuntimeSessionResultPtr)>;
+  explicit BrowserXRRuntimeImpl(
+      device::mojom::XRDeviceId id,
+      device::mojom::XRDeviceDataPtr device_data,
+      mojo::PendingRemote<device::mojom::XRRuntime> runtime,
+      device::mojom::VRDisplayInfoPtr info);
+  ~BrowserXRRuntimeImpl() override;
+
+  void ExitActiveImmersiveSession();
+  bool SupportsFeature(device::mojom::XRSessionFeature feature) const;
+  bool SupportsAllFeatures(
+      const std::vector<device::mojom::XRSessionFeature>& features) const;
+
+  bool SupportsCustomIPD() const;
+  bool SupportsNonEmulatedHeight() const;
+  bool SupportsArBlendMode();
+
+  device::mojom::XRRuntime* GetRuntime() { return runtime_.get(); }
+
+  // Methods called by VRServiceImpl to interact with the runtime's device.
+  void OnServiceAdded(VRServiceImpl* service);
+  void OnServiceRemoved(VRServiceImpl* service);
+  void ExitPresent(VRServiceImpl* service,
+                   VRServiceImpl::ExitPresentCallback on_exited);
+  void SetFramesThrottled(const VRServiceImpl* service, bool throttled);
+
+  // Both of these will forward the RequestSession call onto the runtime, the
+  // main difference is that when Requesting an Immersive session we will bind
+  // the XRSessionController rather than passing it back to the VrService, as
+  // well as setting the appropriate presenting state.
+  void RequestImmersiveSession(
+      VRServiceImpl* service,
+      device::mojom::XRRuntimeSessionOptionsPtr options,
+      RequestSessionCallback callback);
+  void RequestInlineSession(
+      device::mojom::XRRuntimeSessionOptionsPtr options,
+      device::mojom::XRRuntime::RequestSessionCallback callback);
+
+  void EnsureInstalled(int render_process_id,
+                       int render_frame_id,
+                       base::OnceCallback<void(bool)> install_callback);
+  VRServiceImpl* GetServiceWithActiveImmersiveSession() {
+    return presenting_service_;
+  }
+
+  device::mojom::VRDisplayInfoPtr GetVRDisplayInfo() {
+    return display_info_.Clone();
+  }
+
+  device::mojom::XRDeviceId GetId() const { return id_; }
+
+#if defined(OS_WIN)
+  absl::optional<CHROME_LUID> GetLuid() const;
+#endif
+
+  // BrowserXRRuntime
+  void AddObserver(Observer* observer) override;
+  void RemoveObserver(Observer* observer) override;
+
+  // Called to allow the runtime to conduct any cleanup it needs to do before it
+  // is removed.
+  void BeforeRuntimeRemoved();
+
+ private:
+  // device::XRRuntimeEventListener
+  void OnDisplayInfoChanged(
+      device::mojom::VRDisplayInfoPtr vr_device_info) override;
+  void OnExitPresent() override;
+  void OnVisibilityStateChanged(
+      device::mojom::XRVisibilityState visibility_state) override;
+
+  void StopImmersiveSession(VRServiceImpl::ExitPresentCallback on_exited);
+  void OnRequestSessionResult(
+      base::WeakPtr<VRServiceImpl> service,
+      device::mojom::XRRuntimeSessionOptionsPtr options,
+      RequestSessionCallback callback,
+      device::mojom::XRRuntimeSessionResultPtr session_result);
+  void OnImmersiveSessionError();
+  void OnInstallFinished(bool succeeded);
+
+  device::mojom::XRDeviceId id_;
+  device::mojom::XRDeviceDataPtr device_data_;
+  mojo::Remote<device::mojom::XRRuntime> runtime_;
+  mojo::Remote<device::mojom::XRSessionController>
+      immersive_session_controller_;
+
+  std::set<VRServiceImpl*> services_;
+  device::mojom::VRDisplayInfoPtr display_info_;
+
+  VRServiceImpl* presenting_service_ = nullptr;
+
+  mojo::AssociatedReceiver<device::mojom::XRRuntimeEventListener> receiver_{
+      this};
+
+  base::ObserverList<Observer> observers_;
+  std::unique_ptr<content::XrInstallHelper> install_helper_;
+  base::OnceCallback<void(bool)> install_finished_callback_;
+
+  base::WeakPtrFactory<BrowserXRRuntimeImpl> weak_ptr_factory_{this};
+};
+
+}  // namespace content
+
+#endif  // CONTENT_BROWSER_XR_SERVICE_BROWSER_XR_RUNTIME_IMPL_H_

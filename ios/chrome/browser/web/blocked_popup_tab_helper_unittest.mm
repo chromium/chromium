@@ -15,9 +15,7 @@
 #include "ios/chrome/browser/infobars/confirm_infobar_metrics_recorder.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
-#import "ios/web/public/test/fakes/test_navigation_manager.h"
-#import "ios/web/public/test/fakes/test_web_state.h"
-#import "ios/web/public/test/fakes/test_web_state_delegate.h"
+#import "ios/web/public/test/fakes/fake_web_state_delegate.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -39,7 +37,7 @@ class BlockedPopupTabHelperTest : public ChromeWebTest {
 
   // Returns true if InfoBarManager is being observed.
   bool IsObservingSources() {
-    return GetBlockedPopupTabHelper()->scoped_observer_.IsObservingSources();
+    return GetBlockedPopupTabHelper()->scoped_observation_.IsObserving();
   }
 
   // Returns BlockedPopupTabHelper that is being tested.
@@ -52,7 +50,7 @@ class BlockedPopupTabHelperTest : public ChromeWebTest {
     return InfoBarManagerImpl::FromWebState(web_state());
   }
 
-  web::TestWebStateDelegate web_state_delegate_;
+  web::FakeWebStateDelegate web_state_delegate_;
 };
 
 // Tests ShouldBlockPopup method. This test changes content settings without
@@ -69,7 +67,7 @@ TEST_F(BlockedPopupTabHelperTest, ShouldBlockPopup) {
   settings_map->SetContentSettingCustomScope(
       ContentSettingsPattern::FromURL(source_url1),
       ContentSettingsPattern::Wildcard(), ContentSettingsType::POPUPS,
-      std::string(), CONTENT_SETTING_ALLOW);
+      CONTENT_SETTING_ALLOW);
 
   EXPECT_FALSE(GetBlockedPopupTabHelper()->ShouldBlockPopup(source_url1));
   const GURL source_url2("https://source-url2");

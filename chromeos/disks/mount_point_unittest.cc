@@ -5,7 +5,7 @@
 #include "chromeos/disks/mount_point.h"
 
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
@@ -13,6 +13,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using ::testing::_;
+using ::testing::WithArg;
 using ::testing::WithoutArgs;
 
 namespace chromeos {
@@ -119,6 +120,28 @@ TEST_F(MountPointTest, UnmountOnDestruction) {
   EXPECT_CALL(disk_mount_manager_, UnmountPath(kMountPath, _)).Times(1);
 
   MountPoint mount_point(base::FilePath(kMountPath), &disk_mount_manager_);
+}
+
+TEST_F(MountPointTest, UnmountThenDestory) {
+  base::RunLoop run_loop;
+  EXPECT_CALL(disk_mount_manager_, UnmountPath(kMountPath, _))
+      .WillOnce(WithArg<1>(
+          [this, &run_loop](DiskMountManager::UnmountPathCallback callback) {
+            task_environment_.GetMainThreadTaskRunner()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback), MOUNT_ERROR_INTERNAL));
+            task_environment_.GetMainThreadTaskRunner()->PostTask(
+                FROM_HERE, run_loop.QuitClosure());
+          }));
+
+  std::unique_ptr<MountPoint> mount_point = std::make_unique<MountPoint>(
+      base::FilePath(kMountPath), &disk_mount_manager_);
+  mount_point->Unmount(base::BindLambdaForTesting([](MountError error) {
+    // Expect that this callback is never run.
+    FAIL();
+  }));
+  mount_point.reset();
+  run_loop.Run();
 }
 
 }  // namespace

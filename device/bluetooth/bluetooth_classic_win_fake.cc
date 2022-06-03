@@ -4,7 +4,8 @@
 
 #include "device/bluetooth/bluetooth_classic_win_fake.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 
 namespace device {
@@ -85,7 +86,7 @@ bool BluetoothClassicWrapperFake::HasHandle() {
 }
 
 BluetoothRadio* BluetoothClassicWrapperFake::SimulateARadio(
-    base::string16 name,
+    std::u16string name,
     BLUETOOTH_ADDRESS address) {
   BluetoothRadio* radio = new BluetoothRadio();
   radio->is_connectable = true;  // set it connectable by default.

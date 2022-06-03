@@ -14,8 +14,8 @@
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/message_loop/message_pump.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 struct ALooper;
 
@@ -28,6 +28,10 @@ class RunLoop;
 class BASE_EXPORT MessagePumpForUI : public MessagePump {
  public:
   MessagePumpForUI();
+
+  MessagePumpForUI(const MessagePumpForUI&) = delete;
+  MessagePumpForUI& operator=(const MessagePumpForUI&) = delete;
+
   ~MessagePumpForUI() override;
 
   void Run(Delegate* delegate) override;
@@ -57,10 +61,13 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   void OnNonDelayedLooperCallback();
 
  protected:
-  void SetDelegate(Delegate* delegate) { delegate_ = delegate; }
-  virtual bool IsTestImplementation() const;
+  Delegate* SetDelegate(Delegate* delegate);
+  bool SetQuit(bool quit);
+  virtual void DoDelayedLooperWork();
+  virtual void DoNonDelayedLooperWork(bool do_idle_work);
 
  private:
+  void ScheduleWorkInternal(bool do_idle_work);
   void DoIdleWork();
 
   // Unlike other platforms, we don't control the message loop as it's
@@ -83,7 +90,7 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // delayed task. This avoids redundantly scheduling |delayed_fd_| with the
   // same timeout when subsequent work phases all go idle on the same pending
   // delayed task; nullopt if no wakeup is currently scheduled.
-  Optional<TimeTicks> delayed_scheduled_time_;
+  absl::optional<TimeTicks> delayed_scheduled_time_;
 
   // If set, a callback to fire when the message pump is quit.
   base::OnceClosure on_quit_callback_;
@@ -97,7 +104,8 @@ class BASE_EXPORT MessagePumpForUI : public MessagePump {
   // The Android Looper for this thread.
   ALooper* looper_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(MessagePumpForUI);
+  // The JNIEnv* for this thread, used to check for pending exceptions.
+  JNIEnv* env_;
 };
 
 }  // namespace base

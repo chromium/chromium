@@ -47,6 +47,10 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
       base::WeakPtr<ClientSessionControl> client_session_control,
       base::WeakPtr<DesktopSessionConnector> desktop_session_connector,
       const DesktopEnvironmentOptions& options);
+
+  IpcDesktopEnvironment(const IpcDesktopEnvironment&) = delete;
+  IpcDesktopEnvironment& operator=(const IpcDesktopEnvironment&) = delete;
+
   ~IpcDesktopEnvironment() override;
 
   // DesktopEnvironment implementation.
@@ -61,14 +65,16 @@ class IpcDesktopEnvironment : public DesktopEnvironment {
       base::RepeatingCallback<void(const protocol::KeyboardLayout&)> callback)
       override;
   std::unique_ptr<FileOperations> CreateFileOperations() override;
+  std::unique_ptr<UrlForwarderConfigurator> CreateUrlForwarderConfigurator()
+      override;
   std::string GetCapabilities() const override;
   void SetCapabilities(const std::string& capabilities) override;
   uint32_t GetDesktopSessionId() const override;
+  std::unique_ptr<DesktopAndCursorConditionalComposer>
+  CreateComposingVideoCapturer() override;
 
  private:
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;
-
-  DISALLOW_COPY_AND_ASSIGN(IpcDesktopEnvironment);
 };
 
 // Used to create IpcDesktopEnvironment objects integrating with the desktop via
@@ -84,6 +90,11 @@ class IpcDesktopEnvironmentFactory
       scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
       scoped_refptr<base::SingleThreadTaskRunner> io_task_runner,
       IPC::Sender* daemon_channel);
+
+  IpcDesktopEnvironmentFactory(const IpcDesktopEnvironmentFactory&) = delete;
+  IpcDesktopEnvironmentFactory& operator=(const IpcDesktopEnvironmentFactory&) =
+      delete;
+
   ~IpcDesktopEnvironmentFactory() override;
 
   // DesktopEnvironmentFactory implementation.
@@ -130,8 +141,6 @@ class IpcDesktopEnvironmentFactory
 
   // Factory for weak pointers to DesktopSessionConnector interface.
   base::WeakPtrFactory<DesktopSessionConnector> connector_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IpcDesktopEnvironmentFactory);
 };
 
 }  // namespace remoting

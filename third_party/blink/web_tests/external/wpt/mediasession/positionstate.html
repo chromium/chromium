@@ -42,20 +42,16 @@ test(() => {
 }, 'Test setPositionState with zero duration');
 
 test(() => {
-  assert_throws(
-      new TypeError,
-      _ => {
-        window.navigator.mediaSession.setPositionState({
-          duration: 60.9,
-          position: 10.1,
-          playbackRate: -2.0
-        });
-      });
-}, 'Test setPositionState throws a TypeError if playback rate is negative');
+  window.navigator.mediaSession.setPositionState({
+    duration: 60.9,
+    position: 10.1,
+    playbackRate: -2.0
+  });
+}, 'Test setPositionState with negative playback rate');
 
 test(() => {
-  assert_throws(
-      new TypeError,
+  assert_throws_js(
+      TypeError,
       _ => {
         window.navigator.mediaSession.setPositionState({
           duration: -1
@@ -64,8 +60,8 @@ test(() => {
 }, 'Test setPositionState throws a TypeError if duration is negative');
 
 test(() => {
-  assert_throws(
-      new TypeError,
+  assert_throws_js(
+      TypeError,
       _ => {
         window.navigator.mediaSession.setPositionState({
           duration: 10,
@@ -75,8 +71,8 @@ test(() => {
 }, 'Test setPositionState throws a TypeError if position is negative');
 
 test(() => {
-  assert_throws(
-      new TypeError,
+  assert_throws_js(
+      TypeError,
       _ => {
         window.navigator.mediaSession.setPositionState({
           duration: 10,
@@ -86,8 +82,8 @@ test(() => {
 }, 'Test setPositionState throws a TypeError if duration is less than position');
 
 test(() => {
-  assert_throws(
-      new TypeError,
+  assert_throws_js(
+      TypeError,
       _ => {
         window.navigator.mediaSession.setPositionState({
           duration: 60.9,
@@ -98,8 +94,8 @@ test(() => {
 }, 'Test setPositionState throws a TypeError if playback rate is zero');
 
 test(() => {
-  assert_throws(
-      new TypeError,
+  assert_throws_js(
+      TypeError,
       _ => {
         window.navigator.mediaSession.setPositionState({
           position: 10.1,

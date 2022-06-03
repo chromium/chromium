@@ -8,15 +8,15 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/frame_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_scheduler_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/main_thread/main_thread_task_queue.h"
-#include "third_party/blink/renderer/platform/scheduler/main_thread/web_scheduling_task_queue_impl.h"
 #include "third_party/blink/renderer/platform/scheduler/public/web_scheduling_priority.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 namespace blink {
 namespace scheduler {
@@ -68,7 +68,7 @@ FrameTaskQueueController::NewWebSchedulingTaskQueue(
     QueueTraits queue_traits,
     WebSchedulingPriority priority) {
   // Note: we only track this |task_queue| in |all_task_queues_and_voters_|.
-  // It's interacted with through the WebSchedulingTaskQueueImpl that
+  // It's interacted with through the MainThreadWebSchedulingTaskQueueImpl that
   // will wrap it, rather than through this class like other task queues.
   scoped_refptr<MainThreadTaskQueue> task_queue =
       main_thread_scheduler_impl_->NewTaskQueue(
@@ -79,6 +79,12 @@ FrameTaskQueueController::NewWebSchedulingTaskQueue(
               .SetFrameScheduler(frame_scheduler_impl_));
   TaskQueueCreated(task_queue);
   return task_queue;
+}
+
+void FrameTaskQueueController::RemoveWebSchedulingTaskQueue(
+    MainThreadTaskQueue* queue) {
+  DCHECK(queue);
+  RemoveTaskQueueAndVoter(queue);
 }
 
 void FrameTaskQueueController::CreateTaskQueue(
@@ -93,31 +99,7 @@ void FrameTaskQueueController::CreateTaskQueue(
   queue_creation_params =
       queue_creation_params
           .SetQueueTraits(queue_traits)
-          // Freeze when keep active is currently only set for the
-          // throttleable queue.
-          // TODO(altimin): Figure out how to set this for new queues.
-          // Investigate which tasks must be kept alive, and if possible
-          // move them to an unfreezable queue and remove this override and
-          // the page scheduler KeepActive freezing override.
-          .SetFreezeWhenKeepActive(queue_traits.can_be_throttled)
           .SetFrameScheduler(frame_scheduler_impl_);
-
-  switch (queue_traits.prioritisation_type) {
-    case QueueTraits::PrioritisationType::kVeryHigh:
-      queue_creation_params = queue_creation_params.SetFixedPriority(
-        TaskQueue::QueuePriority::kVeryHighPriority);
-      break;
-    case QueueTraits::PrioritisationType::kHigh:
-      queue_creation_params = queue_creation_params.SetFixedPriority(
-        TaskQueue::QueuePriority::kHighPriority);
-      break;
-    case QueueTraits::PrioritisationType::kBestEffort:
-      queue_creation_params = queue_creation_params.SetFixedPriority(
-        TaskQueue::QueuePriority::kBestEffortPriority);
-      break;
-    default:
-      break;
-  }
 
   scoped_refptr<MainThreadTaskQueue> task_queue =
       main_thread_scheduler_impl_->NewTaskQueue(queue_creation_params);
@@ -130,18 +112,33 @@ void FrameTaskQueueController::TaskQueueCreated(
   DCHECK(task_queue);
 
   std::unique_ptr<QueueEnabledVoter> voter =
-      task_queue->CreateQueueEnabledVoter();
+      task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
 
   delegate_->OnTaskQueueCreated(task_queue.get(), voter.get());
 
   all_task_queues_and_voters_.push_back(
       TaskQueueAndEnabledVoterPair(task_queue.get(), voter.get()));
 
-  if (voter) {
-    DCHECK(task_queue_enabled_voters_.find(task_queue) ==
-           task_queue_enabled_voters_.end());
-    task_queue_enabled_voters_.insert(task_queue, std::move(voter));
+  DCHECK(task_queue_enabled_voters_.find(task_queue) ==
+         task_queue_enabled_voters_.end());
+  task_queue_enabled_voters_.insert(task_queue, std::move(voter));
+}
+
+void FrameTaskQueueController::RemoveTaskQueueAndVoter(
+    MainThreadTaskQueue* queue) {
+  DCHECK(task_queue_enabled_voters_.Contains(queue));
+  task_queue_enabled_voters_.erase(queue);
+
+  bool found_task_queue = false;
+  for (auto* it = all_task_queues_and_voters_.begin();
+       it != all_task_queues_and_voters_.end(); ++it) {
+    if (it->first == queue) {
+      found_task_queue = true;
+      all_task_queues_and_voters_.erase(it);
+      break;
+    }
   }
+  DCHECK(found_task_queue);
 }
 
 base::sequence_manager::TaskQueue::QueueEnabledVoter*
@@ -160,35 +157,15 @@ bool FrameTaskQueueController::RemoveResourceLoadingTaskQueue(
   if (!resource_loading_task_queues_.Contains(task_queue))
     return false;
   resource_loading_task_queues_.erase(task_queue);
-  DCHECK(task_queue_enabled_voters_.Contains(task_queue));
-  task_queue_enabled_voters_.erase(task_queue);
-
-  bool found_task_queue = false;
-  for (auto* it = all_task_queues_and_voters_.begin();
-       it != all_task_queues_and_voters_.end(); ++it) {
-    if (it->first == task_queue.get()) {
-      found_task_queue = true;
-      all_task_queues_and_voters_.erase(it);
-      break;
-    }
-  }
-  DCHECK(found_task_queue);
+  RemoveTaskQueueAndVoter(task_queue.get());
   return true;
 }
 
-void FrameTaskQueueController::AsValueInto(
-    base::trace_event::TracedValue* state) const {
-  state->BeginArray("task_queues");
-  for (const auto it : task_queues_) {
-    state->AppendString(PointerToString(it.value.get()));
-  }
-  state->EndArray();
-
-  state->BeginArray("resource_loading_task_queues");
-  for (const auto& queue : resource_loading_task_queues_) {
-    state->AppendString(PointerToString(queue.get()));
-  }
-  state->EndArray();
+void FrameTaskQueueController::WriteIntoTrace(
+    perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("task_queues", task_queues_.Values());
+  dict.Add("resource_loading_task_queues", resource_loading_task_queues_);
 }
 
 // static

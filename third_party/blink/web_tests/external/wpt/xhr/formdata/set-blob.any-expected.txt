@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL blob without type assert_equals: should return the same value when get the same blob entry from FormData expected true but got false
+PASS blob with type
+PASS blob with custom name
+PASS file without lastModified or custom name
+PASS file with lastModified and custom name
+Harness: the test ran to completion.
+

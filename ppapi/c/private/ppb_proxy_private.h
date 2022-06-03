@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_C_PRIVATE_PROXY_PRIVATE_H_
-#define PPAPI_C_PRIVATE_PROXY_PRIVATE_H_
+#ifndef PPAPI_C_PRIVATE_PPB_PROXY_PRIVATE_H_
+#define PPAPI_C_PRIVATE_PPB_PROXY_PRIVATE_H_
 
 #include "ppapi/c/pp_bool.h"
 #include "ppapi/c/pp_instance.h"
@@ -44,4 +44,4 @@ struct PPB_Proxy_Private {
   PP_Bool (*IsInModuleDestructor)(PP_Module module);
 };
 
-#endif  // PPAPI_C_PRIVATE_PROXY_PRIVATE_H_
+#endif  // PPAPI_C_PRIVATE_PPB_PROXY_PRIVATE_H_

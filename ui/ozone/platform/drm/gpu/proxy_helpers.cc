@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/bind.h"
+
 namespace ui {
 
 void PostSyncTask(

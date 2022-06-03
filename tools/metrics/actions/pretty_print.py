@@ -13,7 +13,7 @@ import presubmit_util
 
 def main(argv):
   presubmit_util.DoPresubmitMain(argv, 'actions.xml', 'actions.old.xml',
-                                 'pretty_print.py', extract_actions.UpdateXml)
+                                 extract_actions.UpdateXml)
 
 
 if '__main__' == __name__:

@@ -5,17 +5,34 @@
 #ifndef UI_AURA_TEST_X11_EVENT_SENDER_H_
 #define UI_AURA_TEST_X11_EVENT_SENDER_H_
 
-#include "ui/gfx/x/x11_types.h"
-
-using XEvent = union _XEvent;
+#include "ui/aura/window_tree_host.h"
+#include "ui/base/x/x11_util.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/xproto_util.h"
 
 namespace aura {
 
-class WindowTreeHost;
-
 namespace test {
 
-void PostEventToWindowTreeHost(const XEvent& xevent, WindowTreeHost* host);
+// The root, time, root_x, and root_y fields of |xevent| may be modified.
+template <typename T>
+void PostEventToWindowTreeHost(WindowTreeHost* host, T* xevent) {
+  auto* connection = x11::Connection::Get();
+  x11::Window xwindow = static_cast<x11::Window>(host->GetAcceleratedWidget());
+  xevent->event = xwindow;
+
+  xevent->root = connection->default_root();
+  xevent->time = x11::Time::CurrentTime;
+
+  gfx::Point point(xevent->event_x, xevent->event_y);
+  host->ConvertDIPToScreenInPixels(&point);
+  xevent->root_x = point.x();
+  xevent->root_y = point.y();
+
+  x11::SendEvent(*xevent, xwindow, x11::EventMask::NoEvent);
+  connection->Flush();
+}
 
 }  // namespace test
 }  // namespace aura

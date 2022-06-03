@@ -22,6 +22,7 @@
 
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_func_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_func_b_element.h"
 #include "third_party/blink/renderer/core/svg/svg_fe_func_g_element.h"
@@ -39,20 +40,20 @@ SVGFEComponentTransferElement::SVGFEComponentTransferElement(Document& document)
   AddToPropertyMap(in1_);
 }
 
-void SVGFEComponentTransferElement::Trace(blink::Visitor* visitor) {
+void SVGFEComponentTransferElement::Trace(Visitor* visitor) const {
   visitor->Trace(in1_);
   SVGFilterPrimitiveStandardAttributes::Trace(visitor);
 }
 
 void SVGFEComponentTransferElement::SvgAttributeChanged(
-    const QualifiedName& attr_name) {
-  if (attr_name == svg_names::kInAttr) {
+    const SvgAttributeChangedParams& params) {
+  if (params.name == svg_names::kInAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
     Invalidate();
     return;
   }
 
-  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(attr_name);
+  SVGFilterPrimitiveStandardAttributes::SvgAttributeChanged(params);
 }
 
 FilterEffect* SVGFEComponentTransferElement::Build(

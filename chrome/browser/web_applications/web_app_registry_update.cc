@@ -4,8 +4,8 @@
 
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 
-#include "base/bind_helpers.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 
@@ -21,7 +21,7 @@ bool RegistryUpdateData::IsEmpty() const {
 }
 
 WebAppRegistryUpdate::WebAppRegistryUpdate(const WebAppRegistrar* registrar,
-                                           util::PassKey<WebAppSyncBridge>)
+                                           base::PassKey<WebAppSyncBridge>)
     : registrar_(registrar) {
   DCHECK(registrar_);
   update_data_ = std::make_unique<RegistryUpdateData>();

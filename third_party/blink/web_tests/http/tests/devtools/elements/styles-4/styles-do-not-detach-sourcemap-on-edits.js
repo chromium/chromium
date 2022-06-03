@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests that source map is not detached on edits. crbug.com/257778\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
@@ -24,26 +24,26 @@
   }
 
   var testSuite = [
-    function editProperty(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    async function editProperty(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
 
       var treeItem = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
       treeItem.applyStyleText('NAME: VALUE', true);
       ElementsTestRunner.waitForStyles('container', next);
     },
 
-    function editSelector(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    async function editSelector(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
 
       var section = ElementsTestRunner.firstMatchedStyleSection();
       section.startEditingSelector();
-      section._selectorElement.textContent = '#container, SELECTOR';
+      section.selectorElement.textContent = '#container, SELECTOR';
       ElementsTestRunner.waitForSelectorCommitted(next);
-      section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+      section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     },
 
-    function editMedia(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    async function editMedia(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
 
       var section = ElementsTestRunner.firstMatchedStyleSection();
       var mediaTextElement = ElementsTestRunner.firstMediaTextElementInSection(section);
@@ -53,8 +53,8 @@
       mediaTextElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
     },
 
-    function addRule(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    async function addRule(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
 
       var styleSheetHeader = TestRunner.cssModel.styleSheetHeaders().find(
           header => header.resourceURL().indexOf('styles-do-not-detach-sourcemap-on-edits.css') !== -1);
@@ -66,8 +66,8 @@
       ElementsTestRunner.addNewRuleInStyleSheet(styleSheetHeader, 'NEW-RULE', next);
     },
 
-    function finish(next) {
-      ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    async function finish(next) {
+      await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
       next();
     },
   ];

@@ -9,10 +9,9 @@
 #include <atomic>
 #include <utility>
 
-#include "base/optional.h"
-#include "base/profiler/profile_builder.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -54,11 +53,11 @@ namespace base {
 //        allows readers to preallocate the data structure that we pass back
 //        the metadata in.
 //
-// C) We shouldn't guard writes with a lock that also guards reads. It can take
-//    ~30us from the time that the sampling thread requests that a thread be
-//    suspended and the time that it actually happens. If all metadata writes
-//    block their thread during that time, we're very likely to block all Chrome
-//    threads for an additional 30us per sample.
+// C) We shouldn't guard writes with a lock that also guards reads, since the
+//    read lock is held from the time that the sampling thread requests that a
+//    thread be suspended up to the time that the thread is resumed. If all
+//    metadata writes block their thread during that time, we're very likely to
+//    block all Chrome threads.
 //
 //      Ramifications:
 //
@@ -94,8 +93,8 @@ namespace base {
 //
 // - No thread is using the recorder.
 //
-// - A single writer is writing into the recorder without a simultaneous
-//   read. The write will succeed.
+// - A single writer is writing into the recorder without a simultaneous read.
+//   The write will succeed.
 //
 // - A reader is reading from the recorder without a simultaneous write. The
 //   read will succeed.
@@ -128,71 +127,77 @@ class BASE_EXPORT MetadataRecorder {
   MetadataRecorder(const MetadataRecorder&) = delete;
   MetadataRecorder& operator=(const MetadataRecorder&) = delete;
 
+  struct BASE_EXPORT Item {
+    Item(uint64_t name_hash, absl::optional<int64_t> key, int64_t value);
+    Item();
+
+    Item(const Item& other);
+    Item& operator=(const Item& other);
+
+    // The hash of the metadata name, as produced by HashMetricName().
+    uint64_t name_hash;
+    // The key if specified when setting the item.
+    absl::optional<int64_t> key;
+    // The value of the metadata item.
+    int64_t value;
+  };
+  static constexpr size_t MAX_METADATA_COUNT = 50;
+  typedef std::array<Item, MAX_METADATA_COUNT> ItemArray;
+
   // Sets a value for a (|name_hash|, |key|) pair, overwriting any value
   // previously set for the pair. Nullopt keys are treated as just another key
   // state for the purpose of associating values.
-  void Set(uint64_t name_hash, Optional<int64_t> key, int64_t value);
+  void Set(uint64_t name_hash, absl::optional<int64_t> key, int64_t value);
 
   // Removes the item with the specified name hash and optional key. Has no
   // effect if such an item does not exist.
-  void Remove(uint64_t name_hash, Optional<int64_t> key);
+  void Remove(uint64_t name_hash, absl::optional<int64_t> key);
 
-  // Creates a MetadataProvider object for the recorder, which acquires the
-  // necessary exclusive read lock and provides access to the recorder's items
-  // via its GetItems() function. Reclaiming of inactive slots in the recorder
-  // can't occur while this object lives, so it should be created as soon before
-  // it's needed as possible. Calling GetItems() releases the lock held by the
-  // object and can therefore only be called once during the object's lifetime.
+  // An object that provides access to a MetadataRecorder's items and holds the
+  // necessary exclusive read lock until the object is destroyed. Reclaiming of
+  // inactive slots in the recorder can't occur while this object lives, so it
+  // should be created as soon before it's needed as possible and released as
+  // soon as possible.
   //
-  // This object should be created *before* suspending the target
-  // thread. Otherwise, that thread might be suspended while reclaiming inactive
-  // slots and holding the read lock, which would cause the sampling thread to
-  // deadlock.
+  // This object should be created *before* suspending the target thread and
+  // destroyed after resuming the target thread. Otherwise, that thread might be
+  // suspended while reclaiming inactive slots and holding the read lock, which
+  // would cause the sampling thread to deadlock.
   //
   // Example usage:
   //
   //   MetadataRecorder r;
-  //   base::ProfileBuilder::MetadataItemArray arr;
+  //   base::MetadataRecorder::ItemArray arr;
   //   size_t item_count;
   //   ...
   //   {
-  //     auto get_items = r.CreateMetadataProvider();
-  //     item_count = get_items.GetItems(arr);
+  //     MetadtaRecorder::MetadataProvider provider;
+  //     item_count = provider.GetItems(arr);
   //   }
-  std::unique_ptr<ProfileBuilder::MetadataProvider> CreateMetadataProvider();
-
- private:
-  // An object that provides access to a MetadataRecorder's items and holds the
-  // necessary exclusive read lock until either GetItems() is called or the
-  // object is destroyed.
-  //
-  // For usage and more details, see CreateMetadataProvider().
-  class SCOPED_LOCKABLE ScopedGetItems
-      : public ProfileBuilder::MetadataProvider {
+  class SCOPED_LOCKABLE BASE_EXPORT MetadataProvider {
    public:
     // Acquires an exclusive read lock on the metadata recorder which is held
-    // until either GetItems() is called or the object is destroyed.
-    ScopedGetItems(MetadataRecorder* metadata_recorder)
-        EXCLUSIVE_LOCK_FUNCTION(metadata_recorder->read_lock_);
-    ~ScopedGetItems() override UNLOCK_FUNCTION(metadata_recorder_->read_lock_);
-    ScopedGetItems(const ScopedGetItems&) = delete;
-    ScopedGetItems& operator=(const ScopedGetItems&) = delete;
+    // until the object is destroyed.
+    explicit MetadataProvider(MetadataRecorder* metadata_recorder)
+        EXCLUSIVE_LOCK_FUNCTION(metadata_recorder_->read_lock_);
+    ~MetadataProvider() UNLOCK_FUNCTION();
+    MetadataProvider(const MetadataProvider&) = delete;
+    MetadataProvider& operator=(const MetadataProvider&) = delete;
 
     // Retrieves the first |available_slots| items in the metadata recorder and
     // copies them into |items|, returning the number of metadata items that
     // were copied. To ensure that all items can be copied, |available slots|
-    // should be greater than or equal to |MAX_METADATA_COUNT|.
-    //
-    // This function releases the lock held by the object and can therefore only
-    // be called once during the object's lifetime.
-    size_t GetItems(ProfileBuilder::MetadataItemArray* const items) override
-        EXCLUSIVE_LOCKS_REQUIRED(metadata_recorder_->read_lock_);
+    // should be greater than or equal to |MAX_METADATA_COUNT|. Requires
+    // NO_THREAD_SAFETY_ANALYSIS because clang's analyzer doesn't understand the
+    // cross-class locking used in this class' implementation.
+    size_t GetItems(ItemArray* const items) const NO_THREAD_SAFETY_ANALYSIS;
 
    private:
     const MetadataRecorder* const metadata_recorder_;
-    base::ReleasableAutoLock auto_lock_;
+    base::AutoLock auto_lock_;
   };
 
+ private:
   // TODO(charliea): Support large quantities of metadata efficiently.
   struct ItemInternal {
     ItemInternal();
@@ -213,7 +218,7 @@ class BASE_EXPORT MetadataRecorder {
     // |name_hash| and |key| will be finished writing before |is_active| is set
     // to true.
     uint64_t name_hash;
-    Optional<int64_t> key;
+    absl::optional<int64_t> key;
 
     // Requires atomic reads and writes to avoid word tearing when updating an
     // existing item unsynchronized. Does not require acquire/release semantics
@@ -228,17 +233,14 @@ class BASE_EXPORT MetadataRecorder {
   // after the reclamation.
   size_t TryReclaimInactiveSlots(size_t item_slots_used)
       EXCLUSIVE_LOCKS_REQUIRED(write_lock_) LOCKS_EXCLUDED(read_lock_);
-  // Also protected by read_lock_, but current thread annotation limitations
-  // prevent us from using thread annotations with locks acquired through
-  // Lock::Try(). Updates item_slots_used_ to reflect the new item count and
-  // returns the number of item slots used after the reclamation.
+  // Updates item_slots_used_ to reflect the new item count and returns the
+  // number of item slots used after the reclamation.
   size_t ReclaimInactiveSlots(size_t item_slots_used)
-      EXCLUSIVE_LOCKS_REQUIRED(write_lock_);
+      EXCLUSIVE_LOCKS_REQUIRED(write_lock_)
+          EXCLUSIVE_LOCKS_REQUIRED(read_lock_);
 
-  // Protected by read_lock_, but current thread annotation limitations
-  // prevent us from using thread annotations with locks acquired through
-  // Lock::Try().
-  size_t GetItems(ProfileBuilder::MetadataItemArray* const items) const;
+  size_t GetItems(ItemArray* const items) const
+      EXCLUSIVE_LOCKS_REQUIRED(read_lock_);
 
   // Metadata items that the recorder has seen. Rather than implementing the
   // metadata recorder as a dense array, we implement it as a sparse array where
@@ -248,7 +250,7 @@ class BASE_EXPORT MetadataRecorder {
   //
   // For the rationale behind this design (along with others considered), see
   // https://docs.google.com/document/d/18shLhVwuFbLl_jKZxCmOfRB98FmNHdKl0yZZZ3aEO4U/edit#.
-  std::array<ItemInternal, ProfileBuilder::MAX_METADATA_COUNT> items_;
+  std::array<ItemInternal, MAX_METADATA_COUNT> items_;
 
   // The number of item slots used in the metadata map.
   //
@@ -267,11 +269,6 @@ class BASE_EXPORT MetadataRecorder {
 
   // A lock that guards against a reader trying to read items_ while inactive
   // slots are being reclaimed.
-  //
-  // Note that we can't enforce that this lock is properly acquired through
-  // thread annotations because thread annotations doesn't understand that
-  // ScopedGetItems::GetItems() can only be called between ScopedGetItems's
-  // constructor and destructor.
   base::Lock read_lock_;
 };
 

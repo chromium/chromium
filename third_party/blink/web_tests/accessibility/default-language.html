@@ -11,21 +11,26 @@
   <script>
     setup(() => {
       window.languages = internals.userPreferredLanguages();
+      window.axRoot = accessibilityController.rootElement;
       window.axBody = accessibilityController.accessibleElementById('body');
       window.axParagraph = accessibilityController.accessibleElementById('paragraph');
       window.axSpan = accessibilityController.accessibleElementById('span');
     });
 
     async_test((t) => {
-      assert_equals(window.axBody.language, 'AXLanguage: en-US',
+      assert_equals(window.axRoot.language, 'AXLanguage: en-US',
           'The browser language has not been changed yet.');
+      assert_equals(window.axBody.language, 'AXLanguage: ',
+          'The browser language should not inherit to body.');
 
       internals.setUserPreferredLanguages([ 'de' ]);
       t.step_timeout(() => {
-        assert_equals(window.axBody.language, 'AXLanguage: de',
+        assert_equals(window.axRoot.language, 'AXLanguage: de',
             'The browser language has changed.');
-        assert_equals(window.axParagraph.language, 'AXLanguage: de',
-            'The browser language has changed.');
+        assert_equals(window.axBody.language, 'AXLanguage: ',
+            'The browser language should not inherit to body after change.');
+        assert_equals(window.axParagraph.language, 'AXLanguage: ',
+            'The browser language should not inherit to paragraph after change.');
         assert_equals(window.axSpan.language, 'AXLanguage: pl',
             'The language of the span is controlled by the lang attribute.');
 

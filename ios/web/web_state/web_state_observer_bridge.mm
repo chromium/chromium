@@ -35,6 +35,15 @@ void WebStateObserverBridge::DidStartNavigation(
   }
 }
 
+void WebStateObserverBridge::DidRedirectNavigation(
+    web::WebState* web_state,
+    web::NavigationContext* navigation_context) {
+  SEL selector = @selector(webState:didRedirectNavigation:);
+  if ([observer_ respondsToSelector:selector]) {
+    [observer_ webState:web_state didRedirectNavigation:navigation_context];
+  }
+}
+
 void WebStateObserverBridge::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
@@ -135,6 +144,12 @@ void WebStateObserverBridge::WebFrameWillBecomeUnavailable(
 void WebStateObserverBridge::RenderProcessGone(web::WebState* web_state) {
   if ([observer_ respondsToSelector:@selector(renderProcessGoneForWebState:)]) {
     [observer_ renderProcessGoneForWebState:web_state];
+  }
+}
+
+void WebStateObserverBridge::WebStateRealized(web::WebState* web_state) {
+  if ([observer_ respondsToSelector:@selector(webStateRealized:)]) {
+    [observer_ webStateRealized:web_state];
   }
 }
 

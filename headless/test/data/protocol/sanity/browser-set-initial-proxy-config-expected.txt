@@ -1,0 +1,5 @@
+Tests that headless session can configure proxy.
+
+No proxy page title: Page with title
+Bogus proxy page title: 
+Good proxy page title: Page with title

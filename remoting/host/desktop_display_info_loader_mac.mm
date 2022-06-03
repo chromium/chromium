@@ -1,0 +1,83 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "remoting/host/desktop_display_info_loader.h"
+
+#include <Cocoa/Cocoa.h>
+
+#include "base/check.h"
+
+namespace remoting {
+
+namespace {
+
+constexpr int kDefaultScreenDpi = 96;
+
+class DesktopDisplayInfoLoaderMac : public DesktopDisplayInfoLoader {
+ public:
+  DesktopDisplayInfoLoaderMac() = default;
+  ~DesktopDisplayInfoLoaderMac() override = default;
+
+  DesktopDisplayInfo GetCurrentDisplayInfo() override;
+};
+
+DesktopDisplayInfo DesktopDisplayInfoLoaderMac::GetCurrentDisplayInfo() {
+  DesktopDisplayInfo result;
+
+  NSArray* screens = [NSScreen screens];
+  DCHECK(screens);
+
+  // Each display origin is the bottom left corner, so we need to record the
+  // height of the main display (#0) so that we can adjust the origin of
+  // the secondary displays.
+  int main_display_height = 0;
+
+  for (NSUInteger i = 0; i < [screens count]; ++i) {
+    auto info = std::make_unique<DisplayGeometry>();
+
+    NSScreen* screen = screens[i];
+    NSDictionary* device = [screen deviceDescription];
+    CGDirectDisplayID id =
+        static_cast<CGDirectDisplayID>([device[@"NSScreenNumber"] intValue]);
+    info->id = id;
+
+    float dsf = 1.0f;
+    if ([screen respondsToSelector:@selector(backingScaleFactor)])
+      dsf = [screen backingScaleFactor];
+
+    NSRect bounds = [screen frame];
+    int x = bounds.origin.x;
+    int y = bounds.origin.y;
+    int height = bounds.size.height;
+
+    if (i == 0) {
+      DCHECK(x == 0);
+      DCHECK(y == 0);
+      info->is_default = true;
+      main_display_height = height;
+    } else {
+      info->is_default = false;
+    }
+
+    info->x = x;
+    // Convert origin from lower left to upper left (based on main display).
+    info->y = main_display_height - y - height;
+    info->width = bounds.size.width;
+    info->height = height;
+    info->dpi = (int)(kDefaultScreenDpi * dsf);
+    info->bpp = 24;
+
+    result.AddDisplay(std::move(info));
+  }
+  return result;
+}
+
+}  // namespace
+
+// static
+std::unique_ptr<DesktopDisplayInfoLoader> DesktopDisplayInfoLoader::Create() {
+  return std::make_unique<DesktopDisplayInfoLoaderMac>();
+}
+
+}  // namespace remoting

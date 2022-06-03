@@ -9,7 +9,11 @@ gaia.chromeOSLogin.parent_webview_oob_url_ = 'chrome://oobe';
 gaia.chromeOSLogin.parent_webview_ = undefined;
 gaia.chromeOSLogin.parent_webview_url_ = undefined;
 gaia.chromeOSLogin.initialized_ = false;
+gaia.chromeOSLogin.shouldSendImplicitServices = true;
+gaia.chromeOSLogin.shouldSendCloseView = true;
 
+const urlParams = new URLSearchParams(window.location.search);
+const useNativeNavigation = !!urlParams.get('use_native_navigation');
 
 function goFirstPage() {
 console.error('On first page');
@@ -17,6 +21,8 @@ console.error('On first page');
   document.getElementById('page2').hidden = true;
   history.replaceState({}, '', window.location.pathname + '#identifier');
   gaia.chromeOSLogin.backButton(false);
+  sendSetPrimaryActionLabel('Next');
+  sendSetPrimaryActionEnabled(true);
 }
 
 gaia.chromeOSLogin.registerHtml5Listener = function() {
@@ -28,6 +34,10 @@ gaia.chromeOSLogin.registerHtml5Listener = function() {
         if (!gaia.chromeOSLogin.initialized_) {
           gaia.chromeOSLogin.initialized_ = true;
           goFirstPage();
+        } else if (e.data == 'primaryActionHit') {
+          goNext();
+        } else if (e.data == 'secondaryActionHit') {
+          sendSetSecondaryActionEnabled(false);
         }
     }
   };
@@ -46,6 +56,8 @@ gaia.chromeOSLogin.attemptLogin = function(email, password) {
   gaia.chromeOSLogin.parent_webview_.postMessage(msg,
       gaia.chromeOSLogin.parent_webview_url_);
 
+  if (!email || !password)
+    return;
   // SAML credential passing api for password.
   window.postMessage(
       {type: 'gaia_saml_api',
@@ -55,22 +67,20 @@ gaia.chromeOSLogin.attemptLogin = function(email, password) {
               passwordBytes: password,
               keyType: 'KEY_TYPE_PASSWORD_PLAIN'}
       }, '/');
-  var services = document.getElementById("services").value;
-  if (services) {
-    services = JSON.parse(services);
-    if (!services)
-      services = "Failed to parse test services JSON.";
-  } else if (email.endsWith('@corp.example.com') ||
-             email.endsWith('@example.test')) {
-    // SAML tests.
-    services = [];
-  } else {
-    services = "Services are not set for testing.";
-  }
+};
 
+gaia.chromeOSLogin.sendUserInfo = function(services) {
   msg = {
     'method': 'userInfo',
     'services': services,
+  };
+  gaia.chromeOSLogin.parent_webview_.postMessage(msg,
+      gaia.chromeOSLogin.parent_webview_url_);
+};
+
+gaia.chromeOSLogin.sendCloseView = function() {
+  msg = {
+    'method': 'closeView',
   };
   gaia.chromeOSLogin.parent_webview_.postMessage(msg,
       gaia.chromeOSLogin.parent_webview_url_);
@@ -111,14 +121,40 @@ function goNext() {
 
     gaia.chromeOSLogin.attemptLogin(email, "");
     gaia.chromeOSLogin.backButton(true);
+    sendSetPrimaryActionLabel('Next');
+    sendSetPrimaryActionEnabled(true);
+    sendSetSecondaryActionLabel('Disable button');
+    sendSetSecondaryActionEnabled(true);
   } else if (!document.getElementById("page2").hidden) {
     var email = document.getElementById("identifier").value;
     var password = document.getElementById("password").value;
+    var services = document.getElementById("services").value;
+    if (services) {
+      services = JSON.parse(services);
+      if (!services)
+        services = "Failed to parse test services JSON.";
+    } else if (email.endsWith('@corp.example.com') ||
+               email.endsWith('@example.test')) {
+      // SAML tests.
+      services = [];
+    } else {
+      console.warn("Services are not set for testing.");
+      if (gaia.chromeOSLogin.shouldSendImplicitServices)
+        services = []
+    }
 
     request = new XMLHttpRequest();
     request.open('POST', '/_/embedded/signin/challenge', true);
     request.onreadystatechange = function() {
       if (request.readyState == 4 && request.status == 200) {
+        if (request.getResponseHeader("fake-sync-trusted-vault-keys")) {
+          sendSyncTrustedVaultKeys(JSON.parse(
+              request.getResponseHeader("fake-sync-trusted-vault-keys")));
+        }
+        if (services)
+          gaia.chromeOSLogin.sendUserInfo(services);
+        if (gaia.chromeOSLogin.shouldSendCloseView)
+          gaia.chromeOSLogin.sendCloseView();
         history.pushState({}, "", window.location.pathname + "#close");
       }
     };
@@ -129,6 +165,9 @@ function goNext() {
 }
 
 function onLoad() {
+  if (useNativeNavigation) {
+    document.getElementById("nextButton").remove();
+  }
   gaia.chromeOSLogin.registerHtml5Listener();
 }
 
@@ -170,6 +209,44 @@ function sendSetAllActionsEnabled(enabled) {
       value: enabled
     },
     gaia.chromeOSLogin.parent_webview_url_);
+}
+
+function base64DecodeToArrayBuffer(encoded) {
+  // atob() decodes base64 strings into binary string.
+  var decoded = atob(encoded);
+  var buffer = new ArrayBuffer(decoded.length);
+  var view = new Uint8Array(buffer);
+  for (var i = 0; i < decoded.length; i++) {
+    view[i] = decoded.charCodeAt(i);
+  }
+  return buffer;
+}
+
+// FakeGaia sends the keys in a JSON format that requires some conversion before
+// posting to authenticator.js, due to the use of binary blobs in the API.
+function convertSyncTrustedVaultKeys(fakeKeys) {
+  var keys = {
+    obfuscatedGaiaId: fakeKeys.obfuscatedGaiaId,
+    encryptionKeys: [
+      {keyMaterial: base64DecodeToArrayBuffer(fakeKeys.fakeEncryptionKeyMaterial),
+       version: fakeKeys.fakeEncryptionKeyVersion}
+    ],
+    trustedRecoveryMethods: []
+  };
+  for (var i = 0; i < fakeKeys.fakeTrustedRecoveryMethods.length; i++) {
+    keys.trustedRecoveryMethods.push(
+      {publicKey: base64DecodeToArrayBuffer(fakeKeys.fakeTrustedRecoveryMethods[i].publicKey),
+       type: fakeKeys.fakeTrustedRecoveryMethods[i].type});
+  }
+  return keys;
+}
+
+function sendSyncTrustedVaultKeys(fakeKeys) {
+  gaia.chromeOSLogin.parent_webview_.postMessage({
+    method: 'syncTrustedVaultKeys',
+    value: convertSyncTrustedVaultKeys(fakeKeys)
+  },
+  gaia.chromeOSLogin.parent_webview_url_);
 }
 </script>
 </head>

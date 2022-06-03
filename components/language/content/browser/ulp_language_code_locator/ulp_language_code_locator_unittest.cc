@@ -10,7 +10,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
 #include "components/language/content/browser/ulp_language_code_locator/s2langquadtree.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"

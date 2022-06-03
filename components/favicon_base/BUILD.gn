@@ -34,9 +34,7 @@ static_library("favicon_base") {
     "//ui/gfx/geometry",
     "//url",
   ]
-  public_deps = [
-    "//skia",
-  ]
+  public_deps = [ "//skia" ]
 }
 
 source_set("unit_tests") {
@@ -57,9 +55,7 @@ source_set("unit_tests") {
 }
 
 fuzzer_test("favicon_url_parser_fuzzer") {
-  sources = [
-    "favicon_url_parser_fuzzer.cc",
-  ]
+  sources = [ "favicon_url_parser_fuzzer.cc" ]
 
   deps = [
     ":favicon_base",
@@ -70,8 +66,6 @@ fuzzer_test("favicon_url_parser_fuzzer") {
 
 if (is_android) {
   java_cpp_enum("favicon_base_enums_java") {
-    sources = [
-      "favicon_types.h",
-    ]
+    sources = [ "favicon_types.h" ]
   }
 }

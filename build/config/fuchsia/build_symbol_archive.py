@@ -43,7 +43,7 @@ def main(args):
 
     # Exclude stripped binaries (indicated by their lack of symbol tables).
     readelf_output = subprocess.check_output(
-        ['readelf', '-S', symbol_source_path])
+        ['readelf', '-S', symbol_source_path], universal_newlines=True)
     if not '.symtab' in readelf_output:
       continue
 

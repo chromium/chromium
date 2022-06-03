@@ -31,7 +31,7 @@ enum IDBDataLossAmount { "none", "total" };
 [
     Exposed=(Window,Worker)
 ] interface IDBVersionChangeEvent : Event {
-    constructor(DOMString type, optional IDBVersionChangeEventInit eventInitDict);
+    constructor(DOMString type, optional IDBVersionChangeEventInit eventInitDict = {});
     readonly attribute unsigned long long oldVersion;
     readonly attribute unsigned long long? newVersion;
 

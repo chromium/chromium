@@ -24,6 +24,9 @@ class WtsTerminalMonitor {
   // The console terminal ID.
   static const char kConsole[];
 
+  WtsTerminalMonitor(const WtsTerminalMonitor&) = delete;
+  WtsTerminalMonitor& operator=(const WtsTerminalMonitor&) = delete;
+
   virtual ~WtsTerminalMonitor();
 
   // Registers an observer to receive notifications about a particular WTS
@@ -51,9 +54,6 @@ class WtsTerminalMonitor {
 
  protected:
   WtsTerminalMonitor();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WtsTerminalMonitor);
 };
 
 }  // namespace remoting

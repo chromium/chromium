@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_left_image_consumer.h"
@@ -15,18 +16,16 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AutocompleteResult;
+class ChromeBrowserState;
 class GURL;
 class WebOmniboxEditController;
 struct AutocompleteMatch;
 @class OmniboxTextFieldIOS;
 @class OmniboxTextFieldPasteDelegate;
-@protocol OmniboxFocuser;
-
-namespace ios {
-class ChromeBrowserState;
-}
+@protocol OmniboxCommands;
 
 // iOS implementation of OmniBoxView.  Wraps a UITextField and
 // interfaces with the rest of the autocomplete system.
@@ -38,8 +37,10 @@ class OmniboxViewIOS : public OmniboxView,
   OmniboxViewIOS(OmniboxTextFieldIOS* field,
                  WebOmniboxEditController* controller,
                  id<OmniboxLeftImageConsumer> left_image_consumer,
-                 ios::ChromeBrowserState* browser_state,
-                 id<OmniboxFocuser> omnibox_focuser);
+                 ChromeBrowserState* browser_state,
+                 id<OmniboxCommands> omnibox_focuser);
+
+  ~OmniboxViewIOS() override;
 
   void SetPopupProvider(OmniboxPopupProvider* provider) {
     popup_provider_ = provider;
@@ -51,27 +52,65 @@ class OmniboxViewIOS : public OmniboxView,
       security_state::SecurityLevel security_level,
       bool in_dark_mode);
 
+  void OnReceiveClipboardURLForOpenMatch(
+      const AutocompleteMatch& match,
+      WindowOpenDisposition disposition,
+      const GURL& alternate_nav_url,
+      const std::u16string& pasted_text,
+      size_t selected_line,
+      base::TimeTicks match_selection_timestamp,
+      absl::optional<GURL> optional_gurl);
+
+  void OnReceiveClipboardTextForOpenMatch(
+      const AutocompleteMatch& match,
+      WindowOpenDisposition disposition,
+      const GURL& alternate_nav_url,
+      const std::u16string& pasted_text,
+      size_t selected_line,
+      base::TimeTicks match_selection_timestamp,
+      absl::optional<std::u16string> optional_text);
+
+  void OnReceiveClipboardImageForOpenMatch(
+      const AutocompleteMatch& match,
+      WindowOpenDisposition disposition,
+      const GURL& alternate_nav_url,
+      const std::u16string& pasted_text,
+      size_t selected_line,
+      base::TimeTicks match_selection_timestamp,
+      absl::optional<gfx::Image> optional_image);
+
+  void OnReceiveImageMatchForOpenMatch(
+      WindowOpenDisposition disposition,
+      const GURL& alternate_nav_url,
+      const std::u16string& pasted_text,
+      size_t selected_line,
+      base::TimeTicks match_selection_timestamp,
+      absl::optional<AutocompleteMatch> optional_match);
+
   // OmniboxView implementation.
   void OpenMatch(const AutocompleteMatch& match,
                  WindowOpenDisposition disposition,
                  const GURL& alternate_nav_url,
-                 const base::string16& pasted_text,
+                 const std::u16string& pasted_text,
                  size_t selected_line,
                  base::TimeTicks match_selection_timestamp) override;
-  base::string16 GetText() const override;
-  void SetWindowTextAndCaretPos(const base::string16& text,
+  std::u16string GetText() const override;
+  void SetWindowTextAndCaretPos(const std::u16string& text,
                                 size_t caret_pos,
                                 bool update_popup,
                                 bool notify_text_changed) override;
   void SetCaretPos(size_t caret_pos) override;
   void RevertAll() override;
   void UpdatePopup() override;
-  void OnTemporaryTextMaybeChanged(const base::string16& display_text,
+  void OnTemporaryTextMaybeChanged(const std::u16string& display_text,
                                    const AutocompleteMatch& match,
                                    bool save_original_selection,
                                    bool notify_text_changed) override;
-  bool OnInlineAutocompleteTextMaybeChanged(const base::string16& display_text,
-                                            size_t user_text_length) override;
+  void OnInlineAutocompleteTextMaybeChanged(
+      const std::u16string& display_text,
+      std::vector<gfx::Range> selections,
+      const std::u16string& prefix_autocompletion,
+      const std::u16string& inline_autocompletion) override;
   void OnBeforePossibleChange() override;
   bool OnAfterPossibleChange(bool allow_keyword_ui_change) override;
   bool IsImeComposing() const override;
@@ -79,15 +118,17 @@ class OmniboxViewIOS : public OmniboxView,
 
   // OmniboxView stubs.
   void Update() override {}
+  void SetAdditionalText(const std::u16string& text) override {}
   void EnterKeywordModeForDefaultSearchProvider() override {}
   bool IsSelectAll() const override;
-  void GetSelectionBounds(base::string16::size_type* start,
-                          base::string16::size_type* end) const override;
+  void GetSelectionBounds(std::u16string::size_type* start,
+                          std::u16string::size_type* end) const override;
+  size_t GetAllSelectionsLength() const override;
   void SelectAll(bool reversed) override {}
   void SetFocus(bool is_user_initiated) override {}
   void ApplyCaretVisibility() override {}
   void OnInlineAutocompleteTextCleared() override {}
-  void OnRevertTemporaryText(const base::string16& display_text,
+  void OnRevertTemporaryText(const std::u16string& display_text,
                              const AutocompleteMatch& match) override {}
   gfx::NativeView GetNativeView() const override;
   gfx::NativeView GetRelativeWindowForPopup() const override;
@@ -110,18 +151,18 @@ class OmniboxViewIOS : public OmniboxView,
   void OnSelectedMatchImageChanged(
       bool has_match,
       AutocompleteMatchType::Type match_type,
-      base::Optional<SuggestionAnswer::AnswerType> answer_type,
+      absl::optional<SuggestionAnswer::AnswerType> answer_type,
       GURL favicon_url) override;
   void OnResultsChanged(const AutocompleteResult& result) override;
   void OnPopupDidScroll() override;
-  void OnSelectedMatchForAppending(const base::string16& str) override;
+  void OnSelectedMatchForAppending(const std::u16string& str) override;
   void OnSelectedMatchForOpening(AutocompleteMatch match,
                                  WindowOpenDisposition disposition,
                                  const GURL& alternate_nav_url,
-                                 const base::string16& pasted_text,
+                                 const std::u16string& pasted_text,
                                  size_t index) override;
 
-  ios::ChromeBrowserState* browser_state() { return browser_state_; }
+  ChromeBrowserState* browser_state() { return browser_state_; }
 
   // Updates this edit view to show the proper text, highlight and images.
   void UpdateAppearance();
@@ -144,13 +185,9 @@ class OmniboxViewIOS : public OmniboxView,
   // Returns |true| if AutocompletePopupView is currently open.
   BOOL IsPopupOpen();
 
-  // Returns the resource ID of the icon to show for the current text. Takes
-  // into account the security level of the page, and |offline_page|.
-  int GetIcon(bool offline_page) const;
-
  protected:
   int GetOmniboxTextLength() const override;
-  void EmphasizeURLComponents() override;
+  void EmphasizeURLComponents() override {}
 
  private:
   void SetEmphasis(bool emphasize, const gfx::Range& range) override {}
@@ -158,7 +195,7 @@ class OmniboxViewIOS : public OmniboxView,
 
   // Calculates text attributes according to |display_text| and
   // returns them in an autoreleased object.
-  NSAttributedString* ApplyTextAttributes(const base::string16& text);
+  NSAttributedString* ApplyTextAttributes(const std::u16string& text);
 
   // Removes the query refinement chip from the omnibox.
   void RemoveQueryRefinementChip();
@@ -171,7 +208,7 @@ class OmniboxViewIOS : public OmniboxView,
   // TODO(crbug.com/303212): Remove this workaround once the crash is fixed.
   bool ShouldIgnoreUserInputDueToPendingVoiceSearch();
 
-  ios::ChromeBrowserState* browser_state_;
+  ChromeBrowserState* browser_state_;
 
   OmniboxTextFieldIOS* field_;
 
@@ -180,7 +217,7 @@ class OmniboxViewIOS : public OmniboxView,
   __weak id<OmniboxLeftImageConsumer> left_image_consumer_;
   // Focuser, used to transition the location bar to focused/defocused state as
   // necessary.
-  __weak id<OmniboxFocuser> omnibox_focuser_;
+  __weak id<OmniboxCommands> omnibox_focuser_;
 
   State state_before_change_;
   NSString* marked_text_before_change_;
@@ -193,15 +230,14 @@ class OmniboxViewIOS : public OmniboxView,
   // popup, and then remove this hack.  b/5877366.
   BOOL ignore_popup_updates_;
 
-  // iOS 10.3 fails to apply the strikethrough style unless an extra style is
-  // also applied. See https://crbug.com/699702 for discussion.
-  BOOL use_strikethrough_workaround_;
-
   // Temporary pointer to the attributed display string, stored as color and
   // other emphasis attributes are applied by the superclass.
   NSMutableAttributedString* attributing_display_string_;
 
   OmniboxPopupProvider* popup_provider_;  // weak
+
+  // Used to cancel clipboard callbacks if this is deallocated;
+  base::WeakPtrFactory<OmniboxViewIOS> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_OMNIBOX_VIEW_IOS_H_

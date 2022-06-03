@@ -12,9 +12,18 @@
 
 // Returns a ChromeIdentity based on |email|, |gaiaID| and |name|.
 // The |hashedGaiaID| property will be derived from |name|.
+// For simplicity, both |userGivenName| and |userFullName| properties use
+// |name|.
 + (FakeChromeIdentity*)identityWithEmail:(NSString*)email
                                   gaiaID:(NSString*)gaiaID
                                     name:(NSString*)name;
+
+// Redeclared as readwrite.
+@property(strong, nonatomic, readwrite) NSString* userEmail;
+@property(strong, nonatomic, readwrite) NSString* gaiaID;
+@property(strong, nonatomic, readwrite) NSString* userFullName;
+@property(strong, nonatomic, readwrite) NSString* userGivenName;
+@property(strong, nonatomic, readwrite) NSString* hashedGaiaID;
 
 @end
 

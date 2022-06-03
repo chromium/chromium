@@ -18,14 +18,14 @@ namespace syncer {
 class SyncAuthProvider {
  public:
   using RequestTokenCallback =
-      base::Callback<void(const GoogleServiceAuthError& error,
-                          const std::string& token)>;
+      base::OnceCallback<void(const GoogleServiceAuthError& error,
+                              const std::string& token)>;
 
   virtual ~SyncAuthProvider() {}
 
   // Request access token for sync. Callback will be called with error and
   // access token. If error is anything other than NONE then token is invalid.
-  virtual void RequestAccessToken(const RequestTokenCallback& callback) = 0;
+  virtual void RequestAccessToken(RequestTokenCallback callback) = 0;
 
   // Invalidate access token that was rejected by sync server.
   virtual void InvalidateAccessToken(const std::string& token) = 0;

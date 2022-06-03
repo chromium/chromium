@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -25,8 +24,7 @@ class ImageDecoder;
 // Enumerate the possible image fetcher combinations to allow the service to
 // configure the correct one. New values should be added at the end and things
 // should not be renumbered.
-// GENERATED_JAVA_ENUM_PACKAGE: (
-// org.chromium.chrome.browser.image_fetcher)
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.image_fetcher
 enum class ImageFetcherConfig {
   kNetworkOnly = 0,
   kDiskCacheOnly = 1,
@@ -52,6 +50,10 @@ class ImageFetcherService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<ImageCache> image_cache,
       bool read_only);
+
+  ImageFetcherService(const ImageFetcherService&) = delete;
+  ImageFetcherService& operator=(const ImageFetcherService&) = delete;
+
   ~ImageFetcherService() override;
 
   // Get an image fetcher according to the given config.
@@ -70,8 +72,6 @@ class ImageFetcherService : public KeyedService {
   // This fetcher goes through a disk cache before going to the network, but
   // defers image transcoding when fetching.
   std::unique_ptr<ImageFetcher> reduced_mode_image_fetcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherService);
 };
 
 }  // namespace image_fetcher

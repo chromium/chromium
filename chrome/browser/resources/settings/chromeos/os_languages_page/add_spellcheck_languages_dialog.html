@@ -1,0 +1,112 @@
+<!-- TODO(crbug.com/1201535): Refactor this and os_add_languages_dialog to share
+     code. -->
+
+<style include="settings-shared iron-flex shared-style">
+  #dialogBody {
+    display: flex;
+    flex-direction: column;
+    height: 336px;
+    overflow: auto;
+  }
+
+  cr-search-field {
+    margin-bottom: 8px;
+  }
+
+  .label {
+    padding-bottom: 4px;
+    padding-top: 8px;
+  }
+
+  .list-item {
+    color: var(--cros-text-color-primary);
+    left: 0;
+    min-height: 36px;
+    right: 0;
+    width: inherit;
+  }
+
+  /* Allows the first focused list-item's (of any iron-list) applied
+   * ink droplet to show entirely. */
+  .list-item:first-of-type {
+    margin-top: 4px;
+  }
+
+  cr-checkbox::part(label-container) {
+    white-space: nowrap;
+  }
+
+  cr-dialog [slot=body] {
+    padding-inline-end: 0;
+    padding-inline-start: 0;
+  }
+
+  /* Adds spacing to elements that have the same width as the dialog.
+   * This is added in lieu of adding padding to the cr-dialog to show
+   * the ink droplets applied on focused checkboxes entirely. */
+  cr-dialog [slot=body] .is-width-of-dialog {
+    margin-inline-end: var(--dialog-horizontal-padding);
+    margin-inline-start: var(--dialog-horizontal-padding);
+  }
+</style>
+
+<cr-dialog id="dialog" close-text="$i18n{close}" show-on-attach>
+  <div slot="title">$i18n{addSpellCheckLanguagesTitle}</div>
+  <div id="dialogBody" slot="body" scrollable>
+    <cr-search-field label="$i18n{searchSpellCheckLanguagesLabel}" id="search"
+        on-search-changed="onSearchChanged_" on-keydown="onKeydown_"
+        class="is-width-of-dialog"
+        clear-label="$i18n{clearSearch}" autofocus>
+    </cr-search-field>
+    <template is="dom-if" if="[[showSuggestedList_]]">
+      <div id="suggestedLanguages">
+        <div class="label is-width-of-dialog">
+          $i18n{suggestedSpellcheckLanguages}
+        </div>
+        <iron-list items="[[suggestedLanguages_]]">
+          <template>
+            <cr-checkbox class="list-item no-outline is-width-of-dialog"
+                checked="[[willAdd_(item.language.code,
+                    languageCodesToAdd_.size)]]"
+                on-change="onCheckboxChange_" tab-index="[[tabIndex]]">
+              [[getDisplayText_(item.language)]]
+            </cr-checkbox>
+          </template>
+        </iron-list>
+      </div>
+    </template>
+    <div id="allLanguages">
+      <div class="label is-width-of-dialog" hidden="[[!showSuggestedList_]]">
+        $i18n{allSpellcheckLanguages}
+      </div>
+      <template is="dom-if" if="[[languagesExist_]]">
+        <iron-list items="[[allLanguages_]]">
+          <template>
+            <cr-checkbox-with-policy
+                class="list-item no-outline is-width-of-dialog"
+                checked="[[willAdd_(item.language.code,
+                    languageCodesToAdd_.size)]]"
+                disabled="[[item.isManaged]]"
+                policy-tooltip="$i18n{spellCheckLanguageNotAllowed}"
+                on-change="onCheckboxChange_" tab-index="[[tabIndex]]">
+              [[getDisplayText_(item.language)]]
+            </cr-checkbox-with-policy>
+          </template>
+        </iron-list>
+      </template>
+    </div>
+    <div id="no-search-results" class="centered-message"
+        hidden="[[languagesExist_]]">
+      $i18n{noSearchResults}
+    </div>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onActionButtonClick_"
+        disabled="[[disableActionButton_]]">
+      $i18n{add}
+    </cr-button>
+  </div>
+</cr-dialog>

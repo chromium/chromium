@@ -6,32 +6,42 @@
 #define SERVICES_NETWORK_TEST_TEST_NETWORK_CONTEXT_H_
 
 #include <cstdint>
+#include <set>
 #include <string>
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "base/unguessable_token.h"
+#include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/address_list.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/isolation_info.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/network_service_buildflags.h"
+#include "services/network/public/mojom/cookie_access_observer.mojom.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
+#include "services/network/public/mojom/network_context.mojom-forward.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/proxy_resolving_socket.mojom.h"
 #include "services/network/public/mojom/restricted_cookie_manager.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/udp_socket.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
+#include "services/network/public/mojom/web_transport.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace net {
 class NetworkIsolationKey;
-}
+class IsolationInfo;
+}  // namespace net
 
 namespace network {
 
@@ -54,14 +64,25 @@ class TestNetworkContext : public mojom::NetworkContext {
           restricted_cookie_manager,
       mojom::RestrictedCookieManagerRole role,
       const url::Origin& origin,
-      const GURL& site_for_cookies,
-      const url::Origin& top_frame_origin,
-      bool is_service_worker,
-      int32_t process_id,
-      int32_t routing_id) override {}
-  void ClearNetworkingHistorySince(
+      const net::IsolationInfo& isolation_info,
+      mojo::PendingRemote<mojom::CookieAccessObserver> observer) override {}
+  void GetHasTrustTokensAnswerer(
+      mojo::PendingReceiver<mojom::HasTrustTokensAnswerer> receiver,
+      const url::Origin& top_frame_origin) override {}
+  void GetStoredTrustTokenCounts(
+      GetStoredTrustTokenCountsCallback callback) override {}
+  void DeleteStoredTrustTokens(
+      const url::Origin& issuer,
+      DeleteStoredTrustTokensCallback callback) override {}
+#if BUILDFLAG(ENABLE_REPORTING)
+  void AddReportingApiObserver(
+      mojo::PendingRemote<network::mojom::ReportingApiObserver> observer)
+      override {}
+#endif  // BUILDFLAG(ENABLE_REPORTING)
+  void ClearNetworkingHistoryBetween(
       base::Time start_time,
-      ClearNetworkingHistorySinceCallback callback) override {}
+      base::Time end_time,
+      ClearNetworkingHistoryBetweenCallback callback) override {}
   void ClearHttpCache(base::Time start_time,
                       base::Time end_time,
                       mojom::ClearDataFilterPtr filter,
@@ -72,6 +93,7 @@ class TestNetworkContext : public mojom::NetworkContext {
   void ClearHostCache(mojom::ClearDataFilterPtr filter,
                       ClearHostCacheCallback callback) override {}
   void ClearHttpAuthCache(base::Time start_time,
+                          base::Time end_time,
                           ClearHttpAuthCacheCallback callback) override {}
   void ClearReportingCacheReports(
       mojom::ClearDataFilterPtr filter,
@@ -86,40 +108,52 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojom::ClearDataFilterPtr filter,
       DomainReliabilityClearMode mode,
       ClearDomainReliabilityCallback callback) override {}
+  void ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
+                           ClearTrustTokenDataCallback callback) override {}
   void GetDomainReliabilityJSON(
       GetDomainReliabilityJSONCallback callback) override {}
-  void QueueReport(const std::string& type,
-                   const std::string& group,
-                   const GURL& url,
-                   const base::Optional<std::string>& user_agent,
-                   base::Value body) override {}
+  void SetDocumentReportingEndpoints(
+      const base::UnguessableToken& reporting_source,
+      const url::Origin& origin,
+      const net::IsolationInfo& isolation_info,
+      const base::flat_map<std::string, std::string>& endpoints) override {}
+  void SendReportsAndRemoveSource(
+      const base::UnguessableToken& reporting_source) override {}
+  void QueueReport(
+      const std::string& type,
+      const std::string& group,
+      const GURL& url,
+      const absl::optional<base::UnguessableToken>& reporting_source,
+      const net::NetworkIsolationKey& network_isolation_key,
+      const absl::optional<std::string>& user_agent,
+      base::Value body) override {}
   void QueueSignedExchangeReport(
-      mojom::SignedExchangeReportPtr report) override {}
+      mojom::SignedExchangeReportPtr report,
+      const net::NetworkIsolationKey& network_isolation_key) override {}
   void CloseAllConnections(CloseAllConnectionsCallback callback) override {}
   void CloseIdleConnections(CloseIdleConnectionsCallback callback) override {}
   void SetNetworkConditions(const base::UnguessableToken& throttling_profile_id,
                             mojom::NetworkConditionsPtr conditions) override {}
   void SetAcceptLanguage(const std::string& new_accept_language) override {}
   void SetEnableReferrers(bool enable_referrers) override {}
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void UpdateAdditionalCertificates(
       mojom::AdditionalCertificatesPtr additional_certificates) override {}
 #endif
 #if BUILDFLAG(IS_CT_SUPPORTED)
-  void SetCTPolicy(
-      const std::vector<std::string>& required_hosts,
-      const std::vector<std::string>& excluded_hosts,
-      const std::vector<std::string>& excluded_spkis,
-      const std::vector<std::string>& excluded_legacy_spkis) override {}
+  void SetCTPolicy(mojom::CTPolicyPtr ct_policy) override {}
   void AddExpectCT(const std::string& domain,
                    base::Time expiry,
                    bool enforce,
                    const GURL& report_uri,
+                   const net::NetworkIsolationKey& network_isolation_key,
                    AddExpectCTCallback callback) override {}
   void SetExpectCTTestReport(const GURL& report_uri,
                              SetExpectCTTestReportCallback callback) override {}
   void GetExpectCTState(const std::string& domain,
+                        const net::NetworkIsolationKey& network_isolation_key,
                         GetExpectCTStateCallback callback) override {}
+  void SetSCTAuditingEnabled(bool enabled) override {}
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   void CreateUDPSocket(
       mojo::PendingReceiver<mojom::UDPSocket> receiver,
@@ -131,7 +165,7 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojo::PendingReceiver<mojom::TCPServerSocket> socket,
       CreateTCPServerSocketCallback callback) override {}
   void CreateTCPConnectedSocket(
-      const base::Optional<net::IPEndPoint>& local_addr,
+      const absl::optional<net::IPEndPoint>& local_addr,
       const net::AddressList& remote_addr_list,
       mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
@@ -149,21 +183,26 @@ class TestNetworkContext : public mojom::NetworkContext {
   void CreateWebSocket(
       const GURL& url,
       const std::vector<std::string>& requested_protocols,
-      const GURL& site_for_cookies,
-      const net::NetworkIsolationKey& network_isolation_key,
+      const net::SiteForCookies& site_for_cookies,
+      const net::IsolationInfo& isolation_info,
       std::vector<mojom::HttpHeaderPtr> additional_headers,
       int32_t process_id,
-      int32_t render_frame_id,
       const url::Origin& origin,
       uint32_t options,
+      const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
       mojo::PendingRemote<mojom::WebSocketHandshakeClient> handshake_client,
-      mojo::PendingRemote<mojom::AuthenticationHandler> auth_handler,
-      mojo::PendingRemote<mojom::TrustedHeaderClient> header_client) override {}
-  void CreateQuicTransport(
+      mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+          url_loader_network_observer,
+      mojo::PendingRemote<mojom::WebSocketAuthenticationHandler> auth_handler,
+      mojo::PendingRemote<mojom::TrustedHeaderClient> header_client,
+      const absl::optional<base::UnguessableToken>& throttling_profile_id)
+      override {}
+  void CreateWebTransport(
       const GURL& url,
       const url::Origin& origin,
       const net::NetworkIsolationKey& network_isolation_key,
-      mojo::PendingRemote<mojom::QuicTransportHandshakeClient> handshake_client)
+      std::vector<mojom::WebTransportCertificateFingerprintPtr> fingerprints,
+      mojo::PendingRemote<mojom::WebTransportHandshakeClient> handshake_client)
       override {}
   void LookUpProxyForURL(
       const GURL& url,
@@ -178,14 +217,17 @@ class TestNetworkContext : public mojom::NetworkContext {
       mojom::ResolveHostParametersPtr optional_parameters,
       mojo::PendingRemote<mojom::ResolveHostClient> response_client) override {}
   void CreateHostResolver(
-      const base::Optional<net::DnsConfigOverrides>& config_overrides,
+      const absl::optional<net::DnsConfigOverrides>& config_overrides,
       mojo::PendingReceiver<mojom::HostResolver> receiver) override {}
   void NotifyExternalCacheHit(const GURL& url,
                               const std::string& http_method,
-                              const net::NetworkIsolationKey& key) override {}
+                              const net::NetworkIsolationKey& key,
+                              bool is_subframe_document_resource,
+                              bool include_credentials) override {}
   void VerifyCertForSignedExchange(
       const scoped_refptr<net::X509Certificate>& certificate,
       const GURL& url,
+      const net::NetworkIsolationKey& network_isolation_key,
       const std::string& ocsp_result,
       const std::string& sct_list,
       VerifyCertForSignedExchangeCallback callback) override {}
@@ -196,9 +238,6 @@ class TestNetworkContext : public mojom::NetworkContext {
       std::vector<mojom::CorsOriginPatternPtr> allow_patterns,
       std::vector<mojom::CorsOriginPatternPtr> block_patterns,
       base::OnceClosure closure) override {}
-  void SetCorsExtraSafelistedRequestHeaderNames(
-      const std::vector<std::string>&
-          cors_extra_safelisted_request_header_names) override {}
   void AddHSTS(const std::string& host,
                base::Time expiry,
                bool include_subdomains,
@@ -207,9 +246,6 @@ class TestNetworkContext : public mojom::NetworkContext {
                     GetHSTSStateCallback callback) override {}
   void EnableStaticKeyPinningForTesting(
       EnableStaticKeyPinningForTestingCallback callback) override {}
-  void SetFailingHttpTransactionForTesting(
-      int32_t rv,
-      SetFailingHttpTransactionForTestingCallback callback) override {}
   void VerifyCertificateForTesting(
       const scoped_refptr<net::X509Certificate>& certificate,
       const std::string& hostname,
@@ -221,12 +257,15 @@ class TestNetworkContext : public mojom::NetworkContext {
       const GURL& url,
       bool allow_credentials,
       const net::NetworkIsolationKey& network_isolation_key) override {}
+#if BUILDFLAG(IS_P2P_ENABLED)
   void CreateP2PSocketManager(
+      const net::NetworkIsolationKey& network_isolation_key,
       mojo::PendingRemote<mojom::P2PTrustedSocketManagerClient> client,
       mojo::PendingReceiver<mojom::P2PTrustedSocketManager>
           trusted_socket_manager,
       mojo::PendingReceiver<mojom::P2PSocketManager> socket_manager_receiver)
       override {}
+#endif  // BUILDFLAG(IS_P2P_ENABLED)
   void CreateMdnsResponder(
       mojo::PendingReceiver<mojom::MdnsResponder> responder_receiver) override {
   }
@@ -254,10 +293,18 @@ class TestNetworkContext : public mojom::NetworkContext {
                          const net::NetworkIsolationKey& network_isolation_key,
                          const net::AuthCredentials& credentials,
                          AddAuthCacheEntryCallback callback) override {}
+  void SetCorsNonWildcardRequestHeadersSupport(bool value) override {}
   void LookupServerBasicAuthCredentials(
       const GURL& url,
       const net::NetworkIsolationKey& network_isolation_key,
       LookupServerBasicAuthCredentialsCallback callback) override {}
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void LookupProxyAuthCredentials(
+      const net::ProxyServer& proxy_server,
+      const std::string& auth_scheme,
+      const std::string& realm,
+      LookupProxyAuthCredentialsCallback callback) override {}
+#endif
   void GetOriginPolicyManager(
       mojo::PendingReceiver<mojom::OriginPolicyManager> receiver) override {}
 };

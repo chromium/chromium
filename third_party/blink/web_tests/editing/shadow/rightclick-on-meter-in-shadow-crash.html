@@ -14,7 +14,7 @@ function contextClick(x, y) {
 }
 
 var container = document.getElementById('container');
-var shadowRoot = container.createShadowRoot();
+var shadowRoot = container.attachShadow({mode: 'open'});
 var meter = document.createElement('meter');
 shadowRoot.appendChild(meter);
 

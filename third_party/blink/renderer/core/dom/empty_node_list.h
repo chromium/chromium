@@ -44,7 +44,7 @@ class EmptyNodeList final : public NodeList {
 
   Node& OwnerNode() const { return *owner_; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   unsigned length() const override { return 0; }

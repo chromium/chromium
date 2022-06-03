@@ -5,39 +5,40 @@
 #ifndef CONTENT_BROWSER_ABOUT_URL_LOADER_FACTORY_H_
 #define CONTENT_BROWSER_ABOUT_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/receiver_set.h"
-#include "services/network/public/mojom/url_loader_factory.mojom.h"
+#include "services/network/public/cpp/self_deleting_url_loader_factory.h"
 
 namespace content {
 
 // URLLoaderFactory for handling about: URLs. This treats everything as
 // about:blank since no other about: features should be available to web
 // content.
-class AboutURLLoaderFactory : public network::mojom::URLLoaderFactory {
+class AboutURLLoaderFactory : public network::SelfDeletingURLLoaderFactory {
  public:
-  AboutURLLoaderFactory();
-  ~AboutURLLoaderFactory() override;
+  // Returns mojo::PendingRemote to a newly constructed AboutURLLoadedFactory.
+  // The factory is self-owned - it will delete itself once there are no more
+  // receivers (including the receiver associated with the returned
+  // mojo::PendingRemote and the receivers bound by the Clone method).
+  static mojo::PendingRemote<network::mojom::URLLoaderFactory> Create();
+
+  AboutURLLoaderFactory(const AboutURLLoaderFactory&) = delete;
+  AboutURLLoaderFactory& operator=(const AboutURLLoaderFactory&) = delete;
 
  private:
+  explicit AboutURLLoaderFactory(
+      mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver);
+
   // network::mojom::URLLoaderFactory:
+  ~AboutURLLoaderFactory() override;
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& request,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation)
       override;
-  void Clone(
-      mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) override;
-
-  mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutURLLoaderFactory);
 };
 
 }  // namespace content

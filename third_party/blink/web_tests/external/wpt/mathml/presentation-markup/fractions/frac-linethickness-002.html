@@ -3,11 +3,13 @@
   <head>
     <meta charset="utf-8">
     <title>fractions linethickness</title>
-    <link rel="help" href="https://mathml-refresh.github.io/mathml-core/#fractions-mfrac">
+    <link rel="help" href="https://w3c.github.io/mathml-core/#fractions-mfrac">
+    <link rel="help" href="https://w3c.github.io/mathml-core/#dom-and-javascript">
     <meta name="assert" content="Verifies fraction with positive, negative, percent and named space linethickness values.">
     <script src="/resources/testharness.js"></script>
     <script src="/resources/testharnessreport.js"></script>
     <script src="/mathml/support/feature-detection.js"></script>
+    <script src="/mathml/support/fonts.js"></script>
     <style type="text/css">
       @font-face {
         font-family: TestFont;
@@ -28,7 +30,7 @@
       }
 
       setup({ explicit_done: true });
-      window.addEventListener("load", () => { document.fonts.ready.then(runTests); });
+      window.addEventListener("load", () => { loadAllFonts().then(runTests); });
 
       function runTests() {
         var defaultRuleThickness = 100;
@@ -56,6 +58,22 @@
           assert_approx_equals(LineThickness("namedspace"), defaultRuleThickness, epsilon);
         }, "Named space");
 
+        test(function() {
+          assert_true(MathMLFeatureDetection.has_mspace());
+          /* Calc() expressions are invalid in MathML Core. */
+          assert_approx_equals(LineThickness("calc"), defaultRuleThickness, epsilon);
+        }, "Calc() expression");
+
+        test(function() {
+          assert_true(MathMLFeatureDetection.has_mspace());
+          document.getElementById("dynamic-attach").setAttribute("linethickness", "400%");
+          document.getElementById("dynamic-modify").setAttribute("linethickness", "200%");
+          document.getElementById("dynamic-remove").removeAttribute("linethickness");
+          assert_approx_equals(LineThickness("dynamic-attach"), defaultRuleThickness * 4, epsilon, "attach");
+          assert_approx_equals(LineThickness("dynamic-modify"), defaultRuleThickness * 2, epsilon, "modify");
+          assert_approx_equals(LineThickness("dynamic-remove"), defaultRuleThickness, epsilon, "remove");
+        }, "Dynamic linethickness");
+
         done();
       }
     </script>
@@ -81,6 +99,30 @@
     </math>
     <math>
       <mfrac id="namedspace" linethickness="veryverythickmathspace">
+        <mspace width="20px" height="10px" style="background: blue"></mspace>
+        <mspace width="20px" height="10px" style="background: cyan"></mspace>
+      </mfrac>
+    </math>
+    <math>
+      <mfrac id="calc" linethickness="calc(20px)">
+        <mspace width="20px" height="10px" style="background: blue"></mspace>
+        <mspace width="20px" height="10px" style="background: cyan"></mspace>
+      </mfrac>
+    </math>
+    <math>
+      <mfrac id="dynamic-attach">
+        <mspace width="20px" height="10px" style="background: blue"></mspace>
+        <mspace width="20px" height="10px" style="background: cyan"></mspace>
+      </mfrac>
+    </math>
+    <math>
+      <mfrac id="dynamic-modify" linethickness="300%">
+        <mspace width="20px" height="10px" style="background: blue"></mspace>
+        <mspace width="20px" height="10px" style="background: cyan"></mspace>
+      </mfrac>
+    </math>
+    <math>
+      <mfrac id="dynamic-remove" linethickness="300%">
         <mspace width="20px" height="10px" style="background: blue"></mspace>
         <mspace width="20px" height="10px" style="background: cyan"></mspace>
       </mfrac>

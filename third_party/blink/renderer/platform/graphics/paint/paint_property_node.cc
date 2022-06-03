@@ -66,21 +66,21 @@ const NodeType& LowestCommonAncestorTemplate(const NodeType& a,
 
 }  // namespace
 
-const TransformPaintPropertyNode& LowestCommonAncestorInternal(
-    const TransformPaintPropertyNode& a,
-    const TransformPaintPropertyNode& b) {
+const TransformPaintPropertyNodeOrAlias& LowestCommonAncestorInternal(
+    const TransformPaintPropertyNodeOrAlias& a,
+    const TransformPaintPropertyNodeOrAlias& b) {
   return LowestCommonAncestorTemplate(a, b);
 }
 
-const ClipPaintPropertyNode& LowestCommonAncestorInternal(
-    const ClipPaintPropertyNode& a,
-    const ClipPaintPropertyNode& b) {
+const ClipPaintPropertyNodeOrAlias& LowestCommonAncestorInternal(
+    const ClipPaintPropertyNodeOrAlias& a,
+    const ClipPaintPropertyNodeOrAlias& b) {
   return LowestCommonAncestorTemplate(a, b);
 }
 
-const EffectPaintPropertyNode& LowestCommonAncestorInternal(
-    const EffectPaintPropertyNode& a,
-    const EffectPaintPropertyNode& b) {
+const EffectPaintPropertyNodeOrAlias& LowestCommonAncestorInternal(
+    const EffectPaintPropertyNodeOrAlias& a,
+    const EffectPaintPropertyNodeOrAlias& b) {
   return LowestCommonAncestorTemplate(a, b);
 }
 

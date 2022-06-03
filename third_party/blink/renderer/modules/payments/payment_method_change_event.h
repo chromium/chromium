@@ -7,8 +7,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/world_safe_v8_reference.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_payment_method_change_event_init.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/modules/payments/payment_method_change_event_init.h"
 #include "third_party/blink/renderer/modules/payments/payment_request_update_event.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -25,11 +25,15 @@ class MODULES_EXPORT PaymentMethodChangeEvent final
  public:
   ~PaymentMethodChangeEvent() override;
 
-  static PaymentMethodChangeEvent* Create(
-      ScriptState*,
-      const AtomicString& type,
-      const PaymentMethodChangeEventInit* =
-          PaymentMethodChangeEventInit::Create());
+  static PaymentMethodChangeEvent* Create(ScriptState* script_state,
+                                          const AtomicString& type) {
+    return Create(
+        script_state, type,
+        PaymentMethodChangeEventInit::Create(script_state->GetIsolate()));
+  }
+  static PaymentMethodChangeEvent* Create(ScriptState*,
+                                          const AtomicString& type,
+                                          const PaymentMethodChangeEventInit*);
 
   const String& methodName() const;
   const ScriptValue methodDetails(ScriptState*) const;
@@ -38,7 +42,7 @@ class MODULES_EXPORT PaymentMethodChangeEvent final
                            const AtomicString& type,
                            const PaymentMethodChangeEventInit*);
 
-  void Trace(Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   String method_name_;

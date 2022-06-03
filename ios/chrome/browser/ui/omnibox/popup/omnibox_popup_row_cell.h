@@ -33,10 +33,6 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 // It handles all the layout logic internally.
 @interface OmniboxPopupRowCell : UITableViewCell
 
-// Layout this cell with the given data before displaying.
-- (void)setupWithAutocompleteSuggestion:(id<AutocompleteSuggestion>)suggestion
-                              incognito:(BOOL)incognito;
-
 @property(nonatomic, weak) id<OmniboxPopupRowCellDelegate> delegate;
 // Used to fetch favicons.
 @property(nonatomic, weak) id<FaviconRetriever> faviconRetriever;
@@ -56,6 +52,10 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
 
 // Image view for the leading image.
 @property(nonatomic, strong, readonly) OmniboxIconView* leadingIconView;
+
+// Layout this cell with the given data before displaying.
+- (void)setupWithAutocompleteSuggestion:(id<AutocompleteSuggestion>)suggestion
+                              incognito:(BOOL)incognito;
 
 @end
 

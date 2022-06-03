@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>CSS Lists Test: Supported properties in ::marker</title>
+<link rel="help" href="https://drafts.csswg.org/css-lists/#list-style-position">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4/#marker-pseudo">
+<link rel="author" title="Oriol Brufau" href="mailto:obrufau@igalia.com">
+<meta name="assert" content="This test checks the computed 'display' value of ::marker pseudo-elements. Inside markers are inline, outside ones are inline-blocks." />
+<style>
+[data-marker-display] {
+  display: list-item;
+}
+.inside {
+  list-style-position: inside;
+}
+.outside {
+  list-style-position: outside;
+}
+</style>
+
+<!-- <li> elements with no <ol> or <ul> ancestor are forced to have inside markers -->
+<li class="<li> not-in-list inside" data-marker-display="inline">item</li>
+<li class="<li> not-in-list outside" data-marker-display="inline">item</li>
+
+<!-- That quirk is doesn't affect non-<li> elements with 'display: list-item' -->
+<div class="<div> not-in-list inside" data-marker-display="inline">item</li>
+<div class="<div> not-in-list outside" data-marker-display="inline-block">item</li>
+
+<!-- All list items inside a list element obey 'list-style-position' -->
+<ol>
+  <li class="<li> in-ol inside" data-marker-display="inline">item</li>
+  <li class="<li> in-ol outside" data-marker-display="inline-block">item</li>
+  <div class="<div> in-ol inside" data-marker-display="inline">item</li>
+  <div class="<div> in-ol outside" data-marker-display="inline-block">item</li>
+</ol>
+<ul>
+  <li class="<li> in-ul inside" data-marker-display="inline">item</li>
+  <li class="<li> in-ul outside" data-marker-display="inline-block">item</li>
+  <div class="<div> in-ul inside" data-marker-display="inline">item</li>
+  <div class="<div> in-ul outside" data-marker-display="inline-block">item</li>
+</ul>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+for (const target of document.querySelectorAll("[data-marker-display]")) {
+  test(() => {
+    const actual = getComputedStyle(target, "::marker").display;
+    const expected = target.dataset.markerDisplay;
+    assert_equals(actual, expected, "Computed 'display' value");
+  }, `Computed 'display' for ::marker of ${target.className}`);
+}
+</script>

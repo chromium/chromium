@@ -1,0 +1,44 @@
+#<skip - crbug.com/992297: the accessibility tree is different on Linux>
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++colorWell inputType='color' name='color picker' value='#ff9900' controlsIds=rootWebArea
+++++++++rootWebArea
+++++++++++genericContainer ignored
+++++++++++++genericContainer ignored
+++++++++++++++genericContainer
+++++++++++++++++genericContainer ignored
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++genericContainer
+++++++++++++++++++++++slider horizontal name='Color well' roleDescription='Color well with two-dimensional slider for selecting saturation and lightness' value='X: 227, Y: 0' valueForRange=227.00 minValueForRange=0.00 maxValueForRange=32016.00
+++++++++++++++++++++genericContainer
+++++++++++++++++++++++genericContainer
+++++++++++++++++++++++genericContainer ignored invisible
+++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++slider horizontal name='Hue slider' valueForRange=116.00 minValueForRange=0.00 maxValueForRange=129.00
+++++++++++++++++++genericContainer ignored
+++++++++++++++++++++textField ignored invisible inputType='text' name='Hexadecimal color value' value='#ff9900'
+++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++textField inputType='text' name='Red channel' value='255'
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++staticText name='255'
+++++++++++++++++++++++textField inputType='text' name='Green channel' value='153'
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++staticText name='153'
+++++++++++++++++++++++textField inputType='text' name='Blue channel' value='0'
+++++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++++staticText name='0'
+++++++++++++++++++++textField ignored invisible inputType='text' name='Hue' value='36'
+++++++++++++++++++++textField ignored invisible inputType='text' name='Saturation' value='100%'
+++++++++++++++++++++textField ignored invisible inputType='text' name='Lightness' value='50%'
+++++++++++++++++++++spinButton name='Format toggler' valueForRange=1.00 minValueForRange=1.00 maxValueForRange=3.00
+++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='R'
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='G'
+++++++++++++++++++++++++genericContainer ignored
+++++++++++++++++++++++++++staticText name='B'
+++++++++++++++++++++++genericContainer
+++++++++++++++++++++++++svgRoot
+++++++++++++++++++genericContainer

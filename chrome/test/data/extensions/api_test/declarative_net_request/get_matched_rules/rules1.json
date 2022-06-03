@@ -1,0 +1,11 @@
+[{
+  "id" : 1,
+  "priority": 1,
+  "action": { "type" : "block" },
+  "condition" : {"urlFilter" : "ab", "resourceTypes" : ["main_frame"] }
+}, {
+  "id" : 2,
+  "priority": 2,
+  "action": { "type" : "block" },
+  "condition" : {"urlFilter" : "abc", "resourceTypes" : ["main_frame"] }
+}]

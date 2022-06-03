@@ -12,7 +12,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/prefs/pref_store.h"
 
 namespace base {
@@ -34,6 +33,9 @@ class COMPONENTS_PREFS_EXPORT WriteablePrefStore : public PrefStore {
   };
 
   WriteablePrefStore() {}
+
+  WriteablePrefStore(const WriteablePrefStore&) = delete;
+  WriteablePrefStore& operator=(const WriteablePrefStore&) = delete;
 
   // Sets a |value| for |key| in the store. |value| must be non-NULL. |flags| is
   // a bitmask of PrefWriteFlags.
@@ -76,11 +78,12 @@ class COMPONENTS_PREFS_EXPORT WriteablePrefStore : public PrefStore {
                                 std::unique_ptr<base::Value> value,
                                 uint32_t flags) = 0;
 
+  // Clears all the preferences which names start with |prefix| and doesn't
+  // generate update notifications.
+  virtual void RemoveValuesByPrefixSilently(const std::string& prefix) = 0;
+
  protected:
   ~WriteablePrefStore() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WriteablePrefStore);
 };
 
 #endif  // COMPONENTS_PREFS_WRITEABLE_PREF_STORE_H_

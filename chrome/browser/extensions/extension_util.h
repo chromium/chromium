@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/optional.h"
 #include "extensions/common/constants.h"
 
 namespace base {
@@ -19,24 +18,21 @@ namespace content {
 class BrowserContext;
 }
 
+namespace extensions {
+class PermissionSet;
+}
+
 namespace gfx {
 class ImageSkia;
 }
 
-class GURL;
+class Profile;
 
 namespace extensions {
 
 class Extension;
 
 namespace util {
-
-// Returns true if the site URL corresponds to an extension or app which
-// has isolated storage. This can be either because it is an app that
-// requested this in its manifest, or because it is a policy-installed app or
-// extension running on the Chrome OS sign-in profile.
-bool SiteHasIsolatedStorage(const GURL& extension_site_url,
-                            content::BrowserContext* context);
 
 // Returns true if the extension associated with |extension_id| has isolated
 // storage. This can be either because it is an app that requested this in its
@@ -94,12 +90,18 @@ std::unique_ptr<base::DictionaryValue> GetExtensionInfo(
 const gfx::ImageSkia& GetDefaultExtensionIcon();
 const gfx::ImageSkia& GetDefaultAppIcon();
 
-// Finds the first PWA with |url| in its scope, returns nullptr if there are
-// none.
-const Extension* GetInstalledPwaForUrl(
-    content::BrowserContext* context,
-    const GURL& url,
-    base::Optional<LaunchContainer> launch_container_filter = base::nullopt);
+// Returns a PermissionSet configured with the permissions that should be
+// displayed in an extension installation prompt for the specified |extension|.
+std::unique_ptr<const PermissionSet> GetInstallPromptPermissionSetForExtension(
+    const Extension* extension,
+    Profile* profile,
+    bool include_optional_permissions);
+
+// Returns all profiles affected by permissions of an extension running in
+// "spanning" (rather than "split) mode.
+std::vector<content::BrowserContext*> GetAllRelatedProfiles(
+    Profile* profile,
+    const Extension& extension);
 
 }  // namespace util
 }  // namespace extensions

@@ -8,6 +8,7 @@
 <body>
 <div id="target"></div>
 <script>
+setup({single_test: true});
 var target = document.getElementById("target");
 var attr = target.attributes[0];
 var anotherDocument = document.implementation.createDocument("http://www.w3.org/1999/xhtml", "", null);

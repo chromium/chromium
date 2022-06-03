@@ -7,16 +7,16 @@
 [
     ImplementedAs=ElementFullscreen
 ] partial interface Element {
-    [CallWith=ScriptState] Promise<void> requestFullscreen(optional FullscreenOptions options);
+    [CallWith=ScriptState, RaisesException] Promise<void> requestFullscreen(optional FullscreenOptions options = {});
 
     attribute EventHandler onfullscreenchange;
     attribute EventHandler onfullscreenerror;
 
     // Mozilla version
-    [LogActivity, LogAllWorlds, MeasureAs=PrefixedElementRequestFullScreen, ImplementedAs=webkitRequestFullscreen] void webkitRequestFullScreen(optional FullscreenOptions options);
+    [LogActivity, LogAllWorlds, MeasureAs=PrefixedElementRequestFullScreen, ImplementedAs=webkitRequestFullscreen] void webkitRequestFullScreen(optional FullscreenOptions options = {});
 
     // W3C version
-    [LogActivity, LogAllWorlds, MeasureAs=PrefixedElementRequestFullscreen] void webkitRequestFullscreen(optional FullscreenOptions options);
+    [LogActivity, LogAllWorlds, MeasureAs=PrefixedElementRequestFullscreen] void webkitRequestFullscreen(optional FullscreenOptions options = {});
 
     attribute EventHandler onwebkitfullscreenchange;
     attribute EventHandler onwebkitfullscreenerror;

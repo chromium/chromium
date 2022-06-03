@@ -37,7 +37,6 @@ class SplitCompatEngine implements InstallEngine {
 
     public SplitCompatEngine(SplitCompatEngineFacade facade) {
         mFacade = facade;
-        mFacade.initApplicationContext(this);
     }
 
     @Override
@@ -100,6 +99,7 @@ class SplitCompatEngine implements InstallEngine {
 
             switch (status) {
                 case SplitInstallSessionStatus.INSTALLED:
+                    mFacade.updateCrashKeys();
                     notifyListeners(moduleName, true);
                     break;
                 case SplitInstallSessionStatus.FAILED:

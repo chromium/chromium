@@ -6,44 +6,41 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
 
-template <typename T>
+template <typename CharT>
 class CommonStringPieceTest : public ::testing::Test {
  public:
-  static const T as_string(const char* input) {
-    return T(input);
-  }
-  static const T& as_string(const T& input) {
+  static std::string as_string(const char* input) { return input; }
+  static const std::string& as_string(const std::string& input) {
     return input;
   }
 };
 
 template <>
-class CommonStringPieceTest<string16> : public ::testing::Test {
+class CommonStringPieceTest<char16_t> : public ::testing::Test {
  public:
-  static const string16 as_string(const char* input) {
-    return ASCIIToUTF16(input);
+  static std::u16string as_string(const char* input) {
+    return UTF8ToUTF16(input);
   }
-  static const string16 as_string(const std::string& input) {
-    return ASCIIToUTF16(input);
+  static std::u16string as_string(const std::string& input) {
+    return UTF8ToUTF16(input);
   }
 };
 
-typedef ::testing::Types<std::string, string16> SupportedStringTypes;
+typedef ::testing::Types<char, char16_t> SupportedCharTypes;
 
-TYPED_TEST_SUITE(CommonStringPieceTest, SupportedStringTypes);
+TYPED_TEST_SUITE(CommonStringPieceTest, SupportedCharTypes);
 
 TYPED_TEST(CommonStringPieceTest, CheckComparisonOperators) {
 #define CMP_Y(op, x, y)                                                   \
   {                                                                       \
-    TypeParam lhs(TestFixture::as_string(x));                             \
-    TypeParam rhs(TestFixture::as_string(y));                             \
+    std::basic_string<TypeParam> lhs(TestFixture::as_string(x));          \
+    std::basic_string<TypeParam> rhs(TestFixture::as_string(y));          \
     ASSERT_TRUE((BasicStringPiece<TypeParam>((lhs.c_str()))               \
                      op BasicStringPiece<TypeParam>((rhs.c_str()))));     \
     ASSERT_TRUE(BasicStringPiece<TypeParam>(lhs) op rhs);                 \
@@ -55,8 +52,8 @@ TYPED_TEST(CommonStringPieceTest, CheckComparisonOperators) {
 
 #define CMP_N(op, x, y)                                                    \
   {                                                                        \
-    TypeParam lhs(TestFixture::as_string(x));                              \
-    TypeParam rhs(TestFixture::as_string(y));                              \
+    std::basic_string<TypeParam> lhs(TestFixture::as_string(x));           \
+    std::basic_string<TypeParam> rhs(TestFixture::as_string(y));           \
     ASSERT_FALSE((BasicStringPiece<TypeParam>((lhs.c_str()))               \
                       op BasicStringPiece<TypeParam>((rhs.c_str()))));     \
     ASSERT_FALSE(BasicStringPiece<TypeParam>(lhs) op rhs);                 \
@@ -141,39 +138,39 @@ TYPED_TEST(CommonStringPieceTest, CheckComparisonOperators) {
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckSTL) {
-  TypeParam alphabet(TestFixture::as_string("abcdefghijklmnopqrstuvwxyz"));
-  TypeParam abc(TestFixture::as_string("abc"));
-  TypeParam xyz(TestFixture::as_string("xyz"));
-  TypeParam foobar(TestFixture::as_string("foobar"));
+  std::basic_string<TypeParam> alphabet(
+      TestFixture::as_string("abcdefghijklmnopqrstuvwxyz"));
+  std::basic_string<TypeParam> abc(TestFixture::as_string("abc"));
+  std::basic_string<TypeParam> xyz(TestFixture::as_string("xyz"));
+  std::basic_string<TypeParam> foobar(TestFixture::as_string("foobar"));
 
   BasicStringPiece<TypeParam> a(alphabet);
   BasicStringPiece<TypeParam> b(abc);
   BasicStringPiece<TypeParam> c(xyz);
   BasicStringPiece<TypeParam> d(foobar);
   BasicStringPiece<TypeParam> e;
-  TypeParam temp(TestFixture::as_string("123"));
-  temp += static_cast<typename TypeParam::value_type>(0);
+  std::basic_string<TypeParam> temp(TestFixture::as_string("123"));
+  temp += static_cast<TypeParam>(0);
   temp += TestFixture::as_string("456");
   BasicStringPiece<TypeParam> f(temp);
 
-  ASSERT_EQ(a[6], static_cast<typename TypeParam::value_type>('g'));
-  ASSERT_EQ(b[0], static_cast<typename TypeParam::value_type>('a'));
-  ASSERT_EQ(c[2], static_cast<typename TypeParam::value_type>('z'));
-  ASSERT_EQ(f[3], static_cast<typename TypeParam::value_type>('\0'));
-  ASSERT_EQ(f[5], static_cast<typename TypeParam::value_type>('5'));
+  ASSERT_EQ(a[6], static_cast<TypeParam>('g'));
+  ASSERT_EQ(b[0], static_cast<TypeParam>('a'));
+  ASSERT_EQ(c[2], static_cast<TypeParam>('z'));
+  ASSERT_EQ(f[3], static_cast<TypeParam>('\0'));
+  ASSERT_EQ(f[5], static_cast<TypeParam>('5'));
 
-  ASSERT_EQ(*d.data(), static_cast<typename TypeParam::value_type>('f'));
-  ASSERT_EQ(d.data()[5], static_cast<typename TypeParam::value_type>('r'));
+  ASSERT_EQ(*d.data(), static_cast<TypeParam>('f'));
+  ASSERT_EQ(d.data()[5], static_cast<TypeParam>('r'));
   ASSERT_EQ(e.data(), nullptr);
 
-  ASSERT_EQ(*a.begin(), static_cast<typename TypeParam::value_type>('a'));
-  ASSERT_EQ(*(b.begin() + 2), static_cast<typename TypeParam::value_type>('c'));
-  ASSERT_EQ(*(c.end() - 1), static_cast<typename TypeParam::value_type>('z'));
+  ASSERT_EQ(*a.begin(), static_cast<TypeParam>('a'));
+  ASSERT_EQ(*(b.begin() + 2), static_cast<TypeParam>('c'));
+  ASSERT_EQ(*(c.end() - 1), static_cast<TypeParam>('z'));
 
-  ASSERT_EQ(*a.rbegin(), static_cast<typename TypeParam::value_type>('z'));
-  ASSERT_EQ(*(b.rbegin() + 2),
-            static_cast<typename TypeParam::value_type>('a'));
-  ASSERT_EQ(*(c.rend() - 1), static_cast<typename TypeParam::value_type>('x'));
+  ASSERT_EQ(*a.rbegin(), static_cast<TypeParam>('z'));
+  ASSERT_EQ(*(b.rbegin() + 2), static_cast<TypeParam>('a'));
+  ASSERT_EQ(*(c.rend() - 1), static_cast<TypeParam>('x'));
   ASSERT_EQ(a.rbegin() + 26, a.rend());
 
   ASSERT_EQ(a.size(), 26U);
@@ -190,37 +187,37 @@ TYPED_TEST(CommonStringPieceTest, CheckSTL) {
   ASSERT_TRUE(e.empty());
   ASSERT_EQ(e.begin(), e.end());
 
-  d.clear();
+  d = BasicStringPiece<TypeParam>();
   ASSERT_EQ(d.size(), 0U);
   ASSERT_TRUE(d.empty());
   ASSERT_EQ(d.data(), nullptr);
   ASSERT_EQ(d.begin(), d.end());
 
-  ASSERT_GE(a.max_size(), a.capacity());
-  ASSERT_GE(a.capacity(), a.size());
+  ASSERT_GE(a.max_size(), a.size());
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckFind) {
   typedef BasicStringPiece<TypeParam> Piece;
 
-  TypeParam alphabet(TestFixture::as_string("abcdefghijklmnopqrstuvwxyz"));
-  TypeParam abc(TestFixture::as_string("abc"));
-  TypeParam xyz(TestFixture::as_string("xyz"));
-  TypeParam foobar(TestFixture::as_string("foobar"));
+  std::basic_string<TypeParam> alphabet(
+      TestFixture::as_string("abcdefghijklmnopqrstuvwxyz"));
+  std::basic_string<TypeParam> abc(TestFixture::as_string("abc"));
+  std::basic_string<TypeParam> xyz(TestFixture::as_string("xyz"));
+  std::basic_string<TypeParam> foobar(TestFixture::as_string("foobar"));
 
   BasicStringPiece<TypeParam> a(alphabet);
   BasicStringPiece<TypeParam> b(abc);
   BasicStringPiece<TypeParam> c(xyz);
   BasicStringPiece<TypeParam> d(foobar);
 
-  d.clear();
+  d = Piece();
   Piece e;
-  TypeParam temp(TestFixture::as_string("123"));
+  std::basic_string<TypeParam> temp(TestFixture::as_string("123"));
   temp.push_back('\0');
   temp += TestFixture::as_string("456");
   Piece f(temp);
 
-  typename TypeParam::value_type buf[4] = { '%', '%', '%', '%' };
+  TypeParam buf[4] = {'%', '%', '%', '%'};
   ASSERT_EQ(a.copy(buf, 4), 4U);
   ASSERT_EQ(buf[0], a[0]);
   ASSERT_EQ(buf[1], a[1]);
@@ -237,7 +234,7 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(buf[2], c[2]);
   ASSERT_EQ(buf[3], a[3]);
 
-  ASSERT_EQ(Piece::npos, TypeParam::npos);
+  ASSERT_EQ(Piece::npos, std::basic_string<TypeParam>::npos);
 
   ASSERT_EQ(a.find(b), 0U);
   ASSERT_EQ(a.find(b, 1), Piece::npos);
@@ -250,7 +247,8 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.find(e), 0U);
   ASSERT_EQ(a.find(d, 12), 12U);
   ASSERT_EQ(a.find(e, 17), 17U);
-  TypeParam not_found(TestFixture::as_string("xx not found bb"));
+  std::basic_string<TypeParam> not_found(
+      TestFixture::as_string("xx not found bb"));
   Piece g(not_found);
   ASSERT_EQ(a.find(g), Piece::npos);
   // empty string nonsense
@@ -259,7 +257,8 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(d.find(b, 4), Piece::npos);
   ASSERT_EQ(e.find(b, 7), Piece::npos);
 
-  size_t empty_search_pos = TypeParam().find(TypeParam());
+  size_t empty_search_pos =
+      std::basic_string<TypeParam>().find(std::basic_string<TypeParam>());
   ASSERT_EQ(d.find(d), empty_search_pos);
   ASSERT_EQ(d.find(e), empty_search_pos);
   ASSERT_EQ(e.find(d), empty_search_pos);
@@ -269,12 +268,13 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(e.find(d, 4), std::string().find(std::string(), 4));
   ASSERT_EQ(e.find(e, 4), std::string().find(std::string(), 4));
 
+  constexpr TypeParam kNul = '\0';
   ASSERT_EQ(a.find('a'), 0U);
   ASSERT_EQ(a.find('c'), 2U);
   ASSERT_EQ(a.find('z'), 25U);
   ASSERT_EQ(a.find('$'), Piece::npos);
-  ASSERT_EQ(a.find('\0'), Piece::npos);
-  ASSERT_EQ(f.find('\0'), 3U);
+  ASSERT_EQ(a.find(kNul), Piece::npos);
+  ASSERT_EQ(f.find(kNul), 3U);
   ASSERT_EQ(f.find('3'), 2U);
   ASSERT_EQ(f.find('5'), 5U);
   ASSERT_EQ(g.find('o'), 4U);
@@ -282,14 +282,30 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(g.find('o', 5), 8U);
   ASSERT_EQ(a.find('b', 5), Piece::npos);
   // empty string nonsense
-  ASSERT_EQ(d.find('\0'), Piece::npos);
-  ASSERT_EQ(e.find('\0'), Piece::npos);
-  ASSERT_EQ(d.find('\0', 4), Piece::npos);
-  ASSERT_EQ(e.find('\0', 7), Piece::npos);
+  ASSERT_EQ(d.find(kNul), Piece::npos);
+  ASSERT_EQ(e.find(kNul), Piece::npos);
+  ASSERT_EQ(d.find(kNul, 4), Piece::npos);
+  ASSERT_EQ(e.find(kNul, 7), Piece::npos);
   ASSERT_EQ(d.find('x'), Piece::npos);
   ASSERT_EQ(e.find('x'), Piece::npos);
   ASSERT_EQ(d.find('x', 4), Piece::npos);
   ASSERT_EQ(e.find('x', 7), Piece::npos);
+
+  ASSERT_EQ(a.find(b.data(), 1, 0), 1U);
+  ASSERT_EQ(a.find(c.data(), 9, 0), 9U);
+  ASSERT_EQ(a.find(c.data(), Piece::npos, 0), Piece::npos);
+  ASSERT_EQ(b.find(c.data(), Piece::npos, 0), Piece::npos);
+  // empty string nonsense
+  ASSERT_EQ(d.find(b.data(), 4, 0), Piece::npos);
+  ASSERT_EQ(e.find(b.data(), 7, 0), Piece::npos);
+
+  ASSERT_EQ(a.find(b.data(), 1), Piece::npos);
+  ASSERT_EQ(a.find(c.data(), 9), 23U);
+  ASSERT_EQ(a.find(c.data(), Piece::npos), Piece::npos);
+  ASSERT_EQ(b.find(c.data(), Piece::npos), Piece::npos);
+  // empty string nonsense
+  ASSERT_EQ(d.find(b.data(), 4), Piece::npos);
+  ASSERT_EQ(e.find(b.data(), 7), Piece::npos);
 
   ASSERT_EQ(a.rfind(b), 0U);
   ASSERT_EQ(a.rfind(b, 1), 0U);
@@ -299,10 +315,14 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.rfind(c, 0U), Piece::npos);
   ASSERT_EQ(b.rfind(c), Piece::npos);
   ASSERT_EQ(b.rfind(c, 0U), Piece::npos);
-  ASSERT_EQ(a.rfind(d), static_cast<size_t>(a.as_string().rfind(TypeParam())));
-  ASSERT_EQ(a.rfind(e), a.as_string().rfind(TypeParam()));
-  ASSERT_EQ(a.rfind(d), static_cast<size_t>(TypeParam(a).rfind(TypeParam())));
-  ASSERT_EQ(a.rfind(e), TypeParam(a).rfind(TypeParam()));
+  ASSERT_EQ(a.rfind(d),
+            static_cast<size_t>(a.rfind(std::basic_string<TypeParam>())));
+  ASSERT_EQ(a.rfind(e), a.rfind(std::basic_string<TypeParam>()));
+  ASSERT_EQ(a.rfind(d),
+            static_cast<size_t>(std::basic_string<TypeParam>(a).rfind(
+                std::basic_string<TypeParam>())));
+  ASSERT_EQ(a.rfind(e), std::basic_string<TypeParam>(a).rfind(
+                            std::basic_string<TypeParam>()));
   ASSERT_EQ(a.rfind(d, 12), 12U);
   ASSERT_EQ(a.rfind(e, 17), 17U);
   ASSERT_EQ(a.rfind(g), Piece::npos);
@@ -325,8 +345,8 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(g.rfind('o', 8), 8U);
   ASSERT_EQ(g.rfind('o', 7), 4U);
   ASSERT_EQ(g.rfind('o', 3), Piece::npos);
-  ASSERT_EQ(f.rfind('\0'), 3U);
-  ASSERT_EQ(f.rfind('\0', 12), 3U);
+  ASSERT_EQ(f.rfind(kNul), 3U);
+  ASSERT_EQ(f.rfind(kNul, 12), 3U);
   ASSERT_EQ(f.rfind('3'), 2U);
   ASSERT_EQ(f.rfind('5'), 5U);
   // empty string nonsense
@@ -335,8 +355,17 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(d.rfind('o', 4), Piece::npos);
   ASSERT_EQ(e.rfind('o', 7), Piece::npos);
 
-  TypeParam one_two_three_four(TestFixture::as_string("one,two:three;four"));
-  TypeParam comma_colon(TestFixture::as_string(",:"));
+  ASSERT_EQ(a.rfind(b.data(), 1, 0), 1U);
+  ASSERT_EQ(a.rfind(c.data(), 22U, 0), 22U);
+  ASSERT_EQ(a.rfind(c.data(), 1U, 0), 1U);
+  ASSERT_EQ(a.rfind(c.data(), 0U, 0), 0U);
+  ASSERT_EQ(b.rfind(c.data(), 0U, 0), 0U);
+  ASSERT_EQ(d.rfind(b.data(), 4, 0), 0U);
+  ASSERT_EQ(e.rfind(b.data(), 7, 0), 0U);
+
+  std::basic_string<TypeParam> one_two_three_four(
+      TestFixture::as_string("one,two:three;four"));
+  std::basic_string<TypeParam> comma_colon(TestFixture::as_string(",:"));
   ASSERT_EQ(3U, Piece(one_two_three_four).find_first_of(comma_colon));
   ASSERT_EQ(a.find_first_of(b), 0U);
   ASSERT_EQ(a.find_first_of(b, 0), 0U);
@@ -370,6 +399,10 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(a.find_first_not_of(f), 0U);
   ASSERT_EQ(a.find_first_not_of(d), 0U);
   ASSERT_EQ(a.find_first_not_of(e), 0U);
+  ASSERT_EQ(a.find_first_not_of(d, 1), 1U);
+  ASSERT_EQ(a.find_first_not_of(e, 1), 1U);
+  ASSERT_EQ(a.find_first_not_of(d, a.size()), Piece::npos);
+  ASSERT_EQ(a.find_first_not_of(e, a.size()), Piece::npos);
   // empty string nonsense
   ASSERT_EQ(d.find_first_not_of(a), Piece::npos);
   ASSERT_EQ(e.find_first_not_of(a), Piece::npos);
@@ -378,23 +411,23 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   ASSERT_EQ(d.find_first_not_of(e), Piece::npos);
   ASSERT_EQ(e.find_first_not_of(e), Piece::npos);
 
-  TypeParam equals(TestFixture::as_string("===="));
+  std::basic_string<TypeParam> equals(TestFixture::as_string("===="));
   Piece h(equals);
   ASSERT_EQ(h.find_first_not_of('='), Piece::npos);
   ASSERT_EQ(h.find_first_not_of('=', 3), Piece::npos);
-  ASSERT_EQ(h.find_first_not_of('\0'), 0U);
+  ASSERT_EQ(h.find_first_not_of(kNul), 0U);
   ASSERT_EQ(g.find_first_not_of('x'), 2U);
-  ASSERT_EQ(f.find_first_not_of('\0'), 0U);
-  ASSERT_EQ(f.find_first_not_of('\0', 3), 4U);
-  ASSERT_EQ(f.find_first_not_of('\0', 2), 2U);
+  ASSERT_EQ(f.find_first_not_of(kNul), 0U);
+  ASSERT_EQ(f.find_first_not_of(kNul, 3), 4U);
+  ASSERT_EQ(f.find_first_not_of(kNul, 2), 2U);
   // empty string nonsense
   ASSERT_EQ(d.find_first_not_of('x'), Piece::npos);
   ASSERT_EQ(e.find_first_not_of('x'), Piece::npos);
-  ASSERT_EQ(d.find_first_not_of('\0'), Piece::npos);
-  ASSERT_EQ(e.find_first_not_of('\0'), Piece::npos);
+  ASSERT_EQ(d.find_first_not_of(kNul), Piece::npos);
+  ASSERT_EQ(e.find_first_not_of(kNul), Piece::npos);
 
   //  Piece g("xx not found bb");
-  TypeParam fifty_six(TestFixture::as_string("56"));
+  std::basic_string<TypeParam> fifty_six(TestFixture::as_string("56"));
   Piece i(fifty_six);
   ASSERT_EQ(h.find_last_of(a), Piece::npos);
   ASSERT_EQ(g.find_last_of(a), g.size()-1);
@@ -465,31 +498,28 @@ TYPED_TEST(CommonStringPieceTest, CheckFind) {
   // empty string nonsense
   ASSERT_EQ(d.find_last_not_of('x'), Piece::npos);
   ASSERT_EQ(e.find_last_not_of('x'), Piece::npos);
-  ASSERT_EQ(d.find_last_not_of('\0'), Piece::npos);
-  ASSERT_EQ(e.find_last_not_of('\0'), Piece::npos);
+  ASSERT_EQ(d.find_last_not_of(kNul), Piece::npos);
+  ASSERT_EQ(e.find_last_not_of(kNul), Piece::npos);
 
   ASSERT_EQ(a.substr(0, 3), b);
   ASSERT_EQ(a.substr(23), c);
   ASSERT_EQ(a.substr(23, 3), c);
   ASSERT_EQ(a.substr(23, 99), c);
+  ASSERT_EQ(a.substr(), a);
   ASSERT_EQ(a.substr(0), a);
   ASSERT_EQ(a.substr(3, 2), TestFixture::as_string("de"));
-  // empty string nonsense
-  ASSERT_EQ(a.substr(99, 2), e);
-  ASSERT_EQ(d.substr(99), e);
   ASSERT_EQ(d.substr(0, 99), e);
-  ASSERT_EQ(d.substr(99, 99), e);
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckCustom) {
-  TypeParam foobar(TestFixture::as_string("foobar"));
+  std::basic_string<TypeParam> foobar(TestFixture::as_string("foobar"));
   BasicStringPiece<TypeParam> a(foobar);
-  TypeParam s1(TestFixture::as_string("123"));
-  s1 += static_cast<typename TypeParam::value_type>('\0');
+  std::basic_string<TypeParam> s1(TestFixture::as_string("123"));
+  s1 += static_cast<TypeParam>('\0');
   s1 += TestFixture::as_string("456");
   BasicStringPiece<TypeParam> b(s1);
   BasicStringPiece<TypeParam> e;
-  TypeParam s2;
+  std::basic_string<TypeParam> s2;
 
   // remove_prefix
   BasicStringPiece<TypeParam> c(a);
@@ -511,26 +541,21 @@ TYPED_TEST(CommonStringPieceTest, CheckCustom) {
   c.remove_suffix(c.size());
   ASSERT_EQ(c, e);
 
-  // set
-  c.set(foobar.c_str());
+  // assignment
+  c = foobar.c_str();
   ASSERT_EQ(c, a);
-  c.set(foobar.c_str(), 6);
+  c = {foobar.c_str(), 6};
   ASSERT_EQ(c, a);
-  c.set(foobar.c_str(), 0);
+  c = {foobar.c_str(), 0};
   ASSERT_EQ(c, e);
-  c.set(foobar.c_str(), 7);  // Note, has an embedded NULL
+  c = {foobar.c_str(), 7};  // Note, has an embedded NULL
   ASSERT_NE(c, a);
 
-  // as_string
-  TypeParam s3(a.as_string().c_str(), 7);  // Note, has an embedded NULL
-  ASSERT_EQ(c, s3);
-  TypeParam s4(e.as_string());
-  ASSERT_TRUE(s4.empty());
-
   // operator STRING_TYPE()
-  TypeParam s5(TypeParam(a).c_str(), 7);  // Note, has an embedded NULL
+  std::basic_string<TypeParam> s5(std::basic_string<TypeParam>(a).c_str(),
+                                  7);  // Note, has an embedded NULL
   ASSERT_EQ(c, s5);
-  TypeParam s6(e);
+  std::basic_string<TypeParam> s6(e);
   ASSERT_TRUE(s6.empty());
 }
 
@@ -543,81 +568,32 @@ TEST(StringPieceTest, CheckCustom) {
   StringPiece e;
   std::string s2;
 
-  // CopyToString
-  a.CopyToString(&s2);
-  ASSERT_EQ(s2.size(), 6U);
-  ASSERT_EQ(s2, "foobar");
-  b.CopyToString(&s2);
-  ASSERT_EQ(s2.size(), 7U);
-  ASSERT_EQ(s1, s2);
-  e.CopyToString(&s2);
-  ASSERT_TRUE(s2.empty());
-
-  // AppendToString
-  s2.erase();
-  a.AppendToString(&s2);
-  ASSERT_EQ(s2.size(), 6U);
-  ASSERT_EQ(s2, "foobar");
-  a.AppendToString(&s2);
-  ASSERT_EQ(s2.size(), 12U);
-  ASSERT_EQ(s2, "foobarfoobar");
-
-  // starts_with
-  ASSERT_TRUE(a.starts_with(a));
-  ASSERT_TRUE(a.starts_with("foo"));
-  ASSERT_TRUE(a.starts_with(e));
-  ASSERT_TRUE(b.starts_with(s1));
-  ASSERT_TRUE(b.starts_with(b));
-  ASSERT_TRUE(b.starts_with(e));
-  ASSERT_TRUE(e.starts_with(""));
-  ASSERT_TRUE(!a.starts_with(b));
-  ASSERT_TRUE(!b.starts_with(a));
-  ASSERT_TRUE(!e.starts_with(a));
-
-  // ends with
-  ASSERT_TRUE(a.ends_with(a));
-  ASSERT_TRUE(a.ends_with("bar"));
-  ASSERT_TRUE(a.ends_with(e));
-  ASSERT_TRUE(b.ends_with(s1));
-  ASSERT_TRUE(b.ends_with(b));
-  ASSERT_TRUE(b.ends_with(e));
-  ASSERT_TRUE(e.ends_with(""));
-  ASSERT_TRUE(!a.ends_with(b));
-  ASSERT_TRUE(!b.ends_with(a));
-  ASSERT_TRUE(!e.ends_with(a));
-
   StringPiece c;
-  c.set("foobar", 6);
+  c = {"foobar", 6};
   ASSERT_EQ(c, a);
-  c.set("foobar", 0);
+  c = {"foobar", 0};
   ASSERT_EQ(c, e);
-  c.set("foobar", 7);
+  c = {"foobar", 7};
   ASSERT_NE(c, a);
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckNULL) {
-  // we used to crash here, but now we don't.
-  BasicStringPiece<TypeParam> s(nullptr);
+  BasicStringPiece<TypeParam> s;
   ASSERT_EQ(s.data(), nullptr);
   ASSERT_EQ(s.size(), 0U);
 
-  s.set(nullptr);
-  ASSERT_EQ(s.data(), nullptr);
-  ASSERT_EQ(s.size(), 0U);
-
-  TypeParam str(s);
+  std::basic_string<TypeParam> str(s);
   ASSERT_EQ(str.length(), 0U);
-  ASSERT_EQ(str, TypeParam());
-
-  str = s.as_string();
-  ASSERT_EQ(str.length(), 0U);
-  ASSERT_EQ(str, TypeParam());
+  ASSERT_EQ(str, std::basic_string<TypeParam>());
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckComparisons2) {
-  TypeParam alphabet(TestFixture::as_string("abcdefghijklmnopqrstuvwxyz"));
-  TypeParam alphabet_z(TestFixture::as_string("abcdefghijklmnopqrstuvwxyzz"));
-  TypeParam alphabet_y(TestFixture::as_string("abcdefghijklmnopqrstuvwxyy"));
+  std::basic_string<TypeParam> alphabet(
+      TestFixture::as_string("abcdefghijklmnopqrstuvwxyz"));
+  std::basic_string<TypeParam> alphabet_z(
+      TestFixture::as_string("abcdefghijklmnopqrstuvwxyzz"));
+  std::basic_string<TypeParam> alphabet_y(
+      TestFixture::as_string("abcdefghijklmnopqrstuvwxyy"));
   BasicStringPiece<TypeParam> abc(alphabet);
 
   // check comparison operations on strings longer than 4 bytes.
@@ -631,21 +607,6 @@ TYPED_TEST(CommonStringPieceTest, CheckComparisons2) {
   ASSERT_GT(abc.compare(BasicStringPiece<TypeParam>(alphabet_y)), 0);
 }
 
-// Test operations only supported by std::string version.
-TEST(StringPieceTest, CheckComparisons2) {
-  StringPiece abc("abcdefghijklmnopqrstuvwxyz");
-
-  // starts_with
-  ASSERT_TRUE(abc.starts_with(abc));
-  ASSERT_TRUE(abc.starts_with("abcdefghijklm"));
-  ASSERT_TRUE(!abc.starts_with("abcdefguvwxyz"));
-
-  // ends_with
-  ASSERT_TRUE(abc.ends_with(abc));
-  ASSERT_TRUE(!abc.ends_with("abcdefguvwxyz"));
-  ASSERT_TRUE(abc.ends_with("nopqrstuvwxyz"));
-}
-
 TYPED_TEST(CommonStringPieceTest, StringCompareNotAmbiguous) {
   ASSERT_TRUE(TestFixture::as_string("hello").c_str() ==
               TestFixture::as_string("hello"));
@@ -654,41 +615,37 @@ TYPED_TEST(CommonStringPieceTest, StringCompareNotAmbiguous) {
 }
 
 TYPED_TEST(CommonStringPieceTest, HeterogenousStringPieceEquals) {
-  TypeParam hello(TestFixture::as_string("hello"));
+  std::basic_string<TypeParam> hello(TestFixture::as_string("hello"));
 
   ASSERT_EQ(BasicStringPiece<TypeParam>(hello), hello);
   ASSERT_EQ(hello.c_str(), BasicStringPiece<TypeParam>(hello));
 }
 
-// string16-specific stuff
+// std::u16string-specific stuff
 TEST(StringPiece16Test, CheckSTL) {
   // Check some non-ascii characters.
-  string16 fifth(ASCIIToUTF16("123"));
+  std::u16string fifth(u"123");
   fifth.push_back(0x0000);
   fifth.push_back(0xd8c5);
   fifth.push_back(0xdffe);
   StringPiece16 f(fifth);
 
   ASSERT_EQ(f[3], '\0');
-  ASSERT_EQ(f[5], static_cast<char16>(0xdffe));
+  ASSERT_EQ(f[5], 0xdffe);
 
   ASSERT_EQ(f.size(), 6U);
 }
 
-
-
 TEST(StringPiece16Test, CheckConversion) {
-  // Make sure that we can convert from UTF8 to UTF16 and back. We use a two
-  // byte character (G clef) to test this.
-  ASSERT_EQ(
-      UTF16ToUTF8(
-          StringPiece16(UTF8ToUTF16("\xf0\x9d\x84\x9e")).as_string()),
-      "\xf0\x9d\x84\x9e");
+  // Make sure that we can convert from UTF8 to UTF16 and back. We use a
+  // character (G clef) outside the BMP to test this.
+  const char* kTest = "\U0001D11E";
+  ASSERT_EQ(UTF16ToUTF8(UTF8ToUTF16(kTest)), kTest);
 }
 
 TYPED_TEST(CommonStringPieceTest, CheckConstructors) {
-  TypeParam str(TestFixture::as_string("hello world"));
-  TypeParam empty;
+  std::basic_string<TypeParam> str(TestFixture::as_string("hello world"));
+  std::basic_string<TypeParam> empty;
 
   ASSERT_EQ(str, BasicStringPiece<TypeParam>(str));
   ASSERT_EQ(str, BasicStringPiece<TypeParam>(str.c_str()));
@@ -699,17 +656,14 @@ TYPED_TEST(CommonStringPieceTest, CheckConstructors) {
       BasicStringPiece<TypeParam>(
           str.c_str(),
           static_cast<typename BasicStringPiece<TypeParam>::size_type>(0)));
-  ASSERT_EQ(empty, BasicStringPiece<TypeParam>(nullptr));
+  ASSERT_EQ(empty, BasicStringPiece<TypeParam>());
   ASSERT_TRUE(
       empty ==
       BasicStringPiece<TypeParam>(
           nullptr,
           static_cast<typename BasicStringPiece<TypeParam>::size_type>(0)));
   ASSERT_EQ(empty, BasicStringPiece<TypeParam>());
-  ASSERT_EQ(str, BasicStringPiece<TypeParam>(str.begin(), str.end()));
-  ASSERT_EQ(empty, BasicStringPiece<TypeParam>(str.begin(), str.begin()));
   ASSERT_EQ(empty, BasicStringPiece<TypeParam>(empty));
-  ASSERT_EQ(empty, BasicStringPiece<TypeParam>(empty.begin(), empty.end()));
 }
 
 TEST(StringPieceTest, ConstexprCtor) {
@@ -754,6 +708,16 @@ TEST(StringPieceTest, OutOfBoundsDeath) {
     StringPiece piece;
     ASSERT_DEATH_IF_SUPPORTED(piece.remove_prefix(1), "");
   }
+
+  {
+    StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece.copy(nullptr, 0, 1), "");
+  }
+
+  {
+    StringPiece piece;
+    ASSERT_DEATH_IF_SUPPORTED(piece.substr(1), "");
+  }
 }
 
 TEST(StringPieceTest, ConstexprData) {
@@ -793,6 +757,14 @@ TEST(StringPieceTest, ConstexprSize) {
   }
 }
 
+TEST(StringPieceTest, ConstexprFront) {
+  static_assert(StringPiece("abc").front() == 'a', "");
+}
+
+TEST(StringPieceTest, ConstexprBack) {
+  static_assert(StringPiece("abc").back() == 'c', "");
+}
+
 TEST(StringPieceTest, Compare) {
   constexpr StringPiece piece = "def";
 
@@ -805,34 +777,115 @@ TEST(StringPieceTest, Compare) {
   static_assert(piece.compare("gh") == -1, "");
   static_assert(piece.compare("ghi") == -1, "");
   static_assert(piece.compare("ghij") == -1, "");
+
+  static_assert(piece.compare(0, 0, "") == 0, "");
+  static_assert(piece.compare(0, 1, "d") == 0, "");
+  static_assert(piece.compare(0, 2, "de") == 0, "");
+  static_assert(piece.compare(0, 3, "def") == 0, "");
+  static_assert(piece.compare(1, 0, "") == 0, "");
+  static_assert(piece.compare(1, 1, "e") == 0, "");
+  static_assert(piece.compare(1, 2, "ef") == 0, "");
+  static_assert(piece.compare(1, 3, "ef") == 0, "");
+  static_assert(piece.compare(2, 0, "") == 0, "");
+  static_assert(piece.compare(2, 1, "f") == 0, "");
+  static_assert(piece.compare(2, 2, "f") == 0, "");
+  static_assert(piece.compare(2, 3, "f") == 0, "");
+  static_assert(piece.compare(3, 0, "") == 0, "");
+  static_assert(piece.compare(3, 1, "") == 0, "");
+  static_assert(piece.compare(3, 2, "") == 0, "");
+  static_assert(piece.compare(3, 3, "") == 0, "");
+
+  static_assert(piece.compare(0, 0, "def", 0) == 0, "");
+  static_assert(piece.compare(0, 1, "def", 1) == 0, "");
+  static_assert(piece.compare(0, 2, "def", 2) == 0, "");
+  static_assert(piece.compare(0, 3, "def", 3) == 0, "");
+  static_assert(piece.compare(1, 0, "ef", 0) == 0, "");
+  static_assert(piece.compare(1, 1, "ef", 1) == 0, "");
+  static_assert(piece.compare(1, 2, "ef", 2) == 0, "");
+  static_assert(piece.compare(1, 3, "ef", 2) == 0, "");
+  static_assert(piece.compare(2, 0, "f", 0) == 0, "");
+  static_assert(piece.compare(2, 1, "f", 1) == 0, "");
+  static_assert(piece.compare(2, 2, "f", 1) == 0, "");
+  static_assert(piece.compare(2, 3, "f", 1) == 0, "");
+  static_assert(piece.compare(3, 0, "", 0) == 0, "");
+  static_assert(piece.compare(3, 1, "", 0) == 0, "");
+  static_assert(piece.compare(3, 2, "", 0) == 0, "");
+  static_assert(piece.compare(3, 3, "", 0) == 0, "");
+
+  static_assert(piece.compare(0, 0, "def", 0, 0) == 0, "");
+  static_assert(piece.compare(0, 1, "def", 0, 1) == 0, "");
+  static_assert(piece.compare(0, 2, "def", 0, 2) == 0, "");
+  static_assert(piece.compare(0, 3, "def", 0, 3) == 0, "");
+  static_assert(piece.compare(1, 0, "def", 1, 0) == 0, "");
+  static_assert(piece.compare(1, 1, "def", 1, 1) == 0, "");
+  static_assert(piece.compare(1, 2, "def", 1, 2) == 0, "");
+  static_assert(piece.compare(1, 3, "def", 1, 3) == 0, "");
+  static_assert(piece.compare(2, 0, "def", 2, 0) == 0, "");
+  static_assert(piece.compare(2, 1, "def", 2, 1) == 0, "");
+  static_assert(piece.compare(2, 2, "def", 2, 2) == 0, "");
+  static_assert(piece.compare(2, 3, "def", 2, 3) == 0, "");
+  static_assert(piece.compare(3, 0, "def", 3, 0) == 0, "");
+  static_assert(piece.compare(3, 1, "def", 3, 1) == 0, "");
+  static_assert(piece.compare(3, 2, "def", 3, 2) == 0, "");
+  static_assert(piece.compare(3, 3, "def", 3, 3) == 0, "");
 }
 
-TEST(StringPieceTest, StartsWith) {
-  constexpr StringPiece piece("abc");
+TEST(StringPieceTest, Substr) {
+  constexpr StringPiece piece = "abcdefghijklmnopqrstuvwxyz";
 
-  static_assert(piece.starts_with(""), "");
-  static_assert(piece.starts_with("a"), "");
-  static_assert(piece.starts_with("ab"), "");
-  static_assert(piece.starts_with("abc"), "");
-
-  static_assert(!piece.starts_with("b"), "");
-  static_assert(!piece.starts_with("bc"), "");
-
-  static_assert(!piece.starts_with("abcd"), "");
+  static_assert(piece.substr(0, 2) == "ab", "");
+  static_assert(piece.substr(0, 3) == "abc", "");
+  static_assert(piece.substr(0, 4) == "abcd", "");
+  static_assert(piece.substr(3, 2) == "de", "");
+  static_assert(piece.substr(3, 3) == "def", "");
+  static_assert(piece.substr(23) == "xyz", "");
+  static_assert(piece.substr(23, 3) == "xyz", "");
+  static_assert(piece.substr(23, 99) == "xyz", "");
+  static_assert(piece.substr() == piece, "");
+  static_assert(piece.substr(0) == piece, "");
+  static_assert(piece.substr(0, 99) == piece, "");
 }
 
-TEST(StringPieceTest, EndsWith) {
-  constexpr StringPiece piece("abc");
+TEST(StringPieceTest, Find) {
+  constexpr StringPiece foobar("foobar", 6);
+  constexpr StringPiece foo = foobar.substr(0, 3);
+  constexpr StringPiece bar = foobar.substr(3);
 
-  static_assert(piece.ends_with(""), "");
-  static_assert(piece.ends_with("c"), "");
-  static_assert(piece.ends_with("bc"), "");
-  static_assert(piece.ends_with("abc"), "");
+  // find
+  static_assert(foobar.find(bar, 0) == 3, "");
+  static_assert(foobar.find('o', 0) == 1, "");
+  static_assert(foobar.find("ox", 0, 1) == 1, "");
+  static_assert(foobar.find("ox", 0) == StringPiece::npos, "");
 
-  static_assert(!piece.ends_with("a"), "");
-  static_assert(!piece.ends_with("ab"), "");
+  // rfind
+  static_assert(foobar.rfind(bar, 5) == 3, "");
+  static_assert(foobar.rfind('o', 5) == 2, "");
+  static_assert(foobar.rfind("ox", 5, 1) == 2, "");
+  static_assert(foobar.rfind("ox", 5) == StringPiece::npos, "");
 
-  static_assert(!piece.ends_with("abcd"), "");
+  // find_first_of
+  static_assert(foobar.find_first_of(foo, 2) == 2, "");
+  static_assert(foobar.find_first_of('o', 2) == 2, "");
+  static_assert(foobar.find_first_of("ox", 2, 2) == 2, "");
+  static_assert(foobar.find_first_of("ox", 2) == 2, "");
+
+  // find_last_of
+  static_assert(foobar.find_last_of(foo, 5) == 2, "");
+  static_assert(foobar.find_last_of('o', 5) == 2, "");
+  static_assert(foobar.find_last_of("ox", 5, 2) == 2, "");
+  static_assert(foobar.find_last_of("ox", 5) == 2, "");
+
+  // find_first_not_of
+  static_assert(foobar.find_first_not_of(foo, 2) == 3, "");
+  static_assert(foobar.find_first_not_of('o', 2) == 3, "");
+  static_assert(foobar.find_first_not_of("ox", 2, 2) == 3, "");
+  static_assert(foobar.find_first_not_of("ox", 2) == 3, "");
+
+  // find_last_not_of
+  static_assert(foobar.find_last_not_of(bar, 5) == 2, "");
+  static_assert(foobar.find_last_not_of('a', 4) == 3, "");
+  static_assert(foobar.find_last_not_of("ox", 2, 2) == 0, "");
+  static_assert(foobar.find_last_not_of("ox", 2) == 0, "");
 }
 
 }  // namespace base

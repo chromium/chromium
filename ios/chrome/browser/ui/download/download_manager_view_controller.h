@@ -25,9 +25,9 @@
     (DownloadManagerViewController*)controller;
 
 // Called when "Open In.." button was tapped. Delegate should present system's
-// OpenIn dialog from |layoutGuide|.
-- (void)downloadManagerViewController:(DownloadManagerViewController*)controller
-     presentOpenInMenuWithLayoutGuide:(UILayoutGuide*)layoutGuide;
+// OpenIn dialog.
+- (void)presentOpenInForDownloadManagerViewController:
+    (DownloadManagerViewController*)controller;
 
 // Called when install google drive button was tapped.
 - (void)installDriveForDownloadManagerViewController:

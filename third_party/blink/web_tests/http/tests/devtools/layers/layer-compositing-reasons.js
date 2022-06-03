@@ -4,17 +4,19 @@
 
 (async function() {
   TestRunner.addResult(`Tests layer compositing reasons in Layers Panel`);
-  await TestRunner.loadModule('layers_test_runner');
+  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.navigatePromise(TestRunner.url('resources/compositing-reasons.html'));
 
   async function dumpCompositingReasons(layer) {
-    var reasons = await layer.requestCompositingReasons();
-    var node = layer.nodeForSelfOrAncestor();
-    var label = Elements.DOMPath.fullQualifiedSelector(node, false);
-    TestRunner.addResult(`Compositing reasons for ${label}: ` + reasons.sort().join(','));
+    const node = layer.nodeForSelfOrAncestor();
+    if (node) {
+      const label = Elements.DOMPath.fullQualifiedSelector(node, false);
+      const reasonIds = await layer.requestCompositingReasonIds();
+      TestRunner.addResult(`Compositing reason ids for ${label}: ` + reasonIds.sort().join(','));
+    }
   }
 
-  var idsToTest = [
+  const idsToTest = [
     'transform3d', 'transform3d-individual', 'backface-visibility', 'animation', 'animation-individual',
     'transformWithCompositedDescendants', 'transformWithCompositedDescendants-individual',
     'opacityWithCompositedDescendants', 'reflectionWithCompositedDescendants', 'perspective', 'preserve3d'
@@ -22,8 +24,9 @@
 
   await LayersTestRunner.requestLayers();
   dumpCompositingReasons(LayersTestRunner.layerTreeModel().layerTree().contentRoot());
-  for (var i = 0; i < idsToTest.length - 1; ++i)
+  for (let i = 0; i < idsToTest.length - 1; ++i) {
     dumpCompositingReasons(LayersTestRunner.findLayerByNodeIdAttribute(idsToTest[i]));
+  }
 
   await dumpCompositingReasons(LayersTestRunner.findLayerByNodeIdAttribute(idsToTest[idsToTest.length - 1]));
   TestRunner.completeTest();

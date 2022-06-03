@@ -8,19 +8,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_RUNTIME_CALL_STATS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_RUNTIME_CALL_STATS_H_
 
-#include "base/optional.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
-
 #include "v8/include/v8.h"
 
 #if BUILDFLAG(RCS_COUNT_EVERYTHING)
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#endif
+
+#if BUILDFLAG(BLINK_BINDINGS_TRACE_ENABLED)
+#include "base/trace_event/trace_event.h"
 #endif
 
 namespace base {
@@ -124,7 +127,7 @@ class PLATFORM_EXPORT RuntimeCallTimer {
   }
 
 #define RUNTIME_CALL_TIMER_SCOPE_WITH_RCS(runtime_call_stats, counterId)  \
-  base::Optional<RuntimeCallTimerScope> rcs_scope;                        \
+  absl::optional<RuntimeCallTimerScope> rcs_scope;                        \
   if (UNLIKELY(RuntimeEnabledFeatures::BlinkRuntimeCallStatsEnabled())) { \
     rcs_scope.emplace(runtime_call_stats, counterId);                     \
   }
@@ -149,7 +152,7 @@ class PLATFORM_EXPORT RuntimeCallTimer {
   RUNTIME_CALL_TIMER_SCOPE_WITH_RCS(RuntimeCallStats::From(isolate), counterId)
 
 #define RUNTIME_CALL_TIMER_SCOPE_IF_ISOLATE_EXISTS(isolate, counterId) \
-  base::Optional<RuntimeCallTimerScope> rcs_scope;                     \
+  absl::optional<RuntimeCallTimerScope> rcs_scope;                     \
   if (isolate) {                                                       \
     RUNTIME_CALL_TIMER_SCOPE_WITH_OPTIONAL_RCS(                        \
         rcs_scope, RuntimeCallStats::From(isolate), counterId)         \
@@ -164,6 +167,15 @@ class PLATFORM_EXPORT RuntimeCallTimer {
 #else
 #define RUNTIME_CALL_TIMER_SCOPE_DISABLED_BY_DEFAULT(isolate, counterName) \
   do {                                                                     \
+  } while (false)
+#endif
+
+#if BUILDFLAG(BLINK_BINDINGS_TRACE_ENABLED)
+#define BLINK_BINDINGS_TRACE_EVENT(trace_event_name) \
+  TRACE_EVENT0("blink.bindings", trace_event_name)
+#else
+#define BLINK_BINDINGS_TRACE_EVENT(trace_event_name) \
+  do {                                               \
   } while (false)
 #endif
 
@@ -236,6 +248,7 @@ class PLATFORM_EXPORT RuntimeCallStats {
 
 #define CALLBACK_COUNTERS(V)                       \
   BINDINGS_METHOD(V, ElementGetBoundingClientRect) \
+  BINDINGS_METHOD(V, ElementGetInnerHTML)          \
   BINDINGS_METHOD(V, EventTargetDispatchEvent)     \
   BINDINGS_METHOD(V, HTMLElementClick)             \
   BINDINGS_METHOD(V, NodeAppendChild)              \
@@ -389,6 +402,8 @@ class PLATFORM_EXPORT RuntimeCallStatsScopedTracer {
 
   RuntimeCallStats* stats_ = nullptr;
 };
+
+PLATFORM_EXPORT void LogRuntimeCallStats();
 
 }  // namespace blink
 

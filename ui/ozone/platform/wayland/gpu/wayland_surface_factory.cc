@@ -11,6 +11,7 @@
 #include "ui/ozone/common/egl_util.h"
 #include "ui/ozone/common/gl_ozone_egl.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
+#include "ui/ozone/platform/wayland/gpu/gl_surface_egl_readback_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/gl_surface_wayland.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_buffer_manager_gpu.h"
 #include "ui/ozone/platform/wayland/gpu/wayland_canvas_surface.h"
@@ -24,6 +25,10 @@
 #include "ui/ozone/public/ozone_platform.h"
 #endif
 
+#if BUILDFLAG(ENABLE_VULKAN)
+#include "ui/ozone/platform/wayland/gpu/vulkan_implementation_wayland.h"
+#endif
+
 namespace ui {
 
 namespace {
@@ -33,6 +38,10 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
   GLOzoneEGLWayland(WaylandConnection* connection,
                     WaylandBufferManagerGpu* buffer_manager)
       : connection_(connection), buffer_manager_(buffer_manager) {}
+
+  GLOzoneEGLWayland(const GLOzoneEGLWayland&) = delete;
+  GLOzoneEGLWayland& operator=(const GLOzoneEGLWayland&) = delete;
+
   ~GLOzoneEGLWayland() override {}
 
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
@@ -45,14 +54,12 @@ class GLOzoneEGLWayland : public GLOzoneEGL {
       const gfx::Size& size) override;
 
  protected:
-  intptr_t GetNativeDisplay() override;
-  bool LoadGLES2Bindings(gl::GLImplementation impl) override;
+  gl::EGLDisplayPlatform GetNativeDisplay() override;
+  bool LoadGLES2Bindings(const gl::GLImplementationParts& impl) override;
 
  private:
   WaylandConnection* const connection_;
   WaylandBufferManagerGpu* const buffer_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(GLOzoneEGLWayland);
 };
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
@@ -72,15 +79,17 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateViewGLSurface(
   auto egl_window = CreateWaylandEglWindow(window);
   if (!egl_window)
     return nullptr;
-  return gl::InitializeGLSurface(new GLSurfaceWayland(std::move(egl_window)));
+  return gl::InitializeGLSurface(
+      new GLSurfaceWayland(std::move(egl_window), window));
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
     gfx::AcceleratedWidget window) {
-  // Only EGLGLES2 is supported with surfaceless view gl.
-  if (gl::GetGLImplementation() != gl::kGLImplementationEGLGLES2)
-    return nullptr;
-
+  if (gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
+    return gl::InitializeGLSurface(
+        base::MakeRefCounted<GLSurfaceEglReadbackWayland>(window,
+                                                          buffer_manager_));
+  } else {
 #if defined(WAYLAND_GBM)
   // If there is a gbm device available, use surfaceless gl surface.
   if (!buffer_manager_->gbm_device())
@@ -90,6 +99,7 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
 #else
   return nullptr;
 #endif
+  }
 }
 
 scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateOffscreenGLSurface(
@@ -102,13 +112,15 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateOffscreenGLSurface(
   }
 }
 
-intptr_t GLOzoneEGLWayland::GetNativeDisplay() {
+gl::EGLDisplayPlatform GLOzoneEGLWayland::GetNativeDisplay() {
   if (connection_)
-    return reinterpret_cast<intptr_t>(connection_->display());
-  return EGL_DEFAULT_DISPLAY;
+    return gl::EGLDisplayPlatform(
+        reinterpret_cast<EGLNativeDisplayType>(connection_->display()));
+  return gl::EGLDisplayPlatform(EGL_DEFAULT_DISPLAY);
 }
 
-bool GLOzoneEGLWayland::LoadGLES2Bindings(gl::GLImplementation impl) {
+bool GLOzoneEGLWayland::LoadGLES2Bindings(
+    const gl::GLImplementationParts& impl) {
   // TODO: It may not be necessary to set this environment variable when using
   // swiftshader.
   setenv("EGL_PLATFORM", "wayland", 0);
@@ -128,47 +140,60 @@ WaylandSurfaceFactory::WaylandSurfaceFactory(
 WaylandSurfaceFactory::~WaylandSurfaceFactory() = default;
 
 std::unique_ptr<SurfaceOzoneCanvas>
-WaylandSurfaceFactory::CreateCanvasForWidget(
-    gfx::AcceleratedWidget widget,
-    scoped_refptr<base::SequencedTaskRunner> task_runner) {
+WaylandSurfaceFactory::CreateCanvasForWidget(gfx::AcceleratedWidget widget) {
   return std::make_unique<WaylandCanvasSurface>(buffer_manager_, widget);
 }
 
-std::vector<gl::GLImplementation>
+std::vector<gl::GLImplementationParts>
 WaylandSurfaceFactory::GetAllowedGLImplementations() {
-  std::vector<gl::GLImplementation> impls;
+  std::vector<gl::GLImplementationParts> impls;
   if (egl_implementation_) {
-    impls.push_back(gl::kGLImplementationEGLGLES2);
-    impls.push_back(gl::kGLImplementationSwiftShaderGL);
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL));
+    impls.emplace_back(
+        gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader));
   }
   return impls;
 }
 
 GLOzone* WaylandSurfaceFactory::GetGLOzone(
-    gl::GLImplementation implementation) {
-  switch (implementation) {
+    const gl::GLImplementationParts& implementation) {
+  switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationSwiftShaderGL:
+    case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();
     default:
       return nullptr;
   }
 }
 
+#if BUILDFLAG(ENABLE_VULKAN)
+std::unique_ptr<gpu::VulkanImplementation>
+WaylandSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,
+                                                  bool allow_protected_memory) {
+  return std::make_unique<VulkanImplementationWayland>(use_swiftshader);
+}
+#endif
+
 scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
     gfx::AcceleratedWidget widget,
     VkDevice vk_device,
     gfx::Size size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
+    gfx::BufferUsage usage,
+    absl::optional<gfx::Size> framebuffer_size) {
+  if (framebuffer_size &&
+      !gfx::Rect(size).Contains(gfx::Rect(*framebuffer_size))) {
+    return nullptr;
+  }
 #if defined(WAYLAND_GBM)
   scoped_refptr<GbmPixmapWayland> pixmap =
       base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
-  if (widget != gfx::kNullAcceleratedWidget)
-    pixmap->SetAcceleratedWiget(widget);
-
-  if (!pixmap->InitializeBuffer(size, format, usage))
+  if (!pixmap->InitializeBuffer(widget, size, format, usage, framebuffer_size))
     return nullptr;
   return pixmap;
 #else
@@ -195,8 +220,17 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::Size size,
     gfx::BufferFormat format,
     gfx::NativePixmapHandle handle) {
-  NOTIMPLEMENTED();
+#if defined(WAYLAND_GBM)
+  scoped_refptr<GbmPixmapWayland> pixmap =
+      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
+
+  if (!pixmap->InitializeBufferFromHandle(widget, size, format,
+                                          std::move(handle)))
+    return nullptr;
+  return pixmap;
+#else
   return nullptr;
+#endif
 }
 
 }  // namespace ui

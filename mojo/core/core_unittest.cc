@@ -9,9 +9,9 @@
 #include <limits>
 
 #include "base/bind.h"
+#include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 #include "mojo/core/core_test_base.h"
-#include "mojo/core/test_utils.h"
 #include "mojo/public/cpp/system/wait.h"
 
 #if defined(OS_WIN)
@@ -35,7 +35,7 @@ TEST_F(CoreTest, GetTimeTicksNow) {
   const MojoTimeTicks start = core()->GetTimeTicksNow();
   ASSERT_NE(static_cast<MojoTimeTicks>(0), start)
       << "GetTimeTicksNow should return nonzero value";
-  test::Sleep(test::DeadlineFromMilliseconds(15));
+  base::PlatformThread::Sleep(base::Milliseconds(15));
   const MojoTimeTicks finish = core()->GetTimeTicksNow();
   // Allow for some fuzz in sleep.
   ASSERT_GE((finish - start), static_cast<MojoTimeTicks>(8000))

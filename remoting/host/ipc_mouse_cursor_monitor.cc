@@ -18,7 +18,6 @@ IpcMouseCursorMonitor::~IpcMouseCursorMonitor() = default;
 void IpcMouseCursorMonitor::Init(Callback* callback, Mode mode) {
   DCHECK(!callback_);
   DCHECK(callback);
-  DCHECK_EQ(webrtc::MouseCursorMonitor::SHAPE_ONLY, mode);
   callback_ = callback;
   desktop_session_proxy_->SetMouseCursorMonitor(weak_factory_.GetWeakPtr());
 }

@@ -31,7 +31,8 @@
 ../../third_party/catapult/devil/devil/utils/reraiser_thread.py
 ../../third_party/catapult/devil/devil/utils/timeout_retry.py
 ../../third_party/catapult/devil/devil/utils/watchdog_timer.py
-../../third_party/catapult/third_party/zipfile/zipfile_2_7_13.py
+../../third_party/catapult/third_party/six/six.py
+../gn_helpers.py
 devil_chromium.py
 pylib/__init__.py
 pylib/constants/__init__.py

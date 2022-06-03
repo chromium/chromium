@@ -19,6 +19,7 @@ extern const char kStabilityRendererCrashCount[];
 extern const char kStabilityRendererFailedLaunchCount[];
 extern const char kStabilityRendererHangCount[];
 extern const char kStabilitySystemUncleanShutdownCount[];
+extern const char kWebColorScheme[];
 
 }  // namespace prefs
 }  // namespace chromecast

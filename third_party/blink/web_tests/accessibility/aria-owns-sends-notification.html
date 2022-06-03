@@ -9,13 +9,26 @@
 <script>
 async_test(function(t) {
     var axFutureParent = accessibilityController.accessibleElementById("future_parent");
-    assert_equals(axFutureParent.childrenCount, 0);
-    var listener = function(notification) {
-      assert_equals(notification, "ChildrenChanged");
-      assert_equals(axFutureParent.childrenCount, 1);
+    var testRunner = function*() {
+      assert_equals(axFutureParent.childrenCount, 0);
 
-      axFutureParent.removeNotificationListener(listener);
-      t.done();
+      var expected_notifications = new Set();
+      expected_notifications.add("ChildrenChanged");
+      expected_notifications.add("MarkDirty");
+
+      while (expected_notifications.size) {
+        var notification = yield;
+        expected_notifications.delete(notification);
+      }
+
+      assert_equals(axFutureParent.childrenCount, 1);
+    }();
+    testRunner.next();
+    var listener = function(notification) {
+      if (testRunner.next(notification).done) {
+        axFutureParent.removeNotificationListener(listener);
+        t.done();
+      }
     };
     axFutureParent.addNotificationListener(listener);
     var futureParent = document.getElementById("future_parent");

@@ -5,25 +5,26 @@
 #ifndef IOS_CHROME_BROWSER_INFOBARS_TEST_FAKE_INFOBAR_IOS_H_
 #define IOS_CHROME_BROWSER_INFOBARS_TEST_FAKE_INFOBAR_IOS_H_
 
-#include "ios/chrome/browser/infobars/infobar_ios.h"
+#include <memory>
 
-@class FakeInfobarUIDelegate;
+#include "ios/chrome/browser/infobars/infobar_ios.h"
+#import "ios/chrome/browser/infobars/infobar_type.h"
+
+#include "base/strings/utf_string_conversions.h"
+
 class FakeInfobarDelegate;
 
 // Fake version of InfoBarIOS set up with fake delegates to use in tests.
 class FakeInfobarIOS : public InfoBarIOS {
  public:
-  FakeInfobarIOS();
+  // Creates a FakeInfobarIOS with |type| that has a delegate that uses
+  // |message_text| as its message.
+  FakeInfobarIOS(InfobarType type = InfobarType::kInfobarTypeConfirm,
+                 std::u16string message_text = u"FakeInfobar");
+  // Creates a FakeInfobarIOS with |fake_delegate|. Uses
+  // InfobarType::kInfobarTypeConfirm as a default type value.}
+  FakeInfobarIOS(std::unique_ptr<FakeInfobarDelegate> fake_delegate);
   ~FakeInfobarIOS() override;
-
-  // The fake UI delegate.
-  FakeInfobarUIDelegate* fake_ui_delegate() const { return fake_ui_delegate_; }
-  // The fake InfoBarDelegate.
-  FakeInfobarDelegate* fake_delegate() const { return fake_delegate_; }
-
- private:
-  FakeInfobarUIDelegate* fake_ui_delegate_ = nil;
-  FakeInfobarDelegate* fake_delegate_ = nullptr;
 };
 
 #endif  // IOS_CHROME_BROWSER_INFOBARS_TEST_FAKE_INFOBAR_IOS_H_

@@ -1,0 +1,42 @@
+<style include="settings-shared">
+  #pageDescription {
+    display: flex;
+    min-height: 32px;
+    padding: 0 var(--cr-section-padding);
+  }
+</style>
+<localized-link id="pageDescription"
+    localized-string="[[getTitleInnerHtml_(topicSource)]]">
+</localized-link>
+
+<template is="dom-if" if="[[hasNoAlbums_(albums)]]">
+  <localized-link class="cr-row first"
+      localized-string=
+          $i18nPolymer{ambientModeAlbumsSubpageGooglePhotosNoAlbum}
+  </localized-link>
+</template>
+
+<template is="dom-if" if="[[showArtAlbumDialog_]]" restamp>
+  <art-album-dialog on-close="onArtAlbumDialogClose_"></art-album-dialog>
+</template>
+
+<!-- Text based album selection. -->
+<template is="dom-if" if="[[!photoPreviewEnabled]]">
+  <iron-list id="albums" class="list-frame" items="[[albums]]">
+    <template>
+      <cr-checkbox class="list-item"
+          checked="[[item.checked]]"
+          on-change="onCheckboxChange_"
+          data-id$="[[item.albumId]]"
+          label="[[item.title]]">
+        [[item.title]]
+      </cr-checkbox>
+    </template>
+  </iron-list>
+</template>
+
+<!-- Photo based album selection. -->
+<template is="dom-if" if="[[photoPreviewEnabled]]">
+  <album-list albums="{{albums}}" topic-source="[[topicSource]]">
+  </album-list>
+</template>

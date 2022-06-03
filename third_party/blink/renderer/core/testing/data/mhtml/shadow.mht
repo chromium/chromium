@@ -18,9 +18,6 @@ Content-Location: http://localhost/shadow.html
 <title>A page with shadow DOM content</title>
 <h1>This page has shadow DOM content</h1>
 
-<p id=3D"h1">
-  <template shadowmode=3D"v0">V0</template>
-</p>
 <div id=3D"h2">
   <template shadowmode=3D"open" shadowdelegatesfocus=3D"">Parent
     <p id=3D"h3">

@@ -1,5 +1,5 @@
-document
-++group IsControlElement=false
-++++description Name='Supercali'
-++++description Name='fragilistic'
-++++description Name='expialidocious'
+Document
+++Group IsControlElement=false
+++++Text Name='Supercali'
+++++Text Name='fragilistic'
+++++Text Name='expialidocious'

@@ -8,8 +8,8 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
@@ -24,7 +24,7 @@
   remoting::ContinueWindow* _continue_window;
 }
 
-- (id)initWithWindow:(remoting::ContinueWindow*)continue_window;
+- (instancetype)initWithWindow:(remoting::ContinueWindow*)continue_window;
 - (void)show;
 - (void)hide;
 - (void)onCancel:(id)sender;
@@ -38,6 +38,10 @@ namespace remoting {
 class ContinueWindowMac : public ContinueWindow {
  public:
   ContinueWindowMac();
+
+  ContinueWindowMac(const ContinueWindowMac&) = delete;
+  ContinueWindowMac& operator=(const ContinueWindowMac&) = delete;
+
   ~ContinueWindowMac() override;
 
  protected:
@@ -47,8 +51,6 @@ class ContinueWindowMac : public ContinueWindow {
 
  private:
   base::scoped_nsobject<ContinueWindowMacController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContinueWindowMac);
 };
 
 ContinueWindowMac::ContinueWindowMac() {
@@ -56,6 +58,9 @@ ContinueWindowMac::ContinueWindowMac() {
 
 ContinueWindowMac::~ContinueWindowMac() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (controller_) {
+    HideUi();
+  }
 }
 
 void ContinueWindowMac::ShowUi() {
@@ -73,6 +78,7 @@ void ContinueWindowMac::HideUi() {
 
   @autoreleasepool {
     [controller_ hide];
+    controller_.reset();
   }
 }
 
@@ -85,7 +91,7 @@ std::unique_ptr<HostWindow> HostWindow::CreateContinueWindow() {
 
 @implementation ContinueWindowMacController
 
-- (id)initWithWindow:(remoting::ContinueWindow*)continue_window {
+- (instancetype)initWithWindow:(remoting::ContinueWindow*)continue_window {
   if ((self = [super init])) {
     _continue_window = continue_window;
   }

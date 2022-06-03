@@ -10,31 +10,27 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/refcounted_browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
 enum class ServiceAccessType;
 
-namespace ios {
-class ChromeBrowserState;
-}
-
 namespace password_manager {
-class PasswordStore;
+class PasswordStoreInterface;
 }
 
 // Singleton that owns all PasswordStores and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class IOSChromePasswordStoreFactory
     : public RefcountedBrowserStateKeyedServiceFactory {
  public:
-  static scoped_refptr<password_manager::PasswordStore> GetForBrowserState(
-      ios::ChromeBrowserState* browser_state,
-      ServiceAccessType access_type);
+  static scoped_refptr<password_manager::PasswordStoreInterface>
+  GetForBrowserState(ChromeBrowserState* browser_state,
+                     ServiceAccessType access_type);
 
   static IOSChromePasswordStoreFactory* GetInstance();
 
-  // Called by the PasswordDataTypeController whenever there is a possibility
-  // that syncing passwords has just started or ended for |browser_state|.
-  static void OnPasswordsSyncedStatePotentiallyChanged(
-      ios::ChromeBrowserState* browser_state);
+  IOSChromePasswordStoreFactory(const IOSChromePasswordStoreFactory&) = delete;
+  IOSChromePasswordStoreFactory& operator=(
+      const IOSChromePasswordStoreFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSChromePasswordStoreFactory>;
@@ -48,8 +44,6 @@ class IOSChromePasswordStoreFactory
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromePasswordStoreFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_CHROME_PASSWORD_STORE_FACTORY_H_

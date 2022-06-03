@@ -9,7 +9,6 @@
 
 #include "ash/wm/tablet_mode/internal_input_devices_event_blocker.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
-#include "base/macros.h"
 
 namespace ash {
 
@@ -23,6 +22,11 @@ class TabletModeControllerTestApi {
   static constexpr float kDegreesToRadians = 3.1415926f / 180.0f;
 
   TabletModeControllerTestApi();
+
+  TabletModeControllerTestApi(const TabletModeControllerTestApi&) = delete;
+  TabletModeControllerTestApi& operator=(const TabletModeControllerTestApi&) =
+      delete;
+
   ~TabletModeControllerTestApi();
 
   // Enters or exits tablet mode. Use these instead when stuff such as tray
@@ -95,10 +99,10 @@ class TabletModeControllerTestApi {
     return tablet_mode_controller_->is_in_tablet_physical_state();
   }
 
+  float GetLidAngle() const { return tablet_mode_controller_->lid_angle(); }
+
  private:
   TabletModeController* tablet_mode_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabletModeControllerTestApi);
 };
 
 }  // namespace ash

@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_WIN_UTILS_H_
-#define SANDBOX_SRC_WIN_UTILS_H_
+#ifndef SANDBOX_WIN_SRC_WIN_UTILS_H_
+#define SANDBOX_WIN_SRC_WIN_UTILS_H_
 
 #include <stddef.h>
 #include <windows.h>
 #include <memory>
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "sandbox/win/src/nt_internals.h"
 
 namespace sandbox {
@@ -27,17 +27,21 @@ const size_t kNTDevicePrefixLen = base::size(kNTDevicePrefix) - 1;
 // is destroyed.
 class AutoLock {
  public:
+  AutoLock() = delete;
+
   // Acquires the lock.
   explicit AutoLock(CRITICAL_SECTION* lock) : lock_(lock) {
     ::EnterCriticalSection(lock);
   }
+
+  AutoLock(const AutoLock&) = delete;
+  AutoLock& operator=(const AutoLock&) = delete;
 
   // Releases the lock;
   ~AutoLock() { ::LeaveCriticalSection(lock_); }
 
  private:
   CRITICAL_SECTION* lock_;
-  DISALLOW_IMPLICIT_CONSTRUCTORS(AutoLock);
 };
 
 // Basic implementation of a singleton which calls the destructor
@@ -152,4 +156,4 @@ DWORD GetTokenInformation(HANDLE token,
 // is a pointer to the function pointer.
 void ResolveNTFunctionPtr(const char* name, void* ptr);
 
-#endif  // SANDBOX_SRC_WIN_UTILS_H_
+#endif  // SANDBOX_WIN_SRC_WIN_UTILS_H_

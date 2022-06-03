@@ -8,20 +8,9 @@
 
 #include <ostream>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace base {
-
-// The state of |FeatureList::IsEnabled(kNoPriorityInheritanceFromThreadPool)|
-// as controlled by intenal::SetNoPriorityInheritanceFromThreadPool().
-bool g_no_priority_inheritance_from_thread_pool = false;
-
-void TaskTraits::InheritPriority(TaskPriority priority) {
-  if (priority_set_explicitly() || g_no_priority_inheritance_from_thread_pool)
-    return;
-
-  priority_ = static_cast<uint8_t>(priority);
-}
 
 const char* TaskPriorityToString(TaskPriority task_priority) {
   switch (task_priority) {
@@ -60,11 +49,5 @@ std::ostream& operator<<(std::ostream& os,
   os << TaskShutdownBehaviorToString(shutdown_behavior);
   return os;
 }
-
-namespace internal {
-void SetNoPriorityInheritanceFromThreadPool() {
-  g_no_priority_inheritance_from_thread_pool = true;
-}
-}  // namespace internal
 
 }  // namespace base

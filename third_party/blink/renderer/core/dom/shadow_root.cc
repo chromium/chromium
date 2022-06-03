@@ -27,41 +27,31 @@
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/bindings/core/v8/string_or_trusted_html.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_get_inner_html_options.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_sheet_list.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatch_forbidden_scope.h"
-#include "third_party/blink/renderer/core/dom/shadow_root_v0.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment_engine.h"
 #include "third_party/blink/renderer/core/dom/text.h"
-#include "third_party/blink/renderer/core/dom/v0_insertion_point.h"
 #include "third_party/blink/renderer/core/dom/whitespace_attacher.h"
 #include "third_party/blink/renderer/core/editing/serializers/serialization.h"
-#include "third_party/blink/renderer/core/html/html_content_element.h"
-#include "third_party/blink/renderer/core/html/html_shadow_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
 namespace blink {
 
-void ShadowRoot::Distribute() {
-  if (!IsV1())
-    V0().Distribute();
-}
-
 struct SameSizeAsShadowRoot : public DocumentFragment, public TreeScope {
-  Member<void*> member[3];
+  Member<void*> member[2];
   unsigned flags[1];
 };
 
-static_assert(sizeof(ShadowRoot) == sizeof(SameSizeAsShadowRoot),
-              "ShadowRoot should stay small");
+ASSERT_SIZE(ShadowRoot, SameSizeAsShadowRoot);
 
 ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
     : DocumentFragment(nullptr, kCreateShadowRoot),
@@ -71,12 +61,9 @@ ShadowRoot::ShadowRoot(Document& document, ShadowRootType type)
       type_(static_cast<unsigned>(type)),
       registered_with_parent_shadow_root_(false),
       delegates_focus_(false),
-      slotting_(static_cast<unsigned>(ShadowRootSlotting::kAuto)),
-      needs_distribution_recalc_(false),
-      unused_(0) {
-  if (IsV0())
-    shadow_root_v0_ = MakeGarbageCollected<ShadowRootV0>(*this);
-}
+      slot_assignment_mode_(static_cast<unsigned>(SlotAssignmentMode::kNamed)),
+      needs_dir_auto_attribute_update_(false),
+      unused_(0) {}
 
 ShadowRoot::~ShadowRoot() = default;
 
@@ -93,7 +80,6 @@ HTMLSlotElement* ShadowRoot::AssignedSlotFor(const Node& node) {
 }
 
 void ShadowRoot::DidAddSlot(HTMLSlotElement& slot) {
-  DCHECK(IsV1());
   EnsureSlotAssignment().DidAddSlot(slot);
 }
 
@@ -109,56 +95,56 @@ Node* ShadowRoot::Clone(Document&, CloneChildrenFlag) const {
   return nullptr;
 }
 
-void ShadowRoot::SetSlotting(ShadowRootSlotting slotting) {
-  slotting_ = static_cast<unsigned>(slotting);
+void ShadowRoot::SetSlotAssignmentMode(SlotAssignmentMode assignment_mode) {
+  slot_assignment_mode_ = static_cast<unsigned>(assignment_mode);
 }
 
-String ShadowRoot::InnerHTMLAsString() const {
+String ShadowRoot::innerHTML() const {
   return CreateMarkup(this, kChildrenOnly);
 }
 
-void ShadowRoot::innerHTML(StringOrTrustedHTML& result) const {
-  result.SetString(InnerHTMLAsString());
-}
-
-void ShadowRoot::SetInnerHTMLFromString(const String& markup,
-                                        ExceptionState& exception_state) {
-  if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
-          markup, &host(), kAllowScriptingContent, "innerHTML",
-          exception_state))
-    ReplaceChildrenWithFragment(this, fragment, exception_state);
-}
-
-void ShadowRoot::setInnerHTML(const StringOrTrustedHTML& stringOrHtml,
-                              ExceptionState& exception_state) {
-  String html =
-      GetStringFromTrustedHTML(stringOrHtml, &GetDocument(), exception_state);
-  if (!exception_state.HadException()) {
-    SetInnerHTMLFromString(html, exception_state);
+String ShadowRoot::getInnerHTML(const GetInnerHTMLOptions* options) const {
+  ClosedRootsSet include_closed_roots;
+  if (options->hasClosedRoots()) {
+    for (auto& shadow_root : options->closedRoots()) {
+      include_closed_roots.insert(shadow_root);
+    }
   }
+  return CreateMarkup(
+      this, kChildrenOnly, kDoNotResolveURLs,
+      options->includeShadowRoots() ? kIncludeShadowRoots : kNoShadowRoots,
+      include_closed_roots);
 }
 
-void ShadowRoot::RecalcStyle(const StyleRecalcChange change) {
-  // ShadowRoot doesn't support custom callbacks.
-  DCHECK(!HasCustomStyleCallbacks());
-  DCHECK(!RuntimeEnabledFeatures::FlatTreeStyleRecalcEnabled());
-
-  StyleRecalcChange child_change = change;
-  if (GetStyleChangeType() == kSubtreeStyleChange)
-    child_change = child_change.ForceRecalcDescendants();
-
-  // There's no style to update so just calling RecalcStyle means we're updated.
-  ClearNeedsStyleRecalc();
-
-  if (child_change.TraverseChildren(*this))
-    RecalcDescendantStyles(child_change);
-  ClearChildNeedsStyleRecalc();
+void ShadowRoot::setInnerHTML(const String& html,
+                              ExceptionState& exception_state) {
+  if (DocumentFragment* fragment = CreateFragmentForInnerOuterHTML(
+          html, &host(), kAllowScriptingContent, "innerHTML",
+          /*include_shadow_roots=*/false, exception_state)) {
+    ReplaceChildrenWithFragment(this, fragment, exception_state);
+    if (auto* element = DynamicTo<HTMLElement>(host()))
+      element->AdjustDirectionalityIfNeededAfterShadowRootChanged();
+  }
 }
 
 void ShadowRoot::RebuildLayoutTree(WhitespaceAttacher& whitespace_attacher) {
   DCHECK(!NeedsReattachLayoutTree());
   DCHECK(!ChildNeedsReattachLayoutTree());
   RebuildChildrenLayoutTrees(whitespace_attacher);
+}
+
+void ShadowRoot::DetachLayoutTree(bool performing_reattach) {
+  ContainerNode::DetachLayoutTree(performing_reattach);
+
+  // Shadow host may contain unassigned light dom children that need detaching.
+  // Assigned nodes are detached by the slot element.
+  for (Node& child : NodeTraversal::ChildrenOf(host())) {
+    if (!child.IsSlotable() || child.AssignedSlotWithoutRecalc())
+      continue;
+
+    if (child.GetDocument() == GetDocument())
+      child.DetachLayoutTree(performing_reattach);
+  }
 }
 
 Node::InsertionNotificationRequest ShadowRoot::InsertedInto(
@@ -207,7 +193,6 @@ void ShadowRoot::RemovedFrom(ContainerNode& insertion_point) {
 }
 
 void ShadowRoot::SetNeedsAssignmentRecalc() {
-  DCHECK(IsV1());
   if (!slot_assignment_)
     return;
   return slot_assignment_->SetNeedsAssignmentRecalc();
@@ -222,9 +207,10 @@ void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
 
   if (change.IsChildElementChange()) {
     CheckForSiblingStyleChanges(
-        change.type == kElementRemoved ? kSiblingElementRemoved
-                                       : kSiblingElementInserted,
-        To<Element>(change.sibling_changed.Get()), change.sibling_before_change,
+        change.type == ChildrenChangeType::kElementRemoved
+            ? kSiblingElementRemoved
+            : kSiblingElementInserted,
+        To<Element>(change.sibling_changed), change.sibling_before_change,
         change.sibling_after_change);
   }
 }
@@ -235,25 +221,9 @@ StyleSheetList& ShadowRoot::StyleSheets() {
   return *style_sheet_list_;
 }
 
-void ShadowRoot::SetNeedsDistributionRecalcWillBeSetNeedsAssignmentRecalc() {
-  if (IsV1())
-    SetNeedsAssignmentRecalc();
-  else
-    SetNeedsDistributionRecalc();
-}
-
-void ShadowRoot::SetNeedsDistributionRecalc() {
-  DCHECK(!IsV1());
-  if (needs_distribution_recalc_)
-    return;
-  needs_distribution_recalc_ = true;
-  host().MarkAncestorsWithChildNeedsDistributionRecalc();
-}
-
-void ShadowRoot::Trace(Visitor* visitor) {
+void ShadowRoot::Trace(Visitor* visitor) const {
   visitor->Trace(style_sheet_list_);
   visitor->Trace(slot_assignment_);
-  visitor->Trace(shadow_root_v0_);
   TreeScope::Trace(visitor);
   DocumentFragment::Trace(visitor);
 }
@@ -262,9 +232,6 @@ std::ostream& operator<<(std::ostream& ostream, const ShadowRootType& type) {
   switch (type) {
     case ShadowRootType::kUserAgent:
       ostream << "UserAgent";
-      break;
-    case ShadowRootType::V0:
-      ostream << "V0";
       break;
     case ShadowRootType::kOpen:
       ostream << "Open";

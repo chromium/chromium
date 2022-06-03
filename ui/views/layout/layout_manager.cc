@@ -11,8 +11,7 @@ namespace views {
 
 LayoutManager::~LayoutManager() = default;
 
-void LayoutManager::Installed(View* host) {
-}
+void LayoutManager::Installed(View* host) {}
 
 void LayoutManager::InvalidateLayout() {}
 
@@ -38,11 +37,9 @@ SizeBounds LayoutManager::GetAvailableSize(const View* host,
   return SizeBounds();
 }
 
-void LayoutManager::ViewAdded(View* host, View* view) {
-}
+void LayoutManager::ViewAdded(View* host, View* view) {}
 
-void LayoutManager::ViewRemoved(View* host, View* view) {
-}
+void LayoutManager::ViewRemoved(View* host, View* view) {}
 
 void LayoutManager::ViewVisibilitySet(View* host,
                                       View* view,

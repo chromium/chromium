@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace ui {
 
@@ -24,6 +23,10 @@ namespace ui {
 class COMPONENT_EXPORT(EVDEV) MouseButtonMapEvdev {
  public:
   MouseButtonMapEvdev();
+
+  MouseButtonMapEvdev(const MouseButtonMapEvdev&) = delete;
+  MouseButtonMapEvdev& operator=(const MouseButtonMapEvdev&) = delete;
+
   ~MouseButtonMapEvdev();
 
   // Swaps left & right mouse buttons.
@@ -34,8 +37,6 @@ class COMPONENT_EXPORT(EVDEV) MouseButtonMapEvdev {
 
  private:
   bool primary_button_right_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(MouseButtonMapEvdev);
 };
 
 }  // namspace ui

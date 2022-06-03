@@ -20,6 +20,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_text_path.h"
 
 #include "third_party/blink/renderer/core/layout/svg/svg_layout_support.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_path_element.h"
 #include "third_party/blink/renderer/core/svg/svg_text_path_element.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
@@ -35,8 +36,7 @@ PathPositionMapper::PathPositionMapper(const Path& path,
 
 PathPositionMapper::PositionType PathPositionMapper::PointAndNormalAtLength(
     float length,
-    FloatPoint& point,
-    float& angle) {
+    PointAndTangent& point_and_tangent) {
   if (length < 0)
     return kBeforePath;
   if (length > path_length_)
@@ -44,7 +44,7 @@ PathPositionMapper::PositionType PathPositionMapper::PointAndNormalAtLength(
   DCHECK_GE(length, 0);
   DCHECK_LE(length, path_length_);
 
-  position_calculator_.PointAndNormalAtLength(length, point, angle);
+  point_and_tangent = position_calculator_.PointAndNormalAtLength(length);
   return kOnPath;
 }
 
@@ -53,6 +53,7 @@ LayoutSVGTextPath::LayoutSVGTextPath(Element* element)
 
 bool LayoutSVGTextPath::IsChildAllowed(LayoutObject* child,
                                        const ComputedStyle&) const {
+  NOT_DESTROYED();
   if (child->IsText())
     return SVGLayoutSupport::IsLayoutableTextNode(child);
 
@@ -60,10 +61,10 @@ bool LayoutSVGTextPath::IsChildAllowed(LayoutObject* child,
 }
 
 std::unique_ptr<PathPositionMapper> LayoutSVGTextPath::LayoutPath() const {
+  NOT_DESTROYED();
   const auto& text_path_element = To<SVGTextPathElement>(*GetNode());
   Element* target_element = SVGURIReference::TargetElementFromIRIString(
-      text_path_element.HrefString(),
-      text_path_element.TreeScopeForIdResolution());
+      text_path_element.HrefString(), text_path_element.OriginatingTreeScope());
 
   const auto* path_element = DynamicTo<SVGPathElement>(target_element);
   if (!path_element)

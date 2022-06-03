@@ -12,8 +12,9 @@ namespace switches {
 // different services.
 const char kServiceName[] = "service-name";
 
-// The name of the |service_manager::mojom::ServiceRequest| message pipe handle
-// that is attached to the incoming Mojo invitation received by the service.
+// The name of the |mojo::PendingReceiver<service_manager::mojom::Service>|
+// message pipe handle that is attached to the incoming Mojo invitation received
+// by the service.
 const char kServiceRequestAttachmentName[] = "service-request-attachment-name";
 
 }  // namespace switches

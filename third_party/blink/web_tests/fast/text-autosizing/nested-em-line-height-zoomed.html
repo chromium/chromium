@@ -10,7 +10,8 @@ body { width: 800px; margin: 0; overflow: hidden; }
 
 <script src="resources/autosizingTest.js"></script>
 <script>
-    eventSender.setPageZoomFactor(2);
+  if (window.testRunner)
+    testRunner.setPageZoomFactor(2);
 </script>
 
 </head>

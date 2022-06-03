@@ -43,7 +43,8 @@ String CSSKeyframeShorthandValue::CustomCSSText() const {
   return properties_->GetPropertyValue(shorthand_);
 }
 
-void CSSKeyframeShorthandValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSKeyframeShorthandValue::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   visitor->Trace(properties_);
   CSSValue::TraceAfterDispatch(visitor);
 }

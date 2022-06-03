@@ -1,0 +1,5 @@
+Tests that dedicated worker requests are intercepted.
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/empty.html, type: Document
+[browser] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/worker.js, type: Other
+worker is ready
+

@@ -36,6 +36,8 @@ class DecisionHelper {
         last_shown_type_(SchedulerClientType::kUnknown),
         shown_(0) {}
 
+  DecisionHelper(const DecisionHelper&) = delete;
+  DecisionHelper& operator=(const DecisionHelper&) = delete;
   ~DecisionHelper() = default;
 
   // Figures out a list of notifications to show.
@@ -164,8 +166,6 @@ class DecisionHelper {
   SchedulerClientType last_shown_type_;
   std::map<SchedulerClientType, int> shown_per_type_;
   int shown_;
-
-  DISALLOW_COPY_AND_ASSIGN(DecisionHelper);
 };
 
 class DisplayDeciderImpl : public DisplayDecider {
@@ -174,6 +174,8 @@ class DisplayDeciderImpl : public DisplayDecider {
                      std::vector<SchedulerClientType> clients,
                      base::Clock* clock)
       : config_(config), clients_(std::move(clients)), clock_(clock) {}
+  DisplayDeciderImpl(const DisplayDeciderImpl&) = delete;
+  DisplayDeciderImpl& operator=(const DisplayDeciderImpl&) = delete;
   ~DisplayDeciderImpl() override = default;
 
  private:
@@ -204,8 +206,6 @@ class DisplayDeciderImpl : public DisplayDecider {
   const SchedulerConfig* config_;
   const std::vector<SchedulerClientType> clients_;
   base::Clock* clock_;
-
-  DISALLOW_COPY_AND_ASSIGN(DisplayDeciderImpl);
 };
 
 }  // namespace

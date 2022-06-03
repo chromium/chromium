@@ -33,6 +33,12 @@ class FullCardRequestResultDelegateBridge
  public:
   FullCardRequestResultDelegateBridge(
       id<FullCardRequestResultDelegateObserving> delegate);
+
+  FullCardRequestResultDelegateBridge(
+      const FullCardRequestResultDelegateBridge&) = delete;
+  FullCardRequestResultDelegateBridge& operator=(
+      const FullCardRequestResultDelegateBridge&) = delete;
+
   ~FullCardRequestResultDelegateBridge() override;
 
   base::WeakPtr<FullCardRequestResultDelegateBridge> GetWeakPtr();
@@ -42,13 +48,12 @@ class FullCardRequestResultDelegateBridge
   void OnFullCardRequestSucceeded(
       const autofill::payments::FullCardRequest& full_card_request,
       const autofill::CreditCard& card,
-      const base::string16& cvc) override;
-  void OnFullCardRequestFailed() override;
+      const std::u16string& cvc) override;
+  void OnFullCardRequestFailed(
+      autofill::payments::FullCardRequest::FailureType failure_type) override;
 
   __weak id<FullCardRequestResultDelegateObserving> delegate_ = nil;
   base::WeakPtrFactory<FullCardRequestResultDelegateBridge> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(FullCardRequestResultDelegateBridge);
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_MANUAL_FILL_FULL_CARD_REQUEST_RESULT_DELEGATE_BRIDGE_H_

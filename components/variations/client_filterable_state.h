@@ -8,21 +8,40 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "base/component_export.h"
 #include "base/time/time.h"
 #include "base/version.h"
 #include "components/variations/proto/study.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace variations {
+
+// The values of the ChromeVariations policy. Those should be kept in sync
+// with the values defined in policy_templates.json!
+enum class RestrictionPolicy {
+  // No restrictions applied by policy. Default value when policy not set.
+  NO_RESTRICTIONS = 0,
+  // Only critical security variations should be applied.
+  CRITICAL_ONLY = 1,
+  // All variations disabled. Disables the variations framework altogether.
+  ALL = 2,
+  kMaxValue = ALL,
+};
 
 using IsEnterpriseFunction = base::OnceCallback<bool()>;
 
 // A container for all of the client state which is used for filtering studies.
-struct ClientFilterableState {
+struct COMPONENT_EXPORT(VARIATIONS) ClientFilterableState {
   static Study::Platform GetCurrentPlatform();
 
-  ClientFilterableState(IsEnterpriseFunction is_enterprise_function);
+  // base::Version used in {min,max}_os_version filtering.
+  static base::Version GetOSVersion();
+
+  explicit ClientFilterableState(IsEnterpriseFunction is_enterprise_function);
+
+  ClientFilterableState(const ClientFilterableState&) = delete;
+  ClientFilterableState& operator=(const ClientFilterableState&) = delete;
+
   ~ClientFilterableState();
 
   // Whether this is an enterprise client. Always false on android, iOS, and
@@ -49,6 +68,9 @@ struct ClientFilterableState {
   // The hardware form factor that Chrome is running on.
   Study::FormFactor form_factor;
 
+  // The CPU architecture on which Chrome is running.
+  Study::CpuArchitecture cpu_architecture;
+
   // The OS on which Chrome is running.
   Study::Platform platform;
 
@@ -66,14 +88,15 @@ struct ClientFilterableState {
   // The country code to use for studies configured with permanent consistency.
   std::string permanent_consistency_country;
 
+  // The restriction applied to Chrome through the "ChromeVariations" policy.
+  RestrictionPolicy policy_restriction = RestrictionPolicy::NO_RESTRICTIONS;
+
  private:
   // Evaluating enterprise status negatively affects performance, so we only
   // evaluate it if needed (i.e. if a study is filtering by enterprise) and at
   // most once.
   mutable IsEnterpriseFunction is_enterprise_function_;
-  mutable base::Optional<bool> is_enterprise_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientFilterableState);
+  mutable absl::optional<bool> is_enterprise_;
 };
 
 }  // namespace variations

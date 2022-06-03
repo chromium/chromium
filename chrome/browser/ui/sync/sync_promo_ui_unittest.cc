@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync/driver/sync_driver_switches.h"
@@ -20,6 +20,9 @@
 class SyncPromoUITest : public testing::Test {
  public:
   SyncPromoUITest() {}
+
+  SyncPromoUITest(const SyncPromoUITest&) = delete;
+  SyncPromoUITest& operator=(const SyncPromoUITest&) = delete;
 
   // testing::Test:
   void SetUp() override {
@@ -36,9 +39,6 @@ class SyncPromoUITest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncPromoUITest);
 };
 
 // Verifies that ShouldShowSyncPromo returns false if sync is disabled by
@@ -51,7 +51,7 @@ TEST_F(SyncPromoUITest, ShouldShowSyncPromoSyncDisabled) {
 // Verifies that ShouldShowSyncPromo returns true if all conditions to
 // show the promo are met.
 TEST_F(SyncPromoUITest, ShouldShowSyncPromoSyncEnabled) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // No sync promo on CrOS.
   EXPECT_FALSE(SyncPromoUI::ShouldShowSyncPromo(profile_.get()));
 #else

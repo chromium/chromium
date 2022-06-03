@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "content/browser/accessibility/accessibility_event_recorder_win.h"
 
-#include <oleacc.h>
 #include <stdint.h>
 #include <wrl/client.h>
 
@@ -18,30 +17,36 @@
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
 #include "content/browser/accessibility/accessibility_event_recorder_uia_win.h"
-#include "content/browser/accessibility/accessibility_tree_formatter_utils_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/accessibility/browser_accessibility_win.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
+#include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
 
 namespace content {
 
+using ui::AccessibilityEventToString;
+using ui::GetHWNDBySelector;
+using ui::IAccessible2StateToString;
+using ui::IAccessibleRoleToString;
+using ui::IAccessibleStateToString;
+
 namespace {
 
 std::string RoleVariantToString(const base::win::ScopedVariant& role) {
   if (role.type() == VT_I4) {
-    return base::UTF16ToUTF8(IAccessibleRoleToString(V_I4(role.ptr())));
+    return base::WideToUTF8(IAccessibleRoleToString(V_I4(role.ptr())));
   } else if (role.type() == VT_BSTR) {
-    return base::UTF16ToUTF8(
-        base::string16(V_BSTR(role.ptr()), SysStringLen(V_BSTR(role.ptr()))));
+    return base::WideToUTF8(
+        std::wstring(V_BSTR(role.ptr()), SysStringLen(V_BSTR(role.ptr()))));
   }
   return std::string();
 }
 
 HRESULT QueryIAccessible2(IAccessible* accessible, IAccessible2** accessible2) {
   Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(service_provider.GetAddressOf());
+  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
   return SUCCEEDED(hr)
              ? service_provider->QueryService(IID_IAccessible2, accessible2)
              : hr;
@@ -50,103 +55,35 @@ HRESULT QueryIAccessible2(IAccessible* accessible, IAccessible2** accessible2) {
 HRESULT QueryIAccessibleText(IAccessible* accessible,
                              IAccessibleText** accessible_text) {
   Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-  HRESULT hr = accessible->QueryInterface(service_provider.GetAddressOf());
+  HRESULT hr = accessible->QueryInterface(IID_PPV_ARGS(&service_provider));
   return SUCCEEDED(hr) ? service_provider->QueryService(IID_IAccessibleText,
                                                         accessible_text)
                        : hr;
 }
 
 std::string BstrToPrettyUTF8(BSTR bstr) {
-  base::string16 str16(bstr, SysStringLen(bstr));
+  std::wstring wstr(bstr, SysStringLen(bstr));
 
   // IAccessibleText returns the text you get by appending all static text
   // children, with an "embedded object character" for each non-text child.
   // Pretty-print the embedded object character as <obj> so that test output
   // is human-readable.
-  base::StringPiece16 embedded_character(
-      &BrowserAccessibilityComWin::kEmbeddedCharacter, 1);
-  base::ReplaceChars(str16, embedded_character, L"<obj>", &str16);
+  std::wstring embedded_character = base::UTF16ToWide(
+      std::u16string(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
+  base::ReplaceChars(wstr, embedded_character, L"<obj>", &wstr);
 
-  return base::UTF16ToUTF8(str16);
+  return base::WideToUTF8(wstr);
 }
 
 std::string AccessibilityEventToStringUTF8(int32_t event_id) {
-  return base::UTF16ToUTF8(AccessibilityEventToString(event_id));
+  return base::WideToUTF8(AccessibilityEventToString(event_id));
 }
 
 }  // namespace
 
-class AccessibilityEventRecorderWin : public AccessibilityEventRecorder {
- public:
-  AccessibilityEventRecorderWin(
-      BrowserAccessibilityManager* manager,
-      base::ProcessId pid,
-      const base::StringPiece& application_name_match_pattern);
-  ~AccessibilityEventRecorderWin() override;
-
-  // Callback registered by SetWinEventHook. Just calls OnWinEventHook.
-  static CALLBACK void WinEventHookThunk(HWINEVENTHOOK handle,
-                                         DWORD event,
-                                         HWND hwnd,
-                                         LONG obj_id,
-                                         LONG child_id,
-                                         DWORD event_thread,
-                                         DWORD event_time);
-
- private:
-  // Called by the thunk registered by SetWinEventHook. Retrieves accessibility
-  // info about the node the event was fired on and appends a string to
-  // the event log.
-  void OnWinEventHook(HWINEVENTHOOK handle,
-                      DWORD event,
-                      HWND hwnd,
-                      LONG obj_id,
-                      LONG child_id,
-                      DWORD event_thread,
-                      DWORD event_time);
-
-  // Wrapper around AccessibleObjectFromWindow because the function call
-  // inexplicably flakes sometimes on build/trybots.
-  HRESULT AccessibleObjectFromWindowWrapper(HWND hwnd,
-                                            DWORD dwId,
-                                            REFIID riid,
-                                            void** ppvObject);
-
-  HWINEVENTHOOK win_event_hook_handle_;
-  static AccessibilityEventRecorderWin* instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderWin);
-};
-
 // static
 AccessibilityEventRecorderWin* AccessibilityEventRecorderWin::instance_ =
     nullptr;
-
-// static
-std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern) {
-  if (!application_name_match_pattern.empty()) {
-    LOG(FATAL) << "Recording accessibility events from an application name "
-                  "match pattern not supported on this platform yet.";
-  }
-
-  return std::make_unique<AccessibilityEventRecorderWin>(
-      manager, pid, application_name_match_pattern);
-}
-
-std::vector<AccessibilityEventRecorder::TestPass>
-AccessibilityEventRecorder::GetTestPasses() {
-  // In addition to the 'Blink' pass, Windows includes two accessibility APIs
-  // that need to be tested independently (MSAA & UIA); the Blink pass uses the
-  // same recorder as the MSAA pass.
-  return {
-      {"blink", &AccessibilityEventRecorder::Create},
-      {"win", &AccessibilityEventRecorder::Create},
-      {"uia", &AccessibilityEventRecorderUia::CreateUia},
-  };
-}
 
 // static
 CALLBACK void AccessibilityEventRecorderWin::WinEventHookThunk(
@@ -166,10 +103,21 @@ CALLBACK void AccessibilityEventRecorderWin::WinEventHookThunk(
 AccessibilityEventRecorderWin::AccessibilityEventRecorderWin(
     BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern)
+    const ui::AXTreeSelector& selector)
     : AccessibilityEventRecorder(manager) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
+
+  // Get pid by a selector if the selectors specifies a valid process.
+  HWND hwnd_by_selector = GetHWNDBySelector(selector);
+  if (hwnd_by_selector != NULL) {
+    DWORD pid_by_selector = 0;
+    GetWindowThreadProcessId(hwnd_by_selector, &pid_by_selector);
+    if (pid_by_selector != 0) {
+      pid = static_cast<DWORD>(pid_by_selector);
+    }
+  }
+
   // For now, just use out of context events when running as a utility to watch
   // events (no BrowserAccessibilityManager), because otherwise Chrome events
   // are not getting reported. Being in context is better so that for
@@ -199,8 +147,7 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
                                                    DWORD event_time) {
   Microsoft::WRL::ComPtr<IAccessible> browser_accessible;
   HRESULT hr = AccessibleObjectFromWindowWrapper(
-      hwnd, obj_id, IID_IAccessible,
-      reinterpret_cast<void**>(browser_accessible.GetAddressOf()));
+      hwnd, obj_id, IID_PPV_ARGS(&browser_accessible));
   if (FAILED(hr)) {
     // Note: our event hook will pick up some superfluous events we
     // don't care about, so it's safe to just ignore these failures.
@@ -211,8 +158,7 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
 
   base::win::ScopedVariant childid_variant(child_id);
   Microsoft::WRL::ComPtr<IDispatch> dispatch;
-  hr = browser_accessible->get_accChild(childid_variant,
-                                        dispatch.GetAddressOf());
+  hr = browser_accessible->get_accChild(childid_variant, &dispatch);
   if (hr != S_OK || !dispatch) {
     VLOG(1) << "Ignoring result " << hr << " and result " << dispatch.Get()
             << " from get_accChild";
@@ -220,7 +166,7 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   }
 
   Microsoft::WRL::ComPtr<IAccessible> iaccessible;
-  hr = dispatch.CopyTo(iaccessible.GetAddressOf());
+  hr = dispatch.As(&iaccessible);
   if (FAILED(hr)) {
     VLOG(1) << "Ignoring result " << hr << " from QueryInterface";
     return;
@@ -238,13 +184,13 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   base::win::ScopedVariant state;
   iaccessible->get_accState(childid_self, state.Receive());
   int ia_state = V_I4(state.ptr());
-  std::string hwnd_class_name = base::UTF16ToUTF8(gfx::GetClassName(hwnd));
+  std::string hwnd_class_name = base::WideToUTF8(gfx::GetClassName(hwnd));
 
   // Caret is special:
   // Log all caret events  that occur, with their window class, so that we can
   // test to make sure they are only occurring on the desired window class.
   if (ROLE_SYSTEM_CARET == V_I4(role.ptr())) {
-    base::string16 state_str = IAccessibleStateToString(ia_state);
+    std::wstring state_str = IAccessibleStateToString(ia_state);
     std::string log = base::StringPrintf(
         "%s role=ROLE_SYSTEM_CARET %ls window_class=%s", event_str.c_str(),
         state_str.c_str(), hwnd_class_name.c_str());
@@ -257,13 +203,13 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
       return;
 
     Microsoft::WRL::ComPtr<IServiceProvider> service_provider;
-    hr = iaccessible->QueryInterface(service_provider.GetAddressOf());
+    hr = iaccessible->QueryInterface(IID_PPV_ARGS(&service_provider));
     if (FAILED(hr))
       return;
 
     Microsoft::WRL::ComPtr<IAccessible> content_document;
     hr = service_provider->QueryService(GUID_IAccessibleContentDocument,
-                                        content_document.GetAddressOf());
+                                        IID_PPV_ARGS(&content_document));
     if (FAILED(hr))
       return;
   }
@@ -291,28 +237,28 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
 
   AccessibleStates ia2_state = 0;
   Microsoft::WRL::ComPtr<IAccessible2> iaccessible2;
-  hr = QueryIAccessible2(iaccessible.Get(), iaccessible2.GetAddressOf());
+  hr = QueryIAccessible2(iaccessible.Get(), &iaccessible2);
   bool has_ia2 = SUCCEEDED(hr) && iaccessible2;
 
-  base::string16 html_tag;
-  base::string16 obj_class;
-  base::string16 html_id;
+  std::wstring html_tag;
+  std::wstring obj_class;
+  std::wstring html_id;
 
   if (has_ia2) {
     iaccessible2->get_states(&ia2_state);
     base::win::ScopedBstr attributes_bstr;
     if (S_OK == iaccessible2->get_attributes(attributes_bstr.Receive())) {
-      std::vector<base::string16> ia2_attributes = base::SplitString(
-          base::string16(attributes_bstr, attributes_bstr.Length()),
-          base::string16(1, ';'), base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-      for (base::string16& attr : ia2_attributes) {
-        if (base::StringPiece16(attr).starts_with(L"class:"))
+      std::vector<std::wstring> ia2_attributes = base::SplitString(
+          std::wstring(attributes_bstr.Get(), attributes_bstr.Length()),
+          std::wstring(1, ';'), base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+      for (std::wstring& attr : ia2_attributes) {
+        if (base::StartsWith(attr, L"class:"))
           obj_class = attr.substr(6);  // HTML or view class
-        if (base::StringPiece16(attr).starts_with(L"id:")) {
-          html_id = base::string16(L"#");
+        if (base::StartsWith(attr, L"id:")) {
+          html_id = std::wstring(L"#");
           html_id += attr.substr(3);
         }
-        if (base::StringPiece16(attr).starts_with(L"tag:")) {
+        if (base::StartsWith(attr, L"tag:")) {
           html_tag = attr.substr(4);
         }
       }
@@ -322,20 +268,19 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   std::string log = base::StringPrintf("%s on", event_str.c_str());
   if (!html_tag.empty()) {
     // HTML node with tag
-    log += base::StringPrintf(
-        " <%s%s%s%s>", base::UTF16ToUTF8(html_tag).c_str(),
-        base::UTF16ToUTF8(html_id).c_str(), obj_class.empty() ? "" : ".",
-        base::UTF16ToUTF8(obj_class).c_str());
+    log += base::StringPrintf(" <%s%s%s%s>", base::WideToUTF8(html_tag).c_str(),
+                              base::WideToUTF8(html_id).c_str(),
+                              obj_class.empty() ? "" : ".",
+                              base::WideToUTF8(obj_class).c_str());
   } else if (!obj_class.empty()) {
     // Non-HTML node with class
-    log +=
-        base::StringPrintf(" class=%s", base::UTF16ToUTF8(obj_class).c_str());
+    log += base::StringPrintf(" class=%s", base::WideToUTF8(obj_class).c_str());
   }
 
   log += base::StringPrintf(" role=%s", RoleVariantToString(role).c_str());
   if (name_bstr.Length() > 0)
-    log +=
-        base::StringPrintf(" name=\"%s\"", BstrToPrettyUTF8(name_bstr).c_str());
+    log += base::StringPrintf(" name=\"%s\"",
+                              BstrToPrettyUTF8(name_bstr.Get()).c_str());
   if (value_bstr.Length() > 0) {
     bool is_document =
         role.type() == VT_I4 && ROLE_SYSTEM_DOCUMENT == V_I4(role.ptr());
@@ -344,12 +289,12 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
     log += is_document
                ? " value~=[doc-url]"
                : base::StringPrintf(" value=\"%s\"",
-                                    BstrToPrettyUTF8(value_bstr).c_str());
+                                    BstrToPrettyUTF8(value_bstr.Get()).c_str());
   }
   log += " ";
-  log += base::UTF16ToUTF8(IAccessibleStateToString(ia_state));
+  log += base::WideToUTF8(IAccessibleStateToString(ia_state));
   log += " ";
-  log += base::UTF16ToUTF8(IAccessible2StateToString(ia2_state));
+  log += base::WideToUTF8(IAccessible2StateToString(ia2_state));
 
   // Group position, e.g. L3, 5 of 7
   LONG group_level, similar_items_in_group, position_in_group;
@@ -367,7 +312,7 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   // For TEXT_REMOVED and TEXT_INSERTED events, query the text that was
   // inserted or removed and include that in the log.
   Microsoft::WRL::ComPtr<IAccessibleText> accessible_text;
-  hr = QueryIAccessibleText(iaccessible.Get(), accessible_text.GetAddressOf());
+  hr = QueryIAccessibleText(iaccessible.Get(), &accessible_text);
   if (SUCCEEDED(hr)) {
     if (event == IA2_EVENT_TEXT_REMOVED) {
       IA2TextSegment old_text;

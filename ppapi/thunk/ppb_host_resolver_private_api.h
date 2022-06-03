@@ -34,4 +34,4 @@ class PPAPI_THUNK_EXPORT PPB_HostResolver_Private_API {
 }  // namespace thunk
 }  // namespace ppapi
 
-#endif  // PPAPI_THUNK_PPB_TCP_SOCKET_PRIVATE_API_H_
+#endif  // PPAPI_THUNK_PPB_HOST_RESOLVER_PRIVATE_API_H_

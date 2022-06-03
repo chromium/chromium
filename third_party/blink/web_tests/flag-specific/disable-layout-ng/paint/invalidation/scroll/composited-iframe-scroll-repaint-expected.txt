@@ -1,38 +1,24 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "LayoutIFrame IFRAME",
-      "bounds": [304, 154],
-      "transform": 1
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [300, 516],
+      "contentsOpaque": true,
       "backgroundColor": "#EEEEEE",
-      "transform": 3
+      "transform": 2
     },
     {
       "name": "LayoutBlockFlow BODY",
       "bounds": [284, 500],
-      "transform": 4
-    },
-    {
-      "name": "Horizontal Scrollbar Layer",
-      "position": [0, 150],
-      "bounds": [300, 0],
-      "transform": 2
-    },
-    {
-      "name": "Vertical Scrollbar Layer",
-      "position": [300, 0],
-      "bounds": [0, 150],
-      "transform": 2
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 3
     }
   ],
   "transforms": [
@@ -42,7 +28,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [8, 8, 0, 1]
+        [10, 10, 0, 1]
       ]
     },
     {
@@ -52,22 +38,12 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [2, 2, 0, 1]
+        [0, -20, 0, 1]
       ]
     },
     {
       "id": 3,
       "parent": 2,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [0, -20, 0, 1]
-      ]
-    },
-    {
-      "id": 4,
-      "parent": 3,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],

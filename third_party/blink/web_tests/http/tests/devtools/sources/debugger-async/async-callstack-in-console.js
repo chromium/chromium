@@ -4,8 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests asynchronous call stacks printed in console.\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div><iframe src="../debugger/resources/post-message-listener.html" id="iframe" width="800" height="100" style="border: 1px solid black;">
@@ -73,8 +73,8 @@
     ConsoleTestRunner.expandConsoleMessages(dumpConsoleMessages);
   }
 
-  function dumpConsoleMessages() {
-    ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
+  async function dumpConsoleMessages() {
+    await ConsoleTestRunner.dumpConsoleMessages(false, false, TestRunner.textContentWithLineBreaks);
     SourcesTestRunner.completeDebuggerTest();
   }
 })();

@@ -1,0 +1,10 @@
+This is a testharness.js-based test.
+PASS Middle click should set focus to clicked editable element and collapse selection around the clicked point
+PASS Middle click should move caret in an editable element
+PASS Middle click shouldn't move caret in an editable element if the default of mousedown event is prevented
+PASS Middle click shouldn't move caret in an editable element if the default of pointerdown event is prevented
+FAIL Shift + Middle click should extend the selection promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+FAIL Shift + Middle click in a link shouldn't extend the selection promise_test: Unhandled rejection with value: object "Error: we do not support keydown and keyup actions, please use test_driver.send_keys"
+PASS Middle mouse button down should move caret, but middle mouse button up shouldn't move caret
+Harness: the test ran to completion.
+

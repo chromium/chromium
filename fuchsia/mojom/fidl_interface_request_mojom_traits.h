@@ -8,7 +8,6 @@
 #include <lib/fidl/cpp/interface_request.h>
 
 #include "mojo/public/cpp/platform/platform_handle.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 namespace mojo {
 
@@ -17,19 +16,13 @@ namespace mojo {
 // this struct. Read test_request_interface_mojom_traits.h for an example.
 template <typename DataView, typename Interface>
 struct FidlInterfaceRequestStructTraits {
-  static ScopedHandle request(fidl::InterfaceRequest<Interface>& request) {
+  static PlatformHandle request(fidl::InterfaceRequest<Interface>& request) {
     DCHECK(request.is_valid());
-    PlatformHandle handle(request.TakeChannel());
-    return WrapPlatformHandle(std::move(handle));
+    return PlatformHandle(request.TakeChannel());
   }
 
   static bool Read(DataView input, fidl::InterfaceRequest<Interface>* output) {
-    ScopedHandle input_request = input.TakeRequest();
-    if (!input_request.is_valid())
-      return false;
-
-    PlatformHandle handle =
-        mojo::UnwrapPlatformHandle(std::move(input_request));
+    PlatformHandle handle = input.TakeRequest();
     if (!handle.is_valid_handle())
       return false;
 

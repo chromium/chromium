@@ -11,12 +11,11 @@
 #include "ui/base/page_transition_types.h"
 
 @class AppState;
+class Browser;
 class GURL;
-@class TabModel;
 @protocol StartupInformation;
 struct UrlLoadParams;
-
-enum class ApplicationModeForTabOpening { NORMAL, INCOGNITO, CURRENT };
+@class URLOpenerParams;
 
 // Protocol for object that can open new tabs during application launch.
 @protocol TabOpening<NSObject>
@@ -32,14 +31,23 @@ enum class ApplicationModeForTabOpening { NORMAL, INCOGNITO, CURRENT };
                                dismissOmnibox:(BOOL)dismissOmnibox
                                    completion:(ProceduralBlock)completion;
 
-// Creates a new tab if the launch options are not null.
-- (void)openTabFromLaunchOptions:(NSDictionary*)launchOptions
-              startupInformation:(id<StartupInformation>)startupInformation
-                        appState:(AppState*)appState;
+// Dismisses any modal view, excluding the omnibox if |dismissOmnibox| is NO,
+// then opens the list of URLs in |URLs| in either normal or incognito.
+// After opening the array of URLs, run completion |handler| if it not nil.
+- (void)dismissModalsAndOpenMultipleTabsInMode:
+            (ApplicationModeForTabOpening)targetMode
+                                          URLs:(const std::vector<GURL>&)URLs
+                                dismissOmnibox:(BOOL)dismissOmnibox
+                                    completion:(ProceduralBlock)completion;
 
-// Returns whether an NTP tab should be opened when the specified tabModel is
+// Creates a new tab if the launch options are not null.
+- (void)openTabFromLaunchWithParams:(URLOpenerParams*)params
+                 startupInformation:(id<StartupInformation>)startupInformation
+                           appState:(AppState*)appState;
+
+// Returns whether an NTP tab should be opened when the specified browser is
 // made current.
-- (BOOL)shouldOpenNTPTabOnActivationOfTabModel:(TabModel*)tabModel;
+- (BOOL)shouldOpenNTPTabOnActivationOfBrowser:(Browser*)browser;
 
 // Returns a block that can be executed on the new tab to trigger one of the
 // commands. This block can be passed to
@@ -47,11 +55,6 @@ enum class ApplicationModeForTabOpening { NORMAL, INCOGNITO, CURRENT };
 // This block must only be executed if new tab opened on NTP.
 - (ProceduralBlock)completionBlockForTriggeringAction:
     (NTPTabOpeningPostOpeningAction)action;
-
-// Attempts to complete a Payment Request flow with a payment response from a
-// a third party app. Returns whether or not this operation was successful.
-- (BOOL)shouldCompletePaymentRequestOnCurrentTab:
-    (id<StartupInformation>)startupInformation;
 
 // Whether the |URL| is already opened, in regular mode.
 - (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL;

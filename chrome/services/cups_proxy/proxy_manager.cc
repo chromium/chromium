@@ -12,10 +12,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/ring_buffer.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/services/cups_proxy/cups_proxy_service_delegate.h"
 #include "chrome/services/cups_proxy/ipp_validator.h"
 #include "chrome/services/cups_proxy/printer_installer.h"
@@ -23,15 +23,13 @@
 #include "chrome/services/cups_proxy/public/cpp/ipp_messages.h"
 #include "chrome/services/cups_proxy/public/cpp/type_conversions.h"
 #include "chrome/services/cups_proxy/socket_manager.h"
-#include "chrome/services/ipp_parser/ipp_parser_service.h"
+#include "chrome/services/ipp_parser/public/cpp/browser/ipp_parser_launcher.h"
 #include "chrome/services/ipp_parser/public/cpp/ipp_converter.h"
-#include "content/public/common/service_manager_connection.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
-#include "printing/backend/cups_ipp_util.h"
-#include "services/service_manager/public/cpp/connector.h"
+#include "printing/backend/cups_ipp_helper.h"
 
 namespace cups_proxy {
 namespace {
@@ -47,8 +45,21 @@ class ProxyManagerImpl : public ProxyManager {
                    std::unique_ptr<CupsProxyServiceDelegate> delegate,
                    std::unique_ptr<IppValidator> ipp_validator,
                    std::unique_ptr<PrinterInstaller> printer_installer,
-                   std::unique_ptr<SocketManager> socket_manager);
-  ~ProxyManagerImpl() override;
+                   std::unique_ptr<SocketManager> socket_manager)
+      : delegate_(std::move(delegate)),
+        ipp_validator_(std::move(ipp_validator)),
+        printer_installer_(std::move(printer_installer)),
+        socket_manager_(std::move(socket_manager)),
+        receiver_(this, std::move(request)) {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    receiver_.set_disconnect_handler(
+        base::BindOnce([] { LOG(ERROR) << "CupsProxy mojo connection lost"; }));
+  }
+
+  ProxyManagerImpl(const ProxyManagerImpl&) = delete;
+  ProxyManagerImpl& operator=(const ProxyManagerImpl&) = delete;
+
+  ~ProxyManagerImpl() override = default;
 
   void ProxyRequest(const std::string& method,
                     const std::string& url,
@@ -87,6 +98,9 @@ class ProxyManagerImpl : public ProxyManager {
   // Current in-flight request.
   std::unique_ptr<InFlightRequest> in_flight_;
 
+  // Timestamp ring buffer.
+  base::RingBuffer<base::TimeTicks, kRateLimit> timestamp_;
+
   // CupsIppParser Service handle.
   mojo::Remote<ipp_parser::mojom::IppParser> ipp_parser_;
 
@@ -99,10 +113,9 @@ class ProxyManagerImpl : public ProxyManager {
 
   mojo::Receiver<mojom::CupsProxier> receiver_;
   base::WeakPtrFactory<ProxyManagerImpl> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(ProxyManagerImpl);
 };
 
-base::Optional<std::vector<uint8_t>> RebuildIppRequest(
+absl::optional<std::vector<uint8_t>> RebuildIppRequest(
     const std::string& method,
     const std::string& url,
     const std::string& version,
@@ -111,12 +124,12 @@ base::Optional<std::vector<uint8_t>> RebuildIppRequest(
   auto request_line_buffer =
       ipp_converter::BuildRequestLine(method, url, version);
   if (!request_line_buffer.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   auto headers_buffer = ipp_converter::BuildHeaders(headers);
   if (!headers_buffer.has_value()) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   std::vector<uint8_t> ret;
@@ -127,22 +140,6 @@ base::Optional<std::vector<uint8_t>> RebuildIppRequest(
   return ret;
 }
 
-ProxyManagerImpl::ProxyManagerImpl(
-    mojo::PendingReceiver<CupsProxier> receiver,
-    std::unique_ptr<CupsProxyServiceDelegate> delegate,
-    std::unique_ptr<IppValidator> ipp_validator,
-    std::unique_ptr<PrinterInstaller> printer_installer,
-    std::unique_ptr<SocketManager> socket_manager)
-    : delegate_(std::move(delegate)),
-      ipp_validator_(std::move(ipp_validator)),
-      printer_installer_(std::move(printer_installer)),
-      socket_manager_(std::move(socket_manager)),
-      receiver_(this, std::move(receiver)) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-}
-
-ProxyManagerImpl::~ProxyManagerImpl() = default;
-
 void ProxyManagerImpl::ProxyRequest(
     const std::string& method,
     const std::string& url,
@@ -151,6 +148,29 @@ void ProxyManagerImpl::ProxyRequest(
     const std::vector<uint8_t>& body,
     ProxyRequestCallback cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Limit the rate of requests to kRateLimit per second.
+  // The way the algorithm works is if the number of times this method was
+  // called between a second ago and now, including the current call, exceeds
+  // kRateLimit, the request is blocked and the HTTP 429 Too Many Requests
+  // response status code is returned.
+  base::TimeTicks time = base::TimeTicks::Now();
+  bool block_request = timestamp_.CurrentIndex() >= timestamp_.BufferSize() &&
+                       time - timestamp_.ReadBuffer(0) < base::Seconds(1);
+  timestamp_.SaveToBuffer(time);
+  if (block_request) {
+    LOG(WARNING) << "CupsPrintService: Rate limit (" << kRateLimit
+                 << ") exceeded";
+    std::move(cb).Run({}, {}, 429);  // HTTP_STATUS_TOO_MANY_REQUESTS
+    return;
+  }
+
+  if (!delegate_->IsPrinterAccessAllowed()) {
+    DVLOG(1) << "Printer access not allowed";
+    std::move(cb).Run(/*headers=*/{}, /*ipp_message=*/{},
+                      HTTP_STATUS_FORBIDDEN);
+    return;
+  }
 
   // If we already have an in-flight request, we fail this incoming one
   // directly.
@@ -236,10 +256,12 @@ void ProxyManagerImpl::OnParseIpp(
 }
 
 void ProxyManagerImpl::SpoofGetPrinters() {
-  auto printers = FilterPrintersForPluginVm(
+  std::vector<chromeos::Printer> printers = FilterPrintersForPluginVm(
       delegate_->GetPrinters(chromeos::PrinterClass::kSaved),
-      delegate_->GetPrinters(chromeos::PrinterClass::kEnterprise));
-  auto response = BuildGetDestsResponse(in_flight_->request, printers);
+      delegate_->GetPrinters(chromeos::PrinterClass::kEnterprise),
+      delegate_->GetRecentlyUsedPrinters());
+  absl::optional<IppResponse> response =
+      BuildGetDestsResponse(in_flight_->request, printers);
   if (!response.has_value()) {
     return Fail("Failed to spoof CUPS-Get-Printers response",
                 HTTP_STATUS_SERVER_ERROR);
@@ -336,14 +358,12 @@ void ProxyManagerImpl::Fail(const std::string& error_message,
 std::unique_ptr<ProxyManager> ProxyManager::Create(
     mojo::PendingReceiver<mojom::CupsProxier> request,
     std::unique_ptr<CupsProxyServiceDelegate> delegate) {
-  // Setting up injected managers.
-  auto ipp_validator = std::make_unique<IppValidator>(delegate.get());
-  auto printer_installer = std::make_unique<PrinterInstaller>(delegate.get());
-  auto socket_manager = SocketManager::Create(delegate.get());
-
+  auto* delegate_ptr = delegate.get();
   return std::make_unique<ProxyManagerImpl>(
-      std::move(request), std::move(delegate), std::move(ipp_validator),
-      std::move(printer_installer), std::move(socket_manager));
+      std::move(request), std::move(delegate),
+      std::make_unique<IppValidator>(delegate_ptr),
+      std::make_unique<PrinterInstaller>(delegate_ptr),
+      SocketManager::Create(delegate_ptr));
 }
 
 std::unique_ptr<ProxyManager> ProxyManager::CreateForTesting(

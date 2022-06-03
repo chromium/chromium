@@ -12,7 +12,7 @@
 #include "services/service_manager/public/cpp/manifest.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 #include "services/service_manager/public/cpp/service.h"
-#include "services/service_manager/public/cpp/service_binding.h"
+#include "services/service_manager/public/cpp/service_receiver.h"
 #include "services/service_manager/public/cpp/test/test_service_manager.h"
 #include "services/service_manager/public/mojom/constants.mojom.h"
 #include "services/service_manager/tests/shutdown/shutdown.test-mojom.h"
@@ -71,20 +71,22 @@ class ShutdownTest : public testing::Test {
  public:
   ShutdownTest()
       : test_service_manager_(GetTestManifests()),
-        test_service_binding_(
+        test_service_receiver_(
             &test_service_,
             test_service_manager_.RegisterTestInstance(kTestServiceName)) {}
+
+  ShutdownTest(const ShutdownTest&) = delete;
+  ShutdownTest& operator=(const ShutdownTest&) = delete;
+
   ~ShutdownTest() override = default;
 
-  Connector* connector() { return test_service_binding_.GetConnector(); }
+  Connector* connector() { return test_service_receiver_.GetConnector(); }
 
  private:
   base::test::TaskEnvironment task_environment_;
   TestServiceManager test_service_manager_;
   Service test_service_;
-  ServiceBinding test_service_binding_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShutdownTest);
+  ServiceReceiver test_service_receiver_;
 };
 
 TEST_F(ShutdownTest, ConnectRace) {

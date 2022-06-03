@@ -4,12 +4,12 @@
 
 #include "net/proxy_resolution/multi_threaded_proxy_resolver.h"
 
+#include <memory>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -19,6 +19,7 @@
 #include "base/threading/thread_checker_impl.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/log/net_log_event_type.h"
 #include "net/log/net_log_with_source.h"
@@ -32,7 +33,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -111,6 +111,9 @@ class BlockableProxyResolver : public MockProxyResolver {
 
   BlockableProxyResolver() : state_(State::NONE), condition_(&lock_) {}
 
+  BlockableProxyResolver(const BlockableProxyResolver&) = delete;
+  BlockableProxyResolver& operator=(const BlockableProxyResolver&) = delete;
+
   ~BlockableProxyResolver() override {
     base::AutoLock lock(lock_);
     EXPECT_NE(State::BLOCKED, state_);
@@ -170,8 +173,6 @@ class BlockableProxyResolver : public MockProxyResolver {
   State state_;
   base::Lock lock_;
   base::ConditionVariable condition_;
-
-  DISALLOW_COPY_AND_ASSIGN(BlockableProxyResolver);
 };
 
 // This factory returns new instances of BlockableProxyResolver.
@@ -233,8 +234,9 @@ class MultiThreadedProxyResolverTest : public TestWithTaskEnvironment {
     std::unique_ptr<BlockableProxyResolverFactory> factory_owner(
         new BlockableProxyResolverFactory);
     factory_ = factory_owner.get();
-    resolver_factory_.reset(new SingleShotMultiThreadedProxyResolverFactory(
-        num_threads, std::move(factory_owner)));
+    resolver_factory_ =
+        std::make_unique<SingleShotMultiThreadedProxyResolverFactory>(
+            num_threads, std::move(factory_owner));
     TestCompletionCallback ready_callback;
     std::unique_ptr<ProxyResolverFactory::Request> request;
     resolver_factory_->CreateProxyResolver(
@@ -245,8 +247,7 @@ class MultiThreadedProxyResolverTest : public TestWithTaskEnvironment {
 
     // Verify that the script data reaches the synchronous resolver factory.
     ASSERT_EQ(1u, factory_->script_data().size());
-    EXPECT_EQ(ASCIIToUTF16("pac script bytes"),
-              factory_->script_data()[0]->utf16());
+    EXPECT_EQ(u"pac script bytes", factory_->script_data()[0]->utf16());
   }
 
   void ClearResolver() { resolver_.reset(); }
@@ -274,11 +275,12 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_Basic) {
   // Start request 0.
   int rv;
   TestCompletionCallback callback0;
-  RecordingBoundTestNetLog log0;
+  RecordingNetLogObserver net_log_observer;
   ProxyInfo results0;
-  rv = resolver().GetProxyForURL(GURL("http://request0"), NetworkIsolationKey(),
-                                 &results0, callback0.callback(), nullptr,
-                                 log0.bound());
+  rv =
+      resolver().GetProxyForURL(GURL("http://request0"), NetworkIsolationKey(),
+                                &results0, callback0.callback(), nullptr,
+                                NetLogWithSource::Make(NetLogSourceType::NONE));
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Wait for request 0 to finish.
@@ -290,7 +292,7 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_Basic) {
   // on completion, this should have been copied into |log0|.
   // We also have 1 log entry that was emitted by the
   // MultiThreadedProxyResolver.
-  auto entries0 = log0.GetEntries();
+  auto entries0 = net_log_observer.GetEntries();
 
   ASSERT_EQ(2u, entries0.size());
   EXPECT_EQ(NetLogEventType::SUBMITTED_TO_RESOLVER_THREAD, entries0[0].type);
@@ -350,29 +352,33 @@ TEST_F(MultiThreadedProxyResolverTest,
   std::unique_ptr<ProxyResolver::Request> request0;
   TestCompletionCallback callback0;
   ProxyInfo results0;
-  RecordingBoundTestNetLog log0;
+  RecordingNetLogObserver net_log_observer;
+  NetLogWithSource log_with_source0 =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   rv = resolver().GetProxyForURL(GURL("http://request0"), NetworkIsolationKey(),
                                  &results0, callback0.callback(), &request0,
-                                 log0.bound());
+                                 log_with_source0);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Start 2 more requests (request1 and request2).
 
   TestCompletionCallback callback1;
   ProxyInfo results1;
-  RecordingBoundTestNetLog log1;
+  NetLogWithSource log_with_source1 =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   rv = resolver().GetProxyForURL(GURL("http://request1"), NetworkIsolationKey(),
                                  &results1, callback1.callback(), nullptr,
-                                 log1.bound());
+                                 log_with_source1);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   std::unique_ptr<ProxyResolver::Request> request2;
   TestCompletionCallback callback2;
   ProxyInfo results2;
-  RecordingBoundTestNetLog log2;
+  NetLogWithSource log_with_source2 =
+      NetLogWithSource::Make(NetLogSourceType::NONE);
   rv = resolver().GetProxyForURL(GURL("http://request2"), NetworkIsolationKey(),
                                  &results2, callback2.callback(), &request2,
-                                 log2.bound());
+                                 log_with_source2);
   EXPECT_THAT(rv, IsError(ERR_IO_PENDING));
 
   // Unblock the worker thread so the requests can continue running.
@@ -385,7 +391,8 @@ TEST_F(MultiThreadedProxyResolverTest,
   EXPECT_EQ(0, callback0.WaitForResult());
   EXPECT_EQ("PROXY request0:80", results0.ToPacString());
 
-  auto entries0 = log0.GetEntries();
+  auto entries0 =
+      net_log_observer.GetEntriesForSource(log_with_source0.source());
 
   ASSERT_EQ(2u, entries0.size());
   EXPECT_EQ(NetLogEventType::SUBMITTED_TO_RESOLVER_THREAD, entries0[0].type);
@@ -394,7 +401,8 @@ TEST_F(MultiThreadedProxyResolverTest,
   EXPECT_EQ(1, callback1.WaitForResult());
   EXPECT_EQ("PROXY request1:80", results1.ToPacString());
 
-  auto entries1 = log1.GetEntries();
+  auto entries1 =
+      net_log_observer.GetEntriesForSource(log_with_source1.source());
 
   ASSERT_EQ(4u, entries1.size());
   EXPECT_TRUE(LogContainsBeginEvent(
@@ -406,7 +414,8 @@ TEST_F(MultiThreadedProxyResolverTest,
   EXPECT_EQ(2, callback2.WaitForResult());
   EXPECT_EQ("PROXY request2:80", results2.ToPacString());
 
-  auto entries2 = log2.GetEntries();
+  auto entries2 =
+      net_log_observer.GetEntriesForSource(log_with_source2.source());
 
   ASSERT_EQ(4u, entries2.size());
   EXPECT_TRUE(LogContainsBeginEvent(
@@ -489,8 +498,8 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_CancelRequest) {
 
 // Make sure the NetworkIsolationKey makes it to the resolver.
 TEST_F(MultiThreadedProxyResolverTest, SingleThread_WithNetworkIsolationKey) {
-  const url::Origin kOrigin(url::Origin::Create(GURL("https://origin.test/")));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  const SchemefulSite kSite(GURL("https://origin.test/"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   const GURL kUrl("https://url.test/");
 
   const size_t kNumThreads = 1u;
@@ -564,8 +573,7 @@ TEST_F(MultiThreadedProxyResolverTest, SingleThread_CancelRequestByDeleting) {
   // of the worker thread. The test will pass regardless, so this race doesn't
   // cause flakiness. However the destruction during execution is a more
   // interesting case to test.
-  factory().resolvers()[0]->SetResolveLatency(
-      base::TimeDelta::FromMilliseconds(100));
+  factory().resolvers()[0]->SetResolveLatency(base::Milliseconds(100));
 
   // Unblock the worker thread and delete the underlying
   // MultiThreadedProxyResolver immediately.
@@ -648,8 +656,7 @@ TEST_F(MultiThreadedProxyResolverTest, ThreeThreads_Basic) {
 
   ASSERT_EQ(3u, factory().script_data().size());
   for (int i = 0; i < 3; ++i) {
-    EXPECT_EQ(ASCIIToUTF16("pac script bytes"),
-              factory().script_data()[i]->utf16())
+    EXPECT_EQ(u"pac script bytes", factory().script_data()[i]->utf16())
         << "i=" << i;
   }
 
@@ -701,8 +708,7 @@ TEST_F(MultiThreadedProxyResolverTest, OneThreadBlocked) {
 
   // One thread has been provisioned (i.e. one ProxyResolver was created).
   ASSERT_EQ(1u, factory().resolvers().size());
-  EXPECT_EQ(ASCIIToUTF16("pac script bytes"),
-            factory().script_data()[0]->utf16());
+  EXPECT_EQ(u"pac script bytes", factory().script_data()[0]->utf16());
 
   const int kNumRequests = 4;
   TestCompletionCallback callback[kNumRequests];

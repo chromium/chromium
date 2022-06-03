@@ -7,7 +7,8 @@
 namespace blink {
 namespace cssvalue {
 
-void CSSPendingSubstitutionValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSPendingSubstitutionValue::TraceAfterDispatch(
+    blink::Visitor* visitor) const {
   CSSValue::TraceAfterDispatch(visitor);
   visitor->Trace(shorthand_value_);
 }

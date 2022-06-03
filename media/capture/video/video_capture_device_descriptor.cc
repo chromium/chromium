@@ -4,7 +4,6 @@
 
 #include "media/capture/video/video_capture_device_descriptor.h"
 
-#include "base/logging.h"
 #include "base/strings/string_util.h"
 
 namespace media {
@@ -26,18 +25,21 @@ VideoCaptureDeviceDescriptor::VideoCaptureDeviceDescriptor(
     const std::string& display_name,
     const std::string& device_id,
     VideoCaptureApi capture_api,
+    const VideoCaptureControlSupport& control_support,
     VideoCaptureTransportType transport_type)
     : device_id(device_id),
       facing(VideoFacingMode::MEDIA_VIDEO_FACING_NONE),
       capture_api(capture_api),
       transport_type(transport_type),
-      display_name_(TrimDisplayName(display_name)) {}
+      display_name_(TrimDisplayName(display_name)),
+      control_support_(control_support) {}
 
 VideoCaptureDeviceDescriptor::VideoCaptureDeviceDescriptor(
     const std::string& display_name,
     const std::string& device_id,
     const std::string& model_id,
     VideoCaptureApi capture_api,
+    const VideoCaptureControlSupport& control_support,
     VideoCaptureTransportType transport_type,
     VideoFacingMode facing)
     : device_id(device_id),
@@ -45,7 +47,8 @@ VideoCaptureDeviceDescriptor::VideoCaptureDeviceDescriptor(
       facing(facing),
       capture_api(capture_api),
       transport_type(transport_type),
-      display_name_(TrimDisplayName(display_name)) {}
+      display_name_(TrimDisplayName(display_name)),
+      control_support_(control_support) {}
 
 VideoCaptureDeviceDescriptor::~VideoCaptureDeviceDescriptor() = default;
 
@@ -90,6 +93,8 @@ const char* VideoCaptureDeviceDescriptor::GetCaptureApiTypeString() const {
       return "Camera API2 Full";
     case VideoCaptureApi::ANDROID_API2_LIMITED:
       return "Camera API2 Limited";
+    case VideoCaptureApi::FUCHSIA_CAMERA3:
+      return "fuchsia.camera3 API";
     case VideoCaptureApi::VIRTUAL_DEVICE:
       return "Virtual Device";
     case VideoCaptureApi::UNKNOWN:

@@ -29,6 +29,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWin
       BluetoothRemoteGattCharacteristicWin* parent_characteristic,
       BTH_LE_GATT_DESCRIPTOR* descriptor_info,
       scoped_refptr<base::SequencedTaskRunner>& ui_task_runner);
+
+  BluetoothRemoteGattDescriptorWin(const BluetoothRemoteGattDescriptorWin&) =
+      delete;
+  BluetoothRemoteGattDescriptorWin& operator=(
+      const BluetoothRemoteGattDescriptorWin&) = delete;
+
   ~BluetoothRemoteGattDescriptorWin() override;
 
   // Override BluetoothRemoteGattDescriptor interfaces.
@@ -38,8 +44,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWin
   BluetoothRemoteGattCharacteristic* GetCharacteristic() const override;
   BluetoothRemoteGattCharacteristic::Permissions GetPermissions()
       const override;
-  void ReadRemoteDescriptor(ValueCallback callback,
-                            ErrorCallback error_callback) override;
+  void ReadRemoteDescriptor(ValueCallback callback) override;
   void WriteRemoteDescriptor(const std::vector<uint8_t>& new_value,
                              base::OnceClosure callback,
                              ErrorCallback error_callback) override;
@@ -63,7 +68,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattDescriptorWin
 
   base::WeakPtrFactory<BluetoothRemoteGattDescriptorWin> weak_ptr_factory_{
       this};
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattDescriptorWin);
 };
 
 }  // namespace device.

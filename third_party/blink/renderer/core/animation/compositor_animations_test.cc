@@ -52,17 +52,19 @@
 #include "third_party/blink/renderer/core/css/css_syntax_definition.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/mock_css_paint_image_generator.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/object_paint_properties.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/filter_operations.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
+#include "third_party/blink/renderer/core/svg/svg_element.h"
+#include "third_party/blink/renderer/core/svg/svg_length.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/animation/compositor_color_animation_curve.h"
@@ -73,6 +75,7 @@
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/testing/find_cc_layer.h"
 #include "third_party/blink/renderer/platform/testing/histogram_tester.h"
 #include "third_party/blink/renderer/platform/testing/paint_test_configurations.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -158,27 +161,35 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     // Having an animation would normally ensure this but these tests don't
     // explicitly construct a full animation on the element.
     SetBodyInnerHTML(R"HTML(
-        <div id='test' style='will-change: opacity,filter,transform; height:100px; background: green;'></div>
-        <span id='inline' style='will-change: opacity,filter,transform;'>text</div>
+      <div id='test' style='will-change: opacity,filter,transform;
+                            height:100px; background: green;'>
+      </div>
+      <span id='inline' style='will-change: opacity,filter,transform;'>
+        text
+      </span>
     )HTML");
     element_ = GetDocument().getElementById("test");
     inline_ = GetDocument().getElementById("inline");
 
     helper_.Initialize(nullptr, nullptr, nullptr);
+    helper_.Resize(gfx::Size(800, 600));
     base_url_ = "http://www.test.com/";
   }
 
  public:
   bool ConvertTimingForCompositor(const Timing& t,
-                                  CompositorAnimations::CompositorTiming& out) {
-    return CompositorAnimations::ConvertTimingForCompositor(t, 0, out, 1);
+                                  CompositorAnimations::CompositorTiming& out,
+                                  double playback_rate = 1) {
+    return CompositorAnimations::ConvertTimingForCompositor(
+        t, NormalizedTiming(t), base::TimeDelta(), out, playback_rate);
   }
 
   CompositorAnimations::FailureReasons CanStartEffectOnCompositor(
       const Timing& timing,
       const KeyframeEffectModelBase& effect) {
     // TODO(crbug.com/725385): Remove once compositor uses InterpolationTypes.
-    auto style = GetDocument().EnsureStyleResolver().StyleForElement(element_);
+    auto style = GetDocument().GetStyleResolver().ResolveStyle(
+        element_, StyleRecalcContext());
     effect.SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
                                                      nullptr);
     return CheckCanStartEffectOnCompositor(timing, *element_.Get(), nullptr,
@@ -188,16 +199,20 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       const Timing& timing,
       const Element& element,
       const Animation* animation,
-      const EffectModel& effect_model) {
+      const EffectModel& effect_model,
+      PropertyHandleSet* unsupported_properties = nullptr) {
     const PaintArtifactCompositor* paint_artifact_compositor =
         GetDocument().View()->GetPaintArtifactCompositor();
     return CompositorAnimations::CheckCanStartEffectOnCompositor(
-        timing, element, animation, effect_model, paint_artifact_compositor, 1);
+        timing, NormalizedTiming(timing), element, animation, effect_model,
+        paint_artifact_compositor, 1, unsupported_properties);
   }
 
   CompositorAnimations::FailureReasons CheckCanStartElementOnCompositor(
-      const Element& element) {
-    return CompositorAnimations::CheckCanStartElementOnCompositor(element);
+      const Element& element,
+      const EffectModel& model) {
+    return CompositorAnimations::CheckCanStartElementOnCompositor(element,
+                                                                  model);
   }
 
   void GetAnimationOnCompositor(
@@ -206,8 +221,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       Vector<std::unique_ptr<CompositorKeyframeModel>>& keyframe_models,
       double animation_playback_rate) {
     CompositorAnimations::GetAnimationOnCompositor(
-        *element_, timing, 0, base::nullopt, 0, effect, keyframe_models,
-        animation_playback_rate);
+        *element_, timing, NormalizedTiming(timing), 0, absl::nullopt,
+        base::TimeDelta(), effect, keyframe_models, animation_playback_rate);
   }
 
   CompositorAnimations::FailureReasons
@@ -226,14 +241,40 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 
   Timing CreateCompositableTiming() {
     Timing timing;
-    timing.start_delay = 0;
+    timing.start_delay = AnimationTimeDelta();
     timing.fill_mode = Timing::FillMode::NONE;
     timing.iteration_start = 0;
     timing.iteration_count = 1;
-    timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
+    timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
     timing.direction = Timing::PlaybackDirection::NORMAL;
     timing.timing_function = linear_timing_function_;
     return timing;
+  }
+
+  // Simplified version of what happens in AnimationEffect::NormalizedTiming()
+  Timing::NormalizedTiming NormalizedTiming(Timing timing) {
+    Timing::NormalizedTiming normalized_timing;
+
+    normalized_timing.start_delay = timing.start_delay;
+    normalized_timing.end_delay = timing.end_delay;
+
+    // Currently, compositor animation tests are using document timelines
+    // exclusively. In order to support scroll timelines, the algorithm would
+    // need to correct for the intrinsic iteration duration of the timeline.
+    EXPECT_TRUE(timeline_->IsDocumentTimeline());
+
+    normalized_timing.iteration_duration =
+        timing.iteration_duration.value_or(AnimationTimeDelta());
+
+    normalized_timing.active_duration =
+        normalized_timing.iteration_duration * timing.iteration_count;
+
+    normalized_timing.end_time = std::max(
+        normalized_timing.start_delay + normalized_timing.active_duration +
+            normalized_timing.end_delay,
+        AnimationTimeDelta());
+
+    return normalized_timing;
   }
 
   StringKeyframe* CreateReplaceOpKeyframe(CSSPropertyID id,
@@ -252,9 +293,10 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
                                           const String& value,
                                           double offset = 0) {
     auto* keyframe = MakeGarbageCollected<StringKeyframe>();
-    keyframe->SetCSSPropertyValue(AtomicString(property_name), value,
-                                  GetDocument().GetSecureContextMode(),
-                                  GetDocument().ElementSheet().Contents());
+    keyframe->SetCSSPropertyValue(
+        AtomicString(property_name), value,
+        GetDocument().GetExecutionContext()->GetSecureContextMode(),
+        GetDocument().ElementSheet().Contents());
     keyframe->SetComposite(EffectModel::kCompositeReplace);
     keyframe->SetOffset(offset);
     keyframe->SetEasing(LinearTimingFunction::Shared());
@@ -299,8 +341,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 
   void SetCustomProperty(const String& name, const String& value) {
     DummyExceptionStateForTesting exception_state;
-    element_->style()->setProperty(&GetDocument(), name, value, g_empty_string,
-                                   exception_state);
+    element_->style()->setProperty(GetDocument().GetExecutionContext(), name,
+                                   value, g_empty_string, exception_state);
     EXPECT_FALSE(exception_state.HadException());
     EXPECT_TRUE(element_->style()->getPropertyValue(name));
   }
@@ -330,7 +372,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
       return property_specific_;  // We know a shortcut.
     }
 
-    void Trace(Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(property_specific_);
       StringKeyframe::Trace(visitor);
     }
@@ -347,6 +389,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
             compositor_keyframe_value_(
                 MakeGarbageCollected<CompositorKeyframeDouble>(offset)) {}
       bool IsNeutral() const final { return true; }
+      bool IsRevert() const final { return false; }
+      bool IsRevertLayer() const final { return false; }
       PropertySpecificKeyframe* CloneWithOffset(double) const final {
         NOTREACHED();
         return nullptr;
@@ -368,7 +412,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
         return nullptr;
       }
 
-      void Trace(Visitor* visitor) override {
+      void Trace(Visitor* visitor) const override {
         visitor->Trace(compositor_keyframe_value_);
         PropertySpecificKeyframe::Trace(visitor);
       }
@@ -432,8 +476,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
   }
 
   void SimulateFrame(double time) {
-    GetAnimationClock().UpdateTime(base::TimeTicks() +
-                                   base::TimeDelta::FromSecondsD(time));
+    GetAnimationClock().UpdateTime(base::TimeTicks() + base::Seconds(time));
     GetPendingAnimations().Update(nullptr, false);
     timeline_->ServiceAnimations(kTimingUpdateForAnimationFrame);
   }
@@ -444,7 +487,8 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     // As the compositor code only understands CompositorKeyframeValues, we must
     // snapshot the effect to make those available.
     // TODO(crbug.com/725385): Remove once compositor uses InterpolationTypes.
-    auto style = GetDocument().EnsureStyleResolver().StyleForElement(element_);
+    auto style = GetDocument().GetStyleResolver().ResolveStyle(
+        element_, StyleRecalcContext());
     effect.SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
                                                      nullptr);
 
@@ -466,7 +510,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
     DCHECK_EQ(keyframe_timing_function->GetType(),
               TimingFunction::Type::CUBIC_BEZIER);
     const auto& cubic_timing_function =
-        ToCubicBezierTimingFunction(*keyframe_timing_function);
+        To<CubicBezierTimingFunction>(*keyframe_timing_function);
     EXPECT_EQ(cubic_timing_function.GetEaseType(), ease_type);
   }
 
@@ -485,13 +529,14 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
   LocalFrame* GetFrame() const { return helper_.LocalMainFrame()->GetFrame(); }
 
   void BeginFrame() {
-    helper_.GetWebView()->MainFrameWidget()->BeginFrame(
-        base::TimeTicks::Now(), false /* record_main_frame_metrics */);
+    helper_.GetWebView()
+        ->MainFrameViewWidget()
+        ->SynchronouslyCompositeForTesting(base::TimeTicks::Now());
   }
 
   void ForceFullCompositingUpdate() {
     helper_.GetWebView()->MainFrameWidget()->UpdateAllLifecyclePhases(
-        WebWidget::LifecycleUpdateReason::kTest);
+        DocumentUpdateReason::kTest);
   }
 
  private:
@@ -502,7 +547,7 @@ class AnimationCompositorAnimationsTest : public PaintTestConfigurations,
 class LayoutObjectProxy : public LayoutObject {
  public:
   static LayoutObjectProxy* Create(Node* node) {
-    return new LayoutObjectProxy(node);
+    return MakeGarbageCollected<LayoutObjectProxy>(node);
   }
 
   static void Dispose(LayoutObjectProxy* proxy) { proxy->Destroy(); }
@@ -518,7 +563,6 @@ class LayoutObjectProxy : public LayoutObject {
     EnsureIdForTesting();
   }
 
- private:
   explicit LayoutObjectProxy(Node* node) : LayoutObject(node) {}
 };
 
@@ -550,6 +594,8 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        IsNotCandidateForCompositorAnimationTransformDependsOnBoxSize) {
+  ScopedCompositeRelativeKeyframesForTest no_relative_keyframes(false);
+
   // Absolute transforms can be animated on the compositor.
   String transform = "translateX(2px) translateY(2px)";
   StringKeyframe* good_keyframe =
@@ -613,12 +659,16 @@ TEST_P(AnimationCompositorAnimationsTest,
   RegisterProperty(GetDocument(), "--bar", "<length>", "10px", false);
   RegisterProperty(GetDocument(), "--loo", "<color>", "rgb(0, 0, 0)", false);
   RegisterProperty(GetDocument(), "--x", "<number>", "0", false);
+  RegisterProperty(GetDocument(), "--y", "<number>", "200", false);
+  RegisterProperty(GetDocument(), "--z", "<number>", "200", false);
   SetCustomProperty("--foo", "10");
   SetCustomProperty("--bar", "10px");
   SetCustomProperty("--loo", "rgb(0, 255, 0)");
   SetCustomProperty("--x", "5");
 
-  auto style = GetDocument().EnsureStyleResolver().StyleForElement(element_);
+  UpdateAllLifecyclePhasesForTest();
+  auto style = GetDocument().GetStyleResolver().ResolveStyle(
+      element_, StyleRecalcContext());
   EXPECT_TRUE(style->NonInheritedVariables());
   EXPECT_TRUE(style->NonInheritedVariables()
                   ->GetData(AtomicString("--foo"))
@@ -632,6 +682,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_TRUE(style->NonInheritedVariables()
                   ->GetData(AtomicString("--x"))
                   .value_or(nullptr));
+  EXPECT_TRUE(style->GetVariableData("--y"));
+  EXPECT_TRUE(style->GetVariableData("--z"));
 
   NiceMock<MockCSSPaintImageGenerator>* mock_generator =
       MakeGarbageCollected<NiceMock<MockCSSPaintImageGenerator>>();
@@ -645,6 +697,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   mock_generator->AddCustomProperty("--foo");
   mock_generator->AddCustomProperty("--bar");
   mock_generator->AddCustomProperty("--loo");
+  mock_generator->AddCustomProperty("--y");
+  mock_generator->AddCustomProperty("--z");
   auto* ident = MakeGarbageCollected<CSSCustomIdentValue>("foopainter");
   CSSPaintValue* paint_value = MakeGarbageCollected<CSSPaintValue>(ident);
   paint_value->CreateGeneratorForTesting(GetDocument());
@@ -691,19 +745,46 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_EQ(
       DuplicateSingleKeyframeAndTestIsCandidateOnResult(non_used_keyframe),
       CompositorAnimations::kUnsupportedCSSProperty);
+
+  // Implicitly initial values are supported.
+  StringKeyframe* y_keyframe = CreateReplaceOpKeyframe("--y", "1000");
+  EXPECT_EQ(DuplicateSingleKeyframeAndTestIsCandidateOnResult(y_keyframe),
+            CompositorAnimations::kNoFailure);
+
+  // Implicitly initial values are not supported when the property
+  // has been referenced.
+  SetCustomProperty("opacity", "var(--z)");
+  StringKeyframe* z_keyframe = CreateReplaceOpKeyframe("--z", "1000");
+  EXPECT_EQ(DuplicateSingleKeyframeAndTestIsCandidateOnResult(z_keyframe),
+            CompositorAnimations::kUnsupportedCSSProperty);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
        ConvertTimingForCompositorStartDelay) {
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(20);
+  const double play_forward = 1;
+  const double play_reverse = -1;
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(20);
 
-  timing_.start_delay = 2.0;
-  EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(-2.0, compositor_timing_.scaled_time_offset);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(2.0);
+  EXPECT_TRUE(
+      ConvertTimingForCompositor(timing_, compositor_timing_, play_forward));
+  EXPECT_DOUBLE_EQ(-2.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_TRUE(
+      ConvertTimingForCompositor(timing_, compositor_timing_, play_reverse));
+  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
 
-  timing_.start_delay = -2.0;
-  EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(2.0, compositor_timing_.scaled_time_offset);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(-2.0);
+  EXPECT_TRUE(
+      ConvertTimingForCompositor(timing_, compositor_timing_, play_forward));
+  EXPECT_DOUBLE_EQ(2.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_TRUE(
+      ConvertTimingForCompositor(timing_, compositor_timing_, play_reverse));
+  EXPECT_DOUBLE_EQ(0.0, compositor_timing_.scaled_time_offset.InSecondsF());
+
+  // Stress test with an effectively infinite start delay.
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(1e19);
+  EXPECT_FALSE(
+      ConvertTimingForCompositor(timing_, compositor_timing_, play_forward));
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -724,32 +805,34 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   timing_.iteration_count = std::numeric_limits<double>::infinity();
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_EQ(-1, compositor_timing_.adjusted_iteration_count);
+  EXPECT_EQ(std::numeric_limits<double>::infinity(),
+            compositor_timing_.adjusted_iteration_count);
 
   timing_.iteration_count = std::numeric_limits<double>::infinity();
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(5);
-  timing_.start_delay = -6.0;
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(-6.0);
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(6.0, compositor_timing_.scaled_time_offset);
-  EXPECT_EQ(-1, compositor_timing_.adjusted_iteration_count);
+  EXPECT_DOUBLE_EQ(6.0, compositor_timing_.scaled_time_offset.InSecondsF());
+  EXPECT_EQ(std::numeric_limits<double>::infinity(),
+            compositor_timing_.adjusted_iteration_count);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
        ConvertTimingForCompositorIterationsAndStartDelay) {
   timing_.iteration_count = 4.0;
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(5);
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
 
-  timing_.start_delay = 6.0;
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(6.0);
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(-6.0, compositor_timing_.scaled_time_offset);
+  EXPECT_DOUBLE_EQ(-6.0, compositor_timing_.scaled_time_offset.InSecondsF());
   EXPECT_DOUBLE_EQ(4.0, compositor_timing_.adjusted_iteration_count);
 
-  timing_.start_delay = -6.0;
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(-6.0);
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(6.0, compositor_timing_.scaled_time_offset);
+  EXPECT_DOUBLE_EQ(6.0, compositor_timing_.scaled_time_offset.InSecondsF());
   EXPECT_DOUBLE_EQ(4.0, compositor_timing_.adjusted_iteration_count);
 
-  timing_.start_delay = 21.0;
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(21.0);
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
 }
 
@@ -777,40 +860,40 @@ TEST_P(AnimationCompositorAnimationsTest,
        ConvertTimingForCompositorDirectionIterationsAndStartDelay) {
   timing_.direction = Timing::PlaybackDirection::ALTERNATE_NORMAL;
   timing_.iteration_count = 4.0;
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(5);
-  timing_.start_delay = -6.0;
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(-6.0);
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(6.0, compositor_timing_.scaled_time_offset);
+  EXPECT_DOUBLE_EQ(6.0, compositor_timing_.scaled_time_offset.InSecondsF());
   EXPECT_EQ(4, compositor_timing_.adjusted_iteration_count);
   EXPECT_EQ(compositor_timing_.direction,
             Timing::PlaybackDirection::ALTERNATE_NORMAL);
 
   timing_.direction = Timing::PlaybackDirection::ALTERNATE_NORMAL;
   timing_.iteration_count = 4.0;
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(5);
-  timing_.start_delay = -11.0;
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(-11.0);
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(11.0, compositor_timing_.scaled_time_offset);
+  EXPECT_DOUBLE_EQ(11.0, compositor_timing_.scaled_time_offset.InSecondsF());
   EXPECT_EQ(4, compositor_timing_.adjusted_iteration_count);
   EXPECT_EQ(compositor_timing_.direction,
             Timing::PlaybackDirection::ALTERNATE_NORMAL);
 
   timing_.direction = Timing::PlaybackDirection::ALTERNATE_REVERSE;
   timing_.iteration_count = 4.0;
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(5);
-  timing_.start_delay = -6.0;
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(-6.0);
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(6.0, compositor_timing_.scaled_time_offset);
+  EXPECT_DOUBLE_EQ(6.0, compositor_timing_.scaled_time_offset.InSecondsF());
   EXPECT_EQ(4, compositor_timing_.adjusted_iteration_count);
   EXPECT_EQ(compositor_timing_.direction,
             Timing::PlaybackDirection::ALTERNATE_REVERSE);
 
   timing_.direction = Timing::PlaybackDirection::ALTERNATE_REVERSE;
   timing_.iteration_count = 4.0;
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(5);
-  timing_.start_delay = -11.0;
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(5);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(-11.0);
   EXPECT_TRUE(ConvertTimingForCompositor(timing_, compositor_timing_));
-  EXPECT_DOUBLE_EQ(11.0, compositor_timing_.scaled_time_offset);
+  EXPECT_DOUBLE_EQ(11.0, compositor_timing_.scaled_time_offset.InSecondsF());
   EXPECT_EQ(4, compositor_timing_.adjusted_iteration_count);
   EXPECT_EQ(compositor_timing_.direction,
             Timing::PlaybackDirection::ALTERNATE_REVERSE);
@@ -892,13 +975,13 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<StringKeyframeEffectModel>(key_frames);
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
 
   // The first animation for opacity is ok to run on compositor.
   auto* keyframe_effect1 =
       MakeGarbageCollected<KeyframeEffect>(element_, animation_effect, timing);
   Animation* animation = timeline_->Play(keyframe_effect1);
-  auto style = ComputedStyle::Create();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   animation_effect->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(),
                                                               *style, nullptr);
 
@@ -911,7 +994,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_EQ(CheckCanStartEffectOnCompositor(timing, *element_.Get(), animation,
                                             *animation_effect),
             CompositorAnimations::kNoFailure);
-  timing.end_delay = 1.0;
+  timing.end_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(1.0);
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing, *element_.Get(),
                                               animation, *animation_effect) &
               CompositorAnimations::kEffectHasUnsupportedTimingParameters);
@@ -923,7 +1006,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorEffectInvalid) {
-  auto style = ComputedStyle::Create();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
 
   // Check that we notice the value is not animatable correctly.
   const CSSProperty& target_property1(GetCSSPropertyOutlineStyle());
@@ -1000,12 +1083,6 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorEffectFilter) {
-  // TODO(https://crbug.com/960953): Create a filter effect node when
-  // will-change: filter is specified so that filter effects can be tested
-  // without compositing changes.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   // Filter Properties use a different ID namespace
   StringKeyframeEffectModel* effect1 = CreateKeyframeEffectModel(
       CreateReplaceOpKeyframe(CSSPropertyID::kFilter, "none", 0),
@@ -1015,7 +1092,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect1, timing_);
 
   Animation* animation1 = timeline_->Play(keyframe_effect1);
-  auto style = ComputedStyle::Create();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
                                                      nullptr);
 
@@ -1047,7 +1124,7 @@ TEST_P(AnimationCompositorAnimationsTest,
 
 TEST_P(AnimationCompositorAnimationsTest,
        CanStartElementOnCompositorEffectTransform) {
-  auto style = ComputedStyle::Create();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
 
   StringKeyframeEffectModel* effect1 = CreateKeyframeEffectModel(
       CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "none", 0),
@@ -1084,6 +1161,83 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *element_.Get(),
                                               animation2, *effect2) &
               CompositorAnimations::kMultipleTransformAnimationsOnSameTarget);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       CheckCanStartEffectOnCompositorUnsupportedCSSProperties) {
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
+
+  StringKeyframeEffectModel* effect1 = CreateKeyframeEffectModel(
+      CreateReplaceOpKeyframe(CSSPropertyID::kOpacity, "0", 0),
+      CreateReplaceOpKeyframe(CSSPropertyID::kOpacity, "1", 1));
+
+  auto* keyframe_effect1 =
+      MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect1, timing_);
+
+  Animation* animation1 = timeline_->Play(keyframe_effect1);
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+                                                     nullptr);
+
+  // Make sure supported properties do not register a failure
+  PropertyHandleSet unsupported_properties1;
+  EXPECT_EQ(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(), animation1,
+                                            *effect1, &unsupported_properties1),
+            CompositorAnimations::kNoFailure);
+  EXPECT_TRUE(unsupported_properties1.IsEmpty());
+
+  StringKeyframeEffectModel* effect2 = CreateKeyframeEffectModel(
+      CreateReplaceOpKeyframe(CSSPropertyID::kHeight, "100px", 0),
+      CreateReplaceOpKeyframe(CSSPropertyID::kHeight, "200px", 1));
+
+  auto* keyframe_effect2 =
+      MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect2, timing_);
+
+  Animation* animation2 = timeline_->Play(keyframe_effect2);
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+                                                     nullptr);
+
+  // Make sure unsupported properties are reported
+  PropertyHandleSet unsupported_properties2;
+  EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(),
+                                              animation2, *effect2,
+                                              &unsupported_properties2) &
+              CompositorAnimations::kUnsupportedCSSProperty);
+  EXPECT_EQ(unsupported_properties2.size(), 1U);
+  EXPECT_EQ(
+      unsupported_properties2.begin()->GetCSSPropertyName().ToAtomicString(),
+      "height");
+
+  StringKeyframeEffectModel* effect3 =
+      MakeGarbageCollected<StringKeyframeEffectModel>(StringKeyframeVector({
+          CreateReplaceOpKeyframe(CSSPropertyID::kHeight, "100px", 0),
+          CreateReplaceOpKeyframe(CSSPropertyID::kOpacity, "0", 0),
+          CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "translateY(0)",
+                                  0),
+          CreateReplaceOpKeyframe(CSSPropertyID::kFilter, "grayscale(50%)", 0),
+          CreateReplaceOpKeyframe(CSSPropertyID::kHeight, "200px", 1),
+          CreateReplaceOpKeyframe(CSSPropertyID::kOpacity, "1", 1),
+          CreateReplaceOpKeyframe(CSSPropertyID::kTransform, "translateY(50px)",
+                                  1),
+          CreateReplaceOpKeyframe(CSSPropertyID::kFilter, "grayscale(100%)", 1),
+      }));
+
+  auto* keyframe_effect3 =
+      MakeGarbageCollected<KeyframeEffect>(element_.Get(), effect3, timing_);
+
+  Animation* animation3 = timeline_->Play(keyframe_effect3);
+  effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(), *style,
+                                                     nullptr);
+
+  // Make sure only the unsupported properties are reported
+  PropertyHandleSet unsupported_properties3;
+  EXPECT_TRUE(CheckCanStartEffectOnCompositor(timing_, *inline_.Get(),
+                                              animation3, *effect3,
+                                              &unsupported_properties3) &
+              CompositorAnimations::kUnsupportedCSSProperty);
+  EXPECT_EQ(unsupported_properties3.size(), 1U);
+  EXPECT_EQ(
+      unsupported_properties3.begin()->GetCSSPropertyName().ToAtomicString(),
+      "height");
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1212,6 +1366,7 @@ TEST_P(AnimationCompositorAnimationsTest, CanStartEffectOnCompositorBasic) {
       MakeGarbageCollected<StringKeyframeEffectModel>(non_css_frames_vector);
   EXPECT_TRUE(CanStartEffectOnCompositor(timing_, *non_css_frames) &
               CompositorAnimations::kAnimationAffectsNonCSSProperties);
+  EXPECT_TRUE(non_css_frames->RequiresPropertyNode());
   // NB: Important that non_css_frames_vector goes away and cleans up
   // before fake_name.
 }
@@ -1242,12 +1397,12 @@ TEST_P(AnimationCompositorAnimationsTest, CreateSimpleOpacityAnimation) {
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[1]->Time());
+  EXPECT_EQ(1.0, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(0.5f, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
@@ -1260,7 +1415,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       CreateReplaceOpKeyframe(CSSPropertyID::kOpacity, "0.2", 0),
       CreateReplaceOpKeyframe(CSSPropertyID::kOpacity, "0.5", 1.0));
 
-  const AnimationTimeDelta kDuration = AnimationTimeDelta::FromSecondsD(10);
+  const AnimationTimeDelta kDuration = ANIMATION_TIME_DELTA_FROM_SECONDS(10);
   timing_.iteration_duration = kDuration;
 
   std::unique_ptr<CompositorKeyframeModel> keyframe_model =
@@ -1272,7 +1427,7 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(kDuration, keyframes[1]->Time() * kDuration);
+  EXPECT_EQ(kDuration, keyframes[1]->Time().InSecondsF() * kDuration);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1304,22 +1459,22 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(4UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(0.25, keyframes[1]->Time());
+  EXPECT_EQ(0.25, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(0, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(0.5, keyframes[2]->Time());
+  EXPECT_EQ(0.5, keyframes[2]->Time().InSecondsF());
   EXPECT_EQ(0.25f, keyframes[2]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[2]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[3]->Time());
+  EXPECT_EQ(1.0, keyframes[3]->Time().InSecondsF());
   EXPECT_EQ(0.5f, keyframes[3]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[3]->GetTimingFunctionForTesting()->GetType());
@@ -1335,8 +1490,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   const double kStartDelay = 3.25;
 
   timing_.iteration_count = 5.0;
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(1.75);
-  timing_.start_delay = kStartDelay;
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1.75);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(kStartDelay);
 
   std::unique_ptr<CompositorKeyframeModel> keyframe_model =
       ConvertToCompositorAnimation(*effect);
@@ -1353,8 +1508,8 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(1.75,
-            keyframes[1]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(1.75, keyframes[1]->Time().InSecondsF() *
+                      timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0.5f, keyframes[1]->Value());
 }
 
@@ -1375,7 +1530,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   auto* effect = MakeGarbageCollected<StringKeyframeEffectModel>(frames);
 
   timing_.timing_function = linear_timing_function_.get();
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(2);
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(2);
   timing_.iteration_count = 10;
   timing_.direction = Timing::PlaybackDirection::ALTERNATE_NORMAL;
 
@@ -1396,25 +1551,26 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(4UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF() *
+                   timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   ExpectKeyframeTimingFunctionCubic(*keyframes[0],
                                     CubicBezierTimingFunction::EaseType::EASE);
 
-  EXPECT_EQ(0.5,
-            keyframes[1]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(0.5, keyframes[1]->Time().InSecondsF() *
+                     timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0,
-            keyframes[2]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(1.0, keyframes[2]->Time().InSecondsF() *
+                     timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0.35f, keyframes[2]->Value());
   ExpectKeyframeTimingFunctionCubic(
       *keyframes[2], CubicBezierTimingFunction::EaseType::CUSTOM);
 
-  EXPECT_EQ(2.0,
-            keyframes[3]->Time() * timing_.iteration_duration->InSecondsF());
+  EXPECT_EQ(2.0, keyframes[3]->Time().InSecondsF() *
+                     timing_.iteration_duration->InSecondsF());
   EXPECT_EQ(0.5f, keyframes[3]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[3]->GetTimingFunctionForTesting()->GetType());
@@ -1463,22 +1619,22 @@ TEST_P(AnimationCompositorAnimationsTest, CreateReversedOpacityAnimation) {
   EXPECT_EQ(keyframed_float_curve->GetTimingFunctionForTesting()->GetType(),
             TimingFunction::Type::LINEAR);
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   ExpectKeyframeTimingFunctionCubic(
       *keyframes[0], CubicBezierTimingFunction::EaseType::EASE_IN);
 
-  EXPECT_EQ(0.25, keyframes[1]->Time());
+  EXPECT_EQ(0.25, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(0, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(0.5, keyframes[2]->Time());
+  EXPECT_EQ(0.5, keyframes[2]->Time().InSecondsF());
   EXPECT_EQ(0.25f, keyframes[2]->Value());
   ExpectKeyframeTimingFunctionCubic(
       *keyframes[2], CubicBezierTimingFunction::EaseType::CUSTOM);
 
-  EXPECT_EQ(1.0, keyframes[3]->Time());
+  EXPECT_EQ(1.0, keyframes[3]->Time().InSecondsF());
   EXPECT_EQ(0.5f, keyframes[3]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[3]->GetTimingFunctionForTesting()->GetType());
@@ -1494,8 +1650,8 @@ TEST_P(AnimationCompositorAnimationsTest,
   const double kNegativeStartDelay = -3;
 
   timing_.iteration_count = 5.0;
-  timing_.iteration_duration = AnimationTimeDelta::FromSecondsD(1.5);
-  timing_.start_delay = kNegativeStartDelay;
+  timing_.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1.5);
+  timing_.start_delay = ANIMATION_TIME_DELTA_FROM_SECONDS(kNegativeStartDelay);
   timing_.direction = Timing::PlaybackDirection::ALTERNATE_REVERSE;
 
   std::unique_ptr<CompositorKeyframeModel> keyframe_model =
@@ -1573,7 +1729,7 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_EQ(curve_timing_function->GetType(),
             TimingFunction::Type::CUBIC_BEZIER);
   const auto& cubic_timing_function =
-      ToCubicBezierTimingFunction(*curve_timing_function);
+      To<CubicBezierTimingFunction>(*curve_timing_function);
   EXPECT_EQ(cubic_timing_function.GetEaseType(),
             CubicBezierTimingFunction::EaseType::CUSTOM);
   EXPECT_EQ(cubic_timing_function.X1(), 1.0);
@@ -1585,12 +1741,12 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(0.2f, keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[1]->Time());
+  EXPECT_EQ(1.0, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(0.5f, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
@@ -1614,6 +1770,7 @@ TEST_P(AnimationCompositorAnimationsTest,
             keyframe_model->TargetProperty());
   EXPECT_EQ(keyframe_model->GetCustomPropertyNameForTesting(),
             property_name.Utf8().data());
+  EXPECT_FALSE(effect->RequiresPropertyNode());
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
@@ -1639,12 +1796,12 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_float_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(10, keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[1]->Time());
+  EXPECT_EQ(1.0, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(20, keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
@@ -1673,12 +1830,12 @@ TEST_P(AnimationCompositorAnimationsTest,
       keyframed_color_curve->KeyframesForTesting();
   ASSERT_EQ(2UL, keyframes.size());
 
-  EXPECT_EQ(0, keyframes[0]->Time());
+  EXPECT_EQ(0, keyframes[0]->Time().InSecondsF());
   EXPECT_EQ(SkColorSetRGB(0, 0, 0), keyframes[0]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[0]->GetTimingFunctionForTesting()->GetType());
 
-  EXPECT_EQ(1.0, keyframes[1]->Time());
+  EXPECT_EQ(1.0, keyframes[1]->Time().InSecondsF());
   EXPECT_EQ(SkColorSetRGB(0, 0xFF, 0), keyframes[1]->Value());
   EXPECT_EQ(TimingFunction::Type::LINEAR,
             keyframes[1]->GetTimingFunctionForTesting()->GetType());
@@ -1712,13 +1869,13 @@ TEST_P(AnimationCompositorAnimationsTest,
       MakeGarbageCollected<StringKeyframeEffectModel>(*key_frames);
 
   Timing timing;
-  timing.iteration_duration = AnimationTimeDelta::FromSecondsD(1);
+  timing.iteration_duration = ANIMATION_TIME_DELTA_FROM_SECONDS(1);
 
   // The first animation for opacity is ok to run on compositor.
   auto* keyframe_effect1 = MakeGarbageCollected<KeyframeEffect>(
       element_.Get(), animation_effect1, timing);
   Animation* animation1 = timeline_->Play(keyframe_effect1);
-  auto style = ComputedStyle::Create();
+  auto style = GetDocument().GetStyleResolver().CreateComputedStyle();
   animation_effect1->SnapshotAllCompositorKeyframesIfNecessary(*element_.Get(),
                                                                *style, nullptr);
   EXPECT_EQ(CheckCanStartEffectOnCompositor(timing, *element_.Get(), animation1,
@@ -1757,7 +1914,9 @@ namespace {
 
 void UpdateDummyTransformNode(ObjectPaintProperties& properties,
                               CompositingReasons reasons) {
-  TransformPaintPropertyNode::State state;
+  // Initialize with TransformationMatrix() to avoid 2d translation optimization
+  // in case of transform animation.
+  TransformPaintPropertyNode::State state{TransformationMatrix()};
   state.direct_compositing_reasons = reasons;
   properties.UpdateTransform(TransformPaintPropertyNode::Root(),
                              std::move(state));
@@ -1787,18 +1946,21 @@ TEST_P(AnimationCompositorAnimationsTest,
   // animation.
   UpdateDummyTransformNode(properties,
                            CompositingReason::kActiveTransformAnimation);
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*element),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
 
   // Setting to CompositingReasonNone should produce false.
   UpdateDummyTransformNode(properties, CompositingReason::kNone);
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*element) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
 
   // Clearing the transform node entirely should also produce false.
   properties.ClearTransform();
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*element) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
 
   element->SetLayoutObject(nullptr);
   LayoutObjectProxy::Dispose(layout_object);
@@ -1819,18 +1981,21 @@ TEST_P(AnimationCompositorAnimationsTest,
   // animation.
   UpdateDummyEffectNode(properties,
                         CompositingReason::kActiveTransformAnimation);
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*element),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
 
   // Setting to CompositingReasonNone should produce false.
   UpdateDummyEffectNode(properties, CompositingReason::kNone);
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*element) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
 
   // Clearing the effect node entirely should also produce false.
   properties.ClearEffect();
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*element) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*element, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
 
   element->SetLayoutObject(nullptr);
   LayoutObjectProxy::Dispose(layout_object);
@@ -1846,7 +2011,6 @@ TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimation) {
   // iterations and the other that ends after 10.
   for (int i = 0; i < 9; i++) {
     BeginFrame();
-    ForceFullCompositingUpdate();
     EXPECT_TRUE(host->CurrentFrameHadRAF());
     EXPECT_TRUE(host->NextFrameHasPendingRAF());
   }
@@ -1854,13 +2018,11 @@ TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimation) {
   // On the 10th iteration, there should be a current rAF, but no more pending
   // rAFs.
   BeginFrame();
-  ForceFullCompositingUpdate();
   EXPECT_TRUE(host->CurrentFrameHadRAF());
   EXPECT_FALSE(host->NextFrameHasPendingRAF());
 
   // On the 11th iteration, there should be no more rAFs firing.
   BeginFrame();
-  ForceFullCompositingUpdate();
   EXPECT_FALSE(host->CurrentFrameHadRAF());
   EXPECT_FALSE(host->NextFrameHasPendingRAF());
 }
@@ -1874,9 +2036,17 @@ TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimationTimeout) {
   // The test file executes a rAF, which fires a setTimeout for the next rAF.
   // Even with setTimeout(func, 0), the next rAF is not considered pending.
   BeginFrame();
-  ForceFullCompositingUpdate();
   EXPECT_TRUE(host->CurrentFrameHadRAF());
   EXPECT_FALSE(host->NextFrameHasPendingRAF());
+}
+
+TEST_P(AnimationCompositorAnimationsTest, TrackSVGAnimation) {
+  LoadTestData("svg-smil-animation.html");
+
+  cc::AnimationHost* host = GetFrame()->View()->GetCompositorAnimationHost();
+
+  BeginFrame();
+  EXPECT_TRUE(host->HasSmilAnimation());
 }
 
 TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimationNoneRegistered) {
@@ -1885,7 +2055,6 @@ TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimationNoneRegistered) {
   // Run a full frame after loading the test data so that scripted animations
   // are serviced and data propagated.
   BeginFrame();
-  ForceFullCompositingUpdate();
 
   // The HTML does not have any rAFs.
   cc::AnimationHost* host =
@@ -1895,16 +2064,25 @@ TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimationNoneRegistered) {
 
   // And still shouldn't after another frame.
   BeginFrame();
-  ForceFullCompositingUpdate();
   EXPECT_FALSE(host->CurrentFrameHadRAF());
   EXPECT_FALSE(host->NextFrameHasPendingRAF());
 }
 
-TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
-  // TODO(wangxianzhu): Fix this test for CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
+TEST_P(AnimationCompositorAnimationsTest, CompositedCustomProperty) {
+  RegisterProperty(GetDocument(), "--foo", "<number>", "0", false);
+  SetCustomProperty("--foo", "0");
+  StringKeyframeEffectModel* effect =
+      CreateKeyframeEffectModel(CreateReplaceOpKeyframe("--foo", "20", 0),
+                                CreateReplaceOpKeyframe("--foo", "100", 1.0));
+  LoadTestData("custom-property.html");
+  Document* document = GetFrame()->GetDocument();
+  Element* target = document->getElementById("target");
+  // Make sure the animation is started on the compositor.
+  EXPECT_EQ(CheckCanStartElementOnCompositor(*target, *effect),
+            CompositorAnimations::kNoFailure);
+}
 
+TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
   LoadTestData("transform-animation.html");
   Document* document = GetFrame()->GetDocument();
   Element* target = document->getElementById("target");
@@ -1920,28 +2098,21 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedTransformAnimation) {
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
   auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index
-          [transform->GetCompositorElementId()]);
+      property_trees->element_id_to_transform_node_index.at(
+          transform->GetCompositorElementId()));
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
-  EXPECT_EQ(cc::kNotScaled, cc_transform->starting_animation_scale);
-  EXPECT_EQ(cc::kNotScaled, cc_transform->maximum_animation_scale);
+  EXPECT_EQ(1.f, cc_transform->maximum_animation_scale);
 
   // Make sure the animation is started on the compositor.
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*target),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
   EXPECT_EQ(document->Timeline().AnimationsNeedingUpdateCount(), 1u);
-  cc::AnimationHost* host = document->View()->GetCompositorAnimationHost();
-  EXPECT_EQ(host->MainThreadAnimationsCount(), 0u);
-  EXPECT_EQ(host->CompositedAnimationsCount(), 1u);
 }
 
 TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
-  // TODO(wangxianzhu): Fix this test for CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   LoadTestData("scale-animation.html");
   Document* document = GetFrame()->GetDocument();
   Element* target = document->getElementById("target");
@@ -1957,29 +2128,22 @@ TEST_P(AnimationCompositorAnimationsTest, CompositedScaleAnimation) {
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
   auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index
-          [transform->GetCompositorElementId()]);
+      property_trees->element_id_to_transform_node_index.at(
+          transform->GetCompositorElementId()));
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
-  EXPECT_EQ(2.f, cc_transform->starting_animation_scale);
   EXPECT_EQ(5.f, cc_transform->maximum_animation_scale);
 
   // Make sure the animation is started on the compositor.
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*target),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
   EXPECT_EQ(document->Timeline().AnimationsNeedingUpdateCount(), 1u);
-  cc::AnimationHost* host = document->View()->GetCompositorAnimationHost();
-  EXPECT_EQ(host->MainThreadAnimationsCount(), 0u);
-  EXPECT_EQ(host->CompositedAnimationsCount(), 1u);
 }
 
 TEST_P(AnimationCompositorAnimationsTest,
        NonAnimatedTransformPropertyChangeGetsUpdated) {
-  // TODO(wangxianzhu): Fix this test for CompositeAfterPaint.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   LoadTestData("transform-animation-update.html");
   Document* document = GetFrame()->GetDocument();
   Element* target = document->getElementById("target");
@@ -1991,36 +2155,28 @@ TEST_P(AnimationCompositorAnimationsTest,
   // Make sure composited animation is running on #target.
   EXPECT_TRUE(transform->HasDirectCompositingReasons());
   EXPECT_TRUE(transform->HasActiveTransformAnimation());
-  EXPECT_EQ(CheckCanStartElementOnCompositor(*target),
-            CompositorAnimations::kNoFailure);
+  EXPECT_EQ(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
   // Make sure the animation state is initialized in paint properties.
   auto* property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
   auto* cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index
-          [transform->GetCompositorElementId()]);
+      property_trees->element_id_to_transform_node_index.at(
+          transform->GetCompositorElementId()));
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
   // Make sure the animation is started on the compositor.
   EXPECT_EQ(document->Timeline().AnimationsNeedingUpdateCount(), 1u);
-  cc::AnimationHost* host = document->View()->GetCompositorAnimationHost();
-  EXPECT_EQ(host->MainThreadAnimationsCount(), 0u);
-  EXPECT_EQ(host->CompositedAnimationsCount(), 1u);
   // Make sure the backface-visibility is correctly set, both in blink and on
   // the cc::Layer.
   EXPECT_FALSE(transform->Matrix().IsIdentity());  // Rotated
   EXPECT_EQ(transform->GetBackfaceVisibilityForTesting(),
             TransformPaintPropertyNode::BackfaceVisibility::kVisible);
-  const CompositedLayerMapping* composited_layer_mapping =
-      ToLayoutBoxModelObject(target->GetLayoutObject())
-          ->Layer()
-          ->GetCompositedLayerMapping();
-  ASSERT_NE(nullptr, composited_layer_mapping);
-  const cc::PictureLayer* layer =
-      composited_layer_mapping->MainGraphicsLayer()->CcLayer();
-  ASSERT_NE(nullptr, layer);
-  EXPECT_TRUE(layer->double_sided());
+  const auto& layer =
+      *CcLayersByDOMElementId(document->View()->RootCcLayer(), "target")[0];
+  EXPECT_FALSE(layer.should_check_backface_visibility());
 
   // Change the backface visibility, while the compositor animation is
   // happening.
@@ -2029,15 +2185,15 @@ TEST_P(AnimationCompositorAnimationsTest,
   // Make sure the setting made it to both blink and all the way to CC.
   EXPECT_EQ(transform->GetBackfaceVisibilityForTesting(),
             TransformPaintPropertyNode::BackfaceVisibility::kHidden);
-  EXPECT_FALSE(layer->double_sided())
+  EXPECT_TRUE(layer.should_check_backface_visibility())
       << "Change to hidden did not get propagated to CC";
   // Make sure the animation state is initialized in paint properties after
   // blink pushing new paint properties without animation state change.
   property_trees =
       document->View()->RootCcLayer()->layer_tree_host()->property_trees();
   cc_transform = property_trees->transform_tree.Node(
-      property_trees->element_id_to_transform_node_index
-          [transform->GetCompositorElementId()]);
+      property_trees->element_id_to_transform_node_index.at(
+          transform->GetCompositorElementId()));
   ASSERT_NE(nullptr, cc_transform);
   EXPECT_TRUE(cc_transform->has_potential_animation);
   EXPECT_TRUE(cc_transform->is_currently_animating);
@@ -2051,12 +2207,10 @@ TEST_P(AnimationCompositorAnimationsTest,
   LoadTestData("transform-animation-on-svg.html");
   Document* document = GetFrame()->GetDocument();
   Element* target = document->getElementById("dots");
-  EXPECT_TRUE(CheckCanStartElementOnCompositor(*target) &
-              CompositorAnimations::kTargetHasInvalidCompositingState);
+  EXPECT_TRUE(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_) &
+      CompositorAnimations::kTargetHasInvalidCompositingState);
   EXPECT_EQ(document->Timeline().AnimationsNeedingUpdateCount(), 4u);
-  cc::AnimationHost* host = document->View()->GetCompositorAnimationHost();
-  EXPECT_EQ(host->MainThreadAnimationsCount(), 4u);
-  EXPECT_EQ(host->CompositedAnimationsCount(), 0u);
 }
 
 // Regression test for https://crbug.com/999333. We were relying on the Document
@@ -2070,14 +2224,182 @@ TEST_P(AnimationCompositorAnimationsTest,
 
   // Move the target element to another Document, that does not have a frame
   // (and thus no Settings).
-  Document* another_document = MakeGarbageCollected<Document>();
+  Document* another_document = Document::CreateForTest();
   ASSERT_FALSE(another_document->GetSettings());
 
   another_document->adoptNode(target, ASSERT_NO_EXCEPTION);
 
   // This should not crash.
-  EXPECT_NE(CheckCanStartElementOnCompositor(*target),
-            CompositorAnimations::kNoFailure);
+  EXPECT_NE(
+      CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
+      CompositorAnimations::kNoFailure);
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       CanStartTransformAnimationOnCompositorForSVG) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .animate {
+        width: 100px;
+        height: 100px;
+        animation: wave 1s infinite;
+      }
+      @keyframes wave {
+        0% { transform: rotate(-5deg); }
+        100% { transform: rotate(5deg); }
+      }
+    </style>
+    <svg id="svg" class="animate">
+      <rect id="rect" class="animate"/>
+      <rect id="rect-useref" class="animate"/>
+      <rect id="rect-smil" class="animate">
+        <animateMotion dur="10s" repeatCount="indefinite"
+                       path="M0,0 L100,100 z"/>
+      </rect>
+      <rect id="rect-effect" class="animate"
+            vector-effect="non-scaling-stroke"/>
+      <g id="g-effect" class="animate">
+        <rect class="animate" vector-effect="non-scaling-stroke"/>
+      </g>
+      <svg id="nested-svg" class="animate"/>
+      <foreignObject id="foreign" class="animate"/>
+      <foreignObject id="foreign-zoomed" class="animate"
+                     style="zoom: 1.5; will-change: opacity"/>
+      <use id="use" href="#rect-useref" class="animate"/>
+      <use id="use-offset" href="#rect-useref" x="10" class="animate"/>
+    </svg>
+    <svg id="svg-zoomed" class="animate" style="zoom: 1.5">
+      <rect id="rect-zoomed" class="animate"/>
+    </svg>
+  )HTML");
+
+  auto CanStartAnimation = [&](const char* id) -> bool {
+    return CompositorAnimations::CanStartTransformAnimationOnCompositorForSVG(
+        To<SVGElement>(*GetDocument().getElementById(id)));
+  };
+
+  EXPECT_TRUE(CanStartAnimation("svg"));
+  EXPECT_TRUE(CanStartAnimation("rect"));
+  EXPECT_FALSE(CanStartAnimation("rect-useref"));
+  EXPECT_FALSE(CanStartAnimation("rect-smil"));
+  EXPECT_FALSE(CanStartAnimation("rect-effect"));
+  EXPECT_FALSE(CanStartAnimation("g-effect"));
+  EXPECT_FALSE(CanStartAnimation("nested-svg"));
+  EXPECT_TRUE(CanStartAnimation("foreign"));
+  EXPECT_FALSE(CanStartAnimation("foreign-zoomed"));
+  EXPECT_TRUE(CanStartAnimation("use"));
+  EXPECT_FALSE(CanStartAnimation("use-offset"));
+
+  EXPECT_FALSE(CanStartAnimation("svg-zoomed"));
+  EXPECT_FALSE(CanStartAnimation("rect-zoomed"));
+
+  To<SVGElement>(GetDocument().getElementById("rect"))
+      ->SetWebAnimatedAttribute(
+          svg_names::kXAttr,
+          MakeGarbageCollected<SVGLength>(SVGLength::Initial::kPercent50,
+                                          SVGLengthMode::kOther));
+  EXPECT_FALSE(CanStartAnimation("rect"));
+}
+
+TEST_P(AnimationCompositorAnimationsTest, UnsupportedSVGCSSProperty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes mixed {
+        0% { transform: rotate(-5deg); stroke-dashoffset: 0; }
+        100% { transform: rotate(5deg); stroke-dashoffset: 180; }
+      }
+    </style>
+    <svg>
+      <rect id="rect"
+            style="width: 100px; height: 100px; animation: mixed 1s infinite"/>
+    </svg>
+  )HTML");
+
+  Element* element = GetDocument().getElementById("rect");
+  const Animation& animation =
+      *element->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_EQ(CompositorAnimations::kUnsupportedCSSProperty,
+            animation.CheckCanStartAnimationOnCompositor(
+                GetDocument().View()->GetPaintArtifactCompositor()));
+}
+
+TEST_P(AnimationCompositorAnimationsTest,
+       TotalAnimationCountAcrossAllDocuments) {
+  LoadTestData("animation-in-main-frame.html");
+
+  cc::AnimationHost* host =
+      GetFrame()->GetDocument()->View()->GetCompositorAnimationHost();
+
+  // We are checking that the animation count for all documents is 1 for every
+  // frame.
+  for (int i = 0; i < 9; i++) {
+    BeginFrame();
+    EXPECT_EQ(1U, host->MainThreadAnimationsCount());
+  }
+}
+
+TEST_P(AnimationCompositorAnimationsTest, TrackRafAnimationAcrossAllDocuments) {
+  LoadTestData("raf-countdown-in-main-frame.html");
+
+  cc::AnimationHost* host =
+      GetFrame()->GetDocument()->View()->GetCompositorAnimationHost();
+
+  // The test file registers two rAF 'animations'; one which ends after 5
+  // iterations and the other that ends after 10.
+  for (int i = 0; i < 9; i++) {
+    BeginFrame();
+    EXPECT_TRUE(host->CurrentFrameHadRAF());
+    EXPECT_TRUE(host->NextFrameHasPendingRAF());
+  }
+
+  // On the 10th iteration, there should be a current rAF, but no more pending
+  // rAFs.
+  BeginFrame();
+  EXPECT_TRUE(host->CurrentFrameHadRAF());
+  EXPECT_FALSE(host->NextFrameHasPendingRAF());
+
+  // On the 11th iteration, there should be no more rAFs firing.
+  BeginFrame();
+  EXPECT_FALSE(host->CurrentFrameHadRAF());
+  EXPECT_FALSE(host->NextFrameHasPendingRAF());
+}
+
+TEST_P(AnimationCompositorAnimationsTest, Fragmented) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      @keyframes move {
+        0% { transform: translateX(10px); }
+        100% { transform: translateX(20px); }
+      }
+      #target {
+        width: 10px;
+        height: 150px;
+        background: green;
+      }
+    </style>
+    <div style="columns: 2; height: 100px">
+      <div id="target" style="animation: move 1s infinite">
+      </div>
+    </div>
+  )HTML");
+
+  Element* target = GetDocument().getElementById("target");
+  const Animation& animation =
+      *target->GetElementAnimations()->Animations().begin()->key;
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
+      RuntimeEnabledFeatures::LayoutNGBlockFragmentationEnabled()) {
+    EXPECT_TRUE(target->GetLayoutObject()->FirstFragment().NextFragment());
+    EXPECT_EQ(CompositorAnimations::kTargetHasInvalidCompositingState,
+              animation.CheckCanStartAnimationOnCompositor(
+                  GetDocument().View()->GetPaintArtifactCompositor()));
+  } else {
+    // In pre-CAP + legacy block fragmentation we don't fragment composited
+    // layers.
+    EXPECT_FALSE(target->GetLayoutObject()->FirstFragment().NextFragment());
+    EXPECT_EQ(CompositorAnimations::kNoFailure,
+              animation.CheckCanStartAnimationOnCompositor(
+                  GetDocument().View()->GetPaintArtifactCompositor()));
+  }
 }
 
 }  // namespace blink

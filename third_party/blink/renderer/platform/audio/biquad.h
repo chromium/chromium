@@ -49,7 +49,7 @@ class PLATFORM_EXPORT Biquad final {
   DISALLOW_NEW();
 
  public:
-  Biquad();
+  explicit Biquad(unsigned render_quantum_frames);
   ~Biquad();
 
   void Process(const float* source_p,
@@ -112,7 +112,7 @@ class PLATFORM_EXPORT Biquad final {
   AudioDoubleArray a1_;
   AudioDoubleArray a2_;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   void ProcessFast(const float* source_p,
                    float* dest_p,
                    uint32_t frames_to_process);

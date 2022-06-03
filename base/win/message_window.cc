@@ -11,6 +11,11 @@
 #include "base/win/current_module.h"
 #include "base/win/wrapped_window_proc.h"
 
+#include <windows.h>
+
+// To avoid conflicts with the macro from the Windows SDK...
+#undef FindWindow
+
 const wchar_t kMessageWindowClassName[] = L"Chrome_MessageWindow";
 
 namespace base {
@@ -21,23 +26,24 @@ namespace win {
 class MessageWindow::WindowClass {
  public:
   WindowClass();
+
+  WindowClass(const WindowClass&) = delete;
+  WindowClass& operator=(const WindowClass&) = delete;
+
   ~WindowClass();
 
   ATOM atom() { return atom_; }
   HINSTANCE instance() { return instance_; }
 
  private:
-  ATOM atom_;
-  HINSTANCE instance_;
-
-  DISALLOW_COPY_AND_ASSIGN(WindowClass);
+  ATOM atom_ = 0;
+  HINSTANCE instance_ = CURRENT_MODULE();
 };
 
 static LazyInstance<MessageWindow::WindowClass>::DestructorAtExit
     g_window_class = LAZY_INSTANCE_INITIALIZER;
 
-MessageWindow::WindowClass::WindowClass()
-    : atom_(0), instance_(CURRENT_MODULE()) {
+MessageWindow::WindowClass::WindowClass() {
   WNDCLASSEX window_class;
   window_class.cbSize = sizeof(window_class);
   window_class.style = 0;
@@ -69,7 +75,7 @@ MessageWindow::WindowClass::~WindowClass() {
   }
 }
 
-MessageWindow::MessageWindow() : window_(nullptr) {}
+MessageWindow::MessageWindow() = default;
 
 MessageWindow::~MessageWindow() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -85,14 +91,14 @@ bool MessageWindow::Create(MessageCallback message_callback) {
 }
 
 bool MessageWindow::CreateNamed(MessageCallback message_callback,
-                                const string16& window_name) {
-  return DoCreate(std::move(message_callback), as_wcstr(window_name));
+                                const std::wstring& window_name) {
+  return DoCreate(std::move(message_callback), window_name.c_str());
 }
 
 // static
-HWND MessageWindow::FindWindow(const string16& window_name) {
+HWND MessageWindow::FindWindow(const std::wstring& window_name) {
   return FindWindowEx(HWND_MESSAGE, nullptr, kMessageWindowClassName,
-                      as_wcstr(window_name));
+                      window_name.c_str());
 }
 
 bool MessageWindow::DoCreate(MessageCallback message_callback,

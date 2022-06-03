@@ -5,40 +5,63 @@
 #ifndef ASH_ASSISTANT_MODEL_ASSISTANT_SCREEN_CONTEXT_MODEL_H_
 #define ASH_ASSISTANT_MODEL_ASSISTANT_SCREEN_CONTEXT_MODEL_H_
 
+#include <memory>
+#include <vector>
+
+#include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
-#include "base/observer_list.h"
+#include "ui/accessibility/mojom/ax_assistant_structure.mojom.h"
 
 namespace ash {
 
-class AssistantScreenContextModelObserver;
+// A class to cache the Assistant structure. |Future| means that getting the
+// structure call will be async and will be returned as soon as the structure is
+// set. If the structure has already been set, getting call will be returned
+// immediately.
+class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantStructureFuture {
+ public:
+  using Callback =
+      base::OnceCallback<void(const ax::mojom::AssistantStructure&)>;
 
-// Enumeration of screen context request states.
-enum class ScreenContextRequestState {
-  kIdle,
-  kInProgress,
+  AssistantStructureFuture();
+  AssistantStructureFuture(const AssistantStructureFuture&) = delete;
+  AssistantStructureFuture& operator=(const AssistantStructureFuture&) = delete;
+  ~AssistantStructureFuture();
+
+  void SetValue(ax::mojom::AssistantStructurePtr structure);
+
+  void GetValueAsync(Callback callback);
+
+  bool HasValue() const;
+
+  void Clear();
+
+ private:
+  void Notify();
+  void RunCallback(Callback callback);
+
+  ax::mojom::AssistantStructurePtr structure_;
+  std::vector<Callback> callbacks_;
 };
 
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantScreenContextModel {
  public:
   AssistantScreenContextModel();
+
+  AssistantScreenContextModel(const AssistantScreenContextModel&) = delete;
+  AssistantScreenContextModel& operator=(const AssistantScreenContextModel&) =
+      delete;
+
   ~AssistantScreenContextModel();
 
-  // Adds/removes the specified screen context model |observer|.
-  void AddObserver(AssistantScreenContextModelObserver* observer);
-  void RemoveObserver(AssistantScreenContextModelObserver* observer);
+  void Clear();
 
-  // Sets the screen context request state.
-  void SetRequestState(ScreenContextRequestState request_state);
+  AssistantStructureFuture* assistant_structure() {
+    return &assistant_structure_;
+  }
 
  private:
-  void NotifyRequestStateChanged();
-
-  ScreenContextRequestState request_state_ = ScreenContextRequestState::kIdle;
-
-  base::ObserverList<AssistantScreenContextModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantScreenContextModel);
+  AssistantStructureFuture assistant_structure_;
 };
 
 }  // namespace ash

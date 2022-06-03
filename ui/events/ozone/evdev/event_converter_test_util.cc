@@ -62,6 +62,10 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
     event_factory_evdev_->DispatchTouchEvent(params);
   }
 
+  void DispatchMicrophoneMuteSwitchValueChanged(bool muted) override {
+    event_factory_evdev_->DispatchMicrophoneMuteSwitchValueChanged(muted);
+  }
+
   void DispatchKeyboardDevicesUpdated(
       const std::vector<InputDevice>& devices) override {
     event_factory_evdev_->DispatchKeyboardDevicesUpdated(devices);
@@ -70,9 +74,11 @@ class TestDeviceEventDispatcherEvdev : public DeviceEventDispatcherEvdev {
       const std::vector<TouchscreenDevice>& devices) override {
     event_factory_evdev_->DispatchTouchscreenDevicesUpdated(devices);
   }
-  void DispatchMouseDevicesUpdated(
-      const std::vector<InputDevice>& devices) override {
-    event_factory_evdev_->DispatchMouseDevicesUpdated(devices);
+  void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
+                                   bool has_mouse,
+                                   bool has_pointing_stick) override {
+    event_factory_evdev_->DispatchMouseDevicesUpdated(devices, has_mouse,
+                                                      has_pointing_stick);
   }
   void DispatchTouchpadDevicesUpdated(
       const std::vector<InputDevice>& devices) override {

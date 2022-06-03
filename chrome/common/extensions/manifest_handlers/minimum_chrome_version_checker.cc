@@ -4,6 +4,7 @@
 
 #include "chrome/common/extensions/manifest_handlers/minimum_chrome_version_checker.h"
 
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "chrome/grit/chromium_strings.h"
@@ -25,7 +26,7 @@ MinimumChromeVersionChecker::~MinimumChromeVersionChecker() {
 }
 
 bool MinimumChromeVersionChecker::Parse(Extension* extension,
-                                        base::string16* error) {
+                                        std::u16string* error) {
   std::string minimum_version_string;
   if (!extension->manifest()->GetString(keys::kMinimumChromeVersion,
                                         &minimum_version_string)) {

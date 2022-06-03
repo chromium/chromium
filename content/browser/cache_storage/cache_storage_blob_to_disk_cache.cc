@@ -4,25 +4,28 @@
 
 #include "content/browser/cache_storage/cache_storage_blob_to_disk_cache.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "net/base/io_buffer.h"
-#include "net/url_request/url_request_context.h"
-#include "net/url_request/url_request_context_getter.h"
-#include "storage/browser/blob/blob_data_handle.h"
-#include "storage/common/storage_histograms.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
 const int CacheStorageBlobToDiskCache::kBufferSize = 1024 * 512;
 
-CacheStorageBlobToDiskCache::CacheStorageBlobToDiskCache()
+CacheStorageBlobToDiskCache::CacheStorageBlobToDiskCache(
+    scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
+    const blink::StorageKey& storage_key)
     : handle_watcher_(FROM_HERE,
                       mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                      base::SequencedTaskRunnerHandle::Get()) {}
+                      base::SequencedTaskRunnerHandle::Get()),
+      quota_manager_proxy_(std::move(quota_manager_proxy)),
+      storage_key_(storage_key) {}
 
 CacheStorageBlobToDiskCache::~CacheStorageBlobToDiskCache() = default;
 
@@ -46,7 +49,7 @@ void CacheStorageBlobToDiskCache::StreamBlobToCache(
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   MojoResult rv =
-      mojo::CreateDataPipe(&options, &producer_handle, &consumer_handle_);
+      mojo::CreateDataPipe(&options, producer_handle, consumer_handle_);
   if (rv != MOJO_RESULT_OK) {
     std::move(callback).Run(std::move(entry), false /* success */);
     return;
@@ -91,11 +94,10 @@ void CacheStorageBlobToDiskCache::ReadFromBlob() {
 void CacheStorageBlobToDiskCache::DidWriteDataToEntry(int expected_bytes,
                                                       int rv) {
   if (rv != expected_bytes) {
+    quota_manager_proxy_->NotifyWriteFailed(storage_key_);
     RunCallback(false /* success */);
     return;
   }
-  if (rv > 0)
-    storage::RecordBytesWritten("DiskCache.CacheStorage", rv);
   cache_entry_offset_ += rv;
 
   ReadFromBlob();

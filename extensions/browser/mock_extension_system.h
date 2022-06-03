@@ -24,6 +24,10 @@ class MockExtensionSystem : public ExtensionSystem {
   using InstallUpdateCallback = ExtensionSystem::InstallUpdateCallback;
 
   explicit MockExtensionSystem(content::BrowserContext* context);
+
+  MockExtensionSystem(const MockExtensionSystem&) = delete;
+  MockExtensionSystem& operator=(const MockExtensionSystem&) = delete;
+
   ~MockExtensionSystem() override;
 
   content::BrowserContext* browser_context() { return browser_context_; }
@@ -33,17 +37,18 @@ class MockExtensionSystem : public ExtensionSystem {
   // ExtensionSystem overrides:
   void InitForRegularProfile(bool extensions_enabled) override;
   ExtensionService* extension_service() override;
-  RuntimeData* runtime_data() override;
   ManagementPolicy* management_policy() override;
   ServiceWorkerManager* service_worker_manager() override;
-  SharedUserScriptMaster* shared_user_script_master() override;
+  UserScriptManager* user_script_manager() override;
   StateStore* state_store() override;
   StateStore* rules_store() override;
-  scoped_refptr<ValueStoreFactory> store_factory() override;
+  StateStore* dynamic_user_scripts_store() override;
+  scoped_refptr<value_store::ValueStoreFactory> store_factory() override;
   InfoMap* info_map() override;
   QuotaService* quota_service() override;
   AppSorting* app_sorting() override;
   const base::OneShotEvent& ready() const override;
+  bool is_ready() const override;
   ContentVerifier* content_verifier() override;
   std::unique_ptr<ExtensionSet> GetDependentExtensions(
       const Extension* extension) override;
@@ -52,14 +57,15 @@ class MockExtensionSystem : public ExtensionSystem {
                      const base::FilePath& temp_dir,
                      bool install_immediately,
                      InstallUpdateCallback install_update_callback) override;
+  void PerformActionBasedOnOmahaAttributes(
+      const std::string& extension_id,
+      const base::Value& attributes) override;
   bool FinishDelayedInstallationIfReady(const std::string& extension_id,
                                         bool install_immediately) override;
 
  private:
   content::BrowserContext* browser_context_;
   base::OneShotEvent ready_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockExtensionSystem);
 };
 
 // A factory to create a MockExtensionSystem. Sample use:
@@ -75,6 +81,10 @@ class MockExtensionSystemFactory : public ExtensionSystemProvider {
             BrowserContextDependencyManager::GetInstance()) {
     DependsOn(ExtensionRegistryFactory::GetInstance());
   }
+
+  MockExtensionSystemFactory(const MockExtensionSystemFactory&) = delete;
+  MockExtensionSystemFactory& operator=(const MockExtensionSystemFactory&) =
+      delete;
 
   ~MockExtensionSystemFactory() override {}
 
@@ -95,9 +105,6 @@ class MockExtensionSystemFactory : public ExtensionSystemProvider {
     return static_cast<ExtensionSystem*>(
         GetServiceForBrowserContext(context, true));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockExtensionSystemFactory);
 };
 
 }  // namespace extensions

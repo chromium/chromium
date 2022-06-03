@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -46,6 +47,9 @@ class NET_EXPORT_PRIVATE SSLSocketParams
                   PrivacyMode privacy_mode,
                   NetworkIsolationKey network_isolation_key);
 
+  SSLSocketParams(const SSLSocketParams&) = delete;
+  SSLSocketParams& operator=(const SSLSocketParams&) = delete;
+
   // Returns the type of the underlying connection.
   ConnectionType GetConnectionType() const;
 
@@ -77,8 +81,6 @@ class NET_EXPORT_PRIVATE SSLSocketParams
   const SSLConfig ssl_config_;
   const PrivacyMode privacy_mode_;
   const NetworkIsolationKey network_isolation_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(SSLSocketParams);
 };
 
 // SSLConnectJob establishes a connection, through a proxy if needed, and then
@@ -86,6 +88,20 @@ class NET_EXPORT_PRIVATE SSLSocketParams
 class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
                                          public ConnectJob::Delegate {
  public:
+  class NET_EXPORT_PRIVATE Factory {
+   public:
+    Factory() = default;
+    virtual ~Factory() = default;
+
+    virtual std::unique_ptr<SSLConnectJob> Create(
+        RequestPriority priority,
+        const SocketTag& socket_tag,
+        const CommonConnectJobParams* common_connect_job_params,
+        scoped_refptr<SSLSocketParams> params,
+        ConnectJob::Delegate* delegate,
+        const NetLogWithSource* net_log);
+  };
+
   // Note: the SSLConnectJob does not own |messenger| so it must outlive the
   // job.
   SSLConnectJob(RequestPriority priority,
@@ -94,6 +110,10 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
                 scoped_refptr<SSLSocketParams> params,
                 ConnectJob::Delegate* delegate,
                 const NetLogWithSource* net_log);
+
+  SSLConnectJob(const SSLConnectJob&) = delete;
+  SSLConnectJob& operator=(const SSLConnectJob&) = delete;
+
   ~SSLConnectJob() override;
 
   // ConnectJob methods.
@@ -151,6 +171,8 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // Otherwise, it returns a net error code.
   int ConnectInternal() override;
 
+  void ResetStateForRestart();
+
   void ChangePriorityInternal(RequestPriority priority) override;
 
   scoped_refptr<SSLSocketParams> params_;
@@ -164,6 +186,11 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // True once SSL negotiation has started.
   bool ssl_negotiation_started_;
 
+  // True if legacy crypto should be disabled for the job's current connection
+  // attempt. On error, the connection will be retried with legacy crypto
+  // enabled.
+  bool disable_legacy_crypto_with_fallback_;
+
   scoped_refptr<SSLCertRequestInfo> ssl_cert_request_info_;
 
   ConnectionAttempts connection_attempts_;
@@ -173,7 +200,12 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // through an HTTPS CONNECT request or a SOCKS proxy).
   IPEndPoint server_address_;
 
-  DISALLOW_COPY_AND_ASSIGN(SSLConnectJob);
+  // Any DNS aliases for the remote endpoint. The alias chain order is
+  // preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name. Stored because `nested_connect_job_` has a
+  // limited lifetime and the aliases can no longer be retrieved from there by
+  // by the time that the aliases are needed to be passed in SetSocket.
+  std::vector<std::string> dns_aliases_;
 };
 
 }  // namespace net

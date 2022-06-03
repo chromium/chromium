@@ -5,10 +5,9 @@
 #ifndef DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_
 #define DEVICE_BLUETOOTH_CHROMEOS_BLUETOOTH_UTILS_H_
 
-#include <vector>
-
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TimeDelta;
@@ -26,27 +25,118 @@ enum class BluetoothFilterType {
   KNOWN,
 };
 
-enum class BluetoothUiSurface {
+enum class DeviceSelectionUISurfaces {
   kSettings,
   kSystemTray,
 };
 
+enum class PoweredStateOperation {
+  kEnable,
+  kDisable,
+};
+
+enum class UserInitiatedReconnectionUISurfaces {
+  kSettings,
+  kSystemTray,
+};
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other).
+enum class ConnectionFailureReason {
+  kUnknownError = 0,
+  kSystemError = 1,
+  kAuthFailed = 2,
+  kAuthTimeout = 3,
+  kFailed = 4,
+  kUnknownConnectionError = 5,
+  kUnsupportedDevice = 6,
+  kNotConnectable = 7,
+  kMaxValue = kNotConnectable
+};
+
+// This enum is tied directly to a UMA enum defined in
+// //tools/metrics/histograms/enums.xml, and should always reflect it (do not
+// change one without changing the other).
+enum class BluetoothUiSurface {
+  kSettingsDeviceListSubpage = 0,
+  kSettingsDeviceDetailSubpage = 1,
+  kSettingsPairingDialog = 2,
+  kBluetoothQuickSettings = 3,
+  kStandalonePairingDialog = 4,
+  kPairedNotification = 5,
+  kConnectionToast = 6,
+  kDisconnectedToast = 7,
+  kOobeHidDetection = 8,
+  kMaxValue = kOobeHidDetection
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ForgetResult {
+  kFailure = 0,
+  kSuccess = 1,
+  kMaxValue = kSuccess,
+};
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class DisconnectResult {
+  kFailure = 0,
+  kSuccess = 1,
+  kMaxValue = kSuccess
+};
+
 // Return filtered devices based on the filter type and max number of devices.
-device::BluetoothAdapter::DeviceList DEVICE_BLUETOOTH_EXPORT
+DEVICE_BLUETOOTH_EXPORT device::BluetoothAdapter::DeviceList
 FilterBluetoothDeviceList(const BluetoothAdapter::DeviceList& devices,
                           BluetoothFilterType filter_type,
                           int max_devices);
 
-std::vector<std::vector<uint8_t>> DEVICE_BLUETOOTH_EXPORT
-GetBlockedLongTermKeys();
+// Record outcome of user attempting to pair to a device.
+DEVICE_BLUETOOTH_EXPORT void RecordPairingResult(
+    absl::optional<ConnectionFailureReason> failure_reason,
+    BluetoothTransport transport,
+    base::TimeDelta duration);
+
+// Record outcome of user attempting to reconnect to a previously paired device.
+DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptResult(
+    absl::optional<ConnectionFailureReason> failure_reason,
+    UserInitiatedReconnectionUISurfaces surface);
 
 // Record how long it took for a user to find and select the device they wished
 // to connect to.
-void DEVICE_BLUETOOTH_EXPORT
-RecordDeviceSelectionDuration(base::TimeDelta duration,
-                              BluetoothUiSurface surface,
-                              bool was_paired,
-                              BluetoothTransport transport);
+DEVICE_BLUETOOTH_EXPORT void RecordDeviceSelectionDuration(
+    base::TimeDelta duration,
+    DeviceSelectionUISurfaces surface,
+    bool was_paired,
+    BluetoothTransport transport);
+
+// Record the result of device's Bluetooth being powered on or off.
+DEVICE_BLUETOOTH_EXPORT void RecordPoweredStateOperationResult(
+    PoweredStateOperation operation,
+    bool success);
+
+// Record each time the local device's Bluetooth is powered on or off.
+DEVICE_BLUETOOTH_EXPORT void RecordPoweredState(bool is_powered);
+
+// Record each time a device forget attempt completes.
+DEVICE_BLUETOOTH_EXPORT void RecordForgetResult(ForgetResult forget_result);
+
+// Record the result of each bluetooth device disconnect attempt.
+DEVICE_BLUETOOTH_EXPORT void RecordDisconnectResult(
+    DisconnectResult disconnect_result,
+    BluetoothTransport transport);
+
+// Record each time a bluetooth UI surface is displayed.
+DEVICE_BLUETOOTH_EXPORT void RecordUiSurfaceDisplayed(
+    BluetoothUiSurface ui_surface);
+
+// Record how long it took for an attempted user initiated bluetooth device
+// reconnection to occur.
+DEVICE_BLUETOOTH_EXPORT void RecordUserInitiatedReconnectionAttemptDuration(
+    absl::optional<ConnectionFailureReason> failure_reason,
+    BluetoothTransport transport,
+    base::TimeDelta duration);
 
 }  // namespace device
 

@@ -48,7 +48,7 @@ class V8CustomXPathNSResolver final : public XPathNSResolver {
 
   AtomicString lookupNamespaceURI(const String& prefix) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<ScriptState> script_state_;

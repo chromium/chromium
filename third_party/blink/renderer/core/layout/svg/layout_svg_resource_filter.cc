@@ -23,115 +23,65 @@
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_filter.h"
 
-#include "third_party/blink/renderer/core/svg/graphics/filters/svg_filter_builder.h"
+#include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
+#include "third_party/blink/renderer/core/svg/svg_fe_image_element.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_element.h"
-#include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
-#include "third_party/blink/renderer/core/svg/svg_resource.h"
+#include "third_party/blink/renderer/core/svg/svg_length_context.h"
 
 namespace blink {
 
-void FilterData::Trace(blink::Visitor* visitor) {
-  visitor->Trace(last_effect);
-  visitor->Trace(node_map);
-}
-
-void FilterData::Dispose() {
-  node_map = nullptr;
-  if (last_effect)
-    last_effect->DisposeImageFiltersRecursive();
-  last_effect = nullptr;
-}
-
 LayoutSVGResourceFilter::LayoutSVGResourceFilter(SVGFilterElement* node)
-    : LayoutSVGResourceContainer(node),
-      filter_(MakeGarbageCollected<FilterMap>()) {}
+    : LayoutSVGResourceContainer(node) {}
 
 LayoutSVGResourceFilter::~LayoutSVGResourceFilter() = default;
 
-void LayoutSVGResourceFilter::DisposeFilterMap() {
-  for (auto& entry : *filter_)
-    entry.value->Dispose();
-  filter_->clear();
-}
-
-void LayoutSVGResourceFilter::WillBeDestroyed() {
-  DisposeFilterMap();
-  LayoutSVGResourceContainer::WillBeDestroyed();
-}
-
 bool LayoutSVGResourceFilter::IsChildAllowed(LayoutObject* child,
                                              const ComputedStyle&) const {
-  return child->IsSVGResourceFilterPrimitive();
+  NOT_DESTROYED();
+  return child->IsSVGFilterPrimitive();
 }
 
-void LayoutSVGResourceFilter::RemoveAllClientsFromCache(
-    bool mark_for_invalidation) {
-  // LayoutSVGResourceFilter::removeClientFromCache will be called for
-  // all clients through markAllClientsForInvalidation so no explicit
-  // display item invalidation is needed here.
-  DisposeFilterMap();
-  MarkAllClientsForInvalidation(
-      mark_for_invalidation ? SVGResourceClient::kLayoutInvalidation |
-                                  SVGResourceClient::kBoundariesInvalidation
-                            : SVGResourceClient::kParentOnlyInvalidation);
-}
-
-bool LayoutSVGResourceFilter::RemoveClientFromCache(SVGResourceClient& client) {
-  auto entry = filter_->find(&client);
-  if (entry == filter_->end())
-    return false;
-  entry->value->Dispose();
-  filter_->erase(entry);
-  return true;
+void LayoutSVGResourceFilter::RemoveAllClientsFromCache() {
+  NOT_DESTROYED();
+  MarkAllClientsForInvalidation(kPaintInvalidation | kFilterCacheInvalidation);
 }
 
 FloatRect LayoutSVGResourceFilter::ResourceBoundingBox(
-    const FloatRect& reference_box) const {
+    const gfx::RectF& reference_box) const {
+  NOT_DESTROYED();
   const auto* filter_element = To<SVGFilterElement>(GetElement());
   return SVGLengthContext::ResolveRectangle(filter_element, FilterUnits(),
-                                            reference_box);
+                                            FloatRect(reference_box));
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceFilter::FilterUnits() const {
-  return To<SVGFilterElement>(GetElement())
-      ->filterUnits()
-      ->CurrentValue()
-      ->EnumValue();
+  NOT_DESTROYED();
+  return To<SVGFilterElement>(GetElement())->filterUnits()->CurrentEnumValue();
 }
 
 SVGUnitTypes::SVGUnitType LayoutSVGResourceFilter::PrimitiveUnits() const {
+  NOT_DESTROYED();
   return To<SVGFilterElement>(GetElement())
       ->primitiveUnits()
-      ->CurrentValue()
-      ->EnumValue();
+      ->CurrentEnumValue();
 }
 
-void LayoutSVGResourceFilter::PrimitiveAttributeChanged(
-    SVGFilterPrimitiveStandardAttributes& primitive,
-    const QualifiedName& attribute) {
-  LayoutObject* object = primitive.GetLayoutObject();
-
-  for (auto& filter : *filter_) {
-    FilterData* filter_data = filter.value.Get();
-    if (filter_data->state_ != FilterData::kReadyToPaint)
+bool LayoutSVGResourceFilter::FindCycleFromSelf() const {
+  NOT_DESTROYED();
+  // Traverse and check all <feImage> 'href' element references.
+  for (auto& feimage_element :
+       Traversal<SVGFEImageElement>::ChildrenOf(*GetElement())) {
+    const SVGElement* target = feimage_element.TargetElement();
+    if (!target)
       continue;
-
-    SVGFilterGraphNodeMap* node_map = filter_data->node_map.Get();
-    FilterEffect* effect = node_map->EffectByRenderer(object);
-    if (!effect)
+    const LayoutObject* target_layout_object = target->GetLayoutObject();
+    if (!target_layout_object)
       continue;
-    // Since all effects shares the same attribute value, all
-    // or none of them will be changed.
-    if (!primitive.SetFilterEffectAttribute(effect, attribute))
-      return;
-    node_map->InvalidateDependentEffects(effect);
+    if (FindCycleInSubtree(*target_layout_object))
+      return true;
   }
-  if (auto* resource =
-          To<SVGFilterElement>(GetElement())->AssociatedResource()) {
-    resource->NotifyContentChanged(
-        SVGResourceClient::kPaintInvalidation |
-        SVGResourceClient::kSkipAncestorInvalidation);
-  }
+  return false;
 }
 
 }  // namespace blink

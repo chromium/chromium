@@ -39,15 +39,15 @@ import os
 import subprocess
 
 import ar
-import concurrent
 import models
+import parallel
 import path_util
 
 
 def LookupElfRodataInfo(elf_path, tool_prefix):
   """Returns (address, offset, size) for the .rodata section."""
   args = [path_util.GetReadElfPath(tool_prefix), '-S', '--wide', elf_path]
-  output = subprocess.check_output(args)
+  output = subprocess.check_output(args).decode('ascii')
   lines = output.splitlines()
   for line in lines:
     # [Nr] Name           Type        Addr     Off     Size   ES Flg Lk Inf Al
@@ -88,7 +88,7 @@ def _LookupStringSectionPositions(target, tool_prefix, output_directory):
   Args:
     target: An archive path string (e.g., "foo.a") or a list of object paths.
   """
-  is_archive = isinstance(target, basestring)
+  is_archive = isinstance(target, str)
   args = [path_util.GetReadElfPath(tool_prefix), '-S', '--wide']
   if is_archive:
     args.append(target)
@@ -97,7 +97,7 @@ def _LookupStringSectionPositions(target, tool_prefix, output_directory):
     path = target[0]
     args.extend(target)
 
-  output = subprocess.check_output(args, cwd=output_directory)
+  output = subprocess.check_output(args, cwd=output_directory).decode('ascii')
   lines = output.splitlines()
   section_positions_by_path = {}
   cur_offsets = []
@@ -139,7 +139,7 @@ def _ReadStringSections(target, output_directory, positions_by_path):
     target: An archive path string (e.g., "foo.a") or a list of object paths.
     positions_by_path: A dict of object_path -> [(offset, size)...]
   """
-  is_archive = isinstance(target, basestring)
+  is_archive = isinstance(target, str)
   string_sections_by_path = {}
   if is_archive:
     for subpath, chunk in ar.IterArchiveChunks(
@@ -192,7 +192,7 @@ def _IterStringLiterals(path, addresses, obj_sections):
         continue
       # Figure out which offsets apply to this section via heuristic of them
       # all ending with a null character.
-      if offset == prev_offset or section_data[offset - 1] != '\0':
+      if offset == prev_offset or section_data[offset - 1] != 0:
         next_offsets.append(offset)
         continue
       yield section_data[prev_offset:offset]
@@ -223,7 +223,7 @@ def _AnnotateStringData(string_data, path_value_gen):
   for path, value in path_value_gen:
     first_match = -1
     first_match_dict = None
-    for target_dict, data in itertools.izip(ret, string_data):
+    for target_dict, data in zip(ret, string_data):
       # Set offset so that it will be 0 when len(value) is added to it below.
       offset = -len(value)
       while True:
@@ -233,7 +233,7 @@ def _AnnotateStringData(string_data, path_value_gen):
         # Preferring exact matches (those following \0) over substring matches
         # significantly increases accuracy (although shows that linker isn't
         # being optimal).
-        if offset == 0 or data[offset - 1] == '\0':
+        if offset == 0 or data[offset - 1] == 0:
           break
         if first_match == -1:
           first_match = offset
@@ -255,13 +255,13 @@ def _AnnotateStringData(string_data, path_value_gen):
 # This is a target for BulkForkAndCall().
 def ResolveStringPiecesIndirect(encoded_string_addresses_by_path, string_data,
                                 tool_prefix, output_directory):
-  string_addresses_by_path = concurrent.DecodeDictOfLists(
+  string_addresses_by_path = parallel.DecodeDictOfLists(
       encoded_string_addresses_by_path)
   # Assign |target| as archive path, or a list of object paths.
-  any_path = next(string_addresses_by_path.iterkeys())
+  any_path = next(iter(string_addresses_by_path.keys()))
   target = _ExtractArchivePath(any_path)
   if not target:
-    target = string_addresses_by_path.keys()
+    target = list(string_addresses_by_path.keys())
 
   # Run readelf to find location of .rodata within the .o files.
   section_positions_by_path = _LookupStringSectionPositions(
@@ -271,28 +271,28 @@ def ResolveStringPiecesIndirect(encoded_string_addresses_by_path, string_data,
       target, output_directory, section_positions_by_path)
 
   def GeneratePathAndValues():
-    for path, object_addresses in string_addresses_by_path.iteritems():
+    for path, object_addresses in string_addresses_by_path.items():
       for value in _IterStringLiterals(
           path, object_addresses, string_sections_by_path.get(path)):
         yield path, value
 
   ret = _AnnotateStringData(string_data, GeneratePathAndValues())
-  return [concurrent.EncodeDictOfLists(x) for x in ret]
+  return [parallel.EncodeDictOfLists(x) for x in ret]
 
 
 # This is a target for BulkForkAndCall().
 def ResolveStringPieces(encoded_strings_by_path, string_data):
   # ast.literal_eval() undoes repr() applied to strings.
-  strings_by_path = concurrent.DecodeDictOfLists(
+  strings_by_path = parallel.DecodeDictOfLists(
       encoded_strings_by_path, value_transform=ast.literal_eval)
 
   def GeneratePathAndValues():
-    for path, strings in strings_by_path.iteritems():
+    for path, strings in strings_by_path.items():
       for value in strings:
         yield path, value
 
   ret = _AnnotateStringData(string_data, GeneratePathAndValues())
-  return [concurrent.EncodeDictOfLists(x) for x in ret]
+  return [parallel.EncodeDictOfLists(x) for x in ret]
 
 
 def ReadStringLiterals(symbols, elf_path, tool_prefix, all_rodata=False):
@@ -317,5 +317,5 @@ def ReadStringLiterals(symbols, elf_path, tool_prefix, all_rodata=False):
       # pattern as to which variables lose their kConstant name (the more
       # common case), or which string literals don't get moved to
       # ** merge strings (less common).
-      if symbol.IsStringLiteral() or (all_rodata and data and data[-1] == '\0'):
+      if symbol.IsStringLiteral() or (all_rodata and data and data[-1] == 0):
         yield ((symbol, data))

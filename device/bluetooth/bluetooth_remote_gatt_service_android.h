@@ -42,20 +42,25 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceAndroid
       const base::android::JavaRef<jobject>&
           chrome_bluetooth_device);  // ChromeBluetoothDevice
 
+  BluetoothRemoteGattServiceAndroid(const BluetoothRemoteGattServiceAndroid&) =
+      delete;
+  BluetoothRemoteGattServiceAndroid& operator=(
+      const BluetoothRemoteGattServiceAndroid&) = delete;
+
   ~BluetoothRemoteGattServiceAndroid() override;
 
   // Returns the associated ChromeBluetoothRemoteGattService Java object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
-  // Returns a BluetoothRemoteGattService::GattErrorCode from a given
+  // Returns a BluetoothGattService::GattErrorCode from a given
   // android.bluetooth.BluetoothGatt error code.
   // |bluetooth_gatt_code| must not be 0 == GATT_SUCCESS.
-  static BluetoothRemoteGattService::GattErrorCode GetGattErrorCode(
+  static BluetoothGattService::GattErrorCode GetGattErrorCode(
       int bluetooth_gatt_code);
 
   // Returns an android.bluetooth.BluetoothGatt error code for a given
-  // BluetoothRemoteGattService::GattErrorCode value.
-  static int GetAndroidErrorCode(BluetoothRemoteGattService::GattErrorCode);
+  // BluetoothGattService::GattErrorCode value.
+  static int GetAndroidErrorCode(BluetoothGattService::GattErrorCode);
 
   // device::BluetoothRemoteGattService overrides.
   std::string GetIdentifier() const override;
@@ -106,8 +111,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceAndroid
 
   // Adapter unique instance ID.
   std::string instance_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceAndroid);
 };
 
 }  // namespace device

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
 #include "chrome/browser/extensions/extension_action_test_util.h"
@@ -33,9 +34,9 @@
 #include "content/public/test/test_utils.h"
 #include "services/network/test/test_url_loader_factory.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/input_method/input_method_configuration.h"
-#include "chrome/browser/chromeos/input_method/mock_input_method_manager_impl.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/input_method/input_method_configuration.h"
+#include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
 #endif
 
 namespace {
@@ -50,7 +51,7 @@ std::unique_ptr<KeyedService> CreateTemplateURLService(
       std::make_unique<ChromeTemplateURLServiceClient>(
           HistoryServiceFactory::GetForProfile(
               profile, ServiceAccessType::EXPLICIT_ACCESS)),
-      base::Closure());
+      base::RepeatingClosure());
 }
 
 std::unique_ptr<KeyedService> CreateAutocompleteClassifier(
@@ -58,7 +59,7 @@ std::unique_ptr<KeyedService> CreateAutocompleteClassifier(
   Profile* profile = static_cast<Profile*>(context);
   return std::make_unique<AutocompleteClassifier>(
       std::make_unique<AutocompleteController>(
-          std::make_unique<ChromeAutocompleteProviderClient>(profile), nullptr,
+          std::make_unique<ChromeAutocompleteProviderClient>(profile),
           AutocompleteClassifier::DefaultOmniboxProviders()),
       std::make_unique<TestSchemeClassifier>());
 }
@@ -68,9 +69,9 @@ std::unique_ptr<KeyedService> CreateAutocompleteClassifier(
 TestWithBrowserView::~TestWithBrowserView() {}
 
 void TestWithBrowserView::SetUp() {
-#if defined(OS_CHROMEOS)
-  chromeos::input_method::InitializeForTesting(
-      new chromeos::input_method::MockInputMethodManagerImpl);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::input_method::InitializeForTesting(
+      new ash::input_method::MockInputMethodManagerImpl);
 #endif
   BrowserWithTestWindowTest::SetUp();
   browser_view_ = static_cast<BrowserView*>(browser()->window());
@@ -89,8 +90,8 @@ void TestWithBrowserView::TearDown() {
   browser_view_ = nullptr;
   content::RunAllTasksUntilIdle();
   BrowserWithTestWindowTest::TearDown();
-#if defined(OS_CHROMEOS)
-  chromeos::input_method::Shutdown();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::input_method::Shutdown();
 #endif
 }
 

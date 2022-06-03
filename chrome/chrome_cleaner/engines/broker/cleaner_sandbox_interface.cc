@@ -35,13 +35,13 @@ typedef NTSTATUS(WINAPI* NtDeleteValueKeyFunction)(IN HANDLE KeyHandle,
                                                    IN PUNICODE_STRING
                                                        ValueName);
 
-using chrome_cleaner::String16EmbeddedNulls;
+using chrome_cleaner::WStringEmbeddedNulls;
 
 namespace chrome_cleaner_sandbox {
 
 namespace {
 
-void NormalizeValue(String16EmbeddedNulls* value) {
+void NormalizeValue(WStringEmbeddedNulls* value) {
   for (unsigned int i = 0; i < value->size(); i++) {
     if (value->data()[i] == L' ')
       value->data()[i] = L',';
@@ -50,7 +50,7 @@ void NormalizeValue(String16EmbeddedNulls* value) {
 
 }  // namespace
 
-bool SandboxNtDeleteRegistryKey(const String16EmbeddedNulls& key) {
+bool SandboxNtDeleteRegistryKey(const WStringEmbeddedNulls& key) {
   // TODO(joenotcharles): Add some sanity checks from the old RegistryRemover.
   NtRegistryParamError param_error = ValidateNtRegistryKey(key);
   if (param_error != NtRegistryParamError::None) {
@@ -87,8 +87,8 @@ bool SandboxNtDeleteRegistryKey(const String16EmbeddedNulls& key) {
 }
 
 bool SandboxNtDeleteRegistryValue(
-    const chrome_cleaner::String16EmbeddedNulls& key,
-    const chrome_cleaner::String16EmbeddedNulls& value_name) {
+    const chrome_cleaner::WStringEmbeddedNulls& key,
+    const chrome_cleaner::WStringEmbeddedNulls& value_name) {
   // TODO(joenotcharles): Add some sanity checks from the old RegistryRemover.
   NtRegistryParamError param_error = ValidateNtRegistryKey(key);
   if (param_error != NtRegistryParamError::None) {
@@ -128,7 +128,7 @@ bool SandboxNtDeleteRegistryValue(
   if (status != STATUS_SUCCESS) {
     LOG_IF(ERROR, status != STATUS_OBJECT_NAME_NOT_FOUND)
         << "SandboxNtDeleteRegistryValue: Failed to delete registry value: "
-        << base::string16(value_name_buffer.begin(), value_name_buffer.end())
+        << std::wstring(value_name_buffer.begin(), value_name_buffer.end())
         << " under key: " << FormatNtRegistryMemberForLogging(key)
         << " error: " << status;
   }
@@ -142,23 +142,23 @@ bool SandboxNtDeleteRegistryValue(
   return status == STATUS_SUCCESS;
 }
 
-bool DefaultShouldValueBeNormalized(const String16EmbeddedNulls& key,
-                                    const String16EmbeddedNulls& value_name) {
+bool DefaultShouldValueBeNormalized(const WStringEmbeddedNulls& key,
+                                    const WStringEmbeddedNulls& value_name) {
   return (base::EqualsCaseInsensitiveASCII(
-              key.CastAsStringPiece16(), chrome_cleaner::kAppInitDllsKeyPath) ||
-          base::EqualsCaseInsensitiveASCII(key.CastAsStringPiece16(),
+              key.CastAsWStringPiece(), chrome_cleaner::kAppInitDllsKeyPath) ||
+          base::EqualsCaseInsensitiveASCII(key.CastAsWStringPiece(),
                                            L"\\REGISTRY\\MACHINE\\SOFTWARE\\WOW"
                                            L"6432Node\\Microsoft\\Windows "
                                            L"NT\\CurrentVersion\\Windows")) &&
          base::EqualsCaseInsensitiveASCII(
-             value_name.CastAsStringPiece16(),
+             value_name.CastAsWStringPiece(),
              chrome_cleaner::kAppInitDllsValueName);
 }
 
 bool SandboxNtChangeRegistryValue(
-    const String16EmbeddedNulls& key,
-    const String16EmbeddedNulls& value_name,
-    const String16EmbeddedNulls& new_value,
+    const WStringEmbeddedNulls& key,
+    const WStringEmbeddedNulls& value_name,
+    const WStringEmbeddedNulls& new_value,
     const ShouldNormalizeRegistryValue& should_normalize_callback) {
   // Input checks.
   // TODO(joenotcharles): Implmement additional sanity checks to ensure that the
@@ -209,7 +209,7 @@ bool SandboxNtChangeRegistryValue(
       base::BindOnce(base::IgnoreResult(&::CloseHandle), registry_handle));
 
   DWORD value_type = 0;
-  String16EmbeddedNulls current_value;
+  WStringEmbeddedNulls current_value;
   if (!NativeQueryValueKey(registry_handle, value_name, &value_type,
                            &current_value)) {
     LOG(ERROR) << "Failed to read registry value type from key "
@@ -258,7 +258,7 @@ bool SandboxNtChangeRegistryValue(
   return status == STATUS_SUCCESS;
 }
 
-bool SandboxDeleteService(const base::string16& name) {
+bool SandboxDeleteService(const std::wstring& name) {
   if (name.empty()) {
     LOG(ERROR) << "Sandbox called DeleteService with empty name.";
     return false;
@@ -287,7 +287,7 @@ bool SandboxDeleteService(const base::string16& name) {
   return true;
 }
 
-bool SandboxDeleteTask(const base::string16& name) {
+bool SandboxDeleteTask(const std::wstring& name) {
   // TODO(joenotcharles): Add some sanity checks.
   std::unique_ptr<chrome_cleaner::TaskScheduler> task_scheduler(
       chrome_cleaner::TaskScheduler::CreateInstance());
@@ -308,8 +308,8 @@ TerminateProcessResult SandboxTerminateProcess(uint32_t process_id) {
     return TerminateProcessResult::kFailed;
   }
 
-  base::string16 exec_path;
-  base::string16 sanitized_exec_path(L"<unknown>");
+  std::wstring exec_path;
+  std::wstring sanitized_exec_path(L"<unknown>");
   if (chrome_cleaner::GetProcessExecutablePath(handle_to_kill.Get(),
                                                &exec_path)) {
     sanitized_exec_path =

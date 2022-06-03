@@ -11,12 +11,20 @@
 namespace blink {
 
 // A simple GraphicsLayerClient implementation suitable for use in unit tests.
-class FakeGraphicsLayerClient : public GraphicsLayerClient {
+class FakeGraphicsLayerClient
+    : public GarbageCollected<FakeGraphicsLayerClient>,
+      public GraphicsLayerClient {
  public:
   // GraphicsLayerClient implementation.
   IntRect ComputeInterestRect(const GraphicsLayer*,
                               const IntRect&) const override {
     return IntRect();
+  }
+  IntRect PaintableRegion(const GraphicsLayer*) const override {
+    return IntRect();
+  }
+  PaintArtifactCompositor* GetPaintArtifactCompositor() override {
+    return nullptr;
   }
   String DebugName(const GraphicsLayer*) const override { return String(); }
   bool IsTrackingRasterInvalidations() const override {
@@ -44,6 +52,10 @@ class FakeGraphicsLayerClient : public GraphicsLayerClient {
                                      GraphicsLayerPaintingPhase,
                                      const IntRect&)>;
   void SetPainter(const Painter& painter) { painter_ = painter; }
+
+  void Trace(Visitor* visitor) const override {
+    GraphicsLayerClient::Trace(visitor);
+  }
 
  private:
   Painter painter_ = nullptr;

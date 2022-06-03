@@ -17,6 +17,11 @@ class NET_EXPORT URLRequestContextGetterObserver {
  public:
   URLRequestContextGetterObserver() {}
 
+  URLRequestContextGetterObserver(const URLRequestContextGetterObserver&) =
+      delete;
+  URLRequestContextGetterObserver& operator=(
+      const URLRequestContextGetterObserver&) = delete;
+
   // Called before the URLRequestContext shuts down. When called, the Getter's
   // GetURLRequestContext method must return NULL to protected against
   // re-entrancy, but the Context must still be valid and GetNetworkTaskRunner()
@@ -25,9 +30,6 @@ class NET_EXPORT URLRequestContextGetterObserver {
 
  protected:
   virtual ~URLRequestContextGetterObserver() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(URLRequestContextGetterObserver);
 };
 
 }  // namespace net

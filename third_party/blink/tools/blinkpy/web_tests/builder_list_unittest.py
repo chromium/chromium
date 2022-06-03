@@ -32,19 +32,75 @@ from blinkpy.web_tests.builder_list import BuilderList
 
 
 class BuilderListTest(unittest.TestCase):
-
     @staticmethod
     def sample_builder_list():
         return BuilderList({
-            'Blink A': {'port_name': 'port-a', 'specifiers': ['A', 'Release']},
-            'Blink B': {'port_name': 'port-b', 'specifiers': ['B', 'Release']},
-            'Blink B (dbg)': {'port_name': 'port-b', 'specifiers': ['B', 'Debug']},
-            'Blink C (dbg)': {'port_name': 'port-c', 'specifiers': ['C', 'Release']},
-            'Try A': {'port_name': 'port-a', 'specifiers': ['A', 'Release'], 'is_try_builder': True},
-            'Try B': {'port_name': 'port-b', 'specifiers': ['B', 'Release'], 'is_try_builder': True},
-            'CQ Try A': {'bucket': 'bucket.a', 'port_name': 'port-a', 'specifiers': ['A', 'Release'], 'is_try_builder': True},
-            'CQ Try B': {'bucket': 'bucket.b', 'port_name': 'port-b', 'specifiers': ['B', 'Release'], 'is_try_builder': True},
-            'CQ Try C': {'bucket': 'bucket.c', 'port_name': 'port-c', 'specifiers': ['c', 'Release'], 'is_try_builder': True, 'master': "luci", 'has_webdriver_tests': True},
+            'some-wpt-bot': {
+                'port_name': 'port-c',
+                'specifiers': ['C', 'Release'],
+                'is_try_builder': True,
+            },
+            'Blink A': {
+                'port_name': 'port-a',
+                'specifiers': ['A', 'Release']
+            },
+            'Blink B': {
+                'port_name': 'port-b',
+                'specifiers': ['B', 'Release']
+            },
+            'Blink B (dbg)': {
+                'port_name': 'port-b',
+                'specifiers': ['B', 'Debug']
+            },
+            'Blink C (dbg)': {
+                'port_name': 'port-c',
+                'specifiers': ['C', 'Release']
+            },
+            'Try A': {
+                'port_name': 'port-a',
+                'specifiers': ['A', 'Release'],
+                'is_try_builder': True
+            },
+            'Try B': {
+                'port_name': 'port-b',
+                'specifiers': ['B', 'Release'],
+                'is_try_builder': True
+            },
+            'CQ Try A': {
+                'bucket': 'bucket.a',
+                'port_name': 'port-a',
+                'specifiers': ['A', 'Release'],
+                'is_try_builder': True,
+                'is_cq_builder': True
+            },
+            'CQ Try B': {
+                'bucket': 'bucket.b',
+                'port_name': 'port-b',
+                'specifiers': ['B', 'Release'],
+                'is_try_builder': True,
+                'is_cq_builder': True
+            },
+            'CQ Try C': {
+                'bucket': 'bucket.c',
+                'port_name': 'port-c',
+                'specifiers': ['c', 'Release'],
+                'is_try_builder': True,
+                'is_cq_builder': True,
+                'master': "luci",
+                'has_webdriver_tests': True
+            },
+            'Flag Specific A': {
+                'port_name': 'port-c',
+                'specifiers': ['C', 'Release'],
+                'flag_specific': 'highdpi',
+                "is_try_builder": True
+            },
+            'Flag Specific B': {
+                'port_name': 'port-c',
+                'specifiers': ['C', 'Release'],
+                'flag_specific': 'disable-layout-ng',
+                "is_try_builder": True
+            },
         })
 
     def test_constructor_validates_list(self):
@@ -55,20 +111,53 @@ class BuilderListTest(unittest.TestCase):
 
     def test_all_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['Blink A', 'Blink B', 'Blink B (dbg)', 'Blink C (dbg)', 'CQ Try A', 'CQ Try B', 'CQ Try C', 'Try A', 'Try B'],
-                         builders.all_builder_names())
+        self.assertEqual([
+            'Blink A',
+            'Blink B',
+            'Blink B (dbg)',
+            'Blink C (dbg)',
+            'CQ Try A',
+            'CQ Try B',
+            'CQ Try C',
+            'Flag Specific A',
+            'Flag Specific B',
+            'Try A',
+            'Try B',
+            'some-wpt-bot',
+        ], builders.all_builder_names())
 
     def test_all_continuous_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['Blink A', 'Blink B', 'Blink B (dbg)', 'Blink C (dbg)'], builders.all_continuous_builder_names())
+        self.assertEqual(
+            ['Blink A', 'Blink B', 'Blink B (dbg)', 'Blink C (dbg)'],
+            builders.all_continuous_builder_names())
 
     def test_all_try_builder_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['CQ Try A', 'CQ Try B', 'CQ Try C', 'Try A', 'Try B'], builders.all_try_builder_names())
+        self.assertEqual([
+            'CQ Try A', 'CQ Try B', 'CQ Try C', 'Flag Specific A',
+            'Flag Specific B', 'Try A', 'Try B', 'some-wpt-bot'
+        ], builders.all_try_builder_names())
+
+    def test_all_cq_try_builder_names(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(
+            ['CQ Try A', 'CQ Try B', 'CQ Try C'],
+            builders.all_cq_try_builder_names())
+
+    def test_all_flag_specific_builder_names(self):
+        builders = self.sample_builder_list()
+        self.assertEqual(['Flag Specific A'],
+                         builders.all_flag_specific_try_builder_names(
+                             flag_specific="highdpi"))
+        self.assertEqual(['Flag Specific A', 'Flag Specific B'],
+                         builders.all_flag_specific_try_builder_names(
+                             flag_specific="*"))
 
     def test_all_port_names(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['port-a', 'port-b', 'port-c'], builders.all_port_names())
+        self.assertEqual(['port-a', 'port-b', 'port-c'],
+                         builders.all_port_names())
 
     def test_bucket_for_builder_default_bucket(self):
         builders = self.sample_builder_list()
@@ -88,25 +177,28 @@ class BuilderListTest(unittest.TestCase):
 
     def test_has_webdriver_tests_for_builder_default_value(self):
         builders = self.sample_builder_list()
-        self.assertEqual(
-            None, builders.has_webdriver_tests_for_builder('Try A'))
+        self.assertEqual(None,
+                         builders.has_webdriver_tests_for_builder('Try A'))
 
     def test_has_webdriver_tests_for_builder_configured_value(self):
         builders = self.sample_builder_list()
-        self.assertEqual(
-            True, builders.has_webdriver_tests_for_builder('CQ Try C'))
+        self.assertEqual(True,
+                         builders.has_webdriver_tests_for_builder('CQ Try C'))
 
     def test_port_name_for_builder_name(self):
         builders = self.sample_builder_list()
-        self.assertEqual('port-b', builders.port_name_for_builder_name('Blink B'))
+        self.assertEqual('port-b',
+                         builders.port_name_for_builder_name('Blink B'))
 
     def test_specifiers_for_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual(['B', 'Release'], builders.specifiers_for_builder('Blink B'))
+        self.assertEqual(['B', 'Release'],
+                         builders.specifiers_for_builder('Blink B'))
 
     def test_platform_specifier_for_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual('B', builders.platform_specifier_for_builder('Blink B'))
+        self.assertEqual('B',
+                         builders.platform_specifier_for_builder('Blink B'))
 
     def test_port_name_for_builder_name_with_missing_builder(self):
         builders = self.sample_builder_list()
@@ -120,18 +212,28 @@ class BuilderListTest(unittest.TestCase):
 
     def test_builder_name_for_port_name_with_no_debug_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual('Blink A', builders.builder_name_for_port_name('port-a'))
+        self.assertEqual('Blink A',
+                         builders.builder_name_for_port_name('port-a'))
 
     def test_builder_name_for_port_name_with_debug_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual('Blink B', builders.builder_name_for_port_name('port-b'))
+        self.assertEqual('Blink B',
+                         builders.builder_name_for_port_name('port-b'))
 
     def test_builder_name_for_port_name_with_only_debug_builder(self):
         builders = self.sample_builder_list()
-        self.assertEqual('Blink C (dbg)', builders.builder_name_for_port_name('port-c'))
+        self.assertEqual('Blink C (dbg)',
+                         builders.builder_name_for_port_name('port-c'))
 
     def test_version_specifier_for_port_name(self):
         builders = self.sample_builder_list()
-        self.assertEqual('A', builders.version_specifier_for_port_name('port-a'))
-        self.assertEqual('B', builders.version_specifier_for_port_name('port-b'))
+        self.assertEqual('A',
+                         builders.version_specifier_for_port_name('port-a'))
+        self.assertEqual('B',
+                         builders.version_specifier_for_port_name('port-b'))
         self.assertIsNone(builders.version_specifier_for_port_name('port-x'))
+
+    def test_is_wpt_builder(self):
+        builders = self.sample_builder_list()
+        self.assertFalse(builders.is_wpt_builder('Blink A'))
+        self.assertTrue(builders.is_wpt_builder('some-wpt-bot'))

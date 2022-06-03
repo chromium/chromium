@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/dom/qualified_name.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 
@@ -24,10 +25,11 @@ class ElementSMILAnimations : public GarbageCollected<ElementSMILAnimations> {
 
   void AddAnimation(const QualifiedName& attribute, SVGAnimationElement*);
   void RemoveAnimation(const QualifiedName& attribute, SVGAnimationElement*);
+  bool HasAnimations() const { return !sandwiches_.IsEmpty(); }
 
   bool Apply(SMILTime elapsed);
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   HeapHashMap<QualifiedName, Member<SMILAnimationSandwich>> sandwiches_;

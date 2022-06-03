@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -17,23 +16,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
-#endif
-
 namespace {
 
 class TestSchemeClassifier : public AutocompleteSchemeClassifier {
  public:
   TestSchemeClassifier() = default;
+
+  TestSchemeClassifier(const TestSchemeClassifier&) = delete;
+  TestSchemeClassifier& operator=(const TestSchemeClassifier&) = delete;
+
   ~TestSchemeClassifier() override = default;
 
   // Overridden from AutocompleteInputSchemeClassifier:
   metrics::OmniboxInputType GetInputTypeForScheme(
       const std::string& scheme) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSchemeClassifier);
 };
 
 metrics::OmniboxInputType TestSchemeClassifier::GetInputTypeForScheme(
@@ -59,7 +55,7 @@ class ChromeAutocompleteProviderClientTest : public testing::Test {
   // |client_| will be off the record.
   void GoOffTheRecord() {
     client_ = std::make_unique<ChromeAutocompleteProviderClient>(
-        profile_->GetOffTheRecordProfile());
+        profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));
   }
 
  protected:
@@ -151,24 +147,3 @@ TEST_F(ChromeAutocompleteProviderClientTest, TestStrippedURLsAreEqual) {
                                             GURL(test_case.url2), &input));
   }
 }
-
-// TODO(crbug/950007): Remove this test when the split settings work is complete
-#if defined(OS_CHROMEOS)
-TEST_F(ChromeAutocompleteProviderClientTest, OSSettingsDoNotShowUp) {
-  size_t builtin_urls_with_os_settings;
-  size_t builtin_urls_without_os_settings;
-
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndDisableFeature(chromeos::features::kSplitSettings);
-    builtin_urls_with_os_settings = client_->GetBuiltinURLs().size();
-  }
-  {
-    base::test::ScopedFeatureList feature_list;
-    feature_list.InitAndEnableFeature(chromeos::features::kSplitSettings);
-    builtin_urls_without_os_settings = client_->GetBuiltinURLs().size();
-  }
-
-  EXPECT_GT(builtin_urls_with_os_settings, builtin_urls_without_os_settings);
-}
-#endif

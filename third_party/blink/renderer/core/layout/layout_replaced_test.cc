@@ -26,7 +26,8 @@ TEST_F(LayoutReplacedTest, InvalidateAfterAddingBorderRadius) {
 
   target_element->setAttribute(html_names::kStyleAttr, "border-radius: 10px");
 
-  GetDocument().View()->UpdateLifecycleToLayoutClean();
+  GetDocument().View()->UpdateLifecycleToLayoutClean(
+      DocumentUpdateReason::kTest);
   EXPECT_TRUE(layout_object->NeedsPaintPropertyUpdate());
 }
 

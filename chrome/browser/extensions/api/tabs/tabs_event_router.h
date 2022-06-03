@@ -9,8 +9,8 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_observer.h"
 #include "chrome/browser/resource_coordinator/tab_manager.h"
@@ -42,6 +42,10 @@ class TabsEventRouter : public TabStripModelObserver,
                         public resource_coordinator::TabLifecycleObserver {
  public:
   explicit TabsEventRouter(Profile* profile);
+
+  TabsEventRouter(const TabsEventRouter&) = delete;
+  TabsEventRouter& operator=(const TabsEventRouter&) = delete;
+
   ~TabsEventRouter() override;
 
   // BrowserTabStripTrackerDelegate:
@@ -62,6 +66,9 @@ class TabsEventRouter : public TabStripModelObserver,
   void TabPinnedStateChanged(TabStripModel* tab_strip_model,
                              content::WebContents* contents,
                              int index) override;
+  void TabGroupedStateChanged(absl::optional<tab_groups::TabGroupId> group,
+                              content::WebContents* contents,
+                              int index) override;
 
   // ZoomObserver:
   void OnZoomChanged(
@@ -95,8 +102,7 @@ class TabsEventRouter : public TabStripModelObserver,
                              bool was_active);
   void DispatchActiveTabChanged(content::WebContents* old_contents,
                                 content::WebContents* new_contents,
-                                int index,
-                                int reason);
+                                int index);
   void DispatchTabSelectionChanged(TabStripModel* tab_strip_model,
                                    const ui::ListSelectionModel& old_model);
   void DispatchTabMoved(content::WebContents* contents,
@@ -155,6 +161,9 @@ class TabsEventRouter : public TabStripModelObserver,
     // |contents|.
     TabEntry(TabsEventRouter* router, content::WebContents* contents);
 
+    TabEntry(const TabEntry&) = delete;
+    TabEntry& operator=(const TabEntry&) = delete;
+
     // Indicate via a list of property names if a tab is loading based on its
     // WebContents. Whether the state has changed or not is used to determine if
     // events need to be sent to extensions during processing of TabChangedAt()
@@ -188,8 +197,6 @@ class TabsEventRouter : public TabStripModelObserver,
 
     // Event router that the WebContents's noficiations are forwarded to.
     TabsEventRouter* router_;
-
-    DISALLOW_COPY_AND_ASSIGN(TabEntry);
   };
 
   // Gets the TabEntry for the given |contents|. Returns TabEntry* if found,
@@ -202,16 +209,15 @@ class TabsEventRouter : public TabStripModelObserver,
   // The main profile that owns this event router.
   Profile* profile_;
 
-  ScopedObserver<favicon::FaviconDriver, favicon::FaviconDriverObserver>
-      favicon_scoped_observer_{this};
+  base::ScopedMultiSourceObservation<favicon::FaviconDriver,
+                                     favicon::FaviconDriverObserver>
+      favicon_scoped_observations_{this};
 
   BrowserTabStripTracker browser_tab_strip_tracker_;
 
-  ScopedObserver<resource_coordinator::TabManager,
-                 resource_coordinator::TabLifecycleObserver>
-      tab_manager_scoped_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TabsEventRouter);
+  base::ScopedObservation<resource_coordinator::TabManager,
+                          resource_coordinator::TabLifecycleObserver>
+      tab_manager_scoped_observation_{this};
 };
 
 }  // namespace extensions

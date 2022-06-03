@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_BUBBLE_DELEGATE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_BUBBLE_DELEGATE_VIEW_H_
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_observer.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event_observer.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/event_monitor.h"
@@ -26,6 +26,8 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
                                       public FullscreenObserver,
                                       public content::WebContentsObserver {
  public:
+  METADATA_HEADER(LocationBarBubbleDelegateView);
+
   enum DisplayReason {
     // The bubble appears as a direct result of a user action (clicking on the
     // location bar icon).
@@ -45,6 +47,9 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
   LocationBarBubbleDelegateView(views::View* anchor_view,
                                 content::WebContents* web_contents);
 
+  LocationBarBubbleDelegateView(const LocationBarBubbleDelegateView&) = delete;
+  LocationBarBubbleDelegateView& operator=(
+      const LocationBarBubbleDelegateView&) = delete;
   ~LocationBarBubbleDelegateView() override;
 
   // Displays the bubble with appearance and behavior tailored for |reason|.
@@ -81,6 +86,10 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
    public:
     WebContentMouseHandler(LocationBarBubbleDelegateView* bubble,
                            content::WebContents* web_contents);
+
+    WebContentMouseHandler(const WebContentMouseHandler&) = delete;
+    WebContentMouseHandler& operator=(const WebContentMouseHandler&) = delete;
+
     ~WebContentMouseHandler() override;
 
     // ui::EventObserver:
@@ -90,26 +99,23 @@ class LocationBarBubbleDelegateView : public views::BubbleDialogDelegateView,
     LocationBarBubbleDelegateView* bubble_;
     content::WebContents* web_contents_;
     std::unique_ptr<views::EventMonitor> event_monitor_;
-
-    DISALLOW_COPY_AND_ASSIGN(WebContentMouseHandler);
   };
 
   // Closes the bubble.
   virtual void CloseBubble();
 
-  void set_close_on_main_frame_origin_navigation(bool close) {
-    close_on_main_frame_origin_navigation_ = close;
-  }
+  void SetCloseOnMainFrameOriginNavigation(bool close);
+  bool GetCloseOnMainFrameOriginNavigation() const;
 
  private:
-  ScopedObserver<FullscreenController, FullscreenObserver> fullscreen_observer_{
-      this};
+  base::ScopedObservation<FullscreenController, FullscreenObserver>
+      fullscreen_observation_{this};
 
   // A flag controlling bubble closure when the main frame navigates to a
   // different origin.
   bool close_on_main_frame_origin_navigation_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(LocationBarBubbleDelegateView);
+  DisplayReason display_reason_ = AUTOMATIC;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_LOCATION_BAR_BUBBLE_DELEGATE_VIEW_H_

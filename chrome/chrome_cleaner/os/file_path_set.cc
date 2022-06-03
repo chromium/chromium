@@ -5,8 +5,8 @@
 #include "chrome/chrome_cleaner/os/file_path_set.h"
 
 #include <algorithm>
+#include <string>
 
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/os/file_path_sanitization.h"

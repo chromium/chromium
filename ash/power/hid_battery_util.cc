@@ -53,11 +53,7 @@ std::string ExtractBluetoothAddressFromHIDBatteryPath(const std::string& path) {
   if (!RE2::FullMatch(identifier, kBluetoothAddressRegex))
     return std::string();
 
-  std::string reverse_address = base::ToLowerASCII(identifier);
-  std::vector<base::StringPiece> result = base::SplitStringPiece(
-      reverse_address, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-  std::reverse(result.begin(), result.end());
-  return base::JoinString(result, ":");
+  return base::ToLowerASCII(identifier);
 }
 
 }  // namespace ash

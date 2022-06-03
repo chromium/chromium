@@ -2,14 +2,24 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+
+import {strf, util} from '../../common/js/util.js';
+
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+import {FileSelectionHandler} from './file_selection.js';
+import {ListContainer} from './ui/list_container.js';
+
 /**
  * Controller to handle naming.
  */
-class NamingController {
+export class NamingController {
   /**
    * @param {!ListContainer} listContainer
-   * @param {!cr.ui.dialogs.AlertDialog} alertDialog
-   * @param {!cr.ui.dialogs.ConfirmDialog} confirmDialog
+   * @param {!AlertDialog} alertDialog
+   * @param {!ConfirmDialog} confirmDialog
    * @param {!DirectoryModel} directoryModel
    * @param {!FileFilter} fileFilter
    * @param {!FileSelectionHandler} selectionHandler
@@ -20,10 +30,10 @@ class NamingController {
     /** @private @const {!ListContainer} */
     this.listContainer_ = listContainer;
 
-    /** @private @const {!cr.ui.dialogs.AlertDialog} */
+    /** @private @const {!AlertDialog} */
     this.alertDialog_ = alertDialog;
 
-    /** @private @const {!cr.ui.dialogs.ConfirmDialog} */
+    /** @private @const {!ConfirmDialog} */
     this.confirmDialog_ = confirmDialog;
 
     /** @private @const {!DirectoryModel} */
@@ -35,11 +45,22 @@ class NamingController {
     /** @private @const {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
 
+    /**
+     * Controls if a context menu is shown for the rename input, so it shouldn't
+     * commit the new name.
+     * @private {boolean}
+     */
+    this.showingContextMenu_ = false;
+
     // Register events.
     this.listContainer_.renameInput.addEventListener(
         'keydown', this.onRenameInputKeyDown_.bind(this));
     this.listContainer_.renameInput.addEventListener(
         'blur', this.onRenameInputBlur_.bind(this));
+    this.listContainer_.renameInput.addEventListener(
+        'contextmenu', this.onContextMenu_.bind(this));
+    this.listContainer_.renameInput.addEventListener(
+        'focus', this.onFocus_.bind(this));
   }
 
   /**
@@ -132,7 +153,9 @@ class NamingController {
   }
 
   initiateRename() {
-    const item = this.listContainer_.currentList.ensureLeadItemExists();
+    const selectedIndex = this.listContainer_.selectionModel.selectedIndex;
+    const item =
+        this.listContainer_.currentList.getListItemByIndex(selectedIndex);
     if (!item) {
       return;
     }
@@ -198,12 +221,6 @@ class NamingController {
    * @private
    */
   onRenameInputKeyDown_(event) {
-    // Ignore key events if event.keyCode is VK_PROCESSKEY(229).
-    // TODO(fukino): Remove this workaround once crbug.com/644140 is fixed.
-    if (event.keyCode === 229) {
-      return;
-    }
-
     if (!this.isRenamingInProgress()) {
       return;
     }
@@ -226,11 +243,23 @@ class NamingController {
     }
   }
 
+  onContextMenu_(event) {
+    this.showingContextMenu_ = true;
+  }
+
+  onFocus_(event) {
+    this.showingContextMenu_ = false;
+  }
+
   /**
    * @param {Event} event Blur event.
    * @private
    */
   onRenameInputBlur_(event) {
+    if (this.showingContextMenu_) {
+      return;
+    }
+
     if (this.isRenamingInProgress() &&
         !this.listContainer_.renameInput.validation_) {
       this.commitRename_();
@@ -245,14 +274,13 @@ class NamingController {
     const entry = input.currentEntry;
     const newName = input.value;
 
-    if (!newName || newName == entry.name) {
-      this.cancelRename_();
-      return;
-    }
-
     const renamedItemElement = this.listContainer_.findListItemForNode(
         this.listContainer_.renameInput);
     const nameNode = renamedItemElement.querySelector('.filename-label');
+    if (!newName || newName == nameNode.textContent) {
+      this.cancelRename_();
+      return;
+    }
 
     input.validation_ = true;
     const validationDone = valid => {

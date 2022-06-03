@@ -1,23 +1,23 @@
-document Name='Table example #2'
-++grid Grid.ColumnCount=3 Grid.RowCount=3 Table.RowOrColumnMajor='RowMajor'
-++++row IsControlElement=false
-++++++gridcell Name='1' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++description Name='1' IsControlElement=false
-++++++gridcell Name='2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++description Name='2' IsControlElement=false
-++++++gridcell Name='3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
-++++++++description Name='3' IsControlElement=false
-++++row IsControlElement=false
-++++++gridcell Name='4' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++description Name='4' IsControlElement=false
-++++++gridcell Name='5' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++description Name='5' IsControlElement=false
-++++++gridcell Name='6' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
-++++++++description Name='6' IsControlElement=false
-++++row IsControlElement=false
-++++++gridcell Name='7' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
-++++++++description Name='7' IsControlElement=false
-++++++gridcell Name='8' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
-++++++++description Name='8' IsControlElement=false
-++++++gridcell Name='9' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
-++++++++description Name='9' IsControlElement=false
+Document Name='Table example #2'
+++Table Grid.ColumnCount=3 Grid.RowCount=3 Table.RowOrColumnMajor='RowMajor'
+++++DataItem IsControlElement=false
+++++++DataItem Name='1' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='1' IsControlElement=false
+++++++DataItem Name='2' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='2' IsControlElement=false
+++++++DataItem Name='3' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=0 GridItem.RowSpan=1
+++++++++Text Name='3' IsControlElement=false
+++++DataItem IsControlElement=false
+++++++DataItem Name='4' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='4' IsControlElement=false
+++++++DataItem Name='5' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='5' IsControlElement=false
+++++++DataItem Name='6' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=1 GridItem.RowSpan=1
+++++++++Text Name='6' IsControlElement=false
+++++DataItem IsControlElement=false
+++++++DataItem Name='7' GridItem.Column=0 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='7' IsControlElement=false
+++++++DataItem Name='8' GridItem.Column=1 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='8' IsControlElement=false
+++++++DataItem Name='9' GridItem.Column=2 GridItem.ColumnSpan=1 GridItem.Row=2 GridItem.RowSpan=1
+++++++++Text Name='9' IsControlElement=false

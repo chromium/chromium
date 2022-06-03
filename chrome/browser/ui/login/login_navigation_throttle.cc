@@ -6,7 +6,6 @@
 
 #include "base/feature_list.h"
 #include "chrome/browser/ui/login/login_tab_helper.h"
-#include "chrome/common/chrome_features.h"
 #include "content/public/browser/navigation_handle.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_response_headers.h"
@@ -20,11 +19,9 @@ LoginNavigationThrottle::~LoginNavigationThrottle() {}
 
 LoginNavigationThrottle::ThrottleCheckResult
 LoginNavigationThrottle::WillProcessResponse() {
-  if (!base::FeatureList::IsEnabled(features::kHTTPAuthCommittedInterstitials))
-    return PROCEED;
   if (navigation_handle()->IsSameDocument())
     return PROCEED;
-  if (!navigation_handle()->IsInMainFrame())
+  if (!navigation_handle()->IsInPrimaryMainFrame())
     return PROCEED;
 
   LoginTabHelper* helper =

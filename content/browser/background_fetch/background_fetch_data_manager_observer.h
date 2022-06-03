@@ -9,10 +9,14 @@
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 
 class SkBitmap;
+
+namespace net {
+class IsolationInfo;
+}  // namespace net
 
 namespace content {
 
@@ -21,7 +25,7 @@ class BackgroundFetchRequestInfo;
 
 // Observer interface for objects that would like to be notified about changes
 // committed to storage through the Background Fetch data manager. All methods
-// will be invoked on the service worker core thread.
+// will be invoked on the UI thread.
 class BackgroundFetchDataManagerObserver {
  public:
   // Called when the Background Fetch registration has been created.
@@ -31,7 +35,8 @@ class BackgroundFetchDataManagerObserver {
       blink::mojom::BackgroundFetchOptionsPtr options,
       const SkBitmap& icon,
       int num_requests,
-      bool start_paused) = 0;
+      bool start_paused,
+      net::IsolationInfo isolation_info) = 0;
 
   // Called on start-up when an incomplete registration has been found.
   virtual void OnRegistrationLoadedAtStartup(
@@ -42,7 +47,8 @@ class BackgroundFetchDataManagerObserver {
       int num_completed_requests,
       int num_requests,
       std::vector<scoped_refptr<BackgroundFetchRequestInfo>>
-          active_fetch_requests) = 0;
+          active_fetch_requests,
+      absl::optional<net::IsolationInfo> isolation_info) = 0;
 
   // Called when a registration is being queried. Implementations should update
   // |registration_data| with in-progress information.

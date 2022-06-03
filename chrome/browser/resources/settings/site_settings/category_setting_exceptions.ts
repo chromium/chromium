@@ -1,0 +1,168 @@
+// Copyright 2015 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+/**
+ * @fileoverview
+ * 'category-setting-exceptions' is the polymer element for showing a certain
+ * category of exceptions under Site Settings.
+ */
+import './site_list.js';
+
+import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../i18n_setup.js';
+import {ContentSetting, ContentSettingsTypes} from './constants.js';
+import {SiteSettingsMixin} from './site_settings_mixin.js';
+import {ContentSettingProvider} from './site_settings_prefs_browser_proxy.js';
+
+const CategorySettingExceptionsElementBase =
+    SiteSettingsMixin(WebUIListenerMixin(PolymerElement));
+
+export class CategorySettingExceptionsElement extends
+    CategorySettingExceptionsElementBase {
+  static get is() {
+    return 'category-setting-exceptions';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The string description shown below the header.
+       */
+      description: {
+        type: String,
+        value: function() {
+          return loadTimeData.getString(
+              'siteSettingsCustomizedBehaviorsDescription');
+        },
+      },
+
+      /**
+       * The string ID of the category that this element is displaying data for.
+       * See site_settings/constants.js for possible values.
+       */
+      category: String,
+
+      /**
+       * Some content types (like Location) do not allow the user to manually
+       * edit the exception list from within Settings.
+       */
+      readOnlyList: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * True if the default value is managed by a policy.
+       */
+      defaultManaged_: Boolean,
+
+      /**
+       * The heading text for the blocked exception list.
+       */
+      blockHeader: String,
+
+      /**
+       * The heading text for the allowed exception list.
+       */
+      allowHeader: String,
+
+      searchFilter: String,
+
+      /**
+       * If true, displays the Allow site list. Defaults to true.
+       */
+      showAllowSiteList_: {
+        type: Boolean,
+        computed: 'computeShowAllowSiteList_(category)',
+      },
+
+      /**
+       * If true, displays the Block site list. Defaults to true.
+       */
+      showBlockSiteList_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Expose ContentSetting enum to HTML bindings.
+       */
+      contentSettingEnum_: {
+        type: Object,
+        value: ContentSetting,
+      },
+    };
+  }
+
+  static get observers() {
+    return [
+      'updateDefaultManaged_(category)',
+    ];
+  }
+
+  description: string;
+  category: ContentSettingsTypes;
+  private readOnlyList: boolean;
+  private defaultManaged_: boolean;
+  blockHeader: string;
+  allowHeader: string;
+  searchFilter: string;
+  private showAllowSiteList_: boolean;
+  private showBlockSiteList_: boolean;
+
+  ready() {
+    super.ready();
+
+    this.addWebUIListener(
+        'contentSettingCategoryChanged', () => this.updateDefaultManaged_());
+  }
+
+  /**
+   * Hides particular category subtypes if |this.category| does not support the
+   * content setting of that type.
+   */
+  private computeShowAllowSiteList_(): boolean {
+    return this.category !== ContentSettingsTypes.FILE_SYSTEM_WRITE;
+  }
+
+  /**
+   * Updates whether or not the default value is managed by a policy.
+   */
+  private updateDefaultManaged_() {
+    if (this.category === undefined) {
+      return;
+    }
+
+    this.browserProxy.getDefaultValueForContentType(this.category)
+        .then(update => {
+          this.defaultManaged_ =
+              update.source === ContentSettingProvider.POLICY;
+        });
+  }
+
+  /**
+   * Returns true if this list is explicitly marked as readonly by a consumer
+   * of this component or if the default value for these exceptions are managed
+   * by a policy. User should not be able to set exceptions to managed default
+   * values.
+   */
+  private getReadOnlyList_(): boolean {
+    return this.readOnlyList || this.defaultManaged_;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'category-setting-exceptions': CategorySettingExceptionsElement;
+  }
+}
+
+customElements.define(
+    CategorySettingExceptionsElement.is, CategorySettingExceptionsElement);

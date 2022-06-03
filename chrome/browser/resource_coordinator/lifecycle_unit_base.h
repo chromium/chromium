@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_BASE_H_
 #define CHROME_BROWSER_RESOURCE_COORDINATOR_LIFECYCLE_UNIT_BASE_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_state.mojom-shared.h"
@@ -26,6 +25,10 @@ class LifecycleUnitBase : public LifecycleUnit {
   explicit LifecycleUnitBase(LifecycleUnitSourceBase* source,
                              content::Visibility visibility,
                              UsageClock* usage_clock);
+
+  LifecycleUnitBase(const LifecycleUnitBase&) = delete;
+  LifecycleUnitBase& operator=(const LifecycleUnitBase&) = delete;
+
   ~LifecycleUnitBase() override;
 
   // LifecycleUnit:
@@ -100,8 +103,6 @@ class LifecycleUnitBase : public LifecycleUnit {
   int discard_count_ = 0;
 
   base::ObserverList<LifecycleUnitObserver>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(LifecycleUnitBase);
 };
 
 }  // namespace resource_coordinator

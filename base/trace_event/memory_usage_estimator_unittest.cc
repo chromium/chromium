@@ -6,8 +6,9 @@
 
 #include <stdlib.h>
 
+#include <string>
+
 #include "base/memory/ptr_util.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -73,8 +74,8 @@ TEST(EstimateMemoryUsageTest, String) {
 }
 
 TEST(EstimateMemoryUsageTest, String16) {
-  string16 string(777, 'a');
-  EXPECT_EQ(sizeof(char16) * (string.capacity() + 1),
+  std::u16string string(777, 'a');
+  EXPECT_EQ(sizeof(char16_t) * (string.capacity() + 1),
             EstimateMemoryUsage(string));
 }
 

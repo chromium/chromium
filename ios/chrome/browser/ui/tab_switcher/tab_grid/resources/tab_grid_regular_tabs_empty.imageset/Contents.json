@@ -1,0 +1,15 @@
+{
+    "images": [
+        {
+            "idiom": "universal",
+            "filename": "tab_grid_regular_tabs_empty.pdf"
+        }
+    ],
+    "info": {
+        "version": 1,
+        "author": "xcode"
+    },
+    "properties" : {
+      "preserves-vector-representation" : true
+    }
+}

@@ -4,21 +4,23 @@
 <script src = "/resources/testharness.js"></script>
 <script src = "/resources/testharnessreport.js"></script>
 <script src = "/resources/get-host-info.js?pipe=sub"></script>
+<script src = "/fetch/resources/fetch-test-options.js"></script>
+<script src = "/fetch/resources/thorough-util.js"></script>
 <script src = "/serviceworker/resources/test-helpers.js"></script>
 </head>
 <body>
 <script>
-var host_info = get_host_info();
+var options = get_thorough_test_options();
 function start(t) {
   fetch_tests_from_worker(
     new Worker('/fetch/script-tests/thorough/access-control.js?-base-https-other-https'));
   t.done();
 }
 function init(test) {
-  return login(test, host_info['HTTP_ORIGIN'], host_info['HTTP_REMOTE_ORIGIN'])
+  return login(test, options['BASE_HTTP_ORIGIN'], options['OTHER_HTTP_ORIGIN'])
     .then(function() {
-        return login(test, host_info['HTTPS_ORIGIN'],
-                     host_info['HTTPS_REMOTE_ORIGIN']);
+      return login(test, options['BASE_HTTPS_ORIGIN'],
+        options['OTHER_HTTPS_ORIGIN']);
       });
 }
 </script>

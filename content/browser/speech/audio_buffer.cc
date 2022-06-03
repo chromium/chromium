@@ -4,7 +4,7 @@
 
 #include "content/browser/speech/audio_buffer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace content {
 

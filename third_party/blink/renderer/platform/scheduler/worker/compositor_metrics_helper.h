@@ -14,15 +14,13 @@ namespace scheduler {
 class PLATFORM_EXPORT CompositorMetricsHelper : public MetricsHelper {
  public:
   explicit CompositorMetricsHelper(bool has_cpu_timing_for_each_task);
+  CompositorMetricsHelper(const CompositorMetricsHelper&) = delete;
+  CompositorMetricsHelper& operator=(const CompositorMetricsHelper&) = delete;
   ~CompositorMetricsHelper();
 
   void RecordTaskMetrics(
-      NonMainThreadTaskQueue* queue,
       const base::sequence_manager::Task& task,
       const base::sequence_manager::TaskQueue::TaskTiming& task_timing);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CompositorMetricsHelper);
 };
 
 }  // namespace scheduler

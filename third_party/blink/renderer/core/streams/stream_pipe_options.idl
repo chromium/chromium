@@ -1,0 +1,12 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// https://streams.spec.whatwg.org/#dictdef-streampipeoptions
+
+dictionary StreamPipeOptions {
+  boolean preventClose = false;
+  boolean preventAbort = false;
+  boolean preventCancel = false;
+  AbortSignal signal;
+};

@@ -123,6 +123,9 @@ FindBadConstructsConsumer::FindBadConstructsConsumer(CompilerInstance& instance,
   if (options.check_ipc) {
     ipc_visitor_.reset(new CheckIPCVisitor(instance));
   }
+  if (options.check_layout_object_methods) {
+    layout_visitor_.reset(new CheckLayoutObjectMethodsVisitor(instance));
+  }
 
   // Messages for virtual methods.
   diag_method_requires_override_ = diagnostic().getCustomDiagID(
@@ -218,6 +221,9 @@ void FindBadConstructsConsumer::Traverse(ASTContext& context) {
   if (ipc_visitor_) {
     ipc_visitor_->set_context(&context);
     ParseFunctionTemplates(context.getTranslationUnitDecl());
+  }
+  if (layout_visitor_) {
+    layout_visitor_->VisitLayoutObjectMethods(context);
   }
   RecursiveASTVisitor::TraverseDecl(context.getTranslationUnitDecl());
   if (ipc_visitor_) ipc_visitor_->set_context(nullptr);
@@ -332,7 +338,7 @@ void FindBadConstructsConsumer::CheckEnumMaxValue(EnumDecl* decl) {
   if (max_enumerators.find(max_value) == max_enumerators.end()) {
     ReportIfSpellingLocNotIgnored(max_value->getLocation(),
                                   diag_bad_enum_max_value_)
-        << max_seen.toString(10);
+        << toString(max_seen, 10);
   } else if (max_enumerators.size() < 2) {
     ReportIfSpellingLocNotIgnored(decl->getLocation(),
                                   diag_enum_max_value_unique_);
@@ -687,20 +693,28 @@ void FindBadConstructsConsumer::CountType(const Type* type,
     case Type::TemplateSpecialization: {
       TemplateName name =
           dyn_cast<TemplateSpecializationType>(type)->getTemplateName();
-      bool whitelisted_template = false;
 
       // HACK: I'm at a loss about how to get the syntax checker to get
       // whether a template is externed or not. For the first pass here,
       // just do simple string comparisons.
       if (TemplateDecl* decl = name.getAsTemplateDecl()) {
-        std::string base_name = decl->getNameAsString();
-        if (base_name == "basic_string")
-          whitelisted_template = true;
+        std::string base_name = decl->getQualifiedNameAsString();
+        if (base_name == "std::basic_string") {
+          (*non_trivial_member)++;
+          break;
+        }
+        if (options_.checked_ptr_as_trivial_member &&
+            base_name == "base::CheckedPtr") {
+          (*trivial_member)++;
+          break;
+        }
+        if (options_.raw_ptr_template_as_trivial_member &&
+            base_name == "base::raw_ptr") {
+          (*trivial_member)++;
+          break;
+        }
       }
 
-      if (whitelisted_template)
-        (*non_trivial_member)++;
-      else
         (*templated_non_trivial_member)++;
       break;
     }

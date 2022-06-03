@@ -4,7 +4,7 @@
 
 #include "components/ntp_snippets/category.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ntp_snippets {
 

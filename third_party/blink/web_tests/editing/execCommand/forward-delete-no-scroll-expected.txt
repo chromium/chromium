@@ -1,5 +1,0 @@
-Matching other execCommand identifiers, execCommand("ForwardDelete") should not scroll the page to make selection visible.
-
-This test only works in WebKit, as other engines do not implement this command.
-
-SUCCESS

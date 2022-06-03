@@ -43,6 +43,8 @@ EnumTraits<network::mojom::ConnectionType,
       return network::mojom::ConnectionType::CONNECTION_3G;
     case net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G:
       return network::mojom::ConnectionType::CONNECTION_4G;
+    case net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G:
+      return network::mojom::ConnectionType::CONNECTION_5G;
     case net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE:
       return network::mojom::ConnectionType::CONNECTION_NONE;
     case net::NetworkChangeNotifier::ConnectionType::CONNECTION_BLUETOOTH:
@@ -74,6 +76,9 @@ bool EnumTraits<network::mojom::ConnectionType,
       return true;
     case network::mojom::ConnectionType::CONNECTION_4G:
       *output = net::NetworkChangeNotifier::ConnectionType::CONNECTION_4G;
+      return true;
+    case network::mojom::ConnectionType::CONNECTION_5G:
+      *output = net::NetworkChangeNotifier::ConnectionType::CONNECTION_5G;
       return true;
     case network::mojom::ConnectionType::CONNECTION_NONE:
       *output = net::NetworkChangeNotifier::ConnectionType::CONNECTION_NONE;

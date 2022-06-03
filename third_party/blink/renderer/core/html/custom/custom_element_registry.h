@@ -6,7 +6,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_HTML_CUSTOM_CUSTOM_ELEMENT_REGISTRY_H_
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element_definition.h"
@@ -27,7 +26,6 @@ class LocalDOMWindow;
 class ScriptPromiseResolver;
 class ScriptState;
 class ScriptValue;
-class V0CustomElementRegistrationContext;
 class V8CustomElementConstructor;
 
 class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
@@ -35,6 +33,8 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
 
  public:
   CustomElementRegistry(const LocalDOMWindow*);
+  CustomElementRegistry(const CustomElementRegistry&) = delete;
+  CustomElementRegistry& operator=(const CustomElementRegistry&) = delete;
   ~CustomElementRegistry() override = default;
 
   CustomElementDefinition* define(ScriptState*,
@@ -60,9 +60,7 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
                             ExceptionState&);
   void upgrade(Node* root);
 
-  void Entangle(V0CustomElementRegistrationContext*);
-
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   CustomElementDefinition* DefineInternal(ScriptState*,
@@ -70,8 +68,6 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
                                           CustomElementDefinitionBuilder&,
                                           const ElementDefinitionOptions*,
                                           ExceptionState&);
-
-  bool V0NameIsDefined(const AtomicString& name);
 
   void CollectCandidates(const CustomElementDescriptor&,
                          HeapVector<Member<Element>>*);
@@ -85,10 +81,6 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
   NameIdMap name_id_map_;
 
   Member<const LocalDOMWindow> owner_;
-
-  using V0RegistrySet =
-      HeapHashSet<WeakMember<V0CustomElementRegistrationContext>>;
-  Member<V0RegistrySet> v0_;
 
   using UpgradeCandidateSet = HeapHashSet<WeakMember<Element>>;
   using UpgradeCandidateMap =
@@ -105,8 +97,6 @@ class CORE_EXPORT CustomElementRegistry final : public ScriptWrappable {
       CustomElementTest,
       CreateElement_TagNameCaseHandlingCreatingCustomElement);
   friend class CustomElementRegistryTest;
-
-  DISALLOW_COPY_AND_ASSIGN(CustomElementRegistry);
 };
 
 }  // namespace blink

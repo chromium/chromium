@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutMultiColumnSet (anonymous)",
-          "rect": [8, 52, 525, 315],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [108, 52, 425, 315]
       ]
     }
   ]

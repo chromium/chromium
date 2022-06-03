@@ -1,0 +1,6 @@
+include_rules = [
+  "+chrome/android/modules/stack_unwinder/public",
+  "+components/metrics/call_stack_profile_params.h",
+  "+components/metrics/call_stack_profile_builder.h",
+  "+components/metrics/call_stack_profile_metrics_provider.h",
+]

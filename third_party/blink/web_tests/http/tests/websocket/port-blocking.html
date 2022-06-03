@@ -1,0 +1,35 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<!-- This test intentionally uses the deprecated js-test.js framework so that a
+    port-blocking-expected.txt file will be required. The expectations will
+    include the console message, which will verify that the connection failed
+    because of port blocking and not just because the port was not open. -->
+<script src="/js-test-resources/js-test.js"></script>
+</head>
+<body>
+<div id="description"></div>
+<div id="console"></div>
+<script type="text/javascript">
+description("WebSocket: Test port blocking.");
+
+window.jsTestIsAsync = true;
+
+// Port 25 is SMTP, which is unlikely to ever be removed from the restricted ports list.
+const ws = new WebSocket("ws://127.0.0.1:25/");
+let closeEvent;
+
+ws.onopen = () => {
+  testFailed("onopen was called");
+  finishJSTest();
+};
+
+ws.onclose = event => {
+    closeEvent = event;
+    shouldBeFalse("closeEvent.wasClean");
+    finishJSTest();
+};
+
+</script>
+</body>
+</html>

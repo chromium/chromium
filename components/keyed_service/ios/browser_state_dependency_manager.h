@@ -5,9 +5,7 @@
 #ifndef COMPONENTS_KEYED_SERVICE_IOS_BROWSER_STATE_DEPENDENCY_MANAGER_H_
 #define COMPONENTS_KEYED_SERVICE_IOS_BROWSER_STATE_DEPENDENCY_MANAGER_H_
 
-#include "base/callback_forward.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/keyed_service/core/dependency_manager.h"
 #include "components/keyed_service/core/keyed_service_export.h"
 
@@ -31,6 +29,10 @@ class KEYED_SERVICE_EXPORT BrowserStateDependencyManager
     : public DependencyManager {
  public:
   static BrowserStateDependencyManager* GetInstance();
+
+  BrowserStateDependencyManager(const BrowserStateDependencyManager&) = delete;
+  BrowserStateDependencyManager& operator=(
+      const BrowserStateDependencyManager&) = delete;
 
   // Registers context-specific preferences for all services via |registry|.
   void RegisterBrowserStatePrefsForServices(
@@ -78,8 +80,6 @@ class KEYED_SERVICE_EXPORT BrowserStateDependencyManager
   // DependencyManager:
   void DumpContextDependencies(void* context) const final;
 #endif  // NDEBUG
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserStateDependencyManager);
 };
 
 #endif  // COMPONENTS_KEYED_SERVICE_IOS_BROWSER_STATE_DEPENDENCY_MANAGER_H_

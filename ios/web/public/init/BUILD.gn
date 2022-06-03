@@ -13,9 +13,7 @@ source_set("init") {
     "web_main_runner.h",
   ]
 
-  public_deps = [
-    ":global_state",
-  ]
+  public_deps = [ ":global_state" ]
 
   deps = [
     ":global_state",
@@ -34,7 +32,5 @@ source_set("global_state") {
     "ios_global_state_configuration.h",
   ]
 
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
 }

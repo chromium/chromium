@@ -21,8 +21,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_FILTERS_SVG_FILTER_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_GRAPHICS_FILTERS_SVG_FILTER_BUILDER_H_
 
-#include "third_party/blink/renderer/core/style/svg_computed_style_defs.h"
-#include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
+#include "third_party/blink/renderer/platform/graphics/interpolation_space.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -32,13 +32,15 @@
 
 namespace blink {
 
+class Filter;
+class FilterEffect;
 class FloatRect;
-class LayoutObject;
 class SVGFilterElement;
+class SVGFilterPrimitiveStandardAttributes;
 
-// A map from LayoutObject -> FilterEffect and FilterEffect -> dependent
-// (downstream) FilterEffects ("reverse DAG").  Used during invalidations from
-// changes to the primitives (graph nodes).
+// A map from SVGFilterPrimitiveStandardAttributes -> FilterEffect and
+// FilterEffect -> dependent (downstream) FilterEffects ("reverse DAG"). Used
+// during invalidations for changes to the primitives (graph nodes).
 class SVGFilterGraphNodeMap final
     : public GarbageCollected<SVGFilterGraphNodeMap> {
  public:
@@ -47,29 +49,33 @@ class SVGFilterGraphNodeMap final
   typedef HeapHashSet<Member<FilterEffect>> FilterEffectSet;
 
   void AddBuiltinEffect(FilterEffect*);
-  void AddPrimitive(LayoutObject*, FilterEffect*);
-
-  inline FilterEffectSet& EffectReferences(FilterEffect* effect) {
-    // Only allowed for effects belongs to this builder.
-    DCHECK(effect_references_.Contains(effect));
-    return effect_references_.find(effect)->value;
-  }
+  void AddPrimitive(SVGFilterPrimitiveStandardAttributes&, FilterEffect*);
 
   // Required to change the attributes of a filter during an
-  // svgAttributeChanged.
-  inline FilterEffect* EffectByRenderer(LayoutObject* object) {
-    return effect_renderer_.at(object);
+  // SvgAttributeChanged.
+  FilterEffect* EffectForElement(
+      SVGFilterPrimitiveStandardAttributes& primitive) {
+    auto it = effect_element_.find(&primitive);
+    return it != effect_element_.end() ? it->value : nullptr;
   }
 
   void InvalidateDependentEffects(FilterEffect*);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
-  // The value is a list, which contains those filter effects,
-  // which depends on the key filter effect.
-  HeapHashMap<Member<FilterEffect>, FilterEffectSet> effect_references_;
-  HeapHashMap<LayoutObject*, Member<FilterEffect>> effect_renderer_;
+  FilterEffectSet& EffectReferences(FilterEffect* effect) {
+    // Only allowed for effects that are part of this node map.
+    DCHECK(effect_references_.Contains(effect));
+    return *effect_references_.find(effect)->value;
+  }
+
+  // The value is the set of filter effects that depend on the key
+  // filter effect.
+  HeapHashMap<Member<FilterEffect>, Member<FilterEffectSet>> effect_references_;
+  HeapHashMap<WeakMember<SVGFilterPrimitiveStandardAttributes>,
+              Member<FilterEffect>>
+      effect_element_;
 };
 
 class SVGFilterBuilder {
@@ -84,7 +90,7 @@ class SVGFilterBuilder {
   void BuildGraph(Filter*, SVGFilterElement&, const FloatRect&);
 
   FilterEffect* GetEffectById(const AtomicString& id) const;
-  FilterEffect* LastEffect() const { return last_effect_.Get(); }
+  FilterEffect* LastEffect() const { return last_effect_; }
 
   static InterpolationSpace ResolveInterpolationSpace(EColorInterpolation);
 
@@ -97,8 +103,8 @@ class SVGFilterBuilder {
   NamedFilterEffectMap builtin_effects_;
   NamedFilterEffectMap named_effects_;
 
-  Member<FilterEffect> last_effect_;
-  Member<SVGFilterGraphNodeMap> node_map_;
+  FilterEffect* last_effect_ = nullptr;
+  SVGFilterGraphNodeMap* node_map_;
 };
 
 }  // namespace blink

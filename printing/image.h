@@ -11,7 +11,7 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace base {
@@ -69,7 +69,7 @@ class Image {
 
   bool LoadPng(const std::string& compressed);
 
-  // Loads the first page from |metafile|.
+  // Loads the first page from `metafile`.
   bool LoadMetafile(const Metafile& metafile);
 
   // Pixel dimensions of the image.

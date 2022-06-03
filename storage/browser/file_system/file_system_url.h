@@ -12,8 +12,8 @@
 #include "base/files/file_path.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "storage/common/file_system/file_system_types.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "url/gurl.h"
-#include "url/origin.h"
 
 namespace storage {
 
@@ -79,25 +79,21 @@ namespace storage {
 class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
  public:
   FileSystemURL();
-  FileSystemURL(const FileSystemURL& other);
-  // Constructs FileSystemURL with the contents of |other|, which is left in
-  // valid but unspecified state.
-  FileSystemURL(FileSystemURL&& other);
+
+  FileSystemURL(const FileSystemURL&);
+  FileSystemURL(FileSystemURL&&) noexcept;
+  FileSystemURL& operator=(const FileSystemURL&);
+  FileSystemURL& operator=(FileSystemURL&&) noexcept;
+
   ~FileSystemURL();
-
-  // Replaces the contents with those of |rhs|, which is left in valid but
-  // unspecified state.
-  FileSystemURL& operator=(FileSystemURL&& rhs);
-
-  FileSystemURL& operator=(const FileSystemURL& rhs);
 
   // Methods for creating FileSystemURL without attempting to crack them.
   // Should be used only in tests.
   static FileSystemURL CreateForTest(const GURL& url);
-  static FileSystemURL CreateForTest(const url::Origin& origin,
+  static FileSystemURL CreateForTest(const blink::StorageKey& storage_key,
                                      FileSystemType mount_type,
                                      const base::FilePath& virtual_path);
-  static FileSystemURL CreateForTest(const url::Origin& origin,
+  static FileSystemURL CreateForTest(const blink::StorageKey& storage_key,
                                      FileSystemType mount_type,
                                      const base::FilePath& virtual_path,
                                      const std::string& mount_filesystem_id,
@@ -109,8 +105,11 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
   // Returns true if this instance represents a valid FileSystem URL.
   bool is_valid() const { return is_valid_; }
 
+  // Returns the storage key. See the class comment for details.
+  const blink::StorageKey& storage_key() const { return storage_key_; }
+
   // Returns the origin part of this URL. See the class comment for details.
-  const url::Origin& origin() const { return origin_; }
+  const url::Origin& origin() const { return storage_key_.origin(); }
 
   // Returns the type part of this URL. See the class comment for details.
   FileSystemType type() const { return type_; }
@@ -157,12 +156,13 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
   friend class ExternalMountPoints;
   friend class IsolatedContext;
 
-  explicit FileSystemURL(const GURL& filesystem_url);
-  FileSystemURL(const url::Origin& origin,
+  FileSystemURL(const GURL& filesystem_url,
+                const blink::StorageKey& storage_key);
+  FileSystemURL(const blink::StorageKey& storage_key,
                 FileSystemType mount_type,
                 const base::FilePath& virtual_path);
   // Creates a cracked FileSystemURL.
-  FileSystemURL(const url::Origin& origin,
+  FileSystemURL(const blink::StorageKey& storage_key,
                 FileSystemType mount_type,
                 const base::FilePath& virtual_path,
                 const std::string& mount_filesystem_id,
@@ -177,7 +177,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
   bool is_valid_;
 
   // Values parsed from the original URL.
-  url::Origin origin_;
+  blink::StorageKey storage_key_;
   FileSystemType mount_type_;
   base::FilePath virtual_path_;
 

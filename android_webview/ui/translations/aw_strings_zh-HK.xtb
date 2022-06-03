@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
-<translation id="6106989379647458772"><ph name="PAGE" /> 的網頁可能暫時無法使用，或被永久移至新網址。</translation>
-<translation id="6312113039770857350">網頁無法使用</translation>
-<translation id="8681531050781943054">無法載入 <ph name="PAGE" /> 的網頁，原因如下：</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />建議：<ph name="MARKUP_2" />請確保您已建立數據連線<ph name="MARKUP_3" />請稍後重新載入此網頁<ph name="MARKUP_4" />請檢查您輸入的網址<ph name="MARKUP_5" /></translation>
 </translationbundle>

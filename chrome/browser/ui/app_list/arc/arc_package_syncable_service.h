@@ -11,7 +11,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/sync/glue/sync_start_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -45,6 +44,10 @@ class ArcPackageSyncableService : public syncer::SyncableService,
     int64_t last_backup_time;
   };
 
+  ArcPackageSyncableService(const ArcPackageSyncableService&) = delete;
+  ArcPackageSyncableService& operator=(const ArcPackageSyncableService&) =
+      delete;
+
   ~ArcPackageSyncableService() override;
 
   static ArcPackageSyncableService* Create(Profile* profile,
@@ -56,14 +59,13 @@ class ArcPackageSyncableService : public syncer::SyncableService,
 
   // syncer::SyncableService:
   void WaitUntilReadyToSync(base::OnceClosure done) override;
-  syncer::SyncMergeResult MergeDataAndStartSyncing(
+  absl::optional<syncer::ModelError> MergeDataAndStartSyncing(
       syncer::ModelType type,
       const syncer::SyncDataList& initial_sync_data,
       std::unique_ptr<syncer::SyncChangeProcessor> sync_processor,
       std::unique_ptr<syncer::SyncErrorFactory> error_handler) override;
   void StopSyncing(syncer::ModelType type) override;
-  syncer::SyncDataList GetAllSyncData(syncer::ModelType type) const override;
-  syncer::SyncError ProcessSyncChanges(
+  absl::optional<syncer::ModelError> ProcessSyncChanges(
       const base::Location& from_here,
       const syncer::SyncChangeList& change_list) override;
 
@@ -133,8 +135,6 @@ class ArcPackageSyncableService : public syncer::SyncableService,
   syncer::SyncableService::StartSyncFlare flare_;
 
   ArcAppListPrefs* const prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcPackageSyncableService);
 };
 
 }  // namespace arc

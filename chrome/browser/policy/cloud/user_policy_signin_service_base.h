@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -70,6 +69,9 @@ class UserPolicySigninServiceBase : public KeyedService,
       UserCloudPolicyManager* policy_manager,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory);
+  UserPolicySigninServiceBase(const UserPolicySigninServiceBase&) = delete;
+  UserPolicySigninServiceBase& operator=(const UserPolicySigninServiceBase&) =
+      delete;
   ~UserPolicySigninServiceBase() override;
 
   // Initiates a policy fetch as part of user signin, using a |dm_token| and
@@ -85,8 +87,8 @@ class UserPolicySigninServiceBase : public KeyedService,
       PolicyFetchCallback callback);
 
   // signin::IdentityManager::Observer implementation:
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event_details) override;
 
   // content::NotificationObserver implementation:
   void Observe(int type,
@@ -111,7 +113,7 @@ class UserPolicySigninServiceBase : public KeyedService,
       const std::string& username);
 
   // Returns false if cloud policy is disabled or if the passed |email_address|
-  // is definitely not from a hosted domain (according to the blacklist in
+  // is definitely not from a hosted domain (according to the list in
   // BrowserPolicyConnector::IsNonEnterpriseUser()).
   bool ShouldLoadPolicyForUser(const std::string& email_address);
 
@@ -147,14 +149,20 @@ class UserPolicySigninServiceBase : public KeyedService,
   // out) and deletes any cached policy.
   virtual void ShutdownUserCloudPolicyManager();
 
+  bool CanApplyPoliciesForSignedInUser(bool check_for_refresh_token);
+
+  Profile* profile() { return profile_; }
   // Convenience helpers to get the associated UserCloudPolicyManager and
   // IdentityManager.
   UserCloudPolicyManager* policy_manager() { return policy_manager_; }
   signin::IdentityManager* identity_manager() { return identity_manager_; }
 
   content::NotificationRegistrar* registrar() { return &registrar_; }
+  signin::ConsentLevel consent_level() const { return consent_level_; }
 
  private:
+  // Parent profile for this service.
+  Profile* profile_;
   // Weak pointer to the UserCloudPolicyManager and IdentityManager this service
   // is associated with.
   UserCloudPolicyManager* policy_manager_;
@@ -166,9 +174,8 @@ class UserPolicySigninServiceBase : public KeyedService,
   DeviceManagementService* device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory_;
 
+  signin::ConsentLevel consent_level_;
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(UserPolicySigninServiceBase);
 };
 
 }  // namespace policy

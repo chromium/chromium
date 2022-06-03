@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='month' id='month0' value='2019-04'>
+<script>
+'use strict';
+
+promise_test(() => {
+  let monthElement = document.getElementById("month0");
+  return openPickerWithPromise(monthElement)
+  .then(() => {
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "First escape should close popup if there were no changes.");
+    assert_equals(monthElement.value, "2019-04", "Control should remain at original value.");
+  });
+}, "Month picker: Single escape should close popup if there were no modifications.");
+
+promise_test(() => {
+  let monthElement = document.getElementById("month0");
+  return openPickerWithPromise(monthElement)
+  .then(() => {
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    assert_equals(monthElement.value, "2019-09", "Using arrow keys to navigate month picker should update in-page control.");
+
+    eventSender.keyDown('Escape');
+    assert_not_equals(internals.pagePopupWindow, null, "First escape keypress should not close popup.");
+    assert_equals(monthElement.value, "2019-04", "First escape keypress should reset control back to original value.");
+
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "Second escape keypress should close popup.");
+    assert_equals(monthElement.value, "2019-04", "Control should remain at original value.");
+  });
+}, "Month picker: After modification, first escape should reset value and second escape should close picker.");
+
+promise_test(() => {
+  let monthElement = document.getElementById("month0");
+  return openPickerWithPromise(monthElement)
+  .then(() => {
+    eventSender.keyDown('ArrowRight');
+    eventSender.keyDown('ArrowDown');
+    assert_equals(monthElement.value, "2019-09", "Using arrow keys to navigate month picker should update in-page control.");
+
+    eventSender.keyDown('ArrowUp');
+    eventSender.keyDown('ArrowLeft');
+    assert_equals(monthElement.value, "2019-04", "Expected to be back at the original value.");
+
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, "Escape keypress should close popup.");
+    assert_equals(monthElement.value, "2019-04", "Control should remain at original value.");
+  });
+}, "Month picker: After modification, single escape should close popup if it was changed back to the initial value.");
+
+</script>
+</body>
+</html>

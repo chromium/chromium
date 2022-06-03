@@ -8,8 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 
@@ -19,6 +18,8 @@ namespace scheduler {
 class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data> {
  public:
   Data() = default;
+  Data(const Data&) = delete;
+  Data& operator=(const Data&) = delete;
 
   void PostDelayedTask(base::OnceClosure task, base::TimeDelta delay) {
     task_queue_.emplace_back(std::move(task), time_ + delay);
@@ -40,7 +41,6 @@ class FakeTaskRunner::Data : public WTF::ThreadSafeRefCounted<Data> {
   ~Data() = default;
 
   friend ThreadSafeRefCounted<Data>;
-  DISALLOW_COPY_AND_ASSIGN(Data);
 };
 
 FakeTaskRunner::FakeTaskRunner() : data_(base::AdoptRef(new Data)) {}

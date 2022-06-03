@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that when uncaught exception in eval'ed script ending with //# sourceURL=url is logged into console, its stack trace will have the url as the script source. Bug 47252.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   await TestRunner.evaluateInPagePromise(`
@@ -44,7 +44,7 @@
   }
 
   function step3() {
-    if (Console.ConsoleView.instance()._visibleViewMessages.length < 2)
+    if (Console.ConsoleView.instance().visibleViewMessages.length < 2)
       ConsoleTestRunner.addConsoleSniffer(step3);
     else
       step4();
@@ -54,8 +54,8 @@
     ConsoleTestRunner.expandConsoleMessages(onExpanded);
   }
 
-  function onExpanded() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function onExpanded() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
 })();

@@ -6,8 +6,6 @@ source_set("test") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "fake_infobar_ui_delegate.h",
-    "fake_infobar_ui_delegate.mm",
     "test_infobar_password_delegate.h",
     "test_infobar_password_delegate.mm",
   ]
@@ -16,9 +14,9 @@ source_set("test") {
     "//components/autofill/core/common",
     "//components/infobars/core",
     "//components/password_manager/core/browser:test_support",
+    "//ios/chrome/browser/infobars",
     "//ios/chrome/browser/passwords:infobar_delegates",
     "//ios/chrome/browser/passwords:public",
-    "//ios/chrome/browser/ui/infobars:infobars_ui",
     "//testing/gmock",
     "//testing/gtest",
   ]

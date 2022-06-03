@@ -44,13 +44,13 @@ MATCHER_P(MatchDict, expected, "matches DictionaryValue") {
 class UserInfoFetcherTest : public testing::Test {
  public:
   UserInfoFetcherTest() = default;
+  UserInfoFetcherTest(const UserInfoFetcherTest&) = delete;
+  UserInfoFetcherTest& operator=(const UserInfoFetcherTest&) = delete;
   ~UserInfoFetcherTest() override = default;
 
  protected:
   base::test::TaskEnvironment task_env_;
   network::TestURLLoaderFactory loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(UserInfoFetcherTest);
 };
 
 TEST_F(UserInfoFetcherTest, FailedFetch) {

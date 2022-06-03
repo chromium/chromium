@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -17,6 +16,8 @@ namespace policy {
 class TestRemoteCommandJob : public RemoteCommandJob {
  public:
   TestRemoteCommandJob(bool succeed, base::TimeDelta execution_duration);
+  TestRemoteCommandJob(const TestRemoteCommandJob&) = delete;
+  TestRemoteCommandJob& operator=(const TestRemoteCommandJob&) = delete;
 
   // RemoteCommandJob:
   enterprise_management::RemoteCommand_Type GetType() const override;
@@ -36,8 +37,6 @@ class TestRemoteCommandJob : public RemoteCommandJob {
 
   const bool succeed_;
   const base::TimeDelta execution_duration_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestRemoteCommandJob);
 };
 
 }  // namespace policy

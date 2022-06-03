@@ -1,0 +1,13 @@
+Tests headless context destruction on session close.
+
+Creating context {disposeOnDetach: true} in session1
+Creating context {disposeOnDetach: true} in session1
+Creating context {disposeOnDetach: true} in session1
+Number of contexts created: 3
+Creating context {disposeOnDetach: false} in session2
+Creating context {disposeOnDetach: false} in session2
+Number of contexts created: 5
+Detaching from session1
+Number of contexts created: 2
+Detaching from session2
+Number of contexts created: 2

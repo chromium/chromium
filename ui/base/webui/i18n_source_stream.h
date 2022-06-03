@@ -8,15 +8,18 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/component_export.h"
 #include "net/filter/filter_source_stream.h"
 #include "ui/base/template_expressions.h"
-#include "ui/base/ui_base_export.h"
 
 namespace ui {
 
-class UI_BASE_EXPORT I18nSourceStream : public net::FilterSourceStream {
+class COMPONENT_EXPORT(UI_BASE) I18nSourceStream
+    : public net::FilterSourceStream {
  public:
+  I18nSourceStream(const I18nSourceStream&) = delete;
+  I18nSourceStream& operator=(const I18nSourceStream&) = delete;
+
   ~I18nSourceStream() override;
 
   // Factory function to create an I18nSourceStream.
@@ -52,8 +55,6 @@ class UI_BASE_EXPORT I18nSourceStream : public net::FilterSourceStream {
 
   // A map of i18n replacement keys and translations.
   const TemplateReplacements* replacements_;
-
-  DISALLOW_COPY_AND_ASSIGN(I18nSourceStream);
 };
 
 }  // namespace ui

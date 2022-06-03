@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="datetime-local-0" value="2019-03-15T13:02" step="604800">
+<input type="datetime-local" id="datetime-local-1" value="2019-03-15T13:02" step="691200">
+<script>
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-0');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(dateTimeElement.value, "2019-04-12T13:02", "Closest valid date to 4-15 should have been selected");
+
+    clickDayCellAt(5, 0);
+    eventSender.keyDown('Enter');
+    assert_equals(dateTimeElement.value, "2019-04-05T13:02", "Clicking date should have changed date");
+    assert_equals(internals.pagePopupWindow, null, "Popup should have closed");
+  });
+}, "Datetimelocal picker: If same date in next month is invalid, next month button should choose closest value -- smaller date case");
+
+promise_test(() => {
+  let dateTimeElement = document.getElementById('datetime-local-1');
+  return openPickerWithPromise(dateTimeElement)
+  .then(() => {
+    // Make the picker dismiss synchronously so we don't need to insert
+    // an artificial delay in the test
+    internals.pagePopupWindow.CalendarPicker.commitDelayMs = 0;
+
+    clickNextMonthButton();
+    assert_equals(dateTimeElement.value, "2019-04-16T13:02", "Closest valid date to 4-15 should have been selected");
+
+    clickDayCellAt(3, 3);
+    eventSender.keyDown('Enter');
+    assert_equals(dateTimeElement.value, "2019-04-24T13:02", "Clicking date should have changed date");
+    assert_equals(internals.pagePopupWindow, null, "Popup should have closed");
+  });
+}, "Datetimelocal picker: If same date in next month is invalid, next month button should choose closest value -- larger date case");
+
+</script>
+</body>
+</html>

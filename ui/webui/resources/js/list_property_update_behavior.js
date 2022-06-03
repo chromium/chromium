@@ -15,22 +15,25 @@
  * are calculated using |Polymer.ArraySplice.calculateSplices|. All the edits
  * are then applied to the original list. Once completed, a single notification
  * containing information about all the edits is sent to the polyer object.
+ *
+ * NOTE: This file is deprecated in favor of list_property_update_mixin.ts.
+ * Don't use it in new code.
  */
 
 /** @polymerBehavior */
 /* #export */ const ListPropertyUpdateBehavior = {
   /**
    * @param {string} propertyPath
-   * @param {function(!Object): string} itemUidGetter
+   * @param {function(!Object): (!Object|string)} identityGetter
    * @param {!Array<!Object>} updatedList
-   * @param {boolean} uidBasedUpdate
-   * @returns {boolean} True if notifySplices was called.
+   * @param {boolean=} identityBasedUpdate
+   * @return {boolean} True if notifySplices was called.
    */
-  updateList: function(
-      propertyPath, itemUidGetter, updatedList, uidBasedUpdate = false) {
+  updateList(
+      propertyPath, identityGetter, updatedList, identityBasedUpdate = false) {
     const list = this.get(propertyPath);
     const splices = Polymer.ArraySplice.calculateSplices(
-        updatedList.map(itemUidGetter), list.map(itemUidGetter));
+        updatedList.map(identityGetter), list.map(identityGetter));
 
     splices.forEach(splice => {
       const index = splice.index;
@@ -47,10 +50,10 @@
     });
 
     let updated = splices.length > 0;
-    if (!uidBasedUpdate) {
+    if (!identityBasedUpdate) {
       list.forEach((item, index) => {
         const updatedItem = updatedList[index];
-        if (JSON.stringify(item) != JSON.stringify(updatedItem)) {
+        if (JSON.stringify(item) !== JSON.stringify(updatedItem)) {
           this.set([propertyPath, index], updatedItem);
           updated = true;
         }
@@ -63,3 +66,17 @@
     return updated;
   },
 };
+
+/* #export */ class ListPropertyUpdateBehaviorInterface {
+  /**
+   * @param {string} propertyPath
+   * @param {function(!Object): (!Object|string)} identityGetter
+   * @param {!Array<!Object>} updatedList
+   * @param {boolean=} identityBasedUpdate
+   * @return {boolean} True if notifySplices was called.
+   */
+  updateList(
+      propertyPath, identityGetter, updatedList, identityBasedUpdate = false) {}
+}
+
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

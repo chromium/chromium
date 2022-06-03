@@ -11,8 +11,8 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -94,10 +94,10 @@ void StartCrashReporter(const std::string version) {
 }
 
 void RemoveSwitchIfExisting(const char* const switch_to_remove,
-                            std::vector<base::string16>* argv) {
-  const base::string16 pattern =
+                            std::vector<std::wstring>* argv) {
+  const std::wstring pattern =
       base::StrCat({L"--", base::UTF8ToWide(switch_to_remove)});
-  auto matches_switch = [&pattern](const base::string16& argument) -> bool {
+  auto matches_switch = [&pattern](const std::wstring& argument) -> bool {
     return base::StartsWith(argument, pattern, base::CompareCase::SENSITIVE);
   };
   base::EraseIf(*argv, matches_switch);
@@ -113,7 +113,7 @@ int CrashReporterMain() {
   // This function should only run if --crash-handler switch is present.
   DCHECK(command_line->HasSwitch(chrome_cleaner::kCrashHandlerSwitch));
 
-  std::vector<base::string16> argv = command_line->argv();
+  std::vector<std::wstring> argv = command_line->argv();
 
   // Because of https://bugs.chromium.org/p/crashpad/issues/detail?id=82,
   // Crashpad fails on the presence of flags it doesn't handle. Until that bug
@@ -133,7 +133,7 @@ int CrashReporterMain() {
   std::unique_ptr<char* []> argv_as_utf8(new char*[argv.size() + 1]);
   storage.reserve(argv.size());
   for (size_t i = 0; i < argv.size(); ++i) {
-    storage.push_back(base::UTF16ToUTF8(argv[i]));
+    storage.push_back(base::WideToUTF8(argv[i]));
     argv_as_utf8[i] = &storage[i][0];
   }
   argv_as_utf8[argv.size()] = nullptr;
@@ -143,13 +143,13 @@ int CrashReporterMain() {
                                /* user_stream_sources */ nullptr);
 }
 
-base::string16 GetCrashReporterIPCPipeName() {
+std::wstring GetCrashReporterIPCPipeName() {
   return g_is_connected_to_crash_handler
              ? GetCrashpadClient()->GetHandlerIPCPipe()
-             : base::string16();
+             : std::wstring();
 }
 
-void UseCrashReporter(const base::string16& ipc_pipe_name) {
+void UseCrashReporter(const std::wstring& ipc_pipe_name) {
   DCHECK(!ipc_pipe_name.empty());
   crashpad::CrashpadClient* crashpad_client = GetCrashpadClient();
   if (!crashpad_client->SetHandlerIPCPipe(ipc_pipe_name)) {

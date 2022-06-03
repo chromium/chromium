@@ -4,11 +4,11 @@
 
 #import "ios/chrome/content_widget_extension/content_widget_view.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
-#import "ios/chrome/common/favicon/favicon_view.h"
 #import "ios/chrome/common/ntp_tile/ntp_tile.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/favicon/favicon_view.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/content_widget_extension/most_visited_tile_view.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

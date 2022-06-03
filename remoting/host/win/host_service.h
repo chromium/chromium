@@ -33,6 +33,9 @@ class HostService : public WtsTerminalMonitor {
  public:
   static HostService* GetInstance();
 
+  HostService(const HostService&) = delete;
+  HostService& operator=(const HostService&) = delete;
+
   // This function parses the command line and selects the action routine.
   bool InitWithCommandLine(const base::CommandLine* command_line);
 
@@ -126,8 +129,6 @@ class HostService : public WtsTerminalMonitor {
 
   // Singleton.
   friend struct base::DefaultSingletonTraits<HostService>;
-
-  DISALLOW_COPY_AND_ASSIGN(HostService);
 };
 
 }  // namespace remoting

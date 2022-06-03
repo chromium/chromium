@@ -31,10 +31,8 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/decoder_buffer_queue.h"
@@ -63,6 +61,10 @@ class FFmpegGlue;
 
 typedef std::unique_ptr<AVPacket, ScopedPtrAVFreePacket> ScopedAVPacket;
 
+// Use av_packet_alloc() to create a packet, which is scoped to delete with
+// av_packet_free at the end of it's lifetime.
+MEDIA_EXPORT ScopedAVPacket MakeScopedAVPacket();
+
 class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
  public:
   // Attempts to create FFmpegDemuxerStream form the given AVStream. Will return
@@ -73,6 +75,9 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   static std::unique_ptr<FFmpegDemuxerStream> Create(FFmpegDemuxer* demuxer,
                                                      AVStream* stream,
                                                      MediaLog* media_log);
+
+  FFmpegDemuxerStream(const FFmpegDemuxerStream&) = delete;
+  FFmpegDemuxerStream& operator=(const FFmpegDemuxerStream&) = delete;
 
   ~FFmpegDemuxerStream() override;
 
@@ -115,7 +120,6 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   Type type() const override;
   Liveness liveness() const override;
   void Read(ReadCB read_cb) override;
-  bool IsReadPending() const override;
   void EnableBitstreamConverter() override;
   bool SupportsConfigChanges() override;
   AudioDecoderConfig audio_decoder_config() override;
@@ -174,7 +178,7 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   void InitBitstreamConverter();
 
   FFmpegDemuxer* demuxer_;
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
   AVStream* stream_;
   base::TimeDelta start_time_;
   std::unique_ptr<AudioDecoderConfig> audio_config_;
@@ -205,18 +209,20 @@ class MEDIA_EXPORT FFmpegDemuxerStream : public DemuxerStream {
   int num_discarded_packet_warnings_;
   int64_t last_packet_pos_;
   int64_t last_packet_dts_;
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegDemuxerStream);
 };
 
 class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
  public:
-  FFmpegDemuxer(const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
+  FFmpegDemuxer(const scoped_refptr<base::SequencedTaskRunner>& task_runner,
                 DataSource* data_source,
                 const EncryptedMediaInitDataCB& encrypted_media_init_data_cb,
-                const MediaTracksUpdatedCB& media_tracks_updated_cb,
+                MediaTracksUpdatedCB media_tracks_updated_cb,
                 MediaLog* media_log,
                 bool is_local_file);
+
+  FFmpegDemuxer(const FFmpegDemuxer&) = delete;
+  FFmpegDemuxer& operator=(const FFmpegDemuxer&) = delete;
+
   ~FFmpegDemuxer() override;
 
   // Demuxer implementation.
@@ -231,6 +237,8 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   std::vector<DemuxerStream*> GetAllStreams() override;
   base::TimeDelta GetStartTime() const override;
   int64_t GetMemoryUsage() const override;
+  absl::optional<container_names::MediaContainerName> GetContainerForMetrics()
+      const override;
 
   // Calls |encrypted_media_init_data_cb_| with the initialization data
   // encountered in the file.
@@ -341,7 +349,7 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
 
   DemuxerHost* host_ = nullptr;
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Task runner on which all blocking FFmpeg operations are executed; retrieved
   // from base::ThreadPoolInstance.
@@ -413,8 +421,6 @@ class MEDIA_EXPORT FFmpegDemuxer : public Demuxer {
   base::WeakPtr<FFmpegDemuxer> weak_this_;
   base::WeakPtrFactory<FFmpegDemuxer> cancel_pending_seek_factory_{this};
   base::WeakPtrFactory<FFmpegDemuxer> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FFmpegDemuxer);
 };
 
 }  // namespace media

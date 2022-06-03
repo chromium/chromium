@@ -191,7 +191,6 @@ enum KeyboardCode {
   BRIGHTNESS_UP = 0xD9,
   KBD_BRIGHTNESS_DOWN = 0xDA,
   KBD_BRIGHTNESS_UP = 0xE8,
-  SPATNAV_BACK = 0xE9,
 
   // Windows does not have a specific key code for AltGr. We use the unused
   // VK_OEM_AX to represent AltGr, matching the behaviour of Firefox on Linux.

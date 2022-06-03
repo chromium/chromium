@@ -140,7 +140,7 @@
 #define HAVE_VSPRINTF 1
 
 /* Define to 1 if you have the <xlocale.h> header file. */
-#define HAVE_XLOCALE_H 1
+/* #undef HAVE_XLOCALE_H */
 
 /* Define to 1 if you have the `_stat' function. */
 /* #undef HAVE__STAT */
@@ -158,7 +158,7 @@
 #define PACKAGE_NAME "libxslt"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "libxslt 1.1.33"
+#define PACKAGE_STRING "libxslt 1.1.34"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "libxslt"
@@ -167,7 +167,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "1.1.33"
+#define PACKAGE_VERSION "1.1.34"
 
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
@@ -195,10 +195,13 @@
 
 
 /* Version number of package */
-#define VERSION "1.1.33"
+#define VERSION "1.1.34"
 
 /* Define if debugging support is enabled */
 /* #undef WITH_DEBUGGER */
+
+/* Define if profiling support is enabled */
+#define WITH_PROFILER /**/
 
 /* Define to 1 if on MINIX. */
 /* #undef _MINIX */

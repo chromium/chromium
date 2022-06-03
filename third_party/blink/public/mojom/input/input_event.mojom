@@ -1,0 +1,143 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+// Enumerates the different buttons on a pointing device.
+enum Button {
+  kNoButton = -1,
+  kLeft,
+  kMiddle,
+  kRight,
+  kBarrel = kRight,  // Barrel is aliased per pointer event spec
+  kBack,
+  kForward,
+  kEraser,
+};
+
+// Indicates whether the browser needs to block on the ACK result for
+// this event, and if not, why (for metrics/diagnostics purposes).
+enum DispatchType {
+  // Event can be canceled.
+  kBlocking,
+  // Event can not be canceled.
+  kEventNonBlocking,
+  // All listeners are passive; not cancelable.
+  kListenersNonBlockingPassive,
+  // This value represents a state which would have normally blocking
+  // but was forced to be non-blocking during fling; not cancelable.
+  kListenersForcedNonBlockingDueToFling,
+};
+
+// Enumerates the different types of Input Events.
+enum EventType {
+  kUndefined = -1,
+  kTypeFirst = kUndefined,
+
+  // WebMouseEvent
+  kMouseDown,
+  kMouseTypeFirst = kMouseDown,
+  kMouseUp,
+  kMouseMove,
+  kMouseEnter,
+  kMouseLeave,
+  kContextMenu,
+  kMouseTypeLast = kContextMenu,
+
+  // WebMouseWheelEvent
+  kMouseWheel,
+
+  // WebKeyboardEvent
+  kRawKeyDown,
+  kKeyboardTypeFirst = kRawKeyDown,
+  // KeyDown is a single event combining RawKeyDown and Char.  If KeyDown is
+  // sent for a given keystroke, those two other events will not be sent.
+  // Platforms tend to prefer sending in one format (Android uses KeyDown,
+  // Windows uses RawKeyDown+Char, for example), but this is a weakly held
+  // property as tools like WebDriver/DevTools might still send the other
+  // format.
+  kKeyDown,
+  kKeyUp,
+  kChar,
+  kKeyboardTypeLast = kChar,
+
+  // WebGestureEvent - input interpreted semi-semantically, most commonly from
+  // touchscreen but also used for touchpad, mousewheel, and gamepad
+  // scrolling.
+  kGestureScrollBegin,
+  kGestureTypeFirst = kGestureScrollBegin,
+  kGestureScrollEnd,
+  kGestureScrollUpdate,
+  // Fling is a high-velocity and quickly released finger movement.
+  // FlingStart is sent once and kicks off a scroll animation.
+  kGestureFlingStart,
+  kGestureFlingCancel,
+  // Pinch is two fingers moving closer or farther apart.
+  kGesturePinchBegin,
+  kGesturePinchTypeFirst = kGesturePinchBegin,
+  kGesturePinchEnd,
+  kGesturePinchUpdate,
+  kGesturePinchTypeLast = kGesturePinchUpdate,
+
+  // The following types are variations and subevents of single-taps.
+  //
+  // Sent the moment the user's finger hits the screen.
+  kGestureTapDown,
+  // Sent a short interval later, after it seems the finger is staying in
+  // place.  It's used to activate the link highlight ("show the press").
+  kGestureShowPress,
+  // Sent on finger lift for a simple, static, quick finger tap.  This is the
+  // "main" event which maps to a synthetic mouse click event.
+  kGestureTap,
+  // Sent when a GestureTapDown didn't turn into any variation of GestureTap
+  // (likely it turned into a scroll instead).
+  kGestureTapCancel,
+  // Sent as soon as the long-press timeout fires, while the finger is still
+  // down.
+  kGestureLongPress,
+  // Sent when the finger is lifted following a GestureLongPress.
+  kGestureLongTap,
+  // Sent on finger lift when two fingers tapped at the same time without
+  // moving.
+  kGestureTwoFingerTap,
+  // A rare event sent in place of GestureTap on desktop pages viewed on an
+  // Android phone.  This tap could not yet be resolved into a GestureTap
+  // because it may still turn into a GestureDoubleTap.
+  kGestureTapUnconfirmed,
+
+  // On Android, double-tap is two single-taps spread apart in time, like a
+  // double-click. This event is only sent on desktop pages, and is always
+  // preceded by GestureTapUnconfirmed. It's an instruction to Blink to
+  // perform a PageScaleAnimation zoom onto the double-tapped content. (It's
+  // treated differently from GestureTap with tapCount=2, which can also
+  // happen.)
+  // On desktop, this event may be used for a double-tap with two fingers on
+  // a touchpad, as the desired effect is similar to Android's double-tap.
+  kGestureDoubleTap,
+
+  kGestureTypeLast = kGestureDoubleTap,
+
+  // WebTouchEvent - raw touch pointers not yet classified into gestures.
+  kTouchStart,
+  kTouchTypeFirst = kTouchStart,
+  kTouchMove,
+  kTouchEnd,
+  kTouchCancel,
+  // TODO(nzolghadr): This event should be replaced with
+  // kPointerCausedUaAction
+  kTouchScrollStarted,
+  kTouchTypeLast = kTouchScrollStarted,
+
+  // WebPointerEvent: work in progress
+  kPointerDown,
+  kPointerTypeFirst = kPointerDown,
+  kPointerUp,
+  kPointerMove,
+  kPointerRawUpdate,  // To be only used within blink.
+  kPointerCancel,
+  kPointerCausedUaAction,
+  kPointerTypeLast = kPointerCausedUaAction,
+
+  kTypeLast = kPointerTypeLast
+};

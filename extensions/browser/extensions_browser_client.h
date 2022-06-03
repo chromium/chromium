@@ -11,36 +11,42 @@
 
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/bluetooth_chooser.h"
-#include "content/public/common/resource_type.h"
+#include "content/public/browser/storage_partition_config.h"
 #include "extensions/browser/extension_event_histogram_value.h"
 #include "extensions/browser/extension_prefs_observer.h"
 #include "extensions/browser/extensions_browser_api_provider.h"
 #include "extensions/common/extension_id.h"
-#include "extensions/common/view_type.h"
+#include "extensions/common/mojom/view_type.mojom.h"
+#include "mojo/public/cpp/bindings/binder_map.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/url_loader.mojom-forward.h"
-#include "services/service_manager/public/cpp/binder_map.h"
 #include "ui/base/page_transition_types.h"
 
 class ExtensionFunctionRegistry;
-class GURL;
 class PrefService;
 
 namespace base {
 class CommandLine;
 class FilePath;
 class ListValue;
-}
+}  // namespace base
 
 namespace content {
 class BrowserContext;
 class RenderFrameHost;
 class WebContents;
-}
+}  // namespace content
+
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
 
 namespace network {
+struct ResourceRequest;
 namespace mojom {
 class NetworkContext;
 }
@@ -48,6 +54,10 @@ class NetworkContext;
 
 namespace update_client {
 class UpdateClient;
+}
+
+namespace url {
+class Origin;
 }
 
 namespace extensions {
@@ -76,6 +86,8 @@ class UserScriptListener;
 class ExtensionsBrowserClient {
  public:
   ExtensionsBrowserClient();
+  ExtensionsBrowserClient(const ExtensionsBrowserClient&) = delete;
+  ExtensionsBrowserClient& operator=(const ExtensionsBrowserClient&) = delete;
   virtual ~ExtensionsBrowserClient();
 
   // Returns the single instance of |this|.
@@ -124,7 +136,7 @@ class ExtensionsBrowserClient {
   virtual content::BrowserContext* GetOriginalContext(
       content::BrowserContext* context) = 0;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Returns a user id hash from |context| or an empty string if no hash could
   // be extracted.
   virtual std::string GetUserIdHashFromContext(
@@ -158,17 +170,16 @@ class ExtensionsBrowserClient {
       mojo::PendingReceiver<network::mojom::URLLoader> loader,
       const base::FilePath& resource_relative_path,
       int resource_id,
-      const std::string& content_security_policy,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client,
-      bool send_cors_header) = 0;
+      scoped_refptr<net::HttpResponseHeaders> headers,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client) = 0;
 
   // Returns true if the embedder wants to allow a chrome-extension:// resource
   // request coming from renderer A to access a resource in an extension running
   // in renderer B. For example, Chrome overrides this to provide support for
   // webview and dev tools. May be called on either the UI or IO thread.
   virtual bool AllowCrossRendererResourceLoad(
-      const GURL& url,
-      content::ResourceType resource_type,
+      const network::ResourceRequest& request,
+      network::mojom::RequestDestination destination,
       ui::PageTransition page_transition,
       int child_id,
       bool is_incognito,
@@ -229,8 +240,7 @@ class ExtensionsBrowserClient {
   // Registers additional interfaces to a binder map for a browser interface
   // broker.
   virtual void RegisterBrowserInterfaceBindersForFrame(
-      service_manager::BinderMapWithContext<content::RenderFrameHost*>*
-          binder_map,
+      mojo::BinderMapWithContext<content::RenderFrameHost*>* binder_map,
       content::RenderFrameHost* render_frame_host,
       const Extension* extension) const = 0;
 
@@ -279,11 +289,15 @@ class ExtensionsBrowserClient {
                               int embedder_process_id,
                               int view_instance_id) {}
 
+  // Clears the back-forward cache for all active tabs across all browser
+  // contexts.
+  virtual void ClearBackForwardCache() {}
+
   // Attaches the task manager extension tag to |web_contents|, if needed based
   // on |view_type|, so that its corresponding task shows up in the task
   // manager.
   virtual void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
-                                             ViewType view_type) {}
+                                             mojom::ViewType view_type) {}
 
   // Returns a new UpdateClient.
   virtual scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
@@ -319,7 +333,7 @@ class ExtensionsBrowserClient {
   // of whether it is currently loaded or not) under the provided |context|.
   // Loaded extensions return true if they are currently loaded or terminated.
   // Unloaded extensions will return true if they are not blocked, disabled,
-  // blacklisted or uninstalled (for external extensions). The default return
+  // blocklisted or uninstalled (for external extensions). The default return
   // value of this function is false.
   virtual bool IsExtensionEnabled(const std::string& extension_id,
                                   content::BrowserContext* context) const;
@@ -335,6 +349,10 @@ class ExtensionsBrowserClient {
 
   virtual UserScriptListener* GetUserScriptListener();
 
+  // Called when all initial script loads from extensions have been completed
+  // for the given BrowserContext.
+  virtual void SignalContentScriptsLoaded(content::BrowserContext* context);
+
   // Returns the user agent used by the content module.
   virtual std::string GetUserAgent() const;
 
@@ -344,15 +362,25 @@ class ExtensionsBrowserClient {
   virtual bool ShouldSchemeBypassNavigationChecks(
       const std::string& scheme) const;
 
-  // Returns true when we should enforce 'extraHeaders' option for any
-  // webRequest API callbacks so to mitigate CORS related compatibility issues.
-  virtual bool ShouldForceWebRequestExtraHeaders(
-      content::BrowserContext* context) const;
+  // Gets and sets the last save (download) path for a given context.
+  virtual base::FilePath GetSaveFilePath(content::BrowserContext* context);
+  virtual void SetLastSaveFilePath(content::BrowserContext* context,
+                                   const base::FilePath& path);
+
+  // Returns true if the |extension_id| requires its own isolated storage
+  // partition.
+  virtual bool HasIsolatedStorage(const std::string& extension_id,
+                                  content::BrowserContext* context);
+
+  // Returns whether screenshot of |web_contents| is restricted due to Data Leak
+  // Protection policy.
+  virtual bool IsScreenshotRestricted(content::WebContents* web_contents) const;
+
+  // Returns true if the given |tab_id| exists.
+  virtual bool IsValidTabId(content::BrowserContext* context, int tab_id) const;
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionsBrowserClient);
 };
 
 }  // namespace extensions

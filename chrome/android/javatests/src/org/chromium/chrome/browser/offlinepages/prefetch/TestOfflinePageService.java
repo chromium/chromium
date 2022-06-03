@@ -12,6 +12,7 @@ import org.junit.Assert;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.components.gcm_driver.GCMDriver;
 import org.chromium.components.gcm_driver.GCMMessage;
@@ -24,7 +25,6 @@ import org.chromium.components.offline_pages.core.prefetch.proto.OfflinePages.Pa
 import org.chromium.components.offline_pages.core.prefetch.proto.OfflinePages.PageParameters;
 import org.chromium.components.offline_pages.core.prefetch.proto.OperationOuterClass.Operation;
 import org.chromium.components.offline_pages.core.prefetch.proto.StatusOuterClass;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.WebServer;
 import org.chromium.net.test.util.WebServer.HTTPHeader;

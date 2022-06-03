@@ -84,4 +84,4 @@ struct StructTraits<display::mojom::DisplayLayoutDataView,
 
 }  // namespace mojo
 
-#endif  // UI_DISPLAY_MOJOM_DISPLAY_MOJOM_TRAITS_H_
+#endif  // UI_DISPLAY_MOJOM_DISPLAY_LAYOUT_MOJOM_TRAITS_H_

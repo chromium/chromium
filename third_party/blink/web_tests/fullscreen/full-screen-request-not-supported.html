@@ -11,7 +11,7 @@ in those platforms where fullscreen is not supported.
             logResult(false, 'Entered fullscreen.');
             endTest();
         });
-        waitForEventAndEnd(document, 'webkitfullscreenerror');
+        waitForEventOnceAndEnd(document, 'webkitfullscreenerror');
         runWithKeyDown(function(){document.getElementById('video').webkitRequestFullScreen()});
     }
 </script>

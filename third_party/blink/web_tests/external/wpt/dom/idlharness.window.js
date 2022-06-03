@@ -44,9 +44,9 @@ idl_test(
       DOMTokenList: ['document.body.classList'],
       XPathEvaluator: ['new XPathEvaluator()'],
       XPathExpression: ['document.createExpression("//*")'],
-      // Skipped due to https://github.com/web-platform-tests/wpt/issues/18827:
-      // XPathNSResolver: ['document.createNSResolver(document.body)'],
+      XPathNSResolver: ['document.createNSResolver(document.body)'],
       XPathResult: ['document.evaluate("//*", document.body)'],
+      XSLTProcessor: ['new XSLTProcessor()'],
     });
   }
 );

@@ -1,7 +1,7 @@
 This tests that hovering over a TEXTAREA resizer turns the mouse cursor into the SouthEastResize cursor.
 
 
-Inside TEXTAREA: type=IBeam hotSpot=0,0
-Over dragger: type=SouthEastResize hotSpot=0,0
-Over BODY: type=Hand hotSpot=0,0
-Over dragger: type=SouthEastResize hotSpot=0,0
+Inside TEXTAREA: type=IBeam
+Over dragger: type=SouthEastResize
+Over BODY: type=Hand
+Over dragger: type=SouthEastResize

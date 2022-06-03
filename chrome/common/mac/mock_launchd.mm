@@ -15,13 +15,11 @@
 #include "base/files/file_util.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/common/service_process_util.h"
 #include "components/version_info/version_info.h"
@@ -108,8 +106,7 @@ MockLaunchd::~MockLaunchd() {}
 bool MockLaunchd::GetJobInfo(const std::string& label,
                              mac::services::JobInfo* info) {
   if (!as_service_) {
-    std::unique_ptr<MultiProcessLock> running_lock(
-        TakeNamedLock(pipe_name_, false));
+    std::unique_ptr<MultiProcessLock> running_lock = TakeNamedLock(pipe_name_);
     if (running_lock.get())
       return false;
   }
@@ -164,5 +161,5 @@ bool MockLaunchd::DeletePlist(Domain domain, Type type, CFStringRef name) {
 
 void MockLaunchd::SignalReady() {
   ASSERT_TRUE(as_service_);
-  running_lock_.reset(TakeNamedLock(pipe_name_, true));
+  running_lock_ = TakeNamedLock(pipe_name_);
 }

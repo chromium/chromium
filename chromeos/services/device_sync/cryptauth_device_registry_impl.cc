@@ -8,14 +8,13 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/cryptauth_device.h"
 #include "chromeos/services/device_sync/pref_names.h"
 #include "chromeos/services/device_sync/value_string_encoding.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -26,13 +25,12 @@ CryptAuthDeviceRegistryImpl::Factory*
     CryptAuthDeviceRegistryImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthDeviceRegistryImpl::Factory*
-CryptAuthDeviceRegistryImpl::Factory::Get() {
+std::unique_ptr<CryptAuthDeviceRegistry>
+CryptAuthDeviceRegistryImpl::Factory::Create(PrefService* pref_service) {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance(pref_service);
 
-  static base::NoDestructor<CryptAuthDeviceRegistryImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthDeviceRegistryImpl(pref_service));
 }
 
 // static
@@ -42,11 +40,6 @@ void CryptAuthDeviceRegistryImpl::Factory::SetFactoryForTesting(
 }
 
 CryptAuthDeviceRegistryImpl::Factory::~Factory() = default;
-
-std::unique_ptr<CryptAuthDeviceRegistry>
-CryptAuthDeviceRegistryImpl::Factory::BuildInstance(PrefService* pref_service) {
-  return base::WrapUnique(new CryptAuthDeviceRegistryImpl(pref_service));
-}
 
 // static
 void CryptAuthDeviceRegistryImpl::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -59,11 +52,10 @@ CryptAuthDeviceRegistryImpl::CryptAuthDeviceRegistryImpl(
   const base::Value* dict = pref_service_->Get(prefs::kCryptAuthDeviceRegistry);
 
   CryptAuthDeviceRegistry::InstanceIdToDeviceMap instance_id_to_device_map;
-  for (const std::pair<const std::string&, const base::Value&>& id_device_pair :
-       dict->DictItems()) {
-    base::Optional<std::string> instance_id =
+  for (const auto id_device_pair : dict->DictItems()) {
+    absl::optional<std::string> instance_id =
         util::DecodeFromString(id_device_pair.first);
-    base::Optional<CryptAuthDevice> device =
+    absl::optional<CryptAuthDevice> device =
         CryptAuthDevice::FromDictionary(id_device_pair.second);
     if (!instance_id || !device || *instance_id != device->instance_id()) {
       PA_LOG(ERROR) << "Error retrieving device with Instance ID "

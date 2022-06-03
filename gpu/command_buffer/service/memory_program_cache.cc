@@ -26,16 +26,6 @@
 #include "third_party/zlib/zlib.h"
 #include "ui/gl/gl_bindings.h"
 
-// Macro to help with logging times under 10ms.
-#define UMA_HISTOGRAM_VERY_SHORT_TIMES(name, time_delta)                       \
-  UMA_HISTOGRAM_CUSTOM_COUNTS(                                                 \
-      name,                                                                    \
-      static_cast<base::HistogramBase::Sample>((time_delta).InMicroseconds()), \
-      1,                                                                       \
-      static_cast<base::HistogramBase::Sample>(                                \
-          base::TimeDelta::FromMilliseconds(10).InMicroseconds()),             \
-      50);
-
 namespace gpu {
 namespace gles2 {
 
@@ -53,7 +43,7 @@ void FillShaderVariableProto(
     ShaderVariableProto* field = proto->add_fields();
     FillShaderVariableProto(field, variable.fields[ii]);
   }
-  proto->set_struct_name(variable.structName);
+  proto->set_struct_name(variable.getStructName());
 }
 
 void FillShaderAttributeProto(
@@ -144,7 +134,7 @@ void RetrieveShaderVariableInfo(
   variable->fields.resize(proto.fields_size());
   for (int ii = 0; ii < proto.fields_size(); ++ii)
     RetrieveShaderVariableInfo(proto.fields(ii), &(variable->fields[ii]));
-  variable->structName = proto.struct_name();
+  variable->setStructName(proto.struct_name());
 }
 
 void RetrieveShaderAttributeInfo(
@@ -224,7 +214,6 @@ bool ProgramBinaryExtensionsAvailable() {
 
 // Returns an empty vector if compression fails.
 std::vector<uint8_t> CompressData(const std::vector<uint8_t>& data) {
-  auto start_time = base::TimeTicks::Now();
   uLongf compressed_size = compressBound(data.size());
   std::vector<uint8_t> compressed_data(compressed_size);
   // Level indicates a trade-off between compression and speed. Level 1
@@ -234,17 +223,11 @@ std::vector<uint8_t> CompressData(const std::vector<uint8_t>& data) {
   // It should be impossible for compression to fail with the provided
   // parameters.
   bool success = Z_OK == result;
-  UMA_HISTOGRAM_BOOLEAN("GPU.ProgramCache.CompressDataSuccess", success);
   if (!success)
     return std::vector<uint8_t>();
 
   compressed_data.resize(compressed_size);
   compressed_data.shrink_to_fit();
-
-  UMA_HISTOGRAM_VERY_SHORT_TIMES("GPU.ProgramCache.CompressDataTime",
-                                 base::TimeTicks::Now() - start_time);
-  UMA_HISTOGRAM_PERCENTAGE("GPU.ProgramCache.CompressionPercentage",
-                           (100 * compressed_size) / data.size());
 
   return compressed_data;
 }
@@ -253,7 +236,6 @@ std::vector<uint8_t> CompressData(const std::vector<uint8_t>& data) {
 std::vector<uint8_t> DecompressData(const std::vector<uint8_t>& data,
                                     size_t decompressed_size,
                                     size_t max_size_bytes) {
-  auto start_time = base::TimeTicks::Now();
   std::vector<uint8_t> decompressed_data(decompressed_size);
   uLongf decompressed_size_out =
       static_cast<uLongf>(decompressed_size);
@@ -262,12 +244,8 @@ std::vector<uint8_t> DecompressData(const std::vector<uint8_t>& data,
 
   bool success =
       result == Z_OK && decompressed_data.size() == decompressed_size_out;
-  UMA_HISTOGRAM_BOOLEAN("GPU.ProgramCache.DecompressDataSuccess", success);
   if (!success)
     return std::vector<uint8_t>();
-
-  UMA_HISTOGRAM_VERY_SHORT_TIMES("GPU.ProgramCache.DecompressDataTime",
-                                 base::TimeTicks::Now() - start_time);
 
   return decompressed_data;
 }
@@ -293,7 +271,7 @@ MemoryProgramCache::MemoryProgramCache(
           disable_program_caching_for_transform_feedback),
       compress_program_binaries_(CompressProgramBinaries()),
       curr_size_bytes_(0),
-      store_(ProgramMRUCache::NO_AUTO_EVICT),
+      store_(ProgramLRUCache::NO_AUTO_EVICT),
       activity_flags_(activity_flags) {}
 
 MemoryProgramCache::~MemoryProgramCache() = default;
@@ -334,7 +312,7 @@ ProgramCache::ProgramLoadResult MemoryProgramCache::LoadLinkedProgram(
                      sha);
   const std::string sha_string(sha, kHashLength);
 
-  ProgramMRUCache::iterator found = store_.Get(sha_string);
+  ProgramLRUCache::iterator found = store_.Get(sha_string);
   if (found == store_.end()) {
     return PROGRAM_LOAD_FAILURE;
   }
@@ -428,9 +406,6 @@ void MemoryProgramCache::SaveLinkedProgram(
   if (binary.size() > max_size_bytes())
     return;
 
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.ProgramBinarySizeBytes",
-                          binary.size());
-
   char a_sha[kHashLength];
   char b_sha[kHashLength];
   DCHECK(shader_a && !shader_a->last_compiled_source().empty() &&
@@ -449,12 +424,9 @@ void MemoryProgramCache::SaveLinkedProgram(
                      sha);
   const std::string sha_string(sha, sizeof(sha));
 
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeBeforeKb",
-                          curr_size_bytes_ / 1024);
-
   // Evict any cached program with the same key in favor of the least recently
   // accessed.
-  ProgramMRUCache::iterator existing = store_.Peek(sha_string);
+  ProgramLRUCache::iterator existing = store_.Peek(sha_string);
   if(existing != store_.end())
     store_.Erase(existing);
 
@@ -486,9 +458,6 @@ void MemoryProgramCache::SaveLinkedProgram(
           shader_b->uniform_map(), shader_b->varying_map(),
           shader_b->output_variable_list(), shader_b->interface_block_map(),
           this));
-
-  UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeAfterKb",
-                          curr_size_bytes_ / 1024);
 }
 
 void MemoryProgramCache::LoadProgram(const std::string& key,
@@ -565,9 +534,6 @@ void MemoryProgramCache::LoadProgram(const std::string& key,
             vertex_interface_blocks, proto->fragment_shader().sha().c_str(),
             fragment_attribs, fragment_uniforms, fragment_varyings,
             fragment_output_variables, fragment_interface_blocks, this));
-
-    UMA_HISTOGRAM_COUNTS_1M("GPU.ProgramCache.MemorySizeAfterKb",
-                            curr_size_bytes_ / 1024);
   } else {
     DVLOG(2) << "Failed to parse proto file.";
   }

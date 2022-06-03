@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Hata! Rastgele RSA özel anahtarı oluşturulamadı.</translation>
 <translation id="1445572445564823378">Bu uzantı <ph name="PRODUCT_NAME" /> uygulamasını yavaşlatıyor. <ph name="PRODUCT_NAME" /> uygulamasının performansını eski haline getirmek için bu uzantıyı devre dışı bırakmalısınız.</translation>
 <translation id="1468038450257740950">WebGL desteklenmez.</translation>
-<translation id="149347756975725155">'<ph name="ICON" />' uzantı simgesi yüklenemedi.</translation>
 <translation id="1803557475693955505">'<ph name="BACKGROUND_PAGE" />' arka plan sayfası yüklenemedi.</translation>
 <translation id="2159915644201199628">Resmin kodu çözülemedi: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Yerelleştirme kullanıldı, ancak bildiride default_locale belirtilmedi.</translation>
@@ -30,7 +29,7 @@
 <translation id="4233778200880751280">Hakkında sayfası ("<ph name="ABOUT_PAGE" />") yüklenemedi.</translation>
 <translation id="471800408830181311">Özel anahtar oluşturulamadı.</translation>
 <translation id="4811956658694082538">Bir yardımcı program kilitlendiği için paket yüklenemedi. Chrome'u yeniden başlatın ve tekrar deneyin.</translation>
-<translation id="4988792151665380515">Genel anahtar dışa alınamadı.</translation>
+<translation id="4988792151665380515">Ortak anahtar dışa aktarılamadı.</translation>
 <translation id="5026754133087629784">Web görünümü: <ph name="WEBVIEW_TAG_NAME" /></translation>
 <translation id="5098647635849512368">Paket dizininin tam yolu bulunamadı.</translation>
 <translation id="5356315618422219272">Appview: <ph name="APPVIEW_TAG_NAME" /></translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Özel anahtar okunamadı.</translation>
 <translation id="6391538222494443604">Giriş dizininin olması gerekir.</translation>
 <translation id="641087317769093025">Uzantı açılamadı</translation>
-<translation id="6413453408918378296">Simge yeterince görünür değil "<ph name="ICON" />".</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" uygulaması cihazlarınızdan birine veya birkaçına erişim izni istiyor:</translation>
 <translation id="657064425229075395">Arka plan komut dosyası '<ph name="BACKGROUND_SCRIPT" />' yüklenemedi.</translation>
 <translation id="6580950983454333167">Ürün: <ph name="PRODUCT_NAME" />, Firma: <ph name="VENDOR_NAME" /> (seri numarası: <ph name="SERIAL_NUMBER" />)</translation>

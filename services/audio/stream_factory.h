@@ -18,10 +18,10 @@
 #include "base/threading/thread.h"
 #include "media/mojo/mojom/audio_logging.mojom.h"
 #include "media/mojo/mojom/audio_output_stream.mojom.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "services/audio/concurrent_stream_metric_reporter.h"
 #include "services/audio/loopback_coordinator.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
-#include "services/audio/stream_monitor_coordinator.h"
 
 namespace base {
 class UnguessableToken;
@@ -39,16 +39,20 @@ class LocalMuter;
 class LoopbackStream;
 class OutputStream;
 
-// This class is used to provide the StreamFactory interface. It will typically
-// be instantiated when needed and remain for the lifetime of the service.
-// Destructing the factory will also destroy all the streams it has created.
-// |audio_manager| must outlive the factory.
-class StreamFactory final : public mojom::StreamFactory {
+// This class is used to provide the AudioStreamFactory interface. It will
+// typically be instantiated when needed and remain for the lifetime of the
+// service. Destructing the factory will also destroy all the streams it has
+// created. |audio_manager| must outlive the factory.
+class StreamFactory final : public media::mojom::AudioStreamFactory {
  public:
   explicit StreamFactory(media::AudioManager* audio_manager);
+
+  StreamFactory(const StreamFactory&) = delete;
+  StreamFactory& operator=(const StreamFactory&) = delete;
+
   ~StreamFactory() final;
 
-  void Bind(mojo::PendingReceiver<mojom::StreamFactory> receiver);
+  void Bind(mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver);
 
   // StreamFactory implementation.
   void CreateInputStream(
@@ -60,8 +64,7 @@ class StreamFactory final : public mojom::StreamFactory {
       const media::AudioParameters& params,
       uint32_t shared_memory_count,
       bool enable_agc,
-      mojo::ScopedSharedBufferHandle key_press_count_buffer,
-      mojom::AudioProcessingConfigPtr processing_config,
+      base::ReadOnlySharedMemoryRegion key_press_count_buffer,
       CreateInputStreamCallback created_callback) final;
 
   void AssociateInputAndOutputForAec(
@@ -76,10 +79,10 @@ class StreamFactory final : public mojom::StreamFactory {
       const std::string& output_device_id,
       const media::AudioParameters& params,
       const base::UnguessableToken& group_id,
-      const base::Optional<base::UnguessableToken>& processing_id,
       CreateOutputStreamCallback created_callback) final;
-  void BindMuter(mojo::PendingAssociatedReceiver<mojom::LocalMuter> receiver,
-                 const base::UnguessableToken& group_id) final;
+  void BindMuter(
+      mojo::PendingAssociatedReceiver<media::mojom::LocalMuter> receiver,
+      const base::UnguessableToken& group_id) final;
   void CreateLoopbackStream(
       mojo::PendingReceiver<media::mojom::AudioInputStream> stream_receiver,
       mojo::PendingRemote<media::mojom::AudioInputStreamClient> client,
@@ -100,30 +103,23 @@ class StreamFactory final : public mojom::StreamFactory {
   void DestroyMuter(LocalMuter* muter);
   void DestroyLoopbackStream(LoopbackStream* stream);
 
-  // TODO(crbug.com/888478): Remove this after diagnosis.
-  void SetStateForCrashing(const char* state);
-
   SEQUENCE_CHECKER(owning_sequence_);
 
   media::AudioManager* const audio_manager_;
 
-  mojo::ReceiverSet<mojom::StreamFactory> receivers_;
+  mojo::ReceiverSet<media::mojom::AudioStreamFactory> receivers_;
+
+  ConcurrentStreamMetricReporter stream_count_metric_reporter_;
 
   // Order of the following members is important for a clean shutdown.
   LoopbackCoordinator coordinator_;
   std::vector<std::unique_ptr<LocalMuter>> muters_;
   base::Thread loopback_worker_thread_;
   std::vector<std::unique_ptr<LoopbackStream>> loopback_streams_;
-  StreamMonitorCoordinator stream_monitor_coordinator_;
   InputStreamSet input_streams_;
   OutputStreamSet output_streams_;
 
-  // TODO(crbug.com/888478): Remove this after diagnosis.
-  volatile uint32_t magic_bytes_;
-
   base::WeakPtrFactory<StreamFactory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StreamFactory);
 };
 
 }  // namespace audio

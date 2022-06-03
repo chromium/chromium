@@ -1,0 +1,21 @@
+This is a testharness.js-based test.
+PASS Spacing inside <mfrac>.
+PASS Spacing around <mfrac>.
+PASS Spacing inside <msub>.
+PASS Spacing around <msub>.
+PASS Spacing inside <msup>.
+PASS Spacing around <msup>.
+PASS Spacing inside <msubsup>.
+PASS Spacing around <msubsup>.
+PASS Spacing inside <mmultiscripts>.
+PASS Spacing around <mmultiscripts>.
+PASS Spacing inside <munder>.
+PASS Spacing around <munder>.
+PASS Spacing inside <mover>.
+PASS Spacing around <mover>.
+PASS Spacing inside <munderover>.
+PASS Spacing around <munderover>.
+FAIL Spacing inside <mroot>. assert_less_than_equal: expected a number less than or equal to 100 but got 106.9375
+FAIL Spacing around <mroot>. assert_less_than_equal: expected a number less than or equal to 100 but got 106.9375
+Harness: the test ran to completion.
+

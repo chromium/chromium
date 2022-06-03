@@ -71,10 +71,12 @@ public class AwShellActivity extends Activity {
 
         AwBrowserProcess.loadLibrary(null);
 
+        // This flag is deprecated. Print a hint instead.
         if (CommandLine.getInstance().hasSwitch(AwShellSwitches.ENABLE_ATRACE)) {
-            Log.e(TAG, "Enabling Android trace.");
-            TraceEvent.setATraceEnabled(true);
+            Log.e(TAG, "To trace the test shell, run \"atrace webview\"");
         }
+        TraceEvent.maybeEnableEarlyTracing(
+                TraceEvent.ATRACE_TAG_WEBVIEW, /*readCommandLine=*/false);
 
         setContentView(R.layout.testshell_activity);
 
@@ -111,6 +113,7 @@ public class AwShellActivity extends Activity {
     }
 
     private AwTestContainerView createAwTestContainerView() {
+        AwTestContainerView.installDrawFnFunctionTable(/*useVulkan=*/false);
         AwBrowserProcess.start();
         AwTestContainerView testContainerView = new AwTestContainerView(this, true);
         AwContentsClient awContentsClient = new NullContentsClient() {
@@ -270,7 +273,7 @@ public class AwShellActivity extends Activity {
             mNextButton.setVisibility(hasFocus ? View.GONE : View.VISIBLE);
             mPrevButton.setVisibility(hasFocus ? View.GONE : View.VISIBLE);
             if (!hasFocus) {
-                mUrlTextView.setText(mWebContents.getVisibleUrl());
+                mUrlTextView.setText(mWebContents.getVisibleUrl().getSpec());
             }
         });
     }

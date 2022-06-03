@@ -257,6 +257,10 @@ img {
   margin-top: 5px;
 }
 
+.actions {
+  user-select: none;
+}
+
 .action {
   color: rgb(17, 85, 204);
   cursor: pointer;
@@ -312,6 +316,10 @@ img {
   width: 35ex;
 }
 
+.settings-bar button {
+  margin: 7px 0;
+}
+
 .node-frontend-action {
   margin: 6px 4px;
 }
@@ -322,7 +330,7 @@ dialog.config::backdrop {
 
 dialog.config {
   background: white;
-  border: 0;
+  border: 1px solid transparent;
   border-radius: 3px;
   box-shadow: 0 4px 23px 5px rgba(0, 0, 0, 0.2), 0 2px 6px rgba(0,0,0,0.15);
   color: #333;
@@ -330,8 +338,9 @@ dialog.config {
   position: relative;
 }
 
-#port-forwarding-enable {
-  vertical-align: middle;
+.port-forwarding-container {
+  align-items: center;
+  display: flex;
 }
 
 .close-button {
@@ -439,4 +448,49 @@ dialog.target-discovery .port-forwarding {
 
 .config-buttons > label {
   flex-grow: 1
+}
+
+@media (forced-colors: active) {
+  .content-header {
+    background: Canvas;
+    border-bottom-color: transparent;
+    forced-color-adjust: none;
+  }
+  .tab-header {
+    forced-color-adjust: none;
+  }
+  .tab-header.selected {
+    background-color: Highlight;
+    border-inline-start-color: Highlight;
+  }
+  .tab-header > button {
+    background-color: ButtonFace;
+  }
+  .tab-header:not(.selected) > button {
+    color: ButtonText;
+  }
+  .tab-header.selected > button {
+    background-color: Highlight;
+    color: HighlightText;
+  }
+  .tab-header > button:focus {
+    background-color: Highlight;
+    color: HighlightText;
+    outline: none;
+  }
+  dialog.config {
+    background: Canvas;
+    border-color: CanvasText;
+    color: CanvasText;
+    forced-color-adjust: none;
+  }
+  .config-list-row.selected,
+  .config-list-row.selected:hover,
+  .config-list-row:hover {
+    background-color: Highlight;
+  }
+  .config-list-row input {
+    border-color: ButtonText;
+    outline: none;
+  }
 }

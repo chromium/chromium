@@ -13,25 +13,21 @@
 
 #include "base/containers/queue.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/process/process.h"
-#include "base/strings/string16.h"
 #include "content/browser/renderer_host/pepper/browser_ppapi_host_impl.h"
-#include "content/browser/renderer_host/pepper/pepper_message_filter.h"
 #include "content/public/browser/browser_child_process_host_delegate.h"
 #include "content/public/browser/browser_child_process_host_iterator.h"
 #include "ipc/ipc_sender.h"
 #include "ppapi/shared_impl/ppapi_permissions.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
 namespace content {
 class BrowserChildProcessHostImpl;
 struct PepperPluginInfo;
 
-// Process host for PPAPI plugin and broker processes.
-// When used for the broker, interpret all references to "plugin" with "broker".
+// Process host for PPAPI plugin processes.
 class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
                                public IPC::Sender {
  public:
@@ -65,20 +61,15 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
     ~PluginClient() override {}
   };
 
-  class BrokerClient : public Client {
-   protected:
-    ~BrokerClient() override {}
-  };
+  PpapiPluginProcessHost(const PpapiPluginProcessHost&) = delete;
+  PpapiPluginProcessHost& operator=(const PpapiPluginProcessHost&) = delete;
 
   ~PpapiPluginProcessHost() override;
 
   static PpapiPluginProcessHost* CreatePluginHost(
       const PepperPluginInfo& info,
       const base::FilePath& profile_data_directory,
-      const base::Optional<url::Origin>& origin_lock);
-
-  static PpapiPluginProcessHost* CreateBrokerHost(
-      const PepperPluginInfo& info);
+      const absl::optional<url::Origin>& origin_lock);
 
   // Notification that a PP_Instance has been created and the associated
   // renderer related data including the RenderView/Process pair for the given
@@ -94,14 +85,9 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
   static void DidDeleteOutOfProcessInstance(int plugin_process_id,
                                             int32_t pp_instance);
 
-  // Notification that a Plugin instance has been throttled or unthrottled.
-  static void OnPluginInstanceThrottleStateChange(int plugin_process_id,
-                                                  int32_t pp_instance,
-                                                  bool is_throttled);
-
   // Returns the instances that match the specified process name.
   // It can only be called on the IO thread.
-  static void FindByName(const base::string16& name,
+  static void FindByName(const std::u16string& name,
                          std::vector<PpapiPluginProcessHost*>* hosts);
 
   // IPC::Sender implementation:
@@ -113,7 +99,7 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   BrowserPpapiHostImpl* host_impl() { return host_impl_.get(); }
   BrowserChildProcessHostImpl* process() { return process_.get(); }
-  const base::Optional<url::Origin>& origin_lock() const {
+  const absl::optional<url::Origin>& origin_lock() const {
     return origin_lock_;
   }
   const base::FilePath& plugin_path() const { return plugin_path_; }
@@ -126,12 +112,11 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
  private:
   class PluginNetworkObserver;
 
-  // Constructors for plugin and broker process hosts, respectively.
+  // Constructors for plugin process hosts.
   // You must call Init before doing anything else.
   PpapiPluginProcessHost(const PepperPluginInfo& info,
                          const base::FilePath& profile_data_directory,
-                         const base::Optional<url::Origin>& origin_lock);
-  PpapiPluginProcessHost();
+                         const absl::optional<url::Origin>& origin_lock);
 
   // Actually launches the process with the given plugin info. Returns true
   // on success (the process was spawned).
@@ -150,9 +135,6 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // IPC message handlers.
   void OnRendererPluginChannelCreated(const IPC::ChannelHandle& handle);
-
-  // Handles most requests from the plugin. May be NULL.
-  scoped_refptr<PepperMessageFilter> filter_;
 
   ppapi::PpapiPermissions permissions_;
   std::unique_ptr<BrowserPpapiHostImpl> host_impl_;
@@ -176,13 +158,9 @@ class PpapiPluginProcessHost : public BrowserChildProcessHostDelegate,
 
   // Specific origin to which this is bound, omitted to allow any origin to
   // re-use the plugin host.
-  const base::Optional<url::Origin> origin_lock_;
-
-  const bool is_broker_;
+  const absl::optional<url::Origin> origin_lock_;
 
   std::unique_ptr<BrowserChildProcessHostImpl> process_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiPluginProcessHost);
 };
 
 class PpapiPluginProcessHostIterator
@@ -194,16 +172,6 @@ class PpapiPluginProcessHostIterator
           PpapiPluginProcessHost>(PROCESS_TYPE_PPAPI_PLUGIN) {}
 };
 
-class PpapiBrokerProcessHostIterator
-    : public BrowserChildProcessHostTypeIterator<
-          PpapiPluginProcessHost> {
- public:
-  PpapiBrokerProcessHostIterator()
-      : BrowserChildProcessHostTypeIterator<
-          PpapiPluginProcessHost>(PROCESS_TYPE_PPAPI_BROKER) {}
-};
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_PPAPI_PLUGIN_PROCESS_HOST_H_
-

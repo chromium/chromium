@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/boxed_v8_module.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/script/module_record_resolver.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -25,14 +25,14 @@ class ModuleRecord;
 // ModuleMap (via Modulator) and V8 bindings.
 class CORE_EXPORT ModuleRecordResolverImpl final
     : public ModuleRecordResolver,
-      public ContextLifecycleObserver {
+      public ExecutionContextLifecycleObserver {
  public:
   explicit ModuleRecordResolverImpl(Modulator* modulator,
                                     ExecutionContext* execution_context)
-      : ContextLifecycleObserver(execution_context), modulator_(modulator) {}
+      : ExecutionContextLifecycleObserver(execution_context),
+        modulator_(modulator) {}
 
-  void Trace(Visitor*) override;
-  USING_GARBAGE_COLLECTED_MIXIN(ModuleRecordResolverImpl);
+  void Trace(Visitor*) const override;
 
  private:
   // Implements ModuleRecordResolver:
@@ -44,12 +44,12 @@ class CORE_EXPORT ModuleRecordResolverImpl final
 
   // Implements "Runtime Semantics: HostResolveImportedModule" per HTML spec.
   // https://html.spec.whatwg.org/C/#hostresolveimportedmodule(referencingscriptormodule,-specifier))
-  v8::Local<v8::Module> Resolve(const String& specifier,
+  v8::Local<v8::Module> Resolve(const ModuleRequest& module_request,
                                 v8::Local<v8::Module> referrer,
                                 ExceptionState&) final;
 
-  // Implements ContextLifecycleObserver:
-  void ContextDestroyed(ExecutionContext*) final;
+  // Implements ExecutionContextLifecycleObserver:
+  void ContextDestroyed() final;
 
   // Corresponds to the spec concept "referencingModule.[[HostDefined]]".
   // crbug.com/725816 : ModuleRecord contains strong ref to v8::Module thus we

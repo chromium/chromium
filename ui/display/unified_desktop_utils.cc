@@ -7,9 +7,9 @@
 #include <map>
 #include <set>
 
+#include "base/containers/contains.h"
 #include "base/containers/stack.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "ui/display/types/display_constants.h"
 
 namespace display {

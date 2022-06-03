@@ -1,0 +1,25 @@
+<style>
+    @font-face {
+        font-family: ahem;
+        src: url(Ahem.ttf);
+    }
+    * {
+        font-family: ahem;
+    }
+    body {
+      direction: rtl;
+      -webkit-writing-mode: vertical-lr;
+    }
+</style>
+<span id="text">
+    &#x202E;The quick brown fox jumped over the lazy dog.
+</span>
+<script>
+    var range = document.createRange();
+    var textNode = document.getElementById("text").firstChild;
+    range.setStart(textNode, 10);
+    range.setEnd(textNode, 25);
+    document.getSelection().addRange(range);
+
+    window.expectedResult = [document, 20, 424, 8, 424, document, 8, 244, 20, 244];
+</script>

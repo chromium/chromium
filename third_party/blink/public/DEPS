@@ -1,4 +1,6 @@
 include_rules = [
+    "+base/dcheck_is_on.h",
+    "+base/types/pass_key.h",
     "+base/unguessable_token.h",
     "-third_party/blink/renderer/bindings",
     "-third_party/blink/renderer/core",

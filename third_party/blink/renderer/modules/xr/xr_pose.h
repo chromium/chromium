@@ -5,8 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_POSE_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_POSE_H_
 
-#include <utility>
-
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
@@ -19,13 +17,13 @@ class XRPose : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  XRPose(const TransformationMatrix&, bool);
+  XRPose(const TransformationMatrix&, bool emulated_position);
   ~XRPose() override = default;
 
   XRRigidTransform* transform() const { return transform_; }
   bool emulatedPosition() const { return emulated_position_; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   Member<XRRigidTransform> transform_;

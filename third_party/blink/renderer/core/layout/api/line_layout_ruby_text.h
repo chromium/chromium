@@ -25,10 +25,10 @@ class LineLayoutRubyText : public LineLayoutBlockFlow {
   LineLayoutRubyText() = default;
 
  private:
-  LayoutRubyText* ToRubyText() { return ToLayoutRubyText(GetLayoutObject()); }
+  LayoutRubyText* ToRubyText() { return To<LayoutRubyText>(GetLayoutObject()); }
 
   const LayoutRubyText* ToRubyText() const {
-    return ToLayoutRubyText(GetLayoutObject());
+    return To<LayoutRubyText>(GetLayoutObject());
   }
 };
 

@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PREDICTORS_AUTOCOMPLETE_ACTION_PREDICTOR_FACTORY_H_
 #define CHROME_BROWSER_PREDICTORS_AUTOCOMPLETE_ACTION_PREDICTOR_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -25,6 +24,11 @@ class AutocompleteActionPredictorFactory
 
   static AutocompleteActionPredictorFactory* GetInstance();
 
+  AutocompleteActionPredictorFactory(
+      const AutocompleteActionPredictorFactory&) = delete;
+  AutocompleteActionPredictorFactory& operator=(
+      const AutocompleteActionPredictorFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<
       AutocompleteActionPredictorFactory>;
@@ -37,8 +41,6 @@ class AutocompleteActionPredictorFactory
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AutocompleteActionPredictorFactory);
 };
 
 }  // namespace predictors

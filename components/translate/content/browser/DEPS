@@ -1,6 +1,19 @@
 include_rules = [
   "+content/public/browser",
   "+components/google/core/common",
+  "+components/keyed_service/core",
+  "+components/optimization_guide",
+  "+components/optimization_guide/content",
+  "+components/services/language_detection/public/cpp",
+  "+components/services/language_detection/public/mojom",
+  "+components/translate/core/language_detection",
   "+components/ukm",
   "+services/metrics/public/cpp",
+  "+third_party/blink/public/common",
 ]
+
+specific_include_rules = {
+  '.*_[a-z]*test\.cc': [
+    "+content/public/test",
+  ]
+}

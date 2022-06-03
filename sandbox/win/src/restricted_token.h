@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_RESTRICTED_TOKEN_H_
-#define SANDBOX_SRC_RESTRICTED_TOKEN_H_
+#ifndef SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_
+#define SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_
 
 #include <windows.h>
 
 #include <vector>
 
 #include <string>
+#include <tuple>
 
 #include "base/macros.h"
 #include "base/win/scoped_handle.h"
@@ -48,6 +49,10 @@ class RestrictedToken {
  public:
   // Init() has to be called before calling any other method in the class.
   RestrictedToken();
+
+  RestrictedToken(const RestrictedToken&) = delete;
+  RestrictedToken& operator=(const RestrictedToken&) = delete;
+
   ~RestrictedToken();
 
   // Initializes the RestrictedToken object with effective_token.
@@ -174,6 +179,12 @@ class RestrictedToken {
   // default DACL when created.
   void SetLockdownDefaultDacl();
 
+  // Add a SID to the default DACL. These SIDs are added regardless of the
+  // SetLockdownDefaultDacl state.
+  DWORD AddDefaultDaclSid(const Sid& sid,
+                          ACCESS_MODE access_mode,
+                          ACCESS_MASK access);
+
  private:
   // The list of restricting sids in the restricted token.
   std::vector<Sid> sids_to_restrict_;
@@ -181,6 +192,8 @@ class RestrictedToken {
   std::vector<LUID> privileges_to_disable_;
   // The list of sids to mark as Deny Only in the restricted token.
   std::vector<Sid> sids_for_deny_only_;
+  // The list of sids to add to the default DACL of the restricted token.
+  std::vector<std::tuple<Sid, ACCESS_MODE, ACCESS_MASK>> sids_for_default_dacl_;
   // The token to restrict. Can only be set in a constructor.
   base::win::ScopedHandle effective_token_;
   // The token integrity level. Only valid on Vista.
@@ -189,10 +202,8 @@ class RestrictedToken {
   bool init_;
   // Lockdown the default DACL when creating new tokens.
   bool lockdown_default_dacl_;
-
-  DISALLOW_COPY_AND_ASSIGN(RestrictedToken);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_RESTRICTED_TOKEN_H_
+#endif  // SANDBOX_WIN_SRC_RESTRICTED_TOKEN_H_

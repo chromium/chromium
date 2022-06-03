@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 
 namespace ui {
@@ -15,13 +16,13 @@ std::ostream& operator<<(std::ostream& stream, const AXMode& mode) {
 }
 
 std::string AXMode::ToString() const {
-  std::vector<std::string> tokens;
+  std::vector<base::StringPiece> tokens;
 
   // Written as a loop with a switch so that this crashes if a new
   // mode flag is added without adding support for logging it.
   for (uint32_t mode_flag = AXMode::kFirstModeFlag;
        mode_flag <= AXMode::kLastModeFlag; mode_flag = mode_flag << 1) {
-    const char* flag_name = nullptr;
+    base::StringPiece flag_name;
     switch (mode_flag) {
       case AXMode::kNativeAPIs:
         flag_name = "kNativeAPIs";
@@ -41,9 +42,15 @@ std::string AXMode::ToString() const {
       case AXMode::kLabelImages:
         flag_name = "kLabelImages";
         break;
+      case AXMode::kPDF:
+        flag_name = "kPDF";
+        break;
+      case AXMode::kHTMLMetadata:
+        flag_name = "kHTMLMetadata";
+        break;
     }
 
-    DCHECK(flag_name);
+    DCHECK(!flag_name.empty());
 
     if (has_mode(mode_flag))
       tokens.push_back(flag_name);

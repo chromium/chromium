@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "google_apis/gaia/gaia_oauth_client.h"
@@ -53,6 +52,9 @@ class CloudPrintAuth : public base::RefCountedThreadSafe<CloudPrintAuth>,
                  const net::PartialNetworkTrafficAnnotationTag&
                      partial_traffic_annotation);
 
+  CloudPrintAuth(const CloudPrintAuth&) = delete;
+  CloudPrintAuth& operator=(const CloudPrintAuth&) = delete;
+
   // Note:
   //
   // The Authenticate* methods are the various entry points from
@@ -82,7 +84,7 @@ class CloudPrintAuth : public base::RefCountedThreadSafe<CloudPrintAuth>,
       const base::Value& json_data,
       bool succeeded) override;
   CloudPrintURLFetcher::ResponseAction OnRequestAuthError() override;
-  std::string GetAuthHeader() override;
+  std::string GetAuthHeaderValue() override;
 
  private:
   friend class base::RefCountedThreadSafe<CloudPrintAuth>;
@@ -112,11 +114,8 @@ class CloudPrintAuth : public base::RefCountedThreadSafe<CloudPrintAuth>,
   std::string client_login_token_;
   // Partial network traffic annotation for network requests.
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintAuth);
 };
 
 }  // namespace cloud_print
 
 #endif  // CHROME_SERVICE_CLOUD_PRINT_CLOUD_PRINT_AUTH_H_
-

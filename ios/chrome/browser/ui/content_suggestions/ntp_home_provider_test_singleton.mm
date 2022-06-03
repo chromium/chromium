@@ -8,7 +8,6 @@
 
 #include "components/ntp_snippets/content_suggestion.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_test_utils.h"
-#include "ios/testing/scoped_block_swizzler.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,8 +18,6 @@
   ntp_snippets::MockContentSuggestionsProvider* _provider;
   std::unique_ptr<ntp_snippets::AdditionalSuggestionsHelper>
       _additionalSuggestionsHelper;
-  std::unique_ptr<ScopedBlockSwizzler> _swizzler;
-  __block BOOL _tapped;
 }
 
 + (instancetype)sharedInstance {
@@ -54,22 +51,6 @@
                            ntp_snippets::KnownCategories::ARTICLES)});
   _provider = provider.get();
   service->RegisterProvider(std::move(provider));
-}
-
-- (void)swizzleLocationBarCoordinatorSearchButton {
-  _tapped = NO;
-  _swizzler = std::make_unique<ScopedBlockSwizzler>(
-      NSClassFromString(@"LocationBarCoordinator"),
-      NSSelectorFromString(@"focusOmniboxFromSearchButton"), ^{
-        _tapped = YES;
-      });
-}
-- (void)resetSwizzle {
-  _swizzler.reset();
-}
-
-- (BOOL)locationBarCoordinatorSearchButtonMethodCalled {
-  return _tapped;
 }
 
 @end

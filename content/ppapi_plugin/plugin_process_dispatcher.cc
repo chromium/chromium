@@ -5,7 +5,7 @@
 #include "content/ppapi_plugin/plugin_process_dispatcher.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "content/child/child_process.h"
 
 namespace content {
@@ -31,8 +31,7 @@ PluginProcessDispatcher::~PluginProcessDispatcher() {
   // plugin. This is the case for common plugins where they may be used on a
   // source and destination page of a navigation. We don't want to tear down
   // and re-start processes each time in these cases.
-  process_ref_.ReleaseWithDelay(
-      base::TimeDelta::FromSeconds(kPluginReleaseTimeSeconds));
+  process_ref_.ReleaseWithDelay(base::Seconds(kPluginReleaseTimeSeconds));
 }
 
 }  // namespace content

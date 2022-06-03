@@ -7,7 +7,6 @@
 
 #include <EGL/eglplatform.h>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gl/gl_export.h"
 #include "ui/gl/gl_image.h"
@@ -19,11 +18,16 @@ class GL_EXPORT GLImageEGL : public GLImage {
  public:
   explicit GLImageEGL(const gfx::Size& size);
 
+  GLImageEGL(const GLImageEGL&) = delete;
+  GLImageEGL& operator=(const GLImageEGL&) = delete;
+
   // Overridden from GLImage:
   gfx::Size GetSize() override;
   BindOrCopy ShouldBindOrCopy() override;
   bool BindTexImage(unsigned target) override;
   void ReleaseTexImage(unsigned target) override {}
+
+  void* egl_image() const { return egl_image_; }
 
  protected:
   ~GLImageEGL() override;
@@ -45,9 +49,6 @@ class GL_EXPORT GLImageEGL : public GLImage {
   void* egl_image_ /* EGLImageKHR */;
   const gfx::Size size_;
   base::ThreadChecker thread_checker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(GLImageEGL);
 };
 
 }  // namespace gl

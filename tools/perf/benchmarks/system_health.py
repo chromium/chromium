@@ -1,10 +1,14 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+import logging
+
+import os
 
 from benchmarks import loading_metrics_category
 
 from core import perf_benchmark
+from core import platforms
 
 from telemetry import benchmark
 from telemetry import story
@@ -12,6 +16,15 @@ from telemetry.timeline import chrome_trace_category_filter
 from telemetry.timeline import chrome_trace_config
 from telemetry.web_perf import timeline_based_measurement
 import page_sets
+
+
+SYSTEM_HEALTH_BENCHMARK_UMA = [
+    'Event.Latency.ScrollBegin.TimeToScrollUpdateSwapBegin2',
+    'Event.Latency.ScrollUpdate.TimeToScrollUpdateSwapBegin2',
+    'Graphics.Smoothness.PercentDroppedFrames.AllSequences',
+    'Memory.GPU.PeakMemoryUsage2.Scroll',
+    'Memory.GPU.PeakMemoryUsage2.PageLoad',
+]
 
 
 class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
@@ -27,30 +40,68 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
   https://goo.gl/Jek2NL.
   """
 
+  @classmethod
+  def AddBenchmarkCommandLineArgs(cls, parser):
+    parser.add_option('--allow-software-compositing', action='store_true',
+                      help='If set, allows the benchmark to run with software '
+                           'compositing.')
+
+  @classmethod
+  def ProcessCommandLineArgs(cls, parser, args):
+    cls.allow_software_compositing = args.allow_software_compositing
+
   def CreateCoreTimelineBasedMeasurementOptions(self):
     cat_filter = chrome_trace_category_filter.ChromeTraceCategoryFilter(
-        filter_string='rail,toplevel')
+        filter_string='rail,toplevel,uma')
     cat_filter.AddIncludedCategory('accessibility')
     # Needed for the metric reported by page.
     cat_filter.AddIncludedCategory('blink.user_timing')
+    # Needed for blinkResourceMetric,
+    cat_filter.AddIncludedCategory('blink.resource')
     # Needed for the console error metric.
     cat_filter.AddIncludedCategory('v8.console')
 
     options = timeline_based_measurement.Options(cat_filter)
     options.config.enable_chrome_trace = True
     options.config.enable_cpu_trace = True
+    options.config.chrome_trace_config.EnableUMAHistograms(
+        *SYSTEM_HEALTH_BENCHMARK_UMA)
     options.SetTimelineBasedMetrics([
         'accessibilityMetric',
+        'blinkResourceMetric',
         'consoleErrorMetric',
         'cpuTimeMetric',
         'limitedCpuTimeMetric',
         'reportedByPageMetric',
-        'tracingMetric'
+        'tracingMetric',
+        'umaMetric',
+        # Unless --experimentatil-tbmv3-metric flag is used, the following tbmv3
+        # metrics do nothing.
+        'tbmv3:accessibility_metric',
+        'tbmv3:cpu_time_metric',
     ])
     loading_metrics_category.AugmentOptionsForLoadingMetrics(options)
     # The EQT metric depends on the same categories as the loading metric.
     options.AddTimelineBasedMetric('expectedQueueingTimeMetric')
     return options
+
+  def SetExtraBrowserOptions(self, options):
+    # Using the software fallback can skew the rendering related metrics. So
+    # disable that (unless explicitly run with --allow-software-compositing).
+    if self.allow_software_compositing or self._NeedsSoftwareCompositing():
+      logging.warning('Allowing software compositing. Some of the reported '
+                      'metrics will have unreliable values.')
+    else:
+      options.AppendExtraBrowserArgs('--disable-software-compositing-fallback')
+
+  def _NeedsSoftwareCompositing(self):
+    # We have to run with software compositing under xvfb or
+    # chrome remote desktop.
+    if 'CHROME_REMOTE_DESKTOP_SESSION' in os.environ:
+      return True
+    if 'XVFB_DISPLAY' in os.environ:
+      return True
+    return False
 
   def CreateStorySet(self, options):
     return page_sets.SystemHealthStorySet(platform=self.PLATFORM)
@@ -64,11 +115,21 @@ class _CommonSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
 class DesktopCommonSystemHealth(_CommonSystemHealthBenchmark):
   """Desktop Chrome Energy System Health Benchmark."""
   PLATFORM = 'desktop'
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
 
   @classmethod
   def Name(cls):
     return 'system_health.common_desktop'
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    options = super(DesktopCommonSystemHealth,
+                    self).CreateCoreTimelineBasedMeasurementOptions()
+    options.config.chrome_trace_config.SetTraceBufferSizeInKb(300 * 1024)
+    return options
 
 
 @benchmark.Info(emails=['charliea@chromium.org', 'sullivan@chromium.org',
@@ -79,11 +140,22 @@ class DesktopCommonSystemHealth(_CommonSystemHealthBenchmark):
 class MobileCommonSystemHealth(_CommonSystemHealthBenchmark):
   """Mobile Chrome Energy System Health Benchmark."""
   PLATFORM = 'mobile'
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
 
   @classmethod
   def Name(cls):
     return 'system_health.common_mobile'
+
+  def SetExtraBrowserOptions(self, options):
+    super(MobileCommonSystemHealth, self).SetExtraBrowserOptions(options)
+    # Force online state for the offline indicator so it doesn't show and affect
+    # the benchmarks on bots, which are offline by default.
+    options.AppendExtraBrowserArgs(
+        '--force-online-connection-state-for-indicator')
 
 
 class _MemorySystemHealthBenchmark(perf_benchmark.PerfBenchmark):
@@ -117,12 +189,20 @@ class _MemorySystemHealthBenchmark(perf_benchmark.PerfBenchmark):
                                           take_memory_measurement=True)
 
 
-@benchmark.Info(emails=['pasko@chromium.org', 'crouleau@chromium.org',
-                        'chrome-android-perf-status@chromium.org'],
-                documentation_url='https://bit.ly/system-health-benchmarks')
+MEMORY_DEBUGGING_BLURB = "See https://bit.ly/2CpMhze for more information" \
+                         " on debugging memory metrics."
+
+
+@benchmark.Info(emails=['pasko@chromium.org', 'lizeb@chromium.org'],
+                documentation_url='https://bit.ly/system-health-benchmarks',
+                info_blurb=MEMORY_DEBUGGING_BLURB)
 class DesktopMemorySystemHealth(_MemorySystemHealthBenchmark):
   """Desktop Chrome Memory System Health Benchmark."""
   PLATFORM = 'desktop'
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
 
   @classmethod
@@ -130,12 +210,16 @@ class DesktopMemorySystemHealth(_MemorySystemHealthBenchmark):
     return 'system_health.memory_desktop'
 
 
-@benchmark.Info(emails=['pasko@chromium.org', 'crouleau@chromium.org',
-                        'chrome-android-perf-status@chromium.org'],
-                documentation_url='https://bit.ly/system-health-benchmarks')
+@benchmark.Info(emails=['pasko@chromium.org', 'lizeb@chromium.org'],
+                documentation_url='https://bit.ly/system-health-benchmarks',
+                info_blurb=MEMORY_DEBUGGING_BLURB)
 class MobileMemorySystemHealth(_MemorySystemHealthBenchmark):
   """Mobile Chrome Memory System Health Benchmark."""
   PLATFORM = 'mobile'
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
   SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
 
   def SetExtraBrowserOptions(self, options):
@@ -146,6 +230,10 @@ class MobileMemorySystemHealth(_MemorySystemHealthBenchmark):
     # each time before Chrome starts so we effect even the first story
     # - avoiding the bug.
     options.flush_os_page_caches_on_start = True
+    # Force online state for the offline indicator so it doesn't show and affect
+    # the benchmarks on bots, which are offline by default.
+    options.AppendExtraBrowserArgs(
+        '--force-online-connection-state-for-indicator')
 
   @classmethod
   def Name(cls):
@@ -162,6 +250,10 @@ class WebviewStartupSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
   and load a blank page.
   """
   options = {'pageset_repeat': 20}
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  SUPPORTED_PLATFORM_TAGS = [platforms.ANDROID_WEBVIEW]
   SUPPORTED_PLATFORMS = [story.expectations.ANDROID_WEBVIEW]
 
   def CreateStorySet(self, options):
@@ -181,3 +273,65 @@ class WebviewStartupSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
   @classmethod
   def Name(cls):
     return 'system_health.webview_startup'
+
+
+@benchmark.Info(emails=['cduvall@chromium.org', 'weblayer-team@chromium.org'],
+                component='Internals>WebLayer',
+                documentation_url='https://bit.ly/36XBtpn')
+class WebLayerStartupSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
+  """WebLayer startup time benchmark
+
+  Benchmark that measures how long WebLayer takes to start up
+  and load a blank page.
+  """
+  options = {'pageset_repeat': 20}
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
+  # TODO(crbug.com/1137468): Add WEBLAYER to telemetry platforms.
+  SUPPORTED_PLATFORM_TAGS = [platforms.MOBILE]
+  SUPPORTED_PLATFORMS = [story.expectations.ALL_MOBILE]
+
+  def CreateStorySet(self, options):
+    return page_sets.SystemHealthBlankStorySet()
+
+  def CreateCoreTimelineBasedMeasurementOptions(self):
+    options = timeline_based_measurement.Options()
+    options.SetTimelineBasedMetrics(['weblayerStartupMetric'])
+    options.config.enable_atrace_trace = True
+    # TODO(crbug.com/1028882): Recording a Chrome trace at the same time as
+    # atrace causes events to stack incorrectly. Fix this by recording a
+    # system+Chrome trace via system perfetto on the device instead.
+    options.config.enable_chrome_trace = False
+    options.config.atrace_config.app_name = 'org.chromium.weblayer.shell'
+    return options
+
+  @classmethod
+  def Name(cls):
+    return 'system_health.weblayer_startup'
+
+
+@benchmark.Info(emails=['tmrts@chromium.org', 'mlippautz@chromium.org'],
+                component='Blink',
+                documentation_url='https://bit.ly/36XBtpn')
+class PCScanSystemHealthBenchmark(perf_benchmark.PerfBenchmark):
+  """PCScan feature benchmark
+
+  Benchmark that enables PCScan feature.
+  """
+  options = {'pageset_repeat': 20}
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP, platforms.MOBILE]
+  SUPPORTED_PLATFORMS = [
+      story.expectations.ALL_DESKTOP, story.expectations.ALL_MOBILE
+  ]
+
+  def CreateStorySet(self, options):
+    return page_sets.SystemHealthPCScanStorySet()
+
+  @classmethod
+  def Name(cls):
+    return 'system_health.pcscan'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs(
+        '--enable-features=PartitionAllocPCScanBrowserOnly')

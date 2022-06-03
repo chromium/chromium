@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">임의의 RSA 비공개 키를 생성하지 못했습니다.</translation>
 <translation id="1445572445564823378">이 확장 프로그램은 <ph name="PRODUCT_NAME" />의 성능을 저하시킵니다. <ph name="PRODUCT_NAME" />의 성능을 복원하려면 확장 프로그램을 사용중지해야 합니다.</translation>
 <translation id="1468038450257740950">WebGL이 지원되지 않습니다.</translation>
-<translation id="149347756975725155">확장 프로그램 아이콘('<ph name="ICON" />')을 로드하지 못했습니다.</translation>
 <translation id="1803557475693955505">배경 페이지('<ph name="BACKGROUND_PAGE" />')를 로드하지 못했습니다.</translation>
 <translation id="2159915644201199628">'<ph name="IMAGE_NAME" />' 이미지를 디코딩하지 못했습니다.</translation>
 <translation id="2350172092385603347">번역한 언어를 이용하였지만 매니페스트에 기본 언어(default_locale)를 지정하지 않았습니다.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">비공개 키를 읽지 못했습니다.</translation>
 <translation id="6391538222494443604">입력 디렉터리가 있어야 합니다.</translation>
 <translation id="641087317769093025">확장 프로그램의 압축을 해제하지 못했습니다.</translation>
-<translation id="6413453408918378296">'<ph name="ICON" />' 아이콘이 충분히 표시되지 않습니다.</translation>
 <translation id="6542618148162044354">'<ph name="APP_NAME" />'이(가) 사용자의 기기 하나 이상에 액세스 권한을 요청하고 있습니다.</translation>
 <translation id="657064425229075395">백그라운드 스크립트('<ph name="BACKGROUND_SCRIPT" />')를 로드하지 못했습니다.</translation>
 <translation id="6580950983454333167"><ph name="VENDOR_NAME" />의 제품 <ph name="PRODUCT_NAME" />(일련 번호 <ph name="SERIAL_NUMBER" />)</translation>

@@ -5,11 +5,12 @@
 #ifndef CHROME_RENDERER_CHROME_RENDER_FRAME_OBSERVER_H_
 #define CHROME_RENDERER_CHROME_RENDER_FRAME_OBSERVER_H_
 
-#include "base/macros.h"
-#include "base/timer/timer.h"
+#include <string>
+#include <vector>
+
 #include "build/build_config.h"
 #include "chrome/common/chrome_render_frame.mojom.h"
-#include "chrome/common/prerender_types.h"
+#include "components/safe_browsing/buildflags.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
@@ -20,12 +21,16 @@ namespace gfx {
 class Size;
 }
 
+namespace optimization_guide {
+class PageTextAgent;
+}
+
 namespace safe_browsing {
 class PhishingClassifierDelegate;
 }
 
 namespace translate {
-class TranslateHelper;
+class TranslateAgent;
 }
 
 namespace web_cache {
@@ -39,6 +44,11 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
  public:
   ChromeRenderFrameObserver(content::RenderFrame* render_frame,
                             web_cache::WebCacheImpl* web_cache_impl);
+
+  ChromeRenderFrameObserver(const ChromeRenderFrameObserver&) = delete;
+  ChromeRenderFrameObserver& operator=(const ChromeRenderFrameObserver&) =
+      delete;
+
   ~ChromeRenderFrameObserver() override;
 
   service_manager::BinderRegistry* registry() { return &registry_; }
@@ -46,8 +56,14 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
     return &associated_interfaces_;
   }
 
+#if defined(OS_ANDROID)
+  // This is called on the main thread for subresources or worker threads for
+  // dedicated workers.
+  static std::string GetCCTClientHeader(int render_frame_id);
+#endif
+
  private:
-  enum TextCaptureType { PRELIMINARY_CAPTURE, FINAL_CAPTURE };
+  friend class ChromeRenderFrameObserverTest;
 
   // RenderFrameObserver implementation.
   void OnInterfaceRequestForFrame(
@@ -56,72 +72,85 @@ class ChromeRenderFrameObserver : public content::RenderFrameObserver,
   bool OnAssociatedInterfaceRequestForFrame(
       const std::string& interface_name,
       mojo::ScopedInterfaceEndpointHandle* handle) override;
-  bool OnMessageReceived(const IPC::Message& message) override;
   void ReadyToCommitNavigation(
       blink::WebDocumentLoader* document_loader) override;
   void DidFinishLoad() override;
   void DidCreateNewDocument() override;
-  void DidCommitProvisionalLoad(bool is_same_document_navigation,
-                                ui::PageTransition transition) override;
+  void DidCommitProvisionalLoad(ui::PageTransition transition) override;
   void DidClearWindowObject() override;
   void DidMeaningfulLayout(blink::WebMeaningfulLayout layout_type) override;
   void OnDestruct() override;
-
-  // IPC handlers
-  void OnSetIsPrerendering(prerender::PrerenderMode mode,
-                           const std::string& histogram_prefix);
-  void OnRequestThumbnailForContextNode(
-      int thumbnail_min_area_pixels,
-      const gfx::Size& thumbnail_max_size_pixels,
-      int callback_id);
-  void OnPrintNodeUnderContextMenu();
-  void OnSetClientSidePhishingDetection(bool enable_phishing_detection);
+  void DraggableRegionsChanged() override;
 
   // chrome::mojom::ChromeRenderFrame:
   void SetWindowFeatures(
       blink::mojom::WindowFeaturesPtr window_features) override;
-  void ExecuteWebUIJavaScript(const base::string16& javascript) override;
-  void RequestThumbnailForContextNode(
+  void ExecuteWebUIJavaScript(const std::u16string& javascript) override;
+  void RequestImageForContextNode(
       int32_t thumbnail_min_area_pixels,
       const gfx::Size& thumbnail_max_size_pixels,
       chrome::mojom::ImageFormat image_format,
-      RequestThumbnailForContextNodeCallback callback) override;
+      RequestImageForContextNodeCallback callback) override;
   void RequestReloadImageForContextNode() override;
-  void SetClientSidePhishingDetection(bool enable_phishing_detection) override;
-  void GetWebApplicationInfo(GetWebApplicationInfoCallback callback) override;
+#if defined(OS_ANDROID)
+  void SetCCTClientHeader(const std::string& header) override;
+#endif
+  void GetMediaFeedURL(GetMediaFeedURLCallback callback) override;
+  void LoadBlockedPlugins(const std::string& identifier) override;
+
+  // Initialize a |phishing_classifier_delegate_|.
+  void SetClientSidePhishingDetection();
 
   void OnRenderFrameObserverRequest(
       mojo::PendingAssociatedReceiver<chrome::mojom::ChromeRenderFrame>
           receiver);
 
   // Captures page information using the top (main) frame of a frame tree.
-  // Currently, this page information is just the text content of the all
+  // Currently, this page information is just the text content of the local
   // frames, collected and concatenated until a certain limit (kMaxIndexChars)
   // is reached.
-  // TODO(dglazkov): This is incompatible with OOPIF and needs to be updated.
-  void CapturePageText(TextCaptureType capture_type);
+  void CapturePageText(blink::WebMeaningfulLayout layout_type);
 
-  void CapturePageTextLater(TextCaptureType capture_type,
-                            base::TimeDelta delay);
+  // Returns true if |CapturePageText| should be run for Translate or Phishing.
+  bool ShouldCapturePageTextForTranslateOrPhishing(
+      blink::WebMeaningfulLayout layout_type) const;
+
+  // Check if the image need to downscale.
+  static bool NeedsDownscale(const gfx::Size& original_image_size,
+                             int32_t requested_image_min_area_pixels,
+                             const gfx::Size& requested_image_max_size);
+
+  // If the source image is null or occupies less area than
+  // |requested_image_min_area_pixels|, we return the image unmodified.
+  // Otherwise, we scale down the image so that the width and height do not
+  // exceed |requested_image_max_size|, preserving the original aspect ratio.
+  static SkBitmap Downscale(const SkBitmap& image,
+                            int requested_image_min_area_pixels,
+                            const gfx::Size& requested_image_max_size);
+
+  // Check if the image need to encode to fit requested image format.
+  static bool NeedsEncodeImage(const std::string& image_extension,
+                               chrome::mojom::ImageFormat image_format);
 
   // Have the same lifetime as us.
-  translate::TranslateHelper* translate_helper_;
-  safe_browsing::PhishingClassifierDelegate* phishing_classifier_;
+  translate::TranslateAgent* translate_agent_;
+  optimization_guide::PageTextAgent* page_text_agent_;
+#if BUILDFLAG(SAFE_BROWSING_AVAILABLE)
+  safe_browsing::PhishingClassifierDelegate* phishing_classifier_ = nullptr;
+#endif
 
   // Owned by ChromeContentRendererClient and outlive us.
   web_cache::WebCacheImpl* web_cache_impl_;
 
 #if !defined(OS_ANDROID)
   // Save the JavaScript to preload if ExecuteWebUIJavaScript is invoked.
-  std::vector<base::string16> webui_javascript_;
+  std::vector<std::u16string> webui_javascript_;
 #endif
 
   mojo::AssociatedReceiverSet<chrome::mojom::ChromeRenderFrame> receivers_;
 
   service_manager::BinderRegistry registry_;
   blink::AssociatedInterfaceRegistry associated_interfaces_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRenderFrameObserver);
 };
 
 #endif  // CHROME_RENDERER_CHROME_RENDER_FRAME_OBSERVER_H_

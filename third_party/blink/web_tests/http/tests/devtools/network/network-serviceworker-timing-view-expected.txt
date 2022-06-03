@@ -1,0 +1,37 @@
+Tests that serviceworker timings are displayed correctly.
+
+Page reloaded.
+Connection Start
+
+DURATION
+Stalled
+​
+3 μs
+Service Worker
+
+DURATION
+Startup
+​
+0.48 ms
+respondWith
+​
+5.48 ms
+Request/Response
+
+DURATION
+Waiting (TTFB)
+​
+6.72 ms
+Content Download
+​
+4.19 ms
+CAUTION: request is not finished yet!
+Explanation
+
+10.91 ms
+
+Server Timing
+
+TIME
+During development, you can use the Server Timing API to add insights into the server-side timing of this request.
+

@@ -53,6 +53,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   HttpNetworkTransaction(RequestPriority priority,
                          HttpNetworkSession* session);
 
+  HttpNetworkTransaction(const HttpNetworkTransaction&) = delete;
+  HttpNetworkTransaction& operator=(const HttpNetworkTransaction&) = delete;
+
   ~HttpNetworkTransaction() override;
 
   // HttpTransaction methods:
@@ -84,13 +87,14 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   void SetWebSocketHandshakeStreamCreateHelper(
       WebSocketHandshakeStreamBase::CreateHelper* create_helper) override;
   void SetBeforeNetworkStartCallback(
-      const BeforeNetworkStartCallback& callback) override;
-  void SetBeforeHeadersSentCallback(
-      const BeforeHeadersSentCallback& callback) override;
+      BeforeNetworkStartCallback callback) override;
+  void SetConnectedCallback(const ConnectedCallback& callback) override;
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
+  void SetEarlyResponseHeadersCallback(
+      ResponseHeadersCallback callback) override;
   void SetResponseHeadersCallback(ResponseHeadersCallback callback) override;
-
   int ResumeNetworkStart() override;
+  void CloseConnectionOnDestruction() override;
 
   // HttpStreamRequest::Delegate methods:
   void OnStreamReady(const SSLConfig& used_ssl_config,
@@ -141,6 +145,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     STATE_CREATE_STREAM_COMPLETE,
     STATE_INIT_STREAM,
     STATE_INIT_STREAM_COMPLETE,
+    STATE_CONNECTED_CALLBACK_COMPLETE,
     STATE_GENERATE_PROXY_AUTH_TOKEN,
     STATE_GENERATE_PROXY_AUTH_TOKEN_COMPLETE,
     STATE_GENERATE_SERVER_AUTH_TOKEN,
@@ -181,6 +186,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   int DoCreateStreamComplete(int result);
   int DoInitStream();
   int DoInitStreamComplete(int result);
+  int DoConnectedCallbackComplete(int results);
   int DoGenerateProxyAuthToken();
   int DoGenerateProxyAuthTokenComplete(int result);
   int DoGenerateServerAuthToken();
@@ -302,6 +308,8 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // "Accept-Encoding".
   bool ContentEncodingsValid() const;
 
+  void ResumeAfterConnected(int result);
+
   scoped_refptr<HttpAuthController>
       auth_controllers_[HttpAuth::AUTH_NUM_TARGETS];
 
@@ -415,8 +423,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
       websocket_handshake_stream_base_create_helper_;
 
   BeforeNetworkStartCallback before_network_start_callback_;
-  BeforeHeadersSentCallback before_headers_sent_callback_;
+  ConnectedCallback connected_callback_;
   RequestHeadersCallback request_headers_callback_;
+  ResponseHeadersCallback early_response_headers_callback_;
   ResponseHeadersCallback response_headers_callback_;
 
   ConnectionAttempts connection_attempts_;
@@ -436,7 +445,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
   // Number of times the transaction was restarted via a RestartWith* call.
   size_t num_restarts_;
 
-  DISALLOW_COPY_AND_ASSIGN(HttpNetworkTransaction);
+  bool close_connection_on_destruction_ = false;
 };
 
 }  // namespace net

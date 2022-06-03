@@ -1,0 +1,34 @@
+<!doctype html>
+<style>
+#scroller::-webkit-scrollbar {
+  background: green;
+  width: 100px;
+}
+#scroller {
+  width: 100px;
+  height: 100px;
+  overflow-y: overlay;
+  overflow-x: hidden;
+  position: relative;
+}
+#notransform {
+  width: 100px;
+  height: 50px;
+  background: red;
+  position: relative;
+  z-index: 1;
+}
+#transform {
+  width: 100px;
+  height: 50px;
+  background: red;
+  position: absolute;
+  will-change: transform;
+  z-index: 2;
+}
+</style>
+<div id="scroller">
+  <div id="notransform"></div>
+  <div id="transform"></div>
+  <div id="forcescroll" style="height: 200px; width: 10px;"></div>
+</div>

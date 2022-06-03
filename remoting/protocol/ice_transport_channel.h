@@ -65,17 +65,21 @@ class IceTransportChannel : public sigslot::has_slots<> {
     virtual void OnChannelDeleted(IceTransportChannel* transport) = 0;
   };
 
-  typedef base::Callback<void(std::unique_ptr<P2PDatagramSocket>)>
+  typedef base::OnceCallback<void(std::unique_ptr<P2PDatagramSocket>)>
       ConnectedCallback;
 
   explicit IceTransportChannel(
       scoped_refptr<TransportContext> transport_context);
+
+  IceTransportChannel(const IceTransportChannel&) = delete;
+  IceTransportChannel& operator=(const IceTransportChannel&) = delete;
+
   ~IceTransportChannel() override;
 
   // Connects the channel and calls the |callback| after that.
   void Connect(const std::string& name,
                Delegate* delegate,
-               const ConnectedCallback& callback);
+               ConnectedCallback callback);
 
   // Sets remote ICE credentials.
   void SetRemoteCredentials(const std::string& ufrag,
@@ -132,8 +136,6 @@ class IceTransportChannel : public sigslot::has_slots<> {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<IceTransportChannel> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IceTransportChannel);
 };
 
 }  // namespace protocol

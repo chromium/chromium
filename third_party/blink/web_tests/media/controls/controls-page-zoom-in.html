@@ -15,13 +15,12 @@
   video.onplay = () => {
     video.currentTime = 1;
 
-    if (window.eventSender) {
-      eventSender.zoomPageIn();
-      eventSender.zoomPageIn();
-    }
+    if (window.testRunner) {
+      testRunner.zoomPageIn();
+      testRunner.zoomPageIn();
 
-    if (window.testRunner)
       testRunner.notifyDone();
+    }
   };
 
   video.src = "../content/test.ogv";

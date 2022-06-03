@@ -31,6 +31,12 @@ class CC_EXPORT RasterBuffer {
                         const gfx::AxisTransform2d& transform,
                         const RasterSource::PlaybackSettings& playback_settings,
                         const GURL& url) = 0;
+
+  // Returns true if Playback() can be invoked at background thread priority. To
+  // avoid priority inversions, this should return false if Playback() acquires
+  // resources that are also acquired at normal thread priority.
+  // https://crbug.com/1072756.
+  virtual bool SupportsBackgroundThreadPriority() const = 0;
 };
 
 }  // namespace cc

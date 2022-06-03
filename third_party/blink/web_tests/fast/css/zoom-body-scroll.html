@@ -14,7 +14,7 @@
         var floatPrecision = 0.00001;
         function checkValue(actual, expected)
         {
-            if (window.eventSender) {
+            if (window.testRunner) {
                shouldBeCloseTo(actual, expected, floatPrecision);
             }
         }
@@ -29,7 +29,7 @@
             checkValue('document.scrollingElement.scrollLeft', 40);
 
             // Zooming in.
-            eventSender.zoomPageIn();
+            testRunner.zoomPageIn();
             checkValue('document.scrollingElement.scrollHeight', 1000);
             checkValue('document.scrollingElement.scrollWidth', 1000);
             checkValue('document.scrollingElement.scrollTop', 0);
@@ -40,7 +40,7 @@
             checkValue('document.scrollingElement.scrollTop', 100);
 
             // Zooming back out.
-            eventSender.zoomPageOut();
+            testRunner.zoomPageOut();
             checkValue('document.scrollingElement.scrollTop', 100);
             checkValue('document.scrollingElement.scrollLeft', 40);
         }

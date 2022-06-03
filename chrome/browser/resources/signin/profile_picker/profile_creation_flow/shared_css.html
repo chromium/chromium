@@ -1,0 +1,69 @@
+<template>
+  <style include="cr-icons profile-picker-shared">
+    :host {
+      --avatar-size: 100px;
+      --banner-height: 244px;
+    }
+
+    #signinPromoBanner {
+      background-image:
+          url(profile_creation_flow/images/banner_light_image.svg);
+    }
+
+    @media (prefers-color-scheme: dark) {
+      #signinPromoBanner {
+        background-image:
+            url(profile_creation_flow/images/banner_dark_image.svg);
+      }
+    }
+
+    #headerContainer {
+      background-color: var(--theme-frame-color);
+      height: var(--banner-height);
+      position: relative;
+      width: 100%;
+    }
+
+    .banner {
+      background-size: 100% 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      width: 100%;
+      z-index: 0;
+    }
+
+    #backButton {
+      --cr-icon-button-icon-size: 22px;
+      --cr-icon-button-margin-start: 4px;
+      --cr-icon-button-size: 36px;
+      margin-top: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    @media (forced-colors: none) {
+      #backButton {
+        --cr-icon-button-fill-color: var(--theme-text-color);
+      }
+    }
+
+    #avatarContainer {
+      bottom: calc(var(--avatar-size) / -2);
+      height: calc(var(--avatar-size) + 4px);
+      left: 0;
+      margin: auto;
+      position: absolute;
+      right: 0;
+      width: calc(var(--avatar-size) + 4px);
+    }
+
+    .avatar {
+      border: 2px solid var(--md-background-color);
+      border-radius: 50%;
+      height: var(--avatar-size);
+      width: var(--avatar-size);
+      z-index: 1;
+    }
+  </style>
+</template>

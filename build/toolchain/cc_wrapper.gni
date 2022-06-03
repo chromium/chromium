@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/toolchain/goma.gni")
+import("//build/toolchain/rbe.gni")
 
 # Defines the configuration of cc wrapper
 # ccache: a c/c++ compiler cache which can greatly reduce recompilation times.
@@ -38,3 +39,5 @@ declare_args() {
 
 assert(!use_goma || cc_wrapper == "",
        "use_goma and cc_wrapper can not be used together.")
+assert(!use_remoteexec || cc_wrapper == "",
+       "use_remoteexec and cc_wrapper can not be used together.")

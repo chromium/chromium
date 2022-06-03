@@ -18,24 +18,29 @@ WebEngineURLLoaderThrottleProvider::~WebEngineURLLoaderThrottleProvider() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::unique_ptr<content::URLLoaderThrottleProvider>
+std::unique_ptr<blink::URLLoaderThrottleProvider>
 WebEngineURLLoaderThrottleProvider::Clone() {
   // This should only happen for service workers, which we do not support here.
   NOTREACHED();
   return nullptr;
 }
 
-std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>>
 WebEngineURLLoaderThrottleProvider::CreateThrottles(
     int render_frame_id,
-    const blink::WebURLRequest& request,
-    content::ResourceType resource_type) {
+    const blink::WebURLRequest& request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_NE(render_frame_id, MSG_ROUTING_NONE);
 
-  std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
-  throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(
-      content_renderer_client_->GetUrlRequestRulesReceiverForRenderFrameId(
-          render_frame_id)));
+  blink::WebVector<std::unique_ptr<blink::URLLoaderThrottle>> throttles;
+  scoped_refptr<url_rewrite::UrlRequestRewriteRules>& rules =
+      content_renderer_client_
+          ->GetWebEngineRenderFrameObserverForRenderFrameId(render_frame_id)
+          ->url_request_rules_receiver()
+          ->GetCachedRules();
+  if (rules) {
+    throttles.emplace_back(std::make_unique<WebEngineURLLoaderThrottle>(rules));
+  }
   return throttles;
 }
 

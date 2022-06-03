@@ -2,13 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {DriveSyncHandler} from '../../externs/background/drive_sync_handler.js';
+import {DriveDialogControllerInterface} from '../../externs/drive_dialog_controller.js';
+
 
 /**
  * Mock of DriveSyncHandler.
  * @implements {DriveSyncHandler}
  */
-class MockDriveSyncHandler extends cr.EventTarget {
+export class MockDriveSyncHandler extends EventTarget {
   constructor() {
     super();
 
@@ -54,6 +58,19 @@ class MockDriveSyncHandler extends cr.EventTarget {
   get syncing() {
     return false;
   }
+
+  /**
+   * Adds a dialog to be controlled by DriveSyncHandler.
+   * @param {string} appId App ID of window containing the dialog.
+   * @param {DriveDialogControllerInterface} dialog
+   */
+  addDialog(appId, dialog) {}
+
+  /**
+   * Removes a dialog from being controlled by DriveSyncHandler.
+   * @param {string} appId App ID of window containing the dialog.
+   */
+  removeDialog(appId) {}
 }
 
 /**

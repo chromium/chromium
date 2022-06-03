@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,27 +10,11 @@
       "name": "LayoutBlockFlow DIV id='target'",
       "bounds": [600, 400],
       "backfaceVisibility": "hidden",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'Lorem ipsum dolor'",
-          "rect": [520, 0, 80, 340],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'adipiscing elit.'",
-          "rect": [520, 0, 80, 340],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'consectetur'",
-          "rect": [520, 0, 80, 340],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'sit amet,'",
-          "rect": [520, 0, 80, 340],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [580, 0, 20, 340],
+        [520, 0, 20, 320],
+        [540, 0, 20, 220],
+        [560, 0, 20, 180]
       ],
       "transform": 1
     }

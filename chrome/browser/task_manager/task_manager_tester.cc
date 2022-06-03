@@ -4,10 +4,11 @@
 
 #include "chrome/browser/task_manager/task_manager_tester.h"
 
+#include <memory>
+
 #include "base/memory/ptr_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/task_manager/task_manager_table_model.h"
@@ -25,7 +26,7 @@ class ScopedInterceptTableModelObserver : public ui::TableModelObserver {
   ScopedInterceptTableModelObserver(
       ui::TableModel* model_to_intercept,
       ui::TableModelObserver* real_table_model_observer,
-      const base::Closure& callback)
+      const base::RepeatingClosure& callback)
       : model_to_intercept_(model_to_intercept),
         real_table_model_observer_(real_table_model_observer),
         callback_(callback) {
@@ -57,7 +58,7 @@ class ScopedInterceptTableModelObserver : public ui::TableModelObserver {
  private:
   ui::TableModel* model_to_intercept_;
   ui::TableModelObserver* real_table_model_observer_;
-  base::Closure callback_;
+  base::RepeatingClosure callback_;
 };
 
 namespace {
@@ -69,13 +70,14 @@ TaskManagerTableModel* GetRealModel() {
 
 }  // namespace
 
-TaskManagerTester::TaskManagerTester(const base::Closure& on_resource_change)
+TaskManagerTester::TaskManagerTester(
+    const base::RepeatingClosure& on_resource_change)
     : model_(GetRealModel()) {
   // Eavesdrop the model->view conversation, since the model only supports
   // single observation.
   if (!on_resource_change.is_null()) {
-    interceptor_.reset(new ScopedInterceptTableModelObserver(
-        model_, model_->table_model_observer_, on_resource_change));
+    interceptor_ = std::make_unique<ScopedInterceptTableModelObserver>(
+        model_, model_->table_model_observer_, on_resource_change);
   }
 }
 
@@ -90,7 +92,7 @@ int TaskManagerTester::GetRowCount() {
   return model_->RowCount();
 }
 
-base::string16 TaskManagerTester::GetRowTitle(int row) {
+std::u16string TaskManagerTester::GetRowTitle(int row) {
   return model_->GetText(row, IDS_TASK_MANAGER_TASK_COLUMN);
 }
 
@@ -183,13 +185,24 @@ void TaskManagerTester::GetRowsGroupRange(int row,
   return model_->GetRowsGroupRange(row, out_start, out_length);
 }
 
+std::vector<std::u16string> TaskManagerTester::GetWebContentsTaskTitles() {
+  std::vector<std::u16string> titles;
+  titles.reserve(GetRowCount());
+  for (int row = 0; row < GetRowCount(); row++) {
+    // Exclude tasks which are not associated with a WebContents.
+    if (GetTabId(row) != SessionID::InvalidValue())
+      titles.push_back(GetRowTitle(row));
+  }
+  return titles;
+}
+
 TaskManagerInterface* TaskManagerTester::task_manager() {
   return model_->observed_task_manager();
 }
 
 // static
 std::unique_ptr<TaskManagerTester> TaskManagerTester::Create(
-    const base::Closure& callback) {
+    const base::RepeatingClosure& callback) {
   return base::WrapUnique(new TaskManagerTester(callback));
 }
 

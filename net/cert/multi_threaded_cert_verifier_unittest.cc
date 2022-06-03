@@ -39,7 +39,7 @@ void FailTest(int /* result */) {
 
 class MockCertVerifyProc : public CertVerifyProc {
  public:
-  MOCK_METHOD8(VerifyInternal,
+  MOCK_METHOD9(VerifyInternal,
                int(X509Certificate*,
                    const std::string&,
                    const std::string&,
@@ -47,7 +47,8 @@ class MockCertVerifyProc : public CertVerifyProc {
                    int,
                    CRLSet*,
                    const CertificateList&,
-                   CertVerifyResult*));
+                   CertVerifyResult*,
+                   const NetLogWithSource&));
   MOCK_CONST_METHOD0(SupportsAdditionalTrustAnchors, bool());
 
  private:
@@ -76,10 +77,11 @@ class MultiThreadedCertVerifierTest : public TestWithTaskEnvironment {
  public:
   MultiThreadedCertVerifierTest()
       : mock_verify_proc_(base::MakeRefCounted<MockCertVerifyProc>()),
-        verifier_(mock_verify_proc_) {
+        verifier_(
+            std::make_unique<MultiThreadedCertVerifier>(mock_verify_proc_)) {
     EXPECT_CALL(*mock_verify_proc_, SupportsAdditionalTrustAnchors())
         .WillRepeatedly(Return(true));
-    EXPECT_CALL(*mock_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _))
+    EXPECT_CALL(*mock_verify_proc_, VerifyInternal(_, _, _, _, _, _, _, _, _))
         .WillRepeatedly(
             DoAll(SetCertVerifyResult(), Return(ERR_CERT_COMMON_NAME_INVALID)));
   }
@@ -87,7 +89,7 @@ class MultiThreadedCertVerifierTest : public TestWithTaskEnvironment {
 
  protected:
   scoped_refptr<MockCertVerifyProc> mock_verify_proc_;
-  MultiThreadedCertVerifier verifier_;
+  std::unique_ptr<MultiThreadedCertVerifier> verifier_;
 };
 
 // Tests that the callback of a canceled request is never made.
@@ -101,7 +103,7 @@ TEST_F(MultiThreadedCertVerifierTest, CancelRequest) {
   CertVerifyResult verify_result;
   std::unique_ptr<CertVerifier::Request> request;
 
-  error = verifier_.Verify(
+  error = verifier_->Verify(
       CertVerifier::RequestParams(test_cert, "www.example.com", 0,
                                   /*ocsp_response=*/std::string(),
                                   /*sct_list=*/std::string()),
@@ -115,7 +117,7 @@ TEST_F(MultiThreadedCertVerifierTest, CancelRequest) {
   // worker thread) is likely to complete by the end of this test.
   TestCompletionCallback callback;
   for (int i = 0; i < 5; ++i) {
-    error = verifier_.Verify(
+    error = verifier_->Verify(
         CertVerifier::RequestParams(test_cert, "www2.example.com", 0,
                                     /*ocsp_response=*/std::string(),
                                     /*sct_list=*/std::string()),
@@ -124,6 +126,69 @@ TEST_F(MultiThreadedCertVerifierTest, CancelRequest) {
     EXPECT_TRUE(request);
     error = callback.WaitForResult();
   }
+}
+
+// Tests that the callback of a request is never made if the |verifier_| itself
+// is deleted.
+TEST_F(MultiThreadedCertVerifierTest, DeleteVerifier) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(certs_dir, "ok_cert.pem"));
+  ASSERT_NE(static_cast<X509Certificate*>(nullptr), test_cert.get());
+
+  int error;
+  CertVerifyResult verify_result;
+  std::unique_ptr<CertVerifier::Request> request;
+
+  error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, base::BindOnce(&FailTest), &request, NetLogWithSource());
+  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
+  ASSERT_TRUE(request);
+  verifier_.reset();
+
+  RunUntilIdle();
+}
+
+namespace {
+
+struct CertVerifyResultHelper {
+  void FailTest(int /* result */) { FAIL(); }
+  std::unique_ptr<CertVerifier::Request> request;
+};
+
+}  // namespace
+
+// The same as the above "DeleteVerifier" test, except the callback provided
+// will own the CertVerifier::Request as allowed by the CertVerifier contract.
+// This is a regression test for https://crbug.com/1157562.
+TEST_F(MultiThreadedCertVerifierTest, DeleteVerifierCallbackOwnsResult) {
+  base::FilePath certs_dir = GetTestCertsDirectory();
+  scoped_refptr<X509Certificate> test_cert(
+      ImportCertFromFile(certs_dir, "ok_cert.pem"));
+  ASSERT_NE(static_cast<X509Certificate*>(nullptr), test_cert.get());
+
+  int error;
+  CertVerifyResult verify_result;
+  std::unique_ptr<CertVerifyResultHelper> result_helper =
+      std::make_unique<CertVerifyResultHelper>();
+  CertVerifyResultHelper* result_helper_ptr = result_helper.get();
+  CompletionOnceCallback callback = base::BindOnce(
+      &CertVerifyResultHelper::FailTest, std::move(result_helper));
+
+  error = verifier_->Verify(
+      CertVerifier::RequestParams(test_cert, "www.example.com", 0,
+                                  /*ocsp_response=*/std::string(),
+                                  /*sct_list=*/std::string()),
+      &verify_result, std::move(callback), &result_helper_ptr->request,
+      NetLogWithSource());
+  ASSERT_THAT(error, IsError(ERR_IO_PENDING));
+  ASSERT_TRUE(result_helper_ptr->request);
+  verifier_.reset();
+
+  RunUntilIdle();
 }
 
 // Tests that a canceled request is not leaked.
@@ -146,7 +211,7 @@ TEST_F(MultiThreadedCertVerifierTest, CancelRequestThenQuit) {
     // can't post the reply back to the origin thread. See
     // https://crbug.com/522514
     ANNOTATE_SCOPED_MEMORY_LEAK;
-    error = verifier_.Verify(
+    error = verifier_->Verify(
         CertVerifier::RequestParams(test_cert, "www.example.com", 0,
                                     /*ocsp_response=*/std::string(),
                                     /*sct_list=*/std::string()),
@@ -155,7 +220,7 @@ TEST_F(MultiThreadedCertVerifierTest, CancelRequestThenQuit) {
   ASSERT_THAT(error, IsError(ERR_IO_PENDING));
   EXPECT_TRUE(request);
   request.reset();
-  // Destroy |verifier| by going out of scope.
+  // Destroy |verifier_| by going out of scope.
 }
 
 // Tests propagation of configuration options into CertVerifyProc flags
@@ -182,17 +247,18 @@ TEST_F(MultiThreadedCertVerifierTest, ConvertsConfigToFlags) {
     CertVerifier::Config config;
     config.*test_config.config_ptr = true;
 
-    verifier_.SetConfig(config);
+    verifier_->SetConfig(config);
 
-    EXPECT_CALL(*mock_verify_proc_,
-                VerifyInternal(_, _, _, _, test_config.expected_flag, _, _, _))
+    EXPECT_CALL(
+        *mock_verify_proc_,
+        VerifyInternal(_, _, _, _, test_config.expected_flag, _, _, _, _))
         .WillRepeatedly(
             DoAll(SetCertVerifyRevokedResult(), Return(ERR_CERT_REVOKED)));
 
     CertVerifyResult verify_result;
     TestCompletionCallback callback;
     std::unique_ptr<CertVerifier::Request> request;
-    int error = verifier_.Verify(
+    int error = verifier_->Verify(
         CertVerifier::RequestParams(test_cert, "www.example.com", 0,
                                     /*ocsp_response=*/std::string(),
                                     /*sct_list=*/std::string()),

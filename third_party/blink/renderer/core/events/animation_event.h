@@ -28,9 +28,10 @@
 
 #include "third_party/blink/renderer/core/animation/animation_time_delta.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/animation_event_init.h"
 
 namespace blink {
+
+class AnimationEventInit;
 
 class AnimationEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -65,7 +66,7 @@ class AnimationEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String animation_name_;

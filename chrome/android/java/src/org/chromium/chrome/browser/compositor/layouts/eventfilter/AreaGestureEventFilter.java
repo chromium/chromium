@@ -15,6 +15,9 @@ import android.view.MotionEvent;
 public class AreaGestureEventFilter extends GestureEventFilter {
     private final RectF mTriggerRect = new RectF();
 
+    /** Whether a down event has occurred inside of the specified area. */
+    private boolean mHasDownEventInArea;
+
     /**
      * Creates a {@link AreaGestureEventFilter}.
      * @param context       The context to build the gesture handler under.
@@ -67,8 +70,28 @@ public class AreaGestureEventFilter extends GestureEventFilter {
     }
 
     @Override
+    public boolean onTouchEventInternal(MotionEvent e) {
+        // If the action is up or down, consider it to be a new gesture.
+        if (e.getActionMasked() == MotionEvent.ACTION_UP
+                || e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            mHasDownEventInArea = false;
+        }
+        return super.onTouchEventInternal(e);
+    }
+
+    @Override
     public boolean onInterceptTouchEventInternal(MotionEvent e, boolean isKeyboardShowing) {
+        // If the action is up or down, consider it to be a new gesture.
+        if (e.getActionMasked() == MotionEvent.ACTION_UP
+                || e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            mHasDownEventInArea = false;
+        }
         if (mTriggerRect.contains(e.getX() * mPxToDp, e.getY() * mPxToDp)) {
+            if (e.getActionMasked() == MotionEvent.ACTION_DOWN) {
+                mHasDownEventInArea = true;
+            } else if (!mHasDownEventInArea) {
+                return false;
+            }
             return super.onInterceptTouchEventInternal(e, isKeyboardShowing);
         }
         return false;

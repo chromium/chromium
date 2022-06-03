@@ -12,7 +12,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
@@ -55,7 +55,7 @@ bool IsMonotonic(const StreamParser::BufferQueue& buffers) {
 }
 
 bool IsAlmostEqual(DecodeTimestamp t0, DecodeTimestamp t1) {
-  base::TimeDelta kMaxDeviation = base::TimeDelta::FromMilliseconds(5);
+  base::TimeDelta kMaxDeviation = base::Milliseconds(5);
   base::TimeDelta diff = t1 - t0;
   return (diff >= -kMaxDeviation && diff <= kMaxDeviation);
 }
@@ -164,6 +164,7 @@ class Mp2tStreamParserTest : public testing::Test {
         config_count_(0),
         audio_frame_count_(0),
         video_frame_count_(0),
+        has_audio_(true),
         has_video_(true),
         audio_min_dts_(kNoDecodeTimestamp()),
         audio_max_dts_(kNoDecodeTimestamp()),
@@ -175,7 +176,8 @@ class Mp2tStreamParserTest : public testing::Test {
         current_video_config_(),
         capture_buffers(false) {
     bool has_sbr = false;
-    parser_.reset(new Mp2tStreamParser(has_sbr));
+    const std::string codecs[] = {"avc1.64001e", "mp3", "aac"};
+    parser_ = std::make_unique<Mp2tStreamParser>(codecs, has_sbr);
   }
 
  protected:
@@ -185,6 +187,7 @@ class Mp2tStreamParserTest : public testing::Test {
   int config_count_;
   int audio_frame_count_;
   int video_frame_count_;
+  bool has_audio_;
   bool has_video_;
   DecodeTimestamp audio_min_dts_;
   DecodeTimestamp audio_max_dts_;
@@ -256,7 +259,7 @@ class Mp2tStreamParserTest : public testing::Test {
         EXPECT_TRUE(false);
       }
     }
-    EXPECT_TRUE(found_audio_track);
+    EXPECT_EQ(has_audio_, found_audio_track);
     EXPECT_EQ(has_video_, found_video_track);
     config_count_++;
     return true;
@@ -384,7 +387,9 @@ TEST_F(Mp2tStreamParserTest, UnalignedAppend17) {
   InitializeParser();
   ParseMpeg2TsFile("bear-1280x720.ts", 17);
   parser_->Flush();
+  EXPECT_EQ(audio_frame_count_, 119);
   EXPECT_EQ(video_frame_count_, 82);
+
   // This stream has no mid-stream configuration change.
   EXPECT_EQ(config_count_, 1);
   EXPECT_EQ(segment_count_, 1);
@@ -395,7 +400,9 @@ TEST_F(Mp2tStreamParserTest, UnalignedAppend512) {
   InitializeParser();
   ParseMpeg2TsFile("bear-1280x720.ts", 512);
   parser_->Flush();
+  EXPECT_EQ(audio_frame_count_, 119);
   EXPECT_EQ(video_frame_count_, 82);
+
   // This stream has no mid-stream configuration change.
   EXPECT_EQ(config_count_, 1);
   EXPECT_EQ(segment_count_, 1);
@@ -405,6 +412,7 @@ TEST_F(Mp2tStreamParserTest, AppendAfterFlush512) {
   InitializeParser();
   ParseMpeg2TsFile("bear-1280x720.ts", 512);
   parser_->Flush();
+  EXPECT_EQ(audio_frame_count_, 119);
   EXPECT_EQ(video_frame_count_, 82);
   EXPECT_EQ(config_count_, 1);
   EXPECT_EQ(segment_count_, 1);
@@ -412,6 +420,7 @@ TEST_F(Mp2tStreamParserTest, AppendAfterFlush512) {
   ResetStats();
   ParseMpeg2TsFile("bear-1280x720.ts", 512);
   parser_->Flush();
+  EXPECT_EQ(audio_frame_count_, 119);
   EXPECT_EQ(video_frame_count_, 82);
   EXPECT_EQ(config_count_, 1);
   EXPECT_EQ(segment_count_, 1);
@@ -462,6 +471,23 @@ TEST_F(Mp2tStreamParserTest, AudioInPrivateStream1) {
   EXPECT_EQ(segment_count_, 1);
 }
 
+// Checks the allowed_codecs argument filters streams using disallowed codecs.
+TEST_F(Mp2tStreamParserTest, DisableAudioStream) {
+  // Reset the parser with no audio codec allowed.
+  const std::string codecs[] = {"avc1.64001e"};
+  parser_ = std::make_unique<Mp2tStreamParser>(codecs, true);
+  has_audio_ = false;
+
+  InitializeParser();
+  ParseMpeg2TsFile("bear-1280x720.ts", 512);
+  parser_->Flush();
+  EXPECT_EQ(audio_frame_count_, 0);
+  EXPECT_EQ(video_frame_count_, 82);
+
+  // There should be a single configuration, with no audio.
+  EXPECT_EQ(config_count_, 1);
+}
+
 #if BUILDFLAG(ENABLE_HLS_SAMPLE_AES)
 TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
   std::vector<std::string> decrypted_video_buffers;
@@ -487,7 +513,8 @@ TEST_F(Mp2tStreamParserTest, HLSSampleAES) {
     decrypted_audio_buffers.push_back(decrypted_audio_buffer);
   }
 
-  parser_.reset(new Mp2tStreamParser(false));
+  const std::string codecs[] = {"avc1.64001e", "mp3", "aac"};
+  parser_ = std::make_unique<Mp2tStreamParser>(codecs, false);
   ResetStats();
   InitializeParser();
   video_buffer_capture_.clear();

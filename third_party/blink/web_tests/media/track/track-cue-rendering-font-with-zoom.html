@@ -10,7 +10,7 @@
 <script>
 async_test(function(t) {
     zoom_factor = 2.5;
-    eventSender.setPageZoomFactor(zoom_factor);
+    testRunner.setPageZoomFactor(zoom_factor);
     var video = document.querySelector("video");
     var testTrack = document.querySelector("track");
     video.src = "../content/test.ogv";

@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_BADGED_PROFILE_PHOTO_H_
 #define CHROME_BROWSER_UI_VIEWS_PROFILES_BADGED_PROFILE_PHOTO_H_
 
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/image/image.h"
+#include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
 // Creates a bagded profile photo for the current profile card in the
@@ -15,6 +17,8 @@
 // DICE).
 class BadgedProfilePhoto : public views::View {
  public:
+  METADATA_HEADER(BadgedProfilePhoto);
+
   enum BadgeType {
     BADGE_TYPE_NONE,
     BADGE_TYPE_SUPERVISOR,
@@ -25,8 +29,6 @@ class BadgedProfilePhoto : public views::View {
     BADGE_TYPE_SYNC_DISABLED,
     BADGE_TYPE_SYNC_OFF,
   };
-
-  static const char kViewClassName[];
 
   // Width/Height of the profile photo.
   static constexpr int kImageSize = 40;
@@ -39,12 +41,13 @@ class BadgedProfilePhoto : public views::View {
   // profile photo. The size of the View is fixed.
   // TODO(tangltom): Add accessibility features in the future.
   BadgedProfilePhoto(BadgeType badge_type, const gfx::Image& profile_photo);
-
-  // views::View:
-  const char* GetClassName() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(BadgedProfilePhoto);
+  BadgedProfilePhoto(const BadgedProfilePhoto&) = delete;
+  BadgedProfilePhoto& operator=(const BadgedProfilePhoto&) = delete;
 };
+
+BEGIN_VIEW_BUILDER(, BadgedProfilePhoto, views::View)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(, BadgedProfilePhoto)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_BADGED_PROFILE_PHOTO_H_

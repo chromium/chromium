@@ -10,7 +10,7 @@
 
 #include "base/containers/queue.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -41,6 +41,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
       scoped_refptr<device::BluetoothSocketThread> socket_thread);
 
+  BluetoothSocketBlueZ(const BluetoothSocketBlueZ&) = delete;
+  BluetoothSocketBlueZ& operator=(const BluetoothSocketBlueZ&) = delete;
+
   // Connects this socket to the service on |device| published as UUID |uuid|,
   // the underlying protocol and PSM or Channel is obtained through service
   // discovery. On a successful connection the socket properties will be updated
@@ -49,8 +52,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
   virtual void Connect(const BluetoothDeviceBlueZ* device,
                        const device::BluetoothUUID& uuid,
                        SecurityLevel security_level,
-                       const base::Closure& success_callback,
-                       const ErrorCompletionCallback& error_callback);
+                       base::OnceClosure success_callback,
+                       ErrorCompletionCallback error_callback);
 
   // Listens using this socket using a service published on |adapter|. The
   // service is either RFCOMM or L2CAP depending on |socket_type| and published
@@ -64,14 +67,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
       SocketType socket_type,
       const device::BluetoothUUID& uuid,
       const device::BluetoothAdapter::ServiceOptions& service_options,
-      const base::Closure& success_callback,
-      const ErrorCompletionCallback& error_callback);
+      base::OnceClosure success_callback,
+      ErrorCompletionCallback error_callback);
 
   // BluetoothSocket:
-  void Close() override;
-  void Disconnect(const base::Closure& callback) override;
-  void Accept(const AcceptCompletionCallback& success_callback,
-              const ErrorCompletionCallback& error_callback) override;
+  void Disconnect(base::OnceClosure callback) override;
+  void Accept(AcceptCompletionCallback success_callback,
+              ErrorCompletionCallback error_callback) override;
 
  protected:
   ~BluetoothSocketBlueZ() override;
@@ -83,17 +85,17 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
 
   // Register the underlying profile client object with the Bluetooth Daemon.
   void RegisterProfile(BluetoothAdapterBlueZ* adapter,
-                       const base::Closure& success_callback,
-                       const ErrorCompletionCallback& error_callback);
-  void OnRegisterProfile(const base::Closure& success_callback,
-                         const ErrorCompletionCallback& error_callback,
+                       base::OnceClosure success_callback,
+                       ErrorCompletionCallback error_callback);
+  void OnRegisterProfile(base::OnceClosure success_callback,
+                         ErrorCompletionCallback error_callback,
                          BluetoothAdapterProfileBlueZ* profile);
-  void OnRegisterProfileError(const ErrorCompletionCallback& error_callback,
+  void OnRegisterProfileError(ErrorCompletionCallback error_callback,
                               const std::string& error_message);
 
   // Called by dbus:: on completion of the ConnectProfile() method.
-  void OnConnectProfile(const base::Closure& success_callback);
-  void OnConnectProfileError(const ErrorCompletionCallback& error_callback,
+  void OnConnectProfile(base::OnceClosure success_callback);
+  void OnConnectProfileError(ErrorCompletionCallback error_callback,
                              const std::string& error_name,
                              const std::string& error_message);
 
@@ -134,9 +136,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
   void OnNewConnection(scoped_refptr<BluetoothSocket> socket,
                        ConfirmationCallback callback,
                        Status status);
-
-  // Method run to clean-up a listening socket.
-  void DoCloseListening();
 
   // Unregisters this socket's usage of the Bluetooth profile which cleans up
   // the profile if no one is using it.
@@ -182,8 +181,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothSocketBlueZ
     bool cancelled;
   };
   base::queue<std::unique_ptr<ConnectionRequest>> connection_request_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketBlueZ);
 };
 
 }  // namespace bluez

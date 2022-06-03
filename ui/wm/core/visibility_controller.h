@@ -6,8 +6,6 @@
 #define UI_WM_CORE_VISIBILITY_CONTROLLER_H_
 
 #include "base/compiler_specific.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "ui/aura/client/visibility_client.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -17,6 +15,10 @@ class WM_CORE_EXPORT VisibilityController
     : public aura::client::VisibilityClient {
  public:
   VisibilityController();
+
+  VisibilityController(const VisibilityController&) = delete;
+  VisibilityController& operator=(const VisibilityController&) = delete;
+
   ~VisibilityController() override;
 
  protected:
@@ -30,8 +32,6 @@ class WM_CORE_EXPORT VisibilityController
  private:
   // Overridden from aura::client::VisibilityClient:
   void UpdateLayerVisibility(aura::Window* window, bool visible) override;
-
-  DISALLOW_COPY_AND_ASSIGN(VisibilityController);
 };
 
 // Suspends the animations for visibility changes during the lifetime of an
@@ -52,6 +52,11 @@ class WM_CORE_EXPORT SuspendChildWindowVisibilityAnimations {
   // Suspend visibility animations of child windows.
   explicit SuspendChildWindowVisibilityAnimations(aura::Window* window);
 
+  SuspendChildWindowVisibilityAnimations(
+      const SuspendChildWindowVisibilityAnimations&) = delete;
+  SuspendChildWindowVisibilityAnimations& operator=(
+      const SuspendChildWindowVisibilityAnimations&) = delete;
+
   // Restore visibility animations to their original state.
   ~SuspendChildWindowVisibilityAnimations();
 
@@ -61,8 +66,6 @@ class WM_CORE_EXPORT SuspendChildWindowVisibilityAnimations {
 
   // Whether the visibility animations on child windows were originally enabled.
   const bool original_enabled_;
-
-  DISALLOW_COPY_AND_ASSIGN(SuspendChildWindowVisibilityAnimations);
 };
 
 // Enable visibility change animation for specific |window|. Use this if

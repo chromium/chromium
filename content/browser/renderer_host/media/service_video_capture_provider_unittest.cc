@@ -7,11 +7,12 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/threading/thread.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/video_capture_device_launcher.h"
 #include "content/public/browser/video_capture_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -38,8 +39,7 @@ namespace content {
 static const std::string kStubDeviceId = "StubDevice";
 static const media::VideoCaptureParams kArbitraryParams;
 static const base::WeakPtr<media::VideoFrameReceiver> kNullReceiver;
-static const auto kIgnoreLogMessageCB =
-    base::BindRepeating([](const std::string&) {});
+static const auto kIgnoreLogMessageCB = base::DoNothing();
 
 class MockVideoCaptureDeviceLauncherCallbacks
     : public VideoCaptureDeviceLauncher::Callbacks {
@@ -62,13 +62,18 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
     OverrideVideoCaptureServiceForTesting(&mock_video_capture_service_);
   }
 
+  ServiceVideoCaptureProviderTest(const ServiceVideoCaptureProviderTest&) =
+      delete;
+  ServiceVideoCaptureProviderTest& operator=(
+      const ServiceVideoCaptureProviderTest&) = delete;
+
   ~ServiceVideoCaptureProviderTest() override {
     OverrideVideoCaptureServiceForTesting(nullptr);
   }
 
  protected:
   void SetUp() override {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     provider_ = std::make_unique<ServiceVideoCaptureProvider>(
         base::BindRepeating([]() {
           return std::unique_ptr<video_capture::mojom::AcceleratorFactory>();
@@ -77,7 +82,7 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
 #else
     provider_ =
         std::make_unique<ServiceVideoCaptureProvider>(kIgnoreLogMessageCB);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     ON_CALL(mock_video_capture_service_, DoConnectToVideoSourceProvider(_))
         .WillByDefault(Invoke(
@@ -143,9 +148,6 @@ class ServiceVideoCaptureProviderTest : public testing::Test {
       video_capture::mojom::VideoSourceProvider::GetSourceInfosCallback>
       service_cb_;
   base::RunLoop wait_for_connection_to_service_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceVideoCaptureProviderTest);
 };
 
 // Tests that if connection to the service is lost during an outstanding call
@@ -322,11 +324,9 @@ TEST_F(ServiceVideoCaptureProviderTest,
 
   // Make initial call to GetDeviceInfosAsync(). The service does not yet
   // respond.
-  provider_->GetDeviceInfosAsync(base::BindRepeating(
-      [](const std::vector<media::VideoCaptureDeviceInfo>&) {}));
+  provider_->GetDeviceInfosAsync(base::DoNothing());
   // Make an additional call to GetDeviceInfosAsync().
-  provider_->GetDeviceInfosAsync(base::BindRepeating(
-      [](const std::vector<media::VideoCaptureDeviceInfo>&) {}));
+  provider_->GetDeviceInfosAsync(base::DoNothing());
   {
     base::RunLoop give_mojo_chance_to_process;
     give_mojo_chance_to_process.RunUntilIdle();

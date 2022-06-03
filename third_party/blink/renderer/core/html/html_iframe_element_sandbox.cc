@@ -46,6 +46,7 @@ bool IsTokenSupported(const AtomicString& token) {
       (token == kStorageAccessAPISandboxToken)) {
     return true;
   }
+
   return false;
 }
 

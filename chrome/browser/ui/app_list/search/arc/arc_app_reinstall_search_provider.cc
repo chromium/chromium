@@ -8,12 +8,13 @@
 #include <unordered_set>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
@@ -22,8 +23,8 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/common/url_icon_source.h"
 #include "chrome/common/pref_names.h"
-#include "components/arc/arc_service_manager.h"
 #include "components/arc/session/arc_bridge_service.h"
+#include "components/arc/session/arc_service_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -32,7 +33,7 @@
 
 namespace {
 // Seconds in between refreshes;
-constexpr base::TimeDelta kRefresh = base::TimeDelta::FromMinutes(30);
+constexpr base::TimeDelta kRefresh = base::Minutes(30);
 
 constexpr char kAppListLatency[] = "Apps.AppListRecommendedResponse.Latency";
 constexpr char kAppListCounts[] = "Apps.AppListRecommendedResponse.Count";
@@ -76,6 +77,10 @@ constexpr base::FeatureParam<int> kInteractionGrace(
     &app_list_features::kEnableAppReinstallZeroState,
     "interaction_grace_hours",
     0);
+
+// TODO(thanhdng): This is used to guard the new http endpoint before it's
+// launched. Remove this when it happens.
+constexpr bool kUseHttpEndpoint = false;
 
 void SetStateInt64(Profile* profile,
                    const std::string& package_name,
@@ -149,7 +154,7 @@ bool GetStateTime(Profile* profile,
   if (!GetStateInt64(profile, package_name, key, &value))
     return false;
 
-  *time_delta = base::TimeDelta::FromMilliseconds(value);
+  *time_delta = base::Milliseconds(value);
   return true;
 }
 
@@ -157,7 +162,7 @@ bool GetKnownPackageNames(Profile* profile,
                           std::unordered_set<std::string>* package_names) {
   const base::DictionaryValue* dictionary = profile->GetPrefs()->GetDictionary(
       app_list::ArcAppReinstallSearchProvider::kAppState);
-  for (const auto& it : dictionary->DictItems()) {
+  for (const auto it : dictionary->DictItems()) {
     if (it.second.is_dict()) {
       package_names->insert(it.first);
     }
@@ -169,11 +174,19 @@ void RecordUmaResponseParseResult(arc::mojom::AppReinstallState result) {
   UMA_HISTOGRAM_ENUMERATION("Apps.AppListRecommendedResponse", result);
 }
 
+// Limits icon size to be downloaded with FIFE. The input |icon_dimension| is in
+// dip and the FIFE requires pixel value. Thus, we need to multiply
+// |icon_dimension| with the maximum device scale factor to avoid potential
+// issues.
 std::string LimitIconSizeWithFife(const std::string& icon_url,
                                   int icon_dimension) {
-  // We append a suffix to icon url
   DCHECK_GT(icon_dimension, 0);
-  return base::StrCat({icon_url, "=s", base::NumberToString(icon_dimension)});
+  // Maximum device scale factor (DSF).
+  static const int kMaxDeviceScaleFactor = 3;
+  // We append a suffix to icon url
+  return base::StrCat(
+      {icon_url, "=s",
+       base::NumberToString(icon_dimension * kMaxDeviceScaleFactor)});
 }
 
 }  // namespace
@@ -206,10 +219,13 @@ ArcAppReinstallSearchProvider::ArcAppReinstallSearchProvider(
     unsigned int max_result_count)
     : profile_(profile),
       max_result_count_(max_result_count),
-      icon_dimension_(ash::AppListConfig::instance().GetPreferredIconDimension(
-          ash::SearchResultDisplayType::kRecommendation)),
+      icon_dimension_(
+          ash::SharedAppListConfig::instance().GetPreferredIconDimension(
+              ash::SearchResultDisplayType::kTile)),
       app_fetch_timer_(std::make_unique<base::RepeatingTimer>()) {
-  DCHECK(profile_ != nullptr);
+  DCHECK(profile_);
+  if (kUseHttpEndpoint)
+    recommend_apps_fetcher_ = RecommendAppsFetcher::Create(this);
   ArcAppListPrefs::Get(profile_)->AddObserver(this);
   MaybeUpdateFetching();
 }
@@ -237,24 +253,34 @@ void ArcAppReinstallSearchProvider::StopRepeatingFetch() {
   UpdateResults();
 }
 
-void ArcAppReinstallSearchProvider::Start(const base::string16& query) {
-  if (query_is_empty_ == query.empty())
-    return;
+ash::AppListSearchResultType ArcAppReinstallSearchProvider::ResultType() {
+  return ash::AppListSearchResultType::kPlayStoreReinstallApp;
+}
 
+void ArcAppReinstallSearchProvider::Start(const std::u16string& query) {
   query_is_empty_ = query.empty();
+  if (!query_is_empty_) {
+    ClearResults();
+    return;
+  }
+
+  // Always check if suggested content is enabled before searching for
+  // reinstall recommendations.
+  bool should_show_arc_app_reinstall_result = true;
+  PrefService* pref_service = profile_->GetPrefs();
+  if (pref_service &&
+      !pref_service->GetBoolean(chromeos::prefs::kSuggestedContentEnabled))
+    should_show_arc_app_reinstall_result = false;
+
+  if (!should_show_arc_app_reinstall_result) {
+    ClearResults();
+    return;
+  }
+
   UpdateResults();
 }
 
 void ArcAppReinstallSearchProvider::StartFetch() {
-  arc::mojom::AppInstance* app_instance =
-      arc::ArcServiceManager::Get()
-          ? ARC_GET_INSTANCE_FOR_METHOD(
-                arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
-                GetAppReinstallCandidates)
-          : nullptr;
-  if (app_instance == nullptr)
-    return;
-
   if (profile_->GetPrefs()->IsManagedPreference(
           prefs::kAppReinstallRecommendationEnabled) &&
       !profile_->GetPrefs()->GetBoolean(
@@ -267,6 +293,20 @@ void ArcAppReinstallSearchProvider::StartFetch() {
                                 {});
     return;
   }
+
+  if (kUseHttpEndpoint) {
+    recommend_apps_fetcher_->StartDownload();
+    return;
+  }
+
+  arc::mojom::AppInstance* app_instance =
+      arc::ArcServiceManager::Get()
+          ? ARC_GET_INSTANCE_FOR_METHOD(
+                arc::ArcServiceManager::Get()->arc_bridge_service()->app(),
+                GetAppReinstallCandidates)
+          : nullptr;
+  if (app_instance == nullptr)
+    return;
 
   app_instance->GetAppReinstallCandidates(base::BindOnce(
       &ArcAppReinstallSearchProvider::OnGetAppReinstallCandidates,
@@ -292,29 +332,12 @@ void ArcAppReinstallSearchProvider::OnGetAppReinstallCandidates(
 
   for (const auto& candidate : results) {
     // only keep candidates with icons.
-    if (candidate->icon_url != base::nullopt) {
+    if (candidate->icon_url != absl::nullopt) {
       loaded_value_.push_back(candidate.Clone());
     }
   }
 
-  // Update the dictionary to reset old impression counts.
-  const base::TimeDelta now = base::Time::Now().ToDeltaSinceWindowsEpoch();
-  // Remove stale impressions from state.
-  std::unordered_set<std::string> package_names;
-  GetKnownPackageNames(profile_, &package_names);
-  for (const std::string& package_name : package_names) {
-    base::TimeDelta latest_impression;
-    if (!GetStateTime(profile_, package_name, kImpressionTime,
-                      &latest_impression)) {
-      continue;
-    }
-    if (now - latest_impression >
-        base::TimeDelta::FromHours(kResetImpressionGrace.Get())) {
-      SetStateInt64(profile_, package_name, kImpressionCount, 0);
-      UpdateStateRemoveKey(profile_, package_name, kImpressionTime);
-    }
-  }
-
+  MaybeyResetOldImpressionCounts();
   UpdateResults();
 }
 
@@ -329,7 +352,7 @@ void ArcAppReinstallSearchProvider::UpdateResults() {
   }
 
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(profile_);
-  DCHECK(prefs != nullptr);
+  DCHECK(prefs);
 
   std::vector<std::unique_ptr<ChromeSearchResult>> new_results;
   std::unordered_set<std::string> used_icon_urls;
@@ -361,9 +384,8 @@ void ArcAppReinstallSearchProvider::UpdateResults() {
         // this icon is not loaded, nor is it in the loading set. Add it.
         loading_icon_urls_[icon_url] = gfx::ImageSkia(
             std::make_unique<UrlIconSource>(
-                base::BindRepeating(
-                    &ArcAppReinstallSearchProvider::OnIconLoaded,
-                    weak_ptr_factory_.GetWeakPtr(), icon_url),
+                base::BindOnce(&ArcAppReinstallSearchProvider::OnIconLoaded,
+                               weak_ptr_factory_.GetWeakPtr(), icon_url),
                 profile_,
                 GURL(LimitIconSizeWithFife(icon_url, icon_dimension_)),
                 icon_dimension_, IDR_APP_DEFAULT_ICON),
@@ -395,6 +417,24 @@ void ArcAppReinstallSearchProvider::UpdateResults() {
   // screen?
   if (!ResultsIdentical(results(), new_results)) {
     SwapResults(&new_results);
+  }
+}
+
+void ArcAppReinstallSearchProvider::MaybeyResetOldImpressionCounts() {
+  const base::TimeDelta now = base::Time::Now().ToDeltaSinceWindowsEpoch();
+  // Remove stale impressions from state.
+  std::unordered_set<std::string> package_names;
+  GetKnownPackageNames(profile_, &package_names);
+  for (const std::string& package_name : package_names) {
+    base::TimeDelta latest_impression;
+    if (!GetStateTime(profile_, package_name, kImpressionTime,
+                      &latest_impression)) {
+      continue;
+    }
+    if (now - latest_impression > base::Hours(kResetImpressionGrace.Get())) {
+      SetStateInt64(profile_, package_name, kImpressionCount, 0);
+      UpdateStateRemoveKey(profile_, package_name, kImpressionTime);
+    }
   }
 }
 
@@ -495,8 +535,7 @@ void ArcAppReinstallSearchProvider::OnVisibilityChanged(
   if (!GetStateTime(profile_, package_name, kImpressionTime,
                     &latest_impression) ||
       impression_count == 0 ||
-      (now - latest_impression >
-       base::TimeDelta::FromSeconds(kNewImpressionTime.Get()))) {
+      (now - latest_impression > base::Seconds(kNewImpressionTime.Get()))) {
     UpdateStateTime(profile_, package_name, kImpressionTime);
     SetStateInt64(profile_, package_name, kImpressionCount,
                   impression_count + 1);
@@ -536,14 +575,14 @@ bool ArcAppReinstallSearchProvider::ShouldShowPackage(
   const base::TimeDelta now = base::Time::Now().ToDeltaSinceWindowsEpoch();
   if (GetStateTime(profile_, package_id, kUninstallTime, &timestamp)) {
     const auto delta = now - timestamp;
-    if (delta < base::TimeDelta::FromHours(kUninstallGrace.Get())) {
+    if (delta < base::Hours(kUninstallGrace.Get())) {
       // We uninstalled this recently, don't show.
       return false;
     }
   }
   if (GetStateTime(profile_, package_id, kInstallStartTime, &timestamp)) {
     const auto delta = now - timestamp;
-    if (delta < base::TimeDelta::FromHours(kInstallStartGrace.Get())) {
+    if (delta < base::Hours(kInstallStartGrace.Get())) {
       // We started install on this recently, don't show.
       return false;
     }
@@ -562,8 +601,7 @@ bool ArcAppReinstallSearchProvider::ShouldShowAnything() const {
   if (!kInteractionGrace.Get()) {
     return true;
   }
-  const base::TimeDelta grace_period =
-      base::TimeDelta::FromHours(kInteractionGrace.Get());
+  const base::TimeDelta grace_period = base::Hours(kInteractionGrace.Get());
   const base::TimeDelta now = base::Time::Now().ToDeltaSinceWindowsEpoch();
   std::unordered_set<std::string> package_names;
   GetKnownPackageNames(profile_, &package_names);
@@ -613,7 +651,7 @@ bool ArcAppReinstallSearchProvider::ResultsIdentical(
   for (size_t i = 0; i < old_results.size(); ++i) {
     const ChromeSearchResult& old_result = *(old_results[i]);
     const ChromeSearchResult& new_result = *(new_results[i]);
-    if (!old_result.icon().BackedBySameObjectAs(new_result.icon())) {
+    if (!old_result.icon().icon.BackedBySameObjectAs(new_result.icon().icon)) {
       return false;
     }
     if (old_result.title() != new_result.title()) {
@@ -630,6 +668,39 @@ bool ArcAppReinstallSearchProvider::ResultsIdentical(
     }
   }
   return true;
+}
+
+void ArcAppReinstallSearchProvider::OnLoadSuccess(const base::Value& app_list) {
+  // TODO(thanhdng): add a UMA histogram here.
+  loaded_value_.clear();
+
+  for (const auto& item : app_list.GetList()) {
+    base::Value app_info = item.Clone();
+    const auto package_name = app_info.ExtractPath("package_name");
+    const auto name = app_info.ExtractPath("name");
+    const auto icon = app_info.ExtractPath("icon");
+    if (icon.has_value() && package_name.has_value() && name.has_value()) {
+      if (icon.value().is_string() && package_name.value().is_string() &&
+          name.value().is_string()) {
+        // TODO(thanhdng): currently rating count and average rating is
+        // unavailable. Set them to appropriate value when available.
+        loaded_value_.push_back(arc::mojom::AppReinstallCandidate::New(
+            package_name.value().GetString(), name.value().GetString(),
+            icon.value().GetString(), 0, 0));
+      }
+    }
+  }
+
+  MaybeyResetOldImpressionCounts();
+  UpdateResults();
+}
+
+void ArcAppReinstallSearchProvider::OnLoadError() {
+  // TODO(thanhdng): add a UMA histogram here.
+}
+
+void ArcAppReinstallSearchProvider::OnParseResponseError() {
+  // TODO(thanhdng): add a UMA histogram here.
 }
 
 }  // namespace app_list

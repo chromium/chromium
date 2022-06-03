@@ -15,6 +15,7 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/proxy_config/proxy_config_dictionary.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
+#include "net/base/proxy_string_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_list.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -82,7 +83,7 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
   // specified initial config availability.
   void InitConfigService(net::ProxyConfigService::ConfigAvailability
                              delegate_config_availability) {
-    pref_service_.reset(new TestingPrefServiceSimple());
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     PrefProxyConfigTrackerImpl::RegisterPrefs(pref_service_->registry());
     net::ProxyConfig proxy_config;
     proxy_config.set_pac_url(GURL(kFixedPacUrl));
@@ -90,8 +91,8 @@ class PrefProxyConfigTrackerImplTest : public testing::Test {
         proxy_config, TRAFFIC_ANNOTATION_FOR_TESTS);
     delegate_service_ =
         new TestProxyConfigService(fixed_config_, delegate_config_availability);
-    proxy_config_tracker_.reset(new PrefProxyConfigTrackerImpl(
-        pref_service_.get(), base::ThreadTaskRunnerHandle::Get()));
+    proxy_config_tracker_ = std::make_unique<PrefProxyConfigTrackerImpl>(
+        pref_service_.get(), base::ThreadTaskRunnerHandle::Get());
     proxy_config_service_ =
         proxy_config_tracker_->CreateTrackingProxyConfigService(
             std::unique_ptr<net::ProxyConfigService>(delegate_service_));
@@ -135,8 +136,8 @@ TEST_F(PrefProxyConfigTrackerImplTest, DynamicPrefOverrides) {
   EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
             actual_config.value().proxy_rules().type);
   EXPECT_EQ(actual_config.value().proxy_rules().single_proxies.Get(),
-            net::ProxyServer::FromURI("http://example.com:3128",
-                                      net::ProxyServer::SCHEME_HTTP));
+            net::ProxyUriToProxyServer("http://example.com:3128",
+                                       net::ProxyServer::SCHEME_HTTP));
 
   pref_service_->SetManagedPref(
       proxy_config::prefs::kProxy,

@@ -6,22 +6,22 @@
 
 #import <WebKit/WebKit.h>
 
-#include "base/logging.h"
+#import <MaterialComponents/MDCAppBarViewController.h>
+
+#include "base/check.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/icons/chrome_icon.h"
 #import "ios/chrome/browser/ui/material_components/utils.h"
 #include "ios/chrome/browser/ui/util/rtl_geometry.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/third_party/material_components_ios/src/components/AppBar/src/MDCAppBarViewController.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/common/web_view_creation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
-@interface StaticFileViewController ()<UIScrollViewDelegate,
-                                       WKNavigationDelegate> {
-  ios::ChromeBrowserState* _browserState;  // weak
+@interface StaticFileViewController () <UIScrollViewDelegate> {
+  ChromeBrowserState* _browserState;  // weak
   NSURL* _URL;
   // YES if the header has been configured for RTL.
   BOOL _headerLaidOutForRTL;
@@ -38,9 +38,7 @@
 
 @implementation StaticFileViewController
 
-@synthesize loadStatus = _loadStatus;
-
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState
+- (instancetype)initWithBrowserState:(ChromeBrowserState*)browserState
                                  URL:(NSURL*)URL {
   DCHECK(browserState);
   DCHECK(URL);
@@ -72,8 +70,7 @@
                             cachePolicy:NSURLRequestReloadIgnoringLocalCacheData
                         timeoutInterval:60.0];
   [_webView loadRequest:request];
-  [_webView setBackgroundColor:UIColor.cr_systemBackgroundColor];
-  _webView.navigationDelegate = self;
+  [_webView setBackgroundColor:[UIColor colorNamed:kPrimaryBackgroundColor]];
   [self.view addSubview:_webView];
 
   ConfigureAppBarViewControllerWithCardStyle(_appBarViewController);
@@ -97,7 +94,6 @@
       [ChromeIcon templateBarButtonItemWithImage:[ChromeIcon backIcon]
                                           target:self
                                           action:@selector(back)];
-  self.loadStatus = DID_NOT_COMPLETE;
 }
 
 #pragma mark - Actions
@@ -106,22 +102,4 @@
   [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark - WKNavigationDelegate
-
-- (void)webView:(WKWebView*)webView
-    didFailProvisionalNavigation:(WKNavigation*)navigation
-                       withError:(NSError*)error {
-  self.loadStatus = FAILED;
-}
-
-- (void)webView:(WKWebView*)webView
-    didFailNavigation:(WKNavigation*)navigation
-            withError:(NSError*)error {
-  self.loadStatus = FAILED;
-}
-
-- (void)webView:(WKWebView*)webView
-    didFinishNavigation:(WKNavigation*)navigation {
-  self.loadStatus = SUCCESS;
-}
 @end

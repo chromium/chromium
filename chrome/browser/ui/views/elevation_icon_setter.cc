@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -14,7 +15,7 @@
 #include <windows.h>
 #include <shellapi.h>
 
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/win/win_util.h"
 #include "ui/display/win/dpi.h"
 #include "ui/gfx/icon_util.h"
@@ -53,8 +54,8 @@ ElevationIconSetter::ElevationIconSetter(views::LabelButton* button,
     : button_(button) {
 #if defined(OS_WIN)
   base::PostTaskAndReplyWithResult(
-      base::CreateCOMSTATaskRunner({base::ThreadPool(), base::MayBlock(),
-                                    base::TaskPriority::USER_BLOCKING})
+      base::ThreadPool::CreateCOMSTATaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING})
           .get(),
       FROM_HERE, base::BindOnce(&GetElevationIcon),
       base::BindOnce(&ElevationIconSetter::SetButtonIcon,
@@ -76,7 +77,7 @@ void ElevationIconSetter::SetButtonIcon(base::OnceClosure callback,
 #endif
     button_->SetImage(
         views::Button::STATE_NORMAL,
-        gfx::ImageSkia(gfx::ImageSkiaRep(icon, device_scale_factor)));
+        gfx::ImageSkia::CreateFromBitmap(icon, device_scale_factor));
     button_->SizeToPreferredSize();
     if (button_->parent())
       button_->parent()->Layout();

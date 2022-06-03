@@ -10,14 +10,13 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/media_player_id.h"
 #include "media/base/video_codecs.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -40,6 +39,11 @@ class CONTENT_EXPORT MediaPowerExperimentManager {
   };
 
   MediaPowerExperimentManager();
+
+  MediaPowerExperimentManager(const MediaPowerExperimentManager&) = delete;
+  MediaPowerExperimentManager& operator=(const MediaPowerExperimentManager&) =
+      delete;
+
   virtual ~MediaPowerExperimentManager();
 
   // May return nullptr if experiments aren't enabled.
@@ -66,13 +70,11 @@ class CONTENT_EXPORT MediaPowerExperimentManager {
   std::map<MediaPlayerId, ExperimentCB> players_;
 
   // If set, this is the player that has a running experiment.
-  base::Optional<MediaPlayerId> current_experiment_player_;
+  absl::optional<MediaPlayerId> current_experiment_player_;
   ExperimentCB current_experiment_cb_;
 
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(MediaPowerExperimentManager);
 };
 
 }  // namespace content

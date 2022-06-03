@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html style="font-size: 16px">
+<head>
+
+<meta name="viewport" content="width=800">
+<style>
+  body {
+    width: 800px;
+    margin: 0;
+    overflow-y: hidden;
+    overflow-x: hidden;
+  }
+  ::marker {
+    content: counter(list-item) '. ';
+  }
+</style>
+
+<script src="resources/autosizingTest.js"></script>
+
+</head>
+<body>
+
+<div>
+The below list markers should be autosized to 40px computed font-size (16 * 800/320).
+</div>
+<ol>
+  <li>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</li>
+  <li>plain text</li>
+  <li><a href='#'>hyperlinked</a></li>
+  <li><a href='#'>hyperlinked</a> example</li>
+  <li><em>emphasized</em></li>
+  <li><em>emphasized</em> example</li>
+  <li><b>bold</b></li>
+  <li><b>bold</b> example</li>
+  <li><i>italic</i></li>
+  <li><i>italic</i> example</li>
+  <li><del>strikethrough</del></li>
+  <li><del>strikethrough</del> example</li>
+</ol>
+
+</body>
+</html>

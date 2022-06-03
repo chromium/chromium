@@ -4,7 +4,7 @@
 
 #include "chromecast/media/cma/backend/fuchsia/fuchsia_volume_control.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace chromecast {
 namespace media {

@@ -8,34 +8,33 @@
 #include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer_animator.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
-#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/ax_virtual_view.h"
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_highlight.h"
 #include "ui/views/animation/ink_drop_impl.h"
 #include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/widget/widget.h"
-
-using MD = ui::MaterialDesignController;
 
 namespace {
 
@@ -53,8 +52,9 @@ constexpr int kIconLabelBubbleFadeOutDurationMs = 175;
 
 }  // namespace
 
-//////////////////////////////////////////////////////////////////
-// SeparatorView class
+SkColor IconLabelBubbleView::Delegate::GetIconLabelBubbleInkDropColor() const {
+  return GetIconLabelBubbleSurroundingForegroundColor();
+}
 
 IconLabelBubbleView::SeparatorView::SeparatorView(IconLabelBubbleView* owner) {
   DCHECK(owner);
@@ -65,14 +65,22 @@ IconLabelBubbleView::SeparatorView::SeparatorView(IconLabelBubbleView* owner) {
 }
 
 void IconLabelBubbleView::SeparatorView::OnPaint(gfx::Canvas* canvas) {
-  const SkColor background_color = owner_->GetParentBackgroundColor();
-  const SkColor separator_color =
-      SkColorSetA(color_utils::GetColorWithMaxContrast(background_color), 0x69);
+  // This uses the surrounding context as the base color instead of
+  // IconLabelBubbleView::GetForegroundColor() so that if the
+  // IconLabelBubbleView has been emphasized (e.g. red text for a security
+  // error) the separator will still blend into the background.
+  const SkColor separator_color = SkColorSetA(
+      owner_->delegate_->GetIconLabelBubbleSurroundingForegroundColor(), 0x69);
   const float x = GetLocalBounds().right() -
                   owner_->GetEndPaddingWithSeparator() -
                   1.0f / canvas->image_scale();
   canvas->DrawLine(gfx::PointF(x, GetLocalBounds().y()),
                    gfx::PointF(x, GetLocalBounds().bottom()), separator_color);
+}
+
+void IconLabelBubbleView::SeparatorView::OnThemeChanged() {
+  views::View::OnThemeChanged();
+  SchedulePaint();
 }
 
 void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
@@ -82,12 +90,12 @@ void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
   // When using focus rings are visible we should hide the separator instantly
   // when the IconLabelBubbleView is focused. Otherwise we should follow the
   // inkdrop.
-  if (owner_->focus_ring() && owner_->HasFocus()) {
+  if (views::FocusRing::Get(owner_) && owner_->HasFocus()) {
     layer()->SetOpacity(0.0f);
     return;
   }
 
-  views::InkDrop* ink_drop = owner_->GetInkDrop();
+  views::InkDrop* const ink_drop = views::InkDrop::Get(owner_)->GetInkDrop();
   DCHECK(ink_drop);
 
   // If an inkdrop highlight or ripple is animating in or visible, the
@@ -103,67 +111,79 @@ void IconLabelBubbleView::SeparatorView::UpdateOpacity() {
     duration = kIconLabelBubbleFadeInDurationMs;
   }
 
-  if (disable_animation_for_test_) {
-    layer()->SetOpacity(opacity);
-  } else {
-    ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
-    animation.SetTransitionDuration(
-        base::TimeDelta::FromMilliseconds(duration));
-    animation.SetTweenType(gfx::Tween::Type::EASE_IN);
-    layer()->SetOpacity(opacity);
-  }
+  ui::ScopedLayerAnimationSettings animation(layer()->GetAnimator());
+  animation.SetTransitionDuration(base::Milliseconds(duration));
+  animation.SetTweenType(gfx::Tween::Type::EASE_IN);
+  layer()->SetOpacity(opacity);
 }
 
-//////////////////////////////////////////////////////////////////
-// HighlightPathGenerator class
+using SeparatorView = IconLabelBubbleView::SeparatorView;
+
+BEGIN_METADATA(SeparatorView, views::View)
+END_METADATA
 
 class IconLabelBubbleView::HighlightPathGenerator
     : public views::HighlightPathGenerator {
  public:
   HighlightPathGenerator() = default;
 
+  HighlightPathGenerator(const HighlightPathGenerator&) = delete;
+  HighlightPathGenerator& operator=(const HighlightPathGenerator&) = delete;
+
   // views::HighlightPathGenerator:
   SkPath GetHighlightPath(const views::View* view) override {
     return static_cast<const IconLabelBubbleView*>(view)->GetHighlightPath();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HighlightPathGenerator);
 };
 
-//////////////////////////////////////////////////////////////////
-// IconLabelBubbleView class
+IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list,
+                                         Delegate* delegate)
+    : delegate_(delegate),
+      separator_view_(AddChildView(std::make_unique<SeparatorView>(this))) {
+  DCHECK(delegate_);
 
-IconLabelBubbleView::IconLabelBubbleView(const gfx::FontList& font_list)
-    : LabelButton(nullptr, base::string16()),
-      separator_view_(new SeparatorView(this)) {
   SetFontList(font_list);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   separator_view_->SetVisible(ShouldShowSeparator());
-  AddChildView(separator_view_);
 
-  set_ink_drop_visible_opacity(
+  views::InkDrop::Get(this)->SetVisibleOpacity(
       GetOmniboxStateOpacity(OmniboxPartState::SELECTED));
-  set_ink_drop_highlight_opacity(
+  views::InkDrop::Get(this)->SetHighlightOpacity(
       GetOmniboxStateOpacity(OmniboxPartState::HOVERED));
+
+  views::InkDrop::Get(this)->SetCreateInkDropCallback(base::BindRepeating(
+      [](IconLabelBubbleView* host) {
+        std::unique_ptr<views::InkDrop> ink_drop =
+            views::InkDrop::CreateInkDropForFloodFillRipple(
+                views::InkDrop::Get(host), /*highlight_on_hover=*/true,
+                /*highlight_on_focus=*/!views::FocusRing::Get(host));
+        ink_drop->AddObserver(host);
+        return ink_drop;
+      },
+      this));
+  views::InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+      [](IconLabelBubbleView* host) {
+        return host->delegate_->GetIconLabelBubbleInkDropColor();
+      },
+      this));
 
   views::HighlightPathGenerator::Install(
       this, std::make_unique<HighlightPathGenerator>());
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 
   UpdateBorder();
 
-  set_notify_enter_exit_on_child(true);
+  SetNotifyEnterExitOnChild(true);
 
   // Flip the canvas in RTL so the separator is drawn on the correct side.
-  separator_view_->EnableCanvasFlippingForRTLUI(true);
+  separator_view_->SetFlipCanvasOnPaintForRTLUI(true);
 
   auto alert_view = std::make_unique<views::AXVirtualView>();
   alert_view->GetCustomData().role = ax::mojom::Role::kAlert;
+  alert_view->GetCustomData().AddState(ax::mojom::State::kInvisible);
   alert_virtual_view_ = alert_view.get();
   GetViewAccessibility().AddVirtualChildView(std::move(alert_view));
-
-  md_observer_.Add(MD::GetInstance());
 }
 
 IconLabelBubbleView::~IconLabelBubbleView() {}
@@ -181,24 +201,24 @@ bool IconLabelBubbleView::ShouldShowLabel() const {
   return label()->GetVisible() && !label()->GetText().empty();
 }
 
-void IconLabelBubbleView::SetLabel(const base::string16& label_text) {
+void IconLabelBubbleView::SetLabel(const std::u16string& label_text) {
   SetAccessibleName(label_text);
   label()->SetText(label_text);
   separator_view_->SetVisible(ShouldShowSeparator());
   separator_view_->UpdateOpacity();
 }
 
-void IconLabelBubbleView::SetImage(const gfx::ImageSkia& image_skia) {
-  LabelButton::SetImage(STATE_NORMAL, image_skia);
-}
-
 void IconLabelBubbleView::SetFontList(const gfx::FontList& font_list) {
   label()->SetFontList(font_list);
 }
 
-SkColor IconLabelBubbleView::GetParentBackgroundColor() const {
-  return GetNativeTheme()->GetSystemColor(
-      ui::NativeTheme::kColorId_TextfieldDefaultBackground);
+SkColor IconLabelBubbleView::GetForegroundColor() const {
+  return delegate_->GetIconLabelBubbleSurroundingForegroundColor();
+}
+
+void IconLabelBubbleView::UpdateLabelColors() {
+  SetEnabledTextColors(GetForegroundColor());
+  label()->SetBackgroundColor(delegate_->GetIconLabelBubbleBackgroundColor());
 }
 
 bool IconLabelBubbleView::ShouldShowSeparator() const {
@@ -249,6 +269,15 @@ bool IconLabelBubbleView::IsBubbleShowing() const {
   return false;
 }
 
+void IconLabelBubbleView::OnTouchUiChanged() {
+  UpdateBorder();
+
+  // PreferredSizeChanged() incurs an expensive layout of the location bar, so
+  // only call it when this view is showing.
+  if (GetVisible())
+    PreferredSizeChanged();
+}
+
 gfx::Size IconLabelBubbleView::CalculatePreferredSize() const {
   return GetSizeForLabelWidth(label()->GetPreferredSize().width());
 }
@@ -292,9 +321,9 @@ void IconLabelBubbleView::Layout() {
   separator_view_->SetBounds(separator_x, separator_bounds.y(), separator_width,
                              separator_height);
 
-  if (focus_ring()) {
-    focus_ring()->Layout();
-    focus_ring()->SchedulePaint();
+  if (views::FocusRing::Get(this)) {
+    views::FocusRing::Get(this)->Layout();
+    views::FocusRing::Get(this)->SchedulePaint();
   }
 }
 
@@ -310,17 +339,7 @@ void IconLabelBubbleView::OnThemeChanged() {
   // under certain conditions. We don't want that, so unset the background.
   label()->SetBackground(nullptr);
 
-  SetEnabledTextColors(GetTextColor());
-  label()->SetBackgroundColor(GetParentBackgroundColor());
-  SchedulePaint();
-}
-
-std::unique_ptr<views::InkDrop> IconLabelBubbleView::CreateInkDrop() {
-  std::unique_ptr<views::InkDropImpl> ink_drop =
-      CreateDefaultFloodFillInkDropImpl();
-  ink_drop->SetShowHighlightOnFocus(!focus_ring());
-  ink_drop->AddObserver(this);
-  return std::move(ink_drop);
+  UpdateLabelColors();
 }
 
 bool IconLabelBubbleView::IsTriggerableEvent(const ui::Event& event) {
@@ -362,8 +381,9 @@ void IconLabelBubbleView::AnimationEnded(const gfx::Animation* animation) {
     PreferredSizeChanged();
   }
 
-  GetInkDrop()->SetShowHighlightOnHover(true);
-  GetInkDrop()->SetShowHighlightOnFocus(!focus_ring());
+  views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(true);
+  views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnFocus(
+      !views::FocusRing::Get(this));
 }
 
 void IconLabelBubbleView::AnimationProgressed(const gfx::Animation* animation) {
@@ -387,13 +407,9 @@ void IconLabelBubbleView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
     node_data->SetNameExplicitlyEmpty();
 }
 
-void IconLabelBubbleView::OnTouchUiChanged() {
-  UpdateBorder();
-
-  // PreferredSizeChanged() incurs an expensive layout of the location bar, so
-  // only call it when this view is showing.
-  if (GetVisible())
-    PreferredSizeChanged();
+void IconLabelBubbleView::SetImageModel(const ui::ImageModel& image_model) {
+  DCHECK(!image_model.IsEmpty());
+  LabelButton::SetImageModel(STATE_NORMAL, image_model);
 }
 
 gfx::Size IconLabelBubbleView::GetSizeForLabelWidth(int label_width) const {
@@ -420,7 +436,8 @@ gfx::Size IconLabelBubbleView::GetSizeForLabelWidth(int label_width) const {
 int IconLabelBubbleView::GetInternalSpacing() const {
   if (image()->GetPreferredSize().IsEmpty())
     return 0;
-  return (MD::touch_ui() ? 10 : 8) + GetExtraInternalSpacing();
+  return (ui::TouchUiController::Get()->touch_ui() ? 10 : 8) +
+         GetExtraInternalSpacing();
 }
 
 int IconLabelBubbleView::GetExtraInternalSpacing() const {
@@ -439,16 +456,12 @@ int IconLabelBubbleView::GetEndPaddingWithSeparator() const {
   return end_padding;
 }
 
-const char* IconLabelBubbleView::GetClassName() const {
-  return "IconLabelBubbleView";
-}
-
 void IconLabelBubbleView::SetUpForAnimation() {
-  SetInkDropMode(InkDropMode::ON);
+  views::InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   label()->SetElideBehavior(gfx::NO_ELIDE);
   label()->SetVisible(false);
-  slide_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(150));
+  slide_animation_.SetSlideDuration(base::Milliseconds(150));
   open_state_fraction_ = 1.0;
 }
 
@@ -458,19 +471,19 @@ void IconLabelBubbleView::SetUpForInOutAnimation() {
   // statically showing the label (1800ms), and hiding the label (600ms). The
   // proportion of time spent in each portion of the animation is controlled by
   // kIconLabelBubbleOpenTimeFraction.
-  slide_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(3000));
+  slide_animation_.SetSlideDuration(base::Milliseconds(3000));
   // The tween is calculated in GetWidthBetween().
   slide_animation_.SetTweenType(gfx::Tween::LINEAR);
   open_state_fraction_ = 0.2;
 }
 
-void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
+void IconLabelBubbleView::AnimateIn(absl::optional<int> string_id) {
   if (!label()->GetVisible()) {
     // Start animation from the current width, otherwise the icon will also be
     // included if visible.
     grow_animation_starting_width_ = GetVisible() ? width() : 0;
     if (string_id) {
-      base::string16 label = l10n_util::GetStringUTF16(string_id.value());
+      std::u16string label = l10n_util::GetStringUTF16(string_id.value());
       SetLabel(label);
 
       // Send an accessibility alert whose text is the label's text. Doing this
@@ -478,6 +491,8 @@ void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
       // which serves to announce it. This is done unconditionally here if there
       // is text because the animation is intended to draw attention to the
       // instance anyway.
+      alert_virtual_view_->GetCustomData().RemoveState(
+          ax::mojom::State::kInvisible);
       alert_virtual_view_->GetCustomData().SetName(label);
       alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert);
     }
@@ -489,6 +504,8 @@ void IconLabelBubbleView::AnimateIn(base::Optional<int> string_id) {
 void IconLabelBubbleView::AnimateOut() {
   if (label()->GetVisible()) {
     label()->SetVisible(false);
+    alert_virtual_view_->GetCustomData().AddState(ax::mojom::State::kInvisible);
+    alert_virtual_view_->NotifyAccessibilityEvent(ax::mojom::Event::kHide);
     HideAnimation();
   }
 }
@@ -499,7 +516,7 @@ void IconLabelBubbleView::ResetSlideAnimation(bool show_label) {
 }
 
 void IconLabelBubbleView::ReduceAnimationTimeForTesting() {
-  slide_animation_.SetSlideDuration(base::TimeDelta::FromMilliseconds(1));
+  slide_animation_.SetSlideDuration(base::Milliseconds(1));
 }
 
 void IconLabelBubbleView::PauseAnimation() {
@@ -535,14 +552,14 @@ double IconLabelBubbleView::GetAnimationValue() const {
 
 void IconLabelBubbleView::ShowAnimation() {
   slide_animation_.Show();
-  GetInkDrop()->SetShowHighlightOnHover(false);
-  GetInkDrop()->SetShowHighlightOnFocus(false);
+  views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(false);
+  views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnFocus(false);
 }
 
 void IconLabelBubbleView::HideAnimation() {
   slide_animation_.Hide();
-  GetInkDrop()->SetShowHighlightOnHover(false);
-  GetInkDrop()->SetShowHighlightOnFocus(false);
+  views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnHover(false);
+  views::InkDrop::Get(this)->GetInkDrop()->SetShowHighlightOnFocus(false);
 }
 
 SkPath IconLabelBubbleView::GetHighlightPath() const {
@@ -566,3 +583,14 @@ void IconLabelBubbleView::UpdateBorder() {
       gfx::Insets(GetLayoutConstant(LOCATION_BAR_CHILD_INTERIOR_PADDING),
                   GetLayoutInsets(LOCATION_BAR_ICON_INTERIOR_PADDING).left())));
 }
+
+BEGIN_METADATA(IconLabelBubbleView, views::LabelButton)
+ADD_READONLY_PROPERTY_METADATA(SkColor,
+                               ForegroundColor,
+                               ui::metadata::SkColorConverter)
+ADD_READONLY_PROPERTY_METADATA(double, AnimationValue)
+ADD_READONLY_PROPERTY_METADATA(int, InternalSpacing)
+ADD_READONLY_PROPERTY_METADATA(int, ExtraInternalSpacing)
+ADD_READONLY_PROPERTY_METADATA(int, WidthBetweenIconAndSeparator)
+ADD_READONLY_PROPERTY_METADATA(int, EndPaddingWithSeparator)
+END_METADATA

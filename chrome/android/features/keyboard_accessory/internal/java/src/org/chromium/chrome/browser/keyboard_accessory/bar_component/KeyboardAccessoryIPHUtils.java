@@ -6,16 +6,19 @@ package org.chromium.chrome.browser.keyboard_accessory.bar_component;
 
 import android.view.View;
 
+import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.keyboard_accessory.R;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.ui.widget.textbubble.ImageTextBubble;
+import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.ui.widget.ChipView;
+import org.chromium.components.feature_engagement.TriggerState;
+import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
 
 /**
@@ -29,8 +32,8 @@ class KeyboardAccessoryIPHUtils {
      * @param feature The feature to emit a filling event for. Fails if no event to emit.
      */
     static void emitFillingEvent(String feature) {
-        final Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedProfile());
-        if (!tracker.isInitialized()) return;
+        final Tracker tracker = getTrackerFromProfile();
+        if (tracker == null) return;
         switch (feature) {
             case FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_ADDRESS_AUTOFILLED);
@@ -39,10 +42,52 @@ class KeyboardAccessoryIPHUtils {
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_PASSWORD_AUTOFILLED);
                 return;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE:
+            case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_OFFER_FEATURE:
+            case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:
                 tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED);
                 return;
         }
-        assert false : "No event emitted for feature: " + feature;
+        assert false : "No filling event emitted for feature: " + feature;
+    }
+
+    /**
+     * Emits a scrolling event recording user's familiarity. Noop if no tracker is available yet.
+     */
+    static void emitScrollingEvent() {
+        final Tracker tracker = getTrackerFromProfile();
+        if (tracker != null) tracker.notifyEvent(EventConstants.KEYBOARD_ACCESSORY_BAR_SWIPED);
+    }
+
+    /**
+     * Used to check that filling IPH has priority over IPH that only supports filling, like the IPH
+     * promoting the swipeability of the suggestions.
+     * @return True iff any IPH prompting to use a chip was shown before.
+     */
+    static boolean hasShownAnyAutofillIphBefore() {
+        final Tracker tracker = getTrackerFromProfile();
+        if (tracker == null) return false;
+        return tracker.getTriggerState(FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE)
+                == TriggerState.HAS_BEEN_DISPLAYED
+                || tracker.getTriggerState(
+                           FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE)
+                == TriggerState.HAS_BEEN_DISPLAYED
+                || tracker.getTriggerState(
+                           FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE)
+                == TriggerState.HAS_BEEN_DISPLAYED;
+    }
+
+    /**
+     * Shows a help bubble pointing to the given rect. It contains an appropriate text for the given
+     * feature. The help bubble will not be shown if the {@link Tracker} doesn't allow it anymore.
+     * This may happen for example: if it was shown too often, too many IPH were triggered this
+     * session or other config restrictions apply.
+     * @param feature A String identifying the IPH feature and its appropriate help text.
+     * @param rectProvider The {@link RectProvider} providing bounds to which the bubble will point.
+     * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
+     */
+    static void showHelpBubble(String feature, RectProvider rectProvider, View rootView) {
+        TextBubble helpBubble = createBubble(feature, rectProvider, rootView, null);
+        if (helpBubble != null) helpBubble.show();
     }
 
     /**
@@ -51,26 +96,69 @@ class KeyboardAccessoryIPHUtils {
      * This may happen for example: if it was shown too often, too many IPH were triggered this
      * session or other config restrictions apply.
      * @param feature A String identifying the IPH feature and its appropriate help text.
+     * @param helpText String that should be displayed within the IPH bubble.
+     * @param rectProvider The {@link RectProvider} providing bounds to which the bubble will point.
+     * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
+     */
+    static void showHelpBubble(
+            String feature, RectProvider rectProvider, View rootView, @Nullable String helpText) {
+        TextBubble helpBubble = createBubble(feature, rectProvider, rootView, helpText);
+        if (helpBubble != null) helpBubble.show();
+    }
+
+    /**
+     * Shows a help bubble pointing to the given view. It contains an appropriate text for the given
+     * feature. The help bubble will not be shown if the {@link Tracker} doesn't allow it anymore.
+     * This may happen for example: if it was shown too often, too many IPH were triggered this
+     * session or other config restrictions apply.
+     * @param feature A String identifying the IPH feature and its appropriate help text.
+     * @param helpText String that should be displayed within the IPH bubble.
      * @param view The {@link View} providing context and the Rect to which the bubble will point.
      * @param rootView The {@link View} used to determine the maximal dimensions for the bubble.
      */
-    static void showHelpBubble(String feature, ChipView view, View rootView) {
-        final Tracker tracker = TrackerFactory.getTrackerForProfile(Profile.getLastUsedProfile());
-        if (!tracker.isInitialized()) return;
-        if (!tracker.shouldTriggerHelpUI(feature)) return; // This call records the IPH intent.
-        @StringRes
-        int helpText = getHelpTextForFeature(feature);
-        ImageTextBubble helpBubble = new ImageTextBubble(view.getContext(), rootView, helpText,
-                helpText, true, new ViewRectProvider(view), R.drawable.ic_chrome);
-        helpBubble.setDismissOnTouchInteraction(true);
-        helpBubble.show();
+    static void showHelpBubble(
+            String feature, View view, View rootView, @Nullable String helpText) {
+        TextBubble helpBubble =
+                createBubble(feature, new ViewRectProvider(view), rootView, helpText);
+        if (helpBubble == null) return;
         // To emphasize which chip is pointed to, set selected to true for the built-in highlight.
         // Prefer ViewHighlighter for views without a LayerDrawable background.
         view.setSelected(true);
-        helpBubble.addOnDismissListener(() -> {
-            tracker.dismissed(feature);
-            view.setSelected(false);
-        });
+        helpBubble.addOnDismissListener(() -> { view.setSelected(false); });
+        helpBubble.show();
+    }
+
+    private static TextBubble createBubble(
+            String feature, RectProvider rectProvider, View rootView, @Nullable String helpText) {
+        final Tracker tracker = getTrackerFromProfile();
+        if (tracker == null) return null;
+        if (!tracker.shouldTriggerHelpUI(feature)) return null; // This call records the IPH intent.
+        TextBubble helpBubble;
+        // If the help text is provided, then use it directly to generate the text bubble.
+        if (helpText != null && !helpText.isEmpty()) {
+            helpBubble = new TextBubble(rootView.getContext(), rootView, helpText, helpText,
+                    /* showArrow= */ true, rectProvider,
+                    ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        } else {
+            @StringRes
+            int helpTextResourceId = getHelpTextForFeature(feature);
+            helpBubble = new TextBubble(rootView.getContext(), rootView, helpTextResourceId,
+                    helpTextResourceId, rectProvider,
+                    ChromeAccessibilityUtil.get().isAccessibilityEnabled());
+        }
+        helpBubble.setDismissOnTouchInteraction(true);
+        helpBubble.addOnDismissListener(() -> { tracker.dismissed(feature); });
+        return helpBubble;
+    }
+
+    private static Tracker getTrackerFromProfile() {
+        // TODO(https://crbug.com/1048632): Use the current profile (i.e., regular profile or
+        // incognito profile) instead of always using regular profile. It works correctly now,
+        // but it is not safe.
+        final Tracker tracker =
+                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile());
+        if (!tracker.isInitialized()) return null;
+        return tracker;
     }
 
     /**
@@ -81,11 +169,13 @@ class KeyboardAccessoryIPHUtils {
     private static @StringRes int getHelpTextForFeature(@FeatureConstants String feature) {
         switch (feature) {
             case FeatureConstants.KEYBOARD_ACCESSORY_ADDRESS_FILL_FEATURE:
-                return R.string.iph_keyboard_accessory_fill_address;
             case FeatureConstants.KEYBOARD_ACCESSORY_PASSWORD_FILLING_FEATURE:
-                return R.string.iph_keyboard_accessory_fill_password;
             case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_FILLING_FEATURE:
-                return R.string.iph_keyboard_accessory_fill_payment;
+                return R.string.iph_keyboard_accessory_fill_with_chrome;
+            case FeatureConstants.KEYBOARD_ACCESSORY_BAR_SWIPING_FEATURE:
+                return R.string.iph_keyboard_accessory_swipe_for_more;
+            case FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE:
+                return R.string.iph_keyboard_accessory_payment_virtual_cards;
         }
         assert false : "Unknown help text for feature: " + feature;
         return 0;

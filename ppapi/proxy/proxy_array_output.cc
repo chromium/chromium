@@ -4,7 +4,6 @@
 
 #include "ppapi/proxy/proxy_array_output.h"
 
-#include "base/logging.h"
 
 namespace ppapi {
 namespace proxy {

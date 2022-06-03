@@ -14,6 +14,7 @@
 
 #include "util/posix/process_info.h"
 
+#include <sys/utsname.h>
 #include <time.h>
 
 #include <algorithm>
@@ -21,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "gtest/gtest.h"
@@ -29,8 +31,9 @@
 #include "test/multiprocess.h"
 #include "util/file/file_io.h"
 #include "util/misc/implicit_cast.h"
+#include "util/string/split_string.h"
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "util/linux/direct_ptrace_connection.h"
 #include "test/linux/fake_ptrace_connection.h"
 #endif
@@ -93,18 +96,46 @@ void TestProcessSelfOrClone(const ProcessInfo& process_info) {
   time(&now);
   EXPECT_LE(start_time.tv_sec, now);
 
+  const std::vector<std::string>& expect_argv = GetMainArguments();
+
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // Prior to Linux 4.2, the kernel only allowed reading a single page from
+  // /proc/<pid>/cmdline, causing any further arguments to be truncated. Disable
+  // testing arguments in this case.
+  // TODO(jperaza): The main arguments are stored on the main thread's stack
+  // (and so should be included in dumps automatically), and
+  // ProcessInfo::Arguments() might be updated to read the arguments directly,
+  // rather than via procfs on older kernels.
+  utsname uts;
+  ASSERT_EQ(uname(&uts), 0) << ErrnoMessage("uname");
+  std::vector<std::string> parts = SplitString(uts.release, '.');
+  ASSERT_GE(parts.size(), 2u);
+
+  int major, minor;
+  ASSERT_TRUE(base::StringToInt(parts[0], &major));
+  ASSERT_TRUE(base::StringToInt(parts[1], &minor));
+
+  size_t argv_size = 0;
+  for (const auto& arg : expect_argv) {
+    argv_size += arg.size() + 1;
+  }
+
+  if ((major < 4 || (major == 4 && minor < 2)) &&
+      argv_size > static_cast<size_t>(getpagesize())) {
+    return;
+  }
+#endif  // OS_ANDROID || OS_LINUX || OS_CHROMEOS
+
   std::vector<std::string> argv;
   ASSERT_TRUE(process_info.Arguments(&argv));
 
-  const std::vector<std::string>& expect_argv = GetMainArguments();
-
   // expect_argv always contains the initial view of the arguments at the time
   // the program was invoked. argv may contain this view, or it may contain the
-  // current view of arguments after gtest argv processing. argv may be a subset
-  // of expect_argv.
+  // current view of arguments after Google Test argv processing. argv may be a
+  // subset of expect_argv.
   //
-  // gtest argv processing always leaves argv[0] intact, so this can be checked
-  // directly.
+  // Google Test argv processing always leaves argv[0] intact, so this can be
+  // checked directly.
   ASSERT_FALSE(expect_argv.empty());
   ASSERT_FALSE(argv.empty());
   EXPECT_EQ(argv[0], expect_argv[0]);
@@ -130,18 +161,18 @@ void TestSelfProcess(const ProcessInfo& process_info) {
 
 TEST(ProcessInfo, Self) {
   ProcessInfo process_info;
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(getpid()));
   ASSERT_TRUE(process_info.InitializeWithPtrace(&connection));
 #else
   ASSERT_TRUE(process_info.InitializeWithPid(getpid()));
-#endif  // OS_LINUX || OS_ANDROID
+#endif  // OS_LINUX || OS_ANDROID || OS_CHROMEOS
 
   TestSelfProcess(process_info);
 }
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 TEST(ProcessInfo, SelfTask) {
   ProcessInfo process_info;
   ASSERT_TRUE(process_info.InitializeWithTask(mach_task_self()));
@@ -153,7 +184,7 @@ TEST(ProcessInfo, Pid1) {
   // PID 1 is expected to be init or the system’s equivalent. This tests reading
   // information about another process.
   ProcessInfo process_info;
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   FakePtraceConnection connection;
   ASSERT_TRUE(connection.Initialize(1));
   ASSERT_TRUE(process_info.InitializeWithPtrace(&connection));
@@ -175,13 +206,17 @@ TEST(ProcessInfo, Pid1) {
 class ProcessInfoForkedTest : public Multiprocess {
  public:
   ProcessInfoForkedTest() : Multiprocess() {}
+
+  ProcessInfoForkedTest(const ProcessInfoForkedTest&) = delete;
+  ProcessInfoForkedTest& operator=(const ProcessInfoForkedTest&) = delete;
+
   ~ProcessInfoForkedTest() {}
 
   // Multiprocess:
   void MultiprocessParent() override {
     const pid_t pid = ChildPID();
 
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
     DirectPtraceConnection connection;
     ASSERT_TRUE(connection.Initialize(pid));
 
@@ -190,7 +225,7 @@ class ProcessInfoForkedTest : public Multiprocess {
 #else
     ProcessInfo process_info;
     ASSERT_TRUE(process_info.InitializeWithPid(pid));
-#endif  // OS_LINUX || OS_ANDROID
+#endif  // OS_LINUX || OS_CHROMEOS || OS_ANDROID
 
     EXPECT_EQ(process_info.ProcessID(), pid);
     EXPECT_EQ(process_info.ParentProcessID(), getpid());
@@ -202,9 +237,6 @@ class ProcessInfoForkedTest : public Multiprocess {
     // Hang around until the parent is done.
     CheckedReadFileAtEOF(ReadPipeHandle());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProcessInfoForkedTest);
 };
 
 TEST(ProcessInfo, Forked) {

@@ -11,7 +11,7 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "extensions/common/message_bundle.h"
@@ -20,7 +20,6 @@
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/net_errors.h"
 #include "net/url_request/redirect_info.h"
-#include "net/url_request/url_request_status.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -53,25 +52,28 @@ class MockIpcMessageSender : public IPC::Sender {
         .WillByDefault(DoAll(Invoke(MessageDeleter), Return(true)));
   }
 
-  ~MockIpcMessageSender() override {}
+  MockIpcMessageSender(const MockIpcMessageSender&) = delete;
+  MockIpcMessageSender& operator=(const MockIpcMessageSender&) = delete;
+
+  ~MockIpcMessageSender() override = default;
 
   MOCK_METHOD1(Send, bool(IPC::Message* message));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockIpcMessageSender);
 };
 
-class MockRequestPeer : public content::RequestPeer {
+class MockRequestPeer : public blink::WebRequestPeer {
  public:
   MockRequestPeer()
       : body_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::AUTOMATIC) {
   }
-  ~MockRequestPeer() override {}
+
+  MockRequestPeer(const MockRequestPeer&) = delete;
+  MockRequestPeer& operator=(const MockRequestPeer&) = delete;
 
   MOCK_METHOD2(OnUploadProgress, void(uint64_t position, uint64_t size));
-  MOCK_METHOD2(OnReceivedRedirect,
+  MOCK_METHOD3(OnReceivedRedirect,
                bool(const net::RedirectInfo& redirect_info,
-                    network::mojom::URLResponseHeadPtr head));
+                    network::mojom::URLResponseHeadPtr head,
+                    std::vector<std::string>*));
   MOCK_METHOD1(OnReceivedResponse,
                void(network::mojom::URLResponseHeadPtr head));
   void OnStartLoadingResponseBody(
@@ -89,10 +91,6 @@ class MockRequestPeer : public content::RequestPeer {
   MOCK_METHOD1(OnTransferSizeUpdated, void(int transfer_size_diff));
   MOCK_METHOD1(OnCompletedRequest,
                void(const network::URLLoaderCompletionStatus& status));
-  scoped_refptr<base::TaskRunner> GetTaskRunner() override {
-    NOTREACHED();
-    return nullptr;
-  }
 
   void RunUntilBodyBecomesReady() {
     base::RunLoop loop;
@@ -102,6 +100,8 @@ class MockRequestPeer : public content::RequestPeer {
   }
 
  private:
+  friend class testing::StrictMock<MockRequestPeer>;
+
   void OnReadable(MojoResult, const mojo::HandleSignalsState&) {
     uint32_t available_bytes = 64 * 1024;
     std::vector<char> buffer(available_bytes);
@@ -124,32 +124,30 @@ class MockRequestPeer : public content::RequestPeer {
     body_.append(buffer.begin(), buffer.end());
   }
 
+  ~MockRequestPeer() override = default;
+
   std::string body_;
   mojo::SimpleWatcher body_watcher_;
   mojo::ScopedDataPipeConsumerHandle body_handle_;
   base::OnceClosure wait_for_body_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRequestPeer);
 };
 
 }  // namespace
 
 class ExtensionLocalizationPeerTest : public testing::Test {
  protected:
-  void SetUp() override {
-    sender_.reset(new MockIpcMessageSender());
-  }
+  void SetUp() override { sender_ = std::make_unique<MockIpcMessageSender>(); }
 
   void SetUpExtensionLocalizationPeer(const std::string& mime_type,
                                       const GURL& request_url) {
-    auto original_peer =
-        std::make_unique<testing::StrictMock<MockRequestPeer>>();
-    original_peer_ = original_peer.get();
-    auto extension_peer =
+    original_peer_ =
+        base::MakeRefCounted<testing::StrictMock<MockRequestPeer>>();
+
+    scoped_refptr<blink::WebRequestPeer> peer =
         ExtensionLocalizationPeer::CreateExtensionLocalizationPeer(
-            std::move(original_peer), sender_.get(), mime_type, request_url);
-    filter_peer_.reset(
-        static_cast<ExtensionLocalizationPeer*>(extension_peer.release()));
+            original_peer_, sender_.get(), mime_type, request_url);
+    filter_peer_ = base::WrapRefCounted(
+        static_cast<ExtensionLocalizationPeer*>(peer.get()));
   }
 
   std::string GetData() { return filter_peer_->data_; }
@@ -162,7 +160,7 @@ class ExtensionLocalizationPeerTest : public testing::Test {
     options.capacity_num_bytes = data.size();
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
-    MojoResult result = mojo::CreateDataPipe(&options, &producer, &consumer);
+    MojoResult result = mojo::CreateDataPipe(&options, producer, consumer);
     EXPECT_EQ(MOJO_RESULT_OK, result);
     filter_peer_->OnStartLoadingResponseBody(std::move(consumer));
     mojo::BlockingCopyFromString(data, producer);
@@ -172,19 +170,19 @@ class ExtensionLocalizationPeerTest : public testing::Test {
   mojo::ScopedDataPipeConsumerHandle CreateEmptyBodyDataPipe() const {
     mojo::ScopedDataPipeConsumerHandle consumer;
     mojo::ScopedDataPipeProducerHandle producer;
-    MojoResult result = mojo::CreateDataPipe(nullptr, &producer, &consumer);
+    MojoResult result = mojo::CreateDataPipe(nullptr, producer, consumer);
     DCHECK_EQ(MOJO_RESULT_OK, result);
     return consumer;
   }
 
   base::test::TaskEnvironment scoped_environment_;
   std::unique_ptr<MockIpcMessageSender> sender_;
-  MockRequestPeer* original_peer_;
-  std::unique_ptr<ExtensionLocalizationPeer> filter_peer_;
+  scoped_refptr<MockRequestPeer> original_peer_;
+  scoped_refptr<ExtensionLocalizationPeer> filter_peer_;
 };
 
 TEST_F(ExtensionLocalizationPeerTest, CreateWithWrongMimeType) {
-  std::unique_ptr<content::RequestPeer> peer =
+  scoped_refptr<blink::WebRequestPeer> peer =
       ExtensionLocalizationPeer::CreateExtensionLocalizationPeer(
           nullptr, sender_.get(), "text/html", GURL(kExtensionUrl_1));
   EXPECT_EQ(nullptr, peer);
@@ -197,7 +195,7 @@ TEST_F(ExtensionLocalizationPeerTest, CreateWithValidInput) {
 
 MATCHER_P(IsURLRequestEqual, status, "") { return arg.status() == status; }
 
-TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestBadURLRequestStatus) {
+TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestBadURLLoaderStatus) {
   SetUpExtensionLocalizationPeer("text/css", GURL(kExtensionUrl_1));
 
   // This test simulates completion before receiving the response header.

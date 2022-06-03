@@ -1,0 +1,16 @@
+==== BEGIN EDITS ====
+r:::test-actual.cc:::438:::4:::
+r:::test-actual.cc:::521:::4:::
+r:::test-actual.cc:::685:::5:::
+r:::test-actual.cc:::721:::5:::
+r:::test-actual.cc:::728:::5:::
+r:::test-actual.cc:::766:::5:::
+r:::test-actual.cc:::1028:::2:::std::string()
+r:::test-actual.cc:::1032:::2:::std::string()
+r:::test-actual.cc:::1067:::2:::
+r:::test-actual.cc:::1084:::2:::
+r:::test-actual.cc:::1280:::3:::std::wstring()
+r:::test-actual.cc:::1285:::3:::std::wstring()
+r:::test-actual.cc:::1326:::3:::
+r:::test-actual.cc:::1345:::3:::
+==== END EDITS ====

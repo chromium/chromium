@@ -8,16 +8,22 @@
  * strings. Typically it is used as [[i18n('someString')]] computed bindings or
  * for this.i18n('foo'). It is not needed for HTML $i18n{otherString}, which is
  * handled by a C++ templatizer.
+ * NOTE: This file is deprecated in favor of i18n_mixin.ts. Don't use it in new
+ * code.
  */
 
-// #import {parseHtmlSubset} from './parse_html_subset.m.js';
-// #import {loadTimeData, SanitizeInnerHtmlOpts} from './load_time_data.m.js';
+// #import {parseHtmlSubset, SanitizeInnerHtmlOpts, sanitizeInnerHtml} from './parse_html_subset.m.js';
+// #import {loadTimeData} from './load_time_data.m.js';
 
 /** @polymerBehavior */
 /* #export */ const I18nBehavior = {
+  // <if expr="chromeos">
+  // Dynamic locale changes are only relevant in ChromeOS OOBE/Login flows.
+  // On other platforms Chrome process is restarted upon locale changes.
+  // TODO(crbug.com/955194): move it to OobeI18nBehavior.
   properties: {
     /**
-     * The language the UI is presented in. Used to signal dynamic language
+     * The locale the UI is presented in. Used to signal dynamic locale
      * change.
      */
     locale: {
@@ -25,6 +31,16 @@
       value: '',
     },
   },
+
+  /**
+   * Call this when UI strings may have changed. This will send an update to
+   * any data bindings to i18nDynamic(locale, ...).
+   * @suppress {checkTypes}
+   */
+  i18nUpdateLocale() {
+    this.locale = loadTimeData.getString('app_locale');
+  },
+  // </if>
 
   /**
    * Returns a translated string where $1 to $9 are replaced by the given
@@ -35,8 +51,8 @@
    * @return {string} A translated, substituted string.
    * @private
    */
-  i18nRaw_: function(id, var_args) {
-    return arguments.length == 1 ?
+  i18nRaw_(id, var_args) {
+    return arguments.length === 1 ?
         loadTimeData.getString(id) :
         loadTimeData.getStringF.apply(loadTimeData, arguments);
   },
@@ -51,7 +67,7 @@
    *     to $9 in the string.
    * @return {string} A translated, sanitized, substituted string.
    */
-  i18n: function(id, var_args) {
+  i18n(id, var_args) {
     const rawString = this.i18nRaw_.apply(this, arguments);
     return parseHtmlSubset('<b>' + rawString + '</b>').firstChild.textContent;
   },
@@ -65,11 +81,11 @@
    * @param {SanitizeInnerHtmlOpts=} opts
    * @return {string}
    */
-  i18nAdvanced: function(id, opts) {
+  i18nAdvanced(id, opts) {
     opts = opts || {};
     const args = [id].concat(opts.substitutions || []);
     const rawString = this.i18nRaw_.apply(this, args);
-    return loadTimeData.sanitizeInnerHtml(rawString, opts);
+    return sanitizeInnerHtml(rawString, opts);
   },
 
   /**
@@ -81,7 +97,7 @@
    *     in the string.
    * @return {string} A translated, sanitized, substituted string.
    */
-  i18nDynamic: function(locale, id, var_args) {
+  i18nDynamic(locale, id, var_args) {
     return this.i18n.apply(this, Array.prototype.slice.call(arguments, 1));
   },
 
@@ -96,7 +112,7 @@
    *     list of localized strings.
    * @return {string} A translated, sanitized, substituted string.
    */
-  i18nRecursive: function(locale, id, var_args) {
+  i18nRecursive(locale, id, var_args) {
     let args = Array.prototype.slice.call(arguments, 2);
     if (args.length > 0) {
       // Try to replace IDs with localized values.
@@ -113,30 +129,59 @@
    * @param {string} id
    * @return {boolean}
    */
-  i18nExists: function(id) {
+  i18nExists(id) {
     return loadTimeData.valueExists(id);
-  },
-
-  /**
-   * Call this when UI strings may have changed. This will send an update to
-   * any data bindings to i18nDynamic(locale, ...).
-   * @suppress {checkTypes}
-   */
-  i18nUpdateLocale: function() {
-    // Force reload.
-    this.locale = undefined;
-    this.locale = loadTimeData.getString('language');
   },
 };
 
-/**
- * TODO(stevenjb): Replace with an interface. b/24294625
- * @typedef {{
- *   i18n: function(string, ...string): string,
- *   i18nAdvanced: function(string, SanitizeInnerHtmlOpts=): string,
- *   i18nDynamic: function(string, string, ...string): string,
- *   i18nExists: function(string),
- *   i18nUpdateLocale: function()
- * }}
- */
-I18nBehavior.Proto;
+/** @interface */
+/* #export */ class I18nBehaviorInterface {
+  constructor() {
+    // <if expr="chromeos">
+    /** @type {string} */
+    this.locale;
+    // </if>
+  }
+
+  // <if expr="chromeos">
+  i18nUpdateLocale() {}
+  // </if>
+
+  /**
+   * @param {string} id
+   * @param {...string|number} var_args
+   * @return {string}
+   */
+  i18n(id, var_args) {}
+
+  /**
+   * @param {string} id
+   * @param {SanitizeInnerHtmlOpts=} opts
+   * @return {string}
+   */
+  i18nAdvanced(id, opts) {}
+
+  /**
+   * @param {string} locale
+   * @param {string} id
+   * @param {...string} var_args
+   * @return {string}
+   */
+  i18nDynamic(locale, id, var_args) {}
+
+  /**
+   * @param {string} locale
+   * @param {string} id
+   * @param {...string} var_args
+   * @return {string}
+   */
+  i18nRecursive(locale, id, var_args) {}
+
+  /**
+   * @param {string} id
+   * @return {boolean}
+   */
+  i18nExists(id) {}
+}
+
+/* #ignore */ console.warn('crbug/1173575, non-JS module files deprecated.');

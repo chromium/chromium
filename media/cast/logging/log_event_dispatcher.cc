@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/synchronization/waitable_event.h"
 #include "media/cast/cast_environment.h"
@@ -29,8 +29,8 @@ void LogEventDispatcher::DispatchFrameEvent(
     impl_->DispatchFrameEvent(std::move(event));
   } else {
     env_->PostTask(CastEnvironment::MAIN, FROM_HERE,
-                   base::Bind(&LogEventDispatcher::Impl::DispatchFrameEvent,
-                              impl_, base::Passed(&event)));
+                   base::BindOnce(&LogEventDispatcher::Impl::DispatchFrameEvent,
+                                  impl_, std::move(event)));
   }
 }
 
@@ -39,9 +39,10 @@ void LogEventDispatcher::DispatchPacketEvent(
   if (env_->CurrentlyOn(CastEnvironment::MAIN)) {
     impl_->DispatchPacketEvent(std::move(event));
   } else {
-    env_->PostTask(CastEnvironment::MAIN, FROM_HERE,
-                   base::Bind(&LogEventDispatcher::Impl::DispatchPacketEvent,
-                              impl_, base::Passed(&event)));
+    env_->PostTask(
+        CastEnvironment::MAIN, FROM_HERE,
+        base::BindOnce(&LogEventDispatcher::Impl::DispatchPacketEvent, impl_,
+                       std::move(event)));
   }
 }
 
@@ -54,8 +55,8 @@ void LogEventDispatcher::DispatchBatchOfEvents(
   } else {
     env_->PostTask(
         CastEnvironment::MAIN, FROM_HERE,
-        base::Bind(&LogEventDispatcher::Impl::DispatchBatchOfEvents, impl_,
-                   base::Passed(&frame_events), base::Passed(&packet_events)));
+        base::BindOnce(&LogEventDispatcher::Impl::DispatchBatchOfEvents, impl_,
+                       std::move(frame_events), std::move(packet_events)));
   }
 }
 
@@ -63,9 +64,9 @@ void LogEventDispatcher::Subscribe(RawEventSubscriber* subscriber) {
   if (env_->CurrentlyOn(CastEnvironment::MAIN)) {
     impl_->Subscribe(subscriber);
   } else {
-    env_->PostTask(
-        CastEnvironment::MAIN, FROM_HERE,
-        base::Bind(&LogEventDispatcher::Impl::Subscribe, impl_, subscriber));
+    env_->PostTask(CastEnvironment::MAIN, FROM_HERE,
+                   base::BindOnce(&LogEventDispatcher::Impl::Subscribe, impl_,
+                                  subscriber));
   }
 }
 
@@ -87,9 +88,9 @@ void LogEventDispatcher::Unsubscribe(RawEventSubscriber* subscriber) {
     };
     base::WaitableEvent done(base::WaitableEvent::ResetPolicy::MANUAL,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
-    CHECK(env_->PostTask(
-        CastEnvironment::MAIN, FROM_HERE,
-        base::Bind(&Helper::UnsubscribeAndSignal, impl_, subscriber, &done)));
+    CHECK(env_->PostTask(CastEnvironment::MAIN, FROM_HERE,
+                         base::BindOnce(&Helper::UnsubscribeAndSignal, impl_,
+                                        subscriber, &done)));
     done.Wait();
   }
 }

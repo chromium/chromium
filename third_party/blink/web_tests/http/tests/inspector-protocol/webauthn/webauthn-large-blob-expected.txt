@@ -1,0 +1,13 @@
+Check that WebAuthn large blob operations work
+Create credential result: OK
+Large blob support: true
+{
+    id : <number>
+    result : {
+    }
+    sessionId : <string>
+}
+Assertion result: OK
+Got I'm Commander Shepard, and this is my favorite blob on the Citadel!
+Got I'm Commander Shepard, and this is my favorite blob on the Citadel!
+

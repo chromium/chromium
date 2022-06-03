@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -50,11 +50,11 @@ def FetchLLVM(checkout_dir, revision):
   except subprocess.CalledProcessError:
     # Otherwise, try to update it.
     print('-- Attempting to update existing repo')
-    args = ['git', 'pull', '--rebase', 'origin', 'master']
-    subprocess.check_call(args, cwd=checkout_dir)
+    args = ['git', 'pull', '--rebase', 'origin', 'main']
+    subprocess.check_call(args, cwd=checkout_dir, shell=sys.platform == 'win32')
   if revision:
     args = ['git', 'checkout', revision]
-    subprocess.check_call(args, cwd=checkout_dir)
+    subprocess.check_call(args, cwd=checkout_dir, shell=sys.platform == 'win32')
 
 
 def BuildTargets(build_dir, targets):

@@ -15,6 +15,9 @@ class PLATFORM_EXPORT SharedBufferBytesConsumer final : public BytesConsumer {
  public:
   // |data| should not be modified after it passed to SharedBufferBytesConsumer.
   explicit SharedBufferBytesConsumer(scoped_refptr<const SharedBuffer> data);
+  SharedBufferBytesConsumer(const SharedBufferBytesConsumer&) = delete;
+  SharedBufferBytesConsumer& operator=(const SharedBufferBytesConsumer&) =
+      delete;
 
   // Implements BytesConsumer.
   Result BeginRead(const char** buffer, size_t* available) override;
@@ -33,8 +36,6 @@ class PLATFORM_EXPORT SharedBufferBytesConsumer final : public BytesConsumer {
   scoped_refptr<const SharedBuffer> data_;
   SharedBuffer::Iterator iterator_;
   size_t bytes_read_in_chunk_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedBufferBytesConsumer);
 };
 
 }  // namespace blink

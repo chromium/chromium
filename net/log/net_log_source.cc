@@ -9,7 +9,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/values.h"
 #include "net/log/net_log_capture_mode.h"
 
@@ -20,9 +20,9 @@ namespace {
 base::Value SourceEventParametersCallback(const NetLogSource source) {
   if (!source.IsValid())
     return base::Value();
-  base::DictionaryValue event_params;
+  base::Value event_params(base::Value::Type::DICTIONARY);
   source.AddToEventParameters(&event_params);
-  return std::move(event_params);
+  return event_params;
 }
 
 }  // namespace
@@ -30,10 +30,20 @@ base::Value SourceEventParametersCallback(const NetLogSource source) {
 // LoadTimingInfo requires this be 0.
 const uint32_t NetLogSource::kInvalidId = 0;
 
-NetLogSource::NetLogSource() : type(NetLogSourceType::NONE), id(kInvalidId) {}
+NetLogSource::NetLogSource()
+    : NetLogSource(NetLogSourceType::NONE, kInvalidId) {}
 
 NetLogSource::NetLogSource(NetLogSourceType type, uint32_t id)
-    : type(type), id(id) {}
+    : NetLogSource(type, id, base::TimeTicks::Now()) {}
+
+NetLogSource::NetLogSource(NetLogSourceType type,
+                           uint32_t id,
+                           base::TimeTicks start_time)
+    : type(type), id(id), start_time(start_time) {}
+
+bool NetLogSource::operator==(const NetLogSource& rhs) const {
+  return type == rhs.type && id == rhs.id && start_time == rhs.start_time;
+}
 
 bool NetLogSource::IsValid() const {
   return id != kInvalidId;
@@ -49,27 +59,6 @@ void NetLogSource::AddToEventParameters(base::Value* event_params) const {
 
 base::Value NetLogSource::ToEventParameters() const {
   return SourceEventParametersCallback(*this);
-}
-
-// static
-bool NetLogSource::FromEventParameters(const base::Value* event_params,
-                                       NetLogSource* source) {
-  const base::DictionaryValue* dict = nullptr;
-  const base::DictionaryValue* source_dict = nullptr;
-  int source_id = -1;
-  int source_type = static_cast<int>(NetLogSourceType::COUNT);
-  if (!event_params || !event_params->GetAsDictionary(&dict) ||
-      !dict->GetDictionary("source_dependency", &source_dict) ||
-      !source_dict->GetInteger("id", &source_id) ||
-      !source_dict->GetInteger("type", &source_type)) {
-    *source = NetLogSource();
-    return false;
-  }
-
-  DCHECK_GE(source_id, 0);
-  DCHECK_LT(source_type, static_cast<int>(NetLogSourceType::COUNT));
-  *source = NetLogSource(static_cast<NetLogSourceType>(source_type), source_id);
-  return true;
 }
 
 }  // namespace net

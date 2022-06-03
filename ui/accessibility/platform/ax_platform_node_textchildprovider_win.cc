@@ -60,7 +60,7 @@ void AXPlatformNodeTextChildProviderWin::CreateIUnknown(
     *unknown = text_child_provider.Detach();
 }
 
-STDMETHODIMP AXPlatformNodeTextChildProviderWin::get_TextContainer(
+HRESULT AXPlatformNodeTextChildProviderWin::get_TextContainer(
     IRawElementProviderSimple** result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTCHILD_GET_TEXTCONTAINER);
   UIA_VALIDATE_TEXTCHILDPROVIDER_CALL();
@@ -74,7 +74,7 @@ STDMETHODIMP AXPlatformNodeTextChildProviderWin::get_TextContainer(
   return S_OK;
 }
 
-STDMETHODIMP AXPlatformNodeTextChildProviderWin::get_TextRange(
+HRESULT AXPlatformNodeTextChildProviderWin::get_TextRange(
     ITextRangeProvider** result) {
   WIN_ACCESSIBILITY_API_HISTOGRAM(UMA_API_TEXTCHILD_GET_TEXTRANGE);
   UIA_VALIDATE_TEXTCHILDPROVIDER_CALL();

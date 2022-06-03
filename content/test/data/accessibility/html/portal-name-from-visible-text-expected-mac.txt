@@ -1,0 +1,4 @@
+AXWebArea
+++AXGroup
+++++AXButton AXDescription='visible text'
+++++++AXWebArea AXTitle='visible text'

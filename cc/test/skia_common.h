@@ -6,15 +6,18 @@
 #define CC_TEST_SKIA_COMMON_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_piece.h"
 #include "cc/base/region.h"
 #include "cc/paint/discardable_image_map.h"
 #include "cc/paint/draw_image.h"
 #include "cc/paint/image_animation_count.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_image_generator.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -42,8 +45,10 @@ sk_sp<PaintImageGenerator> CreatePaintImageGenerator(const gfx::Size& size);
 
 PaintImage CreatePaintWorkletPaintImage(scoped_refptr<PaintWorkletInput> input);
 
-SkYUVASizeInfo GetYUV420SizeInfo(const gfx::Size& image_size,
-                                 bool has_alpha = false);
+SkYUVAPixmapInfo GetYUVAPixmapInfo(const gfx::Size& image_size,
+                                   YUVSubsampling yuv_format,
+                                   SkYUVAPixmapInfo::DataType yuv_data_type,
+                                   bool has_alpha = false);
 
 PaintImage CreateDiscardablePaintImage(
     const gfx::Size& size,
@@ -51,13 +56,15 @@ PaintImage CreateDiscardablePaintImage(
     bool allocate_encoded_memory = true,
     PaintImage::Id id = PaintImage::kInvalidId,
     SkColorType color_type = kN32_SkColorType,
-    bool is_yuv = false);
+    absl::optional<YUVSubsampling> yuv_format = absl::nullopt,
+    SkYUVAPixmapInfo::DataType yuv_data_type =
+        SkYUVAPixmapInfo::DataType::kUnorm8);
 
 DrawImage CreateDiscardableDrawImage(const gfx::Size& size,
                                      sk_sp<SkColorSpace> color_space,
                                      SkRect rect,
-                                     SkFilterQuality filter_quality,
-                                     const SkMatrix& matrix);
+                                     PaintFlags::FilterQuality filter_quality,
+                                     const SkM44& matrix);
 
 PaintImage CreateAnimatedImage(
     const gfx::Size& size,
@@ -70,6 +77,7 @@ PaintImage CreateBitmapImage(const gfx::Size& size,
 
 scoped_refptr<SkottieWrapper> CreateSkottie(const gfx::Size& size,
                                             int duration_secs);
+scoped_refptr<SkottieWrapper> CreateSkottieFromString(base::StringPiece json);
 
 PaintImage CreateNonDiscardablePaintImage(const gfx::Size& size);
 

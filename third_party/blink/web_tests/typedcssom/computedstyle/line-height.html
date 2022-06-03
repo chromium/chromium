@@ -32,21 +32,21 @@ test(function() {
   var result = computedStyleMap.get('line-height');
   assert_equals(result.constructor.name, CSSUnitValue.name);
   assert_equals(result.toString(), '10px');
-}, 'Getting a 10% lineHeight results in a CSSUnitValue');
+}, 'Getting a 10% lineHeight results in a px CSSUnitValue');
 
 test(function() {
   testElement.style.lineHeight = '0.2';
   var result = computedStyleMap.get('line-height');
   assert_equals(result.constructor.name, CSSUnitValue.name);
-  assert_equals(result.toString(), '20px');
-}, 'Getting a number lineHeight results in a CSSUnitValue');
+  assert_equals(result.toString(), '0.2');
+}, 'Getting a number lineHeight results in a number CSSUnitValue');
 
 test(function() {
   testElement.style.lineHeight = 'calc(10px + 10%)';
   var result = computedStyleMap.get('line-height');
   assert_equals(result.constructor.name, CSSUnitValue.name);
   assert_equals(result.toString(), '20px');
-}, 'Getting a calc lineHeight results in a CSSUnitValue');
+}, 'Getting a calc lineHeight results in a px CSSUnitValue');
 
 test(function() {
   testElement.style.lineHeight = 'normal';

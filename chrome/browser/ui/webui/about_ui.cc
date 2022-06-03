@@ -14,35 +14,27 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
-#include "base/i18n/number_formatting.h"
-#include "base/json/json_writer.h"
-#include "base/macros.h"
-#include "base/memory/singleton.h"
-#include "base/metrics/statistics_recorder.h"
-#include "base/process/process_metrics.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/system/sys_info.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/about_flags.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
@@ -53,21 +45,12 @@
 #include "components/strings/grit/components_locale_settings.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_process_host.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_client.h"
-#include "content/public/common/process_type.h"
-#include "google_apis/gaia/google_service_auth_error.h"
 #include "net/base/escape.h"
 #include "net/base/filename_util.h"
-#include "net/base/load_flags.h"
-#include "net/http/http_response_headers.h"
-#include "third_party/brotli/include/brotli/decode.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
-#include "ui/base/webui/jstemplate_builder.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "url/gurl.h"
 
@@ -75,18 +58,21 @@
 #include "chrome/browser/ui/webui/theme_source.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include <map>
 
 #include "base/base64.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/strcat.h"
+#include "chrome/browser/ash/crostini/crostini_manager.h"
+#include "chrome/browser/ash/customization/customization_document.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
+#include "chrome/browser/ash/login/wizard_controller.h"
 #include "chrome/browser/browser_process_platform_part_chromeos.h"
-#include "chrome/browser/chromeos/customization/customization_document.h"
-#include "chrome/browser/chromeos/login/demo_mode/demo_setup_controller.h"
-#include "chrome/browser/chromeos/login/wizard_controller.h"
+#include "chrome/browser/component_updater/cros_component_manager.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/language/core/common/locale_util.h"
+#include "third_party/cros_system_api/dbus/service_constants.h"
 #endif
 
 using content::BrowserThread;
@@ -97,9 +83,11 @@ constexpr char kCreditsJsPath[] = "credits.js";
 constexpr char kStatsJsPath[] = "stats.js";
 constexpr char kStringsJsPath[] = "strings.js";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 
 constexpr char kKeyboardUtilsPath[] = "keyboard_utils.js";
+
+constexpr char kTerminaCreditsPath[] = "about_os_credits.html";
 
 // APAC region name.
 constexpr char kApac[] = "apac";
@@ -166,7 +154,7 @@ std::string ReadDeviceRegionFromVpd() {
 // Returns an absolute path under the preinstalled demo resources directory.
 base::FilePath CreateDemoResourcesTermsPath(const base::FilePath& file_path) {
   // Offline ARC TOS are only available during demo mode setup.
-  auto* wizard_controller = chromeos::WizardController::default_controller();
+  auto* wizard_controller = ash::WizardController::default_controller();
   if (!wizard_controller || !wizard_controller->demo_setup_controller())
     return base::FilePath();
   return wizard_controller->demo_setup_controller()
@@ -180,6 +168,9 @@ base::FilePath CreateDemoResourcesTermsPath(const base::FilePath& file_path) {
 class ChromeOSTermsHandler
     : public base::RefCountedThreadSafe<ChromeOSTermsHandler> {
  public:
+  ChromeOSTermsHandler(const ChromeOSTermsHandler&) = delete;
+  ChromeOSTermsHandler& operator=(const ChromeOSTermsHandler&) = delete;
+
   static void Start(const std::string& path,
                     content::URLDataSource::GotDataCallback callback) {
     scoped_refptr<ChromeOSTermsHandler> handler(
@@ -203,37 +194,26 @@ class ChromeOSTermsHandler
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (path_ == chrome::kOemEulaURLPath) {
       // Load local OEM EULA from the disk.
-      base::PostTaskAndReply(
-          FROM_HERE,
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE},
+      base::ThreadPool::PostTaskAndReply(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&ChromeOSTermsHandler::LoadOemEulaFileAsync, this),
           base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
     } else if (path_ == chrome::kArcTermsURLPath) {
       // Load ARC++ terms from the file.
-      base::PostTaskAndReply(
-          FROM_HERE,
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE},
+      base::ThreadPool::PostTaskAndReply(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&ChromeOSTermsHandler::LoadArcTermsFileAsync, this),
           base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
     } else if (path_ == chrome::kArcPrivacyPolicyURLPath) {
       // Load ARC++ privacy policy from the file.
-      base::PostTaskAndReply(
-          FROM_HERE,
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE},
+      base::ThreadPool::PostTaskAndReply(
+          FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
           base::BindOnce(&ChromeOSTermsHandler::LoadArcPrivacyPolicyFileAsync,
                          this),
           base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
     } else {
-      // Load local ChromeOS terms from the file.
-      base::PostTaskAndReply(
-          FROM_HERE,
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE},
-          base::BindOnce(&ChromeOSTermsHandler::LoadEulaFileAsync, this),
-          base::BindOnce(&ChromeOSTermsHandler::ResponseOnUIThread, this));
+      NOTREACHED();
+      ResponseOnUIThread();
     }
   }
 
@@ -241,8 +221,8 @@ class ChromeOSTermsHandler
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-    const chromeos::StartupCustomizationDocument* customization =
-        chromeos::StartupCustomizationDocument::GetInstance();
+    const ash::StartupCustomizationDocument* customization =
+        ash::StartupCustomizationDocument::GetInstance();
     if (!customization->IsReady())
       return;
 
@@ -255,29 +235,12 @@ class ChromeOSTermsHandler
     }
   }
 
-  void LoadEulaFileAsync() {
-    base::ScopedBlockingCall scoped_blocking_call(
-        FROM_HERE, base::BlockingType::MAY_BLOCK);
-
-    std::string file_path =
-        base::StringPrintf(chrome::kEULAPathFormat, locale_.c_str());
-    if (!base::ReadFileToString(base::FilePath(file_path), &contents_)) {
-      // No EULA for given language - try en-US as default.
-      file_path = base::StringPrintf(chrome::kEULAPathFormat, "en-US");
-      if (!base::ReadFileToString(base::FilePath(file_path), &contents_)) {
-        // File with EULA not found, ResponseOnUIThread will load EULA from
-        // resources if contents_ is empty.
-        contents_.clear();
-      }
-    }
-  }
-
   void LoadArcPrivacyPolicyFileAsync() {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
     for (const auto& locale : CreateArcLocaleLookupArray()) {
-      // Offline ARC privacy policis are only available during demo mode setup.
+      // Offline ARC privacy policies are only available during demo mode setup.
       auto path =
           CreateDemoResourcesTermsPath(base::FilePath(base::StringPrintf(
               chrome::kArcPrivacyPolicyPathFormat, locale.c_str())));
@@ -341,8 +304,11 @@ class ChromeOSTermsHandler
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     // If we fail to load Chrome OS EULA from disk, load it from resources.
     // Do nothing if OEM EULA or Play Store ToS load failed.
-    if (contents_.empty() && path_.empty())
-      contents_ = l10n_util::GetStringUTF8(IDS_TERMS_HTML);
+    if (contents_.empty() && path_.empty()) {
+      contents_ =
+          ui::ResourceBundle::GetSharedInstance().LoadLocalizedResourceString(
+              IDS_TERMS_HTML);
+    }
     std::move(callback_).Run(base::RefCountedString::TakeString(&contents_));
   }
 
@@ -357,13 +323,14 @@ class ChromeOSTermsHandler
 
   // EULA contents that was loaded from file.
   std::string contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSTermsHandler);
 };
 
 class ChromeOSCreditsHandler
     : public base::RefCountedThreadSafe<ChromeOSCreditsHandler> {
  public:
+  ChromeOSCreditsHandler(const ChromeOSCreditsHandler&) = delete;
+  ChromeOSCreditsHandler& operator=(const ChromeOSCreditsHandler&) = delete;
+
   static void Start(const std::string& path,
                     content::URLDataSource::GotDataCallback callback) {
     scoped_refptr<ChromeOSCreditsHandler> handler(
@@ -383,18 +350,17 @@ class ChromeOSCreditsHandler
   void StartOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (path_ == kKeyboardUtilsPath) {
-      contents_ = ui::ResourceBundle::GetSharedInstance()
-                      .GetRawDataResource(IDR_KEYBOARD_UTILS_JS)
-                      .as_string();
+      contents_ =
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+              IDR_KEYBOARD_UTILS_JS);
       ResponseOnUIThread();
       return;
     }
     // Load local Chrome OS credits from the disk.
-    base::PostTaskAndReply(
-        FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::Bind(&ChromeOSCreditsHandler::LoadCreditsFileAsync, this),
-        base::Bind(&ChromeOSCreditsHandler::ResponseOnUIThread, this));
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&ChromeOSCreditsHandler::LoadCreditsFileAsync, this),
+        base::BindOnce(&ChromeOSCreditsHandler::ResponseOnUIThread, this));
   }
 
   void LoadCreditsFileAsync() {
@@ -425,64 +391,77 @@ class ChromeOSCreditsHandler
 
   // Chrome OS credits contents that was loaded from file.
   std::string contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeOSCreditsHandler);
 };
 
-class LinuxCreditsHandler
-    : public base::RefCountedThreadSafe<LinuxCreditsHandler> {
+class CrostiniCreditsHandler
+    : public base::RefCountedThreadSafe<CrostiniCreditsHandler> {
  public:
-  static void Start(const std::string& path,
+  CrostiniCreditsHandler(const CrostiniCreditsHandler&) = delete;
+  CrostiniCreditsHandler& operator=(const CrostiniCreditsHandler&) = delete;
+
+  static void Start(Profile* profile,
+                    const std::string& path,
                     content::URLDataSource::GotDataCallback callback) {
-    scoped_refptr<LinuxCreditsHandler> handler(
-        new LinuxCreditsHandler(path, std::move(callback)));
+    scoped_refptr<CrostiniCreditsHandler> handler(
+        new CrostiniCreditsHandler(profile, path, std::move(callback)));
     handler->StartOnUIThread();
   }
 
  private:
-  friend class base::RefCountedThreadSafe<LinuxCreditsHandler>;
+  friend class base::RefCountedThreadSafe<CrostiniCreditsHandler>;
 
-  LinuxCreditsHandler(const std::string& path,
-                      content::URLDataSource::GotDataCallback callback)
-      : path_(path), callback_(std::move(callback)) {}
+  CrostiniCreditsHandler(Profile* profile,
+                         const std::string& path,
+                         content::URLDataSource::GotDataCallback callback)
+      : path_(path), callback_(std::move(callback)), profile_(profile) {}
 
-  virtual ~LinuxCreditsHandler() {}
+  virtual ~CrostiniCreditsHandler() {}
 
   void StartOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     if (path_ == kKeyboardUtilsPath) {
-      contents_ = ui::ResourceBundle::GetSharedInstance()
-                      .GetRawDataResource(IDR_KEYBOARD_UTILS_JS)
-                      .as_string();
-      ResponseOnUIThread();
+      contents_ =
+          ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
+              IDR_KEYBOARD_UTILS_JS);
+      RespondOnUIThread();
       return;
     }
-    // Load local Linux credits from the disk.
-    base::PostTaskAndReply(
-        FROM_HERE,
-        {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::Bind(&LinuxCreditsHandler::LoadLinuxCreditsFileAsync, this),
-        base::Bind(&LinuxCreditsHandler::ResponseOnUIThread, this));
+    crostini::CrostiniManager::GetForProfile(profile_)->GetInstallLocation(
+        base::BindOnce(&CrostiniCreditsHandler::LoadCredits, this));
   }
 
-  void LoadLinuxCreditsFileAsync() {
-    base::FilePath credits_file_path(chrome::kLinuxCreditsPath);
+  void LoadCredits(base::FilePath path) {
+    if (path.empty()) {
+      RespondWithPlaceholder();
+      return;
+    }
+
+    // Load crostini credits from the disk.
+    base::ThreadPool::PostTaskAndReply(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(&CrostiniCreditsHandler::LoadCrostiniCreditsFileAsync,
+                       this, path.Append(kTerminaCreditsPath)),
+        base::BindOnce(&CrostiniCreditsHandler::RespondOnUIThread, this));
+  }
+
+  void LoadCrostiniCreditsFileAsync(base::FilePath credits_file_path) {
     if (!base::ReadFileToString(credits_file_path, &contents_)) {
-      // File with credits not found, ResponseOnUIThread will load credits
-      // from resources if contents_ is empty.
+      // File with credits not found, RespondOnUIThread will load a placeholder
+      // if contents_ is empty.
       contents_.clear();
     }
   }
 
-  void ResponseOnUIThread() {
+  void RespondWithPlaceholder() {
+    contents_.clear();
+    RespondOnUIThread();
+  }
+
+  void RespondOnUIThread() {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
-    // If we fail to load Linux credits from disk, load the placeholder from
-    // resources.
-    // TODO(rjwright): Add a linux-specific placeholder in resources.
+    // If we fail to load Linux credits from disk, use the placeholder.
     if (contents_.empty() && path_ != kKeyboardUtilsPath) {
-      contents_ =
-          ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-              IDR_OS_CREDITS_HTML);
+      contents_ = l10n_util::GetStringUTF8(IDS_CROSTINI_CREDITS_PLACEHOLDER);
     }
     std::move(callback_).Run(base::RefCountedString::TakeString(&contents_));
   }
@@ -496,7 +475,7 @@ class LinuxCreditsHandler
   // Linux credits contents that was loaded from file.
   std::string contents_;
 
-  DISALLOW_COPY_AND_ASSIGN(LinuxCreditsHandler);
+  Profile* profile_;
 };
 #endif
 
@@ -506,19 +485,14 @@ class LinuxCreditsHandler
 
 namespace about_ui {
 
-void AppendHeader(std::string* output, int refresh,
-                  const std::string& unescaped_title) {
+void AppendHeader(std::string* output, const std::string& unescaped_title) {
   output->append("<!DOCTYPE HTML>\n<html>\n<head>\n");
+  output->append("<meta charset='utf-8'>\n");
+  output->append("<meta name='color-scheme' content='light dark'>\n");
   if (!unescaped_title.empty()) {
     output->append("<title>");
     output->append(net::EscapeForHTML(unescaped_title));
     output->append("</title>\n");
-  }
-  output->append("<meta charset='utf-8'>\n");
-  if (refresh > 0) {
-    output->append("<meta http-equiv='refresh' content='");
-    output->append(base::NumberToString(refresh));
-    output->append("'/>\n");
   }
 }
 
@@ -540,16 +514,32 @@ namespace {
 
 std::string ChromeURLs() {
   std::string html;
-  AppendHeader(&html, 0, "Chrome URLs");
+  AppendHeader(&html, "Chrome URLs");
   AppendBody(&html);
+
   html += "<h2>List of Chrome URLs</h2>\n<ul>\n";
   std::vector<std::string> hosts(
       chrome::kChromeHostURLs,
       chrome::kChromeHostURLs + chrome::kNumberOfChromeHostURLs);
   std::sort(hosts.begin(), hosts.end());
-  for (std::vector<std::string>::const_iterator i = hosts.begin();
-       i != hosts.end(); ++i)
-    html += "<li><a href='chrome://" + *i + "/'>chrome://" + *i + "</a></li>\n";
+  for (const std::string& host : hosts) {
+    html +=
+        "<li><a href='chrome://" + host + "/'>chrome://" + host + "</a></li>\n";
+  }
+
+  html +=
+      "</ul><a id=\"internals\"><h2>List of chrome://internals "
+      "pages</h2></a>\n<ul>\n";
+  std::vector<std::string> internals_paths(
+      chrome::kChromeInternalsPathURLs,
+      chrome::kChromeInternalsPathURLs +
+          chrome::kNumberOfChromeInternalsPathURLs);
+  std::sort(internals_paths.begin(), internals_paths.end());
+  for (const std::string& path : internals_paths) {
+    html += "<li><a href='chrome://internals/" + path +
+            "'>chrome://internals/" + path + "</a></li>\n";
+  }
+
   html += "</ul>\n<h2>For Debug</h2>\n"
       "<p>The following pages are for debugging purposes only. Because they "
       "crash or hang the renderer, they're not linked directly; you can type "
@@ -557,14 +547,15 @@ std::string ChromeURLs() {
   for (size_t i = 0; i < chrome::kNumberOfChromeDebugURLs; i++)
     html += "<li>" + std::string(chrome::kChromeDebugURLs[i]) + "</li>\n";
   html += "</ul>\n";
+
   AppendFooter(&html);
   return html;
 }
 
-#if defined(OS_LINUX) || defined(OS_OPENBSD)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
 std::string AboutLinuxProxyConfig() {
   std::string data;
-  AppendHeader(&data, 0,
+  AppendHeader(&data,
                l10n_util::GetStringUTF8(IDS_ABOUT_LINUX_PROXY_CONFIG_TITLE));
   data.append("<style>body { max-width: 70ex; padding: 2ex 5ex; }</style>");
   AppendBody(&data);
@@ -607,7 +598,7 @@ void AboutUIHTMLSource::StartDataRequest(
     int idr = IDR_ABOUT_UI_CREDITS_HTML;
     if (path == kCreditsJsPath)
       idr = IDR_ABOUT_UI_CREDITS_JS;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     else if (path == kKeyboardUtilsPath)
       idr = IDR_KEYBOARD_UTILS_JS;
 #endif
@@ -617,26 +608,29 @@ void AboutUIHTMLSource::StartDataRequest(
       response =
           ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(idr);
     }
-#if defined(OS_LINUX) || defined(OS_OPENBSD)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
   } else if (source_name_ == chrome::kChromeUILinuxProxyConfigHost) {
     response = AboutLinuxProxyConfig();
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   } else if (source_name_ == chrome::kChromeUIOSCreditsHost) {
     ChromeOSCreditsHandler::Start(path, std::move(callback));
     return;
-  } else if (source_name_ == chrome::kChromeUILinuxCreditsHost) {
-    LinuxCreditsHandler::Start(path, std::move(callback));
+  } else if (source_name_ == chrome::kChromeUICrostiniCreditsHost) {
+    CrostiniCreditsHandler::Start(profile(), path, std::move(callback));
     return;
 #endif
 #if !defined(OS_ANDROID)
   } else if (source_name_ == chrome::kChromeUITermsHost) {
-#if defined(OS_CHROMEOS)
-    ChromeOSTermsHandler::Start(path, std::move(callback));
-    return;
-#else
-    response = l10n_util::GetStringUTF8(IDS_TERMS_HTML);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (!path.empty()) {
+      ChromeOSTermsHandler::Start(path, std::move(callback));
+      return;
+    }
 #endif
+    response =
+        ui::ResourceBundle::GetSharedInstance().LoadLocalizedResourceString(
+            IDS_TERMS_HTML);
 #endif
   }
 
@@ -651,21 +645,20 @@ void AboutUIHTMLSource::FinishDataRequest(
 }
 
 std::string AboutUIHTMLSource::GetMimeType(const std::string& path) {
-  if (path == kCreditsJsPath     ||
-#if defined(OS_CHROMEOS)
+  if (path == kCreditsJsPath ||
+#if BUILDFLAG(IS_CHROMEOS_ASH)
       path == kKeyboardUtilsPath ||
 #endif
-      path == kStatsJsPath       ||
-      path == kStringsJsPath) {
+      path == kStatsJsPath || path == kStringsJsPath) {
     return "application/javascript";
   }
   return "text/html";
 }
 
 bool AboutUIHTMLSource::ShouldAddContentSecurityPolicy() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (source_name_ == chrome::kChromeUIOSCreditsHost ||
-      source_name_ == chrome::kChromeUILinuxCreditsHost) {
+      source_name_ == chrome::kChromeUICrostiniCreditsHost) {
     return false;
   }
 #endif
@@ -674,7 +667,7 @@ bool AboutUIHTMLSource::ShouldAddContentSecurityPolicy() {
 
 std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
     const std::string& origin) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Allow chrome://oobe to load chrome://terms via XHR.
   if (source_name_ == chrome::kChromeUITermsHost &&
       base::StartsWith(chrome::kChromeUIOobeURL, origin,

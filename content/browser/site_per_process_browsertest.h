@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/content_browser_test.h"
@@ -19,9 +18,13 @@ namespace content {
 
 class FrameTreeNode;
 
-class SitePerProcessBrowserTest : public ContentBrowserTest {
+class SitePerProcessBrowserTestBase : public ContentBrowserTest {
  public:
-  SitePerProcessBrowserTest();
+  SitePerProcessBrowserTestBase();
+
+  SitePerProcessBrowserTestBase(const SitePerProcessBrowserTestBase&) = delete;
+  SitePerProcessBrowserTestBase& operator=(
+      const SitePerProcessBrowserTestBase&) = delete;
 
  protected:
   std::string DepictFrameTree(FrameTreeNode* node);
@@ -33,11 +36,31 @@ class SitePerProcessBrowserTest : public ContentBrowserTest {
     return static_cast<WebContentsImpl*>(shell()->web_contents());
   }
 
+  static void ForceUpdateViewportIntersection(
+      FrameTreeNode* frame_tree_node,
+      const blink::mojom::ViewportIntersectionState& intersection_state);
+
+  void RunPostedTasks();
+
  private:
   FrameTreeVisualizer visualizer_;
   base::test::ScopedFeatureList feature_list_;
+};
 
-  DISALLOW_COPY_AND_ASSIGN(SitePerProcessBrowserTest);
+class SitePerProcessBrowserTest
+    : public SitePerProcessBrowserTestBase,
+      public ::testing::WithParamInterface<std::string> {
+ public:
+  SitePerProcessBrowserTest();
+
+  SitePerProcessBrowserTest(const SitePerProcessBrowserTest&) = delete;
+  SitePerProcessBrowserTest& operator=(const SitePerProcessBrowserTest&) =
+      delete;
+
+  std::string GetExpectedOrigin(const std::string& host);
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace content

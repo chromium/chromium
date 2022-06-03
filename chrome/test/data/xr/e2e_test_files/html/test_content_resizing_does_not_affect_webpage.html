@@ -11,6 +11,8 @@ that are reported to the webpage.
     <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
     <script src="../resources/webxr_e2e.js"></script>
     <script>
+      setup({single_test: true});
+
       var initialWidth = 0;
       var initialHeight = 0;
       function stepGetInitialDimensions() {

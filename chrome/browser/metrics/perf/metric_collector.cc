@@ -31,8 +31,7 @@ const int kMinIntervalBetweenSessionRestoreCollectionsInSec = 30;
 base::TimeDelta RandomTimeDelta(base::TimeDelta max) {
   if (max.is_zero())
     return max;
-  return base::TimeDelta::FromMicroseconds(
-      base::RandGenerator(max.InMicroseconds()));
+  return base::Microseconds(base::RandGenerator(max.InMicroseconds()));
 }
 
 // PerfDataProto is defined elsewhere with more fields than the definition in
@@ -151,8 +150,8 @@ void MetricCollector::ScheduleSessionRestoreCollection(int num_tabs_restored) {
     return;
   }
 
-  const auto min_interval = base::TimeDelta::FromSeconds(
-      kMinIntervalBetweenSessionRestoreCollectionsInSec);
+  const auto min_interval =
+      base::Seconds(kMinIntervalBetweenSessionRestoreCollectionsInSec);
   const base::TimeDelta time_since_last_collection =
       (base::TimeTicks::Now() - last_session_restore_collection_time_);
   // Do not collect if there hasn't been enough elapsed time since the last
@@ -280,6 +279,11 @@ void MetricCollector::SaveSerializedPerfProto(
   PerfDataProto perf_data_proto;
   if (!perf_data_proto.ParseFromString(serialized_proto)) {
     AddToUmaHistogram(CollectionAttemptStatus::PROTOBUF_NOT_PARSED);
+    return;
+  }
+  // Don't save the profile if there are no samples.
+  if (perf_data_proto.stats().num_sample_events() == 0) {
+    AddToUmaHistogram(CollectionAttemptStatus::SESSION_HAS_ZERO_SAMPLES);
     return;
   }
   RemoveUnknownFieldsFromMessagesWithStrings(&perf_data_proto);

@@ -6,6 +6,9 @@
 
 /* global PaymentRequest:false */
 
+var request = null;
+var showPromise = null;
+
 /**
  * Helper function that launches the PaymentRequest UI with the specified
  * payment methods.
@@ -15,7 +18,7 @@
  * @param {boolean} requestShippingContact: Whether or not shipping address and
  *     payer's contact information are required.
  */
-function testPaymentMethods(methods, requestShippingContact = false) {
+async function testPaymentMethods(methods, requestShippingContact = false) {
   const shippingOptions = requestShippingContact
       ? [{
           id: 'freeShippingOption',
@@ -25,7 +28,7 @@ function testPaymentMethods(methods, requestShippingContact = false) {
         }]
       : [];
   try {
-    new PaymentRequest(
+    request = new PaymentRequest(
         methods,
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}},
             shippingOptions},
@@ -34,25 +37,25 @@ function testPaymentMethods(methods, requestShippingContact = false) {
           requestPayerEmail: requestShippingContact,
           requestPayerName: requestShippingContact,
           requestPayerPhone: requestShippingContact,
-        })
-        .show()
-        .then(function(resp) {
-          resp.complete('success')
-              .then(function() {
-                print(
-                    resp.methodName + '<br>' +
-                    JSON.stringify(resp.details, undefined, 2));
-              })
-              .catch(function(error) {
-                print(error.message);
-              });
-        })
-        .catch(function(error) {
-          print(error.message);
         });
+    showPromise = request.show();
+    const resp = await showPromise;
+    await resp.complete('success');
+    const json = JSON.stringify(resp.details, undefined, 2);
+    print(`${resp.methodName}<br>${json}`);
   } catch (error) {
     print(error.message);
   }
+}
+
+/**
+ * Aborts the PaymentRequest initiated by testPaymentMethods().
+ */
+async function abort() { // eslint-disable-line no-unused-vars
+  await request.abort();
+  return await showPromise.catch((e) => {
+    return e.name == 'AbortError';
+  });
 }
 
 /**

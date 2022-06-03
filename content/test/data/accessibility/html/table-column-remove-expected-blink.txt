@@ -1,0 +1,15 @@
+rootWebArea name='done'
+++genericContainer ignored
+++++genericContainer ignored
+++++++table ariaColumnCount=1 tableColumnCount=1
+++++++++rowGroup ignored
+++++++++++row
+++++++++++++cell ignored invisible
+++++++++++++cell name='B' ariaCellColumnIndex=1 tableCellColumnIndex=0
+++++++++++++++staticText name='B'
+++++++++++++++++inlineTextBox name='B'
+++++++++++row
+++++++++++++cell ignored invisible
+++++++++++++cell name='D' ariaCellColumnIndex=1 tableCellColumnIndex=0
+++++++++++++++staticText name='D'
+++++++++++++++++inlineTextBox name='D'

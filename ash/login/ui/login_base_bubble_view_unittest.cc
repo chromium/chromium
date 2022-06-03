@@ -4,6 +4,7 @@
 
 #include "ash/login/ui/login_base_bubble_view.h"
 #include "ash/login/ui/login_test_base.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
@@ -14,10 +15,14 @@ namespace ash {
 
 namespace {
 // Total width of the bubble view.
-constexpr int kBubbleTotalWidthDp = 178;
+constexpr int kBubbleTotalWidthDp = 192;
 }  // namespace
 
 class LoginBaseBubbleViewTest : public LoginTestBase {
+ public:
+  LoginBaseBubbleViewTest(const LoginBaseBubbleViewTest&) = delete;
+  LoginBaseBubbleViewTest& operator=(const LoginBaseBubbleViewTest&) = delete;
+
  protected:
   LoginBaseBubbleViewTest() = default;
   ~LoginBaseBubbleViewTest() override = default;
@@ -36,8 +41,7 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
     SetWidget(CreateWidgetWithContent(container_));
 
     bubble_ = new LoginBaseBubbleView(anchor_, widget()->GetNativeView());
-    auto* label = new views::Label(base::UTF8ToUTF16("A message"),
-                                   views::style::CONTEXT_LABEL,
+    auto* label = new views::Label(u"A message", views::style::CONTEXT_LABEL,
                                    views::style::STYLE_PRIMARY);
     bubble_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
@@ -49,9 +53,6 @@ class LoginBaseBubbleViewTest : public LoginTestBase {
   LoginBaseBubbleView* bubble_;
   views::View* container_;
   views::View* anchor_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginBaseBubbleViewTest);
 };
 
 TEST_F(LoginBaseBubbleViewTest, BasicProperties) {
@@ -61,7 +62,9 @@ TEST_F(LoginBaseBubbleViewTest, BasicProperties) {
   EXPECT_TRUE(bubble_->GetVisible());
 
   EXPECT_EQ(bubble_->width(), kBubbleTotalWidthDp);
-  EXPECT_EQ(bubble_->background()->get_color(), SK_ColorBLACK);
+  SkColor background_color = AshColorProvider::Get()->GetBaseLayerColor(
+      AshColorProvider::BaseLayerType::kTransparent80);
+  EXPECT_EQ(bubble_->background()->get_color(), background_color);
 
   bubble_->Hide();
   EXPECT_FALSE(bubble_->GetVisible());

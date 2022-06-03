@@ -43,9 +43,7 @@ TEST(PrefValueMapTest, SetDoubleValue) {
 
   const Value* result = nullptr;
   ASSERT_TRUE(map.GetValue("key", &result));
-  double double_value = 0.;
-  EXPECT_TRUE(result->GetAsDouble(&double_value));
-  EXPECT_DOUBLE_EQ(5.5, double_value);
+  EXPECT_DOUBLE_EQ(5.5, result->GetDouble());
 }
 
 TEST(PrefValueMapTest, RemoveValue) {
@@ -69,6 +67,51 @@ TEST(PrefValueMapTest, Clear) {
   map.Clear();
 
   EXPECT_FALSE(map.GetValue("key", nullptr));
+}
+
+TEST(PrefValueMapTest, ClearWithPrefix) {
+  {
+    PrefValueMap map;
+    EXPECT_TRUE(map.SetValue("a", Value("test")));
+    EXPECT_TRUE(map.SetValue("b", Value("test")));
+    EXPECT_TRUE(map.SetValue("bb", Value("test")));
+    EXPECT_TRUE(map.SetValue("z", Value("test")));
+
+    map.ClearWithPrefix("b");
+
+    EXPECT_TRUE(map.GetValue("a", nullptr));
+    EXPECT_FALSE(map.GetValue("b", nullptr));
+    EXPECT_FALSE(map.GetValue("bb", nullptr));
+    EXPECT_TRUE(map.GetValue("z", nullptr));
+  }
+  {
+    PrefValueMap map;
+    EXPECT_TRUE(map.SetValue("a", Value("test")));
+    EXPECT_TRUE(map.SetValue("b", Value("test")));
+    EXPECT_TRUE(map.SetValue("bb", Value("test")));
+    EXPECT_TRUE(map.SetValue("z", Value("test")));
+
+    map.ClearWithPrefix("z");
+
+    EXPECT_TRUE(map.GetValue("a", nullptr));
+    EXPECT_TRUE(map.GetValue("b", nullptr));
+    EXPECT_TRUE(map.GetValue("bb", nullptr));
+    EXPECT_FALSE(map.GetValue("z", nullptr));
+  }
+  {
+    PrefValueMap map;
+    EXPECT_TRUE(map.SetValue("a", Value("test")));
+    EXPECT_TRUE(map.SetValue("b", Value("test")));
+    EXPECT_TRUE(map.SetValue("bb", Value("test")));
+    EXPECT_TRUE(map.SetValue("z", Value("test")));
+
+    map.ClearWithPrefix("c");
+
+    EXPECT_TRUE(map.GetValue("a", nullptr));
+    EXPECT_TRUE(map.GetValue("b", nullptr));
+    EXPECT_TRUE(map.GetValue("bb", nullptr));
+    EXPECT_TRUE(map.GetValue("z", nullptr));
+  }
 }
 
 TEST(PrefValueMapTest, GetDifferingKeys) {

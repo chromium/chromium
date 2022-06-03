@@ -20,7 +20,7 @@ class WaitForEvent : public NativeEventListener {
 
   void Invoke(ExecutionContext*, Event*) final;
 
-  void Trace(Visitor*) final;
+  void Trace(Visitor*) const final;
 
  private:
   base::RunLoop run_loop_;

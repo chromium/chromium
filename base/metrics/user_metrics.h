@@ -10,9 +10,11 @@
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 
 namespace base {
+
+class TimeTicks;
 
 // This module provides some helper functions for logging actions tracked by
 // the user metrics system.
@@ -55,8 +57,18 @@ BASE_EXPORT void RecordAction(const UserMetricsAction& action);
 // SetRecordActionTaskRunner().
 BASE_EXPORT void RecordComputedAction(const std::string& action);
 
+// Similar to RecordComputedAction, but also takes the time at which the action
+// was observed.
+BASE_EXPORT void RecordComputedActionAt(const std::string& action,
+                                        TimeTicks action_time);
+
+// Similar to RecordComputedActionAt, but takes the amount of time elasped since
+// the action was observed.
+BASE_EXPORT void RecordComputedActionSince(const std::string& action,
+                                           TimeDelta time_since);
+
 // Called with the action string.
-using ActionCallback = RepeatingCallback<void(const std::string&)>;
+using ActionCallback = RepeatingCallback<void(const std::string&, TimeTicks)>;
 
 // Add/remove action callbacks (see above).
 // These functions must be called after the task runner has been set with
@@ -67,6 +79,10 @@ BASE_EXPORT void RemoveActionCallback(const ActionCallback& callback);
 // Set the task runner on which to record actions.
 BASE_EXPORT void SetRecordActionTaskRunner(
     scoped_refptr<SingleThreadTaskRunner> task_runner);
+
+// Returns the task runner used to record actions. Returns null when not set.
+// This function is thread safe.
+BASE_EXPORT scoped_refptr<SingleThreadTaskRunner> GetRecordActionTaskRunner();
 
 }  // namespace base
 

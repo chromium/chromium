@@ -67,7 +67,7 @@ String CSSShadowValue::CustomCSSText() const {
     text.Append(style->CssText());
   }
 
-  return text.ToString();
+  return text.ReleaseString();
 }
 
 bool CSSShadowValue::Equals(const CSSShadowValue& other) const {
@@ -77,7 +77,7 @@ bool CSSShadowValue::Equals(const CSSShadowValue& other) const {
          DataEquivalent(style, other.style);
 }
 
-void CSSShadowValue::TraceAfterDispatch(blink::Visitor* visitor) {
+void CSSShadowValue::TraceAfterDispatch(blink::Visitor* visitor) const {
   visitor->Trace(x);
   visitor->Trace(y);
   visitor->Trace(blur);

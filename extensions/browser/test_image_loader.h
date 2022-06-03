@@ -17,6 +17,10 @@ class Extension;
 class TestImageLoader {
  public:
   TestImageLoader();
+
+  TestImageLoader(const TestImageLoader&) = delete;
+  TestImageLoader& operator=(const TestImageLoader&) = delete;
+
   ~TestImageLoader();
 
   // Loads an image to be used in test from |extension|.
@@ -33,11 +37,9 @@ class TestImageLoader {
                             int size);
 
   gfx::Image image_;
-  base::Closure loader_message_loop_quit_;
-  bool waiting_;
-  bool image_loaded_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestImageLoader);
+  base::OnceClosure loader_message_loop_quit_;
+  bool waiting_ = false;
+  bool image_loaded_ = false;
 };
 
 }  // namespace extensions

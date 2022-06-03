@@ -9,11 +9,11 @@
 
 #include <list>
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/gfx/render_text.h"
 #include "ui/gfx/text_constants.h"
@@ -39,6 +39,7 @@ enum class MergeType {
 
 namespace test {
 class BridgedNativeWidgetTest;
+class TextfieldTest;
 }  // namespace test
 
 // A model that represents text content for a views::Textfield.
@@ -60,45 +61,54 @@ class VIEWS_EXPORT TextfieldModel {
   };
 
   explicit TextfieldModel(Delegate* delegate);
+
+  TextfieldModel(const TextfieldModel&) = delete;
+  TextfieldModel& operator=(const TextfieldModel&) = delete;
+
   virtual ~TextfieldModel();
 
   // Edit related methods.
 
-  const base::string16& text() const { return render_text_->text(); }
-  // Sets the text. Returns true if the text has been modified.  The current
-  // composition text will be confirmed first.  Setting the same text will not
-  // add edit history because it's not user visible change nor user-initiated
-  // change. This allow a client code to set the same text multiple times
-  // without worrying about messing edit history.
-  bool SetText(const base::string16& new_text);
+  const std::u16string& text() const { return render_text_->text(); }
+  // Sets the text. Returns true if the text was modified. The current
+  // composition text will be confirmed first. Setting the same text, even with
+  // an updated |cursor_position|, will neither add edit history nor change the
+  // cursor because it's neither a user visible change nor user-initiated
+  // change. This allows clients to set the same text multiple times without
+  // messing up edit history. The resulting history edit will have
+  // |new_cursor_pos| set to |cursor_position|. This is important even if
+  // subsequent calls will override the cursor position because updating the
+  // cursor alone won't update the edit history. I.e. the cursor position after
+  // applying or redoing the edit will be determined by |cursor_position|.
+  bool SetText(const std::u16string& new_text, size_t cursor_position);
 
   gfx::RenderText* render_text() { return render_text_.get(); }
 
   // Inserts given |new_text| at the current cursor position.
   // The current composition text will be cleared.
-  void InsertText(const base::string16& new_text) {
+  void InsertText(const std::u16string& new_text) {
     InsertTextInternal(new_text, false);
   }
 
   // Inserts a character at the current cursor position.
-  void InsertChar(base::char16 c) {
-    InsertTextInternal(base::string16(&c, 1), true);
+  void InsertChar(char16_t c) {
+    InsertTextInternal(std::u16string(&c, 1), true);
   }
 
   // Replaces characters at the current position with characters in given text.
   // The current composition text will be cleared.
-  void ReplaceText(const base::string16& new_text) {
+  void ReplaceText(const std::u16string& new_text) {
     ReplaceTextInternal(new_text, false);
   }
 
   // Replaces the char at the current position with given character.
-  void ReplaceChar(base::char16 c) {
-    ReplaceTextInternal(base::string16(&c, 1), true);
+  void ReplaceChar(char16_t c) {
+    ReplaceTextInternal(std::u16string(&c, 1), true);
   }
 
   // Appends the text.
   // The current composition text will be confirmed.
-  void Append(const base::string16& new_text);
+  void Append(const std::u16string& new_text);
 
   // Deletes the first character after the current cursor position (as if, the
   // the user has pressed delete key in the textfield). Returns true if
@@ -129,19 +139,24 @@ class VIEWS_EXPORT TextfieldModel {
   // will be confirmed, which may alter the specified selection range start.
   bool MoveCursorTo(const gfx::SelectionModel& cursor);
 
+  // Sugar for MoveCursorTo({0, CURSOR_FORWARD}).
+  bool MoveCursorTo(size_t pos);
+
   // Calls the corresponding function on the associated RenderText instance. Any
   // composition text will be confirmed.
   bool MoveCursorTo(const gfx::Point& point, bool select);
 
   // Selection related methods.
 
-  // Returns the selected text.
-  base::string16 GetSelectedText() const;
+  // Returns the primary selected text associated with the cursor. Does not
+  // return secondary selections.
+  std::u16string GetSelectedText() const;
 
-  // The current composition text will be confirmed. The selection starts with
-  // the range's start position, and ends with the range's end position,
-  // therefore the cursor position becomes the end position.
-  void SelectRange(const gfx::Range& range);
+  // The current composition text will be confirmed. If |primary| is true, the
+  // selection starts with the range's start position and ends with the range's
+  // end position; therefore the cursor position becomes the end position. If
+  // |primary| is false, then the selection is not associated with the cursor.
+  void SelectRange(const gfx::Range& range, bool primary = true);
 
   // The current composition text will be confirmed.
   // render_text_'s selection model is set to |sel|.
@@ -197,19 +212,20 @@ class VIEWS_EXPORT TextfieldModel {
   bool Yank();
 
   // Tells if any text is selected, even if the selection is in composition
-  // text.
-  bool HasSelection() const;
+  // text. |primary_only| indicates whether secondary selections should also be
+  // considered.
+  bool HasSelection(bool primary_only = false) const;
 
   // Deletes the selected text. This method shouldn't be called with
   // composition text.
   void DeleteSelection();
 
   // Deletes the selected text (if any) and insert text at given position.
-  void DeleteSelectionAndInsertTextAt(const base::string16& new_text,
-                                      size_t position);
+  void DeletePrimarySelectionAndInsertTextAt(const std::u16string& new_text,
+                                             size_t position);
 
   // Retrieves the text content in a given range.
-  base::string16 GetTextFromRange(const gfx::Range& range) const;
+  std::u16string GetTextFromRange(const gfx::Range& range) const;
 
   // Retrieves the range containing all text in the model.
   void GetTextRange(gfx::Range* range) const;
@@ -222,14 +238,25 @@ class VIEWS_EXPORT TextfieldModel {
   // composition text.
   void SetCompositionText(const ui::CompositionText& composition);
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Return the text range corresponding to the autocorrected text.
+  const gfx::Range& autocorrect_range() const { return autocorrect_range_; }
+
+  // Sets the autocorrect range to |range|. If |range| is empty, then the
+  // autocorrect range is cleared. Returns true if the range was set or cleared
+  // successfully.
+  bool SetAutocorrectRange(const gfx::Range& range);
+#endif
+
   // Puts the text in the specified range into composition mode.
   // This method should not be called with composition text or an invalid range.
   // The provided range is checked against the string's length, if |range| is
   // out of bounds, the composition will be cleared.
   void SetCompositionFromExistingText(const gfx::Range& range);
 
-  // Converts current composition text into final content.
-  void ConfirmCompositionText();
+  // Converts current composition text into final content and returns the
+  // length of the text committed.
+  uint32_t ConfirmCompositionText();
 
   // Removes current composition text.
   void CancelCompositionText();
@@ -247,50 +274,57 @@ class VIEWS_EXPORT TextfieldModel {
   friend class internal::Edit;
   friend class test::BridgedNativeWidgetTest;
   friend class TextfieldModelTest;
-  friend class TextfieldTest;
+  friend class test::TextfieldTest;
 
   FRIEND_TEST_ALL_PREFIXES(TextfieldModelTest, UndoRedo_BasicTest);
   FRIEND_TEST_ALL_PREFIXES(TextfieldModelTest, UndoRedo_CutCopyPasteTest);
   FRIEND_TEST_ALL_PREFIXES(TextfieldModelTest, UndoRedo_ReplaceTest);
 
-  // Insert the given |new_text|. |mergeable| indicates if this insert operation
-  // can be merged with previous edits in the history.
-  void InsertTextInternal(const base::string16& new_text, bool mergeable);
+  // Insert the given |new_text| at the cursor. |mergeable| indicates if this
+  // operation can be merged with previous edits in the history. Will delete any
+  // selected text.
+  void InsertTextInternal(const std::u16string& new_text, bool mergeable);
 
-  // Replace the current text with the given |new_text|. |mergeable| indicates
-  // if this replace operation can be merged with previous edits in the history.
-  void ReplaceTextInternal(const base::string16& new_text, bool mergeable);
+  // Replace the current selected text with the given |new_text|. |mergeable|
+  // indicates if this operation can be merged with previous edits in the
+  // history.
+  void ReplaceTextInternal(const std::u16string& new_text, bool mergeable);
 
   // Clears redo history.
   void ClearRedoHistory();
 
   // Executes and records edit operations.
-  void ExecuteAndRecordDelete(gfx::Range range, bool mergeable);
+  void ExecuteAndRecordDelete(std::vector<gfx::Range> ranges, bool mergeable);
   void ExecuteAndRecordReplaceSelection(internal::MergeType merge_type,
-                                        const base::string16& new_text);
+                                        const std::u16string& new_text);
   void ExecuteAndRecordReplace(internal::MergeType merge_type,
-                               gfx::Range replacement_range,
+                               std::vector<gfx::Range> replacement_range,
                                size_t new_cursor_pos,
-                               const base::string16& new_text,
+                               const std::u16string& new_text,
                                size_t new_text_start);
-  void ExecuteAndRecordInsert(const base::string16& new_text, bool mergeable);
+  void ExecuteAndRecordInsert(const std::u16string& new_text, bool mergeable);
 
   // Adds or merges |edit| into the edit history.
   void AddOrMergeEditHistory(std::unique_ptr<internal::Edit> edit);
 
   // Modify the text buffer in following way:
-  // 1) Delete the string from |delete_from| to |delete_to|.
-  // 2) Insert the |new_text| at the index |new_text_insert_at|.
-  //    Note that the index is after deletion.
-  // 3) Select |selection|.
-  void ModifyText(size_t delete_from,
-                  size_t delete_to,
-                  const base::string16& new_text,
-                  size_t new_text_insert_at,
-                  gfx::Range selection);
+  // 1) Delete the |deletions|.
+  // 2) Insert the |insertion_texts| at the |insertion_positions|.
+  // 3) Select |primary_selection| and |secondary_selections|.
+  // Deletions and insertions are applied in order and affect later edit
+  // indices. E.g., given 'xyz', inserting 'A' at 1 and 'B' at 2 will result in
+  // 'xAByz', not 'xAyBz'. On the other hand, inserting 'B' at 2 then 'A' at 1
+  // will result in 'xAyBz'. Thus, for applying or redoing edits, they should be
+  // ordered with increasing indices; while for undoing edits, they should be
+  // ordered decreasing.
+  void ModifyText(const std::vector<gfx::Range>& deletions,
+                  const std::vector<std::u16string>& insertion_texts,
+                  const std::vector<size_t>& insertion_positions,
+                  const gfx::Range& primary_selection,
+                  const std::vector<gfx::Range>& secondary_selections);
 
   // Calls render_text->SetText() and delegate's callback.
-  void SetRenderTextText(const base::string16& text);
+  void SetRenderTextText(const std::u16string& text);
 
   void ClearComposition();
 
@@ -303,8 +337,11 @@ class VIEWS_EXPORT TextfieldModel {
   // The stylized text, cursor, selection, and the visual layout model.
   std::unique_ptr<gfx::RenderText> render_text_;
 
-  // The composition range.
   gfx::Range composition_range_;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  gfx::Range autocorrect_range_;
+#endif
 
   // The list of Edits. The oldest Edits are at the front of the list, and the
   // newest ones are at the back of the list.
@@ -324,8 +361,6 @@ class VIEWS_EXPORT TextfieldModel {
   //   2) new edit is added. (redo history is cleared)
   //   3) redone all undone edits.
   EditHistory::iterator current_edit_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextfieldModel);
 };
 
 }  // namespace views

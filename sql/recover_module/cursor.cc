@@ -4,6 +4,8 @@
 
 #include "sql/recover_module/cursor.h"
 
+#include <ostream>
+
 #include "base/containers/span.h"
 #include "sql/recover_module/table.h"
 

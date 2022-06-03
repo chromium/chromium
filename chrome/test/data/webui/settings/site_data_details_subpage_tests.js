@@ -2,6 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {cookieInfo, LocalDataBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {MetricsBrowserProxyImpl, PrivacyElementInteractions, Router,routes} from 'chrome://settings/settings.js';
+
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {TestLocalDataBrowserProxy} from './test_local_data_browser_proxy.js';
+import {TestMetricsBrowserProxy} from './test_metrics_browser_proxy.js';
+
+// clang-format on
+
 /** @fileoverview Suite of tests for site-data-details-subpage. */
 suite('SiteDataDetailsSubpage', function() {
   /** @type {?SiteDataDetailsSubpageElement} */
@@ -9,6 +21,9 @@ suite('SiteDataDetailsSubpage', function() {
 
   /** @type {TestLocalDataBrowserProxy} */
   let browserProxy = null;
+
+  /** @type {!TestMetricsBrowserProxy} */
+  let testMetricsBrowserProxy;
 
   /** @type {!CookieDetails} */
   const cookieDetails = {
@@ -27,29 +42,24 @@ suite('SiteDataDetailsSubpage', function() {
     type: 'cookie'
   };
 
-  /** @type {!CookieList} */
-  const cookieList = {
-    id: 'fooId',
-    children: [cookieDetails],
-  };
-
   const site = 'foo.com';
 
   setup(function() {
     browserProxy = new TestLocalDataBrowserProxy();
-    browserProxy.setCookieDetails(cookieList);
-    settings.LocalDataBrowserProxyImpl.instance_ = browserProxy;
+    browserProxy.setCookieDetails([cookieDetails]);
+    LocalDataBrowserProxyImpl.setInstance(browserProxy);
+    testMetricsBrowserProxy = new TestMetricsBrowserProxy();
+    MetricsBrowserProxyImpl.setInstance(testMetricsBrowserProxy);
     PolymerTest.clearBody();
     page = document.createElement('site-data-details-subpage');
-    settings.navigateTo(
-        settings.routes.SITE_SETTINGS_DATA_DETAILS,
-        new URLSearchParams('site=' + site));
+    Router.getInstance().navigateTo(
+        routes.SITE_SETTINGS_DATA_DETAILS, new URLSearchParams('site=' + site));
 
     document.body.appendChild(page);
   });
 
   teardown(function() {
-    settings.resetRouteForTesting();
+    Router.getInstance().resetRouteForTesting();
   });
 
   test('DetailsShownForCookie', function() {
@@ -57,8 +67,8 @@ suite('SiteDataDetailsSubpage', function() {
         .then(function(actualSite) {
           assertEquals(site, actualSite);
 
-          Polymer.dom.flush();
-          const entries = page.root.querySelectorAll('.settings-box');
+          flush();
+          const entries = page.root.querySelectorAll('.cr-row');
           assertEquals(1, entries.length);
 
           const listItems = page.root.querySelectorAll('.list-item');
@@ -75,4 +85,24 @@ suite('SiteDataDetailsSubpage', function() {
           });
         });
   });
+
+  test('InteractionMetrics', async function() {
+    // Confirm that various page interactions record the appropriate metric.
+    await flushTasks();
+    page.shadowRoot.querySelector('.icon-clear').click();
+    let metric =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ITEM, metric);
+    testMetricsBrowserProxy.reset();
+
+    // removeAll is public on the element to allow it to be called from a button
+    // located in the enclosing settings-subpage element. It is not bound to
+    // interactions with any part of the element under test, and is thus called
+    // directly from the test.
+    page.removeAll();
+    metric =
+        await testMetricsBrowserProxy.whenCalled('recordSettingsPageHistogram');
+    assertEquals(PrivacyElementInteractions.COOKIE_DETAILS_REMOVE_ALL, metric);
+  });
+
 });

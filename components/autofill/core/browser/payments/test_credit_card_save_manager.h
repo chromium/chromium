@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/gtest_prod_util.h"
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 
 namespace autofill {
@@ -25,6 +26,11 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
                             AutofillClient* client,
                             payments::TestPaymentsClient* payments_client,
                             PersonalDataManager* personal_data_manager);
+
+  TestCreditCardSaveManager(const TestCreditCardSaveManager&) = delete;
+  TestCreditCardSaveManager& operator=(const TestCreditCardSaveManager&) =
+      delete;
+
   ~TestCreditCardSaveManager() override;
 
   bool IsCreditCardUploadEnabled() override;
@@ -36,7 +42,7 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   void set_show_save_prompt(bool show_save_prompt);
 
-  void set_upload_request_card_number(const base::string16& credit_card_number);
+  void set_upload_request_card_number(const std::u16string& credit_card_number);
 
  private:
   void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
@@ -47,8 +53,6 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
 
   FRIEND_TEST_ALL_PREFIXES(CreditCardSaveManagerTest,
                            UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess);
-
-  DISALLOW_COPY_AND_ASSIGN(TestCreditCardSaveManager);
 };
 
 }  // namespace autofill

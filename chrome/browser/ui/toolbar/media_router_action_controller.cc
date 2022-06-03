@@ -5,15 +5,17 @@
 #include "chrome/browser/ui/toolbar/media_router_action_controller.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
-#include "chrome/browser/media/router/media_router.h"
-#include "chrome/browser/media/router/media_router_factory.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/media/router/media_router_metrics.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/pref_names.h"
+#include "components/media_router/browser/media_router.h"
+#include "components/media_router/browser/media_router_factory.h"
+#include "components/media_router/browser/media_router_metrics.h"
+#include "components/media_router/common/pref_names.h"
+#include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
 MediaRouterActionController::MediaRouterActionController(Profile* profile)
     : MediaRouterActionController(
@@ -30,8 +32,8 @@ bool MediaRouterActionController::IsActionShownByPolicy(Profile* profile) {
   const PrefService::Preference* pref =
       profile->GetPrefs()->FindPreference(prefs::kShowCastIconInToolbar);
   bool show = false;
-  if (pref->IsManaged())
-    pref->GetValue()->GetAsBoolean(&show);
+  if (pref->IsManaged() && pref->GetValue()->is_bool())
+    show = pref->GetValue()->GetBool();
   return show;
 }
 
@@ -62,11 +64,17 @@ void MediaRouterActionController::OnRoutesUpdated(
     const std::vector<media_router::MediaRoute>& routes,
     const std::vector<media_router::MediaRoute::Id>& joinable_route_ids) {
   has_local_display_route_ =
-      std::find_if(routes.begin(), routes.end(),
-                   [](const media_router::MediaRoute& route) {
-                     return route.is_local() && route.for_display();
-                   }) != routes.end();
-
+      std::find_if(
+          routes.begin(), routes.end(),
+          [](const media_router::MediaRoute& route) {
+            bool should_hide_presentation =
+                media_router::GlobalMediaControlsCastStartStopEnabled() &&
+                !(route.media_source().IsTabMirroringSource() ||
+                  route.media_source().IsDesktopMirroringSource() ||
+                  route.media_source().IsLocalFileSource());
+            return route.is_local() && route.for_display() &&
+                   !should_hide_presentation;
+          }) != routes.end();
   MaybeAddOrRemoveAction();
 }
 
@@ -86,8 +94,8 @@ void MediaRouterActionController::OnDialogHidden() {
       observer.DeactivateIcon();
     // Call MaybeAddOrRemoveAction() asynchronously, so that the action icon
     // doesn't get hidden until we have a chance to show a context menu.
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::UI},
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&MediaRouterActionController::MaybeAddOrRemoveAction,
                        weak_factory_.GetWeakPtr()));
   }
@@ -147,11 +155,14 @@ MediaRouterActionController::MediaRouterActionController(
   pref_change_registrar_.Init(profile->GetPrefs());
   pref_change_registrar_.Add(
       prefs::kShowCastIconInToolbar,
-      base::Bind(&MediaRouterActionController::MaybeAddOrRemoveAction,
-                 base::Unretained(this)));
-  if (profile_->IsRegularProfile()) {
+      base::BindRepeating(&MediaRouterActionController::MaybeAddOrRemoveAction,
+                          base::Unretained(this)));
+  if (!profile_->IsOffTheRecord()) {
     media_router::MediaRouterMetrics::RecordIconStateAtInit(
         MediaRouterActionController::GetAlwaysShowActionPref(profile_));
+    media_router::MediaRouterMetrics::RecordCloudPrefAtInit(
+        profile_->GetPrefs()->GetBoolean(
+            media_router::prefs::kMediaRouterEnableCloudServices));
   }
 }
 

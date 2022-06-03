@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/network_service_util.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -15,7 +16,7 @@
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "net/base/network_change_notifier_posix.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #endif
@@ -34,7 +35,7 @@ constexpr base::RunLoop::Type kRunLoopType =
 NetworkConnectionChangeSimulator::NetworkConnectionChangeSimulator() = default;
 NetworkConnectionChangeSimulator::~NetworkConnectionChangeSimulator() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void NetworkConnectionChangeSimulator::InitializeChromeosConnectionType() {
   // Manually set the connection type since ChromeOS's NetworkChangeNotifier
   // implementation relies on some other class controlling it (normally

@@ -1,82 +1,40 @@
     <style>
-      :host {
-        --translate-x-distance: 132px;
-      }
-
-      :host-context([is-print-preview]) {
-        --translate-x-distance: 96px;
-      }
-
-      #wrapper {
-        transition: transform 250ms;
-        transition-timing-function: cubic-bezier(0, 0, 0.2, 1);
-      }
-
-      :host([closed_]) #wrapper {
-        /* 132px roughly flips the location of the button across the right edge
-         * of the page. */
-        transform: translateX(var(--translate-x-distance));
-        transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
-      }
-
-      :host-context([is-print-preview][dir='ltr']):host([closed_]) #wrapper {
-        transform: translateX(calc(-1 * var(--translate-x-distance)));
-      }
-
-      :host-context([dir='rtl']):host([closed_]) #wrapper {
-        transform: translateX(calc(-1 * var(--translate-x-distance)));
-      }
-
-      :host-context([is-print-preview][dir='rtl']):host([closed_]) #wrapper {
-        transform: translateX(var(--translate-x-distance));
-      }
-
       cr-icon-button {
-        --cr-icon-button-fill-color: var(--paper-grey-700);
+        --cr-icon-button-fill-color: white;
         --cr-icon-button-icon-size: 20px;
-        --cr-icon-button-size: 36px;
-        --cr-icon-button-fill-color-focus: rgb(242, 242, 242);
-        background-color: rgb(242, 242, 242);
+        --cr-icon-button-size: 32px;
+        background-color: var(--google-grey-600);
         border-radius: 50%;
+        box-shadow: var(--cr-elevation-1);
         overflow: visible;
-        @apply --shadow-elevation-2dp;
       }
 
       cr-icon-button([disabled]) {
         box-shadow: none;
       }
 
-      :host-context([is-print-preview]) cr-icon-button {
-        --cr-icon-button-fill-color: white;
-        --cr-icon-button-fill-color-focus: var(--google-grey-600);
-        --cr-icon-button-size: 32px;
-        background-color: var(--google-grey-600);
-      }
-
       @media (prefers-color-scheme: light) {
-        :host-context([is-print-preview]) cr-icon-button {
+        cr-icon-button {
           --cr-icon-button-ripple-opacity: .5;
         }
       }
 
       @media (prefers-color-scheme: dark) {
-        :host-context([is-print-preview]) cr-icon-button {
+        cr-icon-button {
           --cr-icon-button-fill-color: var(--google-grey-200);
-          --cr-icon-button-fill-color-focus: var(--google-grey-900);
           background-color: var(--google-grey-900);
         }
       }
 
       :host([keyboard-navigation-active]) cr-icon-button:focus {
-        @apply --shadow-elevation-6dp;
+        box-shadow: var(--cr-elevation-4);
       }
 
       cr-icon-button:active {
-        @apply --shadow-elevation-8dp;
+        box-shadow: var(--cr-elevation-5);
       }
     </style>
-    <div id="wrapper">
-      <cr-icon-button iron-icon="[[visibleIcon_]]" on-click="fireClick_"
-          aria-label$="[[visibleTooltip_]]" title="[[visibleTooltip_]]">
-      </cr-icon-button>
-    </div>
+    <cr-icon-button iron-icon="[[visibleIcon_]]" on-click="fireClick_"
+        aria-label$="[[visibleTooltip_]]" title="[[visibleTooltip_]]"
+        disabled="[[disabled]]">
+    </cr-icon-button>

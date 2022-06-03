@@ -37,7 +37,7 @@ class IsMatch {
   }
 
  private:
-  Member<const LiveNodeList> list_;
+  const LiveNodeList* list_;
 };
 
 }  // namespace
@@ -81,7 +81,7 @@ Element* LiveNodeList::TraverseBackwardToOffset(
       current_element, &RootNode(), offset, current_offset, IsMatch(*this));
 }
 
-void LiveNodeList::Trace(Visitor* visitor) {
+void LiveNodeList::Trace(Visitor* visitor) const {
   visitor->Trace(collection_items_cache_);
   LiveNodeListBase::Trace(visitor);
   NodeList::Trace(visitor);

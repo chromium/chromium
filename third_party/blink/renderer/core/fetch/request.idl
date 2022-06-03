@@ -11,8 +11,8 @@ enum RequestDestination { "", "audio", "audioworklet", "document", "embed", "fon
 enum RequestMode { "navigate", "same-origin", "no-cors", "cors" };
 enum RequestCredentials { "omit", "same-origin", "include" };
 enum RequestRedirect { "follow", "error", "manual" };
-enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache", 
-    "only-if-cached" };
+enum RequestCache { "default", "no-store", "reload", "no-cache", "force-cache",
+                    "only-if-cached" };
 enum RequestImportance {"low", "auto", "high"};
 
 // https://w3c.github.io/webappsec-referrer-policy/#referrer-policies
@@ -33,7 +33,7 @@ enum ReferrerPolicy {
     ActiveScriptWrappable,
     Exposed=(Window,Worker)
 ] interface Request {
-    [CallWith=ScriptState, RaisesException] constructor(RequestInfo input, optional RequestInit requestInitDict);
+    [CallWith=ScriptState, RaisesException] constructor(RequestInfo input, optional RequestInit init = {});
     readonly attribute ByteString method;
     readonly attribute USVString url;
     [ImplementedAs=getHeaders, SameObject] readonly attribute Headers headers;
@@ -50,6 +50,8 @@ enum ReferrerPolicy {
 
     [MeasureAs=RequestIsHistoryNavigation] readonly attribute boolean isHistoryNavigation;
     [RaisesException, CallWith=ScriptState, DoNotTestNewObject, NewObject] Request clone();
+
+    [Affects=Everything, RuntimeEnabled=FetchUploadStreaming] readonly attribute ReadableStream? body;
 };
 
 Request includes Body;

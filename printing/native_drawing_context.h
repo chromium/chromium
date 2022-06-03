@@ -8,8 +8,8 @@
 #include "build/build_config.h"
 
 #if defined(OS_WIN)
-#include <windows.h>
-#elif defined(OS_MACOSX)
+#include "base/win/windows_types.h"
+#elif defined(OS_MAC)
 typedef struct CGContext* CGContextRef;
 #endif
 
@@ -17,7 +17,7 @@ namespace printing {
 
 #if defined(OS_WIN)
 typedef HDC NativeDrawingContext;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 typedef CGContextRef NativeDrawingContext;
 #else
 typedef void* NativeDrawingContext;

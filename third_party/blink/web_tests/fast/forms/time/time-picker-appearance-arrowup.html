@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../resources/picker-common.js"></script>
+<input type="time" id="time" value="14:15">
+<script>
+openPickerAppearanceOnly(document.getElementById('time'), () => {
+  // change hours value
+  for (let i = 0; i < 26; i++)
+    eventSender.keyDown('ArrowUp');
+  testRunner.notifyDone()
+});
+</script>

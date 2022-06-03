@@ -30,7 +30,7 @@ bool WebMediaPlayerSource::IsMediaStream() const {
 }
 
 WebMediaStream WebMediaPlayerSource::GetAsMediaStream() const {
-  return media_stream_;
+  return IsMediaStream() ? media_stream_ : WebMediaStream();
 }
 
 }  // namespace blink

@@ -5,6 +5,7 @@
 #ifndef BASE_TEST_LAUNCHER_TEST_RESULT_H_
 #define BASE_TEST_LAUNCHER_TEST_RESULT_H_
 
+#include <map>
 #include <string>
 #include <vector>
 
@@ -76,6 +77,10 @@ struct TestResult {
   // Returns the test case name (e.g. "A" for "A.B").
   std::string GetTestCaseName() const;
 
+  // Add link in the xml output.
+  // See more in gtest_links.h.
+  void AddLink(const std::string& name, const std::string& url);
+
   // Returns true if the test has completed (i.e. the test binary exited
   // normally, possibly with an exit code indicating failure, but didn't crash
   // or time out in the middle of the test).
@@ -99,6 +104,9 @@ struct TestResult {
 
   // Information about failed expectations.
   std::vector<TestResultPart> test_result_parts;
+
+  // The key is link name.
+  std::map<std::string, std::string> links;
 };
 
 }  // namespace base

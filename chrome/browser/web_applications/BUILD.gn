@@ -2,6 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//chrome/browser/buildflags.gni")
+
 group("web_app_group") {
   public_configs = [ "//build/config/compiler:wexit_time_destructors" ]
 }
@@ -11,73 +14,371 @@ group("web_app_test_group") {
 
 source_set("web_applications") {
   sources = [
-    "external_web_app_manager.cc",
-    "external_web_app_manager.h",
+    "app_registrar_observer.h",
+    "daily_metrics_helper.cc",
+    "daily_metrics_helper.h",
+    "extension_status_utils.h",
+    "external_install_options.cc",
+    "external_install_options.h",
+    "externally_installed_web_app_prefs.cc",
+    "externally_installed_web_app_prefs.h",
+    "externally_managed_app_install_task.cc",
+    "externally_managed_app_install_task.h",
+    "externally_managed_app_manager.cc",
+    "externally_managed_app_manager.h",
+    "externally_managed_app_manager_impl.cc",
+    "externally_managed_app_manager_impl.h",
+    "externally_managed_app_registration_task.cc",
+    "externally_managed_app_registration_task.h",
+    "file_handlers_permission_helper.cc",
+    "file_handlers_permission_helper.h",
+    "file_handling_permission_context.cc",
+    "file_handling_permission_context.h",
     "file_utils_wrapper.cc",
     "file_utils_wrapper.h",
-    "pending_app_install_task.cc",
-    "pending_app_install_task.h",
-    "pending_app_manager_impl.cc",
-    "pending_app_manager_impl.h",
-    "pending_app_registration_task.cc",
-    "pending_app_registration_task.h",
-    "system_web_app_manager.cc",
-    "system_web_app_manager.h",
+    "install_bounce_metric.cc",
+    "install_bounce_metric.h",
+    "isolation_prefs_utils.cc",
+    "isolation_prefs_utils.h",
+    "manifest_update_manager.cc",
+    "manifest_update_manager.h",
+    "manifest_update_task.cc",
+    "manifest_update_task.h",
+    "os_integration_manager.cc",
+    "os_integration_manager.h",
+    "policy/pre_redirection_url_observer.cc",
+    "policy/pre_redirection_url_observer.h",
+    "policy/web_app_policy_constants.cc",
+    "policy/web_app_policy_constants.h",
+    "policy/web_app_policy_manager.cc",
+    "policy/web_app_policy_manager.h",
+    "policy/web_app_policy_manager_observer.h",
+    "preinstalled_app_install_features.cc",
+    "preinstalled_app_install_features.h",
+    "preinstalled_web_app_manager.cc",
+    "preinstalled_web_app_manager.h",
+    "preinstalled_web_app_utils.cc",
+    "preinstalled_web_app_utils.h",
+    "preinstalled_web_apps/preinstalled_web_app_definition_utils.cc",
+    "preinstalled_web_apps/preinstalled_web_app_definition_utils.h",
+    "preinstalled_web_apps/preinstalled_web_apps.cc",
+    "preinstalled_web_apps/preinstalled_web_apps.h",
+    "system_web_apps/system_web_app_background_task.cc",
+    "system_web_apps/system_web_app_background_task.h",
+    "system_web_apps/system_web_app_delegate.cc",
+    "system_web_apps/system_web_app_delegate.h",
+    "system_web_apps/system_web_app_manager.cc",
+    "system_web_apps/system_web_app_manager.h",
+    "system_web_apps/system_web_app_types.h",
+    "url_handler_manager.cc",
+    "url_handler_manager.h",
     "web_app.cc",
     "web_app.h",
+    "web_app_audio_focus_id_map.cc",
+    "web_app_audio_focus_id_map.h",
+    "web_app_callback_app_identity.h",
+    "web_app_chromeos_data.cc",
+    "web_app_chromeos_data.h",
+    "web_app_constants.cc",
+    "web_app_constants.h",
+    "web_app_data_retriever.cc",
+    "web_app_data_retriever.h",
     "web_app_database.cc",
     "web_app_database.h",
     "web_app_database_factory.cc",
     "web_app_database_factory.h",
     "web_app_file_handler_manager.cc",
     "web_app_file_handler_manager.h",
+    "web_app_file_handler_registration.cc",
+    "web_app_file_handler_registration.h",
+    "web_app_helpers.cc",
+    "web_app_helpers.h",
+    "web_app_icon_downloader.cc",
+    "web_app_icon_downloader.h",
+    "web_app_icon_generator.cc",
+    "web_app_icon_generator.h",
     "web_app_icon_manager.cc",
     "web_app_icon_manager.h",
+    "web_app_id.h",
+    "web_app_id_constants.cc",
+    "web_app_id_constants.h",
     "web_app_install_finalizer.cc",
     "web_app_install_finalizer.h",
     "web_app_install_manager.cc",
     "web_app_install_manager.h",
+    "web_app_install_params.cc",
+    "web_app_install_params.h",
     "web_app_install_task.cc",
     "web_app_install_task.h",
+    "web_app_install_utils.cc",
+    "web_app_install_utils.h",
+    "web_app_installation_utils.cc",
+    "web_app_installation_utils.h",
+    "web_app_mover.cc",
+    "web_app_mover.h",
+    "web_app_origin_association_manager.cc",
+    "web_app_origin_association_manager.h",
+    "web_app_origin_association_task.cc",
+    "web_app_origin_association_task.h",
+    "web_app_prefs_utils.cc",
+    "web_app_prefs_utils.h",
+    "web_app_proto_utils.cc",
+    "web_app_proto_utils.h",
+    "web_app_protocol_handler_manager.cc",
+    "web_app_protocol_handler_manager.h",
+    "web_app_protocol_handler_registration.cc",
+    "web_app_protocol_handler_registration.h",
+    "web_app_provider.cc",
+    "web_app_provider.h",
+    "web_app_provider_factory.cc",
+    "web_app_provider_factory.h",
     "web_app_registrar.cc",
     "web_app_registrar.h",
     "web_app_registry_update.cc",
     "web_app_registry_update.h",
+    "web_app_run_on_os_login.cc",
+    "web_app_run_on_os_login.h",
+    "web_app_shortcut.cc",
+    "web_app_shortcut.h",
     "web_app_shortcut_manager.cc",
     "web_app_shortcut_manager.h",
+    "web_app_shortcuts_menu.cc",
+    "web_app_shortcuts_menu.h",
     "web_app_sync_bridge.cc",
     "web_app_sync_bridge.h",
     "web_app_sync_install_delegate.h",
+    "web_app_system_web_app_data.cc",
+    "web_app_system_web_app_data.h",
+    "web_app_tab_helper.cc",
+    "web_app_tab_helper.h",
+    "web_app_ui_manager.h",
+    "web_app_uninstall_job.cc",
+    "web_app_uninstall_job.h",
+    "web_app_uninstallation_via_os_settings_registration.cc",
+    "web_app_uninstallation_via_os_settings_registration.h",
+    "web_app_url_loader.cc",
+    "web_app_url_loader.h",
+    "web_app_utils.cc",
+    "web_app_utils.h",
+    "web_application_info.cc",
+    "web_application_info.h",
   ]
 
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [
+      "web_app_run_on_os_login_chromeos.cc",
+      "web_app_shortcut_chromeos.cc",
+    ]
+  }
+
+  if (is_fuchsia) {
+    sources += [ "web_app_stubs.cc" ]
+  }
+
+  if (is_linux) {
+    # Desktop linux, doesn't count ChromeOS.
+    sources += [
+      "web_app_file_handler_registration_linux.cc",
+      "web_app_run_on_os_login_linux.cc",
+      "web_app_shortcut_linux.cc",
+      "web_app_shortcut_linux.h",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "app_shim_registry_mac.cc",
+      "app_shim_registry_mac.h",
+      "web_app_file_handler_registration_mac.cc",
+      "web_app_run_on_os_login_mac.mm",
+      "web_app_shortcut_mac.h",
+      "web_app_shortcut_mac.mm",
+    ]
+  }
+
+  if (is_win) {
+    sources += [
+      "web_app_file_handler_registration_win.cc",
+      "web_app_handler_registration_utils_win.cc",
+      "web_app_handler_registration_utils_win.h",
+      "web_app_protocol_handler_registration_win.cc",
+      "web_app_run_on_os_login_win.cc",
+      "web_app_shortcut_win.cc",
+      "web_app_shortcut_win.h",
+      "web_app_shortcuts_menu_win.cc",
+      "web_app_shortcuts_menu_win.h",
+      "web_app_uninstallation_via_os_settings_registration_win.cc",
+    ]
+  }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [
+      "url_handler_launch_params.cc",
+      "url_handler_launch_params.h",
+      "url_handler_manager_impl.cc",
+      "url_handler_manager_impl.h",
+      "url_handler_prefs.cc",
+      "url_handler_prefs.h",
+    ]
+  }
+
+  # web_applications must not depend on //chrome/browser/extensions and //extensions
   deps = [
     ":web_app_group",
-    "//chrome/browser/web_applications/components",
+    "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/app/resources:platform_locale_settings",
+    "//chrome/app/theme:chrome_unscaled_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
     "//chrome/common",
+    "//chrome/common:non_code_constants",
+    "//components/content_settings/core/browser",
+
+    # TODO(crbug.com/1225132): Clean up this legacy crx dependency.
+    "//components/crx_file",
+    "//components/device_event_log",
+    "//components/keep_alive_registry:keep_alive_registry",
+    "//components/keyed_service/content",
+    "//components/performance_manager",
+    "//components/permissions:permissions",
     "//components/pref_registry",
+    "//components/services/app_service/public/cpp:app_file_handling",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:app_url_handling",
+    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/services/app_service/public/cpp:types",
+    "//components/services/app_service/public/mojom",
+    "//components/site_engagement/content",
+    "//components/site_engagement/core/mojom:mojo_bindings",
     "//components/sync",
+    "//components/user_manager",
+    "//components/webapps/browser",
+    "//components/webapps/common:mojo_bindings",
+    "//components/webapps/services/web_app_origin_association:lib",
+    "//components/webapps/services/web_app_origin_association:service",
     "//content/public/browser",
+    "//mojo/public/cpp/bindings",
+    "//net",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/network/public/cpp",
+    "//services/preferences/public/cpp",
     "//skia",
+    "//third_party/blink/public/common",
+    "//ui/base",
+    "//ui/base/idle",
+    "//ui/events/devices:devices",
+    "//url",
   ]
 
-  if (is_chromeos) {
+  if (is_chrome_branded) {
+    sources += [
+      "preinstalled_web_apps/gmail.cc",
+      "preinstalled_web_apps/gmail.h",
+      "preinstalled_web_apps/google_docs.cc",
+      "preinstalled_web_apps/google_docs.h",
+      "preinstalled_web_apps/google_drive.cc",
+      "preinstalled_web_apps/google_drive.h",
+      "preinstalled_web_apps/google_sheets.cc",
+      "preinstalled_web_apps/google_sheets.h",
+      "preinstalled_web_apps/google_slides.cc",
+      "preinstalled_web_apps/google_slides.h",
+      "preinstalled_web_apps/youtube.cc",
+      "preinstalled_web_apps/youtube.h",
+    ]
+
+    if (is_chromeos) {
+      sources += [
+        "preinstalled_web_apps/calculator.cc",
+        "preinstalled_web_apps/calculator.h",
+        "preinstalled_web_apps/google_calendar.cc",
+        "preinstalled_web_apps/google_calendar.h",
+        "preinstalled_web_apps/google_chat.cc",
+        "preinstalled_web_apps/google_chat.h",
+        "preinstalled_web_apps/google_meet.cc",
+        "preinstalled_web_apps/google_meet.h",
+      ]
+    }
+
+    deps += [ "//chrome/browser/resources:preinstalled_web_apps_resources" ]
+  }
+
+  if (is_win) {
+    deps += [ "//chrome/browser/web_applications/chrome_pwa_launcher:util" ]
+  }
+
+  if (is_chromeos_ash) {
     deps += [
-      "//ash/public/cpp:cpp",
-      "//chromeos/components/help_app_ui",
-      "//chromeos/components/media_app_ui",
-      "//chromeos/constants",
+      "//ash/constants",
+      "//ash/public/cpp",
+      "//ash/webui/camera_app_ui",
+      "//ash/webui/connectivity_diagnostics",
+      "//ash/webui/eche_app_ui",
+      "//ash/webui/file_manager:file_manager_ui",
+      "//ash/webui/firmware_update_ui",
+      "//ash/webui/help_app_ui",
+      "//ash/webui/media_app_ui",
+      "//ash/webui/os_feedback_ui",
+      "//ash/webui/personalization_app",
+      "//ash/webui/shimless_rma",
+      "//ash/webui/shortcut_customization_ui",
+      "//chromeos/strings",
       "//components/arc:arc_base",
       "//components/arc/mojom",
     ]
 
     if (!is_official_build) {
-      deps += [ "//chromeos/components/sample_system_web_app_ui" ]
+      deps += [ "//ash/webui/sample_system_web_app_ui" ]
     }
   }
 
   public_deps = [
     "//chrome/browser/web_applications/proto",
+    "//components/permissions:permissions",
+    "//components/services/app_service/public/cpp:app_share_target",
+    "//components/services/app_service/public/cpp:app_url_handling",
   ]
+}
+
+# The set of dependencies that //chrome/test:test_support{_ui} have on
+# web_applications test support. Split out from the below target as the below
+# target itself depends on //chrome/test:test_support{_ui}.
+source_set("web_applications_test_support_minimal") {
+  testonly = true
+
+  sources = [
+    "system_web_apps/test/test_system_web_app_manager.cc",
+    "system_web_apps/test/test_system_web_app_manager.h",
+    "test/fake_web_app_provider.cc",
+    "test/fake_web_app_provider.h",
+    "test/service_worker_registration_waiter.cc",
+    "test/service_worker_registration_waiter.h",
+    "test/web_app_install_test_utils.cc",
+    "test/web_app_install_test_utils.h",
+    "test/web_app_test_observers.cc",
+    "test/web_app_test_observers.h",
+    "test/with_crosapi_param.cc",
+    "test/with_crosapi_param.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications",
+    "//chrome/common:buildflags",
+    "//chrome/common:chrome_features",
+    "//chrome/common:non_code_constants",
+    "//components/keyed_service/content",
+    "//components/services/app_service/public/cpp:app_url_handling",
+    "//components/webapps/browser",
+    "//content/public/browser",
+    "//url",
+  ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
 }
 
 # This test_support library doesn't use extensions.
@@ -85,42 +386,56 @@ source_set("web_applications_test_support") {
   testonly = true
 
   sources = [
-    "test/service_worker_registration_waiter.cc",
-    "test/service_worker_registration_waiter.h",
-    "test/test_app_registrar.cc",
-    "test/test_app_registrar.h",
-    "test/test_app_shortcut_manager.cc",
-    "test/test_app_shortcut_manager.h",
-    "test/test_data_retriever.cc",
-    "test/test_data_retriever.h",
-    "test/test_file_handler_manager.cc",
-    "test/test_file_handler_manager.h",
+    "system_web_apps/test/system_web_app_browsertest_base.cc",
+    "system_web_apps/test/system_web_app_browsertest_base.h",
+    "system_web_apps/test/test_system_web_app_installation.cc",
+    "system_web_apps/test/test_system_web_app_installation.h",
+    "system_web_apps/test/test_system_web_app_url_data_source.cc",
+    "system_web_apps/test/test_system_web_app_url_data_source.h",
+    "system_web_apps/test/test_system_web_app_web_ui_controller_factory.cc",
+    "system_web_apps/test/test_system_web_app_web_ui_controller_factory.h",
+    "test/fake_data_retriever.cc",
+    "test/fake_data_retriever.h",
+    "test/fake_externally_managed_app_manager.cc",
+    "test/fake_externally_managed_app_manager.h",
+    "test/fake_install_finalizer.cc",
+    "test/fake_install_finalizer.h",
+    "test/fake_os_integration_manager.cc",
+    "test/fake_os_integration_manager.h",
+    "test/fake_url_handler_manager.cc",
+    "test/fake_url_handler_manager.h",
+    "test/fake_web_app_database_factory.cc",
+    "test/fake_web_app_database_factory.h",
+    "test/fake_web_app_file_handler_manager.cc",
+    "test/fake_web_app_file_handler_manager.h",
+    "test/fake_web_app_origin_association_manager.cc",
+    "test/fake_web_app_origin_association_manager.h",
+    "test/fake_web_app_protocol_handler_manager.cc",
+    "test/fake_web_app_protocol_handler_manager.h",
+    "test/fake_web_app_registry_controller.cc",
+    "test/fake_web_app_registry_controller.h",
+    "test/fake_web_app_ui_manager.cc",
+    "test/fake_web_app_ui_manager.h",
+    "test/mock_file_utils_wrapper.cc",
+    "test/mock_file_utils_wrapper.h",
+    "test/mock_os_integration_manager.cc",
+    "test/mock_os_integration_manager.h",
     "test/test_file_utils.cc",
     "test/test_file_utils.h",
-    "test/test_install_finalizer.cc",
-    "test/test_install_finalizer.h",
-    "test/test_pending_app_manager.cc",
-    "test/test_pending_app_manager.h",
-    "test/test_system_web_app_manager.cc",
-    "test/test_system_web_app_manager.h",
-    "test/test_system_web_app_web_ui_controller_factory.cc",
-    "test/test_system_web_app_web_ui_controller_factory.h",
-    "test/test_web_app_database_factory.cc",
-    "test/test_web_app_database_factory.h",
-    "test/test_web_app_registry_controller.cc",
-    "test/test_web_app_registry_controller.h",
-    "test/test_web_app_ui_manager.cc",
-    "test/test_web_app_ui_manager.h",
     "test/test_web_app_url_loader.cc",
     "test/test_web_app_url_loader.h",
     "test/web_app_icon_test_utils.cc",
     "test/web_app_icon_test_utils.h",
-    "test/web_app_install_observer.cc",
-    "test/web_app_install_observer.h",
     "test/web_app_registration_waiter.cc",
     "test/web_app_registration_waiter.h",
+    "test/web_app_sync_test_utils.cc",
+    "test/web_app_sync_test_utils.h",
     "test/web_app_test.h",
+    "test/web_app_test_utils.cc",
+    "test/web_app_test_utils.h",
   ]
+
+  public_deps = [ ":web_applications_test_support_minimal" ]
 
   deps = [
     ":web_app_test_group",
@@ -128,11 +443,19 @@ source_set("web_applications_test_support") {
     "//base/test:test_support",
     "//chrome/app/theme:chrome_unscaled_resources_grit",
     "//chrome/browser",
-    "//chrome/browser/web_applications/components",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/ui:ui",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
     "//components/crx_file:crx_file",
+    "//components/keyed_service/content:content",
+    "//components/services/app_service/public/cpp:app_url_handling",
+    "//components/services/app_service/public/cpp:types",
     "//components/sync:test_support_model",
+    "//components/webapps/browser",
     "//content/test:test_support",
     "//testing/gtest",
+    "//ui/webui:webui",
   ]
 }
 
@@ -140,40 +463,130 @@ source_set("web_applications_unit_tests") {
   testonly = true
 
   sources = [
-    "external_web_app_manager_unittest.cc",
-    "pending_app_manager_impl_unittest.cc",
+    "daily_metrics_helper_unittest.cc",
+    "external_install_options_unittest.cc",
+    "externally_managed_app_manager_impl_unittest.cc",
+    "externally_managed_app_manager_unittest.cc",
+    "isolation_prefs_utils_unittest.cc",
+    "manifest_update_task_unittest.cc",
+    "os_integration_manager_unittest.cc",
+    "policy/pre_redirection_url_observer_unittest.cc",
+    "preinstalled_app_install_features_unittest.cc",
+    "preinstalled_web_app_manager_unittest.cc",
+    "preinstalled_web_app_utils_unittest.cc",
+    "preinstalled_web_apps/preinstalled_web_app_definition_utils_unittest.cc",
+    "protocol_handler_manager_unittest.cc",
+    "web_app_constants_unittest.cc",
+    "web_app_data_retriever_unittest.cc",
     "web_app_database_unittest.cc",
+    "web_app_file_handler_manager_unittest.cc",
+    "web_app_helpers_unittest.cc",
+    "web_app_icon_downloader_unittest.cc",
+    "web_app_icon_generator_unittest.cc",
     "web_app_icon_manager_unittest.cc",
+    "web_app_install_finalizer_unittest.cc",
     "web_app_install_manager_unittest.cc",
     "web_app_install_task_unittest.cc",
+    "web_app_install_utils_unittest.cc",
+    "web_app_installation_utils_unittest.cc",
+    "web_app_mover_unittest.cc",
+    "web_app_prefs_utils_unittest.cc",
+    "web_app_proto_utils_unittest.cc",
     "web_app_registrar_unittest.cc",
+    "web_app_shortcut_unittest.cc",
     "web_app_sync_bridge_unittest.cc",
+    "web_app_uninstall_job_unittest.cc",
     "web_app_unittest.cc",
+    "web_app_url_loader_unittest.cc",
+    "web_app_utils_unittest.cc",
   ]
+
+  if (is_win) {
+    sources += [
+      "web_app_file_handler_registration_win_unittest.cc",
+      "web_app_handler_registration_utils_win_unittest.cc",
+      "web_app_protocol_handler_registration_win_unittest.cc",
+      "web_app_run_on_os_login_win_unittest.cc",
+      "web_app_shortcut_win_unittest.cc",
+    ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "app_shim_registry_mac_unittest.cc",
+      "web_app_run_on_os_login_mac_unittest.mm",
+      "web_app_shortcut_mac_unittest.mm",
+    ]
+  }
+
+  if (is_linux) {
+    # Desktop linux, doesn't count ChromeOS.
+    sources += [
+      "web_app_file_handler_registration_linux_unittest.cc",
+      "web_app_run_on_os_login_linux_unittest.cc",
+      "web_app_shortcut_linux_unittest.cc",
+    ]
+  }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    sources += [
+      "url_handler_manager_impl_unittest.cc",
+      "url_handler_prefs_unittest.cc",
+    ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [ "system_web_apps/test/system_web_app_manager_unittest.cc" ]
+  }
 
   deps = [
     ":web_app_test_group",
     ":web_applications",
-    ":web_applications_on_extensions_test_support",
     ":web_applications_test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//chrome/app/theme:theme_resources",
     "//chrome/browser",
-    "//chrome/browser/web_applications/components",
+    "//chrome/browser:browser_process",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications/extensions:extensions",
     "//chrome/common",
     "//chrome/test:test_support",
+    "//components/services/app_service/public/cpp:app_url_handling",
+    "//components/services/app_service/public/cpp:protocol_handling",
+    "//components/webapps/browser",
+    "//components/webapps/browser:test_support",
+    "//components/webapps/common:mojo_bindings",
     "//content/public/browser",
     "//content/test:test_support",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//services/preferences/public/cpp",
     "//skia",
+    "//testing/gmock",
     "//testing/gtest",
+    "//ui/base/idle:idle",
+    "//ui/base/idle:test_support",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     deps += [
+      "//ash/constants",
       "//chrome/browser/chromeos",
       "//components/arc:arc",
       "//components/arc:arc_test_support",
       "//components/arc/mojom",
     ]
+  }
+
+  if (is_win) {
+    deps += [
+      "//chrome/browser/web_applications/chrome_pwa_launcher:unit_tests",
+      "//chrome/browser/web_applications/chrome_pwa_launcher:util",
+    ]
+  }
+
+  if (is_win || is_mac || (is_linux && !is_chromeos_lacros)) {
+    deps += [ "//components/services/app_service/public/cpp:app_url_handling" ]
   }
 }
 
@@ -181,65 +594,64 @@ source_set("web_applications_browser_tests") {
   testonly = true
 
   sources = [
-    "pending_app_manager_impl_browsertest.cc",
+    "externally_managed_app_manager_impl_browsertest.cc",
+    "manifest_update_manager_browsertest.cc",
+    "preinstalled_web_app_manager_browsertest.cc",
+    "preinstalled_web_app_migration_browsertest.cc",
+    "preinstalled_web_apps_browsertest.cc",
+    "web_app_audio_focus_browsertest.cc",
     "web_app_icon_manager_browsertest.cc",
+    "web_app_mover_browsertest.cc",
+    "web_app_origin_association_manager_browsertest.cc",
+    "web_app_url_loader_browsertest.cc",
   ]
+
+  if (is_linux) {
+    sources += [ "web_app_file_handler_registration_linux_browsertest.cc" ]
+  }
+
+  if (is_chromeos_ash || is_chromeos_lacros) {
+    sources += [ "system_web_apps/test/system_web_app_manager_browsertest.cc" ]
+  }
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
   deps = [
     ":web_applications",
     ":web_applications_test_support",
-    "//chrome/browser/web_applications/components",
+    "//base",
+    "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
+    "//chrome/app:command_ids",
+    "//chrome/browser/apps/app_service:test_support",
+    "//chrome/browser/extensions:test_support",
+    "//chrome/browser/profiles:profile",
+    "//chrome/browser/web_applications/extensions",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
-  ]
-}
-
-# TODO(crbug.com/877898): Erase this and move WebAppProvider into
-# web_applications set.
-source_set("web_applications_on_extensions") {
-  sources = [
-    "web_app_provider.cc",
-    "web_app_provider.h",
-    "web_app_provider_factory.cc",
-    "web_app_provider_factory.h",
-  ]
-
-  deps = [
-    ":web_app_group",
-    ":web_applications",
-    "//chrome/browser/web_applications/components",
-    "//chrome/browser/web_applications/extensions",
-    "//chrome/common",
-    "//components/keyed_service/content",
-    "//components/pref_registry:pref_registry",
-    "//extensions/browser",
-  ]
-}
-
-# TODO(crbug.com/877898): Erase this and move TestWebAppProvider into
-# web_applications_test_support set.
-source_set("web_applications_on_extensions_test_support") {
-  testonly = true
-
-  sources = [
-    "test/test_system_web_app_installation.cc",
-    "test/test_system_web_app_installation.h",
-    "test/test_web_app_provider.cc",
-    "test/test_web_app_provider.h",
+    "//components/permissions:permissions",
+    "//components/services/app_service/public/cpp:app_types",
+    "//components/services/app_service/public/cpp:app_update",
+    "//components/services/app_service/public/cpp:icon_types",
+    "//components/services/app_service/public/cpp:intents",
+    "//components/webapps/browser",
+    "//components/webapps/services/web_app_origin_association/test:test_support",
+    "//extensions/browser:test_support",
+    "//net:test_support",
+    "//third_party/blink/public/common",
+    "//ui/base/idle:idle",
+    "//ui/base/idle:test_support",
+    "//ui/events/devices:test_support",
+    "//url",
   ]
 
-  deps = [
-    ":web_app_test_group",
-    ":web_applications",
-    ":web_applications_on_extensions",
-    ":web_applications_test_support",
-    "//base",
-    "//chrome/browser",
-    "//chrome/browser/web_applications/components",
-    "//components/keyed_service/content",
-  ]
+  if (is_chromeos_ash) {
+    deps += [
+      "//ash:test_support",
+      "//chrome/browser/chromeos",
+      "//chrome/browser/ui",
+    ]
+  }
 }
 
 group("unit_tests") {
@@ -248,7 +660,6 @@ group("unit_tests") {
   deps = [
     ":web_app_test_group",
     ":web_applications_unit_tests",
-    "//chrome/browser/web_applications/components:unit_tests",
     "//chrome/browser/web_applications/extensions:unit_tests",
   ]
 }
@@ -259,7 +670,26 @@ group("browser_tests") {
   deps = [
     ":web_app_test_group",
     ":web_applications_browser_tests",
-    "//chrome/browser/web_applications/components:browser_tests",
-    "//chrome/browser/web_applications/extensions:browser_tests",
+  ]
+}
+
+source_set("interactive_ui_tests") {
+  testonly = true
+
+  sources = [ "web_app_notifications_interactive_uitest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  deps = [
+    ":web_applications",
+    ":web_applications_test_support",
+    "//chrome/app:command_ids",
+    "//chrome/test:test_support",
+    "//chrome/test:test_support_ui",
+    "//components/permissions:permissions",
+    "//components/webapps/browser",
+    "//ui/base/idle:idle",
+    "//ui/base/idle:test_support",
+    "//ui/events/devices:test_support",
   ]
 }

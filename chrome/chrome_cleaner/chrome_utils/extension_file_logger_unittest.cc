@@ -4,12 +4,12 @@
 
 #include "chrome/chrome_cleaner/chrome_utils/extension_file_logger.h"
 
+#include <string>
 #include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/os/disk_util.h"
 #include "chrome/chrome_cleaner/test/test_extensions.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,18 +19,18 @@ namespace chrome_cleaner {
 
 namespace {
 
-const base::char16 kExtensionId1[] = L"extension1";
-const base::char16 kTestFileName1[] = L"file1.file";
+const wchar_t kExtensionId1[] = L"extension1";
+const wchar_t kTestFileName1[] = L"file1.file";
 
-const base::char16 kExtensionId2[] = L"extension2";
-const base::char16 kTestFileName2[] = L"file2.file";
+const wchar_t kExtensionId2[] = L"extension2";
+const wchar_t kTestFileName2[] = L"file2.file";
 
-const base::char16 kExtensionId3[] = L"extension3";
-const base::char16 kTestFileName3[] = L"file3.file";
+const wchar_t kExtensionId3[] = L"extension3";
+const wchar_t kTestFileName3[] = L"file3.file";
 
-const base::char16 kExtensionId4[] = L"generic-extension-name";
+const wchar_t kExtensionId4[] = L"generic-extension-name";
 
-const base::char16 kExtensionId5[] = L"ghost-extension";
+const wchar_t kExtensionId5[] = L"ghost-extension";
 
 }  // namespace
 
@@ -141,7 +141,7 @@ TEST_F(ExtensionFileLoggerTest, LogExtensionWithMultipleFiles) {
 
   ASSERT_EQ(logged_files.size(), 3u);
 
-  std::vector<base::string16> returned_paths = {
+  std::vector<std::wstring> returned_paths = {
       base::FilePath(logged_files[0].path).BaseName().value(),
       base::FilePath(logged_files[1].path).BaseName().value(),
       base::FilePath(logged_files[2].path).BaseName().value()};

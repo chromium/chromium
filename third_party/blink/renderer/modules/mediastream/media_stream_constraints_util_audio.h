@@ -11,8 +11,8 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+class MediaConstraints;
 class MediaStreamAudioSource;
-class WebMediaConstraints;
 }  // namespace blink
 
 namespace blink {
@@ -52,7 +52,8 @@ class MODULES_EXPORT AudioDeviceCaptureCapability {
   // getUserMedia() with device capture for devices that are currently in use.
   explicit AudioDeviceCaptureCapability(blink::MediaStreamAudioSource* source);
 
-  AudioDeviceCaptureCapability(const AudioDeviceCaptureCapability& other);
+  AudioDeviceCaptureCapability(const AudioDeviceCaptureCapability&);
+  AudioDeviceCaptureCapability& operator=(const AudioDeviceCaptureCapability&);
 
   // If this capability represents a device currently in use, this method
   // returns a pointer to the MediaStreamAudioSource object associated with the
@@ -147,7 +148,7 @@ using AudioDeviceCaptureCapabilities = Vector<AudioDeviceCaptureCapability>;
 // getUserMedia and applyConstraints code paths allow for reconfiguration.
 MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
     const AudioDeviceCaptureCapabilities& capabilities,
-    const blink::WebMediaConstraints& constraints,
+    const MediaConstraints& constraints,
     bool should_disable_hardware_noise_suppression,
     bool is_reconfiguration_allowed = false);
 
@@ -160,7 +161,7 @@ MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
 // TODO(guidou): Allow reconfiguring audio tracks. https://crbug.com/796964
 MODULES_EXPORT blink::AudioCaptureSettings SelectSettingsAudioCapture(
     blink::MediaStreamAudioSource* source,
-    const blink::WebMediaConstraints& constraints);
+    const MediaConstraints& constraints);
 
 // Return a tuple with <min,max> representing the min and max buffer sizes or
 // latencies that can be provided by the given AudioParameters. The min and max

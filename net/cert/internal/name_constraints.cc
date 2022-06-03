@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/string_util.h"
 #include "net/cert/internal/cert_errors.h"

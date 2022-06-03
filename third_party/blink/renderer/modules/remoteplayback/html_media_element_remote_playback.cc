@@ -14,16 +14,16 @@ namespace blink {
 
 // static
 bool HTMLMediaElementRemotePlayback::FastHasAttribute(
-    const QualifiedName& name,
-    const HTMLMediaElement& element) {
+    const HTMLMediaElement& element,
+    const QualifiedName& name) {
   DCHECK(name == html_names::kDisableremoteplaybackAttr);
   return element.FastHasAttribute(name);
 }
 
 // static
 void HTMLMediaElementRemotePlayback::SetBooleanAttribute(
-    const QualifiedName& name,
     HTMLMediaElement& element,
+    const QualifiedName& name,
     bool value) {
   DCHECK(name == html_names::kDisableremoteplaybackAttr);
   element.SetBooleanAttribute(name, value);

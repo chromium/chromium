@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/os_crypt/os_crypt.h"
-
 #include <windows.h>
 
 #include "base/base64.h"
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/wincrypt_shim.h"
+#include "components/os_crypt/os_crypt.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "crypto/aead.h"
@@ -58,8 +59,8 @@ std::string& GetMockEncryptionKeyFactory() {
 bool EncryptStringWithDPAPI(const std::string& plaintext,
                             std::string* ciphertext) {
   DATA_BLOB input;
-  input.pbData = const_cast<BYTE*>(
-      reinterpret_cast<const BYTE*>(plaintext.data()));
+  input.pbData =
+      const_cast<BYTE*>(reinterpret_cast<const BYTE*>(plaintext.data()));
   input.cbData = static_cast<DWORD>(plaintext.length());
 
   DATA_BLOB output;
@@ -81,8 +82,8 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
 bool DecryptStringWithDPAPI(const std::string& ciphertext,
                             std::string* plaintext) {
   DATA_BLOB input;
-  input.pbData = const_cast<BYTE*>(
-      reinterpret_cast<const BYTE*>(ciphertext.data()));
+  input.pbData =
+      const_cast<BYTE*>(reinterpret_cast<const BYTE*>(ciphertext.data()));
   input.cbData = static_cast<DWORD>(ciphertext.length());
 
   DATA_BLOB output;
@@ -115,14 +116,14 @@ const std::string& GetEncryptionKeyInternal() {
 }  // namespace
 
 // static
-bool OSCrypt::EncryptString16(const base::string16& plaintext,
+bool OSCrypt::EncryptString16(const std::u16string& plaintext,
                               std::string* ciphertext) {
   return EncryptString(base::UTF16ToUTF8(plaintext), ciphertext);
 }
 
 // static
 bool OSCrypt::DecryptString16(const std::string& ciphertext,
-                              base::string16* plaintext) {
+                              std::u16string* plaintext) {
   std::string utf8;
   if (!DecryptString(ciphertext, &utf8))
     return false;
@@ -203,13 +204,18 @@ bool OSCrypt::Init(PrefService* local_state) {
     std::string encrypted_key =
         encrypted_key_with_header.substr(sizeof(kDPAPIKeyPrefix) - 1);
     std::string key;
-    if (!DecryptStringWithDPAPI(encrypted_key, &key))
-      return false;
-    GetEncryptionKeyFactory().assign(key);
-    return true;
+    // This DPAPI decryption can fail if the user's password has been reset
+    // by an Administrator.
+    if (DecryptStringWithDPAPI(encrypted_key, &key)) {
+      GetEncryptionKeyFactory().assign(key);
+      return true;
+    }
+    base::UmaHistogramSparse("OSCrypt.Win.KeyDecryptionError",
+                             ::GetLastError());
   }
 
-  // Otherwise, generate a key.
+  // If there is no key in the local state, or if DPAPI decryption fails,
+  // generate a new key.
   std::string key;
 
   crypto::RandBytes(base::WriteInto(&key, kKeyLength + 1), kKeyLength);
@@ -237,6 +243,11 @@ void OSCrypt::SetRawEncryptionKey(const std::string& raw_key) {
 // static
 std::string OSCrypt::GetRawEncryptionKey() {
   return GetEncryptionKeyInternal();
+}
+
+// static
+bool OSCrypt::IsEncryptionAvailable() {
+  return !GetEncryptionKeyFactory().empty();
 }
 
 // static

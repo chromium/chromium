@@ -70,16 +70,18 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     frame_view_prepaints = measurements[
         'LocalFrameView::RunPrePaintLifecyclePhase']['samples']
 
-    # color-changes-measure-frame-time.html specifies 9 iterationCount.
-    self.assertEquals(len(frame_view_prepaints), 9)
+    # color-changes-measure-frame-time.html specifies 10 iterationCount.
+    self.assertEquals(len(frame_view_prepaints), 10)
     self.assertGreater(_Mean(frame_view_prepaints), 0.001)
 
     frame_view_painttrees = measurements[
         'LocalFrameView::RunPaintLifecyclePhase']['samples']
-    # color-changes-measure-frame-time.html specifies 9 iterationCount.
-    self.assertEquals(len(frame_view_painttrees), 9)
+    # color-changes-measure-frame-time.html specifies 10 iterationCount.
+    self.assertEquals(len(frame_view_painttrees), 10)
     self.assertGreater(_Mean(frame_view_painttrees), 0.001)
 
+  @decorators.Disabled('linux',
+                       'chromeos')  # Disable due to flaky: crbug.com/1240931
   def testBlinkPerfTracingMetricsForMeasurePageLoadTime(self):
     measurements = self.RunPageTest(
         self.blink_page_test, 'file://simple-html-measure-page-load-time.html')
@@ -130,6 +132,8 @@ class BlinkPerfTest(legacy_page_test_case.LegacyPageTestCase):
     self.RunPageTest(self.blink_page_test, 'file://lifecycle-methods.html')
     self.assertFalse(self.HasChromeTraces())
 
+  @decorators.Disabled('linux',
+                       'chromeos')  # Disable due to flaky: crbug.com/1163628
   def testExtraChromeCategories(self):
     self.options.extra_chrome_categories = 'cc,blink'
     self.RunPageTest(self.blink_page_test, 'file://lifecycle-methods.html')

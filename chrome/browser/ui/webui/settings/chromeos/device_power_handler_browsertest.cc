@@ -2,17 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/webui/settings/chromeos/device_power_handler.h"
-
 #include <memory>
+#include <set>
 #include <utility>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/webui/settings/chromeos/device_power_handler.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_policy_controller.h"
@@ -20,12 +19,13 @@
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using testing::Return;
 using testing::_;
+using testing::Return;
 
 namespace chromeos {
 namespace settings {
@@ -48,13 +48,46 @@ class TestPowerHandler : public PowerHandler {
 
 class PowerHandlerTest : public InProcessBrowserTest {
  protected:
+  struct DevicePowerSettings {
+    // Initialize with initial settings.
+    DevicePowerSettings() {
+      possible_ac_behaviors.insert(
+          PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP);
+      possible_ac_behaviors.insert(PowerHandler::IdleBehavior::DISPLAY_OFF);
+      possible_ac_behaviors.insert(PowerHandler::IdleBehavior::DISPLAY_ON);
+      possible_battery_behaviors.insert(
+          PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP);
+      possible_battery_behaviors.insert(
+          PowerHandler::IdleBehavior::DISPLAY_OFF);
+      possible_battery_behaviors.insert(PowerHandler::IdleBehavior::DISPLAY_ON);
+    }
+
+    std::set<PowerHandler::IdleBehavior> possible_ac_behaviors;
+    std::set<PowerHandler::IdleBehavior> possible_battery_behaviors;
+    PowerHandler::IdleBehavior current_ac_behavior =
+        PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP;
+    PowerHandler::IdleBehavior current_battery_behavior =
+        PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP;
+    bool ac_idle_managed = false;
+    bool battery_idle_managed = false;
+    PowerPolicyController::Action lid_closed_behavior =
+        PowerPolicyController::ACTION_SUSPEND;
+    bool lid_closed_controlled = false;
+    bool has_lid = true;
+  };
+
   PowerHandlerTest() = default;
+
+  PowerHandlerTest(const PowerHandlerTest&) = delete;
+  PowerHandlerTest& operator=(const PowerHandlerTest&) = delete;
+
   ~PowerHandlerTest() override = default;
 
   // InProcessBrowserTest:
   void SetUpInProcessBrowserTestFixture() override {
     // Initialize user policy.
-    ON_CALL(provider_, IsInitializationComplete(_)).WillByDefault(Return(true));
+    provider_.SetDefaultReturns(/*is_initialization_complete_return=*/true,
+                                /*is_first_policy_load_complete_return=*/true);
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
   }
 
@@ -78,15 +111,14 @@ class PowerHandlerTest : public InProcessBrowserTest {
     for (auto it = web_ui_.call_data().rbegin();
          it != web_ui_.call_data().rend(); ++it) {
       const content::TestWebUI::CallData* data = it->get();
-      std::string name;
+      const std::string* name = data->arg1()->GetIfString();
       const base::DictionaryValue* dict = nullptr;
-      if (data->function_name() != "cr.webUIListenerCallback" ||
-          !data->arg1()->GetAsString(&name) ||
-          name != PowerHandler::kPowerManagementSettingsChangedName) {
+      if (data->function_name() != "cr.webUIListenerCallback" || !name ||
+          *name != PowerHandler::kPowerManagementSettingsChangedName) {
         continue;
       }
       if (!data->arg2()->GetAsDictionary(&dict)) {
-        ADD_FAILURE() << "Failed to get dict from " << name << " message";
+        ADD_FAILURE() << "Failed to get dict from " << *name << " message";
         continue;
       }
       std::string out;
@@ -99,23 +131,32 @@ class PowerHandlerTest : public InProcessBrowserTest {
     return std::string();
   }
 
-  // Returns a string for the given settings that can be compared against the
-  // output of GetLastSettingsChangedMessage().
-  std::string CreateSettingsChangedString(
-      PowerHandler::IdleBehavior idle_behavior,
-      bool idle_controlled,
-      PowerPolicyController::Action lid_closed_behavior,
-      bool lid_closed_controlled,
-      bool has_lid) {
+  // Returns a string for the given |settings|. Used to verify expected
+  // settings are sent to the UI.
+  std::string ToString(const DevicePowerSettings& settings) {
     base::DictionaryValue dict;
-    dict.SetInteger(PowerHandler::kIdleBehaviorKey,
-                    static_cast<int>(idle_behavior));
-    dict.SetBoolean(PowerHandler::kIdleControlledKey, idle_controlled);
-    dict.SetInteger(PowerHandler::kLidClosedBehaviorKey, lid_closed_behavior);
-    dict.SetBoolean(PowerHandler::kLidClosedControlledKey,
-                    lid_closed_controlled);
-    dict.SetBoolean(PowerHandler::kHasLidKey, has_lid);
+    base::Value* list = dict.SetKey(PowerHandler::kPossibleAcIdleBehaviorsKey,
+                                    base::Value(base::Value::Type::LIST));
+    for (auto idle_behavior : settings.possible_ac_behaviors)
+      list->Append(static_cast<int>(idle_behavior));
 
+    list = dict.SetKey(PowerHandler::kPossibleBatteryIdleBehaviorsKey,
+                       base::Value(base::Value::Type::LIST));
+    for (auto idle_behavior : settings.possible_battery_behaviors)
+      list->Append(static_cast<int>(idle_behavior));
+
+    dict.SetInteger(PowerHandler::kCurrentAcIdleBehaviorKey,
+                    static_cast<int>(settings.current_ac_behavior));
+    dict.SetInteger(PowerHandler::kCurrentBatteryIdleBehaviorKey,
+                    static_cast<int>(settings.current_battery_behavior));
+    dict.SetBoolean(PowerHandler::kAcIdleManagedKey, settings.ac_idle_managed);
+    dict.SetBoolean(PowerHandler::kBatteryIdleManagedKey,
+                    settings.battery_idle_managed);
+    dict.SetInteger(PowerHandler::kLidClosedBehaviorKey,
+                    settings.lid_closed_behavior);
+    dict.SetBoolean(PowerHandler::kLidClosedControlledKey,
+                    settings.lid_closed_controlled);
+    dict.SetBoolean(PowerHandler::kHasLidKey, settings.has_lid);
     std::string out;
     EXPECT_TRUE(base::JSONWriter::Write(dict, &out));
     return out;
@@ -129,15 +170,20 @@ class PowerHandlerTest : public InProcessBrowserTest {
     return GetPrefs()->GetInteger(name);
   }
 
+  // Trigger power pref managed change.
+  void UpdateChromePolicy(policy::PolicyMap* policy_map) {
+    provider_.UpdateChromePolicy(*policy_map);
+    base::RunLoop().RunUntilIdle();
+  }
+
   // Sets a policy update which will cause power pref managed change.
   void SetPolicyForPolicyKey(policy::PolicyMap* policy_map,
                              const std::string& policy_key,
-                             std::unique_ptr<base::Value> value) {
+                             base::Value value) {
     policy_map->Set(policy_key, policy::POLICY_LEVEL_MANDATORY,
                     policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                     std::move(value), nullptr);
-    provider_.UpdateChromePolicy(*policy_map);
-    base::RunLoop().RunUntilIdle();
+    UpdateChromePolicy(policy_map);
   }
 
   std::unique_ptr<TestPowerHandler> handler_;
@@ -145,131 +191,187 @@ class PowerHandlerTest : public InProcessBrowserTest {
 
   content::TestWebUI web_ui_;
 
-  policy::MockConfigurationPolicyProvider provider_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerHandlerTest);
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
 // Verifies that settings are sent to WebUI when requested.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendInitialSettings) {
   test_api_->RequestPowerManagementSettings();
-  EXPECT_EQ(
-      CreateSettingsChangedString(
-          PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP,
-          false /* idle_controlled */, PowerPolicyController::ACTION_SUSPEND,
-          false /* lid_closed_controlled */, true /* has_lid */),
-      GetLastSettingsChangedMessage());
+  // Initialized to initial settings.
+  DevicePowerSettings settings;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
 // Verifies that WebUI receives updated settings when the lid state changes.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendSettingsForLidStateChanges) {
   chromeos::FakePowerManagerClient::Get()->SetLidState(
       PowerManagerClient::LidState::NOT_PRESENT, base::TimeTicks());
-  EXPECT_EQ(
-      CreateSettingsChangedString(
-          PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP,
-          false /* idle_controlled */, PowerPolicyController::ACTION_SUSPEND,
-          false /* lid_closed_controlled */, false /* has_lid */),
-      GetLastSettingsChangedMessage());
+
+  DevicePowerSettings settings;
+  settings.has_lid = false;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 
   chromeos::FakePowerManagerClient::Get()->SetLidState(
       PowerManagerClient::LidState::OPEN, base::TimeTicks());
-  EXPECT_EQ(
-      CreateSettingsChangedString(
-          PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP,
-          false /* idle_controlled */, PowerPolicyController::ACTION_SUSPEND,
-          false /* lid_closed_controlled */, true /* has_lid */),
-      GetLastSettingsChangedMessage());
+  settings.has_lid = true;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
-// Verifies that when various prefs are controlled, the corresponding settings
-// are reported as controlled to WebUI.
+// Verifies that when various prefs are controlled, the corresponding
+// settings are reported as controlled/managed to WebUI.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendSettingsForControlledPrefs) {
   policy::PolicyMap policy_map;
-  // Making an arbitrary delay pref managed should result in the idle setting
-  // being reported as controlled.
+  // Making an arbitrary AC delay pref managed should result in the AC idle
+  // setting being reported as managed.
   SetPolicyForPolicyKey(&policy_map, policy::key::kScreenDimDelayAC,
-                        std::make_unique<base::Value>(10000));
-  EXPECT_EQ(
-      CreateSettingsChangedString(
-          PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP,
-          true /* idle_controlled */, PowerPolicyController::ACTION_SUSPEND,
-          false /* lid_closed_controlled */, true /* has_lid */),
-      GetLastSettingsChangedMessage());
+                        base::Value(10000));
+  DevicePowerSettings settings;
+  settings.ac_idle_managed = true;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+
+  // Ditto for battery delay pref managed.
+  SetPolicyForPolicyKey(&policy_map, policy::key::kScreenDimDelayBattery,
+                        base::Value(10000));
+  settings.battery_idle_managed = true;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 
   // Ditto for making the lid action pref managed.
-  SetPolicyForPolicyKey(
-      &policy_map, policy::key::kLidCloseAction,
-      std::make_unique<base::Value>(PowerPolicyController::ACTION_SUSPEND));
-  EXPECT_EQ(
-      CreateSettingsChangedString(
-          PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP,
-          true /* idle_controlled */, PowerPolicyController::ACTION_SUSPEND,
-          true /* lid_closed_controlled */, true /* has_lid */),
-      GetLastSettingsChangedMessage());
+  SetPolicyForPolicyKey(&policy_map, policy::key::kLidCloseAction,
+                        base::Value(PowerPolicyController::ACTION_SUSPEND));
+  settings.lid_closed_controlled = true;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
-// Verifies that idle-related prefs are distilled into the proper WebUI
-// settings.
+// Verifies that idle-related prefs (when not managed by enterpise policy)
+// are distilled into the proper WebUI settings.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendIdleSettingForPrefChanges) {
-  // Set a do-nothing idle action and a nonzero screen-off delay.
+  // Initial power settings.
+  DevicePowerSettings settings;
+  // Set a AC do-nothing idle action and a AC nonzero screen-off delay. User
+  // should see all three options (DISPLAY_ON, DISPLAY_OFF and
+  // DISPLAY_OFF_SLEEP) and the selected setting when on AC should be set to
+  // DISPLAY_OFF.
   GetPrefs()->Set(ash::prefs::kPowerAcIdleAction,
                   base::Value(PowerPolicyController::ACTION_DO_NOTHING));
   GetPrefs()->Set(ash::prefs::kPowerAcScreenOffDelayMs, base::Value(10000));
-  EXPECT_EQ(CreateSettingsChangedString(PowerHandler::IdleBehavior::DISPLAY_OFF,
-                                        false /* idle_controlled */,
-                                        PowerPolicyController::ACTION_SUSPEND,
-                                        false /* lid_closed_controlled */,
-                                        true /* has_lid */),
-            GetLastSettingsChangedMessage());
 
-  // Now set the delay to zero and check that the setting goes to "display on".
-  GetPrefs()->Set(ash::prefs::kPowerAcScreenOffDelayMs, base::Value(0));
-  EXPECT_EQ(CreateSettingsChangedString(PowerHandler::IdleBehavior::DISPLAY_ON,
-                                        false /* idle_controlled */,
-                                        PowerPolicyController::ACTION_SUSPEND,
-                                        false /* lid_closed_controlled */,
-                                        true /* has_lid */),
-            GetLastSettingsChangedMessage());
+  // Current AC idle behavior should be DISPLAY_OFF.
+  settings.current_ac_behavior = PowerHandler::IdleBehavior::DISPLAY_OFF;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 
-  // Other idle actions should result in an "other" setting.
-  GetPrefs()->Set(ash::prefs::kPowerAcIdleAction,
-                  base::Value(PowerPolicyController::ACTION_STOP_SESSION));
-  EXPECT_EQ(CreateSettingsChangedString(
-                PowerHandler::IdleBehavior::OTHER, false /* idle_controlled */,
-                PowerPolicyController::ACTION_SUSPEND,
-                false /* lid_closed_controlled */, true /* has_lid */),
-            GetLastSettingsChangedMessage());
+  // Now set the battery screen off delay to zero along with battery do-nothing
+  // idle action and check that the selected setting goes to "display on" when
+  // on battery.
+  GetPrefs()->Set(ash::prefs::kPowerBatteryIdleAction,
+                  base::Value(PowerPolicyController::ACTION_DO_NOTHING));
+  GetPrefs()->Set(ash::prefs::kPowerBatteryScreenOffDelayMs, base::Value(0));
+
+  // Current battery idle behavior should be DISPLAY_ON.
+  settings.current_battery_behavior = PowerHandler::IdleBehavior::DISPLAY_ON;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+}
+
+// Verifies that idle-related prefs when managed by enterpise policy are
+// distilled into the proper WebUI settings.
+IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendManagedIdleSettingForPrefChanges) {
+  policy::PolicyMap policy_map;
+  // Set Enterpise policy that forces AC idle action to suspend. Only possible
+  // AC idle option visible to the user should be DISPLAY_OFF_SLEEP and the
+  // current should also be set to same.
+  SetPolicyForPolicyKey(
+      &policy_map, policy::key::kIdleActionAC,
+      base::Value(chromeos::PowerPolicyController::ACTION_SUSPEND));
+  DevicePowerSettings settings;
+  std::set<PowerHandler::IdleBehavior> behaviors;
+  behaviors.insert(PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP);
+  settings.possible_ac_behaviors = behaviors;
+  settings.ac_idle_managed = true;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+
+  // Set Enterpise policy that forces battery idle action to Shutdown. Only
+  // possible battery idle option visible to the user then should be SHUT_DOWN
+  // and the default should also be set to same.
+  SetPolicyForPolicyKey(
+      &policy_map, policy::key::kIdleActionBattery,
+      base::Value(chromeos::PowerPolicyController::ACTION_SHUT_DOWN));
+  behaviors.clear();
+  behaviors.insert(PowerHandler::IdleBehavior::SHUT_DOWN);
+  settings.possible_battery_behaviors = behaviors;
+  settings.current_battery_behavior = PowerHandler::IdleBehavior::SHUT_DOWN;
+  settings.battery_idle_managed = true;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+  // Erase battery idle action.
+  policy_map.Erase(policy::key::kIdleActionBattery);
+
+  // Set battery idle action to DO_NOTHING in Enterpise policy. The user then
+  // should not see DISPLAY_OFF_SLEEP in available options.
+  SetPolicyForPolicyKey(
+      &policy_map, policy::key::kIdleActionBattery,
+      base::Value(chromeos::PowerPolicyController::ACTION_DO_NOTHING));
+  behaviors.clear();
+  behaviors.insert(PowerHandler::IdleBehavior::DISPLAY_OFF);
+  behaviors.insert(PowerHandler::IdleBehavior::DISPLAY_ON);
+  settings.possible_battery_behaviors = behaviors;
+  settings.current_battery_behavior = PowerHandler::IdleBehavior::DISPLAY_OFF;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+
+  // Set battery screen delay in Enterprise policy on top of DO_NOTHING idle
+  // action. The user should see only see DISPLAY_OFF as the possible battery
+  // idle action.
+  SetPolicyForPolicyKey(&policy_map, policy::key::kScreenOffDelayBattery,
+                        base::Value(10000));
+  behaviors.clear();
+  behaviors.insert(PowerHandler::IdleBehavior::DISPLAY_OFF);
+  settings.possible_battery_behaviors = behaviors;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
+
+  // Now stop enforcing battery idle action (to DO_NOTHING) in enterprise
+  // policy. The user should see DISPLAY_OFF and DISPLAY_OFF_SLEEP as
+  // the possible battery idle actions.
+  policy_map.Erase(policy::key::kIdleActionBattery);
+  UpdateChromePolicy(&policy_map);
+  settings.possible_battery_behaviors.insert(
+      PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP);
+  settings.current_battery_behavior =
+      PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
 // Verifies that the lid-closed pref's value is sent directly to WebUI.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SendLidSettingForPrefChanges) {
   GetPrefs()->Set(ash::prefs::kPowerLidClosedAction,
                   base::Value(PowerPolicyController::ACTION_SHUT_DOWN));
-  EXPECT_EQ(
-      CreateSettingsChangedString(
-          PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP,
-          false /* idle_controlled */, PowerPolicyController::ACTION_SHUT_DOWN,
-          false /* lid_closed_controlled */, true /* has_lid */),
-      GetLastSettingsChangedMessage());
+  DevicePowerSettings settings;
+  settings.lid_closed_behavior = PowerPolicyController::ACTION_SHUT_DOWN;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 
   GetPrefs()->Set(ash::prefs::kPowerLidClosedAction,
                   base::Value(PowerPolicyController::ACTION_STOP_SESSION));
-  EXPECT_EQ(CreateSettingsChangedString(
-                PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP,
-                false /* idle_controlled */,
-                PowerPolicyController::ACTION_STOP_SESSION,
-                false /* lid_closed_controlled */, true /* has_lid */),
-            GetLastSettingsChangedMessage());
+  settings.lid_closed_behavior = PowerPolicyController::ACTION_STOP_SESSION;
+  EXPECT_EQ(ToString(settings), GetLastSettingsChangedMessage());
 }
 
 // Verifies that requests from WebUI to update the idle behavior update prefs
 // appropriately.
 IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetIdleBehavior) {
-  // Request the "Keep display on" setting and check that prefs are set
+  // Request the "Keep display on" AC setting and check that prefs are set
   // appropriately.
-  test_api_->SetIdleBehavior(PowerHandler::IdleBehavior::DISPLAY_ON);
+  test_api_->SetIdleBehavior(PowerHandler::IdleBehavior::DISPLAY_ON,
+                             true /* is_ac */);
+  EXPECT_EQ(PowerPolicyController::ACTION_DO_NOTHING,
+            GetIntPref(ash::prefs::kPowerAcIdleAction));
+  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerAcScreenDimDelayMs));
+  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerAcScreenOffDelayMs));
+  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerAcScreenLockDelayMs));
+  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryIdleAction));
+  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryScreenDimDelayMs));
+  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryScreenOffDelayMs));
+  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryScreenLockDelayMs));
+
+  // "Turn off display" battery setting should set the battery idle pref but
+  // clear the battery screen delays.
+  test_api_->SetIdleBehavior(PowerHandler::IdleBehavior::DISPLAY_OFF,
+                             false /* is_battery */);
   EXPECT_EQ(PowerPolicyController::ACTION_DO_NOTHING,
             GetIntPref(ash::prefs::kPowerAcIdleAction));
   EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerAcScreenDimDelayMs));
@@ -277,32 +379,22 @@ IN_PROC_BROWSER_TEST_F(PowerHandlerTest, SetIdleBehavior) {
   EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerAcScreenLockDelayMs));
   EXPECT_EQ(PowerPolicyController::ACTION_DO_NOTHING,
             GetIntPref(ash::prefs::kPowerBatteryIdleAction));
-  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerBatteryScreenDimDelayMs));
-  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerBatteryScreenOffDelayMs));
-  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerBatteryScreenLockDelayMs));
-
-  // "Turn off display" should set the idle prefs but clear the screen
-  // delays.
-  test_api_->SetIdleBehavior(PowerHandler::IdleBehavior::DISPLAY_OFF);
-  EXPECT_EQ(PowerPolicyController::ACTION_DO_NOTHING,
-            GetIntPref(ash::prefs::kPowerAcIdleAction));
-  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerAcScreenDimDelayMs));
-  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerAcScreenOffDelayMs));
-  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerAcScreenLockDelayMs));
-  EXPECT_EQ(PowerPolicyController::ACTION_DO_NOTHING,
-            GetIntPref(ash::prefs::kPowerBatteryIdleAction));
   EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryScreenDimDelayMs));
   EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryScreenOffDelayMs));
   EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryScreenLockDelayMs));
 
-  // Now switch to the "Keep display on" setting (to set the prefs again) and
-  // check that the "Turn off display and sleep" setting clears all the prefs.
-  test_api_->SetIdleBehavior(PowerHandler::IdleBehavior::DISPLAY_ON);
-  test_api_->SetIdleBehavior(PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP);
-  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerAcIdleAction));
-  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerAcScreenDimDelayMs));
-  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerAcScreenOffDelayMs));
-  EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerAcScreenLockDelayMs));
+  // Now switch to the "Keep display on" battery setting (to set the prefs
+  // again) and check that the "Turn off display and sleep" battery setting
+  // clears all the battery prefs.
+  test_api_->SetIdleBehavior(PowerHandler::IdleBehavior::DISPLAY_ON,
+                             false /* is_battery */);
+  test_api_->SetIdleBehavior(PowerHandler::IdleBehavior::DISPLAY_OFF_SLEEP,
+                             false /* is_battery */);
+  EXPECT_EQ(PowerPolicyController::ACTION_DO_NOTHING,
+            GetIntPref(ash::prefs::kPowerAcIdleAction));
+  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerAcScreenDimDelayMs));
+  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerAcScreenOffDelayMs));
+  EXPECT_EQ(0, GetIntPref(ash::prefs::kPowerAcScreenLockDelayMs));
   EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryIdleAction));
   EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryScreenDimDelayMs));
   EXPECT_EQ(-1, GetIntPref(ash::prefs::kPowerBatteryScreenOffDelayMs));

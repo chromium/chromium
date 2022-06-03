@@ -12,16 +12,16 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/core/browser/signin_error_controller.h"
 #include "components/signin/core/browser/signin_internals_util.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "services/identity/public/cpp/scope_set.h"
+#include "components/signin/public/identity_manager/scope_set.h"
 
 namespace signin {
 struct AccountsInCookieJarInfo;
@@ -40,21 +40,28 @@ class AboutSigninInternals : public KeyedService,
                              public content_settings::Observer,
                              SigninErrorController::Observer,
                              signin::IdentityManager::Observer,
-                             signin::IdentityManager::DiagnosticsObserver {
+                             signin::IdentityManager::DiagnosticsObserver,
+                             AccountReconcilor::Observer {
  public:
   class Observer {
    public:
     // |info| will contain the dictionary of signin_status_ values as indicated
     // in the comments for GetSigninStatus() below.
-    virtual void OnSigninStateChanged(const base::DictionaryValue* info) = 0;
+    virtual void OnSigninStateChanged(const base::Value* info) = 0;
 
     // Notification that the cookie accounts are ready to be displayed.
-    virtual void OnCookieAccountsFetched(const base::DictionaryValue* info) = 0;
+    virtual void OnCookieAccountsFetched(const base::Value* info) = 0;
   };
 
   AboutSigninInternals(signin::IdentityManager* identity_manager,
                        SigninErrorController* signin_error_controller,
-                       signin::AccountConsistencyMethod account_consistency);
+                       signin::AccountConsistencyMethod account_consistency,
+                       SigninClient* client,
+                       AccountReconcilor* account_reconcilor);
+
+  AboutSigninInternals(const AboutSigninInternals&) = delete;
+  AboutSigninInternals& operator=(const AboutSigninInternals&) = delete;
+
   ~AboutSigninInternals() override;
 
   // Registers the preferences used by AboutSigninInternals.
@@ -67,8 +74,6 @@ class AboutSigninInternals : public KeyedService,
 
   // Pulls all signin values that have been persisted in the user prefs.
   void RefreshSigninPrefs();
-
-  void Initialize(SigninClient* client);
 
   void OnRefreshTokenReceived(const std::string& status);
   void OnAuthenticationResultReceived(const std::string& status);
@@ -90,7 +95,7 @@ class AboutSigninInternals : public KeyedService,
   //     [ List of {"name": "foo-name", "token" : "foo-token",
   //                 "status": "foo_stat", "time" : "foo_time"} elems]
   //  }
-  std::unique_ptr<base::DictionaryValue> GetSigninStatus();
+  base::Value GetSigninStatus();
 
   // signin::IdentityManager::Observer implementations.
   void OnAccountsInCookieUpdated(
@@ -100,9 +105,9 @@ class AboutSigninInternals : public KeyedService,
  private:
   // Encapsulates diagnostic information about tokens for different services.
   struct TokenInfo {
-    TokenInfo(const std::string& consumer_id, const identity::ScopeSet& scopes);
+    TokenInfo(const std::string& consumer_id, const signin::ScopeSet& scopes);
     ~TokenInfo();
-    std::unique_ptr<base::DictionaryValue> ToValue() const;
+    base::Value ToValue() const;
 
     static bool LessThan(const std::unique_ptr<TokenInfo>& a,
                          const std::unique_ptr<TokenInfo>& b);
@@ -111,7 +116,7 @@ class AboutSigninInternals : public KeyedService,
     void Invalidate();
 
     std::string consumer_id;    // service that requested the token.
-    identity::ScopeSet scopes;  // Scoped that are requested.
+    signin::ScopeSet scopes;    // Scoped that are requested.
     base::Time request_time;
     base::Time receive_time;
     base::Time expiration_time;
@@ -154,7 +159,7 @@ class AboutSigninInternals : public KeyedService,
 
     TokenInfo* FindToken(const CoreAccountId& account_id,
                          const std::string& consumer_id,
-                         const identity::ScopeSet& scopes);
+                         const signin::ScopeSet& scopes);
 
     void AddRefreshTokenEvent(const RefreshTokenEvent& event);
 
@@ -175,24 +180,24 @@ class AboutSigninInternals : public KeyedService,
     //                           "status" : request status} elems]
     //       }],
     //  }
-    std::unique_ptr<base::DictionaryValue> ToValue(
-        signin::IdentityManager* identity_manager,
-        SigninErrorController* signin_error_controller,
-        SigninClient* signin_client,
-        signin::AccountConsistencyMethod account_consistency);
+    base::Value ToValue(signin::IdentityManager* identity_manager,
+                        SigninErrorController* signin_error_controller,
+                        SigninClient* signin_client,
+                        signin::AccountConsistencyMethod account_consistency,
+                        AccountReconcilor* account_reconcilor);
   };
 
   // IdentityManager::DiagnosticsObserver implementations.
   void OnAccessTokenRequested(const CoreAccountId& account_id,
                               const std::string& consumer_id,
-                              const identity::ScopeSet& scopes) override;
+                              const signin::ScopeSet& scopes) override;
   void OnAccessTokenRequestCompleted(const CoreAccountId& account_id,
                                      const std::string& consumer_id,
-                                     const identity::ScopeSet& scopes,
+                                     const signin::ScopeSet& scopes,
                                      GoogleServiceAuthError error,
                                      base::Time expiration_time) override;
   void OnAccessTokenRemovedFromCache(const CoreAccountId& account_id,
-                                     const identity::ScopeSet& scopes) override;
+                                     const signin::ScopeSet& scopes) override;
   void OnRefreshTokenUpdatedForAccountFromSource(
       const CoreAccountId& account_id,
       bool is_refresh_token_valid,
@@ -204,10 +209,8 @@ class AboutSigninInternals : public KeyedService,
   // IdentityManager::Observer implementations.
   void OnRefreshTokensLoaded() override;
   void OnEndBatchOfRefreshTokenStateChanges() override;
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
 
   void NotifyTimedSigninFieldValueChanged(
       const signin_internals_util::TimedSigninStatusField& field,
@@ -219,10 +222,16 @@ class AboutSigninInternals : public KeyedService,
   void OnErrorChanged() override;
 
   // content_settings::Observer implementation.
-  void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
-                               const ContentSettingsPattern& secondary_pattern,
-                               ContentSettingsType content_type,
-                               const std::string& resource_identifier) override;
+  void OnContentSettingChanged(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsTypeSet content_type_set) override;
+
+  // AccountReconcilor::Observer implementation.
+  void OnBlockReconcile() override;
+
+  // AccountReconcilor::Observer implementation.
+  void OnUnblockReconcile() override;
 
   // Weak pointer to the identity manager.
   signin::IdentityManager* identity_manager_;
@@ -233,6 +242,9 @@ class AboutSigninInternals : public KeyedService,
   // Weak pointer to the SigninErrorController
   SigninErrorController* signin_error_controller_;
 
+  // Weak pointer to the AccountReconcilor.
+  AccountReconcilor* account_reconcilor_;
+
   // Encapsulates the actual signin and token related values.
   // Most of the values are mirrored in the prefs for persistence.
   SigninStatus signin_status_;
@@ -240,8 +252,6 @@ class AboutSigninInternals : public KeyedService,
   signin::AccountConsistencyMethod account_consistency_;
 
   base::ObserverList<Observer>::Unchecked signin_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AboutSigninInternals);
 };
 
 #endif  // COMPONENTS_SIGNIN_CORE_BROWSER_ABOUT_SIGNIN_INTERNALS_H_

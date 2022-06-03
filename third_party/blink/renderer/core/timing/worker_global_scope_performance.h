@@ -44,8 +44,6 @@ class WorkerGlobalScope;
 class CORE_EXPORT WorkerGlobalScopePerformance final
     : public GarbageCollected<WorkerGlobalScopePerformance>,
       public Supplement<WorkerGlobalScope> {
-  USING_GARBAGE_COLLECTED_MIXIN(WorkerGlobalScopePerformance);
-
  public:
   static const char kSupplementName[];
 
@@ -55,7 +53,7 @@ class CORE_EXPORT WorkerGlobalScopePerformance final
 
   explicit WorkerGlobalScopePerformance(WorkerGlobalScope&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   WorkerPerformance* performance(WorkerGlobalScope*);

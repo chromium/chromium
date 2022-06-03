@@ -9,7 +9,7 @@ instrumentation and JUnit tests.
 
 In order to use JaCoCo code coverage, we need to create build time pre-instrumented
 class files and runtime **.exec** files. Then we need to process them using the
-**build/android/generate_jacoco_report.py** script.
+[build/android/generate_jacoco_report.py](https://source.chromium.org/chromium/chromium/src/+/main:build/android/generate_jacoco_report.py) script.
 
 ## How to collect coverage data
 
@@ -37,7 +37,7 @@ class files and runtime **.exec** files. Then we need to process them using the
   ```shell
   build/android/generate_jacoco_report.py \
      --format html \
-     --output-dir tmp/coverage_report/ \
+     --output-dir /tmp/coverage_report/ \
      --coverage-dir /tmp/coverage/ \
      --sources-json-dir out/Debug/ \
   ```
@@ -57,7 +57,7 @@ class files and runtime **.exec** files. Then we need to process them using the
   ```shell
   build/android/generate_jacoco_report.py \
     --format xml \
-    --output-file tmp/coverage_report/report.xml \
+    --output-file /tmp/coverage_report/report.xml \
     --coverage-dir /tmp/coverage/ \
     --sources-json-dir out/Debug/ \
   ```
@@ -67,7 +67,17 @@ class files and runtime **.exec** files. Then we need to process them using the
   ```shell
   build/android/generate_jacoco_report.py \
     --format csv \
-    --output-file tmp/coverage_report/report.csv \
+    --output-file /tmp/coverage_report/report.csv \
     --coverage-dir /tmp/coverage/ \
     --sources-json-dir out/Debug/ \
+  ```
+3. If generating coverage and there are duplicate class files, as can happen
+   when generating coverage for downstream targets, use the
+   `--include-substr-filter` option to choose jars in the desired directory. Eg.
+   for generating coverage report for Clank internal repo
+  ```shell
+  build/android/generate_jacoco_report.py --format html \
+   --output-dir /tmp/coverage_report/ --coverage-dir /tmp/coverage/ \
+   --sources-json-dir out/java_coverage/ \
+   --include-substr-filter obj/clank
   ```

@@ -28,9 +28,6 @@ class FakeLocalSessionEventHandler : public LocalSessionEventHandler {
     was_notified_ = true;
   }
 
-  void OnFaviconsChanged(const std::set<GURL>& page_urls,
-                         const GURL& icon_url) override {}
-
   bool was_notified_since_last_call() {
     bool was_notified = was_notified_;
     was_notified_ = false;

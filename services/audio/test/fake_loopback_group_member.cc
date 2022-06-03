@@ -63,10 +63,6 @@ const media::AudioParameters& FakeLoopbackGroupMember::GetAudioParameters()
   return params_;
 }
 
-std::string FakeLoopbackGroupMember::GetDeviceId() const {
-  return media::AudioDeviceDescription::kDefaultDeviceId;
-}
-
 void FakeLoopbackGroupMember::StartSnooping(Snooper* snooper) {
   CHECK(!snooper_);
   snooper_ = snooper;

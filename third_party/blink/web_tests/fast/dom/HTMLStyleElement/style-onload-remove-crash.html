@@ -12,7 +12,7 @@ document.body.appendChild(newStyle);
 newDiv = document.createElement("div");
 // Inserting <iframe> into tree flushes the pending @onload event.
 newDiv.innerHTML = "<iframe></iframe><style></style>";
-myDiv.createShadowRoot().appendChild(newDiv);
+myDiv.attachShadow({mode: 'open'}).appendChild(newDiv);
 
 debug("PASS unless crash");
 </script>

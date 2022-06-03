@@ -6,27 +6,29 @@
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_INSTALLED_SCRIPT_READER_H_
 
 #include <memory>
-#include <string>
 
-#include "base/containers/flat_map.h"
-#include "content/browser/service_worker/service_worker_disk_cache.h"
+#include "components/services/storage/public/mojom/service_worker_storage_control.mojom.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/base/big_buffer.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/net_adapters.h"
 
 namespace content {
 
-// Reads a single service worker script from installed script storage. This is
-// basically an adapter from ServiceWorkerResponseReader (AppCache/net style)
-// to Mojo data pipe style.
-class ServiceWorkerInstalledScriptReader {
+// Reads a single service worker script from installed script storage. This acts
+// as a wrapper of ServiceWorkerResourceReader and converts script code cache
+// (metadata) from a BigBuffer to a mojo data pipe.
+class ServiceWorkerInstalledScriptReader
+    : public storage::mojom::ServiceWorkerDataPipeStateNotifier {
  public:
   // Do not change the order. This is used for UMA.
   enum class FinishedReason {
     kNotFinished = 0,
     kSuccess = 1,
-    kNoHttpInfoError = 2,
+    kNoResponseHeadError = 2,
     kCreateDataPipeError = 3,
     kConnectionError = 4,
     kResponseReaderError = 5,
@@ -40,7 +42,8 @@ class ServiceWorkerInstalledScriptReader {
   class Client {
    public:
     virtual void OnStarted(
-        scoped_refptr<HttpResponseInfoIOBuffer> http_info,
+        network::mojom::URLResponseHeadPtr response_head,
+        absl::optional<mojo_base::BigBuffer> metadata,
         mojo::ScopedDataPipeConsumerHandle body_handle,
         mojo::ScopedDataPipeConsumerHandle meta_data_handle) = 0;
     // Called after both body and metadata have finished being written to the
@@ -51,31 +54,37 @@ class ServiceWorkerInstalledScriptReader {
   // Uses |reader| to read an installed service worker script, and sends it to
   // |client|. |client| must outlive this.
   ServiceWorkerInstalledScriptReader(
-      std::unique_ptr<ServiceWorkerResponseReader> reader,
+      mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader,
       Client* client);
-  ~ServiceWorkerInstalledScriptReader();
+  ~ServiceWorkerInstalledScriptReader() override;
 
   // Starts reading the script.
   void Start();
 
  private:
   class MetaDataSender;
-  void OnReadInfoComplete(scoped_refptr<HttpResponseInfoIOBuffer> http_info,
-                          int result);
-  void OnWritableBody(MojoResult);
-  void OnResponseDataRead(int read_bytes);
+  void OnReadResponseHeadComplete(
+      int result,
+      network::mojom::URLResponseHeadPtr response_head,
+      absl::optional<mojo_base::BigBuffer> metadata);
+  void OnReadDataStarted(
+      network::mojom::URLResponseHeadPtr response_head,
+      absl::optional<mojo_base::BigBuffer> metadata,
+      mojo::ScopedDataPipeConsumerHandle body_consumer_handle);
   void OnMetaDataSent(bool success);
+  void OnReaderDisconnected();
   void CompleteSendIfNeeded(FinishedReason reason);
   bool WasMetadataWritten() const { return !meta_data_sender_; }
-  bool WasBodyWritten() const {
-    return !body_handle_.is_valid() && !body_pending_write_;
-  }
+  bool WasBodyWritten() const { return was_body_written_; }
 
   base::WeakPtr<ServiceWorkerInstalledScriptReader> AsWeakPtr() {
     return weak_factory_.GetWeakPtr();
   }
 
-  std::unique_ptr<ServiceWorkerResponseReader> reader_;
+  // storage::mojom::ServiceWorkerDataPipeStateNotifier implementations:
+  void OnComplete(int32_t status) override;
+
+  mojo::Remote<storage::mojom::ServiceWorkerResourceReader> reader_;
   // |client_| must outlive this.
   Client* client_;
 
@@ -83,15 +92,13 @@ class ServiceWorkerInstalledScriptReader {
   std::unique_ptr<MetaDataSender> meta_data_sender_;
 
   // For body.
-  // Either |body_handle_| or |body_pending_write_| is valid during body is
-  // streamed.
-  mojo::ScopedDataPipeProducerHandle body_handle_;
-  scoped_refptr<network::NetToMojoPendingBuffer> body_pending_write_;
-  mojo::SimpleWatcher body_watcher_;
   // Initialized to max uint64_t to default to reading until EOF, but updated
   // to an expected body size in OnReadInfoCompete().
   uint64_t body_size_ = std::numeric_limits<uint64_t>::max();
-  uint64_t body_bytes_sent_ = 0;
+  bool was_body_written_ = false;
+
+  mojo::Receiver<storage::mojom::ServiceWorkerDataPipeStateNotifier> receiver_{
+      this};
 
   base::WeakPtrFactory<ServiceWorkerInstalledScriptReader> weak_factory_{this};
 };

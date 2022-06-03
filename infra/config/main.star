@@ -1,59 +1,94 @@
 #!/usr/bin/env lucicfg
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 # See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md
 # for information on starlark/lucicfg
 
-# Tell lucicfg what files it is allowed to touch
-lucicfg.config(
-    config_dir = 'generated',
-    tracked_files = [
-        'commit-queue.cfg',
-        'cq-builders.md',
-        'cr-buildbucket.cfg',
-        'luci-logdog.cfg',
-        'luci-milo.cfg',
-        'luci-notify.cfg',
-        'luci-scheduler.cfg',
-        'project.cfg',
-        'tricium-prod.cfg',
-    ],
-    fail_on_warnings = True,
+load("//lib/branches.star", "branches")
+load("//project.star", "settings")
+
+lucicfg.check_version(
+    min = "1.29.1",
+    message = "Update depot_tools",
 )
 
-# Copy the not-yet migrated files to the generated outputs
-# TODO(https://crbug.com/1011908) Migrate the configuration in these files to starlark
-[lucicfg.emit(dest = f, data = io.read_file(f)) for f in (
-    # TODO(https://crbug.com/819899) There are a number of noop jobs for dummy
-    # builders defined due to legacy requirements that trybots mirror CI bots
-    # and noop scheduler jobs cannot be created in lucicfg, so the trybots need
-    # to be updated to not rely on dummy builders and the noop jobs need to be
-    # removed
-    'luci-scheduler.cfg',
-)]
+# Enable LUCI Realms support.
+lucicfg.enable_experiment("crbug.com/1085650")
+
+# Tell lucicfg what files it is allowed to touch
+lucicfg.config(
+    config_dir = "generated",
+    tracked_files = [
+        "builders/*/*/*",
+        "cq-builders.md",
+        "cq-usage/default.cfg",
+        "cq-usage/full.cfg",
+        "luci/commit-queue.cfg",
+        "luci/chops-weetbix.cfg",
+        "luci/cr-buildbucket.cfg",
+        "luci/luci-logdog.cfg",
+        "luci/luci-milo.cfg",
+        "luci/luci-notify.cfg",
+        "luci/luci-notify/email-templates/*.template",
+        "luci/luci-scheduler.cfg",
+        "luci/project.cfg",
+        "luci/realms.cfg",
+        "luci/tricium-prod.cfg",
+        "outages.pyl",
+        "project.pyl",
+    ],
+    fail_on_warnings = True,
+    lint_checks = [
+        "default",
+        "-confusing-name",
+        "-function-docstring",
+        "-function-docstring-args",
+        "-function-docstring-return",
+        "-function-docstring-header",
+        "-module-docstring",
+    ],
+)
 
 # Just copy tricium-prod.cfg to the generated outputs
 lucicfg.emit(
-    dest = 'tricium-prod.cfg',
-    data = io.read_file('tricium-prod.cfg'),
+    dest = "luci/tricium-prod.cfg",
+    data = io.read_file("tricium-prod.cfg"),
+)
+
+# Weetbix configuration is also copied verbatim to generated
+# outputs.
+lucicfg.emit(
+    dest = "luci/chops-weetbix.cfg",
+    data = io.read_file("chops-weetbix.cfg"),
 )
 
 luci.project(
-    name = 'chromium',
-    buildbucket = 'cr-buildbucket.appspot.com',
-    logdog = 'luci-logdog.appspot.com',
-    milo = 'luci-milo.appspot.com',
-    notify = 'luci-notify.appspot.com',
-    swarming = 'chromium-swarm.appspot.com',
+    name = settings.project,
+    config_dir = "luci",
+    buildbucket = "cr-buildbucket.appspot.com",
+    logdog = "luci-logdog.appspot.com",
+    milo = "luci-milo.appspot.com",
+    notify = "luci-notify.appspot.com",
+    scheduler = "luci-scheduler.appspot.com",
+    swarming = "chromium-swarm.appspot.com",
     acls = [
         acl.entry(
             roles = [
                 acl.LOGDOG_READER,
                 acl.PROJECT_CONFIGS_READER,
+                acl.SCHEDULER_READER,
             ],
-            groups = 'all',
+            groups = "all",
         ),
         acl.entry(
             roles = acl.LOGDOG_WRITER,
-            groups = 'luci-logdog-chromium-writers',
+            groups = "luci-logdog-chromium-writers",
+        ),
+        acl.entry(
+            roles = acl.SCHEDULER_OWNER,
+            groups = "project-chromium-admins",
         ),
     ],
 )
@@ -61,73 +96,100 @@ luci.project(
 luci.cq(
     submit_max_burst = 2,
     submit_burst_delay = time.minute,
-    status_host = 'chromium-cq-status.appspot.com',
+    status_host = "chromium-cq-status.appspot.com",
 )
 
 luci.logdog(
-    gs_bucket = 'chromium-luci-logdog',
+    gs_bucket = "chromium-luci-logdog",
 )
 
 luci.milo(
-    logo = 'https://storage.googleapis.com/chrome-infra-public/logo/chromium.svg',
+    logo = "https://storage.googleapis.com/chrome-infra-public/logo/chromium.svg",
 )
 
-exec('//buckets/ci.star')
-exec('//buckets/findit.star')
-exec('//buckets/goma.star')
-exec('//buckets/gpu.try.star')
-exec('//buckets/try.star')
-exec('//buckets/webrtc.star')
-exec('//buckets/webrtc.fyi.star')
+luci.notify(
+    tree_closing_enabled = True,
+)
 
-exec('//consoles/android.packager.star')
-exec('//consoles/angle.try.star')
-exec('//consoles/chromium.star')
-exec('//consoles/chromium.android.star')
-exec('//consoles/chromium.android.fyi.star')
-exec('//consoles/chromium.chromiumos.star')
-exec('//consoles/chromium.clang.star')
-exec('//consoles/chromium.dawn.star')
-exec('//consoles/chromium.fuzz.star')
-exec('//consoles/chromium.fyi.star')
-exec('//consoles/chromium.fyi.goma.star')
-exec('//consoles/chromium.goma.star')
-exec('//consoles/chromium.goma.fyi.star')
-exec('//consoles/chromium.goma.migration.star')
-exec('//consoles/chromium.gpu.star')
-exec('//consoles/chromium.gpu.fyi.star')
-exec('//consoles/chromium.linux.star')
-exec('//consoles/chromium.mac.star')
-exec('//consoles/chromium.memory.star')
-exec('//consoles/chromium.swangle.star')
-exec('//consoles/chromium.webrtc.star')
-exec('//consoles/chromium.webrtc.fyi.star')
-exec('//consoles/chromium.win.star')
-exec('//consoles/findit.star')
-exec('//consoles/goma.latest.star')
-exec('//consoles/luci.chromium.goma.star')
-exec('//consoles/luci.chromium.try.star')
-exec('//consoles/main.star')
-exec('//consoles/main-beta.star')
-exec('//consoles/main-stable.star')
-exec('//consoles/sheriff.ios.star')
-exec('//consoles/try-beta.star')
-exec('//consoles/try-stable.star')
-exec('//consoles/tryserver.blink.star')
-exec('//consoles/tryserver.chromium.android.star')
-exec('//consoles/tryserver.chromium.chromiumos.star')
-exec('//consoles/tryserver.chromium.dawn.star')
-exec('//consoles/tryserver.chromium.linux.star')
-exec('//consoles/tryserver.chromium.mac.star')
-exec('//consoles/tryserver.chromium.swangle.star')
-exec('//consoles/tryserver.chromium.win.star')
+# An all-purpose public realm.
+luci.realm(
+    name = "public",
+    bindings = [
+        luci.binding(
+            roles = "role/buildbucket.reader",
+            groups = "all",
+        ),
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = "project-chromium-tryjob-access",
+        ),
+        # Other roles are inherited from @root which grants them to group:all.
+    ],
+)
 
-exec('//notifiers.star')
+luci.realm(
+    name = "ci",
+    bindings = [
+        # Allow CI builders to create invocations in their own builds.
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = "project-chromium-ci-task-accounts",
+        ),
+    ],
+)
 
-exec('//generators/cq-builders-md.star')
+luci.realm(
+    name = "try",
+    bindings = [
+        # Allow try builders to create invocations in their own builds.
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = "project-chromium-try-task-accounts",
+        ),
+    ],
+)
 
-exec('//validators/builders-in-consoles.star')
-# TODO(https://crbug.com/1011908) Provides some checking of scheduler
-# configuration since it can't be migrated to starlark until no-op jobs are
-# removed
-exec('//validators/scheduler-validation.star')
+luci.realm(
+    name = "webrtc",
+    bindings = [
+        # Allow WebRTC builders to create invocations in their own builds.
+        luci.binding(
+            roles = "role/resultdb.invocationCreator",
+            groups = "project-chromium-ci-task-accounts",
+        ),
+    ],
+)
+
+luci.builder.defaults.experiments.set({
+    # TODO(crbug.com/1135718): Promote out of experiment for all builders.
+    "chromium.chromium_tests.use_rdb_results": 100,
+    # Launch Swarming tasks in "realms-aware mode", crbug.com/1136313.
+    "luci.use_realms": 100,
+})
+luci.builder.defaults.test_presentation.set(resultdb.test_presentation(grouping_keys = ["status", "v.test_suite"]))
+
+exec("//swarming.star")
+
+exec("//recipes.star")
+
+exec("//notifiers.star")
+
+exec("//subprojects/chromium/subproject.star")
+branches.exec("//subprojects/codesearch/subproject.star")
+branches.exec("//subprojects/findit/subproject.star")
+branches.exec("//subprojects/flakiness/subproject.star")
+branches.exec("//subprojects/goma/subproject.star")
+branches.exec("//subprojects/reclient/subproject.star")
+branches.exec("//subprojects/webrtc/subproject.star")
+
+exec("//generators/cq-usage.star")
+branches.exec("//generators/cq-builders-md.star")
+
+exec("//generators/scheduler-noop-jobs.star")
+exec("//generators/sort-consoles.star")
+
+exec("//validators/builders-in-consoles.star")
+
+# Execute this file last so that any configuration changes needed for handling
+# outages gets final say
+exec("//outages/outages.star")

@@ -13,16 +13,16 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -88,6 +88,10 @@ GURL GetSafeBrowsingReportUrl(const std::string& default_url) {
 class NetworkCheckerImpl : public NetworkChecker {
  public:
   NetworkCheckerImpl() = default;
+
+  NetworkCheckerImpl(const NetworkCheckerImpl&) = delete;
+  NetworkCheckerImpl& operator=(const NetworkCheckerImpl&) = delete;
+
   ~NetworkCheckerImpl() override = default;
 
   // TODO(olivierli) Make upload_url a member variable
@@ -114,7 +118,7 @@ class NetworkCheckerImpl : public NetworkChecker {
       return false;
     }
     base::ScopedClosureRunner close_event(
-        base::BindRepeating(base::IgnoreResult(&::CloseHandle), event));
+        base::BindOnce(base::IgnoreResult(&::CloseHandle), event));
 
     OVERLAPPED overlapped = {0};
     overlapped.hEvent = event;
@@ -125,7 +129,7 @@ class NetworkCheckerImpl : public NetworkChecker {
       PLOG(ERROR) << "Error in NotifyAddrChange (" << ret << ")";
       return false;
     }
-    base::ScopedClosureRunner cancel_ip_change_notify(base::BindRepeating(
+    base::ScopedClosureRunner cancel_ip_change_notify(base::BindOnce(
         base::IgnoreResult(&::CancelIPChangeNotify), &overlapped));
 
     // NotifyAddrChange will only notify when there are address changes to the
@@ -186,8 +190,6 @@ class NetworkCheckerImpl : public NetworkChecker {
   // Manual-reset event, which will remain set once set.
   base::win::ScopedHandle cancel_wait_event_;
   base::Lock cancel_wait_event_lock_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkCheckerImpl);
 };
 
 NetworkChecker* current_network_checker{nullptr};
@@ -271,12 +273,11 @@ SafeBrowsingReporter::SafeBrowsingReporter(
       done_callback_runner_(done_callback_runner),
       done_callback_(done_callback) {
   DCHECK(done_callback_runner);
-  base::PostTask(FROM_HERE,
-                 {base::ThreadPool(), base::MayBlock(),
-                  base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-                 base::BindRepeating(&SafeBrowsingReporter::UploadWithRetry,
-                                     base::Owned(this), serialized_report,
-                                     traffic_annotation));
+  base::ThreadPool::PostTask(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
+      base::BindOnce(&SafeBrowsingReporter::UploadWithRetry, base::Owned(this),
+                     serialized_report, traffic_annotation));
 }
 
 void SafeBrowsingReporter::UploadWithRetry(
@@ -285,8 +286,7 @@ void SafeBrowsingReporter::UploadWithRetry(
   std::unique_ptr<ChromeFoilResponse> response(new ChromeFoilResponse);
   Result result = Result::UPLOAD_NO_NETWORK;
   if (GetNetworkChecker()->WaitForSafeBrowsing(
-          upload_url_,
-          base::TimeDelta::FromSeconds(kNetworkPresenceTimeoutSeconds))) {
+          upload_url_, base::Seconds(kNetworkPresenceTimeoutSeconds))) {
     result = PerformUploadWithRetries(serialized_report, response.get(),
                                       traffic_annotation);
     if (result != Result::UPLOAD_SUCCESS) {
@@ -298,8 +298,8 @@ void SafeBrowsingReporter::UploadWithRetry(
   LOG(INFO) << "Calling done_callback_ with result: "
             << static_cast<int>(result);
   done_callback_runner_->PostTask(
-      FROM_HERE, base::BindRepeating(done_callback_, result, serialized_report,
-                                     base::Passed(&response)));
+      FROM_HERE, base::BindOnce(done_callback_, result, serialized_report,
+                                std::move(response)));
 }
 
 SafeBrowsingReporter::Result SafeBrowsingReporter::PerformUploadWithRetries(
@@ -310,8 +310,7 @@ SafeBrowsingReporter::Result SafeBrowsingReporter::PerformUploadWithRetries(
 
   SafeBrowsingReporter::Result result = Result::UPLOAD_INTERNAL_ERROR;
   for (unsigned int attempt = 0; attempt < kMaxUploadAttempts; ++attempt) {
-    sleep_callback_.Run(
-        base::TimeDelta::FromSeconds(kUploadAttemptDelaySeconds[attempt]));
+    sleep_callback_.Run(base::Seconds(kUploadAttemptDelaySeconds[attempt]));
     result = PerformUpload(serialized_report, response, traffic_annotation);
     if (result == Result::UPLOAD_SUCCESS)
       break;

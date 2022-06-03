@@ -11,7 +11,5 @@ mojom("mojom") {
     "file.mojom",
     "types.mojom",
   ]
-  public_deps = [
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 }

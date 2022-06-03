@@ -5,14 +5,15 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SINGLE_THREAD_IDLE_TASK_RUNNER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_COMMON_SINGLE_THREAD_IDLE_TASK_RUNNER_H_
 
+#include <map>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace base {
@@ -45,6 +46,8 @@ class SingleThreadIdleTaskRunner
   class PLATFORM_EXPORT Delegate {
    public:
     Delegate();
+    Delegate(const Delegate&) = delete;
+    Delegate& operator=(const Delegate&) = delete;
     virtual ~Delegate();
 
     // Signals that an idle task has been posted. This will be called on the
@@ -61,9 +64,6 @@ class SingleThreadIdleTaskRunner
 
     // Returns the current time.
     virtual base::TimeTicks NowTicks() = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(Delegate);
   };
 
   // NOTE Category strings must have application lifetime (statics or
@@ -71,6 +71,9 @@ class SingleThreadIdleTaskRunner
   SingleThreadIdleTaskRunner(
       scoped_refptr<base::SingleThreadTaskRunner> idle_priority_task_runner,
       Delegate* delegate);
+  SingleThreadIdleTaskRunner(const SingleThreadIdleTaskRunner&) = delete;
+  SingleThreadIdleTaskRunner& operator=(const SingleThreadIdleTaskRunner&) =
+      delete;
 
   virtual void PostIdleTask(const base::Location& from_here,
                             IdleTask idle_task);
@@ -108,7 +111,6 @@ class SingleThreadIdleTaskRunner
   base::trace_event::BlameContext* blame_context_;  // Not owned.
   base::WeakPtr<SingleThreadIdleTaskRunner> weak_scheduler_ptr_;
   base::WeakPtrFactory<SingleThreadIdleTaskRunner> weak_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(SingleThreadIdleTaskRunner);
 };
 
 }  // namespace scheduler

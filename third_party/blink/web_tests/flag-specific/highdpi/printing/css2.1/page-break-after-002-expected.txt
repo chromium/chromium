@@ -1,0 +1,9 @@
+This sentence must be on the first page.
+
+This sentence must be on the second page.
+
+This sentence must be either on the second or on the third page.
+
+
+FAIL: expected page number of "test1" is 1. Was 0
+FAIL: expected page number of "test2" is 1. Was 0

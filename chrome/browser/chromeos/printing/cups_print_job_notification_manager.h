@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
 
 class Profile;
@@ -26,6 +25,12 @@ class CupsPrintJobNotificationManager : public CupsPrintJobManager::Observer {
 
   CupsPrintJobNotificationManager(Profile* profile,
                                   CupsPrintJobManager* print_job_manager);
+
+  CupsPrintJobNotificationManager(const CupsPrintJobNotificationManager&) =
+      delete;
+  CupsPrintJobNotificationManager& operator=(
+      const CupsPrintJobNotificationManager&) = delete;
+
   ~CupsPrintJobNotificationManager() override;
 
   // CupsPrintJobManager::Observer overrides:
@@ -46,8 +51,6 @@ class CupsPrintJobNotificationManager : public CupsPrintJobManager::Observer {
   PrintJobNotificationMap notification_map_;
   CupsPrintJobManager* print_job_manager_;
   Profile* profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(CupsPrintJobNotificationManager);
 };
 
 }  // namespace chromeos

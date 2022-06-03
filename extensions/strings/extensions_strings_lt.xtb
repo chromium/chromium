@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Oi! Nepavyko sukurti atsitiktinio RSA privačiojo rakto.</translation>
 <translation id="1445572445564823378">Dėl šio plėtinio lėčiau veikia „<ph name="PRODUCT_NAME" />“. Kad atkurtumėte „<ph name="PRODUCT_NAME" />“ našumą, turite jo neleisti.</translation>
 <translation id="1468038450257740950">„WebGL“ nepalaikomas.</translation>
-<translation id="149347756975725155">Nepavyko įkelti „<ph name="ICON" />“ plėtinio piktogramos.</translation>
 <translation id="1803557475693955505">Nepavyko įkelti fono puslapio „<ph name="BACKGROUND_PAGE" />“.</translation>
 <translation id="2159915644201199628">Nepavyko iššifruoti vaizdo: „<ph name="IMAGE_NAME" />“</translation>
 <translation id="2350172092385603347">Naudotas lokalizavimas, bet deklaracijoje nenurodyta numatytoji lokalė.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Nepavyko nuskaityti privačiojo rakto.</translation>
 <translation id="6391538222494443604">Turi būti įvesties katalogas.</translation>
 <translation id="641087317769093025">Nepavyko išarchyvuoti plėtinio</translation>
-<translation id="6413453408918378296">Piktograma „<ph name="ICON" />“ nepakankamai matoma.</translation>
 <translation id="6542618148162044354">„<ph name="APP_NAME" />“ prašo leidimo pasiekti vieną ar daugiau jūsų įrenginių:</translation>
 <translation id="657064425229075395">Nepavyko įkelti foninio scenarijaus „<ph name="BACKGROUND_SCRIPT" />“.</translation>
 <translation id="6580950983454333167">„<ph name="PRODUCT_NAME" />“, pardavėjas „<ph name="VENDOR_NAME" />“ (serijos numeris <ph name="SERIAL_NUMBER" />)</translation>

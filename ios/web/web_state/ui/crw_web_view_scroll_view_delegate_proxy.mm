@@ -4,8 +4,10 @@
 
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_delegate_proxy.h"
 
+#include <ostream>
+
+#include "base/check_op.h"
 #import "base/ios/crb_protocol_observers.h"
-#include "base/logging.h"
 #import "ios/web/web_state/ui/crw_web_view_scroll_view_proxy+internal.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -14,7 +16,7 @@
 
 @interface CRWWebViewScrollViewDelegateProxy ()
 
-@property(nonatomic) CRWWebViewScrollViewProxy* scrollViewProxy;
+@property(nonatomic, weak) CRWWebViewScrollViewProxy* scrollViewProxy;
 
 @end
 
@@ -78,7 +80,7 @@
   if (signature.numberOfArguments >= 3 &&
       strcmp([signature getArgumentTypeAtIndex:2], @encode(UIScrollView*)) ==
           0) {
-    UIScrollView* sender;
+    __unsafe_unretained UIScrollView* sender;
     [invocation getArgument:&sender atIndex:2];
     if (sender == self.scrollViewProxy.underlyingScrollView) {
       sender = [self.scrollViewProxy asUIScrollView];

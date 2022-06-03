@@ -21,74 +21,16 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/containers/flat_set.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/queue.h"
-#include "base/strings/string16.h"
-#include "base/strings/utf_string_conversions.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
 using ::testing::IsNull;
 using ::testing::Pair;
-
-// Used as test case to ensure the various base::STLXxx functions don't require
-// more than operators "<" and "==" on values stored in containers.
-class ComparableValue {
- public:
-  explicit ComparableValue(int value) : value_(value) {}
-
-  bool operator==(const ComparableValue& rhs) const {
-    return value_ == rhs.value_;
-  }
-
-  bool operator<(const ComparableValue& rhs) const {
-    return value_ < rhs.value_;
-  }
-
- private:
-  int value_;
-};
-
-template <typename Container>
-void RunEraseTest() {
-  const std::pair<Container, Container> test_data[] = {
-      {Container(), Container()}, {{1, 2, 3}, {1, 3}}, {{1, 2, 3, 2}, {1, 3}}};
-
-  for (auto test_case : test_data) {
-    base::Erase(test_case.first, 2);
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-}
-
-// This test is written for containers of std::pair<int, int> to support maps.
-template <typename Container>
-void RunEraseIfTest() {
-  struct {
-    Container input;
-    Container erase_even;
-    Container erase_odd;
-  } test_data[] = {
-      {Container(), Container(), Container()},
-      {{{1, 1}, {2, 2}, {3, 3}}, {{1, 1}, {3, 3}}, {{2, 2}}},
-      {{{1, 1}, {2, 2}, {3, 3}, {4, 4}}, {{1, 1}, {3, 3}}, {{2, 2}, {4, 4}}},
-  };
-
-  for (auto test_case : test_data) {
-    base::EraseIf(test_case.input, [](const std::pair<int, int>& elem) {
-      return !(elem.first & 1);
-    });
-    EXPECT_EQ(test_case.erase_even, test_case.input);
-  }
-
-  for (auto test_case : test_data) {
-    base::EraseIf(test_case.input, [](const std::pair<int, int>& elem) {
-      return elem.first & 1;
-    });
-    EXPECT_EQ(test_case.erase_odd, test_case.input);
-  }
-}
 
 template <typename Container>
 void RunConstCastIteratorTest() {
@@ -110,166 +52,33 @@ void RunConstCastIteratorTest() {
   EXPECT_THAT(c, testing::ContainerEq(other));
 }
 
-struct CustomIntHash {
-  size_t operator()(int elem) const { return std::hash<int>()(elem) + 1; }
-};
-
-struct HashByFirst {
-  size_t operator()(const std::pair<int, int>& elem) const {
-    return std::hash<int>()(elem.first);
-  }
-};
-
 }  // namespace
 
 namespace base {
 namespace {
 
-TEST(STLUtilTest, Size) {
-  {
-    std::vector<int> vector = {1, 2, 3, 4, 5};
-    static_assert(
-        std::is_same<decltype(base::size(vector)),
-                     decltype(vector.size())>::value,
-        "base::size(vector) should have the same type as vector.size()");
-    EXPECT_EQ(vector.size(), base::size(vector));
-  }
+TEST(STLUtilTest, ToUnderlying) {
+  enum Enum : int {
+    kOne = 1,
+    kTwo = 2,
+  };
 
-  {
-    std::string empty_str;
-    static_assert(
-        std::is_same<decltype(base::size(empty_str)),
-                     decltype(empty_str.size())>::value,
-        "base::size(empty_str) should have the same type as empty_str.size()");
-    EXPECT_EQ(0u, base::size(empty_str));
-  }
+  enum class ScopedEnum : char {
+    kOne = 1,
+    kTwo = 2,
+  };
 
-  {
-    std::array<int, 4> array = {{1, 2, 3, 4}};
-    static_assert(
-        std::is_same<decltype(base::size(array)),
-                     decltype(array.size())>::value,
-        "base::size(array) should have the same type as array.size()");
-    static_assert(base::size(array) == array.size(),
-                  "base::size(array) should be equal to array.size()");
-  }
+  static_assert(std::is_same<decltype(to_underlying(kOne)), int>::value, "");
+  static_assert(std::is_same<decltype(to_underlying(kTwo)), int>::value, "");
+  static_assert(to_underlying(kOne) == 1, "");
+  static_assert(to_underlying(kTwo) == 2, "");
 
-  {
-    int array[] = {1, 2, 3};
-    static_assert(std::is_same<size_t, decltype(base::size(array))>::value,
-                  "base::size(array) should be of type size_t");
-    static_assert(3u == base::size(array), "base::size(array) should be 3");
-  }
-}
-
-TEST(STLUtilTest, Empty) {
-  {
-    std::vector<int> vector;
-    static_assert(
-        std::is_same<decltype(base::empty(vector)),
-                     decltype(vector.empty())>::value,
-        "base::empty(vector) should have the same type as vector.empty()");
-    EXPECT_EQ(vector.empty(), base::empty(vector));
-  }
-
-  {
-    std::array<int, 4> array = {{1, 2, 3, 4}};
-    static_assert(
-        std::is_same<decltype(base::empty(array)),
-                     decltype(array.empty())>::value,
-        "base::empty(array) should have the same type as array.empty()");
-    static_assert(base::empty(array) == array.empty(),
-                  "base::empty(array) should be equal to array.empty()");
-  }
-
-  {
-    int array[] = {1, 2, 3};
-    static_assert(std::is_same<bool, decltype(base::empty(array))>::value,
-                  "base::empty(array) should be of type bool");
-    static_assert(!base::empty(array), "base::empty(array) should be false");
-  }
-
-  {
-    constexpr std::initializer_list<int> il;
-    static_assert(std::is_same<bool, decltype(base::empty(il))>::value,
-                  "base::empty(il) should be of type bool");
-    static_assert(base::empty(il), "base::empty(il) should be true");
-  }
-}
-
-TEST(STLUtilTest, Data) {
-  {
-    std::vector<int> vector = {1, 2, 3, 4, 5};
-    static_assert(
-        std::is_same<decltype(base::data(vector)),
-                     decltype(vector.data())>::value,
-        "base::data(vector) should have the same type as vector.data()");
-    EXPECT_EQ(vector.data(), base::data(vector));
-  }
-
-  {
-    const std::string cstr = "const string";
-    static_assert(
-        std::is_same<decltype(base::data(cstr)), decltype(cstr.data())>::value,
-        "base::data(cstr) should have the same type as cstr.data()");
-
-    EXPECT_EQ(cstr.data(), base::data(cstr));
-  }
-
-  {
-    std::string str = "mutable string";
-    static_assert(std::is_same<decltype(base::data(str)), char*>::value,
-                  "base::data(str) should be of type char*");
-    EXPECT_EQ(str.data(), base::data(str));
-  }
-
-  {
-    std::string empty_str;
-    static_assert(std::is_same<decltype(base::data(empty_str)), char*>::value,
-                  "base::data(empty_str) should be of type char*");
-    EXPECT_EQ(empty_str.data(), base::data(empty_str));
-  }
-
-  {
-    std::array<int, 4> array = {{1, 2, 3, 4}};
-    static_assert(
-        std::is_same<decltype(base::data(array)),
-                     decltype(array.data())>::value,
-        "base::data(array) should have the same type as array.data()");
-    // std::array::data() is not constexpr prior to C++17, hence the runtime
-    // check.
-    EXPECT_EQ(array.data(), base::data(array));
-  }
-
-  {
-    constexpr int array[] = {1, 2, 3};
-    static_assert(std::is_same<const int*, decltype(base::data(array))>::value,
-                  "base::data(array) should be of type const int*");
-    static_assert(array == base::data(array),
-                  "base::data(array) should be array");
-  }
-
-  {
-    constexpr std::initializer_list<int> il;
-    static_assert(
-        std::is_same<decltype(il.begin()), decltype(base::data(il))>::value,
-        "base::data(il) should have the same type as il.begin()");
-    static_assert(il.begin() == base::data(il),
-                  "base::data(il) should be equal to il.begin()");
-  }
-}
-
-TEST(STLUtilTest, AsConst) {
-  int i = 123;
-  EXPECT_EQ(&i, &base::as_const(i));
-  static_assert(std::is_same<const int&, decltype(base::as_const(i))>::value,
-                "Error: base::as_const() returns an unexpected type");
-
-  const int ci = 456;
-  static_assert(&ci == &base::as_const(ci),
-                "Error: base::as_const() returns an unexpected reference");
-  static_assert(std::is_same<const int&, decltype(base::as_const(ci))>::value,
-                "Error: base::as_const() returns an unexpected type");
+  static_assert(
+      std::is_same<decltype(to_underlying(ScopedEnum::kOne)), char>::value, "");
+  static_assert(
+      std::is_same<decltype(to_underlying(ScopedEnum::kTwo)), char>::value, "");
+  static_assert(to_underlying(ScopedEnum::kOne) == 1, "");
+  static_assert(to_underlying(ScopedEnum::kTwo) == 2, "");
 }
 
 TEST(STLUtilTest, GetUnderlyingContainer) {
@@ -333,43 +142,6 @@ TEST(STLUtilTest, ConstCastIterator) {
   // Unordered Associative Containers
   RunConstCastIteratorTest<std::unordered_set<int>>();
   RunConstCastIteratorTest<std::unordered_multiset<int>>();
-}
-
-TEST(STLUtilTest, STLIsSorted) {
-  {
-    std::set<int> set;
-    set.insert(24);
-    set.insert(1);
-    set.insert(12);
-    EXPECT_TRUE(STLIsSorted(set));
-  }
-
-  {
-    std::set<ComparableValue> set;
-    set.insert(ComparableValue(24));
-    set.insert(ComparableValue(1));
-    set.insert(ComparableValue(12));
-    EXPECT_TRUE(STLIsSorted(set));
-  }
-
-  {
-    std::vector<int> vector;
-    vector.push_back(1);
-    vector.push_back(1);
-    vector.push_back(4);
-    vector.push_back(64);
-    vector.push_back(12432);
-    EXPECT_TRUE(STLIsSorted(vector));
-    vector.back() = 1;
-    EXPECT_FALSE(STLIsSorted(vector));
-  }
-
-  {
-    int array[] = {1, 1, 4, 64, 12432};
-    EXPECT_TRUE(STLIsSorted(array));
-    array[4] = 1;
-    EXPECT_FALSE(STLIsSorted(array));
-  }
 }
 
 TEST(STLUtilTest, STLSetDifference) {
@@ -523,167 +295,13 @@ TEST(STLUtilTest, STLSetIntersection) {
   }
 }
 
-TEST(STLUtilTest, STLIncludes) {
-  std::set<int> a1;
-  a1.insert(1);
-  a1.insert(2);
-  a1.insert(3);
-  a1.insert(4);
-
-  std::set<int> a2;
-  a2.insert(3);
-  a2.insert(4);
-
-  std::set<int> a3;
-  a3.insert(3);
-  a3.insert(4);
-  a3.insert(5);
-
-  EXPECT_TRUE(STLIncludes<std::set<int> >(a1, a2));
-  EXPECT_FALSE(STLIncludes<std::set<int> >(a1, a3));
-  EXPECT_FALSE(STLIncludes<std::set<int> >(a2, a1));
-  EXPECT_FALSE(STLIncludes<std::set<int> >(a2, a3));
-  EXPECT_FALSE(STLIncludes<std::set<int> >(a3, a1));
-  EXPECT_TRUE(STLIncludes<std::set<int> >(a3, a2));
-}
-
-TEST(Erase, String) {
-  const std::pair<std::string, std::string> test_data[] = {
-      {"", ""}, {"abc", "bc"}, {"abca", "bc"},
-  };
-
-  for (auto test_case : test_data) {
-    Erase(test_case.first, 'a');
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-
-  for (auto test_case : test_data) {
-    EraseIf(test_case.first, [](char elem) { return elem < 'b'; });
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-}
-
-TEST(Erase, String16) {
-  std::pair<base::string16, base::string16> test_data[] = {
-      {base::string16(), base::string16()},
-      {UTF8ToUTF16("abc"), UTF8ToUTF16("bc")},
-      {UTF8ToUTF16("abca"), UTF8ToUTF16("bc")},
-  };
-
-  const base::string16 letters = UTF8ToUTF16("ab");
-  for (auto test_case : test_data) {
-    Erase(test_case.first, letters[0]);
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-
-  for (auto test_case : test_data) {
-    EraseIf(test_case.first, [&](short elem) { return elem < letters[1]; });
-    EXPECT_EQ(test_case.second, test_case.first);
-  }
-}
-
-TEST(Erase, Deque) {
-  RunEraseTest<std::deque<int>>();
-  RunEraseIfTest<std::deque<std::pair<int, int>>>();
-}
-
-TEST(Erase, Vector) {
-  RunEraseTest<std::vector<int>>();
-  RunEraseIfTest<std::vector<std::pair<int, int>>>();
-}
-
-TEST(Erase, ForwardList) {
-  RunEraseTest<std::forward_list<int>>();
-  RunEraseIfTest<std::forward_list<std::pair<int, int>>>();
-}
-
-TEST(Erase, List) {
-  RunEraseTest<std::list<int>>();
-  RunEraseIfTest<std::list<std::pair<int, int>>>();
-}
-
-TEST(Erase, Map) {
-  RunEraseIfTest<std::map<int, int>>();
-  RunEraseIfTest<std::map<int, int, std::greater<int>>>();
-}
-
-TEST(Erase, Multimap) {
-  RunEraseIfTest<std::multimap<int, int>>();
-  RunEraseIfTest<std::multimap<int, int, std::greater<int>>>();
-}
-
-TEST(Erase, Set) {
-  RunEraseIfTest<std::set<std::pair<int, int>>>();
-  RunEraseIfTest<
-      std::set<std::pair<int, int>, std::greater<std::pair<int, int>>>>();
-}
-
-TEST(Erase, Multiset) {
-  RunEraseIfTest<std::multiset<std::pair<int, int>>>();
-  RunEraseIfTest<
-      std::multiset<std::pair<int, int>, std::greater<std::pair<int, int>>>>();
-}
-
-TEST(Erase, UnorderedMap) {
-  RunEraseIfTest<std::unordered_map<int, int>>();
-  RunEraseIfTest<std::unordered_map<int, int, CustomIntHash>>();
-}
-
-TEST(Erase, UnorderedMultimap) {
-  RunEraseIfTest<std::unordered_multimap<int, int>>();
-  RunEraseIfTest<std::unordered_multimap<int, int, CustomIntHash>>();
-}
-
-TEST(Erase, UnorderedSet) {
-  RunEraseIfTest<std::unordered_set<std::pair<int, int>, HashByFirst>>();
-}
-
-TEST(Erase, UnorderedMultiset) {
-  RunEraseIfTest<std::unordered_multiset<std::pair<int, int>, HashByFirst>>();
-}
-
 TEST(Erase, IsNotIn) {
   // Should keep both '2' but only one '4', like std::set_intersection.
   std::vector<int> lhs = {0, 2, 2, 4, 4, 4, 6, 8, 10};
   std::vector<int> rhs = {1, 2, 2, 4, 5, 6, 7};
   std::vector<int> expected = {2, 2, 4, 6};
-  EraseIf(lhs, IsNotIn<std::vector<int>>(rhs));
+  EXPECT_EQ(5u, EraseIf(lhs, IsNotIn<std::vector<int>>(rhs)));
   EXPECT_EQ(expected, lhs);
-}
-
-TEST(STLUtilTest, GenericContains) {
-  const char allowed_chars[] = {'a', 'b', 'c', 'd'};
-
-  EXPECT_TRUE(Contains(allowed_chars, 'a'));
-  EXPECT_FALSE(Contains(allowed_chars, 'z'));
-  EXPECT_FALSE(Contains(allowed_chars, 0));
-
-  const char allowed_chars_including_nul[] = "abcd";
-  EXPECT_TRUE(Contains(allowed_chars_including_nul, 0));
-}
-
-TEST(STLUtilTest, ContainsWithFindAndNpos) {
-  std::string str = "abcd";
-
-  EXPECT_TRUE(Contains(str, 'a'));
-  EXPECT_FALSE(Contains(str, 'z'));
-  EXPECT_FALSE(Contains(str, 0));
-}
-
-TEST(STLUtilTest, ContainsWithFindAndEnd) {
-  std::set<int> set = {1, 2, 3, 4};
-
-  EXPECT_TRUE(Contains(set, 1));
-  EXPECT_FALSE(Contains(set, 5));
-  EXPECT_FALSE(Contains(set, 0));
-}
-
-TEST(STLUtilTest, ContainsWithContains) {
-  flat_set<int> set = {1, 2, 3, 4};
-
-  EXPECT_TRUE(Contains(set, 1));
-  EXPECT_FALSE(Contains(set, 5));
-  EXPECT_FALSE(Contains(set, 0));
 }
 
 TEST(STLUtilTest, InsertOrAssign) {
@@ -785,7 +403,7 @@ TEST(STLUtilTest, TryEmplaceWrongHints) {
 }
 
 TEST(STLUtilTest, OptionalOrNullptr) {
-  Optional<float> optional;
+  absl::optional<float> optional;
   EXPECT_EQ(nullptr, base::OptionalOrNullptr(optional));
 
   optional = 0.1f;

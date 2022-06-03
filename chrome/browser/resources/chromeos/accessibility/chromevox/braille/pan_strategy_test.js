@@ -2,25 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-GEN_INCLUDE(['../testing/chromevox_unittest_base.js']);
-
 /**
  * Test fixture.
- * @constructor
- * @extends {ChromeVoxUnitTestBase}
  */
-function ChromeVoxPanStrategyUnitTest() {}
+ChromeVoxPanStrategyUnitTest = class extends testing.Test {};
 
-ChromeVoxPanStrategyUnitTest.prototype = {
-  __proto__: ChromeVoxUnitTestBase.prototype,
+/** @override */
+ChromeVoxPanStrategyUnitTest.prototype.extraLibraries = [
+  '../../common/testing/assert_additions.js',
+  '../testing/fake_dom.js',
+  'pan_strategy.js',
+];
 
-  /** @override */
-  closureModuleDeps: [
-    'PanStrategy',
-  ],
-
-
-};
 
 /**
  * Creates an array buffer based off of the passed in content.
@@ -28,16 +21,16 @@ ChromeVoxPanStrategyUnitTest.prototype = {
  * @param {string} content String representing the content.
  */
 function createArrayBuffer(content) {
-  var result = new ArrayBuffer(content.length);
-  var view = new Uint8Array(result);
-  for (var i = 0; i < content.length; ++i) {
+  const result = new ArrayBuffer(content.length);
+  const view = new Uint8Array(result);
+  for (let i = 0; i < content.length; ++i) {
     view[i] = content[i];
   }
   return result;
 }
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
-  var panner = new PanStrategy();
+  const panner = new PanStrategy();
   panner.setPanStrategy(false);
 
   panner.setDisplaySize(0, 0);
@@ -47,7 +40,7 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
   assertFalse(panner.next());
 
   // 25 cells with a blank cell in the first 10 characters.
-  var translatedContent = createArrayBuffer('01234567 9012345678901234');
+  const translatedContent = createArrayBuffer('01234567 9012345678901234');
   panner.setContent('unused', translatedContent, [], 0);
   assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
   assertFalse(panner.next());
@@ -90,11 +83,11 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedPanning', function() {
 });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningSingleLine', function() {
-  var panner = new PanStrategy();
+  const panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // 30 cells with blank cells at positions 8, 22 and 26.
-  var content = createArrayBuffer('11234567 9112345678911 345 789');
+  const content = createArrayBuffer('11234567 9112345678911 345 789');
   panner.setContent('a', content, [], 0);
   assertEqualsJSON({firstRow: 0, lastRow: 0}, panner.viewPort);
   assertFalse(panner.next());
@@ -148,11 +141,11 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningSingleLine', function() {
 });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
-  var panner = new PanStrategy();
+  const panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // 30 cells with blank cells at positions 8, 22 and 26.
-  var content = createArrayBuffer('11234567 9112345678911 345 789');
+  const content = createArrayBuffer('11234567 9112345678911 345 789');
   panner.setContent('a', content, [], 0);
 
   panner.setDisplaySize(2, 10);
@@ -183,40 +176,40 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedPanningMultiline', function() {
 });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'FixedSetContent', function() {
-  var panner = new PanStrategy();
+  const panner = new PanStrategy();
   panner.setPanStrategy(false);
 
-  var textContent = 'ABCDE FGHI';
-  var translatedContent = createArrayBuffer('11234 6789');
-  var mapping = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const textContent = 'ABCDE FGHI';
+  const translatedContent = createArrayBuffer('11234 6789');
+  const mapping = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   panner.setDisplaySize(1, 5);
   panner.setContent(textContent, translatedContent, mapping, 0);
-  var expectedBufferValue = translatedContent;
+  const expectedBufferValue = translatedContent;
   assertArrayBuffersEquals(expectedBufferValue, panner.fixedBuffer_);
-  var expectedMappingValue = mapping;
+  const expectedMappingValue = mapping;
   assertArraysEquals(expectedMappingValue, panner.brailleToText);
 });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
-  var panner = new PanStrategy();
+  const panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // When first word is bigger than column size. (Don't wrap word)
-  var textContent = 'ABCDE';
-  var translatedContent = createArrayBuffer('11234');
-  var mapping = [0, 1, 2, 3, 4];
+  let textContent = 'ABCDE';
+  let translatedContent = createArrayBuffer('11234');
+  let mapping = [0, 1, 2, 3, 4];
   panner.setDisplaySize(1, 4);
   panner.setContent(textContent, translatedContent, mapping, 0);
-  var expectedBufferValue = translatedContent;
+  let expectedBufferValue = translatedContent;
   assertArrayBuffersEquals(expectedBufferValue, panner.wrappedBuffer_);
-  var expectedMappingValue = mapping;
+  let expectedMappingValue = mapping;
   assertArraysEquals(expectedMappingValue, panner.brailleToText);
 
   // When first word is equal to column size.
   // (We expect space to be removed on next line)
   textContent = 'ABCDE FGHI';
   translatedContent = createArrayBuffer('11234 6789');
-  var mapping = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
+  mapping = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
   panner.setDisplaySize(1, 5);
   panner.setContent(textContent, translatedContent, mapping, 0);
   expectedBufferValue = createArrayBuffer('112346789');
@@ -254,12 +247,12 @@ TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedSetContent', function() {
 TEST_F(
     'ChromeVoxPanStrategyUnitTest', 'getCurrentTextViewportContents',
     function() {
-      var panner = new PanStrategy();
+      const panner = new PanStrategy();
       panner.setPanStrategy(true);
 
       // 30 cells with blank cells at positions 8, 22 and 26.
-      var content = createArrayBuffer('11234567 9112345678911 345 789');
-      var mapping = [
+      const content = createArrayBuffer('11234567 9112345678911 345 789');
+      const mapping = [
         0,  1,  2,  3,  4,  5,  6,  7,  8,  9,  10, 11, 12, 13, 14,
         15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29
       ];
@@ -280,11 +273,11 @@ TEST_F(
     });
 
 TEST_F('ChromeVoxPanStrategyUnitTest', 'WrappedUnwrappedCursors', function() {
-  var panner = new PanStrategy();
+  const panner = new PanStrategy();
   panner.setPanStrategy(true);
 
   // 30 cells with blank cells at positions 8, 22 and 26.
-  var content = createArrayBuffer('11234567 9112345678911 345 789');
+  const content = createArrayBuffer('11234567 9112345678911 345 789');
 
   panner.setCursor(1, 3);
   panner.setContent('a', content, [], 0);

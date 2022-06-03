@@ -105,8 +105,8 @@ void ReadaheadFileStreamReader::ReadFromSourceIfNeeded() {
       base::MakeRefCounted<net::IOBuffer>(kBufferSize);
   int result = source_->Read(
       buf.get(), kBufferSize,
-      base::Bind(&ReadaheadFileStreamReader::OnFinishReadFromSource,
-                 weak_factory_.GetWeakPtr(), base::RetainedRef(buf)));
+      base::BindOnce(&ReadaheadFileStreamReader::OnFinishReadFromSource,
+                     weak_factory_.GetWeakPtr(), base::RetainedRef(buf)));
 
   if (result != net::ERR_IO_PENDING)
     OnFinishReadFromSource(buf.get(), result);

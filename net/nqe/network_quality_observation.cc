@@ -3,7 +3,10 @@
 // found in the LICENSE file.
 
 #include "net/nqe/network_quality_observation.h"
+
+#include "base/check.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 
 namespace net {
 
@@ -15,13 +18,13 @@ Observation::Observation(int32_t value,
                          base::TimeTicks timestamp,
                          int32_t signal_strength,
                          NetworkQualityObservationSource source)
-    : Observation(value, timestamp, signal_strength, source, base::nullopt) {}
+    : Observation(value, timestamp, signal_strength, source, absl::nullopt) {}
 
 Observation::Observation(int32_t value,
                          base::TimeTicks timestamp,
                          int32_t signal_strength,
                          NetworkQualityObservationSource source,
-                         const base::Optional<IPHash>& host)
+                         const absl::optional<IPHash>& host)
     : value_(value),
       timestamp_(timestamp),
       signal_strength_(signal_strength),

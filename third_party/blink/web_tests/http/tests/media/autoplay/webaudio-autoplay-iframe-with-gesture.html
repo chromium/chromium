@@ -13,7 +13,33 @@ async_test(t => {
     assert_equals(e.data, 'running');
   }), { once: true });
 
+  const frame = document.getElementsByTagName('iframe')[0];
+
   // Navigate the iframe to a cross origin site.
-  document.getElementsByTagName('iframe')[0].src = 'http://localhost:8000/media/autoplay/resources/webaudio-iframe-with-gesture.html';
+  frame.src = 'http://localhost:8000/media/autoplay/resources/webaudio-iframe-with-gesture.html';
+
+  const frameRect = frame.getBoundingClientRect();
+  const xPos = frameRect.left + frameRect.width / 2;
+  const yPos = frameRect.top + frameRect.height / 2;
+  const leftButton = 0;
+
+  // TODO(crbug.com/1091299): gpuBenchmarking should deal with this
+  // synchronization.
+  // Wait for the iframe to load, then wait for a composite to happen before
+  // we dispatch an event. If we don't wait for these, the test is flaky and
+  // will fail if the pointerActionSequence() beats the compositor hit test
+  // data to the browser. See also https://crbug.com/872952 for analysis.
+  frame.onload = () =>
+    testRunner.updateAllLifecyclePhasesAndCompositeThen(()=>
+      chrome.gpuBenchmarking.pointerActionSequence([
+        {
+          source: 'mouse',
+          actions: [
+            { name: 'pointerMove', x: xPos, y: yPos },
+            { name: 'pointerDown', x: xPos, y: yPos, button: leftButton },
+            { name: 'pointerUp' }
+          ]
+        }
+      ]));
 });
 </script>

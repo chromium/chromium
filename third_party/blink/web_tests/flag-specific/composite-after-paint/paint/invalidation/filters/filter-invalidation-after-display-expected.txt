@@ -5,17 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (positioned) DIV id='box' class='green drop-shadowed box'",
-          "rect": [300, 8, 330, 330],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow HTML",
-          "rect": [300, 8, 200, 200],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [300, 8, 330, 330]
       ]
     }
   ]

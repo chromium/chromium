@@ -5,8 +5,9 @@
 #ifndef COMPONENTS_VIZ_SERVICE_FRAME_SINKS_GPU_VSYNC_BEGIN_FRAME_SOURCE_H_
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_GPU_VSYNC_BEGIN_FRAME_SOURCE_H_
 
-#include "base/macros.h"
+#include "components/viz/common/display/update_vsync_parameters_callback.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
+#include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/viz_service_export.h"
 
 namespace viz {
@@ -22,10 +23,20 @@ class VIZ_SERVICE_EXPORT GpuVSyncBeginFrameSource
       public ExternalBeginFrameSourceClient {
  public:
   GpuVSyncBeginFrameSource(uint32_t restart_id, OutputSurface* output_surface);
+
+  GpuVSyncBeginFrameSource(const GpuVSyncBeginFrameSource&) = delete;
+  GpuVSyncBeginFrameSource& operator=(const GpuVSyncBeginFrameSource&) = delete;
+
   ~GpuVSyncBeginFrameSource() override;
 
   // ExternalBeginFrameSource overrides.
   BeginFrameArgs GetMissedBeginFrameArgs(BeginFrameObserver* obs) override;
+  void SetPreferredInterval(base::TimeDelta interval) override;
+
+  // BeginFrameSource:
+  void SetDynamicBeginFrameDeadlineOffsetSource(
+      DynamicBeginFrameDeadlineOffsetSource*
+          dynamic_begin_frame_deadline_offset_source) override;
 
   // ExternalBeginFrameSourceClient implementation.
   void OnNeedsBeginFrames(bool needs_begin_frames) override;
@@ -34,9 +45,11 @@ class VIZ_SERVICE_EXPORT GpuVSyncBeginFrameSource
   void OnGpuVSync(base::TimeTicks vsync_time, base::TimeDelta vsync_interval);
 
   OutputSurface* const output_surface_;
-  uint64_t next_begin_frame_sequence_number_ = 1;
+  BeginFrameArgsGenerator begin_frame_args_generator_;
 
-  DISALLOW_COPY_AND_ASSIGN(GpuVSyncBeginFrameSource);
+  bool run_at_half_refresh_rate_ = false;
+  bool skip_next_vsync_ = false;
+  base::TimeDelta vsync_interval_ = BeginFrameArgs::DefaultInterval();
 };
 
 }  // namespace viz

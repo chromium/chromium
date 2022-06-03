@@ -26,19 +26,22 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_options.h"
 
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
 HTMLParserOptions::HTMLParserOptions(Document* document) {
-  if (!document)
+  auto* window = document ? document->domWindow() : nullptr;
+  if (!window)
     return;
 
-  if (document->GetFrame()) {
-    script_enabled = document->CanExecuteScripts(kNotAboutToExecuteScript);
-    priority_hints_origin_trial_enabled =
-        RuntimeEnabledFeatures::PriorityHintsEnabled(document);
-  }
+  scripting_flag = (document->GetSettings()->GetParserScriptingFlagPolicy() ==
+                    ParserScriptingFlagPolicy::kEnabled) ||
+                   window->CanExecuteScripts(kNotAboutToExecuteScript);
+  priority_hints_origin_trial_enabled =
+      RuntimeEnabledFeatures::PriorityHintsEnabled(window);
 }
 
 }  // namespace blink

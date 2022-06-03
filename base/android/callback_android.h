@@ -11,6 +11,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/base_export.h"
+#include "base/time/time.h"
 
 // Provides helper utility methods that run the given callback with the
 // specified argument.
@@ -25,6 +26,9 @@ void BASE_EXPORT RunBooleanCallbackAndroid(const JavaRef<jobject>& callback,
 
 void BASE_EXPORT RunIntCallbackAndroid(const JavaRef<jobject>& callback,
                                        int arg);
+
+void BASE_EXPORT RunTimeCallbackAndroid(const JavaRef<jobject>& callback,
+                                        base::Time time);
 
 void BASE_EXPORT RunStringCallbackAndroid(const JavaRef<jobject>& callback,
                                           const std::string& arg);

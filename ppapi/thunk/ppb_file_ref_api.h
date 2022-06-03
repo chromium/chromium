@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <vector>
-
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/ppb_file_ref.h"
 #include "ppapi/shared_impl/file_ref_create_info.h"

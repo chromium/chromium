@@ -97,7 +97,7 @@ class SVGParsingError {
     // for it, the locus will be disabled (set to kNoLocus). This means
     // that very long values will be output in their entirety. That should
     // however be rather uncommon.
-    return clampTo<unsigned>(locus, 0, kNoLocus);
+    return ClampTo<unsigned>(locus, 0, kNoLocus);
   }
 
   unsigned status_ : 8;

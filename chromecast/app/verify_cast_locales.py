@@ -5,6 +5,8 @@
 
 """Ensures that Chromecast developers are notified of locale changes."""
 
+from __future__ import print_function
+
 import argparse
 import sys
 
@@ -45,13 +47,13 @@ def main():
   removed_locales = set(CAST_LOCALES) - set(args.locales)
   added_locales = set(args.locales) - set(CAST_LOCALES)
 
-  print 'CAST_LOCALES no longer matches the locales list from GN!'
+  print('CAST_LOCALES no longer matches the locales list from GN!')
   if removed_locales:
-    print 'These locales have been removed: {}'.format(list(removed_locales))
+    print('These locales have been removed: {}'.format(list(removed_locales)))
   if added_locales:
-    print 'These locales have been added: {}'.format(list(added_locales))
-  print ('Please update CAST_LOCALES in {file} and add a reviewer from '
-         '//chromecast/OWNERS to your CL. ').format(file=__file__)
+    print('These locales have been added: {}'.format(list(added_locales)))
+  print(('Please update CAST_LOCALES in {file} and add a reviewer from '
+         '//chromecast/OWNERS to your CL. ').format(file=__file__))
   return FAILURE_RETURN_CODE
 
 

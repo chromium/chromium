@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "cc/paint/paint_image_generator.h"
+#include "third_party/skia/include/core/SkYUVAPixmaps.h"
 
 namespace cc {
 
@@ -23,7 +24,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   // YUV decoding mode constructor.
   explicit FakePaintImageGenerator(
       const SkImageInfo& info,
-      const SkYUVASizeInfo& yuva_size_info,
+      const SkYUVAPixmapInfo& yuva_pixmap_info,
       std::vector<FrameMetadata> frames = {FrameMetadata()},
       bool allocate_discardable_memory = true,
       std::vector<SkISize> supported_sizes = {});
@@ -40,14 +41,12 @@ class FakePaintImageGenerator : public PaintImageGenerator {
                  size_t frame_index,
                  PaintImage::GeneratorClientId client_id,
                  uint32_t lazy_pixel_ref) override;
-  bool QueryYUVA8(SkYUVASizeInfo* info,
-                  SkYUVAIndex indices[],
-                  SkYUVColorSpace* color_space) const override;
-  bool GetYUVA8Planes(const SkYUVASizeInfo& info,
-                      const SkYUVAIndex indices[],
-                      void* planes[4],
-                      size_t frame_index,
-                      uint32_t lazy_pixel_ref) override;
+  bool QueryYUVA(
+      const SkYUVAPixmapInfo::SupportedDataTypes& supported_data_types,
+      SkYUVAPixmapInfo* yuva_pixmap_info) const override;
+  bool GetYUVAPlanes(const SkYUVAPixmaps& pixmaps,
+                     size_t frame_index,
+                     uint32_t lazy_pixel_ref) override;
   SkISize GetSupportedDecodeSize(const SkISize& requested_size) const override;
   const ImageHeaderMetadata* GetMetadataForDecodeAcceleration() const override;
 
@@ -71,7 +70,7 @@ class FakePaintImageGenerator : public PaintImageGenerator {
   std::vector<SkISize> supported_sizes_;
   std::vector<SkImageInfo> decode_infos_;
   bool is_yuv_ = false;
-  SkYUVASizeInfo yuva_size_info_;
+  SkYUVAPixmapInfo yuva_pixmap_info_;
   // TODO(skbug.com/8564): After Skia supports rendering from software YUV
   // planes and after Chrome implements it, we should no longer expect RGB
   // fallback.

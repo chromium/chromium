@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_enumeration.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
 #include "third_party/blink/renderer/core/svg/svg_unit_types.h"
 #include "third_party/blink/renderer/core/svg/svg_uri_reference.h"
@@ -32,6 +31,8 @@
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedTransformList;
 
 struct GradientAttributes;
 
@@ -45,7 +46,6 @@ DECLARE_SVG_ENUM_MAP(SVGSpreadMethodType);
 
 class SVGGradientElement : public SVGElement, public SVGURIReference {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGGradientElement);
 
  public:
   SVGAnimatedTransformList* gradientTransform() const {
@@ -64,14 +64,14 @@ class SVGGradientElement : public SVGElement, public SVGURIReference {
   const SVGGradientElement* ReferencedElement() const;
   void CollectCommonAttributes(GradientAttributes&) const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   SVGGradientElement(const QualifiedName&, Document&);
 
   using VisitedSet = HeapHashSet<Member<const SVGGradientElement>>;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
  private:
   void CollectStyleForPresentationAttribute(

@@ -11,6 +11,12 @@ dependencies, i.e. it doesn't make sure generated headers exist.  It also
 requires goma to be disabled.  Suggested workflow: Build the target you want
 to convert locally with goma to create generated headers, then disable goma,
 re-run gn, and then run this script.
+
+Since Chrome's clang disables the rewriter, to run this you will need to
+build ToT clang with `-DCLANG_ENABLE_ARCMT` and (temporarily) add the following
+to your Chromium build args:
+clang_base_path = /path/to/clang
+clang_use_chrome_plugins = false
 """
 
 from __future__ import print_function

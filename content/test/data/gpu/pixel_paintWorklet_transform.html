@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+
+<!-- READ BEFORE UPDATING:
+If this test is updated make sure to increment the "revision" value of the
+associated test in content/test/gpu/gpu_tests/pixel_test_pages.py. This will ensure
+that the baseline images are regenerated on the next run.
+-->
+
+<html>
+<head>
+<meta name="viewport" content="initial-scale=1">
+<title>PaintWorklet with basic draw and transform operations</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+  width:300px;
+  height:300px;
+  background-image:paint(basic);
+}
+</style>
+
+<script id="code" type="text/worklet">
+registerPaint('basic', class {
+    paint(ctx, geom) {
+        ctx.fillStyle = 'green';
+        ctx.transform(1, 0.5, 0, 1, 20, 20);
+        ctx.fillRect(0, 0, 50, 50);
+
+        ctx.resetTransform();
+
+        ctx.fillStyle = 'blue';
+        ctx.translate(150, 60);
+        ctx.rotate(60 * Math.PI / 180);
+        ctx.scale(1.5, 1);
+        ctx.fillRect(0, 0, 50, 50);
+    }
+});
+</script>
+
+<script>
+var g_swapsBeforeAck = 15;
+
+function main()
+{
+  var code = document.getElementById('code').textContent;
+  var blob = new Blob([code], {type: 'text/javascript'});
+  CSS.paintWorklet.addModule(URL.createObjectURL(blob)).then(function() {
+  });
+  waitForFinish();
+}
+
+function waitForFinish()
+{
+  // This tests need paint worklet implemented.
+  if (g_swapsBeforeAck == 0 || typeof CSS.paintWorklet === 'undefined') {
+    domAutomationController.send("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    document.getElementById('container').style.zIndex = g_swapsBeforeAck + 1;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+</script>
+</head>
+<body onload="main()">
+<div style="position:relative; width:300px; height:300px; background-color:white">
+</div>
+<div id="container" style="position:absolute; top:0px; left:0px">
+  <div id="target" class="nomargin"></div>
+</div>
+</body>
+</html>

@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 using ::testing::_;
@@ -79,6 +80,11 @@ IN_PROC_BROWSER_TEST_F(TryChromeDialogBrowserTest, ToastCrasher) {}
 // functionality.
 class TryChromeDialogBrowserTestBase : public InProcessBrowserTest {
  public:
+  TryChromeDialogBrowserTestBase(const TryChromeDialogBrowserTestBase&) =
+      delete;
+  TryChromeDialogBrowserTestBase& operator=(
+      const TryChromeDialogBrowserTestBase&) = delete;
+
   // Breaks ShowDialogSync() out of its modal run loop.
   void QuitModalLoop() {
     if (quit_closure_)
@@ -155,9 +161,7 @@ class TryChromeDialogBrowserTestBase : public InProcessBrowserTest {
   const int group_;
   ::testing::NiceMock<MockDelegate> delegate_;
   std::unique_ptr<TryChromeDialog> dialog_;
-  base::Closure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TryChromeDialogBrowserTestBase);
+  base::RepeatingClosure quit_closure_;
 };
 
 // Showing the dialog then closing it via WM_CLOSE should not launch the
@@ -286,6 +290,10 @@ IN_PROC_BROWSER_TEST_F(TryChromeDialogBrowserTestBase, EarlyRendezvous) {
 class TryChromeDialogTest
     : public SupportsTestDialog<TryChromeDialogBrowserTestBase>,
       public ::testing::WithParamInterface<int> {
+ public:
+  TryChromeDialogTest(const TryChromeDialogTest&) = delete;
+  TryChromeDialogTest& operator=(const TryChromeDialogTest&) = delete;
+
  protected:
   TryChromeDialogTest()
       : SupportsTestDialog<TryChromeDialogBrowserTestBase>(GetParam()) {}
@@ -296,9 +304,6 @@ class TryChromeDialogTest
     // This class tests a non-dialog widget with the following name.
     return "TryChromeDialog";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TryChromeDialogTest);
 };
 
 IN_PROC_BROWSER_TEST_P(TryChromeDialogTest, InvokeUi_default) {

@@ -34,28 +34,33 @@ using ::testing::Return;
 
 namespace {
 
-const char kEmptyText[] = "";
-const char kText[] = "Some text to copy to phone device.";
+const char16_t kEmptyText[] = u"";
+const char16_t kText[] = u"Some text to copy to phone device.";
 
 class MockSharingDeviceRegistration : public SharingDeviceRegistration {
  public:
   MockSharingDeviceRegistration()
-      : SharingDeviceRegistration(/* pref_service_= */ nullptr,
-                                  /* sharing_sync_preference_= */ nullptr,
-                                  /* instance_id_driver_= */ nullptr,
-                                  /* vapid_key_manager_= */ nullptr) {}
+      : SharingDeviceRegistration(/*pref_service=*/nullptr,
+                                  /*sharing_sync_preference=*/nullptr,
+                                  /*vapid_key_manager=*/nullptr,
+                                  /*instance_id_driver=*/nullptr,
+                                  /*sync_service=*/nullptr) {}
+
+  MockSharingDeviceRegistration(const MockSharingDeviceRegistration&) = delete;
+  MockSharingDeviceRegistration& operator=(
+      const MockSharingDeviceRegistration&) = delete;
 
   ~MockSharingDeviceRegistration() override = default;
 
   MOCK_CONST_METHOD0(IsSharedClipboardSupported, bool());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockSharingDeviceRegistration);
 };
 
 class SharedClipboardUtilsTest : public testing::Test {
  public:
   SharedClipboardUtilsTest() = default;
+
+  SharedClipboardUtilsTest(const SharedClipboardUtilsTest&) = delete;
+  SharedClipboardUtilsTest& operator=(const SharedClipboardUtilsTest&) = delete;
 
   ~SharedClipboardUtilsTest() override = default;
 
@@ -75,46 +80,40 @@ class SharedClipboardUtilsTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfile profile_;
   bool create_service_ = true;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedClipboardUtilsTest);
 };
 
 }  // namespace
 
 TEST_F(SharedClipboardUtilsTest, UIFlagDisabled_DoNotShowMenu) {
   scoped_feature_list_.InitAndDisableFeature(kSharedClipboardUI);
-  EXPECT_FALSE(
-      ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
 }
 
 TEST_F(SharedClipboardUtilsTest, IncognitoProfile_DoNotShowMenu) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  EXPECT_FALSE(ShouldOfferSharedClipboard(profile_.GetOffTheRecordProfile(),
-                                          base::ASCIIToUTF16(kText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(
+      profile_.GetPrimaryOTRProfile(/*create_if_needed=*/true), kText));
 }
 
 TEST_F(SharedClipboardUtilsTest, EmptyClipboardProtocol_DoNotShowMenu) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  EXPECT_FALSE(
-      ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kEmptyText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kEmptyText));
 }
 
 TEST_F(SharedClipboardUtilsTest, ClipboardProtocol_ShowMenu) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
-  EXPECT_TRUE(ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kText)));
+  EXPECT_TRUE(ShouldOfferSharedClipboard(&profile_, kText));
 }
 
 TEST_F(SharedClipboardUtilsTest, NoSharingService_DoNotShowMenu) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
   create_service_ = false;
-  EXPECT_FALSE(
-      ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
 }
 
 TEST_F(SharedClipboardUtilsTest, EnterprisePolicy_Disabled) {
   scoped_feature_list_.InitAndEnableFeature(kSharedClipboardUI);
   // Set the enterprise policy to false:
   profile_.GetPrefs()->SetBoolean(prefs::kSharedClipboardEnabled, false);
-  EXPECT_FALSE(
-      ShouldOfferSharedClipboard(&profile_, base::ASCIIToUTF16(kText)));
+  EXPECT_FALSE(ShouldOfferSharedClipboard(&profile_, kText));
 }

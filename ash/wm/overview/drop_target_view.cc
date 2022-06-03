@@ -8,7 +8,9 @@
 
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/wm/overview/overview_constants.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -17,10 +19,9 @@ namespace ash {
 namespace {
 
 constexpr SkColor kDropTargetBackgroundColor =
-    SkColorSetARGB(0xFF, 0xFF, 0XFF, 0XFF);
+    SkColorSetARGB(0x24, 0xFF, 0XFF, 0XFF);
 constexpr SkColor kDropTargetBorderColor =
     SkColorSetARGB(0x4C, 0xE8, 0XEA, 0XED);
-constexpr float kDropTargetBackgroundOpacity = 0.14f;
 constexpr int kDropTargetBorderThickness = 2;
 constexpr int kDropTargetMiddleSize = 96;
 
@@ -36,34 +37,24 @@ constexpr int kPlusIconLargestSize = 72;
 class DropTargetView::PlusIconView : public views::ImageView {
  public:
   PlusIconView() {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    set_can_process_events_within_subtree(false);
+    SetCanProcessEventsWithinSubtree(false);
     SetVerticalAlignment(views::ImageView::Alignment::kCenter);
     SetHorizontalAlignment(views::ImageView::Alignment::kCenter);
   }
+  PlusIconView(const PlusIconView&) = delete;
+  PlusIconView& operator=(const PlusIconView&) = delete;
   ~PlusIconView() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlusIconView);
 };
 
 DropTargetView::DropTargetView(bool has_plus_icon) {
-  background_view_ = new views::View();
-  background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  background_view_->layer()->SetColor(kDropTargetBackgroundColor);
-  background_view_->layer()->SetOpacity(kDropTargetBackgroundOpacity);
-  const int corner_radius =
-      views::LayoutProvider::Get()->GetCornerRadiusMetric(views::EMPHASIS_LOW);
-  background_view_->layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(corner_radius));
-  background_view_->layer()->SetIsFastRoundedCorner(true);
-  AddChildView(background_view_);
+  const int corner_radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
+      views::Emphasis::kLow);
+  background_view_ = AddChildView(std::make_unique<views::View>());
+  background_view_->SetBackground(views::CreateRoundedRectBackground(
+      kDropTargetBackgroundColor, corner_radius));
 
-  if (has_plus_icon) {
-    plus_icon_ = new PlusIconView();
-    AddChildView(plus_icon_);
-  }
+  if (has_plus_icon)
+    plus_icon_ = AddChildView(std::make_unique<PlusIconView>());
 
   SetBorder(views::CreateRoundedRectBorder(
       kDropTargetBorderThickness, corner_radius, kDropTargetBorderColor));
@@ -99,5 +90,8 @@ void DropTargetView::Layout() {
     plus_icon_->SetBoundsRect(icon_bounds);
   }
 }
+
+BEGIN_METADATA(DropTargetView, views::View)
+END_METADATA
 
 }  // namespace ash

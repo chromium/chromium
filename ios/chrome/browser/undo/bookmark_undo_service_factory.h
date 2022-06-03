@@ -12,20 +12,22 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class BookmarkUndoService;
-
-namespace ios {
-
 class ChromeBrowserState;
 
+namespace ios {
 // Singleton that owns all FaviconServices and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
  public:
   static BookmarkUndoService* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
   static BookmarkUndoService* GetForBrowserStateIfExists(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
   static BookmarkUndoServiceFactory* GetInstance();
+
+  BookmarkUndoServiceFactory(const BookmarkUndoServiceFactory&) = delete;
+  BookmarkUndoServiceFactory& operator=(const BookmarkUndoServiceFactory&) =
+      delete;
 
  private:
   friend class base::NoDestructor<BookmarkUndoServiceFactory>;
@@ -36,8 +38,6 @@ class BookmarkUndoServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory implementation.
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BookmarkUndoServiceFactory);
 };
 
 }  // namespace ios

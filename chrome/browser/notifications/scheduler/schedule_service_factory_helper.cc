@@ -7,8 +7,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/sequenced_task_runner.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/time/default_clock.h"
 #include "chrome/browser/notifications/scheduler/internal/background_task_coordinator.h"
 #include "chrome/browser/notifications/scheduler/internal/display_decider.h"
@@ -41,7 +42,7 @@ const base::FilePath::CharType kNotificationDBName[] =
     FILE_PATH_LITERAL("NotificationDB");
 }  // namespace
 
-KeyedService* CreateNotificationScheduleService(
+std::unique_ptr<KeyedService> CreateNotificationScheduleService(
     std::unique_ptr<NotificationSchedulerClientRegistrar> client_registrar,
     std::unique_ptr<NotificationBackgroundTaskScheduler>
         background_task_scheduler,
@@ -51,11 +52,11 @@ KeyedService* CreateNotificationScheduleService(
     bool off_the_record) {
   if (!base::FeatureList::IsEnabled(features::kNotificationScheduleService) ||
       off_the_record)
-    return static_cast<KeyedService*>(new NoopNotificationScheduleService());
+    return std::make_unique<NoopNotificationScheduleService>();
 
   auto config = SchedulerConfig::Create();
-  auto task_runner = base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT});
+  auto task_runner = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
   client_registrar->RegisterClient(SchedulerClientType::kWebUI,
                                    std::make_unique<WebUIClient>());
 
@@ -108,8 +109,8 @@ KeyedService* CreateNotificationScheduleService(
   auto scheduler = NotificationScheduler::Create(std::move(context));
   auto init_aware_scheduler =
       std::make_unique<InitAwareNotificationScheduler>(std::move(scheduler));
-  return static_cast<KeyedService*>(
-      new NotificationScheduleServiceImpl(std::move(init_aware_scheduler)));
+  return std::make_unique<NotificationScheduleServiceImpl>(
+      (std::move(init_aware_scheduler)));
 }
 
 }  // namespace notifications

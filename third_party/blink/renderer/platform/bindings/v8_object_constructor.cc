@@ -24,7 +24,7 @@
 
 #include "third_party/blink/renderer/platform/bindings/v8_object_constructor.h"
 
-#include "third_party/blink/renderer/platform/bindings/origin_trial_features.h"
+#include "components/crash/core/common/crash_key.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_context_data.h"
@@ -45,8 +45,8 @@ v8::MaybeLocal<v8::Object> V8ObjectConstructor::NewInstance(
   v8::MicrotasksScope microtasks_scope(
       isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   // Construct without side effect only in ConstructorMode::kWrapExistingObject
-  // cases. This allows whitelisted methods to correctly set return values
-  // without invoking Blink's internal constructors.
+  // cases. Allowed methods can correctly set return values without invoking
+  // Blink's internal constructors.
   v8::MaybeLocal<v8::Object> result = function->NewInstanceWithSideEffectType(
       isolate->GetCurrentContext(), argc, argv,
       v8::SideEffectType::kHasNoSideEffect);
@@ -73,16 +73,19 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
     v8::Isolate* isolate,
     v8::Local<v8::Function> parent_interface,
     CreationMode creation_mode) {
-  // We shouldn't reach this point for the types that are implemented in v8 such
-  // as typed arrays and hence don't have DomTemplateFunction.
-  DCHECK(type->dom_template_function);
   v8::Local<v8::FunctionTemplate> interface_template =
-      type->DomTemplate(isolate, world);
+      type->GetV8ClassTemplate(isolate, world).As<v8::FunctionTemplate>();
   // Getting the function might fail if we're running out of stack or memory.
   v8::Local<v8::Function> interface_object;
   bool get_interface_object =
       interface_template->GetFunction(context).ToLocal(&interface_object);
-  CHECK(get_interface_object);
+  if (UNLIKELY(!get_interface_object)) {
+    // For investigation of crbug.com/1247628
+    static crash_reporter::CrashKeyString<64> crash_key(
+        "blink__create_interface_object");
+    crash_key.Set(type->interface_name);
+    CHECK(get_interface_object);
+  }
 
   if (type->parent_class) {
     DCHECK(!parent_interface.IsEmpty());
@@ -108,8 +111,6 @@ v8::Local<v8::Function> V8ObjectConstructor::CreateInterfaceObject(
     type->InstallConditionalFeatures(context, world, v8::Local<v8::Object>(),
                                      prototype_object, interface_object,
                                      interface_template);
-    InstallOriginTrialFeatures(type, ScriptState::From(context),
-                               prototype_object, interface_object);
   }
 
   return interface_object;

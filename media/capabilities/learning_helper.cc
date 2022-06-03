@@ -5,6 +5,7 @@
 #include "media/capabilities/learning_helper.h"
 
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "media/learning/common/feature_library.h"
 #include "media/learning/common/learning_task.h"
 
@@ -50,9 +51,9 @@ LearningHelper::LearningHelper(FeatureProviderFactoryCB feature_factory) {
   // it's likely that the session will live on the main thread, and handle
   // delegation of LearningTaskControllers to other threads.  However, for now,
   // do it here.
-  learning_session_ =
-      std::make_unique<LearningSessionImpl>(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::TaskPriority::BEST_EFFORT,
+  learning_session_ = std::make_unique<LearningSessionImpl>(
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
 
   // Register a few learning tasks.

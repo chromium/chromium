@@ -1,13 +1,13 @@
-document
-++article
-++++group LocalizedControlType='footer'
-++++++group IsControlElement=false
-++++++++description Name='footer inside article.'
-++group
-++++group LocalizedControlType='footer'
-++++++group IsControlElement=false
-++++++++description Name='footer inside section.'
-++main
-++++group LocalizedControlType='footer'
-++++++group IsControlElement=false
-++++++++description Name='footer inside main.'
+Document
+++Group
+++++Group LocalizedControlType='footer'
+++++++Group IsControlElement=false
+++++++++Text Name='footer inside article.'
+++Group
+++++Group LocalizedControlType='footer'
+++++++Group IsControlElement=false
+++++++++Text Name='footer inside section.'
+++Group
+++++Group LocalizedControlType='footer'
+++++++Group IsControlElement=false
+++++++++Text Name='footer inside main.'

@@ -16,7 +16,8 @@ class BrowsingDataCounter;
 
 class SyncTracker : public syncer::SyncServiceObserver {
  public:
-  using SyncPredicate = base::Callback<bool(const syncer::SyncService*)>;
+  using SyncPredicate =
+      base::RepeatingCallback<bool(const syncer::SyncService*)>;
 
   SyncTracker(BrowsingDataCounter* counter, syncer::SyncService* sync_service);
   ~SyncTracker() override;
@@ -28,6 +29,7 @@ class SyncTracker : public syncer::SyncServiceObserver {
  private:
   // SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync) override;
+  void OnSyncShutdown(syncer::SyncService* sync) override;
 
   BrowsingDataCounter* counter_;
   syncer::SyncService* sync_service_;

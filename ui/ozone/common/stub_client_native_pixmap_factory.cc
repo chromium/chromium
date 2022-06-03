@@ -4,7 +4,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "ui/gfx/client_native_pixmap_factory.h"
 #include "ui/gfx/native_pixmap_handle.h"
 
@@ -15,6 +15,11 @@ namespace {
 class StubClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
  public:
   StubClientNativePixmapFactory() {}
+
+  StubClientNativePixmapFactory(const StubClientNativePixmapFactory&) = delete;
+  StubClientNativePixmapFactory& operator=(
+      const StubClientNativePixmapFactory&) = delete;
+
   ~StubClientNativePixmapFactory() override {}
 
   // ClientNativePixmapFactory:
@@ -26,9 +31,6 @@ class StubClientNativePixmapFactory : public gfx::ClientNativePixmapFactory {
     NOTREACHED();
     return nullptr;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(StubClientNativePixmapFactory);
 };
 
 }  // namespace

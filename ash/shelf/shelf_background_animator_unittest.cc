@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/animation/animation_change_type.h"
-#include "ash/public/cpp/ash_switches.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/shelf.h"
@@ -18,7 +17,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -38,6 +36,11 @@ const SkColor kDummyColor = SK_ColorBLUE;
 class TestShelfBackgroundObserver : public ShelfBackgroundAnimatorObserver {
  public:
   TestShelfBackgroundObserver() = default;
+
+  TestShelfBackgroundObserver(const TestShelfBackgroundObserver&) = delete;
+  TestShelfBackgroundObserver& operator=(const TestShelfBackgroundObserver&) =
+      delete;
+
   ~TestShelfBackgroundObserver() override = default;
 
   SkColor background_color() const { return background_color_; }
@@ -56,8 +59,6 @@ class TestShelfBackgroundObserver : public ShelfBackgroundAnimatorObserver {
   int background_color_ = SK_ColorTRANSPARENT;
 
   base::OnceClosure animation_complete_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestShelfBackgroundObserver);
 };
 
 int TestShelfBackgroundObserver::GetBackgroundAlpha() const {
@@ -86,6 +87,11 @@ class ShelfBackgroundAnimatorTestApi {
   explicit ShelfBackgroundAnimatorTestApi(ShelfBackgroundAnimator* animator)
       : animator_(animator) {}
 
+  ShelfBackgroundAnimatorTestApi(const ShelfBackgroundAnimatorTestApi&) =
+      delete;
+  ShelfBackgroundAnimatorTestApi& operator=(
+      const ShelfBackgroundAnimatorTestApi&) = delete;
+
   ~ShelfBackgroundAnimatorTestApi() = default;
 
   ShelfBackgroundType previous_background_type() const {
@@ -101,13 +107,16 @@ class ShelfBackgroundAnimatorTestApi {
  private:
   // The instance to provide internal access to.
   ShelfBackgroundAnimator* animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfBackgroundAnimatorTestApi);
 };
 
 class ShelfBackgroundAnimatorTest : public AshTestBase {
  public:
   ShelfBackgroundAnimatorTest() = default;
+
+  ShelfBackgroundAnimatorTest(const ShelfBackgroundAnimatorTest&) = delete;
+  ShelfBackgroundAnimatorTest& operator=(const ShelfBackgroundAnimatorTest&) =
+      delete;
+
   ~ShelfBackgroundAnimatorTest() override = default;
 
   // testing::Test:
@@ -132,9 +141,6 @@ class ShelfBackgroundAnimatorTest : public AshTestBase {
 
   // Provides internal access to |animator_|.
   std::unique_ptr<ShelfBackgroundAnimatorTestApi> test_api_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfBackgroundAnimatorTest);
 };
 
 void ShelfBackgroundAnimatorTest::SetUp() {
@@ -144,7 +150,7 @@ void ShelfBackgroundAnimatorTest::SetUp() {
       GetPrimaryShelf()->shelf_widget()->background_animator_for_testing();
   animator_->AddObserver(&observer_);
 
-  test_api_.reset(new ShelfBackgroundAnimatorTestApi(animator_));
+  test_api_ = std::make_unique<ShelfBackgroundAnimatorTestApi>(animator_);
 }
 
 void ShelfBackgroundAnimatorTest::PaintBackground(
@@ -313,6 +319,12 @@ TEST_F(ShelfBackgroundAnimatorTest,
 class ShelfBackgroundTargetColorTest : public NoSessionAshTestBase {
  public:
   ShelfBackgroundTargetColorTest() = default;
+
+  ShelfBackgroundTargetColorTest(const ShelfBackgroundTargetColorTest&) =
+      delete;
+  ShelfBackgroundTargetColorTest& operator=(
+      const ShelfBackgroundTargetColorTest&) = delete;
+
   ~ShelfBackgroundTargetColorTest() override = default;
 
  protected:
@@ -320,9 +332,6 @@ class ShelfBackgroundTargetColorTest : public NoSessionAshTestBase {
   void NotifySessionStateChanged(session_manager::SessionState state) {
     GetSessionControllerClient()->SetSessionState(state);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShelfBackgroundTargetColorTest);
 };
 
 // Verify the target color of the shelf background is updated based on session

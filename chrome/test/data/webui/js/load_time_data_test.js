@@ -7,25 +7,14 @@ import 'chrome://resources/js/load_time_data.m.js';
 suite('LoadTimeDataModuleTest', function() {
   const loadTimeData = window.loadTimeData;
 
-  test('sanitizeInnerHtml', function() {
-    // A few tests to see that that data is being passed through. The
-    // sanitizeInnerHtml() function calls into parseHtmlSubset() which has its
-    // own tests (that don't need to be repeated here).
-    assertEquals(
-        '<a href="chrome://foo"></a>',
-        loadTimeData.sanitizeInnerHtml('<a href="chrome://foo"></a>'));
-    assertThrows(() => {
-      loadTimeData.sanitizeInnerHtml('<div></div>');
-    }, 'DIV is not supported');
-    assertEquals(
-        '<div></div>',
-        loadTimeData.sanitizeInnerHtml('<div></div>', {tags: ['div']}));
+  /** @override */
+  setup(function() {
+    loadTimeData.resetForTesting();
   });
 
   test('getStringPieces', function() {
-    const assertSubstitutedPieces = function(expected, var_args) {
-      var var_args = Array.prototype.slice.call(arguments, 1);
-      var pieces =
+    const assertSubstitutedPieces = function(expected, ...var_args) {
+      const pieces =
           loadTimeData.getSubstitutedStringPieces.apply(loadTimeData, var_args);
       assertDeepEquals(expected, pieces);
 
@@ -85,15 +74,17 @@ suite('LoadTimeDataModuleTest', function() {
   });
 
   test('unescapedDollarSign', function() {
+    const error = 'Unexpected condition on ' + window.location.href +
+        ': Unescaped $ found in localized string.';
     /** @param {string} label */
     const assertSubstitutionThrows = function(label) {
       assertThrows(() => {
         loadTimeData.getSubstitutedStringPieces(label);
-      }, 'Assertion failed: Unescaped $ found in localized string.');
+      }, error);
 
       assertThrows(() => {
         loadTimeData.substituteString(label);
-      }, 'Assertion failed: Unescaped $ found in localized string.');
+      }, error);
     };
 
     assertSubstitutionThrows('$');
@@ -101,5 +92,27 @@ suite('LoadTimeDataModuleTest', function() {
     assertSubstitutionThrows('$$$');
     assertSubstitutionThrows('a$');
     assertSubstitutionThrows('a$\n');
+  });
+
+  test('isInitialized_and_resetForTesting', function() {
+    // Should start as un-initialized.
+    assertFalse(loadTimeData.isInitialized());
+
+    // Setting the data should change the state to initialized.
+    loadTimeData.data = {TEST_KEY: 'test value'};
+    assertTrue(loadTimeData.isInitialized());
+
+    // resetForTesting() should restore the un-initialized state.
+    loadTimeData.resetForTesting();
+    assertFalse(loadTimeData.isInitialized());
+
+    // resetForTesting() to empty state which is considered initialized.
+    loadTimeData.resetForTesting({});
+    assertTrue(loadTimeData.isInitialized());
+
+    // resetForTesting() to a specific state which is considered initialized.
+    loadTimeData.resetForTesting({SOMETHING: 'ANYTHING'});
+    assertTrue(loadTimeData.isInitialized());
+    assertTrue(loadTimeData.valueExists('SOMETHING'));
   });
 });

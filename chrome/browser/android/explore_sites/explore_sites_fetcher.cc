@@ -15,27 +15,25 @@
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/android/chrome_feature_list.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
 #include "chrome/browser/android/explore_sites/explore_sites_bridge.h"
 #include "chrome/browser/android/explore_sites/explore_sites_feature.h"
 #include "chrome/browser/android/explore_sites/explore_sites_types.h"
 #include "chrome/browser/android/explore_sites/url_util.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
-#include "content/public/common/service_manager_connection.h"
 #include "google_apis/google_api_keys.h"
 #include "net/base/load_flags.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_status_code.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_fetcher.h"
-#include "net/url_request/url_request_status.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace explore_sites {
@@ -64,6 +62,8 @@ constexpr net::NetworkTrafficAnnotationTag traffic_annotation =
           }
           policy {
             cookies_allowed: NO
+            policy_exception_justification:
+              "TODO(crbug.com/1231780): Add this field."
           })");
 
 }  // namespace
@@ -90,7 +90,7 @@ const net::BackoffEntry::Policy
         -1,          // Don't discard entry even if unused.
         false        // Don't use initial delay unless the last was an error.
 };
-const int ExploreSitesFetcher::kMaxFailureCountForBackgroundFetch = 7;
+const int ExploreSitesFetcher::kMaxFailureCountForBackgroundFetch = 2;
 
 // static
 std::unique_ptr<ExploreSitesFetcher> ExploreSitesFetcher::CreateForGetCatalog(
@@ -123,7 +123,8 @@ ExploreSitesFetcher::ExploreSitesFetcher(
       callback_(std::move(callback)),
       url_loader_factory_(loader_factory) {
   base::Version version = version_info::GetVersion();
-  std::string channel_name = chrome::GetChannelName();
+  std::string channel_name =
+      chrome::GetChannelName(chrome::WithExtendedStable(true));
   client_version_ = base::StringPrintf("%d.%d.%d.%s.chrome",
                                        version.components()[0],  // Major
                                        version.components()[2],  // Build

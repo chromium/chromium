@@ -1,20 +1,14 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #ifndef COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_H_
 #define COMPONENTS_MEDIA_MESSAGE_CENTER_MEDIA_NOTIFICATION_BACKGROUND_H_
 
-#include <vector>
-
-#include "base/component_export.h"
-#include "base/optional.h"
-#include "ui/gfx/image/image_skia.h"
 #include "ui/views/background.h"
 
 namespace gfx {
-class Rect;
-class Size;
+class ImageSkia;
 }  // namespace gfx
 
 namespace views {
@@ -23,58 +17,25 @@ class View;
 
 namespace media_message_center {
 
-// MediaNotificationBackground draws a custom background for the media
-// notification showing the artwork clipped to a rounded rectangle faded into a
-// background color.
-class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationBackground
-    : public views::Background {
+// Interface for media notification view's background.
+class MediaNotificationBackground : public views::Background {
  public:
-  MediaNotificationBackground(int top_radius,
-                              int bottom_radius,
-                              double artwork_max_width_pct);
-  ~MediaNotificationBackground() override;
+  // views::Background.
+  void Paint(gfx::Canvas* canvas, views::View* view) const override = 0;
 
-  // views::Background
-  void Paint(gfx::Canvas* canvas, views::View* view) const override;
+  virtual void UpdateArtwork(const gfx::ImageSkia& image) = 0;
 
-  void UpdateArtwork(const gfx::ImageSkia& image);
-  bool UpdateCornerRadius(int top_radius, int bottom_radius);
-  bool UpdateArtworkMaxWidthPct(double max_width_pct);
-  void UpdateFavicon(const gfx::ImageSkia& icon);
+  // Return true if corner radius is successfully updated.
+  virtual bool UpdateCornerRadius(int top_radius, int bottom_radius) = 0;
 
-  SkColor GetBackgroundColor(const views::View& owner) const;
-  SkColor GetForegroundColor(const views::View& owner) const;
+  // Retirm true if artwork max with percentage is successfully updated.
+  virtual bool UpdateArtworkMaxWidthPct(double max_width_pct) = 0;
 
- private:
-  friend class MediaNotificationBackgroundTest;
-  friend class MediaNotificationViewImplTest;
-  FRIEND_TEST_ALL_PREFIXES(MediaNotificationBackgroundRTLTest,
-                           BoundsSanityCheck);
+  virtual void UpdateFavicon(const gfx::ImageSkia& icon) = 0;
+  virtual void UpdateDeviceSelectorAvailability(bool availability) = 0;
 
-  // Shade factor used on favicon dominant color before set as background color.
-  static constexpr double kBackgroundFaviconColorShadeFactor = 0.55;
-
-  int GetArtworkWidth(const gfx::Size& view_size) const;
-  int GetArtworkVisibleWidth(const gfx::Size& view_size) const;
-  gfx::Rect GetArtworkBounds(const views::View& owner) const;
-  gfx::Rect GetFilledBackgroundBounds(const views::View& owner) const;
-  gfx::Rect GetGradientBounds(const views::View& owner) const;
-  SkPoint GetGradientStartPoint(const gfx::Rect& draw_bounds) const;
-  SkPoint GetGradientEndPoint(const gfx::Rect& draw_bounds) const;
-  SkColor GetDefaultBackgroundColor(const views::View& owner) const;
-  void UpdateColorsInternal();
-
-  int top_radius_;
-  int bottom_radius_;
-
-  gfx::ImageSkia favicon_;
-  gfx::ImageSkia artwork_;
-  double artwork_max_width_pct_;
-
-  base::Optional<SkColor> background_color_;
-  base::Optional<SkColor> foreground_color_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaNotificationBackground);
+  virtual SkColor GetBackgroundColor(const views::View& ownser) const = 0;
+  virtual SkColor GetForegroundColor(const views::View& ownser) const = 0;
 };
 
 }  // namespace media_message_center

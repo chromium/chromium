@@ -12,14 +12,14 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/thread.h"
-#include "base/threading/thread_task_runner_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -48,9 +48,9 @@ Logging::Logging()
       enabled_on_stderr_(false),
       enabled_color_(false),
       queue_invoke_later_pending_(false),
-      sender_(NULL),
+      sender_(nullptr),
       main_thread_(base::ThreadTaskRunnerHandle::Get()),
-      consumer_(NULL) {
+      consumer_(nullptr) {
 #if defined(OS_WIN)
   // getenv triggers an unsafe warning. Simply check how big of a buffer
   // would be needed to fetch the value to see if the enviornment variable is
@@ -236,7 +236,7 @@ void Logging::Log(const LogData& data) {
         base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
             FROM_HERE,
             base::BindOnce(&Logging::OnSendLogs, base::Unretained(this)),
-            base::TimeDelta::FromMilliseconds(kLogSendDelayMs));
+            base::Milliseconds(kLogSendDelayMs));
       }
     }
   }

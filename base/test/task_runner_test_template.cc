@@ -39,4 +39,7 @@ void TaskTracker::WaitForCompletedTasks(int count) {
 
 }  // namespace test
 
+// This suite is instantiated in binaries that use //base:test_support.
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(TaskRunnerTest);
+
 }  // namespace base

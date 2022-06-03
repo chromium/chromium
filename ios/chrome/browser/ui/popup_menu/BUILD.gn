@@ -7,7 +7,7 @@ source_set("popup_menu") {
   sources = [
     "popup_menu_action_handler.h",
     "popup_menu_action_handler.mm",
-    "popup_menu_action_handler_commands.h",
+    "popup_menu_action_handler_delegate.h",
     "popup_menu_coordinator.h",
     "popup_menu_coordinator.mm",
     "popup_menu_mediator.h",
@@ -20,11 +20,13 @@ source_set("popup_menu") {
     "resources:popup_menu_close_tab",
     "resources:popup_menu_downloads",
     "resources:popup_menu_edit_bookmark",
+    "resources:popup_menu_enterprise_icon",
     "resources:popup_menu_find_in_page",
     "resources:popup_menu_help",
     "resources:popup_menu_history",
     "resources:popup_menu_new_incognito_tab",
     "resources:popup_menu_new_tab",
+    "resources:popup_menu_new_window",
     "resources:popup_menu_paste_and_go",
     "resources:popup_menu_qr_scanner",
     "resources:popup_menu_read_later",
@@ -43,46 +45,68 @@ source_set("popup_menu") {
     "resources:popup_menu_voice_search",
     "//base",
     "//components/bookmarks/browser",
+    "//components/bookmarks/common",
     "//components/feature_engagement/public",
     "//components/language/ios/browser",
     "//components/open_from_clipboard",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/profile_metrics",
     "//components/translate/core/browser",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/browser_state_metrics",
     "//ios/chrome/browser/feature_engagement",
     "//ios/chrome/browser/find_in_page",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/overlays",
+    "//ios/chrome/browser/overlays/public/web_content_area",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy:feature_flags",
+    "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/reading_list",
     "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/translate",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/activity_services",
-    "//ios/chrome/browser/ui/bookmarks",
+    "//ios/chrome/browser/ui/bookmarks:core",
+    "//ios/chrome/browser/ui/browser_container",
+    "//ios/chrome/browser/ui/browser_container:ui",
     "//ios/chrome/browser/ui/bubble",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/default_promo:utils",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/ntp_tile_views:constants",
     "//ios/chrome/browser/ui/popup_menu/cells",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:feature_flags",
+    "//ios/chrome/browser/ui/popup_menu/overflow_menu:overflow_menu_swift",
     "//ios/chrome/browser/ui/popup_menu/public",
     "//ios/chrome/browser/ui/popup_menu/public:popup_menu_ui",
     "//ios/chrome/browser/ui/popup_menu/public/cells",
     "//ios/chrome/browser/ui/presenters",
     "//ios/chrome/browser/ui/reading_list",
-    "//ios/chrome/browser/ui/toolbar/public:feature_flags",
     "//ios/chrome/browser/ui/util",
+    "//ios/chrome/browser/url_loading",
+    "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:feature_flags",
+    "//ios/chrome/browser/web/font_size",
     "//ios/chrome/browser/web_state_list",
+    "//ios/chrome/browser/window_activities",
+    "//ios/chrome/common/ui/colors",
+    "//ios/components/webui:url_constants",
     "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web",
     "//ios/web/common",
     "//ios/web/common:user_agent",
     "//ui/base",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("constants") {
@@ -96,33 +120,45 @@ source_set("constants") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "popup_menu_mediator_unittest.mm",
-  ]
+  sources = [ "popup_menu_mediator_unittest.mm" ]
   deps = [
     ":constants",
     ":popup_menu",
     "//base",
     "//base/test:test_support",
+    "//components/bookmarks/browser",
+    "//components/bookmarks/common",
+    "//components/bookmarks/test",
     "//components/feature_engagement/test:test_support",
     "//components/language/ios/browser",
+    "//components/prefs",
+    "//components/prefs:test_support",
     "//components/reading_list/core",
     "//components/translate/core/browser",
+    "//ios/chrome/browser/bookmarks",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
     "//ios/chrome/browser/overlays/test",
+    "//ios/chrome/browser/policy",
+    "//ios/chrome/browser/policy:feature_flags",
+    "//ios/chrome/browser/policy:test_support",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/popup_menu/cells",
     "//ios/chrome/browser/ui/popup_menu/public:popup_menu_ui",
     "//ios/chrome/browser/ui/toolbar/test",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/browser/web:feature_flags",
     "//ios/chrome/browser/web:test_support",
     "//ios/chrome/browser/web:web_internal",
+    "//ios/chrome/browser/web/font_size",
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test:test_support",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser:test_support",
+    "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
     "//ios/public/provider/chrome/browser/user_feedback",
     "//ios/web",
     "//ios/web/public/test",
@@ -130,12 +166,12 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
     "//third_party/ocmock",
+    "//ui/base:base",
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -147,40 +183,19 @@ source_set("eg2_tests") {
   ]
   deps = [
     ":constants",
+    "//base/test:test_support",
     "//components/strings",
+    "//components/version_info",
     "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/common:features",
     "//ios/web/common:user_agent",
     "//ios/web/public/test/http_server:http_server",
     "//net",
     "//ui/base",
   ]
-  libs = [ "UIKit.framework" ]
-}
-
-source_set("eg_tests") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "popup_menu_egtest.mm",
-    "request_desktop_mobile_site_egtest.mm",
-  ]
-  deps = [
-    "//base",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/popup_menu:constants",
-    "//ios/chrome/browser/ui/util",
-    "//ios/chrome/browser/web:web_internal",
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/web/common:user_agent",
-    "//ios/web/public/test",
-    "//ios/web/public/test/http_server",
-    "//ui/base",
-  ]
+  frameworks = [ "UIKit.framework" ]
 }

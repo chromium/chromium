@@ -12,8 +12,8 @@ struct SessionTab;
 class GURL;
 
 // Returns whether sessions code should track a URL for restoring in the context
-// of //chrome. In particular, blacklists chrome://quit and chrome://restart to
-// avoid quit or restart loops.
+// of //chrome. In particular, does not allow chrome://quit and
+// chrome://restart to avoid quit or restart loops.
 bool ShouldTrackURLForRestore(const GURL& url);
 
 // Returns the current navigation index from the tab. If current navigation's

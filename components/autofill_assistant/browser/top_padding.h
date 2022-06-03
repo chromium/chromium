@@ -8,7 +8,7 @@
 namespace autofill_assistant {
 
 // A simple structure that holds information about the top padding.
-// This structure is used by WebController.FocusElement.
+// This structure is used by WebController.ScrollToElementPosition.
 //
 // Only one type of value can be set (pixels or ratio). If one is
 // set, other returns 0.

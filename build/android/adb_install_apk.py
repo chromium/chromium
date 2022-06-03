@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 #
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -14,7 +14,7 @@ import sys
 
 import devil_chromium
 from devil.android import apk_helper
-from devil.android import device_blacklist
+from devil.android import device_denylist
 from devil.android import device_errors
 from devil.android import device_utils
 from devil.utils import run_tests_helper
@@ -58,9 +58,12 @@ def main():
                            ' times for multiple devices.')
   parser.add_argument('--adb-path', type=os.path.abspath,
                       help='Absolute path to the adb binary to use.')
-  parser.add_argument('--blacklist-file', help='Device blacklist JSON file.')
-  parser.add_argument('-v', '--verbose', action='count',
-                      help='Enable verbose logging.')
+  parser.add_argument('--denylist-file', help='Device denylist JSON file.')
+  parser.add_argument('-v',
+                      '--verbose',
+                      action='count',
+                      help='Enable verbose logging.',
+                      default=0)
   parser.add_argument('--downgrade', action='store_true',
                       help='If set, allows downgrading of apk.')
   parser.add_argument('--timeout', type=int,
@@ -98,13 +101,12 @@ def main():
             and helper.GetSplitName()):
           splits.append(f)
 
-  blacklist = (device_blacklist.Blacklist(args.blacklist_file)
-               if args.blacklist_file
-               else None)
-  devices = device_utils.DeviceUtils.HealthyDevices(blacklist=blacklist,
+  denylist = (device_denylist.Denylist(args.denylist_file)
+              if args.denylist_file else None)
+  devices = device_utils.DeviceUtils.HealthyDevices(denylist=denylist,
                                                     device_arg=args.devices)
 
-  def blacklisting_install(device):
+  def denylisting_install(device):
     try:
       if args.splits:
         device.InstallSplitApk(apk, splits, reinstall=args.keep_data,
@@ -116,16 +118,16 @@ def main():
     except (device_errors.CommandFailedError,
             device_errors.DeviceUnreachableError):
       logging.exception('Failed to install %s', apk)
-      if blacklist:
-        blacklist.Extend([str(device)], reason='install_failure')
-        logging.warning('Blacklisting %s', str(device))
+      if denylist:
+        denylist.Extend([str(device)], reason='install_failure')
+        logging.warning('Denylisting %s', str(device))
     except device_errors.CommandTimeoutError:
       logging.exception('Timed out while installing %s', apk)
-      if blacklist:
-        blacklist.Extend([str(device)], reason='install_timeout')
-        logging.warning('Blacklisting %s', str(device))
+      if denylist:
+        denylist.Extend([str(device)], reason='install_timeout')
+        logging.warning('Denylisting %s', str(device))
 
-  device_utils.DeviceUtils.parallel(devices).pMap(blacklisting_install)
+  device_utils.DeviceUtils.parallel(devices).pMap(denylisting_install)
 
 
 if __name__ == '__main__':

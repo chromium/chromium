@@ -51,24 +51,13 @@ JavaScriptDialogPresenter* WebStateDelegate::GetJavaScriptDialogPresenter(
 void WebStateDelegate::OnAuthRequired(WebState* source,
                                       NSURLProtectionSpace* protection_space,
                                       NSURLCredential* proposed_credential,
-                                      const AuthCallback& callback) {
-  callback.Run(nil, nil);
+                                      AuthCallback callback) {
+  std::move(callback).Run(nil, nil);
 }
 
-bool WebStateDelegate::ShouldPreviewLink(WebState* source,
-                                         const GURL& link_url) {
-  return false;
+UIView* WebStateDelegate::GetWebViewContainer(WebState* source) {
+  return nil;
 }
-
-UIViewController* WebStateDelegate::GetPreviewingViewController(
-    WebState* source,
-    const GURL& link_url) {
-  return nullptr;
-}
-
-void WebStateDelegate::CommitPreviewingViewController(
-    WebState* source,
-    UIViewController* previewing_view_controller) {}
 
 void WebStateDelegate::Attach(WebState* source) {
   DCHECK(attached_states_.find(source) == attached_states_.end());
@@ -78,6 +67,22 @@ void WebStateDelegate::Attach(WebState* source) {
 void WebStateDelegate::Detach(WebState* source) {
   DCHECK(attached_states_.find(source) != attached_states_.end());
   attached_states_.erase(source);
+}
+
+void WebStateDelegate::ContextMenuConfiguration(
+    WebState* source,
+    const ContextMenuParams& params,
+    void (^completion_handler)(UIContextMenuConfiguration*)) {
+  completion_handler(nil);
+}
+
+void WebStateDelegate::ContextMenuWillCommitWithAnimator(
+    WebState* source,
+    id<UIContextMenuInteractionCommitAnimating> animator) {}
+
+id<CRWResponderInputView> WebStateDelegate::GetResponderInputView(
+    WebState* source) {
+  return nil;
 }
 
 }  // web

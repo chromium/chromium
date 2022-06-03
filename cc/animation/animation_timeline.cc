@@ -5,9 +5,13 @@
 #include "cc/animation/animation_timeline.h"
 
 #include <algorithm>
+#include <utility>
+#include <vector>
 
+#include "base/time/time.h"
 #include "cc/animation/animation.h"
 #include "cc/animation/animation_host.h"
+#include "cc/trees/property_tree.h"
 
 namespace cc {
 
@@ -73,6 +77,36 @@ void AnimationTimeline::ClearAnimations() {
   SetNeedsPushProperties();
 }
 
+bool AnimationTimeline::TickTimeLinkedAnimations(
+    const std::vector<scoped_refptr<Animation>>& ticking_animations,
+    base::TimeTicks monotonic_time) {
+  DCHECK(!IsScrollTimeline());
+
+  bool animated = false;
+  for (auto& animation : ticking_animations) {
+    if (animation->animation_timeline() != this)
+      continue;
+    // Worklet animations are ticked separately by AnimationHost.
+    if (animation->IsWorkletAnimation())
+      continue;
+
+    // Scroll-linked animations are ticked separately.
+    if (animation->IsScrollLinkedAnimation())
+      continue;
+
+    animation->Tick(monotonic_time);
+    animated = true;
+  }
+  return animated;
+}
+
+bool AnimationTimeline::TickScrollLinkedAnimations(
+    const std::vector<scoped_refptr<Animation>>& ticking_animations,
+    const ScrollTree& scroll_tree,
+    bool is_active_tree) {
+  return false;
+}
+
 void AnimationTimeline::SetNeedsPushProperties() {
   needs_push_properties_ = true;
   if (animation_host_)
@@ -118,7 +152,7 @@ void AnimationTimeline::RemoveDetachedAnimationsFromImplThread(
 }
 
 void AnimationTimeline::EraseAnimation(scoped_refptr<Animation> animation) {
-  if (animation->has_element_animations())
+  if (animation->element_animations())
     animation->DetachElement();
   animation->SetAnimationTimeline(nullptr);
   animation->SetAnimationHost(nullptr);
@@ -133,6 +167,10 @@ void AnimationTimeline::PushPropertiesToImplThread(
       animation->PushPropertiesTo(animation_impl);
     }
   }
+}
+
+bool AnimationTimeline::IsScrollTimeline() const {
+  return false;
 }
 
 }  // namespace cc

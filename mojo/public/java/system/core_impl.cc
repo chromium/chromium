@@ -10,6 +10,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "mojo/public/c/system/core.h"
 #include "mojo/public/cpp/system/message_pipe.h"
+#include "mojo/public/cpp/system/platform_handle.h"
 #include "mojo/public/java/system/system_impl_java_jni_headers/CoreImpl_jni.h"
 
 namespace mojo {
@@ -213,6 +214,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginReadData(
   if (result == MOJO_RESULT_OK) {
     ScopedJavaLocalRef<jobject> byte_buffer(
         env, env->NewDirectByteBuffer(const_cast<void*>(buffer), buffer_size));
+    base::android::CheckException(env);
     return Java_CoreImpl_newResultAndBuffer(env, result, byte_buffer);
   } else {
     return Java_CoreImpl_newResultAndBuffer(env, result, nullptr);
@@ -263,6 +265,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_BeginWriteData(
   if (result == MOJO_RESULT_OK) {
     ScopedJavaLocalRef<jobject> byte_buffer(
         env, env->NewDirectByteBuffer(buffer, buffer_size));
+    base::android::CheckException(env);
     return Java_CoreImpl_newResultAndBuffer(env, result, byte_buffer);
   } else {
     return Java_CoreImpl_newResultAndBuffer(env, result, nullptr);
@@ -312,6 +315,7 @@ static ScopedJavaLocalRef<jobject> JNI_CoreImpl_Map(
   if (result == MOJO_RESULT_OK) {
     ScopedJavaLocalRef<jobject> byte_buffer(
         env, env->NewDirectByteBuffer(buffer, num_bytes));
+    base::android::CheckException(env);
     return Java_CoreImpl_newResultAndBuffer(env, result, byte_buffer);
   } else {
     return Java_CoreImpl_newResultAndBuffer(env, result, nullptr);
@@ -337,6 +341,12 @@ static jint JNI_CoreImpl_GetNativeBufferOffset(
   if (offset == 0)
     return 0;
   return alignment - offset;
+}
+
+static jint JNI_CoreImpl_CreatePlatformHandle(JNIEnv* env, jint fd) {
+  mojo::ScopedHandle handle =
+      mojo::WrapPlatformHandle(mojo::PlatformHandle(base::ScopedFD(fd)));
+  return handle.release().value();
 }
 
 }  // namespace android

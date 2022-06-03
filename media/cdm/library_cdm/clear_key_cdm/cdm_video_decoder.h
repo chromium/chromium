@@ -11,6 +11,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/status.h"
 #include "media/cdm/api/content_decryption_module.h"
 
 namespace media {
@@ -22,7 +23,7 @@ class CdmVideoDecoder {
   using CdmVideoFrame = cdm::VideoFrame_2;
 
   virtual ~CdmVideoDecoder() {}
-  virtual bool Initialize(const cdm::VideoDecoderConfig_3& config) = 0;
+  virtual Status Initialize(const cdm::VideoDecoderConfig_3& config) = 0;
   virtual void Deinitialize() = 0;
   virtual void Reset() = 0;
   virtual cdm::Status Decode(scoped_refptr<DecoderBuffer> buffer,

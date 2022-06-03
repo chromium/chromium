@@ -168,7 +168,7 @@ defines a `BindNewPipeAndPassReceiver` method:
 
 ``` cpp
 mojo::Remote<sample::mojom::Logger> logger;
-auto receiver = logger.BindNewPipeAndPassReceiver());
+auto receiver = logger.BindNewPipeAndPassReceiver();
 ```
 
 This second snippet is equivalent to the first one.
@@ -237,6 +237,8 @@ class LoggerImpl : public sample::mojom::Logger {
   explicit LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver)
       : receiver_(this, std::move(receiver)) {}
   ~Logger() override {}
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
 
   // sample::mojom::Logger:
   void Log(const std::string& message) override {
@@ -245,8 +247,6 @@ class LoggerImpl : public sample::mojom::Logger {
 
  private:
   mojo::Receiver<sample::mojom::Logger> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggerImpl);
 };
 ```
 
@@ -318,9 +318,11 @@ class Logger {
 As before, both clients and implementations of this interface use the same
 signature for the `GetTail` method: implementations use the `callback` argument
 to *respond* to the request, while clients pass a `callback` argument to
-asynchronously `receive` the response. A client's `callback` runs on the same
-sequence on which they invoked `GetTail` (the sequence to which their `logger`
-is bound). Here's an updated implementation:
+asynchronously `receive` the response. The parameter `GetTailCallback` passed to
+the implementation of `GetTail` is sequence-affine. It must be invoked on the
+same sequence that `GetTail` is called on. A client's `callback` runs on the
+same sequence on which they invoked `GetTail` (the sequence to which their
+`logger` is bound). Here's an updated implementation:
 
 ```cpp
 class LoggerImpl : public sample::mojom::Logger {
@@ -331,6 +333,8 @@ class LoggerImpl : public sample::mojom::Logger {
   explicit LoggerImpl(mojo::PendingReceiver<sample::mojom::Logger> receiver)
       : receiver_(this, std::move(receiver)) {}
   ~Logger() override {}
+  Logger(const Logger&) = delete;
+  Logger& operator=(const Logger&) = delete;
 
   // sample::mojom::Logger:
   void Log(const std::string& message) override {
@@ -345,8 +349,6 @@ class LoggerImpl : public sample::mojom::Logger {
  private:
   mojo::Receiver<sample::mojom::Logger> receiver_;
   std::vector<std::string> lines_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoggerImpl);
 };
 ```
 
@@ -738,7 +740,7 @@ interface Database {
 ```
 
 As noted in the
-[Mojom IDL documentation](/mojo/public/tools/bindings/README.md#Primitive-Types), // need to update this page too!
+[Mojom IDL documentation](/mojo/public/tools/bindings/README.md#Primitive-Types),
 the `pending_receiver<Table>` syntax corresponds
 precisely to the `PendingReceiver<T>` type discussed in the sections above, and
 in fact the generated code for these interfaces is approximately:
@@ -1002,31 +1004,30 @@ Associated interfaces are interfaces which:
 
 ### Mojom
 
-A new keyword `associated` is introduced for remote/receiver
-fields. For example:
+New types `pending_associated_remote` and `pending_associated_receiver` are
+introduced for remote/receiver fields. For example:
 
 ``` cpp
 interface Bar {};
 
 struct Qux {
-  pending_associated_remote<Bar> bar3;
+  pending_associated_remote<Bar> bar;
 };
 
 interface Foo {
   // Uses associated remote.
-  SetBar(pending_associated_remote<Bar> bar1);
+  PassBarRemote(pending_associated_remote<Bar> bar);
   // Uses associated receiver.
-  GetBar(pending_associated_receiver<Bar> bar2);
+  PassBarReceiver(pending_associated_receiver<Bar> bar);
   // Passes a struct with associated interface pointer.
   PassQux(Qux qux);
   // Uses associated interface pointer in callback.
-  AsyncGetBar() => (pending_associated_remote<Bar> bar4);
+  AsyncGetBar() => (pending_associated_remote<Bar> bar);
 };
 ```
 
-It means the interface impl/client will communicate using the same
-message pipe over which the associated remote/receiver is
-passed.
+In each case the interface impl/client will communicate using the same message
+pipe over which the associated remote/receiver is passed.
 
 ### Using associated interfaces in C++
 
@@ -1038,29 +1039,29 @@ mapped to `mojo::PendingAssociatedRemote<Bar>`; pending_associated_receiver to
 // In mojom:
 interface Foo {
   ...
-  SetBar(pending_associated_remote<Bar> bar1);
-  GetBar(pending_associated_receiver<Bar> bar2);
+  PassBarRemote(pending_associated_remote<Bar> bar);
+  PassBarReceiver(pending_associated_receiver<Bar> bar);
   ...
 };
 
 // In C++:
 class Foo {
   ...
-  virtual void SetBar(mojo::PendingAssociatedRemote<Bar> bar1) = 0;
-  virtual void GetBar(mojo::PendingAssociatedReceiver<Bar> bar2) = 0;
+  virtual void PassBarRemote(mojo::PendingAssociatedRemote<Bar> bar) = 0;
+  virtual void PassBarReceiver(mojo::PendingAssociatedReceiver<Bar> bar) = 0;
   ...
 };
 ```
 
 #### Passing pending associated receivers
 
-Assume you have already got an `Remote<Foo> foo`, and you would like
-to call `GetBar()` on it. You can do:
+Assume you already have a `Remote<Foo> foo`, and you would like to call
+`PassBarReceiver()` on it. You can do:
 
 ``` cpp
 mojo::PendingAssociatedRemote<Bar> pending_bar;
 mojo::PendingAssociatedReceiver<Bar> bar_receiver = pending_bar.InitWithNewEndpointAndPassReceiver();
-foo->GetBar(std::move(bar_receiver));
+foo->PassBarReceiver(std::move(bar_receiver));
 
 mojo::AssociatedRemote<Bar> bar;
 bar.Bind(std::move(pending_bar));
@@ -1087,7 +1088,7 @@ to make the code a little shorter. The following code achieves the same purpose:
 
 ``` cpp
 mojo::AssociatedRemote<Bar> bar;
-foo->GetBar(bar.BindNewEndpointAndPassReceiver());
+foo->PassBarReceiver(bar.BindNewEndpointAndPassReceiver());
 bar->DoSomething();
 ```
 
@@ -1096,8 +1097,8 @@ The implementation of `Foo` looks like this:
 ``` cpp
 class FooImpl : public Foo {
   ...
-  void GetBar(mojo::AssociatedReceiver<Bar> bar2) override {
-    bar_receiver_.Bind(std::move(bar2));
+  void PassBarReceiver(mojo::AssociatedReceiver<Bar> bar) override {
+    bar_receiver_.Bind(std::move(bar));
     ...
   }
   ...
@@ -1118,13 +1119,13 @@ When the underlying message pipe is disconnected (e.g., `foo` or
 #### Passing associated remotes
 
 Similarly, assume you have already got an `Remote<Foo> foo`, and you
-would like to call `SetBar()` on it. You can do:
+would like to call `PassBarRemote()` on it. You can do:
 
 ``` cpp
 mojo::AssociatedReceiver<Bar> bar_receiver(some_bar_impl);
 mojo::PendingAssociatedRemote<Bar> bar;
 mojo::PendingAssociatedReceiver<Bar> bar_pending_receiver = bar.InitWithNewEndpointAndPassReceiver();
-foo->SetBar(std::move(bar));
+foo->PassBarRemote(std::move(bar));
 bar_receiver.Bind(std::move(bar_pending_receiver));
 ```
 
@@ -1134,31 +1135,31 @@ The following code achieves the same purpose:
 mojo::AssociatedReceiver<Bar> bar_receiver(some_bar_impl);
 mojo::PendingAssociatedRemote<Bar> bar;
 bar_receiver.Bind(bar.InitWithNewPipeAndPassReceiver());
-foo->SetBar(std::move(bar));
+foo->PassBarRemote(std::move(bar));
 ```
 
 ### Performance considerations
 
-When using associated interfaces on different sequences than the master sequence
-(where the master interface lives):
+When using associated interfaces on different sequences than the primary
+sequence (where the primary interface lives):
 
 * Sending messages: send happens directly on the calling sequence. So there
   isn't sequence hopping.
 * Receiving messages: associated interfaces bound on a different sequence from
-  the master interface incur an extra sequence hop during dispatch.
+  the primary interface incur an extra sequence hop during dispatch.
 
 Therefore, performance-wise associated interfaces are better suited for
-scenarios where message receiving happens on the master sequence.
+scenarios where message receiving happens on the primary sequence.
 
 ### Testing
 
-Associated interfaces need to be associated with a master interface before
+Associated interfaces need to be associated with a primary interface before
 they can be used. This means one end of the associated interface must be sent
-over one end of the master interface, or over one end of another associated
-interface which itself already has a master interface.
+over one end of the primary interface, or over one end of another associated
+interface which itself already has a primary interface.
 
 If you want to test an associated interface endpoint without first
-associating it, you can use `AssociatedRemote::BindNewEndpointAndPassDedicatedReceiverForTesting`.
+associating it, you can use `AssociatedRemote::BindNewEndpointAndPassDedicatedReceiver`.
 This will create working associated interface endpoints which are not actually
 associated with anything else.
 
@@ -1307,22 +1308,6 @@ class Canvas {
 
 The correct answer is, "Yes! That would be nice!" And fortunately, it can!
 
-### Global Configuration
-
-While this feature is quite powerful, it introduces some unavoidable complexity
-into build system. This stems from the fact that type-mapping is an inherently
-viral concept: if `gfx::mojom::Rect` is mapped to `gfx::Rect` anywhere, the
-mapping needs to apply *everywhere*.
-
-For this reason we have a few global typemap configurations defined in
-[chromium_bindings_configuration.gni](https://cs.chromium.org/chromium/src/mojo/public/tools/bindings/chromium_bindings_configuration.gni)
-and
-[blink_bindings_configuration.gni](https://cs.chromium.org/chromium/src/mojo/public/tools/bindings/blink_bindings_configuration.gni). These configure the two supported [variants](#Variants) of Mojom generated
-bindings in the repository. Read more on this in the sections that follow.
-
-For now, let's take a look at how to express the mapping from `gfx::mojom::Rect`
-to `gfx::Rect`.
-
 ### Defining `StructTraits`
 
 In order to teach generated bindings code how to serialize an arbitrary native
@@ -1335,20 +1320,16 @@ A valid specialization of `StructTraits` MUST define the following static
 methods:
 
 * A single static accessor for every field of the Mojom struct, with the exact
-  same name as the struct field. These accessors must all take a const ref to
-  an object of the native type, and must return a value compatible with the
-  Mojom struct field's type. This is used to safely and consistently extract
-  data from the native type during message serialization without incurring extra
-  copying costs.
+  same name as the struct field. These accessors must all take a (preferably
+  const) ref to an object of the native type, and must return a value compatible
+  with the Mojom struct field's type. This is used to safely and consistently
+  extract data from the native type during message serialization without
+  incurring extra copying costs.
 
 * A single static `Read` method which initializes an instance of the the native
   type given a serialized representation of the Mojom struct. The `Read` method
   must return a `bool` to indicate whether the incoming data is accepted
   (`true`) or rejected (`false`).
-
-There are other methods a `StructTraits` specialization may define to satisfy
-some less common requirements. See
-[Advanced StructTraits Usage](#Advanced-StructTraits-Usage) for details.
 
 In order to define the mapping for `gfx::Rect`, we want the following
 `StructTraits` specialization, which we'll define in
@@ -1436,89 +1417,93 @@ struct StructTraits<url::mojom::UrlDataView, GURL> {
 
 We've defined the `StructTraits` necessary, but we still need to teach the
 bindings generator (and hence the build system) about the mapping. To do this we
-must create a **typemap** file, which uses familiar GN syntax to describe the
-new type mapping.
-
-Let's place this `geometry.typemap` file alongside our Mojom file:
+must add some more information to our `mojom` target in GN:
 
 ```
-mojom = "//ui/gfx/geometry/mojo/geometry.mojom"
-os_whitelist = [ "android" ]
-public_headers = [ "//ui/gfx/geometry/rect.h" ]
-traits_headers = [ "//ui/gfx/geometry/mojo/geometry_mojom_traits.h" ]
-sources = [
-  "//ui/gfx/geometry/mojo/geometry_mojom_traits.cc",
-  "//ui/gfx/geometry/mojo/geometry_mojom_traits.h",
-]
-public_deps = [ "//ui/gfx/geometry" ]
-type_mappings = [
-  "gfx.mojom.Rect=::gfx::Rect",
-]
+# Without a typemap
+mojom("mojom") {
+  sources = [
+    "rect.mojom",
+  ]
+}
+
+# With a typemap.
+mojom("mojom") {
+  sources = [
+    "rect.mojom",
+  ]
+
+  cpp_typemaps = [
+    {
+      # NOTE: A single typemap entry can list multiple individual type mappings.
+      # Each mapping assumes the same values for |traits_headers| etc below.
+      #
+      # To typemap a type with separate |traits_headers| etc, add a separate
+      # entry to |cpp_typemaps|.
+      types = [
+        {
+          mojom = "gfx.mojom.Rect"
+          cpp = "::gfx::Rect"
+        },
+      ]
+      traits_headers = [ "//ui/gfx/geometry/mojo/geometry_mojom_traits.h" ]
+      traits_sources = [ "//ui/gfx/geometry/mojo/geometry_mojom_traits.cc" ]
+      traits_public_deps = [ "//ui/gfx/geometry" ]
+    },
+  ]
+}
 ```
 
-Let's look at each of the variables above:
+See typemap documentation in
+[mojom.gni](https://cs.chromium.org/chromium/src/mojo/public/tools/bindings/mojom.gni)
+for details on the above definition and other supported parameters.
 
-* `mojom`: Specifies the `mojom` file to which the typemap applies. Many
-  typemaps may apply to the same `mojom` file, but any given typemap may only
-  apply to a single `mojom` file.
-* `os_whitelist`: Optional list of specific platforms this typemap
-  should be constrained to.
-* `public_headers`: Additional headers required by any code which would depend
-  on the Mojom definition of `gfx.mojom.Rect` now that the typemap is applied.
-  Any headers required for the native target type definition should be listed
-  here.
-* `traits_headers`: Headers which contain the relevant `StructTraits`
-  specialization(s) for any type mappings described by this file.
-* `sources`: Any implementation sources needed for the `StructTraits`
-  definition. These sources are compiled directly into the generated C++
-  bindings target for a `mojom` file applying this typemap.
-* `public_deps`: Target dependencies exposed by the `public_headers` and
-  `traits_headers`.
-* `deps`: Target dependencies exposed by `sources` but not already covered by
-  `public_deps`.
-* `type_mappings`: A list of type mappings to be applied for this typemap. The
-  strings in this list are of the format `"MojomType=CppType"`, where
-  `MojomType` must be a fully qualified Mojom typename and `CppType` must be a
-  fully qualified C++ typename. Additional attributes may be specified in square
-  brackets following the `CppType`:
-    * `move_only`: The `CppType` is move-only and should be passed by value
-      in any generated method signatures. Note that `move_only` is transitive,
-      so containers of `MojomType` will translate to containers of `CppType`
-      also passed by value.
-    * `copyable_pass_by_value`: Forces values of type `CppType` to be passed by
-      value without moving them. Unlike `move_only`, this is not transitive.
-    * `nullable_is_same_type`: By default a non-nullable `MojomType` will be
-      mapped to `CppType` while a nullable `MojomType?` will be mapped to
-      `base::Optional<CppType>`. If this attribute is set, the `base::Optional`
-      wrapper is omitted for nullable `MojomType?` values, but the
-      `StructTraits` definition for this type mapping must define additional
-      `IsNull` and `SetToNull` methods.
-    * `force_serialize`: The typemap is incompatible with lazy serialization
-      (e.g. consider a typemap to a `base::StringPiece`, where retaining a
-      copy is unsafe). Any messages carrying the type will be forced down the
-      eager serailization path.
+With this extra configuration present, any mojom references to `gfx.mojom.Rect`
+(e.g. for method parameters or struct fields) will be `gfx::Rect` references in
+generated C++ code.
 
+For the Blink variant of bindings, add to the `blink_cpp_typemaps` list instead.
 
-Now that we have the typemap file we need to add it to a local list of typemaps
-that can be added to the global configuration. We create a new
-`//ui/gfx/typemaps.gni` file with the following contents:
+### Type Mapping Without `traits_sources`
+
+Using `traits_sources` in a typemap configuration means that the listed sources
+will be baked directly into the corresponding `mojom` target's own sources. This
+can be problematic if you want to use the same typemap for both Blink and
+non-Blink bindings.
+
+For such cases, it is recommended that you define a separate `component` target
+for your typemap traits, and reference this in the `traits_public_deps` of the
+typemap:
 
 ```
-typemaps = [
-  "//ui/gfx/geometry/mojo/geometry.typemap",
-]
-```
+mojom("mojom") {
+  sources = [
+    "rect.mojom",
+  ]
 
-And finally we can reference this file in the global default (Chromium) bindings
-configuration by adding it to `_typemap_imports` in
-[chromium_bindings_configuration.gni](https://cs.chromium.org/chromium/src/mojo/public/tools/bindings/chromium_bindings_configuration.gni):
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "gfx.mojom.Rect"
+          cpp = "::gfx::Rect"
+        },
+      ]
+      traits_headers = [ "//ui/gfx/geometry/mojo/geometry_mojom_traits.h" ]
+      traits_public_deps = [ ":geometry_mojom_traits" ]
+    },
+  ]
+}
 
-```
-_typemap_imports = [
-  ...,
-  "//ui/gfx/typemaps.gni",
-  ...,
-]
+component("geometry_mojom_traits") {
+  sources = [
+    "//ui/gfx/geometry/mojo/geometry_mojom_traits.cc",
+    "//ui/gfx/geometry/mojo/geometry_mojom_traits.h",
+  ]
+
+  # The header of course needs corresponding COMPONENT_EXPORT() tags.
+  defines = [ "IS_GEOMETRY_MOJOM_TRAITS_IMPL" ]
+}
 ```
 
 ### StructTraits Reference
@@ -1556,7 +1541,7 @@ to valid getter return types:
 | `FooEnum`                    | Value of any type that has an appropriate `EnumTraits` specialization defined. By default this inlcudes only the generated `FooEnum` type.
 | `FooStruct`                  | Value or reference to any type that has an appropriate `StructTraits` specialization defined. By default this includes only the generated `FooStructPtr` type.
 | `FooUnion`                   | Value of reference to any type that has an appropriate `UnionTraits` specialization defined. By default this includes only the generated `FooUnionPtr` type.
-| `Foo?`                       | `base::Optional<CppType>`, where `CppType` is the value type defined by the appropriate traits class specialization (e.g. `StructTraits`, `mojo::MapTraits`, etc.). This may be customized by the [typemapping](#Enabling-a-New-Type-Mapping).
+| `Foo?`                       | `absl::optional<CppType>`, where `CppType` is the value type defined by the appropriate traits class specialization (e.g. `StructTraits`, `mojo::MapTraits`, etc.). This may be customized by the [typemapping](#Enabling-a-New-Type-Mapping).
 
 ### Using Generated DataView Types
 
@@ -1684,13 +1669,31 @@ class TableImpl : public db::mojom::blink::Table {
 ```
 
 In addition to using different C++ types for builtin strings, arrays, and maps,
-the global typemap configuration for default and "blink" variants are completely
-separate. To add a typemap for the Blink configuration, you can modify
-[blink_bindings_configuration.gni](https://cs.chromium.org/chromium/src/mojo/public/tools/bindings/blink_bindings_configuration.gni).
+the custom typemaps applied to Blink bindings are managed separately from
+regular bindings.
 
-All variants share some definitions which are unaffected by differences in the
-type mapping configuration (enums, for example). These definitions are generated
-in *shared* sources:
+`mojom` targets support a `blink_cpp_typemaps` parameter in addition to the
+regular `cpp_typemaps`. This lists the typemaps to apply to Blink bindings.
+
+To depend specifically on generated Blink bindings, reference
+`${target_name}_blink`. So for example, with the definition:
+
+```
+# In //foo/mojom
+mojom("mojom") {
+  sources = [
+    "db.mojom",
+  ]
+}
+```
+
+C++ sources can depend on the Blink bindings by depending on
+`"//foo/mojom:mojom_blink"`.
+
+Finally note that both bindings variants share some common definitions which are
+unaffected by differences in the type-mapping configuration (like enums, and
+structures describing serialized object formats). These definitions are
+generated in *shared* sources:
 
 ```
 out/gen/sample/db.mojom-shared.cc
@@ -1702,22 +1705,12 @@ Including either variant's header (`db.mojom.h` or `db.mojom-blink.h`)
 implicitly includes the shared header, but may wish to include *only* the shared
 header in some instances.
 
-Finally, note that for `mojom` GN targets, there is implicitly a corresponding
-`mojom_{variant}` target defined for any supported bindings configuration. So
-for example if you've defined in `//sample/BUILD.gn`:
+C++ sources can depend on shared sources only, by referencing the
+`"${target_name}_shared"` target, e.g. `"//foo/mojom:mojom_shared"` in the
+example above.
 
-```
-import("mojo/public/tools/bindings/mojom.gni")
-
-mojom("mojom") {
-  sources = [
-    "db.mojom",
-  ]
-}
-```
-
-Code in Blink which wishes to use the generated Blink-variant definitions must
-depend on `"//sample:mojom_blink"`.
+For converting between Blink and non-Blink variants, please see
+`//third_party/blink/public/platform/cross_variant_mojo_util.h`.
 
 ## Versioning Considerations
 
@@ -1752,23 +1745,20 @@ received.
 
 ### Versioned Enums
 
-For convenience, every extensible enum has a generated helper function to
-determine whether a received enum value is known by the implementation's current
-version of the enum definition. For example:
+All extensible enums should have one enumerator value designated as the default
+using the `[Default]` attribute. When Mojo deserializes an enum value that is
+not defined in the current version of the enum definition, that value will be
+transparently mapped to the `[Default]` enumerator value. Implementations can
+use the presence of this enumerator value to correctly handle version skew.
 
 ```cpp
 [Extensible]
 enum Department {
-  SALES,
-  DEV,
-  RESEARCH,
+  [Default] kUnknown,
+  kSales,
+  kDev,
+  kResearch,
 };
-```
-
-generates the function in the same namespace as the generated C++ enum type:
-
-```cpp
-inline bool IsKnownEnumValue(Department value);
 ```
 
 ### Using Mojo Bindings in Chrome

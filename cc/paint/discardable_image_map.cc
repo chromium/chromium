@@ -14,35 +14,18 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/paint/image_provider.h"
 #include "cc/paint/paint_filter.h"
 #include "cc/paint/paint_op_buffer.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
+#include "ui/gfx/display_color_spaces.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {
 const int kMaxRectsSize = 256;
-
-SkRect MapRect(const SkMatrix& matrix, const SkRect& src) {
-  SkRect dst;
-  matrix.mapRect(&dst, src);
-  return dst;
-}
-
-bool ComputePaintBounds(const SkRect& rect,
-                        const SkPaint* current_paint,
-                        SkRect* paint_bounds) {
-  *paint_bounds = rect;
-  if (current_paint) {
-    if (!current_paint->canComputeFastBounds())
-      return false;
-    *paint_bounds =
-        current_paint->computeFastBounds(*paint_bounds, paint_bounds);
-  }
-
-  return true;
-}
 
 class DiscardableImageGenerator {
  public:
@@ -74,25 +57,10 @@ class DiscardableImageGenerator {
     return std::move(paint_worklet_inputs_);
   }
 
-  void RecordColorHistograms() const {
-    if (color_stats_total_image_count_ > 0) {
-      int srgb_image_percent = (100 * color_stats_srgb_image_count_) /
-                               color_stats_total_image_count_;
-      UMA_HISTOGRAM_PERCENTAGE("Renderer4.ImagesPercentSRGB",
-                               srgb_image_percent);
-    }
-
-    base::CheckedNumeric<int> srgb_pixel_percent =
-        100 * color_stats_srgb_pixel_count_ / color_stats_total_pixel_count_;
-    if (srgb_pixel_percent.IsValid()) {
-      UMA_HISTOGRAM_PERCENTAGE("Renderer4.ImagePixelsPercentSRGB",
-                               srgb_pixel_percent.ValueOrDie());
-    }
+  gfx::ContentColorUsage content_color_usage() const {
+    return content_color_usage_;
   }
-
-  bool contains_non_srgb_images() const {
-    return color_stats_srgb_image_count_ != color_stats_total_image_count_;
-  }
+  bool contains_hbd_images() const { return contains_hbd_images_; }
 
  private:
   class ImageGatheringProvider : public ImageProvider {
@@ -103,9 +71,9 @@ class DiscardableImageGenerator {
     ~ImageGatheringProvider() override = default;
 
     ScopedResult GetRasterContent(const DrawImage& draw_image) override {
-      generator_->AddImage(draw_image.paint_image(),
+      generator_->AddImage(draw_image.paint_image(), false,
                            SkRect::Make(draw_image.src_rect()), op_rect_,
-                           SkMatrix::I(), draw_image.filter_quality());
+                           SkM44(), draw_image.filter_quality());
       return ScopedResult();
     }
 
@@ -130,7 +98,7 @@ class DiscardableImageGenerator {
     // Prevent PaintOpBuffers from having side effects back into the canvas.
     SkAutoCanvasRestore save_restore(canvas, true);
 
-    PlaybackParams params(nullptr, canvas->getTotalMatrix());
+    PlaybackParams params(nullptr, canvas->getLocalToDevice());
     // TODO(khushalsagar): Optimize out save/restore blocks if there are no
     // images in the draw ops between them.
     for (auto* op : PaintOpBuffer::Iterator(buffer)) {
@@ -143,19 +111,22 @@ class DiscardableImageGenerator {
         continue;
 
       gfx::Rect op_rect;
-      base::Optional<gfx::Rect> local_op_rect;
+      absl::optional<gfx::Rect> local_op_rect;
 
       if (top_level_op_rect) {
         op_rect = *top_level_op_rect;
       } else {
-        local_op_rect = ComputePaintRect(op, canvas);
+        const SkRect& clip_rect = SkRect::Make(canvas->getDeviceClipBounds());
+        const SkMatrix& ctm = canvas->getTotalMatrix();
+
+        local_op_rect = PaintOp::ComputePaintRect(op, clip_rect, ctm);
         if (local_op_rect.value().IsEmpty())
           continue;
 
         op_rect = local_op_rect.value();
       }
 
-      const SkMatrix& ctm = canvas->getTotalMatrix();
+      const SkM44& ctm = canvas->getLocalToDevice();
       if (op->IsPaintOpWithFlags()) {
         AddImageFromFlags(op_rect,
                           static_cast<const PaintOpWithFlags*>(op)->flags, ctm);
@@ -165,17 +136,54 @@ class DiscardableImageGenerator {
       if (op_type == PaintOpType::DrawImage) {
         auto* image_op = static_cast<DrawImageOp*>(op);
         AddImage(
-            image_op->image,
+            image_op->image, image_op->flags.useDarkModeForImage(),
             SkRect::MakeIWH(image_op->image.width(), image_op->image.height()),
             op_rect, ctm, image_op->flags.getFilterQuality());
       } else if (op_type == PaintOpType::DrawImageRect) {
         auto* image_rect_op = static_cast<DrawImageRectOp*>(op);
-        SkMatrix matrix = ctm;
-        matrix.postConcat(SkMatrix::MakeRectToRect(image_rect_op->src,
-                                                   image_rect_op->dst,
-                                                   SkMatrix::kFill_ScaleToFit));
-        AddImage(image_rect_op->image, image_rect_op->src, op_rect, matrix,
-                 image_rect_op->flags.getFilterQuality());
+        // TODO(crbug.com/1155544): Make a RectToRect method that uses SkM44s
+        // in MathUtil.
+        SkM44 matrix = ctm * SkM44(SkMatrix::RectToRect(image_rect_op->src,
+                                                        image_rect_op->dst));
+        AddImage(image_rect_op->image,
+                 image_rect_op->flags.useDarkModeForImage(), image_rect_op->src,
+                 op_rect, matrix, image_rect_op->flags.getFilterQuality());
+      } else if (op_type == PaintOpType::DrawSkottie) {
+        auto* skottie_op = static_cast<DrawSkottieOp*>(op);
+        for (const auto& image_pair : skottie_op->images) {
+          const SkottieFrameData& frame_data = image_pair.second;
+          // Add the whole image (no cropping).
+          SkRect image_src_rect = SkRect::MakeIWH(frame_data.image.width(),
+                                                  frame_data.image.height());
+          // It is too difficult to tell which specific portion of the animation
+          // frame this image will ultimately occupy. So just assume it occupies
+          // the whole animation frame for the purposes of finding which images
+          // overlap with a given rectangle on the screen.
+          gfx::Rect dst_rect = op_rect;
+          // Skottie ultimately takes care of scaling and positioning the image
+          // internally within the animation frame. However, the image that gets
+          // cached in the ImageDecodeCache should have dimensions that at least
+          // roughly reflect the ultimate output both for cache space
+          // consumption reasons and to make Skottie's scaling job easier
+          // (performance). For this reason, the DrawImage submitted to the
+          // cache is scaled by the same amount that the entire animation frame
+          // itself is scaled. This should get the image dimensions in the right
+          // ballpark in the event that the animation's native size and the
+          // destination's size differ drastically.
+          //
+          // Do not allow stretching the image in 1 dimension when scaling. This
+          // matches Skottie's scaling behavior.
+          static constexpr SkMatrix::ScaleToFit kScalingMode =
+              SkMatrix::kCenter_ScaleToFit;
+          SkRect skottie_frame_native_size =
+              SkRect::MakeSize(skottie_op->skottie->size());
+          SkM44 matrix = ctm * SkM44(SkMatrix::RectToRect(
+                                   skottie_frame_native_size,
+                                   gfx::RectToSkRect(dst_rect), kScalingMode));
+          AddImage(frame_data.image, /*use_dark_mode=*/false,
+                   std::move(image_src_rect), std::move(dst_rect), matrix,
+                   frame_data.quality);
+        }
       } else if (op_type == PaintOpType::DrawRecord) {
         GatherDiscardableImages(
             static_cast<const DrawRecordOp*>(op)->record.get(),
@@ -184,61 +192,10 @@ class DiscardableImageGenerator {
     }
   }
 
-  // Given the |op_rect|, which is the rect for the draw op, returns the
-  // transformed rect accounting for the current transform, clip and paint
-  // state on |canvas_|.
-  gfx::Rect ComputePaintRect(const PaintOp* op, SkNoDrawCanvas* canvas) {
-    const SkRect& clip_rect = SkRect::Make(canvas->getDeviceClipBounds());
-    const SkMatrix& ctm = canvas->getTotalMatrix();
-
-    gfx::Rect transformed_rect;
-    SkRect op_rect;
-    if (!op->IsDrawOp() || !PaintOp::GetBounds(op, &op_rect)) {
-      // If we can't provide a conservative bounding rect for the op, assume it
-      // covers the complete current clip.
-      // TODO(khushalsagar): See if we can do something better for non-draw ops.
-      transformed_rect = gfx::ToEnclosingRect(gfx::SkRectToRectF(clip_rect));
-    } else {
-      const PaintFlags* flags =
-          op->IsPaintOpWithFlags()
-              ? &static_cast<const PaintOpWithFlags*>(op)->flags
-              : nullptr;
-      SkPaint paint;
-      if (flags)
-        paint = flags->ToSkPaint();
-
-      SkRect paint_rect = MapRect(ctm, op_rect);
-      bool computed_paint_bounds =
-          ComputePaintBounds(paint_rect, &paint, &paint_rect);
-      if (!computed_paint_bounds) {
-        // TODO(vmpstr): UMA this case.
-        paint_rect = clip_rect;
-      }
-
-      // Clamp the image rect by the current clip rect.
-      if (!paint_rect.intersect(clip_rect))
-        return gfx::Rect();
-
-      transformed_rect = gfx::ToEnclosingRect(gfx::SkRectToRectF(paint_rect));
-    }
-
-    // During raster, we use the device clip bounds on the canvas, which outsets
-    // the actual clip by 1 due to the possibility of antialiasing. Account for
-    // this here by outsetting the image rect by 1. Note that this only affects
-    // queries into the rtree, which will now return images that only touch the
-    // bounds of the query rect.
-    //
-    // Note that it's not sufficient for us to inset the device clip bounds at
-    // raster time, since we might be sending a larger-than-one-item display
-    // item to skia, which means that skia will internally determine whether to
-    // raster the picture (using device clip bounds that are outset).
-    transformed_rect.Inset(-1, -1);
-    return transformed_rect;
-  }
-
   void AddImageFromFlags(const gfx::Rect& op_rect,
                          const PaintFlags& flags,
-                         const SkMatrix& ctm) {
+                         const SkM44& ctm) {
+    // TODO(prashant.n): Add dark mode support for images from shaders/filters.
     AddImageFromShader(op_rect, flags.getShader(), ctm,
                        flags.getFilterQuality());
     AddImageFromFilter(op_rect, flags.getImageFilter().get());
@@ -246,16 +203,16 @@ class DiscardableImageGenerator {
 
   void AddImageFromShader(const gfx::Rect& op_rect,
                           const PaintShader* shader,
-                          const SkMatrix& ctm,
-                          SkFilterQuality filter_quality) {
+                          const SkM44& ctm,
+                          PaintFlags::FilterQuality filter_quality) {
     if (!shader || !shader->has_discardable_images())
       return;
 
     if (shader->shader_type() == PaintShader::Type::kImage) {
       const PaintImage& paint_image = shader->paint_image();
-      SkMatrix matrix = ctm;
-      matrix.postConcat(shader->GetLocalMatrix());
-      AddImage(paint_image,
+      SkM44 matrix = ctm * SkM44(shader->GetLocalMatrix());
+      // TODO(prashant.n): Add dark mode support for images from shader.
+      AddImage(paint_image, false,
                SkRect::MakeWH(paint_image.width(), paint_image.height()),
                op_rect, matrix, filter_quality);
       return;
@@ -270,14 +227,13 @@ class DiscardableImageGenerator {
       }
 
       SkRect scaled_tile_rect;
-      if (!shader->GetRasterizationTileRect(ctm, &scaled_tile_rect)) {
+      if (!shader->GetRasterizationTileRect(ctm.asM33(), &scaled_tile_rect)) {
         return;
       }
 
       SkNoDrawCanvas canvas(scaled_tile_rect.width(),
                             scaled_tile_rect.height());
-      canvas.setMatrix(SkMatrix::MakeRectToRect(
-          shader->tile(), scaled_tile_rect, SkMatrix::kFill_ScaleToFit));
+      canvas.setMatrix(SkMatrix::RectToRect(shader->tile(), scaled_tile_rect));
       base::AutoReset<bool> auto_reset(&only_gather_animated_images_, true);
       size_t prev_image_set_size = image_set_.size();
       GatherDiscardableImages(shader->paint_record().get(), &op_rect, &canvas);
@@ -314,10 +270,11 @@ class DiscardableImageGenerator {
   }
 
   void AddImage(PaintImage paint_image,
+                bool use_dark_mode,
                 const SkRect& src_rect,
                 const gfx::Rect& image_rect,
-                const SkMatrix& matrix,
-                SkFilterQuality filter_quality) {
+                const SkM44& matrix,
+                PaintFlags::FilterQuality filter_quality) {
     if (paint_image.IsTextureBacked())
       return;
 
@@ -328,16 +285,11 @@ class DiscardableImageGenerator {
       paint_worklet_inputs_.push_back(std::make_pair(
           paint_image.paint_worklet_input(), paint_image.stable_id()));
     } else {
-      // Make a note if any image was originally specified in a non-sRGB color
-      // space. PaintWorklets do not have the concept of a color space, so
-      // should not be used to accumulate either counter.
-      SkColorSpace* source_color_space = paint_image.color_space();
-      color_stats_total_pixel_count_ += image_rect.size().GetCheckedArea();
-      color_stats_total_image_count_++;
-      if (!source_color_space || source_color_space->isSRGB()) {
-        color_stats_srgb_pixel_count_ += image_rect.size().GetCheckedArea();
-        color_stats_srgb_image_count_++;
-      }
+      const auto image_color_usage = paint_image.GetContentColorUsage();
+      content_color_usage_ = std::max(content_color_usage_, image_color_usage);
+
+      if (paint_image.is_high_bit_depth())
+        contains_hbd_images_ = true;
     }
 
     auto& rects = image_id_to_rects_[paint_image.stable_id()];
@@ -346,14 +298,17 @@ class DiscardableImageGenerator {
     else
       rects->push_back(image_rect);
 
-    auto decoding_mode_it = decoding_mode_map_.find(paint_image.stable_id());
-    // Use the decoding mode if we don't have one yet, otherwise use the more
-    // conservative one of the two existing ones.
-    if (decoding_mode_it == decoding_mode_map_.end()) {
-      decoding_mode_map_[paint_image.stable_id()] = paint_image.decoding_mode();
-    } else {
-      decoding_mode_it->second = PaintImage::GetConservative(
-          decoding_mode_it->second, paint_image.decoding_mode());
+    if (paint_image.IsLazyGenerated()) {
+      auto decoding_mode_it = decoding_mode_map_.find(paint_image.stable_id());
+      // Use the decoding mode if we don't have one yet, otherwise use the more
+      // conservative one of the two existing ones.
+      if (decoding_mode_it == decoding_mode_map_.end()) {
+        decoding_mode_map_[paint_image.stable_id()] =
+            paint_image.decoding_mode();
+      } else {
+        decoding_mode_it->second = PaintImage::GetConservative(
+            decoding_mode_it->second, paint_image.decoding_mode());
+      }
     }
 
     if (paint_image.ShouldAnimate()) {
@@ -378,9 +333,9 @@ class DiscardableImageGenerator {
     }
 
     if (add_image) {
-      image_set_.emplace_back(
-          DrawImage(std::move(paint_image), src_irect, filter_quality, matrix),
-          image_rect);
+      image_set_.emplace_back(DrawImage(std::move(paint_image), use_dark_mode,
+                                        src_irect, filter_quality, matrix),
+                              image_rect);
     }
   }
 
@@ -394,12 +349,8 @@ class DiscardableImageGenerator {
   base::flat_map<PaintImage::Id, PaintImage::DecodingMode> decoding_mode_map_;
   bool only_gather_animated_images_ = false;
 
-  // Statistics about the number of images and pixels that will require color
-  // conversion if the target color space is not sRGB.
-  int color_stats_srgb_image_count_ = 0;
-  int color_stats_total_image_count_ = 0;
-  base::CheckedNumeric<int64_t> color_stats_srgb_pixel_count_ = 0;
-  base::CheckedNumeric<int64_t> color_stats_total_pixel_count_ = 0;
+  gfx::ContentColorUsage content_color_usage_ = gfx::ContentColorUsage::kSRGB;
+  bool contains_hbd_images_ = false;
 };
 
 }  // namespace
@@ -416,12 +367,12 @@ void DiscardableImageMap::Generate(const PaintOpBuffer* paint_op_buffer,
 
   DiscardableImageGenerator generator(bounds.right(), bounds.bottom(),
                                       paint_op_buffer);
-  generator.RecordColorHistograms();
   image_id_to_rects_ = generator.TakeImageIdToRectsMap();
   animated_images_metadata_ = generator.TakeAnimatedImagesMetadata();
   paint_worklet_inputs_ = generator.TakePaintWorkletInputs();
   decoding_mode_map_ = generator.TakeDecodingModeMap();
-  contains_non_srgb_images_ = generator.contains_non_srgb_images();
+  contains_hbd_images_ = generator.contains_hbd_images();
+  content_color_usage_ = generator.content_color_usage();
   auto images = generator.TakeImages();
   images_rtree_.Build(
       images,

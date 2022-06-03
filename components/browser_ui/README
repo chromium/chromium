@@ -1,0 +1,3 @@
+The browser_ui component consists of modularized build targets for common
+UI elements that are useful for building a browser. Currently it contains
+Android code that is used by WebLayer and Chrome.

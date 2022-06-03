@@ -11,12 +11,13 @@
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/dom_distiller/content/browser/distiller_javascript_utils.h"
+#include "components/dom_distiller/content/browser/test/test_util.h"
 #include "components/dom_distiller/core/distiller_page.h"
 #include "components/dom_distiller/core/proto/distilled_article.pb.h"
 #include "components/dom_distiller/core/proto/distilled_page.pb.h"
@@ -28,6 +29,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/isolated_world_ids.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -51,29 +53,29 @@ namespace {
 class WebContentsMainFrameHelper : public content::WebContentsObserver {
  public:
   WebContentsMainFrameHelper(content::WebContents* web_contents,
-                             const base::Closure& callback,
+                             base::OnceClosure callback,
                              bool wait_for_document_loaded)
       : WebContentsObserver(web_contents),
-        callback_(callback),
+        callback_(std::move(callback)),
         wait_for_document_loaded_(wait_for_document_loaded) {}
 
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override {
-    if (wait_for_document_loaded_)
+    if (wait_for_document_loaded_ || !callback_)
       return;
     if (navigation_handle->HasCommitted() && navigation_handle->IsInMainFrame())
-      callback_.Run();
+      std::move(callback_).Run();
   }
 
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override {
-    if (wait_for_document_loaded_) {
+    if (wait_for_document_loaded_ && callback_) {
       if (!render_frame_host->GetParent())
-        callback_.Run();
+        std::move(callback_).Run();
     }
   }
 
  private:
-  base::Closure callback_;
+  base::OnceClosure callback_;
   bool wait_for_document_loaded_;
 };
 
@@ -92,60 +94,25 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
       SetDistillerJavaScriptWorldId(content::ISOLATED_WORLD_ID_CONTENT_END);
     }
     AddComponentsResources();
-    SetUpTestServer();
+    SetUpTestServer(embedded_test_server());
     ContentBrowserTest::SetUpOnMainThread();
   }
 
-  void DistillPage(const base::Closure& quit_closure, const std::string& url) {
+  void DistillPage(base::OnceClosure quit_closure, const std::string& url) {
     distiller_page_->DistillPage(
         embedded_test_server()->GetURL(url),
         dom_distiller::proto::DomDistillerOptions(),
-        base::Bind(&DistillerPageWebContentsTest::OnPageDistillationFinished,
-                   base::Unretained(this), quit_closure));
+        base::BindOnce(
+            &DistillerPageWebContentsTest::OnPageDistillationFinished,
+            base::Unretained(this), std::move(quit_closure)));
   }
 
   void OnPageDistillationFinished(
-      base::Closure quit_closure,
+      base::OnceClosure quit_closure,
       std::unique_ptr<proto::DomDistillerResult> distiller_result,
       bool distillation_successful) {
     distiller_result_ = std::move(distiller_result);
-    quit_closure.Run();
-  }
-
-  void OnJsExecutionDone(base::Closure callback, base::Value value) {
-    js_result_ = std::move(value);
-    callback.Run();
-  }
-
- private:
-  void AddComponentsResources() {
-    base::FilePath pak_file;
-    base::FilePath pak_dir;
-#if defined(OS_ANDROID)
-    CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, &pak_dir));
-    pak_dir = pak_dir.Append(FILE_PATH_LITERAL("paks"));
-#else
-    base::PathService::Get(base::DIR_MODULE, &pak_dir);
-#endif  // OS_ANDROID
-    pak_file =
-        pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
-    ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-        pak_file, ui::SCALE_FACTOR_NONE);
-  }
-
-  void SetUpTestServer() {
-    base::FilePath path;
-    base::PathService::Get(base::DIR_SOURCE_ROOT, &path);
-
-    embedded_test_server()->ServeFilesFromDirectory(
-        path.AppendASCII("components/test/data/dom_distiller"));
-    embedded_test_server()->ServeFilesFromDirectory(
-        path.AppendASCII("components/dom_distiller/core/javascript"));
-
-    response_ = std::make_unique<net::test_server::ControllableHttpResponse>(
-        embedded_test_server(), "/pinch_tester.html");
-
-    ASSERT_TRUE(embedded_test_server()->Start());
+    std::move(quit_closure).Run();
   }
 
  protected:
@@ -155,9 +122,6 @@ class DistillerPageWebContentsTest : public ContentBrowserTest {
 
   DistillerPageWebContents* distiller_page_;
   std::unique_ptr<proto::DomDistillerResult> distiller_result_;
-  base::Value js_result_;
-
-  std::unique_ptr<net::test_server::ControllableHttpResponse> response_;
 };
 
 // Use this class to be able to leak the WebContents, which is needed for when
@@ -439,7 +403,7 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
 
   // Make sure the test ends when it does not crash.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, run_loop.QuitClosure(), base::TimeDelta::FromSeconds(2));
+      FROM_HERE, run_loop.QuitClosure(), base::Seconds(2));
 
   run_loop.Run();
 }
@@ -519,50 +483,6 @@ IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest,
     std::string js = viewer::GetUnsafeArticleContentJs(article_proto.get());
     EXPECT_THAT(js, HasSubstr(no_content));
   }
-}
-
-#if defined(OS_WIN)
-#define MAYBE_TestPinch DISABLED_TestPinch
-#else
-#define MAYBE_TestPinch TestPinch
-#endif
-IN_PROC_BROWSER_TEST_F(DistillerPageWebContentsTest, MAYBE_TestPinch) {
-  // Load the test file in content shell and wait until it has fully loaded.
-  content::WebContents* web_contents = shell()->web_contents();
-  base::RunLoop url_loaded_runner;
-  WebContentsMainFrameHelper main_frame_loaded(
-      web_contents, url_loaded_runner.QuitClosure(), true);
-  web_contents->GetController().LoadURL(
-      embedded_test_server()->GetURL("/pinch_tester.html"), content::Referrer(),
-      ui::PAGE_TRANSITION_TYPED, std::string());
-
-  const std::string html_template = viewer::GetArticleTemplateHtml(
-      DistilledPagePrefs::THEME_LIGHT,
-      DistilledPagePrefs::FONT_FAMILY_SANS_SERIF);
-
-  const std::string scripts = R"(
-    <script src='dom_distiller_viewer.js'></script>
-    <script src='pinch_tester.js'></script>
-  )";
-
-  response_->WaitForRequest();
-  response_->Send(net::HTTP_OK, "text/html", html_template + scripts);
-  response_->Done();
-  url_loaded_runner.Run();
-
-  // Execute the JS to run the tests, and wait until it has finished.
-  base::RunLoop run_loop;
-  web_contents->GetMainFrame()->ExecuteJavaScriptForTests(
-      base::UTF8ToUTF16("(function() {return pinchtest.run();})();"),
-      base::BindOnce(&DistillerPageWebContentsTest::OnJsExecutionDone,
-                     base::Unretained(this), run_loop.QuitClosure()));
-  run_loop.Run();
-
-  ASSERT_TRUE(js_result_.is_dict());
-
-  base::Optional<bool> value = js_result_.FindBoolKey("success");
-  ASSERT_TRUE(value.has_value());
-  EXPECT_TRUE(value.value());
 }
 
 }  // namespace dom_distiller

@@ -5,13 +5,15 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
 #include "ui/gl/gl_image_io_surface.h"
+#include "ui/gl/test/gl_image_bind_test_template.h"
 #include "ui/gl/test/gl_image_test_template.h"
+#include "ui/gl/test/gl_image_zero_initialize_test_template.h"
 
 namespace gl {
 namespace {
@@ -25,8 +27,9 @@ class GLImageIOSurfaceTestDelegate : public GLImageTestDelegateBase {
     scoped_refptr<GLImageIOSurface> image(GLImageIOSurface::Create(
         size, GLImageIOSurface::GetInternalFormatForTesting(format)));
     IOSurfaceRef surface_ref = gfx::CreateIOSurface(size, format);
-    bool rv =
-        image->Initialize(surface_ref, gfx::GenericSharedMemoryId(1), format);
+    const uint32_t surface_plane = 0;
+    bool rv = image->Initialize(surface_ref, surface_plane,
+                                gfx::GenericSharedMemoryId(1), format);
     EXPECT_TRUE(rv);
     return image;
   }
@@ -36,6 +39,7 @@ class GLImageIOSurfaceTestDelegate : public GLImageTestDelegateBase {
     scoped_refptr<GLImageIOSurface> image(GLImageIOSurface::Create(
         size, GLImageIOSurface::GetInternalFormatForTesting(format)));
     IOSurfaceRef surface_ref = gfx::CreateIOSurface(size, format);
+    const uint32_t surface_plane = 0;
     IOReturn status = IOSurfaceLock(surface_ref, 0, nullptr);
     EXPECT_NE(status, kIOReturnCannotLock);
 
@@ -62,8 +66,8 @@ class GLImageIOSurfaceTestDelegate : public GLImageTestDelegateBase {
     }
     IOSurfaceUnlock(surface_ref, 0, nullptr);
 
-    bool rv =
-        image->Initialize(surface_ref, gfx::GenericSharedMemoryId(1), format);
+    bool rv = image->Initialize(surface_ref, surface_plane,
+                                gfx::GenericSharedMemoryId(1), format);
     EXPECT_TRUE(rv);
 
     return image;
@@ -95,7 +99,7 @@ using GLImageTestTypes = testing::Types<
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRX_8888>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::RGBA_F16>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::YUV_420_BIPLANAR>,
-    GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRX_1010102>>;
+    GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRA_1010102>>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(GLImageIOSurface, GLImageTest, GLImageTestTypes);
 
@@ -104,7 +108,7 @@ using GLImageRGBTestTypes = testing::Types<
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRA_8888>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRX_8888>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::RGBA_F16>,
-    GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRX_1010102>>;
+    GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRA_1010102>>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(GLImageIOSurface,
                                GLImageZeroInitializeTest,
@@ -115,7 +119,7 @@ using GLImageBindTestTypes = testing::Types<
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::RGBA_8888>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRX_8888>,
     GLImageIOSurfaceTestDelegate<gfx::BufferFormat::RGBA_F16>,
-    GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRX_1010102>>;
+    GLImageIOSurfaceTestDelegate<gfx::BufferFormat::BGRA_1010102>>;
 
 INSTANTIATE_TYPED_TEST_SUITE_P(GLImageIOSurface,
                                GLImageBindTest,

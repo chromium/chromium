@@ -31,8 +31,8 @@ const CSSProperty& Get{{property_class_data.property_id}}() {
 {% endfor %}
 
 const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID id) {
-  DCHECK_GT(id, lastCSSProperty);  // last property id
-  DCHECK_LE(id, lastUnresolvedCSSProperty);  // last unresolved property id
+  DCHECK_GT(id, kLastCSSProperty);  // last property id
+  DCHECK_LE(id, kLastUnresolvedCSSProperty);  // last unresolved property id
   switch (id) {
     {% for property_class_data in alias_classes_by_property_id %}
     case CSSPropertyID::{{property_class_data.enum_key}}:
@@ -47,7 +47,7 @@ const CSSUnresolvedProperty* GetAliasPropertyInternal(CSSPropertyID id) {
 const CSSUnresolvedProperty& GetNonAliasPropertyInternal(CSSPropertyID id) {
   DCHECK_NE(id, CSSPropertyID::kInvalid);
   DCHECK_NE(id, CSSPropertyID::kVariable);
-  DCHECK_LE(id, lastCSSProperty);  // last property id
+  DCHECK_LE(id, kLastCSSProperty);  // last property id
   static constexpr const CSSUnresolvedProperty* const property_classes[] = {
     {% for property_class_data in property_classes_by_property_id %}
     &property_{{property_class_data.property_id.lower()}},  // {{property_class_data.property_id}}

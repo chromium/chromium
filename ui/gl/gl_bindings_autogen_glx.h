@@ -420,4 +420,4 @@ class GL_EXPORT GLXApi {
 #define glXWaitVideoSyncSGI ::gl::g_current_glx_context->glXWaitVideoSyncSGIFn
 #define glXWaitX ::gl::g_current_glx_context->glXWaitXFn
 
-#endif  //  UI_GL_GL_BINDINGS_AUTOGEN_GLX_H_
+#endif  // UI_GL_GL_BINDINGS_AUTOGEN_GLX_H_

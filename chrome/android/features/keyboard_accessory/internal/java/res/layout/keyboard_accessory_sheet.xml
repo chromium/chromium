@@ -14,7 +14,7 @@
 
     <org.chromium.chrome.browser.keyboard_accessory.sheet_component.NoSwipeViewPager
         android:id="@+id/keyboard_accessory_sheet"
-        android:background="@color/modern_primary_color"
+        android:background="@color/default_bg_color"
         android:fillViewport="true"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>

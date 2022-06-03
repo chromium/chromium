@@ -9,6 +9,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "chrome/android/chrome_jni_headers/DuplicateDownloadInfoBar_jni.h"
 #include "chrome/browser/download/android/duplicate_download_infobar_delegate.h"
 
@@ -23,22 +24,39 @@ std::unique_ptr<infobars::InfoBar> DuplicateDownloadInfoBar::CreateInfoBar(
 DuplicateDownloadInfoBar::~DuplicateDownloadInfoBar() {
 }
 
+// static
+void DuplicateDownloadInfoBar::RecordDuplicateDownloadInfobarEvent(
+    bool is_offline_page,
+    DuplicateDownloadInfobarEvent event) {
+  base::UmaHistogramEnumeration(
+      is_offline_page ? "Download.DuplicateInfobarEvent.OfflinePage"
+                      : "Download.DuplicateInfobarEvent.Download",
+      event, DuplicateDownloadInfobarEvent::kCount);
+}
+
 DuplicateDownloadInfoBar::DuplicateDownloadInfoBar(
     std::unique_ptr<DuplicateDownloadInfoBarDelegate> delegate)
-    : ConfirmInfoBar(std::move(delegate)) {}
+    : infobars::ConfirmInfoBar(std::move(delegate)) {}
 
 base::android::ScopedJavaLocalRef<jobject>
-DuplicateDownloadInfoBar::CreateRenderInfoBar(JNIEnv* env) {
+DuplicateDownloadInfoBar::CreateRenderInfoBar(
+    JNIEnv* env,
+    const ResourceIdMapper& resource_id_mapper) {
   DuplicateDownloadInfoBarDelegate* delegate = GetDelegate();
 
   base::android::ScopedJavaLocalRef<jstring> j_file_path =
       base::android::ConvertUTF8ToJavaString(env, delegate->GetFilePath());
   base::android::ScopedJavaLocalRef<jstring> j_page_url =
       base::android::ConvertUTF8ToJavaString(env, delegate->GetPageURL());
+  base::android::ScopedJavaLocalRef<jobject> j_otr_profile_id;
+  if (delegate->GetOTRProfileID()) {
+    j_otr_profile_id =
+        delegate->GetOTRProfileID()->ConvertToJavaOTRProfileID(env);
+  }
   base::android::ScopedJavaLocalRef<jobject> java_infobar(
       Java_DuplicateDownloadInfoBar_createInfoBar(
           env, j_file_path, delegate->IsOfflinePage(), j_page_url,
-          delegate->IsOffTheRecord(), delegate->DuplicateRequestExists()));
+          j_otr_profile_id, delegate->DuplicateRequestExists()));
   return java_infobar;
 }
 

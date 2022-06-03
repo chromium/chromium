@@ -14,20 +14,13 @@
 #include "components/webdata/common/web_database_table.h"
 #include "sql/error_delegate_util.h"
 
-using base::Bind;
-using base::FilePath;
-
 WebDatabaseBackend::WebDatabaseBackend(
-    const FilePath& path,
-    Delegate* delegate,
+    const base::FilePath& path,
+    std::unique_ptr<Delegate> delegate,
     const scoped_refptr<base::SingleThreadTaskRunner>& db_thread)
     : base::RefCountedDeleteOnSequence<WebDatabaseBackend>(db_thread),
       db_path_(path),
-      request_manager_(new WebDataRequestManager()),
-      init_status_(sql::INIT_FAILURE),
-      init_complete_(false),
-      catastrophic_error_occurred_(false),
-      delegate_(delegate) {}
+      delegate_(std::move(delegate)) {}
 
 void WebDatabaseBackend::AddTable(std::unique_ptr<WebDatabaseTable> table) {
   DCHECK(!db_);
@@ -36,15 +29,14 @@ void WebDatabaseBackend::AddTable(std::unique_ptr<WebDatabaseTable> table) {
 
 void WebDatabaseBackend::InitDatabase() {
   LoadDatabaseIfNecessary();
-  if (delegate_) {
+  if (delegate_)
     delegate_->DBLoaded(init_status_, diagnostics_);
-  }
 }
 
 void WebDatabaseBackend::ShutdownDatabase() {
   if (db_ && init_status_ == sql::INIT_OK)
     db_->CommitTransaction();
-  db_.reset(nullptr);
+  db_.reset();
   init_complete_ = true;  // Ensures the init sequence is not re-run.
   init_status_ = sql::INIT_FAILURE;
 }
@@ -81,10 +73,8 @@ void WebDatabaseBackend::DBReadTaskWrapper(
 std::unique_ptr<WDTypedResult> WebDatabaseBackend::ExecuteReadTask(
     WebDatabaseService::ReadTask task) {
   LoadDatabaseIfNecessary();
-  if (db_ && init_status_ == sql::INIT_OK) {
-    return std::move(task).Run(db_.get());
-  }
-  return nullptr;
+  return (db_ && init_status_ == sql::INIT_OK) ? std::move(task).Run(db_.get())
+                                               : nullptr;
 }
 
 WebDatabaseBackend::~WebDatabaseBackend() {
@@ -96,7 +86,7 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
     return;
 
   init_complete_ = true;
-  db_.reset(new WebDatabase());
+  db_ = std::make_unique<WebDatabase>();
 
   for (const auto& table : tables_)
     db_->AddTable(table.get());
@@ -109,17 +99,13 @@ void WebDatabaseBackend::LoadDatabaseIfNecessary() {
   init_status_ = db_->Init(db_path_);
 
   if (init_status_ != sql::INIT_OK) {
-    LOG(ERROR) << "Cannot initialize the web database: " << init_status_;
     db_.reset();
     return;
   }
 
   // A catastrophic error might have happened and recovered.
-  if (catastrophic_error_occurred_) {
+  if (catastrophic_error_occurred_)
     init_status_ = sql::INIT_OK_WITH_DATA_LOSS;
-    LOG(WARNING)
-        << "Webdata recovered from a catastrophic error. Data loss possible.";
-  }
   db_->BeginTransaction();
 }
 

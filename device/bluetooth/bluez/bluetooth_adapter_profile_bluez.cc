@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "dbus/bus.h"
@@ -24,18 +25,19 @@ namespace bluez {
 void BluetoothAdapterProfileBlueZ::Register(
     const device::BluetoothUUID& uuid,
     const bluez::BluetoothProfileManagerClient::Options& options,
-    const ProfileRegisteredCallback& success_callback,
-    const bluez::BluetoothProfileManagerClient::ErrorCallback& error_callback) {
+    ProfileRegisteredCallback success_callback,
+    bluez::BluetoothProfileManagerClient::ErrorCallback error_callback) {
   std::unique_ptr<BluetoothAdapterProfileBlueZ> profile(
       new BluetoothAdapterProfileBlueZ(uuid));
 
-  VLOG(1) << "Registering profile: " << profile->object_path().value();
+  DVLOG(1) << "Registering profile: " << profile->object_path().value();
   const dbus::ObjectPath& object_path = profile->object_path();
   bluez::BluezDBusManager::Get()
       ->GetBluetoothProfileManagerClient()
-      ->RegisterProfile(object_path, uuid.canonical_value(), options,
-                        base::Bind(success_callback, base::Passed(&profile)),
-                        error_callback);
+      ->RegisterProfile(
+          object_path, uuid.canonical_value(), options,
+          base::BindOnce(std::move(success_callback), std::move(profile)),
+          std::move(error_callback));
 }
 
 BluetoothAdapterProfileBlueZ::BluetoothAdapterProfileBlueZ(
@@ -58,8 +60,8 @@ bool BluetoothAdapterProfileBlueZ::SetDelegate(
     const dbus::ObjectPath& device_path,
     bluez::BluetoothProfileServiceProvider::Delegate* delegate) {
   DCHECK(delegate);
-  VLOG(1) << "SetDelegate: " << object_path_.value() << " dev "
-          << device_path.value();
+  DVLOG(1) << "SetDelegate: " << object_path_.value() << " dev "
+           << device_path.value();
 
   if (delegates_.find(device_path.value()) != delegates_.end()) {
     return false;
@@ -71,9 +73,9 @@ bool BluetoothAdapterProfileBlueZ::SetDelegate(
 
 void BluetoothAdapterProfileBlueZ::RemoveDelegate(
     const dbus::ObjectPath& device_path,
-    const base::Closure& unregistered_callback) {
-  VLOG(1) << object_path_.value() << " dev " << device_path.value()
-          << ": RemoveDelegate";
+    base::OnceClosure unregistered_callback) {
+  DVLOG(1) << object_path_.value() << " dev " << device_path.value()
+           << ": RemoveDelegate";
 
   if (delegates_.find(device_path.value()) == delegates_.end())
     return;
@@ -83,31 +85,35 @@ void BluetoothAdapterProfileBlueZ::RemoveDelegate(
   if (delegates_.size() != 0)
     return;
 
-  VLOG(1) << device_path.value() << " No delegates left, unregistering.";
+  DVLOG(1) << device_path.value() << " No delegates left, unregistering.";
 
   // No users left, release the profile.
+  auto split_callback =
+      base::SplitOnceCallback(std::move(unregistered_callback));
   bluez::BluezDBusManager::Get()
       ->GetBluetoothProfileManagerClient()
       ->UnregisterProfile(
-          object_path_, unregistered_callback,
-          base::Bind(&BluetoothAdapterProfileBlueZ::OnUnregisterProfileError,
-                     weak_ptr_factory_.GetWeakPtr(), unregistered_callback));
+          object_path_, std::move(split_callback.first),
+          base::BindOnce(
+              &BluetoothAdapterProfileBlueZ::OnUnregisterProfileError,
+              weak_ptr_factory_.GetWeakPtr(),
+              std::move(split_callback.second)));
 }
 
 void BluetoothAdapterProfileBlueZ::OnUnregisterProfileError(
-    const base::Closure& unregistered_callback,
+    base::OnceClosure unregistered_callback,
     const std::string& error_name,
     const std::string& error_message) {
   LOG(WARNING) << this->object_path().value()
                << ": Failed to unregister profile: " << error_name << ": "
                << error_message;
 
-  unregistered_callback.Run();
+  std::move(unregistered_callback).Run();
 }
 
 // bluez::BluetoothProfileServiceProvider::Delegate:
 void BluetoothAdapterProfileBlueZ::Released() {
-  VLOG(1) << object_path_.value() << ": Release";
+  DVLOG(1) << object_path_.value() << ": Release";
 }
 
 void BluetoothAdapterProfileBlueZ::NewConnection(
@@ -121,8 +127,8 @@ void BluetoothAdapterProfileBlueZ::NewConnection(
     delegate_path = dbus::ObjectPath("");
 
   if (delegates_.find(delegate_path.value()) == delegates_.end()) {
-    VLOG(1) << object_path_.value() << ": New connection for device "
-            << device_path.value() << " which has no delegates!";
+    DVLOG(1) << object_path_.value() << ": New connection for device "
+             << device_path.value() << " which has no delegates!";
     std::move(callback).Run(REJECTED);
     return;
   }
@@ -140,8 +146,8 @@ void BluetoothAdapterProfileBlueZ::RequestDisconnection(
     delegate_path = dbus::ObjectPath("");
 
   if (delegates_.find(delegate_path.value()) == delegates_.end()) {
-    VLOG(1) << object_path_.value() << ": RequestDisconnection for device "
-            << device_path.value() << " which has no delegates!";
+    DVLOG(1) << object_path_.value() << ": RequestDisconnection for device "
+             << device_path.value() << " which has no delegates!";
     return;
   }
 
@@ -152,7 +158,7 @@ void BluetoothAdapterProfileBlueZ::RequestDisconnection(
 void BluetoothAdapterProfileBlueZ::Cancel() {
   // Cancel() should only go to a delegate accepting connections.
   if (delegates_.find("") == delegates_.end()) {
-    VLOG(1) << object_path_.value() << ": Cancel with no delegate!";
+    DVLOG(1) << object_path_.value() << ": Cancel with no delegate!";
     return;
   }
 

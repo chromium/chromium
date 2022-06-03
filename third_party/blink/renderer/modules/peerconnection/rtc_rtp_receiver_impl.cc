@@ -5,7 +5,10 @@
 #include "third_party/blink/renderer/modules/peerconnection/rtc_rtp_receiver_impl.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
+#include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_video_stream_transformer.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_sender_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_rtp_source.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
@@ -135,7 +138,9 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
  public:
   RTCRtpReceiverInternal(
       scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
-      RtpReceiverState state)
+      RtpReceiverState state,
+      bool force_encoded_audio_insertable_streams,
+      bool force_encoded_video_insertable_streams)
       : native_peer_connection_(std::move(native_peer_connection)),
         main_task_runner_(state.main_task_runner()),
         signaling_task_runner_(state.signaling_task_runner()),
@@ -143,6 +148,21 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
         state_(std::move(state)) {
     DCHECK(native_peer_connection_);
     DCHECK(state_.is_initialized());
+    if (force_encoded_audio_insertable_streams &&
+        webrtc_receiver_->media_type() == cricket::MEDIA_TYPE_AUDIO) {
+      encoded_audio_transformer_ =
+          std::make_unique<RTCEncodedAudioStreamTransformer>(main_task_runner_);
+      webrtc_receiver_->SetDepacketizerToDecoderFrameTransformer(
+          encoded_audio_transformer_->Delegate());
+    }
+    if (force_encoded_video_insertable_streams &&
+        webrtc_receiver_->media_type() == cricket::MEDIA_TYPE_VIDEO) {
+      encoded_video_transformer_ =
+          std::make_unique<RTCEncodedVideoStreamTransformer>(main_task_runner_);
+      webrtc_receiver_->SetDepacketizerToDecoderFrameTransformer(
+          encoded_video_transformer_->Delegate());
+    }
+    DCHECK(!encoded_audio_transformer_ || !encoded_video_transformer_);
   }
 
   const RtpReceiverState& state() const {
@@ -184,9 +204,17 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
         webrtc_receiver_->GetParameters());
   }
 
-  void SetJitterBufferMinimumDelay(base::Optional<double> delay_seconds) {
+  void SetJitterBufferMinimumDelay(absl::optional<double> delay_seconds) {
     webrtc_receiver_->SetJitterBufferMinimumDelay(
         blink::ToAbslOptional(delay_seconds));
+  }
+
+  RTCEncodedAudioStreamTransformer* GetEncodedAudioStreamTransformer() const {
+    return encoded_audio_transformer_.get();
+  }
+
+  RTCEncodedVideoStreamTransformer* GetEncodedVideoStreamTransformer() const {
+    return encoded_video_transformer_.get();
   }
 
  private:
@@ -214,6 +242,8 @@ class RTCRtpReceiverImpl::RTCRtpReceiverInternal
   const scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
   const scoped_refptr<base::SingleThreadTaskRunner> signaling_task_runner_;
   const scoped_refptr<webrtc::RtpReceiverInterface> webrtc_receiver_;
+  std::unique_ptr<RTCEncodedAudioStreamTransformer> encoded_audio_transformer_;
+  std::unique_ptr<RTCEncodedVideoStreamTransformer> encoded_video_transformer_;
   RtpReceiverState state_;
 };
 
@@ -240,10 +270,14 @@ uintptr_t RTCRtpReceiverImpl::getId(
 
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(
     scoped_refptr<webrtc::PeerConnectionInterface> native_peer_connection,
-    RtpReceiverState state)
+    RtpReceiverState state,
+    bool force_encoded_audio_insertable_streams,
+    bool force_encoded_video_insertable_streams)
     : internal_(base::MakeRefCounted<RTCRtpReceiverInternal>(
           std::move(native_peer_connection),
-          std::move(state))) {}
+          std::move(state),
+          force_encoded_audio_insertable_streams,
+          force_encoded_video_insertable_streams)) {}
 
 RTCRtpReceiverImpl::RTCRtpReceiverImpl(const RTCRtpReceiverImpl& other)
     : internal_(other.internal_) {}
@@ -283,8 +317,8 @@ RTCRtpReceiverImpl::DtlsTransportInformation() {
   return internal_->state().webrtc_dtls_transport_information();
 }
 
-const blink::WebMediaStreamTrack& RTCRtpReceiverImpl::Track() const {
-  return internal_->state().track_ref()->web_track();
+MediaStreamComponent* RTCRtpReceiverImpl::Track() const {
+  return internal_->state().track_ref()->track();
 }
 
 Vector<String> RTCRtpReceiverImpl::StreamIds() const {
@@ -312,8 +346,18 @@ std::unique_ptr<webrtc::RtpParameters> RTCRtpReceiverImpl::GetParameters()
 }
 
 void RTCRtpReceiverImpl::SetJitterBufferMinimumDelay(
-    base::Optional<double> delay_seconds) {
+    absl::optional<double> delay_seconds) {
   internal_->SetJitterBufferMinimumDelay(delay_seconds);
+}
+
+RTCEncodedAudioStreamTransformer*
+RTCRtpReceiverImpl::GetEncodedAudioStreamTransformer() const {
+  return internal_->GetEncodedAudioStreamTransformer();
+}
+
+RTCEncodedVideoStreamTransformer*
+RTCRtpReceiverImpl::GetEncodedVideoStreamTransformer() const {
+  return internal_->GetEncodedVideoStreamTransformer();
 }
 
 RTCRtpReceiverOnlyTransceiver::RTCRtpReceiverOnlyTransceiver(
@@ -361,18 +405,19 @@ webrtc::RtpTransceiverDirection RTCRtpReceiverOnlyTransceiver::Direction()
   return webrtc::RtpTransceiverDirection::kSendOnly;
 }
 
-void RTCRtpReceiverOnlyTransceiver::SetDirection(
+webrtc::RTCError RTCRtpReceiverOnlyTransceiver::SetDirection(
     webrtc::RtpTransceiverDirection direction) {
   NOTIMPLEMENTED();
+  return webrtc::RTCError::OK();
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpReceiverOnlyTransceiver::CurrentDirection() const {
   NOTIMPLEMENTED();
   return webrtc::RtpTransceiverDirection::kSendOnly;
 }
 
-base::Optional<webrtc::RtpTransceiverDirection>
+absl::optional<webrtc::RtpTransceiverDirection>
 RTCRtpReceiverOnlyTransceiver::FiredDirection() const {
   NOTIMPLEMENTED();
   return webrtc::RtpTransceiverDirection::kSendOnly;

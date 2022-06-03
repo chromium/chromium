@@ -21,6 +21,12 @@ CameraAppDeviceProviderImpl::CameraAppDeviceProviderImpl(
 
 CameraAppDeviceProviderImpl::~CameraAppDeviceProviderImpl() = default;
 
+void CameraAppDeviceProviderImpl::Bind(
+    mojo::PendingReceiver<cros::mojom::CameraAppDeviceProvider> receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
+}
+
 void CameraAppDeviceProviderImpl::GetCameraAppDevice(
     const std::string& source_id,
     GetCameraAppDeviceCallback callback) {
@@ -33,7 +39,7 @@ void CameraAppDeviceProviderImpl::GetCameraAppDevice(
 
 void CameraAppDeviceProviderImpl::GetCameraAppDeviceWithDeviceId(
     GetCameraAppDeviceCallback callback,
-    const base::Optional<std::string>& device_id) {
+    const absl::optional<std::string>& device_id) {
   if (!device_id.has_value()) {
     std::move(callback).Run(
         cros::mojom::GetCameraAppDeviceStatus::ERROR_INVALID_ID,
@@ -46,6 +52,29 @@ void CameraAppDeviceProviderImpl::GetCameraAppDeviceWithDeviceId(
 
 void CameraAppDeviceProviderImpl::IsSupported(IsSupportedCallback callback) {
   bridge_->IsSupported(std::move(callback));
+}
+
+void CameraAppDeviceProviderImpl::SetMultipleStreamsEnabled(
+    const std::string& source_id,
+    bool enabled,
+    SetMultipleStreamsEnabledCallback callback) {
+  mapping_callback_.Run(
+      source_id,
+      media::BindToCurrentLoop(base::BindOnce(
+          &CameraAppDeviceProviderImpl::SetMultipleStreamsEnabledWithDeviceId,
+          weak_ptr_factory_.GetWeakPtr(), enabled, std::move(callback))));
+}
+
+void CameraAppDeviceProviderImpl::SetMultipleStreamsEnabledWithDeviceId(
+    bool enabled,
+    SetMultipleStreamsEnabledCallback callback,
+    const absl::optional<std::string>& device_id) {
+  if (!device_id.has_value()) {
+    std::move(callback).Run(false);
+    return;
+  }
+
+  bridge_->SetMultipleStreamsEnabled(*device_id, enabled, std::move(callback));
 }
 
 }  // namespace media

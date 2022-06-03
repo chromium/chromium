@@ -1,0 +1,59 @@
+This is a testharness.js-based test.
+Found 55 tests; 22 PASS, 33 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS idl_test setup
+PASS idl_test validation
+PASS Partial interface Document: original interface defined
+PASS Partial interface Document: member names are unique
+PASS Partial interface HTMLIFrameElement: original interface defined
+PASS Partial interface HTMLIFrameElement: member names are unique
+PASS Partial interface Document[2]: member names are unique
+PASS Partial interface HTMLIFrameElement[2]: member names are unique
+PASS Partial interface Document[3]: member names are unique
+PASS Document includes GlobalEventHandlers: member names are unique
+PASS Document includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes GlobalEventHandlers: member names are unique
+PASS HTMLElement includes DocumentAndElementEventHandlers: member names are unique
+PASS HTMLElement includes ElementContentEditable: member names are unique
+PASS HTMLElement includes HTMLOrSVGElement: member names are unique
+PASS Document includes NonElementParentNode: member names are unique
+PASS Document includes ParentNode: member names are unique
+PASS Element includes ParentNode: member names are unique
+PASS Element includes NonDocumentTypeChildNode: member names are unique
+PASS Element includes ChildNode: member names are unique
+PASS Element includes Slottable: member names are unique
+PASS Document includes XPathEvaluatorBase: member names are unique
+FAIL PermissionsPolicy interface: existence and properties of interface object assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface object length assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface object name assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface: existence and properties of interface prototype object assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface: operation allowsFeature(DOMString, optional DOMString) assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface: operation features() assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface: operation allowedFeatures() assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy interface: operation getAllowlistForFeature(DOMString) assert_own_property: self does not have own property "PermissionsPolicy" expected property "PermissionsPolicy" missing
+FAIL PermissionsPolicy must be primary interface of document.permissionsPolicy assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL Stringification of document.permissionsPolicy assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL PermissionsPolicy interface: document.permissionsPolicy must inherit property "allowsFeature(DOMString, optional DOMString)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL PermissionsPolicy interface: calling allowsFeature(DOMString, optional DOMString) on document.permissionsPolicy with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL PermissionsPolicy interface: document.permissionsPolicy must inherit property "features()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL PermissionsPolicy interface: document.permissionsPolicy must inherit property "allowedFeatures()" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL PermissionsPolicy interface: document.permissionsPolicy must inherit property "getAllowlistForFeature(DOMString)" with the proper type assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL PermissionsPolicy interface: calling getAllowlistForFeature(DOMString) on document.permissionsPolicy with too few arguments must throw TypeError assert_equals: wrong typeof object expected "object" but got "undefined"
+FAIL PermissionsPolicyViolationReportBody interface: existence and properties of interface object assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface object length assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface object name assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface: existence and properties of interface prototype object assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface: existence and properties of interface prototype object's "constructor" property assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface: existence and properties of interface prototype object's @@unscopables property assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface: attribute featureId assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface: attribute sourceFile assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface: attribute lineNumber assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface: attribute columnNumber assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL PermissionsPolicyViolationReportBody interface: attribute disposition assert_own_property: self does not have own property "PermissionsPolicyViolationReportBody" expected property "PermissionsPolicyViolationReportBody" missing
+FAIL HTMLIFrameElement interface: attribute permissionsPolicy assert_true: The prototype object must have a property "permissionsPolicy" expected true got false
+FAIL HTMLIFrameElement interface: document.createElement("iframe") must inherit property "permissionsPolicy" with the proper type assert_inherits: property "permissionsPolicy" not found in prototype chain
+FAIL Document interface: attribute permissionsPolicy assert_true: The prototype object must have a property "permissionsPolicy" expected true got false
+FAIL Document interface: document must inherit property "permissionsPolicy" with the proper type assert_inherits: property "permissionsPolicy" not found in prototype chain
+Harness: the test ran to completion.
+

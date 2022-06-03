@@ -19,8 +19,13 @@ int RunHelper(base::TestSuite* test_suite) {
 
 }  // namespace
 
+// Definition located in third_party/dawn/src/tests/unittests/validation/ValidationTest.h
+// Forward declared here to avoid pulling in the Dawn headers.
+void InitDawnValidationTestEnvironment(int argc, char** argv);
+
 int main(int argc, char** argv) {
   base::CommandLine::Init(argc, argv);
+  InitDawnValidationTestEnvironment(argc, argv);
   testing::InitGoogleMock(&argc, argv);
   base::TestSuite test_suite(argc, argv);
   int rt = base::LaunchUnitTestsSerially(

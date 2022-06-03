@@ -9,19 +9,15 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profile_resetter/profile_reset_report.pb.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace base {
 class ListValue;
 }  // namespace base
-
-namespace content {
-class WebUIDataSource;
-}
 
 class BrandcodeConfigFetcher;
 class Profile;
@@ -39,10 +35,14 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   // profile settings URL.
   static const char kCctResetSettingsHash[];
 
-  ~ResetSettingsHandler() override;
+  static bool ShouldShowResetProfileBanner(Profile* profile);
 
-  static ResetSettingsHandler* Create(
-      content::WebUIDataSource* html_source, Profile* profile);
+  explicit ResetSettingsHandler(Profile* profile);
+
+  ResetSettingsHandler(const ResetSettingsHandler&) = delete;
+  ResetSettingsHandler& operator=(const ResetSettingsHandler&) = delete;
+
+  ~ResetSettingsHandler() override;
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
@@ -50,8 +50,6 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
   void OnJavascriptDisallowed() override;
 
  protected:
-  explicit ResetSettingsHandler(Profile* profile);
-
   // Overriden in tests to substitute with a test version of ProfileResetter.
   virtual ProfileResetter* GetResetter();
 
@@ -93,10 +91,10 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
       bool send_feedback,
       reset_report::ChromeResetReport::ResetRequestOrigin request_origin);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Will be called when powerwash dialog is shown.
   void OnShowPowerwashDialog(const base::ListValue* args);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   Profile* const profile_;
 
@@ -112,8 +110,6 @@ class ResetSettingsHandler : public SettingsPageUIHandler {
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<ResetSettingsHandler> callback_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResetSettingsHandler);
 };
 
 }  // namespace settings

@@ -15,13 +15,12 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
@@ -34,7 +33,6 @@
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/progress_reporter.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace gpu {
@@ -235,7 +233,6 @@ size_t LocationCountForAttribType(GLenum type) {
     case GL_FLOAT_MAT3:
     case GL_FLOAT_MAT3x4:
       return 3;
-      break;
     case GL_FLOAT_MAT4x2:
     case GL_FLOAT_MAT4x3:
     case GL_FLOAT_MAT4:
@@ -373,6 +370,7 @@ Program::UniformInfo::UniformInfo(const std::string& client_name,
     case GL_UNSIGNED_INT_SAMPLER_3D:
     case GL_UNSIGNED_INT_SAMPLER_CUBE:
     case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:
+    case GL_SAMPLER_EXTERNAL_2D_Y2Y_EXT:
       accepts_api_type = UniformApiType::kUniform1i;
       break;
 
@@ -430,8 +428,6 @@ void Program::Reset() {
   attrib_infos_.clear();
   uniform_infos_.clear();
   uniform_locations_.clear();
-  fragment_input_infos_.clear();
-  fragment_input_locations_.clear();
   program_output_infos_.clear();
   sampler_indices_.clear();
   attrib_location_to_index_map_.clear();
@@ -622,7 +618,7 @@ std::string Program::ProcessLogInfo(const std::string& log) {
       output += hashed_name;
   }
 
-  return output + input.as_string();
+  return output + std::string(input);
 }
 
 void Program::UpdateLogInfo() {
@@ -853,7 +849,6 @@ void Program::Update() {
     }
   }
 
-  UpdateFragmentInputs();
   UpdateProgramOutputs();
   UpdateFragmentOutputBaseTypes();
   UpdateVertexInputBaseTypes();
@@ -1040,134 +1035,6 @@ bool Program::UpdateUniforms() {
                                         static_cast<GLsizei>(info.name.size()));
   }
   return true;
-}
-
-void Program::UpdateFragmentInputs() {
-  if (!feature_info().feature_flags().chromium_path_rendering)
-    return;
-  for (const auto& binding : bind_fragment_input_location_map_) {
-    if (binding.second < 0)
-      continue;
-    size_t client_location = static_cast<size_t>(binding.second);
-    if (fragment_input_locations_.size() <= client_location)
-      fragment_input_locations_.resize(client_location + 1);
-    fragment_input_locations_[client_location].SetInactive();
-  }
-
-  GLint num_fragment_inputs = 0;
-  glGetProgramInterfaceiv(service_id_, GL_FRAGMENT_INPUT_NV,
-                          GL_ACTIVE_RESOURCES, &num_fragment_inputs);
-  if (num_fragment_inputs <= 0)
-    return;
-
-  GLint max_len = 0;
-  glGetProgramInterfaceiv(service_id_, GL_FRAGMENT_INPUT_NV, GL_MAX_NAME_LENGTH,
-                          &max_len);
-  DCHECK(max_len > 0);
-
-  std::unique_ptr<char[]> name_buffer(new char[max_len]);
-
-  Shader* fragment_shader =
-      shaders_from_last_successful_link_[ShaderTypeToIndex(GL_FRAGMENT_SHADER)]
-          .get();
-
-  const GLenum kQueryProperties[] = {GL_LOCATION, GL_TYPE, GL_ARRAY_SIZE};
-
-  std::vector<size_t> client_location_indices;
-  for (GLint ii = 0; ii < num_fragment_inputs; ++ii) {
-    GLsizei name_length = 0;
-    glGetProgramResourceName(service_id_, GL_FRAGMENT_INPUT_NV, ii, max_len,
-                             &name_length, name_buffer.get());
-    DCHECK(name_length < max_len);
-    DCHECK(name_length == 0 || name_buffer[name_length] == '\0');
-    // A fragment shader can have gl_FragCoord, gl_FrontFacing or gl_PointCoord
-    // built-ins as its input, as well as custom varyings. We are interested in
-    // custom varyings, client is allowed to bind only them.
-    std::string service_name(name_buffer.get(), name_length);
-    if (ProgramManager::HasBuiltInPrefix(service_name))
-      continue;
-    // Unlike when binding uniforms, we expect the driver to give correct
-    // names: "name" for simple variable, "name[0]" for an array.
-    GLsizei query_length = 0;
-    GLint query_results[base::size(kQueryProperties)] = {
-        0,
-    };
-    glGetProgramResourceiv(service_id_, GL_FRAGMENT_INPUT_NV, ii,
-                           base::size(kQueryProperties), kQueryProperties,
-                           base::size(query_results), &query_length,
-                           query_results);
-    DCHECK(query_length == base::size(kQueryProperties));
-
-    GLenum type = static_cast<GLenum>(query_results[1]);
-    GLsizei size = static_cast<GLsizei>(query_results[2]);
-    std::string client_name;
-
-    const sh::Varying* varying = fragment_shader->GetVaryingInfo(service_name);
-    const sh::ShaderVariable* info = nullptr;
-    if (varying &&
-        varying->findInfoByMappedName(service_name, &info, &client_name)) {
-      type = info->type;
-      size = std::max(1u, info->getOutermostArraySize());
-    } else {
-      // Should only happen if there are major bugs in the driver, ANGLE or if
-      // the shader translator is disabled.
-      DCHECK(feature_info().disable_shader_translator());
-      client_name = service_name;
-      if (size <= 0)
-        continue;
-    }
-
-    auto it = bind_fragment_input_location_map_.find(client_name);
-    if (it != bind_fragment_input_location_map_.end() && it->second >= 0 &&
-        query_results[0] >= 0) {
-      size_t client_location = static_cast<size_t>(it->second);
-      GLuint service_location = static_cast<GLuint>(query_results[0]);
-      fragment_input_infos_.push_back(
-          FragmentInputInfo(type, service_location));
-      client_location_indices.push_back(client_location);
-    }
-
-    if (size <= 1)
-      continue;
-    GLSLArrayName parsed_client_name(client_name);
-    GLSLArrayName parsed_service_name(service_name);
-    if (!parsed_client_name.IsArrayName() ||
-        parsed_client_name.element_index() != 0 ||
-        !parsed_service_name.IsArrayName() ||
-        parsed_service_name.element_index() != 0) {
-      NOTREACHED() << "GLSL array variable names should end with \"[0]\". "
-                      "Likely driver or ANGLE error.";
-      continue;
-    }
-
-    for (GLsizei jj = 1; jj < size; ++jj) {
-      std::string array_spec(std::string("[") + base::NumberToString(jj) + "]");
-      std::string client_element_name =
-          parsed_client_name.base_name() + array_spec;
-
-      it = bind_fragment_input_location_map_.find(client_element_name);
-      if (it != bind_fragment_input_location_map_.end() && it->second >= 0) {
-        size_t client_location = static_cast<size_t>(it->second);
-        std::string service_element_name =
-            parsed_service_name.base_name() + array_spec;
-        GLint service_location = glGetProgramResourceLocation(
-            service_id_, GL_FRAGMENT_INPUT_NV, service_element_name.c_str());
-        if (service_location >= 0) {
-          fragment_input_infos_.push_back(
-              FragmentInputInfo(type, static_cast<GLuint>(service_location)));
-          client_location_indices.push_back(client_location);
-        }
-      }
-    }
-  }
-  for (size_t i = 0; i < client_location_indices.size(); ++i) {
-    size_t client_location = client_location_indices[i];
-    // Before linking, we already validated that no two statically used fragment
-    // inputs are bound to the same location.
-    DCHECK(!fragment_input_locations_[client_location].IsActive());
-    fragment_input_locations_[client_location].SetActive(
-        &fragment_input_infos_[i]);
-  }
 }
 
 void Program::UpdateProgramOutputs() {
@@ -1398,7 +1265,6 @@ bool Program::Link(ShaderManager* manager,
           &bind_attrib_location_map_, transform_feedback_varyings_,
           transform_feedback_buffer_mode_, client);
       link = success != ProgramCache::PROGRAM_LOAD_SUCCESS;
-      UMA_HISTOGRAM_BOOLEAN("GPU.ProgramCache.LoadBinarySuccess", !link);
     }
   }
 
@@ -1442,10 +1308,6 @@ bool Program::Link(ShaderManager* manager,
                              "are not declared in vertex shader: " +
                              conflicting_name;
       set_log_info(ProcessLogInfo(info_log).c_str());
-      return false;
-    }
-    if (DetectFragmentInputLocationBindingConflicts()) {
-      set_log_info("glBindFragmentInputLocationCHROMIUM() conflicts");
       return false;
     }
     if (DetectProgramOutputLocationBindingConflicts()) {
@@ -1509,7 +1371,7 @@ bool Program::Link(ShaderManager* manager,
               (TimeTicks::Now() - before_time).InMicroseconds()),
           1,
           static_cast<base::HistogramBase::Sample>(
-              TimeDelta::FromSeconds(10).InMicroseconds()),
+              base::Seconds(10).InMicroseconds()),
           50);
     } else {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
@@ -1518,7 +1380,7 @@ bool Program::Link(ShaderManager* manager,
               (TimeTicks::Now() - before_time).InMicroseconds()),
           1,
           static_cast<base::HistogramBase::Sample>(
-              TimeDelta::FromSeconds(1).InMicroseconds()),
+              base::Seconds(1).InMicroseconds()),
           50);
     }
   } else {
@@ -1687,28 +1549,6 @@ const sh::InterfaceBlock* Program::GetInterfaceBlockInfo(
   return nullptr;
 }
 
-const Program::FragmentInputInfo* Program::GetFragmentInputInfoByFakeLocation(
-    GLint fake_location) const {
-  if (fake_location < 0)
-    return nullptr;
-  size_t location_index = static_cast<size_t>(fake_location);
-  if (location_index >= fragment_input_locations_.size())
-    return nullptr;
-  if (!fragment_input_locations_[location_index].IsActive())
-    return nullptr;
-  return fragment_input_locations_[location_index].shader_variable();
-}
-
-bool Program::IsInactiveFragmentInputLocationByFakeLocation(
-    GLint fake_location) const {
-  if (fake_location < 0)
-    return true;
-  size_t location_index = static_cast<size_t>(fake_location);
-  if (location_index >= fragment_input_locations_.size())
-    return false;
-  return fragment_input_locations_[location_index].IsInactive();
-}
-
 bool Program::SetUniformLocationBinding(
     const std::string& name, GLint location) {
   std::string short_name;
@@ -1719,21 +1559,6 @@ bool Program::SetUniformLocationBinding(
   }
   bind_uniform_location_map_[short_name] = location;
   return true;
-}
-
-void Program::SetFragmentInputLocationBinding(const std::string& name,
-                                              GLint location) {
-  // The client wants to bind either "name" or "name[0]".
-  // GL ES 3.1 spec refers to active array names with language such as:
-  // "if the string identifies the base name of an active array, where the
-  // string would exactly match the name of the variable if the suffix "[0]"
-  // were appended to the string".
-
-  // At this point we can not know if the string identifies a simple variable,
-  // a base name of an array, or nothing.  Store both, so if user overwrites
-  // either, both still work correctly.
-  bind_fragment_input_location_map_[name] = location;
-  bind_fragment_input_location_map_[name + "[0]"] = location;
 }
 
 void Program::SetProgramOutputLocationBinding(const std::string& name,
@@ -2063,28 +1888,6 @@ bool Program::DetectVaryingsMismatch(std::string* conflicting_name) const {
                                              shader_version)) {
       *conflicting_name = name;
       return true;
-    }
-  }
-  return false;
-}
-
-bool Program::DetectFragmentInputLocationBindingConflicts() const {
-  auto* shader = attached_shaders_[ShaderTypeToIndex(GL_FRAGMENT_SHADER)].get();
-  if (!shader || !shader->valid())
-    return false;
-
-  std::set<GLint> location_binding_used;
-  for (auto it : bind_fragment_input_location_map_) {
-    // Find out if an fragment input is statically used in this program's
-    // shaders.
-    const std::string* mapped_name = shader->GetVaryingMappedName(it.first);
-    if (!mapped_name)
-      continue;
-    const sh::Varying* fragment_input = shader->GetVaryingInfo(*mapped_name);
-    if (fragment_input && fragment_input->staticUse) {
-      auto result = location_binding_used.insert(it.second);
-      if (!result.second)
-        return true;
     }
   }
   return false;

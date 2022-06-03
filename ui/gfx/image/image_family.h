@@ -99,6 +99,14 @@ class GFX_EXPORT ImageFamily {
 
   ImageFamily();
   ImageFamily(ImageFamily&& other);
+
+  // Even though the Images in the family are copyable (reference-counted), the
+  // family itself should not be implicitly copied, as it would result in a
+  // shallow clone of the entire map and updates to many reference counts.
+  // ImageFamily can be explicitly Clone()d, but std::move is preferred.
+  ImageFamily(const ImageFamily&) = delete;
+  ImageFamily& operator=(const ImageFamily&) = delete;
+
   ~ImageFamily();
 
   ImageFamily& operator=(ImageFamily&& other);
@@ -169,12 +177,6 @@ class GFX_EXPORT ImageFamily {
 
   // Map from (aspect ratio, width) to image.
   std::map<MapKey, gfx::Image> map_;
-
-  // Even though the Images in the family are copyable (reference-counted), the
-  // family itself should not be implicitly copied, as it would result in a
-  // shallow clone of the entire map and updates to many reference counts.
-  // ImageFamily can be explicitly Clone()d, but std::move is preferred.
-  DISALLOW_COPY_AND_ASSIGN(ImageFamily);
 };
 
 }  // namespace gfx

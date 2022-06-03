@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
@@ -27,23 +26,36 @@ class BleInitiatorOperation
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<ConnectToDeviceOperation<BleInitiatorFailureType>>
+    Create(BleConnectionManager* ble_connection_manager,
+           ConnectToDeviceOperation<BleInitiatorFailureType>::
+               ConnectionSuccessCallback success_callback,
+           const ConnectToDeviceOperation<BleInitiatorFailureType>::
+               ConnectionFailedCallback& failure_callback,
+           const DeviceIdPair& device_id_pair,
+           ConnectionPriority connection_priority,
+           scoped_refptr<base::TaskRunner> task_runner =
+               base::ThreadTaskRunnerHandle::Get());
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
     virtual std::unique_ptr<ConnectToDeviceOperation<BleInitiatorFailureType>>
-    BuildInstance(BleConnectionManager* ble_connection_manager,
-                  ConnectToDeviceOperation<BleInitiatorFailureType>::
-                      ConnectionSuccessCallback success_callback,
-                  const ConnectToDeviceOperation<BleInitiatorFailureType>::
-                      ConnectionFailedCallback& failure_callback,
-                  const DeviceIdPair& device_id_pair,
-                  ConnectionPriority connection_priority,
-                  scoped_refptr<base::TaskRunner> task_runner =
-                      base::ThreadTaskRunnerHandle::Get());
+    CreateInstance(BleConnectionManager* ble_connection_manager,
+                   ConnectToDeviceOperation<BleInitiatorFailureType>::
+                       ConnectionSuccessCallback success_callback,
+                   const ConnectToDeviceOperation<BleInitiatorFailureType>::
+                       ConnectionFailedCallback& failure_callback,
+                   const DeviceIdPair& device_id_pair,
+                   ConnectionPriority connection_priority,
+                   scoped_refptr<base::TaskRunner> task_runner) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  BleInitiatorOperation(const BleInitiatorOperation&) = delete;
+  BleInitiatorOperation& operator=(const BleInitiatorOperation&) = delete;
 
   ~BleInitiatorOperation() override;
 
@@ -73,8 +85,6 @@ class BleInitiatorOperation
   bool is_attempt_active_ = false;
 
   base::WeakPtrFactory<BleInitiatorOperation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BleInitiatorOperation);
 };
 
 }  // namespace secure_channel

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTATION_CONTEXT_OBSERVER_H_
 #define IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTATION_CONTEXT_OBSERVER_H_
 
+#import <UIKit/UIKit.h>
+
 #include "base/observer_list_types.h"
 #import "ios/chrome/browser/overlays/public/overlay_presentation_context.h"
 
@@ -22,6 +24,14 @@ class OverlayPresentationContextObserver : public base::CheckedObserver {
   // Called after |presentation_context|'s activation state changes.
   virtual void OverlayPresentationContextDidChangePresentationCapabilities(
       OverlayPresentationContext* presentation_context) {}
+
+  virtual void OverlayPresentationContextDidEnableUI(
+      OverlayPresentationContext* presentation_context) {}
+
+  // Called when |presentation_context| moves to |window|.
+  virtual void OverlayPresentationContextDidMoveToWindow(
+      OverlayPresentationContext* presentation_context,
+      UIWindow* window) {}
 };
 
 #endif  // IOS_CHROME_BROWSER_OVERLAYS_PUBLIC_OVERLAY_PRESENTATION_CONTEXT_OBSERVER_H_

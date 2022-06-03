@@ -6,6 +6,7 @@
 
 #include <memory>
 #include "base/memory/scoped_refptr.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_decoder_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -19,7 +20,7 @@ namespace {
 
 sk_sp<SkImage> CreateFrameAtIndex(DeferredImageDecoder* decoder, size_t index) {
   return SkImage::MakeFromGenerator(std::make_unique<SkiaPaintImageGenerator>(
-      decoder->CreateGenerator(index), index,
+      decoder->CreateGenerator(), index,
       cc::PaintImage::kDefaultGeneratorClientId));
 }
 
@@ -45,6 +46,7 @@ sk_sp<SkImage> CreateFrameAtIndex(DeferredImageDecoder* decoder, size_t index) {
 static void MixImages(const char* file_name,
                       size_t bytes_for_first_frame,
                       size_t later_frame) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   const Vector<char> file = ReadFile(file_name)->CopyAs<Vector<char>>();
 
   scoped_refptr<SharedBuffer> partial_file =
@@ -85,7 +87,7 @@ TEST(DeferredImageDecoderTestWoPlatform, mixImagesWebp) {
 }
 
 TEST(DeferredImageDecoderTestWoPlatform, mixImagesBmp) {
-  MixImages("/images/resources/lenna.bmp", 122u, 0u);
+  MixImages("/images/resources/gracehopper.bmp", 122u, 0u);
 }
 
 TEST(DeferredImageDecoderTestWoPlatform, mixImagesIco) {
@@ -93,12 +95,13 @@ TEST(DeferredImageDecoderTestWoPlatform, mixImagesIco) {
 }
 
 TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
+  base::test::SingleThreadTaskEnvironment task_environment;
   const char* test_files[] = {
       "/images/resources/animated.gif",
       "/images/resources/mu.png",
       "/images/resources/2-dht.jpg",
       "/images/resources/webp-animated.webp",
-      "/images/resources/lenna.bmp",
+      "/images/resources/gracehopper.bmp",
       "/images/resources/wrong-frame-dimensions.ico",
   };
 
@@ -112,7 +115,7 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
 
     // Truncated signature (only 1 byte).  Decoder instantiation should fail.
     scoped_refptr<SharedBuffer> buffer = SharedBuffer::Create<size_t>(data, 1u);
-    EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffImageType(*buffer));
+    EXPECT_FALSE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
     EXPECT_EQ(nullptr, DeferredImageDecoder::Create(
                            buffer, false, ImageDecoder::kAlphaPremultiplied,
                            ColorBehavior::Ignore()));
@@ -120,7 +123,7 @@ TEST(DeferredImageDecoderTestWoPlatform, fragmentedSignature) {
     // Append the rest of the data.  We should be able to sniff the signature
     // now, even if segmented.
     buffer->Append<size_t>(data + 1, contiguous.size() - 1);
-    EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffImageType(*buffer));
+    EXPECT_TRUE(ImageDecoder::HasSufficientDataToSniffMimeType(*buffer));
     std::unique_ptr<DeferredImageDecoder> decoder =
         DeferredImageDecoder::Create(buffer, false,
                                      ImageDecoder::kAlphaPremultiplied,

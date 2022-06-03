@@ -16,6 +16,7 @@
 #include "components/viz/common/resources/resource_format.h"
 #include "gpu/command_buffer/service/shared_image_backing_factory.h"
 #include "gpu/gpu_gles2_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gfx {
 class Size;
@@ -23,13 +24,21 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
+class DXGISharedHandleManager;
 class SharedImageBacking;
 struct Mailbox;
 
 class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
     : public SharedImageBackingFactory {
  public:
-  explicit SharedImageBackingFactoryD3D(bool use_passthrough);
+  SharedImageBackingFactoryD3D(
+      Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device,
+      scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager);
+
+  SharedImageBackingFactoryD3D(const SharedImageBackingFactoryD3D&) = delete;
+  SharedImageBackingFactoryD3D& operator=(const SharedImageBackingFactoryD3D&) =
+      delete;
+
   ~SharedImageBackingFactoryD3D() override;
 
   // Returns true if DXGI swap chain shared images for overlays are supported.
@@ -38,15 +47,16 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
   struct GPU_GLES2_EXPORT SwapChainBackings {
     SwapChainBackings(std::unique_ptr<SharedImageBacking> front_buffer,
                       std::unique_ptr<SharedImageBacking> back_buffer);
+
+    SwapChainBackings(const SwapChainBackings&) = delete;
+    SwapChainBackings& operator=(const SwapChainBackings&) = delete;
+
     ~SwapChainBackings();
     SwapChainBackings(SwapChainBackings&&);
     SwapChainBackings& operator=(SwapChainBackings&&);
 
     std::unique_ptr<SharedImageBacking> front_buffer;
     std::unique_ptr<SharedImageBacking> back_buffer;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(SwapChainBackings);
   };
 
   // Creates IDXGI Swap Chain and exposes front and back buffers as Shared Image
@@ -56,13 +66,18 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
                                     viz::ResourceFormat format,
                                     const gfx::Size& size,
                                     const gfx::ColorSpace& color_space,
+                                    GrSurfaceOrigin surface_origin,
+                                    SkAlphaType alpha_type,
                                     uint32_t usage);
 
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
+      SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage,
       bool is_thread_safe) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -70,6 +85,8 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
       viz::ResourceFormat format,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage,
       base::span<const uint8_t> pixel_data) override;
   std::unique_ptr<SharedImageBacking> CreateSharedImage(
@@ -77,36 +94,44 @@ class GPU_GLES2_EXPORT SharedImageBackingFactoryD3D
       int client_id,
       gfx::GpuMemoryBufferHandle handle,
       gfx::BufferFormat format,
+      gfx::BufferPlane plane,
       SurfaceHandle surface_handle,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage) override;
+  std::vector<std::unique_ptr<SharedImageBacking>> CreateSharedImageVideoPlanes(
+      base::span<const Mailbox> mailboxes,
+      gfx::GpuMemoryBufferHandle handle,
+      gfx::BufferFormat format,
+      const gfx::Size& size,
+      uint32_t usage) override;
+
+  bool IsSupported(uint32_t usage,
+                   viz::ResourceFormat format,
+                   bool thread_safe,
+                   gfx::GpuMemoryBufferType gmb_type,
+                   GrContextType gr_context_type,
+                   bool* allow_legacy_mailbox,
+                   bool is_pixel_used) override;
 
   // Returns true if the specified GpuMemoryBufferType can be imported using
   // this factory.
-  bool CanImportGpuMemoryBuffer(
-      gfx::GpuMemoryBufferType memory_buffer_type) override;
+  bool CanImportGpuMemoryBuffer(gfx::GpuMemoryBufferType memory_buffer_type,
+                                viz::ResourceFormat format);
+
+  Microsoft::WRL::ComPtr<ID3D11Device> GetDeviceForTesting() const {
+    return d3d11_device_;
+  }
 
  private:
-  // Wraps the optional swap chain buffer (front buffer/back buffer) and texture
-  // into GLimage and creates a GL texture and stores it as gles2::Texture or as
-  // gles2::TexturePassthrough in the backing that is created.
-  std::unique_ptr<SharedImageBacking> MakeBacking(
-      const Mailbox& mailbox,
-      viz::ResourceFormat format,
-      const gfx::Size& size,
-      const gfx::ColorSpace& color_space,
-      uint32_t usage,
-      Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
-      size_t buffer_index,
-      const Microsoft::WRL::ComPtr<ID3D11Texture2D> d3d11_texture,
-      base::win::ScopedHandle shared_handle);
+  bool UseMapOnDefaultTextures();
 
-  // Whether we're using the passthrough command decoder and should generate
-  // passthrough textures.
-  const bool use_passthrough_ = false;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  DISALLOW_COPY_AND_ASSIGN(SharedImageBackingFactoryD3D);
+  absl::optional<bool> map_on_default_textures_;
+
+  scoped_refptr<DXGISharedHandleManager> dxgi_shared_handle_manager_;
 };
 
 }  // namespace gpu

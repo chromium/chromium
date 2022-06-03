@@ -96,6 +96,9 @@ class GESTURE_DETECTION_EXPORT GestureProvider {
   // double-tap drag zoom).
   bool IsDoubleTapInProgress() const;
 
+  // Synthesizes and propagates gesture end events.
+  void SendSynthesizedEndEvents();
+
   // May be NULL if there is no currently active touch sequence.
   const ui::MotionEvent* current_down_event() const {
     return current_down_event_.get();

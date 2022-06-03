@@ -19,9 +19,9 @@ namespace crashpad {
 ExceptionHandlerProtocol::ClientInformation::ClientInformation()
     : exception_information_address(0),
       sanitization_information_address(0)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
       , crash_loop_before_time(0)
-#endif  // OS_LINUX
+#endif  // OS_LINUX || OS_CHROMEOS
 {}
 
 ExceptionHandlerProtocol::ClientToServerMessage::ClientToServerMessage()

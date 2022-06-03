@@ -12,5 +12,3 @@ per-file webview*.json=file://components/guest_view/OWNERS
 # New APIs or changes to existing APIs should be approved by an
 # extensions OWNER from //extensions/common/api/API_OWNERS.
 per-file file_manager_private*.idl=file://ui/file_manager/OWNERS
-
-# COMPONENT: Platform>Extensions>API

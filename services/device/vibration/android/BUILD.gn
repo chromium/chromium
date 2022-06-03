@@ -6,15 +6,14 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 generate_jni("vibration_jni_headers") {
-  sources = [
-    "java/src/org/chromium/device/vibration/VibrationManagerImpl.java",
-  ]
+  sources =
+      [ "java/src/org/chromium/device/vibration/VibrationManagerImpl.java" ]
 }
 
 android_library("vibration_manager_java") {
   visibility = [ "//services/device:*" ]
 
-  java_files =
+  sources =
       [ "java/src/org/chromium/device/vibration/VibrationManagerImpl.java" ]
 
   deps = [

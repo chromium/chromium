@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NOTIFICATIONS_NON_PERSISTENT_NOTIFICATION_HANDLER_H_
 #define CHROME_BROWSER_NOTIFICATIONS_NON_PERSISTENT_NOTIFICATION_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/notification_handler.h"
 
@@ -13,6 +12,10 @@
 class NonPersistentNotificationHandler : public NotificationHandler {
  public:
   NonPersistentNotificationHandler();
+  NonPersistentNotificationHandler(const NonPersistentNotificationHandler&) =
+      delete;
+  NonPersistentNotificationHandler& operator=(
+      const NonPersistentNotificationHandler&) = delete;
   ~NonPersistentNotificationHandler() override;
 
   // NotificationHandler implementation
@@ -25,8 +28,8 @@ class NonPersistentNotificationHandler : public NotificationHandler {
   void OnClick(Profile* profile,
                const GURL& origin,
                const std::string& notification_id,
-               const base::Optional<int>& action_index,
-               const base::Optional<base::string16>& reply,
+               const absl::optional<int>& action_index,
+               const absl::optional<std::u16string>& reply,
                base::OnceClosure completed_closure) override;
   void DisableNotifications(Profile* profile, const GURL& origin) override;
   void OpenSettings(Profile* profile, const GURL& origin) override;
@@ -43,8 +46,6 @@ class NonPersistentNotificationHandler : public NotificationHandler {
 
   base::WeakPtrFactory<NonPersistentNotificationHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(NonPersistentNotificationHandler);
 };
 
 #endif  // CHROME_BROWSER_NOTIFICATIONS_NON_PERSISTENT_NOTIFICATION_HANDLER_H_

@@ -104,17 +104,17 @@ class SimplifiedBackwardsTextIteratorAlgorithm {
 
   // Current position, not necessarily of the text being returned, but position
   // as we walk through the DOM tree.
-  Member<const Node> node_;
+  const Node* node_;
   int offset_;
   bool handled_node_;
   bool handled_children_;
   FullyClippedStateStackAlgorithm<Strategy> fully_clipped_stack_;
 
   // End of the range.
-  Member<const Node> start_node_;
+  const Node* start_node_;
   int start_offset_;
   // Start of the range.
-  Member<const Node> end_node_;
+  const Node* end_node_;
   int end_offset_;
 
   // Whether |node_| has advanced beyond the iteration range (i.e. start_node_).

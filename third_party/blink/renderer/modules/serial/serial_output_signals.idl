@@ -6,9 +6,9 @@
 
 dictionary SerialOutputSignals {
   // DTR (Data Terminal Ready)
-  boolean dtr;
+  boolean dataTerminalReady;
   // RTS (Request to Send)
-  boolean rts;
-  // BRK (Break)
-  boolean brk;
+  boolean requestToSend;
+  // BRK (Break), implemented as "brk" because "break" is a C++ keyword
+  [ImplementedAs=brk] boolean break;
 };

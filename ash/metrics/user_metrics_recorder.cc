@@ -7,10 +7,13 @@
 #include <memory>
 #include <vector>
 
+#include "ash/app_list/app_list_metrics.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/login/ui/lock_screen.h"
 #include "ash/metrics/demo_session_metrics_recorder.h"
 #include "ash/metrics/desktop_task_switch_metric_recorder.h"
 #include "ash/metrics/pointer_metrics_recorder.h"
+#include "ash/metrics/stylus_metrics_recorder.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/shelf_model.h"
@@ -23,11 +26,14 @@
 #include "ash/wm/window_state.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "components/prefs/pref_service.h"
 #include "ui/aura/window.h"
 
 namespace ash {
 
 namespace {
+
+using ::chromeos::WindowStateType;
 
 // Time in seconds between calls to "RecordPeriodicMetrics".
 const int kAshPeriodicMetricsTimeInSeconds = 30 * 60;
@@ -56,8 +62,8 @@ ActiveWindowStateType GetActiveWindowState() {
       case WindowStateType::kFullscreen:
         active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_FULLSCREEN;
         break;
-      case WindowStateType::kLeftSnapped:
-      case WindowStateType::kRightSnapped:
+      case WindowStateType::kPrimarySnapped:
+      case WindowStateType::kSecondarySnapped:
         active_window_state_type = ACTIVE_WINDOW_STATE_TYPE_SNAPPED;
         break;
       case WindowStateType::kPinned:
@@ -247,6 +253,12 @@ void UserMetricsRecorder::RecordUserMetricsAction(UserMetricsAction action) {
       break;
     case UMA_SHELF_ALIGNMENT_SET_RIGHT:
       RecordAction(UserMetricsAction("Shelf_AlignmentSetRight"));
+      break;
+    case UMA_SHELF_ITEM_PINNED:
+      RecordAction(UserMetricsAction("Shelf_ItemPinned"));
+      break;
+    case UMA_SHELF_ITEM_UNPINNED:
+      RecordAction(UserMetricsAction("Shelf_ItemUnpinned"));
       break;
     case UMA_STATUS_AREA_AUDIO_CURRENT_INPUT_DEVICE:
       RecordAction(UserMetricsAction("StatusArea_Audio_CurrentInputDevice"));
@@ -442,20 +454,22 @@ void UserMetricsRecorder::OnShellInitialized() {
   // Lazy creation of the DesktopTaskSwitchMetricRecorder because it accesses
   // Shell::Get() which is not available when |this| is instantiated.
   if (!desktop_task_switch_metric_recorder_) {
-    desktop_task_switch_metric_recorder_.reset(
-        new DesktopTaskSwitchMetricRecorder());
+    desktop_task_switch_metric_recorder_ =
+        std::make_unique<DesktopTaskSwitchMetricRecorder>();
   }
   pointer_metrics_recorder_ = std::make_unique<PointerMetricsRecorder>();
+  stylus_metrics_recorder_ = std::make_unique<StylusMetricsRecorder>();
 }
 
 void UserMetricsRecorder::OnShellShuttingDown() {
   demo_session_metrics_recorder_.reset();
   desktop_task_switch_metric_recorder_.reset();
 
-  // To clean up pointer_metrics_recorder_ properly, a valid shell instance is
-  // required, so explicitly delete it before the shell instance becomes
-  // invalid.
+  // To clean up pointer_metrics_recorder_ and stylus_metrics_recorder_
+  // properly, a valid shell instance is required, so explicitly delete them
+  // before the shell instance becomes invalid.
   pointer_metrics_recorder_.reset();
+  stylus_metrics_recorder_.reset();
 }
 
 void UserMetricsRecorder::RecordPeriodicMetrics() {
@@ -475,8 +489,14 @@ void UserMetricsRecorder::RecordPeriodicMetrics() {
 
   if (IsUserInActiveDesktopEnvironment()) {
     RecordShelfItemCounts();
+    RecordPeriodicAppListMetrics();
     UMA_HISTOGRAM_COUNTS_100("Ash.NumberOfVisibleWindowsInPrimaryDisplay",
                              GetNumVisibleWindowsInPrimaryDisplay());
+
+    base::UmaHistogramBoolean(
+        "Ash.AppNotificationBadgingPref",
+        Shell::Get()->session_controller()->GetActivePrefService()->GetBoolean(
+            prefs::kAppNotificationBadgingEnabled));
   }
 
   // TODO(bruthig): Find out if this should only be logged when the user is
@@ -493,9 +513,8 @@ bool UserMetricsRecorder::IsUserInActiveDesktopEnvironment() const {
 }
 
 void UserMetricsRecorder::StartTimer() {
-  timer_.Start(FROM_HERE,
-               base::TimeDelta::FromSeconds(kAshPeriodicMetricsTimeInSeconds),
-               this, &UserMetricsRecorder::RecordPeriodicMetrics);
+  timer_.Start(FROM_HERE, base::Seconds(kAshPeriodicMetricsTimeInSeconds), this,
+               &UserMetricsRecorder::RecordPeriodicMetrics);
 }
 
 }  // namespace ash

@@ -5,33 +5,25 @@
       "bounds": [785, 1895],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='ul'",
-          "rect": [677, 52, 100, 100],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [677, 52, 100, 100]
       ],
       "transform": 1
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='scrollpanel'",
+      "bounds": [100, 100],
+      "contentsOpaque": true,
+      "backgroundColor": "#FF0000",
+      "invalidations": [
+        [0, 0, 100, 100]
+      ],
+      "transform": 2
     },
     {
       "name": "VerticalScrollbar",
       "position": [785, 0],
       "bounds": [15, 600]
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='ul'",
-      "bounds": [100, 100],
-      "contentsOpaque": true,
-      "backgroundColor": "#FF0000",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='ul'",
-          "rect": [0, 0, 100, 100],
-          "reason": "full layer"
-        }
-      ],
-      "transform": 2
     }
   ],
   "transforms": [

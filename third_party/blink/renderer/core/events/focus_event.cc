@@ -25,6 +25,7 @@
 
 #include "third_party/blink/renderer/core/events/focus_event.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_focus_event_init.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_dispatcher.h"
 #include "third_party/blink/renderer/core/dom/events/event_path.h"
@@ -65,7 +66,7 @@ FocusEvent::FocusEvent(const AtomicString& type,
     related_target_ = initializer->relatedTarget();
 }
 
-void FocusEvent::Trace(blink::Visitor* visitor) {
+void FocusEvent::Trace(Visitor* visitor) const {
   visitor->Trace(related_target_);
   UIEvent::Trace(visitor);
 }

@@ -18,9 +18,10 @@ class ScrollElasticityHelperImpl : public ScrollElasticityHelper {
 
   bool IsUserScrollable() const override;
   gfx::Vector2dF StretchAmount() const override;
+  gfx::Size ScrollBounds() const override;
   void SetStretchAmount(const gfx::Vector2dF& stretch_amount) override;
-  gfx::ScrollOffset ScrollOffset() const override;
-  gfx::ScrollOffset MaxScrollOffset() const override;
+  gfx::Vector2dF ScrollOffset() const override;
+  gfx::Vector2dF MaxScrollOffset() const override;
   void ScrollBy(const gfx::Vector2dF& delta) override;
   void RequestOneBeginFrame() override;
 
@@ -46,6 +47,12 @@ gfx::Vector2dF ScrollElasticityHelperImpl::StretchAmount() const {
   return host_impl_->active_tree()->elastic_overscroll()->Current(true);
 }
 
+gfx::Size ScrollElasticityHelperImpl::ScrollBounds() const {
+  return host_impl_->OuterViewportScrollNode()
+             ? host_impl_->OuterViewportScrollNode()->container_bounds
+             : gfx::Size();
+}
+
 void ScrollElasticityHelperImpl::SetStretchAmount(
     const gfx::Vector2dF& stretch_amount) {
   if (stretch_amount == StretchAmount())
@@ -58,11 +65,11 @@ void ScrollElasticityHelperImpl::SetStretchAmount(
   host_impl_->SetFullViewportDamage();
 }
 
-gfx::ScrollOffset ScrollElasticityHelperImpl::ScrollOffset() const {
+gfx::Vector2dF ScrollElasticityHelperImpl::ScrollOffset() const {
   return host_impl_->active_tree()->TotalScrollOffset();
 }
 
-gfx::ScrollOffset ScrollElasticityHelperImpl::MaxScrollOffset() const {
+gfx::Vector2dF ScrollElasticityHelperImpl::MaxScrollOffset() const {
   return host_impl_->active_tree()->TotalMaxScrollOffset();
 }
 
@@ -72,7 +79,7 @@ void ScrollElasticityHelperImpl::ScrollBy(const gfx::Vector2dF& delta) {
                                      : host_impl_->InnerViewportScrollNode();
   if (root_scroll_node) {
     LayerTreeImpl* tree_impl = host_impl_->active_tree();
-    tree_impl->property_trees()->scroll_tree.ScrollBy(root_scroll_node, delta,
+    tree_impl->property_trees()->scroll_tree.ScrollBy(*root_scroll_node, delta,
                                                       tree_impl);
   }
 }

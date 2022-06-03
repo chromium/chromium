@@ -1,15 +1,20 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+import {RootPath, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {recursiveExpand, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
  * Constants for interacting with the directory tree on the LHS of Files app.
  * When we are not in guest mode, we fill Google Drive with the basic entry set
  * which causes an extra tree-item to be added.
  */
-const TREEITEM_DRIVE = '#directory-tree [entry-label="My Drive"]';
-const TREEITEM_DOWNLOADS = '#directory-tree [entry-label="Downloads"]';
+export const TREEITEM_DRIVE = '#directory-tree [entry-label="My Drive"]';
+export const TREEITEM_DOWNLOADS = '#directory-tree [entry-label="Downloads"]';
 
 /**
  * Selects the first item in the file list.
@@ -91,8 +96,7 @@ async function createNewFolder(appId, initialEntrySet, selector) {
   chrome.test.assertTrue('renaming' in elements[0].attributes);
 
   // Type the test folder name.
-  await remoteCall.callRemoteTestUtil(
-      'inputText', appId, [textInput, 'Test Folder Name']);
+  await remoteCall.inputText(appId, textInput, 'Test Folder Name');
 
   // Press the Enter key.
   key = [textInput, 'Enter', false, false, false];
@@ -123,39 +127,10 @@ async function createNewFolder(appId, initialEntrySet, selector) {
       'Actual text was: ' + elements[0].text);
 }
 
-/**
- * Expands the directory tree item given by |selector| (Downloads or Drive)
- * to reveal its subtree child items.
- *
- * @param {string} appId The Files app windowId.
- * @param {string} selector Downloads or Drive directory tree item selector.
- * @return {Promise} Promise fulfilled on success.
- */
-async function expandRoot(appId, selector) {
-  const expandIcon =
-      selector + ' > .tree-row[has-children=true] > .expand-icon';
-
-  // Wait for the subtree expand icon to appear.
-  await remoteCall.waitForElement(appId, expandIcon);
-
-  // Click the expand icon to expand the subtree.
-  chrome.test.assertTrue(await remoteCall.callRemoteTestUtil(
-      'fakeMouseClick', appId, [expandIcon]));
-
-  // Wait for the subtree to expand and display its children.
-  const expandedSubtree = selector + ' > .tree-children[expanded]';
-  const element = await remoteCall.waitForElement(appId, expandedSubtree);
-
-  // Verify expected subtree child item name.
-  if (element.text.indexOf('photos') === -1) {
-    chrome.test.fail('directory subtree child item "photos" not found');
-  }
-}
-
 testcase.selectCreateFolderDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  await expandRoot(appId, TREEITEM_DOWNLOADS);
+  await recursiveExpand(appId, '/My files/Downloads');
   await selectFirstFileListItem(appId);
   await createNewFolder(appId, BASIC_LOCAL_ENTRY_SET, TREEITEM_DOWNLOADS);
 };
@@ -163,14 +138,14 @@ testcase.selectCreateFolderDownloads = async () => {
 testcase.createFolderDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  await expandRoot(appId, TREEITEM_DOWNLOADS);
+  await recursiveExpand(appId, '/My files/Downloads');
   await createNewFolder(appId, BASIC_LOCAL_ENTRY_SET, TREEITEM_DOWNLOADS);
 };
 
 testcase.createFolderNestedDownloads = async () => {
   const appId = await setupAndWaitUntilReady(
       RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET, []);
-  await expandRoot(appId, TREEITEM_DOWNLOADS);
+  await recursiveExpand(appId, '/My files/Downloads');
   await remoteCall.navigateWithDirectoryTree(
       appId, '/Downloads/photos', 'My files/Downloads');
   await createNewFolder(appId, [], TREEITEM_DOWNLOADS);
@@ -179,6 +154,6 @@ testcase.createFolderNestedDownloads = async () => {
 testcase.createFolderDrive = async () => {
   const appId =
       await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
-  await expandRoot(appId, TREEITEM_DRIVE);
+  await recursiveExpand(appId, '/Google Drive/My Drive');
   await createNewFolder(appId, BASIC_DRIVE_ENTRY_SET, TREEITEM_DRIVE);
 };

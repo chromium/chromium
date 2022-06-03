@@ -33,6 +33,12 @@ class MailboxVideoFrameConverterTest : public testing::Test {
             base::BindRepeating(&UnwrapVideoFrame),
             base::ThreadTaskRunnerHandle::Get(),
             base::BindRepeating(&GetGpuChannel))) {}
+
+  MailboxVideoFrameConverterTest(const MailboxVideoFrameConverterTest&) =
+      delete;
+  MailboxVideoFrameConverterTest& operator=(
+      const MailboxVideoFrameConverterTest&) = delete;
+
   ~MailboxVideoFrameConverterTest() override = default;
 
   void TearDown() override {
@@ -46,8 +52,6 @@ class MailboxVideoFrameConverterTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<VideoFrameConverter> converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(MailboxVideoFrameConverterTest);
 };
 
 TEST_F(MailboxVideoFrameConverterTest, Initialize) {

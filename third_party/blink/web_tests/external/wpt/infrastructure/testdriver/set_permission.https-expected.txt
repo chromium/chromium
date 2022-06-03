@@ -1,5 +1,0 @@
-This is a testharness.js-based test.
-FAIL Grant Permission for one realm promise_test: Unhandled rejection with value: object "Error: unimplemented"
-FAIL Deny Permission, omit one realm promise_test: Unhandled rejection with value: object "Error: unimplemented"
-Harness: the test ran to completion.
-

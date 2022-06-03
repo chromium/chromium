@@ -4,9 +4,8 @@
 
 #include "content/browser/service_worker/service_worker_script_loader_factory.h"
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
 #include "content/browser/service_worker/embedded_worker_test_helper.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_registration.h"
@@ -18,6 +17,9 @@
 #include "services/network/test/test_url_loader_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -32,7 +34,6 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
   void SetUp() override {
     helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
     ServiceWorkerContextCore* context = helper_->context();
-    context->storage()->LazyInitializeForTest();
 
     scope_ = GURL("https://host/scope");
     script_url_ = GURL("https://host/script.js");
@@ -40,17 +41,18 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
     blink::mojom::ServiceWorkerRegistrationOptions options;
     options.scope = scope_;
     registration_ = base::MakeRefCounted<ServiceWorkerRegistration>(
-        options, 1L /* registration_id */, context->AsWeakPtr());
-    version_ = base::MakeRefCounted<ServiceWorkerVersion>(
-        registration_.get(), script_url_, blink::mojom::ScriptType::kClassic,
-        context->storage()->NewVersionId(), context->AsWeakPtr());
+        options, blink::StorageKey(url::Origin::Create(scope_)),
+        1L /* registration_id */, context->AsWeakPtr());
+    version_ = CreateNewServiceWorkerVersion(
+        context->registry(), registration_.get(), script_url_,
+        blink::mojom::ScriptType::kClassic);
 
-    provider_host_ = CreateProviderHostForServiceWorkerContext(
+    worker_host_ = CreateServiceWorkerHost(
         helper_->mock_render_process_id(), true /* is_parent_frame_secure */,
         version_.get(), context->AsWeakPtr(), &remote_endpoint_);
 
     factory_ = std::make_unique<ServiceWorkerScriptLoaderFactory>(
-        helper_->context()->AsWeakPtr(), provider_host_,
+        helper_->context()->AsWeakPtr(), worker_host_->GetWeakPtr(),
         helper_->url_loader_factory_getter()->GetNetworkFactory());
   }
 
@@ -60,12 +62,12 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
     mojo::PendingRemote<network::mojom::URLLoader> loader;
     network::ResourceRequest resource_request;
     resource_request.url = script_url_;
-    resource_request.resource_type =
-        static_cast<int>(ResourceType::kServiceWorker);
+    resource_request.destination =
+        network::mojom::RequestDestination::kServiceWorker;
     factory_->CreateLoaderAndStart(
-        loader.InitWithNewPipeAndPassReceiver(), 0 /* routing_id */,
-        0 /* request_id */, network::mojom::kURLLoadOptionNone,
-        resource_request, client->CreateRemote(),
+        loader.InitWithNewPipeAndPassReceiver(), 0 /* request_id */,
+        network::mojom::kURLLoadOptionNone, resource_request,
+        client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
     return loader;
   }
@@ -79,8 +81,8 @@ class ServiceWorkerScriptLoaderFactoryTest : public testing::Test {
   GURL script_url_;
   scoped_refptr<ServiceWorkerRegistration> registration_;
   scoped_refptr<ServiceWorkerVersion> version_;
-  base::WeakPtr<ServiceWorkerProviderHost> provider_host_;
-  ServiceWorkerRemoteProviderEndpoint remote_endpoint_;
+  std::unique_ptr<ServiceWorkerHost> worker_host_;
+  ServiceWorkerRemoteContainerEndpoint remote_endpoint_;
   std::unique_ptr<ServiceWorkerScriptLoaderFactory> factory_;
 };
 
@@ -102,8 +104,8 @@ TEST_F(ServiceWorkerScriptLoaderFactoryTest, Redundant) {
   EXPECT_EQ(net::ERR_ABORTED, client.completion_status().error_code);
 }
 
-TEST_F(ServiceWorkerScriptLoaderFactoryTest, NoProviderHost) {
-  helper_->context()->RemoveProviderHost(provider_host_->provider_id());
+TEST_F(ServiceWorkerScriptLoaderFactoryTest, NoWorkerHost) {
+  worker_host_.reset();
 
   network::TestURLLoaderClient client;
   mojo::PendingRemote<network::mojom::URLLoader> loader =
@@ -124,28 +126,24 @@ TEST_F(ServiceWorkerScriptLoaderFactoryTest, ContextDestroyed) {
 }
 
 // This tests copying script and creating resume type
-// ServiceWorkerNewScriptLoaders when ServiceWorkerImportedScriptUpdateCheck
-// is enabled.
+// ServiceWorkerNewScriptLoaders.
 class ServiceWorkerScriptLoaderFactoryCopyResumeTest
     : public ServiceWorkerScriptLoaderFactoryTest {
  public:
-  ServiceWorkerScriptLoaderFactoryCopyResumeTest() {
-    feature_list_.InitAndEnableFeature(
-        blink::features::kServiceWorkerImportedScriptUpdateCheck);
-  }
   ~ServiceWorkerScriptLoaderFactoryCopyResumeTest() override = default;
 
   void SetUp() override {
     ServiceWorkerScriptLoaderFactoryTest::SetUp();
-    WriteToDiskCacheSync(helper_->context()->storage(), script_url_,
-                         kOldResourceId, kOldHeaders, kOldData, std::string());
+    WriteToDiskCacheWithIdSync(helper_->context()->GetStorageControl(),
+                               script_url_, kOldResourceId, kOldHeaders,
+                               kOldData, std::string());
   }
 
   void CheckResponse(const std::string& expected_body) {
     // The response should also be stored in the storage.
     EXPECT_TRUE(ServiceWorkerUpdateCheckTestUtils::VerifyStoredResponse(
         version_->script_cache_map()->LookupResourceId(script_url_),
-        helper_->context()->storage(), expected_body));
+        helper_->context()->GetStorageControl(), expected_body));
 
     EXPECT_TRUE(client_.has_received_response());
     EXPECT_TRUE(client_.response_body().is_valid());
@@ -157,7 +155,6 @@ class ServiceWorkerScriptLoaderFactoryCopyResumeTest
   }
 
  protected:
-  base::test::ScopedFeatureList feature_list_;
   network::TestURLLoaderClient client_;
   const std::vector<std::pair<std::string, std::string>> kOldHeaders = {
       {"Content-Type", "text/javascript"},
@@ -191,24 +188,17 @@ TEST_F(ServiceWorkerScriptLoaderFactoryCopyResumeTest,
        CreateResumeTypeScriptLoader) {
   const std::string kNewHeaders =
       "HTTP/1.0 200 OK\0Content-Type: text/javascript\0Content-Length: 0\0\0";
-  const std::string kNewData = "";
+  const std::string kNewData;
 
-  mojo::ScopedDataPipeProducerHandle network_producer;
-  mojo::ScopedDataPipeConsumerHandle network_consumer;
-
-  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(nullptr, &network_producer,
-                                                 &network_consumer));
   ServiceWorkerUpdateCheckTestUtils::CreateAndSetComparedScriptInfoForVersion(
       script_url_, 0, kNewHeaders, kNewData, kOldResourceId, kNewResourceId,
       helper_.get(), ServiceWorkerUpdatedScriptLoader::LoaderState::kCompleted,
       ServiceWorkerUpdatedScriptLoader::WriterState::kCompleted,
-      std::move(network_consumer),
       ServiceWorkerSingleScriptUpdateChecker::Result::kDifferent,
-      version_.get());
+      version_.get(), nullptr);
 
   mojo::PendingRemote<network::mojom::URLLoader> loader =
       CreateTestLoaderAndStart(&client_);
-  network_producer.reset();
   client_.RunUntilComplete();
 
   EXPECT_EQ(net::OK, client_.completion_status().error_code);

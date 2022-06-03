@@ -27,8 +27,9 @@
 
 #include <memory>
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_wave_shaper_options.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
-#include "third_party/blink/renderer/modules/webaudio/wave_shaper_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 
@@ -39,7 +40,10 @@ WaveShaperHandler::WaveShaperHandler(AudioNode& node, float sample_rate)
           kNodeTypeWaveShaper,
           node,
           sample_rate,
-          std::make_unique<WaveShaperProcessor>(sample_rate, 1)) {
+          std::make_unique<WaveShaperProcessor>(
+              sample_rate,
+              1,
+              node.context()->GetDeferredTaskHandler().RenderQuantumFrames())) {
   Initialize();
 }
 
@@ -82,16 +86,26 @@ WaveShaperProcessor* WaveShaperNode::GetWaveShaperProcessor() const {
 }
 
 void WaveShaperNode::SetCurveImpl(const float* curve_data,
-                                  unsigned curve_length,
+                                  size_t curve_length,
                                   ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (curve_data && curve_length < 2) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidAccessError,
-        ExceptionMessages::IndexExceedsMinimumBound<unsigned>("curve length",
-                                                              curve_length, 2));
-    return;
+  unsigned length = static_cast<unsigned>(curve_length);
+
+  if (curve_data) {
+    if (!base::CheckedNumeric<unsigned>(curve_length).AssignIfValid(&length)) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kNotSupportedError,
+          "The curve length exceeds the maximum supported length");
+      return;
+    }
+    if (length < 2) {
+      exception_state.ThrowDOMException(
+          DOMExceptionCode::kInvalidAccessError,
+          ExceptionMessages::IndexExceedsMinimumBound<unsigned>("curve length",
+                                                                length, 2));
+      return;
+    }
   }
 
   // This is to synchronize with the changes made in
@@ -99,7 +113,7 @@ void WaveShaperNode::SetCurveImpl(const float* curve_data,
   // Initialize() and Uninitialize(), changing the number of kernels.
   BaseAudioContext::GraphAutoLocker context_locker(context());
 
-  GetWaveShaperProcessor()->SetCurve(curve_data, curve_length);
+  GetWaveShaperProcessor()->SetCurve(curve_data, length);
 }
 
 void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
@@ -107,8 +121,7 @@ void WaveShaperNode::setCurve(NotShared<DOMFloat32Array> curve,
   DCHECK(IsMainThread());
 
   if (curve) {
-    SetCurveImpl(curve.View()->Data(),
-                 curve.View()->deprecatedLengthAsUnsigned(), exception_state);
+    SetCurveImpl(curve->Data(), curve->length(), exception_state);
   } else {
     SetCurveImpl(nullptr, 0, exception_state);
   }
@@ -129,7 +142,7 @@ NotShared<DOMFloat32Array> WaveShaperNode::curve() {
   unsigned size = curve->size();
 
   NotShared<DOMFloat32Array> result(DOMFloat32Array::Create(size));
-  memcpy(result.View()->Data(), curve->data(), sizeof(float) * size);
+  memcpy(result->Data(), curve->data(), sizeof(float) * size);
 
   return result;
 }

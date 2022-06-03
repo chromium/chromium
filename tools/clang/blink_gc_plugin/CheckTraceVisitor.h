@@ -41,6 +41,8 @@ class CheckTraceVisitor : public clang::RecursiveASTVisitor<CheckTraceVisitor> {
                            clang::CXXRecordDecl* callee,
                            clang::Expr* arg);
   bool CheckRegisterWeakMembers(clang::CXXMemberCallExpr* call);
+  bool CheckImplicitCastExpr(clang::CallExpr* call,
+                             clang::ImplicitCastExpr* expr);
 
   bool IsWeakCallback() const;
 

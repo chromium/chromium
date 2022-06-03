@@ -7,17 +7,18 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
-#include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/trace_event/trace_config.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/system_trace_writer.h"
 #include "services/tracing/public/mojom/constants.mojom.h"
@@ -51,8 +52,8 @@ class CrOSSystemTracingSession {
       return;
     }
     debug_daemon_->SetStopAgentTracingTaskRunner(
-        base::CreateSequencedTaskRunner(
-            {base::ThreadPool(), base::MayBlock(),
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(),
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN}));
     debug_daemon_->StartAgentTracing(
         trace_config,
@@ -101,20 +102,23 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     return instance.get();
   }
 
+  CrOSDataSource(const CrOSDataSource&) = delete;
+  CrOSDataSource& operator=(const CrOSDataSource&) = delete;
+
   // Called from the tracing::PerfettoProducer on its sequence.
-  void StartTracing(
+  void StartTracingImpl(
       tracing::PerfettoProducer* perfetto_producer,
       const perfetto::DataSourceConfig& data_source_config) override {
-    base::PostTask(FROM_HERE, {BrowserThread::UI},
-                   base::BindOnce(&CrOSDataSource::StartTracingOnUI,
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&CrOSDataSource::StartTracingOnUI,
                                   base::Unretained(this), perfetto_producer,
                                   data_source_config));
   }
 
   // Called from the tracing::PerfettoProducer on its sequence.
-  void StopTracing(base::OnceClosure stop_complete_callback) override {
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+  void StopTracingImpl(base::OnceClosure stop_complete_callback) override {
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&CrOSDataSource::StopTracingOnUI, base::Unretained(this),
                        std::move(stop_complete_callback)));
   }
@@ -135,7 +139,9 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   void StartTracingOnUI(tracing::PerfettoProducer* producer,
                         const perfetto::DataSourceConfig& data_source_config) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(ui_sequence_checker_);
+    DCHECK(!producer_);
     DCHECK(!session_);
+    producer_ = producer;
     target_buffer_ = data_source_config.target_buffer();
     session_ = std::make_unique<CrOSSystemTracingSession>();
     session_->StartTracing(
@@ -190,8 +196,8 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
     trace_writer_.reset();
 
     // Destruction and reset of fields should happen on the UI thread.
-    base::PostTask(
-        FROM_HERE, {BrowserThread::UI},
+    GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(&CrOSDataSource::OnTraceDataOnUI, base::Unretained(this),
                        std::move(stop_complete_callback)));
   }
@@ -209,6 +215,7 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   }
 
   SEQUENCE_CHECKER(ui_sequence_checker_);
+  tracing::PerfettoProducer* producer_ = nullptr;
   std::unique_ptr<CrOSSystemTracingSession> session_;
   bool session_started_ = false;
   base::OnceClosure on_session_started_callback_;
@@ -216,8 +223,6 @@ class CrOSDataSource : public tracing::PerfettoTracedProcess::DataSourceBase {
   std::unique_ptr<
       tracing::SystemTraceWriter<scoped_refptr<base::RefCountedString>>>
       trace_writer_;
-
-  DISALLOW_COPY_AND_ASSIGN(CrOSDataSource);
 };
 
 }  // namespace

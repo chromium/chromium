@@ -23,9 +23,9 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
-#include "third_party/skia/include/effects/SkColorFilterImageFilter.h"
 
 namespace blink {
 
@@ -39,7 +39,7 @@ FilterEffect::FilterEffect(Filter* filter)
 
 FilterEffect::~FilterEffect() = default;
 
-void FilterEffect::Trace(blink::Visitor* visitor) {
+void FilterEffect::Trace(Visitor* visitor) const {
   visitor->Trace(input_effects_);
   visitor->Trace(filter_);
 }
@@ -59,7 +59,7 @@ FloatRect FilterEffect::MapInputs(const FloatRect& rect) const {
   }
   FloatRect input_union;
   for (const auto& effect : input_effects_)
-    input_union.Unite(effect->MapRect(rect));
+    input_union.Union(effect->MapRect(rect));
   return input_union;
 }
 
@@ -74,7 +74,7 @@ FloatRect FilterEffect::ApplyBounds(const FloatRect& rect) const {
   FloatRect bounds = AbsoluteBounds();
   if (AffectsTransparentPixels())
     return bounds;
-  return Intersection(rect, bounds);
+  return IntersectRects(rect, bounds);
 }
 
 FloatRect FilterEffect::MapRect(const FloatRect& rect) const {
@@ -133,21 +133,23 @@ bool FilterEffect::InputsTaintOrigin() const {
 }
 
 sk_sp<PaintFilter> FilterEffect::CreateTransparentBlack() const {
-  PaintFilter::CropRect rect = GetCropRect();
   sk_sp<SkColorFilter> color_filter =
       SkColorFilters::Blend(0, SkBlendMode::kClear);
-  return sk_make_sp<ColorFilterPaintFilter>(std::move(color_filter), nullptr,
-                                            &rect);
+  return sk_make_sp<ColorFilterPaintFilter>(
+      std::move(color_filter), nullptr, base::OptionalOrNullptr(GetCropRect()));
 }
 
-PaintFilter::CropRect FilterEffect::GetCropRect() const {
-  if (!FilterPrimitiveSubregion().IsEmpty()) {
-    FloatRect rect =
-        GetFilter()->MapLocalRectToAbsoluteRect(FilterPrimitiveSubregion());
-    return PaintFilter::CropRect(rect);
-  } else {
-    return PaintFilter::CropRect(SkRect::MakeEmpty(), 0);
-  }
+absl::optional<PaintFilter::CropRect> FilterEffect::GetCropRect() const {
+  if (!ClipsToBounds())
+    return {};
+  FloatRect computed_bounds = FilterPrimitiveSubregion();
+  // This and the filter region check is a workaround for crbug.com/512453.
+  if (computed_bounds.IsEmpty())
+    return {};
+  FloatRect filter_region = GetFilter()->FilterRegion();
+  if (!filter_region.IsEmpty())
+    computed_bounds.Intersect(filter_region);
+  return GetFilter()->MapLocalRectToAbsoluteRect(computed_bounds);
 }
 
 static int GetImageFilterIndex(InterpolationSpace interpolation_space,

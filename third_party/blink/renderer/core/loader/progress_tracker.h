@@ -26,9 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -42,7 +39,14 @@ namespace blink {
 class LocalFrameClient;
 class LocalFrame;
 class ResourceResponse;
-struct ProgressItem;
+
+struct ProgressItem {
+  USING_FAST_MALLOC(ProgressItem);
+
+ public:
+  int64_t bytes_received = 0;
+  int64_t estimated_length = 0;
+};
 
 // FIXME: This is only used on Android. Android is the only Chrome
 // browser which shows a progress bar during loading.
@@ -51,8 +55,10 @@ class CORE_EXPORT ProgressTracker final
     : public GarbageCollected<ProgressTracker> {
  public:
   explicit ProgressTracker(LocalFrame*);
+  ProgressTracker(const ProgressTracker&) = delete;
+  ProgressTracker& operator=(const ProgressTracker&) = delete;
   ~ProgressTracker();
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
   void Dispose();
 
   double EstimatedProgress() const;
@@ -92,10 +98,8 @@ class CORE_EXPORT ProgressTracker final
   int64_t estimated_bytes_for_pending_requests_ = 0;
 
   HashMap<uint64_t, ProgressItem> progress_items_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgressTracker);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_PROGRESS_TRACKER_H_

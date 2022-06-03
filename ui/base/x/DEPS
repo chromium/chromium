@@ -1,3 +1,5 @@
 include_rules = [
   "+ui/platform_window/common/platform_window_defaults.h",
+  "+ui/gl/gl_surface_egl.h",
+  "+third_party/khronos/EGL/egl.h",
 ]

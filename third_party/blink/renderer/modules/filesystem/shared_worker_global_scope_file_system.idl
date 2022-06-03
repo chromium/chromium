@@ -32,9 +32,9 @@ partial interface SharedWorkerGlobalScope {
 
     // TODO(crbug.com/841185): |successCallback| and |errorCallback| are not
     // nullable in the spec.
-    [RuntimeEnabled=FileSystem, MeasureAs=RequestFileSystemWorker] void webkitRequestFileSystem(unsigned short type, long long size, optional FileSystemCallback? successCallback, optional ErrorCallback? errorCallback);
+    [RuntimeEnabled=FileSystem, MeasureAs=RequestFileSystemWorker] void webkitRequestFileSystem(unsigned short type, long long size, optional FileSystemCallback? successCallback = null, optional ErrorCallback? errorCallback = null);
     [RuntimeEnabled=FileSystem, RaisesException, MeasureAs=RequestFileSystemSyncWorker] DOMFileSystemSync webkitRequestFileSystemSync(unsigned short type, long long size);
     // TODO(crbug.com/841185): |errorCallback| is not nullable in the spec.
-    [RuntimeEnabled=FileSystem] void webkitResolveLocalFileSystemURL(DOMString url, EntryCallback successCallback, optional ErrorCallback? errorCallback);
+    [RuntimeEnabled=FileSystem] void webkitResolveLocalFileSystemURL(DOMString url, EntryCallback successCallback, optional ErrorCallback? errorCallback = null);
     [RuntimeEnabled=FileSystem, RaisesException] EntrySync webkitResolveLocalFileSystemSyncURL(DOMString url);
 };

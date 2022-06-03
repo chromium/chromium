@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "base/time/time.h"
-#include "third_party/blink/public/platform/web_client_hints_type.h"
+#include "third_party/blink/public/common/client_hints/enabled_client_hints.h"
 
 namespace blink {
 
@@ -24,31 +24,31 @@ class WebContentSettingsClient {
   // this WebContentSettingsClient so it can be used by another worker thread.
   virtual std::unique_ptr<WebContentSettingsClient> Clone() { return nullptr; }
 
-  // Controls whether access to Web Databases is allowed for this frame.
-  virtual bool AllowDatabase() { return true; }
+  enum class StorageType {
+    kDatabase,
+    kCacheStorage,
+    kIndexedDB,
+    kFileSystem,
+    kWebLocks,
+    kLocalStorage,
+    kSessionStorage
+  };
 
-  // Controls whether access to File System is allowed for this frame.
-  virtual bool RequestFileSystemAccessSync() { return true; }
-
-  // Controls whether access to File System is allowed for this frame.
-  virtual void RequestFileSystemAccessAsync(
-      base::OnceCallback<void(bool)> callback) {
+  // Controls whether access to the given StorageType is allowed for this frame.
+  // Runs asynchronously.
+  virtual void AllowStorageAccess(StorageType storage_type,
+                                  base::OnceCallback<void(bool)> callback) {
     std::move(callback).Run(true);
   }
+
+  // Controls whether access to the given StorageType is allowed for this frame.
+  // Blocks until done.
+  virtual bool AllowStorageAccessSync(StorageType storage_type) { return true; }
 
   // Controls whether images are allowed for this frame.
   virtual bool AllowImage(bool enabled_per_settings, const WebURL& image_url) {
     return enabled_per_settings;
   }
-
-  // Controls whether access to Indexed DB are allowed for this frame.
-  virtual bool AllowIndexedDB() { return true; }
-
-  // Controls whether access to CacheStorage is allowed for this frame.
-  virtual bool AllowCacheStorage() { return true; }
-
-  // Controls whether access to Web Locks is allowed for this frame.
-  virtual bool AllowWebLocks() { return true; }
 
   // Controls whether scripts are allowed to execute for this frame.
   virtual bool AllowScript(bool enabled_per_settings) {
@@ -62,21 +62,16 @@ class WebContentSettingsClient {
     return enabled_per_settings;
   }
 
-  // Retrieves the client hints that should be attached to the request for the
-  // given URL.
-  virtual void GetAllowedClientHintsFromSource(const blink::WebURL& url,
-                                               WebEnabledClientHints*) const {}
-
   // Controls whether insecure scripts are allowed to execute for this frame.
   virtual bool AllowRunningInsecureContent(bool enabled_per_settings,
                                            const WebURL&) {
     return enabled_per_settings;
   }
 
-  // Controls whether HTML5 Web Storage is allowed for this frame.
-  // If local is true, then this is for local storage, otherwise it's for
-  // session storage.
-  virtual bool AllowStorage(bool local) { return true; }
+  // Controls whether auto dark web content is allowed for this frame.
+  virtual bool AllowAutoDarkWebContent(bool enabled_per_settings) {
+    return enabled_per_settings;
+  }
 
   // Controls whether access to read the clipboard is allowed for this frame.
   virtual bool AllowReadFromClipboard(bool default_value) {
@@ -104,10 +99,6 @@ class WebContentSettingsClient {
   // Reports that passive mixed content was found at the provided URL.
   virtual void PassiveInsecureContentFound(const WebURL&) {}
 
-  // Notifies the client that the frame would have instantiated a plugin if
-  // plugins were enabled.
-  virtual void DidNotAllowPlugins() {}
-
   // Notifies the client that the frame would have executed script if script
   // were enabled.
   virtual void DidNotAllowScript() {}
@@ -115,7 +106,7 @@ class WebContentSettingsClient {
   // Called to persist the received client hint preferences when |url| was
   // fetched. The preferences should be persisted for |duration|.
   virtual void PersistClientHints(
-      const WebEnabledClientHints& enabled_client_hints,
+      const EnabledClientHints& enabled_client_hints,
       base::TimeDelta duration,
       const blink::WebURL& url) {}
 

@@ -6,7 +6,8 @@ package org.chromium.chrome.browser.notifications;
 
 import static org.junit.Assert.assertThat;
 
-import android.annotation.TargetApi;
+import static org.chromium.components.content_settings.PrefNames.NOTIFICATIONS_VIBRATE_ENABLED;
+
 import android.app.Notification;
 import android.app.PendingIntent;
 import android.app.RemoteInput;
@@ -18,8 +19,9 @@ import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.LargeTest;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.LargeTest;
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -30,28 +32,28 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.engagement.SiteEngagementService;
-import org.chromium.chrome.browser.permissions.PermissionDialogController;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
-import org.chromium.chrome.browser.preferences.Pref;
-import org.chromium.chrome.browser.preferences.PrefServiceBridge;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.settings.website.ContentSettingValues;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.widget.RoundedIconGenerator;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.TabTitleObserver;
-import org.chromium.chrome.test.util.browser.notifications.MockNotificationManagerProxy.NotificationEntry;
+import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy.NotificationEntry;
+import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
+import org.chromium.components.content_settings.ContentSettingValues;
+import org.chromium.components.permissions.PermissionDialogController;
+import org.chromium.components.site_engagement.SiteEngagementService;
+import org.chromium.components.url_formatter.SchemeDisplay;
 import org.chromium.components.url_formatter.UrlFormatter;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.url.GURL;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -95,7 +97,7 @@ public class NotificationPlatformBridgeTest {
 
         } catch (TimeoutException e) {
             // The title is not as expected, this assertion neatly logs what the difference is.
-            Assert.assertEquals(expectedTitle, tab.getTitle());
+            Assert.assertEquals(expectedTitle, ChromeTabUtils.getTitleOnUiThread(tab));
         }
     }
 
@@ -114,7 +116,9 @@ public class NotificationPlatformBridgeTest {
             return TestThreadUtils.runOnUiThreadBlocking(new Callable<Double>() {
                 @Override
                 public Double call() {
-                    return SiteEngagementService.getForProfile(Profile.getLastUsedProfile())
+                    // TODO (https://crbug.com/1063807):  Add incognito mode tests.
+                    return SiteEngagementService
+                            .getForBrowserContext(Profile.getLastUsedRegularProfile())
                             .getScore(mPermissionTestRule.getOrigin());
                 }
             });
@@ -140,7 +144,9 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "denied: ", mNotificationTestRule.getActivity());
 
-        mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        });
 
         mPermissionTestRule.runDenyTest(updateWaiter, NOTIFICATION_TEST_PAGE,
                 "Notification.requestPermission(addCountAndSendToTest)", 1, false, true);
@@ -178,7 +184,9 @@ public class NotificationPlatformBridgeTest {
                 new PermissionTestRule.PermissionUpdateWaiter(
                         "granted: ", mNotificationTestRule.getActivity());
 
-        mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mNotificationTestRule.getActivity().getActivityTab().addObserver(updateWaiter);
+        });
 
         mPermissionTestRule.runAllowTest(updateWaiter, NOTIFICATION_TEST_PAGE,
                 "Notification.requestPermission(addCountAndSendToTest)", 1, false, true);
@@ -198,7 +206,6 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @RetryOnFailure
     public void testDefaultNotificationProperties() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -206,8 +213,8 @@ public class NotificationPlatformBridgeTest {
 
         Notification notification = showAndGetNotification("MyNotification", "{body: 'Hello'}");
 
-        String expectedOrigin =
-                UrlFormatter.formatUrlForSecurityDisplayOmitScheme(mPermissionTestRule.getOrigin());
+        String expectedOrigin = UrlFormatter.formatUrlForSecurityDisplay(
+                mPermissionTestRule.getOrigin(), SchemeDisplay.OMIT_HTTP_AND_HTTPS);
 
         // Validate the contents of the notification.
         Assert.assertEquals("MyNotification", NotificationTestUtil.getExtraTitle(notification));
@@ -220,18 +227,16 @@ public class NotificationPlatformBridgeTest {
         Assert.assertTrue(tickerText.contains("MyNotification"));
         Assert.assertTrue(tickerText.contains("Hello"));
 
-        // On L+, verify the public version of the notification contains the notification's origin,
+        // Verify the public version of the notification contains the notification's origin,
         // and that the body text has been replaced.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            Assert.assertNotNull(notification.publicVersion);
-            Assert.assertEquals(context.getString(R.string.notification_hidden_text),
-                    NotificationTestUtil.getExtraText(notification.publicVersion));
-        }
+        Assert.assertNotNull(notification.publicVersion);
+        Assert.assertEquals(context.getString(R.string.notification_hidden_text),
+                NotificationTestUtil.getExtraText(notification.publicVersion));
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.M) {
             // On N+, origin should be set as the subtext of the public notification.
             Assert.assertEquals(expectedOrigin,
                     NotificationTestUtil.getExtraSubText(notification.publicVersion));
-        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        } else {
             // On L/M, origin should be the title of the public notification.
             Assert.assertEquals(
                     expectedOrigin, NotificationTestUtil.getExtraTitle(notification.publicVersion));
@@ -248,8 +253,15 @@ public class NotificationPlatformBridgeTest {
         Assert.assertNotNull(
                 NotificationTestUtil.getLargeIconFromNotification(context, notification));
 
-        // Validate the notification's behavior.
-        Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
+        // Validate the notification's behavior. On Android O+ the defaults are ignored as vibrate
+        // and silent moved to the notification channel. The silent flag is achieved by using a
+        // group alert summary.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Assert.assertEquals(0, notification.defaults);
+            Assert.assertEquals(Notification.GROUP_ALERT_ALL, notification.getGroupAlertBehavior());
+        } else {
+            Assert.assertEquals(Notification.DEFAULT_ALL, notification.defaults);
+        }
         Assert.assertEquals(Notification.PRIORITY_DEFAULT, notification.priority);
     }
 
@@ -258,8 +270,6 @@ public class NotificationPlatformBridgeTest {
      * with a remote input on the action.
      */
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT_WATCH)
-    @TargetApi(Build.VERSION_CODES.KITKAT_WATCH) // RemoteInputs were only added in KITKAT_WATCH.
     @MediumTest
     @Feature({"Browser", "Notifications"})
     public void testShowNotificationWithTextAction() throws Exception {
@@ -288,8 +298,6 @@ public class NotificationPlatformBridgeTest {
      * appropriately.
      */
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT_WATCH)
-    @TargetApi(Build.VERSION_CODES.KITKAT_WATCH) // RemoteInputs were only added in KITKAT_WATCH.
     @MediumTest
     @Feature({"Browser", "Notifications"})
     public void testReplyToNotification() throws Exception {
@@ -314,7 +322,7 @@ public class NotificationPlatformBridgeTest {
         Assert.assertNotNull(remoteInputs);
 
         // Set a reply using the action's remote input key and send it on the intent.
-        Helper.sendIntentWithRemoteInput(context, action.actionIntent, remoteInputs,
+        sendIntentWithRemoteInput(context, action.actionIntent, remoteInputs,
                 remoteInputs[0].getResultKey(), "My Reply" /* reply */);
 
         // Check reply was received by the service worker (see android_test_worker.js).
@@ -324,7 +332,7 @@ public class NotificationPlatformBridgeTest {
 
         // Replies are always delivered to an action button.
         assertThat(actionTester.toString(), getNotificationActions(actionTester),
-                Matchers.contains("Notifications.Persistent.Shown",
+                Matchers.hasItems("Notifications.Persistent.Shown",
                         "Notifications.Persistent.ClickedActionButton"));
     }
 
@@ -335,8 +343,6 @@ public class NotificationPlatformBridgeTest {
      * incremented appropriately.
      */
     @Test
-    @MinAndroidSdkLevel(Build.VERSION_CODES.KITKAT_WATCH)
-    @TargetApi(Build.VERSION_CODES.KITKAT_WATCH) // RemoteInputs added in KITKAT_WATCH.
     @MediumTest
     @Feature({"Browser", "Notifications"})
     public void testReplyToNotificationWithEmptyReply() throws Exception {
@@ -359,7 +365,7 @@ public class NotificationPlatformBridgeTest {
         Assert.assertNotNull(remoteInputs);
 
         // Set a reply using the action's remote input key and send it on the intent.
-        Helper.sendIntentWithRemoteInput(context, action.actionIntent, remoteInputs,
+        sendIntentWithRemoteInput(context, action.actionIntent, remoteInputs,
                 remoteInputs[0].getResultKey(), "" /* reply */);
 
         // Check empty reply was received by the service worker (see android_test_worker.js).
@@ -368,24 +374,17 @@ public class NotificationPlatformBridgeTest {
         Assert.assertEquals(1.5, getEngagementScoreBlocking(), 0);
     }
 
-    //TODO(yolandyan): remove this after supporting SdkSuppress annotation
-    //Currently JUnit4 reflection would look for all test methods in a Test class, and
-    //this test uses RemoteInput as input, this would cause NoClassDefFoundError
-    //in lower than L devices
-    private static class Helper {
-        @TargetApi(Build.VERSION_CODES.KITKAT_WATCH) // RemoteInputs added in KITKAT_WATCH.
-        private static void sendIntentWithRemoteInput(Context context, PendingIntent pendingIntent,
-                RemoteInput[] remoteInputs, String resultKey, String reply)
-                throws PendingIntent.CanceledException {
-            Bundle results = new Bundle();
-            results.putString(resultKey, reply);
-            Intent fillInIntent = new Intent().addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
-            RemoteInput.addResultsToIntent(remoteInputs, fillInIntent, results);
+    private static void sendIntentWithRemoteInput(Context context, PendingIntent pendingIntent,
+            RemoteInput[] remoteInputs, String resultKey, String reply)
+            throws PendingIntent.CanceledException {
+        Bundle results = new Bundle();
+        results.putString(resultKey, reply);
+        Intent fillInIntent = new Intent().addFlags(Intent.FLAG_RECEIVER_FOREGROUND);
+        RemoteInput.addResultsToIntent(remoteInputs, fillInIntent, results);
 
-            // Send the pending intent filled in with the additional information from the new
-            // intent.
-            pendingIntent.send(context, 0 /* code */, fillInIntent);
-        }
+        // Send the pending intent filled in with the additional information from the new
+        // intent.
+        pendingIntent.send(context, 0 /* code */, fillInIntent);
     }
 
     /**
@@ -395,7 +394,6 @@ public class NotificationPlatformBridgeTest {
      * incremented appropriately.
      */
     @Test
-    @TargetApi(Build.VERSION_CODES.KITKAT) // Notification.Action.actionIntent added in Android K.
     @MediumTest
     @Feature({"Browser", "Notifications"})
     public void testReplyToNotificationWithNoRemoteInput() throws Exception {
@@ -450,6 +448,13 @@ public class NotificationPlatformBridgeTest {
 
         // Zero indicates that no defaults should be inherited from the system.
         Assert.assertEquals(0, notification.defaults);
+
+        // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
+        // channel. The silent flag is achieved by using a group alert summary.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Assert.assertEquals(
+                    Notification.GROUP_ALERT_SUMMARY, notification.getGroupAlertBehavior());
+        }
     }
 
     private void verifyVibrationNotRequestedWhenDisabledInPrefs(String notificationOptions)
@@ -460,18 +465,24 @@ public class NotificationPlatformBridgeTest {
         // Disable notification vibration in preferences.
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> PrefServiceBridge.getInstance().setBoolean(
-                                Pref.NOTIFICATIONS_VIBRATE_ENABLED, false));
+                        -> UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                   .setBoolean(NOTIFICATIONS_VIBRATE_ENABLED, false));
 
         Notification notification = showAndGetNotification("MyNotification", notificationOptions);
 
-        // Vibration should not be in the defaults.
-        Assert.assertEquals(
-                Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE, notification.defaults);
+        // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
+        // channel.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Assert.assertEquals(0, notification.defaults);
+        } else {
+            // Vibration should not be in the defaults.
+            Assert.assertEquals(Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE,
+                    notification.defaults);
 
-        // There should be a custom no-op vibration pattern.
-        Assert.assertEquals(1, notification.vibrate.length);
-        Assert.assertEquals(0L, notification.vibrate[0]);
+            // There should be a custom no-op vibration pattern.
+            Assert.assertEquals(1, notification.vibrate.length);
+            Assert.assertEquals(0L, notification.vibrate[0]);
+        }
     }
 
     /**
@@ -481,7 +492,6 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @RetryOnFailure
     public void testNotificationVibratePreferenceDisabledDefault() throws Exception {
         verifyVibrationNotRequestedWhenDisabledInPrefs("{}");
     }
@@ -493,7 +503,6 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @RetryOnFailure
     public void testNotificationVibratePreferenceDisabledCustomPattern() throws Exception {
         verifyVibrationNotRequestedWhenDisabledInPrefs("{ vibrate: 42 }");
     }
@@ -512,19 +521,25 @@ public class NotificationPlatformBridgeTest {
         // By default, vibration is enabled in notifications.
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
-                        -> Assert.assertTrue(PrefServiceBridge.getInstance().getBoolean(
-                                Pref.NOTIFICATIONS_VIBRATE_ENABLED)));
+                        -> Assert.assertTrue(UserPrefs.get(Profile.getLastUsedRegularProfile())
+                                                     .getBoolean(NOTIFICATIONS_VIBRATE_ENABLED)));
 
         Notification notification = showAndGetNotification("MyNotification", "{ vibrate: 42 }");
 
-        // Vibration should not be in the defaults, a custom pattern was provided.
-        Assert.assertEquals(
-                Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE, notification.defaults);
+        // On Android O+ the defaults are ignored as vibrate and silent moved to the notification
+        // channel.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            Assert.assertEquals(0, notification.defaults);
+        } else {
+            // Vibration should not be in the defaults, a custom pattern was provided.
+            Assert.assertEquals(Notification.DEFAULT_ALL & ~Notification.DEFAULT_VIBRATE,
+                    notification.defaults);
 
-        // The custom pattern should have been passed along.
-        Assert.assertEquals(2, notification.vibrate.length);
-        Assert.assertEquals(0L, notification.vibrate[0]);
-        Assert.assertEquals(42L, notification.vibrate[1]);
+            // The custom pattern should have been passed along.
+            Assert.assertEquals(2, notification.vibrate.length);
+            Assert.assertEquals(0L, notification.vibrate[0]);
+            Assert.assertEquals(42L, notification.vibrate[1]);
+        }
     }
 
     /**
@@ -572,13 +587,10 @@ public class NotificationPlatformBridgeTest {
                     BitmapFactory.decodeResource(context.getResources(), R.drawable.ic_chrome);
             Assert.assertTrue(expected.sameAs(smallIcon));
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                // Public versions of notifications are only supported on L+.
-                Assert.assertNotNull(notification.publicVersion);
-                Bitmap publicSmallIcon = NotificationTestUtil.getSmallIconFromNotification(
-                        context, notification.publicVersion);
-                Assert.assertTrue(expected.sameAs(publicSmallIcon));
-            }
+            Assert.assertNotNull(notification.publicVersion);
+            Bitmap publicSmallIcon = NotificationTestUtil.getSmallIconFromNotification(
+                    context, notification.publicVersion);
+            Assert.assertTrue(expected.sameAs(publicSmallIcon));
         }
     }
 
@@ -589,7 +601,6 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @RetryOnFailure
     public void testShowNotificationWithIcon() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -612,7 +623,6 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
-    @RetryOnFailure
     public void testShowNotificationWithoutIcon() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -634,7 +644,8 @@ public class NotificationPlatformBridgeTest {
         RoundedIconGenerator generator =
                 NotificationBuilderBase.createIconGenerator(context.getResources());
 
-        Bitmap generatedIcon = generator.generateIconForUrl(mPermissionTestRule.getOrigin());
+        Bitmap generatedIcon =
+                generator.generateIconForUrl(new GURL(mPermissionTestRule.getOrigin()));
         Assert.assertNotNull(generatedIcon);
         // Starts from Android O MR1, large icon can be downscaled by Android platform code.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
@@ -651,7 +662,6 @@ public class NotificationPlatformBridgeTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Notifications"})
-    @RetryOnFailure
     public void testNotificationContentIntentClosesNotification() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -682,7 +692,7 @@ public class NotificationPlatformBridgeTest {
 
         // Clicking on a notification should record the right user metrics.
         assertThat(actionTester.toString(), getNotificationActions(actionTester),
-                Matchers.contains(
+                Matchers.hasItems(
                         "Notifications.Persistent.Shown", "Notifications.Persistent.Clicked"));
         Assert.assertEquals(1,
                 RecordHistogram.getHistogramTotalCountForTesting(
@@ -697,7 +707,6 @@ public class NotificationPlatformBridgeTest {
     @Test
     @LargeTest
     @Feature({"Browser", "Notifications"})
-    @RetryOnFailure
     public void testNotificationContentIntentCreatesTab() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());
@@ -718,11 +727,10 @@ public class NotificationPlatformBridgeTest {
         mNotificationTestRule.waitForNotificationManagerMutation();
         Assert.assertTrue(mNotificationTestRule.getNotificationEntries().isEmpty());
 
-        CriteriaHelper.pollInstrumentationThread(new Criteria("Expected a new tab to be created") {
-            @Override
-            public boolean isSatisfied() {
-                return 2 == mNotificationTestRule.getActivity().getCurrentTabModel().getCount();
-            }
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            Criteria.checkThat("Expected a new tab to be created",
+                    mNotificationTestRule.getActivity().getCurrentTabModel().getCount(),
+                    Matchers.is(2));
         });
         // This metric only applies on N+, where we schedule a job to handle the click.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {

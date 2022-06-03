@@ -4,8 +4,10 @@
 
 #include "ui/views/animation/compositor_animation_runner.h"
 
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/timer/timer.h"
+#include "ui/compositor/test/draw_waiter_for_test.h"
+#include "ui/compositor/throughput_tracker.h"
 #include "ui/gfx/animation/linear_animation.h"
 #include "ui/views/animation/animation_delegate_views.h"
 #include "ui/views/buildflags.h"
@@ -14,7 +16,7 @@
 namespace views {
 namespace test {
 namespace {
-constexpr base::TimeDelta kDuration = base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kDuration = base::Milliseconds(100);
 }
 
 using CompositorAnimationRunnerTest = WidgetTest;
@@ -43,6 +45,94 @@ TEST_F(CompositorAnimationRunnerTest, BasicCoverageTest) {
                        }));
 
   run_loop.Run();
+}
+
+namespace {
+
+// Test AnimationDelegateView which has a non-zero expected animation duration
+// time, which is required for getting smoothness reports.
+class TestAnimationDelegateViews : public AnimationDelegateViews {
+ public:
+  explicit TestAnimationDelegateViews(View* view)
+      : AnimationDelegateViews(view) {}
+  TestAnimationDelegateViews(TestAnimationDelegateViews&) = delete;
+  TestAnimationDelegateViews& operator=(TestAnimationDelegateViews&) = delete;
+  ~TestAnimationDelegateViews() override = default;
+
+  // AnimationDelegateViews:
+  base::TimeDelta GetAnimationDurationForReporting() const override {
+    return kDuration;
+  }
+};
+
+}  // namespace
+
+// Tests that ui::ThroughputTracker will report for gfx::Animation.
+TEST_F(CompositorAnimationRunnerTest, ThroughputTracker) {
+  WidgetAutoclosePtr widget(CreateTopLevelPlatformWidget());
+  widget->Show();
+
+  ui::DrawWaiterForTest::WaitForCompositingStarted(widget->GetCompositor());
+
+  int report_count = 0;
+  int report_count2 = 0;
+
+  TestAnimationDelegateViews delegate(widget->GetContentsView());
+
+  gfx::LinearAnimation animation(
+      kDuration, gfx::LinearAnimation::kDefaultFrameRate, &delegate);
+
+  base::RepeatingTimer interval_timer;
+  base::RunLoop run_loop;
+
+  ui::ThroughputTracker tracker1 =
+      widget->GetCompositor()->RequestNewThroughputTracker();
+  tracker1.Start(base::BindLambdaForTesting(
+      [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
+        ++report_count;
+        run_loop.Quit();
+      }));
+
+  animation.Start();
+  EXPECT_TRUE(animation.is_animating());
+  EXPECT_TRUE(delegate.container()->has_custom_animation_runner());
+
+  interval_timer.Start(FROM_HERE, kDuration, base::BindLambdaForTesting([&]() {
+                         if (animation.is_animating())
+                           return;
+
+                         interval_timer.Stop();
+                         tracker1.Stop();
+                       }));
+  run_loop.Run();
+  EXPECT_EQ(1, report_count);
+  EXPECT_EQ(0, report_count2);
+
+  // Tests that switching metrics reporters for the next animation works as
+  // expected.
+  base::RunLoop run_loop2;
+
+  ui::ThroughputTracker tracker2 =
+      widget->GetCompositor()->RequestNewThroughputTracker();
+  tracker2.Start(base::BindLambdaForTesting(
+      [&](const cc::FrameSequenceMetrics::CustomReportData& data) {
+        ++report_count2;
+        run_loop2.Quit();
+      }));
+
+  animation.Start();
+  EXPECT_TRUE(animation.is_animating());
+
+  interval_timer.Start(FROM_HERE, kDuration, base::BindLambdaForTesting([&]() {
+                         if (animation.is_animating())
+                           return;
+
+                         interval_timer.Stop();
+                         tracker2.Stop();
+                       }));
+  run_loop2.Run();
+  EXPECT_EQ(1, report_count);
+  EXPECT_EQ(1, report_count2);
 }
 
 // No DesktopAura on ChromeOS.

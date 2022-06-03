@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_EAT_RESOLVER_H__
-#define SANDBOX_SRC_EAT_RESOLVER_H__
+#ifndef SANDBOX_WIN_SRC_EAT_RESOLVER_H_
+#define SANDBOX_WIN_SRC_EAT_RESOLVER_H_
 
 #include <stddef.h>
 
@@ -17,6 +17,10 @@ namespace sandbox {
 class EatResolverThunk : public ResolverThunk {
  public:
   EatResolverThunk() : eat_entry_(nullptr) {}
+
+  EatResolverThunk(const EatResolverThunk&) = delete;
+  EatResolverThunk& operator=(const EatResolverThunk&) = delete;
+
   ~EatResolverThunk() override {}
 
   // Implementation of Resolver::Setup.
@@ -40,10 +44,8 @@ class EatResolverThunk : public ResolverThunk {
  private:
   // The entry to patch.
   DWORD* eat_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(EatResolverThunk);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_EAT_RESOLVER_H__
+#endif  // SANDBOX_WIN_SRC_EAT_RESOLVER_H_

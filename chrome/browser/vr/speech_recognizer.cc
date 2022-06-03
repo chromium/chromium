@@ -5,11 +5,9 @@
 #include "chrome/browser/vr/speech_recognizer.h"
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/strings/string16.h"
-#include "base/task/post_task.h"
 #include "chrome/browser/vr/browser_ui_interface.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -35,8 +33,6 @@ const int kNoNewSpeechTimeoutInSeconds = 2;
 // Invalid speech session.
 const int kInvalidSessionId = -1;
 
-const char kSearchEndStateUmaName[] = "VR.VoiceSearch.EndState";
-
 static content::SpeechRecognitionManager* g_manager_for_test = nullptr;
 
 content::SpeechRecognitionManager* GetSpeechRecognitionManager() {
@@ -57,6 +53,10 @@ content::SpeechRecognitionManager* GetSpeechRecognitionManager() {
 class SpeechRecognizerOnIO : public content::SpeechRecognitionEventListener {
  public:
   SpeechRecognizerOnIO();
+
+  SpeechRecognizerOnIO(const SpeechRecognizerOnIO&) = delete;
+  SpeechRecognizerOnIO& operator=(const SpeechRecognizerOnIO&) = delete;
+
   ~SpeechRecognizerOnIO() override;
 
   // |pending_shared_url_loader_factory| must be non-null for the first call to
@@ -110,11 +110,9 @@ class SpeechRecognizerOnIO : public content::SpeechRecognitionEventListener {
   std::string locale_;
   std::unique_ptr<base::OneShotTimer> speech_timeout_;
   int session_;
-  base::string16 last_result_str_;
+  std::u16string last_result_str_;
 
   base::WeakPtrFactory<SpeechRecognizerOnIO> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SpeechRecognizerOnIO);
 };
 
 SpeechRecognizerOnIO::SpeechRecognizerOnIO()
@@ -182,18 +180,17 @@ void SpeechRecognizerOnIO::Stop() {
 
 void SpeechRecognizerOnIO::NotifyRecognitionStateChanged(
     SpeechRecognitionState new_state) {
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&IOBrowserUIInterface::OnSpeechRecognitionStateChanged,
                      browser_ui_, new_state));
 }
 
 void SpeechRecognizerOnIO::StartSpeechTimeout(int timeout_seconds) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  speech_timeout_->Start(
-      FROM_HERE, base::TimeDelta::FromSeconds(timeout_seconds),
-      base::BindRepeating(&SpeechRecognizerOnIO::SpeechTimeout,
-                          weak_factory_.GetWeakPtr()));
+  speech_timeout_->Start(FROM_HERE, base::Seconds(timeout_seconds),
+                         base::BindOnce(&SpeechRecognizerOnIO::SpeechTimeout,
+                                        weak_factory_.GetWeakPtr()));
 }
 
 void SpeechRecognizerOnIO::SpeechTimeout() {
@@ -214,7 +211,7 @@ void SpeechRecognizerOnIO::OnRecognitionEnd(int session_id) {
 void SpeechRecognizerOnIO::OnRecognitionResults(
     int session_id,
     const std::vector<blink::mojom::SpeechRecognitionResultPtr>& results) {
-  base::string16 result_str;
+  std::u16string result_str;
   size_t final_count = 0;
   // The number of results with |is_provisional| false. If |final_count| ==
   // results.size(), then all results are non-provisional and the recognition is
@@ -224,8 +221,8 @@ void SpeechRecognizerOnIO::OnRecognitionResults(
       final_count++;
     result_str += result->hypotheses[0]->utterance;
   }
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&IOBrowserUIInterface::OnSpeechResult, browser_ui_,
                      result_str, final_count == results.size()));
 
@@ -268,8 +265,8 @@ void SpeechRecognizerOnIO::OnAudioLevelsChange(int session_id,
   DCHECK_LE(0.0, noise_volume);
   DCHECK_GE(1.0, noise_volume);
   volume = std::max(0.0f, volume - noise_volume);
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&IOBrowserUIInterface::OnSpeechSoundLevelChanged,
                      browser_ui_, volume));
 }
@@ -308,8 +305,8 @@ SpeechRecognizer::SpeechRecognizer(
 SpeechRecognizer::~SpeechRecognizer() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (speech_recognizer_on_io_) {
-    base::DeleteSoon(FROM_HERE, {content::BrowserThread::IO},
-                     speech_recognizer_on_io_.release());
+    content::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, speech_recognizer_on_io_.release());
   }
 }
 
@@ -322,8 +319,8 @@ void SpeechRecognizer::Start() {
 
   // It is safe to use unretained because speech_recognizer_on_io_ only gets
   // deleted on IO thread when SpeechRecognizer is deleted.
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&SpeechRecognizerOnIO::Start,
                      base::Unretained(speech_recognizer_on_io_.get()),
                      std::move(pending_shared_url_loader_factory_),
@@ -340,18 +337,16 @@ void SpeechRecognizer::Stop() {
 
   // It is safe to use unretained because speech_recognizer_on_io_ only gets
   // deleted on IO thread when SpeechRecognizer is deleted.
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&SpeechRecognizerOnIO::Stop,
                      base::Unretained(speech_recognizer_on_io_.get())));
   if (ui_) {
     ui_->SetSpeechRecognitionEnabled(false);
-    UMA_HISTOGRAM_ENUMERATION(kSearchEndStateUmaName, VOICE_SEARCH_CANCEL,
-                              COUNT);
   }
 }
 
-void SpeechRecognizer::OnSpeechResult(const base::string16& query,
+void SpeechRecognizer::OnSpeechResult(const std::u16string& query,
                                       bool is_final) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!is_final)
@@ -381,14 +376,10 @@ void SpeechRecognizer::OnSpeechRecognitionStateChanged(
     case SPEECH_RECOGNITION_TRY_AGAIN:
       ui_->SetRecognitionResult(
           l10n_util::GetStringUTF16(IDS_VR_NO_SPEECH_RECOGNITION_RESULT));
-      UMA_HISTOGRAM_ENUMERATION(kSearchEndStateUmaName, VOICE_SEARCH_TRY_AGAIN,
-                                COUNT);
       break;
     case SPEECH_RECOGNITION_END:
       if (!final_result_.empty()) {
         ui_->SetRecognitionResult(final_result_);
-        UMA_HISTOGRAM_ENUMERATION(kSearchEndStateUmaName,
-                                  VOICE_SEARCH_OPEN_SEARCH_PAGE, COUNT);
         if (delegate_)
           delegate_->OnVoiceResults(final_result_);
       }

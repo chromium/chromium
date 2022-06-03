@@ -45,7 +45,7 @@ struct WebSocketHandshakeResponse {
 };
 
 // This interface is for HTTP Authentication.
-interface AuthenticationHandler {
+interface WebSocketAuthenticationHandler {
   // Returns null credentials when it wants to cancel authentication, and
   // returns a non-null credentials when it wants to use the credentials for
   // authentication.
@@ -54,20 +54,38 @@ interface AuthenticationHandler {
                  IPEndPoint remote_endpoint) => (AuthCredentials? credentials);
 };
 
+// This interface is for client-side WebSocket handshake. Used to initialize
+// the WebSocket Connection.
 interface WebSocketHandshakeClient {
   // Notify the renderer that the browser has started an opening handshake.
   OnOpeningHandshakeStarted(WebSocketHandshakeRequest request);
 
+  // Called when the WebSocket connection has failed.
+  // |message| may contain a human-readable explanation of the error, but may be
+  // empty.
+  // |net_error| contains a network error code, which will be |ERR_FAILED| for
+  // WebSocket-level protocol errors that do not have their own error code.
+  // |response_code| contains the HTTP status code that caused the failure, if
+  // it was caused by an unexpected status code, or else is -1.
+  OnFailure(string message, int32 net_error, int32 response_code);
+
   // Called when the connection is established.
   // |response| may contain cookie-related headers when the client has
   // an access to raw cookie information.
-  // |readable| is readable datapipe to receive data from browser.
+  // |readable| is readable datapipe to receive data from network service.
+  // |writable| is writable datapipe used to transfer the actual content of the
+  // message(data) to the network service. The network services later sends out
+  // the actual message by framing each message from the meta-info given from
+  // the renderer side with |SendMessage()|.
   OnConnectionEstablished(pending_remote<WebSocket> socket,
                           pending_receiver<WebSocketClient> client_receiver,
                           WebSocketHandshakeResponse response,
-                          handle<data_pipe_consumer> readable);
+                          handle<data_pipe_consumer> readable,
+                          handle<data_pipe_producer> writable);
 };
 
+// The interface for the client side of WebSocket. Implemented by renderer
+// processes to receive messages from the network service.
 interface WebSocketClient {
   // Receive a non-control frame from the remote server.
   // - |fin| indicates that this frame is the last in the current message.
@@ -84,12 +102,6 @@ interface WebSocketClient {
   OnDataFrame(bool fin,
               WebSocketMessageType type,
               uint64 data_length);
-
-  // Add |quota| bytes of send quota. |quota| must be positive. Initial quota
-  // is 0. The renderer will wait for an AddSendFlowControlQuota() message
-  // before forwarding any messages to the browser. Total quota must never
-  // exceed 0x7FFFFFFFFFFFFFFF bytes.
-  AddSendFlowControlQuota(int64 quota);
 
   // Drop the channel.
   //
@@ -112,24 +124,19 @@ interface WebSocketClient {
   OnClosingHandshake();
 };
 
+// The interface for the server side of WebSocket. Implemented by the network
+// service. Used to send out data to the network service.
 interface WebSocket {
-  // The client side may observe the following disconnection reason from the
-  // service side:
-  const uint32 kInsufficientResources = 1;
-  const uint32 kInternalFailure = 2;
-
-  // Send a non-control frame to the remote server.
-  // - |fin| indicates that this frame is the last in the current message.
-  // - |type| is the type of the message. On the first frame of a message, it
-  //   must be set to either WebSocketMessageType.TEXT or
-  //   WebSocketMessageType.BINARY. On subsequent frames, it must be set to
-  //   WebSocketMessageType.CONTINUATION, and the type is the same as that of
-  //   the first message. If |type| is WebSocketMessageType.TEXT, then the
-  //   concatenation of the |data| from every frame in the message must be valid
-  //   UTF-8. If |fin| is not set, |data| must be non-empty.
-  SendFrame(bool fin,
-            WebSocketMessageType type,
-            mojo_base.mojom.ReadOnlyBuffer data);
+  // Sends a message via mojo datapipe to the remote server.
+  // - |type| is the type of the message. It must be set to either
+  //   WebSocketMessageType.TEXT or WebSocketMessageType.BINARY.
+  // - |data_length| is the actual length of message. The message is written to
+  //   the datapipe named |writable| in the
+  //   WebSocketHandshakeClient.OnConnectionEstablished message.
+  //
+  //   If |type| is WebSocketMessageType.TEXT, then the message must be
+  //   valid UTF-8.
+  SendMessage(WebSocketMessageType type, uint64 data_length);
 
   // Let browser to start receiving WebSocket data frames from network stream.
   // TODO(yoichio): Remove this by move Connect() after checking throttle at

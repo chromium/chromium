@@ -9,6 +9,7 @@
 #include "chrome/install_static/install_details.h"
 #include "chrome/installer/mini_installer/configuration.h"
 #include "chrome/installer/mini_installer/mini_installer.h"
+#include "chrome/installer/mini_installer/path_string.h"
 #include "chrome/installer/util/util_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -53,8 +54,32 @@ TEST(MiniInstallerTest, AppendCommandLineFlags) {
   }
 }
 
+TEST(MiniInstallerTest, GetModuleDir) {
+  PathString directory;
+
+  ASSERT_TRUE(GetModuleDir(/*module=*/nullptr, &directory));
+  ASSERT_NE(directory.length(), 0U);
+  EXPECT_LT(directory.length(), directory.capacity());
+  EXPECT_EQ(directory.get()[directory.length() - 1], L'\\');
+}
+
+TEST(MiniInstallerTest, GetTempDir) {
+  ProcessExitResult exit_result(SUCCESS_EXIT_CODE);
+  PathString directory;
+
+  ASSERT_TRUE(GetTempDir(&directory, &exit_result));
+  ASSERT_NE(directory.length(), 0U);
+  EXPECT_LT(directory.length(), directory.capacity());
+  EXPECT_EQ(directory.get()[directory.length() - 1], L'\\');
+}
+
 // A test harness for GetPreviousSetupExePath.
 class GetPreviousSetupExePathTest : public ::testing::Test {
+ public:
+  GetPreviousSetupExePathTest(const GetPreviousSetupExePathTest&) = delete;
+  GetPreviousSetupExePathTest& operator=(const GetPreviousSetupExePathTest&) =
+      delete;
+
  protected:
   GetPreviousSetupExePathTest() = default;
   ~GetPreviousSetupExePathTest() override = default;
@@ -83,7 +108,6 @@ class GetPreviousSetupExePathTest : public ::testing::Test {
  private:
   registry_util::RegistryOverrideManager registry_override_manager_;
   FakeConfiguration configuration_;
-  DISALLOW_COPY_AND_ASSIGN(GetPreviousSetupExePathTest);
 };
 
 // Tests that the path is returned.
@@ -103,7 +127,7 @@ TEST_F(GetPreviousSetupExePathTest, SimpleTest) {
 TEST_F(GetPreviousSetupExePathTest, QuoteStripping) {
   static constexpr wchar_t kSetupExePath[] =
       L"C:\\SomePath\\To\\" PREVIOUS_VERSION L"\\setup.exe";
-  base::string16 quoted_path(L"\"");
+  std::wstring quoted_path(L"\"");
   quoted_path += kSetupExePath;
   quoted_path += L"\"";
   ASSERT_NO_FATAL_FAILURE(SetPreviousSetup(quoted_path.c_str()));

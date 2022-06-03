@@ -1,88 +1,118 @@
-#! /usr/bin/env python
+#! /usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import os
 import re
-import sys
 import zipfile
 
-from pylib.constants import host_paths
 from pylib.dex import dex_parser
 
-sys.path.append(os.path.join(host_paths.DIR_SOURCE_ROOT, 'build', 'util', 'lib',
-                             'common'))
-import perf_tests_results_helper # pylint: disable=import-error
 
+class DexStatsCollector(object):
+  """Tracks count of method/field/string/type as well as unique methods."""
 
-_CONTRIBUTORS_TO_DEX_CACHE = {
-    'type_ids_size': 'types',
-    'string_ids_size': 'strings',
-    'method_ids_size': 'methods',
-    'field_ids_size': 'fields'
-}
+  def __init__(self):
+    # Signatures of all methods from all seen dex files.
+    self._unique_methods = set()
+    # Map of label -> { metric -> count }.
+    self._counts_by_label = {}
 
+  def _CollectFromDexfile(self, label, dexfile):
+    assert label not in self._counts_by_label, 'exists: ' + label
+    self._counts_by_label[label] = {
+        'fields': dexfile.header.field_ids_size,
+        'methods': dexfile.header.method_ids_size,
+        'strings': dexfile.header.string_ids_size,
+        'types': dexfile.header.type_ids_size,
+    }
+    self._unique_methods.update(dexfile.IterMethodSignatureParts())
 
-def _ExtractSizesFromDexFile(dexfile):
-  count_by_item = {}
-  for item_name, readable_name in _CONTRIBUTORS_TO_DEX_CACHE.iteritems():
-    count_by_item[readable_name] = getattr(dexfile.header, item_name)
-  return count_by_item, sum(
-      count_by_item[x] for x in _CONTRIBUTORS_TO_DEX_CACHE.itervalues()) * 4
+  def CollectFromZip(self, label, path):
+    """Add dex stats from an .apk/.jar/.aab/.zip."""
+    with zipfile.ZipFile(path, 'r') as z:
+      for subpath in z.namelist():
+        if not re.match(r'.*classes\d*\.dex$', subpath):
+          continue
+        dexfile = dex_parser.DexFile(bytearray(z.read(subpath)))
+        self._CollectFromDexfile('{}!{}'.format(label, subpath), dexfile)
 
+  def CollectFromDex(self, label, path):
+    """Add dex stats from a .dex file."""
+    with open(path, 'rb') as f:
+      dexfile = dex_parser.DexFile(bytearray(f.read()))
+    self._CollectFromDexfile(label, dexfile)
 
-def ExtractSizesFromZip(path):
-  dex_counts_by_file = {}
-  dexcache_size = 0
-  dexfiles = {}
-  with zipfile.ZipFile(path, 'r') as z:
-    for subpath in z.namelist():
-      if not re.match(r'.*classes[0-9]*\.dex$', subpath):
-        continue
-      dexfile_name = os.path.basename(subpath)
-      dexfiles[dexfile_name] = dex_parser.DexFile(bytearray(z.read(subpath)))
+  def MergeFrom(self, parent_label, other):
+    """Add dex stats from another DexStatsCollector."""
+    # pylint: disable=protected-access
+    for label, other_counts in other._counts_by_label.items():
+      new_label = '{}-{}'.format(parent_label, label)
+      self._counts_by_label[new_label] = other_counts.copy()
+    self._unique_methods.update(other._unique_methods)
+    # pylint: enable=protected-access
 
-  for dexfile_name, dexfile in dexfiles.iteritems():
-    cur_dex_counts, cur_dexcache_size = _ExtractSizesFromDexFile(dexfile)
-    dex_counts_by_file[dexfile_name] = cur_dex_counts
-    dexcache_size += cur_dexcache_size
-  num_unique_methods = dex_parser.CountUniqueDexMethods(dexfiles.values())
-  return dex_counts_by_file, dexcache_size, num_unique_methods
+  def GetUniqueMethodCount(self):
+    """Returns total number of unique methods across encountered dex files."""
+    return len(self._unique_methods)
+
+  def GetCountsByLabel(self):
+    """Returns dict of label -> {metric -> count}."""
+    return self._counts_by_label
+
+  def GetTotalCounts(self):
+    """Returns dict of {metric -> count}, where |count| is sum(metric)."""
+    ret = {}
+    for metric in ('fields', 'methods', 'strings', 'types'):
+      ret[metric] = sum(x[metric] for x in self._counts_by_label.values())
+    return ret
+
+  def GetDexCacheSize(self, pre_oreo):
+    """Returns number of bytes of dirty RAM is consumed from all dex files."""
+    # Dex Cache was optimized in Android Oreo:
+    # https://source.android.com/devices/tech/dalvik/improvements#dex-cache-removal
+    if pre_oreo:
+      total = sum(self.GetTotalCounts().values())
+    else:
+      total = sum(c['methods'] for c in self._counts_by_label.values())
+    return total * 4  # 4 bytes per entry.
 
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument('filename')
-
+  parser.add_argument('paths', nargs='+')
   args = parser.parse_args()
 
-  if os.path.splitext(args.filename)[1] in ('.zip', '.apk', '.jar'):
-    sizes, total_size, num_unique_methods = ExtractSizesFromZip(args.filename)
-  else:
-    with open(args.filename) as f:
-      dexfile = dex_parser.DexFile(bytearray(f.read()))
-    single_set_of_sizes, total_size = _ExtractSizesFromDexFile(dexfile)
-    sizes = {"": single_set_of_sizes}
-    num_unique_methods = single_set_of_sizes['methods']
+  collector = DexStatsCollector()
+  for path in args.paths:
+    if os.path.splitext(path)[1] in ('.zip', '.apk', '.jar', '.aab'):
+      collector.CollectFromZip(path, path)
+    else:
+      collector.CollectFromDex(path, path)
 
-  file_basename = os.path.basename(args.filename)
-  for classes_dex_file, classes_dex_sizes in sizes.iteritems():
-    for readable_name in _CONTRIBUTORS_TO_DEX_CACHE.itervalues():
-      if readable_name in classes_dex_sizes:
-        perf_tests_results_helper.PrintPerfResult(
-            '%s_%s_%s' % (file_basename, classes_dex_file, readable_name),
-            'total', [classes_dex_sizes[readable_name]], readable_name)
+  counts_by_label = collector.GetCountsByLabel()
+  for label, counts in sorted(counts_by_label.items()):
+    print('{}:'.format(label))
+    for metric, count in sorted(counts.items()):
+      print('  {}:'.format(metric), count)
+    print()
 
-  perf_tests_results_helper.PrintPerfResult('%s_unique_methods' % file_basename,
-                                            'total', [num_unique_methods],
-                                            'unique methods')
+  if len(counts_by_label) > 1:
+    print('Totals:')
+    for metric, count in sorted(collector.GetTotalCounts().items()):
+      print('  {}:'.format(metric), count)
+    print()
 
-  perf_tests_results_helper.PrintPerfResult(
-      '%s_DexCache_size' % (file_basename), 'total', [total_size],
-      'bytes of permanent dirty memory')
-  return 0
+  print('Unique Methods:', collector.GetUniqueMethodCount())
+  print('DexCache (Pre-Oreo):', collector.GetDexCacheSize(pre_oreo=True),
+        'bytes of dirty memory')
+  print('DexCache (Oreo+):', collector.GetDexCacheSize(pre_oreo=False),
+        'bytes of dirty memory')
+
 
 if __name__ == '__main__':
-  sys.exit(main())
+  main()

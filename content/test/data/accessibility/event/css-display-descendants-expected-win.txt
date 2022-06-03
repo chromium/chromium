@@ -1,0 +1,3 @@
+EVENT_OBJECT_HIDE on <div#heading-root.a> role=ROLE_SYSTEM_GROUPING name="Heading" level=2
+EVENT_OBJECT_REORDER on <div> role=ROLE_SYSTEM_TOOLBAR IA2_STATE_HORIZONTAL
+EVENT_OBJECT_SHOW on <div#banner-root.b> role=ROLE_SYSTEM_GROUPING name="Banner"

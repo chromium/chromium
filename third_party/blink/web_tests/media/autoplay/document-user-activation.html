@@ -15,7 +15,7 @@ promise_test(t => {
 
   var video = document.createElement('video');
   video.src = '../content/test.ogv';
-  return promise_rejects(t, 'NotAllowedError', video.play());
+  return promise_rejects_dom(t, 'NotAllowedError', video.play());
 }, 'Not allowed to autoplay without some sort of user gesture');
 
 promise_test(t => {

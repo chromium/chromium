@@ -14,7 +14,7 @@
   <translations>
     <file path="substitute.xmb" lang="sv" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <includes>
       <include type="BITMAP" name="IDB_PR" file="pr.bmp" />
       <if expr="lang == 'sv'">

@@ -1,0 +1,12 @@
+This is a testharness.js-based test.
+PASS Test that local scheme workers inherit COEP: require-corp from the creating document
+PASS blob URL dedicated worker: Same origin should be allowed.
+PASS blob URL dedicated worker: Cross origin should be blocked.
+PASS blob URL shared worker: Same origin should be allowed.
+FAIL blob URL shared worker: Cross origin should be blocked. assert_unreached: Should have rejected: undefined Reached unreachable code
+PASS data URL dedicated worker: Same origin should be blocked.
+PASS data URL dedicated worker: Cross origin should be blocked.
+PASS data URL shared worker: Same origin should be blocked.
+PASS data URL shared worker: Cross origin should be blocked.
+Harness: the test ran to completion.
+

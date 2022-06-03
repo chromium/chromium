@@ -20,7 +20,7 @@ function KeepAlive() {
    * @private
    */
   this.handle_ = pipe.handle0;
-  Mojo.bindInterface(extensions.KeepAlive.name, pipe.handle1, 'context', true);
+  Mojo.bindInterface(extensions.KeepAlive.name, pipe.handle1);
 }
 
 /**

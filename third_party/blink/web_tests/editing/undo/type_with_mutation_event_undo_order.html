@@ -14,7 +14,7 @@ test(() => {
       '<div contenteditable id="div1">foo|</div>',
       '<div contenteditable id="div2">bar</div>'
     ].join(''),
-    selection => {
+    (selection, testRunner) => {
       const document = selection.document;
       const div1 = document.getElementById('div1');
       const div2 = document.getElementById('div2');
@@ -42,7 +42,7 @@ test(() => {
       '<div contenteditable id="div1">foo|</div>',
       '<div contenteditable id="div2">bar</div>'
     ].join(''),
-    selection => {
+    (selection, testRunner) => {
       const document = selection.document;
       const div1 = document.getElementById('div1');
       const div2 = document.getElementById('div2');
@@ -72,7 +72,7 @@ test(() => {
       '<div contenteditable id="div1"><blockquote type="cite">foo|</blockquote></div>',
       '<div contenteditable id="div2">bar</div>'
     ].join(''),
-    selection => {
+    (selection, testRunner) => {
       const document = selection.document;
       const div1 = document.getElementById('div1');
       const div2 = document.getElementById('div2');
@@ -100,7 +100,7 @@ test(() => {
       '<div contenteditable id="div1">foo|</div>',
       '<div contenteditable id="div2">bar</div>'
     ].join(''),
-    selection => {
+    (selection, testRunner) => {
       const document = selection.document;
       const div1 = document.getElementById('div1');
       const div2 = document.getElementById('div2');

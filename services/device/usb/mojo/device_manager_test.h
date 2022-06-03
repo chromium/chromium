@@ -22,6 +22,10 @@ class DeviceManagerTest : public mojom::UsbDeviceManagerTest {
   // DeviceService and once created it will keep alive until the UsbService
   // is distroyed.
   explicit DeviceManagerTest(UsbService* usb_service);
+
+  DeviceManagerTest(const DeviceManagerTest&) = delete;
+  DeviceManagerTest& operator=(const DeviceManagerTest&) = delete;
+
   ~DeviceManagerTest() override;
 
   void BindReceiver(
@@ -40,8 +44,6 @@ class DeviceManagerTest : public mojom::UsbDeviceManagerTest {
  private:
   mojo::ReceiverSet<mojom::UsbDeviceManagerTest> receivers_;
   UsbService* usb_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceManagerTest);
 };
 
 }  // namespace usb

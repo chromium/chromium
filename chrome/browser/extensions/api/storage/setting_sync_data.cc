@@ -4,14 +4,16 @@
 
 #include "chrome/browser/extensions/api/storage/setting_sync_data.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 #include "components/sync/model/sync_data.h"
 #include "components/sync/protocol/app_setting_specifics.pb.h"
+#include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/extension_setting_specifics.pb.h"
-#include "components/sync/protocol/sync.pb.h"
 
 namespace extensions {
 
@@ -21,7 +23,7 @@ SettingSyncData::SettingSyncData(const syncer::SyncChange& sync_change)
 }
 
 SettingSyncData::SettingSyncData(const syncer::SyncData& sync_data)
-    : change_type_(syncer::SyncChange::ACTION_INVALID) {
+    : change_type_(absl::nullopt) {
   ExtractSyncData(sync_data);
 }
 
@@ -57,7 +59,7 @@ void SettingSyncData::ExtractSyncData(const syncer::SyncData& sync_data) {
   if (!value_) {
     LOG(WARNING) << "Specifics for " << extension_id_ << "/" << key_
                  << " had bad JSON for value: " << extension_specifics.value();
-    value_.reset(new base::DictionaryValue());
+    value_ = std::make_unique<base::DictionaryValue>();
   }
 }
 

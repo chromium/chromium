@@ -18,6 +18,9 @@ class LogBuffer;
   T(ParsedForms, "Parsed forms:")                                              \
   T(SendAutofillUpload, "Sending Autofill Upload Request:")                    \
   T(LocalHeuristicRegExMatched, "RegEx of local heuristic matched:")           \
+  T(LocalHeuristicDidNotFindEnoughFillableFields,                              \
+    "Local heuristics did not find enough fillable fields to classify the "    \
+    "form as fillable; therefore it did not produce any classifications.")     \
   T(AbortParsingTooManyForms, "Abort parsing form: Too many forms in cache: ") \
   T(AbortParsingNotAllowedScheme,                                              \
     "Abort parsing form: Ignoring form because the source url has no allowed " \
@@ -30,9 +33,30 @@ class LogBuffer;
   T(AbortParsingFormHasNoTextfield,                                            \
     "Abort parsing form: Form has no text field.")                             \
   T(FunnelMetrics, "Funnel Metrics")                                           \
-  T(KeyMetrics, "Key Metrics")
+  T(KeyMetrics, "Key Metrics")                                                 \
+  T(ImportAddressProfileFromForm,                                              \
+    "FormDataImporter::ImportAddressProfiles for form:  ")                     \
+  T(ImportAddressProfileFromFormFailed,                                        \
+    "Address profile can not be imported from the form: ")                     \
+  T(ImportAddressProfileFromFormNumberOfImports,                               \
+    "Number of imported address profiles: ")                                   \
+  T(ImportAddressProfileFromFormSection, "ImportAddressProfileForSection: ")   \
+  T(ImportAddressProfileFromFormCountrySource,                                 \
+    "Source of country for address requirements: ")                            \
+  T(ImportAddressProfileFromFormAddressRequirements,                           \
+    "Requirements for the address import: ")                                   \
+  T(FormSubmissionDetected, "Form submission detected: ")                      \
+  T(SendFillingData, "Sending data to fill to renderer: ")                     \
+  T(CreditCardUploadEnabled, "Credit card upload is enabled.")                 \
+  T(CreditCardUploadDisabled, "Credit card upload is disabled. Reason: ")      \
+  T(CardUploadDecisionUploadOffered, "Credit card upload was offered.")        \
+  T(CardUploadDecisionUploadNotOffered, "Credit card upload was not offered.") \
+  T(SuggestionSuppressed, "Autofill suggestion(s) suppressed.")                \
+  T(Rationalization, "Rationalization: ")                                      \
+  T(ProcessingServerData, "Processing server data.")
 
 // Log messages for chrome://autofill-internals.
+
 #define AUTOFILL_TEMPLATE(NAME, MESSAGE) k##NAME,
 enum class LogMessage {
   AUTOFILL_LOG_MESSAGE_TEMPLATES(AUTOFILL_TEMPLATE) kLastMessage

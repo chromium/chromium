@@ -1,0 +1,30 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//device/vr/buildflags/buildflags.gni")
+
+assert(enable_vr)
+
+component("orientation") {
+  output_name = "vr_orientation"
+  defines = [ "IS_VR_ORIENTATION_IMPL" ]
+  sources = [
+    "orientation_device.cc",
+    "orientation_device.h",
+    "orientation_device_provider.cc",
+    "orientation_device_provider.h",
+    "orientation_session.cc",
+    "orientation_session.h",
+  ]
+
+  public_deps = [ "//device/vr/public/cpp" ]
+
+  deps = [
+    "//base",
+    "//device/vr:vr_base",
+    "//mojo/public/cpp/bindings",
+    "//services/device/public/cpp/generic_sensor",
+    "//ui/gfx",
+  ]
+}

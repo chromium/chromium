@@ -8,13 +8,17 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "ios/chrome/common/material_timing.h"
 #include "ui/gfx/geometry/cubic_bezier.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+CGFloat GetFinalFullscreenProgressForAnimation(FullscreenAnimatorStyle style) {
+  return style == FullscreenAnimatorStyle::ENTER_FULLSCREEN ? 0.0 : 1.0;
+}
 
 @interface FullscreenAnimator () {
   // The bezier backing the timing curve.
@@ -44,8 +48,7 @@
     DCHECK_LE(startProgress, 1.0);
     _style = style;
     _startProgress = startProgress;
-    _finalProgress =
-        _style == FullscreenAnimatorStyle::ENTER_FULLSCREEN ? 0.0 : 1.0;
+    _finalProgress = GetFinalFullscreenProgressForAnimation(_style);
     _bezier = std::make_unique<gfx::CubicBezier>(
         timingParams.controlPoint1.x, timingParams.controlPoint1.y,
         timingParams.controlPoint2.x, timingParams.controlPoint2.y);

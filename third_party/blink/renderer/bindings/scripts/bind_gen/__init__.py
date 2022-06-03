@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import os.path
-import platform
 import sys
 
 
@@ -13,9 +12,10 @@ def _setup_sys_path():
     expected_path = 'third_party/blink/renderer/bindings/scripts/bind_gen/'
 
     this_dir = os.path.dirname(__file__)
-    root_dir = os.path.join(this_dir, *(['..'] * expected_path.count('/')))
+    root_dir = os.path.abspath(
+        os.path.join(this_dir, *(['..'] * expected_path.count('/'))))
 
-    sys.path = [
+    module_dirs = (
         # //third_party/blink/renderer/bindings/scripts/web_idl
         os.path.join(root_dir, 'third_party', 'blink', 'renderer', 'bindings',
                      'scripts'),
@@ -24,37 +24,42 @@ def _setup_sys_path():
                      'scripts'),
         # //third_party/mako/mako
         os.path.join(root_dir, 'third_party', 'mako'),
-    ] + sys.path
+    )
+    for module_dir in reversed(module_dirs):
+        # Preserve sys.path[0] as is.
+        # https://docs.python.org/3/library/sys.html?highlight=path[0]#sys.path
+        sys.path.insert(1, module_dir)
 
 
 _setup_sys_path()
 
-
-from . import clang_format
+from .callback_function import generate_callback_functions
+from .callback_interface import generate_callback_interfaces
 from .dictionary import generate_dictionaries
+from .enumeration import generate_enumerations
 from .interface import generate_interfaces
-from .path_manager import PathManager
+from .namespace import generate_namespaces
+from .observable_array import generate_observable_arrays
+from .task_queue import TaskQueue
+from .typedef import generate_typedefs
+from .union import generate_unions
 
 
-def _setup_clang_format():
-    expected_path = 'third_party/blink/renderer/bindings/scripts/bind_gen/'
-
-    this_dir = os.path.dirname(__file__)
-    root_dir = os.path.join(this_dir, *(['..'] * expected_path.count('/')))
-
-    # //third_party/depot_tools/clang-format
-    command_name = ('clang-format.bat'
-                    if platform.system() == 'Windows' else 'clang-format')
-    command_path = os.path.abspath(
-        os.path.join(root_dir, 'third_party', 'depot_tools', command_name))
-
-    clang_format.init(command_path=command_path)
-
-
-def init(output_dirs):
+def init(web_idl_database_path, root_src_dir, root_gen_dir, component_reldirs,
+         enable_style_format):
     """
     Args:
-        output_dirs: Pairs of component and output directory.
+        web_idl_database_path: File path to the web_idl.Database.
+        root_src_dir: Project's root directory, which corresponds to "//" in GN.
+        root_gen_dir: Root directory of generated files, which corresponds to
+            "//out/Default/gen" in GN.
+        component_reldirs: Pairs of component and output directory.
+        enable_style_format: Enable style formatting of the generated files.
     """
-    _setup_clang_format()
-    PathManager.init(output_dirs)
+
+    from . import package_initializer
+    package_initializer.init(web_idl_database_path=web_idl_database_path,
+                             root_src_dir=root_src_dir,
+                             root_gen_dir=root_gen_dir,
+                             component_reldirs=component_reldirs,
+                             enable_style_format=enable_style_format)

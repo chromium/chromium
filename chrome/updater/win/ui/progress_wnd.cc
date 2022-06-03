@@ -4,24 +4,30 @@
 
 #include "chrome/updater/win/ui/progress_wnd.h"
 
+#include <algorithm>
+
+#include "base/check_op.h"
+#include "base/cxx17_backports.h"
 #include "base/i18n/message_formatter.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/updater/updater_constants.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/util.h"
-#include "chrome/updater/win/ui/constants.h"
+#include "chrome/updater/win/ui/ui_constants.h"
 #include "chrome/updater/win/ui/ui_ctls.h"
-#include "chrome/updater/win/ui/util.h"
-#include "chrome/updater/win/util.h"
+#include "chrome/updater/win/ui/ui_util.h"
+#include "chrome/updater/win/win_util.h"
 
 namespace updater {
 namespace ui {
 
 namespace {
+
+// TODO(crbug.com/1065588): remove this symbol.
+const char16_t kChromeAppId[] = u"{8A69D345-D564-463C-AFF1-A69D9E530F96}";
 
 // The current UI shows to the user only one completion type, even though
 // there could be multiple applications in a bundle, where each application
@@ -62,12 +68,11 @@ int GetPriority(CompletionCodes code) {
   return -1;
 }
 
+// Returns true if all apps are cancelled or if the range is empty.
 bool AreAllAppsCanceled(const std::vector<AppCompletionInfo>& apps_info) {
-  for (const auto& app_info : apps_info) {
-    if (app_info.is_canceled)
-      return false;
-  }
-  return true;
+  return std::all_of(
+      apps_info.begin(), apps_info.end(),
+      [](const AppCompletionInfo& app_info) { return app_info.is_canceled; });
 }
 
 }  // namespace
@@ -158,7 +163,7 @@ LRESULT ProgressWnd::OnInitDialog(UINT message,
 
   SetMarqueeMode(true);
 
-  base::string16 state_text;
+  std::wstring state_text;
   ui::LoadString(IDS_INITIALIZING, &state_text);
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT, state_text.c_str());
   ChangeControlState();
@@ -188,18 +193,18 @@ bool ProgressWnd::MaybeCloseWindow() {
         std::make_unique<InstallStoppedWnd>(message_loop(), *this);
     HWND hwnd = install_stopped_wnd_->Create(*this);
     if (hwnd) {
-      base::string16 title;
+      std::wstring title;
       ui::LoadString(IDS_INSTALLATION_STOPPED_WINDOW_TITLE, &title);
       install_stopped_wnd_->SetWindowText(title.c_str());
 
-      base::string16 button_text;
+      std::wstring button_text;
       ui::LoadString(IDS_RESUME_INSTALLATION, &button_text);
       install_stopped_wnd_->SetDlgItemText(IDOK, button_text.c_str());
 
       ui::LoadString(IDS_CANCEL_INSTALLATION, &button_text);
       install_stopped_wnd_->SetDlgItemText(IDCANCEL, button_text.c_str());
 
-      base::string16 text;
+      std::wstring text;
       ui::LoadString(IDS_INSTALL_STOPPED, &text);
       install_stopped_wnd_->SetDlgItemText(IDC_INSTALL_STOPPED_TEXT,
                                            text.c_str());
@@ -253,7 +258,6 @@ LRESULT ProgressWnd::OnClickedButton(WORD notify_code,
         case States::STATE_COMPLETE_ERROR:
           return CompleteWnd::OnClickedButton(notify_code, id, wnd_ctl,
                                               handled);
-          break;
         default:
           NOTREACHED();
       }
@@ -292,7 +296,7 @@ LRESULT ProgressWnd::OnInstallStopped(UINT msg,
 }
 
 void ProgressWnd::HandleCancelRequest() {
-  base::string16 s;
+  std::wstring s;
   ui::LoadString(IDS_CANCELING, &s);
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
 
@@ -310,20 +314,19 @@ void ProgressWnd::OnCheckingForUpdate() {
 
   cur_state_ = States::STATE_CHECKING_FOR_UPDATE;
 
-  base::string16 s;
+  std::wstring s;
   ui::LoadString(IDS_WAITING_TO_CONNECT, &s);
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
 
   ChangeControlState();
 }
 
-void ProgressWnd::OnUpdateAvailable(const base::string16& app_id,
-                                    const base::string16& app_name,
-                                    const base::string16& version_string) {
+void ProgressWnd::OnUpdateAvailable(const std::u16string& app_id,
+                                    const std::u16string& app_name,
+                                    const std::u16string& version_string) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
-  if (base::EqualsCaseInsensitiveASCII(app_id,
-                                       base::ASCIIToUTF16(kChromeAppId))) {
+  if (base::EqualsCaseInsensitiveASCII(app_id, kChromeAppId)) {
     HBITMAP app_bitmap = reinterpret_cast<HBITMAP>(
         ::LoadImage(GetCurrentModuleHandle(), MAKEINTRESOURCE(IDB_CHROME),
                     IMAGE_BITMAP, 0, 0, LR_SHARED));
@@ -336,15 +339,15 @@ void ProgressWnd::OnUpdateAvailable(const base::string16& app_id,
     return;
 }
 
-void ProgressWnd::OnWaitingToDownload(const base::string16& app_id,
-                                      const base::string16& app_name) {
+void ProgressWnd::OnWaitingToDownload(const std::u16string& app_id,
+                                      const std::u16string& app_name) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsWindow())
     return;
 
   cur_state_ = States::STATE_WAITING_TO_DOWNLOAD;
 
-  base::string16 s;
+  std::wstring s;
   ui::LoadString(IDS_WAITING_TO_DOWNLOAD, &s);
   SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
 
@@ -352,8 +355,8 @@ void ProgressWnd::OnWaitingToDownload(const base::string16& app_id,
 }
 
 // May be called repeatedly during download.
-void ProgressWnd::OnDownloading(const base::string16& app_id,
-                                const base::string16& app_name,
+void ProgressWnd::OnDownloading(const std::u16string& app_id,
+                                const std::u16string& app_name,
                                 int time_remaining_ms,
                                 int pos) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -364,7 +367,7 @@ void ProgressWnd::OnDownloading(const base::string16& app_id,
 
   cur_state_ = States::STATE_DOWNLOADING;
 
-  base::string16 s;
+  std::wstring s;
 
   // TODO(sorin): should use base::TimeDelta, https://crbug.com/1016921
   int time_remaining_sec = CeilingDivide(time_remaining_ms, kMsPerSec);
@@ -375,24 +378,24 @@ void ProgressWnd::OnDownloading(const base::string16& app_id,
   } else if (time_remaining_sec < kSecPerMin) {
     // Less than one minute remaining.
     ui::LoadString(IDS_DOWNLOADING_SHORT, &s);
-    s = base::i18n::MessageFormatter::FormatWithNumberedArgs(
-        s, time_remaining_sec);
+    s = base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+        base::AsString16(s), time_remaining_sec));
   } else if (time_remaining_sec < kSecondsPerHour) {
     // Less than one hour remaining.
     int time_remaining_minute = CeilingDivide(time_remaining_sec, kSecPerMin);
     ui::LoadString(IDS_DOWNLOADING_LONG, &s);
-    s = base::i18n::MessageFormatter::FormatWithNumberedArgs(
-        s, time_remaining_minute);
+    s = base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+        base::AsString16(s), time_remaining_minute));
   } else {
     int time_remaining_hour =
         CeilingDivide(time_remaining_sec, kSecondsPerHour);
     ui::LoadString(IDS_DOWNLOADING_VERY_LONG, &s);
-    s = base::i18n::MessageFormatter::FormatWithNumberedArgs(
-        s, time_remaining_hour);
+    s = base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+        base::AsString16(s), time_remaining_hour));
   }
 
   // Reduces flicker by only updating the control if the text has changed.
-  base::string16 current_text;
+  std::wstring current_text;
   ui::GetDlgItemText(*this, IDC_INSTALLER_STATE_TEXT, &current_text);
   if (s != current_text)
     SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
@@ -404,8 +407,8 @@ void ProgressWnd::OnDownloading(const base::string16& app_id,
   ChangeControlState();
 }
 
-void ProgressWnd::OnWaitingRetryDownload(const base::string16& app_id,
-                                         const base::string16& app_name,
+void ProgressWnd::OnWaitingRetryDownload(const std::u16string& app_id,
+                                         const std::u16string& app_name,
                                          const base::Time& next_retry_time) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsWindow())
@@ -415,17 +418,17 @@ void ProgressWnd::OnWaitingRetryDownload(const base::string16& app_id,
   const auto retry_time_in_sec =
       (next_retry_time - base::Time::NowFromSystemTime()).InSeconds();
   if (retry_time_in_sec > 0) {
-    base::string16 s;
+    std::wstring s;
     ui::LoadString(IDS_DOWNLOAD_RETRY, &s);
-    s = base::i18n::MessageFormatter::FormatWithNumberedArgs(
-        s, 1 + retry_time_in_sec);
+    s = base::AsWString(base::i18n::MessageFormatter::FormatWithNumberedArgs(
+        base::AsString16(s), 1 + retry_time_in_sec));
     SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
     ChangeControlState();
   }
 }
 
-void ProgressWnd::OnWaitingToInstall(const base::string16& app_id,
-                                     const base::string16& app_name,
+void ProgressWnd::OnWaitingToInstall(const std::u16string& app_id,
+                                     const std::u16string& app_name,
                                      bool* can_start_install) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(can_start_install);
@@ -434,7 +437,7 @@ void ProgressWnd::OnWaitingToInstall(const base::string16& app_id,
 
   if (States::STATE_WAITING_TO_INSTALL != cur_state_) {
     cur_state_ = States::STATE_WAITING_TO_INSTALL;
-    base::string16 s;
+    std::wstring s;
     ui::LoadString(IDS_WAITING_TO_INSTALL, &s);
     SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
     ChangeControlState();
@@ -444,8 +447,8 @@ void ProgressWnd::OnWaitingToInstall(const base::string16& app_id,
 }
 
 // May be called repeatedly during install.
-void ProgressWnd::OnInstalling(const base::string16& app_id,
-                               const base::string16& app_name,
+void ProgressWnd::OnInstalling(const std::u16string& app_id,
+                               const std::u16string& app_name,
                                int time_remaining_ms,
                                int pos) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -454,7 +457,7 @@ void ProgressWnd::OnInstalling(const base::string16& app_id,
 
   if (States::STATE_INSTALLING != cur_state_) {
     cur_state_ = States::STATE_INSTALLING;
-    base::string16 s;
+    std::wstring s;
     ui::LoadString(IDS_INSTALLING, &s);
     SetDlgItemText(IDC_INSTALLER_STATE_TEXT, s.c_str());
     ChangeControlState();
@@ -524,7 +527,7 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
 
   using MessageFormatter = base::i18n::MessageFormatter;
 
-  base::string16 s;
+  std::wstring s;
   CompletionCodes overall_completion_code =
       GetBundleOverallCompletionCode(observer_info);
   switch (overall_completion_code) {
@@ -551,9 +554,9 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
       ui::LoadString(IDS_RESTART_LATER, &s);
       SetDlgItemText(IDC_BUTTON2, s.c_str());
       ui::LoadString(IDS_TEXT_RESTART_ALL_BROWSERS, &s);
-      SetDlgItemText(
-          IDC_COMPLETE_TEXT,
-          MessageFormatter::FormatWithNumberedArgs(s, bundle_name()).c_str());
+      SetDlgItemText(IDC_COMPLETE_TEXT,
+                     base::as_wcstr(MessageFormatter::FormatWithNumberedArgs(
+                         base::AsString16(s), bundle_name())));
       DeterminePostInstallUrls(observer_info);
       break;
     case CompletionCodes::COMPLETION_CODE_RESTART_BROWSER:
@@ -563,9 +566,9 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
       ui::LoadString(IDS_RESTART_LATER, &s);
       SetDlgItemText(IDC_BUTTON2, s.c_str());
       ui::LoadString(IDS_TEXT_RESTART_BROWSER, &s);
-      SetDlgItemText(
-          IDC_COMPLETE_TEXT,
-          MessageFormatter::FormatWithNumberedArgs(s, bundle_name()).c_str());
+      SetDlgItemText(IDC_COMPLETE_TEXT,
+                     base::as_wcstr(MessageFormatter::FormatWithNumberedArgs(
+                         base::AsString16(s), bundle_name())));
       SetDlgItemText(IDC_COMPLETE_TEXT, s.c_str());
       DeterminePostInstallUrls(observer_info);
       break;
@@ -576,30 +579,36 @@ void ProgressWnd::OnComplete(const ObserverCompletionInfo& observer_info) {
       ui::LoadString(IDS_RESTART_LATER, &s);
       SetDlgItemText(IDC_BUTTON2, s.c_str());
       ui::LoadString(IDS_TEXT_RESTART_COMPUTER, &s);
-      SetDlgItemText(
-          IDC_COMPLETE_TEXT,
-          MessageFormatter::FormatWithNumberedArgs(s, bundle_name()).c_str());
+      SetDlgItemText(IDC_COMPLETE_TEXT,
+                     base::as_wcstr(MessageFormatter::FormatWithNumberedArgs(
+                         base::AsString16(s), bundle_name())));
       SetDlgItemText(IDC_COMPLETE_TEXT, s.c_str());
       break;
     case CompletionCodes::COMPLETION_CODE_RESTART_ALL_BROWSERS_NOTICE_ONLY:
       cur_state_ = States::STATE_COMPLETE_SUCCESS;
       ui::LoadString(IDS_TEXT_RESTART_ALL_BROWSERS, &s);
       CompleteWnd::DisplayCompletionDialog(
-          true, MessageFormatter::FormatWithNumberedArgs(s, bundle_name()),
+          true,
+          base::AsWString(MessageFormatter::FormatWithNumberedArgs(
+              base::AsString16(s), bundle_name())),
           observer_info.help_url);
       break;
     case CompletionCodes::COMPLETION_CODE_REBOOT_NOTICE_ONLY:
       cur_state_ = States::STATE_COMPLETE_SUCCESS;
       ui::LoadString(IDS_TEXT_RESTART_COMPUTER, &s);
       CompleteWnd::DisplayCompletionDialog(
-          true, MessageFormatter::FormatWithNumberedArgs(s, bundle_name()),
+          true,
+          base::AsWString(MessageFormatter::FormatWithNumberedArgs(
+              base::AsString16(s), bundle_name())),
           observer_info.help_url);
       break;
     case CompletionCodes::COMPLETION_CODE_RESTART_BROWSER_NOTICE_ONLY:
       cur_state_ = States::STATE_COMPLETE_SUCCESS;
       ui::LoadString(IDS_TEXT_RESTART_BROWSER, &s);
       CompleteWnd::DisplayCompletionDialog(
-          true, MessageFormatter::FormatWithNumberedArgs(s, bundle_name()),
+          true,
+          base::AsWString(MessageFormatter::FormatWithNumberedArgs(
+              base::AsString16(s), bundle_name())),
           observer_info.help_url);
       break;
     case CompletionCodes::COMPLETION_CODE_EXIT_SILENTLY_ON_LAUNCH_COMMAND:

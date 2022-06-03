@@ -1,63 +1,125 @@
 # Copyright 2019 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """
 Runs the bindings code generator for the given tasks.
 """
 
-import optparse
+import argparse
 import sys
 
-import bind_gen
 import web_idl
+import bind_gen
 
 
-def parse_options():
-    parser = optparse.OptionParser(usage="%prog [options] TASK...")
-    parser.add_option('--web_idl_database', type='string',
-                      help="filepath of the input database")
-    parser.add_option('--output_dir_core', type='string',
-                      help="outout directory for 'core' component")
-    parser.add_option('--output_dir_modules', type='string',
-                      help="outout directory for 'modules' component")
-    options, args = parser.parse_args()
+def parse_output_reldirs(reldirs):
+    required = ['core', 'modules']
+    valid = required + ['extensions_chromeos']
+    result = {}
+    for key_value_pair in reldirs:
+        key, value = key_value_pair.split("=", 1)
+        key = key.strip()
+        result[key] = value
 
-    required_option_names = (
-        'web_idl_database', 'output_dir_core', 'output_dir_modules')
-    for opt_name in required_option_names:
-        if getattr(options, opt_name) is None:
-            parser.error("--{} is a required option.".format(opt_name))
+    for c in required:
+        assert c in result, 'missing required --output_reldir "{0}"'.format(c)
 
-    if not args:
-        parser.error("No argument specified.")
+    for c in result.keys():
+        assert c in valid, 'invalid --output_reldir "{0}"'.format(c)
 
-    return options, args
+    return result
+
+
+def parse_options(valid_tasks):
+    parser = argparse.ArgumentParser(
+        description='Generator for Blink bindings.')
+    parser.add_argument("--web_idl_database",
+                        required=True,
+                        type=str,
+                        help="filepath of the input database")
+    parser.add_argument("--root_src_dir",
+                        required=True,
+                        type=str,
+                        help='root directory of chromium project, i.e. "//"')
+    parser.add_argument("--root_gen_dir",
+                        required=True,
+                        type=str,
+                        help='root directory of generated code files, i.e. '
+                        '"//out/Default/gen"')
+    parser.add_argument(
+        "--output_reldir",
+        metavar="KEY=VALUE",
+        action="append",
+        help="output directory of KEY component relative to root_gen_dir.")
+    parser.add_argument(
+        '--format_generated_files',
+        action="store_true",
+        default=False,
+        help=("format the resulting generated files by applying clang-format, "
+              "etc."))
+    parser.add_argument(
+        '--single_process',
+        action="store_true",
+        default=False,
+        help=('run everything in a single process, which makes debugging '
+              'easier'))
+    parser.add_argument('tasks',
+                        nargs='+',
+                        choices=valid_tasks,
+                        help='types to generate')
+
+    options = parser.parse_args()
+
+    return options
 
 
 def main():
-    options, tasks = parse_options()
-
     dispatch_table = {
+        'callback_function': bind_gen.generate_callback_functions,
+        'callback_interface': bind_gen.generate_callback_interfaces,
         'dictionary': bind_gen.generate_dictionaries,
+        'enumeration': bind_gen.generate_enumerations,
         'interface': bind_gen.generate_interfaces,
+        'namespace': bind_gen.generate_namespaces,
+        'observable_array': bind_gen.generate_observable_arrays,
+        'typedef': bind_gen.generate_typedefs,
+        'union': bind_gen.generate_unions,
     }
 
-    for task in tasks:
-        if task not in dispatch_table:
-            sys.exit("Unknown task: {}".format(task))
+    options = parse_options(valid_tasks=dispatch_table.keys())
 
-    web_idl_database = web_idl.Database.read_from_file(options.web_idl_database)
-    output_dirs = {
-        web_idl.Component('core'): options.output_dir_core,
-        web_idl.Component('modules'): options.output_dir_modules,
-    }
+    output_reldirs = parse_output_reldirs(options.output_reldir)
 
-    bind_gen.init(output_dirs)
+    component_reldirs = {}
+    for component, reldir in output_reldirs.items():
+        component_reldirs[web_idl.Component(component)] = reldir
 
-    for task in tasks:
-        dispatch_table[task](web_idl_database=web_idl_database,
-                             output_dirs=output_dirs)
+    bind_gen.init(web_idl_database_path=options.web_idl_database,
+                  root_src_dir=options.root_src_dir,
+                  root_gen_dir=options.root_gen_dir,
+                  component_reldirs=component_reldirs,
+                  enable_style_format=options.format_generated_files)
+
+    task_queue = bind_gen.TaskQueue(single_process=options.single_process)
+
+    for task in options.tasks:
+        dispatch_table[task](task_queue)
+
+    def print_to_console(message):
+        out = sys.stdout
+        if not out.isatty():
+            return
+        out.write(message)
+        out.flush()
+
+    def report_progress(total, done):
+        percentage = (int(float(done) / float(total) *
+                          100) if total != 0 else 100)
+        message = "Blink-V8 bindings generation: {}% done\r".format(percentage)
+        print_to_console(message)
+
+    task_queue.run(report_progress)
+    print_to_console("\n")
 
 
 if __name__ == '__main__':

@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Upgrade-Insecure-Requests: Expects allowed for worker-module to same-http-downgrade origin and downgrade redirection from https context. assert_equals: The resource request should be 'allowed'. expected "allowed" but got "blocked"
+FAIL Upgrade-Insecure-Requests: Expects allowed for worker-module to same-http-downgrade origin and no-redirect redirection from https context. assert_equals: The resource request should be 'allowed'. expected "allowed" but got "blocked"
+PASS Upgrade-Insecure-Requests: Expects allowed for worker-module to same-https origin and downgrade redirection from https context.
+Harness: the test ran to completion.
+

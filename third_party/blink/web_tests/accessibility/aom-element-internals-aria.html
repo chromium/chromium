@@ -177,5 +177,15 @@ test(function() {
 }, "aria-posinset");
 
 
+test(function() {
+  const element = createTestElement("ariaDescription");
+  element.role = 'button';
+  const axElement = axElementById(element.id);
+  element.internals.ariaDescription = 'better than apple pie';
+  assert_equals(axElement.description, 'better than apple pie',
+    "ariaDescription can be set through ElementInternals");
+  element.remove();
+}, "aria-description");
+
 </script>
 </body>

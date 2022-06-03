@@ -6,65 +6,77 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/numerics/ranges.h"
+#include "remoting/base/logging.h"
 #include "remoting/proto/event.pb.h"
 
 namespace remoting {
 namespace protocol {
 
-MouseInputFilter::MouseInputFilter()
-    : x_input_(0), y_input_(0), x_output_(0), y_output_(0) {}
+MouseInputFilter::MouseInputFilter() = default;
 
 MouseInputFilter::MouseInputFilter(InputStub* input_stub)
-    : InputFilter(input_stub),
-      x_input_(0),
-      y_input_(0),
-      x_output_(0),
-      y_output_(0) {}
+    : InputFilter(input_stub) {}
 
 MouseInputFilter::~MouseInputFilter() = default;
 
 void MouseInputFilter::InjectMouseEvent(const MouseEvent& event) {
-  if (x_input_ == 0 || y_input_ == 0 || x_output_ == 0 || y_output_ == 0) {
+  if (input_bounds_.is_zero() || output_bounds_.is_zero()) {
     return;
   }
 
-  // We scale based on the maximum input & output coordinates, rather than the
-  // input and output sizes, so that it's possible to reach the edge of the
-  // output when up-scaling.  We also take care to round up or down correctly,
-  // which is important when down-scaling.
-  // After scaling, we offset by the output rect origin. This is normally (0,0),
-  // but will be non-zero when we are showing a single display.
+  // We scale based on the max input and output coordinates (which are equal
+  // to size-1), rather than the input and output sizes, so that it's possible
+  // to reach the edge of the output when up-scaling.  We also take care to
+  // round up or down correctly, which is important when down-scaling.
+  // After scaling, we offset by the output rect origin. This is normally
+  // (0,0), but may be non-zero when there are multiple displays and we are
+  // showing a single display.
+
   MouseEvent out_event(event);
   if (out_event.has_x()) {
-    int x = out_event.x() * x_output_;
-    x = (x + x_input_ / 2) / x_input_;
-    out_event.set_x(output_offset_.x() + base::ClampToRange(x, 0, x_output_));
+    out_event.set_x(output_offset_.x() + GetScaledX(out_event.x()));
   }
   if (out_event.has_y()) {
-    int y = out_event.y() * y_output_;
-    y = (y + y_input_ / 2) / y_input_;
-    out_event.set_y(output_offset_.y() + base::ClampToRange(y, 0, y_output_));
+    out_event.set_y(output_offset_.y() + GetScaledY(out_event.y()));
   }
-
   InputFilter::InjectMouseEvent(out_event);
 }
 
 void MouseInputFilter::set_input_size(const int32_t x, const int32_t y) {
-  x_input_ = x - 1;
-  y_input_ = y - 1;
+  input_bounds_ = webrtc::DesktopVector(std::max(x - 1, 0), std::max(y - 1, 0));
+  HOST_LOG << "Setting MouseInputFilter input boundary to " << input_bounds_.x()
+           << "," << input_bounds_.y();
 }
 
 void MouseInputFilter::set_output_size(const int32_t x, const int32_t y) {
-  x_output_ = x - 1;
-  y_output_ = y - 1;
+  output_bounds_ =
+      webrtc::DesktopVector(std::max(x - 1, 0), std::max(y - 1, 0));
+  HOST_LOG << "Setting MouseInputFilter output boundary to "
+           << output_bounds_.x() << "," << output_bounds_.y();
 }
 
 void MouseInputFilter::set_output_offset(const webrtc::DesktopVector& v) {
   output_offset_ = webrtc::DesktopVector(v.x(), v.y());
-  LOG(INFO) << "Setting MouseInputFilter output_offset to "
-            << output_offset_.x() << "," << output_offset_.y();
+  HOST_LOG << "Setting MouseInputFilter output_offset to " << output_offset_.x()
+           << "," << output_offset_.y();
+}
+
+int32_t MouseInputFilter::GetScaledX(int32_t x) {
+  if (output_bounds_.x() != input_bounds_.x()) {
+    x = ((x * output_bounds_.x()) + (input_bounds_.x() / 2)) /
+        input_bounds_.x();
+  }
+  return base::clamp(x, 0, output_bounds_.x());
+}
+
+int32_t MouseInputFilter::GetScaledY(int32_t y) {
+  if (output_bounds_.y() != input_bounds_.y()) {
+    y = ((y * output_bounds_.y()) + (input_bounds_.y() / 2)) /
+        input_bounds_.y();
+  }
+  return base::clamp(y, 0, output_bounds_.y());
 }
 
 }  // namespace protocol

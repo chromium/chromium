@@ -5,7 +5,8 @@
 #ifndef ASH_SYSTEM_SUPERVISED_SUPERVISED_ICON_STRING_H_
 #define ASH_SYSTEM_SUPERVISED_SUPERVISED_ICON_STRING_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 namespace gfx {
 struct VectorIcon;
@@ -15,8 +16,8 @@ namespace ash {
 
 const gfx::VectorIcon& GetSupervisedUserIcon();
 
-base::string16 GetSupervisedUserMessage();
+std::u16string GetSupervisedUserMessage();
 
 }  // namespace ash
 
-#endif  // ASH_SYSTEM_UNIFIED_UNIFIED_SYSTEM_INFO_VIEW_H_
+#endif  // ASH_SYSTEM_SUPERVISED_SUPERVISED_ICON_STRING_H_

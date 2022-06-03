@@ -4,7 +4,7 @@
 
 #include "components/cronet/metrics_util.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace cronet {
 

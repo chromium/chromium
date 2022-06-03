@@ -4,6 +4,6 @@ PASS: Cross frame access by enumerating the window object was denied.
 PASS: Cross frame access by getting the keys of the window object was denied.
 PASS: Cross frame access by getting the property names of the window object was denied.
 PASS: Cross frame access by enumerating the Location object revealed no properties.
-FAIL: Cross frame access by getting the keys of the Location object returned non-whitelisted key: href
+PASS: Cross frame access by getting the keys of the Location object revealed only whitelisted keys.
 PASS: Cross frame access by getting the property names of the Location object revealed no custom properties.
 

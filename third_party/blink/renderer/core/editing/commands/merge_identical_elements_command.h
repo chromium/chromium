@@ -34,7 +34,7 @@ class MergeIdenticalElementsCommand final : public SimpleEditCommand {
  public:
   MergeIdenticalElementsCommand(Element*, Element*);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

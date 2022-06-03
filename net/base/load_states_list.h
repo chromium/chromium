@@ -3,9 +3,10 @@
 // found in the LICENSE file.
 
 // This file intentionally does not have header guards, it's included
-// inside a macro to generate values. The following line silences a
-// presubmit warning that would otherwise be triggered by this:
+// inside a macro to generate enum values. The following line silences a
+// presubmit and Tricium warning that would otherwise be triggered by this:
 // no-include-guard-because-multiply-included
+// NOLINT(build/header_guard)
 
 // This is the list of load states and their values. For the enum values,
 // include the file "net/base/load_states.h".

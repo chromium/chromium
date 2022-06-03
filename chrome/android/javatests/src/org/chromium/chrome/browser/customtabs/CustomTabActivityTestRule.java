@@ -4,49 +4,46 @@
 
 package org.chromium.chrome.browser.customtabs;
 
-import android.app.Activity;
 import android.content.Intent;
-import android.support.test.InstrumentationRegistry;
+
+import androidx.annotation.NonNull;
 
 import org.junit.Assert;
 
-import org.chromium.base.ApplicationStatus;
-import org.chromium.base.test.util.CallbackHelper;
-import org.chromium.chrome.browser.DeferredStartupHandler;
-import org.chromium.chrome.browser.tab.EmptyTabObserver;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Custom ActivityTestRule for all instrumentation tests that require a {@link CustomTabActivity}.
  */
 public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabActivity> {
-    protected static final long STARTUP_TIMEOUT_MS = 5L * 1000;
+    protected static final long STARTUP_TIMEOUT_MS = ScalableTimeout.scaleTimeout(5L * 1000);
     protected static final long LONG_TIMEOUT_MS = 10L * 1000;
+    private static int sCustomTabId;
 
     public CustomTabActivityTestRule() {
         super(CustomTabActivity.class);
     }
 
+    public static void putCustomTabIdInIntent(Intent intent) {
+        boolean hasCustomTabId = intent.hasExtra(CustomTabsTestUtils.EXTRA_CUSTOM_TAB_ID);
+        // Intent already has a custom tab id assigned to it and we should reuse the same activity.
+        // Test relying on sending the same intent relies on using the same activity.
+        if (hasCustomTabId) return;
+
+        intent.putExtra(CustomTabsTestUtils.EXTRA_CUSTOM_TAB_ID, sCustomTabId++);
+    }
+
+    public static int getCustomTabIdFromIntent(Intent intent) {
+        return intent.getIntExtra(CustomTabsTestUtils.EXTRA_CUSTOM_TAB_ID, -1);
+    }
+
     @Override
-    public void startActivityCompletely(Intent intent) {
-        Activity activity = InstrumentationRegistry.getInstrumentation().startActivitySync(intent);
-        Assert.assertNotNull("Main activity did not start", activity);
-        CriteriaHelper.pollUiThread(() -> {
-            for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
-                if (runningActivity instanceof CustomTabActivity) {
-                    setActivity((CustomTabActivity) runningActivity);
-                    return true;
-                }
-            }
-            return false;
-        });
+    public void launchActivity(@NonNull Intent intent) {
+        putCustomTabIdInIntent(intent);
+        super.launchActivity(intent);
     }
 
     /**
@@ -55,35 +52,7 @@ public class CustomTabActivityTestRule extends ChromeActivityTestRule<CustomTabA
      */
     public void startCustomTabActivityWithIntent(Intent intent) {
         startActivityCompletely(intent);
-        waitForActivityNativeInitializationComplete();
-        CriteriaHelper.pollUiThread(new Criteria("Tab never selected/initialized.") {
-            @Override
-            public boolean isSatisfied() {
-                return getActivity().getActivityTab() != null;
-            }
-        });
         final Tab tab = getActivity().getActivityTab();
-        final CallbackHelper pageLoadFinishedHelper = new CallbackHelper();
-        tab.addObserver(new EmptyTabObserver() {
-            @Override
-            public void onLoadStopped(Tab tab, boolean toDifferentDocument) {
-                pageLoadFinishedHelper.notifyCalled();
-            }
-        });
-        try {
-            if (tab.isLoading()) {
-                pageLoadFinishedHelper.waitForCallback(
-                        0, 1, LONG_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            }
-        } catch (TimeoutException e) {
-            Assert.fail();
-        }
-        CriteriaHelper.pollUiThread(
-                DeferredStartupHandler.getInstance()::isDeferredStartupCompleteForApp,
-                "Deferred startup never completed", STARTUP_TIMEOUT_MS,
-                CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        Assert.assertNotNull(tab);
-        Assert.assertNotNull(tab.getView());
         Assert.assertTrue(TabTestUtils.isCustomTab(tab));
     }
 }

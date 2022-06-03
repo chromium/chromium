@@ -11,6 +11,8 @@ Browser.
     <script src="../../../../../../third_party/blink/web_tests/resources/testharness.js"></script>
     <script src="../resources/webxr_e2e.js"></script>
     <script>
+      setup({single_test: true});
+
       // Arbitrary but valid data to pass to PaymentRequest to trigger the
       // native Payment Request UI.
       var methods = [

@@ -8,13 +8,11 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_browser_field_trials.h"
-#include "chrome/browser/first_run/first_run.h"
-#include "chrome/browser/metrics/field_trial_synchronizer.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "chrome/installer/util/master_preferences.h"
+#include "chrome/installer/util/initial_preferences.h"
 #include "components/metrics_services_manager/metrics_services_manager.h"
 #include "components/prefs/pref_service.h"
 
@@ -24,12 +22,15 @@ class ChromeMetricsServicesManagerClient;
 // setting up field trials, e.g. VariationsService, MetricsServicesManager etc.
 // before the full browser loop starts. The |local_state| is instantiated, and
 // its ownership will be taken by BrowserProcessImpl when the full browser
-// starts. Note: On Chrome OS, this class depends on
-// BrowserPolicyConnectorChromeOS whose behavior depends on DBusThreadManager
-// being initialized.
+// starts. Note: On Chrome OS, this class depends on BrowserPolicyConnectorAsh
+// whose behavior depends on DBusThreadManager being initialized.
 class ChromeFeatureListCreator {
  public:
   ChromeFeatureListCreator();
+
+  ChromeFeatureListCreator(const ChromeFeatureListCreator&) = delete;
+  ChromeFeatureListCreator& operator=(const ChromeFeatureListCreator&) = delete;
+
   ~ChromeFeatureListCreator();
 
   // Initializes all necessary parameters to create the feature list and calls
@@ -58,8 +59,8 @@ class ChromeFeatureListCreator {
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
   TakeChromeBrowserPolicyConnector();
 
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-  std::unique_ptr<installer::MasterPreferences> TakeMasterPrefs();
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<installer::InitialPreferences> TakeInitialPrefs();
 #endif
 
   PrefService* local_state() { return local_state_.get(); }
@@ -75,13 +76,17 @@ class ChromeFeatureListCreator {
  private:
   void CreatePrefService();
   void ConvertFlagsToSwitches();
-  void SetupFieldTrials();
+  void SetUpFieldTrials();
   void CreateMetricsServices();
 
-  // Imports variations master preference any preferences (to local state)
+  // Imports variations initial preference any preferences (to local state)
   // needed for first run. This is always called and early outs if not
   // first-run.
-  void SetupMasterPrefs();
+  void SetupInitialPrefs();
+
+  // Must be destroyed after |local_state_|.
+  std::unique_ptr<policy::ChromeBrowserPolicyConnector>
+      browser_policy_connector_;
 
   // If TakePrefService() is called, the caller will take the ownership
   // of this variable. Stop using this variable afterwards.
@@ -97,18 +102,11 @@ class ChromeFeatureListCreator {
   std::unique_ptr<metrics_services_manager::MetricsServicesManager>
       metrics_services_manager_;
 
-  scoped_refptr<FieldTrialSynchronizer> field_trial_synchronizer_;
-
   std::unique_ptr<ChromeBrowserFieldTrials> browser_field_trials_;
 
-  std::unique_ptr<policy::ChromeBrowserPolicyConnector>
-      browser_policy_connector_;
-
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
-  std::unique_ptr<installer::MasterPreferences> installer_master_prefs_;
+#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<installer::InitialPreferences> installer_initial_prefs_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeFeatureListCreator);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_FEATURE_LIST_CREATOR_H_

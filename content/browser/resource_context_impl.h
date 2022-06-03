@@ -11,14 +11,10 @@
 namespace content {
 
 class BrowserContext;
-class URLDataManagerBackend;
 
 // Getters for objects that are part of BrowserContext which are also used on
 // the IO thread. These are only accessed by content so they're not on the
 // public API.
-
-URLDataManagerBackend* GetURLDataManagerForResourceContext(
-    ResourceContext* context);
 
 // Initialize the above data on the ResourceContext from a given BrowserContext.
 CONTENT_EXPORT void InitializeResourceContext(BrowserContext* browser_context);

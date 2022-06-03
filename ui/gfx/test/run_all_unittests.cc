@@ -4,7 +4,6 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/test_discardable_memory_allocator.h"
@@ -15,7 +14,7 @@
 #include "ui/base/ui_base_paths.h"
 #include "ui/gfx/font_util.h"
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
 #include "base/test/mock_chrome_application_mac.h"
 #endif
 
@@ -34,11 +33,14 @@ class GfxTestSuite : public base::TestSuite {
   GfxTestSuite(int argc, char** argv) : base::TestSuite(argc, argv) {
   }
 
+  GfxTestSuite(const GfxTestSuite&) = delete;
+  GfxTestSuite& operator=(const GfxTestSuite&) = delete;
+
  protected:
   void Initialize() override {
     base::TestSuite::Initialize();
 
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+#if defined(OS_MAC)
     mock_cr_app::RegisterMockCrApp();
 #endif
 
@@ -68,8 +70,6 @@ class GfxTestSuite : public base::TestSuite {
 
  private:
   base::TestDiscardableMemoryAllocator discardable_memory_allocator;
-
-  DISALLOW_COPY_AND_ASSIGN(GfxTestSuite);
 };
 
 }  // namespace

@@ -4,16 +4,17 @@
 
 #include "third_party/blink/renderer/modules/contacts_picker/contacts_manager.h"
 
-#include "base/stl_util.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_contact_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/contacts_picker/contact_address.h"
-#include "third_party/blink/renderer/modules/contacts_picker/contact_info.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -99,18 +100,35 @@ constexpr char kIcon[] = "icon";
 
 }  // namespace
 
-ContactsManager::ContactsManager() = default;
+// static
+const char ContactsManager::kSupplementName[] = "ContactsManager";
+
+// static
+ContactsManager* ContactsManager::contacts(Navigator& navigator) {
+  auto* supplement = Supplement<Navigator>::From<ContactsManager>(navigator);
+  if (!supplement) {
+    supplement = MakeGarbageCollected<ContactsManager>(navigator);
+    ProvideTo(navigator, supplement);
+  }
+  return supplement;
+}
+
+ContactsManager::ContactsManager(Navigator& navigator)
+    : Supplement<Navigator>(navigator),
+      contacts_manager_(navigator.DomWindow()) {}
 
 ContactsManager::~ContactsManager() = default;
 
-mojo::Remote<mojom::blink::ContactsManager>&
-ContactsManager::GetContactsManager(ScriptState* script_state) {
-  if (!contacts_manager_) {
+mojom::blink::ContactsManager* ContactsManager::GetContactsManager(
+    ScriptState* script_state) {
+  if (!contacts_manager_.is_bound()) {
     ExecutionContext::From(script_state)
         ->GetBrowserInterfaceBroker()
-        .GetInterface(contacts_manager_.BindNewPipeAndPassReceiver());
+        .GetInterface(contacts_manager_.BindNewPipeAndPassReceiver(
+            ExecutionContext::From(script_state)
+                ->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
-  return contacts_manager_;
+  return contacts_manager_.get();
 }
 
 const Vector<String>& ContactsManager::GetProperties(
@@ -127,39 +145,37 @@ const Vector<String>& ContactsManager::GetProperties(
   return properties_;
 }
 
-ScriptPromise ContactsManager::select(ScriptState* script_state,
-                                      const Vector<String>& properties,
-                                      ContactsSelectOptions* options) {
-  Document* document = To<Document>(ExecutionContext::From(script_state));
+ScriptPromise ContactsManager::select(
+    ScriptState* script_state,
+    const Vector<V8ContactProperty>& properties,
+    ContactsSelectOptions* options,
+    ExceptionState& exception_state) {
+  LocalFrame* frame = script_state->ContextIsValid()
+                          ? LocalDOMWindow::From(script_state)->GetFrame()
+                          : nullptr;
 
-  if (document->ParentDocument()) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state,
-        MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kInvalidStateError,
-            "The contacts API can only be used in the top frame"));
+  if (!frame || !frame->IsMainFrame()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "The contacts API can only be used in the top frame");
+    return ScriptPromise();
   }
 
-  if (!LocalFrame::HasTransientUserActivation(document ? document->GetFrame()
-                                                       : nullptr)) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kSecurityError,
-                          "A user gesture is required to call this method"));
+  if (!LocalFrame::HasTransientUserActivation(frame)) {
+    exception_state.ThrowSecurityError(
+        "A user gesture is required to call this method");
+    return ScriptPromise();
   }
 
   if (properties.IsEmpty()) {
-    return ScriptPromise::Reject(script_state,
-                                 V8ThrowException::CreateTypeError(
-                                     script_state->GetIsolate(),
-                                     "At least one property must be provided"));
+    exception_state.ThrowTypeError("At least one property must be provided");
+    return ScriptPromise();
   }
 
   if (contact_picker_in_use_) {
-    return ScriptPromise::RejectWithDOMException(
-        script_state, MakeGarbageCollected<DOMException>(
-                          DOMExceptionCode::kInvalidStateError,
-                          "Contacts Picker is already in use."));
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Contacts Picker is already in use.");
+    return ScriptPromise();
   }
 
   bool include_names = false;
@@ -168,26 +184,35 @@ ScriptPromise ContactsManager::select(ScriptState* script_state,
   bool include_addresses = false;
   bool include_icons = false;
 
-  for (const String& property : properties) {
-    if (!base::Contains(GetProperties(script_state), property)) {
-      return ScriptPromise::Reject(
-          script_state,
-          V8ThrowException::CreateTypeError(
-              script_state->GetIsolate(),
-              "The provided value '" + property +
-                  "' is not a valid enum value of type ContactProperty"));
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  for (const auto& property : properties) {
+    if (!RuntimeEnabledFeatures::ContactsManagerExtraPropertiesEnabled(
+            execution_context) &&
+        (property == V8ContactProperty::Enum::kAddress ||
+         property == V8ContactProperty::Enum::kIcon)) {
+      exception_state.ThrowTypeError(
+          "The provided value '" + property.AsString() +
+          "' is not a valid enum value of type ContactProperty");
+      return ScriptPromise();
     }
 
-    if (property == kName)
-      include_names = true;
-    else if (property == kEmail)
-      include_emails = true;
-    else if (property == kTel)
-      include_tel = true;
-    else if (property == kAddress)
-      include_addresses = true;
-    else if (property == kIcon)
-      include_icons = true;
+    switch (property.AsEnum()) {
+      case V8ContactProperty::Enum::kName:
+        include_names = true;
+        break;
+      case V8ContactProperty::Enum::kEmail:
+        include_emails = true;
+        break;
+      case V8ContactProperty::Enum::kTel:
+        include_tel = true;
+        break;
+      case V8ContactProperty::Enum::kAddress:
+        include_addresses = true;
+        break;
+      case V8ContactProperty::Enum::kIcon:
+        include_icons = true;
+        break;
+    }
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -205,7 +230,7 @@ ScriptPromise ContactsManager::select(ScriptState* script_state,
 
 void ContactsManager::OnContactsSelected(
     ScriptPromiseResolver* resolver,
-    base::Optional<Vector<mojom::blink::ContactInfoPtr>> contacts) {
+    absl::optional<Vector<mojom::blink::ContactInfoPtr>> contacts) {
   ScriptState* script_state = resolver->GetScriptState();
 
   if (!script_state->ContextIsValid()) {
@@ -234,6 +259,12 @@ void ContactsManager::OnContactsSelected(
 ScriptPromise ContactsManager::getProperties(ScriptState* script_state) {
   return ScriptPromise::Cast(script_state,
                              ToV8(GetProperties(script_state), script_state));
+}
+
+void ContactsManager::Trace(Visitor* visitor) const {
+  visitor->Trace(contacts_manager_);
+  Supplement<Navigator>::Trace(visitor);
+  ScriptWrappable::Trace(visitor);
 }
 
 }  // namespace blink

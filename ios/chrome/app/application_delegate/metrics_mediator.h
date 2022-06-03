@@ -7,15 +7,28 @@
 
 #import <UIKit/UIKit.h>
 
-@protocol StartupInformation;
+#include "base/containers/span.h"
 
-@protocol BrowserInterfaceProvider;
+@protocol ConnectionInformation;
+@class SceneState;
 @protocol StartupInformation;
 
 namespace metrics_mediator {
 // Key in the UserDefaults to store the date/time that the background fetch
 // handler was called.
 extern NSString* const kAppEnteredBackgroundDateKey;
+
+// Struct containing histogram names and number of buckets. Used for recording
+// histograms fired in extensions.
+struct HistogramNameCountPair {
+  NSString* name;
+  int buckets;
+};
+
+// Send histograms reporting the usage of widget metrics. Uses the provided list
+// of histogram names to see if any histograms have been logged in widgets.
+void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms);
+
 }  // namespace metrics_mediator
 
 // Deals with metrics, checking and updating them accordingly to to the user
@@ -34,12 +47,12 @@ extern NSString* const kAppEnteredBackgroundDateKey;
 - (void)updateMetricsStateBasedOnPrefsUserTriggered:(BOOL)isUserTriggered;
 // Logs the duration of the cold start startup. Does nothing if there isn't a
 // cold start.
-+ (void)logStartupDuration:(id<StartupInformation>)startupInformation;
++ (void)logStartupDuration:(id<StartupInformation>)startupInformation
+     connectionInformation:(id<ConnectionInformation>)connectionInformation;
 // Logs the number of tabs open and the start type.
 + (void)logLaunchMetricsWithStartupInformation:
             (id<StartupInformation>)startupInformation
-                             interfaceProvider:(id<BrowserInterfaceProvider>)
-                                                   interfaceProvider;
+                               connectedScenes:(NSArray<SceneState*>*)scenes;
 // Logs in UserDefaults the current date with kAppEnteredBackgroundDateKey as
 // key.
 + (void)logDateInUserDefaults;

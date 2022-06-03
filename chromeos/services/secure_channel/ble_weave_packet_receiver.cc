@@ -10,6 +10,8 @@
 #include <netinet/in.h>
 #endif
 
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
 namespace chromeos {

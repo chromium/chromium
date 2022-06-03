@@ -13,21 +13,21 @@
 #include "base/location.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/sys_byteorder.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "content/browser/speech/proto/google_streaming_api.pb.h"
 #include "content/browser/speech/speech_recognition_engine.h"
 #include "content/browser/speech/speech_recognition_manager_impl.h"
 #include "content/browser/speech/speech_recognizer_impl.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/google_streaming_api.pb.h"
 #include "content/public/browser/notification_types.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -53,6 +53,9 @@ class MockAudioSystem : public media::AudioSystem {
  public:
   MockAudioSystem() = default;
 
+  MockAudioSystem(const MockAudioSystem&) = delete;
+  MockAudioSystem& operator=(const MockAudioSystem&) = delete;
+
   // AudioSystem implementation.
   void GetInputStreamParameters(const std::string& device_id,
                                 OnAudioParamsCallback on_params_cb) override {
@@ -60,8 +63,8 @@ class MockAudioSystem : public media::AudioSystem {
 
     // Posting callback to allow current SpeechRecognizerImpl dispatching event
     // to complete before transitioning to the next FSM state.
-    base::PostTask(
-        FROM_HERE, {content::BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
         base::BindOnce(std::move(on_params_cb),
                        media::AudioParameters::UnavailableDeviceParams()));
   }
@@ -80,9 +83,6 @@ class MockAudioSystem : public media::AudioSystem {
   MOCK_METHOD2(GetInputDeviceInfo,
                void(const std::string& input_device_id,
                     OnInputDeviceInfoCallback on_input_device_info_cb));
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockAudioSystem);
 };
 
 class MockCapturerSource : public media::AudioCapturerSource {
@@ -96,6 +96,9 @@ class MockCapturerSource : public media::AudioCapturerSource {
     start_callback_ = std::move(start_callback);
     stop_callback_ = std::move(stop_callback);
   }
+
+  MockCapturerSource(const MockCapturerSource&) = delete;
+  MockCapturerSource& operator=(const MockCapturerSource&) = delete;
 
   void Initialize(const media::AudioParameters& params,
                   CaptureCallback* callback) {
@@ -122,8 +125,6 @@ class MockCapturerSource : public media::AudioCapturerSource {
   StopCallback stop_callback_;
   CaptureCallback* capture_callback_;
   media::AudioParameters audio_parameters_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockCapturerSource);
 };
 
 std::string MakeGoodResponse() {
@@ -133,7 +134,7 @@ std::string MakeGoodResponse() {
   blink::mojom::SpeechRecognitionResultPtr result =
       blink::mojom::SpeechRecognitionResult::New();
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
-      base::UTF8ToUTF16("Pictures of the moon"), 1.0F));
+      u"Pictures of the moon", 1.0F));
   proto_result->set_final(!result->is_provisional);
   for (size_t i = 0; i < result->hypotheses.size(); ++i) {
     proto::SpeechRecognitionAlternative* proto_alternative =
@@ -229,8 +230,8 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     // AudioCaptureSourcer::Stop() again.
     SpeechRecognizerImpl::SetAudioEnvironmentForTesting(nullptr, nullptr);
 
-    base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                   base::BindOnce(&SpeechRecognitionBrowserTest::SendResponse,
+    content::GetUIThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&SpeechRecognitionBrowserTest::SendResponse,
                                   base::Unretained(this)));
   }
 
@@ -298,7 +299,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, DISABLED_Precheck) {
 }
 
 // Flaky on mac, see https://crbug.com/794645.
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #define MAYBE_OneShotRecognition DISABLED_OneShotRecognition
 #else
 #define MAYBE_OneShotRecognition OneShotRecognition

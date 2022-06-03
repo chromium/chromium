@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+PASS iso-2022-jp encoder: very basic
+PASS iso-2022-jp encoder: basics
+PASS iso-2022-jp encoder: Katakana
+PASS iso-2022-jp encoder: jis0208
+FAIL iso-2022-jp encoder: SO/SI ESC assert_equals: expected "%26%2365533%3B%26%2365533%3B%26%2365533%3Bx" but got "%0E%0F%1Bx"
+FAIL iso-2022-jp encoder: Roman SO/SI ESC assert_equals: expected "%1B(J~%26%2365533%3B%26%2365533%3B%26%2365533%3Bx%1B(B" but got "%1B(J~%U000E%U000F%U001Bx%1B(B"
+FAIL iso-2022-jp encoder: Katakana SO/SI ESC assert_equals: expected "%1B$B!%23%1B(B%26%2365533%3B%26%2365533%3B%26%2365533%3Bx" but got "%1B$B!%23%1B(B%U000E%U000F%U001Bx"
+FAIL iso-2022-jp encoder: jis0208 SO/SI ESC assert_equals: expected "%1B$B&%23%1B(B%26%2365533%3B%26%2365533%3B%26%2365533%3Bx" but got "%1B$B&%23%1B(B%U000E%U000F%U001Bx"
+PASS iso-2022-jp encoder: U+FFFD
+PASS iso-2022-jp encoder: Roman U+FFFD
+PASS iso-2022-jp encoder: Katakana U+FFFD
+PASS iso-2022-jp encoder: jis0208 U+FFFD
+Harness: the test ran to completion.
+

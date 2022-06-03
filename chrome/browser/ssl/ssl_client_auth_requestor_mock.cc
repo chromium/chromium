@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ssl/ssl_client_auth_requestor_mock.h"
 
-#include "base/macros.h"
+#include <utility>
+
+#include "base/callback.h"
 #include "content/public/browser/client_certificate_delegate.h"
 #include "net/cert/x509_certificate.h"
 #include "net/ssl/ssl_cert_request_info.h"
@@ -15,12 +17,19 @@ namespace {
 class FakeClientCertificateDelegate
     : public content::ClientCertificateDelegate {
  public:
-  explicit FakeClientCertificateDelegate(SSLClientAuthRequestorMock* requestor)
-      : requestor_(requestor) {}
+  FakeClientCertificateDelegate(SSLClientAuthRequestorMock* requestor,
+                                base::OnceClosure done_callback)
+      : requestor_(requestor), done_callback_(std::move(done_callback)) {}
+
+  FakeClientCertificateDelegate(const FakeClientCertificateDelegate&) = delete;
+  FakeClientCertificateDelegate& operator=(
+      const FakeClientCertificateDelegate&) = delete;
 
   ~FakeClientCertificateDelegate() override {
-    if (requestor_)
+    if (requestor_) {
       requestor_->CancelCertificateSelection();
+      std::move(done_callback_).Run();
+    }
   }
 
   // content::ClientCertificateDelegate implementation:
@@ -28,12 +37,12 @@ class FakeClientCertificateDelegate
                                scoped_refptr<net::SSLPrivateKey> key) override {
     requestor_->CertificateSelected(cert.get(), key.get());
     requestor_ = nullptr;
+    std::move(done_callback_).Run();
   }
 
  private:
   scoped_refptr<SSLClientAuthRequestorMock> requestor_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeClientCertificateDelegate);
+  base::OnceClosure done_callback_;
 };
 
 }  // namespace
@@ -47,5 +56,10 @@ SSLClientAuthRequestorMock::~SSLClientAuthRequestorMock() {}
 
 std::unique_ptr<content::ClientCertificateDelegate>
 SSLClientAuthRequestorMock::CreateDelegate() {
-  return std::make_unique<FakeClientCertificateDelegate>(this);
+  return std::make_unique<FakeClientCertificateDelegate>(
+      this, run_loop_.QuitClosure());
+}
+
+void SSLClientAuthRequestorMock::WaitForCompletion() {
+  run_loop_.Run();
 }

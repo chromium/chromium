@@ -1,0 +1,60 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module media.mojom;
+
+import "gpu/ipc/common/mailbox_holder.mojom";
+import "media/capture/mojom/video_capture_types.mojom";
+import "media/mojo/mojom/media_types.mojom";
+import "mojo/public/mojom/base/shared_memory.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
+import "ui/gfx/mojom/color_space.mojom";
+
+struct VideoFrameInfo{
+  mojo_base.mojom.TimeDelta timestamp;
+  VideoFrameMetadata metadata;
+  VideoCapturePixelFormat pixel_format;
+  gfx.mojom.Size coded_size;
+  gfx.mojom.Rect visible_rect;
+  // Some buffer types may be preemtively mapped in the capturer.
+  // In that case a shared memory region is passed to the consumer together
+  // with a GMB handle, and this flag here is passed to notify the consumer
+  // that the region has valid data.
+  bool is_premapped;
+  // This field is only optional to work around the issue of native enums
+  // not being usable for non-Chromium Mojo clients.
+  // TODO(chfremer): Make this non-optional once gfx.mojom.ColorSpace has been
+  // migrated to a full Mojo struct. See https://crbug.com/893203.
+  gfx.mojom.ColorSpace? color_space;
+  // Optionally, stride information can be provided.
+  // If not provided, it is assumed that frame data is tightly packed.
+  PlaneStrides? strides;
+};
+
+// Represents a buffer that is ready for consumption. |buffer_id| has video
+// capture data and |info| contains the associated VideoFrame constituent parts.
+struct ReadyBuffer {
+  int32 buffer_id;
+  VideoFrameInfo info;
+};
+
+struct MailboxBufferHandleSet {
+  // Size must be kept in sync with media::VideoFrame::kMaxPlanes.
+  array<gpu.mojom.MailboxHolder, 4> mailbox_holder;
+};
+
+struct SharedMemoryViaRawFileDescriptor {
+  handle<platform> file_descriptor_handle;
+  uint32 shared_memory_size_in_bytes;
+};
+
+union VideoBufferHandle {
+  handle<shared_buffer> shared_buffer_handle;
+  mojo_base.mojom.ReadOnlySharedMemoryRegion read_only_shmem_region;
+  SharedMemoryViaRawFileDescriptor shared_memory_via_raw_file_descriptor;
+  MailboxBufferHandleSet mailbox_handles;
+  gfx.mojom.GpuMemoryBufferHandle gpu_memory_buffer_handle;
+};

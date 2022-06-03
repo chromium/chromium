@@ -25,6 +25,7 @@
 
 // https://w3c.github.io/speech-api/#speechsynthesisevent
 [
+    Exposed=Window,
     RuntimeEnabled=ScriptedSpeechSynthesis
 ] interface SpeechSynthesisEvent : Event {
     constructor(DOMString type, SpeechSynthesisEventInit eventInitDict);

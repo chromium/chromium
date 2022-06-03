@@ -17,7 +17,10 @@ config("libjingle_xmpp_common_config") {
 }
 
 static_library("rtc_task_runner") {
-  visibility = [ "*" ]
+  visibility = [
+    ":*",
+    "//jingle:*",
+  ]
   sources = [
     "task_runner/task.cc",
     "task_runner/task.h",
@@ -33,7 +36,10 @@ static_library("rtc_task_runner") {
 }
 
 static_library("rtc_xmllite") {
-  visibility = [ "*" ]
+  visibility = [
+    ":*",
+    "//remoting/*",
+  ]
   sources = [
     "xmllite/qname.cc",
     "xmllite/qname.h",
@@ -51,17 +57,17 @@ static_library("rtc_xmllite") {
     "xmllite/xmlprinter.h",
   ]
 
-  deps = [
-    "//base",
-  ]
-  public_deps = [
-    "//third_party/expat",
-  ]
+  deps = [ "//base" ]
+  public_deps = [ "//third_party/expat" ]
   all_dependent_configs = [ ":libjingle_xmpp_common_config" ]
 }
 
 static_library("rtc_xmpp") {
-  visibility = [ "*" ]
+  visibility = [
+    ":*",
+    "//jingle:jingle_glue",
+    "//remoting/*",
+  ]
   cflags = []
   sources = [
     "xmpp/asyncsocket.h",
@@ -111,12 +117,8 @@ static_library("rtc_xmpp") {
 }
 
 fuzzer_test("libjingle_xmpp_xmlparser_fuzzer") {
-  sources = [
-    "xmllite/xmlparser_fuzzer.cc",
-  ]
-  deps = [
-    ":libjingle_xmpp",
-  ]
+  sources = [ "xmllite/xmlparser_fuzzer.cc" ]
+  deps = [ ":libjingle_xmpp" ]
 }
 
 test("libjingle_xmpp_unittests") {

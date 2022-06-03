@@ -61,6 +61,7 @@ source_set("unit_tests") {
     ":test_support",
     ":url_pattern_index",
     "//base",
+    "//testing/gmock",
     "//testing/gtest",
     "//third_party/protobuf:protobuf_lite",
     "//url",

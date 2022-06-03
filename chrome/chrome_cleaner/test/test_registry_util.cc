@@ -4,7 +4,7 @@
 
 #include "chrome/chrome_cleaner/test/test_registry_util.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace chrome_cleaner {
@@ -15,8 +15,8 @@ constexpr unsigned int kInitialRegistryValueSize = 256;
 
 void ExpectRegistryFootprint(const PUPData::PUP& pup,
                              const RegKeyPath& key_path,
-                             const base::char16* value_name,
-                             const base::char16* value_substring,
+                             const wchar_t* value_name,
+                             const wchar_t* value_substring,
                              RegistryMatchRule rule) {
   DCHECK(value_name);
   DCHECK(value_substring);
@@ -36,8 +36,8 @@ void ExpectRegistryFootprint(const PUPData::PUP& pup,
 
 void ExpectRegistryFootprintAbsent(const PUPData::PUP& pup,
                                    const RegKeyPath& key_path,
-                                   const base::char16* value_name,
-                                   const base::char16* value_substring,
+                                   const wchar_t* value_name,
+                                   const wchar_t* value_substring,
                                    RegistryMatchRule rule) {
   DCHECK(value_name);
   DCHECK(value_substring);
@@ -54,10 +54,10 @@ void ExpectRegistryFootprintAbsent(const PUPData::PUP& pup,
 }
 
 ScopedRegistryValue::ScopedRegistryValue(HKEY rootkey,
-                                         const base::char16* subkey,
+                                         const wchar_t* subkey,
                                          REGSAM access,
-                                         const base::char16* value_name,
-                                         const base::char16* content,
+                                         const wchar_t* value_name,
+                                         const wchar_t* content,
                                          uint32_t value_type)
     : value_name_(value_name) {
   DCHECK(subkey);
@@ -86,9 +86,8 @@ ScopedRegistryValue::ScopedRegistryValue(HKEY rootkey,
   }
 
   // Store the new registry value content.
-  result =
-      key_.WriteValue(value_name, content,
-                      ::wcslen(content) * sizeof(base::char16), value_type);
+  result = key_.WriteValue(value_name, content,
+                           ::wcslen(content) * sizeof(wchar_t), value_type);
   DCHECK_EQ(result, ERROR_SUCCESS);
 }
 
@@ -107,7 +106,7 @@ ScopedRegistryValue::~ScopedRegistryValue() {
 }
 
 ScopedTempRegistryKey::ScopedTempRegistryKey(HKEY key,
-                                             const base::char16* key_path,
+                                             const wchar_t* key_path,
                                              REGSAM access) {
   DCHECK(key_path);
   key_.Create(key, key_path, access);

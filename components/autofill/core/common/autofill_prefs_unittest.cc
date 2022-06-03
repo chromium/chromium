@@ -8,6 +8,7 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/pref_service_factory.h"
@@ -77,6 +78,9 @@ TEST_F(AutofillPrefsTest, MigrateDeprecatedAutofillPrefs) {
 
 // Tests that setting and getting the AutofillSyncTransportOptIn works as
 // expected.
+// On mobile, no dedicated opt-in is required for WalletSyncTransport - the
+// user is always considered opted-in and thus this test doesn't make sense.
+#if !defined(OS_ANDROID) && !defined(OS_IOS)
 TEST_F(AutofillPrefsTest, WalletSyncTransportPref_GetAndSet) {
   const CoreAccountId account1("account1");
   const CoreAccountId account2("account2");
@@ -125,6 +129,7 @@ TEST_F(AutofillPrefsTest, WalletSyncTransportPref_GetAndSet) {
                     ->GetDictionary(prefs::kAutofillSyncTransportOptIn)
                     ->DictSize());
 }
+#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
 
 // Tests that AutofillSyncTransportOptIn is not stored using the plain text
 // account id.

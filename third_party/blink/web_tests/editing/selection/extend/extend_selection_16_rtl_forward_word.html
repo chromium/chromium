@@ -40,7 +40,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">car^ means| \u05D0\u05D1\u05D2.</div>'
-      : '<div contenteditable dir="rtl">car^ means |\u05D0\u05D1\u05D2.</div>',
+      : '<div contenteditable dir="rtl">car^ |means \u05D0\u05D1\u05D2.</div>',
   `${behavior} 16-3 rtl forward word`);
 
 selection_test(
@@ -86,7 +86,9 @@ selection_test(
 selection_test(
   '<div contenteditable dir="rtl">car means| \u05D0\u05D1\u05D2.</div>',
   selection => selection.modify('extend', 'forward', 'word'),
-  '<div contenteditable dir="rtl">car means^ \u05D0\u05D1\u05D2|.</div>',
+  behavior === 'mac'
+      ? '<div contenteditable dir="rtl">car means^ \u05D0\u05D1\u05D2|.</div>'
+      : '<div contenteditable dir="rtl">car means^ |\u05D0\u05D1\u05D2.</div>',
   `${behavior} 16-9 rtl forward word`);
 
 selection_test(

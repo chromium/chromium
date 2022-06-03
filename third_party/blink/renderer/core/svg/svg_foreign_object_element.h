@@ -20,11 +20,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FOREIGN_OBJECT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FOREIGN_OBJECT_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedLength;
 
 class SVGForeignObjectElement final : public SVGGraphicsElement {
   DEFINE_WRAPPERTYPEINFO();
@@ -37,14 +38,14 @@ class SVGForeignObjectElement final : public SVGGraphicsElement {
   SVGAnimatedLength* width() const { return width_.Get(); }
   SVGAnimatedLength* height() const { return height_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&, LegacyLayout) override;
 

@@ -20,7 +20,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
-import org.chromium.chrome.browser.settings.developer.TracingSettings;
+import org.chromium.chrome.browser.tracing.settings.TracingSettings;
 import org.chromium.content_public.browser.TracingControllerAndroid;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.ui.widget.Toast;
@@ -71,7 +71,7 @@ public class TracingController {
     private static final String TAG = "TracingController";
     private static final String TEMP_FILE_DIR = "/traces";
     private static final String TEMP_FILE_PREFIX = "chrome-trace-";
-    private static final String TEMP_FILE_EXT = ".json.gz";
+    private static final String TEMP_FILE_EXT = ".pftrace.gz";
     private static final String TRACE_MIMETYPE = "application/gzip";
 
     private static final long DELETE_AFTER_SHARE_TIMEOUT_MILLIS = DateUtils.HOUR_IN_MILLIS;
@@ -242,8 +242,8 @@ public class TracingController {
         String categories = TextUtils.join(",", TracingSettings.getEnabledCategories());
         String options = TracingSettings.getSelectedTracingMode();
 
-        if (!mNativeController.startTracing(
-                    mTracingTempFile.getPath(), false, categories, options, true)) {
+        if (!mNativeController.startTracing(mTracingTempFile.getPath(), false, categories, options,
+                    /*compressFile=*/true, /*useProtobuf=*/true)) {
             Log.e(TAG, "Native error while trying to start tracing");
             showErrorToast();
             setState(State.IDLE);

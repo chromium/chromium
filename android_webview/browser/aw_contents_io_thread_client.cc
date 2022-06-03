@@ -8,10 +8,8 @@
 #include <memory>
 #include <utility>
 
-#include "android_webview/browser/input_stream.h"
 #include "android_webview/browser/network_service/aw_web_resource_intercept_response.h"
 #include "android_webview/browser/network_service/aw_web_resource_request.h"
-#include "android_webview/browser/network_service/aw_web_resource_response.h"
 #include "android_webview/browser_jni_headers/AwContentsBackgroundThreadClient_jni.h"
 #include "android_webview/browser_jni_headers/AwContentsIoThreadClient_jni.h"
 #include "android_webview/common/devtools_instrumentation.h"
@@ -25,6 +23,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "components/embedder_support/android/util/input_stream.h"
+#include "components/embedder_support/android/util/web_resource_response.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
@@ -32,7 +32,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "net/base/data_url.h"
-#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/resource_request.h"
 
 using base::LazyInstance;
@@ -43,7 +42,6 @@ using base::android::ScopedJavaLocalRef;
 using base::android::ToJavaArrayOfStrings;
 using content::BrowserThread;
 using content::RenderFrameHost;
-using content::ResourceType;
 using content::WebContents;
 using std::map;
 using std::pair;
@@ -62,7 +60,7 @@ struct IoThreadClientData {
 
 IoThreadClientData::IoThreadClientData() : pending_association(false) {}
 
-typedef map<pair<int, int>, IoThreadClientData>
+typedef map<content::GlobalRenderFrameHostId, IoThreadClientData>
     RenderFrameHostToIoThreadClientType;
 
 typedef pair<base::flat_set<RenderFrameHost*>, IoThreadClientData>
@@ -76,16 +74,13 @@ typedef pair<base::flat_set<RenderFrameHost*>, IoThreadClientData>
 // therefore the FrameTreeNodeId should be removed).
 typedef map<int, HostsAndClientDataPair> FrameTreeNodeToIoThreadClientType;
 
-static pair<int, int> GetRenderFrameHostIdPair(RenderFrameHost* rfh) {
-  return pair<int, int>(rfh->GetProcess()->GetID(), rfh->GetRoutingID());
-}
-
 // RfhToIoThreadClientMap -----------------------------------------------------
 class RfhToIoThreadClientMap {
  public:
   static RfhToIoThreadClientMap* GetInstance();
-  void Set(pair<int, int> rfh_id, const IoThreadClientData& client);
-  bool Get(pair<int, int> rfh_id, IoThreadClientData* client);
+  void Set(content::GlobalRenderFrameHostId rfh_id,
+           const IoThreadClientData& client);
+  bool Get(content::GlobalRenderFrameHostId rfh_id, IoThreadClientData* client);
 
   bool Get(int frame_tree_node_id, IoThreadClientData* client);
 
@@ -116,13 +111,13 @@ RfhToIoThreadClientMap* RfhToIoThreadClientMap::GetInstance() {
   return g_instance_.Pointer();
 }
 
-void RfhToIoThreadClientMap::Set(pair<int, int> rfh_id,
+void RfhToIoThreadClientMap::Set(content::GlobalRenderFrameHostId rfh_id,
                                  const IoThreadClientData& client) {
   base::AutoLock lock(map_lock_);
   rfh_to_io_thread_client_[rfh_id] = client;
 }
 
-bool RfhToIoThreadClientMap::Get(pair<int, int> rfh_id,
+bool RfhToIoThreadClientMap::Get(content::GlobalRenderFrameHostId rfh_id,
                                  IoThreadClientData* client) {
   base::AutoLock lock(map_lock_);
   RenderFrameHostToIoThreadClientType::iterator iterator =
@@ -149,7 +144,7 @@ bool RfhToIoThreadClientMap::Get(int frame_tree_node_id,
 void RfhToIoThreadClientMap::Set(RenderFrameHost* rfh,
                                  const IoThreadClientData& client) {
   int frame_tree_node_id = rfh->GetFrameTreeNodeId();
-  pair<int, int> rfh_id = GetRenderFrameHostIdPair(rfh);
+  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
   base::AutoLock lock(map_lock_);
 
   // If this FrameTreeNodeId already has an associated IoThreadClientData, add
@@ -168,7 +163,7 @@ void RfhToIoThreadClientMap::Set(RenderFrameHost* rfh,
 
 void RfhToIoThreadClientMap::Erase(RenderFrameHost* rfh) {
   int frame_tree_node_id = rfh->GetFrameTreeNodeId();
-  pair<int, int> rfh_id = GetRenderFrameHostIdPair(rfh);
+  content::GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
   base::AutoLock lock(map_lock_);
   HostsAndClientDataPair& current_entry =
       frame_tree_node_to_io_thread_client_[frame_tree_node_id];
@@ -233,17 +228,16 @@ void ClientMapEntryUpdater::WebContentsDestroyed() {
 
 // static
 std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
-    int render_process_id,
-    int render_frame_id) {
-  pair<int, int> rfh_id(render_process_id, render_frame_id);
+    content::GlobalRenderFrameHostId render_frame_host_id) {
   IoThreadClientData client_data;
-  if (!RfhToIoThreadClientMap::GetInstance()->Get(rfh_id, &client_data))
+  if (!RfhToIoThreadClientMap::GetInstance()->Get(render_frame_host_id,
+                                                  &client_data))
     return nullptr;
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_delegate =
       client_data.io_thread_client.get(env);
-  DCHECK(!client_data.pending_association || java_delegate.is_null());
+  DCHECK(!client_data.pending_association || !java_delegate);
   return std::make_unique<AwContentsIoThreadClient>(
       client_data.pending_association, java_delegate);
 }
@@ -258,7 +252,7 @@ std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_delegate =
       client_data.io_thread_client.get(env);
-  DCHECK(!client_data.pending_association || java_delegate.is_null());
+  DCHECK(!client_data.pending_association || !java_delegate);
   return std::make_unique<AwContentsIoThreadClient>(
       client_data.pending_association, java_delegate);
 }
@@ -267,8 +261,10 @@ std::unique_ptr<AwContentsIoThreadClient> AwContentsIoThreadClient::FromID(
 void AwContentsIoThreadClient::SubFrameCreated(int render_process_id,
                                                int parent_render_frame_id,
                                                int child_render_frame_id) {
-  pair<int, int> parent_rfh_id(render_process_id, parent_render_frame_id);
-  pair<int, int> child_rfh_id(render_process_id, child_render_frame_id);
+  content::GlobalRenderFrameHostId parent_rfh_id(render_process_id,
+                                                 parent_render_frame_id);
+  content::GlobalRenderFrameHostId child_rfh_id(render_process_id,
+                                                child_render_frame_id);
   IoThreadClientData client_data;
   if (!RfhToIoThreadClientMap::GetInstance()->Get(parent_rfh_id,
                                                   &client_data)) {
@@ -285,7 +281,7 @@ void AwContentsIoThreadClient::RegisterPendingContents(
   IoThreadClientData client_data;
   client_data.pending_association = true;
   RfhToIoThreadClientMap::GetInstance()->Set(
-      GetRenderFrameHostIdPair(web_contents->GetMainFrame()), client_data);
+      web_contents->GetMainFrame()->GetGlobalId(), client_data);
 }
 
 // static
@@ -313,7 +309,7 @@ AwContentsIoThreadClient::GetServiceWorkerIoThreadClient() {
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_delegate = g_sw_instance_.Get().get(env);
 
-  if (java_delegate.is_null())
+  if (!java_delegate)
     return nullptr;
 
   return std::make_unique<AwContentsIoThreadClient>(false, java_delegate);
@@ -332,7 +328,7 @@ bool AwContentsIoThreadClient::PendingAssociation() const {
 AwContentsIoThreadClient::CacheMode AwContentsIoThreadClient::GetCacheMode()
     const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (java_object_.is_null())
+  if (!java_object_)
     return AwContentsIoThreadClient::LOAD_DEFAULT;
 
   JNIEnv* env = AttachCurrentThread();
@@ -344,7 +340,7 @@ namespace {
 // Used to specify what kind of url was intercepted by the embedded
 // using shouldIntercepterRequest callback.
 // Note: these values are persisted in UMA logs, so they should never be
-// renumbered nor reused.
+// renumbered or reused.
 enum class InterceptionType {
   kNoIntercept,
   kOther,
@@ -377,39 +373,6 @@ void RecordInterceptedScheme(bool response_is_null, const std::string& url) {
       "Android.WebView.ShouldInterceptRequest.InterceptionType", type);
 }
 
-// Record UMA for the custom response status code for the intercepted requests
-// where input stream is null. UMA is recorded only when the status codes and
-// reason phrases are actually valid.
-void RecordResponseStatusCode(
-    JNIEnv* env,
-    const std::unique_ptr<AwWebResourceResponse>& response) {
-  DCHECK(response);
-  DCHECK(!response->HasInputStream(env));
-
-  int status_code;
-  std::string reason_phrase;
-  bool status_info_valid =
-      response->GetStatusInfo(env, &status_code, &reason_phrase);
-
-  if (!status_info_valid) {
-    // Status code is not necessary set properly in the response,
-    // e.g. Webview's WebResourceResponse(String, String, InputStream) [*]
-    // does not actually set the status code or the reason phrase. In this case
-    // we just record a zero status code.
-    // The other constructor (long version) or the #setStatusCodeAndReasonPhrase
-    // method does actually perform validity checks on status code and reason
-    // phrase arguments.
-    // [*]
-    // https://developer.android.com/reference/android/webkit/WebResourceResponse.html
-    status_code = 0;
-  }
-
-  base::UmaHistogramSparse(
-      "Android.WebView.ShouldInterceptRequest.NullInputStream."
-      "ResponseStatusCode",
-      status_code);
-}
-
 std::unique_ptr<AwWebResourceInterceptResponse> NoInterceptRequest() {
   return nullptr;
 }
@@ -422,7 +385,7 @@ std::unique_ptr<AwWebResourceInterceptResponse> RunShouldInterceptRequest(
 
   JNIEnv* env = AttachCurrentThread();
   base::android::ScopedJavaLocalRef<jobject> obj = ref.get(env);
-  if (obj.is_null()) {
+  if (!obj) {
     return NoInterceptRequest();
   }
 
@@ -438,20 +401,12 @@ std::unique_ptr<AwWebResourceInterceptResponse> RunShouldInterceptRequest(
           java_web_resource_request.jheader_names,
           java_web_resource_request.jheader_values);
 
-  RecordInterceptedScheme(ret.is_null(), request.url);
+  RecordInterceptedScheme(!ret, request.url);
 
-  if (ret.is_null())
+  if (!ret)
     return NoInterceptRequest();
 
-  auto response = std::make_unique<AwWebResourceInterceptResponse>(ret);
-  if (!response->RaisedException(env) && response->HasResponse(env) &&
-      !response->GetResponse(env)->HasInputStream(env)) {
-    // Only record UMA for cases where the input stream is null (see
-    // crbug.com/974273).
-    RecordResponseStatusCode(env, response->GetResponse(env));
-  }
-
-  return response;
+  return std::make_unique<AwWebResourceInterceptResponse>(ret);
 }
 
 }  // namespace
@@ -463,12 +418,12 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
   base::OnceCallback<std::unique_ptr<AwWebResourceInterceptResponse>()>
       get_response = base::BindOnce(&NoInterceptRequest);
   JNIEnv* env = AttachCurrentThread();
-  if (bg_thread_client_object_.is_null() && !java_object_.is_null()) {
+  if (!bg_thread_client_object_ && java_object_) {
     bg_thread_client_object_.Reset(
         Java_AwContentsIoThreadClient_getBackgroundThreadClient(env,
                                                                 java_object_));
   }
-  if (!bg_thread_client_object_.is_null()) {
+  if (bg_thread_client_object_) {
     get_response = base::BindOnce(
         &RunShouldInterceptRequest, std::move(request),
         JavaObjectWeakGlobalRef(env, bg_thread_client_object_.obj()));
@@ -480,7 +435,7 @@ void AwContentsIoThreadClient::ShouldInterceptRequestAsync(
 
 bool AwContentsIoThreadClient::ShouldBlockContentUrls() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (java_object_.is_null())
+  if (!java_object_)
     return false;
 
   JNIEnv* env = AttachCurrentThread();
@@ -490,7 +445,7 @@ bool AwContentsIoThreadClient::ShouldBlockContentUrls() const {
 
 bool AwContentsIoThreadClient::ShouldBlockFileUrls() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (java_object_.is_null())
+  if (!java_object_)
     return false;
 
   JNIEnv* env = AttachCurrentThread();
@@ -499,7 +454,7 @@ bool AwContentsIoThreadClient::ShouldBlockFileUrls() const {
 
 bool AwContentsIoThreadClient::ShouldAcceptThirdPartyCookies() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (java_object_.is_null())
+  if (!java_object_)
     return false;
 
   JNIEnv* env = AttachCurrentThread();
@@ -509,7 +464,7 @@ bool AwContentsIoThreadClient::ShouldAcceptThirdPartyCookies() const {
 
 bool AwContentsIoThreadClient::GetSafeBrowsingEnabled() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (java_object_.is_null())
+  if (!java_object_)
     return false;
 
   JNIEnv* env = AttachCurrentThread();
@@ -519,7 +474,7 @@ bool AwContentsIoThreadClient::GetSafeBrowsingEnabled() const {
 
 bool AwContentsIoThreadClient::ShouldBlockNetworkLoads() const {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  if (java_object_.is_null())
+  if (!java_object_)
     return false;
 
   JNIEnv* env = AttachCurrentThread();

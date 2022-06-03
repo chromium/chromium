@@ -262,30 +262,30 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
 
   const PinsetMap& pinsets = pinset.pinsets();
   for (const auto& current : pinsets) {
-    const std::unique_ptr<Pinset>& pinset = current.second;
-    std::string uppercased_name = pinset->name();
+    const std::unique_ptr<Pinset>& pinset_ptr = current.second;
+    std::string uppercased_name = pinset_ptr->name();
     uppercased_name[0] = base::ToUpperASCII(uppercased_name[0]);
 
     const std::string& accepted_pins_names =
         FormatAcceptedKeyName(uppercased_name);
     certs_output.append(
-        WritePinsetList(accepted_pins_names, pinset->static_spki_hashes()));
+        WritePinsetList(accepted_pins_names, pinset_ptr->static_spki_hashes()));
     certs_output.append(kNewLine);
 
     std::string rejected_pins_names = "kNoRejectedPublicKeys";
-    if (pinset->bad_static_spki_hashes().size()) {
+    if (pinset_ptr->bad_static_spki_hashes().size()) {
       rejected_pins_names = FormatRejectedKeyName(uppercased_name);
-      certs_output.append(WritePinsetList(rejected_pins_names,
-                                          pinset->bad_static_spki_hashes()));
+      certs_output.append(WritePinsetList(
+          rejected_pins_names, pinset_ptr->bad_static_spki_hashes()));
       certs_output.append(kNewLine);
     }
 
     std::string report_uri = "kNoReportURI";
-    if (pinset->report_uri().size()) {
+    if (pinset_ptr->report_uri().size()) {
       report_uri = FormatReportURIName(uppercased_name);
       certs_output.append("static const char " + report_uri + "[] = ");
       certs_output.append("\"");
-      certs_output.append(pinset->report_uri());
+      certs_output.append(pinset_ptr->report_uri());
       certs_output.append("\";");
       certs_output.append(kNewLine);
     }
@@ -297,8 +297,8 @@ void PreloadedStateGenerator::ProcessPinsets(const Pinsets& pinset,
                           rejected_pins_names + ", " + report_uri + "},");
     pinsets_output.append(kNewLine);
 
-    pinset_map->insert(
-        NameIDPair(pinset->name(), static_cast<uint32_t>(pinset_map->size())));
+    pinset_map->insert(NameIDPair(pinset_ptr->name(),
+                                  static_cast<uint32_t>(pinset_map->size())));
   }
 
   pinsets_output.append("}");

@@ -11,8 +11,7 @@
 
 NetworkConditionsOverrideManager::NetworkConditionsOverrideManager(
     DevToolsClient* client)
-    : client_(client),
-      overridden_network_conditions_(NULL) {
+    : client_(client), overridden_network_conditions_(nullptr) {
   client_->AddListener(this);
 }
 
@@ -53,10 +52,11 @@ Status NetworkConditionsOverrideManager::ApplyOverride(
     const NetworkConditions* network_conditions) {
   base::DictionaryValue params, empty_params;
   params.SetBoolean("offline", network_conditions->offline);
-  params.SetDouble("latency", network_conditions->latency);
-  params.SetDouble("downloadThroughput",
-                    network_conditions->download_throughput);
-  params.SetDouble("uploadThroughput", network_conditions->upload_throughput);
+  params.SetDoubleKey("latency", network_conditions->latency);
+  params.SetDoubleKey("downloadThroughput",
+                      network_conditions->download_throughput);
+  params.SetDoubleKey("uploadThroughput",
+                      network_conditions->upload_throughput);
 
   Status status = client_->SendCommand("Network.enable", empty_params);
   if (status.IsError())

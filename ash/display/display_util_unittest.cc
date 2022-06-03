@@ -7,6 +7,7 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/strings/utf_string_conversions.h"
 
 namespace ash {
 
@@ -86,6 +87,16 @@ TEST_F(DisplayUtilTest, RotatedDisplay) {
     EXPECT_EQ("10,100 1x300", rect0.ToString());
     EXPECT_EQ("600,20 1x300", rect1.ToString());
   }
+}
+
+TEST_F(DisplayUtilTest, ConvertRefreshRateToString16) {
+  // Decimal numbers are rounded to two digits.
+  EXPECT_EQ(u"65.98", ConvertRefreshRateToString16(65.98379));
+  EXPECT_EQ(u"65.99", ConvertRefreshRateToString16(65.98779));
+
+  // Mantissa is removed for whole numbers.
+  EXPECT_EQ(u"58", ConvertRefreshRateToString16(58.00000));
+  EXPECT_EQ(u"58", ConvertRefreshRateToString16(57.99999));
 }
 
 }  // namespace ash

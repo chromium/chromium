@@ -17,6 +17,7 @@
 #include "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/disabled_test_macros.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#include "ios/web/common/features.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
@@ -26,16 +27,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-#if defined(CHROME_EARL_GREY_2)
-// TODO(crbug.com/1015113) The EG2 macro is breaking indexing for some reason
-// without the trailing semicolon.  For now, disable the extra semi warning
-// so Xcode indexing works for the egtest.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wc++98-compat-extra-semi"
-GREY_STUB_CLASS_IN_APP_MAIN_QUEUE(AdaptiveToolbarAppInterface);
-#pragma clang diagnostic pop
-#endif  // defined(CHROME_EARL_GREY_2)
 
 namespace {
 
@@ -48,7 +39,6 @@ const char kPageURL[] = "/test-page.html";
 const char kPageURL2[] = "/test-page-2.html";
 const char kPageURL3[] = "/test-page-3.html";
 const char kLinkID[] = "linkID";
-const char kTextID[] = "textID";
 const char kPageLoadedString[] = "Page loaded!";
 
 // The title of the test infobar.
@@ -71,23 +61,6 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       "<html><body><p>" + std::string(kPageLoadedString) + "</p><a href=\"" +
       kPageURL3 + "\" id=\"" + kLinkID + "\">link!</a></body></html>");
   return std::move(http_response);
-}
-
-// Provides response for a very tall page.
-std::unique_ptr<net::test_server::HttpResponse> TallPageResponse(
-    const net::test_server::HttpRequest& request) {
-  std::unique_ptr<net::test_server::BasicHttpResponse> http_response =
-      std::make_unique<net::test_server::BasicHttpResponse>();
-  http_response->set_code(net::HTTP_OK);
-  http_response->set_content(
-      "<html><body><p style=\"height:2000pt\"></p><p id=\"" +
-      std::string(kTextID) + "\">" + kPageLoadedString + "</p></body></html>");
-  return std::move(http_response);
-}
-
-// Returns a matcher for the bookmark button.
-id<GREYMatcher> BookmarkButton() {
-  return chrome_test_util::ButtonWithAccessibilityLabelId(IDS_TOOLTIP_STAR);
 }
 
 // Returns a matcher for the visible share button.
@@ -114,8 +87,8 @@ id<GREYMatcher> CancelButton() {
 }
 
 // Returns a matcher for the search button.
-id<GREYMatcher> SearchButton() {
-  return grey_accessibilityID(kToolbarSearchButtonIdentifier);
+id<GREYMatcher> NewTabButton() {
+  return grey_accessibilityID(kToolbarNewTabButtonIdentifier);
 }
 
 // Returns a matcher for the tab grid button.
@@ -174,21 +147,6 @@ void CheckVisibleInSecondaryToolbar(id<GREYMatcher> matcher, BOOL visible) {
       assertWithMatcher:assertionMatcher];
 }
 
-// Returns a matcher for a UIControl object being spotlighted.
-id<GREYMatcher> Spotlighted() {
-  GREYMatchesBlock matches = ^BOOL(UIControl* control) {
-    return control.state & kControlStateSpotlighted;
-  };
-  GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
-    [description appendText:@"is spotlighted"];
-  };
-  return grey_allOf(
-      grey_kindOfClass([UIControl class]),
-      [[GREYElementMatcherBlock alloc] initWithMatchesBlock:matches
-                                           descriptionBlock:describe],
-      nil);
-}
-
 // Rotate the device if it is an iPhone or change the trait collection to
 // compact width if it is an iPad. Returns the new trait collection.
 UITraitCollection* RotateOrChangeTraitCollection(
@@ -203,8 +161,8 @@ UITraitCollection* RotateOrChangeTraitCollection(
             forViewController:topViewController];
   } else {
     // On iPhone rotate to test the the landscape orientation.
-    [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                        error:nil];
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                  error:nil];
     return topViewController.traitCollection;
   }
 }
@@ -241,12 +199,11 @@ void CheckButtonsVisibilityIPhonePortrait(BOOL omniboxFocused) {
 
     CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
 
     // Those buttons are hidden by the keyboard.
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(SearchButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityNone);
   } else {
@@ -254,11 +211,10 @@ void CheckButtonsVisibilityIPhonePortrait(BOOL omniboxFocused) {
 
     CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilitySecondary);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilitySecondary);
-    CheckVisibilityInToolbar(SearchButton(), ButtonVisibilitySecondary);
+    CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilitySecondary);
     CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilitySecondary);
     CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilitySecondary);
   }
@@ -272,11 +228,10 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
 
     CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityNone);
-    CheckVisibilityInToolbar(SearchButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityNone);
   } else {
@@ -284,11 +239,10 @@ void CheckButtonsVisibilityIPhoneLandscape(BOOL omniboxFocused) {
 
     CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityPrimary);
     CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
-    CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityNone);
 
     CheckVisibilityInToolbar(BackButton(), ButtonVisibilityPrimary);
     CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
-    CheckVisibilityInToolbar(SearchButton(), ButtonVisibilityNone);
+    CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilityNone);
     CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityPrimary);
     CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityPrimary);
   }
@@ -305,12 +259,11 @@ void CheckButtonsVisibilityIPad() {
 
   CheckVisibilityInToolbar(ShareButton(), ButtonVisibilityPrimary);
   CheckVisibilityInToolbar(ReloadButton(), ButtonVisibilityPrimary);
-  CheckVisibilityInToolbar(BookmarkButton(), ButtonVisibilityPrimary);
+  CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityPrimary);
 
   CheckVisibilityInToolbar(BackButton(), ButtonVisibilityPrimary);
   CheckVisibilityInToolbar(ForwardButton(), ButtonVisibilityPrimary);
-  CheckVisibilityInToolbar(SearchButton(), ButtonVisibilityNone);
-  CheckVisibilityInToolbar(TabGridButton(), ButtonVisibilityNone);
+  CheckVisibilityInToolbar(NewTabButton(), ButtonVisibilityNone);
   CheckVisibilityInToolbar(ToolsMenuButton(), ButtonVisibilityPrimary);
 
   // The secondary toolbar is not visible.
@@ -382,12 +335,7 @@ UIViewController* TopPresentedViewControllerFrom(
 
 UIViewController* TopPresentedViewController() {
   UIViewController* rootViewController =
-#if defined(CHROME_EARL_GREY_1)
-      [[UIApplication sharedApplication] keyWindow].rootViewController;
-#else
-      [[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow]
-          .rootViewController;
-#endif
+      chrome_test_util::GetAnyKeyWindow().rootViewController;
   return TopPresentedViewControllerFrom(rootViewController);
 }
 
@@ -401,50 +349,6 @@ UIViewController* TopPresentedViewController() {
 @end
 
 @implementation AdaptiveToolbarTestCase
-
-// Tests that bookmarks button is spotlighted for the bookmarked pages.
-- (void)testBookmarkButton {
-  if (![ChromeEarlGrey isRegularXRegularSizeClass]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"The bookmark button is only visible on Regular x Regular size "
-        @"classes.");
-  }
-
-  // Setup the bookmarks.
-  [ChromeEarlGrey waitForBookmarksToFinishLoading];
-  [ChromeEarlGrey clearBookmarks];
-
-  // Setup the server.
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&StandardResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-
-  // Navigate to a page and check the bookmark button is not spotlighted.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageURL)];
-  [[EarlGrey selectElementWithMatcher:BookmarkButton()]
-      assertWithMatcher:grey_allOf(grey_kindOfClass([UIControl class]),
-                                   grey_not(Spotlighted()), nil)];
-
-  // Bookmark the page.
-  [[EarlGrey selectElementWithMatcher:BookmarkButton()]
-      performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:BookmarkButton()]
-      assertWithMatcher:Spotlighted()];
-
-  // Navigate to a different page and check the button is not selected.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageURL2)];
-  [[EarlGrey selectElementWithMatcher:BookmarkButton()]
-      assertWithMatcher:grey_allOf(grey_kindOfClass([UIControl class]),
-                                   grey_not(Spotlighted()), nil)];
-
-  // Navigate back to the bookmarked page and check the button.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageURL)];
-  [[EarlGrey selectElementWithMatcher:BookmarkButton()]
-      assertWithMatcher:Spotlighted()];
-
-  // Clean the bookmarks
-  [ChromeEarlGrey clearBookmarks];
-}
 
 // Tests that tapping a button cancels the focus on the omnibox.
 - (void)testCancelOmniboxEdit {
@@ -493,8 +397,7 @@ UIViewController* TopPresentedViewController() {
     }
   } else {
     // Cancel the rotation.
-    [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                        error:nil];
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   }
 
   // Check the visiblity after a rotation.
@@ -532,107 +435,12 @@ UIViewController* TopPresentedViewController() {
     }
   } else {
     // Cancel the rotation.
-    [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                        error:nil];
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   }
 
   // Check the visiblity after a size class change. This should let the trait
   // collection change come into effect.
   CheckToolbarButtonVisibility(originalTraitCollection, YES);
-}
-
-// Tests the interactions between the infobars and the bottom toolbar during
-// fullscreen.
-- (void)testInfobarFullscreen {
-  if (![ChromeEarlGrey isSplitToolbarMode]) {
-    // The interaction between the infobar and fullscreen only happens in split
-    // toolbar mode.
-    return;
-  }
-
-  // Setup the server.
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&TallPageResponse));
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-
-  // Navigate to a page.
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kPageURL)];
-
-  GREYAssert(
-      [AdaptiveToolbarAppInterface addInfobarWithTitle:kTestInfoBarTitle],
-      @"Fail to create infobar.");
-
-  GREYAssert(
-      [[GREYCondition
-          conditionWithName:@"Waiting for infobar to show"
-                      block:^BOOL {
-                        NSError* error = nil;
-                        [[EarlGrey selectElementWithMatcher:
-                                       chrome_test_util::
-                                           StaticTextWithAccessibilityLabel(
-                                               kTestInfoBarTitle)]
-                            assertWithMatcher:grey_sufficientlyVisible()
-                                        error:&error];
-                        return error == nil;
-                      }] waitWithTimeout:4],
-      @"Infobar did not show.");
-
-  // Check that the button is visible.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-#if defined(CHROME_EARL_GREY_1)
-  UIWindow* window = [[UIApplication sharedApplication] keyWindow];
-#else
-  UIWindow* window =
-      [[GREY_REMOTE_CLASS_IN_APP(UIApplication) sharedApplication] keyWindow];
-#endif
-
-  GREYElementMatcherBlock* positionMatcher = [GREYElementMatcherBlock
-      matcherWithMatchesBlock:^BOOL(UIView* element) {
-        UILayoutGuide* guide =
-            [ChromeEarlGreyAppInterface guideWithName:kSecondaryToolbarGuide
-                                                 view:element];
-
-        CGFloat toolbarTopPoint = CGRectGetMinY(
-            [window convertRect:guide.layoutFrame fromView:guide.owningView]);
-        CGFloat buttonBottomPoint = CGRectGetMaxY(
-            [window convertRect:element.frame fromView:element.superview]);
-
-        CGFloat bottomSafeArea = CGFLOAT_MAX;
-        bottomSafeArea = CGRectGetMaxY(window.safeAreaLayoutGuide.layoutFrame);
-        CGFloat infobarContentBottomPoint =
-            MIN(bottomSafeArea, toolbarTopPoint);
-        BOOL buttonIsAbove = buttonBottomPoint < infobarContentBottomPoint - 10;
-        BOOL buttonIsNear = buttonBottomPoint > infobarContentBottomPoint - 30;
-        return buttonIsAbove && buttonIsNear;
-      }
-      descriptionBlock:^void(id<GREYDescription> description) {
-        [description
-            appendText:@"Infobar is position on top of the bottom toolbar."];
-      }];
-
-  // Check that the button is positionned above the bottom toolbar.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      assertWithMatcher:positionMatcher];
-
-  // Scroll down
-  [[EarlGrey selectElementWithMatcher:WebStateScrollViewMatcher()]
-      performAction:grey_swipeFastInDirection(kGREYDirectionUp)];
-
-  // Check that the button is visible.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Check that the secondary toolbar is not visible.
-  [[EarlGrey
-      selectElementWithMatcher:grey_kindOfClassName(@"SecondaryToolbarView")]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
-
-  // Check that the button is positionned above the bottom toolbar (i.e. at the
-  // bottom).
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::OKButton()]
-      assertWithMatcher:positionMatcher];
 }
 
 // Verifies that the back/forward buttons are working and are correctly enabled
@@ -683,7 +491,9 @@ UIViewController* TopPresentedViewController() {
                         true /* menu should appear */)];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
-                     IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+                     web::features::UseWebViewNativeContextMenuSystem()
+                         ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
+                         : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
       performAction:grey_tap()];
 
   // Check the buttons status.
@@ -693,25 +503,27 @@ UIViewController* TopPresentedViewController() {
       assertWithMatcher:grey_not(grey_enabled())];
 }
 
-// Tests that tapping the omnibox button focuses the omnibox.
-- (void)testOmniboxButton {
+// Tests that tapping the NewTab button opens a new tab.
+- (void)testNewTabButton {
   if (![ChromeEarlGrey isSplitToolbarMode]) {
-    EARL_GREY_TEST_SKIPPED(@"No omnibox button to tap.");
+    EARL_GREY_TEST_SKIPPED(@"No button to tap.");
   }
 
+  [ChromeEarlGrey waitForMainTabCount:1];
+
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kToolbarSearchButtonIdentifier)]
+                                          kToolbarNewTabButtonIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      assertWithMatcher:firstResponder()];
+
+  [ChromeEarlGrey waitForMainTabCount:2];
 }
 
 // Tests share button is enabled only on pages that can be shared.
 - (void)testShareButton {
   if (![ChromeEarlGrey isIPadIdiom]) {
     // If this test is run on an iPhone, rotate it to have the unsplit toolbar.
-    [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
-                                        error:nil];
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationLandscapeLeft
+                                  error:nil];
   }
 
   // Setup the server.
@@ -727,8 +539,7 @@ UIViewController* TopPresentedViewController() {
 
   if (![ChromeEarlGrey isIPadIdiom]) {
     // Cancel rotation.
-    [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                        error:nil];
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   }
 }
 
@@ -751,13 +562,13 @@ UIViewController* TopPresentedViewController() {
   [[EarlGrey
       selectElementWithMatcher:chrome_test_util::TabGridNewIncognitoTabButton()]
       performAction:grey_tap()];
-  [[GREYUIThreadExecutor sharedInstance] drainUntilIdleWithTimeout:2];
+  GREYWaitForAppToIdleWithTimeout(5.0, @"App failed to idle");
 
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
 
   // Check that the bottom toolbar is visible.
-  [[EarlGrey selectElementWithMatcher:SearchButton()]
+  [[EarlGrey selectElementWithMatcher:NewTabButton()]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
@@ -789,8 +600,7 @@ UIViewController* TopPresentedViewController() {
     }
   } else {
     // Cancel the rotation.
-    [ChromeEarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait
-                                        error:nil];
+    [EarlGrey rotateDeviceToOrientation:UIDeviceOrientationPortrait error:nil];
   }
 }
 

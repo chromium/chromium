@@ -1,0 +1,66 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [450, 774],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#EEEEEE",
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGBlockFlow BODY",
+      "bounds": [426, 750],
+      "transform": 3
+    },
+    {
+      "name": "Horizontal Scrollbar Layer",
+      "position": [0, 225],
+      "bounds": [450, 0],
+      "transform": 1
+    },
+    {
+      "name": "Vertical Scrollbar Layer",
+      "position": [450, 0],
+      "bounds": [0, 225],
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [15, 15, 0, 1]
+      ]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -30, 0, 1]
+      ]
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ]
+    }
+  ]
+}
+

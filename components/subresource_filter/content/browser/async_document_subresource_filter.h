@@ -6,16 +6,16 @@
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_ASYNC_DOCUMENT_SUBRESOURCE_FILTER_H_
 
 #include <memory>
+#include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/subresource_filter/content/browser/verified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/document_subresource_filter.h"
 #include "components/subresource_filter/core/common/load_policy.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -41,11 +41,13 @@ mojom::ActivationState ComputeActivationState(
 //
 // Initially holds an empty filter in the synchronously created Core object, and
 // initializes the filter on the |task_runner| asynchronously. This lets ADSF be
-// created synchrously and be immediately used by clients on the UI thread,
+// created synchronously and be immediately used by clients on the UI thread,
 // while the DSF is retrieved on the |task_runner| in a deferred manner.
 class AsyncDocumentSubresourceFilter {
  public:
   using LoadPolicyCallback = base::OnceCallback<void(LoadPolicy)>;
+  using MultiLoadPolicyCallback =
+      base::OnceCallback<void(std::vector<LoadPolicy>)>;
 
   class Core;
 
@@ -70,6 +72,9 @@ class AsyncDocumentSubresourceFilter {
                          url::Origin parent_document_origin,
                          mojom::ActivationState parent_activation_state);
 
+    InitializationParams(const InitializationParams&) = delete;
+    InitializationParams& operator=(const InitializationParams&) = delete;
+
     ~InitializationParams();
 
     InitializationParams(InitializationParams&& other);
@@ -80,9 +85,6 @@ class AsyncDocumentSubresourceFilter {
     GURL document_url;
     url::Origin parent_document_origin;
     mojom::ActivationState parent_activation_state;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(InitializationParams);
   };
 
   // Creates a Core and initializes it asynchronously on a |task_runner| using
@@ -104,6 +106,33 @@ class AsyncDocumentSubresourceFilter {
       base::OnceCallback<void(mojom::ActivationState)>
           activation_state_callback);
 
+  // Creates a Core and initializes it asynchronously on a |task_runner| using
+  // the supplied |inherited_document_origin| (see below) and a VerifiedRuleset
+  // taken from the |ruleset_handle|. The core remains owned by |this| object,
+  // but lives on (and is accessed on) the |task_runner|.
+  //
+  // The mojom::ActivationState is immediately assigned to the provided
+  // |activation_state|. The activation state is therefore not computed in the
+  // usual way and none of the usual guarantees are enforced. Because of this,
+  // this constructor is only intended for certain edge cases.
+  //
+  // In particular, this method should only be used when it is infeasible to
+  // throttle the navigation until initialization (e.g., aborted loads), where
+  // the activation can be inherited (e.g. about:blank mainframes with an
+  // opener) and where it is expected that the ruleset will be available and
+  // intact (e.g. the activation level is not kDisabled).
+  // |inherited_document_origin| supplies the origin of the new document, which
+  // should have been inherited from the same frame as the |activation_state|.
+  AsyncDocumentSubresourceFilter(
+      VerifiedRuleset::Handle* ruleset_handle,
+      const url::Origin& inherited_document_origin,
+      const mojom::ActivationState& activation_state);
+
+  AsyncDocumentSubresourceFilter(const AsyncDocumentSubresourceFilter&) =
+      delete;
+  AsyncDocumentSubresourceFilter& operator=(
+      const AsyncDocumentSubresourceFilter&) = delete;
+
   ~AsyncDocumentSubresourceFilter();
 
   // Computes LoadPolicy on a |task_runner| and returns it back to the calling
@@ -112,6 +141,13 @@ class AsyncDocumentSubresourceFilter {
   void GetLoadPolicyForSubdocument(const GURL& subdocument_url,
                                    LoadPolicyCallback result_callback);
 
+  // Computes LoadPolicy for each URL in `urls` and returns the vector of
+  // policies back to the calling thread via `result_callback`. If
+  // MemoryMappedRuleset is not present or malformed, then
+  // LoadPolicy::Allow is returned for each of these URLs.
+  void GetLoadPolicyForSubdocumentURLs(const std::vector<GURL>& urls,
+                                       MultiLoadPolicyCallback result_callback);
+
   // Invokes |first_disallowed_load_callback|, if necessary, and posts a task to
   // call DocumentSubresourceFilter::reportDisallowedCallback() on the
   // |task_runner|.
@@ -119,7 +155,7 @@ class AsyncDocumentSubresourceFilter {
 
   // Should only be called for main frames. Updates |activation_state_| with the
   // more accurate |updated_page_state|, but retains ruleset specific properties
-  // like document whitelisting. Must be called after initial activation state
+  // like document allowlisting. Must be called after initial activation state
   // is computed.
   //
   // Posts a task to update the state in |core_|, so any calls to
@@ -128,7 +164,9 @@ class AsyncDocumentSubresourceFilter {
   void UpdateWithMoreAccurateState(
       const mojom::ActivationState& updated_page_state);
 
-  // Must be called after activation state computation is finished.
+  // Must be called after activation state computation is finished. In the case
+  // that the activation state is supplied to the constructor, this can be
+  // called immediately.
   const mojom::ActivationState& activation_state() const;
 
   bool has_activation_state() const { return activation_state_.has_value(); }
@@ -150,13 +188,11 @@ class AsyncDocumentSubresourceFilter {
   std::unique_ptr<Core, base::OnTaskRunnerDeleter> core_;
   base::OnceClosure first_disallowed_load_callback_;
 
-  base::Optional<mojom::ActivationState> activation_state_;
+  absl::optional<mojom::ActivationState> activation_state_;
 
   base::SequenceChecker sequence_checker_;
 
   base::WeakPtrFactory<AsyncDocumentSubresourceFilter> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AsyncDocumentSubresourceFilter);
 };
 
 // Holds a DocumentSubresourceFilter that is created in a deferred manner in
@@ -164,6 +200,10 @@ class AsyncDocumentSubresourceFilter {
 class AsyncDocumentSubresourceFilter::Core {
  public:
   Core();
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
+
   ~Core();
 
   // Can return nullptr even after initialization in case MemoryMappedRuleset
@@ -172,6 +212,8 @@ class AsyncDocumentSubresourceFilter::Core {
     DCHECK(sequence_checker_.CalledOnValidSequence());
     return filter_ ? &filter_.value() : nullptr;
   }
+
+  std::vector<LoadPolicy> GetLoadPolicies(const std::vector<GURL>& urls);
 
  private:
   friend class AsyncDocumentSubresourceFilter;
@@ -184,10 +226,15 @@ class AsyncDocumentSubresourceFilter::Core {
   mojom::ActivationState Initialize(InitializationParams params,
                                     VerifiedRuleset* verified_ruleset);
 
-  base::Optional<DocumentSubresourceFilter> filter_;
-  base::SequenceChecker sequence_checker_;
+  // Initializes a DSF using the provided |activation_state|. Should only be
+  // used in certain uncommon situations. See the second
+  // AsyncDocumentSubresourceFilter constructor for details.
+  void InitializeWithActivation(mojom::ActivationState activation_state,
+                                const url::Origin& document_origin,
+                                VerifiedRuleset* verified_ruleset);
 
-  DISALLOW_COPY_AND_ASSIGN(Core);
+  absl::optional<DocumentSubresourceFilter> filter_;
+  base::SequenceChecker sequence_checker_;
 };
 
 }  // namespace subresource_filter

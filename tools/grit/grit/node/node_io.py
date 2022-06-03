@@ -41,7 +41,7 @@ class FileNode(base.Node):
     defs = getattr(root, 'defines', {})
     target_platform = getattr(root, 'target_platform', '')
 
-    xtb_file = open(self.ToRealPath(self.GetInputPath()))
+    xtb_file = open(self.ToRealPath(self.GetInputPath()), 'rb')
     try:
       lang = xtb_reader.Parse(xtb_file,
                               self.UberClique().GenerateXtbParserCallback(

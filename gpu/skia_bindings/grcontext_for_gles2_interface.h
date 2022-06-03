@@ -9,8 +9,6 @@
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrContextOptions.h"
 
-class GrContext;
-
 namespace gpu {
 struct Capabilities;
 class ContextSupport;
@@ -32,21 +30,23 @@ class GrContextForGLES2Interface : public GrContextOptions::ShaderErrorHandler {
                                       size_t max_resource_cache_bytes,
                                       size_t max_glyph_cache_texture_bytes);
 
+  GrContextForGLES2Interface(const GrContextForGLES2Interface&) = delete;
+  GrContextForGLES2Interface& operator=(const GrContextForGLES2Interface&) =
+      delete;
+
   ~GrContextForGLES2Interface() override;
 
   // Handles Skia-reported shader compilation errors.
   void compileError(const char* shader, const char* errors) override;
 
-  GrContext* get();
+  GrDirectContext* get();
 
   void OnLostContext();
   void FreeGpuResources();
 
  private:
-  sk_sp<class GrContext> gr_context_;
+  sk_sp<class GrDirectContext> gr_context_;
   gpu::ContextSupport* context_support_;
-
-  DISALLOW_COPY_AND_ASSIGN(GrContextForGLES2Interface);
 };
 
 }  // namespace skia_bindings

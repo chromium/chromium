@@ -2,31 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import 'chrome://settings/lazy_load.js';
+
+import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {Router, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {setupRouterWithSyncRoutes} from './sync_test_util.js';
+import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
+
+// clang-format on
+
 suite('sync-page-test', function() {
   /** @type {SyncPageElement} */ let syncPage;
 
   setup(function() {
+    setupRouterWithSyncRoutes();
     PolymerTest.clearBody();
-
-    settings.SyncBrowserProxyImpl.instance_ = new TestSyncBrowserProxy();
-    settings.navigateTo(settings.routes.SYNC);
+    SyncBrowserProxyImpl.setInstance(new TestSyncBrowserProxy());
+    const router = Router.getInstance();
+    router.navigateTo(router.getRoutes().SYNC);
     syncPage = document.createElement('settings-sync-page');
     document.body.appendChild(syncPage);
-    Polymer.dom.flush();
+    flush();
   });
 
   test('autofocus passphrase input', function() {
-    cr.webUIListenerCallback('sync-prefs-changed', {passphraseRequired: false});
-    Polymer.dom.flush();
+    webUIListenerCallback('sync-prefs-changed', {passphraseRequired: false});
+    flush();
     // Passphrase input is not available when no passphrase is required.
-    assertFalse(!!syncPage.$$('#existingPassphraseInput'));
+    assertFalse(
+        !!syncPage.shadowRoot.querySelector('#existingPassphraseInput'));
 
-    cr.webUIListenerCallback('sync-prefs-changed', {passphraseRequired: true});
-    Polymer.dom.flush();
+    webUIListenerCallback('sync-prefs-changed', {passphraseRequired: true});
+    flush();
     // Passphrase input is available and focused when a passphrase is required.
-    assertTrue(!!syncPage.$$('#existingPassphraseInput'));
+    assertTrue(!!syncPage.shadowRoot.querySelector('#existingPassphraseInput'));
     assertEquals(
-        syncPage.$$('#existingPassphraseInput').inputElement,
-        syncPage.$$('#existingPassphraseInput').shadowRoot.activeElement);
+        syncPage.shadowRoot.querySelector('#existingPassphraseInput')
+            .inputElement,
+        syncPage.shadowRoot.querySelector('#existingPassphraseInput')
+            .shadowRoot.activeElement);
   });
 });

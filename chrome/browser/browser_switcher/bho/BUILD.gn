@@ -58,7 +58,7 @@ shared_library("browser_switcher_bho") {
     ]
   } else {
     sources = [
-      "//base/win/atl.h",
+      "atl.h",
       "bho.cc",
       "bho.h",
       "browser_switcher_core.cc",
@@ -70,9 +70,7 @@ shared_library("browser_switcher_bho") {
       "resource.h",
     ]
   }
-  deps = [
-    ":ie_bho_idl",
-  ]
+  deps = [ ":ie_bho_idl" ]
 }
 
 test("browser_switcher_bho_unittests") {
@@ -88,60 +86,53 @@ test("browser_switcher_bho_unittests") {
   ]
 }
 
-if (is_clang) {
-  browser_switcher_x64_toolchain = "//build/toolchain/win:win_clang_x64"
-  browser_switcher_x86_toolchain = "//build/toolchain/win:win_clang_x86"
-} else {
-  browser_switcher_x64_toolchain = "//build/toolchain/win:x64"
-  browser_switcher_x86_toolchain = "//build/toolchain/win:x86"
-}
-
+assert(is_clang)
 browser_switcher_x64_label =
-    ":browser_switcher_bho($browser_switcher_x64_toolchain)"
-browser_switcher_x86_label =
-    ":browser_switcher_bho($browser_switcher_x86_toolchain)"
+    ":browser_switcher_bho(//build/toolchain/win:win_clang_x64)"
 
-copy("copy_browser_switcher_binaries") {
-  # Make sure we have both bitnesses in the root out directory.
-  if (target_cpu == "x86") {
-    cross_build_label = browser_switcher_x64_label
-    cross_build_dll = "browser_switcher_bho_64.dll"
-  } else if (target_cpu == "x64") {
-    cross_build_label = browser_switcher_x86_label
-    cross_build_dll = "browser_switcher_bho.dll"
+if (!is_asan) {
+  browser_switcher_x86_label =
+      ":browser_switcher_bho(//build/toolchain/win:win_clang_x86)"
+
+  copy("copy_browser_switcher_binaries") {
+    # Make sure we have both bitnesses in the root out directory.
+    if (target_cpu == "x86") {
+      cross_build_label = browser_switcher_x64_label
+      cross_build_dll = "browser_switcher_bho_64.dll"
+    } else if (target_cpu == "x64") {
+      cross_build_label = browser_switcher_x86_label
+      cross_build_dll = "browser_switcher_bho.dll"
+    }
+
+    cross_build_out_dir = get_label_info(cross_build_label, "root_out_dir")
+
+    sources = [ "$cross_build_out_dir/$cross_build_dll" ]
+    if (symbol_level > 0) {
+      sources += [ "$cross_build_out_dir/$cross_build_dll.pdb" ]
+    }
+
+    outputs = [ "$root_out_dir/{{source_file_part}}" ]
+    deps = [
+      browser_switcher_x64_label,
+      browser_switcher_x86_label,
+    ]
   }
-
-  cross_build_out_dir = get_label_info(cross_build_label, "root_out_dir")
-
-  sources = [
-    "$cross_build_out_dir/$cross_build_dll",
-  ]
-  if (symbol_level > 0) {
-    sources += [ "$cross_build_out_dir/$cross_build_dll.pdb" ]
-  }
-
-  outputs = [
-    "$root_out_dir/{{source_file_part}}",
-  ]
-  deps = [
-    browser_switcher_x64_label,
-    browser_switcher_x86_label,
-  ]
 }
 
 group("browser_switcher_dlls") {
   # Build a DLL for each bitness, and put them in the root out dir.
-  deps = [
-    ":copy_browser_switcher_binaries",
-    browser_switcher_x64_label,
-    browser_switcher_x86_label,
-  ]
+  # Asan builds only support 64-bit builds, so don't do this there.
+  deps = [ browser_switcher_x64_label ]
+  if (!is_asan) {
+    deps += [
+      ":copy_browser_switcher_binaries",
+      browser_switcher_x86_label,
+    ]
+  }
 }
 
 midl("ie_bho_idl") {
-  sources = [
-    "ie_bho_idl.idl",
-  ]
+  sources = [ "ie_bho_idl.idl" ]
 
   # We have a custom output directory (that excludes the toolchain details).
   generated_dir =

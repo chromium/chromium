@@ -7,27 +7,25 @@
 #include <unordered_set>
 #include <utility>
 
+#include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "content/browser/appcache/chrome_appcache_service.h"
 #include "content/browser/background_fetch/background_fetch_context.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/code_cache/generated_code_cache_context.h"
-#include "content/browser/cookie_store/cookie_store_context.h"
+#include "content/browser/cookie_store/cookie_store_manager.h"
 #include "content/browser/file_system/browser_file_system_helper.h"
 #include "content/browser/loader/prefetch_url_loader_service.h"
 #include "content/browser/resource_context_impl.h"
@@ -156,7 +154,7 @@ void ObliterateOneDirectory(const base::FilePath& current_dir,
 
     switch (action) {
       case kDelete:
-        base::DeleteFileRecursively(to_delete);
+        base::DeletePathRecursively(to_delete);
         break;
 
       case kEnqueue:
@@ -206,7 +204,7 @@ void BlockingObliteratePath(
   // root and be done with it.  Otherwise, signal garbage collection and do
   // a best-effort delete of the on-disk structures.
   if (valid_paths_to_keep.empty()) {
-    base::DeleteFileRecursively(root);
+    base::DeletePathRecursively(root);
     return;
   }
   closure_runner->PostTask(FROM_HERE, std::move(on_gc_required));
@@ -285,8 +283,8 @@ void BlockingGarbageCollect(
   }
 
   file_access_runner->PostTask(
-      FROM_HERE, base::BindOnce(base::IgnoreResult(&base::DeleteFile),
-                                trash_directory, true));
+      FROM_HERE, base::BindOnce(base::GetDeletePathRecursivelyCallback(),
+                                trash_directory));
 }
 
 }  // namespace
@@ -319,23 +317,17 @@ base::FilePath StoragePartitionImplMap::GetStoragePartitionPath(
 StoragePartitionImplMap::StoragePartitionImplMap(
     BrowserContext* browser_context)
     : browser_context_(browser_context),
-      file_access_runner_(
-          base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                           base::TaskPriority::BEST_EFFORT})),
+      file_access_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
       resource_context_initialized_(false) {}
 
 StoragePartitionImplMap::~StoragePartitionImplMap() {
 }
 
 StoragePartitionImpl* StoragePartitionImplMap::Get(
-    const std::string& partition_domain,
-    const std::string& partition_name,
-    bool in_memory,
+    const StoragePartitionConfig& partition_config,
     bool can_create) {
   // Find the previously created partition if it's available.
-  StoragePartitionConfig partition_config(
-      partition_domain, partition_name, in_memory);
-
   PartitionMap::const_iterator it = partitions_.find(partition_config);
   if (it != partitions_.end())
     return it->second.get();
@@ -343,28 +335,35 @@ StoragePartitionImpl* StoragePartitionImplMap::Get(
   if (!can_create)
     return nullptr;
 
-  base::FilePath relative_partition_path =
-      GetStoragePartitionPath(partition_domain, partition_name);
+  base::FilePath relative_partition_path = GetStoragePartitionPath(
+      partition_config.partition_domain(), partition_config.partition_name());
+
+  absl::optional<StoragePartitionConfig> fallback_config =
+      partition_config.GetFallbackForBlobUrls();
+  StoragePartitionImpl* fallback_for_blob_urls =
+      fallback_config.has_value() ? Get(*fallback_config, /*can_create=*/false)
+                                  : nullptr;
 
   std::unique_ptr<StoragePartitionImpl> partition_ptr(
-      StoragePartitionImpl::Create(browser_context_, in_memory,
-                                   relative_partition_path, partition_domain));
+      StoragePartitionImpl::Create(browser_context_, partition_config,
+                                   relative_partition_path));
   StoragePartitionImpl* partition = partition_ptr.get();
   partitions_[partition_config] = std::move(partition_ptr);
-  partition->Initialize();
+  partition->Initialize(fallback_for_blob_urls);
 
   // Arm the serviceworker cookie change observation API.
-  partition->GetCookieStoreContext()->ListenToCookieChanges(
-      partition->GetNetworkContext(), /*success_callback=*/base::DoNothing());
+  partition->GetCookieStoreManager()->ListenToCookieChanges(
+      partition->GetNetworkContext(), base::DoNothing());
 
-  PostCreateInitialization(partition, in_memory);
+  PostCreateInitialization(partition, partition_config.in_memory());
 
   return partition;
 }
 
 void StoragePartitionImplMap::AsyncObliterate(
     const std::string& partition_domain,
-    base::OnceClosure on_gc_required) {
+    base::OnceClosure on_gc_required,
+    base::OnceClosure done_callback) {
   // Find the active partitions for the domain. Because these partitions are
   // active, it is not possible to just delete the directories that contain
   // the backing data structures without causing the browser to crash. Instead,
@@ -377,16 +376,27 @@ void StoragePartitionImplMap::AsyncObliterate(
        it != partitions_.end();
        ++it) {
     const StoragePartitionConfig& config = it->first;
-    if (config.partition_domain == partition_domain) {
-      it->second->ClearData(
-          // All except shader cache.
-          ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
-          StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(),
-          base::Time(), base::Time::Max(), base::DoNothing());
-      if (!config.in_memory) {
+    if (config.partition_domain() == partition_domain) {
+      active_partitions.push_back(it->second.get());
+      if (!config.in_memory()) {
         paths_to_keep.push_back(it->second->GetPath());
       }
     }
+  }
+
+  // Create a barrier closure for keeping track of the callbacks in
+  // AsyncObliterate(). We have one callback for each active partition that is
+  // cleared and an additional one for BlockingObliteratePath()'s task reply.
+  int num_tasks = active_partitions.size() + 1;
+  auto subtask_done_callback =
+      base::BarrierClosure(num_tasks, std::move(done_callback));
+
+  for (auto*& active_partition : active_partitions) {
+    active_partition->ClearData(
+        // All except shader cache.
+        ~StoragePartition::REMOVE_DATA_MASK_SHADER_CACHE,
+        StoragePartition::QUOTA_MANAGED_STORAGE_MASK_ALL, GURL(), base::Time(),
+        base::Time::Max(), subtask_done_callback);
   }
 
   // Start a best-effort delete of the on-disk storage excluding paths that are
@@ -396,13 +406,13 @@ void StoragePartitionImplMap::AsyncObliterate(
   base::FilePath domain_root = browser_context_->GetPath().Append(
       GetStoragePartitionDomainPath(partition_domain));
 
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&BlockingObliteratePath, browser_context_->GetPath(),
                      domain_root, paths_to_keep,
                      base::ThreadTaskRunnerHandle::Get(),
-                     std::move(on_gc_required)));
+                     std::move(on_gc_required)),
+      subtask_done_callback);
 }
 
 void StoragePartitionImplMap::GarbageCollect(
@@ -414,7 +424,7 @@ void StoragePartitionImplMap::GarbageCollect(
        it != partitions_.end();
        ++it) {
     const StoragePartitionConfig& config = it->first;
-    if (!config.in_memory)
+    if (!config.in_memory())
       active_paths->insert(it->second->GetPath());
   }
 
@@ -451,44 +461,17 @@ void StoragePartitionImplMap::PostCreateInitialization(
     InitializeResourceContext(browser_context_);
   }
 
-  partition->GetAppCacheService()->Initialize(
-      in_memory ? base::FilePath()
-                : partition->GetPath().Append(kAppCacheDirname),
-      browser_context_, browser_context_->GetSpecialStoragePolicy());
-
-  // Check first to avoid memory leak in unittests.
-  if (BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
-    partition->GetCacheStorageContext()->SetBlobParametersForCache(
-        ChromeBlobStorageContext::GetFor(browser_context_));
-
-    if (!ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-      base::PostTask(
-          FROM_HERE, {BrowserThread::IO},
-          base::BindOnce(
-              &ServiceWorkerContextWrapper::InitializeResourceContext,
-              partition->GetServiceWorkerContext(),
-              browser_context_->GetResourceContext()));
-    }
-
-    // Use PostTask() instead of RunOrPostTaskOnThread() because not posting a
-    // task causes it to run before the CacheStorageManager has been
-    // initialized, and then CacheStorageContextImpl::CacheManager() ends up
-    // returning null instead of using the CrossSequenceCacheStorageManager in
-    // unit tests that don't use a real IO thread, violating the DCHECK in
-    // BackgroundFetchDataManager::InitializeOnCoreThread().
-    // TODO(crbug.com/960012): This workaround should be unnecessary after
-    // CacheStorage moves off the IO thread to the thread pool.
-    base::PostTask(
-        FROM_HERE, {ServiceWorkerContext::GetCoreThreadId()},
-        base::BindOnce(&BackgroundFetchContext::InitializeOnCoreThread,
-                       partition->GetBackgroundFetchContext()));
-
-    // We do not call InitializeURLRequestContext() for media contexts because,
-    // other than the HTTP cache, the media contexts share the same backing
-    // objects as their associated "normal" request context.  Thus, the previous
-    // call serves to initialize the media request context for this storage
-    // partition as well.
+  if (!in_memory) {
+    // Clean up any lingering AppCache user data on disk, now that AppCache
+    // has been deprecated and removed.
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
+        base::BindOnce(
+            [](const base::FilePath& dir) { base::DeletePathRecursively(dir); },
+            partition->GetPath().Append(kAppCacheDirname)));
   }
+
+  partition->GetBackgroundFetchContext()->Initialize();
 }
 
 }  // namespace content

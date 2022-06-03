@@ -44,4 +44,4 @@ class StringStatics {
 };
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_STRING_STATICS_H_

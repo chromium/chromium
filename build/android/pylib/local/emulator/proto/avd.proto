@@ -44,6 +44,15 @@ message AvdSettings {
 
   // Settings pertaining to the AVD's sdcard.
   SdcardSettings sdcard = 2;
+
+  // Advanced Features for AVD. The <key,value> pairs here will override the
+  // default ones in the given system image.
+  // See https://bit.ly/2P1qK2X for all the available keys.
+  // The values should be on, off, default, or null
+  map<string, string> advanced_features = 3;
+
+  // The physical RAM size on the device, in megabytes.
+  uint32 ram_size = 4;
 }
 
 message Avd {

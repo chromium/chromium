@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Object.preventExtensions throws a TypeError assert_throws_js: function "() => {
+    Object.preventExtensions(location);
+  }" did not throw
+FAIL Reflect.preventExtensions returns false assert_false: expected false got true
+Harness: the test ran to completion.
+

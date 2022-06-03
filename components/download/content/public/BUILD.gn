@@ -15,9 +15,11 @@ source_set("public") {
     "download_navigation_observer.h",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  if (is_android) {
+    sources += [ "context_menu_download.h" ]
+  }
+
+  public_deps = [ "//base" ]
 
   deps = [
     "//components/download/public/background_service:public",
@@ -28,9 +30,7 @@ source_set("public") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [
-    "all_download_item_notifier_unittest.cc",
-  ]
+  sources = [ "all_download_item_notifier_unittest.cc" ]
 
   deps = [
     ":public",

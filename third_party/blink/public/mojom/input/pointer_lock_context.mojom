@@ -1,0 +1,13 @@
+module blink.mojom;
+
+import "third_party/blink/public/mojom/input/pointer_lock_result.mojom";
+
+// PointerLockContext is a pipe that is passed between the browser and the
+// renderer to communicate if the mouse is locked or not. Keeping the interface
+// open retains the Pointer Lock while closing it releases the Pointer Lock.
+interface PointerLockContext {
+  // A request to change the current mouse lock to have the given unadjusted
+  // movement.
+  RequestMouseLockChange(bool unadjusted_movement)
+                          => (blink.mojom.PointerLockResult result);
+};

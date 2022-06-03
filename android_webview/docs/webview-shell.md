@@ -1,8 +1,12 @@
 # System WebView Shell
 
-WebView team maintains a "shell"--a thin interface over the WebView APIs--to
-exercise WebView functionality. The System WebView Shell (AKA "shell browser,"
-"WebView shell") is a standalone app implemented [in
+[TOC]
+
+![WebView Shell](images/webview_shell.png)
+
+WebView team maintains a "shell"&mdash;a thin interface over the WebView
+APIs&mdash;to exercise WebView functionality. The System WebView Shell (AKA
+"shell browser," "WebView shell") is a standalone app implemented [in
 chromium](/android_webview/tools/system_webview_shell/). While often used for
 manual testing, we also use the shell for automated tests (see our [layout and
 page cycler tests](./test-instructions.md#layout-tests-and-page-cycler-tests)).
@@ -20,6 +24,31 @@ at the top. This can be helpful for checking which WebView version is installed
 & selected on the device.
 ***
 
+*** note
+This is *not* a production quality browser and does not implement suitable
+security UI to be used for anything other than testing WebView. This should not
+be shipped anywhere or used as the basis for implementing a browser.
+***
+
+## Setting up the build
+
+WebView shell only requires `target_os = "android"`. The simplest option is to
+just reuse the same out/ folder and GN args you would normally use for WebView
+or Chrome for Android.
+
+*** note
+**For the emulator:** the emulator comes with WebView shell preinstalled with a
+different signing key, so installation will fail with
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE: Package ... signatures do not match
+previously installed version`. You can workaround this in your GN args with
+`system_webview_shell_package_name = "org.chromium.my_webview_shell"`.
+
+Your local build will install alongside the preinstalled WebView shell. You may
+hide the preinstalled shell by running `adb root` followed by `adb shell pm
+disable org.chromium.webview_shell` in your terminal (copy-paste the command
+as-written, **don't** use the package name from the GN arg above).
+***
+
 ## Building the shell
 
 ```sh
@@ -31,40 +60,6 @@ $ autoninja -C out/Default system_webview_shell_apk
 ```sh
 # Build and install
 $ out/Default/bin/system_webview_shell_apk install
-```
-
-The WebView shell may be preinstalled on a device or emulator. If the signature
-of the locally built shell does not match the preinstalled shell then the
-install will fail &ndash; usually with this error:
-
-```
-...
-path/to/SystemWebViewShell.apk: Failure [INSTALL_FAILED_UPDATE_INCOMPATIBLE:
-Package org.chromium.webview_shell signatures do not match previously installed
-version; ignoring!]
-```
-
-If this occurs then delete the preinstalled WebView shell as so:
-
-*** note
-**Note:** If using the emulator ensure it is being started with the
-`-writable-system` option as per the
-[Writable system partition](/docs/android_emulator.md#writable-system-partition)
-instructions.
-***
-
-```sh
-# Remount the /system partition read-write
-$ adb root
-$ adb remount
-# Get the APK path to the WebView shell
-$ adb shell pm path org.chromium.webview_shell
-package:/system/app/Browser2/Browser2.apk
-# Use the APK path above to delete the APK
-$ adb shell rm /system/app/Browser2/Browser2.apk
-# Restart the Android shell to "forget" about the WebView shell
-$ adb shell stop
-$ adb shell start
 ```
 
 ## Running the shell
@@ -82,3 +77,44 @@ $ out/Default/bin/system_webview_shell_apk --help
 https://crbug.com/959425. Instead, you should modify WebView's flags by
 following [commandline-flags.md](./commandline-flags.md).
 ***
+
+## Prebuilt APKs
+
+We maintain a **public** archive of prebuilt WebView shell APKs. This saves you
+the effort of setting up a chromium checkout just for the sake of compiling this
+test app. You can download a prebuilt APK from this cloud storage bucket:
+https://commondatastorage.googleapis.com/chromium-browser-snapshots/index.html?prefix=Android/
+
+1. The builds are sorted from oldest to newest. You should scroll to the
+   **bottom of the page** to get the latest revision. Note that the page can
+   take some time to load all the revisions, so you may have to scroll multiple
+   times. Keep scrolling until you see a file named `LAST_CHANGE`, then pick the
+   numbered folder immediately above it.
+     * Your WebView shell version **does not** need to match your device's
+       WebView version. We recommend using the latest WebView shell build
+       regardless of your WebView version to make sure you have the latest
+       features and bug fixes of the shell app itself.
+1. Click `chrome-android.zip` to download the archived APKs. Unzip this and look
+   for a file named `SystemWebViewShell.apk`.
+1. Now you can install this like any other APK:
+
+     ```sh
+     # Install adb if it's not already installed:
+     $ which adb || sudo apt install adb
+
+     # Replace this path with the path to your downloaded APK
+     $ adb install -d -r ~/Downloads/chrome-android/SystemWebViewShell.apk
+     ```
+
+## Troubleshooting
+
+### INSTALL\_FAILED\_UPDATE\_INCOMPATIBLE: Package ... signatures do not match previously installed version
+
+This may be happening because the shell is preinstalled on your device (ex. this
+is the case on all emulators). **The easiest way** to workaround this is to
+[change the shell's package name in a local build](#building-for-the-emulator).
+
+If you don't want to (or can't) change the package name, then you may be able to
+modify your device's system image. See the [manual steps for removing system
+apps](removing-system-apps.md) and replace **com.google.android.webview** with
+**org.chromium.webview_shell**.

@@ -12,16 +12,15 @@
 namespace cloud_devices {
 
 extern const char kCloudPrintAuthScope[];
-extern const char kCloudPrintLearnMoreURL[];
-extern const char kCloudPrintTestPageURL[];
 
 GURL GetCloudPrintURL();
 GURL GetCloudPrintRelativeURL(const std::string& relative_path);
+GURL GetCloudPrintAddAccountURL();
 GURL GetCloudPrintEnableURL(const std::string& proxy_id);
 GURL GetCloudPrintEnableWithSigninURL(const std::string& proxy_id);
 GURL GetCloudPrintManageDeviceURL(const std::string& device_id);
+GURL GetCloudPrintPrintersURL();
 GURL GetCloudPrintSigninURL();
-GURL GetCloudPrintAddAccountURL();
 bool IsCloudPrintURL(const GURL& url);
 
 }  // namespace cloud_devices

@@ -16,15 +16,11 @@ const char kHistogramFirstImagePaintSuffix[] =
     "PaintTiming.NavigationToFirstImagePaint";
 const char kHistogramFirstInputDelaySuffix[] =
     "InteractiveTiming.FirstInputDelay4";
-const char kHistogramFirstLayoutSuffix[] =
-    "DocumentTiming.NavigationToFirstLayout";
 const char kHistogramFirstMeaningfulPaintSuffix[] =
     "Experimental.PaintTiming.NavigationToFirstMeaningfulPaint";
 const char kHistogramFirstPaintSuffix[] = "PaintTiming.NavigationToFirstPaint";
 const char kHistogramForegroundToFirstContentfulPaintSuffix[] =
     "PaintTiming.ForegroundToFirstContentfulPaint";
-const char kHistogramForegroundToFirstMeaningfulPaintSuffix[] =
-    "Experimental.PaintTiming.ForegroundToFirstMeaningfulPaint";
 const char kHistogramLoadEventFiredBackgroundSuffix[] =
     "DocumentTiming.NavigationToLoadEventFired.Background";
 const char kHistogramLoadEventFiredSuffix[] =

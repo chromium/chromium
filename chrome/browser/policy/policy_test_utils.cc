@@ -4,14 +4,14 @@
 
 #include "chrome/browser/policy/policy_test_utils.h"
 
-#include "base/message_loop/message_loop_current.h"
+#include "base/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/task/post_task.h"
+#include "base/task/current_thread.h"
+#include "base/test/bind.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber.h"
-#include "chrome/browser/ui/ash/chrome_screenshot_grabber_test_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -27,7 +27,6 @@
 #include "components/variations/variations_params_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/interstitial_page_delegate.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
@@ -38,10 +37,7 @@
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/transport_security_state.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
-
-#if defined(OS_CHROMEOS)
-#include "ui/snapshot/screenshot_grabber.h"
-#endif
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using content::BrowserThread;
 using testing::_;
@@ -67,8 +63,8 @@ void PolicyTest::SetUp() {
 
 void PolicyTest::SetUpInProcessBrowserTestFixture() {
   base::CommandLine::ForCurrentProcess()->AppendSwitch("noerrdialogs");
-  EXPECT_CALL(provider_, IsInitializationComplete(_))
-      .WillRepeatedly(Return(true));
+  provider_.SetDefaultReturns(true /* is_initialization_complete_return */,
+                              true /* is_first_policy_load_complete_return */);
   BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
 }
 
@@ -82,72 +78,25 @@ void PolicyTest::SetUpCommandLine(base::CommandLine* command_line) {
       {{"sendingThreshold", "1.0"}}, command_line);
 }
 
-void PolicyTest::SetScreenshotPolicy(bool enabled) {
-  PolicyMap policies;
-  policies.Set(key::kDisableScreenshots, POLICY_LEVEL_MANDATORY,
-               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-               std::make_unique<base::Value>(!enabled), nullptr);
-  UpdateProviderPolicy(policies);
-}
-
-void PolicyTest::SetShouldRequireCTForTesting(bool* required) {
+void PolicyTest::SetRequireCTForTesting(bool required) {
   if (content::IsOutOfProcessNetworkService()) {
     mojo::Remote<network::mojom::NetworkServiceTest> network_service_test;
     content::GetNetworkService()->BindTestInterface(
         network_service_test.BindNewPipeAndPassReceiver());
-    network::mojom::NetworkServiceTest::ShouldRequireCT required_ct;
-    if (!required) {
-      required_ct = network::mojom::NetworkServiceTest::ShouldRequireCT::RESET;
-    } else {
-      required_ct =
-          *required
-              ? network::mojom::NetworkServiceTest::ShouldRequireCT::REQUIRE
-              : network::mojom::NetworkServiceTest::ShouldRequireCT::
-                    DONT_REQUIRE;
-    }
+    network::mojom::NetworkServiceTest::RequireCT required_ct =
+        required ? network::mojom::NetworkServiceTest::RequireCT::REQUIRE
+                 : network::mojom::NetworkServiceTest::RequireCT::DEFAULT;
 
     mojo::ScopedAllowSyncCallForTesting allow_sync_call;
-    network_service_test->SetShouldRequireCT(required_ct);
+    network_service_test->SetRequireCT(required_ct);
     return;
   }
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
-      base::BindOnce(&net::TransportSecurityState::SetShouldRequireCTForTesting,
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&net::TransportSecurityState::SetRequireCTForTesting,
                      required));
 }
-
-#if defined(OS_CHROMEOS)
-class QuitMessageLoopAfterScreenshot
-    : public ChromeScreenshotGrabberTestObserver {
- public:
-  explicit QuitMessageLoopAfterScreenshot(base::OnceClosure done)
-      : done_(std::move(done)) {}
-  void OnScreenshotCompleted(ui::ScreenshotResult screenshot_result,
-                             const base::FilePath& screenshot_path) override {
-    base::PostTaskAndReply(FROM_HERE, {BrowserThread::IO}, base::DoNothing(),
-                           std::move(done_));
-  }
-
-  ~QuitMessageLoopAfterScreenshot() override {}
-
- private:
-  base::OnceClosure done_;
-};
-
-void PolicyTest::TestScreenshotFile(bool enabled) {
-  base::RunLoop run_loop;
-  QuitMessageLoopAfterScreenshot observer_(run_loop.QuitClosure());
-
-  ChromeScreenshotGrabber* grabber = ChromeScreenshotGrabber::Get();
-  grabber->test_observer_ = &observer_;
-  SetScreenshotPolicy(enabled);
-  grabber->HandleTakeScreenshotForAllRootWindows();
-  run_loop.Run();
-
-  grabber->test_observer_ = nullptr;
-}
-#endif  // defined(OS_CHROMEOS)
 
 scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
     const base::FilePath::StringType& name) {
@@ -158,13 +107,12 @@ scoped_refptr<const extensions::Extension> PolicyTest::LoadUnpackedExtension(
 }
 
 void PolicyTest::UpdateProviderPolicy(const PolicyMap& policy) {
-  PolicyMap policy_with_defaults;
-  policy_with_defaults.CopyFrom(policy);
+  PolicyMap policy_with_defaults = policy.Clone();
 #if defined(OS_CHROMEOS)
   SetEnterpriseUsersDefaults(&policy_with_defaults);
 #endif
   provider_.UpdateChromePolicy(policy_with_defaults);
-  DCHECK(base::MessageLoopCurrent::Get());
+  DCHECK(base::CurrentThread::Get());
   base::RunLoop loop;
   loop.RunUntilIdle();
 }
@@ -173,32 +121,32 @@ void PolicyTest::PerformClick(int x, int y) {
   content::WebContents* contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   blink::WebMouseEvent click_event(
-      blink::WebInputEvent::kMouseDown, blink::WebInputEvent::kNoModifiers,
+      blink::WebInputEvent::Type::kMouseDown,
+      blink::WebInputEvent::kNoModifiers,
       blink::WebInputEvent::GetStaticTimeStampForTests());
   click_event.button = blink::WebMouseEvent::Button::kLeft;
   click_event.click_count = 1;
   click_event.SetPositionInWidget(x, y);
-  contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(click_event);
-  click_event.SetType(blink::WebInputEvent::kMouseUp);
-  contents->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(click_event);
+  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      click_event);
+  click_event.SetType(blink::WebInputEvent::Type::kMouseUp);
+  contents->GetMainFrame()->GetRenderViewHost()->GetWidget()->ForwardMouseEvent(
+      click_event);
 }
 
+// static
 void PolicyTest::SetPolicy(PolicyMap* policies,
                            const char* key,
-                           std::unique_ptr<base::Value> value) {
-  if (value) {
-    policies->Set(key, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                  POLICY_SOURCE_CLOUD, std::move(value), nullptr);
-  } else {
-    policies->Erase(key);
-  }
+                           absl::optional<base::Value> value) {
+  policies->Set(key, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                POLICY_SOURCE_CLOUD, std::move(value), nullptr);
 }
 
 void PolicyTest::ApplySafeSearchPolicy(
-    std::unique_ptr<base::Value> legacy_safe_search,
-    std::unique_ptr<base::Value> google_safe_search,
-    std::unique_ptr<base::Value> legacy_youtube,
-    std::unique_ptr<base::Value> youtube_restrict) {
+    absl::optional<base::Value> legacy_safe_search,
+    absl::optional<base::Value> google_safe_search,
+    absl::optional<base::Value> legacy_youtube,
+    absl::optional<base::Value> youtube_restrict) {
   PolicyMap policies;
   SetPolicy(&policies, key::kForceSafeSearch, std::move(legacy_safe_search));
   SetPolicy(&policies, key::kForceGoogleSafeSearch,
@@ -208,7 +156,7 @@ void PolicyTest::ApplySafeSearchPolicy(
   UpdateProviderPolicy(policies);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void PolicyTest::SetEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   keyboard_client->SetEnableFlag(flag);
@@ -218,7 +166,7 @@ void PolicyTest::ClearEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
   auto* keyboard_client = ChromeKeyboardControllerClient::Get();
   keyboard_client->ClearEnableFlag(flag);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // static
 GURL PolicyTest::GetExpectedSearchURL(bool expect_safe_search) {
@@ -249,12 +197,9 @@ void PolicyTest::CheckSafeSearch(Browser* browser,
 // static
 void PolicyTest::CheckYouTubeRestricted(
     int youtube_restrict_mode,
-    const std::map<GURL, net::HttpRequestHeaders>& urls_requested,
-    const GURL& url) {
-  auto iter = urls_requested.find(url);
-  ASSERT_TRUE(iter != urls_requested.end());
+    const net::HttpRequestHeaders& headers) {
   std::string header;
-  iter->second.GetHeader(safe_search_util::kYouTubeRestrictHeaderName, &header);
+  headers.GetHeader(safe_search_util::kYouTubeRestrictHeaderName, &header);
   if (youtube_restrict_mode == safe_search_util::YOUTUBE_RESTRICT_OFF) {
     EXPECT_TRUE(header.empty());
   } else if (youtube_restrict_mode ==
@@ -269,18 +214,15 @@ void PolicyTest::CheckYouTubeRestricted(
 // static
 void PolicyTest::CheckAllowedDomainsHeader(
     const std::string& allowed_domain,
-    const std::map<GURL, net::HttpRequestHeaders>& urls_requested,
-    const GURL& url) {
-  auto iter = urls_requested.find(url);
-  ASSERT_TRUE(iter != urls_requested.end());
+    const net::HttpRequestHeaders& headers) {
   if (allowed_domain.empty()) {
     EXPECT_TRUE(
-        !iter->second.HasHeader(safe_search_util::kGoogleAppsAllowedDomains));
+        !headers.HasHeader(safe_search_util::kGoogleAppsAllowedDomains));
     return;
   }
 
   std::string header;
-  iter->second.GetHeader(safe_search_util::kGoogleAppsAllowedDomains, &header);
+  headers.GetHeader(safe_search_util::kGoogleAppsAllowedDomains, &header);
   EXPECT_EQ(header, allowed_domain);
 }
 
@@ -323,30 +265,6 @@ void PolicyTest::WaitForInterstitial(content::WebContents* tab) {
   ASSERT_TRUE(WaitForRenderFrameReady(tab->GetMainFrame()));
 }
 
-int PolicyTest::IsExtendedReportingCheckboxVisibleOnInterstitial() {
-  const std::string command = base::StringPrintf(
-      "var node = document.getElementById('extended-reporting-opt-in');"
-      "if (node) {"
-      "  window.domAutomationController.send(node.offsetWidth > 0 || "
-      "      node.offsetHeight > 0 ? %d : %d);"
-      "} else {"
-      // The node should be present but not visible, so trigger an error
-      // by sending false if it's not present.
-      "  window.domAutomationController.send(%d);"
-      "}",
-      security_interstitials::CMD_TEXT_FOUND,
-      security_interstitials::CMD_TEXT_NOT_FOUND,
-      security_interstitials::CMD_ERROR);
-
-  content::WebContents* tab =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  WaitForInterstitial(tab);
-  int result = 0;
-  EXPECT_TRUE(content::ExecuteScriptAndExtractInt(tab->GetMainFrame(), command,
-                                                  &result));
-  return result;
-}
-
 void PolicyTest::SendInterstitialCommand(
     content::WebContents* tab,
     security_interstitials::SecurityInterstitialCommand command) {
@@ -356,6 +274,14 @@ void PolicyTest::SendInterstitialCommand(
   helper->GetBlockingPageForCurrentlyCommittedNavigationForTesting()
       ->CommandReceived(base::NumberToString(command));
   return;
+}
+
+void PolicyTest::FlushBlocklistPolicy() {
+  // Updates of the URLBlocklist are done on IO, after building the blocklist
+  // on the blocking pool, which is initiated from IO.
+  content::RunAllPendingInMessageLoop(BrowserThread::IO);
+  content::RunAllTasksUntilIdle();
+  content::RunAllPendingInMessageLoop(BrowserThread::IO);
 }
 
 }  // namespace policy

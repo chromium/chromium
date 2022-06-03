@@ -21,7 +21,6 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/command_buffer/client/buffer_tracker.h"
 #include "gpu/command_buffer/client/client_context_state.h"
@@ -41,6 +40,7 @@
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/context_result.h"
 #include "gpu/command_buffer/common/debug_marker_manager.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace gpu {
 
@@ -88,6 +88,9 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
                       bool lose_context_when_out_of_memory,
                       bool support_client_side_arrays,
                       GpuControl* gpu_control);
+
+  GLES2Implementation(const GLES2Implementation&) = delete;
+  GLES2Implementation& operator=(const GLES2Implementation&) = delete;
 
   ~GLES2Implementation() override;
 
@@ -154,6 +157,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void GenUnverifiedSyncTokenCHROMIUM(GLbyte* sync_token) override;
   void VerifySyncTokensCHROMIUM(GLbyte** sync_tokens, GLsizei count) override;
   void WaitSyncTokenCHROMIUM(const GLbyte* sync_token) override;
+  void ShallowFlushCHROMIUM() override;
 
   void GetProgramInfoCHROMIUMHelper(GLuint program,
                                     std::vector<int8_t>* result);
@@ -399,7 +403,8 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void OnGpuControlLostContextMaybeReentrant() final;
   void OnGpuControlErrorMessage(const char* message, int32_t id) final;
   void OnGpuControlSwapBuffersCompleted(
-      const SwapBuffersCompleteParams& params) final;
+      const SwapBuffersCompleteParams& params,
+      gfx::GpuFenceHandle release_fence) final;
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) final;
   void OnSwapBufferPresented(uint64_t swap_id,
                              const gfx::PresentationFeedback& feedback) final;
@@ -489,7 +494,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void DeleteBuffersStub(GLsizei n, const GLuint* buffers);
   void DeleteRenderbuffersStub(GLsizei n, const GLuint* renderbuffers);
   void DeleteTexturesStub(GLsizei n, const GLuint* textures);
-  void DeletePathsCHROMIUMStub(GLuint first_client_id, GLsizei range);
   void DeleteProgramStub(GLsizei n, const GLuint* programs);
   void DeleteShaderStub(GLsizei n, const GLuint* shaders);
   void DeleteSamplersStub(GLsizei n, const GLuint* samplers);
@@ -600,6 +604,7 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   bool GetHelper(GLenum pname, GLint* params);
   GLuint GetBoundBufferHelper(GLenum target);
   bool GetBooleanvHelper(GLenum pname, GLboolean* params);
+  bool GetBooleani_vHelper(GLenum pname, GLuint index, GLboolean* data);
   bool GetBufferParameteri64vHelper(
       GLenum target, GLenum pname, GLint64* params);
   bool GetBufferParameterivHelper(GLenum target, GLenum pname, GLint* params);
@@ -670,18 +675,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
                            const char* func_name);
 
   const std::string& GetLogPrefix() const;
-
-  bool PrepareInstancedPathCommand(const char* function_name,
-                                   GLsizei num_paths,
-                                   GLenum path_name_type,
-                                   const void* paths,
-                                   GLenum transform_type,
-                                   const GLfloat* transform_values,
-                                   ScopedTransferBufferPtr* buffer,
-                                   uint32_t* out_paths_shm_id,
-                                   uint32_t* out_paths_offset,
-                                   uint32_t* out_transforms_shm_id,
-                                   uint32_t* out_transforms_offset);
 
 // Set to 1 to have the client fail when a GL error is generated.
 // This helps find bugs in the renderer since the debugger stops on the error.
@@ -846,8 +839,8 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   std::unique_ptr<BufferTracker> buffer_tracker_;
   std::unique_ptr<ReadbackBufferShadowTracker> readback_buffer_shadow_tracker_;
 
-  base::Optional<ScopedMappedMemoryPtr> font_mapped_buffer_;
-  base::Optional<ScopedTransferBufferPtr> raster_mapped_buffer_;
+  absl::optional<ScopedMappedMemoryPtr> font_mapped_buffer_;
+  absl::optional<ScopedTransferBufferPtr> raster_mapped_buffer_;
 
   base::RepeatingCallback<void(const char*, int32_t)> error_message_callback_;
   bool deferring_error_callbacks_ = false;
@@ -882,8 +875,6 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   gl::GpuPreference active_gpu_heuristic_ = gl::GpuPreference::kDefault;
 
   base::WeakPtrFactory<GLES2Implementation> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(GLES2Implementation);
 };
 
 inline bool GLES2Implementation::GetBufferParameteri64vHelper(

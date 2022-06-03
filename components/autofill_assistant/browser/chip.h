@@ -20,6 +20,7 @@ class UserAction;  // For SetDefaultChipType
 struct Chip {
   explicit Chip(const ChipProto& proto);
   Chip();
+  Chip(const Chip& other);
   ~Chip();
 
   bool empty() const;
@@ -34,6 +35,15 @@ struct Chip {
   // Whether this chip is sticky. A sticky chip will be a candidate to be
   // displayed in the header if the peek mode of the sheet is HANDLE_HEADER.
   bool sticky = false;
+
+  // Whether this chip should be displayed in the carousel.
+  bool visible = true;
+
+  // Accessibility string for chip.
+  std::string content_description;
+
+  // True when accessibility string for chip is set.
+  bool is_content_description_set;
 };
 
 // Guarantees that the Chip.type of all chips is set to a sensible value.

@@ -6,6 +6,8 @@
 
 #include <memory>
 
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/page_load_metrics/observers/page_load_metrics_observer_test_harness.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
@@ -56,20 +58,18 @@ class SignedExchangePageLoadMetricsObserverTest
       page_load_metrics::mojom::PageLoadTiming* timing) {
     page_load_metrics::InitPageLoadTimingForTest(timing);
     timing->navigation_start = base::Time::FromDoubleT(1);
-    timing->interactive_timing->first_input_delay =
-        base::TimeDelta::FromMilliseconds(50);
+    timing->interactive_timing->first_input_delay = base::Milliseconds(50);
+    // Use timestamps larger than 1000ms, so that they will not race with
+    // background time in the WithSignedExchangeBackground test case.
     timing->interactive_timing->first_input_timestamp =
-        base::TimeDelta::FromMilliseconds(712);
-    timing->parse_timing->parse_start = base::TimeDelta::FromMilliseconds(100);
-    timing->paint_timing->first_paint = base::TimeDelta::FromMilliseconds(200);
-    timing->paint_timing->first_contentful_paint =
-        base::TimeDelta::FromMilliseconds(300);
-    timing->paint_timing->first_meaningful_paint =
-        base::TimeDelta::FromMilliseconds(700);
+        base::Milliseconds(1712);
+    timing->parse_timing->parse_start = base::Milliseconds(1100);
+    timing->paint_timing->first_paint = base::Milliseconds(1200);
+    timing->paint_timing->first_contentful_paint = base::Milliseconds(1300);
+    timing->paint_timing->first_meaningful_paint = base::Milliseconds(1700);
     timing->document_timing->dom_content_loaded_event_start =
-        base::TimeDelta::FromMilliseconds(600);
-    timing->document_timing->load_event_start =
-        base::TimeDelta::FromMilliseconds(1000);
+        base::Milliseconds(1600);
+    timing->document_timing->load_event_start = base::Milliseconds(2000);
     PopulateRequiredTimingFields(timing);
   }
 };

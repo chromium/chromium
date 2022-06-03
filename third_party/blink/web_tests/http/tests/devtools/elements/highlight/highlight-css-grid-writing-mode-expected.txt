@@ -1,0 +1,838 @@
+This test verifies that similarly-sized grids with different writing-modes share the same grid information but have a different writingMode value.
+
+Node id #horizontalTb writing-mode: horizontal-tb
+Grid info: {
+  "rotationAngle": 0,
+  "columnTrackSizes": [
+    {
+      "x": 100,
+      "y": 50,
+      "computedSize": 100,
+      "authoredSize": "100px"
+    },
+    {
+      "x": 260,
+      "y": 50,
+      "computedSize": 200,
+      "authoredSize": "200px"
+    }
+  ],
+  "rowTrackSizes": [
+    {
+      "x": 50,
+      "y": 60,
+      "computedSize": 20,
+      "authoredSize": "20px"
+    },
+    {
+      "x": 50,
+      "y": 105,
+      "computedSize": 50,
+      "authoredSize": "50px"
+    }
+  ],
+  "rows": [
+    "M",
+    50,
+    50,
+    "L",
+    360,
+    50,
+    "M",
+    360,
+    70,
+    "L",
+    50,
+    70,
+    "M",
+    50,
+    80,
+    "L",
+    360,
+    80,
+    "M",
+    360,
+    130,
+    "L",
+    50,
+    130
+  ],
+  "rowGaps": [
+    "M",
+    50,
+    70,
+    "L",
+    360,
+    70,
+    "L",
+    360,
+    80,
+    "L",
+    50,
+    80,
+    "Z"
+  ],
+  "columns": [
+    "M",
+    50,
+    50,
+    "L",
+    50,
+    130,
+    "M",
+    150,
+    130,
+    "L",
+    150,
+    50,
+    "M",
+    160,
+    50,
+    "L",
+    160,
+    130,
+    "M",
+    360,
+    130,
+    "L",
+    360,
+    50
+  ],
+  "columnGaps": [
+    "M",
+    150,
+    50,
+    "L",
+    160,
+    50,
+    "L",
+    160,
+    130,
+    "L",
+    150,
+    130,
+    "Z"
+  ],
+  "positiveRowLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 50
+    },
+    {
+      "x": 50,
+      "y": 75
+    },
+    {
+      "x": 50,
+      "y": 130
+    }
+  ],
+  "positiveColumnLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 50
+    },
+    {
+      "x": 155,
+      "y": 50
+    },
+    {
+      "x": 360,
+      "y": 50
+    }
+  ],
+  "negativeRowLineNumberPositions": [
+    {
+      "x": 360,
+      "y": 50
+    },
+    {
+      "x": 360,
+      "y": 75
+    },
+    {
+      "x": 360,
+      "y": 130
+    }
+  ],
+  "negativeColumnLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 130
+    },
+    {
+      "x": 155,
+      "y": 130
+    },
+    {
+      "x": 360,
+      "y": 130
+    }
+  ],
+  "areaNames": {},
+  "rowLineNameOffsets": [],
+  "columnLineNameOffsets": [],
+  "gridBorder": [
+    "M",
+    50,
+    50,
+    "L",
+    360,
+    50,
+    "L",
+    360,
+    130,
+    "L",
+    50,
+    130,
+    "Z"
+  ],
+  "gridHighlightConfig": {
+    "gridBorderDash": false,
+    "rowLineDash": true,
+    "columnLineDash": true,
+    "showGridExtensionLines": true,
+    "showPositiveLineNumbers": true,
+    "showNegativeLineNumbers": true,
+    "showAreaNames": true,
+    "showLineNames": true,
+    "gridBorderColor": "rgba(255, 0, 0, 0)",
+    "rowLineColor": "rgba(128, 0, 0, 0)",
+    "columnLineColor": "rgba(128, 0, 0, 0)",
+    "rowGapColor": "rgba(0, 255, 0, 0)",
+    "columnGapColor": "rgba(0, 0, 255, 0)",
+    "rowHatchColor": "rgba(255, 255, 255, 0)",
+    "columnHatchColor": "rgba(128, 128, 128, 0)",
+    "areaBorderColor": "rgba(255, 0, 0, 0)",
+    "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+  },
+  "isPrimaryGrid": true
+}
+Node id #verticalRl writing-mode: vertical-rl
+Grid info: {
+  "rotationAngle": 0,
+  "columnTrackSizes": [
+    {
+      "x": 100,
+      "y": 50,
+      "computedSize": 100,
+      "authoredSize": "100px"
+    },
+    {
+      "x": 260,
+      "y": 50,
+      "computedSize": 200,
+      "authoredSize": "200px"
+    }
+  ],
+  "rowTrackSizes": [
+    {
+      "x": 50,
+      "y": 60,
+      "computedSize": 20,
+      "authoredSize": "20px"
+    },
+    {
+      "x": 50,
+      "y": 105,
+      "computedSize": 50,
+      "authoredSize": "50px"
+    }
+  ],
+  "rows": [
+    "M",
+    50,
+    50,
+    "L",
+    360,
+    50,
+    "M",
+    360,
+    70,
+    "L",
+    50,
+    70,
+    "M",
+    50,
+    80,
+    "L",
+    360,
+    80,
+    "M",
+    360,
+    130,
+    "L",
+    50,
+    130
+  ],
+  "rowGaps": [
+    "M",
+    50,
+    70,
+    "L",
+    360,
+    70,
+    "L",
+    360,
+    80,
+    "L",
+    50,
+    80,
+    "Z"
+  ],
+  "columns": [
+    "M",
+    50,
+    50,
+    "L",
+    50,
+    130,
+    "M",
+    150,
+    130,
+    "L",
+    150,
+    50,
+    "M",
+    160,
+    50,
+    "L",
+    160,
+    130,
+    "M",
+    360,
+    130,
+    "L",
+    360,
+    50
+  ],
+  "columnGaps": [
+    "M",
+    150,
+    50,
+    "L",
+    160,
+    50,
+    "L",
+    160,
+    130,
+    "L",
+    150,
+    130,
+    "Z"
+  ],
+  "positiveRowLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 50
+    },
+    {
+      "x": 50,
+      "y": 75
+    },
+    {
+      "x": 50,
+      "y": 130
+    }
+  ],
+  "positiveColumnLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 50
+    },
+    {
+      "x": 155,
+      "y": 50
+    },
+    {
+      "x": 360,
+      "y": 50
+    }
+  ],
+  "negativeRowLineNumberPositions": [
+    {
+      "x": 360,
+      "y": 50
+    },
+    {
+      "x": 360,
+      "y": 75
+    },
+    {
+      "x": 360,
+      "y": 130
+    }
+  ],
+  "negativeColumnLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 130
+    },
+    {
+      "x": 155,
+      "y": 130
+    },
+    {
+      "x": 360,
+      "y": 130
+    }
+  ],
+  "areaNames": {},
+  "rowLineNameOffsets": [],
+  "columnLineNameOffsets": [],
+  "gridBorder": [
+    "M",
+    50,
+    50,
+    "L",
+    360,
+    50,
+    "L",
+    360,
+    130,
+    "L",
+    50,
+    130,
+    "Z"
+  ],
+  "gridHighlightConfig": {
+    "gridBorderDash": false,
+    "rowLineDash": true,
+    "columnLineDash": true,
+    "showGridExtensionLines": true,
+    "showPositiveLineNumbers": true,
+    "showNegativeLineNumbers": true,
+    "showAreaNames": true,
+    "showLineNames": true,
+    "gridBorderColor": "rgba(255, 0, 0, 0)",
+    "rowLineColor": "rgba(128, 0, 0, 0)",
+    "columnLineColor": "rgba(128, 0, 0, 0)",
+    "rowGapColor": "rgba(0, 255, 0, 0)",
+    "columnGapColor": "rgba(0, 0, 255, 0)",
+    "rowHatchColor": "rgba(255, 255, 255, 0)",
+    "columnHatchColor": "rgba(128, 128, 128, 0)",
+    "areaBorderColor": "rgba(255, 0, 0, 0)",
+    "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+  },
+  "isPrimaryGrid": true
+}
+Should be the same as #horizontalTb: true
+Node id #verticalLr writing-mode: vertical-lr
+Grid info: {
+  "rotationAngle": 0,
+  "columnTrackSizes": [
+    {
+      "x": 100,
+      "y": 50,
+      "computedSize": 100,
+      "authoredSize": "100px"
+    },
+    {
+      "x": 260,
+      "y": 50,
+      "computedSize": 200,
+      "authoredSize": "200px"
+    }
+  ],
+  "rowTrackSizes": [
+    {
+      "x": 50,
+      "y": 60,
+      "computedSize": 20,
+      "authoredSize": "20px"
+    },
+    {
+      "x": 50,
+      "y": 105,
+      "computedSize": 50,
+      "authoredSize": "50px"
+    }
+  ],
+  "rows": [
+    "M",
+    50,
+    50,
+    "L",
+    360,
+    50,
+    "M",
+    360,
+    70,
+    "L",
+    50,
+    70,
+    "M",
+    50,
+    80,
+    "L",
+    360,
+    80,
+    "M",
+    360,
+    130,
+    "L",
+    50,
+    130
+  ],
+  "rowGaps": [
+    "M",
+    50,
+    70,
+    "L",
+    360,
+    70,
+    "L",
+    360,
+    80,
+    "L",
+    50,
+    80,
+    "Z"
+  ],
+  "columns": [
+    "M",
+    50,
+    50,
+    "L",
+    50,
+    130,
+    "M",
+    150,
+    130,
+    "L",
+    150,
+    50,
+    "M",
+    160,
+    50,
+    "L",
+    160,
+    130,
+    "M",
+    360,
+    130,
+    "L",
+    360,
+    50
+  ],
+  "columnGaps": [
+    "M",
+    150,
+    50,
+    "L",
+    160,
+    50,
+    "L",
+    160,
+    130,
+    "L",
+    150,
+    130,
+    "Z"
+  ],
+  "positiveRowLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 50
+    },
+    {
+      "x": 50,
+      "y": 75
+    },
+    {
+      "x": 50,
+      "y": 130
+    }
+  ],
+  "positiveColumnLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 50
+    },
+    {
+      "x": 155,
+      "y": 50
+    },
+    {
+      "x": 360,
+      "y": 50
+    }
+  ],
+  "negativeRowLineNumberPositions": [
+    {
+      "x": 360,
+      "y": 50
+    },
+    {
+      "x": 360,
+      "y": 75
+    },
+    {
+      "x": 360,
+      "y": 130
+    }
+  ],
+  "negativeColumnLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 130
+    },
+    {
+      "x": 155,
+      "y": 130
+    },
+    {
+      "x": 360,
+      "y": 130
+    }
+  ],
+  "areaNames": {},
+  "rowLineNameOffsets": [],
+  "columnLineNameOffsets": [],
+  "gridBorder": [
+    "M",
+    50,
+    50,
+    "L",
+    360,
+    50,
+    "L",
+    360,
+    130,
+    "L",
+    50,
+    130,
+    "Z"
+  ],
+  "gridHighlightConfig": {
+    "gridBorderDash": false,
+    "rowLineDash": true,
+    "columnLineDash": true,
+    "showGridExtensionLines": true,
+    "showPositiveLineNumbers": true,
+    "showNegativeLineNumbers": true,
+    "showAreaNames": true,
+    "showLineNames": true,
+    "gridBorderColor": "rgba(255, 0, 0, 0)",
+    "rowLineColor": "rgba(128, 0, 0, 0)",
+    "columnLineColor": "rgba(128, 0, 0, 0)",
+    "rowGapColor": "rgba(0, 255, 0, 0)",
+    "columnGapColor": "rgba(0, 0, 255, 0)",
+    "rowHatchColor": "rgba(255, 255, 255, 0)",
+    "columnHatchColor": "rgba(128, 128, 128, 0)",
+    "areaBorderColor": "rgba(255, 0, 0, 0)",
+    "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+  },
+  "isPrimaryGrid": true
+}
+Should be the same as #horizontalTb: true
+Node id #sidewaysRl writing-mode: horizontal-tb
+Grid info: {
+  "rotationAngle": 0,
+  "columnTrackSizes": [
+    {
+      "x": 100,
+      "y": 50,
+      "computedSize": 100,
+      "authoredSize": "100px"
+    },
+    {
+      "x": 260,
+      "y": 50,
+      "computedSize": 200,
+      "authoredSize": "200px"
+    }
+  ],
+  "rowTrackSizes": [
+    {
+      "x": 50,
+      "y": 60,
+      "computedSize": 20,
+      "authoredSize": "20px"
+    },
+    {
+      "x": 50,
+      "y": 105,
+      "computedSize": 50,
+      "authoredSize": "50px"
+    }
+  ],
+  "rows": [
+    "M",
+    50,
+    50,
+    "L",
+    360,
+    50,
+    "M",
+    360,
+    70,
+    "L",
+    50,
+    70,
+    "M",
+    50,
+    80,
+    "L",
+    360,
+    80,
+    "M",
+    360,
+    130,
+    "L",
+    50,
+    130
+  ],
+  "rowGaps": [
+    "M",
+    50,
+    70,
+    "L",
+    360,
+    70,
+    "L",
+    360,
+    80,
+    "L",
+    50,
+    80,
+    "Z"
+  ],
+  "columns": [
+    "M",
+    50,
+    50,
+    "L",
+    50,
+    130,
+    "M",
+    150,
+    130,
+    "L",
+    150,
+    50,
+    "M",
+    160,
+    50,
+    "L",
+    160,
+    130,
+    "M",
+    360,
+    130,
+    "L",
+    360,
+    50
+  ],
+  "columnGaps": [
+    "M",
+    150,
+    50,
+    "L",
+    160,
+    50,
+    "L",
+    160,
+    130,
+    "L",
+    150,
+    130,
+    "Z"
+  ],
+  "positiveRowLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 50
+    },
+    {
+      "x": 50,
+      "y": 75
+    },
+    {
+      "x": 50,
+      "y": 130
+    }
+  ],
+  "positiveColumnLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 50
+    },
+    {
+      "x": 155,
+      "y": 50
+    },
+    {
+      "x": 360,
+      "y": 50
+    }
+  ],
+  "negativeRowLineNumberPositions": [
+    {
+      "x": 360,
+      "y": 50
+    },
+    {
+      "x": 360,
+      "y": 75
+    },
+    {
+      "x": 360,
+      "y": 130
+    }
+  ],
+  "negativeColumnLineNumberPositions": [
+    {
+      "x": 50,
+      "y": 130
+    },
+    {
+      "x": 155,
+      "y": 130
+    },
+    {
+      "x": 360,
+      "y": 130
+    }
+  ],
+  "areaNames": {},
+  "rowLineNameOffsets": [],
+  "columnLineNameOffsets": [],
+  "gridBorder": [
+    "M",
+    50,
+    50,
+    "L",
+    360,
+    50,
+    "L",
+    360,
+    130,
+    "L",
+    50,
+    130,
+    "Z"
+  ],
+  "gridHighlightConfig": {
+    "gridBorderDash": false,
+    "rowLineDash": true,
+    "columnLineDash": true,
+    "showGridExtensionLines": true,
+    "showPositiveLineNumbers": true,
+    "showNegativeLineNumbers": true,
+    "showAreaNames": true,
+    "showLineNames": true,
+    "gridBorderColor": "rgba(255, 0, 0, 0)",
+    "rowLineColor": "rgba(128, 0, 0, 0)",
+    "columnLineColor": "rgba(128, 0, 0, 0)",
+    "rowGapColor": "rgba(0, 255, 0, 0)",
+    "columnGapColor": "rgba(0, 0, 255, 0)",
+    "rowHatchColor": "rgba(255, 255, 255, 0)",
+    "columnHatchColor": "rgba(128, 128, 128, 0)",
+    "areaBorderColor": "rgba(255, 0, 0, 0)",
+    "gridBackgroundColor": "rgba(255, 0, 0, 0)"
+  },
+  "isPrimaryGrid": true
+}
+Should be the same as #horizontalTb: true
+

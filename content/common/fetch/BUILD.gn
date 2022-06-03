@@ -5,7 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("fetch_api_request_proto") {
-  sources = [
-    "fetch_api_request.proto",
-  ]
+  sources = [ "fetch_api_request.proto" ]
 }

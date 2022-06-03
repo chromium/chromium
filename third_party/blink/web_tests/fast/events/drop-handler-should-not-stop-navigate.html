@@ -3,20 +3,14 @@
 <body>
 <div>This tests that a drop handler's default action must be prevented in order to stop navigation.
 Otherwise, if event.preventDefault() is not called, navigation should occur. To test manually,
-simply drag and drop another link or HTML file on this page. If navigation occurs, then the test
-passed.</div>
+simply drag and drop another link or HTML file on this page. If navigation of a new tab occurs,
+then the test passed.</div>
 <script>
 function log(text)
 {
     document.body.appendChild(document.createElement('br'));
     document.body.appendChild(document.createElement('div').appendChild(document.createTextNode(text)));
 }
-window.addEventListener('beforeunload', function (e)
-{
-    log('PASS');
-    testRunner.notifyDone();
-    e.returnValue = "foo";
-});
 document.body.addEventListener('dragenter', function (event)
 {
     event.preventDefault();
@@ -38,16 +32,16 @@ document.body.addEventListener('drop', function (event)
     // The line below is necessary in order for preventing the default in
     // beforeunload handler to work properly. crbug.com/802982
     testRunner.setShouldStayOnPageAfterHandlingBeforeUnload(true);
+    window.addEventListener('beforeunload', function (e) {
+        log('FAIL: navigation should have occurred in new tab');
+        testRunner.notifyDone();
+        e.returnValue = "foo";
+    });
+
     log('Starting test');
-    eventSender.beginDragWithFiles(['DRTFakeFile']);
+    eventSender.beginDragWithFiles(["resources/notify-done.html"]);
     eventSender.mouseMoveTo(document.body.offsetLeft + 10, document.body.offsetTop + 10);
     eventSender.mouseUp();
-    window.stop();
-    window.setTimeout(function ()
-    {
-        // Deadman's switch so we don't need to wait for the test to timeout to fail.
-        testRunner.notifyDone();
-    }, 0);
 })();
 </script>
 </body>

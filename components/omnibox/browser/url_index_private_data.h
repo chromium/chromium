@@ -56,7 +56,7 @@ class URLIndexPrivateData
 
   URLIndexPrivateData();
 
-  // Given a base::string16 in |term_string|, scans the history index and
+  // Given a std::u16string in |term_string|, scans the history index and
   // returns a vector with all scored, matching history items. The
   // |term_string| is broken down into individual terms (words), each of which
   // must occur in the candidate history item's URL or page title for the item
@@ -75,7 +75,7 @@ class URLIndexPrivateData
   // to this function. In total, |max_matches| of items will be returned in the
   // |ScoredHistoryMatches| vector.
   ScoredHistoryMatches HistoryItemsForTerms(
-      base::string16 term_string,
+      std::u16string term_string,
       size_t cursor_position,
       size_t max_matches,
       bookmarks::BookmarkModel* bookmark_model,
@@ -85,12 +85,12 @@ class URLIndexPrivateData
   // exist and it meets the minimum 'quick' criteria. If the row already exists
   // in the index then the index will be updated if the row still meets the
   // criteria, otherwise the row will be removed from the index. Returns true
-  // if the index was actually updated. |scheme_whitelist| is used to filter
+  // if the index was actually updated. |scheme_allowlist| is used to filter
   // non-qualifying schemes. |history_service| is used to schedule an update to
   // the recent visits component of this URL's entry in the index.
   bool UpdateURL(history::HistoryService* history_service,
                  const history::URLRow& row,
-                 const std::set<std::string>& scheme_whitelist,
+                 const std::set<std::string>& scheme_allowlist,
                  base::CancelableTaskTracker* tracker);
 
   // Updates the entry for |url_id| in the index, replacing its
@@ -125,7 +125,7 @@ class URLIndexPrivateData
   // success will contain the rebuilt data but upon failure will be empty.
   static scoped_refptr<URLIndexPrivateData> RebuildFromHistory(
       history::HistoryDatabase* history_db,
-      const std::set<std::string>& scheme_whitelist);
+      const std::set<std::string>& scheme_allowlist);
 
   // Writes |private_data| as a cache file to |file_path| and returns success.
   static bool WritePrivateDataToCacheFileTask(
@@ -163,7 +163,7 @@ class URLIndexPrivateData
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, TitleSearch);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, TrimHistoryIds);
   FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, TypedCharacterCaching);
-  FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, WhitelistedURLs);
+  FRIEND_TEST_ALL_PREFIXES(InMemoryURLIndexTest, AllowlistedURLs);
   FRIEND_TEST_ALL_PREFIXES(LimitedInMemoryURLIndexTest, Initialization);
 
   // Support caching of term results so that we can optimize searches which
@@ -200,7 +200,7 @@ class URLIndexPrivateData
     HistoryIDSet history_id_set_;
     bool used_;  // True if this item has been used for the current term search.
   };
-  typedef std::map<base::string16, SearchTermCacheItem> SearchTermCacheMap;
+  typedef std::map<std::u16string, SearchTermCacheItem> SearchTermCacheMap;
 
   // A helper predicate class used to filter excess history items when the
   // candidate results set is too large.
@@ -231,7 +231,7 @@ class URLIndexPrivateData
 
   // Helper function to HistoryIDSetFromWords which composes a set of history
   // ids for the given term given in |term|.
-  HistoryIDSet HistoryIDsForTerm(const base::string16& term);
+  HistoryIDSet HistoryIDsForTerm(const std::u16string& term);
 
   // Given a set of Char16s, finds words containing those characters.
   WordIDSet WordIDSetForTermChars(const Char16Set& term_chars);
@@ -239,7 +239,7 @@ class URLIndexPrivateData
   // Helper function for HistoryItemsForTerms().  Fills in |scored_items| from
   // the matches listed in |history_ids|.
   void HistoryIdsToScoredMatches(HistoryIDVector history_ids,
-                                 const base::string16& lower_raw_string,
+                                 const std::u16string& lower_raw_string,
                                  const TemplateURLService* template_url_service,
                                  bookmarks::BookmarkModel* bookmark_model,
                                  ScoredHistoryMatches* scored_items) const;
@@ -251,7 +251,7 @@ class URLIndexPrivateData
       WordStarts* terms_to_word_starts_offsets);
 
   // Indexes one URL history item as described by |row|. Returns true if the
-  // row was actually indexed. |scheme_whitelist| is used to filter
+  // row was actually indexed. |scheme_allowlist| is used to filter
   // non-qualifying schemes.  If |history_db| is not NULL then this function
   // uses the history database synchronously to get the URL's recent visits
   // information.  This mode should/ only be used on the historyDB thread.
@@ -261,7 +261,7 @@ class URLIndexPrivateData
   bool IndexRow(history::HistoryDatabase* history_db,
                 history::HistoryService* history_service,
                 const history::URLRow& row,
-                const std::set<std::string>& scheme_whitelist,
+                const std::set<std::string>& scheme_allowlist,
                 base::CancelableTaskTracker* tracker);
 
   // Parses and indexes the words in the URL and page title of |row| and
@@ -271,11 +271,11 @@ class URLIndexPrivateData
 
   // Given a single word in |uni_word|, adds a reference for the containing
   // history item identified by |history_id| to the index.
-  void AddWordToIndex(const base::string16& uni_word, HistoryID history_id);
+  void AddWordToIndex(const std::u16string& uni_word, HistoryID history_id);
 
   // Adds a new entry to |word_list_|. Uses previously freed positions if
   // available.
-  WordID AddNewWordToWordList(const base::string16& term);
+  WordID AddNewWordToWordList(const std::u16string& term);
 
   // Removes |row| and all associated words and characters from the index.
   void RemoveRowFromIndex(const history::URLRow& row);
@@ -322,9 +322,9 @@ class URLIndexPrivateData
   bool RestoreWordStartsMap(
       const in_memory_url_index::InMemoryURLIndexCacheItem& cache);
 
-  // Determines if |gurl| has a whitelisted scheme and returns true if so.
-  static bool URLSchemeIsWhitelisted(const GURL& gurl,
-                                     const std::set<std::string>& whitelist);
+  // Determines if |gurl| has a allowlisted scheme and returns true if so.
+  static bool URLSchemeIsAllowlisted(const GURL& gurl,
+                                     const std::set<std::string>& allowlist);
 
   // Returns true if the URL associated with |history_id| is missing, malformed,
   // or otherwise should not be displayed.  (Results from the default search

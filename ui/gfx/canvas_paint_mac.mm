@@ -62,10 +62,10 @@ void CanvasSkiaPaint::Init(bool opaque) {
   gfx::Size size(NSWidth(rectangle_), NSHeight(rectangle_));
   RecreateBackingCanvas(size, scale, opaque);
   cc::PaintCanvas* canvas = sk_canvas();
-  canvas->clear(SkColorSetARGB(0, 0, 0, 0));
+  canvas->clear(SK_ColorTRANSPARENT);
 
-    // Need to translate so that the dirty region appears at the origin of the
-    // surface.
+  // Need to translate so that the dirty region appears at the origin of the
+  // surface.
   canvas->translate(-SkDoubleToScalar(NSMinX(rectangle_)),
                     -SkDoubleToScalar(NSMinY(rectangle_)));
 }

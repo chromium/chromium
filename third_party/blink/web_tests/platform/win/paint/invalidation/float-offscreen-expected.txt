@@ -1,21 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow DIV id='target'",
-          "rect": [11, 11, 89, 22],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutNGBlockFlow DIV id='target'",
-          "rect": [11, 11, 89, 22],
-          "reason": "chunk disappeared"
-        }
+      "invalidations": [
+        [11, 11, 93, 22]
       ]
     }
   ]

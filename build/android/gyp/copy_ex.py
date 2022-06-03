@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 #
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -74,7 +74,7 @@ def DoRenaming(options, deps):
     print('Renaming source and destination files not match.')
     sys.exit(-1)
 
-  for src, dest in itertools.izip(src_files, dest_files):
+  for src, dest in zip(src_files, dest_files):
     if os.path.isdir(src):
       print('renaming diretory is not supported.')
       sys.exit(-1)
@@ -119,8 +119,7 @@ def main(args):
     DoRenaming(options, deps)
 
   if options.depfile:
-    build_utils.WriteDepfile(
-        options.depfile, options.stamp, deps, add_pydeps=False)
+    build_utils.WriteDepfile(options.depfile, options.stamp, deps)
 
   if options.stamp:
     build_utils.Touch(options.stamp)

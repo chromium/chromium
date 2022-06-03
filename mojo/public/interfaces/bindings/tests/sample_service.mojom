@@ -95,6 +95,12 @@ struct StructWithHoleV2 {
   int32 v3 = 3;
 };
 
+interface DefaultsSender {
+  SendBar(Bar bar);
+  SendFoo(Foo foo);
+  SendDefaultsTest(DefaultsTest defaults);
+};
+
 interface Service {
   enum BazOptions {
     REGULAR = 0,

@@ -1,0 +1,15 @@
+This page tests whether a click event propagates with the correct target and positioning. See rdar://problem/4477126.
+
+click inside the red box:
+[]
+PASS: event target should be [object HTMLSpanElement] and is
+PASS: event.pageX should be 175 and is
+PASS: event.pageY should be 105 and is
+PASS: event.clientX should be 175 and is
+PASS: event.clientY should be 105 and is
+PASS: event.layerX should be 7 and is
+PASS: event.layerY should be 5 and is
+PASS: event.offsetX should be 7 and is
+PASS: event.offsetY should be 5 and is
+PASS: event.x should be 175 and is
+PASS: event.y should be 105 and is

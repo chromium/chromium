@@ -4,8 +4,7 @@
 
 package org.chromium.chrome.browser.signin;
 
-import android.accounts.Account;
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -15,18 +14,14 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.test.util.browser.signin.SigninTestUtil;
-import org.chromium.components.signin.AccountIdProvider;
-import org.chromium.components.signin.AccountManagerFacade;
-import org.chromium.components.signin.ChromeSigninController;
-import org.chromium.components.signin.identitymanager.CoreAccountId;
-import org.chromium.components.signin.identitymanager.CoreAccountInfo;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
+import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityMutator;
-import org.chromium.components.signin.test.util.AccountHolder;
-import org.chromium.components.signin.test.util.AccountManagerTestRule;
-import org.chromium.content_public.browser.test.NativeLibraryTestRule;
+import org.chromium.components.signin.test.util.FakeAccountInfoService;
+import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Arrays;
@@ -40,47 +35,32 @@ import java.util.HashSet;
 @RunWith(BaseJUnit4ClassRunner.class)
 public class IdentityManagerIntegrationTest {
     @Rule
-    public NativeLibraryTestRule mActivityTestRule = new NativeLibraryTestRule();
+    public final AccountManagerTestRule mAccountManagerTestRule =
+            new AccountManagerTestRule(new FakeAccountInfoService());
 
-    @Rule
-    public AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
-
-    private static final Account TEST_ACCOUNT1 =
-            AccountManagerFacade.createAccountFromName("foo@gmail.com");
-    private static final Account TEST_ACCOUNT2 =
-            AccountManagerFacade.createAccountFromName("bar@gmail.com");
-    private static final AccountHolder TEST_ACCOUNT_HOLDER_1 =
-            AccountHolder.builder(TEST_ACCOUNT1).alwaysAccept(true).build();
-    private static final AccountHolder TEST_ACCOUNT_HOLDER_2 =
-            AccountHolder.builder(TEST_ACCOUNT2).alwaysAccept(true).build();
+    private static final String TEST_ACCOUNT1 = "foo@gmail.com";
+    private static final String TEST_ACCOUNT2 = "bar@gmail.com";
 
     private CoreAccountInfo mTestAccount1;
     private CoreAccountInfo mTestAccount2;
 
     private IdentityMutator mIdentityMutator;
     private IdentityManager mIdentityManager;
-    private ChromeSigninController mChromeSigninController;
 
     @Before
     public void setUp() {
-        setAccountIdProviderForTest();
+        mTestAccount1 = mAccountManagerTestRule.toCoreAccountInfo(TEST_ACCOUNT1);
+        mTestAccount2 = mAccountManagerTestRule.toCoreAccountInfo(TEST_ACCOUNT2);
 
-        TestThreadUtils.runOnUiThreadBlocking(() -> { initializeTestAccounts(); });
+        NativeLibraryTestUtils.loadNativeLibraryAndInitBrowserProcess();
 
-        mActivityTestRule.loadNativeLibraryAndInitBrowserProcess();
-
-        // Make sure there is no account signed in yet.
-        mChromeSigninController = ChromeSigninController.get();
-        mChromeSigninController.setSignedInAccountName(null);
-
+        mAccountManagerTestRule.waitForSeeding();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            // Seed test accounts to AccountTrackerService.
-            seedAccountTrackerService();
-
-            // Get a reference to the service.
-            mIdentityMutator =
-                    IdentityServicesProvider.get().getSigninManager().getIdentityMutator();
-            mIdentityManager = IdentityServicesProvider.get().getIdentityManager();
+            Profile profile = Profile.getLastUsedRegularProfile();
+            SigninManagerImpl signinManager =
+                    (SigninManagerImpl) IdentityServicesProvider.get().getSigninManager(profile);
+            mIdentityMutator = signinManager.getIdentityMutatorForTesting();
+            mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
         });
     }
 
@@ -88,53 +68,6 @@ public class IdentityManagerIntegrationTest {
     public void tearDown() {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(null); });
-        SigninHelper.resetSharedPrefs();
-        SigninTestUtil.resetSigninState();
-    }
-
-    private void setAccountIdProviderForTest() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            AccountIdProvider.setInstanceForTest(new AccountIdProvider() {
-                @Override
-                public String getAccountId(String accountName) {
-                    return "gaia-id-" + accountName.replace("@", "_at_");
-                }
-
-                @Override
-                public boolean canBeUsed() {
-                    return true;
-                }
-            });
-        });
-    }
-
-    private void initializeTestAccounts() {
-        AccountIdProvider provider = AccountIdProvider.getInstance();
-
-        String account1Id = provider.getAccountId(TEST_ACCOUNT1.name);
-        mTestAccount1 =
-                new CoreAccountInfo(new CoreAccountId(account1Id), TEST_ACCOUNT1, account1Id);
-        String account2Id = provider.getAccountId(TEST_ACCOUNT2.name);
-        mTestAccount2 =
-                new CoreAccountInfo(new CoreAccountId(account2Id), TEST_ACCOUNT2, account2Id);
-    }
-
-    private void seedAccountTrackerService() {
-        AccountIdProvider provider = AccountIdProvider.getInstance();
-        String[] accountNames = {mTestAccount1.getName(), mTestAccount2.getName()};
-        String[] accountIds = {mTestAccount1.getGaiaId(), mTestAccount2.getGaiaId()};
-        IdentityServicesProvider.get().getAccountTrackerService().syncForceRefreshForTest(
-                accountIds, accountNames);
-    }
-
-    private void addAccount(AccountHolder accountHolder) {
-        mAccountManagerTestRule.addAccount(accountHolder);
-        TestThreadUtils.runOnUiThreadBlocking(this::seedAccountTrackerService);
-    }
-
-    private void removeAccount(AccountHolder accountHolder) {
-        mAccountManagerTestRule.removeAccount(accountHolder);
-        TestThreadUtils.runOnUiThreadBlocking(this::seedAccountTrackerService);
     }
 
     @Test
@@ -155,7 +88,7 @@ public class IdentityManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListOneAccountsRegisteredAndNoSignedInUser() {
-        addAccount(TEST_ACCOUNT_HOLDER_1);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
@@ -169,7 +102,7 @@ public class IdentityManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListOneAccountsRegisteredSignedIn() {
-        addAccount(TEST_ACCOUNT_HOLDER_1);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
@@ -184,7 +117,7 @@ public class IdentityManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListOneAccountsRegisteredSignedInOther() {
-        addAccount(TEST_ACCOUNT_HOLDER_1);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
@@ -199,7 +132,7 @@ public class IdentityManagerIntegrationTest {
     @Test
     @MediumTest
     public void testUpdateAccountListSingleAccountThenAddOne() {
-        addAccount(TEST_ACCOUNT_HOLDER_1);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run one validation.
@@ -211,16 +144,15 @@ public class IdentityManagerIntegrationTest {
         });
 
         // Add another account.
-        addAccount(TEST_ACCOUNT_HOLDER_2);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Re-run validation.
             mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
-                    new HashSet<CoreAccountInfo>(Arrays.asList(mTestAccount1, mTestAccount2)),
-                    new HashSet<CoreAccountInfo>(
-                            Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
+                    new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                    new HashSet<>(Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
         });
     }
 
@@ -228,20 +160,19 @@ public class IdentityManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsThenRemoveOne() {
         // Add accounts.
-        addAccount(TEST_ACCOUNT_HOLDER_1);
-        addAccount(TEST_ACCOUNT_HOLDER_2);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run one validation.
             mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
-                    new HashSet<CoreAccountInfo>(Arrays.asList(mTestAccount1, mTestAccount2)),
-                    new HashSet<CoreAccountInfo>(
-                            Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
+                    new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                    new HashSet<>(Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
         });
 
-        removeAccount(TEST_ACCOUNT_HOLDER_2);
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
@@ -257,21 +188,20 @@ public class IdentityManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsThenRemoveAll() {
         // Add accounts.
-        addAccount(TEST_ACCOUNT_HOLDER_1);
-        addAccount(TEST_ACCOUNT_HOLDER_2);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
-                    new HashSet<CoreAccountInfo>(Arrays.asList(mTestAccount1, mTestAccount2)),
-                    new HashSet<CoreAccountInfo>(
-                            Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
+                    new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                    new HashSet<>(Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
         });
 
         // Remove all.
-        removeAccount(TEST_ACCOUNT_HOLDER_1);
-        removeAccount(TEST_ACCOUNT_HOLDER_2);
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Re-validate and run checks.
@@ -284,30 +214,28 @@ public class IdentityManagerIntegrationTest {
 
     @Test
     @MediumTest
-    @RetryOnFailure
     public void testUpdateAccountListTwoAccountsThenRemoveAllSignOut() {
         // Add accounts.
-        addAccount(TEST_ACCOUNT_HOLDER_1);
-        addAccount(TEST_ACCOUNT_HOLDER_2);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
-                    new HashSet<CoreAccountInfo>(Arrays.asList(mTestAccount1, mTestAccount2)),
-                    new HashSet<CoreAccountInfo>(
-                            Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
+                    new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                    new HashSet<>(Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
         });
 
-        removeAccount(TEST_ACCOUNT_HOLDER_1);
-        removeAccount(TEST_ACCOUNT_HOLDER_2);
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mAccountManagerTestRule.removeAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Re-validate and run checks.
             mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(null);
 
-            Assert.assertEquals("Not signed in and no accounts available", new CoreAccountInfo[] {},
-                    mIdentityManager.getAccountsWithRefreshTokens());
+            Assert.assertArrayEquals("Not signed in and no accounts available",
+                    new CoreAccountInfo[] {}, mIdentityManager.getAccountsWithRefreshTokens());
         });
     }
 
@@ -315,17 +243,16 @@ public class IdentityManagerIntegrationTest {
     @MediumTest
     public void testUpdateAccountListTwoAccountsRegisteredAndOneSignedIn() {
         // Add accounts.
-        addAccount(TEST_ACCOUNT_HOLDER_1);
-        addAccount(TEST_ACCOUNT_HOLDER_2);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT1);
+        mAccountManagerTestRule.addAccountAndWaitForSeeding(TEST_ACCOUNT2);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Run test.
             mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
 
             Assert.assertEquals("Signed in and two accounts available",
-                    new HashSet<CoreAccountInfo>(Arrays.asList(mTestAccount1, mTestAccount2)),
-                    new HashSet<CoreAccountInfo>(
-                            Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
+                    new HashSet<>(Arrays.asList(mTestAccount1, mTestAccount2)),
+                    new HashSet<>(Arrays.asList(mIdentityManager.getAccountsWithRefreshTokens())));
         });
     }
 
@@ -336,7 +263,7 @@ public class IdentityManagerIntegrationTest {
             // Run test.
             mIdentityMutator.reloadAllAccountsFromSystemWithPrimaryAccount(mTestAccount1.getId());
 
-            Assert.assertEquals("No accounts available", new CoreAccountInfo[] {},
+            Assert.assertArrayEquals("No accounts available", new CoreAccountInfo[] {},
                     mIdentityManager.getAccountsWithRefreshTokens());
         });
     }

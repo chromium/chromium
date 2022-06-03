@@ -323,7 +323,7 @@
     if (this.payloadInterfaceIds) {
       for (var interfaceId of this.payloadInterfaceIds) {
         if (!internal.isValidInterfaceId(interfaceId) ||
-            internal.isMasterInterfaceId(interfaceId)) {
+            internal.isPrimaryInterfaceId(interfaceId)) {
           return validationError.ILLEGAL_INTERFACE_ID;
         }
       }

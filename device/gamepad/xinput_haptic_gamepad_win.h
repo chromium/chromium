@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef DEVICE_GAMEPAD_XINPUT_HAPTIC_GAMEPAD_WIN_
-#define DEVICE_GAMEPAD_XINPUT_HAPTIC_GAMEPAD_WIN_
+#ifndef DEVICE_GAMEPAD_XINPUT_HAPTIC_GAMEPAD_WIN_H_
+#define DEVICE_GAMEPAD_XINPUT_HAPTIC_GAMEPAD_WIN_H_
 
 #include <Unknwn.h>
 #include <XInput.h>
@@ -33,4 +33,4 @@ class XInputHapticGamepadWin final : public AbstractHapticGamepad {
 
 }  // namespace device
 
-#endif  // DEVICE_GAMEPAD_EVDEV_HAPTIC_GAMEPAD_WIN_
+#endif  // DEVICE_GAMEPAD_XINPUT_HAPTIC_GAMEPAD_WIN_H_

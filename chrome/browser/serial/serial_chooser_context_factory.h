@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_FACTORY_H_
 #define CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,7 +14,12 @@ class Profile;
 class SerialChooserContextFactory : public BrowserContextKeyedServiceFactory {
  public:
   static SerialChooserContext* GetForProfile(Profile* profile);
+  static SerialChooserContext* GetForProfileIfExists(Profile* profile);
   static SerialChooserContextFactory* GetInstance();
+
+  SerialChooserContextFactory(const SerialChooserContextFactory&) = delete;
+  SerialChooserContextFactory& operator=(const SerialChooserContextFactory&) =
+      delete;
 
  private:
   friend struct base::DefaultSingletonTraits<SerialChooserContextFactory>;
@@ -28,8 +32,7 @@ class SerialChooserContextFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(SerialChooserContextFactory);
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 #endif  // CHROME_BROWSER_SERIAL_SERIAL_CHOOSER_CONTEXT_FACTORY_H_

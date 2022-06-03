@@ -13,15 +13,15 @@ class HeapObject;
 
 class Mixin : public GarbageCollectedMixin {
 public:
-    virtual void Trace(Visitor*) override { }
+ virtual void Trace(Visitor*) const override {}
 };
 
 template<typename T>
 class Super : public GarbageCollected<Super<T> >, public Mixin {
-    USING_GARBAGE_COLLECTED_MIXIN(Super);
 public:
-    virtual void Trace(Visitor*) override;
-    void clearWeakMembers(Visitor*);
+ virtual void Trace(Visitor*) const override;
+ void clearWeakMembers(Visitor*);
+
 private:
     Member<HeapObject> m_obj;
     WeakMember<HeapObject> m_weak;
@@ -30,14 +30,16 @@ private:
 template<typename T>
 class Sub : public Super<T> {
 public:
-    virtual void Trace(Visitor* visitor) override;
+ virtual void Trace(Visitor* visitor) const override;
+
 private:
     Member<HeapObject> m_obj;
 };
 
 class HeapObject : public Sub<HeapObject> {
 public:
-    virtual void Trace(Visitor*) override;
+ virtual void Trace(Visitor*) const override;
+
 private:
     Member<HeapObject> m_obj;
 };

@@ -4,7 +4,8 @@
 
 #include "ui/views/controls/textfield/textfield_controller.h"
 
-#include "ui/base/dragdrop/drag_drop_types.h"
+#include "base/callback_helpers.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/events/event.h"
 
 namespace views {
@@ -25,8 +26,14 @@ bool TextfieldController::HandleGestureEvent(
   return false;
 }
 
-int TextfieldController::OnDrop(const ui::OSExchangeData& data) {
-  return ui::DragDropTypes::DRAG_NONE;
+ui::mojom::DragOperation TextfieldController::OnDrop(
+    const ui::DropTargetEvent& event) {
+  return ui::mojom::DragOperation::kNone;
+}
+
+views::View::DropCallback TextfieldController::CreateDropCallback(
+    const ui::DropTargetEvent& event) {
+  return base::NullCallback();
 }
 
 }  // namespace views

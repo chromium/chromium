@@ -16,8 +16,8 @@
 #include "base/containers/span.h"
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class GURL;
 
@@ -38,6 +38,9 @@ class NET_EXPORT WebSocketEventInterface {
  public:
   typedef int WebSocketMessageType;
 
+  WebSocketEventInterface(const WebSocketEventInterface&) = delete;
+  WebSocketEventInterface& operator=(const WebSocketEventInterface&) = delete;
+
   virtual ~WebSocketEventInterface() {}
 
   // Called when a URLRequest is created for handshaking.
@@ -45,9 +48,10 @@ class NET_EXPORT WebSocketEventInterface {
 
   // Called in response to an AddChannelRequest. This means that a response has
   // been received from the remote server.
-  virtual void OnAddChannelResponse(const std::string& selected_subprotocol,
-                                    const std::string& extensions,
-                                    int64_t send_flow_control_quota) = 0;
+  virtual void OnAddChannelResponse(
+      std::unique_ptr<WebSocketHandshakeResponseInfo> response,
+      const std::string& selected_subprotocol,
+      const std::string& extensions) = 0;
 
   // Called when a data frame has been received from the remote host and needs
   // to be forwarded to the renderer process.
@@ -62,9 +66,9 @@ class NET_EXPORT WebSocketEventInterface {
   // out. The network service should not read more from network until that.
   virtual bool HasPendingDataFrames() = 0;
 
-  // Called to provide more send quota for this channel to the renderer
-  // process.
-  virtual void OnSendFlowControlQuotaAdded(int64_t quota) = 0;
+  // Called once for each call to SendFrame() once the frame has been passed to
+  // the OS.
+  virtual void OnSendDataFrameDone() = 0;
 
   // Called when the remote server has Started the WebSocket Closing
   // Handshake. The client should not attempt to send any more messages after
@@ -95,16 +99,20 @@ class NET_EXPORT WebSocketEventInterface {
   // The channel should not be used again after OnFailChannel() has been
   // called.
   //
+  // |message| is a human readable string describing the failure. (It may be
+  // empty.) |net_error| contains the network error code for the failure, which
+  // may be |OK| if the failure was at a higher level. |response_code| contains
+  // the HTTP status code that caused the failure, or |absl::nullopt| if the
+  // attempt didn't get that far.
+  //
   // This function deletes the Channel.
-  virtual void OnFailChannel(const std::string& message) = 0;
+  virtual void OnFailChannel(const std::string& message,
+                             int net_error,
+                             absl::optional<int> response_code) = 0;
 
   // Called when the browser starts the WebSocket Opening Handshake.
   virtual void OnStartOpeningHandshake(
       std::unique_ptr<WebSocketHandshakeRequestInfo> request) = 0;
-
-  // Called when the browser finishes the WebSocket Opening Handshake.
-  virtual void OnFinishOpeningHandshake(
-      std::unique_ptr<WebSocketHandshakeResponseInfo> response) = 0;
 
   // Callbacks to be used in response to a call to OnSSLCertificateError. Very
   // similar to content::SSLErrorHandler::Delegate (which we can't use directly
@@ -147,13 +155,10 @@ class NET_EXPORT WebSocketEventInterface {
       scoped_refptr<HttpResponseHeaders> response_headers,
       const IPEndPoint& socket_address,
       base::OnceCallback<void(const AuthCredentials*)> callback,
-      base::Optional<AuthCredentials>* credentials) = 0;
+      absl::optional<AuthCredentials>* credentials) = 0;
 
  protected:
   WebSocketEventInterface() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebSocketEventInterface);
 };
 
 }  // namespace net

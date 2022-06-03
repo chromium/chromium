@@ -1,0 +1,65 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_UNDERLYING_SINK_H_
+#define THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_UNDERLYING_SINK_H_
+
+#include "third_party/blink/public/mojom/file_system_access/file_system_access_file_writer.mojom-blink.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/streams/underlying_sink_base.h"
+#include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+
+namespace blink {
+
+class ExceptionState;
+class ScriptPromiseResolver;
+class V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString;
+class WriteParams;
+
+class FileSystemUnderlyingSink final : public UnderlyingSinkBase {
+ public:
+  explicit FileSystemUnderlyingSink(
+      ExecutionContext*,
+      mojo::PendingRemote<mojom::blink::FileSystemAccessFileWriter>);
+
+  // UnderlyingSinkBase
+  ScriptPromise start(ScriptState*,
+                      WritableStreamDefaultController*,
+                      ExceptionState&) override;
+  ScriptPromise write(ScriptState*,
+                      ScriptValue chunk,
+                      WritableStreamDefaultController*,
+                      ExceptionState&) override;
+  ScriptPromise close(ScriptState*, ExceptionState&) override;
+  ScriptPromise abort(ScriptState*,
+                      ScriptValue reason,
+                      ExceptionState&) override;
+
+  void Trace(Visitor*) const override;
+
+ private:
+  ScriptPromise HandleParams(ScriptState*, const WriteParams&, ExceptionState&);
+  ScriptPromise WriteData(
+      ScriptState*,
+      uint64_t position,
+      const V8UnionArrayBufferOrArrayBufferViewOrBlobOrUSVString* data,
+      ExceptionState&);
+  ScriptPromise Truncate(ScriptState*, uint64_t size, ExceptionState&);
+  ScriptPromise Seek(ScriptState*, uint64_t offset, ExceptionState&);
+  void WriteComplete(mojom::blink::FileSystemAccessErrorPtr result,
+                     uint64_t bytes_written);
+  void TruncateComplete(uint64_t to_size,
+                        mojom::blink::FileSystemAccessErrorPtr result);
+  void CloseComplete(mojom::blink::FileSystemAccessErrorPtr result);
+
+  HeapMojoRemote<mojom::blink::FileSystemAccessFileWriter> writer_remote_;
+
+  uint64_t offset_ = 0;
+  Member<ScriptPromiseResolver> pending_operation_;
+};
+
+}  // namespace blink
+
+#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_FILE_SYSTEM_ACCESS_FILE_SYSTEM_UNDERLYING_SINK_H_

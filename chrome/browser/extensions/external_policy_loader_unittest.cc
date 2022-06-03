@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <set>
 #include <string>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -15,7 +14,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_thread.h"
 #include "extensions/browser/external_install_info.h"
 #include "extensions/browser/external_provider_interface.h"
 #include "extensions/browser/pref_names.h"
@@ -24,6 +22,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::BrowserThread;
+using extensions::mojom::ManifestLocation;
 
 namespace extensions {
 
@@ -46,21 +45,26 @@ class MockExternalPolicyProviderVisitor
   MockExternalPolicyProviderVisitor() {
   }
 
+  MockExternalPolicyProviderVisitor(const MockExternalPolicyProviderVisitor&) =
+      delete;
+  MockExternalPolicyProviderVisitor& operator=(
+      const MockExternalPolicyProviderVisitor&) = delete;
+
   // Initialize a provider with |policy_forcelist|, and check that it installs
   // exactly the extensions specified in |expected_extensions|.
   void Visit(const base::DictionaryValue& policy_forcelist,
              const std::set<std::string>& expected_extensions) {
-    profile_.reset(new TestingProfile);
+    profile_ = std::make_unique<TestingProfile>();
     profile_->GetTestingPrefService()->SetManagedPref(
         pref_names::kInstallForceList, policy_forcelist.CreateDeepCopy());
-    provider_.reset(new ExternalProviderImpl(
+    provider_ = std::make_unique<ExternalProviderImpl>(
         this,
         new ExternalPolicyLoader(
             profile_.get(),
             ExtensionManagementFactory::GetForBrowserContext(profile_.get()),
             ExternalPolicyLoader::FORCED),
-        profile_.get(), Manifest::INVALID_LOCATION,
-        Manifest::EXTERNAL_POLICY_DOWNLOAD, Extension::NO_FLAGS));
+        profile_.get(), ManifestLocation::kInvalidLocation,
+        ManifestLocation::kExternalPolicyDownload, Extension::NO_FLAGS);
 
     // Extensions will be removed from this list as they visited,
     // so it should be emptied by the end.
@@ -79,13 +83,14 @@ class MockExternalPolicyProviderVisitor
       const extensions::ExternalInstallInfoUpdateUrl& info,
       bool is_initial_load) override {
     // Extension has the correct location.
-    EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, info.download_location);
+    EXPECT_EQ(ManifestLocation::kExternalPolicyDownload,
+              info.download_location);
 
     // Provider returns the correct location when asked.
-    Manifest::Location location1;
+    ManifestLocation location1;
     std::unique_ptr<base::Version> version1;
     provider_->GetExtensionDetails(info.extension_id, &location1, &version1);
-    EXPECT_EQ(Manifest::EXTERNAL_POLICY_DOWNLOAD, location1);
+    EXPECT_EQ(ManifestLocation::kExternalPolicyDownload, location1);
     EXPECT_FALSE(version1.get());
 
     // Remove the extension from our list.
@@ -113,8 +118,6 @@ class MockExternalPolicyProviderVisitor
   std::unique_ptr<TestingProfile> profile_;
 
   std::unique_ptr<ExternalProviderImpl> provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockExternalPolicyProviderVisitor);
 };
 
 TEST_F(ExternalPolicyLoaderTest, PolicyIsParsed) {

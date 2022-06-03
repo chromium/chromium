@@ -9,6 +9,8 @@
 
 namespace remoting {
 
+PassthroughOAuthTokenGetter::PassthroughOAuthTokenGetter() = default;
+
 PassthroughOAuthTokenGetter::PassthroughOAuthTokenGetter(
     const std::string& username,
     const std::string& access_token)

@@ -4,9 +4,11 @@
 
 #import "ui/gfx/ios/NSString+CrStringDrawing.h"
 
+#include <ostream>
+
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/gfx/ios/uikit_util.h"
 
 @implementation NSString (CrStringDrawing)

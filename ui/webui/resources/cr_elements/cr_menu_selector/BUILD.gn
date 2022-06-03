@@ -1,0 +1,22 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+html_to_js("web_components") {
+  js_files = [ "cr_menu_selector.js" ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [ ":cr_menu_selector" ]
+}
+
+js_library("cr_menu_selector") {
+  deps = [
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
+  ]
+}

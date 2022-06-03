@@ -12,8 +12,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/observer_list.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -23,12 +23,14 @@
 #include "gpu/command_buffer/common/scheduling_priority.h"
 #include "gpu/ipc/common/surface_handle.h"
 #include "services/viz/public/cpp/gpu/command_buffer_metrics.h"
+#include "skia/buildflags.h"
 #include "ui/gl/gpu_preference.h"
 #include "url/gurl.h"
 
 namespace gpu {
 class CommandBufferHelper;
 class CommandBufferProxyImpl;
+class ClientSharedImageInterface;
 class GpuChannelHost;
 struct GpuFeatureInfo;
 class GpuMemoryBufferManager;
@@ -51,6 +53,7 @@ class WebGPUInterface;
 
 namespace skia_bindings {
 class GrContextForGLES2Interface;
+class GrContextForWebGPUInterface;
 }
 
 namespace viz {
@@ -89,7 +92,7 @@ class ContextProviderCommandBuffer
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
-  class GrContext* GrContext() override;
+  class GrDirectContext* GrContext() override;
   gpu::SharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;
@@ -148,6 +151,11 @@ class ContextProviderCommandBuffer
   gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager_;
   scoped_refptr<base::SingleThreadTaskRunner> default_task_runner_;
 
+  // |shared_image_interface_| must be torn down after |command_buffer_| to
+  // ensure any dependent commands in the command stream are flushed before the
+  // associated shared images are destroyed.
+  std::unique_ptr<gpu::ClientSharedImageInterface> shared_image_interface_;
+
   base::Lock context_lock_;  // Referenced by command_buffer_.
   std::unique_ptr<gpu::CommandBufferProxyImpl> command_buffer_;
   std::unique_ptr<gpu::CommandBufferHelper> helper_;
@@ -161,6 +169,10 @@ class ContextProviderCommandBuffer
   std::unique_ptr<gpu::webgpu::WebGPUInterface> webgpu_interface_;
 
   std::unique_ptr<skia_bindings::GrContextForGLES2Interface> gr_context_;
+#if BUILDFLAG(SKIA_USE_DAWN)
+  std::unique_ptr<skia_bindings::GrContextForWebGPUInterface>
+      webgpu_gr_context_;
+#endif
   std::unique_ptr<ContextCacheController> cache_controller_;
 
   base::ObserverList<ContextLostObserver>::Unchecked observers_;

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="author" title="Joey Arhar" href="mailto:jarhar@chromium.org">
+<link rel="help" href="https://bugs.chromium.org/p/chromium/issues/detail?id=1209217">
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+
+<slot>
+  <input id=input1>
+</slot>
+<slot>
+  <input id=input2>
+</slot>
+
+<script>
+test(() => {
+  input1.focus();
+  assert_equals(document.activeElement, input1);
+
+  // TODO(crbug.com/893480): Replace this with test_driver.Actions() and move
+  // this test to WPT when test_driver.Actions() is supported in content_shell
+  // or when all WPTs are run on chrome instead of content_shell.
+  eventSender.keyDown('\t');
+  assert_equals(document.activeElement, input2);
+}, `Verifies that focusing forwards from an input inside a slot which has no shadow root goes to the next focusable element in light DOM.`);
+</script>

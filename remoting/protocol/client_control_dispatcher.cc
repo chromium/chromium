@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "net/socket/stream_socket.h"
 #include "remoting/base/compound_buffer.h"
 #include "remoting/base/constants.h"
@@ -68,54 +68,61 @@ void ClientControlDispatcher::InjectClipboardEvent(
     const ClipboardEvent& event) {
   ControlMessage message;
   message.mutable_clipboard_event()->CopyFrom(event);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientControlDispatcher::NotifyClientResolution(
     const ClientResolution& resolution) {
   ControlMessage message;
   message.mutable_client_resolution()->CopyFrom(resolution);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientControlDispatcher::ControlVideo(const VideoControl& video_control) {
   ControlMessage message;
   message.mutable_video_control()->CopyFrom(video_control);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientControlDispatcher::ControlAudio(const AudioControl& audio_control) {
   ControlMessage message;
   message.mutable_audio_control()->CopyFrom(audio_control);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientControlDispatcher::SetCapabilities(
     const Capabilities& capabilities) {
   ControlMessage message;
   message.mutable_capabilities()->CopyFrom(capabilities);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientControlDispatcher::RequestPairing(
     const PairingRequest& pairing_request) {
   ControlMessage message;
   message.mutable_pairing_request()->CopyFrom(pairing_request);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
 }
 
 void ClientControlDispatcher::DeliverClientMessage(
     const ExtensionMessage& message) {
   ControlMessage control_message;
   control_message.mutable_extension_message()->CopyFrom(message);
-  message_pipe()->Send(&control_message, base::Closure());
+  message_pipe()->Send(&control_message, {});
 }
 
 void ClientControlDispatcher::SelectDesktopDisplay(
     const SelectDesktopDisplayRequest& select_display) {
   ControlMessage message;
   message.mutable_select_display()->CopyFrom(select_display);
-  message_pipe()->Send(&message, base::Closure());
+  message_pipe()->Send(&message, {});
+}
+
+void ClientControlDispatcher::ControlPeerConnection(
+    const protocol::PeerConnectionParameters& parameters) {
+  ControlMessage message;
+  message.mutable_peer_connection_parameters()->CopyFrom(parameters);
+  message_pipe()->Send(&message, {});
 }
 
 void ClientControlDispatcher::OnIncomingMessage(

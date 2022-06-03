@@ -8,12 +8,14 @@
 
 #include <string>
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/stl_util.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/common/file_system/file_system_mount_option.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
+#include "url/gurl.h"
 
 #define FPL FILE_PATH_LITERAL
 
@@ -23,13 +25,13 @@
 #define DRIVE
 #endif
 
-using storage::FileSystemURL;
+class GURL;
 
-namespace content {
+namespace storage {
 
 TEST(ExternalMountPointsTest, AddMountPoint) {
-  scoped_refptr<storage::ExternalMountPoints> mount_points(
-      storage::ExternalMountPoints::CreateRefCounted());
+  scoped_refptr<ExternalMountPoints> mount_points =
+      ExternalMountPoints::CreateRefCounted();
 
   struct TestCase {
     // The mount point's name.
@@ -113,9 +115,9 @@ TEST(ExternalMountPointsTest, AddMountPoint) {
   // Test adding mount points.
   for (const auto& test : kTestCases) {
     EXPECT_EQ(test.success,
-              mount_points->RegisterFileSystem(
-                  test.name, storage::kFileSystemTypeNativeLocal,
-                  storage::FileSystemMountOption(), base::FilePath(test.path)))
+              mount_points->RegisterFileSystem(test.name, kFileSystemTypeLocal,
+                                               FileSystemMountOption(),
+                                               base::FilePath(test.path)))
         << "Adding mount point: " << test.name << " with path " << test.path;
   }
 
@@ -134,30 +136,29 @@ TEST(ExternalMountPointsTest, AddMountPoint) {
 }
 
 TEST(ExternalMountPointsTest, GetVirtualPath) {
-  scoped_refptr<storage::ExternalMountPoints> mount_points(
-      storage::ExternalMountPoints::CreateRefCounted());
+  scoped_refptr<ExternalMountPoints> mount_points =
+      ExternalMountPoints::CreateRefCounted();
 
-  mount_points->RegisterFileSystem("c", storage::kFileSystemTypeNativeLocal,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("c", kFileSystemTypeLocal,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/a/b/c")));
   // Note that "/a/b/c" < "/a/b/c(1)" < "/a/b/c/".
-  mount_points->RegisterFileSystem("c(1)", storage::kFileSystemTypeNativeLocal,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("c(1)", kFileSystemTypeLocal,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/a/b/c(1)")));
-  mount_points->RegisterFileSystem("x", storage::kFileSystemTypeNativeLocal,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("x", kFileSystemTypeLocal,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/z/y/x")));
-  mount_points->RegisterFileSystem("o", storage::kFileSystemTypeNativeLocal,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("o", kFileSystemTypeLocal,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/m/n/o")));
   // A mount point whose name does not match its path base name.
-  mount_points->RegisterFileSystem("mount", storage::kFileSystemTypeNativeLocal,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("mount", kFileSystemTypeLocal,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/root/foo")));
   // A mount point with an empty path.
-  mount_points->RegisterFileSystem(
-      "empty_path", storage::kFileSystemTypeNativeLocal,
-      storage::FileSystemMountOption(), base::FilePath());
+  mount_points->RegisterFileSystem("empty_path", kFileSystemTypeLocal,
+                                   FileSystemMountOption(), base::FilePath());
 
   struct TestCase {
     const base::FilePath::CharType* const local_path;
@@ -230,116 +231,108 @@ TEST(ExternalMountPointsTest, GetVirtualPath) {
 }
 
 TEST(ExternalMountPointsTest, HandlesFileSystemMountType) {
-  scoped_refptr<storage::ExternalMountPoints> mount_points(
-      storage::ExternalMountPoints::CreateRefCounted());
+  scoped_refptr<ExternalMountPoints> mount_points =
+      ExternalMountPoints::CreateRefCounted();
 
   const GURL test_origin("http://chromium.org");
   const base::FilePath test_path(FPL("/mount"));
 
   // Should handle External File System.
-  EXPECT_TRUE(mount_points->HandlesFileSystemMountType(
-      storage::kFileSystemTypeExternal));
+  EXPECT_TRUE(
+      mount_points->HandlesFileSystemMountType(kFileSystemTypeExternal));
 
   // Shouldn't handle the rest.
-  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(
-      storage::kFileSystemTypeIsolated));
-  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(
-      storage::kFileSystemTypeTemporary));
-  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(
-      storage::kFileSystemTypePersistent));
   EXPECT_FALSE(
-      mount_points->HandlesFileSystemMountType(storage::kFileSystemTypeTest));
+      mount_points->HandlesFileSystemMountType(kFileSystemTypeIsolated));
+  EXPECT_FALSE(
+      mount_points->HandlesFileSystemMountType(kFileSystemTypeTemporary));
+  EXPECT_FALSE(
+      mount_points->HandlesFileSystemMountType(kFileSystemTypePersistent));
+  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(kFileSystemTypeTest));
   // Not even if it's external subtype.
-  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(
-      storage::kFileSystemTypeNativeLocal));
-  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(
-      storage::kFileSystemTypeRestrictedNativeLocal));
-  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(
-      storage::kFileSystemTypeDriveFs));
-  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(
-      storage::kFileSystemTypeSyncable));
+  EXPECT_FALSE(mount_points->HandlesFileSystemMountType(kFileSystemTypeLocal));
+  EXPECT_FALSE(
+      mount_points->HandlesFileSystemMountType(kFileSystemTypeRestrictedLocal));
+  EXPECT_FALSE(
+      mount_points->HandlesFileSystemMountType(kFileSystemTypeDriveFs));
+  EXPECT_FALSE(
+      mount_points->HandlesFileSystemMountType(kFileSystemTypeSyncable));
 }
 
 TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
-  scoped_refptr<storage::ExternalMountPoints> mount_points(
-      storage::ExternalMountPoints::CreateRefCounted());
+  scoped_refptr<ExternalMountPoints> mount_points =
+      ExternalMountPoints::CreateRefCounted();
 
-  const url::Origin kTestOrigin =
-      url::Origin::Create(GURL("http://chromium.org"));
+  const blink::StorageKey kTestStorageKey =
+      blink::StorageKey::CreateFromStringForTesting("http://chromium.org");
 
-  mount_points->RegisterFileSystem("c", storage::kFileSystemTypeNativeLocal,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("c", kFileSystemTypeLocal,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/a/b/c")));
-  mount_points->RegisterFileSystem("c(1)", storage::kFileSystemTypeDriveFs,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("c(1)", kFileSystemTypeDriveFs,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/a/b/c(1)")));
-  mount_points->RegisterFileSystem(
-      "empty_path", storage::kFileSystemTypeSyncable,
-      storage::FileSystemMountOption(), base::FilePath());
-  mount_points->RegisterFileSystem("mount", storage::kFileSystemTypeDriveFs,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("empty_path", kFileSystemTypeSyncable,
+                                   FileSystemMountOption(), base::FilePath());
+  mount_points->RegisterFileSystem("mount", kFileSystemTypeDriveFs,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/root")));
 
   // Try cracking invalid GURL.
-  FileSystemURL invalid = mount_points->CrackURL(GURL("http://chromium.og"));
+  FileSystemURL invalid = mount_points->CrackURL(
+      GURL("http://chromium.og"),
+      blink::StorageKey::CreateFromStringForTesting("http://chromium.og"));
   EXPECT_FALSE(invalid.is_valid());
 
   // Try cracking isolated path.
   FileSystemURL isolated = mount_points->CreateCrackedFileSystemURL(
-      kTestOrigin, storage::kFileSystemTypeIsolated, base::FilePath(FPL("c")));
+      kTestStorageKey, kFileSystemTypeIsolated, base::FilePath(FPL("c")));
   EXPECT_FALSE(isolated.is_valid());
 
   // Try native local which is not cracked.
   FileSystemURL native_local = mount_points->CreateCrackedFileSystemURL(
-      kTestOrigin, storage::kFileSystemTypeNativeLocal,
-      base::FilePath(FPL("c")));
+      kTestStorageKey, kFileSystemTypeLocal, base::FilePath(FPL("c")));
   EXPECT_FALSE(native_local.is_valid());
 
   struct TestCase {
     const base::FilePath::CharType* const path;
     bool expect_valid;
-    storage::FileSystemType expect_type;
+    FileSystemType expect_type;
     const base::FilePath::CharType* const expect_path;
     const char* const expect_fs_id;
   };
 
   const TestCase kTestCases[] = {
-    {FPL("c/d/e"), true, storage::kFileSystemTypeNativeLocal,
-     DRIVE FPL("/a/b/c/d/e"), "c"},
-    {FPL("c(1)/d/e"), true, storage::kFileSystemTypeDriveFs,
-     DRIVE FPL("/a/b/c(1)/d/e"), "c(1)"},
-    {FPL("c(1)"), true, storage::kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)"),
+    {FPL("c/d/e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
+    {FPL("c(1)/d/e"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)/d/e"),
      "c(1)"},
-    {FPL("empty_path/a"), true, storage::kFileSystemTypeSyncable, FPL("a"),
+    {FPL("c(1)"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)"), "c(1)"},
+    {FPL("empty_path/a"), true, kFileSystemTypeSyncable, FPL("a"),
      "empty_path"},
-    {FPL("empty_path"), true, storage::kFileSystemTypeSyncable, FPL(""),
-     "empty_path"},
-    {FPL("mount/a/b"), true, storage::kFileSystemTypeDriveFs,
-     DRIVE FPL("/root/a/b"), "mount"},
-    {FPL("mount"), true, storage::kFileSystemTypeDriveFs, DRIVE FPL("/root"),
+    {FPL("empty_path"), true, kFileSystemTypeSyncable, FPL(""), "empty_path"},
+    {FPL("mount/a/b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
      "mount"},
-    {FPL("cc"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL(""), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL(".."), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    // Absolte paths.
-    {FPL("/c/d/e"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/c(1)/d/e"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/empty_path"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL("mount"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root"), "mount"},
+    {FPL("cc"), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL(""), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL(".."), false, kFileSystemTypeUnknown, FPL(""), ""},
+    // Absolute paths.
+    {FPL("/c/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL("/c(1)/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL("/empty_path"), false, kFileSystemTypeUnknown, FPL(""), ""},
     // PAth references parent.
-    {FPL("c/d/../e"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/empty_path/a/../b"), false, storage::kFileSystemTypeUnknown, FPL(""),
-     ""},
+    {FPL("c/d/../e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL("/empty_path/a/../b"), false, kFileSystemTypeUnknown, FPL(""), ""},
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-    {FPL("c/d\\e"), true, storage::kFileSystemTypeNativeLocal,
-     DRIVE FPL("/a/b/c/d/e"), "c"},
-    {FPL("mount\\a\\b"), true, storage::kFileSystemTypeDriveFs,
-     DRIVE FPL("/root/a/b"), "mount"},
+    {FPL("c/d\\e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
+    {FPL("mount\\a\\b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
+     "mount"},
 #endif
   };
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     FileSystemURL cracked = mount_points->CreateCrackedFileSystemURL(
-        kTestOrigin, storage::kFileSystemTypeExternal,
+        kTestStorageKey, kFileSystemTypeExternal,
         base::FilePath(kTestCases[i].path));
 
     EXPECT_EQ(kTestCases[i].expect_valid, cracked.is_valid())
@@ -348,7 +341,8 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
     if (!kTestCases[i].expect_valid)
       continue;
 
-    EXPECT_EQ(kTestOrigin, cracked.origin()) << "Test case index: " << i;
+    EXPECT_EQ(kTestStorageKey.origin(), cracked.origin())
+        << "Test case index: " << i;
     EXPECT_EQ(kTestCases[i].expect_type, cracked.type())
         << "Test case index: " << i;
     EXPECT_EQ(
@@ -360,78 +354,71 @@ TEST(ExternalMountPointsTest, CreateCrackedFileSystemURL) {
         << "Test case index: " << i;
     EXPECT_EQ(kTestCases[i].expect_fs_id, cracked.filesystem_id())
         << "Test case index: " << i;
-    EXPECT_EQ(storage::kFileSystemTypeExternal, cracked.mount_type())
+    EXPECT_EQ(kFileSystemTypeExternal, cracked.mount_type())
         << "Test case index: " << i;
   }
 }
 
 TEST(ExternalMountPointsTest, CrackVirtualPath) {
-  scoped_refptr<storage::ExternalMountPoints> mount_points(
-      storage::ExternalMountPoints::CreateRefCounted());
+  scoped_refptr<ExternalMountPoints> mount_points =
+      ExternalMountPoints::CreateRefCounted();
 
   const GURL kTestOrigin("http://chromium.org");
 
-  mount_points->RegisterFileSystem("c", storage::kFileSystemTypeNativeLocal,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("c", kFileSystemTypeLocal,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/a/b/c")));
-  mount_points->RegisterFileSystem("c(1)", storage::kFileSystemTypeDriveFs,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("c(1)", kFileSystemTypeDriveFs,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/a/b/c(1)")));
-  mount_points->RegisterFileSystem(
-      "empty_path", storage::kFileSystemTypeSyncable,
-      storage::FileSystemMountOption(), base::FilePath());
-  mount_points->RegisterFileSystem("mount", storage::kFileSystemTypeDriveFs,
-                                   storage::FileSystemMountOption(),
+  mount_points->RegisterFileSystem("empty_path", kFileSystemTypeSyncable,
+                                   FileSystemMountOption(), base::FilePath());
+  mount_points->RegisterFileSystem("mount", kFileSystemTypeDriveFs,
+                                   FileSystemMountOption(),
                                    base::FilePath(DRIVE FPL("/root")));
 
   struct TestCase {
     const base::FilePath::CharType* const path;
     bool expect_valid;
-    storage::FileSystemType expect_type;
+    FileSystemType expect_type;
     const base::FilePath::CharType* const expect_path;
     const char* const expect_name;
   };
 
   const TestCase kTestCases[] = {
-    {FPL("c/d/e"), true, storage::kFileSystemTypeNativeLocal,
-     DRIVE FPL("/a/b/c/d/e"), "c"},
-    {FPL("c(1)/d/e"), true, storage::kFileSystemTypeDriveFs,
-     DRIVE FPL("/a/b/c(1)/d/e"), "c(1)"},
-    {FPL("c(1)"), true, storage::kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)"),
+    {FPL("c/d/e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
+    {FPL("c(1)/d/e"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)/d/e"),
      "c(1)"},
-    {FPL("empty_path/a"), true, storage::kFileSystemTypeSyncable, FPL("a"),
+    {FPL("c(1)"), true, kFileSystemTypeDriveFs, DRIVE FPL("/a/b/c(1)"), "c(1)"},
+    {FPL("empty_path/a"), true, kFileSystemTypeSyncable, FPL("a"),
      "empty_path"},
-    {FPL("empty_path"), true, storage::kFileSystemTypeSyncable, FPL(""),
-     "empty_path"},
-    {FPL("mount/a/b"), true, storage::kFileSystemTypeDriveFs,
-     DRIVE FPL("/root/a/b"), "mount"},
-    {FPL("mount"), true, storage::kFileSystemTypeDriveFs, DRIVE FPL("/root"),
+    {FPL("empty_path"), true, kFileSystemTypeSyncable, FPL(""), "empty_path"},
+    {FPL("mount/a/b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
      "mount"},
-    {FPL("cc"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL(""), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL(".."), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    // Absolte paths.
-    {FPL("/c/d/e"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/c(1)/d/e"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/empty_path"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL("mount"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root"), "mount"},
+    {FPL("cc"), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL(""), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL(".."), false, kFileSystemTypeUnknown, FPL(""), ""},
+    // Absolute paths.
+    {FPL("/c/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL("/c(1)/d/e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL("/empty_path"), false, kFileSystemTypeUnknown, FPL(""), ""},
     // PAth references parent.
-    {FPL("c/d/../e"), false, storage::kFileSystemTypeUnknown, FPL(""), ""},
-    {FPL("/empty_path/a/../b"), false, storage::kFileSystemTypeUnknown, FPL(""),
-     ""},
+    {FPL("c/d/../e"), false, kFileSystemTypeUnknown, FPL(""), ""},
+    {FPL("/empty_path/a/../b"), false, kFileSystemTypeUnknown, FPL(""), ""},
 #if defined(FILE_PATH_USES_WIN_SEPARATORS)
-    {FPL("c/d\\e"), true, storage::kFileSystemTypeNativeLocal,
-     DRIVE FPL("/a/b/c/d/e"), "c"},
-    {FPL("mount\\a\\b"), true, storage::kFileSystemTypeDriveFs,
-     DRIVE FPL("/root/a/b"), "mount"},
+    {FPL("c/d\\e"), true, kFileSystemTypeLocal, DRIVE FPL("/a/b/c/d/e"), "c"},
+    {FPL("mount\\a\\b"), true, kFileSystemTypeDriveFs, DRIVE FPL("/root/a/b"),
+     "mount"},
 #endif
   };
 
   for (size_t i = 0; i < base::size(kTestCases); ++i) {
     std::string cracked_name;
-    storage::FileSystemType cracked_type;
+    FileSystemType cracked_type;
     std::string cracked_id;
     base::FilePath cracked_path;
-    storage::FileSystemMountOption cracked_option;
+    FileSystemMountOption cracked_option;
     EXPECT_EQ(kTestCases[i].expect_valid,
               mount_points->CrackVirtualPath(
                   base::FilePath(kTestCases[i].path), &cracked_name,
@@ -456,33 +443,31 @@ TEST(ExternalMountPointsTest, CrackVirtualPath) {
 }
 
 TEST(ExternalMountPointsTest, MountOption) {
-  scoped_refptr<storage::ExternalMountPoints> mount_points(
-      storage::ExternalMountPoints::CreateRefCounted());
+  scoped_refptr<ExternalMountPoints> mount_points =
+      ExternalMountPoints::CreateRefCounted();
 
   mount_points->RegisterFileSystem(
-      "nosync", storage::kFileSystemTypeNativeLocal,
-      storage::FileSystemMountOption(
-          storage::FlushPolicy::NO_FLUSH_ON_COMPLETION),
+      "nosync", kFileSystemTypeLocal,
+      FileSystemMountOption(FlushPolicy::NO_FLUSH_ON_COMPLETION),
       base::FilePath(DRIVE FPL("/nosync")));
   mount_points->RegisterFileSystem(
-      "sync", storage::kFileSystemTypeNativeLocal,
-      storage::FileSystemMountOption(storage::FlushPolicy::FLUSH_ON_COMPLETION),
+      "sync", kFileSystemTypeLocal,
+      FileSystemMountOption(FlushPolicy::FLUSH_ON_COMPLETION),
       base::FilePath(DRIVE FPL("/sync")));
 
   std::string name;
-  storage::FileSystemType type;
+  FileSystemType type;
   std::string cracked_id;
-  storage::FileSystemMountOption option;
+  FileSystemMountOption option;
   base::FilePath path;
   EXPECT_TRUE(mount_points->CrackVirtualPath(base::FilePath(FPL("nosync/file")),
                                              &name, &type, &cracked_id, &path,
                                              &option));
-  EXPECT_EQ(storage::FlushPolicy::NO_FLUSH_ON_COMPLETION,
-            option.flush_policy());
+  EXPECT_EQ(FlushPolicy::NO_FLUSH_ON_COMPLETION, option.flush_policy());
   EXPECT_TRUE(mount_points->CrackVirtualPath(base::FilePath(FPL("sync/file")),
                                              &name, &type, &cracked_id, &path,
                                              &option));
-  EXPECT_EQ(storage::FlushPolicy::FLUSH_ON_COMPLETION, option.flush_policy());
+  EXPECT_EQ(FlushPolicy::FLUSH_ON_COMPLETION, option.flush_policy());
 }
 
-}  // namespace content
+}  // namespace storage

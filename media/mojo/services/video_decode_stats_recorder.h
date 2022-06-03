@@ -6,9 +6,7 @@
 #define MEDIA_MOJO_SERVICES_VIDEO_DECODE_STATS_RECORDER_H_
 
 #include <stdint.h>
-#include <string>
 
-#include "base/time/time.h"
 #include "media/base/video_codecs.h"
 #include "media/learning/common/value.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -31,6 +29,10 @@ class MEDIA_MOJO_EXPORT VideoDecodeStatsRecorder
                            learning::FeatureValue origin,
                            bool is_top_frame,
                            uint64_t player_id);
+
+  VideoDecodeStatsRecorder(const VideoDecodeStatsRecorder&) = delete;
+  VideoDecodeStatsRecorder& operator=(const VideoDecodeStatsRecorder&) = delete;
+
   ~VideoDecodeStatsRecorder() override;
 
   // mojom::VideoDecodeStatsRecorder implementation:
@@ -50,8 +52,6 @@ class MEDIA_MOJO_EXPORT VideoDecodeStatsRecorder
 
   mojom::PredictionFeatures features_;
   mojom::PredictionTargets targets_;
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecodeStatsRecorder);
 };
 
 }  // namespace media

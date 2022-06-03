@@ -3,15 +3,15 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/stringprintf.h"
 #include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -38,7 +38,6 @@ const bool kIsSmooth = true;
 const bool kIsNotSmooth = false;
 const bool kIsPowerEfficient = true;
 const bool kIsNotPowerEfficient = false;
-const url::Origin kOrigin = url::Origin::Create(GURL("http://example.com"));
 const bool kIsTopFrame = true;
 const uint64_t kPlayerId = 1234u;
 
@@ -53,6 +52,7 @@ class FakeVideoDecodeStatsDB : public VideoDecodeStatsDB {
 
   // Call CompleteInitialize(...) to run |init_cb| callback.
   void Initialize(base::OnceCallback<void(bool)> init_cb) override {
+    EXPECT_FALSE(!!pendnding_init_cb_);
     pendnding_init_cb_ = std::move(init_cb);
   }
 
@@ -60,7 +60,7 @@ class FakeVideoDecodeStatsDB : public VideoDecodeStatsDB {
   // for success.
   void CompleteInitialize(bool success) {
     DVLOG(2) << __func__ << " running with success = " << success;
-    EXPECT_FALSE(!pendnding_init_cb_);
+    EXPECT_TRUE(!!pendnding_init_cb_);
     std::move(pendnding_init_cb_).Run(success);
   }
 
@@ -170,6 +170,10 @@ class VideoDecodePerfHistoryTest : public testing::Test {
 
   double GetMaxSmoothDroppedFramesPercent(bool is_eme = false) {
     return VideoDecodePerfHistory::GetMaxSmoothDroppedFramesPercent(is_eme);
+  }
+
+  static base::FieldTrialParams GetFieldTrialParams() {
+    return VideoDecodePerfHistory::GetFieldTrialParams();
   }
 
   // Tests may set this as the callback for VideoDecodePerfHistory::GetPerfInfo
@@ -298,7 +302,7 @@ class VideoDecodePerfHistoryTest : public testing::Test {
                past_is_efficient);
     // Zero it out to make verification readable.
     if (!old_stats)
-      old_stats.reset(new DecodeStatsEntry(0, 0, 0));
+      old_stats = std::make_unique<DecodeStatsEntry>(0, 0, 0);
     EXPECT_UKM(UkmEntry::kPerf_PastVideoFramesDecodedName,
                old_stats->frames_decoded);
     EXPECT_UKM(UkmEntry::kPerf_PastVideoFramesDroppedName,
@@ -347,6 +351,8 @@ class VideoDecodePerfHistoryTest : public testing::Test {
 
   // The VideoDecodeStatsReporter being tested.
   std::unique_ptr<VideoDecodePerfHistory> perf_history_;
+
+  const url::Origin kOrigin = url::Origin::Create(GURL("http://example.com"));
 };
 
 struct PerfHistoryTestParams {
@@ -820,10 +826,7 @@ TEST_P(VideoDecodePerfHistoryParamTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       media::kMediaCapabilitiesWithParameters, trial_params);
 
-  base::FieldTrialParams actual_trial_params;
-  EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-      media::kMediaCapabilitiesWithParameters, &actual_trial_params));
-  EXPECT_EQ(trial_params, actual_trial_params);
+  EXPECT_EQ(GetFieldTrialParams(), trial_params);
 
   // Non EME threshold is overridden.
   EXPECT_EQ(new_smooth_dropped_frames_threshold,
@@ -938,10 +941,7 @@ TEST_P(VideoDecodePerfHistoryParamTest,
   scoped_feature_list.InitAndEnableFeatureWithParameters(
       media::kMediaCapabilitiesWithParameters, trial_params);
 
-  base::FieldTrialParams actual_trial_params;
-  EXPECT_TRUE(base::GetFieldTrialParamsByFeature(
-      media::kMediaCapabilitiesWithParameters, &actual_trial_params));
-  EXPECT_EQ(trial_params, actual_trial_params);
+  EXPECT_EQ(GetFieldTrialParams(), trial_params);
 
   // Both thresholds should be overridden.
   EXPECT_EQ(new_CLEAR_smooth_dropped_frames_threshold,
@@ -1035,5 +1035,51 @@ const PerfHistoryTestParams kPerfHistoryTestParams[] = {
 INSTANTIATE_TEST_SUITE_P(VaryDBInitTiming,
                          VideoDecodePerfHistoryParamTest,
                          ::testing::ValuesIn(kPerfHistoryTestParams));
+
+//
+// The following test are not parameterized. They instead always hard code
+// deferred initialization.
+//
+
+TEST_F(VideoDecodePerfHistoryTest, ClearHistoryTriggersSuccessfulInitialize) {
+  // Clear the DB. Completion callback shouldn't fire until initialize
+  // completes.
+  EXPECT_CALL(*this, MockOnClearedHistory()).Times(0);
+  perf_history_->ClearHistory(
+      base::BindOnce(&VideoDecodePerfHistoryParamTest::MockOnClearedHistory,
+                     base::Unretained(this)));
+
+  // Give completion callback a chance to fire. Confirm it did not fire.
+  task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Expect completion callback after we successfully initialize.
+  EXPECT_CALL(*this, MockOnClearedHistory());
+  GetFakeDB()->CompleteInitialize(true);
+
+  // Give deferred callback a chance to fire.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(VideoDecodePerfHistoryTest, ClearHistoryTriggersFailedInitialize) {
+  // Clear the DB. Completion callback shouldn't fire until initialize
+  // completes.
+  EXPECT_CALL(*this, MockOnClearedHistory()).Times(0);
+  perf_history_->ClearHistory(
+      base::BindOnce(&VideoDecodePerfHistoryParamTest::MockOnClearedHistory,
+                     base::Unretained(this)));
+
+  // Give completion callback a chance to fire. Confirm it did not fire.
+  task_environment_.RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(this);
+
+  // Expect completion callback after completing initialize. "Failure" is still
+  // a form of completion.
+  EXPECT_CALL(*this, MockOnClearedHistory());
+  GetFakeDB()->CompleteInitialize(false);
+
+  // Give deferred callback a chance to fire.
+  task_environment_.RunUntilIdle();
+}
 
 }  // namespace media

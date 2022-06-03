@@ -1,0 +1,22 @@
+Test for orphans and widows
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+
+FAIL: expected page number of "page1-1" is 1. Was 0
+PASS: page number of "page1-2" is 1
+PASS: page number of "page1-3" is 1
+FAIL: expected page number of "page2" is 2. Was 1
+FAIL: expected page number of "page3" is 3. Was 2
+FAIL: expected page number of "page4" is 4. Was 3
+FAIL: expected page number of "page5" is 5. Was 3
+FAIL: expected page number of "page6-1" is 6. Was 5
+FAIL: expected page number of "page6-2" is 6. Was 5
+FAIL: expected page number of "page7" is 7. Was 6
+FAIL: expected page number of "page8" is 8. Was 7
+FAIL: expected page number of "page9" is 9. Was 7
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/dashboard_private/dashboard_private_api.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
@@ -15,7 +16,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "extensions/common/extension.h"
 #include "net/base/load_flags.h"
-#include "net/url_request/url_request.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -57,7 +57,7 @@ DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
 
 ExtensionFunction::ResponseAction
 DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::Run() {
-  params_ = Params::Create(*args_);
+  params_ = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_);
 
   if (!crx_file::id_util::IdIsValid(params_->details.id)) {
@@ -77,10 +77,10 @@ DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::Run() {
 
   network::mojom::URLLoaderFactory* loader_factory = nullptr;
   if (!icon_url.is_empty()) {
-    loader_factory =
-        content::BrowserContext::GetDefaultStoragePartition(browser_context())
-            ->GetURLLoaderFactoryForBrowserProcess()
-            .get();
+    loader_factory = browser_context()
+                         ->GetDefaultStoragePartition()
+                         ->GetURLLoaderFactoryForBrowserProcess()
+                         .get();
   }
 
   auto helper = base::MakeRefCounted<WebstoreInstallHelper>(
@@ -135,9 +135,9 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
           ExtensionInstallPrompt::DELEGATED_PERMISSIONS_PROMPT));
   prompt->set_delegated_username(details().delegated_user);
 
-  install_prompt_.reset(new ExtensionInstallPrompt(web_contents));
+  install_prompt_ = std::make_unique<ExtensionInstallPrompt>(web_contents);
   install_prompt_->ShowDialog(
-      base::Bind(
+      base::BindOnce(
           &DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
               OnInstallPromptDone,
           this),
@@ -161,8 +161,8 @@ void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
 }
 
 void DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::
-    OnInstallPromptDone(ExtensionInstallPrompt::Result result) {
-  bool accepted = (result == ExtensionInstallPrompt::Result::ACCEPTED);
+    OnInstallPromptDone(ExtensionInstallPrompt::DoneCallbackPayload payload) {
+  bool accepted = (payload.result == ExtensionInstallPrompt::Result::ACCEPTED);
   Respond(
       BuildResponse(accepted ? api::dashboard_private::RESULT_EMPTY_STRING
                              : api::dashboard_private::RESULT_USER_CANCELLED,
@@ -175,16 +175,11 @@ ExtensionFunction::ResponseValue
 DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::BuildResponse(
     api::dashboard_private::Result result, const std::string& error) {
   // The web store expects an empty string on success.
+  std::vector<base::Value> args =
+      ShowPermissionPromptForDelegatedInstall::Results::Create(result);
   if (result == api::dashboard_private::RESULT_EMPTY_STRING)
-    return ArgumentList(CreateResults(result));
-  return ErrorWithArguments(CreateResults(result), error);
-}
-
-std::unique_ptr<base::ListValue>
-DashboardPrivateShowPermissionPromptForDelegatedInstallFunction::CreateResults(
-    api::dashboard_private::Result result) const {
-  return ShowPermissionPromptForDelegatedInstall::Results::Create(result);
+    return ArgumentList(std::move(args));
+  return ErrorWithArguments(std::move(args), error);
 }
 
 }  // namespace extensions
-

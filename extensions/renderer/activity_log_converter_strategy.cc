@@ -6,9 +6,14 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "base/values.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-container.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-value.h"
 
 namespace extensions {
 
@@ -22,43 +27,32 @@ std::unique_ptr<base::Value> SummarizeV8Value(v8::Isolate* isolate,
   v8::TryCatch try_catch(isolate);
   v8::Isolate::DisallowJavascriptExecutionScope scope(
       isolate, v8::Isolate::DisallowJavascriptExecutionScope::THROW_ON_FAILURE);
-  v8::Local<v8::String> name =
-      v8::String::NewFromUtf8(isolate, "[", v8::NewStringType::kNormal)
-          .ToLocalChecked();
+  v8::Local<v8::String> name = v8::String::NewFromUtf8Literal(isolate, "[");
   if (object->IsFunction()) {
     name = v8::String::Concat(
-        isolate, name,
-        v8::String::NewFromUtf8(isolate, "Function", v8::NewStringType::kNormal)
-            .ToLocalChecked());
+        isolate, name, v8::String::NewFromUtf8Literal(isolate, "Function"));
     v8::Local<v8::Value> fname =
         v8::Local<v8::Function>::Cast(object)->GetName();
     if (fname->IsString() && v8::Local<v8::String>::Cast(fname)->Length()) {
-      name = v8::String::Concat(
-          isolate, name,
-          v8::String::NewFromUtf8(isolate, " ", v8::NewStringType::kNormal)
-              .ToLocalChecked());
+      name = v8::String::Concat(isolate, name,
+                                v8::String::NewFromUtf8Literal(isolate, " "));
       name =
           v8::String::Concat(isolate, name, v8::Local<v8::String>::Cast(fname));
-      name = v8::String::Concat(
-          isolate, name,
-          v8::String::NewFromUtf8(isolate, "()", v8::NewStringType::kNormal)
-              .ToLocalChecked());
+      name = v8::String::Concat(isolate, name,
+                                v8::String::NewFromUtf8Literal(isolate, "()"));
     }
   } else {
     name = v8::String::Concat(isolate, name, object->GetConstructorName());
   }
-  name = v8::String::Concat(
-      isolate, name,
-      v8::String::NewFromUtf8(isolate, "]", v8::NewStringType::kNormal)
-          .ToLocalChecked());
+  name = v8::String::Concat(isolate, name,
+                            v8::String::NewFromUtf8Literal(isolate, "]"));
 
   if (try_catch.HasCaught()) {
-    return std::unique_ptr<base::Value>(
-        new base::Value("[JS Execution Exception]"));
+    return std::make_unique<base::Value>("[JS Execution Exception]");
   }
 
-  return std::unique_ptr<base::Value>(
-      new base::Value(std::string(*v8::String::Utf8Value(isolate, name))));
+  return std::make_unique<base::Value>(
+      std::string(*v8::String::Utf8Value(isolate, name)));
 }
 
 }  // namespace

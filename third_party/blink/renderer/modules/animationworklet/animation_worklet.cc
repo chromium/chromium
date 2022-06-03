@@ -7,6 +7,7 @@
 #include "base/atomic_sequence_num.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/workers/worker_clients.h"
 #include "third_party/blink/renderer/modules/animationworklet/animation_worklet_messaging_proxy.h"
@@ -22,8 +23,8 @@ int NextId() {
 
 namespace blink {
 
-AnimationWorklet::AnimationWorklet(Document* document)
-    : Worklet(document), worklet_id_(NextId()), last_animation_id_(0) {}
+AnimationWorklet::AnimationWorklet(LocalDOMWindow& window)
+    : Worklet(window), worklet_id_(NextId()), last_animation_id_(0) {}
 
 AnimationWorklet::~AnimationWorklet() = default;
 
@@ -41,7 +42,7 @@ WorkletGlobalScopeProxy* AnimationWorklet::CreateGlobalScope() {
     // initialization can move to the constructor. Currently, initialization
     // in the constructor leads to test failures as the document frame has not
     // been initialized at the time of the constructor call.
-    Document* document = To<Document>(GetExecutionContext());
+    Document* document = To<LocalDOMWindow>(GetExecutionContext())->document();
     proxy_client_ =
         AnimationWorkletProxyClient::FromDocument(document, worklet_id_);
   }
@@ -62,7 +63,7 @@ WorkletAnimationId AnimationWorklet::NextWorkletAnimationId() {
   return WorkletAnimationId(worklet_id_, ++last_animation_id_);
 }
 
-void AnimationWorklet::Trace(blink::Visitor* visitor) {
+void AnimationWorklet::Trace(Visitor* visitor) const {
   Worklet::Trace(visitor);
   visitor->Trace(proxy_client_);
 }

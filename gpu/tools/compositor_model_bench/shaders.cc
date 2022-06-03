@@ -143,7 +143,6 @@ const char* GetShaderSource(ShaderID shader) {
           uv_texCoord = vec2(uv_widthScaleFactor * a_texCoord.x,
             a_texCoord.y);
         });
-      break;
     case VERTEX_SHADER_POS_TEX:
       return SHADER(
         attribute vec4 a_position;
@@ -154,7 +153,6 @@ const char* GetShaderSource(ShaderID shader) {
           gl_Position = matrix * a_position;
           v_texCoord = a_texCoord;
         });
-      break;
     case VERTEX_SHADER_POS_TEX_TRANSFORM:
       return SHADER(
         attribute vec4 a_position;
@@ -166,7 +164,6 @@ const char* GetShaderSource(ShaderID shader) {
           gl_Position = matrix * a_position;
           v_texCoord = a_texCoord*texTransform.zw + texTransform.xy;
         });
-      break;
     case FRAGMENT_SHADER_YUV_VIDEO:
       return SHADER(
         #ifdef GL_ES
@@ -189,7 +186,6 @@ const char* GetShaderSource(ShaderID shader) {
           vec3 rgb = cc_matrix * yuv;
           gl_FragColor = vec4(rgb, 1.0) * alpha;
         });
-      break;
     case FRAGMENT_SHADER_RGBA_TEX_FLIP_ALPHA:
       return SHADER(
         #ifdef GL_ES
@@ -206,7 +202,6 @@ const char* GetShaderSource(ShaderID shader) {
             texColor.z,
             texColor.w) * alpha;
         });
-      break;
     case FRAGMENT_SHADER_RGBA_TEX_ALPHA:
       return SHADER(
         #ifdef GL_ES
@@ -219,7 +214,6 @@ const char* GetShaderSource(ShaderID shader) {
           vec4 texColor = texture2D(s_texture, v_texCoord);
           gl_FragColor = texColor * alpha;
         });
-      break;
     default:
       printf("Shader source requested for unknown shader\n");
       return "";

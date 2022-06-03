@@ -6,7 +6,7 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "net/socket/stream_socket.h"
 #include "services/network/public/cpp/server/web_socket.h"
 

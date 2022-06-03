@@ -7,13 +7,14 @@
 #include "base/files/file_path.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "components/prefs/default_pref_store.h"
 
 namespace user_prefs {
 namespace {
 
 constexpr uint32_t kSyncablePrefFlags =
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     PrefRegistrySyncable::SYNCABLE_OS_PREF |
     PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF |
 #endif
@@ -37,7 +38,7 @@ void PrefRegistrySyncable::OnPrefRegistered(const std::string& path,
   // SYNCABLE_PRIORITY_PREF flags at the same time.
   DCHECK(!(flags & PrefRegistrySyncable::SYNCABLE_PREF) ||
          !(flags & PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Ditto for the mutually exclusive OS pref flags.
   DCHECK(!(flags & PrefRegistrySyncable::SYNCABLE_OS_PREF) ||
          !(flags & PrefRegistrySyncable::SYNCABLE_OS_PRIORITY_PREF));

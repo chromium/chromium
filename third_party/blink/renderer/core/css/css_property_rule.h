@@ -11,9 +11,7 @@
 
 namespace blink {
 
-class CSSStyleDeclaration;
 class StyleRuleProperty;
-class StyleRuleCSSStyleDeclaration;
 
 class CSSPropertyRule final : public CSSRule {
   DEFINE_WRAPPERTYPEINFO();
@@ -25,21 +23,23 @@ class CSSPropertyRule final : public CSSRule {
   String cssText() const override;
   void Reattach(StyleRuleBase*) override;
 
-  CSSStyleDeclaration* style() const;
+  String name() const;
+  String syntax() const;
+  bool inherits() const;
+  String initialValue() const;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  CSSRule::Type type() const override { return kPropertyRule; }
+  CSSRule::Type GetType() const override { return kPropertyRule; }
 
   Member<StyleRuleProperty> property_rule_;
-  mutable Member<StyleRuleCSSStyleDeclaration> properties_cssom_wrapper_;
 };
 
 template <>
 struct DowncastTraits<CSSPropertyRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    return rule.type() == CSSRule::kPropertyRule;
+    return rule.GetType() == CSSRule::kPropertyRule;
   }
 };
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/sequenced_task_runner_helpers.h"
+#include "base/task/sequenced_task_runner_helpers.h"
 #include "content/common/content_export.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_errors.h"
@@ -29,16 +29,10 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
       disk_cache::Backend* cache,
       base::RepeatingCallback<bool(const disk_cache::Entry*)> condition);
 
-  // A convenience method to create a condition matching cache entries whose
-  // last modified time is between |begin_time| (inclusively), |end_time|
-  // (exclusively) and whose URL is matched by the |url_predicate|. Note that
-  // |begin_time| and |end_time| can be null to indicate unbounded time interval
-  // in their respective direction.
-  static base::RepeatingCallback<bool(const disk_cache::Entry*)>
-  CreateURLAndTimeCondition(
-      base::RepeatingCallback<bool(const GURL&)> url_predicate,
-      base::Time begin_time,
-      base::Time end_time);
+  ConditionalCacheDeletionHelper(const ConditionalCacheDeletionHelper&) =
+      delete;
+  ConditionalCacheDeletionHelper& operator=(
+      const ConditionalCacheDeletionHelper&) = delete;
 
   // A convenience method to create a condition matching cache entries whose
   // last modified time is between |begin_time| (inclusively), |end_time|
@@ -47,7 +41,7 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
   // |get_url_from_key| method is useful when the entries are not keyed by the
   // resource url alone. For ex: using two keys for site isolation.
   static base::RepeatingCallback<bool(const disk_cache::Entry*)>
-  CreateCustomKeyURLAndTimeCondition(
+  CreateURLAndTimeCondition(
       base::RepeatingCallback<bool(const GURL&)> url_predicate,
       base::RepeatingCallback<std::string(const std::string&)> get_url_from_key,
       base::Time begin_time,
@@ -77,8 +71,6 @@ class CONTENT_EXPORT ConditionalCacheDeletionHelper {
 
   std::unique_ptr<disk_cache::Backend::Iterator> iterator_;
   disk_cache::Entry* previous_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConditionalCacheDeletionHelper);
 };
 
 }  // namespace content

@@ -5,7 +5,5 @@
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
-  sources = [
-    "crostini_upgrader.mojom",
-  ]
+  sources = [ "crostini_upgrader.mojom" ]
 }

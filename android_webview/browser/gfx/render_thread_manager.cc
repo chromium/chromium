@@ -4,14 +4,14 @@
 
 #include "android_webview/browser/gfx/render_thread_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "android_webview/browser/gfx/compositor_frame_producer.h"
-#include "android_webview/browser/gfx/gpu_service_web_view.h"
-#include "android_webview/browser/gfx/hardware_renderer_single_thread.h"
+#include "android_webview/browser/gfx/gpu_service_webview.h"
 #include "android_webview/browser/gfx/hardware_renderer_viz.h"
 #include "android_webview/browser/gfx/scoped_app_gl_state_restore.h"
-#include "android_webview/browser/gfx/task_queue_web_view.h"
+#include "android_webview/browser/gfx/task_queue_webview.h"
 #include "android_webview/common/aw_features.h"
 #include "android_webview/public/browser/draw_gl.h"
 #include "base/bind.h"
@@ -22,6 +22,7 @@
 #include "base/trace_event/traced_value.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace android_webview {
 
@@ -156,20 +157,26 @@ bool RenderThreadManager::IsInsideHardwareRelease() const {
 }
 
 void RenderThreadManager::InsertReturnedResourcesOnRT(
-    const std::vector<viz::ReturnedResource>& resources,
+    std::vector<viz::ReturnedResource> resources,
     const viz::FrameSinkId& frame_sink_id,
     uint32_t layer_tree_frame_sink_id) {
   if (resources.empty())
     return;
   ui_loop_->PostTask(
       FROM_HERE, base::BindOnce(&CompositorFrameProducer::ReturnUsedResources,
-                                producer_weak_ptr_, resources, frame_sink_id,
-                                layer_tree_frame_sink_id));
+                                producer_weak_ptr_, std::move(resources),
+                                frame_sink_id, layer_tree_frame_sink_id));
 }
 
 void RenderThreadManager::CommitFrameOnRT() {
   if (hardware_renderer_)
     hardware_renderer_->CommitFrame();
+}
+
+void RenderThreadManager::SetVulkanContextProviderOnRT(
+    AwVulkanContextProvider* context_provider) {
+  DCHECK(!hardware_renderer_);
+  vulkan_context_provider_ = context_provider;
 }
 
 void RenderThreadManager::UpdateViewTreeForceDarkStateOnRT(
@@ -184,38 +191,54 @@ void RenderThreadManager::UpdateViewTreeForceDarkStateOnRT(
 }
 
 void RenderThreadManager::DrawOnRT(bool save_restore,
-                                   HardwareRendererDrawParams* params) {
+                                   const HardwareRendererDrawParams& params,
+                                   const OverlaysParams& overlays_params) {
   // Force GL binding init if it's not yet initialized.
   GpuServiceWebView::GetInstance();
-  ScopedAppGLStateRestore state_restore(ScopedAppGLStateRestore::MODE_DRAW,
-                                        save_restore);
-  ScopedAllowGL allow_gl;
+
+  absl::optional<ScopedAppGLStateRestore> state_restore;
+  if (!vulkan_context_provider_) {
+    state_restore.emplace(ScopedAppGLStateRestore::MODE_DRAW, save_restore);
+    if (state_restore->skip_draw()) {
+      return;
+    }
+  }
+
   if (!hardware_renderer_ && !IsInsideHardwareRelease() &&
       HasFrameForHardwareRendererOnRT()) {
-    if (::features::IsUsingVizForWebView()) {
-      RootFrameSinkGetter getter;
-      {
-        base::AutoLock lock(lock_);
-        getter = root_frame_sink_getter_;
-      }
-      DCHECK(getter);
-      hardware_renderer_.reset(
-          new HardwareRendererViz(this, std::move(getter)));
-    } else {
-      hardware_renderer_.reset(new HardwareRendererSingleThread(this));
+    RootFrameSinkGetter getter;
+    {
+      base::AutoLock lock(lock_);
+      getter = root_frame_sink_getter_;
     }
+    DCHECK(getter);
+    hardware_renderer_ = std::make_unique<HardwareRendererViz>(
+        this, std::move(getter), vulkan_context_provider_);
     hardware_renderer_->CommitFrame();
   }
 
   if (hardware_renderer_)
-    hardware_renderer_->Draw(params);
+    hardware_renderer_->Draw(params, overlays_params);
 }
 
-void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore) {
+void RenderThreadManager::RemoveOverlaysOnRT(
+    OverlaysParams::MergeTransactionFn merge_transaction) {
+  if (hardware_renderer_)
+    hardware_renderer_->RemoveOverlays(merge_transaction);
+}
+
+void RenderThreadManager::DestroyHardwareRendererOnRT(bool save_restore,
+                                                      bool abandon_context) {
   GpuServiceWebView::GetInstance();
-  ScopedAppGLStateRestore state_restore(
-      ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT, save_restore);
-  ScopedAllowGL allow_gl;
+
+  absl::optional<ScopedAppGLStateRestore> state_restore;
+  if (!vulkan_context_provider_ && !abandon_context) {
+    state_restore.emplace(ScopedAppGLStateRestore::MODE_RESOURCE_MANAGEMENT,
+                          save_restore);
+  }
+  if (abandon_context && hardware_renderer_)
+    hardware_renderer_->AbandonContext();
+
   hardware_renderer_.reset();
 }
 

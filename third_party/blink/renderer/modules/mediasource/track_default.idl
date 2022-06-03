@@ -8,6 +8,7 @@
 enum TrackDefaultType { "audio", "video", "text" };
 
 [
+    Exposed=Window,
     RuntimeEnabled=MediaSourceExperimental
 ] interface TrackDefault {
     [RaisesException] constructor(TrackDefaultType type, DOMString language, DOMString label, sequence<DOMString> kinds, optional DOMString byteStreamTrackID = "");

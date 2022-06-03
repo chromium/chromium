@@ -7,7 +7,8 @@ package org.chromium.chrome.browser.explore_sites;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -42,7 +43,8 @@ public final class ExploreSitesBridgeExperimentalTest {
 
     @Before
     public void setUp() {
-        TestThreadUtils.runOnUiThreadBlocking(() -> { mProfile = Profile.getLastUsedProfile(); });
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mProfile = Profile.getLastUsedRegularProfile(); });
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
     }
 

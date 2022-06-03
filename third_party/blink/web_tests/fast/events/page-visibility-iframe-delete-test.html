@@ -34,8 +34,7 @@ function startTest() {
         "visibilitychange", onFrame2VisibilityChange, false);
     // Change the visibility of the current page to invisible.
     if (window.testRunner)
-        testRunner.setPageVisibility("hidden");
-    finishJSTest();
+        testRunner.setMainWindowHidden(true);
 }
 
 function onMainPageVisibilityChange() {
@@ -61,6 +60,7 @@ function onFrame2VisibilityChange() {
     debug("Visibility of sub frame 2 changed.");
     // Delete frame 1.
     document.body.removeChild(frame1);
+    finishJSTest();
 }
 
 </script>

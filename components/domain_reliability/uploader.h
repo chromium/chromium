@@ -15,8 +15,9 @@
 #include "url/gurl.h"
 
 namespace net {
+class NetworkIsolationKey;
 class URLRequest;
-class URLRequestContextGetter;
+class URLRequestContext;
 }  // namespace net
 
 namespace domain_reliability {
@@ -41,31 +42,31 @@ class DOMAIN_RELIABILITY_EXPORT DomainReliabilityUploader {
     base::TimeDelta retry_after;
   };
 
-  typedef base::Callback<void(const UploadResult& result)> UploadCallback;
+  using UploadCallback = base::OnceCallback<void(const UploadResult& result)>;
 
   DomainReliabilityUploader();
 
   virtual ~DomainReliabilityUploader();
 
-  // Creates an uploader that uses the given |url_request_context_getter| to
-  // get a URLRequestContext to use for uploads. (See test_util.h for a mock
-  // version.)
+  // Creates an uploader that uses the given |url_request_context| for uploads.
+  // (See test_util.h for a mock version.)
   static std::unique_ptr<DomainReliabilityUploader> Create(
       MockableTime* time,
-      const scoped_refptr<net::URLRequestContextGetter>&
-          url_request_context_getter);
+      net::URLRequestContext* url_request_context);
 
   // Uploads |report_json| to |upload_url| and calls |callback| when the upload
   // has either completed or failed.
-  virtual void UploadReport(const std::string& report_json,
-                            int max_beacon_depth,
-                            const GURL& upload_url,
-                            const UploadCallback& callback) = 0;
+  virtual void UploadReport(
+      const std::string& report_json,
+      int max_beacon_depth,
+      const GURL& upload_url,
+      const net::NetworkIsolationKey& network_isolation_key,
+      UploadCallback callback) = 0;
 
   // Shuts down the uploader prior to destruction. Currently, terminates pending
   // uploads and prevents the uploader from starting new ones to avoid hairy
   // lifetime issues at destruction.
-  virtual void Shutdown();
+  virtual void Shutdown() = 0;
 
   // Sets whether the uploader will discard uploads but pretend they succeeded.
   // In Chrome, this is used when the user has not opted in to metrics

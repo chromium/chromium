@@ -92,7 +92,11 @@ base::Value NetLogCertComplianceCheckResultParams(
     bool build_timely,
     CTPolicyCompliance compliance) {
   base::DictionaryValue dict;
-  dict.SetKey("certificate", net::NetLogX509CertificateParams(cert));
+  // TODO(mattm): This double-wrapping of the certificate list is weird. Remove
+  // this (probably requires updates to netlog-viewer).
+  base::Value certificate_dict(base::Value::Type::DICTIONARY);
+  certificate_dict.SetKey("certificates", net::NetLogX509CertificateList(cert));
+  dict.SetKey("certificate", std::move(certificate_dict));
   dict.SetBoolean("build_timely", build_timely);
   dict.SetString("ct_compliance_status",
                  CTPolicyComplianceToString(compliance));
@@ -135,6 +139,15 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCompliance(
   });
 
   return compliance;
+}
+
+void ChromeCTPolicyEnforcer::UpdateCTLogList(
+    base::Time update_time,
+    std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs,
+    std::vector<std::string> operated_by_google_logs) {
+  log_list_date_ = update_time;
+  disqualified_logs_ = std::move(disqualified_logs);
+  operated_by_google_logs_ = std::move(operated_by_google_logs);
 }
 
 bool ChromeCTPolicyEnforcer::IsLogDisqualified(
@@ -279,7 +292,7 @@ CTPolicyCompliance ChromeCTPolicyEnforcer::CheckCTPolicyCompliance(
   // The date when diverse SCTs requirement is effective from.
   // 2015-07-01 00:00:00 UTC.
   const base::Time kDiverseSCTRequirementStartDate =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1435708800);
+      base::Time::UnixEpoch() + base::Seconds(1435708800);
   if (issuance_date >= kDiverseSCTRequirementStartDate &&
       !(has_embedded_google_sct && has_embedded_nongoogle_sct)) {
     // Note: This also covers the case for non-embedded SCTs, as it's only

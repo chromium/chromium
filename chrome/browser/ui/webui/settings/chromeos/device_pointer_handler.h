@@ -7,8 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "chrome/browser/chromeos/system/pointer_device_observer.h"
+#include "chrome/browser/ash/system/pointer_device_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace base {
@@ -24,6 +23,10 @@ class PointerHandler
       public chromeos::system::PointerDeviceObserver::Observer {
  public:
   PointerHandler();
+
+  PointerHandler(const PointerHandler&) = delete;
+  PointerHandler& operator=(const PointerHandler&) = delete;
+
   ~PointerHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -35,14 +38,13 @@ class PointerHandler
   // PointerDeviceObserver implementation.
   void TouchpadExists(bool exists) override;
   void MouseExists(bool exists) override;
+  void PointingStickExists(bool exists) override;
 
   // Initializes the page with the current pointer information.
   void HandleInitialize(const base::ListValue* args);
 
   std::unique_ptr<chromeos::system::PointerDeviceObserver>
       pointer_device_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(PointerHandler);
 };
 
 }  // namespace settings

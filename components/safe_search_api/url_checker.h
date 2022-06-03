@@ -9,7 +9,8 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "url/gurl.h"
@@ -42,6 +43,9 @@ class URLChecker {
   URLChecker(std::unique_ptr<URLCheckerClient> async_checker,
              size_t cache_size);
 
+  URLChecker(const URLChecker&) = delete;
+  URLChecker& operator=(const URLChecker&) = delete;
+
   ~URLChecker();
 
   // Returns whether |callback| was run synchronously.
@@ -68,10 +72,10 @@ class URLChecker {
   std::unique_ptr<URLCheckerClient> async_checker_;
   CheckList checks_in_progress_;
 
-  base::MRUCache<GURL, CheckResult> cache_;
+  base::LRUCache<GURL, CheckResult> cache_;
   base::TimeDelta cache_timeout_;
 
-  DISALLOW_COPY_AND_ASSIGN(URLChecker);
+  base::WeakPtrFactory<URLChecker> weak_factory_{this};
 };
 
 }  // namespace safe_search_api

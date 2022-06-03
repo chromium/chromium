@@ -1,0 +1,60 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash,
+       "Quick Pair protocols (e.g. Fast Pair) are ash-chrome only")
+
+static_library("keyed_service") {
+  sources = [
+    "quick_pair_keyed_service.cc",
+    "quick_pair_keyed_service.h",
+    "quick_pair_mediator.cc",
+    "quick_pair_mediator.h",
+    "quick_pair_metrics_logger.cc",
+    "quick_pair_metrics_logger.h",
+  ]
+
+  deps = [
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/feature_status_tracker",
+    "//ash/quick_pair/message_stream",
+    "//ash/quick_pair/pairing",
+    "//ash/quick_pair/repository",
+    "//ash/quick_pair/scanning",
+    "//ash/quick_pair/ui",
+    "//ash/services/quick_pair",
+    "//base",
+    "//chromeos/services/bluetooth_config",
+    "//components/keyed_service/core",
+    "//components/prefs",
+    "//components/user_manager",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [
+    "quick_pair_mediator_unittest.cc",
+    "quick_pair_metrics_logger_unittest.cc",
+  ]
+
+  deps = [
+    ":keyed_service",
+    "//ash/quick_pair/common",
+    "//ash/quick_pair/feature_status_tracker:test_support",
+    "//ash/quick_pair/message_stream",
+    "//ash/quick_pair/message_stream:test_support",
+    "//ash/quick_pair/pairing:test_support",
+    "//ash/quick_pair/repository",
+    "//ash/quick_pair/scanning:test_support",
+    "//ash/quick_pair/ui:test_support",
+    "//ash/services/quick_pair",
+    "//base/test:test_support",
+    "//components/user_manager:test_support",
+    "//testing/gtest",
+  ]
+}

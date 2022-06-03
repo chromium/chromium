@@ -7,6 +7,8 @@ package org.chromium.android_webview.test.util;
 import org.junit.Assert;
 
 import org.chromium.android_webview.common.variations.VariationsUtils;
+import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.NativeMethods;
 import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
 
 import java.io.File;
@@ -17,7 +19,11 @@ import java.util.Arrays;
 /**
  * Utilities for dealing with variations seeds.
  */
+@JNINamespace("android_webview")
 public class VariationsTestUtils {
+    // This should match the Feature definition in variations_test_utils.cc.
+    public static final String TEST_FEATURE_NAME = "WebViewTestFeature";
+
     public static void assertSeedsEqual(SeedInfo expected, SeedInfo actual) {
         Assert.assertTrue("Expected " + expected + " but got " + actual,
                 seedsEqual(expected, actual));
@@ -62,5 +68,14 @@ public class VariationsTestUtils {
         if (file.exists() && !file.delete()) {
             throw new IOException("Failed to delete " + file);
         }
+    }
+
+    public static void disableSignatureVerificationForTesting() {
+        VariationsTestUtilsJni.get().disableSignatureVerificationForTesting();
+    }
+
+    @NativeMethods
+    interface Natives {
+        void disableSignatureVerificationForTesting();
     }
 }

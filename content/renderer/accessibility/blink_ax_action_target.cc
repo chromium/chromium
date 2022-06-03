@@ -3,15 +3,11 @@
 // found in the LICENSE file.
 
 #include "content/renderer/accessibility/blink_ax_action_target.h"
-#include "third_party/blink/public/platform/web_float_rect.h"
-#include "third_party/blink/public/platform/web_rect.h"
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/public/platform/web_string.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 using blink::WebAXObject;
-using blink::WebFloatRect;
-using blink::WebPoint;
-using blink::WebRect;
 
 namespace content {
 
@@ -40,56 +36,34 @@ ui::AXActionTarget::Type BlinkAXActionTarget::GetType() const {
   return ui::AXActionTarget::Type::kBlink;
 }
 
-bool BlinkAXActionTarget::ClearAccessibilityFocus() const {
-  return web_ax_object_.ClearAccessibilityFocus();
-}
-
-bool BlinkAXActionTarget::Click() const {
-  return web_ax_object_.Click();
-}
-
-bool BlinkAXActionTarget::Decrement() const {
-  return web_ax_object_.Decrement();
-}
-
-bool BlinkAXActionTarget::Increment() const {
-  return web_ax_object_.Increment();
-}
-
-bool BlinkAXActionTarget::Focus() const {
-  return web_ax_object_.Focus();
+bool BlinkAXActionTarget::PerformAction(
+    const ui::AXActionData& action_data) const {
+  return web_ax_object_.PerformAction(action_data);
 }
 
 gfx::Rect BlinkAXActionTarget::GetRelativeBounds() const {
   blink::WebAXObject offset_container;
-  WebFloatRect bounds;
-  SkMatrix44 container_transform;
+  gfx::RectF bounds;
+  skia::Matrix44 container_transform;
   web_ax_object_.GetRelativeBounds(offset_container, bounds,
                                    container_transform);
-  return gfx::Rect(bounds.x, bounds.y, bounds.width, bounds.height);
+  return gfx::ToEnclosedRect(bounds);
 }
 
 gfx::Point BlinkAXActionTarget::GetScrollOffset() const {
-  WebPoint offset = web_ax_object_.GetScrollOffset();
-  return gfx::Point(offset.x, offset.y);
+  return web_ax_object_.GetScrollOffset();
 }
 
 gfx::Point BlinkAXActionTarget::MinimumScrollOffset() const {
-  WebPoint offset = web_ax_object_.MinimumScrollOffset();
-  return gfx::Point(offset.x, offset.y);
+  return web_ax_object_.MinimumScrollOffset();
 }
 
 gfx::Point BlinkAXActionTarget::MaximumScrollOffset() const {
-  WebPoint offset = web_ax_object_.MaximumScrollOffset();
-  return gfx::Point(offset.x, offset.y);
-}
-
-bool BlinkAXActionTarget::SetAccessibilityFocus() const {
-  return web_ax_object_.SetAccessibilityFocus();
+  return web_ax_object_.MaximumScrollOffset();
 }
 
 void BlinkAXActionTarget::SetScrollOffset(const gfx::Point& point) const {
-  web_ax_object_.SetScrollOffset(WebPoint(point.x(), point.y()));
+  web_ax_object_.SetScrollOffset(point);
 }
 
 bool BlinkAXActionTarget::SetSelected(bool selected) const {
@@ -112,18 +86,6 @@ bool BlinkAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
       blink_focus_object->WebAXObject(), focus_offset);
 }
 
-bool BlinkAXActionTarget::SetSequentialFocusNavigationStartingPoint() const {
-  return web_ax_object_.SetSequentialFocusNavigationStartingPoint();
-}
-
-bool BlinkAXActionTarget::SetValue(const std::string& value) const {
-  return web_ax_object_.SetValue(blink::WebString::FromUTF8(value));
-}
-
-bool BlinkAXActionTarget::ShowContextMenu() const {
-  return web_ax_object_.ShowContextMenu();
-}
-
 bool BlinkAXActionTarget::ScrollToMakeVisible() const {
   return web_ax_object_.ScrollToMakeVisible();
 }
@@ -134,12 +96,8 @@ bool BlinkAXActionTarget::ScrollToMakeVisibleWithSubFocus(
     ax::mojom::ScrollAlignment vertical_scroll_alignment,
     ax::mojom::ScrollBehavior scroll_behavior) const {
   return web_ax_object_.ScrollToMakeVisibleWithSubFocus(
-      WebRect(rect.x(), rect.y(), rect.width(), rect.height()),
-      horizontal_scroll_alignment, vertical_scroll_alignment, scroll_behavior);
-}
-
-bool BlinkAXActionTarget::ScrollToGlobalPoint(const gfx::Point& point) const {
-  return web_ax_object_.ScrollToGlobalPoint(WebPoint(point.x(), point.y()));
+      rect, horizontal_scroll_alignment, vertical_scroll_alignment,
+      scroll_behavior);
 }
 
 }  // namespace content

@@ -5,18 +5,19 @@ package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.support.v4.view.animation.PathInterpolatorCompat;
 import android.text.TextUtils;
 import android.view.animation.Interpolator;
 
+import androidx.core.view.animation.PathInterpolatorCompat;
+
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 
 /**
- * Controls the image shown in the Bar. Owns animating between the search provider icon and
- * custom image (either a thumbnail or card icon) for the current query.
+ * Controls the image shown in the {@link ContextualSearchBarControl}. Owns animating between the
+ * search provider icon and custom image (either a thumbnail or card icon) for the current query.
  */
 public class ContextualSearchImageControl {
     /** The {@link OverlayPanel} that this class belongs to. */

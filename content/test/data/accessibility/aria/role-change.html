@@ -1,0 +1,21 @@
+<!DOCTYPE HTML>
+
+<div role="grid">
+  <div role="presentation" id="row1">
+    <div role="gridcell">Cell</div>
+    <div role="gridcell">Cell</div>
+  </div>
+</div>
+
+<table role="presentation" id="table1">
+  <caption>Real data table</caption>
+  <tr id="tr1">
+    <td id="td1">X</td>
+  </tr>
+</table>
+
+<script>
+document.getElementById('row1').setAttribute('role', 'row');
+
+document.getElementById('table1').removeAttribute('role');
+</script>

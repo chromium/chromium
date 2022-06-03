@@ -14,13 +14,9 @@ static_library("quarantine") {
     "quarantine.h",
     "quarantine_impl.cc",
     "quarantine_impl.h",
-    "quarantine_mac.mm",
-    "quarantine_win.cc",
   ]
 
-  public_deps = [
-    "//components/services/quarantine/public/mojom",
-  ]
+  public_deps = [ "//components/services/quarantine/public/mojom" ]
 
   deps = [
     ":common",
@@ -30,13 +26,23 @@ static_library("quarantine") {
   ]
 
   if (is_win) {
+    sources += [ "quarantine_win.cc" ]
     deps += [ "//components/services/quarantine/public/cpp:features" ]
   }
 
   if (is_mac) {
-    libs = [
+    sources += [ "quarantine_mac.mm" ]
+    frameworks = [
       "Carbon.framework",
       "Foundation.framework",
+    ]
+  }
+
+  if (is_chromeos) {
+    sources += [ "quarantine_chromeos.cc" ]
+    deps += [
+      "//chromeos/dbus/dlp",
+      "//chromeos/dbus/dlp:dlp_proto",
     ]
   }
 }
@@ -45,10 +51,6 @@ source_set("common") {
   sources = [
     "common.cc",
     "common.h",
-    "common_mac.h",
-    "common_mac.mm",
-    "common_win.cc",
-    "common_win.h",
   ]
 
   deps = [
@@ -56,8 +58,19 @@ source_set("common") {
     "//url",
   ]
 
+  if (is_win) {
+    sources += [
+      "common_win.cc",
+      "common_win.h",
+    ]
+  }
+
   if (is_mac) {
-    libs = [
+    sources += [
+      "common_mac.h",
+      "common_mac.mm",
+    ]
+    frameworks = [
       "Carbon.framework",
       "Foundation.framework",
     ]
@@ -70,8 +83,6 @@ source_set("test_support") {
   sources = [
     "test_support.cc",
     "test_support.h",
-    "test_support_mac.mm",
-    "test_support_win.cc",
   ]
 
   deps = [
@@ -81,8 +92,13 @@ source_set("test_support") {
     "//url",
   ]
 
+  if (is_win) {
+    sources += [ "test_support_win.cc" ]
+  }
+
   if (is_mac) {
-    libs = [
+    sources += [ "test_support_mac.mm" ]
+    frameworks = [
       "Carbon.framework",
       "Foundation.framework",
     ]
@@ -94,9 +110,7 @@ source_set("unit_tests") {
 
   sources = [
     "common_unittests.cc",
-    "quarantine_mac_unittest.mm",
     "quarantine_service_unittest.cc",
-    "quarantine_win_unittest.cc",
   ]
 
   # Chromecasts do not have extended attributes enabled; even if it were
@@ -121,11 +135,13 @@ source_set("unit_tests") {
   ]
 
   if (is_win) {
+    sources += [ "quarantine_win_unittest.cc" ]
     deps += [ "//components/services/quarantine/public/cpp:features" ]
   }
 
   if (is_mac) {
-    libs = [
+    sources += [ "quarantine_mac_unittest.mm" ]
+    frameworks = [
       "Carbon.framework",
       "Foundation.framework",
     ]

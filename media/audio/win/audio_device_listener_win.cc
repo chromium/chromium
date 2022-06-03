@@ -19,7 +19,7 @@ using base::win::ScopedCoMem;
 namespace media {
 
 static std::string FlowToString(EDataFlow flow) {
-  return flow == eRender ? "eRender" : "eConsole";
+  return flow == eRender ? "eRender" : "eCapture";
 }
 
 static std::string RoleToString(ERole role) {
@@ -67,15 +67,15 @@ AudioDeviceListenerWin::~AudioDeviceListenerWin() {
                              << "failed: " << std::hex << hr;
 }
 
-STDMETHODIMP_(ULONG) AudioDeviceListenerWin::AddRef() {
+ULONG AudioDeviceListenerWin::AddRef() {
   return 1;
 }
 
-STDMETHODIMP_(ULONG) AudioDeviceListenerWin::Release() {
+ULONG AudioDeviceListenerWin::Release() {
   return 1;
 }
 
-STDMETHODIMP AudioDeviceListenerWin::QueryInterface(REFIID iid, void** object) {
+HRESULT AudioDeviceListenerWin::QueryInterface(REFIID iid, void** object) {
   if (iid == IID_IUnknown || iid == __uuidof(IMMNotificationClient)) {
     *object = static_cast<IMMNotificationClient*>(this);
     return S_OK;
@@ -85,33 +85,32 @@ STDMETHODIMP AudioDeviceListenerWin::QueryInterface(REFIID iid, void** object) {
   return E_NOINTERFACE;
 }
 
-STDMETHODIMP AudioDeviceListenerWin::OnPropertyValueChanged(
-    LPCWSTR device_id,
-    const PROPERTYKEY key) {
+HRESULT AudioDeviceListenerWin::OnPropertyValueChanged(LPCWSTR device_id,
+                                                       const PROPERTYKEY key) {
   // Property changes are handled by IAudioSessionControl listeners hung off of
   // each WASAPIAudioOutputStream() since not all property changes make it to
   // this method and those that do are spammed 10s of times.
   return S_OK;
 }
 
-STDMETHODIMP AudioDeviceListenerWin::OnDeviceAdded(LPCWSTR device_id) {
+HRESULT AudioDeviceListenerWin::OnDeviceAdded(LPCWSTR device_id) {
   // We don't care when devices are added.
   return S_OK;
 }
 
-STDMETHODIMP AudioDeviceListenerWin::OnDeviceRemoved(LPCWSTR device_id) {
+HRESULT AudioDeviceListenerWin::OnDeviceRemoved(LPCWSTR device_id) {
   // We don't care when devices are removed.
   return S_OK;
 }
 
-STDMETHODIMP AudioDeviceListenerWin::OnDeviceStateChanged(LPCWSTR device_id,
-                                                          DWORD new_state) {
+HRESULT AudioDeviceListenerWin::OnDeviceStateChanged(LPCWSTR device_id,
+                                                     DWORD new_state) {
   if (auto* monitor = base::SystemMonitor::Get())
     monitor->ProcessDevicesChanged(base::SystemMonitor::DEVTYPE_AUDIO);
   return S_OK;
 }
 
-STDMETHODIMP AudioDeviceListenerWin::OnDefaultDeviceChanged(
+HRESULT AudioDeviceListenerWin::OnDefaultDeviceChanged(
     EDataFlow flow,
     ERole role,
     LPCWSTR new_default_device_id) {
@@ -135,8 +134,10 @@ STDMETHODIMP AudioDeviceListenerWin::OnDefaultDeviceChanged(
   // it provides a substantially faster resumption of playback.
   bool did_run_listener_cb = false;
   const base::TimeTicks now = tick_clock_->NowTicks();
-  if (flow == eRender && now - last_device_change_time_ > kDeviceChangeLimit) {
+  if (flow == eRender && (now - last_device_change_time_ > kDeviceChangeLimit ||
+                          new_device_id.compare(last_device_id_) != 0)) {
     last_device_change_time_ = now;
+    last_device_id_ = new_device_id;
     listener_cb_.Run();
     did_run_listener_cb = true;
   }

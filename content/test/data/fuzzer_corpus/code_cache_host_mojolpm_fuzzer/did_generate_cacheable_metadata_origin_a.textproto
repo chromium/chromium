@@ -1,0 +1,35 @@
+actions {
+  new_code_cache_host {
+    id: 1
+    render_process_id: 0
+    origin_id: ORIGIN_A
+  }
+}
+actions {
+  code_cache_host_remote_action {
+    id: 1
+    m_did_generate_cacheable_metadata {
+      m_cache_type: CodeCacheType_kJavascript
+      m_url {
+        new {
+          id: 1
+          m_url: "http://aaa.com/test"
+        }
+      }
+      m_data {
+        new {
+          id: 1
+          m_bytes {
+          }
+        }
+      }
+      m_expected_response_time {
+      }
+    }
+  }
+}
+sequences {
+  action_indexes: 0
+  action_indexes: 1
+}
+sequence_indexes: 0

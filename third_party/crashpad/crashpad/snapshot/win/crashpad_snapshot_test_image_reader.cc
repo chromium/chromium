@@ -14,8 +14,8 @@
 
 #include <windows.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "client/crashpad_info.h"
 #include "util/file/file_io.h"
 #include "util/synchronization/semaphore.h"

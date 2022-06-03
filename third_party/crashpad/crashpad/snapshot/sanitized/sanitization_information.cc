@@ -16,6 +16,7 @@
 
 #include <limits>
 
+#include "base/logging.h"
 #include "client/annotation.h"
 
 namespace crashpad {
@@ -23,18 +24,18 @@ namespace crashpad {
 namespace {
 
 template <typename Pointer>
-bool ReadAnnotationsWhitelist(const ProcessMemoryRange& memory,
-                              VMAddress whitelist_address,
-                              std::vector<std::string>* whitelist) {
-  if (!whitelist_address) {
+bool ReadAllowedAnnotations(const ProcessMemoryRange& memory,
+                            VMAddress list_address,
+                            std::vector<std::string>* allowed_annotations) {
+  if (!list_address) {
     return true;
   }
 
-  std::vector<std::string> local_whitelist;
+  std::vector<std::string> local_allowed_annotations;
   Pointer name_address;
-  while (memory.Read(whitelist_address, sizeof(name_address), &name_address)) {
+  while (memory.Read(list_address, sizeof(name_address), &name_address)) {
     if (!name_address) {
-      whitelist->swap(local_whitelist);
+      allowed_annotations->swap(local_allowed_annotations);
       return true;
     }
 
@@ -43,8 +44,8 @@ bool ReadAnnotationsWhitelist(const ProcessMemoryRange& memory,
             name_address, Annotation::kNameMaxLength, &name)) {
       return false;
     }
-    local_whitelist.push_back(name);
-    whitelist_address += sizeof(Pointer);
+    local_allowed_annotations.push_back(name);
+    list_address += sizeof(Pointer);
   }
 
   return false;
@@ -52,27 +53,27 @@ bool ReadAnnotationsWhitelist(const ProcessMemoryRange& memory,
 
 }  // namespace
 
-bool ReadAnnotationsWhitelist(const ProcessMemoryRange& memory,
-                              VMAddress whitelist_address,
-                              std::vector<std::string>* whitelist) {
-  return memory.Is64Bit() ? ReadAnnotationsWhitelist<uint64_t>(
-                                memory, whitelist_address, whitelist)
-                          : ReadAnnotationsWhitelist<uint32_t>(
-                                memory, whitelist_address, whitelist);
+bool ReadAllowedAnnotations(const ProcessMemoryRange& memory,
+                            VMAddress list_address,
+                            std::vector<std::string>* allowed_annotations) {
+  return memory.Is64Bit() ? ReadAllowedAnnotations<uint64_t>(
+                                memory, list_address, allowed_annotations)
+                          : ReadAllowedAnnotations<uint32_t>(
+                                memory, list_address, allowed_annotations);
 }
 
-bool ReadMemoryRangeWhitelist(
+bool ReadAllowedMemoryRanges(
     const ProcessMemoryRange& memory,
-    VMAddress whitelist_address,
-    std::vector<std::pair<VMAddress, VMAddress>>* whitelist) {
-  whitelist->clear();
-  if (!whitelist_address) {
+    VMAddress list_address,
+    std::vector<std::pair<VMAddress, VMAddress>>* allowed_memory_ranges) {
+  allowed_memory_ranges->clear();
+  if (!list_address) {
     return true;
   }
 
-  SanitizationMemoryRangeWhitelist list;
-  if (!memory.Read(whitelist_address, sizeof(list), &list)) {
-    LOG(ERROR) << "Failed to read memory range whitelist.";
+  SanitizationAllowedMemoryRanges list;
+  if (!memory.Read(list_address, sizeof(list), &list)) {
+    LOG(ERROR) << "Failed to read allowed memory ranges";
     return false;
   }
 
@@ -83,31 +84,32 @@ bool ReadMemoryRangeWhitelist(
   // An upper bound of entries that we never expect to see more than.
   constexpr size_t kMaxListSize = 256;
   if (list.size > kMaxListSize) {
-    LOG(ERROR) << "Whitelist exceeded maximum, size=" << list.size;
+    LOG(ERROR) << "list exceeded maximum, size=" << list.size;
     return false;
   }
 
-  SanitizationMemoryRangeWhitelist::Range ranges[list.size];
-  if (!memory.Read(list.entries, sizeof(ranges), &ranges)) {
-    LOG(ERROR) << "Failed to read memory range whitelist entries.";
+  std::vector<SanitizationAllowedMemoryRanges::Range> ranges(list.size);
+  if (!memory.Read(list.entries, sizeof(ranges[0]) * list.size,
+                   ranges.data())) {
+    LOG(ERROR) << "Failed to read allowed memory ranges";
     return false;
   }
 
   const VMAddress vm_max = memory.Is64Bit()
                                ? std::numeric_limits<uint64_t>::max()
                                : std::numeric_limits<uint32_t>::max();
-  std::vector<std::pair<VMAddress, VMAddress>> local_whitelist;
-  for (size_t i = 0; i < list.size; i++) {
+  std::vector<std::pair<VMAddress, VMAddress>> local_allowed_memory_ranges;
+  for (size_t i = 0; i < list.size; ++i) {
     if (ranges[i].base > vm_max || ranges[i].length > vm_max - ranges[i].base) {
-      LOG(ERROR) << "Invalid memory range whitelist entry base="
-                 << ranges[i].base << " length=" << ranges[i].length;
+      LOG(ERROR) << "Invalid range: base=" << ranges[i].base
+                 << " length=" << ranges[i].length;
       return false;
     }
-    local_whitelist.emplace_back(ranges[i].base,
-                                 ranges[i].base + ranges[i].length);
+    local_allowed_memory_ranges.emplace_back(ranges[i].base,
+                                             ranges[i].base + ranges[i].length);
   }
 
-  whitelist->swap(local_whitelist);
+  allowed_memory_ranges->swap(local_allowed_memory_ranges);
   return true;
 }
 

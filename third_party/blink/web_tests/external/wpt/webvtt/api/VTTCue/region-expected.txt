@@ -1,4 +1,4 @@
 This is a testharness.js-based test.
-FAIL VTTCue.region, script-created cue Failed to set the 'region' property on 'VTTCue': The provided value is not of type 'VTTRegion'.
+FAIL VTTCue.region, script-created cue Failed to set the 'region' property on 'VTTCue': Failed to convert value to 'VTTRegion'.
 Harness: the test ran to completion.
 

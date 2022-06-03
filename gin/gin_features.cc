@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "gin/gin_features.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace features {
 
@@ -14,32 +15,105 @@ const base::Feature kV8OptimizeJavascript{"V8OptimizeJavascript",
 const base::Feature kV8FlushBytecode{"V8FlushBytecode",
                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables flushing of baseline code in V8.
+const base::Feature kV8FlushBaselineCode{"V8FlushBaselineCode",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables finalizing streaming JS compilations on a background thread.
+const base::Feature kV8OffThreadFinalization{"V8OffThreadFinalization",
+                                             base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Enables lazy feedback allocation in V8.
 const base::Feature kV8LazyFeedbackAllocation{"V8LazyFeedbackAllocation",
                                               base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Enables memory reducer for small heaps in V8.
-const base::Feature kV8MemoryReducerForSmallHeaps{
-    "V8MemoryReducerForSmallHeaps", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Increase V8 heap size to 4GB if the physical memory is bigger than 16 GB.
-const base::Feature kV8HugeMaxOldGenerationSize{
-    "V8HugeMaxOldGenerationSize", base::FEATURE_ENABLED_BY_DEFAULT};
-
-// Enables new background GC scheduling heuristics.
-const base::Feature kV8GCBackgroundSchedule{"V8GCBackgroundSchedule",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Perform less compaction in non-memory reducing mode.
-const base::Feature kV8GCLessCompaction{"V8GCLessCompaction",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Always promote young objects in Mark-Compact GC.
-const base::Feature kV8GCAlwaysPromoteYoungMC{
-    "V8GCAlwaysPromoteYoungMC", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// Enable concurrent inlining in TurboFan.
+// Enables concurrent inlining in TurboFan.
 const base::Feature kV8ConcurrentInlining{"V8ConcurrentInlining",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables per-context marking worklists in V8 GC.
+const base::Feature kV8PerContextMarkingWorklist{
+    "V8PerContextMarkingWorklist", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables flushing of the instruction cache for the embedded blob.
+const base::Feature kV8FlushEmbeddedBlobICache{
+    "V8FlushEmbeddedBlobICache", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables reduced number of concurrent marking tasks.
+const base::Feature kV8ReduceConcurrentMarkingTasks{
+    "V8ReduceConcurrentMarkingTasks", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Disables reclaiming of unmodified wrappers objects.
+const base::Feature kV8NoReclaimUnmodifiedWrappers{
+    "V8NoReclaimUnmodifiedWrappers", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables W^X code memory protection in V8.
+// This is enabled in V8 by default. To test the performance impact, we are
+// going to disable this feature in a finch experiment.
+const base::Feature kV8CodeMemoryWriteProtection{
+    "V8CodeMemoryWriteProtection", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables fallback to a breadth-first regexp engine on excessive backtracking.
+const base::Feature kV8ExperimentalRegexpEngine{
+    "V8ExperimentalRegexpEngine", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables experimental Turboprop compiler.
+const base::Feature kV8Turboprop{"V8Turboprop",
+                                 base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables Sparkplug compiler. Note that this only sets the V8 flag when
+// manually overridden; otherwise it defers to whatever the V8 default is.
+const base::Feature kV8Sparkplug{"V8Sparkplug",
+                                 base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Makes sure the experimental Sparkplug compiler is only enabled if short
+// builtin calls are enabled too.
+const base::Feature kV8SparkplugNeedsShortBuiltinCalls{
+    "V8SparkplugNeedsShortBuiltinCalls", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables short builtin calls feature.
+const base::Feature kV8ShortBuiltinCalls{"V8ShortBuiltinCalls",
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Enables fast API calls in TurboFan.
+const base::Feature kV8TurboFastApiCalls{"V8TurboFastApiCalls",
+                                         base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Artificially delays script execution.
+const base::Feature kV8ScriptAblation{"V8ScriptAblation",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<int> kV8ScriptDelayOnceMs{&kV8ScriptAblation,
+                                                   "V8ScriptDelayOnceMs", 0};
+const base::FeatureParam<int> kV8ScriptDelayMs{&kV8ScriptAblation,
+                                               "V8ScriptDelayMs", 0};
+const base::FeatureParam<double> kV8ScriptDelayFraction{
+    &kV8ScriptAblation, "V8ScriptDelayFraction", 0.0};
+
+// Enables slow histograms that provide detailed information at increased
+// runtime overheads.
+const base::Feature kV8SlowHistograms{"V8SlowHistograms",
+                                      base::FEATURE_DISABLED_BY_DEFAULT};
+// Multiple finch experiments might use slow-histograms. We introduce
+// separate feature flags to circumvent finch limitations.
+const base::Feature kV8SlowHistogramsCodeMemoryWriteProtection{
+    "V8SlowHistogramsCodeMemoryWriteProtection",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kV8SlowHistogramsSparkplug{
+    "V8SlowHistogramsSparkplug", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kV8SlowHistogramsSparkplugAndroid{
+    "V8SlowHistogramsSparkplugAndroid", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::Feature kV8SlowHistogramsScriptAblation{
+    "V8SlowHistogramsScriptAblation", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Enables the V8 virtual memory cage.
+const base::Feature kV8VirtualMemoryCage {
+  "V8VirtualMemoryCage",
+#if defined(V8_HEAP_SANDBOX)
+      // The cage is required for the V8 Heap Sandbox.
+      base::FEATURE_ENABLED_BY_DEFAULT
+#else
+      base::FEATURE_DISABLED_BY_DEFAULT
+#endif
+};
 
 }  // namespace features

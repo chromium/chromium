@@ -1,0 +1,38 @@
+<!--
+@MAC-ALLOW:AXRoleDescription
+@WIN-ALLOW:xml-roles*
+@WIN-ALLOW:level*
+@WIN-ALLOW:setsize*
+@WIN-ALLOW:posinset*
+@AURALINUX-ALLOW:level:*
+@AURALINUX-ALLOW:posinset*
+@AURALINUX-ALLOW:setsize*
+@BLINK-ALLOW:hierarchicalLevel*
+@BLINK-ALLOW:posInSet*
+@BLINK-ALLOW:setSize*
+-->
+<!DOCTYPE html>
+<html>
+<body>
+  <!-- aria-level stopped being a supported property in ARIA 1.2 -->
+  <div role="tablist" aria-level="1">
+    <div role="tab">Tab 1 of 2, level 1</div>
+    <div role="tab">Tab 2 of 2, level 1</div>
+  </div>
+  <div role="tablist" aria-level="2">
+    <div role="tab">Tab 1 of 3, level 2</div>
+    <div role="tab">Tab 2 of 3, level 2</div>
+    <div role="tablist" aria-level="3">
+      <div role="tab">Tab 1 of 1, level 3</div>
+    </div>
+    <div role="tab">Tab 3 of 3, level 2</div>
+  </div>
+  <div role="tablist" aria-level="2">
+    <div role="tab">Tab 1 of 1, level 2</div>
+  </div>
+  <div role="tablist" aria-level="1">
+    <div role="tab">Tab 1 of 1, level 1</div>
+  </div>
+</body>
+
+</html>

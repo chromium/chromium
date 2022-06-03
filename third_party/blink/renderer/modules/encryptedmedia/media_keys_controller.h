@@ -16,8 +16,6 @@ class WebEncryptedMediaClient;
 class MODULES_EXPORT MediaKeysController final
     : public GarbageCollected<MediaKeysController>,
       public Supplement<Page> {
-  USING_GARBAGE_COLLECTED_MIXIN(MediaKeysController);
-
  public:
   static const char kSupplementName[];
 
@@ -30,7 +28,7 @@ class MODULES_EXPORT MediaKeysController final
 
   MediaKeysController();
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     Supplement<Page>::Trace(visitor);
   }
 };

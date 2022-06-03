@@ -2,40 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":clear_browsing_data_browser_proxy",
-    ":clear_browsing_data_dialog",
-    ":installed_app_checkbox",
-  ]
-}
-
-js_library("clear_browsing_data_browser_proxy") {
-  deps = [
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog",
-    "//ui/webui/resources/js:cr",
-  ]
-}
-
-js_library("clear_browsing_data_dialog") {
-  deps = [
-    ":clear_browsing_data_browser_proxy",
-    "..:route",
-    "../controls:settings_dropdown_menu",
-    "../people_page:sync_browser_proxy",
-    "//third_party/polymer/v1_0/components-chromium/iron-pages:iron-pages-extracted",
-    "//third_party/polymer/v1_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior-extracted",
-    "//ui/webui/resources/js:cr",
-    "//ui/webui/resources/js:load_time_data",
-    "//ui/webui/resources/js:web_ui_listener_behavior",
-  ]
-}
-
-js_library("installed_app_checkbox") {
-  deps = [
-    ":clear_browsing_data_browser_proxy",
-    "../controls:settings_boolean_control_behavior",
+html_to_js("web_components") {
+  js_files = [
+    "clear_browsing_data_dialog.ts",
+    "history_deletion_dialog.ts",
+    "installed_app_checkbox.ts",
+    "passwords_deletion_dialog.ts",
   ]
 }

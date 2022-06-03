@@ -60,7 +60,7 @@ const unsigned kTagNumberMask = CBS_ASN1_TAG_NUMBER_MASK;
 const unsigned kTagConstructionMask = CBS_ASN1_CONSTRUCTED;
 const unsigned kTagClassMask = CBS_ASN1_CLASS_MASK;
 
-// Creates the value for the outter tag of an explicitly tagged type.
+// Creates the value for the outer tag of an explicitly tagged type.
 //
 // The ASN.1 keyword for this is:
 //     [tag_number] EXPLICIT

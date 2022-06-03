@@ -43,7 +43,6 @@
 #include <google/protobuf/util/type_resolver.h>
 #include <google/protobuf/util/type_resolver_util.h>
 #include <google/protobuf/stubs/bytestream.h>
-
 #include <google/protobuf/stubs/strutil.h>
 #include <google/protobuf/stubs/status_macros.h>
 
@@ -146,8 +145,8 @@ class StatusErrorListener : public converter::ErrorListener {
                     StringPiece value) override {
     status_ = util::Status(
         util::error::INVALID_ARGUMENT,
-        StrCat(GetLocString(loc), ": invalid value ", string(value),
-                     " for type ", string(type_name)));
+        StrCat(GetLocString(loc), ": invalid value ", std::string(value),
+                     " for type ", std::string(type_name)));
   }
 
   void MissingField(const converter::LocationTrackerInterface& loc,

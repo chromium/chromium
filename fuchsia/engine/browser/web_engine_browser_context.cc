@@ -4,32 +4,30 @@
 
 #include "fuchsia/engine/browser/web_engine_browser_context.h"
 
+#include <lib/fdio/namespace.h>
 #include <memory>
 #include <utility>
 
-#include "base/base_paths_fuchsia.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/fuchsia/fuchsia_logging.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
+#include "base/threading/thread_restrictions.h"
+#include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
+#include "components/profile_metrics/browser_profile_type.h"
+#include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/resource_context.h"
 #include "fuchsia/engine/browser/web_engine_net_log_observer.h"
-#include "fuchsia/engine/browser/web_engine_permission_manager.h"
+#include "fuchsia/engine/switches.h"
+#include "media/capabilities/in_memory_video_decode_stats_db_impl.h"
+#include "media/mojo/services/video_decode_perf_history.h"
 #include "services/network/public/cpp/network_switches.h"
 
-class WebEngineBrowserContext::ResourceContext
-    : public content::ResourceContext {
- public:
-  ResourceContext() = default;
-  ~ResourceContext() override = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceContext);
-};
+namespace {
 
 std::unique_ptr<WebEngineNetLogObserver> CreateNetLogObserver() {
   std::unique_ptr<WebEngineNetLogObserver> result;
@@ -45,30 +43,43 @@ std::unique_ptr<WebEngineNetLogObserver> CreateNetLogObserver() {
   return result;
 }
 
-WebEngineBrowserContext::WebEngineBrowserContext(bool force_incognito)
-    : net_log_observer_(CreateNetLogObserver()),
-      resource_context_(new ResourceContext()) {
-  if (!force_incognito) {
-    base::PathService::Get(base::DIR_APP_DATA, &data_dir_path_);
-    if (!base::PathExists(data_dir_path_)) {
-      // Run in incognito mode if /data doesn't exist.
-      data_dir_path_.clear();
-    }
-  }
-  simple_factory_key_ =
-      std::make_unique<SimpleFactoryKey>(GetPath(), IsOffTheRecord());
-  SimpleKeyMap::GetInstance()->Associate(this, simple_factory_key_.get());
-  BrowserContext::Initialize(this, data_dir_path_);
+}  // namespace
+
+class WebEngineBrowserContext::ResourceContext
+    : public content::ResourceContext {
+ public:
+  ResourceContext() = default;
+
+  ResourceContext(const ResourceContext&) = delete;
+  ResourceContext& operator=(const ResourceContext&) = delete;
+
+  ~ResourceContext() override = default;
+};
+
+// static
+std::unique_ptr<WebEngineBrowserContext>
+WebEngineBrowserContext::CreatePersistent(base::FilePath data_directory) {
+  return base::WrapUnique(
+      new WebEngineBrowserContext(std::move(data_directory)));
+}
+
+// static
+std::unique_ptr<WebEngineBrowserContext>
+WebEngineBrowserContext::CreateIncognito() {
+  return base::WrapUnique(new WebEngineBrowserContext({}));
 }
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
   SimpleKeyMap::GetInstance()->Dissociate(this);
-  NotifyWillBeDestroyed(this);
+  NotifyWillBeDestroyed();
 
   if (resource_context_) {
-    base::DeleteSoon(FROM_HERE, {content::BrowserThread::IO},
-                     std::move(resource_context_));
+    content::GetIOThreadTaskRunner({})->DeleteSoon(
+        FROM_HERE, std::move(resource_context_));
   }
+
+  BrowserContextDependencyManager::GetInstance()->DestroyBrowserContextServices(
+      this);
 
   ShutdownStoragePartitions();
 }
@@ -106,6 +117,11 @@ WebEngineBrowserContext::GetSpecialStoragePolicy() {
   return nullptr;
 }
 
+content::PlatformNotificationService*
+WebEngineBrowserContext::GetPlatformNotificationService() {
+  return nullptr;
+}
+
 content::PushMessagingService*
 WebEngineBrowserContext::GetPushMessagingService() {
   return nullptr;
@@ -123,9 +139,7 @@ WebEngineBrowserContext::GetSSLHostStateDelegate() {
 
 content::PermissionControllerDelegate*
 WebEngineBrowserContext::GetPermissionControllerDelegate() {
-  if (!permission_manager_)
-    permission_manager_ = std::make_unique<WebEnginePermissionManager>();
-  return permission_manager_.get();
+  return &permission_delegate_;
 }
 
 content::ClientHintsControllerDelegate*
@@ -146,4 +160,35 @@ WebEngineBrowserContext::GetBackgroundSyncController() {
 content::BrowsingDataRemoverDelegate*
 WebEngineBrowserContext::GetBrowsingDataRemoverDelegate() {
   return nullptr;
+}
+
+std::unique_ptr<media::VideoDecodePerfHistory>
+WebEngineBrowserContext::CreateVideoDecodePerfHistory() {
+  if (!IsOffTheRecord()) {
+    // Delegate to the base class for stateful VideoDecodePerfHistory DB
+    // creation.
+    return BrowserContext::CreateVideoDecodePerfHistory();
+  }
+
+  // Return in-memory VideoDecodePerfHistory.
+  return std::make_unique<media::VideoDecodePerfHistory>(
+      std::make_unique<media::InMemoryVideoDecodeStatsDBImpl>(
+          nullptr /* seed_db_provider */),
+      media::learning::FeatureProviderFactoryCB());
+}
+
+WebEngineBrowserContext::WebEngineBrowserContext(base::FilePath data_directory)
+    : data_dir_path_(std::move(data_directory)),
+      net_log_observer_(CreateNetLogObserver()),
+      simple_factory_key_(GetPath(), IsOffTheRecord()),
+      resource_context_(std::make_unique<ResourceContext>()) {
+  SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
+
+  profile_metrics::SetBrowserProfileType(
+      this, IsOffTheRecord() ? profile_metrics::BrowserProfileType::kIncognito
+                             : profile_metrics::BrowserProfileType::kRegular);
+
+  // TODO(crbug.com/1181156): Should apply any persisted isolated origins here.
+  // However, since WebEngine does not persist any, that would currently be a
+  // no-op.
 }

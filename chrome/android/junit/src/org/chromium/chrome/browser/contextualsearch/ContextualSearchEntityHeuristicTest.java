@@ -41,6 +41,12 @@ public class ContextualSearchEntityHeuristicTest {
     private ContextualSearchContext mContext;
     private ContextualSearchEntityHeuristic mEntityHeuristic;
 
+    /** A {@link ContextualSearchContext} that ignores changes to the selection. */
+    private class ChangeIgnoringContextFortest extends ContextualSearchContext {
+        @Override
+        void onSelectionChanged() {}
+    }
+
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
@@ -48,8 +54,8 @@ public class ContextualSearchEntityHeuristicTest {
     }
 
     private void setupInstanceToTest(Locale locale, int tapOffset) {
-        mContext = new ContextualSearchContext.ChangeIgnoringContext();
-        mContext.setSurroundingText(UTF_8, SAMPLE_TEXT, tapOffset, tapOffset);
+        mContext = new ChangeIgnoringContextFortest();
+        mContext.setSurroundingText(SAMPLE_TEXT, tapOffset, tapOffset);
         when(mContextJniMock.detectLanguage(anyLong(), eq(mContext)))
                 .thenReturn(locale.getLanguage());
         mEntityHeuristic = ContextualSearchEntityHeuristic.testInstance(mContext, true);
@@ -109,11 +115,11 @@ public class ContextualSearchEntityHeuristicTest {
 
     private ContextualSearchEntityHeuristic setupHeuristic(
             String language, String start, String text) {
-        ContextualSearchContext context = new ContextualSearchContext.ChangeIgnoringContext();
+        ContextualSearchContext context = new ChangeIgnoringContextFortest();
         when(mContextJniMock.detectLanguage(anyLong(), eq(context))).thenReturn(language);
         assert text.startsWith(start);
         int tapOffset = start.length();
-        context.setSurroundingText(UTF_8, text, tapOffset, tapOffset);
+        context.setSurroundingText(text, tapOffset, tapOffset);
         return ContextualSearchEntityHeuristic.testInstance(context, true);
     }
 

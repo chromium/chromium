@@ -1,25 +1,14 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../controls/controlled_radio_button.html">
-<link rel="import" href="../controls/extension_controlled_indicator.html">
-<link rel="import" href="../controls/settings_radio_group.html">
-<link rel="import" href="on_startup_browser_proxy.html">
-<link rel="import" href="startup_urls_page.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-on-startup-page">
-  <template>
-    <style include="settings-shared">
+    <style include="cr-shared-style settings-shared iron-flex">
       .block {
         display: block;
       }
     </style>
-    <div class="settings-box block first">
+    <div class="cr-row first">
       <settings-radio-group id="onStartupRadioGroup"
+          class="flex"
           pref="{{prefs.session.restore_on_startup}}"
           group-aria-label="$i18n{onStartup}">
-        <controlled-radio-button name="[[prefValues_.OPEN_NEW_TAB]]"
+        <controlled-radio-button name="[[getName_(prefValues_.OPEN_NEW_TAB)]]"
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupOpenNewTab}"
             no-extension-indicator>
@@ -31,11 +20,11 @@
               extension-can-be-disabled="[[ntpExtension_.canBeDisabled]]">
           </extension-controlled-indicator>
         </template>
-        <controlled-radio-button name="[[prefValues_.CONTINUE]]"
+        <controlled-radio-button name="[[getName_(prefValues_.CONTINUE)]]"
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupContinue}">
         </controlled-radio-button>
-        <controlled-radio-button name="[[prefValues_.OPEN_SPECIFIC]]"
+        <controlled-radio-button name="[[getName_(prefValues_.OPEN_SPECIFIC)]]"
             pref="[[prefs.session.restore_on_startup]]"
             label="$i18n{onStartupOpenSpecific}">
         </controlled-radio-button>
@@ -46,6 +35,3 @@
       <settings-startup-urls-page prefs="[[prefs]]">
       </settings-startup-urls-page>
     </template>
-  </template>
-  <script src="on_startup_page.js"></script>
-</dom-module>

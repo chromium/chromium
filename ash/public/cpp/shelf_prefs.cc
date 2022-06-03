@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/prefs/pref_service.h"
@@ -80,9 +80,9 @@ std::string GetPerDisplayPref(PrefService* prefs,
   if (local_pref->IsRecommended() || !has_per_display_prefs)
     return value;
 
-  std::string default_string;
-  prefs->GetDefaultPrefValue(local_path)->GetAsString(&default_string);
-  return default_string;
+  const std::string* default_string =
+      prefs->GetDefaultPrefValue(local_path)->GetIfString();
+  return default_string ? *default_string : std::string();
 }
 
 // Sets the preference value for the display with the given |display_id|.

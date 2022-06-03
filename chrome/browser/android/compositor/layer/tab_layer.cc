@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/i18n/rtl.h"
+#include "base/numerics/safe_conversions.h"
 #include "cc/layers/layer.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/layers/nine_patch_layer.h"
@@ -25,9 +26,8 @@
 #include "ui/gfx/geometry/insets_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_f.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace android {
 
@@ -133,7 +133,6 @@ void TabLayer::SetProperties(int id,
                              float content_width,
                              float content_height,
                              float view_width,
-                             float view_height,
                              bool show_toolbar,
                              int default_theme_color,
                              int toolbar_background_color,
@@ -142,9 +141,9 @@ void TabLayer::SetProperties(int id,
                              bool show_tab_title,
                              int toolbar_textbox_resource_id,
                              int toolbar_textbox_background_color,
-                             float toolbar_textbox_alpha,
                              float toolbar_alpha,
                              float toolbar_y_offset,
+                             float content_offset,
                              float side_border_scale,
                              bool inset_border) {
   if (alpha <= 0) {
@@ -193,8 +192,8 @@ void TabLayer::SetProperties(int id,
   const gfx::RectF shadow_padding(shadow_resource->padding());
   const gfx::RectF contour_padding(contour_resource->padding());
 
-  const bool back_visible = cos(rotation_x * SK_MScalarPI / 180.0f) < 0 ||
-                            cos(rotation_y * SK_MScalarPI / 180.0f) < 0;
+  const bool back_visible = cos(rotation_x * SK_ScalarPI / 180.0f) < 0 ||
+                            cos(rotation_y * SK_ScalarPI / 180.0f) < 0;
 
   const float content_scale = width / content_width;
   gfx::RectF content_area(0.f, 0.f, content_width, content_height);
@@ -230,16 +229,13 @@ void TabLayer::SetProperties(int id,
   // TODO(kkimlabs): Tab switcher doesn't show the progress bar.
   toolbar_layer_->PushResource(
       toolbar_resource_id, toolbar_background_color, anonymize_toolbar,
-      toolbar_textbox_background_color, toolbar_textbox_resource_id,
-      toolbar_textbox_alpha, view_height,
-      // TODO(mdjones): Feels odd to pass 0 here when
-      // we have access to toolbar_y_offset.
-      0, false, false);
+      toolbar_textbox_background_color, toolbar_textbox_resource_id, 0,
+      toolbar_y_offset, false, false);
   toolbar_layer_->UpdateProgressBar(0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
 
   float toolbar_impact_height = 0;
   if (show_toolbar && !back_visible)
-    toolbar_impact_height = toolbar_layer_->layer()->bounds().height();
+    toolbar_impact_height = content_offset;
 
   //----------------------------------------------------------------------------
   // Compute Alpha and Visibility
@@ -292,9 +288,8 @@ void TabLayer::SetProperties(int id,
       descaled_local_content_area.height() - toolbar_impact_height);
 
   // Shrink the toolbar layer so we properly clip if it's offset.
-  gfx::Size toolbar_size(
-      toolbar_layer_->layer()->bounds().width(),
-      toolbar_layer_->layer()->bounds().height() - toolbar_y_offset);
+  gfx::Size toolbar_size(toolbar_layer_->layer()->bounds().width(),
+                         toolbar_layer_->layer()->bounds().height());
 
   //----------------------------------------------------------------------------
   // Compute Layer Positions
@@ -439,10 +434,9 @@ void TabLayer::SetProperties(int id,
 
   if (!back_visible) {
     gfx::Rect rounded_descaled_content_area(
-        round(descaled_local_content_area.x()),
-        round(descaled_local_content_area.y()),
-        round(desired_content_size.width()),
-        round(desired_content_size.height()));
+        base::ClampRound(descaled_local_content_area.x()),
+        base::ClampRound(descaled_local_content_area.y()),
+        desired_content_size.width(), desired_content_size.height());
 
     SetContentProperties(
         id, ids, can_use_live_layer, static_to_view_blend, true, alpha,

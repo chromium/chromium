@@ -23,22 +23,24 @@
 
 #include <stdint.h>
 
-#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/synchronization/lock.h"
+#include "base/types/pass_key.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/shared_remote.h"
-#include "mojo/public/cpp/bindings/thread_safe_interface_ptr.h"
 #include "net/base/ip_address.h"
 #include "net/base/network_interfaces.h"
 #include "services/network/public/cpp/p2p_socket_type.h"
 #include "services/network/public/mojom/p2p.mojom-blink.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
+#include "third_party/blink/renderer/platform/mojo/mojo_binding_context.h"
 #include "third_party/blink/renderer/platform/p2p/network_list_manager.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace base {
@@ -47,18 +49,24 @@ class SingleThreadTaskRunner;
 
 namespace blink {
 class NetworkListObserver;
-}
-
-namespace blink {
 
 // This class is created on the main thread, but is used primarily on the
 // WebRTC worker threads.
 class PLATFORM_EXPORT P2PSocketDispatcher
-    : public base::RefCountedThreadSafe<P2PSocketDispatcher>,
+    : public GarbageCollected<P2PSocketDispatcher>,
+      public Supplement<MojoBindingContext>,
       public blink::NetworkListManager,
       public network::mojom::blink::P2PNetworkNotificationClient {
  public:
-  P2PSocketDispatcher();
+  static const char kSupplementName[];
+
+  static P2PSocketDispatcher& From(MojoBindingContext& context);
+
+  P2PSocketDispatcher(MojoBindingContext& context,
+                      base::PassKey<P2PSocketDispatcher>);
+  P2PSocketDispatcher(const P2PSocketDispatcher&) = delete;
+  P2PSocketDispatcher& operator=(const P2PSocketDispatcher&) = delete;
+  ~P2PSocketDispatcher() override;
 
   // blink::NetworkListManager interface:
   void AddNetworkListObserver(
@@ -66,13 +74,12 @@ class PLATFORM_EXPORT P2PSocketDispatcher
   void RemoveNetworkListObserver(
       blink::NetworkListObserver* network_list_observer) override;
 
-  network::mojom::blink::P2PSocketManager* GetP2PSocketManager();
+  mojo::SharedRemote<network::mojom::blink::P2PSocketManager>
+  GetP2PSocketManager();
+
+  void Trace(Visitor*) const override;
 
  private:
-  friend class base::RefCountedThreadSafe<P2PSocketDispatcher>;
-
-  ~P2PSocketDispatcher() override;
-
   // network::mojom::blink::P2PNetworkNotificationClient interface.
   void NetworkListChanged(
       const Vector<net::NetworkInterface>& networks,
@@ -83,6 +90,7 @@ class PLATFORM_EXPORT P2PSocketDispatcher
   void RequestNetworkEventsIfNecessary();
 
   void OnConnectionError();
+  void ReconnectP2PSocketManager();
 
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
 
@@ -94,7 +102,7 @@ class PLATFORM_EXPORT P2PSocketDispatcher
   mojo::PendingReceiver<network::mojom::blink::P2PSocketManager>
       p2p_socket_manager_receiver_;
   mojo::SharedRemote<network::mojom::blink::P2PSocketManager>
-      p2p_socket_manager_;
+      p2p_socket_manager_ GUARDED_BY(p2p_socket_manager_lock_);
   base::Lock p2p_socket_manager_lock_;
 
   // Cached from last |NetworkListChanged| call.
@@ -102,10 +110,9 @@ class PLATFORM_EXPORT P2PSocketDispatcher
   net::IPAddress default_ipv4_local_address_;
   net::IPAddress default_ipv6_local_address_;
 
-  mojo::Receiver<network::mojom::blink::P2PNetworkNotificationClient>
-      network_notification_client_receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(P2PSocketDispatcher);
+  HeapMojoReceiver<network::mojom::blink::P2PNetworkNotificationClient,
+                   P2PSocketDispatcher>
+      network_notification_client_receiver_;
 };
 
 }  // namespace blink

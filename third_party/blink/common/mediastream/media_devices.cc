@@ -3,32 +3,35 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/public/common/mediastream/media_devices.h"
-#include "media/capture/video/video_capture_device_descriptor.h"
+#include "third_party/blink/public/mojom/mediastream/media_devices.mojom-shared.h"
 
 namespace blink {
 
-WebMediaDeviceInfo::WebMediaDeviceInfo()
-    : video_facing(media::VideoFacingMode::MEDIA_VIDEO_FACING_NONE) {}
+WebMediaDeviceInfo::WebMediaDeviceInfo() = default;
 
 WebMediaDeviceInfo::WebMediaDeviceInfo(const WebMediaDeviceInfo& other) =
     default;
 
 WebMediaDeviceInfo::WebMediaDeviceInfo(WebMediaDeviceInfo&& other) = default;
 
-WebMediaDeviceInfo::WebMediaDeviceInfo(const std::string& device_id,
-                                       const std::string& label,
-                                       const std::string& group_id,
-                                       media::VideoFacingMode video_facing)
+WebMediaDeviceInfo::WebMediaDeviceInfo(
+    const std::string& device_id,
+    const std::string& label,
+    const std::string& group_id,
+    const media::VideoCaptureControlSupport& video_control_support,
+    blink::mojom::FacingMode video_facing)
     : device_id(device_id),
       label(label),
       group_id(group_id),
+      video_control_support(video_control_support),
       video_facing(video_facing) {}
 
 WebMediaDeviceInfo::WebMediaDeviceInfo(
     const media::VideoCaptureDeviceDescriptor& descriptor)
     : device_id(descriptor.device_id),
       label(descriptor.GetNameAndModel()),
-      video_facing(descriptor.facing) {}
+      video_control_support(descriptor.control_support()),
+      video_facing(static_cast<blink::mojom::FacingMode>(descriptor.facing)) {}
 
 WebMediaDeviceInfo::~WebMediaDeviceInfo() = default;
 

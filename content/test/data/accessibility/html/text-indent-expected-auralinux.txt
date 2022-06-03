@@ -1,0 +1,15 @@
+[document web]
+++[section] text-indent:13.23mm
+++++[static] name='Text indent 50px'
+++[section] text-indent:-13.23mm
+++++[static] name='Text indent -50px'
+++[section]
+++++[static] name='Text indent 0px'
+++[section]
+++++[static] name='Text indent initial'
+++[section]
+++++[static] name='Text indent inherit'
+++[section]
+++++[static] name='No text indent specified'
+++[section]
+++++[static] name='Invalid text indent'

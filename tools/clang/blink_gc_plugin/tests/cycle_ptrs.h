@@ -21,18 +21,19 @@ class E;
 
 class A : public GarbageCollected<A> {
 public:
-    virtual void Trace(Visitor*);
+ virtual void Trace(Visitor*) const;
+
 private:
     Member<B> m_b;
 };
 
 class B : public GarbageCollected<B> {
  public:
-  virtual void Trace(Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   Member<A> m_a;
-  RefPtr<C> m_c;
+  scoped_refptr<C> m_c;
 };
 
 class C : public RefCounted<C> {

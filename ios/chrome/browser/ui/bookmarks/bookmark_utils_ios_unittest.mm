@@ -28,28 +28,27 @@ using bookmark_utils_ios::NodesSection;
 class BookmarkIOSUtilsUnitTest : public BookmarkIOSUnitTest {
  protected:
   base::Time timeFromEpoch(int days, int hours) {
-    return base::Time::UnixEpoch() + base::TimeDelta::FromDays(days) +
-           base::TimeDelta::FromHours(hours);
+    return base::Time::UnixEpoch() + base::Days(days) + base::Hours(hours);
   }
 };
 
 TEST_F(BookmarkIOSUtilsUnitTest, segregateNodesByCreationDate) {
-  const BookmarkNode* mobileNode = _bookmarkModel->mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
   const BookmarkNode* a = AddBookmark(mobileNode, @"a");
-  _bookmarkModel->SetDateAdded(a, timeFromEpoch(169, 5));
+  bookmark_model_->SetDateAdded(a, timeFromEpoch(169, 5));
   const BookmarkNode* b = AddBookmark(mobileNode, @"b");
-  _bookmarkModel->SetDateAdded(b, timeFromEpoch(170, 6));
+  bookmark_model_->SetDateAdded(b, timeFromEpoch(170, 6));
   const BookmarkNode* f2 = AddFolder(mobileNode, @"f2");
 
   const BookmarkNode* f1a = AddBookmark(f1, @"f1a");
-  _bookmarkModel->SetDateAdded(f1a, timeFromEpoch(129, 5));
+  bookmark_model_->SetDateAdded(f1a, timeFromEpoch(129, 5));
   const BookmarkNode* f1b = AddBookmark(f1, @"f1b");
-  _bookmarkModel->SetDateAdded(f1b, timeFromEpoch(130, 6));
+  bookmark_model_->SetDateAdded(f1b, timeFromEpoch(130, 6));
   const BookmarkNode* f2a = AddBookmark(f2, @"f2a");
-  _bookmarkModel->SetDateAdded(f2a, timeFromEpoch(201, 5));
+  bookmark_model_->SetDateAdded(f2a, timeFromEpoch(201, 5));
   const BookmarkNode* f2b = AddBookmark(f2, @"f2b");
-  _bookmarkModel->SetDateAdded(f2b, timeFromEpoch(10, 5));
+  bookmark_model_->SetDateAdded(f2b, timeFromEpoch(10, 5));
 
   std::vector<const BookmarkNode*> toSort;
   toSort.push_back(a);
@@ -85,7 +84,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, segregateNodesByCreationDate) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
-  const BookmarkNode* mobileNode = _bookmarkModel->mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
   const BookmarkNode* a = AddBookmark(mobileNode, @"a");
   const BookmarkNode* b = AddBookmark(mobileNode, @"b");
@@ -102,7 +101,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
   toDelete.insert(f2b);
   toDelete.insert(f2);
 
-  bookmark_utils_ios::DeleteBookmarks(toDelete, _bookmarkModel);
+  bookmark_utils_ios::DeleteBookmarks(toDelete, bookmark_model_);
 
   EXPECT_EQ(2u, mobileNode->children().size());
   const BookmarkNode* child0 = mobileNode->children()[0].get();
@@ -114,7 +113,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, DeleteNodes) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
-  const BookmarkNode* mobileNode = _bookmarkModel->mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
   const BookmarkNode* a = AddBookmark(mobileNode, @"a");
   const BookmarkNode* b = AddBookmark(mobileNode, @"b");
@@ -131,7 +130,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
   toMove.insert(f2b);
   toMove.insert(f2);
 
-  bookmark_utils_ios::MoveBookmarks(toMove, _bookmarkModel, f1);
+  bookmark_utils_ios::MoveBookmarks(toMove, bookmark_model_, f1);
 
   EXPECT_EQ(2u, mobileNode->children().size());
   const BookmarkNode* child0 = mobileNode->children()[0].get();
@@ -143,7 +142,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, MoveNodes) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestDefaultMoveFolder) {
-  const BookmarkNode* mobileNode = _bookmarkModel->mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
   const BookmarkNode* a = AddBookmark(mobileNode, @"a");
   AddBookmark(mobileNode, @"b");
@@ -161,21 +160,21 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestDefaultMoveFolder) {
   toMove.insert(f2);
 
   const BookmarkNode* folder =
-      bookmark_utils_ios::defaultMoveFolder(toMove, _bookmarkModel);
+      bookmark_utils_ios::defaultMoveFolder(toMove, bookmark_model_);
   EXPECT_EQ(folder, mobileNode);
 
   toMove.clear();
   toMove.insert(f2a);
   toMove.insert(f2b);
-  folder = bookmark_utils_ios::defaultMoveFolder(toMove, _bookmarkModel);
+  folder = bookmark_utils_ios::defaultMoveFolder(toMove, bookmark_model_);
   EXPECT_EQ(folder, f2);
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
-  const BookmarkNode* mobileNode = _bookmarkModel->mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* f1 = AddFolder(mobileNode, @"f1");
   NSArray* path =
-      bookmark_utils_ios::CreateBookmarkPath(_bookmarkModel, f1->id());
+      bookmark_utils_ios::CreateBookmarkPath(bookmark_model_, f1->id());
   NSMutableArray* expectedPath = [NSMutableArray array];
   [expectedPath addObject:@0];
   [expectedPath addObject:[NSNumber numberWithLongLong:mobileNode->id()]];
@@ -184,12 +183,12 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestCreateBookmarkPath) {
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestCreateNilBookmarkPath) {
-  NSArray* path = bookmark_utils_ios::CreateBookmarkPath(_bookmarkModel, 999);
+  NSArray* path = bookmark_utils_ios::CreateBookmarkPath(bookmark_model_, 999);
   EXPECT_TRUE(path == nil);
 }
 
 TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
-  const BookmarkNode* mobileNode = _bookmarkModel->mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* music = AddFolder(mobileNode, @"music");
 
   const BookmarkNode* pop = AddFolder(music, @"pop");
@@ -209,7 +208,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
   const BookmarkNode* camel = AddFolder(animals, @"camel");
   AddFolder(camel, @"al paca");
 
-  AddFolder(_bookmarkModel->other_node(), @"buildings");
+  AddFolder(bookmark_model_->other_node(), @"buildings");
 
   std::set<const BookmarkNode*> obstructions;
   // Editing a folder and a bookmark.
@@ -218,7 +217,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestVisibleNonDescendantNodes) {
 
   bookmark_utils_ios::NodeVector result =
       bookmark_utils_ios::VisibleNonDescendantNodes(obstructions,
-                                                    _bookmarkModel);
+                                                    bookmark_model_);
   ASSERT_EQ(13u, result.size());
 
   EXPECT_NSEQ(base::SysUTF16ToNSString(result[0]->GetTitle()),
@@ -246,7 +245,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestIsSubvectorOfNodes) {
   EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector2, vector1));
 
   // Empty vs vector with one element: [] - [1].
-  const BookmarkNode* mobileNode = _bookmarkModel->mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* bookmark1 = AddBookmark(mobileNode, @"1");
   vector2.push_back(bookmark1);
   EXPECT_TRUE(bookmark_utils_ios::IsSubvectorOfNodes(vector1, vector2));
@@ -314,7 +313,7 @@ TEST_F(BookmarkIOSUtilsUnitTest, TestMissingNodes) {
             bookmark_utils_ios::MissingNodesIndices(vector1, vector2).size());
 
   // [] - [1].
-  const BookmarkNode* mobileNode = _bookmarkModel->mobile_node();
+  const BookmarkNode* mobileNode = bookmark_model_->mobile_node();
   const BookmarkNode* bookmark1 = AddBookmark(mobileNode, @"1");
   vector2.push_back(bookmark1);
   std::vector<bookmark_utils_ios::NodeVector::size_type> missingNodesIndices =

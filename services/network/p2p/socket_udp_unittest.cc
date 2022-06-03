@@ -9,8 +9,9 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/containers/circular_deque.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/sys_byteorder.h"
 #include "base/test/task_environment.h"
@@ -20,6 +21,7 @@
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/log/net_log_with_source.h"
 #include "net/socket/datagram_server_socket.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -232,7 +234,8 @@ class P2PSocketUdpTest : public testing::Test {
     socket_impl_->Init(
         local_address_, 0, 0,
         P2PHostAndIPEndPoint(std::string(),
-                             ParseAddress(kTestIpAddress1, kTestPort1)));
+                             ParseAddress(kTestIpAddress1, kTestPort1)),
+        net::NetworkIsolationKey());
     socket_ = GetSocketFromHost(socket_impl_.get());
 
     dest1_ = ParseAddress(kTestIpAddress1, kTestPort1);
@@ -576,11 +579,13 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
     socket_impl->Init(
         local_address, min_port, max_port,
         P2PHostAndIPEndPoint(std::string(),
-                             ParseAddress(kTestIpAddress1, kTestPort1)));
+                             ParseAddress(kTestIpAddress1, kTestPort1)),
+        net::NetworkIsolationKey());
 
-    FakeDatagramServerSocket* socket = GetSocketFromHost(socket_impl.get());
+    FakeDatagramServerSocket* datagram_socket =
+        GetSocketFromHost(socket_impl.get());
     net::IPEndPoint bound_address;
-    socket->GetLocalAddress(&bound_address);
+    datagram_socket->GetLocalAddress(&bound_address);
     EXPECT_EQ(port, bound_address.port());
 
     base::RunLoop().RunUntilIdle();
@@ -600,7 +605,8 @@ TEST_F(P2PSocketUdpTest, PortRangeImplicitPort) {
   socket_impl_ptr->Init(
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
-                           ParseAddress(kTestIpAddress1, kTestPort1)));
+                           ParseAddress(kTestIpAddress1, kTestPort1)),
+      net::NetworkIsolationKey());
 
   base::RunLoop().RunUntilIdle();
 
@@ -637,7 +643,8 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictValidPort) {
   socket_host->Init(
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
-                           ParseAddress(kTestIpAddress1, kTestPort1)));
+                           ParseAddress(kTestIpAddress1, kTestPort1)),
+      net::NetworkIsolationKey());
 
   FakeDatagramServerSocket* fake_socket = GetSocketFromHost(socket_host.get());
   net::IPEndPoint bound_address;
@@ -678,7 +685,8 @@ TEST_F(P2PSocketUdpTest, PortRangeExplictInvalidPort) {
   socket_impl_ptr->Init(
       local_address, min_port, max_port,
       P2PHostAndIPEndPoint(std::string(),
-                           ParseAddress(kTestIpAddress1, kTestPort1)));
+                           ParseAddress(kTestIpAddress1, kTestPort1)),
+      net::NetworkIsolationKey());
 
   base::RunLoop().RunUntilIdle();
 

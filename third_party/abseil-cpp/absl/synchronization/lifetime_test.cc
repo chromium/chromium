@@ -122,6 +122,11 @@ class OnDestruction {
   Function fn_;
 };
 
+// These tests require that the compiler correctly supports C++11 constant
+// initialization... but MSVC has a known regression since v19.10:
+// https://developercommunity.visualstudio.com/content/problem/336946/class-with-constexpr-constructor-not-using-static.html
+// TODO(epastor): Limit the affected range once MSVC fixes this bug.
+#if defined(__clang__) || !(defined(_MSC_VER) && _MSC_VER > 1900)
 // kConstInit
 // Test early usage.  (Declaration comes first; definitions must appear after
 // the test runner.)
@@ -151,6 +156,7 @@ OnConstruction check_still_locked([]() ABSL_NO_THREAD_SAFETY_ANALYSIS {
   const_init_sanity_mutex.AssertHeld();
   const_init_sanity_mutex.Unlock();
 });
+#endif  // defined(__clang__) || !(defined(_MSC_VER) && _MSC_VER > 1900)
 
 // Test shutdown usage.  (Declarations come first; definitions must appear after
 // the test runner.)

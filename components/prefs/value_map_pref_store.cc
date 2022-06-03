@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/stl_util.h"
 #include "base/values.h"
 
 ValueMapPrefStore::ValueMapPrefStore() {}
@@ -30,7 +29,7 @@ void ValueMapPrefStore::RemoveObserver(PrefStore::Observer* observer) {
 }
 
 bool ValueMapPrefStore::HasObservers() const {
-  return observers_.might_have_observers();
+  return !observers_.empty();
 }
 
 void ValueMapPrefStore::SetValue(const std::string& key,
@@ -73,4 +72,9 @@ ValueMapPrefStore::~ValueMapPrefStore() {}
 void ValueMapPrefStore::NotifyInitializationCompleted() {
   for (Observer& observer : observers_)
     observer.OnInitializationCompleted(true);
+}
+
+void ValueMapPrefStore::RemoveValuesByPrefixSilently(
+    const std::string& prefix) {
+  prefs_.ClearWithPrefix(prefix);
 }

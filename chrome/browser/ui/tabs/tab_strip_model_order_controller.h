@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_ORDER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_ORDER_CONTROLLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "ui/base/page_transition_types.h"
 
@@ -19,7 +18,10 @@ class TabStripModel;
 //
 class TabStripModelOrderController : public TabStripModelObserver {
  public:
-  explicit TabStripModelOrderController(TabStripModel* tabstrip);
+  explicit TabStripModelOrderController(TabStripModel* model);
+  TabStripModelOrderController(const TabStripModelOrderController&) = delete;
+  TabStripModelOrderController& operator=(const TabStripModelOrderController&) =
+      delete;
   ~TabStripModelOrderController() override;
 
   // Determine where to place a newly opened tab by using the supplied
@@ -28,7 +30,7 @@ class TabStripModelOrderController : public TabStripModelObserver {
                               bool foreground);
 
   // Determine where to shift selection after a tab is closed.
-  base::Optional<int> DetermineNewSelectedIndex(int removed_index) const;
+  absl::optional<int> DetermineNewSelectedIndex(int removed_index) const;
 
   // Overridden from TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -42,9 +44,7 @@ class TabStripModelOrderController : public TabStripModelObserver {
   // reflect the fact that |removing_index| is going away.
   int GetValidIndex(int index, int removing_index) const;
 
-  TabStripModel* tabstrip_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabStripModelOrderController);
+  TabStripModel* model_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_ORDER_CONTROLLER_H_

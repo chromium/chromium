@@ -7,7 +7,6 @@
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
@@ -117,8 +116,6 @@ bool SizesMathFunctionParser::HandleRightParenthesis(
 
 bool SizesMathFunctionParser::HandleComma(Vector<CSSParserToken>& stack,
                                           const CSSParserToken& token) {
-  if (!RuntimeEnabledFeatures::CSSComparisonFunctionsEnabled())
-    return false;
   // Treat comma as a binary right-associative operation for now, so that
   // when reaching the right parenthesis of the function, we can get the
   // number of parameters by counting the number of commas.
@@ -180,13 +177,11 @@ bool SizesMathFunctionParser::CalcToReversePolishNotation(
           return false;
         break;
       case kFunctionToken:
-        if (RuntimeEnabledFeatures::CSSComparisonFunctionsEnabled()) {
-          if (token.FunctionId() == CSSValueID::kMin ||
-              token.FunctionId() == CSSValueID::kMax ||
-              token.FunctionId() == CSSValueID::kClamp) {
-            stack.push_back(token);
-            break;
-          }
+        if (token.FunctionId() == CSSValueID::kMin ||
+            token.FunctionId() == CSSValueID::kMax ||
+            token.FunctionId() == CSSValueID::kClamp) {
+          stack.push_back(token);
+          break;
         }
         if (token.FunctionId() != CSSValueID::kCalc)
           return false;
@@ -320,7 +315,7 @@ bool SizesMathFunctionParser::Calculate() {
     }
   }
   if (stack.size() == 1 && stack.back().is_length) {
-    result_ = std::max(clampTo<float>(stack.back().value), (float)0.0);
+    result_ = std::max(ClampTo<float>(stack.back().value), 0.0f);
     return true;
   }
   return false;

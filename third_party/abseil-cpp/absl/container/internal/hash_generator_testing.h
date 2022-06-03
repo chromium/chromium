@@ -19,18 +19,23 @@
 #define ABSL_CONTAINER_INTERNAL_HASH_GENERATOR_TESTING_H_
 
 #include <stdint.h>
+
 #include <algorithm>
+#include <cassert>
 #include <iosfwd>
 #include <random>
 #include <tuple>
 #include <type_traits>
 #include <utility>
+#include <vector>
 
 #include "absl/container/internal/hash_policy_testing.h"
+#include "absl/memory/memory.h"
 #include "absl/meta/type_traits.h"
 #include "absl/strings/string_view.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace container_internal {
 namespace hash_internal {
 namespace generator_internal {
@@ -129,6 +134,13 @@ struct Generator<std::tuple<Ts...>> {
   }
 };
 
+template <class T>
+struct Generator<std::unique_ptr<T>> {
+  std::unique_ptr<T> operator()() const {
+    return absl::make_unique<T>(Generator<T>()());
+  }
+};
+
 template <class U>
 struct Generator<U, absl::void_t<decltype(std::declval<U&>().key()),
                                 decltype(std::declval<U&>().value())>>
@@ -143,8 +155,28 @@ using GeneratedType = decltype(
                                   typename Container::value_type,
                                   typename Container::key_type>::type>&>()());
 
+// Naive wrapper that performs a linear search of previous values.
+// Beware this is O(SQR), which is reasonable for smaller kMaxValues.
+template <class T, size_t kMaxValues = 64, class E = void>
+struct UniqueGenerator {
+  Generator<T, E> gen;
+  std::vector<T> values;
+
+  T operator()() {
+    assert(values.size() < kMaxValues);
+    for (;;) {
+      T value = gen();
+      if (std::find(values.begin(), values.end(), value) == values.end()) {
+        values.push_back(value);
+        return value;
+      }
+    }
+  }
+};
+
 }  // namespace hash_internal
 }  // namespace container_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_INTERNAL_HASH_GENERATOR_TESTING_H_

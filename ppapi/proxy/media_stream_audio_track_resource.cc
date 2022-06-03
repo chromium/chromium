@@ -80,10 +80,9 @@ int32_t MediaStreamAudioTrackResource::Configure(
 
   configure_callback_ = callback;
   Call<PpapiPluginMsg_MediaStreamAudioTrack_ConfigureReply>(
-      RENDERER,
-      PpapiHostMsg_MediaStreamAudioTrack_Configure(attributes),
-      base::Bind(&MediaStreamAudioTrackResource::OnPluginMsgConfigureReply,
-                 base::Unretained(this)),
+      RENDERER, PpapiHostMsg_MediaStreamAudioTrack_Configure(attributes),
+      base::BindOnce(&MediaStreamAudioTrackResource::OnPluginMsgConfigureReply,
+                     base::Unretained(this)),
       callback);
   return PP_OK_COMPLETIONPENDING;
 }

@@ -6,30 +6,31 @@ class PartObject {
     Member<HeapObject> m_obj; // Needs tracing.
     ^
 ./stack_allocated.h:24:5: warning: [blink-gc] The stack allocated class 'StackObject' provides an unnecessary trace method:
-    void Trace(Visitor* visitor) { visitor->Trace(m_obj); }
+    void Trace(Visitor* visitor) const { visitor->Trace(m_obj); }
     ^
 ./stack_allocated.h:30:1: warning: [blink-gc] Class 'HeapObject' contains invalid fields.
 class HeapObject : public GarbageCollected<HeapObject> {
 ^
-./stack_allocated.h:34:5: note: [blink-gc] Stack-allocated field 'm_part' declared here:
+./stack_allocated.h:35:5: note: [blink-gc] Stack-allocated field 'm_part' declared here:
     StackObject m_part; // Cannot embed a stack allocated object.
     ^
-./stack_allocated.h:38:27: warning: [blink-gc] Stack-allocated class 'DerivedHeapObject' derives class 'HeapObject' which is garbage collected.
+./stack_allocated.h:39:27: warning: [blink-gc] Stack-allocated class 'DerivedHeapObject' derives class 'HeapObject' which is garbage collected.
 class DerivedHeapObject : public HeapObject, public StackObject {
                           ^
-./stack_allocated.h:42:28: warning: [blink-gc] Stack-allocated class 'DerivedHeapObject2' derives class 'HeapObject' which is garbage collected.
+./stack_allocated.h:43:28: warning: [blink-gc] Stack-allocated class 'DerivedHeapObject2' derives class 'HeapObject' which is garbage collected.
 class DerivedHeapObject2 : public HeapObject {
                            ^
-./stack_allocated.h:43:3: warning: [blink-gc] Garbage collected class 'DerivedHeapObject2' is not permitted to override its new operator.
+./stack_allocated.h:44:3: warning: [blink-gc] Garbage collected class 'DerivedHeapObject2' is not permitted to override its new operator.
   STACK_ALLOCATED();
   ^
-./heap/stubs.h:182:5: note: expanded from macro 'STACK_ALLOCATED'
-    __attribute__((annotate("blink_stack_allocated")))      \
+./heap/stubs.h:358:3: note: expanded from macro 'STACK_ALLOCATED'
+  __attribute__((annotate("blink_stack_allocated"))) void* operator new( \
+  ^
+In file included from stack_allocated.cpp:5:
+./stack_allocated.h:24:5: warning: [blink-gc] Class 'StackObject' has untraced or not traceable fields.
+    void Trace(Visitor* visitor) const { visitor->Trace(m_obj); }
     ^
-stack_allocated.cpp:12:1: warning: [blink-gc] Class 'AnonStackObject' contains invalid fields.
-class AnonStackObject : public StackObject {
-^
-stack_allocated.cpp:14:5: note: [blink-gc] Raw pointer field 'm_obj' to a GC managed class declared here:
-    HeapObject* m_obj;
+./stack_allocated.h:27:5: note: [blink-gc] Untraceable field 'm_obj' declared here:
+    HeapObject* m_obj; // Does not need tracing.
     ^
 7 warnings generated.

@@ -26,16 +26,15 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/linked_list.h"
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "base/containers/queue.h"
 #include "base/stl_util.h"
-#include "base/strings/string16.h"
 #include "base/template_util.h"
 
 // Composable memory usage estimators.
 //
 // This file defines set of EstimateMemoryUsage(object) functions that return
-// approximate memory usage of their argument.
+// approximate dynamically allocated memory usage of their argument.
 //
 // The ultimate goal is to make memory usage estimation for a class simply a
 // matter of aggregating EstimateMemoryUsage() results over all fields.
@@ -55,10 +54,22 @@
 //
 // Here is an example implementation:
 //
-// size_t foo::bar::MyClass::EstimateMemoryUsage() const {
-//   return base::trace_event::EstimateMemoryUsage(name_) +
-//          base::trace_event::EstimateMemoryUsage(id_) +
-//          base::trace_event::EstimateMemoryUsage(items_);
+// class MyClass {
+//   ...
+//   ...
+//   size_t EstimateMemoryUsage() const {
+//     return base::trace_event::EstimateMemoryUsage(set_) +
+//            base::trace_event::EstimateMemoryUsage(name_) +
+//            base::trace_event::EstimateMemoryUsage(foo_);
+//   }
+//   ...
+//  private:
+//   ...
+//   std::set<int> set_;
+//   std::string name_;
+//   Foo foo_;
+//   int id_;
+//   bool success_;
 // }
 //
 // The approach is simple: first call EstimateMemoryUsage() on all members,
@@ -169,8 +180,9 @@ size_t EstimateMemoryUsage(const base::flat_map<K, V, C>& map);
 template <class Key,
           class Payload,
           class HashOrComp,
-          template <typename, typename, typename> class Map>
-size_t EstimateMemoryUsage(const MRUCacheBase<Key, Payload, HashOrComp, Map>&);
+          template <typename, typename, typename>
+          class Map>
+size_t EstimateMemoryUsage(const LRUCacheBase<Key, Payload, HashOrComp, Map>&);
 
 // TODO(dskiba):
 //   std::forward_list
@@ -338,7 +350,7 @@ size_t EstimateMemoryUsage(const std::basic_string<C, T, A>& string) {
 
 // Use explicit instantiations from the .cc file (reduces bloat).
 extern template BASE_EXPORT size_t EstimateMemoryUsage(const std::string&);
-extern template BASE_EXPORT size_t EstimateMemoryUsage(const string16&);
+extern template BASE_EXPORT size_t EstimateMemoryUsage(const std::u16string&);
 
 // Arrays
 
@@ -495,10 +507,10 @@ size_t HashMapBucketCountForTesting(size_t bucket_count) {
   return bucket_count;
 }
 
-template <class MruCacheType>
-size_t DoEstimateMemoryUsageForMruCache(const MruCacheType& mru_cache) {
-  return EstimateMemoryUsage(mru_cache.ordering_) +
-         EstimateMemoryUsage(mru_cache.index_);
+template <class LruCacheType>
+size_t DoEstimateMemoryUsageForLruCache(const LruCacheType& lru_cache) {
+  return EstimateMemoryUsage(lru_cache.ordering_) +
+         EstimateMemoryUsage(lru_cache.index_);
 }
 
 }  // namespace internal
@@ -642,10 +654,11 @@ size_t EstimateMemoryUsage(const base::flat_map<K, V, C>& map) {
 template <class Key,
           class Payload,
           class HashOrComp,
-          template <typename, typename, typename> class Map>
+          template <typename, typename, typename>
+          class Map>
 size_t EstimateMemoryUsage(
-    const MRUCacheBase<Key, Payload, HashOrComp, Map>& mru_cache) {
-  return internal::DoEstimateMemoryUsageForMruCache(mru_cache);
+    const LRUCacheBase<Key, Payload, HashOrComp, Map>& lru_cache) {
+  return internal::DoEstimateMemoryUsageForLruCache(lru_cache);
 }
 
 }  // namespace trace_event

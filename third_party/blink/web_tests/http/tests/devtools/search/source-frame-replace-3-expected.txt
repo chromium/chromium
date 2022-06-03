@@ -1,7 +1,0 @@
-Tests different types of search-and-replace in SourceFrame
-
-Running replace test for /(REPLACE)ME[38]/$1D/  (regex, caseSensitive):
-  - // REPLACE#ME3#D#
-Running replace test for /(REPLACE)ME[45]/$1D/  (regex, caseSensitive, replaceAll):
-  - // REPLACE#ME4 REPLACEME4#D REPLACED#
-

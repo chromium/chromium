@@ -41,7 +41,7 @@ void SpellCheckMockPanelHost::ShowSpellingPanel(bool show) {
 }
 
 void SpellCheckMockPanelHost::UpdateSpellingPanelWithMisspelledWord(
-    const base::string16& word) {
+    const std::u16string& word) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 }  // namespace spellcheck

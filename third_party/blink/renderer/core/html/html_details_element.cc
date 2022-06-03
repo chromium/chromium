@@ -26,13 +26,15 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/text.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/html_slot_element.h"
+#include "third_party/blink/renderer/core/html/html_style_element.h"
 #include "third_party/blink/renderer/core/html/html_summary_element.h"
-#include "third_party/blink/renderer/core/html/shadow/details_marker_control.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
@@ -44,16 +46,9 @@
 
 namespace blink {
 
-HTMLDetailsElement::HTMLDetailsElement(Document& document)
-    : HTMLElement(html_names::kDetailsTag, document), is_open_(false) {
-  UseCounter::Count(document, WebFeature::kDetailsElement);
-  EnsureUserAgentShadowRoot();
-}
+namespace {
 
-HTMLDetailsElement::~HTMLDetailsElement() = default;
-
-// static
-bool HTMLDetailsElement::IsFirstSummary(const Node& node) {
+bool IsFirstSummary(const Node& node) {
   DCHECK(IsA<HTMLDetailsElement>(node.parentElement()));
   if (!IsA<HTMLSummaryElement>(node))
     return false;
@@ -61,6 +56,17 @@ bool HTMLDetailsElement::IsFirstSummary(const Node& node) {
          &node ==
              Traversal<HTMLSummaryElement>::FirstChild(*node.parentElement());
 }
+
+}  // namespace
+
+HTMLDetailsElement::HTMLDetailsElement(Document& document)
+    : HTMLElement(html_names::kDetailsTag, document), is_open_(false) {
+  UseCounter::Count(document, WebFeature::kDetailsElement);
+  EnsureUserAgentShadowRoot().SetSlotAssignmentMode(
+      SlotAssignmentMode::kManual);
+}
+
+HTMLDetailsElement::~HTMLDetailsElement() = default;
 
 void HTMLDetailsElement::DispatchPendingEvent(
     const AttributeModificationReason reason) {
@@ -76,6 +82,11 @@ LayoutObject* HTMLDetailsElement::CreateLayoutObject(const ComputedStyle& style,
   return LayoutObjectFactory::CreateBlockFlow(*this, style, legacy);
 }
 
+// Creates shadow DOM
+// <SLOT id="details-summary">
+//   <SUMMARY>#text "Details"</SUMMARY>
+// <SLOT id="details-content" style="display: none;">
+// <STYLE>...
 void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   auto* default_summary =
       MakeGarbageCollected<HTMLSummaryElement>(GetDocument());
@@ -83,18 +94,40 @@ void HTMLDetailsElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
       Text::Create(GetDocument(),
                    GetLocale().QueryString(IDS_DETAILS_WITHOUT_SUMMARY_LABEL)));
 
-  HTMLSlotElement* summary_slot =
-      HTMLSlotElement::CreateUserAgentCustomAssignSlot(GetDocument());
-  summary_slot->SetIdAttribute(shadow_element_names::DetailsSummary());
-  summary_slot->AppendChild(default_summary);
-  root.AppendChild(summary_slot);
+  summary_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
+  summary_slot_->SetIdAttribute(shadow_element_names::kIdDetailsSummary);
+  summary_slot_->AppendChild(default_summary);
+  root.AppendChild(summary_slot_);
 
-  auto* content = MakeGarbageCollected<HTMLDivElement>(GetDocument());
-  content->SetIdAttribute(shadow_element_names::DetailsContent());
-  content->AppendChild(
-      HTMLSlotElement::CreateUserAgentDefaultSlot(GetDocument()));
-  content->SetInlineStyleProperty(CSSPropertyID::kDisplay, CSSValueID::kNone);
-  root.AppendChild(content);
+  content_slot_ = MakeGarbageCollected<HTMLSlotElement>(GetDocument());
+  content_slot_->SetIdAttribute(shadow_element_names::kIdDetailsContent);
+  if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
+    content_slot_->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                          CSSValueID::kHidden);
+    content_slot_->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
+    content_slot_->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                          CSSValueID::kBlock);
+  } else {
+    content_slot_->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                          CSSValueID::kNone);
+  }
+  root.AppendChild(content_slot_);
+
+  auto* default_summary_style = MakeGarbageCollected<HTMLStyleElement>(
+      GetDocument(), CreateElementFlags::ByCreateElement());
+  // This style is required only if this <details> shows the UA-provided
+  // <summary>, not a light child <summary>.
+  default_summary_style->setTextContent(R"CSS(
+:host summary {
+  display: list-item;
+  counter-increment: list-item 0;
+  list-style: disclosure-closed inside;
+}
+:host([open]) summary {
+  list-style-type: disclosure-open;
+}
+)CSS");
+  root.AppendChild(default_summary_style);
 }
 
 Element* HTMLDetailsElement::FindMainSummary() const {
@@ -108,6 +141,28 @@ Element* HTMLDetailsElement::FindMainSummary() const {
   DCHECK(slot->firstChild());
   CHECK(IsA<HTMLSummaryElement>(*slot->firstChild()));
   return To<Element>(slot->firstChild());
+}
+
+void HTMLDetailsElement::ManuallyAssignSlots() {
+  HeapVector<Member<Node>> summary_nodes;
+  HeapVector<Member<Node>> content_nodes;
+  for (Node& child : NodeTraversal::ChildrenOf(*this)) {
+    if (!child.IsSlotable())
+      continue;
+    if (IsFirstSummary(child)) {
+      summary_nodes.push_back(child);
+    } else {
+      content_nodes.push_back(child);
+    }
+  }
+  summary_slot_->Assign(summary_nodes);
+  content_slot_->Assign(content_nodes);
+}
+
+void HTMLDetailsElement::Trace(Visitor* visitor) const {
+  visitor->Trace(summary_slot_);
+  visitor->Trace(content_slot_);
+  HTMLElement::Trace(visitor);
 }
 
 void HTMLDetailsElement::ParseAttribute(
@@ -125,23 +180,28 @@ void HTMLDetailsElement::ParseAttribute(
                   WrapPersistent(this), params.reason));
 
     Element* content = EnsureUserAgentShadowRoot().getElementById(
-        shadow_element_names::DetailsContent());
+        shadow_element_names::kIdDetailsContent);
     DCHECK(content);
-    if (is_open_) {
-      content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+
+    if (RuntimeEnabledFeatures::AutoExpandDetailsElementEnabled()) {
+      if (is_open_) {
+        content->RemoveInlineStyleProperty(CSSPropertyID::kContentVisibility);
+        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+      } else {
+        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                        CSSValueID::kBlock);
+        content->SetInlineStyleProperty(CSSPropertyID::kContentVisibility,
+                                        CSSValueID::kHidden);
+        content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
+      }
     } else {
-      content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
-                                      CSSValueID::kNone);
+      if (is_open_) {
+        content->RemoveInlineStyleProperty(CSSPropertyID::kDisplay);
+      } else {
+        content->SetInlineStyleProperty(CSSPropertyID::kDisplay,
+                                        CSSValueID::kNone);
+      }
     }
-
-    // Invalidate the LayoutDetailsMarker in order to turn the arrow signifying
-    // if the details element is open or closed.
-    Element* summary = FindMainSummary();
-    DCHECK(summary);
-
-    auto* control = To<HTMLSummaryElement>(summary)->MarkerControl();
-    if (control && control->GetLayoutObject())
-      control->GetLayoutObject()->SetShouldDoFullPaintInvalidation();
 
     return;
   }
@@ -154,6 +214,41 @@ void HTMLDetailsElement::ToggleOpen() {
 
 bool HTMLDetailsElement::IsInteractiveContent() const {
   return true;
+}
+
+// static
+bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
+  // Since setting the open attribute fires mutation events which could mess
+  // with the FlatTreeTraversal iterator, we should first iterate details
+  // elements to open and then open them all.
+  VectorOf<HTMLDetailsElement> details_to_open;
+
+  for (Node& parent : FlatTreeTraversal::AncestorsOf(node)) {
+    if (HTMLDetailsElement* details = DynamicTo<HTMLDetailsElement>(parent)) {
+      // If the active match is inside the <summary> of a <details>, then we
+      // shouldn't expand the <details> because the active match is already
+      // visible.
+      bool inside_summary = false;
+      Element& summary = *details->FindMainSummary();
+      for (Node& ancestor : FlatTreeTraversal::AncestorsOf(node)) {
+        if (&ancestor == &summary) {
+          inside_summary = true;
+          break;
+        }
+      }
+
+      if (!inside_summary &&
+          !details->FastHasAttribute(html_names::kOpenAttr)) {
+        details_to_open.push_back(details);
+      }
+    }
+  }
+
+  for (HTMLDetailsElement* details : details_to_open) {
+    details->setAttribute(html_names::kOpenAttr, g_empty_atom);
+  }
+
+  return details_to_open.size();
 }
 
 }  // namespace blink

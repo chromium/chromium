@@ -7,7 +7,8 @@ import static org.junit.Assert.assertThat;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
@@ -18,10 +19,9 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.base.test.util.RetryOnFailure;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.app.ChromeActivity;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
@@ -53,7 +53,6 @@ public class DirectActionAvailabilityTabbedTest {
 
     @Test
     @MediumTest
-    @RetryOnFailure
     @Feature({"DirectActions"})
     public void testCoreDirectActionInTabbedActivity() throws Exception {
         assertThat(DirectActionTestUtils.setupActivityAndGetDirectAction(mTabbedActivityTestRule),

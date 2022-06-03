@@ -36,7 +36,7 @@ import org.chromium.weblayer_private.interfaces.StrictModeWorkaround;
  * user preference. Knowing that a crash is available can be used as a signal to schedule upload
  * work for a later point in time (or favourable power/network conditions).
  */
-public final class CrashReporterController {
+public class CrashReporterController {
     private ICrashReporterController mImpl;
     private final ObserverList<CrashReporterCallback> mCallbacks;
 
@@ -44,7 +44,8 @@ public final class CrashReporterController {
         static CrashReporterController sInstance = new CrashReporterController();
     }
 
-    private CrashReporterController() {
+    // Protected so it's available for test mocking.
+    protected CrashReporterController() {
         mCallbacks = new ObserverList<CrashReporterCallback>();
     }
 
@@ -90,7 +91,7 @@ public final class CrashReporterController {
      *
      * @param localId a crash identifier.
      */
-    public void deleteCrash(String localId) {
+    public void deleteCrash(@NonNull String localId) {
         try {
             mImpl.deleteCrash(localId);
         } catch (RemoteException e) {
@@ -109,7 +110,7 @@ public final class CrashReporterController {
      *
      * @param localId a crash identifier.
      */
-    public void uploadCrash(String localId) {
+    public void uploadCrash(@NonNull String localId) {
         try {
             mImpl.uploadCrash(localId);
         } catch (RemoteException e) {
@@ -134,15 +135,10 @@ public final class CrashReporterController {
             return this;
         }
         try {
-            if (WebLayer.getSupportedMajorVersion(appContext) < 81) {
-                mImpl = WebLayer.getIWebLayer(appContext)
-                                .getCrashReporterControllerV80(ObjectWrapper.wrap(appContext));
-            } else {
-                mImpl = WebLayer.getIWebLayer(appContext)
-                                .getCrashReporterController(ObjectWrapper.wrap(appContext),
-                                        ObjectWrapper.wrap(
-                                                WebLayer.getOrCreateRemoteContext(appContext)));
-            }
+            mImpl = WebLayer.getIWebLayer(appContext)
+                            .getCrashReporterController(ObjectWrapper.wrap(appContext),
+                                    ObjectWrapper.wrap(
+                                            WebLayer.getOrCreateRemoteContext(appContext)));
             mImpl.setClient(new CrashReporterControllerClientImpl());
         } catch (Exception e) {
             throw new APICallException(e);

@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src="../resources/picker-common.js"></script>
+<select id="menu">
+  <optgroup label="Theropods">
+      <option>Tyrannosaurus</option>
+      <option>Velociraptor</option>
+      <option>Deinonychus</option>
+  </optgroup>
+  <optgroup label="Sauropods">
+      <option>Diplodocus</option>
+      <option>Saltasaurus</option>
+      <option>Apatosaurus</option>
+  </optgroup>
+</select>
+<style>
+option, optgroup {
+  font-size:0;
+}
+</style>
+<script>
+openPicker(document.getElementById('menu'), () => testRunner.notifyDone(), () => testRunner.notifyDone());
+</script>

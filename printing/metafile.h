@@ -9,14 +9,15 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "base/component_export.h"
+#include "base/containers/span.h"
 #include "build/build_config.h"
+#include "printing/mojom/print.mojom-forward.h"
 #include "printing/native_drawing_context.h"
-#include "printing/printing_export.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #include <ApplicationServices/ApplicationServices.h>
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/scoped_cftyperef.h"
@@ -34,38 +35,11 @@ class Size;
 namespace printing {
 
 // This class plays metafiles from data stream (usually PDF or EMF).
-class PRINTING_EXPORT MetafilePlayer {
+class COMPONENT_EXPORT(PRINTING_METAFILE) MetafilePlayer {
  public:
-#if defined(OS_MACOSX)
-  // |shrink_to_fit| specifies whether the output should be shrunk to fit a
-  // destination page if the source PDF is bigger than the destination page in
-  // any dimension. If this is false, parts of the source PDF page that lie
-  // outside the bounds will be clipped.
-  // |stretch_to_fit| specifies whether the output should be stretched to fit
-  // the destination page if the source page size is smaller in all dimensions.
-  // |center_horizontally| specifies whether the output (after any scaling is
-  // done) should be centered horizontally within the destination page.
-  // |center_vertically| specifies whether the output (after any scaling is
-  // done) should be centered vertically within the destination page.
-  // Note that all scaling preserves the original aspect ratio of the page.
-  // |autorotate| specifies whether the source PDF should be autorotated to fit
-  // on the destination page.
-  struct MacRenderPageParams {
-    MacRenderPageParams()
-        : shrink_to_fit(false),
-          stretch_to_fit(false),
-          center_horizontally(false),
-          center_vertically(false),
-          autorotate(false) {}
-
-    bool shrink_to_fit;
-    bool stretch_to_fit;
-    bool center_horizontally;
-    bool center_vertically;
-    bool autorotate;
-  };
-#endif  // defined(OS_MACOSX)
   MetafilePlayer();
+  MetafilePlayer(const MetafilePlayer&) = delete;
+  MetafilePlayer& operator=(const MetafilePlayer&) = delete;
   virtual ~MetafilePlayer();
 
 #if defined(OS_WIN)
@@ -75,33 +49,46 @@ class PRINTING_EXPORT MetafilePlayer {
   // details.
   virtual bool SafePlayback(printing::NativeDrawingContext hdc) const = 0;
 
-#elif defined(OS_MACOSX)
-  // Renders the given page into |rect| in the given context.
-  // Pages use a 1-based index. The rendering uses the arguments in
-  // |params| to determine scaling, translation, and rotation.
+#elif defined(OS_MAC)
+  // Renders the given page into `rect` in the given context.
+  // Pages use a 1-based index. `autorotate` determines whether the source PDF
+  // should be autorotated to fit on the destination page. `fit_to_page`
+  // determines whether the source PDF should be scaled to fit on the
+  // destination page.
   virtual bool RenderPage(unsigned int page_number,
                           printing::NativeDrawingContext context,
-                          const CGRect rect,
-                          const MacRenderPageParams& params) const = 0;
-#endif  // if defined(OS_WIN)
+                          const CGRect& rect,
+                          bool autorotate,
+                          bool fit_to_page) const = 0;
+#endif  // defined(OS_WIN)
 
   // Populates the buffer with the underlying data. This function should ONLY be
   // called after the metafile is closed. Returns true if writing succeeded.
   virtual bool GetDataAsVector(std::vector<char>* buffer) const = 0;
 
+  // Identifies the type of encapsulated.
+  virtual mojom::MetafileDataType GetDataType() const = 0;
+
+#if defined(OS_ANDROID)
+  // Similar to bool SaveTo(base::File* file) const, but write the data to the
+  // file descriptor directly. This is because Android doesn't allow file
+  // ownership exchange. This function should ONLY be called after the metafile
+  // is closed. Returns true if writing succeeded.
+  virtual bool SaveToFileDescriptor(int fd) const = 0;
+#else
   // Saves the underlying data to the given file. This function should ONLY be
   // called after the metafile is closed. Returns true if writing succeeded.
   virtual bool SaveTo(base::File* file) const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MetafilePlayer);
+#endif  // defined(OS_ANDROID)
 };
 
 // This class creates a graphics context that renders into a data stream
 // (usually PDF or EMF).
-class PRINTING_EXPORT Metafile : public MetafilePlayer {
+class COMPONENT_EXPORT(PRINTING_METAFILE) Metafile : public MetafilePlayer {
  public:
   Metafile();
+  Metafile(const Metafile&) = delete;
+  Metafile& operator=(const Metafile&) = delete;
   ~Metafile() override;
 
   // Initializes a fresh new metafile for rendering. Returns false on failure.
@@ -109,17 +96,17 @@ class PRINTING_EXPORT Metafile : public MetafilePlayer {
   // rendering resources.
   virtual bool Init() = 0;
 
-  // Initializes the metafile with the data in |src_buffer|. Returns true
-  // on success.
+  // Initializes the metafile with `data`. Returns true on success.
   // Note: It should only be called from within the browser process.
-  virtual bool InitFromData(const void* src_buffer, size_t src_buffer_size) = 0;
+  virtual bool InitFromData(base::span<const uint8_t> data) = 0;
 
-  // Prepares a context for rendering a new page with the given |page_size|,
-  // |content_area| and a |scale_factor| to use for the drawing. The units are
+  // Prepares a context for rendering a new page with the given `page_size`,
+  // `content_area` and a `scale_factor` to use for the drawing. The units are
   // in points (=1/72 in).
   virtual void StartPage(const gfx::Size& page_size,
                          const gfx::Rect& content_area,
-                         const float& scale_factor) = 0;
+                         float scale_factor,
+                         mojom::PageOrientation page_orientation) = 0;
 
   // Closes the current page and destroys the context used in rendering that
   // page. The results of current page will be appended into the underlying
@@ -134,8 +121,8 @@ class PRINTING_EXPORT Metafile : public MetafilePlayer {
   // has been called.
   virtual uint32_t GetDataSize() const = 0;
 
-  // Copies the first |dst_buffer_size| bytes of the underlying data stream into
-  // |dst_buffer|. This function should ONLY be called after Close() is invoked.
+  // Copies the first `dst_buffer_size` bytes of the underlying data stream into
+  // `dst_buffer`. This function should ONLY be called after Close() is invoked.
   // Returns true if the copy succeeds.
   virtual bool GetData(void* dst_buffer, uint32_t dst_buffer_size) const = 0;
 
@@ -146,8 +133,8 @@ class PRINTING_EXPORT Metafile : public MetafilePlayer {
 
 #if defined(OS_WIN)
   // "Plays" the EMF buffer in a HDC. It is the same effect as calling the
-  // original GDI function that were called when recording the EMF. |rect| is in
-  // "logical units" and is optional. If |rect| is NULL, the natural EMF bounds
+  // original GDI function that were called when recording the EMF. `rect` is in
+  // "logical units" and is optional. If `rect` is NULL, the natural EMF bounds
   // are used.
   // Note: Windows has been known to have stack buffer overflow in its GDI
   // functions, whether used directly or indirectly through precompiled EMF
@@ -159,10 +146,9 @@ class PRINTING_EXPORT Metafile : public MetafilePlayer {
 
   // MetfilePlayer
   bool GetDataAsVector(std::vector<char>* buffer) const override;
+#if !defined(OS_ANDROID)
   bool SaveTo(base::File* file) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Metafile);
+#endif  // !defined(OS_ANDROID)
 };
 
 }  // namespace printing

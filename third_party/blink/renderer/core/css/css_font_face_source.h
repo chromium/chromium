@@ -26,7 +26,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_SOURCE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/font_display.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache_key.h"
@@ -40,10 +39,14 @@ namespace blink {
 
 class FontDescription;
 class SimpleFontData;
+class FontCustomPlatformData;
 
 class CORE_EXPORT CSSFontFaceSource
     : public GarbageCollected<CSSFontFaceSource> {
  public:
+  CSSFontFaceSource(const CSSFontFaceSource&) = delete;
+  CSSFontFaceSource& operator=(const CSSFontFaceSource&) = delete;
+
   virtual ~CSSFontFaceSource();
 
   // Describes whether this a LocalFontFaceSource can be retrieved locally
@@ -55,6 +58,16 @@ class CORE_EXPORT CSSFontFaceSource
   virtual bool IsLoading() const { return false; }
   virtual bool IsLoaded() const { return true; }
   virtual bool IsValid() const { return true; }
+
+  // Returns nullptr unless the source is a loaded RemoteFontFaceSource.
+  virtual String GetURL() const { return g_null_atom; }
+
+  virtual bool IsPendingDataUrl() const { return false; }
+
+  // Returns nullptr unless the source is a loaded RemoteFontFaceSource.
+  virtual const FontCustomPlatformData* GetCustomPlaftormData() const {
+    return nullptr;
+  }
 
   scoped_refptr<SimpleFontData> GetFontData(const FontDescription&,
                                             const FontSelectionCapabilities&);
@@ -70,11 +83,15 @@ class CORE_EXPORT CSSFontFaceSource
   virtual bool IsInBlockPeriod() const { return false; }
   virtual bool IsInFailurePeriod() const { return false; }
 
+  // Recalculate the font loading timeline period for the font face.
+  // https://drafts.csswg.org/css-fonts-4/#font-display-timeline
+  virtual bool UpdatePeriod() { return false; }
+
   // For UMA reporting
   virtual bool HadBlankText() { return false; }
   virtual void PaintRequested() {}
 
-  virtual void Trace(blink::Visitor* visitor) {}
+  virtual void Trace(Visitor* visitor) const {}
 
  protected:
   CSSFontFaceSource() = default;
@@ -83,20 +100,21 @@ class CORE_EXPORT CSSFontFaceSource
       const FontSelectionCapabilities&) = 0;
   void PruneTable();
 
+  // Report the font lookup for metrics collection. Only used for local font
+  // face sources currently.
+  virtual void ReportFontLookup(const FontDescription& font_description,
+                                SimpleFontData* font_data,
+                                bool is_loading_fallback = false) {}
+
  private:
   void PruneOldestIfNeeded();
-  using FontDataTable = HashMap<FontCacheKey,
-                                scoped_refptr<SimpleFontData>,
-                                FontCacheKeyHash,
-                                FontCacheKeyTraits>;
-  using FontCacheKeyAgeList =
-      LinkedHashSet<FontCacheKey, FontCacheKeyHash, FontCacheKeyTraits>;
+  using FontDataTable = HashMap<FontCacheKey, scoped_refptr<SimpleFontData>>;
+  using FontCacheKeyAgeList = LinkedHashSet<FontCacheKey>;
 
   FontDataTable font_data_table_;
   FontCacheKeyAgeList font_cache_key_age;
-  DISALLOW_COPY_AND_ASSIGN(CSSFontFaceSource);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_FONT_FACE_SOURCE_H_

@@ -26,18 +26,20 @@ message WebviewCreateRequest {
   // This is the cast window ID that will be assigned to the web contents
   // window.
   int32 window_id = 2;
+  // True if this webview should exist in an incognito context. It will never
+  // persist state.
+  bool incognito = 3;
 }
 
 message WebviewCreateResponse {
   AccessibilityTreeInfo accessibility_info = 1;
 }
 
-// These are a translation of ui::Event and children.
 message KeyInput {
-  int32 key_code = 1;
-  int32 dom_code = 2;
-  int32 dom_key = 3;
-  bool is_char = 4;
+  // A string value representing the key character or descriptive key name.
+  // Values of non-character keys follow the web standard key names:
+  // https://www.w3.org/TR/uievents-key/#key-attr-values
+  string key_string = 1;
 }
 
 message TouchInput {
@@ -80,6 +82,8 @@ message NavigateRequest {
 }
 
 message AsyncPageEvent {
+  // These values *must* be kept in sync with ::chromecast::PageState in
+  // chromecast/browser/web_types.h.
   enum State {
     IDLE = 0;
     LOADING = 1;
@@ -95,6 +99,7 @@ message AsyncPageEvent {
   bool resource_load_failed = 3;
   bool did_first_visually_non_empty_paint = 4;
   string url = 5;
+  string stopped_error_description = 6;
 }
 
 message StopPageRequest {
@@ -142,6 +147,12 @@ message GoForwardRequest {}
 message ReloadRequest {}
 
 message ClearCacheRequest {}
+
+message ClearCookiesRequest {}
+
+message ClearCookiesResponse {
+  bool had_cookies = 1;
+}
 
 message UserAgent {
   oneof type {
@@ -239,6 +250,60 @@ message ResizeRequest {
   int32 height = 2;
 }
 
+// Represents the type of a focused text input field.
+// Corresponds with blink's public/platform/WebTextInputType.h
+// Reference that source for more extended commentary on meaning of each value.
+enum TextInputType {
+  // Input caret is not in an editable node, no input method shall be used.
+  TEXT_INPUT_TYPE_NONE = 0;
+  TEXT_INPUT_TYPE_TEXT = 1;
+  TEXT_INPUT_TYPE_PASSWORD = 2;
+  TEXT_INPUT_TYPE_SEARCH = 3;
+  TEXT_INPUT_TYPE_EMAIL = 4;
+  TEXT_INPUT_TYPE_NUMBER = 5;
+  TEXT_INPUT_TYPE_TELEPHONE = 6;
+  TEXT_INPUT_TYPE_URL = 7;
+  TEXT_INPUT_TYPE_DATE = 8;
+  TEXT_INPUT_TYPE_DATE_TIME = 9;
+  TEXT_INPUT_TYPE_DATE_TIME_LOCAL = 10;
+  TEXT_INPUT_TYPE_MONTH = 11;
+  TEXT_INPUT_TYPE_TIME = 12;
+  TEXT_INPUT_TYPE_WEEK = 13;
+  TEXT_INPUT_TYPE_TEXT_AREA = 14;
+  TEXT_INPUT_TYPE_CONTENT_EDITABLE = 15;
+  TEXT_INPUT_TYPE_DATE_TIME_FIELD = 16;
+
+  // Input caret is in an editable node which doesn't support rich editing.
+  TEXT_INPUT_TYPE_NULL = 17;
+}
+
+// Represents a focus event for an input field within the webview's contents.
+message TextInputFocusEvent {
+  TextInputType type = 1;
+
+  // Flagged attributes of the focused text input field.
+  // Corresponds with those described in blink::WebTextInputFlags in
+  // public/platform/WebTextInputType.h
+  int32 flags = 2;
+}
+
+// Used to represent a space within a rectangle by "shrinking" the rectangle by
+// the inset amount on all four sides.
+message SetInsetsRequest {
+  int32 top = 1;
+  int32 left = 2;
+  int32 bottom = 3;
+  int32 right = 4;
+}
+
+message GetUserAgentRequest {}
+
+message FocusRequest {}
+
+message GetUserAgentResponse {
+  string user_agent = 1;
+}
+
 message WebviewRequest {
   // Unique identifier for the request. For requests that will have a response,
   // the response id will match the request id.
@@ -284,6 +349,10 @@ message WebviewRequest {
     // This must be the first request for CreateCastAppWindowLink
     AssociateCastAppWindowRequest associate = 20;
     ResizeRequest resize = 21;
+    ClearCookiesRequest clear_cookies = 22;
+    SetInsetsRequest set_insets = 23;
+    GetUserAgentRequest get_user_agent = 24;
+    FocusRequest focus = 25;
   }
 }
 
@@ -305,14 +374,11 @@ message WebviewResponse {
     // Events sents from JS inside of Webviews to the embedder who added JS
     // channels via AddJavascriptChannelsRequest.
     JavascriptChannelMessage javascript_channel_message = 10;
+    ClearCookiesResponse clear_cookies = 11;
+    TextInputFocusEvent input_focus_event = 12;
     AssociateCastAppWindowResponse associate = 20;
+    GetUserAgentResponse get_user_agent = 21;
   }
-}
-
-// TODO(sagallea): Deprecate this after moving to new service.
-service WebviewService {
-  // Creates a webview. See the comment at the top of the file.
-  rpc CreateWebview(stream WebviewRequest) returns (stream WebviewResponse);
 }
 
 service PlatformViewsService {

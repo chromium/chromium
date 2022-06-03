@@ -5,8 +5,6 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_FEATURE_STATE_MANAGER_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_FAKE_FEATURE_STATE_MANAGER_H_
 
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/feature_state_manager.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
@@ -19,8 +17,13 @@ namespace multidevice_setup {
 class FakeFeatureStateManager : public FeatureStateManager {
  public:
   FakeFeatureStateManager();
+
+  FakeFeatureStateManager(const FakeFeatureStateManager&) = delete;
+  FakeFeatureStateManager& operator=(const FakeFeatureStateManager&) = delete;
+
   ~FakeFeatureStateManager() override;
 
+  mojom::FeatureState GetFeatureState(mojom::Feature feature);
   void SetFeatureState(mojom::Feature feature, mojom::FeatureState state);
   void SetFeatureStates(const FeatureStatesMap& feature_states_map);
 
@@ -33,14 +36,18 @@ class FakeFeatureStateManager : public FeatureStateManager {
                                      bool enabled) override;
 
   FeatureStatesMap feature_states_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFeatureStateManager);
 };
 
 // Test FeatureStateManager::Observer implementation.
 class FakeFeatureStateManagerObserver : public FeatureStateManager::Observer {
  public:
   FakeFeatureStateManagerObserver();
+
+  FakeFeatureStateManagerObserver(const FakeFeatureStateManagerObserver&) =
+      delete;
+  FakeFeatureStateManagerObserver& operator=(
+      const FakeFeatureStateManagerObserver&) = delete;
+
   ~FakeFeatureStateManagerObserver() override;
 
   const std::vector<FeatureStateManager::FeatureStatesMap>&
@@ -54,8 +61,6 @@ class FakeFeatureStateManagerObserver : public FeatureStateManager::Observer {
       const FeatureStateManager::FeatureStatesMap& feature_states_map) override;
 
   std::vector<FeatureStateManager::FeatureStatesMap> feature_state_updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFeatureStateManagerObserver);
 };
 
 }  // namespace multidevice_setup

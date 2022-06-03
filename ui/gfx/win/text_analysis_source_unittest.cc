@@ -37,11 +37,11 @@ class TextAnalysisSourceTest : public testing::Test {
                                number_substitution.Get(), kReadingDirection);
   }
 
+  TextAnalysisSourceTest(const TextAnalysisSourceTest&) = delete;
+  TextAnalysisSourceTest& operator=(const TextAnalysisSourceTest&) = delete;
+
  protected:
   mswr::ComPtr<IDWriteTextAnalysisSource> source_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TextAnalysisSourceTest);
 };
 
 TEST_F(TextAnalysisSourceTest, TestGetLocaleName) {

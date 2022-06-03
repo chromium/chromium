@@ -1,0 +1,4 @@
+monorail {
+  component: "Blink>Storage>CookiesAPI"
+}
+team_email: "storage-dev@chromium.org"

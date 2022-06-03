@@ -8,59 +8,81 @@ import make_runtime_features_utilities as util
 from blinkbuild.name_style_converter import NameStyleConverter
 
 
+def _feature(name,
+             depends_on=[],
+             implied_by=[],
+             origin_trial_feature_name=None):
+    return {
+        'name': name,
+        'depends_on': depends_on,
+        'implied_by': implied_by,
+        'origin_trial_feature_name': origin_trial_feature_name
+    }
+
+
 class MakeRuntimeFeaturesUtilitiesTest(unittest.TestCase):
-    def test_cycle_in_dependency(self):
+    def test_cycle(self):
         # Cycle: 'c' => 'd' => 'e' => 'c'
-        graph = {
-            'a': ['b'],
-            'b': [],
-            'c': ['a', 'd'],
-            'd': ['e'],
-            'e': ['c']
-        }
-        with self.assertRaises(Exception):
-            util.check_if_dependency_graph_contains_cycle(graph)
+        with self.assertRaisesRegexp(
+                AssertionError, 'Cycle found in depends_on/implied_by graph'):
+            util.origin_trials([
+                _feature('a', depends_on=['b']),
+                _feature('b'),
+                _feature('c', implied_by=['a', 'd']),
+                _feature('d', depends_on=['e']),
+                _feature('e', implied_by=['c'])
+            ])
 
-    def test_in_origin_trials_flag(self):
+    def test_bad_dependency(self):
+        with self.assertRaisesRegexp(AssertionError,
+                                     'a: Depends on non-existent-feature: x'):
+            util.origin_trials([_feature('a', depends_on=['x'])])
+
+    def test_bad_implication(self):
+        with self.assertRaisesRegexp(AssertionError,
+                                     'a: Implied by non-existent-feature: x'):
+            util.origin_trials([_feature('a', implied_by=['x'])])
+        with self.assertRaisesRegexp(
+                AssertionError,
+                'a: A feature must be in origin trial if implied by an origin trial feature: b'
+        ):
+            util.origin_trials([
+                _feature('a', implied_by=['b']),
+                _feature('b', origin_trial_feature_name='b')
+            ])
+
+    def test_both_dependency_and_implication(self):
+        with self.assertRaisesRegexp(
+                AssertionError,
+                'c: Only one of implied_by and depends_on is allowed'):
+            util.origin_trials([
+                _feature('a'),
+                _feature('b'),
+                _feature('c', depends_on=['a'], implied_by=['b'])
+            ])
+
+    def test_origin_trials(self):
         features = [
-            {'name': NameStyleConverter('a'), 'depends_on': [], 'origin_trial_feature_name': None},
-            {'name': NameStyleConverter('b'), 'depends_on': ['a'], 'origin_trial_feature_name': 'OriginTrials'},
-            {'name': NameStyleConverter('c'), 'depends_on': ['b'], 'origin_trial_feature_name': None},
-            {'name': NameStyleConverter('d'), 'depends_on': ['b'], 'origin_trial_feature_name': None},
-            {'name': NameStyleConverter('e'), 'depends_on': ['d'], 'origin_trial_feature_name': None},
+            _feature(NameStyleConverter('a')),
+            _feature(
+                NameStyleConverter('b'),
+                depends_on=['a'],
+                origin_trial_feature_name='b'),
+            _feature(NameStyleConverter('c'), depends_on=['b']),
+            _feature(NameStyleConverter('d'), depends_on=['b']),
+            _feature(NameStyleConverter('e'), depends_on=['d'])
         ]
-        graph = {
-            'a': ['b'],
-            'b': ['c', 'd'],
-            'c': [],
-            'd': ['e'],
-            'e': []
-        }
-        results = [
-            {'name': NameStyleConverter('a'), 'in_origin_trial': False},
-            {'name': NameStyleConverter('b'), 'depends_on': ['a'],
-             'origin_trial_feature_name': 'OriginTrials', 'in_origin_trial': True},
-            {'name': NameStyleConverter('c'), 'depends_on': ['b'], 'in_origin_trial': True},
-            {'name': NameStyleConverter('d'), 'depends_on': ['b'], 'in_origin_trial': True},
-            {'name': NameStyleConverter('e'), 'depends_on': ['d'], 'in_origin_trial': True},
-        ]
+        self.assertSetEqual(util.origin_trials(features), {'b', 'c', 'd', 'e'})
 
-        util.set_origin_trials_features(features, graph)
-        self.assertEqual(len(features), len(results))
-        for feature, result in zip(features, results):
-            self.assertEqual(result['in_origin_trial'], feature['in_origin_trial'])
-
-    def test_init_graph(self):
         features = [
-            {'name': NameStyleConverter('a')},
-            {'name': NameStyleConverter('b')},
-            {'name': NameStyleConverter('c')},
+            _feature('a'),
+            _feature('b', depends_on=['x', 'y']),
+            _feature('c', depends_on=['y', 'z']),
+            _feature('x', depends_on=['a']),
+            _feature('y', depends_on=['x'], origin_trial_feature_name='y'),
+            _feature('z', depends_on=['y'])
         ]
-
-        graph = util.init_graph(features)
-        self.assertEqual(len(features), len(graph))
-        for node in graph:
-            self.assertEqual(len(graph[node]), 0)
+        self.assertSetEqual(util.origin_trials(features), {'b', 'c', 'y', 'z'})
 
 
 if __name__ == "__main__":

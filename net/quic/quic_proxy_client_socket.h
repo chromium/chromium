@@ -10,7 +10,7 @@
 #include <string>
 
 #include "net/base/completion_once_callback.h"
-#include "net/base/load_timing_info.h"
+#include "net/base/proxy_server.h"
 #include "net/http/proxy_client_socket.h"
 #include "net/quic/quic_chromium_client_session.h"
 #include "net/quic/quic_chromium_client_stream.h"
@@ -20,6 +20,7 @@
 namespace net {
 
 class HttpAuthController;
+class ProxyDelegate;
 
 // QuicProxyClientSocket provides a socket interface to an underlying
 // QuicChromiumClientStream. Bytes written to/read from a QuicProxyClientSocket
@@ -32,10 +33,15 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   QuicProxyClientSocket(
       std::unique_ptr<QuicChromiumClientStream::Handle> stream,
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
+      const ProxyServer& proxy_server,
       const std::string& user_agent,
       const HostPortPair& endpoint,
       const NetLogWithSource& net_log,
-      HttpAuthController* auth_controller);
+      HttpAuthController* auth_controller,
+      ProxyDelegate* proxy_delegate);
+
+  QuicProxyClientSocket(const QuicProxyClientSocket&) = delete;
+  QuicProxyClientSocket& operator=(const QuicProxyClientSocket&) = delete;
 
   // On destruction Disconnect() is called.
   ~QuicProxyClientSocket() override;
@@ -95,7 +101,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
 
   // Callback for stream_->ReadInitialHeaders()
   void OnReadResponseHeadersComplete(int result);
-  int ProcessResponseHeaders(const spdy::SpdyHeaderBlock& headers);
+  int ProcessResponseHeaders(const spdy::Http2HeaderBlock& headers);
 
   int DoLoop(int last_io_result);
   int DoGenerateAuthToken();
@@ -104,8 +110,6 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   int DoSendRequestComplete(int result);
   int DoReadReply();
   int DoReadReplyComplete(int result);
-
-  bool GetLoadTimingInfo(LoadTimingInfo* load_timing_info) const;
 
   State next_state_;
 
@@ -130,24 +134,24 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   HttpRequestInfo request_;
   HttpResponseInfo response_;
 
-  spdy::SpdyHeaderBlock response_header_block_;
+  spdy::Http2HeaderBlock response_header_block_;
 
   // The hostname and port of the endpoint.  This is not necessarily the one
   // specified by the URL, due to Alternate-Protocol or fixed testing ports.
   const HostPortPair endpoint_;
   scoped_refptr<HttpAuthController> auth_;
 
-  std::string user_agent_;
+  const ProxyServer proxy_server_;
 
-  // Session connect timing info.
-  LoadTimingInfo::ConnectTiming connect_timing_;
+  // This delegate must outlive this proxy client socket.
+  ProxyDelegate* const proxy_delegate_;
+
+  std::string user_agent_;
 
   const NetLogWithSource net_log_;
 
   // The default weak pointer factory.
   base::WeakPtrFactory<QuicProxyClientSocket> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(QuicProxyClientSocket);
 };
 
 }  // namespace net

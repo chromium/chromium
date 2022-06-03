@@ -38,7 +38,7 @@ class FakeRemoteDeviceProviderFactory
   ~FakeRemoteDeviceProviderFactory() override = default;
 
   // device_sync::RemoteDeviceProviderImpl::Factory:
-  std::unique_ptr<device_sync::RemoteDeviceProvider> BuildInstance(
+  std::unique_ptr<device_sync::RemoteDeviceProvider> CreateInstance(
       device_sync::CryptAuthDeviceManager* device_manager,
       device_sync::CryptAuthV2DeviceManager* v2_device_manager,
       const std::string& user_email,
@@ -50,6 +50,12 @@ class FakeRemoteDeviceProviderFactory
 }  // namespace
 
 class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
+ public:
+  AsynchronousShutdownObjectContainerImplTest(
+      const AsynchronousShutdownObjectContainerImplTest&) = delete;
+  AsynchronousShutdownObjectContainerImplTest& operator=(
+      const AsynchronousShutdownObjectContainerImplTest&) = delete;
+
  protected:
   AsynchronousShutdownObjectContainerImplTest()
       : test_device_(multidevice::CreateRemoteDeviceRefListForTest(1u)[0]) {}
@@ -59,7 +65,7 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
 
     fake_remote_device_provider_factory_ =
         base::WrapUnique(new FakeRemoteDeviceProviderFactory());
-    device_sync::RemoteDeviceProviderImpl::Factory::SetInstanceForTesting(
+    device_sync::RemoteDeviceProviderImpl::Factory::SetFactoryForTesting(
         fake_remote_device_provider_factory_.get());
 
     fake_device_sync_client_ =
@@ -91,7 +97,7 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
   }
 
   void CallShutdown() {
-    container_->Shutdown(base::Bind(
+    container_->Shutdown(base::BindOnce(
         &AsynchronousShutdownObjectContainerImplTest::OnShutdownComplete,
         base::Unretained(this)));
   }
@@ -115,9 +121,6 @@ class AsynchronousShutdownObjectContainerImplTest : public testing::Test {
   bool was_shutdown_callback_invoked_;
 
   std::unique_ptr<AsynchronousShutdownObjectContainerImpl> container_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousShutdownObjectContainerImplTest);
 };
 
 TEST_F(AsynchronousShutdownObjectContainerImplTest,

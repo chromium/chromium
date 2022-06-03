@@ -51,6 +51,7 @@
 #include "absl/container/internal/btree_container.h"  // IWYU pragma: export
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // absl::btree_map<>
 //
@@ -184,7 +185,7 @@ class btree_map
   // template <typename K> size_type erase(const K& key):
   //
   //   Erases the element with the matching key, if it exists, returning the
-  //   number of elements erased.
+  //   number of elements erased (0 or 1).
   using Base::erase;
 
   // btree_map::insert()
@@ -224,6 +225,30 @@ class btree_map
   //
   //   Inserts the elements within the initializer list `ilist`.
   using Base::insert;
+
+  // btree_map::insert_or_assign()
+  //
+  // Inserts an element of the specified value into the `btree_map` provided
+  // that a value with the given key does not already exist, or replaces the
+  // corresponding mapped type with the forwarded `obj` argument if a key for
+  // that value already exists, returning an iterator pointing to the newly
+  // inserted element. Overloads are listed below.
+  //
+  // pair<iterator, bool> insert_or_assign(const key_type& k, M&& obj):
+  // pair<iterator, bool> insert_or_assign(key_type&& k, M&& obj):
+  //
+  //   Inserts/Assigns (or moves) the element of the specified key into the
+  //   `btree_map`. If the returned bool is true, insertion took place, and if
+  //   it's false, assignment took place.
+  //
+  // iterator insert_or_assign(const_iterator hint,
+  //                           const key_type& k, M&& obj):
+  // iterator insert_or_assign(const_iterator hint, key_type&& k, M&& obj):
+  //
+  //   Inserts/Assigns (or moves) the element of the specified key into the
+  //   `btree_map` using the position of `hint` as a non-binding suggestion
+  //   for where to begin the insertion search.
+  using Base::insert_or_assign;
 
   // btree_map::emplace()
   //
@@ -293,12 +318,17 @@ class btree_map
   //   Extracts the element at the indicated position and returns a node handle
   //   owning that extracted data.
   //
-  // template <typename K> node_type extract(const K& x):
+  // template <typename K> node_type extract(const K& k):
   //
   //   Extracts the element with the key matching the passed key value and
   //   returns a node handle owning that extracted data. If the `btree_map`
   //   does not contain an element with a matching key, this function returns an
   //   empty node handle.
+  //
+  // NOTE: when compiled in an earlier version of C++ than C++17,
+  // `node_type::key()` returns a const reference to the key instead of a
+  // mutable reference. We cannot safely return a mutable reference without
+  // std::launder (which is not available before C++17).
   //
   // NOTE: In this context, `node_type` refers to the C++17 concept of a
   // move-only type that owns and provides access to the elements in associative
@@ -336,8 +366,8 @@ class btree_map
   // Determines whether an element comparing equal to the given `key` exists
   // within the `btree_map`, returning `true` if so or `false` otherwise.
   //
-  // Supports heterogeneous lookup, provided that the map is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
   using Base::contains;
 
   // btree_map::count()
@@ -348,15 +378,14 @@ class btree_map
   // the `btree_map`. Note that this function will return either `1` or `0`
   // since duplicate elements are not allowed within a `btree_map`.
   //
-  // Supports heterogeneous lookup, provided that the map is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
   using Base::count;
 
   // btree_map::equal_range()
   //
-  // Returns a closed range [first, last], defined by a `std::pair` of two
-  // iterators, containing all elements with the passed key in the
-  // `btree_map`.
+  // Returns a half-open range [first, last), defined by a `std::pair` of two
+  // iterators, containing all elements with the passed key in the `btree_map`.
   using Base::equal_range;
 
   // btree_map::find()
@@ -366,9 +395,33 @@ class btree_map
   //
   // Finds an element with the passed `key` within the `btree_map`.
   //
-  // Supports heterogeneous lookup, provided that the map is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
   using Base::find;
+
+  // btree_map::lower_bound()
+  //
+  // template <typename K> iterator lower_bound(const K& key):
+  // template <typename K> const_iterator lower_bound(const K& key) const:
+  //
+  // Finds the first element with a key that is not less than `key` within the
+  // `btree_map`.
+  //
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
+  using Base::lower_bound;
+
+  // btree_map::upper_bound()
+  //
+  // template <typename K> iterator upper_bound(const K& key):
+  // template <typename K> const_iterator upper_bound(const K& key) const:
+  //
+  // Finds the first element with a key that is greater than `key` within the
+  // `btree_map`.
+  //
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
+  using Base::upper_bound;
 
   // btree_map::operator[]()
   //
@@ -409,6 +462,20 @@ class btree_map
 template <typename K, typename V, typename C, typename A>
 void swap(btree_map<K, V, C, A> &x, btree_map<K, V, C, A> &y) {
   return x.swap(y);
+}
+
+// absl::erase_if(absl::btree_map<>, Pred)
+//
+// Erases all elements that satisfy the predicate pred from the container.
+template <typename K, typename V, typename C, typename A, typename Pred>
+void erase_if(btree_map<K, V, C, A> &map, Pred pred) {
+  for (auto it = map.begin(); it != map.end();) {
+    if (pred(*it)) {
+      it = map.erase(it);
+    } else {
+      ++it;
+    }
+  }
 }
 
 // absl::btree_multimap
@@ -606,12 +673,17 @@ class btree_multimap
   //   Extracts the element at the indicated position and returns a node handle
   //   owning that extracted data.
   //
-  // template <typename K> node_type extract(const K& x):
+  // template <typename K> node_type extract(const K& k):
   //
   //   Extracts the element with the key matching the passed key value and
   //   returns a node handle owning that extracted data. If the `btree_multimap`
   //   does not contain an element with a matching key, this function returns an
   //   empty node handle.
+  //
+  // NOTE: when compiled in an earlier version of C++ than C++17,
+  // `node_type::key()` returns a const reference to the key instead of a
+  // mutable reference. We cannot safely return a mutable reference without
+  // std::launder (which is not available before C++17).
   //
   // NOTE: In this context, `node_type` refers to the C++17 concept of a
   // move-only type that owns and provides access to the elements in associative
@@ -621,9 +693,8 @@ class btree_multimap
 
   // btree_multimap::merge()
   //
-  // Extracts elements from a given `source` btree_multimap into this
-  // `btree_multimap`. If the destination `btree_multimap` already contains an
-  // element with an equivalent key, that element is not extracted.
+  // Extracts all elements from a given `source` btree_multimap into this
+  // `btree_multimap`.
   using Base::merge;
 
   // btree_multimap::swap(btree_multimap& other)
@@ -643,8 +714,8 @@ class btree_multimap
   // Determines whether an element comparing equal to the given `key` exists
   // within the `btree_multimap`, returning `true` if so or `false` otherwise.
   //
-  // Supports heterogeneous lookup, provided that the map is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
   using Base::contains;
 
   // btree_multimap::count()
@@ -654,13 +725,13 @@ class btree_multimap
   // Returns the number of elements comparing equal to the given `key` within
   // the `btree_multimap`.
   //
-  // Supports heterogeneous lookup, provided that the map is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
   using Base::count;
 
   // btree_multimap::equal_range()
   //
-  // Returns a closed range [first, last], defined by a `std::pair` of two
+  // Returns a half-open range [first, last), defined by a `std::pair` of two
   // iterators, containing all elements with the passed key in the
   // `btree_multimap`.
   using Base::equal_range;
@@ -672,9 +743,33 @@ class btree_multimap
   //
   // Finds an element with the passed `key` within the `btree_multimap`.
   //
-  // Supports heterogeneous lookup, provided that the map is provided a
-  // compatible heterogeneous comparator.
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
   using Base::find;
+
+  // btree_multimap::lower_bound()
+  //
+  // template <typename K> iterator lower_bound(const K& key):
+  // template <typename K> const_iterator lower_bound(const K& key) const:
+  //
+  // Finds the first element with a key that is not less than `key` within the
+  // `btree_multimap`.
+  //
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
+  using Base::lower_bound;
+
+  // btree_multimap::upper_bound()
+  //
+  // template <typename K> iterator upper_bound(const K& key):
+  // template <typename K> const_iterator upper_bound(const K& key) const:
+  //
+  // Finds the first element with a key that is greater than `key` within the
+  // `btree_multimap`.
+  //
+  // Supports heterogeneous lookup, provided that the map has a compatible
+  // heterogeneous comparator.
+  using Base::upper_bound;
 
   // btree_multimap::get_allocator()
   //
@@ -700,6 +795,21 @@ void swap(btree_multimap<K, V, C, A> &x, btree_multimap<K, V, C, A> &y) {
   return x.swap(y);
 }
 
+// absl::erase_if(absl::btree_multimap<>, Pred)
+//
+// Erases all elements that satisfy the predicate pred from the container.
+template <typename K, typename V, typename C, typename A, typename Pred>
+void erase_if(btree_multimap<K, V, C, A> &map, Pred pred) {
+  for (auto it = map.begin(); it != map.end();) {
+    if (pred(*it)) {
+      it = map.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_CONTAINER_BTREE_MAP_H_

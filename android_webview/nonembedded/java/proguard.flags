@@ -39,8 +39,11 @@
 -keep class com.android.webview.chromium.DrawGLFunctor
 -keep class com.android.webview.chromium.GraphicsUtils
 
--keep class org.chromium.android_webview.AwBrowserProcess {
+# The lock file object must be kept explicitly to avoid it being optimized
+# away and the lock released by the object's finalizer.
+-keep class org.chromium.android_webview.AwDataDirLock {
     java.nio.channels.FileLock sExclusiveFileLock;
+    java.io.RandomAccessFile sLockFile;
 }
 
 # Workaround for crbug/1002847. Methods of BaseGmsClient are incorrectly

@@ -12,7 +12,7 @@
 
 /**
  * @typedef {object} TreeNode Node object used to represent the file tree. Can
- * represent either a container or a symbol.
+ * represent either an artifact or a symbol.
  * @prop {TreeNode[] | null} children Child tree nodes. Null values indicate
  * that there are children, but that they haven't been loaded in yet. Empty
  * arrays indicate this is a leaf node.
@@ -53,8 +53,15 @@
  * include DOM elements for styling.
  * @prop {number} value The size number used to create the other strings.
  */
+
 /**
  * @typedef {(node: TreeNode, unit: string) => GetSizeResult} GetSize
+ */
+
+/**
+ * @typedef {object} SizeProperties Properties loaded from .size / .sizediff
+ * files.
+ * @prop {boolean} isMultiContainer Whether multiple containers exist.
  */
 
 /**
@@ -109,15 +116,15 @@ const _DIFF_STATUSES = Object.freeze({
 });
 
 /**
- * Special types used by containers, such as folders and files.
+ * Special types used by artifacts, such as folders and files.
  */
-const _CONTAINER_TYPES = {
+const _ARTIFACT_TYPES = {
   DIRECTORY: 'D',
   COMPONENT: 'C',
   FILE: 'F',
   JAVA_CLASS: 'J',
 };
-const _CONTAINER_TYPE_SET = new Set(Object.values(_CONTAINER_TYPES));
+const _ARTIFACT_TYPE_SET = new Set(Object.values(_ARTIFACT_TYPES));
 
 /** Type for a code/.text symbol */
 const _CODE_SYMBOL_TYPE = 't';
@@ -128,7 +135,7 @@ const _DEX_SYMBOL_TYPE = 'x';
 /** Type for an 'other' symbol */
 const _OTHER_SYMBOL_TYPE = 'o';
 
-/** Set of all known symbol types. Container types are not included. */
+/** Set of all known symbol types. Artifact types are not included. */
 const _SYMBOL_TYPE_SET = new Set('bdrtRxmopP');
 
 /** Name used by a directory created to hold symbols with no name. */

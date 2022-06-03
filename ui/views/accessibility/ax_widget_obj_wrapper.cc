@@ -18,17 +18,12 @@ namespace views {
 AXWidgetObjWrapper::AXWidgetObjWrapper(AXAuraObjCache* aura_obj_cache,
                                        Widget* widget)
     : AXAuraObjWrapper(aura_obj_cache), widget_(widget) {
-  widget_observer_.Add(widget);
-  widget->AddRemovalsObserver(this);
+  DCHECK(widget->GetNativeView());
+  widget_observation_.Observe(widget);
+  widget_removals_observation_.Observe(widget);
 }
 
-AXWidgetObjWrapper::~AXWidgetObjWrapper() {
-  widget_->RemoveRemovalsObserver(this);
-}
-
-bool AXWidgetObjWrapper::IsIgnored() {
-  return false;
-}
+AXWidgetObjWrapper::~AXWidgetObjWrapper() = default;
 
 AXAuraObjWrapper* AXWidgetObjWrapper::GetParent() {
   return aura_obj_cache_->GetOrCreate(widget_->GetNativeView());
@@ -58,11 +53,24 @@ void AXWidgetObjWrapper::Serialize(ui::AXNodeData* out_node_data) {
   out_node_data->state = 0;
 }
 
-int32_t AXWidgetObjWrapper::GetUniqueId() const {
+ui::AXNodeID AXWidgetObjWrapper::GetUniqueId() const {
   return unique_id_.Get();
 }
 
+std::string AXWidgetObjWrapper::ToString() const {
+  return "Widget";
+}
+
 void AXWidgetObjWrapper::OnWidgetDestroying(Widget* widget) {
+  aura_obj_cache_->Remove(widget);
+}
+
+void AXWidgetObjWrapper::OnWidgetDestroyed(Widget* widget) {
+  // Normally this does not run because of OnWidgetDestroying should have
+  // removed |this| from cache. However, some code could trigger a destroying
+  // widget to be created after OnWidgetDestroying. This guards against such
+  // situation and ensures the destroyed widget is removed from cache.
+  // See https://crbug.com/1091545
   aura_obj_cache_->Remove(widget);
 }
 

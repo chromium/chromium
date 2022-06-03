@@ -10,3 +10,6 @@
 
 NSString* const kOmniboxPopupRowSwitchTabAccessibilityIdentifier =
     @"OmniboxPopupRowSwitchTabAccessibilityIdentifier";
+
+NSString* const kOmniboxPopupTableViewAccessibilityIdentifier =
+    @"OmniboxPopupTableViewAccessibilityIdentifier";

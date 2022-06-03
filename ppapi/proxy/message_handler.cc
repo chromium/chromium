@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ipc/ipc_message.h"
 #include "ppapi/proxy/plugin_dispatcher.h"
 #include "ppapi/proxy/ppapi_messages.h"
@@ -109,9 +109,9 @@ bool MessageHandler::LoopIsValid() const {
 
 void MessageHandler::HandleMessage(ScopedPPVar var) {
   message_loop_->task_runner()->PostTask(
-      FROM_HERE, RunWhileLocked(base::Bind(&HandleMessageWrapper,
-                                           handler_if_->HandleMessage,
-                                           instance_, user_data_, var)));
+      FROM_HERE, RunWhileLocked(base::BindOnce(&HandleMessageWrapper,
+                                               handler_if_->HandleMessage,
+                                               instance_, user_data_, var)));
 }
 
 void MessageHandler::HandleBlockingMessage(
@@ -119,9 +119,9 @@ void MessageHandler::HandleBlockingMessage(
     std::unique_ptr<IPC::Message> reply_msg) {
   message_loop_->task_runner()->PostTask(
       FROM_HERE,
-      RunWhileLocked(base::Bind(
+      RunWhileLocked(base::BindOnce(
           &HandleBlockingMessageWrapper, handler_if_->HandleBlockingMessage,
-          instance_, user_data_, var, base::Passed(std::move(reply_msg)))));
+          instance_, user_data_, var, std::move(reply_msg))));
 }
 
 MessageHandler::MessageHandler(

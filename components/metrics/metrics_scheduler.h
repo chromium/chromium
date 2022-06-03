@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_METRICS_SCHEDULER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 
@@ -17,8 +16,12 @@ class MetricsScheduler {
  public:
   // Creates MetricsScheduler object with the given |task_callback|
   // callback to call when a task should happen.
-  MetricsScheduler(const base::Closure& task_callback,
+  MetricsScheduler(const base::RepeatingClosure& task_callback,
                    bool fast_startup_for_testing);
+
+  MetricsScheduler(const MetricsScheduler&) = delete;
+  MetricsScheduler& operator=(const MetricsScheduler&) = delete;
+
   virtual ~MetricsScheduler();
 
   // Starts scheduling uploads. This in a no-op if the scheduler is already
@@ -42,7 +45,7 @@ class MetricsScheduler {
   void ScheduleNextTask();
 
   // The method to call when task should happen.
-  const base::Closure task_callback_;
+  const base::RepeatingClosure task_callback_;
 
   // Uses a one-shot timer rather than a repeating one because the task may be
   // async, and the length of the interval may change.
@@ -57,8 +60,6 @@ class MetricsScheduler {
 
   // Indicates that the last triggered task hasn't resolved yet.
   bool callback_pending_;
-
-  DISALLOW_COPY_AND_ASSIGN(MetricsScheduler);
 };
 
 }  // namespace metrics

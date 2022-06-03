@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace data_reduction_proxy {
@@ -23,6 +22,10 @@ class DataStore {
   enum Status { OK, NOT_FOUND, CORRUPTED, IO_ERROR, MISC_ERROR, STATUS_MAX };
 
   DataStore();
+
+  DataStore(const DataStore&) = delete;
+  DataStore& operator=(const DataStore&) = delete;
+
   virtual ~DataStore();
 
   // Initializes the store on DB sequenced task runner.
@@ -38,9 +41,6 @@ class DataStore {
 
   // Deletes the LevelDB and recreates it.
   virtual Status RecreateDB();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DataStore);
 };
 
 }  // namespace data_reduction_proxy

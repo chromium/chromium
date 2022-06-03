@@ -5,17 +5,20 @@
 module blink.mojom;
 
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "third_party/blink/public/mojom/user_agent/user_agent_metadata.mojom";
 import "third_party/blink/public/mojom/browser_interface_broker.mojom";
 import "third_party/blink/public/mojom/loader/url_loader_factory_bundle.mojom";
 import "third_party/blink/public/mojom/renderer_preference_watcher.mojom";
 import "third_party/blink/public/mojom/renderer_preferences.mojom";
 import "third_party/blink/public/mojom/service_worker/controller_service_worker.mojom";
-import "third_party/blink/public/mojom/service_worker/service_worker_provider.mojom";
+import "third_party/blink/public/mojom/service_worker/service_worker_container.mojom";
+import "third_party/blink/public/mojom/tokens/tokens.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker_host.mojom";
 import "third_party/blink/public/mojom/worker/shared_worker_info.mojom";
 import "third_party/blink/public/mojom/worker/worker_content_settings_proxy.mojom";
 import "third_party/blink/public/mojom/worker/worker_main_script_load_params.mojom";
+import "url/mojom/origin.mojom";
 
 // The name of the InterfaceProviderSpec in service manifests used by the
 // frame tree to expose shared-worker-specific interfaces between renderer and
@@ -23,7 +26,8 @@ import "third_party/blink/public/mojom/worker/worker_main_script_load_params.moj
 const string kNavigation_SharedWorkerSpec = "navigation:shared_worker";
 
 // This interface is used to instantiate a shared worker. It is exported from a
-// child process where the shared worker should run.
+// renderer process where the shared worker should run. The method on this
+// interface is called by the browser process.
 interface SharedWorkerFactory {
   // Create a new shared worker. The |host| interface receives events from the
   // shared worker.
@@ -32,25 +36,34 @@ interface SharedWorkerFactory {
   // |browser_interface_broker| instead of receiving plumbing it here.
   CreateSharedWorker(
       SharedWorkerInfo info,
+
+      // The token that uniquely identifies this worker. Generated in the
+      // browser, and communicated to the worker in the renderer. This token
+      // should not be shared with any renderer except that hosting the worker.
+      SharedWorkerToken token,
+
+      // The origin of the page where `new SharedWorker()` is called.
+      // This origin must be able to access shared workers.
+      // (see blink::SecurityOrigin::CanAccessSharedWorkers())
+      // https://html.spec.whatwg.org/C/#concept-sharedworkerglobalscope-constructor-origin
+      url.mojom.Origin constructor_origin,
+
       string user_agent,
+      string reduced_user_agent,
+      UserAgentMetadata ua_metadata,
       bool pause_on_start,
       mojo_base.mojom.UnguessableToken devtools_worker_token,
       RendererPreferences renderer_preferences,
       pending_receiver<RendererPreferenceWatcher> preference_watcher_receiver,
       pending_remote<WorkerContentSettingsProxy> content_settings,
 
-      // The info about the service worker provider in the browser process that
-      // provides support for this worker to be a service worker client.
+      // The info about the service worker container host in the browser process
+      // that provides support for this worker to be a service worker client.
       //
       // This is null if the shared worker cannot be a service
       // worker client, because for example, the worker's URL is
       // not http(s) or another service worker supported scheme.
-      ServiceWorkerProviderInfoForClient? service_worker_provider_info,
-
-      // The ID of the AppCacheHost in the browser process that serves resources
-      // for this shared worker. This is not specified when AppCache doesn't
-      // serve resources for this shared worker.
-      mojo_base.mojom.UnguessableToken? appcache_host_id,
+      ServiceWorkerContainerInfoForClient? service_worker_container_info,
 
       // Used for passing the main script pre-requested by the browser process
       // and its redirect information.
@@ -69,5 +82,9 @@ interface SharedWorkerFactory {
 
       // BrowserInterfaceBroker for providing browser interfaces.
       pending_remote<blink.mojom.BrowserInterfaceBroker>
-          browser_interface_broker);
+          browser_interface_broker,
+
+      // The UKM SourceId associated with the SharedWorkerHost. This is distinct
+      // from the IDs that are associated with the connected clients.
+      int64 ukm_source_id);
 };

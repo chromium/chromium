@@ -13,6 +13,7 @@
 #include "base/sequence_checker.h"
 #include "base/system/system_monitor.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "device/udev_linux/udev.h"
 #include "device/udev_linux/udev_watcher.h"
 
@@ -29,8 +30,8 @@ const char kVideoSubsystem[] = "video4linux";
 
 // Add more subsystems here for monitoring.
 const SubsystemMap kSubsystemMap[] = {
-    {base::SystemMonitor::DEVTYPE_AUDIO, kAudioSubsystem, NULL},
-    {base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE, kVideoSubsystem, NULL},
+    {base::SystemMonitor::DEVTYPE_AUDIO, kAudioSubsystem, ""},
+    {base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE, kVideoSubsystem, ""},
 };
 
 }  // namespace
@@ -44,6 +45,10 @@ class DeviceMonitorLinux::BlockingTaskRunnerHelper
     : public device::UdevWatcher::Observer {
  public:
   BlockingTaskRunnerHelper();
+
+  BlockingTaskRunnerHelper(const BlockingTaskRunnerHelper&) = delete;
+  BlockingTaskRunnerHelper& operator=(const BlockingTaskRunnerHelper&) = delete;
+
   ~BlockingTaskRunnerHelper() override = default;
 
   void Initialize();
@@ -59,8 +64,6 @@ class DeviceMonitorLinux::BlockingTaskRunnerHelper
   std::unique_ptr<device::UdevWatcher> udev_watcher_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BlockingTaskRunnerHelper);
 };
 
 DeviceMonitorLinux::BlockingTaskRunnerHelper::BlockingTaskRunnerHelper() {
@@ -114,9 +117,8 @@ void DeviceMonitorLinux::BlockingTaskRunnerHelper::OnDevicesChanged(
 }
 
 DeviceMonitorLinux::DeviceMonitorLinux()
-    : blocking_task_runner_(base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::MayBlock(),
-           base::TaskPriority::USER_VISIBLE,
+    : blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
       blocking_task_helper_(new BlockingTaskRunnerHelper,
                             base::OnTaskRunnerDeleter(blocking_task_runner_)) {

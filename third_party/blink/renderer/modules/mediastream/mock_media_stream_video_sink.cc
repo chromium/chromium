@@ -32,18 +32,19 @@ EncodedVideoFrameCB MockMediaStreamVideoSink::GetDeliverEncodedVideoFrameCB() {
 
 void MockMediaStreamVideoSink::DeliverVideoFrame(
     scoped_refptr<media::VideoFrame> frame,
+    std::vector<scoped_refptr<media::VideoFrame>> scaled_frames,
     base::TimeTicks estimated_capture_time) {
   ++number_of_frames_;
   format_ = frame->format();
   frame_size_ = frame->natural_size();
   last_frame_ = std::move(frame);
-  OnVideoFrame();
+  OnVideoFrame(estimated_capture_time);
 }
 
 void MockMediaStreamVideoSink::DeliverEncodedVideoFrame(
     scoped_refptr<EncodedVideoFrame> frame,
     base::TimeTicks estimated_capture_time) {
-  OnEncodedVideoFrame();
+  OnEncodedVideoFrame(estimated_capture_time);
 }
 
 void MockMediaStreamVideoSink::OnReadyStateChanged(
@@ -53,6 +54,11 @@ void MockMediaStreamVideoSink::OnReadyStateChanged(
 
 void MockMediaStreamVideoSink::OnEnabledChanged(bool enabled) {
   enabled_ = enabled;
+}
+
+void MockMediaStreamVideoSink::OnContentHintChanged(
+    WebMediaStreamTrack::ContentHintType content_hint) {
+  content_hint_ = content_hint;
 }
 
 }  // namespace blink

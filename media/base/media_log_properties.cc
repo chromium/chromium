@@ -23,15 +23,22 @@ std::string MediaLogPropertyKeyToString(MediaLogProperty property) {
     STRINGIFY(kFrameUrl);
     STRINGIFY(kFrameTitle);
     STRINGIFY(kIsSingleOrigin);
+    STRINGIFY(kRendererName);
     STRINGIFY(kVideoDecoderName);
     STRINGIFY(kIsPlatformVideoDecoder);
     STRINGIFY(kIsRangeHeaderSupported);
     STRINGIFY(kIsVideoDecryptingDemuxerStream);
     STRINGIFY(kIsAudioDecryptingDemuxerStream);
+    STRINGIFY(kVideoEncoderName);
+    STRINGIFY(kIsPlatformVideoEncoder);
     STRINGIFY(kAudioDecoderName);
     STRINGIFY(kIsPlatformAudioDecoder);
     STRINGIFY(kAudioTracks);
+    STRINGIFY(kTextTracks);
     STRINGIFY(kVideoTracks);
+    STRINGIFY(kFramerate);
+    STRINGIFY(kVideoPlaybackRoughness);
+    STRINGIFY(kVideoPlaybackFreezing);
   }
 #undef STRINGIFY
 }

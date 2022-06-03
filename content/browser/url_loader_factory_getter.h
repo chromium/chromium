@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -34,6 +33,9 @@ class URLLoaderFactoryGetter
                                         BrowserThread::DeleteOnIOThread> {
  public:
   CONTENT_EXPORT URLLoaderFactoryGetter();
+
+  URLLoaderFactoryGetter(const URLLoaderFactoryGetter&) = delete;
+  URLLoaderFactoryGetter& operator=(const URLLoaderFactoryGetter&) = delete;
 
   // Initializes this object on the UI thread. The |partition| is used to
   // initialize the URLLoaderFactories for the network service, AppCache, and
@@ -151,8 +153,6 @@ class URLLoaderFactoryGetter
   // only be accessed on UI thread. Must be cleared by |StoragePartitionImpl|
   // when it's going away.
   StoragePartitionImpl* partition_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(URLLoaderFactoryGetter);
 };
 
 }  // namespace content

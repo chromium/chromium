@@ -6,11 +6,14 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/check_op.h"
 #include "base/hash/hash.h"
-#include "base/logging.h"
+#include "base/notreached.h"
+#include "components/favicon_base/select_favicon_frames.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/favicon_url.h"
+#include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -19,11 +22,16 @@ using content::WebContents;
 
 namespace android_webview {
 
+namespace {
+
+const int kLargestIconSize = 192;
+
+}  // namespace
+
 IconHelper::IconHelper(WebContents* web_contents)
     : WebContentsObserver(web_contents),
-      listener_(NULL),
-      missing_favicon_urls_() {
-}
+      listener_(nullptr),
+      missing_favicon_urls_() {}
 
 IconHelper::~IconHelper() {
 }
@@ -52,43 +60,51 @@ void IconHelper::DownloadFaviconCallback(
   // in different sizes. We need more fine grain API spec
   // to let clients pick out the frame they want.
 
-  // TODO(acleung): Pick the best icon to return based on size.
-  if (listener_)
-    listener_->OnReceivedIcon(image_url, bitmaps[0]);
+  if (listener_) {
+    std::vector<size_t> best_indices;
+    SelectFaviconFrameIndices(original_bitmap_sizes,
+                              std::vector<int>(1U, kLargestIconSize),
+                              &best_indices, nullptr);
+
+    listener_->OnReceivedIcon(
+        image_url,
+        bitmaps[best_indices.size() == 0 ? 0 : best_indices.front()]);
+  }
 }
 
 void IconHelper::DidUpdateFaviconURL(
-    const std::vector<content::FaviconURL>& candidates) {
+    content::RenderFrameHost* render_frame_host,
+    const std::vector<blink::mojom::FaviconURLPtr>& candidates) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  for (std::vector<content::FaviconURL>::const_iterator i = candidates.begin();
-       i != candidates.end(); ++i) {
-    if (!i->icon_url.is_valid())
+  for (const auto& candidate : candidates) {
+    if (!candidate->icon_url.is_valid())
       continue;
 
-    switch(i->icon_type) {
-      case content::FaviconURL::IconType::kFavicon:
-        if ((listener_ && !listener_->ShouldDownloadFavicon(i->icon_url)) ||
-            WasUnableToDownloadFavicon(i->icon_url)) {
+    switch (candidate->icon_type) {
+      case blink::mojom::FaviconIconType::kFavicon:
+        if ((listener_ &&
+             !listener_->ShouldDownloadFavicon(candidate->icon_url)) ||
+            WasUnableToDownloadFavicon(candidate->icon_url)) {
           break;
         }
         web_contents()->DownloadImage(
-            i->icon_url,
-            true,   // Is a favicon
-            0,      // No preferred size
-            0,      // No maximum size
-            false,  // Normal cache policy
+            candidate->icon_url,
+            true,              // Is a favicon
+            gfx::Size(),       // No preferred size
+            kLargestIconSize,  // Max bitmap size
+            false,             // Normal cache policy
             base::BindOnce(&IconHelper::DownloadFaviconCallback,
                            base::Unretained(this)));
         break;
-      case content::FaviconURL::IconType::kTouchIcon:
+      case blink::mojom::FaviconIconType::kTouchIcon:
         if (listener_)
-          listener_->OnReceivedTouchIconUrl(i->icon_url.spec(), false);
+          listener_->OnReceivedTouchIconUrl(candidate->icon_url.spec(), false);
         break;
-      case content::FaviconURL::IconType::kTouchPrecomposedIcon:
+      case blink::mojom::FaviconIconType::kTouchPrecomposedIcon:
         if (listener_)
-          listener_->OnReceivedTouchIconUrl(i->icon_url.spec(), true);
+          listener_->OnReceivedTouchIconUrl(candidate->icon_url.spec(), true);
         break;
-      case content::FaviconURL::IconType::kInvalid:
+      case blink::mojom::FaviconIconType::kInvalid:
         // Silently ignore it. Only trigger a callback on valid icons.
         break;
       default:
@@ -98,10 +114,8 @@ void IconHelper::DidUpdateFaviconURL(
   }
 }
 
-void IconHelper::DidStartNavigationToPendingEntry(
-    const GURL& url,
-    content::ReloadType reload_type) {
-  if (reload_type == content::ReloadType::BYPASSING_CACHE)
+void IconHelper::DidStartNavigation(content::NavigationHandle* navigation) {
+  if (navigation->GetReloadType() == content::ReloadType::BYPASSING_CACHE)
     ClearUnableToDownloadFavicons();
 }
 

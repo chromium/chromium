@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<head>
+  <title>Example</title>
+</head>
+<body>
+  <!-- An image should be annotated. -->
+  <div>
+    <img src="red.png" width=16 height=16>
+  </div>
+
+  <!-- An image in an anonymous iframe should be annotated. -->
+  <iframe></iframe>
+
+  <script>
+    let iframe = document.querySelector('iframe');
+    iframe.contentDocument.body.innerHTML = `
+      <img src="green.png" width=16 height=16>
+    `;
+  </script>
+</body>

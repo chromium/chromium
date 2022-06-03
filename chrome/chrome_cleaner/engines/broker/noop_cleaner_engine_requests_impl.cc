@@ -49,34 +49,34 @@ void CleanerEngineRequestsImpl::SandboxDeleteFilePostReboot(
 }
 
 void CleanerEngineRequestsImpl::SandboxNtDeleteRegistryKey(
-    const String16EmbeddedNulls& key,
+    const WStringEmbeddedNulls& key,
     SandboxNtDeleteRegistryKeyCallback result_callback) {
   CHECK(false);
 }
 
 void CleanerEngineRequestsImpl::SandboxNtDeleteRegistryValue(
-    const String16EmbeddedNulls& key,
-    const String16EmbeddedNulls& value_name,
+    const WStringEmbeddedNulls& key,
+    const WStringEmbeddedNulls& value_name,
     SandboxNtDeleteRegistryValueCallback result_callback) {
   CHECK(false);
 }
 
 void CleanerEngineRequestsImpl::SandboxNtChangeRegistryValue(
-    const String16EmbeddedNulls& key,
-    const String16EmbeddedNulls& value_name,
-    const String16EmbeddedNulls& new_value,
+    const WStringEmbeddedNulls& key,
+    const WStringEmbeddedNulls& value_name,
+    const WStringEmbeddedNulls& new_value,
     SandboxNtChangeRegistryValueCallback result_callback) {
   CHECK(false);
 }
 
 void CleanerEngineRequestsImpl::SandboxDeleteService(
-    const base::string16& name,
+    const std::wstring& name,
     SandboxDeleteServiceCallback result_callback) {
   CHECK(false);
 }
 
 void CleanerEngineRequestsImpl::SandboxDeleteTask(
-    const base::string16& name,
+    const std::wstring& name,
     SandboxDeleteServiceCallback result_callback) {
   CHECK(false);
 }

@@ -1,8 +1,8 @@
 # Omnibox Bug Triage Process
 
-*last update: 2018/06/11*
+*last update: 2020/04/16*
 
-*The current triage process owner is `mpearson@`.*
+*The current triage process owner is `jdonnelly@`.*
 
 Instructions for Chrome omnibox engineers serving an assigned bug triage
 rotation.
@@ -27,7 +27,7 @@ labeled as such (*Needs=Feedback* or *Needs=TestConfirmation*).
 
 ## Process
 
-* Every other day (weekend excluded), the triage engineer looks over [all
+* Every Monday, Wednesday and Friday, the triage engineer looks over [all
   *Unconfirmed* and *Untriaged* omnibox bugs (without *Needs=Feedback*)](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-component%3AUI%3EBrowser%3EOmnibox%3ESecurityIndicators+-Needs%3DFeedback&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids)
   and triages them.
 * Every week on Tuesday, the triage engineer looks over [all *Unconfirmed* and
@@ -35,15 +35,8 @@ labeled as such (*Needs=Feedback* or *Needs=TestConfirmation*).
   terms](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=omnibox+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Comni+box%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+omnibar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Comni+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+locationbar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Clocation+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+addressbar+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner+OR+%E2%80%9Caddress+bar%E2%80%9D+-component%3AUI%3EBrowser%3EOmnibox+status%3AUnconfirmed%2CUntriaged+-has%3Aowner&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids)
   to see if any should be moved to the omnibox component and triaged.  ([This
   scan can be limited to those filed in the last week, i.e., since the last
-  check.](https://bugs.chromium.org/p/chromium/issues/list?colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified&x=m&y=releaseblock&cells=ids&q=omnibox%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20“omni%20box”%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20omnibar%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20“omni%20bar”%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20locationbar%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20“location%20bar”%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20addressbar%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14%20OR%20“address%20bar”%20-component%3AUI>Browser>Omnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified>today-14&can=2))
-* Every week on Thursday, the triage engineer looks over all alerts sent to
-  [chrome-omnibox-team-alerts@](https://groups.google.com/a/google.com/forum/#!forum/chrome-omnibox-team-alerts)
-  and, for each, either files a bug or replies to the message indicating why
-  filing a bug is not appropriate.  These bugs should be set to "Untriaged",
-  so that the current triage engineer sees them, until a root cause has been
-  identified and an owner assigned (or closed.) More details available
-  [below](#How-to-triage-alerts).
-* Every week on Thursday, the triage engineer should
+  check.](https://bugs.chromium.org/p/chromium/issues/list?colspec=ID%20Pri%20M%20Stars%20ReleaseBlock%20Component%20Status%20Owner%20Summary%20OS%20Modified&x=m&y=releaseblock&cells=ids&q=omnibox%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Comni%20box%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20omnibar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Comni%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20locationbar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Clocation%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20addressbar%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14%20OR%20%E2%80%9Caddress%20bar%E2%80%9D%20-component%3AUI%3EBrowser%3EOmnibox%20status%3AUnconfirmed%2CUntriaged%20-has%3Aowner%20modified%3Etoday-14&can=2&sort=-modified))
+* Every week on Tuesday, the triage engineer should also
   look over [all bugs with *Needs=Feedback*](https://bugs.chromium.org/p/chromium/issues/list?can=2&q=component%3AUI%3EBrowser%3EOmnibox+Needs%3DFeedback+&colspec=ID+Pri+M+Stars+ReleaseBlock+Component+Status+Owner+Summary+OS+Modified&x=m&y=releaseblock&cells=ids)
   and should take action on those that have been sitting for too long.
   * If there's been no feedback over a week since the label was added, ping the
@@ -51,6 +44,13 @@ labeled as such (*Needs=Feedback* or *Needs=TestConfirmation*).
     provide feedback.
   * If there's been no feedback for over a week since the last ping, and no one
     can reproduce the issue, close it as WontFix.
+* Every week on Thursday, the triage engineer looks over all alerts sent to
+  [chrome-omnibox-team-alerts@](https://groups.google.com/a/google.com/forum/#!forum/chrome-omnibox-team-alerts)
+  and, for each, either files a bug or replies to the message indicating why
+  filing a bug is not appropriate.  These bugs should be set to "Untriaged",
+  so that the current triage engineer sees them, until a root cause has been
+  identified and an owner assigned (or closed.) More details available
+  [below](#How-to-triage-alerts).
 
 Other team members are welcome to triage a bug if they see it before the the
 triage engineer.  The triager owner will cycle among team members by
@@ -180,7 +180,7 @@ The subcomponents of omnibox bugs include:
 | UI>Browser>Omnibox>ZeroSuggest | Suggestions displayed on omnibox focus (both contextual and non-contextual). |
 
 If the bug is extremely low priority, set the **NextAction field** to
-**01/07/2020** and mention that we will "reassess" the bug next year.  This
+**01/07/2021** and mention that we will "reassess" the bug next year.  This
 NextAction field is for Priority-3 bugs that are somehow less important than
 other *priority-3* bugs.  These are bugs we’re sure no one on the team intends
 to fix this year (e.g., really unimportant, or mostly unimportant and hard to
@@ -278,12 +278,15 @@ restrict applied.
 
 Example request:
 
-> Please submit chrome://omnibox output for “\_\_\_”.  Check both the "show
-> all details" and "show results per provider" boxes.  This will help us
-> figure out what's going on.
+> Please visit chrome://omnibox in the version of Chrome in which you're
+> experiencing the issue and type the input that triggers the issue into the
+> "Enter omnibox input" text box. Then click the Download link and attach the
+> downloaded file to this issue.
 >
-> Feel free to paste the results in here unformatted; we’ll be able to
-> decipher them.
+> Please be aware that this data may reveal details of your browsing history so
+> only attach the file if you're comfortable sharing that data with the omnibox
+> team. I have added the Restrict-View-Google label to this issue so that it is
+> not visible to the public.
 
 ## Commonly referenced bugs
 

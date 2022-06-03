@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests $x for iterator and non-iterator types.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
       <a href="http://chromium.org"></a>
@@ -12,7 +12,7 @@
   `);
 
   TestRunner.addSniffer(
-      Console.ConsoleViewMessage.prototype, '_formattedParameterAsNodeForTest', formattedParameter, true);
+      Console.ConsoleViewMessage.prototype, 'formattedParameterAsNodeForTest', formattedParameter, true);
   ConsoleTestRunner.addConsoleViewSniffer(messageSniffer, true);
 
   await ConsoleTestRunner.evaluateInConsolePromise('$x(\'42\')');                           // number
@@ -38,9 +38,9 @@
     maybeCompleteTest();
   }
 
-  function maybeCompleteTest() {
+  async function maybeCompleteTest() {
     if (!waitForParameteres && completeMessageReceived) {
-      ConsoleTestRunner.dumpConsoleMessages();
+      await ConsoleTestRunner.dumpConsoleMessages();
       TestRunner.completeTest();
     }
   }

@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/macros.h"
-#include "third_party/blink/public/web/web_widget_client.h"
+#include "base/gtest_prod_util.h"
+#include "third_party/blink/public/web/web_performance.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
@@ -28,24 +28,28 @@ class LocalFrame;
 // document.
 class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
                                       public Supplement<Document> {
-  USING_GARBAGE_COLLECTED_MIXIN(PaintTiming);
   friend class FirstMeaningfulPaintDetector;
   using ReportTimeCallback =
-      WTF::CrossThreadOnceFunction<void(WebWidgetClient::SwapResult,
-                                        base::TimeTicks)>;
+      WTF::CrossThreadOnceFunction<void(base::TimeTicks)>;
+  using RequestAnimationFrameTimesAfterBackForwardCacheRestore = std::array<
+      base::TimeTicks,
+      WebPerformance::
+          kRequestAnimationFramesToRecordAfterBackForwardCacheRestore>;
 
  public:
   static const char kSupplementName[];
 
   explicit PaintTiming(Document&);
+  PaintTiming(const PaintTiming&) = delete;
+  PaintTiming& operator=(const PaintTiming&) = delete;
   virtual ~PaintTiming() = default;
 
   static PaintTiming& From(Document&);
 
-  // Mark*() methods record the time for the given paint event and queue a swap
-  // promise to record the |first_*_swap_| timestamp. These methods do nothing
-  // (early return) if a time has already been recorded for the given paint
-  // event.
+  // Mark*() methods record the time for the given paint event and queue a
+  // presentation promise to record the |first_*_presentation_| timestamp. These
+  // methods do nothing (early return) if a time has already been recorded for
+  // the given paint event.
   void MarkFirstPaint();
 
   // MarkFirstImagePaint, and MarkFirstContentfulPaint
@@ -56,11 +60,25 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   // contentful paint hasn't been recorded yet.
   void MarkFirstImagePaint();
 
+  // MarkFirstEligibleToPaint records the first time that the frame is not
+  // throttled and so is eligible to paint. A null value indicates throttling.
+  void MarkFirstEligibleToPaint();
+
+  // MarkIneligibleToPaint resets the paint eligibility timestamp to null.
+  // A null value indicates throttling. This call is ignored if a first
+  // contentful paint has already been recorded.
+  void MarkIneligibleToPaint();
+
   void SetFirstMeaningfulPaintCandidate(base::TimeTicks timestamp);
   void SetFirstMeaningfulPaint(
-      base::TimeTicks swap_stamp,
+      base::TimeTicks presentation_time,
       FirstMeaningfulPaintDetector::HadUserInput had_input);
   void NotifyPaint(bool is_first_paint, bool text_painted, bool image_painted);
+
+  // Notifies the PaintTiming that this Document received the onPortalActivate
+  // event.
+  void OnPortalActivate();
+  void SetPortalActivatedPaint(base::TimeTicks stamp);
 
   // The getters below return monotonically-increasing seconds, or zero if the
   // given paint event has not yet occurred. See the comments for
@@ -68,22 +86,47 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   // FirstPaint returns the first time that anything was painted for the
   // current document.
-  base::TimeTicks FirstPaint() const { return first_paint_swap_; }
+  base::TimeTicks FirstPaint() const { return first_paint_presentation_; }
+
+  // Times when the first paint happens after the page is restored from the
+  // back-forward cache. If the element value is zero time tick, the first paint
+  // event did not happen for that navigation.
+  WTF::Vector<base::TimeTicks> FirstPaintsAfterBackForwardCacheRestore() const {
+    return first_paints_after_back_forward_cache_restore_presentation_;
+  }
+
+  WTF::Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
+  RequestAnimationFramesAfterBackForwardCacheRestore() const {
+    return request_animation_frames_after_back_forward_cache_restore_;
+  }
 
   // FirstContentfulPaint returns the first time that 'contentful' content was
   // painted. For instance, the first time that text or image content was
   // painted.
   base::TimeTicks FirstContentfulPaint() const {
-    return first_contentful_paint_swap_;
+    return first_contentful_paint_presentation_;
   }
 
   // FirstImagePaint returns the first time that image content was painted.
-  base::TimeTicks FirstImagePaint() const { return first_image_paint_swap_; }
+  base::TimeTicks FirstImagePaint() const {
+    return first_image_paint_presentation_;
+  }
+
+  // FirstEligibleToPaint returns the first time that the frame is not
+  // throttled and is eligible to paint. A null value indicates throttling.
+  base::TimeTicks FirstEligibleToPaint() const {
+    return first_eligible_to_paint_;
+  }
 
   // FirstMeaningfulPaint returns the first time that page's primary content
   // was painted.
   base::TimeTicks FirstMeaningfulPaint() const {
-    return first_meaningful_paint_swap_;
+    return first_meaningful_paint_presentation_;
+  }
+
+  // The time that the first paint happened after a portal activation.
+  base::TimeTicks LastPortalActivatedPaint() const {
+    return last_portal_activated_presentation_;
   }
 
   // FirstMeaningfulPaintCandidate indicates the first time we considered a
@@ -98,44 +141,59 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return *fmp_detector_;
   }
 
-  void RegisterNotifySwapTime(PaintEvent, ReportTimeCallback);
-  void ReportSwapTime(PaintEvent,
-                      WebWidgetClient::SwapResult,
-                      base::TimeTicks timestamp);
-
-  void ReportSwapResultHistogram(WebWidgetClient::SwapResult);
+  void RegisterNotifyPresentationTime(ReportTimeCallback);
+  void ReportPresentationTime(PaintEvent,
+                              base::TimeTicks timestamp);
+  void ReportFirstPaintAfterBackForwardCacheRestorePresentationTime(
+      wtf_size_t index,
+      base::TimeTicks timestamp);
 
   // The caller owns the |clock| which must outlive the PaintTiming.
   void SetTickClockForTesting(const base::TickClock* clock);
 
-  void Trace(blink::Visitor*) override;
+  void OnRestoredFromBackForwardCache();
+
+  void Trace(Visitor*) const override;
 
  private:
+  friend class RecodingTimeAfterBackForwardCacheRestoreFrameCallback;
+
   LocalFrame* GetFrame() const;
   void NotifyPaintTimingChanged();
 
   // Set*() set the timing for the given paint event to the given timestamp if
-  // the value is currently zero, and queue a swap promise to record the
-  // |first_*_swap_| timestamp. These methods can be invoked from other Mark*()
-  // or Set*() methods to make sure that first paint is marked as part of
-  // marking first contentful paint, or that first contentful paint is marked as
-  // part of marking first text/image paint, for example.
+  // the value is currently zero, and queue a presentation promise to record the
+  // |first_*_presentation_| timestamp. These methods can be invoked from other
+  // Mark*() or Set*() methods to make sure that first paint is marked as part
+  // of marking first contentful paint, or that first contentful paint is marked
+  // as part of marking first text/image paint, for example.
   void SetFirstPaint(base::TimeTicks stamp);
 
   // setFirstContentfulPaint will also set first paint time if first paint
   // time has not yet been recorded.
   void SetFirstContentfulPaint(base::TimeTicks stamp);
 
-  // Set*Swap() are called when the SwapPromise is fulfilled and the swap
-  // timestamp is available. These methods will record trace events, update Web
-  // Perf API (FP and FCP only), and notify that paint timing has changed, which
-  // triggers UMAs and UKMS.
-  // |stamp| is the swap timestamp used for tracing, UMA, UKM, and Web Perf API.
-  void SetFirstPaintSwap(base::TimeTicks stamp);
-  void SetFirstContentfulPaintSwap(base::TimeTicks stamp);
-  void SetFirstImagePaintSwap(base::TimeTicks stamp);
+  // Set*Presentation() are called when the presentation promise is fulfilled
+  // and the presentation timestamp is available. These methods will record
+  // trace events, update Web Perf API (FP and FCP only), and notify that paint
+  // timing has changed, which triggers UMAs and UKMS. |stamp| is the
+  // presentation timestamp used for tracing, UMA, UKM, and Web Perf API.
+  void SetFirstPaintPresentation(base::TimeTicks stamp);
+  void SetFirstContentfulPaintPresentation(base::TimeTicks stamp);
+  void SetFirstImagePaintPresentation(base::TimeTicks stamp);
 
-  void RegisterNotifySwapTime(PaintEvent);
+  // When quickly navigating back and forward between the pages in the cache
+  // paint events might race with navigations. Pass explicit bfcache restore
+  // index to avoid confusing the data from different navigations.
+  void SetFirstPaintAfterBackForwardCacheRestorePresentation(
+      base::TimeTicks stamp,
+      wtf_size_t index);
+  void SetRequestAnimationFrameAfterBackForwardCacheRestore(wtf_size_t index,
+                                                            size_t count);
+
+  void RegisterNotifyPresentationTime(PaintEvent);
+  void RegisterNotifyFirstPaintAfterBackForwardCacheRestorePresentationTime(
+      wtf_size_t index);
 
   base::TimeTicks FirstPaintRendered() const { return first_paint_; }
 
@@ -143,65 +201,37 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return first_contentful_paint_;
   }
 
-  // TODO(crbug/738235): Non first_*_swap_ variables are only being tracked to
-  // compute deltas for reporting histograms and should be removed once we
-  // confirm the deltas and discrepancies look reasonable.
+  // TODO(crbug/738235): Non first_*_presentation_ variables are only being
+  // tracked to compute deltas for reporting histograms and should be removed
+  // once we confirm the deltas and discrepancies look reasonable.
   base::TimeTicks first_paint_;
-  base::TimeTicks first_paint_swap_;
+  base::TimeTicks first_paint_presentation_;
+  WTF::Vector<base::TimeTicks>
+      first_paints_after_back_forward_cache_restore_presentation_;
+  WTF::Vector<RequestAnimationFrameTimesAfterBackForwardCacheRestore>
+      request_animation_frames_after_back_forward_cache_restore_;
   base::TimeTicks first_image_paint_;
-  base::TimeTicks first_image_paint_swap_;
+  base::TimeTicks first_image_paint_presentation_;
   base::TimeTicks first_contentful_paint_;
-  base::TimeTicks first_contentful_paint_swap_;
-  base::TimeTicks first_meaningful_paint_swap_;
+  base::TimeTicks first_contentful_paint_presentation_;
+  base::TimeTicks first_meaningful_paint_presentation_;
   base::TimeTicks first_meaningful_paint_candidate_;
+  base::TimeTicks first_eligible_to_paint_;
+
+  base::TimeTicks last_portal_activated_presentation_;
 
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
 
+  // The callback ID for requestAnimationFrame to record its time after the page
+  // is restored from the back-forward cache.
+  int raf_after_bfcache_restore_measurement_callback_id_ = 0;
+
   const base::TickClock* clock_;
 
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest, NoFirstPaint);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest, OneLayout);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           TwoLayoutsSignificantSecond);
   FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
                            TwoLayoutsSignificantFirst);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           FirstMeaningfulPaintCandidate);
-  FRIEND_TEST_ALL_PREFIXES(
-      FirstMeaningfulPaintDetectorTest,
-      OnlyOneFirstMeaningfulPaintCandidateBeforeNetworkStable);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           NetworkStableBeforeFirstContentfulPaint);
-  FRIEND_TEST_ALL_PREFIXES(
-      FirstMeaningfulPaintDetectorTest,
-      FirstMeaningfulPaintShouldNotBeBeforeFirstContentfulPaint);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           Network2QuietThen0Quiet);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           Network0QuietThen2Quiet);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           Network0QuietTimer);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           Network2QuietTimer);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           FirstMeaningfulPaintAfterUserInteraction);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           UserInteractionBeforeFirstPaint);
-  FRIEND_TEST_ALL_PREFIXES(
-      FirstMeaningfulPaintDetectorTest,
-      WaitForSingleOutstandingSwapPromiseAfterNetworkStable);
-  FRIEND_TEST_ALL_PREFIXES(
-      FirstMeaningfulPaintDetectorTest,
-      WaitForMultipleOutstandingSwapPromisesAfterNetworkStable);
-  FRIEND_TEST_ALL_PREFIXES(FirstMeaningfulPaintDetectorTest,
-                           WaitForFirstContentfulPaintSwapAfterNetworkStable);
-  FRIEND_TEST_ALL_PREFIXES(
-      FirstMeaningfulPaintDetectorTest,
-      ProvisionalTimestampChangesAfterNetworkQuietWithOutstandingSwapPromise);
-
-  DISALLOW_COPY_AND_ASSIGN(PaintTiming);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_TIMING_H_

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="datetime-local">
+<script>
+
+let t = async_test('Test select invalid value in datetime-local popup');
+
+function selectValue() {
+  let dateTimeElement = document.getElementById("datetime-local");
+  dateTimeElement.addEventListener("change", t.step_func_done(() => {
+    assert_equals(dateTimeElement.value, "2019-02-27T17:03:53");
+    // the validity should be false since seconds are not supported.
+    assert_false(dateTimeElement.validity.valid);
+  }));
+  clickDayCellAt(3, 4);
+  clickTimeCellAt(0, 4);
+  clickTimeCellAt(1, 1);
+  clickTimeCellAt(2, 3);
+  eventSender.keyDown('Enter');
+}
+
+t.step(() => {
+  let dateTimeElement = document.getElementById("datetime-local");
+  dateTimeElement.value = "2019-02-14T13:02:50";
+  openPicker(dateTimeElement, t.step_func(selectValue));
+});
+</script>
+</body>
+</html>

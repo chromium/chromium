@@ -9,10 +9,11 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gfx/presentation_feedback.h"
 
-class GrContext;
+class GrDirectContext;
 
 namespace gfx {
 class GpuFence;
@@ -60,7 +61,8 @@ class ContextSupport {
       bool aggressively_free_resources) = 0;
 
   using SwapCompletedCallback =
-      base::OnceCallback<void(const SwapBuffersCompleteParams&)>;
+      base::OnceCallback<void(const SwapBuffersCompleteParams&,
+                              gfx::GpuFenceHandle)>;
   using PresentationCallback =
       base::OnceCallback<void(const gfx::PresentationFeedback&)>;
   virtual void Swap(uint32_t flags,
@@ -152,13 +154,13 @@ class ContextSupport {
       const cc::ImageHeaderMetadata* image_metadata) const = 0;
 
   // Returns true if the context provider automatically manages calls to
-  // GrContext::resetContext under the hood to prevent GL state synchronization
-  // problems between the GLES2 interface and skia.
+  // GrDirectContext::resetContext under the hood to prevent GL state
+  // synchronization problems between the GLES2 interface and skia.
   virtual bool HasGrContextSupport() const = 0;
 
-  // Sets the GrContext that is to receive resetContext signals when the GL
-  // state is modified via direct calls to the GLES2 interface.
-  virtual void SetGrContext(GrContext* gr) = 0;
+  // Sets the GrDirectContext that is to receive resetContext signals when the
+  // GL state is modified via direct calls to the GLES2 interface.
+  virtual void SetGrContext(GrDirectContext* gr) = 0;
 
   virtual void WillCallGLFromSkia() = 0;
 
@@ -167,6 +169,10 @@ class ContextSupport {
   // Notifies the onscreen surface of the display transform applied to the swaps
   // from the client.
   virtual void SetDisplayTransform(gfx::OverlayTransform transform) = 0;
+
+  // Notifies the onscreen surface of the rate at which content is being
+  // updated.
+  virtual void SetFrameRate(float frame_rate) = 0;
 
  protected:
   ContextSupport() = default;

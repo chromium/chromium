@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/feedback/system_logs/system_logs_source.h"
@@ -27,7 +27,7 @@ using api::feedback_private::LogSource;
 using system_logs::SystemLogsResponse;
 using system_logs::SystemLogsSource;
 
-// A fake MAC address used to test anonymization.
+// A fake MAC address used to test redaction.
 const char kDummyMacAddress[] = "11:22:33:44:55:66";
 
 std::unique_ptr<KeyedService> ApiResourceManagerTestFactory(
@@ -41,6 +41,9 @@ class TestSingleLogSource : public SystemLogsSource {
  public:
   explicit TestSingleLogSource(LogSource type)
       : SystemLogsSource(ToString(type)) {}
+
+  TestSingleLogSource(const TestSingleLogSource&) = delete;
+  TestSingleLogSource& operator=(const TestSingleLogSource&) = delete;
 
   ~TestSingleLogSource() override = default;
 
@@ -82,27 +85,31 @@ class TestSingleLogSource : public SystemLogsSource {
   // Keep track of how many times Fetch() has been called, in order to determine
   // its behavior each time.
   int call_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(TestSingleLogSource);
 };
 
 class TestFeedbackPrivateDelegate : public ShellFeedbackPrivateDelegate {
  public:
   TestFeedbackPrivateDelegate() = default;
+
+  TestFeedbackPrivateDelegate(const TestFeedbackPrivateDelegate&) = delete;
+  TestFeedbackPrivateDelegate& operator=(const TestFeedbackPrivateDelegate&) =
+      delete;
+
   ~TestFeedbackPrivateDelegate() override = default;
 
   std::unique_ptr<system_logs::SystemLogsSource> CreateSingleLogSource(
       api::feedback_private::LogSource source_type) const override {
     return std::make_unique<TestSingleLogSource>(source_type);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestFeedbackPrivateDelegate);
 };
 
 class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
  public:
   TestExtensionsAPIClient() = default;
+
+  TestExtensionsAPIClient(const TestExtensionsAPIClient&) = delete;
+  TestExtensionsAPIClient& operator=(const TestExtensionsAPIClient&) = delete;
+
   ~TestExtensionsAPIClient() override = default;
 
   // ShellExtensionsApiClient implementation:
@@ -116,8 +123,6 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
 
  private:
   std::unique_ptr<FeedbackPrivateDelegate> feedback_private_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionsAPIClient);
 };
 
 }  // namespace

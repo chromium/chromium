@@ -5,6 +5,8 @@
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 
 #include <memory>
+
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_state_init.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
@@ -13,11 +15,13 @@
 namespace blink {
 
 namespace {
+
 Node* NodeForId(DOMNodeId node_id) {
   Node* node = DOMNodeIds::NodeForId(node_id);
   DCHECK(node);
   return node;
 }
+
 }  // namespace
 
 ScrollState* ScrollState::Create(ScrollStateInit* init) {
@@ -36,7 +40,8 @@ ScrollState* ScrollState::Create(ScrollStateInit* init) {
   scroll_state_data->is_ending = init->isEnding();
   scroll_state_data->from_user_input = init->fromUserInput();
   scroll_state_data->is_direct_manipulation = init->isDirectManipulation();
-  scroll_state_data->delta_granularity = init->deltaGranularity();
+  scroll_state_data->delta_granularity =
+      static_cast<ScrollGranularity>(init->deltaGranularity());
   ScrollState* scroll_state =
       MakeGarbageCollected<ScrollState>(std::move(scroll_state_data));
   return scroll_state;

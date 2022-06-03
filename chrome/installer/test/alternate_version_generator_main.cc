@@ -11,12 +11,12 @@
 #include <cstdlib>
 
 #include "base/at_exit.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "chrome/installer/test/alternate_version_generator.h"
 
 namespace {
@@ -44,11 +44,9 @@ enum ErrorCode {
 };
 
 const wchar_t* const Messages[] = {
-  NULL,
-  L"original mini_installer.exe not found",
-  L"output file already exists",
-  L"failed to generate a newly versioned mini_installer.exe"
-};
+    nullptr, L"original mini_installer.exe not found",
+    L"output file already exists",
+    L"failed to generate a newly versioned mini_installer.exe"};
 
 const wchar_t* GetErrorMessage(ErrorCode error_code) {
   DCHECK_LE(0, error_code);
@@ -64,7 +62,7 @@ void DumpUsage(const base::CommandLine& cmd_line,
                errors::ErrorCode error_code,
                const std::wstring& detail) {
   const wchar_t* error_message = errors::GetErrorMessage(error_code);
-  if (error_message != NULL) {
+  if (error_message != nullptr) {
     fwprintf(stderr, L"%s: %s", cmd_line.GetProgram().value().c_str(),
              errors::GetErrorMessage(error_code));
     if (!detail.empty())
@@ -73,24 +71,30 @@ void DumpUsage(const base::CommandLine& cmd_line,
       fwprintf(stderr, L"\n");
   }
 
-  fwprintf(stderr,
-L"Usage: %s [ OPTIONS ]\n"
-L" Where OPTIONS is one or more of:\n"
-L" --help                     Display this help message.\n"
-L" --force                    Overwrite any existing output files.\n"
-L" --mini_installer=SRC_PATH  Path to mini_installer.exe.  Default value is\n"
-L"                            \"mini_installer.exe\" in the same directory as\n"
-L"                            this program.\n"
-L" --out=OUT_PATH             Path to output file. Default value is\n"
-L"                            \"mini_installer_new.exe\" in the current\n"
-L"                            directory.\n"
-L" --previous                 OUT_PATH will have a lower version than\n"
-L"                            SRC_PATH.  By default, OUT_PATH will have a\n"
-L"                            higher version.\n"
-L" --7za_path=7ZA_PATH        Path to the directory holding 7za.exe. Defaults\n"
-L"                            to ..\\..\\third_party\\lzma_sdk\\Executable\n"
-L"                            relative to this program's location.\n",
-           cmd_line.GetProgram().value().c_str());
+  fwprintf(
+      stderr,
+      L"Usage: %s [ OPTIONS ]\n"
+      L" Where OPTIONS is one or more of:\n"
+      L" --help                     Display this help message.\n"
+      L" --force                    Overwrite any existing output files.\n"
+      L" --mini_installer=SRC_PATH  Path to mini_installer.exe.  Default value "
+      L"is\n"
+      L"                            \"mini_installer.exe\" in the same "
+      L"directory as\n"
+      L"                            this program.\n"
+      L" --out=OUT_PATH             Path to output file. Default value is\n"
+      L"                            \"mini_installer_new.exe\" in the current\n"
+      L"                            directory.\n"
+      L" --previous                 OUT_PATH will have a lower version than\n"
+      L"                            SRC_PATH.  By default, OUT_PATH will have "
+      L"a\n"
+      L"                            higher version.\n"
+      L" --7za_path=7ZA_PATH        Path to the directory holding 7za.exe. "
+      L"Defaults\n"
+      L"                            to "
+      L"..\\..\\third_party\\lzma_sdk\\Executable\n"
+      L"                            relative to this program's location.\n",
+      cmd_line.GetProgram().value().c_str());
 }
 
 // Gets the path to the source mini_installer.exe on which to operate, putting
@@ -119,16 +123,17 @@ void GetOutPath(const base::CommandLine& cmd_line, base::FilePath* out) {
 
 // Returns the direction in which the version should be adjusted.
 upgrade_test::Direction GetDirection(const base::CommandLine& cmd_line) {
-  return cmd_line.HasSwitch(switches::kPrevious) ?
-      upgrade_test::PREVIOUS_VERSION : upgrade_test::NEXT_VERSION;
+  return cmd_line.HasSwitch(switches::kPrevious)
+             ? upgrade_test::PREVIOUS_VERSION
+             : upgrade_test::NEXT_VERSION;
 }
 
 }  // namespace
 
 // The main program.
-int wmain(int argc, wchar_t *argv[]) {
+int wmain(int argc, wchar_t* argv[]) {
   base::AtExitManager exit_manager;
-  base::CommandLine::Init(0, NULL);
+  base::CommandLine::Init(0, nullptr);
   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
 
   if (cmd_line->HasSwitch(switches::kHelp)) {

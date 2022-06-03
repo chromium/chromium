@@ -1,0 +1,11 @@
+{
+  "name": "Minimum Version Theme",
+  "manifest_version": 2,
+  "version": "1",
+  "theme": {
+    "colors": {
+      "frame": [100, 100, 100]
+    }
+  },
+  "minimum_chrome_version": "1.0.0.1"
+}

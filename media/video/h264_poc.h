@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -17,10 +17,14 @@ struct H264SliceHeader;
 class MEDIA_EXPORT H264POC {
  public:
   H264POC();
+
+  H264POC(const H264POC&) = delete;
+  H264POC& operator=(const H264POC&) = delete;
+
   ~H264POC();
 
   // Returns the picture order count for a slice.
-  base::Optional<int32_t> ComputePicOrderCnt(const H264SPS* sps,
+  absl::optional<int32_t> ComputePicOrderCnt(const H264SPS* sps,
                                              const H264SliceHeader& slice_hdr);
 
   // As specified, the POC of a frame with MMCO5 changes (to zero) after
@@ -42,8 +46,6 @@ class MEDIA_EXPORT H264POC {
   int32_t prev_frame_num_;
   int32_t prev_frame_num_offset_;
   bool pending_mmco5_;
-
-  DISALLOW_COPY_AND_ASSIGN(H264POC);
 };
 
 }  // namespace media

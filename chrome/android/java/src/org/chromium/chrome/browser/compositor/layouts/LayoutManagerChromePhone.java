@@ -7,16 +7,21 @@ package org.chromium.chrome.browser.compositor.layouts;
 import android.content.Context;
 import android.view.ViewGroup;
 
+import org.chromium.base.jank_tracker.JankTracker;
+import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.base.supplier.OneshotSupplierImpl;
+import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.compositor.LayerTitleCache;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
-import org.chromium.chrome.browser.compositor.overlays.SceneOverlay;
-import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagementDelegate;
 import org.chromium.chrome.browser.device.DeviceClassManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
+import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -26,44 +31,54 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  */
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // Layouts
-    private final SimpleAnimationLayout mSimpleAnimationLayout;
+    private SimpleAnimationLayout mSimpleAnimationLayout;
 
     /**
      * Creates an instance of a {@link LayoutManagerChromePhone}.
      * @param host         A {@link LayoutManagerHost} instance.
+     * @param contentContainer A {@link ViewGroup} for Android views to be bound to.
      * @param startSurface An interface to talk to the Grid Tab Switcher. If it's NULL, VTS
      *                     should be used, otherwise GTS should be used.
+     * @param tabContentManagerSupplier Supplier of the {@link TabContentManager} instance.
+     * @param layerTitleCacheSupplier Supplier of the {@link LayerTitleCache}.
+     * @param overviewModeBehaviorSupplier Supplier of the {@link OverviewModeBehavior}.
+     * @param topUiThemeColorProvider {@link ThemeColorProvider} for top UI.
      */
-    public LayoutManagerChromePhone(LayoutManagerHost host, StartSurface startSurface) {
-        super(host, true, startSurface);
-        Context context = host.getContext();
-        LayoutRenderHost renderHost = host.getLayoutRenderHost();
-
-        // Build Layouts
-        mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
-
-        // Set up layout parameters
-        mStaticLayout.setLayoutHandlesTabLifecycles(false);
-        mToolbarSwipeLayout.setMovesToolbar(true);
+    public LayoutManagerChromePhone(LayoutManagerHost host, ViewGroup contentContainer,
+            StartSurface startSurface,
+            ObservableSupplier<TabContentManager> tabContentManagerSupplier,
+            Supplier<LayerTitleCache> layerTitleCacheSupplier,
+            OneshotSupplierImpl<OverviewModeBehavior> overviewModeBehaviorSupplier,
+            Supplier<TopUiThemeColorProvider> topUiThemeColorProvider, JankTracker jankTracker) {
+        super(host, contentContainer, true, startSurface, tabContentManagerSupplier,
+                layerTitleCacheSupplier, overviewModeBehaviorSupplier, topUiThemeColorProvider,
+                jankTracker);
     }
 
     @Override
     public void init(TabModelSelector selector, TabCreatorManager creator,
-            TabContentManager content, ViewGroup androidContentContainer,
-            ContextualSearchManagementDelegate contextualSearchDelegate,
-            DynamicResourceLoader dynamicResourceLoader) {
-        super.init(selector, creator, content, androidContentContainer, contextualSearchDelegate,
-                dynamicResourceLoader);
+            ControlContainer controlContainer, DynamicResourceLoader dynamicResourceLoader,
+            TopUiThemeColorProvider topUiColorProvider) {
+        Context context = mHost.getContext();
+        LayoutRenderHost renderHost = mHost.getLayoutRenderHost();
+
+        // Build Layouts
+        mSimpleAnimationLayout = new SimpleAnimationLayout(context, this, renderHost);
+
+        super.init(selector, creator, controlContainer, dynamicResourceLoader, topUiColorProvider);
 
         // Initialize Layouts
-        mSimpleAnimationLayout.setTabModelSelector(selector, content);
+        TabContentManager tabContentManager = mTabContentManagerSupplier.get();
+        assert tabContentManager != null;
+        mSimpleAnimationLayout.setTabModelSelector(selector, tabContentManager);
     }
 
     @Override
     public boolean closeAllTabsRequest(boolean incognito) {
         if (getActiveLayout() == mStaticLayout && !incognito) {
-            startShowing(DeviceClassManager.enableAccessibilityLayout() ? mOverviewListLayout
-                                                                        : mOverviewLayout,
+            startShowing(DeviceClassManager.enableAccessibilityLayout(mHost.getContext())
+                            ? mOverviewListLayout
+                            : mOverviewLayout,
                     /* animate= */ false);
         }
         return super.closeAllTabsRequest(incognito);
@@ -78,12 +93,6 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                 if (animate) tabClosing(tab.getId());
             }
         };
-    }
-
-    @Override
-    protected void addGlobalSceneOverlay(SceneOverlay helper) {
-        super.addGlobalSceneOverlay(helper);
-        mSimpleAnimationLayout.addSceneOverlay(helper);
     }
 
     @Override
@@ -109,8 +118,9 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     @Override
     protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
         boolean showOverview = nextId == Tab.INVALID_TAB_ID;
-        Layout overviewLayout = DeviceClassManager.enableAccessibilityLayout() ? mOverviewListLayout
-                                                                               : mOverviewLayout;
+        Layout overviewLayout = DeviceClassManager.enableAccessibilityLayout(mHost.getContext())
+                ? mOverviewListLayout
+                : mOverviewLayout;
         if (getActiveLayout() != overviewLayout && showOverview) {
             // Since there will be no 'next' tab to display, switch to
             // overview mode when the animation is finished.
@@ -126,15 +136,16 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     }
 
     @Override
-    protected void tabCreating(int sourceId, String url, boolean isIncognito) {
-        if (!getActiveLayout().isHiding() && getActiveLayout().handlesTabCreating()) {
+    protected void tabCreating(int sourceId, boolean isIncognito) {
+        if (getActiveLayout() != null && !getActiveLayout().isStartingToHide()
+                && overlaysHandleTabCreating() && getActiveLayout().handlesTabCreating()) {
             // If the current layout in the foreground, let it handle the tab creation animation.
             // This check allows us to switch from the StackLayout to the SimpleAnimationLayout
             // smoothly.
             getActiveLayout().onTabCreating(sourceId);
         } else if (animationsEnabled()) {
             if (!overviewVisible()) {
-                if (getActiveLayout() != null && getActiveLayout().isHiding()) {
+                if (getActiveLayout() != null && getActiveLayout().isStartingToHide()) {
                     setNextLayout(mSimpleAnimationLayout);
                     // The method Layout#doneHiding() will automatically show the next layout.
                     getActiveLayout().doneHiding();
@@ -142,8 +153,29 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
                     startShowing(mSimpleAnimationLayout, false);
                 }
             }
-            getActiveLayout().onTabCreating(sourceId);
+            if (getActiveLayout() != null) {
+                getActiveLayout().onTabCreating(sourceId);
+            }
         }
+    }
+
+    /** @return Whether the {@link SceneOverlay}s handle tab creation. */
+    private boolean overlaysHandleTabCreating() {
+        Layout layout = getActiveLayout();
+        if (layout == null || layout.getLayoutTabsToRender() == null
+                || layout.getLayoutTabsToRender().length != 1) {
+            return false;
+        }
+        for (int i = 0; i < mSceneOverlays.size(); i++) {
+            if (!mSceneOverlays.get(i).isSceneOverlayTreeShowing()) continue;
+            if (mSceneOverlays.get(i).handlesTabCreating()) {
+                // Prevent animation from happening if the overlay handles creation.
+                startHiding(layout.getLayoutTabsToRender()[0].getId(), false);
+                doneHiding();
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

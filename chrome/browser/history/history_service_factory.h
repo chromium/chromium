@@ -36,6 +36,9 @@ class HistoryServiceFactory : public BrowserContextKeyedServiceFactory {
   // calling test is expected to do the cleanup before calling this function.
   static void ShutdownForProfile(Profile* profile);
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
  private:
   friend struct base::DefaultSingletonTraits<HistoryServiceFactory>;
 

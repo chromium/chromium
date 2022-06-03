@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- The background of the top-view must be opaque, otherwise it bleeds through to the
+     cc::Layer that mirrors the contents of the top-view. -->
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="LabelFor,ContentDescription"
+    android:background="#FFc9c9c9"
+    android:layout_width="match_parent"
+    style="@style/ShellTheme">
+
+    <ViewSwitcher
+        android:id="@+id/url_view_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_toStartOf="@+id/app_menu_button"
+        android:paddingStart="5dp"
+        android:layout_centerVertical="true">
+
+        <EditText
+            android:id="@+id/editable_url_view"
+            android:inputType="textUri"
+            android:selectAllOnFocus="true"
+            android:imeOptions="actionGo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:importantForAutofill="no"
+            android:textSize="15sp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:paddingLeft="8dp">
+
+          <ImageView
+              android:id="@+id/favicon_image_view"
+              android:layout_width="16dp"
+              android:layout_height="16dp"
+              android:layout_gravity="center"
+              android:scaleType="fitXY"/>
+
+          <RelativeLayout
+              android:id="@+id/noneditable_url_view_container"
+              android:layout_width="0dp"
+              android:layout_height="match_parent"
+              android:layout_weight="1"/>
+
+        </LinearLayout>
+
+    </ViewSwitcher>
+
+    <ImageButton
+        android:id="@+id/app_menu_button"
+        android:src="@android:drawable/ic_menu_more"
+        android:background="@android:color/transparent"
+        android:layout_width="25dp"
+        android:layout_height="25dp"
+        android:scaleType="fitXY"
+        android:layout_marginTop="5dp"
+        android:layout_alignParentEnd="true"/>
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        style="@android:style/Widget.Holo.Light.ProgressBar.Horizontal"
+        android:indeterminate="false"
+        android:max="100"
+        android:visibility="invisible"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/url_view_container"
+        android:layout_marginTop="0dp"
+        android:layout_marginBottom="-10px"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"/>
+
+</RelativeLayout>

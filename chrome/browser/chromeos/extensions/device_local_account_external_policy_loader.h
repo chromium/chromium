@@ -6,14 +6,12 @@
 #define CHROME_BROWSER_CHROMEOS_EXTENSIONS_DEVICE_LOCAL_ACCOUNT_EXTERNAL_POLICY_LOADER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/chromeos/extensions/external_cache_delegate.h"
 #include "chrome/browser/extensions/external_loader.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -36,6 +34,11 @@ class DeviceLocalAccountExternalPolicyLoader
   // extensions will be cached in the |cache_dir_|.
   DeviceLocalAccountExternalPolicyLoader(policy::CloudPolicyStore* store,
                                          const base::FilePath& cache_dir);
+
+  DeviceLocalAccountExternalPolicyLoader(
+      const DeviceLocalAccountExternalPolicyLoader&) = delete;
+  DeviceLocalAccountExternalPolicyLoader& operator=(
+      const DeviceLocalAccountExternalPolicyLoader&) = delete;
 
   // While running, the cache requires exclusive write access to the
   // |cache_dir_|.
@@ -60,9 +63,6 @@ class DeviceLocalAccountExternalPolicyLoader
 
   // ExternalCacheDelegate:
   void OnExtensionListsUpdated(const base::DictionaryValue* prefs) override;
-  void OnExtensionLoadedInCache(const std::string& id) override;
-  void OnExtensionDownloadFailed(const std::string& id) override;
-  std::string GetInstalledExtensionVersion(const std::string& id) override;
 
   ExternalCache* GetExternalCacheForTesting();
 
@@ -78,8 +78,6 @@ class DeviceLocalAccountExternalPolicyLoader
   const base::FilePath cache_dir_;
   std::unique_ptr<ExternalCache> external_cache_;
   std::unique_ptr<base::DictionaryValue> prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceLocalAccountExternalPolicyLoader);
 };
 
 }  // namespace chromeos

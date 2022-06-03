@@ -1,0 +1,32 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script type="module">
+promise_test(_ => {
+  return new Promise((resolve, reject) => {
+    const iframe = document.createElement('iframe');
+
+    window.navigateToSecondPage = () => {
+      iframe.src = 'resources/notimer-after-unload-inner-after.html';
+
+      // A little cheesy, but if the callback is realistically ever going to
+      // run, it would will almost certainly within 1 second of the request
+      // issued by the first page.
+      iframe.onload = () => setTimeout(resolve, 1000);
+    };
+
+    window.onGeolocationResponse = x => {
+      reject('Geolocation callback invoked after page unload');
+    };
+
+    iframe.src = 'resources/notimer-after-unload-inner-before.html';
+    document.body.appendChild(iframe);
+  });
+}, 'geolocation callbacks are not invoked after page unload');
+</script>
+</body>
+</html>

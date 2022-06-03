@@ -26,14 +26,20 @@ MouseShapePump::MouseShapePump(
     protocol::CursorShapeStub* cursor_shape_stub)
     : mouse_cursor_monitor_(std::move(mouse_cursor_monitor)),
       cursor_shape_stub_(cursor_shape_stub) {
-  mouse_cursor_monitor_->Init(this, webrtc::MouseCursorMonitor::SHAPE_ONLY);
+  mouse_cursor_monitor_->Init(this,
+                              webrtc::MouseCursorMonitor::SHAPE_AND_POSITION);
   capture_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(kCursorCaptureIntervalMs),
-      base::Bind(&MouseShapePump::Capture, base::Unretained(this)));
+      FROM_HERE, base::Milliseconds(kCursorCaptureIntervalMs),
+      base::BindRepeating(&MouseShapePump::Capture, base::Unretained(this)));
 }
 
 MouseShapePump::~MouseShapePump() {
   DCHECK(thread_checker_.CalledOnValidThread());
+}
+
+void MouseShapePump::SetMouseCursorMonitorCallback(
+    webrtc::MouseCursorMonitor::Callback* callback) {
+  callback_ = callback;
 }
 
 void MouseShapePump::Capture() {
@@ -65,13 +71,15 @@ void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {
   }
 
   cursor_shape_stub_->SetCursorShape(*cursor_proto);
+
+  if (callback_)
+    callback_->OnMouseCursor(owned_cursor.release());
 }
 
 void MouseShapePump::OnMouseCursorPosition(
-    webrtc::MouseCursorMonitor::CursorState state,
     const webrtc::DesktopVector& position) {
-  // We're not subscribing to mouse position changes.
-  NOTREACHED();
+  if (callback_)
+    callback_->OnMouseCursorPosition(position);
 }
 
 }  // namespace remoting

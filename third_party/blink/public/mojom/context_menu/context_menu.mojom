@@ -1,0 +1,205 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "services/network/public/mojom/referrer_policy.mojom";
+import "third_party/blink/public/mojom/conversions/conversions.mojom";
+import "ui/base/mojom/ui_base_types.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "url/mojom/url.mojom";
+import "url/mojom/origin.mojom";
+
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.blink_public.common
+// GENERATED_JAVA_CLASS_NAME_OVERRIDE: ContextMenuDataMediaType
+enum ContextMenuDataMediaType {
+  // No special node is in context.
+  kNone,
+
+  // An image node is selected.
+  kImage,
+
+  // A video node is selected.
+  kVideo,
+
+  // An audio node is selected.
+  kAudio,
+
+  // A canvas node is selected.
+  kCanvas,
+
+  // A file node is selected.
+  kFile,
+
+  // A plugin node is selected.
+  kPlugin,
+};
+
+enum ContextMenuDataInputFieldType {
+  // Not an input field.
+  kNone,
+
+  // type = text, search, email, url
+  kPlainText,
+
+  // type = password
+  kPassword,
+
+  // type = number
+  kNumber,
+
+  // type = tel
+  kTelephone,
+
+  // type = <etc.>
+  kOther,
+};
+
+enum CustomContextMenuItemType {
+  kOption,
+  kCheckableOption,
+  kGroup,
+  kSeparator,
+  kSubMenu
+};
+
+// Container for information about entries in an HTML select popup menu and
+// custom entries of the context menu.
+// TODO(crbug.com/1093904): Consider merging the MenuItem struct in
+// popup_menu.mojom.
+struct CustomContextMenuItem {
+  mojo_base.mojom.String16 label;
+  mojo_base.mojom.String16 icon;
+  mojo_base.mojom.String16 tool_tip;
+  CustomContextMenuItemType type;
+  int32 action;
+  bool rtl;
+  bool has_directional_override;
+  bool enabled;
+  bool checked;
+  array<CustomContextMenuItem> submenu;
+};
+
+// Mojo struct to represent blink::UntrustworthyContextMenuParams native struct.
+struct UntrustworthyContextMenuParams {
+  // This is the type of Context Node that the context menu was invoked on.
+  ContextMenuDataMediaType media_type;
+
+  // These values represent the coordinates of the mouse when the context menu
+  // was invoked.  Coords are relative to the associated RenderView's origin.
+  int32 x;
+  int32 y;
+
+  // This is the URL of the link that encloses the node the context menu was
+  // invoked on.
+  url.mojom.Url link_url;
+
+  // The text associated with the link. May be an empty string if the contents
+  // of the link are an image.
+  // Will be empty if |link_url| is empty.
+  mojo_base.mojom.String16 link_text;
+
+  // The impression declared by the link. May be absl::nullopt even if
+  // |link_url| is non-empty.
+  Impression? impression;
+
+  // The link URL to be used ONLY for "copy link address". We don't validate
+  // this field in the frontend process.
+  url.mojom.Url unfiltered_link_url;
+
+  // This is the source URL for the element that the context menu was
+  // invoked on. Example of elements with source URLs are img, audio, and
+  // video.
+  url.mojom.Url src_url;
+
+  // This is true if the context menu was invoked on an image which has
+  // non-empty contents.
+  bool has_image_contents;
+
+  // These are the parameters for the media element that the context menu
+  // was invoked on.
+  int32 media_flags;
+
+  // This is the text of the selection that the context menu was invoked on.
+  mojo_base.mojom.String16 selection_text;
+
+  // This is the title text of the selection that the context menu was
+  // invoked on.
+  mojo_base.mojom.String16 title_text;
+
+  // This is the alt text of the selection that the context menu was
+  // invoked on.
+  mojo_base.mojom.String16 alt_text;
+
+  // This is the suggested filename to be used when saving file through "Save
+  // Link As" option of context menu.
+  mojo_base.mojom.String16 suggested_filename;
+
+  // The misspelled word under the cursor, if any. Used to generate the
+  // |dictionary_suggestions| list.
+  mojo_base.mojom.String16 misspelled_word;
+
+  // Suggested replacements for a misspelled word under the cursor.
+  // This vector gets populated in the render process host
+  // by intercepting ViewHostMsg_ContextMenu in ResourceMessageFilter
+  // and populating dictionary_suggestions if the type is EDITABLE
+  // and the misspelled_word is not empty.
+  array<mojo_base.mojom.String16> dictionary_suggestions;
+
+  // If editable, flag for whether spell check is enabled or not.
+  bool spellcheck_enabled;
+
+  // Whether context is editable.
+  bool is_editable;
+
+  // Writing direction menu items.
+  int32 writing_direction_default;
+  int32 writing_direction_left_to_right;
+  int32 writing_direction_right_to_left;
+
+  // These flags indicate to the browser whether the renderer believes it is
+  // able to perform the corresponding action.
+  int32 edit_flags;
+
+  // The character encoding of the frame on which the menu is invoked.
+  string frame_charset;
+
+  // The referrer policy of the frame on which the menu is invoked.
+  network.mojom.ReferrerPolicy referrer_policy;
+
+  // If the context menu was created for a link, and we navigated to that url,
+  // this will contain the url that was navigated. This field may not be set
+  // if, for example, we are transitioning to an incognito window, since we
+  // want to sever any connection to the old renderer.
+  url.mojom.Url link_followed;
+
+  array<CustomContextMenuItem> custom_items;
+
+  ui.mojom.MenuSourceType source_type;
+
+  // If this node is an input field, the type of that field.
+  ContextMenuDataInputFieldType input_field_type;
+
+  // Rect representing the coordinates in the document space of the selection.
+  gfx.mojom.Rect selection_rect;
+
+  // Start position of the selection text.
+  int32 selection_start_offset;
+
+  // Whether the context contains text highlighted by a text fragment.
+  // See TextFragmentAnchor.
+  bool opened_from_highlight;
+};
+
+// Defines methods for Context menu to commnicate from the renderer to the
+// browser.
+interface ContextMenuClient {
+  // Executes custom context menu action that was provided from Blink.
+  CustomContextMenuAction(uint32 action);
+
+  // Called in response to a blink.mojom.ShowContextMenu to let the renderer
+  // know that the menu has been closed.
+  ContextMenuClosed(url.mojom.Url link_followed);
+};

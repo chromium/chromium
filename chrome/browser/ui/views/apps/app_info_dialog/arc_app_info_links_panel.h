@@ -9,11 +9,11 @@
 
 #include <string>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/views/apps/app_info_dialog/app_info_panel.h"
-#include "ui/views/controls/link_listener.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/metadata/view_factory.h"
 
 class Profile;
 
@@ -27,16 +27,15 @@ class Link;
 
 // Shows a link to get to managing supported links activity on ARC side.
 class ArcAppInfoLinksPanel : public AppInfoPanel,
-                             public views::LinkListener,
                              public ArcAppListPrefs::Observer {
  public:
+  METADATA_HEADER(ArcAppInfoLinksPanel);
   ArcAppInfoLinksPanel(Profile* profile, const extensions::Extension* app);
+  ArcAppInfoLinksPanel(const ArcAppInfoLinksPanel&) = delete;
+  ArcAppInfoLinksPanel& operator=(const ArcAppInfoLinksPanel&) = delete;
   ~ArcAppInfoLinksPanel() override;
 
  private:
-  // views::LinkListener:
-  void LinkClicked(views::Link* source, int event_flags) override;
-
   // ArcAppListPrefs::Observer:
   void OnAppRegistered(const std::string& app_id,
                        const ArcAppListPrefs::AppInfo& app_info) override;
@@ -45,11 +44,16 @@ class ArcAppInfoLinksPanel : public AppInfoPanel,
   void OnAppRemoved(const std::string& app_id) override;
 
   void UpdateLink(bool enabled);
+  void LinkClicked();
 
-  ScopedObserver<ArcAppListPrefs, ArcAppListPrefs::Observer> app_list_observer_;
-  views::Link* manage_link_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcAppInfoLinksPanel);
+  base::ScopedObservation<ArcAppListPrefs, ArcAppListPrefs::Observer>
+      app_list_observation_{this};
+  views::Link* manage_link_ = nullptr;
 };
+
+BEGIN_VIEW_BUILDER(/* no export */, ArcAppInfoLinksPanel, AppInfoPanel)
+END_VIEW_BUILDER
+
+DEFINE_VIEW_BUILDER(/* no export */, ArcAppInfoLinksPanel)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_APPS_APP_INFO_DIALOG_ARC_APP_INFO_LINKS_PANEL_H_

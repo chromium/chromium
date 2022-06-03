@@ -14,7 +14,7 @@
 
 module arc.mojom;
 
-// For gfx::Size.
+import "components/arc/mojom/gfx.mojom";
 import "components/arc/mojom/video_common.mojom";
 
 // Implemented by Chrome in order to allow requesting of permissions to perform
@@ -42,9 +42,9 @@ interface ScreenCaptureHost {
   // size should have the width/height of the buffers used
   // returns null interface in the case the permission was not granted, a valid
   //     interface pointer otherwise
-  OpenSession@1(ScreenCaptureSessionNotifier notifier,
-                string package_name, Size size) =>
-                (ScreenCaptureSession? session);
+  OpenSession@1(pending_remote<ScreenCaptureSessionNotifier> notifier,
+                string package_name, Size size)
+      => (pending_remote<ScreenCaptureSession>? session);
 };
 
 // Implemented by Chrome for handling a screen capture session.
@@ -61,7 +61,7 @@ interface ScreenCaptureSession {
 // Implemented by Android.
 interface ScreenCaptureInstance {
   // Establishes full-duplex communication with the host.
-  Init@0(ScreenCaptureHost host_ptr) => ();
+  Init@0(pending_remote<ScreenCaptureHost> host_remote) => ();
 };
 
 // Implemented by Android as a callback mechanism.

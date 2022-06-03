@@ -6,10 +6,10 @@
 
 #include <utility>
 
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_restrictions.h"
 #include "net/base/net_errors.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
@@ -22,7 +22,7 @@ TestNetworkContextClient::TestNetworkContextClient(
 TestNetworkContextClient::~TestNetworkContextClient() {}
 
 void TestNetworkContextClient::OnFileUploadRequested(
-    uint32_t process_id,
+    int32_t process_id,
     bool async,
     const std::vector<base::FilePath>& file_paths,
     OnFileUploadRequestedCallback callback) {

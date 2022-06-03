@@ -44,7 +44,7 @@ var updateHashChangeReceivedText = function(received) {
 }
 
 // Clears all div text an starts a timer that updates no-op-div with "NoOpText"
-// after 1s.  This allows tests to verify that no nagivations occur after a
+// after 1s.  This allows tests to verify that no navigations occur after a
 // no-op JavaScript call.
 var onButtonTapped = function() {
   updateOnLoadText('');

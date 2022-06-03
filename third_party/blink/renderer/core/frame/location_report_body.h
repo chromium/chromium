@@ -15,45 +15,53 @@
 namespace blink {
 
 class CORE_EXPORT LocationReportBody : public ReportBody {
- public:
+ private:
+  struct ReportLocation {
+    String file;
+    absl::optional<uint32_t> line_number;
+    absl::optional<uint32_t> column_number;
+  };
+
+  static ReportLocation CreateReportLocation(
+      const String& file,
+      absl::optional<uint32_t> line_number,
+      absl::optional<uint32_t> column_number);
+
+  static ReportLocation CreateReportLocation(
+      std::unique_ptr<SourceLocation> location);
+
+  explicit LocationReportBody(const ReportLocation& location)
+      : source_file_(location.file),
+        line_number_(location.line_number),
+        column_number_(location.column_number) {}
+
+ protected:
   explicit LocationReportBody(std::unique_ptr<SourceLocation> location)
-      : source_file_(location->Url()),
-        line_number_(location->IsUnknown()
-                         ? base::nullopt
-                         : base::Optional<uint32_t>{location->LineNumber()}),
-        column_number_(location->IsUnknown() ? base::nullopt
-                                             : base::Optional<uint32_t>{
-                                                   location->ColumnNumber()}) {}
+      : LocationReportBody(CreateReportLocation(std::move(location))) {}
 
-  LocationReportBody() : LocationReportBody(SourceLocation::Capture()) {}
+  explicit LocationReportBody(
+      const String& source_file = g_empty_string,
+      absl::optional<uint32_t> line_number = absl::nullopt,
+      absl::optional<uint32_t> column_number = absl::nullopt)
+      : LocationReportBody(
+            CreateReportLocation(source_file, line_number, column_number)) {}
 
-  LocationReportBody(const String& source_file,
-                     base::Optional<uint32_t> line_number = base::nullopt,
-                     base::Optional<uint32_t> column_number = base::nullopt)
-      : source_file_(source_file),
-        line_number_(line_number),
-        column_number_(column_number) {}
-
+ public:
   ~LocationReportBody() override = default;
 
-  String sourceFile() const { return source_file_; }
+  const String& sourceFile() const { return source_file_; }
 
-  uint32_t lineNumber(bool& is_null) const {
-    is_null = !line_number_.has_value();
-    return line_number_.value_or(0);
-  }
-
-  uint32_t columnNumber(bool& is_null) const {
-    is_null = !column_number_.has_value();
-    return column_number_.value_or(0);
-  }
+  absl::optional<uint32_t> lineNumber() const { return line_number_; }
+  absl::optional<uint32_t> columnNumber() const { return column_number_; }
 
   void BuildJSONValue(V8ObjectBuilder& builder) const override;
 
+  unsigned MatchId() const override;
+
  protected:
   const String source_file_;
-  base::Optional<uint32_t> line_number_;
-  base::Optional<uint32_t> column_number_;
+  const absl::optional<uint32_t> line_number_;
+  const absl::optional<uint32_t> column_number_;
 };
 
 }  // namespace blink

@@ -82,7 +82,7 @@ class BrowserContextKeyedAPI : public KeyedService {
 //         BrowserContextKeyedAPIFactory<ApiResourceManager<T>>* factory) {
 //       factory->DependsOn(
 //           ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
-//       factory->DependsOn(ProfileSyncServiceFactory::GetInstance());
+//       factory->DependsOn(SyncServiceFactory::GetInstance());
 //       ...
 //     }
 //   };
@@ -126,6 +126,10 @@ class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
     DeclareFactoryDependencies();
   }
 
+  BrowserContextKeyedAPIFactory(const BrowserContextKeyedAPIFactory&) = delete;
+  BrowserContextKeyedAPIFactory& operator=(
+      const BrowserContextKeyedAPIFactory&) = delete;
+
   ~BrowserContextKeyedAPIFactory() override {}
 
  private:
@@ -157,8 +161,6 @@ class BrowserContextKeyedAPIFactory : public BrowserContextKeyedServiceFactory {
   bool ServiceIsNULLWhileTesting() const override {
     return T::kServiceIsNULLWhileTesting;
   }
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserContextKeyedAPIFactory);
 };
 
 }  // namespace extensions

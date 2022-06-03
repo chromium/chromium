@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_GLOBAL_FETCH_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 
@@ -26,26 +27,30 @@ class CORE_EXPORT GlobalFetch {
     virtual ~ScopedFetcher();
 
     virtual ScriptPromise Fetch(ScriptState*,
-                                const RequestInfo&,
+                                const V8RequestInfo*,
                                 const RequestInit*,
                                 ExceptionState&) = 0;
+
+    // Returns the number of fetch() method calls in the associated execution
+    // context.  This is used for metrics.
+    virtual uint32_t FetchCount() const = 0;
 
     static ScopedFetcher* From(LocalDOMWindow&);
     static ScopedFetcher* From(WorkerGlobalScope&);
 
-    void Trace(blink::Visitor*) override;
+    void Trace(Visitor*) const override;
   };
 
-  static ScriptPromise fetch(ScriptState*,
-                             LocalDOMWindow&,
-                             const RequestInfo&,
-                             const RequestInit*,
-                             ExceptionState&);
-  static ScriptPromise fetch(ScriptState*,
-                             WorkerGlobalScope&,
-                             const RequestInfo&,
-                             const RequestInit*,
-                             ExceptionState&);
+  static ScriptPromise fetch(ScriptState* script_state,
+                             LocalDOMWindow& window,
+                             const V8RequestInfo* input,
+                             const RequestInit* init,
+                             ExceptionState& exception_state);
+  static ScriptPromise fetch(ScriptState* script_state,
+                             WorkerGlobalScope& worker,
+                             const V8RequestInfo* input,
+                             const RequestInit* init,
+                             ExceptionState& exception_state);
 };
 
 }  // namespace blink

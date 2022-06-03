@@ -5,8 +5,9 @@
 #include "services/preferences/tracked/dictionary_hash_store_contents.h"
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "base/values.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/persistent_pref_store.h"
@@ -44,7 +45,7 @@ base::StringPiece DictionaryHashStoreContents::GetUMASuffix() const {
 }
 
 void DictionaryHashStoreContents::Reset() {
-  storage_->Remove(kPreferenceMACs, NULL);
+  storage_->RemovePath(kPreferenceMACs);
 }
 
 bool DictionaryHashStoreContents::GetMac(const std::string& path,
@@ -68,12 +69,12 @@ bool DictionaryHashStoreContents::GetSplitMacs(
     return false;
   for (base::DictionaryValue::Iterator it(*split_macs_dict); !it.IsAtEnd();
        it.Advance()) {
-    std::string mac_string;
-    if (!it.value().GetAsString(&mac_string)) {
+    const std::string* mac_string = it.value().GetIfString();
+    if (!mac_string) {
       NOTREACHED();
       continue;
     }
-    split_macs->insert(make_pair(it.key(), mac_string));
+    split_macs->insert(make_pair(it.key(), *mac_string));
   }
   return true;
 }
@@ -100,13 +101,13 @@ void DictionaryHashStoreContents::SetSplitMac(const std::string& path,
 void DictionaryHashStoreContents::ImportEntry(const std::string& path,
                                               const base::Value* in_value) {
   base::DictionaryValue* macs_dict = GetMutableContents(true);
-  macs_dict->Set(path, std::make_unique<base::Value>(in_value->Clone()));
+  macs_dict->SetPath(path, in_value->Clone());
 }
 
 bool DictionaryHashStoreContents::RemoveEntry(const std::string& path) {
   base::DictionaryValue* macs_dict = GetMutableContents(false);
   if (macs_dict)
-    return macs_dict->RemovePath(path, NULL);
+    return macs_dict->RemovePath(path);
 
   return false;
 }

@@ -5,6 +5,8 @@
 #include "chrome/service/service_process.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -15,16 +17,15 @@
 #include "base/environment.h"
 #include "base/i18n/rtl.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -52,7 +53,6 @@
 #include "net/url_request/url_fetcher.h"
 #include "services/network/public/cpp/network_switches.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_switches.h"
 
@@ -73,13 +73,14 @@ const char kDefaultServiceProcessLocale[] = "en-US";
 class ServiceIOThread : public base::Thread {
  public:
   explicit ServiceIOThread(const char* name);
+
+  ServiceIOThread(const ServiceIOThread&) = delete;
+  ServiceIOThread& operator=(const ServiceIOThread&) = delete;
+
   ~ServiceIOThread() override;
 
  protected:
   void CleanUp() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ServiceIOThread);
 };
 
 ServiceIOThread::ServiceIOThread(const char* name) : base::Thread(name) {}
@@ -113,10 +114,10 @@ void PrepareRestartOnCrashEnviroment(
   // The encoding we use for the info is "title|context|direction" where
   // direction is either env_vars::kRtlLocale or env_vars::kLtrLocale depending
   // on the current locale.
-  base::string16 dlg_strings(
+  std::u16string dlg_strings(
       l10n_util::GetStringUTF16(IDS_CRASH_RECOVERY_TITLE));
   dlg_strings.push_back('|');
-  base::string16 adjusted_string(l10n_util::GetStringFUTF16(
+  std::u16string adjusted_string(l10n_util::GetStringFUTF16(
       IDS_SERVICE_CRASH_RECOVERY_CONTENT,
       l10n_util::GetStringUTF16(IDS_GOOGLE_CLOUD_PRINT)));
   base::i18n::AdjustStringForLocaleDirection(&adjusted_string);
@@ -176,8 +177,8 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
   // Initialize the IO and FILE threads.
   base::Thread::Options options;
   options.message_pump_type = base::MessagePumpType::IO;
-  io_thread_.reset(new ServiceIOThread("ServiceProcess_IO"));
-  if (!io_thread_->StartWithOptions(options)) {
+  io_thread_ = std::make_unique<ServiceIOThread>("ServiceProcess_IO");
+  if (!io_thread_->StartWithOptions(std::move(options))) {
     NOTREACHED();
     Teardown();
     return false;
@@ -185,9 +186,9 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
 
   // Initialize Mojo early so things can use it.
   mojo::core::Init();
-  mojo_ipc_support_.reset(new mojo::core::ScopedIPCSupport(
+  mojo_ipc_support_ = std::make_unique<mojo::core::ScopedIPCSupport>(
       io_thread_->task_runner(),
-      mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST));
+      mojo::core::ScopedIPCSupport::ShutdownPolicy::FAST);
 
   request_context_getter_ = new ServiceURLRequestContextGetter();
 
@@ -196,10 +197,10 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
   base::FilePath pref_path =
       user_data_dir.Append(chrome::kServiceStateFileName);
   service_prefs_ = std::make_unique<ServiceProcessPrefs>(
-      pref_path, base::CreateSequencedTaskRunner(
-                     {base::ThreadPool(), base::MayBlock(),
-                      base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
-                     .get());
+      pref_path,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskShutdownBehavior::BLOCK_SHUTDOWN})
+          .get());
   service_prefs_->ReadPrefs();
 
   // This switch it required to run connector with test gaia.
@@ -221,7 +222,6 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
     if (locale.empty())
       locale = kDefaultServiceProcessLocale;
   }
-  ui::MaterialDesignController::Initialize();
   ui::ResourceBundle::InitSharedInstanceWithLocale(
       locale, NULL, ui::ResourceBundle::LOAD_COMMON_RESOURCES);
 
@@ -236,8 +236,8 @@ bool ServiceProcess::Initialize(base::OnceClosure quit_closure,
 
   VLOG(1) << "Starting Service Process IPC Server";
 
-  ipc_server_.reset(new ServiceIPCServer(this /* client */, io_task_runner(),
-                                         &shutdown_event_));
+  ipc_server_ = std::make_unique<ServiceIPCServer>(
+      this /* client */, io_task_runner(), &shutdown_event_);
   ipc_server_->binder_registry().AddInterface(base::BindRepeating(
       &cloud_print::CloudPrintMessageHandler::Create, this));
   ipc_server_->Init();
@@ -285,7 +285,7 @@ bool ServiceProcess::Teardown() {
 // This method is called when a shutdown command is received from IPC channel
 // or there was an error in the IPC channel.
 void ServiceProcess::Shutdown() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // On MacOS X the service must be removed from the launchd job list.
   // http://www.chromium.org/developers/design-documents/service-processes
   // The best way to do that is to go through the ForceServiceProcessShutdown
@@ -325,7 +325,7 @@ bool ServiceProcess::OnIPCClientDisconnect() {
 }
 
 mojo::ScopedMessagePipeHandle ServiceProcess::CreateChannelMessagePipe() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   if (!server_endpoint_.is_valid()) {
     server_endpoint_ =
         service_process_state_->GetServiceProcessServerEndpoint();
@@ -347,7 +347,7 @@ mojo::ScopedMessagePipeHandle ServiceProcess::CreateChannelMessagePipe() {
 #endif
 
   mojo::PlatformChannelServerEndpoint server_endpoint;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // Mach receive rights (named server channels) are not Clone-able.
   server_endpoint = std::move(server_endpoint_);
 #elif defined(OS_POSIX)
@@ -367,7 +367,7 @@ mojo::ScopedMessagePipeHandle ServiceProcess::CreateChannelMessagePipe() {
 
 cloud_print::CloudPrintProxy* ServiceProcess::GetCloudPrintProxy() {
   if (!cloud_print_proxy_.get()) {
-    cloud_print_proxy_.reset(new cloud_print::CloudPrintProxy());
+    cloud_print_proxy_ = std::make_unique<cloud_print::CloudPrintProxy>();
     cloud_print_proxy_->Initialize(service_prefs_.get(), this,
                                    network_connection_tracker_.get());
   }
@@ -427,7 +427,7 @@ void ServiceProcess::ScheduleShutdownCheck() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ServiceProcess::ShutdownIfNeeded, base::Unretained(this)),
-      base::TimeDelta::FromSeconds(kShutdownDelaySeconds));
+      base::Seconds(kShutdownDelaySeconds));
 }
 
 void ServiceProcess::ShutdownIfNeeded() {

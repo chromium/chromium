@@ -5,7 +5,7 @@
 #include "media/cast/net/rtp/rtp_packet_builder.h"
 
 #include "base/big_endian.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace media {
 namespace cast {

@@ -8,8 +8,7 @@
 #include "components/autofill/core/browser/field_types.h"
 
 // This defines an enumeration of IDs that can uniquely identify a view within
-// the scope of the local and upload credit card save bubbles as well as the
-// local card migration bubble and dialogs.
+// the scope of various credit-card-related Autofill bubbles and dialogs.
 
 namespace autofill {
 

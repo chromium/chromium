@@ -27,11 +27,13 @@ LocalSVGResource* SVGTreeScopeResources::ExistingResourceForId(
     const AtomicString& id) const {
   if (id.IsEmpty())
     return nullptr;
-  return resources_.at(id);
+  auto it = resources_.find(id);
+  if (it == resources_.end())
+    return nullptr;
+  return it->value;
 }
 
-void SVGTreeScopeResources::ProcessCustomWeakness(
-    const WeakCallbackInfo& info) {
+void SVGTreeScopeResources::ProcessCustomWeakness(const LivenessBroker& info) {
   // Unregister and remove any resources that are no longer alive.
   Vector<AtomicString> to_remove;
   for (auto& resource_entry : resources_) {
@@ -43,7 +45,7 @@ void SVGTreeScopeResources::ProcessCustomWeakness(
   resources_.RemoveAll(to_remove);
 }
 
-void SVGTreeScopeResources::Trace(Visitor* visitor) {
+void SVGTreeScopeResources::Trace(Visitor* visitor) const {
   visitor->template RegisterWeakCallbackMethod<
       SVGTreeScopeResources, &SVGTreeScopeResources::ProcessCustomWeakness>(
       this);

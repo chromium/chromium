@@ -1,0 +1,9 @@
+CONSOLE ERROR: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/get.txt?sync' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+CONSOLE ERROR: Access to XMLHttpRequest at 'http://localhost:8000/xmlhttprequest/resources/get.txt?async' from origin 'http://127.0.0.1:8000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+Tests that origin allowlisting for https does not match http URLs.
+
+Testing: http://localhost:8000/xmlhttprequest/resources/get.txt (sync)
+PASS: NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'http://localhost:8000/xmlhttprequest/resources/get.txt?sync'.
+Testing: http://localhost:8000/xmlhttprequest/resources/get.txt (async)
+PASS: 0
+

@@ -1,0 +1,12 @@
+Test CSS.forcePseudoStates method for :focus setting :focus-within state across shadow root boundaries
+Shadow mode: open
+#inner background color without forced focus: default
+#host border without forced focus: 0px none rgb(0, 0, 0)
+#inner background color with forced focus:  background: red; 
+#host border with forced focus: 1px solid rgb(0, 0, 0)
+Shadow mode: closed
+#inner background color without forced focus: default
+#host border without forced focus: 0px none rgb(0, 0, 0)
+#inner background color with forced focus:  background: red; 
+#host border with forced focus: 1px solid rgb(0, 0, 0)
+

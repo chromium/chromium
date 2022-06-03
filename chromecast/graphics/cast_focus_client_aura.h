@@ -25,6 +25,10 @@ class CastFocusClientAura : public aura::WindowObserver,
                             public wm::ActivationClient {
  public:
   CastFocusClientAura();
+
+  CastFocusClientAura(const CastFocusClientAura&) = delete;
+  CastFocusClientAura& operator=(const CastFocusClientAura&) = delete;
+
   ~CastFocusClientAura() override;
 
   // aura::client::FocusClient implementation:
@@ -74,8 +78,6 @@ class CastFocusClientAura : public aura::WindowObserver,
   // focus to them.  We assume that this is a small list so that we can perform
   // linear ops on it.
   std::vector<aura::Window*> focusable_windows_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastFocusClientAura);
 };
 
 }  // namespace chromecast

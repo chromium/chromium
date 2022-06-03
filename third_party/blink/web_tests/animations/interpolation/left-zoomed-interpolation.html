@@ -25,8 +25,8 @@
 <script src="resources/interpolation-test.js"></script>
 <script>
 // When viewing this test manually you will need to pass --expose-internals-for-testing to content_shell.
-if (window.eventSender) {
-  eventSender.setPageZoomFactor(2);
+if (window.testRunner) {
+  testRunner.setPageZoomFactor(2);
 }
 
 assertInterpolation({

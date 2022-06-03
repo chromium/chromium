@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_MARKERS_SUGGESTION_MARKER_LIST_IMPL_H_
 
 #include "third_party/blink/renderer/core/editing/markers/document_marker_list.h"
+#include "third_party/blink/renderer/core/editing/markers/suggestion_marker.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -18,6 +19,8 @@ namespace blink {
 class CORE_EXPORT SuggestionMarkerListImpl final : public DocumentMarkerList {
  public:
   SuggestionMarkerListImpl() = default;
+  SuggestionMarkerListImpl(const SuggestionMarkerListImpl&) = delete;
+  SuggestionMarkerListImpl& operator=(const SuggestionMarkerListImpl&) = delete;
 
   // DocumentMarkerList implementations
   DocumentMarker::MarkerType MarkerType() const final;
@@ -41,10 +44,11 @@ class CORE_EXPORT SuggestionMarkerListImpl final : public DocumentMarkerList {
                     unsigned old_length,
                     unsigned new_length) final;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // SuggestionMarkerListImpl-specific
   bool RemoveMarkerByTag(int32_t tag);
+  bool RemoveMarkerByType(const SuggestionMarker::SuggestionType& type);
 
  private:
   bool ShiftMarkersForSuggestionReplacement(unsigned offset,
@@ -56,8 +60,6 @@ class CORE_EXPORT SuggestionMarkerListImpl final : public DocumentMarkerList {
                                                     unsigned new_length);
 
   HeapVector<Member<DocumentMarker>> markers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SuggestionMarkerListImpl);
 };
 
 template <>

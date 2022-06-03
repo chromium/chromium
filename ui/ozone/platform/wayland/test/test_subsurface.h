@@ -5,10 +5,8 @@
 #ifndef UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_SUBSURFACE_H_
 #define UI_OZONE_PLATFORM_WAYLAND_TEST_TEST_SUBSURFACE_H_
 
-#include <wayland-server-protocol-core.h>
+#include <wayland-server-protocol.h>
 
-#include <memory>
-#include <utility>
 
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/point.h"

@@ -4,14 +4,14 @@
 
 (async function() {
   TestRunner.addResult(`Test CPU profile timestamps are properly sorted.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '6.23';
   var rawTraceEvents = [
     {
       'args': {'name': 'Renderer'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': 17851,
@@ -20,7 +20,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': 17851,
@@ -90,10 +90,10 @@
   };
 
   var timelineController = PerformanceTestRunner.createTimelineController();
-  timelineController._addCpuProfile(SDK.targetManager.mainTarget().id(), cpuProfile);
+  timelineController.addCpuProfile(SDK.targetManager.mainTarget().id(), cpuProfile);
   timelineController.traceEventsCollected(rawTraceEvents);
-  await timelineController._finalizeTrace();
-  var events = UI.panels.timeline._performanceModel.timelineModel().inspectedTargetEvents();
+  await timelineController.finalizeTrace();
+  var events = UI.panels.timeline.performanceModel.timelineModel().inspectedTargetEvents();
   events.forEach(
       e => TestRunner.addResult(
           `${e.name}: ${e.startTime} ${(e.selfTime || 0).toFixed(2)}/${(e.duration || 0).toFixed(2)}`));

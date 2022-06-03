@@ -1,8 +1,0 @@
-rootWebArea
-++genericContainer ignored
-++++dialog modal=false
-++++++staticText name='Nonmodal'
-++++++++inlineTextBox name='Nonmodal'
-++++dialog modal=true
-++++++staticText name='Modal'
-++++++++inlineTextBox name='Modal'

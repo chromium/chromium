@@ -16,6 +16,10 @@ class CourierRendererFactory : public RendererFactory {
  public:
   explicit CourierRendererFactory(
       std::unique_ptr<RendererController> controller);
+
+  CourierRendererFactory(const CourierRendererFactory&) = delete;
+  CourierRendererFactory& operator=(const CourierRendererFactory&) = delete;
+
   ~CourierRendererFactory() override;
 
   std::unique_ptr<Renderer> CreateRenderer(
@@ -23,7 +27,7 @@ class CourierRendererFactory : public RendererFactory {
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       AudioRendererSink* audio_renderer_sink,
       VideoRendererSink* video_renderer_sink,
-      const RequestOverlayInfoCB& request_overlay_info_cb,
+      RequestOverlayInfoCB request_overlay_info_cb,
       const gfx::ColorSpace& target_color_space) override;
 
   // Returns whether remote rendering has started, based off of |controller_|.
@@ -33,8 +37,6 @@ class CourierRendererFactory : public RendererFactory {
 
  private:
   const std::unique_ptr<RendererController> controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(CourierRendererFactory);
 };
 
 }  // namespace remoting

@@ -6,6 +6,7 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_ADDRESS_FAMILY_MOJOM_TRAITS_H_
 
 #include "mojo/public/cpp/bindings/enum_traits.h"
+#include "net/base/address_family.h"
 #include "services/network/public/mojom/address_family.mojom.h"
 
 namespace mojo {

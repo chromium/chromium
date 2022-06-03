@@ -8,7 +8,8 @@
 #include <map>
 #include <vector>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/autofill/core/common/form_data.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "third_party/blink/public/web/web_form_control_element.h"
 #include "third_party/blink/public/web/web_input_element.h"
 
@@ -16,7 +17,8 @@ namespace autofill {
 
 // The detector's cache is a map from a |unique_renderer_id| to the list of
 // predictions for the given form (in the order of decreasing reliability).
-using UsernameDetectorCache = std::map<uint32_t, std::vector<uint32_t>>;
+using UsernameDetectorCache =
+    std::map<FormRendererId, std::vector<FieldRendererId>>;
 
 // Classifier for getting username field by analyzing HTML attribute values.
 // The algorithm looks for words that are likely to point to username field (ex.
@@ -29,10 +31,11 @@ using UsernameDetectorCache = std::map<uint32_t, std::vector<uint32_t>>;
 // data. Otherwise, the detector will be run and the outcome will be saved to
 // the cache. The function returns a reference to the vector of predictions,
 // which is stored in the cache.
-const std::vector<uint32_t>& GetPredictionsFieldBasedOnHtmlAttributes(
+const std::vector<FieldRendererId>& GetPredictionsFieldBasedOnHtmlAttributes(
     const std::vector<blink::WebFormControlElement>& all_control_elements,
     const FormData& form_data,
-    UsernameDetectorCache* username_detector_cache);
+    UsernameDetectorCache* username_detector_cache,
+    const blink::WebFormElement& form);
 
 }  // namespace autofill
 

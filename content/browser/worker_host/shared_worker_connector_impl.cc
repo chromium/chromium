@@ -21,32 +21,31 @@ namespace content {
 
 // static
 void SharedWorkerConnectorImpl::Create(
-    int client_process_id,
-    int frame_id,
+    GlobalRenderFrameHostId client_render_frame_host_id,
     mojo::PendingReceiver<blink::mojom::SharedWorkerConnector> receiver) {
   mojo::MakeSelfOwnedReceiver(base::WrapUnique(new SharedWorkerConnectorImpl(
-                                  client_process_id, frame_id)),
+                                  client_render_frame_host_id)),
                               std::move(receiver));
 }
 
-SharedWorkerConnectorImpl::SharedWorkerConnectorImpl(int client_process_id,
-                                                     int frame_id)
-    : client_process_id_(client_process_id), frame_id_(frame_id) {}
+SharedWorkerConnectorImpl::SharedWorkerConnectorImpl(
+    GlobalRenderFrameHostId client_render_frame_host_id)
+    : client_render_frame_host_id_(client_render_frame_host_id) {}
 
 void SharedWorkerConnectorImpl::Connect(
     blink::mojom::SharedWorkerInfoPtr info,
-    blink::mojom::FetchClientSettingsObjectPtr
-        outside_fetch_client_settings_object,
     mojo::PendingRemote<blink::mojom::SharedWorkerClient> client,
     blink::mojom::SharedWorkerCreationContextType creation_context_type,
-    mojo::ScopedMessagePipeHandle message_port,
-    mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token) {
-  RenderProcessHost* host = RenderProcessHost::FromID(client_process_id_);
+    blink::MessagePortDescriptor message_port,
+    mojo::PendingRemote<blink::mojom::BlobURLToken> blob_url_token,
+    ukm::SourceId client_ukm_source_id) {
+  RenderProcessHost* host =
+      RenderProcessHost::FromID(client_render_frame_host_id_.child_id);
   // The render process was already terminated.
   if (!host) {
     mojo::Remote<blink::mojom::SharedWorkerClient> remote_client(
         std::move(client));
-    remote_client->OnScriptLoadFailed();
+    remote_client->OnScriptLoadFailed(/*error_message=*/"");
     return;
   }
   scoped_refptr<network::SharedURLLoaderFactory> blob_url_loader_factory;
@@ -57,16 +56,15 @@ void SharedWorkerConnectorImpl::Connect(
     }
     blob_url_loader_factory =
         ChromeBlobStorageContext::URLLoaderFactoryForToken(
-            host->GetBrowserContext(), std::move(blob_url_token));
+            host->GetStoragePartition(), std::move(blob_url_token));
   }
   SharedWorkerServiceImpl* service =
       static_cast<StoragePartitionImpl*>(host->GetStoragePartition())
           ->GetSharedWorkerService();
-  service->ConnectToWorker(client_process_id_, frame_id_, std::move(info),
-                           std::move(outside_fetch_client_settings_object),
-                           std::move(client), creation_context_type,
-                           blink::MessagePortChannel(std::move(message_port)),
-                           std::move(blob_url_loader_factory));
+  service->ConnectToWorker(
+      client_render_frame_host_id_, std::move(info), std::move(client),
+      creation_context_type, blink::MessagePortChannel(std::move(message_port)),
+      std::move(blob_url_loader_factory), client_ukm_source_id);
 }
 
 }  // namespace content

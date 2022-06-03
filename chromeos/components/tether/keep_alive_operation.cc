@@ -20,29 +20,25 @@ KeepAliveOperation::Factory* KeepAliveOperation::Factory::factory_instance_ =
     nullptr;
 
 // static
-std::unique_ptr<KeepAliveOperation> KeepAliveOperation::Factory::NewInstance(
+std::unique_ptr<KeepAliveOperation> KeepAliveOperation::Factory::Create(
     multidevice::RemoteDeviceRef device_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client) {
-  if (!factory_instance_) {
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(
+        device_to_connect, device_sync_client, secure_channel_client);
   }
-  return factory_instance_->BuildInstance(device_to_connect, device_sync_client,
-                                          secure_channel_client);
-}
 
-// static
-void KeepAliveOperation::Factory::SetInstanceForTesting(Factory* factory) {
-  factory_instance_ = factory;
-}
-
-std::unique_ptr<KeepAliveOperation> KeepAliveOperation::Factory::BuildInstance(
-    multidevice::RemoteDeviceRef device_to_connect,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client) {
   return base::WrapUnique(new KeepAliveOperation(
       device_to_connect, device_sync_client, secure_channel_client));
 }
+
+// static
+void KeepAliveOperation::Factory::SetFactoryForTesting(Factory* factory) {
+  factory_instance_ = factory;
+}
+
+KeepAliveOperation::Factory::~Factory() = default;
 
 KeepAliveOperation::KeepAliveOperation(
     multidevice::RemoteDeviceRef device_to_connect,

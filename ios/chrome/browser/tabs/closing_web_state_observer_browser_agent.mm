@@ -1,0 +1,101 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/tabs/closing_web_state_observer_browser_agent.h"
+
+#include "base/strings/string_piece.h"
+#include "components/sessions/core/tab_restore_service.h"
+#include "components/sessions/ios/ios_restore_live_tab.h"
+#include "components/sessions/ios/ios_webstate_live_tab.h"
+#include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
+#import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
+#import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/web/public/navigation/navigation_item.h"
+#import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
+#include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
+BROWSER_USER_DATA_KEY_IMPL(ClosingWebStateObserverBrowserAgent)
+
+ClosingWebStateObserverBrowserAgent::ClosingWebStateObserverBrowserAgent(
+    Browser* browser)
+    : restore_service_(IOSChromeTabRestoreServiceFactory::GetForBrowserState(
+          browser->GetBrowserState())) {
+  browser->AddObserver(this);
+  browser->GetWebStateList()->AddObserver(this);
+}
+
+ClosingWebStateObserverBrowserAgent::~ClosingWebStateObserverBrowserAgent() {}
+
+#pragma mark - Private methods
+
+void ClosingWebStateObserverBrowserAgent::RecordHistoryForWebStateAtIndex(
+    web::WebState* web_state,
+    int index) {
+  // The RestoreService will be null if navigation is off the record.
+  if (!restore_service_)
+    return;
+
+  web::NavigationManager* navigation_manager =
+      web_state->GetNavigationManager();
+  if (navigation_manager->IsRestoreSessionInProgress()) {
+    CRWSessionStorage* storage = web_state->BuildSessionStorage();
+    auto live_tab = std::make_unique<sessions::RestoreIOSLiveTab>(storage);
+    restore_service_->CreateHistoricalTab(live_tab.get(), index);
+    return;
+  }
+  // No need to record history if the tab has no navigation or has only
+  // presented the NTP or the bookmark UI.
+  if (navigation_manager->GetItemCount() <= 1) {
+    web::NavigationItem* item = navigation_manager->GetLastCommittedItem();
+    if (!item)
+      return;
+
+    const base::StringPiece host = item->GetVirtualURL().host_piece();
+    if (host == kChromeUINewTabHost)
+      return;
+  }
+
+  restore_service_->CreateHistoricalTab(
+      sessions::IOSWebStateLiveTab::GetForWebState(web_state), index);
+}
+
+#pragma mark - BrowserObserver
+
+void ClosingWebStateObserverBrowserAgent::BrowserDestroyed(Browser* browser) {
+  browser->RemoveObserver(this);
+  browser->GetWebStateList()->RemoveObserver(this);
+}
+
+#pragma mark - WebStateListObserving
+
+void ClosingWebStateObserverBrowserAgent::WebStateReplacedAt(
+    WebStateList* web_state_list,
+    web::WebState* old_web_state,
+    web::WebState* new_web_state,
+    int index) {
+  SnapshotTabHelper::FromWebState(old_web_state)->RemoveSnapshot();
+}
+
+void ClosingWebStateObserverBrowserAgent::WillDetachWebStateAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index) {
+  RecordHistoryForWebStateAtIndex(web_state, index);
+}
+
+void ClosingWebStateObserverBrowserAgent::WillCloseWebStateAt(
+    WebStateList* web_state_list,
+    web::WebState* web_state,
+    int index,
+    bool user_action) {
+  if (user_action) {
+    SnapshotTabHelper::FromWebState(web_state)->RemoveSnapshot();
+  }
+}

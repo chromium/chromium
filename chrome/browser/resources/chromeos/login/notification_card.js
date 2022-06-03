@@ -23,17 +23,17 @@ Polymer({
    * @param {NotificationCardType} type
    * @private
    */
-  iconNameByType_: function(type) {
+  iconNameByType_(type) {
     if (type == NotificationCardType.FAIL)
       return 'cr:warning';
     if (type == NotificationCardType.SUCCESS)
-      return 'notification-card:done';
+      return 'oobe-24:done';
     console.error('Unknown type "' + type + '".');
     return '';
   },
 
   /** @private */
-  buttonClicked_: function() {
+  buttonClicked_() {
     this.fire('buttonclick');
   },
 
@@ -41,7 +41,7 @@ Polymer({
    * @param {Event} e
    * @private
    */
-  linkClicked_: function(e) {
+  linkClicked_(e) {
     this.fire('linkclick');
     e.preventDefault();
   },

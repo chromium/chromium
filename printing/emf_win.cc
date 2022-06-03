@@ -9,11 +9,12 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/check_op.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
+#include "printing/mojom/print.mojom.h"
 #include "skia/ext/skia_utils_win.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/codec/jpeg_codec.h"
@@ -75,13 +76,12 @@ bool Emf::Init() {
   return !!hdc_;
 }
 
-bool Emf::InitFromData(const void* src_buffer, size_t src_buffer_size) {
+bool Emf::InitFromData(base::span<const uint8_t> data) {
   DCHECK(!emf_ && !hdc_);
-  if (!base::IsValueInRangeForNumericType<UINT>(src_buffer_size))
+  if (!base::IsValueInRangeForNumericType<UINT>(data.size()))
     return false;
 
-  emf_ = SetEnhMetaFileBits(static_cast<UINT>(src_buffer_size),
-                            reinterpret_cast<const BYTE*>(src_buffer));
+  emf_ = SetEnhMetaFileBits(static_cast<UINT>(data.size()), data.data());
   return !!emf_;
 }
 
@@ -156,6 +156,10 @@ bool Emf::GetData(void* buffer, uint32_t size) const {
       GetEnhMetaFileBits(emf_, size, reinterpret_cast<BYTE*>(buffer));
   DCHECK(size2 == size);
   return size2 == size && size2 != 0;
+}
+
+mojom::MetafileDataType Emf::GetDataType() const {
+  return mojom::MetafileDataType::kEMF;
 }
 
 int CALLBACK Emf::SafePlaybackProc(HDC hdc,
@@ -250,37 +254,38 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
                                         bmih->biSizeImage)) {
           play_normally = false;
           bitmap = gfx::JPEGCodec::Decode(bits, bmih->biSizeImage);
+          DCHECK(bitmap);
+          DCHECK(!bitmap->isNull());
         }
       } else if (bmih->biCompression == BI_PNG) {
         if (!DIBFormatNativelySupported(hdc, CHECKPNGFORMAT, bits,
                                         bmih->biSizeImage)) {
           play_normally = false;
           bitmap = std::make_unique<SkBitmap>();
-          gfx::PNGCodec::Decode(bits, bmih->biSizeImage, bitmap.get());
+          bool png_ok =
+              gfx::PNGCodec::Decode(bits, bmih->biSizeImage, &*bitmap);
+          DCHECK(png_ok);
+          DCHECK(!bitmap->isNull());
         }
       }
       if (play_normally) {
         res = Play(context);
       } else {
-        DCHECK(bitmap.get());
-        if (bitmap.get()) {
-          DCHECK_EQ(bitmap->colorType(), kN32_SkColorType);
-          const uint32_t* pixels =
-              static_cast<const uint32_t*>(bitmap->getPixels());
-          if (!pixels) {
-            NOTREACHED();
-            return false;
-          }
-          BITMAPINFOHEADER bmi = {0};
-          skia::CreateBitmapHeader(bitmap->width(), bitmap->height(), &bmi);
-          res = (0 !=
-                 StretchDIBits(hdc, sdib_record->xDest, sdib_record->yDest,
-                               sdib_record->cxDest, sdib_record->cyDest,
-                               sdib_record->xSrc, sdib_record->ySrc,
-                               sdib_record->cxSrc, sdib_record->cySrc, pixels,
-                               reinterpret_cast<const BITMAPINFO*>(&bmi),
-                               sdib_record->iUsageSrc, sdib_record->dwRop));
+        const uint32_t* pixels =
+            static_cast<const uint32_t*>(bitmap->getPixels());
+        if (!pixels) {
+          NOTREACHED();
+          return false;
         }
+        BITMAPINFOHEADER bmi = {0};
+        skia::CreateBitmapHeaderForN32SkBitmap(*bitmap, &bmi);
+        res =
+            (0 != StretchDIBits(hdc, sdib_record->xDest, sdib_record->yDest,
+                                sdib_record->cxDest, sdib_record->cyDest,
+                                sdib_record->xSrc, sdib_record->ySrc,
+                                sdib_record->cxSrc, sdib_record->cySrc, pixels,
+                                reinterpret_cast<const BITMAPINFO*>(&bmi),
+                                sdib_record->iUsageSrc, sdib_record->dwRop));
       }
       break;
     }
@@ -342,7 +347,8 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
 
 void Emf::StartPage(const gfx::Size& /*page_size*/,
                     const gfx::Rect& /*content_area*/,
-                    const float& /*scale_factor*/) {}
+                    float /*scale_factor*/,
+                    mojom::PageOrientation /*page_orientation*/) {}
 
 bool Emf::FinishPage() {
   return true;

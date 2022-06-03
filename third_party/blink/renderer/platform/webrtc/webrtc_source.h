@@ -28,7 +28,7 @@ class PLATFORM_EXPORT WebRtcAudioRendererSource {
   // |audio_bus| must have buffer size |sample_rate/100| and 1-2 channels.
   virtual void RenderData(media::AudioBus* audio_bus,
                           int sample_rate,
-                          int audio_delay_milliseconds,
+                          base::TimeDelta audio_delay,
                           base::TimeDelta* current_time) = 0;
 
   // Callback to notify the client that the renderer is going away.
@@ -63,7 +63,7 @@ class PLATFORM_EXPORT WebRtcPlayoutDataSource {
     // |audio_bus| must have buffer size |sample_rate/100| and 1-2 channels.
     virtual void OnPlayoutData(media::AudioBus* audio_bus,
                                int sample_rate,
-                               int audio_delay_milliseconds) = 0;
+                               base::TimeDelta audio_delay) = 0;
 
     // Callback to notify the sink that the source has changed.
     // Called on the main render thread.

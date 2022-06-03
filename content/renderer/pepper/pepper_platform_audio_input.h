@@ -9,11 +9,13 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "ipc/ipc_message.h"
 #include "media/audio/audio_input_ipc.h"
+#include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
+#include "third_party/blink/public/common/tokens/tokens.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -48,6 +50,9 @@ class PepperPlatformAudioInput
       int frames_per_buffer,
       PepperAudioInputHost* client);
 
+  PepperPlatformAudioInput(const PepperPlatformAudioInput&) = delete;
+  PepperPlatformAudioInput& operator=(const PepperPlatformAudioInput&) = delete;
+
   // Called on main thread.
   void StartCapture();
   void StopCapture();
@@ -56,9 +61,9 @@ class PepperPlatformAudioInput
 
   // media::AudioInputIPCDelegate.
   void OnStreamCreated(base::ReadOnlySharedMemoryRegion shared_memory_region,
-                       base::SyncSocket::Handle socket_handle,
+                       base::SyncSocket::ScopedHandle socket_handle,
                        bool initially_muted) override;
-  void OnError() override;
+  void OnError(media::AudioCapturerSource::ErrorCode code) override;
   void OnMuted(bool is_muted) override;
   void OnIPCClosed() override;
 
@@ -92,7 +97,7 @@ class PepperPlatformAudioInput
 
   // The client to notify when the stream is created. THIS MUST ONLY BE
   // ACCESSED ON THE MAIN THREAD.
-  PepperAudioInputHost* client_;
+  PepperAudioInputHost* client_ = nullptr;
 
   // Used to send/receive IPC. THIS MUST ONLY BE ACCESSED ON THE
   // I/O THREAD.
@@ -102,7 +107,8 @@ class PepperPlatformAudioInput
   scoped_refptr<base::SingleThreadTaskRunner> io_task_runner_;
 
   // The frame containing the Pepper widget.
-  int render_frame_id_;
+  int render_frame_id_ = MSG_ROUTING_NONE;
+  blink::LocalFrameToken render_frame_token_;
 
   // The unique ID to identify the opened device. THIS MUST ONLY BE ACCESSED ON
   // THE MAIN THREAD.
@@ -113,20 +119,18 @@ class PepperPlatformAudioInput
 
   // Whether we have tried to create an audio stream. THIS MUST ONLY BE ACCESSED
   // ON THE I/O THREAD.
-  bool create_stream_sent_;
+  bool create_stream_sent_ = false;
 
   // Whether we have a pending request to open a device. We have to make sure
   // there isn't any pending request before this object goes away.
   // THIS MUST ONLY BE ACCESSED ON THE MAIN THREAD.
-  bool pending_open_device_;
+  bool pending_open_device_ = false;
   // THIS MUST ONLY BE ACCESSED ON THE MAIN THREAD.
-  int pending_open_device_id_;
+  int pending_open_device_id_ = -1;
 
   // Used to handle cases where (Start|Stop)CaptureOnIOThread runs before the
   // InitializeOnIOThread. THIS MUST ONLY BE ACCESSED ON THE IO THREAD.
-  enum { kIdle, kStarted, kStopped } ipc_startup_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformAudioInput);
+  enum { kIdle, kStarted, kStopped } ipc_startup_state_ = kIdle;
 };
 
 }  // namespace content

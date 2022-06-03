@@ -14,10 +14,10 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
+#include "base/strings/stringprintf.h"
 #include "content/browser/presentation/presentation_test_utils.h"
 #include "content/public/browser/presentation_request.h"
 #include "content/public/browser/presentation_service_delegate.h"
@@ -25,13 +25,12 @@
 #include "content/test/test_render_frame_host.h"
 #include "content/test/test_render_view_host.h"
 #include "content/test/test_web_contents.h"
-#include "mojo/public/cpp/bindings/interface_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
-
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -53,8 +52,8 @@ class PresentationServiceImplTest : public RenderViewHostImplTestHarness {
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    // This needed to keep the WebContentsObserverSanityChecker checks happy for
-    // when AppendChild is called.
+    // This needed to keep the WebContentsObserverConsistencyChecker checks
+    // happy for when AppendChild is called.
     NavigateAndCommit(GURL("about:blank"));
 
     EXPECT_CALL(mock_delegate_, AddObserver(_, _, _)).Times(1);
@@ -156,7 +155,7 @@ class PresentationServiceImplTest : public RenderViewHostImplTestHarness {
   std::unique_ptr<PresentationServiceImpl> service_impl_;
 
   MockPresentationController mock_controller_;
-  base::Optional<mojo::Receiver<PresentationController>> controller_receiver_;
+  absl::optional<mojo::Receiver<PresentationController>> controller_receiver_;
 
   GURL presentation_url1_;
   GURL presentation_url2_;

@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_EXTENSIONS_API_BRAILLE_DISPLAY_PRIVATE_BRAILLE_CONTROLLER_BRLAPI_H_
 
 #include <memory>
+#include <vector>
 
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/observer_list.h"
 #include "chrome/browser/extensions/api/braille_display_private/braille_controller.h"
@@ -24,6 +25,8 @@ namespace braille_display_private {
 class BrailleControllerImpl : public BrailleController {
  public:
   static BrailleControllerImpl* GetInstance();
+  BrailleControllerImpl(const BrailleControllerImpl&) = delete;
+  BrailleControllerImpl& operator=(const BrailleControllerImpl&) = delete;
   std::unique_ptr<DisplayState> GetDisplayState() override;
   void WriteDots(const std::vector<uint8_t>& cells,
                  unsigned int cols,
@@ -40,13 +43,13 @@ class BrailleControllerImpl : public BrailleController {
   ~BrailleControllerImpl() override;
   void TryLoadLibBrlApi();
 
-  typedef base::Callback<std::unique_ptr<BrlapiConnection>()>
-      CreateBrlapiConnectionFunction;
+  using CreateBrlapiConnectionFunction =
+      base::OnceCallback<std::unique_ptr<BrlapiConnection>()>;
 
   // For dependency injection in tests.  Sets the function used to create
   // brlapi connections.
   void SetCreateBrlapiConnectionForTesting(
-      const CreateBrlapiConnectionFunction& callback);
+      CreateBrlapiConnectionFunction callback);
 
   // Makes the controller try to reconnect (if disconnected) as if the brlapi
   // socket directory had changed.
@@ -72,8 +75,8 @@ class BrailleControllerImpl : public BrailleController {
   // Manipulated on the IO thread.
   LibBrlapiLoader libbrlapi_loader_;
   std::unique_ptr<BrlapiConnection> connection_;
-  bool started_connecting_;
-  bool connect_scheduled_;
+  bool started_connecting_ = false;
+  bool connect_scheduled_ = false;
   base::Time retry_connect_horizon_;
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;
 
@@ -83,9 +86,10 @@ class BrailleControllerImpl : public BrailleController {
   // Manipulated by the SequencedTaskRunner.
   base::FilePathWatcher file_path_watcher_;
 
-  friend struct base::DefaultSingletonTraits<BrailleControllerImpl>;
+  // Set by tests to skip libbrlapi.so loading.
+  bool skip_libbrlapi_so_load_ = false;
 
-  DISALLOW_COPY_AND_ASSIGN(BrailleControllerImpl);
+  friend struct base::DefaultSingletonTraits<BrailleControllerImpl>;
 };
 
 }  // namespace braille_display_private

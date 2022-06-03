@@ -44,9 +44,16 @@ class MultiprocessTestHelper {
     // system, using a named pipe.
     NAMED_PEER,
 #endif  //  !defined(OS_FUCHSIA)
+    // This is the same as child; however, it will never advertise any
+    // capabilities.
+    CHILD_WITHOUT_CAPABILITIES
   };
 
   MultiprocessTestHelper();
+
+  MultiprocessTestHelper(const MultiprocessTestHelper&) = delete;
+  MultiprocessTestHelper& operator=(const MultiprocessTestHelper&) = delete;
+
   ~MultiprocessTestHelper();
 
   // Start a child process and run the "main" function "named" |test_child_name|
@@ -95,8 +102,6 @@ class MultiprocessTestHelper {
   base::Process test_child_;
 
   std::unique_ptr<IsolatedConnection> isolated_connection_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiprocessTestHelper);
 };
 
 }  // namespace test

@@ -1,7 +1,0 @@
-specific_include_rules = {
-  "answer_card_web_contents\.cc": [
-    # TODO(mash): Fix. https://crbug.com/854787
-    "+ash/app_list/views/app_list_view.h",
-  ],
-}
-

@@ -27,6 +27,7 @@ TEST_F(GPUTestConfigTest, EmptyValues) {
   EXPECT_EQ(0u, config.gpu_device_id());
   EXPECT_EQ(GPUTestConfig::kBuildTypeUnknown, config.build_type());
   EXPECT_EQ(GPUTestConfig::kAPIUnknown, config.api());
+  EXPECT_EQ(GPUTestConfig::kCommandDecoderUnknown, config.command_decoder());
 }
 
 TEST_F(GPUTestConfigTest, SetGPUInfo) {
@@ -65,8 +66,13 @@ TEST_F(GPUTestConfigTest, IsValid) {
     config.AddGPUVendor(0x10de);
     EXPECT_TRUE(config.IsValid());
 
+    // Device ID of 0 is valid only on macOS.
     config.set_gpu_device_id(0);
+    config.set_os(GPUTestConfig::kOsMacBigSur);
+    EXPECT_TRUE(config.IsValid());
+    config.set_os(GPUTestConfig::kOsWin7);
     EXPECT_FALSE(config.IsValid());
+
     config.set_gpu_device_id(0x0640);
     EXPECT_TRUE(config.IsValid());
 
@@ -91,6 +97,7 @@ TEST_F(GPUTestConfigTest, Matches) {
   config.AddGPUVendor(0x10de);
   config.set_gpu_device_id(0x0640);
   config.set_api(GPUTestConfig::kAPID3D11);
+  config.set_command_decoder(GPUTestConfig::kCommandDecoderPassthrough);
   EXPECT_TRUE(config.IsValid());
 
   {  // os matching
@@ -157,6 +164,18 @@ TEST_F(GPUTestConfigTest, Matches) {
       EXPECT_FALSE(config.Matches(config2));
     }
   }
+  {  // command decoder matching
+    {
+      GPUTestConfig config2;
+      config2.set_command_decoder(GPUTestConfig::kCommandDecoderPassthrough);
+      EXPECT_TRUE(config.Matches(config2));
+    }
+    {
+      GPUTestConfig config2;
+      config2.set_command_decoder(GPUTestConfig::kCommandDecoderValidating);
+      EXPECT_FALSE(config.Matches(config2));
+    }
+  }
 }
 
 TEST_F(GPUTestConfigTest, StringMatches) {
@@ -166,6 +185,7 @@ TEST_F(GPUTestConfigTest, StringMatches) {
   config.AddGPUVendor(0x10de);
   config.set_gpu_device_id(0x0640);
   config.set_api(GPUTestConfig::kAPID3D11);
+  config.set_command_decoder(GPUTestConfig::kCommandDecoderPassthrough);
   EXPECT_TRUE(config.IsValid());
 
   EXPECT_TRUE(config.Matches(std::string()));
@@ -193,6 +213,10 @@ TEST_F(GPUTestConfigTest, StringMatches) {
   // api matching
   EXPECT_TRUE(config.Matches("D3D11"));
   EXPECT_FALSE(config.Matches("D3D9 OPENGL GLES"));
+
+  // command decoder matching
+  EXPECT_TRUE(config.Matches("PASSTHROUGH"));
+  EXPECT_FALSE(config.Matches("VALIDATING"));
 }
 
 TEST_F(GPUTestConfigTest, OverlapsWith) {

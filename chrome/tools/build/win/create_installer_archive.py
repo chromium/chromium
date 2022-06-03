@@ -12,7 +12,7 @@
 
 """
 
-import ConfigParser
+import configparser
 import fnmatch
 import glob
 import optparse
@@ -94,7 +94,8 @@ def CompressUsingLZMA(build_dir, compressed_file, input_file, verbose):
 
 
 def CopyAllFilesToStagingDir(config, distribution, staging_dir, build_dir,
-                             enable_hidpi, include_snapshotblob, verbose):
+                             enable_hidpi, include_snapshotblob,
+                             component_build, component_ffmpeg_build, verbose):
   """Copies the files required for installer archive.
   Copies all common files required for various distributions of Chromium and
   also files for the specific Chromium build specified by distribution.
@@ -117,7 +118,11 @@ def CopyAllFilesToStagingDir(config, distribution, staging_dir, build_dir,
     CopySectionFilesToStagingDir(config, 'SNAPSHOTBLOB', staging_dir, build_dir,
                                  verbose)
 
-# The 'SafeConfigParser' makes all strings lowercase - which works fine on
+  if component_build != '1' and component_ffmpeg_build == '1':
+    CopySectionFilesToStagingDir(config, 'FFMPEG', staging_dir, build_dir,
+                                 verbose)
+
+# The 'ConfigParser' makes all strings lowercase - which works fine on
 # a cases-insensitive NTFS partition, but makes no sense when trying to build
 # mini_installer.exe on a linux box. This function can be used to make glob
 # matches case insensitive to bypass this issue.
@@ -204,7 +209,7 @@ def Readconfig(input_file, current_version):
   variables['ChromeDir'] = CHROME_DIR
   variables['VersionDir'] = os.path.join(variables['ChromeDir'],
                                           current_version)
-  config = ConfigParser.SafeConfigParser(variables)
+  config = configparser.ConfigParser(variables)
   config.read(input_file)
   return config
 
@@ -268,9 +273,10 @@ def CreateArchiveFile(options, staging_dir, current_version, prev_version):
 
     # Finally, write the depfile referencing the inputs.
     with open(options.depfile, 'wb') as f:
-      f.write(path_fixup(os.path.relpath(archive_file, options.build_dir)) +
-              ': \\\n')
-      f.write('  ' + ' \\\n  '.join(path_fixup(x) for x in g_archive_inputs))
+      f.write((path_fixup(os.path.relpath(archive_file, options.build_dir)) +
+              ': \\\n').encode())
+      f.write(('  ' + ' \\\n  '.join(path_fixup(x)
+              for x in g_archive_inputs)).encode())
 
   # It is important to use abspath to create the path to the directory because
   # if you use a relative path without any .. sequences then 7za.exe uses the
@@ -414,7 +420,7 @@ def CopyAndAugmentManifest(build_dir, output_dir, manifest_name,
 
   insert_line = -1
   insert_pos = -1
-  for i in xrange(len(manifest_lines)):
+  for i in range(len(manifest_lines)):
     insert_pos = manifest_lines[i].find(insert_before)
     if insert_pos != -1:
       insert_line = i
@@ -538,6 +544,8 @@ def main(options):
                            staging_dir, options.build_dir,
                            options.enable_hidpi,
                            options.include_snapshotblob,
+                           options.component_build,
+                           options.component_ffmpeg_build,
                            options.verbose)
 
   if options.component_build == '1':
@@ -603,6 +611,8 @@ def _ParseOptions():
       help='Whether to include the V8 snapshot blob.')
   parser.add_option('--component_build', default='0',
       help='Whether this archive is packaging a component build.')
+  parser.add_option('--component_ffmpeg_build', default='0',
+      help='Whether this archive is packaging with ffmpeg component build.')
   parser.add_option('--skip_archive_compression',
       action='store_true', default=False,
       help='This will turn off compression of chrome.7z into chrome.packed.7z '

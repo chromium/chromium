@@ -9,8 +9,18 @@
 
 #include "base/compiler_specific.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
+#include "chrome/browser/buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
+
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+#include <string.h>
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/updater/update_service.h"  // nogncheck
+
+class BrowserUpdaterClient;
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 
 @class KeystoneObserver;
 
@@ -18,9 +28,12 @@
 // About/Help page.
 class VersionUpdaterMac : public VersionUpdater {
  public:
+  VersionUpdaterMac(const VersionUpdaterMac&) = delete;
+  VersionUpdaterMac& operator=(const VersionUpdaterMac&) = delete;
+
   // VersionUpdater implementation.
-  void CheckForUpdate(const StatusCallback& status_callback,
-                      const PromoteCallback& promote_callback) override;
+  void CheckForUpdate(StatusCallback status_callback,
+                      PromoteCallback promote_callback) override;
   void PromoteUpdater() const override;
 
   // Process status updates received from Keystone. The dictionary will contain
@@ -40,6 +53,19 @@ class VersionUpdaterMac : public VersionUpdater {
   // Update the visibility state of promote button.
   void UpdateShowPromoteButton();
 
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+  // Updates the status from the Chromium Updater.
+  void UpdateStatusFromChromiumUpdater(
+      VersionUpdater::StatusCallback status_callback,
+      VersionUpdater::PromoteCallback promote_callback,
+      updater::UpdateService::UpdateState update_state);
+
+  void UpdatePromotionStatusFromChromiumUpdater(
+      VersionUpdater::PromoteCallback promote_callback,
+      bool enable_promote_button,
+      const std::string& version);
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+
   // Callback used to communicate update status to the client.
   StatusCallback status_callback_;
 
@@ -52,8 +78,12 @@ class VersionUpdaterMac : public VersionUpdater {
   // The observer that will receive keystone status updates.
   base::scoped_nsobject<KeystoneObserver> keystone_observer_;
 
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterMac);
+#if BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
+  // Instance of the BrowserUpdaterClient used to update the browser with the
+  // new updater.
+  scoped_refptr<BrowserUpdaterClient> update_client_;
+  base::WeakPtrFactory<VersionUpdaterMac> weak_factory_{this};
+#endif  // BUILDFLAG(ENABLE_CHROMIUM_UPDATER)
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_VERSION_UPDATER_MAC_H_
-

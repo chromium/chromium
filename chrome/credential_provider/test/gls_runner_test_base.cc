@@ -4,6 +4,8 @@
 
 #include "gls_runner_test_base.h"
 
+#include <memory>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
@@ -49,11 +51,11 @@ MULTIPROCESS_TEST_MAIN(gls_main) {
   // If a start event name is specified, the process waits for an event from the
   // tester telling it that it can start running.
   if (command_line->HasSwitch(switches::kStartGlsEventName)) {
-    base::string16 start_event_name =
+    std::wstring start_event_name =
         command_line->GetSwitchValueNative(switches::kStartGlsEventName);
     if (!start_event_name.empty()) {
-      base::win::ScopedHandle start_event_handle(::CreateEvent(
-          nullptr, false, false, base::UTF16ToWide(start_event_name).c_str()));
+      base::win::ScopedHandle start_event_handle(
+          ::CreateEvent(nullptr, false, false, start_event_name.c_str()));
       if (start_event_handle.IsValid()) {
         base::WaitableEvent start_event(std::move(start_event_handle));
         start_event.Wait();
@@ -148,6 +150,21 @@ void GlsRunnerTestBase::SetUp() {
   // Make sure not to read random GCPW settings from the machine that is running
   // the tests.
   InitializeRegistryOverrideForTesting(&registry_override_);
+
+  // Override location of "Program Files" system folder and its x86 version so
+  // we don't modify local machine settings.
+  ASSERT_TRUE(scoped_temp_program_files_dir_.CreateUniqueTempDir());
+  program_files_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_PROGRAM_FILES, scoped_temp_program_files_dir_.GetPath());
+  ASSERT_TRUE(scoped_temp_program_files_x86_dir_.CreateUniqueTempDir());
+  program_files_x86_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_PROGRAM_FILESX86, scoped_temp_program_files_x86_dir_.GetPath());
+
+  // Also override location of "ProgramData" system folder as we store user
+  // policies there.
+  ASSERT_TRUE(scoped_temp_progdata_dir_.CreateUniqueTempDir());
+  programdata_override_ = std::make_unique<base::ScopedPathOverride>(
+      base::DIR_COMMON_APP_DATA, scoped_temp_progdata_dir_.GetPath());
 }
 
 void GlsRunnerTestBase::TearDown() {
@@ -309,6 +326,11 @@ HRESULT GlsRunnerTestBase::InternalInitializeProvider(
          other_user_tile_available)) {
       continue;
     }
+
+    // Don't add the gaia special account into the fake user array.
+    if (sid_and_username.second == kDefaultGaiaAccountName)
+      continue;
+
     fake_user_array_.AddUser(sid_and_username.first.c_str(),
                              sid_and_username.second.c_str());
   }
@@ -417,9 +439,34 @@ HRESULT GlsRunnerTestBase::ApplyProviderFilter(
   fake_associated_user_validator_.StartRefreshingTokenHandleValidity();
 
   // Perform initial filter code.
-  hr = filter->Filter(cpus_, 0, nullptr, nullptr, 0);
+  GUID CLSID_SystemCredProvider1 = {
+      0x11111111,
+      0x2222,
+      0x3333,
+      {0x44, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55}};
+  GUID CLSID_SystemCredProvider2 = {
+      0x11111211,
+      0x2122,
+      0x3333,
+      {0x44, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55, 0x55}};
+  GUID provider_guids[] = {CLSID_GaiaCredentialProvider,
+                           CLSID_SystemCredProvider1,
+                           CLSID_SystemCredProvider2};
+  BOOL provider_allow[] = {TRUE, TRUE, TRUE};
+  DWORD provider_count = 3;
+  hr = filter->Filter(cpus_, 0, provider_guids, provider_allow, provider_count);
+
+  // None of the system CLSID should be filtered out.
+  EXPECT_EQ(TRUE, provider_allow[1]);
+  EXPECT_EQ(TRUE, provider_allow[2]);
+
+  BOOL all_providers_allowed =
+      provider_allow[0] && provider_allow[1] && provider_allow[2];
+
   if (FAILED(hr))
     return hr;
+  else if (!all_providers_allowed)
+    return E_FAIL;
 
   // Apply remote credentials if any.
   if (pcpcs_in && pcpcs_out && update_remote_credentials_hr)
@@ -488,14 +535,14 @@ HRESULT GlsRunnerTestBase::GetFakeGlsCommandline(
     const std::string& gaia_id_override,
     const std::string& gaia_password,
     const std::string& full_name_override,
-    const base::string16& start_gls_event_name,
+    const std::wstring& start_gls_event_name,
     bool ignore_expected_gaia_id,
     base::CommandLine* command_line) {
   *command_line = base::GetMultiProcessTestChildBaseCommandLine();
   command_line->AppendSwitchASCII(::switches::kTestChildProcess, "gls_main");
   command_line->AppendSwitchASCII(switches::kGlsUserEmail, gls_email);
   command_line->AppendSwitchNative(switches::kDefaultExitCode,
-                                   base::NumberToString16(default_exit_code));
+                                   base::NumberToWString(default_exit_code));
 
   if (ignore_expected_gaia_id)
     command_line->AppendSwitch(switches::kIgnoreExpectedGaiaId);
@@ -535,13 +582,14 @@ HRESULT GlsRunnerTestBase::FinishLogonProcess(
 HRESULT GlsRunnerTestBase::FinishLogonProcess(
     bool expected_success,
     bool expected_credentials_change_fired,
-    const base::string16& expected_error_message) {
+    const std::wstring& expected_error_message) {
   // If no logon process was started, there is nothing to finish.
   if (!logon_process_started_successfully_)
     return S_OK;
 
   Microsoft::WRL::ComPtr<ICredentialProviderCredential> local_testing_cred =
       testing_cred_;
+
   // Release ownership on the testing_cred_ which should be finishing.
   testing_cred_.Reset();
 
@@ -549,7 +597,11 @@ HRESULT GlsRunnerTestBase::FinishLogonProcess(
       expected_success, expected_credentials_change_fired,
       expected_error_message, local_testing_cred);
 
-  EXPECT_EQ(hr, S_OK);
+  if (!fake_os_user_manager()->DoesOperationFail(
+          FAILEDOPERATIONS::CHANGE_PASSWORD)) {
+    EXPECT_EQ(hr, S_OK);
+  }
+
   if (FAILED(hr))
     return hr;
 
@@ -577,7 +629,7 @@ HRESULT GlsRunnerTestBase::FinishLogonProcessWithCred(
 HRESULT GlsRunnerTestBase::FinishLogonProcessWithCred(
     bool expected_success,
     bool expected_credentials_change_fired,
-    const base::string16& expected_error_message,
+    const std::wstring& expected_error_message,
     const Microsoft::WRL::ComPtr<ICredentialProviderCredential>&
         local_testing_cred) {
   // If no logon process was started, there is nothing to finish.
@@ -629,11 +681,21 @@ HRESULT GlsRunnerTestBase::FinishLogonProcessWithCred(
   if (FAILED(hr))
     return hr;
 
-  EXPECT_EQ(nullptr, status_text);
-  EXPECT_EQ(CPSI_SUCCESS, status_icon);
-  EXPECT_EQ(CPGSR_RETURN_CREDENTIAL_FINISHED, cpgsr);
-  EXPECT_LT(0u, cpcs.cbSerialization);
-  EXPECT_NE(nullptr, cpcs.rgbSerialization);
+  // Credentials not valid, login doesn't go through.
+  if (test_cred->AreCredentialsValid()) {
+    EXPECT_EQ(nullptr, status_text);
+    EXPECT_EQ(CPSI_SUCCESS, status_icon);
+    EXPECT_EQ(CPGSR_RETURN_CREDENTIAL_FINISHED, cpgsr);
+    EXPECT_LT(0u, cpcs.cbSerialization);
+    EXPECT_NE(nullptr, cpcs.rgbSerialization);
+  } else {
+    EXPECT_EQ(CPSI_ERROR, status_icon);
+    EXPECT_EQ(CPGSR_RETURN_NO_CREDENTIAL_FINISHED, cpgsr);
+    // The credential provider has not serialized a credential,
+    // but has completed its work. This will force the logon UI to
+    // return, which will call UnAdvise for all the credential providers.
+    return E_FAIL;
+  }
 
   // Check that values were propagated to the provider.
   if (expected_credentials_change_fired) {

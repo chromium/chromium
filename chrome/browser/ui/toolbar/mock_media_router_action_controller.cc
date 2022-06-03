@@ -4,7 +4,7 @@
 
 #include "chrome/browser/ui/toolbar/mock_media_router_action_controller.h"
 
-#include "chrome/browser/media/router/media_router_factory.h"
+#include "components/media_router/browser/media_router_factory.h"
 
 MockMediaRouterActionController::MockMediaRouterActionController(
     Profile* profile)

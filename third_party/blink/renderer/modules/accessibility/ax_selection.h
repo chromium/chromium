@@ -9,8 +9,9 @@
 
 #include <ostream>
 
-#include <base/logging.h>
-#include <base/optional.h>
+#include "base/dcheck_is_on.h"
+#include "base/logging.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/html/forms/text_control_element.h"
@@ -26,14 +27,11 @@ namespace blink {
 // selection will shrink or extend the |AXSelection| to encompass endpoints that
 // are in the DOM.
 // Conversely, if a DOM selection is converted to an |AXSelection| via the
-// |AsSelection| method, but the endpoints of the DOM selection are not present
-// in the accessibility tree, e.g. they are aria-hidden, determines whether the
-// conversion will shrink or extend the DOM selection to encompass endpoints
-// that are in the accessibility tree.
-enum class AXSelectionBehavior {
-  kShrinkToValidDOMRange,
-  kExtendToValidDOMRange
-};
+// |FromSelection| method, but the endpoints of the DOM selection are not
+// present in the accessibility tree, e.g. they are aria-hidden, determines
+// whether the conversion will shrink or extend the DOM selection to encompass
+// endpoints that are in the accessibility tree.
+enum class AXSelectionBehavior { kShrinkToValidRange, kExtendToValidRange };
 
 class MODULES_EXPORT AXSelection final {
   DISALLOW_NEW();
@@ -45,13 +43,13 @@ class MODULES_EXPORT AXSelection final {
 
   static AXSelection FromCurrentSelection(
       const Document&,
-      const AXSelectionBehavior = AXSelectionBehavior::kExtendToValidDOMRange);
+      const AXSelectionBehavior = AXSelectionBehavior::kExtendToValidRange);
 
   static AXSelection FromCurrentSelection(const TextControlElement&);
 
   static AXSelection FromSelection(
       const SelectionInDOMTree&,
-      const AXSelectionBehavior = AXSelectionBehavior::kExtendToValidDOMRange);
+      const AXSelectionBehavior = AXSelectionBehavior::kExtendToValidRange);
 
   AXSelection(const AXSelection&) = default;
   AXSelection& operator=(const AXSelection&) = default;
@@ -68,13 +66,13 @@ class MODULES_EXPORT AXSelection final {
 
   const SelectionInDOMTree AsSelection(
       const AXSelectionBehavior =
-          AXSelectionBehavior::kExtendToValidDOMRange) const;
+          AXSelectionBehavior::kExtendToValidRange) const;
 
   // Tries to set the DOM selection to this. Returns |false| if the selection
   // has been cancelled via the "selectionstart" event or if the selection could
   // not be set for any other reason.
   bool Select(
-      const AXSelectionBehavior = AXSelectionBehavior::kExtendToValidDOMRange);
+      const AXSelectionBehavior = AXSelectionBehavior::kExtendToValidRange);
 
   // Returns a string representation of this object.
   String ToString() const;
@@ -97,10 +95,14 @@ class MODULES_EXPORT AXSelection final {
 
   AXSelection();
 
+  // If a layout is pending, update the style and layout along with the DOM
+  // tree and style versions of the AXSelection and associated AXPositions.
+  void UpdateSelectionIfNecessary();
+
   // Determines whether this selection is targeted to the contents of a text
   // field, and returns the start and end text offsets, as well as its
   // direction. |start| should always be less than equal to |end|.
-  base::Optional<TextControlSelection> AsTextControlSelection() const;
+  absl::optional<TextControlSelection> AsTextControlSelection() const;
 
   // The |AXPosition| where the selection starts.
   AXPosition base_;

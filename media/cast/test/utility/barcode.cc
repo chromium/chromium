@@ -24,8 +24,8 @@
 #include <algorithm>
 #include <vector>
 
+#include "base/check_op.h"
 #include "base/containers/circular_deque.h"
-#include "base/logging.h"
 #include "media/base/video_frame.h"
 #include "media/cast/test/utility/barcode.h"
 

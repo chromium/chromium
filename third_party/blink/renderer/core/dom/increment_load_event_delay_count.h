@@ -5,9 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_INCREMENT_LOAD_EVENT_DELAY_COUNT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_INCREMENT_LOAD_EVENT_DELAY_COUNT_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -17,12 +14,15 @@ namespace blink {
 class Document;
 
 // A helper class that will increment a document's loadEventDelayCount on
-// contruction and decrement it on destruction (semantics similar to RefPtr).
+// construction and decrement it on destruction (semantics similar to RefPtr).
 class CORE_EXPORT IncrementLoadEventDelayCount {
   USING_FAST_MALLOC(IncrementLoadEventDelayCount);
 
  public:
   explicit IncrementLoadEventDelayCount(Document&);
+  IncrementLoadEventDelayCount(const IncrementLoadEventDelayCount&) = delete;
+  IncrementLoadEventDelayCount& operator=(const IncrementLoadEventDelayCount&) =
+      delete;
   ~IncrementLoadEventDelayCount();
 
   // Decrements the loadEventDelayCount and checks load event synchronously,
@@ -37,8 +37,7 @@ class CORE_EXPORT IncrementLoadEventDelayCount {
 
  private:
   WeakPersistent<Document> document_;
-  DISALLOW_COPY_AND_ASSIGN(IncrementLoadEventDelayCount);
 };
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_INCREMENT_LOAD_EVENT_DELAY_COUNT_H_

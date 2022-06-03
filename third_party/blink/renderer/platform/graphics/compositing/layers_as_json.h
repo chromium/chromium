@@ -26,9 +26,10 @@ enum {
   kLayerTreeNormal = 0,
   // Dump extra debugging info like layer addresses.
   kLayerTreeIncludesDebugInfo = 1 << 0,
-  kLayerTreeIncludesPaintInvalidations = 1 << 1,
-  kLayerTreeIncludesPaintingPhases = 1 << 2,
-  kLayerTreeIncludesAllLayers = 1 << 3,
+  kLayerTreeIncludesInvalidations = 1 << 1,
+  kLayerTreeIncludesDetailedInvalidations = 1 << 2,
+  kLayerTreeIncludesPaintingPhases = 1 << 3,
+  kLayerTreeIncludesAllLayers = 1 << 4,
   kLayerTreeIncludesCompositingReasons = 1 << 5,
   kLayerTreeIncludesPaintRecords = 1 << 6,
   // Outputs all layers as a layer tree. The default is output children
@@ -66,7 +67,7 @@ class PLATFORM_EXPORT LayersAsJSON {
 };
 
 PLATFORM_EXPORT std::unique_ptr<JSONObject> CCLayerAsJSON(
-    const cc::Layer* layer,
+    const cc::Layer& layer,
     LayerTreeFlags flags);
 
 }  // namespace blink

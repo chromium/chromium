@@ -5,9 +5,9 @@
 #include "ios/chrome/app/application_delegate/mock_tab_opener.h"
 
 #include "base/ios/block_types.h"
-#include "base/mac/scoped_block.h"
 #include "ios/chrome/app/application_mode.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
+#import "net/base/mac/url_conversions.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
@@ -15,7 +15,9 @@
 #error "This file requires ARC support."
 #endif
 
-@implementation MockTabOpener
+@implementation MockTabOpener {
+  std::vector<GURL> _URLs;
+}
 
 - (void)dismissModalsAndOpenSelectedTabInMode:
             (ApplicationModeForTabOpening)targetMode
@@ -26,19 +28,28 @@
   _urlLoadParams = urlLoadParams;
   _applicationMode = targetMode;
   _completionBlock = [completion copy];
+  _URLs.push_back(urlLoadParams.web_params.url);
+}
+
+- (void)dismissModalsAndOpenMultipleTabsInMode:
+            (ApplicationModeForTabOpening)targetMode
+                                          URLs:(const std::vector<GURL>&)URLs
+                                dismissOmnibox:(BOOL)dismissOmnibox
+                                    completion:(ProceduralBlock)completion {
+  _URLs = URLs;
 }
 
 - (void)resetURL {
   _urlLoadParams.web_params.url = _urlLoadParams.web_params.url.EmptyGURL();
 }
 
-- (void)openTabFromLaunchOptions:(NSDictionary*)launchOptions
-              startupInformation:(id<StartupInformation>)startupInformation
-                        appState:(AppState*)appState {
+- (void)openTabFromLaunchWithParams:(NSDictionary*)launchOptions
+                 startupInformation:(id<StartupInformation>)startupInformation
+                           appState:(AppState*)appState {
   // Stub.
 }
 
-- (BOOL)shouldOpenNTPTabOnActivationOfTabModel:(TabModel*)tabModel {
+- (BOOL)shouldOpenNTPTabOnActivationOfBrowser:(Browser*)browser {
   // Stub.
   return YES;
 }
@@ -47,12 +58,6 @@
     (NTPTabOpeningPostOpeningAction)action {
   // Stub
   return nil;
-}
-
-- (BOOL)shouldCompletePaymentRequestOnCurrentTab:
-    (id<StartupInformation>)startupInformation {
-  // Stub.
-  return NO;
 }
 
 - (BOOL)URLIsOpenedInRegularMode:(const GURL&)URL {

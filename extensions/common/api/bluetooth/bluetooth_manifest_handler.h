@@ -22,10 +22,14 @@ namespace extensions {
 class BluetoothManifestHandler : public ManifestHandler {
  public:
   BluetoothManifestHandler();
+
+  BluetoothManifestHandler(const BluetoothManifestHandler&) = delete;
+  BluetoothManifestHandler& operator=(const BluetoothManifestHandler&) = delete;
+
   ~BluetoothManifestHandler() override;
 
   // ManifestHandler overrides.
-  bool Parse(Extension* extension, base::string16* error) override;
+  bool Parse(Extension* extension, std::u16string* error) override;
   ManifestPermission* CreatePermission() override;
   ManifestPermission* CreateInitialRequiredPermission(
       const Extension* extension) override;
@@ -33,8 +37,6 @@ class BluetoothManifestHandler : public ManifestHandler {
  private:
   // ManifestHandler overrides.
   base::span<const char* const> Keys() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothManifestHandler);
 };
 
 }  // namespace extensions

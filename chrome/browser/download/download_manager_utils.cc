@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_manager_utils.h"
 
 #include "base/bind.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_offline_content_provider.h"
@@ -42,6 +43,17 @@ InProgressManagerMap& GetInProgressManagerMap() {
   return *map;
 }
 
+// Returns a callback to be invoked during `RetrieveInProgressDownloadManager()`
+// to provide an opportunity to cache a pointer to the in progress download
+// manager being released.
+base::RepeatingCallback<void(download::InProgressDownloadManager*)>&
+GetRetrieveInProgressDownloadManagerCallback() {
+  static base::NoDestructor<
+      base::RepeatingCallback<void(download::InProgressDownloadManager*)>>
+      callback;
+  return *callback;
+}
+
 // Ignores origin security check. DownloadManagerImpl will provide its own
 // implementation when InProgressDownloadManager object is passed to it.
 bool IgnoreOriginSecurityCheck(const GURL& url) {
@@ -52,8 +64,7 @@ bool IgnoreOriginSecurityCheck(const GURL& url) {
 // is created, and cause the download request to fail. This method helps us
 // ensure that the DownloadManager will be created after profile creation.
 void GetDownloadManagerOnProfileCreation(Profile* profile) {
-  content::DownloadManager* manager =
-      content::BrowserContext::GetDownloadManager(profile);
+  content::DownloadManager* manager = profile->GetDownloadManager();
   DCHECK(manager);
 }
 
@@ -70,6 +81,8 @@ DownloadManagerUtils::RetrieveInProgressDownloadManager(Profile* profile) {
   ProfileKey* key = profile->GetProfileKey();
   GetInProgressDownloadManager(key);
   auto& map = GetInProgressManagerMap();
+  if (GetRetrieveInProgressDownloadManagerCallback())
+    GetRetrieveInProgressDownloadManagerCallback().Run(map[key].get());
   return map[key].release();
 }
 
@@ -127,4 +140,12 @@ DownloadManagerUtils::GetInProgressDownloadManager(ProfileKey* key) {
     map[key] = std::move(in_progress_manager);
   }
   return map[key].get();
+}
+
+// static
+void DownloadManagerUtils::
+    SetRetrieveInProgressDownloadManagerCallbackForTesting(
+        base::RepeatingCallback<void(download::InProgressDownloadManager*)>
+            callback) {
+  GetRetrieveInProgressDownloadManagerCallback() = callback;
 }

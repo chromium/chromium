@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_location.h"
-#include "third_party/blink/renderer/modules/service_worker/respond_with_observer.h"
+#include "third_party/blink/renderer/modules/payments/can_make_payment_respond_with_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -24,7 +24,7 @@ CanMakePaymentEvent* CanMakePaymentEvent::Create(
 CanMakePaymentEvent* CanMakePaymentEvent::Create(
     const AtomicString& type,
     const CanMakePaymentEventInit* initializer,
-    RespondWithObserver* respond_with_observer,
+    CanMakePaymentRespondWithObserver* respond_with_observer,
     WaitUntilObserver* wait_until_observer) {
   return MakeGarbageCollected<CanMakePaymentEvent>(
       type, initializer, respond_with_observer, wait_until_observer);
@@ -66,25 +66,30 @@ void CanMakePaymentEvent::respondWith(ScriptState* script_state,
 
   stopImmediatePropagation();
   if (observer_) {
-    observer_->RespondWith(script_state, script_promise, exception_state);
+    observer_->ObservePromiseResponse(script_state, script_promise,
+                                      exception_state);
   }
 }
 
-void CanMakePaymentEvent::Trace(blink::Visitor* visitor) {
+void CanMakePaymentEvent::Trace(Visitor* visitor) const {
   visitor->Trace(method_data_);
   visitor->Trace(modifiers_);
   visitor->Trace(observer_);
   ExtendableEvent::Trace(visitor);
 }
 
+// TODO(crbug.com/1070871): Use fooOr() in members' initializers.
 CanMakePaymentEvent::CanMakePaymentEvent(
     const AtomicString& type,
     const CanMakePaymentEventInit* initializer,
-    RespondWithObserver* respond_with_observer,
+    CanMakePaymentRespondWithObserver* respond_with_observer,
     WaitUntilObserver* wait_until_observer)
     : ExtendableEvent(type, initializer, wait_until_observer),
-      top_origin_(initializer->topOrigin()),
-      payment_request_origin_(initializer->paymentRequestOrigin()),
+      top_origin_(initializer->hasTopOrigin() ? initializer->topOrigin()
+                                              : String()),
+      payment_request_origin_(initializer->hasPaymentRequestOrigin()
+                                  ? initializer->paymentRequestOrigin()
+                                  : String()),
       method_data_(initializer->hasMethodData()
                        ? initializer->methodData()
                        : HeapVector<Member<PaymentMethodData>>()),

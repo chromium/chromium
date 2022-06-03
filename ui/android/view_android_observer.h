@@ -19,6 +19,9 @@ class UI_ANDROID_EXPORT ViewAndroidObserver {
   // is not sent if view is already in detached state.
   virtual void OnDetachedFromWindow() = 0;
 
+  // Notifies the view has been destroyed.
+  virtual void OnViewAndroidDestroyed() {}
+
  protected:
   virtual ~ViewAndroidObserver() {}
 };

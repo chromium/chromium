@@ -82,10 +82,10 @@ test(function() {
     assert_calc_expression("calc(10mm + 10mm)", (20 * cssPixelsPerMillimeter));
     assert_calc_expression("calc(20mm)", (20 * cssPixelsPerMillimeter));
     assert_calc_expression("calc(10 + 10)", 20);
-    assert_calc_expression("calc(10mm + 10)", (10 * cssPixelsPerMillimeter) + 10);
-    assert_calc_expression("calc(10% + 10)", (10 * viewportWidthPercent()) + 10);
-    assert_calc_expression("calc(1cm + 2in + 1cm + 2)", (2 * cssPixelsPerInch) + (2 * cssPixelsPerCentimeter) + 2);
-    assert_calc_expression("calc(1cm + 2 + 1cm + 2in)", (2 * cssPixelsPerInch) + (2 * cssPixelsPerCentimeter) + 2);
-    assert_calc_expression("calc(10% + 10 + 2% + 10pc)", (12 * viewportWidthPercent()) + 10 + (10 * cssPixelsPerPica));
+    assert_calc_expression("calc(10mm + 10px)", (10 * cssPixelsPerMillimeter) + 10);
+    assert_calc_expression("calc(10% + 10px)", (10 * viewportWidthPercent()) + 10);
+    assert_calc_expression("calc(1cm + 2in + 1cm + 2px)", (2 * cssPixelsPerInch) + (2 * cssPixelsPerCentimeter) + 2);
+    assert_calc_expression("calc(1cm + 2px + 1cm + 2in)", (2 * cssPixelsPerInch) + (2 * cssPixelsPerCentimeter) + 2);
+    assert_calc_expression("calc(10% + 10px + 2% + 10pc)", (12 * viewportWidthPercent()) + 10 + (10 * cssPixelsPerPica));
 }, "Tests calc() on presentation and non-presentation attr in svgLength");
 </script>

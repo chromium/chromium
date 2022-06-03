@@ -3,13 +3,12 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/version.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -76,8 +75,7 @@ void WriteComputedHashes(
   for (const auto& resource : contents) {
     std::vector<std::string> hashes =
         ComputedHashes::GetHashesForContent(resource.second, block_size);
-    computed_hashes_data[resource.first] =
-        ComputedHashes::HashInfo(block_size, hashes);
+    computed_hashes_data.Add(resource.first, block_size, std::move(hashes));
   }
 
   base::CreateDirectory(extension_root.Append(kMetadataFolder));
@@ -91,6 +89,10 @@ void WriteComputedHashes(
 class ContentVerifyJobUnittest : public ExtensionsTest {
  public:
   ContentVerifyJobUnittest() {}
+
+  ContentVerifyJobUnittest(const ContentVerifyJobUnittest&) = delete;
+  ContentVerifyJobUnittest& operator=(const ContentVerifyJobUnittest&) = delete;
+
   ~ContentVerifyJobUnittest() override {}
 
   // Helper to get files from our subdirectory in the general extensions test
@@ -158,7 +160,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
         observer.WaitForOnHashesReady();
         run_content_read_step(verify_job.get(), &resource_contents);
         break;
-    };
+    }
     return observer.WaitForJobFinished();
   }
 
@@ -168,6 +170,14 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
       std::string& resource_contents) {
     return RunContentVerifyJob(extension, resource_path, resource_contents,
                                kNone);
+  }
+
+  void StartContentVerifyJob(const Extension& extension,
+                             const base::FilePath& resource_path) {
+    auto verify_job = base::MakeRefCounted<ContentVerifyJob>(
+        extension.id(), extension.version(), extension.path(), resource_path,
+        base::DoNothing());
+    StartJob(verify_job);
   }
 
   // Returns an extension after extracting and loading it from a .zip file.
@@ -204,7 +214,7 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   // extension resources in |extension_path|, including manifest.json.
   scoped_refptr<Extension> CreateAndLoadTestExtensionToTempDir(
       base::ScopedTempDir* temp_dir,
-      base::Optional<std::map<base::FilePath, std::string>>
+      absl::optional<std::map<base::FilePath, std::string>>
           resources_for_hashes) {
     if (!temp_dir->CreateUniqueTempDir()) {
       ADD_FAILURE() << "Failed to create temp dir.";
@@ -219,7 +229,8 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
 
     std::string error;
     scoped_refptr<Extension> extension = file_util::LoadExtension(
-        extension_root, Manifest::INTERNAL, /*flags=*/0, &error);
+        extension_root, mojom::ManifestLocation::kInternal, /*flags=*/0,
+        &error);
     EXPECT_NE(nullptr, extension.get()) << " error:'" << error << "'";
 
     content_verifier_->OnExtensionLoaded(&testing_context_, extension.get());
@@ -234,8 +245,8 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
 
  private:
   void StartJob(scoped_refptr<ContentVerifyJob> job) {
-    base::PostTask(FROM_HERE, {content::BrowserThread::IO},
-                   base::BindOnce(&ContentVerifyJob::Start, job,
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(&ContentVerifyJob::Start, job,
                                   base::Unretained(content_verifier_.get())));
   }
 
@@ -244,8 +255,6 @@ class ContentVerifyJobUnittest : public ExtensionsTest {
   MockContentVerifierDelegate* content_verifier_delegate_ =
       nullptr;  // Owned by |content_verifier_|.
   content::TestBrowserContext testing_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifyJobUnittest);
 };
 
 // Tests that deleted legitimate files trigger content verification failure.
@@ -274,8 +283,7 @@ TEST_F(ContentVerifyJobUnittest, DeletedAndMissingFiles) {
   {
     // Once background.js is deleted, verification will result in HASH_MISMATCH.
     // Delete the existent file first.
-    EXPECT_TRUE(
-        base::DeleteFile(unzipped_path.Append(existent_resource_path), false));
+    EXPECT_TRUE(base::DeleteFile(unzipped_path.Append(existent_resource_path)));
 
     // Deleted file will serve empty contents.
     std::string empty_contents;
@@ -355,8 +363,7 @@ void WriteIncorrectComputedHashes(const base::FilePath& extension_path,
   ASSERT_TRUE(
       base::PathExists(file_util::GetComputedHashesPath(extension_path)));
 
-  base::DeleteFile(file_util::GetComputedHashesPath(extension_path),
-                   false /* recursive */);
+  base::DeleteFile(file_util::GetComputedHashesPath(extension_path));
 
   int block_size = extension_misc::kContentVerificationDefaultBlockSize;
   ComputedHashes::Data incorrect_computed_hashes_data;
@@ -365,8 +372,8 @@ void WriteIncorrectComputedHashes(const base::FilePath& extension_path,
   const std::string kFakeContents = "fake contents";
   std::vector<std::string> hashes =
       ComputedHashes::GetHashesForContent(kFakeContents, block_size);
-  incorrect_computed_hashes_data[resource_path] =
-      ComputedHashes::HashInfo(block_size, hashes);
+  incorrect_computed_hashes_data.Add(resource_path, block_size,
+                                     std::move(hashes));
 
   ASSERT_TRUE(
       ComputedHashes(std::move(incorrect_computed_hashes_data))
@@ -380,8 +387,7 @@ void WriteEmptyComputedHashes(const base::FilePath& extension_path) {
   ASSERT_TRUE(
       base::PathExists(file_util::GetComputedHashesPath(extension_path)));
 
-  base::DeleteFile(file_util::GetComputedHashesPath(extension_path),
-                   false /* recursive */);
+  base::DeleteFile(file_util::GetComputedHashesPath(extension_path));
 
   ComputedHashes::Data incorrect_computed_hashes_data;
 
@@ -412,7 +418,7 @@ TEST_F(ContentVerifyJobUnittest, DeletedResourceAndCorruptedComputedHashes) {
   base::FilePath unzipped_path = temp_dir.GetPath();
   WriteIncorrectComputedHashes(unzipped_path, resource_path);
   EXPECT_TRUE(
-      base::DeleteFile(unzipped_path.Append(base::FilePath(kResource)), false));
+      base::DeleteFile(unzipped_path.Append(base::FilePath(kResource))));
   content_verifier()->ClearCacheForTesting();
 
   {
@@ -445,7 +451,7 @@ TEST_F(ContentVerifyJobUnittest, DeletedResourceAndCleanedComputedHashes) {
   base::FilePath unzipped_path = temp_dir.GetPath();
   WriteEmptyComputedHashes(unzipped_path);
   EXPECT_TRUE(
-      base::DeleteFile(unzipped_path.Append(base::FilePath(kResource)), false));
+      base::DeleteFile(unzipped_path.Append(base::FilePath(kResource))));
   content_verifier()->ClearCacheForTesting();
 
   {
@@ -506,8 +512,7 @@ TEST_F(ContentVerifyJobUnittest, DifferentSizedFiles) {
       {"8191.js", 8191}, {"8193.js", 8193},
   };
   for (const auto& file_to_test : kFilesToTest) {
-    base::FilePath resource_path =
-        base::FilePath::FromUTF8Unsafe(file_to_test.name);
+    base::FilePath resource_path = base::FilePath::FromASCII(file_to_test.name);
     std::string contents;
     base::ReadFileToString(unzipped_path.AppendASCII(file_to_test.name),
                            &contents);
@@ -545,6 +550,65 @@ using ContentVerifyJobWithoutSignedHashesUnittest = ContentVerifyJobUnittest;
 // verified_contents.json. Typically these are self-hosted extension, since
 // there is no possibility for them to use private Chrome Web Store key to sign
 // hashes.
+
+// Tests that without verified_contents.json file computes_hashes.json file is
+// loaded correctly and appropriate error is reported when load fails.
+TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ComputedHashesLoad) {
+  base::ScopedTempDir temp_dir;
+  content_verifier_delegate()->SetVerifierSourceType(
+      ContentVerifierDelegate::VerifierSourceType::UNSIGNED_HASHES);
+
+  // Simple resource to trigger content verify job start and hashes load.
+  const base::FilePath kResourcePath(FILE_PATH_LITERAL("script.js"));
+  const std::string kResourceContents = "console.log('Nothing special');";
+  std::map<base::FilePath, std::string> resource_map = {
+      {kResourcePath, kResourceContents}};
+
+  // Contents of corrupted computed_hashes.json file.
+  const std::string kCorruptedContents = "not a json";
+
+  scoped_refptr<Extension> extension =
+      CreateAndLoadTestExtensionToTempDir(&temp_dir, std::move(resource_map));
+  ASSERT_TRUE(extension);
+  base::FilePath unzipped_path = temp_dir.GetPath();
+
+  {
+    // Case where computed_hashes.json is on its place and correct.
+    TestContentVerifySingleJobObserver observer(extension->id(), kResourcePath);
+    content_verifier()->ClearCacheForTesting();
+    StartContentVerifyJob(*extension, kResourcePath);
+    ContentHashReader::InitStatus hashes_status =
+        observer.WaitForOnHashesReady();
+    EXPECT_EQ(ContentHashReader::InitStatus::SUCCESS, hashes_status);
+  }
+
+  {
+    // Case where computed_hashes.json is corrupted.
+    ASSERT_EQ(
+        static_cast<int>(kCorruptedContents.size()),
+        base::WriteFile(file_util::GetComputedHashesPath(unzipped_path),
+                        kCorruptedContents.data(), kCorruptedContents.size()));
+
+    TestContentVerifySingleJobObserver observer(extension->id(), kResourcePath);
+    content_verifier()->ClearCacheForTesting();
+    StartContentVerifyJob(*extension, kResourcePath);
+    ContentHashReader::InitStatus hashes_status =
+        observer.WaitForOnHashesReady();
+    EXPECT_EQ(ContentHashReader::InitStatus::HASHES_DAMAGED, hashes_status);
+  }
+
+  {
+    // Case where computed_hashes.json doesn't exist.
+    base::DeleteFile(file_util::GetComputedHashesPath(unzipped_path));
+
+    TestContentVerifySingleJobObserver observer(extension->id(), kResourcePath);
+    content_verifier()->ClearCacheForTesting();
+    StartContentVerifyJob(*extension, kResourcePath);
+    ContentHashReader::InitStatus hashes_status =
+        observer.WaitForOnHashesReady();
+    EXPECT_EQ(ContentHashReader::InitStatus::HASHES_MISSING, hashes_status);
+  }
+}
 
 // Tests that extension without verified_contents.json is checked properly.
 TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, UnverifiedExtension) {
@@ -629,7 +693,7 @@ TEST_F(ContentVerifyJobWithoutSignedHashesUnittest, ExtensionWithoutHashes) {
   const base::FilePath kResourcePath(FILE_PATH_LITERAL("script-ok.js"));
 
   scoped_refptr<Extension> extension =
-      CreateAndLoadTestExtensionToTempDir(&temp_dir, base::nullopt);
+      CreateAndLoadTestExtensionToTempDir(&temp_dir, absl::nullopt);
   ASSERT_TRUE(extension);
   base::FilePath unzipped_path = temp_dir.GetPath();
   const std::string kContents = "console.log('Nothing special');";
@@ -657,6 +721,9 @@ class ContentMismatchUnittest
       public testing::WithParamInterface<ContentVerifyJobAsyncRunMode> {
  public:
   ContentMismatchUnittest() {}
+
+  ContentMismatchUnittest(const ContentMismatchUnittest&) = delete;
+  ContentMismatchUnittest& operator=(const ContentMismatchUnittest&) = delete;
 
  protected:
   // Runs test to verify that a modified extension resource (background.js)
@@ -686,9 +753,6 @@ class ContentMismatchUnittest
                                     modified_contents, run_mode));
     }
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentMismatchUnittest);
 };
 
 INSTANTIATE_TEST_SUITE_P(ContentVerifyJobUnittest,
@@ -718,6 +782,11 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
             &ContentVerifyJobWithHashFetchUnittest::InterceptHashFetch,
             base::Unretained(this))) {}
 
+  ContentVerifyJobWithHashFetchUnittest(
+      const ContentVerifyJobWithHashFetchUnittest&) = delete;
+  ContentVerifyJobWithHashFetchUnittest& operator=(
+      const ContentVerifyJobWithHashFetchUnittest&) = delete;
+
  protected:
   // Responds to hash fetch request.
   void RespondToClientIfReady() {
@@ -734,15 +803,15 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
     verified_contents_ = GetVerifiedContents(extension);
 
     // Delete verified_contents.json.
-    EXPECT_TRUE(base::DeleteFile(
-        file_util::GetVerifiedContentsPath(extension.path()), true));
+    EXPECT_TRUE(base::DeletePathRecursively(
+        file_util::GetVerifiedContentsPath(extension.path())));
 
     // Clear cache so that next extension resource load will fetch hashes as
     // we've already deleted verified_contents.json.
     // Use this opportunity to
     base::RunLoop run_loop;
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::IO},
+    content::GetIOThreadTaskRunner({})->PostTaskAndReply(
+        FROM_HERE,
         base::BindOnce(
             [](scoped_refptr<ContentVerifier> content_verifier) {
               content_verifier->ClearCacheForTesting();
@@ -774,9 +843,7 @@ class ContentVerifyJobWithHashFetchUnittest : public ContentVerifyJobUnittest {
   bool ready_to_respond_ = false;
 
   // Copy of the contents of verified_contents.json.
-  base::Optional<std::string> verified_contents_;
-
-  DISALLOW_COPY_AND_ASSIGN(ContentVerifyJobWithHashFetchUnittest);
+  absl::optional<std::string> verified_contents_;
 };
 
 // Regression test for https://crbug.com/995436.
@@ -813,8 +880,8 @@ TEST_F(ContentVerifyJobWithHashFetchUnittest, ReadErrorBeforeHashReady) {
         };
 
     base::RunLoop run_loop;
-    base::PostTask(FROM_HERE, {content::BrowserThread::IO},
-                   base::BindOnce(do_read_abort_and_done, verify_job,
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE, base::BindOnce(do_read_abort_and_done, verify_job,
                                   content_verifier(), run_loop.QuitClosure()));
     run_loop.Run();
 

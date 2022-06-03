@@ -9,15 +9,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/optional.h"
+#include "base/json/values_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
-#include "base/value_conversions.h"
 #include "chrome/browser/media/android/cdm/media_drm_origin_id_manager_factory.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -27,6 +26,7 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace {
@@ -40,9 +40,9 @@ const char kMediaDrmOriginIds[] = "media.media_drm_origin_ids";
 const char kExpirableToken[] = "expirable_token";
 const char kAvailableOriginIds[] = "origin_ids";
 constexpr size_t kExpectedPreferenceListSize = 2;
-constexpr base::TimeDelta kExpirationDelta = base::TimeDelta::FromHours(24);
+constexpr base::TimeDelta kExpirationDelta = base::Hours(24);
 constexpr size_t kConnectionAttempts = 5;
-constexpr base::TimeDelta kStartupDelay = base::TimeDelta::FromMinutes(1);
+constexpr base::TimeDelta kStartupDelay = base::Minutes(1);
 
 }  // namespace
 
@@ -294,8 +294,8 @@ TEST_F(MediaDrmOriginIdManagerTest, OriginIdNotInList) {
   DVLOG(1) << "Checking preference " << kMediaDrmOriginIds;
   auto* dict = GetDictionary(kMediaDrmOriginIds);
   auto* list = dict->FindKey(kAvailableOriginIds);
-  EXPECT_FALSE(base::Contains(list->GetList(),
-                              CreateUnguessableTokenValue(origin_id.value())));
+  EXPECT_FALSE(base::Contains(
+      list->GetList(), base::UnguessableTokenToValue(origin_id.value())));
 }
 
 TEST_F(MediaDrmOriginIdManagerTest, ProvisioningFail) {
@@ -373,7 +373,7 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
   // pre-provision more origin Ids.
   DVLOG(1) << "Advancing Time";
   task_environment_.FastForwardBy(kExpirationDelta);
-  task_environment_.FastForwardBy(base::TimeDelta::FromMinutes(1));
+  task_environment_.FastForwardBy(base::Minutes(1));
   DVLOG(1) << "Adjusted time: " << base::Time::Now();
   PreProvision();
   task_environment_.RunUntilIdle();
@@ -403,7 +403,8 @@ TEST_F(MediaDrmOriginIdManagerTest, ProvisioningAfterExpiration) {
 TEST_F(MediaDrmOriginIdManagerTest, Incognito) {
   // No MediaDrmOriginIdManager should be created for an incognito profile.
   Initialize();
-  auto* incognito_profile = profile_->GetOffTheRecordProfile();
+  auto* incognito_profile =
+      profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true);
   EXPECT_FALSE(
       MediaDrmOriginIdManagerFactory::GetForProfile(incognito_profile));
 }

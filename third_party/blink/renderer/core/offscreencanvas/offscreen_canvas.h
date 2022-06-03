@@ -6,35 +6,31 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_OFFSCREENCANVAS_OFFSCREEN_CANVAS_H_
 
 #include <memory>
+
+#include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
+#include "third_party/blink/public/common/privacy_budget/identifiable_token.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context_host.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
-#include "third_party/blink/renderer/core/html/canvas/image_encode_options.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
 
 class CanvasContextCreationAttributesCore;
 class CanvasResourceProvider;
 class ImageBitmap;
-#if defined(SUPPORT_WEBGL2_COMPUTE_CONTEXT)
 class
-    OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrWebGL2ComputeRenderingContextOrImageBitmapRenderingContext;
-typedef OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrWebGL2ComputeRenderingContextOrImageBitmapRenderingContext
+    OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext;
+typedef OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContextOrGPUCanvasContext
     OffscreenRenderingContext;
-#else
-class
-    OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContext;
-typedef OffscreenCanvasRenderingContext2DOrWebGLRenderingContextOrWebGL2RenderingContextOrImageBitmapRenderingContext
-    OffscreenRenderingContext;
-#endif
 
 class CORE_EXPORT OffscreenCanvas final
     : public EventTargetWithInlineData,
@@ -42,7 +38,6 @@ class CORE_EXPORT OffscreenCanvas final
       public CanvasRenderingContextHost,
       public CanvasResourceDispatcherClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(OffscreenCanvas);
   USING_PRE_FINALIZER(OffscreenCanvas, Dispose);
 
  public:
@@ -56,17 +51,22 @@ class CORE_EXPORT OffscreenCanvas final
 
   bool IsOffscreenCanvas() const override { return true; }
   // IDL attributes
-  unsigned width() const { return size_.Width(); }
-  unsigned height() const { return size_.Height(); }
+  unsigned width() const { return size_.width(); }
+  unsigned height() const { return size_.height(); }
   void setWidth(unsigned);
   void setHeight(unsigned);
 
   // CanvasResourceDispatcherClient
   bool BeginFrame() override;
-  void SetFilterQualityInResource(SkFilterQuality filter_quality) override;
+  void SetFilterQualityInResource(
+      cc::PaintFlags::FilterQuality filter_quality) override;
 
   // API Methods
   ImageBitmap* transferToImageBitmap(ScriptState*, ExceptionState&);
+
+  ScriptPromise convertToBlob(ScriptState* script_state,
+                              const ImageEncodeOptions* options,
+                              ExceptionState& exception_state);
 
   const IntSize& Size() const override { return size_; }
   void SetSize(const IntSize&);
@@ -102,10 +102,6 @@ class CORE_EXPORT OffscreenCanvas final
   uint32_t ClientId() const { return client_id_; }
   uint32_t SinkId() const { return sink_id_; }
 
-  void SetFilterQuality(const SkFilterQuality& quality) {
-    filter_quality_ = quality;
-  }
-
   void AllowHighPerformancePowerPreference() {
     allow_high_performance_power_preference_ = true;
   }
@@ -119,20 +115,20 @@ class CORE_EXPORT OffscreenCanvas final
   bool PushFrameIfNeeded();
   bool PushFrame(scoped_refptr<CanvasResource> frame,
                  const SkIRect& damage_rect) override;
-  void DidDraw(const FloatRect&) override;
-  void DidDraw() override;
+  void DidDraw(const SkIRect&) override;
+  using CanvasRenderingContextHost::DidDraw;
   void Commit(scoped_refptr<CanvasResource> bitmap_image,
               const SkIRect& damage_rect) override;
   bool ShouldAccelerate2dContext() const override;
-  unsigned GetMSAASampleCountFor2dContext() const override { return 0; }
   CanvasResourceDispatcher* GetOrCreateResourceDispatcher() override;
+  UkmParameters GetUkmParameters() override;
 
   // Partial CanvasResourceHost implementation
-  void NotifyGpuContextLost() override {}
+  void NotifyGpuContextLost() override;
   void SetNeedsCompositingUpdate() override {}
   // TODO(fserb): Merge this with HTMLCanvasElement::UpdateMemoryUsage
   void UpdateMemoryUsage() override;
-  SkFilterQuality FilterQuality() const override { return filter_quality_; }
+  size_t GetMemoryUsage() const override;
 
   // EventTarget implementation
   const AtomicString& InterfaceName() const final {
@@ -153,16 +149,18 @@ class CORE_EXPORT OffscreenCanvas final
   // ImageBitmapSource implementation
   IntSize BitmapSourceSize() const final;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  EventTarget&,
-                                  base::Optional<IntRect>,
-                                  const ImageBitmapOptions*) final;
+                                  absl::optional<IntRect>,
+                                  const ImageBitmapOptions*,
+                                  ExceptionState&) final;
 
   // CanvasImageSource implementation
-  scoped_refptr<Image> GetSourceImageForCanvas(SourceImageStatus*,
-                                               AccelerationHint,
-                                               const FloatSize&) final;
+  scoped_refptr<Image> GetSourceImageForCanvas(
+      SourceImageStatus*,
+      const FloatSize&,
+      const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final;
   bool WouldTaintOrigin() const final { return !origin_clean_; }
-  FloatSize ElementSize(const FloatSize& default_object_size) const final {
+  FloatSize ElementSize(const FloatSize& default_object_size,
+                        const RespectImageOrientationEnum) const final {
     return FloatSize(width(), height());
   }
   bool IsOpaque() const final;
@@ -178,7 +176,7 @@ class CORE_EXPORT OffscreenCanvas final
 
   FontSelector* GetFontSelector() override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   class ScopedInsideWorkerRAF {
     STACK_ALLOCATED();
@@ -234,6 +232,9 @@ class CORE_EXPORT OffscreenCanvas final
   static ContextFactoryVector& RenderingContextFactories();
   static CanvasRenderingContextFactory* GetRenderingContextFactory(int);
 
+  void RecordIdentifiabilityMetric(const blink::IdentifiableSurface& surface,
+                                   const IdentifiableToken& token) const;
+
   Member<CanvasRenderingContext> context_;
   WeakMember<ExecutionContext> execution_context_;
 
@@ -251,8 +252,6 @@ class CORE_EXPORT OffscreenCanvas final
   bool needs_matrix_clip_restore_ = false;
   bool needs_push_frame_ = false;
   bool inside_worker_raf_ = false;
-
-  SkFilterQuality filter_quality_ = kLow_SkFilterQuality;
 
   // An offscreen canvas should only prefer the high-performance GPU if it is
   // initialized by transferring control from an HTML canvas that is not

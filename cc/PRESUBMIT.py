@@ -9,20 +9,23 @@ for more details about the presubmit API built into depot_tools.
 """
 
 import re
-import string
 
+USE_PYTHON3 = True
 CC_SOURCE_FILES=(r'^cc[\\/].*\.(cc|h)$',)
 
 def CheckChangeLintsClean(input_api, output_api):
-  source_filter = lambda x: input_api.FilterSourceFile(
-    x, white_list=CC_SOURCE_FILES, black_list=None)
+  allowlist = CC_SOURCE_FILES
+  denylist = None
+  source_filter = lambda x: input_api.FilterSourceFile(x, allowlist, denylist)
 
   return input_api.canned_checks.CheckChangeLintsClean(
       input_api, output_api, source_filter, lint_filters=[], verbose_level=1)
 
-def CheckAsserts(input_api, output_api, white_list=CC_SOURCE_FILES, black_list=None):
-  black_list = tuple(black_list or input_api.DEFAULT_BLACK_LIST)
-  source_file_filter = lambda x: input_api.FilterSourceFile(x, white_list, black_list)
+def CheckAsserts(input_api, output_api, allowlist=CC_SOURCE_FILES,
+                 denylist=None):
+  denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
+  source_file_filter = lambda x: input_api.FilterSourceFile(x, allowlist,
+      denylist)
 
   assert_files = []
 
@@ -39,11 +42,11 @@ def CheckAsserts(input_api, output_api, white_list=CC_SOURCE_FILES, black_list=N
   return []
 
 def CheckStdAbs(input_api, output_api,
-                white_list=CC_SOURCE_FILES, black_list=None):
-  black_list = tuple(black_list or input_api.DEFAULT_BLACK_LIST)
+                allowlist=CC_SOURCE_FILES, denylist=None):
+  denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
   source_file_filter = lambda x: input_api.FilterSourceFile(x,
-                                                            white_list,
-                                                            black_list)
+                                                            allowlist,
+                                                            denylist)
 
   using_std_abs_files = []
   found_fabs_files = []
@@ -86,12 +89,12 @@ def CheckStdAbs(input_api, output_api,
 
 def CheckPassByValue(input_api,
                      output_api,
-                     white_list=CC_SOURCE_FILES,
-                     black_list=None):
-  black_list = tuple(black_list or input_api.DEFAULT_BLACK_LIST)
+                     allowlist=CC_SOURCE_FILES,
+                     denylist=None):
+  denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
   source_file_filter = lambda x: input_api.FilterSourceFile(x,
-                                                            white_list,
-                                                            black_list)
+                                                            allowlist,
+                                                            denylist)
 
   local_errors = []
 
@@ -102,9 +105,9 @@ def CheckPassByValue(input_api,
 
   for f in input_api.AffectedSourceFiles(source_file_filter):
     contents = input_api.ReadFile(f, 'rb')
+    sep = '|'
     match = re.search(
-      r'\bconst +' + '(?P<type>(%s))&' %
-        string.join(pass_by_value_types, '|'),
+      r'\bconst +' + '(?P<type>(%s))&' % sep.join(pass_by_value_types),
       contents)
     if match:
       local_errors.append(output_api.PresubmitError(
@@ -128,13 +131,13 @@ def CheckTodos(input_api, output_api):
       items=errors)]
   return []
 
-def CheckDoubleAngles(input_api, output_api, white_list=CC_SOURCE_FILES,
-                      black_list=None):
+def CheckDoubleAngles(input_api, output_api, allowlist=CC_SOURCE_FILES,
+                      denylist=None):
   errors = []
 
   source_file_filter = lambda x: input_api.FilterSourceFile(x,
-                                                            white_list,
-                                                            black_list)
+                                                            allowlist,
+                                                            denylist)
   for f in input_api.AffectedSourceFiles(source_file_filter):
     contents = input_api.ReadFile(f, 'rb')
     if ('> >') in contents:
@@ -161,7 +164,7 @@ def FindUselessIfdefs(input_api, output_api):
       items=errors)]
   return []
 
-def FindNamespaceInBlock(pos, namespace, contents, whitelist=[]):
+def FindNamespaceInBlock(pos, namespace, contents, allowlist=[]):
   open_brace = -1
   close_brace = -1
   quote = -1
@@ -192,12 +195,12 @@ def FindNamespaceInBlock(pos, namespace, contents, whitelist=[]):
     elif next == quote:
       quote_count = 0 if quote_count else 1
     elif next == name and not quote_count:
-      in_whitelist = False
-      for w in whitelist:
+      in_allowlist = False
+      for w in allowlist:
         if re.match(w, contents[next:]):
-          in_whitelist = True
+          in_allowlist = True
           break
-      if not in_whitelist:
+      if not in_allowlist:
         return True
     pos = next + 1
   return False
@@ -212,8 +215,8 @@ def CheckNamespace(input_api, output_api):
     contents = input_api.ReadFile(f, 'rb')
     match = re.search(r'namespace\s*cc\s*{', contents)
     if match:
-      whitelist = []
-      if FindNamespaceInBlock(match.end(), 'cc', contents, whitelist=whitelist):
+      allowlist = []
+      if FindNamespaceInBlock(match.end(), 'cc', contents, allowlist=allowlist):
         errors.append(f.LocalPath())
 
   if errors:
@@ -224,13 +227,13 @@ def CheckNamespace(input_api, output_api):
 
 def CheckForUseOfWrongClock(input_api,
                             output_api,
-                            white_list=CC_SOURCE_FILES,
-                            black_list=None):
+                            allowlist=CC_SOURCE_FILES,
+                            denylist=None):
   """Make sure new lines of code don't use a clock susceptible to skew."""
-  black_list = tuple(black_list or input_api.DEFAULT_BLACK_LIST)
+  denylist = tuple(denylist or input_api.DEFAULT_FILES_TO_SKIP)
   source_file_filter = lambda x: input_api.FilterSourceFile(x,
-                                                            white_list,
-                                                            black_list)
+                                                            allowlist,
+                                                            denylist)
   # Regular expression that should detect any explicit references to the
   # base::Time type (or base::Clock/DefaultClock), whether in using decls,
   # typedefs, or to call static methods.
@@ -275,27 +278,6 @@ def CheckForUseOfWrongClock(input_api,
   else:
     return []
 
-def CheckForDisallowMacros(input_api, output_api, white_list=CC_SOURCE_FILES, black_list=None):
-  black_list = tuple(black_list or input_api.DEFAULT_BLACK_LIST)
-  source_file_filter = lambda x: input_api.FilterSourceFile(x, white_list, black_list)
-
-  disallow_macro_files = []
-
-  for f in input_api.AffectedSourceFiles(source_file_filter):
-    contents = input_api.ReadFile(f, 'rb')
-    # DISALLOW macros are not allowed, use deleted constructors instead.
-    if re.search(r"\bDISALLOW_COPY\(", contents) or \
-       re.search(r"\bDISALLOW_ASSIGN\(", contents) or \
-       re.search(r"\bDISALLOW_COPY_AND_ASSIGN\(", contents) or \
-       re.search(r"\bDISALLOW_IMPLICIT_CONSTRUCTORS\(", contents):
-      disallow_macro_files.append(f.LocalPath())
-
-  if disallow_macro_files:
-    return [output_api.PresubmitError(
-      'The following files use DISALLOW* macros. In cc, please use deleted constructors/operators instead.',
-      items=disallow_macro_files)]
-  return []
-
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results += CheckAsserts(input_api, output_api)
@@ -307,5 +289,4 @@ def CheckChangeOnUpload(input_api, output_api):
   results += CheckNamespace(input_api, output_api)
   results += CheckForUseOfWrongClock(input_api, output_api)
   results += FindUselessIfdefs(input_api, output_api)
-  results += CheckForDisallowMacros(input_api, output_api)
   return results

@@ -114,4 +114,25 @@ DWORD Job::AssignProcessToJob(HANDLE process_handle) {
   return ERROR_SUCCESS;
 }
 
+// static
+DWORD Job::SetActiveProcessLimit(base::win::ScopedHandle* job_handle,
+                                 DWORD processes) {
+  JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = {};
+
+  if (!::QueryInformationJobObject(job_handle->Get(),
+                                   JobObjectExtendedLimitInformation, &jeli,
+                                   sizeof(jeli), nullptr))
+    return ::GetLastError();
+
+  jeli.BasicLimitInformation.LimitFlags |= JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
+  jeli.BasicLimitInformation.ActiveProcessLimit = processes;
+
+  if (!::SetInformationJobObject(job_handle->Get(),
+                                 JobObjectExtendedLimitInformation, &jeli,
+                                 sizeof(jeli)))
+    return ::GetLastError();
+
+  return ERROR_SUCCESS;
+}
+
 }  // namespace sandbox

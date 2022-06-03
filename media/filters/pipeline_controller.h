@@ -6,16 +6,16 @@
 #define MEDIA_FILTERS_PIPELINE_CONTROLLER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline.h"
-#include "media/base/renderer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
+
+class CdmContext;
 class Demuxer;
 
 // PipelineController wraps a Pipeline to expose the one-at-a-time operations
@@ -42,10 +42,11 @@ class MEDIA_EXPORT PipelineController {
     RESUMING,
   };
 
-  using SeekedCB = base::Callback<void(bool time_updated)>;
-  using SuspendedCB = base::Callback<void()>;
-  using BeforeResumeCB = base::Callback<void()>;
-  using ResumedCB = base::Callback<void()>;
+  using SeekedCB = base::RepeatingCallback<void(bool time_updated)>;
+  using SuspendedCB = base::RepeatingClosure;
+  using BeforeResumeCB = base::RepeatingClosure;
+  using ResumedCB = base::RepeatingClosure;
+  using CdmAttachedCB = base::OnceCallback<void(bool)>;
 
   // Construct a PipelineController wrapping |pipeline_|.
   // The callbacks are:
@@ -56,11 +57,15 @@ class MEDIA_EXPORT PipelineController {
   //   - |error_cb| is called if any operation on |pipeline_| does not result
   //     in PIPELINE_OK or its error callback is called.
   PipelineController(std::unique_ptr<Pipeline> pipeline,
-                     const SeekedCB& seeked_cb,
-                     const SuspendedCB& suspended_cb,
-                     const BeforeResumeCB& before_resume_cb,
-                     const ResumedCB& resumed_cb,
-                     const PipelineStatusCB& error_cb);
+                     SeekedCB seeked_cb,
+                     SuspendedCB suspended_cb,
+                     BeforeResumeCB before_resume_cb,
+                     ResumedCB resumed_cb,
+                     PipelineStatusCB error_cb);
+
+  PipelineController(const PipelineController&) = delete;
+  PipelineController& operator=(const PipelineController&) = delete;
+
   ~PipelineController();
 
   // Start |pipeline_|. |demuxer| will be retained and StartWaitingForSeek()/
@@ -129,7 +134,9 @@ class MEDIA_EXPORT PipelineController {
   void SetPlaybackRate(double playback_rate);
   float GetVolume() const;
   void SetVolume(float volume);
-  void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint);
+  void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint);
+  void SetPreservesPitch(bool preserves_pitch);
+  void SetAutoplayInitiated(bool autoplay_initiated);
   base::TimeDelta GetMediaTime() const;
   Ranges<base::TimeDelta> GetBufferedTimeRanges() const;
   base::TimeDelta GetMediaDuration() const;
@@ -139,7 +146,7 @@ class MEDIA_EXPORT PipelineController {
   void OnEnabledAudioTracksChanged(
       const std::vector<MediaTrack::Id>& enabled_track_ids);
   void OnSelectedVideoTrackChanged(
-      base::Optional<MediaTrack::Id> selected_track_id);
+      absl::optional<MediaTrack::Id> selected_track_id);
 
   // Used to fire the OnTrackChangeComplete function which is captured in a
   // OnceCallback, and doesn't play nicely with gmock.
@@ -152,7 +159,7 @@ class MEDIA_EXPORT PipelineController {
   // PipelineStaus callback that also carries the target state.
   void OnPipelineStatus(State state, PipelineStatus pipeline_status);
 
-  void OnTrackChangeComplete(State previous_state);
+  void OnTrackChangeComplete();
 
   // The Pipeline we are managing state for.
   std::unique_ptr<Pipeline> pipeline_;
@@ -160,19 +167,19 @@ class MEDIA_EXPORT PipelineController {
   // Called after seeks (which includes Start()) upon reaching a stable state.
   // Multiple seeks result in only one callback if no stable state occurs
   // between them.
-  SeekedCB seeked_cb_;
+  const SeekedCB seeked_cb_;
 
   // Called immediately when |pipeline_| completes a suspend operation.
-  SuspendedCB suspended_cb_;
+  const SuspendedCB suspended_cb_;
 
   // Called immediately before |pipeline_| starts a resume operation.
-  ResumedCB before_resume_cb_;
+  const BeforeResumeCB before_resume_cb_;
 
   // Called immediately when |pipeline_| completes a resume operation.
-  ResumedCB resumed_cb_;
+  const ResumedCB resumed_cb_;
 
   // Called immediately when any operation on |pipeline_| results in an error.
-  PipelineStatusCB error_cb_;
+  const PipelineStatusCB error_cb_;
 
   // State for handling StartWaitingForSeek()/CancelPendingSeek().
   Demuxer* demuxer_ = nullptr;
@@ -187,6 +194,10 @@ class MEDIA_EXPORT PipelineController {
 
   // Tracks the current state of |pipeline_|.
   State state_ = State::STOPPED;
+
+  // The previous state of |pipeline_| if it's currently undergoing a track
+  // change.
+  State previous_track_change_state_ = State::STOPPED;
 
   // Indicates that a seek has occurred. When set, a seeked callback will be
   // issued at the next stable state.
@@ -218,7 +229,7 @@ class MEDIA_EXPORT PipelineController {
   //   |pending_video_track_change_|.
   base::TimeDelta pending_seek_time_;
   std::vector<MediaTrack::Id> pending_audio_track_change_ids_;
-  base::Optional<MediaTrack::Id> pending_video_track_change_id_;
+  absl::optional<MediaTrack::Id> pending_video_track_change_id_;
 
   // Set to true during Start(). Indicates that |seeked_cb_| must be fired once
   // we've completed startup.
@@ -226,8 +237,6 @@ class MEDIA_EXPORT PipelineController {
 
   base::ThreadChecker thread_checker_;
   base::WeakPtrFactory<PipelineController> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PipelineController);
 };
 
 }  // namespace media

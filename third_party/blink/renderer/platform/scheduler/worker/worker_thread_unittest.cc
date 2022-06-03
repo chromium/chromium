@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/task_executor.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -72,6 +71,8 @@ void ShutdownOnThread(Thread* thread) {
 class WorkerThreadTest : public testing::Test {
  public:
   WorkerThreadTest() = default;
+  WorkerThreadTest(const WorkerThreadTest&) = delete;
+  WorkerThreadTest& operator=(const WorkerThreadTest&) = delete;
 
   ~WorkerThreadTest() override = default;
 
@@ -100,8 +101,6 @@ class WorkerThreadTest : public testing::Test {
   }
 
   std::unique_ptr<Thread> thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(WorkerThreadTest);
 };
 
 TEST_F(WorkerThreadTest, TestDefaultTask) {
@@ -158,7 +157,7 @@ TEST_F(WorkerThreadTest, TestShutdown) {
       *thread_->GetTaskRunner(), FROM_HERE,
       CrossThreadBindOnce(&MockTask::Run,
                           WTF::CrossThreadUnretained(&delayed_task)),
-      base::TimeDelta::FromMilliseconds(50));
+      base::Milliseconds(50));
   thread_.reset();
 }
 

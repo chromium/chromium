@@ -4,9 +4,16 @@
 
 #include "chrome/browser/plugins/chrome_content_browser_client_plugins_part.h"
 
+#include <memory>
+#include <set>
+#include <string>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/no_destructor.h"
 #include "base/task/post_task.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/plugins/plugin_info_host_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_host/pepper/chrome_browser_pepper_host_factory.h"
@@ -32,8 +39,70 @@
 #include "extensions/common/permissions/socket_permission.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/common/webui_url_constants.h"
+#endif
+
 namespace plugins {
 namespace {
+
+// TODO(teravest): Add renderer-side API-specific checking for these APIs so
+// that blanket permission isn't granted to all dev channel APIs for these.
+// http://crbug.com/386743
+
+// Set of origins that can use "dev channel" APIs from NaCl, even on stable
+// versions of Chrome.
+const std::set<std::string>& GetAllowedDevChannelOrigins() {
+  static const char* const kPredefinedAllowedDevChannelOrigins[] = {
+      "6EAED1924DB611B6EEF2A664BD077BE7EAD33B8F",  // see crbug.com/383937
+      "4EB74897CB187C7633357C2FE832E0AD6A44883A"   // see crbug.com/383937
+  };
+  static base::NoDestructor<std::set<std::string>> origins(
+      std::begin(kPredefinedAllowedDevChannelOrigins),
+      std::end(kPredefinedAllowedDevChannelOrigins));
+  return *origins;
+}
+
+// Set of origins that can get a handle for FileIO from NaCl.
+const std::set<std::string>& GetAllowedFileHandleOrigins() {
+  static const char* const kPredefinedAllowedFileHandleOrigins[] = {
+      "6EAED1924DB611B6EEF2A664BD077BE7EAD33B8F",  // see crbug.com/234789
+      "4EB74897CB187C7633357C2FE832E0AD6A44883A"   // see crbug.com/234789
+  };
+  static base::NoDestructor<std::set<std::string>> origins(
+      std::begin(kPredefinedAllowedFileHandleOrigins),
+      std::end(kPredefinedAllowedFileHandleOrigins));
+  return *origins;
+}
+
+// Set of origins that can use TCP/UDP private APIs from NaCl.
+const std::set<std::string>& GetAllowedSocketOrigins() {
+  static const char* const kPredefinedAllowedSocketOrigins[] = {
+      "okddffdblfhhnmhodogpojmfkjmhinfp",  // Secure Shell App (dev)
+      "pnhechapfaindjhompbnflcldabbghjo",  // Secure Shell App (stable)
+      "algkcnfjnajfhgimadimbjhmpaeohhln",  // Secure Shell Extension (dev)
+      "iodihamcpbpeioajjeobimgagajmlibd",  // Secure Shell Extension (stable)
+      "bglhmjfplikpjnfoegeomebmfnkjomhe",  // see crbug.com/122126
+      "cbkkbcmdlboombapidmoeolnmdacpkch",  // see crbug.com/129089
+      "hhnbmknkdabfoieppbbljkhkfjcmcbjh",  // see crbug.com/134099
+      "mablfbjkhmhkmefkjjacnbaikjkipphg",  // see crbug.com/134099
+      "pdeelgamlgannhelgoegilelnnojegoh",  // see crbug.com/134099
+      "cabapfdbkniadpollkckdnedaanlciaj",  // see crbug.com/134099
+      "mapljbgnjledlpdmlchihnmeclmefbba",  // see crbug.com/134099
+      "ghbfeebgmiidnnmeobbbaiamklmpbpii",  // see crbug.com/134099
+      "jdfhpkjeckflbbleddjlpimecpbjdeep",  // see crbug.com/142514
+      "iabmpiboiopbgfabjmgeedhcmjenhbla",  // see crbug.com/165080
+      "B7CF8A292249681AF81771650BA4CEEAF19A4560",  // see crbug.com/165080
+      "7525AF4F66763A70A883C4700529F647B470E4D2",  // see crbug.com/238084
+      "0B549507088E1564D672F7942EB87CA4DAD73972",  // see crbug.com/238084
+      "864288364E239573E777D3E0E36864E590E95C74"   // see crbug.com/238084
+  };
+  static base::NoDestructor<std::set<std::string>> origins(
+      std::begin(kPredefinedAllowedSocketOrigins),
+      std::end(kPredefinedAllowedSocketOrigins));
+  return *origins;
+}
+
 void BindPluginInfoHost(
     int render_process_id,
     mojo::PendingAssociatedReceiver<chrome::mojom::PluginInfoHost> receiver) {
@@ -48,14 +117,14 @@ void BindPluginInfoHost(
       std::make_unique<PluginInfoHostImpl>(render_process_id, profile),
       std::move(receiver));
 }
+
 }  // namespace
 
-ChromeContentBrowserClientPluginsPart::ChromeContentBrowserClientPluginsPart() {
-}
+ChromeContentBrowserClientPluginsPart::ChromeContentBrowserClientPluginsPart() =
+    default;
 
 ChromeContentBrowserClientPluginsPart::
-    ~ChromeContentBrowserClientPluginsPart() {
-}
+    ~ChromeContentBrowserClientPluginsPart() = default;
 
 void ChromeContentBrowserClientPluginsPart::ExposeInterfacesToRenderer(
     service_manager::BinderRegistry* registry,
@@ -68,18 +137,17 @@ void ChromeContentBrowserClientPluginsPart::ExposeInterfacesToRenderer(
 bool ChromeContentBrowserClientPluginsPart::
     IsPluginAllowedToCallRequestOSFileHandle(
         content::BrowserContext* browser_context,
-        const GURL& url,
-        const std::set<std::string>& allowed_file_handle_origins) {
+        const GURL& url) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const extensions::ExtensionSet* extension_set = NULL;
+  const extensions::ExtensionSet* extension_set = nullptr;
   if (profile) {
     extension_set =
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   }
 
-  return IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                              allowed_file_handle_origins) ||
+  return IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                          GetAllowedFileHandleOrigins()) ||
          IsHostAllowedByCommandLine(url, extension_set,
                                     ::switches::kAllowNaClFileHandleAPI);
 #else
@@ -91,22 +159,26 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
     content::BrowserContext* browser_context,
     const GURL& url,
     bool private_api,
-    const content::SocketPermissionRequest* params,
-    const std::set<std::string>& allowed_socket_origin) {
+    const content::SocketPermissionRequest* params) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const extensions::ExtensionSet* extension_set = NULL;
+  const extensions::ExtensionSet* extension_set = nullptr;
   if (profile) {
     extension_set =
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   }
 
   if (private_api) {
-    // Access to private socket APIs is controlled by the whitelist.
-    if (IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                             allowed_socket_origin)) {
+    // Access to private socket APIs is controlled by the allowlist.
+    if (IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                         GetAllowedSocketOrigins())) {
       return true;
     }
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // Terminal SWA is not an extension, but runs SSH NaCL with sockets.
+    if (url == chrome::kChromeUIUntrustedTerminalURL)
+      return true;
+#endif
   } else {
     // Access to public socket APIs is controlled by extension permissions.
     if (url.is_valid() && url.SchemeIs(extensions::kExtensionScheme) &&
@@ -120,11 +192,11 @@ bool ChromeContentBrowserClientPluginsPart::AllowPepperSocketAPI(
           extensions::SocketPermission::CheckParam check_params(
               params->type, params->host, params->port);
           if (permissions_data->CheckAPIPermissionWithParam(
-                  extensions::APIPermission::kSocket, &check_params)) {
+                  extensions::mojom::APIPermissionID::kSocket, &check_params)) {
             return true;
           }
         } else if (permissions_data->HasAPIPermission(
-                       extensions::APIPermission::kSocket)) {
+                       extensions::mojom::APIPermissionID::kSocket)) {
           return true;
         }
       }
@@ -157,7 +229,7 @@ bool ChromeContentBrowserClientPluginsPart::IsPepperVpnProviderAPIAllowed(
     const extensions::Extension* extension = extension_set->GetByID(url.host());
     if (extension) {
       if (extension->permissions_data()->HasAPIPermission(
-              extensions::APIPermission::kVpnProvider)) {
+              extensions::mojom::APIPermissionID::kVpnProvider)) {
         return true;
       }
     }
@@ -169,8 +241,7 @@ bool ChromeContentBrowserClientPluginsPart::IsPepperVpnProviderAPIAllowed(
 
 bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
     content::BrowserContext* browser_context,
-    const GURL& url,
-    const std::set<std::string>& allowed_dev_channel_origins) {
+    const GURL& url) {
   // Allow access for tests.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnablePepperTesting)) {
@@ -179,15 +250,15 @@ bool ChromeContentBrowserClientPluginsPart::IsPluginAllowedToUseDevChannelAPIs(
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   Profile* profile = Profile::FromBrowserContext(browser_context);
-  const extensions::ExtensionSet* extension_set = NULL;
+  const extensions::ExtensionSet* extension_set = nullptr;
   if (profile) {
     extension_set =
         &extensions::ExtensionRegistry::Get(profile)->enabled_extensions();
   }
 
-  // Allow access for whitelisted applications.
-  if (IsExtensionOrSharedModuleWhitelisted(url, extension_set,
-                                           allowed_dev_channel_origins)) {
+  // Allow access for allowlisted applications.
+  if (IsExtensionOrSharedModuleAllowed(url, extension_set,
+                                       GetAllowedDevChannelOrigins())) {
     return true;
   }
 #endif

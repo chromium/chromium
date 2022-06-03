@@ -14,14 +14,13 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/flat_set.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
+#include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequence_bound.h"
-#include "base/threading/thread.h"
 #include "base/time/time.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
 #include "chromecast/media/cma/backend/mixer/mixer_pipeline.h"
@@ -69,11 +68,15 @@ class StreamMixer {
  public:
   StreamMixer(
       scoped_refptr<base::SequencedTaskRunner> io_task_runner = nullptr);
+
+  StreamMixer(const StreamMixer&) = delete;
+  StreamMixer& operator=(const StreamMixer&) = delete;
+
   ~StreamMixer();
 
   int num_output_channels() const { return num_output_channels_; }
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner() const {
+  scoped_refptr<base::TaskRunner> task_runner() const {
     return mixer_task_runner_;
   }
 
@@ -120,8 +123,8 @@ class StreamMixer {
   // Test-only methods.
   StreamMixer(
       std::unique_ptr<MixerOutputStream> output,
-      std::unique_ptr<base::Thread> mixer_thread,
-      scoped_refptr<base::SingleThreadTaskRunner> mixer_task_runner,
+      scoped_refptr<base::SequencedTaskRunner> mixer_task_runner,
+      const std::string& pipeline_json,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner = nullptr);
   void ResetPostProcessorsForTest(
       std::unique_ptr<PostProcessingPipelineFactory> pipeline_factory,
@@ -139,6 +142,8 @@ class StreamMixer {
   };
   class ExternalMediaVolumeChangeRequestObserver;
 
+  class MixerThread;
+
   enum State {
     kStateStopped,
     kStateRunning,
@@ -146,8 +151,6 @@ class StreamMixer {
 
   // Contains volume control information for an audio content type.
   struct VolumeInfo {
-    float GetEffectiveVolume();
-
     float volume = 0.0f;
     float limit = 1.0f;
     bool muted = false;
@@ -166,6 +169,7 @@ class StreamMixer {
                                int input_samples_per_second);
   void SignalError(MixerInput::Source::MixerError error);
   int GetEffectiveChannelCount(MixerInput::Source* input_source);
+  void AddInputOnThread(MixerInput::Source* input_source);
   void RemoveInputOnThread(MixerInput::Source* input_source);
   void SetCloseTimeout();
   void UpdatePlayoutChannel();
@@ -174,9 +178,20 @@ class StreamMixer {
   void WriteOneBuffer();
   void WriteMixedPcm(int frames, int64_t expected_playback_time);
 
+  void UpdateStreamCountsOnThread();
+  void SetVolumeOnThread(AudioContentType type, float level);
+  void SetMutedOnThread(AudioContentType type, bool muted);
+  void SetOutputLimitOnThread(AudioContentType type, float limit);
+  void SetVolumeMultiplierOnThread(MixerInput::Source* source,
+                                   float multiplier);
+  void SetPostProcessorConfigOnThread(std::string name, std::string config);
+  void AddAudioOutputRedirectorOnThread(
+      std::unique_ptr<AudioOutputRedirector> redirector);
   void RemoveAudioOutputRedirectorOnThread(AudioOutputRedirector* redirector);
 
   int GetSampleRateForDeviceId(const std::string& device);
+
+  void OnHealthCheckFailed();
 
   MediaPipelineBackend::AudioDecoder::RenderingDelay GetTotalRenderingDelay(
       FilterGroup* filter_group);
@@ -185,15 +200,14 @@ class StreamMixer {
   std::unique_ptr<PostProcessingPipelineFactory>
       post_processing_pipeline_factory_;
   std::unique_ptr<MixerPipeline> mixer_pipeline_;
-  std::unique_ptr<base::Thread> mixer_thread_;
-  scoped_refptr<base::SingleThreadTaskRunner> mixer_task_runner_;
+  SEQUENCE_CHECKER(mixer_sequence_checker_);
+  scoped_refptr<MixerThread> mixer_thread_;
+  scoped_refptr<base::TaskRunner> mixer_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
   std::unique_ptr<ThreadHealthChecker> health_checker_;
 
   std::unique_ptr<InterleavedChannelMixer> loopback_channel_mixer_;
   std::unique_ptr<InterleavedChannelMixer> output_channel_mixer_;
-
-  void OnHealthCheckFailed();
 
   bool enable_dynamic_channel_count_;
   const int low_sample_rate_cutoff_;
@@ -217,6 +231,9 @@ class StreamMixer {
   int redirector_samples_per_second_ = 0;
   int redirector_frames_per_write_ = 0;
 
+  int last_sent_primary_stream_count_ = 0;
+  int last_sent_sfx_stream_count_ = 0;
+
   State state_;
   base::TimeTicks close_timestamp_;
 
@@ -238,8 +255,6 @@ class StreamMixer {
   base::SequenceBound<MixerServiceReceiver> receiver_;
 
   base::WeakPtrFactory<StreamMixer> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamMixer);
 };
 
 }  // namespace media

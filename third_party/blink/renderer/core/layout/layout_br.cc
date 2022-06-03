@@ -38,6 +38,7 @@ LayoutBR::LayoutBR(Node* node) : LayoutText(node, NewlineString()) {}
 LayoutBR::~LayoutBR() = default;
 
 int LayoutBR::LineHeight(bool first_line) const {
+  NOT_DESTROYED();
   const ComputedStyle& style = StyleRef(
       first_line && GetDocument().GetStyleEngine().UsesFirstLineRules());
   return style.ComputedLineHeight();
@@ -45,32 +46,43 @@ int LayoutBR::LineHeight(bool first_line) const {
 
 void LayoutBR::StyleDidChange(StyleDifference diff,
                               const ComputedStyle* old_style) {
+  NOT_DESTROYED();
   LayoutText::StyleDidChange(diff, old_style);
 }
 
 int LayoutBR::CaretMinOffset() const {
+  NOT_DESTROYED();
   return 0;
 }
 
 int LayoutBR::CaretMaxOffset() const {
+  NOT_DESTROYED();
   return 1;
 }
 
 PositionWithAffinity LayoutBR::PositionForPoint(const PhysicalOffset&) const {
-  return CreatePositionWithAffinity(0);
+  NOT_DESTROYED();
+  // NG codepath requires |kPrePaintClean|.
+  // |SelectionModifier| calls this only in legacy codepath.
+  DCHECK(!IsInLayoutNGInlineFormattingContext() ||
+         GetDocument().Lifecycle().GetState() >=
+             DocumentLifecycle::kPrePaintClean);
+  return PositionBeforeThis();
 }
 
 Position LayoutBR::PositionForCaretOffset(unsigned offset) const {
+  NOT_DESTROYED();
   DCHECK_LE(offset, 1u);
   DCHECK(GetNode());
   return offset ? Position::AfterNode(*GetNode())
                 : Position::BeforeNode(*GetNode());
 }
 
-base::Optional<unsigned> LayoutBR::CaretOffsetForPosition(
+absl::optional<unsigned> LayoutBR::CaretOffsetForPosition(
     const Position& position) const {
+  NOT_DESTROYED();
   if (position.IsNull() || position.AnchorNode() != GetNode())
-    return base::nullopt;
+    return absl::nullopt;
   DCHECK(position.IsBeforeAnchor() || position.IsAfterAnchor()) << position;
   return position.IsBeforeAnchor() ? 0 : 1;
 }

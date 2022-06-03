@@ -1,0 +1,16 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+metric_integration_sources = [
+  "//chrome/browser/page_load_metrics/integration_tests/event_counts_browsertest.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/first_input_delay_browsertest.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/first_scroll_delay_browsertest.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/largest_contentful_paint_browsertest.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/layout_instability_browsertest.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/metric_integration_test.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/metric_integration_test.h",
+  "//chrome/browser/page_load_metrics/integration_tests/smoothness_metric_browsertest.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/total_input_delay_browsertest.cc",
+  "//chrome/browser/page_load_metrics/integration_tests/user_timing_browsertest.cc",
+]

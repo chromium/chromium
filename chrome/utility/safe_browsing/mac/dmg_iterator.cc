@@ -4,6 +4,8 @@
 
 #include "chrome/utility/safe_browsing/mac/dmg_iterator.h"
 
+#include <memory>
+
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 
@@ -43,7 +45,8 @@ bool DMGIterator::Next() {
   // Iterate through all the HFS partitions in the DMG file.
   for (; current_partition_ < partitions_.size(); ++current_partition_) {
     if (!hfs_) {
-      hfs_.reset(new HFSIterator(partitions_[current_partition_].get()));
+      hfs_ =
+          std::make_unique<HFSIterator>(partitions_[current_partition_].get());
       if (!hfs_->Open())
         continue;
     }
@@ -75,7 +78,7 @@ bool DMGIterator::Next() {
   return false;
 }
 
-base::string16 DMGIterator::GetPath() {
+std::u16string DMGIterator::GetPath() {
   return hfs_->GetPath();
 }
 

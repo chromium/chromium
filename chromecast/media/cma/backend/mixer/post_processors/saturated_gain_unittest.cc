@@ -55,7 +55,8 @@ TEST_P(PostProcessorTest, Gain) {
   }
   float original_amplitude =
       SineAmplitude(data.data(), kNumChannels * kNumFrames);
-  pp->ProcessFrames(data.data(), kNumFrames, 1.0 /* doesn't matter */, -20.0);
+  AudioPostProcessor2::Metadata metadata = {-20.0, -20.0, 1.0};
+  pp->ProcessFrames(data.data(), kNumFrames, &metadata);
 
   EXPECT_FLOAT_EQ(original_amplitude * 10.0,
                   SineAmplitude(data.data(), kNumChannels * kNumFrames))

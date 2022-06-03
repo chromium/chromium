@@ -8,21 +8,23 @@
 #include <cups/cups.h>
 #include <memory>
 
+#include "base/component_export.h"
+
 namespace printing {
 
-struct HttpDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) HttpDeleter {
   void operator()(http_t* http) const;
 };
 
-struct DestinationDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) DestinationDeleter {
   void operator()(cups_dest_t* dest) const;
 };
 
-struct DestInfoDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) DestInfoDeleter {
   void operator()(cups_dinfo_t* info) const;
 };
 
-struct OptionDeleter {
+struct COMPONENT_EXPORT(PRINT_BACKEND) OptionDeleter {
   void operator()(cups_option_t* option) const;
 };
 

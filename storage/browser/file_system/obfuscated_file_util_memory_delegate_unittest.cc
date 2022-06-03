@@ -5,6 +5,7 @@
 #include "storage/browser/file_system/obfuscated_file_util_memory_delegate.h"
 
 #include <memory>
+#include <string>
 
 #include "base/files/file.h"
 #include "base/files/file_path.h"
@@ -16,10 +17,21 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage {
+namespace {
+
+using CopyOrMoveOption = FileSystemOperation::CopyOrMoveOption;
+using CopyOrMoveOptionSet = FileSystemOperation::CopyOrMoveOptionSet;
+
+}  // namespace
 
 class ObfuscatedFileUtilMemoryDelegateTest : public testing::Test {
  public:
   ObfuscatedFileUtilMemoryDelegateTest() = default;
+
+  ObfuscatedFileUtilMemoryDelegateTest(
+      const ObfuscatedFileUtilMemoryDelegateTest&) = delete;
+  ObfuscatedFileUtilMemoryDelegateTest& operator=(
+      const ObfuscatedFileUtilMemoryDelegateTest&) = delete;
 
   void SetUp() override {
     ASSERT_TRUE(file_system_directory_.CreateUniqueTempDir());
@@ -55,8 +67,6 @@ class ObfuscatedFileUtilMemoryDelegateTest : public testing::Test {
  private:
   base::ScopedTempDir file_system_directory_;
   std::unique_ptr<ObfuscatedFileUtilMemoryDelegate> file_util_;
-
-  DISALLOW_COPY_AND_ASSIGN(ObfuscatedFileUtilMemoryDelegateTest);
 };
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CreateOrOpenFile) {
@@ -227,10 +237,8 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, TouchFileAndGetFileInfo) {
   ASSERT_EQ(false, info.is_directory);
   ASSERT_EQ(false, info.is_symbolic_link);
 
-  const base::Time new_accessed =
-      info.last_accessed + base::TimeDelta::FromHours(10);
-  const base::Time new_modified =
-      info.last_modified + base::TimeDelta::FromHours(5);
+  const base::Time new_accessed = info.last_accessed + base::Hours(10);
+  const base::Time new_modified = info.last_modified + base::Hours(5);
 
   EXPECT_EQ(base::File::FILE_OK,
             file_util()->Touch(file_name, new_accessed, new_modified));
@@ -258,10 +266,8 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFile) {
   base::FilePath from_file = Path("fromfile");
   base::FilePath to_file1 = Path("tofile1");
   base::FilePath to_file2 = Path("tofile2");
-  const storage::NativeFileUtil::CopyOrMoveMode nosync =
-      storage::NativeFileUtil::COPY_NOSYNC;
-  const storage::NativeFileUtil::CopyOrMoveMode sync =
-      storage::NativeFileUtil::COPY_SYNC;
+  const NativeFileUtil::CopyOrMoveMode nosync = NativeFileUtil::COPY_NOSYNC;
+  const NativeFileUtil::CopyOrMoveMode sync = NativeFileUtil::COPY_SYNC;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -275,11 +281,13 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFile) {
 
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CopyOrMoveFile(
-                from_file, to_file1, FileSystemOperation::OPTION_NONE, sync));
+                from_file, to_file1, FileSystemOperation::CopyOrMoveOptionSet(),
+                sync));
 
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CopyOrMoveFile(
-                from_file, to_file2, FileSystemOperation::OPTION_NONE, nosync));
+                from_file, to_file2, FileSystemOperation::CopyOrMoveOptionSet(),
+                nosync));
 
   EXPECT_TRUE(FileExists(from_file));
   EXPECT_EQ(1020, GetSize(from_file));
@@ -293,9 +301,10 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFile) {
             file_util()->CreateDirectory(dir, false, false));
   ASSERT_TRUE(file_util()->DirectoryExists(dir));
   base::FilePath to_dir_file = dir.AppendASCII("file");
-  ASSERT_EQ(base::File::FILE_OK, file_util()->CopyOrMoveFile(
-                                     from_file, to_dir_file,
-                                     FileSystemOperation::OPTION_NONE, nosync));
+  ASSERT_EQ(base::File::FILE_OK,
+            file_util()->CopyOrMoveFile(
+                from_file, to_dir_file,
+                FileSystemOperation::CopyOrMoveOptionSet(), nosync));
   EXPECT_TRUE(FileExists(to_dir_file));
   EXPECT_EQ(1020, GetSize(to_dir_file));
 }
@@ -311,30 +320,29 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyForeignFile) {
   char test_data[] = "0123456789";
   const int test_data_len = strlen(test_data);
 
-  const storage::NativeFileUtil::CopyOrMoveMode sync =
-      storage::NativeFileUtil::COPY_SYNC;
+  const NativeFileUtil::CopyOrMoveMode sync = NativeFileUtil::COPY_SYNC;
 
   // Test copying nonexistent file.
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      file_util()->CopyInForeignFile(from_file, valid_to_file,
-                                     FileSystemOperation::OPTION_NONE, sync));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyInForeignFile(
+                from_file, valid_to_file,
+                FileSystemOperation::CopyOrMoveOptionSet(), sync));
 
   // Create source file.
-  EXPECT_EQ(test_data_len,
-            base::WriteFile(from_file, test_data, test_data_len));
+  EXPECT_TRUE(base::WriteFile(from_file, test_data));
 
   // Test copying to a nonexistent directory.
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      file_util()->CopyInForeignFile(from_file, invalid_to_file,
-                                     FileSystemOperation::OPTION_NONE, sync));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyInForeignFile(
+                from_file, invalid_to_file,
+                FileSystemOperation::CopyOrMoveOptionSet(), sync));
   EXPECT_FALSE(FileExists(invalid_to_file));
 
   // Test copying to a valid path.
-  EXPECT_EQ(base::File::FILE_OK, file_util()->CopyInForeignFile(
-                                     from_file, valid_to_file,
-                                     FileSystemOperation::OPTION_NONE, sync));
+  EXPECT_EQ(base::File::FILE_OK,
+            file_util()->CopyInForeignFile(
+                from_file, valid_to_file,
+                FileSystemOperation::CopyOrMoveOptionSet(), sync));
   EXPECT_TRUE(FileExists(valid_to_file));
   EXPECT_EQ(test_data_len, GetSize(valid_to_file));
   scoped_refptr<net::IOBuffer> content =
@@ -346,18 +354,16 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyForeignFile) {
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFileNonExistingFile) {
-  const storage::NativeFileUtil::CopyOrMoveMode nosync =
-      storage::NativeFileUtil::COPY_NOSYNC;
+  const NativeFileUtil::CopyOrMoveMode nosync = NativeFileUtil::COPY_NOSYNC;
 
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      file_util()->CopyOrMoveFile(Path("nonexists"), Path("file"),
-                                  FileSystemOperation::OPTION_NONE, nosync));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyOrMoveFile(
+                Path("nonexists"), Path("file"),
+                FileSystemOperation::CopyOrMoveOptionSet(), nosync));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyDirectoryOverFile) {
-  const storage::NativeFileUtil::CopyOrMoveMode nosync =
-      storage::NativeFileUtil::COPY_NOSYNC;
+  const NativeFileUtil::CopyOrMoveMode nosync = NativeFileUtil::COPY_NOSYNC;
 
   base::FilePath dir = Path("dir");
   ASSERT_EQ(base::File::FILE_OK,
@@ -365,14 +371,14 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyDirectoryOverFile) {
 
   EXPECT_EQ(base::File::FILE_ERROR_NOT_A_FILE,
             file_util()->CopyOrMoveFile(
-                dir, Path("file"), FileSystemOperation::OPTION_NONE, nosync));
+                dir, Path("file"), FileSystemOperation::CopyOrMoveOptionSet(),
+                nosync));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFileOverDirectory) {
   base::FilePath file_name = Path("fromfile");
   base::FilePath dir = Path("dir");
-  const storage::NativeFileUtil::CopyOrMoveMode nosync =
-      storage::NativeFileUtil::COPY_NOSYNC;
+  const NativeFileUtil::CopyOrMoveMode nosync = NativeFileUtil::COPY_NOSYNC;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -380,31 +386,30 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFileOverDirectory) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateDirectory(dir, false, false));
 
-  EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
-            file_util()->CopyOrMoveFile(
-                file_name, dir, FileSystemOperation::OPTION_NONE, nosync));
+  EXPECT_EQ(
+      base::File::FILE_ERROR_INVALID_OPERATION,
+      file_util()->CopyOrMoveFile(
+          file_name, dir, FileSystemOperation::CopyOrMoveOptionSet(), nosync));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFileToNonExistingDirectory) {
   base::FilePath file_name = Path("fromfile");
-  const storage::NativeFileUtil::CopyOrMoveMode nosync =
-      storage::NativeFileUtil::COPY_NOSYNC;
+  const NativeFileUtil::CopyOrMoveMode nosync = NativeFileUtil::COPY_NOSYNC;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->EnsureFileExists(file_name, &created));
 
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      file_util()->CopyOrMoveFile(file_name, Path("nodir").AppendASCII("file"),
-                                  FileSystemOperation::OPTION_NONE, nosync));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyOrMoveFile(
+                file_name, Path("nodir").AppendASCII("file"),
+                FileSystemOperation::CopyOrMoveOptionSet(), nosync));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFileAsChildOfOtherFile) {
   base::FilePath from_file = Path("fromfile");
   base::FilePath to_file = Path("tofile");
-  const storage::NativeFileUtil::CopyOrMoveMode nosync =
-      storage::NativeFileUtil::COPY_NOSYNC;
+  const NativeFileUtil::CopyOrMoveMode nosync = NativeFileUtil::COPY_NOSYNC;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -412,18 +417,17 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, CopyFileAsChildOfOtherFile) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->EnsureFileExists(to_file, &created));
 
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      file_util()->CopyOrMoveFile(from_file, to_file.AppendASCII("file"),
-                                  FileSystemOperation::OPTION_NONE, nosync));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyOrMoveFile(
+                from_file, to_file.AppendASCII("file"),
+                FileSystemOperation::CopyOrMoveOptionSet(), nosync));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile) {
   base::FilePath from_file = Path("fromfile");
   base::FilePath to_file = Path("tofile");
 
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -437,7 +441,8 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile) {
 
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CopyOrMoveFile(
-                from_file, to_file, FileSystemOperation::OPTION_NONE, move));
+                from_file, to_file, FileSystemOperation::CopyOrMoveOptionSet(),
+                move));
 
   EXPECT_FALSE(FileExists(from_file));
   EXPECT_TRUE(FileExists(to_file));
@@ -453,30 +458,29 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile) {
             file_util()->CreateDirectory(dir, false, false));
   ASSERT_TRUE(file_util()->DirectoryExists(dir));
   base::FilePath to_dir_file = dir.AppendASCII("file");
-  ASSERT_EQ(base::File::FILE_OK, file_util()->CopyOrMoveFile(
-                                     from_file, to_dir_file,
-                                     FileSystemOperation::OPTION_NONE, move));
+  ASSERT_EQ(base::File::FILE_OK,
+            file_util()->CopyOrMoveFile(
+                from_file, to_dir_file,
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
   EXPECT_FALSE(FileExists(from_file));
   EXPECT_TRUE(FileExists(to_dir_file));
   EXPECT_EQ(1020, GetSize(to_dir_file));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveNonExistingFile) {
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
 
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      file_util()->CopyOrMoveFile(Path("nonexists"), Path("file"),
-                                  FileSystemOperation::OPTION_NONE, move));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyOrMoveFile(
+                Path("nonexists"), Path("file"),
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveDirectoryOverDirectory) {
   base::FilePath dir = Path("dir");
   base::FilePath dir2 = Path("dir2");
 
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
 
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateDirectory(dir, false, false));
@@ -484,7 +488,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveDirectoryOverDirectory) {
             file_util()->CreateDirectory(dir2, false, false));
 
   base::File::Error result = file_util()->CopyOrMoveFile(
-      dir, dir2, FileSystemOperation::OPTION_NONE, move);
+      dir, dir2, FileSystemOperation::CopyOrMoveOptionSet(), move);
 #if defined(OS_WIN)
   EXPECT_EQ(base::File::FILE_ERROR_NOT_A_FILE, result);
 #else
@@ -496,8 +500,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFileOverDirectory) {
   base::FilePath from_file = Path("fromfile");
   base::FilePath dir = Path("dir");
 
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -505,33 +508,32 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFileOverDirectory) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateDirectory(dir, false, false));
 
-  EXPECT_EQ(base::File::FILE_ERROR_INVALID_OPERATION,
-            file_util()->CopyOrMoveFile(
-                from_file, dir, FileSystemOperation::OPTION_NONE, move));
+  EXPECT_EQ(
+      base::File::FILE_ERROR_INVALID_OPERATION,
+      file_util()->CopyOrMoveFile(
+          from_file, dir, FileSystemOperation::CopyOrMoveOptionSet(), move));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFileToNonExistingDirectory) {
   base::FilePath from_file = Path("fromfile");
 
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->EnsureFileExists(from_file, &created));
 
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      file_util()->CopyOrMoveFile(from_file, Path("nodir").AppendASCII("file"),
-                                  FileSystemOperation::OPTION_NONE, move));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyOrMoveFile(
+                from_file, Path("nodir").AppendASCII("file"),
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFileAsChildOfOtherFile) {
   base::FilePath from_file = Path("fromfile");
   base::FilePath to_file = Path("tofile");
 
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -539,10 +541,10 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFileAsChildOfOtherFile) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->EnsureFileExists(to_file, &created));
 
-  EXPECT_EQ(
-      base::File::FILE_ERROR_NOT_FOUND,
-      file_util()->CopyOrMoveFile(from_file, to_file.AppendASCII("file"),
-                                  FileSystemOperation::OPTION_NONE, move));
+  EXPECT_EQ(base::File::FILE_ERROR_NOT_FOUND,
+            file_util()->CopyOrMoveFile(
+                from_file, to_file.AppendASCII("file"),
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 }
 
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile_Directory) {
@@ -554,8 +556,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile_Directory) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateDirectory(from_directory, false /* exclusive */,
                                          false /* recursive */));
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->EnsureFileExists(from_file, &created));
@@ -566,9 +567,10 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile_Directory) {
   EXPECT_TRUE(FileExists(from_file));
   EXPECT_EQ(1020, GetSize(from_file));
 
-  ASSERT_EQ(base::File::FILE_OK, file_util()->CopyOrMoveFile(
-                                     from_directory, to_directory,
-                                     FileSystemOperation::OPTION_NONE, move));
+  ASSERT_EQ(base::File::FILE_OK,
+            file_util()->CopyOrMoveFile(
+                from_directory, to_directory,
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 
   EXPECT_FALSE(file_util()->DirectoryExists(from_directory));
   EXPECT_FALSE(FileExists(from_file));
@@ -589,8 +591,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile_OverwriteEmptyDirectory) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CreateDirectory(to_directory, false /* exclusive */,
                                          false /* recursive */));
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->EnsureFileExists(from_file, &created));
@@ -600,9 +601,10 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile_OverwriteEmptyDirectory) {
 
   EXPECT_TRUE(FileExists(from_file));
   EXPECT_EQ(1020, GetSize(from_file));
-  ASSERT_EQ(base::File::FILE_OK, file_util()->CopyOrMoveFile(
-                                     from_directory, to_directory,
-                                     FileSystemOperation::OPTION_NONE, move));
+  ASSERT_EQ(base::File::FILE_OK,
+            file_util()->CopyOrMoveFile(
+                from_directory, to_directory,
+                FileSystemOperation::CopyOrMoveOptionSet(), move));
 
   EXPECT_FALSE(file_util()->DirectoryExists(from_directory));
   EXPECT_FALSE(FileExists(from_file));
@@ -616,8 +618,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_NoSync) {
   base::FilePath from_file = Path("fromfile");
   base::FilePath to_file = Path("tofile");
 
-  const storage::NativeFileUtil::CopyOrMoveMode nosync =
-      storage::NativeFileUtil::COPY_NOSYNC;
+  const NativeFileUtil::CopyOrMoveMode nosync = NativeFileUtil::COPY_NOSYNC;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -632,10 +633,11 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_NoSync) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->CopyOrMoveFile(
                 from_file, to_file,
-                FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED, nosync));
+                CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified),
+                nosync));
+  ASSERT_TRUE(FileExists(to_file));
 
   base::File::Info file_info2;
-  ASSERT_TRUE(FileExists(to_file));
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->GetFileInfo(to_file, &file_info2));
   EXPECT_EQ(file_info1.last_modified, file_info2.last_modified);
@@ -645,8 +647,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_Sync) {
   base::FilePath from_file = Path("fromfile");
   base::FilePath to_file = Path("tofile");
 
-  const storage::NativeFileUtil::CopyOrMoveMode sync =
-      storage::NativeFileUtil::COPY_SYNC;
+  const NativeFileUtil::CopyOrMoveMode sync = NativeFileUtil::COPY_SYNC;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -658,10 +659,11 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_Sync) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->GetFileInfo(from_file, &file_info1));
 
-  ASSERT_EQ(base::File::FILE_OK,
-            file_util()->CopyOrMoveFile(
-                from_file, to_file,
-                FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED, sync));
+  ASSERT_EQ(
+      base::File::FILE_OK,
+      file_util()->CopyOrMoveFile(
+          from_file, to_file,
+          CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified), sync));
   ASSERT_TRUE(FileExists(to_file));
 
   base::File::Info file_info2;
@@ -674,8 +676,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_Move) {
   base::FilePath from_file = Path("fromfile");
   base::FilePath to_file = Path("tofile");
 
-  const storage::NativeFileUtil::CopyOrMoveMode move =
-      storage::NativeFileUtil::MOVE;
+  const NativeFileUtil::CopyOrMoveMode move = NativeFileUtil::MOVE;
 
   bool created = false;
   ASSERT_EQ(base::File::FILE_OK,
@@ -687,10 +688,11 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, PreserveLastModified_Move) {
   ASSERT_EQ(base::File::FILE_OK,
             file_util()->GetFileInfo(from_file, &file_info1));
 
-  ASSERT_EQ(base::File::FILE_OK,
-            file_util()->CopyOrMoveFile(
-                from_file, to_file,
-                FileSystemOperation::OPTION_PRESERVE_LAST_MODIFIED, move));
+  ASSERT_EQ(
+      base::File::FILE_OK,
+      file_util()->CopyOrMoveFile(
+          from_file, to_file,
+          CopyOrMoveOptionSet(CopyOrMoveOption::kPreserveLastModified), move));
   ASSERT_TRUE(FileExists(to_file));
 
   base::File::Info file_info2;

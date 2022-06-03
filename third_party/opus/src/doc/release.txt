@@ -15,7 +15,7 @@
  - svn commit
  - Copy to archive.mozilla.org/pub/opus/
  - Update checksum files there as well.
-- Add release notes to https://git.xiph.org/opus-website.git
+- Add release notes to https://gitlab.xiph.org/xiph/opus-website.git
 - Update links and checksums on the downloads page.
 - Add a copy of the documentation to <https://www.opus-codec.org/docs/>
   and update the links.
@@ -25,7 +25,7 @@ Releases are commited to https://svn.xiph.org/releases/opus/
 which propagates to downloads.xiph.org, and copied manually
 to https://archive.mozilla.org/pub/opus/
 
-Website updates are committed to https://git.xiph.org/opus-website.git
+Website updates are committed to https://gitlab.xiph.org/xiph/opus-website.git
 which propagates to https://opus-codec.org/
 
 == Binary release ==

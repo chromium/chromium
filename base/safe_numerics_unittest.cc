@@ -9,6 +9,7 @@
 #include <type_traits>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 
 // WARNING: This block must come before the base/numerics headers are included.
 // These tests deliberately cause arithmetic boundary errors. If the compiler is
@@ -29,7 +30,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/numerics/safe_math.h"
 #include "base/test/gtest_util.h"
-#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(COMPILER_MSVC) && defined(ARCH_CPU_32_BITS)
@@ -298,12 +298,26 @@ static void TestSpecializedArithmetic(
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(-1).UnsignedAbs());
 
   // Modulus is legal only for integers.
-  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>() % 1);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(0) % 2);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(0) % 1);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(0) % -1);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(0) % -2);
+  TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1) % 2);
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(1) % 1);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(1) % -1);
+  TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(1) % -2);
   TEST_EXPECTED_VALUE(-1, CheckedNumeric<Dst>(-1) % 2);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(-1) % 1);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(-1) % -1);
   TEST_EXPECTED_VALUE(-1, CheckedNumeric<Dst>(-1) % -2);
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(DstLimits::lowest()) % 2);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(DstLimits::lowest()) % 1);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(DstLimits::lowest()) % -1);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(DstLimits::lowest()) % -2);
   TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(DstLimits::max()) % 2);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(DstLimits::max()) % 1);
+  TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(DstLimits::max()) % -1);
+  TEST_EXPECTED_VALUE(1, CheckedNumeric<Dst>(DstLimits::max()) % -2);
   // Test all the different modulus combinations.
   TEST_EXPECTED_VALUE(0, CheckedNumeric<Dst>(1) % CheckedNumeric<Dst>(1));
   TEST_EXPECTED_VALUE(0, 1 % CheckedNumeric<Dst>(1));
@@ -334,12 +348,26 @@ static void TestSpecializedArithmetic(
   TEST_EXPECTED_FAILURE(CheckedNumeric<Dst>(1) >> negative_one);
 
   // Modulus is legal only for integers.
-  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>() % 1);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0) % 2);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0) % 1);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0) % -1);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(0) % -2);
+  TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1) % 2);
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(1) % 1);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(1) % -1);
+  TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(1) % -2);
   TEST_EXPECTED_VALUE(-1, ClampedNumeric<Dst>(-1) % 2);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(-1) % 1);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(-1) % -1);
   TEST_EXPECTED_VALUE(-1, ClampedNumeric<Dst>(-1) % -2);
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(DstLimits::lowest()) % 2);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(DstLimits::lowest()) % 1);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(DstLimits::lowest()) % -1);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(DstLimits::lowest()) % -2);
   TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(DstLimits::max()) % 2);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(DstLimits::max()) % 1);
+  TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(DstLimits::max()) % -1);
+  TEST_EXPECTED_VALUE(1, ClampedNumeric<Dst>(DstLimits::max()) % -2);
   // Test all the different modulus combinations.
   TEST_EXPECTED_VALUE(0, ClampedNumeric<Dst>(1) % ClampedNumeric<Dst>(1));
   TEST_EXPECTED_VALUE(0, 1 % ClampedNumeric<Dst>(1));
@@ -969,7 +997,7 @@ struct TestNumericConversion<Dst, Src, SIGN_PRESERVING_VALUE_PRESERVING> {
         // At least twice larger type.
         TEST_EXPECTED_SUCCESS(SrcLimits::max() * checked_dst);
         TEST_EXPECTED_VALUE(SrcLimits::max() * clamped_dst,
-                            Dst(SrcLimits::max()) * SrcLimits::max());
+                            Dst(SrcLimits::max()) * Dst(SrcLimits::max()));
       } else {  // Larger, but not at least twice as large.
         TEST_EXPECTED_FAILURE(SrcLimits::max() * checked_dst);
         TEST_EXPECTED_SUCCESS(checked_dst + 1);
@@ -1507,6 +1535,11 @@ TEST(SafeNumerics, IsValueInRangeForNumericType) {
   EXPECT_FALSE(IsValueInRangeForNumericType<uint32_t>(
       std::numeric_limits<int64_t>::lowest()));
 
+  // Converting to integer types will discard the fractional part first, so -0.9
+  // will be truncated to -0.0.
+  EXPECT_TRUE(IsValueInRangeForNumericType<uint32_t>(-0.9));
+  EXPECT_FALSE(IsValueInRangeForNumericType<uint32_t>(-1.0));
+
   EXPECT_TRUE(IsValueInRangeForNumericType<int32_t>(0));
   EXPECT_TRUE(IsValueInRangeForNumericType<int32_t>(1));
   EXPECT_TRUE(IsValueInRangeForNumericType<int32_t>(2));
@@ -1540,6 +1573,11 @@ TEST(SafeNumerics, IsValueInRangeForNumericType) {
   EXPECT_FALSE(IsValueInRangeForNumericType<uint64_t>(INT64_C(-1)));
   EXPECT_FALSE(IsValueInRangeForNumericType<uint64_t>(
       std::numeric_limits<int64_t>::lowest()));
+
+  // Converting to integer types will discard the fractional part first, so -0.9
+  // will be truncated to -0.0.
+  EXPECT_TRUE(IsValueInRangeForNumericType<uint64_t>(-0.9));
+  EXPECT_FALSE(IsValueInRangeForNumericType<uint64_t>(-1.0));
 
   EXPECT_TRUE(IsValueInRangeForNumericType<int64_t>(0));
   EXPECT_TRUE(IsValueInRangeForNumericType<int64_t>(1));
@@ -1581,6 +1619,8 @@ TEST(SafeNumerics, CompoundNumericOperations) {
   EXPECT_EQ(2, d.ValueOrDie());
   d *= d;
   EXPECT_EQ(4, d.ValueOrDie());
+  d *= 0.5;
+  EXPECT_EQ(2, d.ValueOrDie());
 
   CheckedNumeric<int> too_large = std::numeric_limits<int>::max();
   EXPECT_TRUE(too_large.IsValid());
@@ -1630,6 +1670,119 @@ TEST(SafeNumerics, VariadicNumericOperations) {
     auto h = ClampRsh(ClampAdd(1, 1, 1, 1), ClampSub(4U, 2));
     EXPECT_EQ(static_cast<decltype(h)::type>(1), h);
   }
+}
+
+TEST(SafeNumerics, CeilInt) {
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
+  constexpr float kMin = std::numeric_limits<int>::min();
+  constexpr float kInfinity = std::numeric_limits<float>::infinity();
+  constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
+
+  constexpr int kIntMax = std::numeric_limits<int>::max();
+  constexpr int kIntMin = std::numeric_limits<int>::min();
+
+  EXPECT_EQ(kIntMax, ClampCeil(kInfinity));
+  EXPECT_EQ(kIntMax, ClampCeil(kMax));
+  EXPECT_EQ(kIntMax, ClampCeil(kMax + 100.0f));
+  EXPECT_EQ(0, ClampCeil(kNaN));
+
+  EXPECT_EQ(-100, ClampCeil(-100.5f));
+  EXPECT_EQ(0, ClampCeil(0.0f));
+  EXPECT_EQ(101, ClampCeil(100.5f));
+
+  EXPECT_EQ(kIntMin, ClampCeil(-kInfinity));
+  EXPECT_EQ(kIntMin, ClampCeil(kMin));
+  EXPECT_EQ(kIntMin, ClampCeil(kMin - 100.0f));
+  EXPECT_EQ(0, ClampCeil(-kNaN));
+}
+
+TEST(SafeNumerics, FloorInt) {
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
+  constexpr float kMin = std::numeric_limits<int>::min();
+  constexpr float kInfinity = std::numeric_limits<float>::infinity();
+  constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
+
+  constexpr int kIntMax = std::numeric_limits<int>::max();
+  constexpr int kIntMin = std::numeric_limits<int>::min();
+
+  EXPECT_EQ(kIntMax, ClampFloor(kInfinity));
+  EXPECT_EQ(kIntMax, ClampFloor(kMax));
+  EXPECT_EQ(kIntMax, ClampFloor(kMax + 100.0f));
+  EXPECT_EQ(0, ClampFloor(kNaN));
+
+  EXPECT_EQ(-101, ClampFloor(-100.5f));
+  EXPECT_EQ(0, ClampFloor(0.0f));
+  EXPECT_EQ(100, ClampFloor(100.5f));
+
+  EXPECT_EQ(kIntMin, ClampFloor(-kInfinity));
+  EXPECT_EQ(kIntMin, ClampFloor(kMin));
+  EXPECT_EQ(kIntMin, ClampFloor(kMin - 100.0f));
+  EXPECT_EQ(0, ClampFloor(-kNaN));
+}
+
+TEST(SafeNumerics, RoundInt) {
+  constexpr float kMax = static_cast<float>(std::numeric_limits<int>::max());
+  constexpr float kMin = std::numeric_limits<int>::min();
+  constexpr float kInfinity = std::numeric_limits<float>::infinity();
+  constexpr float kNaN = std::numeric_limits<float>::quiet_NaN();
+
+  constexpr int kIntMax = std::numeric_limits<int>::max();
+  constexpr int kIntMin = std::numeric_limits<int>::min();
+
+  EXPECT_EQ(kIntMax, ClampRound(kInfinity));
+  EXPECT_EQ(kIntMax, ClampRound(kMax));
+  EXPECT_EQ(kIntMax, ClampRound(kMax + 100.0f));
+  EXPECT_EQ(0, ClampRound(kNaN));
+
+  EXPECT_EQ(-100, ClampRound(-100.1f));
+  EXPECT_EQ(-101, ClampRound(-100.5f));
+  EXPECT_EQ(-101, ClampRound(-100.9f));
+  EXPECT_EQ(0, ClampRound(0.0f));
+  EXPECT_EQ(100, ClampRound(100.1f));
+  EXPECT_EQ(101, ClampRound(100.5f));
+  EXPECT_EQ(101, ClampRound(100.9f));
+
+  EXPECT_EQ(kIntMin, ClampRound(-kInfinity));
+  EXPECT_EQ(kIntMin, ClampRound(kMin));
+  EXPECT_EQ(kIntMin, ClampRound(kMin - 100.0f));
+  EXPECT_EQ(0, ClampRound(-kNaN));
+}
+
+TEST(SafeNumerics, Int64) {
+  constexpr double kMax =
+      static_cast<double>(std::numeric_limits<int64_t>::max());
+  constexpr double kMin = std::numeric_limits<int64_t>::min();
+  constexpr double kInfinity = std::numeric_limits<double>::infinity();
+  constexpr double kNaN = std::numeric_limits<double>::quiet_NaN();
+
+  constexpr int64_t kInt64Max = std::numeric_limits<int64_t>::max();
+  constexpr int64_t kInt64Min = std::numeric_limits<int64_t>::min();
+
+  EXPECT_EQ(kInt64Max, ClampFloor<int64_t>(kInfinity));
+  EXPECT_EQ(kInt64Max, ClampCeil<int64_t>(kInfinity));
+  EXPECT_EQ(kInt64Max, ClampRound<int64_t>(kInfinity));
+  EXPECT_EQ(kInt64Max, ClampFloor<int64_t>(kMax));
+  EXPECT_EQ(kInt64Max, ClampCeil<int64_t>(kMax));
+  EXPECT_EQ(kInt64Max, ClampRound<int64_t>(kMax));
+  EXPECT_EQ(kInt64Max, ClampFloor<int64_t>(kMax + 100.0));
+  EXPECT_EQ(kInt64Max, ClampCeil<int64_t>(kMax + 100.0));
+  EXPECT_EQ(kInt64Max, ClampRound<int64_t>(kMax + 100.0));
+  EXPECT_EQ(0, ClampFloor<int64_t>(kNaN));
+  EXPECT_EQ(0, ClampCeil<int64_t>(kNaN));
+  EXPECT_EQ(0, ClampRound<int64_t>(kNaN));
+
+  EXPECT_EQ(kInt64Min, ClampFloor<int64_t>(-kInfinity));
+  EXPECT_EQ(kInt64Min, ClampCeil<int64_t>(-kInfinity));
+  EXPECT_EQ(kInt64Min, ClampRound<int64_t>(-kInfinity));
+  EXPECT_EQ(kInt64Min, ClampFloor<int64_t>(kMin));
+  EXPECT_EQ(kInt64Min, ClampCeil<int64_t>(kMin));
+  EXPECT_EQ(kInt64Min, ClampRound<int64_t>(kMin));
+  EXPECT_EQ(kInt64Min, ClampFloor<int64_t>(kMin - 100.0));
+  EXPECT_EQ(kInt64Min, ClampCeil<int64_t>(kMin - 100.0));
+  EXPECT_EQ(kInt64Min, ClampRound<int64_t>(kMin - 100.0));
+  EXPECT_EQ(0, ClampFloor<int64_t>(-kNaN));
+  EXPECT_EQ(0, ClampCeil<int64_t>(-kNaN));
+  EXPECT_EQ(0, ClampRound<int64_t>(-kNaN));
 }
 
 #if defined(__clang__)

@@ -13,10 +13,9 @@
 // This file defines IfaddrsToNetworkInterfaceList() so it can be called in
 // unittests.
 
+#include "build/build_config.h"
 #include "net/base/net_export.h"
 #include "net/base/network_interfaces.h"
-
-#include <string>
 
 struct ifaddrs;
 
@@ -25,8 +24,10 @@ namespace internal {
 
 class NET_EXPORT_PRIVATE IPAttributesGetter {
  public:
-  IPAttributesGetter() {}
-  virtual ~IPAttributesGetter() {}
+  IPAttributesGetter() = default;
+  IPAttributesGetter(const IPAttributesGetter&) = delete;
+  IPAttributesGetter& operator=(const IPAttributesGetter&) = delete;
+  virtual ~IPAttributesGetter() = default;
   virtual bool IsInitialized() const = 0;
 
   // Returns false if the interface must be skipped. Otherwise sets |attributes|
@@ -37,9 +38,6 @@ class NET_EXPORT_PRIVATE IPAttributesGetter {
   // Returns interface type for the given interface.
   virtual NetworkChangeNotifier::ConnectionType GetNetworkInterfaceType(
       const ifaddrs* if_addr) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IPAttributesGetter);
 };
 
 // Converts ifaddrs list returned by getifaddrs() to NetworkInterfaceList. Also
@@ -50,6 +48,12 @@ NET_EXPORT_PRIVATE bool IfaddrsToNetworkInterfaceList(
     const ifaddrs* interfaces,
     IPAttributesGetter* ip_attributes_getter,
     NetworkInterfaceList* networks);
+
+#if defined(OS_ANDROID)
+// A version of GetNetworkList() that uses getifaddrs(). Only callable on
+// Android N+ where getifaddrs() was available.
+bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks, int policy);
+#endif
 
 }  // namespace internal
 }  // namespace net

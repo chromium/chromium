@@ -171,7 +171,7 @@ void MojoDataPipeWriter::Write(const uint8_t* buffer,
   // Cannot write if the pipe is already closed.
   if (!producer_handle_.is_valid()) {
     DVLOG(1) << __func__
-             << ": Failed to write buffer becuase the pipe is already closed";
+             << ": Failed to write buffer because the pipe is already closed";
     std::move(done_cb).Run(false);
     return;
   }

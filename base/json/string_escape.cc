@@ -93,7 +93,7 @@ bool EscapeJSONStringImpl(const S& str, bool put_in_quotes, std::string* dest) {
     uint32_t code_point;
     if (!ReadUnicodeCharacter(str.data(), length, &i, &code_point) ||
         code_point == static_cast<decltype(code_point)>(CBU_SENTINEL) ||
-        !IsValidCharacter(code_point)) {
+        !IsValidCodepoint(code_point)) {
       code_point = kReplacementCodePoint;
       did_replacement = true;
     }

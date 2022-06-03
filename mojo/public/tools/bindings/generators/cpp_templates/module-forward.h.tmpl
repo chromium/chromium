@@ -43,7 +43,7 @@ namespace {{variant}} {
 #include <stdint.h>
 {%- endif %}
 
-{% if structs|length -%}
+{% if structs|length or unions|length -%}
 #include "mojo/public/cpp/bindings/struct_forward.h"
 {%- endif %}
 
@@ -85,27 +85,12 @@ using {{enum|get_name_for_kind(flatten_nested_kind=True)}} = mojo::NativeEnum;
 {%-   endif %}
 {%- endfor %}
 
+{%- for interface in interfaces %}
+class {{interface.name}}InterfaceBase;
+{%- endfor %}
+
 {%-   for namespace in namespaces_as_array %}
 }  // namespace {{namespace}}
-{%-   endfor %}
-{%- endif %}
-
-{#--- WTF enum hashing #}
-{%- from "enum_macros.tmpl" import enum_hash_blink_forward%}
-{%- if for_blink %}
-{%-   if all_enums %}
-
-namespace WTF {
-template <typename T>
-struct DefaultHash;
-}
-
-{%-   endif %}
-
-{%-   for enum in all_enums %}
-{%-     if not enum|is_native_only_kind %}
-{{enum_hash_blink_forward(enum)}}
-{%-     endif %}
 {%-   endfor %}
 {%- endif %}
 
@@ -142,17 +127,25 @@ using {{enum|get_name_for_kind(flatten_nested_kind=True)}} = mojo::NativeEnum;
 
 {%- endif %}
 
-{#--- Enums #}
+{#--- Enum and interface base aliases #}
 {%- if variant %}
+{%-   if enum or interfaces %}
+// Aliases for definition in the parent namespace.
+{%-   endif %}
 {%-   for enum in enums %}
-using {{enum.name}} = {{enum.name}};  // Alias for definition in the parent namespace.
+using {{enum.name}} = {{enum.name}};
+{%-   endfor %}
+{%-   for interface in interfaces %}
+using {{interface.name}}InterfaceBase = {{interface.name}}InterfaceBase;
 {%-   endfor %}
 {%- endif %}
 
-{#--- Constants #}
+{#--- Constants that do not rely on other headers (basic types) #}
 {%- for constant in module.constants %}
+{%-  if not constant.kind|is_enum_kind %}
 {{ kythe_annotation("%s.%s"|format(module_prefix, constant.name)) }}
 {{constant|format_constant_declaration}};
+{%- endif %}
 {%- endfor %}
 
 {#--- Struct Forward Declarations -#}
@@ -174,9 +167,9 @@ using {{struct.name}}Ptr = mojo::StructPtr<{{struct.name}}>;
 {%  for union in unions %}
 class {{union.name}};
 {%    if union|should_inline_union %}
-typedef mojo::InlinedStructPtr<{{union.name}}> {{union.name}}Ptr;
+using {{union.name}}Ptr = mojo::InlinedStructPtr<{{union.name}}>;
 {%    else %}
-typedef mojo::StructPtr<{{union.name}}> {{union.name}}Ptr;
+using {{union.name}}Ptr = mojo::StructPtr<{{union.name}}>;
 {%    endif %}
 {%- endfor %}
 
@@ -187,15 +180,8 @@ class {{interface.name}};
 {{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
 using {{interface.name}}Ptr = mojo::InterfacePtr<{{interface.name}}>;
 using {{interface.name}}PtrInfo = mojo::InterfacePtrInfo<{{interface.name}}>;
-using ThreadSafe{{interface.name}}Ptr =
-    mojo::ThreadSafeInterfacePtr<{{interface.name}}>;
 {{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
 using {{interface.name}}Request = mojo::InterfaceRequest<{{interface.name}}>;
-{{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
-using {{interface.name}}AssociatedPtr =
-    mojo::AssociatedInterfacePtr<{{interface.name}}>;
-using ThreadSafe{{interface.name}}AssociatedPtr =
-    mojo::ThreadSafeAssociatedInterfacePtr<{{interface.name}}>;
 using {{interface.name}}AssociatedPtrInfo =
     mojo::AssociatedInterfacePtrInfo<{{interface.name}}>;
 {{ kythe_annotation("%s.%s"|format(module_prefix, interface.name)) }}
@@ -207,9 +193,5 @@ using {{interface.name}}AssociatedRequest =
 {{namespace_end()}}
 
 {#- TODO(tikuta): Use forward declaration of native enum/struct here. #}
-
-{%- for header in extra_public_headers %}
-#include "{{header}}"
-{%- endfor %}
 
 #endif  // {{header_guard}}

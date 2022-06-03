@@ -35,9 +35,11 @@ class CORE_EXPORT HTMLDocument : public Document {
 
  public:
   explicit HTMLDocument(
-      const DocumentInit& = DocumentInit::Create(),
+      const DocumentInit&,
       DocumentClassFlags extended_document_classes = kDefaultDocumentClass);
   ~HTMLDocument() override;
+
+  static HTMLDocument* CreateForTest();
 
   void AddNamedItem(const AtomicString& name);
   void RemoveNamedItem(const AtomicString& name);
@@ -55,7 +57,12 @@ inline bool HTMLDocument::HasNamedItem(const AtomicString& name) {
   return named_item_counts_.Contains(name);
 }
 
-DEFINE_DOCUMENT_TYPE_CASTS(HTMLDocument);
+template <>
+struct DowncastTraits<HTMLDocument> {
+  static bool AllowFrom(const Document& document) {
+    return document.IsHTMLDocument();
+  }
+};
 
 }  // namespace blink
 

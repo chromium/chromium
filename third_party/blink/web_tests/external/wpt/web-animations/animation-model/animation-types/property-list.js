@@ -1,6 +1,6 @@
 'use strict';
 
-const gCSSProperties = {
+const gCSSProperties1 = {
   'align-content': {
     // https://drafts.csswg.org/css-align/#propdef-align-content
     types: [
@@ -599,7 +599,7 @@ const gCSSProperties = {
     types: [
       'fontVariationSettings',
       { type: 'discrete',
-        options: [ ['"wght" 1.1, "wdth" 1', '"wdth" 5'],
+        options: [ ['"wdth" 1, "wght" 1.1', '"wdth" 5'],
                    ['"wdth" 5', 'normal']
                  ] },
     ]
@@ -701,6 +701,9 @@ const gCSSProperties = {
       { type: 'discrete', options: [ [ '1 2', '3 4' ] ] }
     ]
   },
+};
+
+const gCSSProperties2 = {
   'inline-size': {
     // https://drafts.csswg.org/css-logical-props/#propdef-inline-size
     types: [
@@ -1256,12 +1259,6 @@ const gCSSProperties = {
     // https://svgwg.org/svg2-draft/text.html#TextAnchorProperty
     types: [
       { type: 'discrete', options: [ [ 'middle', 'end' ] ] }
-    ]
-  },
-  'text-combine-upright': {
-    // https://drafts.csswg.org/css-writing-modes-3/#propdef-text-combine-upright
-    types: [
-      { type: 'discrete', options: [ [ 'all', 'none' ] ] }
     ]
   },
   'text-decoration-color': {

@@ -2,107 +2,23 @@
 <html dir="$i18n{textdirection}" lang="$i18n{language}">
   <head>
     <meta charset="utf-8">
-    <link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-    <link rel="import" href="chrome://resources/html/polymer.html">
-    <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
-    <link rel="import" href="signin_shared_old_css.html">
     <link rel="stylesheet" href="chrome://resources/css/md_colors.css">
-    <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
-    <link rel="import" href="chrome://resources/html/cr.html">
-    <link rel="import" href="chrome://resources/html/load_time_data.html">
-    <link rel="import" href="chrome://resources/html/util.html">
-    <custom-style>
-      <style include="signin-dialog-shared">
-        @media (prefers-color-scheme: dark) {
-          html {
-            background: var(--md-background-color);
-          }
-        }
+    <script type="module" src="signin_error_app.js"></script>
+    <style>
+      body {
+        margin: 0;
+      }
 
-        .details {
-          line-height: 20px;
-          margin-bottom: 8px;
-          margin-top: 16px;
-          padding: 0 24px;
+      @media (prefers-color-scheme: dark) {
+        html {
+          background: var(--md-background-color);
         }
-
-        .details p {
-          margin-bottom: 0;
-        }
-
-        #closeButton {
-          margin-inline-start: 8px;
-        }
-
-        #normal-error-message p:empty,
-        #normal-error-message a:empty {
-          display: none;
-        }
-
-        #profile-blocking-error-message {
-          margin-top: 30px;
-        }
-
-        #profile-blocking-error-message p {
-          background-position: 0 3px;
-          background-repeat: no-repeat;
-          background-size: 20px;
-          line-height: 18px;
-          padding-inline-start: 35px;
-        }
-
-        html[dir=rtl] #profile-blocking-error-message p {
-          background-position: right 3px;
-        }
-
-        #profile-blocking-error-message p:empty {
-          display: none;
-        }
-
-        #profile-blocking-error-message p:nth-child(1) {
-          background-image:
-            url(../../../../../ui/webui/resources/images/business.svg);
-        }
-
-        #profile-blocking-error-message p:nth-child(2) {
-          background-image:
-            url(../../../../../ui/webui/resources/images/info.svg);
-        }
-
-<if expr="is_macosx or is_linux">
-        #closeButton {
-          margin-inline-end: 8px;
-          margin-inline-start: 0;
-        }
-</if>
-      </style>
-    </custom-style>
+      }
+    </style>
   </head>
   <body>
-    <div class="container">
-      <div class="top-title-bar">$i18n{signinErrorTitle}</div>
-      <div id="normal-error-message" class="details">
-        <p>$i18nRaw{signinErrorMessage}</p>
-        <a id="learnMoreLink" href="#">$i18nRaw{signinErrorLearnMore}</a>
-      </div>
-      <div id="profile-blocking-error-message" class="details">
-        <p>$i18n{profileBlockedMessage}</p>
-        <p>$i18n{profileBlockedAddPersonSuggestion}</p>
-        <p>$i18n{profileBlockedRemoveProfileSuggestion}</p>
-      </div>
-      <div class="action-container">
-        <cr-button class="action-button" id="switchButton">
-          $i18n{signinErrorSwitchLabel}
-        </cr-button>
-        <cr-button id="closeButton">
-          $i18n{signinErrorCloseLabel}
-        </cr-button>
-        <cr-button id="confirmButton" hidden>
-          $i18n{signinErrorOkLabel}
-        </cr-button>
-      </div>
-    </div>
+    <signin-error-app></signin-error-app>
   </body>
-  <script src="signin_error.js"></script>
-  <script src="chrome://signin-error/strings.js"></script>
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
+  <script type="module" src="signin_error.js"></script>
 </html>

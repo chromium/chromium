@@ -10,7 +10,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/time/time.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "url/gurl.h"
 
@@ -34,6 +36,7 @@ class CONTENT_EXPORT PushMessagingService {
   using RegisterCallback =
       base::OnceCallback<void(const std::string& registration_id,
                               const GURL& endpoint,
+                              const absl::optional<base::Time>& expiration_time,
                               const std::vector<uint8_t>& p256dh,
                               const std::vector<uint8_t>& auth,
                               blink::mojom::PushRegistrationStatus status)>;
@@ -42,10 +45,18 @@ class CONTENT_EXPORT PushMessagingService {
   using SubscriptionInfoCallback =
       base::OnceCallback<void(bool is_valid,
                               const GURL& endpoint,
+                              const absl::optional<base::Time>& expiration_time,
                               const std::vector<uint8_t>& p256dh,
                               const std::vector<uint8_t>& auth)>;
-  using StringCallback = base::OnceCallback<
-      void(const std::string& data, bool success, bool not_found)>;
+  using RegistrationUserDataCallback =
+      base::OnceCallback<void(const std::vector<std::string>& data)>;
+
+  using SWDataCallback =
+      base::OnceCallback<void(const std::string& sender_id,
+                              const std::string& subscription_id)>;
+
+  using SenderIdCallback =
+      base::OnceCallback<void(const std::string& sender_id)>;
 
   virtual ~PushMessagingService() {}
 
@@ -57,7 +68,7 @@ class CONTENT_EXPORT PushMessagingService {
   virtual void SubscribeFromDocument(
       const GURL& requesting_origin,
       int64_t service_worker_registration_id,
-      int renderer_id,
+      int render_process_id,
       int render_frame_id,
       blink::mojom::PushSubscriptionOptionsPtr options,
       bool user_gesture,
@@ -114,7 +125,14 @@ class CONTENT_EXPORT PushMessagingService {
   static void GetSenderId(BrowserContext* browser_context,
                           const GURL& origin,
                           int64_t service_worker_registration_id,
-                          StringCallback callback);
+                          SenderIdCallback callback);
+
+  // Get |sender_id| and |subscription_id| from Service Worker database. Can be
+  // empty if no data found in the database.
+  static void GetSWData(BrowserContext* browser_context,
+                        const GURL& origin,
+                        int64_t service_worker_registration_id,
+                        SWDataCallback callback);
 
   // Clear the push subscription id stored in the service worker with the given
   // |service_worker_registration_id| for the given |origin|.
@@ -122,6 +140,13 @@ class CONTENT_EXPORT PushMessagingService {
                                       const GURL& origin,
                                       int64_t service_worker_registration_id,
                                       base::OnceClosure callback);
+
+  // Update |subscription_id| stored in Service Worker database.
+  static void UpdatePushSubscriptionId(BrowserContext* browser_context,
+                                       const GURL& origin,
+                                       int64_t service_worker_registration_id,
+                                       const std::string& subscription_id,
+                                       base::OnceClosure callback);
 
   // Stores a push subscription in the service worker for the given |origin|.
   // Must only be used by tests.

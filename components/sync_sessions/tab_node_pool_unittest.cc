@@ -28,7 +28,7 @@ const SessionID kTabId6 = SessionID::FromSerializedValue(1060);
 
 class SyncTabNodePoolTest : public testing::Test {
  protected:
-  SyncTabNodePoolTest() {}
+  SyncTabNodePoolTest() = default;
 
   int GetMaxUsedTabNodeId() const { return pool_.GetMaxUsedTabNodeIdForTest(); }
 

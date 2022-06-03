@@ -4,6 +4,10 @@
 
 #include "ui/views/animation/slide_out_controller.h"
 
+#include <memory>
+#include <utility>
+
+#include "ui/compositor/layer.h"
 #include "ui/views/animation/slide_out_controller_delegate.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/view.h"
@@ -37,10 +41,10 @@ class TestSlideOutControllerDelegate : public SlideOutControllerDelegate {
     slide_started_count_ = 0;
     slide_changed_count_ = 0;
     slide_out_count_ = 0;
-    slide_changed_last_value_ = base::nullopt;
+    slide_changed_last_value_ = absl::nullopt;
   }
 
-  base::Optional<bool> slide_changed_last_value_;
+  absl::optional<bool> slide_changed_last_value_;
   int slide_started_count_ = 0;
   int slide_changed_count_ = 0;
   int slide_out_count_ = 0;
@@ -94,7 +98,7 @@ class SlideOutControllerTest : public ViewsTestBase {
 
   void PostSequentialGestureEvent(const ui::GestureEventDetails& details) {
     // Set the timestamp ahead one microsecond.
-    sequential_event_timestamp_ += base::TimeDelta::FromMicroseconds(1);
+    sequential_event_timestamp_ += base::Microseconds(1);
 
     ui::GestureEvent gesture_event(
         0, 0, ui::EF_NONE, base::TimeTicks() + sequential_event_timestamp_,

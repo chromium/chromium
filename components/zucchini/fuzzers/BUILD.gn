@@ -21,9 +21,7 @@ static_library("zucchini_fuzz_utils") {
 #   gs://clusterfuzz-corpus/libfuzzer/zucchini_disassembler_dex_fuzzer \
 #   components/zucchini/fuzzing/testdata/disassembler_dex_fuzzer/
 fuzzer_test("zucchini_disassembler_dex_fuzzer") {
-  sources = [
-    "disassembler_dex_fuzzer.cc",
-  ]
+  sources = [ "disassembler_dex_fuzzer.cc" ]
   deps = [
     "//base",
     "//components/zucchini:zucchini_lib",
@@ -35,9 +33,7 @@ fuzzer_test("zucchini_disassembler_dex_fuzzer") {
 #   gs://clusterfuzz-corpus/libfuzzer/zucchini_disassembler_win32_fuzzer \
 #   components/zucchini/fuzzing/testdata/disassembler_win32_fuzzer/
 fuzzer_test("zucchini_disassembler_win32_fuzzer") {
-  sources = [
-    "disassembler_win32_fuzzer.cc",
-  ]
+  sources = [ "disassembler_win32_fuzzer.cc" ]
   deps = [
     ":zucchini_fuzz_utils",
     "//base",
@@ -50,9 +46,7 @@ fuzzer_test("zucchini_disassembler_win32_fuzzer") {
 #   gs://clusterfuzz-corpus/libfuzzer/zucchini_disassembler_elf_fuzzer \
 #   components/zucchini/fuzzing/testdata/disassembler_elf_fuzzer/
 fuzzer_test("zucchini_disassembler_elf_fuzzer") {
-  sources = [
-    "disassembler_elf_fuzzer.cc",
-  ]
+  sources = [ "disassembler_elf_fuzzer.cc" ]
   deps = [
     ":zucchini_fuzz_utils",
     "//base",
@@ -61,9 +55,7 @@ fuzzer_test("zucchini_disassembler_elf_fuzzer") {
 }
 
 fuzzer_test("zucchini_patch_fuzzer") {
-  sources = [
-    "patch_fuzzer.cc",
-  ]
+  sources = [ "patch_fuzzer.cc" ]
   deps = [
     "//base",
     "//components/zucchini:zucchini_lib",
@@ -72,9 +64,7 @@ fuzzer_test("zucchini_patch_fuzzer") {
 }
 
 proto_library("zucchini_file_pair_proto") {
-  sources = [
-    "file_pair.proto",
-  ]
+  sources = [ "file_pair.proto" ]
 }
 
 # Ensure protoc is available.
@@ -108,9 +98,8 @@ if (current_toolchain == host_toolchain && !is_win) {
     ]
 
     # Outputs: necessary for validation.
-    outputs = [
-      "$target_gen_dir/testdata/apply_fuzzer/raw_apply_seed_proto.bin",
-    ]
+    outputs =
+        [ "$target_gen_dir/testdata/apply_fuzzer/raw_apply_seed_proto.bin" ]
     deps = [
       "//components/zucchini:zucchini",
       "//third_party/protobuf:protoc",
@@ -144,9 +133,8 @@ if (current_toolchain == host_toolchain && !is_win) {
     ]
 
     # Outputs: necessary for validation.
-    outputs = [
-      "$target_gen_dir/testdata/apply_fuzzer/ztf_apply_seed_proto.bin",
-    ]
+    outputs =
+        [ "$target_gen_dir/testdata/apply_fuzzer/ztf_apply_seed_proto.bin" ]
     deps = [
       "//components/zucchini:zucchini",
       "//third_party/protobuf:protoc",
@@ -155,9 +143,7 @@ if (current_toolchain == host_toolchain && !is_win) {
 
   # Apply Fuzzer:
   fuzzer_test("zucchini_apply_fuzzer") {
-    sources = [
-      "apply_fuzzer.cc",
-    ]
+    sources = [ "apply_fuzzer.cc" ]
     deps = [
       ":zucchini_file_pair_proto",
       "//base",
@@ -180,9 +166,7 @@ if (current_toolchain == host_toolchain && !is_win) {
   # <new file>: testdata/new.ztf
   # <out file>: testdata/raw_or_ztf_gen_fuzzer/seed.asciipb
   fuzzer_test("zucchini_raw_gen_fuzzer") {
-    sources = [
-      "raw_gen_fuzzer.cc",
-    ]
+    sources = [ "raw_gen_fuzzer.cc" ]
     deps = [
       ":zucchini_file_pair_proto",
       "//base",
@@ -197,9 +181,7 @@ if (current_toolchain == host_toolchain && !is_win) {
   # <new file>: testdata/new.ztf
   # <out file>: testdata/raw_or_ztf_gen_fuzzer/seed.asciipb
   fuzzer_test("zucchini_ztf_gen_fuzzer") {
-    sources = [
-      "ztf_gen_fuzzer.cc",
-    ]
+    sources = [ "ztf_gen_fuzzer.cc" ]
     deps = [
       ":zucchini_file_pair_proto",
       "//base",
@@ -216,9 +198,7 @@ if (current_toolchain == host_toolchain && !is_win) {
   # <imposed>: 17+420=388+347,452+420=27+347
   # This is a mapping of regions old_offset+old_size=new_offset+new_size,...
   fuzzer_test("zucchini_imposed_ensemble_matcher_fuzzer") {
-    sources = [
-      "imposed_ensemble_matcher_fuzzer.cc",
-    ]
+    sources = [ "imposed_ensemble_matcher_fuzzer.cc" ]
     deps = [
       ":zucchini_file_pair_proto",
       "//base",

@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<!--
+The most basic GPU smoke test for WebCodecs: Accelerated VideoEncoder encodes
+several frames and accelerated VideoDecoder needs to successfully decode them.
+-->
+<html>
+
+<head>
+  <title>Encode, decode, render test</title>
+  <script src="webcodecs_common.js"></script>
+  <script type="text/javascript">
+    'use strict';
+    const acceleration = 'prefer-hardware';
+    async function main(arg) {
+      const width = 640;
+      const height = 480;
+      const frames_to_encode = 32;
+      let frames_encoded = 0;
+      let frames_decoded = 0;
+      let errors = 0;
+
+      const encoder_config = {
+        codec: arg.codec,
+        hardwareAcceleration: acceleration,
+        width: width,
+        height: height,
+        bitrate: 5000000,
+        framerate: 24
+      };
+      if (arg.codec.startsWith('avc1')) {
+        encoder_config.avc = { format: 'annexb' };
+      }
+
+      let support = await VideoEncoder.isConfigSupported(encoder_config);
+      if (!support.supported) {
+        TEST.log('Skipping unsupported codec: ' + arg.codec);
+        return;
+      }
+
+      let decoder = new VideoDecoder({
+        output(frame) {
+          frames_decoded++;
+          frame.close();
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      });
+
+      const encoder_init = {
+        output(chunk, metadata) {
+          let config = metadata.decoderConfig;
+          if (config) {
+            // Here we assume that if accelerated encoding is supported,
+            // accelerated decoding should be supported too.
+            config.hardwareAcceleration = acceleration;
+            decoder.configure(config);
+          }
+          decoder.decode(chunk);
+          frames_encoded++;
+        },
+        error(e) {
+          errors++;
+          TEST.log(e);
+        }
+      };
+
+      let encoder = new VideoEncoder(encoder_init);
+      encoder.configure(encoder_config);
+      let source = new CanvasSource(width, height);
+
+      for (let i = 0; i < frames_to_encode; i++) {
+        let frame = await source.getNextFrame();
+        let keyframe = (i % 10 == 0);
+        encoder.encode(frame, { keyFrame: keyframe });
+        frame.close();
+
+        await waitForNextFrame();
+      }
+      await encoder.flush();
+      await decoder.flush();
+      encoder.close();
+      decoder.close();
+
+      TEST.assert(
+        frames_encoded == frames_to_encode,
+        'frames_encoded mismatch: ' + frames_encoded);
+      TEST.assert(
+        frames_decoded == frames_to_encode,
+        'frames_decoded mismatch: ' + frames_decoded);
+      TEST.assert(
+        errors == 0, 'Decoding or encoding errors occurred during the test');
+    }
+  </script>
+</head>
+
+<body>
+</body>
+
+</html>

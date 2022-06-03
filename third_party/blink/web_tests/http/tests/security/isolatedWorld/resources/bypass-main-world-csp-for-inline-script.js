@@ -4,6 +4,7 @@ if (window.testRunner) {
 }
 
 tests = 6;
+mainWorld = true;
 window.addEventListener("message", function(message) {
     tests -= 1;
     test();
@@ -15,7 +16,6 @@ function test() {
         var isolatedStr = isolated ? 'isolated world' : 'main world';
         script.innerText = `console.log('EXECUTED in ${isolatedStr}.');`;
         document.body.appendChild(script);
-        window.postMessage("next", "*");
     }
     function injectInlineEventHandler(isolated) {
       // Inline event handlers are evaluated in the main world. See
@@ -24,13 +24,27 @@ function test() {
       div.innerHTML = '<div onclick=\'console.log(`click`)\'></div>';
       document.body.appendChild(div);
       div.firstChild.click();
-      window.postMessage("next", "*");
+    }
+
+    function injectInlineScriptUsingDocumentWrite(isolated) {
+      // Note the the behavior of document.write is quite unusual currently.
+      // See crrev.com/c/chromium/src/+/2236957/4/third_party/blink/web_tests/http/tests/security/isolatedWorld/resources/bypass-main-world-csp-for-inline-script.js#33
+      // for more details.
+      var isolatedStr = isolated ? 'isolated world' : 'main world';
+      var iframe = document.createElement('iframe');
+      document.body.appendChild(iframe);
+      var iframeDocument = iframe.contentWindow.document;
+      iframeDocument.open();
+      iframeDocument.write(`<script>console.log('Executed using document.write in ${isolatedStr}. Is main world: ' + parent.mainWorld);</script>`);
+      iframeDocument.close();
     }
 
     function testInlineScript(isolated, worldId) {
       if (!isolated) {
         injectInlineScript(false);
         injectInlineEventHandler(false);
+        injectInlineScriptUsingDocumentWrite(false);
+        window.postMessage("next", "*");
         return;
       }
 
@@ -40,7 +54,12 @@ function test() {
       testRunner.evaluateScriptInIsolatedWorld(
           worldId,
           String(eval('injectInlineEventHandler')) +
-              '\injectInlineEventHandler(true);');
+              '\ninjectInlineEventHandler(true);');
+      testRunner.evaluateScriptInIsolatedWorld(
+          worldId,
+          String(eval('injectInlineScriptUsingDocumentWrite')) +
+              '\ninjectInlineScriptUsingDocumentWrite(true);');
+      testRunner.evaluateScriptInIsolatedWorld(worldId, 'window.postMessage("next", "*");');
     }
 
     switch (tests) {
@@ -66,13 +85,7 @@ function test() {
         testInlineScript(true, 1);
         break;
       case 3:
-        // This case is dependent on whether the "IsolatedWorldCSP" feature is
-        // enabled.
         console.log('Disallowing unsafe-inline for the isolated world.');
-        console.log(
-            'internals.runtimeFlags.isolatedWorldCSPEnabled is ' +
-            internals.runtimeFlags.isolatedWorldCSPEnabled);
-
         testRunner.setIsolatedWorldInfo(
             1, 'chrome-extension://123', 'script-src \'none\'');
         testInlineScript(true, 1);

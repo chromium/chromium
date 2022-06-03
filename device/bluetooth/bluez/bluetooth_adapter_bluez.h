@@ -15,9 +15,11 @@
 #include <vector>
 
 #include "base/containers/queue.h"
+#include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "build/chromeos_buildflags.h"
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
@@ -26,17 +28,22 @@
 #include "device/bluetooth/bluetooth_gatt_service.h"
 #include "device/bluetooth/bluez/bluetooth_service_record_bluez.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/bluetooth_agent_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_agent_service_provider.h"
+#include "device/bluetooth/dbus/bluetooth_battery_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluetooth_input_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 #include "device/bluetooth/dbus/bluetooth_profile_service_provider.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
-#endif  // defined(OS_CHROMEOS)
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace base {
 class TimeDelta;
@@ -53,6 +60,10 @@ namespace bluez {
 class BluetoothBlueZTest;
 class BluetoothAdapterProfileBlueZ;
 class BluetoothAdvertisementBlueZ;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+class BluetoothAdvertisementMonitorApplicationServiceProvider;
+class BluetoothAdvertisementMonitorServiceProvider;
+#endif
 class BluetoothDeviceBlueZ;
 class BluetoothLocalGattCharacteristicBlueZ;
 class BluetoothLocalGattServiceBlueZ;
@@ -77,79 +88,103 @@ class BluetoothPairingBlueZ;
 class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
     : public device::BluetoothAdapter,
       public bluez::BluetoothAdapterClient::Observer,
+      public bluez::BluetoothAdminPolicyClient::Observer,
+      public bluez::BluetoothBatteryClient::Observer,
       public bluez::BluetoothDeviceClient::Observer,
       public bluez::BluetoothInputClient::Observer,
       public bluez::BluetoothAgentManagerClient::Observer,
       public bluez::BluetoothAgentServiceProvider::Delegate {
  public:
   using ErrorCompletionCallback =
-      base::Callback<void(const std::string& error_message)>;
+      base::OnceCallback<void(const std::string& error_message)>;
   using ProfileRegisteredCallback =
-      base::Callback<void(BluetoothAdapterProfileBlueZ* profile)>;
-  using ServiceRecordCallback = base::Callback<void(uint32_t)>;
+      base::OnceCallback<void(BluetoothAdapterProfileBlueZ* profile)>;
+  using ServiceRecordCallback = base::OnceCallback<void(uint32_t)>;
   using ServiceRecordErrorCallback =
-      base::Callback<void(BluetoothServiceRecordBlueZ::ErrorCode)>;
+      base::OnceCallback<void(BluetoothServiceRecordBlueZ::ErrorCode)>;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   using ScanRecordPtr = data_decoder::mojom::ScanRecordPtr;
   using ScanRecordCallback = base::OnceCallback<void(ScanRecordPtr)>;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // Calls |init_callback| after a BluetoothAdapter is fully initialized.
-  static base::WeakPtr<BluetoothAdapter> CreateAdapter(
-      InitCallback init_callback);
+  static scoped_refptr<BluetoothAdapterBlueZ> CreateAdapter();
+
+  BluetoothAdapterBlueZ(const BluetoothAdapterBlueZ&) = delete;
+  BluetoothAdapterBlueZ& operator=(const BluetoothAdapterBlueZ&) = delete;
 
   // BluetoothAdapter:
+  void Initialize(base::OnceClosure callback) override;
   void Shutdown() override;
   UUIDList GetUUIDs() const override;
   std::string GetAddress() const override;
   std::string GetName() const override;
+  std::string GetSystemName() const override;
   void SetName(const std::string& name,
-               const base::Closure& callback,
-               const ErrorCallback& error_callback) override;
+               base::OnceClosure callback,
+               ErrorCallback error_callback) override;
   bool IsInitialized() const override;
   bool IsPresent() const override;
   bool IsPowered() const override;
   void SetPowered(bool powered,
-                  const base::Closure& callback,
-                  const ErrorCallback& error_callback) override;
+                  base::OnceClosure callback,
+                  ErrorCallback error_callback) override;
   bool IsDiscoverable() const override;
   void SetDiscoverable(bool discoverable,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback) override;
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) override;
   uint32_t GetDiscoverableTimeout() const;
   bool IsDiscovering() const override;
+  bool IsDiscoveringForTesting() const;
   std::unordered_map<device::BluetoothDevice*, device::BluetoothDevice::UUIDSet>
   RetrieveGattConnectedDevicesWithDiscoveryFilter(
       const device::BluetoothDiscoveryFilter& discovery_filter) override;
-  void CreateRfcommService(
-      const device::BluetoothUUID& uuid,
-      const ServiceOptions& options,
-      const CreateServiceCallback& callback,
-      const CreateServiceErrorCallback& error_callback) override;
-  void CreateL2capService(
-      const device::BluetoothUUID& uuid,
-      const ServiceOptions& options,
-      const CreateServiceCallback& callback,
-      const CreateServiceErrorCallback& error_callback) override;
+  void CreateRfcommService(const device::BluetoothUUID& uuid,
+                           const ServiceOptions& options,
+                           CreateServiceCallback callback,
+                           CreateServiceErrorCallback error_callback) override;
+  void CreateL2capService(const device::BluetoothUUID& uuid,
+                          const ServiceOptions& options,
+                          CreateServiceCallback callback,
+                          CreateServiceErrorCallback error_callback) override;
 
   void RegisterAdvertisement(
       std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
-      const CreateAdvertisementCallback& callback,
-      const AdvertisementErrorCallback& error_callback) override;
+      CreateAdvertisementCallback callback,
+      AdvertisementErrorCallback error_callback) override;
 
   void SetAdvertisingInterval(
       const base::TimeDelta& min,
       const base::TimeDelta& max,
-      const base::Closure& callback,
-      const AdvertisementErrorCallback& error_callback) override;
+      base::OnceClosure callback,
+      AdvertisementErrorCallback error_callback) override;
 
-  void ResetAdvertising(
-      const base::Closure& callback,
-      const AdvertisementErrorCallback& error_callback) override;
+  void ResetAdvertising(base::OnceClosure callback,
+                        AdvertisementErrorCallback error_callback) override;
+
+  void ConnectDevice(
+      const std::string& address,
+      const absl::optional<device::BluetoothDevice::AddressType>& address_type,
+      ConnectDeviceCallback callback,
+      ErrorCallback error_callback) override;
 
   device::BluetoothLocalGattService* GetGattService(
       const std::string& identifier) const override;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetServiceAllowList(const UUIDList& uuids,
+                           base::OnceClosure callback,
+                           ErrorCallback error_callback) override;
+
+  LowEnergyScanSessionHardwareOffloadingStatus
+  GetLowEnergyScanSessionHardwareOffloadingStatus() override;
+
+  std::unique_ptr<device::BluetoothLowEnergyScanSession>
+  StartLowEnergyScanSession(
+      std::unique_ptr<device::BluetoothLowEnergyScanFilter> filter,
+      base::WeakPtr<device::BluetoothLowEnergyScanSession::Delegate> delegate)
+      override;
+#endif
 
   // These functions are specifically for use with ARC. They have no need to
   // exist for other platforms, hence we're putting them directly in the BlueZ
@@ -159,15 +194,15 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // only creates the record, it does not create a listening socket for the
   // service.
   void CreateServiceRecord(const BluetoothServiceRecordBlueZ& record,
-                           const ServiceRecordCallback& callback,
-                           const ServiceRecordErrorCallback& error_callback);
+                           ServiceRecordCallback callback,
+                           ServiceRecordErrorCallback error_callback);
 
   // Removes a service record from the SDP server. This would result in the
   // service not being discoverable in any further scans of the adapter. Any
   // sockets listening on this service will need to be closed separately.
   void RemoveServiceRecord(uint32_t handle,
-                           const base::Closure& callback,
-                           const ServiceRecordErrorCallback& error_callback);
+                           base::OnceClosure callback,
+                           ServiceRecordErrorCallback error_callback);
 
   // Locates the device object by object path (the devices map and
   // BluetoothDevice methods are by address).
@@ -185,14 +220,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                                          int16_t rssi,
                                          const std::vector<uint8_t>& eir);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Announce to observers advertisement received from |device|.
   void OnAdvertisementReceived(std::string device_address,
                                std::string device_name,
                                uint8_t rssi,
                                uint16_t device_appearance,
+                               const dbus::ObjectPath& device_path,
                                ScanRecordPtr scan_record);
-#endif  // defined(OS_CHROMEOS)
+
+  // Set the adapter name to one chosen from the system information.
+  void SetStandardChromeOSAdapterName();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Announce to observers that |device| has changed its connected state.
   void NotifyDeviceConnectedStateChanged(BluetoothDeviceBlueZ* device,
@@ -212,8 +251,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
                   const dbus::ObjectPath& device_path,
                   const bluez::BluetoothProfileManagerClient::Options& options,
                   bluez::BluetoothProfileServiceProvider::Delegate* delegate,
-                  const ProfileRegisteredCallback& success_callback,
-                  const ErrorCompletionCallback& error_callback);
+                  ProfileRegisteredCallback success_callback,
+                  ErrorCompletionCallback error_callback);
 
   // Release use of a profile by a device.
   void ReleaseProfile(const dbus::ObjectPath& device_path,
@@ -230,13 +269,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // Register a GATT service. The service must belong to this adapter.
   void RegisterGattService(
       BluetoothLocalGattServiceBlueZ* service,
-      const base::Closure& callback,
+      base::OnceClosure callback,
       device::BluetoothGattService::ErrorCallback error_callback);
 
   // Unregister a GATT service. The service must already be registered.
   void UnregisterGattService(
       BluetoothLocalGattServiceBlueZ* service,
-      const base::Closure& callback,
+      base::OnceClosure callback,
       device::BluetoothGattService::ErrorCallback error_callback);
 
   // Returns if a given service is currently registered.
@@ -274,9 +313,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
 
   // Callback pair for the profile registration queue.
   using RegisterProfileCompletionPair =
-      std::pair<base::Closure, ErrorCompletionCallback>;
+      std::pair<base::OnceClosure, ErrorCompletionCallback>;
 
-  explicit BluetoothAdapterBlueZ(InitCallback init_callback);
+  explicit BluetoothAdapterBlueZ();
   ~BluetoothAdapterBlueZ() override;
 
   // Init will get asynchronouly called once we know if Object Manager is
@@ -287,6 +326,18 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void AdapterAdded(const dbus::ObjectPath& object_path) override;
   void AdapterRemoved(const dbus::ObjectPath& object_path) override;
   void AdapterPropertyChanged(const dbus::ObjectPath& object_path,
+                              const std::string& property_name) override;
+
+  // bluez::BluetoothAdminPolicyClient::Observer override.
+  void AdminPolicyAdded(const dbus::ObjectPath& object_path) override;
+  void AdminPolicyRemoved(const dbus::ObjectPath& object_path) override;
+  void AdminPolicyPropertyChanged(const dbus::ObjectPath& object_path,
+                                  const std::string& property_name) override;
+
+  // bluez::BluetoothBatteryClient::Observer override.
+  void BatteryAdded(const dbus::ObjectPath& object_path) override;
+  void BatteryRemoved(const dbus::ObjectPath& object_path) override;
+  void BatteryPropertyChanged(const dbus::ObjectPath& object_path,
                               const std::string& property_name) override;
 
   // bluez::BluetoothDeviceClient::Observer override.
@@ -347,11 +398,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // subsequently operate on that adapter until it is removed.
   void SetAdapter(const dbus::ObjectPath& object_path);
 
-#if defined(OS_CHROMEOS)
-  // Set the adapter name to one chosen from the system information.
-  void SetStandardChromeOSAdapterName();
-#endif
-
   // Remove the currently tracked adapter. IsPresent() will return false after
   // this is called.
   void RemoveAdapter();
@@ -362,13 +408,13 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void PresentChanged(bool present);
 
   // Called by dbus:: on completion of the discoverable property change.
-  void OnSetDiscoverable(const base::Closure& callback,
-                         const ErrorCallback& error_callback,
+  void OnSetDiscoverable(base::OnceClosure callback,
+                         ErrorCallback error_callback,
                          bool success);
 
   // Called by dbus:: on completion of an adapter property change.
-  void OnPropertyChangeCompleted(const base::Closure& callback,
-                                 const ErrorCallback& error_callback,
+  void OnPropertyChangeCompleted(base::OnceClosure callback,
+                                 ErrorCallback error_callback,
                                  bool success);
 
   // BluetoothAdapter:
@@ -383,33 +429,28 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   void StopScan(DiscoverySessionResultCallback callback) override;
   void SetDiscoveryFilter(
       std::unique_ptr<device::BluetoothDiscoveryFilter> discovery_filter,
-      const base::Closure& callback,
+      base::OnceClosure callback,
       DiscoverySessionErrorCallback error_callback);
 
   // Called by dbus:: on completion of the D-Bus method call to start discovery.
-  void OnStartDiscovery(const base::Closure& callback,
-                        DiscoverySessionErrorCallback error_callback);
-  void OnStartDiscoveryError(const base::Closure& callback,
-                             DiscoverySessionErrorCallback error_callback,
+  void OnStartDiscovery(DiscoverySessionResultCallback callback);
+  void OnStartDiscoveryError(DiscoverySessionResultCallback callback,
                              const std::string& error_name,
                              const std::string& error_message);
 
   // Called by dbus:: on completion of the D-Bus method call to stop discovery.
-  void OnStopDiscovery(const base::Closure& callback);
+  void OnStopDiscovery(base::OnceClosure callback);
   void OnStopDiscoveryError(DiscoverySessionErrorCallback error_callback,
                             const std::string& error_name,
                             const std::string& error_message);
 
-  void OnPreSetDiscoveryFilter(const base::Closure& callback,
-                               DiscoverySessionErrorCallback error_callback);
+  void OnPreSetDiscoveryFilter(DiscoverySessionResultCallback callback);
   void OnPreSetDiscoveryFilterError(
-      const base::Closure& callback,
       DiscoverySessionErrorCallback error_callback,
       device::UMABluetoothDiscoverySessionOutcome outcome);
-  void OnSetDiscoveryFilter(const base::Closure& callback,
+  void OnSetDiscoveryFilter(base::OnceClosure callback,
                             DiscoverySessionErrorCallback error_callback);
-  void OnSetDiscoveryFilterError(const base::Closure& callback,
-                                 DiscoverySessionErrorCallback error_callback,
+  void OnSetDiscoveryFilterError(DiscoverySessionErrorCallback error_callback,
                                  const std::string& error_name,
                                  const std::string& error_message);
 
@@ -421,8 +462,8 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
       const device::BluetoothUUID& uuid,
       const dbus::ObjectPath& device_path,
       bluez::BluetoothProfileServiceProvider::Delegate* delegate,
-      const ProfileRegisteredCallback& success_callback,
-      const ErrorCompletionCallback& error_callback);
+      ProfileRegisteredCallback success_callback,
+      ErrorCompletionCallback error_callback);
   void OnRegisterProfileError(const device::BluetoothUUID& uuid,
                               const std::string& error_name,
                               const std::string& error_message);
@@ -436,19 +477,19 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // register even if the initial unregister call fails.
   void UpdateRegisteredApplication(
       bool ignore_unregister_failure,
-      const base::Closure& callback,
+      base::OnceClosure callback,
       device::BluetoothGattService::ErrorCallback error_callback);
 
   // Make the call to GattManager1 to register the services currently
   // registered.
   void RegisterApplication(
-      const base::Closure& callback,
+      base::OnceClosure callback,
       device::BluetoothGattService::ErrorCallback error_callback);
 
   // Register application, ignoring the given errors. Used to register a GATT
   // application even if a previous unregister application call fails.
   void RegisterApplicationOnError(
-      const base::Closure& callback,
+      base::OnceClosure callback,
       device::BluetoothGattService::ErrorCallback error_callback,
       const std::string& error_name,
       const std::string& error_message);
@@ -456,22 +497,32 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // Called by dbus:: on an error while trying to create or remove a service
   // record. Translates the error name/message into a
   // BluetoothServiceRecordBlueZ::ErrorCode value.
-  void ServiceRecordErrorConnector(
-      const ServiceRecordErrorCallback& error_callback,
-      const std::string& error_name,
-      const std::string& error_message);
+  void ServiceRecordErrorConnector(ServiceRecordErrorCallback error_callback,
+                                   const std::string& error_name,
+                                   const std::string& error_message);
 
-#if defined(OS_CHROMEOS)
-  // Inform DBus of the current list of long term keys.
-  void SetLongTermKeys();
-
-  // Called by dbus:: on an error while trying to set long term keys, see
-  // SetLongTermKeys().
-  void SetLongTermKeysError(const std::string& error_name,
+  void OnConnectDevice(ConnectDeviceCallback callback,
+                       const dbus::ObjectPath& object_path);
+  void OnConnectDeviceError(ErrorCallback error_callback,
+                            const std::string& error_name,
                             const std::string& error_message);
-#endif
 
-  InitCallback init_callback_;
+  // Updates |battery_percentage| field of a device based on its corresponding
+  // value in Battery interface. Should be called when receiving events about
+  // battery object addition, change, or removal.
+  void UpdateDeviceBatteryLevelFromBatteryClient(
+      const dbus::ObjectPath& object_path);
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void RegisterAdvertisementMonitorApplicationServiceProvider();
+  void OnRegisterAdvertisementMonitorApplicationServiceProvider();
+
+  // Unregister the underlying advertisement monitor through
+  // |advertisement_monitor_application_provider_|.
+  void OnLowEnergyScanSessionDestroyed(const std::string& session_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  base::OnceClosure init_callback_;
 
   bool initialized_;
 
@@ -531,7 +582,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
   // crbug.com/687396.
   std::vector<scoped_refptr<BluetoothAdvertisementBlueZ>> advertisements_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Timer used to schedule a second update to BlueZ's long term keys. This
   // second update is necessary in a first-time install situation, where field
   // trials might not yet have been available. By scheduling a second update
@@ -540,13 +591,28 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdapterBlueZ final
 
   // Pointer for parsing BLE advertising packets out of process.
   mojo::Remote<data_decoder::mojom::BleScanParser> ble_scan_parser_;
+
+  std::unique_ptr<BluetoothAdvertisementMonitorApplicationServiceProvider>
+      advertisement_monitor_application_provider_;
+
+  bool is_advertisement_monitor_application_provider_registered_ = false;
+
+  // Used to queue up low energy scan sessions that need to be started as soon
+  // as the advertisement monitor application has been registered. The
+  // application can only be registered once the adapter has been set, so it is
+  // possible for clients to start scan sessions before the monitor application
+  // is registered.
+  base::queue<std::unique_ptr<BluetoothAdvertisementMonitorServiceProvider>>
+      pending_advertisement_monitors_;
+
+  LowEnergyScanSessionHardwareOffloadingStatus
+      low_energy_scan_session_hardware_offloading_status_ =
+          LowEnergyScanSessionHardwareOffloadingStatus::kUndetermined;
 #endif
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothAdapterBlueZ> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothAdapterBlueZ);
 };
 
 }  // namespace bluez

@@ -6,9 +6,10 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/single_thread_task_runner.h"
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace remoting {

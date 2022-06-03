@@ -16,13 +16,11 @@
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringize_macros.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "remoting/base/breakpad.h"
 #include "remoting/host/evaluate_capability.h"
-#include "remoting/host/host_config_upgrader.h"
 #include "remoting/host/host_exit_codes.h"
 #include "remoting/host/logging.h"
 #include "remoting/host/resources.h"
@@ -30,11 +28,13 @@
 #include "remoting/host/switches.h"
 #include "remoting/host/usage_stats_consent.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include "base/mac/scoped_nsautorelease_pool.h"
-#endif  // defined(OS_MACOSX)
+#endif  // defined(OS_APPLE)
 
 #if defined(OS_WIN)
+#include <windows.h>
+
 #include <commctrl.h>
 #include <shellapi.h>
 #endif  // defined(OS_WIN)
@@ -48,10 +48,11 @@ int DaemonProcessMain();
 int DesktopProcessMain();
 int FileChooserMain();
 int RdpDesktopSessionMain();
+int UrlForwarderConfiguratorMain();
 #endif  // defined(OS_WIN)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 int XSessionChooserMain();
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 namespace {
 
@@ -61,21 +62,24 @@ const char kUsageMessage[] =
     "Usage: %s [options]\n"
     "\n"
     "Options:\n"
+
+#if defined(OS_LINUX)
     "  --audio-pipe-name=<pipe> - Sets the pipe name to capture audio on "
     "Linux.\n"
+#endif  // defined(OS_LINUX)
+
+#if defined(OS_APPLE)
+    "  --list-audio-devices     - List all audio devices and their device "
+    "UID.\n"
+#endif  // defined(OS_APPLE)
+
     "  --console                - Runs the daemon interactively.\n"
-    "  --daemon-pipe=<pipe>     - Specifies the pipe to connect to the "
-    "daemon.\n"
     "  --elevate=<binary>       - Runs <binary> elevated.\n"
     "  --host-config=<config>   - Specifies the host configuration.\n"
     "  --help, -?               - Prints this message.\n"
     "  --type                   - Specifies process type.\n"
     "  --version                - Prints the host version and exits.\n"
-    "  --window-id=<id>         - Specifies a window to remote,"
-    " instead of the whole desktop.\n"
-    "  --evaluate-type=<type>   - Evaluates the capability of the host.\n"
-    "  --upgrade-token          - Upgrades the OAuth token in the host "
-    "config.\n";
+    "  --evaluate-type=<type>   - Evaluates the capability of the host.\n";
 
 void Usage(const base::FilePath& program_name) {
   printf(kUsageMessage, program_name.MaybeAsASCII().c_str());
@@ -145,11 +149,13 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
     main_routine = &FileChooserMain;
   } else if (process_type == kProcessTypeRdpDesktopSession) {
     main_routine = &RdpDesktopSessionMain;
+  } else if (process_type == kProcessTypeUrlForwarderConfigurator) {
+    main_routine = &UrlForwarderConfiguratorMain;
 #endif  // defined(OS_WIN)
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   } else if (process_type == kProcessTypeXSessionChooser) {
     main_routine = &XSessionChooserMain;
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
   }
 
   return main_routine;
@@ -158,21 +164,12 @@ MainRoutineFn SelectMainRoutine(const std::string& process_type) {
 }  // namespace
 
 int HostMain(int argc, char** argv) {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Needed so we don't leak objects when threads are created.
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
   base::CommandLine::Init(argc, argv);
-
-#if !defined(NDEBUG)
-  // Always enable Webrtc logging for debug builds.
-  // Without this switch, Webrtc errors will still be logged but
-  // RTC_LOG(LS_INFO) lines will not.
-  // See https://webrtc.org/native-code/logging
-  auto* cl = base::CommandLine::ForCurrentProcess();
-  cl->AppendSwitch("vmodule=*/webrtc/*=1");
-#endif
 
   // Parse the command line.
   const base::CommandLine* command_line =
@@ -215,11 +212,6 @@ int HostMain(int argc, char** argv) {
 
   // Enable debug logs.
   InitHostLogging();
-
-  // Perform token upgrade if specified on command-line.
-  if (command_line->HasSwitch(kUpgradeTokenSwitchName)) {
-    return HostConfigUpgrader::UpgradeConfigFile();
-  }
 
 #if defined(REMOTING_ENABLE_BREAKPAD)
   // Initialize Breakpad as early as possible. On Mac the command-line needs to

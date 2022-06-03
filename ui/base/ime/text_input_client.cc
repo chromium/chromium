@@ -9,4 +9,20 @@ namespace ui {
 TextInputClient::~TextInputClient() {
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+absl::optional<GrammarFragment> TextInputClient::GetGrammarFragment(
+    const gfx::Range& range) {
+  return absl::nullopt;
+}
+
+bool TextInputClient::ClearGrammarFragments(const gfx::Range& range) {
+  return false;
+}
+
+bool TextInputClient::AddGrammarFragments(
+    const std::vector<GrammarFragment>& fragments) {
+  return false;
+}
+#endif
+
 }  // namespace ui

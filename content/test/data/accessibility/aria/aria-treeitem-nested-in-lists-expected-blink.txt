@@ -1,0 +1,19 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tree setSize=5
+++++++++treeItem name='treeitem 2 of 5, level 1' hierarchicalLevel=1 setSize=5 posInSet=2 selected=false
+++++++++++staticText name='treeitem 2 of 5, level 1'
+++++++++++++inlineTextBox name='treeitem 2 of 5, level 1'
+++++++++treeItem name='treeitem 3 of 5, level 1' hierarchicalLevel=1 setSize=5 posInSet=3 selected=false
+++++++++++staticText name='treeitem 3 of 5, level 1'
+++++++++++++inlineTextBox name='treeitem 3 of 5, level 1'
+++++++++treeItem name='treeitem 1 of 2, level 2' hierarchicalLevel=2 setSize=2 posInSet=1 selected=false
+++++++++++staticText name='treeitem 1 of 2, level 2'
+++++++++++++inlineTextBox name='treeitem 1 of 2, level 2'
+++++++++treeItem name='treeitem 1 of 1, level 3' hierarchicalLevel=3 setSize=1 posInSet=1 selected=false
+++++++++++staticText name='treeitem 1 of 1, level 3'
+++++++++++++inlineTextBox name='treeitem 1 of 1, level 3'
+++++++++treeItem name='treeitem 2 of 2, level 2' hierarchicalLevel=2 setSize=2 posInSet=2 selected=false
+++++++++++staticText name='treeitem 2 of 2, level 2'
+++++++++++++inlineTextBox name='treeitem 2 of 2, level 2'

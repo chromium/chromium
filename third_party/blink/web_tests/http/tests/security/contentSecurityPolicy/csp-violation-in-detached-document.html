@@ -1,0 +1,16 @@
+<html>
+<head>
+<meta content="form-action 'self';" http-equiv=Content-Security-Policy>
+</head>
+<body>
+<iframe id="i" name="i"></iframe>
+<form action="about:blank" target="i"></form>
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+
+document.forms[0].submit();
+document.body.appendChild(document.head);
+new Document().prepend(document.body);
+document.documentElement.appendChild(document.createTextNode("PASS if no crash"));
+</script></html>

@@ -2,16 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://tab-strip/alert_indicator.js';
+import {AlertIndicatorElement} from 'chrome://tab-strip.top-chrome/alert_indicator.js';
+
+import {assertEquals, assertFalse, assertNotEquals} from '../chai_assert.js';
 
 suite('AlertIndicator', () => {
+  /** @type {!AlertIndicatorElement} */
   let alertIndicatorElement;
+
+  /** @type {CSSStyleDeclaration} */
   let alertIndicatorStyle;
 
   setup(() => {
     document.body.innerHTML = '';
 
-    alertIndicatorElement = document.createElement('tabstrip-alert-indicator');
+    alertIndicatorElement = /** @type {!AlertIndicatorElement} */ (
+        document.createElement('tabstrip-alert-indicator'));
     document.body.appendChild(alertIndicatorElement);
 
     alertIndicatorStyle = window.getComputedStyle(alertIndicatorElement);

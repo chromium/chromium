@@ -1,0 +1,15 @@
+# Metadata for this directory.
+#
+# DIR_METADATA files allow code owners to point users to additional bits of
+# information about the code, like where to file bugs and how to contact the
+# team that works on the code.
+#
+# For more information on DIR_METADATA files, see:
+#   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/README.md
+#
+# For the schema of this file, see Metadata message:
+#   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/proto/dir_metadata.proto
+
+monorail {
+  project: "chromium"
+}

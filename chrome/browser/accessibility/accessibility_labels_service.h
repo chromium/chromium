@@ -6,12 +6,18 @@
 #define CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_LABELS_SERVICE_H_
 
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/image_annotation/public/mojom/image_annotation.mojom.h"
 #include "ui/accessibility/ax_mode.h"
+
+#if defined(OS_ANDROID)
+#include "net/base/network_change_notifier.h"
+#include "ui/accessibility/ax_mode_observer.h"
+#endif
 
 class Profile;
 
@@ -27,8 +33,22 @@ class PrefRegistrySyncable;
 // Tracks the per-profile preference and updates the accessibility mode of
 // WebContents when it changes, provided image labeling is not disabled via
 // command-line switch.
-class AccessibilityLabelsService : public KeyedService {
+class AccessibilityLabelsService
+    : public KeyedService
+#if defined(OS_ANDROID)
+    // On Android, implement NetworkChangeObserver for "only on wifi" option,
+    // and an AXModeObserver for detecting when a screen reader is enabled.
+    ,
+      public net::NetworkChangeNotifier::NetworkChangeObserver,
+      public ui::AXModeObserver
+#endif
+{
+
  public:
+  AccessibilityLabelsService(const AccessibilityLabelsService&) = delete;
+  AccessibilityLabelsService& operator=(const AccessibilityLabelsService&) =
+      delete;
+
   ~AccessibilityLabelsService() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
@@ -53,6 +73,17 @@ class AccessibilityLabelsService : public KeyedService {
       mojo::PendingReceiver<image_annotation::mojom::ImageAnnotationService>)>;
   void OverrideImageAnnotatorBinderForTesting(ImageAnnotatorBinder binder);
 
+#if defined(OS_ANDROID)
+  // net::NetworkChangeNotifier::NetworkChangeObserver
+  void OnNetworkChanged(
+      net::NetworkChangeNotifier::ConnectionType type) override;
+
+  // ui::AXModeObserver
+  void OnAXModeAdded(ui::AXMode mode) override;
+
+  bool GetAndroidEnabledStatus();
+#endif
+
  private:
   friend class AccessibilityLabelsServiceFactory;
 
@@ -74,8 +105,6 @@ class AccessibilityLabelsService : public KeyedService {
   mojo::Remote<image_annotation::mojom::ImageAnnotationService> remote_service_;
 
   base::WeakPtrFactory<AccessibilityLabelsService> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityLabelsService);
 };
 
 #endif  // CHROME_BROWSER_ACCESSIBILITY_ACCESSIBILITY_LABELS_SERVICE_H_

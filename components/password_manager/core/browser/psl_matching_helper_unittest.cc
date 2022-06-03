@@ -7,11 +7,9 @@
 #include <stddef.h>
 #include <cctype>
 
-#include "base/macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_form_digest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -64,12 +62,13 @@ TEST(PSLMatchingUtilsTest, GetMatchResultNormalCredentials) {
       {"http://www.example.com", "bad url", MatchResult::NO_MATCH}};
 
   for (const TestData& data : cases) {
-    autofill::PasswordForm form;
-    form.origin = GURL(data.form_origin);
-    form.signon_realm = form.origin.GetOrigin().spec();
-    PasswordStore::FormDigest digest(
-        autofill::PasswordForm::Scheme::kHtml,
-        GURL(data.digest_origin).GetOrigin().spec(), GURL(data.digest_origin));
+    PasswordForm form;
+    form.url = GURL(data.form_origin);
+    form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
+    PasswordFormDigest digest(
+        PasswordForm::Scheme::kHtml,
+        GURL(data.digest_origin).DeprecatedGetOriginAsURL().spec(),
+        GURL(data.digest_origin));
 
     EXPECT_EQ(data.match_result, GetMatchResult(form, digest))
         << "form_origin = " << data.form_origin << ", digest = " << digest;
@@ -121,12 +120,13 @@ TEST(PSLMatchingUtilsTest, GetMatchResultPSL) {
   };
 
   for (const TestData& data : cases) {
-    autofill::PasswordForm form;
-    form.origin = GURL(data.form_origin);
-    form.signon_realm = form.origin.GetOrigin().spec();
-    PasswordStore::FormDigest digest(
-        autofill::PasswordForm::Scheme::kHtml,
-        GURL(data.digest_origin).GetOrigin().spec(), GURL(data.digest_origin));
+    PasswordForm form;
+    form.url = GURL(data.form_origin);
+    form.signon_realm = form.url.DeprecatedGetOriginAsURL().spec();
+    PasswordFormDigest digest(
+        PasswordForm::Scheme::kHtml,
+        GURL(data.digest_origin).DeprecatedGetOriginAsURL().spec(),
+        GURL(data.digest_origin));
 
     EXPECT_EQ(data.match_result, GetMatchResult(form, digest))
         << "form_origin = " << data.form_origin << ", digest = " << digest;
@@ -181,16 +181,17 @@ TEST(PSLMatchingUtilsTest, GetMatchResultFederated) {
   };
 
   for (const TestData& data : cases) {
-    autofill::PasswordForm form;
-    form.origin = GURL(data.form_origin);
+    PasswordForm form;
+    form.url = GURL(data.form_origin);
     form.federation_origin =
         url::Origin::Create(GURL(data.form_federation_origin));
-    form.signon_realm = "federation://" + form.origin.host() + "/" +
-                        form.federation_origin.host();
+    form.signon_realm =
+        "federation://" + form.url.host() + "/" + form.federation_origin.host();
 
-    PasswordStore::FormDigest digest(
-        autofill::PasswordForm::Scheme::kHtml,
-        GURL(data.digest_origin).GetOrigin().spec(), GURL(data.digest_origin));
+    PasswordFormDigest digest(
+        PasswordForm::Scheme::kHtml,
+        GURL(data.digest_origin).DeprecatedGetOriginAsURL().spec(),
+        GURL(data.digest_origin));
 
     EXPECT_EQ(data.match_result, GetMatchResult(form, digest))
         << "form_origin = " << data.form_origin
@@ -252,16 +253,17 @@ TEST(PSLMatchingUtilsTest, GetMatchResultFederatedPSL) {
   };
 
   for (const TestData& data : cases) {
-    autofill::PasswordForm form;
-    form.origin = GURL(data.form_origin);
+    PasswordForm form;
+    form.url = GURL(data.form_origin);
     form.federation_origin =
         url::Origin::Create(GURL(data.form_federation_origin));
-    form.signon_realm = "federation://" + form.origin.host() + "/" +
-                        form.federation_origin.host();
+    form.signon_realm =
+        "federation://" + form.url.host() + "/" + form.federation_origin.host();
 
-    PasswordStore::FormDigest digest(
-        autofill::PasswordForm::Scheme::kHtml,
-        GURL(data.digest_origin).GetOrigin().spec(), GURL(data.digest_origin));
+    PasswordFormDigest digest(
+        PasswordForm::Scheme::kHtml,
+        GURL(data.digest_origin).DeprecatedGetOriginAsURL().spec(),
+        GURL(data.digest_origin));
 
     EXPECT_EQ(data.match_result, GetMatchResult(form, digest))
         << "form_origin = " << data.form_origin
@@ -304,9 +306,9 @@ TEST(PSLMatchingUtilsTest, IsPublicSuffixDomainMatch) {
   };
 
   for (const TestPair& pair : pairs) {
-    autofill::PasswordForm form1;
+    PasswordForm form1;
     form1.signon_realm = pair.url1;
-    autofill::PasswordForm form2;
+    PasswordForm form2;
     form2.signon_realm = pair.url2;
     EXPECT_EQ(pair.should_match,
               IsPublicSuffixDomainMatch(form1.signon_realm, form2.signon_realm))

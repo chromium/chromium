@@ -73,7 +73,7 @@ void SegmentedString::Push(UChar c) {
   if (current_string_.PushIfPossible(c))
     return;
 
-  Prepend(SegmentedString(String(&c, 1)), PrependType::kUnconsume);
+  Prepend(SegmentedString(String(&c, 1u)), PrependType::kUnconsume);
 }
 
 void SegmentedString::Prepend(const SegmentedSubstring& s, PrependType type) {
@@ -124,19 +124,21 @@ void SegmentedString::Prepend(const SegmentedString& s, PrependType type) {
   Prepend(s.current_string_, type);
 }
 
-void SegmentedString::AdvanceSubstring() {
+UChar SegmentedString::AdvanceSubstring() {
+  number_of_characters_consumed_prior_to_current_string_ +=
+      current_string_.NumberOfCharactersConsumed() + 1;
   if (IsComposite()) {
-    number_of_characters_consumed_prior_to_current_string_ +=
-        current_string_.NumberOfCharactersConsumed() + 1;
     current_string_ = substrings_.TakeFirst();
     // If we've previously consumed some characters of the non-current
     // string, we now account for those characters as part of the current
     // string, not as part of "prior to current string."
     number_of_characters_consumed_prior_to_current_string_ -=
         current_string_.NumberOfCharactersConsumed();
+    return CurrentChar();
   } else {
     current_string_.Clear();
     empty_ = true;
+    return 0;
   }
 }
 

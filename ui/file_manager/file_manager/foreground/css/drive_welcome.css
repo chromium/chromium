@@ -4,10 +4,8 @@
 
 /* Google Drive welcome banners.*/
 
-.drive-welcome-icon {
-  background-image: -webkit-image-set(
-    url(../images/files/ui/drive_logo.png) 1x,
-    url(../images/files/ui/2x/drive_logo.png) 2x);
+body.files-ng .drive-welcome-icon {
+  background-image: url(../images/files/ui/drive_logo.svg);
   background-repeat: no-repeat;
 }
 
@@ -25,81 +23,67 @@
 }
 
 /* Header welcome banner. */
-.drive-welcome.header {
-  background-color: rgb(79, 129, 232);
+body.files-ng .drive-welcome.header {
+  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
+  box-sizing: border-box;
   flex: none;
-  height: 130px;
+  height: 72px;
+  opacity: 1;
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
-  transition: height 180ms ease, visibility 0ms linear 180ms;
+  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 150ms ease 50ms;
+  visibility: visible;
 }
 
-.dialog-container:not([drive-welcome='header']) .drive-welcome.header {
+body.files-ng .dialog-container:not([drive-welcome='header'])
+.drive-welcome.header {
   height: 0;
+  opacity: 0;
   visibility: hidden;
 }
 
-.drive-welcome.header .drive-welcome-wrapper {
-  color: white;
+body.files-ng .drive-welcome.header .drive-welcome-wrapper {
+  align-items: center;
   display: flex;
   flex-direction: row;
-  left: 0;
-  padding-top: 21px;
-  position: absolute;
-  right: 0;
-  top: 0;
+  height: 71px;
 }
 
-.drive-welcome.header .drive-welcome-icon {
-  background-color: white;
+body.files-ng .drive-welcome.header .drive-welcome-icon {
   background-position: center;
-  background-size: 64px 64px;
+  background-size: 32px 32px;
   border-radius: 4px;
   flex: none;
-  height: 78px;
-  /* Icon should be centered within 128px banner with 25px margin. */
-  /* 4px at top adds to 21px padding-top in drive-welcom-header to make 25px. */
-  margin: 4px 25px 0 25px;
-  width: 78px;
+  height: 32px;
+  margin-inline-end: 20px;
+  margin-inline-start: 16px;
+  width: 32px;
 }
 
-.drive-welcome.header .drive-welcome-message {
-  -webkit-margin-end: 50px;
-  -webkit-margin-start: 20px;
+body.files-ng .drive-welcome.header .drive-welcome-message {
   z-index: 1;
 }
 
-.drive-welcome.header .drive-welcome-title {
-  font-size: 21px;
-  font-weight: 500;
-  margin-bottom: 4px;
+body.files-ng .drive-welcome.header .drive-welcome-title {
+  margin-bottom: 2px;
 }
 
-.drive-welcome.header .drive-welcome-text {
-  font-size: 16px;
+body.files-ng .drive-welcome.header .drive-welcome-text {
+  display: inline;
 }
 
-.drive-welcome.header .drive-welcome-links {
+body.files-ng .drive-welcome.header .drive-welcome-links {
+  display: inline;
+  margin-inline-start: 4px;
   z-index: 1;
 }
 
 .drive-welcome.header .drive-welcome-links > a {
   display: inline-block;
-}
-
-.drive-welcome.header .banner-close {
-  top: 0;
-}
-
-.drive-welcome.header .banner-people {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/drive_banner_people.png) 1x,
-      url(../images/files/ui/2x/drive_banner_people.png) 2x);
-  height: 128px;
-  position: absolute;
-  top: 0;
-  width: 106px;
+  outline-offset: -1px;
+  padding: 0 4px;
 }
 
 html[dir='ltr'] .drive-welcome.header .banner-people {
@@ -110,19 +94,8 @@ html[dir='rtl'] .drive-welcome.header .banner-people {
   left: 38px;
 }
 
-.drive-welcome.header .banner-cloud-bg {
-  bottom: 0;
-  left: 0;
-  position: absolute;
-  right: 0;
-  top: 0;
-  transform: scaleY(-1);
-}
-
-.drive-welcome.header .plain-link {
-  color: white;
-  font-size: 16px;
-  text-decoration: underline;
+body.files-ng .drive-welcome.header .plain-link {
+  color: var(--google-blue-600);
 }
 
 /* Full page welcome banner. */
@@ -146,10 +119,6 @@ html[dir='rtl'] .drive-welcome.header .banner-people {
 .drive-welcome.page .drive-welcome-wrapper {
   align-items: center;
   background-color: white;
-  /* This image looks good in high DPI as is. */
-  background-image: url(../images/files/ui/clouds.png);
-  background-repeat: repeat-x;
-  background-size: 520px 173px;
   bottom: 0;
   color: #333;
   display: flex;
@@ -173,8 +142,8 @@ html[dir='rtl'] .drive-welcome.header .banner-people {
 }
 
 .drive-welcome.page .drive-welcome-message {
-  margin-left: 10px;
-  margin-right: 10px;
+  margin-inline-end: 10px;
+  margin-inline-start: 10px;
   max-width: 525px;
 }
 

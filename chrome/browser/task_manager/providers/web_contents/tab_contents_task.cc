@@ -23,7 +23,7 @@ bool HostsExtension(content::WebContents* web_contents) {
 }  // namespace
 
 TabContentsTask::TabContentsTask(content::WebContents* web_contents)
-    : RendererTask(base::string16(),
+    : RendererTask(std::u16string(),
                    RendererTask::GetFaviconFromWebContents(web_contents),
                    web_contents) {
   set_title(GetCurrentTitle());
@@ -48,7 +48,7 @@ Task::Type TabContentsTask::GetType() const {
   return HostsExtension(web_contents()) ? Task::EXTENSION : Task::RENDERER;
 }
 
-base::string16 TabContentsTask::GetCurrentTitle() const {
+std::u16string TabContentsTask::GetCurrentTitle() const {
   // Check if the URL is an app and if the tab is hoisting an extension.
   Profile* profile =
       Profile::FromBrowserContext(web_contents()->GetBrowserContext());
@@ -62,7 +62,7 @@ base::string16 TabContentsTask::GetCurrentTitle() const {
   bool is_extension = HostsExtension(web_contents());
   bool is_incognito = profile->IsOffTheRecord();
 
-  base::string16 tab_title =
+  std::u16string tab_title =
       RendererTask::GetTitleFromWebContents(web_contents());
 
   // Fall back to the URL if the title is empty.

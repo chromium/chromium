@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -45,7 +44,7 @@ TEST_F(HidBatteryUtilTest, ExtractBluetoothAddressFromHIDBatteryPath) {
             ExtractBluetoothAddressFromHIDBatteryPath(
                 "/sys/class/power_supply/hid-A00:b1:C2:d3:E4:f5-battery"));
 
-  EXPECT_EQ("f5:e4:d3:c2:b1:a0",
+  EXPECT_EQ("a0:b1:c2:d3:e4:f5",
             ExtractBluetoothAddressFromHIDBatteryPath(
                 "/sys/class/power_supply/hid-A0:b1:C2:d3:E4:f5-battery"));
 }

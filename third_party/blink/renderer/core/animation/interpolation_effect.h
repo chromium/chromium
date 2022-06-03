@@ -49,7 +49,7 @@ class CORE_EXPORT InterpolationEffect
       double apply_from,
       double apply_to);
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   class InterpolationRecord final
@@ -75,7 +75,7 @@ class CORE_EXPORT InterpolationEffect
     double apply_from_;
     double apply_to_;
 
-    void Trace(Visitor* visitor) { visitor->Trace(interpolation_); }
+    void Trace(Visitor* visitor) const { visitor->Trace(interpolation_); }
   };
 
   bool is_populated_;

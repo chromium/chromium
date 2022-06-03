@@ -15,8 +15,6 @@
 #include "base/macros.h"
 
 namespace base {
-class DictionaryValue;
-class ListValue;
 class Value;
 }  // namespace base
 
@@ -29,9 +27,9 @@ extern const base::Feature kTripleBuffer720;
 extern const base::Feature kSingleBuffer;
 extern const base::Feature kDisableIdleSocketsCloseOnMemoryPressure;
 extern const base::Feature kEnableGeneralAudienceBrowsing;
-extern const base::Feature kUseQueryableDataBackend;
 extern const base::Feature kEnableSideGesturePassThrough;
-extern const base::Feature kReduceHeadlessFrameRate;
+extern const base::Feature kEnableChromeAudioManagerAndroid;
+extern const base::Feature kEnableCastAudioOutputDevice;
 
 // Get an iterable list of all of the cast features for checking all features as
 // a collection.
@@ -50,8 +48,10 @@ const std::vector<const base::Feature*>& GetFeatures();
 //
 // This function should be called before the browser's main loop. After this is
 // called, the other functions in this file may be called on any thread.
-void InitializeFeatureList(const base::DictionaryValue& dcs_features,
-                           const base::ListValue& dcs_experiment_ids,
+// TODO(juke): Keep type info of params by passing in base::flat_map and
+// std::vector instead of base::Value.
+void InitializeFeatureList(const base::Value& dcs_features,
+                           const base::Value& dcs_experiment_ids,
                            const std::string& cmd_line_enable_features,
                            const std::string& cmd_line_disable_features,
                            const std::string& extra_enable_features,
@@ -64,8 +64,7 @@ bool IsFeatureEnabled(const base::Feature& feature);
 // Given a dictionary of features, create a copy that is ready to be persisted
 // to disk. Encodes all values as strings,  which is how the FieldTrial
 // classes expect the param data.
-base::DictionaryValue GetOverriddenFeaturesForStorage(
-    const base::Value& features);
+base::Value GetOverriddenFeaturesForStorage(const base::Value& features);
 
 // Query the set of experiment ids set for this run. Intended only for metrics
 // reporting. Must be called after InitializeFeatureList(). May be called on any

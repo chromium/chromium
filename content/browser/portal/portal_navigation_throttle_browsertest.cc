@@ -3,17 +3,21 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "content/browser/portal/portal.h"
 #include "content/browser/portal/portal_navigation_throttle.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/portal/portal_activated_observer.h"
 #include "content/test/portal/portal_created_observer.h"
 #include "net/base/escape.h"
 #include "net/dns/mock_host_resolver.h"
@@ -40,10 +44,19 @@ GURL GetServerRedirectURL(const net::EmbeddedTestServer* server,
 
 class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
  protected:
+  virtual bool ShouldEnableCrossOriginPortals() const { return false; }
+
   void SetUp() override {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{blink::features::kPortals},
-        /*disabled_features=*/{blink::features::kPortalsCrossOrigin});
+    if (ShouldEnableCrossOriginPortals()) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{blink::features::kPortals,
+                                blink::features::kPortalsCrossOrigin},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{blink::features::kPortals},
+          /*disabled_features=*/{blink::features::kPortalsCrossOrigin});
+    }
     ContentBrowserTest::SetUp();
   }
 
@@ -70,7 +83,7 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
 
   Portal* InsertAndWaitForPortal(const GURL& url,
                                  bool expected_to_succeed = true) {
-    TestNavigationObserver navigation_observer(url);
+    TestNavigationObserver navigation_observer(/*web_contents=*/nullptr, 1);
     navigation_observer.StartWatchingNewWebContents();
     PortalCreatedObserver portal_created_observer(GetMainFrame());
     EXPECT_TRUE(ExecJs(
@@ -84,6 +97,8 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
     navigation_observer.Wait();
     EXPECT_EQ(navigation_observer.last_navigation_succeeded(),
               expected_to_succeed);
+    if (expected_to_succeed)
+      EXPECT_EQ(navigation_observer.last_navigation_url(), url);
     return portal;
   }
 
@@ -97,7 +112,7 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
                base::StringPrintf(
                    "document.querySelector('body > portal').src = '%s';",
                    url.spec().c_str())));
-    navigation_observer.WaitForNavigationFinished();
+    navigation_observer.Wait();
     return navigation_observer.last_navigation_succeeded();
   }
 
@@ -109,7 +124,7 @@ class PortalNavigationThrottleBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(ExecJs(
         portal->GetPortalContents(),
         base::StringPrintf("location.href = '%s';", url.spec().c_str())));
-    navigation_observer.WaitForNavigationFinished();
+    navigation_observer.Wait();
     return navigation_observer.last_navigation_succeeded();
   }
 
@@ -190,14 +205,14 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       GetWebContents(),
       embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  Portal* portal = InsertAndWaitForPortal(
-      embedded_test_server()->GetURL("portal.test", "/title2.html"));
-
+  GURL referrer_url =
+      embedded_test_server()->GetURL("portal.test", "/title2.html");
   GURL destination_url =
       embedded_test_server()->GetURL("not.portal.test", "/notreached");
+
+  Portal* portal = InsertAndWaitForPortal(referrer_url);
   EXPECT_FALSE(NavigatePortalViaSrcAttribute(portal, destination_url, 1));
-  EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(),
-            destination_url);
+  EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
@@ -205,14 +220,14 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       GetWebContents(),
       embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  Portal* portal = InsertAndWaitForPortal(
-      embedded_test_server()->GetURL("portal.test", "/title2.html"));
-
+  GURL referrer_url =
+      embedded_test_server()->GetURL("portal.test", "/title2.html");
   GURL destination_url =
       embedded_test_server()->GetURL("not.portal.test", "/notreached");
+
+  Portal* portal = InsertAndWaitForPortal(referrer_url);
   EXPECT_FALSE(NavigatePortalViaLocationHref(portal, destination_url, 1));
-  EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(),
-            destination_url);
+  EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
@@ -220,16 +235,16 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       GetWebContents(),
       embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  Portal* portal = InsertAndWaitForPortal(
-      embedded_test_server()->GetURL("portal.test", "/title2.html"));
-
+  GURL referrer_url =
+      embedded_test_server()->GetURL("portal.test", "/title2.html");
   GURL destination_url =
       embedded_test_server()->GetURL("not.portal.test", "/notreached");
   GURL redirect_url = GetServerRedirectURL(embedded_test_server(),
                                            "portal.test", destination_url);
+
+  Portal* portal = InsertAndWaitForPortal(referrer_url);
   EXPECT_FALSE(NavigatePortalViaSrcAttribute(portal, redirect_url, 1));
-  EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(),
-            destination_url);
+  EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
 }
 
 IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
@@ -237,15 +252,41 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
   ASSERT_TRUE(NavigateToURL(
       GetWebContents(),
       embedded_test_server()->GetURL("portal.test", "/title1.html")));
-  Portal* portal = InsertAndWaitForPortal(
-      embedded_test_server()->GetURL("portal.test", "/title2.html"));
 
+  GURL referrer_url =
+      embedded_test_server()->GetURL("portal.test", "/title2.html");
   GURL destination_url =
       embedded_test_server()->GetURL("portal.test", "/notreached");
   GURL redirect_url = GetServerRedirectURL(embedded_test_server(),
                                            "not.portal.test", destination_url);
+
+  Portal* portal = InsertAndWaitForPortal(referrer_url);
   EXPECT_FALSE(NavigatePortalViaSrcAttribute(portal, redirect_url, 1));
-  EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), redirect_url);
+  EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
+}
+
+IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
+                       ActivateAfterCanceledInitialNavigation) {
+  ASSERT_TRUE(NavigateToURL(
+      GetWebContents(),
+      embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  GURL referrer_url =
+      embedded_test_server()->GetURL("portal.test", "/title2.html");
+  GURL destination_url =
+      embedded_test_server()->GetURL("not.portal.test", "/notreached");
+
+  Portal* portal =
+      InsertAndWaitForPortal(destination_url, /*expected_to_succeed=*/false);
+  EXPECT_NE(portal, nullptr);
+
+  std::string result =
+      EvalJs(GetMainFrame(),
+             "document.querySelector('body > portal').activate()"
+             ".then(() => 'activated', e => e.message)")
+          .ExtractString();
+  EXPECT_THAT(result, ::testing::HasSubstr("not yet ready or was blocked"));
+  EXPECT_EQ(GetWebContents()->GetLastCommittedURL(),
+            embedded_test_server()->GetURL("portal.test", "/title1.html"));
 }
 
 IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
@@ -254,20 +295,101 @@ IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
       GetWebContents(),
       embedded_test_server()->GetURL("portal.test", "/title1.html")));
 
-  auto* old_delegate = GetWebContents()->GetDelegate();
-  ConsoleObserverDelegate console_delegate(GetWebContents(),
-                                           "*portal*cross-origin*");
-  GetWebContents()->SetDelegate(&console_delegate);
+  WebContentsConsoleObserver console_observer(GetWebContents());
+  console_observer.SetPattern("*portal*cross-origin*");
 
   Portal* portal = InsertAndWaitForPortal(
       embedded_test_server()->GetURL("not.portal.test", "/title2.html"),
       /*expected_to_succeed=*/false);
   EXPECT_NE(portal, nullptr);
 
-  console_delegate.Wait();
-  EXPECT_THAT(console_delegate.message(),
+  console_observer.Wait();
+  EXPECT_THAT(console_observer.GetMessageAt(0u),
               ::testing::HasSubstr("http://not.portal.test"));
-  GetWebContents()->SetDelegate(old_delegate);
+}
+
+// Ensure navigating while a portal is orphaned does not bypass cross-origin
+// restrictions.
+IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTest,
+                       CrossOriginNavigationWhileOrphaned) {
+  WebContentsImpl* predecessor_contents = GetWebContents();
+  GURL predecessor_url =
+      embedded_test_server()->GetURL("portal.test", "/title1.html");
+  GURL orphan_navigation_url =
+      embedded_test_server()->GetURL("not.portal.test", "/notreached");
+  ASSERT_TRUE(NavigateToURL(predecessor_contents, predecessor_url));
+  Portal* portal = InsertAndWaitForPortal(
+      embedded_test_server()->GetURL("portal.test", "/title2.html"));
+
+  // We want the predecessor's navigation to occur before adoption, so we have
+  // the successor hang to keep the predecessor in the orphaned state.
+  EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
+                     "window.addEventListener('portalactivate', (e) => {"
+                     "  while (true);"
+                     "});"));
+
+  TestNavigationObserver navigation_observer(predecessor_contents);
+  EXPECT_TRUE(ExecJs(predecessor_contents,
+                     JsReplace("document.querySelector('portal').activate();"
+                               "location.href = $1;",
+                               orphan_navigation_url)));
+  navigation_observer.Wait();
+  EXPECT_FALSE(navigation_observer.last_navigation_succeeded());
+  EXPECT_EQ(predecessor_contents->GetLastCommittedURL(), predecessor_url);
+}
+
+class PortalNavigationThrottleBrowserTestCrossOrigin
+    : public PortalNavigationThrottleBrowserTest {
+ protected:
+  bool ShouldEnableCrossOriginPortals() const override { return true; }
+};
+
+void SleepWithRunLoop(base::TimeDelta delay, base::Location from_here) {
+  base::RunLoop run_loop;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      from_here, run_loop.QuitClosure(), delay);
+  run_loop.Run();
+}
+
+IN_PROC_BROWSER_TEST_F(PortalNavigationThrottleBrowserTestCrossOrigin,
+                       NonHTTPSchemesBlockedEvenInCrossOriginMode) {
+  ASSERT_TRUE(NavigateToURL(
+      GetWebContents(),
+      embedded_test_server()->GetURL("portal.test", "/title1.html")));
+  GURL referrer_url =
+      embedded_test_server()->GetURL("portal.test", "/title2.html");
+  Portal* portal = InsertAndWaitForPortal(referrer_url);
+
+  // Can't use NavigatePortalViaLocationHref as the checks for data: URLs are
+  // duplicated between Blink and content/browser/, and the former check aborts
+  // before a navigation even begins.
+  //
+  // This is also why we use sleeps to watch for the navigation occurring.
+  // Fortunately, because the sleep only races in the failure case this test
+  // should only be flaky if there is a bug.
+
+  {
+    WebContentsConsoleObserver console_observer(portal->GetPortalContents());
+    console_observer.SetPattern("*avigat*");
+    EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
+                       "location.href = 'data:text/html,hello world';"));
+    console_observer.Wait();
+    EXPECT_THAT(console_observer.GetMessageAt(0u),
+                ::testing::HasSubstr("data"));
+    SleepWithRunLoop(base::Seconds(3), FROM_HERE);
+    EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
+  }
+
+  {
+    WebContentsConsoleObserver console_observer(GetWebContents());
+    console_observer.SetPattern("*avigat*");
+    EXPECT_TRUE(ExecJs(portal->GetPortalContents(),
+                       "location.href = 'ftp://user:pass@example.com/';"));
+    console_observer.Wait();
+    EXPECT_THAT(console_observer.GetMessageAt(0u), ::testing::HasSubstr("ftp"));
+    SleepWithRunLoop(base::Seconds(3), FROM_HERE);
+    EXPECT_EQ(portal->GetPortalContents()->GetLastCommittedURL(), referrer_url);
+  }
 }
 
 }  // namespace

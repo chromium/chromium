@@ -13,7 +13,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -74,9 +73,13 @@ class SafeBrowsingService;
 // the initial incident. Finally, already-reported incidents are pruned and any
 // remaining are uploaded in an incident report.
 // Lives on the UI thread.
-class IncidentReportingService : public ProfileManagerObserver {
+class IncidentReportingService : public ProfileManagerObserver,
+                                 public ProfileObserver {
  public:
   explicit IncidentReportingService(SafeBrowsingService* safe_browsing_service);
+
+  IncidentReportingService(const IncidentReportingService&) = delete;
+  IncidentReportingService& operator=(const IncidentReportingService&) = delete;
 
   // All incident collection, data collection, and uploads in progress are
   // dropped at destruction.
@@ -98,7 +101,7 @@ class IncidentReportingService : public ProfileManagerObserver {
   CreatePreferenceValidationDelegate(Profile* profile);
 
   // Registers |callback| to be run after some delay following process launch.
-  void RegisterDelayedAnalysisCallback(const DelayedAnalysisCallback& callback);
+  void RegisterDelayedAnalysisCallback(DelayedAnalysisCallback callback);
 
   // Adds |download_manager| to the set monitored for client download request
   // storage.
@@ -106,6 +109,9 @@ class IncidentReportingService : public ProfileManagerObserver {
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;
+
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
 
  protected:
   // A pointer to a function that populates a protobuf with environment data.
@@ -134,11 +140,11 @@ class IncidentReportingService : public ProfileManagerObserver {
   // Initiates a search for the most recent binary download. Overriden by unit
   // tests to provide a fake finder.
   virtual std::unique_ptr<LastDownloadFinder> CreateDownloadFinder(
-      const LastDownloadFinder::LastDownloadCallback& callback);
+      LastDownloadFinder::LastDownloadCallback callback);
 
   // Initiates an upload. Overridden by unit tests to provide a fake uploader.
   virtual std::unique_ptr<IncidentReportUploader> StartReportUpload(
-      const IncidentReportUploader::OnResultCallback& callback,
+      IncidentReportUploader::OnResultCallback callback,
       const ClientIncidentReport& report);
 
   // Returns true if a report is currently being processed.
@@ -268,7 +274,7 @@ class IncidentReportingService : public ProfileManagerObserver {
 
   // A subscription for ClientDownloadRequests, used to persist them for later
   // use.
-  ClientDownloadRequestSubscription client_download_request_subscription_;
+  base::CallbackListSubscription client_download_request_subscription_;
 
   // True when the asynchronous environment collection task has been fired off
   // but has not yet completed.
@@ -324,8 +330,6 @@ class IncidentReportingService : public ProfileManagerObserver {
   // that are posted during normal processing (e.g., environment collection,
   // and report uploads).
   base::WeakPtrFactory<IncidentReportingService> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(IncidentReportingService);
 };
 
 }  // namespace safe_browsing

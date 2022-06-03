@@ -2,12 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 
 # This target contains dummy or fake classes that can be used as
 # placeholders when lacking something better, or for testing.
-jumbo_component("fake") {
+component("fake") {
   sources = [
     "fake_display_delegate.cc",
     "fake_display_delegate.h",

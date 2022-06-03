@@ -6,11 +6,13 @@ package org.chromium.chrome.browser.document;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.os.StrictMode;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.ColorDelegateImpl;
 import org.chromium.chrome.browser.vr.VrModuleProvider;
 
 /**
@@ -21,35 +23,44 @@ public class ChromeLauncherActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Third-party code adds disk access to Activity.onCreate. http://crbug.com/619824
-        StrictMode.ThreadPolicy oldPolicy = StrictMode.allowThreadDiskReads();
         TraceEvent.begin("ChromeLauncherActivity.onCreate");
-        try {
-            super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);
 
-            if (VrModuleProvider.getIntentDelegate().isVrIntent(getIntent())) {
-                // We need to turn VR mode on as early as possible in the intent handling flow to
-                // avoid brightness flickering when handling VR intents.
-                VrModuleProvider.getDelegate().setVrModeEnabled(this, true);
-            }
+        // TODO(https://crbug.com/1225066): Figure out a scalable way to apply overlays to
+        // activities like this.
+        applyThemeOverlays();
 
-            @LaunchIntentDispatcher.Action
-            int dispatchAction = LaunchIntentDispatcher.dispatch(this, getIntent());
-            switch (dispatchAction) {
-                case LaunchIntentDispatcher.Action.FINISH_ACTIVITY:
-                    finish();
-                    break;
-                case LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK:
-                    ApiCompatibilityUtils.finishAndRemoveTask(this);
-                    break;
-                default:
-                    assert false : "Intent dispatcher finished with action " + dispatchAction
-                                   + ", finishing anyway";
-                    finish();
-                    break;
-            }
-        } finally {
-            StrictMode.setThreadPolicy(oldPolicy);
-            TraceEvent.end("ChromeLauncherActivity.onCreate");
+        if (VrModuleProvider.getIntentDelegate().isVrIntent(getIntent())) {
+            // We need to turn VR mode on as early as possible in the intent handling flow to
+            // avoid brightness flickering when handling VR intents.
+            VrModuleProvider.getDelegate().setVrModeEnabled(this, true);
+        }
+
+        @LaunchIntentDispatcher.Action
+        int dispatchAction = LaunchIntentDispatcher.dispatch(this, getIntent());
+        switch (dispatchAction) {
+            case LaunchIntentDispatcher.Action.FINISH_ACTIVITY:
+                finish();
+                break;
+            case LaunchIntentDispatcher.Action.FINISH_ACTIVITY_REMOVE_TASK:
+                ApiCompatibilityUtils.finishAndRemoveTask(this);
+                break;
+            default:
+                assert false : "Intent dispatcher finished with action " + dispatchAction
+                               + ", finishing anyway";
+                finish();
+                break;
+        }
+        TraceEvent.end("ChromeLauncherActivity.onCreate");
+    }
+
+    private void applyThemeOverlays() {
+        setTheme(R.style.ColorOverlay_ChromiumAndroid);
+
+        // The effect of this activity's theme is currently limited to CCTs, so we should only apply
+        // dynamic colors when we enable them everywhere.
+        if (ThemeUtils.ENABLE_FULL_DYNAMIC_COLORS.getValue()) {
+            new ColorDelegateImpl().applyDynamicColorsIfAvailable(this);
         }
     }
 }

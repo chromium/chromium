@@ -9,9 +9,10 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "components/device_event_log/device_event_log.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -124,25 +125,32 @@ void OnObjectPathMethodWithoutStatus(
   std::move(callback).Run(result);
 }
 
-// Handles responses for methods with DictionaryValue results.
-void OnDictionaryValueMethod(
-    ShillClientHelper::RefHolder* ref_holder,
-    ShillClientHelper::DictionaryValueCallback callback,
-    dbus::Response* response) {
+// Handles responses for methods with base::Value results.
+void OnValueMethod(ShillClientHelper::RefHolder* ref_holder,
+                   DBusMethodCallback<base::Value> callback,
+                   dbus::Response* response,
+                   dbus::ErrorResponse* error_response) {
   if (!response) {
-    base::DictionaryValue result;
-    std::move(callback).Run(DBUS_METHOD_CALL_FAILURE, result);
+    if (error_response) {
+      dbus::MessageReader reader(error_response);
+      std::string error_message;
+      reader.PopString(&error_message);
+      NET_LOG(ERROR) << "DBus call failed. Error: "
+                     << error_response->GetErrorName()
+                     << " Message: " << error_message;
+    } else {
+      NET_LOG(ERROR) << "DBus call failed with no error.";
+    }
+    std::move(callback).Run(absl::nullopt);
     return;
   }
   dbus::MessageReader reader(response);
   std::unique_ptr<base::Value> value(dbus::PopDataAsValue(&reader));
-  base::DictionaryValue* result = NULL;
-  if (!value.get() || !value->GetAsDictionary(&result)) {
-    base::DictionaryValue result;
-    std::move(callback).Run(DBUS_METHOD_CALL_FAILURE, result);
+  if (!value.get()) {
+    std::move(callback).Run(absl::nullopt);
     return;
   }
-  std::move(callback).Run(DBUS_METHOD_CALL_SUCCESS, *result);
+  std::move(callback).Run(std::move(*value));
 }
 
 // Handles responses for methods without results.
@@ -152,22 +160,21 @@ void OnVoidMethodWithErrorCallback(ShillClientHelper::RefHolder* ref_holder,
   std::move(callback).Run();
 }
 
-// Handles responses for methods with DictionaryValue results.
-// Used by CallDictionaryValueMethodWithErrorCallback().
-void OnDictionaryValueMethodWithErrorCallback(
+// Handles responses for methods with base::Value results.
+// Used by CallValueMethodWithErrorCallback().
+void OnValueMethodWithErrorCallback(
     ShillClientHelper::RefHolder* ref_holder,
-    ShillClientHelper::DictionaryValueCallbackWithoutStatus callback,
+    base::OnceCallback<void(base::Value result)> callback,
     ShillClientHelper::ErrorCallback error_callback,
     dbus::Response* response) {
   dbus::MessageReader reader(response);
   std::unique_ptr<base::Value> value(dbus::PopDataAsValue(&reader));
-  base::DictionaryValue* result = NULL;
-  if (!value.get() || !value->GetAsDictionary(&result)) {
+  if (!value.get() || !value->is_dict()) {
     std::move(error_callback)
         .Run(kInvalidResponseErrorName, kInvalidResponseErrorMessage);
     return;
   }
-  std::move(callback).Run(*result);
+  std::move(callback).Run(std::move(*value));
 }
 
 // Handles responses for methods with ListValue results.
@@ -178,13 +185,12 @@ void OnListValueMethodWithErrorCallback(
     dbus::Response* response) {
   dbus::MessageReader reader(response);
   std::unique_ptr<base::Value> value(dbus::PopDataAsValue(&reader));
-  base::ListValue* result = NULL;
-  if (!value.get() || !value->GetAsList(&result)) {
+  if (!value.get() || !value->is_list()) {
     std::move(error_callback)
         .Run(kInvalidResponseErrorName, kInvalidResponseErrorMessage);
     return;
   }
-  std::move(callback).Run(*result);
+  std::move(callback).Run(base::Value::AsListValue(*value));
 }
 
 // Handles running appropriate error callbacks.
@@ -207,7 +213,7 @@ ShillClientHelper::ShillClientHelper(dbus::ObjectProxy* proxy)
     : proxy_(proxy), active_refs_(0) {}
 
 ShillClientHelper::~ShillClientHelper() {
-  if (observer_list_.might_have_observers())
+  if (!observer_list_.empty())
     NET_LOG(ERROR) << "ShillClientHelper destroyed with active observers";
 }
 
@@ -240,7 +246,7 @@ void ShillClientHelper::RemovePropertyChangedObserver(
 
 void ShillClientHelper::MonitorPropertyChanged(
     const std::string& interface_name) {
-  if (observer_list_.might_have_observers()) {
+  if (!observer_list_.empty()) {
     // Effectively monitor the PropertyChanged now.
     MonitorPropertyChangedInternal(interface_name);
   } else {
@@ -277,23 +283,22 @@ void ShillClientHelper::CallObjectPathMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnObjectPathMethodWithoutStatus,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
-void ShillClientHelper::CallDictionaryValueMethod(
+void ShillClientHelper::CallValueMethod(
     dbus::MethodCall* method_call,
-    DictionaryValueCallback callback) {
+    DBusMethodCallback<base::Value> callback) {
   DCHECK(!callback.is_null());
-  proxy_->CallMethod(
+  proxy_->CallMethodWithErrorResponse(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&OnDictionaryValueMethod,
+      base::BindOnce(&OnValueMethod,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
                      std::move(callback)));
 }
@@ -318,14 +323,13 @@ void ShillClientHelper::CallBooleanMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnBooleanMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
 void ShillClientHelper::CallStringMethodWithErrorCallback(
@@ -334,30 +338,28 @@ void ShillClientHelper::CallStringMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnStringMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
-void ShillClientHelper::CallDictionaryValueMethodWithErrorCallback(
+void ShillClientHelper::CallValueMethodWithErrorCallback(
     dbus::MethodCall* method_call,
-    DictionaryValueCallbackWithoutStatus callback,
+    base::OnceCallback<void(base::Value result)> callback,
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-      base::BindOnce(&OnDictionaryValueMethodWithErrorCallback,
+      base::BindOnce(&OnValueMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
 void ShillClientHelper::CallListValueMethodWithErrorCallback(
@@ -366,14 +368,13 @@ void ShillClientHelper::CallListValueMethodWithErrorCallback(
     ErrorCallback error_callback) {
   DCHECK(!callback.is_null());
   DCHECK(!error_callback.is_null());
-  auto error_callback_adapted =
-      base::AdaptCallbackForRepeating(std::move(error_callback));
+  auto split_callback = base::SplitOnceCallback(std::move(error_callback));
   proxy_->CallMethodWithErrorCallback(
       method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
       base::BindOnce(&OnListValueMethodWithErrorCallback,
                      base::Owned(new RefHolder(weak_ptr_factory_.GetWeakPtr())),
-                     std::move(callback), error_callback_adapted),
-      base::BindOnce(&OnError, error_callback_adapted));
+                     std::move(callback), std::move(split_callback.first)),
+      base::BindOnce(&OnError, std::move(split_callback.second)));
 }
 
 namespace {
@@ -382,64 +383,75 @@ enum DictionaryType { DICTIONARY_TYPE_VARIANT, DICTIONARY_TYPE_STRING };
 
 // Appends an a{ss} dictionary to |writer|. |dictionary| must only contain
 // strings.
-void AppendStringDictionary(const base::DictionaryValue& dictionary,
+void AppendStringDictionary(const base::Value& dictionary,
                             dbus::MessageWriter* writer) {
-  dbus::MessageWriter variant_writer(NULL);
-  writer->OpenVariant("a{ss}", &variant_writer);
-  dbus::MessageWriter array_writer(NULL);
-  variant_writer.OpenArray("{ss}", &array_writer);
-  for (base::DictionaryValue::Iterator it(dictionary); !it.IsAtEnd();
-       it.Advance()) {
-    dbus::MessageWriter entry_writer(NULL);
+  dbus::MessageWriter array_writer(nullptr);
+  writer->OpenArray("{ss}", &array_writer);
+  for (const auto it : dictionary.DictItems()) {
+    dbus::MessageWriter entry_writer(nullptr);
     array_writer.OpenDictEntry(&entry_writer);
-    entry_writer.AppendString(it.key());
-    const base::Value& value = it.value();
+    entry_writer.AppendString(it.first);
+    const base::Value& value = it.second;
     std::string value_string;
-    if (!value.GetAsString(&value_string))
-      NET_LOG(ERROR) << "Dictionary value not a string: " << it.key();
+    if (value.is_string()) {
+      value_string = value.GetString();
+    } else {
+      NET_LOG(ERROR) << "Dictionary value not a string: " << it.first;
+    }
     entry_writer.AppendString(value_string);
     array_writer.CloseContainer(&entry_writer);
   }
-  variant_writer.CloseContainer(&array_writer);
-  writer->CloseContainer(&variant_writer);
+  writer->CloseContainer(&array_writer);
 }
 
-// Implements AppendValueDataAsVariant. If |dictionary_type| is
-// DICTIONARY_TYPE_VARIANT  and |value| is a Dictionary then it will be written
-// as type 'a{ss}'. Otherwise dictionaries are written as type a{sv}. (This is
-// to support Cellular.APN which expects a string -> string dictionary).
 void AppendValueDataAsVariantInternal(dbus::MessageWriter* writer,
                                       const base::Value& value,
                                       DictionaryType dictionary_type) {
   // Support basic types and string-to-string dictionary.
   switch (value.type()) {
     case base::Value::Type::DICTIONARY: {
-      const base::DictionaryValue* dictionary = NULL;
-      value.GetAsDictionary(&dictionary);
       if (dictionary_type == DICTIONARY_TYPE_STRING) {
-        AppendStringDictionary(*dictionary, writer);
+        // AppendStringDictionary uses a{ss} to support Cellular.APN which
+        // expects a string -> string dictionary.
+        dbus::MessageWriter variant_writer(nullptr);
+        writer->OpenVariant("a{ss}", &variant_writer);
+        AppendStringDictionary(value, &variant_writer);
+        writer->CloseContainer(&variant_writer);
       } else {
-        dbus::MessageWriter variant_writer(NULL);
+        dbus::MessageWriter variant_writer(nullptr);
         writer->OpenVariant("a{sv}", &variant_writer);
-        ShillClientHelper::AppendServicePropertiesDictionary(&variant_writer,
-                                                             *dictionary);
+        ShillClientHelper::AppendServiceProperties(&variant_writer, value);
         writer->CloseContainer(&variant_writer);
       }
       break;
     }
     case base::Value::Type::LIST: {
-      const base::ListValue* list = NULL;
-      value.GetAsList(&list);
-      dbus::MessageWriter variant_writer(NULL);
+      // Support list of string and list of string-to-string dictionary.
+      const auto& list_view = value.GetList();
+      if (list_view.size() > 0 && list_view.front().is_dict()) {
+        // aa{ss} to support WireGuard.Peers
+        dbus::MessageWriter variant_writer(nullptr);
+        writer->OpenVariant("aa{ss}", &variant_writer);
+        dbus::MessageWriter array_writer(nullptr);
+        variant_writer.OpenArray("a{ss}", &array_writer);
+        for (const auto& value : list_view) {
+          AppendStringDictionary(value, &array_writer);
+        }
+        variant_writer.CloseContainer(&array_writer);
+        writer->CloseContainer(&variant_writer);
+        break;
+      }
+      dbus::MessageWriter variant_writer(nullptr);
       writer->OpenVariant("as", &variant_writer);
-      dbus::MessageWriter array_writer(NULL);
+      dbus::MessageWriter array_writer(nullptr);
       variant_writer.OpenArray("s", &array_writer);
-      for (base::ListValue::const_iterator it = list->begin();
-           it != list->end(); ++it) {
-        const base::Value& value = *it;
+      for (const auto& inner_value : list_view) {
         std::string value_string;
-        if (!value.GetAsString(&value_string))
+        if (inner_value.is_string()) {
+          value_string = inner_value.GetString();
+        } else {
           NET_LOG(ERROR) << "List value not a string: " << value;
+        }
         array_writer.AppendString(value_string);
       }
       variant_writer.CloseContainer(&array_writer);
@@ -466,27 +478,38 @@ void ShillClientHelper::AppendValueDataAsVariant(dbus::MessageWriter* writer,
 }
 
 // static
-void ShillClientHelper::AppendServicePropertiesDictionary(
-    dbus::MessageWriter* writer,
-    const base::DictionaryValue& dictionary) {
-  dbus::MessageWriter array_writer(NULL);
+void ShillClientHelper::AppendServiceProperties(dbus::MessageWriter* writer,
+                                                const base::Value& dictionary) {
+  dbus::MessageWriter array_writer(nullptr);
   writer->OpenArray("{sv}", &array_writer);
-  for (base::DictionaryValue::Iterator it(dictionary); !it.IsAtEnd();
-       it.Advance()) {
-    dbus::MessageWriter entry_writer(NULL);
+  for (auto it : dictionary.DictItems()) {
+    dbus::MessageWriter entry_writer(nullptr);
     array_writer.OpenDictEntry(&entry_writer);
-    entry_writer.AppendString(it.key());
+    entry_writer.AppendString(it.first);
     // Shill expects Cellular.APN to be a string dictionary, a{ss}. All other
     // properties use a varient dictionary, a{sv}. TODO(stevenjb): Remove this
     // hack if/when we change Shill to accept a{sv} for Cellular.APN.
-    DictionaryType dictionary_type = (it.key() == shill::kCellularApnProperty)
+    DictionaryType dictionary_type = (it.first == shill::kCellularApnProperty)
                                          ? DICTIONARY_TYPE_STRING
                                          : DICTIONARY_TYPE_VARIANT;
-    AppendValueDataAsVariantInternal(&entry_writer, it.value(),
-                                     dictionary_type);
+    AppendValueDataAsVariantInternal(&entry_writer, it.second, dictionary_type);
     array_writer.CloseContainer(&entry_writer);
   }
   writer->CloseContainer(&array_writer);
+}
+
+// static
+void ShillClientHelper::OnGetProperties(
+    const dbus::ObjectPath& device_path,
+    DBusMethodCallback<base::Value> callback,
+    absl::optional<base::Value> result) {
+  if (result && !result->is_dict()) {
+    NET_LOG(ERROR) << "GetProperties for: " << device_path.value()
+                   << " returned non dictionary Value: " << *result;
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  std::move(callback).Run(std::move(result));
 }
 
 void ShillClientHelper::AddRef() {
@@ -507,7 +530,7 @@ void ShillClientHelper::OnSignalConnected(const std::string& interface,
 }
 
 void ShillClientHelper::OnPropertyChanged(dbus::Signal* signal) {
-  if (!observer_list_.might_have_observers())
+  if (observer_list_.empty())
     return;
 
   dbus::MessageReader reader(signal);

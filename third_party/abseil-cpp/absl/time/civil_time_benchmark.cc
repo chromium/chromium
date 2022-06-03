@@ -66,6 +66,26 @@ void BM_Format(benchmark::State& state) {
 }
 BENCHMARK(BM_Format);
 
+void BM_Parse(benchmark::State& state) {
+  const std::string f = "2014-01-02T03:04:05";
+  absl::CivilSecond c;
+  while (state.KeepRunning()) {
+    const bool b = absl::ParseCivilTime(f, &c);
+    benchmark::DoNotOptimize(b);
+  }
+}
+BENCHMARK(BM_Parse);
+
+void BM_RoundTripFormatParse(benchmark::State& state) {
+  const absl::CivilSecond c(2014, 1, 2, 3, 4, 5);
+  absl::CivilSecond out;
+  while (state.KeepRunning()) {
+    const bool b = absl::ParseCivilTime(absl::FormatCivilTime(c), &out);
+    benchmark::DoNotOptimize(b);
+  }
+}
+BENCHMARK(BM_RoundTripFormatParse);
+
 template <typename T>
 void BM_CivilTimeAbslHash(benchmark::State& state) {
   const int kSize = 100000;

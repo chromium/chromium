@@ -14,6 +14,7 @@
 #include <string>
 #include <vector>
 
+#include "base/logging.h"
 #include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_winrt.h"
@@ -33,6 +34,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
       Microsoft::WRL::ComPtr<ABI::Windows::Devices::Bluetooth::
                                  GenericAttributeProfile::IGattDeviceService>
           gatt_service);
+
+  BluetoothRemoteGattServiceWinrt(const BluetoothRemoteGattServiceWinrt&) =
+      delete;
+  BluetoothRemoteGattServiceWinrt& operator=(
+      const BluetoothRemoteGattServiceWinrt&) = delete;
+
   ~BluetoothRemoteGattServiceWinrt() override;
 
   // BluetoothRemoteGattService:
@@ -53,25 +60,25 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
         protocol_error_ref;
     HRESULT hr = i->get_ProtocolError(&protocol_error_ref);
     if (FAILED(hr)) {
-      VLOG(2) << "Getting Protocol Error Reference failed: "
-              << logging::SystemErrorCodeToString(hr);
+      DVLOG(2) << "Getting Protocol Error Reference failed: "
+               << logging::SystemErrorCodeToString(hr);
       return GattErrorCode::GATT_ERROR_UNKNOWN;
     }
 
     if (!protocol_error_ref) {
-      VLOG(2) << "Got Null Protocol Error Reference.";
+      DVLOG(2) << "Got Null Protocol Error Reference.";
       return GattErrorCode::GATT_ERROR_UNKNOWN;
     }
 
     uint8_t protocol_error;
     hr = protocol_error_ref->get_Value(&protocol_error);
     if (FAILED(hr)) {
-      VLOG(2) << "Getting Protocol Error Value failed: "
-              << logging::SystemErrorCodeToString(hr);
+      DVLOG(2) << "Getting Protocol Error Value failed: "
+               << logging::SystemErrorCodeToString(hr);
       return GattErrorCode::GATT_ERROR_UNKNOWN;
     }
 
-    VLOG(2) << "Got Protocol Error: " << static_cast<int>(protocol_error);
+    DVLOG(2) << "Got Protocol Error: " << static_cast<int>(protocol_error);
 
     // GATT Protocol Errors are described in the Bluetooth Core Specification
     // Version 5.0 Vol 3, Part F, 3.4.1.1.
@@ -133,8 +140,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothRemoteGattServiceWinrt
   BluetoothUUID uuid_;
   uint16_t attribute_handle_;
   std::string identifier_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothRemoteGattServiceWinrt);
 };
 
 }  // namespace device

@@ -6,7 +6,6 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
-#include "base/task/post_task.h"
 #include "components/performance_manager/public/render_process_host_proxy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -69,8 +68,8 @@ void DispatchSetProcessPriority(const ProcessNode* process_node,
   // driven 100% from the PM, we could post directly to the launcher thread
   // via the base::Process directly.
   const auto& proxy = process_node->GetRenderProcessHostProxy();
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&SetProcessPriorityOnUIThread, proxy, foreground));
 }
 
@@ -105,7 +104,7 @@ void ProcessPriorityPolicy::ClearCallbackForTesting() {
 }
 
 void ProcessPriorityPolicy::OnPassedToGraph(Graph* graph) {
-  DCHECK(graph->IsEmpty());
+  DCHECK(graph->HasOnlySystemNode());
   graph->AddProcessNodeObserver(this);
 }
 

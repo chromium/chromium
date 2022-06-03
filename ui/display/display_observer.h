@@ -12,6 +12,7 @@
 
 namespace display {
 class Display;
+enum class TabletState;
 
 // Observers for display configuration changes.
 class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
@@ -25,6 +26,8 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
     DISPLAY_METRIC_PRIMARY = 1 << 4,
     DISPLAY_METRIC_MIRROR_STATE = 1 << 5,
     DISPLAY_METRIC_COLOR_SPACE = 1 << 6,
+    DISPLAY_METRIC_REFRESH_RATE = 1 << 7,
+    DISPLAY_METRIC_INTERLACED = 1 << 8,
   };
 
   // This may be called before other methods to signal changes are about to
@@ -39,7 +42,14 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
   virtual void OnDisplayAdded(const Display& new_display);
 
   // Called when |old_display| has been removed.
+  // In Ash, this is called *before* the display has been removed.
+  // Everywhere else, this is called *after* the display has been removed.
   virtual void OnDisplayRemoved(const Display& old_display);
+
+  // Called *after* any displays have been removed.  Not called per display.
+  // TODO(enne): resolve the Ash inconsistency for OnDisplayRemoved and
+  // remove this function.
+  virtual void OnDidRemoveDisplays();
 
   // Called when the metrics of a display change.
   // |changed_metrics| is a bitmask of DisplayMatric types indicating which
@@ -49,8 +59,36 @@ class DISPLAY_EXPORT DisplayObserver : public base::CheckedObserver {
   virtual void OnDisplayMetricsChanged(const Display& display,
                                        uint32_t changed_metrics);
 
+  // Called when the (platform-specific) workspace ID changes to
+  // |new_workspace|.
+  virtual void OnCurrentWorkspaceChanged(const std::string& new_workspace);
+
+  // Called when display changes between conventional and tablet mode.
+  virtual void OnDisplayTabletStateChanged(TabletState state);
+
  protected:
   ~DisplayObserver() override;
+};
+
+// Caller must ensure the lifetime of `observer` outlives ScopedDisplayObserver
+// and ScopedOptionalDisplayObserver.  The "Optional" version does not care
+// whether there is a display::Screen::GetScreen() to observe or not and will
+// silently noop when there is not.  The non-optional ScopedDisplayObserver
+// will CHECK that display::Screen::GetScreen() exists on construction to
+// receive events from.
+class DISPLAY_EXPORT ScopedOptionalDisplayObserver {
+ public:
+  explicit ScopedOptionalDisplayObserver(DisplayObserver* observer);
+  ~ScopedOptionalDisplayObserver();
+
+ private:
+  DisplayObserver* observer_ = nullptr;
+};
+
+class DISPLAY_EXPORT ScopedDisplayObserver
+    : public ScopedOptionalDisplayObserver {
+ public:
+  explicit ScopedDisplayObserver(DisplayObserver* observer);
 };
 
 }  // namespace display

@@ -10,6 +10,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/platform/web_url_loader_mock_factory.h"
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/loader/resource/mock_font_resource_client.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
@@ -24,7 +25,7 @@
 #include "third_party/blink/renderer/platform/loader/testing/mock_resource_client.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_loader_factory.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/testing/mock_context_lifecycle_notifier.h"
 #include "third_party/blink/renderer/platform/testing/url_test_helpers.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 
@@ -67,11 +68,15 @@ TEST_F(FontResourceTest,
   auto* fetcher = MakeGarbageCollected<ResourceFetcher>(
       ResourceFetcherInit(properties->MakeDetachable(), context,
                           base::MakeRefCounted<scheduler::FakeTaskRunner>(),
-                          MakeGarbageCollected<TestLoaderFactory>()));
+                          base::MakeRefCounted<scheduler::FakeTaskRunner>(),
+                          MakeGarbageCollected<TestLoaderFactory>(),
+                          MakeGarbageCollected<MockContextLifecycleNotifier>(),
+                          nullptr /* back_forward_cache_loader_helper */));
 
   // Fetch to cache a resource.
   ResourceRequest request1(url);
-  FetchParameters fetch_params1(request1);
+  FetchParameters fetch_params1 =
+      FetchParameters::CreateForTest(std::move(request1));
   Resource* resource1 = FontResource::Fetch(fetch_params1, fetcher, nullptr);
   ASSERT_FALSE(resource1->ErrorOccurred());
   fetcher->StartLoad(resource1);
@@ -85,7 +90,8 @@ TEST_F(FontResourceTest,
   // Revalidate the resource.
   ResourceRequest request2(url);
   request2.SetCacheMode(mojom::FetchCacheMode::kValidateCache);
-  FetchParameters fetch_params2(request2);
+  FetchParameters fetch_params2 =
+      FetchParameters::CreateForTest(std::move(request2));
   Resource* resource2 = FontResource::Fetch(fetch_params2, fetcher, nullptr);
   ASSERT_FALSE(resource2->ErrorOccurred());
   EXPECT_EQ(resource1, resource2);
@@ -95,7 +101,8 @@ TEST_F(FontResourceTest,
   // Fetch the same resource again before actual load operation starts.
   ResourceRequest request3(url);
   request3.SetCacheMode(mojom::FetchCacheMode::kValidateCache);
-  FetchParameters fetch_params3(request3);
+  FetchParameters fetch_params3 =
+      FetchParameters::CreateForTest(std::move(request3));
   Resource* resource3 = FontResource::Fetch(fetch_params3, fetcher, nullptr);
   ASSERT_FALSE(resource3->ErrorOccurred());
   EXPECT_EQ(resource2, resource3);
@@ -130,7 +137,7 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   CSSFontFaceSrcValue* src_value = CSSFontFaceSrcValue::Create(
       url.GetString(), url.GetString(),
       Referrer(document.Url(), document.GetReferrerPolicy()),
-      kDoNotCheckContentSecurityPolicy, OriginClean::kTrue);
+      nullptr /* world */, OriginClean::kTrue, false /* is_ad_related */);
 
   // Route font requests in this test through CSSFontFaceSrcValue::Fetch
   // instead of calling FontResource::Fetch directly. CSSFontFaceSrcValue
@@ -140,11 +147,12 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   // a "cache hit" in ResourceFetcher's view.
   Persistent<MockFontResourceClient> client =
       MakeGarbageCollected<MockFontResourceClient>();
-  FontResource& resource = src_value->Fetch(&document, client);
+  FontResource& resource =
+      src_value->Fetch(document.GetExecutionContext(), client);
 
   fetcher->StartLoad(&resource);
   EXPECT_TRUE(resource.Loader()->IsCacheAwareLoadingActivated());
-  resource.load_limit_state_ = FontResource::kUnderLimit;
+  resource.load_limit_state_ = FontResource::LoadLimitState::kUnderLimit;
 
   // FontResource callbacks should be blocked during cache-aware loading.
   resource.FontLoadShortLimitCallback();
@@ -162,7 +170,8 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   // Add client now, FontLoadShortLimitExceeded() should be called.
   Persistent<MockFontResourceClient> client2 =
       MakeGarbageCollected<MockFontResourceClient>();
-  FontResource& resource2 = src_value->Fetch(&document, client2);
+  FontResource& resource2 =
+      src_value->Fetch(document.GetExecutionContext(), client2);
   EXPECT_EQ(&resource, &resource2);
   EXPECT_TRUE(client2->FontLoadShortLimitExceededCalled());
   EXPECT_FALSE(client2->FontLoadLongLimitExceededCalled());
@@ -174,7 +183,8 @@ TEST_F(CacheAwareFontResourceTest, CacheAwareFontLoading) {
   // Add client now, both callbacks should be called.
   Persistent<MockFontResourceClient> client3 =
       MakeGarbageCollected<MockFontResourceClient>();
-  FontResource& resource3 = src_value->Fetch(&document, client3);
+  FontResource& resource3 =
+      src_value->Fetch(document.GetExecutionContext(), client3);
   EXPECT_EQ(&resource, &resource3);
   EXPECT_TRUE(client3->FontLoadShortLimitExceededCalled());
   EXPECT_TRUE(client3->FontLoadLongLimitExceededCalled());

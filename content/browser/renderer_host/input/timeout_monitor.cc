@@ -5,8 +5,9 @@
 #include "content/browser/renderer_host/input/timeout_monitor.h"
 
 #include "base/trace_event/trace_event.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 
-using base::TimeDelta;
 using base::TimeTicks;
 
 namespace content {
@@ -14,13 +15,15 @@ namespace content {
 TimeoutMonitor::TimeoutMonitor(const TimeoutHandler& timeout_handler)
     : timeout_handler_(timeout_handler) {
   DCHECK(!timeout_handler_.is_null());
+  timeout_timer_.SetTaskRunner(
+      content::GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
 }
 
 TimeoutMonitor::~TimeoutMonitor() {
   Stop();
 }
 
-void TimeoutMonitor::Start(TimeDelta delay) {
+void TimeoutMonitor::Start(base::TimeDelta delay) {
   if (!IsRunning()) {
     TRACE_EVENT_ASYNC_BEGIN0("renderer_host", "TimeoutMonitor", this);
     TRACE_EVENT_INSTANT0("renderer_host", "TimeoutMonitor::Start",
@@ -30,7 +33,7 @@ void TimeoutMonitor::Start(TimeDelta delay) {
   StartImpl(delay);
 }
 
-void TimeoutMonitor::Restart(TimeDelta delay) {
+void TimeoutMonitor::Restart(base::TimeDelta delay) {
   if (!IsRunning()) {
     Start(delay);
     return;

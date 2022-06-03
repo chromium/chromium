@@ -7,34 +7,50 @@
 
 #include "ash/ash_export.h"
 #include "ash/system/model/update_model.h"
-#include "base/macros.h"
+#include "base/files/file_path.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
+
+class ShutdownConfirmationDialog;
 
 // Controller class to manage update notification.
 class ASH_EXPORT UpdateNotificationController : public UpdateObserver {
  public:
   UpdateNotificationController();
+
+  UpdateNotificationController(const UpdateNotificationController&) = delete;
+  UpdateNotificationController& operator=(const UpdateNotificationController&) =
+      delete;
+
   ~UpdateNotificationController() override;
 
   // UpdateObserver:
   void OnUpdateAvailable() override;
 
+  // Callback functions for Shutdown Confirmation Dialog which is generated
+  // when the device bootup process is occasionally slow - eg. memory training
+  // during the bootup due to a system firmware update.
+  void RestartForUpdate();
+  void RestartCancelled();
+
  private:
   friend class UpdateNotificationControllerTest;
 
   bool ShouldShowUpdate() const;
-  base::string16 GetNotificationTitle() const;
-  base::string16 GetNotificationMessage() const;
-  void HandleNotificationClick(base::Optional<int> index);
-
-  static const char kNotificationId[];
+  std::u16string GetNotificationTitle() const;
+  std::u16string GetNotificationMessage() const;
+  void HandleNotificationClick(absl::optional<int> index);
+  void GenerateUpdateNotification(
+      absl::optional<bool> slow_boot_file_path_exists);
 
   UpdateModel* const model_;
 
-  base::WeakPtrFactory<UpdateNotificationController> weak_ptr_factory_{this};
+  base::FilePath slow_boot_file_path_;
+  bool slow_boot_file_path_exists_ = false;
+  ShutdownConfirmationDialog* confirmation_dialog_ = nullptr;
 
-  DISALLOW_COPY_AND_ASSIGN(UpdateNotificationController);
+  base::WeakPtrFactory<UpdateNotificationController> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

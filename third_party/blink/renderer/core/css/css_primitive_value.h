@@ -25,6 +25,7 @@
 #include <bitset>
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
+#include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -34,7 +35,6 @@
 namespace blink {
 
 class CSSToLengthConversionData;
-class Length;
 
 // Dimension calculations are imprecise, often resulting in values of e.g.
 // 44.99998. We need to go ahead and round if we're really close to the next
@@ -83,6 +83,12 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kViewportHeight,
     kViewportMin,
     kViewportMax,
+    kContainerWidth,
+    kContainerHeight,
+    kContainerInlineSize,
+    kContainerBlockSize,
+    kContainerMin,
+    kContainerMax,
     kRems,
     kChs,
     kUserUnits,  // The SVG term for unitless lengths
@@ -124,6 +130,12 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
     kUnitTypeViewportHeight,
     kUnitTypeViewportMin,
     kUnitTypeViewportMax,
+    kUnitTypeContainerWidth,
+    kUnitTypeContainerHeight,
+    kUnitTypeContainerInlineSize,
+    kUnitTypeContainerBlockSize,
+    kUnitTypeContainerMin,
+    kUnitTypeContainerMax,
 
     // This value must come after the last length unit type to enable iteration
     // over the length unit types.
@@ -159,6 +171,11 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static UnitCategory UnitTypeToUnitCategory(UnitType);
   static float ClampToCSSLengthRange(double);
 
+  enum class ValueRange { kAll, kNonNegative, kInteger, kPositiveInteger };
+
+  static Length::ValueRange ConversionToLengthValueRange(ValueRange);
+  static ValueRange ValueRangeForLengthValueRange(Length::ValueRange);
+
   static bool IsAngle(UnitType unit) {
     return unit == UnitType::kDegrees || unit == UnitType::kRadians ||
            unit == UnitType::kGradians || unit == UnitType::kTurns;
@@ -167,6 +184,9 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static bool IsViewportPercentageLength(UnitType type) {
     return type >= UnitType::kViewportWidth && type <= UnitType::kViewportMax;
   }
+  static bool IsContainerPercentageLength(UnitType type) {
+    return type >= UnitType::kContainerWidth && type <= UnitType::kContainerMax;
+  }
   static bool IsLength(UnitType type) {
     return (type >= UnitType::kEms && type <= UnitType::kUserUnits) ||
            type == UnitType::kQuirkyEms;
@@ -174,7 +194,8 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   static inline bool IsRelativeUnit(UnitType type) {
     return type == UnitType::kPercentage || type == UnitType::kEms ||
            type == UnitType::kExs || type == UnitType::kRems ||
-           type == UnitType::kChs || IsViewportPercentageLength(type);
+           type == UnitType::kChs || IsViewportPercentageLength(type) ||
+           IsContainerPercentageLength(type);
   }
   bool IsLength() const;
   bool IsNumber() const;
@@ -229,11 +250,15 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
   // expression can be resolved into a single numeric value *without any type
   // conversion* (e.g., between px and em). Otherwise, it hits a DCHECK.
   double GetDoubleValue() const;
+
+  // Returns Double Value including infinity, -infinity, and NaN.
+  double GetDoubleValueWithoutClamping() const;
+
   float GetFloatValue() const { return GetValue<float>(); }
   int GetIntValue() const { return GetValue<int>(); }
   template <typename T>
   inline T GetValue() const {
-    return clampTo<T>(GetDoubleValue());
+    return ClampTo<T>(GetDoubleValue());
   }
 
   template <typename T>
@@ -248,7 +273,7 @@ class CORE_EXPORT CSSPrimitiveValue : public CSSValue {
 
   String CustomCSSText() const;
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void TraceAfterDispatch(blink::Visitor*) const;
 
   static UnitType CanonicalUnitTypeForCategory(UnitCategory);
   static double ConversionToCanonicalUnitsScaleFactor(UnitType);
@@ -296,7 +321,8 @@ CORE_EXPORT float CSSPrimitiveValue::ComputeLength(
     const CSSToLengthConversionData&) const;
 
 template <>
-double CSSPrimitiveValue::ComputeLength(const CSSToLengthConversionData&) const;
+CORE_EXPORT double CSSPrimitiveValue::ComputeLength(
+    const CSSToLengthConversionData&) const;
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_PRIMITIVE_VALUE_H_

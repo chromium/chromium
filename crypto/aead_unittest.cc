@@ -11,8 +11,10 @@
 namespace {
 
 const crypto::Aead::AeadAlgorithm kAllAlgorithms[]{
-    crypto::Aead::AES_128_CTR_HMAC_SHA256, crypto::Aead::AES_256_GCM,
+    crypto::Aead::AES_128_CTR_HMAC_SHA256,
+    crypto::Aead::AES_256_GCM,
     crypto::Aead::AES_256_GCM_SIV,
+    crypto::Aead::CHACHA20_POLY1305,
 };
 
 class AeadTest : public testing::TestWithParam<crypto::Aead::AeadAlgorithm> {};
@@ -49,7 +51,7 @@ TEST_P(AeadTest, SealOpenSpan) {
       aead.Seal(kPlaintext, nonce, kAdditionalData);
   EXPECT_LT(sizeof(kPlaintext), ciphertext.size());
 
-  base::Optional<std::vector<uint8_t>> decrypted =
+  absl::optional<std::vector<uint8_t>> decrypted =
       aead.Open(ciphertext, nonce, kAdditionalData);
   ASSERT_TRUE(decrypted);
   ASSERT_EQ(decrypted->size(), sizeof(kPlaintext));

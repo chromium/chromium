@@ -40,6 +40,10 @@ class MDnsSocketFactoryImpl : public MDnsSocketFactory {
  public:
   MDnsSocketFactoryImpl() : net_log_(nullptr) {}
   explicit MDnsSocketFactoryImpl(NetLog* net_log) : net_log_(net_log) {}
+
+  MDnsSocketFactoryImpl(const MDnsSocketFactoryImpl&) = delete;
+  MDnsSocketFactoryImpl& operator=(const MDnsSocketFactoryImpl&) = delete;
+
   ~MDnsSocketFactoryImpl() override {}
 
   void CreateSockets(
@@ -47,8 +51,6 @@ class MDnsSocketFactoryImpl : public MDnsSocketFactory {
 
  private:
   NetLog* const net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsSocketFactoryImpl);
 };
 
 // A connection to the network for multicast DNS clients. It reads data into
@@ -64,6 +66,10 @@ class NET_EXPORT_PRIVATE MDnsConnection {
   };
 
   explicit MDnsConnection(MDnsConnection::Delegate* delegate);
+
+  MDnsConnection(const MDnsConnection&) = delete;
+  MDnsConnection& operator=(const MDnsConnection&) = delete;
+
   virtual ~MDnsConnection();
 
   // Succeeds if at least one of the socket handlers succeeded.
@@ -75,6 +81,10 @@ class NET_EXPORT_PRIVATE MDnsConnection {
    public:
     SocketHandler(std::unique_ptr<DatagramServerSocket> socket,
                   MDnsConnection* connection);
+
+    SocketHandler(const SocketHandler&) = delete;
+    SocketHandler& operator=(const SocketHandler&) = delete;
+
     ~SocketHandler();
 
     int Start();
@@ -94,8 +104,6 @@ class NET_EXPORT_PRIVATE MDnsConnection {
     IPEndPoint multicast_addr_;
     bool send_in_progress_;
     base::queue<std::pair<scoped_refptr<IOBuffer>, unsigned>> send_queue_;
-
-    DISALLOW_COPY_AND_ASSIGN(SocketHandler);
   };
 
   // Callback for handling a datagram being received on either ipv4 or ipv6.
@@ -112,8 +120,6 @@ class NET_EXPORT_PRIVATE MDnsConnection {
   Delegate* delegate_;
 
   base::WeakPtrFactory<MDnsConnection> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsConnection);
 };
 
 class MDnsListenerImpl;
@@ -127,6 +133,10 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   class Core : public base::SupportsWeakPtr<Core>, MDnsConnection::Delegate {
    public:
     Core(base::Clock* clock, base::OneShotTimer* timer);
+
+    Core(const Core&) = delete;
+    Core& operator=(const Core&) = delete;
+
     ~Core() override;
 
     // Initialize the core.
@@ -154,7 +164,19 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
    private:
     FRIEND_TEST_ALL_PREFIXES(MDnsTest, CacheCleanupWithShortTTL);
 
-    typedef std::pair<std::string, uint16_t> ListenerKey;
+    class ListenerKey {
+     public:
+      ListenerKey(const std::string& name, uint16_t type);
+      ListenerKey(const ListenerKey&) = default;
+      ListenerKey(ListenerKey&&) = default;
+      bool operator<(const ListenerKey& key) const;
+      const std::string& name_lowercase() const { return name_lowercase_; }
+      uint16_t type() const { return type_; }
+
+     private:
+      std::string name_lowercase_;
+      uint16_t type_;
+    };
     typedef base::ObserverList<MDnsListenerImpl>::Unchecked ObserverListType;
     typedef std::map<ListenerKey, std::unique_ptr<ObserverListType>>
         ListenerMap;
@@ -187,8 +209,6 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
     base::Time scheduled_cleanup_;
 
     std::unique_ptr<MDnsConnection> connection_;
-
-    DISALLOW_COPY_AND_ASSIGN(Core);
   };
 
   MDnsClientImpl();
@@ -196,6 +216,9 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   // Test constructor, takes a mock clock and mock timer.
   MDnsClientImpl(base::Clock* clock,
                  std::unique_ptr<base::OneShotTimer> cleanup_timer);
+
+  MDnsClientImpl(const MDnsClientImpl&) = delete;
+  MDnsClientImpl& operator=(const MDnsClientImpl&) = delete;
 
   ~MDnsClientImpl() override;
 
@@ -222,8 +245,6 @@ class NET_EXPORT_PRIVATE MDnsClientImpl : public MDnsClient {
   std::unique_ptr<base::OneShotTimer> cleanup_timer_;
 
   std::unique_ptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsClientImpl);
 };
 
 class MDnsListenerImpl : public MDnsListener,
@@ -234,6 +255,9 @@ class MDnsListenerImpl : public MDnsListener,
                    base::Clock* clock,
                    MDnsListener::Delegate* delegate,
                    MDnsClientImpl* client);
+
+  MDnsListenerImpl(const MDnsListenerImpl&) = delete;
+  MDnsListenerImpl& operator=(const MDnsListenerImpl&) = delete;
 
   ~MDnsListenerImpl() override;
 
@@ -271,8 +295,7 @@ class MDnsListenerImpl : public MDnsListener,
   bool started_;
   bool active_refresh_;
 
-  base::CancelableClosure next_refresh_;
-  DISALLOW_COPY_AND_ASSIGN(MDnsListenerImpl);
+  base::CancelableRepeatingClosure next_refresh_;
 };
 
 class MDnsTransactionImpl : public base::SupportsWeakPtr<MDnsTransactionImpl>,
@@ -284,6 +307,10 @@ class MDnsTransactionImpl : public base::SupportsWeakPtr<MDnsTransactionImpl>,
                       int flags,
                       const MDnsTransaction::ResultCallback& callback,
                       MDnsClientImpl* client);
+
+  MDnsTransactionImpl(const MDnsTransactionImpl&) = delete;
+  MDnsTransactionImpl& operator=(const MDnsTransactionImpl&) = delete;
+
   ~MDnsTransactionImpl() override;
 
   // MDnsTransaction implementation:
@@ -328,14 +355,12 @@ class MDnsTransactionImpl : public base::SupportsWeakPtr<MDnsTransactionImpl>,
   MDnsTransaction::ResultCallback callback_;
 
   std::unique_ptr<MDnsListener> listener_;
-  base::CancelableCallback<void()> timeout_;
+  base::CancelableOnceCallback<void()> timeout_;
 
   MDnsClientImpl* client_;
 
   bool started_;
   int flags_;
-
-  DISALLOW_COPY_AND_ASSIGN(MDnsTransactionImpl);
 };
 
 }  // namespace net

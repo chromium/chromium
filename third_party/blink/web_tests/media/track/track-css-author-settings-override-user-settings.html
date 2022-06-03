@@ -18,6 +18,7 @@ video::cue(c) {
 function addVideoTo(container) {
     var video = document.createElement("video");
     video.src = "../content/test.ogv";
+    video.autoplay = true;
     var track = document.createElement("track");
     track.src = "captions-webvtt/styling.vtt";
     track.kind = "captions";

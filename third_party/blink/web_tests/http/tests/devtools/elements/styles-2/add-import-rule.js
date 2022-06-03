@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding an @import with data URI does not lead to stylesheet collection crbug.com/644719\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <!DOCTYPE html>
@@ -22,10 +22,10 @@
     TestRunner.cssModel.matchedStylesPromise(nodeId).then(matchedStylesBefore);
   }
 
-  function matchedStylesBefore(matchedResult) {
+  async function matchedStylesBefore(matchedResult) {
     sheetId = matchedResult.nodeStyles()[1].styleSheetId;
     TestRunner.addResult('\n== Matched rules before @import added ==\n');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.CSSAgent.setStyleSheetText(sheetId, '@import \'data:text/css,span{color:green}\';').then(sheetTextSet);
   }
 
@@ -33,9 +33,9 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('styled-span', matchedStylesAfter);
   }
 
-  function matchedStylesAfter() {
+  async function matchedStylesAfter() {
     TestRunner.addResult('\n== Matched rules after @import added ==\n');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

@@ -1,0 +1,16 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module network.mojom;
+
+// Represent a location in a source file.
+//
+// Used by both MixedContent and Content-Security-Policy. In these cases it
+// represents what instruction initiated a navigation. This is reported to
+// developers to help them investigate what caused these errors.
+struct SourceLocation {
+  string url;
+  uint32 line = 0;
+  uint32 column = 0;
+};

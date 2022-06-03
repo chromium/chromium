@@ -7,6 +7,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 
 namespace {
 
@@ -78,7 +79,7 @@ bool WriteBackendUse(const base::FilePath& user_data_dir, bool use) {
     return false;
   base::FilePath pref_path = user_data_dir.Append(kPreferenceFileName);
   if (use)
-    return base::DeleteFile(pref_path, false);
+    return base::DeleteFile(pref_path);
   FILE* f = base::OpenFile(pref_path, "w");
   return f != nullptr && base::CloseFile(f);
 }

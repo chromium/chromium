@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/browser/sync/profile_sync_service_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/common/extensions/api/signed_in_devices.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
@@ -29,9 +29,10 @@ TEST(SignedInDevicesManager, UpdateListener) {
       IdentityTestEnvironmentProfileAdaptor::
           CreateProfileForIdentityTestEnvironment();
   IdentityTestEnvironmentProfileAdaptor adaptor(profile.get());
-  adaptor.identity_test_env()->SetPrimaryAccount("foo@test.com");
+  adaptor.identity_test_env()->SetPrimaryAccount("foo@test.com",
+                                                 signin::ConsentLevel::kSync);
 
-  ProfileSyncServiceFactory::GetInstance()->SetTestingFactory(
+  SyncServiceFactory::GetInstance()->SetTestingFactory(
       profile.get(), BrowserContextKeyedServiceFactory::TestingFactory());
   SignedInDevicesManager manager(profile.get());
 

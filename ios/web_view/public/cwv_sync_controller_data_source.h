@@ -7,6 +7,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import "cwv_export.h"
+#import "cwv_sync_errors.h"
+
 NS_ASSUME_NONNULL_BEGIN
 
 @class CWVIdentity;
@@ -30,6 +33,13 @@ NS_ASSUME_NONNULL_BEGIN
 // Return all available identities. This is used internally to track if accounts
 // become stale and need to be removed.
 - (NSArray<CWVIdentity*>*)allKnownIdentities;
+
+// Used to map a NSError for |identity| to its closest CWVSyncError equivalent.
+// If |fetchAccessTokenForIdentity:scopes:completionHandler|'s completion is
+// called with an error, this delegate method will be called to allow the client
+// inform the library of the type of error it is.
+- (CWVSyncError)syncErrorForNSError:(NSError*)error
+                           identity:(CWVIdentity*)identity;
 
 @end
 

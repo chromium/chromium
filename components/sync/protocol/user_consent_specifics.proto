@@ -16,7 +16,7 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
-import "user_consent_types.proto";
+import "components/sync/protocol/user_consent_types.proto";
 
 // Next id: 14
 message UserConsentSpecifics {
@@ -53,14 +53,15 @@ message UserConsentSpecifics {
     UserConsentTypes.ArcPlayTermsOfServiceConsent
         arc_play_terms_of_service_consent = 10;
 
-    UserConsentTypes.ArcMetricsAndUsageConsent arc_metrics_and_usage_consent =
-        11;
-
-    UserConsentTypes.UnifiedConsent unified_consent = 13;
+    UserConsentTypes.UnifiedConsent unified_consent = 13 [deprecated = true];
 
     UserConsentTypes.AssistantActivityControlConsent
         assistant_activity_control_consent = 14;
+
+    UserConsentTypes.AccountPasswordsConsent account_passwords_consent = 15;
   }
+  reserved "arc_metrics_and_usage_consent";
+  reserved 11;
 
   // ===========================================================================
   // Client only fields.
@@ -76,15 +77,14 @@ message UserConsentSpecifics {
   // redundant.
   //
   // For semantics and usage of the |account_id| in the signin codebase,
-  // see PrimaryAccountManager::GetAuthenticatedAccountId()
-  // or AccountInfo::account_id.
+  // see IdentityManager::GetPrimaryAccountId() or CoreAccountId.
   optional string account_id = 6;
 
   // ===========================================================================
-  // Deprecated fields. Please do not use them !
+  // Deprecated fields. Please do not use them!
+  // They have to remain in the proto because the server must continue
+  // supporting legacy consent formats like this.
   // ===========================================================================
-  // TODO(vitaliii): Deprecate them completely once the USER_CONSENTS bridge
-  // uses the fields above instead.
 
   // Which feature does the consent apply to?
   enum Feature {

@@ -41,8 +41,12 @@ class AXObjectCacheImpl;
 class AXImageMapLink final : public AXNodeObject {
  public:
   explicit AXImageMapLink(HTMLAreaElement*, AXObjectCacheImpl&);
+
+  AXImageMapLink(const AXImageMapLink&) = delete;
+  AXImageMapLink& operator=(const AXImageMapLink&) = delete;
+
   ~AXImageMapLink() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   HTMLAreaElement* AreaElement() const {
     return To<HTMLAreaElement>(GetNode());
@@ -50,27 +54,36 @@ class AXImageMapLink final : public AXNodeObject {
 
   HTMLMapElement* MapElement() const;
 
-  ax::mojom::Role RoleValue() const override;
+  ax::mojom::blink::Role NativeRoleIgnoringAria() const override;
   bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
+  bool CanHaveChildren() const override {
+    // If the area has child nodes, those will be rendered, and the combination
+    // of Role::kGenericContainer and CanHaveChildren() = true allows for those
+    // children to show in the AX hierarchy.
+    return RoleValue() == ax::mojom::blink::Role::kGenericContainer;
+  }
 
   Element* AnchorElement() const override;
   Element* ActionElement() const override;
   KURL Url() const override;
-  bool IsLink() const override { return true; }
   bool IsLinked() const override { return true; }
-  AXObject* ComputeParent() const override;
+  // For an <area>, return an <img> that should be used as its parent, or null.
+  static AXObject* GetAXObjectForImageMap(AXObjectCacheImpl& cache, Node* area);
   void GetRelativeBounds(AXObject** out_container,
                          FloatRect& out_bounds_in_container,
-                         SkMatrix44& out_container_transform,
+                         skia::Matrix44& out_container_transform,
                          bool* clips_children = nullptr) const override;
 
  private:
-  bool IsImageMapLink() const override { return true; }
-
-  DISALLOW_COPY_AND_ASSIGN(AXImageMapLink);
+  bool IsImageMapLink() const override;
 };
 
-DEFINE_AX_OBJECT_TYPE_CASTS(AXImageMapLink, IsImageMapLink());
+template <>
+struct DowncastTraits<AXImageMapLink> {
+  static bool AllowFrom(const AXObject& object) {
+    return object.IsImageMapLink();
+  }
+};
 
 }  // namespace blink
 

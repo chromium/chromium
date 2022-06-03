@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console logging dumps proper messages.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.loadHTML(`
       <div id="x"></div>
@@ -133,8 +133,8 @@
         loopOverGlobals(next, total);
     }
 
-    function onRemoteObjectsLoaded() {
-      ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
+    async function onRemoteObjectsLoaded() {
+      await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
       TestRunner.addResult('Expanded all messages');
       ConsoleTestRunner.expandConsoleMessages(
           ConsoleTestRunner.expandConsoleMessagesErrorParameters.bind(this, finish), undefined, function(section) {
@@ -142,8 +142,8 @@
           });
     }
 
-    function finish() {
-      ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
+    async function finish() {
+      await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
       TestRunner.completeTest();
     }
 

@@ -24,6 +24,11 @@ class ReportingNetworkChangeObserverImpl
     NetworkChangeNotifier::AddNetworkChangeObserver(this);
   }
 
+  ReportingNetworkChangeObserverImpl(
+      const ReportingNetworkChangeObserverImpl&) = delete;
+  ReportingNetworkChangeObserverImpl& operator=(
+      const ReportingNetworkChangeObserverImpl&) = delete;
+
   // ReportingNetworkChangeObserver implementation:
   ~ReportingNetworkChangeObserverImpl() override {
     NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
@@ -39,8 +44,7 @@ class ReportingNetworkChangeObserverImpl
       return;
 
     if (!context_->policy().persist_reports_across_network_changes)
-      context_->cache()->RemoveAllReports(
-          ReportingReport::Outcome::ERASED_NETWORK_CHANGED);
+      context_->cache()->RemoveAllReports();
 
     if (!context_->policy().persist_clients_across_network_changes)
       context_->cache()->RemoveAllClients();
@@ -48,8 +52,6 @@ class ReportingNetworkChangeObserverImpl
 
  private:
   ReportingContext* context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingNetworkChangeObserverImpl);
 };
 
 }  // namespace

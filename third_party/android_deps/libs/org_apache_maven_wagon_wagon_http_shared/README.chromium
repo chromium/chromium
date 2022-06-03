@@ -1,0 +1,13 @@
+Name: Maven Wagon HTTP Shared Library
+Short Name: wagon-http-shared
+URL: https://maven.apache.org/
+Version: 1.0-beta-6
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Shared Library for the wagon-http, and wagon-http-lightweight wagon providers.
+
+Local Modifications:
+No modifications.

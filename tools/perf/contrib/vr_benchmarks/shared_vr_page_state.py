@@ -11,15 +11,11 @@ from pylib.utils import shared_preference_utils
 from telemetry.core import android_platform
 from telemetry.core import util
 from telemetry.page import shared_page_state
-from contrib.vr_benchmarks.desktop_runtimes import oculus_runtimes
-from contrib.vr_benchmarks.desktop_runtimes import openvr_runtimes
-from contrib.vr_benchmarks.desktop_runtimes import wmr_runtimes
+from contrib.vr_benchmarks.desktop_runtimes import openxr_runtimes
 
 
 CARDBOARD_PATH = os.path.join('chrome', 'android', 'shared_preference_files',
                               'test', 'vr_cardboard_skipdon_setupcomplete.json')
-WEBXR_CONSENT_DIALOG_DISABLE_FLAG = (
-    '--disable-xr-device-consent-prompt-for-testing')
 
 
 class SharedVrPageStateFactory(shared_page_state.SharedPageState):
@@ -66,8 +62,6 @@ class _SharedVrPageState(shared_page_state.SharedPageState):
     super(_SharedVrPageState, self).__init__(
         test, finder_options, story_set, possible_browser)
     self._story_set = story_set
-    self._finder_options.AppendExtraBrowserArgs(
-        [WEBXR_CONSENT_DIALOG_DISABLE_FLAG])
 
   @property
   def recording_wpr(self):
@@ -117,7 +111,7 @@ class AndroidSharedVrPageState(_SharedVrPageState):
     # forwarding necessary for the local server to work. Since port forwarding
     # often refuses to work for a short period after rebooting, try several
     # times.
-    for _ in xrange(5):
+    for _ in range(5):
       try:
         self.platform.network_controller.Open(self.wpr_mode)
         break
@@ -218,18 +212,10 @@ class WindowsSharedVrPageState(_SharedVrPageState):
   # to be installed, i.e. exactly how a real user would use VR. Mock runtimes
   # avoid this, but can't necessarily be implemented.
   DESKTOP_RUNTIMES = {
-    'oculus': {
-      MOCK_RUNTIME: oculus_runtimes.OculusRuntimeMock,
-      REAL_RUNTIME: oculus_runtimes.OculusRuntimeReal,
-    },
-    'openvr': {
-      MOCK_RUNTIME: openvr_runtimes.OpenVRRuntimeMock,
-      REAL_RUNTIME: openvr_runtimes.OpenVRRuntimeReal
-    },
-    'wmr': {
-      MOCK_RUNTIME: wmr_runtimes.WMRRuntimeMock,
-      REAL_RUNTIME: wmr_runtimes.WMRRuntimeReal,
-    },
+      'openxr': {
+          MOCK_RUNTIME: openxr_runtimes.OpenXRRuntimeMock,
+          REAL_RUNTIME: openxr_runtimes.OpenXRRuntimeReal,
+      },
   }
 
   def __init__(self, test, finder_options, story_set, possible_browser):

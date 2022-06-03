@@ -1,0 +1,47 @@
+# These tests cannot work on Wayland because the platform does not allow clients
+# to position top level windows, activate them, and set focus.
+-All/HostedOrWebAppTest.CtrlClickLink/HostedApp
+-All/HostedOrWebAppTest.CtrlClickLink/WebApp
+-All/PopupBrowserTest.MoveClampedToCurrentDisplay/0
+-All/PopupBrowserTest.MoveClampedToCurrentDisplay/1
+-AutomationManagerAuraBrowserTest.EventFromAction
+-AutomationManagerAuraBrowserTest.TransientFocusChangesAreSuppressed
+-BrowserViewTest.F6CyclesThroughCaptionBubbleToo
+-BrowserViewTest.GetAccessibleTabModalDialogTitle
+-ChromeSitePerProcessTest.PopupWindowFocus
+-ExternalProtocolDialogBrowserTest.TestFocus
+-FolderUploadConfirmationViewTest.InitiallyFocusesCancel
+-PreservedWindowPlacement.Test
+-ProfileHelperTest.OpenNewWindowForProfile
+-TabHoverCardBubbleViewBrowserTest.WidgetNotVisibleOnMousePressAfterTabFocus
+-TabHoverCardBubbleViewBrowserTest.WidgetVisibleOnKeyPressAfterTabFocus
+
+# Screen capture on Wayland is tricky.
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideo/0
+-All/WebRtcScreenCaptureBrowserTestWithPicker.ScreenCaptureVideoAndAudio/0
+-WebRtcDesktopCaptureBrowserTest.RunsScreenshareFromOneTabToAnother
+
+# Fail on the bot, pass locally.
+-BackForwardCachePageLoadMetricsObserverBrowserTest.CumulativeLayoutShiftAfterBackForwardCacheRestore
+-DesktopCaptureApiTest.ChooseDesktopMedia
+-IconLoaderBrowserTest.LoadGroup
+
+# TODO(https://crbug.com/1084469): fix these tests.
+
+# Failed:
+-BrowserViewTest.GetAccessibleTabModalDialogTree
+-OmniboxPopupContentsViewTest.ClickOmnibox
+-OmniboxPopupContentsViewTest.PopupMatchesLocationBarBackground
+-PageInfoBubbleViewBrowserTest.FocusDoesNotReturnToContentsOnReloadPrompt
+-PageInfoBubbleViewBrowserTest.FocusReturnsToContentOnClose
+-PrintBrowserTest.PDFPluginNotKeyboardFocusable
+
+# These tests fail when run either with weston's test-plugin module or with
+# normal Wayland compositor. The reason is that weston with headless backend
+# and without test-plugin doesn't create a wl_seat and as a consequence any
+# input devices. This affects the way how menus and other children windows
+# are created.
+# TODO(https://crbug.com/1176174): figure out what exactly is wrong and fix
+# the problems.
+-AudioFocusWebContentsObserverBrowserTest.PlatformAppHasDifferentAudioFocus
+-BrowserNavigatorTest.SwitchToTabLatestWindow

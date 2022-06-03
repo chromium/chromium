@@ -4,6 +4,7 @@
 
 #include "cc/layers/effect_tree_layer_list_iterator.h"
 
+#include <memory>
 #include <vector>
 
 #include "base/memory/ptr_util.h"
@@ -13,7 +14,7 @@
 #include "cc/test/test_task_graph_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace cc {
 namespace {

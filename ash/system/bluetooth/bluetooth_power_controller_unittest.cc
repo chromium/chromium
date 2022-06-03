@@ -4,14 +4,14 @@
 
 #include "ash/system/bluetooth/bluetooth_power_controller.h"
 
-#include "ash/public/cpp/ash_pref_names.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
@@ -46,21 +46,21 @@ device::BluetoothAdapter* GetBluetoothAdapter() {
 
 }  // namespace
 
-// NOTE: Manually controls local state prefs and user prefs so to allow tests
-// of default pref values before the pref service initialization notifications.
-class BluetoothPowerControllerTest : public NoSessionAshTestBase {
+class BluetoothPowerControllerTest : public AshTestBase {
  public:
-  BluetoothPowerControllerTest() { disable_provide_local_state(); }
+  BluetoothPowerControllerTest() {
+    BluetoothPowerController::RegisterProfilePrefs(
+        active_user_prefs_.registry());
+  }
+
+  BluetoothPowerControllerTest(const BluetoothPowerControllerTest&) = delete;
+  BluetoothPowerControllerTest& operator=(const BluetoothPowerControllerTest&) =
+      delete;
+
   ~BluetoothPowerControllerTest() override = default;
 
   void SetUp() override {
-    NoSessionAshTestBase::SetUp();
-
-    BluetoothPowerController::RegisterProfilePrefs(
-        active_user_prefs_.registry());
-    BluetoothPowerController::RegisterLocalStatePrefs(local_state_.registry());
-
-    GetController()->local_state_ = &local_state_;
+    AshTestBase::SetUp();
 
     SetupBluetoothAdapter();
   }
@@ -70,8 +70,8 @@ class BluetoothPowerControllerTest : public NoSessionAshTestBase {
       user_manager::UserType user_type = user_manager::USER_TYPE_REGULAR,
       bool is_new_profile = false) {
     GetSessionControllerClient()->AddUserSession(
-        display_email, user_type, false /* enable_settings */,
-        false /* provide_pref_service */, is_new_profile);
+        display_email, user_type, false /* provide_pref_service */,
+        is_new_profile);
     GetController()->active_user_pref_service_ = &active_user_prefs_;
     GetController()->StartWatchingActiveUserPrefsChanges();
   }
@@ -104,21 +104,46 @@ class BluetoothPowerControllerTest : public NoSessionAshTestBase {
   }
 
   TestingPrefServiceSimple active_user_prefs_;
-  TestingPrefServiceSimple local_state_;
+  base::HistogramTester histogram_tester;
+};
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(BluetoothPowerControllerTest);
+class BluetoothPowerControllerNoSessionTest
+    : public BluetoothPowerControllerTest {
+ public:
+  BluetoothPowerControllerNoSessionTest() { set_start_session(false); }
 };
 
 // Tests toggling Bluetooth setting on and off.
-TEST_F(BluetoothPowerControllerTest, ToggleBluetoothEnabled) {
+TEST_F(BluetoothPowerControllerNoSessionTest, ToggleBluetoothEnabled) {
+  // Initially power state is set to default value.
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     0);
+
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
+
   // Toggling bluetooth on/off when there is no user session should affect
   // local state prefs.
-  EXPECT_FALSE(local_state_.GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_FALSE(
+      local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
   GetController()->SetBluetoothEnabled(true);
-  EXPECT_TRUE(local_state_.GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
   GetController()->SetBluetoothEnabled(false);
-  EXPECT_FALSE(local_state_.GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_FALSE(
+      local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     2);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 2);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
 
   // Toggling bluetooth on/off when there is user session should affect
   // user prefs.
@@ -131,24 +156,60 @@ TEST_F(BluetoothPowerControllerTest, ToggleBluetoothEnabled) {
   GetController()->SetBluetoothEnabled(false);
   EXPECT_FALSE(
       active_user_prefs_.GetBoolean(prefs::kUserBluetoothAdapterEnabled));
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     3);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     2);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 3);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 2);
 }
 
 // Tests that BluetoothPowerController listens to local state pref changes
 // and applies the changes to bluetooth device.
 TEST_F(BluetoothPowerControllerTest, ListensPrefChangesLocalState) {
+  // Initially power state is set to default value .
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
   StartWatchingLocalStatePrefsChanges();
 
   // Makes sure we start with bluetooth power off.
   EXPECT_FALSE(GetBluetoothAdapter()->IsPowered());
-  EXPECT_FALSE(local_state_.GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_FALSE(
+      local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
 
   // Power should be turned on when pref changes to enabled.
-  local_state_.SetBoolean(prefs::kSystemBluetoothAdapterEnabled, true);
+  local_state()->SetBoolean(prefs::kSystemBluetoothAdapterEnabled, true);
   EXPECT_TRUE(GetBluetoothAdapter()->IsPowered());
 
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
+
   // Power should be turned off when pref changes to disabled.
-  local_state_.SetBoolean(prefs::kSystemBluetoothAdapterEnabled, false);
+  local_state()->SetBoolean(prefs::kSystemBluetoothAdapterEnabled, false);
   EXPECT_FALSE(GetBluetoothAdapter()->IsPowered());
+
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     2);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 2);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
 }
 
 // Tests that BluetoothPowerController listens to active user pref changes
@@ -175,6 +236,15 @@ TEST_F(BluetoothPowerControllerTest, ListensPrefChangesActiveUser) {
 // power change tasks shouldn't be executed all but rather only the last request
 // is executed.
 TEST_F(BluetoothPowerControllerTest, ListensPrefChangesLongQueue) {
+  // Initially power state is set to default value.
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
   AddUserSessionAndStartWatchingPrefsChanges(kUser1Email);
 
   // Makes sure we start with bluetooth power off.
@@ -196,15 +266,26 @@ TEST_F(BluetoothPowerControllerTest, ListensPrefChangesLongQueue) {
   SimulateControllerBusy(false);
   // The power state should represent the last request in the queue.
   EXPECT_TRUE(GetBluetoothAdapter()->IsPowered());
+
+  // Since controller executes only last request only power on is recorded.
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
 }
 
 // Tests how BluetoothPowerController applies the local state pref when
 // the pref hasn't been set before.
 TEST_F(BluetoothPowerControllerTest, ApplyBluetoothLocalStatePrefDefault) {
   // Makes sure pref hasn't been set before.
-  EXPECT_TRUE(
-      local_state_.FindPreference(prefs::kSystemBluetoothAdapterEnabled)
-          ->IsDefaultValue());
+  local_state()->RemoveUserPref(prefs::kSystemBluetoothAdapterEnabled);
+  EXPECT_TRUE(local_state()
+                  ->FindPreference(prefs::kSystemBluetoothAdapterEnabled)
+                  ->IsDefaultValue());
   // Start with bluetooth power on.
   GetBluetoothAdapter()->SetPowered(true, base::DoNothing(), base::DoNothing());
   EXPECT_TRUE(GetBluetoothAdapter()->IsPowered());
@@ -212,20 +293,40 @@ TEST_F(BluetoothPowerControllerTest, ApplyBluetoothLocalStatePrefDefault) {
   ApplyBluetoothLocalStatePref();
 
   // Pref should now contain the current bluetooth adapter state (on).
-  EXPECT_FALSE(
-      local_state_.FindPreference(prefs::kSystemBluetoothAdapterEnabled)
-          ->IsDefaultValue());
-  EXPECT_TRUE(local_state_.GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_FALSE(local_state()
+                   ->FindPreference(prefs::kSystemBluetoothAdapterEnabled)
+                   ->IsDefaultValue());
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
 }
 
 // Tests how BluetoothPowerController applies the local state pref when
 // the pref has been set before.
 TEST_F(BluetoothPowerControllerTest, ApplyBluetoothLocalStatePrefOn) {
+  // Initially power state is set to default value .
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     0);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 0);
+
   // Set the pref to true.
-  local_state_.SetBoolean(prefs::kSystemBluetoothAdapterEnabled, true);
-  EXPECT_FALSE(
-      local_state_.FindPreference(prefs::kSystemBluetoothAdapterEnabled)
-          ->IsDefaultValue());
+  local_state()->SetBoolean(prefs::kSystemBluetoothAdapterEnabled, true);
+  EXPECT_FALSE(local_state()
+                   ->FindPreference(prefs::kSystemBluetoothAdapterEnabled)
+                   ->IsDefaultValue());
+
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 1);
+
   // Start with bluetooth power off.
   GetBluetoothAdapter()->SetPowered(false, base::DoNothing(),
                                     base::DoNothing());
@@ -234,8 +335,17 @@ TEST_F(BluetoothPowerControllerTest, ApplyBluetoothLocalStatePrefOn) {
   ApplyBluetoothLocalStatePref();
 
   // Bluetooth power setting should be applied (on), and pref value unchanged.
-  EXPECT_TRUE(local_state_.GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
   EXPECT_TRUE(GetBluetoothAdapter()->IsPowered());
+
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", false,
+                                     1);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.PoweredState", true,
+                                     2);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Disable.Result", true, 1);
+  histogram_tester.ExpectBucketCount(
+      "Bluetooth.ChromeOS.PoweredState.Enable.Result", true, 2);
 }
 
 // Tests how BluetoothPowerController applies the user pref when
@@ -264,7 +374,8 @@ TEST_F(BluetoothPowerControllerTest, ApplyBluetoothPrimaryUserPrefDefault) {
 
 // Tests how BluetoothPowerController applies the user pref when
 // the pref hasn't been set before, and it's a first-login user.
-TEST_F(BluetoothPowerControllerTest, ApplyBluetoothPrimaryUserPrefDefaultNew) {
+TEST_F(BluetoothPowerControllerNoSessionTest,
+       ApplyBluetoothPrimaryUserPrefDefaultNew) {
   AddUserSessionAndStartWatchingPrefsChanges(
       kUser1Email, user_manager::USER_TYPE_REGULAR, kUserFirstLogin);
 
@@ -291,7 +402,8 @@ TEST_F(BluetoothPowerControllerTest, ApplyBluetoothPrimaryUserPrefDefaultNew) {
 
 // Tests how BluetoothPowerController applies the user pref when
 // the pref hasn't been set before, but not a regular user (e.g. kiosk).
-TEST_F(BluetoothPowerControllerTest, ApplyBluetoothKioskUserPrefDefault) {
+TEST_F(BluetoothPowerControllerNoSessionTest,
+       ApplyBluetoothKioskUserPrefDefault) {
   AddUserSessionAndStartWatchingPrefsChanges(kUser1Email,
                                              user_manager::USER_TYPE_KIOSK_APP);
 
@@ -350,12 +462,12 @@ TEST_F(BluetoothPowerControllerIntegrationTest, Basics) {
   device::BluetoothAdapter* adapter = GetBluetoothAdapter();
 
   // Verify toggling bluetooth before login.
-  PrefService* local_state = ash_test_helper()->GetLocalStatePrefService();
   GetController()->SetBluetoothEnabled(true);
-  EXPECT_TRUE(local_state->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_TRUE(local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
   EXPECT_TRUE(adapter->IsPowered());
   GetController()->SetBluetoothEnabled(false);
-  EXPECT_FALSE(local_state->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
+  EXPECT_FALSE(
+      local_state()->GetBoolean(prefs::kSystemBluetoothAdapterEnabled));
   EXPECT_FALSE(adapter->IsPowered());
 
   // Verify toggling bluetooth after login.

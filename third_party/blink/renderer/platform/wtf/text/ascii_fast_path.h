@@ -25,11 +25,14 @@
 #include <stdint.h>
 
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/ascii_ctype.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
+#include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
-#if defined(OS_MACOSX) && defined(ARCH_CPU_X86_FAMILY)
+#if defined(OS_MAC) && defined(ARCH_CPU_X86_FAMILY)
 #include <emmintrin.h>
 #endif
 
@@ -74,44 +77,119 @@ inline bool IsAllASCII(MachineWord word) {
   return !(word & NonASCIIMask<sizeof(MachineWord), CharacterType>::Value());
 }
 
-// Note: This function assume the input is likely all ASCII, and
+struct ASCIIStringAttributes {
+  ASCIIStringAttributes(bool contains_only_ascii, bool is_lower_ascii)
+      : contains_only_ascii(contains_only_ascii),
+        is_lower_ascii(is_lower_ascii) {}
+  unsigned contains_only_ascii : 1;
+  unsigned is_lower_ascii : 1;
+};
+
+// Note: This function assumes the input is likely all ASCII, and
 // does not leave early if it is not the case.
 template <typename CharacterType>
-inline bool CharactersAreAllASCII(const CharacterType* characters,
-                                  size_t length) {
+ALWAYS_INLINE ASCIIStringAttributes
+CharacterAttributes(const CharacterType* characters, size_t length) {
   DCHECK_GT(length, 0u);
-  MachineWord all_char_bits = 0;
-  const CharacterType* end = characters + length;
 
-  // Prologue: align the input.
-  while (!IsAlignedToMachineWord(characters) && characters != end) {
-    all_char_bits |= *characters;
-    ++characters;
+  // Performance note: This loop will not vectorize properly in -Oz. Ensure
+  // the calling code is built with -O2.
+  CharacterType all_char_bits = 0;
+  bool contains_upper_case = false;
+  for (size_t i = 0; i < length; i++) {
+    all_char_bits |= characters[i];
+    contains_upper_case |= IsASCIIUpper(characters[i]);
   }
 
-  // Compare the values of CPU word size.
-  const CharacterType* word_end = AlignToMachineWord(end);
-  const size_t kLoopIncrement = sizeof(MachineWord) / sizeof(CharacterType);
-  while (characters < word_end) {
-    all_char_bits |= *(reinterpret_cast_ptr<const MachineWord*>(characters));
-    characters += kLoopIncrement;
+  return ASCIIStringAttributes(IsASCII(all_char_bits), !contains_upper_case);
+}
+
+template <typename CharacterType>
+ALWAYS_INLINE bool IsLowerASCII(const CharacterType* characters,
+                                size_t length) {
+  bool contains_upper_case = false;
+  for (wtf_size_t i = 0; i < length; i++) {
+    contains_upper_case |= IsASCIIUpper(characters[i]);
+  }
+  return !contains_upper_case;
+}
+
+template <typename CharacterType>
+ALWAYS_INLINE bool IsUpperASCII(const CharacterType* characters,
+                                size_t length) {
+  bool contains_lower_case = false;
+  for (wtf_size_t i = 0; i < length; i++) {
+    contains_lower_case |= IsASCIILower(characters[i]);
+  }
+  return !contains_lower_case;
+}
+
+class LowerConverter {
+ public:
+  template <typename CharType>
+  ALWAYS_INLINE static bool IsCorrectCase(CharType* characters, size_t length) {
+    return IsLowerASCII(characters, length);
   }
 
-  // Process the remaining bytes.
-  while (characters != end) {
-    all_char_bits |= *characters;
-    ++characters;
+  template <typename CharType>
+  ALWAYS_INLINE static CharType Convert(CharType ch) {
+    return ToASCIILower(ch);
+  }
+};
+
+class UpperConverter {
+ public:
+  template <typename CharType>
+  ALWAYS_INLINE static bool IsCorrectCase(CharType* characters, size_t length) {
+    return IsUpperASCII(characters, length);
   }
 
-  MachineWord non_ascii_bit_mask =
-      NonASCIIMask<sizeof(MachineWord), CharacterType>::Value();
-  return !(all_char_bits & non_ascii_bit_mask);
+  template <typename CharType>
+  ALWAYS_INLINE static CharType Convert(CharType ch) {
+    return ToASCIIUpper(ch);
+  }
+};
+
+template <typename StringType, typename Converter, typename Allocator>
+ALWAYS_INLINE typename Allocator::ResultStringType ConvertASCIICase(
+    const StringType& string,
+    Converter&& converter,
+    Allocator&& allocator) {
+  CHECK_LE(string.length(), std::numeric_limits<wtf_size_t>::max());
+
+  // First scan the string for uppercase and non-ASCII characters:
+  wtf_size_t length = string.length();
+  if (string.Is8Bit()) {
+    if (converter.IsCorrectCase(string.Characters8(), length)) {
+      return allocator.CoerceOriginal(string);
+    }
+
+    LChar* data8;
+    auto new_impl = allocator.Alloc(length, data8);
+
+    for (wtf_size_t i = 0; i < length; ++i) {
+      data8[i] = converter.Convert(string.Characters8()[i]);
+    }
+    return new_impl;
+  }
+
+  if (converter.IsCorrectCase(string.Characters16(), length)) {
+    return allocator.CoerceOriginal(string);
+  }
+
+  UChar* data16;
+  auto new_impl = allocator.Alloc(length, data16);
+
+  for (wtf_size_t i = 0; i < length; ++i) {
+    data16[i] = converter.Convert(string.Characters16()[i]);
+  }
+  return new_impl;
 }
 
 inline void CopyLCharsFromUCharSource(LChar* destination,
                                       const UChar* source,
                                       size_t length) {
-#if defined(OS_MACOSX) && defined(ARCH_CPU_X86_FAMILY)
+#if defined(OS_MAC) && defined(ARCH_CPU_X86_FAMILY)
   const uintptr_t kMemoryAccessSize =
       16;  // Memory accesses on 16 byte (128 bit) alignment
   const uintptr_t kMemoryAccessMask = kMemoryAccessSize - 1;

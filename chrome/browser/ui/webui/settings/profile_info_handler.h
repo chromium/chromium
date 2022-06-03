@@ -7,15 +7,16 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "components/prefs/pref_change_registrar.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user_manager.h"
 #else
 #include "chrome/browser/profiles/profile_statistics_common.h"
@@ -26,7 +27,7 @@ class Profile;
 namespace settings {
 
 class ProfileInfoHandler : public SettingsPageUIHandler,
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
                            public user_manager::UserManager::Observer,
 #endif
                            public ProfileAttributesStorage::Observer {
@@ -35,6 +36,10 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   static const char kProfileStatsCountReadyEventName[];
 
   explicit ProfileInfoHandler(Profile* profile);
+
+  ProfileInfoHandler(const ProfileInfoHandler&) = delete;
+  ProfileInfoHandler& operator=(const ProfileInfoHandler&) = delete;
+
   ~ProfileInfoHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -42,14 +47,14 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // user_manager::UserManager::Observer implementation.
   void OnUserImageChanged(const user_manager::User& user) override;
 #endif
 
   // ProfileAttributesStorage::Observer implementation.
   void OnProfileNameChanged(const base::FilePath& profile_path,
-                            const base::string16& old_profile_name) override;
+                            const std::u16string& old_profile_name) override;
   void OnProfileAvatarChanged(const base::FilePath& profile_path) override;
 
  private:
@@ -60,7 +65,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   void HandleGetProfileInfo(const base::ListValue* args);
   void PushProfileInfo();
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   void HandleGetProfileStats(const base::ListValue* args);
 
   // Returns the sum of the counts of individual profile states. Returns 0 if
@@ -68,23 +73,23 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   void PushProfileStatsCount(profiles::ProfileCategoryStats stats);
 #endif
 
-  std::unique_ptr<base::DictionaryValue> GetAccountNameAndIcon() const;
+  std::unique_ptr<base::DictionaryValue> GetAccountNameAndIcon();
 
   // Weak pointer.
   Profile* profile_;
 
-#if defined(OS_CHROMEOS)
-  ScopedObserver<user_manager::UserManager, user_manager::UserManager::Observer>
-      user_manager_observer_{this};
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  base::ScopedObservation<user_manager::UserManager,
+                          user_manager::UserManager::Observer>
+      user_manager_observation_{this};
 #endif
 
-  ScopedObserver<ProfileAttributesStorage, ProfileAttributesStorage::Observer>
-      profile_observer_{this};
+  base::ScopedObservation<ProfileAttributesStorage,
+                          ProfileAttributesStorage::Observer>
+      profile_observation_{this};
 
   // Used to cancel callbacks when JavaScript becomes disallowed.
   base::WeakPtrFactory<ProfileInfoHandler> callback_weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileInfoHandler);
 };
 
 }  // namespace settings

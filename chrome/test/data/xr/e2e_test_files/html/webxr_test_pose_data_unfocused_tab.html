@@ -12,6 +12,8 @@ Tests that WebXR doesn't update frame data when the tab is not focused
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
+      setup({single_test: true});
+
       var pose = null;
       let counter = 0;
 

@@ -6,11 +6,15 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_VIEW_H_
 
 #include <memory>
+#include <utility>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
-#include "ui/views/controls/button/button.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/button/image_button.h"
 #include "ui/views/view.h"
+
+namespace views {
+class Label;
+}  // namespace views
 
 class AuthenticatorRequestSheetModel;
 class NonAccessibleImageView;
@@ -22,9 +26,10 @@ class NonAccessibleImageView;
 //  -- an optional `back icon`,
 //  -- a pretty illustration in the top half of the dialog,
 //  -- the title of the current step,
-//  -- the description of the current step, and
+//  -- the description of the current step,
 //  -- an optional view with step-specific content, added by subclasses, filling
-//     the rest of the space.
+//     the rest of the space, and
+//  -- an optional contextual error.
 //
 // +-------------------------------------------------+
 // |*************************************************|
@@ -43,6 +48,7 @@ class NonAccessibleImageView;
 // | |                                             | |
 // | |                                             | |
 // | +---------------------------------------------+ |
+// |  optional contextual error                      |
 // +-------------------------------------------------+
 // |                                   OK   CANCEL   | <- Not part of this view.
 // +-------------------------------------------------+
@@ -50,11 +56,14 @@ class NonAccessibleImageView;
 // TODO(https://crbug.com/852352): The Web Authentication and Web Payment APIs
 // both use the concept of showing multiple "sheets" in a single dialog. To
 // avoid code duplication, consider factoring out common parts.
-class AuthenticatorRequestSheetView : public views::View,
-                                      public views::ButtonListener {
+class AuthenticatorRequestSheetView : public views::View {
  public:
+  METADATA_HEADER(AuthenticatorRequestSheetView);
   explicit AuthenticatorRequestSheetView(
       std::unique_ptr<AuthenticatorRequestSheetModel> model);
+  AuthenticatorRequestSheetView(const AuthenticatorRequestSheetView&) = delete;
+  AuthenticatorRequestSheetView& operator=(
+      const AuthenticatorRequestSheetView&) = delete;
   ~AuthenticatorRequestSheetView() override;
 
   // Recreates the standard child views on this sheet, potentially including
@@ -71,11 +80,17 @@ class AuthenticatorRequestSheetView : public views::View,
   AuthenticatorRequestSheetModel* model() { return model_.get(); }
 
  protected:
-  // Returns the step-specific view the derived sheet wishes to provide, if any.
-  virtual std::unique_ptr<views::View> BuildStepSpecificContent();
+  // AutoFocus is a named boolean that indicates whether step-specific content
+  // should automatically get focus when displayed.
+  enum class AutoFocus {
+    kNo,
+    kYes,
+  };
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
+  // Returns the step-specific view the derived sheet wishes to provide, if any,
+  // and whether that content should be initially focused.
+  virtual std::pair<std::unique_ptr<views::View>, AutoFocus>
+  BuildStepSpecificContent();
 
  private:
   // Creates the upper half of the sheet, consisting of a pretty illustration
@@ -90,15 +105,19 @@ class AuthenticatorRequestSheetView : public views::View,
   // Updates the illustration icon shown on the sheet.
   void UpdateIconImageFromModel();
 
+  // Updates the icon color.
+  void UpdateIconColors();
+
   // views::View:
   void OnThemeChanged() override;
 
   std::unique_ptr<AuthenticatorRequestSheetModel> model_;
   views::Button* back_arrow_button_ = nullptr;
+  views::ImageButton* back_arrow_ = nullptr;
   views::View* step_specific_content_ = nullptr;
+  AutoFocus should_focus_step_specific_content_ = AutoFocus::kNo;
   NonAccessibleImageView* step_illustration_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorRequestSheetView);
+  views::Label* error_label_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_VIEW_H_

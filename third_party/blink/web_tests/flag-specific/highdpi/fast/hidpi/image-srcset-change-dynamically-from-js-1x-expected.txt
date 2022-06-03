@@ -1,0 +1,7 @@
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS internals.isPreloaded("resources/green-400-px-square.png") is false
+FAIL document.getElementById("foo").clientWidth==100 should be true. Was false.
+This test passes if this img tag below is a blue square when the scale factor is 1. It ensures that attributes can be changed dynamically from javascript, and that only the correct resource is loaded.

@@ -4,6 +4,8 @@
 
 package org.chromium.base.library_loader;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JniIgnoreNatives;
 
@@ -18,85 +20,69 @@ import javax.annotation.concurrent.GuardedBy;
  */
 @JniIgnoreNatives
 class LegacyLinker extends Linker {
-    // Log tag for this class.
     private static final String TAG = "LegacyLinker";
 
     LegacyLinker() {}
 
     @Override
     void setApkFilePath(String path) {
-        synchronized (sLock) {
-            ensureInitializedLocked();
+        ensureInitializedImplicitlyAsLastResort();
+        synchronized (mLock) {
             nativeAddZipArchivePath(path);
         }
     }
 
     @Override
-    @GuardedBy("sLock")
-    void loadLibraryImplLocked(String library, boolean isFixedAddressPermitted) {
-        ensureInitializedLocked();
+    protected boolean keepMemoryReservationUntilLoad() {
+        // The crazylinker attempts to reserve the address range. There is a feature to load on top
+        // of a reserved memory region, but it has not been tested recently, and looks buggy.
+        return false;
+    }
+
+    @Override
+    @GuardedBy("mLock")
+    protected void loadLibraryImplLocked(String library, @RelroSharingMode int relroMode) {
         assert mState == State.INITIALIZED; // Only one successful call.
 
-        boolean provideRelro = mInBrowserProcess;
-        long loadAddress = isFixedAddressPermitted ? mBaseLoadAddress : 0;
-
         String libFilePath = System.mapLibraryName(library);
-        final String sharedRelRoName = libFilePath;
-        LibInfo libInfo = new LibInfo();
-        if (!nativeLoadLibrary(libFilePath, loadAddress, libInfo)) {
+        if (!nativeLoadLibrary(libFilePath, mLocalLibInfo.mLoadAddress, mLocalLibInfo)) {
             String errorMessage = "Unable to load library: " + libFilePath;
             Log.e(TAG, errorMessage);
             throw new UnsatisfiedLinkError(errorMessage);
         }
-        libInfo.mLibFilePath = libFilePath;
+        mLocalLibInfo.mLibFilePath = libFilePath;
 
-        // Print the load address to the logcat when testing the linker. The format
-        // of the string is expected by the Python test_runner script as one of:
-        //    BROWSER_LIBRARY_ADDRESS: <library-name> <address>
-        //    RENDERER_LIBRARY_ADDRESS: <library-name> <address>
-        // Where <library-name> is the library name, and <address> is the hexadecimal load
-        // address.
-        if (NativeLibraries.sEnableLinkerTests) {
-            String tag = mInBrowserProcess ? "BROWSER_LIBRARY_ADDRESS" : "RENDERER_LIBRARY_ADDRESS";
-            Log.i(TAG, "%s: %s %x", tag, libFilePath, libInfo.mLoadAddress);
-        }
-
-        if (provideRelro) {
-            if (!nativeCreateSharedRelro(sharedRelRoName, mBaseLoadAddress, libInfo)) {
+        if (relroMode == RelroSharingMode.PRODUCE || relroMode == RelroSharingMode.NO_SHARING) {
+            if (!nativeCreateSharedRelro(libFilePath, mLocalLibInfo.mLoadAddress, mLocalLibInfo)) {
                 Log.w(TAG, "Could not create shared RELRO for %s at %x", libFilePath,
-                        mBaseLoadAddress);
-                // Next state is still to provide relro (even though we don't have any), as child
+                        mLocalLibInfo.mLoadAddress);
+                // Next state is still to provide RELRO (even though there is none), as child
                 // processes would wait for them.
-                libInfo.mRelroFd = -1;
+                mLocalLibInfo.mRelroFd = -1;
             } else {
                 if (DEBUG) {
-                    Log.i(TAG, "Created shared RELRO for %s at %x: %s", sharedRelRoName,
-                            mBaseLoadAddress, libInfo.toString());
+                    Log.i(TAG, "Created shared RELRO for %s at 0x%x: %s", libFilePath,
+                            mLocalLibInfo.mLoadAddress, mLocalLibInfo.toString());
                 }
             }
-            mLibInfo = libInfo;
-            useSharedRelrosLocked(mLibInfo);
+            useSharedRelrosLocked(mLocalLibInfo);
             mState = State.DONE_PROVIDE_RELRO;
         } else {
+            assert relroMode == RelroSharingMode.CONSUME;
             waitForSharedRelrosLocked();
-            assert libFilePath.equals(mLibInfo.mLibFilePath);
-            useSharedRelrosLocked(mLibInfo);
-            mLibInfo.close();
-            mLibInfo = null;
+            assert libFilePath.equals(mRemoteLibInfo.mLibFilePath);
+            useSharedRelrosLocked(mRemoteLibInfo);
+            mRemoteLibInfo.close();
+            mRemoteLibInfo = null;
             mState = State.DONE;
         }
-
-        // If testing, run tests now that all libraries are loaded and initialized.
-        if (NativeLibraries.sEnableLinkerTests) runTestRunnerClassForTesting(mInBrowserProcess);
     }
 
     /**
-     * Use the shared RELRO section from a Bundle received form another process. Call this after
-     * calling setBaseLoadAddress() then loading the library with loadLibrary().
+     * Replace the memory mapping under RELRO with the contents of the given shared memory region.
      *
-     * @param info Object containing the relro file descriptor.
+     * @param info Object containing the RELRO FD.
      */
-    @GuardedBy("sLock")
     private static void useSharedRelrosLocked(LibInfo info) {
         String libFilePath = info.mLibFilePath;
         if (!nativeUseSharedRelro(libFilePath, info)) {
@@ -111,18 +97,18 @@ class LegacyLinker extends Linker {
      *
      * @param library Platform specific library name (e.g. libfoo.so)
      * @param loadAddress Explicit load address, or 0 for randomized one.
-     * @param libInfo If not null, the mLoadAddress and mLoadSize fields
-     * of this LibInfo instance will set on success.
+     * @param libInfo The mLoadAddress and mLoadSize fields
+     * of this LibInfo instance will be set on success.
      * @return true for success, false otherwise.
      */
     private static native boolean nativeLoadLibrary(
-            String library, long loadAddress, LibInfo libInfo);
+            String library, long loadAddress, @NonNull LibInfo libInfo);
 
     /**
      * Native method used to add a zip archive or APK to the search path
      * for native libraries. Allows loading directly from it.
      *
-     * @param zipfilePath Path of the zip file containing the libraries.
+     * @param zipFilePath Path of the zip file containing the libraries.
      * @return true for success, false otherwise.
      */
     private static native boolean nativeAddZipArchivePath(String zipFilePath);

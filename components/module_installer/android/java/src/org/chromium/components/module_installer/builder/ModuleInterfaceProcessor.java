@@ -107,6 +107,12 @@ public class ModuleInterfaceProcessor extends AbstractProcessor {
                                              .addStatement("sModule.installDeferred()")
                                              .build();
 
+        MethodSpec ensureNativeLoaded = MethodSpec.methodBuilder("ensureNativeLoaded")
+                                                .returns(TypeName.VOID)
+                                                .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
+                                                .addStatement("sModule.ensureNativeLoaded()")
+                                                .build();
+
         MethodSpec getImpl = MethodSpec.methodBuilder("getImpl")
                                      .returns(interfaceClassName)
                                      .addModifiers(Modifier.PUBLIC, Modifier.STATIC)
@@ -136,6 +142,7 @@ public class ModuleInterfaceProcessor extends AbstractProcessor {
                 .addMethod(isInstalled)
                 .addMethod(install)
                 .addMethod(installDeferred)
+                .addMethod(ensureNativeLoaded)
                 .addMethod(getImpl)
                 .addMethod(getInstallEngine)
                 .addMethod(setInstallEngine)

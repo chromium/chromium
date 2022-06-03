@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
+#include "third_party/blink/renderer/core/dom/static_range.h"
 #include "third_party/blink/renderer/core/editing/commands/editing_command_type.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command.h"
 #include "third_party/blink/renderer/core/editing/commands/editor_command_names.h"
@@ -61,7 +64,7 @@ TEST_F(EditingCommandTest, CreateCommandFromStringCaseFolding) {
   Editor& dummy_editor = GetDocument().GetFrame()->GetEditor();
   for (const auto& entry : kCommandNameEntries) {
     const EditorCommand lower_name_command =
-        dummy_editor.CreateCommand(String(entry.name).DeprecatedLower());
+        dummy_editor.CreateCommand(String(entry.name).LowerASCII());
     EXPECT_EQ(static_cast<int>(entry.type), lower_name_command.IdForHistogram())
         << entry.name;
     const EditorCommand upper_name_command =
@@ -91,8 +94,8 @@ TEST_F(EditingCommandTest, EnabledVisibleSelection) {
       SetSelectionOptions());
   Element* div = GetDocument().QuerySelector("div");
   GetDocument().SetFocusedElement(
-      div,
-      FocusParams(SelectionBehaviorOnFocus::kNone, kWebFocusTypeNone, nullptr));
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
   EXPECT_TRUE(command.IsEnabled());
   div->removeAttribute("contenteditable");
   EXPECT_FALSE(command.IsEnabled());
@@ -108,8 +111,8 @@ TEST_F(EditingCommandTest, EnabledVisibleSelectionAndMark) {
       SetSelectionOptions());
   Element* div = GetDocument().QuerySelector("div");
   GetDocument().SetFocusedElement(
-      div,
-      FocusParams(SelectionBehaviorOnFocus::kNone, kWebFocusTypeNone, nullptr));
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
   EXPECT_FALSE(command.IsEnabled());
   editor.SetMark();
   EXPECT_TRUE(command.IsEnabled());
@@ -135,11 +138,32 @@ TEST_F(EditingCommandTest, EnabledInEditableTextOrCaretBrowsing) {
       SetSelectionOptions());
   Element* div = GetDocument().QuerySelector("div");
   GetDocument().SetFocusedElement(
-      div,
-      FocusParams(SelectionBehaviorOnFocus::kNone, kWebFocusTypeNone, nullptr));
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
   EXPECT_TRUE(command.IsEnabled());
   div->removeAttribute("contenteditable");
   EXPECT_FALSE(command.IsEnabled());
+}
+
+TEST_F(EditingCommandTest, DeleteSoftLineBackwardTargetRanges) {
+  Editor& editor = GetDocument().GetFrame()->GetEditor();
+  const EditorCommand command = editor.CreateCommand("DeleteToBeginningOfLine");
+
+  Selection().SetSelection(
+      SetSelectionTextToBody("<div contenteditable>abcdef<br>123|<div>"),
+      SetSelectionOptions());
+  Element* div = GetDocument().QuerySelector("div");
+  GetDocument().SetFocusedElement(
+      div, FocusParams(SelectionBehaviorOnFocus::kNone,
+                       mojom::blink::FocusType::kNone, nullptr));
+  EXPECT_TRUE(command.IsEnabled());
+  const StaticRangeVector* ranges = command.GetTargetRanges();
+  EXPECT_EQ(1u, ranges->size());
+  const StaticRange& range = *ranges->at(0);
+  EXPECT_EQ("123", range.startContainer()->textContent());
+  EXPECT_EQ(0u, range.startOffset());
+  EXPECT_EQ(range.startContainer(), range.endContainer());
+  EXPECT_EQ(3u, range.endOffset());
 }
 
 }  // namespace blink

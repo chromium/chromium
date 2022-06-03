@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "media/base/cdm_key_information.h"
 #include "media/base/eme_constants.h"
@@ -43,8 +42,7 @@ typedef std::vector<std::unique_ptr<CdmKeyInformation>> CdmKeysInfo;
 enum class CdmSessionType {
   kTemporary,
   kPersistentLicense,
-  kPersistentUsageRecord,
-  kMaxValue = kPersistentUsageRecord
+  kMaxValue = kPersistentLicense
 };
 
 // Type of message being sent to the application.
@@ -69,7 +67,18 @@ enum class HdcpVersion {
   kHdcpVersion2_1,
   kHdcpVersion2_2,
   kHdcpVersion2_3,
-  kHdcpVersionMax = kHdcpVersion2_3
+  kMaxValue = kHdcpVersion2_3
+};
+
+// Reasons for CDM session closed.
+enum class CdmSessionClosedReason {
+  kInternalError,  // An unrecoverable error happened in the CDM., e.g. crash.
+  kClose,          // Reaction to MediaKeySession close().
+  kReleaseAcknowledged,   // The CDM received a "record-of-license-destruction"
+                          // acknowledgement.
+  kHardwareContextReset,  // As a result of hardware context reset.
+  kResourceEvicted,  // The CDM resource was evicted, e.g. by newer sessions.
+  kMaxValue = kResourceEvicted
 };
 
 // An interface that represents the Content Decryption Module (CDM) in the
@@ -99,6 +108,9 @@ class MEDIA_EXPORT ContentDecryptionModule
     : public base::RefCountedThreadSafe<ContentDecryptionModule,
                                         ContentDecryptionModuleTraits> {
  public:
+  ContentDecryptionModule(const ContentDecryptionModule&) = delete;
+  ContentDecryptionModule& operator=(const ContentDecryptionModule&) = delete;
+
   // Provides a server certificate to be used to encrypt messages to the
   // license server.
   virtual void SetServerCertificate(
@@ -173,9 +185,6 @@ class MEDIA_EXPORT ContentDecryptionModule
 
   ContentDecryptionModule();
   virtual ~ContentDecryptionModule();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ContentDecryptionModule);
 };
 
 struct MEDIA_EXPORT ContentDecryptionModuleTraits {
@@ -187,32 +196,35 @@ struct MEDIA_EXPORT ContentDecryptionModuleTraits {
 
 // Called when the CDM needs to queue a message event to the session object.
 // See http://w3c.github.io/encrypted-media/#dom-evt-message
-typedef base::Callback<void(const std::string& session_id,
-                            CdmMessageType message_type,
-                            const std::vector<uint8_t>& message)>
-    SessionMessageCB;
+using SessionMessageCB =
+    base::RepeatingCallback<void(const std::string& session_id,
+                                 CdmMessageType message_type,
+                                 const std::vector<uint8_t>& message)>;
 
-// Called when the session specified by |session_id| is closed. Note that the
+// Called when the session specified by `session_id` is closed. Note that the
 // CDM may close a session at any point, such as in response to a CloseSession()
 // call, when the session is no longer needed, or when system resources are
-// lost. See http://w3c.github.io/encrypted-media/#session-close
-typedef base::Callback<void(const std::string& session_id)> SessionClosedCB;
+// lost, as specified by `reason`.
+// See http://w3c.github.io/encrypted-media/#session-close
+using SessionClosedCB =
+    base::RepeatingCallback<void(const std::string& session_id,
+                                 CdmSessionClosedReason reason)>;
 
 // Called when there has been a change in the keys in the session or their
 // status. See http://w3c.github.io/encrypted-media/#dom-evt-keystatuseschange
-typedef base::Callback<void(const std::string& session_id,
-                            bool has_additional_usable_key,
-                            CdmKeysInfo keys_info)>
-    SessionKeysChangeCB;
+using SessionKeysChangeCB =
+    base::RepeatingCallback<void(const std::string& session_id,
+                                 bool has_additional_usable_key,
+                                 CdmKeysInfo keys_info)>;
 
 // Called when the CDM changes the expiration time of a session.
 // See http://w3c.github.io/encrypted-media/#update-expiration
 // A null base::Time() will be translated to NaN in Javascript, which means "no
 // such time exists or if the license explicitly never expires, as determined
 // by the CDM", according to the EME spec.
-typedef base::Callback<void(const std::string& session_id,
-                            base::Time new_expiry_time)>
-    SessionExpirationUpdateCB;
+using SessionExpirationUpdateCB =
+    base::RepeatingCallback<void(const std::string& session_id,
+                                 base::Time new_expiry_time)>;
 
 }  // namespace media
 

@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/sctp_transport_proxy.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
@@ -24,10 +24,9 @@ enum class RTCSctpTransportState { kChecking, kConnected, kClosed };
 // Blink bindings for the RTCSctpTransport JavaScript object.
 class MODULES_EXPORT RTCSctpTransport final
     : public EventTargetWithInlineData,
-      public ContextClient,
+      public ExecutionContextClient,
       public SctpTransportProxy::Delegate {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(RTCSctpTransport);
 
  public:
   RTCSctpTransport(
@@ -45,7 +44,7 @@ class MODULES_EXPORT RTCSctpTransport final
   RTCDtlsTransport* transport() const;
   String state() const;
   double maxMessageSize() const;
-  int16_t maxChannels(bool& is_null) const;
+  absl::optional<int16_t> maxChannels() const;
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(statechange, kStatechange)
 
@@ -63,7 +62,7 @@ class MODULES_EXPORT RTCSctpTransport final
   // Called from owning RtcPeerConnection when it is closed.
   void Close();
   // For garbage collection.
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
 
  private:
   webrtc::SctpTransportInformation current_state_;

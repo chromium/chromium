@@ -20,7 +20,6 @@
 #include "base/format_macros.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -30,8 +29,8 @@
 
 #include "base/command_line.h"
 #include "base/time/time.h"
-#include "base/trace_event/memory_dump_manager.h"
-#include "base/trace_event/memory_dump_provider.h"
+#include "base/trace_event/memory_dump_manager.h"   // no-presubmit-check
+#include "base/trace_event/memory_dump_provider.h"  // no-presubmit-check
 #endif  // BUILDFLAG(DEVTOOLS_INSTRUMENTATION_DUMPING)
 
 #if !BUILDFLAG(SUPPORTS_CODE_ORDERING)
@@ -241,11 +240,11 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path) {
 
   // This can get very large as it  constructs the whole data structure in
   // memory before dumping it to the file.
-  DictionaryValue root;
+  Value root(Value::Type::DICTIONARY);
   uint32_t total_calls_count = g_calls_count.load(std::memory_order_relaxed);
   root.SetStringKey("total_calls_count",
                     base::StringPrintf("%" PRIu32, total_calls_count));
-  ListValue call_graph;
+  Value call_graph(Value::Type::LIST);
   for (size_t i = 0; i < kMaxElements; i++) {
     auto caller_index =
         callee_map[i].load(std::memory_order_relaxed) * kTotalBuckets;
@@ -253,14 +252,14 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path) {
       // This callee was never called.
       continue;
 
-    DictionaryValue callee_element;
+    Value callee_element(Value::Type::DICTIONARY);
     uint32_t callee_offset = i * 4;
     callee_element.SetStringKey("index",
                                 base::StringPrintf("%" PRIuS, caller_index));
     callee_element.SetStringKey("callee_offset",
                                 base::StringPrintf("%" PRIu32, callee_offset));
-    std::string offset_str = "";
-    ListValue callers_list;
+    std::string offset_str;
+    Value callers_list(Value::Type::LIST);
     for (size_t j = 0; j < kTotalBuckets; j++) {
       uint32_t caller_offset =
           g_caller_offset[caller_index + j].load(std::memory_order_relaxed);
@@ -279,7 +278,7 @@ NO_INSTRUMENT_FUNCTION bool DumpToFile(const base::FilePath& path) {
         // No misses.
         continue;
 
-      DictionaryValue caller_count;
+      Value caller_count(Value::Type::DICTIONARY);
       caller_count.SetStringKey("caller_offset",
                                 base::StringPrintf("%" PRIu32, caller_offset));
       caller_count.SetStringKey("count", base::StringPrintf("%" PRIu32, count));

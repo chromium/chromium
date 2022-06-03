@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/connection_attempt_base.h"
 
@@ -23,17 +22,27 @@ class BleInitiatorConnectionAttempt
  public:
   class Factory {
    public:
-    static Factory* Get();
+    static std::unique_ptr<ConnectionAttempt<BleInitiatorFailureType>> Create(
+        BleConnectionManager* ble_connection_manager,
+        ConnectionAttemptDelegate* delegate,
+        const ConnectionAttemptDetails& connection_attempt_details);
     static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
     virtual ~Factory();
     virtual std::unique_ptr<ConnectionAttempt<BleInitiatorFailureType>>
-    BuildInstance(BleConnectionManager* ble_connection_manager,
-                  ConnectionAttemptDelegate* delegate,
-                  const ConnectionAttemptDetails& connection_attempt_details);
+    CreateInstance(
+        BleConnectionManager* ble_connection_manager,
+        ConnectionAttemptDelegate* delegate,
+        const ConnectionAttemptDetails& connection_attempt_details) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  BleInitiatorConnectionAttempt(const BleInitiatorConnectionAttempt&) = delete;
+  BleInitiatorConnectionAttempt& operator=(
+      const BleInitiatorConnectionAttempt&) = delete;
 
   ~BleInitiatorConnectionAttempt() override;
 
@@ -53,8 +62,6 @@ class BleInitiatorConnectionAttempt
           ConnectionFailedCallback& failure_callback) override;
 
   BleConnectionManager* ble_connection_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleInitiatorConnectionAttempt);
 };
 
 }  // namespace secure_channel

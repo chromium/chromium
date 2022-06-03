@@ -7,17 +7,14 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
-#include "net/url_request/url_request_status.h"
 
 namespace net {
 
-URLRequestErrorJob::URLRequestErrorJob(URLRequest* request,
-                                       NetworkDelegate* network_delegate,
-                                       int error)
-    : URLRequestJob(request, network_delegate), error_(error) {}
+URLRequestErrorJob::URLRequestErrorJob(URLRequest* request, int error)
+    : URLRequestJob(request), error_(error) {}
 
 URLRequestErrorJob::~URLRequestErrorJob() = default;
 
@@ -33,7 +30,7 @@ void URLRequestErrorJob::Kill() {
 }
 
 void URLRequestErrorJob::StartAsync() {
-  NotifyStartError(URLRequestStatus(URLRequestStatus::FAILED, error_));
+  NotifyStartError(error_);
 }
 
 }  // namespace net

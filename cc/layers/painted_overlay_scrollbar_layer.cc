@@ -5,6 +5,8 @@
 #include "cc/layers/painted_overlay_scrollbar_layer.h"
 
 #include <algorithm>
+#include <memory>
+#include <utility>
 
 #include "base/auto_reset.h"
 #include "cc/base/math_util.h"
@@ -19,7 +21,7 @@
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkSize.h"
 #include "ui/gfx/geometry/size_conversions.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 
@@ -27,6 +29,15 @@ std::unique_ptr<LayerImpl> PaintedOverlayScrollbarLayer::CreateLayerImpl(
     LayerTreeImpl* tree_impl) {
   return PaintedOverlayScrollbarLayerImpl::Create(
       tree_impl, id(), orientation(), is_left_side_vertical_scrollbar());
+}
+
+scoped_refptr<PaintedOverlayScrollbarLayer>
+PaintedOverlayScrollbarLayer::CreateOrReuse(
+    scoped_refptr<Scrollbar> scrollbar,
+    PaintedOverlayScrollbarLayer* existing_layer) {
+  if (existing_layer && existing_layer->scrollbar_->IsSame(*scrollbar))
+    return existing_layer;
+  return Create(std::move(scrollbar));
 }
 
 scoped_refptr<PaintedOverlayScrollbarLayer>
@@ -51,13 +62,15 @@ bool PaintedOverlayScrollbarLayer::OpacityCanAnimateOnImplThread() const {
   return true;
 }
 
-void PaintedOverlayScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
-  ScrollbarLayerBase::PushPropertiesTo(layer);
+void PaintedOverlayScrollbarLayer::PushPropertiesTo(
+    LayerImpl* layer,
+    const CommitState& commit_state) {
+  ScrollbarLayerBase::PushPropertiesTo(layer, commit_state);
 
   PaintedOverlayScrollbarLayerImpl* scrollbar_layer =
       static_cast<PaintedOverlayScrollbarLayerImpl*>(layer);
 
-  if (orientation() == HORIZONTAL) {
+  if (orientation() == ScrollbarOrientation::HORIZONTAL) {
     scrollbar_layer->SetThumbThickness(thumb_size_.height());
     scrollbar_layer->SetThumbLength(thumb_size_.width());
     scrollbar_layer->SetTrackStart(track_rect_.x());
@@ -70,9 +83,11 @@ void PaintedOverlayScrollbarLayer::PushPropertiesTo(LayerImpl* layer) {
   }
 
   if (thumb_resource_.get()) {
-    scrollbar_layer->SetImageBounds(
-        layer_tree_host()->GetUIResourceManager()->GetUIResourceSize(
-            thumb_resource_->id()));
+    auto iter = commit_state.ui_resource_sizes.find(thumb_resource_->id());
+    gfx::Size image_bounds = (iter == commit_state.ui_resource_sizes.end())
+                                 ? gfx::Size()
+                                 : iter->second;
+    scrollbar_layer->SetImageBounds(image_bounds);
     scrollbar_layer->SetAperture(aperture_);
     scrollbar_layer->set_thumb_ui_resource_id(thumb_resource_->id());
   } else {
@@ -121,7 +136,7 @@ bool PaintedOverlayScrollbarLayer::Update() {
 }
 
 bool PaintedOverlayScrollbarLayer::PaintThumbIfNeeded() {
-  if (!scrollbar_->NeedsRepaintPart(THUMB) && thumb_resource_)
+  if (!scrollbar_->NeedsRepaintPart(ScrollbarPart::THUMB) && thumb_resource_)
     return false;
 
   gfx::Size paint_size = scrollbar_->NinePatchThumbCanvasSize();
@@ -133,7 +148,7 @@ bool PaintedOverlayScrollbarLayer::PaintThumbIfNeeded() {
   SkiaPaintCanvas canvas(skbitmap);
   canvas.clear(SK_ColorTRANSPARENT);
 
-  scrollbar_->PaintPart(&canvas, THUMB, gfx::Rect(paint_size));
+  scrollbar_->PaintPart(&canvas, ScrollbarPart::THUMB, gfx::Rect(paint_size));
   // Make sure that the pixels are no longer mutable to unavoid unnecessary
   // allocation and copying.
   skbitmap.setImmutable();
@@ -166,7 +181,7 @@ bool PaintedOverlayScrollbarLayer::PaintTickmarks() {
   SkiaPaintCanvas canvas(skbitmap);
   canvas.clear(SK_ColorTRANSPARENT);
 
-  scrollbar_->PaintPart(&canvas, TRACK_BUTTONS_TICKMARKS,
+  scrollbar_->PaintPart(&canvas, ScrollbarPart::TRACK_BUTTONS_TICKMARKS,
                         gfx::Rect(paint_size));
   // Make sure that the pixels are no longer mutable to unavoid unnecessary
   // allocation and copying.
@@ -177,6 +192,11 @@ bool PaintedOverlayScrollbarLayer::PaintTickmarks() {
 
   SetNeedsPushProperties();
   return true;
+}
+
+ScrollbarLayerBase::ScrollbarLayerType
+PaintedOverlayScrollbarLayer::GetScrollbarLayerType() const {
+  return kPaintedOverlay;
 }
 
 }  // namespace cc

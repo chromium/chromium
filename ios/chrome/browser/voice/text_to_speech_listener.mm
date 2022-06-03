@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "ios/chrome/browser/voice/text_to_speech_parser.h"
 #import "ios/chrome/browser/voice/voice_search_url_rewriter.h"
 #include "ios/web/public/navigation/navigation_manager.h"

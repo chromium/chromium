@@ -13,6 +13,12 @@
 
 namespace mojo {
 
+// DEPRECATED: Do not introduce new uses of this type. Instead use the
+// AssociatedPendingRemote type defined in associated_pending_remote.h. Mojom
+// files which pass associated interface endpoints
+// (i.e. "associated Interface" syntax) should be updated to instead pass
+// a "pending_associated_remote<Interface>".
+//
 // AssociatedInterfacePtrInfo stores necessary information to construct an
 // associated interface pointer. It is similar to InterfacePtrInfo except that
 // it doesn't own a message pipe handle.
@@ -30,6 +36,10 @@ class AssociatedInterfacePtrInfo {
   AssociatedInterfacePtrInfo(ScopedInterfaceEndpointHandle handle,
                              uint32_t version)
       : handle_(std::move(handle)), version_(version) {}
+
+  AssociatedInterfacePtrInfo(const AssociatedInterfacePtrInfo&) = delete;
+  AssociatedInterfacePtrInfo& operator=(const AssociatedInterfacePtrInfo&) =
+      delete;
 
   ~AssociatedInterfacePtrInfo() {}
 
@@ -70,8 +80,6 @@ class AssociatedInterfacePtrInfo {
  private:
   ScopedInterfaceEndpointHandle handle_;
   uint32_t version_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssociatedInterfacePtrInfo);
 };
 
 }  // namespace mojo

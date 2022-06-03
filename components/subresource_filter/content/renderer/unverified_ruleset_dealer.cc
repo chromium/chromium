@@ -4,28 +4,38 @@
 
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 
-#include "components/subresource_filter/content/common/subresource_filter_messages.h"
-#include "ipc/ipc_message_macros.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 
 namespace subresource_filter {
 
 UnverifiedRulesetDealer::UnverifiedRulesetDealer() = default;
 UnverifiedRulesetDealer::~UnverifiedRulesetDealer() = default;
 
-bool UnverifiedRulesetDealer::OnControlMessageReceived(
-    const IPC::Message& message) {
-  bool handled = true;
-  IPC_BEGIN_MESSAGE_MAP(UnverifiedRulesetDealer, message)
-    IPC_MESSAGE_HANDLER(SubresourceFilterMsg_SetRulesetForProcess,
-                        OnSetRulesetForProcess)
-    IPC_MESSAGE_UNHANDLED(handled = false)
-  IPC_END_MESSAGE_MAP()
-  return handled;
+void UnverifiedRulesetDealer::RegisterMojoInterfaces(
+    blink::AssociatedInterfaceRegistry* associated_interfaces) {
+  // base::Unretained can be used here because the associated_interfaces
+  // is owned by the RenderThread and will live for the duration of the
+  // RenderThread.
+  associated_interfaces->AddInterface(
+      base::BindRepeating(&UnverifiedRulesetDealer::OnRendererAssociatedRequest,
+                          base::Unretained(this)));
 }
 
-void UnverifiedRulesetDealer::OnSetRulesetForProcess(
-    const IPC::PlatformFileForTransit& platform_file) {
-  SetRulesetFile(IPC::PlatformFileForTransitToFile(platform_file));
+void UnverifiedRulesetDealer::UnregisterMojoInterfaces(
+    blink::AssociatedInterfaceRegistry* associated_interfaces) {
+  associated_interfaces->RemoveInterface(
+      mojom::SubresourceFilterRulesetObserver::Name_);
+}
+
+void UnverifiedRulesetDealer::SetRulesetForProcess(base::File ruleset_file) {
+  SetRulesetFile(std::move(ruleset_file));
+}
+
+void UnverifiedRulesetDealer::OnRendererAssociatedRequest(
+    mojo::PendingAssociatedReceiver<mojom::SubresourceFilterRulesetObserver>
+        receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace subresource_filter

@@ -2,31 +2,31 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include <fuchsia/sys/cpp/fidl.h>
-#include <fuchsia/web/cpp/fidl.h>
-#include <lib/fdio/directory.h>
-#include <lib/fidl/cpp/binding.h>
-#include <lib/sys/cpp/component_context.h>
-#include <zircon/processargs.h>
+#include <fuchsia/mediacodec/cpp/fidl.h>
+#include <fuchsia/mem/cpp/fidl.h>
+#include <zircon/rights.h>
+#include <zircon/types.h>
 
-#include "base/command_line.h"
-#include "base/fuchsia/default_context.h"
-#include "base/fuchsia/file_utils.h"
+#include <string>
+
+#include <lib/zx/vmo.h>
+
+#include "base/cxx17_backports.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/fuchsia/service_directory_client.h"
-#include "base/macros.h"
-#include "base/path_service.h"
-#include "base/test/task_environment.h"
-#include "fuchsia/base/fit_adapter.h"
-#include "fuchsia/base/frame_test_util.h"
-#include "fuchsia/base/result_receiver.h"
-#include "fuchsia/base/test_devtools_list_fetcher.h"
-#include "fuchsia/base/test_navigation_listener.h"
-#include "fuchsia/engine/test/context_provider_test_connector.h"
+#include "base/fuchsia/mem_buffer_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "components/version_info/version_info.h"
+#include "fuchsia/base/test/fit_adapter.h"
+#include "fuchsia/base/test/frame_test_util.h"
+#include "fuchsia/base/test/test_devtools_list_fetcher.h"
+#include "fuchsia/engine/web_engine_integration_test_base.h"
+#include "media/base/media_switches.h"
+#include "media/fuchsia/audio/fake_audio_consumer.h"
+#include "media/fuchsia/camera/fake_fuchsia_camera.h"
 #include "net/http/http_request_headers.h"
-#include "net/test/embedded_test_server/default_handlers.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "testing/gtest/include/gtest/gtest.h"
+#include "testing/gmock/include/gmock/gmock.h"
 
 namespace {
 
@@ -36,252 +36,239 @@ constexpr char kValidUserAgentProductAndVersion[] = "TestProduct/dev.12345";
 constexpr char kInvalidUserAgentProduct[] = "Test/Product";
 constexpr char kInvalidUserAgentVersion[] = "dev/12345";
 
+constexpr char kAutoplayVp9OpusUrl[] =
+    "fuchsia-dir://testdata/play_video.html?codecs=vp9,opus&autoplay=1";
+constexpr char kAutoplayVp9OpusToEndUrl[] =
+    "fuchsia-dir://testdata/"
+    "play_video.html?codecs=vp9,opus&autoplay=1&reportended=1";
+constexpr char kLoadVp9OpusUrl[] =
+    "fuchsia-dir://testdata/play_video.html?codecs=vp9,opus";
+
 }  // namespace
 
-class WebEngineIntegrationTest : public testing::Test {
- public:
-  WebEngineIntegrationTest()
-      : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
-  ~WebEngineIntegrationTest() override = default;
+// Starts a WebEngine instance before running the test.
+class WebEngineIntegrationTest : public WebEngineIntegrationTestBase {
+ protected:
+  WebEngineIntegrationTest() = default;
 
   void SetUp() override {
-    net::test_server::RegisterDefaultHandlers(&embedded_test_server_);
-    ASSERT_TRUE(embedded_test_server_.Start());
+    WebEngineIntegrationTestBase::SetUp();
+
+    StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
   }
 
-  void StartWebEngine() {
-    web_context_provider_ =
-        StartWebEngineForTests(web_engine_controller_.NewRequest());
-    web_context_provider_.set_error_handler(
-        [](zx_status_t status) { ADD_FAILURE(); });
-  }
-
-  fuchsia::web::CreateContextParams DefaultContextParams() const {
-    fuchsia::web::CreateContextParams create_params;
-    auto directory = base::fuchsia::OpenDirectory(
-        base::FilePath(base::fuchsia::kServiceDirectoryPath));
-    EXPECT_TRUE(directory.is_valid());
-    create_params.set_service_directory(std::move(directory));
-    return create_params;
-  }
-
-  fuchsia::web::CreateContextParams DefaultContextParamsWithTestData() const {
-    fuchsia::web::CreateContextParams create_params = DefaultContextParams();
-
-    fuchsia::web::ContentDirectoryProvider provider;
-    provider.set_name("testdata");
-    base::FilePath pkg_path;
-    CHECK(base::PathService::Get(base::DIR_ASSETS, &pkg_path));
-    provider.set_directory(base::fuchsia::OpenDirectory(
-        pkg_path.AppendASCII("fuchsia/engine/test/data")));
-
-    create_params.mutable_content_directories()->emplace_back(
-        std::move(provider));
-
-    return create_params;
-  }
-
-  void CreateContextAndFrame(fuchsia::web::CreateContextParams params) {
-    web_context_provider_->Create(std::move(params), context_.NewRequest());
-    context_.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
-
-    context_->CreateFrame(frame_.NewRequest());
-    frame_.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
-
-    frame_->GetNavigationController(navigation_controller_.NewRequest());
-    navigation_controller_.set_error_handler(
-        [](zx_status_t status) { ADD_FAILURE(); });
-  }
-
-  void CreateContextAndExpectError(fuchsia::web::CreateContextParams params,
-                                   zx_status_t expected_error) {
-    web_context_provider_->Create(std::move(params), context_.NewRequest());
-    base::RunLoop run_loop;
-    context_.set_error_handler([&run_loop, expected_error](zx_status_t status) {
-      EXPECT_EQ(status, expected_error);
-      run_loop.Quit();
-    });
-    run_loop.Run();
-  }
-
-  void CreateContextAndFrameAndLoadUrl(fuchsia::web::CreateContextParams params,
-                                       const GURL& url) {
-    CreateContextAndFrame(std::move(params));
-
-    // Attach a navigation listener, to monitor the state of the Frame.
-    cr_fuchsia::TestNavigationListener listener;
-    fidl::Binding<fuchsia::web::NavigationEventListener> listener_binding(
-        &listener);
-    frame_->SetNavigationEventListener(listener_binding.NewBinding());
-
-    // Navigate the Frame to |url| and wait for it to complete loading.
-    fuchsia::web::LoadUrlParams load_url_params;
-    ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-        navigation_controller_.get(), std::move(load_url_params), url.spec()));
-
-    // Wait for the URL to finish loading.
-    listener.RunUntilUrlEquals(url);
-  }
-
-  std::string ExecuteJavaScriptWithStringResult(base::StringPiece script) {
-    base::Optional<base::Value> value =
-        cr_fuchsia::ExecuteJavaScript(frame_.get(), script);
-    return value ? value->GetString() : std::string();
-  }
-
- protected:
-  const base::test::TaskEnvironment task_environment_;
-
-  fidl::InterfaceHandle<fuchsia::sys::ComponentController>
-      web_engine_controller_;
-  fuchsia::web::ContextProviderPtr web_context_provider_;
-
-  net::EmbeddedTestServer embedded_test_server_;
-
-  fuchsia::web::ContextPtr context_;
-  fuchsia::web::FramePtr frame_;
-  fuchsia::web::NavigationControllerPtr navigation_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebEngineIntegrationTest);
+  void RunPermissionTest(bool grant);
 };
 
-TEST_F(WebEngineIntegrationTest, ValidUserAgent) {
-  StartWebEngine();
+// Configures the default filtered service directory with a fake AudioConsumer
+// service for testing.
+class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
+ protected:
+  WebEngineIntegrationMediaTest()
+      : fake_audio_consumer_service_(filtered_service_directory()
+                                         .outgoing_directory()
+                                         ->GetOrCreateDirectory("svc")) {}
 
-  const std::string kEchoHeaderPath =
-      std::string("/echoheader?") + net::HttpRequestHeaders::kUserAgent;
-  const GURL kEchoUserAgentUrl(embedded_test_server_.GetURL(kEchoHeaderPath));
-
-  {
-    // Create a Context with just an embedder product specified.
-    fuchsia::web::CreateContextParams create_params = DefaultContextParams();
-    create_params.set_user_agent_product(kValidUserAgentProduct);
-    CreateContextAndFrameAndLoadUrl(std::move(create_params),
-                                    kEchoUserAgentUrl);
-
-    // Query & verify that the header echoed into the document body contains
-    // the product tag.
-    std::string result =
-        ExecuteJavaScriptWithStringResult("document.body.innerText;");
-    EXPECT_TRUE(result.find(kValidUserAgentProduct) != std::string::npos);
-
-    // Query & verify that the navigator.userAgent contains the product tag.
-    result = ExecuteJavaScriptWithStringResult("navigator.userAgent;");
-    EXPECT_TRUE(result.find(kValidUserAgentProduct) != std::string::npos);
+  // Returns a CreateContextParams that has AUDIO feature, and the "testdata"
+  // content directory provider configured.
+  fuchsia::web::CreateContextParams ContextParamsWithAudioAndTestData() {
+    fuchsia::web::CreateContextParams create_params =
+        TestContextParamsWithTestData();
+    create_params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
+    return create_params;
   }
 
-  {
-    // Create a Context with both product and version specified.
-    fuchsia::web::CreateContextParams create_params = DefaultContextParams();
-    create_params.set_user_agent_product(kValidUserAgentProduct);
-    create_params.set_user_agent_version(kValidUserAgentVersion);
-    CreateContextAndFrameAndLoadUrl(std::move(create_params),
-                                    kEchoUserAgentUrl);
+  media::FakeAudioConsumerService fake_audio_consumer_service_;
+};
 
-    // Query & verify that the header echoed into the document body contains
-    // both product & version.
-    std::string result =
-        ExecuteJavaScriptWithStringResult("document.body.innerText;");
-    EXPECT_TRUE(result.find(kValidUserAgentProductAndVersion) !=
-                std::string::npos);
-
-    // Query & verify that the navigator.userAgent contains product & version.
-    result = ExecuteJavaScriptWithStringResult("navigator.userAgent;");
-    EXPECT_TRUE(result.find(kValidUserAgentProductAndVersion) !=
-                std::string::npos);
+class WebEngineIntegrationUserAgentTest : public WebEngineIntegrationTest {
+ protected:
+  GURL GetEchoUserAgentUrl() {
+    static std::string echo_user_agent_header_path =
+        std::string("/echoheader?") + net::HttpRequestHeaders::kUserAgent;
+    return embedded_test_server_.GetURL(echo_user_agent_header_path);
   }
+
+  // Returns the expected user agent string for the current Chrome version.
+  static std::string GetExpectedUserAgentString() {
+    // The default (base) user agent string without any client modifications.
+    // TODO(crbug.com/1225812): Replace "X11; " appropriately and the version
+    // with <majorVersion>.0.0.0.
+    constexpr char kDefaultUserAgentStringWithVersionPlaceholder[] =
+        "Mozilla/5.0 (X11; Fuchsia) AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/%s Safari/537.36";
+
+    std::string expected_ua =
+        base::StringPrintf(kDefaultUserAgentStringWithVersionPlaceholder,
+                           version_info::GetVersionNumber().c_str());
+
+    // Ensure the field was actually populated.
+    EXPECT_GT(expected_ua.length(),
+              base::size(kDefaultUserAgentStringWithVersionPlaceholder));
+    EXPECT_NE(expected_ua.find(version_info::GetVersionNumber()),
+              std::string::npos);
+
+    return expected_ua;
+  }
+
+  static std::string GetExpectedUserAgentStringWithProduct(
+      const char* product) {
+    return base::StringPrintf("%s %s", GetExpectedUserAgentString().c_str(),
+                              product);
+  }
+};
+
+// Although this does not need to be an integration test, all other user agent
+// tests are here.
+TEST_F(WebEngineIntegrationUserAgentTest, Default) {
+  // Create a Context with no values specified.
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+  CreateContextAndFrameAndLoadUrl(std::move(create_params),
+                                  GetEchoUserAgentUrl());
+
+  // Query & verify that the header echoed into the document body is as
+  // expected.
+  std::string result =
+      ExecuteJavaScriptWithStringResult("document.body.innerText;");
+  EXPECT_EQ(result, GetExpectedUserAgentString());
+
+  // Query & verify that the navigator.userAgent is as expected.
+  result = ExecuteJavaScriptWithStringResult("navigator.userAgent;");
+  EXPECT_EQ(result, GetExpectedUserAgentString());
 }
 
-TEST_F(WebEngineIntegrationTest, InvalidUserAgent) {
-  StartWebEngine();
+TEST_F(WebEngineIntegrationUserAgentTest, ValidProductOnly) {
+  // Create a Context with just an embedder product specified.
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+  create_params.set_user_agent_product(kValidUserAgentProduct);
+  CreateContextAndFrameAndLoadUrl(std::move(create_params),
+                                  GetEchoUserAgentUrl());
 
-  const std::string kEchoHeaderPath =
-      std::string("/echoheader?") + net::HttpRequestHeaders::kUserAgent;
-  const GURL kEchoUserAgentUrl(embedded_test_server_.GetURL(kEchoHeaderPath));
+  std::string expected =
+      GetExpectedUserAgentStringWithProduct(kValidUserAgentProduct);
 
-  {
-    // Try to create a Context with an invalid embedder product tag.
-    fuchsia::web::CreateContextParams create_params = DefaultContextParams();
-    create_params.set_user_agent_product(kInvalidUserAgentProduct);
-    CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
-  }
+  // Query & verify that the header echoed into the document body contains
+  // the product tag.
+  std::string result =
+      ExecuteJavaScriptWithStringResult("document.body.innerText;");
+  EXPECT_TRUE(result.find(kValidUserAgentProduct) != std::string::npos);
+  EXPECT_EQ(result, expected);
 
-  {
-    // Try to create a Context with an embedder version but no product.
-    fuchsia::web::CreateContextParams create_params = DefaultContextParams();
-    create_params.set_user_agent_version(kValidUserAgentVersion);
-    CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
-  }
+  // Query & verify that the navigator.userAgent contains the product tag.
+  result = ExecuteJavaScriptWithStringResult("navigator.userAgent;");
+  EXPECT_TRUE(result.find(kValidUserAgentProduct) != std::string::npos);
+  EXPECT_EQ(result, expected);
+}
 
-  {
-    // Try to create a Context with valid product tag, but invalid version.
-    fuchsia::web::CreateContextParams create_params = DefaultContextParams();
-    create_params.set_user_agent_product(kValidUserAgentProduct);
-    create_params.set_user_agent_version(kInvalidUserAgentVersion);
-    CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
-  }
+TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndVersion) {
+  // Create a Context with both product and version specified.
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+  create_params.set_user_agent_product(kValidUserAgentProduct);
+  create_params.set_user_agent_version(kValidUserAgentVersion);
+  CreateContextAndFrameAndLoadUrl(std::move(create_params),
+                                  GetEchoUserAgentUrl());
+
+  std::string expected =
+      GetExpectedUserAgentStringWithProduct(kValidUserAgentProductAndVersion);
+
+  // Query & verify that the header echoed into the document body contains
+  // both product & version.
+  std::string result =
+      ExecuteJavaScriptWithStringResult("document.body.innerText;");
+  EXPECT_TRUE(result.find(kValidUserAgentProductAndVersion) !=
+              std::string::npos);
+  EXPECT_EQ(result, expected);
+
+  // Query & verify that the navigator.userAgent contains product & version.
+  result = ExecuteJavaScriptWithStringResult("navigator.userAgent;");
+  EXPECT_TRUE(result.find(kValidUserAgentProductAndVersion) !=
+              std::string::npos);
+  EXPECT_EQ(result, expected);
+}
+
+TEST_F(WebEngineIntegrationUserAgentTest, InvalidProduct) {
+  // Try to create a Context with an invalid embedder product tag.
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+  create_params.set_user_agent_product(kInvalidUserAgentProduct);
+  CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
+}
+
+TEST_F(WebEngineIntegrationUserAgentTest, VersionOnly) {
+  // Try to create a Context with an embedder version but no product.
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+  create_params.set_user_agent_version(kValidUserAgentVersion);
+  CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
+}
+
+TEST_F(WebEngineIntegrationUserAgentTest, ValidProductAndInvalidVersion) {
+  // Try to create a Context with valid product tag, but invalid version.
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+  create_params.set_user_agent_product(kValidUserAgentProduct);
+  create_params.set_user_agent_version(kInvalidUserAgentVersion);
+  CreateContextAndExpectError(std::move(create_params), ZX_ERR_INVALID_ARGS);
+}
+
+TEST_F(WebEngineIntegrationTest, CreateFrameWithUnclonableFrameParamsFails) {
+  CreateContext(TestContextParams());
+
+  zx_rights_t kReadRightsWithoutDuplicate =
+      ZX_RIGHT_TRANSFER | ZX_RIGHT_READ | ZX_RIGHT_MAP | ZX_RIGHT_GET_PROPERTY;
+
+  // Create a buffer and remove the ability clone it by changing its rights to
+  // not include ZX_RIGHT_DUPLICATE.
+  auto buffer = base::MemBufferFromString("some data", "some name");
+  zx::vmo unclonable_readonly_vmo;
+  EXPECT_EQ(ZX_OK, buffer.vmo.duplicate(kReadRightsWithoutDuplicate,
+                                        &unclonable_readonly_vmo));
+  buffer.vmo = std::move(unclonable_readonly_vmo);
+
+  // Creation will fail, which will be reported in the error handler below.
+  fuchsia::web::CreateFrameParams create_frame_params;
+  create_frame_params.set_explicit_sites_filter_error_page(
+      fuchsia::mem::Data::WithBuffer(std::move(buffer)));
+  context_->CreateFrameWithParams(std::move(create_frame_params),
+                                  frame_.NewRequest());
+
+  base::RunLoop loop;
+  frame_.set_error_handler(
+      [quit_loop = loop.QuitClosure()](zx_status_t status) {
+        EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
+        quit_loop.Run();
+      });
+  loop.Run();
+
+  EXPECT_FALSE(frame_);
 }
 
 // Check that if the CreateContextParams has |remote_debugging_port| set then:
 // - DevTools becomes available when the first debuggable Frame is created.
 // - DevTools closes when the last debuggable Frame is closed.
 TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
-  StartWebEngine();
-
   // Create a Context with remote debugging enabled via an ephemeral port.
-  fuchsia::web::CreateContextParams create_params;
-  auto directory = base::fuchsia::OpenDirectory(
-      base::FilePath(base::fuchsia::kServiceDirectoryPath));
-  ASSERT_TRUE(directory.is_valid());
-  create_params.set_service_directory(std::move(directory));
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
   create_params.set_remote_debugging_port(0);
 
-  fuchsia::web::ContextPtr web_context;
-  web_context_provider_->Create(std::move(create_params),
-                                web_context.NewRequest());
-  web_context.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status);
-    ADD_FAILURE();
-  });
-
   // Create a Frame with remote debugging enabled.
-  fuchsia::web::FramePtr web_frame;
   fuchsia::web::CreateFrameParams create_frame_params;
   create_frame_params.set_enable_remote_debugging(true);
-  web_context->CreateFrameWithParams(std::move(create_frame_params),
-                                     web_frame.NewRequest());
-  web_frame.set_error_handler([](zx_status_t status) {
-    ZX_LOG(ERROR, status);
-    ADD_FAILURE();
-  });
+  CreateContext(std::move(create_params));
+  CreateFrameWithParams(std::move(create_frame_params));
 
   // Expect to receive a notification of the selected DevTools port.
-  base::RunLoop run_loop;
-  cr_fuchsia::ResultReceiver<
-      fuchsia::web::Context_GetRemoteDebuggingPort_Result>
-      port_receiver(run_loop.QuitClosure());
-  web_context->GetRemoteDebuggingPort(
-      cr_fuchsia::CallbackToFitFunction(port_receiver.GetReceiveCallback()));
-  run_loop.Run();
+  base::test::TestFuture<fuchsia::web::Context_GetRemoteDebuggingPort_Result>
+      port_receiver;
+  context_->GetRemoteDebuggingPort(
+      cr_fuchsia::CallbackToFitFunction(port_receiver.GetCallback()));
+  port_receiver.Wait();
 
-  ASSERT_TRUE(port_receiver->is_response());
-  uint16_t remote_debugging_port = port_receiver->response().port;
+  ASSERT_TRUE(port_receiver.Get().is_response());
+  uint16_t remote_debugging_port = port_receiver.Get().response().port;
   ASSERT_TRUE(remote_debugging_port != 0);
-
-  // Navigate the Frame to a URL, and verify the URL via DevTools.
-  fuchsia::web::NavigationControllerPtr nav_controller;
-  web_frame->GetNavigationController(nav_controller.NewRequest());
-
-  cr_fuchsia::TestNavigationListener navigation_listener;
-  fidl::Binding<fuchsia::web::NavigationEventListener> listener_binding(
-      &navigation_listener);
-  web_frame->SetNavigationEventListener(listener_binding.NewBinding());
 
   // Navigate to a URL.
   GURL url = embedded_test_server_.GetURL("/defaultresponse");
-  ASSERT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      nav_controller.get(), fuchsia::web::LoadUrlParams(), url.spec()));
-  navigation_listener.RunUntilUrlEquals(url);
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(url.spec()));
+  navigation_listener()->RunUntilUrlEquals(url);
 
   base::Value devtools_list =
       cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
@@ -295,8 +282,8 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   // Create a second frame, without remote debugging enabled. The remote
   // debugging service should still report a single Frame is present.
   fuchsia::web::FramePtr web_frame2;
-  web_context->CreateFrame(web_frame2.NewRequest());
-  web_frame2.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
+  web_frame2.set_error_handler([](zx_status_t) { ADD_FAILURE(); });
+  context()->CreateFrame(web_frame2.NewRequest());
 
   devtools_list = cr_fuchsia::GetDevToolsListFromPort(remote_debugging_port);
   ASSERT_TRUE(devtools_list.is_list());
@@ -309,9 +296,10 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
   // Tear down the debuggable Frame. The remote debugging service should have
   // shut down.
   base::RunLoop controller_run_loop;
-  nav_controller.set_error_handler(
+  auto navigation_controller = CreateNavigationController();
+  navigation_controller.set_error_handler(
       [&controller_run_loop](zx_status_t) { controller_run_loop.Quit(); });
-  web_frame.Unbind();
+  frame_.Unbind();
 
   // Wait until the NavigationController shuts down to ensure WebEngine has
   // handled the Frame tear down.
@@ -324,23 +312,13 @@ TEST_F(WebEngineIntegrationTest, RemoteDebuggingPort) {
 // Check that remote debugging requests for Frames in non-debuggable Contexts
 // cause an error to be reported.
 TEST_F(WebEngineIntegrationTest, RequestDebuggableFrameInNonDebuggableContext) {
-  StartWebEngine();
-
-  fuchsia::web::CreateContextParams create_params = DefaultContextParams();
-
-  fuchsia::web::ContextPtr web_context;
-  web_context_provider_->Create(std::move(create_params),
-                                web_context.NewRequest());
-  web_context.set_error_handler([](zx_status_t status) { ADD_FAILURE(); });
-
-  fuchsia::web::FramePtr web_frame;
   fuchsia::web::CreateFrameParams create_frame_params;
   create_frame_params.set_enable_remote_debugging(true);
-  web_context->CreateFrameWithParams(std::move(create_frame_params),
-                                     web_frame.NewRequest());
+  CreateContext(TestContextParams());
+  CreateFrameWithParams(std::move(create_frame_params));
 
   base::RunLoop loop;
-  web_frame.set_error_handler(
+  frame_.set_error_handler(
       [quit_loop = loop.QuitClosure()](zx_status_t status) {
         EXPECT_EQ(status, ZX_ERR_INVALID_ARGS);
         quit_loop.Run();
@@ -350,52 +328,308 @@ TEST_F(WebEngineIntegrationTest, RequestDebuggableFrameInNonDebuggableContext) {
 
 // Navigates to a resource served under the "testdata" ContentDirectory.
 TEST_F(WebEngineIntegrationTest, ContentDirectoryProvider) {
-  StartWebEngine();
-
   const GURL kUrl("fuchsia-dir://testdata/title1.html");
   constexpr char kTitle[] = "title 1";
 
-  fuchsia::web::CreateContextParams create_params =
-      DefaultContextParamsWithTestData();
-
-  CreateContextAndFrame(std::move(create_params));
+  CreateContextAndFrame(TestContextParamsWithTestData());
 
   // Navigate to test1.html and verify that the resource was correctly
   // downloaded and interpreted by inspecting the document title.
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), fuchsia::web::LoadUrlParams(),
-      kUrl.spec()));
-  cr_fuchsia::TestNavigationListener navigation_listener;
-  fidl::Binding<fuchsia::web::NavigationEventListener> listener_binding(
-      &navigation_listener);
-  frame_->SetNavigationEventListener(listener_binding.NewBinding());
-  navigation_listener.RunUntilUrlAndTitleEquals(kUrl, kTitle);
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(kUrl.spec()));
+  navigation_listener()->RunUntilUrlAndTitleEquals(kUrl, kTitle);
 }
 
-TEST_F(WebEngineIntegrationTest, PlayAudio) {
-  StartWebEngine();
+TEST_F(WebEngineIntegrationMediaTest, PlayAudio) {
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
 
+  static uint16_t kTestMediaSessionId = 43;
+  frame_->SetMediaSessionId(kTestMediaSessionId);
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_audio.html",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+
+  navigation_listener()->RunUntilTitleEquals("ended");
+
+  ASSERT_EQ(fake_audio_consumer_service_.num_instances(), 1U);
+
+  auto pos = fake_audio_consumer_service_.instance(0)->GetMediaPosition();
+  EXPECT_GT(pos, base::Seconds(2.0));
+  EXPECT_LT(pos, base::Seconds(2.5));
+
+  EXPECT_EQ(fake_audio_consumer_service_.instance(0)->session_id(),
+            kTestMediaSessionId);
+  EXPECT_EQ(fake_audio_consumer_service_.instance(0)->volume(), 1.0);
+  EXPECT_FALSE(fake_audio_consumer_service_.instance(0)->is_muted());
+}
+
+// Check that audio cannot play when the AUDIO ContextFeatureFlag is not
+// provided.
+TEST_F(WebEngineIntegrationMediaTest, PlayAudio_NoFlag) {
+  // Both FilteredServiceDirectory and test data are needed.
   fuchsia::web::CreateContextParams create_params =
-      DefaultContextParamsWithTestData();
-  auto features = fuchsia::web::ContextFeatureFlags::AUDIO;
-  if (create_params.has_features())
-    features |= create_params.features();
-  create_params.set_features(features);
+      TestContextParamsWithTestData();
   CreateContextAndFrame(std::move(create_params));
 
-  fuchsia::web::LoadUrlParams load_url_params;
+  bool is_requested = false;
+  zx_status_t status =
+      filtered_service_directory()
+          .outgoing_directory()
+          ->RemovePublicService<fuchsia::media::SessionAudioConsumerFactory>();
+  ZX_CHECK(status == ZX_OK, status) << "RemovePublicService";
+  status = filtered_service_directory().outgoing_directory()->AddPublicService(
+      fidl::InterfaceRequestHandler<
+          fuchsia::media::SessionAudioConsumerFactory>(
+          [&is_requested](auto request) { is_requested = true; }));
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
 
-  // |was_user_activated| needs to be set to ensure the page can play audio
-  // without user gesture.
-  load_url_params.set_was_user_activated(true);
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/play_audio.html",
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
 
-  EXPECT_TRUE(cr_fuchsia::LoadUrlAndExpectResponse(
-      navigation_controller_.get(), std::move(load_url_params),
-      "fuchsia-dir://testdata/play_audio.html"));
+  navigation_listener()->RunUntilTitleEquals("media element error");
+  EXPECT_FALSE(is_requested);
+}
 
-  cr_fuchsia::TestNavigationListener navigation_listener;
-  fidl::Binding<fuchsia::web::NavigationEventListener> listener_binding(
-      &navigation_listener);
-  frame_->SetNavigationEventListener(listener_binding.NewBinding());
-  navigation_listener.RunUntilTitleEquals("ended");
+TEST_F(WebEngineIntegrationMediaTest, PlayVideo) {
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      kAutoplayVp9OpusToEndUrl,
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+
+  navigation_listener()->RunUntilTitleEquals("ended");
+}
+
+void WebEngineIntegrationTest::RunPermissionTest(bool grant) {
+  CreateContextAndFrame(TestContextParamsWithTestData());
+
+  if (grant) {
+    GrantPermission(fuchsia::web::PermissionType::MICROPHONE,
+                    "fuchsia-dir://testdata/");
+  }
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      "fuchsia-dir://testdata/check_mic_permission.html"));
+
+  navigation_listener()->RunUntilTitleEquals(grant ? "granted" : "denied");
+}
+
+TEST_F(WebEngineIntegrationTest, PermissionDenied) {
+  RunPermissionTest(false);
+}
+
+TEST_F(WebEngineIntegrationTest, PermissionGranted) {
+  RunPermissionTest(true);
+}
+
+TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithPermission) {
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
+
+  GrantPermission(
+      fuchsia::web::PermissionType::MICROPHONE,
+      embedded_test_server_.GetURL("/").DeprecatedGetOriginAsURL().spec());
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      embedded_test_server_.GetURL("/mic.html").spec()));
+
+  navigation_listener()->RunUntilTitleEquals("ended");
+}
+
+TEST_F(WebEngineIntegrationMediaTest, MicrophoneAccess_WithoutPermission) {
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      embedded_test_server_.GetURL("/mic.html?NoPermission").spec()));
+
+  navigation_listener()->RunUntilTitleEquals("ended-NotFoundError");
+}
+
+TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_Blocked) {
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
+
+  frame_->SetBlockMediaLoading(true);
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      kAutoplayVp9OpusUrl,
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+
+  // Check different indicators that media has not loaded and is not playing.
+  navigation_listener()->RunUntilTitleEquals("stalled");
+  EXPECT_EQ(0 /*HAVE_NOTHING*/,
+            ExecuteJavaScriptWithDoubleResult("bear.readyState"));
+  EXPECT_EQ(0.0, ExecuteJavaScriptWithDoubleResult("bear.currentTime"));
+  EXPECT_FALSE(ExecuteJavaScriptWithBoolResult("isMetadataLoaded"));
+}
+
+// Initially, set media blocking to be true. When media is unblocked, check that
+// it begins playing, since autoplay=true.
+TEST_F(WebEngineIntegrationMediaTest, SetBlockMediaLoading_AfterUnblock) {
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
+
+  frame_->SetBlockMediaLoading(true);
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      kAutoplayVp9OpusUrl,
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+
+  // Check that media loading has been blocked.
+  navigation_listener()->RunUntilTitleEquals("stalled");
+
+  // Unblock media from loading and see if media loads and plays, since
+  // autoplay=true.
+  frame_->SetBlockMediaLoading(false);
+  navigation_listener()->RunUntilTitleEquals("playing");
+  EXPECT_TRUE(ExecuteJavaScriptWithBoolResult("isMetadataLoaded"));
+}
+
+// Check that when autoplay=false and media loading was blocked after the
+// element has started loading that media will play when play() is called.
+TEST_F(WebEngineIntegrationMediaTest,
+       SetBlockMediaLoading_SetBlockedAfterLoading) {
+  CreateContextAndFrame(ContextParamsWithAudioAndTestData());
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      kLoadVp9OpusUrl, cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+
+  navigation_listener()->RunUntilTitleEquals("loaded");
+  frame_->SetBlockMediaLoading(true);
+  cr_fuchsia::ExecuteJavaScript(frame_.get(), "bear.play()");
+  navigation_listener()->RunUntilTitleEquals("playing");
+}
+
+TEST_F(WebEngineIntegrationTest, WebGLContextAbsentWithoutVulkanFeature) {
+  CreateContextAndFrame(TestContextParams());
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      embedded_test_server_.GetURL("/webgl_presence.html").spec()));
+
+  navigation_listener()->RunUntilLoaded();
+
+  EXPECT_EQ(navigation_listener()->title(), "absent");
+}
+
+#if defined(ARCH_CPU_ARM_FAMILY)
+// TODO(crbug.com/1058247): Support Vulkan in tests on ARM64.
+#define MAYBE_VulkanWebEngineIntegrationTest \
+  DISABLED_VulkanWebEngineIntegrationTest
+#else
+#define MAYBE_VulkanWebEngineIntegrationTest VulkanWebEngineIntegrationTest
+#endif
+class MAYBE_VulkanWebEngineIntegrationTest
+    : public WebEngineIntegrationMediaTest {};
+
+TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
+       WebGLContextPresentWithVulkanFeature) {
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+  create_params.set_features(fuchsia::web::ContextFeatureFlags::VULKAN);
+  CreateContextAndFrame(std::move(create_params));
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      embedded_test_server_.GetURL("/webgl_presence.html").spec()));
+
+  navigation_listener()->RunUntilLoaded();
+
+  EXPECT_EQ(navigation_listener()->title(), "present");
+}
+
+// Does not start WebEngine automatically as one of the tests requires manually
+// starting it.
+class WebEngineIntegrationCameraTest : public WebEngineIntegrationTestBase {
+ protected:
+  WebEngineIntegrationCameraTest() = default;
+
+  void RunCameraTest(bool grant_permission);
+};
+
+void WebEngineIntegrationCameraTest::RunCameraTest(bool grant_permission) {
+  fuchsia::web::CreateContextParams create_params = TestContextParams();
+
+  media::FakeCameraDeviceWatcher fake_camera_device_watcher(
+      filtered_service_directory().outgoing_directory());
+
+  CreateContextAndFrame(std::move(create_params));
+
+  if (grant_permission) {
+    GrantPermission(
+        fuchsia::web::PermissionType::CAMERA,
+        embedded_test_server_.GetURL("/").DeprecatedGetOriginAsURL().spec());
+  }
+
+  const char* url =
+      grant_permission ? "/camera.html" : "/camera.html?NoPermission";
+  ASSERT_NO_FATAL_FAILURE(
+      LoadUrlAndExpectResponse(embedded_test_server_.GetURL(url).spec()));
+
+  navigation_listener()->RunUntilTitleEquals("ended");
+}
+
+TEST_F(WebEngineIntegrationCameraTest, CameraAccess_WithPermission) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
+  RunCameraTest(/*grant_permission=*/true);
+}
+
+TEST_F(WebEngineIntegrationCameraTest, CameraAccess_WithoutPermission) {
+  StartWebEngine(base::CommandLine(base::CommandLine::NO_PROGRAM));
+  RunCameraTest(/*grant_permission=*/false);
+}
+
+TEST_F(WebEngineIntegrationCameraTest, CameraNoVideoCaptureProcess) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitchASCII("disable-features", "MojoVideoCapture");
+  StartWebEngine(std::move(command_line));
+  RunCameraTest(/*grant_permission=*/true);
+}
+
+// Check that when the ContextFeatureFlag HARDWARE_VIDEO_DECODER is
+// provided that the CodecFactory service is connected to.
+TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
+       HardwareVideoDecoderFlag_Provided) {
+  // Check that the CodecFactory service is requested.
+  base::RunLoop codec_connected_run_loop;
+  zx_status_t status =
+      filtered_service_directory().outgoing_directory()->AddPublicService(
+          fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
+              [&codec_connected_run_loop](auto request) {
+                codec_connected_run_loop.Quit();
+              }));
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
+
+  // The VULKAN flag is required for hardware video decoders to be available.
+  fuchsia::web::CreateContextParams create_params =
+      ContextParamsWithAudioAndTestData();
+  create_params.set_features(
+      fuchsia::web::ContextFeatureFlags::VULKAN |
+      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
+      fuchsia::web::ContextFeatureFlags::AUDIO);
+  CreateContextAndFrame(std::move(create_params));
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      kAutoplayVp9OpusToEndUrl,
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+  codec_connected_run_loop.Run();
+}
+
+// Check that the CodecFactory service is not requested when
+// HARDWARE_VIDEO_DECODER is not provided.
+// The video should use software decoders and still play.
+TEST_F(WebEngineIntegrationMediaTest, HardwareVideoDecoderFlag_NotProvided) {
+  bool is_requested = false;
+  zx_status_t status =
+      filtered_service_directory().outgoing_directory()->AddPublicService(
+          fidl::InterfaceRequestHandler<fuchsia::mediacodec::CodecFactory>(
+              [&is_requested](auto request) { is_requested = true; }));
+  ZX_CHECK(status == ZX_OK, status) << "AddPublicService";
+
+  fuchsia::web::CreateContextParams create_params =
+      ContextParamsWithAudioAndTestData();
+  CreateContextAndFrame(std::move(create_params));
+
+  ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
+      kAutoplayVp9OpusToEndUrl,
+      cr_fuchsia::CreateLoadUrlParamsWithUserActivation()));
+
+  navigation_listener()->RunUntilTitleEquals("ended");
+
+  EXPECT_FALSE(is_requested);
 }

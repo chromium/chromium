@@ -8,7 +8,8 @@
 
 #include <limits>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/numerics/safe_conversions.h"
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkRect.h"
 #include "third_party/skia/include/core/SkScalar.h"
@@ -16,10 +17,9 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
-#include "ui/gfx/geometry/safe_integer_conversions.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/scoped_canvas.h"
-#include "ui/gfx/skia_util.h"
 
 namespace gfx {
 
@@ -99,10 +99,10 @@ void NineImagePainter::Paint(Canvas* canvas,
 
   // Since the drawing from the following Fill() calls assumes the mapped origin
   // is at (0,0), we need to translate the canvas to the mapped origin.
-  const int left_in_pixels = ToRoundedInt(bounds.x() * scale);
-  const int top_in_pixels = ToRoundedInt(bounds.y() * scale);
-  const int right_in_pixels = ToRoundedInt(bounds.right() * scale);
-  const int bottom_in_pixels = ToRoundedInt(bounds.bottom() * scale);
+  const int left_in_pixels = base::ClampRound(bounds.x() * scale);
+  const int top_in_pixels = base::ClampRound(bounds.y() * scale);
+  const int right_in_pixels = base::ClampRound(bounds.right() * scale);
+  const int bottom_in_pixels = base::ClampRound(bounds.bottom() * scale);
 
   const int width_in_pixels = right_in_pixels - left_in_pixels;
   const int height_in_pixels = bottom_in_pixels - top_in_pixels;

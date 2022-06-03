@@ -9,15 +9,25 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
+#include "ash/shelf/hotseat_widget.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/message_center/fullscreen_notification_blocker.h"
+#include "ash/system/message_center/message_center_constants.h"
+#include "ash/system/message_center/message_view_factory.h"
+#include "ash/system/message_center/metrics_utils.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/tray/tray_utils.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/work_area_insets.h"
 #include "base/i18n/rtl.h"
+#include "base/metrics/histogram_functions.h"
+#include "ui/compositor/compositor.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
+#include "ui/message_center/views/message_popup_view.h"
 #include "ui/wm/core/shadow_types.h"
 
 namespace ash {
@@ -25,6 +35,11 @@ namespace ash {
 namespace {
 
 const int kToastMarginX = 7;
+
+void ReportPopupAnimationSmoothness(int smoothness) {
+  base::UmaHistogramPercentage("Ash.NotificationPopup.AnimationSmoothness",
+                               smoothness);
+}
 
 }  // namespace
 
@@ -38,11 +53,10 @@ AshMessagePopupCollection::AshMessagePopupCollection(Shelf* shelf)
 }
 
 AshMessagePopupCollection::~AshMessagePopupCollection() {
-  if (screen_)
-    screen_->RemoveObserver(this);
   shelf_->RemoveObserver(this);
   for (views::Widget* widget : tracked_widgets_)
     widget->RemoveObserver(this);
+  CHECK(!views::WidgetObserver::IsInObserverList());
 }
 
 void AshMessagePopupCollection::StartObserving(
@@ -50,7 +64,7 @@ void AshMessagePopupCollection::StartObserving(
     const display::Display& display) {
   screen_ = screen;
   work_area_ = display.work_area();
-  screen->AddObserver(this);
+  display_observer_.emplace(this);
   if (tray_bubble_height_ > 0)
     UpdateWorkArea();
 }
@@ -89,7 +103,13 @@ int AshMessagePopupCollection::GetToastOriginX(
 }
 
 int AshMessagePopupCollection::GetBaseline() const {
-  return work_area_.bottom() - kUnifiedMenuPadding - tray_bubble_height_;
+  gfx::Insets tray_bubble_insets = GetTrayBubbleInsets();
+  int hotseat_height =
+      shelf_->hotseat_widget()->state() == HotseatState::kExtended
+          ? shelf_->hotseat_widget()->GetHotseatSize()
+          : 0;
+  return work_area_.bottom() - tray_bubble_insets.bottom() -
+         tray_bubble_height_ - hotseat_height;
 }
 
 gfx::Rect AshMessagePopupCollection::GetWorkArea() const {
@@ -120,12 +140,13 @@ void AshMessagePopupCollection::ConfigureWidgetInitParamsForContainer(
   init_params->shadow_elevation = ::wm::kShadowElevationInactiveWindow;
   // On ash, popups go in the status container.
   init_params->parent = shelf_->GetWindow()->GetRootWindow()->GetChildById(
-      kShellWindowId_ShelfControlContainer);
+      kShellWindowId_ShelfContainer);
 
   // Make the widget activatable so it can receive focus when cycling through
   // windows (i.e. pressing ctrl + forward/back).
-  init_params->activatable = views::Widget::InitParams::ACTIVATABLE_YES;
+  init_params->activatable = views::Widget::InitParams::Activatable::kYes;
   init_params->name = kMessagePopupWidgetName;
+  init_params->corner_radius = kMessagePopupCornerRadius;
   Shell::Get()->focus_cycler()->AddWidget(widget);
   widget->AddObserver(this);
   tracked_widgets_.insert(widget);
@@ -134,6 +155,85 @@ void AshMessagePopupCollection::ConfigureWidgetInitParamsForContainer(
 bool AshMessagePopupCollection::IsPrimaryDisplayForNotification() const {
   return screen_ &&
          GetCurrentDisplay().id() == screen_->GetPrimaryDisplay().id();
+}
+
+bool AshMessagePopupCollection::BlockForMixedFullscreen(
+    const message_center::Notification& notification) const {
+  return FullscreenNotificationBlocker::BlockForMixedFullscreen(
+      notification, RootWindowController::ForWindow(shelf_->GetWindow())
+                        ->IsInFullscreenMode());
+}
+
+void AshMessagePopupCollection::NotifyPopupAdded(
+    message_center::MessagePopupView* popup) {
+  MessagePopupCollection::NotifyPopupAdded(popup);
+  popup->message_view()->AddObserver(this);
+  metrics_utils::LogPopupShown(popup->message_view()->notification_id());
+  last_pop_up_added_ = popup;
+}
+
+void AshMessagePopupCollection::NotifyPopupClosed(
+    message_center::MessagePopupView* popup) {
+  MessagePopupCollection::NotifyPopupClosed(popup);
+  popup->message_view()->RemoveObserver(this);
+  if (last_pop_up_added_ == popup)
+    last_pop_up_added_ = nullptr;
+}
+
+void AshMessagePopupCollection::AnimationStarted() {
+  if (popups_animating_ == 0 && last_pop_up_added_) {
+    // Since all the popup widgets use the same compositor, we only need to set
+    // this when the first popup shows in the animation sequence.
+    animation_tracker_.emplace(last_pop_up_added_->GetWidget()
+                                   ->GetCompositor()
+                                   ->RequestNewThroughputTracker());
+    animation_tracker_->Start(metrics_util::ForSmoothness(
+        base::BindRepeating(&ReportPopupAnimationSmoothness)));
+  }
+  ++popups_animating_;
+}
+
+void AshMessagePopupCollection::AnimationFinished() {
+  --popups_animating_;
+  // Stop when all animations are finished.
+  if (animation_tracker_ && popups_animating_ == 0) {
+    animation_tracker_->Stop();
+    animation_tracker_.reset();
+  }
+}
+
+message_center::MessagePopupView* AshMessagePopupCollection::CreatePopup(
+    const message_center::Notification& notification) {
+  bool a11_feedback_on_init =
+      notification.rich_notification_data()
+          .should_make_spoken_feedback_for_popup_updates;
+  return new message_center::MessagePopupView(
+      MessageViewFactory::Create(notification, /*shown_in_popup=*/true)
+          .release(),
+      this, a11_feedback_on_init);
+}
+
+void AshMessagePopupCollection::OnSlideOut(const std::string& notification_id) {
+  metrics_utils::LogClosedByUser(notification_id, /*is_swipe=*/true,
+                                 /*is_popup=*/true);
+}
+
+void AshMessagePopupCollection::OnCloseButtonPressed(
+    const std::string& notification_id) {
+  metrics_utils::LogClosedByUser(notification_id, /*is_swipe=*/false,
+                                 /*is_popup=*/true);
+}
+
+void AshMessagePopupCollection::OnSettingsButtonPressed(
+    const std::string& notification_id) {
+  metrics_utils::LogSettingsShown(notification_id, /*is_slide_controls=*/false,
+                                  /*is_popup=*/true);
+}
+
+void AshMessagePopupCollection::OnSnoozeButtonPressed(
+    const std::string& notification_id) {
+  metrics_utils::LogSnoozed(notification_id, /*is_slide_controls=*/false,
+                            /*is_popup=*/true);
 }
 
 ShelfAlignment AshMessagePopupCollection::GetAlignment() const {
@@ -161,6 +261,11 @@ void AshMessagePopupCollection::UpdateWorkArea() {
 
 void AshMessagePopupCollection::OnShelfWorkAreaInsetsChanged() {
   UpdateWorkArea();
+}
+
+void AshMessagePopupCollection::OnHotseatStateChanged(HotseatState old_state,
+                                                      HotseatState new_state) {
+  ResetBounds();
 }
 
 ///////////////////////////////////////////////////////////////////////////////

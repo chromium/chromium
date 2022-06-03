@@ -12,8 +12,7 @@
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace apdu {
 
@@ -26,18 +25,23 @@ class COMPONENT_EXPORT(APDU) ApduResponse {
   enum class Status : uint16_t {
     SW_NO_ERROR = 0x9000,
     SW_CONDITIONS_NOT_SATISFIED = 0x6985,
+    SW_COMMAND_NOT_ALLOWED = 0x6986,
     SW_WRONG_DATA = 0x6A80,
     SW_WRONG_LENGTH = 0x6700,
     SW_INS_NOT_SUPPORTED = 0x6D00,
   };
 
   // Create a APDU response from the serialized message.
-  static base::Optional<ApduResponse> CreateFromMessage(
+  static absl::optional<ApduResponse> CreateFromMessage(
       base::span<const uint8_t> data);
 
   ApduResponse(std::vector<uint8_t> data, Status response_status);
   ApduResponse(ApduResponse&& that);
   ApduResponse& operator=(ApduResponse&& that);
+
+  ApduResponse(const ApduResponse&) = delete;
+  ApduResponse& operator=(const ApduResponse&) = delete;
+
   ~ApduResponse();
 
   std::vector<uint8_t> GetEncodedResponse() const;
@@ -50,8 +54,6 @@ class COMPONENT_EXPORT(APDU) ApduResponse {
 
   std::vector<uint8_t> data_;
   Status response_status_;
-
-  DISALLOW_COPY_AND_ASSIGN(ApduResponse);
 };
 
 }  // namespace apdu

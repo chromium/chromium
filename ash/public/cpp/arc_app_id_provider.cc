@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/arc_app_id_provider.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 

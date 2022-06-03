@@ -27,10 +27,10 @@ class MODULES_EXPORT ContentIndexIconLoader final
 
   void Start(ExecutionContext* execution_context,
              mojom::blink::ContentDescriptionPtr description,
-             const Vector<WebSize>& icon_sizes,
+             const Vector<gfx::Size>& icon_sizes,
              IconsCallback callback);
 
-  void Trace(Visitor* visitor) {}
+  void Trace(Visitor* visitor) const {}
 
  private:
   void DidGetIcons(mojom::blink::ContentDescriptionPtr description,

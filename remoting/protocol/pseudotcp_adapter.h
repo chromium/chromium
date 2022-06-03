@@ -31,6 +31,10 @@ class P2PDatagramSocket;
 class PseudoTcpAdapter : public P2PStreamSocket {
  public:
   explicit PseudoTcpAdapter(std::unique_ptr<P2PDatagramSocket> socket);
+
+  PseudoTcpAdapter(const PseudoTcpAdapter&) = delete;
+  PseudoTcpAdapter& operator=(const PseudoTcpAdapter&) = delete;
+
   ~PseudoTcpAdapter() override;
 
   // P2PStreamSocket implementation.
@@ -43,7 +47,10 @@ class PseudoTcpAdapter : public P2PStreamSocket {
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation) override;
 
-  int Connect(net::CompletionOnceCallback callback);
+  // If the connection succeeds, this will take ownership of |callback| and
+  // return a null callback. If it fails, |callback| will be passed back to the
+  // caller.
+  net::CompletionOnceCallback Connect(net::CompletionOnceCallback callback);
 
   // Set receive and send buffer sizes.
   int SetReceiveBufferSize(int32_t size);
@@ -81,8 +88,6 @@ class PseudoTcpAdapter : public P2PStreamSocket {
   net::NetLogWithSource net_log_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(PseudoTcpAdapter);
 };
 
 }  // namespace protocol

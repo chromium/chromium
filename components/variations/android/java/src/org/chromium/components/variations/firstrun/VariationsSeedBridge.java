@@ -8,9 +8,6 @@ import android.util.Base64;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
-import org.chromium.components.variations.firstrun.VariationsSeedFetcher.SeedInfo;
-
-import java.text.ParseException;
 
 /**
  * VariationsSeedBridge is a class which is used to pass variations first run seed that was fetched
@@ -22,7 +19,6 @@ public class VariationsSeedBridge {
     protected static final String VARIATIONS_FIRST_RUN_SEED_BASE64 = "variations_seed_base64";
     protected static final String VARIATIONS_FIRST_RUN_SEED_SIGNATURE = "variations_seed_signature";
     protected static final String VARIATIONS_FIRST_RUN_SEED_COUNTRY = "variations_seed_country";
-    protected static final String VARIATIONS_FIRST_RUN_SEED_DATE_HEADER = "variations_seed_date";
     protected static final String VARIATIONS_FIRST_RUN_SEED_DATE = "variations_seed_date_ms";
     protected static final String VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED =
             "variations_seed_is_gzip_compressed";
@@ -62,7 +58,6 @@ public class VariationsSeedBridge {
                 .remove(VARIATIONS_FIRST_RUN_SEED_SIGNATURE)
                 .remove(VARIATIONS_FIRST_RUN_SEED_COUNTRY)
                 .remove(VARIATIONS_FIRST_RUN_SEED_DATE)
-                .remove(VARIATIONS_FIRST_RUN_SEED_DATE_HEADER)
                 .remove(VARIATIONS_FIRST_RUN_SEED_IS_GZIP_COMPRESSED)
                 .apply();
     }
@@ -79,6 +74,7 @@ public class VariationsSeedBridge {
     /**
      * Returns the status of the variations seed storing on the C++ side: was it successful or not.
      */
+    @CalledByNative
     public static boolean hasNativePref() {
         return ContextUtils.getAppSharedPreferences().getBoolean(
                 VARIATIONS_FIRST_RUN_SEED_NATIVE_STORED, false);
@@ -110,21 +106,7 @@ public class VariationsSeedBridge {
 
     @CalledByNative
     private static long getVariationsFirstRunSeedDate() {
-        long date =
-                ContextUtils.getAppSharedPreferences().getLong(VARIATIONS_FIRST_RUN_SEED_DATE, 0);
-        if (date > 0) return date;
-        // VARIATIONS_FIRST_RUN_SEED_DATE_HEADER is deprecated in favor of
-        // VARIATIONS_FIRST_RUN_SEED_DATE, but fall back on the old value in case the prefs were
-        // written by an old version.
-        // TODO(crbug.com/1013390): Remove this fallback logic.
-        String header = getVariationsFirstRunSeedPref(VARIATIONS_FIRST_RUN_SEED_DATE_HEADER);
-        if (header.isEmpty()) return 0;
-        try {
-            return SeedInfo.parseDateHeader(header);
-        } catch (ParseException e) {
-            // Shouldn't happen as the date will have been verified in VariationsSeedFetcher.
-            throw new RuntimeException("Invalid date in first run seed pref", e);
-        }
+        return ContextUtils.getAppSharedPreferences().getLong(VARIATIONS_FIRST_RUN_SEED_DATE, 0);
     }
 
     @CalledByNative

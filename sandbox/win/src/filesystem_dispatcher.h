@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_FILESYSTEM_DISPATCHER_H__
-#define SANDBOX_SRC_FILESYSTEM_DISPATCHER_H__
+#ifndef SANDBOX_WIN_SRC_FILESYSTEM_DISPATCHER_H_
+#define SANDBOX_WIN_SRC_FILESYSTEM_DISPATCHER_H_
 
 #include <stdint.h>
 
@@ -20,6 +20,10 @@ namespace sandbox {
 class FilesystemDispatcher : public Dispatcher {
  public:
   explicit FilesystemDispatcher(PolicyBase* policy_base);
+
+  FilesystemDispatcher(const FilesystemDispatcher&) = delete;
+  FilesystemDispatcher& operator=(const FilesystemDispatcher&) = delete;
+
   ~FilesystemDispatcher() override {}
 
   // Dispatcher interface.
@@ -68,9 +72,8 @@ class FilesystemDispatcher : public Dispatcher {
                             uint32_t info_class);
 
   PolicyBase* policy_base_;
-  DISALLOW_COPY_AND_ASSIGN(FilesystemDispatcher);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_FILESYSTEM_DISPATCHER_H__
+#endif  // SANDBOX_WIN_SRC_FILESYSTEM_DISPATCHER_H_

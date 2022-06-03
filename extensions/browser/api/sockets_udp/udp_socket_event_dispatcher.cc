@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/lazy_instance.h"
-#include "base/task/post_task.h"
-#include "content/public/browser/browser_task_traits.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/api/socket/udp_socket.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extensions_browser_client.h"
@@ -123,8 +123,7 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     receive_info.data.assign(io_buffer->data(), io_buffer->data() + bytes_read);
     receive_info.remote_address = address;
     receive_info.remote_port = port;
-    std::unique_ptr<base::ListValue> args =
-        sockets_udp::OnReceive::Create(receive_info);
+    auto args = sockets_udp::OnReceive::Create(receive_info);
     std::unique_ptr<Event> event(new Event(events::SOCKETS_UDP_ON_RECEIVE,
                                            sockets_udp::OnReceive::kEventName,
                                            std::move(args)));
@@ -132,8 +131,8 @@ void UDPSocketEventDispatcher::ReceiveCallback(
 
     // Post a task to delay the read until the socket is available, as
     // calling StartReceive at this point would error with ERR_IO_PENDING.
-    base::PostTask(
-        FROM_HERE, {params.thread_id},
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
         base::BindOnce(&UDPSocketEventDispatcher::StartReceive, params));
   } else if (bytes_read == net::ERR_IO_PENDING) {
     // This happens when resuming a socket which already had an
@@ -147,8 +146,7 @@ void UDPSocketEventDispatcher::ReceiveCallback(
     sockets_udp::ReceiveErrorInfo receive_error_info;
     receive_error_info.socket_id = params.socket_id;
     receive_error_info.result_code = bytes_read;
-    std::unique_ptr<base::ListValue> args =
-        sockets_udp::OnReceiveError::Create(receive_error_info);
+    auto args = sockets_udp::OnReceiveError::Create(receive_error_info);
     std::unique_ptr<Event> event(
         new Event(events::SOCKETS_UDP_ON_RECEIVE_ERROR,
                   sockets_udp::OnReceiveError::kEventName, std::move(args)));
@@ -171,8 +169,8 @@ void UDPSocketEventDispatcher::PostEvent(const ReceiveParams& params,
                                          std::unique_ptr<Event> event) {
   DCHECK_CURRENTLY_ON(params.thread_id);
 
-  base::PostTask(FROM_HERE, {BrowserThread::UI},
-                 base::BindOnce(&DispatchEvent, params.browser_context_id,
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&DispatchEvent, params.browser_context_id,
                                 params.extension_id, std::move(event)));
 }
 

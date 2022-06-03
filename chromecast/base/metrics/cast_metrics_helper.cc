@@ -8,13 +8,14 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/user_metrics.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_split.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "chromecast/base/metrics/cast_histograms.h"
 #include "chromecast/base/metrics/grouped_histogram.h"
@@ -35,7 +36,7 @@ namespace {
 
 const char kMetricsNameAppInfoDelimiter = '#';
 
-constexpr base::TimeDelta kAppLoadTimeout = base::TimeDelta::FromMinutes(5);
+constexpr base::TimeDelta kAppLoadTimeout = base::Minutes(5);
 
 }  // namespace
 
@@ -190,7 +191,7 @@ void CastMetricsHelper::LogTimeToFirstAudio() {
 void CastMetricsHelper::LogTimeToBufferAv(BufferingType buffering_type,
                                           base::TimeDelta time) {
   MAKE_SURE_SEQUENCE(LogTimeToBufferAv, buffering_type, time);
-  if (time < base::TimeDelta()) {
+  if (time.is_negative()) {
     LOG(WARNING) << "Negative time";
     return;
   }
@@ -205,12 +206,8 @@ void CastMetricsHelper::LogTimeToBufferAv(BufferingType buffering_type,
   // Histogram from 250ms to 30s with 50 buckets.
   // The ratio between 2 consecutive buckets is:
   // exp( (ln(30000) - ln(250)) / 50 ) = 1.1
-  LogTimeHistogramEvent(
-      uma_name,
-      time,
-      base::TimeDelta::FromMilliseconds(250),
-      base::TimeDelta::FromMilliseconds(30000),
-      50);
+  LogTimeHistogramEvent(uma_name, time, base::Milliseconds(250),
+                        base::Milliseconds(30000), 50);
 }
 
 std::string CastMetricsHelper::GetMetricsNameWithAppName(
@@ -284,16 +281,14 @@ void CastMetricsHelper::LogTimeHistogramEvent(const std::string& name,
 void CastMetricsHelper::LogMediumTimeHistogramEvent(const std::string& name,
                                                     base::TimeDelta value) {
   // Follow UMA_HISTOGRAM_MEDIUM_TIMES definition.
-  LogTimeHistogramEvent(name, value,
-                        base::TimeDelta::FromMilliseconds(10),
-                        base::TimeDelta::FromMinutes(3),
+  LogTimeHistogramEvent(name, value, base::Milliseconds(10), base::Minutes(3),
                         50);
 }
 
 base::Value CastMetricsHelper::CreateEventBase(const std::string& name) {
   base::Value cast_event(base::Value::Type::DICTIONARY);
   cast_event.SetKey("name", base::Value(name));
-  const double time = (Now() - base::TimeTicks()).InMicroseconds();
+  const double time = (Now() - base::TimeTicks()).InMicrosecondsF();
   cast_event.SetKey("time", base::Value(time));
   return cast_event;
 }
@@ -331,6 +326,22 @@ void CastMetricsHelper::RecordApplicationEventWithValue(
   cast_event.SetKey("app_id", base::Value(app_id_));
   cast_event.SetKey("session_id", base::Value(session_id_));
   cast_event.SetKey("sdk_version", base::Value(sdk_version_));
+  cast_event.SetKey("value", base::Value(value));
+  std::string message;
+  base::JSONWriter::Write(cast_event, &message);
+  RecordSimpleAction(message);
+}
+
+void CastMetricsHelper::RecordApplicationEventWithValue(
+    const std::string& app_id,
+    const std::string& session_id,
+    const std::string& sdk_version,
+    const std::string& event,
+    int value) {
+  base::Value cast_event = CreateEventBase(event);
+  cast_event.SetKey("app_id", base::Value(app_id));
+  cast_event.SetKey("session_id", base::Value(session_id));
+  cast_event.SetKey("sdk_version", base::Value(sdk_version));
   cast_event.SetKey("value", base::Value(value));
   std::string message;
   base::JSONWriter::Write(cast_event, &message);

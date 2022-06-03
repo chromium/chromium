@@ -8,6 +8,10 @@
 #include "base/component_export.h"
 #include "base/observer_list_types.h"
 
+namespace base {
+class TimeDelta;
+}
+
 namespace system_media_controls {
 
 // Interface to observe events on the SystemMediaControls.
@@ -25,6 +29,7 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsObserver
   virtual void OnPause() = 0;
   virtual void OnPlayPause() = 0;
   virtual void OnStop() = 0;
+  virtual void OnSeekTo(const base::TimeDelta& time) = 0;
 
  protected:
   ~SystemMediaControlsObserver() override = default;

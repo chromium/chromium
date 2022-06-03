@@ -12,7 +12,8 @@ namespace {
 const double kSecondsPerWeek =
     base::Time::kMicrosecondsPerWeek / base::Time::kMicrosecondsPerSecond;
 // Used for validation in debug build.  Week numbers are > 2300 as of year 2016.
-const int kReasonableMinWeek = 2000;
+// TODO(donnd): reenable this const.  https://crbug.com/1094008. See below.
+// const int kReasonableMinWeek = 2000;
 
 }  // namespace
 
@@ -23,7 +24,9 @@ CtrAggregator::CtrAggregator(WeeklyActivityStorage& storage)
   base::Time now = base::Time::NowFromSystemTime();
   double now_in_seconds = now.ToDoubleT();
   week_number_ = now_in_seconds / kSecondsPerWeek;
-  DCHECK(week_number_ >= kReasonableMinWeek);
+  // TODO(donnd): reenable this DCHECK.  Some bots have bad clocks or time
+  // settings, causing flaky test failures. https://crbug.com/1094008.
+  // DCHECK(week_number_ >= kReasonableMinWeek);
   // NOTE: This initialization may callback into the storage implementation so
   // that needs to be fully initialized when constructing this aggregator.
   storage_.AdvanceToWeek(week_number_);

@@ -12,25 +12,6 @@ namespace autofill {
 
 const char kSettingsOrigin[] = "Chrome settings";
 
-size_t MinRequiredFieldsForHeuristics() {
-  return base::FeatureList::IsEnabled(
-             autofill::features::kAutofillEnforceMinRequiredFieldsForHeuristics)
-             ? 3
-             : 1;
-}
-size_t MinRequiredFieldsForQuery() {
-  return base::FeatureList::IsEnabled(
-             autofill::features::kAutofillEnforceMinRequiredFieldsForQuery)
-             ? 3
-             : 1;
-}
-size_t MinRequiredFieldsForUpload() {
-  return base::FeatureList::IsEnabled(
-             autofill::features::kAutofillEnforceMinRequiredFieldsForUpload)
-             ? 3
-             : 1;
-}
-
 bool IsAutofillEntryWithUseDateDeletable(const base::Time& use_date) {
   return use_date < AutofillClock::Now() - kDisusedDataModelDeletionTimeDelta;
 }

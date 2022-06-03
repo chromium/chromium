@@ -7,14 +7,14 @@
 #include <taskschd.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/test_timeouts.h"
@@ -101,9 +101,9 @@ TEST_F(TaskSchedulerTests, RunAProgramNow) {
 
   // Create a unique name for a shared event to be waited for in this process
   // and signaled in the test process to confirm it was scheduled and ran.
-  const base::string16 event_name =
+  const std::wstring event_name =
       base::StrCat({kTestProcessExecutableName, L"-",
-                    base::NumberToString16(::GetCurrentProcessId())});
+                    base::NumberToWString(::GetCurrentProcessId())});
   base::WaitableEvent event(base::win::ScopedHandle(
       ::CreateEvent(nullptr, FALSE, FALSE, event_name.c_str())));
   ASSERT_NE(event.handle(), nullptr);
@@ -130,8 +130,8 @@ TEST_F(TaskSchedulerTests, Hourly) {
                                     TaskScheduler::TRIGGER_TYPE_HOURLY, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  base::TimeDelta one_hour(base::TimeDelta::FromHours(1));
-  base::TimeDelta one_minute(base::TimeDelta::FromMinutes(1));
+  base::TimeDelta one_hour(base::Hours(1));
+  base::TimeDelta one_minute(base::Minutes(1));
 
   base::Time next_run_time;
   EXPECT_TRUE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
@@ -155,8 +155,8 @@ TEST_F(TaskSchedulerTests, EverySixHours) {
       TaskScheduler::TRIGGER_TYPE_EVERY_SIX_HOURS, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  base::TimeDelta six_hours(base::TimeDelta::FromHours(6));
-  base::TimeDelta one_minute(base::TimeDelta::FromMinutes(1));
+  base::TimeDelta six_hours(base::Hours(6));
+  base::TimeDelta one_minute(base::Minutes(1));
 
   base::Time next_run_time;
   EXPECT_TRUE(task_scheduler_->GetNextTaskRunTime(kTaskName1, &next_run_time));
@@ -205,7 +205,7 @@ TEST_F(TaskSchedulerTests, GetTaskNameList) {
                                     TaskScheduler::TRIGGER_TYPE_HOURLY, false));
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName2));
 
-  std::vector<base::string16> task_names;
+  std::vector<std::wstring> task_names;
   EXPECT_TRUE(task_scheduler_->GetTaskNameList(&task_names));
   EXPECT_TRUE(base::Contains(task_names, kTaskName1));
   EXPECT_TRUE(base::Contains(task_names, kTaskName2));
@@ -226,7 +226,7 @@ TEST_F(TaskSchedulerTests, GetTasksIncludesHidden) {
 
   EXPECT_TRUE(task_scheduler_->IsTaskRegistered(kTaskName1));
 
-  std::vector<base::string16> task_names;
+  std::vector<std::wstring> task_names;
   EXPECT_TRUE(task_scheduler_->GetTaskNameList(&task_names));
   EXPECT_TRUE(base::Contains(task_names, kTaskName1));
 

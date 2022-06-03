@@ -5,7 +5,7 @@ if (window.testRunner)
     testRunner.dumpAsText();
 
 function func() {
-    div1.createShadowRoot().innerHTML="<style></style>";
+    div1.attachShadow({mode: 'open'}).innerHTML="<style></style>";
 
     var doc0 = document.implementation.createDocument("http://www.w3.org/2000/svg", "svg", null);
     var doc1 = document.implementation.createDocument("", null);

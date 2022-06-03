@@ -19,10 +19,6 @@
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_prompt_actions_win.h"
 #include "components/component_updater/component_updater_service.h"
 
-namespace extensions {
-class ExtensionRegistry;
-}
-
 namespace safe_browsing {
 
 // Delegate class that provides services to the ChromeCleanerController class
@@ -49,12 +45,19 @@ class ChromeCleanerControllerDelegate {
 
   // Starts the reboot prompt flow if a cleanup requires a machine restart.
   virtual void StartRebootPromptFlow(ChromeCleanerController* controller);
+
+  // Checks if the cleaner is allowed to run by enterprise policy.
+  virtual bool IsAllowedByPolicy();
 };
 
 class ChromeCleanerControllerImpl : public ChromeCleanerController {
  public:
   // Returns the global controller object.
   static ChromeCleanerControllerImpl* GetInstance();
+
+  ChromeCleanerControllerImpl(const ChromeCleanerControllerImpl&) = delete;
+  ChromeCleanerControllerImpl& operator=(const ChromeCleanerControllerImpl&) =
+      delete;
 
   // ChromeCleanerController overrides.
   State state() const override;
@@ -64,13 +67,13 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   void ResetIdleState() override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
+  bool HasObserver(Observer* observer) override;
   void OnReporterSequenceStarted() override;
   void OnReporterSequenceDone(SwReporterInvocationResult result) override;
   void RequestUserInitiatedScan(Profile* profile) override;
   void OnSwReporterReady(SwReporterInvocationSequence&& invocations) override;
   void Scan(const SwReporterInvocation& reporter_invocation) override;
   void ReplyWithUserResponse(Profile* profile,
-                             extensions::ExtensionService* extension_service,
                              UserResponse user_response) override;
   void Reboot() override;
   bool IsAllowedByPolicy() override;
@@ -84,6 +87,7 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   // Force the current controller's state for tests that check the effect of
   // starting and completing reporter runs.
   void SetStateForTesting(State state);
+  void SetIdleForTesting(IdleReason idle_reason);
 
  private:
   ChromeCleanerControllerImpl();
@@ -124,9 +128,6 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   // Pointer to either real_delegate_ or one set by tests.
   ChromeCleanerControllerDelegate* delegate_;
 
-  extensions::ExtensionService* extension_service_ = nullptr;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
-
   State state_ = State::kIdle;
   // Whether Cleanup is powered by an external partner.
   bool powered_by_partner_ = false;
@@ -141,7 +142,7 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   base::Time time_scanning_started_;
   base::Time time_cleanup_started_;
 
-  base::ObserverList<Observer>::Unchecked observer_list_;
+  base::ObserverList<Observer> observer_list_;
 
   // Mutex that guards |pending_invocation_type_|,
   // |on_demand_sw_reporter_fetcher_| and |cached_reporter_invocations_|.
@@ -158,8 +159,6 @@ class ChromeCleanerControllerImpl : public ChromeCleanerController {
   THREAD_CHECKER(thread_checker_);
 
   base::WeakPtrFactory<ChromeCleanerControllerImpl> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeCleanerControllerImpl);
 };
 
 }  // namespace safe_browsing

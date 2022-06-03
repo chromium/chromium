@@ -5,11 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_TWO_KEYS_ADAPTER_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_PEERCONNECTION_TWO_KEYS_ADAPTER_MAP_H_
 
-#include <map>
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 
@@ -27,10 +28,6 @@ namespace blink {
 // webrtc/blink object that was used to create the adapter and the secondary key
 // is based on the resulting blink/webrtc object after the adapter has been
 // initialized.
-//
-// TODO(crbug.com/787254): Move this class out of the Blink exposed API when
-// its clients get Onion souped, and change the use of std::map below to
-// WTF::HashMap.
 template <typename PrimaryKey, typename SecondaryKey, typename Value>
 class TwoKeysAdapterMap {
  public:
@@ -41,13 +38,13 @@ class TwoKeysAdapterMap {
   // words |!FindByPrimary(primary)| must hold.
   Value* Insert(PrimaryKey primary, Value value) {
     DCHECK(entries_by_primary_.find(primary) == entries_by_primary_.end());
-    auto it = entries_by_primary_
-                  .insert(std::make_pair(
-                      std::move(primary),
-                      std::unique_ptr<Entry>(new Entry(std::move(value)))))
-                  .first;
-    it->second->primary_it = it;
-    return &it->second->value;
+    auto* add_result =
+        entries_by_primary_
+            .insert(std::move(primary),
+                    std::unique_ptr<Entry>(new Entry(std::move(value))))
+            .stored_value;
+    add_result->value->primary_key = add_result->key;
+    return &add_result->value->value;
   }
 
   // Maps the secondary key to the value mapped by the primary key, increasing
@@ -61,11 +58,10 @@ class TwoKeysAdapterMap {
     DCHECK(it != entries_by_primary_.end());
     DCHECK(entries_by_secondary_.find(secondary) ==
            entries_by_secondary_.end());
-    Entry* entry = it->second.get();
-    entry->secondary_it =
-        entries_by_secondary_
-            .insert(std::make_pair(std::move(secondary), entry))
-            .first;
+    Entry* entry = it->value.get();
+    auto* add_result =
+        entries_by_secondary_.insert(std::move(secondary), entry).stored_value;
+    entry->secondary_key = add_result->key;
   }
 
   // Returns a pointer to the value mapped by the primary key, or null if the
@@ -75,7 +71,7 @@ class TwoKeysAdapterMap {
     auto it = entries_by_primary_.find(primary);
     if (it == entries_by_primary_.end())
       return nullptr;
-    return &it->second->value;
+    return &it->value->value;
   }
 
   // Returns a pointer to the value mapped by the secondary key, or null if the
@@ -85,7 +81,7 @@ class TwoKeysAdapterMap {
     auto it = entries_by_secondary_.find(secondary);
     if (it == entries_by_secondary_.end())
       return nullptr;
-    return &it->second->value;
+    return &it->value->value;
   }
 
   // Erases the value associated with the primary key, removing the mapping of
@@ -95,8 +91,13 @@ class TwoKeysAdapterMap {
     auto primary_it = entries_by_primary_.find(primary);
     if (primary_it == entries_by_primary_.end())
       return false;
-    if (primary_it->second->secondary_it != entries_by_secondary_.end())
-      entries_by_secondary_.erase(primary_it->second->secondary_it);
+
+    if (primary_it->value->secondary_key.has_value()) {
+      auto secondary_it =
+          entries_by_secondary_.find(*primary_it->value->secondary_key);
+      if (secondary_it != entries_by_secondary_.end())
+        entries_by_secondary_.erase(secondary_it);
+    }
     entries_by_primary_.erase(primary_it);
     return true;
   }
@@ -108,7 +109,10 @@ class TwoKeysAdapterMap {
     auto secondary_it = entries_by_secondary_.find(secondary);
     if (secondary_it == entries_by_secondary_.end())
       return false;
-    entries_by_primary_.erase(secondary_it->second->primary_it);
+
+    auto primary_it =
+        entries_by_primary_.find(secondary_it->value->primary_key);
+    entries_by_primary_.erase(primary_it);
     entries_by_secondary_.erase(secondary_it);
     return true;
   }
@@ -117,21 +121,34 @@ class TwoKeysAdapterMap {
   size_t PrimarySize() const { return entries_by_primary_.size(); }
   // The number of elements in the map which have secondary keys.
   size_t SecondarySize() const { return entries_by_secondary_.size(); }
-  bool empty() const { return entries_by_primary_.empty(); }
+  bool empty() const { return entries_by_primary_.IsEmpty(); }
 
  private:
-  // TODO(crbug.com/787254): Move this class out of the Blink exposed API when
-  // its clients get Onion souped.
   struct Entry {
     Entry(Value value) : value(std::move(value)) {}
 
     Value value;
-    typename std::map<PrimaryKey, std::unique_ptr<Entry>>::iterator primary_it;
-    typename std::map<SecondaryKey, Entry*>::iterator secondary_it;
+
+    // The primary and secondary keys are cached here, instead of the
+    // respective iterators, because WTF::HashMap invalidates iterators
+    // upon changes on the set (eg insertion, deletions).
+    //
+    // Entries are only created in TwoKeysAdapterMap::Insert, which initializes
+    // |primary_key| right afterward (so it can never be read while
+    // uninitialized).
+    PrimaryKey primary_key;
+
+    // However, for |secondary_key|, calling EraseByPrimaryKey() can
+    // read an uninitialized secondary_key in case it is left uninitialized.
+    // Hence, it is guarded with absl::optional.
+    absl::optional<SecondaryKey> secondary_key;
   };
 
-  typename std::map<PrimaryKey, std::unique_ptr<Entry>> entries_by_primary_;
-  typename std::map<SecondaryKey, Entry*> entries_by_secondary_;
+  using PrimaryMap = WTF::HashMap<PrimaryKey, std::unique_ptr<Entry>>;
+  using SecondaryMap = WTF::HashMap<SecondaryKey, Entry*>;
+
+  PrimaryMap entries_by_primary_;
+  SecondaryMap entries_by_secondary_;
 };
 
 }  // namespace blink

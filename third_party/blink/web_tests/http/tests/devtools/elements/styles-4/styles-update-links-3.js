@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that links are updated properly after disabling property.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -44,11 +44,11 @@
     function testDisableProperty(next) {
       var treeItem = ElementsTestRunner.getMatchedStylePropertyTreeItem('border');
       ElementsTestRunner.waitForStyleApplied(onPropertyDisabled);
-      treeItem._toggleDisabled(true);
+      treeItem.toggleDisabled(true);
 
-      function onPropertyDisabled() {
+      async function onPropertyDisabled() {
         TestRunner.addResult('\n\n#### AFTER PROPERTY DISABLED ####\n\n');
-        ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+        await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
         var rules = ElementsTestRunner.getMatchedRules();
         ElementsTestRunner.validateRuleRanges('container', rules, next);
       }

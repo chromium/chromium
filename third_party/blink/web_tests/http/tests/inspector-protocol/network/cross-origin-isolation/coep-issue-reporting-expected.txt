@@ -1,0 +1,137 @@
+Tests that cross-origin embedder policy (COEP) related blocking is reported correctly.
+Issue reported: {
+    code : BlockedByResponseIssue
+    details : {
+        blockedByResponseIssueDetails : {
+            blockedFrame : {
+                frameId : <string>
+            }
+            parentFrame : {
+                frameId : <string>
+            }
+            reason : CorpNotSameOriginAfterDefaultedToSameOriginByCoep
+            request : {
+                requestId : <string>
+                url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php
+            }
+        }
+    }
+}
+Issue reported: {
+    code : BlockedByResponseIssue
+    details : {
+        blockedByResponseIssueDetails : {
+            blockedFrame : {
+                frameId : <string>
+            }
+            parentFrame : {
+                frameId : <string>
+            }
+            reason : CorpNotSameOriginAfterDefaultedToSameOriginByCoep
+            request : {
+                requestId : <string>
+                url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep
+            }
+        }
+    }
+}
+Issue reported: {
+    code : BlockedByResponseIssue
+    details : {
+        blockedByResponseIssueDetails : {
+            blockedFrame : {
+                frameId : <string>
+            }
+            parentFrame : {
+                frameId : <string>
+            }
+            reason : CorpNotSameOrigin
+            request : {
+                requestId : <string>
+                url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep&corp=same-origin
+            }
+        }
+    }
+}
+Issue reported: {
+    code : BlockedByResponseIssue
+    details : {
+        blockedByResponseIssueDetails : {
+            blockedFrame : {
+                frameId : <string>
+            }
+            parentFrame : {
+                frameId : <string>
+            }
+            reason : CorpNotSameSite
+            request : {
+                requestId : <string>
+                url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coep&corp=same-site
+            }
+        }
+    }
+}
+Issue reported: {
+    code : BlockedByResponseIssue
+    details : {
+        blockedByResponseIssueDetails : {
+            blockedFrame : {
+                frameId : <string>
+            }
+            parentFrame : {
+                frameId : <string>
+            }
+            reason : CorpNotSameOriginAfterDefaultedToSameOriginByCoep
+            request : {
+                requestId : <string>
+                url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?coop
+            }
+        }
+    }
+}
+Issue reported: {
+    code : BlockedByResponseIssue
+    details : {
+        blockedByResponseIssueDetails : {
+            parentFrame : {
+                frameId : <string>
+            }
+            reason : CorpNotSameOriginAfterDefaultedToSameOriginByCoep
+            request : {
+                requestId : <string>
+                url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?script&
+            }
+        }
+    }
+}
+Issue reported: {
+    code : BlockedByResponseIssue
+    details : {
+        blockedByResponseIssueDetails : {
+            parentFrame : {
+                frameId : <string>
+            }
+            reason : CorpNotSameOrigin
+            request : {
+                requestId : <string>
+                url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?script&corp=same-origin
+            }
+        }
+    }
+}
+Issue reported: {
+    code : BlockedByResponseIssue
+    details : {
+        blockedByResponseIssueDetails : {
+            parentFrame : {
+                frameId : <string>
+            }
+            reason : CorpNotSameSite
+            request : {
+                requestId : <string>
+                url : https://devtools.oopif.test:8443/inspector-protocol/network/cross-origin-isolation/resources/page-with-coep-corp.php?script&corp=same-site
+            }
+        }
+    }
+}
+

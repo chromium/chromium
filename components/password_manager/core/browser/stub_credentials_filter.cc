@@ -10,18 +10,17 @@ StubCredentialsFilter::StubCredentialsFilter() = default;
 
 StubCredentialsFilter::~StubCredentialsFilter() = default;
 
-bool StubCredentialsFilter::ShouldSave(
-    const autofill::PasswordForm& form) const {
+bool StubCredentialsFilter::ShouldSave(const PasswordForm& form) const {
   return true;
 }
 
 bool StubCredentialsFilter::ShouldSaveGaiaPasswordHash(
-    const autofill::PasswordForm& form) const {
+    const PasswordForm& form) const {
   return false;
 }
 
 bool StubCredentialsFilter::ShouldSaveEnterprisePasswordHash(
-    const autofill::PasswordForm& form) const {
+    const PasswordForm& form) const {
   return false;
 }
 

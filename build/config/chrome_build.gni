@@ -7,15 +7,6 @@ declare_args() {
   # true means official Google Chrome branding (requires extra Google-internal
   # resources).
   is_chrome_branded = false
-
-  # Break chrome.dll into multple pieces based on process type. Only available
-  # on Windows.
-  # TODO: Remove this flag once m79 has shipped with this disabled.
-  is_multi_dll_chrome = false
-
-  # Turn this on to generate order files. See
-  # https://chromium.googlesource.com/chromium/src/+/master/docs/win_order_files.md
-  generate_order_files = false
 }
 
 declare_args() {

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -11,9 +12,7 @@ import android.content.res.Resources;
 import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffColorFilter;
-import android.os.Build;
 import android.os.Handler;
-import android.support.v4.widget.TextViewCompat;
 import android.view.View;
 import android.view.View.MeasureSpec;
 import android.view.ViewGroup;
@@ -23,10 +22,13 @@ import android.widget.TextView;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
+import androidx.core.widget.TextViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.profiles.Profile;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -62,6 +64,16 @@ public class AutofillUiUtils {
         int NOT_ENOUGH_INFO = 6;
         int NONE = 7;
     }
+
+    /**
+     * Launches the Autofill help page on top of the current @{link android.app.Activity} and
+     * current @{link Profile}.
+     */
+    public static void launchAutofillHelpPage(Activity activity, Profile profile) {
+        HelpAndFeedbackLauncherImpl.getInstance().show(
+                activity, activity.getString(R.string.help_context_autofill), profile, null);
+    }
+
     /**
      * Show Tooltip UI.
      *
@@ -76,7 +88,8 @@ public class AutofillUiUtils {
             OffsetProvider offsetProvider, View anchorView, final Runnable dismissAction) {
         TextView textView = new TextView(context);
         textView.setText(text);
-        TextViewCompat.setTextAppearance(textView, R.style.TextAppearance_WhiteBody);
+        TextViewCompat.setTextAppearance(
+                textView, R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
         Resources resources = context.getResources();
         int hPadding = resources.getDimensionPixelSize(R.dimen.autofill_tooltip_horizontal_padding);
         int vPadding = resources.getDimensionPixelSize(R.dimen.autofill_tooltip_vertical_padding);
@@ -297,10 +310,6 @@ public class AutofillUiUtils {
      */
     public static void updateColorForInputs(@ErrorType int errorType, Context context,
             EditText monthInput, EditText yearInput, EditText cvcInput) {
-        // The rest of this code makes L-specific assumptions about the background being used to
-        // draw the TextInput.
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
-
         ColorFilter filter =
                 new PorterDuffColorFilter(ApiCompatibilityUtils.getColor(context.getResources(),
                                                   R.color.input_underline_error_color),

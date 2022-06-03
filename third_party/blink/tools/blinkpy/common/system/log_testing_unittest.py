@@ -9,7 +9,6 @@ from blinkpy.common.system.log_testing import LoggingTestCase, LogTesting, TestL
 
 
 class TestLogStreamTest(unittest.TestCase):
-
     def test_passed_to_stream_handler(self):
         stream = TestLogStream(self)
         handler = logging.StreamHandler(stream)
@@ -27,7 +26,6 @@ class TestLogStreamTest(unittest.TestCase):
 
 
 class LogTestingTest(unittest.TestCase):
-
     def test_basic(self):
         log_testing_instance = LogTesting.setUp(self)
         logger = logging.getLogger('test.logger')
@@ -37,14 +35,14 @@ class LogTestingTest(unittest.TestCase):
         log_testing_instance.assertMessages([])
 
     def test_log_level_warning(self):
-        log_testing_instance = LogTesting.setUp(self, logging_level=logging.WARNING)
+        log_testing_instance = LogTesting.setUp(
+            self, logging_level=logging.WARNING)
         logger = logging.getLogger('test.logger')
         logger.info('my message')
         log_testing_instance.assertMessages([])
 
 
 class LoggingTestCaseTest(LoggingTestCase):
-
     def test_basic(self):
         self.example_logging_code()
         self.assertLog([

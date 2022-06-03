@@ -1,0 +1,69 @@
+<template>
+  <style include="cr-shared-style cros-color-overrides">
+    :host {
+      --grey-border: 1px solid var(--google-grey-300);
+      --dialog-top-border-size: 35px;
+    }
+
+    h1 {
+      font-size: 2em;
+      font-weight: normal;
+      margin-bottom: 16px;
+      margin-top: 20px;
+    }
+
+    p {
+      line-height: 1.5;
+      margin: 0;
+      white-space: pre-line;
+    }
+
+    a {
+      color: var(--google-blue-700);
+      text-decoration: none;
+    }
+
+    .main-padding {
+      padding-inline-end: 64px;
+      padding-inline-start: 64px;
+      padding-top: calc(64px - var(--dialog-top-border-size));
+    }
+
+    .text-elide {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .secondary {
+      color: var(--google-grey-refresh-700);
+      font-weight: 400;
+    }
+
+    .google-logo {
+      height: 32px;
+      margin-top: 10px;
+      width: 32px;
+    }
+
+    .google-full-logo {
+      width: 74px;
+    }
+
+    .profile-icon {
+      background: center / cover no-repeat;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    span[slot='buttons'] {
+      display: flex;
+      width: 100%;
+    }
+
+    edu-login-button[button-type='ok'],
+    edu-login-button[button-type='next'] {
+      margin-inline-start: auto;
+    }
+  </style>
+</template>

@@ -38,36 +38,34 @@ TEST(PreFetchedPathsTest, CheckExpectedPaths) {
   PreFetchedPaths* pre_fetched_paths = PreFetchedPaths::GetInstance();
   // Note: pre_fetched_paths->Initialized() is already called in test_main.cc.
 
-  auto GetExpectedPath = [](int key) -> base::FilePath {
-    base::FilePath expected_path;
-    CHECK(base::PathService::Get(key, &expected_path));
-    return expected_path;
-  };
-
-  EXPECT_EQ(GetExpectedPath(base::FILE_EXE),
+  EXPECT_EQ(base::PathService::CheckedGet(base::FILE_EXE),
             pre_fetched_paths->GetExecutablePath());
-  EXPECT_EQ(GetExpectedPath(base::DIR_PROGRAM_FILES),
+  EXPECT_EQ(base::PathService::CheckedGet(base::DIR_PROGRAM_FILES),
             pre_fetched_paths->GetProgramFilesFolder());
-  EXPECT_EQ(GetExpectedPath(base::DIR_WINDOWS),
+  EXPECT_EQ(base::PathService::CheckedGet(base::DIR_WINDOWS),
             pre_fetched_paths->GetWindowsFolder());
-  EXPECT_EQ(GetExpectedPath(base::DIR_COMMON_APP_DATA),
+  EXPECT_EQ(base::PathService::CheckedGet(base::DIR_COMMON_APP_DATA),
             pre_fetched_paths->GetCommonAppDataFolder());
-  EXPECT_EQ(GetExpectedPath(base::DIR_LOCAL_APP_DATA),
+  EXPECT_EQ(base::PathService::CheckedGet(base::DIR_LOCAL_APP_DATA),
             pre_fetched_paths->GetLocalAppDataFolder());
-  EXPECT_EQ(GetExpectedPath(CsidlToPathServiceKey(CSIDL_PROGRAM_FILES)),
-            pre_fetched_paths->GetCsidlProgramFilesFolder());
-  EXPECT_EQ(GetExpectedPath(CsidlToPathServiceKey(CSIDL_PROGRAM_FILESX86)),
+  EXPECT_EQ(
+      base::PathService::CheckedGet(CsidlToPathServiceKey(CSIDL_PROGRAM_FILES)),
+      pre_fetched_paths->GetCsidlProgramFilesFolder());
+  EXPECT_EQ(base::PathService::CheckedGet(
+                CsidlToPathServiceKey(CSIDL_PROGRAM_FILESX86)),
             pre_fetched_paths->GetCsidlProgramFilesX86Folder());
-  EXPECT_EQ(GetExpectedPath(CsidlToPathServiceKey(CSIDL_WINDOWS)),
+  EXPECT_EQ(base::PathService::CheckedGet(CsidlToPathServiceKey(CSIDL_WINDOWS)),
             pre_fetched_paths->GetCsidlWindowsFolder());
-  EXPECT_EQ(GetExpectedPath(CsidlToPathServiceKey(CSIDL_STARTUP)),
+  EXPECT_EQ(base::PathService::CheckedGet(CsidlToPathServiceKey(CSIDL_STARTUP)),
             pre_fetched_paths->GetCsidlStartupFolder());
-  EXPECT_EQ(GetExpectedPath(CsidlToPathServiceKey(CSIDL_SYSTEM)),
+  EXPECT_EQ(base::PathService::CheckedGet(CsidlToPathServiceKey(CSIDL_SYSTEM)),
             pre_fetched_paths->GetCsidlSystemFolder());
-  EXPECT_EQ(GetExpectedPath(CsidlToPathServiceKey(CSIDL_COMMON_APPDATA)),
+  EXPECT_EQ(base::PathService::CheckedGet(
+                CsidlToPathServiceKey(CSIDL_COMMON_APPDATA)),
             pre_fetched_paths->GetCsidlCommonAppDataFolder());
-  EXPECT_EQ(GetExpectedPath(CsidlToPathServiceKey(CSIDL_LOCAL_APPDATA)),
-            pre_fetched_paths->GetCsidlLocalAppDataFolder());
+  EXPECT_EQ(
+      base::PathService::CheckedGet(CsidlToPathServiceKey(CSIDL_LOCAL_APPDATA)),
+      pre_fetched_paths->GetCsidlLocalAppDataFolder());
 }
 
 }  // namespace

@@ -41,7 +41,7 @@
       "bounds": [7, 19],
       "paintInvalidations": [
         {
-          "object": "LayoutListMarker (anonymous)",
+          "object": "LayoutListMarker ::marker",
           "rect": [0, 0, 7, 19],
           "reason": "geometry"
         }

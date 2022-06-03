@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that weak references are ignored when dominators are calculated and that weak references won't affect object's retained size.\n`);
-  await TestRunner.loadModule('heap_profiler_test_runner');
+  await TestRunner.loadTestModule('heap_profiler_test_runner');
   await TestRunner.showPanel('heap_profiler');
   await TestRunner.loadHTML(`
       <pre></pre>
@@ -46,7 +46,7 @@
       return builder.generateSnapshot();
     }
 
-    TestRunner.addSniffer(Profiler.HeapSnapshotView.prototype, '_retrieveStatistics', checkStatistics);
+    TestRunner.addSniffer(Profiler.HeapSnapshotView.prototype, 'retrieveStatistics', checkStatistics);
     HeapProfilerTestRunner.takeAndOpenSnapshot(createHeapSnapshot, step1);
 
     async function checkStatistics(arg, result) {
@@ -63,29 +63,29 @@
     function step2() {
       var row = HeapProfilerTestRunner.findRow('A');
       TestRunner.assertEquals(true, !!row, '"A" row');
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(300, row._retainedSize);
-      TestRunner.assertEquals(300, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(300, row.retainedSize);
+      TestRunner.assertEquals(300, row.shallowSize);
 
 
       row = HeapProfilerTestRunner.findRow('B');
       TestRunner.assertEquals(true, !!row, '"B" row');
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(300, row._retainedSize);
-      TestRunner.assertEquals(300, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(300, row.retainedSize);
+      TestRunner.assertEquals(300, row.shallowSize);
 
       row = HeapProfilerTestRunner.findRow('Orphan');
       TestRunner.assertEquals(true, !!row, '"Orphan" row');
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(4000, row._retainedSize);
-      TestRunner.assertEquals(2000, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(4000, row.retainedSize);
+      TestRunner.assertEquals(2000, row.shallowSize);
 
 
       row = HeapProfilerTestRunner.findRow('OrphanChild');
       TestRunner.assertEquals(true, !!row, '"OrphanChild" row');
-      TestRunner.assertEquals(1, row._count);
-      TestRunner.assertEquals(2000, row._retainedSize);
-      TestRunner.assertEquals(2000, row._shallowSize);
+      TestRunner.assertEquals(1, row.count);
+      TestRunner.assertEquals(2000, row.retainedSize);
+      TestRunner.assertEquals(2000, row.shallowSize);
 
       TestRunner.addResult('SUCCESS: all nodes have expected retained sizes.');
       setTimeout(next, 0);

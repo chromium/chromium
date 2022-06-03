@@ -1,0 +1,165 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+preprocess_folder = "preprocessed"
+preprocess_manifest = "preprocessed_manifest.json"
+preprocess_web_components_manifest = "preprocessed_gen_manifest.json"
+preprocess_mojo_manifest = "preprocessed_mojo_manifest.json"
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  # These arguments are needed since the grd is generated at build time.
+  enable_input_discovery_for_gn_analyze = false
+  source = "$target_gen_dir/read_later_resources.grd"
+  deps = [ ":build_grd" ]
+
+  outputs = [
+    "grit/read_later_resources.h",
+    "grit/read_later_resources_map.cc",
+    "grit/read_later_resources_map.h",
+    "read_later_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}
+
+generate_grd("build_grd") {
+  input_files = [
+    "read_later.html",
+    "images/read_later_empty.svg",
+    "images/read_later_empty_dark.svg",
+  ]
+  input_files_base_dir = rebase_path(".", "//")
+  grdp_files = [ "$target_gen_dir/side_panel/resources.grdp" ]
+  deps = [
+    ":preprocess",
+    ":preprocess_mojo",
+    ":preprocess_web_components",
+    "side_panel:build_grdp",
+  ]
+  manifest_files = [
+    "$target_gen_dir/$preprocess_manifest",
+    "$target_gen_dir/$preprocess_web_components_manifest",
+    "$target_gen_dir/$preprocess_mojo_manifest",
+  ]
+  grd_prefix = "read_later"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
+}
+
+preprocess_if_expr("preprocess") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_manifest"
+  in_files = [ "read_later_api_proxy.js" ]
+}
+
+preprocess_if_expr("preprocess_mojo") {
+  deps = [ "//chrome/browser/ui/webui/read_later:mojo_bindings_js" ]
+  in_folder = "$root_gen_dir/chrome/browser/ui/webui/read_later/"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_mojo_manifest"
+  in_files = [ "read_later.mojom-lite.js" ]
+}
+
+preprocess_if_expr("preprocess_web_components") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  out_manifest = "$target_gen_dir/$preprocess_web_components_manifest"
+  in_files = [
+    "app.js",
+    "icons.js",
+    "read_later_item.js",
+  ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [
+    ":app",
+    ":read_later_api_proxy",
+    ":read_later_item",
+  ]
+}
+
+js_library("app") {
+  deps = [
+    ":read_later_api_proxy",
+    ":read_later_item",
+    "//third_party/polymer/v3_0/components-chromium/iron-selector:iron-selector",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:load_time_data.m",
+    "//ui/webui/resources/js:util.m",
+  ]
+  externs_list = [ "$externs_path/metrics_private.js" ]
+}
+
+js_library("read_later_api_proxy") {
+  deps = [
+    "//chrome/browser/ui/webui/read_later:mojo_bindings_js_library_for_compile",
+    "//ui/webui/resources/js:cr.m",
+  ]
+}
+
+js_library("read_later_item") {
+  deps = [
+    ":read_later_api_proxy",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements:mouse_hoverable_mixin",
+    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
+    "//ui/webui/resources/js:assert.m",
+    "//ui/webui/resources/js:icon",
+  ]
+}
+
+html_to_js("web_components") {
+  js_files = [
+    "app.js",
+    "icons.js",
+    "read_later_item.js",
+  ]
+}
+
+ts_library("build_ts") {
+  tsconfig_base = "tsconfig_base.json"
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/side_panel/tsc"
+  in_files = [
+    "read_later_api_proxy.js",
+    "side_panel/app.ts",
+    "side_panel/bookmark_folder.ts",
+    "side_panel/bookmarks_list.ts",
+    "side_panel/bookmarks_api_proxy.ts",
+    "side_panel/bookmarks_drag_manager.ts",
+    "side_panel/bookmarks.mojom-webui.js",
+  ]
+  definitions = [
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/chrome_event.d.ts",
+    "//tools/typescript/definitions/metrics_private.d.ts",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [
+    ":preprocess",
+    "side_panel:preprocess",
+    "side_panel:preprocess_generated",
+    "side_panel:preprocess_mojo",
+  ]
+}

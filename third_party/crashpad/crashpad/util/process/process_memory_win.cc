@@ -20,8 +20,8 @@
 #include <limits>
 
 #include "base/logging.h"
+#include "base/memory/page_size.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/process/process_metrics.h"
 #include "base/strings/stringprintf.h"
 
 namespace crashpad {

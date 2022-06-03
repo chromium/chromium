@@ -5,6 +5,7 @@
 package org.chromium.base.test.util;
 
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
@@ -15,13 +16,38 @@ import java.lang.annotation.Target;
  * These annotations should only be used to disable tests that are temporarily failing
  * in some configurations. If a test should never run at all in some configurations, use
  * {@link Restriction}.
+ *
+ * When this annotation is specified multiple times, each condition is 'or'ed together. In the
+ * following either baz or sdk > 22 will cause the test case to be disabled.
+ * <code>
+ * \@DisableIf.Build(supported_abis_includes = "baz")
+ * \@DisableIf.Build(sdk_is_greater_than = 22)
+ * </code>
+ * In the following either baz or tablet will cause the test case to be disabled.
+ * <code>
+ * \@DisableIf.Build(supported_abis_includes = "baz")
+ * \@DisableIf.Device(type = {UiDisableIf.TABLET})
+ * </code>
+ *
+ * When multiple arguments are specified for a single annotation, each condition is 'and'ed
+ * together. In the following both baz and sdk > 22 will need to be true for this test case to be
+ * disabled.
+ * <code>
+ * \@DisableIf.Build(supported_abis_includes = "baz", sdk_is_greater_than = 22)
+ * </code>
  */
 public class DisableIf {
-
-    /** Conditional disabling based on {@link android.os.Build}.
-     */
+    /** Containing annotations type to wrap {@link DisableIf.Build}. */
     @Target({ElementType.METHOD, ElementType.TYPE})
     @Retention(RetentionPolicy.RUNTIME)
+    public @interface Builds {
+        Build[] value();
+    }
+
+    /** Conditional disabling based on {@link android.os.Build}. */
+    @Target({ElementType.METHOD, ElementType.TYPE})
+    @Retention(RetentionPolicy.RUNTIME)
+    @Repeatable(Builds.class)
     public static @interface Build {
         String message() default "";
 

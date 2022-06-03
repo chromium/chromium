@@ -6,6 +6,9 @@ module blink.mojom;
 
 import "url/mojom/url.mojom";
 
+// Implemented in the browser process. This interface defines observer methods
+// that are called upon a manifest URL change from the renderer process.
 interface ManifestUrlChangeObserver {
-  ManifestUrlChanged(url.mojom.Url? manifest_url);
+  // Notifies that a manifest URL is changed.
+  ManifestUrlChanged(url.mojom.Url manifest_url);
 };

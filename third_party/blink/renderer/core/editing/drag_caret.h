@@ -27,9 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_DRAG_CARET_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_DRAG_CARET_H_
 
-#include <memory>
-
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/dom/synchronous_mutation_observer.h"
 #include "third_party/blink/renderer/core/editing/caret_display_item_client.h"
 #include "third_party/blink/renderer/core/editing/position_with_affinity.h"
@@ -38,23 +35,24 @@
 namespace blink {
 
 class LayoutBlock;
+class NGPhysicalBoxFragment;
 struct PaintInvalidatorContext;
 
 class DragCaret final : public GarbageCollected<DragCaret>,
                         public SynchronousMutationObserver {
-  USING_GARBAGE_COLLECTED_MIXIN(DragCaret);
-
  public:
   DragCaret();
+  DragCaret(const DragCaret&) = delete;
+  DragCaret& operator=(const DragCaret&) = delete;
   virtual ~DragCaret();
 
   // Paint invalidation methods delegating to CaretDisplayItemClient.
-  void ClearPreviousVisualRect(const LayoutBlock&);
   void LayoutBlockWillBeDestroyed(const LayoutBlock&);
   void UpdateStyleAndLayoutIfNeeded();
   void InvalidatePaint(const LayoutBlock&, const PaintInvalidatorContext&);
 
   bool ShouldPaintCaret(const LayoutBlock&) const;
+  bool ShouldPaintCaret(const NGPhysicalBoxFragment&) const;
   void PaintDragCaret(const LocalFrame*,
                       GraphicsContext&,
                       const PhysicalOffset&) const;
@@ -66,7 +64,7 @@ class DragCaret final : public GarbageCollected<DragCaret>,
   void SetCaretPosition(const PositionWithAffinity&);
   void Clear() { SetCaretPosition(PositionWithAffinity()); }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // Implementations of |SynchronousMutationObserver|
@@ -74,9 +72,7 @@ class DragCaret final : public GarbageCollected<DragCaret>,
   void NodeWillBeRemoved(Node&) final;
 
   PositionWithAffinity position_;
-  const std::unique_ptr<CaretDisplayItemClient> display_item_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragCaret);
+  const Member<CaretDisplayItemClient> display_item_client_;
 };
 
 }  // namespace blink

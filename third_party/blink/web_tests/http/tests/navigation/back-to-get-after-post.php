@@ -13,7 +13,7 @@ if (window.testRunner) {
     testRunner.waitUntilDone();
 }
 
-window.onload = function() {
+window.onpageshow = function() {
     setTimeout(function() {
         if (sessionStorage.getItem("backToGet") == null) {
             sessionStorage.setItem("backToGet", "step1");

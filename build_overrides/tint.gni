@@ -1,0 +1,13 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+tint_root_dir = "//third_party/dawn/third_party/tint"
+tint_spirv_tools_dir = "//third_party/vulkan-deps/spirv-tools/src"
+tint_googletest_dir = "//third_party/googletest/src"
+tint_spirv_headers_dir = "//third_party/vulkan-deps/spirv-headers/src"
+
+tint_build_spv_reader = true
+tint_build_spv_writer = true
+tint_build_wgsl_reader = true
+tint_build_wgsl_writer = true

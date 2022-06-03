@@ -14,7 +14,6 @@
 #include "third_party/blink/renderer/core/paint/scoped_paint_state.h"
 #include "third_party/blink/renderer/core/paint/table_cell_painter.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
-#include "third_party/blink/renderer/platform/graphics/paint/hit_test_display_item.h"
 
 namespace blink {
 
@@ -68,37 +67,21 @@ void TableRowPainter::HandleChangedPartialPaint(
       paint_result, paint_info.GetCullRect());
 }
 
-void TableRowPainter::RecordHitTestData(const PaintInfo& paint_info,
-                                        const PhysicalOffset& paint_offset) {
-  // Hit test display items are only needed for compositing. This flag is used
-  // for for printing and drag images which do not need hit testing.
-  if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
-    return;
-
-  // If an object is not visible, it does not participate in hit testing.
-  if (layout_table_row_.StyleRef().Visibility() != EVisibility::kVisible)
-    return;
-
-  auto touch_action = layout_table_row_.EffectiveAllowedTouchAction();
-  if (touch_action == TouchAction::kAuto)
-    return;
-
-  auto rect = layout_table_row_.PhysicalBorderBoxRect();
-  rect.offset += paint_offset;
-  HitTestDisplayItem::Record(paint_info.context, layout_table_row_,
-                             HitTestRect(rect.ToLayoutRect(), touch_action));
-}
-
 void TableRowPainter::PaintBoxDecorationBackground(
     const PaintInfo& paint_info,
     const CellSpan& dirtied_columns) {
   ScopedPaintState paint_state(layout_table_row_, paint_info);
   const auto& local_paint_info = paint_state.GetPaintInfo();
   auto paint_offset = paint_state.PaintOffset();
-  RecordHitTestData(local_paint_info, paint_offset);
+  PhysicalRect paint_rect(paint_offset, layout_table_row_.Size());
 
-  bool has_background = layout_table_row_.StyleRef().HasBackground();
-  bool has_box_shadow = layout_table_row_.StyleRef().BoxShadow();
+  BoxPainter(layout_table_row_)
+      .RecordHitTestData(local_paint_info, paint_rect, layout_table_row_);
+  BoxPainter(layout_table_row_)
+      .RecordRegionCaptureData(local_paint_info, paint_rect, layout_table_row_);
+
+  const bool has_background = layout_table_row_.StyleRef().HasBackground();
+  const bool has_box_shadow = layout_table_row_.StyleRef().BoxShadow();
   if (!has_background && !has_box_shadow)
     return;
 
@@ -109,9 +92,9 @@ void TableRowPainter::PaintBoxDecorationBackground(
           DisplayItem::kBoxDecorationBackground))
     return;
 
-  DrawingRecorder recorder(local_paint_info.context, layout_table_row_,
-                           DisplayItem::kBoxDecorationBackground);
-  PhysicalRect paint_rect(paint_offset, layout_table_row_.Size());
+  BoxDrawingRecorder recorder(local_paint_info.context, layout_table_row_,
+                              DisplayItem::kBoxDecorationBackground,
+                              paint_offset);
 
   if (has_box_shadow) {
     BoxPainterBase::PaintNormalBoxShadow(local_paint_info, paint_rect,
@@ -139,20 +122,18 @@ void TableRowPainter::PaintBoxDecorationBackground(
 void TableRowPainter::PaintCollapsedBorders(const PaintInfo& paint_info,
                                             const CellSpan& dirtied_columns) {
   ScopedPaintState paint_state(layout_table_row_, paint_info);
-  base::Optional<DrawingRecorder> recorder;
+  absl::optional<BoxDrawingRecorder> recorder;
 
-  if (LIKELY(!layout_table_row_.Table()->ShouldPaintAllCollapsedBorders())) {
-    HandleChangedPartialPaint(paint_info, dirtied_columns);
+  HandleChangedPartialPaint(paint_info, dirtied_columns);
 
-    if (DrawingRecorder::UseCachedDrawingIfPossible(
-            paint_info.context, layout_table_row_,
-            DisplayItem::kTableCollapsedBorders))
-      return;
+  if (DrawingRecorder::UseCachedDrawingIfPossible(
+          paint_info.context, layout_table_row_,
+          DisplayItem::kTableCollapsedBorders))
+    return;
 
-    recorder.emplace(paint_info.context, layout_table_row_,
-                     DisplayItem::kTableCollapsedBorders);
-  }
-  // Otherwise TablePainter should have created the drawing recorder.
+  recorder.emplace(paint_info.context, layout_table_row_,
+                   DisplayItem::kTableCollapsedBorders,
+                   paint_state.PaintOffset());
 
   const auto* section = layout_table_row_.Section();
   unsigned row = layout_table_row_.RowIndex();

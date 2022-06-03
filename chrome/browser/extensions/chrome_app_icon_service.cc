@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/chrome_app_icon.h"
 #include "chrome/browser/extensions/chrome_app_icon_service_factory.h"
 
@@ -20,17 +21,18 @@ ChromeAppIconService* ChromeAppIconService::Get(
 
 ChromeAppIconService::ChromeAppIconService(content::BrowserContext* context)
     : context_(context) {
-#if defined(OS_CHROMEOS)
-  app_updater_ = std::make_unique<LauncherExtensionAppUpdater>(this, context);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  app_updater_ = std::make_unique<ShelfExtensionAppUpdater>(
+      this, context, false /* extensions_only */);
 #endif
 
-  observer_.Add(ExtensionRegistry::Get(context_));
+  observation_.Observe(ExtensionRegistry::Get(context_));
 }
 
 ChromeAppIconService::~ChromeAppIconService() = default;
 
 void ChromeAppIconService::Shutdown() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   app_updater_.reset();
 #endif
 }
@@ -42,8 +44,8 @@ std::unique_ptr<ChromeAppIcon> ChromeAppIconService::CreateIcon(
     const ResizeFunction& resize_function) {
   std::unique_ptr<ChromeAppIcon> icon = std::make_unique<ChromeAppIcon>(
       delegate, context_,
-      base::Bind(&ChromeAppIconService::OnIconDestroyed,
-                 weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&ChromeAppIconService::OnIconDestroyed,
+                     weak_ptr_factory_.GetWeakPtr()),
       app_id, resource_size_in_dip, resize_function);
 
   icon_map_[icon->app_id()].insert(icon.get());
@@ -70,10 +72,14 @@ void ChromeAppIconService::OnExtensionUnloaded(
   OnAppUpdated(extension->id());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void ChromeAppIconService::OnAppUpdated(
     content::BrowserContext* browser_context,
-    const std::string& app_id) {
+    const std::string& app_id,
+    bool reload_icon) {
+  if (!reload_icon)
+    return;
+
   OnAppUpdated(app_id);
 }
 #endif

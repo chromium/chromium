@@ -7,10 +7,11 @@
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event_watcher.h"
 #include "base/system/sys_info.h"
-#include "base/test/bind_test_util.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/test/bind.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -64,12 +65,26 @@ void LevelDBScopesTestBase::TearDown() {
 void LevelDBScopesTestBase::CloseScopesAndDestroyLevelDBState() {
   if (leveldb_) {
     base::RunLoop loop;
-    if (leveldb_->RequestDestruction(loop.QuitClosure(),
-                                     base::SequencedTaskRunnerHandle::Get())) {
-      leveldb_.reset();
-      loop.Run();
+    base::WaitableEvent* leveldb_close_event_ptr;
+    base::WaitableEventWatcher event_watcher;
+    if (leveldb_->destruction_requested()) {
+      leveldb_close_event_ptr = leveldb_->destruction_event();
+    } else {
+      leveldb_close_event_ptr = &leveldb_close_event_;
+      leveldb_->RequestDestruction(leveldb_close_event_ptr);
     }
+    event_watcher.StartWatching(
+        leveldb_close_event_ptr,
+        base::BindLambdaForTesting([&](base::WaitableEvent*) { loop.Quit(); }),
+        base::SequencedTaskRunnerHandle::Get());
     leveldb_.reset();
+    loop.Run();
+    // There is a possible race in |leveldb_close_event| where the signaling
+    // thread is still in the WaitableEvent::Signal() method. To ensure that
+    // the other thread exits their Signal method, any method on the
+    // WaitableEvent can be called to acquire the internal lock (which will
+    // subsequently wait for the other thread to exit the Signal method).
+    EXPECT_TRUE(leveldb_close_event_ptr->IsSignaled());
   }
 }
 

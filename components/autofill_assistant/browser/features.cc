@@ -12,12 +12,63 @@ namespace features {
 const base::Feature kAutofillAssistant{"AutofillAssistant",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Controls whether to query backend service to start any assisted actions.
+// Controls whether to enable Assistant Autofill in a normal Chrome tab.
 const base::Feature kAutofillAssistantChromeEntry{
-    "AutofillAssistantChromeEntry", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillAssistantChromeEntry", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether to enable dialog onboarding for Autofill Assistant
+const base::Feature kAutofillAssistantDialogOnboarding{
+    "AutofillAssistantDialogOnboarding", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kAutofillAssistantDirectActions{
-    "AutofillAssistantDirectActions", base::FEATURE_DISABLED_BY_DEFAULT};
+    "AutofillAssistantDirectActions", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether to disable onboarding flow for Autofill Assistant
+const base::Feature kAutofillAssistantDisableOnboardingFlow{
+    "AutofillAssistantDisableOnboardingFlow",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// By default, proactive help is only offered if MSBB is turned on. This feature
+// flag allows disabling the link. Proactive help can still be offered to users
+// so long as no communication to a remote backend is required. Specifically,
+// base64-injected trigger scripts can be shown even in the absence of MSBB.
+const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
+    "AutofillAssistantDisableProactiveHelpTiedToMSBB",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Whether Autofill Assistant should enable in-CCT triggering, i.e., requesting
+// and showing trigger scripts in CCTs without explicit user request. This
+// requires also specifying valid URL heuristics via
+// |kAutofillAssistantUrlHeuristics| to take effect.
+const base::Feature kAutofillAssistantInCCTTriggering{
+    "AutofillAssistantInCctTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Whether Autofill Assistant should enable in-tab triggering, i.e., requesting
+// and showing trigger scripts in regular tabs without explicit user request.
+// This requires also specifying valid URL heuristics via
+// |kAutofillAssistantUrlHeuristics| to take effect.
+const base::Feature kAutofillAssistantInTabTriggering{
+    "AutofillAssistantInTabTriggering", base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether to show the "Send feedback" chip while in an error state.
+const base::Feature kAutofillAssistantFeedbackChip{
+    "AutofillAssistantFeedbackChip", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Whether autofill assistant should load the DFM for trigger scripts when
+// necessary. Without this feature, trigger scripts will exit if the DFM is not
+// available.
+const base::Feature kAutofillAssistantLoadDFMForTriggerScripts{
+    "AutofillAssistantLoadDFMForTriggerScripts",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kAutofillAssistantProactiveHelp{
+    "AutofillAssistantProactiveHelp", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Used to configure the start heuristics for
+// |kAutofillAssistantInCctTriggering| and/or
+// |kAutofillAssistantInTabTriggering|.
+const base::Feature kAutofillAssistantUrlHeuristics{
+    "AutofillAssistantUrlHeuristics", base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace features
 }  // namespace autofill_assistant

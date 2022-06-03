@@ -28,7 +28,5 @@ group("sdk") {
 }
 
 group("fuzzers") {
-  deps = [
-    "tools/fuzzers",
-  ]
+  deps = [ "tools/fuzzers" ]
 }

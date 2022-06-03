@@ -28,6 +28,7 @@ union FuzzUnion {
   float fuzz_float;
   double fuzz_double;
   string fuzz_string;
+  array<bool> fuzz_bool_array;
   array<int8> fuzz_primitive_array;
   array<FuzzDummyStruct> fuzz_struct_array;
   map<string, int8> fuzz_primitive_map;
@@ -52,6 +53,7 @@ struct FuzzStruct {
   double fuzz_double;
   string fuzz_string;
 
+  array<bool> fuzz_bool_array;
   array<int8> fuzz_primitive_array;
   map<string, int8> fuzz_primitive_map;
   map<string, array<string>> fuzz_array_map;

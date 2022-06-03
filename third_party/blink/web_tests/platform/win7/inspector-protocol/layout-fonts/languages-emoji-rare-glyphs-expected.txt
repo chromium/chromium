@@ -5,7 +5,7 @@
 
 いろはにほへと ちりぬるを わかよたれそ つねならむ うゐのおくやま けふこえて あさき ゆめみし ゑひもせす（ん）色は匂へど 散りぬるを 我が世誰ぞ 常ならむ 有為の奥山 今日越えて 浅き夢見じ 酔ひもせず（ん）
 #japanese_iroha:
-"Meiryo UI" : 92,
+"Meiryo" : 92,
 "Times New Roman" : 15
 
 키스의 고유조건은 입술끼리 만나야 하고 특별한 기술은 필요치 않다.
@@ -22,14 +22,14 @@
 #arabic_pangram:
 "Times New Roman" : 85
 
-🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰
+🌱🌲🌳🌴🌵🌷🌸🌹🌺🌻🌼💐🌾🌿🍀🍁🍂🍃🍄🌰☺️😀👪
 #emoji:
-"Segoe UI Symbol" : 18,
-"Arial" : 2
+"Segoe UI Symbol" : 19,
+"Times New Roman" : 5
 
 𓀀𓀁𓀂𓀃𓀄𓀅𓀆𓀇𓀈𓀉𓀊𓀋𓀌𓀍𓀎𓀏
 #egyptian_hieroglyphs:
-"Arial" : 16
+"Times New Roman" : 16
 
 ខ្ញុំអាចញុំកញ្ចក់បាន ដោយគ្មានបញ្ហារ
 #khmer:
@@ -46,8 +46,8 @@
 
 ⇦⇧⇨⇩￩￪￫￬⟀
 #text_presentation_arrows_maths:
-"Meiryo UI" : 4,
-"Segoe UI Symbol" : 4,
-"Arial" : 1
+"MS PGothic" : 4,
+"Cambria Math" : 4,
+"Times New Roman" : 1
 
 

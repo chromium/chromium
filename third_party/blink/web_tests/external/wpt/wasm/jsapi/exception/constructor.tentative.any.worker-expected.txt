@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS name
+PASS length
+PASS No arguments
+FAIL Calling WebAssembly.Tag is not a constructor
+PASS Invalid descriptor argument
+FAIL Invalid exception argument WebAssembly.Tag is not a constructor
+Harness: the test ran to completion.
+

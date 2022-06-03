@@ -4,7 +4,7 @@
 
 #include "chrome/chrome_cleaner/mojom/typemaps/windows_handle_mojom_traits.h"
 
-#include "mojo/public/cpp/system/platform_handle.h"
+#include <windows.h>
 
 namespace mojo {
 
@@ -120,18 +120,18 @@ bool EnumTraits<PredefinedHandle, HANDLE>::FromMojom(PredefinedHandle input,
 }
 
 // static
-mojo::ScopedHandle UnionTraits<WindowsHandleDataView, HANDLE>::raw_handle(
+mojo::PlatformHandle UnionTraits<WindowsHandleDataView, HANDLE>::raw_handle(
     HANDLE handle) {
   DCHECK_EQ(WindowsHandleDataView::Tag::RAW_HANDLE, GetTag(handle));
 
   if (IsPredefinedHandle(handle)) {
     CHECK(false) << "Accessor raw_handle() should only be called when the "
                     "union's tag is RAW_HANDLE.";
-    return mojo::ScopedHandle();
+    return mojo::PlatformHandle();
   }
 
-  HANDLE duplicate_handle = DuplicateWindowsHandle(handle);
-  return WrapPlatformFile(duplicate_handle);
+  base::win::ScopedHandle duplicate_handle(DuplicateWindowsHandle(handle));
+  return mojo::PlatformHandle(std::move(duplicate_handle));
 }
 
 // static
@@ -160,14 +160,7 @@ bool UnionTraits<WindowsHandleDataView, HANDLE>::Read(
     WindowsHandleDataView windows_handle_view,
     HANDLE* out) {
   if (windows_handle_view.is_raw_handle()) {
-    HANDLE handle;
-    MojoResult mojo_result =
-        UnwrapPlatformFile(windows_handle_view.TakeRawHandle(), &handle);
-    if (mojo_result != MOJO_RESULT_OK) {
-      *out = INVALID_HANDLE_VALUE;
-      return false;
-    }
-    *out = handle;
+    *out = windows_handle_view.TakeRawHandle().ReleaseHandle();
     return true;
   }
 

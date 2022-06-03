@@ -14,7 +14,7 @@ namespace switches {
 const char kCompensateForUnstablePinchZoom[] =
     "compensate-for-unstable-pinch-zoom";
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // Tells chrome to interpret events from these devices as touch events. Only
 // available with XInput 2 (i.e. X server 1.8 or above). The id's of the
 // devices can be retrieved from 'xinput list'.
@@ -26,7 +26,7 @@ const char kTouchDevices[] = "touch-devices";
 const char kPenDevices[] = "pen-devices";
 #endif
 
-#if defined(USE_X11) || defined(USE_OZONE)
+#if defined(USE_OZONE)
 // Tells Chrome to do edge touch filtering. Useful for convertible tablet.
 const char kEdgeTouchFiltering[] = "edge-touch-filtering";
 

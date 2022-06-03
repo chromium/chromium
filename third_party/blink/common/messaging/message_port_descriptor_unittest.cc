@@ -12,6 +12,8 @@ namespace blink {
 
 namespace {
 
+ExecutionContext* kDummyEc = reinterpret_cast<ExecutionContext*>(0xBAADF00D);
+
 class LenientMockInstrumentationDelegate
     : public MessagePortDescriptor::InstrumentationDelegate {
  public:
@@ -23,13 +25,18 @@ class LenientMockInstrumentationDelegate
     MessagePortDescriptor::SetInstrumentationDelegate(nullptr);
   }
 
-  MOCK_METHOD1(NotifyMessagePortPairCreated,
-               void(const MessagePortDescriptorPair& pair));
+  MOCK_METHOD2(NotifyMessagePortPairCreated,
+               void(const base::UnguessableToken& port0_id,
+                    const base::UnguessableToken& port1_id));
 
   MOCK_METHOD3(NotifyMessagePortAttached,
                void(const base::UnguessableToken& port_id,
                     uint64_t sequence_number,
-                    const base::UnguessableToken& execution_context_id));
+                    ExecutionContext* execution_context));
+
+  MOCK_METHOD2(NotifyMessagePortAttachedToEmbedder,
+               void(const base::UnguessableToken& port_id,
+                    uint64_t sequence_number));
 
   MOCK_METHOD2(NotifyMessagePortDetached,
                void(const base::UnguessableToken& port_id,
@@ -48,39 +55,6 @@ using testing::Invoke;
 
 }  // namespace
 
-class MessagePortDescriptorTestHelper {
- public:
-  static void Init(MessagePortDescriptor* port,
-                   mojo::ScopedMessagePipeHandle handle,
-                   base::UnguessableToken id,
-                   uint64_t sequence_number) {
-    return port->Init(std::move(handle), id, sequence_number);
-  }
-
-  static mojo::ScopedMessagePipeHandle TakeHandle(MessagePortDescriptor* port) {
-    return port->TakeHandle();
-  }
-
-  static base::UnguessableToken TakeId(MessagePortDescriptor* port) {
-    return port->TakeId();
-  }
-
-  static uint64_t TakeSequenceNumber(MessagePortDescriptor* port) {
-    return port->TakeSequenceNumber();
-  }
-
-  static mojo::ScopedMessagePipeHandle TakeHandleToEntangle(
-      MessagePortDescriptor* port,
-      const base::UnguessableToken& execution_context_id) {
-    return port->TakeHandleToEntangle(execution_context_id);
-  }
-
-  static void GiveDisentangledHandle(MessagePortDescriptor* port,
-                                     mojo::ScopedMessagePipeHandle handle) {
-    return port->GiveDisentangledHandle(std::move(handle));
-  }
-};
-
 TEST(MessagePortDescriptorTest, InstrumentationAndSerializationWorks) {
   MockInstrumentationDelegate delegate;
 
@@ -95,12 +69,11 @@ TEST(MessagePortDescriptorTest, InstrumentationAndSerializationWorks) {
   } created_data;
 
   // Create a message handle descriptor pair and expect a notification.
-  EXPECT_CALL(delegate, NotifyMessagePortPairCreated(_))
-      .WillOnce(Invoke([&created_data](const MessagePortDescriptorPair& pair) {
-        created_data.token0 = pair.port0().id();
-        created_data.token1 = pair.port1().id();
-        EXPECT_EQ(1u, pair.port0().sequence_number());
-        EXPECT_EQ(1u, pair.port1().sequence_number());
+  EXPECT_CALL(delegate, NotifyMessagePortPairCreated(_, _))
+      .WillOnce(Invoke([&created_data](const base::UnguessableToken& port0_id,
+                                       const base::UnguessableToken& port1_id) {
+        created_data.token0 = port0_id;
+        created_data.token1 = port1_id;
       }));
   MessagePortDescriptorPair pair;
 
@@ -128,12 +101,10 @@ TEST(MessagePortDescriptorTest, InstrumentationAndSerializationWorks) {
   EXPECT_EQ(created_data.seq1, port1.sequence_number());
 
   // Simulate that a handle is attached by taking the pipe handle.
-  base::UnguessableToken dummy_ec = base::UnguessableToken::Create();
   EXPECT_CALL(delegate,
               NotifyMessagePortAttached(created_data.token0,
-                                        created_data.seq0++, dummy_ec));
-  auto handle0 =
-      MessagePortDescriptorTestHelper::TakeHandleToEntangle(&port0, dummy_ec);
+                                        created_data.seq0++, kDummyEc));
+  auto handle0 = port0.TakeHandleToEntangle(kDummyEc);
   EXPECT_TRUE(port0.IsValid());
   EXPECT_TRUE(port0.IsEntangled());
   EXPECT_FALSE(port0.IsDefault());
@@ -141,8 +112,7 @@ TEST(MessagePortDescriptorTest, InstrumentationAndSerializationWorks) {
   // Simulate that the handle is detached by giving the pipe handle back.
   EXPECT_CALL(delegate, NotifyMessagePortDetached(created_data.token0,
                                                   created_data.seq0++));
-  MessagePortDescriptorTestHelper::GiveDisentangledHandle(&port0,
-                                                          std::move(handle0));
+  port0.GiveDisentangledHandle(std::move(handle0));
   EXPECT_TRUE(port0.IsValid());
   EXPECT_FALSE(port0.IsEntangled());
   EXPECT_FALSE(port0.IsDefault());
@@ -157,7 +127,7 @@ TEST(MessagePortDescriptorTest, InstrumentationAndSerializationWorks) {
                                                    created_data.seq0++));
 }
 
-TEST(MessagePortDescriptorTest, InvalidUsageDeathTest) {
+TEST(MessagePortDescriptorTestDeathTest, InvalidUsageInstrumentationDelegate) {
   static MessagePortDescriptor::InstrumentationDelegate* kDummyDelegate1 =
       reinterpret_cast<MessagePortDescriptor::InstrumentationDelegate*>(
           0xBAADF00D);
@@ -175,64 +145,77 @@ TEST(MessagePortDescriptorTest, InvalidUsageDeathTest) {
   // Unset the dummy delegate we installed so we don't receive notifications in
   // the rest of the test.
   MessagePortDescriptor::SetInstrumentationDelegate(nullptr);
+}
 
+TEST(MessagePortDescriptorTestDeathTest, InvalidUsageForSerialization) {
   // Trying to take properties of a default port descriptor should explode.
   MessagePortDescriptor port0;
-  EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::TakeHandle(&port0));
-  EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::TakeId(&port0));
-  EXPECT_DCHECK_DEATH(
-      MessagePortDescriptorTestHelper::TakeSequenceNumber(&port0));
+  EXPECT_DCHECK_DEATH(port0.TakeHandleForSerialization());
+  EXPECT_DCHECK_DEATH(port0.TakeIdForSerialization());
+  EXPECT_DCHECK_DEATH(port0.TakeSequenceNumberForSerialization());
 
   MessagePortDescriptorPair pair;
   port0 = pair.TakePort0();
   MessagePortDescriptor port1 = pair.TakePort1();
 
   {
-    // Dismantle the port as if for serialization.
-    auto handle = MessagePortDescriptorTestHelper::TakeHandle(&port0);
-    auto id = MessagePortDescriptorTestHelper::TakeId(&port0);
-    auto sequence_number =
-        MessagePortDescriptorTestHelper::TakeSequenceNumber(&port0);
+    // Dismantle the port as if for serialization. Trying to take fields a
+    // second time should explode. A partially serialized object should also
+    // explode if
+    auto handle = port0.TakeHandleForSerialization();
+    EXPECT_DCHECK_DEATH(port0.TakeHandleForSerialization());
+    EXPECT_DCHECK_DEATH(port0.Reset());
+    auto id = port0.TakeIdForSerialization();
+    EXPECT_DCHECK_DEATH(port0.TakeIdForSerialization());
+    EXPECT_DCHECK_DEATH(port0.Reset());
+    auto sequence_number = port0.TakeSequenceNumberForSerialization();
+    EXPECT_DCHECK_DEATH(port0.TakeSequenceNumberForSerialization());
+
+    // This time reset should *not* explode, as the object has been fully taken
+    // for serialization.
+    port0.Reset();
 
     // Reserializing with inconsistent state should explode.
 
     // First try with any 1 of the 3 fields being invalid.
-    EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::Init(
-        &port0, mojo::ScopedMessagePipeHandle(), id, sequence_number));
-    EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::Init(
-        &port0, std::move(handle), base::UnguessableToken::Null(),
-        sequence_number));
-    EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::Init(
-        &port0, std::move(handle), id, 0));
+    EXPECT_DCHECK_DEATH(port0.InitializeFromSerializedValues(
+        mojo::ScopedMessagePipeHandle(), id, sequence_number));
+    EXPECT_DCHECK_DEATH(port0.InitializeFromSerializedValues(
+        std::move(handle), base::UnguessableToken::Null(), sequence_number));
+    EXPECT_DCHECK_DEATH(
+        port0.InitializeFromSerializedValues(std::move(handle), id, 0));
 
     // Next try with any 2 of the 3 fields being invalid.
-    EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::Init(
-        &port0, std::move(handle), base::UnguessableToken::Null(), 0));
-    EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::Init(
-        &port0, mojo::ScopedMessagePipeHandle(), id, 0));
-    EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::Init(
-        &port0, mojo::ScopedMessagePipeHandle(), base::UnguessableToken::Null(),
+    EXPECT_DCHECK_DEATH(port0.InitializeFromSerializedValues(
+        std::move(handle), base::UnguessableToken::Null(), 0));
+    EXPECT_DCHECK_DEATH(port0.InitializeFromSerializedValues(
+        mojo::ScopedMessagePipeHandle(), id, 0));
+    EXPECT_DCHECK_DEATH(port0.InitializeFromSerializedValues(
+        mojo::ScopedMessagePipeHandle(), base::UnguessableToken::Null(),
         sequence_number));
 
     // Restoring the port with default state should work (all 3 fields invalid).
-    MessagePortDescriptorTestHelper::Init(&port0,
-                                          mojo::ScopedMessagePipeHandle(),
-                                          base::UnguessableToken::Null(), 0);
+    port0.InitializeFromSerializedValues(mojo::ScopedMessagePipeHandle(),
+                                         base::UnguessableToken::Null(), 0);
     EXPECT_TRUE(port0.IsDefault());
 
     // Restoring the port with full state should work (all 3 fields valid).
-    MessagePortDescriptorTestHelper::Init(&port0, std::move(handle), id,
-                                          sequence_number);
+    port0.InitializeFromSerializedValues(std::move(handle), id,
+                                         sequence_number);
   }
+}
+
+TEST(MessagePortDescriptorTestDeathTest, InvalidUsageForEntangling) {
+  MessagePortDescriptorPair pair;
+  MessagePortDescriptor port0 = pair.TakePort0();
+  MessagePortDescriptor port1 = pair.TakePort1();
 
   // Entangle the port.
-  base::UnguessableToken dummy_ec = base::UnguessableToken::Create();
-  auto handle0 =
-      MessagePortDescriptorTestHelper::TakeHandleToEntangle(&port0, dummy_ec);
+  auto handle0 = port0.TakeHandleToEntangleWithEmbedder();
 
   // Trying to entangle a second time should explode.
-  EXPECT_DCHECK_DEATH(
-      MessagePortDescriptorTestHelper::TakeHandleToEntangle(&port0, dummy_ec));
+  EXPECT_DCHECK_DEATH(port0.TakeHandleToEntangleWithEmbedder());
+  EXPECT_DCHECK_DEATH(port0.TakeHandleToEntangle(kDummyEc));
 
   // Destroying a port descriptor that has been entangled should explode. The
   // handle needs to be given back to the descriptor before its death, ensuring
@@ -243,22 +226,16 @@ TEST(MessagePortDescriptorTest, InvalidUsageDeathTest) {
   // amounts to destroying the existing descriptor.
   EXPECT_DCHECK_DEATH(port0 = MessagePortDescriptor());
 
-  // Trying to disentangle with an empty port should explode.
-  mojo::ScopedMessagePipeHandle handle1;
-  EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::GiveDisentangledHandle(
-      &port0, std::move(handle1)));
+  // Trying to reset an entangled port should explode.
+  EXPECT_DCHECK_DEATH(port0.Reset());
 
-  // Trying to disentangle with the wrong port should explode.
-  handle1 =
-      MessagePortDescriptorTestHelper::TakeHandleToEntangle(&port1, dummy_ec);
-  EXPECT_DCHECK_DEATH(MessagePortDescriptorTestHelper::GiveDisentangledHandle(
-      &port0, std::move(handle1)));
+  // Trying to serialize an entangled port should explode.
+  EXPECT_DCHECK_DEATH(port0.TakeHandleForSerialization());
+  EXPECT_DCHECK_DEATH(port0.TakeIdForSerialization());
+  EXPECT_DCHECK_DEATH(port0.TakeSequenceNumberForSerialization());
 
-  // Disentangle the ports properly.
-  MessagePortDescriptorTestHelper::GiveDisentangledHandle(&port0,
-                                                          std::move(handle0));
-  MessagePortDescriptorTestHelper::GiveDisentangledHandle(&port1,
-                                                          std::move(handle1));
+  // Disentangle the port so it doesn't explode at teardown.
+  port0.GiveDisentangledHandle(std::move(handle0));
 }
 
 }  // namespace blink

@@ -8,22 +8,24 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
-#include "content/browser/frame_host/frame_tree_node.h"
+#include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/authenticator_environment.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
-#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom.h"
+#include "third_party/blink/public/mojom/webauthn/virtual_authenticator.mojom-forward.h"
 
 namespace device {
 class FidoDiscoveryFactory;
-}
+#if defined(OS_WIN)
+class WinWebAuthnApi;
+#endif
+}  // namespace device
 
 namespace content {
 
-class VirtualFidoDiscovery;
-class VirtualFidoDiscoveryFactory;
+class VirtualAuthenticatorManagerImpl;
 
 // Allows enabling and disabling per-frame virtual environments for the Web
 // Authentication API. Disabling the environment resets its state.
@@ -35,9 +37,9 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
  public:
   static AuthenticatorEnvironmentImpl* GetInstance();
 
-  // Returns the FidoDiscoveryFactory acting as replacement for the |node|.
-  device::FidoDiscoveryFactory* GetDiscoveryFactoryOverride(
-      FrameTreeNode* node);
+  AuthenticatorEnvironmentImpl(const AuthenticatorEnvironmentImpl&) = delete;
+  AuthenticatorEnvironmentImpl& operator=(const AuthenticatorEnvironmentImpl&) =
+      delete;
 
   // Enables the scoped virtual authenticator environment for the |node| and its
   // descendants.
@@ -50,9 +52,14 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
   // parents instead, this won't have any effect.
   void DisableVirtualAuthenticatorFor(FrameTreeNode* node);
 
+  // Returns whether the virtual authenticator environment is enabled for
+  // |node|.
+  bool IsVirtualAuthenticatorEnabledFor(FrameTreeNode* node);
+
   // Returns the virtual fido discovery factory for the |node| if the virtual
   // environment is enabled for it, otherwise returns nullptr.
-  VirtualFidoDiscoveryFactory* GetVirtualFactoryFor(FrameTreeNode* node);
+  VirtualAuthenticatorManagerImpl* MaybeGetVirtualAuthenticatorManager(
+      FrameTreeNode* node);
 
   // Adds the receiver to the virtual authenticator enabled for the |node|. The
   // virtual authenticator must be enabled beforehand.
@@ -61,8 +68,27 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
       mojo::PendingReceiver<blink::test::mojom::VirtualAuthenticatorManager>
           receiver);
 
-  // Called by VirtualFidoDiscoveries when they are destructed.
-  void OnDiscoveryDestroyed(VirtualFidoDiscovery* discovery);
+  // Returns whether |node| has the virtual authenticator environment enabled
+  // with a user-verifying platform installed in that environment.
+  bool HasVirtualUserVerifyingPlatformAuthenticator(FrameTreeNode* node);
+
+  // Returns the override installed by
+  // ReplaceDefaultDiscoveryFactoryForTesting().
+  device::FidoDiscoveryFactory* MaybeGetDiscoveryFactoryTestOverride();
+
+#if defined(OS_WIN)
+  // win_webauthn_api returns the WinWebAuthApi instance to be used for talking
+  // to the Windows WebAuthn API. This is a testing seam that can be altered
+  // with |SetWinWebAuthnApiForTesting|.
+  device::WinWebAuthnApi* win_webauthn_api() const;
+
+  // SetWinWebAuthnApiForTesting sets a testing override for |win_webauthn_api|.
+  void SetWinWebAuthnApiForTesting(device::WinWebAuthnApi*);
+
+  // ClearWinWebAuthnApiForTesting clears the testing override for
+  // |win_webauthn_api|.
+  void ClearWinWebAuthnApiForTesting();
+#endif
 
   // AuthenticatorEnvironment:
   void ReplaceDefaultDiscoveryFactoryForTesting(
@@ -80,10 +106,12 @@ class CONTENT_EXPORT AuthenticatorEnvironmentImpl
 
   std::unique_ptr<device::FidoDiscoveryFactory> replaced_discovery_factory_;
 
-  std::map<FrameTreeNode*, std::unique_ptr<VirtualFidoDiscoveryFactory>>
-      virtual_discovery_factories_;
+  std::map<FrameTreeNode*, std::unique_ptr<VirtualAuthenticatorManagerImpl>>
+      virtual_authenticator_managers_;
 
-  DISALLOW_COPY_AND_ASSIGN(AuthenticatorEnvironmentImpl);
+#if defined(OS_WIN)
+  device::WinWebAuthnApi* win_webauthn_api_for_testing_ = nullptr;
+#endif
 };
 
 }  // namespace content

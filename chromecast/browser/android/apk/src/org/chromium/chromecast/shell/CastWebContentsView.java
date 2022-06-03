@@ -10,12 +10,13 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.accessibility.AccessibilityNodeProvider;
 import android.widget.FrameLayout;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.chromecast.base.CastSwitches;

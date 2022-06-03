@@ -5,6 +5,7 @@
 #include "base/build_time.h"
 #include "base/generated_build_date.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 

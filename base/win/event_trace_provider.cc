@@ -6,8 +6,6 @@
 
 #include <windows.h>
 
-#include <cguid.h>
-
 namespace base {
 namespace win {
 
@@ -15,18 +13,9 @@ TRACE_GUID_REGISTRATION EtwTraceProvider::obligatory_guid_registration_ = {
     &GUID_NULL, nullptr};
 
 EtwTraceProvider::EtwTraceProvider(const GUID& provider_name)
-    : provider_name_(provider_name),
-      registration_handle_(NULL),
-      session_handle_(NULL),
-      enable_flags_(0),
-      enable_level_(0) {}
+    : provider_name_(provider_name) {}
 
-EtwTraceProvider::EtwTraceProvider()
-    : provider_name_(GUID_NULL),
-      registration_handle_(NULL),
-      session_handle_(NULL),
-      enable_flags_(0),
-      enable_level_(0) {}
+EtwTraceProvider::EtwTraceProvider() = default;
 
 EtwTraceProvider::~EtwTraceProvider() {
   Unregister();

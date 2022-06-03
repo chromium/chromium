@@ -8,7 +8,7 @@ This test verifies videos in fullscreen mode are not affected by CSS top/left pr
 var clientRect;
 var video = document.getElementById('video');
 
-waitForEventAndEnd(document, 'webkitfullscreenchange', function(){
+waitForEventOnceAndEnd(document, 'webkitfullscreenchange', function(){
     clientRect = video.getBoundingClientRect();
     testExpected('clientRect.left', 0)
     testExpected('clientRect.top', 0)

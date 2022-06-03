@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/sharing/proto/shared_clipboard_message.pb.h"
 #include "chrome/browser/sharing/proto/sharing_message.pb.h"
 #include "chrome/browser/sharing/sharing_device_source.h"
@@ -25,6 +26,7 @@ void SharedClipboardMessageHandler::OnMessage(
     chrome_browser_sharing::SharingMessage message,
     SharingMessageHandler::DoneCallback done_callback) {
   DCHECK(message.has_shared_clipboard_message());
+  TRACE_EVENT0("sharing", "SharedClipboardMessageHandler::OnMessage");
 
   ui::ScopedClipboardWriter(ui::ClipboardBuffer::kCopyPaste)
       .WriteText(base::UTF8ToUTF16(message.shared_clipboard_message().text()));

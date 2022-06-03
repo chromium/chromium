@@ -11,6 +11,7 @@ const options = {
         title: 'hi',
         message: 'there',
         type: 'basic',
+        appIconMaskUrl: redDot,
         buttons: [{title: 'Button'}, {title: 'Button'}]
       };
 

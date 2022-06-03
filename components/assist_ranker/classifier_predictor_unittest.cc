@@ -10,8 +10,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/assist_ranker/example_preprocessing.h"
 #include "components/assist_ranker/fake_ranker_model_loader.h"
@@ -56,9 +57,9 @@ std::unique_ptr<ClassifierPredictor> ClassifierPredictorTest::InitPredictor(
   std::unique_ptr<ClassifierPredictor> predictor(
       new ClassifierPredictor(config));
   auto fake_model_loader = std::make_unique<FakeRankerModelLoader>(
-      base::Bind(&ClassifierPredictor::ValidateModel),
-      base::Bind(&ClassifierPredictor::OnModelAvailable,
-                 base::Unretained(predictor.get())),
+      base::BindRepeating(&ClassifierPredictor::ValidateModel),
+      base::BindRepeating(&ClassifierPredictor::OnModelAvailable,
+                          base::Unretained(predictor.get())),
       std::move(ranker_model));
   predictor->LoadModel(std::move(fake_model_loader));
   return predictor;
@@ -72,7 +73,7 @@ const base::FeatureParam<std::string> kTestRankerUrl{
 
 PredictorConfig ClassifierPredictorTest::GetConfig() {
   return PredictorConfig("model_name", "logging_name", "uma_prefix", LOG_NONE,
-                         GetEmptyWhitelist(), &kTestRankerQuery,
+                         GetEmptyAllowlist(), &kTestRankerQuery,
                          &kTestRankerUrl, 0);
 }
 

@@ -65,9 +65,9 @@ class GCM_EXPORT RegistrationRequest {
   };
 
   // Callback completing the registration request.
-  typedef base::Callback<void(Status status,
-                              const std::string& registration_id)>
-      RegistrationCallback;
+  using RegistrationCallback =
+      base::OnceCallback<void(Status status,
+                              const std::string& registration_id)>;
 
   // Defines the common info about a registration/token request. All parameters
   // are mandatory.
@@ -118,12 +118,16 @@ class GCM_EXPORT RegistrationRequest {
       const RequestInfo& request_info,
       std::unique_ptr<CustomRequestHandler> custom_request_handler,
       const net::BackoffEntry::Policy& backoff_policy,
-      const RegistrationCallback& callback,
+      RegistrationCallback callback,
       int max_retry_count,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       GCMStatsRecorder* recorder,
       const std::string& source_to_record);
+
+  RegistrationRequest(const RegistrationRequest&) = delete;
+  RegistrationRequest& operator=(const RegistrationRequest&) = delete;
+
   ~RegistrationRequest();
 
   void Start();
@@ -162,8 +166,6 @@ class GCM_EXPORT RegistrationRequest {
   std::string source_to_record_;
 
   base::WeakPtrFactory<RegistrationRequest> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RegistrationRequest);
 };
 
 }  // namespace gcm

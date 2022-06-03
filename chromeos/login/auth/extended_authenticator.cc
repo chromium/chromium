@@ -10,12 +10,6 @@ namespace chromeos {
 
 // static
 scoped_refptr<ExtendedAuthenticator> ExtendedAuthenticator::Create(
-    NewAuthStatusConsumer* consumer) {
-  return ExtendedAuthenticatorImpl::Create(consumer);
-}
-
-// static
-scoped_refptr<ExtendedAuthenticator> ExtendedAuthenticator::Create(
       AuthStatusConsumer* consumer) {
   return ExtendedAuthenticatorImpl::Create(consumer);
 }

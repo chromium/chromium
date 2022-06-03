@@ -9,7 +9,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace chromeos {
 
@@ -31,12 +30,13 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) KioskOemManifestParser {
     bool keyboard_driven_oobe;
   };
 
+  KioskOemManifestParser() = delete;
+  KioskOemManifestParser(const KioskOemManifestParser&) = delete;
+  KioskOemManifestParser& operator=(const KioskOemManifestParser&) = delete;
+
   // Loads manifest from |kiosk_oem_file|. Returns true if manifest was
   // found and successfully parsed.
   static bool Load(const base::FilePath& kiosk_oem_file, Manifest* manifest);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(KioskOemManifestParser);
 };
 
 }  // namespace chromeos

@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "components/safe_browsing/proto/csd.pb.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "net/base/load_flags.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -49,8 +49,8 @@ TEST_F(IncidentReportUploaderImplTest, Success) {
 
   ClientIncidentReport report;
   auto instance(IncidentReportUploaderImpl::UploadReport(
-      base::Bind(&IncidentReportUploaderImplTest::OnReportUploadResult,
-                 base::Unretained(this)),
+      base::BindOnce(&IncidentReportUploaderImplTest::OnReportUploadResult,
+                     base::Unretained(this)),
       url_loader_factory, report));
 
   std::string response;

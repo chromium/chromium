@@ -2,21 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './mojo_api.js';
-
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {GraphChangeStreamInterface, GraphChangeStreamReceiver, GraphDump, GraphDumpRemote} from './chrome/browser/ui/webui/discards/discards.mojom-webui.js';
+
 /**
- * @implements {discards.mojom.GraphChangeStreamInterface}
+ * @implements {GraphChangeStreamInterface}
  */
 class DiscardsGraphChangeStreamImpl {
+  /** @param {Window} contentWindow */
   constructor(contentWindow) {
+    /** @private {Window} */
     this.contentWindow_ = contentWindow;
   }
 
   /**
    * @param {string} type
-   * @param {Object|number} data
+   * @param {Object|number|bigint} data
    */
   postMessage_(type, data) {
     this.contentWindow_.postMessage([type, data], '*');
@@ -81,38 +83,65 @@ Polymer({
   /**
    * The Mojo graph data source.
    *
-   * @private {discards.mojom.GraphDumpRemote}
+   * @private {GraphDumpRemote}
    */
   graphDump_: null,
 
   /**
    * The graph change listener.
    *
-   * @private {discards.mojom.GraphChangeStreamInterface}
+   * @private {GraphChangeStreamInterface}
    */
   changeListener_: null,
 
+  /**
+   * The WebView's content window object.
+   * @private {?Window}
+   */
+  contentWindow_: null,
+
   /** @override */
-  ready: function() {
-    this.graphDump_ =
-        discards.mojom.GraphDump.getRemote(/*useBrowserInterfaceBroker=*/ true);
+  ready() {
+    this.graphDump_ = GraphDump.getRemote();
   },
 
   /** @override */
-  detached: function() {
+  detached() {
     // TODO(siggi): Is there a way to tear down the binding explicitly?
     this.graphDump_ = null;
     this.changeListener_ = null;
   },
 
+  /**
+   * @param {!Event} event A request from the WebView.
+   * @private
+   */
+  onMessage_(event) {
+    const type = /** @type {string} */ (event.data[0]);
+    const data = /** @type {Object|number|bigint} */ (event.data[1]);
+    switch (type) {
+      case 'requestNodeDescriptions':
+        // Forward the request through the mojoms and bounce the reply back.
+        this.graphDump_
+            .requestNodeDescriptions(/** @type {!Array<bigint>} */ (data))
+            .then(
+                (descriptions) => this.contentWindow_.postMessage(
+                    ['nodeDescriptions', descriptions.nodeDescriptionsJson],
+                    '*'));
+        break;
+    }
+  },
+
   /** @private */
-  onWebViewReady_: function() {
+  onWebViewReady_() {
+    this.contentWindow_ = this.$.webView.contentWindow;
     this.changeListener_ =
-        new DiscardsGraphChangeStreamImpl(this.$.webView.contentWindow);
-    this.client_ =
-        new discards.mojom.GraphChangeStreamReceiver(this.changeListener_);
+        new DiscardsGraphChangeStreamImpl(this.contentWindow_);
+    this.client_ = new GraphChangeStreamReceiver(this.changeListener_);
     // Subscribe for graph updates.
     this.graphDump_.subscribeToChanges(
         this.client_.$.bindNewPipeAndPassRemote());
+
+    window.addEventListener('message', this.onMessage_.bind(this));
   },
 });

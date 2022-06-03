@@ -6,40 +6,98 @@
 Polymer({
   is: 'button-bar',
 
-  behaviors: [I18nBehavior],
+  behaviors: [
+    I18nBehavior,
+  ],
 
   properties: {
-    /** When set, displays the Try Again action button. */
-    showTryAgainButton: {
-      type: Boolean,
-      value: false,
+    /**
+     * Sets the states of all buttons
+     * @type {!cellularSetup.ButtonBarState}
+     */
+    buttonState: {
+      type: Object,
+      value: {},
     },
 
-    /** When set, displays the Finish action button. */
-    showFinishButton: {
-      type: Boolean,
-      value: false,
+    /**
+     * @type {!cellularSetup.Button}
+     */
+    Button: {
+      type: Object,
+      value: cellularSetup.Button,
     },
 
-    /** When set, displays a cancel button instead of back. */
-    showCancelButton: {
-      type: Boolean,
-      value: false,
-    },
+    forwardButtonLabel: {
+      type: String,
+      value: '',
+    }
+  },
+
+  /**
+   * @param {!cellularSetup.Button} buttonName
+   * @return {boolean}
+   * @private
+   */
+  isButtonHidden_(buttonName) {
+    const state = this.getButtonBarState_(buttonName);
+    return state === cellularSetup.ButtonState.HIDDEN;
+  },
+
+  /**
+   * @param {!cellularSetup.Button} buttonName
+   * @return {boolean}
+   * @private
+   */
+  isButtonDisabled_(buttonName) {
+    const state = this.getButtonBarState_(buttonName);
+    return state === cellularSetup.ButtonState.DISABLED;
+  },
+
+  focusDefaultButton() {
+    const buttons = this.shadowRoot.querySelectorAll('cr-button');
+    // Focus the first non-disabled, non-hidden button from the end.
+    for (let i = buttons.length - 1; i >= 0; i--) {
+      const button = buttons.item(i);
+      if (!button.disabled && !button.hidden) {
+        cr.ui.focusWithoutInk(button);
+        return;
+      }
+    }
   },
 
   /** @private */
-  onBackwardButtonClicked_: function() {
+  onBackwardButtonClicked_() {
     this.fire('backward-nav-requested');
   },
 
   /** @private */
-  onTryAgainButtonClicked_: function() {
-    this.fire('retry-requested');
+  onCancelButtonClicked_() {
+    this.fire('cancel-requested');
   },
 
   /** @private */
-  onFinishButtonClicked_: function() {
-    this.fire('complete-flow-requested');
+  onForwardButtonClicked_() {
+    this.fire('forward-nav-requested');
   },
+
+  /**
+   * @param {!cellularSetup.Button} button
+   * @returns {!cellularSetup.ButtonState|undefined}
+   * @private
+   */
+  getButtonBarState_(button) {
+    assert(this.buttonState);
+    switch (button) {
+      case cellularSetup.Button.BACKWARD:
+        return this.buttonState.backward;
+      case cellularSetup.Button.CANCEL:
+        return this.buttonState.cancel;
+      case cellularSetup.Button.FORWARD:
+        return this.buttonState.forward;
+      default:
+        assertNotReached();
+        return cellularSetup.ButtonState.ENABLED;
+    }
+  }
 });

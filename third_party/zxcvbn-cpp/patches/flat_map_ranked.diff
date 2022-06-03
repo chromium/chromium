@@ -1,0 +1,151 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
+index a7adbe95a0d9..4996f7959be4 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.cpp
+@@ -1,31 +1,32 @@
+ #include <zxcvbn/frequency_lists.hpp>
+ 
+-#include <unordered_map>
+ #include <utility>
+ 
++#include "base/containers/flat_map.h"
+ #include "base/no_destructor.h"
+ 
+ namespace zxcvbn {
+ 
+ namespace {
+ 
+-std::unordered_map<DictionaryTag, RankedDict>& ranked_dicts() {
+-  static base::NoDestructor<std::unordered_map<DictionaryTag, RankedDict>>
++base::flat_map<DictionaryTag, RankedDict>& ranked_dicts() {
++  static base::NoDestructor<base::flat_map<DictionaryTag, RankedDict>>
+       ranked_dicts;
+   return *ranked_dicts;
+ }
+ 
+ }  // namespace
+ 
+-void SetRankedDicts(std::unordered_map<DictionaryTag, RankedDict> dicts) {
++void SetRankedDicts(base::flat_map<DictionaryTag, RankedDict> dicts) {
+   ranked_dicts() = std::move(dicts);
+ }
+ 
+-RankedDicts convert_to_ranked_dicts(std::unordered_map<DictionaryTag, RankedDict> & ranked_dicts) {
++RankedDicts convert_to_ranked_dicts(
++    base::flat_map<DictionaryTag, RankedDict>& ranked_dicts) {
+   RankedDicts build;
+ 
+   for (const auto & item : ranked_dicts) {
+-    build.insert(item);
++    build.emplace(item.first, &item.second);
+   }
+ 
+   return build;
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
+index 33da02707152..3757483251e5 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists.hpp
+@@ -3,11 +3,10 @@
+ 
+ #include <zxcvbn/frequency_lists_common.hpp>
+ 
+-#include <unordered_map>
+-
+ #include <cstdint>
+ 
+ #include "base/strings/string_piece.h"
++#include "base/containers/flat_map.h"
+ 
+ namespace zxcvbn {
+ 
+@@ -23,24 +22,13 @@ enum class DictionaryTag {
+ 
+ }
+ 
+-namespace std {
+-
+-template<>
+-struct hash<zxcvbn::DictionaryTag> {
+-  std::size_t operator()(const zxcvbn::DictionaryTag & v) const {
+-    return static_cast<std::size_t>(v);
+-  }
+-};
+-
+-}
+-
+ namespace zxcvbn {
+ 
+-using RankedDicts = std::unordered_map<DictionaryTag, const RankedDict &>;
++using RankedDicts = base::flat_map<DictionaryTag, const RankedDict*>;
+ 
+-void SetRankedDicts(std::unordered_map<DictionaryTag, RankedDict> dicts);
++void SetRankedDicts(base::flat_map<DictionaryTag, RankedDict> dicts);
+ 
+-RankedDicts convert_to_ranked_dicts(std::unordered_map<DictionaryTag, RankedDict> & ranked_dicts);
++RankedDicts convert_to_ranked_dicts(base::flat_map<DictionaryTag, RankedDict> & ranked_dicts);
+ RankedDicts default_ranked_dicts();
+ 
+ }
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
+index 40eee250f244..d1c5177fb183 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/frequency_lists_common.hpp
+@@ -1,26 +1,27 @@
+ #ifndef __ZXCVBN__FREQUENCY_LISTS_COMMON_HPP
+ #define __ZXCVBN__FREQUENCY_LISTS_COMMON_HPP
+ 
++#include <cstdint>
+ #include <string>
+-#include <unordered_map>
+-#include <utility>
++#include <vector>
+ 
+-#include <cstdint>
++#include "base/containers/flat_map.h"
+ 
+ namespace zxcvbn {
+ 
+ using rank_t = std::size_t;
+-using RankedDict = std::unordered_map<std::string, rank_t>;
++using RankedDict = base::flat_map<std::string, rank_t>;
+ 
+ template<class T>
+ RankedDict build_ranked_dict(const T & ordered_list) {
+-  RankedDict result;
++  std::vector<RankedDict::value_type> items;
++  items.reserve(ordered_list.size());
+   rank_t idx = 1; // rank starts at 1, not 0
+   for (const auto & word : ordered_list) {
+-    result.insert(std::make_pair(word, idx));
++    items.emplace_back(word, idx);
+     idx += 1;
+   }
+-  return result;
++  return RankedDict(std::move(items));
+ }
+ 
+ }
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+index 6d43cd2dc20b..8f4e6d2f0e00 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/matching.cpp
+@@ -124,8 +124,8 @@ std::vector<Match> omnimatch(const std::string & password,
+   auto ranked_dictionaries = default_ranked_dicts();
+ 
+   auto ranked_dict = build_ranked_dict(ordered_list);
+-  ranked_dictionaries.insert(std::make_pair(DictionaryTag::USER_INPUTS,
+-                                            std::cref(ranked_dict)));
++  ranked_dictionaries.insert(
++      std::make_pair(DictionaryTag::USER_INPUTS, &ranked_dict));
+ 
+   std::vector<Match> matches;
+   std::function<std::vector<Match>(const std::string&)> matchers[] = {
+@@ -159,7 +159,7 @@ std::vector<Match> dictionary_match(const std::string & password,
+   auto password_lower = dict_normalize(password);
+   for (const auto & item : ranked_dictionaries) {
+     auto dictionary_tag = item.first;
+-    auto & ranked_dict = item.second;
++    auto& ranked_dict = *item.second;
+     for (decltype(len) i = 0, idx = 0; idx < len; util::utf8_decode(password, idx), ++i) {
+       for (decltype(len) j = i, jdx = idx; jdx < len; ++j) {
+         // j is inclusive, but jdx is not so eagerly iterate jdx

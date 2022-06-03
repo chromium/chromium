@@ -72,7 +72,8 @@ setup(() => {
     expected[property] = getComputedStyle(target)[property];
   }
   target.style.transition = '1s';
-  eventSender.setPageZoomFactor(2);
+  if (window.testRunner)
+    testRunner.setPageZoomFactor(2);
 });
 
 for (var property of lengthProperties) {

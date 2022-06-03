@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_UI_WEBUI_DOMAIN_RELIABILITY_INTERNALS_UI_H_
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_message_handler.h"
 
 namespace base {
 class ListValue;
@@ -20,15 +21,34 @@ class Value;
 class DomainReliabilityInternalsUI : public content::WebUIController {
  public:
   explicit DomainReliabilityInternalsUI(content::WebUI* web_ui);
+
+  DomainReliabilityInternalsUI(const DomainReliabilityInternalsUI&) = delete;
+  DomainReliabilityInternalsUI& operator=(const DomainReliabilityInternalsUI&) =
+      delete;
+
   ~DomainReliabilityInternalsUI() override;
+};
+
+class DomainReliabilityInternalsHandler : public content::WebUIMessageHandler {
+ public:
+  DomainReliabilityInternalsHandler();
+
+  DomainReliabilityInternalsHandler(const DomainReliabilityInternalsHandler&) =
+      delete;
+  DomainReliabilityInternalsHandler& operator=(
+      const DomainReliabilityInternalsHandler&) = delete;
+
+  ~DomainReliabilityInternalsHandler() override;
+
+  // content::WebUIMessageHandler:
+  void RegisterMessages() override;
 
  private:
-  void UpdateData(const base::ListValue* args);
-  void OnDataUpdated(base::Value data) const;
+  void HandleUpdateData(const base::ListValue* args);
+  void OnDataUpdated(base::Value data);
 
-  base::WeakPtrFactory<DomainReliabilityInternalsUI> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DomainReliabilityInternalsUI);
+  std::string callback_id_;
+  base::WeakPtrFactory<DomainReliabilityInternalsHandler> weak_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_DOMAIN_RELIABILITY_INTERNALS_UI_H_

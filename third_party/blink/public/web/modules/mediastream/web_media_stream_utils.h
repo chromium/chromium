@@ -5,25 +5,20 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_UTILS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_UTILS_H_
 
-#include <memory>
-
 #include "media/capture/video_capture_types.h"
 #include "third_party/blink/public/common/media/video_capture.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_sink.h"
+#include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 
 namespace blink {
 
 class WebMediaStreamSink;
 class WebMediaStreamTrack;
 
-// Requests that a refresh frame be sent "soon" (e.g., to resolve picture loss
-// or quality issues).
-//
 // TODO(crbug.com/704136): Move these helper functions out of the Blink
 // public API. Note for while moving it: there is an existing
 // media_stream_utils.h on renderer/modules/mediastream.
-BLINK_MODULES_EXPORT void RequestRefreshFrameFromVideoTrack(
-    const WebMediaStreamTrack& video_track);
 
 // Calls to these methods must be done on the main render thread.
 // Note that |callback| for frame delivery happens on the IO thread.
@@ -36,10 +31,18 @@ BLINK_MODULES_EXPORT void AddSinkToMediaStreamTrack(
     const WebMediaStreamTrack& track,
     WebMediaStreamSink* sink,
     const VideoCaptureDeliverFrameCB& callback,
-    bool is_sink_secure);
+    MediaStreamVideoSink::IsSecure is_secure,
+    MediaStreamVideoSink::UsesAlpha uses_alpha);
 BLINK_MODULES_EXPORT void RemoveSinkFromMediaStreamTrack(
     const WebMediaStreamTrack& track,
     WebMediaStreamSink* sink);
+
+// See documentation of MediaStreamVideoTrack::CreateVideoTrack().
+BLINK_MODULES_EXPORT WebMediaStreamTrack CreateWebMediaStreamVideoTrack(
+    MediaStreamVideoSource* source,
+    MediaStreamVideoSource::ConstraintsOnceCallback callback,
+    bool enabled);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_MODULES_MEDIASTREAM_WEB_MEDIA_STREAM_UTILS_H_

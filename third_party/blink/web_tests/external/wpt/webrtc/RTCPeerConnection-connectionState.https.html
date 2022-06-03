@@ -11,7 +11,7 @@
 
   // The following helper functions are called from RTCPeerConnection-helper.js:
   // exchangeIceCandidates
-  // doSignalingHandshake
+  // exchangeOfferAnswer
 
   /*
     4.3.2.  Interface Definition
@@ -134,7 +134,7 @@
     pc1.addEventListener('connectionstatechange', onConnectionStateChange);
 
     exchangeIceCandidates(pc1, pc2);
-    doSignalingHandshake(pc1, pc2);
+    exchangeOfferAnswer(pc1, pc2);
   }, 'connection with one data channel should eventually have connected connection state');
 
   async_test(t => {
@@ -166,7 +166,7 @@
     pc1.addEventListener('connectionstatechange', onConnectionStateChange);
 
     exchangeIceCandidates(pc1, pc2);
-    doSignalingHandshake(pc1, pc2);
+    exchangeOfferAnswer(pc1, pc2);
   }, 'connection with one data channel should eventually have transports in connected state');
 
   /*
@@ -239,12 +239,12 @@
     t.add_cleanup(() => caller.close());
     const callee = new RTCPeerConnection();
     t.add_cleanup(() => callee.close());
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
     const [track] = stream.getTracks();
     caller.addTrack(track, stream);
 
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
 
     assert_equals(caller.iceConnectionState, 'new');
     assert_equals(callee.iceConnectionState, 'new');
@@ -256,7 +256,7 @@
     t.add_cleanup(() => caller.close());
     const callee = new RTCPeerConnection();
     t.add_cleanup(() => callee.close());
-    const stream = await navigator.mediaDevices.getUserMedia({audio: true});
+    const stream = await getNoiseStream({audio: true});
     t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
     const [track] = stream.getTracks();
     caller.addTrack(track, stream);
@@ -264,10 +264,28 @@
     const states = [];
     caller.addEventListener('connectionstatechange', () => states.push(caller.connectionState));
     exchangeIceCandidates(caller, callee);
-    await doSignalingHandshake(caller, callee);
+    await exchangeOfferAnswer(caller, callee);
 
     await listenToConnected(caller);
 
     assert_array_equals(states, ['connecting', 'connected']);
   }, 'connectionState transitions to connected via connecting');
+
+  promise_test(async t => {
+    const pc1 = new RTCPeerConnection();
+    t.add_cleanup(() => pc1.close());
+    const pc2 = new RTCPeerConnection();
+    const stream = await getNoiseStream({ audio: true });
+    t.add_cleanup(() => stream.getTracks().forEach(track => track.stop()));
+
+    stream.getTracks().forEach(track => pc1.addTrack(track, stream));
+    exchangeIceCandidates(pc1, pc2);
+    exchangeOfferAnswer(pc1, pc2);
+    await listenToIceConnected(pc2);
+
+    pc2.onconnectionstatechange = t.unreached_func();
+    pc2.close();
+    assert_equals(pc2.connectionState, 'closed');
+    await new Promise(r => t.step_timeout(r, 100));
+  }, 'Closing a PeerConnection should not fire connectionstatechange event');
 </script>

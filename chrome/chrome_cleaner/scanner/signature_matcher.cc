@@ -90,8 +90,9 @@ bool SignatureMatcher::RetrieveVersionInformation(
   if (!version.get())
     return false;
 
-  information->company_name = version->company_name();
-  information->original_filename = version->original_filename();
+  information->company_name = base::AsWString(version->company_name());
+  information->original_filename =
+      base::AsWString(version->original_filename());
   return true;
 }
 

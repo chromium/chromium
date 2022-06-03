@@ -15,17 +15,16 @@ group("unit_tests") {
       "//components/download/public/common:unit_tests",
       "//components/download/public/task:unit_tests",
     ]
+  } else {
+    deps =
+        [ "//components/download/internal/background_service/ios:unit_tests" ]
   }
 
-  data_deps = [
-    ":components_unittests_gtest_filter",
-  ]
+  data_deps = [ ":components_unittests_gtest_filter" ]
 }
 
 source_set("components_unittests_gtest_filter") {
   testonly = true
 
-  data = [
-    "components_unittests.filter",
-  ]
+  data = [ "components_unittests.filter" ]
 }

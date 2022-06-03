@@ -23,7 +23,7 @@ Test following keys:
 <script>
 description("Multiple fields UI of time input type with keyboard events");
 if (window.internals)
-    internals.settings.setLangAttributeAwareFormControlUIEnabled(true);
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
 var input = document.getElementById("input");
 
 function shadowPseudoIdOfFocusedSubField(host)
@@ -177,7 +177,7 @@ keyDown('\t');
 keyDown('ArrowUp');
 keyDown('\t');
 keyDown('ArrowUp');
-shouldBeEqualToString('input.value', '13:00');
+shouldBeEqualToString('input.value', '13:00:00.000');
 
 beginTest('Down key on minimum value', '01:00');
 input.step = 0.001;
@@ -220,6 +220,26 @@ keyDown('\t', ['shiftKey']); // -> [01]:02
 keyDown('3'); //          -> [03]:02
 shouldBeEqualToString('input.value', '03:02');
 input.removeAttribute("lang");
+
+input.min = '23:00';
+input.max = '01:00';
+beginTest('Reversed range', '');
+keyDown('1');          // -> [01]:-- --
+keyDown('1');          // -> 11:[--] --
+keyDown('3');          // -> 11:[03] --
+keyDown('0');          // -> 11:30 [--]
+keyDown('P');          // -> 11:30 [PM]
+shouldBeEqualToString('input.value', '23:30');
+keyDown('ArrowLeft');  // -> 11:[30] PM
+keyDown('ArrowLeft');  // -> [11]:30 PM
+keyDown('1');          // -> [01]:30 PM
+keyDown('2');          // -> 12:[30] PM
+keyDown('ArrowRight'); // -> 12:30 [PM]
+keyDown('ArrowUp');    // -> 12:30 [AM]
+shouldBeEqualToString('input.value', '00:30');
+input.min = '';
+input.max = '';
+
 </script>
 </body>
 </html>

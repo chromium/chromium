@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_KEYWORD_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_KEYWORD_VALUE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -24,6 +23,8 @@ class CORE_EXPORT CSSKeywordValue final : public CSSStyleValue {
   static CSSKeywordValue* FromCSSValue(const CSSValue&);
 
   explicit CSSKeywordValue(const String& keyword) : keyword_value_(keyword) {}
+  CSSKeywordValue(const CSSKeywordValue&) = delete;
+  CSSKeywordValue& operator=(const CSSKeywordValue&) = delete;
 
   StyleValueType GetType() const override { return kKeywordType; }
 
@@ -35,7 +36,6 @@ class CORE_EXPORT CSSKeywordValue final : public CSSStyleValue {
 
  private:
   String keyword_value_;
-  DISALLOW_COPY_AND_ASSIGN(CSSKeywordValue);
 };
 
 template <>
@@ -47,4 +47,4 @@ struct DowncastTraits<CSSKeywordValue> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_KEYWORD_VALUE_H_

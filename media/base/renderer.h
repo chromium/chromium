@@ -6,24 +6,26 @@
 #define MEDIA_BASE_RENDERER_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "media/base/buffering_state.h"
-#include "media/base/cdm_context.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
+class CdmContext;
 class MediaResource;
 class RendererClient;
 
 class MEDIA_EXPORT Renderer {
  public:
   Renderer();
+
+  Renderer(const Renderer&) = delete;
+  Renderer& operator=(const Renderer&) = delete;
 
   // Stops rendering and fires any pending callbacks.
   virtual ~Renderer();
@@ -38,9 +40,10 @@ class MEDIA_EXPORT Renderer {
                           PipelineStatusCallback init_cb) = 0;
 
   // Associates the |cdm_context| with this Renderer for decryption (and
-  // decoding) of media data, then fires |cdm_attached_cb| with the result.
-  virtual void SetCdm(CdmContext* cdm_context,
-                      CdmAttachedCB cdm_attached_cb) = 0;
+  // decoding) of media data, then fires |cdm_attached_cb| with whether the
+  // operation succeeded.
+  using CdmAttachedCB = base::OnceCallback<void(bool)>;
+  virtual void SetCdm(CdmContext* cdm_context, CdmAttachedCB cdm_attached_cb);
 
   // Specifies a latency hint from the site. Renderers should clamp the hint
   // value to reasonable min and max and use the resulting value as a target
@@ -48,7 +51,14 @@ class MEDIA_EXPORT Renderer {
   // of decoded data is buffered. A nullopt hint indicates the user is clearing
   // their preference and the renderer should restore its default buffering
   // thresholds.
-  virtual void SetLatencyHint(base::Optional<base::TimeDelta> latency_hint) = 0;
+  virtual void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) = 0;
+
+  // Sets whether pitch adjustment should be applied when the playback rate is
+  // different than 1.0.
+  virtual void SetPreservesPitch(bool preserves_pitch);
+
+  // Sets a flag indicating whether the audio stream was initiated by autoplay.
+  virtual void SetAutoplayInitiated(bool autoplay_initiated);
 
   // The following functions must be called after Initialize().
 
@@ -80,9 +90,6 @@ class MEDIA_EXPORT Renderer {
   virtual void OnEnabledAudioTracksChanged(
       const std::vector<DemuxerStream*>& enabled_tracks,
       base::OnceClosure change_completed_cb);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Renderer);
 };
 
 }  // namespace media

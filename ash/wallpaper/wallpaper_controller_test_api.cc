@@ -14,7 +14,8 @@ namespace ash {
 
 namespace {
 
-const WallpaperInfo kTestWallpaperInfo = {"", WALLPAPER_LAYOUT_CENTER, DEFAULT,
+const WallpaperInfo kTestWallpaperInfo = {"", WALLPAPER_LAYOUT_CENTER,
+                                          WallpaperType::kDefault,
                                           base::Time::Now().LocalMidnight()};
 
 gfx::ImageSkia CreateImageWithColor(const SkColor color) {

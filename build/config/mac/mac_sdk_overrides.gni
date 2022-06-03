@@ -9,7 +9,7 @@ _sdk_min_from_env = getenv("FORCE_MAC_SDK_MIN")
 declare_args() {
   # Minimum supported version of the Mac SDK.
   if (_sdk_min_from_env == "") {
-    mac_sdk_min = "10.14"
+    mac_sdk_min = "10.15"
   } else {
     mac_sdk_min = _sdk_min_from_env
   }

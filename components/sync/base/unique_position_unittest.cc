@@ -10,9 +10,9 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/cxx17_backports.h"
 #include "base/hash/sha1.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/sync/protocol/unique_position.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,45 +42,45 @@ class UniquePositionTest : public ::testing::Test {
     return pos.ToProto().ByteSize();
   }
 
-const size_t kMinLength = UniquePosition::kSuffixLength;
-const size_t kGenericPredecessorLength = kMinLength + 2;
-const size_t kGenericSuccessorLength = kMinLength + 1;
-const size_t kBigPositionLength = kMinLength;
-const size_t kSmallPositionLength = kMinLength;
+  const size_t kMinLength = UniquePosition::kSuffixLength;
+  const size_t kGenericPredecessorLength = kMinLength + 2;
+  const size_t kGenericSuccessorLength = kMinLength + 1;
+  const size_t kBigPositionLength = kMinLength;
+  const size_t kSmallPositionLength = kMinLength;
 
-// Be careful when adding more prefixes to this list.
-// We have to manually ensure each has a unique suffix.
-const UniquePosition kGenericPredecessor =
-    FromBytes((std::string(kGenericPredecessorLength, '\x23') + '\xFF'));
-const UniquePosition kGenericSuccessor =
-    FromBytes(std::string(kGenericSuccessorLength, '\xAB') + '\xFF');
-const UniquePosition kBigPosition =
-    FromBytes(std::string(kBigPositionLength - 1, '\xFF') + '\xFE' + '\xFF');
-const UniquePosition kBigPositionLessTwo =
-    FromBytes(std::string(kBigPositionLength - 1, '\xFF') + '\xFC' + '\xFF');
-const UniquePosition kBiggerPosition =
-    FromBytes(std::string(kBigPositionLength, '\xFF') + '\xFF');
-const UniquePosition kSmallPosition =
-    FromBytes(std::string(kSmallPositionLength - 1, '\x00') + '\x01' + '\xFF');
-const UniquePosition kSmallPositionPlusOne =
-    FromBytes(std::string(kSmallPositionLength - 1, '\x00') + '\x02' + '\xFF');
-const UniquePosition kHugePosition = FromBytes(
-    std::string(UniquePosition::kCompressBytesThreshold, '\xFF') + '\xAB');
+  // Be careful when adding more prefixes to this list.
+  // We have to manually ensure each has a unique suffix.
+  const UniquePosition kGenericPredecessor =
+      FromBytes((std::string(kGenericPredecessorLength, '\x23') + '\xFF'));
+  const UniquePosition kGenericSuccessor =
+      FromBytes(std::string(kGenericSuccessorLength, '\xAB') + '\xFF');
+  const UniquePosition kBigPosition =
+      FromBytes(std::string(kBigPositionLength - 1, '\xFF') + '\xFE' + '\xFF');
+  const UniquePosition kBigPositionLessTwo =
+      FromBytes(std::string(kBigPositionLength - 1, '\xFF') + '\xFC' + '\xFF');
+  const UniquePosition kBiggerPosition =
+      FromBytes(std::string(kBigPositionLength, '\xFF') + '\xFF');
+  const UniquePosition kSmallPosition = FromBytes(
+      std::string(kSmallPositionLength - 1, '\x00') + '\x01' + '\xFF');
+  const UniquePosition kSmallPositionPlusOne = FromBytes(
+      std::string(kSmallPositionLength - 1, '\x00') + '\x02' + '\xFF');
+  const UniquePosition kHugePosition = FromBytes(
+      std::string(UniquePosition::kCompressBytesThreshold, '\xFF') + '\xAB');
 
-const UniquePosition kPositionArray[7] = {
-    kGenericPredecessor,   kGenericSuccessor, kBigPosition,
-    kBigPositionLessTwo,   kBiggerPosition,   kSmallPosition,
-    kSmallPositionPlusOne,
-};
+  const UniquePosition kPositionArray[7] = {
+      kGenericPredecessor,   kGenericSuccessor, kBigPosition,
+      kBigPositionLessTwo,   kBiggerPosition,   kSmallPosition,
+      kSmallPositionPlusOne,
+  };
 
-const UniquePosition kSortedPositionArray[7] = {
-    kSmallPosition,    kSmallPositionPlusOne, kGenericPredecessor,
-    kGenericSuccessor, kBigPositionLessTwo,   kBigPosition,
-    kBiggerPosition,
-};
+  const UniquePosition kSortedPositionArray[7] = {
+      kSmallPosition,    kSmallPositionPlusOne, kGenericPredecessor,
+      kGenericSuccessor, kBigPositionLessTwo,   kBigPosition,
+      kBiggerPosition,
+  };
 
-const size_t kNumPositions = base::size(kPositionArray);
-const size_t kNumSortedPositions = base::size(kSortedPositionArray);
+  const size_t kNumPositions = base::size(kPositionArray);
+  const size_t kNumSortedPositions = base::size(kSortedPositionArray);
 };
 
 static constexpr char kMinSuffix[] = {
@@ -114,9 +114,9 @@ static_assert(base::size(kNormalSuffix) == UniquePosition::kSuffixLength,
   if (m.LessThan(n))
     return ::testing::AssertionSuccess();
 
-  return ::testing::AssertionFailure() << m_expr << " is not less than "
-                                       << n_expr << " (" << m.ToDebugString()
-                                       << " and " << n.ToDebugString() << ")";
+  return ::testing::AssertionFailure()
+         << m_expr << " is not less than " << n_expr << " ("
+         << m.ToDebugString() << " and " << n.ToDebugString() << ")";
 }
 
 ::testing::AssertionResult Equals(const char* m_expr,
@@ -126,9 +126,9 @@ static_assert(base::size(kNormalSuffix) == UniquePosition::kSuffixLength,
   if (m.Equals(n))
     return ::testing::AssertionSuccess();
 
-  return ::testing::AssertionFailure() << m_expr << " is not equal to "
-                                       << n_expr << " (" << m.ToDebugString()
-                                       << " != " << n.ToDebugString() << ")";
+  return ::testing::AssertionFailure()
+         << m_expr << " is not equal to " << n_expr << " (" << m.ToDebugString()
+         << " != " << n.ToDebugString() << ")";
 }
 
 // Test that the code can read the uncompressed serialization format.
@@ -381,7 +381,7 @@ TEST_P(PositionInsertTest, StressRightInsertBetween) {
   VLOG(1) << "Lengths: " << GetLength(left_pos) << ", " << GetLength(right_pos);
 }
 
-// Generates suffixes similar to those generated by the directory.
+// Generates suffixes similar to those generated by the legacy Directory.
 // This may become obsolete if the suffix generation code is modified.
 class SuffixGenerator {
  public:

@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_TRANSLATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_TRANSLATE_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_component.h"
@@ -44,6 +43,8 @@ class CORE_EXPORT CSSTranslate final : public CSSTransformComponent {
                CSSNumericValue* y,
                CSSNumericValue* z,
                bool is2D);
+  CSSTranslate(const CSSTranslate&) = delete;
+  CSSTranslate& operator=(const CSSTranslate&) = delete;
 
   // Getters and setters for attributes defined in the IDL.
   CSSNumericValue* x() { return x_; }
@@ -59,7 +60,7 @@ class CORE_EXPORT CSSTranslate final : public CSSTransformComponent {
   TransformComponentType GetType() const final { return kTranslationType; }
   const CSSFunctionValue* ToCSSValue() const final;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(x_);
     visitor->Trace(y_);
     visitor->Trace(z_);
@@ -70,9 +71,8 @@ class CORE_EXPORT CSSTranslate final : public CSSTransformComponent {
   Member<CSSNumericValue> x_;
   Member<CSSNumericValue> y_;
   Member<CSSNumericValue> z_;
-  DISALLOW_COPY_AND_ASSIGN(CSSTranslate);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_TRANSLATE_H_

@@ -6,8 +6,8 @@
 
 #include <stdint.h>
 
+#include "base/cxx17_backports.h"
 #include "base/format_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -419,6 +419,26 @@ const DeviceCapabilities kLinkTouchpad = {
     /* ff */ "0",
     kLinkTouchpadAbsAxes,
     base::size(kLinkTouchpadAbsAxes),
+};
+
+const DeviceCapabilities kMorphiusPointingStick = {
+    /* path */ "/sys/devices/platform/i8042/serio1/input/input12/event11",
+    /* name */ "TPPS/2 JYT_Synaptics TrackPoint",
+    /* phys */ "isa0060/serio1/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0002",
+    /* product */ "000a",
+    /* version */ "0000",
+    /* prop */ "21",
+    /* ev */ "7",
+    /* key */ "70000 0 0 0 0",
+    /* rel */ "3",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
 };
 
 // Captured from generic HP KU-1156 USB keyboard.
@@ -959,6 +979,366 @@ const DeviceCapabilities kKohakuStylus = {
     base::size(kKohakuStylusAxes),
 };
 
+const DeviceAbsoluteAxis kXboxEliteAxes[] = {
+    {ABS_X, {0, 0, 65535, 255, 4095, 0}},
+    {ABS_Y, {0, 0, 65535, 255, 4095, 0}},
+    {ABS_Z, {0, 0, 65535, 255, 4095, 0}},
+    {ABS_RZ, {0, 0, 65535, 255, 4095, 0}},
+    {ABS_GAS, {0, 0, 1023, 3, 63, 0}},
+    {ABS_BRAKE, {0, 0, 1023, 3, 63, 0}},
+    {ABS_HAT0X, {0, -1, 1, 0, 0, 0}},
+    {ABS_HAT0Y, {0, -1, 1, 0, 0, 0}},
+};
+
+// captured from Xbox Elite series 2 controller
+const DeviceCapabilities kXboxElite = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:14.0/usb1/1-3/1-3:1.0/bluetooth/hci0/"
+    "hci0:256:11/0005:045E:0B05.000C/input/input21/event11",
+    /* name */ "Xbox Elite Wireless Controller",
+    /* phys */ "a0:af:bd:9f:2f:76",
+    /* uniq */ "98:7a:14:3b:42:b3",
+    /* bustype */ "0005",
+    /* vendor */ "045e",
+    /* product */ "0b05",
+    /* version */ "0903",
+    /* prop */ "0",
+    /* ev */ "10001b",
+    /* key */ "4000000 0 7fff000000000000 1000000000000 100040000000 e080ffdf01cfffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "30627",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kXboxEliteAxes,
+    base::size(kXboxEliteAxes),
+};
+const DeviceCapabilities kDellActivePenButton = {
+    /* path */
+    "/sys/devices/virtual/misc/uhid/0005:413C:81D5.0004/input/input13/event11",
+    /* name */ "Dell Active Pen PN579X",
+    /* phys */ "f8:94:c2:b9:dd:b2",
+    /* uniq */ "90:7f:61:28:8d:09",
+    /* bustype */ "0005",
+    /* vendor */ "413c",
+    /* product */ "81d5",
+    /* version */ "0f08",
+    /* prop */ "0",
+    /* ev */ "100013",
+    /* key */ "7f80000000000000 e0b0ffdf01cfffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+};
+
+const DeviceAbsoluteAxis kDrallionStylusAxes[] = {
+    {ABS_X, {0, 0, 30931, 0, 0, 100}},
+    {ABS_Y, {0, 0, 17399, 0, 0, 100}},
+    {ABS_PRESSURE, {0, 0, 4095, 0, 0, 0}},
+    {ABS_TILT_X, {0, -90, 90, 0, 0, 57}},
+    {ABS_TILT_Y, {0, -90, 90, 0, 0, 57}},
+    {ABS_MISC, {0, 0, 65535, 0, 0, 0}},
+};
+
+const DeviceCapabilities kDrallionStylus = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:15.0/i2c_designware.0/i2c-7/"
+    "i2c-WCOM48E2:00/0018:2D1F:4971.0001/input/input6/event5",
+    /* name */ "WCOM48E2:00 2D1F:4971 Pen",
+    /* phys */ "i2c-WCOM48E2:00",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "2d1f",
+    /* product */ "4971",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "1b",
+    /* key */ "1c03 0 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "1000d000003",
+    /* msc */ "11",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kDrallionStylusAxes,
+    base::size(kDrallionStylusAxes),
+};
+
+const DeviceCapabilities kPuffMicrophoneMuteSwitch = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:19.0/PRP0001:00/input/input3/event3",
+    /* name */ "mic_mute_switch",
+    /* phys */ "gpio-keys/input0",
+    /* uniq */ "",
+    /* bustype */ "0019",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "21",
+    /* key */ "0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "4000",
+    /* led */ "0",
+    /* ff */ "0",
+};
+
+const DeviceCapabilities kDrawciaStylusGarage = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:15.2/PRP0001:00/input/input4/event4",
+    /* name */ "PRP0001:00",
+    /* phys */ "gpio-keys/input0",
+    /* uniq */ "",
+    /* bustype */ "0019",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "21",
+    /* key */ "0",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "0",
+    /* sw */ "8000",
+    /* led */ "0",
+    /* ff */ "0",
+};
+
+// The built-in keyboard for Eve, which has an Assistant key.
+const DeviceCapabilities kEveKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "88 0 0 0 0 0 402000000 3003078f800d001 feffffdfffefffff "
+    "fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
+// The built-in keyboard on Sarien, which has a few more keys than normal.
+const DeviceCapabilities kSarienKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input2/event2",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab41",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "100 0 0 0 10000000000000 0 f02000000 3803078f800d001 ffffffdfffefffff "
+    "fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
+// The built-in keyboard on Woomax, which has a numeric pad
+const DeviceCapabilities kWoomaxKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input3/event3",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "10000000000000 0 300000000 200040004000 3d1ebfdf524fff80 3fffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
+// The keyboard of a Drobit
+const DeviceCapabilities kDrobitKeyboard = {
+    /* path */ "/sys/devices/platform/i8042/serio0/input/input2/event2",
+    /* name */ "AT Translated Set 2 keyboard",
+    /* phys */ "isa0060/serio0/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0001",
+    /* product */ "0001",
+    /* version */ "ab83",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "10000000000000 0 300000000 200040004000 3d1e169a52400000 37ffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+};
+
+// The numberpad-aspect of the touchpad on Drobit.
+const DeviceCapabilities kDrobitNumberpad = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:19.1/i2c_designware.5/i2c-20/"
+    "i2c-ELAN2701:00/0018:04F3:31C6.0001/input/input5/event5",
+    /* name */ "ELAN2701:00 04F3:31C6 Keyboard",
+    /* phys */ "i2c-ELAN2701:00",
+    /* uniq */ "",
+    /* bustype */ "0018",
+    /* vendor */ "04f3",
+    /* product */ "31c6",
+    /* version */ "0100",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */ "5000fffa0 80040000006040",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "1",
+    /* ff */ "0",
+};
+
+const DeviceCapabilities kLogitechKeyboardK120 = {
+    /* path */
+    "/sys/devices/pci0000:00/0000:00:08.1/0000:04:00.3/usb1/1-2/1-2:1.0/"
+    "0003:046D:C31C.0002/input/input18/event16",
+    /* name */ "Logitech USB Keyboard",
+    /* phys */ "usb-0000:04:00.3-2/input0",
+    /* uniq */ "",
+    /* bustype */ "0003",
+    /* vendor */ "046d",
+    /* product */ "c31c",
+    /* version */ "0110",
+    /* prop */ "0",
+    /* ev */ "120013",
+    /* key */
+    "1000000000007 ff9f207ac14057ff febeffdfffefffff fffffffffffffffe",
+    /* rel */ "0",
+    /* abs */ "0",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "1f",
+    /* ff */ "0",
+};
+const DeviceAbsoluteAxis kMicrosoftBluetoothNumberPadAbsAxes[] = {
+    {ABS_VOLUME, {0, 0, 1023, 0, 0, 0}},
+};
+const DeviceCapabilities kMicrosoftBluetoothNumberPad = {
+    /* path */
+    "/sys/devices/virtual/misc/uhid/0005:045E:0836.0007/input/input26/event16",
+    /* name */ "Microsoft Number Pad Keyboard",
+    /* phys */ "c8:b2:9b:af:3a:47",
+    /* uniq */ "ce:aa:3f:f5:d9:12",
+    /* bustype */ "0005",
+    /* vendor */ "045e",
+    /* product */ "0836",
+    /* version */ "0125",
+    /* prop */ "0",
+    /* ev */ "12001f",
+    /* key */
+    "3f000303ff 0 0 483ffff17aff32d bfd4444600000000 1 130ff38b17c007 "
+    "ffe77bfad9415fff ffbeffdff3cfffff fffffffffffffffe",
+    /* rel */ "1040",
+    /* abs */ "100000000",
+    /* msc */ "10",
+    /* sw */ "0",
+    /* led */ "7",
+    /* ff */ "0",
+    kMicrosoftBluetoothNumberPadAbsAxes,
+    base::size(kMicrosoftBluetoothNumberPadAbsAxes),
+};
+
+// Captured from Dell Latitude E6510, which report non valid resolutions and is
+// semi-multitouch.
+const ui::DeviceAbsoluteAxis kDellLatitudeE6510TouchpadAbsAxes[] = {
+    {ABS_X, {0, 0, 2000, 0, 0, 0}},
+    {ABS_Y, {0, 0, 1400, 0, 0, 0}},
+    {ABS_PRESSURE, {0, 0, 127, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 3, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 0, 2000, 0, 0, 0}},
+    {ABS_MT_POSITION_Y, {0, 0, 1400, 0, 0, 0}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+};
+const ui::DeviceCapabilities kDellLatitudeE6510Touchpad = {
+    /* path */ "/sys/devices/platform/i8042/serio1/input/input7/event7",
+    /* name */ "AlpsPS/2 ALPS DualPoint TouchPad",
+    /* phys */ "isa0060/serio1/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0002",
+    /* product */ "0008",
+    /* version */ "0300",
+    /* prop */ "9",
+    /* ev */ "b",
+    /* key */ "e420 70000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "260800001000003",
+    /* msc */ "0",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kDellLatitudeE6510TouchpadAbsAxes,
+    base::size(kDellLatitudeE6510TouchpadAbsAxes),
+};
+
+// Captured from HP ProBook 6560b. Touchpad that is semi-multitouch.
+const ui::DeviceAbsoluteAxis kHPProBook6560bTouchpadAbsAxes[] = {
+    {ABS_X, {0, 1472, 5690, 8, 0, 40}},
+    {ABS_Y, {0, 1408, 4854, 8, 0, 74}},
+    {ABS_PRESSURE, {0, 0, 255, 0, 0, 0}},
+    {ABS_TOOL_WIDTH, {0, 0, 15, 0, 0, 0}},
+    {ABS_MT_SLOT, {0, 0, 1, 0, 0, 0}},
+    {ABS_MT_POSITION_X, {0, 1472, 5690, 8, 0, 40}},
+    {ABS_MT_POSITION_Y, {0, 1408, 4854, 8, 0, 74}},
+    {ABS_MT_TRACKING_ID, {0, 0, 65535, 0, 0, 0}},
+};
+const ui::DeviceCapabilities kHPProBook6560bTouchpad = {
+    /* path */ "/sys/devices/platform/i8042/serio4/input/input12/event5",
+    /* name */ "SynPS/2 Synaptics TouchPad",
+    /* phys */ "isa0060/serio4/input0",
+    /* uniq */ "",
+    /* bustype */ "0011",
+    /* vendor */ "0002",
+    /* product */ "0007",
+    /* version */ "01b1",
+    /* prop */ "9",
+    /* ev */ "b",
+    /* key */ "6420 30000 0 0 0 0",
+    /* rel */ "0",
+    /* abs */ "260800011000003",
+    /* msc */ "0",
+    /* sw */ "0",
+    /* led */ "0",
+    /* ff */ "0",
+    kHPProBook6560bTouchpadAbsAxes,
+    base::size(kHPProBook6560bTouchpadAbsAxes),
+};
+
 // NB: Please use the capture_device_capabilities.py script to add more
 // test data here. This will help ensure the data matches what the kernel
 // reports for a real device and is entered correctly.
@@ -967,7 +1347,7 @@ const DeviceCapabilities kKohakuStylus = {
 //   DEVICE_IP=<your device IP>
 //   cd ui/events/ozone/evdev/
 //   scp capture_device_capabilities.py "root@${DEVICE_IP}:/tmp/"
-//   ssh "root@${DEVICE_IP}" /tmp/capture_device_capabilities.py
+//   ssh "root@${DEVICE_IP}" python /tmp/capture_device_capabilities.py
 
 bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
                               EventDeviceInfo* devinfo) {
@@ -991,6 +1371,11 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
     return false;
   devinfo->SetAbsEvents(&abs_bits[0], abs_bits.size());
 
+  std::vector<unsigned long> sw_bits;
+  if (!ParseBitfield(capabilities.sw, SW_CNT, &sw_bits))
+    return false;
+  devinfo->SetSwEvents(&sw_bits[0], sw_bits.size());
+
   std::vector<unsigned long> msc_bits;
   if (!ParseBitfield(capabilities.msc, MSC_CNT, &msc_bits))
     return false;
@@ -1000,6 +1385,11 @@ bool CapabilitiesToDeviceInfo(const DeviceCapabilities& capabilities,
   if (!ParseBitfield(capabilities.led, LED_CNT, &led_bits))
     return false;
   devinfo->SetLedEvents(&led_bits[0], led_bits.size());
+
+  std::vector<unsigned long> ff_bits;
+  if (!ParseBitfield(capabilities.ff, FF_CNT, &ff_bits))
+    return false;
+  devinfo->SetFfEvents(&ff_bits[0], ff_bits.size());
 
   std::vector<unsigned long> prop_bits;
   if (!ParseBitfield(capabilities.prop, INPUT_PROP_CNT, &prop_bits))

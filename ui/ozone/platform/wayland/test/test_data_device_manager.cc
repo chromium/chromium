@@ -45,6 +45,6 @@ TestDataDeviceManager::TestDataDeviceManager()
                    &kTestDataDeviceManagerImpl,
                    kDataDeviceManagerVersion) {}
 
-TestDataDeviceManager::~TestDataDeviceManager() {}
+TestDataDeviceManager::~TestDataDeviceManager() = default;
 
 }  // namespace wl

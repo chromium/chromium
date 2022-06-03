@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "build/build_config.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
+
+#include "build/build_config.h"
 
 namespace password_manager {
 namespace prefs {
@@ -11,8 +12,9 @@ namespace prefs {
 const char kCredentialsEnableAutosignin[] = "credentials_enable_autosignin";
 const char kCredentialsEnableService[] = "credentials_enable_service";
 
-#if !defined(OS_MACOSX) && !defined(OS_CHROMEOS) && defined(OS_POSIX)
-const char kMigrationToLoginDBStep[] = "profile.migration_to_logindb_step";
+#if defined(OS_ANDROID)
+const char kCurrentMigrationVersionToGoogleMobileServices[] =
+    "current_migration_version_to_google_mobile_services";
 #endif
 
 #if defined(OS_WIN)
@@ -21,27 +23,18 @@ const char kOsPasswordLastChanged[] =
     "password_manager.os_password_last_changed";
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 const char kKeychainMigrationStatus[] = "password_manager.keychain_migration";
-const char kPasswordRecovery[] = "password_manager.password_recovery";
 #endif
 
 const char kWasAutoSignInFirstRunExperienceShown[] =
     "profile.was_auto_sign_in_first_run_experience_shown";
 
-const char kWasSignInPasswordPromoClicked[] =
-    "profile.was_sign_in_password_promo_clicked";
+const char kWereOldGoogleLoginsRemoved[] =
+    "profile.were_old_google_logins_removed";
 
-const char kNumberSignInPasswordPromoShown[] =
-    "profile.number_sign_in_password_promo_shown";
-
-const char kSignInPasswordPromoRevive[] =
-    "profile.sign_in_password_promo_revive";
-
-const char kAccountStorageOptedInAccounts[] =
-    "profile.password_account_storage_opted_in_accounts";
-
-const char kIsAccountStoreDefault[] = "profile.is_account_store_default";
+const char kAccountStoragePerAccountSettings[] =
+    "profile.password_account_storage_settings";
 
 const char kSyncPasswordHash[] = "profile.sync_password_hash";
 
@@ -51,16 +44,21 @@ const char kSyncPasswordLengthAndHashSalt[] =
 const char kLastTimeObsoleteHttpCredentialsRemoved[] =
     "profile.last_time_obsolete_http_credentials_removed";
 
-const char kPasswordHashDataList[] = "profile.password_hash_data_list";
+const char kLastTimePasswordCheckCompleted[] =
+    "profile.last_time_password_check_completed";
 
-const char kPasswordManagerOnboardingState[] =
-    "profile.password_manager_onboarding_state";
+const char kSyncedLastTimePasswordCheckCompleted[] =
+    "profile.credentials_last_password_checkup_time";
+
+const char kPasswordHashDataList[] = "profile.password_hash_data_list";
 
 const char kPasswordLeakDetectionEnabled[] =
     "profile.password_manager_leak_detection";
 
-const char kWasOnboardingFeatureCheckedBefore[] =
-    "profile.was_pwm_onboarding_feature_checked_before";
+const char kProfileStoreDateLastUsedForFilling[] =
+    "password_manager.profile_store_date_last_used_for_filling";
+const char kAccountStoreDateLastUsedForFilling[] =
+    "password_manager.account_store_date_last_used_for_filling";
 
 }  // namespace prefs
 }  // namespace password_manager

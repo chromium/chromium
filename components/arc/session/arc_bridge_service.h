@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_ARC_SESSION_ARC_BRIDGE_SERVICE_H_
 #define COMPONENTS_ARC_SESSION_ARC_BRIDGE_SERVICE_H_
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "components/arc/session/connection_holder.h"
 
@@ -17,6 +16,8 @@ namespace mojom {
 // the instance classes here for faster build.
 class AccessibilityHelperHost;
 class AccessibilityHelperInstance;
+class AdbdMonitorHost;
+class AdbdMonitorInstance;
 class AppHost;
 class AppInstance;
 class AppPermissionsInstance;
@@ -38,44 +39,53 @@ class CertStoreHost;
 class CertStoreInstance;
 class ClipboardHost;
 class ClipboardInstance;
+class CompatibilityModeInstance;
 class CrashCollectorHost;
 class CrashCollectorInstance;
+class DarkThemeInstance;
+class DigitalGoodsInstance;
 class DiskQuotaHost;
 class DiskQuotaInstance;
 class EnterpriseReportingHost;
 class EnterpriseReportingInstance;
 class FileSystemHost;
 class FileSystemInstance;
+class IioSensorHost;
+class IioSensorInstance;
 class ImeHost;
 class ImeInstance;
 class InputMethodManagerHost;
 class InputMethodManagerInstance;
 class IntentHelperHost;
 class IntentHelperInstance;
+class KeyboardShortcutHost;
+class KeyboardShortcutInstance;
 class KeymasterHost;
 class KeymasterInstance;
 class KioskHost;
 class KioskInstance;
 class LockScreenInstance;
 class MediaSessionInstance;
+class MemoryInstance;
 class MetricsHost;
 class MetricsInstance;
 class MidisHost;
 class MidisInstance;
+class NearbyShareHost;
+class NearbyShareInstance;
 class NetHost;
 class NetInstance;
 class ObbMounterHost;
 class ObbMounterInstance;
 class OemCryptoHost;
 class OemCryptoInstance;
+class PaymentAppInstance;
 class PipHost;
 class PipInstance;
 class PolicyHost;
 class PolicyInstance;
 class PowerHost;
 class PowerInstance;
-class PrintHost;
-class PrintInstance;
 class PrintSpoolerHost;
 class PrintSpoolerInstance;
 class ProcessInstance;
@@ -83,6 +93,10 @@ class PropertyInstance;
 class RotationLockInstance;
 class ScreenCaptureHost;
 class ScreenCaptureInstance;
+class SensorHost;
+class SensorInstance;
+class SharesheetHost;
+class SharesheetInstance;
 class SmartCardManagerHost;
 class SmartCardManagerInstance;
 class StorageManagerInstance;
@@ -101,7 +115,7 @@ class WakeLockHost;
 class WakeLockInstance;
 class WallpaperHost;
 class WallpaperInstance;
-
+class WebApkInstance;
 }  // namespace mojom
 
 // Holds Mojo channels which proxy to ARC side implementation. The actual
@@ -122,6 +136,10 @@ class ArcBridgeService {
   };
 
   ArcBridgeService();
+
+  ArcBridgeService(const ArcBridgeService&) = delete;
+  ArcBridgeService& operator=(const ArcBridgeService&) = delete;
+
   ~ArcBridgeService();
 
   // Adds or removes observers.
@@ -136,6 +154,10 @@ class ArcBridgeService {
                    mojom::AccessibilityHelperHost>*
   accessibility_helper() {
     return &accessibility_helper_;
+  }
+  ConnectionHolder<mojom::AdbdMonitorInstance, mojom::AdbdMonitorHost>*
+  adbd_monitor() {
+    return &adbd_monitor_;
   }
   ConnectionHolder<mojom::AppInstance, mojom::AppHost>* app() { return &app_; }
   ConnectionHolder<mojom::AppPermissionsInstance>* app_permissions() {
@@ -176,9 +198,18 @@ class ArcBridgeService {
   clipboard() {
     return &clipboard_;
   }
+  ConnectionHolder<mojom::CompatibilityModeInstance>* compatibility_mode() {
+    return &compatibility_mode_;
+  }
   ConnectionHolder<mojom::CrashCollectorInstance, mojom::CrashCollectorHost>*
   crash_collector() {
     return &crash_collector_;
+  }
+  ConnectionHolder<mojom::DarkThemeInstance>* dark_theme() {
+    return &dark_theme_;
+  }
+  ConnectionHolder<mojom::DigitalGoodsInstance>* digital_goods() {
+    return &digital_goods_;
   }
   ConnectionHolder<mojom::DiskQuotaInstance, mojom::DiskQuotaHost>*
   disk_quota() {
@@ -193,6 +224,10 @@ class ArcBridgeService {
   file_system() {
     return &file_system_;
   }
+  ConnectionHolder<mojom::IioSensorInstance, mojom::IioSensorHost>*
+  iio_sensor() {
+    return &iio_sensor_;
+  }
   ConnectionHolder<mojom::ImeInstance, mojom::ImeHost>* ime() { return &ime_; }
   ConnectionHolder<mojom::InputMethodManagerInstance,
                    mojom::InputMethodManagerHost>*
@@ -202,6 +237,11 @@ class ArcBridgeService {
   ConnectionHolder<mojom::IntentHelperInstance, mojom::IntentHelperHost>*
   intent_helper() {
     return &intent_helper_;
+  }
+  ConnectionHolder<mojom::KeyboardShortcutInstance,
+                   mojom::KeyboardShortcutHost>*
+  keyboard_shortcut() {
+    return &keyboard_shortcut_;
   }
   ConnectionHolder<mojom::KeymasterInstance, mojom::KeymasterHost>*
   keymaster() {
@@ -216,11 +256,16 @@ class ArcBridgeService {
   ConnectionHolder<mojom::MediaSessionInstance>* media_session() {
     return &media_session_;
   }
+  ConnectionHolder<mojom::MemoryInstance>* memory() { return &memory_; }
   ConnectionHolder<mojom::MetricsInstance, mojom::MetricsHost>* metrics() {
     return &metrics_;
   }
   ConnectionHolder<mojom::MidisInstance, mojom::MidisHost>* midis() {
     return &midis_;
+  }
+  ConnectionHolder<mojom::NearbyShareInstance, mojom::NearbyShareHost>*
+  nearby_share() {
+    return &nearby_share_;
   }
   ConnectionHolder<mojom::NetInstance, mojom::NetHost>* net() { return &net_; }
   ConnectionHolder<mojom::ObbMounterInstance, mojom::ObbMounterHost>*
@@ -231,15 +276,15 @@ class ArcBridgeService {
   oemcrypto() {
     return &oemcrypto_;
   }
+  ConnectionHolder<mojom::PaymentAppInstance>* payment_app() {
+    return &payment_app_;
+  }
   ConnectionHolder<mojom::PipInstance, mojom::PipHost>* pip() { return &pip_; }
   ConnectionHolder<mojom::PolicyInstance, mojom::PolicyHost>* policy() {
     return &policy_;
   }
   ConnectionHolder<mojom::PowerInstance, mojom::PowerHost>* power() {
     return &power_;
-  }
-  ConnectionHolder<mojom::PrintInstance, mojom::PrintHost>* print() {
-    return &print_;
   }
   ConnectionHolder<mojom::PrintSpoolerInstance, mojom::PrintSpoolerHost>*
   print_spooler() {
@@ -253,6 +298,13 @@ class ArcBridgeService {
   ConnectionHolder<mojom::ScreenCaptureInstance, mojom::ScreenCaptureHost>*
   screen_capture() {
     return &screen_capture_;
+  }
+  ConnectionHolder<mojom::SensorInstance, mojom::SensorHost>* sensor() {
+    return &sensor_;
+  }
+  ConnectionHolder<mojom::SharesheetInstance, mojom::SharesheetHost>*
+  sharesheet() {
+    return &sharesheet_;
   }
   ConnectionHolder<mojom::SmartCardManagerInstance,
                    mojom::SmartCardManagerHost>*
@@ -285,6 +337,7 @@ class ArcBridgeService {
   wallpaper() {
     return &wallpaper_;
   }
+  ConnectionHolder<mojom::WebApkInstance>* webapk() { return &webapk_; }
 
  private:
   base::ObserverList<Observer> observer_list_;
@@ -292,6 +345,8 @@ class ArcBridgeService {
   ConnectionHolder<mojom::AccessibilityHelperInstance,
                    mojom::AccessibilityHelperHost>
       accessibility_helper_;
+  ConnectionHolder<mojom::AdbdMonitorInstance, mojom::AdbdMonitorHost>
+      adbd_monitor_;
   ConnectionHolder<mojom::AppInstance, mojom::AppHost> app_;
   ConnectionHolder<mojom::AppPermissionsInstance> app_permissions_;
   ConnectionHolder<mojom::AppfuseInstance, mojom::AppfuseHost> appfuse_;
@@ -305,34 +360,43 @@ class ArcBridgeService {
   ConnectionHolder<mojom::CastReceiverInstance> cast_receiver_;
   ConnectionHolder<mojom::CertStoreInstance, mojom::CertStoreHost> cert_store_;
   ConnectionHolder<mojom::ClipboardInstance, mojom::ClipboardHost> clipboard_;
+  ConnectionHolder<mojom::CompatibilityModeInstance> compatibility_mode_;
   ConnectionHolder<mojom::CrashCollectorInstance, mojom::CrashCollectorHost>
       crash_collector_;
+  ConnectionHolder<mojom::DarkThemeInstance> dark_theme_;
+  ConnectionHolder<mojom::DigitalGoodsInstance> digital_goods_;
   ConnectionHolder<mojom::DiskQuotaInstance, mojom::DiskQuotaHost> disk_quota_;
   ConnectionHolder<mojom::EnterpriseReportingInstance,
                    mojom::EnterpriseReportingHost>
       enterprise_reporting_;
   ConnectionHolder<mojom::FileSystemInstance, mojom::FileSystemHost>
       file_system_;
+  ConnectionHolder<mojom::IioSensorInstance, mojom::IioSensorHost> iio_sensor_;
   ConnectionHolder<mojom::ImeInstance, mojom::ImeHost> ime_;
   ConnectionHolder<mojom::InputMethodManagerInstance,
                    mojom::InputMethodManagerHost>
       input_method_manager_;
   ConnectionHolder<mojom::IntentHelperInstance, mojom::IntentHelperHost>
       intent_helper_;
+  ConnectionHolder<mojom::KeyboardShortcutInstance, mojom::KeyboardShortcutHost>
+      keyboard_shortcut_;
   ConnectionHolder<mojom::KeymasterInstance, mojom::KeymasterHost> keymaster_;
   ConnectionHolder<mojom::KioskInstance, mojom::KioskHost> kiosk_;
   ConnectionHolder<mojom::LockScreenInstance> lock_screen_;
   ConnectionHolder<mojom::MediaSessionInstance> media_session_;
+  ConnectionHolder<mojom::MemoryInstance> memory_;
   ConnectionHolder<mojom::MetricsInstance, mojom::MetricsHost> metrics_;
   ConnectionHolder<mojom::MidisInstance, mojom::MidisHost> midis_;
+  ConnectionHolder<mojom::NearbyShareInstance, mojom::NearbyShareHost>
+      nearby_share_;
   ConnectionHolder<mojom::NetInstance, mojom::NetHost> net_;
   ConnectionHolder<mojom::ObbMounterInstance, mojom::ObbMounterHost>
       obb_mounter_;
   ConnectionHolder<mojom::OemCryptoInstance, mojom::OemCryptoHost> oemcrypto_;
+  ConnectionHolder<mojom::PaymentAppInstance> payment_app_;
   ConnectionHolder<mojom::PipInstance, mojom::PipHost> pip_;
   ConnectionHolder<mojom::PolicyInstance, mojom::PolicyHost> policy_;
   ConnectionHolder<mojom::PowerInstance, mojom::PowerHost> power_;
-  ConnectionHolder<mojom::PrintInstance, mojom::PrintHost> print_;
   ConnectionHolder<mojom::PrintSpoolerInstance, mojom::PrintSpoolerHost>
       print_spooler_;
   ConnectionHolder<mojom::ProcessInstance> process_;
@@ -340,6 +404,9 @@ class ArcBridgeService {
   ConnectionHolder<mojom::RotationLockInstance> rotation_lock_;
   ConnectionHolder<mojom::ScreenCaptureInstance, mojom::ScreenCaptureHost>
       screen_capture_;
+  ConnectionHolder<mojom::SensorInstance, mojom::SensorHost> sensor_;
+  ConnectionHolder<mojom::SharesheetInstance, mojom::SharesheetHost>
+      sharesheet_;
   ConnectionHolder<mojom::SmartCardManagerInstance, mojom::SmartCardManagerHost>
       smart_card_manager_;
   ConnectionHolder<mojom::StorageManagerInstance> storage_manager_;
@@ -352,8 +419,7 @@ class ArcBridgeService {
       volume_mounter_;
   ConnectionHolder<mojom::WakeLockInstance, mojom::WakeLockHost> wake_lock_;
   ConnectionHolder<mojom::WallpaperInstance, mojom::WallpaperHost> wallpaper_;
-
-  DISALLOW_COPY_AND_ASSIGN(ArcBridgeService);
+  ConnectionHolder<mojom::WebApkInstance> webapk_;
 };
 
 }  // namespace arc

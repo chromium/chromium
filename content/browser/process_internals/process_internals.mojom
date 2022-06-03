@@ -10,22 +10,33 @@ import "url/mojom/url.mojom";
 struct SiteInstanceInfo {
   int32 id;
 
-  // Boolean indicating whether the SiteInstance is locked to a specific URL.
-  // It does not indicate the granularity of the lock URL.
+  // Boolean indicating whether the SiteInstance's process is locked to a
+  // specific URL.
   bool locked;
 
   url.mojom.Url? site_url;
+
+  // The URL to which the SiteInstance's process is locked.
+  url.mojom.Url? process_lock_url;
+
+  // Specifies whether the SiteInstance is origin-keyed.  This is true for
+  // opt-in origin isolation, false otherwise.
+  bool is_origin_keyed;
 };
 
 // Basic information describing a frame and all of its subframes.
 struct FrameInfo {
   int32 routing_id;
+  int32 agent_scheduling_group_id;
   int32 process_id;
 
   SiteInstanceInfo site_instance;
   url.mojom.Url? last_committed_url;
 
   array<FrameInfo> subframes;
+
+  enum Type { kActive, kBackForwardCache, kPrerender };
+  Type type;
 };
 
 // Basic information describing a WebContents object and all frames that are
@@ -33,6 +44,8 @@ struct FrameInfo {
 struct WebContentsInfo {
   string title;
   FrameInfo root_frame;
+  array<FrameInfo> bfcached_root_frames;
+  array<FrameInfo> prerender_root_frames;
 };
 
 // Information about a currently active isolated origin, including the origin
@@ -54,6 +67,14 @@ interface ProcessInternalsHandler {
   // origins apply within the current profile only, they are preserved across
   // restarts, and they are cleared when the user clears browsing data.
   GetUserTriggeredIsolatedOrigins() => (array<string> isolated_origins);
+
+  // Returns a list of web-triggered isolated origins, which are typically
+  // added in response to heuristics triggered directly by web sites, such
+  // as headers that suggest the site might benefit from isolation.  Like
+  // user-triggered isolated origins, these isolated origins apply within
+  // the current profile only, they are preserved across
+  // restarts, and they are cleared when the user clears browsing data.
+  GetWebTriggeredIsolatedOrigins() => (array<string> isolated_origins);
 
   // Returns a list of isolated origins that apply globally in all profiles.
   GetGloballyIsolatedOrigins() => (array<IsolatedOriginInfo> isolated_origins);

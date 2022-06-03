@@ -16,6 +16,7 @@ static_library("supervised_user_error_page") {
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:resources_grit",
+    "//chrome/browser/supervised_user/supervised_user_features",
     "//components/signin/public/base",
     "//ui/base",
     "//url",
@@ -24,23 +25,20 @@ static_library("supervised_user_error_page") {
 
 if (is_android) {
   java_cpp_enum("enums_srcjar") {
-    sources = [
-      "supervised_user_error_page.h",
-    ]
+    sources = [ "supervised_user_error_page.h" ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "supervised_user_error_page_unittest.cc",
-  ]
+  sources = [ "supervised_user_error_page_unittest.cc" ]
   deps = [
     ":supervised_user_error_page",
     "//base",
     "//base/test:test_support",
     "//chrome/app:generated_resources",
     "//chrome/browser:resources_grit",
+    "//chrome/browser/supervised_user/supervised_user_features",
     "//testing/gmock",
     "//testing/gtest",
     "//ui/base",

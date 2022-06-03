@@ -6,8 +6,6 @@ package org.chromium.device.battery;
 
 import android.content.Intent;
 import android.os.BatteryManager;
-import android.os.Build;
-import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
@@ -99,7 +97,7 @@ public class BatteryStatusManagerTest {
 
     public void initializeBatteryManager(FakeAndroidBatteryManager managerForTesting) {
         mManager = BatteryStatusManager.createBatteryStatusManagerForTesting(
-                InstrumentationRegistry.getContext(), mCallback, managerForTesting);
+                mCallback, managerForTesting);
     }
 
     @Test
@@ -188,9 +186,7 @@ public class BatteryStatusManagerTest {
 
     @Test
     @SmallTest
-    public void testLollipopChargingTimeEstimate() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
-
+    public void testChargingTimeEstimate() {
         Intent intent = new Intent(Intent.ACTION_BATTERY_CHANGED);
         intent.putExtra(BatteryManager.EXTRA_PRESENT, true);
         intent.putExtra(BatteryManager.EXTRA_PLUGGED, BatteryManager.BATTERY_PLUGGED_USB);
@@ -209,9 +205,7 @@ public class BatteryStatusManagerTest {
 
     @Test
     @SmallTest
-    public void testLollipopDischargingTimeEstimate() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
-
+    public void testDischargingTimeEstimate() {
         Intent intent = new Intent(Intent.ACTION_BATTERY_CHANGED);
         intent.putExtra(BatteryManager.EXTRA_PRESENT, true);
         intent.putExtra(BatteryManager.EXTRA_PLUGGED, 0);
@@ -231,9 +225,7 @@ public class BatteryStatusManagerTest {
 
     @Test
     @SmallTest
-    public void testLollipopDischargingTimeEstimateRounding() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
-
+    public void testDischargingTimeEstimateRounding() {
         Intent intent = new Intent(Intent.ACTION_BATTERY_CHANGED);
         intent.putExtra(BatteryManager.EXTRA_PRESENT, true);
         intent.putExtra(BatteryManager.EXTRA_PLUGGED, 0);

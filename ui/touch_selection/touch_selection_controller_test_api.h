@@ -5,7 +5,6 @@
 #ifndef UI_TOUCH_SELECTION_TOUCH_SELECTION_CONTROLLER_TEST_API_H_
 #define UI_TOUCH_SELECTION_TOUCH_SELECTION_CONTROLLER_TEST_API_H_
 
-#include "base/macros.h"
 #include "ui/touch_selection/touch_selection_controller.h"
 
 namespace ui {
@@ -16,6 +15,12 @@ class TouchSelectionControllerTestApi {
  public:
   explicit TouchSelectionControllerTestApi(
       TouchSelectionController* controller);
+
+  TouchSelectionControllerTestApi(const TouchSelectionControllerTestApi&) =
+      delete;
+  TouchSelectionControllerTestApi& operator=(
+      const TouchSelectionControllerTestApi&) = delete;
+
   ~TouchSelectionControllerTestApi();
 
   bool GetStartVisible() const;
@@ -30,8 +35,6 @@ class TouchSelectionControllerTestApi {
 
  private:
   TouchSelectionController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(TouchSelectionControllerTestApi);
 };
 
 }  // namespace ui

@@ -4,7 +4,7 @@
 <script src="../../resources/testharnessreport.js"></script>
 <script>
 function assert_type_error(f, msg) {
-    assert_throws(TypeError(), f, msg);
+    assert_throws_js(TypeError, f, msg);
 }
 
 test(function() {

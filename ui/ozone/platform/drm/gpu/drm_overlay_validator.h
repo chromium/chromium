@@ -5,7 +5,7 @@
 #ifndef UI_OZONE_PLATFORM_DRM_GPU_DRM_OVERLAY_VALIDATOR_H_
 #define UI_OZONE_PLATFORM_DRM_GPU_DRM_OVERLAY_VALIDATOR_H_
 
-#include "base/containers/mru_cache.h"
+#include "base/containers/lru_cache.h"
 #include "ui/ozone/platform/drm/gpu/drm_overlay_plane.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 
@@ -16,6 +16,10 @@ class DrmWindow;
 class DrmOverlayValidator {
  public:
   DrmOverlayValidator(DrmWindow* window);
+
+  DrmOverlayValidator(const DrmOverlayValidator&) = delete;
+  DrmOverlayValidator& operator=(const DrmOverlayValidator&) = delete;
+
   ~DrmOverlayValidator();
 
   // Tests if configurations |params| are compatible with |window_| and finds
@@ -26,8 +30,6 @@ class DrmOverlayValidator {
 
  private:
   DrmWindow* const window_;  // Not owned.
-
-  DISALLOW_COPY_AND_ASSIGN(DrmOverlayValidator);
 };
 
 }  // namespace ui

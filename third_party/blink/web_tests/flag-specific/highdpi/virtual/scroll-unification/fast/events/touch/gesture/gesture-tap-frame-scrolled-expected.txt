@@ -1,0 +1,43 @@
+Verifies that a tap occurring in a scrolled iframe has the correct co-ordinates
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Sending GestureTapDown to 30,27
+Sending GestureShowPress
+Sending GestureTap
+Received mousemove in child frame
+FAIL event.screenX should be 30. Was 45.
+FAIL event.screenY should be 27. Was 40.
+PASS event.clientX is pointInFrame.x
+PASS event.clientY is pointInFrame.y
+PASS event.pageX is pointInFrame.x + frameScrollOffset.x
+PASS event.pageY is pointInFrame.y + frameScrollOffset.y
+Received mousedown in child frame
+FAIL event.screenX should be 30. Was 45.
+FAIL event.screenY should be 27. Was 40.
+PASS event.clientX is pointInFrame.x
+PASS event.clientY is pointInFrame.y
+PASS event.pageX is pointInFrame.x + frameScrollOffset.x
+PASS event.pageY is pointInFrame.y + frameScrollOffset.y
+Received mouseup in child frame
+FAIL event.screenX should be 30. Was 45.
+FAIL event.screenY should be 27. Was 40.
+PASS event.clientX is pointInFrame.x
+PASS event.clientY is pointInFrame.y
+PASS event.pageX is pointInFrame.x + frameScrollOffset.x
+PASS event.pageY is pointInFrame.y + frameScrollOffset.y
+Received click in child frame
+FAIL event.screenX should be 30. Was 45.
+FAIL event.screenY should be 27. Was 40.
+PASS event.clientX is pointInFrame.x
+PASS event.clientY is pointInFrame.y
+PASS event.pageX is pointInFrame.x + frameScrollOffset.x
+PASS event.pageY is pointInFrame.y + frameScrollOffset.y
+PASS eventReceived.mousemove is true
+PASS eventReceived.mousedown is true
+PASS eventReceived.mouseup is true
+PASS eventReceived.click is true
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

@@ -216,82 +216,6 @@
         "name": "blink_perf.bindings/undefined-id-getter.html"
     },
     {
-        "duration": "9.487877176767679",
-        "name": "blink_perf.canvas/createImageBitmapFromImageData.html"
-    },
-    {
-        "duration": "5.964705346464645",
-        "name": "blink_perf.canvas/draw-dynamic-canvas-2d-to-hw-accelerated-canvas-2d.html"
-    },
-    {
-        "duration": "11.936835055555557",
-        "name": "blink_perf.canvas/draw-dynamic-webgl-to-hw-accelerated-canvas-2d.html"
-    },
-    {
-        "duration": "1.2400981121212113",
-        "name": "blink_perf.canvas/draw-hw-accelerated-canvas-2d-to-sw-canvas-2d.html"
-    },
-    {
-        "duration": "3.741480925252526",
-        "name": "blink_perf.canvas/draw-static-canvas-2d-to-hw-accelerated-canvas-2d.html"
-    },
-    {
-        "duration": "3.813386540404041",
-        "name": "blink_perf.canvas/draw-static-webgl-to-hw-accelerated-canvas-2d.html"
-    },
-    {
-        "duration": "4.475043364646466",
-        "name": "blink_perf.canvas/draw-video-to-hw-accelerated-canvas-2d.html"
-    },
-    {
-        "duration": "7.343074614141415",
-        "name": "blink_perf.canvas/drawimage-not-pixelaligned.html"
-    },
-    {
-        "duration": "7.111080769696973",
-        "name": "blink_perf.canvas/drawimage.html"
-    },
-    {
-        "duration": "7.516304147474746",
-        "name": "blink_perf.canvas/getImageData.html"
-    },
-    {
-        "duration": "8.53597232020202",
-        "name": "blink_perf.canvas/getImageDataColorManaged.html"
-    },
-    {
-        "duration": "7.382463451515153",
-        "name": "blink_perf.canvas/putImageData.html"
-    },
-    {
-        "duration": "5.406577264646463",
-        "name": "blink_perf.canvas/toBlob_duration.html"
-    },
-    {
-        "duration": "2.2370332838383837",
-        "name": "blink_perf.canvas/toBlob_duration_jpeg.html"
-    },
-    {
-        "duration": "2.3555758969696967",
-        "name": "blink_perf.canvas/transferFromImageBitmap.html"
-    },
-    {
-        "duration": "3.6314959929292923",
-        "name": "blink_perf.canvas/upload-canvas-2d-to-texture.html"
-    },
-    {
-        "duration": "8.077196209090912",
-        "name": "blink_perf.canvas/upload-video-to-sub-texture.html"
-    },
-    {
-        "duration": "2.463287210101009",
-        "name": "blink_perf.canvas/upload-video-to-texture.html"
-    },
-    {
-        "duration": "3.720329938383839",
-        "name": "blink_perf.canvas/upload-webgl-to-texture.html"
-    },
-    {
         "duration": "13.611388484848492",
         "name": "blink_perf.css/AttributeDescendantSelector.html"
     },
@@ -5594,30 +5518,6 @@
     {
         "duration": "38.185777909090895",
         "name": "v8.runtime_stats.top_25/https://www.youtube.com/watch?v=_kZsOISarzg"
-    },
-    {
-        "duration": "3.3975144354166667E-4",
-        "name": "wasm/AsmJsZenGarden"
-    },
-    {
-        "duration": "15.685649274410771",
-        "name": "wasm/WasmSpaceBuggy"
-    },
-    {
-        "duration": "65.75625318518516",
-        "name": "wasm/WasmStylizedRenderer"
-    },
-    {
-        "duration": "55.867687333333336",
-        "name": "wasm/WasmSunTemple"
-    },
-    {
-        "duration": "21.503581095959596",
-        "name": "wasm/WasmTanks"
-    },
-    {
-        "duration": "64.70462446127945",
-        "name": "wasm/WasmZenGarden"
     },
     {
         "duration": "63.42066826262625",

@@ -1,0 +1,60 @@
+<html>
+<head>
+<link rel="shortcut icon" type="image/x-icon" href="http://test.com/favicon.ico"/>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+
+function addFavIcon(iconURL, media) {
+    var docHead = document.getElementsByTagName("head")[0];
+    var link = document.createElement("link");
+    link.type = "image/x-icon";
+    link.rel = "shortcut icon";
+    link.href = iconURL;
+    link.media = media;
+    docHead.appendChild(link);
+}
+
+var t = async_test('Favicons are updated when the window is resized.');
+window.onload = t.step_func(function () {
+  testRunner.useUnfortunateSynchronousResizeMode();
+
+  addFavIcon(
+    "http://test.com/mediafavicon1.ico",
+    `(max-width: ${window.outerWidth + 1}px)`
+  );
+  addFavIcon(
+    "http://test.com/mediafavicon2.ico",
+    `(max-width: ${window.outerWidth - 1}px)`
+  );
+
+  var expectedURLs = [
+    "http://test.com/mediafavicon1.ico",
+    "http://test.com/favicon.ico",
+  ];
+  assert_array_equals(
+    internals.shortcutIconURLs(document),
+    expectedURLs,
+    "URL list does not match expected"
+  );
+
+  window.resizeBy(-24, 0);
+  requestAnimationFrame(function () {
+    t.step(function () {
+      var expectedURLs = [
+        "http://test.com/mediafavicon2.ico",
+        "http://test.com/mediafavicon1.ico",
+        "http://test.com/favicon.ico",
+      ];
+      assert_array_equals(
+        internals.shortcutIconURLs(document),
+        expectedURLs,
+        "URL list does not match expected"
+      );
+      t.done();
+    });
+  });
+});
+</script>
+</head>
+</html>

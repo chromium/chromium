@@ -14,7 +14,7 @@
 
 #include "snapshot/mac/mach_o_image_reader.h"
 
-#include <AvailabilityMacros.h>
+#include <Availability.h>
 #include <dlfcn.h>
 #include <mach-o/dyld.h>
 #include <mach-o/dyld_images.h>
@@ -68,6 +68,8 @@ using Nlist = struct nlist;
 constexpr int kCPUType = CPU_TYPE_X86_64;
 #elif defined(ARCH_CPU_X86)
 constexpr int kCPUType = CPU_TYPE_X86;
+#elif defined(ARCH_CPU_ARM64)
+constexpr int kCPUType = CPU_TYPE_ARM64;
 #endif
 
 // Verifies that |expect_section| and |actual_section| agree.
@@ -604,7 +606,7 @@ TEST(MachOImageReader, Self_DyldImages) {
     ASSERT_NO_FATAL_FAILURE(ExpectSymbolTable(mach_header, &image_reader));
   }
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED >= MAC_OS_X_VERSION_10_7
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= __MAC_10_7
   // If dyld is new enough to record UUIDs, check the UUID of any module that
   // it says has one. Note that dyld doesn’t record UUIDs of anything that
   // loaded out of the shared cache, but it should at least have a UUID for the

@@ -5,16 +5,19 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_FOREIGN_LAYER_DISPLAY_ITEM_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_FOREIGN_LAYER_DISPLAY_ITEM_H_
 
+#include "base/dcheck_is_on.h"
 #include "cc/layers/layer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
+#include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
+class DisplayItemClient;
 class GraphicsContext;
-class GraphicsLayer;
-class LayerAsJSONClient;
 
 // Represents foreign content (produced outside Blink) which draws to a layer.
 // A client supplies a layer which can be unwrapped and inserted into the full
@@ -22,47 +25,52 @@ class LayerAsJSONClient;
 //
 // Before CAP, this content is not painted, but is instead inserted into the
 // GraphicsLayer tree.
-class PLATFORM_EXPORT ForeignLayerDisplayItem final : public DisplayItem {
+class PLATFORM_EXPORT ForeignLayerDisplayItem : public DisplayItem {
  public:
-  ForeignLayerDisplayItem(const DisplayItemClient& client,
+  ForeignLayerDisplayItem(DisplayItemClientId client_id,
                           Type,
                           scoped_refptr<cc::Layer>,
-                          const FloatPoint& offset,
-                          const LayerAsJSONClient*);
-  ~ForeignLayerDisplayItem() override;
+                          const gfx::Point& origin,
+                          RasterEffectOutset,
+                          PaintInvalidationReason);
 
-  cc::Layer* GetLayer() const;
-
-  const LayerAsJSONClient* GetLayerAsJSONClient() const;
-
-  // DisplayItem
-  bool Equals(const DisplayItem&) const override;
-#if DCHECK_IS_ON()
-  void PropertiesAsJSON(JSONObject&) const override;
-#endif
-
-  FloatPoint Offset() const { return offset_; }
+  cc::Layer* GetLayer() const {
+    DCHECK(!IsTombstone());
+    return layer_.get();
+  }
 
  private:
-  FloatPoint offset_;
-  const LayerAsJSONClient* json_client_;
+  friend class DisplayItem;
+  bool EqualsForUnderInvalidationImpl(const ForeignLayerDisplayItem&) const;
+#if DCHECK_IS_ON()
+  void PropertiesAsJSONImpl(JSONObject&) const;
+#endif
+
+  scoped_refptr<cc::Layer> layer_;
 };
 
 // When a foreign layer's debug name is a literal string, define a instance of
 // LiteralDebugNameClient with DEFINE_STATIC_LOCAL() and pass the instance as
 // client to RecordForeignLayer().
-class LiteralDebugNameClient : public DisplayItemClient {
+class LiteralDebugNameClient : public GarbageCollected<LiteralDebugNameClient>,
+                               public DisplayItemClient {
  public:
   LiteralDebugNameClient(const char* name) : name_(name) {}
 
   String DebugName() const override { return name_; }
-  IntRect VisualRect() const override {
-    NOTREACHED();
-    return IntRect();
+  void Trace(Visitor* visitor) const override {
+    DisplayItemClient::Trace(visitor);
   }
 
  private:
   const char* name_;
+};
+
+template <>
+struct DowncastTraits<ForeignLayerDisplayItem> {
+  static bool AllowFrom(const DisplayItem& i) {
+    return !i.IsTombstone() && i.IsForeignLayer();
+  }
 };
 
 // Records a foreign layer into a GraphicsContext.
@@ -74,14 +82,8 @@ PLATFORM_EXPORT void RecordForeignLayer(
     const DisplayItemClient& client,
     DisplayItem::Type type,
     scoped_refptr<cc::Layer> layer,
-    const FloatPoint& offset,
-    const base::Optional<PropertyTreeState>& = base::nullopt);
-
-// Records a graphics layer into a GraphicsContext.
-PLATFORM_EXPORT void RecordGraphicsLayerAsForeignLayer(
-    GraphicsContext& context,
-    DisplayItem::Type type,
-    const GraphicsLayer& graphics_layer);
+    const gfx::Point& origin,
+    const PropertyTreeStateOrAlias* properties = nullptr);
 
 }  // namespace blink
 

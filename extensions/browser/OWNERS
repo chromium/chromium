@@ -1,6 +1,5 @@
 # Please talk to the apps shell team before adding DEPS.
 per-file DEPS=benwells@chromium.org
-per-file DEPS=rockot@google.com
 per-file DEPS=rdevlin.cronin@chromium.org
 
 per-file extension_event_histogram_value.h=set noparent
@@ -9,8 +8,9 @@ per-file extension_function_histogram_value.h=set noparent
 per-file extension_function_histogram_value.h=file://extensions/common/api/API_OWNERS
 
 # DeviceLocalAccount reviewers.
-per-file device_local_account_util*=isandrk@chromium.org
+per-file device_local_account_util*=anqing@chromium.org
+per-file device_local_account_util*=apotapchuk@chromium.org
 
 # For security review.
-per-file extensions_browser_interface_binders.cc=set noparent
-per-file extensions_browser_interface_binders.cc=file://ipc/SECURITY_OWNERS
+per-file extensions_browser_interface_binders.*=set noparent
+per-file extensions_browser_interface_binders.*=file://ipc/SECURITY_OWNERS

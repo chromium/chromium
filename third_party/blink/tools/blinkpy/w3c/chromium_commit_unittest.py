@@ -14,60 +14,71 @@ CHROMIUM_WPT_DIR = RELATIVE_WEB_TESTS + 'external/wpt/'
 
 
 class ChromiumCommitTest(unittest.TestCase):
-
     def test_validates_sha(self):
         with self.assertRaises(AssertionError):
             ChromiumCommit(MockHost(), sha='rutabaga')
 
     def test_derives_sha_from_position(self):
         host = MockHost()
-        host.executive = MockExecutive(output='c881563d734a86f7d9cd57ac509653a61c45c240')
-        pos = 'Cr-Commit-Position: refs/heads/master@{#789}'
+        host.executive = MockExecutive(
+            output='c881563d734a86f7d9cd57ac509653a61c45c240')
+        pos = 'Cr-Commit-Position: refs/heads/main@{#789}'
         chromium_commit = ChromiumCommit(host, position=pos)
 
-        self.assertEqual(chromium_commit.position, 'refs/heads/master@{#789}')
-        self.assertEqual(chromium_commit.sha, 'c881563d734a86f7d9cd57ac509653a61c45c240')
+        self.assertEqual(chromium_commit.position, 'refs/heads/main@{#789}')
+        self.assertEqual(chromium_commit.sha,
+                         'c881563d734a86f7d9cd57ac509653a61c45c240')
 
     def test_derives_position_from_sha(self):
         host = MockHost()
         host.executive = mock_git_commands({
-            'footers': 'refs/heads/master@{#789}'
+            'footers':
+            'refs/heads/main@{#789}'
         })
-        chromium_commit = ChromiumCommit(host, sha='c881563d734a86f7d9cd57ac509653a61c45c240')
+        chromium_commit = ChromiumCommit(
+            host, sha='c881563d734a86f7d9cd57ac509653a61c45c240')
 
-        self.assertEqual(chromium_commit.position, 'refs/heads/master@{#789}')
-        self.assertEqual(chromium_commit.sha, 'c881563d734a86f7d9cd57ac509653a61c45c240')
+        self.assertEqual(chromium_commit.position, 'refs/heads/main@{#789}')
+        self.assertEqual(chromium_commit.sha,
+                         'c881563d734a86f7d9cd57ac509653a61c45c240')
 
     def test_when_commit_has_no_position(self):
         host = MockHost()
 
         def run_command(_):
-            raise ScriptError('Unable to infer commit position from footers rutabaga')
+            raise ScriptError(
+                'Unable to infer commit position from footers rutabaga')
 
         host.executive = MockExecutive(run_command_fn=run_command)
-        chromium_commit = ChromiumCommit(host, sha='c881563d734a86f7d9cd57ac509653a61c45c240')
+        chromium_commit = ChromiumCommit(
+            host, sha='c881563d734a86f7d9cd57ac509653a61c45c240')
 
         self.assertEqual(chromium_commit.position, 'no-commit-position-yet')
-        self.assertEqual(chromium_commit.sha, 'c881563d734a86f7d9cd57ac509653a61c45c240')
+        self.assertEqual(chromium_commit.sha,
+                         'c881563d734a86f7d9cd57ac509653a61c45c240')
 
-    def test_filtered_changed_files_blacklist(self):
+    def test_filtered_changed_files_skips_special_files(self):
         host = MockHost()
 
         fake_files = ['file1', 'MANIFEST.json', 'file3', 'OWNERS']
         qualified_fake_files = [CHROMIUM_WPT_DIR + f for f in fake_files]
 
         host.executive = mock_git_commands({
-            'diff-tree': '\n'.join(qualified_fake_files),
-            'crrev-parse': 'c881563d734a86f7d9cd57ac509653a61c45c240',
+            'diff-tree':
+            '\n'.join(qualified_fake_files),
+            'crrev-parse':
+            'c881563d734a86f7d9cd57ac509653a61c45c240',
         })
 
-        position_footer = 'Cr-Commit-Position: refs/heads/master@{#789}'
+        position_footer = 'Cr-Commit-Position: refs/heads/main@{#789}'
         chromium_commit = ChromiumCommit(host, position=position_footer)
 
         files = chromium_commit.filtered_changed_files()
 
         expected_files = ['file1', 'file3']
-        qualified_expected_files = [CHROMIUM_WPT_DIR + f for f in expected_files]
+        qualified_expected_files = [
+            CHROMIUM_WPT_DIR + f for f in expected_files
+        ]
 
         self.assertEqual(files, qualified_expected_files)
 

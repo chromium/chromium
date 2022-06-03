@@ -1,0 +1,26 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//tools/style_variable_generator/style_variable_generator.gni")
+
+style_variable_generator("assistant_colors") {
+  sources = [
+    "//ui/chromeos/styles/cros_palette.json5",
+    "assistant_colors.json5",
+  ]
+}
+
+source_set("assistant_colors_util") {
+  sources = [
+    "assistant_colors_util.cc",
+    "assistant_colors_util.h",
+  ]
+  deps = [
+    ":assistant_colors_views",
+    "//ash/constants",
+    "//ash/public/cpp",
+    "//base",
+    "//skia",
+  ]
+}

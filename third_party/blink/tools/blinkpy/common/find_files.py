@@ -25,7 +25,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """A utility module used to find files. It exposes one public function: find().
 
 If a list is passed in, the returned list of files is constrained to those
@@ -45,7 +44,12 @@ The callback has to take three arguments: filesystem, dirname and filename.
 import itertools
 
 
-def find(filesystem, base_dir, paths=None, skipped_directories=None, file_filter=None, directory_sort_key=None):
+def find(filesystem,
+         base_dir,
+         paths=None,
+         skipped_directories=None,
+         file_filter=None,
+         directory_sort_key=None):
     """Finds the set of tests under a given list of sub-paths.
 
     Args:
@@ -64,14 +68,18 @@ def find(filesystem, base_dir, paths=None, skipped_directories=None, file_filter
     paths = paths or ['*']
     skipped_directories = skipped_directories or set()
     absolute_paths = _normalize(filesystem, base_dir, paths)
-    return _normalized_find(filesystem, absolute_paths, skipped_directories, file_filter, directory_sort_key)
+    return _normalized_find(filesystem, absolute_paths, skipped_directories,
+                            file_filter, directory_sort_key)
 
 
 def _normalize(filesystem, base_dir, paths):
-    return [filesystem.normpath(filesystem.join(base_dir, path)) for path in paths]
+    return [
+        filesystem.normpath(filesystem.join(base_dir, path)) for path in paths
+    ]
 
 
-def _normalized_find(filesystem, paths, skipped_directories, file_filter, directory_sort_key):
+def _normalized_find(filesystem, paths, skipped_directories, file_filter,
+                     directory_sort_key):
     """Finds the set of tests under the given list of paths."""
     paths_to_walk = itertools.chain(*(filesystem.glob(path) for path in paths))
 
@@ -81,4 +89,5 @@ def _normalized_find(filesystem, paths, skipped_directories, file_filter, direct
         return files_list
 
     return itertools.chain(*(sort_by_directory_key(
-        filesystem.files_under(path, skipped_directories, file_filter)) for path in paths_to_walk))
+        filesystem.files_under(path, skipped_directories, file_filter))
+                             for path in paths_to_walk))

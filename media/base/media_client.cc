@@ -4,7 +4,6 @@
 
 #include "media/base/media_client.h"
 
-#include "base/logging.h"
 
 namespace media {
 

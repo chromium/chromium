@@ -1,25 +1,10 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-import("//build/config/jumbo.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//testing/test.gni")
 
-mojom("mojom") {
-  sources = [
-    "blob/mojom/blob_storage_context.mojom",
-  ]
-
-  public_deps = [
-    "//mojo/public/mojom/base",
-    "//third_party/blink/public/mojom:mojom_core",
-  ]
-
-  overridden_deps = [ "//third_party/blink/public/mojom:mojom_core" ]
-  component_deps = [ "//third_party/blink/public/common" ]
-}
-
-jumbo_component("browser") {
+component("browser") {
   output_name = "storage_browser"
   sources = [
     "blob/blob_builder_from_stream.cc",
@@ -56,6 +41,8 @@ jumbo_component("browser") {
     "blob/blob_url_loader.h",
     "blob/blob_url_loader_factory.cc",
     "blob/blob_url_loader_factory.h",
+    "blob/blob_url_registry.cc",
+    "blob/blob_url_registry.h",
     "blob/blob_url_store_impl.cc",
     "blob/blob_url_store_impl.h",
     "blob/blob_url_utils.cc",
@@ -70,6 +57,10 @@ jumbo_component("browser") {
     "blob/shareable_file_reference.h",
     "blob/view_blob_internals_job.cc",
     "blob/view_blob_internals_job.h",
+    "blob/write_blob_to_file.cc",
+    "blob/write_blob_to_file.h",
+    "database/database_connections.cc",
+    "database/database_connections.h",
     "database/database_quota_client.cc",
     "database/database_quota_client.h",
     "database/database_tracker.cc",
@@ -100,8 +91,6 @@ jumbo_component("browser") {
     "file_system/file_system_context.h",
     "file_system/file_system_features.cc",
     "file_system/file_system_features.h",
-    "file_system/file_system_file_stream_reader.cc",
-    "file_system/file_system_file_stream_reader.h",
     "file_system/file_system_file_util.cc",
     "file_system/file_system_file_util.h",
     "file_system/file_system_operation.h",
@@ -116,12 +105,18 @@ jumbo_component("browser") {
     "file_system/file_system_quota_client.cc",
     "file_system/file_system_quota_client.h",
     "file_system/file_system_quota_util.h",
+    "file_system/file_system_request_info.cc",
+    "file_system/file_system_request_info.h",
     "file_system/file_system_url.cc",
     "file_system/file_system_url.h",
     "file_system/file_system_usage_cache.cc",
     "file_system/file_system_usage_cache.h",
+    "file_system/file_system_util.cc",
+    "file_system/file_system_util.h",
     "file_system/file_writer_delegate.cc",
     "file_system/file_writer_delegate.h",
+    "file_system/filesystem_proxy_file_stream_reader.cc",
+    "file_system/filesystem_proxy_file_stream_reader.h",
     "file_system/isolated_context.cc",
     "file_system/isolated_context.h",
     "file_system/isolated_file_system_backend.cc",
@@ -156,6 +151,7 @@ jumbo_component("browser") {
     "file_system/quota/open_file_handle_context.h",
     "file_system/quota/quota_backend_impl.cc",
     "file_system/quota/quota_backend_impl.h",
+    "file_system/quota/quota_limit_type.h",
     "file_system/quota/quota_reservation.cc",
     "file_system/quota/quota_reservation.h",
     "file_system/quota/quota_reservation_buffer.cc",
@@ -168,20 +164,18 @@ jumbo_component("browser") {
     "file_system/remove_operation_delegate.h",
     "file_system/sandbox_directory_database.cc",
     "file_system/sandbox_directory_database.h",
+    "file_system/sandbox_file_stream_reader.cc",
+    "file_system/sandbox_file_stream_reader.h",
     "file_system/sandbox_file_stream_writer.cc",
     "file_system/sandbox_file_stream_writer.h",
     "file_system/sandbox_file_system_backend.cc",
     "file_system/sandbox_file_system_backend.h",
     "file_system/sandbox_file_system_backend_delegate.cc",
     "file_system/sandbox_file_system_backend_delegate.h",
-    "file_system/sandbox_isolated_origin_database.cc",
-    "file_system/sandbox_isolated_origin_database.h",
     "file_system/sandbox_origin_database.cc",
     "file_system/sandbox_origin_database.h",
     "file_system/sandbox_origin_database_interface.cc",
     "file_system/sandbox_origin_database_interface.h",
-    "file_system/sandbox_prioritized_origin_database.cc",
-    "file_system/sandbox_prioritized_origin_database.h",
     "file_system/sandbox_quota_observer.cc",
     "file_system/sandbox_quota_observer.h",
     "file_system/task_runner_bound_observer_list.h",
@@ -190,23 +184,26 @@ jumbo_component("browser") {
     "file_system/watcher_manager.h",
     "quota/client_usage_tracker.cc",
     "quota/client_usage_tracker.h",
-    "quota/padding_key.cc",
-    "quota/padding_key.h",
     "quota/quota_callbacks.h",
-    "quota/quota_client.cc",
-    "quota/quota_client.h",
+    "quota/quota_client_type.cc",
+    "quota/quota_client_type.h",
     "quota/quota_database.cc",
     "quota/quota_database.h",
+    "quota/quota_database_migrations.cc",
+    "quota/quota_database_migrations.h",
     "quota/quota_device_info_helper.cc",
     "quota/quota_device_info_helper.h",
     "quota/quota_features.cc",
     "quota/quota_features.h",
-    "quota/quota_limit_type.h",
     "quota/quota_macros.h",
     "quota/quota_manager.cc",
     "quota/quota_manager.h",
+    "quota/quota_manager_impl.cc",
+    "quota/quota_manager_impl.h",
     "quota/quota_manager_proxy.cc",
     "quota/quota_manager_proxy.h",
+    "quota/quota_override_handle.cc",
+    "quota/quota_override_handle.h",
     "quota/quota_settings.cc",
     "quota/quota_settings.h",
     "quota/quota_task.cc",
@@ -215,6 +212,8 @@ jumbo_component("browser") {
     "quota/quota_temporary_storage_evictor.h",
     "quota/special_storage_policy.cc",
     "quota/special_storage_policy.h",
+    "quota/storage_policy_observer.cc",
+    "quota/storage_policy_observer.h",
     "quota/usage_tracker.cc",
     "quota/usage_tracker.h",
   ]
@@ -226,20 +225,24 @@ jumbo_component("browser") {
   ]
 
   public_deps = [
-    ":mojom",
     "//components/services/filesystem/public/mojom",
+    "//components/services/storage/public/mojom",
     "//storage/common",
   ]
   deps = [
     "//base",
     "//base:i18n",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
+    "//components/services/storage/public/cpp",
+    "//components/services/storage/public/cpp/filesystem",
     "//mojo/public/cpp/bindings",
     "//net",
     "//services/network:network_service",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//sql",
+    "//third_party/blink/public/common",
     "//third_party/leveldatabase",
     "//third_party/sqlite",
     "//url",
@@ -247,9 +250,7 @@ jumbo_component("browser") {
 }
 
 executable("dump_file_system") {
-  sources = [
-    "file_system/dump_file_system.cc",
-  ]
+  sources = [ "file_system/dump_file_system.cc" ]
 
   deps = [
     ":browser",
@@ -273,10 +274,13 @@ source_set("unittests") {
     "blob/blob_reader_unittest.cc",
     "blob/blob_registry_impl_unittest.cc",
     "blob/blob_slice_unittest.cc",
+    "blob/blob_storage_context_mojo_unittest.cc",
     "blob/blob_storage_context_unittest.cc",
     "blob/blob_storage_registry_unittest.cc",
     "blob/blob_transport_strategy_unittest.cc",
+    "blob/blob_url_registry_unittest.cc",
     "blob/blob_url_store_impl_unittest.cc",
+    "database/database_connections_unittest.cc",
     "database/database_quota_client_unittest.cc",
     "database/database_tracker_unittest.cc",
     "database/database_util_unittest.cc",
@@ -285,16 +289,20 @@ source_set("unittests") {
     "file_system/copy_or_move_operation_delegate_unittest.cc",
     "file_system/dragged_file_util_unittest.cc",
     "file_system/external_mount_points_unittest.cc",
+    "file_system/file_stream_reader_test.cc",
+    "file_system/file_stream_reader_test.h",
     "file_system/file_stream_test_utils.cc",
     "file_system/file_stream_test_utils.h",
+    "file_system/file_stream_writer_test.cc",
+    "file_system/file_stream_writer_test.h",
     "file_system/file_system_context_unittest.cc",
-    "file_system/file_system_file_stream_reader_unittest.cc",
     "file_system/file_system_operation_impl_unittest.cc",
     "file_system/file_system_operation_impl_write_unittest.cc",
     "file_system/file_system_quota_client_unittest.cc",
     "file_system/file_system_url_unittest.cc",
     "file_system/file_system_usage_cache_unittest.cc",
     "file_system/file_writer_delegate_unittest.cc",
+    "file_system/filesystem_proxy_file_stream_reader_unittest.cc",
     "file_system/isolated_context_unittest.cc",
     "file_system/local_file_stream_reader_unittest.cc",
     "file_system/local_file_stream_writer_unittest.cc",
@@ -309,12 +317,13 @@ source_set("unittests") {
     "file_system/quota/quota_reservation_manager_unittest.cc",
     "file_system/recursive_operation_delegate_unittest.cc",
     "file_system/sandbox_directory_database_unittest.cc",
+    "file_system/sandbox_file_stream_reader_unittest.cc",
+    "file_system/sandbox_file_stream_writer_unittest.cc",
     "file_system/sandbox_file_system_backend_delegate_unittest.cc",
     "file_system/sandbox_file_system_backend_unittest.cc",
-    "file_system/sandbox_isolated_origin_database_unittest.cc",
     "file_system/sandbox_origin_database_unittest.cc",
-    "file_system/sandbox_prioritized_origin_database_unittest.cc",
     "file_system/transient_file_util_unittest.cc",
+    "quota/quota_database_migrations_unittest.cc",
     "quota/quota_database_unittest.cc",
     "quota/quota_manager_unittest.cc",
     "quota/quota_settings_unittest.cc",
@@ -327,19 +336,22 @@ source_set("unittests") {
     ":browser",
     ":test_support",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//components/services/filesystem/public/mojom",
-    "//mojo/core/embedder",
+    "//components/services/storage/public/cpp",
+    "//mojo/public/cpp/system",
     "//net:test_support",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
     "//sql:test_support",
     "//testing/gtest",
+    "//third_party/blink/public/common",
     "//third_party/leveldatabase",
     "//third_party/sqlite",
   ]
 }
 
-jumbo_static_library("test_support") {
+static_library("test_support") {
   testonly = true
 
   sources = [
@@ -365,14 +377,16 @@ jumbo_static_library("test_support") {
     "test/mock_file_change_observer.h",
     "test/mock_file_update_observer.cc",
     "test/mock_file_update_observer.h",
+    "test/mock_quota_client.cc",
+    "test/mock_quota_client.h",
     "test/mock_quota_manager.cc",
     "test/mock_quota_manager.h",
     "test/mock_quota_manager_proxy.cc",
     "test/mock_quota_manager_proxy.h",
     "test/mock_special_storage_policy.cc",
     "test/mock_special_storage_policy.h",
-    "test/mock_storage_client.cc",
-    "test/mock_storage_client.h",
+    "test/quota_manager_proxy_sync.cc",
+    "test/quota_manager_proxy_sync.h",
     "test/sandbox_database_test_helper.cc",
     "test/sandbox_database_test_helper.h",
     "test/sandbox_file_system_test_helper.cc",
@@ -387,8 +401,10 @@ jumbo_static_library("test_support") {
 
   deps = [
     ":browser",
-    ":mojom",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/services/storage/public/cpp",
+    "//components/services/storage/public/mojom",
     "//net:test_support",
     "//services/network:network_service",
     "//testing/gtest",

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import six
 
 # Ignore the following files from SVG optimization checks.
 BLOCKLIST = [
@@ -17,12 +18,21 @@ def CheckOptimized(input_api, output_api):
   if not svgs:
     return []
 
-  import svgo
-
+  from resources import svgo
   unoptimized = []
+
+  def _ToBinary(s):
+    if isinstance(s, six.binary_type):
+      return s
+    if isinstance(s, six.text_type):
+      return s.encode('utf-8')
+
   for f in svgs:
-    output = svgo.Run(input_api.os_path, ['-o', '-', f.AbsoluteLocalPath()])
-    if output.strip() != '\n'.join(f.NewContents()).strip():
+    original = b'\n'.join(_ToBinary(line) for line in f.NewContents()).strip()
+    output = _ToBinary(
+        svgo.Run(input_api.os_path,
+                 ['-o', '-', f.AbsoluteLocalPath()]).strip())
+    if original != output:
       unoptimized.append(f.LocalPath())
 
   if unoptimized:

@@ -1,9 +1,8 @@
-" Copyright (c) 2014 The Chromium Authors. All rights reserved.
+" Copyright 2014 The Chromium Authors. All rights reserved.
 " Use of this source code is governed by a BSD-style license that can be
 " found in the LICENSE file.
 
-" Binds cmd-shift-i (on Mac) or ctrl-shift-i (elsewhere) to invoking
-" clang-format.py.
+" Binds cmd-shift-i (on Mac) or ctrl-i (elsewhere) to invoke clang-format.py.
 " It will format the current selection (and if there's no selection, the
 " current line.)
 

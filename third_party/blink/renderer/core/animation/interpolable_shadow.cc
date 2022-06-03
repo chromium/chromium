@@ -75,11 +75,11 @@ std::unique_ptr<InterpolableShadow> InterpolableShadow::MaybeConvertCSSValue(
   if (!shadow)
     return nullptr;
 
-  ShadowStyle shadow_style = kNormal;
+  ShadowStyle shadow_style = ShadowStyle::kNormal;
   if (shadow->style) {
     if (shadow->style->GetValueID() != CSSValueID::kInset)
       return nullptr;
-    shadow_style = kInset;
+    shadow_style = ShadowStyle::kInset;
   }
 
   std::unique_ptr<InterpolableLength> x = MaybeConvertLength(shadow->x.Get());
@@ -133,17 +133,19 @@ ShadowData InterpolableShadow::CreateShadowData(
     const StyleResolverState& state) const {
   const CSSToLengthConversionData& conversion_data =
       state.CssToLengthConversionData();
-  Length shadow_x = x_->CreateLength(conversion_data, kValueRangeAll);
-  Length shadow_y = y_->CreateLength(conversion_data, kValueRangeAll);
+  Length shadow_x = x_->CreateLength(conversion_data, Length::ValueRange::kAll);
+  Length shadow_y = y_->CreateLength(conversion_data, Length::ValueRange::kAll);
   Length shadow_blur =
-      blur_->CreateLength(conversion_data, kValueRangeNonNegative);
-  Length shadow_spread = spread_->CreateLength(conversion_data, kValueRangeAll);
+      blur_->CreateLength(conversion_data, Length::ValueRange::kNonNegative);
+  Length shadow_spread =
+      spread_->CreateLength(conversion_data, Length::ValueRange::kAll);
   DCHECK(shadow_x.IsFixed() && shadow_y.IsFixed() && shadow_blur.IsFixed() &&
          shadow_spread.IsFixed());
   return ShadowData(
       FloatPoint(shadow_x.Value(), shadow_y.Value()), shadow_blur.Value(),
       shadow_spread.Value(), shadow_style_,
-      CSSColorInterpolationType::ResolveInterpolableColor(*color_, state));
+      StyleColor(
+          CSSColorInterpolationType::ResolveInterpolableColor(*color_, state)));
 }
 
 InterpolableShadow* InterpolableShadow::RawClone() const {

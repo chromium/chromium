@@ -13,10 +13,9 @@ namespace system {
 
 class StatisticsProvider;
 
-// The RLZ embargo end date is considered invalid if it's more than this many
+// An embargo end date is considered invalid if it's more than this many
 // days in the future.
-constexpr base::TimeDelta kRlzEmbargoEndDateGarbageDateThreshold =
-    base::TimeDelta::FromDays(14);
+constexpr base::TimeDelta kEmbargoEndDateGarbageDateThreshold = base::Days(14);
 
 enum class FactoryPingEmbargoState {
   // There is no correctly formatted factory ping embargo end date value in
@@ -34,7 +33,11 @@ enum class FactoryPingEmbargoState {
 };
 
 COMPONENT_EXPORT(CHROMEOS_SYSTEM)
-FactoryPingEmbargoState GetFactoryPingEmbargoState(
+FactoryPingEmbargoState GetEnterpriseManagementPingEmbargoState(
+    StatisticsProvider* statistics_provider);
+
+COMPONENT_EXPORT(CHROMEOS_SYSTEM)
+FactoryPingEmbargoState GetRlzPingEmbargoState(
     StatisticsProvider* statistics_provider);
 
 }  // namespace system

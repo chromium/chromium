@@ -7,11 +7,11 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/proxy/ppapi_proxy_test.h"
 #include "testing/gtest/include/gtest/gtest.h"

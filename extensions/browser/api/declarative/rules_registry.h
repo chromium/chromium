@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -54,6 +53,9 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
                 content::BrowserThread::ID owner_thread,
                 RulesCacheDelegate* cache_delegate,
                 int id);
+
+  RulesRegistry(const RulesRegistry&) = delete;
+  RulesRegistry& operator=(const RulesRegistry&) = delete;
 
   const base::OneShotEvent& ready() const { return ready_; }
 
@@ -300,8 +302,6 @@ class RulesRegistry : public base::RefCountedThreadSafe<RulesRegistry> {
   base::WeakPtr<RulesCacheDelegate> cache_delegate_;
 
   base::WeakPtrFactory<RulesRegistry> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RulesRegistry);
 };
 
 }  // namespace extensions

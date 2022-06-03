@@ -10,12 +10,14 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "net/socket/connect_job_factory.h"
 #include "net/ssl/ssl_config.h"
 #include "url/gurl.h"
 
 namespace net {
 struct CommonConnectJobParams;
 class HttpNetworkSession;
+class NetworkIsolationKey;
 class URLRequestContext;
 }  // namespace net
 
@@ -30,6 +32,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocketFactory {
   // pools by instantiating and owning a separate |network_session_|.
   explicit ProxyResolvingClientSocketFactory(
       net::URLRequestContext* request_context);
+
+  ProxyResolvingClientSocketFactory(const ProxyResolvingClientSocketFactory&) =
+      delete;
+  ProxyResolvingClientSocketFactory& operator=(
+      const ProxyResolvingClientSocketFactory&) = delete;
+
   ~ProxyResolvingClientSocketFactory();
 
   // Creates a socket. |url|'s host and port specify where a connection will be
@@ -37,22 +45,27 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) ProxyResolvingClientSocketFactory {
   // doesn't need to explicitly sanitize the url, any sensitive data (like
   // embedded usernames and passwords), and local data (i.e. reference fragment)
   // will be sanitized by net::ProxyService::ResolveProxyHelper() before the url
-  // is disclosed to the proxy. If |use_tls|, TLS connect will be used in
-  // addition to TCP connect. The URLRequestContext's SSL configurations will be
-  // respected when establishing a TLS connection.
-  std::unique_ptr<ProxyResolvingClientSocket> CreateSocket(const GURL& url,
-                                                           bool use_tls);
-
-  const net::HttpNetworkSession* network_session() const {
-    return network_session_.get();
-  }
+  // is disclosed to the proxy.
+  //
+  // |network_isolation_key| indicates the network shard to use for storing
+  // shared network state (DNS cache entries, shared H2/QUIC proxy connections,
+  // etc).  Proxy connections will only be shared with other
+  // ProxyResolvingClientSockets, not with standards HTTP/HTTPS requests.
+  //
+  // If |use_tls| is true, TLS connect will be used in addition to TCP connect.
+  // The URLRequestContext's SSL configurations will be respected when
+  // establishing a TLS connection.
+  std::unique_ptr<ProxyResolvingClientSocket> CreateSocket(
+      const GURL& url,
+      const net::NetworkIsolationKey& network_isolation_key,
+      bool use_tls);
 
  private:
   std::unique_ptr<net::HttpNetworkSession> network_session_;
   std::unique_ptr<net::CommonConnectJobParams> common_connect_job_params_;
   net::URLRequestContext* request_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProxyResolvingClientSocketFactory);
+  std::unique_ptr<net::ConnectJobFactory> connect_job_factory_ =
+      std::make_unique<net::ConnectJobFactory>();
 };
 
 }  // namespace network

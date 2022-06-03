@@ -4,6 +4,8 @@
 
 #include "ui/views/animation/flood_fill_ink_drop_ripple.h"
 
+#include <cmath>
+
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/point.h"
@@ -137,10 +139,8 @@ TEST(FloodFillInkDropRippleTest, TransformIsPixelAligned) {
     dsf_transform.Scale(dsf, dsf);
     dsf_transform.TransformPoint(&ripple_origin);
 
-    EXPECT_NEAR(ripple_origin.x(), gfx::ToRoundedInt(ripple_origin.x()),
-                kEpsilon);
-    EXPECT_NEAR(ripple_origin.y(), gfx::ToRoundedInt(ripple_origin.y()),
-                kEpsilon);
+    EXPECT_NEAR(ripple_origin.x(), std::round(ripple_origin.x()), kEpsilon);
+    EXPECT_NEAR(ripple_origin.y(), std::round(ripple_origin.y()), kEpsilon);
   }
 }
 

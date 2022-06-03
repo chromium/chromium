@@ -10,7 +10,7 @@
 
 #include "base/files/file_path.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_history.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -37,12 +37,12 @@ class WebRtcEventLogUploader {
    public:
     virtual ~Factory() = default;
 
-    // Creates uploaders. The observer is passed to each call of Create,
-    // rather than be memorized by the factory's constructor, because factories
-    // created by unit tests have no visibility into the real implementation's
-    // observer (WebRtcRemoteEventLogManager).
+    // Creates uploaders.
     // This takes ownership of the file. The caller must not attempt to access
-    // the file after invoking Create().
+    // the file after invoking Create(). Even deleting the file due to
+    // the user clearing cache, is to be done through the uploader's Cancel,
+    // and not through direct access of the caller to the file. The file may
+    // be touched again only after |this| is destroyed.
     virtual std::unique_ptr<WebRtcEventLogUploader> Create(
         const WebRtcLogFileInfo& log_file,
         UploadResultCallback callback) = 0;
@@ -55,10 +55,9 @@ class WebRtcEventLogUploader {
   virtual const WebRtcLogFileInfo& GetWebRtcLogFileInfo() const = 0;
 
   // Cancels the upload, then deletes the log file and its history file.
-  // Returns true if the upload was cancelled due to this call, and false if
-  // the upload was already completed or aborted before this call.
-  // (Aborted uploads are ones where the file could not be read, etc.)
-  virtual bool Cancel() = 0;
+  // (These files are deleted even if the upload has been completed by the time
+  // Cancel is called.)
+  virtual void Cancel() = 0;
 };
 
 // Primary implementation of WebRtcEventLogUploader. Uploads log files to crash.
@@ -67,7 +66,9 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
  public:
   class Factory : public WebRtcEventLogUploader::Factory {
    public:
-    ~Factory() override = default;
+    explicit Factory(scoped_refptr<base::SequencedTaskRunner> task_runner);
+
+    ~Factory() override;
 
     std::unique_ptr<WebRtcEventLogUploader> Create(
         const WebRtcLogFileInfo& log_file,
@@ -80,9 +81,13 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
         const WebRtcLogFileInfo& log_file,
         UploadResultCallback callback,
         size_t max_remote_log_file_size_bytes);
+
+   private:
+    scoped_refptr<base::SequencedTaskRunner> task_runner_;
   };
 
   WebRtcEventLogUploaderImpl(
+      scoped_refptr<base::SequencedTaskRunner> task_runner,
       const WebRtcLogFileInfo& log_file,
       UploadResultCallback callback,
       size_t max_remote_log_file_size_bytes);
@@ -90,7 +95,7 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
 
   const WebRtcLogFileInfo& GetWebRtcLogFileInfo() const override;
 
-  bool Cancel() override;
+  void Cancel() override;
 
  private:
   friend class WebRtcEventLogUploaderImplTest;
@@ -110,7 +115,7 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
   void OnURLLoadComplete(std::unique_ptr<std::string> response_body);
 
   // Cleanup and posting of the result callback.
-  void ReportResult(bool result);
+  void ReportResult(bool upload_successful, bool delete_history_file = false);
 
   // Remove the log file which is owned by |this|.
   void DeleteLogFile();
@@ -120,6 +125,9 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
 
   // The URL used for uploading the logs.
   static const char kUploadURL[];
+
+  // The object lives on this IO-capable task runner.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Housekeeping information about the uploaded file (path, time of last
   // modification, associated BrowserContext).
@@ -139,8 +147,8 @@ class WebRtcEventLogUploaderImpl : public WebRtcEventLogUploader {
   // This object is in charge of the actual upload.
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 
-  // The object lives on this IO-capable task runner.
-  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
+  // Allows releasing |this| while a task from |url_loader_| is still pending.
+  base::WeakPtrFactory<WebRtcEventLogUploaderImpl> weak_ptr_factory_{this};
 };
 
 }  // namespace webrtc_event_logging

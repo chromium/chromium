@@ -2,10 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import collections
+
 from page_sets import page_cycler_story
 from telemetry.page import cache_temperature as cache_temperature_module
 from telemetry.page import shared_page_state
 from telemetry import story
+
+Tag = collections.namedtuple('Tag', ['name', 'description'])
+
+# pylint: disable=line-too-long
+# Used https://cs.chromium.org/chromium/src/tools/perf/experimental/story_clustering/README.md
+# to find representative stories.
+
+ABRIDGED = Tag('abridged', 'Story should be included in abridged runs')
+ABRIDGED_STORY_NAMES = [
+    "AirBnB_warm",
+    "ru.wikipedia_warm",
+    "Baidu_warm",
+    "AllRecipes_cold",
+    "TheOnion_cold",
+    "Naver_cold",
+    "Aljayyash_cold",
+    "Taobao_warm",
+    "Orange_cold",
+    "Orange_warm",
+]
 
 
 class LoadingDesktopStorySet(story.StorySet):
@@ -94,6 +116,9 @@ class LoadingDesktopStorySet(story.StorySet):
          ('http://www.airbnb.com/', 'AirBnB'),
          ('http://www.ign.com/', 'IGN')], cache_temperatures)
 
+  def GetAbridgedStorySetTagFilter(self):
+    return ABRIDGED.name
+
   def AddStories(self, tags, urls, cache_temperatures):
     for url, name in urls:
       for temp in cache_temperatures:
@@ -105,6 +130,19 @@ class LoadingDesktopStorySet(story.StorySet):
           tags.append('cache_temperature_warm')
         else:
           raise NotImplementedError
-        self.AddStory(page_cycler_story.PageCyclerStory(url, self,
-            shared_page_state_class=shared_page_state.SharedDesktopPageState,
-            cache_temperature=temp, tags=tags, name=page_name))
+
+        page_tags = tags[:]
+
+        if page_name in ABRIDGED_STORY_NAMES:
+          page_tags.append(ABRIDGED.name)
+
+        self.AddStory(
+            page_cycler_story.PageCyclerStory(
+                url,
+                self,
+                shared_page_state_class=shared_page_state.
+                SharedDesktopPageState,
+                cache_temperature=temp,
+                tags=page_tags,
+                name=page_name,
+                perform_final_navigation=True))

@@ -6,6 +6,8 @@
 
 #include <vector>
 
+#include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -25,6 +27,7 @@ const char kRequestSigninAll[] = "all_accounts";
 const char kSigninActionAttrName[] = "action";
 const char kSigninAuthUserAttrName[] = "authuser";
 const char kSigninAuthorizationCodeAttrName[] = "authorization_code";
+const char kSigninNoAuthorizationCodeAttrName[] = "no_authorization_code";
 const char kSigninEmailAttrName[] = "email";
 const char kSigninIdAttrName[] = "id";
 
@@ -100,6 +103,13 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
         params.signin_info->authorization_code = value;
       else
         DLOG(WARNING) << "Authorization code expected only with SIGNIN action";
+    } else if (key_name == kSigninNoAuthorizationCodeAttrName) {
+      if (params.signin_info) {
+        params.signin_info->no_authorization_code = true;
+      } else {
+        DLOG(WARNING)
+            << "No authorization code header expected only with SIGNIN action";
+      }
     } else {
       DLOG(WARNING) << "Unexpected Gaia header attribute '" << key_name << "'.";
     }
@@ -111,10 +121,18 @@ DiceResponseParams DiceHeaderHelper::BuildDiceSigninResponseParams(
     return DiceResponseParams();
   }
 
-  if (params.signin_info && params.signin_info->authorization_code.empty()) {
-    DLOG(WARNING) << "Missing authorization code in Dice SIGNIN header: "
-                  << header_value;
-    return DiceResponseParams();
+  if (params.signin_info) {
+    if (params.signin_info->authorization_code.empty() &&
+        !params.signin_info->no_authorization_code) {
+      DLOG(WARNING)
+          << "Missing authorization code  and no authorization code headers"
+          << "in Dice SIGNIN header: " << header_value;
+      return DiceResponseParams();
+    }
+    // Uma histogram that records whether the authorization code was present or
+    // not.
+    base::UmaHistogramBoolean("Signin.DiceAuthorizationCode",
+                              !params.signin_info->authorization_code.empty());
   }
 
   return params;
@@ -186,7 +204,7 @@ bool DiceHeaderHelper::IsUrlEligibleForRequestHeader(const GURL& url) {
   if (account_consistency_ != AccountConsistencyMethod::kDice)
     return false;
 
-  return gaia::IsGaiaSignonRealm(url.GetOrigin());
+  return gaia::IsGaiaSignonRealm(url.DeprecatedGetOriginAsURL());
 }
 
 std::string DiceHeaderHelper::BuildRequestHeader(

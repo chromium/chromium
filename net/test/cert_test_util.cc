@@ -14,17 +14,15 @@
 
 namespace net {
 
-CertificateList CreateCertificateListFromFile(
-    const base::FilePath& certs_dir,
-    const std::string& cert_file,
-    int format) {
+CertificateList CreateCertificateListFromFile(const base::FilePath& certs_dir,
+                                              base::StringPiece cert_file,
+                                              int format) {
   base::FilePath cert_path = certs_dir.AppendASCII(cert_file);
   std::string cert_data;
   if (!base::ReadFileToString(cert_path, &cert_data))
     return CertificateList();
-  return X509Certificate::CreateCertificateListFromBytes(cert_data.data(),
-                                                         cert_data.size(),
-                                                         format);
+  return X509Certificate::CreateCertificateListFromBytes(
+      base::as_bytes(base::make_span(cert_data)), format);
 }
 
 ::testing::AssertionResult LoadCertificateFiles(
@@ -46,7 +44,7 @@ CertificateList CreateCertificateListFromFile(
 
 scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file,
+    base::StringPiece cert_file,
     int format) {
   CertificateList certs = CreateCertificateListFromFile(
       certs_dir, cert_file, format);
@@ -64,7 +62,7 @@ scoped_refptr<X509Certificate> CreateCertificateChainFromFile(
 
 scoped_refptr<X509Certificate> ImportCertFromFile(
     const base::FilePath& certs_dir,
-    const std::string& cert_file) {
+    base::StringPiece cert_file) {
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath cert_path = certs_dir.AppendASCII(cert_file);
   std::string cert_data;
@@ -73,7 +71,8 @@ scoped_refptr<X509Certificate> ImportCertFromFile(
 
   CertificateList certs_in_file =
       X509Certificate::CreateCertificateListFromBytes(
-          cert_data.data(), cert_data.size(), X509Certificate::FORMAT_AUTO);
+          base::as_bytes(base::make_span(cert_data)),
+          X509Certificate::FORMAT_AUTO);
   if (certs_in_file.empty())
     return nullptr;
   return certs_in_file[0];

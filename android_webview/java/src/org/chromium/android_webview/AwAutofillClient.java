@@ -99,9 +99,9 @@ public class AwAutofillClient {
     @CalledByNative
     private static void addToAutofillSuggestionArray(AutofillSuggestion[] array, int index,
             String name, String label, int uniqueId) {
-        array[index] = new AutofillSuggestion(name, label, DropdownItem.NO_ICON,
+        array[index] = new AutofillSuggestion(name, label, /* itemTag= */ "", DropdownItem.NO_ICON,
                 false /* isIconAtLeft */, uniqueId, false /* isDeletable */,
-                false /* isMultilineLabel */, false /* isBoldLabel */);
+                false /* isMultilineLabel */, false /* isBoldLabel */, /* featureForIPH= */ "");
     }
 
     @NativeMethods

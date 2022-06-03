@@ -1,24 +1,19 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [913, 235],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling Contents Layer",
-          "rect": [0, 0, 913, 235],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 913, 235]
       ],
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [600, 15],
-      "contentsOpaque": true
+      "bounds": [600, 15]
     }
   ],
   "transforms": [
@@ -36,24 +31,19 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [913, 235],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling Contents Layer",
-          "rect": [0, 0, 913, 235],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 913, 235]
       ],
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "HorizontalScrollbar",
       "position": [0, 235],
-      "bounds": [400, 15],
-      "contentsOpaque": true
+      "bounds": [400, 15]
     }
   ],
   "transforms": [
@@ -71,16 +61,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [400, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling Contents Layer",
-          "rect": [0, 0, 400, 600],
-          "reason": "full layer"
-        }
+      "invalidations": [
+        [0, 0, 400, 600]
       ]
     }
   ]
@@ -88,66 +74,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "Scrolling background of LayoutView #document",
-          "rect": [400, 0, 400, 600],
-          "reason": "incremental"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
-          "rect": [447, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
-          "rect": [447, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
-          "rect": [447, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
-          "rect": [447, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'NNNN'",
-          "rect": [447, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'AAAA BBBB CCCC'",
-          "rect": [47, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'DDDD EEEE FFFF'",
-          "rect": [47, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'GGGG HHHH IIII JJJJ'",
-          "rect": [47, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'KKKK LLLL MMMM'",
-          "rect": [47, 8, 345, 565],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'NNNN'",
-          "rect": [47, 8, 345, 565],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [400, 0, 400, 600],
+        [47, 8, 345, 565]
       ]
     }
   ]

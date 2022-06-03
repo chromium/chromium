@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Web App Notifications</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="red-32.png">
+</head>
+<body>
+  <!-- This page is intended to be used by the cross-platform
+        WebAppNotificationsBrowserTest. https://notifications.spec.whatwg.org/
+  -->
+  <script src="service_worker_test_utils.js"></script>
+  <script src="scripted_test_commands.js"></script>
+  <script>
+    window.onload = () => {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register("service_worker.js");
+      }
+    };
+  </script>
+</body>
+</html>

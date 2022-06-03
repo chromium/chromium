@@ -34,6 +34,9 @@ namespace blink {
 
 // Base structure for callback user data
 struct QueryData {
+  STACK_ALLOCATED();
+
+ public:
   QueryData()
       : is_vertical_text(false),
         current_offset(0),
@@ -65,7 +68,7 @@ static inline InlineFlowBox* FlowBoxForLayoutObject(
   if (layout_object->IsLayoutInline()) {
     // We're given a LayoutSVGInline or objects that derive from it
     // (LayoutSVGTSpan / LayoutSVGTextPath)
-    LayoutInline* layout_inline = ToLayoutInline(layout_object);
+    auto* layout_inline = To<LayoutInline>(layout_object);
 
     // LayoutSVGInline only ever contains a single line box.
     InlineFlowBox* flow_box = layout_inline->FirstLineBox();
@@ -77,8 +80,9 @@ static inline InlineFlowBox* FlowBoxForLayoutObject(
   return nullptr;
 }
 
-static void CollectTextBoxesInFlowBox(InlineFlowBox* flow_box,
-                                      Vector<SVGInlineTextBox*>& text_boxes) {
+static void CollectTextBoxesInFlowBox(
+    InlineFlowBox* flow_box,
+    HeapVector<Member<SVGInlineTextBox>>& text_boxes) {
   if (!flow_box)
     return;
 
@@ -89,12 +93,12 @@ static void CollectTextBoxesInFlowBox(InlineFlowBox* flow_box,
       if (!child->GetLineLayoutItem().GetNode())
         continue;
 
-      CollectTextBoxesInFlowBox(ToInlineFlowBox(child), text_boxes);
+      CollectTextBoxesInFlowBox(To<InlineFlowBox>(child), text_boxes);
       continue;
     }
 
-    if (child->IsSVGInlineTextBox())
-      text_boxes.push_back(ToSVGInlineTextBox(child));
+    if (auto* svg_inline_text_box = DynamicTo<SVGInlineTextBox>(child))
+      text_boxes.push_back(svg_inline_text_box);
   }
 }
 
@@ -123,7 +127,7 @@ static bool QueryTextBox(QueryData* query_data,
 static void SpatialQuery(LayoutObject* query_root,
                          QueryData* query_data,
                          ProcessTextFragmentCallback fragment_callback) {
-  Vector<SVGInlineTextBox*> text_boxes;
+  HeapVector<Member<SVGInlineTextBox>> text_boxes;
   CollectTextBoxesInFlowBox(FlowBoxForLayoutObject(query_root), text_boxes);
 
   // Loop over all text boxes
@@ -135,11 +139,11 @@ static void SpatialQuery(LayoutObject* query_root,
 
 static void CollectTextBoxesInLogicalOrder(
     LineLayoutSVGInlineText text_line_layout,
-    Vector<SVGInlineTextBox*>& text_boxes) {
+    HeapVector<Member<SVGInlineTextBox>>& text_boxes) {
   text_boxes.Shrink(0);
   for (InlineTextBox* text_box = text_line_layout.FirstTextBox(); text_box;
        text_box = text_box->NextForSameLayoutObject())
-    text_boxes.push_back(ToSVGInlineTextBox(text_box));
+    text_boxes.push_back(To<SVGInlineTextBox>(text_box));
   std::sort(text_boxes.begin(), text_boxes.end(),
             InlineTextBox::CompareByStart);
 }
@@ -154,15 +158,15 @@ static void LogicalQuery(LayoutObject* query_root,
 
   // Walk the layout tree in pre-order, starting at the specified root, and
   // run the query for each text node.
-  Vector<SVGInlineTextBox*> text_boxes;
+  HeapVector<Member<SVGInlineTextBox>> text_boxes;
   for (LayoutObject* layout_object = query_root->SlowFirstChild();
        layout_object;
        layout_object = layout_object->NextInPreOrder(query_root)) {
     if (!layout_object->IsSVGInlineText())
       continue;
 
-    LineLayoutSVGInlineText text_line_layout =
-        LineLayoutSVGInlineText(ToLayoutSVGInlineText(layout_object));
+    auto text_line_layout =
+        LineLayoutSVGInlineText(To<LayoutSVGInlineText>(layout_object));
     DCHECK(text_line_layout.Style());
 
     // TODO(fs): Allow filtering the search earlier, since we should be
@@ -302,10 +306,10 @@ struct StartPositionOfCharacterData : QueryData {
       : position(query_position) {}
 
   unsigned position;
-  FloatPoint start_position;
+  gfx::PointF start_position;
 };
 
-static FloatPoint LogicalGlyphPositionToPhysical(
+static gfx::PointF LogicalGlyphPositionToPhysical(
     const QueryData* query_data,
     const SVGTextFragment& fragment,
     float logical_glyph_offset) {
@@ -316,21 +320,21 @@ static FloatPoint LogicalGlyphPositionToPhysical(
     physical_glyph_offset = fragment_extent - logical_glyph_offset;
   }
 
-  FloatPoint glyph_position(fragment.x, fragment.y);
+  gfx::PointF glyph_position(fragment.x, fragment.y);
   if (query_data->is_vertical_text)
-    glyph_position.Move(0, physical_glyph_offset);
+    glyph_position.Offset(0, physical_glyph_offset);
   else
-    glyph_position.Move(physical_glyph_offset, 0);
+    glyph_position.Offset(physical_glyph_offset, 0);
 
   return glyph_position;
 }
 
-static FloatPoint CalculateGlyphPosition(const QueryData* query_data,
-                                         const SVGTextFragment& fragment,
-                                         unsigned offset_in_fragment) {
+static gfx::PointF CalculateGlyphPosition(const QueryData* query_data,
+                                          const SVGTextFragment& fragment,
+                                          unsigned offset_in_fragment) {
   float glyph_offset_in_direction =
       CalculateGlyphRange(query_data, fragment, 0, offset_in_fragment);
-  FloatPoint glyph_position = LogicalGlyphPositionToPhysical(
+  gfx::PointF glyph_position = LogicalGlyphPositionToPhysical(
       query_data, fragment, glyph_offset_in_direction);
   if (fragment.IsTransformed()) {
     AffineTransform fragment_transform = fragment.BuildFragmentTransform(
@@ -356,7 +360,7 @@ static bool StartPositionOfCharacterCallback(QueryData* query_data,
   return true;
 }
 
-FloatPoint SVGTextQuery::StartPositionOfCharacter(unsigned position) const {
+gfx::PointF SVGTextQuery::StartPositionOfCharacter(unsigned position) const {
   StartPositionOfCharacterData data(position);
   LogicalQuery(query_root_layout_object_, &data,
                StartPositionOfCharacterCallback);
@@ -369,7 +373,7 @@ struct EndPositionOfCharacterData : QueryData {
       : position(query_position) {}
 
   unsigned position;
-  FloatPoint end_position;
+  gfx::PointF end_position;
 };
 
 static bool EndPositionOfCharacterCallback(QueryData* query_data,
@@ -388,7 +392,7 @@ static bool EndPositionOfCharacterCallback(QueryData* query_data,
   return true;
 }
 
-FloatPoint SVGTextQuery::EndPositionOfCharacter(unsigned position) const {
+gfx::PointF SVGTextQuery::EndPositionOfCharacter(unsigned position) const {
   EndPositionOfCharacterData data(position);
   LogicalQuery(query_root_layout_object_, &data,
                EndPositionOfCharacterCallback);
@@ -422,8 +426,8 @@ static bool RotationOfCharacterCallback(QueryData* query_data,
         SVGTextFragment::kTransformIgnoringTextLength);
     fragment_transform.Scale(1 / fragment_transform.XScale(),
                              1 / fragment_transform.YScale());
-    data->rotation = clampTo<float>(
-        rad2deg(atan2(fragment_transform.B(), fragment_transform.A())));
+    data->rotation = ClampTo<float>(
+        Rad2deg(atan2(fragment_transform.B(), fragment_transform.A())));
   }
   return true;
 }
@@ -439,26 +443,26 @@ struct ExtentOfCharacterData : QueryData {
   ExtentOfCharacterData(unsigned query_position) : position(query_position) {}
 
   unsigned position;
-  FloatRect extent;
+  gfx::RectF extent;
 };
 
-static FloatRect PhysicalGlyphExtents(const QueryData* query_data,
-                                      const SVGTextMetrics& metrics,
-                                      const FloatPoint& glyph_position) {
-  FloatRect glyph_extents(glyph_position, metrics.Extents());
+static gfx::RectF PhysicalGlyphExtents(const QueryData* query_data,
+                                       const SVGTextMetrics& metrics,
+                                       const gfx::PointF& glyph_position) {
+  gfx::RectF glyph_extents(glyph_position, metrics.Extents());
 
   // If RTL, adjust the starting point to align with the LHS of the glyph
   // bounding box.
   if (!query_data->text_box->IsLeftToRightDirection()) {
     if (query_data->is_vertical_text)
-      glyph_extents.Move(0, -glyph_extents.Height());
+      glyph_extents.Offset(0, -glyph_extents.height());
     else
-      glyph_extents.Move(-glyph_extents.Width(), 0);
+      glyph_extents.Offset(-glyph_extents.width(), 0);
   }
   return glyph_extents;
 }
 
-static inline FloatRect CalculateGlyphBoundaries(
+static inline gfx::RectF CalculateGlyphBoundaries(
     const QueryData* query_data,
     const SVGTextFragment& fragment,
     int start_position) {
@@ -468,22 +472,23 @@ static inline FloatRect CalculateGlyphBoundaries(
       query_data->text_line_layout.ScaledFont().PrimaryFont();
   DCHECK(font_data);
   if (!font_data)
-    return FloatRect();
+    return gfx::RectF();
 
   const float baseline =
       font_data->GetFontMetrics().FloatAscent() / scaling_factor;
   float glyph_offset_in_direction =
       CalculateGlyphRange(query_data, fragment, 0, start_position);
-  FloatPoint glyph_position = LogicalGlyphPositionToPhysical(
+  gfx::PointF glyph_position = LogicalGlyphPositionToPhysical(
       query_data, fragment, glyph_offset_in_direction);
-  glyph_position.Move(0, -baseline);
+  glyph_position.Offset(0, -baseline);
 
   // Use the SVGTextMetrics computed by SVGTextMetricsBuilder.
   const MetricsList& metrics_list = query_data->text_line_layout.MetricsList();
   auto* metrics =
       FindMetricsForCharacter(metrics_list, fragment, start_position);
 
-  FloatRect extent = PhysicalGlyphExtents(query_data, *metrics, glyph_position);
+  gfx::RectF extent =
+      PhysicalGlyphExtents(query_data, *metrics, glyph_position);
   if (fragment.IsTransformed()) {
     AffineTransform fragment_transform = fragment.BuildFragmentTransform(
         SVGTextFragment::kTransformIgnoringTextLength);
@@ -506,7 +511,7 @@ static bool ExtentOfCharacterCallback(QueryData* query_data,
   return true;
 }
 
-FloatRect SVGTextQuery::ExtentOfCharacter(unsigned position) const {
+gfx::RectF SVGTextQuery::ExtentOfCharacter(unsigned position) const {
   ExtentOfCharacterData data(position);
   LogicalQuery(query_root_layout_object_, &data, ExtentOfCharacterCallback);
   return data.extent;
@@ -514,16 +519,14 @@ FloatRect SVGTextQuery::ExtentOfCharacter(unsigned position) const {
 
 // characterNumberAtPosition() implementation
 struct CharacterNumberAtPositionData : QueryData {
-  CharacterNumberAtPositionData(const FloatPoint& query_position)
-      : position(query_position),
-        hit_layout_item(nullptr),
-        offset_in_text_node(0) {}
+  explicit CharacterNumberAtPositionData(const gfx::PointF& query_position)
+      : position(query_position) {}
 
   int CharacterNumberWithin(const LayoutObject* query_root) const;
 
-  FloatPoint position;
-  LineLayoutItem hit_layout_item;
-  int offset_in_text_node;
+  gfx::PointF position;
+  LineLayoutItem hit_layout_item{nullptr};
+  int offset_in_text_node = 0;
 };
 
 int CharacterNumberAtPositionData::CharacterNumberWithin(
@@ -552,7 +555,7 @@ static unsigned LogicalOffsetInTextNode(
     LineLayoutSVGInlineText text_line_layout,
     const SVGInlineTextBox* start_text_box,
     unsigned fragment_offset) {
-  Vector<SVGInlineTextBox*> text_boxes;
+  HeapVector<Member<SVGInlineTextBox>> text_boxes;
   CollectTextBoxesInLogicalOrder(text_line_layout, text_boxes);
 
   DCHECK(start_text_box);
@@ -585,7 +588,7 @@ static bool CharacterNumberAtPositionCallback(QueryData* query_data,
       font_data->GetFontMetrics().FloatAscent() / scaling_factor;
 
   // Test the query point against the bounds of the entire fragment first.
-  if (!fragment.BoundingBox(baseline).Contains(data->position))
+  if (!fragment.BoundingBox(baseline).InclusiveContains(data->position))
     return false;
 
   AffineTransform fragment_transform = fragment.BuildFragmentTransform(
@@ -599,13 +602,13 @@ static bool CharacterNumberAtPositionCallback(QueryData* query_data,
   unsigned fragment_offset = 0;
   float glyph_offset = 0;
   while (fragment_offset < fragment.length) {
-    FloatPoint glyph_position =
+    gfx::PointF glyph_position =
         LogicalGlyphPositionToPhysical(data, fragment, glyph_offset);
-    glyph_position.Move(0, -baseline);
+    glyph_position.Offset(0, -baseline);
 
-    FloatRect extent = fragment_transform.MapRect(
+    gfx::RectF extent = fragment_transform.MapRect(
         PhysicalGlyphExtents(data, *metrics, glyph_position));
-    if (extent.Contains(data->position)) {
+    if (extent.InclusiveContains(data->position)) {
       // Compute the character offset of the glyph within the text node.
       unsigned offset_in_box = fragment.character_offset -
                                query_data->text_box->Start() + fragment_offset;
@@ -621,7 +624,7 @@ static bool CharacterNumberAtPositionCallback(QueryData* query_data,
   return false;
 }
 
-int SVGTextQuery::CharacterNumberAtPosition(const FloatPoint& position) const {
+int SVGTextQuery::CharacterNumberAtPosition(const gfx::PointF& position) const {
   CharacterNumberAtPositionData data(position);
   SpatialQuery(query_root_layout_object_, &data,
                CharacterNumberAtPositionCallback);

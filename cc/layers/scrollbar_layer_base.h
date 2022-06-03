@@ -12,6 +12,10 @@ namespace cc {
 
 class CC_EXPORT ScrollbarLayerBase : public Layer {
  public:
+  static scoped_refptr<ScrollbarLayerBase> CreateOrReuse(
+      scoped_refptr<Scrollbar>,
+      ScrollbarLayerBase* existing_layer);
+
   void SetScrollElementId(ElementId element_id);
   ElementId scroll_element_id() const { return scroll_element_id_; }
 
@@ -20,7 +24,15 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
     return is_left_side_vertical_scrollbar_;
   }
 
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
+
+  enum ScrollbarLayerType {
+    kSolidColor,
+    kPainted,
+    kPaintedOverlay,
+  };
+  virtual ScrollbarLayerType GetScrollbarLayerType() const = 0;
 
  protected:
   ScrollbarLayerBase(ScrollbarOrientation orientation,
@@ -28,6 +40,8 @@ class CC_EXPORT ScrollbarLayerBase : public Layer {
   ~ScrollbarLayerBase() override;
 
  private:
+  bool IsScrollbarLayerForTesting() const final;
+
   const ScrollbarOrientation orientation_;
   const bool is_left_side_vertical_scrollbar_;
   ElementId scroll_element_id_;

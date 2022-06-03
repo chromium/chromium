@@ -8,10 +8,8 @@
 #include <vector>
 
 #include "android_webview/common/aw_switches.h"
-#include "android_webview/common/render_view_messages.h"
+#include "android_webview/common/mojom/frame.mojom.h"
 #include "android_webview/common/url_constants.h"
-#include "android_webview/grit/aw_resources.h"
-#include "android_webview/grit/aw_strings.h"
 #include "android_webview/renderer/aw_content_settings_client.h"
 #include "android_webview/renderer/aw_key_systems.h"
 #include "android_webview/renderer/aw_print_render_frame_helper_delegate.h"
@@ -21,13 +19,12 @@
 #include "android_webview/renderer/aw_url_loader_throttle_provider.h"
 #include "android_webview/renderer/aw_websocket_handshake_throttle_provider.h"
 #include "android_webview/renderer/browser_exposed_renderer_interfaces.h"
-#include "android_webview/renderer/js_java_interaction/js_java_configurator.h"
-#include "android_webview/renderer/print_render_frame_observer.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
-#include "base/strings/utf_string_conversions.h"
+#include "components/android_system_error_page/error_page_populator.h"
+#include "components/js_injection/renderer/js_communication.h"
 #include "components/page_load_metrics/renderer/metrics_render_frame_observer.h"
 #include "components/printing/renderer/print_render_frame_helper.h"
 #include "components/visitedlink/renderer/visitedlink_reader.h"
@@ -37,19 +34,16 @@
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
+#include "ipc/ipc_sync_channel.h"
 #include "mojo/public/cpp/bindings/binder_map.h"
-#include "net/base/escape.h"
-#include "net/base/net_errors.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
-#include "third_party/blink/public/platform/web_url_error.h"
 #include "third_party/blink/public/platform/web_url_request.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "third_party/blink/public/web/web_navigation_type.h"
 #include "third_party/blink/public/web/web_security_policy.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
@@ -62,22 +56,16 @@ using content::RenderThread;
 
 namespace android_webview {
 
-namespace {
-constexpr char kThrottledErrorDescription[] =
-    "Request throttled. Visit http://dev.chromium.org/throttling for more "
-    "information.";
-}  // namespace
-
 AwContentRendererClient::AwContentRendererClient() = default;
 
 AwContentRendererClient::~AwContentRendererClient() = default;
 
 void AwContentRendererClient::RenderThreadStarted() {
   RenderThread* thread = RenderThread::Get();
-  aw_render_thread_observer_.reset(new AwRenderThreadObserver);
+  aw_render_thread_observer_ = std::make_unique<AwRenderThreadObserver>();
   thread->AddObserver(aw_render_thread_observer_.get());
 
-  visited_link_reader_.reset(new visitedlink::VisitedLinkReader);
+  visited_link_reader_ = std::make_unique<visitedlink::VisitedLinkReader>();
 
   browser_interface_broker_ =
       blink::Platform::Current()->GetBrowserInterfaceBroker();
@@ -98,7 +86,6 @@ void AwContentRendererClient::ExposeInterfacesToBrowser(
 
 bool AwContentRendererClient::HandleNavigation(
     content::RenderFrame* render_frame,
-    bool is_content_initiated,
     bool render_view_was_created_by_renderer,
     blink::WebFrame* frame,
     const blink::WebURLRequest& request,
@@ -113,12 +100,7 @@ bool AwContentRendererClient::HandleNavigation(
   // initiated and hence will not yield a shouldOverrideUrlLoading() callback.
   // Webview classic does not consider reload application-initiated so we
   // continue the same behavior.
-  // TODO(sgurun) is_content_initiated is normally false for cross-origin
-  // navigations but since android_webview does not swap out renderers, this
-  // works fine. This will stop working if android_webview starts swapping out
-  // renderers on navigation.
-  bool application_initiated =
-      !is_content_initiated || type == blink::kWebNavigationTypeBackForward;
+  bool application_initiated = type == blink::kWebNavigationTypeBackForward;
 
   // Don't offer application-initiated navigations unless it's a redirect.
   if (application_initiated && !is_redirect)
@@ -148,35 +130,33 @@ bool AwContentRendererClient::HandleNavigation(
   }
 
   bool ignore_navigation = false;
-  base::string16 url = request.Url().GetString().Utf16();
+  std::u16string url = request.Url().GetString().Utf16();
   bool has_user_gesture = request.HasUserGesture();
 
-  int render_frame_id = render_frame->GetRoutingID();
-  RenderThread::Get()->Send(new AwViewHostMsg_ShouldOverrideUrlLoading(
-      render_frame_id, url, has_user_gesture, is_redirect, is_main_frame,
-      &ignore_navigation));
+  mojo::AssociatedRemote<mojom::FrameHost> frame_host_remote;
+  render_frame->GetRemoteAssociatedInterfaces()->GetInterface(
+      &frame_host_remote);
+  frame_host_remote->ShouldOverrideUrlLoading(
+      url, has_user_gesture, is_redirect, is_main_frame, &ignore_navigation);
+
   return ignore_navigation;
 }
 
 void AwContentRendererClient::RenderFrameCreated(
     content::RenderFrame* render_frame) {
   new AwContentSettingsClient(render_frame);
-  new PrintRenderFrameObserver(render_frame);
   new printing::PrintRenderFrameHelper(
       render_frame, std::make_unique<AwPrintRenderFrameHelperDelegate>());
   new AwRenderFrameExt(render_frame);
-  new JsJavaConfigurator(render_frame);
+  new js_injection::JsCommunication(render_frame);
   new AwSafeBrowsingErrorPageControllerDelegateImpl(render_frame);
 
-  // TODO(jam): when the frame tree moves into content and parent() works at
-  // RenderFrame construction, simplify this by just checking parent().
-  content::RenderFrame* parent_frame =
-      render_frame->GetRenderView()->GetMainRenderFrame();
-  if (parent_frame && parent_frame != render_frame) {
+  content::RenderFrame* main_frame = render_frame->GetMainRenderFrame();
+  if (main_frame && main_frame != render_frame) {
     // Avoid any race conditions from having the browser's UI thread tell the IO
     // thread that a subframe was created.
-    RenderThread::Get()->Send(new AwViewHostMsg_SubFrameCreated(
-        parent_frame->GetRoutingID(), render_frame->GetRoutingID()));
+    GetRenderMessageFilter()->SubFrameCreated(main_frame->GetRoutingID(),
+                                              render_frame->GetRoutingID());
   }
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
@@ -187,26 +167,8 @@ void AwContentRendererClient::RenderFrameCreated(
   new page_load_metrics::MetricsRenderFrameObserver(render_frame);
 }
 
-void AwContentRendererClient::RenderViewCreated(
-    content::RenderView* render_view) {
-  AwRenderViewExt::RenderViewCreated(render_view);
-}
-
-bool AwContentRendererClient::HasErrorPage(int http_status_code) {
-  return http_status_code >= 400;
-}
-
-bool AwContentRendererClient::ShouldSuppressErrorPage(
-    content::RenderFrame* render_frame,
-    const GURL& url) {
-  DCHECK(render_frame != nullptr);
-
-  AwRenderFrameExt* render_frame_ext =
-      AwRenderFrameExt::FromRenderFrame(render_frame);
-  if (render_frame_ext == nullptr)
-    return false;
-
-  return render_frame_ext->GetWillSuppressErrorPage();
+void AwContentRendererClient::WebViewCreated(blink::WebView* web_view) {
+  AwRenderViewExt::WebViewCreated(web_view);
 }
 
 void AwContentRendererClient::PrepareErrorPage(
@@ -217,45 +179,7 @@ void AwContentRendererClient::PrepareErrorPage(
   AwSafeBrowsingErrorPageControllerDelegateImpl::Get(render_frame)
       ->PrepareForErrorPage();
 
-  std::string err;
-  if (error.reason() == net::ERR_TEMPORARILY_THROTTLED)
-    err = kThrottledErrorDescription;
-  else
-    err = net::ErrorToString(error.reason());
-
-  if (!error_html)
-    return;
-
-  // Create the error page based on the error reason.
-  GURL gurl(error.url());
-  std::string url_string = gurl.possibly_invalid_spec();
-  int reason_id = IDS_AW_WEBPAGE_CAN_NOT_BE_LOADED;
-
-  if (err.empty())
-    reason_id = IDS_AW_WEBPAGE_TEMPORARILY_DOWN;
-
-  std::string escaped_url = net::EscapeForHTML(url_string);
-  std::vector<std::string> replacements;
-  replacements.push_back(
-      l10n_util::GetStringUTF8(IDS_AW_WEBPAGE_NOT_AVAILABLE));
-  replacements.push_back(
-      l10n_util::GetStringFUTF8(reason_id, base::UTF8ToUTF16(escaped_url)));
-
-  // Having chosen the base reason, chose what extra information to add.
-  if (reason_id == IDS_AW_WEBPAGE_TEMPORARILY_DOWN) {
-    replacements.push_back(
-        l10n_util::GetStringUTF8(IDS_AW_WEBPAGE_TEMPORARILY_DOWN_SUGGESTIONS));
-  } else {
-    replacements.push_back(err);
-  }
-  if (base::i18n::IsRTL())
-    replacements.push_back("direction: rtl;");
-  else
-    replacements.push_back("");
-  *error_html = base::ReplaceStringPlaceholders(
-      ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
-          IDR_AW_LOAD_ERROR_HTML),
-      replacements, nullptr);
+  android_system_error_page::PopulateErrorPageHtml(error, error_html);
 }
 
 uint64_t AwContentRendererClient::VisitedLinkHash(const char* canonical_url,
@@ -267,20 +191,27 @@ bool AwContentRendererClient::IsLinkVisited(uint64_t link_hash) {
   return visited_link_reader_->IsVisited(link_hash);
 }
 
+void AwContentRendererClient::RunScriptsAtDocumentStart(
+    content::RenderFrame* render_frame) {
+  js_injection::JsCommunication* communication =
+      js_injection::JsCommunication::Get(render_frame);
+  communication->RunScriptsAtDocumentStart();
+}
+
 void AwContentRendererClient::AddSupportedKeySystems(
     std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems) {
   AwAddKeySystems(key_systems);
 }
 
-std::unique_ptr<content::WebSocketHandshakeThrottleProvider>
+std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>
 AwContentRendererClient::CreateWebSocketHandshakeThrottleProvider() {
   return std::make_unique<AwWebSocketHandshakeThrottleProvider>(
       browser_interface_broker_.get());
 }
 
-std::unique_ptr<content::URLLoaderThrottleProvider>
+std::unique_ptr<blink::URLLoaderThrottleProvider>
 AwContentRendererClient::CreateURLLoaderThrottleProvider(
-    content::URLLoaderThrottleProviderType provider_type) {
+    blink::URLLoaderThrottleProviderType provider_type) {
   return std::make_unique<AwURLLoaderThrottleProvider>(
       browser_interface_broker_.get(), provider_type);
 }
@@ -293,6 +224,14 @@ void AwContentRendererClient::GetInterface(
   // and SafeBrowsing, instead of |content_browser|.
   RenderThread::Get()->BindHostReceiver(
       mojo::GenericPendingReceiver(interface_name, std::move(interface_pipe)));
+}
+
+mojom::RenderMessageFilter* AwContentRendererClient::GetRenderMessageFilter() {
+  if (!render_message_filter_) {
+    RenderThread::Get()->GetChannel()->GetRemoteAssociatedInterface(
+        &render_message_filter_);
+  }
+  return render_message_filter_.get();
 }
 
 }  // namespace android_webview

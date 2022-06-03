@@ -53,7 +53,7 @@ class MODULES_EXPORT DeviceMotionData final
       DeviceMotionEventRotationRate*,
       double interval);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
   DeviceMotionEventAcceleration* GetAcceleration() const {
     return acceleration_.Get();

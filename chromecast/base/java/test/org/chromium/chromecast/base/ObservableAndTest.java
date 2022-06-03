@@ -120,4 +120,39 @@ public class ObservableAndTest {
                 .closed(Both.both(Both.both(Both.both("a", "b"), "c"), "d"))
                 .end();
     }
+
+    @Test
+    public void testAndCartesianProduct() {
+        ReactiveRecorder r = ReactiveRecorder.record(
+                Observable
+                        .make(observer
+                                -> Scopes.combine(
+                                        observer.open(1), observer.open(2), observer.open(3)))
+                        .and(Observable.make(observer
+                                -> Scopes.combine(observer.open("a"), observer.open("b"),
+                                        observer.open("c")))));
+        r.verify()
+                .opened(Both.both(1, "a"))
+                .opened(Both.both(1, "b"))
+                .opened(Both.both(1, "c"))
+                .opened(Both.both(2, "a"))
+                .opened(Both.both(2, "b"))
+                .opened(Both.both(2, "c"))
+                .opened(Both.both(3, "a"))
+                .opened(Both.both(3, "b"))
+                .opened(Both.both(3, "c"))
+                .end();
+        r.unsubscribe();
+        r.verify()
+                .closed(Both.both(3, "c"))
+                .closed(Both.both(3, "b"))
+                .closed(Both.both(3, "a"))
+                .closed(Both.both(2, "c"))
+                .closed(Both.both(2, "b"))
+                .closed(Both.both(2, "a"))
+                .closed(Both.both(1, "c"))
+                .closed(Both.both(1, "b"))
+                .closed(Both.both(1, "a"))
+                .end();
+    }
 }

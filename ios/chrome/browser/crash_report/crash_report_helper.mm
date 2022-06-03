@@ -15,18 +15,19 @@
 #include "base/path_service.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/time/time.h"
+#include "components/breadcrumbs/core/breadcrumb_manager.h"
+#include "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
 #include "components/upload_list/crash_upload_list.h"
 #include "ios/chrome/browser/chrome_paths.h"
-#include "ios/chrome/browser/crash_report/breakpad_helper.h"
+#include "ios/chrome/browser/crash_report/crash_helper.h"
+#include "ios/chrome/browser/crash_report/crash_keys_helper.h"
 #import "ios/chrome/browser/crash_report/crash_report_user_application_state.h"
+#include "ios/chrome/browser/crash_report/crash_reporter_url_observer.h"
 #import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
-#include "ios/web/public/browser_state.h"
 #import "ios/web/public/navigation/navigation_context.h"
-#import "ios/web/public/navigation/navigation_item.h"
-#import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/thread/web_thread.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
@@ -35,47 +36,6 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-// WebStateListObserver that allows loaded urls to be sent to the crash server.
-@interface CrashReporterURLObserver
-    : NSObject <WebStateListObserving, CRWWebStateObserver> {
- @private
-  // Map associating the tab id to the breakpad key used to keep track of the
-  // loaded URL.
-  NSMutableDictionary* _breakpadKeyByTabId;
-  // List of keys to use for recording URLs. This list is sorted such that a new
-  // tab must use the first key in this list to record its URLs.
-  NSMutableArray* _breakpadKeys;
-  // The WebStateObserverBridge used to register self as a WebStateObserver
-  std::unique_ptr<web::WebStateObserverBridge> _webStateObserver;
-  // Forwards observer methods for all WebStates in the WebStateList monitored
-  // by the CrashReporterURLObserver.
-  std::unique_ptr<AllWebStateObservationForwarder>
-      _allWebStateObservationForwarder;
-  // Bridges C++ WebStateListObserver methods to this CrashReporterURLObserver.
-  std::unique_ptr<WebStateListObserverBridge> _webStateListObserver;
-}
-+ (CrashReporterURLObserver*)uniqueInstance;
-// Removes the URL for the tab with the given id from the URLs sent to the crash
-// server.
-- (void)removeTabId:(NSString*)tabId;
-// Records the given URL associated to the given id to the list of URLs to send
-// to the crash server. If |pending| is true, the URL is one that is
-// expected to start loading, but hasn't actually been seen yet.
-- (void)recordURL:(NSString*)url
-         forTabId:(NSString*)tabId
-          pending:(BOOL)pending;
-// Observes |webState| by this instance of the CrashReporterURLObserver.
-- (void)observeWebState:(web::WebState*)webState;
-// Stop Observing |webState| by this instance of the CrashReporterURLObserver.
-- (void)stopObservingWebState:(web::WebState*)webState;
-// Observes |webStateList| by this instance of the CrashReporterURLObserver.
-- (void)observeWebStateList:(WebStateList*)webStateList;
-// Stop Observing |webStateList| by this instance of the
-// CrashReporterURLObserver.
-- (void)stopObservingWebStateList:(WebStateList*)webStateList;
-
-@end
 
 // WebStateList Observer that some tabs stats to be sent to the crash server.
 @interface CrashReporterTabStateObserver
@@ -104,8 +64,8 @@
 - (void)setTabInfo:(NSString*)key
          withValue:(const NSString*)value
             forTab:(NSString*)tabId;
-// Retrieves the |key| information for tab |tabId|.
-- (id)getTabInfo:(NSString*)key forTab:(NSString*)tabId;
+// Retrieves the |key| information for tab |tabID|.
+- (id)tabInfo:(NSString*)key forTab:(NSString*)tabID;
 // Removes the |key| information for tab |tabId|
 - (void)removeTabInfo:(NSString*)key forTab:(NSString*)tabId;
 // Observes |webState| by this instance of the CrashReporterTabStateObserver.
@@ -122,168 +82,9 @@
 @end
 
 namespace {
-
-// Returns the breakpad key to use for a pending URL corresponding to the
-// same tab that is using |key|.
-NSString* PendingURLKeyForKey(NSString* key) {
-  return [key stringByAppendingString:@"-pending"];
-}
-
-// Max number of urls to send. This must be kept low for privacy issue as well
-// as because breakpad does limit the total number of parameters to 64.
-const int kNumberOfURLsToSend = 1;
-
 // Mime type used for PDF documents.
 const NSString* kDocumentMimeType = @"application/pdf";
 }  // namespace
-
-@implementation CrashReporterURLObserver
-
-+ (CrashReporterURLObserver*)uniqueInstance {
-  static CrashReporterURLObserver* instance =
-      [[CrashReporterURLObserver alloc] init];
-  return instance;
-}
-
-- (id)init {
-  if ((self = [super init])) {
-    _breakpadKeyByTabId =
-        [[NSMutableDictionary alloc] initWithCapacity:kNumberOfURLsToSend];
-    _breakpadKeys =
-        [[NSMutableArray alloc] initWithCapacity:kNumberOfURLsToSend];
-    for (int i = 0; i < kNumberOfURLsToSend; ++i)
-      [_breakpadKeys addObject:[NSString stringWithFormat:@"url%d", i]];
-    _webStateObserver = std::make_unique<web::WebStateObserverBridge>(self);
-    _webStateListObserver = std::make_unique<WebStateListObserverBridge>(self);
-  }
-  return self;
-}
-
-- (void)removeTabId:(NSString*)tabId {
-  NSString* key = [_breakpadKeyByTabId objectForKey:tabId];
-  if (!key)
-    return;
-  breakpad_helper::RemoveReportParameter(key);
-  breakpad_helper::RemoveReportParameter(PendingURLKeyForKey(key));
-  [_breakpadKeyByTabId removeObjectForKey:tabId];
-  [_breakpadKeys removeObject:key];
-  [_breakpadKeys insertObject:key atIndex:0];
-}
-
-- (void)recordURL:(NSString*)url
-         forTabId:(NSString*)tabId
-          pending:(BOOL)pending {
-  NSString* breakpadKey = [_breakpadKeyByTabId objectForKey:tabId];
-  BOOL reusingKey = NO;
-  if (!breakpadKey) {
-    // Get the first breakpad key and push it back at the end of the keys.
-    breakpadKey = [_breakpadKeys objectAtIndex:0];
-    [_breakpadKeys removeObject:breakpadKey];
-    [_breakpadKeys addObject:breakpadKey];
-    // Remove the current mapping to the breakpad key.
-    for (NSString* tabId in
-         [_breakpadKeyByTabId allKeysForObject:breakpadKey]) {
-      reusingKey = YES;
-      [_breakpadKeyByTabId removeObjectForKey:tabId];
-    }
-    // Associate the breakpad key to the tab id.
-    [_breakpadKeyByTabId setObject:breakpadKey forKey:tabId];
-  }
-  NSString* pendingKey = PendingURLKeyForKey(breakpadKey);
-  if (pending) {
-    if (reusingKey)
-      breakpad_helper::RemoveReportParameter(breakpadKey);
-    breakpad_helper::AddReportParameter(pendingKey, url, true);
-  } else {
-    breakpad_helper::AddReportParameter(breakpadKey, url, true);
-    breakpad_helper::RemoveReportParameter(pendingKey);
-  }
-}
-
-- (void)observeWebState:(web::WebState*)webState {
-  webState->AddObserver(_webStateObserver.get());
-}
-
-- (void)stopObservingWebState:(web::WebState*)webState {
-  webState->RemoveObserver(_webStateObserver.get());
-}
-
-- (void)observeWebStateList:(WebStateList*)webStateList {
-  webStateList->AddObserver(_webStateListObserver.get());
-  // CrashReporterURLObserver should only observe one webStateList at a time.
-  DCHECK(!_allWebStateObservationForwarder);
-  // Observe all webStates of this tabModel, so that URLs are saved in cases
-  // of crashing.
-  _allWebStateObservationForwarder =
-      std::make_unique<AllWebStateObservationForwarder>(
-          webStateList, _webStateObserver.get());
-}
-
-- (void)stopObservingWebStateList:(WebStateList*)webStateList {
-  _allWebStateObservationForwarder.reset(nullptr);
-  webStateList->RemoveObserver(_webStateListObserver.get());
-}
-
-#pragma mark - WebStateListObserving protocol
-
-- (void)webStateList:(WebStateList*)webStateList
-    didDetachWebState:(web::WebState*)webState
-              atIndex:(int)atIndex {
-  [self removeTabId:TabIdTabHelper::FromWebState(webState)->tab_id()];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didReplaceWebState:(web::WebState*)oldWebState
-          withWebState:(web::WebState*)newWebState
-               atIndex:(int)atIndex {
-  [self removeTabId:TabIdTabHelper::FromWebState(oldWebState)->tab_id()];
-}
-
-- (void)webStateList:(WebStateList*)webStateList
-    didChangeActiveWebState:(web::WebState*)newWebState
-                oldWebState:(web::WebState*)oldWebState
-                    atIndex:(int)atIndex
-                     reason:(int)reason {
-  if (!newWebState)
-    return;
-  web::NavigationItem* pendingItem =
-      newWebState->GetNavigationManager()->GetPendingItem();
-  const GURL& URL =
-      pendingItem ? pendingItem->GetURL() : newWebState->GetLastCommittedURL();
-  [self recordURL:base::SysUTF8ToNSString(URL.spec())
-         forTabId:TabIdTabHelper::FromWebState(newWebState)->tab_id()
-          pending:pendingItem ? YES : NO];
-}
-
-#pragma mark - CRWWebStateObserver protocol
-
-- (void)webState:(web::WebState*)webState
-    didStartNavigation:(web::NavigationContext*)navigation {
-  NSString* urlString = base::SysUTF8ToNSString(navigation->GetUrl().spec());
-  if (!urlString.length || webState->GetBrowserState()->IsOffTheRecord())
-    return;
-  [self recordURL:urlString
-         forTabId:TabIdTabHelper::FromWebState(webState)->tab_id()
-          pending:YES];
-}
-
-- (void)webState:(web::WebState*)webState
-    didFinishNavigation:(web::NavigationContext*)navigation {
-  NSString* urlString =
-      base::SysUTF8ToNSString(webState->GetLastCommittedURL().spec());
-  if (!urlString.length || webState->GetBrowserState()->IsOffTheRecord())
-    return;
-  [self recordURL:urlString
-         forTabId:TabIdTabHelper::FromWebState(webState)->tab_id()
-          pending:NO];
-}
-
-// Empty method left in place in case jailbreakers are swizzling this.
-- (void)detectJailbrokenDevice {
-  // This method has been intentionally left blank.
-}
-
-@end
 
 @implementation CrashReporterTabStateObserver
 
@@ -303,9 +104,9 @@ const NSString* kDocumentMimeType = @"application/pdf";
 }
 
 - (void)closingDocumentInTab:(NSString*)tabId {
-  NSString* mime = (NSString*)[self getTabInfo:@"mime" forTab:tabId];
+  NSString* mime = (NSString*)[self tabInfo:@"mime" forTab:tabId];
   if ([kDocumentMimeType isEqualToString:mime])
-    breakpad_helper::SetCurrentTabIsPDF(false);
+    crash_keys::SetCurrentTabIsPDF(false);
   [self removeTabInfo:@"mime" forTab:tabId];
 }
 
@@ -323,8 +124,8 @@ const NSString* kDocumentMimeType = @"application/pdf";
   [tabCurrentState setObject:value forKey:key];
 }
 
-- (id)getTabInfo:(NSString*)key forTab:(NSString*)tabId {
-  NSMutableDictionary* tabValues = [_tabCurrentStateByTabId objectForKey:tabId];
+- (id)tabInfo:(NSString*)key forTab:(NSString*)tabID {
+  NSMutableDictionary* tabValues = [_tabCurrentStateByTabId objectForKey:tabID];
   return [tabValues objectForKey:key];
 }
 
@@ -388,34 +189,36 @@ const NSString* kDocumentMimeType = @"application/pdf";
   if (!loadSuccess || webState->GetContentsMimeType() != "application/pdf")
     return;
   NSString* tabID = TabIdTabHelper::FromWebState(webState)->tab_id();
-  NSString* oldMime = (NSString*)[self getTabInfo:@"mime" forTab:tabID];
+  NSString* oldMime = (NSString*)[self tabInfo:@"mime" forTab:tabID];
   if ([kDocumentMimeType isEqualToString:oldMime])
     return;
 
   [self setTabInfo:@"mime" withValue:kDocumentMimeType forTab:tabID];
-  breakpad_helper::SetCurrentTabIsPDF(true);
+  crash_keys::SetCurrentTabIsPDF(true);
 }
 
 @end
 
 namespace breakpad {
 
-void MonitorURLsForWebState(web::WebState* web_state) {
-  [[CrashReporterURLObserver uniqueInstance] observeWebState:web_state];
+void MonitorURLsForPreloadWebState(web::WebState* web_state) {
+  CrashReporterURLObserver::GetSharedInstance()->ObservePreloadWebState(
+      web_state);
 }
 
-void StopMonitoringURLsForWebState(web::WebState* web_state) {
-  [[CrashReporterURLObserver uniqueInstance] stopObservingWebState:web_state];
+void StopMonitoringURLsForPreloadWebState(web::WebState* web_state) {
+  CrashReporterURLObserver::GetSharedInstance()->StopObservingPreloadWebState(
+      web_state);
 }
 
 void MonitorURLsForWebStateList(WebStateList* web_state_list) {
-  [[CrashReporterURLObserver uniqueInstance]
-      observeWebStateList:web_state_list];
+  CrashReporterURLObserver::GetSharedInstance()->ObserveWebStateList(
+      web_state_list);
 }
 
 void StopMonitoringURLsForWebStateList(WebStateList* web_state_list) {
-  [[CrashReporterURLObserver uniqueInstance]
-      stopObservingWebStateList:web_state_list];
+  CrashReporterURLObserver::GetSharedInstance()->StopObservingWebStateList(
+      web_state_list);
 }
 
 void MonitorTabStateForWebStateList(WebStateList* web_state_list) {
@@ -429,13 +232,25 @@ void StopMonitoringTabStateForWebStateList(WebStateList* web_state_list) {
 }
 
 void ClearStateForWebStateList(WebStateList* web_state_list) {
-  CrashReporterURLObserver* observer =
-      [CrashReporterURLObserver uniqueInstance];
+  CrashReporterURLObserver::GetSharedInstance()->RemoveWebStateList(
+      web_state_list);
+}
 
-  for (int index = 0; index < web_state_list->count(); ++index) {
-    web::WebState* web_state = web_state_list->GetWebStateAt(index);
-    [observer removeTabId:TabIdTabHelper::FromWebState(web_state)->tab_id()];
-  }
+void MonitorBreadcrumbManagerService(
+    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .ObserveBreadcrumbManagerService(breadcrumb_manager_service);
+}
+
+void StopMonitoringBreadcrumbManagerService(
+    breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_manager_service) {
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .StopObservingBreadcrumbManagerService(breadcrumb_manager_service);
+}
+
+void SetPreviousSessionEvents(const std::vector<std::string>& events) {
+  breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance()
+      .SetPreviousSessionEvents(events);
 }
 
 }  // namespace breakpad

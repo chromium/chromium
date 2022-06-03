@@ -4,17 +4,28 @@
 
 package org.chromium.chrome.browser.infobar;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.style.ClickableSpan;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ResourceId;
+import org.chromium.chrome.browser.autofill.LegalMessageLine;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.widget.RoundedCornerImageView;
+import org.chromium.components.infobars.ConfirmInfoBar;
+import org.chromium.components.infobars.InfoBarControlLayout;
+import org.chromium.components.infobars.InfoBarLayout;
 import org.chromium.ui.UiUtils;
 
 import java.util.ArrayList;
@@ -25,63 +36,9 @@ import java.util.List;
  * An infobar for saving credit card information.
  */
 public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
-    /**
-     * Legal message line with links to show in the infobar.
-     */
-    public static class LegalMessageLine {
-        /**
-         * A link in the legal message line.
-         */
-        public static class Link {
-            /**
-             * The starting inclusive index of the link position in the text.
-             */
-            public int start;
 
-            /**
-             * The ending exclusive index of the link position in the text.
-             */
-            public int end;
-
-            /**
-             * The URL of the link.
-             */
-            public String url;
-
-            /**
-             * Creates a new instance of the link.
-             *
-             * @param start The starting inclusive index of the link position in the text.
-             * @param end The ending exclusive index of the link position in the text.
-             * @param url The URL of the link.
-             */
-            public Link(int start, int end, String url) {
-                this.start = start;
-                this.end = end;
-                this.url = url;
-            }
-        }
-
-        /**
-         * The plain text legal message line.
-         */
-        public String text;
-
-        /**
-         * A collection of links in the legal message line.
-         */
-        public final List<Link> links = new LinkedList<Link>();
-
-        /**
-         * Creates a new instance of the legal message line.
-         *
-         * @param text The plain text legal message.
-         */
-        public LegalMessageLine(String text) {
-            this.text = text;
-        }
-    }
-
+    private final @Nullable String mAccountFooterEmail;
+    private final @Nullable Bitmap mAccountFooterAvatar;
     private final long mNativeAutofillSaveCardInfoBar;
     private final List<CardDetail> mCardDetails = new ArrayList<>();
     private int mIconDrawableId = -1;
@@ -95,64 +52,71 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
      * Creates a new instance of the infobar.
      *
      * @param nativeAutofillSaveCardInfoBar The pointer to the native object for callbacks.
-     * @param enumeratedIconId ID corresponding to the icon that will be shown for the InfoBar.
-     *                         The ID must have been mapped using the ResourceMapper class before
-     *                         passing it to this function.
-     * @param iconBitmap Bitmap to use if there is no equivalent Java resource for enumeratedIconId.
+     * @param iconId ID corresponding to the icon that will be shown for the InfoBar.
+     * @param iconBitmap Bitmap to use if there is no equivalent Java resource for iconId.
      * @param message Title of the infobar to display along the icon.
      * @param linkText Link text to display in addition to the message.
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
+     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is
+     * only shown if both this and |accountFooterAvatar| are provided.
+     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is
+     * only shown if both this and |accountFooterEmail| are provided.
      */
-    private AutofillSaveCardInfoBar(long nativeAutofillSaveCardInfoBar, int enumeratedIconId,
+    private AutofillSaveCardInfoBar(long nativeAutofillSaveCardInfoBar, int iconId,
             Bitmap iconBitmap, String message, String linkText, String buttonOk,
-            String buttonCancel, boolean isGooglePayBrandingEnabled) {
+            String buttonCancel, boolean isGooglePayBrandingEnabled,
+            @Nullable String accountFooterEmail, @Nullable Bitmap accountFooterAvatar) {
         // If Google Pay branding is enabled, no icon is specified here; it is rather added in
         // |createContent|. This hides the ImageView that normally shows the icon and gets rid of
         // the left padding of the infobar content.
-        super(isGooglePayBrandingEnabled ? 0 : ResourceId.mapToDrawableId(enumeratedIconId),
+        super(isGooglePayBrandingEnabled ? 0 : iconId,
                 isGooglePayBrandingEnabled ? 0 : R.color.infobar_icon_drawable_color, iconBitmap,
                 message, linkText, buttonOk, buttonCancel);
-        mIconDrawableId = ResourceId.mapToDrawableId(enumeratedIconId);
+        mIconDrawableId = iconId;
         mTitleText = message;
         mIsGooglePayBrandingEnabled = isGooglePayBrandingEnabled;
         mNativeAutofillSaveCardInfoBar = nativeAutofillSaveCardInfoBar;
+        mAccountFooterEmail = accountFooterEmail;
+        mAccountFooterAvatar = accountFooterAvatar;
     }
 
     /**
      * Creates an infobar for saving a credit card.
      *
      * @param nativeAutofillSaveCardInfoBar The pointer to the native object for callbacks.
-     * @param enumeratedIconId ID corresponding to the icon that will be shown for the InfoBar.
-     *                         The ID must have been mapped using the ResourceMapper class before
-     *                         passing it to this function.
-     * @param iconBitmap Bitmap to use if there is no equivalent Java resource for enumeratedIconId.
+     * @param iconId ID corresponding to the icon that will be shown for the InfoBar.
+     * @param iconBitmap Bitmap to use if there is no equivalent Java resource for iconId.
      * @param message Title of the infobar to display along the icon.
      * @param linkText Link text to display in addition to the message.
      * @param buttonOk String to display on the OK button.
      * @param buttonCancel String to display on the Cancel button.
+     * @param accountFooterEmail The email to be shown on the footer, or null. The footer is
+     * only shown if both this and |accountFooterAvatar| are provided.
+     * @param accountFooterAvatar The avatar to be shown on the footer, or null. The footer is
+     * only shown if both this and |accountFooterEmail| are provided.
      * @return A new instance of the infobar.
      */
     @CalledByNative
-    private static AutofillSaveCardInfoBar create(long nativeAutofillSaveCardInfoBar,
-            int enumeratedIconId, Bitmap iconBitmap, String message, String linkText,
-            String buttonOk, String buttonCancel, boolean isGooglePayBrandingEnabled) {
-        return new AutofillSaveCardInfoBar(nativeAutofillSaveCardInfoBar, enumeratedIconId,
-                iconBitmap, message, linkText, buttonOk, buttonCancel, isGooglePayBrandingEnabled);
+    private static AutofillSaveCardInfoBar create(long nativeAutofillSaveCardInfoBar, int iconId,
+            Bitmap iconBitmap, String message, String linkText, String buttonOk,
+            String buttonCancel, boolean isGooglePayBrandingEnabled,
+            @Nullable String accountFooterEmail, @Nullable Bitmap accountFooterAvatar) {
+        return new AutofillSaveCardInfoBar(nativeAutofillSaveCardInfoBar, iconId, iconBitmap,
+                message, linkText, buttonOk, buttonCancel, isGooglePayBrandingEnabled,
+                accountFooterEmail, accountFooterAvatar);
     }
 
     /**
      * Adds information to the infobar about the credit card that will be saved.
      *
-     * @param enumeratedIconId ID corresponding to the icon that will be shown for this credit card.
-     *                         The ID must have been mapped using the ResourceMapper class before
-     *                         passing it to this function.
+     * @param iconId ID corresponding to the icon that will be shown for this credit card.
      * @param label The credit card label, for example "***1234".
      * @param subLabel The credit card sub-label, for example "Exp: 06/17".
      */
     @CalledByNative
-    private void addDetail(int enumeratedIconId, String label, String subLabel) {
-        mCardDetails.add(new CardDetail(enumeratedIconId, label, subLabel));
+    private void addDetail(int iconId, String label, String subLabel) {
+        mCardDetails.add(new CardDetail(iconId, label, subLabel));
     }
 
     /**
@@ -222,6 +186,30 @@ public class AutofillSaveCardInfoBar extends ConfirmInfoBar {
                 }, link.start, link.end, Spanned.SPAN_INCLUSIVE_EXCLUSIVE);
             }
             control.addDescription(text);
+        }
+
+        if (ChromeFeatureList.isEnabled(
+                    ChromeFeatureList.AUTOFILL_ENABLE_SAVE_CARD_INFO_BAR_ACCOUNT_INDICATION_FOOTER)
+                && mAccountFooterEmail != null && mAccountFooterAvatar != null) {
+            Resources res = layout.getResources();
+            int smallIconSize = res.getDimensionPixelSize(R.dimen.infobar_small_icon_size);
+            int padding = res.getDimensionPixelOffset(R.dimen.infobar_padding);
+
+            LinearLayout footer = (LinearLayout) LayoutInflater.from(layout.getContext())
+                                          .inflate(R.layout.infobar_footer, null, false);
+
+            TextView emailView = (TextView) footer.findViewById(R.id.infobar_footer_email);
+            emailView.setText(mAccountFooterEmail);
+
+            RoundedCornerImageView profilePicView =
+                    (RoundedCornerImageView) footer.findViewById(R.id.infobar_footer_profile_pic);
+            Bitmap resizedProfilePic = Bitmap.createScaledBitmap(
+                    mAccountFooterAvatar, smallIconSize, smallIconSize, false);
+            profilePicView.setRoundedCorners(
+                    smallIconSize / 2, smallIconSize / 2, smallIconSize / 2, smallIconSize / 2);
+            profilePicView.setImageBitmap(resizedProfilePic);
+
+            layout.addFooterView(footer);
         }
     }
 

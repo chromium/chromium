@@ -7,16 +7,11 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/logging.h"
-#include "components/invalidation/impl/network_channel.h"
 #include "components/invalidation/public/invalidation_util.h"
-#include "components/invalidation/public/object_id_invalidation_map.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "components/prefs/pref_service.h"
-#include "google/cacheinvalidation/include/types.h"
 
-namespace syncer {
-
-FCMInvalidationListener::Delegate::~Delegate() {}
+namespace invalidation {
 
 FCMInvalidationListener::FCMInvalidationListener(
     std::unique_ptr<FCMSyncNetworkChannel> network_channel)
@@ -32,15 +27,15 @@ FCMInvalidationListener::~FCMInvalidationListener() {
 
 void FCMInvalidationListener::Start(
     Delegate* delegate,
-    std::unique_ptr<PerUserTopicRegistrationManager>
-        per_user_topic_registration_manager) {
+    std::unique_ptr<PerUserTopicSubscriptionManager>
+        per_user_topic_subscription_manager) {
   DCHECK(delegate);
   Stop();
   delegate_ = delegate;
-  per_user_topic_registration_manager_ =
-      std::move(per_user_topic_registration_manager);
-  per_user_topic_registration_manager_->Init();
-  per_user_topic_registration_manager_->AddObserver(this);
+  per_user_topic_subscription_manager_ =
+      std::move(per_user_topic_subscription_manager);
+  per_user_topic_subscription_manager_->Init();
+  per_user_topic_subscription_manager_->AddObserver(this);
   network_channel_->SetMessageReceiver(
       base::BindRepeating(&FCMInvalidationListener::InvalidationReceived,
                           weak_factory_.GetWeakPtr()));
@@ -70,8 +65,8 @@ void FCMInvalidationListener::InvalidationReceived(
     int64_t version) {
   // Note: |public_topic| is empty for some invalidations (e.g. Drive). Prefer
   // using |*expected_public_topic| over |public_topic|.
-  base::Optional<std::string> expected_public_topic =
-      per_user_topic_registration_manager_
+  absl::optional<std::string> expected_public_topic =
+      per_user_topic_subscription_manager_
           ->LookupSubscribedPublicTopicByPrivateTopic(private_topic);
   if (!expected_public_topic ||
       (!public_topic.empty() && public_topic != *expected_public_topic)) {
@@ -81,8 +76,8 @@ void FCMInvalidationListener::InvalidationReceived(
     return;
   }
   TopicInvalidationMap invalidations;
-  Invalidation inv = Invalidation::Init(
-      ConvertTopicToId(*expected_public_topic), version, payload);
+  Invalidation inv =
+      Invalidation::Init(*expected_public_topic, version, payload);
   inv.SetAckHandler(weak_factory_.GetWeakPtr(),
                     base::ThreadTaskRunnerHandle::Get());
   DVLOG(1) << "Received invalidation with version " << inv.version() << " for "
@@ -104,15 +99,14 @@ void FCMInvalidationListener::DispatchInvalidations(
 
 void FCMInvalidationListener::SaveInvalidations(
     const TopicInvalidationMap& to_save) {
-  ObjectIdSet objects_to_save = ConvertTopicsToIds(to_save.GetTopics());
-  for (const invalidation::ObjectId& id : objects_to_save) {
-    auto lookup = unacked_invalidations_map_.find(id);
+  for (const Topic& topic : to_save.GetTopics()) {
+    auto lookup = unacked_invalidations_map_.find(topic);
     if (lookup == unacked_invalidations_map_.end()) {
-      lookup =
-          unacked_invalidations_map_.emplace(id, UnackedInvalidationSet(id))
-              .first;
+      lookup = unacked_invalidations_map_
+                   .emplace(topic, UnackedInvalidationSet(topic))
+                   .first;
     }
-    lookup->second.AddSet(to_save.ForTopic(id.name()));
+    lookup->second.AddSet(to_save.ForTopic(topic));
   }
 }
 
@@ -125,64 +119,62 @@ void FCMInvalidationListener::TokenReceived(
     const std::string& instance_id_token) {
   instance_id_token_ = instance_id_token;
   if (instance_id_token_.empty()) {
-    if (per_user_topic_registration_manager_) {
-      per_user_topic_registration_manager_->ClearInstanceIDToken();
+    if (per_user_topic_subscription_manager_) {
+      per_user_topic_subscription_manager_->ClearInstanceIDToken();
     }
   } else {
     DoSubscriptionUpdate();
   }
 }
 
-void FCMInvalidationListener::Acknowledge(const invalidation::ObjectId& id,
-                                          const syncer::AckHandle& handle) {
-  auto lookup = unacked_invalidations_map_.find(id);
+void FCMInvalidationListener::Acknowledge(const Topic& topic,
+                                          const AckHandle& handle) {
+  auto lookup = unacked_invalidations_map_.find(topic);
   if (lookup == unacked_invalidations_map_.end()) {
-    DLOG(WARNING) << "Received acknowledgement for untracked object ID";
+    DLOG(WARNING) << "Received acknowledgement for untracked topic";
     return;
   }
   lookup->second.Acknowledge(handle);
 }
 
-void FCMInvalidationListener::Drop(const invalidation::ObjectId& id,
-                                   const syncer::AckHandle& handle) {
-  auto lookup = unacked_invalidations_map_.find(id);
+void FCMInvalidationListener::Drop(const Topic& topic,
+                                   const AckHandle& handle) {
+  auto lookup = unacked_invalidations_map_.find(topic);
   if (lookup == unacked_invalidations_map_.end()) {
-    DLOG(WARNING) << "Received drop for untracked object ID";
+    DLOG(WARNING) << "Received drop for untracked topic";
     return;
   }
   lookup->second.Drop(handle);
 }
 
 void FCMInvalidationListener::DoSubscriptionUpdate() {
-  if (!per_user_topic_registration_manager_ || instance_id_token_.empty() ||
+  if (!per_user_topic_subscription_manager_ || instance_id_token_.empty() ||
       !topics_update_requested_) {
     return;
   }
-  per_user_topic_registration_manager_->UpdateSubscribedTopics(
+  per_user_topic_subscription_manager_->UpdateSubscribedTopics(
       interested_topics_, instance_id_token_);
 
   // Go over all stored unacked invalidations and dispatch them if their topics
   // have become interesting.
   // Note: We might dispatch invalidations for a second time here, if they were
   // already dispatched but not acked yet.
-  // TODO(melandory): remove unacked invalidations for unregistered objects.
-  ObjectIdInvalidationMap object_id_invalidation_map;
+  // TODO(melandory): remove unacked invalidations for unregistered topics.
+  TopicInvalidationMap topic_invalidation_map;
   for (const auto& unacked : unacked_invalidations_map_) {
-    if (interested_topics_.find(unacked.first.name()) ==
-        interested_topics_.end()) {
+    if (interested_topics_.find(unacked.first) == interested_topics_.end()) {
       continue;
     }
 
     unacked.second.ExportInvalidations(weak_factory_.GetWeakPtr(),
                                        base::ThreadTaskRunnerHandle::Get(),
-                                       &object_id_invalidation_map);
+                                       &topic_invalidation_map);
   }
 
   // There's no need to run these through DispatchInvalidations(); they've
   // already been saved to storage (that's where we found them) so all we need
   // to do now is emit them.
-  EmitSavedInvalidations(ConvertObjectIdInvalidationMapToTopicInvalidationMap(
-      object_id_invalidation_map));
+  EmitSavedInvalidations(topic_invalidation_map);
 }
 
 void FCMInvalidationListener::RequestDetailedStatus(
@@ -208,10 +200,10 @@ void FCMInvalidationListener::EmitSavedInvalidationsForTest(
 void FCMInvalidationListener::Stop() {
   delegate_ = nullptr;
 
-  if (per_user_topic_registration_manager_) {
-    per_user_topic_registration_manager_->RemoveObserver(this);
+  if (per_user_topic_subscription_manager_) {
+    per_user_topic_subscription_manager_->RemoveObserver(this);
   }
-  per_user_topic_registration_manager_.reset();
+  per_user_topic_subscription_manager_.reset();
   network_channel_->StopListening();
 
   subscription_channel_state_ = SubscriptionChannelState::NOT_STARTED;
@@ -251,7 +243,7 @@ void FCMInvalidationListener::OnSubscriptionChannelStateChanged(
 
 base::DictionaryValue FCMInvalidationListener::CollectDebugData() const {
   base::DictionaryValue status =
-      per_user_topic_registration_manager_->CollectDebugData();
+      per_user_topic_subscription_manager_->CollectDebugData();
   status.SetString("InvalidationListener.FCM-channel-state",
                    FcmChannelStateToString(fcm_network_state_));
   status.SetString(
@@ -265,4 +257,4 @@ base::DictionaryValue FCMInvalidationListener::CollectDebugData() const {
   return status;
 }
 
-}  // namespace syncer
+}  // namespace invalidation

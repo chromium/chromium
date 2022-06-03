@@ -7,9 +7,9 @@
 
 #include <jni.h>
 
+#include <string>
+
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "chrome/browser/ui/login/login_handler.h"
 #include "components/password_manager/core/browser/http_auth_observer.h"
 
@@ -23,9 +23,13 @@ class HttpAuthManager;
 // by, e.g., showing the user a login dialog.
 class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
  public:
-  ChromeHttpAuthHandler(const base::string16& authority,
-                        const base::string16& explanation,
+  ChromeHttpAuthHandler(const std::u16string& authority,
+                        const std::u16string& explanation,
                         LoginHandler::LoginModelData* login_model_data);
+
+  ChromeHttpAuthHandler(const ChromeHttpAuthHandler&) = delete;
+  ChromeHttpAuthHandler& operator=(const ChromeHttpAuthHandler&) = delete;
+
   ~ChromeHttpAuthHandler() override;
 
   // This must be called before using the object.
@@ -44,8 +48,8 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
   void CloseDialog();
 
   // password_manager::HttpAuthObserver:
-  void OnAutofillDataAvailable(const base::string16& username,
-                               const base::string16& password) override;
+  void OnAutofillDataAvailable(const std::u16string& username,
+                               const std::u16string& password) override;
   void OnLoginModelDestroying() override;
 
   // --------------------------------------------------------------
@@ -69,14 +73,12 @@ class ChromeHttpAuthHandler : public password_manager::HttpAuthObserver {
  private:
   LoginHandler* observer_;
   base::android::ScopedJavaGlobalRef<jobject> java_chrome_http_auth_handler_;
-  base::string16 authority_;
-  base::string16 explanation_;
+  std::u16string authority_;
+  std::u16string explanation_;
 
   // If not null, points to a model we need to notify of our own destruction
   // so it doesn't try and access this when its too late.
   password_manager::HttpAuthManager* auth_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeHttpAuthHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_CHROME_HTTP_AUTH_HANDLER_H_

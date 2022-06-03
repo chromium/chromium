@@ -30,7 +30,6 @@
 namespace blink {
 
 class Document;
-class DocumentInit;
 class DocumentType;
 class ExceptionState;
 class XMLDocument;
@@ -55,15 +54,7 @@ class CORE_EXPORT DOMImplementation final : public ScriptWrappable {
   // From the HTMLDOMImplementation interface
   Document* createHTMLDocument(const String& title = String());
 
-  // Other methods (not part of DOM)
-  static Document* createDocument(const String& mime_type,
-                                  const DocumentInit&,
-                                  bool in_view_source_mode);
-
-  static bool IsXMLMIMEType(const String&);
-  static bool IsTextMIMEType(const String&);
-
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<Document> document_;

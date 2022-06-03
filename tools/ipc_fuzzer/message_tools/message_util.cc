@@ -127,8 +127,9 @@ int main(int argc, char** argv) {
            args[0], base::FilePath::StringType(1, ','),
            base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
     ipc_fuzzer::MessageVector message_vector;
-    if (!ipc_fuzzer::MessageFile::Read(base::FilePath(name), &message_vector))
+    if (!ipc_fuzzer::MessageFile::Read(base::FilePath(name), &message_vector)) {
       return EXIT_FAILURE;
+    }
     input_message_vector.insert(input_message_vector.end(),
                                 std::make_move_iterator(message_vector.begin()),
                                 std::make_move_iterator(message_vector.end()));

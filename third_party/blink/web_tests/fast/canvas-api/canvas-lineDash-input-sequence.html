@@ -48,7 +48,7 @@ test(function(t) {
         ctx.setLineDash([]);
         // Set line dash.
         if (shouldFail) {
-          assert_throws(new TypeError(), function() {
+          assert_throws_js(TypeError, function() {
             ctx.setLineDash(inputArray);
           });
         } else {

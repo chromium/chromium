@@ -9,8 +9,8 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/net_errors.h"
 #include "net/dns/host_resolver.h"
@@ -70,8 +70,10 @@ bool HttpAuthHandlerMock::AllowsExplicitCredentials() {
   return allows_explicit_credentials_;
 }
 
-bool HttpAuthHandlerMock::Init(HttpAuthChallengeTokenizer* challenge,
-                               const SSLInfo& ssl_info) {
+bool HttpAuthHandlerMock::Init(
+    HttpAuthChallengeTokenizer* challenge,
+    const SSLInfo& ssl_info,
+    const NetworkIsolationKey& network_isolation_key) {
   EXPECT_EQ(State::WAIT_FOR_INIT, state_);
   state_ = State::WAIT_FOR_GENERATE_AUTH_TOKEN;
   auth_scheme_ = HttpAuth::AUTH_SCHEME_MOCK;
@@ -161,6 +163,7 @@ int HttpAuthHandlerMock::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
     HttpAuth::Target target,
     const SSLInfo& ssl_info,
+    const NetworkIsolationKey& network_isolation_key,
     const GURL& origin,
     CreateReason reason,
     int nonce_count,
@@ -174,9 +177,10 @@ int HttpAuthHandlerMock::Factory::CreateAuthHandler(
   std::vector<std::unique_ptr<HttpAuthHandler>>& handlers = handlers_[target];
   handlers.erase(handlers.begin());
   if (do_init_from_challenge_ &&
-      !tmp_handler->InitFromChallenge(challenge, target, ssl_info, origin,
-                                      net_log))
+      !tmp_handler->InitFromChallenge(challenge, target, ssl_info,
+                                      network_isolation_key, origin, net_log)) {
     return ERR_INVALID_RESPONSE;
+  }
   handler->swap(tmp_handler);
   return OK;
 }

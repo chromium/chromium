@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "chromeos/services/multidevice_setup/host_status_provider.h"
 
 namespace chromeos {
@@ -18,26 +17,34 @@ namespace multidevice_setup {
 class FakeHostStatusProvider : public HostStatusProvider {
  public:
   FakeHostStatusProvider();
+
+  FakeHostStatusProvider(const FakeHostStatusProvider&) = delete;
+  FakeHostStatusProvider& operator=(const FakeHostStatusProvider&) = delete;
+
   ~FakeHostStatusProvider() override;
 
   void SetHostWithStatus(
       mojom::HostStatus host_status,
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device);
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device);
 
   // HostStatusProvider:
   HostStatusWithDevice GetHostWithStatus() const override;
 
  private:
   mojom::HostStatus host_status_ = mojom::HostStatus::kNoEligibleHosts;
-  base::Optional<multidevice::RemoteDeviceRef> host_device_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostStatusProvider);
+  absl::optional<multidevice::RemoteDeviceRef> host_device_;
 };
 
 // Test HostStatusProvider::Observer implementation.
 class FakeHostStatusProviderObserver : public HostStatusProvider::Observer {
  public:
   FakeHostStatusProviderObserver();
+
+  FakeHostStatusProviderObserver(const FakeHostStatusProviderObserver&) =
+      delete;
+  FakeHostStatusProviderObserver& operator=(
+      const FakeHostStatusProviderObserver&) = delete;
+
   ~FakeHostStatusProviderObserver() override;
 
   const std::vector<HostStatusProvider::HostStatusWithDevice>&
@@ -51,8 +58,6 @@ class FakeHostStatusProviderObserver : public HostStatusProvider::Observer {
                               host_status_with_device) override;
 
   std::vector<HostStatusProvider::HostStatusWithDevice> host_status_updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeHostStatusProviderObserver);
 };
 
 }  // namespace multidevice_setup

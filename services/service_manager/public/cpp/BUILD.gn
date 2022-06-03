@@ -8,8 +8,6 @@ component("cpp") {
   output_name = "service_manager_cpp"
 
   sources = [
-    "binder_map.h",
-    "binder_map_internal.h",
     "binder_registry.h",
     "connect.h",
     "connector.cc",
@@ -27,11 +25,11 @@ component("cpp") {
     "manifest_builder.h",
     "service.cc",
     "service.h",
-    "service_binding.cc",
-    "service_binding.h",
     "service_context_ref.h",
     "service_keepalive.cc",
     "service_keepalive.h",
+    "service_receiver.cc",
+    "service_receiver.h",
     "standalone_connector_impl.cc",
     "standalone_connector_impl.h",
   ]
@@ -48,9 +46,7 @@ component("cpp") {
     "//url",
   ]
 
-  deps = [
-    "//services/tracing/public/cpp:traced_process",
-  ]
+  deps = [ "//services/tracing/public/cpp:traced_process" ]
 
   defines = [
     "IS_SERVICE_MANAGER_CPP_IMPL",
@@ -80,9 +76,7 @@ component("cpp_types") {
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  deps = [
-    "//services/service_manager/public/mojom:constants",
-  ]
+  deps = [ "//services/service_manager/public/mojom:constants" ]
 
   defines = [
     "IS_SERVICE_MANAGER_CPP_TYPES_IMPL",
@@ -131,7 +125,5 @@ source_set("unittests") {
 
 mojom("test_mojom") {
   testonly = true
-  sources = [
-    "standalone_connector_impl_unittest.test-mojom",
-  ]
+  sources = [ "standalone_connector_impl_unittest.test-mojom" ]
 }

@@ -25,6 +25,7 @@ void FakeBlob::AsDataPipeGetter(
     mojo::PendingReceiver<network::mojom::DataPipeGetter>) {
   NOTREACHED();
 }
+
 void FakeBlob::ReadRange(uint64_t offset,
                          uint64_t size,
                          mojo::ScopedDataPipeProducerHandle,
@@ -37,7 +38,18 @@ void FakeBlob::ReadAll(mojo::ScopedDataPipeProducerHandle,
   NOTREACHED();
 }
 
+void FakeBlob::Load(mojo::PendingReceiver<network::mojom::URLLoader>,
+                    const std::string& method,
+                    const net::HttpRequestHeaders&,
+                    mojo::PendingRemote<network::mojom::URLLoaderClient>) {
+  NOTREACHED();
+}
+
 void FakeBlob::ReadSideData(ReadSideDataCallback) {
+  NOTREACHED();
+}
+
+void FakeBlob::CaptureSnapshot(CaptureSnapshotCallback) {
   NOTREACHED();
 }
 

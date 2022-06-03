@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+
+<style>
+.spacer {
+  height: 200px;
+}
+.hidden-matchable {
+  content-visibility: hidden-matchable;
+}
+</style>
+
+<div id=hiddendiv class="hidden-matchable">
+  <div class="spacer"></div>
+  <div id=hiddentext>hiddentext</div>
+</div>
+<div>a bunch of</div>
+<div>other stuff</div>
+
+<script>
+hiddendiv.addEventListener('beforematch', () => {
+  requestAnimationFrame(() => {
+    hiddendiv.classList.remove('hidden-matchable');
+  });
+});
+
+async_test(t => {
+  // PerformanceObserver won't work until we wait for two rAFs.
+  requestAnimationFrame(t.step_func(() => {
+    requestAnimationFrame(t.step_func(() => {
+      const observer = new PerformanceObserver(t.step_func_done(list => {
+        assert_true(list.getEntries().length === 1, 'There should be entries in the list.');
+        assert_true(list.getEntries()[0].hadRecentInput, 'find-in-page should mark hadRecentInput.');
+      }));
+      observer.observe({type: 'layout-shift', buffered: true});
+      testRunner.findString('hiddentext', ['Async']);
+    }));
+  }));
+
+}, 'Verifies that find-in-page adds a layout shift allowance so that beforematch can cause layout shift.');
+</script>

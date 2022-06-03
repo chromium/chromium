@@ -5,7 +5,7 @@
 #include "content/browser/devtools/protocol/background_service_handler.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "content/browser/frame_host/frame_tree.h"
+#include "content/browser/renderer_host/frame_tree.h"
 #include "content/browser/service_worker/service_worker_version.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/render_process_host.h"
@@ -79,7 +79,7 @@ ProtoMapToArray(
 std::unique_ptr<protocol::BackgroundService::BackgroundServiceEvent>
 ToBackgroundServiceEvent(const devtools::proto::BackgroundServiceEvent& event) {
   base::Time timestamp = base::Time::FromDeltaSinceWindowsEpoch(
-      base::TimeDelta::FromMicroseconds(event.timestamp()));
+      base::Microseconds(event.timestamp()));
   return protocol::BackgroundService::BackgroundServiceEvent::Create()
       .SetTimestamp(timestamp.ToJsTime() / 1'000)  // milliseconds -> seconds
       .SetOrigin(event.origin())
@@ -136,7 +136,7 @@ Response BackgroundServiceHandler::Disable() {
   if (!enabled_services_.empty())
     devtools_context_->RemoveObserver(this);
   enabled_services_.clear();
-  return Response::OK();
+  return Response::Success();
 }
 
 void BackgroundServiceHandler::StartObserving(
@@ -177,13 +177,13 @@ Response BackgroundServiceHandler::StopObserving(const std::string& service) {
     return Response::InvalidParams("Invalid service name");
 
   if (!enabled_services_.count(service_enum))
-    return Response::OK();
+    return Response::Success();
 
   enabled_services_.erase(service_enum);
   if (enabled_services_.empty())
     devtools_context_->RemoveObserver(this);
 
-  return Response::OK();
+  return Response::Success();
 }
 
 void BackgroundServiceHandler::DidGetLoggedEvents(
@@ -216,7 +216,7 @@ Response BackgroundServiceHandler::SetRecording(bool should_record,
     devtools_context_->StopRecording(service_enum);
   }
 
-  return Response::OK();
+  return Response::Success();
 }
 
 Response BackgroundServiceHandler::ClearEvents(const std::string& service) {
@@ -227,7 +227,7 @@ Response BackgroundServiceHandler::ClearEvents(const std::string& service) {
     return Response::InvalidParams("Invalid service name");
 
   devtools_context_->ClearLoggedBackgroundServiceEvents(service_enum);
-  return Response::OK();
+  return Response::Success();
 }
 
 void BackgroundServiceHandler::OnEventReceived(

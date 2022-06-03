@@ -20,9 +20,4 @@ body { (user agent stylesheet)
         margin-bottom: 8px;
         margin-left: 8px;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 

@@ -37,75 +37,76 @@ AXPlatformRelationWin::AXPlatformRelationWin() {
 
 AXPlatformRelationWin::~AXPlatformRelationWin() {}
 
-base::string16 GetIA2RelationFromIntAttr(ax::mojom::IntAttribute attribute) {
+std::wstring GetIA2RelationFromIntAttr(ax::mojom::IntAttribute attribute) {
   switch (attribute) {
-    case ax::mojom::IntAttribute::kDetailsId:
-      return IA2_RELATION_DETAILS;
     case ax::mojom::IntAttribute::kMemberOfId:
       return IA2_RELATION_MEMBER_OF;
     case ax::mojom::IntAttribute::kErrormessageId:
       return IA2_RELATION_ERROR;
+    case ax::mojom::IntAttribute::kPopupForId:
+      // Map "popup for" to "controlled by".
+      // Unlike ATK there is no special IA2 popup-for relationship, but it can
+      // be exposed via the controlled by relation, which is also computed for
+      // content as the reverse of the controls relationship.
+      return IA2_RELATION_CONTROLLED_BY;
     default:
-      break;
+      return std::wstring();
   }
-  return base::string16();
 }
 
-base::string16 GetIA2RelationFromIntListAttr(
+std::wstring GetIA2RelationFromIntListAttr(
     ax::mojom::IntListAttribute attribute) {
   switch (attribute) {
     case ax::mojom::IntListAttribute::kControlsIds:
       return IA2_RELATION_CONTROLLER_FOR;
     case ax::mojom::IntListAttribute::kDescribedbyIds:
       return IA2_RELATION_DESCRIBED_BY;
+    case ax::mojom::IntListAttribute::kDetailsIds:
+      return IA2_RELATION_DETAILS;
     case ax::mojom::IntListAttribute::kFlowtoIds:
       return IA2_RELATION_FLOWS_TO;
     case ax::mojom::IntListAttribute::kLabelledbyIds:
       return IA2_RELATION_LABELLED_BY;
     default:
-      break;
+      return std::wstring();
   }
-  return base::string16();
 }
 
-base::string16 GetIA2ReverseRelationFromIntAttr(
+std::wstring GetIA2ReverseRelationFromIntAttr(
     ax::mojom::IntAttribute attribute) {
   switch (attribute) {
-    case ax::mojom::IntAttribute::kDetailsId:
-      return IA2_RELATION_DETAILS_FOR;
     case ax::mojom::IntAttribute::kErrormessageId:
       return IA2_RELATION_ERROR_FOR;
     default:
-      break;
+      return std::wstring();
   }
-  return base::string16();
 }
 
-base::string16 GetIA2ReverseRelationFromIntListAttr(
+std::wstring GetIA2ReverseRelationFromIntListAttr(
     ax::mojom::IntListAttribute attribute) {
   switch (attribute) {
     case ax::mojom::IntListAttribute::kControlsIds:
       return IA2_RELATION_CONTROLLED_BY;
     case ax::mojom::IntListAttribute::kDescribedbyIds:
       return IA2_RELATION_DESCRIPTION_FOR;
+    case ax::mojom::IntListAttribute::kDetailsIds:
+      return IA2_RELATION_DETAILS_FOR;
     case ax::mojom::IntListAttribute::kFlowtoIds:
       return IA2_RELATION_FLOWS_FROM;
     case ax::mojom::IntListAttribute::kLabelledbyIds:
       return IA2_RELATION_LABEL_FOR;
     default:
-      break;
+      return std::wstring();
   }
-  return base::string16();
 }
 
 // static
 int AXPlatformRelationWin::EnumerateRelationships(
     AXPlatformNodeBase* node,
     int desired_index,
-    const base::string16& desired_ia2_relation,
-    base::string16* out_ia2_relation,
+    const std::wstring& desired_ia2_relation,
+    std::wstring* out_ia2_relation,
     std::set<AXPlatformNode*>* out_targets) {
-  const AXNodeData& node_data = node->GetData();
   AXPlatformNodeDelegate* delegate = node->GetDelegate();
 
   // The first time this is called, populate vectors with all of the
@@ -146,21 +147,22 @@ int AXPlatformRelationWin::EnumerateRelationships(
   // requested that particular relation by index, and return it.
   // Otherwise we build up and return the total number of relations found.
   int total_count = 0;
+  const AXNodeID node_id = node->GetData().id;
 
   // Iterate over all int attributes on this node to check the ones
   // that correspond to IAccessible2 relations.
-  for (size_t i = 0; i < node_data.int_attributes.size(); ++i) {
-    ax::mojom::IntAttribute int_attribute = node_data.int_attributes[i].first;
-    base::string16 relation = GetIA2RelationFromIntAttr(int_attribute);
+  for (const auto& attribute_value_pair : node->GetIntAttributes()) {
+    ax::mojom::IntAttribute int_attribute = attribute_value_pair.first;
+    std::wstring relation = GetIA2RelationFromIntAttr(int_attribute);
     if (!relation.empty() &&
         (desired_ia2_relation.empty() || desired_ia2_relation == relation)) {
       // Skip reflexive relations
-      if (node_data.int_attributes[i].second == node_data.id)
+      if (attribute_value_pair.second == node_id)
         continue;
       if (desired_index == total_count) {
         *out_ia2_relation = relation;
-        out_targets->insert(
-            delegate->GetFromNodeID(node_data.int_attributes[i].second));
+        out_targets->insert(delegate->GetFromNodeID(
+            static_cast<AXNodeID>(attribute_value_pair.second)));
         return 1;
       }
       total_count++;
@@ -171,7 +173,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
   // in IAccessible2, and query AXTree to see if the reverse relation exists.
   for (ax::mojom::IntAttribute int_attribute :
        int_attributes_with_reverse_relations) {
-    base::string16 relation = GetIA2ReverseRelationFromIntAttr(int_attribute);
+    std::wstring relation = GetIA2ReverseRelationFromIntAttr(int_attribute);
     std::set<AXPlatformNode*> targets =
         delegate->GetReverseRelations(int_attribute);
     // Erase reflexive relations.
@@ -191,19 +193,19 @@ int AXPlatformRelationWin::EnumerateRelationships(
 
   // Iterate over all intlist attributes on this node to check the ones
   // that correspond to IAccessible2 relations.
-  for (size_t i = 0; i < node_data.intlist_attributes.size(); ++i) {
-    ax::mojom::IntListAttribute intlist_attribute =
-        node_data.intlist_attributes[i].first;
-    base::string16 relation = GetIA2RelationFromIntListAttr(intlist_attribute);
+  for (const auto& attribute_value_pair : node->GetIntListAttributes()) {
+    ax::mojom::IntListAttribute intlist_attribute = attribute_value_pair.first;
+    std::wstring relation = GetIA2RelationFromIntListAttr(intlist_attribute);
     if (!relation.empty() &&
         (desired_ia2_relation.empty() || desired_ia2_relation == relation)) {
       if (desired_index == total_count) {
         *out_ia2_relation = relation;
-        for (int32_t target_id : node_data.intlist_attributes[i].second) {
+        for (int32_t target_id : attribute_value_pair.second) {
           // Skip reflexive relations
-          if (target_id == node_data.id)
+          if (static_cast<AXNodeID>(target_id) == node_id)
             continue;
-          out_targets->insert(delegate->GetFromNodeID(target_id));
+          out_targets->insert(
+              delegate->GetFromNodeID(static_cast<AXNodeID>(target_id)));
         }
         if (out_targets->size() == 0)
           continue;
@@ -217,7 +219,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
   // in IAccessible2, and query AXTree to see if the reverse relation exists.
   for (ax::mojom::IntListAttribute intlist_attribute :
        intlist_attributes_with_reverse_relations) {
-    base::string16 relation =
+    std::wstring relation =
         GetIA2ReverseRelationFromIntListAttr(intlist_attribute);
     std::set<AXPlatformNode*> targets =
         delegate->GetReverseRelations(intlist_attribute);
@@ -239,7 +241,7 @@ int AXPlatformRelationWin::EnumerateRelationships(
   return total_count;
 }
 
-void AXPlatformRelationWin::Initialize(const base::string16& type) {
+void AXPlatformRelationWin::Initialize(const std::wstring& type) {
   type_ = type;
 }
 

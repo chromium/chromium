@@ -77,7 +77,8 @@ TEST(SystemSnapshotLinux, Basic) {
 
   EXPECT_PRED1(
       [](std::string vendor) {
-        return vendor == "GenuineIntel" || vendor == "AuthenticAMD";
+        return vendor == "GenuineIntel" || vendor == "AuthenticAMD" ||
+               vendor == "HygonGenuine";
       },
       system.CPUVendor());
 

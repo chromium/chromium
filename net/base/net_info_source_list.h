@@ -2,23 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file intentionally does not have header guards, it's included
-// inside a macro to generate enum values. The following line silences a
-// presubmit warning that would otherwise be triggered by this:
-// no-include-guard-because-multiply-included
+#ifndef NET_BASE_NET_INFO_SOURCE_LIST_H_
+#define NET_BASE_NET_INFO_SOURCE_LIST_H_
 
-// Flags used to request different types of information about the current state
-// of a URLRequestContext.
-//
-// The strings don't match the enums for historical reasons.
+// NetInfo Sources written to NetLog JSON files.
+const char kNetInfoProxySettings[] = "proxySettings";
+const char kNetInfoBadProxies[] = "badProxies";
+const char kNetInfoHostResolver[] = "hostResolverInfo";
+const char kNetInfoSocketPool[] = "socketPoolInfo";
+const char kNetInfoQuic[] = "quicInfo";
+const char kNetInfoSpdySessions[] = "spdySessionInfo";
+const char kNetInfoSpdyStatus[] = "spdyStatus";
+const char kNetInfoAltSvcMappings[] = "altSvcMappings";
+const char kNetInfoHTTPCache[] = "httpCacheInfo";
+const char kNetInfoReporting[] = "reportingInfo";
+const char kNetInfoFieldTrials[] = "activeFieldTrialGroups";
 
-NET_INFO_SOURCE(PROXY_SETTINGS, "proxySettings",                         1 << 0)
-NET_INFO_SOURCE(BAD_PROXIES, "badProxies",                               1 << 1)
-NET_INFO_SOURCE(HOST_RESOLVER, "hostResolverInfo",                       1 << 2)
-NET_INFO_SOURCE(SOCKET_POOL, "socketPoolInfo",                           1 << 3)
-NET_INFO_SOURCE(QUIC, "quicInfo",                                        1 << 4)
-NET_INFO_SOURCE(SPDY_SESSIONS, "spdySessionInfo",                        1 << 5)
-NET_INFO_SOURCE(SPDY_STATUS, "spdyStatus",                               1 << 6)
-NET_INFO_SOURCE(ALT_SVC_MAPPINGS, "altSvcMappings", 1 << 7)
-NET_INFO_SOURCE(HTTP_CACHE, "httpCacheInfo",                             1 << 8)
-NET_INFO_SOURCE(REPORTING, "reportingInfo",                              1 << 9)
+#endif  // NET_BASE_NET_INFO_SOURCE_LIST_H_

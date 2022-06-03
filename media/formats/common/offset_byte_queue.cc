@@ -4,16 +4,17 @@
 
 #include "media/formats/common/offset_byte_queue.h"
 
+#include "base/check.h"
 #include "base/logging.h"
 
 namespace media {
 
-OffsetByteQueue::OffsetByteQueue() : buf_(NULL), size_(0), head_(0) {}
+OffsetByteQueue::OffsetByteQueue() : buf_(nullptr), size_(0), head_(0) {}
 OffsetByteQueue::~OffsetByteQueue() = default;
 
 void OffsetByteQueue::Reset() {
   queue_.Reset();
-  buf_ = NULL;
+  buf_ = nullptr;
   size_ = 0;
   head_ = 0;
 }
@@ -25,7 +26,7 @@ void OffsetByteQueue::Push(const uint8_t* buf, int size) {
 }
 
 void OffsetByteQueue::Peek(const uint8_t** buf, int* size) {
-  *buf = size_ > 0 ? buf_ : NULL;
+  *buf = size_ > 0 ? buf_ : nullptr;
   *size = size_;
 }
 
@@ -38,7 +39,7 @@ void OffsetByteQueue::Pop(int count) {
 void OffsetByteQueue::PeekAt(int64_t offset, const uint8_t** buf, int* size) {
   DCHECK(offset >= head());
   if (offset < head() || offset >= tail()) {
-    *buf = NULL;
+    *buf = nullptr;
     *size = 0;
     return;
   }

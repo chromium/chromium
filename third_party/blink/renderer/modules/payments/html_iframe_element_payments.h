@@ -17,21 +17,19 @@ class QualifiedName;
 class HTMLIFrameElementPayments final
     : public GarbageCollected<HTMLIFrameElementPayments>,
       public Supplement<HTMLIFrameElement> {
-  USING_GARBAGE_COLLECTED_MIXIN(HTMLIFrameElementPayments);
-
  public:
   static const char kSupplementName[];
 
   HTMLIFrameElementPayments();
 
-  static bool FastHasAttribute(const QualifiedName&, const HTMLIFrameElement&);
-  static void SetBooleanAttribute(const QualifiedName&,
-                                  HTMLIFrameElement&,
+  static bool FastHasAttribute(const HTMLIFrameElement&, const QualifiedName&);
+  static void SetBooleanAttribute(HTMLIFrameElement&,
+                                  const QualifiedName&,
                                   bool);
   static HTMLIFrameElementPayments& From(HTMLIFrameElement&);
   static bool AllowPaymentRequest(HTMLIFrameElement&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 };
 
 }  // namespace blink

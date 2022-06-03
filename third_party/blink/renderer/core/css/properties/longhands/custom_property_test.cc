@@ -7,6 +7,7 @@
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_local_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -24,14 +25,18 @@ namespace {
 class CustomPropertyTest : public PageTestBase {
  public:
   void SetElementWithStyle(const String& value) {
-    GetDocument().body()->SetInnerHTMLFromString("<div id='target' style='" +
-                                                 value + "'></div>");
+    GetDocument().body()->setInnerHTML("<div id='target' style='" + value +
+                                       "'></div>");
     UpdateAllLifecyclePhasesForTest();
   }
 
-  const CSSValue* GetComputedValue(const CustomProperty& property) {
+  const ComputedStyle& GetComputedStyle() {
     Element* node = GetDocument().getElementById("target");
-    return property.CSSValueFromComputedStyle(node->ComputedStyleRef(),
+    return node->ComputedStyleRef();
+  }
+
+  const CSSValue* GetComputedValue(const CustomProperty& property) {
+    return property.CSSValueFromComputedStyle(GetComputedStyle(),
                                               nullptr /* layout_object */,
                                               false /* allow_visited_style */);
   }
@@ -198,6 +203,38 @@ TEST_F(CustomPropertyTest, ParseSingleValueValidatedUntyped) {
 TEST_F(CustomPropertyTest, GetCSSPropertyName) {
   CustomProperty property("--x", GetDocument());
   EXPECT_EQ(CSSPropertyName("--x"), property.GetCSSPropertyName());
+}
+
+TEST_F(CustomPropertyTest, SupportsGuaranteedInvalid) {
+  RegisterProperty(GetDocument(), "--universal", "*", "foo", true);
+  RegisterProperty(GetDocument(), "--no-initial", "*", absl::nullopt, true);
+  RegisterProperty(GetDocument(), "--length", "<length>", "0px", true);
+
+  CustomProperty unregistered("--unregistered", GetDocument());
+  CustomProperty universal("--universal", GetDocument());
+  CustomProperty no_initial_value("--no-initial", GetDocument());
+  CustomProperty length("--length", GetDocument());
+
+  EXPECT_TRUE(unregistered.SupportsGuaranteedInvalid());
+  EXPECT_TRUE(universal.SupportsGuaranteedInvalid());
+  EXPECT_TRUE(no_initial_value.SupportsGuaranteedInvalid());
+  EXPECT_FALSE(length.SupportsGuaranteedInvalid());
+}
+
+TEST_F(CustomPropertyTest, HasInitialValue) {
+  RegisterProperty(GetDocument(), "--universal", "*", "foo", true);
+  RegisterProperty(GetDocument(), "--no-initial", "*", absl::nullopt, true);
+  RegisterProperty(GetDocument(), "--length", "<length>", "0px", true);
+
+  CustomProperty unregistered("--unregistered", GetDocument());
+  CustomProperty universal("--universal", GetDocument());
+  CustomProperty no_initial_value("--no-initial", GetDocument());
+  CustomProperty length("--length", GetDocument());
+
+  EXPECT_FALSE(unregistered.HasInitialValue());
+  EXPECT_TRUE(universal.HasInitialValue());
+  EXPECT_FALSE(no_initial_value.HasInitialValue());
+  EXPECT_TRUE(length.HasInitialValue());
 }
 
 }  // namespace blink

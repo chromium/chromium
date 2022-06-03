@@ -16,13 +16,13 @@
 
 #include "base/compiler_specific.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "base/win/scoped_gdi_object.h"
 #include "base/win/win_util.h"
-#include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
+#include "ui/base/ime/input_method.h"
 #include "ui/base/ime/input_method_observer.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/win/window_event_target.h"
@@ -34,20 +34,19 @@
 #include "ui/views/views_export.h"
 #include "ui/views/win/pen_event_processor.h"
 #include "ui/views/win/scoped_enable_unadjusted_mouse_events_win.h"
-#include "ui/views/window/window_resize_utils.h"
 
 namespace gfx {
 class ImageSkia;
 class Insets;
 }  // namespace gfx
 
-namespace ui  {
+namespace ui {
 class AXFragmentRootWin;
 class AXSystemCaretWin;
-class InputMethod;
+class SessionChangeObserver;
 class TextInputClient;
 class ViewProp;
-class SessionChangeObserver;
+class WinCursor;
 }  // namespace ui
 
 namespace views {
@@ -89,6 +88,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // See WindowImpl for details on |debugging_id|.
   HWNDMessageHandler(HWNDMessageHandlerDelegate* delegate,
                      const std::string& debugging_id);
+
+  HWNDMessageHandler(const HWNDMessageHandler&) = delete;
+  HWNDMessageHandler& operator=(const HWNDMessageHandler&) = delete;
+
   ~HWNDMessageHandler() override;
 
   void Init(HWND parent, const gfx::Rect& bounds);
@@ -159,9 +162,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   void SetVisibilityChangedAnimationsEnabled(bool enabled);
 
   // Returns true if the title changed.
-  bool SetTitle(const base::string16& title);
+  bool SetTitle(const std::u16string& title);
 
-  void SetCursor(HCURSOR cursor);
+  void SetCursor(scoped_refptr<ui::WinCursor> cursor);
 
   void FrameTypeChanged();
 
@@ -280,10 +283,9 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // Called after the WM_ACTIVATE message has been processed by the default
   // windows procedure.
-  void PostProcessActivateMessage(
-      int activation_state,
-      bool minimized,
-      HWND window_gaining_or_losing_activation);
+  void PostProcessActivateMessage(int activation_state,
+                                  bool minimized,
+                                  HWND window_gaining_or_losing_activation);
 
   // Enables disabled owner windows that may have been disabled due to this
   // window's modality.
@@ -466,7 +468,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   void OnActivateApp(BOOL active, DWORD thread_id);
   // TODO(beng): return BOOL is temporary until this object becomes a
   //             WindowImpl.
-  BOOL OnAppCommand(HWND window, short command, WORD device, int keystate);
+  BOOL OnAppCommand(HWND window, int command, WORD device, WORD keystate);
   void OnCancelMode();
   void OnCaptureChanged(HWND window);
   void OnClose();
@@ -543,13 +545,17 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
                                    LPARAM l_param,
                                    bool track_mouse);
 
-  LRESULT HandlePointerEventTypeTouch(UINT message,
-                                      WPARAM w_param,
-                                      LPARAM l_param);
+  // We handle 2 kinds of WM_POINTER events: PT_TOUCH and PT_PEN. This helper
+  // handles client area events of PT_TOUCH, and non-client area events of both
+  // kinds.
+  LRESULT HandlePointerEventTypeTouchOrNonClient(UINT message,
+                                                 WPARAM w_param,
+                                                 LPARAM l_param);
 
-  LRESULT HandlePointerEventTypePen(UINT message,
-                                    WPARAM w_param,
-                                    LPARAM l_param);
+  // Helper to handle client area events of PT_PEN.
+  LRESULT HandlePointerEventTypePenClient(UINT message,
+                                          WPARAM w_param,
+                                          LPARAM l_param);
 
   // Returns true if the mouse message passed in is an OS synthesized mouse
   // message.
@@ -604,7 +610,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // Updates |rect| to adhere to the |aspect_ratio| of the window. |param|
   // refers to the edge of the window being sized.
-  void SizeRectToAspectRatio(UINT param, gfx::Rect* rect);
+  void SizeWindowToAspectRatio(UINT param, gfx::Rect* rect);
 
   // Get the cursor position, which may be mocked if running a test
   POINT GetCursorPos() const;
@@ -623,11 +629,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   bool restored_enabled_;
 
   // The current cursor.
-  HCURSOR current_cursor_;
-
-  // The last cursor that was active before the current one was selected. Saved
-  // so that we can restore it.
-  HCURSOR previous_cursor_;
+  scoped_refptr<ui::WinCursor> current_cursor_;
 
   // The icon created from the bitmap image of the window icon.
   base::win::ScopedHICON window_icon_;
@@ -637,7 +639,7 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // The aspect ratio for the window. This is only used for sizing operations
   // for the non-client area.
-  base::Optional<float> aspect_ratio_;
+  absl::optional<float> aspect_ratio_;
 
   // The current DPI.
   int dpi_;
@@ -713,11 +715,19 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // messages synthesized by Windows for touch which are not flagged by the OS
   // as synthesized mouse messages. For more information please refer to the
   // IsMouseEventFromTouch function.
-  static long last_touch_or_pen_message_time_;
+  static LONG last_touch_or_pen_message_time_;
+
+  // When true, this flag makes us discard window management mouse messages.
+  // Windows sends window management mouse messages at the mouse location when
+  // window states change (e.g. tooltips or status bubbles opening/closing).
+  // Those system generated messages should be ignored while the pen is active
+  // over the client area, where it is not in sync with the mouse position.
+  // Reset to false when we get user mouse input again.
+  static bool is_pen_active_in_client_area_;
 
   // Time the last WM_MOUSEHWHEEL message is received. Please refer to the
   // HandleMouseEventInternal function as to why this is needed.
-  long last_mouse_hwheel_time_;
+  LONG last_mouse_hwheel_time_;
 
   // On Windows Vista and beyond, if we are transitioning from custom frame
   // to Aero(glass) we delay setting the DWM related properties in full
@@ -746,8 +756,14 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // Some assistive software need to track the location of the caret.
   std::unique_ptr<ui::AXSystemCaretWin> ax_system_caret_;
 
-  // Implements IRawElementProviderFragmentRoot when UIA is enabled
+  // Implements IRawElementProviderFragmentRoot when UIA is enabled.
   std::unique_ptr<ui::AXFragmentRootWin> ax_fragment_root_;
+
+  // Set to true when we return a UIA object. Determines whether we need to
+  // call UIA to clean up object references on window destruction.
+  // This is important to avoid triggering a cross-thread COM call which could
+  // cause re-entrancy during teardown. https://crbug.com/1087553
+  bool did_return_uia_object_;
 
   // The location where the user clicked on the caption. We cache this when we
   // receive the WM_NCLBUTTONDOWN message. We use this in the subsequent
@@ -772,10 +788,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // not WM_TOUCH events.
   bool pointer_events_for_touch_;
 
-  // True if we enable feature kPrecisionTouchpadScrollPhase. Indicate we will
-  // report the scroll phase information or not.
-  bool precision_touchpad_scroll_phase_enabled_;
-
   // True if DWM frame should be cleared on next WM_ERASEBKGND message.  This is
   // necessary to avoid white flashing in the titlebar area around the
   // minimize/maximize/close buttons.  Clearing the frame on every WM_ERASEBKGND
@@ -786,6 +798,15 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // True if is handling mouse WM_INPUT messages.
   bool using_wm_input_ = false;
 
+  // True if we're displaying the system menu on the title bar. If we are,
+  // then we want to ignore right mouse clicks instead of bringing up a
+  // context menu.
+  bool handling_mouse_menu_ = false;
+
+  // This is set to true when we call ShowWindow(SC_RESTORE), in order to
+  // call HandleWindowMinimizedOrRestored() when we get a WM_ACTIVATE message.
+  bool notify_restore_on_activate_ = false;
+
   // This is a map of the HMONITOR to full screeen window instance. It is safe
   // to keep a raw pointer to the HWNDMessageHandler instance as we track the
   // window destruction and ensure that the map is cleaned up.
@@ -793,8 +814,16 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   static base::LazyInstance<FullscreenWindowMonitorMap>::DestructorAtExit
       fullscreen_monitor_map_;
 
+  // How many pixels the window is expected to grow from OnWindowPosChanging().
+  // Used to fill the newly exposed pixels black in OnPaint() before the
+  // browser compositor is able to redraw at the new window size.
+  gfx::Size exposed_pixels_;
+
   // Populated if the cursor position is being mocked for testing purposes.
-  base::Optional<gfx::Point> mock_cursor_position_;
+  absl::optional<gfx::Point> mock_cursor_position_;
+
+  base::ScopedObservation<ui::InputMethod, ui::InputMethodObserver>
+      observation_{this};
 
   // The WeakPtrFactories below (one inside the
   // CR_MSG_MAP_CLASS_DECLARATIONS macro and autohide_factory_) must
@@ -804,8 +833,6 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
 
   // The factory used to lookup appbar autohide edges.
   base::WeakPtrFactory<HWNDMessageHandler> autohide_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HWNDMessageHandler);
 };
 
 }  // namespace views

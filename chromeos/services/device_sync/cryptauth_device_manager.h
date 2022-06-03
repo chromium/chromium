@@ -7,11 +7,15 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
 
 class PrefRegistrySimple;
+
+namespace base {
+class Time;
+class TimeDelta;
+}  // namespace base
 
 namespace chromeos {
 
@@ -53,6 +57,10 @@ class CryptAuthDeviceManager {
   };
 
   CryptAuthDeviceManager();
+
+  CryptAuthDeviceManager(const CryptAuthDeviceManager&) = delete;
+  CryptAuthDeviceManager& operator=(const CryptAuthDeviceManager&) = delete;
+
   virtual ~CryptAuthDeviceManager();
 
   void AddObserver(Observer* observer);
@@ -109,8 +117,6 @@ class CryptAuthDeviceManager {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthDeviceManager);
 };
 
 }  // namespace device_sync

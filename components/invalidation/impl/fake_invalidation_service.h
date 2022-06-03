@@ -6,20 +6,18 @@
 #define COMPONENTS_INVALIDATION_IMPL_FAKE_INVALIDATION_SERVICE_H_
 
 #include <list>
+#include <memory>
 #include <utility>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "components/invalidation/impl/deprecated_invalidator_registrar.h"
+#include "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #include "components/invalidation/impl/mock_ack_handler.h"
 #include "components/invalidation/public/invalidation_service.h"
-
-namespace syncer {
-class Invalidation;
-}
+#include "components/prefs/testing_pref_service.h"
 
 namespace invalidation {
 
+class Invalidation;
 class InvalidationLogger;
 
 // An InvalidationService that emits invalidations only when
@@ -27,39 +25,41 @@ class InvalidationLogger;
 class FakeInvalidationService : public InvalidationService {
  public:
   FakeInvalidationService();
+  FakeInvalidationService(const FakeInvalidationService& other) = delete;
+  FakeInvalidationService& operator=(const FakeInvalidationService& other) =
+      delete;
   ~FakeInvalidationService() override;
 
-  void RegisterInvalidationHandler(
-      syncer::InvalidationHandler* handler) override;
-  bool UpdateRegisteredInvalidationIds(syncer::InvalidationHandler* handler,
-                                       const syncer::ObjectIdSet& ids) override;
-  void UnregisterInvalidationHandler(
-      syncer::InvalidationHandler* handler) override;
+  void RegisterInvalidationHandler(InvalidationHandler* handler) override;
+  bool UpdateInterestedTopics(InvalidationHandler* handler,
+                              const TopicSet& topics) override;
+  void UnregisterInvalidationHandler(InvalidationHandler* handler) override;
 
-  syncer::InvalidatorState GetInvalidatorState() const override;
+  InvalidatorState GetInvalidatorState() const override;
   std::string GetInvalidatorClientId() const override;
   InvalidationLogger* GetInvalidationLogger() override;
   void RequestDetailedStatus(
-      base::Callback<void(const base::DictionaryValue&)> caller) const override;
+      base::RepeatingCallback<void(const base::DictionaryValue&)> caller)
+      const override;
 
-  void SetInvalidatorState(syncer::InvalidatorState state);
+  void SetInvalidatorState(InvalidatorState state);
 
-  const syncer::DeprecatedInvalidatorRegistrar& invalidator_registrar() const {
-    return invalidator_registrar_;
+  const InvalidatorRegistrarWithMemory& invalidator_registrar() const {
+    return *invalidator_registrar_;
   }
 
-  void EmitInvalidationForTest(const syncer::Invalidation& invalidation);
+  void EmitInvalidationForTest(const Invalidation& invalidation);
 
   // Emitted invalidations will be hooked up to this AckHandler.  Clients can
   // query it to assert the invalidaitons are being acked properly.
-  syncer::MockAckHandler* GetMockAckHandler();
+  MockAckHandler* GetMockAckHandler();
 
  private:
   std::string client_id_;
-  syncer::DeprecatedInvalidatorRegistrar invalidator_registrar_;
-  syncer::MockAckHandler mock_ack_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeInvalidationService);
+  // |pref_service_| must outlive |invalidator_registrar_|.
+  TestingPrefServiceSimple pref_service_;
+  std::unique_ptr<InvalidatorRegistrarWithMemory> invalidator_registrar_;
+  MockAckHandler mock_ack_handler_;
 };
 
 }  // namespace invalidation

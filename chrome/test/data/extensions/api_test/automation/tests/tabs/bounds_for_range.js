@@ -117,6 +117,49 @@ var allTests = [
     });
 
     chrome.test.succeed();
+  },
+
+  function boundsForRangeUnclipped() {
+    let overflowText = rootNode.find(
+        {role: 'inlineTextBox', attributes: {name: 'This text overflows'}});
+    overflowText.unclippedBoundsForRange(
+        0, overflowText.name.length, (unclippedBounds) => {
+          assertTrue(
+              overflowText.parent.location.width <
+              overflowText.unclippedLocation.width);
+          // Since bounds may differ in different platforms, we set a 2 px
+          // tolerance.
+          assertTrue(
+              Math.abs(
+                  overflowText.unclippedLocation.width -
+                  unclippedBounds.width) <= 2);
+        });
+
+    // The static text parent has 4 children, one for each word. The small box
+    // size causes the words to be laid out on different lines, creating four
+    // individual inlineTextBox nodes.
+    let hiddenParent = rootNode.find(
+        {role: 'staticText', attributes: {name: 'This text is hidden'}});
+    assertEq(hiddenParent.children.length, 4);
+    let hiddenChild = hiddenParent.children[0];
+    hiddenChild.unclippedBoundsForRange(
+        0, hiddenChild.name.length, (hiddenBounds) => {
+          assertTrue(
+              hiddenParent.location.width <
+              hiddenChild.unclippedLocation.width);
+          assertTrue(
+              hiddenParent.location.height <
+              hiddenChild.unclippedLocation.height);
+          // Since bounds may differ in different platforms, we set a 2 px
+          // tolerance.
+          assertTrue(
+              Math.abs(
+                  hiddenChild.unclippedLocation.width - hiddenBounds.width) <=
+              2);
+          assertEq(hiddenChild.unclippedLocation.height, hiddenBounds.height);
+        });
+
+    chrome.test.succeed();
   }
 ];
 

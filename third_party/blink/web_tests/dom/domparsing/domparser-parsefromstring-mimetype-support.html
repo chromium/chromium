@@ -91,7 +91,7 @@ function shouldSupport(content, mimeType)
 function shouldThrowException(content, mimeType)
 {
     var parser = new DOMParser();
-    assert_throws(new TypeError(), () => { parser.parseFromString(content, mimeType); });
+    assert_throws_js(TypeError, () => { parser.parseFromString(content, mimeType); });
 }
 
 test(() => {

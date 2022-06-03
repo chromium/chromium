@@ -3,8 +3,14 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="./resources/addressspace-test.js"></script>
 <script>
-    window.onload = function () {
-        addressSpaceTest("http://localhost:8000", "sharedworker", "local");
-        addressSpaceTest("http://127.0.0.1:8000", "sharedworker", "local");
-    };
+window.onload = function () {
+    addressSpaceTest("http://localhost:8000", "sharedworker", "local",
+                     /*callback=*/undefined, "classic");
+    addressSpaceTest("http://127.0.0.1:8000", "sharedworker", "local",
+                     /*callback=*/undefined, "classic");
+    addressSpaceTest("http://localhost:8000", "module-sharedworker", "local",
+                     /*callback=*/undefined, "module");
+    addressSpaceTest("http://127.0.0.1:8000", "module-sharedworker", "local",
+                     /*callback=*/undefined, "module");
+};
 </script>

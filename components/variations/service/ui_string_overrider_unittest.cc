@@ -7,7 +7,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace variations {
@@ -36,14 +35,15 @@ class UIStringOverriderTest : public ::testing::Test {
   UIStringOverriderTest()
       : provider_(kResourceHashes, kResourceIndices, kNumResources) {}
 
+  UIStringOverriderTest(const UIStringOverriderTest&) = delete;
+  UIStringOverriderTest& operator=(const UIStringOverriderTest&) = delete;
+
   int GetResourceIndex(uint32_t hash) {
     return provider_.GetResourceIndex(hash);
   }
 
  private:
   UIStringOverrider provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(UIStringOverriderTest);
 };
 
 TEST_F(UIStringOverriderTest, LookupNotFound) {

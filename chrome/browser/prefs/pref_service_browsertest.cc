@@ -13,6 +13,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window_state.h"
@@ -22,6 +23,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "ui/gfx/geometry/rect.h"
 
 typedef InProcessBrowserTest PreservedWindowPlacement;
@@ -32,7 +34,7 @@ IN_PROC_BROWSER_TEST_F(PreservedWindowPlacement, PRE_Test) {
 
 // Fails on Chrome OS as the browser thinks it is restarting after a crash, see
 // http://crbug.com/168044
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_Test DISABLED_Test
 #else
 #define MAYBE_Test Test
@@ -77,7 +79,7 @@ class PreferenceServiceTest : public InProcessBrowserTest {
   base::FilePath tmp_pref_file_;
 };
 
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
 // This test verifies that the window position from the prefs file is restored
 // when the app restores.  This doesn't really make sense on Linux, where
 // the window manager might fight with you over positioning.  However, we

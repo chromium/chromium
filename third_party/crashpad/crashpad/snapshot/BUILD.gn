@@ -19,15 +19,12 @@ if (crashpad_is_in_chromium) {
   import("//build/config/compiler/compiler.gni")
 }
 
-static_library("snapshot") {
+crashpad_static_library("snapshot") {
   sources = [
     "annotation_snapshot.cc",
     "annotation_snapshot.h",
     "capture_memory.cc",
     "capture_memory.h",
-    "cpu_architecture.h",
-    "cpu_context.cc",
-    "cpu_context.h",
     "crashpad_info_client_options.cc",
     "crashpad_info_client_options.h",
     "exception_snapshot.h",
@@ -108,8 +105,28 @@ static_library("snapshot") {
     ]
   }
 
+  if (crashpad_is_ios) {
+    sources += [
+      "ios/exception_snapshot_ios_intermediate_dump.cc",
+      "ios/exception_snapshot_ios_intermediate_dump.h",
+      "ios/intermediate_dump_reader_util.cc",
+      "ios/intermediate_dump_reader_util.h",
+      "ios/memory_snapshot_ios_intermediate_dump.cc",
+      "ios/memory_snapshot_ios_intermediate_dump.h",
+      "ios/module_snapshot_ios_intermediate_dump.cc",
+      "ios/module_snapshot_ios_intermediate_dump.h",
+      "ios/process_snapshot_ios_intermediate_dump.cc",
+      "ios/process_snapshot_ios_intermediate_dump.h",
+      "ios/system_snapshot_ios_intermediate_dump.cc",
+      "ios/system_snapshot_ios_intermediate_dump.h",
+      "ios/thread_snapshot_ios_intermediate_dump.cc",
+      "ios/thread_snapshot_ios_intermediate_dump.h",
+      "mac/cpu_context_mac.cc",
+      "mac/cpu_context_mac.h",
+    ]
+  }
+
   if (crashpad_is_linux || crashpad_is_android) {
-    set_sources_assignment_filter([])
     sources += [
       "linux/cpu_context_linux.cc",
       "linux/cpu_context_linux.h",
@@ -214,7 +231,8 @@ static_library("snapshot") {
     ]
   }
 
-  if (target_cpu == "x86" || target_cpu == "x64") {
+  if (current_cpu == "x86" || current_cpu == "x64" ||
+      (crashpad_is_mac && current_cpu == "mac_universal")) {
     sources += [
       "x86/cpuid_reader.cc",
       "x86/cpuid_reader.h",
@@ -223,31 +241,51 @@ static_library("snapshot") {
 
   public_configs = [ "..:crashpad_config" ]
 
+  public_deps = [ ":context" ]
+
   deps = [
-    "../client",
+    "$mini_chromium_source_parent:base",
+    "../client:common",
     "../compat",
-    "../third_party/mini_chromium:base",
+    "../minidump:format",
     "../util",
   ]
 
   if (crashpad_is_win) {
+    deps += [ "../client" ]
     cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
     libs = [ "powrprof.lib" ]
   }
 }
 
-if (crashpad_is_linux && use_fuzzing_engine) {
-  # Since crashpad uses its own crashpad_fuzzer_test GN template to wrap
-  # Chromium's fuzzer_test template, it's better to rely on |use_fuzzing_engine|
-  # and disable fuzz targets as they will not build successfully without it.
+# :context is the only part of snapshot that minidump may depend on.
+static_library("context") {
+  sources = [
+    "cpu_architecture.h",
+    "cpu_context.cc",
+    "cpu_context.h",
+  ]
+
+  public_configs = [ "..:crashpad_config" ]
+
+  deps = [
+    "$mini_chromium_source_parent:base",
+    "../util",
+  ]
+
+  if (crashpad_is_win) {
+    cflags = [ "/wd4201" ]  # nonstandard extension used : nameless struct/union
+  }
+}
+
+if (crashpad_is_linux) {
   crashpad_fuzzer_test("elf_image_reader_fuzzer") {
-    sources = [
-      "elf/elf_image_reader_fuzzer.cc",
-    ]
+    sources = [ "elf/elf_image_reader_fuzzer.cc" ]
 
     deps = [
       ":snapshot",
-      "../third_party/mini_chromium:base",
+      "$mini_chromium_source_parent:base",
+      "../util:util",
     ]
     seed_corpus = "elf/elf_image_reader_fuzzer_corpus"
   }
@@ -277,13 +315,11 @@ static_library("test_support") {
 
   public_configs = [ "..:crashpad_config" ]
 
-  public_deps = [
-    ":snapshot",
-  ]
+  public_deps = [ ":snapshot" ]
 
   deps = [
+    "$mini_chromium_source_parent:base",
     "../compat",
-    "../third_party/mini_chromium:base",
     "../util",
   ]
 
@@ -298,9 +334,7 @@ config("snapshot_test_link") {
     # There’s no way to make the link depend on this file. “inputs” doesn’t have
     # the intended effect in a config. https://crbug.com/781858,
     # https://crbug.com/796187.
-    inputs = [
-      "elf/test_exported_symbols.sym",
-    ]
+    inputs = [ "elf/test_exported_symbols.sym" ]
     ldflags = [ "-Wl,--dynamic-list," + rebase_path(inputs[0], root_build_dir) ]
   }
 }
@@ -326,16 +360,25 @@ source_set("snapshot_test") {
     ]
   }
 
+  if (crashpad_is_ios) {
+    sources += [
+      "ios/process_snapshot_ios_intermediate_dump_test.cc",
+      "mac/cpu_context_mac_test.cc",
+    ]
+  }
+
   if (crashpad_is_linux || crashpad_is_android) {
     sources += [
       "linux/debug_rendezvous_test.cc",
       "linux/exception_snapshot_linux_test.cc",
       "linux/process_reader_linux_test.cc",
       "linux/system_snapshot_linux_test.cc",
+      "linux/test_modules.cc",
+      "linux/test_modules.h",
       "sanitized/process_snapshot_sanitized_test.cc",
       "sanitized/sanitization_information_test.cc",
     ]
-  } else {
+  } else if (!crashpad_is_ios) {
     sources += [ "crashpad_info_client_options_test.cc" ]
   }
 
@@ -386,13 +429,26 @@ source_set("snapshot_test") {
 
   deps = [
     ":test_support",
-    "../client",
+    "$mini_chromium_source_parent:base",
+    "../client:common",
     "../compat",
+    "../minidump:format",
     "../test",
-    "../third_party/gtest:gtest",
-    "../third_party/mini_chromium:base",
+    "../third_party/googletest:googlemock",
+    "../third_party/googletest:googletest",
     "../util",
   ]
+
+  if (crashpad_is_win) {
+    deps += [ "../client" ]
+  }
+
+  if (crashpad_is_ios) {
+    deps += [
+      ":snapshot_test_ios_data",
+      "../minidump",
+    ]
+  }
 
   data_deps = [
     ":crashpad_snapshot_test_module",
@@ -401,7 +457,7 @@ source_set("snapshot_test") {
   ]
 
   if (crashpad_is_mac) {
-    libs = [ "OpenCL.framework" ]
+    frameworks = [ "OpenCL.framework" ]
 
     data_deps += [
       ":crashpad_snapshot_test_module_crashy_initializer",
@@ -432,22 +488,26 @@ source_set("snapshot_test") {
   }
 }
 
+bundle_data("snapshot_test_ios_data") {
+  testonly = true
+
+  sources = [ "ios/testdata/crash-1fa088dda0adb41459d063078a0f384a0bb8eefa" ]
+
+  outputs = [ "{{bundle_resources_dir}}/crashpad_test_data/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
 crashpad_loadable_module("crashpad_snapshot_test_module") {
   testonly = true
-  sources = [
-    "crashpad_info_client_options_test_module.cc",
-  ]
+  sources = [ "crashpad_info_client_options_test_module.cc" ]
   deps = [
+    "$mini_chromium_source_parent:base",
     "../client",
-    "../third_party/mini_chromium:base",
   ]
 }
 
 crashpad_loadable_module("crashpad_snapshot_test_module_large") {
   testonly = true
-  sources = [
-    "crashpad_info_size_test_module.cc",
-  ]
+  sources = [ "crashpad_info_size_test_module.cc" ]
 
   deps = []
   if (crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) {
@@ -456,14 +516,12 @@ crashpad_loadable_module("crashpad_snapshot_test_module_large") {
   }
 
   defines = [ "CRASHPAD_INFO_SIZE_TEST_MODULE_LARGE" ]
-  deps += [ "../third_party/mini_chromium:base" ]
+  deps += [ "$mini_chromium_source_parent:base" ]
 }
 
 crashpad_loadable_module("crashpad_snapshot_test_module_small") {
   testonly = true
-  sources = [
-    "crashpad_info_size_test_module.cc",
-  ]
+  sources = [ "crashpad_info_size_test_module.cc" ]
 
   deps = []
   if (crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) {
@@ -472,23 +530,21 @@ crashpad_loadable_module("crashpad_snapshot_test_module_small") {
   }
 
   defines = [ "CRASHPAD_INFO_SIZE_TEST_MODULE_SMALL" ]
-  deps += [ "../third_party/mini_chromium:base" ]
+  deps += [ "$mini_chromium_source_parent:base" ]
 }
 
 if ((crashpad_is_linux || crashpad_is_android || crashpad_is_fuchsia) &&
     target_cpu != "mipsel" && target_cpu != "mips64el") {
   crashpad_loadable_module("crashpad_snapshot_test_both_dt_hash_styles") {
     testonly = true
-    sources = [
-      "hash_types_test.cc",
-    ]
+    sources = [ "hash_types_test.cc" ]
 
     # This makes `ld` emit both .hash and .gnu.hash sections.
     ldflags = [ "-Wl,--hash-style=both" ]
   }
 }
 
-if (crashpad_is_mac) {
+if (crashpad_is_mac || crashpad_is_ios) {
   crashpad_loadable_module("crashpad_snapshot_test_module_crashy_initializer") {
     testonly = true
     sources = [
@@ -498,72 +554,60 @@ if (crashpad_is_mac) {
 
   crashpad_executable("crashpad_snapshot_test_no_op") {
     testonly = true
-    sources = [
-      "mac/mach_o_image_annotations_reader_test_no_op.cc",
-    ]
+    sources = [ "mac/mach_o_image_annotations_reader_test_no_op.cc" ]
   }
 }
 
 if (crashpad_is_win) {
   crashpad_executable("crashpad_snapshot_test_annotations") {
     testonly = true
-    sources = [
-      "win/crashpad_snapshot_test_annotations.cc",
-    ]
+    sources = [ "win/crashpad_snapshot_test_annotations.cc" ]
     deps = [
+      "$mini_chromium_source_parent:base",
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
     ]
   }
 
   crashpad_executable("crashpad_snapshot_test_crashing_child") {
     testonly = true
-    sources = [
-      "win/crashpad_snapshot_test_crashing_child.cc",
-    ]
+    sources = [ "win/crashpad_snapshot_test_crashing_child.cc" ]
     deps = [
+      "$mini_chromium_source_parent:base",
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
       "../util",
     ]
   }
 
   crashpad_executable("crashpad_snapshot_test_dump_without_crashing") {
     testonly = true
-    sources = [
-      "win/crashpad_snapshot_test_dump_without_crashing.cc",
-    ]
+    sources = [ "win/crashpad_snapshot_test_dump_without_crashing.cc" ]
     deps = [
+      "$mini_chromium_source_parent:base",
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
       "../util",
     ]
   }
 
   crashpad_executable("crashpad_snapshot_test_extra_memory_ranges") {
     testonly = true
-    sources = [
-      "win/crashpad_snapshot_test_extra_memory_ranges.cc",
-    ]
+    sources = [ "win/crashpad_snapshot_test_extra_memory_ranges.cc" ]
     deps = [
+      "$mini_chromium_source_parent:base",
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
     ]
   }
 
   crashpad_executable("crashpad_snapshot_test_image_reader") {
     testonly = true
-    sources = [
-      "win/crashpad_snapshot_test_image_reader.cc",
-    ]
+    sources = [ "win/crashpad_snapshot_test_image_reader.cc" ]
     deps = [
+      "$mini_chromium_source_parent:base",
       "../client",
       "../compat",
-      "../third_party/mini_chromium:base",
       "../util",
     ]
     if (crashpad_is_in_chromium) {
@@ -578,12 +622,10 @@ if (crashpad_is_win) {
 
   crashpad_loadable_module("crashpad_snapshot_test_image_reader_module") {
     testonly = true
-    sources = [
-      "win/crashpad_snapshot_test_image_reader_module.cc",
-    ]
+    sources = [ "win/crashpad_snapshot_test_image_reader_module.cc" ]
     deps = [
+      "$mini_chromium_source_parent:base",
       "../client",
-      "../third_party/mini_chromium:base",
     ]
     if (crashpad_is_in_chromium) {
       if (symbol_level == 0) {

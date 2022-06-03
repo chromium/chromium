@@ -1,0 +1,6 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View
+++++android.widget.TextView name='Content outside modal dialog. '
+++++android.widget.Button role_description='button' clickable focusable name='Button outside modal dialog.'
+++android.app.Dialog role_description='dialog' name='Modal dialog.'
+++++android.widget.Button role_description='button' clickable name='Button inside modal dialog.'

@@ -7,21 +7,19 @@
 #include <string>
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/task_environment.h"
 #include "components/invalidation/impl/fcm_invalidation_listener.h"
-#include "components/invalidation/impl/per_user_topic_registration_manager.h"
-#include "components/invalidation/impl/unacked_invalidation_set_test_util.h"
+#include "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
-#include "components/invalidation/public/object_id_invalidation_map.h"
 #include "components/invalidation/public/topic_invalidation_map.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace syncer {
+namespace invalidation {
 
 namespace {
 
@@ -51,7 +49,7 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
  public:
   explicit FakeDelegate(FCMInvalidationListener* listener)
       : state_(TRANSIENT_INVALIDATION_ERROR) {}
-  ~FakeDelegate() override {}
+  ~FakeDelegate() override = default;
 
   size_t GetInvalidationCount(const Topic& topic) const {
     auto it = invalidations_.find(topic);
@@ -112,8 +110,8 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
 
   void AcknowledgeAll(const Topic& topic) {
     List& list = invalidations_[topic];
-    for (auto it = list.begin(); it != list.end(); ++it) {
-      it->Acknowledge();
+    for (Invalidation& invalidation : list) {
+      invalidation.Acknowledge();
     }
   }
 
@@ -137,7 +135,7 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
   void OnInvalidate(const TopicInvalidationMap& invalidation_map) override {
     TopicSet topics = invalidation_map.GetTopics();
     for (const auto& topic : topics) {
-      const SingleObjectInvalidationSet& incoming =
+      const SingleTopicInvalidationSet& incoming =
           invalidation_map.ForTopic(topic);
       List& list = invalidations_[topic];
       list.insert(list.end(), incoming.begin(), incoming.end());
@@ -158,24 +156,23 @@ class FakeDelegate : public FCMInvalidationListener::Delegate {
   DropMap dropped_invalidations_map_;
 };
 
-class MockRegistrationManager : public PerUserTopicRegistrationManager {
+class MockSubscriptionManager : public PerUserTopicSubscriptionManager {
  public:
-  MockRegistrationManager()
-      : PerUserTopicRegistrationManager(
-            nullptr /* identity_provider */,
-            nullptr /* pref_service */,
-            nullptr /* loader_factory */,
-            "fake_sender_id",
-            false) {
+  MockSubscriptionManager()
+      : PerUserTopicSubscriptionManager(nullptr /* identity_provider */,
+                                        nullptr /* pref_service */,
+                                        nullptr /* loader_factory */,
+                                        "fake_sender_id",
+                                        false) {
     ON_CALL(*this, LookupSubscribedPublicTopicByPrivateTopic)
         .WillByDefault(testing::ReturnArg<0>());
   }
-  ~MockRegistrationManager() override {}
+  ~MockSubscriptionManager() override = default;
   MOCK_METHOD2(UpdateSubscribedTopics,
                void(const Topics& topics, const std::string& token));
   MOCK_METHOD0(Init, void());
   MOCK_CONST_METHOD1(LookupSubscribedPublicTopicByPrivateTopic,
-                     base::Optional<Topic>(const std::string& private_topic));
+                     absl::optional<Topic>(const std::string& private_topic));
 };
 
 class FCMInvalidationListenerTest : public testing::Test {
@@ -201,10 +198,10 @@ class FCMInvalidationListenerTest : public testing::Test {
   void TearDown() override {}
 
   void StartListener() {
-    std::unique_ptr<MockRegistrationManager> mock_registration_manager =
-        std::make_unique<MockRegistrationManager>();
-    registration_manager_ = mock_registration_manager.get();
-    listener_.Start(&fake_delegate_, std::move(mock_registration_manager));
+    auto mock_subscription_manager =
+        std::make_unique<MockSubscriptionManager>();
+    subscription_manager_ = mock_subscription_manager.get();
+    listener_.Start(&fake_delegate_, std::move(mock_subscription_manager));
   }
 
   size_t GetInvalidationCount(const Topic& topic) const {
@@ -273,7 +270,7 @@ class FCMInvalidationListenerTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   TestFCMSyncNetworkChannel* fcm_sync_network_channel_;
-  MockRegistrationManager* registration_manager_;
+  MockSubscriptionManager* subscription_manager_;
 
  protected:
   // Tests need to access these directly.
@@ -339,9 +336,8 @@ TEST_F(FCMInvalidationListenerTest, ManyInvalidations_NoDrop) {
   EXPECT_EQ(initial_version + kRepeatCount - 1, GetVersion(topic));
 }
 
-// Fire an invalidation for an unregistered object topic with a payload.  It
-// should still be processed, and both the payload and the version should be
-// updated.
+// Fire an invalidation for an unregistered topic with a payload. It should
+// still be processed, and both the payload and the version should be updated.
 TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Simple) {
   const Topic kUnregisteredId = "unregistered";
   const Topic& topic = kUnregisteredId;
@@ -363,7 +359,7 @@ TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Simple) {
   EXPECT_EQ(kPayload1, GetPayload(topic));
 }
 
-// Fire ten invalidations before an object registers.  Some invalidations will
+// Fire ten invalidations before an topics registers.  Some invalidations will
 // be dropped an replaced with an unknown version invalidation.
 TEST_F(FCMInvalidationListenerTest, InvalidateBeforeRegistration_Drop) {
   const int kRepeatCount =
@@ -434,4 +430,4 @@ TEST_F(FCMInvalidationListenerTest, ReEnableNotifications) {
 
 }  // namespace
 
-}  // namespace syncer
+}  // namespace invalidation

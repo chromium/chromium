@@ -1,0 +1,48 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "components/performance_manager/test_support/performance_manager_test_harness.h"
+
+#include "base/bind.h"
+#include "content/public/browser/web_contents.h"
+
+namespace performance_manager {
+
+PerformanceManagerTestHarness::PerformanceManagerTestHarness() {
+  // Ensure the helper is available at construction so that graph features and
+  // callbacks can be configured.
+  helper_ = std::make_unique<PerformanceManagerTestHarnessHelper>();
+}
+
+PerformanceManagerTestHarness::~PerformanceManagerTestHarness() = default;
+
+void PerformanceManagerTestHarness::SetUp() {
+  DCHECK(helper_);
+  Super::SetUp();
+  helper_->SetGraphImplCallback(base::BindOnce(
+      &PerformanceManagerTestHarness::OnGraphCreated, base::Unretained(this)));
+  helper_->SetUp();
+}
+
+void PerformanceManagerTestHarness::TearDown() {
+  if (helper_)
+    TearDownNow();
+  Super::TearDown();
+}
+
+std::unique_ptr<content::WebContents>
+PerformanceManagerTestHarness::CreateTestWebContents() {
+  DCHECK(helper_);
+  std::unique_ptr<content::WebContents> contents =
+      Super::CreateTestWebContents();
+  helper_->OnWebContentsCreated(contents.get());
+  return contents;
+}
+
+void PerformanceManagerTestHarness::TearDownNow() {
+  helper_->TearDown();
+  helper_.reset();
+}
+
+}  // namespace performance_manager

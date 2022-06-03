@@ -5,11 +5,14 @@
 #include "chrome/browser/ui/media_router/query_result_manager.h"
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
-#include "chrome/browser/media/router/media_sinks_observer.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
-#include "chrome/common/media_router/media_source.h"
+#include "components/media_router/browser/media_sinks_observer.h"
+#include "components/media_router/browser/test/mock_media_router.h"
+#include "components/media_router/common/media_route_provider_helper.h"
+#include "components/media_router/common/media_sink.h"
+#include "components/media_router/common/media_source.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -19,6 +22,7 @@ using testing::_;
 using testing::Eq;
 using testing::IsEmpty;
 using testing::Mock;
+using testing::NiceMock;
 using testing::Return;
 
 namespace media_router {
@@ -39,6 +43,9 @@ class QueryResultManagerTest : public ::testing::Test {
  public:
   QueryResultManagerTest()
       : mock_router_(), query_result_manager_(&mock_router_) {}
+
+  QueryResultManagerTest(const QueryResultManagerTest&) = delete;
+  QueryResultManagerTest& operator=(const QueryResultManagerTest&) = delete;
 
   void DiscoverSinks(MediaCastMode cast_mode, const MediaSource& source) {
     EXPECT_CALL(mock_router_, RegisterMediaSinksObserver(_))
@@ -67,12 +74,9 @@ class QueryResultManagerTest : public ::testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  MockMediaRouter mock_router_;
+  NiceMock<MockMediaRouter> mock_router_;
   QueryResultManager query_result_manager_;
   MockObserver mock_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(QueryResultManagerTest);
 };
 
 // Requires that the elements of |expected| are unique.
@@ -156,10 +160,10 @@ TEST_F(QueryResultManagerTest, StartStopSinksQuery) {
 }
 
 TEST_F(QueryResultManagerTest, MultipleQueries) {
-  MediaSink sink1("sinkId1", "Sink 1", SinkIconType::CAST);
-  MediaSink sink2("sinkId2", "Sink 2", SinkIconType::CAST);
-  MediaSink sink3("sinkId3", "Sink 3", SinkIconType::CAST);
-  MediaSink sink4("sinkId4", "Sink 4", SinkIconType::CAST);
+  MediaSink sink1{CreateCastSink("sinkId1", "Sink 1")};
+  MediaSink sink2{CreateCastSink("sinkId2", "Sink 2")};
+  MediaSink sink3{CreateCastSink("sinkId3", "Sink 3")};
+  MediaSink sink4{CreateCastSink("sinkId4", "Sink 4")};
   MediaSource presentation_source1 =
       MediaSource::ForPresentationUrl(GURL("http://bar.com"));
   MediaSource presentation_source2 =
@@ -256,10 +260,10 @@ TEST_F(QueryResultManagerTest, MultipleQueries) {
 }
 
 TEST_F(QueryResultManagerTest, MultipleUrls) {
-  const MediaSink sink1("sinkId1", "Sink 1", SinkIconType::CAST);
-  const MediaSink sink2("sinkId2", "Sink 2", SinkIconType::CAST);
-  const MediaSink sink3("sinkId3", "Sink 3", SinkIconType::CAST);
-  const MediaSink sink4("sinkId4", "Sink 4", SinkIconType::CAST);
+  MediaSink sink1{CreateCastSink("sinkId1", "Sink 1")};
+  MediaSink sink2{CreateCastSink("sinkId2", "Sink 2")};
+  MediaSink sink3{CreateCastSink("sinkId3", "Sink 3")};
+  MediaSink sink4{CreateCastSink("sinkId4", "Sink 4")};
   const MediaSource source_a(
       MediaSource::ForPresentationUrl(GURL("http://urlA.com")));
   const MediaSource source_b(

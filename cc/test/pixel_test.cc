@@ -8,28 +8,30 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/test/scoped_feature_list.h"
+#include "base/test/test_switches.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "cc/base/switches.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/test/fake_output_surface_client.h"
 #include "cc/test/pixel_test_output_surface.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/viz/client/client_resource_provider.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_result.h"
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/resources/shared_bitmap.h"
-#include "components/viz/service/display/display_resource_provider.h"
+#include "components/viz/service/display/display_resource_provider_gl.h"
+#include "components/viz/service/display/display_resource_provider_skia.h"
+#include "components/viz/service/display/display_resource_provider_software.h"
 #include "components/viz/service/display/gl_renderer.h"
 #include "components/viz/service/display/output_surface_client.h"
 #include "components/viz/service/display/software_output_device.h"
@@ -45,6 +47,7 @@
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/service_utils.h"
 #include "gpu/config/gpu_feature_type.h"
+#include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/ipc/gpu_in_process_thread_service.h"
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
@@ -53,18 +56,43 @@
 
 namespace cc {
 
-PixelTest::PixelTest()
+PixelTest::PixelTest(GraphicsBackend backend)
     : device_viewport_size_(gfx::Size(200, 200)),
       disable_picture_quad_image_filtering_(false),
       output_surface_client_(std::make_unique<FakeOutputSurfaceClient>()) {
   // Keep texture sizes exactly matching the bounds of the RenderPass to avoid
   // floating point badness in texcoords.
   renderer_settings_.dont_round_texture_sizes_for_pixel_tests = true;
+
+  // Check if the graphics backend needs to initialize Vulkan.
+  bool init_vulkan = false;
+  if (backend == kSkiaVulkan) {
+    scoped_feature_list_.InitAndEnableFeature(features::kVulkan);
+    init_vulkan = true;
+  } else if (backend == kSkiaDawn) {
+    scoped_feature_list_.InitAndEnableFeature(features::kSkiaDawn);
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+    init_vulkan = true;
+#elif defined(OS_WIN)
+    // TODO(rivr): Initialize D3D12 for Windows.
+#else
+    NOTREACHED();
+#endif
+  }
+
+  if (init_vulkan) {
+    auto* command_line = base::CommandLine::ForCurrentProcess();
+    bool use_gpu = command_line->HasSwitch(::switches::kUseGpuInTests);
+    command_line->AppendSwitchASCII(
+        ::switches::kUseVulkan,
+        use_gpu ? ::switches::kVulkanImplementationNameNative
+                : ::switches::kVulkanImplementationNameSwiftshader);
+  }
 }
 
 PixelTest::~PixelTest() = default;
 
-bool PixelTest::RunPixelTest(viz::RenderPassList* pass_list,
+bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
                              const base::FilePath& ref_file,
                              const PixelComparator& comparator) {
   return RunPixelTestWithReadbackTarget(pass_list, pass_list->back().get(),
@@ -72,8 +100,8 @@ bool PixelTest::RunPixelTest(viz::RenderPassList* pass_list,
 }
 
 bool PixelTest::RunPixelTestWithReadbackTarget(
-    viz::RenderPassList* pass_list,
-    viz::RenderPass* target,
+    viz::AggregatedRenderPassList* pass_list,
+    viz::AggregatedRenderPass* target,
     const base::FilePath& ref_file,
     const PixelComparator& comparator) {
   return RunPixelTestWithReadbackTargetAndArea(
@@ -81,8 +109,8 @@ bool PixelTest::RunPixelTestWithReadbackTarget(
 }
 
 bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
-    viz::RenderPassList* pass_list,
-    viz::RenderPass* target,
+    viz::AggregatedRenderPassList* pass_list,
+    viz::AggregatedRenderPass* target,
     const base::FilePath& ref_file,
     const PixelComparator& comparator,
     const gfx::Rect* copy_rect) {
@@ -90,7 +118,8 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
 
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
                          run_loop.QuitClosure()));
   if (copy_rect)
@@ -104,7 +133,13 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
 
   renderer_->DecideRenderPassAllocationsForFrame(*pass_list);
   float device_scale_factor = 1.f;
-  renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_);
+  renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
+                       display_color_spaces_,
+                       std::move(surface_damage_rect_list_));
+
+  // Call SwapBuffersSkipped(), so the renderer can have a chance to release
+  // resources.
+  renderer_->SwapBuffersSkipped();
 
   // Wait for the readback to complete.
   if (output_surface_->context_provider())
@@ -114,15 +149,16 @@ bool PixelTest::RunPixelTestWithReadbackTargetAndArea(
   return PixelsMatchReference(ref_file, comparator);
 }
 
-bool PixelTest::RunPixelTest(viz::RenderPassList* pass_list,
+bool PixelTest::RunPixelTest(viz::AggregatedRenderPassList* pass_list,
                              std::vector<SkColor>* ref_pixels,
                              const PixelComparator& comparator) {
   base::RunLoop run_loop;
-  viz::RenderPass* target = pass_list->back().get();
+  auto* target = pass_list->back().get();
 
   std::unique_ptr<viz::CopyOutputRequest> request =
       std::make_unique<viz::CopyOutputRequest>(
-          viz::CopyOutputRequest::ResultFormat::RGBA_BITMAP,
+          viz::CopyOutputRequest::ResultFormat::RGBA,
+          viz::CopyOutputRequest::ResultDestination::kSystemMemory,
           base::BindOnce(&PixelTest::ReadbackResult, base::Unretained(this),
                          run_loop.QuitClosure()));
   target->copy_requests.push_back(std::move(request));
@@ -134,7 +170,13 @@ bool PixelTest::RunPixelTest(viz::RenderPassList* pass_list,
 
   renderer_->DecideRenderPassAllocationsForFrame(*pass_list);
   float device_scale_factor = 1.f;
-  renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_);
+  renderer_->DrawFrame(pass_list, device_scale_factor, device_viewport_size_,
+                       display_color_spaces_,
+                       std::move(surface_damage_rect_list_));
+
+  // Call SwapBuffersSkipped(), so the renderer can have a chance to release
+  // resources.
+  renderer_->SwapBuffersSkipped();
 
   // Wait for the readback to complete.
   if (output_surface_->context_provider())
@@ -163,8 +205,12 @@ bool PixelTest::RunPixelTest(viz::RenderPassList* pass_list,
 void PixelTest::ReadbackResult(base::OnceClosure quit_run_loop,
                                std::unique_ptr<viz::CopyOutputResult> result) {
   ASSERT_FALSE(result->IsEmpty());
-  EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA_BITMAP);
-  result_bitmap_ = std::make_unique<SkBitmap>(result->AsSkBitmap());
+  EXPECT_EQ(result->format(), viz::CopyOutputResult::Format::RGBA);
+  EXPECT_EQ(result->destination(),
+            viz::CopyOutputResult::Destination::kSystemMemory);
+  auto scoped_sk_bitmap = result->ScopedAccessSkBitmap();
+  result_bitmap_ =
+      std::make_unique<SkBitmap>(scoped_sk_bitmap.GetOutScopedBitmap());
   EXPECT_TRUE(result_bitmap_->readyToDraw());
   std::move(quit_run_loop).Run();
 }
@@ -180,7 +226,7 @@ bool PixelTest::PixelsMatchReference(const base::FilePath& ref_file,
     return false;
 
   base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  if (cmd->HasSwitch(switches::kCCRebaselinePixeltests))
+  if (cmd->HasSwitch(switches::kRebaselinePixelTests))
     return WritePNGFile(*result_bitmap_, test_data_dir.Append(ref_file), true);
 
   return MatchesPNGFile(
@@ -210,82 +256,73 @@ viz::ResourceId PixelTest::AllocateAndFillSoftwareResource(
   return child_resource_provider_->ImportResource(
       viz::TransferableResource::MakeSoftware(shared_bitmap_id, size,
                                               viz::RGBA_8888),
-      viz::SingleReleaseCallback::Create(base::DoNothing()));
+      base::DoNothing());
 }
 
-void PixelTest::SetUpGLWithoutRenderer(bool flipped_output_surface) {
+void PixelTest::SetUpGLWithoutRenderer(
+    gfx::SurfaceOrigin output_surface_origin) {
   enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
 
   auto context_provider =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+          /*enable_gles2_interface=*/true, /*support_locking=*/false,
+          viz::RasterInterfaceType::None);
   gpu::ContextResult result = context_provider->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   output_surface_ = std::make_unique<PixelTestOutputSurface>(
-      std::move(context_provider), flipped_output_surface);
+      std::move(context_provider), output_surface_origin);
   output_surface_->BindToClient(output_surface_client_.get());
-
-  shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
-  resource_provider_ = std::make_unique<viz::DisplayResourceProvider>(
-      viz::DisplayResourceProvider::kGpu, output_surface_->context_provider(),
-      shared_bitmap_manager_.get());
 
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+          /*enable_gles2_interface=*/true, /*support_locking=*/false,
+          viz::RasterInterfaceType::None);
   result = child_context_provider_->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 }
 
-void PixelTest::SetUpGLRenderer(bool flipped_output_surface) {
-  SetUpGLWithoutRenderer(flipped_output_surface);
+void PixelTest::SetUpGLRenderer(gfx::SurfaceOrigin output_surface_origin) {
+  SetUpGLWithoutRenderer(output_surface_origin);
+  auto resource_provider = std::make_unique<viz::DisplayResourceProviderGL>(
+      output_surface_->context_provider());
   renderer_ = std::make_unique<viz::GLRenderer>(
-      &renderer_settings_, output_surface_.get(), resource_provider_.get(),
-      base::ThreadTaskRunnerHandle::Get());
+      &renderer_settings_, &debug_settings_, output_surface_.get(),
+      resource_provider.get(), nullptr, base::ThreadTaskRunnerHandle::Get());
+  resource_provider_ = std::move(resource_provider);
   renderer_->Initialize();
   renderer_->SetVisible(true);
 }
 
-void PixelTest::SetUpSkiaRenderer(bool flipped_output_surface,
-                                  bool enable_vulkan) {
+void PixelTest::SetUpSkiaRenderer(gfx::SurfaceOrigin output_surface_origin) {
   enable_pixel_output_ = std::make_unique<gl::DisableNullDrawGLBindings>();
-  if (enable_vulkan) {
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    bool use_gpu = command_line->HasSwitch(::switches::kUseGpuInTests);
-    command_line->AppendSwitchASCII(
-        ::switches::kUseVulkan,
-        use_gpu ? ::switches::kVulkanImplementationNameNative
-                : ::switches::kVulkanImplementationNameSwiftshader);
-    command_line->AppendSwitchASCII(
-        ::switches::kGrContextType, ::switches::kGrContextTypeVulkan);
-  }
   // Set up the GPU service.
   gpu_service_holder_ = viz::TestGpuServiceHolder::GetInstance();
 
-  // Set up the skia renderer.
+  auto skia_deps = std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
+      gpu_service(), gpu::kNullSurfaceHandle);
+  display_controller_ =
+      std::make_unique<viz::DisplayCompositorMemoryAndTaskController>(
+          std::move(skia_deps));
   output_surface_ = viz::SkiaOutputSurfaceImpl::Create(
-      std::make_unique<viz::SkiaOutputSurfaceDependencyImpl>(
-          gpu_service(), gpu::kNullSurfaceHandle),
-      renderer_settings_);
+      display_controller_.get(), renderer_settings_, &debug_settings_);
   output_surface_->BindToClient(output_surface_client_.get());
   static_cast<viz::SkiaOutputSurfaceImpl*>(output_surface_.get())
-      ->SetCapabilitiesForTesting(flipped_output_surface);
-  resource_provider_ = std::make_unique<viz::DisplayResourceProvider>(
-      viz::DisplayResourceProvider::kGpu,
-      /*compositor_context_provider=*/nullptr,
-      /*shared_bitmap_manager=*/nullptr);
+      ->SetCapabilitiesForTesting(output_surface_origin);
+  auto resource_provider = std::make_unique<viz::DisplayResourceProviderSkia>();
   renderer_ = std::make_unique<viz::SkiaRenderer>(
-      &renderer_settings_, output_surface_.get(), resource_provider_.get(),
-      static_cast<viz::SkiaOutputSurface*>(output_surface_.get()),
-      viz::SkiaRenderer::DrawMode::DDL);
+      &renderer_settings_, &debug_settings_, output_surface_.get(),
+      resource_provider.get(), nullptr,
+      static_cast<viz::SkiaOutputSurface*>(output_surface_.get()));
+  resource_provider_ = std::move(resource_provider);
   renderer_->Initialize();
   renderer_->SetVisible(true);
 
   // Set up the client side context provider, etc
   child_context_provider_ =
       base::MakeRefCounted<viz::TestInProcessContextProvider>(
-          /*enable_oop_rasterization=*/false, /*support_locking=*/false);
+          /*enable_gles2_interface=*/true, /*support_locking=*/false,
+          viz::RasterInterfaceType::None);
   gpu::ContextResult result = child_context_provider_->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
@@ -301,7 +338,6 @@ void PixelTest::TearDown() {
   renderer_.reset();
   resource_provider_.reset();
   output_surface_.reset();
-  scoped_feature_list_.reset();
 }
 
 void PixelTest::EnableExternalStencilTest() {
@@ -310,17 +346,19 @@ void PixelTest::EnableExternalStencilTest() {
 }
 
 void PixelTest::SetUpSoftwareRenderer() {
-  output_surface_.reset(new PixelTestOutputSurface(
-      std::make_unique<viz::SoftwareOutputDevice>()));
+  output_surface_ = std::make_unique<PixelTestOutputSurface>(
+      std::make_unique<viz::SoftwareOutputDevice>());
   output_surface_->BindToClient(output_surface_client_.get());
   shared_bitmap_manager_ = std::make_unique<viz::TestSharedBitmapManager>();
-  resource_provider_ = std::make_unique<viz::DisplayResourceProvider>(
-      viz::DisplayResourceProvider::kSoftware, nullptr,
-      shared_bitmap_manager_.get());
+  auto resource_provider =
+      std::make_unique<viz::DisplayResourceProviderSoftware>(
+          shared_bitmap_manager_.get());
   child_resource_provider_ = std::make_unique<viz::ClientResourceProvider>();
 
   auto renderer = std::make_unique<viz::SoftwareRenderer>(
-      &renderer_settings_, output_surface_.get(), resource_provider_.get());
+      &renderer_settings_, &debug_settings_, output_surface_.get(),
+      resource_provider.get(), nullptr);
+  resource_provider_ = std::move(resource_provider);
   software_renderer_ = renderer.get();
   renderer_ = std::move(renderer);
   renderer_->Initialize();

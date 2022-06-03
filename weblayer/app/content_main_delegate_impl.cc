@@ -8,19 +8,33 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
 #include "base/cpu.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/path_service.h"
+#include "base/strings/string_split.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/content_capture/common/content_capture_features.h"
+#include "components/startup_metric_utils/browser/startup_metric_utils.h"
+#include "components/translate/core/common/translate_util.h"
+#include "components/variations/variations_ids_provider.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/common/main_function_params.h"
 #include "content/public/common/url_constants.h"
 #include "media/base/media_switches.h"
+#include "services/network/public/cpp/features.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/platform/web_runtime_features.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_paths.h"
+#include "weblayer/browser/background_fetch/background_fetch_delegate_factory.h"
 #include "weblayer/browser/content_browser_client_impl.h"
 #include "weblayer/common/content_client_impl.h"
 #include "weblayer/common/weblayer_paths.h"
@@ -30,13 +44,19 @@
 
 #if defined(OS_ANDROID)
 #include "base/android/apk_assets.h"
+#include "base/android/build_info.h"
 #include "base/android/bundle_utils.h"
+#include "base/android/java_exception_reporter.h"
 #include "base/android/locale_utils.h"
 #include "base/i18n/rtl.h"
 #include "base/posix/global_descriptors.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/viz/common/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "ui/base/resource/resource_bundle_android.h"
 #include "ui/base/ui_base_switches.h"
+#include "weblayer/browser/android/application_info_helper.h"
+#include "weblayer/browser/android/exception_filter.h"
 #include "weblayer/browser/android_descriptors.h"
 #include "weblayer/common/crash_reporter/crash_keys.h"
 #include "weblayer/common/crash_reporter/crash_reporter_client.h"
@@ -66,42 +86,70 @@ void InitLogging(MainParams* params) {
                        true /* Timestamp */, false /* Tick count */);
 }
 
-// Disables each feature in |features_to_disable| unless it is already set in
-// the command line.
-void DisableFeaturesIfNotSet(
+// Enables each feature in |features_to_enable| unless it is already set in the
+// command line, and similarly disables each feature in |features_to_disable|
+// unless it is already set in the command line.
+void ConfigureFeaturesIfNotSet(
+    const std::vector<base::Feature>& features_to_enable,
     const std::vector<base::Feature>& features_to_disable) {
   auto* cl = base::CommandLine::ForCurrentProcess();
   std::vector<std::string> enabled_features;
+  base::flat_set<std::string> feature_names_enabled_via_command_line;
   std::string enabled_features_str =
-      cl->GetSwitchValueASCII(switches::kEnableFeatures);
+      cl->GetSwitchValueASCII(::switches::kEnableFeatures);
   for (const auto& f :
        base::FeatureList::SplitFeatureListString(enabled_features_str)) {
     enabled_features.emplace_back(f);
+
+    // "<" is used as separator for field trial/groups.
+    std::vector<base::StringPiece> parts = base::SplitStringPiece(
+        f, "<", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+    // Split with supplied params should always return at least one entry.
+    DCHECK(!parts.empty());
+    if (parts[0].length() > 0)
+      feature_names_enabled_via_command_line.insert(std::string(parts[0]));
   }
 
   std::vector<std::string> disabled_features;
   std::string disabled_features_str =
-      cl->GetSwitchValueASCII(switches::kDisableFeatures);
+      cl->GetSwitchValueASCII(::switches::kDisableFeatures);
   for (const auto& f :
        base::FeatureList::SplitFeatureListString(disabled_features_str)) {
     disabled_features.emplace_back(f);
   }
 
+  for (const auto& feature : features_to_enable) {
+    if (!base::Contains(disabled_features, feature.name) &&
+        !base::Contains(feature_names_enabled_via_command_line, feature.name)) {
+      enabled_features.push_back(feature.name);
+    }
+  }
+  cl->AppendSwitchASCII(::switches::kEnableFeatures,
+                        base::JoinString(enabled_features, ","));
+
   for (const auto& feature : features_to_disable) {
     if (!base::Contains(disabled_features, feature.name) &&
-        !base::Contains(enabled_features, feature.name)) {
+        !base::Contains(feature_names_enabled_via_command_line, feature.name)) {
       disabled_features.push_back(feature.name);
     }
   }
-
-  cl->AppendSwitchASCII(switches::kDisableFeatures,
+  cl->AppendSwitchASCII(::switches::kDisableFeatures,
                         base::JoinString(disabled_features, ","));
 }
 
 }  // namespace
 
 ContentMainDelegateImpl::ContentMainDelegateImpl(MainParams params)
-    : params_(std::move(params)) {}
+    : params_(std::move(params)) {
+#if !defined(OS_ANDROID)
+  // On non-Android, the application start time is recorded in this constructor,
+  // which runs early during application lifetime. On Android, the application
+  // start time is sampled when the Java code is entered, and it is retrieved
+  // from C++ after initializing the JNI (see
+  // BrowserMainPartsImpl::PreMainMessageLoopRun()).
+  startup_metric_utils::RecordApplicationStartTime(base::TimeTicks::Now());
+#endif
+}
 
 ContentMainDelegateImpl::~ContentMainDelegateImpl() = default;
 
@@ -114,22 +162,65 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   // sites to do feature detection, and prevents crashes in some not fully
   // implemented features.
   base::CommandLine* cl = base::CommandLine::ForCurrentProcess();
-  cl->AppendSwitch(switches::kDisableNotifications);
-  cl->AppendSwitch(switches::kDisableSpeechSynthesisAPI);
-  cl->AppendSwitch(switches::kDisableSpeechAPI);
-  cl->AppendSwitch(switches::kDisablePermissionsAPI);
-  cl->AppendSwitch(switches::kDisablePresentationAPI);
-  cl->AppendSwitch(switches::kDisableRemotePlaybackAPI);
+  // TODO(crbug.com/1025610): make notifications work with WebLayer.
+  // This also turns off Push messaging.
+  cl->AppendSwitch(::switches::kDisableNotifications);
+
+  std::vector<base::Feature> enabled_features = {
 #if defined(OS_ANDROID)
-  cl->AppendSwitch(switches::kDisableMediaSessionAPI);
+    // Overlay promotion requires some guarantees we don't have on WebLayer
+    // (e.g. ensuring fullscreen, no movement of the parent view). Given that
+    // we're unsure about the benefits when used embedded in a parent app, we
+    // will only promote to overlays if needed for secure videos.
+    media::kUseAndroidOverlayForSecureOnly,
 #endif
-  DisableFeaturesIfNotSet({
-    ::features::kWebPayments, ::features::kWebAuth, ::features::kSmsReceiver,
-        ::features::kWebXr,
+  };
+
+  std::vector<base::Feature> disabled_features = {
+    // TODO(crbug.com/1091212): make Notification triggers work with
+    // WebLayer.
+    ::features::kNotificationTriggers,
+    // TODO(crbug.com/1091211): Support PeriodicBackgroundSync on WebLayer.
+    ::features::kPeriodicBackgroundSync,
+    // TODO(crbug.com/1174856): Support Portals.
+    blink::features::kPortals,
+    // TODO(crbug.com/1144912): Support BackForwardCache on WebLayer.
+    ::features::kBackForwardCache,
+    // TODO(crbug.com/1247836): Enable TFLite/Optimization Guide on WebLayer.
+    translate::kTFLiteLanguageDetectionEnabled,
+
 #if defined(OS_ANDROID)
-        media::kPictureInPictureAPI,
+    // TODO(crbug.com/1131016): Support Picture in Picture API on WebLayer.
+    media::kPictureInPictureAPI,
+
+    ::features::kDisableDeJelly,
+    ::features::kDynamicColorGamut,
+#else
+    // WebOTP is supported only on Android in WebLayer.
+    ::features::kWebOTP,
 #endif
-  });
+  };
+
+#if defined(OS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+      base::android::SDK_VERSION_OREO) {
+    enabled_features.push_back(
+        autofill::features::kAutofillExtractAllDatalists);
+    enabled_features.push_back(
+        autofill::features::kAutofillSkipComparingInferredLabels);
+  }
+
+  if (GetApplicationMetadataAsBoolean(
+          "org.chromium.weblayer.ENABLE_LOGGING_OF_JS_CONSOLE_MESSAGES",
+          /*default_value=*/false)) {
+    enabled_features.push_back(features::kLogJsConsoleMessages);
+  }
+#endif
+
+  ConfigureFeaturesIfNotSet(enabled_features, disabled_features);
+
+  // TODO(crbug.com/1097105): Support Web GPU on WebLayer.
+  blink::WebRuntimeFeatures::EnableWebGPU(false);
 
 #if defined(OS_ANDROID)
   content::Compositor::Initialize();
@@ -142,8 +233,30 @@ bool ContentMainDelegateImpl::BasicStartupComplete(int* exit_code) {
   return false;
 }
 
+bool ContentMainDelegateImpl::ShouldCreateFeatureList() {
+#if defined(OS_ANDROID)
+  // On android WebLayer is in charge of creating its own FeatureList.
+  return false;
+#else
+  // TODO(weblayer-dev): Support feature lists on desktop.
+  return true;
+#endif
+}
+
+variations::VariationsIdsProvider*
+ContentMainDelegateImpl::CreateVariationsIdsProvider() {
+  // As the embedder supplies the set of ids, the signed-in state does not make
+  // sense and is ignored.
+  return variations::VariationsIdsProvider::Create(
+      variations::VariationsIdsProvider::Mode::kIgnoreSignedInState);
+}
+
 void ContentMainDelegateImpl::PreSandboxStartup() {
-#if defined(ARCH_CPU_ARM_FAMILY) && (defined(OS_ANDROID) || defined(OS_LINUX))
+// TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
+// complete.
+#if defined(ARCH_CPU_ARM_FAMILY) &&              \
+    (defined(OS_ANDROID) || defined(OS_LINUX) || \
+     BUILDFLAG(IS_CHROMEOS_LACROS))
   // Create an instance of the CPU class to parse /proc/cpuinfo and cache
   // cpu_brand info.
   base::CPU cpu_info;
@@ -151,8 +264,8 @@ void ContentMainDelegateImpl::PreSandboxStartup() {
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  bool is_browser_process =
-      command_line.GetSwitchValueASCII(switches::kProcessType).empty();
+  const bool is_browser_process =
+      command_line.GetSwitchValueASCII(::switches::kProcessType).empty();
   if (is_browser_process &&
       command_line.HasSwitch(switches::kWebLayerUserDataDir)) {
     base::FilePath path =
@@ -166,29 +279,38 @@ void ContentMainDelegateImpl::PreSandboxStartup() {
       LOG(ERROR) << "Unable to create data-path directory: " << path.value();
     }
     CHECK(base::PathService::OverrideAndCreateIfNeeded(
-        weblayer::DIR_USER_DATA, path, true /* is_absolute */,
-        false /* create */));
+        DIR_USER_DATA, path, true /* is_absolute */, false /* create */));
   }
 
   InitializeResourceBundle();
 
 #if defined(OS_ANDROID)
-  EnableCrashReporter(command_line.GetSwitchValueASCII(switches::kProcessType));
+  EnableCrashReporter(
+      command_line.GetSwitchValueASCII(::switches::kProcessType));
+  if (is_browser_process) {
+    base::android::SetJavaExceptionFilter(
+        base::BindRepeating(&WebLayerJavaExceptionFilter));
+  }
   SetWebLayerCrashKeys();
 #endif
 }
 
-int ContentMainDelegateImpl::RunProcess(
+void ContentMainDelegateImpl::PostEarlyInitialization(bool is_running_tests) {
+  browser_client_->CreateFeatureListAndFieldTrials();
+}
+
+absl::variant<int, content::MainFunctionParams>
+ContentMainDelegateImpl::RunProcess(
     const std::string& process_type,
-    const content::MainFunctionParams& main_function_params) {
+    content::MainFunctionParams main_function_params) {
   // For non-browser process, return and have the caller run the main loop.
   if (!process_type.empty())
-    return -1;
+    return std::move(main_function_params);
 
 #if !defined(OS_ANDROID)
-  // On non-Android, we can return -1 and have the caller run BrowserMain()
-  // normally.
-  return -1;
+  // On non-Android, we can return |main_function_params| back and have the
+  // caller run BrowserMain() normally.
+  return std::move(main_function_params);
 #else
   // On Android, we defer to the system message loop when the stack unwinds.
   // So here we only create (and leak) a BrowserMainRunner. The shutdown
@@ -198,7 +320,8 @@ int ContentMainDelegateImpl::RunProcess(
   // In browser tests, the |main_function_params| contains a |ui_task| which
   // will execute the testing. The task will be executed synchronously inside
   // Initialize() so we don't depend on the BrowserMainRunner being Run().
-  int initialize_exit_code = main_runner->Initialize(main_function_params);
+  int initialize_exit_code =
+      main_runner->Initialize(std::move(main_function_params));
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in MainDelegate";
   ignore_result(main_runner.release());
@@ -215,7 +338,7 @@ void ContentMainDelegateImpl::InitializeResourceBundle() {
       *base::CommandLine::ForCurrentProcess();
 
   bool is_browser_process =
-      command_line.GetSwitchValueASCII(switches::kProcessType).empty();
+      command_line.GetSwitchValueASCII(::switches::kProcessType).empty();
   if (is_browser_process) {
     // If we're not being loaded from a bundle, locales will be loaded from the
     // webview stored-locales directory. Otherwise, we are in Monochrome, and
@@ -254,7 +377,7 @@ void ContentMainDelegateImpl::InitializeResourceBundle() {
     }
   } else {
     base::i18n::SetICUDefaultLocale(
-        command_line.GetSwitchValueASCII(switches::kLang));
+        command_line.GetSwitchValueASCII(::switches::kLang));
 
     auto* global_descriptors = base::GlobalDescriptors::GetInstance();
     int pak_fd = global_descriptors->Get(kWebLayerLocalePakDescriptor);
@@ -270,9 +393,9 @@ void ContentMainDelegateImpl::InitializeResourceBundle() {
         .LoadSecondaryLocaleDataWithPakFileRegion(base::File(pak_fd),
                                                   pak_region);
 
-    std::vector<std::pair<int, ui::ScaleFactor>> extra_paks = {
-        {kWebLayerMainPakDescriptor, ui::SCALE_FACTOR_NONE},
-        {kWebLayer100PercentPakDescriptor, ui::SCALE_FACTOR_100P}};
+    std::vector<std::pair<int, ui::ResourceScaleFactor>> extra_paks = {
+        {kWebLayerMainPakDescriptor, ui::kScaleFactorNone},
+        {kWebLayer100PercentPakDescriptor, ui::k100Percent}};
 
     for (const auto& pak_info : extra_paks) {
       pak_fd = global_descriptors->Get(pak_info.first);

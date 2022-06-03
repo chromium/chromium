@@ -34,6 +34,10 @@ namespace ppapi {
 // tracker, etc.
 class PPAPI_SHARED_EXPORT ProxyLock {
  public:
+  ProxyLock() = delete;
+  ProxyLock(const ProxyLock&) = delete;
+  ProxyLock& operator=(const ProxyLock&) = delete;
+
   // Return the global ProxyLock. Normally, you should not access this
   // directly but instead use ProxyAutoLock or ProxyAutoUnlock. But sometimes
   // you need access to the ProxyLock, for example to create a condition
@@ -73,8 +77,6 @@ class PPAPI_SHARED_EXPORT ProxyLock {
   // startup, before other threads that may access the ProxyLock have had a
   // chance to run.
   static void DisableLocking();
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ProxyLock);
 };
 
 // A simple RAII class for locking the PPAPI proxy lock on entry and releasing
@@ -83,10 +85,11 @@ class PPAPI_SHARED_EXPORT ProxyLock {
 class ProxyAutoLock {
  public:
   ProxyAutoLock() { ProxyLock::Acquire(); }
-  ~ProxyAutoLock() { ProxyLock::Release(); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyAutoLock);
+  ProxyAutoLock(const ProxyAutoLock&) = delete;
+  ProxyAutoLock& operator=(const ProxyAutoLock&) = delete;
+
+  ~ProxyAutoLock() { ProxyLock::Release(); }
 };
 
 // The inverse of the above; unlock on construction, lock on destruction. This
@@ -96,10 +99,11 @@ class ProxyAutoLock {
 class ProxyAutoUnlock {
  public:
   ProxyAutoUnlock() { ProxyLock::Release(); }
-  ~ProxyAutoUnlock() { ProxyLock::Acquire(); }
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyAutoUnlock);
+  ProxyAutoUnlock(const ProxyAutoUnlock&) = delete;
+  ProxyAutoUnlock& operator=(const ProxyAutoUnlock&) = delete;
+
+  ~ProxyAutoUnlock() { ProxyLock::Acquire(); }
 };
 
 // A set of function template overloads for invoking a function pointer while
@@ -164,7 +168,7 @@ ReturnType CallWhileUnlocked(ReturnType (*function)(A1, A2, A3, A4, A5),
   ProxyAutoUnlock unlock;
   return function(p1, p2, p3, p4, p5);
 }
-void PPAPI_SHARED_EXPORT CallWhileUnlocked(const base::Closure& closure);
+void PPAPI_SHARED_EXPORT CallWhileUnlocked(base::OnceClosure closure);
 
 namespace internal {
 
@@ -178,9 +182,9 @@ class RunWhileLockedHelper;
 template <>
 class RunWhileLockedHelper<void()> {
  public:
-  typedef base::Callback<void()> CallbackType;
-  explicit RunWhileLockedHelper(const CallbackType& callback)
-      : callback_(new CallbackType(callback)) {
+  typedef base::OnceCallback<void()> CallbackType;
+  explicit RunWhileLockedHelper(CallbackType callback)
+      : callback_(std::move(callback)) {
     // CallWhileLocked and destruction might happen on a different thread from
     // creation.
     thread_checker_.DetachFromThread();
@@ -201,10 +205,13 @@ class RunWhileLockedHelper<void()> {
       // Use a scope and local Callback to ensure that the callback is cleared
       // before the lock is released, even in the unlikely event that Run()
       // throws an exception.
-      std::unique_ptr<CallbackType> temp_callback(std::move(ptr->callback_));
-      temp_callback->Run();
+      CallbackType temp_callback = std::move(ptr->callback_);
+      std::move(temp_callback).Run();
     }
   }
+
+  RunWhileLockedHelper(const RunWhileLockedHelper&) = delete;
+  RunWhileLockedHelper& operator=(const RunWhileLockedHelper&) = delete;
 
   ~RunWhileLockedHelper() {
     // Check that the Callback is destroyed on the same thread as where
@@ -234,13 +241,12 @@ class RunWhileLockedHelper<void()> {
       base::ScopedAllowCrossThreadRefCountAccess
           allow_cross_thread_ref_count_access;
 
-      callback_.reset();
+      callback_.Reset();
     }
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RunWhileLockedHelper);
-  std::unique_ptr<CallbackType> callback_;
+  CallbackType callback_;
 
   // Used to ensure that the Callback is run and deleted on the same thread.
   base::ThreadChecker thread_checker_;
@@ -249,9 +255,9 @@ class RunWhileLockedHelper<void()> {
 template <typename P1>
 class RunWhileLockedHelper<void(P1)> {
  public:
-  typedef base::Callback<void(P1)> CallbackType;
-  explicit RunWhileLockedHelper(const CallbackType& callback)
-      : callback_(new CallbackType(callback)) {
+  typedef base::OnceCallback<void(P1)> CallbackType;
+  explicit RunWhileLockedHelper(CallbackType callback)
+      : callback_(std::move(callback)) {
     thread_checker_.DetachFromThread();
   }
   static void CallWhileLocked(std::unique_ptr<RunWhileLockedHelper> ptr,
@@ -263,10 +269,14 @@ class RunWhileLockedHelper<void(P1)> {
     base::ScopedAllowCrossThreadRefCountAccess
         allow_cross_thread_ref_count_access;
     {
-      std::unique_ptr<CallbackType> temp_callback(std::move(ptr->callback_));
-      temp_callback->Run(p1);
+      CallbackType temp_callback = std::move(ptr->callback_);
+      std::move(temp_callback).Run(p1);
     }
   }
+
+  RunWhileLockedHelper(const RunWhileLockedHelper&) = delete;
+  RunWhileLockedHelper& operator=(const RunWhileLockedHelper&) = delete;
+
   ~RunWhileLockedHelper() {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (callback_) {
@@ -275,22 +285,21 @@ class RunWhileLockedHelper<void(P1)> {
       // |lock| above protects the access to Resource instances.
       base::ScopedAllowCrossThreadRefCountAccess
           allow_cross_thread_ref_count_access;
-      callback_.reset();
+      callback_.Reset();
     }
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RunWhileLockedHelper);
-  std::unique_ptr<CallbackType> callback_;
+  CallbackType callback_;
   base::ThreadChecker thread_checker_;
 };
 
 template <typename P1, typename P2>
 class RunWhileLockedHelper<void(P1, P2)> {
  public:
-  typedef base::Callback<void(P1, P2)> CallbackType;
-  explicit RunWhileLockedHelper(const CallbackType& callback)
-      : callback_(new CallbackType(callback)) {
+  typedef base::OnceCallback<void(P1, P2)> CallbackType;
+  explicit RunWhileLockedHelper(CallbackType callback)
+      : callback_(std::move(callback)) {
     thread_checker_.DetachFromThread();
   }
   static void CallWhileLocked(std::unique_ptr<RunWhileLockedHelper> ptr,
@@ -303,10 +312,14 @@ class RunWhileLockedHelper<void(P1, P2)> {
     base::ScopedAllowCrossThreadRefCountAccess
         allow_cross_thread_ref_count_access;
     {
-      std::unique_ptr<CallbackType> temp_callback(std::move(ptr->callback_));
-      temp_callback->Run(p1, p2);
+      CallbackType temp_callback = std::move(ptr->callback_);
+      std::move(temp_callback).Run(p1, p2);
     }
   }
+
+  RunWhileLockedHelper(const RunWhileLockedHelper&) = delete;
+  RunWhileLockedHelper& operator=(const RunWhileLockedHelper&) = delete;
+
   ~RunWhileLockedHelper() {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (callback_) {
@@ -315,22 +328,21 @@ class RunWhileLockedHelper<void(P1, P2)> {
       // |lock| above protects the access to Resource instances.
       base::ScopedAllowCrossThreadRefCountAccess
           allow_cross_thread_ref_count_access;
-      callback_.reset();
+      callback_.Reset();
     }
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RunWhileLockedHelper);
-  std::unique_ptr<CallbackType> callback_;
+  CallbackType callback_;
   base::ThreadChecker thread_checker_;
 };
 
 template <typename P1, typename P2, typename P3>
 class RunWhileLockedHelper<void(P1, P2, P3)> {
  public:
-  typedef base::Callback<void(P1, P2, P3)> CallbackType;
-  explicit RunWhileLockedHelper(const CallbackType& callback)
-      : callback_(new CallbackType(callback)) {
+  typedef base::OnceCallback<void(P1, P2, P3)> CallbackType;
+  explicit RunWhileLockedHelper(CallbackType callback)
+      : callback_(std::move(callback)) {
     thread_checker_.DetachFromThread();
   }
   static void CallWhileLocked(std::unique_ptr<RunWhileLockedHelper> ptr,
@@ -344,10 +356,14 @@ class RunWhileLockedHelper<void(P1, P2, P3)> {
     base::ScopedAllowCrossThreadRefCountAccess
         allow_cross_thread_ref_count_access;
     {
-      std::unique_ptr<CallbackType> temp_callback(std::move(ptr->callback_));
-      temp_callback->Run(p1, p2, p3);
+      CallbackType temp_callback = std::move(ptr->callback_);
+      std::move(temp_callback).Run(p1, p2, p3);
     }
   }
+
+  RunWhileLockedHelper(const RunWhileLockedHelper&) = delete;
+  RunWhileLockedHelper& operator=(const RunWhileLockedHelper&) = delete;
+
   ~RunWhileLockedHelper() {
     DCHECK(thread_checker_.CalledOnValidThread());
     if (callback_) {
@@ -356,13 +372,12 @@ class RunWhileLockedHelper<void(P1, P2, P3)> {
       // |lock| above protects the access to Resource instances.
       base::ScopedAllowCrossThreadRefCountAccess
           allow_cross_thread_ref_count_access;
-      callback_.reset();
+      callback_.Reset();
     }
   }
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(RunWhileLockedHelper);
-  std::unique_ptr<CallbackType> callback_;
+  CallbackType callback_;
   base::ThreadChecker thread_checker_;
 };
 
@@ -381,9 +396,10 @@ class RunWhileLockedHelper<void(P1, P2, P3)> {
 // want to ensure that the ProxyLock is acquired for the duration of the task
 // that the Callback runs.
 // EXAMPLE USAGE:
-//   GetMainThreadMessageLoop()->PostDelayedTask(
+// GetMainThreadMessageLoop()->PostDelayedTask(
 //     FROM_HERE,
-//     RunWhileLocked(base::Bind(&CallbackWrapper, callback, result)),
+//     RunWhileLocked(
+//         base::BindOnce(&CallbackWrapper, std::move(callback), result)),
 //     delay_in_ms);
 //
 // In normal usage like the above, this all should "just work". However, if you
@@ -397,14 +413,15 @@ class RunWhileLockedHelper<void(P1, P2, P3)> {
 // was run (but can be destroyed with or without the proxy lock acquired). Or
 // (3) destroyed without the proxy lock acquired.
 template <class FunctionType>
-inline base::Callback<FunctionType> RunWhileLocked(
-    const base::Callback<FunctionType>& callback) {
+inline base::OnceCallback<FunctionType> RunWhileLocked(
+    base::OnceCallback<FunctionType> callback) {
   // NOTE: the reason we use "scoped_ptr" here instead of letting the callback
   // own it via base::Owned is kind of subtle. Imagine for the moment that we
   // call RunWhileLocked without the ProxyLock:
   // {
-  //   base::Callback<void ()> local_callback = base::Bind(&Foo);
-  //   some_task_runner.PostTask(FROM_HERE, RunWhileLocked(local_callback));
+  //   base::OnceCallback<void ()> local_callback = base::BinOnced(&Foo);
+  //   some_task_runner.PostTask(FROM_HERE,
+  //                             RunWhileLocked(std::move(local_callback)));
   // }
   // In this case, since we don't have a lock synchronizing us, it's possible
   // for the callback to run on the other thread before we return and destroy
@@ -415,10 +432,10 @@ inline base::Callback<FunctionType> RunWhileLocked(
   // on this thread, which will violate the RunWhileLockedHelper's assumption
   // that it is destroyed on the same thread where it is run.
   std::unique_ptr<internal::RunWhileLockedHelper<FunctionType>> helper(
-      new internal::RunWhileLockedHelper<FunctionType>(callback));
-  return base::Bind(
+      new internal::RunWhileLockedHelper<FunctionType>(std::move(callback)));
+  return base::BindOnce(
       &internal::RunWhileLockedHelper<FunctionType>::CallWhileLocked,
-      base::Passed(std::move(helper)));
+      std::move(helper));
 }
 
 }  // namespace ppapi

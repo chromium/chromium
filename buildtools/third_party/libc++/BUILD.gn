@@ -10,11 +10,20 @@ import("//build/toolchain/toolchain.gni")
 config("config") {
   cflags = [ "-fstrict-aliasing" ]
   if (is_win) {
-    # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S in
-    # its implementation.
-    cflags += [ "-Wno-macro-redefined" ]
+    cflags += [
+      # libc++ wants to redefine the macros WIN32_LEAN_AND_MEAN and _CRT_RAND_S in
+      # its implementation.
+      "-Wno-macro-redefined",
+
+      # We want to use a uniform C++ version across all of chromium, but
+      # upstream libc++ requires C++17 so we have to make an exception here.
+      "-std:c++17",
+    ]
   } else {
-    cflags += [ "-fPIC" ]
+    cflags += [
+      "-fPIC",
+      "-std=c++17",
+    ]
   }
 }
 
@@ -42,7 +51,7 @@ target(_libcxx_target_type, "libc++") {
     "//build/config:common_deps",
     "//third_party/catapult/devil:devil",
   ]
-  if (is_linux) {
+  if (is_linux && !is_chromeos) {
     # This target packages libc++.so, so must have an explicit dependency on
     # libc++.
     visibility +=
@@ -51,9 +60,16 @@ target(_libcxx_target_type, "libc++") {
   if (libcxx_is_shared) {
     no_default_deps = true
   }
+
+  if (is_linux && !is_clang) {
+    libs = [ "atomic" ]
+  }
+
   sources = [
     "trunk/src/algorithm.cpp",
     "trunk/src/any.cpp",
+    "trunk/src/atomic.cpp",
+    "trunk/src/barrier.cpp",
     "trunk/src/bind.cpp",
     "trunk/src/charconv.cpp",
     "trunk/src/chrono.cpp",
@@ -65,6 +81,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/future.cpp",
     "trunk/src/hash.cpp",
     "trunk/src/ios.cpp",
+    "trunk/src/ios.instantiations.cpp",
     "trunk/src/iostream.cpp",
     "trunk/src/locale.cpp",
     "trunk/src/memory.cpp",
@@ -73,6 +90,7 @@ target(_libcxx_target_type, "libc++") {
     "trunk/src/new.cpp",
     "trunk/src/optional.cpp",
     "trunk/src/random.cpp",
+    "trunk/src/random_shuffle.cpp",
     "trunk/src/regex.cpp",
     "trunk/src/shared_mutex.cpp",
     "trunk/src/stdexcept.cpp",
@@ -110,6 +128,9 @@ target(_libcxx_target_type, "libc++") {
     "//build/config/coverage:default_coverage",
   ]
   if (is_android && libcxx_is_shared) {
+    # Use libc++_chrome to avoid conflicting with system libc++
+    # See crbug.com/1076244#c11 for more detail.
+    output_name = "libc++_chrome"
     configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   }
   configs += [
@@ -125,17 +146,9 @@ target(_libcxx_target_type, "libc++") {
   }
 
   defines = [ "_LIBCPP_BUILDING_LIBRARY" ]
-  if (!is_clang && libcxx_is_shared) {
-    # This is a temporary workaround to get libc++ builds working with
-    # gcc.  It can be removed with either
-    # https://reviews.llvm.org/D35326 or
-    # https://reviews.llvm.org/D35388 lands.
-    defines += [ "_LIBCPP_EXTERN_TEMPLATE_TYPE_VIS=__attribute__((__visibility__(\"default\")))" ]
-  }
+
   if (!libcxx_is_shared) {
-    # TODO(https://crbug.com/946629): Remove use_xcode_clang condition once
-    # XCode clang is updated to support -fvisibility-global-new-delete-hidden.
-    if ((is_mac || (is_ios && !use_xcode_clang)) && is_clang) {
+    if (is_apple && is_clang) {
       # We want operator new/delete to be private on Mac, but these functions
       # are implicitly created by the compiler for each translation unit, as
       # specified in the C++ spec 3.7.4p2, which makes them always have default
@@ -162,7 +175,7 @@ target(_libcxx_target_type, "libc++") {
       ]
     }
   }
-  if (!is_mac && !is_ios && (is_asan || is_tsan || is_msan)) {
+  if (!is_apple && (is_asan || is_tsan || is_msan)) {
     # In {a,t,m}san configurations, operator new and operator delete will be
     # provided by the sanitizer runtime library.  Since libc++ defines these
     # symbols with weak linkage, and the *san runtime uses strong linkage, it
@@ -173,9 +186,7 @@ target(_libcxx_target_type, "libc++") {
   if (!is_win) {
     defines += [ "LIBCXX_BUILDING_LIBCXXABI" ]
     if (!export_libcxxabi_from_executables) {
-      deps = [
-        "//buildtools/third_party/libc++abi",
-      ]
+      deps = [ "//buildtools/third_party/libc++abi" ]
     }
   }
 }

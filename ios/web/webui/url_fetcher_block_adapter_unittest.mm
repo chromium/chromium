@@ -31,7 +31,7 @@ class URLFetcherBlockAdapterTest : public PlatformTest {
       : task_environment_(
             base::test::SingleThreadTaskEnvironment::MainThreadType::UI) {}
 
-  // Required for base::MessageLoopCurrent::Get().
+  // Required for base::CurrentThread::Get().
   base::test::SingleThreadTaskEnvironment task_environment_;
 };
 

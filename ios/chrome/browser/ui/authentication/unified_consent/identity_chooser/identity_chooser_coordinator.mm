@@ -4,7 +4,12 @@
 
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check_op.h"
+#include "base/notreached.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_mediator.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/identity_chooser/identity_chooser_transition_delegate.h"
@@ -64,8 +69,7 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   self.state = IdentityChooserCoordinatorStateStarted;
   // Creates the controller.
   self.identityChooserViewController = [[IdentityChooserViewController alloc]
-      initWithTableViewStyle:UITableViewStylePlain
-                 appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+      initWithStyle:UITableViewStylePlain];
   self.identityChooserViewController.modalPresentationStyle =
       UIModalPresentationCustom;
   self.transitionController = [[IdentityChooserTransitionDelegate alloc] init];
@@ -76,7 +80,11 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
       UIModalPresentationCustom;
 
   // Creates the mediator.
-  self.identityChooserMediator = [[IdentityChooserMediator alloc] init];
+  self.identityChooserMediator = [[IdentityChooserMediator alloc]
+      initWithAccountManagerService:ChromeAccountManagerServiceFactory::
+                                        GetForBrowserState(
+                                            self.browser->GetBrowserState())];
+
   self.identityChooserMediator.consumer = self.identityChooserViewController;
   // Setups.
   self.identityChooserViewController.presentationDelegate = self;
@@ -86,6 +94,12 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
       presentViewController:self.identityChooserViewController
                    animated:YES
                  completion:nil];
+}
+
+- (void)stop {
+  [super stop];
+  [self.identityChooserMediator disconnect];
+  self.identityChooserMediator = nil;
 }
 
 #pragma mark - Setters/Getters
@@ -141,7 +155,11 @@ typedef NS_ENUM(NSInteger, IdentityChooserCoordinatorState) {
   DCHECK_EQ(self.identityChooserViewController, viewController);
   DCHECK_EQ(IdentityChooserCoordinatorStateStarted, self.state);
   [self.identityChooserMediator selectIdentityWithGaiaID:gaiaID];
-  self.state = IdentityChooserCoordinatorStateClosedBySelectingIdentity;
+  // If the account refresh token is invalidated during this
+  // operation then |identity| will be nil.
+  if (self.selectedIdentity) {
+    self.state = IdentityChooserCoordinatorStateClosedBySelectingIdentity;
+  }
   [self.identityChooserViewController dismissViewControllerAnimated:YES
                                                          completion:nil];
 }

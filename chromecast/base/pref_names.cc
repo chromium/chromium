@@ -51,5 +51,8 @@ const char kStabilityRendererHangCount[] =
 const char kStabilitySystemUncleanShutdownCount[] =
     "user_experience_metrics.stability.system_unclean_shutdowns";
 
+// Current web color scheme. See blink::PreferredColorScheme.
+const char kWebColorScheme[] = "web-color-scheme";
+
 }  // namespace prefs
 }  // namespace chromecast

@@ -7,9 +7,8 @@
 #include <utility>
 
 #include "base/files/file_util.h"
+#include "base/json/json_file_value_serializer.h"
 #include "base/logging.h"
-#include "base/values.h"
-#include "chromecast/base/serializers.h"
 #include "chromecast/media/base/audio_device_ids.h"
 #include "media/audio/audio_device_description.h"
 
@@ -25,16 +24,19 @@ const char kLinearizePipelineKey[] = "linearize";
 const char kProcessorsKey[] = "processors";
 const char kStreamsKey[] = "streams";
 const char kNumInputChannelsKey[] = "num_input_channels";
+const char kVolumeLimitsKey[] = "volume_limits";
 
 }  // namespace
 
 StreamPipelineDescriptor::StreamPipelineDescriptor(
     const base::Value* pipeline_in,
     const base::Value* stream_types_in,
-    const base::Optional<int> num_input_channels_in)
+    const absl::optional<int> num_input_channels_in,
+    const base::Value* volume_limits_in)
     : pipeline(pipeline_in),
       stream_types(stream_types_in),
-      num_input_channels(std::move(num_input_channels_in)) {}
+      num_input_channels(std::move(num_input_channels_in)),
+      volume_limits(volume_limits_in) {}
 
 StreamPipelineDescriptor::~StreamPipelineDescriptor() = default;
 
@@ -42,14 +44,14 @@ StreamPipelineDescriptor::StreamPipelineDescriptor(
     const StreamPipelineDescriptor& other)
     : StreamPipelineDescriptor(other.pipeline,
                                other.stream_types,
-                               other.num_input_channels) {}
+                               other.num_input_channels,
+                               other.volume_limits) {}
 
 PostProcessingPipelineParser::PostProcessingPipelineParser(
-    std::unique_ptr<base::DictionaryValue> config_dict)
+    base::Value config_dict)
     : file_path_(""), config_dict_(std::move(config_dict)) {
-  CHECK(config_dict_) << "Invalid JSON";
-  if (!config_dict_->GetDictionary(kPostProcessorsKey,
-                                   &postprocessor_config_)) {
+  postprocessor_config_ = config_dict_.FindPath(kPostProcessorsKey);
+  if (!postprocessor_config_) {
     LOG(WARNING) << "No post-processor config found.";
   }
 }
@@ -62,12 +64,16 @@ PostProcessingPipelineParser::PostProcessingPipelineParser(
     return;
   }
 
-  config_dict_ =
-      base::DictionaryValue::From(DeserializeJsonFromFile(file_path_));
-  CHECK(config_dict_) << "Invalid JSON in " << file_path_;
+  JSONFileValueDeserializer deserializer(file_path_);
+  int error_code = -1;
+  std::string error_msg;
+  auto config_dict_ptr = deserializer.Deserialize(&error_code, &error_msg);
+  CHECK(config_dict_ptr) << "Invalid JSON in " << file_path_ << " error "
+                         << error_code << ":" << error_msg;
+  config_dict_ = base::Value(std::move(*config_dict_ptr));
 
-  if (!config_dict_->GetDictionary(kPostProcessorsKey,
-                                   &postprocessor_config_)) {
+  postprocessor_config_ = config_dict_.FindPath(kPostProcessorsKey);
+  if (!postprocessor_config_) {
     LOG(WARNING) << "No post-processor config found.";
   }
 }
@@ -104,8 +110,11 @@ PostProcessingPipelineParser::GetStreamPipelines() {
     auto num_input_channels =
         pipeline_description_dict.FindIntKey(kNumInputChannelsKey);
 
+    const base::Value* volume_limits = pipeline_description_dict.FindKeyOfType(
+        kVolumeLimitsKey, base::Value::Type::DICTIONARY);
+
     descriptors.emplace_back(processors_list, streams_list,
-                             std::move(num_input_channels));
+                             std::move(num_input_channels), volume_limits);
   }
   return descriptors;
 }
@@ -120,12 +129,12 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetLinearizePipeline() {
 
 StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
     const std::string& key) {
-  const base::DictionaryValue* stream_dict;
-  if (!postprocessor_config_ ||
-      !postprocessor_config_->GetDictionary(key, &stream_dict)) {
+  const base::Value* stream_dict =
+      postprocessor_config_ ? postprocessor_config_->FindPath(key) : nullptr;
+  if (!postprocessor_config_ || !stream_dict) {
     LOG(WARNING) << "No post-processor description found for \"" << key
                  << "\" in " << file_path_ << ". Using passthrough.";
-    return StreamPipelineDescriptor(nullptr, nullptr, base::nullopt);
+    return StreamPipelineDescriptor(nullptr, nullptr, absl::nullopt, nullptr);
   }
   const base::Value* processors_list =
       stream_dict->FindKeyOfType(kProcessorsKey, base::Value::Type::LIST);
@@ -134,9 +143,12 @@ StreamPipelineDescriptor PostProcessingPipelineParser::GetPipelineByKey(
   const base::Value* streams_list =
       stream_dict->FindKeyOfType(kStreamsKey, base::Value::Type::LIST);
 
-  return StreamPipelineDescriptor(
-      processors_list, streams_list,
-      stream_dict->FindIntKey(kNumInputChannelsKey));
+  const base::Value* volume_limits = stream_dict->FindKeyOfType(
+      kVolumeLimitsKey, base::Value::Type::DICTIONARY);
+
+  return StreamPipelineDescriptor(processors_list, streams_list,
+                                  stream_dict->FindIntKey(kNumInputChannelsKey),
+                                  volume_limits);
 }
 
 base::FilePath PostProcessingPipelineParser::GetFilePath() const {

@@ -3,27 +3,20 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/interactive_test_utils.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/test/result_catcher.h"
 #include "ui/base/base_window.h"
 #include "ui/base/test/ui_controls.h"
 #include "ui/events/event_constants.h"
 
-#if defined(USE_X11)
-#include "ui/aura/window.h"
-#include "ui/events/keycodes/keyboard_code_conversion_x.h"
-#include "ui/gfx/x/x11.h"
-#include "ui/gfx/x/x11_types.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_observer_x11.h"
-#include "ui/views/widget/desktop_aura/desktop_window_tree_host_x11.h"
-#endif
-
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include <Carbon/Carbon.h>
 #include "base/mac/mac_util.h"
 #endif
@@ -32,56 +25,13 @@ namespace extensions {
 
 typedef ExtensionApiTest GlobalCommandsApiTest;
 
-#if defined(USE_X11)
-// Send a simulated key press and release event, where |control|, |shift| or
-// |alt| indicates whether the key is struck with corresponding modifier.
-void SendNativeKeyEventToXDisplay(ui::KeyboardCode key,
-                                  bool control,
-                                  bool shift,
-                                  bool alt) {
-  Display* display = gfx::GetXDisplay();
-  KeyCode ctrl_key_code = XKeysymToKeycode(display, XK_Control_L);
-  KeyCode shift_key_code = XKeysymToKeycode(display, XK_Shift_L);
-  KeyCode alt_key_code = XKeysymToKeycode(display, XK_Alt_L);
-
-  // Release modifiers first of all to make sure this function can work as
-  // expected. For example, when |control| is false, but the status of Ctrl key
-  // is down, we will generate a keyboard event with unwanted Ctrl key.
-  XTestFakeKeyEvent(display, ctrl_key_code, x11::False, x11::CurrentTime);
-  XTestFakeKeyEvent(display, shift_key_code, x11::False, x11::CurrentTime);
-  XTestFakeKeyEvent(display, alt_key_code, x11::False, x11::CurrentTime);
-
-  typedef std::vector<KeyCode> KeyCodes;
-  KeyCodes key_codes;
-  if (control)
-    key_codes.push_back(ctrl_key_code);
-  if (shift)
-    key_codes.push_back(shift_key_code);
-  if (alt)
-    key_codes.push_back(alt_key_code);
-
-  key_codes.push_back(XKeysymToKeycode(display,
-                                       XKeysymForWindowsKeyCode(key, false)));
-
-  // Simulate the keys being pressed.
-  for (auto it = key_codes.begin(); it != key_codes.end(); it++)
-    XTestFakeKeyEvent(display, *it, x11::True, x11::CurrentTime);
-
-  // Simulate the keys being released.
-  for (auto it = key_codes.begin(); it != key_codes.end(); it++)
-    XTestFakeKeyEvent(display, *it, x11::False, x11::CurrentTime);
-
-  XFlush(display);
-}
-#endif  // defined(USE_X11)
-
 // Test the basics of global commands and make sure they work when Chrome
 // doesn't have focus. Also test that non-global commands are not treated as
 // global and that keys beyond Ctrl+Shift+[0..9] cannot be auto-assigned by an
 // extension.
 //
 // Doesn't work in CrOS builds, http://crbug.com/619784
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_GlobalCommand DISABLED_GlobalCommand
 #else
 #define MAYBE_GlobalCommand GlobalCommand
@@ -92,7 +42,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalCommand) {
   ASSERT_TRUE(RunExtensionTest("keybinding/global")) << message_;
   ASSERT_TRUE(catcher.GetNextResult());
 
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if defined(OS_WIN) || defined(OS_CHROMEOS) || defined(OS_LINUX)
   // Our infrastructure for sending keys expects a browser to send them to, but
   // to properly test global shortcuts you need to send them to another target.
   // So, create an incognito browser to use as a target to send the shortcuts
@@ -113,36 +63,7 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalCommand) {
   // Activate the shortcut (Ctrl+Shift+8). This should have an effect.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       incognito_browser, ui::VKEY_8, true, true, false, false));
-#elif defined(USE_X11)
-  // Create an incognito browser to capture the focus.
-  Browser* incognito_browser = CreateIncognitoBrowser();
-
-  views::DesktopWindowTreeHostX11* host =
-      static_cast<views::DesktopWindowTreeHostX11*>(
-          incognito_browser->window()->GetNativeWindow()->GetHost());
-
-  class GlobalCommandTreeHostObserver
-      : public views::DesktopWindowTreeHostObserverX11 {
-   public:
-    void OnWindowMapped(unsigned long xid) override {
-      // On Linux, our infrastructure for sending keys just synthesize keyboard
-      // event and send them directly to the specified window, without notifying
-      // the X root window. It didn't work while testing global shortcut because
-      // the stuff of global shortcut on Linux need to be notified when KeyPress
-      // event is happening on X root window. So we simulate the keyboard input
-      // here.
-      SendNativeKeyEventToXDisplay(ui::VKEY_1, true, true, false);
-      SendNativeKeyEventToXDisplay(ui::VKEY_A, true, true, false);
-      SendNativeKeyEventToXDisplay(ui::VKEY_8, true, true, false);
-    }
-
-    void OnWindowUnmapped(unsigned long xid) override {}
-  } observer;
-
-  // The observer sends the commands after window mapping
-  host->AddObserver(&observer);
-
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   // ui_test_utils::SendGlobalKeyEventsAndWait() hangs the test on macOS 10.14 -
   // https://crbug.com/904403
   if (base::mac::IsAtLeastOS10_14())
@@ -172,9 +93,6 @@ IN_PROC_BROWSER_TEST_F(GlobalCommandsApiTest, MAYBE_GlobalCommand) {
   // but it might also be because the non-global shortcuts unexpectedly
   // worked.
   ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
-#if defined(USE_X11)
-  host->RemoveObserver(&observer);
-#endif
 }
 
 #if defined(OS_WIN)

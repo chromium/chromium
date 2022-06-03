@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.infobar;
 
-import org.chromium.chrome.browser.ResourceId;
-
 /**
  * Detailed card information to show in the various Autofill infobars.
  */
@@ -28,14 +26,12 @@ public class CardDetail {
     /**
      * Creates a new instance of the detailed card information.
      *
-     * @param enumeratedIconId ID corresponding to the icon that will be shown for this credit
-     *                         card. The ID must have been mapped using the ResourceMapper class
-     *                         before passing it to this function.
+     * @param iconId ID corresponding to the icon that will be shown for this credit card.
      * @param label The credit card label, for example "***1234".
      * @param subLabel The credit card sub-label, for example "Exp: 06/17".
      */
-    public CardDetail(int enumeratedIconId, String label, String subLabel) {
-        this.issuerIconDrawableId = ResourceId.mapToDrawableId(enumeratedIconId);
+    public CardDetail(int iconId, String label, String subLabel) {
+        this.issuerIconDrawableId = iconId;
         this.label = label;
         this.subLabel = subLabel;
     }

@@ -4,8 +4,6 @@
 
 source_set("cloud_print") {
   sources = [
-    "cloud_print_class_mac.h",
-    "cloud_print_class_mac.mm",
     "cloud_print_constants.cc",
     "cloud_print_constants.h",
     "cloud_print_helpers.cc",

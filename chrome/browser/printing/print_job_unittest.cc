@@ -5,12 +5,13 @@
 #include "chrome/browser/printing/print_job.h"
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/run_loop.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/printing/print_job_worker.h"
 #include "chrome/browser/printing/printer_query.h"
@@ -18,6 +19,7 @@
 #include "content/public/browser/notification_service.h"
 #include "content/public/common/child_process_host.h"
 #include "content/public/test/browser_task_environment.h"
+#include "printing/mojom/print.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace printing {
@@ -40,9 +42,12 @@ class TestQuery : public PrinterQuery {
 
   void GetSettingsDone(base::OnceClosure callback,
                        std::unique_ptr<PrintSettings> new_settings,
-                       PrintingContext::Result result) override {
+                       mojom::ResultCode result) override {
     FAIL();
   }
+
+  TestQuery(const TestQuery&) = delete;
+  TestQuery& operator=(const TestQuery&) = delete;
 
   ~TestQuery() override {}
 
@@ -61,9 +66,6 @@ class TestQuery : public PrinterQuery {
 
     return std::move(worker);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestQuery);
 };
 
 class TestPrintJob : public PrintJob {
@@ -98,7 +100,7 @@ TEST(PrintJobTest, SimplePrint) {
                 content::NotificationService::AllSources());
   volatile bool check = false;
   scoped_refptr<PrintJob> job(new TestPrintJob(&check));
-  job->Initialize(std::make_unique<TestQuery>(), base::string16(), 1);
+  job->Initialize(std::make_unique<TestQuery>(), std::u16string(), 1);
 #if defined(OS_CHROMEOS)
   job->SetSource(PrintJob::Source::PRINT_PREVIEW, /*source_id=*/"");
 #endif  // defined(OS_CHROMEOS)
@@ -149,28 +151,33 @@ TEST(PrintJobTest, PageRangeMapping) {
   content::BrowserTaskEnvironment task_environment;
 
   int page_count = 4;
-  std::vector<int> input_full = {0, 1, 2, 3};
-  std::vector<int> expected_output_full = {0, 1, 2, 3};
+  std::vector<uint32_t> input_full = {0, 1, 2, 3};
+  std::vector<uint32_t> expected_output_full = {0, 1, 2, 3};
   EXPECT_EQ(expected_output_full,
             PrintJob::GetFullPageMapping(input_full, page_count));
 
-  std::vector<int> input_12 = {1, 2};
-  std::vector<int> expected_output_12 = {-1, 1, 2, -1};
+  std::vector<uint32_t> input_12 = {1, 2};
+  std::vector<uint32_t> expected_output_12 = {kInvalidPageIndex, 1, 2,
+                                              kInvalidPageIndex};
   EXPECT_EQ(expected_output_12,
             PrintJob::GetFullPageMapping(input_12, page_count));
 
-  std::vector<int> input_03 = {0, 3};
-  std::vector<int> expected_output_03 = {0, -1, -1, 3};
+  std::vector<uint32_t> input_03 = {0, 3};
+  std::vector<uint32_t> expected_output_03 = {0, kInvalidPageIndex,
+                                              kInvalidPageIndex, 3};
   EXPECT_EQ(expected_output_03,
             PrintJob::GetFullPageMapping(input_03, page_count));
 
-  std::vector<int> input_0 = {0};
-  std::vector<int> expected_output_0 = {0, -1, -1, -1};
+  std::vector<uint32_t> input_0 = {0};
+  std::vector<uint32_t> expected_output_0 = {
+      0, kInvalidPageIndex, kInvalidPageIndex, kInvalidPageIndex};
   EXPECT_EQ(expected_output_0,
             PrintJob::GetFullPageMapping(input_0, page_count));
 
-  std::vector<int> input_invalid = {4, 100};
-  std::vector<int> expected_output_invalid = {-1, -1, -1, -1};
+  std::vector<uint32_t> input_invalid = {4, 100};
+  std::vector<uint32_t> expected_output_invalid = {
+      kInvalidPageIndex, kInvalidPageIndex, kInvalidPageIndex,
+      kInvalidPageIndex};
   EXPECT_EQ(expected_output_invalid,
             PrintJob::GetFullPageMapping(input_invalid, page_count));
 }

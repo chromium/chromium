@@ -47,11 +47,6 @@ gfx::Size FitSizeToDisplay(const gfx::Size& desired) {
 
   gfx::Size display_size = display.size();
 
-  if (display.rotation() == display::Display::ROTATE_90 ||
-      display.rotation() == display::Display::ROTATE_270) {
-    display_size = gfx::Size(display_size.height(), display_size.width());
-  }
-
   return gfx::Size(std::min(desired.width(), display_size.width()),
                    std::min(desired.height(), display_size.height()));
 }
@@ -59,7 +54,7 @@ gfx::Size FitSizeToDisplay(const gfx::Size& desired) {
 }  // namespace
 
 BasePasswordDialog::BasePasswordDialog(GURL url, gfx::Size desired_size)
-    : SystemWebDialogDelegate(url, /*title=*/base::string16()),
+    : SystemWebDialogDelegate(url, /*title=*/std::u16string()),
       desired_size_(desired_size) {}
 
 BasePasswordDialog::~BasePasswordDialog() {}

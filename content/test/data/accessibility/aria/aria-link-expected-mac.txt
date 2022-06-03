@@ -1,3 +1,3 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXLink AXRoleDescription='link' AXTitle='ARIA Link'
+++AXLink AXDescription='ARIA Link' AXRoleDescription='link'
 ++++AXStaticText AXRoleDescription='text' AXValue='ARIA Link'

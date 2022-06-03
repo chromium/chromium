@@ -1,0 +1,10 @@
+include_rules = [
+  "+components/viz/common",
+  "+components/viz/host",
+  "+services/viz/privileged/mojom/compositing",
+  "+services/viz/public/mojom/compositing",
+  "+skia/ext",
+  "+third_party/arcore-android-sdk/src",
+  "+third_party/skia/include",
+  "+ui/android/window_android.h",
+  ]

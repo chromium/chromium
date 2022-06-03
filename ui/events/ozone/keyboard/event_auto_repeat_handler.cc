@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/events/event_constants.h"
 
 namespace ui {
 
@@ -18,8 +19,8 @@ constexpr int kRepeatIntervalMs = 50;
 }  // namespace
 
 EventAutoRepeatHandler::EventAutoRepeatHandler(Delegate* delegate)
-    : repeat_delay_(base::TimeDelta::FromMilliseconds(kRepeatDelayMs)),
-      repeat_interval_(base::TimeDelta::FromMilliseconds(kRepeatIntervalMs)),
+    : repeat_delay_(base::Milliseconds(kRepeatDelayMs)),
+      repeat_interval_(base::Milliseconds(kRepeatIntervalMs)),
       delegate_(delegate) {
   DCHECK(delegate_);
 }
@@ -48,19 +49,23 @@ void EventAutoRepeatHandler::GetAutoRepeatRate(base::TimeDelta* delay,
 }
 
 void EventAutoRepeatHandler::UpdateKeyRepeat(unsigned int key,
+                                             unsigned int scan_code,
                                              bool down,
                                              bool suppress_auto_repeat,
                                              int device_id) {
   if (!auto_repeat_enabled_ || suppress_auto_repeat)
     StopKeyRepeat();
   else if (key != repeat_key_ && down)
-    StartKeyRepeat(key, device_id);
+    StartKeyRepeat(key, scan_code, device_id);
   else if (key == repeat_key_ && !down)
     StopKeyRepeat();
 }
 
-void EventAutoRepeatHandler::StartKeyRepeat(unsigned int key, int device_id) {
+void EventAutoRepeatHandler::StartKeyRepeat(unsigned int key,
+                                            unsigned int scan_code,
+                                            int device_id) {
   repeat_key_ = key;
+  repeat_scan_code_ = scan_code;
   repeat_device_id_ = device_id;
   repeat_sequence_++;
 
@@ -69,6 +74,7 @@ void EventAutoRepeatHandler::StartKeyRepeat(unsigned int key, int device_id) {
 
 void EventAutoRepeatHandler::StopKeyRepeat() {
   repeat_key_ = kInvalidKey;
+  repeat_scan_code_ = 0;
   repeat_sequence_++;
 }
 
@@ -94,8 +100,9 @@ void EventAutoRepeatHandler::OnRepeatCommit(unsigned int sequence) {
   if (repeat_sequence_ != sequence)
     return;
 
-  delegate_->DispatchKey(repeat_key_, true /* down */, true /* repeat */,
-                         EventTimeForNow(), repeat_device_id_);
+  delegate_->DispatchKey(repeat_key_, repeat_scan_code_, true /* down */,
+                         true /* repeat */, EventTimeForNow(),
+                         repeat_device_id_, ui::EF_NONE);
 
   ScheduleKeyRepeat(repeat_interval_);
 }

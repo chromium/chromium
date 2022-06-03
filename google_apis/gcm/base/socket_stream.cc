@@ -5,6 +5,7 @@
 #include "google_apis/gcm/base/socket_stream.h"
 
 #include <stddef.h>
+#include <cstring>
 
 #include "base/bind.h"
 #include "base/callback.h"
@@ -215,7 +216,6 @@ void SocketInputStream::CloseStream(net::Error error) {
   DCHECK_LT(error, net::ERR_IO_PENDING);
   ResetInternal();
   last_error_ = error;
-  LOG(ERROR) << "Closing stream with result " << error;
 }
 
 SocketOutputStream::SocketOutputStream(

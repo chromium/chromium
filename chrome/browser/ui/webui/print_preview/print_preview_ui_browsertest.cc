@@ -4,6 +4,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/task_manager_browsertest_util.h"
@@ -18,6 +19,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
@@ -57,7 +59,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
 
   ASSERT_TRUE(chrome::IsCommandEnabled(browser(), IDC_PRINT));
 
-#if BUILDFLAG(ENABLE_PRINTING) && !defined(OS_CHROMEOS)
+#if BUILDFLAG(ENABLE_PRINTING) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // This is analagous to ENABLE_BASIC_PRINT_DIALOG but helps to verify
   // that it is defined as expected.
   bool is_basic_print_expected = true;
@@ -88,7 +90,7 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest, PrintCommands) {
 }
 
 // Disable the test for mac, see http://crbug/367665.
-#if defined(OS_MACOSX) || defined(OS_LINUX)
+#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_TaskManagerNewPrintPreview DISABLED_TaskManagerNewPrintPreview
 #else
 #define MAYBE_TaskManagerNewPrintPreview TaskManagerNewPrintPreview
@@ -135,13 +137,13 @@ IN_PROC_BROWSER_TEST_F(PrintPreviewBrowserTest,
 
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), GURL("about:blank"), WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
 
   // Navigate main tab to hide print preview.
-  ui_test_utils::NavigateToURL(browser(), GURL("about:blank"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
 
   browser()->tab_strip_model()->ActivateTabAt(
       1, {TabStripModel::GestureType::kOther});

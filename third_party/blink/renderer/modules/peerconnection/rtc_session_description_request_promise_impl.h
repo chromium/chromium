@@ -39,7 +39,7 @@ class RTCSessionDescriptionRequestPromiseImpl final
   void RequestSucceeded(RTCSessionDescriptionPlatform*) override;
   void RequestFailed(const webrtc::RTCError& error) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void Clear();

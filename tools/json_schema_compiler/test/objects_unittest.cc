@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <utility>
+#include <vector>
 
 #include "base/json/json_writer.h"
 #include "base/values.h"
@@ -19,18 +20,18 @@ namespace objects_movable = test::api::objects_movable;
 
 TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
   {
-    auto strings = std::make_unique<base::ListValue>();
-    strings->AppendString("one");
-    strings->AppendString("two");
-    auto info_value = std::make_unique<base::DictionaryValue>();
-    info_value->Set("strings", std::move(strings));
-    info_value->SetInteger("integer", 5);
-    info_value->SetBoolean("boolean", true);
+    base::Value strings(base::Value::Type::LIST);
+    strings.Append("one");
+    strings.Append("two");
+    base::Value info_value(base::Value::Type::DICTIONARY);
+    info_value.SetKey("strings", std::move(strings));
+    info_value.SetIntPath("integer", 5);
+    info_value.SetBoolPath("boolean", true);
 
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append(std::move(info_value));
+    std::vector<base::Value> params_value;
+    params_value.push_back(std::move(info_value));
     std::unique_ptr<test::api::objects::ObjectParam::Params> params(
-        test::api::objects::ObjectParam::Params::Create(*params_value));
+        test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_TRUE(params.get());
     EXPECT_EQ((size_t) 2, params->info.strings.size());
     EXPECT_EQ("one", params->info.strings[0]);
@@ -39,17 +40,17 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
     EXPECT_TRUE(params->info.boolean);
   }
   {
-    auto strings = std::make_unique<base::ListValue>();
-    strings->AppendString("one");
-    strings->AppendString("two");
-    auto info_value = std::make_unique<base::DictionaryValue>();
-    info_value->Set("strings", std::move(strings));
-    info_value->SetInteger("integer", 5);
+    base::Value strings(base::Value::Type::LIST);
+    strings.Append("one");
+    strings.Append("two");
+    base::Value info_value(base::Value::Type::DICTIONARY);
+    info_value.SetKey("strings", std::move(strings));
+    info_value.SetIntPath("integer", 5);
 
-    auto params_value = std::make_unique<base::ListValue>();
-    params_value->Append(std::move(info_value));
+    std::vector<base::Value> params_value;
+    params_value.push_back(std::move(info_value));
     std::unique_ptr<test::api::objects::ObjectParam::Params> params(
-        test::api::objects::ObjectParam::Params::Create(*params_value));
+        test::api::objects::ObjectParam::Params::Create(params_value));
     EXPECT_FALSE(params.get());
   }
 }
@@ -57,28 +58,27 @@ TEST(JsonSchemaCompilerObjectsTest, ObjectParamParamsCreate) {
 TEST(JsonSchemaCompilerObjectsTest, ReturnsObjectResultCreate) {
   test::api::objects::ReturnsObject::Results::Info info;
   info.state = test::api::objects::FIRST_STATE_FOO;
-  std::unique_ptr<base::ListValue> results =
-      test::api::objects::ReturnsObject::Results::Create(info);
+  base::Value results(test::api::objects::ReturnsObject::Results::Create(info));
+  ASSERT_TRUE(results.is_list());
+  ASSERT_EQ(1u, results.GetList().size());
 
   base::DictionaryValue expected;
   expected.SetString("state", "foo");
-  base::DictionaryValue* result = NULL;
-  ASSERT_TRUE(results->GetDictionary(0, &result));
-  ASSERT_TRUE(result->Equals(&expected));
+  EXPECT_EQ(expected, results.GetList()[0]);
 }
 
 TEST(JsonSchemaCompilerObjectsTest, OnObjectFiredCreate) {
   test::api::objects::OnObjectFired::SomeObject object;
   object.state = test::api::objects::FIRST_STATE_BAR;
-  std::unique_ptr<base::ListValue> results(
-      test::api::objects::OnObjectFired::Create(object));
+  base::Value results(test::api::objects::OnObjectFired::Create(object));
+  ASSERT_TRUE(results.is_list());
+  ASSERT_EQ(1u, results.GetList().size());
 
   base::DictionaryValue expected;
   expected.SetString("state", "bar");
-  base::DictionaryValue* result = NULL;
-  ASSERT_TRUE(results->GetDictionary(0, &result));
-  ASSERT_TRUE(result->Equals(&expected));
+  EXPECT_EQ(expected, results.GetList()[0]);
 }
+
 TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   std::vector<objects_movable::MovablePod> pods;
   {
@@ -136,7 +136,7 @@ TEST(JsonSchemaCompilerMovableObjectsTest, MovableObjectsTest) {
   }
   EXPECT_TRUE(parent2.pods.empty());
   EXPECT_TRUE(parent2.strs.empty());
-  EXPECT_TRUE(parent2.blob.additional_properties.empty());
+  EXPECT_TRUE(parent2.blob.additional_properties.DictEmpty());
   EXPECT_FALSE(parent2.choice.as_string.get());
   ASSERT_TRUE(parent2.choice.as_movable_pod.get());
   EXPECT_EQ(objects_movable::FOO_BAZ, parent2.choice.as_movable_pod->foo);

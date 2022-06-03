@@ -5,12 +5,12 @@
 #ifndef GPU_VULKAN_SEMAPHORE_HANDLE_H_
 #define GPU_VULKAN_SEMAPHORE_HANDLE_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 #include <utility>
 
+#include "base/component_export.h"
 #include "base/macros.h"
 #include "build/build_config.h"
-#include "gpu/vulkan/vulkan_export.h"
 
 #if defined(OS_POSIX)
 #include "base/files/scoped_file.h"
@@ -30,7 +30,7 @@ namespace gpu {
 // Note that handle transference depends on a handle type.
 // SYNC_FD handles that use copy transference, while reference transference is
 // used other handles types.
-class VULKAN_EXPORT SemaphoreHandle {
+class COMPONENT_EXPORT(VULKAN) SemaphoreHandle {
  public:
 #if defined(OS_POSIX)
   using PlatformHandle = base::ScopedFD;
@@ -44,6 +44,9 @@ class VULKAN_EXPORT SemaphoreHandle {
   SemaphoreHandle(VkExternalSemaphoreHandleTypeFlagBits type,
                   PlatformHandle handle);
   SemaphoreHandle(SemaphoreHandle&&);
+
+  SemaphoreHandle(const SemaphoreHandle&) = delete;
+  SemaphoreHandle& operator=(const SemaphoreHandle&) = delete;
 
   ~SemaphoreHandle();
 
@@ -68,8 +71,6 @@ class VULKAN_EXPORT SemaphoreHandle {
  private:
   VkExternalSemaphoreHandleTypeFlagBits type_;
   PlatformHandle handle_;
-
-  DISALLOW_COPY_AND_ASSIGN(SemaphoreHandle);
 };
 
 }  // namespace gpu

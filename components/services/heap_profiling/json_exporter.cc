@@ -5,16 +5,17 @@
 #include "components/services/heap_profiling/json_exporter.h"
 
 #include <inttypes.h>
+
 #include <map>
 #include <unordered_map>
 
 #include "base/containers/adapters.h"
 #include "base/json/json_writer.h"
 #include "base/json/string_escape.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/trace_event/traced_value.h"
 #include "base/values.h"
-#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer.h"
+#include "services/resource_coordinator/public/cpp/memory_instrumentation/tracing_observer_traced_value.h"
 
 namespace heap_profiling {
 namespace {
@@ -57,8 +58,6 @@ const char* StringForAllocatorType(uint32_t type) {
       return "malloc";
     case AllocatorType::kPartitionAlloc:
       return "partition_alloc";
-    case AllocatorType::kOilpan:
-      return "blink_gc";
     default:
       NOTREACHED();
       return "unknown";
@@ -125,7 +124,7 @@ base::Value BuildAllocatorsSummary(const AllocationMap& allocations) {
 
 base::Value BuildMemoryMaps(const ExportParams& params) {
   base::trace_event::TracedValueJSON traced_value;
-  memory_instrumentation::TracingObserver::MemoryMapsAsValueInto(
+  memory_instrumentation::TracingObserverTracedValue::MemoryMapsAsValueInto(
       params.maps, &traced_value, params.strip_path_from_mapped_files);
   return traced_value.ToBaseValue()->Clone();
 }

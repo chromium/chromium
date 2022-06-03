@@ -7,13 +7,12 @@
 #include "base/feature_list.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
-#include "components/language/core/browser/baseline_language_model.h"
-#include "components/language/core/browser/fluent_language_model.h"
-#include "components/language/core/browser/heuristic_language_model.h"
 #include "components/language/core/browser/language_model.h"
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/language/core/common/language_experiments.h"
+#include "components/language/core/language_model/baseline_language_model.h"
+#include "components/language/core/language_model/fluent_language_model.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/application_context.h"
@@ -22,28 +21,17 @@
 
 namespace {
 
-void PrepareLanguageModels(ios::ChromeBrowserState* const chrome_state,
+void PrepareLanguageModels(ChromeBrowserState* const chrome_state,
                            language::LanguageModelManager* const manager) {
   // Create and set the primary Language Model to use based on the state of
   // experiments.
   switch (language::GetOverrideLanguageModel()) {
     case language::OverrideLanguageModel::FLUENT:
-      manager->AddModel(
-          language::LanguageModelManager::ModelType::FLUENT,
-          std::make_unique<language::FluentLanguageModel>(
-              chrome_state->GetPrefs(), language::prefs::kAcceptLanguages));
+      manager->AddModel(language::LanguageModelManager::ModelType::FLUENT,
+                        std::make_unique<language::FluentLanguageModel>(
+                            chrome_state->GetPrefs()));
       manager->SetPrimaryModel(
           language::LanguageModelManager::ModelType::FLUENT);
-      break;
-    case language::OverrideLanguageModel::HEURISTIC:
-      manager->AddModel(language::LanguageModelManager::ModelType::HEURISTIC,
-                        std::make_unique<language::HeuristicLanguageModel>(
-                            chrome_state->GetPrefs(),
-                            GetApplicationContext()->GetApplicationLocale(),
-                            language::prefs::kAcceptLanguages,
-                            language::prefs::kUserLanguageProfile));
-      manager->SetPrimaryModel(
-          language::LanguageModelManager::ModelType::HEURISTIC);
       break;
     case language::OverrideLanguageModel::DEFAULT:
     default:
@@ -68,7 +56,7 @@ LanguageModelManagerFactory* LanguageModelManagerFactory::GetInstance() {
 
 // static
 language::LanguageModelManager* LanguageModelManagerFactory::GetForBrowserState(
-    ios::ChromeBrowserState* const state) {
+    ChromeBrowserState* const state) {
   return static_cast<language::LanguageModelManager*>(
       GetInstance()->GetServiceForBrowserState(state, true));
 }
@@ -83,8 +71,8 @@ LanguageModelManagerFactory::~LanguageModelManagerFactory() {}
 std::unique_ptr<KeyedService>
 LanguageModelManagerFactory::BuildServiceInstanceFor(
     web::BrowserState* const state) const {
-  ios::ChromeBrowserState* const chrome_state =
-      ios::ChromeBrowserState::FromBrowserState(state);
+  ChromeBrowserState* const chrome_state =
+      ChromeBrowserState::FromBrowserState(state);
   std::unique_ptr<language::LanguageModelManager> manager =
       std::make_unique<language::LanguageModelManager>(
           chrome_state->GetPrefs(),
@@ -97,13 +85,4 @@ web::BrowserState* LanguageModelManagerFactory::GetBrowserStateToUse(
     web::BrowserState* const state) const {
   // Use the original profile's language model even in Incognito mode.
   return GetBrowserStateRedirectedInIncognito(state);
-}
-
-void LanguageModelManagerFactory::RegisterBrowserStatePrefs(
-    user_prefs::PrefRegistrySyncable* const registry) {
-  if (base::FeatureList::IsEnabled(language::kUseHeuristicLanguageModel)) {
-    registry->RegisterDictionaryPref(
-        language::prefs::kUserLanguageProfile,
-        user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
-  }
 }

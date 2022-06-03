@@ -4,6 +4,7 @@
 
 #include "services/network/mojo_host_resolver_impl.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -15,7 +16,9 @@
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/address_family.h"
+#include "net/base/address_list.h"
 #include "net/base/ip_address.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
@@ -107,16 +110,19 @@ class MojoHostResolverImplTest : public testing::Test {
   const net::IPAddress kChromiumOrgAddress{8, 8, 8, 8};
 
   void SetUp() override {
-    mock_host_resolver_.rules()->AddRuleForAddressFamily(
-        "example.com", net::ADDRESS_FAMILY_IPV4, kExampleComAddress.ToString());
+    net::AddressList example_com_addresses;
+    example_com_addresses.push_back(net::IPEndPoint(kExampleComAddress, 0));
+    example_com_addresses.push_back(net::IPEndPoint(kExampleComAddressIpv6, 0));
     mock_host_resolver_.rules()->AddRule("example.com",
-                                         kExampleComAddressIpv6.ToString());
+                                         std::move(example_com_addresses));
+
     mock_host_resolver_.rules()->AddRule("chromium.org",
                                          kChromiumOrgAddress.ToString());
-    mock_host_resolver_.rules()->AddSimulatedFailure("failure.fail");
+    mock_host_resolver_.rules()->AddRule("failure.fail",
+                                         net::ERR_NAME_NOT_RESOLVED);
 
-    resolver_service_.reset(new MojoHostResolverImpl(&mock_host_resolver_,
-                                                     net::NetLogWithSource()));
+    resolver_service_ = std::make_unique<MojoHostResolverImpl>(
+        &mock_host_resolver_, net::NetLogWithSource());
   }
 
   // Wait until the mock resolver has received |num| resolve requests.
@@ -236,7 +242,8 @@ TEST_F(MojoHostResolverImplTest, ResolveEx) {
   client.WaitForResult();
 
   EXPECT_THAT(client.error_, IsOk());
-  EXPECT_THAT(client.results_, testing::ElementsAre(kExampleComAddressIpv6));
+  EXPECT_THAT(client.results_, testing::UnorderedElementsAre(
+                                   kExampleComAddress, kExampleComAddressIpv6));
 }
 
 // Makes sure that the passed in NetworkIsolationKey is passed to the

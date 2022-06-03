@@ -6,7 +6,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/zucchini/io_utils.h"
 
 namespace zucchini {
@@ -16,7 +16,7 @@ namespace zucchini {
 Rel32ReaderX86::Rel32ReaderX86(ConstBufferView image,
                                offset_t lo,
                                offset_t hi,
-                               const std::vector<offset_t>* locations,
+                               const std::deque<offset_t>* locations,
                                const AddressTranslator& translator)
     : image_(image),
       target_rva_to_offset_(translator),
@@ -30,7 +30,7 @@ Rel32ReaderX86::Rel32ReaderX86(ConstBufferView image,
 
 Rel32ReaderX86::~Rel32ReaderX86() = default;
 
-base::Optional<Reference> Rel32ReaderX86::GetNext() {
+absl::optional<Reference> Rel32ReaderX86::GetNext() {
   while (current_ < last_ && *current_ < hi_) {
     offset_t loc_offset = *(current_++);
     DCHECK_LE(loc_offset + 4, image_.size());  // Sanity check.
@@ -41,7 +41,7 @@ base::Optional<Reference> Rel32ReaderX86::GetNext() {
     DCHECK_NE(kInvalidOffset, target_offset);
     return Reference{loc_offset, target_offset};
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 /******** Rel32ReceptorX86 ********/

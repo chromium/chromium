@@ -1,0 +1,43 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "empty_logger.cc",
+    "empty_logger.h",
+    "fake_server_response.cc",
+    "fake_server_response.h",
+    "fake_tile_service.cc",
+    "fake_tile_service.h",
+  ]
+
+  deps = [
+    "//components/query_tiles:public",
+    "//components/query_tiles/internal",
+    "//components/query_tiles/proto",
+  ]
+}
+
+source_set("test_lib") {
+  testonly = true
+
+  visibility = [
+    "//components/query_tiles/internal:unit_tests",
+    "//components/query_tiles:query_tiles_unit_tests",
+  ]
+
+  sources = [
+    "test_utils.cc",
+    "test_utils.h",
+  ]
+
+  deps = [
+    "//components/query_tiles:public",
+    "//components/query_tiles/internal",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

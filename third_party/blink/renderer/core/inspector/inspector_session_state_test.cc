@@ -7,6 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
 using mojom::blink::DevToolsSessionState;
@@ -82,10 +83,14 @@ TEST(InspectorSessionStateTest, SimpleFields) {
     simple_agent.counter_.Set(311);
     simple_agent.bytes_.Set({0xde, 0xad, 0xbe, 0xef});
 
+    // Test that Latin1 is handled properly
+    simple_agent.message_.Set("\xC7 cedilla");
+
     EXPECT_EQ(true, simple_agent.enabled_.Get());
     EXPECT_EQ(11.0, simple_agent.field1_.Get());
     EXPECT_EQ(42.0, simple_agent.multiplier_.Get());
     EXPECT_EQ(311, simple_agent.counter_.Get());
+    EXPECT_EQ("\xC7 cedilla", simple_agent.message_.Get());
     EXPECT_THAT(simple_agent.bytes_.Get(), ElementsAre(0xde, 0xad, 0xbe, 0xef));
 
     // Now send the updates back to the browser session.
@@ -101,6 +106,7 @@ TEST(InspectorSessionStateTest, SimpleFields) {
     EXPECT_EQ(11.0, simple_agent.field1_.Get());
     EXPECT_EQ(42.0, simple_agent.multiplier_.Get());
     EXPECT_EQ(311, simple_agent.counter_.Get());
+    EXPECT_EQ("\xC7 cedilla", simple_agent.message_.Get());
     EXPECT_THAT(simple_agent.bytes_.Get(), ElementsAre(0xde, 0xad, 0xbe, 0xef));
 
     simple_agent.enabled_.Set(false);
@@ -231,8 +237,7 @@ TEST(InspectorSessionStateTest, MultipleAgents) {
   // passed to AgentState so that the stored values won't collide.
   DevToolsSessionStatePtr cookie = dev_tools_session.CloneCookie();
   Vector<WTF::String> keys;
-  for (const WTF::String& k : cookie->entries.Keys())
-    keys.push_back(k);
+  WTF::CopyKeysToVector(cookie->entries, keys);
 
   EXPECT_THAT(keys, UnorderedElementsAre("map_agents.1/Pi", "simple_agent.4/"));
 

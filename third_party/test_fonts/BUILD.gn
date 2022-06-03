@@ -27,15 +27,16 @@ copy("test_fonts") {
     "test_fonts/Lohit-Gurmukhi.ttf",
     "test_fonts/Lohit-Tamil.ttf",
     "test_fonts/MuktiNarrow.ttf",
+    "test_fonts/NotoColorEmoji.ttf",
     "test_fonts/NotoSansCJKjp-Regular.otf",
     "test_fonts/NotoSansKhmer-Regular.ttf",
+    "test_fonts/NotoSansSymbols2-Regular.ttf",
+    "test_fonts/NotoSansTibetan-Regular.ttf",
     "test_fonts/Tinos-Bold.ttf",
     "test_fonts/Tinos-BoldItalic.ttf",
     "test_fonts/Tinos-Italic.ttf",
     "test_fonts/Tinos-Regular.ttf",
   ]
 
-  outputs = [
-    "${root_build_dir}/test_fonts/{{source_file_part}}",
-  ]
+  outputs = [ "$root_out_dir/test_fonts/{{source_file_part}}" ]
 }

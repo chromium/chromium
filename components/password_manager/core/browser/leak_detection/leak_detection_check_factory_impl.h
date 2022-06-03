@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_CHECK_FACTORY_IMPL_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_LEAK_DETECTION_LEAK_DETECTION_CHECK_FACTORY_IMPL_H_
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "url/gurl.h"
 
@@ -21,6 +19,12 @@ class LeakDetectionCheckFactoryImpl : public LeakDetectionCheckFactory {
 
   std::unique_ptr<LeakDetectionCheck> TryCreateLeakCheck(
       LeakDetectionDelegateInterface* delegate,
+      signin::IdentityManager* identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+      const override;
+
+  std::unique_ptr<BulkLeakCheck> TryCreateBulkLeakCheck(
+      BulkLeakCheckDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
       const override;

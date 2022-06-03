@@ -7,7 +7,6 @@
 #include <memory>
 #include <string>
 
-#include "base/logging.h"
 #include "base/nix/xdg_util.h"
 #include "dbus/message.h"
 #include "dbus/mock_bus.h"
@@ -93,7 +92,7 @@ class KWalletDBusTest
         mock_session_bus_.get(), dbus_service_name_,
         dbus::ObjectPath(dbus_path_));
 
-    // The kwallet proxy is aquired once, when preparing |kwallet_dbus_|
+    // The kwallet proxy is acquired once, when preparing |kwallet_dbus_|
     EXPECT_CALL(
         *mock_session_bus_.get(),
         GetObjectProxy(dbus_service_name_, dbus::ObjectPath(dbus_path_)))
@@ -103,6 +102,9 @@ class KWalletDBusTest
 
     testing::Mock::VerifyAndClearExpectations(mock_session_bus_.get());
   }
+
+  KWalletDBusTest(const KWalletDBusTest&) = delete;
+  KWalletDBusTest& operator=(const KWalletDBusTest&) = delete;
 
  protected:
   const base::nix::DesktopEnvironment desktop_env_;
@@ -114,9 +116,6 @@ class KWalletDBusTest
   std::string dbus_service_name_;
   std::string dbus_path_;
   std::string kwalletd_name_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KWalletDBusTest);
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -809,10 +808,11 @@ TEST_P(KWalletDBusTest, ReadPassword) {
           _))
       .WillOnce(Return(ByMove(RespondString("password"))));
 
-  std::string password;
+  absl::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::SUCCESS,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
-  EXPECT_EQ("password", password);
+  EXPECT_TRUE(password.has_value());
+  EXPECT_EQ("password", password.value());
 }
 
 TEST_P(KWalletDBusTest, ReadPasswordErrorRead) {
@@ -821,9 +821,10 @@ TEST_P(KWalletDBusTest, ReadPasswordErrorRead) {
       CallMethodAndBlock(Calls(kKWalletInterface, "readPassword"), _))
       .WillOnce(Return(ByMove(dbus::Response::CreateEmpty())));
 
-  std::string password;
+  absl::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::CANNOT_READ,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
+  EXPECT_FALSE(password.has_value());
 }
 
 TEST_P(KWalletDBusTest, ReadPasswordErrorContact) {
@@ -832,9 +833,10 @@ TEST_P(KWalletDBusTest, ReadPasswordErrorContact) {
       CallMethodAndBlock(Calls(kKWalletInterface, "readPassword"), _))
       .WillOnce(Return(ByMove(nullptr)));
 
-  std::string password;
+  absl::optional<std::string> password;
   EXPECT_EQ(KWalletDBus::Error::CANNOT_CONTACT,
             kwallet_dbus_.ReadPassword(123, "folder", "key", "app", &password));
+  EXPECT_FALSE(password.has_value());
 }
 
 TEST_P(KWalletDBusTest, CloseSuccess) {

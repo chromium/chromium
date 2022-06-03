@@ -14,17 +14,17 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/task_runner.h"
+#include "base/task/current_thread.h"
+#include "base/task/task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
 #include "third_party/skia/include/core/SkImageInfo.h"
 #include "ui/display/types/gamma_ramp_rgb_entry.h"
 #include "ui/ozone/platform/drm/common/drm_util.h"
+#include "ui/ozone/platform/drm/gpu/hardware_display_plane.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_atomic.h"
 #include "ui/ozone/platform/drm/gpu/hardware_display_plane_manager_legacy.h"
 
@@ -105,10 +105,10 @@ bool ProcessDrmEvent(int fd, const DrmEventHandler& callback) {
         DCHECK_EQ(base::TimeTicks::GetClock(),
                   base::TimeTicks::Clock::LINUX_CLOCK_MONOTONIC);
         const base::TimeTicks timestamp =
-            base::TimeTicks() + base::TimeDelta::FromMicroseconds(
-                                    static_cast<int64_t>(vblank.tv_sec) *
-                                        base::Time::kMicrosecondsPerSecond +
-                                    vblank.tv_usec);
+            base::TimeTicks() +
+            base::Microseconds(static_cast<int64_t>(vblank.tv_sec) *
+                                   base::Time::kMicrosecondsPerSecond +
+                               vblank.tv_usec);
         callback.Run(vblank.sequence, timestamp, vblank.user_data);
       } break;
       case DRM_EVENT_VBLANK:
@@ -146,7 +146,11 @@ DrmPropertyBlobMetadata::~DrmPropertyBlobMetadata() {
 class DrmDevice::PageFlipManager {
  public:
   PageFlipManager() : next_id_(0) {}
-  ~PageFlipManager() {}
+
+  PageFlipManager(const PageFlipManager&) = delete;
+  PageFlipManager& operator=(const PageFlipManager&) = delete;
+
+  ~PageFlipManager() = default;
 
   void OnPageFlip(uint32_t frame, base::TimeTicks timestamp, uint64_t id) {
     auto it =
@@ -170,7 +174,8 @@ class DrmDevice::PageFlipManager {
   void RegisterCallback(uint64_t id,
                         uint64_t pending_calls,
                         DrmDevice::PageFlipCallback callback) {
-    callbacks_.push_back({id, pending_calls, std::move(callback)});
+    callbacks_.push_back(
+        {id, static_cast<uint32_t>(pending_calls), std::move(callback)});
   }
 
  private:
@@ -191,8 +196,6 @@ class DrmDevice::PageFlipManager {
   uint64_t next_id_;
 
   std::vector<PageFlip> callbacks_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageFlipManager);
 };
 
 class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
@@ -202,23 +205,26 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
     Register();
   }
 
+  IOWatcher(const IOWatcher&) = delete;
+  IOWatcher& operator=(const IOWatcher&) = delete;
+
   ~IOWatcher() override { Unregister(); }
 
  private:
   void Register() {
-    DCHECK(base::MessageLoopCurrentForIO::IsSet());
-    base::MessageLoopCurrentForIO::Get()->WatchFileDescriptor(
+    DCHECK(base::CurrentIOThread::IsSet());
+    base::CurrentIOThread::Get()->WatchFileDescriptor(
         fd_, true, base::MessagePumpForIO::WATCH_READ, &controller_, this);
   }
 
   void Unregister() {
-    DCHECK(base::MessageLoopCurrentForIO::IsSet());
+    DCHECK(base::CurrentIOThread::IsSet());
     controller_.StopWatchingFileDescriptor();
   }
 
   // base::MessagePumpLibevent::FdWatcher overrides:
   void OnFileCanReadWithoutBlocking(int fd) override {
-    DCHECK(base::MessageLoopCurrentForIO::IsSet());
+    DCHECK(base::CurrentIOThread::IsSet());
     TRACE_EVENT1("drm", "OnDrmEvent", "socket", fd);
 
     if (!ProcessDrmEvent(
@@ -234,8 +240,6 @@ class DrmDevice::IOWatcher : public base::MessagePumpLibevent::FdWatcher {
   base::MessagePumpLibevent::FdWatchController controller_;
 
   int fd_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOWatcher);
 };
 
 DrmDevice::DrmDevice(const base::FilePath& device_path,
@@ -248,7 +252,7 @@ DrmDevice::DrmDevice(const base::FilePath& device_path,
       is_primary_device_(is_primary_device),
       gbm_(std::move(gbm)) {}
 
-DrmDevice::~DrmDevice() {}
+DrmDevice::~DrmDevice() = default;
 
 bool DrmDevice::Initialize() {
   // Ignore devices that cannot perform modesetting.
@@ -275,8 +279,8 @@ bool DrmDevice::Initialize() {
   allow_addfb2_modifiers_ =
       GetCapability(DRM_CAP_ADDFB2_MODIFIERS, &value) && value;
 
-  watcher_.reset(
-      new IOWatcher(file_.GetPlatformFile(), page_flip_manager_.get()));
+  watcher_ = std::make_unique<IOWatcher>(file_.GetPlatformFile(),
+                                         page_flip_manager_.get());
 
   return true;
 }
@@ -302,36 +306,28 @@ ScopedDrmCrtcPtr DrmDevice::GetCrtc(uint32_t crtc_id) {
 bool DrmDevice::SetCrtc(uint32_t crtc_id,
                         uint32_t framebuffer,
                         std::vector<uint32_t> connectors,
-                        drmModeModeInfo* mode) {
+                        const drmModeModeInfo& mode) {
   DCHECK(file_.IsValid());
   DCHECK(!connectors.empty());
-  DCHECK(mode);
 
   TRACE_EVENT2("drm", "DrmDevice::SetCrtc", "crtc", crtc_id, "size",
-               gfx::Size(mode->hdisplay, mode->vdisplay).ToString());
-  return !drmModeSetCrtc(file_.GetPlatformFile(), crtc_id, framebuffer, 0, 0,
-                         connectors.data(), connectors.size(), mode);
-}
+               gfx::Size(mode.hdisplay, mode.vdisplay).ToString());
 
-bool DrmDevice::SetCrtc(drmModeCrtc* crtc, std::vector<uint32_t> connectors) {
-  DCHECK(file_.IsValid());
-  // If there's no buffer then the CRTC was disabled.
-  if (!crtc->buffer_id)
-    return DisableCrtc(crtc->crtc_id);
+  if (!drmModeSetCrtc(file_.GetPlatformFile(), crtc_id, framebuffer, 0, 0,
+                      connectors.data(), connectors.size(),
+                      const_cast<drmModeModeInfo*>(&mode))) {
+    ++modeset_sequence_id_;
+    return true;
+  }
 
-  DCHECK(!connectors.empty());
-
-  TRACE_EVENT1("drm", "DrmDevice::RestoreCrtc", "crtc", crtc->crtc_id);
-  return !drmModeSetCrtc(file_.GetPlatformFile(), crtc->crtc_id,
-                         crtc->buffer_id, crtc->x, crtc->y, connectors.data(),
-                         connectors.size(), &crtc->mode);
+  return false;
 }
 
 bool DrmDevice::DisableCrtc(uint32_t crtc_id) {
   DCHECK(file_.IsValid());
   TRACE_EVENT1("drm", "DrmDevice::DisableCrtc", "crtc", crtc_id);
-  return !drmModeSetCrtc(file_.GetPlatformFile(), crtc_id, 0, 0, 0, NULL, 0,
-                         NULL);
+  return !drmModeSetCrtc(file_.GetPlatformFile(), crtc_id, 0, 0, 0, nullptr, 0,
+                         nullptr);
 }
 
 ScopedDrmConnectorPtr DrmDevice::GetConnector(uint32_t connector_id) {
@@ -432,12 +428,13 @@ bool DrmDevice::SetProperty(uint32_t connector_id,
                                       property_id, value);
 }
 
-ScopedDrmPropertyBlob DrmDevice::CreatePropertyBlob(void* blob, size_t size) {
+ScopedDrmPropertyBlob DrmDevice::CreatePropertyBlob(const void* blob,
+                                                    size_t size) {
   uint32_t id = 0;
   int ret = drmModeCreatePropertyBlob(file_.GetPlatformFile(), blob, size, &id);
   DCHECK(!ret && id);
 
-  return ScopedDrmPropertyBlob(new DrmPropertyBlobMetadata(this, id));
+  return std::make_unique<DrmPropertyBlobMetadata>(this, id);
 }
 
 void DrmDevice::DestroyPropertyBlob(uint32_t id) {
@@ -526,7 +523,7 @@ bool DrmDevice::MapDumbBuffer(uint32_t handle, size_t size, void** pixels) {
     return false;
   }
 
-  *pixels = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED,
+  *pixels = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED,
                  file_.GetPlatformFile(), map_request.offset);
   if (*pixels == MAP_FAILED) {
     PLOG(ERROR) << "Cannot mmap dumb buffer";
@@ -553,14 +550,45 @@ bool DrmDevice::CommitProperties(
     uint32_t flags,
     uint32_t crtc_count,
     scoped_refptr<PageFlipRequest> page_flip_request) {
+  bool success = CommitPropertiesInternal(properties, flags, crtc_count,
+                                          page_flip_request);
+
+  if (success && flags == DRM_MODE_ATOMIC_ALLOW_MODESET)
+    ++modeset_sequence_id_;
+
+  return success;
+}
+
+bool DrmDevice::CommitPropertiesInternal(
+    drmModeAtomicReq* properties,
+    uint32_t flags,
+    uint32_t crtc_count,
+    scoped_refptr<PageFlipRequest> page_flip_request) {
   uint64_t id = 0;
+
   if (page_flip_request) {
     flags |= DRM_MODE_PAGE_FLIP_EVENT;
     id = page_flip_manager_->GetNextId();
   }
 
-  if (!drmModeAtomicCommit(file_.GetPlatformFile(), properties, flags,
-                           reinterpret_cast<void*>(id))) {
+  int result = drmModeAtomicCommit(file_.GetPlatformFile(), properties, flags,
+                                   reinterpret_cast<void*>(id));
+  if (result && errno == EBUSY && (flags & DRM_MODE_ATOMIC_NONBLOCK)) {
+    VLOG(1) << "Nonblocking atomic commit failed with EBUSY, retry without "
+               "nonblock";
+    // There have been cases where we get back EBUSY when attempting a
+    // non-blocking atomic commit. If we return false from here, that will cause
+    // the GPU process to CHECK itself. These are likely due to kernel bugs,
+    // which should be fixed, but rather than crashing we should retry the
+    // commit without the non-blocking flag and then it should work. This will
+    // cause a slight delay, but that should be imperceptible and better than
+    // crashing. We still do want the underlying driver bugs fixed, but this
+    // provide a better user experience.
+    flags &= ~DRM_MODE_ATOMIC_NONBLOCK;
+    result = drmModeAtomicCommit(file_.GetPlatformFile(), properties, flags,
+                                 reinterpret_cast<void*>(id));
+  }
+  if (!result) {
     if (page_flip_request) {
       page_flip_manager_->RegisterCallback(id, crtc_count,
                                            page_flip_request->AddPageFlip());
@@ -588,6 +616,17 @@ bool DrmDevice::DropMaster() {
   TRACE_EVENT1("drm", "DrmDevice::DropMaster", "path", device_path_.value());
   DCHECK(file_.IsValid());
   return (drmDropMaster(file_.GetPlatformFile()) == 0);
+}
+
+void DrmDevice::AsValueInto(base::trace_event::TracedValue* value) const {
+  value->SetString("device_path", device_path_.value());
+  {
+    auto scoped_array = value->BeginArrayScoped("planes");
+    for (const auto& plane : plane_manager_->planes()) {
+      auto scoped_dict = value->AppendDictionaryScoped();
+      plane->AsValueInto(value);
+    }
+  }
 }
 
 bool DrmDevice::SetGammaRamp(

@@ -8,8 +8,9 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/task_environment.h"
 #include "chromecast/net/fake_stream_socket.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
@@ -45,6 +46,7 @@ class FakeStreamSocketTest : public ::testing::Test {
         socket_2_(endpoint_2_) {}
   ~FakeStreamSocketTest() override {}
 
+  base::test::TaskEnvironment task_environment_;
   net::IPEndPoint endpoint_1_;
   FakeStreamSocket socket_1_;
   net::IPEndPoint endpoint_2_;
@@ -65,6 +67,7 @@ TEST_F(FakeStreamSocketTest, GetPeerAddressWithoutPeer) {
 
 TEST_F(FakeStreamSocketTest, GetPeerAddressWithPeer) {
   socket_1_.SetPeer(&socket_2_);
+  socket_2_.SetPeer(&socket_1_);
   net::IPEndPoint peer_address;
   ASSERT_EQ(net::OK, socket_1_.GetPeerAddress(&peer_address));
   EXPECT_EQ(endpoint_2_, peer_address);
@@ -73,9 +76,9 @@ TEST_F(FakeStreamSocketTest, GetPeerAddressWithPeer) {
 TEST_F(FakeStreamSocketTest, ReadAndWriteWithoutPeer) {
   auto io_buffer = base::MakeRefCounted<net::IOBuffer>(1);
   EXPECT_EQ(net::ERR_IO_PENDING,
-            socket_1_.Read(io_buffer.get(), 1, base::Bind(&Callback)));
+            socket_1_.Read(io_buffer.get(), 1, base::BindOnce(&Callback)));
   EXPECT_EQ(net::ERR_SOCKET_NOT_CONNECTED,
-            socket_1_.Write(io_buffer.get(), 1, base::Bind(&Callback),
+            socket_1_.Write(io_buffer.get(), 1, base::BindOnce(&Callback),
                             TRAFFIC_ANNOTATION_FOR_TESTS));
 }
 
@@ -86,12 +89,12 @@ TEST_F(FakeStreamSocketTest, ReadAndWriteWithPeer) {
   auto send_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
   ASSERT_EQ(
       static_cast<int>(kData.size()),
-      socket_1_.Write(send_buffer.get(), kData.size(), base::Bind(&Callback),
-                      TRAFFIC_ANNOTATION_FOR_TESTS));
+      socket_1_.Write(send_buffer.get(), kData.size(),
+                      base::BindOnce(&Callback), TRAFFIC_ANNOTATION_FOR_TESTS));
   auto receive_buffer = base::MakeRefCounted<net::IOBuffer>(kData.size());
   ASSERT_EQ(static_cast<int>(kData.size()),
             socket_2_.Read(receive_buffer.get(), kData.size(),
-                           base::Bind(&Callback)));
+                           base::BindOnce(&Callback)));
   EXPECT_EQ(0, std::memcmp(kData.data(), receive_buffer->data(), kData.size()));
 }
 
@@ -102,12 +105,12 @@ TEST_F(FakeStreamSocketTest, ReadAndWritePending) {
   auto receive_buffer = base::MakeRefCounted<net::IOBuffer>(kData.size());
   ASSERT_EQ(net::ERR_IO_PENDING,
             socket_2_.Read(receive_buffer.get(), kData.size(),
-                           base::Bind(&Callback)));
+                           base::BindOnce(&Callback)));
   auto send_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
   ASSERT_EQ(
       static_cast<int>(kData.size()),
-      socket_1_.Write(send_buffer.get(), kData.size(), base::Bind(&Callback),
-                      TRAFFIC_ANNOTATION_FOR_TESTS));
+      socket_1_.Write(send_buffer.get(), kData.size(),
+                      base::BindOnce(&Callback), TRAFFIC_ANNOTATION_FOR_TESTS));
   EXPECT_EQ(0, std::memcmp(kData.data(), receive_buffer->data(), kData.size()));
 }
 
@@ -119,15 +122,15 @@ TEST_F(FakeStreamSocketTest, ReadAndWriteLargeData) {
   auto send_buffer = base::MakeRefCounted<net::StringIOBuffer>(kData);
   const int kWriteCount = 1024 * 1024 / kData.size();
   for (int i = 0; i < kWriteCount; i++) {
-    ASSERT_EQ(
-        static_cast<int>(kData.size()),
-        socket_1_.Write(send_buffer.get(), kData.size(), base::Bind(&Callback),
-                        TRAFFIC_ANNOTATION_FOR_TESTS));
+    ASSERT_EQ(static_cast<int>(kData.size()),
+              socket_1_.Write(send_buffer.get(), kData.size(),
+                              base::BindOnce(&Callback),
+                              TRAFFIC_ANNOTATION_FOR_TESTS));
   }
   auto receive_buffer = base::MakeRefCounted<net::IOBuffer>(1024);
   for (int i = 0; i < 1024; i++) {
     ASSERT_EQ(1024, socket_2_.Read(receive_buffer.get(), 1024,
-                                   base::Bind(&Callback)));
+                                   base::BindOnce(&Callback)));
   }
 }
 

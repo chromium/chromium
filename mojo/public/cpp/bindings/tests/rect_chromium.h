@@ -7,7 +7,7 @@
 
 #include <functional>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace mojo {
 namespace test {

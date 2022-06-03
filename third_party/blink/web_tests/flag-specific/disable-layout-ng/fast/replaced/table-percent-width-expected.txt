@@ -1,0 +1,23 @@
+This test checks that a replaced element with percentage width (and no height specified) within a table cell is squeezed to the dimensions of the table cell.
+See bug #29447.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+PASS getWidth('img-1') is '105px'
+PASS getHeight('img-1') is '105px'
+FAIL getWidth('img-2') should be 100px. Was 98px.
+FAIL getHeight('img-2') should be 100px. Was 98px.
+PASS getWidth('img-3') is '40px'
+PASS getHeight('img-3') is '40px'
+FAIL getWidth('img-4') should be 102px. Was 98px.
+FAIL getHeight('img-4') should be 102px. Was 98px.
+PASS getWidth('img-5') is '40px'
+FAIL getHeight('img-5') should be 102px. Was 98px.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

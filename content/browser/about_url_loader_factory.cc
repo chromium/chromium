@@ -10,12 +10,14 @@
 
 namespace content {
 
-AboutURLLoaderFactory::AboutURLLoaderFactory() = default;
+AboutURLLoaderFactory::AboutURLLoaderFactory(
+    mojo::PendingReceiver<network::mojom::URLLoaderFactory> factory_receiver)
+    : network::SelfDeletingURLLoaderFactory(std::move(factory_receiver)) {}
+
 AboutURLLoaderFactory::~AboutURLLoaderFactory() = default;
 
 void AboutURLLoaderFactory::CreateLoaderAndStart(
     mojo::PendingReceiver<network::mojom::URLLoader> loader,
-    int32_t routing_id,
     int32_t request_id,
     uint32_t options,
     const network::ResourceRequest& request,
@@ -31,7 +33,7 @@ void AboutURLLoaderFactory::CreateLoaderAndStart(
   // doesn't add any data.
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;
-  if (CreateDataPipe(nullptr, &producer, &consumer) != MOJO_RESULT_OK) {
+  if (CreateDataPipe(nullptr, producer, consumer) != MOJO_RESULT_OK) {
     client_remote->OnComplete(
         network::URLLoaderCompletionStatus(net::ERR_INSUFFICIENT_RESOURCES));
     return;
@@ -41,9 +43,17 @@ void AboutURLLoaderFactory::CreateLoaderAndStart(
   client_remote->OnComplete(network::URLLoaderCompletionStatus(net::OK));
 }
 
-void AboutURLLoaderFactory::Clone(
-    mojo::PendingReceiver<network::mojom::URLLoaderFactory> loader) {
-  receivers_.Add(this, std::move(loader));
+// static
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+AboutURLLoaderFactory::Create() {
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> pending_remote;
+
+  // The AboutURLLoaderFactory will delete itself when there are no more
+  // receivers - see the network::SelfDeletingURLLoaderFactory::OnDisconnect
+  // method.
+  new AboutURLLoaderFactory(pending_remote.InitWithNewPipeAndPassReceiver());
+
+  return pending_remote;
 }
 
 }  // namespace content

@@ -27,6 +27,7 @@
 
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/tag_collection.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -46,11 +47,12 @@ class HTMLTagCollection final : public TagCollection {
   AtomicString lowered_qualified_name_;
 };
 
-DEFINE_TYPE_CASTS(HTMLTagCollection,
-                  LiveNodeListBase,
-                  collection,
-                  collection->GetType() == kHTMLTagCollectionType,
-                  collection.GetType() == kHTMLTagCollectionType);
+template <>
+struct DowncastTraits<HTMLTagCollection> {
+  static bool AllowFrom(const LiveNodeListBase& collection) {
+    return collection.GetType() == kHTMLTagCollectionType;
+  }
+};
 
 inline bool HTMLTagCollection::ElementMatches(
     const Element& test_element) const {

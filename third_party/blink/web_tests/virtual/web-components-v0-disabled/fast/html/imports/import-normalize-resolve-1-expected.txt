@@ -1,4 +1,0 @@
-CONSOLE ERROR: line 9: Uncaught TypeError: document.registerElement is not a function
-CONSOLE WARNING: HTML Imports is deprecated and has now been removed as of M80. See https://www.chromestatus.com/features/5144752345317376 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-CONSOLE WARNING: HTML Imports is deprecated and has now been removed as of M80. See https://www.chromestatus.com/features/5144752345317376 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
-

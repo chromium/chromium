@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS An embed name appears in a document's property names if the embed is exposed.
+FAIL An embed name does not appears in a document's property names if the embed is inside another embed. assert_false: expected false got true
+PASS A form name appears in a document's property names.
+PASS An iframe name appears in a document's property names.
+PASS An img name appears in a document's property names when the img has no id.
+FAIL An object name appears in a document's property names if the object is exposed. assert_true: expected true got false
+PASS An object id appears in a document's property names if the object is exposed.
+FAIL An object name does not appear in a document's property names if the object is inside another object. assert_false: expected false got true
+FAIL An object id does not appear in a document's property names if the object is inside another object. assert_false: expected false got true
+PASS An img name appears in a document's property names when the img has an id.
+PASS An img id appears in a document's property names when the img has a name.
+PASS An img id does not appear in a document's property names when the img has no name.
+PASS A document's property names can include integer strings.
+PASS A template name does not appear in a document's property names.
+PASS An img name does not appear in a document's property names when the img is in a template's document fragment.
+FAIL A document's property names appear in tree order. assert_greater_than: expected a number greater than 11 but got 0
+Harness: the test ran to completion.
+

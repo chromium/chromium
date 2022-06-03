@@ -25,7 +25,7 @@
 namespace crashpad {
 namespace test {
 
-//! \brief Creates a child process for testing. Uses gtest `ASSERT_*` to
+//! \brief Creates a child process for testing. Uses Google Test `ASSERT_*` to
 //!     indicate failure. The child's output is passed through a pipe and is
 //!     available via stdout_read_handle(), and the child's input is attached to
 //!     a second pipe available via stdin_write_handle().
@@ -41,8 +41,8 @@ class ChildLauncher {
   //! \brief Starts the child process, after which the handle functions below
   //!     will be valid.
   //!
-  //! Errors are signaled via gtest assertions. This method may be invoked via
-  //! `ASSERT_NO_FATAL_FAILURE()` to assert that it succeeds.
+  //! Errors are signaled via Google Test assertions. This method may be invoked
+  //! via `ASSERT_NO_FATAL_FAILURE()` to assert that it succeeds.
   void Start();
 
   //! \brief Waits for the child process to exit.

@@ -4,12 +4,12 @@
 
 (async function() {
   TestRunner.addResult(`Tests highlights for display locking.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
-      <div id="container" renderSubtree="invisible skip-activation" style="intrinsic-size: 10px;">
-        <div id="child" style="width: 50px; height: 50px;"></div>
+      <div id="container" style="content-visibility: hidden; contain-intrinsic-size: 10px;">
+        <div id="child" style="width: 50px; height: 50px; background: blue">Text</div>
       </div>
     `);
 

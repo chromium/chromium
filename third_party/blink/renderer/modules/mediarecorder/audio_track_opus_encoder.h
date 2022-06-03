@@ -24,7 +24,11 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
                               public media::AudioConverter::InputCallback {
  public:
   AudioTrackOpusEncoder(OnEncodedAudioCB on_encoded_audio_cb,
-                        int32_t bits_per_second);
+                        int32_t bits_per_second,
+                        bool vbr_enabled = true);
+
+  AudioTrackOpusEncoder(const AudioTrackOpusEncoder&) = delete;
+  AudioTrackOpusEncoder& operator=(const AudioTrackOpusEncoder&) = delete;
 
   void OnSetFormat(const media::AudioParameters& params) override;
   void EncodeAudio(std::unique_ptr<media::AudioBus> input_bus,
@@ -44,6 +48,11 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   // Target bitrate for Opus. If 0, Opus provide automatic bitrate is used.
   const int32_t bits_per_second_;
 
+  // Opus operates in VBR or constrained VBR modes even when a fixed bitrate
+  // is specified, unless 'hard' CBR is explicitly enabled by disabling VBR
+  // mode with this flag.
+  const bool vbr_enabled_;
+
   // Output parameters after audio conversion. This differs from the input
   // parameters only in sample_rate() and frames_per_buffer(): output should be
   // 48ksamples/s and 2880, respectively.
@@ -60,8 +69,6 @@ class AudioTrackOpusEncoder : public AudioTrackEncoder,
   std::unique_ptr<float[]> buffer_;
 
   OpusEncoder* opus_encoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioTrackOpusEncoder);
 };
 
 }  // namespace blink

@@ -1,0 +1,78 @@
+<!doctype html>
+<title>CSS url() reference filter may taint the canvas: tainting</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<svg style="display: block; width: 0; height: 0">
+  <defs>
+    <filter id="drop-shadow">
+      <feOffset dx="0" dy="10" result="offset" in="SourceAlpha"></feOffset>
+      <feFlood flood-color="currentcolor"></feFlood>
+      <feComposite in2="offset" operator="in"></feComposite>
+      <feMerge>
+        <feMergeNode></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+      </feMerge>
+    </filter>
+    <filter id="image">
+      <feImage xlink:href="#circle" />
+      <feColorMatrix type="matrix" values="0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1" />
+    </filter>
+    <filter id="merge-clean">
+      <feColorMatrix type="matrix" values="0 0 0 1 0  0 0 0 1 0  0 0 0 1 0  0 0 0 0 1" />
+      <feMerge>
+        <feMergeNode></feMergeNode>
+        <feMergeNode in="SourceGraphic"></feMergeNode>
+        <feMergeNode in="SourceAlpha"></feMergeNode>
+        <feMergeNode in="FillPaint"></feMergeNode>
+        <feMergeNode in="StrokePaint"></feMergeNode>
+      </feMerge>
+    </filter>
+    <circle id="circle" r="100" fill="blue" />
+  </defs>
+</svg>
+<script>
+function assert_tainted(performCommands, description) {
+  let ctx = document.createElement('canvas').getContext('2d');
+  performCommands(ctx);
+  assert_throws_dom("SecurityError", () => ctx.getImageData(0, 0, 1, 1), description);
+}
+
+// SVG reference filters taint the canvas according to
+// https://drafts.fxtf.org/filter-effects/#tainted-filter-primitives
+
+test(function() {
+  assert_tainted(ctx => {
+    ctx.filter = 'url(#drop-shadow)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'url(#drop-shadow)');
+
+  assert_tainted(ctx => {
+    ctx.fillStyle = '#0f0';
+    ctx.filter = 'url(#drop-shadow) brightness(0.5) url(#merge-clean)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'url(#drop-shadow) brightness(0.5) url(#merge-clean)');
+
+  assert_tainted(ctx => {
+    ctx.fillStyle = '#0f0';
+    ctx.filter = 'brightness(0.5) url(#drop-shadow)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'brightness(0.5) url(#drop-shadow)');
+
+  assert_tainted(ctx => {
+    ctx.fillStyle = '#0f0';
+    ctx.filter = 'brightness(0.5) url(#drop-shadow) brightness(0.5)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'brightness(0.5) url(#drop-shadow) brightness(0.5)');
+
+  assert_tainted(ctx => {
+    ctx.fillStyle = '#0f0';
+    ctx.filter = 'brightness(0.5) url(#drop-shadow) brightness(0.5)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'brightness(0.5) url(#drop-shadow) brightness(0.5)');
+
+  assert_tainted(ctx => {
+    ctx.filter = 'url(#image)';
+    ctx.fillRect(5, 5, 10, 10);
+  }, 'url(#image)');
+});
+</script>

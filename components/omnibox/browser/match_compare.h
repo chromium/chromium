@@ -22,7 +22,7 @@ class CompareWithDemoteByType {
   // Returns the relevance score of |match| demoted appropriately by
   // |demotions_by_type_|.
   int GetDemotedRelevance(const Match& match) const {
-    auto demotion_it = demotions_.find(match.GetDemotionType());
+    auto demotion_it = demotions_.find(match.type);
     return (demotion_it == demotions_.end())
                ? match.relevance
                : (match.relevance * demotion_it->second);
@@ -37,11 +37,6 @@ class CompareWithDemoteByType {
       // Greater relevance should come first.
       return demoted_relevance1 > demoted_relevance2;
     }
-    // "Paired" suggestions should follow each other, lower first.
-    // Even if subrelevances don't match, we must compare them to maintain
-    // ordering.
-    if (elem1.subrelevance != elem2.subrelevance)
-      return elem1.subrelevance < elem2.subrelevance;
     // For equal-relevance matches, we sort alphabetically, so that providers
     // who return multiple elements at the same priority get a "stable" sort
     // across multiple updates.

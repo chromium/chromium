@@ -4,11 +4,13 @@
 
 #include "ash/assistant/assistant_notification_expiry_monitor.h"
 
-#include "ash/assistant/assistant_notification_controller.h"
+#include <algorithm>
+
+#include "ash/assistant/assistant_notification_controller_impl.h"
 #include "ash/assistant/model/assistant_notification_model.h"
 #include "ash/assistant/model/assistant_notification_model_observer.h"
 #include "base/bind.h"
-#include "chromeos/services/assistant/public/mojom/assistant.mojom.h"
+#include "chromeos/services/assistant/public/cpp/assistant_service.h"
 
 namespace ash {
 
@@ -21,8 +23,8 @@ bool HasExpired(const AssistantNotificationExpiryMonitor::AssistantNotification*
 }
 
 // Returns the minimum of the base::Time instances that actually have a value.
-base::Optional<base::Time> Min(base::Optional<base::Time> left,
-                               base::Optional<base::Time> right) {
+absl::optional<base::Time> Min(absl::optional<base::Time> left,
+                               absl::optional<base::Time> right) {
   if (!left.has_value())
     return right;
 
@@ -37,19 +39,24 @@ base::Optional<base::Time> Min(base::Optional<base::Time> left,
 class AssistantNotificationExpiryMonitor::Observer
     : public AssistantNotificationModelObserver {
  public:
-  Observer(AssistantNotificationExpiryMonitor* monitor) : monitor_(monitor) {}
+  explicit Observer(AssistantNotificationExpiryMonitor* monitor)
+      : monitor_(monitor) {}
+
+  Observer(const Observer&) = delete;
+  Observer& operator=(const Observer&) = delete;
+
   ~Observer() override = default;
 
-  void OnNotificationAdded(const AssistantNotification* notification) override {
+  void OnNotificationAdded(const AssistantNotification& notification) override {
     monitor_->UpdateTimer();
   }
 
   void OnNotificationUpdated(
-      const AssistantNotification* notification) override {
+      const AssistantNotification& notification) override {
     monitor_->UpdateTimer();
   }
 
-  void OnNotificationRemoved(const AssistantNotification* notification,
+  void OnNotificationRemoved(const AssistantNotification& notification,
                              bool from_server) override {
     monitor_->UpdateTimer();
   }
@@ -60,22 +67,20 @@ class AssistantNotificationExpiryMonitor::Observer
 
  private:
   AssistantNotificationExpiryMonitor* const monitor_;
-
-  DISALLOW_COPY_AND_ASSIGN(Observer);
 };
 
 AssistantNotificationExpiryMonitor::AssistantNotificationExpiryMonitor(
-    AssistantNotificationController* controller)
+    AssistantNotificationControllerImpl* controller)
     : controller_(controller), observer_(std::make_unique<Observer>(this)) {
   DCHECK(controller_);
-  controller_->AddModelObserver(observer_.get());
+  controller_->model()->AddObserver(observer_.get());
 }
 
 AssistantNotificationExpiryMonitor::~AssistantNotificationExpiryMonitor() =
     default;
 
 void AssistantNotificationExpiryMonitor::UpdateTimer() {
-  base::Optional<base::TimeDelta> timeout = GetTimerTimeout();
+  absl::optional<base::TimeDelta> timeout = GetTimerTimeout();
   if (timeout) {
     timer_.Start(
         FROM_HERE, timeout.value(),
@@ -87,17 +92,17 @@ void AssistantNotificationExpiryMonitor::UpdateTimer() {
   }
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 AssistantNotificationExpiryMonitor::GetTimerTimeout() const {
-  base::Optional<base::Time> endtime = GetTimerEndTime();
+  absl::optional<base::Time> endtime = GetTimerEndTime();
   if (endtime)
     return endtime.value() - base::Time::Now();
-  return base::nullopt;
+  return absl::nullopt;
 }
 
-base::Optional<base::Time> AssistantNotificationExpiryMonitor::GetTimerEndTime()
+absl::optional<base::Time> AssistantNotificationExpiryMonitor::GetTimerEndTime()
     const {
-  base::Optional<base::Time> result = base::nullopt;
+  absl::optional<base::Time> result = absl::nullopt;
   for (const AssistantNotification* notification : GetNotifications())
     result = Min(result, notification->expiry_time);
   return result;

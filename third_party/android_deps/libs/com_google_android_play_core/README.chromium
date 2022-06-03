@@ -1,0 +1,13 @@
+Name: core
+Short Name: core
+URL: https://developers.google.com/android/guides/setup
+Version: 1.10.0
+License: Android Software Development Kit License
+License File: LICENSE
+Security Critical: yes
+
+Description:
+
+
+Local Modifications:
+No modifications.

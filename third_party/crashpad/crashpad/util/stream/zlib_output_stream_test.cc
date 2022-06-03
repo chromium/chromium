@@ -18,8 +18,8 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "gtest/gtest.h"
 #include "util/stream/test_output_stream.h"
@@ -41,6 +41,9 @@ class ZlibOutputStreamTest : public testing::Test {
         std::make_unique<ZlibOutputStream>(ZlibOutputStream::Mode::kDecompress,
                                            std::move(test_output_stream)));
   }
+
+  ZlibOutputStreamTest(const ZlibOutputStreamTest&) = delete;
+  ZlibOutputStreamTest& operator=(const ZlibOutputStreamTest&) = delete;
 
   const uint8_t* BuildDeterministicInput(size_t size) {
     deterministic_input_ = std::make_unique<uint8_t[]>(size);
@@ -69,8 +72,6 @@ class ZlibOutputStreamTest : public testing::Test {
   std::unique_ptr<uint8_t[]> input_;
   std::unique_ptr<uint8_t[]> deterministic_input_;
   TestOutputStream* test_output_stream_;  // weak, owned by zlib_output_stream_
-
-  DISALLOW_COPY_AND_ASSIGN(ZlibOutputStreamTest);
 };
 
 TEST_F(ZlibOutputStreamTest, WriteDeterministicShortData) {

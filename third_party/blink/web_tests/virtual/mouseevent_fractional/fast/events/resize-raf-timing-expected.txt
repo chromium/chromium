@@ -1,9 +1,0 @@
-Test that resize events are fired at requestAnimationFrame timing
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS resizeEventCount is 1
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

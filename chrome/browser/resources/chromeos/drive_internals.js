@@ -91,6 +91,14 @@ function updateCacheContents(cacheEntry) {
   $('cache-contents').appendChild(tr);
 }
 
+function updateVerboseLogging(enabled) {
+  $('verbose-logging-toggle').checked = enabled;
+}
+
+function updateStartupArguments(args) {
+  $('startup-arguments-input').value = args;
+}
+
 /**
  * Updates the Local Storage summary.
  * @param {Object} localStorageSummary Dictionary describing the status of local
@@ -237,6 +245,10 @@ function updateKeyValueList(ul, list) {
   }
 }
 
+function updateStartupArgumentsStatus(success) {
+  $('arguments-status-text').textContent = (success ? 'success' : 'failed');
+}
+
 /**
  * Updates the text next to the 'reset' button to update the status.
  * @param {boolean} success whether or not resetting has succeeded.
@@ -289,9 +301,59 @@ document.addEventListener('DOMContentLoaded', function() {
 
   updateToc();
 
+  $('verbose-logging-toggle').addEventListener('change', function(e) {
+    chrome.send('setVerboseLoggingEnabled', [e.target.checked]);
+  });
+
+  $('startup-arguments-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    $('arguments-status-text').textContent = 'applying...';
+    chrome.send('setStartupArguments', [$('startup-arguments-input').value]);
+  });
+
+  $('button-enable-tracing').addEventListener('click', function() {
+    chrome.send('enableTracing');
+  });
+
+  $('button-disable-tracing').addEventListener('click', function() {
+    chrome.send('disableTracing');
+  });
+
+  $('button-enable-networking').addEventListener('click', function() {
+    chrome.send('enableNetworking');
+  });
+
+  $('button-disable-networking').addEventListener('click', function() {
+    chrome.send('disableNetworking');
+  });
+
+  $('button-enable-force-pause-syncing').addEventListener('click', function() {
+    chrome.send('enableForcePauseSyncing');
+  });
+
+  $('button-disable-force-pause-syncing').addEventListener('click', function() {
+    chrome.send('disableForcePauseSyncing');
+  });
+
+  $('button-dump-account-settings').addEventListener('click', function() {
+    chrome.send('dumpAccountSettings');
+  });
+
+  $('button-load-account-settings').addEventListener('click', function() {
+    chrome.send('loadAccountSettings');
+  });
+
+  $('button-restart-drive').addEventListener('click', function() {
+    chrome.send('restartDrive');
+  });
+
   $('button-reset-drive-filesystem').addEventListener('click', function() {
-    $('reset-status-text').textContent = 'resetting...';
-    chrome.send('resetDriveFileSystem');
+    if (window.confirm(
+            'Warning: Any local changes not yet uploaded to the Drive server ' +
+            'will be lost, continue?')) {
+      $('reset-status-text').textContent = 'resetting...';
+      chrome.send('resetDriveFileSystem');
+    }
   });
 
   $('button-export-logs').addEventListener('click', function() {

@@ -8,8 +8,8 @@
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/waitable_event.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/simple_thread.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/c/pp_errors.h"
@@ -245,7 +245,7 @@ class CallbackMockResource : public Resource {
     // |thread_checker_| will bind to the background thread.
     thread_checker_.DetachFromThread();
     loop_resource->task_runner()->PostTask(
-        FROM_HERE, RunWhileLocked(base::Bind(
+        FROM_HERE, RunWhileLocked(base::BindOnce(
                        &CallbackMockResource::CreateCallbacks, this)));
   }
 
@@ -353,19 +353,18 @@ class CallbackMockResource : public Resource {
         PP_MakeCompletionCallback(&TestCallback,
                                   &info_did_run_with_completion_task_));
     callback_did_run_with_completion_task_->set_completion_task(
-        Bind(&CallbackMockResource::CompletionTask,
-             this,
-             &info_did_run_with_completion_task_));
+        base::BindOnce(&CallbackMockResource::CompletionTask, this,
+                       &info_did_run_with_completion_task_));
 
     callback_did_abort_ = new TrackedCallback(
         this, PP_MakeCompletionCallback(&TestCallback, &info_did_abort_));
-    callback_did_abort_->set_completion_task(
-        Bind(&CallbackMockResource::CompletionTask, this, &info_did_abort_));
+    callback_did_abort_->set_completion_task(base::BindOnce(
+        &CallbackMockResource::CompletionTask, this, &info_did_abort_));
 
     callback_didnt_run_ = new TrackedCallback(
         this, PP_MakeCompletionCallback(&TestCallback, &info_didnt_run_));
-    callback_didnt_run_->set_completion_task(
-        Bind(&CallbackMockResource::CompletionTask, this, &info_didnt_run_));
+    callback_didnt_run_->set_completion_task(base::BindOnce(
+        &CallbackMockResource::CompletionTask, this, &info_didnt_run_));
 
     callbacks_created_event_.Signal();
   }

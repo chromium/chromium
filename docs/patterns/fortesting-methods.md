@@ -25,7 +25,7 @@ functionality on.
 
 ## How to use this pattern:
 
-```
+```cpp
 class Foo {
  public:
   // ... regular public API ...
@@ -38,7 +38,7 @@ The ForTesting suffix indicates to code reviewers that the method should not be
 called in production code. There is a very similar antipattern in which the
 suffix is missing:
 
-```
+```cpp
 class Foo {
  public:
   // ... regular public API ...

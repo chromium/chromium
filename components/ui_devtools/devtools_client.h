@@ -26,6 +26,10 @@ class UI_DEVTOOLS_EXPORT UiDevToolsClient : public protocol::FrontendChannel {
   static const int kNotConnected = -1;
 
   UiDevToolsClient(const std::string& name, UiDevToolsServer* server);
+
+  UiDevToolsClient(const UiDevToolsClient&) = delete;
+  UiDevToolsClient& operator=(const UiDevToolsClient&) = delete;
+
   ~UiDevToolsClient() override;
 
   void AddAgent(std::unique_ptr<UiDevToolsAgent> agent);
@@ -42,14 +46,14 @@ class UI_DEVTOOLS_EXPORT UiDevToolsClient : public protocol::FrontendChannel {
       std::unique_ptr<protocol::Serializable> message);
 
   // protocol::FrontendChannel
-  void sendProtocolResponse(
+  void SendProtocolResponse(
       int callId,
       std::unique_ptr<protocol::Serializable> message) override;
-  void sendProtocolNotification(
+  void SendProtocolNotification(
       std::unique_ptr<protocol::Serializable> message) override;
-  void flushProtocolNotifications() override;
-  void fallThrough(int call_id,
-                   const std::string& method,
+  void FlushProtocolNotifications() override;
+  void FallThrough(int call_id,
+                   crdtp::span<uint8_t> method,
                    crdtp::span<uint8_t> message) override;
 
   std::string name_;
@@ -58,8 +62,6 @@ class UI_DEVTOOLS_EXPORT UiDevToolsClient : public protocol::FrontendChannel {
   std::vector<std::unique_ptr<UiDevToolsAgent>> agents_;
   protocol::UberDispatcher dispatcher_;
   UiDevToolsServer* server_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiDevToolsClient);
 };
 
 }  // namespace ui_devtools

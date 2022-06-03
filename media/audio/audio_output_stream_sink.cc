@@ -8,7 +8,7 @@
 #include <cmath>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "media/audio/audio_manager.h"
@@ -19,10 +19,10 @@ namespace media {
 AudioOutputStreamSink::AudioOutputStreamSink()
     : initialized_(false),
       started_(false),
-      render_callback_(NULL),
-      active_render_callback_(NULL),
+      render_callback_(nullptr),
+      active_render_callback_(nullptr),
       audio_task_runner_(AudioManager::Get()->GetTaskRunner()),
-      stream_(NULL) {}
+      stream_(nullptr) {}
 
 AudioOutputStreamSink::~AudioOutputStreamSink() = default;
 
@@ -137,7 +137,7 @@ void AudioOutputStreamSink::DoStart(const AudioParameters& params) {
     }
     if (stream_)
       stream_->Close();
-    stream_ = NULL;
+    stream_ = nullptr;
   }
 }
 
@@ -149,7 +149,7 @@ void AudioOutputStreamSink::DoStop() {
 
   DoPause();
   stream_->Close();
-  stream_ = NULL;
+  stream_ = nullptr;
 }
 
 void AudioOutputStreamSink::DoPause() {
@@ -176,7 +176,7 @@ void AudioOutputStreamSink::DoSetVolume(double volume) {
 
 void AudioOutputStreamSink::ClearCallback() {
   base::AutoLock al(callback_lock_);
-  active_render_callback_ = NULL;
+  active_render_callback_ = nullptr;
 }
 
 }  // namespace media

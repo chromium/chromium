@@ -39,15 +39,17 @@
 #include <utility>
 #include <vector>
 
+#include "base/cxx17_backports.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/optional.h"
+#include "base/macros.h"
 #include "base/process/launch.h"
-#include "base/stl_util.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -73,6 +75,9 @@ const char kExeSymlink[] = "/proc/self/exe";
 const char kLogFileTemplate[] =
     "/tmp/chrome_remote_desktop_%Y%m%d_%H%M%S_XXXXXX";
 
+// The filename for the latest log symlink.
+constexpr char kLatestLogSymlink[] = "/tmp/chrome_remote_desktop.latest";
+
 const char kUsageMessage[] =
     "This program is not intended to be run by end users. To configure Chrome\n"
     "Remote Desktop, please install the app from the Chrome Web Store:\n"
@@ -97,13 +102,13 @@ void PrintUsage() {
 // Shell-escapes a single argument in a way that is compatible with various
 // different shells. Returns nullopt when argument contains a newline, which
 // can't be represented in a cross-shell fashion.
-base::Optional<std::string> ShellEscapeArgument(
+absl::optional<std::string> ShellEscapeArgument(
     const base::StringPiece argument) {
   std::string result;
   for (char character : argument) {
     // csh in particular doesn't provide a good way to handle this
     if (character == '\n') {
-      return base::nullopt;
+      return absl::nullopt;
     }
 
     // Some shells ascribe special meaning to some escape sequences such as \t,
@@ -187,6 +192,9 @@ class PamHandle {
     }
   }
 
+  PamHandle(const PamHandle&) = delete;
+  PamHandle& operator=(const PamHandle&) = delete;
+
   // Terminates PAM transaction
   ~PamHandle() {
     if (pam_handle_ != nullptr) {
@@ -224,31 +232,27 @@ class PamHandle {
 
   // Returns the current username according to PAM. It is possible for PAM
   // modules to change this from the initial value passed to the constructor.
-  base::Optional<std::string> GetUser() {
+  absl::optional<std::string> GetUser() {
     const char* user;
     last_return_code_ = pam_get_item(pam_handle_, PAM_USER,
                                      reinterpret_cast<const void**>(&user));
     if (last_return_code_ != PAM_SUCCESS || user == nullptr)
-      return base::nullopt;
+      return absl::nullopt;
     return std::string(user);
   }
 
   // Sets a PAM environment variable.
   int PutEnv(base::StringPiece name, base::StringPiece value) {
-    std::string name_value;
-    name_value.reserve(name.size() + value.size() + 1);
-    name.AppendToString(&name_value);
-    name_value.push_back('=');
-    value.AppendToString(&name_value);
+    std::string name_value = base::StrCat({name, "=", value});
     return last_return_code_ = pam_putenv(pam_handle_, name_value.c_str());
   }
 
   // Obtains the list of environment variables provided by PAM modules.
-  base::Optional<base::EnvironmentMap> GetEnvironment() {
+  absl::optional<base::EnvironmentMap> GetEnvironment() {
     char** environment = pam_getenvlist(pam_handle_);
 
     if (environment == nullptr)
-      return base::nullopt;
+      return absl::nullopt;
 
     base::EnvironmentMap environment_map;
 
@@ -280,8 +284,6 @@ class PamHandle {
  private:
   pam_handle_t* pam_handle_ = nullptr;
   int last_return_code_ = PAM_SUCCESS;
-
-  DISALLOW_COPY_AND_ASSIGN(PamHandle);
 };
 
 // Initializes the gExecutablePath global to the location of the running
@@ -304,22 +306,28 @@ std::string FindScriptPath() {
 // Execs the me2me script.
 // This function is called after forking and dropping privileges. It never
 // returns.
-void ExecMe2MeScript(base::EnvironmentMap environment,
-                     const struct passwd* pwinfo,
-                     const std::vector<std::string>& script_args) {
-  // By convention, a login shell is signified by preceeding the shell name in
-  // argv[0] with a '-'.
-  std::string shell_name =
-      '-' + base::FilePath(pwinfo->pw_shell).BaseName().value();
+[[noreturn]] void ExecMe2MeScript(base::EnvironmentMap environment,
+                                  const struct passwd* pwinfo,
+                                  const std::vector<std::string>& script_args) {
+  std::string login_shell = pwinfo->pw_shell;
+  if (login_shell.empty()) {
+    // According to "man 5 passwd", if the shell field is empty, it defaults to
+    // "/bin/sh".
+    login_shell = "/bin/sh";
+  }
 
-  base::Optional<std::string> escaped_script_path =
+  // By convention, a login shell is signified by preceding the shell name in
+  // argv[0] with a '-'.
+  std::string shell_name = '-' + base::FilePath(login_shell).BaseName().value();
+
+  absl::optional<std::string> escaped_script_path =
       ShellEscapeArgument(FindScriptPath());
   CHECK(escaped_script_path) << "Could not escape script path";
 
   std::string shell_arg = *escaped_script_path + " --start --child-process";
 
   for (const std::string& arg : script_args) {
-    base::Optional<std::string> escaped_arg = ShellEscapeArgument(arg);
+    absl::optional<std::string> escaped_arg = ShellEscapeArgument(arg);
     CHECK(escaped_arg) << "Could not escape script argument";
     shell_arg += " ";
     shell_arg += *escaped_arg;
@@ -328,10 +336,11 @@ void ExecMe2MeScript(base::EnvironmentMap environment,
   environment["USER"] = pwinfo->pw_name;
   environment["LOGNAME"] = pwinfo->pw_name;
   environment["HOME"] = pwinfo->pw_dir;
-  environment["SHELL"] = pwinfo->pw_shell;
+  environment["SHELL"] = login_shell;
   if (!environment.count("PATH")) {
     environment["PATH"] = "/bin:/usr/bin";
   }
+  environment["CHROME_REMOTE_DESKTOP_SESSION"] = "1";
 
   std::vector<std::string> env_strings;
   for (const auto& env_var : environment) {
@@ -347,27 +356,28 @@ void ExecMe2MeScript(base::EnvironmentMap environment,
   }
   env_ptrs.push_back(nullptr);
 
-  execve(pwinfo->pw_shell, const_cast<char* const*>(arg_ptrs.data()),
+  execve(login_shell.c_str(), const_cast<char* const*>(arg_ptrs.data()),
          const_cast<char* const*>(env_ptrs.data()));
-  PLOG(FATAL) << "Failed to exec login shell " << pwinfo->pw_shell;
+  PLOG(FATAL) << "Failed to exec login shell " << login_shell;
+  // The FATAL log should have terminated the program already, but this makes
+  // the compiler happy.
+  std::exit(EXIT_FAILURE);
 }
 
-// Relaunch the user session. When calling this function, the real UID must be
-// set to the target user, while the effective UID must be root. The provided
-// user must correspond with the current real UID.
-void Relaunch(const std::string& user,
+// Either |user| must be set when running as root, xor the real user ID must be
+// properly set when running as a user.
+void Relaunch(const absl::optional<std::string>& user,
               const std::vector<std::string>& script_args) {
-  CHECK(getuid() != 0);
-
-  // Real user ID has already been set to the target user, but the corresponding
-  // environment variables may not have been if the session was started by root
-  // (e.g., at boot).
-  PCHECK(setenv("USER", user.c_str(), true) == 0) << "setenv failed";
-  PCHECK(setenv("LOGNAME", user.c_str(), true) == 0) << "setenv failed";
+  CHECK(user.has_value() == (getuid() == 0));
 
   // Pass --foreground to continue using the same log file.
   std::vector<const char*> arg_ptrs = {gExecutablePath, kStartCommand,
-                                       kForegroundFlag, "--"};
+                                       kForegroundFlag};
+  if (user) {
+    arg_ptrs.push_back(kUserFlag);
+    arg_ptrs.push_back(user->c_str());
+  }
+  arg_ptrs.push_back("--");
   for (const std::string& arg : script_args) {
     arg_ptrs.push_back(arg.c_str());
   }
@@ -383,9 +393,11 @@ void Relaunch(const std::string& user,
 // will fail if the final user id does not match the one provided. If
 // script_args is not empty, the contained arguments will be passed on to the
 // me2me script.
-void ExecuteSession(std::string user,
+//
+// Returns: whether the session should be relaunched.
+bool ExecuteSession(std::string user,
                     bool chown_log,
-                    base::Optional<uid_t> match_uid,
+                    absl::optional<uid_t> match_uid,
                     const std::vector<std::string>& script_args) {
   PamHandle pam_handle(kPamName, user.c_str(), &kPamConversation);
   CHECK(pam_handle.IsInitialized()) << "Failed to initialize PAM";
@@ -467,6 +479,9 @@ void ExecuteSession(std::string user,
   if (chown_log) {
     int result = fchown(STDOUT_FILENO, pwinfo->pw_uid, pwinfo->pw_gid);
     PLOG_IF(WARNING, result != 0) << "Failed to change log file owner";
+    result = lchown(kLatestLogSymlink, pwinfo->pw_uid, pwinfo->pw_gid);
+    PLOG_IF(WARNING, result != 0)
+        << "Failed to change latest log symlink owner";
   }
 
   pid_t child_pid = fork();
@@ -474,7 +489,7 @@ void ExecuteSession(std::string user,
   if (child_pid == 0) {
     PCHECK(setuid(pwinfo->pw_uid) == 0) << "setuid failed";
     PCHECK(chdir(pwinfo->pw_dir) == 0) << "chdir to $HOME failed";
-    base::Optional<base::EnvironmentMap> pam_environment =
+    absl::optional<base::EnvironmentMap> pam_environment =
         pam_handle.GetEnvironment();
     CHECK(pam_environment) << "Failed to get environment from PAM";
 
@@ -515,9 +530,7 @@ void ExecuteSession(std::string user,
     }
     ignore_result(pam_handle.SetCredentials(PAM_DELETE_CRED));
 
-    if (relaunch) {
-      Relaunch(user, script_args);
-    }
+    return relaunch;
   }
 }
 
@@ -541,6 +554,16 @@ LogFile OpenLogFile() {
   mode_t mode = umask(0177);
   int fd = mkstemp(logfile);
   PCHECK(fd != -1) << "Failed to open log file";
+
+  // Creates a symlink to make the logs easier to find.
+  int symlink_ret = symlink(logfile, kLatestLogSymlink);
+  if (symlink_ret != 0 && errno == EEXIST) {
+    unlink(kLatestLogSymlink);
+    symlink_ret = symlink(logfile, kLatestLogSymlink);
+  }
+  PLOG_IF(ERROR, symlink_ret != 0)
+      << "Failed to create log symlink to " << logfile;
+
   umask(mode);
 
   return {fd, logfile};
@@ -777,7 +800,7 @@ int main(int argc, char** argv) {
   argv += 2;
 
   bool foreground = false;
-  base::Optional<std::string> user;
+  absl::optional<std::string> user;
   std::vector<std::string> script_args;
 
   while (argc > 0) {
@@ -829,8 +852,39 @@ int main(int argc, char** argv) {
   // Daemonizing redirects stdout to a log file, which we want to be owned by
   // the target user.
   bool chown_stdout = !foreground;
-  base::Optional<uid_t> match_uid =
-      real_uid != 0 ? base::make_optional(real_uid) : base::nullopt;
-  ExecuteSession(std::move(*user), chown_stdout, match_uid,
-                 std::move(script_args));
+  absl::optional<uid_t> match_uid =
+      real_uid != 0 ? absl::make_optional(real_uid) : absl::nullopt;
+
+  // Fork before opening PAM session so relaunches don't descend from the closed
+  // PAM session.
+  pid_t child_pid = fork();
+  PCHECK(child_pid >= 0) << "fork failed";
+  if (child_pid == 0) {
+    bool relaunch = ExecuteSession(std::move(*user), chown_stdout, match_uid,
+                                   std::move(script_args));
+    std::exit(relaunch ? kRelaunchExitCode : EXIT_SUCCESS);
+  } else {
+    // Close pipe write fd if it is open.
+    close(kMessageFd);
+    // waitpid will return if the child is ptraced, so loop until the process
+    // actually exits.
+    int status;
+    do {
+      pid_t wait_result = waitpid(child_pid, &status, 0);
+
+      // If we fail to wait on our child process, something has gone wrong and
+      // there's not much we can do. Note that this means if the user later logs
+      // out, the session won't restart.
+      PCHECK(wait_result >= 0) << "wait failed";
+    } while (!WIFEXITED(status) && !WIFSIGNALED(status));
+
+    if (WIFEXITED(status) && WEXITSTATUS(status) == kRelaunchExitCode) {
+      // If running as root, forward the username argument to the relaunched
+      // process. Otherwise, it should be inferred from the user id and
+      // environment.
+      Relaunch(real_uid == 0 ? user : absl::nullopt, script_args);
+    }
+  }
+
+  return EXIT_SUCCESS;
 }

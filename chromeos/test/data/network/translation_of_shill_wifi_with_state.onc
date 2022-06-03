@@ -2,6 +2,8 @@
   "Connectable": true,
   "GUID": "{64c4f86b-cf6a-4e4a-8eff-456def}",
   "Name": "OpenWrt",
+  "IPAddressConfigType":"DHCP",
+  "NameServersConfigType":"DHCP",
   "Priority": 1,
   "Type": "WiFi",
   "WiFi": {
@@ -10,7 +12,6 @@
     "HexSSID": "4F70656E577274", // "OpenWrt"
     "HiddenSSID": false,
     "Passphrase": "some passphrase",
-    "RoamThreshold": 20,
     "SSID": "OpenWrt",
     "Security": "WPA-PSK",
     "SignalStrength": 10

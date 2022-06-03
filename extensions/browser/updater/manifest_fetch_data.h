@@ -10,7 +10,9 @@
 #include <string>
 
 #include "base/macros.h"
+#include "base/version.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "url/gurl.h"
 
 namespace extensions {
@@ -84,7 +86,7 @@ class ManifestFetchData {
   // Returns a string to use for reporting an extension's install location.
   // Some locations with a common purpose, such as the external locations, are
   // grouped together and will return the same string.
-  static std::string GetSimpleLocationString(Manifest::Location loc);
+  static std::string GetSimpleLocationString(mojom::ManifestLocation loc);
 
   ManifestFetchData(const GURL& update_url,
                     int request_id,
@@ -92,6 +94,10 @@ class ManifestFetchData {
                     const std::string& base_query_params,
                     PingMode ping_mode,
                     FetchPriority fetch_priority);
+
+  ManifestFetchData(const ManifestFetchData&) = delete;
+  ManifestFetchData& operator=(const ManifestFetchData&) = delete;
+
   ~ManifestFetchData();
 
   // Returns true if this extension information was successfully added. If the
@@ -103,18 +109,26 @@ class ManifestFetchData {
                     const PingData* ping_data,
                     const std::string& update_url_data,
                     const std::string& install_source,
-                    const std::string& install_location,
+                    mojom::ManifestLocation install_location,
                     FetchPriority fetch_priority);
 
   const GURL& base_url() const { return base_url_; }
   const GURL& full_url() const { return full_url_; }
-  const std::set<std::string>& extension_ids() const { return extension_ids_; }
+  ExtensionIdSet GetExtensionIds() const;
   const std::set<int>& request_ids() const { return request_ids_; }
   bool foreground_check() const { return fetch_priority_ == FOREGROUND; }
   FetchPriority fetch_priority() const { return fetch_priority_; }
+  bool is_all_external_policy_download() const {
+    return is_all_external_policy_download_;
+  }
 
   // Returns true if the given id is included in this manifest fetch.
   bool Includes(const std::string& extension_id) const;
+
+  // Resets the full url to base url and removes |id_to_remove| from
+  // the ManifestFetchData.
+  void RemoveExtensions(const ExtensionIdSet& id_to_remove,
+                        const std::string& base_query_params);
 
   // Returns true if a ping parameter for |type| was added to full_url for this
   // extension id.
@@ -126,9 +140,37 @@ class ManifestFetchData {
   // to this ManifestFetchData).
   void Merge(const ManifestFetchData& other);
 
+  // Assigns true if all the extensions are force installed.
+  void set_is_all_external_policy_download();
+
  private:
-  // The set of extension id's for this ManifestFetchData.
-  std::set<std::string> extension_ids_;
+  // Contains supplementary data needed to construct update manifest fetch
+  // query.
+  struct ExtensionData {
+    ExtensionData();
+    ExtensionData(const ExtensionData& other);
+    ExtensionData(const base::Version& version,
+                  const std::string& update_url_data,
+                  const std::string& install_source,
+                  mojom::ManifestLocation extension_location);
+
+    ~ExtensionData();
+    base::Version version;
+    std::string update_url_data;
+    std::string install_source;
+    mojom::ManifestLocation extension_location{
+        mojom::ManifestLocation::kInternal};
+  };
+
+  const std::map<ExtensionId, ExtensionData>& extensions_data() const {
+    return extensions_data_;
+  }
+
+  // Appends query parameters to the full url if any.
+  void UpdateFullUrl(const std::string& base_query_params);
+
+  // The set of extension data for each extension.
+  std::map<std::string, ExtensionData> extensions_data_;
 
   // The set of ping data we actually sent.
   std::map<std::string, PingData> pings_;
@@ -157,7 +199,9 @@ class ManifestFetchData {
   // The priority of the update.
   FetchPriority fetch_priority_;
 
-  DISALLOW_COPY_AND_ASSIGN(ManifestFetchData);
+  // The flag is set to true if all the extensions are force installed
+  // extensions.
+  bool is_all_external_policy_download_;
 };
 
 }  // namespace extensions

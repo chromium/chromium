@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Resources for user-facing NTP features. -->
 <grit-part>
   <if expr="is_android or is_ios">
     <if expr="_google_chrome">
@@ -19,7 +20,4 @@
       </else>
     </if>
   </if>
-  <include name="IDR_NTP_TILES_INTERNALS_HTML" file="../ntp_tiles/webui/resources/ntp_tiles_internals.html" flattenhtml="true" allowexternalscript="true" type="BINDATA" compress="gzip" />
-  <include name="IDR_NTP_TILES_INTERNALS_JS" file="../ntp_tiles/webui/resources/ntp_tiles_internals.js" type="BINDATA" compress="gzip" />
-  <include name="IDR_NTP_TILES_INTERNALS_CSS" file="../ntp_tiles/webui/resources/ntp_tiles_internals.css" type="BINDATA" compress="gzip" />
 </grit-part>

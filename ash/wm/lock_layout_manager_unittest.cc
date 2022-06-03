@@ -30,20 +30,23 @@ namespace {
 // A login implementation of WidgetDelegate.
 class LoginTestWidgetDelegate : public views::WidgetDelegate {
  public:
-  explicit LoginTestWidgetDelegate(views::Widget* widget) : widget_(widget) {}
+  explicit LoginTestWidgetDelegate(views::Widget* widget) : widget_(widget) {
+    SetOwnedByWidget(true);
+    SetFocusTraversesOut(true);
+  }
+
+  LoginTestWidgetDelegate(const LoginTestWidgetDelegate&) = delete;
+  LoginTestWidgetDelegate& operator=(const LoginTestWidgetDelegate&) = delete;
+
   ~LoginTestWidgetDelegate() override = default;
 
-  // Overridden from WidgetDelegate:
-  void DeleteDelegate() override { delete this; }
+  // views::WidgetDelegate:
   views::Widget* GetWidget() override { return widget_; }
   const views::Widget* GetWidget() const override { return widget_; }
   bool CanActivate() const override { return true; }
-  bool ShouldAdvanceFocusToTopLevelWidget() const override { return true; }
 
  private:
   views::Widget* widget_;
-
-  DISALLOW_COPY_AND_ASSIGN(LoginTestWidgetDelegate);
 };
 
 }  // namespace
@@ -65,12 +68,12 @@ class LockLayoutManagerTest : public AshTestBase {
                                       bool use_delegate) {
     aura::Window* parent =
         Shell::GetPrimaryRootWindowController()->GetContainer(
-            ash::kShellWindowId_LockScreenContainer);
+            kShellWindowId_LockScreenContainer);
     params.parent = parent;
     views::Widget* widget = new views::Widget;
     if (use_delegate)
       params.delegate = new LoginTestWidgetDelegate(widget);
-    params.context = CurrentContext();
+    params.context = GetContext();
     widget->Init(std::move(params));
     widget->Show();
     aura::Window* window = widget->GetNativeView();
@@ -141,7 +144,7 @@ TEST_F(LockLayoutManagerTest, MaximizedFullscreenWindowBoundsAreEqualToScreen) {
       CreateTestLoginWindow(std::move(widget_params), true /* use_delegate */));
 
   widget_params.show_state = ui::SHOW_STATE_FULLSCREEN;
-  widget_params.delegate = NULL;
+  widget_params.delegate = nullptr;
   std::unique_ptr<aura::Window> fullscreen_window(CreateTestLoginWindow(
       std::move(widget_params), false /* use_delegate */));
 
@@ -177,7 +180,7 @@ TEST_F(LockLayoutManagerTest, MaximizedFullscreenWindowBoundsAreEqualToScreen) {
 }
 
 TEST_F(LockLayoutManagerTest, AccessibilityPanel) {
-  ash::ShelfLayoutManager* shelf_layout_manager =
+  ShelfLayoutManager* shelf_layout_manager =
       GetPrimaryShelf()->shelf_layout_manager();
   ASSERT_TRUE(shelf_layout_manager);
 
@@ -274,7 +277,7 @@ TEST_F(LockLayoutManagerTest, KeyboardBounds) {
   SetKeyboardOverscrollBehavior(keyboard::KeyboardOverscrollBehavior::kDefault);
 
   keyboard->SetContainerType(keyboard::ContainerType::kFloating,
-                             base::nullopt /* target_bounds */,
+                             gfx::Rect() /* target_bounds */,
                              base::BindOnce([](bool success) {}));
   ShowKeyboard(true);
   primary_display = display::Screen::GetScreen()->GetPrimaryDisplay();
@@ -335,7 +338,7 @@ TEST_F(LockLayoutManagerTest, MultipleMonitors) {
 TEST_F(LockLayoutManagerTest, AccessibilityPanelWithMultipleMonitors) {
   UpdateDisplay("300x400,400x500");
 
-  ash::ShelfLayoutManager* shelf_layout_manager =
+  ShelfLayoutManager* shelf_layout_manager =
       GetPrimaryShelf()->shelf_layout_manager();
   ASSERT_TRUE(shelf_layout_manager);
 

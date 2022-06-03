@@ -9,11 +9,14 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
+#include "base/ios/ios_util.h"
 #include "base/json/json_reader.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -24,7 +27,10 @@
 #include "ios/chrome/browser/system_flags.h"
 #include "ios/chrome/grit/ios_chromium_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
+#include "ios/chrome/grit/ios_theme_resources.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -44,6 +50,7 @@ const PromoStringToIdsMapEntry kPromoStringToIdsMap[] = {
     {"testWhatsNewCommand", kTestWhatsNewMessage, 0},
     {"moveToDockTip", nullptr, IDS_IOS_MOVE_TO_DOCK_TIP},
     {"reviewChromeToS", nullptr, IDS_IOS_REVIEW_UPDATED_CHROME_TOS},
+    {"setChromeDefaultBrowser", nullptr, IDS_IOS_SET_DEFAULT_BROWSER},
 };
 
 // Returns a localized version of |promo_text| if it has an entry in the
@@ -60,6 +67,43 @@ std::string GetLocalizedPromoText(const std::string& promo_text) {
   return std::string();
 }
 
+// Convert an icon name string to an IconType.
+NotificationPromoWhatsNew::IconType IconNameToIconType(
+    const std::string& icon_name) {
+  if (icon_name == "logo") {
+    return NotificationPromoWhatsNew::kIconTypeLogo;
+  }
+
+  if (icon_name == "logoWithRoundedRectangle") {
+    return NotificationPromoWhatsNew::kIconTypeLogoRoundedRectangle;
+  }
+
+  return NotificationPromoWhatsNew::kIconTypeInfo;
+}
+
+// Convert an icon type to an UIImage*.
+UIImage* IconTypeToUIImage(NotificationPromoWhatsNew::IconType icon_type) {
+  switch (icon_type) {
+    case NotificationPromoWhatsNew::kIconTypeInfo: {
+      ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
+      return rb.GetNativeImageNamed(IDR_IOS_PROMO_INFO).ToUIImage();
+    }
+
+    case NotificationPromoWhatsNew::kIconTypeLogo: {
+      return ios::provider::GetBrandedImage(
+          ios::provider::BrandedImage::kWhatsNewLogo);
+    }
+
+    case NotificationPromoWhatsNew::kIconTypeLogoRoundedRectangle: {
+      return ios::provider::GetBrandedImage(
+          ios::provider::BrandedImage::kWhatsNewLogoRoundedRectangle);
+    }
+  }
+
+  NOTREACHED();
+  return nil;
+}
+
 }  // namespace
 
 // The What's New promo command for testing.
@@ -67,10 +111,12 @@ const char kTestWhatsNewCommand[] = "testwhatsnew";
 const char kTestWhatsNewMessage[] =
     "What's New? BEGIN_LINKFind out hereEND_LINK";
 
+const char kSetDefaultBrowserCommand[] = "openSettings";
+
 NotificationPromoWhatsNew::NotificationPromoWhatsNew(PrefService* local_state)
-    : local_state_(local_state),
-      valid_(false),
-      notification_promo_(local_state_) {}
+    : local_state_(local_state), notification_promo_(local_state_) {
+  DCHECK(local_state_);
+}
 
 NotificationPromoWhatsNew::~NotificationPromoWhatsNew() {}
 
@@ -94,6 +140,11 @@ bool NotificationPromoWhatsNew::Init() {
     case experimental_flags::WHATS_NEW_REVIEW_UPDATED_TOS:
       InjectFakePromo("3", "reviewChromeToS", "url", "", "chrome://terms",
                       "ReviewUpdatedChromeToS", "logoWithRoundedRectangle");
+      break;
+    case experimental_flags::WHATS_NEW_DEFAULT_BROWSER_TIP:
+      InjectFakePromo("4", "setChromeDefaultBrowser", "chrome_command",
+                      kSetDefaultBrowserCommand, "", "SetChromeDefaultBrowser",
+                      "logo");
       break;
     default:
       NOTREACHED();
@@ -123,9 +174,8 @@ bool NotificationPromoWhatsNew::CanShow() const {
     // Do not show the promo if the app's installation did not occur more than
     // |seconds_since_install_| seconds ago.
     int64_t install_date = local_state_->GetInt64(metrics::prefs::kInstallDate);
-    const base::Time first_view_time =
-        base::Time::FromTimeT(install_date) +
-        base::TimeDelta::FromSeconds(seconds_since_install_);
+    const base::Time first_view_time = base::Time::FromTimeT(install_date) +
+                                       base::Seconds(seconds_since_install_);
     if (first_view_time > base::Time::Now()) {
       return false;
     }
@@ -135,9 +185,8 @@ bool NotificationPromoWhatsNew::CanShow() const {
     // Do not show the promo if the app's installation occurred more than
     // |max_seconds_since_install_| seconds ago.
     int64_t install_date = local_state_->GetInt64(metrics::prefs::kInstallDate);
-    const base::Time last_view_time =
-        base::Time::FromTimeT(install_date) +
-        base::TimeDelta::FromSeconds(max_seconds_since_install_);
+    const base::Time last_view_time = base::Time::FromTimeT(install_date) +
+                                      base::Seconds(max_seconds_since_install_);
     if (last_view_time < base::Time::Now()) {
       return false;
     }
@@ -170,22 +219,16 @@ void NotificationPromoWhatsNew::HandleClosed() {
   notification_promo_.HandleClosed();
 }
 
+UIImage* NotificationPromoWhatsNew::GetIcon() const {
+  return IconTypeToUIImage(icon_type_);
+}
+
 bool NotificationPromoWhatsNew::IsURLPromo() const {
   return promo_type_ == "url";
 }
 
 bool NotificationPromoWhatsNew::IsChromeCommandPromo() const {
   return promo_type_ == "chrome_command";
-}
-
-WhatsNewIcon NotificationPromoWhatsNew::ParseIconName(
-    const std::string& icon_name) {
-  if (icon_name == "logo") {
-    return WHATS_NEW_LOGO;
-  } else if (icon_name == "logoWithRoundedRectangle") {
-    return WHATS_NEW_LOGO_ROUNDED_RECTANGLE;
-  }
-  return WHATS_NEW_INFO;
 }
 
 bool NotificationPromoWhatsNew::InitFromNotificationPromo() {
@@ -220,9 +263,10 @@ bool NotificationPromoWhatsNew::InitFromNotificationPromo() {
     if (command)
       command_ = *command;
 
-    // There is only one valid command for NTP Promotions, and that is the
-    // test command itself.
-    if (command_ != kTestWhatsNewCommand) {
+    // There are only two valid commands for NTP Promotions, the test command
+    // and kSetDefaultBrowserCommand.
+    if (command_ != kTestWhatsNewCommand &&
+        command_ != kSetDefaultBrowserCommand) {
       return valid_;
     }
   } else {  // If |promo_type_| is not set to URL or Command, return early.
@@ -234,7 +278,7 @@ bool NotificationPromoWhatsNew::InitFromNotificationPromo() {
   // Optional values don't need validation.
   const std::string* icon_name =
       notification_promo_.promo_payload().FindStringKey("icon");
-  icon_ = ParseIconName(icon_name ? *icon_name : std::string());
+  icon_type_ = IconNameToIconType(icon_name ? *icon_name : std::string());
 
   seconds_since_install_ = notification_promo_.promo_payload()
                                .FindIntKey("seconds_since_install")
@@ -282,7 +326,7 @@ void NotificationPromoWhatsNew::InjectFakePromo(const std::string& promo_id,
   std::string promo_json_filled_in =
       base::ReplaceStringPlaceholders(promo_json, replacements, nullptr);
 
-  base::Optional<base::Value> value =
+  absl::optional<base::Value> value =
       base::JSONReader::Read(promo_json_filled_in);
   DCHECK(value.has_value());
   DCHECK(value.value().is_dict());

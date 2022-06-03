@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.infobar;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -19,44 +22,57 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
 import org.chromium.chrome.browser.WebContentsFactory;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.TabTestUtils;
 import org.chromium.chrome.browser.tab.TabWebContentsDelegateAndroid;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
+import org.chromium.chrome.test.util.InfoBarUtil.InfoBarMatcher;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.chrome.test.util.browser.LocationSettingsTestUtil;
+import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.url.GURL;
 
 import java.net.HttpURLConnection;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for the InfoBars. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(Batch.PER_CLASS)
+@DisableFeatures({ChromeFeatureList.MESSAGES_FOR_ANDROID_INFRASTRUCTURE})
 public class InfoBarTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final long MAX_TIMEOUT = 2000L;
     private static final int CHECK_INTERVAL = 500;
@@ -70,7 +86,7 @@ public class InfoBarTest {
             "displayed_data_reduction_promo_version";
     private static final String M51_VERSION = "Chrome 51.0.2704.0";
 
-    private EmbeddedTestServer mTestServer;
+    private static EmbeddedTestServer sTestServer = sActivityTestRule.getTestServer();
     private InfoBarTestAnimationListener mListener;
 
     private static class TestInfoBar extends InfoBar {
@@ -108,31 +124,27 @@ public class InfoBarTest {
     }
 
     private void waitUntilDataReductionPromoInfoBarAppears() {
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                List<InfoBar> infobars = mActivityTestRule.getInfoBars();
-                return infobars.size() == 1 && infobars.get(0) instanceof DataReductionPromoInfoBar;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            List<InfoBar> infobars = sActivityTestRule.getInfoBars();
+            Criteria.checkThat(infobars.size(), Matchers.is(1));
+            Criteria.checkThat(
+                    infobars.get(0), Matchers.instanceOf(DataReductionPromoInfoBar.class));
         });
     }
 
     private TabWebContentsDelegateAndroid getTabWebContentsDelegate() {
         return TabTestUtils.getTabWebContentsDelegate(
-                mActivityTestRule.getActivity().getActivityTab());
+                sActivityTestRule.getActivity().getActivityTab());
     }
 
     @Before
     public void setUp() throws Exception {
-        mActivityTestRule.startMainActivityOnBlankPage();
-
         // Register for animation notifications
         CriteriaHelper.pollInstrumentationThread(
-                () -> mActivityTestRule.getInfoBarContainer() != null);
+                () -> sActivityTestRule.getInfoBarContainer() != null);
         mListener =  new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(mListener);
-
-        mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> sActivityTestRule.getInfoBarContainer().addAnimationListener(mListener));
 
         // Using an AdvancedMockContext allows us to use a fresh in-memory SharedPreference.
         Context context = new AdvancedMockContext(InstrumentationRegistry.getInstrumentation()
@@ -143,8 +155,11 @@ public class InfoBarTest {
 
     @After
     public void tearDown() {
-        if (mTestServer != null) {
-            mTestServer.stopAndDestroyServer();
+        // Unregister animation notifications
+        InfoBarContainer container = sActivityTestRule.getInfoBarContainer();
+        if (container != null) {
+            TestThreadUtils.runOnUiThreadBlocking(
+                    () -> container.removeAnimationListener(mListener));
         }
     }
 
@@ -234,23 +249,26 @@ public class InfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @DisabledTest(message = "crbug.com/593003")
-    public void testInfoBarForPopUp() throws TimeoutException {
-        mActivityTestRule.loadUrl(mTestServer.getURL(POPUP_PAGE));
+    @FlakyTest(message = "https://crbug.com/1269025")
+    public void testInfoBarForPopUp() throws TimeoutException, ExecutionException {
+        sActivityTestRule.loadUrl(sTestServer.getURL(POPUP_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not added");
 
-        List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
+        List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
         Assert.assertEquals("Wrong infobar count", 1, infoBars.size());
         Assert.assertTrue(InfoBarUtil.hasPrimaryButton(infoBars.get(0)));
         Assert.assertFalse(InfoBarUtil.hasSecondaryButton(infoBars.get(0)));
-        InfoBarUtil.clickPrimaryButton(infoBars.get(0));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> InfoBarUtil.clickPrimaryButton(infoBars.get(0)));
+        InfoBarUtil.waitUntilNoInfoBarsExist(sActivityTestRule.getInfoBars());
         mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-        Assert.assertEquals("Wrong infobar count", 0, infoBars.size());
-        Assert.assertNotNull(infoBars.get(0).getSnackbarManager());
 
-        // A second load should not show the infobar.
-        mActivityTestRule.loadUrl(mTestServer.getURL(POPUP_PAGE));
-        mListener.addInfoBarAnimationFinished("InfoBar added when it should not");
+        // A second load should open a popup and should not show the infobar.
+        int tabCount = sActivityTestRule.tabsCount(false);
+        sActivityTestRule.loadUrl(sTestServer.getURL(POPUP_PAGE));
+        CriteriaHelper.pollUiThread(
+                () -> { return sActivityTestRule.tabsCount(false) > tabCount; });
+        Assert.assertEquals("Wrong infobar count", 0, infoBars.size());
     }
 
     /**
@@ -259,23 +277,22 @@ public class InfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser"})
-    @RetryOnFailure
     public void testInfoBarForGeolocationDisappearsOnBack() throws TimeoutException {
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        mActivityTestRule.loadUrl(HELLO_WORLD_URL);
-        mActivityTestRule.loadUrl(mTestServer.getURL(POPUP_PAGE));
+        sActivityTestRule.loadUrl(HELLO_WORLD_URL);
+        sActivityTestRule.loadUrl(sTestServer.getURL(POPUP_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not added.");
 
-        Assert.assertEquals("Wrong infobar count", 1, mActivityTestRule.getInfoBars().size());
+        Assert.assertEquals("Wrong infobar count", 1, sActivityTestRule.getInfoBars().size());
 
         // Navigate back and ensure the InfoBar has been removed.
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                mActivityTestRule.getActivity().getActivityTab().goBack();
+                sActivityTestRule.getActivity().getActivityTab().goBack();
             }
         });
-        InfoBarUtil.waitUntilNoInfoBarsExist(mActivityTestRule.getInfoBars());
+        InfoBarUtil.waitUntilNoInfoBarsExist(sActivityTestRule.getInfoBars());
         mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
     }
 
@@ -288,8 +305,8 @@ public class InfoBarTest {
     @CommandLineFlags.Add("force-fieldtrials=DataCompressionProxyPromoVisibility/Enabled")
     @EnableFeatures("DataReductionProxyEnabledWithNetworkService")
     @Feature({"Browser", "Main"})
-    @RetryOnFailure
     public void testDataReductionPromoInfoBar() {
+        GURL gurl = new GURL("http://google.com");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse("Data Reduction Proxy enabled",
                     DataReductionProxySettings.getInstance().isDataReductionProxyEnabled());
@@ -301,12 +318,12 @@ public class InfoBarTest {
                     .apply();
             // Add an infobar.
             Assert.assertTrue(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                    "http://google.com", false, false, HttpURLConnection.HTTP_OK));
+                    sActivityTestRule.getActivity(), sActivityTestRule.getWebContents(), gurl,
+                    false, false, HttpURLConnection.HTTP_OK));
         });
 
         waitUntilDataReductionPromoInfoBarAppears();
-        final List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
+        final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
         Assert.assertTrue("InfoBar does not have primary button",
                 InfoBarUtil.hasPrimaryButton(infoBars.get(0)));
         Assert.assertTrue("InfoBar does not have secondary button",
@@ -316,19 +333,19 @@ public class InfoBarTest {
                 (Runnable) () -> InfoBarUtil.clickPrimaryButton(infoBars.get(0)));
 
         // The renderer should have been killed and the infobar removed.
-        InfoBarUtil.waitUntilNoInfoBarsExist(mActivityTestRule.getInfoBars());
+        InfoBarUtil.waitUntilNoInfoBarsExist(sActivityTestRule.getInfoBars());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertTrue("Data Reduction Proxy not enabled",
                     DataReductionProxySettings.getInstance().isDataReductionProxyEnabled());
             // Turn Data Saver off so the promo can be reshown.
             DataReductionProxySettings.getInstance().setDataReductionProxyEnabled(
-                    mActivityTestRule.getActivity(), false);
+                    sActivityTestRule.getActivity(), false);
             // Try to add an infobar. Infobar should not be added since it has already been
             // shown.
             Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                    "http://google.com", false, false, HttpURLConnection.HTTP_OK));
+                    sActivityTestRule.getActivity(), sActivityTestRule.getWebContents(), gurl,
+                    false, false, HttpURLConnection.HTTP_OK));
         });
     }
 
@@ -340,8 +357,8 @@ public class InfoBarTest {
     @MediumTest
     @CommandLineFlags.Add("force-fieldtrials=DataCompressionProxyPromoVisibility/Enabled")
     @Feature({"Browser", "Main"})
-    @RetryOnFailure
     public void testDataReductionPromoInfoBarDismissed() {
+        GURL gurl = new GURL("http://google.com");
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse("Data Reduction Proxy enabled",
                     DataReductionProxySettings.getInstance().isDataReductionProxyEnabled());
@@ -353,12 +370,12 @@ public class InfoBarTest {
                     .apply();
             // Add an infobar.
             Assert.assertTrue(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                    "http://google.com", false, false, HttpURLConnection.HTTP_OK));
+                    sActivityTestRule.getActivity(), sActivityTestRule.getWebContents(), gurl,
+                    false, false, HttpURLConnection.HTTP_OK));
         });
 
         waitUntilDataReductionPromoInfoBarAppears();
-        final List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
+        final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
         Assert.assertTrue("InfoBar does not have primary button",
                 InfoBarUtil.hasPrimaryButton(infoBars.get(0)));
         Assert.assertTrue("InfoBar does not have secondary button",
@@ -368,7 +385,7 @@ public class InfoBarTest {
                 (Runnable) () -> InfoBarUtil.clickSecondaryButton(infoBars.get(0)));
 
         // The renderer should have been killed and the infobar removed.
-        InfoBarUtil.waitUntilNoInfoBarsExist(mActivityTestRule.getInfoBars());
+        InfoBarUtil.waitUntilNoInfoBarsExist(sActivityTestRule.getInfoBars());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Assert.assertFalse("Data Reduction Proxy enabled",
@@ -376,8 +393,8 @@ public class InfoBarTest {
             // Try to add an infobar. Infobar should not be added since the user clicked
             // dismiss.
             Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                    mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                    "http://google.com", false, false, HttpURLConnection.HTTP_OK));
+                    sActivityTestRule.getActivity(), sActivityTestRule.getWebContents(), gurl,
+                    false, false, HttpURLConnection.HTTP_OK));
         });
     }
 
@@ -390,7 +407,7 @@ public class InfoBarTest {
     @CommandLineFlags.Add("force-fieldtrials=DataCompressionProxyPromoVisibility/Enabled")
     @Feature({"Browser", "Main"})
     public void testDataReductionPromoInfoBarPostM48Install() throws Throwable {
-        mActivityTestRule.runOnUiThread(new Runnable() {
+        sActivityTestRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 Assert.assertFalse("Data Reduction Proxy enabled",
@@ -406,8 +423,8 @@ public class InfoBarTest {
                 // or second run promo version was not shown and the package was installed
                 // after M48.
                 Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                        "http://google.com", false, false, HttpURLConnection.HTTP_OK));
+                        sActivityTestRule.getActivity(), sActivityTestRule.getWebContents(),
+                        new GURL("http://google.com"), false, false, HttpURLConnection.HTTP_OK));
             }
         });
     }
@@ -420,16 +437,16 @@ public class InfoBarTest {
     @MediumTest
     @CommandLineFlags.Add("force-fieldtrials=DataCompressionProxyPromoVisibility/Enabled")
     @Feature({"Browser", "Main"})
-    @RetryOnFailure
     public void testDataReductionPromoInfoBarFreOptOut() throws Throwable {
-        mActivityTestRule.runOnUiThread(new Runnable() {
+        GURL gurl = new GURL("http://google.com");
+        sActivityTestRule.runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 // Try to add an infobar. Infobar should not be added since the first run
                 // experience or second run promo hasn't been shown.
                 Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                        "http://google.com", false, false, HttpURLConnection.HTTP_OK));
+                        sActivityTestRule.getActivity(), sActivityTestRule.getWebContents(), gurl,
+                        false, false, HttpURLConnection.HTTP_OK));
 
                 // Fake showing the FRE.
                 DataReductionPromoUtils.saveFreOrSecondRunPromoDisplayed();
@@ -437,8 +454,8 @@ public class InfoBarTest {
                 // Try to add an infobar. Infobar should not be added since the
                 // first run experience was just shown.
                 Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                        "http://google.com", false, false, HttpURLConnection.HTTP_OK));
+                        sActivityTestRule.getActivity(), sActivityTestRule.getWebContents(), gurl,
+                        false, false, HttpURLConnection.HTTP_OK));
 
                 // Fake the first run experience or second run promo being shown in M51.
                 DataReductionPromoUtils.saveFreOrSecondRunPromoDisplayed();
@@ -451,8 +468,8 @@ public class InfoBarTest {
                 // Try to add an infobar. Infobar should not be added since the user opted
                 // out on the first run experience.
                 Assert.assertFalse(DataReductionPromoInfoBar.maybeLaunchPromoInfoBar(
-                        mActivityTestRule.getActivity(), mActivityTestRule.getWebContents(),
-                        "http://google.com", false, false, HttpURLConnection.HTTP_OK));
+                        sActivityTestRule.getActivity(), sActivityTestRule.getWebContents(), gurl,
+                        false, false, HttpURLConnection.HTTP_OK));
             }
         });
     }
@@ -463,9 +480,8 @@ public class InfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @RetryOnFailure
     public void testInfoBarForHungRenderer() throws TimeoutException {
-        mActivityTestRule.loadUrl(HELLO_WORLD_URL);
+        sActivityTestRule.loadUrl(HELLO_WORLD_URL);
 
         // Fake an unresponsive renderer signal.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
@@ -474,17 +490,28 @@ public class InfoBarTest {
         });
         mListener.addInfoBarAnimationFinished("InfoBar not added");
 
-        // Make sure it has Kill/Wait buttons.
-        List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-        Assert.assertEquals("Wrong infobar count", 1, infoBars.size());
-        Assert.assertTrue(InfoBarUtil.hasPrimaryButton(infoBars.get(0)));
-        Assert.assertTrue(InfoBarUtil.hasSecondaryButton(infoBars.get(0)));
+        CriteriaHelper.pollUiThread(() -> {
+            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
+            InfoBarMatcher matcher =
+                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
+            Criteria.checkThat(infoBars, Matchers.hasItem(matcher));
+
+            // Make sure it has Kill/Wait buttons.
+            Assert.assertTrue(InfoBarUtil.hasPrimaryButton(matcher.mLastMatch));
+            Assert.assertTrue(InfoBarUtil.hasSecondaryButton(matcher.mLastMatch));
+        });
 
         // Fake a responsive renderer signal.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
                 () -> { getTabWebContentsDelegate().rendererResponsive(); });
         mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-        Assert.assertTrue("Wrong infobar count", mActivityTestRule.getInfoBars().isEmpty());
+
+        CriteriaHelper.pollUiThread(() -> {
+            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
+            InfoBarMatcher matcher =
+                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
+            Criteria.checkThat(infoBars, Matchers.not(Matchers.hasItem(matcher)));
+        });
     }
 
     /**
@@ -493,9 +520,8 @@ public class InfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @RetryOnFailure
     public void testInfoBarForHungRendererCanKillRenderer() throws TimeoutException {
-        mActivityTestRule.loadUrl(HELLO_WORLD_URL);
+        sActivityTestRule.loadUrl(HELLO_WORLD_URL);
 
         // Fake an unresponsive renderer signal.
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
@@ -504,24 +530,24 @@ public class InfoBarTest {
         });
         mListener.addInfoBarAnimationFinished("InfoBar not added");
 
-        // Make sure it has Kill/Wait buttons.
-        final List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
-        Assert.assertEquals("Wrong infobar count", 1, infoBars.size());
-        Assert.assertTrue(InfoBarUtil.hasPrimaryButton(infoBars.get(0)));
-        Assert.assertTrue(InfoBarUtil.hasSecondaryButton(infoBars.get(0)));
+        CriteriaHelper.pollUiThread(() -> {
+            final List<InfoBar> infoBars = sActivityTestRule.getInfoBars();
+            InfoBarMatcher matcher =
+                    new InfoBarMatcher(InfoBarIdentifier.HUNG_RENDERER_INFOBAR_DELEGATE_ANDROID);
+            Criteria.checkThat(infoBars, Matchers.hasItem(matcher));
 
-        // Activate the Kill button.
-        PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT,
-                () -> { InfoBarUtil.clickPrimaryButton(infoBars.get(0)); });
+            // Make sure it has Kill/Wait buttons.
+            Assert.assertTrue(InfoBarUtil.hasPrimaryButton(matcher.mLastMatch));
+            Assert.assertTrue(InfoBarUtil.hasSecondaryButton(matcher.mLastMatch));
+
+            // Activate the Kill button.
+            InfoBarUtil.clickPrimaryButton(matcher.mLastMatch);
+        });
 
         // The renderer should have been killed and the InfoBar removed.
         mListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-        Assert.assertTrue("Wrong infobar count", mActivityTestRule.getInfoBars().isEmpty());
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return SadTab.isShowing(mActivityTestRule.getActivity().getActivityTab());
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            return SadTab.isShowing(sActivityTestRule.getActivity().getActivityTab());
         }, MAX_TIMEOUT, CHECK_INTERVAL);
     }
 
@@ -531,31 +557,33 @@ public class InfoBarTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Main"})
-    @RetryOnFailure
     public void testInfoBarContainerSwapsWebContents() throws TimeoutException {
         // Add an infobar.
         LocationSettingsTestUtil.setSystemLocationSettingEnabled(true);
-        mActivityTestRule.loadUrl(mTestServer.getURL(POPUP_PAGE));
+        sActivityTestRule.loadUrl(sTestServer.getURL(POPUP_PAGE));
         mListener.addInfoBarAnimationFinished("InfoBar not added");
-        Assert.assertEquals("Wrong infobar count", 1, mActivityTestRule.getInfoBars().size());
+        Assert.assertEquals("Wrong infobar count", 1, sActivityTestRule.getInfoBars().size());
 
         // Swap out the WebContents and send the user somewhere so that the InfoBar gets removed.
         InfoBarTestAnimationListener removeListener = new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(removeListener);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> sActivityTestRule.getInfoBarContainer().addAnimationListener(removeListener));
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
-            WebContents newContents = WebContentsFactory.createWebContents(false, false);
+            WebContents newContents = WebContentsFactory.createWebContents(
+                    Profile.getLastUsedRegularProfile(), false);
             TabTestUtils.swapWebContents(
-                    mActivityTestRule.getActivity().getActivityTab(), newContents, false, false);
+                    sActivityTestRule.getActivity().getActivityTab(), newContents, false, false);
         });
-        mActivityTestRule.loadUrl(HELLO_WORLD_URL);
+        sActivityTestRule.loadUrl(HELLO_WORLD_URL);
         removeListener.removeInfoBarAnimationFinished("InfoBar not removed.");
-        Assert.assertEquals("Wrong infobar count", 0, mActivityTestRule.getInfoBars().size());
+        Assert.assertEquals("Wrong infobar count", 0, sActivityTestRule.getInfoBars().size());
 
         // Revisiting the original page should make the InfoBar reappear.
         InfoBarTestAnimationListener addListener = new InfoBarTestAnimationListener();
-        mActivityTestRule.getInfoBarContainer().addAnimationListener(addListener);
-        mActivityTestRule.loadUrl(mTestServer.getURL(POPUP_PAGE));
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> sActivityTestRule.getInfoBarContainer().addAnimationListener(addListener));
+        sActivityTestRule.loadUrl(sTestServer.getURL(POPUP_PAGE));
         addListener.addInfoBarAnimationFinished("InfoBar not added");
-        Assert.assertEquals("Wrong infobar count", 1, mActivityTestRule.getInfoBars().size());
+        Assert.assertEquals("Wrong infobar count", 1, sActivityTestRule.getInfoBars().size());
     }
 }

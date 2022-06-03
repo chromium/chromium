@@ -4,29 +4,32 @@
 
 #include "content/renderer/pepper/pepper_platform_audio_output_dev.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "content/child/child_process.h"
 #include "content/common/content_constants_internal.h"
-#include "content/renderer/media/audio/audio_output_ipc_factory.h"
 #include "content/renderer/pepper/audio_helper.h"
 #include "content/renderer/pepper/pepper_audio_output_host.h"
 #include "content/renderer/pepper/pepper_media_device_manager.h"
 #include "content/renderer/render_frame_impl.h"
 #include "media/audio/audio_device_description.h"
 #include "ppapi/shared_impl/ppb_audio_config_shared.h"
+#include "third_party/blink/public/web/modules/media/audio/web_audio_output_ipc_factory.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 
 namespace {
-#if defined(OS_WIN) || defined(OS_MACOSX)
-const int64_t kMaxAuthorizationTimeoutMs = 4000;
+#if defined(OS_WIN) || defined(OS_MAC)
+constexpr base::TimeDelta kMaxAuthorizationTimeout = base::Seconds(4);
 #else
-const int64_t kMaxAuthorizationTimeoutMs = 0;  // No timeout.
+constexpr base::TimeDelta kMaxAuthorizationTimeout;  // No timeout.
 #endif
 }
 
@@ -44,8 +47,7 @@ PepperPlatformAudioOutputDev* PepperPlatformAudioOutputDev::Create(
           render_frame_id, device_id,
           // Set authorization request timeout at 80% of renderer hung timeout,
           // but no more than kMaxAuthorizationTimeout.
-          base::TimeDelta::FromMilliseconds(std::min(
-              kHungRendererDelayMs * 8 / 10, kMaxAuthorizationTimeoutMs))));
+          std::min(kHungRendererDelay * 8 / 10, kMaxAuthorizationTimeout)));
 
   if (audio_output->Initialize(sample_rate, frames_per_buffer, client)) {
     // Balanced by Release invoked in
@@ -181,13 +183,13 @@ void PepperPlatformAudioOutputDev::OnDeviceAuthorized(
 
 void PepperPlatformAudioOutputDev::OnStreamCreated(
     base::UnsafeSharedMemoryRegion shared_memory_region,
-    base::SyncSocket::Handle socket_handle,
+    base::SyncSocket::ScopedHandle socket_handle,
     bool playing_automatically) {
   DCHECK(shared_memory_region.IsValid());
 #if defined(OS_WIN)
-  DCHECK(socket_handle);
+  DCHECK(socket_handle.IsValid());
 #else
-  DCHECK_NE(-1, socket_handle);
+  DCHECK(socket_handle.is_valid());
 #endif
   DCHECK_GT(shared_memory_region.GetSize(), 0u);
 
@@ -195,7 +197,8 @@ void PepperPlatformAudioOutputDev::OnStreamCreated(
     // Must dereference the client only on the main thread. Shutdown may have
     // occurred while the request was in-flight, so we need to NULL check.
     if (client_)
-      client_->StreamCreated(std::move(shared_memory_region), socket_handle);
+      client_->StreamCreated(std::move(shared_memory_region),
+                             std::move(socket_handle));
   } else {
     DCHECK(io_task_runner_->BelongsToCurrentThread());
     if (state_ != CREATING_STREAM)
@@ -208,8 +211,8 @@ void PepperPlatformAudioOutputDev::OnStreamCreated(
     main_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&PepperPlatformAudioOutputDev::OnStreamCreated, this,
-                       std::move(shared_memory_region), socket_handle,
-                       playing_automatically));
+                       std::move(shared_memory_region),
+                       std::move(socket_handle), playing_automatically));
   }
 }
 
@@ -258,7 +261,8 @@ bool PepperPlatformAudioOutputDev::Initialize(int sample_rate,
 
   client_ = client;
 
-  ipc_ = AudioOutputIPCFactory::get()->CreateAudioOutputIPC(render_frame_id_);
+  ipc_ = blink::WebAudioOutputIPCFactory::GetInstance().CreateAudioOutputIPC(
+      render_frame->GetWebFrame()->GetLocalFrameToken());
   CHECK(ipc_);
 
   params_.Reset(media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
@@ -282,11 +286,11 @@ void PepperPlatformAudioOutputDev::RequestDeviceAuthorizationOnIOThread() {
   state_ = AUTHORIZING;
   ipc_->RequestDeviceAuthorization(this, session_id_, device_id_);
 
-  if (auth_timeout_ > base::TimeDelta()) {
+  if (auth_timeout_.is_positive()) {
     // Create the timer on the thread it's used on. It's guaranteed to be
     // deleted on the same thread since users must call ShutDown() before
     // deleting PepperPlatformAudioOutputDev; see ShutDownOnIOThread().
-    auth_timeout_action_.reset(new base::OneShotTimer());
+    auth_timeout_action_ = std::make_unique<base::OneShotTimer>();
     auth_timeout_action_->Start(
         FROM_HERE, auth_timeout_,
         base::BindOnce(&PepperPlatformAudioOutputDev::OnDeviceAuthorized, this,
@@ -309,7 +313,7 @@ void PepperPlatformAudioOutputDev::CreateStreamOnIOThread(
     case IDLE:
       if (did_receive_auth_.IsSignaled() && device_id_.empty()) {
         state_ = CREATING_STREAM;
-        ipc_->CreateStream(this, params, base::nullopt);
+        ipc_->CreateStream(this, params, absl::nullopt);
       } else {
         RequestDeviceAuthorizationOnIOThread();
         start_on_authorized_ = true;
@@ -322,7 +326,7 @@ void PepperPlatformAudioOutputDev::CreateStreamOnIOThread(
 
     case AUTHORIZED:
       state_ = CREATING_STREAM;
-      ipc_->CreateStream(this, params, base::nullopt);
+      ipc_->CreateStream(this, params, absl::nullopt);
       start_on_authorized_ = false;
       break;
 

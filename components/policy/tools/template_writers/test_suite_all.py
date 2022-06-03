@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -25,6 +25,8 @@ class TestSuiteAll(unittest.TestSuite):
     import writers.doc_writer_unittest
     import writers.google_adml_writer_unittest
     import writers.google_admx_writer_unittest
+    import writers.ios_app_config_writer_unittest
+    import writers.jamf_writer_unittest
     import writers.json_writer_unittest
     import writers.plist_strings_writer_unittest
     import writers.plist_writer_unittest
@@ -43,6 +45,8 @@ class TestSuiteAll(unittest.TestSuite):
         writers.doc_writer_unittest.DocWriterUnittest,
         writers.google_adml_writer_unittest.GoogleAdmlWriterUnittest,
         writers.google_admx_writer_unittest.GoogleAdmxWriterUnittest,
+        writers.ios_app_config_writer_unittest.IOSAppConfigWriterUnitTests,
+        writers.jamf_writer_unittest.JamfWriterUnitTests,
         writers.json_writer_unittest.JsonWriterUnittest,
         writers.plist_strings_writer_unittest.PListStringsWriterUnittest,
         writers.plist_writer_unittest.PListWriterUnittest,

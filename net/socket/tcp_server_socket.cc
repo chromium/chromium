@@ -4,11 +4,13 @@
 
 #include "net/socket/tcp_server_socket.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "net/base/net_errors.h"
 #include "net/socket/socket_descriptor.h"
 #include "net/socket/tcp_client_socket.h"
@@ -62,6 +64,12 @@ int TCPServerSocket::GetLocalAddress(IPEndPoint* address) const {
 
 int TCPServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,
                             CompletionOnceCallback callback) {
+  return Accept(socket, std::move(callback), nullptr);
+}
+
+int TCPServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,
+                            CompletionOnceCallback callback,
+                            IPEndPoint* peer_address) {
   DCHECK(socket);
   DCHECK(!callback.is_null());
 
@@ -72,16 +80,16 @@ int TCPServerSocket::Accept(std::unique_ptr<StreamSocket>* socket,
 
   // It is safe to use base::Unretained(this). |socket_| is owned by this class,
   // and the callback won't be run after |socket_| is destroyed.
-  CompletionOnceCallback accept_callback =
-      base::BindOnce(&TCPServerSocket::OnAcceptCompleted,
-                     base::Unretained(this), socket, std::move(callback));
+  CompletionOnceCallback accept_callback = base::BindOnce(
+      &TCPServerSocket::OnAcceptCompleted, base::Unretained(this), socket,
+      peer_address, std::move(callback));
   int result = socket_->Accept(&accepted_socket_, &accepted_address_,
                                std::move(accept_callback));
   if (result != ERR_IO_PENDING) {
     // |accept_callback| won't be called so we need to run
     // ConvertAcceptedSocket() ourselves in order to do the conversion from
     // |accepted_socket_| to |socket|.
-    result = ConvertAcceptedSocket(result, socket);
+    result = ConvertAcceptedSocket(result, socket, peer_address);
   } else {
     pending_accept_ = true;
   }
@@ -95,23 +103,29 @@ void TCPServerSocket::DetachFromThread() {
 
 int TCPServerSocket::ConvertAcceptedSocket(
     int result,
-    std::unique_ptr<StreamSocket>* output_accepted_socket) {
+    std::unique_ptr<StreamSocket>* output_accepted_socket,
+    IPEndPoint* output_accepted_address) {
   // Make sure the TCPSocket object is destroyed in any case.
   std::unique_ptr<TCPSocket> temp_accepted_socket(std::move(accepted_socket_));
   if (result != OK)
     return result;
 
-  output_accepted_socket->reset(
-      new TCPClientSocket(std::move(temp_accepted_socket), accepted_address_));
+  if (output_accepted_address)
+    *output_accepted_address = accepted_address_;
+
+  *output_accepted_socket = std::make_unique<TCPClientSocket>(
+      std::move(temp_accepted_socket), accepted_address_);
 
   return OK;
 }
 
 void TCPServerSocket::OnAcceptCompleted(
     std::unique_ptr<StreamSocket>* output_accepted_socket,
+    IPEndPoint* output_accepted_address,
     CompletionOnceCallback forward_callback,
     int result) {
-  result = ConvertAcceptedSocket(result, output_accepted_socket);
+  result = ConvertAcceptedSocket(result, output_accepted_socket,
+                                 output_accepted_address);
   pending_accept_ = false;
   std::move(forward_callback).Run(result);
 }

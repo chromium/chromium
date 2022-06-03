@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/url_constants.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "url/url_util.h"
 
 namespace content {
@@ -26,7 +27,6 @@ const char* const kDefaultSavableSchemes[] = {
   url::kHttpsScheme,
   url::kFileScheme,
   url::kFileSystemScheme,
-  url::kFtpScheme,
   kChromeDevToolsScheme,
   kChromeUIScheme,
   url::kDataScheme
@@ -50,7 +50,7 @@ std::vector<std::string>& GetMutableServiceWorkerSchemes() {
 }  // namespace
 
 void RegisterContentSchemes() {
-  // On Android, schemes may have been registered already.
+  // On Android and in tests, schemes may have been registered already.
   if (g_registered_url_schemes)
     return;
   g_registered_url_schemes = true;
@@ -59,6 +59,7 @@ void RegisterContentSchemes() {
 
   url::AddStandardScheme(kChromeDevToolsScheme, url::SCHEME_WITH_HOST);
   url::AddStandardScheme(kChromeUIScheme, url::SCHEME_WITH_HOST);
+  url::AddStandardScheme(kChromeUIUntrustedScheme, url::SCHEME_WITH_HOST);
   url::AddStandardScheme(kGuestScheme, url::SCHEME_WITH_HOST);
   url::AddStandardScheme(kChromeErrorScheme, url::SCHEME_WITH_HOST);
 
@@ -68,7 +69,9 @@ void RegisterContentSchemes() {
   for (auto& scheme : schemes.referrer_schemes)
     url::AddReferrerScheme(scheme.c_str(), url::SCHEME_WITH_HOST);
 
+  schemes.secure_schemes.push_back(kChromeDevToolsScheme);
   schemes.secure_schemes.push_back(kChromeUIScheme);
+  schemes.secure_schemes.push_back(kChromeUIUntrustedScheme);
   schemes.secure_schemes.push_back(kChromeErrorScheme);
   for (auto& scheme : schemes.secure_schemes)
     url::AddSecureScheme(scheme.c_str());
@@ -76,11 +79,15 @@ void RegisterContentSchemes() {
   for (auto& scheme : schemes.local_schemes)
     url::AddLocalScheme(scheme.c_str());
 
+  for (auto& scheme : schemes.extension_schemes)
+    blink::CommonSchemeRegistry::RegisterURLSchemeAsExtension(scheme.c_str());
+
   schemes.no_access_schemes.push_back(kChromeErrorScheme);
   for (auto& scheme : schemes.no_access_schemes)
     url::AddNoAccessScheme(scheme.c_str());
 
   schemes.cors_enabled_schemes.push_back(kChromeUIScheme);
+  schemes.cors_enabled_schemes.push_back(kChromeUIUntrustedScheme);
   for (auto& scheme : schemes.cors_enabled_schemes)
     url::AddCorsEnabledScheme(scheme.c_str());
 
@@ -97,6 +104,13 @@ void RegisterContentSchemes() {
     url::EnableNonStandardSchemesForAndroidWebView();
 #endif
 
+  // Prevent future modification of the scheme lists. This is to prevent
+  // accidental creation of data races in the program. Add*Scheme aren't
+  // threadsafe so must be called when GURL isn't used on any other thread. This
+  // is really easy to mess up, so we say that all calls to Add*Scheme in Chrome
+  // must be inside this function.
+  url::LockSchemeRegistries();
+
   // Combine the default savable schemes with the additional ones given.
   GetMutableSavableSchemes().assign(std::begin(kDefaultSavableSchemes),
                                     std::end(kDefaultSavableSchemes));
@@ -108,6 +122,7 @@ void RegisterContentSchemes() {
 }
 
 void ReRegisterContentSchemesForTests() {
+  url::ClearSchemesForTests();
   g_registered_url_schemes = false;
   RegisterContentSchemes();
 }

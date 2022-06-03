@@ -4,11 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests query string extraction.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   function checkURL(url) {
-    var request = new SDK.NetworkRequest(url, url, '', '', '');
+    var request = SDK.NetworkRequest.create(url, url, '', '', '');
     TestRunner.addResult('URL: ' + url);
     TestRunner.addResult('Query: ' + request.queryString());
     TestRunner.addResult('');

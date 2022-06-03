@@ -1,0 +1,31 @@
+
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gc.js"></script>
+</head>
+<body>
+<script>
+promise_test(async t => {
+  let iframe = document.createElement("iframe");
+  document.body.appendChild(iframe);
+  let iframe_exception_constructor = iframe.contentWindow.DOMException;
+  let iframe_ac = new iframe.contentWindow.AudioContext();
+  let iframe_constructor = iframe.contentWindow.MediaStreamAudioDestinationNode;
+  iframe.remove();
+  assert_throws_dom('NotAllowedError', iframe_exception_constructor, () => {
+    let stream = iframe_ac.createMediaStreamDestination();
+  });
+  assert_throws_dom('NotAllowedError', iframe_exception_constructor, () => {
+    let stream = iframe_ac.createMediaStreamDestination({
+      "channelCount": 4,
+      "channelInterpretation": "discrete"});
+  });
+  assert_throws_dom('NotAllowedError', iframe_exception_constructor, () => {
+    let stream = new iframe_constructor(iframe_ac);
+  });
+}, 'MediaStreamAudioDestinationNode creation in closed iframe throws error');
+</script>
+</body>
+</html>

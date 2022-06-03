@@ -20,4 +20,4 @@ testing::AssertionResult AssertAlmostEqual(const char* actual_expr,
 }  // namespace geometry_test
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_GEOMETRY_TEST_HELPERS_H_

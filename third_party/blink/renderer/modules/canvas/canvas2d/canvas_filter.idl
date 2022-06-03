@@ -1,0 +1,11 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+typedef (object or FrozenArray<object>) CanvasFilterInput;
+[
+    Exposed=(Window,Worker), RuntimeEnabled=NewCanvas2DAPI
+] interface CanvasFilter {
+
+    [RaisesException] constructor(CanvasFilterInput init);
+};

@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -12,9 +11,6 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/find_bar/find_bar_controller.h"
-#include "chrome/browser/ui/find_bar/find_notification_details.h"
-#include "chrome/browser/ui/find_bar/find_tab_helper.h"
-#include "chrome/browser/ui/find_bar/find_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/find_bar_host.h"
@@ -23,11 +19,16 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/find_in_page/find_notification_details.h"
+#include "components/find_in_page/find_tab_helper.h"
+#include "components/find_in_page/find_types.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/focus_changed_observer.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/switches.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/focus/focus_manager.h"
@@ -40,34 +41,21 @@ using ui_test_utils::IsViewFocused;
 
 namespace {
 const char kSimplePage[] = "/find_in_page/simple.html";
-
-class WebContentsFocusChangedWatcher : public content::WebContentsObserver {
- public:
-  explicit WebContentsFocusChangedWatcher(WebContents* web_contents)
-      : WebContentsObserver(web_contents) {
-    EXPECT_TRUE(web_contents != nullptr);
-  }
-  ~WebContentsFocusChangedWatcher() override {}
-
-  // Waits until focus changes in the page.
-  void Wait() { run_loop_.Run(); }
-
- private:
-  // Overridden WebContentsObserver methods.
-  void OnFocusChangedInPage(content::FocusedNodeDetails* details) override {
-    run_loop_.Quit();
-  }
-
-  base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsFocusChangedWatcher);
-};
 }  // namespace
 
 class FindInPageTest : public InProcessBrowserTest {
  public:
   FindInPageTest() {
     FindBarHost::disable_animations_during_testing_ = true;
+  }
+
+  FindInPageTest(const FindInPageTest&) = delete;
+  FindInPageTest& operator=(const FindInPageTest&) = delete;
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    // Some bots are flaky due to slower loading interacting with
+    // deferred commits.
+    command_line->AppendSwitch(blink::switches::kAllowPreCommitInput);
   }
 
   FindBarHost* GetFindBarHost() {
@@ -77,9 +65,9 @@ class FindInPageTest : public InProcessBrowserTest {
 
   FindBarView* GetFindBarView() { return GetFindBarHost()->find_bar_view(); }
 
-  base::string16 GetFindBarText() { return GetFindBarHost()->GetFindText(); }
+  std::u16string GetFindBarText() { return GetFindBarHost()->GetFindText(); }
 
-  base::string16 GetFindBarSelectedText() {
+  std::u16string GetFindBarSelectedText() {
     return GetFindBarHost()->GetFindBarTesting()->GetFindSelectedText();
   }
 
@@ -104,41 +92,21 @@ class FindInPageTest : public InProcessBrowserTest {
     view->OnGestureEvent(&event);
   }
 
-  FindNotificationDetails WaitForFindResult() {
+  find_in_page::FindNotificationDetails WaitForFindResult() {
     WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     ui_test_utils::FindResultWaiter(web_contents).Wait();
-    return FindTabHelper::FromWebContents(web_contents)->find_result();
+    return find_in_page::FindTabHelper::FromWebContents(web_contents)
+        ->find_result();
   }
 
-  FindNotificationDetails WaitForFinalFindResult() {
+  find_in_page::FindNotificationDetails WaitForFinalFindResult() {
     while (true) {
       auto details = WaitForFindResult();
       if (details.final_update())
         return details;
     }
   }
-
-  bool SendKeyPressAndWait(const Browser* browser,
-                           ui::KeyboardCode key,
-                           bool control,
-                           bool shift,
-                           bool alt,
-                           bool command,
-                           int type,
-                           const content::NotificationSource& source) {
-    content::WindowedNotificationObserver observer(type, source);
-
-    if (!ui_test_utils::SendKeyPressSync(browser, key, control, shift, alt,
-                                         command))
-      return false;
-
-    observer.Wait();
-    return !testing::Test::HasFatalFailure();
-  }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FindInPageTest);
 };
 
 // Flaky because the test server fails to start? See: http://crbug.com/96594.
@@ -147,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, CrashEscHandlers) {
 
   // First we navigate to our test page (tab A).
   GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   chrome::Find(browser());
 
@@ -182,14 +150,14 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, NavigationByKeyEvent) {
   // won't do anything and the test will hang.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   // First we navigate to any page.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kSimplePage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSimplePage)));
   // Show the Find bar.
   browser()->GetFindBarController()->Show();
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
   ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), ASCIIToUTF16("a"),
-      true, false, NULL, NULL);
+      browser()->tab_strip_model()->GetActiveWebContents(), u"a", true, false,
+      nullptr, nullptr);
 
   // The previous button should still be focused after pressing [Enter] on it.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
@@ -200,8 +168,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, NavigationByKeyEvent) {
 
   // The next button should still be focused after pressing [Enter] on it.
   ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), ASCIIToUTF16("b"),
-      true, false, NULL, NULL);
+      browser()->tab_strip_model()->GetActiveWebContents(), u"b", true, false,
+      nullptr, nullptr);
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
                                               false, false, false));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN, false,
@@ -215,14 +183,14 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDoNotAlterFocus) {
   // won't do anything and the test will hang.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   // First we navigate to any page.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kSimplePage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSimplePage)));
   // Show the Find bar.
   browser()->GetFindBarController()->Show();
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
   const int match_count = ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(), ASCIIToUTF16("e"),
-      true, false, nullptr, nullptr);
+      browser()->tab_strip_model()->GetActiveWebContents(), u"e", true, false,
+      nullptr, nullptr);
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 
   // This test requires at least 3 possible matches.
@@ -276,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, ButtonsDisabledWithoutText) {
   // won't do anything and the test will hang.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   // First we navigate to any page.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kSimplePage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSimplePage)));
   // Show the Find bar.
   browser()->GetFindBarController()->Show();
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
@@ -293,7 +261,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   GURL url = embedded_test_server()->GetURL("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Focus the location bar, open and close the find-in-page, focus should
   // return to the location bar.
@@ -303,7 +271,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
   browser()->GetFindBarController()->Show();
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
   browser()->GetFindBarController()->EndFindSession(
-      FindOnPageSelectionAction::kKeep, FindBoxResultAction::kKeep);
+      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 
   // Focus the location bar, find something on the page, close the find box,
@@ -312,10 +280,10 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
   chrome::Find(browser());
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
   ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      ASCIIToUTF16("a"), true, false, NULL, NULL);
+      browser()->tab_strip_model()->GetActiveWebContents(), u"a", true, false,
+      nullptr, nullptr);
   browser()->GetFindBarController()->EndFindSession(
-      FindOnPageSelectionAction::kKeep, FindBoxResultAction::kKeep);
+      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
 
   // Focus the location bar, open and close the find box, focus should return to
@@ -326,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
   browser()->GetFindBarController()->Show();
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
   browser()->GetFindBarController()->EndFindSession(
-      FindOnPageSelectionAction::kKeep, FindBoxResultAction::kKeep);
+      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 }
 
@@ -337,9 +305,10 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
 #define MAYBE_SelectionRestoreOnTabSwitch SelectionRestoreOnTabSwitch
 #endif
 IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_SelectionRestoreOnTabSwitch) {
+#if defined(OS_MAC)
   // Mac intentionally changes selection on focus.
-  if (views::PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
-    return;
+  GTEST_SKIP() << "Mac intentionally has different behavior";
+#endif
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Make sure Chrome is in the foreground, otherwise sending input
@@ -348,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_SelectionRestoreOnTabSwitch) {
 
   // First we navigate to any page in the current tab (tab A).
   GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Show the Find bar.
   browser()->GetFindBarController()->Show();
@@ -360,14 +329,14 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_SelectionRestoreOnTabSwitch) {
       browser(), ui::VKEY_B, false, false, false, false));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_C, false, false, false, false));
-  EXPECT_EQ(ASCIIToUTF16("abc"), GetFindBarText());
+  EXPECT_EQ(u"abc", GetFindBarText());
 
   // Select "bc".
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_LEFT, false, true, false, false));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_LEFT, false, true, false, false));
-  EXPECT_EQ(ASCIIToUTF16("bc"), GetFindBarSelectedText());
+  EXPECT_EQ(u"bc", GetFindBarSelectedText());
 
   // Open another tab (tab B).
   content::WindowedNotificationObserver observer(
@@ -386,7 +355,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_SelectionRestoreOnTabSwitch) {
       browser(), ui::VKEY_E, false, false, false, false));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_F, false, false, false, false));
-  EXPECT_EQ(ASCIIToUTF16("def"), GetFindBarText());
+  EXPECT_EQ(u"def", GetFindBarText());
 
   // Select "de".
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -395,19 +364,19 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_SelectionRestoreOnTabSwitch) {
       browser(), ui::VKEY_RIGHT, false, true, false, false));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_RIGHT, false, true, false, false));
-  EXPECT_EQ(ASCIIToUTF16("de"), GetFindBarSelectedText());
+  EXPECT_EQ(u"de", GetFindBarSelectedText());
 
   // Select tab A. Find bar should select "bc".
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  EXPECT_EQ(ASCIIToUTF16("bc"), GetFindBarSelectedText());
+  EXPECT_EQ(u"bc", GetFindBarSelectedText());
 
   // Select tab B. Find bar should select "de".
   browser()->tab_strip_model()->ActivateTabAt(
       1, {TabStripModel::GestureType::kOther});
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  EXPECT_EQ(ASCIIToUTF16("de"), GetFindBarSelectedText());
+  EXPECT_EQ(u"de", GetFindBarSelectedText());
 }
 
 IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
@@ -416,16 +385,16 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
 
   // First we navigate to our test page (tab A).
   GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   chrome::Find(browser());
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 
   // Search for 'a'.
   ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      ASCIIToUTF16("a"), true, false, NULL, NULL);
-  EXPECT_EQ(ASCIIToUTF16("a"), GetFindBarSelectedText());
+      browser()->tab_strip_model()->GetActiveWebContents(), u"a", true, false,
+      nullptr, nullptr);
+  EXPECT_EQ(u"a", GetFindBarSelectedText());
 
   // Open another tab (tab B).
   content::WindowedNotificationObserver observer(
@@ -440,11 +409,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
 
   // Search for 'b'.
   ui_test_utils::FindInPage(
-      browser()->tab_strip_model()->GetActiveWebContents(),
-      ASCIIToUTF16("b"), true, false, NULL, NULL);
-  // Mac intentionally changes selection on focus.
-  if (!views::PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
-    EXPECT_EQ(ASCIIToUTF16("b"), GetFindBarSelectedText());
+      browser()->tab_strip_model()->GetActiveWebContents(), u"b", true, false,
+      nullptr, nullptr);
+  EXPECT_EQ(u"b", GetFindBarSelectedText());
 
   // Set focus away from the Find bar (to the Location bar).
   chrome::FocusLocationBar(browser());
@@ -454,8 +421,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
   browser()->tab_strip_model()->ActivateTabAt(
       0, {TabStripModel::GestureType::kOther});
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
-  if (!views::PlatformStyle::kTextfieldScrollsToStartOnFocusChange)
-    EXPECT_EQ(ASCIIToUTF16("a"), GetFindBarSelectedText());
+  EXPECT_EQ(u"a", GetFindBarSelectedText());
 
   // Select tab B. Location bar should get focus.
   browser()->tab_strip_model()->ActivateTabAt(
@@ -463,8 +429,47 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitch) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_OMNIBOX));
 }
 
+IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // First we navigate to our test page (tab A).
+  GURL url = embedded_test_server()->GetURL(kSimplePage);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  chrome::Find(browser());
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  content::WindowedNotificationObserver observer(
+      content::NOTIFICATION_LOAD_STOP,
+      content::NotificationService::AllSources());
+  chrome::AddSelectedTabWithURL(browser(), url, ui::PAGE_TRANSITION_TYPED);
+  observer.Wait();
+
+  // Make sure Find box is not open when starting the new tab.
+  EXPECT_FALSE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  // Select tab A. Find bar should get focus.
+  browser()->tab_strip_model()->ActivateTabAt(
+      0, {TabStripModel::GestureType::kOther});
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  // Dismiss the Find box. Focus should go to the content view.
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
+
+  // Wait until the focus settles.
+  content::RunUntilInputProcessed(browser()
+                                      ->tab_strip_model()
+                                      ->GetActiveWebContents()
+                                      ->GetRenderWidgetHostView()
+                                      ->GetRenderWidgetHost());
+  ASSERT_FALSE(IsFindBarVisible());
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_TAB_CONTAINER));
+}
+
 // FindInPage on Mac doesn't use prepopulated values. Search there is global.
-#if !defined(OS_MACOSX) && !defined(USE_AURA)
+#if !defined(OS_MAC) && !defined(USE_AURA)
 // Flaky because the test server fails to start? See: http://crbug.com/96594.
 // This tests that whenever you clear values from the Find box and close it that
 // it respects that and doesn't show you the last search, as reported in bug:
@@ -478,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
 
   // First we navigate to any page.
   GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Show the Find bar.
   browser()->GetFindBarController()->Show();
@@ -488,14 +493,14 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
       browser(), ui::VKEY_A, false, false, false, false));
 
   // We should find "a" here.
-  EXPECT_EQ(ASCIIToUTF16("a"), GetFindBarText());
+  EXPECT_EQ(u"a", GetFindBarText());
 
   // Delete "a".
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_BACK, false, false, false, false));
 
   // Validate we have cleared the text.
-  EXPECT_EQ(base::string16(), GetFindBarText());
+  EXPECT_EQ(std::u16string(), GetFindBarText());
 
   // Close the Find box.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -506,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
 
   // After the Find box has been reopened, it should not have been prepopulated
   // with "a" again.
-  EXPECT_EQ(base::string16(), GetFindBarText());
+  EXPECT_EQ(std::u16string(), GetFindBarText());
 
   // Close the Find box.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
@@ -518,20 +523,14 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, PrepopulateRespectBlank) {
 
   // After the Find box has been reopened, it should still have no prepopulate
   // value.
-  EXPECT_EQ(base::string16(), GetFindBarText());
+  EXPECT_EQ(std::u16string(), GetFindBarText());
 }
 #endif
 
 // Flaky on Win. http://crbug.com/92467
 // Flaky on ChromeOS. http://crbug.com/118216
 // Flaky on linux aura. http://crbug.com/163931
-#if defined(TOOLKIT_VIEWS)
-#define MAYBE_PasteWithoutTextChange DISABLED_PasteWithoutTextChange
-#else
-#define MAYBE_PasteWithoutTextChange PasteWithoutTextChange
-#endif
-
-IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_PasteWithoutTextChange) {
+IN_PROC_BROWSER_TEST_F(FindInPageTest, DISABLED_PasteWithoutTextChange) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Make sure Chrome is in the foreground, otherwise sending input
@@ -540,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_PasteWithoutTextChange) {
 
   // First we navigate to any page.
   GURL url = embedded_test_server()->GetURL(kSimplePage);
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Show the Find bar.
   browser()->GetFindBarController()->Show();
@@ -552,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_PasteWithoutTextChange) {
       browser(), ui::VKEY_A, false, false, false, false));
 
   // We should find "a" here.
-  EXPECT_EQ(ASCIIToUTF16("a"), GetFindBarText());
+  EXPECT_EQ(u"a", GetFindBarText());
 
   // Reload the page to clear the matching result.
   chrome::Reload(browser(), WindowOpenDisposition::CURRENT_TAB);
@@ -563,37 +562,40 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_PasteWithoutTextChange) {
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 
   // "a" should be selected.
-  EXPECT_EQ(ASCIIToUTF16("a"), GetFindBarSelectedText());
+  EXPECT_EQ(u"a", GetFindBarSelectedText());
 
   // Press Ctrl-C to copy the content.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_C, true, false, false, false));
 
-  base::string16 str;
+  std::u16string str;
   ui::Clipboard::GetForCurrentThread()->ReadText(
-      ui::ClipboardBuffer::kCopyPaste, &str);
+      ui::ClipboardBuffer::kCopyPaste, /* data_dst = */ nullptr, &str);
 
   // Make sure the text is copied successfully.
-  EXPECT_EQ(ASCIIToUTF16("a"), str);
+  EXPECT_EQ(u"a", str);
 
   // Press Ctrl-V to paste the content back, it should start finding even if the
   // content is not changed.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_V, true, false, false, false));
-  FindNotificationDetails details = WaitForFindResult();
+  find_in_page::FindNotificationDetails details = WaitForFindResult();
   EXPECT_TRUE(details.number_of_matches() > 0);
 }
 
 // Slow flakiness on Linux. crbug.com/803743
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_CtrlEnter DISABLED_CtrlEnter
 #else
 #define MAYBE_CtrlEnter CtrlEnter
 #endif
 IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_CtrlEnter) {
-  ui_test_utils::NavigateToURL(browser(),
-                               GURL("data:text/html,This is some text with a "
-                                    "<a href=\"about:blank\">link</a>."));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL("data:text/html,This is some text with a "
+                      "<a href=\"about:blank\">link</a>.")));
+
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+  auto* host = web_contents->GetRenderWidgetHostView()->GetRenderWidgetHost();
 
   browser()->GetFindBarController()->Show();
 
@@ -606,7 +608,9 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_CtrlEnter) {
       browser(), ui::VKEY_N, false, false, false, false));
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
       browser(), ui::VKEY_K, false, false, false, false));
-  EXPECT_EQ(ASCIIToUTF16("link"), GetFindBarText());
+  content::RunUntilInputProcessed(host);
+
+  EXPECT_EQ(u"link", GetFindBarText());
 
   ui_test_utils::UrlLoadObserver observer(
       GURL("about:blank"), content::NotificationService::AllSources());
@@ -618,38 +622,134 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_CtrlEnter) {
   observer.Wait();
 }
 
-// FindInPage on Mac doesn't use prepopulated values. Search there is global.
-#if !defined(OS_MACOSX)
+// This tests the following bug that used to exist:
+// 1) Do a find that has 0 results. The search text must contain a space.
+// 2) Navigate to a new page (on the same domain) that contains the search text.
+// 3) Open the find bar. It should display 0/N (where N is the number of
+// matches) and have no active-match highlighting. The bug caused it to display
+// 1/N, with the first having active-match highlighting (and the page wouldn't
+// scroll to the match if it was off-screen).
+IN_PROC_BROWSER_TEST_F(FindInPageTest, ActiveMatchAfterNoResults) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/find_in_page/simple.html")));
+
+  // This bug does not reproduce when using ui_test_utils::FindInPage here;
+  // sending keystrokes like this is required. Also note that the text must
+  // contain a space.
+  browser()->GetFindBarController()->Show();
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_A, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_SPACE, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_L, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_I, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_N, false, false, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_K, false, false, false, false));
+  EXPECT_EQ(u"a link", GetFindBarText());
+
+  browser()->GetFindBarController()->EndFindSession(
+      find_in_page::SelectionAction::kKeep, find_in_page::ResultAction::kKeep);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/find_in_page/link.html")));
+
+  browser()->GetFindBarController()->Show();
+  auto details = WaitForFindResult();
+  EXPECT_EQ(1, details.number_of_matches());
+  EXPECT_EQ(0, details.active_match_ordinal());
+}
+
 IN_PROC_BROWSER_TEST_F(FindInPageTest, SelectionDuringFind) {
   ASSERT_TRUE(embedded_test_server()->Start());
   // Make sure Chrome is in the foreground, otherwise sending input
   // won't do anything and the test will hang.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  ui_test_utils::NavigateToURL(
-      browser(),
-      embedded_test_server()->GetURL("/find_in_page/find_from_selection.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(
+                     "/find_in_page/find_from_selection.html")));
 
   WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
+  auto* host_view = web_contents->GetRenderWidgetHostView();
+  auto* host = host_view->GetRenderWidgetHost();
 
-  WebContentsFocusChangedWatcher watcher(web_contents);
+  content::FocusChangedObserver observer(web_contents);
 
   // Tab to the input (which selects the text inside)
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
                                               false, false, false));
 
-  watcher.Wait();
+  observer.Wait();
 
-  browser()->GetFindBarController()->Show();
+  auto* find_bar_controller = browser()->GetFindBarController();
+  find_bar_controller->Show();
   EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
 
-  // verify the text matches the selection
-  EXPECT_EQ(ASCIIToUTF16("text"), GetFindBarText());
-  FindNotificationDetails details = WaitForFindResult();
-  EXPECT_TRUE(details.number_of_matches() > 0);
+  // Verify the text matches the selection
+  EXPECT_EQ(u"text", GetFindBarText());
+  find_in_page::FindNotificationDetails details = WaitForFindResult();
+  // We don't ever want the page to (potentially) scroll just from opening the
+  // find bar, so the active match should always be 0 at this point.
+  // See http://crbug.com/1043550
+  EXPECT_EQ(0, details.active_match_ordinal());
+  EXPECT_EQ(5, details.number_of_matches());
+
+  // Make sure pressing an arrow key doesn't result in a find request.
+  // See https://crbug.com/1127666
+  auto* helper = find_in_page::FindTabHelper::FromWebContents(web_contents);
+  int find_request_id = helper->current_find_request_id();
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_LEFT, false,
+                                              false, false, false));
+  content::RunUntilInputProcessed(host);
+  EXPECT_EQ(find_request_id, helper->current_find_request_id());
+
+  // Make sure calling Show while the findbar is already showing doesn't result
+  // in a find request. It's wasted work, could cause some flicker in the
+  // results, and was previously triggering another bug that caused an endless
+  // loop of searching and flickering results. See http://crbug.com/1129756
+  find_bar_controller->Show(false /*find_next*/);
+  EXPECT_EQ(find_request_id, helper->current_find_request_id());
+
+  // Find the next match and verify the correct match is highlighted (the
+  // one after text that was selected).
+  find_bar_controller->Show(true /*find_next*/);
+  details = WaitForFindResult();
+  EXPECT_EQ(3, details.active_match_ordinal());
+  EXPECT_EQ(5, details.number_of_matches());
+
+  // Start a new find without a selection and verify we still get find results.
+  // See https://crbug.com/1124605
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_ESCAPE, false,
+                                              false, false, false));
+  // Wait until the focus settles.
+  content::RunUntilInputProcessed(host);
+
+  // Shift-tab back to the input box, then clear the text (and selection).
+  // Doing it this way in part because there's a bug with non-input-based
+  // selection changes not affecting GetSelectedText().
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_TAB, false,
+                                              true, false, false));
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_DELETE, false,
+                                              false, false, false));
+  content::RunUntilInputProcessed(host);
+  EXPECT_EQ(std::u16string(), host_view->GetSelectedText());
+
+  find_bar_controller->Show();
+  details = WaitForFindResult();
+  EXPECT_EQ(0, details.active_match_ordinal());
+  // One less than before because we deleted the text in the input box.
+  EXPECT_EQ(4, details.number_of_matches());
 }
-#endif
 
 IN_PROC_BROWSER_TEST_F(FindInPageTest, GlobalEscapeClosesFind) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -657,8 +757,8 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, GlobalEscapeClosesFind) {
   // won't do anything and the test will hang.
   ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
 
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL(kSimplePage));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL(kSimplePage)));
 
   // Open find
   browser()->GetFindBarController()->Show(false, true);
@@ -673,4 +773,31 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, GlobalEscapeClosesFind) {
 
   // Find should be closed
   ASSERT_FALSE(IsFindBarVisible());
+}
+
+// See http://crbug.com/1142027
+IN_PROC_BROWSER_TEST_F(FindInPageTest, MatchOrdinalStableWhileTyping) {
+  // Make sure Chrome is in the foreground, otherwise sending input
+  // won't do anything and the test will hang.
+  ASSERT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           GURL("data:text/html,foo foo foo")));
+  auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
+
+  browser()->GetFindBarController()->Show();
+  EXPECT_TRUE(IsViewFocused(browser(), VIEW_ID_FIND_IN_PAGE_TEXT_FIELD));
+
+  ui_test_utils::FindResultWaiter waiter1(web_contents, 1 /*request_offset*/);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_F, false, false, false, false));
+  waiter1.Wait();
+  EXPECT_EQ(1, waiter1.active_match_ordinal());
+  EXPECT_EQ(3, waiter1.number_of_matches());
+
+  ui_test_utils::FindResultWaiter waiter2(web_contents, 1 /*request_offset*/);
+  ASSERT_TRUE(ui_test_utils::SendKeyPressSync(
+      browser(), ui::VKEY_O, false, false, false, false));
+  waiter2.Wait();
+  EXPECT_EQ(1, waiter2.active_match_ordinal());
+  EXPECT_EQ(3, waiter2.number_of_matches());
 }

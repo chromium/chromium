@@ -12,6 +12,7 @@
 #include "base/token.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "services/service_manager/public/cpp/service_filter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace service_manager {
 
@@ -35,6 +36,10 @@ class ServiceInstance;
 class ServiceInstanceRegistry {
  public:
   ServiceInstanceRegistry();
+
+  ServiceInstanceRegistry(const ServiceInstanceRegistry&) = delete;
+  ServiceInstanceRegistry& operator=(const ServiceInstanceRegistry&) = delete;
+
   ~ServiceInstanceRegistry();
 
   // Registers |instance| with the registry. |instance| is not owned by the
@@ -101,14 +106,12 @@ class ServiceInstanceRegistry {
 
   ServiceInstance* FindMatchInEntries(
       const std::vector<Entry>& entries,
-      const base::Optional<base::Token>& guid) const;
+      const absl::optional<base::Token>& guid) const;
   bool EraseEntry(const base::Token& guid, std::vector<Entry>* entries);
 
   RegularInstanceMap regular_instances_;
   SharedInstanceMap shared_instances_;
   SingletonInstanceMap singleton_instances_;
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceInstanceRegistry);
 };
 
 }  // namespace service_manager

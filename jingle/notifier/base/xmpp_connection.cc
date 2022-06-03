@@ -116,7 +116,7 @@ void XmppConnection::OnStateChange(jingle_xmpp::XmppEngine::State state) {
           weak_xmpp_client_->GetStreamError();
       ClearClient();
       Delegate* delegate = delegate_;
-      delegate_ = NULL;
+      delegate_ = nullptr;
       delegate->OnError(error, subcode, stream_error);
       break;
     }

@@ -37,6 +37,9 @@ class TestingProvider : public EtwTraceProvider {
     callback_event_.Set(::CreateEvent(nullptr, TRUE, FALSE, nullptr));
   }
 
+  TestingProvider(const TestingProvider&) = delete;
+  TestingProvider& operator=(const TestingProvider&) = delete;
+
   void WaitForCallback() {
     ::WaitForSingleObject(callback_event_.Get(), INFINITE);
     ::ResetEvent(callback_event_.Get());
@@ -47,8 +50,6 @@ class TestingProvider : public EtwTraceProvider {
   void PostEventsDisabled() override { ::SetEvent(callback_event_.Get()); }
 
   ScopedHandle callback_event_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestingProvider);
 };
 
 }  // namespace
@@ -139,8 +140,7 @@ TEST_F(EtwTraceControllerTest, Initialize) {
 TEST_F(EtwTraceControllerTest, StartRealTimeSession) {
   EtwTraceController controller;
 
-  HRESULT hr =
-      controller.StartRealtimeSession(session_name_.c_str(), 100 * 1024);
+  HRESULT hr = controller.StartRealtimeSession(session_name_.c_str(), 1024);
   if (hr == E_ACCESSDENIED) {
     VLOG(1) << "You must be an administrator to run this test on Vista";
     return;
@@ -165,7 +165,7 @@ TEST_F(EtwTraceControllerTest, StartFileSession) {
       controller.StartFileSession(session_name_.c_str(), temp.value().c_str());
   if (hr == E_ACCESSDENIED) {
     VLOG(1) << "You must be an administrator to run this test on Vista";
-    DeleteFile(temp, false);
+    DeleteFile(temp);
     return;
   }
 
@@ -175,7 +175,7 @@ TEST_F(EtwTraceControllerTest, StartFileSession) {
   EXPECT_HRESULT_SUCCEEDED(controller.Stop(nullptr));
   EXPECT_EQ(0u, controller.session());
   EXPECT_STREQ(L"", controller.session_name());
-  DeleteFile(temp, false);
+  DeleteFile(temp);
 }
 
 // This test is flaky for unclear reasons. See bugs 525297 and 534184
@@ -186,8 +186,7 @@ TEST_F(EtwTraceControllerTest, DISABLED_EnableDisable) {
   EXPECT_EQ(0u, provider.session_handle());
 
   EtwTraceController controller;
-  HRESULT hr =
-      controller.StartRealtimeSession(session_name_.c_str(), 100 * 1024);
+  HRESULT hr = controller.StartRealtimeSession(session_name_.c_str(), 1024);
   if (hr == E_ACCESSDENIED) {
     VLOG(1) << "You must be an administrator to run this test on Vista";
     return;

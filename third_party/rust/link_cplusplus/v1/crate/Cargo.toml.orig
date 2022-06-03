@@ -1,0 +1,27 @@
+[package]
+name = "link-cplusplus"
+version = "1.0.5"
+authors = ["David Tolnay <dtolnay@gmail.com>"]
+links = "cplusplus"
+edition = "2018"
+license = "MIT OR Apache-2.0"
+description = "Link libstdc++ or libc++ automatically or manually"
+repository = "https://github.com/dtolnay/link-cplusplus"
+documentation = "https://docs.rs/link-cplusplus"
+readme = "README.md"
+
+[build-dependencies]
+cc = "1.0"
+
+[features]
+default = [] # automatic
+"libstdc++" = [] # force libstdc++
+"libc++" = [] # force libc++
+nothing = [] # link nothing, determined somewhere else
+
+# deprecated aliases
+libstdcxx = ["libstdc++"]
+libcxx = ["libc++"]
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]

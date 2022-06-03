@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_EVENTS_OZONE_DEVICE_EVENT_H_
-#define UI_EVENTS_OZONE_DEVICE_EVENT_H_
+#ifndef UI_EVENTS_OZONE_DEVICE_DEVICE_EVENT_H_
+#define UI_EVENTS_OZONE_DEVICE_DEVICE_EVENT_H_
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 
 namespace ui {
 
@@ -26,6 +25,9 @@ class COMPONENT_EXPORT(EVENTS_OZONE) DeviceEvent {
 
   DeviceEvent(DeviceType type, ActionType action, const base::FilePath& path);
 
+  DeviceEvent(const DeviceEvent&) = delete;
+  DeviceEvent& operator=(const DeviceEvent&) = delete;
+
   DeviceType device_type() const { return device_type_; }
   ActionType action_type() const { return action_type_; }
   base::FilePath path() const { return path_; }
@@ -34,10 +36,8 @@ class COMPONENT_EXPORT(EVENTS_OZONE) DeviceEvent {
   DeviceType device_type_;
   ActionType action_type_;
   base::FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceEvent);
 };
 
 }  // namespace ui
 
-#endif  // UI_EVENTS_OZONE_DEVICE_EVENT_H_
+#endif  // UI_EVENTS_OZONE_DEVICE_DEVICE_EVENT_H_

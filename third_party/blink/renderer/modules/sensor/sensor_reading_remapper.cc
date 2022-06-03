@@ -125,6 +125,7 @@ void SensorReadingRemapper::RemapToScreenCoords(
       break;
     case SensorType::ACCELEROMETER:
     case SensorType::LINEAR_ACCELERATION:
+    case SensorType::GRAVITY:
       RemapSensorReadingXYZ(angle, reading->accel);
       break;
     case SensorType::GYROSCOPE:

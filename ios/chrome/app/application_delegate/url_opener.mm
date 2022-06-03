@@ -7,11 +7,15 @@
 #import <Foundation/Foundation.h>
 
 #include "base/metrics/histogram_macros.h"
+#include "components/prefs/pref_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
 #import "ios/chrome/app/application_delegate/tab_opening.h"
+#import "ios/chrome/app/application_delegate/url_opener_params.h"
 #include "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 #import "ios/chrome/browser/chrome_url_util.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/ui/main/connection_information.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #include "url/gurl.h"
 
@@ -29,28 +33,35 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
 
 #pragma mark - ApplicationDelegate - URL Opening methods
 
-+ (BOOL)openURL:(NSURL*)url
-     applicationActive:(BOOL)applicationActive
-               options:(NSDictionary<NSString*, id>*)options
-             tabOpener:(id<TabOpening>)tabOpener
-    startupInformation:(id<StartupInformation>)startupInformation {
-  NSString* sourceApplication =
-      options[UIApplicationOpenURLOptionsSourceApplicationKey];
++ (BOOL)openURL:(URLOpenerParams*)options
+        applicationActive:(BOOL)applicationActive
+                tabOpener:(id<TabOpening>)tabOpener
+    connectionInformation:(id<ConnectionInformation>)connectionInformation
+       startupInformation:(id<StartupInformation>)startupInformation
+              prefService:(PrefService*)prefService
+                initStage:(InitStage)initStage {
+  NSURL* URL = options.URL;
+  NSString* sourceApplication = options.sourceApplication;
+
   ChromeAppStartupParameters* params = [ChromeAppStartupParameters
-      newChromeAppStartupParametersWithURL:url
+      newChromeAppStartupParametersWithURL:URL
                      fromSourceApplication:sourceApplication];
+
+  if (IsIncognitoModeDisabled(prefService)) {
+    params.launchInIncognito = NO;
+  } else if (IsIncognitoModeForced(prefService)) {
+    params.launchInIncognito = YES;
+  }
 
   MobileSessionCallerApp callerApp = [params callerApp];
 
   UMA_HISTOGRAM_ENUMERATION(kUMAMobileSessionStartFromAppsHistogram, callerApp,
                             MOBILE_SESSION_CALLER_APP_COUNT);
 
-  if (startupInformation.isPresentingFirstRunUI) {
+  if (initStage == InitStageFirstRun) {
     UMA_HISTOGRAM_ENUMERATION("FirstRun.LaunchSource", [params launchSource],
                               first_run::LAUNCH_SIZE);
-  }
-
-  if (applicationActive) {
+  } else if (applicationActive) {
     // The app is already active so the applicationDidBecomeActive: method will
     // never be called. Open the requested URL immediately and return YES if
     // the parsed URL was valid.
@@ -58,15 +69,15 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
       // As applicationDidBecomeActive: will not be called again,
       // _startupParameters will not include the command from openURL.
       // Pass the startup parameters from here.
-      DCHECK(!startupInformation.startupParameters);
-      [startupInformation setStartupParameters:params];
+      DCHECK(!connectionInformation.startupParameters);
+      [connectionInformation setStartupParameters:params];
       ProceduralBlock tabOpenedCompletion = ^{
-        [startupInformation setStartupParameters:nil];
+        [connectionInformation setStartupParameters:nil];
       };
 
       // TODO(crbug.com/935019): Exacly the same copy of this code is present in
       // +[UserAcrtivityHandler
-      // handleStartupParametersWithTabOpener:startupInformation:interfaceProvider:]
+      // handleStartupParametersWithTabOpener:startupInformation:browserState:]
 
       GURL URL;
       GURL virtualURL;
@@ -81,9 +92,7 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
       }
       UrlLoadParams urlLoadParams = UrlLoadParams::InNewTab(URL, virtualURL);
 
-      ApplicationModeForTabOpening targetMode =
-          [params launchInIncognito] ? ApplicationModeForTabOpening::INCOGNITO
-                                     : ApplicationModeForTabOpening::NORMAL;
+      ApplicationModeForTabOpening targetMode = params.applicationMode;
       // If the call is coming from the app, it should be opened in the current
       // mode to avoid changing mode.
       if (callerApp == CALLER_APP_GOOGLE_CHROME)
@@ -103,38 +112,33 @@ const char* const kUMAMobileSessionStartFromAppsHistogram =
       return YES;
     }
     return NO;
+  } else {
+    // Don't record the first user action if application is not active.
+    [startupInformation resetFirstUserActionRecorder];
   }
 
-  // Don't record the first user action.
-  [startupInformation resetFirstUserActionRecorder];
-
-  startupInformation.startupParameters = params;
-  return startupInformation.startupParameters != nil;
+  connectionInformation.startupParameters = params;
+  return connectionInformation.startupParameters != nil;
 }
 
-+ (void)handleLaunchOptions:(NSDictionary*)launchOptions
-          applicationActive:(BOOL)applicationActive
++ (void)handleLaunchOptions:(URLOpenerParams*)options
                   tabOpener:(id<TabOpening>)tabOpener
+      connectionInformation:(id<ConnectionInformation>)connectionInformation
          startupInformation:(id<StartupInformation>)startupInformation
-                   appState:(AppState*)appState {
-  NSURL* url = launchOptions[UIApplicationLaunchOptionsURLKey];
-
-  if (url) {
-    NSMutableDictionary<NSString*, id>* options =
-        [[NSMutableDictionary alloc] init];
-    NSString* sourceApplication =
-        launchOptions[UIApplicationLaunchOptionsSourceApplicationKey];
-    if (sourceApplication) {
-      options[UIApplicationOpenURLOptionsSourceApplicationKey] =
-          sourceApplication;
-    }
-
-    BOOL openURLResult = [URLOpener openURL:url
-                          applicationActive:applicationActive
-                                    options:options
-                                  tabOpener:tabOpener
-                         startupInformation:startupInformation];
-    [appState launchFromURLHandled:openURLResult];
+                   appState:(AppState*)appState
+                prefService:(PrefService*)prefService {
+  if (options.URL) {
+    // This method is always called when the SceneState transitions to
+    // SceneActivationLevelForegroundActive, and before the handling of
+    // startupInformation is done.
+    // Pass |NO| as active to avoid double processing.
+    [URLOpener openURL:options
+            applicationActive:NO
+                    tabOpener:tabOpener
+        connectionInformation:connectionInformation
+           startupInformation:startupInformation
+                  prefService:prefService
+                    initStage:appState.initStage];
   }
 }
 

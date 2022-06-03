@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       'Verifies that snippets still map when local overrides is on.\n');
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('bindings_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('bindings_test_runner');
   await TestRunner.showPanel('sources');
 
   await BindingsTestRunner.createOverrideProject('file:///tmp');
@@ -25,7 +25,7 @@
   await Common.Revealer.reveal(uiSourceCode);
   await uiSourceCode.rename('my_snippet_name');
   const bindingPromise = Persistence.persistence.once(Persistence.Persistence.Events.BindingCreated);
-  Sources.SourcesPanel.instance()._runSnippet();
+  Sources.SourcesPanel.instance().runSnippet();
   const binding = await bindingPromise;
   TestRunner.addResult(binding.network.url() + ' <=> ' + binding.fileSystem.url());
 

@@ -12,7 +12,7 @@
 namespace blink {
 
 void RootInlineBoxPainter::PaintEllipsisBox(const PaintInfo& paint_info,
-                                            const LayoutPoint& paint_offset,
+                                            const PhysicalOffset& paint_offset,
                                             LayoutUnit line_top,
                                             LayoutUnit line_bottom) const {
   if (root_inline_box_.HasEllipsisBox() &&
@@ -24,7 +24,7 @@ void RootInlineBoxPainter::PaintEllipsisBox(const PaintInfo& paint_info,
 }
 
 void RootInlineBoxPainter::Paint(const PaintInfo& paint_info,
-                                 const LayoutPoint& paint_offset,
+                                 const PhysicalOffset& paint_offset,
                                  LayoutUnit line_top,
                                  LayoutUnit line_bottom) {
   root_inline_box_.InlineFlowBox::Paint(paint_info, paint_offset, line_top,

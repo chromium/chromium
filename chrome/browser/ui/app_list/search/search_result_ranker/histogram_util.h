@@ -95,20 +95,6 @@ void LogJsonConfigConversionStatus(const std::string& suffix,
 
 void LogZeroStateLaunchType(RankingItemType type);
 
-// Log |score| within the [lo, hi] range divided into 100 buckets. |lo| is
-// reported as 0 and |hi| as 100. Values below |lo| are reported in the bottom
-// bucket, similarly for |hi|.
-void LogZeroStateReceivedScore(const std::string& suffix,
-                               float score,
-                               float lo,
-                               float hi);
-
-// Logs zero state UI-related metrics. These comprise of the clicked position,
-// number of types per impression set, and CTR metrics.
-void LogZeroStateResultsListMetrics(
-    const std::vector<RankingItemType>& result_types,
-    int launched_index);
-
 }  // namespace app_list
 
 #endif  // CHROME_BROWSER_UI_APP_LIST_SEARCH_SEARCH_RESULT_RANKER_HISTOGRAM_UTIL_H_

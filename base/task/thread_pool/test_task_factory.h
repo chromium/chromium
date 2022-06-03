@@ -10,13 +10,12 @@
 #include <unordered_set>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
+#include "base/task/task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/test_utils.h"
-#include "base/task_runner.h"
 #include "base/threading/thread_checker_impl.h"
 
 namespace base {
@@ -47,6 +46,8 @@ class TestTaskFactory {
   TestTaskFactory(scoped_refptr<TaskRunner> task_runner,
                   TaskSourceExecutionMode execution_mode);
 
+  TestTaskFactory(const TestTaskFactory&) = delete;
+  TestTaskFactory& operator=(const TestTaskFactory&) = delete;
   ~TestTaskFactory();
 
   // Posts a task. The posted task will:
@@ -89,8 +90,6 @@ class TestTaskFactory {
   // Used to verify that all tasks run on the same thread when |execution_mode_|
   // is SINGLE_THREADED.
   ThreadCheckerImpl thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestTaskFactory);
 };
 
 }  // namespace test

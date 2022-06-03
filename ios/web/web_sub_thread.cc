@@ -107,14 +107,16 @@ void WebSubThread::CompleteInitializationOnWebThread() {
 }
 
 void WebSubThread::UIThreadRun(base::RunLoop* run_loop) {
-  const int line_number = __LINE__;
   Thread::Run(run_loop);
+  // Inhibit tail calls of Run and inhibit code folding.
+  const int line_number = __LINE__;
   base::debug::Alias(&line_number);
 }
 
 void WebSubThread::IOThreadRun(base::RunLoop* run_loop) {
-  const int line_number = __LINE__;
   Thread::Run(run_loop);
+  // Inhibit tail calls of Run and inhibit code folding.
+  const int line_number = __LINE__;
   base::debug::Alias(&line_number);
 }
 

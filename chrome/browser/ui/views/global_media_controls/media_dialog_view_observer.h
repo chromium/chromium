@@ -18,6 +18,9 @@ class MediaDialogViewObserver : public base::CheckedObserver {
   // Called when a shown media session's metadata is updated.
   virtual void OnMediaSessionMetadataUpdated() = 0;
 
+  // Called when a shown media session's actions are changed.
+  virtual void OnMediaSessionActionsChanged() = 0;
+
  protected:
   ~MediaDialogViewObserver() override = default;
 };

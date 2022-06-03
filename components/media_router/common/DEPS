@@ -1,0 +1,5 @@
+include_rules = [
+  "+url",
+  "+mojo",
+  "+third_party/openscreen/src/cast/common/public",
+]

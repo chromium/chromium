@@ -14,10 +14,9 @@ namespace syncer {
 namespace {
 
 using base::ExpectDictBooleanValue;
-using base::ExpectDictDictionaryValue;
 using base::ExpectDictIntegerValue;
-using base::ExpectDictListValue;
 using base::ExpectDictStringValue;
+using base::ExpectDictValue;
 
 class SyncCycleSnapshotTest : public testing::Test {};
 
@@ -53,13 +52,13 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
       kBirthday, kBagOfChips, model_neutral, download_progress_markers,
       kIsSilenced, kNumEncryptionConflicts, kNumHierarchyConflicts,
       kNumServerConflicts, false, 0, base::Time::Now(), base::Time::Now(),
-      std::vector<int>(ModelType::NUM_ENTRIES, 0),
-      std::vector<int>(ModelType::NUM_ENTRIES, 0),
+      std::vector<int>(GetNumModelTypes(), 0),
+      std::vector<int>(GetNumModelTypes(), 0),
       sync_pb::SyncEnums::UNKNOWN_ORIGIN,
-      /*poll_interval=*/base::TimeDelta::FromMinutes(30),
+      /*poll_interval=*/base::Minutes(30),
       /*has_remaining_local_changes=*/false);
   std::unique_ptr<base::DictionaryValue> value(snapshot.ToValue());
-  EXPECT_EQ(21u, value->size());
+  EXPECT_EQ(21u, value->DictSize());
   ExpectDictStringValue(kBirthday, *value, "birthday");
   // Base64-encoded version of |kBagOfChips|.
   ExpectDictStringValue("YmFnb2ZjaGlwcwE=", *value, "bagOfChips");
@@ -77,8 +76,8 @@ TEST_F(SyncCycleSnapshotTest, SyncCycleSnapshotToValue) {
                          "numLocalOverwrites");
   ExpectDictIntegerValue(model_neutral.num_server_overwrites, *value,
                          "numServerOverwrites");
-  ExpectDictDictionaryValue(*expected_download_progress_markers_value, *value,
-                            "downloadProgressMarkers");
+  ExpectDictValue(*expected_download_progress_markers_value, *value,
+                  "downloadProgressMarkers");
   ExpectDictBooleanValue(kIsSilenced, *value, "isSilenced");
   ExpectDictIntegerValue(kNumEncryptionConflicts, *value,
                          "numEncryptionConflicts");

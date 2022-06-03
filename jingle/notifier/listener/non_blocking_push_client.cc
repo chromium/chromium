@@ -5,8 +5,8 @@
 #include "jingle/notifier/listener/non_blocking_push_client.h"
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/notifier/listener/push_client_observer.h"
@@ -24,6 +24,9 @@ class NonBlockingPushClient::Core
       const scoped_refptr<base::SingleThreadTaskRunner>&
           delegate_task_runner,
       const base::WeakPtr<NonBlockingPushClient>& parent_push_client);
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   // Must be called after being created.
   //
@@ -59,8 +62,6 @@ class NonBlockingPushClient::Core
 
   const base::WeakPtr<NonBlockingPushClient> parent_push_client_;
   std::unique_ptr<PushClient> delegate_push_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 NonBlockingPushClient::Core::Core(

@@ -9,7 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "components/crash/content/app/crash_reporter_client.h"
+#include "components/crash/core/app/crash_reporter_client.h"
 
 namespace chromecast {
 
@@ -17,6 +17,12 @@ class CastCrashReporterClientAndroid
     : public crash_reporter::CrashReporterClient {
  public:
   explicit CastCrashReporterClientAndroid(const std::string& process_type);
+
+  CastCrashReporterClientAndroid(const CastCrashReporterClientAndroid&) =
+      delete;
+  CastCrashReporterClientAndroid& operator=(
+      const CastCrashReporterClientAndroid&) = delete;
+
   ~CastCrashReporterClientAndroid() override;
 
   // Return the path to a directory of MIME-encoded crash reports.
@@ -35,8 +41,6 @@ class CastCrashReporterClientAndroid
 
  private:
   std::string process_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastCrashReporterClientAndroid);
 };
 
 }  // namespace chromecast

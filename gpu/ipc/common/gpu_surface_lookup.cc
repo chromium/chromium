@@ -4,7 +4,7 @@
 
 #include "gpu/ipc/common/gpu_surface_lookup.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace gpu {
 

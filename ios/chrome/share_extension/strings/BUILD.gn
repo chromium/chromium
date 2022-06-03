@@ -8,10 +8,8 @@ import("//tools/grit/grit_rule.gni")
 grit("strings") {
   source = "ios_share_extension_strings.grd"
   output_dir = "$root_gen_dir/ios/share_extension"
-  outputs = [
-    "grit/ios_share_extension_strings.h",
-  ]
-  foreach(locale, locales_with_fake_bidi) {
+  outputs = [ "grit/ios_share_extension_strings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "ios_share_extension_strings_$locale.pak" ]
   }
 }

@@ -14,12 +14,14 @@ namespace blink {
 class ExceptionState;
 class NDEFMessage;
 class NDEFReadingEventInit;
+class ScriptState;
 
 class NDEFReadingEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  static NDEFReadingEvent* Create(const AtomicString&,
+  static NDEFReadingEvent* Create(const ScriptState*,
+                                  const AtomicString&,
                                   const NDEFReadingEventInit*,
                                   ExceptionState&);
 
@@ -31,7 +33,7 @@ class NDEFReadingEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   const String& serialNumber() const;
   NDEFMessage* message() const;
@@ -40,14 +42,6 @@ class NDEFReadingEvent final : public Event {
   String serial_number_;
   Member<NDEFMessage> message_;
 };
-
-DEFINE_TYPE_CASTS(NDEFReadingEvent,
-                  Event,
-                  event,
-                  event->InterfaceName() ==
-                      event_interface_names::kNDEFReadingEvent,
-                  event.InterfaceName() ==
-                      event_interface_names::kNDEFReadingEvent);
 
 }  // namespace blink
 

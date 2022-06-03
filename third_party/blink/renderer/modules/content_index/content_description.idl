@@ -18,5 +18,5 @@ dictionary ContentDescription {
     required DOMString description;
     ContentCategory category = "";
     sequence<ContentIconDefinition> icons = [];
-    required USVString launchUrl;
+    required USVString url;
 };

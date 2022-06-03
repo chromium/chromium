@@ -5,18 +5,15 @@
 #ifndef COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_H_
 #define COMPONENTS_SYNC_ENGINE_SYNC_ENGINE_H_
 
-#include <map>
 #include <memory>
 #include <string>
 #include <vector>
 
-#include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/sync/base/extensions_activity.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/weak_handle.h"
@@ -24,16 +21,17 @@
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/model_type_configurer.h"
 #include "components/sync/engine/shutdown_reason.h"
-#include "components/sync/engine/sync_backend_registrar.h"
 #include "components/sync/engine/sync_credentials.h"
+#include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "url/gurl.h"
 
 namespace syncer {
 
+class EngineComponentsFactory;
 class HttpPostProviderFactory;
 class SyncEngineHost;
-class UnrecoverableErrorHandler;
+struct SyncStatus;
 
 // The interface into the sync engine, which is the part of sync that performs
 // communication between model types and the sync server. In prod the engine
@@ -49,42 +47,33 @@ class SyncEngine : public ModelTypeConfigurer {
   // Utility struct for holding initialization options.
   struct InitParams {
     InitParams();
+
+    InitParams(const InitParams&) = delete;
+    InitParams& operator=(const InitParams&) = delete;
+
     InitParams(InitParams&& other);
+
     ~InitParams();
 
-    scoped_refptr<base::SequencedTaskRunner> sync_task_runner;
     SyncEngineHost* host = nullptr;
-    std::unique_ptr<SyncBackendRegistrar> registrar;
     std::unique_ptr<SyncEncryptionHandler::Observer> encryption_observer_proxy;
     scoped_refptr<ExtensionsActivity> extensions_activity;
-    WeakHandle<JsEventHandler> event_handler;
     GURL service_url;
     SyncEngine::HttpPostProviderFactoryGetter http_factory_getter;
-    CoreAccountId authenticated_account_id;
+    CoreAccountInfo authenticated_account_info;
     std::string invalidator_client_id;
     std::unique_ptr<SyncManagerFactory> sync_manager_factory;
     bool enable_local_sync_backend = false;
     base::FilePath local_sync_backend_folder;
-    std::string restored_key_for_bootstrapping;
-    std::string restored_keystore_key_for_bootstrapping;
     std::unique_ptr<EngineComponentsFactory> engine_components_factory;
-    WeakHandle<UnrecoverableErrorHandler> unrecoverable_error_handler;
-    base::Closure report_unrecoverable_error_function;
-    std::map<ModelType, int64_t> invalidation_versions;
-
-    // Initial authoritative values (usually read from prefs).
-    std::string cache_guid;
-    std::string birthday;
-    std::string bag_of_chips;
-
-    // Define the polling interval. Must not be zero.
-    base::TimeDelta poll_interval;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(InitParams);
+    std::string encryption_bootstrap_token;
   };
 
   SyncEngine();
+
+  SyncEngine(const SyncEngine&) = delete;
+  SyncEngine& operator=(const SyncEngine&) = delete;
+
   ~SyncEngine() override;
 
   // Kicks off asynchronous initialization. Optionally deletes sync data during
@@ -107,6 +96,11 @@ class SyncEngine : public ModelTypeConfigurer {
 
   // Invalidates the SyncCredentials.
   virtual void InvalidateCredentials() = 0;
+
+  // Transport metadata getters.
+  virtual std::string GetCacheGuid() const = 0;
+  virtual std::string GetBirthday() const = 0;
+  virtual base::Time GetLastSyncedTimeForDebugging() const = 0;
 
   // Switches sync engine into configuration mode. In this mode only initial
   // data for newly enabled types is downloaded from server. No local changes
@@ -136,7 +130,7 @@ class SyncEngine : public ModelTypeConfigurer {
   // the operation via OnTrustedVaultKeyAccepted if the provided keys
   // successfully decrypted pending keys. |done_cb| is invoked at the very end.
   virtual void AddTrustedVaultDecryptionKeys(
-      const std::vector<std::string>& keys,
+      const std::vector<std::vector<uint8_t>>& keys,
       base::OnceClosure done_cb) = 0;
 
   // Kick off shutdown procedure. Attempts to cut short any long-lived or
@@ -148,16 +142,8 @@ class SyncEngine : public ModelTypeConfigurer {
   // Must be called *after* StopSyncingForShutdown.
   virtual void Shutdown(ShutdownReason reason) = 0;
 
-  // Turns on encryption of all present and future sync data.
-  virtual void EnableEncryptEverything() = 0;
-
-  // Obtain a handle to the UserShare needed for creating transactions. Should
-  // not be called before we signal initialization is complete with
-  // OnBackendInitialized().
-  virtual UserShare* GetUserShare() const = 0;
-
-  // Called from any thread to obtain current detailed status information.
-  virtual SyncStatus GetDetailedStatus() = 0;
+  // Returns current detailed status information.
+  virtual const SyncStatus& GetDetailedStatus() const = 0;
 
   // Determines if the underlying sync engine has made any local changes to
   // items that have not yet been synced with the server.
@@ -165,11 +151,9 @@ class SyncEngine : public ModelTypeConfigurer {
   virtual void HasUnsyncedItemsForTest(
       base::OnceCallback<void(bool)> cb) const = 0;
 
-
-  virtual void GetModelSafeRoutingInfo(ModelSafeRoutingInfo* out) const = 0;
-
-  // Send a message to the sync thread to persist the Directory to disk.
-  virtual void FlushDirectory() const = 0;
+  // Returns datatypes that are currently throttled.
+  virtual void GetThrottledDataTypesForTest(
+      base::OnceCallback<void(ModelTypeSet)> cb) const = 0;
 
   // Requests that the backend forward to the fronent any protocol events in
   // its buffer and begin forwarding automatically from now on.  Repeated calls
@@ -180,28 +164,16 @@ class SyncEngine : public ModelTypeConfigurer {
   // Disables protocol event forwarding.
   virtual void DisableProtocolEventForwarding() = 0;
 
-  // Enables the sending of directory type debug counters.  Also, for every
-  // time it is called, it makes an explicit request that updates to an update
-  // for all counters be emitted.
-  virtual void EnableDirectoryTypeDebugInfoForwarding() = 0;
-
-  // Disables the sending of directory type debug counters.
-  virtual void DisableDirectoryTypeDebugInfoForwarding() = 0;
-
   // Notify the syncer that the cookie jar has changed.
   // See SyncManager::OnCookieJarChanged.
   virtual void OnCookieJarChanged(bool account_mismatch,
-                                  bool empty_jar,
-                                  const base::Closure& callback) = 0;
+                                  base::OnceClosure callback) = 0;
 
   // Enables/Disables invalidations for session sync related datatypes.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 
   // Returns a ListValue representing Nigori node.
   virtual void GetNigoriNodeForDebugging(AllNodesCallback callback) = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncEngine);
 };
 
 }  // namespace syncer

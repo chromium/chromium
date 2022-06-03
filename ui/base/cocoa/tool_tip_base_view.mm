@@ -4,7 +4,8 @@
 
 #import "ui/base/cocoa/tool_tip_base_view.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 // Below is the nasty tooltip stuff -- copied from WebKit's WebHTMLView.mm
 // with minor modifications for code style and commenting.

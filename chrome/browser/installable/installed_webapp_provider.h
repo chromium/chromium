@@ -8,9 +8,9 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "url/gurl.h"
 
 class InstalledWebappProvider : public content_settings::ObservableProvider {
@@ -20,28 +20,29 @@ class InstalledWebappProvider : public content_settings::ObservableProvider {
   using RuleList = std::vector<std::pair<GURL, ContentSetting>>;
 
   InstalledWebappProvider();
+
+  InstalledWebappProvider(const InstalledWebappProvider&) = delete;
+  InstalledWebappProvider& operator=(const InstalledWebappProvider&) = delete;
+
   ~InstalledWebappProvider() override;
 
   // ProviderInterface implementations.
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      const content_settings::ResourceIdentifier& resource_identifier,
       bool incognito) const override;
 
   bool SetWebsiteSetting(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      const content_settings::ResourceIdentifier& resource_identifier,
-      std::unique_ptr<base::Value>&& value) override;
+      std::unique_ptr<base::Value>&& value,
+      const content_settings::ContentSettingConstraints& constraints = {})
+      override;
 
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
 
-  void Notify();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(InstalledWebappProvider);
+  void Notify(ContentSettingsType content_type);
 };
 
 #endif  // CHROME_BROWSER_INSTALLABLE_INSTALLED_WEBAPP_PROVIDER_H_

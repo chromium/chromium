@@ -2,21 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-# Example for updating r8 in the current dir:
-#   Run:
-#     cd <r8 code directory>
-#     tools/gradle.py r8 # Building R8
-#     cd -
-#
-#     cipd auth-login
-#     rm lib/r8.jar
-#     cp <r8 code directory>/build/libs/r8.jar lib/r8.jar
-#     java -jar lib/r8.jar --version
-#     cipd create --pkg-def cipd.yaml # Make note of the instance ID
-#   Manually update:
-#     README.chromium (version number)
-#     //DEPS (instance ID output by cipd create)
-
+# To create CIPD package run the following command.
+# cipd create --pkg-def cipd.yaml
 package: chromium/third_party/r8
 description: >
   R8 is a proguard-like optimizer that also has the option to dex.

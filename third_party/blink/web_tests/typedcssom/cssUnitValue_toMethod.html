@@ -103,14 +103,14 @@ let conversionFactors = {
 
 test(() => {
   let unitValue = new CSSUnitValue(1, 'deg');
-  assert_throws(new SyntaxError(), () => {
+  assert_throws_dom("SyntaxError", () => {
     unitValue.to('bananas');
   });
 }, 'Converting to invalid unit throws');
 
 test(() => {
   let unitValue = new CSSUnitValue(1, 'deg');
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     unitValue.to('px');
   });
 }, 'Converting to a non-compatible unit throws');

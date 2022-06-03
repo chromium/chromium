@@ -26,7 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_CUSTOM_SCROLLBAR_PART_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_CUSTOM_SCROLLBAR_PART_H_
 
-#include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
 
 namespace blink {
@@ -34,84 +34,118 @@ namespace blink {
 class CustomScrollbar;
 class ScrollableArea;
 
-class LayoutCustomScrollbarPart final : public LayoutBlock {
+class CORE_EXPORT LayoutCustomScrollbarPart final : public LayoutReplaced {
  public:
   static LayoutCustomScrollbarPart* CreateAnonymous(Document*,
                                                     ScrollableArea*,
                                                     CustomScrollbar* = nullptr,
                                                     ScrollbarPart = kNoPart);
 
-  const char* GetName() const override { return "LayoutCustomScrollbarPart"; }
-
-  PaintLayerType LayerTypeRequired() const override { return kNoPaintLayer; }
-
-  void UpdateLayout() override;
-
-  static int ComputeScrollbarWidth(int visible_size, const ComputedStyle*);
-  static int ComputeScrollbarHeight(int visible_size, const ComputedStyle*);
-
-  // Scrollbar parts needs to be rendered at device pixel boundaries.
-  LayoutUnit MarginTop() const override {
-    DCHECK(IsIntegerValue(LayoutBlock::MarginTop()));
-    return LayoutBlock::MarginTop();
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutCustomScrollbarPart";
   }
-  LayoutUnit MarginBottom() const override {
-    DCHECK(IsIntegerValue(LayoutBlock::MarginBottom()));
-    return LayoutBlock::MarginBottom();
+
+  PaintLayerType LayerTypeRequired() const override {
+    NOT_DESTROYED();
+    return kNoPaintLayer;
   }
-  LayoutUnit MarginLeft() const override {
-    DCHECK(IsIntegerValue(LayoutBlock::MarginLeft()));
-    return LayoutBlock::MarginLeft();
-  }
-  LayoutUnit MarginRight() const override {
-    DCHECK(IsIntegerValue(LayoutBlock::MarginRight()));
-    return LayoutBlock::MarginRight();
-  }
+
+  // Computes thickness of the scrollbar (which defines thickness of all parts).
+  // For kScrollbarBGPart only. This can be called during style update.
+  // Percentage size will be ignored.
+  int ComputeThickness() const;
+
+  // Computes size of the part in the direction of the scrollbar orientation.
+  // This doesn't apply to kScrollbarBGPart because its length is not determined
+  // by the style of the part of itself. For kThumbPart this returns the
+  // minimum length of the thumb. The length may depend on the size of the
+  // containing box, so this function can only be called after the size is
+  // available.
+  int ComputeLength() const;
+
+  LayoutUnit MarginTop() const override;
+  LayoutUnit MarginBottom() const override;
+  LayoutUnit MarginLeft() const override;
+  LayoutUnit MarginRight() const override;
 
   bool IsOfType(LayoutObjectType type) const override {
-    return type == kLayoutObjectLayoutCustomScrollbarPart ||
-           LayoutBlock::IsOfType(type);
+    NOT_DESTROYED();
+    return type == kLayoutObjectCustomScrollbarPart ||
+           LayoutReplaced::IsOfType(type);
   }
-  ScrollableArea* GetScrollableArea() const { return scrollable_area_; }
+  ScrollableArea* GetScrollableArea() const {
+    NOT_DESTROYED();
+    return scrollable_area_;
+  }
 
- protected:
-  void StyleWillChange(StyleDifference,
-                       const ComputedStyle& new_style) override;
+  LayoutCustomScrollbarPart(ScrollableArea*, CustomScrollbar*, ScrollbarPart);
+
+ private:
+  void UpdateFromStyle() override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
 
- private:
-  LayoutCustomScrollbarPart(ScrollableArea*, CustomScrollbar*, ScrollbarPart);
+  // A scrollbar part's Location() and PhysicalLocation() are relative to the
+  // scrollbar (instead of relative to any LayoutBox ancestor), and both are
+  // in physical coordinates.
+  LayoutBox* LocationContainer() const override {
+    NOT_DESTROYED();
+    return nullptr;
+  }
 
-  void ComputePreferredLogicalWidths() override;
+  // A scrollbar part is not in the layout tree and is not laid out like other
+  // layout objects. CustomScrollbar will call scrollbar parts' SetFrameRect()
+  // from its SetFrameRect() when needed.
+  void UpdateLayout() override {
+    NOT_DESTROYED();
+    NOTREACHED();
+  }
 
   // Have all padding getters return 0. The important point here is to avoid
   // resolving percents against the containing block, since scroll bar corners
   // don't always have one (so it would crash). Scroll bar corners are not
   // actually laid out, and they don't have child content, so what we return
   // here doesn't really matter.
-  LayoutUnit PaddingTop() const override { return LayoutUnit(); }
-  LayoutUnit PaddingBottom() const override { return LayoutUnit(); }
-  LayoutUnit PaddingLeft() const override { return LayoutUnit(); }
-  LayoutUnit PaddingRight() const override { return LayoutUnit(); }
-
-  void LayoutHorizontalPart();
-  void LayoutVerticalPart();
-
-  void UpdateScrollbarWidth();
-  void UpdateScrollbarHeight();
+  LayoutUnit PaddingTop() const override {
+    NOT_DESTROYED();
+    return LayoutUnit();
+  }
+  LayoutUnit PaddingBottom() const override {
+    NOT_DESTROYED();
+    return LayoutUnit();
+  }
+  LayoutUnit PaddingLeft() const override {
+    NOT_DESTROYED();
+    return LayoutUnit();
+  }
+  LayoutUnit PaddingRight() const override {
+    NOT_DESTROYED();
+    return LayoutUnit();
+  }
 
   void SetNeedsPaintInvalidation();
 
-  bool AllowsOverflowClip() const override { return false; }
+  void RecordPercentLengthStats() const;
+
+  int ComputeSize(SizeType size_type,
+                  const Length& length,
+                  int container_size) const;
+  int ComputeWidth(int container_width) const;
+  int ComputeHeight(int container_height) const;
 
   UntracedMember<ScrollableArea> scrollable_area_;
   UntracedMember<CustomScrollbar> scrollbar_;
+
   ScrollbarPart part_;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutCustomScrollbarPart,
-                                IsLayoutCustomScrollbarPart());
+template <>
+struct DowncastTraits<LayoutCustomScrollbarPart> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutCustomScrollbarPart();
+  }
+};
 
 }  // namespace blink
 

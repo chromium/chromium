@@ -1,0 +1,39 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Nearby Share is CrOS only")
+
+source_set("sharing") {
+  sources = [
+    "sharing_impl.cc",
+    "sharing_impl.h",
+  ]
+
+  deps = [
+    "nearby",
+    "webrtc",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chrome/services/sharing/public/cpp",
+    "//chromeos/services/nearby/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "sharing_impl_unittest.cc" ]
+
+  deps = [
+    ":sharing",
+    "nearby",
+    "nearby/test_support",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

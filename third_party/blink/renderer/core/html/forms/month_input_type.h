@@ -44,7 +44,7 @@ class MonthInputType final : public BaseTemporalInputType {
   void CountUsage() override;
   const AtomicString& FormControlType() const override;
   double ValueAsDate() const override;
-  String SerializeWithDate(const base::Optional<base::Time>&) const override;
+  String SerializeWithDate(const absl::optional<base::Time>&) const override;
   Decimal ParseToNumber(const String&, const Decimal&) const override;
   Decimal DefaultValueForStepUp() const override;
   StepRange CreateStepRange(AnyStepHandling) const override;
@@ -66,6 +66,7 @@ class MonthInputType final : public BaseTemporalInputType {
                      bool has_hour,
                      bool has_minute,
                      bool has_second) const override;
+  String AriaLabelForPickerIndicator() const override;
 };
 
 }  // namespace blink

@@ -16,11 +16,6 @@ element.style { ()
 section { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-    color: -internal-root-color;
-
 ======== Pseudo ::before element ========
 [expanded] 
 #pseudo::before { (<style>)
@@ -37,7 +32,6 @@ html { (user agent stylesheet)
 /-- overloaded --/     PROPERTY: INSERTED;
     color: red;
 
-0 rule ranges are equal.
 0 rule ranges are equal.
 3 rule ranges are equal.
 3 rule ranges are equal.

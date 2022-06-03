@@ -16,11 +16,46 @@ Polymer({
   properties: {
     label: String,
 
+    subLabel: String,
+
     checked: {
       type: Boolean,
       value: false,
       reflectToAttribute: true,
       notify: true,
     },
+
+    /**
+     * Uses Settings styling when true (policy icon is left of the toggle)
+     */
+    policyOnLeft: {
+      type: Boolean,
+      value: false,
+      reflectToAttribute: true,
+    },
+  },
+
+  listeners: {
+    'click': 'onHostTap_',
+  },
+
+  /** @override */
+  focus() {
+    this.$$('cr-toggle').focus();
+  },
+
+  /**
+   * Handles non cr-toggle button clicks (cr-toggle handles its own click events
+   * which don't bubble).
+   * @param {!Event} e
+   * @private
+   */
+  onHostTap_(e) {
+    e.stopPropagation();
+    if (this.getDisabled_(this.disabled, this.property)) {
+      return;
+    }
+    this.checked = !this.checked;
+    this.fire('change');
   },
 });

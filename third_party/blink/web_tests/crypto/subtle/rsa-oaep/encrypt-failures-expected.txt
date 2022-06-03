@@ -8,8 +8,8 @@ PASS publicKey.type is "public"
 PASS typeof publicKey.extractable is 'boolean'
 PASS publicKey.extractable is true
 PASS publicKey.usages.join(',') is "encrypt"
-error is: TypeError: RsaOaepParams: label: Not a BufferSource
-error is: TypeError: RsaOaepParams: label: Not a BufferSource
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': RsaOaepParams: label: Not a BufferSource
+error is: TypeError: Failed to execute 'encrypt' on 'SubtleCrypto': RsaOaepParams: label: Not a BufferSource
 PASS successfullyParsed is true
 
 TEST COMPLETE

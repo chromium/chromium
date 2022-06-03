@@ -4,9 +4,10 @@
 
 #include "services/network/ssl_config_service_mojo.h"
 
+#include "base/cxx17_backports.h"
+#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
@@ -28,8 +29,10 @@
 #include "net/url_request/url_request_context.h"
 #include "services/network/network_context.h"
 #include "services/network/network_service.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/ssl_config.mojom.h"
+#include "services/network/test/fake_test_cert_verifier_params_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -156,6 +159,12 @@ class NetworkServiceSSLConfigServiceTest : public testing::Test {
   // stores it in |network_context_|.
   void SetUpNetworkContext(
       mojom::NetworkContextParamsPtr network_context_params) {
+    // Use a dummy CertVerifier that always passes cert verification, since
+    // these unittests don't need to test the behavior of a real CertVerifier.
+    // There are a parallel set of tests in services/cert_verifier/ that *do*
+    // test CertVerifier behavior.
+    network_context_params->cert_verifier_params =
+        FakeTestCertVerifierParamsFactory::GetCertVerifierParams();
     ssl_config_client_.reset();
     network_context_params->ssl_config_client_receiver =
         ssl_config_client_.BindNewPipeAndPassReceiver();
@@ -430,16 +439,6 @@ TEST_F(NetworkServiceSSLConfigServiceTest,
   RunConversionTests(*mojo_config, expected_net_config);
 }
 
-TEST_F(NetworkServiceSSLConfigServiceTest, InitialConfigTLS13Hardening) {
-  net::SSLContextConfig expected_net_config;
-  expected_net_config.tls13_hardening_for_local_anchors_enabled = true;
-
-  mojom::SSLConfigPtr mojo_config = mojom::SSLConfig::New();
-  mojo_config->tls13_hardening_for_local_anchors_enabled = true;
-
-  RunConversionTests(*mojo_config, expected_net_config);
-}
-
 TEST_F(NetworkServiceSSLConfigServiceTest, CanShareConnectionWithClientCerts) {
   // Create a default NetworkContext and test that
   // CanShareConnectionWithClientCerts returns false.
@@ -488,67 +487,6 @@ TEST_F(NetworkServiceSSLConfigServiceTest, CanShareConnectionWithClientCerts) {
   EXPECT_FALSE(
       config_service->CanShareConnectionWithClientCerts("example.net"));
 }
-
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
-TEST_F(NetworkServiceSSLConfigServiceTest, CRLSetIsApplied) {
-  SetUpNetworkContext(mojom::NetworkContextParams::New());
-
-  SSLConfigServiceMojo* config_service = static_cast<SSLConfigServiceMojo*>(
-      network_context_->url_request_context()->ssl_config_service());
-
-  scoped_refptr<net::X509Certificate> root_cert =
-      net::CreateCertificateChainFromFile(
-          net::GetTestCertsDirectory(), "root_ca_cert.pem",
-          net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
-  ASSERT_TRUE(root_cert);
-  net::ScopedTestRoot test_root(root_cert.get());
-
-  scoped_refptr<net::X509Certificate> cert =
-      net::CreateCertificateChainFromFile(
-          net::GetTestCertsDirectory(), "ok_cert.pem",
-          net::X509Certificate::FORMAT_PEM_CERT_SEQUENCE);
-  ASSERT_TRUE(cert);
-
-  // Ensure that |cert| is trusted without any CRLSet explicitly configured.
-  net::TestCompletionCallback callback1;
-  net::CertVerifyResult cert_verify_result1;
-  std::unique_ptr<net::CertVerifier::Request> request1;
-  int result = network_context_->url_request_context()->cert_verifier()->Verify(
-      net::CertVerifier::RequestParams(cert, "127.0.0.1",
-                                       /*flags=*/0,
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string()),
-      &cert_verify_result1, callback1.callback(), &request1,
-      net::NetLogWithSource());
-  ASSERT_THAT(callback1.GetResult(result), net::test::IsOk());
-
-  // Configure an explicit CRLSet that removes trust in |leaf_cert| by SPKI.
-  base::StringPiece spki;
-  ASSERT_TRUE(net::asn1::ExtractSPKIFromDERCert(
-      net::x509_util::CryptoBufferAsStringPiece(root_cert->cert_buffer()),
-      &spki));
-  net::SHA256HashValue spki_sha256;
-  crypto::SHA256HashString(spki, spki_sha256.data, sizeof(spki_sha256.data));
-
-  config_service->OnNewCRLSet(net::CRLSet::ForTesting(
-      false, &spki_sha256, cert->serial_number(), "", {}));
-
-  // Ensure that |cert| is revoked, due to the CRLSet being applied.
-  net::TestCompletionCallback callback2;
-  net::CertVerifyResult cert_verify_result2;
-  std::unique_ptr<net::CertVerifier::Request> request2;
-  result = network_context_->url_request_context()->cert_verifier()->Verify(
-      net::CertVerifier::RequestParams(cert, "127.0.0.1",
-                                       /*flags=*/0,
-                                       /*ocsp_response=*/std::string(),
-                                       /*sct_list=*/std::string()),
-      &cert_verify_result2, callback2.callback(), &request2,
-      net::NetLogWithSource());
-  ASSERT_THAT(callback2.GetResult(result),
-              net::test::IsError(net::ERR_CERT_REVOKED));
-}
-
-#endif  // !defined(OS_IOS) && !defined(OS_ANDROID)
 
 }  // namespace
 }  // namespace network

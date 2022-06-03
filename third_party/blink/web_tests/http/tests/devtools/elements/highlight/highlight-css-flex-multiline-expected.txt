@@ -1,0 +1,271 @@
+This test verifies the position and size of the highlighted lines and items in a multiline flex container.
+
+flex-container{
+  "paths": [
+    {
+      "path": [
+        "M",
+        100,
+        100,
+        "L",
+        500,
+        100,
+        "L",
+        500,
+        500,
+        "L",
+        100,
+        500,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        100,
+        100,
+        "L",
+        500,
+        100,
+        "L",
+        500,
+        500,
+        "L",
+        100,
+        500,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        100,
+        100,
+        "L",
+        500,
+        100,
+        "L",
+        500,
+        500,
+        "L",
+        100,
+        500,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        100,
+        100,
+        "L",
+        500,
+        100,
+        "L",
+        500,
+        500,
+        "L",
+        100,
+        500,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "flex-container",
+    "nodeWidth": "400",
+    "nodeHeight": "400",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGFlexibleBox",
+    "showAccessibilityInfo": true
+  },
+  "flexInfo": [
+    {
+      "containerBorder": [
+        "M",
+        100,
+        100,
+        "L",
+        500,
+        100,
+        "L",
+        500,
+        500,
+        "L",
+        100,
+        500,
+        "Z"
+      ],
+      "lines": [
+        [
+          {
+            "itemBorder": [
+              "M",
+              100,
+              100,
+              "L",
+              200,
+              100,
+              "L",
+              200,
+              200,
+              "L",
+              100,
+              200,
+              "Z"
+            ],
+            "baseline": 100
+          },
+          {
+            "itemBorder": [
+              "M",
+              250,
+              100,
+              "L",
+              350,
+              100,
+              "L",
+              350,
+              200,
+              "L",
+              250,
+              200,
+              "Z"
+            ],
+            "baseline": 100
+          },
+          {
+            "itemBorder": [
+              "M",
+              400,
+              100,
+              "L",
+              500,
+              100,
+              "L",
+              500,
+              200,
+              "L",
+              400,
+              200,
+              "Z"
+            ],
+            "baseline": 100
+          }
+        ],
+        [
+          {
+            "itemBorder": [
+              "M",
+              100,
+              400,
+              "L",
+              200,
+              400,
+              "L",
+              200,
+              500,
+              "L",
+              100,
+              500,
+              "Z"
+            ],
+            "baseline": 100
+          },
+          {
+            "itemBorder": [
+              "M",
+              250,
+              400,
+              "L",
+              350,
+              400,
+              "L",
+              350,
+              500,
+              "L",
+              250,
+              500,
+              "Z"
+            ],
+            "baseline": 100
+          },
+          {
+            "itemBorder": [
+              "M",
+              400,
+              400,
+              "L",
+              500,
+              400,
+              "L",
+              500,
+              500,
+              "L",
+              400,
+              500,
+              "Z"
+            ],
+            "baseline": 100
+          }
+        ]
+      ],
+      "isHorizontalFlow": true,
+      "isReverse": false,
+      "alignItemsStyle": "normal",
+      "mainGap": 10,
+      "crossGap": 10,
+      "flexContainerHighlightConfig": {
+        "containerBorder": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "lineSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "itemSeparator": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        },
+        "mainDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossDistributedSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "rowGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "columnGapSpace": {
+          "fillColor": "rgba(255, 0, 0, 0)",
+          "hatchColor": "rgba(255, 0, 0, 0)"
+        },
+        "crossAlignment": {
+          "color": "rgba(255, 0, 0, 0)",
+          "pattern": "solid"
+        }
+      }
+    }
+  ]
+}
+

@@ -12,6 +12,36 @@ This file contains the strings for //device/fido.
     </output>
     <if expr="is_android">
       <output filename="fido_strings_af.pak" type="data_package" lang="af" />
+      <output filename="fido_strings_as.pak" type="data_package" lang="as" />
+      <output filename="fido_strings_az.pak" type="data_package" lang="az" />
+      <output filename="fido_strings_be.pak" type="data_package" lang="be" />
+      <output filename="fido_strings_bs.pak" type="data_package" lang="bs" />
+      <output filename="fido_strings_eu.pak" type="data_package" lang="eu" />
+      <output filename="fido_strings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="fido_strings_gl.pak" type="data_package" lang="gl" />
+      <output filename="fido_strings_hy.pak" type="data_package" lang="hy" />
+      <output filename="fido_strings_is.pak" type="data_package" lang="is" />
+      <output filename="fido_strings_ka.pak" type="data_package" lang="ka" />
+      <output filename="fido_strings_kk.pak" type="data_package" lang="kk" />
+      <output filename="fido_strings_km.pak" type="data_package" lang="km" />
+      <output filename="fido_strings_ky.pak" type="data_package" lang="ky" />
+      <output filename="fido_strings_lo.pak" type="data_package" lang="lo" />
+      <output filename="fido_strings_mk.pak" type="data_package" lang="mk" />
+      <output filename="fido_strings_mn.pak" type="data_package" lang="mn" />
+      <output filename="fido_strings_my.pak" type="data_package" lang="my" />
+      <output filename="fido_strings_ne.pak" type="data_package" lang="ne" />
+      <output filename="fido_strings_or.pak" type="data_package" lang="or" />
+      <output filename="fido_strings_pa.pak" type="data_package" lang="pa" />
+      <output filename="fido_strings_si.pak" type="data_package" lang="si" />
+      <output filename="fido_strings_sq.pak" type="data_package" lang="sq" />
+      <output filename="fido_strings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="fido_strings_ur.pak" type="data_package" lang="ur" />
+      <output filename="fido_strings_uz.pak" type="data_package" lang="uz" />
+      <output filename="fido_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="fido_strings_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="fido_strings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="fido_strings_am.pak" type="data_package" lang="am" />
     <output filename="fido_strings_ar.pak" type="data_package" lang="ar" />
@@ -28,7 +58,6 @@ This file contains the strings for //device/fido.
     <output filename="fido_strings_es-419.pak" type="data_package" lang="es-419" />
     <output filename="fido_strings_et.pak" type="data_package" lang="et" />
     <output filename="fido_strings_fa.pak" type="data_package" lang="fa" />
-    <output filename="fido_strings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="fido_strings_fi.pak" type="data_package" lang="fi" />
     <output filename="fido_strings_fil.pak" type="data_package" lang="fil" />
     <output filename="fido_strings_fr.pak" type="data_package" lang="fr" />
@@ -69,6 +98,10 @@ This file contains the strings for //device/fido.
     <output filename="fido_strings_vi.pak" type="data_package" lang="vi" />
     <output filename="fido_strings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="fido_strings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="fido_strings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="fido_strings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="strings/fido_strings_af.xtb" lang="af" />
@@ -137,6 +170,7 @@ This file contains the strings for //device/fido.
     <file path="strings/fido_strings_sl.xtb" lang="sl" />
     <file path="strings/fido_strings_sq.xtb" lang="sq" />
     <file path="strings/fido_strings_sr.xtb" lang="sr" />
+    <file path="strings/fido_strings_sr-Latn.xtb" lang="sr-Latn" />
     <file path="strings/fido_strings_sv.xtb" lang="sv" />
     <file path="strings/fido_strings_sw.xtb" lang="sw" />
     <file path="strings/fido_strings_ta.xtb" lang="ta" />
@@ -152,7 +186,7 @@ This file contains the strings for //device/fido.
     <file path="strings/fido_strings_zh-TW.xtb" lang="zh-TW" />
     <file path="strings/fido_strings_zu.xtb" lang="zu" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
     <if expr="is_macosx">
       <message name="IDS_WEBAUTHN_TOUCH_ID_PROMPT_REASON" desc="Sentence fragment (lower case). Shown after 'Google Chrome is trying to ' (or in some languages, 'Google Chrome wants to ') in a dialog message asking the user to confirm or cancel this action.">

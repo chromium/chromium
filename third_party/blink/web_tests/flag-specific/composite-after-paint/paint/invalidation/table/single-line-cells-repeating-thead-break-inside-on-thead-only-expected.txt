@@ -5,27 +5,11 @@
       "bounds": [1059, 585],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'Col 1'",
-          "rect": [10, 74, 836, 19],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'Col 1'",
-          "rect": [10, 74, 836, 19],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'Col 1'",
-          "rect": [10, 74, 836, 19],
-          "reason": "style change"
-        },
-        {
-          "object": "InlineTextBox 'Col 1'",
-          "rect": [10, 74, 836, 19],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [809, 74, 37, 19],
+        [543, 74, 37, 19],
+        [276, 74, 37, 19],
+        [10, 74, 36, 19]
       ]
     },
     {

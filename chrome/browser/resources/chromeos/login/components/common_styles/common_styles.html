@@ -1,0 +1,96 @@
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<link rel="import" href="../oobe_vars/oobe_custom_vars_css.html">
+<link rel="import" href="../oobe_vars/oobe_shared_vars_css.html">
+<link rel="import" href="../common_styles/oobe_flex_layout_styles.html">
+
+<dom-module id="oobe-common-styles">
+  <template>
+    <style include="oobe-flex-layout-styles">
+
+      :host {
+        --oobe-default-font: {
+            color: var(--oobe-text-color);
+            font-family: var(--oobe-default-font-family);
+            font-size: var(--oobe-default-font-size);
+            font-weight: var(--oobe-default-font-weight);
+            line-height: var(--oobe-default-line-height);
+        };
+
+        --oobe-header-font: {
+            font-family: var(--oobe-header-font-family);
+            font-size: var(--oobe-header-font-size);
+            font-weight: var(--oobe-header-font-weight);
+            line-height: var(--oobe-header-line-height);
+        };
+
+        --oobe-subheader-font: {
+            font-family: var(--oobe-subheader-font-family);
+            font-size: var(--oobe-subheader-font-size);
+            font-weight: var(--oobe-subheader-font-weight);
+            line-height: var(--oobe-subheader-line-height);
+        };
+
+        /* OOBE Modal Dialog */
+        --oobe-modal-dialog-header-font: {
+          font-family: var(--oobe-default-font-family);
+          font-size: var(--oobe-modal-dialog-header-font-size);
+          font-weight: var(--oobe-modal-dialog-header-font-weight);
+        };
+      }
+
+      /* Classes can-scroll is-scrolled scrolled-to-bottom are set by
+         OobeScrollableBehavior. */
+      .scrollable.can-scroll:not(.is-scrolled):not(.scrolled-to-bottom) {
+        background: linear-gradient(0deg,
+                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+
+      }
+      .scrollable.can-scroll.is-scrolled:not(.scrolled-to-bottom) {
+        background: linear-gradient(0deg,
+                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px),
+                    linear-gradient(180deg,
+                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+      }
+      .scrollable.is-scrolled.scrolled-to-bottom {
+        background: linear-gradient(180deg,
+                        rgba(var(--google-grey-refresh-100-rgb), 1) 0,
+                        rgba(var(--google-grey-refresh-100-rgb), 0) 8px);
+      }
+
+      /* Links styles used within OOBE */
+
+      .oobe-local-link {
+        color: rgb(17, 85, 204); /* #1155CC */
+        cursor: pointer;
+        text-decoration: none;
+      }
+
+      .oobe-local-link:focus {
+        outline-color: rgb(77, 144, 254); /* #4D90FE */
+        transition: outline-color 200ms;
+      }
+
+      .oobe-optin-row {
+        border-top: 1px solid var(--google-grey-200);
+        font-size: 13px;
+        margin-top: 12px;
+        padding-top: 12px;
+      }
+
+      .oobe-optin-title {
+        color: var(--oobe-header-text-color);
+        font-weight: var(--oobe-header-font-weight);
+      }
+
+      .oobe-optin-content {
+        margin-inline-end: 16px;
+      }
+    </style>
+  </template>
+</dom-module>

@@ -8,72 +8,56 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
-#include "base/optional.h"
 #include "base/task/post_task.h"
 #include "base/threading/sequence_bound.h"
 #include "base/unguessable_token.h"
 #include "content/browser/browsing_data/clear_site_data_handler.h"
-#include "content/browser/devtools/devtools_instrumentation.h"
-#include "content/browser/frame_host/frame_tree_node.h"
-#include "content/browser/loader/webrtc_connections_observer.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/ssl/ssl_manager.h"
-#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/browser/webrtc/webrtc_connections_observer.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/global_request_id.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
-#include "content/public/common/resource_type.h"
-#include "services/network/public/cpp/load_info_util.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/mojom/network_context.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #endif
 
-#if defined(OS_MACOSX)
-#include "base/message_loop/message_loop_current.h"
+#if defined(OS_MAC)
+#include "base/task/current_thread.h"
 #endif
 
 namespace content {
-namespace {
 
-WebContents* GetWebContents(int process_id, int routing_id) {
-  if (process_id != network::mojom::kBrowserProcessId) {
-    return WebContentsImpl::FromRenderFrameHostID(process_id, routing_id);
-  }
-  return WebContents::FromFrameTreeNodeId(routing_id);
-}
-
-}  // namespace
-
-NetworkServiceClient::NetworkServiceClient(
-    mojo::PendingReceiver<network::mojom::NetworkServiceClient>
-        network_service_client_receiver)
-    : receiver_(this, std::move(network_service_client_receiver))
+NetworkServiceClient::NetworkServiceClient()
 #if defined(OS_ANDROID)
-      ,
-      app_status_listener_(base::android::ApplicationStatusListener::New(
+    : app_status_listener_(base::android::ApplicationStatusListener::New(
           base::BindRepeating(&NetworkServiceClient::OnApplicationStateChange,
                               base::Unretained(this))))
 #endif
 {
 
-#if defined(OS_MACOSX)
-  if (base::MessageLoopCurrentForUI::IsSet())  // Not set in some unit tests.
+#if defined(OS_MAC)
+  if (base::CurrentUIThread::IsSet())  // Not set in some unit tests.
     net::CertDatabase::GetInstance()->StartListeningForKeychainEvents();
 #endif
 
   if (IsOutOfProcessNetworkService()) {
     net::CertDatabase::GetInstance()->AddObserver(this);
-    memory_pressure_listener_ =
-        std::make_unique<base::MemoryPressureListener>(base::BindRepeating(
-            &NetworkServiceClient::OnMemoryPressure, base::Unretained(this)));
+    memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+        FROM_HERE, base::BindRepeating(&NetworkServiceClient::OnMemoryPressure,
+                                       base::Unretained(this)));
 
 #if defined(OS_ANDROID)
     DCHECK(!net::NetworkChangeNotifier::CreateIfNeeded());
@@ -102,36 +86,6 @@ NetworkServiceClient::~NetworkServiceClient() {
     net::NetworkChangeNotifier::RemoveDNSObserver(this);
 #endif
   }
-}
-
-void NetworkServiceClient::OnLoadingStateUpdate(
-    std::vector<network::mojom::LoadInfoPtr> infos,
-    OnLoadingStateUpdateCallback callback) {
-  std::map<WebContents*, network::mojom::LoadInfo> info_map;
-
-  for (auto& info : infos) {
-    auto* web_contents = GetWebContents(info->process_id, info->routing_id);
-    if (!web_contents)
-      continue;
-
-    auto existing = info_map.find(web_contents);
-    if (existing == info_map.end() ||
-        network::LoadInfoIsMoreInteresting(*info, existing->second)) {
-      info_map[web_contents] = *info;
-    }
-  }
-
-  for (const auto& load_info : info_map) {
-    net::LoadStateWithParam load_state;
-    load_state.state = static_cast<net::LoadState>(load_info.second.load_state);
-    load_state.param = load_info.second.state_param;
-    static_cast<WebContentsImpl*>(load_info.first)
-        ->LoadStateChanged(load_info.second.host, load_state,
-                           load_info.second.upload_position,
-                           load_info.second.upload_size);
-  }
-
-  std::move(callback).Run();
 }
 
 void NetworkServiceClient::OnCertDBChanged() {
@@ -199,34 +153,79 @@ void NetworkServiceClient::OnDNSChanged() {
 }
 #endif
 
+mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver>
+NetworkServiceClient::BindURLLoaderNetworkServiceObserver() {
+  mojo::PendingRemote<network::mojom::URLLoaderNetworkServiceObserver> remote;
+  url_loader_network_service_observers_.Add(
+      this, remote.InitWithNewPipeAndPassReceiver());
+  return remote;
+}
+
+void NetworkServiceClient::OnSSLCertificateError(
+    const GURL& url,
+    int net_error,
+    const net::SSLInfo& ssl_info,
+    bool fatal,
+    OnSSLCertificateErrorCallback response) {
+  std::move(response).Run(net::ERR_INSECURE_RESPONSE);
+}
+
+void NetworkServiceClient::OnCertificateRequested(
+    const absl::optional<base::UnguessableToken>& window_id,
+    const scoped_refptr<net::SSLCertRequestInfo>& cert_info,
+    mojo::PendingRemote<network::mojom::ClientCertificateResponder>
+        cert_responder_remote) {
+  mojo::Remote<network::mojom::ClientCertificateResponder> cert_responder(
+      std::move(cert_responder_remote));
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          network::switches::kIgnoreUrlFetcherCertRequests)) {
+    cert_responder->ContinueWithoutCertificate();
+    return;
+  }
+  cert_responder->CancelRequest();
+}
+
+void NetworkServiceClient::OnAuthRequired(
+    const absl::optional<base::UnguessableToken>& window_id,
+    uint32_t request_id,
+    const GURL& url,
+    bool first_auth_attempt,
+    const net::AuthChallengeInfo& auth_info,
+    const scoped_refptr<net::HttpResponseHeaders>& head_headers,
+    mojo::PendingRemote<network::mojom::AuthChallengeResponder>
+        auth_challenge_responder) {
+  mojo::Remote<network::mojom::AuthChallengeResponder>
+      auth_challenge_responder_remote(std::move(auth_challenge_responder));
+  auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
+}
+
+void NetworkServiceClient::OnClearSiteData(const GURL& url,
+                                           const std::string& header_value,
+                                           int load_flags,
+                                           OnClearSiteDataCallback callback) {
+  std::move(callback).Run();
+}
+
+void NetworkServiceClient::OnLoadingStateUpdate(
+    network::mojom::LoadInfoPtr info,
+    OnLoadingStateUpdateCallback callback) {
+  std::move(callback).Run();
+}
+
 void NetworkServiceClient::OnDataUseUpdate(
     int32_t network_traffic_annotation_id_hash,
     int64_t recv_bytes,
     int64_t sent_bytes) {
   GetContentClient()->browser()->OnNetworkServiceDataUseUpdate(
+      network::mojom::kBrowserProcessId, MSG_ROUTING_NONE,
       network_traffic_annotation_id_hash, recv_bytes, sent_bytes);
 }
 
-void NetworkServiceClient::OnRawRequest(
-    int32_t process_id,
-    int32_t routing_id,
-    const std::string& devtools_request_id,
-    const net::CookieStatusList& cookies_with_status,
-    std::vector<network::mojom::HttpRawHeaderPairPtr> headers) {
-  devtools_instrumentation::OnRequestWillBeSentExtraInfo(
-      process_id, routing_id, devtools_request_id, cookies_with_status,
-      headers);
+void NetworkServiceClient::Clone(
+    mojo::PendingReceiver<network::mojom::URLLoaderNetworkServiceObserver>
+        observer) {
+  url_loader_network_service_observers_.Add(this, std::move(observer));
 }
 
-void NetworkServiceClient::OnRawResponse(
-    int32_t process_id,
-    int32_t routing_id,
-    const std::string& devtools_request_id,
-    const net::CookieAndLineStatusList& cookies_with_status,
-    std::vector<network::mojom::HttpRawHeaderPairPtr> headers,
-    const base::Optional<std::string>& raw_response_headers) {
-  devtools_instrumentation::OnResponseReceivedExtraInfo(
-      process_id, routing_id, devtools_request_id, cookies_with_status, headers,
-      raw_response_headers);
-}
 }  // namespace content

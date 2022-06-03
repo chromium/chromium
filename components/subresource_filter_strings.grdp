@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <message name="IDS_ALWAYS_ALLOW_ADS" desc="Explanation associated with a toggle to allow ads after ads have been blocked on the page. To be used on pages where the ad blocking UI is governed by a persistent permissions-based allowlist.">
+    Always allow ads on this site
+  </message>
+  <message name="IDS_BLOCKED_ADS_PROMPT_TITLE" desc="Title of the prompt shown to users in the omnibox or infobar when Chrome has blocked ads on the site because the site tends to show intrusive ads. The title will stand alone next to an icon so there is no need for a period." formatter_data="android_java">
+    Ads blocked
+  </message>
+  <message name="IDS_BLOCKED_ADS_PROMPT_EXPLANATION" desc="A warning that a site has, in the past, shown intrusive or misleading ads. To be shown in an expanded infobar / bubble">
+    This site shows intrusive or misleading ads.
+  </message>
+
+  <if expr="is_android">
+    <message name="IDS_BLOCKED_ADS_INFOBAR_MESSAGE" desc="The mini infobar message shown to users on Android when Chrome has blocked ads on the site because the site tends to show intrusive ads. Will be presented as a sentence, next to a Details link to expand the infobar.">
+      Ads blocked.
+    </message>
+    <message name="IDS_BLOCKED_ADS_MESSAGE_PRIMARY_TEXT" desc="The primary message text shown to users on Android when Chrome has blocked ads on the site because the site tends to show intrusive ads. Will be presented next to a clickable gear icon.">
+      Ads blocked
+    </message>
+    <message name="IDS_BLOCKED_ADS_DIALOG_TITLE" desc="The title of the Ads Blocked dialog shown to users upon acceptance of the Ads Blocked message." formatter_data="android_java">
+      Ads blocked
+    </message>
+    <message name="IDS_BLOCKED_ADS_DIALOG_MESSAGE" desc="A description that a site has, in the past, shown intrusive or misleading ads. To be shown on the Ads Blocked dialog." formatter_data="android_java">
+      This site shows intrusive or misleading ads. <ph name="LEARN_MORE_LINK_TEXT">^1</ph>
+    </message>
+    <message name="IDS_BLOCKED_ADS_DIALOG_ALWAYS_ALLOW" desc="Text associated with the button to allow ads after ads have been blocked on the site. To be shown on the Ads Blocked dialog." formatter_data="android_java">
+      Allow for this site
+    </message>
+    <message name="IDS_BLOCKED_ADS_DIALOG_LEARN_MORE" desc="Learn more link text. To be shown on the Ads Blocked dialog." formatter_data="android_java">
+      Learn more
+    </message>
+  </if>
+</grit-part>

@@ -5,22 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutSVGRect rect",
-          "rect": [8, 8, 200, 200],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [8, 108, 200, 100],
-          "reason": "incremental"
-        },
-        {
-          "object": "LayoutSVGRoot svg",
-          "rect": [108, 8, 100, 100],
-          "reason": "incremental"
-        }
+      "invalidations": [
+        [8, 8, 200, 200]
       ]
     }
   ]

@@ -69,8 +69,10 @@ typedef enum {
   PP_PDF_DO_DEFAULT_ACTION = 2,
   // Action specifying a command to scroll to the global point.
   PP_PDF_SCROLL_TO_GLOBAL_POINT = 3,
+  // Sets text selection.
+  PP_PDF_SET_SELECTION = 4,
   // Last enum value marker.
-  PP_PDF_ACCESSIBILITYACTION_LAST = PP_PDF_SCROLL_TO_GLOBAL_POINT
+  PP_PDF_ACCESSIBILITYACTION_LAST = PP_PDF_SET_SELECTION
 } PP_PdfAccessibilityAction;
 PP_COMPILE_ASSERT_SIZE_IN_BYTES(PP_PdfAccessibilityAction, 4);
 
@@ -105,6 +107,14 @@ typedef enum {
 } PP_PdfAccessibilityAnnotationType;
 PP_COMPILE_ASSERT_SIZE_IN_BYTES(PP_PdfAccessibilityAnnotationType, 4);
 
+struct PP_PdfPageCharacterIndex {
+  // Index of PDF page.
+  uint32_t page_index;
+  // Character index within the PDF page.
+  uint32_t char_index;
+};
+PP_COMPILE_ASSERT_SIZE_IN_BYTES(PP_PdfPageCharacterIndex, 8);
+
 struct PP_PdfAccessibilityActionData {
   // Accessibility action type.
   PP_PdfAccessibilityAction action;
@@ -122,8 +132,12 @@ struct PP_PdfAccessibilityActionData {
   PP_PdfAccessibilityScrollAlignment horizontal_scroll_alignment;
   // Vertical scroll alignment with respect to the viewport
   PP_PdfAccessibilityScrollAlignment vertical_scroll_alignment;
+  // Page and character index of start of selection.
+  PP_PdfPageCharacterIndex selection_start_index;
+  // Page and character index of exclusive end of selection.
+  PP_PdfPageCharacterIndex selection_end_index;
 };
-PP_COMPILE_ASSERT_STRUCT_SIZE_IN_BYTES(PP_PdfAccessibilityActionData, 48);
+PP_COMPILE_ASSERT_STRUCT_SIZE_IN_BYTES(PP_PdfAccessibilityActionData, 64);
 
 struct PPP_Pdf_1_1 {
   // Returns an absolute URL if the position is over a link.
@@ -161,6 +175,9 @@ struct PPP_Pdf_1_1 {
   // If there is no selected text, append the replacement text after the current
   // caret position.
   void (*ReplaceSelection)(PP_Instance instance, const char* text);
+
+  // Perform a select all operation.
+  void (*SelectAll)(PP_Instance instance);
 
   // Return true if plugin can perform an undo operation.
   PP_Bool (*CanUndo)(PP_Instance instance);

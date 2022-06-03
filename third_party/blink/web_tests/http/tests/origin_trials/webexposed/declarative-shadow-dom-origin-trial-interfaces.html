@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<!-- Generate token with the command:
+generate_token.py --version 3 http://127.0.0.1:8000 DeclarativeShadowDOM --expire-timestamp=2000000000
+-- -->
+<meta http-equiv="origin-trial" content="A80LutZa5Y3GLQ8KvEiYH5ism5H62hH0Yk231NOhuQlkVDIMoJ8lh9xPALEPNZuWT+JymA4H7CkeOeystF+K9gwAAABceyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImZlYXR1cmUiOiAiRGVjbGFyYXRpdmVTaGFkb3dET00iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=" />
+<title>DeclarativeShadowDOM - enabled by origin trial</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>
+test(t => {
+  assert_true(HTMLTemplateElement.prototype.hasOwnProperty("shadowRoot"),'Unable to feature detect');
+}, 'Declarative Shadow DOM feature detection for origin-trial enabled document.');
+</script>
+
+<div id=host>
+	<template shadowroot="open"></template>
+</div>
+
+<script>
+test(t => {
+  const host = document.querySelector('#host');
+  assert_true(!!host,"Unable to locate host");
+  assert_true(!!host.shadowRoot,"No shadow root found");
+}, 'Declarative Shadow DOM enabled for origin-trial enabled document.');
+</script>

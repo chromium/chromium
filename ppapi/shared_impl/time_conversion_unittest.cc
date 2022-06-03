@@ -28,7 +28,7 @@ TEST(TimeConversion, Time) {
             abs(static_cast<int>((converted - now).ToInternalValue())));
 
   // Units should be in seconds.
-  base::Time one_second_from_now = now + base::TimeDelta::FromSeconds(1);
+  base::Time one_second_from_now = now + base::Seconds(1);
   double converted_one_second_from_now =
       ppapi::TimeToPPTime(one_second_from_now) - ppapi::TimeToPPTime(now);
   EXPECT_GE(kTimeSecondsSlop, fabs(converted_one_second_from_now - 1));
@@ -42,7 +42,7 @@ TEST(TimeConversion, EpochTime) {
             abs(static_cast<int>((converted - epoch).ToInternalValue())));
 
   // Units should be in seconds.
-  base::Time one_second_from_epoch = epoch + base::TimeDelta::FromSeconds(1);
+  base::Time one_second_from_epoch = epoch + base::Seconds(1);
   double converted_one_second_from_epoch =
       ppapi::TimeToPPTime(one_second_from_epoch) - ppapi::TimeToPPTime(epoch);
   EXPECT_GE(kTimeSecondsSlop, fabs(converted_one_second_from_epoch - 1));

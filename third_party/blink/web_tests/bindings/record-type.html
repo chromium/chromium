@@ -14,10 +14,10 @@
  test(() => {
    let recordTest = internals.recordTest();
 
-   assert_throws(new TypeError(), () => {
+   assert_throws_js(TypeError, () => {
      recordTest.setStringLongRecord(null);
    }, "Converting null to record should be rejected.");
-   assert_throws(new TypeError(), () => {
+   assert_throws_js(TypeError, () => {
      recordTest.setStringLongRecord(undefined);
    }, "Converting undefined to record should be rejected.");
    recordTest.setNullableStringLongRecord(null);
@@ -75,10 +75,10 @@
  test(() => {
    let recordTest = internals.recordTest();
 
-   assert_throws(new TypeError(), () => {
+   assert_throws_js(TypeError, () => {
      recordTest.setByteStringByteStringRecord({'a': 'bc', '\uFFFF': 'foo'});
    }, "Invalid ByteString key must throw a TypeError");
-   assert_throws(new TypeError(), () => {
+   assert_throws_js(TypeError, () => {
      recordTest.setByteStringByteStringRecord({'xy': 'z', 'foo': '\uFFFF'});
    }, "Invalid ByteString value must throw a TypeError");
  }, "Test ByteString validation");

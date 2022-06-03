@@ -28,16 +28,16 @@ test(function() {
     return rectElement.getTotalLength();
   }
 
-  assert_throws("InvalidStateError", function() { getTotalLength(0, 0, 200, 300) });
-  assert_throws("InvalidStateError", function() { getTotalLength(50, 50, 200, 300)});
+  assert_throws_dom("InvalidStateError", function() { getTotalLength(0, 0, 200, 300) });
+  assert_throws_dom("InvalidStateError", function() { getTotalLength(50, 50, 200, 300)});
 }, document.title + " with SVGRectElement");
 
 test(function() {
   var circleElement = document.createElementNS("http://www.w3.org/2000/svg", "circle");
 
   circleElement.setAttribute("r", 10);
-  assert_throws("InvalidStateError", function() { circleElement.getTotalLength() });
+  assert_throws_dom("InvalidStateError", function() { circleElement.getTotalLength() });
   circleElement.setAttribute("r", 20);
-  assert_throws("InvalidStateError", function() { circleElement.getTotalLength() });
+  assert_throws_dom("InvalidStateError", function() { circleElement.getTotalLength() });
 }, document.title + " with SVGCircleElement");
 </script>

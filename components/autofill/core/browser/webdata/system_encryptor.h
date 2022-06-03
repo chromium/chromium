@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_SYSTEM_ENCRYPTOR_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_WEBDATA_SYSTEM_ENCRYPTOR_H_
 
-#include "base/macros.h"
 #include "components/autofill/core/browser/webdata/autofill_table_encryptor.h"
 
 namespace autofill {
@@ -13,16 +12,17 @@ namespace autofill {
 class SystemEncryptor : public AutofillTableEncryptor {
  public:
   SystemEncryptor() = default;
+
+  SystemEncryptor(const SystemEncryptor&) = delete;
+  SystemEncryptor& operator=(const SystemEncryptor&) = delete;
+
   ~SystemEncryptor() override = default;
 
-  bool EncryptString16(const base::string16& plaintext,
+  bool EncryptString16(const std::u16string& plaintext,
                        std::string* ciphertext) const override;
 
   bool DecryptString16(const std::string& ciphertext,
-                       base::string16* plaintext) const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SystemEncryptor);
+                       std::u16string* plaintext) const override;
 };
 
 }  // namespace autofill

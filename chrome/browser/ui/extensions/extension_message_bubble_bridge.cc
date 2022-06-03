@@ -11,6 +11,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/common/extension.h"
+#include "extensions/common/extension_id.h"
 #include "ui/base/l10n/l10n_util.h"
 
 ExtensionMessageBubbleBridge::ExtensionMessageBubbleBridge(
@@ -33,21 +35,21 @@ bool ExtensionMessageBubbleBridge::IsPolicyIndicationNeeded(
          extensions::Manifest::IsPolicyLocation(extension->location());
 }
 
-base::string16 ExtensionMessageBubbleBridge::GetHeadingText() {
+std::u16string ExtensionMessageBubbleBridge::GetHeadingText() {
   return controller_->delegate()->GetTitle();
 }
 
-base::string16 ExtensionMessageBubbleBridge::GetBodyText(
+std::u16string ExtensionMessageBubbleBridge::GetBodyText(
     bool anchored_to_action) {
   return controller_->delegate()->GetMessageBody(
       anchored_to_action, controller_->GetExtensionIdList().size());
 }
 
-base::string16 ExtensionMessageBubbleBridge::GetItemListText() {
+std::u16string ExtensionMessageBubbleBridge::GetItemListText() {
   return controller_->GetExtensionListForDisplay();
 }
 
-base::string16 ExtensionMessageBubbleBridge::GetActionButtonText() {
+std::u16string ExtensionMessageBubbleBridge::GetActionButtonText() {
   const extensions::ExtensionIdList& list = controller_->GetExtensionIdList();
   DCHECK(!list.empty());
   // Normally, the extension is enabled, but this might not be the case (such as
@@ -62,11 +64,11 @@ base::string16 ExtensionMessageBubbleBridge::GetActionButtonText() {
   // An empty string is returned so that we don't display the button prompting
   // to remove policy-installed extensions.
   if (IsPolicyIndicationNeeded(extension))
-    return base::string16();
+    return std::u16string();
   return controller_->delegate()->GetActionButtonLabel();
 }
 
-base::string16 ExtensionMessageBubbleBridge::GetDismissButtonText() {
+std::u16string ExtensionMessageBubbleBridge::GetDismissButtonText() {
   return controller_->delegate()->GetDismissButtonLabel();
 }
 
@@ -83,8 +85,8 @@ std::string ExtensionMessageBubbleBridge::GetAnchorActionId() {
 }
 
 void ExtensionMessageBubbleBridge::OnBubbleShown(
-    const base::Closure& close_bubble_callback) {
-  controller_->OnShown(close_bubble_callback);
+    base::OnceClosure close_bubble_callback) {
+  controller_->OnShown(std::move(close_bubble_callback));
 }
 
 void ExtensionMessageBubbleBridge::OnBubbleClosed(CloseAction action) {

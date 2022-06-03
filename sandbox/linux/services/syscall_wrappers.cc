@@ -4,6 +4,7 @@
 
 #include "sandbox/linux/services/syscall_wrappers.h"
 
+#include <fcntl.h>
 #include <pthread.h>
 #include <sched.h>
 #include <setjmp.h>
@@ -14,11 +15,13 @@
 #include <unistd.h>
 #include <cstring>
 
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "sandbox/linux/system_headers/capability.h"
 #include "sandbox/linux/system_headers/linux_signal.h"
+#include "sandbox/linux/system_headers/linux_stat.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
 
 namespace sandbox {
@@ -217,7 +220,7 @@ asm(
 #undef STR
 #undef XSTR
 
-#endif
+#endif  // defined(ARCH_CPU_X86_FAMILY)
 
 int sys_sigaction(int signum,
                   const struct sigaction* act,
@@ -241,7 +244,7 @@ int sys_sigaction(int signum,
 #error "Unsupported architecture."
 #endif
     }
-#endif
+#endif  // defined(ARCH_CPU_X86_FAMILY)
   }
 
   LinuxSigAction linux_oldact = {};
@@ -259,6 +262,47 @@ int sys_sigaction(int signum,
   return result;
 }
 
-#endif  // defined(MEMORY_SANITIZER)
+#endif  // !defined(OS_NACL_NONSFI)
+
+int sys_stat(const char* path, struct kernel_stat* stat_buf) {
+  int res;
+#if !defined(__NR_stat)
+  res = syscall(__NR_newfstatat, AT_FDCWD, path, stat_buf, 0);
+#else
+  res = syscall(__NR_stat, path, stat_buf);
+#endif
+  if (res == 0)
+    MSAN_UNPOISON(stat_buf, sizeof(*stat_buf));
+  return res;
+}
+
+int sys_lstat(const char* path, struct kernel_stat* stat_buf) {
+  int res;
+#if !defined(__NR_lstat)
+  res = syscall(__NR_newfstatat, AT_FDCWD, path, stat_buf, AT_SYMLINK_NOFOLLOW);
+#else
+  res = syscall(__NR_lstat, path, stat_buf);
+#endif
+  if (res == 0)
+    MSAN_UNPOISON(stat_buf, sizeof(*stat_buf));
+  return res;
+}
+
+int sys_fstatat64(int dirfd,
+                  const char* pathname,
+                  struct kernel_stat64* stat_buf,
+                  int flags) {
+#if defined(__NR_fstatat64)
+  int res = syscall(__NR_fstatat64, dirfd, pathname, stat_buf, flags);
+  if (res == 0)
+    MSAN_UNPOISON(stat_buf, sizeof(*stat_buf));
+  return res;
+#else  // defined(__NR_fstatat64)
+  // We should not reach here on 64-bit systems, as the *stat*64() are only
+  // necessary on 32-bit.
+  RAW_CHECK(false);
+  return -ENOSYS;
+#endif
+}
 
 }  // namespace sandbox

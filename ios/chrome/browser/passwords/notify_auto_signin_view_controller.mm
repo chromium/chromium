@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/passwords/notify_auto_signin_view_controller.h"
 
+#import <MaterialComponents/MaterialTypography.h>
+
 #include "base/bind.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/image_fetcher/core/image_fetcher_impl.h"
@@ -11,8 +13,7 @@
 #include "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/ui/util/rtl_geometry.h"
 #include "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/image/image.h"

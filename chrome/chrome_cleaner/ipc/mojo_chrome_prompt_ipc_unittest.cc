@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -22,7 +22,8 @@
 #include "chrome/chrome_cleaner/test/test_util.h"
 #include "components/chrome_cleaner/public/proto/chrome_prompt.pb.h"
 #include "components/chrome_cleaner/test/test_name_helper.h"
-#include "mojo/public/cpp/bindings/binding.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/system/message_pipe.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
@@ -39,8 +40,7 @@ constexpr char kExpectedParentDisconnectedSwitch[] =
     "expected-parent-disconnected";
 
 const base::FilePath kBadFilePath(L"/path/to/bad.dll");
-const base::string16 kBadRegistryKey(L"HKCU:32\\Software\\ugly-uws\\nasty");
-const base::string16 kExtensionId(L"expected-extension-id");
+const std::wstring kBadRegistryKey(L"HKCU:32\\Software\\ugly-uws\\nasty");
 
 // Possible moments when the parent process can disconnect from the IPC to
 // check connection error handling in the child process.
@@ -87,15 +87,16 @@ struct TestConfig {
 // Class that lives in the parent process and handles that side of the IPC.
 class MockChromePrompt : public mojom::ChromePrompt {
  public:
-  MockChromePrompt(TestConfig test_config, mojom::ChromePromptRequest request)
-      : test_config_(test_config), binding_(this, std::move(request)) {}
+  MockChromePrompt(TestConfig test_config,
+                   mojo::PendingReceiver<mojom::ChromePrompt> receiver)
+      : test_config_(test_config), receiver_(this, std::move(receiver)) {}
 
   ~MockChromePrompt() override = default;
 
   void PromptUser(
       const std::vector<base::FilePath>& files_to_delete,
-      const base::Optional<std::vector<base::string16>>& registry_keys,
-      const base::Optional<std::vector<base::string16>>& extension_ids,
+      const absl::optional<std::vector<std::wstring>>& registry_keys,
+      const absl::optional<std::vector<std::wstring>>& extension_ids,
       mojom::ChromePrompt::PromptUserCallback callback) override {
     EXPECT_NE(test_config_.uws_expected, files_to_delete.empty());
     if (test_config_.uws_expected) {
@@ -110,20 +111,20 @@ class MockChromePrompt : public mojom::ChromePrompt {
     CloseConnectionIf(ParentDisconnected::kOnDone);
   }
 
-  void DisableExtensions(const std::vector<base::string16>& extension_ids,
+  void DisableExtensions(const std::vector<std::wstring>& extension_ids,
                          DisableExtensionsCallback callback) override {
-    FAIL() << "No tests include UwE so DisableExtensions should not be called.";
+    FAIL() << "DisableExtensions is deprecated and should not be called.";
   }
 
   // Close the IPC connection on the parent process depending on the value of
   // |parent_disconnected|.
   void CloseConnectionIf(ParentDisconnected parent_disconnected) {
     if (test_config_.expected_parent_disconnected == parent_disconnected)
-      binding_.Close();
+      receiver_.reset();
   }
 
   TestConfig test_config_;
-  mojo::Binding<chrome_cleaner::mojom::ChromePrompt> binding_;
+  mojo::Receiver<chrome_cleaner::mojom::ChromePrompt> receiver_{this};
 };
 
 class ChromePromptIPCParentProcess : public ParentProcess {
@@ -144,9 +145,9 @@ class ChromePromptIPCParentProcess : public ParentProcess {
 
  protected:
   void CreateImpl(mojo::ScopedMessagePipeHandle mojo_pipe) override {
-    mojom::ChromePromptRequest chrome_prompt_request(std::move(mojo_pipe));
     mock_chrome_prompt_ = std::make_unique<MockChromePrompt>(
-        test_config_, std::move(chrome_prompt_request));
+        test_config_,
+        mojo::PendingReceiver<mojom::ChromePrompt>(std::move(mojo_pipe)));
     // At this point, the child process should be connected.
     mock_chrome_prompt_->CloseConnectionIf(ParentDisconnected::kOnStartup);
   }
@@ -172,8 +173,8 @@ class ChromePromptIPCChildProcess : public ChildProcess {
     CHECK(chrome_prompt_ipc);
 
     std::vector<base::FilePath> files_to_delete;
-    std::vector<base::string16> registry_keys;
-    std::vector<base::string16> extension_ids;
+    std::vector<std::wstring> registry_keys;
+    std::vector<std::wstring> extension_ids;
     if (uws_expected()) {
       files_to_delete.push_back(kBadFilePath);
       registry_keys.push_back(kBadRegistryKey);
@@ -183,7 +184,7 @@ class ChromePromptIPCChildProcess : public ChildProcess {
         std::move(files_to_delete), std::move(registry_keys),
         std::move(extension_ids),
         base::BindOnce(&ChromePromptIPCChildProcess::ReceivePromptResult,
-                       base::Unretained(this), base::Passed(&done)));
+                       base::Unretained(this), std::move(done)));
   }
 
   ParentDisconnected expected_parent_disconnected() const {
@@ -202,11 +203,6 @@ class ChromePromptIPCChildProcess : public ChildProcess {
       PromptUserResponse::PromptAcceptance prompt_acceptance) {
     CHECK_EQ(expected_prompt_acceptance(), prompt_acceptance);
     // Unblocks the main thread.
-    std::move(done).Run();
-  }
-
-  void ReceiveDisableExtensionsResult(base::OnceClosure done, bool completed) {
-    CHECK(completed);
     std::move(done).Run();
   }
 

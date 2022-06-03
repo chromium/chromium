@@ -5,6 +5,8 @@
 #include "ui/views/layout/proposed_layout.h"
 
 #include <map>
+#include <sstream>
+#include <string>
 
 #include "ui/gfx/animation/tween.h"
 
@@ -12,21 +14,19 @@ namespace views {
 
 namespace {
 
-base::Optional<int> OptionalValueBetween(double value,
-                                         base::Optional<int> start,
-                                         base::Optional<int> target) {
-  if (start.has_value() != target.has_value())
-    return target;
-  if (start)
-    return gfx::Tween::IntValueBetween(value, *start, *target);
-  return base::nullopt;
+SizeBound SizeBoundValueBetween(double value,
+                                const SizeBound& start,
+                                const SizeBound& target) {
+  return (start.is_bounded() && target.is_bounded())
+             ? gfx::Tween::IntValueBetween(value, start.value(), target.value())
+             : target;
 }
 
 SizeBounds SizeBoundsBetween(double value,
                              const SizeBounds& start,
                              const SizeBounds& target) {
-  return {OptionalValueBetween(value, start.width(), target.width()),
-          OptionalValueBetween(value, start.height(), target.height())};
+  return {SizeBoundValueBetween(value, start.width(), target.width()),
+          SizeBoundValueBetween(value, start.height(), target.height())};
 }
 
 }  // anonymous namespace

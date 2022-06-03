@@ -8,51 +8,44 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
-#include "components/safe_browsing/common/safe_browsing_prefs.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/security_interstitials/content/cert_report_helper.h"
 #include "components/security_interstitials/content/security_interstitial_controller_client.h"
+#include "components/security_interstitials/content/security_interstitial_page.h"
 #include "components/security_interstitials/content/ssl_cert_reporter.h"
 #include "components/security_interstitials/core/controller_client.h"
 #include "components/security_interstitials/core/metrics_helper.h"
 #include "components/security_interstitials/core/ssl_error_options_mask.h"
 #include "components/security_interstitials/core/ssl_error_ui.h"
-#include "content/public/browser/interstitial_page.h"
-#include "content/public/browser/interstitial_page_delegate.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/net_errors.h"
-#include "third_party/blink/public/mojom/renderer_preferences.mojom.h"
 
 using base::TimeTicks;
-using content::InterstitialPage;
-using content::InterstitialPageDelegate;
 using content::NavigationEntry;
 using security_interstitials::SSLErrorUI;
 
 // static
-const InterstitialPageDelegate::TypeID SSLBlockingPage::kTypeForTesting =
-    &SSLBlockingPage::kTypeForTesting;
+const security_interstitials::SecurityInterstitialPage::TypeID
+    SSLBlockingPage::kTypeForTesting = &SSLBlockingPage::kTypeForTesting;
 
-bool SSLBlockingPage::ShouldCreateNewNavigation() const {
-  return true;
-}
-
-InterstitialPageDelegate::TypeID SSLBlockingPage::GetTypeForTesting() {
+security_interstitials::SecurityInterstitialPage::TypeID
+SSLBlockingPage::GetTypeForTesting() {
   return SSLBlockingPage::kTypeForTesting;
 }
 
 SSLBlockingPage::~SSLBlockingPage() = default;
 
-void SSLBlockingPage::PopulateInterstitialStrings(
-    base::DictionaryValue* load_time_data) {
+void SSLBlockingPage::PopulateInterstitialStrings(base::Value* load_time_data) {
   ssl_error_ui_->PopulateStringsForHTML(load_time_data);
   cert_report_helper()->PopulateExtendedReportingOption(load_time_data);
+  cert_report_helper()->PopulateEnhancedProtectionMessage(load_time_data);
 }
 
 // Note that we always create a navigation entry with SSL errors.
@@ -67,6 +60,7 @@ SSLBlockingPage::SSLBlockingPage(
     const GURL& support_url,
     std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
     bool overridable,
+    bool can_show_enhanced_protection_message,
     std::unique_ptr<
         security_interstitials::SecurityInterstitialControllerClient>
         controller_client)
@@ -77,6 +71,7 @@ SSLBlockingPage::SSLBlockingPage(
                           std::move(ssl_cert_reporter),
                           overridable,
                           time_triggered,
+                          can_show_enhanced_protection_message,
                           std::move(controller_client)),
       ssl_info_(ssl_info),
       overridable_(overridable),
@@ -89,10 +84,6 @@ SSLBlockingPage::SSLBlockingPage(
                                                  controller())) {
   // Creating an interstitial without showing (e.g. from chrome://interstitials)
   // it leaks memory, so don't create it here.
-}
-
-void SSLBlockingPage::OverrideEntry(NavigationEntry* entry) {
-  entry->GetSSL() = content::SSLStatus(ssl_info_);
 }
 
 // This handles the commands sent from the interstitial JavaScript.

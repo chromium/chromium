@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 #if !defined(OS_ANDROID)
 #include "base/memory/scoped_refptr.h"
@@ -38,21 +39,21 @@ class NetworkConnectionTracker;
 class TokenWebData;
 #endif
 
-#if defined(OS_CHROMEOS)
-namespace chromeos {
-class AccountManager;
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+namespace account_manager {
+class AccountManagerFacade;
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 std::unique_ptr<ProfileOAuth2TokenService> BuildProfileOAuth2TokenService(
     PrefService* pref_service,
     AccountTrackerService* account_tracker_service,
     network::NetworkConnectionTracker* network_connection_tracker,
     signin::AccountConsistencyMethod account_consistency,
-#if defined(OS_CHROMEOS)
-    chromeos::AccountManager* account_manager,
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
+    account_manager::AccountManagerFacade* account_manager_facade,
     bool is_regular_profile,
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #if !defined(OS_ANDROID)
     bool delete_signin_cookies_on_exit,
     scoped_refptr<TokenWebData> token_web_data,

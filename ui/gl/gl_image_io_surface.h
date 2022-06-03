@@ -10,7 +10,6 @@
 #include <stdint.h>
 
 #include "base/mac/scoped_cftyperef.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
@@ -31,7 +30,16 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   static GLImageIOSurface* Create(const gfx::Size& size,
                                   unsigned internalformat);
 
+  GLImageIOSurface(const GLImageIOSurface&) = delete;
+  GLImageIOSurface& operator=(const GLImageIOSurface&) = delete;
+
+  // Initialize to wrap of |io_surface|. The format of the plane to wrap is
+  // specified in |format|. The index of the plane to wrap is
+  // |io_surface_plane|. If |format| is a multi-planar format (e.g,
+  // YUV_420_BIPLANAR or P010), then this will automatically convert from YUV
+  // to RGB, and |io_surface_plane| is ignored.
   bool Initialize(IOSurfaceRef io_surface,
+                  uint32_t io_surface_plane,
                   gfx::GenericSharedMemoryId io_surface_id,
                   gfx::BufferFormat format);
 
@@ -40,6 +48,7 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   // initialization will ensure that the CVPixelBuffer be retained for the
   // lifetime of the GLImage.
   bool InitializeWithCVPixelBuffer(CVPixelBufferRef cv_pixel_buffer,
+                                   uint32_t io_surface_plane,
                                    gfx::GenericSharedMemoryId io_surface_id,
                                    gfx::BufferFormat format);
 
@@ -56,32 +65,27 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   bool CopyTexSubImage(unsigned target,
                        const gfx::Point& offset,
                        const gfx::Rect& rect) override;
-  bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int z_order,
-                            gfx::OverlayTransform transform,
-                            const gfx::Rect& bounds_rect,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
   void SetColorSpace(const gfx::ColorSpace& color_space) override;
   void Flush() override {}
   void OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
                     uint64_t process_tracing_id,
                     const std::string& dump_name) override;
   bool EmulatingRGB() const override;
+  bool IsInUseByWindowServer() const override;
+  void DisableInUseByWindowServer() override;
 
   gfx::GenericSharedMemoryId io_surface_id() const { return io_surface_id_; }
   base::ScopedCFTypeRef<IOSurfaceRef> io_surface();
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer();
 
-  // Whether checking IOSurfaceIsInUse() will actually provide a meaningful
-  // signal about whether the Window Server is still using the IOSurface.
-  bool CanCheckIOSurfaceIsInUse() const;
-
   // For IOSurfaces that need manual conversion to a GL texture before being
   // sampled from, specify the color space in which to do the required YUV to
   // RGB transformation.
   void SetColorSpaceForYUVToRGBConversion(const gfx::ColorSpace& color_space);
+
+  // Sets the color space of the GLImage without modifying the underlying
+  // IOSurface. Callers should ensure the color spaces match.
+  void SetColorSpaceShallow(const gfx::ColorSpace& color_space);
 
   static unsigned GetInternalFormatForTesting(gfx::BufferFormat format);
 
@@ -91,7 +95,7 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
  protected:
   GLImageIOSurface(const gfx::Size& size, unsigned internalformat);
   ~GLImageIOSurface() override;
-  virtual bool BindTexImageImpl(unsigned internalformat);
+  virtual bool BindTexImageImpl(unsigned target, unsigned internalformat);
 
   static bool ValidFormat(gfx::BufferFormat format);
   Type GetType() const override;
@@ -111,11 +115,16 @@ class GL_EXPORT GLImageIOSurface : public GLImage {
   base::ScopedCFTypeRef<CVPixelBufferRef> cv_pixel_buffer_;
   gfx::GenericSharedMemoryId io_surface_id_;
 
+  // The plane that is bound for this image. If the plane is invalid, then
+  // this is a multi-planar IOSurface, which will be copied instead of bound.
+  static constexpr uint32_t kInvalidIOSurfacePlane = -1;
+  uint32_t io_surface_plane_ = kInvalidIOSurfacePlane;
+
   base::ThreadChecker thread_checker_;
   // The default value of Rec. 601 is based on historical shader code.
   gfx::ColorSpace color_space_for_yuv_to_rgb_ = gfx::ColorSpace::CreateREC601();
 
-  DISALLOW_COPY_AND_ASSIGN(GLImageIOSurface);
+  bool disable_in_use_by_window_server_ = false;
 };
 
 }  // namespace gl

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<title>Length unit ch used in webkit-scrollbar should be recalculated after loading a web font</title>
+<link rel="help" href="https://www.w3.org/TR/css-values-4/#font-relative-lengths">
+<link rel="help" href="https://drafts.csswg.org/css-pseudo-4">
+<link rel="match" href="webkit-scrollbar-ch-recalc-ref.html">
+<link rel="author" href="xiaochengh@chromium.org">
+<style>
+@font-face {
+  font-family: "custom font";
+  src: url(/fonts/Ahem.ttf);
+}
+
+.container {
+  width: 600px;
+  height: 400px;
+  font: 25px/1 "custom font", monospace;
+  overflow: scroll;
+}
+
+.container::-webkit-scrollbar {
+  font-family: monospace;
+  font-size: 1ch; /* Refers to originating element's font metrics, which are different from self font metrics. */
+  width: 1em; /* Refers to self font size. */
+  background-color: gray;
+}
+</style>
+
+<div class="container"></div>

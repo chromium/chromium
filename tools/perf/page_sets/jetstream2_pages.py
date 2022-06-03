@@ -58,7 +58,7 @@ class Jetstream2Story(press_story.PressStory):
     )
 
     self.AddMeasurement('Score', 'score', score)
-    for k, v in result.iteritems():
+    for k, v in result.items():
       # Replace '.' in the benchmark name, because '.' is interpreted
       # as a sub-category of the metric
       benchmark = str(k).replace('.', '_')
@@ -68,7 +68,7 @@ class Jetstream2Story(press_story.PressStory):
       self.AddMeasurement(
           '%s.Iterations' % benchmark, 'count', v['Iterations'],
           description='Total number of iterations')
-      for sub_k, sub_v in v['SubResults'].iteritems():
+      for sub_k, sub_v in v['SubResults'].items():
         self.AddMeasurement('%s.%s' % (benchmark, sub_k), 'score', sub_v)
 
 

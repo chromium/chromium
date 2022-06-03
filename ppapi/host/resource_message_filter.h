@@ -15,6 +15,9 @@
 namespace base {
 class SequencedTaskRunner;
 class SingleThreadTaskRunner;
+
+template <typename T>
+class DeleteHelper;
 }
 
 namespace IPC {
@@ -52,8 +55,7 @@ struct PPAPI_HOST_EXPORT ResourceMessageFilterDeleteTraits {
 //   scoped_refptr<base::TaskRunner> OverrideTaskRunnerForMessage(
 //       const IPC::Message& message) override {
 //     if (message.type() == MyMessage::ID) {
-//       return base::CreateSingleThreadTaskRunner(
-//           {BrowserThread::UI});
+//       return content::GetUIThreadTaskRunner({});
 //     }
 //     return NULL;
 //   }
@@ -90,6 +92,9 @@ class PPAPI_HOST_EXPORT ResourceMessageFilter
   // to dispatch replies on.
   ResourceMessageFilter(
       scoped_refptr<base::SingleThreadTaskRunner> reply_thread_task_runner);
+
+  ResourceMessageFilter(const ResourceMessageFilter&) = delete;
+  ResourceMessageFilter& operator=(const ResourceMessageFilter&) = delete;
 
   // Called when a filter is added to a ResourceHost.
   void OnFilterAdded(ResourceHost* resource_host);
@@ -141,8 +146,6 @@ class PPAPI_HOST_EXPORT ResourceMessageFilter
   // ResourceHost when |OnFilterAdded| is called. When the owning ResourceHost
   // is destroyed, |OnFilterDestroyed| is called and this will be set to NULL.
   ResourceHost* resource_host_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceMessageFilter);
 };
 
 }  // namespace host

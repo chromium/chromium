@@ -21,8 +21,8 @@
 #include <algorithm>
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/numerics/safe_math.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gtest/gtest.h"
 #include "minidump/minidump_context.h"
@@ -748,7 +748,7 @@ TEST(ProcessSnapshotMinidump, System) {
   minidump_system_info.Cpu.X86CpuInfo.VendorId[2] = cpu_info_bytes[2];
 
   MINIDUMP_MISC_INFO_5 minidump_misc_info = {};
-  base::string16 build_string;
+  std::u16string build_string;
   ASSERT_TRUE(base::UTF8ToUTF16(
       "MyOSVersion; MyMachineDescription", 33, &build_string));
   std::copy(build_string.begin(), build_string.end(),

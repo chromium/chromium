@@ -29,7 +29,7 @@ class CORE_EXPORT SlotAssignmentEngine final
 
   void RecalcSlotAssignments();
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   HeapHashSet<WeakMember<ShadowRoot>> shadow_roots_needing_recalc_;

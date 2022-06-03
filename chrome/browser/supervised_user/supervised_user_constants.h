@@ -5,18 +5,10 @@
 #ifndef CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_CONSTANTS_H_
 #define CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_CONSTANTS_H_
 
-#include "extensions/buildflags/buildflags.h"
-
 namespace supervised_users {
 
 // Keys for supervised user settings. These are configured remotely and mapped
 // to preferences by the SupervisedUserPrefStore.
-#if defined(OS_CHROMEOS)
-extern const char kAccountConsistencyMirrorRequired[];
-#endif
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-extern const char kApprovedExtensions[];
-#endif
 extern const char kAuthorizationHeaderFormat[];
 extern const char kCameraMicDisabled[];
 extern const char kContentPackDefaultFilteringBehavior[];

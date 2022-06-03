@@ -4,7 +4,8 @@
 
 #include "services/service_manager/public/cpp/standalone_connector_impl.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace service_manager {
 
@@ -30,7 +31,7 @@ void StandaloneConnectorImpl::BindInterface(
   delegate_->OnConnect(
       filter.service_name(),
       mojo::GenericPendingReceiver(interface_name, std::move(interface_pipe)));
-  std::move(callback).Run(mojom::ConnectResult::SUCCEEDED, base::nullopt);
+  std::move(callback).Run(mojom::ConnectResult::SUCCEEDED, absl::nullopt);
 }
 
 void StandaloneConnectorImpl::QueryService(const std::string& service_name,
@@ -45,7 +46,7 @@ void StandaloneConnectorImpl::WarmService(const ServiceFilter& filter,
   NOTIMPLEMENTED()
       << "WarmService is not supported by StandaloneConnectorImpl.";
   std::move(callback).Run(mojom::ConnectResult::INVALID_ARGUMENT,
-                          base::nullopt);
+                          absl::nullopt);
 }
 
 void StandaloneConnectorImpl::RegisterServiceInstance(

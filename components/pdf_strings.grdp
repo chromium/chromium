@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <grit-part>
   <if expr="enable_plugins">
+    <message name="IDS_PDF_DOWNLOAD_ORIGINAL" desc="The label for the menu option to download the original, unedited PDF document (without user's changes).">
+      Without your changes
+    </message>
+    <message name="IDS_PDF_DOWNLOAD_EDITED" desc="The label for the menu option to download the edited PDF document (with user's changes).">
+      With your changes
+    </message>
+    <message name="IDS_PDF_PRESENT" desc="The label for the menu option to switch to Presentation mode.">
+      Present
+    </message>
     <message name="IDS_PDF_NEED_PASSWORD" desc="A message asking the user for a password to open a PDF file.">
       This document is password protected.  Please enter a password.
     </message>
@@ -30,9 +39,85 @@
     <message name="IDS_PDF_BOOKMARKS" desc="Label for the bookmarks (table of contents) of a PDF document. Used as a heading for the bookmarks menu, and as a tooltip to open that menu">
       Bookmarks
     </message>
+    <message name="IDS_PDF_BOOKMARK_EXPAND_ICON_ARIA_LABEL" desc="aria-label describing the icon button that expands/collapses a bookmark entry that has children">
+      Section
+    </message>
+
+    <message name="IDS_PDF_PROPERTIES_DIALOG_TITLE" desc="Title of the dialog that displays the PDF document properties.">
+      Document properties
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FILE_NAME" desc="Name of the property describing the file name of the PDF document.">
+      File name:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FILE_SIZE" desc="Name of the property describing the size of the PDF document.">
+      File size:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_TITLE" desc="Name of the property describing the title of the PDF document.">
+      Title:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_AUTHOR" desc="Name of the property describing the author of the PDF document.">
+      Author:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_SUBJECT" desc="Name of the property describing the subject of the PDF document.">
+      Subject:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_KEYWORDS" desc="Name of the property describing the keywords associated with the PDF document.">
+      Keywords:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_CREATED" desc="Name of the property describing the date and time when the PDF document was created.">
+      Created:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_MODIFIED" desc="Name of the property describing the date and time when the PDF document was most recently modified.">
+      Modified:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_APPLICATION" desc="Name of the property describing the application that created the original document from which the PDF document was made.">
+      Application:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PDF_PRODUCER" desc="Name of the property describing the name of the application that converted the original document to a PDF document.">
+      PDF producer:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PDF_VERSION" desc="Name of the property describing the version of the PDF document.">
+      PDF version:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_COUNT" desc="Name of the property describing the number of pages in the PDF document.">
+      Page count:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE" desc="Name of the property describing the size of the pages of the PDF document.">
+      Page size:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VALUE_INCH" desc="Value for the page size of a PDF in inches.">
+      <ph name="WIDTH">$1<ex>8.5</ex></ph> × <ph name="HEIGHT">$2<ex>11.00</ex></ph> in (<ph name="ORIENTATION">$3<ex>portrait</ex></ph>)
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VALUE_MM" desc="Value for the page size of a PDF in millimeters.">
+      <ph name="WIDTH">$1<ex>210</ex></ph> × <ph name="HEIGHT">$2<ex>297</ex></ph> mm (<ph name="ORIENTATION">$3<ex>portrait</ex></ph>)
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_PORTRAIT" desc="Label for a portrait page orientation.">
+      portrait
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_LANDSCAPE" desc="Label for a landscape page orientation.">
+      landscape
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_SQUARE" desc="Label for a square page that has neither portrait nor landscape orientation.">
+      square
+    </message>
+    <message name="IDS_PDF_PROPERTIES_PAGE_SIZE_VARIABLE" desc="Value for the page size of a PDF that lacks a uniform page size.">
+      Varies
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW" desc="Name of the property describing whether the PDF document is organized to be viewed efficiently in network environments.">
+      Fast web view:
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW_NO" desc="Label indicating that the PDF document is not organized to be viewed efficiently in network environments.">
+      No
+    </message>
+    <message name="IDS_PDF_PROPERTIES_FAST_WEB_VIEW_YES" desc="Label indicating that the PDF document is organized to be viewed efficiently in network environments.">
+      Yes
+    </message>
 
     <message name="IDS_PDF_TOOLTIP_ROTATE_CW" desc="Button tooltip for the button which rotates a PDF document clockwise">
       Rotate clockwise
+    </message>
+    <message name="IDS_PDF_TOOLTIP_ROTATE_CCW" desc="Button tooltip for the button which rotates a PDF document counterclockwise">
+      Rotate counterclockwise
     </message>
     <message name="IDS_PDF_TOOLTIP_DOWNLOAD" desc="Button tooltip for the button to download a PDF document">
       Download
@@ -46,11 +131,26 @@
     <message name="IDS_PDF_TOOLTIP_FIT_WIDTH" desc="Button tooltip for the button which zooms a PDF so that the width of a single page fills the window horizontally">
       Fit to width
     </message>
+    <message name="IDS_PDF_TWO_UP_VIEW_ENABLE" desc="Button text for the button which enables displaying two pages of a PDF on the screen horizontally">
+      Two page view
+    </message>
+    <message name="IDS_PDF_ANNOTATIONS_SHOW_TOGGLE" desc="Button text for toggling showing annotations on the PDF document">
+      Annotations
+    </message>
+    <message name="IDS_PDF_ZOOM_TEXT_INPUT_ARIA_LABEL" desc="aria-label describing the zoom level text input">
+      Zoom level
+    </message>
     <message name="IDS_PDF_TOOLTIP_ZOOM_IN" desc="Button tooltip for the button which zooms in a PDF, so that the document appears larger">
       Zoom in
     </message>
     <message name="IDS_PDF_TOOLTIP_ZOOM_OUT" desc="Button tooltip for the button which zooms out a PDF, so that the document appears smaller">
       Zoom out
+    </message>
+    <message name="IDS_PDF_TOOLTIP_THUMBNAILS" desc="Button tooltip for the button which selects the PDF thumbnail view in the sidenav">
+      Thumbnails
+    </message>
+    <message name="IDS_PDF_TOOLTIP_DOCUMENT_OUTLINE" desc="Button tooltip for the button which selects the PDF document outline view in the sidenav">
+      Document outline
     </message>
     <message name="IDS_PDF_LABEL_PAGE_NUMBER" desc="Label for the input field containing the current page number">
       Page number
@@ -58,31 +158,34 @@
     <message name="IDS_PDF_PAGE_INDEX" desc="Accessible label for each page, describing the page number">
       {COUNT, plural,
          =1 {Page 1}
-         other {Page #}}
+         other {Page {COUNT}}}
     </message>
     <message name="IDS_PDF_DOCUMENT_PAGE_COUNT" desc="Accessible name of PDF document. It gives information about the number of pages in the PDF file">
-      PDF document containing {COUNT, plural,
-      =1 {1 page}
-      other {# pages}}
+      {COUNT, plural,
+      =1 {PDF document containing {COUNT} page}
+      other {PDF document containing {COUNT} pages}}
+    </message>
+    <message name="IDS_PDF_THUMBNAIL_PAGE_ARIA_LABEL" desc="aria-label describing a thumbnail by its corresponding PDF page number">
+      Thumbnail for page <ph name="THUMBNAIL_PAGE"><ex>1</ex>$1</ph>
     </message>
     <if expr="chromeos">
-      <message name="IDS_PDF_DISCARD_FORM_CHANGES" desc="Title for a dialog that informs the user that the changes they have made to a form will be lost if they continue">
-        Discard changes?
-      </message>
-      <message name="IDS_PDF_DISCARD_FORM_CHANGES_DETAIL" desc="Warning message in dialog that informs the user that the changes they have made to a form will be lost if they continue">
-        Form changes will be lost. Are you sure you want to continue?
-      </message>
-      <message name="IDS_PDF_KEEP_EDITING" desc="Button label for the button that lets the user return and keep editing the changes they made">
-        Keep editing
-      </message>
-      <message name="IDS_PDF_DISCARD" desc="Button label for the button that lets the user discard their unneeded changes">
-        Discard
-      </message>
       <message name="IDS_PDF_ANNOTATION_ANNOTATE" desc="Button tooltip for entering the 'Annotation mode' which allows writing, drawing and highlighting of the PDF document">
         Annotate
       </message>
       <message name="IDS_PDF_ANNOTATION_UNAVAILABLE" desc="Button tooltip to explain that 'Annotation mode' which allows writing, drawing and highlighting of the PDF document is not available">
         Annotation not available
+      </message>
+      <message name="IDS_PDF_ANNOTATION_EDIT_IN_DEFAULT_VIEW" desc="Title of a dialog asking the user if they want to annotate the document in default view">
+        Edit annotations in default view?
+      </message>
+      <message name="IDS_PDF_ANNOTATION_RESET_ROTATE" desc="Text in a dialog informing the user that rotation will be reset to default if they continue to annotation mode">
+        When you edit annotations, this document will return to its original rotation
+      </message>
+      <message name="IDS_PDF_ANNOTATION_RESET_TWO_PAGE_VIEW" desc="Text in a dialog informing the user that the view will reset to single page if they continue to annotation mode">
+        When you edit annotations, this document will return to single page view
+      </message>
+      <message name="IDS_PDF_ANNOTATION_RESET_ROTATE_AND_TWO_PAGE_VIEW" desc="Text in a dialog informing the user that rotation will be reset to default and the view will reset to single page if they continue to annotation mode">
+        When you edit annotations, this document will return to single page view and its original rotation
       </message>
       <message name="IDS_PDF_ANNOTATION_DOCUMENT_TOO_LARGE" desc="Button tooltip to indicate why 'Annotation mode' which allows writing, drawing and highlighting of the PDF document is not available due to the document being too large">
         Document is too large to be annotated
@@ -226,6 +329,9 @@
 
     <message name="IDS_AX_ROLE_DESCRIPTION_PDF_HIGHLIGHT" desc="Accessibility role description for PDF highlight">
       Highlight
+    </message>
+    <message name="IDS_AX_ROLE_DESCRIPTION_PDF_POPUP_NOTE" desc="Accessibility role description for popup note annotation associated with a PDF highlight">
+      Note
     </message>
   </if>
 </grit-part>

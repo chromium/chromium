@@ -1,0 +1,3860 @@
+<!--
+Copyright 2020 The Chromium Authors. All rights reserved.
+Use of this source code is governed by a BSD-style license that can be
+found in the LICENSE file.
+-->
+
+<!--
+This file is used to generate a comprehensive list of Ash histograms
+along with a detailed description for each histogram.
+
+For best practices on writing histogram descriptions, see
+https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histograms/README.md
+
+Please follow the instructions in the OWNERS file in this directory to find a
+reviewer. If no OWNERS file exists, please consider signing up at
+go/reviewing-metrics (Googlers only), as all subdirectories are expected to
+have an OWNERS file. As a last resort you can send the CL to
+chromium-metrics-reviews@google.com.
+-->
+
+<histogram-configuration>
+
+<histograms>
+
+<variants name="ContextualNudgesCategories">
+  <variant name=".BackGesture"
+      summary="Metrics related to back gesture's nudes and usage."/>
+  <variant name=".HomeToOverview"
+      summary="Metrics related to home to overview gesture's nudes and usage."/>
+  <variant name=".InAppToHome"
+      summary="Metrics related to in app to home gesture's nudes and usage."/>
+</variants>
+
+<variants name="DisplayModes">
+  <variant name="ClamshellMode" summary="Clamshell mode"/>
+  <variant name="TabletMode" summary="Tablet mode"/>
+</variants>
+
+<variants name="HotseatTransitionType">
+  <variant name=".TransitionToExtendedHotseat"
+      summary="Transition to the extended hotseat"/>
+  <variant name=".TransitionToHiddenHotseat"
+      summary="Transition to the hidden hotseat"/>
+  <variant name=".TransitionToShownHotseat"
+      summary="Transition to the shown hotseat"/>
+</variants>
+
+<variants name="OverviewAnimationMode">
+  <variant name=".ClamshellMode"
+      summary="Normal clamshell mode with multiple windows animates"/>
+  <variant name=".MinimizedTabletMode"
+      summary="Animates in Tablet mode w/o split view and all windows are
+               minimized"/>
+  <variant name=".SingleClamshellMode"
+      summary="In Clamshell mode with only top maximized/fullscren window
+               animates"/>
+  <variant name=".SplitView" summary="Animates in SplitView enabled"/>
+  <variant name=".TabletMode" summary="Animates in Tablet mode w/o split view"/>
+</variants>
+
+<variants name="SplitViewResizeModes">
+  <variant name=".ClamshellMode.SingleWindow" summary=""/>
+  <variant name=".ClamshellMode.WithOverview" summary=""/>
+  <variant name=".TabletMode.MultiWindow" summary=""/>
+  <variant name=".TabletMode.SingleWindow" summary=""/>
+  <variant name=".TabletMode.WithOverview" summary=""/>
+</variants>
+
+<histogram name="Ash.Accelerators.Deprecated.ShowImeMenuBubble"
+    enum="DeprecatedAcceleratorUsage" expires_after="M77">
+  <owner>afakhry@chromium.org</owner>
+  <summary>
+    Showing the IME menu bubble has two accelerators: - Alt+Shift+K which is
+    deprecated. - Search+Shift+K which is new. This histogram shows the number
+    of times each accelerator (deprecated and new) is used.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Accelerators.Deprecated.ShowTaskManager"
+    enum="DeprecatedAcceleratorUsage" expires_after="2022-01-23">
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@chromium.org</owner>
+  <summary>
+    Opening the task manager has two accelerators: - Shift+Esc which is
+    deprecated. - Search+Esc which is new. This histogram shows the number of
+    times each accelerator (deprecated and new) is used.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Accelerators.Deprecated.ToggleHighContrast"
+    enum="DeprecatedAcceleratorUsage" expires_after="M77">
+  <owner>afakhry@chromium.org</owner>
+  <summary>
+    Toggling the high contrast display mode has two accelerators: -
+    Search+Shift+H which is deprecated. - Ctrl+Search+H which is new. This
+    histogram shows the number of times each accelerator (deprecated and new) is
+    used.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Accelerators.Rotation.Usage"
+    enum="ScreenRotationAcceleratorAction" expires_after="2022-03-15">
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Captures the result of a user using the rotation accelerator -
+    Ctrl+Shift+Refresh. This histogram shows how frequently users accidentally
+    hit the key combination.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Accelerators.WindowSnap"
+    enum="WindowSnapAcceleratorAction" expires_after="2022-04-10">
+  <owner>amusbach@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>Captures usage of Alt+[ and Alt+].</summary>
+</histogram>
+
+<histogram name="Ash.ActiveWindowShowTypeOverTime" enum="ActiveWindowShowType"
+    expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <summary>
+    The show type of the active window tracked over time by logging on a regular
+    basis (30 minutes).
+  </summary>
+</histogram>
+
+<histogram name="Ash.AmbientMode.Activation.{TabletOrClamshell}"
+    enum="AmbientUiMode" expires_after="2022-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Recorded whenever Ambient mode is entered from {TabletOrClamshell}.
+    AmbientUiMode indicates whether the user entered Ambient mode from the lock
+    screen or from screen idle.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.AmbientMode.AnimationSmoothness.PhotoTransition" units="%"
+    expires_after="2022-05-01">
+  <owner>wutao@chromium.org</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Emitted when the ambient mode photo transition animation completes to report
+    the smoothness of this animation. 100% represents ideally smooth 60 frames
+    per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.AmbientMode.Enabled" enum="BooleanEnabled"
+    expires_after="2022-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users, whether the user has Ambient mode enabled. Recorded
+    once for every UMA upload. The set of eligible users includes all users with
+    profiles that can allow Ambient mode to be enabled. This is limited by
+    profile type, whether the user is primary, if the user has a supported
+    email, etc.
+  </summary>
+</histogram>
+
+<histogram name="Ash.AmbientMode.EngagementTime.{TabletOrClamshell}" units="ms"
+    expires_after="2022-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the length of each
+    session. The metric is uploaded when ambient mode is ended.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.AmbientMode.PhotoSource" enum="AmbientModePhotoSource"
+    expires_after="2022-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the source of
+    ambient mode photos. Recorded once for every UMA upload.
+  </summary>
+</histogram>
+
+<histogram name="Ash.AmbientMode.SelectedNumberOfAlbums" units="int"
+    expires_after="2022-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the selected number
+    of personal photo albums. Recorded once only when users make a selection on
+    the personal photo albums on Settings page.
+  </summary>
+</histogram>
+
+<histogram name="Ash.AmbientMode.TotalNumberOfAlbums" units="int"
+    expires_after="2022-05-01">
+  <owner>cowmoo@google.com</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Among eligible users with ambient mode enabled, records the total number of
+    personal photo albums. Recorded once only when users make a selection on the
+    personal photo albums on Settings page.
+  </summary>
+</histogram>
+
+<histogram name="Ash.AppNotificationBadgingPref" enum="Boolean"
+    expires_after="2022-04-10">
+  <owner>mmourgos@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    For each user, records whether they have the app notification badging user
+    preference enabled or disabled. This metric is only logged when an active
+    user session has been started. This metric is logged periodically every 30
+    minutes.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.Assistant.AnimationSmoothness{AshAssistantAnimationSmoothness}"
+    units="%" expires_after="2021-11-21">
+  <owner>cowmoo@chromium.org</owner>
+  <owner>xiaohuic@chromium.org</owner>
+  <summary>
+    Relative smoothness of assistant related animations. 100% represents ideally
+    smooth 60 frames per second. {AshAssistantAnimationSmoothness}
+  </summary>
+  <token key="AshAssistantAnimationSmoothness">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name=".CardElement"
+        summary="Animation for showing and hiding card responses"/>
+    <variant name=".ResizeAssistantPageView"
+        summary="Expand assistant from launcher"/>
+    <variant name=".SuggestionChip"
+        summary="Animation for showing and hiding suggestion chips"/>
+    <variant name=".TextElement"
+        summary="Animation for showing and hiding text response"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.BackGesture.EndScenarioType"
+    enum="BackGestureEndScenarioType" expires_after="2021-12-01">
+  <owner>minch@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    End scenario type while swiping back from the left side of the window in
+    tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BackGesture.StartScenarioType"
+    enum="BackGestureStartScenarioType" expires_after="2021-12-01">
+  <owner>minch@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Start scenario type while swiping back from the left side of the window in
+    tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BackGesture.UnderneathWindowType"
+    enum="BackGestureUnderneathWindowType" expires_after="2021-12-01">
+  <owner>minch@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Underneath window type while swiping back from the left side of the window
+    in tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.AshDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of profile data that is identified to belong to ash-chrome i.e. the
+    total size of files that are under profile data directory of ash-chrome that
+    should remain in the same directory.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.CommonDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of profile data that is duplicated in both ash and lacros data
+    directory.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.CommonDataTimeTakenMS" units="ms"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The time taken for copying common data shared with lacros and ash.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.CopiedDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of data copied due to the migration i.e. extra space taken up
+    because of the migration. Only recorded if migration succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.CreateDirectoryFailure"
+    enum="PlatformFileError" expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Records error if CreateDirectory failed to create a directory used to copy
+    files into as an intermediate destination during migration.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.DryRunAshDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of profile data that is identified to belong to ash-chrome i.e. the
+    total size of files that are under profile data directory of ash-chrome that
+    should remain in the same directory.
+
+    The same as Ash.BrowserDataMigrator.AshDataSizeMB but collected without
+    actually running the migrator. It is called on every ash launch.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.DryRunCommonDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of profile data that is duplicated in both ash and lacros data
+    directory.
+
+    The same as Ash.BrowserDataMigrator.CommonDataSizeMB but collected without
+    actually running the migrator. It is called on every ash launch.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.DryRunHasEnoughDiskSpace.{Mode}"
+    enum="Boolean" expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Checks if there is enough disk space for profile migration in each modes.
+    These modes are Copy, Move, DeleteAndCopy and DeleteAndMove.
+
+    Checked upon launch of ash-chrome.
+  </summary>
+  <token key="Mode">
+    <variant name="Copy"/>
+    <variant name="DeleteAndCopy"/>
+    <variant name="DeleteAndMove"/>
+    <variant name="Move"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.DryRunLacrosDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of profile data that is identified to belong to lacros-chrome i.e.
+    the total size of files that are under profile data directory of ash-chrome
+    that should move to lacros data directory.
+
+    The same as Ash.BrowserDataMigrator.LacrosDataSizeMB but collected without
+    actually running the migrator. It is called on every ash launch.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.DryRunNoCopyDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of profile data that is identified to be deletable such as cache.
+
+    The same as Ash.BrowserDataMigrator.NoCopyDataSizeMB but collected without
+    actually running the migrator. It is called on every ash launch.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.FinalStatus"
+    enum="BrowserDataMigratorFinalStatus" expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The final status of browser data migration. It is collected to monitor if
+    migration is working and if not used to determine which step is failing.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.LacrosDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of profile data that is identified to belong to lacros-chrome i.e.
+    the total size of files that are under profile data directory of ash-chrome
+    that should move to lacros data directory.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.LacrosDataTimeTakenMS" units="ms"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>The time taken for copying lacros data.</summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.NoCopyDataSizeMB" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The size of profile data that is identified to be deletable such as cache.
+  </summary>
+</histogram>
+
+<histogram name="Ash.BrowserDataMigrator.TotalTimeTakenMS" units="ms"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    The time taken for migration to complete in ms. Only recorded if migration
+    succeeded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.BarButtons.{TabletOrClamshell}"
+    enum="CaptureModeBarButtonType" expires_after="2022-09-29">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a button from the bar widget displayed in Capture mode is
+    pressed in {TabletOrClamshell}. The recorded enum value indicates the type
+    of the button pressed.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.CaptureAudioOnMetric.{TabletOrClamshell}"
+    enum="BooleanEnabled" expires_after="2022-09-09">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a user is in a capture mode screen recording entered from
+    {TabletOrClamshell}. Emits true when audio is enabled, false otherwise.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.CaptureConfiguration.{TabletOrClamshell}"
+    enum="CaptureModeConfiguration" expires_after="2022-09-29">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a user performs a screen capture in {TabletOrClamshell}.
+    The recorded enum indicates the configuration used for the capture. I.e. the
+    capture source and the capture type.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.CaptureRegionAdjusted.{TabletOrClamshell}"
+    units="adjustments" expires_after="2022-09-29">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a user is in a region capture session in
+    {TabletOrClamshell} and performs a capture or they switch the capture
+    source. The recorded count indicates the number of times the user adjusts
+    the region. This counts each time they move the region or resize it. It is
+    reset whenever a user creates a new region or the count is recorded.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.ConsecutiveScreenshots"
+    units="consecutive screenshots" expires_after="2022-09-09">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of consecutive screenshots the user takes within 5s of
+    each other, regardless of capture options.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.EndRecordingReason.{TabletOrClamshell}"
+    enum="EndRecordingReason" expires_after="2022-09-09">
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever capture mode screen recording is ended in
+    {TabletOrClamshell}. The recorded enum value indicates the reason that lead
+    to ending the screen recording.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.EntryPoint.{TabletOrClamshell}"
+    enum="CaptureModeEntryType" expires_after="2022-09-09">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever Capture mode is entered from {TabletOrClamshell}. The
+    recorded enum value indicates the method used to enter Capture mode.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.QuickAction"
+    enum="CaptureQuickAction" expires_after="2022-09-09">
+  <owner>shidi@chromium.org</owner>
+  <owner>chinsenj@chromium.org</owner>
+  <summary>
+    Track all quick actions on screenshot notification. Including: Edit in
+    backlight, Go to Files, Delete File.
+  </summary>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.SaveToLocation.{TabletOrClamshell}"
+    enum="CaptureModeSaveToLocation" expires_after="2022-09-09">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever screen capture is saved in {TabletOrClamshell}. The
+    recorded enum value indicates the location that the screen capture is saved.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.ScreenRecordingLength"
+    units="seconds" expires_after="2022-09-09">
+  <owner>afakhry@chromium.org</owner>
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time of a successful video recording in capture mode. This
+    metric will not be recorded if a file was not successfully saved. The upper
+    limit of this histogram is 3 hours.
+  </summary>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.ScreenshotsPerDay" units="int"
+    expires_after="2022-09-09">
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of screenshots that have been taken via the
+    CaptureModeController every 24 hours. Note that counts are not persisted
+    across crashes, restarts, or sessions so this is only intended to give a
+    rough approximation.
+  </summary>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.ScreenshotsPerWeek" units="int"
+    expires_after="2022-09-09">
+  <owner>afakhry@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of screenshots that have been taken via the
+    CaptureModeController every 7 days. Note that counts are not persisted
+    across crashes, restarts, or sessions so this is only intended to give a
+    rough approximation. This means that this metric will only be recorded in
+    sessions spanning at least 7 days.
+  </summary>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.SwitchesFromInitialCaptureMode"
+    enum="Boolean" expires_after="2022-09-09">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Emits true if a user has switched capture modes (fullscreen, region, window)
+    while in a capture mode session, false otherwise.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.SwitchToDefaultReason.{TabletOrClamshell}"
+    enum="CaptureModeSwitchToDefaultReason" expires_after="2022-09-09">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever the capture folder is switched to default downloads folder
+    in {TabletOrClamshell}. The recorded enum value indicates the reason that
+    leads to the switching.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.Clipboard.ConsecutiveCopies" units="times"
+    expires_after="2021-09-01">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of consecutive copies in the user session, recorded when a paste
+    occurs.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Clipboard.ConsecutivePastes" units="times"
+    expires_after="2022-04-10">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of consecutive pastes in the user session, recorded when a copy
+    occurs. Includes pastes from Clipboard History.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ConsecutivePastes" units="times"
+    expires_after="2022-01-02">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of consecutive pastes from the clipboard history menu. The count
+    is reset after a copy or a paste that is not through the clipboard history
+    menu (such as pressing ctrl-v accelerator or clicking at a context menu
+    option).
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatDeleted"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-04-10">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The format of the ClipboardHistoryItemView that was deleted from the
+    Clipboard History menu. Logged on ClipboardHistoryItemView::ButtonPressed().
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatPasted"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-04-10">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The format of the ClipboardHistoryItemView that was pasted from the
+    Clipboard History menu. Logged on ClipboardHistoryItemView::ButtonPressed().
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.DisplayFormatShown"
+    enum="ClipboardHistoryDisplayFormat" expires_after="2022-04-10">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The format of the view used to display clipboard data. Logged when the view
+    is created.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.MenuOptionSelected"
+    units="index" expires_after="2022-04-03">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The command ID index within the Clipboard History contextual menu that was
+    selected by the user. Recorded when the menu item is selected.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.NumberOfItemsShown"
+    units="Items Shown" expires_after="2022-04-10">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of clipboard history items shown in the clipboard history
+    contextual menu. Recorded when the clipboard history contextual menu model
+    is built.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.ShowMenu"
+    enum="ClipboardHistoryTriggerType" expires_after="2022-04-10">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    It records how many times users trigger the clipboard history menu through
+    different ways respecitvely. Recorded when the clipboard history menu shows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.ShowPlaceholderString"
+    enum="ClipboardHistoryPlaceholderStringType" expires_after="2022-04-10">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The number of placeholder strings shown to users in lieu of actual data,
+    broken down by placeholder string type. Recorded when the label is requested
+    from ClipboardHistoryResourceManager.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextMenu.UserJourneyTime" units="ms"
+    expires_after="2022-04-10">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The length of the user journey of the context menu version of clipboard
+    history. Measured as time from starting to construct the menu, to time of
+    the menu being closed. Recorded every time the menu is closed, regardless of
+    whether the user selected one of the menu options.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureOpenTime"
+    units="seconds" expires_after="2021-09-01">
+  <obsolete>
+    Removed 04/2021 as of http://crrev.com/2761780. This histogram entry was
+    recreated as to some metrics may not be logging correctly. Replaced by
+    Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeatureOpenTime.
+  </obsolete>
+  <owner>yulunwu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of seconds between the user being shown the clipboard history
+    contextual nudge and the opening the clipboard history menu. The sum over
+    this histogram will also be used to measure the conversion rate between
+    showing the nudge and the clipboard history feature being opened.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextualNudge.NudgeToFeatureUseTime"
+    units="seconds" expires_after="2021-09-01">
+  <obsolete>
+    Removed 04/2021 as of http://crrev.com/2761780. This histogram entry was
+    recreated as to some metrics may not be logging correctly. Replaced by
+    Ash.ClipboardHistory.Nudges.OnboardingNudge.ToFeaturePasteTime.
+  </obsolete>
+  <owner>yulunwu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of seconds between the user being shown the clipboard history
+    contextual nudge and the user pasting with the clipboard history feature.
+    The sum over this histogram will also be used to measure the conversion rate
+    between showing the nudge and the clipboard history feature being used.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ContextualNudge.ShownCount"
+    enum="BooleanHit" expires_after="2021-09-01">
+  <obsolete>
+    Replaced 04/2021 by Ash.ClipboardHistory.Nudges.OnboardingNudge.ShownCount
+    as of http://crrev.com/2761780.
+  </obsolete>
+  <owner>yulunwu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of times the clipboard history contextual nudge has been shown.
+    This number will be used as the baseline against the sum of the
+    NudgeToFeatureUseTime and NudgeToFeatureOpenTime.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ControlToVDelay" units="ms"
+    expires_after="2022-04-10">
+  <owner>gzadina@google.com</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The time between a user pressing control and V when pasting via keyboard.
+    Recorded in AcceleratorHistory when a V is pressed. Only recorded for the
+    first pressed V in a sequence, for example: User holds control, waits 200ms,
+    presses V (histogram logged), presses V again without releasing control (no
+    histogram logged). This metric is used to set a baseline for an experimental
+    keyboard combination where a user holds control, then presses V after a
+    delay to show multipaste.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.Lifetime" units="ms"
+    expires_after="2022-04-24">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The lifetime of the ClipboardImageModelRequest object. Logged in the dtor of
+    ClipboardImageModelRequest.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.Runtime" units="ms"
+    expires_after="2022-04-24">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The runtime of a request in a ClipboardImageModelRequest. Logged from when
+    the ClipboardImageModelRequest is Start()-ed to when it is Stop()-ed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ImageModelRequest.StopReason"
+    enum="RequestStopReason" expires_after="2022-04-24">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    The reason a ClipboardImageModelRequest is stopped. Logged when a request is
+    Stop()-ed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ShownCount"
+    enum="BooleanHit" expires_after="2022-04-01">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of times the clipboard history {NudgeType} has been shown. This
+    number will be used as the baseline against the number of emits of the
+    ToFeaturePasteTime and ToFeatureOpenTime histograms.
+  </summary>
+  <token key="NudgeType">
+    <variant name="NewFeatureBadge" summary="new feature badge"/>
+    <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ScreenshotNotificationNudge"
+        summary="screenshot notification nudge"/>
+    <variant name="ZeroStateNudge" summary="zero state nudge"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.Nudges.{NudgeType}.ToFeature{Action}Time"
+    units="seconds" expires_after="2022-04-01">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>multipaste@chromium.org</owner>
+  <summary>
+    The number of seconds between the user being shown the clipboard history
+    {NudgeType} and {Action}. The number of emits to this histogram will also be
+    used to measure the conversion rate by comparing it to ShownCount histogram
+  </summary>
+  <token key="NudgeType">
+    <variant name="NewFeatureBadge" summary="new feature badge"/>
+    <variant name="OnboardingNudge" summary="onboarding nudge"/>
+    <variant name="ScreenshotNotificationNudge"
+        summary="screenshot notification nudge"/>
+    <variant name="ZeroStateNudge" summary="zero state nudge"/>
+  </token>
+  <token key="Action">
+    <variant name="Open" summary="opening the clipboard history menu"/>
+    <variant name="Paste"
+        summary="using the clipboard history to paste something"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.Operation"
+    enum="ClipboardHistoryOperation" expires_after="2022-01-02">
+  <owner>newcomer@chromium.org</owner>
+  <owner>multipaste@google.com</owner>
+  <summary>
+    Different operations detected by ClipboardHistory. Debounced, so different
+    than Clipboard.Read, Clipboard.Write. Any clipboard copy detected here will
+    result in a new entry in ClipboardHistory. Recorded after a clipboard read
+    or write is debounced in ClipboardHistory.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ClipboardHistory.ZeroStateContextualNudge.ShownCount"
+    enum="BooleanHit" expires_after="2021-09-01">
+  <obsolete>
+    Replaced 04/2021 by Ash.ClipboardHistory.Nudges.ZeroStateNudge.ShownCount as
+    of http://crrev.com/2761780.
+  </obsolete>
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    The number of times the clipboard history zero state contextual nudge has
+    been shown. This number will be used as the baseline against the sum of the
+    ToFeatureUseTime and ToFeatureOpenTime.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ContextualNudgeDismissContext{ContextualNudgesCategories}"
+    enum="ContextualNudgeDismissContext" expires_after="2022-10-01">
+<!-- Name completed by histogram_suffixes name="ContextualNudgesNames" -->
+
+  <owner>yulunwu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Tracks the reason contextual nudges for user gesture education are
+    dismissed. Metrics are recorded when the user performs an action that
+    renders the shown contextual nudge irrelevant. Metrics are recorded when the
+    user performs the gesture suggested by the nudge as well as when the user
+    exits the relevant state some other way. {ContextualNudgesCategories}
+  </summary>
+  <token key="ContextualNudgesCategories" variants="ContextualNudgesCategories">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.ContextualNudgeDismissTime{ContextualNudgesCategories}"
+    units="ms" expires_after="2022-10-01">
+<!-- Name completed by histogram_suffixes name="ContextualNudgesNames" -->
+
+  <owner>yulunwu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Tracks time between showing contextual nudge and gesture being performed.
+    Metrics are only recorded when the user performs the action suggested by the
+    contextual nudge. No metrics are recorded if the user exits the relevant
+    state some other way. {ContextualNudgesCategories}
+  </summary>
+  <token key="ContextualNudgesCategories" variants="ContextualNudgesCategories">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.Desks.AnimationSmoothness.DeskActivation" units="%"
+    expires_after="2022-04-17">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <owner>mukai@chromium.org</owner>
+  <summary>
+    Emitted when the virtual desks activation animation completes to report the
+    smoothness of this animation when running on the display on which the active
+    window resides (if any) or the display of the primary root window. 100%
+    represents ideally smooth 60 frames per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.AnimationSmoothness.DeskEndGesture" units="%"
+    expires_after="2022-08-03">
+  <owner>afakhry@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    When a four finger touchpad swipe has ended, an animation to the nearest
+    desk will occur. This histogram is emitted when that animation finishes.
+    100% represents ideally smooth 60 frames per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.AnimationSmoothness.DeskRemoval" units="%"
+    expires_after="2022-04-17">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <owner>mukai@chromium.org</owner>
+  <summary>
+    Emitted when the virtual desks removal animation completes to report the
+    smoothness of this animation when running on the display on which the active
+    window resides (if any) or the display of the primary root window. 100%
+    represents ideally smooth 60 frames per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.BentoBarEnabled" enum="Boolean"
+    expires_after="2022-05-19">
+  <owner>minch@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emits true if a user clicked `Show deskbar` inside the context menu of bento
+    bar or desks bar in overview mode, false if `Hide deskbar` inside the same
+    context menu being clicked.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.BentoBarIsVisible" enum="Boolean"
+    expires_after="2022-05-19">
+  <owner>minch@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emits true when the bento bar is created for the user. Will not emit false
+    if the bento bar has never been created for the user. This will be used to
+    count the number of users who saw the bento bar.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.ConsecutiveDailyVisits" units="days"
+    expires_after="2022-04-24">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when a desk is destroyed or a user activates a desk they haven't
+    visited the prior day. In the former case, reports the number of consecutive
+    days a user visited the newly-closed desk. In the latter case, reports the
+    number of consecutive days a user visited the desk during the previous
+    visit. This metric is persisted across multiple sessions and restarts. I.e.
+    if a user logs out and logs back in their desk's consecutive daily visits
+    will be restored. This metric uses the user's local timezone so if they move
+    back in time via timezone change, this metric will be reset.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.DeskLifetime_{DeskIndex}" units="hr"
+    expires_after="2022-02-19">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    The lifetime of the desk at index {DeskIndex} (1-indexed). Emitted when a
+    desk is removed. This metric is persisted across multiple sessions and
+    restarts. I.e. if a user logs out and logs back in their desk's lifetime
+    will be restored.
+  </summary>
+  <token key="DeskIndex">
+    <variant name="1" summary="1"/>
+    <variant name="2" summary="2"/>
+    <variant name="3" summary="3"/>
+    <variant name="4" summary="4"/>
+    <variant name="5" summary="5"/>
+    <variant name="6" summary="6"/>
+    <variant name="7" summary="7"/>
+    <variant name="8" summary="8"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Desks.DesksCount2" units="units"
+    expires_after="2021-11-29">
+  <obsolete>
+    Removed 04/2021. #enhanced-desks flag is removed from chrome://flags, which
+    means users will not able to switch to classic desks. Make this histogram
+    only for classic desks obsolete.
+  </obsolete>
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when there's a change in the virtual desks count whether due to desk
+    creation or removal in classic desks. Specifies the number of available
+    desks. It is not emitted for the first-ever created default desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.DesksCount3" units="units"
+    expires_after="2022-04-03">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when there's a change in the virtual desks count whether due to desk
+    creation or removal in Bento. Specifies the number of available desks. It is
+    not emitted for the first-ever created default desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.DesksSwitch" enum="DesksSwitchSource"
+    expires_after="2022-04-24">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when the active desk is changed to specify the source of this
+    action, i.e. whether due to new-desk shortcut, desk removed, window
+    activated, switch-desk shortcut, or a press on the desk mini_view.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.MoveWindowFromActiveDesk"
+    enum="DesksMoveWindowFromActiveDeskSource" expires_after="2022-04-03">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when a window is moved from the current active desk to another desk.
+    Specifies the source of this action, i.e. whether to window drag-and-drop,
+    or keyboard shortcut. As of M90, the &quot;Assign to desk menu&quot; bucket
+    is emitted when a user assigns a window to all desks through its context
+    menu. Prior to this, the &quot;Assign to desk menu&quot; bucket was emitted
+    when a user switched desks and their All Desks windows were moved from the
+    old active desk to the new active desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NewDesk2" enum="DesksCreationRemovalSource"
+    expires_after="2022-04-03">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when a virtual desk is created to specify the source of this action,
+    i.e. whether from the new-desk button, keyboard shortcut, or due to desks
+    restore. It is not emitted for the first-ever created default desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfDeskTraversals" units="units"
+    expires_after="2022-04-24">
+  <owner>afakhry@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Tracks the number of times a desk (virtual workspace) has visibly changed in
+    a time span of five seconds. This counts the number of total traversals; for
+    example if the user has moved from desk 1 to 2 to 1 to 2 to 3, the number
+    recorded is 4. This only gets recorded if a traversal starts. A traversal
+    means that the desk has changed onscreen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_1" units="units"
+    expires_after="2022-04-03">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the first desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_2" units="units"
+    expires_after="2022-04-10">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the second desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_3" units="units"
+    expires_after="2022-04-10">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the third desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_4" units="units"
+    expires_after="2022-04-10">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the fourth desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_5" units="units"
+    expires_after="2022-04-17">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the fifth desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_6" units="units"
+    expires_after="2022-04-17">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the sixth desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_7" units="units"
+    expires_after="2022-04-17">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the seventh desk. Emitted when a desk is removed,
+    or a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.NumberOfWindowsOnDesk_8" units="units"
+    expires_after="2022-04-24">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of windows on the eighth desk. Emitted when a desk is removed, or
+    a window is moved to another desk.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.PresentationTime.UpdateGesture" units="ms"
+    expires_after="2022-03-27">
+  <owner>afakhry@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Presentation time in ms when a four finger swipe is being used to change
+    desks. One full swipe results in multiple emissions of this metric; once
+    everytime the fingers change location on the trackpad. Presentation time is
+    the time it takes from when the software recognizes the touchpad swipe to
+    when the next frame is displayed on the screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.PresentationTime.UpdateGesture.MaxLatency"
+    units="ms" expires_after="2022-08-03">
+  <owner>afakhry@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The largest presentation time value in ms for a single four finger swipe to
+    change desks. One full swipe results in one emission of this metric; its the
+    largest value of Ash.Desks.PresentationTime.UpdateGesture which is emitted
+    multiple times during a single full swipe. Presentation time is the time it
+    takes from when the software recognizes the touchpad swipe to when the next
+    frame is displayed on the frame.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.RemoveDesk" enum="DesksCreationRemovalSource"
+    expires_after="2022-04-17">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when a virtual desk is removed to specify the source of this remove
+    operation, i.e. whether from the close-desk button, or keyboard shortcut.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.UserHasUsedDesksRecently" enum="Boolean"
+    expires_after="2022-05-19">
+  <owner>minch@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted true when first session started and detected user pref
+    `kUserHasUsedDesksRecently` has been set to true for the user. Will not emit
+    false otherwise. This will be used to count the number of users that
+    `kUserHasUsedDesksRecently` has been set to true.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desks.WeeklyActiveDesks" units="active desks"
+    expires_after="2022-03-24">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    The number of unique weekly active desks a user has interacted with in a
+    week. A desk is considered interacted with if a window is moved to it, it is
+    created, its name is changed, or it is activated and stayed on for at least
+    3s. This metric is persisted across multiple sessions and restarts. I.e. if
+    a user logs out and logs back in. This metric is reported a week after it
+    begins counting. If a session is restored and more than a week has elapsed
+    since counting has begun, the restored data will be emitted as an entry and
+    this metric will be reset.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.LaunchFromTemplate" enum="BooleanHit"
+    expires_after="2022-07-14">
+  <owner>richui@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>Emitted when a template is launched and a desk is created.</summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.TabCount" units="count"
+    expires_after="2022-07-14">
+  <owner>richui@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>Records the number of tabs in a template when it is saved.</summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.UserTemplateCount" units="count"
+    expires_after="2022-07-14">
+  <owner>richui@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of templates a user has saved when a template is saved or
+    deleted.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.WindowAndTabCount" units="count"
+    expires_after="2022-07-14">
+  <owner>richui@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of windows and tabs in a template when it is saved.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DeskTemplate.WindowCount" units="count"
+    expires_after="2022-07-14">
+  <owner>richui@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of windows in a template when it is saved.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Desktop.TimeBetweenNavigateToTaskSwitches" units="seconds"
+    expires_after="2021-03-15">
+  <owner>tbuckley@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The number of seconds between task window activations triggered by users
+    clicking or tapping on a window, as recorded by the Desktop_SwitchTask user
+    action. Recorded on Chrome OS only. Task switches from other sources are
+    ignored and do not affect this metric. In other words, if a user performs
+    the following steps (1) click on task window 'A' (2) Alt+Tab to task 'Z'(3)
+    click on task window 'B', then this will result in a sample recorded for the
+    time delta between activating task window 'A'and 'B'.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Display.InternalDisplay.ActiveEffectiveResolution"
+    enum="EffectiveResolution" expires_after="2022-04-03">
+  <owner>malaykeshav@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    The effective resolution of the internal display after device scale factor
+    and display zoom level has been applied. This is the exact value matching
+    the display's effective resolution. This is emitted at regular intervals.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Display.PrimaryDisplayZoomAtStartup" units="%"
+    expires_after="2020-09-06">
+  <owner>jamescook@chromium.org</owner>
+  <owner>jessejames@chromium.org</owner>
+  <owner>cros-system-services@google.com</owner>
+  <summary>
+    The display zoom setting for the primary display, recorded on startup.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DisplayChangeDialog.Saved" enum="BooleanSaved"
+    expires_after="2020-06-30">
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Emitted when the user chooses an option on the Display Change Dialog that is
+    shown when a user changes the resolution of an external display.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DisplayColorManager.HasColorCorrectionMatrix"
+    enum="Boolean" expires_after="M77">
+  <owner>mcasas@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    Whether a display has a &quot;CTM&quot; matrix properties that can be used
+    to set a color transform matrix. Recorded every time there is a display
+    configuration update.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DisplayColorManager.IccFileDownloaded"
+    enum="BooleanDownloaded" expires_after="M77">
+  <owner>mcasas@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    This boolean keeps track if an ICC file was downloaded correctly (if true)
+    or a local file was reused instead.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DisplayColorManager.ValidDisplayColorSpace" enum="Boolean"
+    expires_after="M77">
+  <owner>mcasas@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    This boolean keeps track if a Display update (i.e. when connecting a new
+    one) carried valid ColorSpace information.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DisplayColorManager.ValidProductId" enum="Boolean"
+    expires_after="M77">
+  <owner>mcasas@chromium.org</owner>
+  <owner>dcastagna@chromium.org</owner>
+  <summary>
+    Whether we could parse a valid product id from a display EDID. Recorded
+    every time there is a display configuration update.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Dock.Action" enum="DockedAction" expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    User-initiated action taken that affects docked windows such as docking,
+    undocking, minimizing, restoring, closing or just dragging a docked window.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Dock.ActionSource" enum="DockedActionSource"
+    expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Source (mouse, touch, keyboard or unknown) of the user-initiated action for
+    docked windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Dock.ItemsAll" units="units" expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Number of all docked windows or panels including hidden or minimized.
+    Recorded on every user action that interacts with docked windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Dock.ItemsLarge" units="units" expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Number of large (wider than dock maximum width) windows that had to be
+    shrunk to get docked among the visible docked windows. Recorded on every
+    user action that interacts with docked windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Dock.ItemsPanels" units="units" expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Number of docked visible panels. Recorded on every user action that
+    interacts with docked windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Dock.ItemsVisible" units="units" expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Number of visible docked windows or panels. Recorded on every user action
+    that interacts with docked windows.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Dock.TimeBetweenUse" units="seconds" expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Time elapsed between instances of docking, undocking or any other action
+    affecting docked state of a window.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Dock.Width" units="pixels" expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Width of the docked area in pixels. Recorded every time it changes after a
+    user window resize operation is completed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DragWindowFromShelf.PresentationTime" units="ms"
+    expires_after="2021-12-31">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Presentation time in ms when a window is dragged from the bottom of the
+    shelf. Recorded when the drag action is in progress.
+  </summary>
+</histogram>
+
+<histogram name="Ash.DragWindowFromShelf.PresentationTime.MaxLatency"
+    units="ms" expires_after="2021-12-31">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation time in ms when a window is dragged from
+    the bottom of the shelf. Recorded when the drag action is finished.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Homescreen.AnimationSmoothness" units="%"
+    expires_after="2020-08-01">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations when performing tablet mode homescreen
+    animations, recorded when the animation completes. 100% represents ideally
+    smooth 60 frames per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.HotseatGesture" enum="HotseatInAppGesture"
+    expires_after="M106">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>Gestures supported by the in-app hotseat.</summary>
+</histogram>
+
+<histogram
+    name="Ash.HotseatTransition.AnimationSmoothness{HotseatTransitionType}"
+    units="%" expires_after="2022-10-07">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Tracks the animation smoothness for the ShelfWidget's animating background
+    during transitions of the hotseat to shown, extended, and hidden hotseat
+    states. Check Ash.HotseatWidgetAnimation.AnimationSmoothness for smoothness
+    of the HotseatWidget. {HotseatTransitionType}
+  </summary>
+  <token key="HotseatTransitionType" variants="HotseatTransitionType">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.HotseatTransition.Drag.PresentationTime" units="ms"
+    expires_after="2022-04-10">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Presentation time in ms of the hotseat when it changes between the hidden
+    and the extended state as a result of a drag action. Recorded when the drag
+    action is in progress.
+  </summary>
+</histogram>
+
+<histogram name="Ash.HotseatTransition.Drag.PresentationTime.MaxLatency"
+    units="ms" expires_after="2022-11-10">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation time in ms of the hotseat when it
+    changes between the hidden and the extended state as a result of a drag
+    action. Recorded when the drag action is finished.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.HotseatWidgetAnimation.AnimationSmoothness{HotseatTransitionType}"
+    units="%" expires_after="2022-07-14">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Tracks the animation smoothness for the bounds animation of the hotseat
+    widget's elements during transitions of the hotseat to shown, extended, and
+    hidden hotseat states. Check Ash.HotseatTransition.AnimationSmoothness for
+    smoothness of the shelf's animating background. {HotseatTransitionType}
+  </summary>
+  <token key="HotseatTransitionType" variants="HotseatTransitionType"/>
+</histogram>
+
+<histogram
+    name="Ash.HotseatWidgetAnimation.{HotseatWidgetElement}AnimationSmoothness"
+    units="%" expires_after="2022-07-14">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Tracks the animation smoothness for the bounds animation of the hotseat
+    widget's elements during transitions of the hotseat to shown, extended, and
+    hidden hotseat states. Check Ash.HotseatTransition.AnimationSmoothness for
+    smoothness of the shelf's animating background. {HotseatWidgetElement}
+  </summary>
+  <token key="HotseatWidgetElement">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name="TranslucentBackground."
+        summary="Hotseat widget's translucent background"/>
+    <variant name="Widget." summary="Hotseat widget"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.ImmersiveFullscreen.WindowType" enum="WindowType"
+    expires_after="M77">
+  <obsolete>
+    Removed 10/2020 in Issue 1138662 - its recording code was deleted. This
+    histogram entry was added long time ago, likely when immersive fullscreen
+    was first added (circa 2014), and there is no records of what was learned.
+  </obsolete>
+  <owner>kuscher@google.com</owner>
+  <summary>
+    The type of the window which is put into immersive fullscreen. Immersive
+    fullscreen is entered via the F4 key.
+  </summary>
+</histogram>
+
+<histogram name="Ash.InteractiveWindowResize.TimeToPresent" units="ms"
+    expires_after="2022-04-17">
+  <owner>oshima@chromium.org</owner>
+  <owner>mukai@chromium.org</owner>
+  <summary>
+    Time between when the size of a window changes during an interactive window
+    resize and the results are drawn (presented) on screen. This is recorded for
+    each movement of the mouse/pointer that results in a resize.
+  </summary>
+</histogram>
+
+<histogram name="Ash.InteractiveWindowResize.TimeToPresent.MaxLatency"
+    units="ms" expires_after="2021-12-10">
+  <owner>oshima@chromium.org</owner>
+  <owner>mukai@chromium.org</owner>
+  <summary>
+    Maximum time between when the size of a window changes during an interactive
+    window resize and the results are drawn (presented) on screen. This is
+    recorded for each movement of the mouse/pointer that results in a resize.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Lacros.Launch.Mode" enum="LacrosLaunchMode"
+    expires_after="2022-09-01">
+  <owner>skuhne@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    The Lacros operation mode. This will record if Ash is the only browser, both
+    browsers are running side by side or if Lacros is the only browser. It will
+    be emitted once when the system (Ash) starts.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Lock.AuthMethod.Switched"
+    enum="AuthMethodSwitchType" expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The count of auth method switching actions on ChromeOS lock screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Lock.AuthMethod.Used.ClamShellMode"
+    enum="AuthMethod" expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The usage of different auth methods (PIN / Password / Smartlock /
+    Fingerprint / Challenge response) on Chromebooks in clamshell mode and on
+    other form-factors.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Lock.AuthMethod.Used.TabletMode" enum="AuthMethod"
+    expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The usage of different auth methods (PIN / Password / Smartlock /
+    Fingerprint / Challenge response) on Chromebooks in tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Lock.NbPasswordAttempts.UntilFailure"
+    units="attempts" expires_after="2022-06-29">
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The number of incorrect passwords entered in Chrome OS login/lock screen
+    until the user gives up (user signs out the current session or shuts down
+    the device).
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Lock.NbPasswordAttempts.UntilSuccess"
+    units="attempts" expires_after="2022-06-29">
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The number of incorrect passwords entered in Chrome OS login/lock screen
+    until a successful attempt.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Lock.UserClicks" enum="LockScreenUserClickTarget"
+    expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The numbers of times that users click on the shelf buttons, trays and lock
+    screen note on the ChromeOS lock screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Login.AuthMethod.Switched"
+    enum="AuthMethodSwitchType" expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The count of auth method switching actions on ChromeOS login screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Login.AuthMethod.Used.ClamShellMode"
+    enum="AuthMethod" expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The usage of different auth methods (PIN / Password / Smartlock /
+    Fingerprint / Challenge response) on Chromebooks in clamshell mode and on
+    other form-factors.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Login.AuthMethod.Used.TabletMode" enum="AuthMethod"
+    expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>tellier@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The usage of different auth methods (PIN / Password / Smartlock /
+    Fingerprint / Challenge response) on Chromebooks in tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Login.MigrationBanner" enum="BooleanShown"
+    expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    Whether the cryptohome migration banner was shown on the Chrome OS login
+    screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.Login.UserClicks" enum="LoginScreenUserClickTarget"
+    expires_after="2022-06-29">
+  <owner>rsorokin@chromium.org</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The numbers of times that users click on the shelf buttons and trays on the
+    ChromeOS login screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Login.OOBE.UserClicks" enum="OobeUserClickTarget"
+    expires_after="2022-06-29">
+  <owner>raleksandrov@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>What shelf buttons or trays are clicked in the OOBE.</summary>
+</histogram>
+
+<histogram name="Ash.Login.PinAutosubmit.Backfill"
+    enum="PinAutosubmitBackfillEvent" expires_after="2022-06-29">
+  <owner>rrsilva@google.com</owner>
+  <owner>cros-oac@google.com</owner>
+  <summary>
+    The result of the PIN auto submit 'Backfill' operation. Users updating to
+    M86 with an existing PIN will have their preference regarding auto submit
+    'backfilled' to either enabled or disabled.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Ash.LoginAnimation.Duration" units="ms"
+    expires_after="2022-04-17">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <summary>
+    The duration of how long it took to finish all animations applied during the
+    login process, from the time the first animation is added, to the time the
+    last animation is finished.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Ash.LoginAnimation.Jank" units="%"
+    expires_after="2022-05-01">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <summary>
+    Jank metrics of all animations applied during the login process. This
+    represents how often the frame update rate changed during animation.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Ash.LoginAnimation.Smoothness" units="%"
+    expires_after="2022-04-24">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <summary>
+    Relative smoothness of all animations applied during the login process. 100%
+    represents the ideal smoothness for 60 frames per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Media.CameraPrivacySwitch.Event"
+    enum="CameraPrivacySwitchEvent" expires_after="2022-05-01">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Reports events related to camera privacy switch state. The camera privacy
+    switch is a hardware toggle supported by some Chrome OS devices that
+    disables the built in camera video feed. The histogram is reported (1) when
+    a camera privacy switch state change is detected (which generally causes a
+    system toast to get shown), and (2) when a notification informing the user
+    that the camera privacy switch is on (the notification is shown if the user
+    tries to use their camera with the privacy switch tuned on). The camera
+    privacy switch state is only recorded if the state change is a result of a
+    user action - it will not be recorded for state changes that are a result of
+    camera privacy switch state initialization.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Media.CameraPrivacySwitch.TimeFromNotificationToOff"
+    units="5 seconds" expires_after="2022-05-01">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Time from showing a notification informing the user about the camera privacy
+    switch to the user turning the privacy switch off. The camera privacy switch
+    is a hardware switch supported by some Chrome OS devices that cuts the video
+    camera feed off. The Chrome OS UI shows a notification if the user tries to
+    use the camera with the privacy switch on. The intention is to track the
+    time it takes for the user to flip the privacy switch after they're notified
+    the camera is disabled. The histogram is recorded if the user toggles the
+    camera privacy switch after seeing the notification about the privacy switch
+    being on (if the switch is toggled more than once after the notification
+    gets shown, only the first toggle action will be reported). The time is
+    reported in seconds with 5 second granularity.
+  </summary>
+</histogram>
+
+<histogram name="Ash.MessageCenter.Scroll.PresentationTime" units="ms"
+    expires_after="2022-07-10">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Presentation time while scrolling through the list of notifications in
+    Notification Center. Emitted when Notification Center is scrolled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.MessageCenter.Scroll.PresentationTime.MaxLatency"
+    units="ms" expires_after="2022-07-10">
+  <owner>leandre@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Presentation time while scrolling through the list of notifications in
+    Notification Center. Emitted when Notification Center is scrolled.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.NavigationWidget.AnimationSmoothness{HotseatTransitionType}"
+    units="%" expires_after="2022-06-02">
+<!-- Name completed by histogram suffixes
+     name="HotseatTransitionType" -->
+
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations of the navigation widget's elements, which
+    are the widget itself and its child views. 100% represents ideally smooth 60
+    frames per second. 50% represents only 30 frames per second is achieved
+    during the animations. Recorded every time an animation is triggered in the
+    Navigation Widget. We record this metric for each element separately.
+    {HotseatTransitionType}
+  </summary>
+  <token key="HotseatTransitionType" variants="HotseatTransitionType"/>
+</histogram>
+
+<histogram
+    name="Ash.NavigationWidget.{NavigationWidgetElement}AnimationSmoothness"
+    units="%" expires_after="2022-06-02">
+  <owner>anasalazar@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations of the navigation widget's elements, which
+    are the widget itself and its child views. 100% represents ideally smooth 60
+    frames per second. 50% represents only 30 frames per second is achieved
+    during the animations. Recorded every time an animation is triggered in the
+    Navigation Widget. We record this metric for each element separately.
+    {NavigationWidgetElement}
+  </summary>
+  <token key="NavigationWidgetElement">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+    <variant name="BackButton." summary="Navigation widget's back button"/>
+    <variant name="HomeButton." summary="Navigation widget's home button"/>
+    <variant name="Widget." summary="Navigation widget"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.NightLight.AutoNightLightNotificationShown"
+    enum="BooleanShown" expires_after="2022-01-30">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>Emitted when the Auto Night Light notification is shown.</summary>
+</histogram>
+
+<histogram name="Ash.NightLight.AutoNightLightNotificationState"
+    enum="AshAutoNightLightNotificationState" expires_after="2022-05-01">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when the user interacts with the Auto Night Light notification to
+    report the state of the notification as a result of this interaction.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NightLight.DisplayCrtcCtmSupport"
+    enum="AshNightLightDisplayCrtcCtmSupportType" expires_after="2022-02-01">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The type of CRTC color transorm matrix support for the currently connected
+    displays. Emitted when cursor compositing status is refreshed, but only when
+    Night Light is on. The cursor compositing status is refreshed whenever there
+    is a change in Night Light status or color temperature.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NightLight.ScheduleType" enum="AshNightLightScheduleType"
+    expires_after="2022-04-24">
+  <owner>afakhry@chromium.org</owner>
+  <summary>
+    The selected Night Light schedule type. Emitted when the user changes the
+    Night Light schedule type from the Display System Settings.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NightLight.Temperature"
+    enum="AshNightLightTemperatureRanges" expires_after="2022-02-01">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    The ranges in which the selected values of the Night Light color temperature
+    reside. Emitted when the user drags the Night Light color temperature slider
+    to change its value from the Display System Settings.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Notification.ClearAllStacked.AnimationSmoothness"
+    units="%" expires_after="2022-07-02">
+  <owner>newcomer@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the &quot;clear all&quot; animation in the CrOS
+    message center. This occurs when the clear all button is pressed with
+    notifications that are not visible on screen. Measured via a throughtput
+    tracker.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Notification.ClearAllVisible.AnimationSmoothness"
+    units="%" expires_after="2022-07-02">
+  <owner>newcomer@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the &quot;clear all&quot; animation in the CrOS
+    message center. This occurs when the clear all button is pressed and all
+    notifications are visible. Measured via a throughtput tracker.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Notification.MoveDown.AnimationSmoothness" units="%"
+    expires_after="2022-07-02">
+  <owner>newcomer@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Animation smoothness of the &quot;move down&quot; animation in the CrOS
+    message center. This occurs when a notification is removed and notifications
+    above the deleted one animate downwards to fill in the space. Measured via a
+    throughtput tracker.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NotificationPopup.AnimationSmoothness" units="%"
+    expires_after="2022-06-25">
+  <owner>leandre@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <owner>cros-status-area-eng@google.com</owner>
+  <summary>
+    Relative smoothness of animations of notification pop-up. 100% represents
+    ideally smooth 60 frames per second. Emitted when pop-up animations are
+    completed, including pop-up fade-in, fade-out, move-up, move-down.
+  </summary>
+</histogram>
+
+<histogram name="Ash.NumberOfVisibleWindowsInPrimaryDisplay" units="Windows"
+    expires_after="2022-04-24">
+  <owner>jamescook@chromium.org</owner>
+  <summary>
+    An upper bound on the number of windows visible to the user on the primary
+    display. Determined by processing the windows in increasing z-order and
+    counting all non-minimized windows until a maximized or fullscreen window is
+    processed. This metric is logged periodically every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
+    expires_after="2022-04-10">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>omrilio@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations when closing a window, recorded when the
+    animation completes. 100% represents ideally smooth 60 frames per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.AnimationSmoothness.Enter{OverviewAnimationMode}"
+    units="%" expires_after="2021-12-31">
+  <owner>omrilio@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations when entering overview mode, recorded when
+    the animation completes. 100% represents ideally smooth 60 frames per
+    second. {OverviewAnimationMode}
+  </summary>
+  <token key="OverviewAnimationMode" variants="OverviewAnimationMode">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.Overview.AnimationSmoothness.Exit{OverviewAnimationMode}"
+    units="%" expires_after="2021-12-31">
+  <owner>omrilio@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations when exiting overview mode, recorded when
+    the animation completes. 100% represents ideally smooth 60 frames per
+    second. {OverviewAnimationMode}
+  </summary>
+  <token key="OverviewAnimationMode" variants="OverviewAnimationMode">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.Overview.ArrowKeyPresses" units="units"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The number of times the arrow keys are pressed in overview mode per session,
+    i.e. between bringing up overview mode and ending it. This is only measured
+    for the sessions that end by selecting a window with the enter key.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.EndAction" enum="OverviewEndAction"
+    expires_after="2022-05-19">
+  <owner>minch@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when exiting overview mode. Recording the reasons for ending
+    overview mode. E.g, pressing the overview button at status area.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.Items" units="units" expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The number of items (single windows or groups of windows such as panels) in
+    the overview mode, present at the start of each session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.KeyPressesOverItemsRatio" units="%"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The ratio between the arrow key presses and the number of overview items,
+    expressed as a percentage for a single session. Recorded when an overview
+    session is exited after selecting a highlighted overview item.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.OverviewClosedItems" units="units"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The number of items closed from the window overview for a single session.
+    Recorded when exiting an overview session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.Scroll.PresentationTime.MaxLatency.TabletMode"
+    units="ms" expires_after="2021-12-31">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation time for scrolling the overview grid in
+    overview mode for a scrolling session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.Scroll.PresentationTime.TabletMode" units="ms"
+    expires_after="2022-04-17">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Presentation time for scrolling the overview grid in overview mode. Each
+    time the grid is updated by a scroll, the time it takes to update the new
+    visuals onto the screen is updated.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.SelectionDepth" units="items"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    When a window is selected in overview mode, records that window's position
+    in the global MRU ordering. 1 represents the most-recently used window, 2
+    represents the next most-recently used window, and so on.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.StartAction" enum="OverviewStartAction"
+    expires_after="2022-05-19">
+  <owner>minch@chromium.org</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Emitted when entering overview mode. Recording the reasons for starting
+    overview mode. E.g, pressing the overview button at status area.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.TimeBetweenActiveWindowChanges" units="seconds"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The amount of time between endings of overview mode sessions which were
+    caused by the user selecting a window which was not previously active. Only
+    recorded on the second and later times after startup that the user selected
+    a window which was not previously active.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.TimeBetweenUse" units="ms"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The amount of time between uses of overview mode, recorded when overview
+    mode is entered. Only recorded on the second and later times after startup
+    that the user entered overview mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.TimeInOverview" units="ms"
+    expires_after="2022-04-08">
+  <owner>chinsenj@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    The amount of time spent in overview mode. Overview mode is engaged by
+    pressing the overview accelerator, overview button tray or swiping up from
+    the shelf in tablet mode. The time is measured from the moment the windows
+    begin animating to a thumbnail size preview to when a window is selected or
+    selection is canceled. Recorded when an overview session is exited, before
+    the exit animation starts.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Ash.Overview.WindowDrag.PresentationTime"
+    units="ms" expires_after="2021-12-31">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>omrilio@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>Presentation time for dragging a window in overview mode.</summary>
+</histogram>
+
+<histogram base="true"
+    name="Ash.Overview.WindowDrag.PresentationTime.MaxLatency" units="ms"
+    expires_after="2021-12-31">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>omrilio@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation time for dragging a window in overview
+    mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Overview.WindowDrag.Workflow" enum="OverviewDragAction"
+    expires_after="2022-04-24">
+  <owner>amusbach@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Recorded when a drag from overview (not from the top or shelf) is completed,
+    and when an overview item is closed by vertically swiping or flinging (even
+    if you fling without dragging).
+  </summary>
+</histogram>
+
+<histogram name="Ash.PciePeripheral.ConnectivityResults"
+    enum="PciePeripheralConnectivityResult" expires_after="2022-03-15">
+  <owner>jimmyxgong@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    The connectivity results of when the user plugs in a Thunderbolt/USB4
+    peripheral to their Chrome OS device. This is recorded for only devices that
+    support Thunderbolt/USB4 connectivity. Gets recorded every time a
+    Thunderbolt/USB4 peripheral is plugged in.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PersistentWindow.NumOfWindowsRestored" units="units"
+    expires_after="M82">
+  <obsolete>
+    Expired on M82. Marked as obsolete on 10/2021. Replaced by
+    Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded.
+  </obsolete>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    The number of windows restored in multi-display scenario, such as due to
+    disconnecting and reconnecting display, enabling and disabling mirror mode,
+    entering and leaving dock mode. Zero is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnDisplayAdded"
+    units="units" expires_after="2022-10-31">
+  <owner>minch@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    The number of windows restored in multi-display scenario, such as due to
+    disconnecting and reconnecting display, enabling and disabling mirror mode,
+    entering and leaving dock mode. Zero is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PersistentWindow.NumOfWindowsRestoredOnScreenRotation"
+    units="units" expires_after="2022-10-31">
+  <owner>minch@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emits the number of windows bounds restored when rotating the screen back to
+    the previous screen orientation. Zero is not recorded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.InterstitialScreenEvent.{Screen}"
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/metadata/phonehub/histograms.xml. Removed
+    11/2020 in M89.
+  </obsolete>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    Events logged when the given PhoneHub interstitial screen is shown.
+  </summary>
+<!-- The entries below should be a subset of the PhoneHubScreen enum -->
+
+  <token key="Screen">
+    <variant name="BluetoothOrWifiDisabled"/>
+    <variant name="ConnectionError">
+      <obsolete>
+        Renamed to PhoneDisconnected on Nov 2020.
+      </obsolete>
+    </variant>
+    <variant name="InitialConnecting">
+      <obsolete>
+        Combined into PhoneConnecting on Nov 2020.
+      </obsolete>
+    </variant>
+    <variant name="Onboarding.ExistingMultideviceUser"/>
+    <variant name="Onboarding.NewMultideviceUser"/>
+    <variant name="OnboardingDismissPrompt"/>
+    <variant name="PhoneConnecting"/>
+    <variant name="PhoneDisconnected"/>
+    <variant name="Reconnecting">
+      <obsolete>
+        Combined into PhoneConnecting on Nov 2020.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.PhoneHub.NotificationCount" units="notifications"
+    expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/metadata/phonehub/histograms.xml. Removed
+    11/2020 in M89.
+  </obsolete>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    The number of PhoneHub notifications, logged each time a notification is
+    added or removed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.NotificationOptInEvents"
+    enum="PhoneHubInterstitialScreenEvent" expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/metadata/phonehub/histograms.xml. Removed
+    11/2020 in M89.
+  </obsolete>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>Events for the given notification opt-in prompt.</summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.QuickActionClicked" enum="PhoneHubQuickAction"
+    expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/metadata/phonehub/histograms.xml. Removed
+    11/2020 in M89.
+  </obsolete>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>Event logged after the user clicks on a quick action.</summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.ScreenOnSettingsButtonClicked"
+    enum="PhoneHubScreen" expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/metadata/phonehub/histograms.xml. Removed
+    11/2020 in M89.
+  </obsolete>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    Logs the current screen when the settings button is clicked in the tray
+    bubble.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PhoneHub.ScreenOn{BubbleEvent}" enum="PhoneHubScreen"
+    expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/metadata/phonehub/histograms.xml. Removed
+    11/2020 in M89.
+  </obsolete>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    Logs the current screen for the PhoneHub tray given bubble event (i.e. on
+    bubble open or close).
+  </summary>
+  <token key="BubbleEvent">
+    <variant name="BubbleClose"/>
+    <variant name="BubbleOpen"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.PhoneHub.TabContinuationChipClicked" units="tab index"
+    expires_after="2021-10-31">
+  <obsolete>
+    Moved to tools/metrics/histograms/metadata/phonehub/histograms.xml. Removed
+    11/2020 in M89.
+  </obsolete>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>khorimoto@chromium.org</owner>
+  <summary>
+    After a tab continuation chip is clicked, the index of the tab is logged.
+    Tab indices are ordered left-to-right, top-to-bottom in a standard LTR
+    locale.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Pip.AndroidPipUseTime" units="ms"
+    expires_after="2022-04-24">
+  <owner>takise@chromium.org</owner>
+  <owner>linben@chromium.org</owner>
+  <summary>How long Android PIP was used for, upon ending the session.</summary>
+</histogram>
+
+<histogram name="Ash.Pip.Events" enum="AshPipEvents" expires_after="2022-04-17">
+  <owner>takise@chromium.org</owner>
+  <owner>linben@chromium.org</owner>
+  <summary>
+    Various individiual Picture-in-picture related events. See AshPipEvents.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Pip.FreeResizeFinishArea" units="%"
+    expires_after="2021-06-16">
+  <owner>takise@chromium.org</owner>
+  <owner>linben@chromium.org</owner>
+  <summary>
+    Area of a Picture-in-picture window when ending a free-resize, as a
+    percentage of the area it takes up on the display it is on.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Pip.FreeResizeInitialArea" units="%"
+    expires_after="2021-06-16">
+  <owner>takise@chromium.org</owner>
+  <owner>linben@chromium.org</owner>
+  <summary>
+    Initial area of a Picture-in-picture window when beginning a free-resize, as
+    a percentage of the area it takes up on the display it is on.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Pip.Position" enum="AshPipPosition"
+    expires_after="2021-06-16">
+  <owner>takise@chromium.org</owner>
+  <owner>linben@chromium.org</owner>
+  <summary>
+    The position that a Picture-in-picture window was moved to by a user drag.
+  </summary>
+</histogram>
+
+<histogram name="Ash.PowerButtonScreenshot.DelayBetweenAccelKeyPressed"
+    units="ms" expires_after="2020-11-15">
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Record the delay when power button and volume down key are both pressed,
+    which indicates user might want to use accelerator to take screenshot. This
+    will help us determine the best chord delay among metrics.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Projector.MarkerColor.{TabletOrClamshell}"
+    enum="ProjectorMarkerColor" expires_after="2022-05-19">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Recorded whenever the user chooses a marker color on the Projector toolbar
+    in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.Projector.Toolbar.{TabletOrClamshell}"
+    enum="ProjectorToolbar" expires_after="2022-05-19">
+  <owner>tobyhuang@chromium.org</owner>
+  <owner>yilkal@chromium.org</owner>
+  <owner>llin@chromium.org</owner>
+  <owner>cros-projector@google.com</owner>
+  <summary>
+    Recorded whenever the user opens, closes, or presses a button the Projector
+    toolbar in {TabletOrClamshell}.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.Rotation.AnimationSmoothness" units="%"
+    expires_after="2022-04-10">
+  <owner>oshima@chromium.org</owner>
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations when rotating screen. 100% represents
+    ideally smooth 60 frames per second. 50% represents only 30 frames per
+    second is achieved during the animations. 0% should not happen. This metric
+    is recorded exactly once when the user rotates the screen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ScreenshotController.ScreenshotsPerDay" units="int"
+    expires_after="2021-09-29">
+  <obsolete>
+    Removed 07/2021. Use Ash.CaptureModeController.ScreenshotsPerDay instead.
+  </obsolete>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of screenshots that have been taken via the
+    ScreenshotController every 24 hours. Note that counts are not persisted
+    across crashes, restarts, or sessions so this is only intended to give a
+    rough approximation.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ScreenshotController.ScreenshotsPerWeek" units="int"
+    expires_after="2021-11-28">
+  <obsolete>
+    Removed 07/2021. Use Ash.CaptureModeController.ScreenshotsPerWeek instead.
+  </obsolete>
+  <owner>xiyuan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the number of screenshots that have been taken via the
+    ScreenshotController every 7 days. Note that counts are not persisted across
+    crashes, restarts, or sessions so this is only intended to give a rough
+    approximation. This means that this metric will only be recorded in sessions
+    spanning at least 7 days.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Menu.NumItemsEnabledUponSelection" units="Count"
+    expires_after="2021-01-26">
+  <owner>anasalazar@google.com</owner>
+  <owner>mmourgos@google.com</owner>
+  <summary>
+    Tracks the number of menu items that are enabled in a shelf item's secondary
+    menu. This metric is only recorded when a menu item is selected.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Menu.SelectedMenuItemIndex" units="Index"
+    expires_after="2021-01-26">
+  <owner>anasalazar@google.com</owner>
+  <owner>mmourgos@google.com</owner>
+  <summary>
+    Tracks the index of the selected menu item in a shelf item's secondary menu.
+    This metric is only recorded when a menu item is selected.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.NavigationButtonsInTabletMode.ReasonShown"
+    enum="ReasonToShowShelfNavigationButtons" expires_after="2022-01-09">
+  <owner>tbarzic@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    The reason shelf navigation buttons are shown in tablet mode. The buttons
+    are shown when the device is in tablet mode only if certain accessibility
+    settings are enabled. This histogram records which accessibility setting
+    caused the buttons to be shown. Shown when navigation buttons visibility
+    changes in tablet mode, and only if HideShelfControlsInTabletMode feature is
+    enabled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.NumberOfItems" units="Icons"
+    expires_after="2022-04-24">
+  <owner>anasalazar@google.com</owner>
+  <owner>mmourgos@google.com</owner>
+  <summary>
+    The number of icons in the shelf, not including the App Launcher icon. This
+    metric is recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.NumberOfPinnedItems" units="Icons"
+    expires_after="2022-02-20">
+  <owner>anasalazar@google.com</owner>
+  <owner>mmourgos@google.com</owner>
+  <summary>
+    The number of pinned icons in the shelf, not including the App Launcher
+    icon. This metric is recorded every 30 minutes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.NumberOfUnpinnedItems" units="Icons"
+    expires_after="2022-02-06">
+  <owner>anasalazar@google.com</owner>
+  <owner>mmourgos@google.com</owner>
+  <summary>
+    The number of unpinned icons in the shelf. This metric is recorded every 30
+    minutes.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Assistant.CircledPercentage" units="%"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The percentage of the screen area circled by the Assistant pen. Recorded
+    when the &quot;closed shape&quot; gesture is recognized.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Assistant.GestureDuration" units="ms"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The duration of an Assistant pen gesture. Recorded at the end of every
+    gesture.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Assistant.GestureInterval" units="ms"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The interval between subsequent Assistant pen gestures within a session.
+    Session is defined as the period while the Assistant tool is enabled.
+    Recorded at the end of each gesture except for the first one in the session.
+    The interval is computed excluding the gesture duration.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Assistant.GesturesPerSession" units="units"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The number of Assistant pen gestures per session. Session is defined as the
+    period while the Assistant tool is enabled. Recorded at the end of the
+    session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Assistant.GesturesPerSession.Recognized"
+    units="units" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The number of recognized Assistant pen gestures per session. Session is
+    defined as the period while the Assistant tool is enabled. Recorded at the
+    end of the session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Assistant.GestureType"
+    enum="AssistantGestureType" expires_after="2022-05-01">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The type of the Assistant pen gesture. Recorded at the end of each gesture.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Assistant.HighlighterLength" units="dp"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The length of a recognized &quot;horizontal stroke&quot; Assistant pen
+    gesture. Recorded at the and of the gesture.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.InAssistantMode" units="ms"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The amount of time spent in Palette Assistant mode. Recorded when the
+    Assistant mode is exited.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.InLaserPointerMode" units="ms"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The amount of time spend in Palette Laser pointer mode. Recorded when the
+    Laser pointer mode is exited.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.InMagnifyMode" units="ms"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The amount of time spend in Palette Magnify mode. Recorded when the Magnify
+    mode is exited.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.ModeCancellation"
+    enum="PaletteModeCancelType" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    Tracks the number of times a palette mode is explicitly cancelled or
+    switched out of.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Usage" enum="PaletteTrayOptions"
+    expires_after="2022-04-17">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    Recorded every time that the palette option has been selected from the
+    palette that has been opened manually (not via a stylus eject event).
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Usage.AutoOpened" enum="PaletteTrayOptions"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    Recorded every time that the palette option has been selected from the
+    palette that has been opened automatically (by a stylus eject event).
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.Palette.Usage.Shortcut" enum="PaletteTrayOptions"
+    expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    Recorded every time that the palette option has been selected by means other
+    that the palette menu (e.g. stylus barrel button or a keyboard accelerator).
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.TimeBetweenNavigateToTaskSwitches" units="seconds"
+    expires_after="M81">
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The number of seconds between contiguous task switch user actions triggered
+    by the Shelf buttons where the user activates a different user-predictable
+    task. Task switches from other sources are ignored and do not affect this
+    metric. In other words, if a user performs the following steps (1) launch
+    task 'A' from the Shelf (2) Alt+Tab to task 'Z' (3) launch task 'B' from the
+    Shelf, then this will result in a sample recorded for the time delta between
+    launching tasks 'A' and 'B'.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.TimeBetweenWindowMinimizedAndActivatedActions"
+    units="ms" expires_after="2020-06-28">
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Tracks the amount of time between a window being minimized by the shelf and
+    subsequently activated. In other words this metric is only recorded if a
+    shelf button pressed action causes a window to be minimized and the very
+    next shelf button pressed action causes the same window to be activated.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.UkmLogger.HasNightLightSchedule" enum="Boolean"
+    expires_after="2020-09-27">
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    Whether or not the user had set up a night light schedule at the time of
+    night light event logging.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Shelf.UkmLogger.NumAvailableBluetoothDevices"
+    units="count" expires_after="2020-09-27">
+  <owner>wrong@chromium.org</owner>
+  <summary>
+    The number of Bluetooth devices available at the time of Bluetooth event
+    logging.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ShelfAlignmentOverTime" enum="ShelfAlignmentValue"
+    expires_after="2020-11-22">
+  <owner>kuscher@google.com</owner>
+  <summary>
+    The current state of the shelf (alignment) tracked over time by logging on a
+    regular basis (30 minutes), this is used instead of log in or shelf usage to
+    track users that do not lock/unlock or log in frequently and use a small
+    number of browser instances or otherwise infrequently interact with the
+    shelf launcher.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ShelfAlignmentUsage" enum="ShelfAlignmentValue"
+    expires_after="never">
+<!-- expires-never: Monitors core shelf behavior/usage (the shelf alignment) -->
+
+  <owner>kuscher@google.com</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The current state of the shelf (alignment) when the shelf launcher is used
+    to launch an app/window/etc, this is used instead of log in to give data on
+    users that do not lock/unlock or log in frequently.
+  </summary>
+</histogram>
+
+<histogram name="Ash.ShelfIcon.AnimationSmoothness{ShelfIconAnimationType}"
+    units="%" expires_after="2021-03-30">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>newcomer@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations of the shelf icons. 100% represents
+    ideally smooth 60 frames per second. Recorded when shelf icon animations are
+    completed, including icon move, icon fade-in and icon fade-out.
+    {ShelfIconAnimationType}
+  </summary>
+  <token key="ShelfIconAnimationType">
+    <variant name=""/>
+    <variant name=".FadeIn" summary="Shelf icon fade-in animation"/>
+    <variant name=".FadeOut" summary="Shelf icon fade-out animation"/>
+    <variant name=".Move" summary="Shelf icon move animation"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Smoothness.MaxPercentDroppedFrames_1sWindow" units="%"
+    expires_after="2022-09-30">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Similar to Graphics.Smoothness.MaxPercentDroppedFrames_1sWindow but for
+    ui::Compositor. Tracks the max percent of dropped frames for in a 1 second
+    sliding window when the percentage changes.
+
+    PercentDroppedFrames is measured by tracking the number of frames which were
+    not displayed on screen out of the total number of frames expected to be
+    produced and displayed. In other words, the lower this number is, the
+    smoother experience.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Smoothness.MaxPercentDroppedFrames_1sWindow.Uniform"
+    units="%" expires_after="2022-09-30">
+  <owner>xiyuan@chromium.org</owner>
+  <owner>chromeos-perfmetrics-eng@google.com</owner>
+  <summary>
+    Same as Ash.Smoothness.MaxPercentDroppedFrames_1sWindow but instead of
+    recording samples when dropped frame percentage changes, it records the
+    percentage uniformly over time.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SplitView.DeviceOrientation.{DeviceUIMode}"
+    enum="DeviceOrientation" expires_after="2022-08-11">
+  <owner>cattalyya@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted at entry to split view mode and each time the orientation or the
+    device mode changes to report whether the device is in clamshell mode or
+    tablet mode and whether the orientation is landscape or portrait.
+  </summary>
+  <token key="DeviceUIMode">
+    <variant name="ClamshellMode"/>
+    <variant name="TabletMode"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.SplitView.EntryPoint.DeviceOrientation"
+    enum="DeviceOrientation" expires_after="2022-06-11">
+  <owner>xdai@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted at the entry point of split view mode, to report the device
+    orientation is in landscape mode (left and right) or portrait mode (top and
+    bottom).
+  </summary>
+</histogram>
+
+<histogram name="Ash.SplitView.EntryPoint.DeviceUIMode" enum="DeviceMode"
+    expires_after="2022-06-11">
+  <owner>xdai@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted at the entry point of split view mode, to report the device is in
+    clamshell mode or tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SplitView.OrientationInSplitView" enum="DeviceOrientation"
+    expires_after="2022-06-11">
+  <owner>xdai@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted when device orientation changes in split view, to report the device
+    orientation is in landscape mode (left and right) or portrait mode (top and
+    bottom).
+  </summary>
+</histogram>
+
+<histogram name="Ash.SplitView.ResizeWindowCount.{DeviceUIMode}" units="count"
+    expires_after="2022-06-11">
+  <owner>xdai@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted at the end of split view mode to report the number of resizing
+    window operations in split view mode session for both clamshell and tablet
+    mode.
+  </summary>
+  <token key="DeviceUIMode">
+    <variant name="ClamshellMode"/>
+    <variant name="TabletMode"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.SplitView.SwapWindowCount" units="count"
+    expires_after="2022-06-11">
+  <owner>xdai@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted at the end of split view mode to report the number of swap window
+    operations in split view mode session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SplitView.TimeInMultiDisplaySplitView" units="ms"
+    expires_after="2022-10-12">
+  <owner>amusbach@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    The amount of time that the user spent in multi-display split view mode,
+    meaning that split view is active on more than one display. The time is
+    measured from when the number of displays in split view becomes more than
+    one to when it drops back down to one.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SplitView.TimeInSplitView" units="ms"
+    expires_after="2022-04-17">
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    The amount of time that the user spent in split view mode. The time is
+    measured from the moment a window is snapped to one side of the screen to
+    when split view mode is ended.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SplitView.{EngagementTime}.{DeviceUIMode}" units="ms"
+    expires_after="2022-06-11">
+  <owner>xdai@chromium.org</owner>
+  <owner>zxdan@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted at the end of split view mode or the point of switching between
+    clamshell mode and tablet mode in split view, to report the engagement time
+    of general split view and multi-display split view in both clamshell mode
+    and tablet mode.
+  </summary>
+  <token key="EngagementTime">
+    <variant name="TimeInMultiDisplaySplitScreen"/>
+    <variant name="TimeInSplitScreen"/>
+  </token>
+  <token key="DeviceUIMode">
+    <variant name="ClamshellMode"/>
+    <variant name="TabletMode"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.SplitViewResize.AnimationSmoothness.DividerAnimation"
+    units="%" expires_after="2022-04-17">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Relative smoothness of animation when releasing the split view divider,
+    recorded when the animation completes. 100% represents ideally smooth 60
+    frames per second.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.SplitViewResize.PresentationTime.MaxLatency{SplitViewResizeModes}"
+    units="ms" expires_after="2022-10-12">
+  <owner>amusbach@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation time while resizing one or two split
+    view windows. {SplitViewResizeModes}
+  </summary>
+  <token key="SplitViewResizeModes" variants="SplitViewResizeModes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.SplitViewResize.PresentationTime{SplitViewResizeModes}"
+    units="ms" expires_after="2022-10-26">
+  <owner>amusbach@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Presentation time while resizing one or two split view windows.
+    {SplitViewResizeModes}
+  </summary>
+  <token key="SplitViewResizeModes" variants="SplitViewResizeModes">
+    <variant name="">
+      <obsolete>
+        Base histogram. Use suffixes of this histogram instead.
+      </obsolete>
+    </variant>
+  </token>
+</histogram>
+
+<histogram name="Ash.StatusAreaShowBubble.PresentationTime" units="ms"
+    expires_after="2022-06-15">
+  <owner>leandre@chromium.org</owner>
+  <owner>amehfooz@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Presentation time while opening QuickSettings and Notification Center
+    through Status Area button. Emitted when QuickSettings and Notification
+    Center are opened and shown.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.MaxLatency.TabletMode"
+    units="ms" expires_after="2022-06-30">
+  <owner>xdai@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation timestamp while dragging a tab in tablet
+    mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SwipeDownDrag.Tab.PresentationTime.TabletMode" units="ms"
+    expires_after="2022-06-30">
+  <owner>xdai@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <summary>Presentation time while dragging a tab in tablet mode.</summary>
+</histogram>
+
+<histogram
+    name="Ash.SwipeDownDrag.Window.PresentationTime.MaxLatency.TabletMode"
+    units="ms" expires_after="2022-06-30">
+  <owner>xdai@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <summary>
+    Maximum latency of the presentation timestamp while dragging maximized
+    window in tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SwipeDownDrag.Window.PresentationTime.TabletMode"
+    units="ms" expires_after="2022-06-30">
+  <owner>xdai@chromium.org</owner>
+  <owner>omrilio@chromium.org</owner>
+  <summary>
+    Presentation time while dragging maximized window in tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SwipeHomeToOverviewGesture"
+    enum="SwipeHomeToOverviewResult" expires_after="2022-05-01">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    Boolean indicating whether a swipe from hotseat on home screen resulted in a
+    transition to overview.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SystemMenu.DefaultView.VisibleRows"
+    enum="SystemMenuDefaultViewRows" expires_after="2022-04-24">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The visible rows displayed in the system menu's default view. Recorded each
+    time the menu is opened.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SystemMenu.PercentageOfWorkAreaHeightCoveredByMenu"
+    units="%" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The height of the system menu divided by the height of the Ash desktop work
+    area; a value over 100% indicates that a portion of the system menu is not
+    visible to the user. Recorded each time the menu is opened.
+  </summary>
+</histogram>
+
+<histogram name="Ash.SystemMenu.Rows" units="rows" expires_after="2021-12-12">
+  <owner>amehfooz@chromium.org</owner>
+  <owner>cros-status-area@google.com</owner>
+  <owner>gzadina@chromium.org</owner>
+  <summary>
+    The number of user-visible rows in the system menu's default view. Recorded
+    each time the menu is opened.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TabDrag.PresentationTime" units="ms"
+    expires_after="2022-04-07">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Presentation time in ms when a tab is dragged. In clamshell mode, each time
+    a tab is dragged within a display, the time it takes to present the new
+    frame on screen is recorded. In tablet mode (with webui tab strip enable),
+    dragging between displays is precluded, thus each time a tab is dragged, the
+    time it takes to present the new frame to screen is recorded.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TabDrag.PresentationTime.MaxLatency" units="ms"
+    expires_after="2022-04-07">
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Maximum presentation time recorded during a tab dragging session in both
+    clamshell and tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TabletMode.AnimationSmoothness.Enter" units="%"
+    expires_after="2022-04-17">
+  <owner>oshima@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations when entering tablet mode, recorded when
+    the animation completes. 100% represents ideally smooth 60 frames per
+    second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TabletMode.AnimationSmoothness.Exit" units="%"
+    expires_after="2022-04-24">
+  <owner>oshima@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Relative smoothness of animations when exiting tablet mode, recorded when
+    the animation completes. 100% represents ideally smooth 60 frames per
+    second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TimeBetweenTaskSwitches" units="seconds"
+    expires_after="2022-04-08">
+  <owner>nupurjain@chromium.org</owner>
+  <owner>tbuckley@google.com</owner>
+  <summary>
+    The number of seconds between contiguous task switch user actions triggered
+    by any of the other task switch actions that are tracked. (e.g.,
+    Ash.Shelf.TimeBetweenNavigateToTaskSwitches,
+    Ash.Tab.TimeBetweenSwitchToExistingTabUserActions,
+    Ash.WindowCycleController.TimeBetweenTaskSwitches,
+    Ash.AppList.TimeBetweenTaskSwitches,
+    Ash.Overview.TimeBetweenActiveWindowChanges, etc). Note the
+    Ash.AppList.TimeBetweenTaskSwitches and
+    Ash.Tab.TimeBetweenSwitchToExistingTabUserActions histograms were deprecated
+    and removed in 10/2016. Note that
+    Ash.Overview.TimeBetweenActiveWindowChanges was renamed from
+    Ash.WindowSelector.TimeBetweenActiveWindowChanges on 04/2021.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TouchMoveSteps" units="pixels" expires_after="M85">
+  <owner>kuscher@google.com</owner>
+  <owner>rbyers@chromium.org</owner>
+  <summary>The distance between touch-move events.</summary>
+</histogram>
+
+<histogram name="Ash.TouchStartAfterEnd" units="ms" expires_after="M77">
+  <owner>kuscher@google.com</owner>
+  <summary>
+    The interval between the end of a touch-sequence and the start of the next
+    touch-sequence.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TouchView.LidAngle" units="degrees"
+    expires_after="2022-04-03">
+  <owner>oshima@chromium.org</owner>
+  <summary>
+    Chrome OS only. The computed angle between the lid and the keyboard panel.
+    These values are imprecise and may be tens of degrees off from reality.
+    Reported once per hour that the system is awake, and not reported if the
+    system doesn't have two accelerometers.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TouchView.TouchViewActive" units="ms"
+    expires_after="2022-04-03">
+  <owner>girard@chromium.org</owner>
+  <summary>
+    The length of time that TouchView is active, for each activation.
+  </summary>
+</histogram>
+
+<histogram name="Ash.TouchView.TouchViewActivePercentage" units="%"
+    expires_after="2022-04-03">
+  <owner>girard@chromium.org</owner>
+  <summary>The proportion of time spent in TouchView during a session.</summary>
+</histogram>
+
+<histogram name="Ash.TouchView.TouchViewActiveTotal" units="minutes"
+    expires_after="2022-04-03">
+  <owner>girard@chromium.org</owner>
+  <summary>The total time that TouchView is active during a session.</summary>
+</histogram>
+
+<histogram name="Ash.TouchView.TouchViewInactive" units="ms"
+    expires_after="2022-04-03">
+  <owner>girard@chromium.org</owner>
+  <summary>The length of time between TouchView activations.</summary>
+</histogram>
+
+<histogram name="Ash.TouchView.TouchViewInactiveTotal" units="minutes"
+    expires_after="2022-04-03">
+  <owner>girard@chromium.org</owner>
+  <summary>
+    The total time that TouchView is not active during a session.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Ash.UnlockAnimation.Duration" units="ms"
+    expires_after="2021-12-10">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <summary>
+    The duration of how long it took to finish all animations applied during the
+    login process, from the time the first animation is added, to the time the
+    last animation is finished.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Ash.UnlockAnimation.Jank" units="%"
+    expires_after="2022-04-17">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <summary>
+    Jank metrics of all animations applied during the unlock process. This
+    represents how often the frame update rate changed during animation.
+  </summary>
+</histogram>
+
+<histogram base="true" name="Ash.UnlockAnimation.Smoothness" units="%"
+    expires_after="2022-04-17">
+  <owner>oshima@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+<!-- Name completed by histogram_suffixes
+     name="TabletOrClamshellMode" -->
+
+  <summary>
+    Relative smoothness of all animations applied during the unlock process.
+    100% represents the ideal smoothness for 60 frames per second.
+  </summary>
+</histogram>
+
+<histogram name="Ash.UserDataStatsRecorder.DataSize.TotalSize" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Records the size of the entire profile data directory. Collected upon
+    launching ash chrome.
+  </summary>
+</histogram>
+
+<histogram name="Ash.UserDataStatsRecorder.DataSize.{ItemName}" units="MB"
+    expires_after="M101">
+  <owner>ythjkt@chromium.org</owner>
+  <owner>hidehiko@chromium.org</owner>
+  <summary>
+    Records the size of each file/dir directly under user data directory.
+  </summary>
+  <token key="ItemName">
+    <variant name="AccountManagerTokensBin"/>
+    <variant name="Accounts"/>
+    <variant name="AffiliationDatabase"/>
+    <variant name="AppRankerPb"/>
+    <variant name="ArcApps"/>
+    <variant name="Autobrightness"/>
+    <variant name="AutofillStrikeDatabase"/>
+    <variant name="BlobStorage"/>
+    <variant name="Bookmarks"/>
+    <variant name="BrowserDataMigrator"/>
+    <variant name="BudgetDatabase"/>
+    <variant name="Cache"/>
+    <variant name="CodeCache"/>
+    <variant name="Cookies"/>
+    <variant name="CrostiniIcons"/>
+    <variant name="Databases"/>
+    <variant name="DataReductionProxyLeveldb"/>
+    <variant name="DNRExtensionRules"/>
+    <variant name="Downloads"/>
+    <variant name="DownloadService"/>
+    <variant name="ExtensionCookies"/>
+    <variant name="ExtensionInstallLog"/>
+    <variant name="ExtensionRules"/>
+    <variant name="Extensions"/>
+    <variant name="ExtensionState"/>
+    <variant name="Favicons"/>
+    <variant name="FeatureEngagementTracker"/>
+    <variant name="FileSystem"/>
+    <variant name="FullRestoreData"/>
+    <variant name="GCache"/>
+    <variant name="GCMStore"/>
+    <variant name="GoogleAssistantLibrary"/>
+    <variant name="GPUCache"/>
+    <variant name="HeavyAdInterventionOptOutDb"/>
+    <variant name="History"/>
+    <variant name="IndexedDB"/>
+    <variant name="LocalAppSettings"/>
+    <variant name="LocalExtensionSettings"/>
+    <variant name="LocalStorage"/>
+    <variant name="LOCK"/>
+    <variant name="LOG"/>
+    <variant name="LoginData"/>
+    <variant name="LoginDataForAccount"/>
+    <variant name="LoginTimes"/>
+    <variant name="LOGOld"/>
+    <variant name="LogoutTimes"/>
+    <variant name="ManagedExtensionSettings"/>
+    <variant name="MyFiles"/>
+    <variant name="NearbySharePublicCertificateDatabase"/>
+    <variant name="NetworkActionPredictor"/>
+    <variant name="NetworkPersistentState"/>
+    <variant name="OptimizationGuideHintCacheStore"/>
+    <variant name="OptimizationGuideModelAndFeaturesStore"/>
+    <variant name="PlatformNotifications"/>
+    <variant name="Policy"/>
+    <variant name="PPDCache"/>
+    <variant name="Preferences"/>
+    <variant name="PreferredApps"/>
+    <variant name="PreviewsOptOutDb"/>
+    <variant name="PrintJobDatabase"/>
+    <variant name="QuotaManager"/>
+    <variant name="README"/>
+    <variant name="ReportingAndNEL"/>
+    <variant name="RLZData"/>
+    <variant name="ServiceWorker"/>
+    <variant name="Sessions"/>
+    <variant name="SessionStorage"/>
+    <variant name="SharedProtoDb"/>
+    <variant name="Shortcuts"/>
+    <variant name="SiteCharacteristicsDatabase"/>
+    <variant name="Smartcharging"/>
+    <variant name="StructuredMetrics"/>
+    <variant name="SyncAppSettings"/>
+    <variant name="SyncData"/>
+    <variant name="SyncExtensionSettings"/>
+    <variant name="TopSites"/>
+    <variant name="TranslateRankerModel"/>
+    <variant name="TransportSecurity"/>
+    <variant name="TrustedVault"/>
+    <variant name="Unknown"/>
+    <variant name="VisitedLinks"/>
+    <variant name="WebApplications"/>
+    <variant name="WebData"/>
+    <variant name="WebrtcEventLogs"/>
+    <variant name="WebRTCLogs"/>
+    <variant name="ZeroStateGroupRankerPb"/>
+    <variant name="ZeroStateLocalFilesPb"/>
+  </token>
+</histogram>
+
+<histogram name="Ash.Wallpaper.Collection" enum="WallpaperCollection"
+    expires_after="2022-05-17">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    The wallpaper collection of the selected online wallpaper. Recorded each
+    time the online wallpaper image is selected, but not when wallpaper is
+    automatically refreshed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.ColorExtractionResult2"
+    enum="WallpaperColorExtractionResult" expires_after="M92">
+  <owner>newcomer@chromium.org</owner>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    Tracks the success rate for wallpaper color extraction. Recorded each time
+    the wallpaper image changes for each extracted wallpaper prominent color.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.CustomLayout" enum="WallpaperLayout"
+    expires_after="2022-04-24">
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    The custom wallpaper layout type. Recorded when the user sets a new custom
+    wallpaper or changes the existing custom wallpaper's layout.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.Image" enum="WallpaperImage"
+    expires_after="2022-05-25">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    The selected online wallpaper. Recorded each time the online wallpaper image
+    is selected, but not when wallpaper is automatically refreshed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.Preview.Show" enum="BooleanHit"
+    expires_after="2022-06-03">
+  <owner>jasontt@chromium.org</owner>
+  <owner>assistive-eng@google.com</owner>
+  <summary>
+    Tracks the preview mode usage for wallpaper. Recorded each time the
+    wallpaper image is previewed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.Source" enum="WallpaperType"
+    expires_after="2022-04-24">
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    Recorded when a new wallpaper is set, either by the built-in Wallpaper
+    Picker App, or by a third party App. Note the wallpaper change triggered by
+    Sync file system event doesn't count.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Wallpaper.Type" enum="WallpaperType"
+    expires_after="2022-04-24">
+  <owner>kuscher@google.com</owner>
+  <summary>The wallpaper type. Recorded at user login.</summary>
+</histogram>
+
+<histogram name="Ash.Window.AnimationSmoothness.CrossFade" units="%"
+    expires_after="2022-04-10">
+  <owner>wutao@chromium.org</owner>
+  <summary>
+    Relative smoothness of cross fade animation when setting window bounds. 100%
+    represents ideally smooth 60 frames per second. 50% represents when only 30
+    frames per second is achieved during the animations. 0% should not happen.
+    This metric is recorded exactly once when SetBoundsDirectCrossFade is
+    called, such as when window is maximized.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragMaximize"
+    units="%" expires_after="2022-05-10">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    When dragging a maximized window, the window will shrink to restore bounds.
+    Dragging the window back to the top of the screen will expand the window.
+    This histogram will be recorded to measure the smoothenss of the expand
+    animation. 100% represents ideally smooth 60 frames per second. 50%
+    represents when only 30 frames per second is achieved during the animations.
+    0% should not happen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Window.AnimationSmoothness.CrossFade.DragUnmaximize"
+    units="%" expires_after="2022-05-10">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    When dragging a maximized window, the window will shrink to restore bounds.
+    This histogram will be recorded to measure the smoothness of the shrink
+    animation. 100% represents ideally smooth 60 frames per second. 50%
+    represents when only 30 frames per second is achieved during the animations.
+    0% should not happen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Window.AnimationSmoothness.Hide" units="%"
+    expires_after="2022-07-25">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Relative smoothness of hiding window animation. 100% represents ideally
+    smooth 60 frames per second. 50% represents when only 30 frames per second
+    is achieved during the animations. 0% should not happen. This metric is
+    recorded exactly once when AnimateHideWindowCommon is called, such as when
+    window is closed.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Window.AnimationSmoothness.Snap" units="%"
+    expires_after="2022-07-01">
+  <owner>oshima@chromium.org</owner>
+  <owner>sammiequon@chromium.org</owner>
+  <summary>
+    Relative smoothness of snapping window animation. 100% represents ideally
+    smooth 60 frames per second. 50% represents when only 30 frames per second
+    is achieved during the animations. 0% should not happen. This metric is
+    recorded exactly once when a window is snapped to the left or right in
+    clamshell mode using the alt + [ or ] accelerator, but only if the size of
+    the window's bounds change.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Window.Snap.DeviceOrientation" enum="DeviceOrientation"
+    expires_after="2022-08-11">
+  <owner>cattalyya@chromium.org</owner>
+  <owner>afakhry@chromium.org</owner>
+  <owner>nupurjain@chromium.org</owner>
+  <owner>fanafan@chromium.org</owner>
+  <summary>
+    Emitted when the user snaps the window to record whether window snap is used
+    while the display orientation is portrait or landscape mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleController.DesksSwitchDistance" units="units"
+    expires_after="2022-04-17">
+  <owner>afakhry@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when the user ends window cycling via Alt-Tab, if and only if user
+    had 2 or more desks and a new window was activated, to report the distance
+    between the active desks before and after window cycling. A distance of 0
+    means no desks switch occurred.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleController.InitialMode" enum="AltTabMode"
+    expires_after="2022-03-09">
+  <owner>afakhry@chromium.org</owner>
+  <owner>cattalyya@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when the user starts Alt-Tab, if and only if user had 2 or more
+    desks and Bento is not disabled, to report the initial alt-tab mode, which
+    signals user's saved and preferred mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleController.Items" units="items"
+    expires_after="2022-04-10">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    The number of windows in the Alt+Tab selector. Only recorded once when
+    cycling starts, not every time when Tab is pressed without releasing Alt.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleController.ModeSwitchSource"
+    enum="AltTabModeSwitchSource" expires_after="2022-03-09">
+  <owner>afakhry@chromium.org</owner>
+  <owner>cattalyya@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when the user switches the Alt-Tab mode, if and only if user had 2
+    or more desks and Bento is not disabled, to report whether the user switches
+    the mode via a click or keyboard.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleController.SwitchMode" enum="AltTabMode"
+    expires_after="2022-03-09">
+  <owner>afakhry@chromium.org</owner>
+  <owner>cattalyya@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    Emitted when the user switches the Alt-Tab mode from a click or keyboard, if
+    and only if user had 2 or more desks and Bento is not disabled, to report
+    the alt-tab mode the user switches to.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleController.TimeBetweenTaskSwitches"
+    units="seconds" expires_after="2022-04-17">
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <owner>xdai@chromium.org</owner>
+  <summary>
+    The number of seconds between task switches triggered by the next window and
+    previous window accelerator keys (ie Alt+Tab, Alt+Shift+Tab).
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleView.AnimationSmoothness.Container" units="%"
+    expires_after="2022-04-10">
+  <owner>yjliu@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Relative smoothness of showing window animation when the window cycle view
+    moves the next window into position when alt + tab is pressed. 100%
+    represents ideally smooth 60 frames per second. 50% represents when only 30
+    frames per second is achieved during the animations. 0% should not happen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowCycleView.AnimationSmoothness.Show" units="%"
+    expires_after="2022-04-10">
+  <owner>yjliu@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Relative smoothness of showing window animation when the window cycle view
+    starts. 100% represents ideally smooth 60 frames per second. 50% represents
+    when only 30 frames per second is achieved during the animations. 0% should
+    not happen.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowDragFromShelfResult" enum="ShelfWindowDragResult"
+    expires_after="M106">
+  <owner>andrewxu@chromium.org</owner>
+  <owner>tbarzic@chromium.org</owner>
+  <summary>
+    The final state after window drag gesture that started from the system shelf
+    in tablet mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowManager.Lock.Success" units="ms" expires_after="M77">
+  <owner>jdufault@chromium.org</owner>
+  <summary>
+    How long it took for the screen lock process to complete. This does not
+    include timeouts.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowManager.Lock.Timeout" units="ms" expires_after="M77">
+  <owner>jdufault@chromium.org</owner>
+  <summary>
+    How long it took for the screen lock process to complete, for timeouts only.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.ArrowKeyPresses" units="units"
+    expires_after="M81">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.ArrowKeyPresses.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The number of times the arrow keys are pressed in overview mode per session,
+    i.e. between bringing up overview mode and ending it. This is only measured
+    for the sessions that end by selecting a window with the enter key.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.Items" units="units"
+    expires_after="2020-10-04">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.Items.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <owner>kuscher@google.com</owner>
+  <summary>
+    The number of items (single windows or groups of windows such as panels) in
+    the overview mode, present at the start of each session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.ItemsWhenTextFilteringUsed" units="items"
+    expires_after="M77">
+  <obsolete>
+    Removed 04/2021 as of https://crrev.com/c/2816339. The text filtering
+    feature has been removed.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The number of items showing in overview mode at the moment when an item is
+    selected or when selection is canceled. Only recorded if the text filtering
+    textfield contains a non-empty string.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.KeyPressesOverItemsRatio" units="%"
+    expires_after="2020-03-01">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.KeyPressesOverItemsRatio.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The ratio between the arrow key presses and the number of overview items,
+    expressed as a percentage for a single session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.OverviewClosedItems" units="units"
+    expires_after="2020-01-26">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.OverviewClosedItems.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The number of items closed from the window overview for a single session.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.SelectionDepth" units="items"
+    expires_after="2021-09-29">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.SelectionDepth.
+  </obsolete>
+  <owner>sammiequon@chromium.org</owner>
+  <owner>tclaiborne@chromium.org</owner>
+  <summary>
+    When a window is selected in overview mode, records that window's position
+    in the global MRU ordering. 1 represents the most-recently used window, 2
+    represents the next most-recently used window, and so on.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.TextFilteringStringLength"
+    units="characters" expires_after="M77">
+  <obsolete>
+    Removed 04/2021 as of https://crrev.com/c/2816339. The text filtering
+    feature has been removed.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The length of the string entered into the text filtering textfield at the
+    moment when an item is selected or when selection is canceled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.TextFilteringTextfieldCleared"
+    units="units" expires_after="M77">
+  <obsolete>
+    Removed 04/2021 as of https://crrev.com/c/2816339. The text filtering
+    feature has been removed.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The number of times the text filtering textfield has had all of its text
+    removed within a single overview mode session. Measured from the time
+    overview mode is invoked to when an item is selected or when selection is
+    canceled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.TimeBetweenActiveWindowChanges"
+    units="seconds" expires_after="M81">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.TimeBetweenActiveWindowChanges.
+  </obsolete>
+  <owner>tbuckley@chromium.org</owner>
+  <summary>
+    The amount of time between endings of overview mode sessions which were
+    caused by the user selecting a window which was not previously active. Only
+    recorded on the second and later times after startup that the user selected
+    a window which was not previously active.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.TimeBetweenUse" units="ms"
+    expires_after="M82">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.TimeBetweenUse.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <owner>kuscher@google.com</owner>
+  <summary>
+    The amount of time between uses of overview mode, recorded when overview
+    mode is entered. Only recorded on the second and later times after startup
+    that the user entered overview mode.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.TimeInOverview" units="ms"
+    expires_after="2020-10-18">
+  <obsolete>
+    Replaced 04/2021 by Ash.Overview.TimeInOverview.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <owner>kuscher@google.com</owner>
+  <summary>
+    The amount of time spent in overview mode. Overview mode is engaged by
+    pressing the overview button. The time is measured from the moment the
+    windows begin animating to a thumbnail size preview to when a window is
+    selected or selection is canceled.
+  </summary>
+</histogram>
+
+<histogram name="Ash.WindowSelector.TimeInOverviewWithTextFiltering" units="ms"
+    expires_after="M85">
+  <obsolete>
+    Removed 04/2021 as of https://crrev.com/c/2816339. The text filtering
+    feature has been removed.
+  </obsolete>
+  <owner>flackr@chromium.org</owner>
+  <summary>
+    The amount of time spent in overview mode when text filtering is used. The
+    time is measured from the moment the windows begin animating to a thumbnail
+    size preview to when a window is selected or selection is canceled. Only
+    recorded if the text filtering textfield contains a non-empty string.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.WorkspaceWindowResizer.TabDragging.PresentationTime.ClamshellMode"
+    units="ms" expires_after="2021-10-04">
+  <obsolete>
+    Replaced in 03/2021 by Ash.TabDrag.PresentationTime.ClamshellMode.
+  </obsolete>
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Presentation time in ms when a tab is dragged in clamshell mode. Each time
+    the tab is dragged within a display, the time it takes to present the new
+    frame on screen is recorded.
+  </summary>
+</histogram>
+
+<histogram
+    name="Ash.WorkspaceWindowResizer.TabDragging.PresentationTime.MaxLatency.ClamshellMode"
+    units="ms" expires_after="2021-08-09">
+  <obsolete>
+    Replaced in 03/2021 by
+    Ash.TabDrag.PresentationTime.MaxLatency.ClamshellMode.
+  </obsolete>
+  <owner>yichenz@chromium.org</owner>
+  <owner>chromeos-wmp@google.com</owner>
+  <summary>
+    Maximum presentation time recorded during the tab dragging session.
+  </summary>
+</histogram>
+
+</histograms>
+
+</histogram-configuration>

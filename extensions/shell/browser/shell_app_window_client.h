@@ -15,6 +15,10 @@ namespace extensions {
 class ShellAppWindowClient : public AppWindowClient {
  public:
   ShellAppWindowClient();
+
+  ShellAppWindowClient(const ShellAppWindowClient&) = delete;
+  ShellAppWindowClient& operator=(const ShellAppWindowClient&) = delete;
+
   ~ShellAppWindowClient() override;
 
   // AppWindowClient overrides:
@@ -30,11 +34,8 @@ class ShellAppWindowClient : public AppWindowClient {
       AppWindow* window,
       AppWindow::CreateParams* params) override;
   void OpenDevToolsWindow(content::WebContents* web_contents,
-                          const base::Closure& callback) override;
+                          base::OnceClosure callback) override;
   bool IsCurrentChannelOlderThanDev() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellAppWindowClient);
 };
 
 }  // namespace extensions

@@ -5,7 +5,7 @@
 
 #include "third_party/blink/renderer/core/{{namespace|lower}}_element_factory.h"
 
-#include "base/stl_util.h"  // for base::size()
+#include "base/cxx17_backports.h"  // for base::size()
 #include "third_party/blink/renderer/core/{{namespace|lower}}_names.h"
 {% for header in tags|groupby('interface_header') %}
 #include "{{header[0]}}"
@@ -26,11 +26,11 @@ using {{namespace}}FunctionMap = HashMap<AtomicString, {{namespace}}ConstructorF
 
 static {{namespace}}FunctionMap* g_{{namespace|lower}}_constructors = nullptr;
 
-{% for tag in tags|sort if not tag.noConstructor %}
+{% for tag in tags|sort(attribute='name') if not tag.noConstructor %}
 static {{namespace}}Element* {{namespace}}{{tag.name.to_upper_camel_case()}}Constructor(
     Document& document, const CreateElementFlags flags) {
   {% if tag.runtimeEnabled %}
-  if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled())
+  if (!RuntimeEnabledFeatures::{{tag.runtimeEnabled}}Enabled(document.GetExecutionContext()))
     return MakeGarbageCollected<{{fallback_interface}}>({{cpp_namespace}}::{{tag|symbol}}Tag, document);
   {% endif %}
   return MakeGarbageCollected<{{tag.interface}}>(
@@ -52,7 +52,7 @@ static void Create{{namespace}}FunctionMap() {
   // Empty array initializer lists are illegal [dcl.init.aggr] and will not
   // compile in MSVC. If tags list is empty, add check to skip this.
   static const Create{{namespace}}FunctionMapData data[] = {
-  {% for tag in tags|sort if not tag.noConstructor %}
+  {% for tag in tags|sort(attribute='name') if not tag.noConstructor %}
     { {{cpp_namespace}}::{{tag|symbol}}Tag, {{namespace}}{{tag.name.to_upper_camel_case()}}Constructor },
   {% endfor %}
   };
@@ -66,9 +66,11 @@ static void Create{{namespace}}FunctionMap() {
     const CreateElementFlags flags) {
   if (!g_{{namespace|lower}}_constructors)
     Create{{namespace}}FunctionMap();
-  if ({{namespace}}ConstructorFunction function = g_{{namespace|lower}}_constructors->at(local_name))
-    return function(document, flags);
-  return nullptr;
+  auto it = g_{{namespace|lower}}_constructors->find(local_name);
+  if (it == g_{{namespace|lower}}_constructors->end())
+    return nullptr;
+  {{namespace}}ConstructorFunction function = it->value;
+  return function(document, flags);
 }
 
 }  // namespace blink

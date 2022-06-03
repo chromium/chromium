@@ -23,8 +23,7 @@ you want to be confident that this test functionality is not used outside tests.
 ## How to use this pattern:
 
 `//foo/commonly_used.h`:
-```
-
+```cpp
 class CommonlyUsed {
  public:
   // ... big public API ...
@@ -38,7 +37,7 @@ class CommonlyUsed {
 ```
 
 `//foo/commonly_used_test_api.h`:
-```
+```cpp
 class CommonlyUsedTestApi {
  public:
   CommonlyUsedTestApi(CommonlyUsed* thing);
@@ -53,8 +52,8 @@ class CommonlyUsedTestApi {
 ```
 
 And then client code can do:
-```
-  CommonlyUsedTestApi(commonly_used).DoTestStuff(...);
+```cpp
+CommonlyUsedTestApi(commonly_used).DoTestStuff(...);
 ```
 
 Then only link `commonly_used_test_api.{cc,h}` in test targets, so these methods

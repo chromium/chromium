@@ -1,0 +1,19 @@
+Test for chromium bug : 408066. ASSERTION FAILED: !extraRowSpanningHeight in blink::RenderTableSection::distributeRowSpanHeightToRows.
+	
+FAIL:
+Expected 50 for height, but got 22. 
+
+<th id="perc-height" data-expected-height="50">
+            </th>
+r0c0
+
+r2c0
+	
+FAIL:
+Expected 50 for height, but got 24. 
+
+<th id="perc-height" data-expected-height="50">
+            </th>
+r0c0	r0c1
+
+r2c0

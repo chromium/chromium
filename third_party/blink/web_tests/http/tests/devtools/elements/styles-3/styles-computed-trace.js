@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that computed styles expand and allow tracing to style rules.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -47,22 +47,22 @@
 
   ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('id1', step1);
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('==== Computed style for ID1 ====');
-    ElementsTestRunner.dumpSelectedElementStyles(false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(false, true);
     ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('id2', step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('==== Computed style for ID2 ====');
-    ElementsTestRunner.dumpSelectedElementStyles(false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(false, true);
     ElementsTestRunner.selectNodeAndWaitForStylesWithComputed('id3', step3);
   }
 
-  function step3() {
+  async function step3() {
     TestRunner.addResult('==== Style for ID3 ====');
     // The button[hidden] style specifies "display: none", which should not be /-- overloaded --/.
-    ElementsTestRunner.dumpSelectedElementStyles(true, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, true);
     TestRunner.completeTest();
   }
 })();

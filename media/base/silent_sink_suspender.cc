@@ -5,7 +5,7 @@
 #include "media/base/silent_sink_suspender.h"
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 
 namespace media {
@@ -14,14 +14,14 @@ SilentSinkSuspender::SilentSinkSuspender(
     AudioRendererSink::RenderCallback* callback,
     base::TimeDelta silence_timeout,
     const AudioParameters& params,
-    const scoped_refptr<AudioRendererSink>& sink,
-    const scoped_refptr<base::SingleThreadTaskRunner>& worker)
+    scoped_refptr<AudioRendererSink> sink,
+    scoped_refptr<base::SingleThreadTaskRunner> worker)
     : callback_(callback),
       params_(params),
-      sink_(sink),
+      sink_(std::move(sink)),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
       silence_timeout_(silence_timeout),
-      fake_sink_(worker, params_),
+      fake_sink_(std::move(worker), params_),
       sink_transition_callback_(
           base::BindRepeating(&SilentSinkSuspender::TransitionSinks,
                               base::Unretained(this))) {
@@ -58,11 +58,11 @@ int SilentSinkSuspender::Render(base::TimeDelta delay,
     // |delay_timestamp| contains the value cached at
     // |latest_output_delay_timestamp_|
     // so we simulate the real sink output, promoting |delay_timestamp| with
-    // |elapsedTime|.
+    // |elapsed_time|.
     DCHECK_EQ(delay_timestamp, latest_output_delay_timestamp_);
-    base::TimeDelta elapsedTime =
+    base::TimeDelta elapsed_time =
         base::TimeTicks::Now() - fake_sink_transition_time_;
-    delay_timestamp += elapsedTime;
+    delay_timestamp += elapsed_time;
 
     // If we have no buffers or a transition is pending, one or more extra
     // Render() calls have occurred in before TransitionSinks() can run, so we
@@ -84,7 +84,7 @@ int SilentSinkSuspender::Render(base::TimeDelta delay,
   callback_->Render(delay, delay_timestamp, prior_frames_skipped, dest);
 
   // Check for silence or real audio data and transition if necessary.
-  if (!dest->AreFramesZero()) {
+  if (!dest->AreFramesZero() || !detect_silence_) {
     first_silence_time_ = base::TimeTicks();
     if (is_using_fake_sink_) {
       is_transition_pending_ = true;
@@ -113,6 +113,51 @@ int SilentSinkSuspender::Render(base::TimeDelta delay,
 
 void SilentSinkSuspender::OnRenderError() {
   callback_->OnRenderError();
+}
+
+void SilentSinkSuspender::OnPaused() {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  // This is a no-op if the sink isn't running, but must be executed without the
+  // |transition_lock_| being held to avoid possible deadlock.
+  fake_sink_.Stop();
+
+  base::AutoLock al(transition_lock_);
+
+  // Nothing to do if we haven't touched the sink.
+  if (!is_using_fake_sink_ && !is_transition_pending_) {
+    first_silence_time_ = base::TimeTicks();
+    return;
+  }
+
+  // If we've moved over to the fake sink, we just need to stop it and cancel
+  // any pending transitions.
+  is_using_fake_sink_ = false;
+  is_transition_pending_ = false;
+  first_silence_time_ = base::TimeTicks();
+  sink_transition_callback_.Reset(base::BindRepeating(
+      &SilentSinkSuspender::TransitionSinks, base::Unretained(this)));
+}
+
+void SilentSinkSuspender::SetDetectSilence(bool detect_silence) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  bool should_transition_to_real_sink = false;
+  {
+    base::AutoLock lock(transition_lock_);
+    detect_silence_ = detect_silence;
+    should_transition_to_real_sink = !detect_silence_ && is_using_fake_sink_;
+
+    // If we haven't started the transition abort it.
+    if (is_transition_pending_) {
+      is_transition_pending_ = false;
+      sink_transition_callback_.Reset(base::BindRepeating(
+          &SilentSinkSuspender::TransitionSinks, base::Unretained(this)));
+    }
+  }
+
+  if (should_transition_to_real_sink)
+    TransitionSinks(/*use_fake_sink=*/false);
 }
 
 bool SilentSinkSuspender::IsUsingFakeSinkForTesting() {
@@ -170,4 +215,4 @@ void SilentSinkSuspender::TransitionSinks(bool use_fake_sink) {
   }
 }
 
-}  // namespace content
+}  // namespace media

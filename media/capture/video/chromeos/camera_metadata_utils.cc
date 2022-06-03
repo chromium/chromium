@@ -35,6 +35,10 @@ template <>
 const cros::mojom::EntryType entry_type_of<double>::value =
     cros::mojom::EntryType::TYPE_DOUBLE;
 
+template <>
+const cros::mojom::EntryType entry_type_of<Rational>::value =
+    cros::mojom::EntryType::TYPE_RATIONAL;
+
 // TODO(shik): support TYPE_RATIONAL
 
 cros::mojom::CameraMetadataEntryPtr* GetMetadataEntry(
@@ -52,7 +56,15 @@ cros::mojom::CameraMetadataEntryPtr* GetMetadataEntry(
   if (iter == camera_metadata->entries.value().end()) {
     return nullptr;
   }
-  return &(camera_metadata->entries.value()[(*iter)->index]);
+
+  auto* entry_ptr = &(camera_metadata->entries.value()[(*iter)->index]);
+  if ((*entry_ptr)->data.empty()) {
+    // Metadata tag found with no valid data.
+    LOG(WARNING) << "Found tag " << static_cast<int>(tag)
+                 << " but with invalid data";
+    return nullptr;
+  }
+  return entry_ptr;
 }
 
 void AddOrUpdateMetadataEntry(cros::mojom::CameraMetadataPtr* to,
@@ -115,6 +127,7 @@ void MergeMetadata(cros::mojom::CameraMetadataPtr* to,
   }
   for (const auto& entry : from->entries.value()) {
     if (tags.find(entry->tag) != tags.end()) {
+      (*to)->entry_count -= 1;
       LOG(ERROR) << "Found duplicated entries for tag " << entry->tag;
       continue;
     }

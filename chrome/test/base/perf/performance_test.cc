@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/trace_event/trace_event.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/test_switches.h"
 #include "content/public/browser/tracing_controller.h"
 #include "services/tracing/public/cpp/trace_event_agent.h"
@@ -16,31 +17,34 @@
 #include "ui/compositor/compositor_switches.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_CHROMEOS)
-#include "ash/public/cpp/wallpaper_controller_observer.h"
-#include "ash/public/cpp/wallpaper_types.h"
-#include "chrome/browser/ui/ash/wallpaper_controller_client.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
+#include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "components/user_manager/user_names.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
 constexpr char kTraceDir[] = "trace-dir";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Watches if the wallpaper has been changed and runs a passed callback if so.
 class TestWallpaperObserver : public ash::WallpaperControllerObserver {
  public:
   explicit TestWallpaperObserver(base::OnceClosure closure)
       : closure_(std::move(closure)) {
-    WallpaperControllerClient::Get()->AddObserver(this);
+    WallpaperControllerClientImpl::Get()->AddObserver(this);
   }
 
+  TestWallpaperObserver(const TestWallpaperObserver&) = delete;
+  TestWallpaperObserver& operator=(const TestWallpaperObserver&) = delete;
+
   ~TestWallpaperObserver() override {
-    WallpaperControllerClient::Get()->RemoveObserver(this);
+    WallpaperControllerClientImpl::Get()->RemoveObserver(this);
   }
 
   // ash::WallpaperControllerObserver:
@@ -48,8 +52,6 @@ class TestWallpaperObserver : public ash::WallpaperControllerObserver {
 
  private:
   base::OnceClosure closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestWallpaperObserver);
 };
 
 // Creates a high resolution wallpaper and sets it as the current wallpaper as
@@ -62,17 +64,17 @@ void CreateAndSetWallpaper() {
                         /*isOpaque=*/true);
   SkCanvas canvas(bitmap);
   canvas.drawColor(SK_ColorGREEN);
-  gfx::ImageSkia image(gfx::ImageSkiaRep(std::move(bitmap), 1.f));
+  gfx::ImageSkia image =
+      gfx::ImageSkia::CreateFromBitmap(std::move(bitmap), 1.f);
 
   base::RunLoop run_loop;
   TestWallpaperObserver observer(run_loop.QuitClosure());
-  WallpaperControllerClient::Get()->SetCustomWallpaper(
-      user_manager::StubAccountId(), /*wallpaper_files_id=*/"dummyid",
-      /*file_name=*/"dummyfilename", ash::WALLPAPER_LAYOUT_CENTER_CROPPED,
-      image, /*preview_mode=*/false);
+  WallpaperControllerClientImpl::Get()->SetCustomWallpaper(
+      user_manager::StubAccountId(), /*file_name=*/"dummyfilename",
+      ash::WALLPAPER_LAYOUT_CENTER_CROPPED, image, /*preview_mode=*/false);
   run_loop.Run();
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 perf_test::LuciTestResult CreateTestResult(
     const base::FilePath& trace_file,
@@ -191,9 +193,9 @@ bool PerformanceTest::HasHistogram(const std::string& name) {
 
 void UIPerformanceTest::SetUpOnMainThread() {
   PerformanceTest::SetUpOnMainThread();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   CreateAndSetWallpaper();
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 const std::string UIPerformanceTest::GetTracingCategories() const {

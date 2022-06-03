@@ -12,7 +12,7 @@
 
 namespace gfx {
 class Transform;
-class ScrollOffset;
+class Vector2dF;
 }
 
 namespace cc {
@@ -52,7 +52,7 @@ class MutatorHostClient {
   virtual void SetElementScrollOffsetMutated(
       ElementId element_id,
       ElementListType list_type,
-      const gfx::ScrollOffset& scroll_offset) = 0;
+      const gfx::Vector2dF& scroll_offset) = 0;
 
   // Allows to change IsAnimating value for a set of properties.
   virtual void ElementIsAnimatingChanged(
@@ -61,13 +61,12 @@ class MutatorHostClient {
       const PropertyAnimationState& mask,
       const PropertyAnimationState& state) = 0;
 
-  virtual void AnimationScalesChanged(ElementId element_id,
-                                      ElementListType list_type,
-                                      float maximum_scale,
-                                      float starting_scale) = 0;
+  virtual void MaximumScaleChanged(ElementId element_id,
+                                   ElementListType list_type,
+                                   float maximum_scale) = 0;
 
   virtual void ScrollOffsetAnimationFinished() = 0;
-  virtual gfx::ScrollOffset GetScrollOffsetForAnimation(
+  virtual gfx::Vector2dF GetScrollOffsetForAnimation(
       ElementId element_id) const = 0;
 
   virtual void NotifyAnimationWorkletStateChange(
@@ -75,9 +74,8 @@ class MutatorHostClient {
       ElementListType tree_type) = 0;
 
   virtual void OnCustomPropertyMutated(
-      ElementId element_id,
-      const std::string& custom_property_name,
-      PaintWorkletInput::PropertyValue custom_property_value) = 0;
+      PaintWorkletInput::PropertyKey property_key,
+      PaintWorkletInput::PropertyValue property_value) = 0;
 };
 
 }  // namespace cc

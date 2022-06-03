@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -42,6 +43,8 @@ class RemoteSuggestionsService : public KeyedService {
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~RemoteSuggestionsService() override;
+  RemoteSuggestionsService(const RemoteSuggestionsService&) = delete;
+  RemoteSuggestionsService& operator=(const RemoteSuggestionsService&) = delete;
 
   using StartCallback = base::OnceCallback<void(
       std::unique_ptr<network::SimpleURLLoader> loader)>;
@@ -100,8 +103,6 @@ class RemoteSuggestionsService : public KeyedService {
       CompletionCallback completion_callback);
 
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteSuggestionsService);
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_REMOTE_SUGGESTIONS_SERVICE_H_

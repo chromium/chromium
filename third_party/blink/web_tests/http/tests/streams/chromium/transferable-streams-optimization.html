@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<body>
+<script>
+'use strict';
+
+async function readAll(rs) {
+  const reader = rs.getReader();
+  const seq = [];
+  while (true) {
+    const {value, done} = await reader.read();
+    if (done) {
+      break;
+    }
+    seq.push(value);
+  }
+  return seq;
+}
+
+async function writeAll(ws, seq) {
+  const writer = ws.getWriter();
+  for (const data of seq) {
+    await writer.write(data);
+  }
+  await writer.close();
+  writer.releaseLock();
+}
+
+function createIframe() {
+  const iframe = document.createElement('iframe');
+  document.body.appendChild(iframe);
+  return iframe;
+}
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const rs = internals.createReadableStream(3, '');
+
+    iframe.contentWindow.postMessage(rs, '*', [rs]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    const seq = await readAll(ev.data);
+
+    assert_array_equals(seq, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[rs] transferring between frames; optimizer is not used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const rs = internals.createReadableStream(3, 'perform-null');
+
+    iframe.contentWindow.postMessage(rs, '*', [rs]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    const seq = await readAll(ev.data);
+
+    assert_array_equals(seq, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[rs] transferring between frames; non-null but doing nothing optimizer is used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const rs = internals.createReadableStream(3, 'observable');
+
+    iframe.contentWindow.postMessage(rs, '*', [rs]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    const seq = await readAll(ev.data);
+
+    assert_array_equals(
+      seq, [100, 101, 102, 103, 204, 205, 206, 207, 208, 209]);
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[rs] transferring between frames; observable optimizer is used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const rs = internals.createReadableStream(3, 'perfect');
+
+    iframe.contentWindow.postMessage(rs, '*', [rs]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    const seq = await readAll(ev.data);
+
+    assert_array_equals(seq, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[rs] transferring between frames; perfect optimizer is used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const rs = internals.createReadableStream(3, 'perfect');
+    const reader = rs.getReader();
+    await reader.read();
+    await reader.read();
+    reader.releaseLock();
+
+    iframe.contentWindow.postMessage(rs, '*', [rs]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    const seq = await readAll(ev.data);
+
+    assert_array_equals(seq, [2, 3, 4, 5, 6, 7, 8, 9]);
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[rs] transferring between frames; read chunks before transferring');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const worker = new Worker('resources/transferring-back-worker.js');
+    const rs = internals.createReadableStream(3, 'perfect');
+    const mc = new MessageChannel();
+
+    worker.postMessage({port: mc.port2}, [mc.port2]);
+    mc.port1.start();
+    mc.port1.postMessage({rs}, [rs]);
+
+    const ev = await new Promise((r) => mc.port1.onmessage = r);
+    const seq = await readAll(ev.data.rs);
+
+    assert_array_equals(seq, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[rs] transferring to worker; perfect optimizer is used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const {stream: ws, sink} = internals.createWritableStreamAndSink(3, '');
+    const writer = ws.getWriter();
+    writer.write(1);
+    writer.write(2);
+    writer.releaseLock();
+
+    iframe.contentWindow.postMessage(ws, '*', [ws]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    await writeAll(ev.data, [3, 4, 5]);
+
+    assert_equals(await sink, '12345');
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[ws] transferring between frames; non-null but doing nothing optimizer is used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const {stream: ws, sink}
+      = internals.createWritableStreamAndSink(3, 'perform-null');
+    const writer = ws.getWriter();
+    writer.write(1);
+    writer.write(2);
+    writer.releaseLock();
+
+    iframe.contentWindow.postMessage(ws, '*', [ws]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    await writeAll(ev.data, [3, 4, 5]);
+
+    assert_equals(await sink, '12345');
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[ws] transferring between frames; optimizer is not used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const {stream: ws, sink}
+      = internals.createWritableStreamAndSink(3, 'observable');
+    const writer = ws.getWriter();
+    writer.write(1);
+    writer.write(2);
+    writer.releaseLock();
+
+    iframe.contentWindow.postMessage(ws, '*', [ws]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    await writeAll(ev.data, [3, 4, 5]);
+
+    assert_equals(await sink, 'A12A345');
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[ws] transferring between frames; observable optimizer is used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const iframe = createIframe();
+    const {stream: ws, sink}
+      = internals.createWritableStreamAndSink(3, 'perfect');
+    const writer = ws.getWriter();
+    writer.write(1);
+    writer.write(2);
+    writer.releaseLock();
+
+    iframe.contentWindow.postMessage(ws, '*', [ws]);
+    const ev = await new Promise((r) => iframe.contentWindow.onmessage = r);
+    const seq = await writeAll(ev.data, [3, 4, 5]);
+
+    assert_equals(await sink, '12345');
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[ws] transferring between frames; perfect optimizer is used');
+
+async_test((t) => {
+  Promise.resolve().then(async () => {
+    const worker = new Worker('resources/transferring-back-worker.js');
+    const {stream: ws, sink}
+      = internals.createWritableStreamAndSink(3, 'observable');
+    const mc = new MessageChannel();
+
+    let writer = ws.getWriter();
+    writer.write(1);
+    writer.write(2);
+    writer.releaseLock();
+
+    worker.postMessage({port: mc.port2}, [mc.port2]);
+    mc.port1.start();
+    mc.port1.postMessage({ws}, [ws]);
+
+    const ev = await new Promise((r) => mc.port1.onmessage = r);
+    await writeAll(ev.data.ws, [3, 4, 5]);
+
+    assert_equals(await sink, 'A12A345');
+  }).then(() => t.done(), t.step_func((e) => assert_unreached(e)));
+}, '[ws] transferring to worker; observable optimizer is used');
+
+</script>
+</body>
+

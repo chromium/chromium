@@ -54,7 +54,7 @@ class Foo {
  public:
   Foo() : owning_sequence_(base::SequencedTaskRunnerHandle::Get()) {}
 
-  DoSomethingAndReply(base::OnceClosure reply) {
+  DoSomethingAndReply(base::OnceClosure on_done) {
     DCHECK(owning_sequence_->RunsTasksInCurrentSequence());
     something_was_done_ = true;
     owning_sequence_->PostTask(on_done);
@@ -106,9 +106,8 @@ class FooService {
  public:
   FooService()
       : backend_task_runner_(
-            base::CreateSequencedTaskRunnerWithTraits(
-                base::MayBlock(), base::ThreadPool(),
-                base::TaskPriority::BEST_EFFORT))),
+            base::ThreadPool::CreateSequencedTaskRunner(
+                {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
         backend_(new FooBackend,
                  base::OnTaskRunnerDeleter(backend_task_runner_)) {}
 
@@ -117,7 +116,7 @@ class FooService {
     DCHECK(owning_sequence_->RunsTasksInCurrentSequence());
     backend_task_runner_->PostTaskAndReply(
         base::BindOnce(&FooBackend::Flush, Unretained(backend_.get()),
-        std::move(on_done));
+        std::move(on_done)));
   }
 
  private:
@@ -158,6 +157,14 @@ trait for rare instances that desire distinct physical BrowserThreads.
 
 This is the //ios equivalent of `content::BrowserTaskEnvironment` to simulate
 `web::WebThread`.
+
+### Blink ?
+
+We would like to have something like `blink::BlinkTaskEnvironment` to simulate
+Blink's task posting infrastructure. We don't have it yet because Blink can be
+initialized only once and some things have to be reused across multiple unit
+tests which makes creating per-test task environment quite tricky. Contributions
+welcome!
 
 ## Task Environment Traits and Abilities
 
@@ -207,7 +214,7 @@ foo_storage.h
 class FooStorage {
  public:
   static constexpr base::TimeDelta::kFlushInterval =
-      base::TimeDelta::FromSeconds(30);
+      base::Seconds(30);
 
   // Sets |key| to |value|. Flushed to disk on the next flush interval.
   void Set(base::StringPiece key, base::StringPiece value);
@@ -254,12 +261,12 @@ TEST(FooTest, TimeoutExceeded)
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::WaitableEvent event;
   base::RunLoop run_loop;
-  base::PostTaskAndReply(
-      FROM_HERE, {base::ThreadPool(), base::MayBlock()},
+  base::ThreadPool::PostTaskAndReply(
+      FROM_HERE, {base::MayBlock()},
       base::BindOnce(&BlocksOnEvent, base::Unretained(&event)),
       run_loop.QuitClosure());
-  base::PostDelayedTask(
-      FROM_HERE, {base::ThreadPool()},
+  base::ThreadPool::PostDelayedTask(
+      FROM_HERE, {},
       base::BindOnce(&WaitableEvent::Signal, base::Unretained(&event)),
       kTimeout);
   // Can't use task_environment.FastForwardBy() since BlocksOnEvent blocks

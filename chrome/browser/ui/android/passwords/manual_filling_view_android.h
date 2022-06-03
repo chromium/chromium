@@ -5,15 +5,20 @@
 #ifndef CHROME_BROWSER_UI_ANDROID_PASSWORDS_MANUAL_FILLING_VIEW_ANDROID_H_
 #define CHROME_BROWSER_UI_ANDROID_PASSWORDS_MANUAL_FILLING_VIEW_ANDROID_H_
 
-#include <vector>
+#include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
+#include "base/callback_forward.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "components/autofill/core/browser/ui/accessory_sheet_data.h"
 
 namespace gfx {
 class Image;
 }
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 class ManualFillingController;
 
@@ -23,7 +28,12 @@ class ManualFillingController;
 class ManualFillingViewAndroid : public ManualFillingViewInterface {
  public:
   // Builds the UI for the |controller|.
-  explicit ManualFillingViewAndroid(ManualFillingController* controller);
+  ManualFillingViewAndroid(ManualFillingController* controller,
+                           content::WebContents* web_contents);
+
+  ManualFillingViewAndroid(const ManualFillingViewAndroid&) = delete;
+  ManualFillingViewAndroid& operator=(const ManualFillingViewAndroid&) = delete;
+
   ~ManualFillingViewAndroid() override;
 
   // ManualFillingViewInterface:
@@ -33,6 +43,8 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void SwapSheetWithKeyboard() override;
   void ShowWhenKeyboardIsVisible() override;
   void Hide() override;
+  void ShowAccessorySheetTab(
+      const autofill::AccessoryTabType& tab_type) override;
 
   // Called from Java via JNI:
   void OnFaviconRequested(
@@ -49,6 +61,15 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
   void OnOptionSelected(JNIEnv* env,
                         const base::android::JavaParamRef<jobject>& obj,
                         jint selected_action);
+  void OnToggleChanged(JNIEnv* env,
+                       const base::android::JavaParamRef<jobject>& obj,
+                       jint selected_action,
+                       jboolean enabled);
+  void RequestAccessorySheet(JNIEnv* env,
+                             const base::android::JavaParamRef<jobject>& obj,
+                             jint tab_type);
+  void OnViewDestroyed(JNIEnv* env,
+                       const base::android::JavaParamRef<jobject>& obj);
 
  private:
   void OnImageFetched(base::android::ScopedJavaGlobalRef<jstring> j_origin,
@@ -60,17 +81,20 @@ class ManualFillingViewAndroid : public ManualFillingViewInterface {
       JNIEnv* env,
       const autofill::AccessorySheetData& tab_data);
 
-  autofill::UserInfo::Field ConvertJavaUserInfoField(
+  autofill::AccessorySheetField ConvertJavaUserInfoField(
       JNIEnv* env,
       const base::android::JavaRef<jobject>& j_field_to_convert);
+
+  base::android::ScopedJavaGlobalRef<jobject> GetOrCreateJavaObject();
 
   // The controller provides data for this view and owns it.
   ManualFillingController* controller_;
 
-  // The corresponding java object.
-  base::android::ScopedJavaGlobalRef<jobject> java_object_;
+  // WebContents object that the controller and the bridge correspond to.
+  content::WebContents* web_contents_;
 
-  DISALLOW_COPY_AND_ASSIGN(ManualFillingViewAndroid);
+  // The corresponding java object. Use `GetOrCreateJavaObject()` to access.
+  base::android::ScopedJavaGlobalRef<jobject> java_object_internal_;
 };
 
 #endif  // CHROME_BROWSER_UI_ANDROID_PASSWORDS_MANUAL_FILLING_VIEW_ANDROID_H_

@@ -1,6 +1,7 @@
 <html dir=rtl style="-webkit-writing-mode:vertical-lr">
     <head>
         <script src="../../resources/js-test.js"></script>
+        <script src="../../resources/gesture-util.js"></script>
         <script language="javascript">
             window.jsTestIsAsync = true;
 
@@ -32,7 +33,7 @@
             var expectedScrollX = 500;
             var expectedScrollY = -1000;
 
-            onload = function()
+            onload = async function()
             {
                 if (window.testRunner)
                     testRunner.dumpAsText();
@@ -48,35 +49,50 @@
 
 
                 // Test zooming wont reset scroll position.
-                if (window.eventSender) {
+                if (window.testRunner) {
                     window.scrollTo(expectedScrollX, expectedScrollY);
-                    eventSender.zoomPageIn();
-                    eventSender.zoomPageOut();
+                    testRunner.zoomPageIn();
+                    testRunner.zoomPageOut();
                     assertClose("zoom in and out preserve scroll position", window.scrollY, expectedScrollY);
                 }
 
                 // Test resize wont reset scroll position.
-                window.resizeTo(window.innerWidth, 1000);
+                const oldHeight = window.innerHeight;
+                window.resizeTo(window.innerWidth, oldHeight - 100);
                 window.scrollTo(expectedScrollX, expectedScrollY);
-                window.resizeTo(window.innerWidth, 2000);
+                window.resizeTo(window.innerWidth, oldHeight);
                 assertEqual("resize preserves scroll position", window.scrollY, expectedScrollY);
 
                 // Test HOME/END operation.
                 if (window.eventSender) {
-                    // Not using assert equal here since the behavior is different in each port.
-                    // For example, in Mac, HOME/END key reset both x and y scroll position.
-                    // In Chromium, HOME/END key only reset y scroll position, and x scroll position is preserved.
-                    function testEnd() {
+                    // Note: in Mac, HOME/END key resets the scroll position in
+                    // the x direction first, then y on a second call. This
+                    // differs from other platforms where HOME/END key only
+                    // reset y scroll position, and x scroll position is
+                    // preserved.
+                    async function testEnd() {
                         window.scrollTo(expectedScrollX, expectedScrollY);
                         eventSender.keyDown("End");
-                        shouldBecomeEqual('window.scrollY == 0', 'true', testSelectAll);
+                        await waitForCompositorCommit();
+                        await waitForAnimationEndTimeBased(() => { return window.scrollX; });
+                        eventSender.keyDown("End");
+                        await waitForCompositorCommit();
+                        await waitForAnimationEndTimeBased(() => { return window.scrollY; });
+                        assertEqual("End key scrolls to bottom", window.scrollY, 0);
                     }
-                    function testHome() {
+                    async function testHome() {
                         window.scrollTo(expectedScrollX, expectedScrollY);
                         eventSender.keyDown("Home");
-                        shouldBecomeEqual('window.scrollY == -3425', 'true', testEnd);
+                        await waitForCompositorCommit();
+                        await waitForAnimationEndTimeBased(() => { return window.scrollX; });
+                        eventSender.keyDown("Home");
+                        await waitForCompositorCommit();
+                        await waitForAnimationEndTimeBased(() => { return window.scrollY; });
+                        assertEqual("Home key scrolls to top", window.scrollY, -3425);
                     }
-                    testHome();
+                    await testHome();
+                    await waitForCompositorCommit();
+                    await testEnd();
                 }
 
                 function testSelectAll() {
@@ -90,6 +106,8 @@
 
                     finishJSTest();
                 }
+
+                testSelectAll();
             }
         </script>
     </head>

@@ -16,17 +16,6 @@
 #if defined(OS_POSIX) && !defined(__STDC_FORMAT_MACROS)
 #define __STDC_FORMAT_MACROS
 #endif
-#if defined(USE_GLX)
-// Must be included before GL headers or they might pollute the global
-// namespace with X11 macros indirectly.
-#include "ui/gfx/x/x11.h"
-
-// GL headers expect Bool and Status this to be defined but we avoid
-// defining them since they clash with too much code. Instead we have
-// to add them temporarily here and undef them again below.
-#define Bool int
-#define Status int
-#endif  // USE_GLX
 
 #include <GL/gl.h>
 #include <GL/glext.h>
@@ -45,15 +34,29 @@
 // The standard OpenGL native extension headers are also included.
 #if defined(OS_WIN)
 #include <GL/wglext.h>
-#elif defined(OS_MACOSX)
+#elif defined(OS_APPLE)
 #include <OpenGL/OpenGL.h>
 #elif defined(USE_GLX)
-#include <GL/glx.h>
-#include <GL/glxext.h>
+using Display = struct _XDisplay;
+using Bool = int;
+using Status = int;
+using XID = unsigned long;
+using Colormap = XID;
+using Font = XID;
+using Pixmap = XID;
+using Window = XID;
+using GLXPixmap = XID;
+using GLXWindow = XID;
+using GLXDrawable = XID;
+using GLXPbuffer = XID;
+using GLXContextID = XID;
+using GLXContext = struct __GLXcontextRec*;
+using GLXFBConfig = struct __GLXFBConfigRec*;
+struct XVisualInfo;
 
-// Done with these temporary macros now
-#undef Bool
-#undef Status
+
+#include <GL/glxext.h>
+#include <GL/glxtokens.h>
 #endif
 
 // GLES2 defines not part of Desktop GL
@@ -83,6 +86,12 @@
 #define GL_SAMPLER_EXTERNAL_OES                          0x8D66
 #define GL_TEXTURE_BINDING_EXTERNAL_OES                  0x8D67
 #define GL_REQUIRED_TEXTURE_IMAGE_UNITS_OES              0x8D68
+
+// GL_ANGLE_texture_rectangle
+#define GL_MAX_RECTANGLE_TEXTURE_SIZE_ANGLE 0x84F8
+#define GL_TEXTURE_RECTANGLE_ANGLE 0x84F5
+#define GL_TEXTURE_BINDING_RECTANGLE_ANGLE 0x84F6
+#define GL_SAMPLER_2D_RECT_ANGLE 0x8B63
 
 // GL_ANGLE_translated_shader_source
 #define GL_TRANSLATED_SHADER_SOURCE_LENGTH_ANGLE         0x93A0
@@ -124,6 +133,7 @@
 
 // GL_ANGLE_robust_resource_initialization
 #define GL_ROBUST_RESOURCE_INITIALIZATION_ANGLE 0x93AB
+#define GL_RESOURCE_INITIALIZED_ANGLE 0x969F
 
 // GL_ANGLE_request_extension
 #define GL_REQUESTABLE_EXTENSIONS_ANGLE 0x93A8
@@ -188,13 +198,6 @@
 // GL_CHROMIUM_texture_filtering_hint
 #define GL_TEXTURE_FILTERING_HINT_CHROMIUM               0x8AF0
 
-// GL_CHROMIUM_resize
-#define GL_COLOR_SPACE_UNSPECIFIED_CHROMIUM 0x8AF1
-#define GL_COLOR_SPACE_SCRGB_LINEAR_CHROMIUM 0x8AF2
-#define GL_COLOR_SPACE_SRGB_CHROMIUM 0x8AF3
-#define GL_COLOR_SPACE_DISPLAY_P3_CHROMIUM 0x8AF4
-#define GL_COLOR_SPACE_HDR10_CHROMIUM 0x8AF5
-
 // GL_CHROMIUM_texture_storage_image
 #define GL_SCANOUT_CHROMIUM 0x6000
 
@@ -219,6 +222,9 @@
 // GL_OES_compressed_ETC1_RGB8_texture
 #define GL_ETC1_RGB8_OES                                 0x8D64
 
+// GL_OES_compressed_ETC2_RGB8_texture
+#define GL_COMPRESSED_RGB8_ETC2 0x9274
+
 // GL_AMD_compressed_ATC_texture
 #define GL_ATC_RGB_AMD                                   0x8C92
 #define GL_ATC_RGBA_EXPLICIT_ALPHA_AMD                   0x8C93
@@ -229,6 +235,18 @@
 #define GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG               0x8C01
 #define GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG              0x8C02
 #define GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG              0x8C03
+
+// GL_EXT_texture_compression_bptc
+#define GL_COMPRESSED_RGBA_BPTC_UNORM_EXT 0x8E8C
+#define GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT 0x8E8D
+#define GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT 0x8E8E
+#define GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT 0x8E8F
+
+// GL_EXT_texture_compression_rgtc
+#define GL_COMPRESSED_RED_RGTC1_EXT 0x8DBB
+#define GL_COMPRESSED_SIGNED_RED_RGTC1_EXT 0x8DBC
+#define GL_COMPRESSED_RED_GREEN_RGTC2_EXT 0x8DBD
+#define GL_COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT 0x8DBE
 
 // GL_OES_vertex_array_object
 #define GL_VERTEX_ARRAY_BINDING_OES                      0x85B5
@@ -376,6 +394,9 @@
 #define GL_RG16_EXT 0x822C
 #define GL_RGBA16_EXT 0x805B
 #define GL_RGB16_EXT 0x8054
+#define GL_R16_SNORM_EXT 0x8F98
+#define GL_RG16_SNORM_EXT 0x8F99
+#define GL_RGBA16_SNORM_EXT 0x8F9B
 #define GL_RGB16_SNORM_EXT 0x8F9A
 #endif /* GL_EXT_texture_norm16 */
 
@@ -403,6 +424,17 @@
 #define GL_ONE_MINUS_SRC1_ALPHA_EXT 0x88FB
 #define GL_MAX_DUAL_SOURCE_DRAW_BUFFERS_EXT 0x88FC
 #endif /* GL_EXT_blend_func_extended */
+
+#ifndef GL_OES_draw_buffers_indexed
+#define GL_OES_draw_buffers_indexed 1
+#define GL_BLEND_EQUATION_RGB 0x8009
+#define GL_BLEND_EQUATION_ALPHA 0x883D
+#define GL_BLEND_SRC_RGB 0x80C9
+#define GL_BLEND_SRC_ALPHA 0x80CB
+#define GL_BLEND_DST_RGB 0x80C8
+#define GL_BLEND_DST_ALPHA 0x80CA
+#define GL_COLOR_WRITEMASK 0x0C23
+#endif /* GL_OES_draw_buffers_indexed */
 
 #ifndef GL_EXT_window_rectangles
 #define GL_EXT_window_rectangles 1
@@ -434,6 +466,7 @@
 #define GL_CHROMIUM_shared_image 1
 #define GL_SHARED_IMAGE_ACCESS_MODE_READ_CHROMIUM 0x8AF6
 #define GL_SHARED_IMAGE_ACCESS_MODE_READWRITE_CHROMIUM 0x8AF7
+#define GL_SHARED_IMAGE_ACCESS_MODE_OVERLAY_CHROMIUM 0x8AF8
 #endif /* GL_CHROMIUM_shared_image */
 
 #ifndef GL_NV_internalformat_sample_query
@@ -442,6 +475,11 @@
 #define GL_SUPERSAMPLE_SCALE_Y_NV 0x9373
 #define GL_CONFORMANT_NV 0x9374
 #endif /* GL_NV_internalformat_sample_query */
+
+#ifndef GL_EXT_YUV_target
+#define GL_EXT_YUV_target 1
+#define GL_SAMPLER_EXTERNAL_2D_Y2Y_EXT 0x8BE7
+#endif /* GL_EXT_YUV_target */
 
 #define GL_GLEXT_PROTOTYPES 1
 
@@ -476,10 +514,6 @@ typedef uint64_t EGLuint64CHROMIUM;
 #include "gl_bindings_autogen_egl.h"
 #endif
 
-#if defined(OS_WIN)
-#include "gl_bindings_autogen_wgl.h"
-#endif
-
 #if defined(USE_GLX)
 #include "gl_bindings_autogen_glx.h"
 #endif
@@ -508,20 +542,6 @@ struct GL_EXPORT CurrentGL {
   DriverGL* Driver = nullptr;
   const GLVersionInfo* Version = nullptr;
 };
-
-#if defined(OS_WIN)
-struct GL_EXPORT DriverWGL {
-  void InitializeStaticBindings();
-  void InitializeExtensionBindings();
-  void ClearBindings();
-
-  ProcsWGL fn;
-  ExtensionsWGL ext;
-
- private:
-  static std::string GetPlatformExtensions();
-};
-#endif
 
 #if defined(USE_EGL)
 struct GL_EXPORT DriverEGL {
@@ -562,11 +582,6 @@ GL_EXPORT extern base::ThreadLocalPointer<CurrentGL>* g_current_gl_context_tls;
 #if defined(USE_EGL)
 GL_EXPORT extern EGLApi* g_current_egl_context;
 GL_EXPORT extern DriverEGL g_driver_egl;
-#endif
-
-#if defined(OS_WIN)
-GL_EXPORT extern WGLApi* g_current_wgl_context;
-GL_EXPORT extern DriverWGL g_driver_wgl;
 #endif
 
 #if defined(USE_GLX)

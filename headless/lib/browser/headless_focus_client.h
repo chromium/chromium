@@ -7,7 +7,7 @@
 
 #include "base/macros.h"
 #include "base/observer_list.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/focus_client.h"
 #include "ui/aura/window_observer.h"
 
@@ -17,6 +17,10 @@ class HeadlessFocusClient : public aura::client::FocusClient,
                             public aura::WindowObserver {
  public:
   HeadlessFocusClient();
+
+  HeadlessFocusClient(const HeadlessFocusClient&) = delete;
+  HeadlessFocusClient& operator=(const HeadlessFocusClient&) = delete;
+
   ~HeadlessFocusClient() override;
 
  private:
@@ -31,11 +35,10 @@ class HeadlessFocusClient : public aura::client::FocusClient,
   void OnWindowDestroying(aura::Window* window) override;
 
   aura::Window* focused_window_;
-  ScopedObserver<aura::Window, aura::WindowObserver> observer_manager_;
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      observation_manager_{this};
   base::ObserverList<aura::client::FocusChangeObserver>::Unchecked
       focus_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(HeadlessFocusClient);
 };
 
 }  // namespace headless

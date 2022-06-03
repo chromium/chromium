@@ -12,8 +12,10 @@ FakePipInstance::FakePipInstance() = default;
 
 FakePipInstance::~FakePipInstance() = default;
 
-void FakePipInstance::Init(mojom::PipHostPtr host_ptr, InitCallback callback) {
-  host_ptr_ = std::move(host_ptr);
+void FakePipInstance::Init(mojo::PendingRemote<mojom::PipHost> host_remote,
+                           InitCallback callback) {
+  host_remote_.reset();
+  host_remote_.Bind(std::move(host_remote));
   std::move(callback).Run();
 }
 

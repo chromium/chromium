@@ -10,7 +10,7 @@
 #include "base/bind.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "components/download/internal/background_service/entry.h"
-#include "components/download/internal/background_service/stats.h"
+#include "components/download/internal/background_service/model_stats.h"
 
 namespace download {
 
@@ -92,7 +92,7 @@ Model::EntryList ModelImpl::PeekEntries() {
 void ModelImpl::OnInitializedFinished(
     bool success,
     std::unique_ptr<std::vector<Entry>> entries) {
-  stats::LogModelOperationResult(stats::ModelAction::INITIALIZE, success);
+  stats::LogModelOperationResult(stats::ModelAction::kInitialize, success);
 
   if (!success) {
     client_->OnModelReady(false);
@@ -116,7 +116,7 @@ void ModelImpl::OnHardRecoverFinished(bool success) {
 void ModelImpl::OnAddFinished(DownloadClient client,
                               const std::string& guid,
                               bool success) {
-  stats::LogModelOperationResult(stats::ModelAction::ADD, success);
+  stats::LogModelOperationResult(stats::ModelAction::kAdd, success);
 
   // Don't notify the Client if the entry was already removed.
   auto it = entries_.find(guid);
@@ -134,7 +134,7 @@ void ModelImpl::OnAddFinished(DownloadClient client,
 void ModelImpl::OnUpdateFinished(DownloadClient client,
                                  const std::string& guid,
                                  bool success) {
-  stats::LogModelOperationResult(stats::ModelAction::UPDATE, success);
+  stats::LogModelOperationResult(stats::ModelAction::kUpdate, success);
 
   // Don't notify the Client if the entry was already removed.
   if (entries_.find(guid) == entries_.end())
@@ -146,7 +146,7 @@ void ModelImpl::OnUpdateFinished(DownloadClient client,
 void ModelImpl::OnRemoveFinished(DownloadClient client,
                                  const std::string& guid,
                                  bool success) {
-  stats::LogModelOperationResult(stats::ModelAction::REMOVE, success);
+  stats::LogModelOperationResult(stats::ModelAction::kRemove, success);
 
   DCHECK(entries_.find(guid) == entries_.end());
   client_->OnItemRemoved(success, client, guid);

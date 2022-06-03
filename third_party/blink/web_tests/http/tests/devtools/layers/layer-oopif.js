@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests renderer does not crash with an out-of-process iframe`);
-  await TestRunner.loadModule('layers_test_runner');
+  await TestRunner.loadModule('panels/layers'); await TestRunner.loadTestModule('layers_test_runner');
   await TestRunner.loadHTML(`
       <style>
       #frame {

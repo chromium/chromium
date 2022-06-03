@@ -1,5 +1,6 @@
 // META: script=/resources/WebIDLParser.js
 // META: script=/resources/idlharness.js
+// META: timeout=long
 
 'use strict';
 
@@ -7,7 +8,7 @@
 
 idl_test(
   ['css-animation-worklet'],
-  ['worklets', 'web-animations', 'html', 'cssom', 'dom'],
+  ['web-animations', 'html', 'cssom', 'dom'],
   idl_array => {
     idl_array.add_objects({
       WorkletAnimation: ['new WorkletAnimation("name")'],

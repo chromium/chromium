@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_POLICY_HANDLER_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
@@ -13,10 +12,14 @@ class PrefValueMap;
 
 namespace policy {
 
-// Handles DnsOverHttpsMode policy.
+// Handles DnsOverHttpsMode and DnsOverHttpsTemplates policies.
 class SecureDnsPolicyHandler : public ConfigurationPolicyHandler {
  public:
   SecureDnsPolicyHandler();
+
+  SecureDnsPolicyHandler(const SecureDnsPolicyHandler&) = delete;
+  SecureDnsPolicyHandler& operator=(const SecureDnsPolicyHandler&) = delete;
+
   ~SecureDnsPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -28,11 +31,8 @@ class SecureDnsPolicyHandler : public ConfigurationPolicyHandler {
  private:
   bool IsTemplatesPolicyNotSpecified(const base::Value* templates,
                                      const base::StringPiece mode_str);
-  bool IsTemplatesPolicyInvalid(const base::StringPiece templates_str);
 
   bool ShouldSetTemplatesPref(const base::Value* templates);
-
-  DISALLOW_COPY_AND_ASSIGN(SecureDnsPolicyHandler);
 };
 
 }  // namespace policy

@@ -1,7 +1,6 @@
 # Copyright (c) 2017 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """Generic generator for configuration files in JSON5 format.
 
 The configuration file is expected to contain either a data array or a data map,
@@ -97,28 +96,38 @@ def _merge_doc(doc, doc2):
 
 def _is_valid(valid_values, value, valid_keys=None):
     if type(value) == str and all([type(i) == str for i in valid_values]):
-        return any([(value == valid) or (re.match("^" + valid + "$", value) is not None)
+        return any([(value == valid)
+                    or (re.match("^" + valid + "$", value) is not None)
                     for valid in valid_values])
     elif isinstance(value, dict):
         assert valid_keys, "'valid_keys' must be declared when using a dict value"
         return all([(key in valid_keys or key == "default")
                     and (val in valid_values or val == "")
-                    for key, val in value.iteritems()])
+                    for key, val in value.items()])
     else:
         return value in valid_values
 
 
 class Json5File(object):
-    def __init__(self, file_paths, doc, default_metadata=None, default_parameters=None):
+    def __init__(self,
+                 file_paths,
+                 doc,
+                 default_metadata=None,
+                 default_parameters=None):
         self.file_paths = file_paths
         self.name_dictionaries = []
-        self.metadata = copy.deepcopy(default_metadata if default_metadata else {})
-        self.parameters = copy.deepcopy(default_parameters if default_parameters else {})
+        self.metadata = copy.deepcopy(
+            default_metadata if default_metadata else {})
+        self.parameters = copy.deepcopy(
+            default_parameters if default_parameters else {})
         self._defaults = {}
         self._process(doc)
 
     @classmethod
-    def load_from_files(cls, file_paths, default_metadata=None, default_parameters=None):
+    def load_from_files(cls,
+                        file_paths,
+                        default_metadata=None,
+                        default_parameters=None):
         merged_doc = dict()
         for path in file_paths:
             assert path.endswith(".json5")
@@ -128,7 +137,8 @@ class Json5File(object):
                     merged_doc = doc
                 else:
                     _merge_doc(merged_doc, doc)
-        return Json5File(file_paths, merged_doc, default_metadata, default_parameters)
+        return Json5File(file_paths, merged_doc, default_metadata,
+                         default_parameters)
 
     def _process(self, doc):
         # Process optional metadata map entries.
@@ -174,14 +184,14 @@ class Json5File(object):
         if not self.parameters:
             entry.update(item)
             return entry
-        assert "name" not in self.parameters, "The parameter 'name' is reserved, use a different name."
+        assert "name" not in self.parameters, \
+            "The parameter 'name' is reserved, use a different name."
         entry["name"] = NameStyleConverter(item.pop("name"))
         # Validate parameters if it's specified.
         for key, value in item.items():
             if key not in self.parameters:
-                raise Exception(
-                    "Unknown parameter: '%s'\nKnown params: %s" %
-                    (key, self.parameters.keys()))
+                raise Exception("Unknown parameter: '%s'\nKnown params: %s" %
+                                (key, self.parameters.keys()))
             assert self.parameters[key] is not None, \
                 "Specification for parameter 'key' cannot be None. Use {} instead."
             self._validate_parameter(self.parameters[key], value)
@@ -203,17 +213,48 @@ class Json5File(object):
             for item in value:
                 if not _is_valid(valid_values, item):
                     raise Exception("Unknown value: '%s'\nValid values: %s, \
-                        Please change your value to a valid value" % (item, valid_values))
+                        Please change your value to a valid value" %
+                                    (item, valid_values))
         elif not _is_valid(valid_values, value, valid_keys):
             message = "Unknown value: '%s'\nValid values: %s, \
-                Please change your value to a valid value" % (value, valid_values)
+                Please change your value to a valid value" % (value,
+                                                              valid_values)
             if isinstance(value, dict):
-                message = "Unknown key or value in: %s\nPlease choose your keys and values from the list below:\n \
-                Valid keys: %s\nValid values: %s" % (value, valid_keys, valid_values)
+                message = ("Unknown key or value in: %s\n" \
+                           "Please choose your keys and values from the list below:\n" \
+                           "Valid keys: %s\nValid values: %s" %
+                           (value, valid_keys, valid_values))
             raise Exception(message)
 
     def merge_from(self, doc):
         self._process(doc)
+
+
+def reject_duplicates(entries):
+    assert isinstance(entries, list), 'The data should be a list.'
+    name_dict = {}
+    for entry in entries:
+        name = entry['name'].original
+        if name in name_dict:
+            raise Exception(
+                'The data contains multiple entries for "%s".' % name)
+        name_dict[name] = entry
+
+
+def remove_duplicates(entries):
+    assert isinstance(entries, list), 'The data should be a list.'
+    name_dict = {}
+    filtered_list = []
+    for entry in entries:
+        name = entry['name'].original
+        if name in name_dict:
+            if entry != name_dict[name]:
+                raise Exception(
+                    'Duplicated entries for "%s" must be identical.' % name)
+        else:
+            name_dict[name] = entry
+            filtered_list.append(entry)
+    return filtered_list
 
 
 class Writer(object):
@@ -232,12 +273,12 @@ class Writer(object):
         self._cleanup = set()
         self.gperf_path = None
         if json5_files:
-            self.json5_file = Json5File.load_from_files(json5_files,
-                                                        self.default_metadata,
-                                                        self.default_parameters)
+            self.json5_file = Json5File.load_from_files(
+                json5_files, self.default_metadata, self.default_parameters)
         match = re.search(r'\bgen[\\/]', output_dir)
         if match:
-            self._relative_output_dir = output_dir[match.end():].replace(os.path.sep, '/') + '/'
+            self._relative_output_dir = output_dir[match.end():].replace(
+                os.path.sep, '/') + '/'
         else:
             self._relative_output_dir = ''
 

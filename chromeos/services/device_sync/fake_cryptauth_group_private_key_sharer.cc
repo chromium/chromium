@@ -41,7 +41,7 @@ FakeCryptAuthGroupPrivateKeySharerFactory::
     ~FakeCryptAuthGroupPrivateKeySharerFactory() = default;
 
 std::unique_ptr<CryptAuthGroupPrivateKeySharer>
-FakeCryptAuthGroupPrivateKeySharerFactory::BuildInstance(
+FakeCryptAuthGroupPrivateKeySharerFactory::CreateInstance(
     CryptAuthClientFactory* client_factory,
     std::unique_ptr<base::OneShotTimer> timer) {
   last_client_factory_ = client_factory;

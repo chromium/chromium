@@ -1,0 +1,30 @@
+<html>
+<script>
+'use strict;'
+
+let cnt = 0;
+
+function causeIssue() {
+  youConnection = new RTCPeerConnection({});
+
+  youConnection.onsignalingstatechange = ev => {
+    if(cnt==1) {
+      parent.trigger();
+    }
+    cnt++;
+  };
+  var offerOptions = {
+    offerToReceiveVideo: 1
+  };
+
+  youConnection.createOffer(offerOptions)
+    .then(async function(offer) {
+      await youConnection.setLocalDescription(offer);
+      // Cause an implicit rollback.
+      youConnection.setRemoteDescription(offer);
+    });
+}
+
+causeIssue();
+</script>
+</html>

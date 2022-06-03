@@ -29,6 +29,8 @@ struct LoadTimingInfo {
   mojo_base.mojom.TimeTicks send_end;
   mojo_base.mojom.TimeTicks receive_headers_start;
   mojo_base.mojom.TimeTicks receive_headers_end;
+  mojo_base.mojom.TimeTicks receive_non_informational_headers_start;
+  mojo_base.mojom.TimeTicks first_early_hints_time;
   mojo_base.mojom.TimeTicks push_start;
   mojo_base.mojom.TimeTicks push_end;
 
@@ -39,4 +41,14 @@ struct LoadTimingInfo {
   // The time immediately before dispatching fetch event in ServiceWorker.
   // If the response is not provided by the ServiceWorker, kept empty.
   mojo_base.mojom.TimeTicks service_worker_ready_time;
+
+  // The time immediately before the service worker fetch event handler runs.
+  // If the response is not provided by the service worker, kept empty.
+  // If respondWith() was not called, kept empty.
+  mojo_base.mojom.TimeTicks service_worker_fetch_start;
+
+  // The time when a service worker respondWith promise gets settled.
+  // If the response is not provided by the service worker, kept empty.
+  // If respondWith() was not called, kept empty.
+  mojo_base.mojom.TimeTicks service_worker_respond_with_settled;
 };

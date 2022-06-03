@@ -31,6 +31,10 @@ class PPAPI_SHARED_EXPORT ResourceTracker {
   // CheckThreadingPreconditions() for more details.
   enum ThreadMode { SINGLE_THREADED, THREAD_SAFE };
   explicit ResourceTracker(ThreadMode thread_mode);
+
+  ResourceTracker(const ResourceTracker&) = delete;
+  ResourceTracker& operator=(const ResourceTracker&) = delete;
+
   virtual ~ResourceTracker();
 
   // The returned pointer will be NULL if there is no resource. The reference
@@ -132,8 +136,6 @@ class PPAPI_SHARED_EXPORT ResourceTracker {
   std::unique_ptr<base::ThreadChecker> thread_checker_;
 
   base::WeakPtrFactory<ResourceTracker> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceTracker);
 };
 
 }  // namespace ppapi

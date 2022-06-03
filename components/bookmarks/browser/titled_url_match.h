@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include <cstddef>
 #include <utility>
 #include <vector>
 
@@ -44,6 +43,9 @@ struct TitledUrlMatch {
 
   // Location of the matching words in the URL of the node.
   MatchPositions url_match_positions;
+
+  // Whether there was at least 1 match in the titles of ancestors of the node.
+  bool has_ancestor_match;
 };
 
 }  // namespace bookmarks

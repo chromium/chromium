@@ -12,6 +12,7 @@
 namespace blink {
 
 class DOMException;
+class ScriptPromiseResolver;
 class SerialPort;
 
 class SerialPortUnderlyingSource : public UnderlyingSourceBase {
@@ -23,20 +24,19 @@ class SerialPortUnderlyingSource : public UnderlyingSourceBase {
   // UnderlyingSourceBase
   ScriptPromise pull(ScriptState*) override;
   ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
-  void ContextDestroyed(ExecutionContext*) override;
+  void ContextDestroyed() override;
 
   void SignalErrorImmediately(DOMException*);
   void SignalErrorOnClose(DOMException*);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  // Reads data from |data_pipe_|. Returns true if data was enqueued to
-  // |Controller()| or the pipe was closed, and false otherwise.
-  bool ReadData();
+  // Reads data from |data_pipe_|. Arms |watcher_| if it needs to wait.
+  void ReadDataOrArmWatcher();
 
-  void ArmWatcher();
   void OnHandleReady(MojoResult, const mojo::HandleSignalsState&);
+  void OnFlush(ScriptPromiseResolver*);
   void ExpectPipeClose();
   void PipeClosed();
   void Close();

@@ -4,10 +4,11 @@
 
 #include "ui/wm/core/cursor_manager.h"
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "ui/aura/client/cursor_client_observer.h"
 #include "ui/aura/test/aura_test_base.h"
+#include "ui/base/cursor/cursor_size.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 #include "ui/wm/core/native_cursor_manager.h"
 #include "ui/wm/test/testing_cursor_client_observer.h"
 
@@ -54,15 +55,15 @@ class CursorManagerTest : public aura::test::AuraTestBase {
 };
 
 TEST_F(CursorManagerTest, ShowHideCursor) {
-  cursor_manager_.SetCursor(ui::CursorType::kCopy);
-  EXPECT_EQ(ui::CursorType::kCopy, cursor_manager_.GetCursor().native_type());
+  cursor_manager_.SetCursor(ui::mojom::CursorType::kCopy);
+  EXPECT_EQ(ui::mojom::CursorType::kCopy, cursor_manager_.GetCursor().type());
 
   cursor_manager_.ShowCursor();
   EXPECT_TRUE(cursor_manager_.IsCursorVisible());
   cursor_manager_.HideCursor();
   EXPECT_FALSE(cursor_manager_.IsCursorVisible());
   // The current cursor does not change even when the cursor is not shown.
-  EXPECT_EQ(ui::CursorType::kCopy, cursor_manager_.GetCursor().native_type());
+  EXPECT_EQ(ui::mojom::CursorType::kCopy, cursor_manager_.GetCursor().type());
 
   // Check if cursor visibility is locked.
   cursor_manager_.LockCursor();
@@ -105,15 +106,15 @@ TEST_F(CursorManagerTest, ShowHideCursor) {
 // Verifies that LockCursor/UnlockCursor work correctly with
 // EnableMouseEvents and DisableMouseEvents
 TEST_F(CursorManagerTest, EnableDisableMouseEvents) {
-  cursor_manager_.SetCursor(ui::CursorType::kCopy);
-  EXPECT_EQ(ui::CursorType::kCopy, cursor_manager_.GetCursor().native_type());
+  cursor_manager_.SetCursor(ui::mojom::CursorType::kCopy);
+  EXPECT_EQ(ui::mojom::CursorType::kCopy, cursor_manager_.GetCursor().type());
 
   cursor_manager_.EnableMouseEvents();
   EXPECT_TRUE(cursor_manager_.IsMouseEventsEnabled());
   cursor_manager_.DisableMouseEvents();
   EXPECT_FALSE(cursor_manager_.IsMouseEventsEnabled());
   // The current cursor does not change even when the cursor is not shown.
-  EXPECT_EQ(ui::CursorType::kCopy, cursor_manager_.GetCursor().native_type());
+  EXPECT_EQ(ui::mojom::CursorType::kCopy, cursor_manager_.GetCursor().type());
 
   // Check if cursor enable state is locked.
   cursor_manager_.LockCursor();
@@ -259,7 +260,7 @@ TEST_F(CursorManagerTest, MultipleEnableMouseEvents) {
 }
 
 TEST_F(CursorManagerTest, TestCursorClientObserver) {
-  cursor_manager_.SetCursor(ui::CursorType::kPointer);
+  cursor_manager_.SetCursor(ui::mojom::CursorType::kPointer);
   // Add two observers. Both should have OnCursorVisibilityChanged()
   // invoked when the visibility of the cursor changes.
   wm::TestingCursorClientObserver observer_a;
@@ -327,29 +328,29 @@ TEST_F(CursorManagerTest, TestCursorClientObserver) {
   EXPECT_TRUE(observer_a.is_cursor_visible());
 
   // Hide the cursor by changing the cursor type.
-  cursor_manager_.SetCursor(ui::CursorType::kPointer);
+  cursor_manager_.SetCursor(ui::mojom::CursorType::kPointer);
   observer_a.reset();
-  cursor_manager_.SetCursor(ui::CursorType::kNone);
+  cursor_manager_.SetCursor(ui::mojom::CursorType::kNone);
   EXPECT_TRUE(observer_a.did_visibility_change());
   EXPECT_FALSE(observer_a.is_cursor_visible());
 
   // Show the cursor by changing the cursor type.
   observer_a.reset();
-  cursor_manager_.SetCursor(ui::CursorType::kPointer);
+  cursor_manager_.SetCursor(ui::mojom::CursorType::kPointer);
   EXPECT_TRUE(observer_a.did_visibility_change());
   EXPECT_TRUE(observer_a.is_cursor_visible());
 
   // Changing the type to another visible type doesn't cause unnecessary
   // callbacks.
   observer_a.reset();
-  cursor_manager_.SetCursor(ui::CursorType::kHand);
+  cursor_manager_.SetCursor(ui::mojom::CursorType::kHand);
   EXPECT_FALSE(observer_a.did_visibility_change());
   EXPECT_FALSE(observer_a.is_cursor_visible());
 
   // If the type is kNone, showing the cursor shouldn't cause observers to
   // think that the cursor is now visible.
   cursor_manager_.HideCursor();
-  cursor_manager_.SetCursor(ui::CursorType::kNone);
+  cursor_manager_.SetCursor(ui::mojom::CursorType::kNone);
   observer_a.reset();
   cursor_manager_.ShowCursor();
   EXPECT_TRUE(observer_a.did_visibility_change());

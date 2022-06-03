@@ -8,13 +8,13 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/scoped_observation.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/extensions/api/runtime/chrome_runtime_api_delegate.h"
@@ -44,6 +44,10 @@ class TestEventRouter : public EventRouter {
  public:
   explicit TestEventRouter(content::BrowserContext* context)
       : EventRouter(context, ExtensionPrefs::Get(context)) {}
+
+  TestEventRouter(const TestEventRouter&) = delete;
+  TestEventRouter& operator=(const TestEventRouter&) = delete;
+
   ~TestEventRouter() override {}
 
   // An entry in our fake event registry.
@@ -62,8 +66,6 @@ class TestEventRouter : public EventRouter {
 
  private:
   std::set<Entry> fake_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestEventRouter);
 };
 
 std::unique_ptr<KeyedService> TestEventRouterFactoryFunction(
@@ -76,6 +78,9 @@ std::unique_ptr<KeyedService> TestEventRouterFactoryFunction(
 class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
  public:
   DownloaderTestDelegate() {}
+
+  DownloaderTestDelegate(const DownloaderTestDelegate&) = delete;
+  DownloaderTestDelegate& operator=(const DownloaderTestDelegate&) = delete;
 
   // On the next update check for extension |id|, we'll respond that no update
   // is available.
@@ -94,7 +99,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
       no_updates_.erase(id);
     DownloadFinishedArgs args;
     args.path = path;
-    args.version = version;
+    args.version = base::Version(version);
     updates_[id] = std::move(args);
   }
 
@@ -107,7 +112,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
     // expecting a synchronous reply (the real code has to go do at least one
     // network request before getting a response, so this is is a reasonable
     // expectation by delegates).
-    for (const std::string& id : fetch_data->extension_ids()) {
+    for (const std::string& id : fetch_data->GetExtensionIds()) {
       auto no_update = no_updates_.find(id);
       if (no_update != no_updates_.end()) {
         no_updates_.erase(no_update);
@@ -118,21 +123,22 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
                 base::Unretained(delegate), id,
                 ExtensionDownloaderDelegate::Error::NO_UPDATE_AVAILABLE,
                 ExtensionDownloaderDelegate::PingResult(),
-                fetch_data->request_ids()));
+                fetch_data->request_ids(),
+                ExtensionDownloaderDelegate::FailureData()));
         continue;
       }
       auto update = updates_.find(id);
       if (update != updates_.end()) {
-        CRXFileInfo info(id, update->second.path, "" /* no hash */,
-                         GetTestVerifierFormat());
-        std::string version = update->second.version;
+        CRXFileInfo crx_info(update->second.path, GetTestVerifierFormat());
+        crx_info.expected_version = update->second.version;
+        crx_info.extension_id = id;
         updates_.erase(update);
         base::ThreadTaskRunnerHandle::Get()->PostTask(
             FROM_HERE,
             base::BindOnce(
                 &ExtensionDownloaderDelegate::OnExtensionDownloadFinished,
-                base::Unretained(delegate), info,
-                false /* file_ownership_passed */, GURL(), version,
+                base::Unretained(delegate), crx_info,
+                false /* file_ownership_passed */, GURL(),
                 ExtensionDownloaderDelegate::PingResult(),
                 fetch_data->request_ids(),
                 ExtensionDownloaderDelegate::InstallCallback()));
@@ -146,7 +152,7 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
   // Simple holder for the data passed in AddUpdateResponse calls.
   struct DownloadFinishedArgs {
     base::FilePath path;
-    std::string version;
+    base::Version version;
   };
 
   // These keep track of what response we should give for update checks, keyed
@@ -154,14 +160,15 @@ class DownloaderTestDelegate : public ExtensionDownloaderTestDelegate {
   // other.
   std::set<std::string> no_updates_;
   std::map<std::string, DownloadFinishedArgs> updates_;
-
-  DISALLOW_COPY_AND_ASSIGN(DownloaderTestDelegate);
 };
 
 // Helper to let test code wait for and return an update check result.
 class UpdateCheckResultCatcher {
  public:
   UpdateCheckResultCatcher() {}
+
+  UpdateCheckResultCatcher(const UpdateCheckResultCatcher&) = delete;
+  UpdateCheckResultCatcher& operator=(const UpdateCheckResultCatcher&) = delete;
 
   void OnResult(const RuntimeAPIDelegate::UpdateCheckResult& result) {
     EXPECT_EQ(nullptr, result_.get());
@@ -182,13 +189,15 @@ class UpdateCheckResultCatcher {
  private:
   std::unique_ptr<RuntimeAPIDelegate::UpdateCheckResult> result_;
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(UpdateCheckResultCatcher);
 };
 
 class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
  public:
   ChromeRuntimeAPIDelegateTest() {}
+
+  ChromeRuntimeAPIDelegateTest(const ChromeRuntimeAPIDelegateTest&) = delete;
+  ChromeRuntimeAPIDelegateTest& operator=(const ChromeRuntimeAPIDelegateTest&) =
+      delete;
 
   void SetUp() override {
     ExtensionServiceTestWithInstall::SetUp();
@@ -205,7 +214,8 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
 
     // Setup the ExtensionService so that extension updates won't complete
     // installation until the extension is idle.
-    update_install_gate_ = std::make_unique<UpdateInstallGate>(service());
+    update_install_gate_ =
+        std::make_unique<UpdateInstallGate>(service()->profile());
     service()->RegisterInstallGate(ExtensionPrefs::DELAY_REASON_WAIT_FOR_IDLE,
                                    update_install_gate_.get());
     static_cast<TestExtensionSystem*>(ExtensionSystem::Get(browser_context()))
@@ -227,8 +237,8 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
                      const std::string& expected_version) {
     UpdateCheckResultCatcher catcher;
     EXPECT_TRUE(runtime_delegate_->CheckForUpdates(
-        id, base::Bind(&UpdateCheckResultCatcher::OnResult,
-                       base::Unretained(&catcher))));
+        id, base::BindOnce(&UpdateCheckResultCatcher::OnResult,
+                           base::Unretained(&catcher))));
     std::unique_ptr<RuntimeAPIDelegate::UpdateCheckResult> result =
         catcher.WaitForResult();
     ASSERT_NE(nullptr, result.get());
@@ -251,9 +261,6 @@ class ChromeRuntimeAPIDelegateTest : public ExtensionServiceTestWithInstall {
 
   // For preventing extensions from being updated immediately.
   std::unique_ptr<UpdateInstallGate> update_install_gate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeRuntimeAPIDelegateTest);
 };
 
 TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
@@ -285,14 +292,14 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
 
   // Check again after a short delay - we should be throttled because
   // not enough time has passed.
-  clock_.Advance(base::TimeDelta::FromMinutes(15));
+  clock_.Advance(base::Minutes(15));
   downloader_test_delegate_.AddNoUpdateResponse(id);
   DoUpdateCheck(id, "throttled", "");
 
   // Now simulate checking a few times at a 6 hour interval - none of these
   // should be throttled.
   for (int i = 0; i < 5; i++) {
-    clock_.Advance(base::TimeDelta::FromHours(6));
+    clock_.Advance(base::Hours(6));
     downloader_test_delegate_.AddNoUpdateResponse(id);
     DoUpdateCheck(id, "no_update", "");
   }
@@ -300,13 +307,13 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
   // Run an update check that should get an "update_available" response. This
   // actually causes the new version to be downloaded/unpacked, but the install
   // will not complete until we reload the extension.
-  clock_.Advance(base::TimeDelta::FromDays(1));
+  clock_.Advance(base::Days(1));
   downloader_test_delegate_.AddUpdateResponse(id, v2_path, "2.0");
   DoUpdateCheck(id, "update_available", "2.0");
 
   // Call again after short delay - it should be throttled instead of getting
   // another "update_available" response.
-  clock_.Advance(base::TimeDelta::FromMinutes(30));
+  clock_.Advance(base::Minutes(30));
   downloader_test_delegate_.AddUpdateResponse(id, v2_path, "2.0");
   DoUpdateCheck(id, "throttled", "");
 
@@ -317,16 +324,16 @@ TEST_F(ChromeRuntimeAPIDelegateTest, RequestUpdateCheck) {
       ExtensionRegistry::Get(browser_context())->GetInstalledExtension(id);
   ASSERT_NE(nullptr, current);
   EXPECT_EQ("2.0", current->VersionString());
-  clock_.Advance(base::TimeDelta::FromSeconds(10));
+  clock_.Advance(base::Seconds(10));
   downloader_test_delegate_.AddNoUpdateResponse(id);
   DoUpdateCheck(id, "no_update", "");
 
   // Check again after short delay; we should be throttled.
-  clock_.Advance(base::TimeDelta::FromMinutes(5));
+  clock_.Advance(base::Minutes(5));
   DoUpdateCheck(id, "throttled", "");
 
   // Call again after a longer delay, we should should be unthrottled.
-  clock_.Advance(base::TimeDelta::FromHours(8));
+  clock_.Advance(base::Hours(8));
   downloader_test_delegate_.AddNoUpdateResponse(id);
   DoUpdateCheck(id, "no_update", "");
 }
@@ -335,8 +342,11 @@ class ExtensionLoadWaiter : public ExtensionRegistryObserver {
  public:
   explicit ExtensionLoadWaiter(content::BrowserContext* context)
       : context_(context) {
-    extension_registry_observer_.Add(ExtensionRegistry::Get(context_));
+    extension_registry_observation_.Observe(ExtensionRegistry::Get(context_));
   }
+
+  ExtensionLoadWaiter(const ExtensionLoadWaiter&) = delete;
+  ExtensionLoadWaiter& operator=(const ExtensionLoadWaiter&) = delete;
 
   void WaitForReload() { run_loop_.Run(); }
 
@@ -365,15 +375,18 @@ class ExtensionLoadWaiter : public ExtensionRegistryObserver {
  private:
   base::RunLoop run_loop_;
   content::BrowserContext* context_;
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionLoadWaiter);
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 class ChromeRuntimeAPIDelegateReloadTest : public ChromeRuntimeAPIDelegateTest {
  public:
   ChromeRuntimeAPIDelegateReloadTest() {}
+
+  ChromeRuntimeAPIDelegateReloadTest(
+      const ChromeRuntimeAPIDelegateReloadTest&) = delete;
+  ChromeRuntimeAPIDelegateReloadTest& operator=(
+      const ChromeRuntimeAPIDelegateReloadTest&) = delete;
 
   void SetUp() override {
     ChromeRuntimeAPIDelegateTest::SetUp();
@@ -396,8 +409,6 @@ class ChromeRuntimeAPIDelegateReloadTest : public ChromeRuntimeAPIDelegateTest {
 
  private:
   ExtensionId extension_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeRuntimeAPIDelegateReloadTest);
 };
 
 TEST_F(ChromeRuntimeAPIDelegateReloadTest,
@@ -435,7 +446,7 @@ TEST_F(ChromeRuntimeAPIDelegateReloadTest,
 
   // Reload one more time after the time threshold for a suspiciously fast
   // reload has passed.
-  clock_.Advance(base::TimeDelta::FromSeconds(1000));
+  clock_.Advance(base::Seconds(1000));
 
   ReloadExtensionAndWait();
   EXPECT_TRUE(registry()->enabled_extensions().Contains(extension_id()));

@@ -15,7 +15,5 @@ source_set("gles2") {
 
   public_configs = [ ":gles2_config" ]
 
-  public_deps = [
-    "//ppapi/c",
-  ]
+  public_deps = [ "//ppapi/c" ]
 }

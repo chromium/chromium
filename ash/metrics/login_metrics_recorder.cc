@@ -16,8 +16,6 @@ namespace {
 
 void LogUserClickOnLock(
     LoginMetricsRecorder::LockScreenUserClickTarget target) {
-  DCHECK_NE(LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
-            target);
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.Login.Lock.UserClicks", target,
       LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount);
@@ -25,30 +23,124 @@ void LogUserClickOnLock(
 
 void LogUserClickOnLogin(
     LoginMetricsRecorder::LoginScreenUserClickTarget target) {
-  DCHECK_NE(LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
-            target);
   UMA_HISTOGRAM_ENUMERATION(
       "Ash.Login.Login.UserClicks", target,
       LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount);
 }
 
-void LogUserClick(
-    LoginMetricsRecorder::LockScreenUserClickTarget lock_target,
-    LoginMetricsRecorder::LoginScreenUserClickTarget login_target) {
-  bool is_locked = Shell::Get()->session_controller()->GetSessionState() ==
-                   session_manager::SessionState::LOCKED;
-  if (is_locked) {
-    LogUserClickOnLock(lock_target);
-  } else {
-    LogUserClickOnLogin(login_target);
-  }
+void LogUserClickInOobe(LoginMetricsRecorder::OobeUserClickTarget target) {
+  UMA_HISTOGRAM_ENUMERATION(
+      "Ash.Login.OOBE.UserClicks", target,
+      LoginMetricsRecorder::OobeUserClickTarget::kTargetCount);
 }
+
+// Defines mapping of ShelfButtonClickTarget |original| to different UMA target
+// in different session state.
+struct ShelfButtonClickMapping {
+  LoginMetricsRecorder::ShelfButtonClickTarget original;
+  LoginMetricsRecorder::LockScreenUserClickTarget lock;
+  LoginMetricsRecorder::LoginScreenUserClickTarget login;
+  LoginMetricsRecorder::OobeUserClickTarget oobe;
+};
+
+// |kTargetCount| is used to mark the click target as unexpected.
+const ShelfButtonClickMapping kShelfTargets[] = {
+    // |kShutDownButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kShutDownButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kShutDownButton,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kShutDownButton,
+     LoginMetricsRecorder::OobeUserClickTarget::kShutDownButton},
+    // |kRestartButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kRestartButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kRestartButton,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kRestartButton,
+     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
+    // |kSignOutButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kSignOutButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kSignOutButton,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
+    // |kBrowseAsGuestButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kBrowseAsGuestButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kBrowseAsGuestButton,
+     LoginMetricsRecorder::OobeUserClickTarget::kBrowseAsGuestButton},
+    // |kAddUserButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kAddUserButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kAddUserButton,
+     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
+    // |kCloseNoteButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kCloseNoteButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kCloseNoteButton,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
+    // |kParentAccessButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kParentAccessButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kParentAccessButton,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
+    // |kEnterpriseEnrollmentButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kEnterpriseEnrollmentButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::OobeUserClickTarget::kEnterpriseEnrollmentButton},
+    // |kOsInstallButton|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kOsInstallButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kOsInstallButton,
+     LoginMetricsRecorder::OobeUserClickTarget::kOsInstallButton},
+    // |kSignIn|
+    {LoginMetricsRecorder::ShelfButtonClickTarget::kSignIn,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::OobeUserClickTarget::kSignIn},
+};
+
+// Defines mapping of TrayClickTarget |original| to different UMA target in
+// different session state.
+struct TrayClickMapping {
+  LoginMetricsRecorder::TrayClickTarget original;
+  LoginMetricsRecorder::LockScreenUserClickTarget lock;
+  LoginMetricsRecorder::LoginScreenUserClickTarget login;
+  LoginMetricsRecorder::OobeUserClickTarget oobe;
+};
+
+// |kTargetCount| is used to mark the click target as unexpected.
+const TrayClickMapping kTrayTargets[] = {
+    // |kSystemTray|
+    {LoginMetricsRecorder::TrayClickTarget::kSystemTray,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kSystemTray,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kSystemTray,
+     LoginMetricsRecorder::OobeUserClickTarget::kSystemTray},
+    // |kVirtualKeyboardTray|
+    {LoginMetricsRecorder::TrayClickTarget::kVirtualKeyboardTray,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kVirtualKeyboardTray,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kVirtualKeyboardTray,
+     LoginMetricsRecorder::OobeUserClickTarget::kVirtualKeyboardTray},
+    // |kImeTray|
+    {LoginMetricsRecorder::TrayClickTarget::kImeTray,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kImeTray,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kImeTray,
+     LoginMetricsRecorder::OobeUserClickTarget::kImeTray},
+    // |kNotificationTray|
+    {LoginMetricsRecorder::TrayClickTarget::kNotificationTray,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kNotificationTray,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
+    // |kTrayActionNoteButton|
+    {LoginMetricsRecorder::TrayClickTarget::kTrayActionNoteButton,
+     LoginMetricsRecorder::LockScreenUserClickTarget::kTrayActionNoteButton,
+     LoginMetricsRecorder::LoginScreenUserClickTarget::kTargetCount,
+     LoginMetricsRecorder::OobeUserClickTarget::kTargetCount},
+};
 
 bool ShouldRecordMetrics() {
   session_manager::SessionState session_state =
       Shell::Get()->session_controller()->GetSessionState();
   return session_state == session_manager::SessionState::LOGIN_PRIMARY ||
-         session_state == session_manager::SessionState::LOCKED;
+         session_state == session_manager::SessionState::LOCKED ||
+         session_state == session_manager::SessionState::OOBE;
 }
 
 }  // namespace
@@ -56,96 +148,86 @@ bool ShouldRecordMetrics() {
 LoginMetricsRecorder::LoginMetricsRecorder() = default;
 LoginMetricsRecorder::~LoginMetricsRecorder() = default;
 
-void LoginMetricsRecorder::RecordNumLoginAttempts(int num_attempt,
-                                                  bool success) {
+void LoginMetricsRecorder::RecordNumLoginAttempts(bool success,
+                                                  int* num_attempt) {
   if (success) {
-    UMA_HISTOGRAM_COUNTS_100("Ash.Login.Lock.NumPasswordAttempts.UntilSuccess",
-                             num_attempt);
-  } else {
-    UMA_HISTOGRAM_COUNTS_100("Ash.Login.Lock.NumPasswordAttempts.UntilFailure",
-                             num_attempt);
+    UMA_HISTOGRAM_COUNTS_100("Ash.Login.Lock.NbPasswordAttempts.UntilSuccess",
+                             *num_attempt);
+  } else if (*num_attempt > 0) {
+    UMA_HISTOGRAM_COUNTS_100("Ash.Login.Lock.NbPasswordAttempts.UntilFailure",
+                             *num_attempt);
   }
+
+  *num_attempt = 0;
 }
 
 void LoginMetricsRecorder::RecordUserTrayClick(TrayClickTarget target) {
   if (!ShouldRecordMetrics())
     return;
-
-  bool is_locked = Shell::Get()->session_controller()->GetSessionState() ==
-                   session_manager::SessionState::LOCKED;
-  switch (target) {
-    case TrayClickTarget::kSystemTray:
-      LogUserClick(LockScreenUserClickTarget::kSystemTray,
-                   LoginScreenUserClickTarget::kSystemTray);
-      break;
-    case TrayClickTarget::kVirtualKeyboardTray:
-      LogUserClick(LockScreenUserClickTarget::kVirtualKeyboardTray,
-                   LoginScreenUserClickTarget::kVirtualKeyboardTray);
-      break;
-    case TrayClickTarget::kImeTray:
-      LogUserClick(LockScreenUserClickTarget::kImeTray,
-                   LoginScreenUserClickTarget::kImeTray);
-      break;
-    case TrayClickTarget::kNotificationTray:
-      DCHECK(is_locked);
-      LogUserClick(LockScreenUserClickTarget::kNotificationTray,
-                   LoginScreenUserClickTarget::kTargetCount);
-      break;
-    case TrayClickTarget::kTrayActionNoteButton:
-      DCHECK(is_locked);
-      LogUserClick(LockScreenUserClickTarget::kLockScreenNoteActionButton,
-                   LoginScreenUserClickTarget::kTargetCount);
-      break;
-    case TrayClickTarget::kTargetCount:
-      NOTREACHED();
-      break;
+  auto state = Shell::Get()->session_controller()->GetSessionState();
+  for (const auto& el : kTrayTargets) {
+    if (el.original != target)
+      continue;
+    switch (state) {
+      case session_manager::SessionState::LOCKED:
+        DCHECK(el.lock != LockScreenUserClickTarget::kTargetCount)
+            << "Not expected tray click target: " << static_cast<int>(target)
+            << " for session state: " << static_cast<int>(state);
+        LogUserClickOnLock(el.lock);
+        return;
+      case session_manager::SessionState::LOGIN_PRIMARY:
+        DCHECK(el.login != LoginScreenUserClickTarget::kTargetCount)
+            << "Not expected tray click target: " << static_cast<int>(target)
+            << " for session state: " << static_cast<int>(state);
+        LogUserClickOnLogin(el.login);
+        return;
+      case session_manager::SessionState::OOBE:
+        DCHECK(el.oobe != OobeUserClickTarget::kTargetCount)
+            << "Not expected tray click target: " << static_cast<int>(target)
+            << " for session state: " << static_cast<int>(state);
+        LogUserClickInOobe(el.oobe);
+        return;
+      default:
+        NOTREACHED() << "Unexpected session state: " << static_cast<int>(state);
+        return;
+    }
   }
+  NOTREACHED() << "Tray click target wasn't found in the |kTrayTargets|.";
 }
 
 void LoginMetricsRecorder::RecordUserShelfButtonClick(
     ShelfButtonClickTarget target) {
   if (!ShouldRecordMetrics())
     return;
-
-  bool is_lock = Shell::Get()->session_controller()->GetSessionState() ==
-                 session_manager::SessionState::LOCKED;
-  switch (target) {
-    case ShelfButtonClickTarget::kShutDownButton:
-      LogUserClick(LockScreenUserClickTarget::kShutDownButton,
-                   LoginScreenUserClickTarget::kShutDownButton);
-      break;
-    case ShelfButtonClickTarget::kRestartButton:
-      LogUserClick(LockScreenUserClickTarget::kRestartButton,
-                   LoginScreenUserClickTarget::kRestartButton);
-      break;
-    case ShelfButtonClickTarget::kSignOutButton:
-      DCHECK(is_lock);
-      LogUserClickOnLock(LockScreenUserClickTarget::kSignOutButton);
-      break;
-    case ShelfButtonClickTarget::kBrowseAsGuestButton:
-      DCHECK(!is_lock);
-      LogUserClickOnLogin(LoginScreenUserClickTarget::kBrowseAsGuestButton);
-      break;
-    case ShelfButtonClickTarget::kAddUserButton:
-      DCHECK(!is_lock);
-      LogUserClickOnLogin(LoginScreenUserClickTarget::kAddUserButton);
-      break;
-    case ShelfButtonClickTarget::kCloseNoteButton:
-      DCHECK(is_lock);
-      LogUserClickOnLock(LockScreenUserClickTarget::kCloseNoteButton);
-      break;
-    case ShelfButtonClickTarget::kCancelButton:
-      // Should not be called in LOCKED nor LOGIN_PRIMARY states.
-      NOTREACHED();
-      break;
-    case ShelfButtonClickTarget::kParentAccessButton:
-      DCHECK(is_lock);
-      LogUserClickOnLock(LockScreenUserClickTarget::kParentAccessButton);
-      break;
-    case ShelfButtonClickTarget::kTargetCount:
-      NOTREACHED();
-      break;
+  auto state = Shell::Get()->session_controller()->GetSessionState();
+  for (const auto& el : kShelfTargets) {
+    if (el.original != target)
+      continue;
+    switch (state) {
+      case session_manager::SessionState::LOCKED:
+        DCHECK(el.lock != LockScreenUserClickTarget::kTargetCount)
+            << "Not expected shelf click target: " << static_cast<int>(target)
+            << " for session state: " << static_cast<int>(state);
+        LogUserClickOnLock(el.lock);
+        return;
+      case session_manager::SessionState::LOGIN_PRIMARY:
+        DCHECK(el.login != LoginScreenUserClickTarget::kTargetCount)
+            << "Not expected shelf click target: " << static_cast<int>(target)
+            << " for session state: " << static_cast<int>(state);
+        LogUserClickOnLogin(el.login);
+        return;
+      case session_manager::SessionState::OOBE:
+        DCHECK(el.oobe != OobeUserClickTarget::kTargetCount)
+            << "Not expected shelf click target: " << static_cast<int>(target)
+            << " for session state: " << static_cast<int>(state);
+        LogUserClickInOobe(el.oobe);
+        return;
+      default:
+        NOTREACHED() << "Unexpected session state: " << static_cast<int>(state);
+        return;
+    }
   }
+  NOTREACHED() << "Shelf click target wasn't found in the |kShelfTargets|.";
 }
 
 }  // namespace ash

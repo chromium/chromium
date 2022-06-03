@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 #include "components/assist_ranker/nn_classifier.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "components/assist_ranker/proto/nn_classifier.pb.h"
 
 namespace assist_ranker {

@@ -14,9 +14,15 @@ namespace autofill {
 
 class TestAutofillExternalDelegate : public AutofillExternalDelegate {
  public:
-  explicit TestAutofillExternalDelegate(AutofillManager* autofill_manager,
-                                        AutofillDriver* autofill_driver,
-                                        bool call_parent_methods);
+  explicit TestAutofillExternalDelegate(
+      BrowserAutofillManager* autofill_manager,
+      AutofillDriver* autofill_driver,
+      bool call_parent_methods);
+
+  TestAutofillExternalDelegate(const TestAutofillExternalDelegate&) = delete;
+  TestAutofillExternalDelegate& operator=(const TestAutofillExternalDelegate&) =
+      delete;
+
   ~TestAutofillExternalDelegate() override;
 
   // AutofillExternalDelegate overrides.
@@ -96,8 +102,6 @@ class TestAutofillExternalDelegate : public AutofillExternalDelegate {
   bool has_suggestions_available_on_field_focus_ = false;
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestAutofillExternalDelegate);
 };
 
 }  // namespace autofill

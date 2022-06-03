@@ -9,10 +9,11 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "build/build_config.h"
 #include "media/audio/audio_debug_recording_manager.h"
 #include "media/audio/audio_manager.h"
@@ -29,7 +30,7 @@ namespace media {
 namespace {
 
 #if defined(OS_WIN)
-#define NumberToStringType base::NumberToString16
+#define NumberToStringType base::NumberToWString
 #else
 #define NumberToStringType base::NumberToString
 #endif
@@ -58,9 +59,9 @@ void CreateWavFile(const base::FilePath& debug_recording_file_path,
     return;
   }
 
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(
           [](const base::FilePath& file_name) {

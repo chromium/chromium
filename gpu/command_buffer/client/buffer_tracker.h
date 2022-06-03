@@ -91,6 +91,10 @@ class GLES2_IMPL_EXPORT BufferTracker {
   };
 
   BufferTracker(MappedMemoryManager* manager);
+
+  BufferTracker(const BufferTracker&) = delete;
+  BufferTracker& operator=(const BufferTracker&) = delete;
+
   ~BufferTracker();
 
   Buffer* CreateBuffer(GLuint id, GLsizeiptr size);
@@ -108,8 +112,6 @@ class GLES2_IMPL_EXPORT BufferTracker {
 
   MappedMemoryManager* mapped_memory_;
   BufferMap buffers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BufferTracker);
 };
 
 }  // namespace gles2

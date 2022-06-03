@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 
 namespace sync_sessions {
 namespace {
@@ -17,14 +17,6 @@ const size_t kNavigationTrackingCleanupThreshold = 100;
 
 // When we clean up navigation tracking, delete this many global_ids.
 const int kNavigationTrackingCleanupAmount = 10;
-
-// Used to record conflict information into histogram Sync.GlobalIdConflict.
-enum SyncGlobalIdConflict {
-  CONFLICT = 0,
-  NO_CONFLICT_NEW_ID,
-  NO_CONFLICT_SAME_IDS,
-  CONFLICT_MAX,
-};
 
 }  // namespace
 
@@ -64,17 +56,7 @@ void SessionsGlobalIdMapper::TrackNavigationId(const base::Time& timestamp,
 
   DCHECK_NE(0, unique_id);
 
-  auto g2u_iter = global_to_unique_.find(global_id);
-  if (g2u_iter == global_to_unique_.end()) {
-    global_to_unique_.insert(g2u_iter, std::make_pair(global_id, unique_id));
-    UMA_HISTOGRAM_ENUMERATION("Sync.GlobalIdConflict", NO_CONFLICT_NEW_ID,
-                              CONFLICT_MAX);
-  } else if (g2u_iter->second != unique_id) {
-    UMA_HISTOGRAM_ENUMERATION("Sync.GlobalIdConflict", CONFLICT, CONFLICT_MAX);
-  } else {
-    UMA_HISTOGRAM_ENUMERATION("Sync.GlobalIdConflict", NO_CONFLICT_SAME_IDS,
-                              CONFLICT_MAX);
-  }
+  global_to_unique_.emplace(global_id, unique_id);
 
   auto u2g_iter = unique_to_current_global_.find(unique_id);
   if (u2g_iter == unique_to_current_global_.end()) {

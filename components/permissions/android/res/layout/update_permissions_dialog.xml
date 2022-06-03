@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:gravity="start"
+    style="@style/AlertDialogContent">
+
+    <org.chromium.ui.widget.ChromeImageView
+        android:id="@+id/icon"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/exclamation_triangle"
+        tools:ignore="ContentDescription"
+        app:tint="@color/default_icon_color" />
+
+    <org.chromium.ui.widget.TextViewWithLeading
+        android:id="@+id/text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextLarge.Primary"
+        android:paddingTop="0dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginStart="48dp"
+        app:leading="@dimen/text_size_large_leading" />
+</FrameLayout>

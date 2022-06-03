@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include <string>
-#include <vector>
 
 #include "base/containers/circular_deque.h"
 #include "components/gcm_driver/crypto/gcm_decryption_result.h"

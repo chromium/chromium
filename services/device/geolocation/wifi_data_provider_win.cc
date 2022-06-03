@@ -8,12 +8,12 @@
 #include <winioctl.h>
 #include <wlanapi.h>
 
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/timer/elapsed_timer.h"
 #include "base/win/windows_version.h"
 #include "services/device/geolocation/wifi_data_provider_common.h"
 #include "services/device/geolocation/wifi_data_provider_common_win.h"
@@ -92,9 +92,6 @@ class WindowsWlanApi : public WifiDataProviderCommon::WlanApiInterface {
   bool GetAccessPointData(WifiData::AccessPointDataSet* data) override;
 
  private:
-  // Logs number of detected wlan interfaces.
-  static void LogWlanInterfaceCount(int count);
-
   bool GetInterfaceDataWLAN(HANDLE wlan_handle,
                             const GUID& interface_id,
                             WifiData::AccessPointDataSet* data);
@@ -145,12 +142,6 @@ WindowsWlanApi::~WindowsWlanApi() {
   FreeLibrary(library_);
 }
 
-// static
-void WindowsWlanApi::LogWlanInterfaceCount(int count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Net.Wifi.InterfaceCount", count, 1 /* min */,
-                              5 /* max */, 6 /* bucket_count */);
-}
-
 bool WindowsWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
   DCHECK(data);
 
@@ -163,7 +154,6 @@ bool WindowsWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
   if ((*WlanOpenHandle_function_)(kXpWlanClientVersion, NULL,
                                   &negotiated_version,
                                   &wlan_handle) != ERROR_SUCCESS) {
-    LogWlanInterfaceCount(0);
     return false;
   }
   DCHECK(wlan_handle);
@@ -172,12 +162,9 @@ bool WindowsWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
   WLAN_INTERFACE_INFO_LIST* interface_list = nullptr;
   if ((*WlanEnumInterfaces_function_)(wlan_handle, NULL, &interface_list) !=
       ERROR_SUCCESS) {
-    LogWlanInterfaceCount(0);
     return false;
   }
   DCHECK(interface_list);
-
-  LogWlanInterfaceCount(interface_list->dwNumberOfItems);
 
   // Go through the list of interfaces and get the data for each.
   for (size_t i = 0; i < interface_list->dwNumberOfItems; ++i) {
@@ -205,7 +192,6 @@ bool WindowsWlanApi::GetAccessPointData(WifiData::AccessPointDataSet* data) {
 bool WindowsWlanApi::GetInterfaceDataWLAN(const HANDLE wlan_handle,
                                           const GUID& interface_id,
                                           WifiData::AccessPointDataSet* data) {
-  base::ElapsedTimer wlan_get_network_list_timer;
   // WlanGetNetworkBssList allocates |bss_list|.
   WLAN_BSS_LIST* bss_list = nullptr;
   if ((*WlanGetNetworkBssList_function_)(wlan_handle, &interface_id,
@@ -219,11 +205,6 @@ bool WindowsWlanApi::GetInterfaceDataWLAN(const HANDLE wlan_handle,
   // WlanGetNetworkBssList() can return success without filling |bss_list|.
   if (!bss_list)
     return false;
-
-  UMA_HISTOGRAM_CUSTOM_TIMES("Net.Wifi.ScanLatency",
-                             wlan_get_network_list_timer.Elapsed(),
-                             base::TimeDelta::FromMilliseconds(1),
-                             base::TimeDelta::FromMinutes(1), 100);
 
   for (size_t i = 0; i < bss_list->dwNumberOfItems; ++i)
     data->insert(GetNetworkData(bss_list->wlanBssEntries[i]));

@@ -1,0 +1,60 @@
+/* Copyright (c) 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* Google Photos welcome banner.*/
+
+#photos-welcome {
+  border-bottom: 1px solid var(--cr-separator-color, rgb(224, 224, 224));
+  box-sizing: border-box;
+  flex: none;
+  height: 72px;
+  opacity: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  position: relative;
+  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 150ms ease 50ms;
+  visibility: visible;
+}
+
+#photos-welcome.photos-welcome-hidden {
+  height: 0;
+  opacity: 0;
+  visibility: hidden;
+}
+
+#photos-welcome .photos-welcome-icon {
+  background-image: url(../images/files/ui/photos_logo.svg);
+  background-repeat: no-repeat;
+}
+
+#photos-welcome .photos-welcome-wrapper {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  height: 71px;
+}
+
+#photos-welcome .photos-welcome-icon {
+  background-position: center;
+  background-size: 32px 32px;
+  border-radius: 4px;
+  flex: none;
+  height: 32px;
+  margin-inline-end: 20px;
+  margin-inline-start: 16px;
+  width: 32px;
+}
+
+#photos-welcome .photos-welcome-message {
+  z-index: 1;
+}
+
+#photos-welcome .photos-welcome-title {
+  margin-bottom: 2px;
+}
+
+#photos-welcome .photos-welcome-text {
+  display: inline;
+}

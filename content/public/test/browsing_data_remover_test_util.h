@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/scoped_observer.h"
-#include "base/sequenced_task_runner.h"
+#include "base/scoped_observation.h"
+#include "base/task/sequenced_task_runner.h"
 #include "content/public/browser/browsing_data_remover.h"
 
 namespace content {
@@ -21,13 +20,21 @@ class BrowsingDataRemoverCompletionObserver
     : public BrowsingDataRemover::Observer {
  public:
   explicit BrowsingDataRemoverCompletionObserver(BrowsingDataRemover* remover);
+
+  BrowsingDataRemoverCompletionObserver(
+      const BrowsingDataRemoverCompletionObserver&) = delete;
+  BrowsingDataRemoverCompletionObserver& operator=(
+      const BrowsingDataRemoverCompletionObserver&) = delete;
+
   ~BrowsingDataRemoverCompletionObserver() override;
 
   void BlockUntilCompletion();
 
+  uint64_t failed_data_types() { return failed_data_types_; }
+
  protected:
   // BrowsingDataRemover::Observer:
-  void OnBrowsingDataRemoverDone() override;
+  void OnBrowsingDataRemoverDone(uint64_t failed_data_types) override;
 
  private:
   void FlushForTestingComplete();
@@ -40,11 +47,14 @@ class BrowsingDataRemoverCompletionObserver
   // called.
   bool browsing_data_remover_done_ = false;
 
-  base::RunLoop run_loop_;
-  ScopedObserver<BrowsingDataRemover, BrowsingDataRemover::Observer> observer_;
-  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
+  // Stores the |failed_data_types| mask passed into
+  // OnBrowsingDataRemoverDone().
+  uint64_t failed_data_types_ = 0;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionObserver);
+  base::RunLoop run_loop_;
+  base::ScopedObservation<BrowsingDataRemover, BrowsingDataRemover::Observer>
+      observation_{this};
+  scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
 };
 
 // The completion inhibitor can artificially delay completion of the browsing
@@ -57,6 +67,12 @@ class BrowsingDataRemoverCompletionObserver
 class BrowsingDataRemoverCompletionInhibitor {
  public:
   explicit BrowsingDataRemoverCompletionInhibitor(BrowsingDataRemover* remover);
+
+  BrowsingDataRemoverCompletionInhibitor(
+      const BrowsingDataRemoverCompletionInhibitor&) = delete;
+  BrowsingDataRemoverCompletionInhibitor& operator=(
+      const BrowsingDataRemoverCompletionInhibitor&) = delete;
+
   virtual ~BrowsingDataRemoverCompletionInhibitor();
 
   void Reset();
@@ -85,8 +101,6 @@ class BrowsingDataRemoverCompletionInhibitor {
   std::unique_ptr<base::RunLoop> run_loop_;
   base::OnceClosure continue_to_completion_callback_;
   scoped_refptr<base::SequencedTaskRunner> origin_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemoverCompletionInhibitor);
 };
 
 }  // namespace content

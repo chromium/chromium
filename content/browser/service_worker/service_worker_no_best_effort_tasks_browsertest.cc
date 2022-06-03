@@ -4,6 +4,7 @@
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -16,6 +17,12 @@ namespace content {
 class ServiceWorkerNoBestEffortTasksTest : public ContentBrowserTest {
  public:
   ServiceWorkerNoBestEffortTasksTest() = default;
+
+  ServiceWorkerNoBestEffortTasksTest(
+      const ServiceWorkerNoBestEffortTasksTest&) = delete;
+  ServiceWorkerNoBestEffortTasksTest& operator=(
+      const ServiceWorkerNoBestEffortTasksTest&) = delete;
+
   ~ServiceWorkerNoBestEffortTasksTest() override = default;
 
   void SetUp() override {
@@ -33,8 +40,6 @@ class ServiceWorkerNoBestEffortTasksTest : public ContentBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
     embedded_test_server()->StartAcceptingConnections();
   }
-
-  DISALLOW_COPY_AND_ASSIGN(ServiceWorkerNoBestEffortTasksTest);
 };
 
 // Verify that the promise returned by navigator.serviceWorker.register()

@@ -7,6 +7,7 @@
 #include "gpu/command_buffer/service/context_group.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 #include "gpu/command_buffer/service/service_discardable_manager.h"
+#include "gpu/config/gpu_preferences.h"
 
 namespace gpu {
 
@@ -25,9 +26,12 @@ PassthroughDiscardableManager::DiscardableCacheValue::operator=(
 PassthroughDiscardableManager::DiscardableCacheValue::~DiscardableCacheValue() =
     default;
 
-PassthroughDiscardableManager::PassthroughDiscardableManager()
+PassthroughDiscardableManager::PassthroughDiscardableManager(
+    const GpuPreferences& preferences)
     : cache_(DiscardableCache::NO_AUTO_EVICT),
-      cache_size_limit_(DiscardableCacheSizeLimit()) {}
+      cache_size_limit_(preferences.force_gpu_mem_discardable_limit_bytes
+                            ? preferences.force_gpu_mem_discardable_limit_bytes
+                            : DiscardableCacheSizeLimit()) {}
 
 PassthroughDiscardableManager::~PassthroughDiscardableManager() {
   DCHECK(cache_.empty());
@@ -104,12 +108,27 @@ bool PassthroughDiscardableManager::LockTexture(
 }
 
 void PassthroughDiscardableManager::DeleteContextGroup(
-    const gles2::ContextGroup* context_group) {
+    const gles2::ContextGroup* context_group,
+    bool has_context) {
+  DCHECK(context_group);
+
+  DeleteTextures(context_group, has_context);
+}
+
+void PassthroughDiscardableManager::OnContextLost() {
+  DeleteTextures(nullptr, false);
+}
+
+void PassthroughDiscardableManager::DeleteTextures(
+    const gles2::ContextGroup* context_group,
+    bool has_context) {
   auto iter = cache_.begin();
   while (iter != cache_.end()) {
-    if (iter->first.second == context_group) {
+    if (iter->first.second == context_group || !context_group) {
       iter->second.handle.ForceDelete();
       total_size_ -= iter->second.size;
+      if (!has_context && iter->second.unlocked_texture)
+        iter->second.unlocked_texture->MarkContextLost();
       iter = cache_.Erase(iter);
     } else {
       iter++;

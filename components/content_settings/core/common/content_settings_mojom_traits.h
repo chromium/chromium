@@ -9,7 +9,8 @@
 
 #include "base/values.h"
 #include "components/content_settings/core/common/content_settings.h"
-#include "components/content_settings/core/common/content_settings.mojom.h"
+#include "components/content_settings/core/common/content_settings.mojom-shared.h"
+#include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/base/values_mojom_traits.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -103,6 +104,10 @@ struct StructTraits<
     return r.setting_value;
   }
 
+  static const base::Time& expiration(const ContentSettingPatternSource& r) {
+    return r.expiration;
+  }
+
   static const std::string& source(const ContentSettingPatternSource& r) {
     return r.source;
   }
@@ -130,11 +135,6 @@ struct StructTraits<
     return r.script_rules;
   }
 
-  static const std::vector<ContentSettingPatternSource>& client_hints_rules(
-      const RendererContentSettingRules& r) {
-    return r.client_hints_rules;
-  }
-
   static const std::vector<ContentSettingPatternSource>& popup_redirect_rules(
       const RendererContentSettingRules& r) {
     return r.popup_redirect_rules;
@@ -143,6 +143,11 @@ struct StructTraits<
   static const std::vector<ContentSettingPatternSource>& mixed_content_rules(
       const RendererContentSettingRules& r) {
     return r.mixed_content_rules;
+  }
+
+  static const std::vector<ContentSettingPatternSource>&
+  auto_dark_content_rules(const RendererContentSettingRules& r) {
+    return r.auto_dark_content_rules;
   }
 
   static bool Read(

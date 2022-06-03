@@ -7,10 +7,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orderingFromXml="true">
     <Preference
-        android:fragment="org.chromium.chrome.browser.settings.developer.TracingSettings"
+        android:fragment="org.chromium.chrome.browser.tracing.settings.TracingSettings"
         android:key="tracing"
         android:title="Tracing" />
-    <org.chromium.chrome.browser.settings.TextMessagePreference
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:enabled="false"

@@ -10,26 +10,27 @@ import static org.junit.Assert.assertTrue;
 
 import android.os.Build;
 import android.os.Bundle;
-import android.support.test.filters.MediumTest;
+
+import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
-import org.chromium.chrome.browser.tabmodel.SingleTabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
@@ -39,10 +40,15 @@ import java.util.List;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MinAndroidSdkLevel(Build.VERSION_CODES.N)
+@Batch(Batch.PER_CLASS)
 public class CloseTabDirectActionHandlerTest {
+    @ClassRule
+    public static ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
+
     @Rule
-    public ChromeActivityTestRule<? extends ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule(ChromeTabbedActivity.class);
+    public BlankCTATabInitialStateRule mBlankCTATabInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private TabModelSelector mSelector;
     private CloseTabDirectActionHandler mHandler;
@@ -50,11 +56,10 @@ public class CloseTabDirectActionHandlerTest {
     @Before
     public void setUp() throws Exception {
         // Setup an activity with two blank tabs.
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mActivityTestRule.loadUrlInNewTab(
+        sActivityTestRule.loadUrlInNewTab(
                 "about:blank", false /* incognito */, TabLaunchType.FROM_CHROME_UI);
 
-        mSelector = mActivityTestRule.getActivity().getTabModelSelector();
+        mSelector = sActivityTestRule.getActivity().getTabModelSelector();
         mHandler = new CloseTabDirectActionHandler(mSelector);
     }
 
@@ -71,13 +76,9 @@ public class CloseTabDirectActionHandlerTest {
         assertThat(
                 mSelector.getCurrentTab(), Matchers.not(Matchers.sameInstance(initiallyCurrent)));
 
-        if (!(mSelector instanceof SingleTabModelSelector)) {
-            assertEquals(1, mSelector.getTotalTabCount());
-            // Close last tab
-            performAction("close_tab");
-        } else {
-            assertEquals(0, mSelector.getTotalTabCount());
-        }
+        assertEquals(1, mSelector.getTotalTabCount());
+        // Close last tab
+        performAction("close_tab");
 
         // No tabs are left, so actions aren't available anymore.
         assertThat(getDirectActions(), Matchers.empty());

@@ -7,6 +7,10 @@
 namespace metrics {
 namespace switches {
 
+// Forces metrics reporting to be enabled. Should not be used for tests as it
+// will send data to servers.
+const char kForceEnableMetricsReporting[] = "force-enable-metrics-reporting";
+
 // Enables the recording of metrics reports but disables reporting. In contrast
 // to kForceEnableMetricsReporting, this executes all the code that a normal
 // client would use for reporting, except the report is dropped rather than sent
@@ -23,8 +27,28 @@ const char kMetricsUploadIntervalSec[] = "metrics-upload-interval";
 // known as the Chrome Variations state.
 const char kResetVariationState[] = "reset-variation-state";
 
-// Forces metrics reporting to be enabled.
-const char kForceEnableMetricsReporting[] = "force-enable-metrics-reporting";
-
 }  // namespace switches
+
+bool IsMetricsRecordingOnlyEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kMetricsRecordingOnly);
+}
+
+bool IsMetricsReportingForceEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kForceEnableMetricsReporting);
+}
+
+void EnableMetricsRecordingOnlyForTesting(base::CommandLine* command_line) {
+  DCHECK(command_line != nullptr);
+  if (!command_line->HasSwitch(switches::kMetricsRecordingOnly))
+    command_line->AppendSwitch(switches::kMetricsRecordingOnly);
+}
+
+void ForceEnableMetricsReportingForTesting(base::CommandLine* command_line) {
+  DCHECK(command_line != nullptr);
+  if (!command_line->HasSwitch(switches::kForceEnableMetricsReporting))
+    command_line->AppendSwitch(switches::kForceEnableMetricsReporting);
+}
+
 }  // namespace metrics

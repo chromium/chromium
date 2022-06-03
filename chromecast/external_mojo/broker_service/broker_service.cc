@@ -12,16 +12,19 @@
 #include "base/macros.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/no_destructor.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread.h"
 #include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/external_mojo/public/cpp/external_mojo_broker.h"
+#include "chromecast/external_mojo/public/mojom/connector.mojom.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 
 namespace chromecast {
 namespace external_mojo {
 
 namespace {
+
+BrokerService* g_instance = nullptr;
 
 std::vector<service_manager::Manifest>& GetExternalManifests() {
   static std::vector<service_manager::Manifest> manifests;
@@ -58,8 +61,9 @@ service_manager::Manifest MakePackagedServices(
 
 }  // namespace
 
-BrokerService::BrokerService(service_manager::mojom::ServiceRequest request)
-    : service_binding_(this, std::move(request)) {
+BrokerService::BrokerService(service_manager::Connector* connector) {
+  DCHECK(!g_instance);
+  g_instance = this;
   io_thread_ = std::make_unique<base::Thread>("external_mojo");
   io_thread_->StartWithOptions(
       base::Thread::Options(base::MessagePumpType::IO, 0));
@@ -69,16 +73,32 @@ BrokerService::BrokerService(service_manager::mojom::ServiceRequest request)
   for (const auto& sub_manifest : manifest.packaged_services) {
     external_services_to_proxy.push_back(sub_manifest.service_name);
   }
+  bundle_.AddBinder(base::BindRepeating(&BrokerService::BindConnector,
+                                        base::Unretained(this)));
   broker_ = base::SequenceBound<ExternalMojoBroker>(io_thread_->task_runner(),
                                                     GetBrokerPath());
-  broker_.Post(FROM_HERE, &ExternalMojoBroker::InitializeChromium,
-               service_binding_.GetConnector()->Clone(),
-               external_services_to_proxy);
+  broker_.AsyncCall(&ExternalMojoBroker::InitializeChromium)
+      .WithArgs(connector->Clone(), external_services_to_proxy);
 }
 
 BrokerService::~BrokerService() {
   broker_.Reset();
   io_thread_.reset();
+  g_instance = nullptr;
+}
+
+// static
+BrokerService* BrokerService::GetInstance() {
+  return g_instance;
+}
+
+// static
+void BrokerService::ServiceRequestHandler(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
+  if (!g_instance) {
+    return;
+  }
+  g_instance->BindServiceRequest(std::move(receiver));
 }
 
 // static
@@ -97,9 +117,41 @@ const service_manager::Manifest& BrokerService::GetManifest() {
                            .WithSandboxType("none")
                            .CanRegisterOtherServiceInstances(true)
                            .Build())
+          .ExposeCapability(
+              "connector_factory",
+              std::set<const char*>{
+                  "chromecast.external_mojo.mojom.ExternalConnector",
+              })
           .Build()
           .Amend(MakePackagedServices(GetExternalManifests()))};
   return *manifest;
+}
+
+void BrokerService::OnConnect(const service_manager::BindSourceInfo& source,
+                              const std::string& interface_name,
+                              mojo::ScopedMessagePipeHandle interface_pipe) {
+  bundle_.BindInterface(interface_name, std::move(interface_pipe));
+}
+
+void BrokerService::BindConnector(
+    mojo::PendingReceiver<mojom::ExternalConnector> receiver) {
+  broker_.AsyncCall(&ExternalMojoBroker::BindConnector)
+      .WithArgs(std::move(receiver));
+}
+
+mojo::PendingRemote<mojom::ExternalConnector> BrokerService::CreateConnector() {
+  mojo::PendingRemote<mojom::ExternalConnector> connector_remote;
+  BindConnector(connector_remote.InitWithNewPipeAndPassReceiver());
+  return connector_remote;
+}
+
+void BrokerService::BindServiceRequest(
+    mojo::PendingReceiver<service_manager::mojom::Service> receiver) {
+  if (service_receiver_.is_bound()) {
+    LOG(INFO) << "BrokerService is re-binding to the Service Manager.";
+    service_receiver_.Close();
+  }
+  service_receiver_.Bind(std::move(receiver));
 }
 
 }  // namespace external_mojo

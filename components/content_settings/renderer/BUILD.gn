@@ -1,0 +1,23 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("renderer") {
+  sources = [
+    "content_settings_agent_impl.cc",
+    "content_settings_agent_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//components/client_hints/common",
+    "//components/content_settings/common:mojom",
+    "//components/content_settings/core/common",
+    "//content/public/child",
+    "//content/public/common",
+    "//content/public/renderer",
+    "//mojo/public/cpp/bindings",
+    "//services/service_manager/public/cpp",
+    "//third_party/blink/public:blink_headers",
+    "//url",
+  ]
+}

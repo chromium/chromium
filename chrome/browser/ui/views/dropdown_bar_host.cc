@@ -6,10 +6,12 @@
 
 #include <algorithm>
 
+#include "build/build_config.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/dropdown_bar_host_delegate.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/gfx/scrollbar_size.h"
@@ -23,30 +25,28 @@ bool DropdownBarHost::disable_animations_during_testing_ = false;
 // DropdownBarHost, public:
 
 DropdownBarHost::DropdownBarHost(BrowserView* browser_view)
-    : AnimationDelegateViews(browser_view),
-      browser_view_(browser_view),
-      view_(nullptr),
-      delegate_(nullptr),
-      focus_manager_(nullptr),
-      esc_accel_target_registered_(false),
-      is_visible_(false) {}
+    : AnimationDelegateViews(browser_view), browser_view_(browser_view) {}
+
+DropdownBarHost::~DropdownBarHost() {
+  focus_manager_->RemoveFocusChangeListener(this);
+  ResetFocusTracker();
+}
 
 void DropdownBarHost::Init(views::View* host_view,
-                           views::View* view,
+                           std::unique_ptr<views::View> view,
                            DropdownBarHostDelegate* delegate) {
   DCHECK(view);
   DCHECK(delegate);
 
-  view_ = view;
   delegate_ = delegate;
 
   // The |clip_view| exists to paint to a layer so that it can clip descendent
   // Views which also paint to a Layer. See http://crbug.com/589497
-  std::unique_ptr<views::View> clip_view(new views::View());
+  auto clip_view = std::make_unique<views::View>();
   clip_view->SetPaintToLayer();
   clip_view->layer()->SetFillsBoundsOpaquely(false);
   clip_view->layer()->SetMasksToBounds(true);
-  clip_view->AddChildView(view_);
+  view_ = clip_view->AddChildView(std::move(view));
 
   // Initialize the host.
   host_ = std::make_unique<ThemeCopyingWidget>(browser_view_->GetWidget());
@@ -56,8 +56,11 @@ void DropdownBarHost::Init(views::View* host_view,
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
   params.parent = browser_view_->GetWidget()->GetNativeView();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
+#if defined(OS_MAC)
+  params.activatable = views::Widget::InitParams::Activatable::kYes;
+#endif
   host_->Init(std::move(params));
-  host_->SetContentsView(clip_view.release());
+  host_->SetContentsView(std::move(clip_view));
 
   SetHostViewNative(host_view);
 
@@ -80,16 +83,31 @@ void DropdownBarHost::Init(views::View* host_view,
   AnimationProgressed(animation_.get());
 }
 
-DropdownBarHost::~DropdownBarHost() {
-  focus_manager_->RemoveFocusChangeListener(this);
-  focus_tracker_.reset(NULL);
+bool DropdownBarHost::IsAnimating() const {
+  return animation_->is_animating();
+}
+
+bool DropdownBarHost::IsVisible() const {
+  return is_visible_;
+}
+
+void DropdownBarHost::SetFocusAndSelection() {
+  delegate_->FocusAndSelectAll();
+}
+
+void DropdownBarHost::StopAnimation() {
+  animation_->End();
 }
 
 void DropdownBarHost::Show(bool animate) {
-  // Stores the currently focused view, and tracks focus changes so that we can
-  // restore focus when the dropdown widget is closed.
-  focus_tracker_ =
-      std::make_unique<views::ExternalFocusTracker>(view_, focus_manager_);
+  if (!focus_tracker_) {
+    // Stores the currently focused view, and tracks focus changes so that we
+    // can restore focus when the dropdown widget is closed.
+    // One may already be set if this Show() call is part of restoring this
+    // DropdownBarHost visibility to a specific tab.
+    focus_tracker_ =
+        std::make_unique<views::ExternalFocusTracker>(view_, focus_manager_);
+  }
 
   SetDialogPosition(GetDialogPosition(gfx::Rect()));
 
@@ -116,17 +134,10 @@ void DropdownBarHost::Show(bool animate) {
     OnVisibilityChanged();
 }
 
-void DropdownBarHost::SetFocusAndSelection() {
-  delegate_->FocusAndSelectAll();
-}
-
-bool DropdownBarHost::IsAnimating() const {
-  return animation_->is_animating();
-}
-
 void DropdownBarHost::Hide(bool animate) {
   if (!IsVisible())
     return;
+
   if (animate && !disable_animations_during_testing_ &&
       !animation_->IsClosing()) {
     animation_->Hide();
@@ -147,14 +158,6 @@ void DropdownBarHost::Hide(bool animate) {
   }
 }
 
-void DropdownBarHost::StopAnimation() {
-  animation_->End();
-}
-
-bool DropdownBarHost::IsVisible() const {
-  return is_visible_;
-}
-
 void DropdownBarHost::SetDialogPosition(const gfx::Rect& new_pos) {
   view_->SetSize(new_pos.size());
 
@@ -164,8 +167,6 @@ void DropdownBarHost::SetDialogPosition(const gfx::Rect& new_pos) {
   host()->SetBounds(new_pos);
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// DropdownBarHost, views::FocusChangeListener implementation:
 void DropdownBarHost::OnWillChangeFocus(views::View* focused_before,
                                         views::View* focused_now) {
   // First we need to determine if one or both of the views passed in are child
@@ -193,9 +194,6 @@ void DropdownBarHost::OnDidChangeFocus(views::View* focused_before,
                                        views::View* focused_now) {
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// DropdownBarHost, views::AnimationDelegateViews implementation:
-
 void DropdownBarHost::AnimationProgressed(const gfx::Animation* animation) {
   // First, we calculate how many pixels to slide the widget.
   gfx::Size pref_size = view_->GetPreferredSize();
@@ -208,6 +206,11 @@ void DropdownBarHost::AnimationProgressed(const gfx::Animation* animation) {
 }
 
 void DropdownBarHost::AnimationEnded(const gfx::Animation* animation) {
+  // Ensure the position gets a final update.  This is important when ending the
+  // animation early (e.g. closing a tab with an open find bar), since otherwise
+  // the position will be out of date at the start of the next animation.
+  AnimationProgressed(animation);
+
   if (!animation_->IsShowing()) {
     // Animation has finished closing.
     host_->Hide();
@@ -216,29 +219,6 @@ void DropdownBarHost::AnimationEnded(const gfx::Animation* animation) {
   } else {
     // Animation has finished opening.
   }
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// DropdownBarHost protected:
-
-void DropdownBarHost::ResetFocusTracker() {
-  focus_tracker_.reset(NULL);
-}
-
-void DropdownBarHost::OnVisibilityChanged() {
-}
-
-void DropdownBarHost::GetWidgetBounds(gfx::Rect* bounds) {
-  DCHECK(bounds);
-  *bounds = browser_view_->bounds();
-}
-
-views::Widget* DropdownBarHost::GetWidget() {
-  return host_.get();
-}
-
-const views::Widget* DropdownBarHost::GetWidget() const {
-  return host_.get();
 }
 
 void DropdownBarHost::RegisterAccelerators() {
@@ -254,4 +234,33 @@ void DropdownBarHost::UnregisterAccelerators() {
   ui::Accelerator escape(ui::VKEY_ESCAPE, ui::EF_NONE);
   focus_manager_->UnregisterAccelerator(escape, this);
   esc_accel_target_registered_ = false;
+}
+
+void DropdownBarHost::OnVisibilityChanged() {}
+
+void DropdownBarHost::SetFocusTracker(
+    std::unique_ptr<views::ExternalFocusTracker> focus_tracker) {
+  focus_tracker_ = std::move(focus_tracker);
+}
+
+std::unique_ptr<views::ExternalFocusTracker>
+DropdownBarHost::TakeFocusTracker() {
+  return std::move(focus_tracker_);
+}
+
+void DropdownBarHost::ResetFocusTracker() {
+  focus_tracker_.reset();
+}
+
+void DropdownBarHost::GetWidgetBounds(gfx::Rect* bounds) {
+  DCHECK(bounds);
+  *bounds = browser_view_->bounds();
+}
+
+views::Widget* DropdownBarHost::GetWidget() {
+  return host_.get();
+}
+
+const views::Widget* DropdownBarHost::GetWidget() const {
+  return host_.get();
 }

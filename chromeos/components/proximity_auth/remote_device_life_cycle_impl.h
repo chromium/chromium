@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -39,8 +38,13 @@ class RemoteDeviceLifeCycleImpl
   // |proximity_auth_client| is not owned.
   RemoteDeviceLifeCycleImpl(
       chromeos::multidevice::RemoteDeviceRef remote_device,
-      base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device,
+      absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device,
       chromeos::secure_channel::SecureChannelClient* secure_channel_client);
+
+  RemoteDeviceLifeCycleImpl(const RemoteDeviceLifeCycleImpl&) = delete;
+  RemoteDeviceLifeCycleImpl& operator=(const RemoteDeviceLifeCycleImpl&) =
+      delete;
+
   ~RemoteDeviceLifeCycleImpl() override;
 
   // RemoteDeviceLifeCycle:
@@ -78,7 +82,7 @@ class RemoteDeviceLifeCycleImpl
   const chromeos::multidevice::RemoteDeviceRef remote_device_;
 
   // Represents this device (i.e. this Chromebook) for a particular profile.
-  base::Optional<chromeos::multidevice::RemoteDeviceRef> local_device_;
+  absl::optional<chromeos::multidevice::RemoteDeviceRef> local_device_;
 
   // The entrypoint to the SecureChannel API.
   chromeos::secure_channel::SecureChannelClient* secure_channel_client_;
@@ -105,8 +109,6 @@ class RemoteDeviceLifeCycleImpl
   base::OneShotTimer authentication_recovery_timer_;
 
   base::WeakPtrFactory<RemoteDeviceLifeCycleImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceLifeCycleImpl);
 };
 
 }  // namespace proximity_auth

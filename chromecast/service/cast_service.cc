@@ -4,20 +4,15 @@
 
 #include "chromecast/service/cast_service.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_checker.h"
 
 namespace chromecast {
 
-CastService::CastService(
-    content::BrowserContext* browser_context,
-    PrefService* pref_service)
-    : browser_context_(browser_context),
-      pref_service_(pref_service),
-      stopped_(true),
-      thread_checker_(new base::ThreadChecker()) {
-}
+CastService::CastService()
+    : stopped_(true), thread_checker_(new base::ThreadChecker()) {}
 
 CastService::~CastService() {
   DCHECK(thread_checker_->CalledOnValidThread());

@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 
 // Parses INI files in a string. Users should in inherit from this class.
@@ -34,9 +33,9 @@ class INIParser {
   void Parse(const std::string& content);
 
  private:
-  virtual void HandleTriplet(const std::string& section,
-                             const std::string& key,
-                             const std::string& value) = 0;
+  virtual void HandleTriplet(base::StringPiece section,
+                             base::StringPiece key,
+                             base::StringPiece value) = 0;
 
   bool used_;
 };
@@ -46,19 +45,21 @@ class INIParser {
 class DictionaryValueINIParser : public INIParser {
  public:
   DictionaryValueINIParser();
+
+  DictionaryValueINIParser(const DictionaryValueINIParser&) = delete;
+  DictionaryValueINIParser& operator=(const DictionaryValueINIParser&) = delete;
+
   ~DictionaryValueINIParser() override;
 
   const base::DictionaryValue& root() const { return root_; }
 
  private:
   // INIParser implementation.
-  void HandleTriplet(const std::string& section,
-                     const std::string& key,
-                     const std::string& value) override;
+  void HandleTriplet(base::StringPiece section,
+                     base::StringPiece key,
+                     base::StringPiece value) override;
 
   base::DictionaryValue root_;
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryValueINIParser);
 };
 
 #endif  // CHROME_COMMON_INI_PARSER_H_

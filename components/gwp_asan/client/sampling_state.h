@@ -13,7 +13,7 @@
 #include "base/rand_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX) || defined(OS_ANDROID)
+#if defined(OS_APPLE) || defined(OS_ANDROID)
 #define USE_PTHREAD_TLS
 #include <pthread.h>
 #endif

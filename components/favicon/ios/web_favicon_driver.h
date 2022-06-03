@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_FAVICON_IOS_WEB_FAVICON_DRIVER_H_
 #define COMPONENTS_FAVICON_IOS_WEB_FAVICON_DRIVER_H_
 
-#include "base/macros.h"
 #include "components/favicon/core/favicon_driver_impl.h"
 #import "components/image_fetcher/ios/ios_image_data_fetcher_wrapper.h"
 #include "ios/web/public/web_state_observer.h"
@@ -17,6 +16,8 @@ class WebState;
 
 namespace favicon {
 
+class CoreFaviconService;
+
 // WebFaviconDriver is an implementation of FaviconDriver that listen to
 // WebState events to start download of favicons and to get informed when the
 // favicon download has completed.
@@ -24,10 +25,13 @@ class WebFaviconDriver : public web::WebStateObserver,
                          public web::WebStateUserData<WebFaviconDriver>,
                          public FaviconDriverImpl {
  public:
+  WebFaviconDriver(const WebFaviconDriver&) = delete;
+  WebFaviconDriver& operator=(const WebFaviconDriver&) = delete;
+
   ~WebFaviconDriver() override;
 
   static void CreateForWebState(web::WebState* web_state,
-                                FaviconService* favicon_service);
+                                CoreFaviconService* favicon_service);
 
   // FaviconDriver implementation.
   gfx::Image GetFavicon() const override;
@@ -54,7 +58,8 @@ class WebFaviconDriver : public web::WebStateObserver,
  private:
   friend class web::WebStateUserData<WebFaviconDriver>;
 
-  WebFaviconDriver(web::WebState* web_state, FaviconService* favicon_service);
+  WebFaviconDriver(web::WebState* web_state,
+                   CoreFaviconService* favicon_service);
 
   // web::WebStateObserver implementation.
   void DidFinishNavigation(web::WebState* web_state,
@@ -76,8 +81,6 @@ class WebFaviconDriver : public web::WebStateObserver,
   web::WebState* web_state_ = nullptr;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(WebFaviconDriver);
 };
 
 }  // namespace favicon

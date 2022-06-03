@@ -7,14 +7,23 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
+#import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
+#import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
+#import "net/base/mac/url_conversions.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+@interface ManageSyncSettingsTableViewController () <
+    PopoverLabelViewControllerDelegate>
+@end
 
 @implementation ManageSyncSettingsTableViewController
 
@@ -24,12 +33,19 @@
   [super viewDidLoad];
   self.tableView.accessibilityIdentifier =
       kManageSyncTableViewAccessibilityIdentifier;
-  self.title = l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   [self reloadData];
+}
+
+- (void)didMoveToParentViewController:(UIViewController*)parent {
+  [super didMoveToParentViewController:parent];
+  if (!parent) {
+    [self.presentationDelegate
+        manageSyncSettingsTableViewControllerWasRemoved:self];
+  }
 }
 
 #pragma mark - Private
@@ -58,15 +74,36 @@
                     forControlEvents:UIControlEventValueChanged];
     ListItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
     switchCell.switchView.tag = item.type;
+  } else if ([cell isKindOfClass:[TableViewInfoButtonCell class]]) {
+    TableViewInfoButtonCell* managedCell =
+        base::mac::ObjCCastStrict<TableViewInfoButtonCell>(cell);
+    managedCell.textLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+    [managedCell.trailingButton addTarget:self
+                                   action:@selector(didTapManagedUIInfoButton:)
+                         forControlEvents:UIControlEventTouchUpInside];
   }
   return cell;
 }
 
-#pragma mark - SettingsControllerProtocol
+- (UIView*)tableView:(UITableView*)tableView
+    viewForFooterInSection:(NSInteger)section {
+  UIView* view = [super tableView:tableView viewForFooterInSection:section];
 
-- (void)viewControllerWasPopped {
-  [self.presentationDelegate
-      manageSyncSettingsTableViewControllerWasPopped:self];
+  if (![self.tableViewModel footerForSection:section]) {
+    // Don't set up the footer view when there isn't a footer in the model.
+    return view;
+  }
+
+  NSInteger sectionIdentifier =
+      [self.tableViewModel sectionIdentifierForSection:section];
+
+  if (sectionIdentifier == SignOutSectionIdentifier) {
+    TableViewLinkHeaderFooterView* linkView =
+        base::mac::ObjCCastStrict<TableViewLinkHeaderFooterView>(view);
+    linkView.delegate = self;
+  }
+
+  return view;
 }
 
 #pragma mark - ChromeTableViewController
@@ -78,6 +115,24 @@
 
 #pragma mark - ManageSyncSettingsConsumer
 
+- (void)insertSections:(NSIndexSet*)sections {
+  if (!self.tableViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.tableView insertSections:sections
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
+- (void)deleteSections:(NSIndexSet*)sections {
+  if (!self.tableViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.tableView deleteSections:sections
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
 - (void)reloadItem:(TableViewItem*)item {
   if (!self.tableViewModel) {
     // No need to reload since the model has not been loaded yet.
@@ -88,14 +143,55 @@
                         withRowAnimation:UITableViewRowAnimationNone];
 }
 
+- (void)reloadSections:(NSIndexSet*)sections {
+  if (!self.tableViewModel) {
+    // No need to reload since the model has not been loaded yet.
+    return;
+  }
+  [self.tableView reloadSections:sections
+                withRowAnimation:UITableViewRowAnimationNone];
+}
+
 #pragma mark - UITableViewDelegate
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   [super tableView:tableView didSelectRowAtIndexPath:indexPath];
   TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  [self.serviceDelegate didSelectItem:item];
+  CGRect cellRect = [tableView rectForRowAtIndexPath:indexPath];
+  [self.serviceDelegate didSelectItem:item cellRect:cellRect];
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - Sync helpers
+
+// Called when the user clicks on the information button of the managed
+// setting's UI. Shows a textual bubble with the information of the enterprise.
+- (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
+  EnterpriseInfoPopoverViewController* bubbleViewController =
+      [[EnterpriseInfoPopoverViewController alloc]
+          initWithMessage:l10n_util::GetNSString(
+                              IDS_IOS_ENTERPRISE_MANAGED_SYNC)
+           enterpriseName:nil];
+  [self presentViewController:bubbleViewController animated:YES completion:nil];
+
+  // Disable the button when showing the bubble.
+  buttonView.enabled = NO;
+
+  // Set the anchor and arrow direction of the bubble.
+  bubbleViewController.popoverPresentationController.sourceView = buttonView;
+  bubbleViewController.popoverPresentationController.sourceRect =
+      buttonView.bounds;
+  bubbleViewController.popoverPresentationController.permittedArrowDirections =
+      UIPopoverArrowDirectionAny;
+  bubbleViewController.delegate = self;
+}
+
+#pragma mark - PopoverLabelViewControllerDelegate
+
+- (void)didTapLinkURL:(NSURL*)URL {
+  GURL convertedURL = net::GURLWithNSURL(URL);
+  [self view:nil didTapLinkURL:convertedURL];
 }
 
 @end

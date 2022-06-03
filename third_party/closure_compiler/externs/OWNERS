@@ -1,9 +1,11 @@
+khorimoto@chromium.org
 michaelpg@chromium.org
 rdevlin.cronin@chromium.org
 stevenjb@chromium.org
 
 per-file accessibility_private.js=file://ui/accessibility/OWNERS
 per-file automation.js=file://ui/accessibility/OWNERS
+per-file braille_display_private.js=file://ui/accessibility/OWNERS
 per-file file_manager_private.js=file://ui/file_manager/OWNERS
 per-file input_method_private.js=file://ui/base/ime/OWNERS
-# COMPONENT: UI>Browser>WebUI
+per-file terminal_private.js=file://chrome/browser/ash/guest_os/OWNERS

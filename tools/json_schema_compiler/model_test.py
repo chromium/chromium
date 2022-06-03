@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -40,49 +40,77 @@ class ModelTest(unittest.TestCase):
         'path/to/idl_namespace_non_specific_platforms.idl')
     self.idl_namespace_non_specific_platforms = self.model.namespaces.get(
         'idl_namespace_non_specific_platforms')
+    self.returns_async_json = CachedLoad('test/returns_async.json')
+    self.model.AddNamespace(self.returns_async_json[0],
+        'path/to/returns_async.json')
+    self.returns_async = self.model.namespaces.get('returns_async')
+    self.idl_returns_async_idl = Load('test/idl_returns_async.idl')
+    self.model.AddNamespace(self.idl_returns_async_idl[0],
+        'path/to/idl_returns_async.idl')
+    self.idl_returns_async = self.model.namespaces.get('idl_returns_async')
+    self.nodoc_json = CachedLoad('test/namespace_nodoc.json')
+    self.model.AddNamespace(self.nodoc_json[0],
+        'path/to/namespace_nodoc.json')
+    self.nodoc = self.model.namespaces.get('nodoc')
+    self.fakeapi_json = CachedLoad('test/namespace_fakeapi.json')
+    self.model.AddNamespace(self.fakeapi_json[0],
+        'path/to/namespace_fakeapi.json')
+    self.fakeapi = self.model.namespaces.get('fakeapi')
+
+    self.function_platforms_idl = Load('test/function_platforms.idl')
+    self.model.AddNamespace(self.function_platforms_idl[0],
+      '/path/to/function_platforms.idl')
+    self.function_platforms = self.model.namespaces.get('function_platforms')
+
+    self.function_platform_win_linux_json = CachedLoad(
+        'test/function_platform_win_linux.json')
+    self.model.AddNamespace(self.function_platform_win_linux_json[0],
+        'path/to/function_platform_win_linux.json')
+    self.function_platform_win_linux = self.model.namespaces.get(
+        'function_platform_win_linux')
 
   def testNamespaces(self):
-    self.assertEquals(6, len(self.model.namespaces))
+    self.assertEqual(12, len(self.model.namespaces))
     self.assertTrue(self.permissions)
 
   def testHasFunctions(self):
-    self.assertEquals(["contains", "getAll", "remove", "request"],
+    self.assertEqual(["contains", "getAll", "remove", "request"],
         sorted(self.permissions.functions.keys()))
 
   def testHasTypes(self):
-    self.assertEquals(['Tab'], self.tabs.types.keys())
-    self.assertEquals(['Permissions'], self.permissions.types.keys())
-    self.assertEquals(['Window'], self.windows.types.keys())
+    self.assertEqual(['Tab'], list(self.tabs.types.keys()))
+    self.assertEqual(['Permissions'], list(self.permissions.types.keys()))
+    self.assertEqual(['Window'], list(self.windows.types.keys()))
 
   def testHasProperties(self):
-    self.assertEquals(["active", "favIconUrl", "highlighted", "id",
+    self.assertEqual(["active", "favIconUrl", "highlighted", "id",
         "incognito", "index", "pinned", "selected", "status", "title", "url",
         "windowId"],
         sorted(self.tabs.types['Tab'].properties.keys()))
 
   def testProperties(self):
     string_prop = self.tabs.types['Tab'].properties['status']
-    self.assertEquals(model.PropertyType.STRING,
+    self.assertEqual(model.PropertyType.STRING,
                       string_prop.type_.property_type)
     integer_prop = self.tabs.types['Tab'].properties['id']
-    self.assertEquals(model.PropertyType.INTEGER,
+    self.assertEqual(model.PropertyType.INTEGER,
                       integer_prop.type_.property_type)
     array_prop = self.windows.types['Window'].properties['tabs']
-    self.assertEquals(model.PropertyType.ARRAY,
+    self.assertEqual(model.PropertyType.ARRAY,
                       array_prop.type_.property_type)
-    self.assertEquals(model.PropertyType.REF,
+    self.assertEqual(model.PropertyType.REF,
                       array_prop.type_.item_type.property_type)
-    self.assertEquals('tabs.Tab', array_prop.type_.item_type.ref_type)
+    self.assertEqual('tabs.Tab', array_prop.type_.item_type.ref_type)
     object_prop = self.tabs.functions['query'].params[0]
-    self.assertEquals(model.PropertyType.OBJECT,
+    self.assertEqual(model.PropertyType.OBJECT,
                       object_prop.type_.property_type)
-    self.assertEquals(
+    self.assertEqual(
         ["active", "highlighted", "pinned", "status", "title", "url",
          "windowId", "windowType"],
         sorted(object_prop.type_.properties.keys()))
 
   def testChoices(self):
-    self.assertEquals(model.PropertyType.CHOICES,
+    self.assertEqual(model.PropertyType.CHOICES,
                       self.tabs.functions['move'].params[0].type_.property_type)
 
   def testPropertyNotImplemented(self):
@@ -91,15 +119,52 @@ class ModelTest(unittest.TestCase):
     self.assertRaises(model.ParseException, self.model.AddNamespace,
         self.permissions_json[0], 'path/to/something.json')
 
+  def testDefaultSpecifiedRedundantly(self):
+    test_json = CachedLoad('test/redundant_default_attribute.json')
+    self.assertRaisesRegexp(
+        model.ParseException,
+        'Model parse exception at:\nredundantDefaultAttribute\noptionalFalse\n'
+        '  in path/to/redundant_default_attribute.json\n'
+        'The attribute "optional" is specified as "False", but this is the '
+        'default value if the attribute is not included\. It should be '
+        'removed\.',
+        self.model.AddNamespace,
+        test_json[0],
+        'path/to/redundant_default_attribute.json')
+
+  def testReturnsAsyncMissingParametersKey(self):
+    test_json = CachedLoad('test/returns_async_missing_parameters_key.json')
+    self.assertRaisesRegexp(
+        ValueError,
+        'parameters key not specified on returns_async: '
+        'returnsAsyncMissingParametersKey.asyncNoParametersKey in '
+        'path/to/returns_async_missing_parameters_key.json',
+        self.model.AddNamespace,
+        test_json[0],
+        'path/to/returns_async_missing_parameters_key.json')
+
   def testDescription(self):
     self.assertFalse(
         self.permissions.functions['contains'].params[0].description)
-    self.assertEquals('True if the extension has the specified permissions.',
-        self.permissions.functions['contains'].callback.params[0].description)
+    self.assertEqual(
+        'True if the extension has the specified permissions.', self.
+        permissions.functions['contains'].returns_async.params[0].description)
+
+  def testAsyncPromise(self):
+    supportsPromises = self.returns_async.functions['supportsPromises']
+    self.assertTrue(supportsPromises.returns_async.can_return_promise)
+    doesNotSupportPromises = self.returns_async.functions[
+        'doesNotSupportPromises']
+    self.assertFalse(doesNotSupportPromises.returns_async.can_return_promise)
+    supportsPromisesIdl = self.idl_returns_async.functions['supportsPromises']
+    self.assertTrue(supportsPromisesIdl.returns_async.can_return_promise)
+    doesNotSupportPromisesIdl = self.idl_returns_async.functions[
+        'doesNotSupportPromises']
+    self.assertFalse(doesNotSupportPromisesIdl.returns_async.can_return_promise)
 
   def testPropertyUnixName(self):
     param = self.tabs.functions['move'].params[0]
-    self.assertEquals('tab_ids', param.unix_name)
+    self.assertEqual('tab_ids', param.unix_name)
 
   def testUnixName(self):
     expectations = {
@@ -116,7 +181,7 @@ class ModelTest(unittest.TestCase):
       'foo_Bar_Baz_box': 'foo_bar_baz_box',
       }
     for name in expectations:
-      self.assertEquals(expectations[name], model.UnixName(name))
+      self.assertEqual(expectations[name], model.UnixName(name))
 
   def testCamelName(self):
     expectations = {
@@ -131,17 +196,66 @@ class ModelTest(unittest.TestCase):
       'bar_baz_': 'barBaz',
       }
     for testcase, expected in expectations.items():
-      self.assertEquals(expected, model.CamelName(testcase))
+      self.assertEqual(expected, model.CamelName(testcase))
 
   def testPlatforms(self):
     self.assertEqual([Platforms.CHROMEOS],
                      self.idl_namespace_chromeos.platforms)
     self.assertEqual(
-        [Platforms.CHROMEOS, Platforms.CHROMEOS_TOUCH, Platforms.LINUX,
-         Platforms.MAC, Platforms.WIN],
+        [Platforms.CHROMEOS, Platforms.LINUX, Platforms.MAC, Platforms.WIN],
         self.idl_namespace_all_platforms.platforms)
     self.assertEqual(None,
         self.idl_namespace_non_specific_platforms.platforms)
+
+  def testInvalidNamespacePlatform(self):
+    invalid_namespace_platform = Load('test/invalid_platform_namespace.idl')
+    with self.assertRaises(ValueError) as context:
+      self.model.AddNamespace(invalid_namespace_platform[0],
+                              'path/to/something.json')
+    self.assertIn('Invalid platform specified: invalid', str(context.exception))
+
+  def testInvalidFunctionPlatform(self):
+    invalid_function_platform = Load('test/invalid_function_platform.idl')
+    with self.assertRaises(ValueError) as context:
+      self.model.AddNamespace(invalid_function_platform[0],
+                              'path/to/something.json')
+    self.assertIn('Invalid platform specified: windows', str(context.exception))
+
+  def testPlatformsOnFunctionsIDL(self):
+    function_win_linux = self.function_platforms.functions['function_win_linux']
+    self.assertEqual([Platforms.WIN, Platforms.LINUX],
+        function_win_linux.platforms)
+
+    function_all = self.function_platforms.functions['function_all']
+    self.assertIsNone(function_all.platforms)
+
+    function_cros = self.function_platforms.functions['function_cros']
+    self.assertEqual([Platforms.CHROMEOS], function_cros.platforms)
+
+  def testPlatformsOnFunctionsJSON(self):
+    test_function = self.function_platform_win_linux.functions['test']
+    self.assertEqual([Platforms.WIN, Platforms.LINUX], test_function.platforms)
+
+  def testHasNoDoc(self):
+    fakeapi_NoDocType = self.fakeapi.types['NoDocType']
+    self.assertTrue(fakeapi_NoDocType.nodoc)
+
+    fakeapi_FakeType = self.fakeapi.types['FakeType']
+    selected_property = fakeapi_FakeType.properties['nodocProperty']
+    self.assertTrue(selected_property.nodoc)
+
+    nodocMethod_method = self.fakeapi.functions['nodocMethod']
+    self.assertTrue(nodocMethod_method.nodoc)
+
+    onFooNoDoc_event = self.fakeapi.events['onFooNoDoc']
+    self.assertTrue(onFooNoDoc_event.nodoc)
+
+    onFoo_event = self.fakeapi.events['onFoo']
+    self.assertFalse(onFoo_event.nodoc)
+
+    self.assertTrue(self.nodoc.nodoc, 'Namespace should also be marked nodoc')
+    nodoc_ValidType = self.nodoc.types['ValidType']
+    self.assertFalse(nodoc_ValidType.nodoc)
 
 if __name__ == '__main__':
   unittest.main()

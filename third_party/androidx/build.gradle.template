@@ -1,0 +1,122 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+apply plugin: ChromiumPlugin
+
+repositories {
+    google()
+    maven {
+        url '{{androidx_repository_url}}'
+    }
+    mavenCentral()
+}
+
+dependencies {
+    // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
+
+    compile 'androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-common:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-common-java8:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-livedata:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-livedata-core:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-viewmodel:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-viewmodel-savedstate:{{androidx_dependency_version}}'
+
+    compile 'androidx.activity:activity:{{androidx_dependency_version}}'
+    compile 'androidx.annotation:annotation:{{androidx_dependency_version}}'
+    compile 'androidx.appcompat:appcompat:{{androidx_dependency_version}}'
+    compile 'androidx.appcompat:appcompat-resources:{{androidx_dependency_version}}'
+    compile 'androidx.asynclayoutinflater:asynclayoutinflater:{{androidx_dependency_version}}'
+    compile 'androidx.biometric:biometric:{{androidx_dependency_version}}'
+    compile 'androidx.browser:browser:{{androidx_dependency_version}}'
+    compile 'androidx.cardview:cardview:{{androidx_dependency_version}}'
+    compile 'androidx.collection:collection:{{androidx_dependency_version}}'
+    compile 'androidx.concurrent:concurrent-futures:{{androidx_dependency_version}}'
+    compile 'androidx.coordinatorlayout:coordinatorlayout:{{androidx_dependency_version}}'
+    compile 'androidx.core:core:{{androidx_dependency_version}}'
+    compile 'androidx.core:core-animation:{{androidx_dependency_version}}'
+    compile 'androidx.customview:customview:{{androidx_dependency_version}}'
+    compile 'androidx.drawerlayout:drawerlayout:{{androidx_dependency_version}}'
+    compile 'androidx.dynamicanimation:dynamicanimation:{{androidx_dependency_version}}'
+    compile 'androidx.exifinterface:exifinterface:{{androidx_dependency_version}}'
+    compile 'androidx.fragment:fragment:{{androidx_dependency_version}}'
+    compile 'androidx.gridlayout:gridlayout:{{androidx_dependency_version}}'
+    compile 'androidx.interpolator:interpolator:{{androidx_dependency_version}}'
+    compile 'androidx.leanback:leanback:{{androidx_dependency_version}}'
+    compile 'androidx.leanback:leanback-preference:{{androidx_dependency_version}}'
+    compile 'androidx.localbroadcastmanager:localbroadcastmanager:{{androidx_dependency_version}}'
+    compile 'androidx.media:media:{{androidx_dependency_version}}'
+    compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
+    compile 'androidx.preference:preference:{{androidx_dependency_version}}'
+    compile 'androidx.recyclerview:recyclerview:{{androidx_dependency_version}}'
+    compile 'androidx.savedstate:savedstate:{{androidx_dependency_version}}'
+    compile 'androidx.slice:slice-builders:{{androidx_dependency_version}}'
+    compile 'androidx.slice:slice-core:{{androidx_dependency_version}}'
+    compile 'androidx.swiperefreshlayout:swiperefreshlayout:{{androidx_dependency_version}}'
+    compile 'androidx.tvprovider:tvprovider:{{androidx_dependency_version}}'
+    compile 'androidx.vectordrawable:vectordrawable:{{androidx_dependency_version}}'
+    compile 'androidx.vectordrawable:vectordrawable-animated:{{androidx_dependency_version}}'
+    compile 'androidx.viewpager:viewpager:{{androidx_dependency_version}}'
+    compile 'androidx.window:window:{{androidx_dependency_version}}'
+    compile 'androidx.window.extensions:extensions:{{androidx_dependency_version}}'
+    compile 'androidx.window:window-java:{{androidx_dependency_version}}'
+    compile 'androidx.window.sidecar:sidecar:{{androidx_dependency_version}}'
+
+    // Those are for use by doubledown libraries.
+    compile 'androidx.arch.core:core-common:{{androidx_dependency_version}}'
+    compile 'androidx.annotation:annotation-experimental:{{androidx_dependency_version}}'
+    compile 'androidx.annotation:annotation:{{androidx_dependency_version}}'
+    compile 'androidx.emoji:emoji:{{androidx_dependency_version}}'
+    compile 'androidx.lifecycle:lifecycle-runtime:{{androidx_dependency_version}}'
+    compile 'androidx.room:room-runtime:{{androidx_dependency_version}}'
+    compile 'androidx.transition:transition:{{androidx_dependency_version}}'
+    compile 'androidx.viewpager2:viewpager2:{{androidx_dependency_version}}'
+    compile 'androidx.legacy:legacy-support-core-utils:1.0.0'
+    compile 'androidx.documentfile:documentfile:{{androidx_dependency_version}}'
+    compile 'androidx.print:print:{{androidx_dependency_version}}'
+
+    compile 'androidx.multidex:multidex:2.0.0'
+    compile 'androidx.webkit:webkit:{{androidx_dependency_version}}'
+
+    // For some reason ConstraintLayout is not shipped with the rest of
+    // androidx, and not included in snapshots.
+    compile 'androidx.constraintlayout:constraintlayout:2.1.0-beta02'
+
+    // Used by 1p Play Services.
+    compile 'androidx.legacy:legacy-support-v4:1.0.0'
+
+    // testCompile targets have test_only = true.
+    androidTestCompile 'androidx.test:core:1.4.0-rc01'
+    androidTestCompile 'androidx.test:monitor:1.4.0-rc01'
+    androidTestCompile 'androidx.test:rules:1.2.0'
+    androidTestCompile 'androidx.test:runner:1.2.0'
+    androidTestCompile 'androidx.test.espresso:espresso-contrib:3.2.0'
+    androidTestCompile 'androidx.test.espresso:espresso-core:3.2.0'
+    androidTestCompile 'androidx.test.espresso:espresso-intents:3.2.0'
+    androidTestCompile 'androidx.test.espresso:espresso-web:3.2.0'
+    androidTestCompile 'androidx.test.ext:junit:1.1.1'
+    androidTestCompile 'androidx.test.uiautomator:uiautomator:2.2.0'
+}
+
+// The snapshot repository only has the latest version of each dependency.  When
+// building the dependency tree, gradle attempts to resolve dependency versions
+// specified in .pom files. However, that version might not live in neither the
+// current snapshot repo (eg: it lives in an older snapshot repo instead) nor in
+// the google maven repo (eg: it is too new thus has yet to be released in the
+// google maven repo). Override the version for androidx dependencies with the
+// version provided in the current snapshot repo so that gradle can find the
+// dependency.
+ext {
+  {{version_overrides}}
+}
+
+task setUpRepository(type: BuildConfigGenerator) {
+    // Paths are relative to the chromium source root.
+    repositoryPath 'third_party/androidx'
+    chromiumSourceRoot '../..'
+    cipdBucket 'chromium'
+    internalTargetVisibility = [ '//third_party/android_deps:*', ':*' ]
+    skipLicenses false
+    ignoreDEPS true
+}

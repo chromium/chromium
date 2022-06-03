@@ -7,9 +7,8 @@
 <translation id="1420684932347524586">‏عذرًا! تعذّر إنشاء ملف خاص RSA عشوائي.</translation>
 <translation id="1445572445564823378">تتسبب هذه الإضافة في بطء <ph name="PRODUCT_NAME" />. يجب إيقافها لاستعادة أداء <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">‏WebGL غير متوافق.</translation>
-<translation id="149347756975725155">تعذر تحميل رمز الإضافة '<ph name="ICON" />'.</translation>
 <translation id="1803557475693955505">تعذر تحميل صفحة الخلفية '<ph name="BACKGROUND_PAGE" />'.</translation>
-<translation id="2159915644201199628">تعذر فك تشفير الصورة: '<ph name="IMAGE_NAME" />'</translation>
+<translation id="2159915644201199628">تعذر فك ترميز الصورة: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">‏تم استخدام التعريب، ولكن لم يتم تحديد default_locale في البيان.</translation>
 <translation id="2576842806987913196">‏هناك ملف CRX بهذا الاسم فعلاً.</translation>
 <translation id="2785530881066938471">‏تعذر تحميل الملف '<ph name="RELATIVE_PATH" />' للنص البرمجي للمحتوى. لأنه ليس بتشفير UTF-8.</translation>
@@ -25,7 +24,7 @@
 <translation id="3561217442734750519">يجب أن تكون قيمة الإدخال للمفتاح الخاص مسارًا صالحًا.</translation>
 <translation id="388442998277590542">تعذر تحميل صفحة الخيارات "<ph name="OPTIONS_PAGE" />".</translation>
 <translation id="3984413272403535372">حدث خطأ أثناء التوقيع على الإضافة.</translation>
-<translation id="39964277676607559">تعذر تحميل جافا سكريبت '<ph name="RELATIVE_PATH" />' للنص البرمجي للمحتوى.</translation>
+<translation id="39964277676607559">‏تعذر تحميل JavaScript '<ph name="RELATIVE_PATH" />' للنص البرمجي للمحتوى.</translation>
 <translation id="4115165561519362854">يطلب مشرف هذا الجهاز <ph name="EXTENSION_NAME" /> الحصول على الحد الأدنى لإصدار <ph name="EXTENSION_VERSION" />. ولا يمكن تمكينه حتى يتم تحديثه إلى هذا الإصدار (أو أعلى).</translation>
 <translation id="4233778200880751280">تعذر تحميل حول الصفحة "<ph name="ABOUT_PAGE" />".</translation>
 <translation id="471800408830181311">تعذّر إخراج المفتاح الخاص.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">تعذّرت قراءة المفتاح الخاص.</translation>
 <translation id="6391538222494443604">يجب أن يكون دليل الإدخال موجودًا.</translation>
 <translation id="641087317769093025">تعذر فك ضغط الإضافة</translation>
-<translation id="6413453408918378296">لا يظهر الرمز بشكلٍ كافٍ '<ph name="ICON" />'.</translation>
 <translation id="6542618148162044354">يطلب تطبيق "<ph name="APP_NAME" />" الدخول إلى جهاز أو أكثر من أجهزتك:</translation>
 <translation id="657064425229075395">تعذر تحميل النص البرمجي للخلفية '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> من <ph name="VENDOR_NAME" /> (الرقم التسلسلي <ph name="SERIAL_NUMBER" />)</translation>

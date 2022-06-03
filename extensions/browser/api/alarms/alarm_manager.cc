@@ -6,16 +6,17 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/json/json_writer.h"
+#include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/macros.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
-#include "base/value_conversions.h"
 #include "base/values.h"
 #include "extensions/browser/api/alarms/alarms_api_constants.h"
 #include "extensions/browser/event_router.h"
@@ -38,7 +39,7 @@ const int kSecondsPerMinute = 60;
 
 // The minimum period between polling for alarms to run.
 const base::TimeDelta kDefaultMinPollPeriod() {
-  return base::TimeDelta::FromDays(1);
+  return base::Days(1);
 }
 
 class DefaultAlarmDelegate : public AlarmManager::Delegate {
@@ -50,8 +51,9 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
   void OnAlarm(const std::string& extension_id, const Alarm& alarm) override {
     std::unique_ptr<base::ListValue> args(new base::ListValue());
     args->Append(alarm.js_alarm->ToValue());
-    std::unique_ptr<Event> event(new Event(
-        events::ALARMS_ON_ALARM, alarms::OnAlarm::kEventName, std::move(args)));
+    std::unique_ptr<Event> event(
+        new Event(events::ALARMS_ON_ALARM, alarms::OnAlarm::kEventName,
+                  std::move(*args).TakeList(), browser_context_));
     EventRouter::Get(browser_context_)
         ->DispatchEventToExtension(extension_id, std::move(event));
   }
@@ -62,26 +64,26 @@ class DefaultAlarmDelegate : public AlarmManager::Delegate {
 
 // Creates a TimeDelta from a delay as specified in the API.
 base::TimeDelta TimeDeltaFromDelay(double delay_in_minutes) {
-  return base::TimeDelta::FromMicroseconds(delay_in_minutes *
-                                           base::Time::kMicrosecondsPerMinute);
+  return base::Microseconds(delay_in_minutes *
+                            base::Time::kMicrosecondsPerMinute);
 }
 
 AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
                                         bool is_unpacked,
                                         const base::ListValue* list) {
   AlarmManager::AlarmList alarms;
-  for (size_t i = 0; i < list->GetSize(); ++i) {
-    const base::DictionaryValue* alarm_dict = nullptr;
+  for (const base::Value& alarm_value : list->GetList()) {
     std::unique_ptr<Alarm> alarm(new Alarm());
-    if (list->GetDictionary(i, &alarm_dict) &&
-        alarms::Alarm::Populate(*alarm_dict, alarm->js_alarm.get())) {
-      const base::Value* time_value = nullptr;
-      if (alarm_dict->Get(kAlarmGranularity, &time_value)) {
-        // It's okay to ignore the failure since we have minimum granularity.
-        ignore_result(
-            base::GetValueAsTimeDelta(*time_value, &alarm->granularity));
+    if (alarm_value.is_dict() &&
+        alarms::Alarm::Populate(alarm_value, alarm->js_alarm.get())) {
+      absl::optional<base::TimeDelta> delta =
+          base::ValueToTimeDelta(alarm_value.FindKey(kAlarmGranularity));
+      if (delta) {
+        alarm->granularity = *delta;
+        // No else branch. It's okay to ignore the failure since we have
+        // minimum granularity.
       }
-      alarm->minimum_granularity = base::TimeDelta::FromSecondsD(
+      alarm->minimum_granularity = base::Seconds(
           (is_unpacked ? alarms_api_constants::kDevDelayMinimum
                        : alarms_api_constants::kReleaseDelayMinimum) *
           kSecondsPerMinute);
@@ -100,7 +102,7 @@ std::unique_ptr<base::ListValue> AlarmsToValue(
     std::unique_ptr<base::DictionaryValue> alarm =
         alarms[i]->js_alarm->ToValue();
     alarm->SetKey(kAlarmGranularity,
-                  base::CreateTimeDeltaValue(alarms[i]->granularity));
+                  base::TimeDeltaToValue(alarms[i]->granularity));
     list->Append(std::move(alarm));
   }
   return list;
@@ -114,7 +116,8 @@ AlarmManager::AlarmManager(content::BrowserContext* context)
     : browser_context_(context),
       clock_(base::DefaultClock::GetInstance()),
       delegate_(new DefaultAlarmDelegate(context)) {
-  extension_registry_observer_.Add(ExtensionRegistry::Get(browser_context_));
+  extension_registry_observation_.Observe(
+      ExtensionRegistry::Get(browser_context_));
 
   StateStore* storage = ExtensionSystem::Get(browser_context_)->state_store();
   if (storage)
@@ -345,8 +348,7 @@ void AlarmManager::ReadFromStorage(const std::string& extension_id,
 
 void AlarmManager::SetNextPollTime(const base::Time& time) {
   next_poll_time_ = time;
-  timer_.Start(FROM_HERE,
-               std::max(base::TimeDelta::FromSeconds(0), time - clock_->Now()),
+  timer_.Start(FROM_HERE, std::max(base::Seconds(0), time - clock_->Now()),
                this, &AlarmManager::PollAlarms);
 }
 
@@ -440,8 +442,8 @@ void AlarmManager::OnExtensionLoaded(content::BrowserContext* browser_context,
     ready_actions_.insert(ReadyMap::value_type(extension->id(), ReadyQueue()));
     storage->GetExtensionValue(
         extension->id(), kRegisteredAlarms,
-        base::Bind(&AlarmManager::ReadFromStorage, AsWeakPtr(), extension->id(),
-                   is_unpacked));
+        base::BindOnce(&AlarmManager::ReadFromStorage, AsWeakPtr(),
+                       extension->id(), is_unpacked));
   }
 }
 
@@ -449,7 +451,8 @@ void AlarmManager::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  RemoveAllAlarms(extension->id(), base::Bind(RemoveAllOnUninstallCallback));
+  RemoveAllAlarms(extension->id(),
+                  base::BindOnce(RemoveAllOnUninstallCallback));
 }
 
 // AlarmManager::Alarm
@@ -487,8 +490,8 @@ Alarm::Alarm(const std::string& name,
 
   // Check for repetition.
   if (create_info.period_in_minutes.get()) {
-    js_alarm->period_in_minutes.reset(
-        new double(*create_info.period_in_minutes));
+    js_alarm->period_in_minutes =
+        std::make_unique<double>(*create_info.period_in_minutes);
   }
 }
 

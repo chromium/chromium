@@ -5,10 +5,10 @@
 #ifndef UI_BASE_ACCELERATORS_GLOBAL_MEDIA_KEYS_LISTENER_WIN_H_
 #define UI_BASE_ACCELERATORS_GLOBAL_MEDIA_KEYS_LISTENER_WIN_H_
 
+#include "base/component_export.h"
 #include "base/containers/flat_map.h"
 #include "base/win/windows_types.h"
 #include "ui/base/accelerators/media_keys_listener.h"
-#include "ui/base/ui_base_export.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace gfx {
@@ -22,9 +22,15 @@ namespace ui {
 // Implementation of MediaKeysListener that uses RegisterHotKey to globally
 // listen for media key presses. It only allows for a single instance to be
 // created in order to prevent conflicts form multiple listeners.
-class UI_BASE_EXPORT GlobalMediaKeysListenerWin : public MediaKeysListener {
+class COMPONENT_EXPORT(UI_BASE) GlobalMediaKeysListenerWin
+    : public MediaKeysListener {
  public:
   explicit GlobalMediaKeysListenerWin(MediaKeysListener::Delegate* delegate);
+
+  GlobalMediaKeysListenerWin(const GlobalMediaKeysListenerWin&) = delete;
+  GlobalMediaKeysListenerWin& operator=(const GlobalMediaKeysListenerWin&) =
+      delete;
+
   ~GlobalMediaKeysListenerWin() override;
 
   static bool has_instance() { return has_instance_; }
@@ -32,7 +38,6 @@ class UI_BASE_EXPORT GlobalMediaKeysListenerWin : public MediaKeysListener {
   // MediaKeysListener implementation.
   bool StartWatchingMediaKey(KeyboardCode key_code) override;
   void StopWatchingMediaKey(KeyboardCode key_code) override;
-  void SetIsMediaPlaying(bool is_playing) override {}
 
  private:
   // Called by SingletonHwndObserver.
@@ -44,8 +49,6 @@ class UI_BASE_EXPORT GlobalMediaKeysListenerWin : public MediaKeysListener {
   base::flat_map<KeyboardCode,
                  std::unique_ptr<gfx::SingletonHwndHotKeyObserver>>
       key_codes_hotkey_observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalMediaKeysListenerWin);
 };
 
 }  // namespace ui

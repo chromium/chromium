@@ -34,6 +34,7 @@
 #include "absl/types/span.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // -----------------------------------------------------------------------------
 // absl::SeedSeq
@@ -103,6 +104,7 @@ SeedSeq CreateSeedSeqFrom(URBG* urbg) {
 //
 SeedSeq MakeSeedSeq();
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_SEED_SEQUENCES_H_

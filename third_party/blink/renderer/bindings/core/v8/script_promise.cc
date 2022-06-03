@@ -64,7 +64,10 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
     }
   }
 
-  virtual void Trace(blink::Visitor* visitor) {
+  PromiseAllHandler(const PromiseAllHandler&) = delete;
+  PromiseAllHandler& operator=(const PromiseAllHandler&) = delete;
+
+  virtual void Trace(Visitor* visitor) const {
     visitor->Trace(resolver_);
     visitor->Trace(values_);
   }
@@ -95,7 +98,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
           index_(index),
           handler_(handler) {}
 
-    void Trace(blink::Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(handler_);
       ScriptFunction::Trace(visitor);
     }
@@ -160,8 +163,6 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
   // This is cleared when owners of this handler, that is, given promises are
   // settled.
   HeapVector<ScriptValue> values_;
-
-  DISALLOW_COPY_AND_ASSIGN(PromiseAllHandler);
 };
 
 }  // namespace
@@ -189,6 +190,8 @@ ScriptPromise ScriptPromise::InternalResolver::Promise() const {
 void ScriptPromise::InternalResolver::Resolve(v8::Local<v8::Value> value) {
   if (resolver_.IsEmpty())
     return;
+  v8::MicrotasksScope microtasks_scope(
+      script_state_->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Maybe<bool> result =
       resolver_.V8Value().As<v8::Promise::Resolver>()->Resolve(
           script_state_->GetContext(), value);
@@ -202,6 +205,8 @@ void ScriptPromise::InternalResolver::Resolve(v8::Local<v8::Value> value) {
 void ScriptPromise::InternalResolver::Reject(v8::Local<v8::Value> value) {
   if (resolver_.IsEmpty())
     return;
+  v8::MicrotasksScope microtasks_scope(
+      script_state_->GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
   v8::Maybe<bool> result =
       resolver_.V8Value().As<v8::Promise::Resolver>()->Reject(
           script_state_->GetContext(), value);
@@ -228,8 +233,8 @@ ScriptPromise::ScriptPromise(ScriptState* script_state,
 }
 
 ScriptPromise::ScriptPromise(const ScriptPromise& other) {
-  this->script_state_ = other.script_state_;
-  this->promise_ = other.promise_;
+  script_state_ = other.script_state_;
+  promise_ = other.promise_;
 }
 
 ScriptPromise ScriptPromise::Then(v8::Local<v8::Function> on_fulfilled,
@@ -264,6 +269,13 @@ ScriptPromise ScriptPromise::Then(v8::Local<v8::Function> on_fulfilled,
     return ScriptPromise();
   }
   return ScriptPromise(script_state_, result_promise);
+}
+
+ScriptPromise ScriptPromise::Then(NewScriptFunction* on_fulfilled,
+                                  NewScriptFunction* on_rejected) {
+  const v8::Local<v8::Function> empty;
+  return Then(on_fulfilled ? on_fulfilled->V8Function() : empty,
+              on_rejected ? on_rejected->V8Function() : empty);
 }
 
 ScriptPromise ScriptPromise::CastUndefined(ScriptState* script_state) {

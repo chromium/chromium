@@ -8,11 +8,12 @@
 
 #include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/diagnostics/diagnostics_model.h"
 #include "chrome/browser/diagnostics/diagnostics_writer.h"
 #include "chrome/browser/diagnostics/sqlite_diagnostics.h"
@@ -20,15 +21,20 @@
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/constants/chromeos_constants.h"
-#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_constants.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace diagnostics {
 
 // Basic harness to acquire and release the required temporary environment to
 // run a test in.
 class DiagnosticsControllerTest : public testing::Test {
+ public:
+  DiagnosticsControllerTest(const DiagnosticsControllerTest&) = delete;
+  DiagnosticsControllerTest& operator=(const DiagnosticsControllerTest&) =
+      delete;
+
  protected:
   DiagnosticsControllerTest() : cmdline_(base::CommandLine::NO_PROGRAM) {}
 
@@ -43,7 +49,7 @@ class DiagnosticsControllerTest : public testing::Test {
     base::CopyDirectory(test_data, temp_dir_.GetPath(), true);
     profile_dir_ = temp_dir_.GetPath().Append(FILE_PATH_LITERAL("user"));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // Redirect the home dir to the profile directory. We have to do this
     // because NSS uses the HOME directory to find where to store it's database,
     // so that's where the diagnostics and recovery code looks for it.
@@ -62,7 +68,7 @@ class DiagnosticsControllerTest : public testing::Test {
 
   void TearDown() override {
     DiagnosticsController::GetInstance()->ClearResults();
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     base::PathService::Override(base::DIR_HOME, old_home_dir_);
     old_home_dir_.clear();
 #endif
@@ -81,11 +87,9 @@ class DiagnosticsControllerTest : public testing::Test {
   std::unique_ptr<DiagnosticsWriter> writer_;
   base::FilePath profile_dir_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath old_home_dir_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(DiagnosticsControllerTest);
 };
 
 TEST_F(DiagnosticsControllerTest, Diagnostics) {
@@ -117,9 +121,9 @@ TEST_F(DiagnosticsControllerTest, RecoverAllOK) {
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DiagnosticsControllerTest, RecoverFromNssCertDbFailure) {
-  base::FilePath db_path = profile_dir_.Append(chromeos::kNssCertDbPath);
+  base::FilePath db_path = profile_dir_.Append(ash::kNssCertDbPath);
   EXPECT_TRUE(base::PathExists(db_path));
   CorruptDataFile(db_path);
   DiagnosticsController::GetInstance()->Run(cmdline_, writer_.get());
@@ -141,7 +145,7 @@ TEST_F(DiagnosticsControllerTest, RecoverFromNssCertDbFailure) {
 }
 
 TEST_F(DiagnosticsControllerTest, RecoverFromNssKeyDbFailure) {
-  base::FilePath db_path = profile_dir_.Append(chromeos::kNssKeyDbPath);
+  base::FilePath db_path = profile_dir_.Append(ash::kNssKeyDbPath);
   EXPECT_TRUE(base::PathExists(db_path));
   CorruptDataFile(db_path);
   DiagnosticsController::GetInstance()->Run(cmdline_, writer_.get());

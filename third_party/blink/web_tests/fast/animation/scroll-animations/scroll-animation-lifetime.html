@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>ScrollTimeline snapshotting</title>
+<link rel="help" href="https://wicg.github.io/scroll-animations">
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../external/wpt/web-animations/testcommon.js'></script>
+<script src='../../../external/wpt/scroll-animations/testcommon.js'></script>
+<style>
+  .scroller {
+    overflow: auto;
+    height: 100px;
+    width: 100px;
+    will-change: transform;
+  }
+
+  .contents {
+    height: 1000px;
+    width: 100%;
+  }
+</style>
+<div id="log"></div>
+
+<script>
+'use strict';
+
+promise_test(async t => {
+  var animation = createScrollLinkedAnimation(t);
+  var scroller = animation.timeline.scrollSource;
+  const maxScroll = scroller.scrollHeight - scroller.clientHeight;
+
+  animation.play();
+  await animation.ready;
+
+  scroller.scrollTop = maxScroll;
+  await animation.finished;
+
+  // Do not hold a reference to the animation.
+  animation = null;
+  GCController.collectAll();
+
+  scroller.scrollTop = 0.5 * maxScroll;
+  await waitForNextFrame();
+
+  // Scroller is alive - animation is not GC'ed.
+  assert_equals(document.getAnimations().length, 1,
+    'Animation must remain active.');
+
+}, 'Scroll animation is not GC\'ed when scroller is alive.');
+
+
+</script>

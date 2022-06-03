@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_INFO_H_
 
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -30,12 +30,8 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
   ~ImageResourceInfo() = default;
   virtual const KURL& Url() const = 0;
   virtual base::TimeTicks LoadResponseEnd() const = 0;
-  virtual bool IsSchedulingReload() const = 0;
   virtual const ResourceResponse& GetResponse() const = 0;
-  virtual bool ShouldShowPlaceholder() const = 0;
-  virtual bool ShouldShowLazyImagePlaceholder() const = 0;
   virtual bool IsCacheValidator() const = 0;
-  virtual bool SchedulingReloadOrShouldReloadBrokenPlaceholder() const = 0;
   enum DoesCurrentFrameHaveSingleSecurityOrigin {
     kHasMultipleSecurityOrigin,
     kHasSingleSecurityOrigin
@@ -43,7 +39,7 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
   virtual bool IsAccessAllowed(
       DoesCurrentFrameHaveSingleSecurityOrigin) const = 0;
   virtual bool HasCacheControlNoStoreHeader() const = 0;
-  virtual base::Optional<ResourceError> GetResourceError() const = 0;
+  virtual absl::optional<ResourceError> GetResourceError() const = 0;
 
   // TODO(hiroshige): Remove this once MemoryCache becomes further weaker.
   virtual void SetDecodedSize(size_t) = 0;
@@ -60,9 +56,13 @@ class CORE_EXPORT ImageResourceInfo : public GarbageCollectedMixin {
 
   virtual void LoadDeferredImage(ResourceFetcher* fetcher) = 0;
 
-  void Trace(blink::Visitor* visitor) override {}
+  virtual bool IsAdResource() const = 0;
+
+  virtual const HashSet<String>* GetUnsupportedImageMimeTypes() const = 0;
+
+  void Trace(Visitor* visitor) const override {}
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_RESOURCE_IMAGE_RESOURCE_INFO_H_

@@ -48,21 +48,21 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
  public:
   class Factory {
    public:
-    static std::unique_ptr<RemoteDeviceProvider> NewInstance(
+    static std::unique_ptr<RemoteDeviceProvider> Create(
         CryptAuthDeviceManager* v1_device_manager,
         CryptAuthV2DeviceManager* v2_device_manager,
         const std::string& user_email,
         const std::string& user_private_key);
 
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
     virtual ~Factory();
-    virtual std::unique_ptr<RemoteDeviceProvider> BuildInstance(
+    virtual std::unique_ptr<RemoteDeviceProvider> CreateInstance(
         CryptAuthDeviceManager* v1_device_manager,
         CryptAuthV2DeviceManager* v2_device_manager,
         const std::string& user_email,
-        const std::string& user_private_key);
+        const std::string& user_private_key) = 0;
 
    private:
     static Factory* factory_instance_;
@@ -72,6 +72,9 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
                            CryptAuthV2DeviceManager* v2_device_manager,
                            const std::string& user_email,
                            const std::string& user_private_key);
+
+  RemoteDeviceProviderImpl(const RemoteDeviceProviderImpl&) = delete;
+  RemoteDeviceProviderImpl& operator=(const RemoteDeviceProviderImpl&) = delete;
 
   ~RemoteDeviceProviderImpl() override;
 
@@ -122,8 +125,6 @@ class RemoteDeviceProviderImpl : public RemoteDeviceProvider,
 
   multidevice::RemoteDeviceList synced_remote_devices_;
   base::WeakPtrFactory<RemoteDeviceProviderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceProviderImpl);
 };
 
 }  // namespace device_sync

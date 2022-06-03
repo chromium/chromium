@@ -10,7 +10,7 @@
 
 #include "base/callback.h"
 #include "build/build_config.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/contacts_picker_properties_requested.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
@@ -38,10 +38,10 @@ std::unique_ptr<ContactsProvider> CreateProvider(
 void OnContactsSelected(
     blink::mojom::ContactsManager::SelectCallback callback,
     ukm::SourceId source_id,
-    base::Optional<std::vector<blink::mojom::ContactInfoPtr>> contacts,
+    absl::optional<std::vector<blink::mojom::ContactInfoPtr>> contacts,
     int percentage_shared,
     ContactsPickerPropertiesRequested properties_requested) {
-  if (contacts != base::nullopt) {
+  if (contacts != absl::nullopt) {
     int select_count = contacts.value().size();
     ukm::builders::ContactsPicker_ShareStatistics(source_id)
         .SetSelectCount(ukm::GetExponentialBucketMinForCounts1000(select_count))
@@ -54,24 +54,12 @@ void OnContactsSelected(
 
 }  // namespace
 
-// static
-void ContactsManagerImpl::Create(
+ContactsManagerImpl::ContactsManagerImpl(
     RenderFrameHostImpl* render_frame_host,
-    mojo::PendingReceiver<blink::mojom::ContactsManager> receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<ContactsManagerImpl>(render_frame_host),
-      std::move(receiver));
-}
-
-ContactsManagerImpl::ContactsManagerImpl(RenderFrameHostImpl* render_frame_host)
-    : contacts_provider_(CreateProvider(render_frame_host)) {
-  WebContents* web_contents =
-      WebContents::FromRenderFrameHost(render_frame_host);
-  if (!web_contents || !web_contents->GetTopLevelNativeWindow())
-    return;
-
-  source_id_ = web_contents->GetLastCommittedSourceId();
-}
+    mojo::PendingReceiver<blink::mojom::ContactsManager> receiver)
+    : DocumentService(render_frame_host, std::move(receiver)),
+      contacts_provider_(CreateProvider(render_frame_host)),
+      source_id_(render_frame_host->GetPageUkmSourceId()) {}
 
 ContactsManagerImpl::~ContactsManagerImpl() = default;
 
@@ -89,7 +77,7 @@ void ContactsManagerImpl::Select(bool multiple,
         base::BindOnce(&OnContactsSelected, std::move(mojom_callback),
                        source_id_));
   } else {
-    std::move(mojom_callback).Run(base::nullopt);
+    std::move(mojom_callback).Run(absl::nullopt);
   }
 }
 

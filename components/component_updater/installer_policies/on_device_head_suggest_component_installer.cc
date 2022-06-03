@@ -15,8 +15,8 @@
 #include "base/strings/string_util.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/on_device_model_update_listener.h"
-#include "components/omnibox/common/omnibox_features.h"
 
 namespace component_updater {
 
@@ -29,18 +29,29 @@ const uint8_t kOnDeviceHeadSuggestPublicKeySHA256[32] = {
 
 // Get the normalized locale from a given raw locale, i.e capitalizes all
 // letters and removes all hyphens and underscores in the locale string, e.g.
-// "en-US" -> "ENUS".
+// "en-US" -> "ENUS". If param "ForceModelLocaleConstraint" is set, append it
+// to the normalized locale as suffix.
 std::string GetNormalizedLocale(const std::string& raw_locale) {
-  std::string locale = base::GetFieldTrialParamValueByFeature(
-      omnibox::kOnDeviceHeadProvider, "ForceModelLocaleConstraint");
-  if (locale.empty())
-    locale = raw_locale;
+  std::string locale, locale_constraint;
+  // Both incognito and non-incognito will use a same model so it's okay to
+  // fetch the param from either feature.
+  if (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForIncognito())
+    locale_constraint =
+        OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(true);
+  else if (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForNonIncognito())
+    locale_constraint =
+        OmniboxFieldTrial::OnDeviceHeadModelLocaleConstraint(false);
 
+  locale = raw_locale;
   for (const auto c : "-_")
     locale.erase(std::remove(locale.begin(), locale.end(), c), locale.end());
 
   std::transform(locale.begin(), locale.end(), locale.begin(),
                  [](char c) -> char { return base::ToUpperASCII(c); });
+
+  if (!locale_constraint.empty())
+    locale += locale_constraint;
+
   VLOG(1) << "On Device Head Component will fetch model for locale: " << locale;
 
   return locale;
@@ -56,9 +67,9 @@ OnDeviceHeadSuggestInstallerPolicy::~OnDeviceHeadSuggestInstallerPolicy() =
     default;
 
 bool OnDeviceHeadSuggestInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
-  const std::string* name = manifest.FindStringPath("name");
+  const std::string* name = manifest.FindStringKey("name");
 
   if (!name || *name != ("OnDeviceHeadSuggest" + accept_locale_))
     return false;
@@ -73,16 +84,16 @@ bool OnDeviceHeadSuggestInstallerPolicy::VerifyInstallation(
 
 bool OnDeviceHeadSuggestInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool OnDeviceHeadSuggestInstallerPolicy::RequiresNetworkEncryption() const {
-  return true;
+  return false;
 }
 
 update_client::CrxInstaller::Result
 OnDeviceHeadSuggestInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);  // Nothing custom here.
 }
@@ -92,7 +103,7 @@ void OnDeviceHeadSuggestInstallerPolicy::OnCustomUninstall() {}
 void OnDeviceHeadSuggestInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   auto* listener = OnDeviceModelUpdateListener::GetInstance();
   if (listener)
     listener->OnModelUpdate(install_dir);
@@ -118,14 +129,12 @@ OnDeviceHeadSuggestInstallerPolicy::GetInstallerAttributes() const {
   return {{"accept_locale", accept_locale_}};
 }
 
-std::vector<std::string> OnDeviceHeadSuggestInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
-}
-
 void RegisterOnDeviceHeadSuggestComponent(ComponentUpdateService* cus,
                                           const std::string& locale) {
-  if (base::FeatureList::IsEnabled(omnibox::kOnDeviceHeadProvider)) {
+  // Ideally we should only check if the feature is enabled for non-incognito or
+  // incognito, but whether the browser is currently on incognito or not is not
+  // available yet during component registration on iOS platform.
+  if (OmniboxFieldTrial::IsOnDeviceHeadSuggestEnabledForAnyMode()) {
     auto installer = base::MakeRefCounted<ComponentInstaller>(
         std::make_unique<OnDeviceHeadSuggestInstallerPolicy>(locale));
     installer->Register(cus, base::OnceClosure());

@@ -5,11 +5,12 @@
 #include "remoting/protocol/ice_transport_channel.h"
 
 #include <algorithm>
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "jingle/glue/utils.h"
 #include "net/base/net_errors.h"
@@ -71,7 +72,7 @@ IceTransportChannel::~IceTransportChannel() {
 
 void IceTransportChannel::Connect(const std::string& name,
                                   Delegate* delegate,
-                                  const ConnectedCallback& callback) {
+                                  ConnectedCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(!name.empty());
   DCHECK(delegate);
@@ -80,16 +81,16 @@ void IceTransportChannel::Connect(const std::string& name,
   DCHECK(name_.empty());
   name_ = name;
   delegate_ = delegate;
-  callback_ = callback;
+  callback_ = std::move(callback);
 
   port_allocator_ =
       transport_context_->port_allocator_factory()->CreatePortAllocator(
-          transport_context_);
+          transport_context_, nullptr);
 
   // Create P2PTransportChannel, attach signal handlers and connect it.
   // TODO(sergeyu): Specify correct component ID for the channel.
-  channel_.reset(new cricket::P2PTransportChannel(
-      std::string(), 0, port_allocator_.get()));
+  channel_ = std::make_unique<cricket::P2PTransportChannel>(
+      std::string(), 0, port_allocator_.get());
   std::string ice_password = rtc::CreateRandomString(cricket::ICE_PWD_LENGTH);
   channel_->SetIceProtocolType(cricket::ICEPROTO_RFC5245);
   channel_->SetIceRole((transport_context_->role() == TransportRole::CLIENT)
@@ -137,7 +138,7 @@ void IceTransportChannel::NotifyConnected() {
   // Create P2PDatagramSocket adapter for the P2PTransportChannel.
   std::unique_ptr<TransportChannelSocketAdapter> socket(
       new TransportChannelSocketAdapter(channel_.get()));
-  socket->SetOnDestroyedCallback(base::Bind(
+  socket->SetOnDestroyedCallback(base::BindOnce(
       &IceTransportChannel::OnChannelDestroyed, base::Unretained(this)));
   std::move(callback_).Run(std::move(socket));
 }

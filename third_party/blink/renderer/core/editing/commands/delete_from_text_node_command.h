@@ -36,7 +36,7 @@ class DeleteFromTextNodeCommand final : public SimpleEditCommand {
  public:
   DeleteFromTextNodeCommand(Text*, unsigned offset, unsigned count);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

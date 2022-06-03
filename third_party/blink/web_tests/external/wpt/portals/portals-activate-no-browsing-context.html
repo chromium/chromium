@@ -3,7 +3,8 @@
 <script src="/resources/testharnessreport.js"></script>
 <script>
 promise_test(async t => {
+  assert_implements("HTMLPortalElement" in self);
   let activatePromise = document.createElement('portal').activate();
-  await promise_rejects(t, 'InvalidStateError', activatePromise);
+  await promise_rejects_dom(t, 'InvalidStateError', activatePromise);
 }, "A portal with nothing in it cannot be activated");
 </script>

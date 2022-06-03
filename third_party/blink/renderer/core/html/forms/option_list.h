@@ -18,7 +18,7 @@ class CORE_EXPORT OptionListIterator final {
 
  public:
   explicit OptionListIterator(const HTMLSelectElement* select)
-      : select_(select) {
+      : select_(select), current_(nullptr) {
     if (select_)
       Advance(nullptr);
   }
@@ -37,8 +37,8 @@ class CORE_EXPORT OptionListIterator final {
  private:
   void Advance(HTMLOptionElement* current);
 
-  Member<const HTMLSelectElement> select_;
-  Member<HTMLOptionElement> current_;  // nullptr means we reached to the end.
+  const HTMLSelectElement* select_;
+  HTMLOptionElement* current_;  // nullptr means we reached to the end.
 };
 
 // OptionList class is a lightweight version of HTMLOptionsCollection.
@@ -46,15 +46,15 @@ class OptionList final {
   STACK_ALLOCATED();
 
  public:
-  explicit OptionList(const HTMLSelectElement& select) : select_(select) {}
+  explicit OptionList(const HTMLSelectElement& select) : select_(&select) {}
   using Iterator = OptionListIterator;
   Iterator begin() { return Iterator(select_); }
   Iterator end() { return Iterator(nullptr); }
 
  private:
-  Member<const HTMLSelectElement> select_;
+  const HTMLSelectElement* select_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_HTML_FORMS_OPTION_LIST_H_

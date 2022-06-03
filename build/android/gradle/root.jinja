@@ -9,18 +9,18 @@ buildscript {
         jcenter()
 {% if channel == 'canary' %}
         // Workaround for http://b/144885480.
-        maven() {
-          url "http://dl.bintray.com/kotlin/kotlin-eap"
-        }
+        //maven() {
+        //  url "http://dl.bintray.com/kotlin/kotlin-eap"
+        //}
 {% endif %}
     }
     dependencies {
 {% if channel == 'canary' %}
-        classpath "com.android.tools.build:gradle:4.0.0-alpha04"
+        classpath "com.android.tools.build:gradle:4.1.0-beta01"
 {% elif channel == 'beta' %}
-        classpath "com.android.tools.build:gradle:3.1.0-beta4"
+        classpath "com.android.tools.build:gradle:4.0.0-rc01"
 {% else %}
-        classpath "com.android.tools.build:gradle:3.0.1"
+        classpath "com.android.tools.build:gradle:4.0.1"
 {% endif %}
     }
 }

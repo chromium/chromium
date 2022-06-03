@@ -5,22 +5,22 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_RESOURCE_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/core/svg/svg_resource_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
-#include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
-#include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class Document;
-class DocumentResource;
 class Element;
 class IdTargetObserver;
 class LayoutSVGResourceContainer;
+class QualifiedName;
+class SVGFilterPrimitiveStandardAttributes;
+class SVGResourceClient;
+class SVGResourceDocumentContent;
 class TreeScope;
 
 // A class tracking a reference to an SVG resource (an element that constitutes
@@ -61,30 +61,49 @@ class TreeScope;
 //
 class SVGResource : public GarbageCollected<SVGResource> {
  public:
+  SVGResource(const SVGResource&) = delete;
+  SVGResource& operator=(const SVGResource&) = delete;
   virtual ~SVGResource();
 
-  virtual void Load(const Document&) {}
+  virtual void Load(Document&) {}
+  virtual void LoadWithoutCSP(Document&) {}
 
   Element* Target() const { return target_; }
-  LayoutSVGResourceContainer* ResourceContainer() const;
+  // Returns the target's LayoutObject (if target exists and is attached to the
+  // layout tree). Also perform cycle-checking, and may thus return nullptr if
+  // this SVGResourceClient -> SVGResource reference would start a cycle.
+  LayoutSVGResourceContainer* ResourceContainer(SVGResourceClient&) const;
+  // Same as the above, minus the cycle-checking.
+  LayoutSVGResourceContainer* ResourceContainerNoCycleCheck() const;
+  // Run cycle-checking for this SVGResourceClient -> SVGResource
+  // reference. Used internally by the cycle-checking, and shouldn't be called
+  // directly in general.
+  bool FindCycle(SVGResourceClient&) const;
 
   void AddClient(SVGResourceClient&);
   void RemoveClient(SVGResourceClient&);
 
-  bool HasClients() const { return !clients_.IsEmpty(); }
-
-  virtual void Trace(Visitor*);
+  virtual void Trace(Visitor*) const;
 
  protected:
   SVGResource();
 
-  void NotifyElementChanged();
+  void InvalidateCycleCache();
+  void NotifyContentChanged();
 
   Member<Element> target_;
-  HeapHashCountedSet<Member<SVGResourceClient>> clients_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(SVGResource);
+  enum CycleState {
+    kNeedCheck,
+    kPerformingCheck,
+    kHasCycle,
+    kNoCycle,
+  };
+  struct ClientEntry {
+    int count = 0;
+    CycleState cached_cycle_check = kNeedCheck;
+  };
+  mutable HeapHashMap<Member<SVGResourceClient>, ClientEntry> clients_;
 };
 
 // Local resource reference (see SVGResource.)
@@ -94,12 +113,13 @@ class LocalSVGResource final : public SVGResource {
 
   void Unregister();
 
-  void NotifyContentChanged(InvalidationModeMask);
+  using SVGResource::NotifyContentChanged;
 
-  void NotifyResourceAttached(LayoutSVGResourceContainer&);
-  void NotifyResourceDestroyed(LayoutSVGResourceContainer&);
+  void NotifyFilterPrimitiveChanged(
+      SVGFilterPrimitiveStandardAttributes& primitive,
+      const QualifiedName& attribute);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void TargetChanged(const AtomicString& id);
@@ -109,25 +129,24 @@ class LocalSVGResource final : public SVGResource {
 };
 
 // External resource reference (see SVGResource.)
-class ExternalSVGResource final : public SVGResource, private ResourceClient {
-  USING_GARBAGE_COLLECTED_MIXIN(ExternalSVGResource);
-
+class ExternalSVGResource final : public SVGResource, public ResourceClient {
  public:
   explicit ExternalSVGResource(const KURL&);
 
-  void Load(const Document&) override;
+  void Load(Document&) override;
+  void LoadWithoutCSP(Document&) override;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Element* ResolveTarget();
 
   // ResourceClient implementation
-  String DebugName() const override;
   void NotifyFinished(Resource*) override;
+  String DebugName() const override;
 
+  Member<SVGResourceDocumentContent> document_content_;
   KURL url_;
-  Member<DocumentResource> resource_document_;
 };
 
 }  // namespace blink

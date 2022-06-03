@@ -7,7 +7,7 @@
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -32,12 +32,15 @@
   [super viewDidLoad];
 
   self.navigationBar.translucent = NO;
-  self.navigationBar.barTintColor = UIColor.cr_systemBackgroundColor;
-  self.view.backgroundColor = UIColor.cr_systemBackgroundColor;
   self.navigationBar.prefersLargeTitles = YES;
-
   self.toolbar.translucent = NO;
-  self.toolbar.barTintColor = UIColor.cr_systemBackgroundColor;
+
+  self.navigationBar.barTintColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.toolbar.barTintColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+  self.view.backgroundColor =
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 
 @end

@@ -5,17 +5,18 @@
 #ifndef BASE_FILES_IMPORTANT_FILE_WRITER_H_
 #define BASE_FILES_IMPORTANT_FILE_WRITER_H_
 
+#include <memory>
 #include <string>
 
 #include "base/base_export.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 
@@ -37,6 +38,11 @@ class SequencedTaskRunner;
 // for details) and thus please don't block shutdown on ImportantFileWriter.
 class BASE_EXPORT ImportantFileWriter {
  public:
+  // Promise-like callback that returns (via output parameter) the serialized
+  // data to be written. This callback is invoked on the sequence where I/O
+  // operations are executed. Returning false indicates an error.
+  using BackgroundDataProducerCallback = base::OnceCallback<bool(std::string*)>;
+
   // Used by ScheduleSave to lazily provide the data to be saved. Allows us
   // to also batch data serializations.
   class BASE_EXPORT DataSerializer {
@@ -48,6 +54,21 @@ class BASE_EXPORT ImportantFileWriter {
 
    protected:
     virtual ~DataSerializer() = default;
+  };
+
+  // Same as DataSerializer but allows the caller to move some of the
+  // serialization logic to the sequence where I/O operations are executed.
+  class BASE_EXPORT BackgroundDataSerializer {
+   public:
+    // Returns a promise-like callback that, when invoked, will produce the
+    // serialized string. This getter itself will be called on the same thread
+    // on which ImportantFileWriter has been created, but the callback will be
+    // invoked from the sequence where I/O operations are executed.
+    virtual BackgroundDataProducerCallback
+    GetSerializedDataProducerForBackgroundSequence() = 0;
+
+   protected:
+    virtual ~BackgroundDataSerializer() = default;
   };
 
   // Save |data| to |path| in an atomic manner. Blocks and writes data on the
@@ -64,13 +85,16 @@ class BASE_EXPORT ImportantFileWriter {
   // All non-const methods, ctor and dtor must be called on the same thread.
   ImportantFileWriter(const FilePath& path,
                       scoped_refptr<SequencedTaskRunner> task_runner,
-                      const char* histogram_suffix = nullptr);
+                      StringPiece histogram_suffix = StringPiece());
 
   // Same as above, but with a custom commit interval.
   ImportantFileWriter(const FilePath& path,
                       scoped_refptr<SequencedTaskRunner> task_runner,
                       TimeDelta interval,
-                      const char* histogram_suffix = nullptr);
+                      StringPiece histogram_suffix = StringPiece());
+
+  ImportantFileWriter(const ImportantFileWriter&) = delete;
+  ImportantFileWriter& operator=(const ImportantFileWriter&) = delete;
 
   // You have to ensure that there are no pending writes at the moment
   // of destruction.
@@ -94,7 +118,11 @@ class BASE_EXPORT ImportantFileWriter {
   // ImportantFileWriter.
   void ScheduleWrite(DataSerializer* serializer);
 
-  // Serialize data pending to be saved and execute write on backend thread.
+  // Same as above but uses the BackgroundDataSerializer API.
+  void ScheduleWriteWithBackgroundDataSerializer(
+      BackgroundDataSerializer* serializer);
+
+  // Serialize data pending to be saved and execute write on background thread.
   void DoScheduledWrite();
 
   // Registers |before_next_write_callback| and |after_next_write_callback| to
@@ -116,11 +144,42 @@ class BASE_EXPORT ImportantFileWriter {
   // Overrides the timer to use for scheduling writes with |timer_override|.
   void SetTimerForTesting(OneShotTimer* timer_override);
 
+#if defined(UNIT_TEST)
+  size_t previous_data_size() const { return previous_data_size_; }
+#endif
+  void set_previous_data_size(size_t previous_data_size) {
+    previous_data_size_ = previous_data_size;
+  }
+
  private:
   const OneShotTimer& timer() const {
     return timer_override_ ? *timer_override_ : timer_;
   }
   OneShotTimer& timer() { return timer_override_ ? *timer_override_ : timer_; }
+
+  // Same as WriteNow() but it uses a promise-like signature that allows running
+  // custom logic in the background sequence.
+  void WriteNowWithBackgroundDataProducer(
+      BackgroundDataProducerCallback background_producer);
+
+  // Helper function to call WriteFileAtomically() with a promise-like callback
+  // producing a std::string.
+  static void ProduceAndWriteStringToFileAtomically(
+      const FilePath& path,
+      BackgroundDataProducerCallback data_producer_for_background_sequence,
+      OnceClosure before_write_callback,
+      OnceCallback<void(bool success)> after_write_callback,
+      const std::string& histogram_suffix);
+
+  // Writes |data| to |path|, recording histograms with an optional
+  // |histogram_suffix|. |from_instance| indicates whether the call originates
+  // from an instance of ImportantFileWriter or a direct call to
+  // WriteFileAtomically. When false, the directory containing |path| is added
+  // to the set cleaned by the ImportantFileWriterCleaner (Windows only).
+  static bool WriteFileAtomicallyImpl(const FilePath& path,
+                                      StringPiece data,
+                                      StringPiece histogram_suffix,
+                                      bool from_instance);
 
   void ClearPendingWrite();
 
@@ -141,7 +200,8 @@ class BASE_EXPORT ImportantFileWriter {
   OneShotTimer* timer_override_ = nullptr;
 
   // Serializer which will provide the data to be saved.
-  DataSerializer* serializer_;
+  absl::variant<absl::monostate, DataSerializer*, BackgroundDataSerializer*>
+      serializer_;
 
   // Time delta after which scheduled data will be written to disk.
   const TimeDelta commit_interval_;
@@ -149,11 +209,14 @@ class BASE_EXPORT ImportantFileWriter {
   // Custom histogram suffix.
   const std::string histogram_suffix_;
 
+  // Memorizes the amount of data written on the previous write. This helps
+  // preallocating memory for the data serialization. It is only used for
+  // scheduled writes.
+  size_t previous_data_size_ = 0;
+
   SEQUENCE_CHECKER(sequence_checker_);
 
   WeakPtrFactory<ImportantFileWriter> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ImportantFileWriter);
 };
 
 }  // namespace base

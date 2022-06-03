@@ -1,0 +1,12 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++tabList horizontal
+++++++++tab name='tab1' selected=false selectedFromFocus=false
+++++++++++staticText name='tab1'
+++++++++++++inlineTextBox name='tab1'
+++++++++tab name='tab2' selected=false selectedFromFocus=false
+++++++++++staticText name='tab2'
+++++++++++++inlineTextBox name='tab2'
+++++++staticText name='Done'
+++++++++inlineTextBox name='Done'

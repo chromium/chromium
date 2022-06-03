@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
 import json
 import time
 
+from six.moves import range  # pylint: disable=redefined-builtin
 from devil.android import forwarder
 from devil.android import ports
 from pylib.base import test_server
@@ -25,7 +27,7 @@ def _WaitUntil(predicate, max_attempts=5):
     Whether the provided predicate was satisfied once (before the timeout).
   """
   sleep_time_sec = 0.025
-  for _ in xrange(1, max_attempts):
+  for _ in range(1, max_attempts):
     if predicate():
       return True
     time.sleep(sleep_time_sec)
@@ -76,10 +78,9 @@ class LocalTestServerSpawner(test_server.TestServer):
 
   #override
   def SetUp(self):
-    # See net/test/spawned_test_server/test_server_config.h for description of
+    # See net/test/spawned_test_server/remote_test_server.h for description of
     # the fields in the config file.
     test_server_config = json.dumps({
-      'address': '127.0.0.1',
       'spawner_url_base': 'http://localhost:%d' % self.port
     })
     self._device.WriteFile(

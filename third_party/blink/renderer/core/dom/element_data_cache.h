@@ -44,7 +44,7 @@ class ElementDataCache final : public GarbageCollected<ElementDataCache> {
   ShareableElementData* CachedShareableElementDataWithAttributes(
       const Vector<Attribute>&);
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   typedef HeapHashMap<unsigned, Member<ShareableElementData>, AlreadyHashed>
@@ -54,4 +54,4 @@ class ElementDataCache final : public GarbageCollected<ElementDataCache> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_ELEMENT_DATA_CACHE_H_

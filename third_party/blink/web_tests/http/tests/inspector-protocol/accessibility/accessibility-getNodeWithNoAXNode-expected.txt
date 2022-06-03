@@ -1,0 +1,20 @@
+Tests that node without AXNode reports accessibility values.
+{
+    domNode : head
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : notRendered
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+

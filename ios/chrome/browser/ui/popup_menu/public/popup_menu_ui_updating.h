@@ -13,7 +13,7 @@ typedef NS_ENUM(NSInteger, PopupMenuType) {
   PopupMenuTypeNavigationBackward,
   PopupMenuTypeNavigationForward,
   PopupMenuTypeTabGrid,
-  PopupMenuTypeSearch,
+  PopupMenuTypeNewTab,
   PopupMenuTypeTabStripTabGrid,
 };
 

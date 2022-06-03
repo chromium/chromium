@@ -4,7 +4,10 @@
 
 #include "ui/accessibility/platform/ax_platform_atk_hyperlink.h"
 
-#include "ui/accessibility/ax_text_utils.h"
+#include <string>
+#include <utility>
+
+#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/platform/ax_platform_node_auralinux.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 
@@ -82,7 +85,7 @@ static gboolean AXPlatformAtkHyperlinkIsSelectedLink(
 static int AXPlatformAtkHyperlinkGetStartIndex(AtkHyperlink* atk_hyperlink) {
   g_return_val_if_fail(IS_AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink), 0);
   AXPlatformAtkHyperlink* link = AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink);
-  base::Optional<std::pair<int, int>> indices =
+  absl::optional<std::pair<int, int>> indices =
       link->priv->platform_node->GetEmbeddedObjectIndices();
   return indices.has_value() ? indices->first : 0;
 }
@@ -90,7 +93,7 @@ static int AXPlatformAtkHyperlinkGetStartIndex(AtkHyperlink* atk_hyperlink) {
 static int AXPlatformAtkHyperlinkGetEndIndex(AtkHyperlink* atk_hyperlink) {
   g_return_val_if_fail(IS_AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink), 0);
   AXPlatformAtkHyperlink* link = AX_PLATFORM_ATK_HYPERLINK(atk_hyperlink);
-  base::Optional<std::pair<int, int>> indices =
+  absl::optional<std::pair<int, int>> indices =
       link->priv->platform_node->GetEmbeddedObjectIndices();
   return indices.has_value() ? indices->second : 0;
 }
@@ -192,9 +195,9 @@ static const gchar* ax_platform_atk_hyperlink_get_name(AtkAction* atk_action,
   if (!obj->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
                             &action))
     return nullptr;
-  base::string16 action_verb = ui::ActionVerbToUnlocalizedString(
-      static_cast<ax::mojom::DefaultActionVerb>(action));
-  ATK_AURALINUX_RETURN_STRING(base::UTF16ToUTF8(action_verb));
+  std::string action_verb =
+      ui::ToString(static_cast<ax::mojom::DefaultActionVerb>(action));
+  ATK_AURALINUX_RETURN_STRING(action_verb);
 }
 
 static const gchar* ax_platform_atk_hyperlink_get_localized_name(
@@ -212,9 +215,9 @@ static const gchar* ax_platform_atk_hyperlink_get_localized_name(
   if (!obj->GetIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
                             &action))
     return nullptr;
-  base::string16 action_verb = ui::ActionVerbToLocalizedString(
-      static_cast<ax::mojom::DefaultActionVerb>(action));
-  ATK_AURALINUX_RETURN_STRING(base::UTF16ToUTF8(action_verb));
+  std::string action_verb =
+      ui::ToLocalizedString(static_cast<ax::mojom::DefaultActionVerb>(action));
+  ATK_AURALINUX_RETURN_STRING(action_verb);
 }
 
 static void atk_action_interface_init(AtkActionIface* iface) {

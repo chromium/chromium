@@ -9,7 +9,7 @@ namespace viz {
 FakeSurfaceObserver::FakeSurfaceObserver(bool damage_display)
     : damage_display_(damage_display) {}
 
-FakeSurfaceObserver::~FakeSurfaceObserver() {}
+FakeSurfaceObserver::~FakeSurfaceObserver() = default;
 
 void FakeSurfaceObserver::Reset() {
   last_ack_ = BeginFrameAck();
@@ -37,8 +37,6 @@ void FakeSurfaceObserver::OnFirstSurfaceActivation(
   last_surface_info_ = surface_info;
 }
 
-void FakeSurfaceObserver::OnSurfaceActivated(
-    const SurfaceId& surface_id,
-    base::Optional<base::TimeDelta> duration) {}
+void FakeSurfaceObserver::OnSurfaceActivated(const SurfaceId& surface_id) {}
 
 }  // namespace viz

@@ -27,10 +27,6 @@
 namespace base {
 class FilePath;
 
-namespace trace_event {
-class ProcessMemoryDump;
-}
-
 namespace android {
 class ApplicationStatusListener;
 }  // namespace android
@@ -47,7 +43,9 @@ namespace disk_cache {
 class Entry;
 class Backend;
 class EntryResult;
+struct RangeResult;
 using EntryResultCallback = base::OnceCallback<void(EntryResult)>;
+using RangeResultCallback = base::OnceCallback<void(const RangeResult&)>;
 
 // How to handle resetting the back-end cache from the previous session.
 // See CreateCacheBackend() for its usage.
@@ -265,11 +263,6 @@ class NET_EXPORT Backend {
   // referred to by |key|.
   virtual void OnExternalCacheHit(const std::string& key) = 0;
 
-  // Returns the estimate of dynamically allocated memory in bytes.
-  virtual size_t DumpMemoryStats(
-      base::trace_event::ProcessMemoryDump* pmd,
-      const std::string& parent_absolute_name) const = 0;
-
   // Backends can optionally permit one to store, probabilistically, up to a
   // byte associated with a key of an existing entry in memory.
 
@@ -295,8 +288,10 @@ class NET_EXPORT Backend {
 // This interface represents an entry in the disk cache.
 class NET_EXPORT Entry {
  public:
-  typedef net::CompletionOnceCallback CompletionOnceCallback;
-  typedef net::IOBuffer IOBuffer;
+  using CompletionOnceCallback = net::CompletionOnceCallback;
+  using IOBuffer = net::IOBuffer;
+  using RangeResultCallback = disk_cache::RangeResultCallback;
+  using RangeResult = disk_cache::RangeResult;
 
   // Marks this cache entry for deletion.
   virtual void Doom() = 0;
@@ -413,17 +408,11 @@ class NET_EXPORT Entry {
 
   // Returns information about the currently stored portion of a sparse entry.
   // |offset| and |len| describe a particular range that should be scanned to
-  // find out if it is stored or not. |start| will contain the offset of the
-  // first byte that is stored within this range, and the return value is the
-  // minimum number of consecutive stored bytes. Note that it is possible that
-  // this entry has stored more than the returned value. This method returns a
-  // net error code whenever the request cannot be completed successfully. If
-  // this method returns ERR_IO_PENDING, the |callback| will be invoked when the
-  // operation completes, and |start| must remain valid until that point.
-  virtual int GetAvailableRange(int64_t offset,
-                                int len,
-                                int64_t* start,
-                                CompletionOnceCallback callback) = 0;
+  // find out if it is stored or not. Please see the documentation of
+  // RangeResult for more details.
+  virtual RangeResult GetAvailableRange(int64_t offset,
+                                        int len,
+                                        RangeResultCallback callback) = 0;
 
   // Returns true if this entry could be a sparse entry or false otherwise. This
   // is a quick test that may return true even if the entry is not really
@@ -521,6 +510,44 @@ class NET_EXPORT EntryResult {
   bool opened_ = false;
   ScopedEntryPtr entry_;
 };
+
+// Represents a result of GetAvailableRange.
+struct NET_EXPORT RangeResult {
+  RangeResult() = default;
+  explicit RangeResult(net::Error error) : net_error(error) {}
+
+  RangeResult(int64_t start, int available_len)
+      : net_error(net::OK), start(start), available_len(available_len) {}
+
+  // This is net::OK if operation succeeded, and `start` and `available_len`
+  // were set appropriately (potentially with 0 for `available_len`).
+  //
+  // In return value of GetAvailableRange(), net::ERR_IO_PENDING means that the
+  // result will be provided asynchronously via the callback. This can not occur
+  // in the value passed to the callback itself.
+  //
+  // In case the operation failed, this will be the error code.
+  net::Error net_error = net::ERR_FAILED;
+
+  // First byte within the range passed to GetAvailableRange that's available
+  // in the cache entry.
+  //
+  // Valid iff net_error is net::OK.
+  int64_t start = -1;
+
+  // Number of consecutive bytes stored within the requested range starting from
+  // `start` that can be read at once. This may be zero.
+  //
+  // Valid iff net_error is net::OK.
+  int available_len = 0;
+};
+
+// The maximum size of cache that can be created for type
+// GENERATED_WEBUI_BYTE_CODE_CACHE. There are only a handful of commonly
+// accessed WebUI pages, which can each cache 0.5 - 1.5 MB of code. There is no
+// point in having a very large WebUI code cache, even if lots of disk space is
+// available.
+constexpr int kMaxWebUICodeCacheSize = 5 * 1024 * 1024;
 
 }  // namespace disk_cache
 

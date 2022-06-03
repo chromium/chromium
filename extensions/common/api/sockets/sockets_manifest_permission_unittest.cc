@@ -5,13 +5,12 @@
 #include <set>
 #include <tuple>
 
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
-#include "base/pickle.h"
-#include "base/stl_util.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "extensions/common/api/sockets/sockets_manifest_permission.h"
 #include "extensions/common/manifest_constants.h"
-#include "ipc/ipc_message.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using content::SocketPermissionRequest;
@@ -49,7 +48,7 @@ static std::unique_ptr<base::Value> ParsePermissionJSON(
 
 static std::unique_ptr<SocketsManifestPermission> PermissionFromValue(
     const base::Value& value) {
-  base::string16 error16;
+  std::u16string error16;
   std::unique_ptr<SocketsManifestPermission> permission(
       SocketsManifestPermission::FromValue(value, &error16));
   EXPECT_TRUE(permission) << "Error parsing Value into permission: " << error16;
@@ -188,18 +187,6 @@ TEST(SocketsManifestPermissionTest, Empty) {
   auto* intersect =
       static_cast<SocketsManifestPermission*>(manifest_intersect.get());
   AssertEmptyPermission(intersect);
-
-  // IPC
-  std::unique_ptr<SocketsManifestPermission> ipc_perm(
-      new SocketsManifestPermission());
-  std::unique_ptr<SocketsManifestPermission> ipc_perm2(
-      new SocketsManifestPermission());
-
-  IPC::Message m;
-  ipc_perm->Write(&m);
-  base::PickleIterator iter(m);
-  EXPECT_TRUE(ipc_perm2->Read(&m, &iter));
-  AssertEmptyPermission(ipc_perm2.get());
 }
 
 TEST(SocketsManifestPermissionTest, JSONFormats) {
@@ -395,23 +382,6 @@ TEST(SocketsManifestPermissionTest, SetOperations) {
 
   EXPECT_TRUE(permission1->Equal(intersect1));
   EXPECT_TRUE(intersect1->Equal(permission1.get()));
-}
-
-TEST(SocketsManifestPermissionTest, IPC) {
-  std::unique_ptr<SocketsManifestPermission> permission(
-      PermissionFromJSON(kUdpBindPermission));
-
-  std::unique_ptr<ManifestPermission> manifest_ipc_perm1 = permission->Clone();
-  auto* ipc_perm1 =
-      static_cast<SocketsManifestPermission*>(manifest_ipc_perm1.get());
-
-  auto ipc_perm2 = std::make_unique<SocketsManifestPermission>();
-
-  IPC::Message m;
-  ipc_perm1->Write(&m);
-  base::PickleIterator iter(m);
-  EXPECT_TRUE(ipc_perm2->Read(&m, &iter));
-  EXPECT_TRUE(permission->Equal(ipc_perm2.get()));
 }
 
 }  // namespace extensions

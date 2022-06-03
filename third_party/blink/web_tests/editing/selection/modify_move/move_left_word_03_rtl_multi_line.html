@@ -37,7 +37,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<br><br><br>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|<br><br><br>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0<br><br><br>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0</div>',
   '3-3 rtl left word');
 
 selection_test(
@@ -117,7 +117,7 @@ selection_test(
   selection => selection.modify('move', 'left', 'word'),
   isMac
       ? '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<br><br><br>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>'
-      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<br><br><br>\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0|</div>',
+      : '<div contenteditable dir="rtl">\u05D0\u05D0\u05D0 \u05D0\u05D0\u05D0<br><br><br>\u05D0\u05D0\u05D0 |\u05D0\u05D0\u05D0</div>',
   '3-13 rtl left word');
 
 selection_test(

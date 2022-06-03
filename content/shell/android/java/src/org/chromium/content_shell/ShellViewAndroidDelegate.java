@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 import android.view.ViewGroup;
 
 import org.chromium.ui.base.ViewAndroidDelegate;
-import org.chromium.ui_base.web.CursorType;
+import org.chromium.ui.mojom.CursorType;
 
 /**
  * Implementation of the abstract class {@link ViewAndroidDelegate} for content shell.

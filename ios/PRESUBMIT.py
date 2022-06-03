@@ -10,6 +10,9 @@ for more details about the presubmit API built into depot_tools.
 
 import os
 
+USE_PYTHON3 = True
+
+NULLABILITY_PATTERN = r'(nonnull|nullable|_Nullable|_Nonnull)'
 TODO_PATTERN = r'TO[D]O\(([^\)]*)\)'
 CRBUG_PATTERN = r'crbug\.com/\d+$'
 ARC_COMPILE_GUARD = [
@@ -53,19 +56,32 @@ def _CheckARCCompilationGuard(input_api, output_api):
   return [output_api.PresubmitError(error_message)]
 
 
-def _CheckBugInToDo(input_api, output_api):
-  """ Checks whether TODOs in ios code are identified by a bug number."""
-  todo_regex = input_api.re.compile(TODO_PATTERN)
-  crbug_regex = input_api.re.compile(CRBUG_PATTERN)
+def _CheckNullabilityAnnotations(input_api, output_api):
+  """ Checks whether there are nullability annotations in ios code."""
+  nullability_regex = input_api.re.compile(NULLABILITY_PATTERN)
 
   errors = []
   for f in input_api.AffectedFiles():
     for line_num, line in f.ChangedContents():
-      todo_match = todo_regex.search(line)
-      if not todo_match:
-        continue
-      crbug_match = crbug_regex.match(todo_match.group(1))
-      if not crbug_match:
+      if nullability_regex.search(line):
+        errors.append('%s:%s' % (f.LocalPath(), line_num))
+  if not errors:
+    return []
+
+  plural_suffix = '' if len(errors) == 1 else 's'
+  error_message = ('Found Nullability annotation%(plural)s. '
+      'Prefer DCHECKs in ios code to check for nullness:'
+       % {'plural': plural_suffix})
+
+  return [output_api.PresubmitPromptWarning(error_message, items=errors)]
+
+
+def _CheckBugInToDo(input_api, output_api):
+  """ Checks whether TODOs in ios code are identified by a bug number."""
+  errors = []
+  for f in input_api.AffectedFiles():
+    for line_num, line in f.ChangedContents():
+      if _HasToDoWithNoBug(input_api, line):
         errors.append('%s:%s' % (f.LocalPath(), line_num))
   if not errors:
     return []
@@ -79,8 +95,21 @@ def _CheckBugInToDo(input_api, output_api):
   return [output_api.PresubmitError(error_message)]
 
 
+def _HasToDoWithNoBug(input_api, line):
+  """ Returns True if TODO is not identified by a bug number."""
+  todo_regex = input_api.re.compile(TODO_PATTERN)
+  crbug_regex = input_api.re.compile(CRBUG_PATTERN)
+
+  todo_match = todo_regex.search(line)
+  if not todo_match:
+    return False
+  crbug_match = crbug_regex.match(todo_match.group(1))
+  return not crbug_match
+
+
 def CheckChangeOnUpload(input_api, output_api):
   results = []
   results.extend(_CheckBugInToDo(input_api, output_api))
+  results.extend(_CheckNullabilityAnnotations(input_api, output_api))
   results.extend(_CheckARCCompilationGuard(input_api, output_api))
   return results

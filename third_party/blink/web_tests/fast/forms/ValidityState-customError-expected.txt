@@ -3,10 +3,10 @@ This test checks validity.customError.
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
 Set some value for customError.
-PASS customErrorFor("fieldset-set") is false
+PASS customErrorFor("fieldset-set") is true
 PASS customErrorFor("button-set") is true
-PASS customErrorFor("button-button-set") is false
-PASS customErrorFor("button-reset-set") is false
+PASS customErrorFor("button-button-set") is true
+PASS customErrorFor("button-reset-set") is true
 PASS customErrorFor("select-set") is true
 PASS customErrorFor("textarea-set") is true
 PASS customErrorFor("input-set") is true
@@ -45,37 +45,37 @@ PASS setCustomValidity() threw Failed to execute 'setCustomValidity' on 'HTMLSel
 PASS setCustomValidity() threw Failed to execute 'setCustomValidity' on 'HTMLTextAreaElement': 1 argument required, but only 0 present.
 PASS setCustomValidity() threw Failed to execute 'setCustomValidity' on 'HTMLInputElement': 1 argument required, but only 0 present.
 PASS setCustomValidity() threw Failed to execute 'setCustomValidity' on 'HTMLInputElement': 1 argument required, but only 0 present.
-PASS customErrorFor("fieldset-many-changes") is false
+PASS customErrorFor("fieldset-many-changes") is true
 PASS customErrorFor("button-many-changes") is true
-PASS customErrorFor("button-button-many-changes") is false
-PASS customErrorFor("button-reset-many-changes") is false
+PASS customErrorFor("button-button-many-changes") is true
+PASS customErrorFor("button-reset-many-changes") is true
 PASS customErrorFor("select-many-changes") is true
 PASS customErrorFor("textarea-many-changes") is true
 PASS customErrorFor("input-many-changes") is true
 PASS customErrorFor("input-submit-many-changes") is true
 Set with three arguments.
-PASS customErrorFor("fieldset-many-changes") is false
+PASS customErrorFor("fieldset-many-changes") is true
 PASS customErrorFor("button-many-changes") is true
-PASS customErrorFor("button-button-many-changes") is false
-PASS customErrorFor("button-reset-many-changes") is false
+PASS customErrorFor("button-button-many-changes") is true
+PASS customErrorFor("button-reset-many-changes") is true
 PASS customErrorFor("select-many-changes") is true
 PASS customErrorFor("textarea-many-changes") is true
 PASS customErrorFor("input-many-changes") is true
 PASS customErrorFor("input-submit-many-changes") is true
 Set null.
-PASS customErrorFor("fieldset-many-changes") is false
+PASS customErrorFor("fieldset-many-changes") is true
 PASS customErrorFor("button-many-changes") is true
-PASS customErrorFor("button-button-many-changes") is false
-PASS customErrorFor("button-reset-many-changes") is false
+PASS customErrorFor("button-button-many-changes") is true
+PASS customErrorFor("button-reset-many-changes") is true
 PASS customErrorFor("select-many-changes") is true
 PASS customErrorFor("textarea-many-changes") is true
 PASS customErrorFor("input-many-changes") is true
 PASS customErrorFor("input-submit-many-changes") is true
 Set some value, and set undefined.
-PASS customErrorFor("fieldset-many-changes") is false
+PASS customErrorFor("fieldset-many-changes") is true
 PASS customErrorFor("button-many-changes") is true
-PASS customErrorFor("button-button-many-changes") is false
-PASS customErrorFor("button-reset-many-changes") is false
+PASS customErrorFor("button-button-many-changes") is true
+PASS customErrorFor("button-reset-many-changes") is true
 PASS customErrorFor("select-many-changes") is true
 PASS customErrorFor("textarea-many-changes") is true
 PASS customErrorFor("input-many-changes") is true

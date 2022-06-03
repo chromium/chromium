@@ -12,7 +12,7 @@ function loadAndStall()
 
 function jpegImage()
 {
-    return "?name=../../../images/resources/lenna.jpg&mimeType=image%2Fjpeg";
+    return "?name=../../../images/resources/gracehopper.jpg&mimeType=image%2Fjpeg";
 }
 
 function testDone()
@@ -22,7 +22,7 @@ function testDone()
 
 function runTest()
 {
-    document.querySelector("img").src = loadAndStall() + jpegImage() + "&stallAt=14337&stallFor=60";
+    document.querySelector("img").src = loadAndStall() + jpegImage() + "&stallAt=26337&stallFor=60";
     setTimeout(testDone, 1500);
 }
 

@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_RENDERER_GET_SCRIPT_CONTEXT_H_
 #define EXTENSIONS_RENDERER_GET_SCRIPT_CONTEXT_H_
 
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace extensions {
 class ScriptContext;

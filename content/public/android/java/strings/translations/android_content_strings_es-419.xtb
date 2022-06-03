@@ -6,9 +6,9 @@
 <translation id="1768717197362323622">Milisegundo</translation>
 <translation id="1822429046913737220">AM/PM</translation>
 <translation id="2094750046714988961">No se puede iniciar el generador de perfiles porque el almacenamiento externo no está disponible.</translation>
-<translation id="2429669115401274487">p. m.</translation>
+<translation id="2429669115401274487">p.m.</translation>
 <translation id="2520230379124234395">Se inició el generador de perfiles.</translation>
-<translation id="2732718972699418926">a. m.</translation>
+<translation id="2732718972699418926">a.m.</translation>
 <translation id="2841013758207633010">Hora</translation>
 <translation id="376869769528291915">:</translation>
 <translation id="3845599764535987402">Hora</translation>
@@ -22,6 +22,7 @@
 <translation id="6015796118275082299">Año</translation>
 <translation id="6444070574980481588">Establecer fecha y hora</translation>
 <translation id="6527303717912515753">Compartir</translation>
+<translation id="660254432468400466">No se pudo encontrar el motor de texto a voz de Google</translation>
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6727102863431372879">Establecer</translation>
 <translation id="6849295950938417341">Error al iniciar el generador de perfiles</translation>

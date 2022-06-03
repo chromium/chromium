@@ -13,7 +13,7 @@ class ContextLostObserver {
   virtual void OnContextLost() = 0;
 
  protected:
-  virtual ~ContextLostObserver() {}
+  virtual ~ContextLostObserver() = default;
 };
 
 }  // namespace viz

@@ -12,26 +12,6 @@ class FragmentDataTest : public RenderingTest {
   bool HasRareData(const FragmentData& data) { return !!data.rare_data_; }
 };
 
-TEST_F(FragmentDataTest, SelectionVisualRect) {
-  FragmentData fragment;
-
-  // Default SelectionVisualRect should not create RareData.
-  fragment.SetVisualRect(IntRect(10, 20, 30, 400));
-  fragment.SetSelectionVisualRect(IntRect());
-  EXPECT_FALSE(HasRareData(fragment));
-  EXPECT_EQ(IntRect(), fragment.SelectionVisualRect());
-
-  // Non-Default SelectionVisualRect creates RareData.
-  fragment.SetSelectionVisualRect(IntRect(1, 2, 3, 4));
-  EXPECT_TRUE(HasRareData(fragment));
-  EXPECT_EQ(IntRect(1, 2, 3, 4), fragment.SelectionVisualRect());
-
-  // PaintProperties should store default SelectionVisualRect once it's created.
-  fragment.SetSelectionVisualRect(IntRect());
-  EXPECT_TRUE(HasRareData(fragment));
-  EXPECT_EQ(IntRect(), fragment.SelectionVisualRect());
-}
-
 TEST_F(FragmentDataTest, PreEffectClipProperties) {
   SetBodyInnerHTML(R"HTML(
     <style>

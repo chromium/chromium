@@ -285,19 +285,21 @@ change list. These checks include:
 * All usages from Chrome have annotation.
 * Unique ids are unique, through history (even if an annotation gets deprecated,
   its unique id cannot be reused to keep the stats sound).
+* That the annotation appears in
+  `tools/traffic_annotation/summary/grouping.xml`. When adding a new annotation,
+  it must also be included in `grouping.xml` for reporting purposes (please
+  refer to the **Annotations Review**).
+
 
 ### Presubmit tests
-To perform tests prior to submit, one can use traffic_annotation_auditor binary.
-It runs over the whole repository and using a clang tool, checks if all above
-items are correct.
-Running the `traffic_annotation_auditor` requires having a COMPLETE compiled
-build directory and can be done with the following syntax.
-`tools/traffic_annotation/bin/[linux64/win32]/traffic_annotation_auditor
- --build-path=[out/Default]`
-The latest executable of `traffic_annotation_auditor` for supported platforms
-can be found in `tools/traffic_annotation/bin/[platform]`.
-As this test is slow, it is not a mandatory step of the presubmit checks on
-clients, and one can run it manually.
+To perform tests prior to submit, one can use the `auditor.py`
+script. It runs over the whole repository, extracts
+all the annotations from C++ code, and then checks them for correctness.
+
+Running the `auditor.py` script requires a build directory in which you just
+built the `chrome` target. You can invoke it like this:
+`vpython3 tools/traffic_annotation/scripts/auditor/auditor.py
+ --build-path=out/Default`
 
 ### Waterfall tests
 Two commit queue trybots test traffic annotations on changed files using the
@@ -314,15 +316,22 @@ scope of tests have not neglected any issues.
 
 Network traffic annotations require review before landing in code and this is
 enforced through keeping a summary of annotations in
-`tools/traffic_annotation/summary/annotations.xml`.
-Once a new annotation is added, one is updated, or deleted, this file
-should also be updated. To update the file automatically, one can run
-`traffic_annotation_auditor` as specified in presubmit tests. But if it is not
-possible to do so (e.g., if you are changing the code from an unsupported
-platform or you don’t have a compiled build directory), the code can be
-submitted to the trybot and the test on trybot will tell you the required
-modifications.
+`tools/traffic_annotation/summary/annotations.xml`. Once a new annotation is added,
+one is updated, or deleted, this file should also be updated. To update the
+`annotations.xml` file automatically, one can run `auditor.py`
+as specified in presubmit tests. But if it is not possible to do so (e.g., if
+you are changing the code from an unsupported platform or you don’t have a
+compiled build directory), the code can be submitted to the trybot and the test
+on trybot will tell you the required modifications.
 
+In order to help make external reports easier, annotation unique ids should be
+mentioned in `tools/traffic_annotation/summary/grouping.xml`. Once a new
+annotation is added, or a preexisting annotation's unique id changes, this file
+should also be updated. When adding a new annotation, make sure it is placed
+within an appropriate group of `grouping.xml`. In the rare case that none of
+the groups are appropriate, one can create a new group for the annotation; the
+arrangement of annotations and group names in `grouping.xml` may be later
+updated by a technical writer to better coincide with the external reports.
 
 ## Partial Annotations (Advanced)
 
@@ -423,11 +432,12 @@ where after serialization, the annotation object is first created, then receives
 value. In these cases, `net::MutableNetworkTrafficAnnotationTag` and
 `net::MutablePartialNetworkTrafficAnnotationTag` can be used which do not have
 this limitation.
+
 Mutable annotations have a run time check before being converted into normal
 annotations to ensure their content is valid. Therefore it is suggested that
 they would be used only if there is no other way around it. Use cases are
-checked with the `traffic_annotation_auditor` to ensure proper initialization
-values for the mutable annotations.
+checked with `auditor.py` to ensure proper initialization values for the
+mutable annotations.
 
 
 ## Mojo Interfaces (Advanced)

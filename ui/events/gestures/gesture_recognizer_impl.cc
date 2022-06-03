@@ -9,10 +9,10 @@
 #include <limits>
 #include <memory>
 
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "ui/events/event.h"
 #include "ui/events/event_constants.h"
@@ -20,6 +20,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
 #include "ui/events/gestures/gesture_types.h"
+#include "ui/events/types/event_type.h"
 
 namespace ui {
 
@@ -229,7 +230,7 @@ GestureRecognizerImpl::GetEventPerPointForConsumer(GestureConsumer* consumer,
   for (size_t i = 0; i < pointer_state.GetPointerCount(); ++i) {
     auto touch_event = std::make_unique<TouchEvent>(
         type, gfx::Point(), EventTimeForNow(),
-        PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH,
+        PointerDetails(ui::EventPointerType::kTouch,
                        pointer_state.GetPointerId(i)),
         EF_IS_SYNTHESIZED);
     gfx::PointF point(pointer_state.GetX(i), pointer_state.GetY(i));
@@ -305,7 +306,7 @@ void GestureRecognizerImpl::DispatchGestureEvent(
 GestureRecognizer::Gestures GestureRecognizerImpl::AckTouchEvent(
     uint32_t unique_event_id,
     ui::EventResult result,
-    bool is_source_touch_event_set_non_blocking,
+    bool is_source_touch_event_set_blocking,
     GestureConsumer* consumer) {
   GestureProviderAura* gesture_provider = nullptr;
 
@@ -320,7 +321,7 @@ GestureRecognizer::Gestures GestureRecognizerImpl::AckTouchEvent(
     gesture_provider = GetGestureProviderForConsumer(consumer);
   }
   gesture_provider->OnTouchEventAck(unique_event_id, result != ER_UNHANDLED,
-                                    is_source_touch_event_set_non_blocking);
+                                    is_source_touch_event_set_blocking);
   return gesture_provider->GetAndResetPendingGestures();
 }
 
@@ -385,6 +386,21 @@ void GestureRecognizerImpl::RemoveGestureEventHelper(
   auto it = std::find(helpers_.begin(), helpers_.end(), helper);
   if (it != helpers_.end())
     helpers_.erase(it);
+}
+
+bool GestureRecognizerImpl::DoesConsumerHaveActiveTouch(
+    GestureConsumer* consumer) const {
+  for (const auto& id_consumer_pair : touch_id_target_) {
+    if (id_consumer_pair.second == consumer)
+      return true;
+  }
+
+  return false;
+}
+
+void GestureRecognizerImpl::SendSynthesizedEndEvents(
+    GestureConsumer* consumer) {
+  GetGestureProviderForConsumer(consumer)->SendSynthesizedEndEvents();
 }
 
 void GestureRecognizerImpl::OnGestureEvent(GestureConsumer* raw_input_consumer,

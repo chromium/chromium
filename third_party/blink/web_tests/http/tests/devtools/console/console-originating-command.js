@@ -4,12 +4,12 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console result has originating command associated with it.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   ConsoleTestRunner.evaluateInConsole('1 + 1', step1);
-  function step1() {
-    ConsoleTestRunner.dumpConsoleMessages(true);
+  async function step1() {
+    await ConsoleTestRunner.dumpConsoleMessages(true);
     TestRunner.completeTest();
   }
 })();

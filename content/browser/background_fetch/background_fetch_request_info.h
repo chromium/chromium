@@ -10,10 +10,7 @@
 #include <string>
 #include <vector>
 
-#include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_item.h"
@@ -41,6 +38,10 @@ class CONTENT_EXPORT BackgroundFetchRequestInfo
   BackgroundFetchRequestInfo(int request_index,
                              blink::mojom::FetchAPIRequestPtr fetch_request,
                              uint64_t request_body_size);
+
+  BackgroundFetchRequestInfo(const BackgroundFetchRequestInfo&) = delete;
+  BackgroundFetchRequestInfo& operator=(const BackgroundFetchRequestInfo&) =
+      delete;
 
   // Sets the download GUID to a newly generated value. Can only be used if no
   // GUID is already set.
@@ -152,8 +153,6 @@ class CONTENT_EXPORT BackgroundFetchRequestInfo
   uint64_t response_size_ = 0u;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundFetchRequestInfo);
 };
 
 }  // namespace content

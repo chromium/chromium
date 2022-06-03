@@ -1,0 +1,48 @@
+<style include="cr-shared-style shimless-rma-shared">
+  .large-icon {
+    height: 200px;
+    width: 300px;
+  }
+
+  .small-icon {
+    height: 20px;
+    width: 20px;
+  }
+
+  #performUpdateButton {
+    border-color: var(--google-blue-600);
+    border-radius: 12px;
+  }
+</style>
+
+<base-page orientation="column">
+  <div slot="header">
+    <h1>[[i18n('osUpdateTitleText')]]</h1>
+    <div>[[updateNoticeMessage_]]</div>
+    <div id="versionInfo">
+      <iron-icon id="updateIcon" icon="[[getUpdateNoticeIcon_(updateAvailable_)]]"
+        class="small-icon">
+      </iron-icon>
+      [[currentVersionText_]]
+    </div>
+    <div id="progressMessage">
+      <paper-spinner-lite hidden$="[[!updateInProgress_]]" active>
+      </paper-spinner-lite>
+      [[updateProgressMessage_]]
+    </div>
+    <p id="networkUnavailable" hidden$="[[networkAvailable]]">
+      To check if OS is up to date, connect to the internet in previous screen
+    </p>
+    <cr-button id="performUpdateButton" disabled="[[updateInProgress_]]"
+        hidden$="[[!updateAvailable_]]" on-click="onUpdateButtonClicked_">
+        [[i18n('updateVersionRestartLabel')]]
+      <iron-icon id="restartIcon" icon="shimless-icon:update"
+          class="small-icon">
+      </iron-icon>
+    </cr-button>
+  </div>
+  <div slot="body">
+    <!-- TODO(gavindodd): Replace with real image -->
+    <iron-icon icon="shimless:shimless-placeholder" class="large-icon"></iron-icon>
+  </div>
+</base-page>

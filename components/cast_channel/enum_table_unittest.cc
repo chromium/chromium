@@ -4,10 +4,9 @@
 
 #include "components/cast_channel/enum_table.h"
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace cast_util {
 namespace {
@@ -37,11 +36,13 @@ const EnumTable<MyEnum> kUnsortedMissing({{MyEnum::kOne, "ONE"},
 }  // namespace
 
 template <>
-const EnumTable<MyEnum> EnumTable<MyEnum>::instance(
-    {{MyEnum::kZero, "ZERO_DEFAULT"},
-     {MyEnum::kOne, "ONE_DEFAULT"},
-     {MyEnum::kTwo, "TWO_DEFAULT"}},
-    MyEnum::kMaxValue);
+const EnumTable<MyEnum>& EnumTable<MyEnum>::GetInstance() {
+  static const EnumTable<MyEnum> kInstance({{MyEnum::kZero, "ZERO_DEFAULT"},
+                                            {MyEnum::kOne, "ONE_DEFAULT"},
+                                            {MyEnum::kTwo, "TWO_DEFAULT"}},
+                                           MyEnum::kMaxValue);
+  return kInstance;
+}
 
 namespace {
 
@@ -59,12 +60,12 @@ TEST(EnumTableTest, TestGetStringUnsorted) {
 
 TEST(EnumTableTest, TestGetMissingString) {
   EXPECT_EQ("ZERO", kSortedMissing.GetString(MyEnum::kZero));
-  EXPECT_EQ(base::nullopt, kSortedMissing.GetString(MyEnum::kOne));
+  EXPECT_EQ(absl::nullopt, kSortedMissing.GetString(MyEnum::kOne));
   EXPECT_EQ("TWO", kSortedMissing.GetString(MyEnum::kTwo));
 }
 
 TEST(EnumTableTest, TestGetMissingStringUnsorted) {
-  EXPECT_EQ(base::nullopt, kUnsortedMissing.GetString(MyEnum::kZero));
+  EXPECT_EQ(absl::nullopt, kUnsortedMissing.GetString(MyEnum::kZero));
   EXPECT_EQ("ONE", kUnsortedMissing.GetString(MyEnum::kOne));
   EXPECT_EQ("TWO", kUnsortedMissing.GetString(MyEnum::kTwo));
 }
@@ -92,16 +93,16 @@ TEST(EnumTableTest, TestGetEnum) {
   EXPECT_EQ(MyEnum::kZero, kSorted.GetEnum("ZERO"));
   EXPECT_EQ(MyEnum::kOne, kSorted.GetEnum("ONE"));
   EXPECT_EQ(MyEnum::kTwo, kSorted.GetEnum("TWO"));
-  EXPECT_EQ(base::nullopt, kSorted.GetEnum("THREE"));
-  EXPECT_EQ(base::nullopt, kSorted.GetEnum(nullptr));
+  EXPECT_EQ(absl::nullopt, kSorted.GetEnum("THREE"));
+  EXPECT_EQ(absl::nullopt, kSorted.GetEnum(""));
 }
 
 TEST(EnumTableTest, TestStringToEnumGlobal) {
   EXPECT_EQ(MyEnum::kZero, StringToEnum<MyEnum>("ZERO_DEFAULT"));
   EXPECT_EQ(MyEnum::kOne, StringToEnum<MyEnum>("ONE_DEFAULT"));
   EXPECT_EQ(MyEnum::kTwo, StringToEnum<MyEnum>("TWO_DEFAULT"));
-  EXPECT_EQ(base::nullopt, StringToEnum<MyEnum>("THREE"));
-  EXPECT_EQ(base::nullopt, StringToEnum<MyEnum>(nullptr));
+  EXPECT_EQ(absl::nullopt, StringToEnum<MyEnum>("THREE"));
+  EXPECT_EQ(absl::nullopt, StringToEnum<MyEnum>(""));
 }
 
 // See note in enum_table.h for details of why these tests have to be compiled

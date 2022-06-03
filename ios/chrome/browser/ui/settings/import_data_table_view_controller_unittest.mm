@@ -6,7 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_multiline_detail_item.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -47,7 +47,7 @@ class ImportDataTableViewControllerTest : public ChromeTableViewControllerTest {
  protected:
   void SetUp() override {
     ChromeTableViewControllerTest::SetUp();
-    is_signed_in_ = true;
+    is_syncing_ = true;
   }
 
   ChromeTableViewController* InstantiateController() override {
@@ -56,12 +56,12 @@ class ImportDataTableViewControllerTest : public ChromeTableViewControllerTest {
         initWithDelegate:delegate_
                fromEmail:@"fromEmail@gmail.com"
                  toEmail:@"toEmail@gmail.com"
-              isSignedIn:is_signed_in_];
+               isSyncing:is_syncing_];
   }
 
-  void set_is_signed_in(bool is_signed_in) { is_signed_in_ = is_signed_in; }
+  void set_is_syncing(bool is_syncing) { is_syncing_ = is_syncing; }
 
-  bool is_signed_in_;
+  bool is_syncing_;
   ImportDataControllerTestDelegate* delegate_;
 };
 
@@ -70,7 +70,7 @@ TEST_F(ImportDataTableViewControllerTest, TestModelSignedIn) {
   CheckController();
   ASSERT_EQ(2, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  SettingsMultilineDetailItem* item = GetTableViewItem(0, 0);
+  SettingsImageDetailTextItem* item = GetTableViewItem(0, 0);
   EXPECT_NSEQ(
       l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_HEADER,
                               base::SysNSStringToUTF16(@"fromEmail@gmail.com")),
@@ -91,12 +91,12 @@ TEST_F(ImportDataTableViewControllerTest, TestModelSignedIn) {
 }
 
 TEST_F(ImportDataTableViewControllerTest, TestModelSignedOut) {
-  set_is_signed_in(false);
+  set_is_syncing(false);
   CreateController();
   CheckController();
   ASSERT_EQ(2, NumberOfSections());
   EXPECT_EQ(1, NumberOfItemsInSection(0));
-  SettingsMultilineDetailItem* item = GetTableViewItem(0, 0);
+  SettingsImageDetailTextItem* item = GetTableViewItem(0, 0);
   EXPECT_NSEQ(
       l10n_util::GetNSStringF(IDS_IOS_OPTIONS_IMPORT_DATA_HEADER,
                               base::SysNSStringToUTF16(@"fromEmail@gmail.com")),
@@ -124,12 +124,12 @@ TEST_F(ImportDataTableViewControllerTest, TestUniqueBoxChecked) {
   NSIndexPath* importIndexPath = [NSIndexPath indexPathForItem:0 inSection:1];
   NSIndexPath* keepSeparateIndexPath = [NSIndexPath indexPathForItem:1
                                                            inSection:1];
-  SettingsMultilineDetailItem* importItem =
-      base::mac::ObjCCastStrict<SettingsMultilineDetailItem>(
+  SettingsImageDetailTextItem* importItem =
+      base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(
           [import_data_controller.tableViewModel
               itemAtIndexPath:importIndexPath]);
-  SettingsMultilineDetailItem* keepSeparateItem =
-      base::mac::ObjCCastStrict<SettingsMultilineDetailItem>(
+  SettingsImageDetailTextItem* keepSeparateItem =
+      base::mac::ObjCCastStrict<SettingsImageDetailTextItem>(
           [import_data_controller.tableViewModel
               itemAtIndexPath:keepSeparateIndexPath]);
 
@@ -166,7 +166,7 @@ TEST_F(ImportDataTableViewControllerTest, TestDefaultChoiceSignedIn) {
 // that tapping continue will correctly select it. Regression test for
 // crbug.com/649533
 TEST_F(ImportDataTableViewControllerTest, TestDefaultChoiceSignedOut) {
-  set_is_signed_in(false);
+  set_is_syncing(false);
   CreateController();
 
   EXPECT_FALSE(delegate().didChooseClearDataPolicyCalled);

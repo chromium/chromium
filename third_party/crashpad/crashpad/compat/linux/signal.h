@@ -17,6 +17,11 @@
 
 #include_next <signal.h>
 
+// Missing from glibc and bionic
+#if !defined(SS_AUTODISARM)
+#define SS_AUTODISARM (1u << 31)
+#endif
+
 // Missing from glibc and bionic-x86_64
 
 #if defined(__x86_64__) || defined(__i386__)

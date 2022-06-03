@@ -28,12 +28,15 @@ class NetworkQualitiesPrefDelegateTest : public testing::Test {
   NetworkQualitiesPrefDelegateTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO) {}
 
+  NetworkQualitiesPrefDelegateTest(const NetworkQualitiesPrefDelegateTest&) =
+      delete;
+  NetworkQualitiesPrefDelegateTest& operator=(
+      const NetworkQualitiesPrefDelegateTest&) = delete;
+
   ~NetworkQualitiesPrefDelegateTest() override = default;
 
  private:
   base::test::TaskEnvironment task_environment_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesPrefDelegateTest);
 };
 
 // Verify that prefs are writen and read correctly.

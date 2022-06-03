@@ -7,12 +7,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/check_op.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/profile_resetter/brandcoded_default_settings.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
@@ -33,7 +34,7 @@ namespace safe_browsing {
 
 namespace {
 
-base::string16 FormatUrlForDisplay(const GURL& url) {
+std::u16string FormatUrlForDisplay(const GURL& url) {
   return url_formatter::FormatUrlForSecurityDisplay(
       url, url_formatter::SchemeDisplay::OMIT_HTTP_AND_HTTPS);
 }
@@ -75,7 +76,7 @@ SettingsResetPromptController::SettingsResetPromptController(
 
 SettingsResetPromptController::~SettingsResetPromptController() {}
 
-base::string16 SettingsResetPromptController::GetWindowTitle() const {
+std::u16string SettingsResetPromptController::GetWindowTitle() const {
   if (ResetSearchEnabled(*model_)) {
     return l10n_util::GetStringUTF16(
         IDS_SETTINGS_RESET_PROMPT_TITLE_SEARCH_ENGINE);
@@ -88,10 +89,10 @@ base::string16 SettingsResetPromptController::GetWindowTitle() const {
     return l10n_util::GetStringUTF16(IDS_SETTINGS_RESET_PROMPT_TITLE_HOMEPAGE);
 
   NOTREACHED();
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 SettingsResetPromptController::GetMainText() const {
+std::u16string SettingsResetPromptController::GetMainText() const {
   DCHECK(!main_text_.empty());
   return main_text_;
 }
@@ -117,8 +118,8 @@ void SettingsResetPromptController::Accept() {
   UMA_HISTOGRAM_BOOLEAN("SettingsResetPrompt.PromptAccepted", true);
   model_->PerformReset(
       std::move(default_settings_),
-      base::Bind(&SettingsResetPromptController::OnInteractionDone,
-                 base::Unretained(this)));
+      base::BindOnce(&SettingsResetPromptController::OnInteractionDone,
+                     base::Unretained(this)));
 }
 
 void SettingsResetPromptController::Cancel() {
@@ -143,7 +144,7 @@ void SettingsResetPromptController::InitMainText() {
   DCHECK(main_text_.empty());
 
   // Get the URL string to be displayed in the dialog message.
-  base::string16 url_string;
+  std::u16string url_string;
   if (ResetSearchEnabled(*model_)) {
     url_string = FormatUrlForDisplay(model_->default_search());
   } else if (ResetStartupUrlsEnabled(*model_)) {

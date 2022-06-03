@@ -29,7 +29,7 @@ grit("strings") {
     "messages.h",
     "en_messages.cc",
   ]
-  foreach(locale, locales_with_fake_bidi) {
+  foreach(locale, locales_with_pseudolocales) {
     outputs += [ "address_input_strings_$locale.pak" ]
   }
 
@@ -170,13 +170,9 @@ static_library("libaddressinput") {
 if (is_ios) {
   bundle_data("countryinfo_test_bundle_data") {
     testonly = true
-    sources = [
-      "//third_party/libaddressinput/src/testdata/countryinfo.txt",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/" +
-          "{{source_root_relative_dir}}/{{source_file_part}}",
-    ]
+    sources = [ "//third_party/libaddressinput/src/testdata/countryinfo.txt" ]
+    outputs = [ "{{bundle_resources_dir}}/" +
+                "{{source_root_relative_dir}}/{{source_file_part}}" ]
   }
 }
 
@@ -197,15 +193,11 @@ source_set("test_support") {
 
   defines = [ "TEST_DATA_DIR=\"src/third_party/libaddressinput/src/testdata\"" ]
 
-  data = [
-    "//third_party/libaddressinput/src/testdata/",
-  ]
+  data = [ "//third_party/libaddressinput/src/testdata/" ]
 
   include_dirs = [ "src/cpp/src" ]
 
-  deps = [
-    ":libaddressinput",
-  ]
+  deps = [ ":libaddressinput" ]
   if (is_ios) {
     deps += [ ":countryinfo_test_bundle_data" ]
   }
@@ -288,9 +280,7 @@ test("libaddressinput_unittests") {
 }
 
 fuzzer_test("libaddressinput_parse_address_fields_fuzzer") {
-  sources = [
-    "fuzz/parse_address_fields_fuzzer.cc",
-  ]
+  sources = [ "fuzz/parse_address_fields_fuzzer.cc" ]
   deps = [
     ":libaddressinput",
     ":util",
@@ -299,9 +289,7 @@ fuzzer_test("libaddressinput_parse_address_fields_fuzzer") {
 }
 
 fuzzer_test("libaddressinput_parse_format_rule_fuzzer") {
-  sources = [
-    "fuzz/parse_format_rule_fuzzer.cc",
-  ]
+  sources = [ "fuzz/parse_format_rule_fuzzer.cc" ]
   deps = [
     ":libaddressinput",
     ":util",
@@ -310,9 +298,7 @@ fuzzer_test("libaddressinput_parse_format_rule_fuzzer") {
 }
 
 fuzzer_test("libaddressinput_address_formatter_fuzzer") {
-  sources = [
-    "fuzz/address_formatter_fuzzer.cc",
-  ]
+  sources = [ "fuzz/address_formatter_fuzzer.cc" ]
   deps = [
     ":libaddressinput",
     ":util",

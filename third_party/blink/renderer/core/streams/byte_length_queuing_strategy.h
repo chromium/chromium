@@ -14,7 +14,6 @@ namespace blink {
 class QueuingStrategyInit;
 class ScriptState;
 class ScriptValue;
-class Visitor;
 
 // https://streams.spec.whatwg.org/#blqs-class
 class ByteLengthQueuingStrategy final : public ScriptWrappable {
@@ -27,13 +26,11 @@ class ByteLengthQueuingStrategy final : public ScriptWrappable {
   ByteLengthQueuingStrategy(ScriptState*, const QueuingStrategyInit*);
   ~ByteLengthQueuingStrategy() override;
 
-  ScriptValue highWaterMark(ScriptState*) const;
+  double highWaterMark() const { return high_water_mark_; }
   ScriptValue size(ScriptState*) const;
 
-  void Trace(Visitor*) override;
-
  private:
-  const TraceWrapperV8Reference<v8::Value> high_water_mark_;
+  const double high_water_mark_;
 };
 
 }  // namespace blink

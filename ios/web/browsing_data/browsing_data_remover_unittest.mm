@@ -9,7 +9,8 @@
 #include "base/bind.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
-#include "ios/web/public/test/fakes/test_browser_state.h"
+#import "ios/web/common/uikit_ui_util.h"
+#include "ios/web/public/test/fakes/fake_browser_state.h"
 #include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -21,11 +22,27 @@ using base::test::ios::kWaitForCookiesTimeout;
 
 namespace {
 
+// Makes sure that the DataStore is created, otherwise cookies can't be set in
+// some cases.
+bool FetchCookieStore() WARN_UNUSED_RESULT;
+bool FetchCookieStore() {
+  __block bool fetch_done = false;
+
+  NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
+  [[WKWebsiteDataStore defaultDataStore]
+      fetchDataRecordsOfTypes:data_types
+            completionHandler:^(NSArray<WKWebsiteDataRecord*>* records) {
+              fetch_done = true;
+            }];
+  return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
+    return fetch_done;
+  });
+}
+
 // Adds cookies to the default data store. Returns whether it succeed to add
 // cookies. Declare the function to have the "WARN_UNUSED_RESULT".
 bool AddCookie() WARN_UNUSED_RESULT;
 bool AddCookie() {
-  WKWebsiteDataStore* data_store = [WKWebsiteDataStore defaultDataStore];
   NSHTTPCookie* cookie = [NSHTTPCookie cookieWithProperties:@{
     NSHTTPCookiePath : @"path",
     NSHTTPCookieName : @"cookieName",
@@ -33,19 +50,11 @@ bool AddCookie() {
     NSHTTPCookieOriginURL : @"http://chromium.org"
   }];
 
-  // This is needed to forces the DataStore to be created, otherwise the cookie
-  // isn't set in some cases.
   __block bool cookie_set = false;
-  NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
-  [[WKWebsiteDataStore defaultDataStore]
-      fetchDataRecordsOfTypes:data_types
-            completionHandler:^(NSArray<WKWebsiteDataRecord*>* records){
-            }];
-
-  [data_store.httpCookieStore setCookie:cookie
-                      completionHandler:^{
-                        cookie_set = true;
-                      }];
+  [[WKWebsiteDataStore defaultDataStore].httpCookieStore setCookie:cookie
+                                                 completionHandler:^{
+                                                   cookie_set = true;
+                                                 }];
 
   return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
     return cookie_set;
@@ -58,14 +67,6 @@ bool HasCookies(bool should_have_cookies) WARN_UNUSED_RESULT;
 bool HasCookies(bool should_have_cookies) {
   __block bool has_cookies = false;
   __block bool completion_called = false;
-
-  // This is needed to forces the DataStore to be created, otherwise the cookie
-  // isn't fetched in some cases.
-  NSSet* data_types = [NSSet setWithObject:WKWebsiteDataTypeCookies];
-  [[WKWebsiteDataStore defaultDataStore]
-      fetchDataRecordsOfTypes:data_types
-            completionHandler:^(NSArray<WKWebsiteDataRecord*>* records){
-            }];
 
   [[WKWebsiteDataStore defaultDataStore].httpCookieStore
       getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {
@@ -93,9 +94,8 @@ bool RemoveCookies(web::BrowserState* browser_state,
   base::OnceClosure closure = base::BindOnce(^{
     closure_called = true;
   });
-  remover->ClearBrowsingData(
-      types, base::Time::Now() - base::TimeDelta::FromMinutes(1),
-      std::move(closure));
+  remover->ClearBrowsingData(types, base::Time::Now() - base::Minutes(1),
+                             std::move(closure));
 
   return WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
     return closure_called;
@@ -107,18 +107,57 @@ bool RemoveCookies(web::BrowserState* browser_state,
 namespace web {
 
 class BrowsingDataRemoverTest : public PlatformTest {
+ public:
+  void SetUp() override {
+    PlatformTest::SetUp();
+    original_root_view_controller_ = GetAnyKeyWindow().rootViewController;
+
+    UIViewController* controller = [[UIViewController alloc] init];
+    GetAnyKeyWindow().rootViewController = controller;
+    WKWebViewConfiguration* config = [[WKWebViewConfiguration alloc] init];
+    WKWebView* web_view = [[WKWebView alloc] initWithFrame:CGRectZero
+                                             configuration:config];
+    [controller.view addSubview:web_view];
+
+    ASSERT_TRUE(FetchCookieStore());
+    __block bool clear_done = false;
+    bool clear_success = false;
+    // Clear store from cookies.
+    [[WKWebsiteDataStore defaultDataStore]
+        removeDataOfTypes:[NSSet setWithObject:WKWebsiteDataTypeCookies]
+            modifiedSince:[NSDate distantPast]
+        completionHandler:^{
+          clear_done = true;
+        }];
+    clear_success = WaitUntilConditionOrTimeout(kWaitForCookiesTimeout, ^bool {
+      return clear_done;
+    });
+    ASSERT_TRUE(clear_success);
+  }
+
+  void TearDown() override {
+    if (original_root_view_controller_) {
+      GetAnyKeyWindow().rootViewController = original_root_view_controller_;
+      original_root_view_controller_ = nil;
+    }
+    PlatformTest::TearDown();
+  }
+
  protected:
   BrowsingDataRemover* GetRemover() {
     return BrowsingDataRemover::FromBrowserState(&browser_state_);
   }
 
   base::test::TaskEnvironment task_environment_;
-  TestBrowserState browser_state_;
+  FakeBrowserState browser_state_;
+  // The key window's original root view controller, to be  restored at the end
+  // of the test.
+  UIViewController* original_root_view_controller_;
 };
 
 TEST_F(BrowsingDataRemoverTest, DifferentRemoverForDifferentBrowserState) {
-  TestBrowserState browser_state_1;
-  TestBrowserState browser_state_2;
+  FakeBrowserState browser_state_1;
+  FakeBrowserState browser_state_2;
 
   BrowsingDataRemover* remover_1 =
       BrowsingDataRemover::FromBrowserState(&browser_state_1);

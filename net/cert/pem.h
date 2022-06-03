@@ -27,6 +27,10 @@ class NET_EXPORT_PRIVATE PEMTokenizer {
   // |str| must remain valid for the duration of the PEMTokenizer.
   PEMTokenizer(const base::StringPiece& str,
                const std::vector<std::string>& allowed_block_types);
+
+  PEMTokenizer(const PEMTokenizer&) = delete;
+  PEMTokenizer& operator=(const PEMTokenizer&) = delete;
+
   ~PEMTokenizer();
 
   // Attempts to decode the next PEM block in the string. Returns false if no
@@ -71,8 +75,6 @@ class NET_EXPORT_PRIVATE PEMTokenizer {
 
   // The raw (Base64-decoded) data of the last successfully decoded block.
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(PEMTokenizer);
 };
 
 // Encodes |data| in the encapsulated message format described in RFC 1421,

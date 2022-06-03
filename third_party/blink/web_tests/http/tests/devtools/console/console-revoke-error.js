@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console revokes lazily handled promise rejections.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       var p = [];
@@ -24,7 +24,7 @@
 
   var messageAddedListener = ConsoleTestRunner.wrapListener(messageAdded);
   SDK.consoleModel.addEventListener(SDK.ConsoleModel.Events.MessageAdded, messageAddedListener);
-  Console.ConsoleView.instance()._setImmediatelyFilterMessagesForTest();
+  Console.ConsoleView.instance().setImmediatelyFilterMessagesForTest();
   Common.settings.moduleSetting('consoleGroupSimilar').set(false);
   TestRunner.addResult('Creating promise');
   TestRunner.evaluateInPageWithTimeout('createPromises()');

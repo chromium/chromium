@@ -8,8 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
-#include "base/stl_util.h"
 #include "device/bluetooth/bluetooth_adapter_win.h"
 #include "device/bluetooth/bluetooth_device_win.h"
 #include "device/bluetooth/bluetooth_remote_gatt_characteristic_win.h"
@@ -99,8 +99,9 @@ void BluetoothRemoteGattServiceWin::Update() {
   ++discovery_pending_count_;
   task_manager_->PostGetGattIncludedCharacteristics(
       service_path_, service_uuid_, service_attribute_handle_,
-      base::Bind(&BluetoothRemoteGattServiceWin::OnGetIncludedCharacteristics,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(
+          &BluetoothRemoteGattServiceWin::OnGetIncludedCharacteristics,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 void BluetoothRemoteGattServiceWin::OnGetIncludedCharacteristics(

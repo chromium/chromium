@@ -2,7 +2,9 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import HTMLParser
+
+
+import json
 import logging
 import os
 import re
@@ -10,6 +12,7 @@ import tempfile
 import threading
 import xml.etree.ElementTree
 
+import six
 from devil.android import apk_helper
 from pylib import constants
 from pylib.constants import host_paths
@@ -18,16 +21,21 @@ from pylib.base import test_instance
 from pylib.symbols import stack_symbolizer
 from pylib.utils import test_filter
 
+
 with host_paths.SysPath(host_paths.BUILD_COMMON_PATH):
   import unittest_util # pylint: disable=import-error
 
 
 BROWSER_TEST_SUITES = [
     'android_browsertests',
+    'android_sync_integration_tests',
     'components_browsertests',
     'content_browsertests',
     'weblayer_browsertests',
 ]
+
+# The max number of tests to run on a shard during the test run.
+MAX_SHARDS = 256
 
 RUN_IN_SUB_THREAD_TEST_SUITES = [
     # Multiprocess tests should be run outside of the main thread.
@@ -79,13 +87,26 @@ _EXTRA_SHARD_SIZE_LIMIT = (
 # TODO(jbudorick): Remove these once we're no longer parsing stdout to generate
 # results.
 _RE_TEST_STATUS = re.compile(
-    r'\[ +((?:RUN)|(?:FAILED)|(?:OK)|(?:CRASHED)) +\]'
-    r' ?([^ ]+)?(?: \((\d+) ms\))?$')
+    # Test state.
+    r'\[ +((?:RUN)|(?:FAILED)|(?:OK)|(?:CRASHED)|(?:SKIPPED)) +\] ?'
+    # Test name.
+    r'([^ ]+)?'
+    # Optional parameters.
+    r'(?:, where'
+    #   Type parameter
+    r'(?: TypeParam = [^()]*(?: and)?)?'
+    #   Value parameter
+    r'(?: GetParam\(\) = [^()]*)?'
+    # End of optional parameters.
+    ')?'
+    # Optional test execution time.
+    r'(?: \((\d+) ms\))?$')
 # Crash detection constants.
 _RE_TEST_ERROR = re.compile(r'FAILURES!!! Tests run: \d+,'
                                     r' Failures: \d+, Errors: 1')
-_RE_TEST_CURRENTLY_RUNNING = re.compile(r'\[ERROR:.*?\]'
-                                    r' Currently running: (.*)')
+_RE_TEST_CURRENTLY_RUNNING = re.compile(
+    r'\[ERROR:.*?\] Currently running: (.*)')
+_RE_TEST_DCHECK_FATAL = re.compile(r'\[.*:FATAL:.*\] (.*)')
 _RE_DISABLED = re.compile(r'DISABLED_')
 _RE_FLAKY = re.compile(r'FLAKY_')
 
@@ -157,10 +178,15 @@ def ParseGTestOutput(output, symbolizer, device_abi):
 
   def handle_possibly_unknown_test():
     if test_name is not None:
-      results.append(base_test_result.BaseTestResult(
-          TestNameWithoutDisabledPrefix(test_name),
-          fallback_result_type or base_test_result.ResultType.UNKNOWN,
-          duration, log=symbolize_stack_and_merge_with_log()))
+      results.append(
+          base_test_result.BaseTestResult(
+              TestNameWithoutDisabledPrefix(test_name),
+              # If we get here, that means we started a test, but it did not
+              # produce a definitive test status output, so assume it crashed.
+              # crbug/1191716
+              fallback_result_type or base_test_result.ResultType.CRASH,
+              duration,
+              log=symbolize_stack_and_merge_with_log()))
 
   for l in output:
     matcher = _RE_TEST_STATUS.match(l)
@@ -174,6 +200,8 @@ def ParseGTestOutput(output, symbolizer, device_abi):
         result_type = None
       elif matcher.group(1) == 'OK':
         result_type = base_test_result.ResultType.PASS
+      elif matcher.group(1) == 'SKIPPED':
+        result_type = base_test_result.ResultType.SKIP
       elif matcher.group(1) == 'FAILED':
         result_type = base_test_result.ResultType.FAIL
       elif matcher.group(1) == 'CRASHED':
@@ -183,12 +211,17 @@ def ParseGTestOutput(output, symbolizer, device_abi):
       duration = int(matcher.group(3)) if matcher.group(3) else 0
 
     else:
-      # Needs another matcher here to match crashes, like those of DCHECK.
-      matcher = _RE_TEST_CURRENTLY_RUNNING.match(l)
-      if matcher:
-        test_name = matcher.group(1)
+      # Can possibly add more matchers, such as different results from DCHECK.
+      currently_running_matcher = _RE_TEST_CURRENTLY_RUNNING.match(l)
+      dcheck_matcher = _RE_TEST_DCHECK_FATAL.match(l)
+
+      if currently_running_matcher:
+        test_name = currently_running_matcher.group(1)
         result_type = base_test_result.ResultType.CRASH
-        duration = 0 # Don't know.
+        duration = None  # Don't know. Not using 0 as this is unknown vs 0.
+      elif dcheck_matcher:
+        result_type = base_test_result.ResultType.CRASH
+        duration = None  # Don't know.  Not using 0 as this is unknown vs 0.
 
     if log is not None:
       if not matcher and _STACK_LINE_RE.match(l):
@@ -216,7 +249,7 @@ def ParseGTestXML(xml_content):
   if not xml_content:
     return results
 
-  html = HTMLParser.HTMLParser()
+  html = six.moves.html_parser.HTMLParser()
 
   testsuites = xml.etree.ElementTree.fromstring(xml_content)
   for testsuite in testsuites:
@@ -234,6 +267,37 @@ def ParseGTestXML(xml_content):
           result_type,
           int(float(testcase.attrib['time']) * 1000),
           log=('\n'.join(log) if log else '')))
+
+  return results
+
+
+def ParseGTestJSON(json_content):
+  """Parse results in the JSON Test Results format."""
+  results = []
+  if not json_content:
+    return results
+
+  json_data = json.loads(json_content)
+
+  openstack = list(json_data['tests'].items())
+
+  while openstack:
+    name, value = openstack.pop()
+
+    if 'expected' in value and 'actual' in value:
+      if value['actual'] == 'PASS':
+        result_type = base_test_result.ResultType.PASS
+      elif value['actual'] == 'SKIP':
+        result_type = base_test_result.ResultType.SKIP
+      elif value['actual'] == 'CRASH':
+        result_type = base_test_result.ResultType.CRASH
+      elif value['actual'] == 'TIMEOUT':
+        result_type = base_test_result.ResultType.TIMEOUT
+      else:
+        result_type = base_test_result.ResultType.FAIL
+      results.append(base_test_result.BaseTestResult(name, result_type))
+    else:
+      openstack += [("%s.%s" % (name, k), v) for k, v in six.iteritems(value)]
 
   return results
 
@@ -265,14 +329,17 @@ class GtestTestInstance(test_instance.TestInstance):
     self._extract_test_list_from_filter = args.extract_test_list_from_filter
     self._filter_tests_lock = threading.Lock()
     self._gs_test_artifacts_bucket = args.gs_test_artifacts_bucket
+    self._isolated_script_test_output = args.isolated_script_test_output
     self._isolated_script_test_perf_output = (
         args.isolated_script_test_perf_output)
+    self._render_test_output_dir = args.render_test_output_dir
     self._shard_timeout = args.shard_timeout
     self._store_tombstones = args.store_tombstones
     self._suite = args.suite_name[0]
     self._symbolizer = stack_symbolizer.Symbolizer(None)
     self._total_external_shards = args.test_launcher_total_shards
     self._wait_for_java_debugger = args.wait_for_java_debugger
+    self._use_existing_test_data = args.use_existing_test_data
 
     # GYP:
     if args.executable_dist_dir:
@@ -288,6 +355,11 @@ class GtestTestInstance(test_instance.TestInstance):
     incremental_part = ''
     if args.test_apk_incremental_install_json:
       incremental_part = '_incremental'
+
+    self._test_launcher_batch_limit = MAX_SHARDS
+    if (args.test_launcher_batch_limit
+        and 0 < args.test_launcher_batch_limit < MAX_SHARDS):
+      self._test_launcher_batch_limit = args.test_launcher_batch_limit
 
     apk_path = os.path.join(
         constants.GetOutDirectory(), '%s_apk' % self._suite,
@@ -407,8 +479,16 @@ class GtestTestInstance(test_instance.TestInstance):
     return self._gtest_filter
 
   @property
+  def isolated_script_test_output(self):
+    return self._isolated_script_test_output
+
+  @property
   def isolated_script_test_perf_output(self):
     return self._isolated_script_test_perf_output
+
+  @property
+  def render_test_output_dir(self):
+    return self._render_test_output_dir
 
   @property
   def package(self):
@@ -443,12 +523,20 @@ class GtestTestInstance(test_instance.TestInstance):
     return self._test_apk_incremental_install_json
 
   @property
+  def test_launcher_batch_limit(self):
+    return self._test_launcher_batch_limit
+
+  @property
   def total_external_shards(self):
     return self._total_external_shards
 
   @property
   def wait_for_java_debugger(self):
     return self._wait_for_java_debugger
+
+  @property
+  def use_existing_test_data(self):
+    return self._use_existing_test_data
 
   #override
   def TestType(self):

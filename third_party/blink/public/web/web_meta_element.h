@@ -35,4 +35,4 @@ DECLARE_WEB_NODE_TYPE_CASTS(WebMetaElement);
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_META_ELEMENT_H_

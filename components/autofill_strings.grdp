@@ -21,6 +21,9 @@
   <message name="IDS_AUTOFILL_WARNING_INSECURE_CONNECTION" desc="Warning text to show when credit card autofill is disabled because the website is not using a secure connection.">
     Automatic credit card filling is disabled because this form does not use a secure connection.
   </message>
+  <message name="IDS_AUTOFILL_WARNING_MIXED_FORM" desc="Warning text shown when autofill is disabled due to a form on a secure site being submitted over an insecure connection.">
+    This form is not secure. Autofill has been turned off.
+  </message>
   <message name="IDS_AUTOFILL_CREDIT_CARD_SIGNIN_PROMO" desc="Promo text shown alongside credit card suggestions to get people to sign in.">
     To use cards from your Google Account, sign in to Chrome
   </message>
@@ -61,6 +64,9 @@
   <message name="IDS_AUTOFILL_CC_ELO" desc="Elo credit card name.">
     Elo
   </message>
+  <message name="IDS_AUTOFILL_CC_GOOGLE_ISSUED" desc="Prefix for the Google Plex card" formatter_data="android_java">
+    Plex
+  </message>
   <message name="IDS_AUTOFILL_CC_GOOGLE_PAY" desc="Google pay brand name">
     Google Pay
   </message>
@@ -72,6 +78,9 @@
   </message>
   <message name="IDS_AUTOFILL_CC_MIR" desc="Mir credit card name." formatter_data="android_java">
     Mir
+  </message>
+  <message name="IDS_AUTOFILL_CC_TROY" desc="Troy credit card name.">
+    Troy
   </message>
   <message name="IDS_AUTOFILL_CC_UNION_PAY" desc="China UnionPay credit card name." formatter_data="android_java">
     China UnionPay
@@ -176,17 +185,17 @@
   ''' • '''</message>
 
   <!-- Autofill credit card suggestion popup -->
-  <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. [CHAR-LIMIT=32]">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR" desc="Abbreviated label for credit card expiration date. [CHAR_LIMIT=32]">
     Exp: <ph name="EXPIRATION_MONTH">$1<ex>06</ex></ph>/<ph name="EXPIRATION_YEAR">$2<ex>17</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR_V2" desc="Abbreviated label for credit card expiration date. Please translate the date as either YY/MM or MM/YY depending on how credit card expiration dates are more commonly presented in your locale. [CHAR-LIMIT=32]" meaning="Label for credit card expiration date for the save card dialog.">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_EXPIRATION_DATE_ABBR_V2" desc="Abbreviated label for credit card expiration date. Please translate the date as either YY/MM or MM/YY depending on how credit card expiration dates are more commonly presented in your locale. [CHAR_LIMIT=32]" meaning="Label for credit card expiration date for the save card dialog.">
     <ph name="EXPIRATION_MONTH">$1<ex>06</ex></ph>/<ph name="EXPIRATION_YEAR">$2<ex>17</ex></ph>
   </message>
 
-  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME" desc="Second line label for the autofill credit card popup when the name is selected. This text will appear below the cardholder name. [CHAR-LIMIT=32]">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_NAME" desc="Second line label for the autofill credit card popup when the name is selected. This text will appear below the cardholder name. [CHAR_LIMIT=32]">
     <ph name="CREDIT_CARD">$1<ex>Visa  ••••5679</ex></ph>, expires on <ph name="EXPIRATION_DATE_ABBR">$2<ex>06/17</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER" desc="Second line label for the autofill credit card popup when the card number is selected. This text will appear below the credit card number. [CHAR-LIMIT=32]">
+  <message name="IDS_AUTOFILL_CREDIT_CARD_TWO_LINE_LABEL_FROM_CARD_NUMBER" desc="Second line label for the autofill credit card popup when the card number is selected. This text will appear below the credit card number. [CHAR_LIMIT=32]">
     Expires on <ph name="EXPIRATION_DATE_ABBR">$1<ex>06/17</ex></ph>
   </message>
 
@@ -242,10 +251,10 @@
         </message>
       </if>
       <if expr="is_android">
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="The authentication mechanism on Android. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased.">
+        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_LABEL" desc="The authentication mechanism on Android. Label for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking. Title-Cased." formatter_data="android_java">
           Screen lock
         </message>
-        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking for Android. Sentence-Cased.">
+        <message name="IDS_ENABLE_CREDIT_CARD_FIDO_AUTH_SUBLABEL" desc="Sublabel for a toggle that allows users to control whether or not to use FIDO authentication for credit card unmasking for Android. Sentence-Cased." formatter_data="android_java">
           Use screen lock to confirm cards faster
         </message>
       </if>
@@ -307,4 +316,87 @@
     </message>
   </if>
 
+  <!-- Explicit save/update address prompt strings -->
+  <!-- Common on all platforms (platform-specific defined later): -->
+  <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to save a new address.">
+    Save
+  </message>
+  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL" desc="Label of the OK button in the prompt that offers the user to update an existing address.">
+    Update
+  </message>
+  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_NEW_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the new address values in the prompt that offers the user to update an existing address." formatter_data="android_java">
+    New
+  </message>
+  <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OLD_VALUES_SECTION_LABEL" meaning="In the address update prompt" desc="Label shown next to the section that displays the old address values in the prompt that offers the user to update an existing address." formatter_data="android_java">
+    Old
+  </message>
+  <!-- Used on Android: -->
+  <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
+      Save address?
+    </message>
+    <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
+      Update address?
+    </message>
+    <message name="IDS_ANDROID_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the negative button in the modal dialog that offers the user to save a new address.">
+      Cancel
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP" desc="Tooltip of the Edit button in the prompt that offers the user to save a new address." formatter_data="android_java">
+      Edit address
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it" formatter_data="android_java">
+      Edit address
+    </message>
+  </if>
+  <!-- Used on iOS: -->
+  <if expr="is_ios">
+    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_TITLE" desc="In Title Case: Title shown in the message that offers the user to proceed with saving a new address." meaning="In Title Case for iOS">
+      Save Address?
+    </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with saving a new address.">
+      Save…
+    </message>
+    <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_TITLE" desc="In Title Case: Title shown in the message that offers the user to proceed with updating an existing address." meaning="In Title Case for iOS">
+      Update Address?
+    </message>
+    <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION" desc="Label of the primary action button in the message that offers the user to proceed with updating an existing address.">
+      Update…
+    </message>
+    <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="In Title Case: Title shown at the top of modal dialog that offers the user to save a new address." meaning="In Title Case for iOS">
+      Save Address
+    </message>
+    <message name="IDS_IOS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="In Title Case: Title shown at the top of modal dialog that offers the user to update an existing address." meaning="In Title Case for iOS">
+      Update Address
+    </message>
+  </if>
+  <!-- Used on Desktop: -->
+  <if expr="not is_android and not is_ios">
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to save a new address.">
+      Save address?
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to save a new address.">
+      No thanks
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_EDIT_BUTTON_TOOLTIP" desc="Tooltip of the Edit button in the prompt that offers the user to save a new address.">
+      Edit address
+    </message>
+    <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
+      Update address?
+    </message>
+    <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the prompt that offers the user to update an existing address.">
+      No thanks
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_TITLE" desc="Title shown at the top of dialog that edits an address before saving it">
+      Edit address
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_SAVE" desc="Label of the OK button in the dialog that edits the address before saving it as a new address.">
+      Save
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_OK_BUTTON_LABEL_UPDATE" desc="Label of the OK button in the dialog that edits the address before using it to update an existing address.">
+      Update
+    </message>
+    <message name="IDS_AUTOFILL_EDIT_ADDRESS_DIALOG_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that edits an address before saving it.">
+      Cancel
+    </message>
+  </if>
 </grit-part>

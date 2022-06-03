@@ -8,24 +8,21 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
-ConfirmBubbleModel::ConfirmBubbleModel() {}
+ConfirmBubbleModel::ConfirmBubbleModel() = default;
+ConfirmBubbleModel::~ConfirmBubbleModel() = default;
 
-ConfirmBubbleModel::~ConfirmBubbleModel() {}
-
-int ConfirmBubbleModel::GetButtons() const {
-  return BUTTON_OK | BUTTON_CANCEL;
-}
-
-base::string16 ConfirmBubbleModel::GetButtonLabel(BubbleButton button) const {
-  return l10n_util::GetStringUTF16((button == BUTTON_OK) ? IDS_OK : IDS_CANCEL);
+std::u16string ConfirmBubbleModel::GetButtonLabel(
+    ui::DialogButton button) const {
+  return l10n_util::GetStringUTF16(
+      (button == ui::DIALOG_BUTTON_OK) ? IDS_OK : IDS_CANCEL);
 }
 
 void ConfirmBubbleModel::Accept() {}
 
 void ConfirmBubbleModel::Cancel() {}
 
-base::string16 ConfirmBubbleModel::GetLinkText() const {
-  return base::string16();
+std::u16string ConfirmBubbleModel::GetLinkText() const {
+  return std::u16string();
 }
 
 GURL ConfirmBubbleModel::GetHelpPageURL() const {

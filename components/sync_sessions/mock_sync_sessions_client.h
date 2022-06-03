@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_SYNC_SESSIONS_MOCK_SYNC_SESSIONS_CLIENT_H_
 #define COMPONENTS_SYNC_SESSIONS_MOCK_SYNC_SESSIONS_CLIENT_H_
 
+#include <string>
+
 #include "components/sync_sessions/sync_sessions_client.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
@@ -16,15 +18,25 @@ class MockSyncSessionsClient : public SyncSessionsClient {
   // By default, ShouldSyncURL() always returns true.
   MockSyncSessionsClient();
   ~MockSyncSessionsClient() override;
-
-  MOCK_METHOD0(GetFaviconService, favicon::FaviconService*());
-  MOCK_METHOD0(GetHistoryService, history::HistoryService*());
-  MOCK_METHOD0(GetSessionSyncPrefs, SessionSyncPrefs*());
-  MOCK_METHOD0(GetStoreFactory, syncer::RepeatingModelTypeStoreFactory());
-  MOCK_CONST_METHOD1(ShouldSyncURL, bool(const GURL& url));
-  MOCK_METHOD0(GetSyncedWindowDelegatesGetter, SyncedWindowDelegatesGetter*());
-  MOCK_METHOD0(GetLocalSessionEventRouter, LocalSessionEventRouter*());
-  MOCK_METHOD0(IsProxyTabsSyncRunning, bool());
+  MOCK_METHOD(SessionSyncPrefs*, GetSessionSyncPrefs, (), (override));
+  MOCK_METHOD(syncer::RepeatingModelTypeStoreFactory,
+              GetStoreFactory,
+              (),
+              (override));
+  MOCK_METHOD(void, ClearAllOnDemandFavicons, (), (override));
+  MOCK_METHOD(bool, ShouldSyncURL, (const GURL& url), (const override));
+  MOCK_METHOD(bool,
+              IsRecentLocalCacheGuid,
+              (const std::string& cache_guid),
+              (const override));
+  MOCK_METHOD(SyncedWindowDelegatesGetter*,
+              GetSyncedWindowDelegatesGetter,
+              (),
+              (override));
+  MOCK_METHOD(LocalSessionEventRouter*,
+              GetLocalSessionEventRouter,
+              (),
+              (override));
 };
 
 }  // namespace sync_sessions

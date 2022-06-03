@@ -10,9 +10,11 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_data_source.h"
+#include "ui/base/template_expressions.h"
 
 class GURL;
 
@@ -22,7 +24,6 @@ class RefCountedMemory;
 
 namespace content {
 class BrowserContext;
-class ResourceContext;
 
 // A URLDataSource is an object that can answer requests for WebUI data
 // asynchronously. An implementation of URLDataSource should handle calls to
@@ -34,14 +35,6 @@ class CONTENT_EXPORT URLDataSource {
   // Adds a URL data source to |browser_context|.
   static void Add(BrowserContext* browser_context,
                   std::unique_ptr<URLDataSource> source);
-
-  // Gets a reference to the URL data source for |url| and runs |callback| with
-  // it as an argument.
-  // TODO (rbpotter): Remove this function when the OOBE page Polymer 2
-  // migration is complete.
-  static void GetSourceForURL(BrowserContext* browser_context,
-                              const GURL& url,
-                              base::OnceCallback<void(URLDataSource*)>);
 
   // Parse |url| to get the path which will be used to resolve the request. The
   // path is the remaining portion after the scheme and hostname, without the
@@ -64,9 +57,6 @@ class CONTENT_EXPORT URLDataSource {
   using GotDataCallback =
       base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
 
-  // Must be called on the task runner specified by TaskRunnerForRequestPath,
-  // or the IO thread if TaskRunnerForRequestPath returns nullptr.
-  //
   // Called by URLDataSource to request data at |url|. The child class should
   // run |callback| when the data is available or if the request could not be
   // satisfied. This can be called either in this callback or asynchronously
@@ -78,27 +68,12 @@ class CONTENT_EXPORT URLDataSource {
                                 const WebContents::Getter& wc_getter,
                                 GotDataCallback callback) = 0;
 
-  // The following methods are all called on the IO thread.
-
   // Return the mimetype that should be sent with this response, or empty
   // string to specify no mime type.
   virtual std::string GetMimeType(const std::string& path) = 0;
 
-  // Returns the TaskRunner on which the delegate wishes to have
-  // StartDataRequest called to handle the request for |path|. The default
-  // implementation returns BrowserThread::UI. If the delegate does not care
-  // which thread StartDataRequest is called on, this should return nullptr.
-  // It may be beneficial to return nullptr for requests that are safe to handle
-  // directly on the IO thread.  This can improve performance by satisfying such
-  // requests more rapidly when there is a large amount of UI thread contention.
-  // Or the delegate can return a specific thread's TaskRunner if they wish.
-  virtual scoped_refptr<base::SingleThreadTaskRunner> TaskRunnerForRequestPath(
-      const std::string& path);
-
   // Returns true if the URLDataSource should replace an existing URLDataSource
   // with the same name that has already been registered. The default is true.
-  //
-  // WARNING: this is invoked on the IO thread.
   //
   // TODO: nuke this and convert all callers to not replace.
   virtual bool ShouldReplaceExistingSource();
@@ -114,27 +89,22 @@ class CONTENT_EXPORT URLDataSource {
   // is delivered through the data manager backend. Do not disable CSP on your
   // page without first contacting the chrome security team.
   virtual bool ShouldAddContentSecurityPolicy();
-  // For pre-existing code, enabling CSP with relaxed script-src attributes
-  // may be marginally better than disabling CSP outright.
-  // Do not override this method without first contacting the chrome security
-  // team.
-  // By default, "script-src chrome://resources 'self';" is added to CSP.
-  // Override to change this.
-  virtual std::string GetContentSecurityPolicyScriptSrc();
 
-  // It is OK to override the following methods to a custom CSP directive
-  // thereby slightly reducing the protection applied to the page.
+  // By default, the following CSPs are added. Override to change this.
+  //  - "child-src 'none';"
+  //  - "object-src 'none';"
+  //  - "frame ancestors: 'none'" is added to the CSP unless
+  //    ShouldDenyXFrameOptions() returns false
+  //  - "script-src chrome://resources 'self';"
+  virtual std::string GetContentSecurityPolicy(
+      network::mojom::CSPDirectiveName directive);
 
-  // By default, "object-src 'none';" is added to CSP. Override to change this.
-  virtual std::string GetContentSecurityPolicyObjectSrc();
-  // By default, "child-src 'none';" is added to CSP. Override to change this.
-  virtual std::string GetContentSecurityPolicyChildSrc();
-  // By default empty. Override to change this.
-  virtual std::string GetContentSecurityPolicyStyleSrc();
-  // By default empty. Override to change this.
-  virtual std::string GetContentSecurityPolicyImgSrc();
-  // By default empty. Override to change this.
-  virtual std::string GetContentSecurityPolicyWorkerSrc();
+  // By default, neither of these headers are set. Override to change this.
+  // TODO(https://crbug.com/1189194): Consider setting COOP:same-origin and
+  // COEP:require-corp as the default instead.
+  virtual std::string GetCrossOriginOpenerPolicy();
+  virtual std::string GetCrossOriginEmbedderPolicy();
+  virtual std::string GetCrossOriginResourcePolicy();
 
   // By default, the "X-Frame-Options: DENY" header is sent. To stop this from
   // happening, return false. It is OK to return false as needed.
@@ -146,7 +116,7 @@ class CONTENT_EXPORT URLDataSource {
   // ContentBrowserClient::GetAdditionalWebUISchemes() to permit additional
   // WebUI scheme support for an embedder.
   virtual bool ShouldServiceRequest(const GURL& url,
-                                    ResourceContext* resource_context,
+                                    BrowserContext* browser_context,
                                     int render_process_id);
 
   // By default, Content-Type: header is not sent along with the response.
@@ -165,12 +135,8 @@ class CONTENT_EXPORT URLDataSource {
   virtual std::string GetAccessControlAllowOriginForOrigin(
       const std::string& origin);
 
-  // Called on the UI thread. For the shared resource, disables using Polymer 2
-  // for requests from |host|, even if WebUIPolymer2 is enabled. Assumes this
-  // method is only called from one host.
-  // TODO (rbpotter): Remove this function when the OOBE page Polymer 2
-  // migration is complete.
-  virtual void DisablePolymer2ForHost(const std::string& host);
+  // Replacements for i18n or null if no replacements are desired.
+  virtual const ui::TemplateReplacements* GetReplacements();
 
   // Whether i18n template expression replacement should be allowed in HTML
   // templates within JS files.

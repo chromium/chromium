@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/direct_manipulation_test_helper_win.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace content {
 MockDirectManipulationContent::MockDirectManipulationContent() {}

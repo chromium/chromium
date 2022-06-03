@@ -1,5 +1,7 @@
 # How to handle an alert for a new problem
 
+**Important**: When making changes to this document, also update duplicate files under the [internal docs](http://goto.google.com/perf-bot-health-sheriffs).
+
 **Warning: this is the hardest part of being a sheriff.**
 
 Each bug may take 10 minutes to an hour to address, but there are usually a manageable number of new bugs per shift (5 on a good shift, 15 on a bad one).
@@ -26,7 +28,7 @@ Note that this list is not at all comprehensive. If you encounter an alert that 
 
 ![Story failures in Sheriff-o-matic](images/som_story_failures.png)
 
-Sheriff-o-matic may occasionally fail to recognize a benchmark failure is due to story failures: because of this, it's worth double-checking [the test logs](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md#getting-a-list-of-stories-that-failed) for a general benchmark failure to verify that it's not due to a story failure.
+Sheriff-o-matic may occasionally fail to recognize a benchmark failure is due to story failures: because of this, it's worth double-checking [the test logs](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md#getting-a-list-of-stories-that-failed) for a general benchmark failure to verify that it's not due to a story failure.
 
 **What action to take: **File a P1 bug, CCing the benchmark owner(s) (found [here](https://docs.google.com/spreadsheets/d/1xaAo0_SU3iDfGdqDJZX_jRV0QtkufwHUKH3kQKF3YQs/edit#gid=0)).
 
@@ -34,11 +36,11 @@ Add to the bug:
 
 * A link to the failing test's log
 
-* [Any relevant failure stack trace](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md#identifying-why-a-story-failed)
+* [Any relevant failure stack trace](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md#identifying-why-a-story-failed)
 
-* The revision range at which the story started failing (most easily found [through the flakiness dashboard](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/what_test_is_failing.md))
+* The revision range at which the story started failing (most easily found [through the flakiness dashboard](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/what_test_is_failing.md))
 
-Once the bug is filed, [disable the failing story](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_disable_a_story.md) and [launch a bisect over the revision range of the breakage](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_launch_a_functional_bisect.md), and snooze the alert for 24h to give the bisect time to finish. Once the story is disabled, lower its priority to P2 and assign the bug to the benchmark owner.
+Once the bug is filed, [disable the failing story](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_disable_a_story.md) and [launch a bisect over the revision range of the breakage](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_launch_a_functional_bisect.md), and snooze the alert for 24h to give the bisect time to finish. Once the story is disabled, lower its priority to P2 and assign the bug to the benchmark owner.
 
 **[Canonical example](https://bugs.cromium.org/p/chromium/issues/detail?id=809063)**
 
@@ -56,7 +58,7 @@ Add to the bug:
 
 * A clear request to Infra > Labs (e.g. "Labs team, could you please take a look at this bot to see why tests aren't running?")
 
-Once the bug is filed, [snooze the alert](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_snooze_an_alert.md) for 24 hours.
+Once the bug is filed, [snooze the alert](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_snooze_an_alert.md) for 24 hours.
 
 Sometimes, Infra>Labs may request additional help in debugging the problem. For example, they may notice that this bot repeatedly goes down and may ask for your help in figuring out why. If this happens and you're unsure what next step to take, reach out for help [on chat](https://hangouts.google.com/group/80kY8Glh1AqcbQP92).
 
@@ -72,7 +74,7 @@ Sometimes, Infra>Labs may request additional help in debugging the problem. For 
 
 ### Benchmark harness failure
 
-**How to recognize: **Sheriff-o-matic will indicate that an entire benchmark is failing (i.e. no story failures will be listed). [The logs](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md) will contain a failure that's not attributable to any particular story. For example:
+**How to recognize: **Sheriff-o-matic will indicate that an entire benchmark is failing (i.e. no story failures will be listed). [The logs](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md) will contain a failure that's not attributable to any particular story. For example:
 
 ![A general benchmark failure in Sheriff-o-matic](images/som_benchmark_failure.png)
 
@@ -82,7 +84,7 @@ Add to the bug:
 
 * A link to the failing test's log
 
-* [Any relevant failure stack trace](https://chromium.googlesource.com/chromium/src/+/master/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md#identifying-why-a-story-failed)
+* [Any relevant failure stack trace](https://chromium.googlesource.com/chromium/src/+/main/docs/speed/bot_health_sheriffing/how_to_access_test_logs.md#identifying-why-a-story-failed)
 
 * The revision range at which the story started failing. Because entire benchmark failures don't appear in the flakiness dashboard, you'll have to manually skim recent test run logs to identify when the failure started.
 

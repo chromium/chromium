@@ -11,6 +11,10 @@
 
 namespace blink {
 
+// A value which represents custom properties that are invalid at computed-
+// value time.
+//
+// https://drafts.csswg.org/css-variables/#invalid-at-computed-value-time
 class CORE_EXPORT CSSInvalidVariableValue : public CSSValue {
  public:
   static CSSInvalidVariableValue* Create();
@@ -23,9 +27,13 @@ class CORE_EXPORT CSSInvalidVariableValue : public CSSValue {
 
   bool Equals(const CSSInvalidVariableValue&) const { return true; }
 
-  void TraceAfterDispatch(blink::Visitor* visitor) {
+  void TraceAfterDispatch(blink::Visitor* visitor) const {
     CSSValue::TraceAfterDispatch(visitor);
   }
+
+ protected:
+  explicit CSSInvalidVariableValue(ClassType class_type)
+      : CSSValue(class_type) {}
 
  private:
   friend class CSSValuePool;

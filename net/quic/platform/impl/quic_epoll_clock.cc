@@ -21,14 +21,8 @@ QuicTime QuicEpollClock::ApproximateNow() const {
 
 QuicTime QuicEpollClock::Now() const {
   QuicTime now = CreateTimeFromMicroseconds(epoll_server_->NowInUsec());
-  if (!GetQuicReloadableFlag(quic_monotonic_epoll_clock)) {
-    return now;
-  }
 
   if (now <= largest_time_) {
-    if (now < largest_time_) {
-      QUIC_RELOADABLE_FLAG_COUNT(quic_monotonic_epoll_clock);
-    }
     // Time not increasing, return |largest_time_|.
     return largest_time_;
   }

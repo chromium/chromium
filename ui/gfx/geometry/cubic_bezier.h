@@ -5,7 +5,6 @@
 #ifndef UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 #define UI_GFX_GEOMETRY_CUBIC_BEZIER_H_
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/geometry_export.h"
 
 namespace gfx {
@@ -16,6 +15,8 @@ class GEOMETRY_EXPORT CubicBezier {
  public:
   CubicBezier(double p1x, double p1y, double p2x, double p2y);
   CubicBezier(const CubicBezier& other);
+
+  CubicBezier& operator=(const CubicBezier&) = delete;
 
   double SampleCurveX(double t) const {
     // `ax t^3 + bx t^2 + cx t' expanded using Horner's rule.
@@ -98,8 +99,6 @@ class GEOMETRY_EXPORT CubicBezier {
   // may have multiple values for t for some values of x in [0, 1].
   bool monotonically_increasing_;
 #endif
-
-  DISALLOW_ASSIGN(CubicBezier);
 };
 
 }  // namespace gfx

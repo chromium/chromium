@@ -106,7 +106,7 @@ bool SpellCheckMarkerListImpl::ShiftMarkers(const String&,
       &markers_, offset, old_length, new_length);
 }
 
-void SpellCheckMarkerListImpl::Trace(Visitor* visitor) {
+void SpellCheckMarkerListImpl::Trace(Visitor* visitor) const {
   visitor->Trace(markers_);
   DocumentMarkerList::Trace(visitor);
 }

@@ -22,6 +22,10 @@ namespace net {
 // thread, and notifies registered observers when the value changes.
 class NET_EXPORT_PRIVATE PollingProxyConfigService : public ProxyConfigService {
  public:
+  PollingProxyConfigService(const PollingProxyConfigService&) = delete;
+  PollingProxyConfigService& operator=(const PollingProxyConfigService&) =
+      delete;
+
   // ProxyConfigService implementation:
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
@@ -52,8 +56,6 @@ class NET_EXPORT_PRIVATE PollingProxyConfigService : public ProxyConfigService {
  private:
   class Core;
   scoped_refptr<Core> core_;
-
-  DISALLOW_COPY_AND_ASSIGN(PollingProxyConfigService);
 };
 
 }  // namespace net

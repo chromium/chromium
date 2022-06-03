@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_HOST_WINDOW_TREE_HOST_INIT_PARAMS_H_
-#define ASH_HOST_WINDOW_TREE_HOST_INIT_PARAMS_H_
+#ifndef ASH_HOST_ASH_WINDOW_TREE_HOST_INIT_PARAMS_H_
+#define ASH_HOST_ASH_WINDOW_TREE_HOST_INIT_PARAMS_H_
 
 #include <stdint.h>
 
@@ -27,4 +27,4 @@ struct ASH_EXPORT AshWindowTreeHostInitParams {
 
 }  // namespace ash
 
-#endif  // ASH_HOST_WINDOW_TREE_HOST_INIT_PARAMS_H_
+#endif  // ASH_HOST_ASH_WINDOW_TREE_HOST_INIT_PARAMS_H_

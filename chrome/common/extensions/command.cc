@@ -6,13 +6,14 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/manifest_constants.h"
@@ -31,24 +32,20 @@ static const char kMissing[] = "Missing";
 static const char kCommandKeyNotSupported[] =
     "Command key is not supported. Note: Ctrl means Command on Mac";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // ChromeOS supports an additional modifier 'Search', which can result in longer
 // sequences.
 static const int kMaxTokenSize = 4;
 #else
 static const int kMaxTokenSize = 3;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-Command::Type GetCommandType(const std::string& command_name) {
-  if (command_name == values::kPageActionCommandEvent)
-    return Command::Type::kPageAction;
-  if (command_name == values::kBrowserActionCommandEvent)
-    return Command::Type::kBrowserAction;
-  return Command::Type::kNamed;
-}
-
+// TODO(devlin): Expose this on Command, since many places implicitly check
+// this.
 bool IsNamedCommand(const std::string& command_name) {
-  return GetCommandType(command_name) == Command::Type::kNamed;
+  return command_name != values::kPageActionCommandEvent &&
+         command_name != values::kBrowserActionCommandEvent &&
+         command_name != values::kActionCommandEvent;
 }
 
 bool DoesRequireModifier(const std::string& accelerator) {
@@ -70,7 +67,7 @@ ui::Accelerator ParseImpl(const std::string& accelerator,
                           const std::string& platform_key,
                           int index,
                           bool should_parse_media_keys,
-                          base::string16* error) {
+                          std::u16string* error) {
   error->clear();
   if (platform_key != values::kKeybindingPlatformWin &&
       platform_key != values::kKeybindingPlatformMac &&
@@ -107,7 +104,7 @@ ui::Accelerator ParseImpl(const std::string& accelerator,
         // Mac the developer has to specify MacCtrl). Therefore we treat this
         // as Command.
         modifiers |= ui::EF_COMMAND_DOWN;
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       } else if (platform_key == values::kKeybindingPlatformDefault) {
         // If we see "Command+foo" in the Default section it can mean two
         // things, depending on the platform:
@@ -252,7 +249,7 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
   if (platform == values::kKeybindingPlatformMac) {
     normalize = true;
   } else if (platform == values::kKeybindingPlatformDefault) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     normalize = true;
 #endif
   }
@@ -273,19 +270,16 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
 
 }  // namespace
 
-Command::Command() : global_(false), type_(Type::kNamed) {}
+Command::Command() : global_(false) {}
 
 Command::Command(const std::string& command_name,
-                 const base::string16& description,
+                 const std::u16string& description,
                  const std::string& accelerator,
                  bool global)
-    : command_name_(command_name),
-      description_(description),
-      global_(global),
-      type_(GetCommandType(command_name)) {
-  base::string16 error;
+    : command_name_(command_name), description_(description), global_(global) {
+  std::u16string error;
   accelerator_ = ParseImpl(accelerator, CommandPlatform(), 0,
-                           type_ == Type::kNamed, &error);
+                           IsNamedCommand(command_name), &error);
 }
 
 Command::Command(const Command& other) = default;
@@ -296,9 +290,9 @@ Command::~Command() {}
 std::string Command::CommandPlatform() {
 #if defined(OS_WIN)
   return values::kKeybindingPlatformWin;
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
   return values::kKeybindingPlatformMac;
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return values::kKeybindingPlatformChromeOs;
 #elif defined(OS_LINUX)
   return values::kKeybindingPlatformLinux;
@@ -310,7 +304,7 @@ std::string Command::CommandPlatform() {
 // static
 ui::Accelerator Command::StringToAccelerator(const std::string& accelerator,
                                              const std::string& command_name) {
-  base::string16 error;
+  std::u16string error;
   ui::Accelerator parsed =
       ParseImpl(accelerator, Command::CommandPlatform(), 0,
                 IsNamedCommand(command_name), &error);
@@ -330,7 +324,7 @@ std::string Command::AcceleratorToString(const ui::Accelerator& accelerator) {
     shortcut += values::kKeySeparator;
 
   if (accelerator.IsCmdDown()) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
     // Chrome OS treats the Search key like the Command key.
     shortcut += values::kKeySearch;
 #else
@@ -424,10 +418,10 @@ bool Command::IsMediaKey(const ui::Accelerator& accelerator) {
 bool Command::Parse(const base::DictionaryValue* command,
                     const std::string& command_name,
                     int index,
-                    base::string16* error) {
+                    std::u16string* error) {
   DCHECK(!command_name.empty());
 
-  base::string16 description;
+  std::u16string description;
   if (IsNamedCommand(command_name)) {
     if (!command->GetString(keys::kDescription, &description) ||
         description.empty()) {
@@ -447,11 +441,10 @@ bool Command::Parse(const base::DictionaryValue* command,
     for (base::DictionaryValue::Iterator iter(*suggested_key_dict);
          !iter.IsAtEnd(); iter.Advance()) {
       // For each item in the dictionary, extract the platforms specified.
-      std::string suggested_key_string;
-      if (iter.value().GetAsString(&suggested_key_string) &&
-          !suggested_key_string.empty()) {
+      const std::string* suggested_key_string = iter.value().GetIfString();
+      if (suggested_key_string && !suggested_key_string->empty()) {
         // Found a platform, add it to the suggestions list.
-        suggestions[iter.key()] = suggested_key_string;
+        suggestions[iter.key()] = *suggested_key_string;
       } else {
         *error = ErrorUtils::FormatErrorMessageUTF16(
             errors::kInvalidKeyBinding, base::NumberToString(index),
@@ -533,7 +526,6 @@ bool Command::Parse(const base::DictionaryValue* command,
       command_name_ = command_name;
       description_ = description;
       global_ = global;
-      type_ = GetCommandType(command_name);
     }
   }
   return true;

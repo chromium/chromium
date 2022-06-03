@@ -13,6 +13,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/android/bookmarks/partner_bookmarks_reader.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -124,11 +125,11 @@ bool PartnerBookmarksShim::IsEditable(const BookmarkNode* node) const {
 
 void PartnerBookmarksShim::RemoveBookmark(const BookmarkNode* node) {
   DCHECK(IsEditable(node));
-  RenameBookmark(node, base::string16());
+  RenameBookmark(node, std::u16string());
 }
 
 void PartnerBookmarksShim::RenameBookmark(const BookmarkNode* node,
-                                          const base::string16& title) {
+                                          const std::u16string& title) {
   DCHECK(IsEditable(node));
   const NodeRenamingMapKey key(node->url(), node->GetTitle());
   node_rename_remove_map_[key] = title;
@@ -154,7 +155,7 @@ const BookmarkNode* PartnerBookmarksShim::GetNodeByID(int64_t id) const {
   return GetNodeByID(GetPartnerBookmarksRoot(), id);
 }
 
-base::string16 PartnerBookmarksShim::GetTitle(const BookmarkNode* node) const {
+std::u16string PartnerBookmarksShim::GetTitle(const BookmarkNode* node) const {
   DCHECK(node);
   DCHECK(IsPartnerBookmark(node));
 
@@ -195,7 +196,8 @@ void PartnerBookmarksShim::SetPartnerBookmarksRoot(
 }
 
 PartnerBookmarksShim::NodeRenamingMapKey::NodeRenamingMapKey(
-    const GURL& url, const base::string16& provider_title)
+    const GURL& url,
+    const std::u16string& provider_title)
     : url_(url), provider_title_(provider_title) {}
 
 PartnerBookmarksShim::NodeRenamingMapKey::~NodeRenamingMapKey() {}
@@ -257,17 +259,16 @@ void PartnerBookmarksShim::ReloadNodeMapping() {
   if (!list)
     return;
 
-  for (base::ListValue::const_iterator it = list->begin();
-       it != list->end(); ++it) {
-    const base::DictionaryValue* dict = NULL;
-    if (!it->GetAsDictionary(&dict)) {
+  for (const auto& entry : list->GetList()) {
+    const base::DictionaryValue* dict = nullptr;
+    if (!entry.GetAsDictionary(&dict)) {
       NOTREACHED();
       continue;
     }
 
     std::string url;
-    base::string16 provider_title;
-    base::string16 mapped_title;
+    std::u16string provider_title;
+    std::u16string mapped_title;
     if (!dict->GetString(kMappingUrl, &url) ||
         !dict->GetString(kMappingProviderTitle, &provider_title) ||
         !dict->GetString(kMappingTitle, &mapped_title)) {
@@ -304,7 +305,7 @@ void PartnerBookmarksShim::GetPartnerBookmarksMatchingProperties(
     std::vector<const BookmarkNode*>* nodes) {
   DCHECK(nodes->size() <= max_count);
 
-  std::vector<base::string16> query_words =
+  std::vector<std::u16string> query_words =
       bookmarks::ParseBookmarkQuery(query);
   if (query_words.empty())
     return;

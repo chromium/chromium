@@ -2,8 +2,8 @@ This is a testharness.js-based test.
 PASS Worker has an opaque origin.
 PASS Worker can read its own blobs.
 PASS Worker can read its owners blobs.
-FAIL Worker can XHR fetch a blob. assert_equals: expected "from page" but got ""
-FAIL Worker can fetch a blob. promise_test: Unhandled rejection with value: object "TypeError: Failed to fetch"
+PASS Worker can XHR fetch a blob.
+PASS Worker can fetch a blob.
 FAIL Worker can access BroadcastChannel Failed to construct 'BroadcastChannel': Can't create BroadcastChannel in an opaque origin
 Harness: the test ran to completion.
 

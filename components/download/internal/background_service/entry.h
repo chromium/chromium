@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/time/time.h"
 #include "components/download/public/background_service/client.h"
 #include "components/download/public/background_service/clients.h"
@@ -101,9 +102,6 @@ struct Entry {
 
   // Stores the number of resumptions for this download.
   uint32_t resumption_count;
-
-  // Stores the number of times the service tried to delete the download file.
-  uint32_t cleanup_attempt_count;
 
   // Stores whether this request has some data to be uploaded. This is set to
   // true only when the client has provided with the upload data and is not

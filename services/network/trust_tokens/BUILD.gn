@@ -1,0 +1,212 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//services/network/public/cpp/features.gni")
+import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/protobuf/proto_library.gni")
+
+source_set("trust_tokens") {
+  visibility = [
+    ":*",
+    "//services/network:network_service",
+    "//services/network:tests",
+  ]
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [
+    "boringssl_trust_token_issuance_cryptographer.cc",
+    "boringssl_trust_token_issuance_cryptographer.h",
+    "boringssl_trust_token_redemption_cryptographer.cc",
+    "boringssl_trust_token_redemption_cryptographer.h",
+    "ecdsa_p256_key_pair_generator.cc",
+    "ecdsa_p256_key_pair_generator.h",
+    "ecdsa_sha256_trust_token_request_signer.cc",
+    "ecdsa_sha256_trust_token_request_signer.h",
+    "ed25519_key_pair_generator.cc",
+    "ed25519_key_pair_generator.h",
+    "ed25519_trust_token_request_signer.cc",
+    "ed25519_trust_token_request_signer.h",
+    "expiry_inspecting_record_expiry_delegate.cc",
+    "expiry_inspecting_record_expiry_delegate.h",
+    "has_trust_tokens_answerer.cc",
+    "has_trust_tokens_answerer.h",
+    "in_memory_trust_token_persister.cc",
+    "in_memory_trust_token_persister.h",
+    "local_trust_token_operation_delegate.h",
+    "local_trust_token_operation_delegate_impl.cc",
+    "local_trust_token_operation_delegate_impl.h",
+    "operating_system_matching.cc",
+    "operating_system_matching.h",
+    "operation_timing_request_helper_wrapper.cc",
+    "operation_timing_request_helper_wrapper.h",
+    "pending_trust_token_store.cc",
+    "pending_trust_token_store.h",
+    "scoped_boringssl_bytes.h",
+    "sqlite_trust_token_persister.cc",
+    "sqlite_trust_token_persister.h",
+    "suitable_trust_token_origin.cc",
+    "suitable_trust_token_origin.h",
+    "trust_token_client_data_canonicalization.cc",
+    "trust_token_client_data_canonicalization.h",
+    "trust_token_database_owner.cc",
+    "trust_token_database_owner.h",
+    "trust_token_key_commitment_controller.cc",
+    "trust_token_key_commitment_controller.h",
+    "trust_token_key_commitment_getter.h",
+    "trust_token_key_commitment_parser.cc",
+    "trust_token_key_commitment_parser.h",
+    "trust_token_key_commitments.cc",
+    "trust_token_key_commitments.h",
+    "trust_token_key_filtering.cc",
+    "trust_token_key_filtering.h",
+    "trust_token_operation_metrics_recorder.cc",
+    "trust_token_operation_metrics_recorder.h",
+    "trust_token_parameterization.cc",
+    "trust_token_parameterization.h",
+    "trust_token_persister.h",
+    "trust_token_request_canonicalizer.cc",
+    "trust_token_request_canonicalizer.h",
+    "trust_token_request_helper.h",
+    "trust_token_request_helper_factory.cc",
+    "trust_token_request_helper_factory.h",
+    "trust_token_request_issuance_helper.cc",
+    "trust_token_request_issuance_helper.h",
+    "trust_token_request_redemption_helper.cc",
+    "trust_token_request_redemption_helper.h",
+    "trust_token_request_signing_helper.cc",
+    "trust_token_request_signing_helper.h",
+    "trust_token_store.cc",
+    "trust_token_store.h",
+    "types.cc",
+    "types.h",
+  ]
+
+  deps = [
+    ":storage_proto",
+    "//base",
+    "//components/cbor",
+    "//components/sqlite_proto",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//sql",
+    "//url",
+  ]
+
+  public_deps = [ ":public_proto" ]
+}
+
+source_set("test_support") {
+  testonly = true
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [
+    "test/signed_request_verification_util.cc",
+    "test/signed_request_verification_util.h",
+    "test/test_server_handler_registration.cc",
+    "test/test_server_handler_registration.h",
+    "test/trust_token_request_handler.cc",
+    "test/trust_token_request_handler.h",
+    "test/trust_token_test_util.cc",
+    "test/trust_token_test_util.h",
+  ]
+
+  deps = [
+    ":trust_tokens",
+    "//base",
+    "//base/test:test_support",
+    "//components/cbor",
+    "//net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+source_set("tests") {
+  testonly = true
+
+  defines = [ "IS_NETWORK_SERVICE_IMPL" ]
+
+  sources = [
+    "boringssl_trust_token_issuance_cryptographer_unittest.cc",
+    "ecdsa_p256_key_pair_generator_unittest.cc",
+    "ed25519_key_pair_generator_unittest.cc",
+    "expiry_inspecting_record_expiry_delegate_unittest.cc",
+    "has_trust_tokens_answerer_unittest.cc",
+    "local_trust_token_operation_delegate_impl_unittest.cc",
+    "pending_trust_token_store_unittest.cc",
+    "sqlite_trust_token_persister_unittest.cc",
+    "suitable_trust_token_origin_unittest.cc",
+    "trust_token_client_data_canonicalization_unittest.cc",
+    "trust_token_cryptographers_test.cc",
+    "trust_token_database_owner_unittest.cc",
+    "trust_token_key_commitment_controller_unittest.cc",
+    "trust_token_key_commitment_parser_unittest.cc",
+    "trust_token_key_commitments_unittest.cc",
+    "trust_token_key_filtering_unittest.cc",
+    "trust_token_operation_metrics_recorder_unittest.cc",
+    "trust_token_persister_unittest.cc",
+    "trust_token_request_canonicalizer_unittest.cc",
+    "trust_token_request_helper_factory_unittest.cc",
+    "trust_token_request_issuance_helper_unittest.cc",
+    "trust_token_request_redemption_helper_unittest.cc",
+    "trust_token_request_signer_unittest.cc",
+    "trust_token_request_signing_helper_unittest.cc",
+    "trust_token_store_unittest.cc",
+    "types_unittest.cc",
+  ]
+
+  deps = [
+    ":public_proto",
+    ":storage_proto",
+    ":test_support",
+    ":trust_tokens",
+    "//base",
+    "//base/test:test_support",
+    "//components/cbor",
+    "//components/sqlite_proto",
+    "//net",
+    "//net:test_support",
+    "//net/traffic_annotation:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//url",
+  ]
+}
+
+# public.proto contains datatypes intended
+# to be exposed to Trust Tokens consumers.
+proto_library("public_proto") {
+  sources = [ "proto/public.proto" ]
+
+  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+# storage.proto contains datatypes internal
+# to the implementation of Trust Token state
+# persistent storage.
+proto_library("storage_proto") {
+  sources = [ "proto/storage.proto" ]
+  deps = [ ":public_proto" ]
+
+  extra_configs = [ "//build/config/compiler:wexit_time_destructors" ]
+}
+
+fuzzer_test("trust_token_key_commitment_parser_fuzzer") {
+  sources = [ "test/trust_token_key_commitment_parser_fuzzer.cc" ]
+  deps = [
+    ":trust_tokens",
+    "//base",
+    "//net:net_fuzzer_test_support",
+    "//services/network/public/mojom",
+  ]
+  dict = "test/trust_token_key_commitment_parser_fuzzer.dict"
+  seed_corpus = "//third_party/grpc/src/test/core/json/corpus/"
+}

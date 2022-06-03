@@ -26,16 +26,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_TRAVERSAL_STATE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_TRAVERSAL_STATE_H_
 
-#include "base/macros.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
 class PLATFORM_EXPORT PathTraversalState final {
   STACK_ALLOCATED();
-  DISALLOW_COPY_AND_ASSIGN(PathTraversalState);
 
  public:
   enum PathTraversalAction {
@@ -45,13 +43,15 @@ class PLATFORM_EXPORT PathTraversalState final {
   };
 
   PathTraversalState(PathTraversalAction);
+  PathTraversalState(const PathTraversalState&) = delete;
+  PathTraversalState& operator=(const PathTraversalState&) = delete;
 
   float CloseSubpath();
-  float MoveTo(const FloatPoint&);
-  float LineTo(const FloatPoint&);
-  float CubicBezierTo(const FloatPoint& new_control1,
-                      const FloatPoint& new_control2,
-                      const FloatPoint& new_end);
+  float MoveTo(const gfx::PointF&);
+  float LineTo(const gfx::PointF&);
+  float CubicBezierTo(const gfx::PointF& new_control1,
+                      const gfx::PointF& new_control2,
+                      const gfx::PointF& new_end);
 
   void ProcessSegment();
 
@@ -59,17 +59,17 @@ class PLATFORM_EXPORT PathTraversalState final {
   PathTraversalAction action_;
   bool success_;
 
-  FloatPoint current_;
-  FloatPoint start_;
+  gfx::PointF current_;
+  gfx::PointF start_;
 
   float total_length_;
   float desired_length_;
 
   // For normal calculations
-  FloatPoint previous_;
+  gfx::PointF previous_;
   float normal_angle_;  // degrees
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PATH_TRAVERSAL_STATE_H_

@@ -15,19 +15,21 @@ namespace extensions {
 class ShellContentClient : public content::ContentClient {
  public:
   ShellContentClient();
+
+  ShellContentClient(const ShellContentClient&) = delete;
+  ShellContentClient& operator=(const ShellContentClient&) = delete;
+
   ~ShellContentClient() override;
 
   void AddPepperPlugins(
       std::vector<content::PepperPluginInfo>* plugins) override;
   void AddAdditionalSchemes(Schemes* schemes) override;
-  base::string16 GetLocalizedString(int message_id) override;
-  base::StringPiece GetDataResource(int resource_id,
-                                    ui::ScaleFactor scale_factor) override;
+  std::u16string GetLocalizedString(int message_id) override;
+  base::StringPiece GetDataResource(
+      int resource_id,
+      ui::ResourceScaleFactor scale_factor) override;
   base::RefCountedMemory* GetDataResourceBytes(int resource_id) override;
   gfx::Image& GetNativeImageNamed(int resource_id) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ShellContentClient);
 };
 
 }  // namespace extensions

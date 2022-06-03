@@ -5,70 +5,67 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include <memory>
+
+#include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "components/prefs/pref_member.h"
-#include "extensions/browser/extension_registry.h"
-#include "extensions/browser/extension_registry_observer.h"
-#include "ui/views/widget/widget.h"
-#include "ui/views/widget/widget_observer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/simple_menu_model.h"
+
+namespace views {
+class MenuRunner;
+}
 
 class Browser;
 class CommandUpdater;
+class StarMenuModel;
 
 // The star icon to show a bookmark bubble.
 class StarView : public PageActionIconView,
-                 public views::WidgetObserver,
-                 public extensions::ExtensionRegistryObserver {
+                 public ui::SimpleMenuModel::Delegate {
  public:
+  METADATA_HEADER(StarView);
   StarView(CommandUpdater* command_updater,
            Browser* browser,
-           PageActionIconView::Delegate* delegate);
+           IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+           PageActionIconView::Delegate* page_action_icon_delegate);
+  StarView(const StarView&) = delete;
+  StarView& operator=(const StarView&) = delete;
   ~StarView() override;
 
-  // Shows the BookmarkPromoBubbleView when the BookmarkTracker calls for it.
-  void ShowPromo();
+  // ui::PropertyHandler:
+  void AfterPropertyChange(const void* key, int64_t old_value) override;
+
+  StarMenuModel* menu_model_for_test() { return menu_model_.get(); }
+  views::MenuRunner* menu_runner_for_test() { return menu_runner_.get(); }
 
  protected:
   // PageActionIconView:
   void UpdateImpl() override;
   void OnExecuting(PageActionIconView::ExecuteSource execute_source) override;
   void ExecuteCommand(ExecuteSource source) override;
-  views::BubbleDialogDelegateView* GetBubble() const override;
-  SkColor GetInkDropBaseColor() const override;
+  views::BubbleDialogDelegate* GetBubble() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
-  base::string16 GetTextForTooltipAndAccessibleName() const override;
-
-  // views::WidgetObserver:
-  void OnWidgetDestroying(views::Widget* widget) override;
-
-  // extensions::ExtensionRegistryObserver:
-  void OnExtensionLoaded(content::BrowserContext* browser_context,
-                         const extensions::Extension* extension) override;
-  void OnExtensionUnloaded(content::BrowserContext* browser_context,
-                           const extensions::Extension* extension,
-                           extensions::UnloadedExtensionReason reason) override;
+  std::u16string GetTextForTooltipAndAccessibleName() const override;
 
  private:
   void EditBookmarksPrefUpdated();
-  bool IsBookmarkStarHiddenByExtension() const;
+
+  // ui::SimpleMenuModel::Delegate:
+  void ExecuteCommand(int command_id, int event_flags) override;
+  void MenuClosed(ui::SimpleMenuModel* source) override;
+  bool IsCommandIdAlerted(int command_id) const override;
 
   Browser* const browser_;
 
+  std::unique_ptr<views::MenuRunner> menu_runner_;
+  std::unique_ptr<StarMenuModel> menu_model_;
+
   BooleanPrefMember edit_bookmarks_enabled_;
 
-  // Observes the BookmarkPromoBubbleView's widget. Used to tell whether the
-  // promo is open and gets called back when it closes.
-  ScopedObserver<views::Widget, views::WidgetObserver> bookmark_promo_observer_{
-      this};
-
-  // Observes Extensions for changes to their |extensions::UIOverrides|.
-  ScopedObserver<extensions::ExtensionRegistry,
-                 extensions::ExtensionRegistryObserver>
-      extension_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(StarView);
+  absl::optional<FeaturePromoController::PromoHandle>
+      reading_list_entry_point_promo_handle_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_STAR_VIEW_H_

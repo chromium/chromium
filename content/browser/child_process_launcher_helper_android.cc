@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
+#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/task/post_task.h"
 #include "content/browser/child_process_launcher.h"
@@ -22,9 +23,10 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_launcher_utils.h"
 #include "content/public/browser/render_process_host.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
-#include "services/service_manager/sandbox/switches.h"
+#include "sandbox/policy/switches.h"
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
@@ -57,12 +59,12 @@ void ChildProcessLauncherHelper::BeforeLaunchOnClientThread() {
 
   // Non-sandboxed utility or renderer process are currently not supported.
   DCHECK(process_type == switches::kGpuProcess ||
-         !command_line()->HasSwitch(service_manager::switches::kNoSandbox));
+         !command_line()->HasSwitch(sandbox::policy::switches::kNoSandbox));
 }
 
-base::Optional<mojo::NamedPlatformChannel>
+absl::optional<mojo::NamedPlatformChannel>
 ChildProcessLauncherHelper::CreateNamedPlatformChannelOnClientThread() {
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 std::unique_ptr<PosixFileDescriptorInfo>
@@ -193,23 +195,25 @@ static void JNI_ChildProcessLauncherHelperImpl_SetTerminationInfo(
     jint binding_state,
     jboolean killed_by_us,
     jboolean clean_exit,
-    jint remaining_process_with_strong_binding,
-    jint remaining_process_with_moderate_binding,
-    jint remaining_process_with_waived_binding,
+    jboolean exception_during_init,
     jint reverse_rank) {
   ChildProcessTerminationInfo* info =
       reinterpret_cast<ChildProcessTerminationInfo*>(termination_info_ptr);
   info->binding_state =
       static_cast<base::android::ChildBindingState>(binding_state);
   info->was_killed_intentionally_by_browser = killed_by_us;
+  info->threw_exception_during_init = exception_during_init;
   info->clean_exit = clean_exit;
-  info->remaining_process_with_strong_binding =
-      remaining_process_with_strong_binding;
-  info->remaining_process_with_moderate_binding =
-      remaining_process_with_moderate_binding;
-  info->remaining_process_with_waived_binding =
-      remaining_process_with_waived_binding;
   info->best_effort_reverse_rank = reverse_rank;
+}
+
+static jboolean
+JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(JNIEnv* env) {
+  // Not this is called on the launcher thread, not UI thread.
+  return SiteIsolationPolicy::AreIsolatedOriginsEnabled() ||
+         SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
+         SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
+         SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled();
 }
 
 // static

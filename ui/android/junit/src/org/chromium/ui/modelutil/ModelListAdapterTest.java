@@ -5,7 +5,10 @@
 package org.chromium.ui.modelutil;
 
 import android.text.TextUtils;
+import android.view.Gravity;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.LinearLayout;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -30,6 +33,7 @@ import java.util.concurrent.TimeoutException;
 public class ModelListAdapterTest {
     private static final Integer VIEW_TYPE_1 = 0;
     private static final Integer VIEW_TYPE_2 = 1;
+    private static final Integer VIEW_TYPE_3_INFLATED = 2;
 
     private static final PropertyModel.WritableBooleanPropertyKey BOOLEAN_PROPERTY =
             new PropertyModel.WritableBooleanPropertyKey();
@@ -59,8 +63,8 @@ public class ModelListAdapterTest {
 
     private class TestViewBuilder implements ModelListAdapter.ViewBuilder<View> {
         @Override
-        public View buildView() {
-            return new View(RuntimeEnvironment.application);
+        public View buildView(ViewGroup parent) {
+            return new View(parent.getContext());
         }
     }
 
@@ -80,6 +84,7 @@ public class ModelListAdapterTest {
 
     private PropertyModel mModel;
     private ModelListAdapter mModelListAdapter;
+    private ViewGroup mList;
     private final CallbackHelper mBindBooleanCallbackHelper = new CallbackHelper();
     private final CallbackHelper mBindFloatCallbackHelper = new CallbackHelper();
     private final CallbackHelper mBindIntCallbackHelper = new CallbackHelper();
@@ -92,10 +97,15 @@ public class ModelListAdapterTest {
         ModelListAdapter.ModelList testData = new ModelListAdapter.ModelList();
         mModel = new PropertyModel(BOOLEAN_PROPERTY, FLOAT_PROPERTY, INT_PROPERTY, OBJECT_PROPERTY);
         testData.add(new ModelListAdapter.ListItem(VIEW_TYPE_1, mModel));
+        testData.add(new ModelListAdapter.ListItem(VIEW_TYPE_2, mModel));
+        testData.add(new ModelListAdapter.ListItem(VIEW_TYPE_3_INFLATED, mModel));
+        mList = new LinearLayout(RuntimeEnvironment.application);
 
         mModelListAdapter = new ModelListAdapter(testData);
         mModelListAdapter.registerType(VIEW_TYPE_1, new TestViewBuilder(), new TestViewBinder());
         mModelListAdapter.registerType(VIEW_TYPE_2, new TestViewBuilder(), new TestViewBinder());
+        mModelListAdapter.registerType(VIEW_TYPE_3_INFLATED,
+                new LayoutViewBuilder(R.layout.layout_view_builder_test), new TestViewBinder());
     }
 
     @Test
@@ -103,7 +113,7 @@ public class ModelListAdapterTest {
         // Set a property to test that it gets bound.
         mModel.set(BOOLEAN_PROPERTY, true);
 
-        View view = mModelListAdapter.getView(0, null, null);
+        View view = mModelListAdapter.getView(0, null, mList);
 
         mBindBooleanCallbackHelper.waitForCallback(0);
 
@@ -122,7 +132,7 @@ public class ModelListAdapterTest {
         mModel.set(BOOLEAN_PROPERTY, true);
 
         View nullTypeView = new View(RuntimeEnvironment.application);
-        View view = mModelListAdapter.getView(0, nullTypeView, null);
+        View view = mModelListAdapter.getView(0, nullTypeView, mList);
 
         mBindBooleanCallbackHelper.waitForCallback(0);
         Assert.assertEquals("Incorrect view type", VIEW_TYPE_1, view.getTag(R.id.view_type));
@@ -148,7 +158,7 @@ public class ModelListAdapterTest {
         convertView.setTag(R.id.view_model, convertViewModel);
         convertView.setTag(R.id.view_mcp, convertViewMcp);
 
-        View view = mModelListAdapter.getView(0, convertView, null);
+        View view = mModelListAdapter.getView(0, convertView, mList);
 
         Assert.assertEquals("Incorrect callback count for boolean property", 0,
                 mBindBooleanCallbackHelper.getCallCount());
@@ -186,7 +196,7 @@ public class ModelListAdapterTest {
         convertView.setTag(R.id.view_type, VIEW_TYPE_1);
         convertView.setTag(R.id.view_model, convertViewModel);
 
-        View view = mModelListAdapter.getView(0, convertView, null);
+        View view = mModelListAdapter.getView(0, convertView, mList);
 
         mBindBooleanCallbackHelper.waitForCallback(0);
         Assert.assertEquals("convertView not reused", convertView, view);
@@ -206,11 +216,28 @@ public class ModelListAdapterTest {
         convertView.setTag(R.id.view_type, VIEW_TYPE_2);
         convertView.setTag(R.id.view_model, convertViewModel);
 
-        View view = mModelListAdapter.getView(0, convertView, null);
+        View view = mModelListAdapter.getView(0, convertView, mList);
 
         mBindBooleanCallbackHelper.waitForCallback(0);
         Assert.assertEquals("Incorrect view type", VIEW_TYPE_1, view.getTag(R.id.view_type));
         Assert.assertNotEquals("convertView incorrectly reused", convertView, view);
+    }
+
+    @Test
+    public void testLayoutViewBuilder() {
+        View view = mModelListAdapter.getView(VIEW_TYPE_3_INFLATED, null, mList);
+        Assert.assertNotNull("No View inflated", view);
+        Assert.assertNotNull("Wrong View inflated", view.findViewById(R.id.lvb_inflated_view));
+        Assert.assertTrue("View inflated with wrong LayoutParams",
+                view.getLayoutParams() instanceof LinearLayout.LayoutParams);
+        LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) view.getLayoutParams();
+
+        // See the layout_view_builder_test.xml file for the details below.
+        Assert.assertEquals("Unexpected weight after inflate", 0.25, params.weight, 1e-7);
+        Assert.assertEquals(
+                "Unexpected gravity after inflate", Gravity.RIGHT | Gravity.BOTTOM, params.gravity);
+        Assert.assertEquals("Unexpected left margin after inflate", 12, params.leftMargin);
+        Assert.assertEquals("Unexpected right margin after inflate", 34, params.rightMargin);
     }
 
     @Test

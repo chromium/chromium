@@ -103,15 +103,18 @@ AudioListener::AudioListener(BaseAudioContext& context)
                              AudioParamHandler::AutomationRateMode::kVariable)),
       last_update_time_(-1),
       is_listener_dirty_(false),
-      position_x_values_(audio_utilities::kRenderQuantumFrames),
-      position_y_values_(audio_utilities::kRenderQuantumFrames),
-      position_z_values_(audio_utilities::kRenderQuantumFrames),
-      forward_x_values_(audio_utilities::kRenderQuantumFrames),
-      forward_y_values_(audio_utilities::kRenderQuantumFrames),
-      forward_z_values_(audio_utilities::kRenderQuantumFrames),
-      up_x_values_(audio_utilities::kRenderQuantumFrames),
-      up_y_values_(audio_utilities::kRenderQuantumFrames),
-      up_z_values_(audio_utilities::kRenderQuantumFrames) {
+      position_x_values_(
+          context.GetDeferredTaskHandler().RenderQuantumFrames()),
+      position_y_values_(
+          context.GetDeferredTaskHandler().RenderQuantumFrames()),
+      position_z_values_(
+          context.GetDeferredTaskHandler().RenderQuantumFrames()),
+      forward_x_values_(context.GetDeferredTaskHandler().RenderQuantumFrames()),
+      forward_y_values_(context.GetDeferredTaskHandler().RenderQuantumFrames()),
+      forward_z_values_(context.GetDeferredTaskHandler().RenderQuantumFrames()),
+      up_x_values_(context.GetDeferredTaskHandler().RenderQuantumFrames()),
+      up_y_values_(context.GetDeferredTaskHandler().RenderQuantumFrames()),
+      up_z_values_(context.GetDeferredTaskHandler().RenderQuantumFrames()) {
   // Initialize the cached values with the current values.  Thus, we don't need
   // to notify any panners because we haved moved.
   last_position_ = GetPosition();
@@ -121,7 +124,7 @@ AudioListener::AudioListener(BaseAudioContext& context)
 
 AudioListener::~AudioListener() = default;
 
-void AudioListener::Trace(blink::Visitor* visitor) {
+void AudioListener::Trace(Visitor* visitor) const {
   visitor->Trace(position_x_);
   visitor->Trace(position_y_);
   visitor->Trace(position_z_);
@@ -159,6 +162,17 @@ bool AudioListener::HasSampleAccurateValues() const {
          upX()->Handler().HasSampleAccurateValues() ||
          upY()->Handler().HasSampleAccurateValues() ||
          upZ()->Handler().HasSampleAccurateValues();
+}
+
+bool AudioListener::IsAudioRate() const {
+  return positionX()->Handler().IsAudioRate() ||
+         positionY()->Handler().IsAudioRate() ||
+         positionZ()->Handler().IsAudioRate() ||
+         forwardX()->Handler().IsAudioRate() ||
+         forwardY()->Handler().IsAudioRate() ||
+         forwardZ()->Handler().IsAudioRate() ||
+         upX()->Handler().IsAudioRate() || upY()->Handler().IsAudioRate() ||
+         upZ()->Handler().IsAudioRate();
 }
 
 void AudioListener::UpdateValuesIfNeeded(uint32_t frames_to_process) {
@@ -307,9 +321,9 @@ void AudioListener::setPosition(const FloatPoint3D& position,
 
   double now = position_x_->Context()->currentTime();
 
-  position_x_->setValueAtTime(position.X(), now, exceptionState);
-  position_y_->setValueAtTime(position.Y(), now, exceptionState);
-  position_z_->setValueAtTime(position.Z(), now, exceptionState);
+  position_x_->setValueAtTime(position.x(), now, exceptionState);
+  position_y_->setValueAtTime(position.y(), now, exceptionState);
+  position_z_->setValueAtTime(position.z(), now, exceptionState);
 
   MarkPannersAsDirty(PannerHandler::kAzimuthElevationDirty |
                      PannerHandler::kDistanceConeGainDirty);
@@ -324,9 +338,9 @@ void AudioListener::setOrientation(const FloatPoint3D& orientation,
 
   double now = forward_x_->Context()->currentTime();
 
-  forward_x_->setValueAtTime(orientation.X(), now, exceptionState);
-  forward_y_->setValueAtTime(orientation.Y(), now, exceptionState);
-  forward_z_->setValueAtTime(orientation.Z(), now, exceptionState);
+  forward_x_->setValueAtTime(orientation.x(), now, exceptionState);
+  forward_y_->setValueAtTime(orientation.y(), now, exceptionState);
+  forward_z_->setValueAtTime(orientation.z(), now, exceptionState);
 
   MarkPannersAsDirty(PannerHandler::kAzimuthElevationDirty);
 }
@@ -340,9 +354,9 @@ void AudioListener::SetUpVector(const FloatPoint3D& up_vector,
 
   double now = up_x_->Context()->currentTime();
 
-  up_x_->setValueAtTime(up_vector.X(), now, exceptionState);
-  up_y_->setValueAtTime(up_vector.Y(), now, exceptionState);
-  up_z_->setValueAtTime(up_vector.Z(), now, exceptionState);
+  up_x_->setValueAtTime(up_vector.x(), now, exceptionState);
+  up_y_->setValueAtTime(up_vector.y(), now, exceptionState);
+  up_z_->setValueAtTime(up_vector.z(), now, exceptionState);
 
   MarkPannersAsDirty(PannerHandler::kAzimuthElevationDirty);
 }

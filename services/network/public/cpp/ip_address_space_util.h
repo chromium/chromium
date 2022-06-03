@@ -1,0 +1,102 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_
+#define SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_
+
+#include <vector>
+
+#include "services/network/public/mojom/ip_address_space.mojom.h"
+#include "services/network/public/mojom/parsed_headers.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+class GURL;
+
+namespace net {
+
+class IPEndPoint;
+
+}  // namespace net
+
+namespace network {
+
+// Returns the IPAddressSpace to which `endpoint` belongs.
+//
+// Returns `kUnknown` for invalid IP addresses. Otherwise, takes into account
+// the `--ip-address-space-overrides` command-line switch.
+//
+// `endpoint`'s port is only used for matching to command-line overrides. It is
+// ignored otherwise. In particular, if no overrides are specified on the
+// command-line, then this function ignores the port entirely.
+//
+// WARNING: This can only be used as-is for subresource requests loaded over the
+// network. Special URL schemes and resource headers must also be taken into
+// account at higher layers.
+mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
+    IPEndPointToIPAddressSpace(const net::IPEndPoint& endpoint);
+
+// Returns whether `lhs` is less public than `rhs`.
+//
+// This comparator is compatible with std::less.
+//
+// Address spaces go from most public to least public in the following order:
+//
+//  - public and unknown (equivalent)
+//  - private
+//  - local
+//
+bool COMPONENT_EXPORT(NETWORK_CPP)
+    IsLessPublicAddressSpace(mojom::IPAddressSpace lhs,
+                             mojom::IPAddressSpace rhs);
+
+// Represents optional parameters of CalculateClientAddressSpace().
+// This is effectively a subset of network::mojom::URLResponseHead.
+// WARNING: This struct just keeps references to parameters and does not own
+// them nor make copy of them. Parameters must outlive this struct. For example,
+// passing net::IPEndPoint() as `remote_endpoint` is invalid.
+struct COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpaceParams {
+  CalculateClientAddressSpaceParams(
+      const std::vector<GURL>& url_list_via_service_worker,
+      const mojom::ParsedHeadersPtr& parsed_headers,
+      const net::IPEndPoint& remote_endpoint);
+  ~CalculateClientAddressSpaceParams();
+
+  const std::vector<GURL>& url_list_via_service_worker;
+  const mojom::ParsedHeadersPtr& parsed_headers;
+  const net::IPEndPoint& remote_endpoint;
+};
+
+// Given a request URL and `params`, this function calculates the
+// IPAddressSpace which should be associated with documents or worker global
+// scopes (collectively: request clients) instantiated from this resource.
+//
+// `params` is optional. If `params` contain values, values must be valid and
+// `params.value().parsed_headers` must be populated with the result of
+// parsing the corresponding response headers.
+//
+// WARNING: This function is defined here for proximity with related code and
+// the data structures involved. However since it deals with higher-level
+// concepts too (documents and worker global scopes), it should probably only be
+// used at the content/ layer or above.
+//
+// See: https://wicg.github.io/cors-rfc1918/#address-space
+mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP) CalculateClientAddressSpace(
+    const GURL& url,
+    absl::optional<CalculateClientAddressSpaceParams> params);
+
+// Given a response URL and the IP endpoint the requested resource was fetched
+// from, this function calculates the IPAddressSpace of the requested resource.
+//
+// As opposed to CalculateClientAddressSpace(), this function is used to
+// determine the address space of the *target* of a fetch, for comparison with
+// that of the client of the fetch.
+//
+// See: https://wicg.github.io/cors-rfc1918/#integration-fetch
+mojom::IPAddressSpace COMPONENT_EXPORT(NETWORK_CPP)
+    CalculateResourceAddressSpace(const GURL& url,
+                                  const net::IPEndPoint& endpoint);
+
+}  // namespace network
+
+#endif  // SERVICES_NETWORK_PUBLIC_CPP_IP_ADDRESS_SPACE_UTIL_H_

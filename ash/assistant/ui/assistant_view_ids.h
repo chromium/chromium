@@ -32,8 +32,25 @@ enum AssistantViewID {
   kQueryView,
   kSuggestionContainer,
   kUiElementContainer,
+  kZeroStateView,
+  kOnboardingView,
+  kHorizontalSeparator,
 
-  kWebView,
+  // UIs in OptInView
+  kOptInViewStyledLabel,
+
+  // UIs in QueryView
+  kHighConfidenceLabel,
+  kLowConfidenceLabel,
+
+  // UIs in UiElementContainer
+  kOverflowIndicator,
+
+  // UIs in AssistantOnboardingSuggestionView
+  kAssistantOnboardingSuggestionViewLabel,
+
+  // UIs in SuggestionChipView
+  kSuggestionChipViewLabel
 };
 
 }  // namespace ash

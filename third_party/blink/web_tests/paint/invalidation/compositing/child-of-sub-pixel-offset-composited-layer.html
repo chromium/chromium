@@ -3,7 +3,8 @@
 <head>
 <style>
 .container {
-  will-change: transform;
+  /* Not using will-change: transform because it ignores subpixel accumulation. */
+  will-change: opacity;
   position: absolute;
   top: 100px;
   left:100.5px;

@@ -43,6 +43,13 @@ SessionRateImpact CreateSessionRateImpactExplicit(
   return impact;
 }
 
+BlockedBy CreateBlockedByExplicit(std::vector<std::string> affected_features) {
+  BlockedBy blocked_by;
+  blocked_by.type = BlockedBy::Type::EXPLICIT;
+  blocked_by.affected_features = affected_features;
+  return blocked_by;
+}
+
 class ChromeVariationsConfigurationTest : public ::testing::Test {
  public:
   ChromeVariationsConfigurationTest() {
@@ -75,6 +82,11 @@ class ChromeVariationsConfigurationTest : public ::testing::Test {
     EXPECT_EQ(qux_trial,
               base::FeatureList::GetFieldTrial(kChromeTestFeatureQux));
   }
+
+  ChromeVariationsConfigurationTest(const ChromeVariationsConfigurationTest&) =
+      delete;
+  ChromeVariationsConfigurationTest& operator=(
+      const ChromeVariationsConfigurationTest&) = delete;
 
   void TearDown() override {
     // This is required to ensure each test can define its own params.
@@ -113,8 +125,6 @@ class ChromeVariationsConfigurationTest : public ::testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   std::map<std::string, base::FieldTrial*> trials_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeVariationsConfigurationTest);
 };
 
 }  // namespace
@@ -177,6 +187,93 @@ TEST_F(ChromeVariationsConfigurationTest, ParseSingleFeature) {
   expected_foo.event_configs.insert(
       EventConfig("user_opened_downloads_home", Comparator(ANY, 0), 0, 360));
   EXPECT_EQ(expected_foo, foo);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParsePrefixedParamNames) {
+  std::map<std::string, std::string> foo_params;
+  // Prefixed param names.
+  foo_params["test_foo_session_rate"] = "!=6";
+  foo_params["test_foo_availability"] = ">=1";
+  foo_params["test_foo_event_used"] =
+      "name:page_download_started;comparator:any;window:0;storage:360";
+  foo_params["test_foo_event_trigger"] =
+      "name:opened_chrome_home;comparator:any;window:0;storage:360";
+  foo_params["test_foo_event_1"] =
+      "name:user_has_seen_dino;comparator:>=1;window:120;storage:180";
+  foo_params["event_2"] =
+      "name:user_opened_app_menu;comparator:<=0;window:120;storage:180";
+  foo_params["event_3"] =
+      "name:user_opened_downloads_home;comparator:any;window:0;storage:360";
+
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  base::HistogramTester histogram_tester;
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_TRUE(foo.valid);
+  histogram_tester.ExpectBucketCount(
+      kConfigParseEventName,
+      static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
+  histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
+
+  FeatureConfig expected_foo;
+  expected_foo.valid = true;
+  expected_foo.used =
+      EventConfig("page_download_started", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger =
+      EventConfig("opened_chrome_home", Comparator(ANY, 0), 0, 360);
+  expected_foo.event_configs.insert(EventConfig(
+      "user_has_seen_dino", Comparator(GREATER_THAN_OR_EQUAL, 1), 120, 180));
+  expected_foo.event_configs.insert(EventConfig(
+      "user_opened_app_menu", Comparator(LESS_THAN_OR_EQUAL, 0), 120, 180));
+  expected_foo.event_configs.insert(
+      EventConfig("user_opened_downloads_home", Comparator(ANY, 0), 0, 360));
+  expected_foo.session_rate = Comparator(NOT_EQUAL, 6);
+  expected_foo.availability = Comparator(GREATER_THAN_OR_EQUAL, 1);
+  EXPECT_EQ(expected_foo, foo);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       MultipleFeaturesWithPrefixedAndUnprefixedParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["test_foo_session_rate"] = "!=6";
+  foo_params["test_foo_availability"] = ">=1";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::map<std::string, std::string> bar_params;
+  bar_params["test_bar_session_rate"] = "!=7";
+  bar_params["test_bar_availability"] = ">=2";
+  SetFeatureParams(kChromeTestFeatureBar, bar_params);
+
+  std::map<std::string, std::string> qux_params;
+  qux_params["session_rate"] = "!=3";
+  qux_params["availability"] = ">=5";
+  SetFeatureParams(kChromeTestFeatureQux, qux_params);
+
+  std::vector<const base::Feature*> features = {
+      &kChromeTestFeatureFoo, &kChromeTestFeatureBar, &kChromeTestFeatureQux};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  FeatureConfig bar = configuration_.GetFeatureConfig(kChromeTestFeatureBar);
+  FeatureConfig qux = configuration_.GetFeatureConfig(kChromeTestFeatureQux);
+
+  FeatureConfig expected_foo;
+  expected_foo.session_rate = Comparator(NOT_EQUAL, 6);
+  expected_foo.availability = Comparator(GREATER_THAN_OR_EQUAL, 1);
+  EXPECT_EQ(expected_foo, foo);
+
+  FeatureConfig expected_bar;
+  expected_bar.session_rate = Comparator(NOT_EQUAL, 7);
+  expected_bar.availability = Comparator(GREATER_THAN_OR_EQUAL, 2);
+  EXPECT_EQ(expected_bar, bar);
+
+  FeatureConfig expected_qux;
+  expected_qux.session_rate = Comparator(NOT_EQUAL, 3);
+  expected_qux.availability = Comparator(GREATER_THAN_OR_EQUAL, 5);
+  EXPECT_EQ(expected_qux, qux);
 }
 
 TEST_F(ChromeVariationsConfigurationTest, MissingUsedIsInvalid) {
@@ -244,6 +341,143 @@ TEST_F(ChromeVariationsConfigurationTest, OnlyTriggerAndUsedIsValid) {
       kConfigParseEventName,
       static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
   histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
+}
+
+void RunBlockedByTest(ChromeVariationsConfigurationTest* test,
+                      ChromeVariationsConfiguration* configuration,
+                      std::vector<const base::Feature*> features,
+                      std::string blocked_by_param_value,
+                      BlockedBy expected_blocked_by,
+                      bool is_valid) {
+  base::HistogramTester histogram_tester;
+  std::map<std::string, std::string> foo_params;
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  foo_params["blocked_by"] = blocked_by_param_value;
+  test->SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  configuration->ParseFeatureConfigs(features);
+  FeatureConfig foo = configuration->GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(is_valid, foo.valid);
+  FeatureConfig expected_foo;
+  expected_foo.valid = is_valid;
+  expected_foo.used = EventConfig("eu", Comparator(ANY, 0), 0, 360);
+  expected_foo.trigger = EventConfig("et", Comparator(ANY, 0), 0, 360);
+  expected_foo.blocked_by = expected_blocked_by;
+  EXPECT_EQ(expected_foo, foo);
+  if (is_valid) {
+    histogram_tester.ExpectBucketCount(
+        kConfigParseEventName,
+        static_cast<int>(stats::ConfigParsingEvent::SUCCESS), 1);
+  } else {
+    histogram_tester.ExpectBucketCount(
+        kConfigParseEventName,
+        static_cast<int>(stats::ConfigParsingEvent::FAILURE), 1);
+  }
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockingNone) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["blocking"] = "none";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.blocking.type, Blocking::Type::NONE);
+  EXPECT_TRUE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockingAll) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["blocking"] = "all";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.blocking.type, Blocking::Type::ALL);
+  EXPECT_TRUE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseInvalidBlockingParams) {
+  std::map<std::string, std::string> foo_params;
+  // Anything other than all/none should be invalid.
+  foo_params["blocking"] = "123";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.blocking.type, Blocking::Type::ALL);
+  EXPECT_FALSE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByAll) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, "all",
+                   BlockedBy(), true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByNone) {
+  BlockedBy blocked_by;
+  blocked_by.type = BlockedBy::Type::NONE;
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, "none",
+                   blocked_by, true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitSelf) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo},
+                   kChromeTestFeatureFoo.name,
+                   CreateBlockedByExplicit({kChromeTestFeatureFoo.name}),
+                   true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitOther) {
+  RunBlockedByTest(this, &configuration_,
+                   {&kChromeTestFeatureFoo, &kChromeTestFeatureBar},
+                   kChromeTestFeatureBar.name,
+                   CreateBlockedByExplicit({kChromeTestFeatureBar.name}),
+                   true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitMultiple) {
+  RunBlockedByTest(
+      this, &configuration_,
+      {&kChromeTestFeatureFoo, &kChromeTestFeatureBar, &kChromeTestFeatureQux},
+      "test_bar,test_qux",
+      CreateBlockedByExplicit(
+          {kChromeTestFeatureBar.name, kChromeTestFeatureQux.name}),
+      true /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitEmpty) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, "",
+                   BlockedBy(), false /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitOnlySeparator) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, ",",
+                   BlockedBy(), false /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest,
+       ParseBlockedByExplicitUnknownFeature) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo}, "random",
+                   BlockedBy(), false /* is_valid */);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseBlockedByExplicitAll) {
+  RunBlockedByTest(this, &configuration_, {&kChromeTestFeatureFoo},
+                   "all,test_foo", BlockedBy(), false /* is_valid */);
 }
 
 void RunSessionRateImpactTest(ChromeVariationsConfigurationTest* test,
@@ -1073,6 +1307,86 @@ TEST_F(ChromeVariationsConfigurationTest, NonExistingConfigIsInvalid) {
       kConfigParseEventName,
       static_cast<int>(stats::ConfigParsingEvent::FAILURE_NO_FIELD_TRIAL), 1);
   histogram_tester.ExpectTotalCount(kConfigParseEventName, 1);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, ParseValidSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "max_limit:5, snooze_interval:3";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 5u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 3u);
+  EXPECT_TRUE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, UnorderedSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "snooze_interval:3, max_limit:3";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 3u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 3u);
+  EXPECT_TRUE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, InvalidMaxLimitSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "max_limit:e, snooze_interval:3";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 0u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 0u);
+  EXPECT_FALSE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, InvalidIntervalSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "max_limit:3, snooze_interval:e";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 0u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 0u);
+  EXPECT_FALSE(foo.valid);
+}
+
+TEST_F(ChromeVariationsConfigurationTest, IncompleteSnoozeParams) {
+  std::map<std::string, std::string> foo_params;
+  foo_params["snooze_params"] = "max_limit:3";
+  foo_params["event_used"] = "name:eu;comparator:any;window:0;storage:360";
+  foo_params["event_trigger"] = "name:et;comparator:any;window:0;storage:360";
+  SetFeatureParams(kChromeTestFeatureFoo, foo_params);
+
+  std::vector<const base::Feature*> features = {&kChromeTestFeatureFoo};
+  configuration_.ParseFeatureConfigs(features);
+
+  FeatureConfig foo = configuration_.GetFeatureConfig(kChromeTestFeatureFoo);
+  EXPECT_EQ(foo.snooze_params.max_limit, 0u);
+  EXPECT_EQ(foo.snooze_params.snooze_interval, 0u);
+  EXPECT_FALSE(foo.valid);
 }
 
 }  // namespace feature_engagement

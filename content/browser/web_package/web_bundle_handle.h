@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -42,6 +41,9 @@ class WebBundleHandle {
       std::unique_ptr<WebBundleNavigationInfo> navigation_info,
       int frame_tree_node_id);
 
+  WebBundleHandle(const WebBundleHandle&) = delete;
+  WebBundleHandle& operator=(const WebBundleHandle&) = delete;
+
   ~WebBundleHandle();
 
   // Takes a NavigationLoaderInterceptor instance to handle the request for
@@ -62,9 +64,10 @@ class WebBundleHandle {
   // Checks if a valid Web Bundle is attached, opened, and ready for use.
   bool IsReadyForLoading();
 
-  // The base URL which will be set for the document to support relative path
-  // subresource loading in unsigned Web Bundle file.
-  const GURL& base_url_override() const { return base_url_override_; }
+  // The claimed URL inside Web Bundle file from which the document is loaded.
+  // This URL is used for window.location and document.URL and relative path
+  // computation in the document.
+  const GURL& claimed_url() const { return claimed_url_; }
 
   const WebBundleNavigationInfo* navigation_info() const {
     return navigation_info_.get();
@@ -84,14 +87,12 @@ class WebBundleHandle {
 
   std::unique_ptr<NavigationLoaderInterceptor> interceptor_;
 
-  GURL base_url_override_;
+  GURL claimed_url_;
   std::unique_ptr<WebBundleNavigationInfo> navigation_info_;
 
   std::unique_ptr<WebBundleURLLoaderFactory> url_loader_factory_;
 
   base::WeakPtrFactory<WebBundleHandle> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleHandle);
 };
 
 }  // namespace content

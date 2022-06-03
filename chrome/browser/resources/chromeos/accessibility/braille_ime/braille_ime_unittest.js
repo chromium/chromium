@@ -8,21 +8,20 @@
 
 /**
  * Mock Chrome event supporting one listener.
- * @constructor
  */
-function MockEvent() {}
-
-MockEvent.prototype = {
-  /** @type {Function?} */
-  listener: null,
+class MockEvent {
+  constructor() {
+    /** @type {Function?} */
+    this.listener = null;
+  }
 
   /**
    * @param {Function} listener
    */
-  addListener: function(listener) {
+  addListener(listener) {
     assertTrue(this.listener === null);
     this.listener = listener;
-  },
+  }
 
   /**
    * Dispatches an event to the listener if any.
@@ -30,34 +29,35 @@ MockEvent.prototype = {
    * @return {*} Return value from listener or {@code undefined} if no
    *     listener.
    */
-  dispatch: function() {
+  dispatch() {
     if (this.listener) {
       return this.listener.apply(null, arguments);
     }
   }
-};
+}
+
 
 /**
  * Mock port that supports the {@code onMessage} and {@code onDisconnect}
  * events as well as {@code postMessage}.
- * @constructor.
  */
-function MockPort() {
-  this.onMessage = new MockEvent();
-  this.onDisconnect = new MockEvent();
-  /** @type {Array<Object>} */
-  this.messages = [];
-}
+class MockPort {
+  constructor() {
+    this.onMessage = new MockEvent();
+    this.onDisconnect = new MockEvent();
+    /** @type {Array<Object>} */
+    this.messages = [];
+  }
 
-MockPort.prototype = {
   /**
    * Stores {@code message} in this object.
    * @param {Object} message Message to store.
    */
-  postMessage: function(message) {
+  postMessage(message) {
     this.messages.push(message);
   }
-};
+}
+
 
 /**
  * Engine ID as specified in manifest.
@@ -69,21 +69,10 @@ var localStorage;
 
 /**
  * Test fixture for the braille IME unit test.
- * @constructor
- * @extends {testing.Test}
  */
-function BrailleImeUnitTest() {
-  testing.Test.call(this);
-}
-
-BrailleImeUnitTest.prototype = {
-  __proto__: testing.Test.prototype,
-
+BrailleImeUnitTest = class extends testing.Test {
   /** @Override */
-  extraLibraries: ['braille_ime.js'],
-
-  /** @Override */
-  setUp: function() {
+  setUp() {
     chrome = chrome || {};
     chrome.input = chrome.input || {};
     chrome.input.ime = chrome.input.ime || {};
@@ -97,9 +86,9 @@ BrailleImeUnitTest.prototype = {
       this.lastHandledKeyResult_ = result;
     }.bind(this);
     this.createIme();
-  },
+  }
 
-  createIme: function() {
+  createIme() {
     var IME_EVENTS = [
       'onActivate', 'onDeactivated', 'onFocus', 'onBlur',
       'onInputContextUpdate', 'onKeyEvent', 'onReset', 'onMenuItemActivated'
@@ -118,21 +107,16 @@ BrailleImeUnitTest.prototype = {
     this.port = null;
     this.ime = new BrailleIme();
     this.ime.init();
-  },
+  }
 
-  activateIme: function() {
+  activateIme() {
     this.onActivate.dispatch(ENGINE_ID);
-    assertThat(
-        this.port.messages, eqJSON([{type: 'activeState', active: true}]));
+    assertDeepEquals(this.port.messages, [{type: 'activeState', active: true}]);
     this.port.messages.length = 0;
-  },
+  }
 
-  sendKeyEvent_: function(type, code, extra) {
-    var event = {
-      type: type,
-      code: code,
-      requestId: (++this.lastSentKeyRequestId_) + ''
-    };
+  sendKeyEvent_(type, code, extra) {
+    var event = {type, code, requestId: (++this.lastSentKeyRequestId_) + ''};
     for (var key in extra) {
       event[key] = extra[key];
     }
@@ -140,16 +124,20 @@ BrailleImeUnitTest.prototype = {
     if (this.lastSentKeyRequestId_ === this.lastHandledKeyRequestId_) {
       return this.lastHandledKeyResult_;
     }
-  },
+  }
 
-  sendKeyDown: function(code, extra) {
+  sendKeyDown(code, extra) {
     return this.sendKeyEvent_('keydown', code, extra);
-  },
+  }
 
-  sendKeyUp: function(code, extra) {
+  sendKeyUp(code, extra) {
     return this.sendKeyEvent_('keyup', code, extra);
-  },
+  }
 };
+
+/** @Override */
+BrailleImeUnitTest.prototype.extraLibraries = ['braille_ime.js'];
+
 
 TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeyboardDisabled', function() {
   this.activateIme();
@@ -207,10 +195,10 @@ TEST_F('BrailleImeUnitTest', 'KeysWhenStandardKeysEnabled', function() {
   expectTrue(this.sendKeyUp('Space'));
   expectTrue(this.sendKeyUp('KeyF'));
 
-  assertThat(this.port.messages, eqJSON([
-               {type: 'brailleDots', dots: 0x03},
-               {type: 'brailleDots', dots: 0x09}, {type: 'brailleDots', dots: 0}
-             ]));
+  assertDeepEquals(this.port.messages, [
+    {type: 'brailleDots', dots: 0x03}, {type: 'brailleDots', dots: 0x09},
+    {type: 'brailleDots', dots: 0}
+  ]);
 });
 
 TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
@@ -221,9 +209,9 @@ TEST_F('BrailleImeUnitTest', 'TestBackspaceKey', function() {
   assertTrue(this.menuItems[0].checked);
 
   expectEquals(undefined, this.sendKeyDown('Backspace'));
-  assertThat(this.port.messages, eqJSON([
-               {type: 'backspace', requestId: this.lastSentKeyRequestId_ + ''}
-             ]));
+  assertDeepEquals(
+      this.port.messages,
+      [{type: 'backspace', requestId: this.lastSentKeyRequestId_ + ''}]);
   this.port.onMessage.dispatch({
     type: 'keyEventHandled',
     requestId: this.lastSentKeyRequestId_ + '',
@@ -265,12 +253,8 @@ TEST_F('BrailleImeUnitTest', 'ReplaceText', function() {
     callback();
   };
   var sendReplaceText = function(deleteBefore, newText) {
-    this.port.onMessage.dispatch({
-      type: 'replaceText',
-      contextID: CONTEXT_ID,
-      deleteBefore: deleteBefore,
-      newText: newText
-    });
+    this.port.onMessage.dispatch(
+        {type: 'replaceText', contextID: CONTEXT_ID, deleteBefore, newText});
   }.bind(this);
   this.activateIme();
   sendReplaceText(0, 'hello!');
@@ -290,11 +274,10 @@ TEST_F('BrailleImeUnitTest', 'Uncommitted', function() {
   };
   var sendSetUncommitted = function(text) {
     this.port.onMessage.dispatch(
-        {type: 'setUncommitted', contextID: CONTEXT_ID, text: text});
+        {type: 'setUncommitted', contextID: CONTEXT_ID, text});
   }.bind(this);
   var sendCommitUncommitted = function(contextID) {
-    this.port.onMessage.dispatch(
-        {type: 'commitUncommitted', contextID: contextID});
+    this.port.onMessage.dispatch({type: 'commitUncommitted', contextID});
   }.bind(this);
 
   this.activateIme();

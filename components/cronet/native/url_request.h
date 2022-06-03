@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/thread_annotations.h"
@@ -30,6 +29,10 @@ class Cronet_UploadDataSinkImpl;
 class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
  public:
   Cronet_UrlRequestImpl();
+
+  Cronet_UrlRequestImpl(const Cronet_UrlRequestImpl&) = delete;
+  Cronet_UrlRequestImpl& operator=(const Cronet_UrlRequestImpl&) = delete;
+
   ~Cronet_UrlRequestImpl() override;
 
   // Cronet_UrlRequest
@@ -198,8 +201,6 @@ class Cronet_UrlRequestImpl : public Cronet_UrlRequest {
   // Event indicating Executor is properly destroying Runnables.
   base::WaitableEvent runnable_destroyed_;
 #endif  // DCHECK_IS_ON()
-
-  DISALLOW_COPY_AND_ASSIGN(Cronet_UrlRequestImpl);
 };
 
 }  // namespace cronet

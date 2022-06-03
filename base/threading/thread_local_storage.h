@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/atomicops.h"
 #include "base/base_export.h"
 #include "base/macros.h"
 #include "build/build_config.h"
@@ -17,10 +16,6 @@
 #elif defined(OS_POSIX) || defined(OS_FUCHSIA)
 #include <pthread.h>
 #endif
-
-namespace ui {
-class TLSDestructionCheckerForX11;
-}
 
 namespace base {
 
@@ -46,7 +41,6 @@ class ThreadLocalStorageTestInternal;
 // * ThreadLocalStorage::StaticSlot/Slot for more direct control of the slot.
 class BASE_EXPORT PlatformThreadLocalStorage {
  public:
-
 #if defined(OS_WIN)
   typedef unsigned long TLSKey;
   enum : unsigned { TLS_KEY_OUT_OF_INDEXES = TLS_OUT_OF_INDEXES };
@@ -125,6 +119,10 @@ class BASE_EXPORT ThreadLocalStorage {
     // |destructor| is a pointer to a function to perform per-thread cleanup of
     // this object.  If set to nullptr, no cleanup is done for this TLS slot.
     explicit Slot(TLSDestructorFunc destructor = nullptr);
+
+    Slot(const Slot&) = delete;
+    Slot& operator=(const Slot&) = delete;
+
     // If a destructor was set for this slot, removes the destructor so that
     // remaining threads exiting will not free data.
     ~Slot();
@@ -144,9 +142,10 @@ class BASE_EXPORT ThreadLocalStorage {
     static constexpr int kInvalidSlotValue = -1;
     int slot_ = kInvalidSlotValue;
     uint32_t version_ = 0;
-
-    DISALLOW_COPY_AND_ASSIGN(Slot);
   };
+
+  ThreadLocalStorage(const ThreadLocalStorage&) = delete;
+  ThreadLocalStorage& operator=(const ThreadLocalStorage&) = delete;
 
  private:
   // In most cases, most callers should not need access to HasBeenDestroyed().
@@ -164,10 +163,7 @@ class BASE_EXPORT ThreadLocalStorage {
   friend class internal::ThreadLocalStorageTestInternal;
   friend class trace_event::MallocDumpProvider;
   friend class debug::GlobalActivityTracker;
-  friend class ui::TLSDestructionCheckerForX11;
   static bool HasBeenDestroyed();
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadLocalStorage);
 };
 
 }  // namespace base

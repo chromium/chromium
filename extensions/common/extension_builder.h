@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "extensions/common/manifest.h"
+#include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/value_builder.h"
 
 namespace extensions {
@@ -48,6 +49,7 @@ class ExtensionBuilder {
   enum class ActionType {
     PAGE_ACTION,
     BROWSER_ACTION,
+    ACTION,
   };
 
   enum class BackgroundContext {
@@ -66,6 +68,9 @@ class ExtensionBuilder {
   // methods to automatically construct a manifest. |name| will be the name of
   // the extension and used to generate a stable ID.
   ExtensionBuilder(const std::string& name, Type type = Type::EXTENSION);
+
+  ExtensionBuilder(const ExtensionBuilder&) = delete;
+  ExtensionBuilder& operator=(const ExtensionBuilder&) = delete;
 
   ~ExtensionBuilder();
 
@@ -149,8 +154,8 @@ class ExtensionBuilder {
   // Defaults to FilePath().
   ExtensionBuilder& SetPath(const base::FilePath& path);
 
-  // Defaults to Manifest::UNPACKED.
-  ExtensionBuilder& SetLocation(Manifest::Location location);
+  // Defaults to mojom::ManifestLocation::kUnpacked.
+  ExtensionBuilder& SetLocation(mojom::ManifestLocation location);
 
   // Merge another manifest into the current manifest, with new keys taking
   // precedence.
@@ -179,11 +184,9 @@ class ExtensionBuilder {
   std::unique_ptr<base::DictionaryValue> manifest_value_;
 
   base::FilePath path_;
-  Manifest::Location location_;
+  mojom::ManifestLocation location_;
   int flags_;
   std::string id_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionBuilder);
 };
 
 }  // namespace extensions

@@ -89,4 +89,4 @@ class BLINK_PLATFORM_EXPORT WebTimeRanges : public WebVector<WebTimeRange> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_WEB_TIME_RANGE_H_

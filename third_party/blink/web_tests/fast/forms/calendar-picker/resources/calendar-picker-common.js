@@ -106,36 +106,6 @@ function clickTimeCellAt(column, row) {
   eventSender.mouseUp();
 }
 
-function hoverOverSubmitTimeButton() {
-  skipAnimation();
-  var submitButton = popupWindow.global.picker.submissionControls.submitButton;
-  var offset = cumulativeOffset(submitButton);
-  var x = offset[0] + submitButton.offsetWidth / 2;
-  var y = offset[1] + submitButton.offsetHeight / 2;
-  eventSender.mouseMoveTo(x, y);
-}
-
-function clickSubmitTimeButton() {
-  hoverOverSubmitTimeButton();
-  eventSender.mouseDown();
-  eventSender.mouseUp();
-}
-
-function hoverOverCancelTimeButton() {
-  skipAnimation();
-  var cancelButton = popupWindow.global.picker.submissionControls.cancelButton;
-  var offset = cumulativeOffset(cancelButton);
-  var x = offset[0] + cancelButton.offsetWidth / 2;
-  var y = offset[1] + cancelButton.offsetHeight / 2;
-  eventSender.mouseMoveTo(x, y);
-}
-
-function clickCancelTimeButton() {
-  hoverOverCancelTimeButton();
-  eventSender.mouseDown();
-  eventSender.mouseUp();
-}
-
 function highlightedMonthButton() {
     skipAnimation();
     var year = popupWindow.global.picker.monthPopupView.yearListView.selectedRow + 1;
@@ -146,7 +116,10 @@ function highlightedMonthButton() {
 
 function skipAnimationAndGetPositionOfMonthPopupButton() {
     skipAnimation();
-    var buttonElement = popupWindow.global.picker.calendarHeaderView.monthPopupButton.element;
+    const calendarHeaderView = popupWindow.global.picker.datePicker ?
+        popupWindow.global.picker.datePicker.calendarHeaderView :
+        popupWindow.global.picker.calendarHeaderView;
+    var buttonElement = calendarHeaderView.monthPopupButton.element;
     var offset = cumulativeOffset(buttonElement);
     return {x: offset[0] + buttonElement.offsetWidth / 2, y: offset[1] + buttonElement.offsetHeight / 2};
 }
@@ -160,6 +133,108 @@ function clickMonthPopupButton() {
     hoverOverMonthPopupButton();
     eventSender.mouseDown();
     eventSender.mouseUp();
+}
+
+function skipAnimationAndGetPositionOfPrevNextMonthButton(buttonIndex) {
+  skipAnimation();
+  var prevNextMonthButton = popupWindow.global.picker.element ?
+      popupWindow.global.picker.element.querySelectorAll(
+          '.calendar-navigation-button')[buttonIndex] :
+      popupWindow.global.picker.querySelectorAll(
+          '.calendar-navigation-button')[buttonIndex];
+  prevNextMonthButton.foo;
+  var offset = cumulativeOffset(prevNextMonthButton);
+  return {
+    x: offset[0] + prevNextMonthButton.offsetWidth / 2,
+    y: offset[1] + prevNextMonthButton.offsetHeight / 2
+  };
+}
+
+function hoverOverPrevNextMonthButton(buttonIndex) {
+  var position = skipAnimationAndGetPositionOfPrevNextMonthButton(buttonIndex);
+  eventSender.mouseMoveTo(position.x, position.y);
+}
+
+function clickPrevMonthButton() {
+  hoverOverPrevNextMonthButton(/*buttonIndex*/ 0);
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+}
+
+function clickNextMonthButton() {
+  hoverOverPrevNextMonthButton(/*buttonIndex*/ 1);
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+}
+
+function skipAnimationAndGetPositionOfButton(selector) {
+  skipAnimation();
+  const calendarTableView = popupWindow.global.picker.datePicker ?
+      popupWindow.global.picker.datePicker.calendarTableView :
+      popupWindow.global.picker.calendarTableView;
+  var buttonElement =
+      calendarTableView.element.querySelector(selector);
+  var offset = cumulativeOffset(buttonElement);
+  return {
+    x: offset[0] + buttonElement.offsetWidth / 2,
+    y: offset[1] + buttonElement.offsetHeight / 2
+  };
+}
+
+function hoverOverClearButton() {
+  var position = skipAnimationAndGetPositionOfButton('.clear-button');
+  eventSender.mouseMoveTo(position.x, position.y);
+}
+
+function clickClearButton() {
+  hoverOverClearButton();
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+}
+
+function hoverOverTodayButton() {
+  var position = skipAnimationAndGetPositionOfButton('.today-button');
+  eventSender.mouseMoveTo(position.x, position.y);
+}
+
+function clickTodayButton() {
+  hoverOverTodayButton();
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+}
+
+function skipAnimationAndGetPositionOfGlobalPickerButton(selector) {
+  skipAnimation();
+  const button = popupWindow.global.picker.querySelector(selector);
+  var offset = cumulativeOffset(button);
+  return {
+    x: offset[0] + button.offsetWidth / 2,
+    y: offset[1] + button.offsetHeight / 2
+  };
+}
+
+function hoverOverClearMonthButton() {
+  var position =
+      skipAnimationAndGetPositionOfGlobalPickerButton('.clear-button');
+  eventSender.mouseMoveTo(position.x, position.y);
+}
+
+function clickClearMonthButton() {
+  hoverOverClearMonthButton();
+  eventSender.mouseDown();
+  eventSender.mouseUp();
+}
+
+function hoverOverThisMonthButton() {
+  var position =
+      skipAnimationAndGetPositionOfGlobalPickerButton('.today-button');
+  eventSender.mouseMoveTo(position.x, position.y);
+}
+
+function clickThisMonthButton() {
+  hoverOverThisMonthButton();
+  eventSender.mouseDown();
+  eventSender.mouseUp();
 }
 
 function clickYearListCell(year) {

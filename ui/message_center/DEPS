@@ -1,10 +1,12 @@
 include_rules = [
+  "+ash/constants",
   "+components/url_formatter",
   "+skia/ext",
   "+third_party/skia",
   "+ui/accessibility",
   "+ui/aura",
   "+ui/base",
+  "+ui/color",
   "+ui/compositor",
   "+ui/display",
   "+ui/events",

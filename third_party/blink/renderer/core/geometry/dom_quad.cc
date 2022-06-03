@@ -4,12 +4,13 @@
 
 #include "third_party/blink/renderer/core/geometry/dom_quad.h"
 
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_point_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_quad_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_dom_rect_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 #include "third_party/blink/renderer/core/geometry/dom_point.h"
-#include "third_party/blink/renderer/core/geometry/dom_point_init.h"
-#include "third_party/blink/renderer/core/geometry/dom_quad_init.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
-#include "third_party/blink/renderer/core/geometry/dom_rect_init.h"
+#include "third_party/blink/renderer/core/geometry/geometry_util.h"
 
 namespace blink {
 namespace {
@@ -44,7 +45,7 @@ class DOMQuadPoint final : public DOMPoint {
       quad_->set_needs_bounds_calculation(true);
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(quad_);
     DOMPoint::Trace(visitor);
   }
@@ -53,12 +54,14 @@ class DOMQuadPoint final : public DOMPoint {
   WeakMember<DOMQuad> quad_;
 };
 
-double min4(double a, double b, double c, double d) {
-  return std::min(std::min(a, b), std::min(c, d));
+double NanSafeMin4(double a, double b, double c, double d) {
+  using geometry_util::NanSafeMin;
+  return NanSafeMin(NanSafeMin(a, b), NanSafeMin(c, d));
 }
 
-double max4(double a, double b, double c, double d) {
-  return std::max(std::max(a, b), std::max(c, d));
+double NanSafeMax4(double a, double b, double c, double d) {
+  using geometry_util::NanSafeMax;
+  return NanSafeMax(NanSafeMax(a, b), NanSafeMax(c, d));
 }
 
 }  // namespace
@@ -80,7 +83,7 @@ DOMQuad* DOMQuad::fromQuad(const DOMQuadInit* other) {
       other->hasP1() ? other->p1() : DOMPointInit::Create(),
       other->hasP2() ? other->p2() : DOMPointInit::Create(),
       other->hasP3() ? other->p3() : DOMPointInit::Create(),
-      other->hasP3() ? other->p4() : DOMPointInit::Create());
+      other->hasP4() ? other->p4() : DOMPointInit::Create());
 }
 
 DOMRect* DOMQuad::getBounds() {
@@ -90,10 +93,10 @@ DOMRect* DOMQuad::getBounds() {
 }
 
 void DOMQuad::CalculateBounds() {
-  x_ = min4(p1()->x(), p2()->x(), p3()->x(), p4()->x());
-  y_ = min4(p1()->y(), p2()->y(), p3()->y(), p4()->y());
-  width_ = max4(p1()->x(), p2()->x(), p3()->x(), p4()->x()) - x_;
-  height_ = max4(p1()->y(), p2()->y(), p3()->y(), p4()->y()) - y_;
+  x_ = NanSafeMin4(p1()->x(), p2()->x(), p3()->x(), p4()->x());
+  y_ = NanSafeMin4(p1()->y(), p2()->y(), p3()->y(), p4()->y());
+  width_ = NanSafeMax4(p1()->x(), p2()->x(), p3()->x(), p4()->x()) - x_;
+  height_ = NanSafeMax4(p1()->y(), p2()->y(), p3()->y(), p4()->y()) - y_;
   needs_bounds_calculation_ = false;
 }
 

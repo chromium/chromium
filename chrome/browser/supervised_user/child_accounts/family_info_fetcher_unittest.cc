@@ -16,10 +16,13 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
+#include "components/signin/public/base/consent_level.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
-#include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -55,8 +58,10 @@ std::string BuildGetFamilyProfileResponse(
   std::unique_ptr<base::DictionaryValue> profile_dict =
       std::make_unique<base::DictionaryValue>();
   profile_dict->SetKey("name", base::Value(family.name));
-  family_dict->SetWithoutPathExpansion("profile", std::move(profile_dict));
-  dict.SetWithoutPathExpansion("family", std::move(family_dict));
+  family_dict->SetKey("profile",
+                      base::Value::FromUniquePtrValue(std::move(profile_dict)));
+  dict.SetKey("family",
+              base::Value::FromUniquePtrValue(std::move(family_dict)));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;
@@ -64,8 +69,7 @@ std::string BuildGetFamilyProfileResponse(
 
 std::string BuildEmptyGetFamilyProfileResponse() {
   base::DictionaryValue dict;
-  dict.SetWithoutPathExpansion("family",
-                               std::make_unique<base::DictionaryValue>());
+  dict.SetKey("family", base::DictionaryValue());
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;
@@ -97,11 +101,12 @@ std::string BuildGetFamilyMembersResponse(
         profile_dict->SetKey("profileImageUrl",
                              base::Value(member.profile_image_url));
 
-      member_dict->SetWithoutPathExpansion("profile", std::move(profile_dict));
+      member_dict->SetKey(
+          "profile", base::Value::FromUniquePtrValue(std::move(profile_dict)));
     }
     list->Append(std::move(member_dict));
   }
-  dict.SetWithoutPathExpansion("members", std::move(list));
+  dict.SetKey("members", base::Value::FromUniquePtrValue(std::move(list)));
   std::string result;
   base::JSONWriter::Write(dict, &result);
   return result;
@@ -123,10 +128,10 @@ class FamilyInfoFetcherTest
  private:
   void EnsureFamilyInfoFetcher() {
     DCHECK(!fetcher_);
-    fetcher_.reset(new FamilyInfoFetcher(
+    fetcher_ = std::make_unique<FamilyInfoFetcher>(
         this, identity_test_env_.identity_manager(),
         base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
-            &test_url_loader_factory_)));
+            &test_url_loader_factory_));
   }
 
  protected:
@@ -140,8 +145,34 @@ class FamilyInfoFetcherTest
     fetcher_->StartGetFamilyMembers();
   }
 
+  CoreAccountInfo SetPrimaryAccount() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    return identity_test_env_.SetPrimaryAccount(kAccountId,
+                                                signin::ConsentLevel::kSync);
+#elif defined(OS_ANDROID)
+    // TODO(https://crbug.com/1046746): Change to ConsentLevel::kSignin
+    // when Android supports the concept of an unconsented primary account that
+    // is different than the primary account.
+    return identity_test_env_.SetPrimaryAccount(kAccountId,
+                                                signin::ConsentLevel::kSync);
+#else
+#error Unsupported platform.
+#endif
+  }
+
   void IssueRefreshToken() {
-    identity_test_env_.MakePrimaryAccountAvailable(kAccountId);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
+                                                   signin::ConsentLevel::kSync);
+#elif defined(OS_ANDROID)
+    // TODO(https://crbug.com/1046746): Change to ConsentLevel::kSignin
+    // when Android supports the concept of an unconsented primary account that
+    // is different than the primary account.
+    identity_test_env_.MakePrimaryAccountAvailable(kAccountId,
+                                                   signin::ConsentLevel::kSync);
+#else
+#error Unsupported platform.
+#endif
   }
 
   void IssueRefreshTokenForDifferentAccount() {
@@ -150,8 +181,9 @@ class FamilyInfoFetcherTest
 
   void WaitForAccessTokenRequestAndIssueToken() {
     identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-        identity_test_env_.identity_manager()->GetPrimaryAccountId(),
-        "access_token", base::Time::Now() + base::TimeDelta::FromHours(1));
+        identity_test_env_.identity_manager()->GetPrimaryAccountId(
+            signin::ConsentLevel::kSignin),
+        "access_token", base::Time::Now() + base::Hours(1));
   }
 
   void SendResponse(net::Error error, const std::string& response) {
@@ -248,7 +280,7 @@ TEST_F(FamilyInfoFetcherTest, SuccessAfterWaitingForRefreshToken) {
   // account_id. We don't use IssueRefreshToken() as it also sets a refresh
   // token for the primary account and that's something we don't want for this
   // test.
-  identity_test_env_.SetPrimaryAccount(kAccountId);
+  CoreAccountInfo account_info = SetPrimaryAccount();
   StartGetFamilyProfile();
 
   // Since there is no refresh token yet, we should not get a request for an
@@ -258,10 +290,10 @@ TEST_F(FamilyInfoFetcherTest, SuccessAfterWaitingForRefreshToken) {
   identity_test_env_.SetCallbackForNextAccessTokenRequest(
       access_token_requested.Get());
 
-  // In this case we don't directly call IssueRefreshToken() as it calls
-  // MakePrimaryAccountAvailable(). Since we already have a primary account set
-  // we cannot set another one without clearing it before.
-  identity_test_env_.SetRefreshTokenForPrimaryAccount();
+  // In this case we don't directly call IssueRefreshToken() as it sets the
+  // primary account. We already have a primary account set so we cannot set
+  // another one.
+  identity_test_env_.SetRefreshTokenForAccount(account_info.account_id);
 
   // Do reset the callback for access token request before using the Wait* APIs.
   identity_test_env_.SetCallbackForNextAccessTokenRequest(base::OnceClosure());
@@ -277,7 +309,7 @@ TEST_F(FamilyInfoFetcherTest, NoRefreshToken) {
   // retrieve the primary account_id from IdentityManager. We don't call
   // IssueRefreshToken because we don't want it to precisely issue a refresh
   // token for the primary account, just set it.
-  identity_test_env_.SetPrimaryAccount(kAccountId);
+  SetPrimaryAccount();
   StartGetFamilyProfile();
 
   IssueRefreshTokenForDifferentAccount();
@@ -296,9 +328,10 @@ TEST_F(FamilyInfoFetcherTest, GetTokenFailure) {
   StartGetFamilyProfile();
 
   // On failure to get an access token we expect a token error.
-  EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::TOKEN_ERROR));
+  EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::ErrorCode::kTokenError));
   identity_test_env_.WaitForAccessTokenRequestIfNecessaryAndRespondWithError(
-      identity_test_env_.identity_manager()->GetPrimaryAccountId(),
+      identity_test_env_.identity_manager()->GetPrimaryAccountId(
+          signin::ConsentLevel::kSignin),
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 }
 
@@ -310,7 +343,7 @@ TEST_F(FamilyInfoFetcherTest, InvalidResponse) {
   WaitForAccessTokenRequestAndIssueToken();
 
   // Invalid response data should result in a service error.
-  EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::SERVICE_ERROR));
+  EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::ErrorCode::kServiceError));
   SendInvalidGetFamilyProfileResponse();
 }
 
@@ -322,6 +355,6 @@ TEST_F(FamilyInfoFetcherTest, FailedResponse) {
   WaitForAccessTokenRequestAndIssueToken();
 
   // Failed API call should result in a network error.
-  EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::NETWORK_ERROR));
+  EXPECT_CALL(*this, OnFailure(FamilyInfoFetcher::ErrorCode::kNetworkError));
   SendFailedResponse();
 }

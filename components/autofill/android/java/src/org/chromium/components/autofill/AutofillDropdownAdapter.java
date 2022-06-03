@@ -5,11 +5,9 @@
 package org.chromium.components.autofill;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.v4.view.MarginLayoutParamsCompat;
-import android.support.v4.view.ViewCompat;
-import android.support.v7.content.res.AppCompatResources;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
@@ -20,6 +18,11 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.view.MarginLayoutParamsCompat;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.ui.DropdownDividerDrawable;
@@ -85,6 +88,9 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
         if (mIsRefresh) {
             TextView labelView = populateLabelView(item, layout);
             populateSublabelView(item, layout);
+            // For refreshed layout, ignore the return value as we don't need to adjust the height
+            // of the view.
+            populateItemTagView(item, layout);
             ImageView iconView =
                     populateIconView((ImageView) layout.findViewById(R.id.end_dropdown_icon), item);
             if (iconView != null) {
@@ -130,6 +136,16 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
                         mContext.getResources(), R.color.dropdown_divider_color);
             }
             divider.setDividerColor(dividerColor);
+        }
+
+        // Layout of the item tag view, which has a smaller font and sits below the sub
+        // label.
+        TextView itemTagView = populateItemTagView(item, layout);
+        if (itemTagView != null) {
+            itemTagView.setTextSize(TypedValue.COMPLEX_UNIT_PX,
+                    mContext.getResources().getDimension(item.getSublabelFontSizeResId()));
+            height += mContext.getResources().getDimensionPixelSize(
+                    R.dimen.autofill_dropdown_item_tag_height);
         }
 
         // Note: trying to set the height of the root LinearLayout breaks accessibility,
@@ -234,18 +250,54 @@ public class AutofillDropdownAdapter extends ArrayAdapter<DropdownItem> {
     }
 
     /**
+     * Sets the text of the itemTag's View if such text exists; otherwise, sets the View's
+     * visibility to GONE.
+     * @param item the DropdownItem for this row.
+     * @param layout the View in which the label can be found.
+     * @return the View if it has been set to be visible; null otherwise. This view is already part
+     *         of the view hierarchy, thus no need to explicitly add it.
+     */
+    private TextView populateItemTagView(DropdownItem item, View layout) {
+        TextView itemTagView = (TextView) layout.findViewById(R.id.dropdown_item_tag);
+        CharSequence itemTag = item.getItemTag();
+        if (TextUtils.isEmpty(itemTag)) {
+            itemTagView.setVisibility(View.GONE);
+            return null;
+        }
+        itemTagView.setText(itemTag);
+        itemTagView.setVisibility(View.VISIBLE);
+        return itemTagView;
+    }
+
+    /**
      * Sets the drawable in the given ImageView to the resource identified in the item, or sets
      * iconView to visibility GONE if no icon is given.
      * @param iconView the ImageView which should be modified.
      * @param item the DropdownItem for this row.
      * @return |iconView| if it has been set to be visible; null otherwise.
      */
+    @Nullable
     private ImageView populateIconView(ImageView iconView, DropdownItem item) {
-        if (item.getIconId() == DropdownItem.NO_ICON) {
+        // If neither the iconId nor the customIcon are provided, return null as we have nothing to
+        // display for the item.
+        if (item.getIconId() == DropdownItem.NO_ICON && item.getCustomIcon() == null) {
             iconView.setVisibility(View.GONE);
             return null;
         }
-        iconView.setImageDrawable(AppCompatResources.getDrawable(mContext, item.getIconId()));
+        // If a customIcon is provided we prefer to use it over the iconId of the item.
+        if (item.getCustomIcon() != null) {
+            // Scale the bitmap to match the dimensions of the default resources used for other
+            // items.
+            Bitmap scaledBitmap = Bitmap.createScaledBitmap(item.getCustomIcon(),
+                    mContext.getResources().getDimensionPixelSize(
+                            R.dimen.autofill_dropdown_icon_width),
+                    mContext.getResources().getDimensionPixelSize(
+                            R.dimen.autofill_dropdown_icon_height),
+                    true);
+            iconView.setImageBitmap(scaledBitmap);
+        } else {
+            iconView.setImageDrawable(AppCompatResources.getDrawable(mContext, item.getIconId()));
+        }
         iconView.setVisibility(View.VISIBLE);
         // TODO(crbug.com/874077): Add accessible text for this icon.
         return iconView;

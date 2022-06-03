@@ -12,6 +12,7 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/cpp/net_adapters.h"
 #include "storage/browser/file_system/file_stream_reader.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -48,7 +49,7 @@ class CONTENT_EXPORT FileStreamReaderToDataPipe {
 
   scoped_refptr<network::NetToMojoPendingBuffer> pending_write_;
   // Optional so that its construction can be deferred.
-  base::Optional<mojo::SimpleWatcher> writable_handle_watcher_;
+  absl::optional<mojo::SimpleWatcher> writable_handle_watcher_;
 
   base::WeakPtrFactory<FileStreamReaderToDataPipe> weak_factory_{this};
 };

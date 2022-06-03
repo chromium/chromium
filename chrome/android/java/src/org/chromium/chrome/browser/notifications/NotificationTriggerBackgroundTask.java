@@ -10,9 +10,8 @@ import android.os.Bundle;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.chrome.browser.background_task_scheduler.NativeBackgroundTask;
-import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 import org.chromium.components.background_task_scheduler.BackgroundTaskSchedulerFactory;
+import org.chromium.components.background_task_scheduler.NativeBackgroundTask;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.background_task_scheduler.TaskInfo;
 import org.chromium.components.background_task_scheduler.TaskParameters;
@@ -46,7 +45,6 @@ public class NotificationTriggerBackgroundTask extends NativeBackgroundTask {
         // Simply waking up native should have triggered all outstanding notifications already.
         // Explicitly calling TriggerNotifications here in case Chrome was already running.
         NotificationTriggerScheduler.getInstance().triggerNotifications();
-        // TODO(knollr): wait until native is done
         mShouldReschedule = false;
         callback.taskFinished(false);
     }

@@ -28,7 +28,6 @@ class FakeBlobDataHandle : public BlobDataItem::DataHandle {
   void ReadSideData(
       base::OnceCallback<void(int, mojo_base::BigBuffer)> callback) override;
   void PrintTo(::std::ostream* os) const override {}
-  const char* BytesReadHistogramLabel() const override;
 
  private:
   ~FakeBlobDataHandle() override;

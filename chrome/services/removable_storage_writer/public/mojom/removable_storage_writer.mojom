@@ -5,7 +5,18 @@
 module chrome.mojom;
 
 import "mojo/public/mojom/base/file_path.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
 
+[EnableIf=is_win]
+const sandbox.mojom.Sandbox kRemovableStorageWriterSandbox
+  = sandbox.mojom.Sandbox.kNoSandboxAndElevatedPrivileges;
+[EnableIfNot=is_win]
+const sandbox.mojom.Sandbox kRemovableStorageWriterSandbox
+  = sandbox.mojom.Sandbox.kNoSandbox;
+
+// Used by the Chromebook Recovery Utility to write bootable images on removable
+// storage devices. On Windows requires elevation to access the disk directly.
+[ServiceSandbox=kRemovableStorageWriterSandbox]
 interface RemovableStorageWriter {
   const string kTestDevice = "chrome://test-removable-storage-writer";
 

@@ -4,13 +4,16 @@ URL: https://github.com/abseil/abseil-cpp
 License: Apache 2.0
 License File: LICENSE
 Version: 0
-Revision: 4ef574064e75b86f115549e9eb4c7e806781b3ab
+Revision: 39f46faa69614b429b97bdad737097fa0497b06d
 Security Critical: yes
 
 Description:
 This directory contains the source code of Abseil for C++. This can be used by
-Chromium's dependencies, but shouldn't be used by Chromium itself.
-See: https://goo.gl/TgnJb8.
+Chromium, subject to the guidance at
+https://chromium.googlesource.com/chromium/src/+/main/styleguide/c++/c++11.md;
+it can be used without restriction by Chromium's dependencies, except that
+objects compiled into Chromium itself cannot use anything relying on
+absl::base_internal::FastTypeId (see https://crbug.com/1096380).
 
 How to update Abseil:
 
@@ -18,19 +21,17 @@ How to update Abseil:
 
 2. Copy the content of the Abseil git repo to //third_party/abseil-cpp.
 
-3. From //third_party/abseil-cpp/ launch ./rename_annotations.sh.
-   This script will rewrite dynamic_annotations and thread_annotations
-   macros and function inside Abseil in order to avoid ODR violations
-   and macro clashing with Chromium
-   (see: https://github.com/abseil/abseil-cpp/issues/122).
+3. From your source root run third_party/abseil-cpp/generate_def_files.py to
+   regenerate Windows symbol definition files.
 
 Local Modifications:
 
 * absl/copts.bzl has been translated to //third_party/absl-cpp/BUILD.gn. Both
   files contain lists of compiler flags in order to reduce duplication.
 
-* All the BUILD.bazel files has been translated to BUILD.gn files.
+* All the BUILD.bazel files have been translated to BUILD.gn files.
 
-* Functions and macros in absl/base/dynamic_annotations.{h,cc} and
-  absl/base/thread_annotations.h have been renamed to avoid ODR
-  violations and macro clashes with Chromium (see step 3).
+* Patches from //third_party/abseil-cpp/patches have been applied.
+
+* Increment this number to silence presubmits about modifying files in
+  third_party when regenerating absl .def files: 1

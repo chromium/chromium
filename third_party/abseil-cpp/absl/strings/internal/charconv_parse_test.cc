@@ -63,7 +63,7 @@ void ExpectParsedFloat(std::string s, absl::chars_format format_flags,
   }
   const std::string::size_type expected_characters_matched = s.find('$');
   ABSL_RAW_CHECK(expected_characters_matched != std::string::npos,
-                 "Input std::string must contain $");
+                 "Input string must contain $");
   s.replace(expected_characters_matched, 1, "");
 
   ParsedFloat parsed =

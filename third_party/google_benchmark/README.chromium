@@ -1,0 +1,25 @@
+Name: Google Benchmark
+Short Name: benchmark
+URL: https://github.com/google/benchmark
+Version: unknown
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+A microbenchmark support library.
+
+Google Benchmark is NOT supported for writing benchmarks in Chromium. It is
+included to run benchmarks in third-party code that have already been written
+against Google Benchmarks.
+
+To include this library in the Chromium checkout, add the following clause to
+your .gclient configuration.
+
+    "custom_vars": {
+        "checkout_google_benchmark": True,
+    }
+
+
+Local Additions:
+* gn file for building in chromium

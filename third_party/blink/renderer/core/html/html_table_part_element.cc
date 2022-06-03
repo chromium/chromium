@@ -57,28 +57,25 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
   } else if (name == html_names::kBackgroundAttr) {
     String url = StripLeadingAndTrailingHTMLSpaces(value);
     if (!url.IsEmpty()) {
-      UseCounter::Count(
-          GetDocument(),
-          WebFeature::kHTMLTableElementPresentationAttributeBackground);
       CSSImageValue* image_value = MakeGarbageCollected<CSSImageValue>(
           AtomicString(url), GetDocument().CompleteURL(url),
-          Referrer(GetDocument().OutgoingReferrer(),
-                   GetDocument().GetReferrerPolicy()),
-          OriginClean::kTrue);
-      style->SetProperty(
-          CSSPropertyValue(GetCSSPropertyBackgroundImage(), *image_value));
+          Referrer(GetExecutionContext()->OutgoingReferrer(),
+                   GetExecutionContext()->GetReferrerPolicy()),
+          OriginClean::kTrue, false /* is_ad_related */);
+      style->SetProperty(CSSPropertyValue(
+          CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
     }
   } else if (name == html_names::kValignAttr) {
-    if (DeprecatedEqualIgnoringCase(value, "top")) {
+    if (EqualIgnoringASCIICase(value, "top")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, CSSValueID::kTop);
-    } else if (DeprecatedEqualIgnoringCase(value, "middle")) {
+    } else if (EqualIgnoringASCIICase(value, "middle")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, CSSValueID::kMiddle);
-    } else if (DeprecatedEqualIgnoringCase(value, "bottom")) {
+    } else if (EqualIgnoringASCIICase(value, "bottom")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, CSSValueID::kBottom);
-    } else if (DeprecatedEqualIgnoringCase(value, "baseline")) {
+    } else if (EqualIgnoringASCIICase(value, "baseline")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kVerticalAlign, CSSValueID::kBaseline);
     } else {
@@ -86,17 +83,17 @@ void HTMLTablePartElement::CollectStyleForPresentationAttribute(
           style, CSSPropertyID::kVerticalAlign, value);
     }
   } else if (name == html_names::kAlignAttr) {
-    if (DeprecatedEqualIgnoringCase(value, "middle") ||
-        DeprecatedEqualIgnoringCase(value, "center")) {
+    if (EqualIgnoringASCIICase(value, "middle") ||
+        EqualIgnoringASCIICase(value, "center")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitCenter);
-    } else if (DeprecatedEqualIgnoringCase(value, "absmiddle")) {
+    } else if (EqualIgnoringASCIICase(value, "absmiddle")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kCenter);
-    } else if (DeprecatedEqualIgnoringCase(value, "left")) {
+    } else if (EqualIgnoringASCIICase(value, "left")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitLeft);
-    } else if (DeprecatedEqualIgnoringCase(value, "right")) {
+    } else if (EqualIgnoringASCIICase(value, "right")) {
       AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kTextAlign,
                                               CSSValueID::kWebkitRight);
     } else {

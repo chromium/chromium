@@ -35,6 +35,10 @@ class CORE_EXPORT TimeZoneController final
     TimeZoneOverride() = default;
 
    public:
+    void change(const String& timezone_id) {
+      ChangeTimeZoneOverride(timezone_id);
+    }
+
     ~TimeZoneOverride() { ClearTimeZoneOverride(); }
   };
 
@@ -43,18 +47,23 @@ class CORE_EXPORT TimeZoneController final
 
   static bool HasTimeZoneOverride();
 
+  static void ChangeTimeZoneForTesting(const String&);
+
  private:
   TimeZoneController();
   static TimeZoneController& instance();
   static void ClearTimeZoneOverride();
+  static void ChangeTimeZoneOverride(const String&);
 
   // device::mojom::blink::TimeZoneMonitorClient:
   void OnTimeZoneChange(const String& timezone_id) override;
 
+  // receiver_ must not use HeapMojoReceiver. TimeZoneController is not managed
+  // by Oilpan.
   mojo::Receiver<device::mojom::blink::TimeZoneMonitorClient> receiver_{this};
 
   String host_timezone_id_;
-  bool has_timezone_id_override_ = false;
+  String override_timezone_id_;
 };
 
 }  // namespace blink

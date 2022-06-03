@@ -10,7 +10,6 @@
 #include "chrome/browser/chromeos/extensions/wallpaper_function_base.h"
 #include "chrome/common/extensions/api/wallpaper.h"
 #include "components/account_id/account_id.h"
-#include "net/url_request/url_request_status.h"
 
 // Implementation of chrome.wallpaper.setWallpaper API.
 // After this API being called, a jpeg encoded wallpaper will be saved to
@@ -46,9 +45,6 @@ class WallpaperSetWallpaperFunction : public WallpaperFunctionBase {
 
   // User id of the user who initiate this API call.
   AccountId account_id_ = EmptyAccountId();
-
-  // Id used to identify user wallpaper files on hard drive.
-  std::string wallpaper_files_id_;
 };
 
 #endif  // CHROME_BROWSER_CHROMEOS_EXTENSIONS_WALLPAPER_API_H_

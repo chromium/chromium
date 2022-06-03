@@ -1,0 +1,3 @@
+This tests for a bug where moving the caret right towards a non-editable pocket of an editable region would make the caret disappear. The caret should be just after the 'y' in "Sally".
+
+Caret: (51, 66)

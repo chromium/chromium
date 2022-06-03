@@ -8,7 +8,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_config_memory_test_util.h"
@@ -20,6 +20,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "services/resource_coordinator/public/cpp/memory_instrumentation/memory_instrumentation.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -32,21 +33,22 @@ using base::trace_event::MemoryDumpType;
 using tracing::BeginTracingWithTraceConfig;
 using tracing::EndTracing;
 
-void RequestGlobalDumpCallback(base::Closure quit_closure,
+void RequestGlobalDumpCallback(base::OnceClosure quit_closure,
                                bool success,
                                uint64_t) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE, quit_closure);
+  base::ThreadTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                std::move(quit_closure));
   // TODO(ssid): Check for dump success once crbug.com/709524 is fixed.
 }
 
 void OnStartTracingDoneCallback(
     base::trace_event::MemoryDumpLevelOfDetail explicit_dump_type,
-    base::Closure quit_closure) {
+    base::OnceClosure quit_closure) {
   memory_instrumentation::MemoryInstrumentation::GetInstance()
       ->RequestGlobalDumpAndAppendToTrace(
           MemoryDumpType::EXPLICITLY_TRIGGERED, explicit_dump_type,
           MemoryDumpDeterminism::NONE,
-          Bind(&RequestGlobalDumpCallback, quit_closure));
+          BindOnce(&RequestGlobalDumpCallback, std::move(quit_closure)));
 }
 
 class MemoryTracingBrowserTest : public InProcessBrowserTest {
@@ -73,21 +75,21 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
     GURL url1("about:blank");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url1, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 
     // Begin tracing and trigger dump once start is broadcasted to all
     // processes.
     base::RunLoop run_loop;
     ASSERT_TRUE(BeginTracingWithTraceConfig(
-        trace_config, Bind(&OnStartTracingDoneCallback, explicit_dump_type,
-                           run_loop.QuitClosure())));
+        trace_config, BindOnce(&OnStartTracingDoneCallback, explicit_dump_type,
+                               run_loop.QuitClosure())));
 
     // Create and destroy renderers while tracing is enabled.
     GURL url2("chrome://credits");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url2, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 
     // Close the current tab.
@@ -96,7 +98,7 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
     GURL url3("chrome://chrome-urls");
     ui_test_utils::NavigateToURLWithDisposition(
         browser(), url3, WindowOpenDisposition::CURRENT_TAB,
-        ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+        ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
     ASSERT_NO_FATAL_FAILURE(ExecuteJavascriptOnCurrentTab());
 
     run_loop.Run();
@@ -113,8 +115,9 @@ class MemoryTracingBrowserTest : public InProcessBrowserTest {
   bool should_test_memory_dump_success_;
 };
 
-// TODO(crbug.com/806988): Disabled due to excessive output on lsan bots.
-#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
+// TODO(crbug.com/806988): Disabled due to excessive output on lsan bots and
+// timeouts on debug bots.
+#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_TestMemoryInfra DISABLED_TestMemoryInfra
 #else
 #define MAYBE_TestMemoryInfra TestMemoryInfra
@@ -132,8 +135,9 @@ IN_PROC_BROWSER_TEST_F(MemoryTracingBrowserTest, MAYBE_TestMemoryInfra) {
       base::trace_event::MemoryDumpLevelOfDetail::DETAILED, &json_events);
 }
 
-// crbug.com/808152: This test is flakily failing on LSAN.
-#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER)
+// crbug.com/808152: This test is flakily failing on LSAN. This test also
+// flakily fails with timeout on Linux debug.
+#if defined(LEAK_SANITIZER) || defined(ADDRESS_SANITIZER) || !defined(NDEBUG)
 #define MAYBE_TestBackgroundMemoryInfra DISABLED_TestBackgroundMemoryInfra
 #else
 #define MAYBE_TestBackgroundMemoryInfra TestBackgroundMemoryInfra

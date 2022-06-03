@@ -6,15 +6,12 @@
 
 namespace content_capture {
 
-ContentCaptureData::ContentCaptureData() {}
+ContentCaptureData::ContentCaptureData() = default;
 
-ContentCaptureData::ContentCaptureData(const ContentCaptureData& data)
-    : id(data.id),
-      value(data.value),
-      bounds(data.bounds),
-      children(data.children) {}
+ContentCaptureData::ContentCaptureData(const ContentCaptureData& data) =
+    default;
 
-ContentCaptureData::~ContentCaptureData() {}
+ContentCaptureData::~ContentCaptureData() = default;
 
 bool ContentCaptureData::operator==(const ContentCaptureData& other) const {
   return id == other.id && value == other.value && bounds == other.bounds &&

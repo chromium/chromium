@@ -26,7 +26,6 @@
 
 #include "third_party/blink/renderer/core/editing/editor.h"
 
-#include "third_party/blink/public/platform/web_scroll_into_view_params.h"
 #include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
@@ -66,9 +65,9 @@
 #include "third_party/blink/renderer/core/editing/spellcheck/spell_checker.h"
 #include "third_party/blink/renderer/core/editing/visible_position.h"
 #include "third_party/blink/renderer/core/editing/visible_units.h"
-#include "third_party/blink/renderer/core/editing/writing_direction.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/events/text_event.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
@@ -133,7 +132,7 @@ SelectionInDOMTree Editor::SelectionForCommand(Event* event) {
 // not available.
 EditingBehavior Editor::Behavior() const {
   if (!GetFrame().GetSettings())
-    return EditingBehavior(kEditingMacBehavior);
+    return EditingBehavior(mojom::blink::EditingBehavior::kEditingMacBehavior);
 
   return EditingBehavior(GetFrame().GetSettings()->GetEditingBehaviorType());
 }
@@ -175,7 +174,7 @@ bool Editor::HandleTextEvent(TextEvent* event) {
 
   // TODO(editing-dev): The use of UpdateStyleAndLayout
   // needs to be audited.  See http://crbug.com/590369 for more details.
-  frame_->GetDocument()->UpdateStyleAndLayout();
+  frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   if (event->IsPaste()) {
     if (event->PastingFragment()) {
@@ -236,7 +235,7 @@ bool Editor::CanCopy() const {
   FrameSelection& selection = GetFrameSelection();
   if (!selection.IsAvailable())
     return false;
-  frame_->GetDocument()->UpdateStyleAndLayout();
+  frame_->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
   const VisibleSelectionInFlatTree& visible_selection =
       selection.ComputeVisibleSelectionInFlatTree();
   return visible_selection.IsRange() &&
@@ -361,6 +360,10 @@ bool Editor::DeleteSelectionAfterDraggingWithEvents(
   if (frame_->GetDocument()->GetFrame() != frame_)
     return false;
 
+  // No DOM mutation if EditContext is active.
+  if (frame_->GetInputMethodController().GetActiveEditContext())
+    return true;
+
   if (should_delete && drag_source->isConnected()) {
     DeleteSelectionWithSmartDelete(delete_mode,
                                    InputEvent::InputType::kDeleteByDrag,
@@ -394,6 +397,10 @@ bool Editor::ReplaceSelectionAfterDraggingWithEvents(
   // remaining actions;
   if (frame_->GetDocument()->GetFrame() != frame_)
     return false;
+
+  // No DOM mutation if EditContext is active.
+  if (frame_->GetInputMethodController().GetActiveEditContext())
+    return true;
 
   if (should_insert && drop_target->isConnected())
     ReplaceSelectionAfterDragging(fragment, insert_mode, drag_source_type);
@@ -456,8 +463,7 @@ Editor::Editor(LocalFrame& frame)
       should_style_with_css_(false),
       kill_ring_(std::make_unique<KillRing>()),
       are_marked_text_matches_highlighted_(false),
-      default_paragraph_separator_(EditorParagraphSeparator::kIsDiv),
-      overwrite_mode_enabled_(false) {}
+      default_paragraph_separator_(EditorParagraphSeparator::kIsDiv) {}
 
 Editor::~Editor() = default;
 
@@ -502,7 +508,7 @@ bool Editor::InsertTextWithoutSendingTextEvent(
       LocalFrame* focused_or_main_frame =
           To<LocalFrame>(page->GetFocusController().FocusedOrMainFrame());
       focused_or_main_frame->Selection().RevealSelection(
-          ScrollAlignment::kAlignToEdgeIfNeeded);
+          ScrollAlignment::ToEdgeIfNeeded());
     }
   }
 
@@ -518,7 +524,7 @@ bool Editor::InsertLineBreak() {
   DCHECK(GetFrame().GetDocument());
   if (!TypingCommand::InsertLineBreak(*GetFrame().GetDocument()))
     return false;
-  RevealSelectionAfterEditingOperation(ScrollAlignment::kAlignToEdgeIfNeeded);
+  RevealSelectionAfterEditingOperation(ScrollAlignment::ToEdgeIfNeeded());
 
   return true;
 }
@@ -536,7 +542,7 @@ bool Editor::InsertParagraphSeparator() {
   EditingState editing_state;
   if (!TypingCommand::InsertParagraphSeparator(*GetFrame().GetDocument()))
     return false;
-  RevealSelectionAfterEditingOperation(ScrollAlignment::kAlignToEdgeIfNeeded);
+  RevealSelectionAfterEditingOperation(ScrollAlignment::ToEdgeIfNeeded());
 
   return true;
 }
@@ -612,7 +618,8 @@ void Editor::CountEvent(ExecutionContext* execution_context,
 }
 
 void Editor::CopyImage(const HitTestResult& result) {
-  WriteImageNodeToClipboard(*result.InnerNodeOrImageMapImage(),
+  WriteImageNodeToClipboard(*frame_->GetSystemClipboard(),
+                            *result.InnerNodeOrImageMapImage(),
                             result.AltDisplayString());
 }
 
@@ -632,15 +639,18 @@ void Editor::Redo() {
   undo_stack_->Redo();
 }
 
-void Editor::SetBaseWritingDirection(WritingDirection direction) {
+void Editor::SetBaseWritingDirection(
+    mojo_base::mojom::blink::TextDirection direction) {
   Element* focused_element = GetFrame().GetDocument()->FocusedElement();
-  if (IsTextControl(focused_element)) {
-    if (direction == WritingDirection::kNatural)
+  if (auto* text_control = ToTextControlOrNull(focused_element)) {
+    if (direction == mojo_base::mojom::blink::TextDirection::UNKNOWN_DIRECTION)
       return;
-    focused_element->setAttribute(
+    text_control->setAttribute(
         html_names::kDirAttr,
-        direction == WritingDirection::kLeftToRight ? "ltr" : "rtl");
-    focused_element->DispatchInputEvent();
+        direction == mojo_base::mojom::blink::TextDirection::LEFT_TO_RIGHT
+            ? "ltr"
+            : "rtl");
+    text_control->DispatchInputEvent();
     return;
   }
 
@@ -648,16 +658,18 @@ void Editor::SetBaseWritingDirection(WritingDirection direction) {
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLQuirksMode);
   style->SetProperty(
       CSSPropertyID::kDirection,
-      direction == WritingDirection::kLeftToRight
+      direction == mojo_base::mojom::blink::TextDirection::LEFT_TO_RIGHT
           ? "ltr"
-          : direction == WritingDirection::kRightToLeft ? "rtl" : "inherit",
-      /* important */ false, GetFrame().GetDocument()->GetSecureContextMode());
+          : direction == mojo_base::mojom::blink::TextDirection::RIGHT_TO_LEFT
+                ? "rtl"
+                : "inherit",
+      /* important */ false, GetFrame().DomWindow()->GetSecureContextMode());
   ApplyParagraphStyleToSelection(
       style, InputEvent::InputType::kFormatSetBlockTextDirection);
 }
 
 void Editor::RevealSelectionAfterEditingOperation(
-    const ScrollAlignment& alignment) {
+    const mojom::blink::ScrollAlignment& alignment) {
   if (prevent_reveal_selection_)
     return;
   if (!GetFrameSelection().IsAvailable())
@@ -675,7 +687,7 @@ void Editor::AddToKillRing(const EphemeralRange& range) {
   should_start_new_kill_ring_sequence_ = false;
 }
 
-EphemeralRange Editor::RangeForPoint(const IntPoint& frame_point) const {
+EphemeralRange Editor::RangeForPoint(const gfx::Point& frame_point) const {
   const PositionWithAffinity position_with_affinity =
       GetFrame().PositionForPoint(PhysicalOffset(frame_point));
   if (position_with_affinity.IsNull())
@@ -725,7 +737,8 @@ void Editor::ComputeAndSetTypingStyle(CSSPropertyValueSet* style,
       EditingStyle::kPreserveWritingDirection);
 
   // Handle block styles, substracting these from the typing style.
-  EditingStyle* block_style = typing_style_->ExtractAndRemoveBlockProperties();
+  EditingStyle* block_style =
+      typing_style_->ExtractAndRemoveBlockProperties(GetFrame().DomWindow());
   if (!block_style->IsEmpty()) {
     DCHECK(GetFrame().GetDocument());
     MakeGarbageCollected<ApplyStyleCommand>(*GetFrame().GetDocument(),
@@ -807,7 +820,8 @@ Range* Editor::FindRangeOfString(
     Document& document,
     const String& target,
     const EphemeralRangeInFlatTree& reference_range,
-    FindOptions options) {
+    FindOptions options,
+    bool* wrapped_around) {
   if (target.IsEmpty())
     return nullptr;
 
@@ -818,7 +832,7 @@ Range* Editor::FindRangeOfString(
       EphemeralRangeInFlatTree::RangeOfContents(document);
   EphemeralRangeInFlatTree search_range(document_range);
 
-  bool forward = !(options & kBackwards);
+  const bool forward = !(options & kBackwards);
   bool start_in_reference_range = false;
   if (reference_range.IsNotNull()) {
     start_in_reference_range = options & kStartInSelection;
@@ -858,8 +872,11 @@ Range* Editor::FindRangeOfString(
     result_range = FindStringBetweenPositions(target, search_range, options);
   }
 
-  if (!result_range && options & kWrapAround)
+  if (!result_range && options & kWrapAround) {
+    if (wrapped_around)
+      *wrapped_around = true;
     return FindStringBetweenPositions(target, document_range, options);
+  }
 
   return result_range;
 }
@@ -875,9 +892,13 @@ void Editor::SetMarkedTextMatchesAreHighlighted(bool flag) {
 
 void Editor::RespondToChangedSelection() {
   GetSpellChecker().RespondToChangedSelection();
-  frame_->Client()->DidChangeSelection(
-      GetFrameSelection().GetSelectionInDOMTree().Type() != kRangeSelection);
+  SyncSelection(blink::SyncCondition::kNotForced);
   SetStartNewKillRingSequence(true);
+}
+
+void Editor::SyncSelection(SyncCondition force_sync) {
+  frame_->Client()->DidChangeSelection(
+      !GetFrameSelection().GetSelectionInDOMTree().IsRange(), force_sync);
 }
 
 SpellChecker& Editor::GetSpellChecker() const {
@@ -893,11 +914,6 @@ void Editor::SetMark() {
   mark_is_directional_ = GetFrameSelection().IsDirectional();
 }
 
-void Editor::ToggleOverwriteModeEnabled() {
-  overwrite_mode_enabled_ = !overwrite_mode_enabled_;
-  GetFrameSelection().SetShouldShowBlockCursor(overwrite_mode_enabled_);
-}
-
 void Editor::ReplaceSelection(const String& text) {
   DCHECK(!GetFrame().GetDocument()->NeedsLayoutTreeUpdate());
   bool select_replacement = Behavior().ShouldSelectReplacement();
@@ -906,7 +922,7 @@ void Editor::ReplaceSelection(const String& text) {
                            InputEvent::InputType::kInsertReplacementText);
 }
 
-void Editor::Trace(Visitor* visitor) {
+void Editor::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(last_edit_command_);
   visitor->Trace(undo_stack_);

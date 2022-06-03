@@ -6,8 +6,9 @@
 
 #include <utility>
 
+#include "base/cxx17_backports.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
@@ -18,7 +19,6 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_thread.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
@@ -29,6 +29,7 @@ using content::BrowserThread;
 using extensions::Extension;
 using extensions::ExtensionSet;
 using extensions::Manifest;
+using extensions::mojom::ManifestLocation;
 using storage::SpecialStoragePolicy;
 
 typedef SpecialStoragePolicy::StoragePolicy StoragePolicy;
@@ -44,16 +45,19 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
           expected_change_flags_(0) {
     }
 
-    void OnGranted(const GURL& origin, int change_flags) override {
+    PolicyChangeObserver(const PolicyChangeObserver&) = delete;
+    PolicyChangeObserver& operator=(const PolicyChangeObserver&) = delete;
+
+    void OnGranted(const url::Origin& origin, int change_flags) override {
       EXPECT_EQ(expected_type_, NOTIFICATION_TYPE_GRANT);
-      EXPECT_EQ(expected_origin_, origin);
+      EXPECT_EQ(expected_origin_, origin.GetURL());
       EXPECT_EQ(expected_change_flags_, change_flags);
       expected_type_ = NOTIFICATION_TYPE_NONE;
     }
 
-    void OnRevoked(const GURL& origin, int change_flags) override {
+    void OnRevoked(const url::Origin& origin, int change_flags) override {
       EXPECT_EQ(expected_type_, NOTIFICATION_TYPE_REVOKE);
-      EXPECT_EQ(expected_origin_, origin);
+      EXPECT_EQ(expected_origin_, origin.GetURL());
       EXPECT_EQ(expected_change_flags_, change_flags);
       expected_type_ = NOTIFICATION_TYPE_NONE;
     }
@@ -95,16 +99,16 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
 
     GURL expected_origin_;
     int expected_change_flags_;
-
-    DISALLOW_COPY_AND_ASSIGN(PolicyChangeObserver);
   };
 
-  void SetUp() override { policy_ = new ExtensionSpecialStoragePolicy(NULL); }
+  void SetUp() override {
+    policy_ = base::MakeRefCounted<ExtensionSpecialStoragePolicy>(nullptr);
+  }
 
   scoped_refptr<Extension> CreateProtectedApp() {
 #if defined(OS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\foo"));
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/foo"));
 #endif
     base::DictionaryValue manifest;
@@ -112,13 +116,13 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     manifest.SetString(keys::kVersion, "1");
     manifest.SetString(keys::kLaunchWebURL, "http://explicit/protected/start");
     auto list = std::make_unique<base::ListValue>();
-    list->AppendString("http://explicit/protected");
-    list->AppendString("*://*.wildcards/protected");
+    list->Append("http://explicit/protected");
+    list->Append("*://*.wildcards/protected");
     manifest.Set(keys::kWebURLs, std::move(list));
     std::string error;
-    scoped_refptr<Extension> protected_app = Extension::Create(
-        path, Manifest::INVALID_LOCATION, manifest,
-        Extension::NO_FLAGS, &error);
+    scoped_refptr<Extension> protected_app =
+        Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
+                          Extension::NO_FLAGS, &error);
     EXPECT_TRUE(protected_app.get()) << error;
     return protected_app;
   }
@@ -126,7 +130,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   scoped_refptr<Extension> CreateUnlimitedApp() {
 #if defined(OS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\bar"));
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/bar"));
 #endif
     base::DictionaryValue manifest;
@@ -134,16 +138,16 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     manifest.SetString(keys::kVersion, "1");
     manifest.SetString(keys::kLaunchWebURL, "http://explicit/unlimited/start");
     auto list = std::make_unique<base::ListValue>();
-    list->AppendString("unlimitedStorage");
+    list->Append("unlimitedStorage");
     manifest.Set(keys::kPermissions, std::move(list));
     list = std::make_unique<base::ListValue>();
-    list->AppendString("http://explicit/unlimited");
-    list->AppendString("*://*.wildcards/unlimited");
+    list->Append("http://explicit/unlimited");
+    list->Append("*://*.wildcards/unlimited");
     manifest.Set(keys::kWebURLs, std::move(list));
     std::string error;
-    scoped_refptr<Extension> unlimited_app = Extension::Create(
-        path, Manifest::INVALID_LOCATION, manifest,
-        Extension::NO_FLAGS, &error);
+    scoped_refptr<Extension> unlimited_app =
+        Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
+                          Extension::NO_FLAGS, &error);
     EXPECT_TRUE(unlimited_app.get()) << error;
     return unlimited_app;
   }
@@ -151,7 +155,7 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
   scoped_refptr<Extension> CreateRegularApp() {
 #if defined(OS_WIN)
     base::FilePath path(FILE_PATH_LITERAL("c:\\app"));
-#elif defined(OS_POSIX)
+#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
     base::FilePath path(FILE_PATH_LITERAL("/app"));
 #endif
     base::DictionaryValue manifest;
@@ -159,9 +163,9 @@ class ExtensionSpecialStoragePolicyTest : public testing::Test {
     manifest.SetString(keys::kVersion, "1");
     manifest.SetString(keys::kPlatformAppBackgroundPage, "background.html");
     std::string error;
-    scoped_refptr<Extension> app = Extension::Create(
-        path, Manifest::INVALID_LOCATION, manifest,
-        Extension::NO_FLAGS, &error);
+    scoped_refptr<Extension> app =
+        Extension::Create(path, ManifestLocation::kInvalidLocation, manifest,
+                          Extension::NO_FLAGS, &error);
     EXPECT_TRUE(app.get()) << error;
     return app;
   }
@@ -305,7 +309,8 @@ TEST_F(ExtensionSpecialStoragePolicyTest, HasSessionOnlyOrigins) {
   TestingProfile profile;
   content_settings::CookieSettings* cookie_settings =
       CookieSettingsFactory::GetForProfile(&profile).get();
-  policy_ = new ExtensionSpecialStoragePolicy(cookie_settings);
+  policy_ =
+      base::MakeRefCounted<ExtensionSpecialStoragePolicy>(cookie_settings);
 
   EXPECT_FALSE(policy_->HasSessionOnlyOrigins());
 
@@ -332,7 +337,8 @@ TEST_F(ExtensionSpecialStoragePolicyTest, IsStorageDurableTest) {
   TestingProfile profile;
   content_settings::CookieSettings* cookie_settings =
       CookieSettingsFactory::GetForProfile(&profile).get();
-  policy_ = new ExtensionSpecialStoragePolicy(cookie_settings);
+  policy_ =
+      base::MakeRefCounted<ExtensionSpecialStoragePolicy>(cookie_settings);
   const GURL kHttpUrl("http://foo.com");
 
   EXPECT_FALSE(policy_->IsStorageDurable(kHttpUrl));
@@ -340,7 +346,7 @@ TEST_F(ExtensionSpecialStoragePolicyTest, IsStorageDurableTest) {
   HostContentSettingsMap* content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(&profile);
   content_settings_map->SetContentSettingDefaultScope(
-      kHttpUrl, GURL(), ContentSettingsType::DURABLE_STORAGE, std::string(),
+      kHttpUrl, GURL(), ContentSettingsType::DURABLE_STORAGE,
       CONTENT_SETTING_ALLOW);
 
   EXPECT_TRUE(policy_->IsStorageDurable(kHttpUrl));

@@ -4,11 +4,11 @@
 
 #include "third_party/blink/renderer/core/mojo/mojo_watcher.h"
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_mojo_handle_signals.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_mojo_watch_callback.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
-#include "third_party/blink/renderer/core/mojo/mojo_handle_signals.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -49,23 +49,23 @@ MojoResult MojoWatcher::cancel() {
   return MOJO_RESULT_OK;
 }
 
-void MojoWatcher::Trace(blink::Visitor* visitor) {
+void MojoWatcher::Trace(Visitor* visitor) const {
   visitor->Trace(callback_);
   ScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 bool MojoWatcher::HasPendingActivity() const {
   return handle_.is_valid();
 }
 
-void MojoWatcher::ContextDestroyed(ExecutionContext*) {
+void MojoWatcher::ContextDestroyed() {
   cancel();
 }
 
 MojoWatcher::MojoWatcher(ExecutionContext* context,
                          V8MojoWatchCallback* callback)
-    : ContextLifecycleObserver(context),
+    : ExecutionContextLifecycleObserver(context),
       task_runner_(context->GetTaskRunner(TaskType::kInternalDefault)),
       callback_(callback) {}
 
@@ -88,6 +88,11 @@ MojoResult MojoWatcher::Watch(mojo::Handle handle,
                           reinterpret_cast<uintptr_t>(this), nullptr);
   if (result != MOJO_RESULT_OK)
     return result;
+
+  // If MojoAddTrigger succeeded above, we need this object to stay alive at
+  // least until OnHandleReady is invoked with MOJO_RESULT_CANCELLED, which
+  // signals the final invocation by the trap.
+  keep_alive_ = this;
 
   handle_ = handle;
 
@@ -137,10 +142,9 @@ MojoResult MojoWatcher::Arm(MojoResult* ready_result) {
 
 // static
 void MojoWatcher::OnHandleReady(const MojoTrapEvent* event) {
-  // It is safe to assume the MojoWathcer still exists. It stays alive at least
-  // as long as |handle_| is valid, and |handle_| is only reset after we
-  // dispatch a |MOJO_RESULT_CANCELLED| notification. That is always the last
-  // notification received by this callback.
+  // It is safe to assume the MojoWathcer still exists, because we keep it alive
+  // until we've dispatched MOJO_RESULT_CANCELLED from here to RunReadyCallback,
+  // and that is always the last notification we'll dispatch.
   MojoWatcher* watcher = reinterpret_cast<MojoWatcher*>(event->trigger_context);
   PostCrossThreadTask(
       *watcher->task_runner_, FROM_HERE,
@@ -152,6 +156,7 @@ void MojoWatcher::OnHandleReady(const MojoTrapEvent* event) {
 void MojoWatcher::RunReadyCallback(MojoResult result) {
   if (result == MOJO_RESULT_CANCELLED) {
     // Last notification.
+    keep_alive_.Clear();
     handle_ = mojo::Handle();
 
     // Only dispatch to the callback if this cancellation was implicit due to

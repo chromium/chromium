@@ -22,10 +22,11 @@ namespace loginScreenUi {
   interface Functions {
     // Opens a window, which is visible on top of the login and lock screen.
     // |options|: Options for the custom login UI window.
-    static void show(ShowOptions options, optional SimpleCallback callback);
+    [supportsPromises] static void show(ShowOptions options,
+                                        optional SimpleCallback callback);
 
     // Closes the login/lock screen UI window previously opened by this
     // extension.
-    static void close(optional SimpleCallback callback);
+    [supportsPromises] static void close(optional SimpleCallback callback);
   };
 };

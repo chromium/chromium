@@ -5,18 +5,19 @@
 #import "chrome/browser/ui/cocoa/applescript/tab_applescript.h"
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
 #import "base/mac/scoped_nsobject.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sessions/session_tab_helper.h"
 #include "chrome/browser/ui/cocoa/applescript/apple_event_util.h"
 #include "chrome/browser/ui/cocoa/applescript/error_applescript.h"
 #include "chrome/browser/ui/cocoa/applescript/metrics_applescript.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/common/url_constants.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "components/sessions/core/session_id.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_entry.h"
@@ -88,8 +89,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
     // particular tab is never returned.
     _webContents = webContents;
     _profile = Profile::FromBrowserContext(webContents->GetBrowserContext());
-    SessionTabHelper* session_tab_helper =
-        SessionTabHelper::FromWebContents(webContents);
+    sessions::SessionTabHelper* session_tab_helper =
+        sessions::SessionTabHelper::FromWebContents(webContents);
     base::scoped_nsobject<NSNumber> numID(
         [[NSNumber alloc] initWithInt:session_tab_helper->session_id().id()]);
     [self setUniqueID:numID];
@@ -103,8 +104,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   // the AppleScript runtime calls tabs in AppleScriptWindow and this
   // particular tab is never returned.
   _webContents = webContents;
-  SessionTabHelper* session_tab_helper =
-      SessionTabHelper::FromWebContents(webContents);
+  sessions::SessionTabHelper* session_tab_helper =
+      sessions::SessionTabHelper::FromWebContents(webContents);
   _profile = Profile::FromBrowserContext(webContents->GetBrowserContext());
   base::scoped_nsobject<NSNumber> numID(
       [[NSNumber alloc] initWithInt:session_tab_helper->session_id().id()]);
@@ -165,13 +166,13 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   if (!entry)
     return nil;
 
-  base::string16 title = entry ? entry->GetTitle() : base::string16();
+  std::u16string title = entry ? entry->GetTitle() : std::u16string();
   return base::SysUTF16ToNSString(title);
 }
 
 - (NSNumber*)loading {
   BOOL loadingValue = _webContents->IsLoading() ? YES : NO;
-  return [NSNumber numberWithBool:loadingValue];
+  return @(loadingValue);
 }
 
 - (void)handlesUndoScriptCommand:(NSScriptCommand*)command {
@@ -245,7 +246,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   AppleScript::LogAppleScriptUMA(AppleScript::AppleScriptCommand::TAB_SAVE);
   NSDictionary* dictionary = [command evaluatedArguments];
 
-  NSURL* fileURL = [dictionary objectForKey:@"File"];
+  NSURL* fileURL = dictionary[@"File"];
   // Scripter has not specifed the location at which to save, so we prompt for
   // it.
   if (!fileURL) {
@@ -260,7 +261,7 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   base::FilePath directoryPath = mainFile.RemoveExtension();
   directoryPath = directoryPath.InsertBeforeExtension(std::string("_files/"));
 
-  NSString* saveType = [dictionary objectForKey:@"FileType"];
+  NSString* saveType = dictionary[@"FileType"];
 
   content::SavePageType savePageType = content::SAVE_PAGE_TYPE_AS_COMPLETE_HTML;
   if (saveType) {
@@ -317,8 +318,8 @@ void ResumeAppleEventAndSendReply(NSAppleEventManagerSuspensionID suspension_id,
   content::RenderFrameHost::JavaScriptResultCallback callback =
       base::BindOnce(&ResumeAppleEventAndSendReply, suspensionID);
 
-  base::string16 script = base::SysNSStringToUTF16(
-      [[command evaluatedArguments] objectForKey:@"javascript"]);
+  std::u16string script =
+      base::SysNSStringToUTF16([command evaluatedArguments][@"javascript"]);
   frame->ExecuteJavaScriptInIsolatedWorld(script, std::move(callback),
                                           ISOLATED_WORLD_ID_APPLESCRIPT);
 

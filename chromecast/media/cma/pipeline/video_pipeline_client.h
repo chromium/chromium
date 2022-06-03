@@ -16,11 +16,14 @@ namespace chromecast {
 namespace media {
 
 struct VideoPipelineClient {
-  typedef base::Callback<void(
-      const gfx::Size& natural_size)> NaturalSizeChangedCB;
+  typedef base::RepeatingCallback<void(const gfx::Size& natural_size)>
+      NaturalSizeChangedCB;
 
   VideoPipelineClient();
-  VideoPipelineClient(const VideoPipelineClient& other);
+  VideoPipelineClient(VideoPipelineClient&& other);
+  VideoPipelineClient(const VideoPipelineClient& other) = delete;
+  VideoPipelineClient& operator=(VideoPipelineClient&& other);
+  VideoPipelineClient& operator=(const VideoPipelineClient& other) = delete;
   ~VideoPipelineClient();
 
   // All the default callbacks.

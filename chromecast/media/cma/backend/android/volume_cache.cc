@@ -18,7 +18,13 @@ VolumeCache::VolumeCache(AudioContentType type, SystemVolumeTableAccessApi* api)
   cache_.resize(kMaxVolumeIndex + 1);
   for (size_t v_idx = 0; v_idx < cache_.size(); v_idx++) {
     float v_level = static_cast<float>(v_idx) / kMaxVolumeIndex;
-    cache_[v_idx] = api->VolumeToDbFS(type, v_level);
+    float dbVolume = api->VolumeToDbFS(type, v_level);
+    if (isinf(dbVolume)) {
+      // In Android volume tables, -inf started to be used for mute. Use a value
+      // that is effectively mute, but allows math to be performed.
+      dbVolume = -120.0;
+    }
+    cache_[v_idx] = dbVolume;
     LOG(INFO) << "     " << v_idx << "(" << v_level << ") -> " << cache_[v_idx];
   }
 }

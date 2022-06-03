@@ -1,0 +1,13 @@
+<body>
+PASS if no crash.
+<script>
+if (window.testRunner)
+ testRunner.dumpAsText();
+
+var s = document.createElementNS('http://www.w3.org/1999/xhtml', 'script') 
+s.src = 'data:text/javascript,';
+s.setAttribute('integrity', 'sha384-oqVuAfXRKap7fdgcCY5uykM6+R9GqQ8K/uxy9rx7HNQlGYl1kPzQho1wx4JwY8wC') 
+document.body.appendChild(s)
+new Document().prepend(s) 
+</script>
+</body>

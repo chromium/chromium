@@ -5,72 +5,28 @@
 #include "chrome/browser/ui/app_list/app_service/app_service_app_item.h"
 
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/app_list/app_list_types.h"
+#include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/shelf_model.h"
+#include "ash/public/cpp/shelf_types.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/crostini/crostini_util.h"
+#include "chrome/browser/apps/app_service/launch_utils.h"
+#include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager.h"
+#include "chrome/browser/ash/remote_apps/remote_apps_manager_factory.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
-#include "chrome/browser/ui/app_list/arc/arc_app_context_menu.h"
-#include "chrome/browser/ui/app_list/crostini/crostini_app_context_menu.h"
-#include "chrome/browser/ui/app_list/extension_app_context_menu.h"
-#include "chrome/browser/ui/app_list/web_app_context_menu.h"
-#include "chrome/browser/ui/ash/launcher/chrome_launcher_controller.h"
-#include "chrome/common/chrome_features.h"
+#include "chrome/browser/ui/app_list/app_service/app_service_context_menu.h"
+#include "chrome/browser/ui/ash/shelf/chrome_shelf_controller.h"
 
 // static
 const char AppServiceAppItem::kItemType[] = "AppServiceAppItem";
-
-// static
-std::unique_ptr<app_list::AppContextMenu> AppServiceAppItem::MakeAppContextMenu(
-    apps::mojom::AppType app_type,
-    AppContextMenuDelegate* delegate,
-    Profile* profile,
-    const std::string& app_id,
-    AppListControllerDelegate* controller,
-    bool is_platform_app) {
-  // Terminal System App uses CrostiniAppContextMenu.
-  if (app_id == crostini::kCrostiniTerminalSystemAppId) {
-    return std::make_unique<CrostiniAppContextMenu>(profile, app_id,
-                                                    controller);
-  }
-
-  switch (app_type) {
-    case apps::mojom::AppType::kUnknown:
-    case apps::mojom::AppType::kBuiltIn:
-      return std::make_unique<app_list::AppContextMenu>(delegate, profile,
-                                                        app_id, controller);
-
-    case apps::mojom::AppType::kArc:
-      return std::make_unique<ArcAppContextMenu>(delegate, profile, app_id,
-                                                 controller);
-
-    case apps::mojom::AppType::kCrostini:
-      return std::make_unique<CrostiniAppContextMenu>(profile, app_id,
-                                                      controller);
-
-    case apps::mojom::AppType::kWeb:
-      if (base::FeatureList::IsEnabled(
-              features::kDesktopPWAsWithoutExtensions)) {
-        return std::make_unique<app_list::WebAppContextMenu>(
-            delegate, profile, app_id, controller);
-      }
-      // Otherwise deliberately fall through to fallback on Bookmark Apps.
-      FALLTHROUGH;
-
-    case apps::mojom::AppType::kExtension:
-      return std::make_unique<app_list::ExtensionAppContextMenu>(
-          delegate, profile, app_id, controller, is_platform_app);
-
-    case apps::mojom::AppType::kMacNative:
-      NOTREACHED() << "Should not be trying to make a menu for a native app";
-      return nullptr;
-  }
-
-  return nullptr;
-}
 
 AppServiceAppItem::AppServiceAppItem(
     Profile* profile,
@@ -82,15 +38,23 @@ AppServiceAppItem::AppServiceAppItem(
       is_platform_app_(false) {
   OnAppUpdate(app_update, true);
   if (sync_item && sync_item->item_ordinal.IsValid()) {
-    UpdateFromSync(sync_item);
+    InitFromSync(sync_item);
   } else {
-    SetDefaultPositionIfApplicable(model_updater);
+    syncer::StringOrdinal default_position;
+    if (app_type_ == apps::mojom::AppType::kRemote &&
+        ash::RemoteAppsManagerFactory::GetForProfile(profile)->ShouldAddToFront(
+            app_update.AppId())) {
+      default_position = model_updater->GetPositionBeforeFirstItem();
+    } else {
+      default_position = CalculateDefaultPositionIfApplicable(model_updater);
+    }
+    SetPosition(default_position);
 
     // Crostini apps and the Terminal System App start in the crostini folder.
     if (app_type_ == apps::mojom::AppType::kCrostini ||
         id() == crostini::kCrostiniTerminalSystemAppId) {
       DCHECK(folder_id().empty());
-      SetChromeFolderId(crostini::kCrostiniFolderId);
+      SetChromeFolderId(ash::kCrostiniFolderId);
     }
   }
 
@@ -111,44 +75,64 @@ void AppServiceAppItem::OnAppUpdate(const apps::AppUpdate& app_update,
   }
 
   if (in_constructor || app_update.IconKeyChanged()) {
-    constexpr bool allow_placeholder_icon = true;
-    CallLoadIcon(allow_placeholder_icon);
+    // Increment icon version to indicate icon needs to be updated.
+    IncrementIconVersion();
   }
 
   if (in_constructor || app_update.IsPlatformAppChanged()) {
     is_platform_app_ =
         app_update.IsPlatformApp() == apps::mojom::OptionalBool::kTrue;
   }
+
+  if (in_constructor || app_update.ReadinessChanged() ||
+      app_update.PausedChanged()) {
+    if (app_update.Readiness() == apps::mojom::Readiness::kDisabledByPolicy) {
+      SetAppStatus(ash::AppStatus::kBlocked);
+    } else if (app_update.Paused() == apps::mojom::OptionalBool::kTrue) {
+      SetAppStatus(ash::AppStatus::kPaused);
+    } else {
+      SetAppStatus(ash::AppStatus::kReady);
+    }
+  }
+}
+
+void AppServiceAppItem::LoadIcon() {
+  constexpr bool allow_placeholder_icon = true;
+  CallLoadIcon(allow_placeholder_icon);
 }
 
 void AppServiceAppItem::Activate(int event_flags) {
   // For Crostini apps, non-platform Chrome apps, Web apps, it could be
   // selecting an existing delegate for the app, so call
-  // ChromeLauncherController's ActivateApp interface. Platform apps or ARC
+  // ChromeShelfController's ActivateApp interface. Platform apps or ARC
   // apps, Crostini apps treat activations as a launch. The app can decide
   // whether to show a new window or focus an existing window as it sees fit.
   //
   // TODO(crbug.com/1022541): Move the Chrome special case to ExtensionApps,
   // when AppService Instance feature is done.
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  if (!proxy)
-    return;
   bool is_active_app = false;
-  proxy->AppRegistryCache().ForOneApp(
-      id(), [&is_active_app](const apps::AppUpdate& update) {
+  apps::AppServiceProxyFactory::GetForProfile(profile())
+      ->AppRegistryCache()
+      .ForOneApp(id(), [&is_active_app](const apps::AppUpdate& update) {
         if (update.AppType() == apps::mojom::AppType::kCrostini ||
-            ((update.AppType() == apps::mojom::AppType::kExtension ||
-              update.AppType() == apps::mojom::AppType::kWeb) &&
+            update.AppType() == apps::mojom::AppType::kWeb ||
+            update.AppType() == apps::mojom::AppType::kSystemWeb ||
+            (update.AppType() == apps::mojom::AppType::kExtension &&
              update.IsPlatformApp() == apps::mojom::OptionalBool::kFalse)) {
           is_active_app = true;
         }
       });
   if (is_active_app) {
-    ChromeLauncherController::instance()->ActivateApp(
-        id(), ash::LAUNCH_FROM_APP_LIST, event_flags,
-        GetController()->GetAppListDisplayId());
-    return;
+    ash::ShelfID shelf_id(id());
+    ash::ShelfModel* model = ChromeShelfController::instance()->shelf_model();
+    ash::ShelfItemDelegate* delegate = model->GetShelfItemDelegate(shelf_id);
+    if (delegate) {
+      delegate->ItemSelected(
+          /*event=*/nullptr, GetController()->GetAppListDisplayId(),
+          ash::LAUNCH_FROM_APP_LIST, /*callback=*/base::DoNothing(),
+          /*filter_predicate=*/base::NullCallback());
+      return;
+    }
   }
   Launch(event_flags, apps::mojom::LaunchSource::kFromAppListGrid);
 }
@@ -158,8 +142,9 @@ const char* AppServiceAppItem::GetItemType() const {
 }
 
 void AppServiceAppItem::GetContextMenuModel(GetMenuModelCallback callback) {
-  context_menu_ = MakeAppContextMenu(app_type_, this, profile(), id(),
-                                     GetController(), is_platform_app_);
+  context_menu_ = std::make_unique<AppServiceContextMenu>(this, profile(), id(),
+                                                          GetController());
+
   context_menu_->GetMenuModel(std::move(callback));
 }
 
@@ -172,37 +157,32 @@ void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
 
   // TODO(crbug.com/826982): drop the if, and call MaybeDismissAppList
   // unconditionally?
-  if (app_type_ == apps::mojom::AppType::kArc) {
+  if (app_type_ == apps::mojom::AppType::kArc ||
+      app_type_ == apps::mojom::AppType::kRemote) {
     MaybeDismissAppList();
   }
 }
 
 void AppServiceAppItem::Launch(int event_flags,
                                apps::mojom::LaunchSource launch_source) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  if (proxy) {
-    proxy->Launch(id(), event_flags, launch_source,
-                  GetController()->GetAppListDisplayId());
-  }
+  apps::AppServiceProxyFactory::GetForProfile(profile())->Launch(
+      id(), event_flags, launch_source,
+      apps::MakeWindowInfo(GetController()->GetAppListDisplayId()));
 }
 
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile());
-  if (proxy) {
-    proxy->LoadIcon(app_type_, id(),
-                    apps::mojom::IconCompression::kUncompressed,
-                    ash::AppListConfig::instance().grid_icon_dimension(),
-                    allow_placeholder_icon,
-                    base::BindOnce(&AppServiceAppItem::OnLoadIcon,
-                                   weak_ptr_factory_.GetWeakPtr()));
-  }
+  auto icon_type = apps::mojom::IconType::kStandard;
+  apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
+      app_type_, id(), icon_type,
+      ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
+      allow_placeholder_icon,
+      base::BindOnce(&AppServiceAppItem::OnLoadIcon,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AppServiceAppItem::OnLoadIcon(apps::mojom::IconValuePtr icon_value) {
-  if (icon_value->icon_compression !=
-      apps::mojom::IconCompression::kUncompressed) {
+  auto icon_type = apps::mojom::IconType::kStandard;
+  if (icon_value->icon_type != icon_type) {
     return;
   }
   SetIcon(icon_value->uncompressed);

@@ -30,7 +30,7 @@
 
 // https://www.w3.org/TR/2012/WD-file-system-api-20120417/#idl-def-FileSystemSync
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface DOMFileSystemSync {
     readonly attribute DOMString name;
     readonly attribute DirectoryEntrySync root;

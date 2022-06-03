@@ -33,12 +33,18 @@ class SimpleConnectionListener : public EmbeddedTestServerConnectionListener {
       int expected_connections,
       AllowAdditionalConnections allow_additional_connections);
 
+  SimpleConnectionListener(const SimpleConnectionListener&) = delete;
+  SimpleConnectionListener& operator=(const SimpleConnectionListener&) = delete;
+
   // Must be torn down only after the EmbeddedTestServer it's attached to is
   // shut down.
   ~SimpleConnectionListener() override;
 
-  void AcceptedSocket(const StreamSocket& socket) override;
+  std::unique_ptr<StreamSocket> AcceptedSocket(
+      std::unique_ptr<StreamSocket> socket) override;
   void ReadFromSocket(const StreamSocket& socket, int rv) override;
+  void OnResponseCompletedSuccessfully(
+      std::unique_ptr<StreamSocket> socket) override;
 
   // Wait until the expected number of connections have been seen.
   void WaitForConnections();
@@ -50,8 +56,6 @@ class SimpleConnectionListener : public EmbeddedTestServerConnectionListener {
   const AllowAdditionalConnections allow_additional_connections_;
 
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleConnectionListener);
 };
 
 }  // namespace test_server

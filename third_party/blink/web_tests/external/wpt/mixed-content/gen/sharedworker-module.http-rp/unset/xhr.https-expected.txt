@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS Mixed-Content: Expects allowed for xhr to same-https origin and keep-scheme redirection from https context.
+PASS Mixed-Content: Expects allowed for xhr to same-https origin and no-redirect redirection from https context.
+FAIL Mixed-Content: Expects blocked for xhr to cross-http origin and keep-scheme redirection from https context. assert_equals: The resource request should be 'blocked'. expected "blocked" but got "allowed"
+FAIL Mixed-Content: Expects blocked for xhr to cross-http origin and no-redirect redirection from https context. assert_equals: The resource request should be 'blocked'. expected "blocked" but got "allowed"
+FAIL Mixed-Content: Expects blocked for xhr to cross-http origin and swap-scheme redirection from https context. assert_equals: The resource request should be 'blocked'. expected "blocked" but got "allowed"
+FAIL Mixed-Content: Expects blocked for xhr to same-http origin and keep-scheme redirection from https context. assert_equals: The resource request should be 'blocked'. expected "blocked" but got "allowed"
+FAIL Mixed-Content: Expects blocked for xhr to same-http origin and no-redirect redirection from https context. assert_equals: The resource request should be 'blocked'. expected "blocked" but got "allowed"
+FAIL Mixed-Content: Expects blocked for xhr to same-http origin and swap-scheme redirection from https context. assert_equals: The resource request should be 'blocked'. expected "blocked" but got "allowed"
+Harness: the test ran to completion.
+

@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/thread.h"
 #include "media/audio/audio_io.h"
@@ -28,13 +27,15 @@ class AudioManagerBase;
 // beeping sound unless --use-file-for-fake-audio-capture=<file> is specified,
 // in which case the indicated .wav file will be read and played into the
 // stream.
-class MEDIA_EXPORT FakeAudioInputStream
-    : public AudioInputStream {
+class MEDIA_EXPORT FakeAudioInputStream : public AudioInputStream {
  public:
-  static AudioInputStream* MakeFakeStream(
-      AudioManagerBase* manager, const AudioParameters& params);
+  static AudioInputStream* MakeFakeStream(AudioManagerBase* manager,
+                                          const AudioParameters& params);
 
-  bool Open() override;
+  FakeAudioInputStream(const FakeAudioInputStream&) = delete;
+  FakeAudioInputStream& operator=(const FakeAudioInputStream&) = delete;
+
+  OpenOutcome Open() override;
   void Start(AudioInputCallback* callback) override;
   void Stop() override;
   void Close() override;
@@ -83,8 +84,6 @@ class MEDIA_EXPORT FakeAudioInputStream
   // We will delete the capture thread on the AudioManager worker task runner
   // since the audio thread is the main UI thread on Mac.
   std::unique_ptr<base::Thread, base::OnTaskRunnerDeleter> capture_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeAudioInputStream);
 };
 
 }  // namespace media

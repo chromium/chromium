@@ -4,10 +4,17 @@
 
 package org.chromium.content_public.browser;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.blink.mojom.Impression;
 import org.chromium.net.NetError;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
+
+import java.nio.ByteBuffer;
 
 /**
  * JNI bridge with content::NavigationHandle
@@ -15,11 +22,11 @@ import org.chromium.net.NetError;
 @JNINamespace("content")
 public class NavigationHandle {
     private long mNativeNavigationHandleProxy;
-    private final boolean mIsInMainFrame;
+    private final boolean mIsInPrimaryMainFrame;
     private final boolean mIsRendererInitiated;
     private final boolean mIsSameDocument;
     private Integer mPageTransition;
-    private String mUrl;
+    private GURL mUrl;
     private boolean mHasCommitted;
     private boolean mIsDownload;
     private boolean mIsErrorPage;
@@ -27,15 +34,20 @@ public class NavigationHandle {
     private boolean mIsValidSearchFormUrl;
     private @NetError int mErrorCode;
     private int mHttpStatusCode;
+    private final Origin mInitiatorOrigin;
+    private final Impression mImpression;
 
     @CalledByNative
-    public NavigationHandle(long nativeNavigationHandleProxy, String url, boolean isInMainFrame,
-            boolean isSameDocument, boolean isRendererInitiated) {
+    public NavigationHandle(long nativeNavigationHandleProxy, GURL url,
+            boolean isInPrimaryMaimFrame, boolean isSameDocument, boolean isRendererInitiated,
+            Origin initiatorOrigin, ByteBuffer impressionData) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
-        mIsInMainFrame = isInMainFrame;
+        mIsInPrimaryMainFrame = isInPrimaryMaimFrame;
         mIsSameDocument = isSameDocument;
         mIsRendererInitiated = isRendererInitiated;
+        mInitiatorOrigin = initiatorOrigin;
+        mImpression = impressionData != null ? Impression.deserialize(impressionData) : null;
     }
 
     /**
@@ -43,7 +55,7 @@ public class NavigationHandle {
      * @param url The new URL.
      */
     @CalledByNative
-    private void didRedirect(String url) {
+    private void didRedirect(GURL url) {
         mUrl = url;
     }
 
@@ -51,7 +63,7 @@ public class NavigationHandle {
      * The navigation finished. Called once per navigation.
      */
     @CalledByNative
-    public void didFinish(String url, boolean isErrorPage, boolean hasCommitted,
+    public void didFinish(@NonNull GURL url, boolean isErrorPage, boolean hasCommitted,
             boolean isFragmentNavigation, boolean isDownload, boolean isValidSearchFormUrl,
             int transition, @NetError int errorCode, int httpStatuscode) {
         mUrl = url;
@@ -81,15 +93,19 @@ public class NavigationHandle {
      * The URL the frame is navigating to.  This may change during the navigation when encountering
      * a server redirect.
      */
-    public String getUrl() {
+    public GURL getUrl() {
         return mUrl;
     }
 
     /**
-     * Whether the navigation is taking place in the main frame or in a subframe.
+     * Whether the navigation is taking place in the main frame of the primary
+     * frame tree. With MPArch (crbug.com/1164280), a WebContents may have
+     * additional frame trees for prerendering pages in addition to the primary
+     * frame tree (holding the page currently shown to the user). This remains
+     * constant over the navigation lifetime.
      */
-    public boolean isInMainFrame() {
-        return mIsInMainFrame;
+    public boolean isInPrimaryMainFrame() {
+        return mIsInPrimaryMainFrame;
     }
 
     /**
@@ -207,6 +223,21 @@ public class NavigationHandle {
      */
     public void removeRequestHeader(String headerName) {
         NavigationHandleJni.get().removeRequestHeader(mNativeNavigationHandleProxy, headerName);
+    }
+
+    /**
+     * Get the Origin that initiated this navigation. May be null in the case of navigations
+     * originating from the browser.
+     */
+    public Origin getInitiatorOrigin() {
+        return mInitiatorOrigin;
+    }
+
+    /**
+     * Return the blink::Impression associated with this navigation, if any.
+     */
+    public Impression getImpression() {
+        return mImpression;
     }
 
     @NativeMethods

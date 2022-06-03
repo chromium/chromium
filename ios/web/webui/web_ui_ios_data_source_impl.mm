@@ -71,7 +71,7 @@ WebUIIOSDataSourceImpl::WebUIIOSDataSourceImpl(const std::string& source_name)
 WebUIIOSDataSourceImpl::~WebUIIOSDataSourceImpl() {}
 
 void WebUIIOSDataSourceImpl::AddString(const std::string& name,
-                                       const base::string16& value) {
+                                       const std::u16string& value) {
   localized_strings_.SetString(name, value);
   replacements_[name] = base::UTF16ToUTF8(value);
 }
@@ -94,6 +94,13 @@ void WebUIIOSDataSourceImpl::AddLocalizedStrings(
   localized_strings_.MergeDictionary(&localized_strings);
   ui::TemplateReplacementsFromDictionaryValue(localized_strings,
                                               &replacements_);
+}
+
+void WebUIIOSDataSourceImpl::AddLocalizedStrings(
+    base::span<const webui::LocalizedString> strings) {
+  for (const auto& str : strings) {
+    AddLocalizedString(str.name, str.id);
+  }
 }
 
 void WebUIIOSDataSourceImpl::AddBoolean(const std::string& name, bool value) {

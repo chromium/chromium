@@ -1,8 +1,9 @@
 rootWebArea
 ++genericContainer ignored
-++++image name='Pipe'
-++++paragraph
-++++++staticText name='The pipe'
-++++++++inlineTextBox name='The pipe'
-++++++staticText name=' clicked by SomeOne.'
-++++++++inlineTextBox name=' clicked by SomeOne.'
+++++genericContainer ignored
+++++++image name='Pipe'
+++++++paragraph
+++++++++staticText name='The pipe'
+++++++++++inlineTextBox name='The pipe'
+++++++++staticText name=' clicked by SomeOne.'
+++++++++++inlineTextBox name=' clicked by SomeOne.'

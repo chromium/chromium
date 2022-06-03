@@ -7,17 +7,19 @@ package org.chromium.chrome.browser.init;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Supplier;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.IntentHandler;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tabmodel.ChromeTabCreator;
+import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.document.TabDelegate;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -54,6 +56,8 @@ public class StartupTabPreloaderUnitTest {
             new Intent(Intent.ACTION_MAIN).setData(Uri.parse(SITE_B));
     private static final Intent MAIN_INTENT_WITHOUT_URL = new Intent(Intent.ACTION_MAIN);
     private static final TabCreatorManager sChromeTabCreator = new ChromeTabCreatorManager();
+    private static final TabCreatorManager sUninitializedChromeTabCreatorManager =
+            new UninitializedChromeTabCreatorManager();
     private static final TabCreatorManager sNonChromeTabCreator = new NonChromeTabCreatorManager();
 
     @Rule
@@ -94,7 +98,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_AllowViewIntents() {
         Assert.assertTrue(
                 createStartupTabPreloader(VIEW_INTENT, sChromeTabCreator).shouldLoadTab());
@@ -102,7 +106,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_AllowChromeMainComponentIntentWithUrl() {
         Assert.assertTrue(createStartupTabPreloader(CHROME_MAIN_COMPONENT_INTENT, sChromeTabCreator)
                                   .shouldLoadTab());
@@ -110,7 +114,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_AllowMainIntentsWithUrl() {
         Assert.assertTrue(
                 createStartupTabPreloader(MAIN_INTENT_WITH_URL, sChromeTabCreator).shouldLoadTab());
@@ -118,7 +122,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedMainIntentsWithoutUrl() {
         Assert.assertFalse(createStartupTabPreloader(MAIN_INTENT_WITHOUT_URL, sChromeTabCreator)
                                    .shouldLoadTab());
@@ -126,7 +130,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @DisableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @EnableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedWhenFeatureDisabled() {
         Assert.assertFalse(
                 createStartupTabPreloader(VIEW_INTENT, sChromeTabCreator).shouldLoadTab());
@@ -134,7 +138,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedInvalidSchemeIntent() {
         Assert.assertFalse(
                 createStartupTabPreloader(VIEW_INTENT_WITH_INVALID_SCHEME, sChromeTabCreator)
@@ -143,7 +147,7 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedNonChromeTabCreators() {
         Assert.assertFalse(
                 createStartupTabPreloader(VIEW_INTENT, sNonChromeTabCreator).shouldLoadTab());
@@ -151,33 +155,52 @@ public class StartupTabPreloaderUnitTest {
 
     @Test
     @SmallTest
-    @EnableFeatures(ChromeFeatureList.PRIORITIZE_BOOTSTRAP_TASKS)
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
     public void testShouldLoadTab_BlockedIncognitoIntents() {
         Assert.assertFalse(createStartupTabPreloader(INCOGNITO_VIEW_INTENT, sChromeTabCreator)
                                    .shouldLoadTab());
     }
 
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.ELIDE_TAB_PRELOAD_AT_STARTUP)
+    public void testShouldLoadTab_UninitializedTabCreatorManager() {
+        Assert.assertFalse(
+                createStartupTabPreloader(VIEW_INTENT, sUninitializedChromeTabCreatorManager)
+                        .shouldLoadTab());
+    }
+
     private StartupTabPreloader createStartupTabPreloader(
             Intent intent, TabCreatorManager tabCreatorManager) {
-        return new StartupTabPreloader(new Supplier<Intent>() {
-            @Override
-            public Intent get() {
-                return intent;
-            }
-        }, new ActivityLifecycleDispatcherImpl(), null, tabCreatorManager);
+        return new StartupTabPreloader(
+                new Supplier<Intent>() {
+                    @Override
+                    public Intent get() {
+                        return intent;
+                    }
+                },
+                new ActivityLifecycleDispatcherImpl(null), null, tabCreatorManager,
+                new IntentHandler(null, null));
     }
 
     private static class ChromeTabCreatorManager implements TabCreatorManager {
         @Override
-        public TabCreatorManager.TabCreator getTabCreator(boolean incognito) {
+        public TabCreator getTabCreator(boolean incognito) {
             Assert.assertFalse(incognito);
-            return new ChromeTabCreator(null, null, null, null, false);
+            return new ChromeTabCreator(null, null, null, null, false, null, null, null, null);
+        }
+    }
+
+    private static class UninitializedChromeTabCreatorManager implements TabCreatorManager {
+        @Override
+        public TabCreator getTabCreator(boolean incognito) {
+            throw new IllegalStateException("uninitialized for test");
         }
     }
 
     private static class NonChromeTabCreatorManager implements TabCreatorManager {
         @Override
-        public TabCreatorManager.TabCreator getTabCreator(boolean incognito) {
+        public TabCreator getTabCreator(boolean incognito) {
             Assert.assertFalse(incognito);
 
             // The important thing is this isn't ChromeTabCreator.

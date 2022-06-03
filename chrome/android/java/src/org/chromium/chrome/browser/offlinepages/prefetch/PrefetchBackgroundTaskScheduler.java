@@ -48,7 +48,6 @@ public class PrefetchBackgroundTaskScheduler {
                 + additionalDelaySeconds;
         TaskInfo.Builder taskInfoBuilder =
                 TaskInfo.createOneOffTask(TaskIds.OFFLINE_PAGES_PREFETCH_JOB_ID,
-                                PrefetchBackgroundTask.class,
                                 // Minimum time to wait
                                 DateUtils.SECOND_IN_MILLIS * minimumTimeSeconds,
                                 // Maximum time to wait.  After this interval the event will fire

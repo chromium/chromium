@@ -13,7 +13,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/assist_ranker/ranker_model_loader.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/translate/core/browser/translate_ranker.h"
@@ -26,6 +26,10 @@ namespace assist_ranker {
 class RankerModel;
 }  // namespace assist_ranker
 
+namespace base {
+class FilePath;
+}
+
 namespace ukm {
 class UkmRecorder;
 }  // namespace ukm
@@ -36,13 +40,14 @@ class TranslateEventProto;
 
 namespace translate {
 
+class TranslateMetricsLogger;
+
 extern const char kDefaultTranslateRankerModelURL[];
 
 // Features used to enable ranker query, enforcement and logging. Note that
 // enabling enforcement implies (forces) enabling queries.
 extern const base::Feature kTranslateRankerQuery;
 extern const base::Feature kTranslateRankerEnforcement;
-extern const base::Feature kTranslateRankerAutoBlacklistOverride;
 extern const base::Feature kTranslateRankerPreviousLanguageMatchesOverride;
 
 struct TranslateRankerFeatures {
@@ -85,6 +90,10 @@ class TranslateRankerImpl : public TranslateRanker {
   TranslateRankerImpl(const base::FilePath& model_path,
                       const GURL& model_url,
                       ukm::UkmRecorder* ukm_recorder);
+
+  TranslateRankerImpl(const TranslateRankerImpl&) = delete;
+  TranslateRankerImpl& operator=(const TranslateRankerImpl&) = delete;
+
   ~TranslateRankerImpl() override;
 
   // Get the file path of the translate ranker model, by default with a fixed
@@ -99,15 +108,15 @@ class TranslateRankerImpl : public TranslateRanker {
   void EnableLogging(bool value) override;
   uint32_t GetModelVersion() const override;
   bool ShouldOfferTranslation(
-      metrics::TranslateEventProto* translate_event) override;
+      metrics::TranslateEventProto* translate_event,
+      TranslateMetricsLogger* translate_metrics_logger) override;
   void FlushTranslateEvents(
       std::vector<metrics::TranslateEventProto>* events) override;
   void RecordTranslateEvent(
       int event_type,
       ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) override;
-  bool ShouldOverrideDecision(
-      int event_type,
+  bool ShouldOverrideMatchesPreviousLanguageDecision(
       ukm::SourceId ukm_source_id,
       metrics::TranslateEventProto* translate_event) override;
 
@@ -142,7 +151,7 @@ class TranslateRankerImpl : public TranslateRanker {
   std::unique_ptr<assist_ranker::RankerModel> model_;
 
   // Tracks whether or not translate event logging is enabled.
-  bool is_logging_enabled_ = true;
+  bool is_uma_logging_enabled_ = true;
 
   // Tracks whether or not translate ranker querying is enabled.
   bool is_query_enabled_ = true;
@@ -150,10 +159,6 @@ class TranslateRankerImpl : public TranslateRanker {
   // Tracks whether or not translate ranker enforcement is enabled. Note that
   // that also enables the code paths for translate ranker querying.
   bool is_enforcement_enabled_ = true;
-
-  // When set to true, overrides UI suppression caused by auto blacklist in
-  // bubble UI.
-  bool is_auto_blacklist_override_enabled_ = false;
 
   // When set to true, overrides UI suppression when previous language
   // matches current language in bubble UI.
@@ -163,8 +168,6 @@ class TranslateRankerImpl : public TranslateRanker {
   std::vector<metrics::TranslateEventProto> event_cache_;
 
   base::WeakPtrFactory<TranslateRankerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateRankerImpl);
 };
 
 }  // namespace translate

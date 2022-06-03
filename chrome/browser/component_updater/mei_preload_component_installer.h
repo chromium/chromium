@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/component_updater/component_installer.h"
 
@@ -30,6 +29,10 @@ class MediaEngagementPreloadComponentInstallerPolicy
  public:
   explicit MediaEngagementPreloadComponentInstallerPolicy(
       base::OnceClosure on_load_closure);
+  MediaEngagementPreloadComponentInstallerPolicy(
+      const MediaEngagementPreloadComponentInstallerPolicy&) = delete;
+  MediaEngagementPreloadComponentInstallerPolicy& operator=(
+      const MediaEngagementPreloadComponentInstallerPolicy&) = delete;
   ~MediaEngagementPreloadComponentInstallerPolicy() override;
 
  private:
@@ -37,26 +40,24 @@ class MediaEngagementPreloadComponentInstallerPolicy
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;
   bool RequiresNetworkEncryption() const override;
   update_client::CrxInstaller::Result OnCustomInstall(
-      const base::DictionaryValue& manifest,
+      const base::Value& manifest,
       const base::FilePath& install_dir) override;
   void OnCustomUninstall() override;
-  bool VerifyInstallation(const base::DictionaryValue& manifest,
+  bool VerifyInstallation(const base::Value& manifest,
                           const base::FilePath& install_dir) const override;
   void ComponentReady(const base::Version& version,
                       const base::FilePath& install_dir,
-                      std::unique_ptr<base::DictionaryValue> manifest) override;
+                      base::Value manifest) override;
   base::FilePath GetRelativeInstallDir() const override;
   void GetHash(std::vector<uint8_t>* hash) const override;
   std::string GetName() const override;
   update_client::InstallerAttributes GetInstallerAttributes() const override;
-  std::vector<std::string> GetMimeTypes() const override;
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 
   // Called when the data is loaded into the preloaded list.
   base::OnceClosure on_load_closure_;
 
-  DISALLOW_COPY_AND_ASSIGN(MediaEngagementPreloadComponentInstallerPolicy);
 };
 
 // Call once during startup to make the component update service aware of

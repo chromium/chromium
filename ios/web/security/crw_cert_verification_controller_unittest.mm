@@ -118,7 +118,6 @@ TEST_F(CRWCertVerificationControllerTest, PolicyForInvalidTrust) {
   DecidePolicy(invalid_trust_, kHostName, &policy, &status);
   EXPECT_EQ(CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_UNDECIDED_BY_USER, policy);
   EXPECT_TRUE(net::CERT_STATUS_AUTHORITY_INVALID & status);
-  EXPECT_TRUE(net::CERT_STATUS_COMMON_NAME_INVALID & status);
 }
 
 // Tests cert policy with an invalid trust accepted by user.
@@ -131,7 +130,6 @@ TEST_F(CRWCertVerificationControllerTest, PolicyForInvalidTrustAcceptedByUser) {
   DecidePolicy(invalid_trust_, kHostName, &policy, &status);
   EXPECT_EQ(CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_ACCEPTED_BY_USER, policy);
   EXPECT_TRUE(net::CERT_STATUS_AUTHORITY_INVALID & status);
-  EXPECT_TRUE(net::CERT_STATUS_COMMON_NAME_INVALID & status);
 }
 
 // Tests that allowCert:forHost:status: strips all intermediate certs.
@@ -150,7 +148,6 @@ TEST_F(CRWCertVerificationControllerTest, AllowCertIgnoresIntermediateCerts) {
   DecidePolicy(invalid_trust_, kHostName, &policy, &status);
   EXPECT_EQ(CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_ACCEPTED_BY_USER, policy);
   EXPECT_TRUE(net::CERT_STATUS_AUTHORITY_INVALID & status);
-  EXPECT_TRUE(net::CERT_STATUS_COMMON_NAME_INVALID & status);
 }
 
 // Tests cert policy with null trust.
@@ -170,7 +167,6 @@ TEST_F(CRWCertVerificationControllerTest, PolicyForNullHost) {
   DecidePolicy(invalid_trust_, nil, &policy, &status);
   EXPECT_EQ(CERT_ACCEPT_POLICY_RECOVERABLE_ERROR_UNDECIDED_BY_USER, policy);
   EXPECT_TRUE(net::CERT_STATUS_AUTHORITY_INVALID & status);
-  EXPECT_TRUE(net::CERT_STATUS_COMMON_NAME_INVALID & status);
 }
 
 // Tests SSL status with valid trust.
@@ -191,7 +187,6 @@ TEST_F(CRWCertVerificationControllerTest, SSLStatusForInvalidTrust) {
   QueryStatus(invalid_trust_, kHostName, &style, &status);
   EXPECT_EQ(SECURITY_STYLE_AUTHENTICATION_BROKEN, style);
   EXPECT_TRUE(net::CERT_STATUS_AUTHORITY_INVALID & status);
-  EXPECT_TRUE(net::CERT_STATUS_COMMON_NAME_INVALID & status);
 }
 
 }  // namespace web

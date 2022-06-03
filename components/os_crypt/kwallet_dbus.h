@@ -9,9 +9,9 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/nix/xdg_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 class Bus;
@@ -25,6 +25,10 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
   enum Error { SUCCESS = 0, CANNOT_CONTACT, CANNOT_READ };
 
   explicit KWalletDBus(base::nix::DesktopEnvironment desktop_env);
+
+  KWalletDBus(const KWalletDBus&) = delete;
+  KWalletDBus& operator=(const KWalletDBus&) = delete;
+
   virtual ~KWalletDBus();
 
   // Set the bus that we will use. Required before any other operation.
@@ -118,7 +122,8 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
                              const std::string& folder_name,
                              const std::string& key,
                              const std::string& app_name,
-                             std::string* password_ptr) WARN_UNUSED_RESULT;
+                             absl::optional<std::string>* const password_ptr)
+      WARN_UNUSED_RESULT;
 
   // Close the wallet. The wallet will only be closed if it is open but not in
   // use (rare), or if it is forced closed.
@@ -139,8 +144,6 @@ class COMPONENT_EXPORT(OS_CRYPT) KWalletDBus {
   std::string dbus_path_;
   // The name used for logging and by klauncher when starting KWallet.
   std::string kwalletd_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(KWalletDBus);
 };
 
 #endif  // COMPONENTS_OS_CRYPT_KWALLET_DBUS_H_

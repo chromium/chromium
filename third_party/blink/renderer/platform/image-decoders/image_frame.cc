@@ -133,12 +133,13 @@ bool ImageFrame::AllocatePixelData(int new_width,
       std::move(color_space));
   if (pixel_format_ == kRGBA_F16)
     info = info.makeColorType(kRGBA_F16_SkColorType);
-  bitmap_.setInfo(info);
-  bool allocated = bitmap_.tryAllocPixels(allocator_);
-  if (allocated)
+  bool success = bitmap_.setInfo(info);
+  DCHECK(success);
+  success = bitmap_.tryAllocPixels(allocator_);
+  if (success)
     status_ = kFrameInitialized;
 
-  return allocated;
+  return success;
 }
 
 sk_sp<SkImage> ImageFrame::FinalizePixelsAndGetImage() {
@@ -182,9 +183,9 @@ static void BlendRGBAF16Buffer(ImageFrame::PixelDataF16* dst,
   // Source is always unpremul, but the blending result might be premul or
   // unpremul, depending on the alpha type of the destination pixel passed to
   // this function.
-  SkImageInfo info =
-      SkImageInfo::Make(num_pixels, 1, kRGBA_F16_SkColorType, dst_alpha_type,
-                        SkColorSpace::MakeSRGBLinear());
+  SkImageInfo info = SkImageInfo::Make(base::checked_cast<int>(num_pixels), 1,
+                                       kRGBA_F16_SkColorType, dst_alpha_type,
+                                       SkColorSpace::MakeSRGBLinear());
   sk_sp<SkSurface> surface =
       SkSurface::MakeRasterDirect(info, dst, info.minRowBytes());
 
@@ -194,7 +195,7 @@ static void BlendRGBAF16Buffer(ImageFrame::PixelDataF16* dst,
       SkImage::MakeFromRaster(src_pixmap, nullptr, nullptr);
 
   surface->getCanvas()->drawImage(src_image, 0, 0);
-  surface->flush();
+  surface->flushAndSubmit();
 }
 
 void ImageFrame::BlendRGBARawF16Buffer(PixelDataF16* dst,

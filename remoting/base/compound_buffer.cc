@@ -7,7 +7,7 @@
 #include <algorithm>
 #include <functional>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "net/base/io_buffer.h"
 
 namespace remoting {

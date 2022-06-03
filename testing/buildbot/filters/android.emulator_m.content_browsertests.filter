@@ -1,0 +1,62 @@
+# crbug.com/1054829
+-All/TouchActionBrowserTest.PanXAtYAreaWithTimeout
+-All/TouchActionBrowserTest.TouchActionNone
+-All/TouchActionBrowserTest.TwoFingerPanXAtYAreaWithTimeout
+-All/TouchActionBrowserTest.BlockDoubleTapDragZoom
+
+# crbug.com/1056878
+-BackForwardCacheBrowserTest.VideoSuspendAndResume
+
+# crbug.com/1096612
+-All/SitePerProcessBrowserTest.DetachedIframeUnloadHandlerABCB/*
+
+# crbug.com/1058447
+-All/SitePerProcessBrowserTest.FrameViewportOffsetTestSimple/*
+
+# crbug.com/1056325
+-WebRtcAudioBrowserTest.*
+
+# crbug.com/1058570
+-WebRtcGetUserMediaBrowserTest.ApplyConstraintsNonDevice
+
+# crbug.com/1065184
+-RenderFrameHostImplBrowserTest.CheckIsCurrentBeforeAndAfterUnload
+
+# This is a known issue in AudioMixer and there's no fix until O
+# See crbug.com/1081969 for more detail
+-*/MediaTest.AudioBearFlac*
+-*/MediaTest.AudioBearOpus*
+-*/MediaTest.VideoBearMovPcm*
+-*/MediaTest.VideoBearMp4/0
+-*/MediaTest.VideoBearWavAlaw/0
+-*/MediaTest.VideoBearWavMulaw/0
+-*/MediaTest.VideoBearWavPcm*
+-*/MediaTest.VideoBearWebm/0
+-*/MediaTest.VideoTulipWebm/0
+-MSE_*ClearKey/EncryptedMediaTest.ConfigChangeVideo_*
+-MSE_*ClearKey/EncryptedMediaTest.Playback_AudioOnly_MP4*
+-MSE_*ClearKey/EncryptedMediaTest.Playback_Encryption_CBCS*
+-MSE_*ClearKey/EncryptedMediaTest.Playback_Encryption_CENC*
+-*ClearKey/EncryptedMediaTest.Playback_AudioClearVideo_WebM/0
+-*ClearKey/EncryptedMediaTest.Playback_AudioOnly_WebM*
+-*ClearKey/EncryptedMediaTest.Playback_VideoAudio_WebM*
+-*ClearKey/EncryptedMediaTest.Playback_VideoClearAudio_WebM*
+-MediaSourceTest.ConfigChangeVideo
+-MediaSourceTest.Playback_AudioOnly_FLAC_MP4
+-MediaSourceTest.Playback_AudioOnly_WebM
+-MediaSourceTest.Playback_VideoAudio_WebM
+-MediaSourceTest.Playback_Video_MP4_Audio_WEBM
+-MediaSourceTest.Playback_Video_WEBM_Audio_MP4
+-MediaTest.Navigate
+-ServiceProcessHostBrowserTest.ObserveCrash
+-UtilityProcessHostBrowserTest.LaunchProcessAndCrash
+-MediaRedirectTest.CanPlayHiddenWebm
+
+# crbug.com/954217
+-RenderFrameHostImplBrowserTest.VisibilityScrolledOutOfView
+
+# crbug.com/1120813
+-P/CompositorImplBrowserTestRefreshRate.VideoPreference/*
+
+# crbug.com/1047994
+-WebRtcBrowserTest.CanSetupH264VideoCallOnSupportedDevice

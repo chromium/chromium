@@ -4,6 +4,14 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
+imageset("recent_tabs_other_devices_empty") {
+  sources = [
+    "recent_tabs_other_devices_empty.imageset/Contents.json",
+    "recent_tabs_other_devices_empty.imageset/recent_tabs_other_devices_empty.pdf",
+    "recent_tabs_other_devices_empty.imageset/recent_tabs_other_devices_empty_dark.pdf",
+  ]
+}
+
 imageset("show_history") {
   sources = [
     "show_history.imageset/Contents.json",

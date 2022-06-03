@@ -14,12 +14,12 @@
     link.onload = t_css.unreached_func('Second request should fail');
     link.onerror = t_css.step_func_done();
     link.href =
-      "../../cache/resources/etag-200-empty.php?empty-after-revalidate-css";
+      "../../cache/resources/etag-200-empty.php?type=css&empty-after-revalidate-css";
     document.head.appendChild(link);
   }
 </script>
 <link
-  href="../../cache/resources/etag-200-empty.php?empty-after-revalidate-css"
+  href="../../cache/resources/etag-200-empty.php?type=css&empty-after-revalidate-css"
   rel="stylesheet"
   integrity="sha256-YsI40D9FX0QghiYVdxQyySP2TOmARkLC5uPRO8RL2dE="
   onload="t_css.step_timeout(revalidate_css, 0)"

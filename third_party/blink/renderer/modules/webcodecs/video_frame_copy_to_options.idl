@@ -1,0 +1,16 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://github.com/WICG/web-codecs
+
+dictionary VideoFrameCopyToOptions {
+  // The area to copy. If unspecified, the visible rect will be used. The coded
+  // rect can be specified by passing frame.codedRect.
+  DOMRectInit rect;
+
+  // The layout of each plane in the buffer. This allows the offset and stride
+  // of each plane to be specified. If unspecified, the planes will be tightly
+  // packed. It is invalid to specify planes that overlap.
+  sequence<PlaneLayout> layout;
+};

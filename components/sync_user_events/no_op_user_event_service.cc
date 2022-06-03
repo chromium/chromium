@@ -10,9 +10,9 @@ using sync_pb::UserEventSpecifics;
 
 namespace syncer {
 
-NoOpUserEventService::NoOpUserEventService() {}
+NoOpUserEventService::NoOpUserEventService() = default;
 
-NoOpUserEventService::~NoOpUserEventService() {}
+NoOpUserEventService::~NoOpUserEventService() = default;
 
 void NoOpUserEventService::RecordUserEvent(
     std::unique_ptr<UserEventSpecifics> specifics) {}
@@ -20,7 +20,8 @@ void NoOpUserEventService::RecordUserEvent(
 void NoOpUserEventService::RecordUserEvent(
     const UserEventSpecifics& specifics) {}
 
-ModelTypeSyncBridge* NoOpUserEventService::GetSyncBridge() {
+base::WeakPtr<syncer::ModelTypeControllerDelegate>
+NoOpUserEventService::GetControllerDelegate() {
   return nullptr;
 }
 

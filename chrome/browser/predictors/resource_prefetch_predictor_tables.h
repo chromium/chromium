@@ -12,15 +12,10 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/sequenced_task_runner.h"
-#include "chrome/browser/predictors/loading_predictor_key_value_table.h"
-#include "chrome/browser/predictors/predictor_table_base.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.pb.h"
-
-namespace base {
-class Location;
-}
+#include "components/sqlite_proto/key_value_table.h"
+#include "components/sqlite_proto/table_manager.h"
 
 namespace predictors {
 
@@ -31,16 +26,15 @@ namespace predictors {
 // Currently manages:
 //  - HostRedirectTable - key: host, value: RedirectData
 //  - OriginTable - key: host, value: OriginData
-class ResourcePrefetchPredictorTables : public PredictorTableBase {
+class ResourcePrefetchPredictorTables : public sqlite_proto::TableManager {
  public:
-  typedef base::OnceCallback<void(sql::Database*)> DBTask;
+  ResourcePrefetchPredictorTables(const ResourcePrefetchPredictorTables&) =
+      delete;
+  ResourcePrefetchPredictorTables& operator=(
+      const ResourcePrefetchPredictorTables&) = delete;
 
-  virtual void ScheduleDBTask(const base::Location& from_here, DBTask task);
-
-  virtual void ExecuteDBTaskOnDBSequence(DBTask task);
-
-  virtual LoadingPredictorKeyValueTable<RedirectData>* host_redirect_table();
-  virtual LoadingPredictorKeyValueTable<OriginData>* origin_table();
+  virtual sqlite_proto::KeyValueTable<RedirectData>* host_redirect_table();
+  virtual sqlite_proto::KeyValueTable<OriginData>* origin_table();
 
   // Removes the redirects with more than |max_consecutive_misses| consecutive
   // misses from |data|.
@@ -64,7 +58,7 @@ class ResourcePrefetchPredictorTables : public PredictorTableBase {
  protected:
   // Protected for testing. Use PredictorDatabase::resource_prefetch_tables()
   // instead of this constructor.
-  ResourcePrefetchPredictorTables(
+  explicit ResourcePrefetchPredictorTables(
       scoped_refptr<base::SequencedTaskRunner> db_task_runner);
   ~ResourcePrefetchPredictorTables() override;
 
@@ -79,19 +73,17 @@ class ResourcePrefetchPredictorTables : public PredictorTableBase {
   // schema (including the .proto).
   static constexpr int kDatabaseVersion = 11;
 
-  // PredictorTableBase:
-  void CreateTableIfNonExistent() override;
+  // sqlite_proto::TableManager:
+  void CreateOrClearTablesIfNecessary() override;
   void LogDatabaseStats() override;
 
   static bool DropTablesIfOutdated(sql::Database* db);
   static int GetDatabaseVersion(sql::Database* db);
   static bool SetDatabaseVersion(sql::Database* db, int version);
 
-  std::unique_ptr<LoadingPredictorKeyValueTable<RedirectData>>
+  std::unique_ptr<sqlite_proto::KeyValueTable<RedirectData>>
       host_redirect_table_;
-  std::unique_ptr<LoadingPredictorKeyValueTable<OriginData>> origin_table_;
-
-  DISALLOW_COPY_AND_ASSIGN(ResourcePrefetchPredictorTables);
+  std::unique_ptr<sqlite_proto::KeyValueTable<OriginData>> origin_table_;
 };
 
 }  // namespace predictors

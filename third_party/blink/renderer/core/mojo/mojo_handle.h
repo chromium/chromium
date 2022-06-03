@@ -6,12 +6,12 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_MOJO_MOJO_HANDLE_H_
 
 #include "mojo/public/cpp/system/core.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
-class ArrayBufferOrArrayBufferView;
 class MojoCreateSharedBufferResult;
 class MojoDiscardDataOptions;
 class MojoDuplicateBufferHandleOptions;
@@ -41,18 +41,18 @@ class CORE_EXPORT MojoHandle final : public ScriptWrappable {
                      V8MojoWatchCallback*);
 
   // MessagePipe handle.
-  MojoResult writeMessage(ArrayBufferOrArrayBufferView&,
-                          const HeapVector<Member<MojoHandle>>&);
+  MojoResult writeMessage(const V8BufferSource* buffer,
+                          const HeapVector<Member<MojoHandle>>& handles);
   MojoReadMessageResult* readMessage(const MojoReadMessageFlags*);
 
   // DataPipe handle.
-  MojoWriteDataResult* writeData(const ArrayBufferOrArrayBufferView&,
-                                 const MojoWriteDataOptions*);
+  MojoWriteDataResult* writeData(const V8BufferSource* buffer,
+                                 const MojoWriteDataOptions* options);
   MojoReadDataResult* queryData() const;
   MojoReadDataResult* discardData(unsigned num_bytes,
                                   const MojoDiscardDataOptions*);
-  MojoReadDataResult* readData(ArrayBufferOrArrayBufferView&,
-                               const MojoReadDataOptions*) const;
+  MojoReadDataResult* readData(const V8BufferSource* buffer,
+                               const MojoReadDataOptions* options) const;
 
   // SharedBuffer handle.
   MojoMapBufferResult* mapBuffer(unsigned offset, unsigned num_bytes);

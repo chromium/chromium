@@ -5,21 +5,19 @@
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import 'chrome://resources/cr_elements/icons.m.js';
 import 'chrome://resources/polymer/v3_0/iron-icon/iron-icon.js';
-import './mojo_api.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {boolToString, durationToString, getOrCreateDetailsProvider, secondsToString} from './discards.js';
+import {SiteDataDatabaseSize, SiteDataEntry, SiteDataFeature, SiteDataProviderRemote} from './chrome/browser/ui/webui/discards/site_data.mojom-webui.js';
+import {boolToString, durationToString, getOrCreateSiteDataProvider, secondsToString} from './discards.js';
 import {SortedTableBehavior} from './sorted_table_behavior.js';
 
 /**
  * Compares two db rows by their origin.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} a The first value
- *     being compared.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} b The second value
- *     being compared.
- * @return {number} A negative number if a < b, 0 if a == b, and a positive
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
+ * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
 function compareRowsByOrigin(a, b) {
@@ -28,11 +26,9 @@ function compareRowsByOrigin(a, b) {
 
 /**
  * Compares two db rows by their dirty bit.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} a The first value
- *     being compared.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} b The second value
- *     being compared.
- * @return {number} A negative number if a < b, 0 if a == b, and a positive
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
+ * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
 function compareRowsByIsDirty(a, b) {
@@ -41,11 +37,9 @@ function compareRowsByIsDirty(a, b) {
 
 /**
  * Compares two db rows by their last load time.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} a The first value
- *     being compared.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} b The second value
- *     being compared.
- * @return {number} A negative number if a < b, 0 if a == b, and a positive
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
+ * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
 function compareRowsByLastLoaded(a, b) {
@@ -54,11 +48,9 @@ function compareRowsByLastLoaded(a, b) {
 
 /**
  * Compares two db rows by their CPU usage.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} a The first value
- *     being compared.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} b The second value
- *     being compared.
- * @return {number} A negative number if a < b, 0 if a == b, and a positive
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
+ * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
 function compareRowsByCpuUsage(a, b) {
@@ -71,11 +63,9 @@ function compareRowsByCpuUsage(a, b) {
 
 /**
  * Compares two db rows by their memory usage.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} a The first value
- *     being compared.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} b The second value
- *     being compared.
- * @return {number} A negative number if a < b, 0 if a == b, and a positive
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
+ * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
 function compareRowsByMemoryUsage(a, b) {
@@ -88,11 +78,9 @@ function compareRowsByMemoryUsage(a, b) {
 
 /**
  * Compares two db rows by their load duration.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} a The first value
- *     being compared.
- * @param {discards.mojom.SiteCharacteristicsDatabaseEntry} b The second value
- *     being compared.
- * @return {number} A negative number if a < b, 0 if a == b, and a positive
+ * @param {SiteDataEntry} a The first value being compared.
+ * @param {SiteDataEntry} b The second value being compared.
+ * @return {number} A negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
 function compareRowsByLoadDuration(a, b) {
@@ -107,10 +95,9 @@ function compareRowsByLoadDuration(a, b) {
 
 /**
  * @param {string} sortKey The sort key to get a function for.
- * @return {function(discards.mojom.SiteCharacteristicsDatabaseEntry,
-                     discards.mojom.SiteCharacteristicsDatabaseEntry): number}
+ * @return {function(SiteDataEntry, SiteDataEntry): number}
  *     A comparison function that compares two tab infos, returns
- *     negative number if a < b, 0 if a == b, and a positive
+ *     negative number if a < b, 0 if a === b, and a positive
  *     number if a > b.
  */
 function getSortFunctionForKey(sortKey) {
@@ -196,7 +183,7 @@ Polymer({
   properties: {
     /**
      * List of database rows.
-     * @private {?Array<!discards.mojom.SiteCharacteristicsDatabaseEntry>}
+     * @private {?Array<!SiteDataEntry>}
      */
     rows_: {
       type: Array,
@@ -204,7 +191,7 @@ Polymer({
 
     /**
      * The database size response.
-     * @private {!discards.mojom.SiteCharacteristicsDatabaseSize}
+     * @private {!SiteDataDatabaseSize}
      */
     size_: {
       type: Object,
@@ -229,14 +216,14 @@ Polymer({
   /** @private {!Object} */
   requestedOrigins_: {},
 
-  /** @private {?discards.mojom.DetailsProviderRemote} */
-  discardsDetailsProvider_: null,
+  /** @private {?SiteDataProviderRemote} */
+  siteDataProvider_: null,
 
   /** @override */
-  ready: function() {
+  ready() {
     this.setSortKey('origin');
     this.requestedOrigins_ = {};
-    this.discardsDetailsProvider_ = getOrCreateDetailsProvider();
+    this.siteDataProvider_ = getOrCreateSiteDataProvider();
 
     // Specifies the update interval of the table, in ms.
     const UPDATE_INTERVAL_MS = 1000;
@@ -256,7 +243,7 @@ Polymer({
   },
 
   /** @override */
-  detached: function() {
+  detached() {
     // Clear the update timers to avoid memory leaks.
     clearInterval(this.updateTableTimer_);
     this.updateTableTimer_ = 0;
@@ -268,11 +255,10 @@ Polymer({
    * Issues a request for the data and renders on response.
    * @private
    */
-  updateDbRows_: function() {
-    this.discardsDetailsProvider_
-        .getSiteCharacteristicsDatabase(Object.keys(this.requestedOrigins_))
+  updateDbRows_() {
+    this.siteDataProvider_.getSiteDataArray(Object.keys(this.requestedOrigins_))
         .then(response => {
-          // Bail if the SiteCharacteristicsDatabase is turned off.
+          // Bail if the SiteData database is turned off.
           if (!response.result) {
             return;
           }
@@ -291,7 +277,7 @@ Polymer({
    * Adds the current new origin to requested origins and starts an update.
    * @private
    */
-  addNewOrigin_: function() {
+  addNewOrigin_() {
     this.requestedOrigins_[this.newOrigin_] = true;
     this.newOrigin_ = '';
     this.updateDbRows_();
@@ -302,7 +288,7 @@ Polymer({
    * origins.
    * @private
    */
-  onAddOriginClick_: function() {
+  onAddOriginClick_() {
     this.addNewOrigin_();
 
     // Set the focus back to the input field for convenience.
@@ -313,7 +299,7 @@ Polymer({
    * A key-down handler that adds the current new origin to requested origins.
    * @private
    */
-  onOriginKeydown_: function(e) {
+  onOriginKeydown_(e) {
     if (e.key === 'Enter' && this.isValidOrigin_(this.newOrigin_)) {
       this.addNewOrigin_();
       e.stopPropagation();
@@ -324,15 +310,14 @@ Polymer({
    * Issues a request for the database sizes and renders on response.
    * @private
    */
-  updateDbSizes_: function() {
-    this.discardsDetailsProvider_.getSiteCharacteristicsDatabaseSize().then(
-        response => {
-          // Bail if the SiteCharacteristicsDatabase is turned off.
-          if (!response.dbSize) {
-            return;
-          }
-          this.size_ = response.dbSize;
-        });
+  updateDbSizes_() {
+    this.siteDataProvider_.getSiteDataDatabaseSize().then(response => {
+      // Bail if the SiteData database is turned off.
+      if (!response.dbSize) {
+        return;
+      }
+      this.size_ = response.dbSize;
+    });
   },
 
   /**
@@ -342,11 +327,11 @@ Polymer({
    * @param {boolean} sortReverse True if sorting is reversed.
    * @return {function({Object}, {Object}): number}
    *     A comparison function that compares two tab infos, returns
-   *     negative number if a < b, 0 if a == b, and a positive
+   *     negative number if a < b, 0 if a === b, and a positive
    *     number if a > b.
    * @private
    */
-  computeSortFunction_: function(sortKey, sortReverse) {
+  computeSortFunction_(sortKey, sortReverse) {
     // Polymer 2 may invoke multi-property observers before all properties
     // are defined.
     if (!sortKey) {
@@ -365,7 +350,7 @@ Polymer({
    * @return {boolean} Whether the origin is valid.
    * @private
    */
-  isValidOrigin_: function(origin) {
+  isValidOrigin_(origin) {
     const re = /(https?|ftp):\/\/[a-z+.]/;
 
     return re.test(origin);
@@ -376,7 +361,7 @@ Polymer({
    * @return {boolean} Whether the origin is valid or empty.
    * @private
    */
-  isEmptyOrValidOrigin_: function(origin) {
+  isEmptyOrValidOrigin_(origin) {
     return !origin || this.isValidOrigin_(origin);
   },
 
@@ -385,7 +370,7 @@ Polymer({
    * @return {string} A display string representing value.
    * @private
    */
-  boolToString_: function(value) {
+  boolToString_(value) {
     return boolToString(value);
   },
 
@@ -396,18 +381,17 @@ Polymer({
    *     occurred.
    * @private
    */
-  lastUseToString_: function(time) {
+  lastUseToString_(time) {
     const nowSecondsFromEpoch = Math.round(Date.now() / 1000);
     return durationToString(nowSecondsFromEpoch - time);
   },
 
   /**
-   * @param {?discards.mojom.SiteCharacteristicsFeature} feature The feature
-   *     in question.
+   * @param {?SiteDataFeature} feature The feature in question.
    * @return {string} A human-readable string representing the feature.
    * @private
    */
-  featureToString_: function(feature) {
+  featureToString_(feature) {
     if (!feature) {
       return 'N/A';
     }
@@ -415,11 +399,12 @@ Polymer({
     if (feature.useTimestamp) {
       const nowSecondsFromEpoch = Math.round(Date.now() / 1000);
       return 'Used ' +
-          durationToString(nowSecondsFromEpoch - feature.useTimestamp);
+          durationToString(
+                 Number(BigInt(nowSecondsFromEpoch) - feature.useTimestamp));
     }
 
     if (feature.observationDuration) {
-      return secondsToString(feature.observationDuration);
+      return secondsToString(Number(feature.observationDuration));
     }
 
     return 'N/A';
@@ -432,7 +417,7 @@ Polymer({
    *     unavailable.
    * @private
    */
-  getLoadTimeEstimate_: function(item, propertyName) {
+  getLoadTimeEstimate_(item, propertyName) {
     return formatLoadTimeEstimate(item, propertyName);
   },
 
@@ -442,8 +427,8 @@ Polymer({
    * @return {string} A human readable string representing value.
    * @private
    */
-  kilobytesToString_: function(value) {
-    return value == -1 ? 'N/A' : kilobytesToString(value);
+  kilobytesToString_(value) {
+    return value === -1 ? 'N/A' : kilobytesToString(value);
   },
 
   /**
@@ -451,7 +436,7 @@ Polymer({
    * @return {string} A human readable string representing value.
    * @private
    */
-  optionalIntegerToString_: function(value) {
-    return value == -1 ? 'N/A' : value.toString();
+  optionalIntegerToString_(value) {
+    return value === -1 ? 'N/A' : value.toString();
   },
 });

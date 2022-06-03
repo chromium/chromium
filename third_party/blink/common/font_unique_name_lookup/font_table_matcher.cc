@@ -28,7 +28,7 @@ FontTableMatcher::MemoryMappingFromFontUniqueNameTable(
   return mapped_region.region.Map();
 }
 
-base::Optional<FontTableMatcher::MatchResult> FontTableMatcher::MatchName(
+absl::optional<FontTableMatcher::MatchResult> FontTableMatcher::MatchName(
     const std::string& name_request) const {
   std::string folded_name_request = IcuFoldCase(name_request);
 
@@ -52,7 +52,7 @@ base::Optional<FontTableMatcher::MatchResult> FontTableMatcher::MatchName(
 
   if (found_font.file_path().empty())
     return {};
-  return base::Optional<MatchResult>(
+  return absl::optional<MatchResult>(
       {found_font.file_path(), found_font.ttc_index()});
 }
 

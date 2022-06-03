@@ -9,13 +9,14 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/task_runner.h"
+#include "base/metrics/histogram_macros.h"
+#include "base/task/scoped_set_task_priority_for_current_thread.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 
 namespace base {
@@ -30,8 +31,42 @@ void RunOrPostToTaskRunner(scoped_refptr<SequencedTaskRunner> task_runner,
     task_runner->PostTask(FROM_HERE, std::move(closure));
 }
 
-// TODO(https://crbug.com/1009795): Remove this once we have established whether
-// off-sequence cancelation is worthwhile.
+// TODO(https://crbug.com/1009795): Remove these once we have established
+// whether off-sequence cancelation is worthwhile.
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class TaskStatus {
+  kSameSequenceLive = 0,
+  kOffSequenceLive = 1,
+  kSameSequenceCanceled = 2,
+  kOffSequenceCanceled = 3,
+  kMaxValue = kOffSequenceCanceled,
+};
+
+void UmaRecordTaskDuration(bool same_sequence,
+                           bool background,
+                           bool canceled,
+                           TimeDelta duration) {
+#define DECLARE_HISTOGRAM(suffix)                              \
+  Histogram::FactoryTimeGet(                                   \
+      "Scheduler.CancelableTaskTracker.TaskDuration2_" suffix, \
+      Milliseconds(1), Seconds(10), 50, Histogram::kUmaTargetedHistogramFlag)
+
+  static HistogramBase* histograms[] = {
+      DECLARE_HISTOGRAM("LiveForegroundOffSequence"),
+      DECLARE_HISTOGRAM("LiveForegroundSameSequence"),
+      DECLARE_HISTOGRAM("LiveBackgroundOffSequence"),
+      DECLARE_HISTOGRAM("LiveBackgroundSameSequence"),
+      DECLARE_HISTOGRAM("CanceledForegroundOffSequence"),
+      DECLARE_HISTOGRAM("CanceledForegroundSameSequence"),
+      DECLARE_HISTOGRAM("CanceledBackgroundOffSequence"),
+      DECLARE_HISTOGRAM("CanceledBackgroundSameSequence")};
+
+  int i = (same_sequence ? 1 : 0) + (background ? 2 : 0) + (canceled ? 4 : 0);
+  histograms[i]->AddTimeMillisecondsGranularity(duration);
+}
+
 const base::Feature kAllowOffSequenceTaskCancelation{
     "AllowOffSequenceTaskCancelation", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -167,14 +202,37 @@ void CancelableTaskTracker::RunIfNotCanceled(
     const scoped_refptr<SequencedTaskRunner>& origin_task_runner,
     const scoped_refptr<TaskCancellationFlag>& flag,
     OnceClosure task) {
-  // TODO(https://crbug.com/1009795): Ignore off-sequence cancellation, to
-  // evaluate whether it is a worthwhile optimization.
-  if (flag->data.IsSet() &&
-      (AllowOffSequenceTaskCancelation() ||
-       origin_task_runner->RunsTasksInCurrentSequence())) {
+  // TODO(https://crbug.com/1009795): Record durations for executed tasks,
+  // correlated with whether the task runs on a background or foreground
+  // sequence, and whether it is the same sequence as the CancelableTaskTracker.
+  // Also correlate with whether the task was run despite being canceled, to
+  // allow an experiment to assess the value of off-sequence cancelation.
+
+  // Record canceled & off-sequence status for all tasks.
+  const bool was_canceled = flag->data.IsSet();
+  const bool same_sequence = origin_task_runner->RunsTasksInCurrentSequence();
+  const TaskStatus task_status =
+      was_canceled ? (same_sequence ? TaskStatus::kSameSequenceCanceled
+                                    : TaskStatus::kOffSequenceCanceled)
+                   : (same_sequence ? TaskStatus::kSameSequenceLive
+                                    : TaskStatus::kOffSequenceLive);
+  UMA_HISTOGRAM_ENUMERATION("Scheduler.CancelableTaskTracker.TaskStatus",
+                            task_status);
+
+  // Skip tasks if they are canceled, taking into account the off-sequence
+  // cancelation experiment.
+  const bool skip_task =
+      was_canceled && (AllowOffSequenceTaskCancelation() || same_sequence);
+  if (skip_task)
     return;
-  }
+
+  // Run the task and record its duration.
+  const TimeTicks before_task_ticks = TimeTicks::Now();
   std::move(task).Run();
+  const TimeDelta duration = TimeTicks::Now() - before_task_ticks;
+  const bool is_background =
+      internal::GetTaskPriorityForCurrentThread() < TaskPriority::USER_VISIBLE;
+  UmaRecordTaskDuration(same_sequence, is_background, was_canceled, duration);
 }
 
 // static

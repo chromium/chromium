@@ -5,6 +5,7 @@
 #include "remoting/client/ui/desktop_viewport.h"
 
 #include <algorithm>
+#include <cmath>
 
 #include "base/logging.h"
 

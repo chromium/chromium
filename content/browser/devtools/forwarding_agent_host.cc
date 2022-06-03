@@ -17,10 +17,10 @@ ForwardingAgentHost::ForwardingAgentHost(
   NotifyCreated();
 }
 
-ForwardingAgentHost::~ForwardingAgentHost() {
-}
+ForwardingAgentHost::~ForwardingAgentHost() = default;
 
-bool ForwardingAgentHost::AttachSession(DevToolsSession* session) {
+bool ForwardingAgentHost::AttachSession(DevToolsSession* session,
+                                        bool acquire_wake_lock) {
   session->TurnIntoExternalProxy(delegate_.get());
   return true;
 }
@@ -61,6 +61,10 @@ bool ForwardingAgentHost::Close() {
 
 base::TimeTicks ForwardingAgentHost::GetLastActivityTime() {
   return delegate_->GetLastActivityTime();
+}
+
+std::string ForwardingAgentHost::GetDescription() {
+  return delegate_->GetDescription();
 }
 
 }  // content

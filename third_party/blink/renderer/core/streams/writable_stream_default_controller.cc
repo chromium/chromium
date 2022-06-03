@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_writable_stream_default_controller.h"
 #include "third_party/blink/renderer/core/streams/miscellaneous_operations.h"
 #include "third_party/blink/renderer/core/streams/promise_handler.h"
@@ -13,19 +14,20 @@
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
 WritableStreamDefaultController* WritableStreamDefaultController::From(
+    ScriptState* script_state,
     ScriptValue controller) {
-  DCHECK(controller.IsObject());
-  return V8WritableStreamDefaultController::ToImpl(
-      controller.V8Value().As<v8::Object>());
+  CHECK(controller.IsObject());
+  auto* controller_impl =
+      V8WritableStreamDefaultController::ToImplWithTypeCheck(
+          script_state->GetIsolate(), controller.V8Value().As<v8::Object>());
+  CHECK(controller_impl);
+  return controller_impl;
 }
 
 // Only used internally. Not reachable from JavaScript.
@@ -153,8 +155,8 @@ void WritableStreamDefaultController::SetUp(
       // 16. Upon fulfillment of startPromise
       //      a. Assert: stream.[[state]] is "writable" or "erroring".
       const auto state = stream_->GetState();
-      DCHECK(state == WritableStream::kWritable ||
-             state == WritableStream::kErroring);
+      CHECK(state == WritableStream::kWritable ||
+            state == WritableStream::kErroring);
 
       //      b. Set controller.[[started]] to true.
       WritableStreamDefaultController* controller = stream_->Controller();
@@ -166,7 +168,7 @@ void WritableStreamDefaultController::SetUp(
                                                             controller);
     }
 
-    void Trace(Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       PromiseHandler::Trace(visitor);
     }
@@ -184,8 +186,8 @@ void WritableStreamDefaultController::SetUp(
       // 17. Upon rejection of startPromise with reason r,
       //      a. Assert: stream.[[state]] is "writable" or "erroring".
       const auto state = stream_->GetState();
-      DCHECK(state == WritableStream::kWritable ||
-             state == WritableStream::kErroring);
+      CHECK(state == WritableStream::kWritable ||
+            state == WritableStream::kErroring);
 
       //      b. Set controller.[[started]] to true.
       WritableStreamDefaultController* controller = stream_->Controller();
@@ -195,7 +197,7 @@ void WritableStreamDefaultController::SetUp(
       WritableStream::DealWithRejection(GetScriptState(), stream_, r);
     }
 
-    void Trace(Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       PromiseHandler::Trace(visitor);
     }
@@ -229,7 +231,9 @@ void WritableStreamDefaultController::SetUpFromUnderlyingSink(
   // This method is only called when a WritableStream is being constructed by
   // JavaScript. So the execution context should be valid and this call should
   // not crash.
-  auto controller_value = ToV8(controller, script_state);
+  auto controller_value = ToV8Traits<WritableStreamDefaultController>::ToV8(
+                              script_state, controller)
+                              .ToLocalChecked();
 
   //  3. Let startAlgorithm be the following steps:
   //      a. Return ? InvokeOrNoop(underlyingSink, "start", « controller »).
@@ -392,7 +396,7 @@ void WritableStreamDefaultController::ErrorIfNeeded(
   }
 }
 
-void WritableStreamDefaultController::Trace(Visitor* visitor) {
+void WritableStreamDefaultController::Trace(Visitor* visitor) const {
   visitor->Trace(abort_algorithm_);
   visitor->Trace(close_algorithm_);
   visitor->Trace(controlled_writable_stream_);
@@ -511,7 +515,7 @@ void WritableStreamDefaultController::ProcessClose(
       WritableStream::FinishInFlightClose(GetScriptState(), stream_);
     }
 
-    void Trace(Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       PromiseHandler::Trace(visitor);
     }
@@ -533,7 +537,7 @@ void WritableStreamDefaultController::ProcessClose(
                                                    reason);
     }
 
-    void Trace(Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       PromiseHandler::Trace(visitor);
     }
@@ -582,8 +586,8 @@ void WritableStreamDefaultController::ProcessWrite(
       const auto state = stream_->GetState();
 
       //      c. Assert: state is "writable" or "erroring".
-      DCHECK(state == WritableStream::kWritable ||
-             state == WritableStream::kErroring);
+      CHECK(state == WritableStream::kWritable ||
+            state == WritableStream::kErroring);
 
       //      d. Perform ! DequeueValue(controller).
       controller_->queue_->DequeueValue(script_state->GetIsolate());
@@ -608,7 +612,7 @@ void WritableStreamDefaultController::ProcessWrite(
                                                             controller_);
     }
 
-    void Trace(Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       visitor->Trace(controller_);
       PromiseHandler::Trace(visitor);
@@ -643,7 +647,7 @@ void WritableStreamDefaultController::ProcessWrite(
                                                    reason);
     }
 
-    void Trace(Visitor* visitor) override {
+    void Trace(Visitor* visitor) const override {
       visitor->Trace(stream_);
       visitor->Trace(controller_);
       PromiseHandler::Trace(visitor);

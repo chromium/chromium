@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
@@ -26,6 +25,8 @@ class TabActivitySimulator {
   class TestWebContentsObserver;
 
   TabActivitySimulator();
+  TabActivitySimulator(const TabActivitySimulator&) = delete;
+  TabActivitySimulator& operator=(const TabActivitySimulator&) = delete;
   ~TabActivitySimulator();
 
   // Simulates a navigation to |url| using the given transition type.
@@ -53,8 +54,6 @@ class TabActivitySimulator {
  private:
   // Owns the observers we've created.
   std::vector<std::unique_ptr<TestWebContentsObserver>> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabActivitySimulator);
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_ACTIVITY_SIMULATOR_H_

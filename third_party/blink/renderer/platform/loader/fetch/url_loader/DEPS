@@ -1,0 +1,35 @@
+include_rules = [
+    "+base/atomic_sequence_num.h",
+    "+base/containers/queue.h",
+    "+base/strings/string_piece.h",
+    "+base/threading/sequenced_task_runner_handle.h",
+    "+net/base/registry_controlled_domains/registry_controlled_domain.h",
+    "+net/base/request_priority.h",
+    "+net/base/host_port_pair.h",
+    "+net/cert/cert_status_flags.h",
+    "+net/cert/ct_sct_to_string.h",
+    "+net/cert/x509_certificate.h",
+    "+net/cert/x509_util.h",
+    "+net/ssl/ssl_cipher_suite_names.h",
+    "+net/ssl/ssl_connection_status_flags.h",
+    "+net/ssl/ssl_info.h",
+    "+net/test/cert_test_util.h",
+    "+net/traffic_annotation/network_traffic_annotation.h",
+    "+net/url_request/referrer_policy.h",
+    "+services/network/public/mojom/url_loader.mojom.h",
+    "+services/network/public/mojom/url_response_head.mojom.h",
+    "+third_party/blink/public/mojom/loader/code_cache.mojom-shared.h"
+]
+
+specific_include_rules = {
+    "request_conversion.cc" : [
+        "+media/media_buildflags.h"
+    ],
+    "sync_load_context_unittest.cc": [
+        "+base/threading/thread.h",
+        "+services/network/test/test_url_loader_factory.h"
+    ],
+    "web_url_loader_unittest.cc": [
+        "+net/test/cert_test_util.h"
+    ],
+}

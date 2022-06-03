@@ -5,8 +5,6 @@
 #ifndef PPAPI_PROXY_GAMEPAD_RESOURCE_H_
 #define PPAPI_PROXY_GAMEPAD_RESOURCE_H_
 
-#include <memory>
-
 #include "base/compiler_specific.h"
 #include "base/macros.h"
 #include "base/memory/shared_memory_mapping.h"
@@ -30,6 +28,10 @@ class PPAPI_PROXY_EXPORT GamepadResource
         public thunk::PPB_Gamepad_API {
  public:
   GamepadResource(Connection connection, PP_Instance instance);
+
+  GamepadResource(const GamepadResource&) = delete;
+  GamepadResource& operator=(const GamepadResource&) = delete;
+
   ~GamepadResource() override;
 
   // Resource implementation.
@@ -46,8 +48,6 @@ class PPAPI_PROXY_EXPORT GamepadResource
 
   // Last data returned so we can use this in the event of a read failure.
   PP_GamepadsSampleData last_read_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadResource);
 };
 
 }  // namespace proxy

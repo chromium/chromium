@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/cloud_policy_util.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 
 namespace em = enterprise_management;
@@ -38,12 +39,16 @@ CloudPolicyService::CloudPolicyService(const std::string& policy_type,
 }
 
 CloudPolicyService::~CloudPolicyService() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   client_->RemovePolicyTypeToFetch(policy_type_, settings_entity_id_);
   client_->RemoveObserver(this);
   store_->RemoveObserver(this);
 }
 
 void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // If the client is not registered or is unregistering, bail out.
   if (!client_->is_registered() || unregister_state_ != UNREGISTER_NONE) {
     std::move(callback).Run(false);
@@ -56,7 +61,9 @@ void CloudPolicyService::RefreshPolicy(RefreshPolicyCallback callback) {
   client_->FetchPolicy();
 }
 
-void CloudPolicyService::Unregister(const UnregisterCallback& callback) {
+void CloudPolicyService::Unregister(UnregisterCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Abort all pending refresh requests.
   if (refresh_state_ != REFRESH_NONE)
     RefreshCompleted(false);
@@ -65,12 +72,14 @@ void CloudPolicyService::Unregister(const UnregisterCallback& callback) {
   if (unregister_state_  != UNREGISTER_NONE)
     UnregisterCompleted(false);
 
-  unregister_callback_ = callback;
+  unregister_callback_ = std::move(callback);
   unregister_state_ = UNREGISTER_PENDING;
   client_->Unregister();
 }
 
 void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (client_->status() != DM_STATUS_SUCCESS) {
     RefreshCompleted(false);
     return;
@@ -89,11 +98,17 @@ void CloudPolicyService::OnPolicyFetched(CloudPolicyClient* client) {
 }
 
 void CloudPolicyService::OnRegistrationStateChanged(CloudPolicyClient* client) {
-  if (unregister_state_ == UNREGISTER_PENDING)
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (unregister_state_ == UNREGISTER_PENDING) {
+    DCHECK(!client->is_registered());
     UnregisterCompleted(true);
+  }
 }
 
 void CloudPolicyService::OnClientError(CloudPolicyClient* client) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (refresh_state_ == REFRESH_POLICY_FETCH)
     RefreshCompleted(false);
   if (unregister_state_ == UNREGISTER_PENDING)
@@ -101,6 +116,8 @@ void CloudPolicyService::OnClientError(CloudPolicyClient* client) {
 }
 
 void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   // Update the client with state from the store.
   const em::PolicyData* policy(store_->policy());
 
@@ -119,8 +136,7 @@ void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
     } else if (policy_type_ == dm_protocol::kChromeDevicePolicyType) {
       UMA_HISTOGRAM_CUSTOM_COUNTS("Enterprise.PolicyUpdatePeriod.Device",
                                   age.InDays(), 1, 1000, 100);
-    } else if (policy_type_ ==
-               dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
+    } else if (IsMachineLevelUserCloudPolicyType(policy_type_)) {
       UMA_HISTOGRAM_CUSTOM_COUNTS(
           "Enterprise.PolicyUpdatePeriod.MachineLevelUser", age.InDays(), 1,
           1000, 100);
@@ -155,6 +171,8 @@ void CloudPolicyService::OnStoreLoaded(CloudPolicyStore* store) {
 }
 
 void CloudPolicyService::OnStoreError(CloudPolicyStore* store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (refresh_state_ == REFRESH_POLICY_STORE)
     RefreshCompleted(false);
   CheckInitializationCompleted();
@@ -162,6 +180,8 @@ void CloudPolicyService::OnStoreError(CloudPolicyStore* store) {
 }
 
 void CloudPolicyService::ReportValidationResult(CloudPolicyStore* store) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   const CloudPolicyValidatorBase::ValidationResult* validation_result =
       store->validation_result();
   if (!validation_result)
@@ -219,6 +239,11 @@ void CloudPolicyService::RefreshCompleted(bool success) {
   if (!initial_policy_refresh_result_.has_value())
     initial_policy_refresh_result_ = success;
 
+  // If there was an error while fetching the policies the first time, assume
+  // that there are no policies until the next retry.
+  if (!success)
+    store_->SetFirstPoliciesLoaded(true);
+
   // Clear state and |refresh_callbacks_| before actually invoking them, s.t.
   // triggering new policy fetches behaves as expected.
   std::vector<RefreshPolicyCallback> callbacks;
@@ -237,15 +262,18 @@ void CloudPolicyService::UnregisterCompleted(bool success) {
     LOG(ERROR) << "Unregister request failed.";
 
   unregister_state_ = UNREGISTER_NONE;
-  unregister_callback_.Run(success);
-  unregister_callback_ = UnregisterCallback();  // Reset.
+  std::move(unregister_callback_).Run(success);
 }
 
 void CloudPolicyService::AddObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   observers_.AddObserver(observer);
 }
 
 void CloudPolicyService::RemoveObserver(Observer* observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   observers_.RemoveObserver(observer);
 }
 

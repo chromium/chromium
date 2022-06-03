@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<!--
+@AURALINUX-ALLOW:editable
+@AURALINUX-ALLOW:multi-line
+@BLINK-ALLOW:nonAtomicTextFieldRoot=true
+@BLINK-ALLOW:editable*
+@BLINK-ALLOW:richlyEditable*
+@WIN-ALLOW:IA2_STATE_EDITABLE
+-->
+<html>
+<body>
+<div role="textbox" aria-label="not editable">
+  <p>Foo</p>
+  <div role="textbox" aria-label="nested, not editable, rich">
+    <p>Bar</p>
+  </div>
+  <div role="textbox" aria-label="nested, not editable, plain">Bar</div>
+  <div role="textbox" contenteditable aria-label="nested, editable, rich">
+    <p>Baz</p>
+  </div>
+  <div role="textbox" contenteditable aria-label="nested, editable, plain">Baz</div>
+</div>
+<div role="textbox" contenteditable aria-label="editable">
+  <p>Foo</p>
+  <div role="textbox" aria-label="nested, not editable, rich">
+    <p>Bar</p>
+  </div>
+  <div role="textbox" aria-label="nested, not editable, plain">Bar</div>
+  <div role="textbox" contenteditable aria-label="nested, editable, rich">
+    <p>Baz</p>
+  </div>
+  <div role="textbox" contenteditable aria-label="nested, editable, plain">Baz</div>
+</div>
+</body>
+</html>

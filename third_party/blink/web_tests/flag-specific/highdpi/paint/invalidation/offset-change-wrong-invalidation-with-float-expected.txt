@@ -1,0 +1,31 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [72, 138, 60, 27]
+      ]
+    },
+    {
+      "name": "LayoutInline (relative positioned) SPAN id='placeholder'",
+      "drawsContent": false,
+      "backfaceVisibility": "hidden",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [72, 63, 0, 1]
+      ]
+    }
+  ]
+}
+

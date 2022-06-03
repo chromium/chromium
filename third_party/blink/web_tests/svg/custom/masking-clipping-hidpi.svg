@@ -13,6 +13,10 @@
     }
     </script>
     <style>
+        /* This test is not concerned with scrollbar differences. */
+        :root {
+            overflow: hidden;
+        }
         text {
             -webkit-font-smoothing: antialiased;
         }

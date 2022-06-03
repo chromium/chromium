@@ -1,46 +1,45 @@
 <!DOCTYPE html>
 <script src="../../resources/testharness.js"></script>
 <script src="../../resources/testharnessreport.js"></script>
-
+<iframe id="iframe1" src="../resources/undo-iframe-location-change-src.html"></iframe>
 <script>
-function part1() {
-    add_result_callback(function(result) {
-        if (result.status == result.PASS)
-            window.location = window.location.toString() + '?part2';
-    });
+const t = async_test();
 
-    test(function() {
-        frames['iframe'].document.body.focus();
-        frames['iframe'].document.execCommand('InsertText', false, 'c');
+const iframe1 = document.getElementById('iframe1');
 
-        assert_equals(frames['iframe'].document.body.innerText, 'c',
-                      'Text should be inserted into the subframe.');
+// Note: "load" event for "iframe1" is dispatched twice:
+//  1. Main document load
+//  2. Set window1.location
+iframe1.addEventListener('load', t.step_func(() => {
+    const window1 = iframe1.contentWindow;
+    const document1 = window1.document;
 
+    const iframe2 = document1.getElementById('iframe2');
+    const window2 = iframe2.contentWindow;
+    const document2 = window2.document;
+    const target = document2.getElementById('target');
+
+    if (window1.location.toString().indexOf('?part2') === -1) {
+        // Checks with modification in the subframe
+        target.focus();
+        document2.execCommand('InsertText', false, 'x');
+        assert_equals(target.innerText, 'x',
+                     'Text should be inserted into the subframe.');
         assert_false(document.queryCommandEnabled('Undo'),
-                     'Undo should not be enabled in main document by text insertion in subframe.');
-    }, 'Checks with modification in the subframe.');
-}
-
-function part2() {
-    test(function() {
-      assert_equals(frames['iframe'].document.body.innerText, '',
-                    'Subframe should not have old content after navigaiton.');
-
-      assert_false(document.queryCommandEnabled('Undo'),
-                   'Undo should not be enabled after the location changed.');
-    }, 'Checks after the subframe has navigated');
-}
-
-function runTest() {
-    if (window.location.toString().indexOf("?part2") == -1) {
-        part1();
-    } else {
-        part2();
+                    'Undo should not be enabled in main document');
+        assert_false(document1.queryCommandEnabled('Undo'),
+                    'Undo should not be enabled in outer IFRAME');
+        window1.location = window1.location.toString() + '?part2';
+        return;
     }
-}
-</script>
 
-<body onload="runTest()">
-<iframe name="iframe" src="../resources/contenteditable-iframe-src.html"></iframe>
-<div id="log"></div>
-</body>
+    // Checks after the subframe has navigated
+    assert_equals(target.innerText, '',
+                 'IFRAME should not have old content after navigation.');
+    assert_false(document2.queryCommandEnabled('Undo'),
+                'Undo should not be enabled after the location changed');
+    assert_false(document1.queryCommandEnabled('Undo'),
+                'Undo should not be enabled in outer IFRAME after navigation');
+    t.done();
+}));
+</script>

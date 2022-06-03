@@ -29,8 +29,8 @@
 
 #include "third_party/blink/renderer/core/html/track/vtt/vtt_cue.h"
 
-#include "base/stl_util.h"
-#include "third_party/blink/renderer/bindings/core/v8/double_or_auto_keyword.h"
+#include "base/cxx17_backports.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_autokeyword_double.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document_fragment.h"
@@ -72,11 +72,6 @@ static const CSSValueID kDisplayAlignmentMap[] = {
 static_assert(base::size(kDisplayAlignmentMap) == VTTCue::kNumberOfAlignments,
               "displayAlignmentMap should have the same number of elements as "
               "VTTCue::NumberOfAlignments");
-
-static const String& AutoKeyword() {
-  DEFINE_STATIC_LOCAL(const String, auto_string, ("auto"));
-  return auto_string;
-}
 
 static const String& StartKeyword() {
   DEFINE_STATIC_LOCAL(const String, start, ("start"));
@@ -145,7 +140,7 @@ VTTCueBackgroundBox::VTTCueBackgroundBox(Document& document)
   SetShadowPseudoId(TextTrackCue::CueShadowPseudoId());
 }
 
-void VTTCueBackgroundBox::Trace(blink::Visitor* visitor) {
+void VTTCueBackgroundBox::Trace(Visitor* visitor) const {
   visitor->Trace(track_);
   HTMLDivElement::Trace(visitor);
 }
@@ -179,11 +174,11 @@ void VTTCueBox::ApplyCSSProperties(
   const FloatPoint& position = display_parameters.position;
 
   // the 'top' property must be set to top,
-  SetInlineStyleProperty(CSSPropertyID::kTop, position.Y(),
+  SetInlineStyleProperty(CSSPropertyID::kTop, position.y(),
                          CSSPrimitiveValue::UnitType::kPercentage);
 
   // the 'left' property must be set to left
-  SetInlineStyleProperty(CSSPropertyID::kLeft, position.X(),
+  SetInlineStyleProperty(CSSPropertyID::kLeft, position.x(),
                          CSSPrimitiveValue::UnitType::kPercentage);
 
   // the 'width' property must be set to width, and the 'height' property  must
@@ -220,7 +215,7 @@ void VTTCueBox::ApplyCSSProperties(
     // other.
     SetInlineStyleProperty(CSSPropertyID::kTransform,
                            String::Format("translate(-%.2f%%, -%.2f%%)",
-                                          position.X(), position.Y()));
+                                          position.x(), position.y()));
     SetInlineStyleProperty(CSSPropertyID::kWhiteSpace, CSSValueID::kPre);
   }
 
@@ -237,7 +232,8 @@ LayoutObject* VTTCueBox::CreateLayoutObject(const ComputedStyle& style,
   if (style.GetPosition() == EPosition::kRelative)
     return HTMLDivElement::CreateLayoutObject(style, legacy);
 
-  return new LayoutVTTCue(this, snap_to_lines_position_);
+  UseCounter::Count(GetDocument(), WebFeature::kLegacyLayoutByVTTCue);
+  return MakeGarbageCollected<LayoutVTTCue>(this, snap_to_lines_position_);
 }
 
 VTTCue::VTTCue(Document& document,
@@ -319,29 +315,35 @@ bool VTTCue::LineIsAuto() const {
   return std::isnan(line_position_);
 }
 
-void VTTCue::line(DoubleOrAutoKeyword& result) const {
-  if (LineIsAuto())
-    result.SetAutoKeyword(AutoKeyword());
-  else
-    result.SetDouble(line_position_);
+V8UnionAutoKeywordOrDouble* VTTCue::line() const {
+  if (LineIsAuto()) {
+    return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(
+        V8AutoKeyword(V8AutoKeyword::Enum::kAuto));
+  }
+  return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(line_position_);
 }
 
-void VTTCue::setLine(const DoubleOrAutoKeyword& position) {
+void VTTCue::setLine(const V8UnionAutoKeywordOrDouble* position) {
   // http://dev.w3.org/html5/webvtt/#dfn-vttcue-line
   // On setting, the WebVTT cue line must be set to the new value; if the new
   // value is the string "auto", then it must be interpreted as the special
   // value auto.  ("auto" is translated to NaN.)
-  double line_position;
-  if (position.IsAutoKeyword()) {
-    if (LineIsAuto())
-      return;
-    line_position = std::numeric_limits<double>::quiet_NaN();
-  } else {
-    DCHECK(position.IsDouble());
-    line_position = position.GetAsDouble();
-    if (line_position_ == line_position)
-      return;
+  double line_position = 0;
+  switch (position->GetContentType()) {
+    case V8UnionAutoKeywordOrDouble::ContentType::kAutoKeyword: {
+      if (LineIsAuto())
+        return;
+      line_position = std::numeric_limits<double>::quiet_NaN();
+      break;
+    }
+    case V8UnionAutoKeywordOrDouble::ContentType::kDouble: {
+      line_position = position->GetAsDouble();
+      if (line_position_ == line_position)
+        return;
+      break;
+    }
   }
+
   CueWillChange();
   line_position_ = line_position;
   CueDidChange();
@@ -351,32 +353,37 @@ bool VTTCue::TextPositionIsAuto() const {
   return std::isnan(text_position_);
 }
 
-void VTTCue::position(DoubleOrAutoKeyword& result) const {
-  if (TextPositionIsAuto())
-    result.SetAutoKeyword(AutoKeyword());
-  else
-    result.SetDouble(text_position_);
+V8UnionAutoKeywordOrDouble* VTTCue::position() const {
+  if (TextPositionIsAuto()) {
+    return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(
+        V8AutoKeyword(V8AutoKeyword::Enum::kAuto));
+  }
+  return MakeGarbageCollected<V8UnionAutoKeywordOrDouble>(text_position_);
 }
 
-void VTTCue::setPosition(const DoubleOrAutoKeyword& position,
+void VTTCue::setPosition(const V8UnionAutoKeywordOrDouble* position,
                          ExceptionState& exception_state) {
   // http://dev.w3.org/html5/webvtt/#dfn-vttcue-position
   // On setting, if the new value is negative or greater than 100, then an
   // IndexSizeError exception must be thrown. Otherwise, the WebVTT cue
   // position must be set to the new value; if the new value is the string
   // "auto", then it must be interpreted as the special value auto.
-  double text_position;
-  if (position.IsAutoKeyword()) {
-    if (TextPositionIsAuto())
-      return;
-    text_position = std::numeric_limits<double>::quiet_NaN();
-  } else {
-    DCHECK(position.IsDouble());
-    if (IsInvalidPercentage(position.GetAsDouble(), exception_state))
-      return;
-    text_position = position.GetAsDouble();
-    if (text_position_ == text_position)
-      return;
+  double text_position = 0;
+  switch (position->GetContentType()) {
+    case V8UnionAutoKeywordOrDouble::ContentType::kAutoKeyword: {
+      if (TextPositionIsAuto())
+        return;
+      text_position = std::numeric_limits<double>::quiet_NaN();
+      break;
+    }
+    case V8UnionAutoKeywordOrDouble::ContentType::kDouble: {
+      text_position = position->GetAsDouble();
+      if (IsInvalidPercentage(text_position, exception_state))
+        return;
+      if (text_position_ == text_position)
+        return;
+      break;
+    }
   }
 
   CueWillChange();
@@ -693,15 +700,15 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   if (writing_direction_ == kHorizontal) {
     switch (computed_cue_alignment) {
       case kStart:
-        display_parameters.position.SetX(computed_text_position);
+        display_parameters.position.set_x(computed_text_position);
         break;
       case kEnd:
-        display_parameters.position.SetX(computed_text_position -
-                                         display_parameters.size);
+        display_parameters.position.set_x(computed_text_position -
+                                          display_parameters.size);
         break;
       case kCenter:
-        display_parameters.position.SetX(computed_text_position -
-                                         display_parameters.size / 2);
+        display_parameters.position.set_x(computed_text_position -
+                                          display_parameters.size / 2);
         break;
       default:
         NOTREACHED();
@@ -710,15 +717,15 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
     // Cases for writing_direction_ being kVerticalGrowing{Left|Right}
     switch (computed_cue_alignment) {
       case kStart:
-        display_parameters.position.SetY(computed_text_position);
+        display_parameters.position.set_y(computed_text_position);
         break;
       case kEnd:
-        display_parameters.position.SetY(computed_text_position -
-                                         display_parameters.size);
+        display_parameters.position.set_y(computed_text_position -
+                                          display_parameters.size);
         break;
       case kCenter:
-        display_parameters.position.SetY(computed_text_position -
-                                         display_parameters.size / 2);
+        display_parameters.position.set_y(computed_text_position -
+                                          display_parameters.size / 2);
         break;
       default:
         NOTREACHED();
@@ -734,14 +741,14 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
   // list:
   if (!snap_to_lines_) {
     if (writing_direction_ == kHorizontal)
-      display_parameters.position.SetY(computed_line_position);
+      display_parameters.position.set_y(computed_line_position);
     else
-      display_parameters.position.SetX(computed_line_position);
+      display_parameters.position.set_x(computed_line_position);
   } else {
     if (writing_direction_ == kHorizontal)
-      display_parameters.position.SetY(0);
+      display_parameters.position.set_y(0);
     else
-      display_parameters.position.SetX(0);
+      display_parameters.position.set_x(0);
   }
 
   // Step 9 not implemented (margin == 0).
@@ -758,8 +765,6 @@ VTTDisplayParameters VTTCue::CalculateDisplayParameters() const {
 }
 
 void VTTCue::UpdatePastAndFutureNodes(double movie_time) {
-  DEFINE_STATIC_LOCAL(const String, timestamp_tag, ("timestamp"));
-
   DCHECK(IsActive());
 
   // An active cue may still not have a display tree, e.g. if its track is
@@ -780,7 +785,7 @@ void VTTCue::UpdatePastAndFutureNodes(double movie_time) {
     is_past_node = false;
 
   for (Node& child : NodeTraversal::DescendantsOf(*display_tree_)) {
-    if (child.nodeName() == timestamp_tag) {
+    if (child.nodeName() == "timestamp") {
       bool check =
           VTTParser::CollectTimeStamp(child.nodeValue(), current_timestamp);
       DCHECK(check);
@@ -796,6 +801,34 @@ void VTTCue::UpdatePastAndFutureNodes(double movie_time) {
         To<Element>(child).SetIdAttribute(id());
     }
   }
+}
+
+absl::optional<double> VTTCue::GetNextIntraCueTime(double movie_time) const {
+  if (!display_tree_) {
+    return absl::nullopt;
+  }
+
+  // Iterate through children once, since in a well-formed VTTCue
+  // timestamps will always increase.
+  for (Node const& child : NodeTraversal::DescendantsOf(*display_tree_)) {
+    if (child.nodeName() == "timestamp") {
+      double timestamp = -1;
+      bool const check =
+          VTTParser::CollectTimeStamp(child.nodeValue(), timestamp);
+      DCHECK(check);
+
+      if (timestamp > movie_time) {
+        if (timestamp < endTime()) {
+          return timestamp;
+        } else {
+          // Timestamps should never be greater than the end time of the VTTCue.
+          return absl::nullopt;
+        }
+      }
+    }
+  }
+
+  return absl::nullopt;
 }
 
 VTTCueBox* VTTCue::GetDisplayTree() {
@@ -814,7 +847,8 @@ VTTCueBox* VTTCue::GetDisplayTree() {
   CreateVTTNodeTree();
 
   cue_background_box_->RemoveChildren();
-  cue_background_box_->CloneChildNodesFrom(*vtt_node_tree_);
+  cue_background_box_->CloneChildNodesFrom(*vtt_node_tree_,
+                                           CloneChildrenFlag::kClone);
 
   if (!region()) {
     VTTDisplayParameters display_parameters = CalculateDisplayParameters();
@@ -1090,8 +1124,10 @@ void VTTCue::ParseSettings(const VTTRegionMap* region_map,
         break;
       }
       case kRegionId:
-        if (region_map)
-          region_ = region_map->at(input.ExtractString(value_run));
+        if (region_map) {
+          auto it = region_map->find(input.ExtractString(value_run));
+          region_ = it != region_map->end() ? it->value : nullptr;
+        }
         break;
       case kNone:
         break;
@@ -1112,7 +1148,7 @@ Document& VTTCue::GetDocument() const {
   return cue_background_box_->GetDocument();
 }
 
-void VTTCue::Trace(Visitor* visitor) {
+void VTTCue::Trace(Visitor* visitor) const {
   visitor->Trace(region_);
   visitor->Trace(vtt_node_tree_);
   visitor->Trace(cue_background_box_);

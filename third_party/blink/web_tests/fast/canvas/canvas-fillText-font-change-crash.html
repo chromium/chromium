@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<canvas id="target"></canvas>
+<script>
+// https://crbug.com/1051715
+test(() => {
+  const ctx = document.getElementById('target').getContext('2d');
+  ctx.font = '25px custom-font';
+
+  const style = document.createElement('style');
+  style.textContent = '@font-face { font-family: custom-font; src: url(fake-font.woff); }';
+  document.body.appendChild(style);
+
+  ctx.fillText('foo', 0, 0);
+
+  // This is a crash test. Nothing to assert.
+}, '@font-face rule changes should not lead to canvas crash');
+</script>

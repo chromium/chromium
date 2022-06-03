@@ -1,0 +1,2 @@
+AXValueChanged on AXCheckBox AXDescription="My Checkbox"
+AXValueChanged on AXRow AXTitle="Treeitem"

@@ -9,14 +9,13 @@
 #include <string>
 
 #include "base/command_line.h"
-#include "base/strings/string16.h"
 
 namespace chrome_cleaner {
 
 // Registers the application to execute again after a reboot.
 class PostRebootRegistration {
  public:
-  explicit PostRebootRegistration(const base::string16& product_shortname);
+  explicit PostRebootRegistration(const std::wstring& product_shortname);
 
   // Register the current running app to be called post reboot with the provided
   // command line switches. Returns false if failed.
@@ -29,7 +28,7 @@ class PostRebootRegistration {
 
   // Returns the value stored by |RegisterRunOnceOnRestart|, or an empty string
   // if there is none.
-  base::string16 RunOnceOnRestartRegisteredValue();
+  std::wstring RunOnceOnRestartRegisteredValue();
 
   // Fills |out_command_line| with the switches of the post-reboot run by
   // reading from a cleanup-id dependent registry key. The registry key is then
@@ -44,9 +43,9 @@ class PostRebootRegistration {
 
   // Returns the registry key path in which the full post-reboot command line
   // switches can be found.
-  static base::string16 GetPostRebootSwitchKeyPath();
+  static std::wstring GetPostRebootSwitchKeyPath();
 
-  base::string16 product_shortname_;
+  std::wstring product_shortname_;
 };
 
 }  // namespace chrome_cleaner

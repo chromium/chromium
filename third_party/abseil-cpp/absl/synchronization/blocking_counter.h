@@ -20,10 +20,13 @@
 #ifndef ABSL_SYNCHRONIZATION_BLOCKING_COUNTER_H_
 #define ABSL_SYNCHRONIZATION_BLOCKING_COUNTER_H_
 
+#include <atomic>
+
 #include "absl/base/thread_annotations.h"
 #include "absl/synchronization/mutex.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // BlockingCounter
 //
@@ -59,8 +62,7 @@ namespace absl {
 //
 class BlockingCounter {
  public:
-  explicit BlockingCounter(int initial_count)
-      : count_(initial_count), num_waiting_(0) {}
+  explicit BlockingCounter(int initial_count);
 
   BlockingCounter(const BlockingCounter&) = delete;
   BlockingCounter& operator=(const BlockingCounter&) = delete;
@@ -88,10 +90,12 @@ class BlockingCounter {
 
  private:
   Mutex lock_;
-  int count_ ABSL_GUARDED_BY(lock_);
+  std::atomic<int> count_;
   int num_waiting_ ABSL_GUARDED_BY(lock_);
+  bool done_ ABSL_GUARDED_BY(lock_);
 };
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_SYNCHRONIZATION_BLOCKING_COUNTER_H_

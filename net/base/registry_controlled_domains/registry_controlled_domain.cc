@@ -45,7 +45,9 @@
 
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/lookup_string_in_fixed_set.h"
@@ -60,7 +62,7 @@ namespace net {
 namespace registry_controlled_domains {
 
 namespace {
-#include "net/base/registry_controlled_domains/effective_tld_names-inc.cc"
+#include "net/base/registry_controlled_domains/effective_tld_names-reversed-inc.cc"
 
 // See make_dafsa.py for documentation of the generated dafsa byte array.
 
@@ -75,6 +77,77 @@ struct MappedHostComponent {
   size_t canonical_end;
 };
 
+// This version assumes we already removed leading dots from host as well as the
+// last trailing dot if it had one.
+size_t GetRegistryLengthInTrimmedHost(base::StringPiece host,
+                                      UnknownRegistryFilter unknown_filter,
+                                      PrivateRegistryFilter private_filter) {
+  size_t length;
+  int type = LookupSuffixInReversedSet(
+      g_graph, g_graph_length, private_filter == INCLUDE_PRIVATE_REGISTRIES,
+      host, &length);
+
+  DCHECK_LE(length, host.size());
+
+  // No rule found in the registry.
+  if (type == kDafsaNotFound) {
+    // If we allow unknown registries, return the length of last subcomponent.
+    if (unknown_filter == INCLUDE_UNKNOWN_REGISTRIES) {
+      const size_t last_dot = host.find_last_of('.');
+      if (last_dot != base::StringPiece::npos)
+        return host.size() - last_dot - 1;
+    }
+    return 0;
+  }
+
+  // Exception rules override wildcard rules when the domain is an exact
+  // match, but wildcards take precedence when there's a subdomain.
+  if (type & kDafsaWildcardRule) {
+    // If the complete host matches, then the host is the wildcard suffix, so
+    // return 0.
+    if (length == host.size())
+      return 0;
+
+    DCHECK_LE(length + 2, host.size());
+    DCHECK_EQ('.', host[host.size() - length - 1]);
+
+    const size_t preceding_dot =
+        host.find_last_of('.', host.size() - length - 2);
+
+    // If no preceding dot, then the host is the registry itself, so return 0.
+    if (preceding_dot == base::StringPiece::npos)
+      return 0;
+
+    // Return suffix size plus size of subdomain.
+    return host.size() - preceding_dot - 1;
+  }
+
+  if (type & kDafsaExceptionRule) {
+    size_t first_dot = host.find_first_of('.', host.size() - length);
+    if (first_dot == base::StringPiece::npos) {
+      // If we get here, we had an exception rule with no dots (e.g.
+      // "!foo").  This would only be valid if we had a corresponding
+      // wildcard rule, which would have to be "*".  But we explicitly
+      // disallow that case, so this kind of rule is invalid.
+      // TODO(https://crbug.com/459802): This assumes that all wildcard entries,
+      // such as *.foo.invalid, also have their parent, foo.invalid, as an entry
+      // on the PSL, which is why it returns the length of foo.invalid. This
+      // isn't entirely correct.
+      NOTREACHED() << "Invalid exception rule";
+      return 0;
+    }
+    return host.length() - first_dot - 1;
+  }
+
+  DCHECK_NE(type, kDafsaNotFound);
+
+  // If a complete match, then the host is the registry itself, so return 0.
+  if (length == host.size())
+    return 0;
+
+  return length;
+}
+
 size_t GetRegistryLengthImpl(base::StringPiece host,
                              UnknownRegistryFilter unknown_filter,
                              PrivateRegistryFilter private_filter) {
@@ -83,79 +156,23 @@ size_t GetRegistryLengthImpl(base::StringPiece host,
 
   // Skip leading dots.
   const size_t host_check_begin = host.find_first_not_of('.');
-  if (host_check_begin == std::string::npos)
+  if (host_check_begin == base::StringPiece::npos)
     return 0;  // Host is only dots.
 
   // A single trailing dot isn't relevant in this determination, but does need
   // to be included in the final returned length.
-  size_t host_check_len = host.length();
-  if (host[host_check_len - 1] == '.') {
-    --host_check_len;
-    DCHECK(host_check_len > 0);  // If this weren't true, the host would be ".",
-                                 // and we'd have already returned above.
-    if (host[host_check_len - 1] == '.')
-      return 0;  // Multiple trailing dots.
-  }
+  size_t host_check_end = host.size();
+  if (host.back() == '.')
+    --host_check_end;
 
-  // Walk up the domain tree, most specific to least specific,
-  // looking for matches at each level.
-  size_t prev_start = std::string::npos;
-  size_t curr_start = host_check_begin;
-  size_t next_dot = host.find('.', curr_start);
-  if (next_dot >= host_check_len)  // Catches std::string::npos as well.
-    return 0;  // This can't have a registry + domain.
-  while (1) {
-    const char* domain_str = host.data() + curr_start;
-    size_t domain_length = host_check_len - curr_start;
-    int type = LookupStringInFixedSet(g_graph, g_graph_length, domain_str,
-                                      domain_length);
-    bool do_check = type != kDafsaNotFound &&
-                    (!(type & kDafsaPrivateRule) ||
-                     private_filter == INCLUDE_PRIVATE_REGISTRIES);
+  size_t length = GetRegistryLengthInTrimmedHost(
+      host.substr(host_check_begin, host_check_end - host_check_begin),
+      unknown_filter, private_filter);
 
-    // If the apparent match is a private registry and we're not including
-    // those, it can't be an actual match.
-    if (do_check) {
-      // Exception rules override wildcard rules when the domain is an exact
-      // match, but wildcards take precedence when there's a subdomain.
-      if (type & kDafsaWildcardRule && (prev_start != std::string::npos)) {
-        // If prev_start == host_check_begin, then the host is the registry
-        // itself, so return 0.
-        return (prev_start == host_check_begin) ? 0
-                                                : (host.length() - prev_start);
-      }
+  if (length == 0)
+    return 0;
 
-      if (type & kDafsaExceptionRule) {
-        if (next_dot == std::string::npos) {
-          // If we get here, we had an exception rule with no dots (e.g.
-          // "!foo").  This would only be valid if we had a corresponding
-          // wildcard rule, which would have to be "*".  But we explicitly
-          // disallow that case, so this kind of rule is invalid.
-          NOTREACHED() << "Invalid exception rule";
-          return 0;
-        }
-        return host.length() - next_dot - 1;
-      }
-
-      // If curr_start == host_check_begin, then the host is the registry
-      // itself, so return 0.
-      return (curr_start == host_check_begin) ? 0
-                                              : (host.length() - curr_start);
-    }
-
-    if (next_dot >= host_check_len)  // Catches std::string::npos as well.
-      break;
-
-    prev_start = curr_start;
-    curr_start = next_dot + 1;
-    next_dot = host.find('.', curr_start);
-  }
-
-  // No rule found in the registry.  curr_start now points to the first
-  // character of the last subcomponent of the host, so if we allow unknown
-  // registries, return the length of this subcomponent.
-  return unknown_filter == INCLUDE_UNKNOWN_REGISTRIES ?
-      (host.length() - curr_start) : 0;
+  return length + host.size() - host_check_end;
 }
 
 base::StringPiece GetDomainAndRegistryImpl(
@@ -209,10 +226,9 @@ void AppendInvalidString(base::StringPiece16 str, url::CanonOutput* output) {
 }
 
 // Backend for PermissiveGetHostRegistryLength that handles both UTF-8 and
-// UTF-16 input. The template type is the std::string type to use (it makes the
-// typedefs easier than using the character type).
-template <typename Str>
-size_t DoPermissiveGetHostRegistryLength(base::BasicStringPiece<Str> host,
+// UTF-16 input.
+template <typename T, typename CharT = typename T::value_type>
+size_t DoPermissiveGetHostRegistryLength(T host,
                                          UnknownRegistryFilter unknown_filter,
                                          PrivateRegistryFilter private_filter) {
   std::string canonical_host;  // Do not modify outside of canon_output.
@@ -332,8 +348,13 @@ bool SameDomainOrHost(base::StringPiece host1,
 
 std::string GetDomainAndRegistry(const GURL& gurl,
                                  PrivateRegistryFilter filter) {
-  return GetDomainAndRegistryAsStringPiece(gurl.host_piece(), filter)
-      .as_string();
+  return std::string(
+      GetDomainAndRegistryAsStringPiece(gurl.host_piece(), filter));
+}
+
+std::string GetDomainAndRegistry(const url::Origin& origin,
+                                 PrivateRegistryFilter filter) {
+  return std::string(GetDomainAndRegistryAsStringPiece(origin.host(), filter));
 }
 
 std::string GetDomainAndRegistry(base::StringPiece host,
@@ -342,7 +363,7 @@ std::string GetDomainAndRegistry(base::StringPiece host,
   const std::string canon_host(CanonicalizeHost(host, &host_info));
   if (canon_host.empty() || host_info.IsIPAddress())
     return std::string();
-  return GetDomainAndRegistryImpl(canon_host, filter).as_string();
+  return std::string(GetDomainAndRegistryImpl(canon_host, filter));
 }
 
 bool SameDomainOrHost(
@@ -359,7 +380,7 @@ bool SameDomainOrHost(const url::Origin& origin1,
 }
 
 bool SameDomainOrHost(const url::Origin& origin1,
-                      const base::Optional<url::Origin>& origin2,
+                      const absl::optional<url::Origin>& origin2,
                       PrivateRegistryFilter filter) {
   return origin2.has_value() &&
          SameDomainOrHost(origin1, origin2.value(), filter);
@@ -423,15 +444,15 @@ size_t GetCanonicalHostRegistryLength(base::StringPiece canon_host,
 size_t PermissiveGetHostRegistryLength(base::StringPiece host,
                                        UnknownRegistryFilter unknown_filter,
                                        PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength<std::string>(host, unknown_filter,
-                                                        private_filter);
+  return DoPermissiveGetHostRegistryLength(host, unknown_filter,
+                                           private_filter);
 }
 
 size_t PermissiveGetHostRegistryLength(base::StringPiece16 host,
                                        UnknownRegistryFilter unknown_filter,
                                        PrivateRegistryFilter private_filter) {
-  return DoPermissiveGetHostRegistryLength<base::string16>(host, unknown_filter,
-                                                           private_filter);
+  return DoPermissiveGetHostRegistryLength(host, unknown_filter,
+                                           private_filter);
 }
 
 void SetFindDomainGraph() {

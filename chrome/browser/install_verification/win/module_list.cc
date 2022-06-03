@@ -8,7 +8,7 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "chrome/browser/install_verification/win/module_info.h"
 
 namespace {

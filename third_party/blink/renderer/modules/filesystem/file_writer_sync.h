@@ -31,7 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_WRITER_SYNC_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_WRITER_SYNC_H_
 
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/filesystem/file_writer_base.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
@@ -44,14 +44,13 @@ class ExceptionState;
 
 class FileWriterSync final : public ScriptWrappable,
                              public FileWriterBase,
-                             public ContextClient {
+                             public ExecutionContextClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(FileWriterSync);
 
  public:
   explicit FileWriterSync(ExecutionContext* context);
   ~FileWriterSync() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void write(Blob*, ExceptionState&);
   void seek(int64_t position, ExceptionState&);

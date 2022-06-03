@@ -9,8 +9,8 @@
 #include <string>
 
 #include "ash/ash_export.h"
-#include "base/strings/string16.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-forward.h"
+#include "chromeos/services/network_config/public/mojom/network_types.mojom-forward.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia.h"
@@ -24,7 +24,13 @@ enum IconType {
   ICON_TYPE_TRAY_REGULAR,  // light icons with VPN badges, used outside of OOBE
   ICON_TYPE_DEFAULT_VIEW,  // dark icons with VPN badges
   ICON_TYPE_LIST,          // dark icons without VPN badges; in-line status
-  ICON_TYPE_MENU_LIST,     // dark icons without VPN badges; separate status
+  ICON_TYPE_FEATURE_POD,   // icons in the network feature pod button in system
+                           // menu
+  ICON_TYPE_FEATURE_POD_TOGGLED,   // toggled icons in the network feature pod
+                                   // button in system menu
+  ICON_TYPE_FEATURE_POD_DISABLED,  // disabled icons in the network feature pod
+                                   // button in system menu
+  ICON_TYPE_MENU_LIST,  // dark icons without VPN badges; separate status
 };
 
 // Strength of a wireless signal.
@@ -59,6 +65,10 @@ ASH_EXPORT gfx::ImageSkia GetImageForVPN(
     IconType icon_type,
     bool* animating = nullptr);
 
+// Returns an image for Wi-Fi with no connections available, Wi-Fi icon with
+// a cross in the center.
+ASH_EXPORT gfx::ImageSkia GetImageForWiFiNoConnections(IconType icon_type);
+
 // Returns an image for a Wi-Fi network, either full strength or strike-through
 // based on |enabled|.
 ASH_EXPORT gfx::ImageSkia GetImageForWiFiEnabledState(
@@ -82,7 +92,7 @@ gfx::ImageSkia GetDisconnectedImageForNetworkType(
     chromeos::network_config::mojom::NetworkType network_type);
 
 // Returns the label for |network| when displayed in a list.
-ASH_EXPORT base::string16 GetLabelForNetworkList(
+ASH_EXPORT std::u16string GetLabelForNetworkList(
     const chromeos::network_config::mojom::NetworkStateProperties* network);
 
 // Called periodically with the current list of network guids. Removes cached

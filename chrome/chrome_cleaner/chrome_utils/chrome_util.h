@@ -6,8 +6,7 @@
 #define CHROME_CHROME_CLEANER_CHROME_UTILS_CHROME_UTIL_H_
 
 #include <set>
-
-#include "base/strings/string16.h"
+#include <string>
 
 namespace base {
 class FilePath;
@@ -24,7 +23,7 @@ extern const wchar_t kKOChromeShortcutFilename[];
 // |system_install| receives whether the chrome is installed system wide or per
 // user. |system_install| is optional and can be null.
 // Return true on success.
-bool RetrieveChromeVersionAndInstalledDomain(base::string16* chrome_version,
+bool RetrieveChromeVersionAndInstalledDomain(std::wstring* chrome_version,
                                              bool* system_install);
 
 // Retrieve path to Chrome's executable from the path given on the command
@@ -32,9 +31,9 @@ bool RetrieveChromeVersionAndInstalledDomain(base::string16* chrome_version,
 // path exists.
 bool RetrieveChromeExePathFromCommandLine(base::FilePath* chrome_exe_path);
 
-// Search for all Chrome executable paths, for example
+// Search for all Chrome executable path directories, for example
 // "C:\Program Files\Google\Chrome\Application".
-void ListChromeExePaths(std::set<base::FilePath>* paths);
+void ListChromeExeDirectories(std::set<base::FilePath>* paths);
 
 // Search for all Chrome versioned installation paths, for example
 // "C:\Program Files\Google\Chrome\Application\68.0.3440.84".

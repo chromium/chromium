@@ -6,9 +6,13 @@
 
 #include <sys/socket.h>
 #include <sys/un.h>
+
+#include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/base/sockaddr_storage.h"
 #include "net/socket/socket_posix.h"
@@ -56,7 +60,7 @@ bool UnixDomainClientSocket::FillAddress(const std::string& socket_path,
     return true;
   }
 
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
   // Convert the path given into abstract socket name. It must start with
   // the '\0' character, so we are adding it. |addr_len| must specify the
   // length of the structure exactly, as potentially the socket name may
@@ -70,13 +74,14 @@ bool UnixDomainClientSocket::FillAddress(const std::string& socket_path,
 }
 
 int UnixDomainClientSocket::Connect(CompletionOnceCallback callback) {
-  DCHECK(!socket_);
+  if (IsConnected())
+    return OK;
 
   SockaddrStorage address;
   if (!FillAddress(socket_path_, use_abstract_namespace_, &address))
     return ERR_ADDRESS_INVALID;
 
-  socket_.reset(new SocketPosix);
+  socket_ = std::make_unique<SocketPosix>();
   int rv = socket_->Open(AF_UNIX);
   DCHECK_NE(ERR_IO_PENDING, rv);
   if (rv != OK)

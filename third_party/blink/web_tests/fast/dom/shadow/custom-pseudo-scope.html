@@ -7,6 +7,6 @@
 <div id="host1"></div>
 <div id="host2"></div>
 <script>
-host1.createShadowRoot().innerHTML = "<meter></meter>";
-host2.createShadowRoot().innerHTML = "<style>::-webkit-meter-bar { background: blue }</style><meter></meter>";
+host1.attachShadow({mode: 'open'}).innerHTML = "<meter></meter>";
+host2.attachShadow({mode: 'open'}).innerHTML = "<style>::-webkit-meter-bar { background: blue }</style><meter></meter>";
 </script>

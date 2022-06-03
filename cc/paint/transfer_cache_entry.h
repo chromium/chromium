@@ -10,7 +10,7 @@
 #include "base/containers/span.h"
 #include "cc/paint/paint_export.h"
 
-class GrContext;
+class GrDirectContext;
 
 namespace cc {
 
@@ -23,15 +23,16 @@ enum class TransferCacheEntryType : uint32_t {
   kRawMemory,
   kImage,
   kShader,
+  kSkottie,
   // Add new entries above this line, make sure to update kLast.
-  kLast = kShader,
+  kLast = kSkottie,
 };
 
 // An interface used on the client to serialize a transfer cache entry
 // into raw bytes that can be sent to the service.
 class CC_PAINT_EXPORT ClientTransferCacheEntry {
  public:
-  virtual ~ClientTransferCacheEntry() {}
+  virtual ~ClientTransferCacheEntry() = default;
 
   // Returns the type of this entry. Combined with id, it should form a unique
   // identifier.
@@ -72,7 +73,7 @@ class CC_PAINT_EXPORT ServiceTransferCacheEntry {
   // Returns true if the entry needs a GrContext during deserialization.
   static bool UsesGrContext(TransferCacheEntryType type);
 
-  virtual ~ServiceTransferCacheEntry() {}
+  virtual ~ServiceTransferCacheEntry() = default;
 
   // Returns the type of this entry.
   virtual TransferCacheEntryType Type() const = 0;
@@ -84,7 +85,7 @@ class CC_PAINT_EXPORT ServiceTransferCacheEntry {
 
   // Deserialize the cache entry from the given span of memory with the given
   // context.
-  virtual bool Deserialize(GrContext* context,
+  virtual bool Deserialize(GrDirectContext* context,
                            base::span<const uint8_t> data) = 0;
 };
 

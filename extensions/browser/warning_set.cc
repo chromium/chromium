@@ -128,6 +128,14 @@ Warning Warning::CreateRulesetFailedToLoadWarning(
                  {} /*message_parameters*/);
 }
 
+// static
+Warning Warning::CreateEnabledRuleCountExceededWarning(
+    const ExtensionId& extension_id) {
+  return Warning(kEnabledRuleCountExceeded, extension_id,
+                 IDS_EXTENSION_WARNING_ENABLED_RULE_COUNT_EXCEEDED,
+                 {} /*message_parameters*/);
+}
+
 bool Warning::operator<(const Warning& other) const {
   return std::tie(extension_id_, type_) <
          std::tie(other.extension_id_, other.type_);
@@ -139,7 +147,7 @@ std::string Warning::GetLocalizedMessage(const ExtensionSet* extensions) const {
   // These parameters may be unsafe (URLs and Extension names) and need
   // to be HTML-escaped before being embedded in the UI. Also extension IDs
   // are translated to full extension names.
-  std::vector<base::string16> final_parameters;
+  std::vector<std::u16string> final_parameters;
   for (size_t i = 0; i < message_parameters_.size(); ++i) {
     std::string message = message_parameters_[i];
     if (base::StartsWith(message, kTranslate, base::CompareCase::SENSITIVE)) {

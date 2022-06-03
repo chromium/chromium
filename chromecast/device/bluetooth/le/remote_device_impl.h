@@ -14,12 +14,13 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
 #include "base/timer/timer.h"
 #include "chromecast/device/bluetooth/le/remote_characteristic.h"
 #include "chromecast/device/bluetooth/le/remote_descriptor.h"
 #include "chromecast/device/bluetooth/le/remote_device.h"
+#include "chromecast/public/bluetooth/gatt.h"
 
 namespace chromecast {
 namespace bluetooth {
@@ -27,16 +28,20 @@ namespace bluetooth {
 class GattClientManagerImpl;
 class RemoteCharacteristicImpl;
 class RemoteDescriptorImpl;
+class RemoteService;
+class RemoteServiceImpl;
 
 class RemoteDeviceImpl : public RemoteDevice {
  public:
   // If commands take longer than this amount of time, we will disconnect the
   // device.
-  static constexpr base::TimeDelta kCommandTimeout =
-      base::TimeDelta::FromSeconds(30);
+  static constexpr base::TimeDelta kCommandTimeout = base::Seconds(30);
+
+  RemoteDeviceImpl(const RemoteDeviceImpl&) = delete;
+  RemoteDeviceImpl& operator=(const RemoteDeviceImpl&) = delete;
 
   // RemoteDevice implementation
-  void Connect(StatusCallback cb) override;
+  void Connect(ConnectCallback cb, bluetooth_v2_shlib::Gatt::Client::Transport transport) override;
   void Disconnect(StatusCallback cb) override;
   void CreateBond(StatusCallback cb) override;
   void RemoveBond(StatusCallback cb) override;
@@ -151,8 +156,7 @@ class RemoteDeviceImpl : public RemoteDevice {
 
   bool services_discovered_ = false;
 
-  bool connect_pending_ = false;
-  StatusCallback connect_cb_;
+  ConnectCallback connect_cb_;
 
   bool disconnect_pending_ = false;
   StatusCallback disconnect_cb_;
@@ -169,7 +173,7 @@ class RemoteDeviceImpl : public RemoteDevice {
   std::atomic<bool> connected_{false};
   std::atomic<bool> bonded_{false};
   std::atomic<int> mtu_{kDefaultMtu};
-  std::map<bluetooth_v2_shlib::Uuid, scoped_refptr<RemoteService>>
+  std::map<bluetooth_v2_shlib::Uuid, scoped_refptr<RemoteServiceImpl>>
       uuid_to_service_;
   std::map<uint16_t, scoped_refptr<RemoteCharacteristicImpl>>
       handle_to_characteristic_;
@@ -189,8 +193,6 @@ class RemoteDeviceImpl : public RemoteDevice {
       handle_to_descriptor_read_cbs_;
   std::map<uint16_t, std::queue<RemoteDescriptor::StatusCallback>>
       handle_to_descriptor_write_cbs_;
-
-  DISALLOW_COPY_AND_ASSIGN(RemoteDeviceImpl);
 };
 
 }  // namespace bluetooth

@@ -36,7 +36,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include <asl.h>
 #elif defined(OS_ANDROID)
 #include <android/log.h>
@@ -46,7 +46,7 @@
 
 PRINTF_FORMAT(1, 0)
 void vprintf_stderr_common(const char* format, va_list args) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   va_list copyOfArgs;
   va_copy(copyOfArgs, args);
   asl_vlog(0, 0, ASL_LEVEL_NOTICE, format, copyOfArgs);

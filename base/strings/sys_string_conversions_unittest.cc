@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -75,8 +74,8 @@ TEST(SysStrings, SysUTF8ToWide) {
   EXPECT_EQ(expected_null, SysUTF8ToWide(utf8_null));
 }
 
-#if defined(OS_LINUX)  // Tests depend on setting a specific Linux locale.
-
+// Tests depend on setting a specific Linux locale.
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 TEST(SysStrings, SysWideToNativeMB) {
 #if !defined(SYSTEM_NATIVE_UTF8)
   ScopedLocale locale("en_US.UTF-8");
@@ -191,6 +190,6 @@ TEST(SysStrings, SysNativeMBAndWide) {
     EXPECT_EQ(wide, trip);
   }
 }
-#endif  // OS_LINUX
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 }  // namespace base

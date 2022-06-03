@@ -45,7 +45,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
   // Command buffer Flush / Finish.
   MOCK_METHOD0(Finish, void());
   MOCK_METHOD0(Flush, void());
-  MOCK_METHOD0(ShallowFlushCHROMIUM, void());
   MOCK_METHOD0(OrderingBarrierCHROMIUM, void());
 
   // SyncTokens.
@@ -54,6 +53,7 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
   MOCK_METHOD2(VerifySyncTokensCHROMIUM,
                void(GLbyte** sync_tokens, GLsizei count));
   MOCK_METHOD1(WaitSyncTokenCHROMIUM, void(const GLbyte* sync_token));
+  MOCK_METHOD0(ShallowFlushCHROMIUM, void());
 
   // Command buffer state.
   MOCK_METHOD0(GetError, GLenum());
@@ -82,7 +82,7 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
   MOCK_METHOD1(ActiveTexture, void(GLenum texture));
   MOCK_METHOD1(GenerateMipmap, void(GLenum target));
   MOCK_METHOD2(SetColorSpaceMetadataCHROMIUM,
-               void(GLuint texture_id, GLColorSpace color_space));
+               void(GLuint texture_id, GLcolorSpace color_space));
   MOCK_METHOD3(TexParameteri, void(GLenum target, GLenum pname, GLint param));
 
   // Mailboxes.
@@ -144,19 +144,6 @@ class RasterMockGLES2Interface : public gles2::GLES2InterfaceStub {
                     GLenum bufferUsage,
                     GLsizei width,
                     GLsizei height));
-
-  // OOP-Raster
-  MOCK_METHOD6(BeginRasterCHROMIUM,
-               void(GLuint texture_id,
-                    GLuint sk_color,
-                    GLuint msaa_sample_count,
-                    GLboolean can_use_lcd_text,
-                    GLint color_type,
-                    GLuint color_space_id));
-  MOCK_METHOD2(RasterCHROMIUM, void(GLsizeiptr size, const void* list));
-  MOCK_METHOD1(MapRasterCHROMIUM, void*(GLsizeiptr size));
-  MOCK_METHOD1(UnmapRasterCHROMIUM, void(GLsizeiptr written));
-  MOCK_METHOD0(EndRasterCHROMIUM, void());
 
   MOCK_METHOD2(PixelStorei, void(GLenum pname, GLint param));
   MOCK_METHOD2(TraceBeginCHROMIUM,
@@ -237,10 +224,11 @@ class ContextSupportStub : public ContextSupport {
     return false;
   }
   bool HasGrContextSupport() const override { return false; }
-  void SetGrContext(GrContext* gr) override {}
+  void SetGrContext(GrDirectContext* gr) override {}
   void WillCallGLFromSkia() override {}
   void DidCallGLFromSkia() override {}
   void SetDisplayTransform(gfx::OverlayTransform transform) override {}
+  void SetFrameRate(float frame_rate) override {}
 
  private:
   std::unique_ptr<char[]> mapped_transfer_cache_entry_;
@@ -260,7 +248,7 @@ class RasterImplementationGLESTest : public testing::Test {
 
   void SetUp() override {
     gl_ = std::make_unique<RasterMockGLES2Interface>();
-    ri_ = std::make_unique<RasterImplementationGLES>(gl_.get());
+    ri_ = std::make_unique<RasterImplementationGLES>(gl_.get(), &support_);
   }
 
   void TearDown() override {}

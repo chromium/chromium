@@ -5,14 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_LAYOUT_NG_MATHML_BLOCK_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_MATHML_LAYOUT_NG_MATHML_BLOCK_H_
 
-#include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
-#include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/layout/ng/layout_ng_block.h"
 
 namespace blink {
 
-class LayoutNGMathMLBlock : public LayoutNGMixin<LayoutBlock> {
+class LayoutNGMathMLBlock : public LayoutNGBlock {
  public:
-  explicit LayoutNGMathMLBlock(MathMLElement*);
+  explicit LayoutNGMathMLBlock(Element*);
 
   const char* GetName() const override { return "LayoutNGMathMLBlock"; }
 
@@ -21,9 +20,14 @@ class LayoutNGMathMLBlock : public LayoutNGMixin<LayoutBlock> {
 
   bool IsOfType(LayoutObjectType) const final;
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const final;
-};
+  bool CanHaveChildren() const final;
+  void StyleDidChange(StyleDifference, const ComputedStyle*) final;
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutNGMathMLBlock, IsMathML());
+  PaginationBreakability GetPaginationBreakability(
+      FragmentationEngine) const final {
+    return kForbidBreaks;
+  }
+};
 
 }  // namespace blink
 

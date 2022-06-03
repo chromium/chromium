@@ -5,6 +5,7 @@
 #include "mojo/public/cpp/platform/named_platform_channel.h"
 
 #include <errno.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <unistd.h>

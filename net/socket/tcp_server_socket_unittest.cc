@@ -74,16 +74,21 @@ TEST_F(TCPServerSocketTest, Accept) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;
   std::unique_ptr<StreamSocket> accepted_socket;
-  int result = socket_.Accept(&accepted_socket, accept_callback.callback());
+  IPEndPoint peer_address;
+  int result = socket_.Accept(&accepted_socket, accept_callback.callback(),
+                              &peer_address);
   result = accept_callback.GetResult(result);
   ASSERT_THAT(result, IsOk());
 
   ASSERT_TRUE(accepted_socket.get() != nullptr);
+
+  // |peer_address| should be correctly populated.
+  EXPECT_EQ(peer_address.address(), local_address_.address());
 
   // Both sockets should be on the loopback network interface.
   EXPECT_EQ(GetPeerAddress(accepted_socket.get()).address(),
@@ -98,13 +103,15 @@ TEST_F(TCPServerSocketTest, AcceptAsync) {
 
   TestCompletionCallback accept_callback;
   std::unique_ptr<StreamSocket> accepted_socket;
+  IPEndPoint peer_address;
 
-  ASSERT_THAT(socket_.Accept(&accepted_socket, accept_callback.callback()),
+  ASSERT_THAT(socket_.Accept(&accepted_socket, accept_callback.callback(),
+                             &peer_address),
               IsError(ERR_IO_PENDING));
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
   EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
 
@@ -112,9 +119,38 @@ TEST_F(TCPServerSocketTest, AcceptAsync) {
 
   EXPECT_TRUE(accepted_socket != nullptr);
 
+  // |peer_address| should be correctly populated.
+  EXPECT_EQ(peer_address.address(), local_address_.address());
+
   // Both sockets should be on the loopback network interface.
   EXPECT_EQ(GetPeerAddress(accepted_socket.get()).address(),
             local_address_.address());
+}
+
+// Test Accept() when client disconnects right after trying to connect.
+TEST_F(TCPServerSocketTest, AcceptClientDisconnectAfterConnect) {
+  ASSERT_NO_FATAL_FAILURE(SetUpIPv4());
+
+  TestCompletionCallback accept_callback;
+  std::unique_ptr<StreamSocket> accepted_socket;
+  IPEndPoint peer_address;
+
+  TestCompletionCallback connect_callback;
+  TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
+                                    nullptr, NetLogSource());
+  int connect_result = connecting_socket.Connect(connect_callback.callback());
+  EXPECT_THAT(connect_callback.GetResult(connect_result), IsOk());
+
+  int accept_result = socket_.Accept(&accepted_socket,
+                                     accept_callback.callback(), &peer_address);
+  connecting_socket.Disconnect();
+
+  EXPECT_THAT(accept_callback.GetResult(accept_result), IsOk());
+
+  EXPECT_TRUE(accepted_socket != nullptr);
+
+  // |peer_address| should be correctly populated.
+  EXPECT_EQ(peer_address.address(), local_address_.address());
 }
 
 // Accept two connections simultaneously.
@@ -123,18 +159,20 @@ TEST_F(TCPServerSocketTest, Accept2Connections) {
 
   TestCompletionCallback accept_callback;
   std::unique_ptr<StreamSocket> accepted_socket;
+  IPEndPoint peer_address;
 
   ASSERT_EQ(ERR_IO_PENDING,
-            socket_.Accept(&accepted_socket, accept_callback.callback()));
+            socket_.Accept(&accepted_socket, accept_callback.callback(),
+                           &peer_address));
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback connect_callback2;
   TCPClientSocket connecting_socket2(local_address_list(), nullptr, nullptr,
-                                     NetLogSource());
+                                     nullptr, NetLogSource());
   int connect_result2 =
       connecting_socket2.Connect(connect_callback2.callback());
 
@@ -142,7 +180,9 @@ TEST_F(TCPServerSocketTest, Accept2Connections) {
 
   TestCompletionCallback accept_callback2;
   std::unique_ptr<StreamSocket> accepted_socket2;
-  int result = socket_.Accept(&accepted_socket2, accept_callback2.callback());
+  IPEndPoint peer_address2;
+  int result = socket_.Accept(&accepted_socket2, accept_callback2.callback(),
+                              &peer_address2);
   result = accept_callback2.GetResult(result);
   ASSERT_THAT(result, IsOk());
 
@@ -153,8 +193,10 @@ TEST_F(TCPServerSocketTest, Accept2Connections) {
   EXPECT_TRUE(accepted_socket2 != nullptr);
   EXPECT_NE(accepted_socket.get(), accepted_socket2.get());
 
+  EXPECT_EQ(peer_address.address(), local_address_.address());
   EXPECT_EQ(GetPeerAddress(accepted_socket.get()).address(),
             local_address_.address());
+  EXPECT_EQ(peer_address2.address(), local_address_.address());
   EXPECT_EQ(GetPeerAddress(accepted_socket2.get()).address(),
             local_address_.address());
 }
@@ -167,16 +209,21 @@ TEST_F(TCPServerSocketTest, AcceptIPv6) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;
   std::unique_ptr<StreamSocket> accepted_socket;
-  int result = socket_.Accept(&accepted_socket, accept_callback.callback());
+  IPEndPoint peer_address;
+  int result = socket_.Accept(&accepted_socket, accept_callback.callback(),
+                              &peer_address);
   result = accept_callback.GetResult(result);
   ASSERT_THAT(result, IsOk());
 
   ASSERT_TRUE(accepted_socket.get() != nullptr);
+
+  // |peer_address| should be correctly populated.
+  EXPECT_EQ(peer_address.address(), local_address_.address());
 
   // Both sockets should be on the loopback network interface.
   EXPECT_EQ(GetPeerAddress(accepted_socket.get()).address(),
@@ -190,15 +237,20 @@ TEST_F(TCPServerSocketTest, AcceptIO) {
 
   TestCompletionCallback connect_callback;
   TCPClientSocket connecting_socket(local_address_list(), nullptr, nullptr,
-                                    NetLogSource());
+                                    nullptr, NetLogSource());
   int connect_result = connecting_socket.Connect(connect_callback.callback());
 
   TestCompletionCallback accept_callback;
   std::unique_ptr<StreamSocket> accepted_socket;
-  int result = socket_.Accept(&accepted_socket, accept_callback.callback());
+  IPEndPoint peer_address;
+  int result = socket_.Accept(&accepted_socket, accept_callback.callback(),
+                              &peer_address);
   ASSERT_THAT(accept_callback.GetResult(result), IsOk());
 
   ASSERT_TRUE(accepted_socket.get() != nullptr);
+
+  // |peer_address| should be correctly populated.
+  EXPECT_EQ(peer_address.address(), local_address_.address());
 
   // Both sockets should be on the loopback network interface.
   EXPECT_EQ(GetPeerAddress(accepted_socket.get()).address(),

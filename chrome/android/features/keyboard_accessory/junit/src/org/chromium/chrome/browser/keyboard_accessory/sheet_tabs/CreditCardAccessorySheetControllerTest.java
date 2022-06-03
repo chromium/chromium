@@ -17,15 +17,18 @@ import static org.mockito.Mockito.when;
 import static org.chromium.chrome.browser.keyboard_accessory.ManualFillingMetricsRecorder.getHistogramForType;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabMetricsRecorder.UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.CREDIT_CARD_INFO;
+import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.PROMO_CODE_INFO;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.Type.TITLE;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece.getType;
 
 import android.graphics.drawable.Drawable;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.recyclerview.widget.RecyclerView;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
@@ -38,16 +41,16 @@ import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.task.test.CustomShadowAsyncTask;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.AccessorySheetData;
+import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.PromoCodeInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData.UserInfo;
 import org.chromium.chrome.browser.keyboard_accessory.data.PropertyProvider;
 import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.ui.modelutil.ListObservable;
-
-import java.util.HashMap;
 
 /**
  * Controller tests for the credit card accessory sheet.
@@ -55,9 +58,12 @@ import java.util.HashMap;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {CustomShadowAsyncTask.class, ShadowRecordHistogram.class})
+@Features.EnableFeatures(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY)
 public class CreditCardAccessorySheetControllerTest {
     @Rule
     public JniMocker mocker = new JniMocker();
+    @Rule
+    public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
     @Mock
     private RecyclerView mMockView;
     @Mock
@@ -74,7 +80,6 @@ public class CreditCardAccessorySheetControllerTest {
         MockitoAnnotations.initMocks(this);
         mocker.mock(RecordHistogramJni.TEST_HOOKS, mMockRecordHistogramNatives);
         AccessorySheetTabCoordinator.IconProvider.setIconForTesting(mock(Drawable.class));
-        setAutofillFeature(true);
         mCoordinator =
                 new CreditCardAccessorySheetCoordinator(RuntimeEnvironment.application, null);
         assertNotNull(mCoordinator);
@@ -138,13 +143,22 @@ public class CreditCardAccessorySheetControllerTest {
                 new UserInfoField("Todd", "Todd", "", false, field -> {}));
         testData.getUserInfoList().get(0).addField(
                 new UserInfoField("**** 9219", "**** 9219", "", true, field -> {}));
+        testData.getPromoCodeInfoList().add(new PromoCodeInfo());
+        testData.getPromoCodeInfoList().get(0).setPromoCode(
+                new UserInfoField("50$OFF", "Promo Code for Todd Tester", "", false, field -> {}));
+        testData.getPromoCodeInfoList().get(0).setDetailsText(
+                "Get $50 off when you use this code at checkout.");
 
         mCoordinator.registerDataProvider(testProvider);
         testProvider.notifyObservers(testData);
 
-        assertThat(mSheetDataPieces.size(), is(1));
-        assertThat(getType(mSheetDataPieces.get(0)), is(CREDIT_CARD_INFO));
-        assertThat(mSheetDataPieces.get(0).getDataPiece(), is(testData.getUserInfoList().get(0)));
+        // Tests that promo code offers are ordered before credit cards.
+        assertThat(mSheetDataPieces.size(), is(2));
+        assertThat(getType(mSheetDataPieces.get(0)), is(PROMO_CODE_INFO));
+        assertThat(getType(mSheetDataPieces.get(1)), is(CREDIT_CARD_INFO));
+        assertThat(
+                mSheetDataPieces.get(0).getDataPiece(), is(testData.getPromoCodeInfoList().get(0)));
+        assertThat(mSheetDataPieces.get(1).getDataPiece(), is(testData.getUserInfoList().get(0)));
     }
 
     @Test
@@ -170,6 +184,28 @@ public class CreditCardAccessorySheetControllerTest {
 
         assertThat(mSheetDataPieces.size(), is(1));
         assertThat(getType(mSheetDataPieces.get(0)), is(CREDIT_CARD_INFO));
+    }
+
+    @Test
+    public void testShowsNoCreditCardsMessageBelowPromoCodes() {
+        final PropertyProvider<AccessorySheetData> testProvider = new PropertyProvider<>();
+        final AccessorySheetData testData =
+                new AccessorySheetData(AccessoryTabType.CREDIT_CARDS, "No payment methods", "");
+
+        testData.getPromoCodeInfoList().add(new PromoCodeInfo());
+        testData.getPromoCodeInfoList().get(0).setPromoCode(
+                new UserInfoField("50$OFF", "Promo Code for Todd Tester", "", false, field -> {}));
+        testData.getPromoCodeInfoList().get(0).setDetailsText(
+                "Get $50 off when you use this code at checkout.");
+
+        mCoordinator.registerDataProvider(testProvider);
+        testProvider.notifyObservers(testData);
+
+        // Tests |mTitle| is shown below promo codes.
+        assertThat(mSheetDataPieces.size(), is(2));
+        assertThat(getType(mSheetDataPieces.get(0)), is(PROMO_CODE_INFO));
+        assertThat(getType(mSheetDataPieces.get(1)), is(TITLE));
+        assertThat(mSheetDataPieces.get(1).getDataPiece(), is(equalTo("No payment methods")));
     }
 
     @Test
@@ -222,11 +258,5 @@ public class CreditCardAccessorySheetControllerTest {
     private int getSuggestionsImpressions(@AccessoryTabType int type, int sample) {
         return RecordHistogram.getHistogramValueCountForTesting(
                 getHistogramForType(UMA_KEYBOARD_ACCESSORY_SHEET_SUGGESTIONS, type), sample);
-    }
-
-    private void setAutofillFeature(boolean enabled) {
-        HashMap<String, Boolean> features = new HashMap<>();
-        features.put(ChromeFeatureList.AUTOFILL_KEYBOARD_ACCESSORY, enabled);
-        ChromeFeatureList.setTestFeatures(features);
     }
 }

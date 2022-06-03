@@ -1,15 +1,3 @@
-<link rel="import" href="../../html/polymer.html">
-
-<link rel="import" href="../cr_icon_button/cr_icon_button.html">
-<link rel="import" href="../cr_icons_css.html">
-<link rel="import" href="../cr_search_field/cr_search_field_behavior.html">
-<link rel="import" href="../icons.html">
-<link rel="import" href="../shared_style_css.html">
-<link rel="import" href="../shared_vars_css.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-
-<dom-module id="cr-toolbar-search-field">
-  <template>
     <style include="cr-shared-style cr-icons">
       :host {
         align-items: center;
@@ -25,25 +13,31 @@
       }
 
       cr-icon-button {
-        --cr-icon-button-fill-color-focus: var(
-            --cr-toolbar-search-field-input-bg-color,
-            var(--cr-toolbar-background-color));
-        --cr-icon-button-size: 32px;
-        margin: 6px;
+        --cr-icon-button-size: var(--cr-toolbar-icon-container-size, 32px);
+        margin: var(--cr-toolbar-icon-margin, 6px);
       }
 
       @media (prefers-color-scheme: light) {
         cr-icon-button {
-          --cr-icon-button-fill-color: var(
-              --cr-toolbar-search-field-input-color,
+          --cr-icon-button-focus-outline-color: var(
+              --cr-toolbar-icon-button-focus-outline-color,
               white);
+          --cr-icon-button-fill-color: var(
+              --cr-toolbar-search-field-input-icon-color,
+              white);
+        }
+
+        :host-context([enable-branding-update]) cr-icon-button {
+          --cr-icon-button-fill-color: var(
+              --cr-toolbar-search-field-input-icon-color,
+              var(--google-grey-refresh-700));
         }
       }
 
       @media (prefers-color-scheme: dark) {
         cr-icon-button {
           --cr-icon-button-fill-color: var(
-              --cr-toolbar-search-field-input-color,
+              --cr-toolbar-search-field-input-icon-color,
               var(--google-grey-refresh-500));
         }
       }
@@ -53,24 +47,41 @@
       }
 
       #prompt {
-        --cr-toolbar-search-field-prompt-opacity: .7;
+        color: var(--cr-toolbar-search-field-prompt-color, white);
         opacity: 0;
+      }
+
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]) #prompt {
+          color: var(--cr-toolbar-search-field-prompt-color,
+              var(--google-grey-refresh-700));
+        }
       }
 
       @media (prefers-color-scheme: dark) {
         #prompt {
           --cr-toolbar-search-field-prompt-opacity: 1;
+          color: var(--cr-secondary-text-color, white);
         }
       }
 
       paper-spinner-lite {
-        @apply --cr-icon-height-width;
         --paper-spinner-color:
-            var(--cr-toolbar-search-field-input-color, white);
-        margin: 0 6px;
+            var(--cr-toolbar-search-field-input-icon-color, white);
+        height: var(--cr-icon-size);
+        margin: var(--cr-toolbar-search-field-paper-spinner-margin, 0 6px);
         opacity: 0;
         padding: 6px;
         position: absolute;
+        width: var(--cr-icon-size);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]) paper-spinner-lite {
+          --paper-spinner-color: var(
+              --cr-toolbar-search-field-input-icon-color,
+              var(--google-grey-refresh-700));
+        }
       }
 
       paper-spinner-lite[active] {
@@ -87,14 +98,13 @@
         -webkit-font-smoothing: antialiased;
         flex: 1;
         line-height: 185%;
-        margin-inline-end: 2px;
-        margin-inline-start: 2px;
+        margin: var(--cr-toolbar-search-field-term-margin, 0 2px);
         position: relative;
       }
 
       label {
         bottom: 0;
-        cursor: text;
+        cursor: var(--cr-toolbar-search-field-cursor, text);
         left: 0;
         overflow: hidden;
         position: absolute;
@@ -111,7 +121,8 @@
         -webkit-appearance: none;
         background: transparent;
         border: none;
-        color: var(--cr-toolbar-search-field-input-color, white);
+        color: var(--cr-toolbar-search-field-input-text-color, white);
+        cursor: var(--cr-toolbar-search-field-cursor, text);
         font: inherit;
         outline: none;
         padding: 0;
@@ -119,9 +130,21 @@
         width: 100%;
       }
 
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]) input {
+          caret-color: var(--google-blue-refresh-700);
+          color: var(--cr-toolbar-search-field-input-text-color,
+              var(--google-grey-900));
+        }
+      }
+
       input[type='search']::-webkit-search-cancel-button {
-        -webkit-appearance: none;
-        margin: 0;
+        display: none;
+      }
+
+      :host([narrow]) {
+        border-radius:
+            var(--cr-toolbar-search-field-border-radius, 0);
       }
 
       /** Wide layout. */
@@ -130,17 +153,49 @@
             var(--cr-toolbar-search-field-background, rgba(0, 0, 0, 0.22));
         border-radius:
             var(--cr-toolbar-search-field-border-radius, 2px);
-        cursor: text;
+        cursor: var(--cr-toolbar-search-field-cursor, text);
+        max-width: var(--cr-toolbar-field-max-width, none);
         padding-inline-end: 0;
         width: var(--cr-toolbar-field-width, 680px);
       }
 
+      :host-context([enable-branding-update]):host(:not([narrow])) {
+        border-radius:
+            var(--cr-toolbar-search-field-border-radius, 46px);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]):host(:not([narrow])) {
+          background:
+              var(--cr-toolbar-search-field-background,
+                  var(--google-grey-refresh-100));
+        }
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :host-context([enable-branding-update]):host(:not([narrow])) {
+          background:
+              var(--cr-toolbar-search-field-background,
+                  rgba(0, 0, 0, 0.22));
+        }
+      }
+
       :host(:not([narrow]):not([showing-search])) #icon {
-        opacity: .7;
+        opacity: var(--cr-toolbar-search-field-icon-opacity, .7);
       }
 
       :host(:not([narrow])) #prompt {
-        opacity: var(--cr-toolbar-search-field-prompt-opacity);
+        opacity: var(--cr-toolbar-search-field-prompt-opacity, .7);
+      }
+
+      @media (prefers-color-scheme: light) {
+        :host-context([enable-branding-update]):host(:not([narrow])) #prompt {
+          opacity: 1;
+        }
+      }
+
+      :host([narrow]) #prompt {
+        opacity: var(--cr-toolbar-search-field-narrow-mode-prompt-opacity, 0);
       }
 
       :host([narrow]:not([showing-search])) #searchTerm {
@@ -158,34 +213,36 @@
 
       :host([narrow][showing-search]) #icon,
       :host([narrow][showing-search]) paper-spinner-lite {
-        margin-inline-start: 18px;  /* Line up with Menu icon. */
+        /* 18px to line up with the Menu icon by default. */
+        margin-inline-start:
+            var(--cr-toolbar-search-icon-margin-inline-start, 18px);
       }
     </style>
     <template is="dom-if" id="spinnerTemplate">
       <paper-spinner-lite active="[[isSpinnerShown_]]">
       </paper-spinner-lite>
     </template>
-    <cr-icon-button id="icon" iron-icon="cr:search" title="[[label]]"
+    <cr-icon-button id="icon" iron-icon="cr:search" title="[[label]]" dir="ltr"
         tabindex$="[[computeIconTabIndex_(narrow, hasSearchText)]]"
-        aria-hidden$="[[computeIconAriaHidden_(narrow, hasSearchText)]]">
+        aria-hidden$="[[computeIconAriaHidden_(narrow, hasSearchText)]]"
+        on-click="onSearchIconClicked_">
     </cr-icon-button>
     <div id="searchTerm">
       <label id="prompt" for="searchInput" aria-hidden="true">[[label]]</label>
       <input id="searchInput"
           aria-labelledby="prompt"
+          autocapitalize="off"
+          autocomplete="off"
           type="search"
           on-input="onSearchTermInput"
           on-search="onSearchTermSearch"
           on-keydown="onSearchTermKeydown_"
           on-focus="onInputFocus_"
           on-blur="onInputBlur_"
-          autofocus
+          autofocus$="[[autofocus]]"
           spellcheck="false">
     </div>
     <template is="dom-if" if="[[hasSearchText]]">
       <cr-icon-button id="clearSearch" iron-icon="cr:cancel"
           title="[[clearLabel]]" on-click="clearSearch_"></cr-icon-button>
     </template>
-  </template>
-  <script src="cr_toolbar_search_field.js"></script>
-</dom-module>

@@ -9,10 +9,12 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
@@ -20,6 +22,7 @@
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
+#include "components/viz/service/display_embedder/viz_process_context_provider.h"
 #include "components/viz/test/test_context_support.h"
 #include "gpu/command_buffer/client/gles2_interface_stub.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -42,19 +45,37 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   gpu::Mailbox CreateSharedImage(ResourceFormat format,
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,
-                                 uint32_t usage) override;
+                                 GrSurfaceOrigin surface_origin,
+                                 SkAlphaType alpha_type,
+                                 uint32_t usage,
+                                 gpu::SurfaceHandle surface_handle) override;
 
   gpu::Mailbox CreateSharedImage(ResourceFormat format,
                                  const gfx::Size& size,
                                  const gfx::ColorSpace& color_space,
+                                 GrSurfaceOrigin surface_origin,
+                                 SkAlphaType alpha_type,
                                  uint32_t usage,
                                  base::span<const uint8_t> pixel_data) override;
 
   gpu::Mailbox CreateSharedImage(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      gfx::BufferPlane plane,
       const gfx::ColorSpace& color_space,
+      GrSurfaceOrigin surface_origin,
+      SkAlphaType alpha_type,
       uint32_t usage) override;
+
+  std::vector<gpu::Mailbox> CreateSharedImageVideoPlanes(
+      gfx::GpuMemoryBuffer* gpu_memory_buffer,
+      gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
+      uint32_t usage) override;
+
+  gpu::Mailbox CreateSharedImageWithAHB(
+      const gpu::Mailbox& mailbox,
+      uint32_t usage,
+      const gpu::SyncToken& sync_token) override;
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
                          const gpu::Mailbox& mailbox) override;
@@ -68,20 +89,28 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   SwapChainMailboxes CreateSwapChain(ResourceFormat format,
                                      const gfx::Size& size,
                                      const gfx::ColorSpace& color_space,
+                                     GrSurfaceOrigin surface_origin,
+                                     SkAlphaType alpha_type,
                                      uint32_t usage) override;
   void PresentSwapChain(const gpu::SyncToken& sync_token,
                         const gpu::Mailbox& mailbox) override;
 
 #if defined(OS_FUCHSIA)
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
-                                      zx::channel token) override;
+                                      zx::channel token,
+                                      gfx::BufferFormat format,
+                                      gfx::BufferUsage usage,
+                                      bool register_with_image_pipe) override;
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id) override;
 #endif  // defined(OS_FUCHSIA)
 
   gpu::SyncToken GenVerifiedSyncToken() override;
   gpu::SyncToken GenUnverifiedSyncToken() override;
+  void WaitSyncToken(const gpu::SyncToken& sync_token) override;
 
   void Flush() override;
+  scoped_refptr<gfx::NativePixmap> GetNativePixmap(
+      const gpu::Mailbox& mailbox) override;
 
   size_t shared_image_count() const { return shared_images_.size(); }
   const gfx::Size& MostRecentSize() const { return most_recent_size_; }
@@ -118,17 +147,23 @@ class TestContextProvider
   static scoped_refptr<TestContextProvider> Create(
       std::unique_ptr<TestGLES2Interface> gl);
   static scoped_refptr<TestContextProvider> Create(
+      std::unique_ptr<TestSharedImageInterface> sii);
+  static scoped_refptr<TestContextProvider> Create(
       std::unique_ptr<TestContextSupport> support);
 
-  explicit TestContextProvider(
-      std::unique_ptr<TestContextSupport> support,
-      std::unique_ptr<TestGLES2Interface> gl,
-      bool support_locking);
+  explicit TestContextProvider(std::unique_ptr<TestContextSupport> support,
+                               std::unique_ptr<TestGLES2Interface> gl,
+                               std::unique_ptr<TestSharedImageInterface> sii,
+                               bool support_locking);
   explicit TestContextProvider(
       std::unique_ptr<TestContextSupport> support,
       std::unique_ptr<TestGLES2Interface> gl,
       std::unique_ptr<gpu::raster::RasterInterface> raster,
+      std::unique_ptr<TestSharedImageInterface> sii,
       bool support_locking);
+
+  TestContextProvider(const TestContextProvider&) = delete;
+  TestContextProvider& operator=(const TestContextProvider&) = delete;
 
   // ContextProvider / RasterContextProvider implementation.
   void AddRef() const override;
@@ -139,7 +174,7 @@ class TestContextProvider
   gpu::gles2::GLES2Interface* ContextGL() override;
   gpu::raster::RasterInterface* RasterInterface() override;
   gpu::ContextSupport* ContextSupport() override;
-  class GrContext* GrContext() override;
+  class GrDirectContext* GrContext() override;
   TestSharedImageInterface* SharedImageInterface() override;
   ContextCacheController* CacheController() override;
   base::Lock* GetLock() override;
@@ -153,6 +188,8 @@ class TestContextProvider
   TestGLES2Interface* UnboundTestContextGL() { return context_gl_.get(); }
 
   TestContextSupport* support() { return support_.get(); }
+
+  gpu::GpuFeatureInfo& GetWritableGpuFeatureInfo() { return gpu_feature_info_; }
 
  protected:
   friend class base::RefCountedThreadSafe<TestContextProvider>;
@@ -189,8 +226,38 @@ class TestContextProvider
   base::ObserverList<ContextLostObserver>::Unchecked observers_;
 
   base::WeakPtrFactory<TestContextProvider> weak_ptr_factory_{this};
+};
 
-  DISALLOW_COPY_AND_ASSIGN(TestContextProvider);
+class TestVizProcessContextProvider : public VizProcessContextProvider {
+ public:
+  TestVizProcessContextProvider(std::unique_ptr<TestContextSupport> support,
+                                std::unique_ptr<TestGLES2Interface> gl);
+  TestVizProcessContextProvider(const TestVizProcessContextProvider&) = delete;
+  TestVizProcessContextProvider& operator=(
+      const TestVizProcessContextProvider&) = delete;
+
+  // ContextProvider implementation.
+  gpu::gles2::GLES2Interface* ContextGL() override;
+  gpu::ContextSupport* ContextSupport() override;
+  const gpu::Capabilities& ContextCapabilities() const override;
+  const gpu::GpuFeatureInfo& GetGpuFeatureInfo() const override;
+
+  void SetUpdateVSyncParametersCallback(
+      UpdateVSyncParametersCallback callback) override;
+  void SetGpuVSyncCallback(GpuVSyncCallback callback) override;
+  void SetGpuVSyncEnabled(bool enabled) override;
+  bool UseRGB565PixelFormat() const override;
+  uint32_t GetCopyTextureInternalFormat() override;
+  base::ScopedClosureRunner GetCacheBackBufferCb() override;
+
+ protected:
+  ~TestVizProcessContextProvider() override;
+
+ private:
+  std::unique_ptr<TestContextSupport> support_;
+  std::unique_ptr<TestGLES2Interface> context_gl_;
+  gpu::Capabilities gpu_capabilities_;
+  gpu::GpuFeatureInfo gpu_feature_info_;
 };
 
 }  // namespace viz

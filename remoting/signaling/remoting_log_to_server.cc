@@ -7,12 +7,15 @@
 #include <sstream>
 
 #include "base/bind.h"
-#include "remoting/base/grpc_support/grpc_async_unary_request.h"
-#include "remoting/base/grpc_support/grpc_authenticated_executor.h"
-#include "remoting/base/grpc_support/grpc_channel.h"
+#include "base/logging.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
+#include "remoting/base/protobuf_http_client.h"
+#include "remoting/base/protobuf_http_request.h"
+#include "remoting/base/protobuf_http_request_config.h"
+#include "remoting/base/protobuf_http_status.h"
 #include "remoting/base/service_urls.h"
-#include "remoting/proto/remoting/v1/telemetry_service.grpc.pb.h"
-#include "third_party/grpc/src/include/grpcpp/support/status.h"
+#include "remoting/proto/remoting/v1/telemetry_messages.pb.h"
+#include "services/network/public/cpp/shared_url_loader_factory.h"
 
 namespace remoting {
 
@@ -44,55 +47,90 @@ const net::BackoffEntry::Policy kBackoffPolicy = {
     false,
 };
 
+constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("remoting_log_to_server",
+                                        R"(
+        semantics {
+          sender: "Chrome Remote Desktop"
+          description:
+            "Sends telemetry logs for Chrome Remote Desktop."
+          trigger:
+            "These requests are sent periodically when a session is connected, "
+            "i.e. CRD host is running and is connected to a client."
+          data:
+            "Anonymous usage statistics, which includes CRD host version, OS "
+            "name, OS version, and CPU architecture (e.g. x86_64)."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "This request cannot be stopped in settings, but will not be sent "
+            "if the user does not use Chrome Remote Desktop."
+          policy_exception_justification:
+            "Not implemented."
+        })");
+
+constexpr char kCreateLogEntryPath[] = "/v1/telemetry:createlogentry";
+
 using CreateLogEntryResponseCallback =
-    base::OnceCallback<void(const grpc::Status&,
-                            const apis::v1::CreateLogEntryResponse&)>;
+    base::OnceCallback<void(const ProtobufHttpStatus&,
+                            std::unique_ptr<apis::v1::CreateLogEntryResponse>)>;
 
 class TelemetryClient {
  public:
-  explicit TelemetryClient(OAuthTokenGetter* token_getter);
+  TelemetryClient(
+      OAuthTokenGetter* token_getter,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  TelemetryClient(const TelemetryClient&) = delete;
+  TelemetryClient& operator=(const TelemetryClient&) = delete;
+
   ~TelemetryClient();
 
   void CreateLogEntry(const apis::v1::CreateLogEntryRequest& request,
                       CreateLogEntryResponseCallback callback);
 
  private:
-  using TelemetryService = apis::v1::RemotingTelemetryService;
-  GrpcAuthenticatedExecutor executor_;
-  std::unique_ptr<TelemetryService::Stub> stub_;
-  DISALLOW_COPY_AND_ASSIGN(TelemetryClient);
+  ProtobufHttpClient http_client_;
 };
 
-TelemetryClient::TelemetryClient(OAuthTokenGetter* token_getter)
-    : executor_(token_getter) {
-  stub_ = TelemetryService::NewStub(CreateSslChannelForEndpoint(
-      ServiceUrls::GetInstance()->remoting_server_endpoint()));
-}
+TelemetryClient::TelemetryClient(
+    OAuthTokenGetter* token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    : http_client_(ServiceUrls::GetInstance()->remoting_server_endpoint(),
+                   token_getter,
+                   url_loader_factory) {}
 
 TelemetryClient::~TelemetryClient() = default;
 
 void TelemetryClient::CreateLogEntry(
     const apis::v1::CreateLogEntryRequest& request,
     CreateLogEntryResponseCallback callback) {
-  executor_.ExecuteRpc(CreateGrpcAsyncUnaryRequest(
-      base::BindOnce(&TelemetryService::Stub::AsyncCreateLogEntry,
-                     base::Unretained(stub_.get())),
-      request, std::move(callback)));
+  auto request_config =
+      std::make_unique<ProtobufHttpRequestConfig>(kTrafficAnnotation);
+  request_config->path = kCreateLogEntryPath;
+  request_config->request_message =
+      std::make_unique<apis::v1::CreateLogEntryRequest>(request);
+  auto http_request =
+      std::make_unique<ProtobufHttpRequest>(std::move(request_config));
+  http_request->SetResponseCallback(std::move(callback));
+  http_client_.ExecuteRequest(std::move(http_request));
 }
 
 }  // namespace
 
 RemotingLogToServer::RemotingLogToServer(
     ServerLogEntry::Mode mode,
-    std::unique_ptr<OAuthTokenGetter> token_getter)
+    std::unique_ptr<OAuthTokenGetter> token_getter,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
     : mode_(mode),
       token_getter_(std::move(token_getter)),
       backoff_(&kBackoffPolicy),
       create_log_entry_(base::BindRepeating(
           &TelemetryClient::CreateLogEntry,
-          std::make_unique<TelemetryClient>(token_getter_.get()))) {
-  DETACH_FROM_SEQUENCE(sequence_checker_);
-}
+          std::make_unique<TelemetryClient>(token_getter_.get(),
+                                            url_loader_factory))) {}
 
 RemotingLogToServer::~RemotingLogToServer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -141,8 +179,8 @@ void RemotingLogToServer::SendLogRequestWithBackoff(
 void RemotingLogToServer::OnSendLogRequestResult(
     const apis::v1::CreateLogEntryRequest& request,
     int attempts_left,
-    const grpc::Status& status,
-    const apis::v1::CreateLogEntryResponse& response) {
+    const ProtobufHttpStatus& status,
+    std::unique_ptr<apis::v1::CreateLogEntryResponse> response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (status.ok()) {
     VLOG(1) << "One log has been successfully sent.";
@@ -150,7 +188,7 @@ void RemotingLogToServer::OnSendLogRequestResult(
     return;
   }
   LOG(WARNING) << "Failed to send one log."
-               << " Error: " << status.error_code()
+               << " Error: " << static_cast<int>(status.error_code())
                << " Message: " << status.error_message();
   backoff_.InformOfRequest(false);
   if (attempts_left <= 0) {

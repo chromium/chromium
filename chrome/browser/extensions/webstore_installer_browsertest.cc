@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/extensions/webstore_install_result.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
@@ -48,15 +49,17 @@ class TestWebstoreInstaller : public WebstoreInstaller {
                           std::move(approval),
                           source) {}
 
-  void SetDeletedClosure(const base::Closure& cb) { deleted_closure_ = cb; }
+  void SetDeletedClosure(base::OnceClosure cb) {
+    deleted_closure_ = std::move(cb);
+  }
 
  private:
   ~TestWebstoreInstaller() override {
     if (!deleted_closure_.is_null())
-      deleted_closure_.Run();
+      std::move(deleted_closure_).Run();
   }
 
-  base::Closure deleted_closure_;
+  base::OnceClosure deleted_closure_;
 };
 
 class WebstoreInstallerBrowserTest
@@ -72,8 +75,8 @@ class WebstoreInstallerBrowserTest
             kNonAppDomain) {}
   ~WebstoreInstallerBrowserTest() override {}
 
-  void SetDoneClosure(const base::Closure& done_closure) {
-    done_closure_ = done_closure;
+  void SetDoneClosure(base::OnceClosure done_closure) {
+    done_closure_ = std::move(done_closure);
   }
 
   bool success() const { return success_; }
@@ -90,7 +93,7 @@ class WebstoreInstallerBrowserTest
       WebstoreInstaller::FailureReason reason) override;
 
  private:
-  base::Closure done_closure_;
+  base::OnceClosure done_closure_;
   bool success_;
 };
 
@@ -105,7 +108,7 @@ void WebstoreInstallerBrowserTest::OnExtensionDownloadProgress(
 void WebstoreInstallerBrowserTest::OnExtensionInstallSuccess(
     const std::string& id) {
   success_ = true;
-  done_closure_.Run();
+  std::move(done_closure_).Run();
 }
 
 void WebstoreInstallerBrowserTest::OnExtensionInstallFailure(
@@ -113,7 +116,7 @@ void WebstoreInstallerBrowserTest::OnExtensionInstallFailure(
     const std::string& error,
     WebstoreInstaller::FailureReason reason) {
   success_ = false;
-  done_closure_.Run();
+  std::move(done_closure_).Run();
 }
 
 IN_PROC_BROWSER_TEST_F(WebstoreInstallerBrowserTest, WebstoreInstall) {
@@ -180,7 +183,7 @@ IN_PROC_BROWSER_TEST_F(WebstoreInstallerBrowserTest, SimultaneousInstall) {
   // Simulate another mechanism installing the same extension.
   scoped_refptr<const Extension> extension =
       ExtensionBuilder()
-          .SetLocation(Manifest::INTERNAL)
+          .SetLocation(mojom::ManifestLocation::kInternal)
           .SetID(kTestExtensionId)
           .SetManifest(std::move(manifest))
           .Build();

@@ -22,16 +22,16 @@
 
 #include <algorithm>
 
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "util/file/directory_reader.h"
 #include "util/misc/implicit_cast.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <sys/sysctl.h>
 #endif
 
@@ -51,7 +51,7 @@ namespace {
 void CloseNowOrOnExec(int fd, bool ebadf_ok) {
   int rv;
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // Try to set close-on-exec, to avoid attempting to close a guarded FD with
   // a close guard set.
   rv = fcntl(fd, F_SETFD, FD_CLOEXEC);
@@ -72,9 +72,9 @@ void CloseNowOrOnExec(int fd, bool ebadf_ok) {
 // This is an advantage over looping over all possible file descriptors, because
 // no attempt needs to be made to close file descriptors that are not open.
 bool CloseMultipleNowOrOnExecUsingFDDir(int min_fd, int preserve_fd) {
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   static constexpr char kFDDir[] = "/dev/fd";
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   static constexpr char kFDDir[] = "/proc/self/fd";
 #endif
 
@@ -109,6 +109,12 @@ bool CloseMultipleNowOrOnExecUsingFDDir(int min_fd, int preserve_fd) {
 }  // namespace
 
 void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  // See comments on the ResetFDOwnership() declaration in
+  // base/files/scoped_file.h regarding why this is called here.
+  base::subtle::ResetFDOwnership();
+#endif
+
   if (CloseMultipleNowOrOnExecUsingFDDir(fd, preserve_fd)) {
     return;
   }
@@ -135,7 +141,8 @@ void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
   max_fd = std::max(max_fd, getdtablesize());
 #endif
 
-#if !(defined(OS_LINUX) || defined(OS_ANDROID)) || defined(OPEN_MAX)
+#if !(defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)) || \
+    defined(OPEN_MAX)
   // Linux does not provide OPEN_MAX. See
   // https://git.kernel.org/cgit/linux/kernel/git/stable/linux-stable.git/commit/include/linux/limits.h?id=77293034696e3e0b6c8b8fc1f96be091104b3d2b.
   max_fd = std::max(max_fd, OPEN_MAX);
@@ -146,7 +153,7 @@ void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
   // while the system is running, but it’s still a better upper bound than the
   // current RLIMIT_NOFILE value.
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   // See 10.11.6 xnu-3248.60.10/bsd/kern/kern_resource.c maxfilesperproc,
   // referenced by dosetrlimit().
   int oid[] = {CTL_KERN, KERN_MAXFILESPERPROC};
@@ -162,7 +169,7 @@ void CloseMultipleNowOrOnExec(int fd, int preserve_fd) {
   } else {
     PLOG(WARNING) << "sysctl";
   }
-#elif defined(OS_LINUX) || defined(OS_ANDROID)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
   // See linux-4.4.27/fs/file.c sysctl_nr_open, referenced by kernel/sys.c
   // do_prlimit() and kernel/sysctl.c fs_table. Inability to open this file is
   // not considered an error, because /proc may not be available or usable.

@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/webui/welcome/bookmark_item.h"
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/values.h"
 
 namespace welcome {

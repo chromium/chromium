@@ -22,4 +22,8 @@ DataTypeActivationRequest& DataTypeActivationRequest::operator=(
 DataTypeActivationRequest& DataTypeActivationRequest::operator=(
     DataTypeActivationRequest&& request) = default;
 
+bool DataTypeActivationRequest::IsValid() const {
+  return !error_handler.is_null();
+}
+
 }  // namespace syncer

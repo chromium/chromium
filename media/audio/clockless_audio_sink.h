@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "media/base/audio_renderer_sink.h"
 
@@ -21,6 +20,9 @@ class MEDIA_EXPORT ClocklessAudioSink : public AudioRendererSink {
  public:
   ClocklessAudioSink();
   explicit ClocklessAudioSink(const OutputDeviceInfo& device_info);
+
+  ClocklessAudioSink(const ClocklessAudioSink&) = delete;
+  ClocklessAudioSink& operator=(const ClocklessAudioSink&) = delete;
 
   // AudioRendererSink implementation.
   void Initialize(const AudioParameters& params,
@@ -60,8 +62,6 @@ class MEDIA_EXPORT ClocklessAudioSink : public AudioRendererSink {
 
   // Time taken in last set of Render() calls.
   base::TimeDelta playback_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClocklessAudioSink);
 };
 
 }  // namespace media

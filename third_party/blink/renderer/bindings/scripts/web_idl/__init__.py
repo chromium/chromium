@@ -12,8 +12,10 @@ def _setup_sys_path():
     expected_path = 'third_party/blink/renderer/bindings/scripts/web_idl/'
 
     this_dir = os.path.dirname(__file__)
-    root_dir = os.path.join(this_dir, *(['..'] * expected_path.count('/')))
-    sys.path = [
+    root_dir = os.path.abspath(
+        os.path.join(this_dir, *(['..'] * expected_path.count('/'))))
+
+    module_dirs = (
         # //third_party/blink/renderer/build/scripts/blinkbuild
         os.path.join(root_dir, 'third_party', 'blink', 'renderer', 'build',
                      'scripts'),
@@ -23,17 +25,24 @@ def _setup_sys_path():
         os.path.join(root_dir, 'third_party', 'pyjson5', 'src'),
         # //tools/idl_parser
         os.path.join(root_dir, 'tools'),
-    ] + sys.path
+    )
+    for module_dir in reversed(module_dirs):
+        # Preserve sys.path[0] as is.
+        # https://docs.python.org/3/library/sys.html?highlight=path[0]#sys.path
+        sys.path.insert(1, module_dir)
 
 
 _setup_sys_path()
 
-
+from . import file_io
+from .argument import Argument
 from .ast_group import AstGroup
 from .attribute import Attribute
 from .callback_function import CallbackFunction
 from .callback_interface import CallbackInterface
 from .composition_parts import Component
+from .composition_parts import DebugInfo
+from .composition_parts import Identifier
 from .constant import Constant
 from .constructor import Constructor
 from .constructor import ConstructorGroup
@@ -43,12 +52,21 @@ from .dictionary import Dictionary
 from .dictionary import DictionaryMember
 from .enumeration import Enumeration
 from .exposure import Exposure
+from .extended_attribute import ExtendedAttribute
+from .extended_attribute import ExtendedAttributes
 from .function_like import FunctionLike
 from .function_like import OverloadGroup
 from .idl_type import IdlType
+from .interface import IndexedAndNamedProperties
 from .interface import Interface
+from .interface import Iterable
+from .interface import LegacyWindowAlias
+from .interface import Maplike
+from .interface import Setlike
+from .interface import Stringifier
 from .literal_constant import LiteralConstant
 from .namespace import Namespace
+from .observable_array import ObservableArray
 from .operation import Operation
 from .operation import OperationGroup
 from .runtime_enabled_features import RuntimeEnabledFeatures

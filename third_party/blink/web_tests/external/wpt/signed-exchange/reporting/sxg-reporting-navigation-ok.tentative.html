@@ -10,8 +10,8 @@
 const alt_origin = get_host_info().HTTPS_NOTSAMESITE_ORIGIN;
 const test_origin = get_host_info().HTTPS_ORIGIN;
 
-nel_test(async t => {
-  await fetchResourceWithBasicPolicy();
+nel_iframe_test(async t => {
+  await loadResourceWithBasicPolicyInIframe();
   const sxg_url = alt_origin + '/signed-exchange/resources/sxg/sxg-location.sxg?navigation';
   const cert_url = test_origin + '/signed-exchange/resources/127.0.0.1.sxg.pem.cbor';
   const message = await openSXGInIframeAndWaitForMessage(t, sxg_url);
@@ -27,7 +27,7 @@ nel_test(async t => {
         phase: "sxg",
         type: "ok",
         status_code: 200,
-        referrer: location.href,
+        referrer: location.origin + '/',
         sxg: {
           outer_url: sxg_url,
           inner_url:
@@ -47,7 +47,7 @@ nel_test(async t => {
         phase: "application",
         type: "ok",
         status_code: 200,
-        referrer: location.href,
+        referrer: location.origin + '/',
       },
       metadata: {
         content_type: "application/reports+json",

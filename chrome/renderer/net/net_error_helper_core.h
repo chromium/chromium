@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
@@ -25,9 +24,6 @@
 
 namespace content {
 class RenderFrame;
-}
-namespace error_page {
-struct ErrorPageParams;
 }
 
 // Class that contains the logic for how the NetErrorHelper.  This allows for
@@ -51,7 +47,6 @@ class NetErrorHelperCore {
     RELOAD_BUTTON,
     MORE_BUTTON,
     EASTER_EGG,
-    SHOW_CACHED_COPY_BUTTON,  // "Google cached copy" button label experiment.
     DIAGNOSE_ERROR,
     DOWNLOAD_BUTTON,  // "Download page later" experiment.
   };
@@ -65,12 +60,7 @@ class NetErrorHelperCore {
         const error_page::Error& error,
         bool is_failed_post,
         bool can_show_network_diagnostics_dialog,
-        std::unique_ptr<error_page::ErrorPageParams> params,
         std::string* html) const = 0;
-
-    // Loads the given HTML in the frame for use as an error page.
-    virtual void LoadErrorPage(const std::string& html,
-                               const GURL& failed_url) = 0;
 
     // Create extra Javascript bindings in the error page. Will only be invoked
     // after an error page has finished loading.
@@ -94,23 +84,6 @@ class NetErrorHelperCore {
     // preferences from the browser.  The delegate should call
     // OnEasterEggHighScoreReceived() with the response.
     virtual void RequestEasterEggHighScore() = 0;
-
-    // Fetches an error page and calls into OnErrorPageFetched when done.  Any
-    // previous fetch must either be canceled or finished before calling.  Can't
-    // be called synchronously after a previous fetch completes.
-    virtual void FetchNavigationCorrections(
-        const GURL& navigation_correction_url,
-        const std::string& navigation_correction_request_body) = 0;
-
-    // Cancels fetching navigation corrections.  Does nothing if no fetch is
-    // ongoing.
-    virtual void CancelFetchNavigationCorrections() = 0;
-
-    // Sends an HTTP request used to track which link on the page was clicked to
-    // the navigation correction service.
-    virtual void SendTrackingRequest(
-        const GURL& tracking_url,
-        const std::string& tracking_request_body) = 0;
 
     // Starts a reload of the observed frame.
     virtual void ReloadFrame() = 0;
@@ -143,23 +116,7 @@ class NetErrorHelperCore {
     virtual ~Delegate() {}
   };
 
-  struct NavigationCorrectionParams {
-    NavigationCorrectionParams();
-    NavigationCorrectionParams(const NavigationCorrectionParams& other);
-    ~NavigationCorrectionParams();
-
-    // URL used both for getting the suggestions and tracking clicks.
-    GURL url;
-
-    std::string language;
-    std::string country_code;
-    std::string api_key;
-    GURL search_url;
-  };
-
-  NetErrorHelperCore(Delegate* delegate,
-                     bool auto_reload_enabled,
-                     bool is_visible);
+  explicit NetErrorHelperCore(Delegate* delegate);
   ~NetErrorHelperCore();
 
   // Sets values in |pending_error_page_info_|. If |error_html| is not null, it
@@ -172,19 +129,10 @@ class NetErrorHelperCore {
                         std::string* error_html);
 
   // These methods handle tracking the actual state of the page.
-  void OnStartLoad(FrameType frame_type, PageType page_type);
   void OnCommitLoad(FrameType frame_type, const GURL& url);
   void OnFinishLoad(FrameType frame_type);
-  void OnStop();
-  void OnWasShown();
-  void OnWasHidden();
 
-  void CancelPendingFetches();
-
-  // Called when an error page have has been retrieved over the network.  |html|
-  // must be an empty string on error.
-  void OnNavigationCorrectionsFetched(const std::string& corrections,
-                                      bool is_rtl);
+  void CancelPendingAutoReload();
 
   // Notifies |this| that network error information from the browser process
   // has been received.
@@ -195,36 +143,9 @@ class NetErrorHelperCore {
   void OnSetCanShowNetworkDiagnosticsDialog(
       bool can_show_network_diagnostics_dialog);
 
-  void OnSetNavigationCorrectionInfo(const GURL& navigation_correction_url,
-                                     const std::string& language,
-                                     const std::string& country_code,
-                                     const std::string& api_key,
-                                     const GURL& search_url);
-
   // Notifies |this| about the current high score that's saved in the user's
   // synced preferences.
   void OnEasterEggHighScoreReceived(int high_score);
-
-  // Notifies |this| that the network's online status changed.
-  // Handler for NetworkStateChanged notification from the browser process. If
-  // the network state changes to online, this method is responsible for
-  // starting the auto-reload process.
-  //
-  // Warning: if there are many tabs sitting at an error page, this handler will
-  // be run at the same time for each of their top-level renderframes, which can
-  // cause many requests to be started at the same time. There's no current
-  // protection against this kind of "reload storm".
-  //
-  // TODO(rdsmith): prevent the reload storm.
-  void NetworkStateChanged(bool online);
-
-  int auto_reload_count() const { return auto_reload_count_; }
-
-  bool ShouldSuppressErrorPage(FrameType frame_type, const GURL& url);
-
-  void set_timer_for_testing(std::unique_ptr<base::OneShotTimer> timer) {
-    auto_reload_timer_ = std::move(timer);
-  }
 
 #if defined(OS_ANDROID)
   void SetPageAutoFetcherHelperForTesting(
@@ -235,12 +156,6 @@ class NetErrorHelperCore {
   // Note that the visual effects of the 'MORE' button are taken
   // care of in JavaScript.
   void ExecuteButtonPress(Button button);
-
-  // Reports to the correction service that the link with the given tracking
-  // ID was clicked.  Only pages generated with information from the service
-  // have links with tracking IDs.  Duplicate requests from the same page with
-  // the same tracking ID are ignored.
-  void TrackClick(int tracking_id);
 
   // Opens a suggested offline item.
   void LaunchOfflineItem(const std::string& id, const std::string& name_space);
@@ -261,8 +176,8 @@ class NetErrorHelperCore {
   // Sets values in |pending_error_page_info| for a main frame error page. If
   // |error_html| is not null, it also fetches the string containing the error
   // page HTML, and sets error_html to it. Depending on
-  // |pending_error_page_info|, may use the navigation correction service, or
-  // show a DNS probe error page.  May modify |pending_error_page_info|.
+  // |pending_error_page_info|, may show a DNS probe error page.  May modify
+  // |pending_error_page_info|.
   void PrepareErrorPageForMainFrame(ErrorPageInfo* pending_error_page_info,
                                     std::string* error_html);
 
@@ -278,14 +193,8 @@ class NetErrorHelperCore {
   error_page::Error GetUpdatedError(const ErrorPageInfo& error_info) const;
 
   void Reload();
-  bool MaybeStartAutoReloadTimer();
-  void StartAutoReloadTimer();
-  void AutoReloadTimerFired();
-  void PauseAutoReloadTimer();
 
-  static bool IsReloadableError(const ErrorPageInfo& info);
-
-  Delegate* delegate_;
+  Delegate* const delegate_;
 
   // The last DnsProbeStatus received from the browser.
   error_page::DnsProbeStatus last_probe_status_;
@@ -299,38 +208,6 @@ class NetErrorHelperCore {
   std::unique_ptr<ErrorPageInfo> committed_error_page_info_;
 
   bool can_show_network_diagnostics_dialog_;
-
-  NavigationCorrectionParams navigation_correction_params_;
-
-  // True if auto-reload is enabled at all.
-  const bool auto_reload_enabled_;
-
-  // Timer used to wait for auto-reload attempts.
-  std::unique_ptr<base::OneShotTimer> auto_reload_timer_;
-
-  // True if the auto-reload timer would be running but is waiting for an
-  // offline->online network transition.
-  bool auto_reload_paused_;
-
-  // Whether an auto-reload-initiated Reload() attempt is in flight.
-  bool auto_reload_in_flight_;
-
-  // True if there is an uncommitted-but-started load, error page or not. This
-  // is used to inhibit starting auto-reload when an error page finishes, in
-  // case this happens:
-  //   Error page starts
-  //   Error page commits
-  //   Non-error page starts
-  //   Error page finishes
-  bool uncommitted_load_started_;
-
-  // Is the browser online?
-  bool online_;
-
-  // Is the RenderFrame this object is observing visible?
-  bool visible_;
-
-  int auto_reload_count_;
 
   // This value is set only when a navigation has been initiated from
   // the error page.  It is used to detect when such navigations result

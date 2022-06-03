@@ -7,9 +7,9 @@
 
 #include <string>
 
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "content/public/browser/tts_controller.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
+#include "extensions/browser/extension_function.h"
 
 namespace content {
 class BrowserContext;
@@ -20,10 +20,10 @@ content::TtsEventType TtsEventTypeFromString(const std::string& str);
 
 namespace extensions {
 
-class TtsSpeakFunction : public ChromeAsyncExtensionFunction {
+class TtsSpeakFunction : public ExtensionFunction {
  private:
   ~TtsSpeakFunction() override {}
-  bool RunAsync() override;
+  ResponseAction Run() override;
   DECLARE_EXTENSION_FUNCTION("tts.speak", TTS_SPEAK)
 };
 

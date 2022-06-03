@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IDLENESS_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IDLENESS_DETECTOR_H_
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -29,6 +28,8 @@ class CORE_EXPORT IdlenessDetector
   IdlenessDetector(
       LocalFrame*,
       const base::TickClock* = base::DefaultTickClock::GetInstance());
+  IdlenessDetector(const IdlenessDetector&) = delete;
+  IdlenessDetector& operator=(const IdlenessDetector&) = delete;
 
   void Shutdown();
   void WillCommitLoad();
@@ -42,7 +43,7 @@ class CORE_EXPORT IdlenessDetector
   base::TimeTicks GetNetworkIdleTime();
   bool NetworkIsAlmostIdle();
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   friend class IdlenessDetectorTest;
@@ -50,9 +51,8 @@ class CORE_EXPORT IdlenessDetector
   // The page is quiet if there are no more than 2 active network requests for
   // this duration of time.
   static constexpr base::TimeDelta kNetworkQuietWindow =
-      base::TimeDelta::FromMilliseconds(500);
-  static constexpr base::TimeDelta kNetworkQuietWatchdog =
-      base::TimeDelta::FromSeconds(2);
+      base::Milliseconds(500);
+  static constexpr base::TimeDelta kNetworkQuietWatchdog = base::Seconds(2);
   static constexpr int kNetworkQuietMaximumConnections = 2;
 
   // TaskTimeObserver implementation.
@@ -82,11 +82,9 @@ class CORE_EXPORT IdlenessDetector
   // Record the actual start time of network quiet.
   base::TimeTicks network_0_quiet_start_time_;
   base::TimeTicks network_2_quiet_start_time_;
-  TaskRunnerTimer<IdlenessDetector> network_quiet_timer_;
-
-  DISALLOW_COPY_AND_ASSIGN(IdlenessDetector);
+  HeapTaskRunnerTimer<IdlenessDetector> network_quiet_timer_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LOADER_IDLENESS_DETECTOR_H_

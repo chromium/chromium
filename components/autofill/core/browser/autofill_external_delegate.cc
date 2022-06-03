@@ -9,18 +9,20 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autocomplete_history_manager.h"
 #include "components/autofill/core/browser/autofill_driver.h"
-#include "components/autofill/core/browser/autofill_manager.h"
-#include "components/autofill/core/browser/autofill_metrics.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -38,16 +40,22 @@ namespace autofill {
 
 namespace {
 
+using AutoselectFirstSuggestion =
+    AutofillClient::PopupOpenArgs::AutoselectFirstSuggestion;
+
 // Returns true if the suggestion entry is an Autofill warning message.
 // Warning messages should display on top of suggestion list.
 bool IsAutofillWarningEntry(int frontend_id) {
-  return frontend_id == POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE;
+  return frontend_id ==
+             POPUP_ITEM_ID_INSECURE_CONTEXT_PAYMENT_DISABLED_MESSAGE ||
+         frontend_id == POPUP_ITEM_ID_MIXED_FORM_MESSAGE;
 }
 
 }  // namespace
 
-AutofillExternalDelegate::AutofillExternalDelegate(AutofillManager* manager,
-                                                   AutofillDriver* driver)
+AutofillExternalDelegate::AutofillExternalDelegate(
+    BrowserAutofillManager* manager,
+    AutofillDriver* driver)
     : manager_(manager), driver_(driver) {
   DCHECK(manager);
 }
@@ -81,6 +89,10 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
     bool is_all_server_suggestions) {
   if (query_id != query_id_)
     return;
+#if defined(OS_IOS)
+  if (!manager_->client()->IsQueryIDRelevant(query_id))
+    return;
+#endif
 
   std::vector<Suggestion> suggestions(input_suggestions);
 
@@ -117,15 +129,23 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
 
     // Append the "Hide Suggestions" menu item for only Autofill Address and
     // Autocomplete popups.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MACOSX) || \
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_APPLE) || \
     defined(OS_CHROMEOS)
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableHideSuggestionsUI)) {
-    if (!suggestions.empty() && (GetPopupType() == PopupType::kAddresses ||
-                                 GetPopupType() == PopupType::kUnspecified)) {
-      suggestions.push_back(
-          Suggestion(l10n_util::GetStringUTF16(IDS_AUTOFILL_HIDE_SUGGESTIONS)));
-      suggestions.back().frontend_id = POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS;
+    // If the user has selected a suggestion, it indicates the suggestions are
+    // useful to the user and no need  hide them. In this case,
+    // ApplyAutofillOptions() should have added a "Clear form" option instead.
+    if (!query_field_.is_autofilled) {
+      if (!suggestions.empty() &&
+          (GetPopupType() == PopupType::kAddresses ||
+           GetPopupType() == PopupType::kUnspecified) &&
+          suggestions[0].frontend_id != POPUP_ITEM_ID_MIXED_FORM_MESSAGE) {
+        suggestions.push_back(Suggestion(
+            l10n_util::GetStringUTF16(IDS_AUTOFILL_HIDE_SUGGESTIONS)));
+        suggestions.back().frontend_id =
+            POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS;
+      }
     }
   }
 #endif
@@ -149,15 +169,16 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (suggestions.empty()) {
     OnAutofillAvailabilityEvent(mojom::AutofillState::kNoSuggestions);
     // No suggestions, any popup currently showing is obsolete.
-    manager_->client()->HideAutofillPopup();
+    manager_->client()->HideAutofillPopup(PopupHidingReason::kNoSuggestions);
     return;
   }
 
   // Send to display.
-  if (query_field_.is_focusable) {
-    manager_->client()->ShowAutofillPopup(
+  if (query_field_.is_focusable && driver_->CanShowAutofillUi()) {
+    autofill::AutofillClient::PopupOpenArgs open_args(
         element_bounds_, query_field_.text_direction, suggestions,
-        autoselect_first_suggestion, popup_type_, GetWeakPtr());
+        AutoselectFirstSuggestion(autoselect_first_suggestion), popup_type_);
+    manager_->client()->ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }
 
@@ -172,12 +193,13 @@ void AutofillExternalDelegate::OnAutofillAvailabilityEvent(
     const mojom::AutofillState state) {
   // Availability of suggestions should be communicated to Blink because
   // accessibility objects live in both the renderer and browser processes.
-  driver_->RendererShouldSetSuggestionAvailability(state);
+  driver_->RendererShouldSetSuggestionAvailability(query_field_.global_id(),
+                                                   state);
 }
 
 void AutofillExternalDelegate::SetCurrentDataListValues(
-    const std::vector<base::string16>& data_list_values,
-    const std::vector<base::string16>& data_list_labels) {
+    const std::vector<std::u16string>& data_list_values,
+    const std::vector<std::u16string>& data_list_labels) {
   data_list_values_ = data_list_values;
   data_list_labels_ = data_list_labels;
 
@@ -186,7 +208,9 @@ void AutofillExternalDelegate::SetCurrentDataListValues(
 }
 
 void AutofillExternalDelegate::OnPopupShown() {
-  // If a popup was shown, then we showed either autofill or autocomplete.
+  // Popups are expected to be Autofill or Autocomplete.
+  DCHECK_NE(GetPopupType(), PopupType::kPasswords);
+
   OnAutofillAvailabilityEvent(
       has_autofill_suggestions_ ? mojom::AutofillState::kAutofillAvailable
                                 : mojom::AutofillState::kAutocompleteAvailable);
@@ -207,91 +231,103 @@ void AutofillExternalDelegate::OnPopupSuppressed() {
   manager_->DidSuppressPopup(query_form_, query_field_);
 }
 
-void AutofillExternalDelegate::DidSelectSuggestion(const base::string16& value,
-                                                   int identifier) {
+void AutofillExternalDelegate::DidSelectSuggestion(const std::u16string& value,
+                                                   int frontend_id) {
   ClearPreviewedForm();
 
   // Only preview the data if it is a profile.
-  if (identifier > 0)
-    FillAutofillFormData(identifier, true);
-  else if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
-    driver_->RendererShouldPreviewFieldWithValue(value);
+  if (frontend_id > 0)
+    FillAutofillFormData(frontend_id, true);
+  else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY)
+    driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
+                                                 value);
 }
 
-void AutofillExternalDelegate::DidAcceptSuggestion(const base::string16& value,
-                                                   int identifier,
-                                                   int position) {
-  if (identifier == POPUP_ITEM_ID_AUTOFILL_OPTIONS) {
+void AutofillExternalDelegate::DidAcceptSuggestion(
+    const std::u16string& value,
+    int frontend_id,
+    const std::string& backend_id,
+    int position) {
+  if (frontend_id == POPUP_ITEM_ID_AUTOFILL_OPTIONS) {
     // User selected 'Autofill Options'.
     manager_->ShowAutofillSettings(popup_type_ == PopupType::kCreditCards);
-  } else if (identifier == POPUP_ITEM_ID_CLEAR_FORM) {
+  } else if (frontend_id == POPUP_ITEM_ID_CLEAR_FORM) {
     // User selected 'Clear form'.
     AutofillMetrics::LogAutofillFormCleared();
     driver_->RendererShouldClearFilledSection();
-  } else if (identifier == POPUP_ITEM_ID_PASSWORD_ENTRY ||
-             identifier == POPUP_ITEM_ID_USERNAME_ENTRY) {
+  } else if (frontend_id == POPUP_ITEM_ID_PASSWORD_ENTRY ||
+             frontend_id == POPUP_ITEM_ID_USERNAME_ENTRY ||
+             frontend_id == POPUP_ITEM_ID_ACCOUNT_STORAGE_PASSWORD_ENTRY ||
+             frontend_id == POPUP_ITEM_ID_ACCOUNT_STORAGE_USERNAME_ENTRY) {
     NOTREACHED();  // Should be handled elsewhere.
-  } else if (identifier == POPUP_ITEM_ID_DATALIST_ENTRY) {
-    driver_->RendererShouldAcceptDataListSuggestion(value);
-  } else if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
+  } else if (frontend_id == POPUP_ITEM_ID_DATALIST_ENTRY) {
+    driver_->RendererShouldAcceptDataListSuggestion(query_field_.global_id(),
+                                                    value);
+  } else if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
     // User selected an Autocomplete, so we fill directly.
-    driver_->RendererShouldFillFieldWithValue(value);
+    driver_->RendererShouldFillFieldWithValue(query_field_.global_id(), value);
     AutofillMetrics::LogAutocompleteSuggestionAcceptedIndex(position);
-    manager_->OnAutocompleteEntrySelected(value);
-  } else if (identifier == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
+    manager_->OnSingleFieldSuggestionSelected(value);
+  } else if (frontend_id == POPUP_ITEM_ID_SCAN_CREDIT_CARD) {
     manager_->client()->ScanCreditCard(base::BindOnce(
         &AutofillExternalDelegate::OnCreditCardScanned, GetWeakPtr()));
-  } else if (identifier == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
-    manager_->client()->ExecuteCommand(identifier);
-  } else if (identifier == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
+  } else if (frontend_id == POPUP_ITEM_ID_CREDIT_CARD_SIGNIN_PROMO) {
+    manager_->client()->ExecuteCommand(frontend_id);
+  } else if (frontend_id == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
     manager_->OnUserAcceptedCardsFromAccountOption();
-  } else if (identifier == POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS) {
+  } else if (frontend_id == POPUP_ITEM_ID_HIDE_AUTOFILL_SUGGESTIONS) {
     // No-op as the popup will be closed in the end of the method.
     manager_->OnUserHideSuggestions(query_form_, query_field_);
-  } else if (identifier == POPUP_ITEM_ID_USE_VIRTUAL_CARD) {
+  } else if (frontend_id == POPUP_ITEM_ID_USE_VIRTUAL_CARD) {
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
     manager_->FetchVirtualCardCandidates();
 #else
     NOTREACHED();
 #endif
+  } else if (frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
+    // There can be multiple virtual credit cards that all rely on
+    // POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY as a frontend_id. In this case,
+    // the backend_id identifies the actually chosen credit card.
+    manager_->FillVirtualCardInformation(backend_id, query_id_, query_form_,
+                                         query_field_);
   } else {
-    if (identifier > 0) {  // Denotes an Autofill suggestion.
+    if (frontend_id > 0) {  // Denotes an Autofill suggestion.
       AutofillMetrics::LogAutofillSuggestionAcceptedIndex(
           position, popup_type_, driver_->IsIncognito());
     }
-    FillAutofillFormData(identifier, false);
+    FillAutofillFormData(frontend_id, false);
   }
 
   if (should_show_scan_credit_card_) {
     AutofillMetrics::LogScanCreditCardPromptMetric(
-        identifier == POPUP_ITEM_ID_SCAN_CREDIT_CARD
+        frontend_id == POPUP_ITEM_ID_SCAN_CREDIT_CARD
             ? AutofillMetrics::SCAN_CARD_ITEM_SELECTED
             : AutofillMetrics::SCAN_CARD_OTHER_ITEM_SELECTED);
   }
 
-  if (identifier == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
+  if (frontend_id == POPUP_ITEM_ID_SHOW_ACCOUNT_CARDS) {
     should_show_cards_from_account_option_ = false;
     manager_->RefetchCardsAndUpdatePopup(query_id_, query_form_, query_field_);
   } else {
-    manager_->client()->HideAutofillPopup();
+    manager_->client()->HideAutofillPopup(PopupHidingReason::kAcceptSuggestion);
   }
 }
 
 bool AutofillExternalDelegate::GetDeletionConfirmationText(
-    const base::string16& value,
-    int identifier,
-    base::string16* title,
-    base::string16* body) {
-  return manager_->GetDeletionConfirmationText(value, identifier, title, body);
+    const std::u16string& value,
+    int frontend_id,
+    std::u16string* title,
+    std::u16string* body) {
+  return manager_->GetDeletionConfirmationText(value, frontend_id, title, body);
 }
 
-bool AutofillExternalDelegate::RemoveSuggestion(const base::string16& value,
-                                                int identifier) {
-  if (identifier > 0)
-    return manager_->RemoveAutofillProfileOrCreditCard(identifier);
+bool AutofillExternalDelegate::RemoveSuggestion(const std::u16string& value,
+                                                int frontend_id) {
+  if (frontend_id > 0)
+    return manager_->RemoveAutofillProfileOrCreditCard(frontend_id);
 
-  if (identifier == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
-    manager_->RemoveAutocompleteEntry(query_field_.name, value);
+  if (frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY) {
+    manager_->RemoveCurrentSingleFieldSuggestion(query_field_.name, value);
     return true;
   }
 
@@ -299,7 +335,7 @@ bool AutofillExternalDelegate::RemoveSuggestion(const base::string16& value,
 }
 
 void AutofillExternalDelegate::DidEndTextFieldEditing() {
-  manager_->client()->HideAutofillPopup();
+  manager_->client()->HideAutofillPopup(PopupHidingReason::kEndEditing);
 }
 
 void AutofillExternalDelegate::ClearPreviewedForm() {
@@ -310,7 +346,8 @@ PopupType AutofillExternalDelegate::GetPopupType() const {
   return popup_type_;
 }
 
-AutofillDriver* AutofillExternalDelegate::GetAutofillDriver() {
+absl::variant<AutofillDriver*, password_manager::PasswordManagerDriver*>
+AutofillExternalDelegate::GetDriver() {
   return driver_;
 }
 
@@ -324,7 +361,9 @@ void AutofillExternalDelegate::RegisterDeletionCallback(
 }
 
 void AutofillExternalDelegate::Reset() {
-  manager_->client()->HideAutofillPopup();
+  // We should not affect UI on the active page due to a prerendered page.
+  if (!manager_->driver()->IsPrerendering())
+    manager_->client()->HideAutofillPopup(PopupHidingReason::kNavigation);
 }
 
 base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
@@ -333,7 +372,7 @@ base::WeakPtr<AutofillExternalDelegate> AutofillExternalDelegate::GetWeakPtr() {
 
 void AutofillExternalDelegate::OnCreditCardScanned(const CreditCard& card) {
   manager_->FillCreditCardForm(query_id_, query_form_, query_field_, card,
-                               base::string16());
+                               std::u16string());
 }
 
 void AutofillExternalDelegate::FillAutofillFormData(int unique_id,
@@ -342,9 +381,9 @@ void AutofillExternalDelegate::FillAutofillFormData(int unique_id,
   if (IsAutofillWarningEntry(unique_id))
     return;
 
-  AutofillDriver::RendererFormDataAction renderer_action =
-      is_preview ? AutofillDriver::FORM_DATA_ACTION_PREVIEW
-                 : AutofillDriver::FORM_DATA_ACTION_FILL;
+  mojom::RendererFormDataAction renderer_action =
+      is_preview ? mojom::RendererFormDataAction::kPreview
+                 : mojom::RendererFormDataAction::kFill;
 
   DCHECK(driver_->RendererIsAvailable());
   // Fill the values for the whole form.
@@ -369,7 +408,7 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // The form has been auto-filled, so give the user the chance to clear the
   // form.  Append the 'Clear form' menu item.
   if (query_field_.is_autofilled) {
-    base::string16 value =
+    std::u16string value =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
 #if defined(OS_ANDROID)
     if (IsKeyboardAccessoryEnabled())
@@ -381,34 +420,27 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   }
 
   // Append the 'Autofill settings' menu item, or the menu item specified in the
-  // popup layout experiment. If we do not include |POPUP_ITEM_ID_CLEAR_FORM|,
-  // include a hint for keyboard accessory.
+  // popup layout experiment.
   suggestions->push_back(Suggestion(GetSettingsSuggestionValue()));
   suggestions->back().frontend_id = POPUP_ITEM_ID_AUTOFILL_OPTIONS;
+
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillUseConsistentPopupSettingsIcons)) {
+    suggestions->back().icon = "settingsIcon";
+  }
+
   // On Android and Desktop, Google Pay branding is shown along with Settings.
   // So Google Pay Icon is just attached to an existing menu item.
   if (is_all_server_suggestions) {
 #if defined(OS_ANDROID) || defined(OS_IOS)
     suggestions->back().icon = "googlePay";
 #else
-    suggestions->back().icon =
+    suggestions->back().store_indicator_icon =
         ui::NativeTheme::GetInstanceForNativeUi()->ShouldUseDarkColors()
             ? "googlePayDark"
             : "googlePay";
 #endif
   }
-
-#if defined(OS_ANDROID)
-  if (IsKeyboardAccessoryEnabled()) {
-    suggestions->back().icon = "settings";
-    if (IsHintEnabledInKeyboardAccessory() && !query_field_.is_autofilled) {
-      Suggestion create_icon;
-      create_icon.icon = "create";
-      create_icon.frontend_id = POPUP_ITEM_ID_CREATE_HINT;
-      suggestions->push_back(create_icon);
-    }
-  }
-#endif
 }
 
 void AutofillExternalDelegate::InsertDataListValues(
@@ -418,7 +450,7 @@ void AutofillExternalDelegate::InsertDataListValues(
 
   // Go through the list of autocomplete values and remove them if they are in
   // the list of datalist values.
-  std::set<base::string16> data_list_set(data_list_values_.begin(),
+  std::set<std::u16string> data_list_set(data_list_values_.begin(),
                                          data_list_values_.end());
   base::EraseIf(*suggestions, [&data_list_set](const Suggestion& suggestion) {
     return suggestion.frontend_id == POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY &&
@@ -444,7 +476,7 @@ void AutofillExternalDelegate::InsertDataListValues(
   }
 }
 
-base::string16 AutofillExternalDelegate::GetSettingsSuggestionValue() const {
+std::u16string AutofillExternalDelegate::GetSettingsSuggestionValue() const {
   switch (GetPopupType()) {
     case PopupType::kAddresses:
       return l10n_util::GetStringUTF16(IDS_AUTOFILL_MANAGE_ADDRESSES);
@@ -458,7 +490,7 @@ base::string16 AutofillExternalDelegate::GetSettingsSuggestionValue() const {
 
     case PopupType::kPasswords:
       NOTREACHED();
-      return base::string16();
+      return std::u16string();
   }
 }
 

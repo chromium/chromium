@@ -5,7 +5,8 @@
 #ifndef COMPONENTS_PAYMENTS_CORE_PAYMENT_SHIPPING_OPTION_H_
 #define COMPONENTS_PAYMENTS_CORE_PAYMENT_SHIPPING_OPTION_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/payments/core/payment_currency_amount.h"
 
 // C++ bindings for the PaymentRequest API PaymentShippingOption. Conforms to
@@ -13,7 +14,7 @@
 // https://w3c.github.io/browser-payment-api/#dom-paymentshippingoption
 
 namespace base {
-class DictionaryValue;
+class Value;
 }
 
 namespace payments {
@@ -31,7 +32,7 @@ class PaymentShippingOption {
 
   // Populates the properties of this PaymentShippingOption from |value|.
   // Returns true if the required values are present.
-  bool FromDictionaryValue(const base::DictionaryValue& value);
+  bool FromValue(const base::Value& value);
 
   // An identifier used to reference this PaymentShippingOption. It is unique
   // for a given PaymentRequest.

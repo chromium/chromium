@@ -38,11 +38,11 @@ struct EsParserMpeg1Audio::Mpeg1AudioFrame {
 
 EsParserMpeg1Audio::EsParserMpeg1Audio(
     const NewAudioConfigCB& new_audio_config_cb,
-    const EmitBufferCB& emit_buffer_cb,
+    EmitBufferCB emit_buffer_cb,
     MediaLog* media_log)
     : media_log_(media_log),
       new_audio_config_cb_(new_audio_config_cb),
-      emit_buffer_cb_(emit_buffer_cb) {}
+      emit_buffer_cb_(std::move(emit_buffer_cb)) {}
 
 EsParserMpeg1Audio::~EsParserMpeg1Audio() {
 }
@@ -120,8 +120,10 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
     int remaining_size = es_size - offset;
     DCHECK_GE(remaining_size, MPEG1AudioStreamParser::kHeaderSize);
     MPEG1AudioStreamParser::Header header;
-    if (!MPEG1AudioStreamParser::ParseHeader(media_log_, cur_buf, &header))
+    if (!MPEG1AudioStreamParser::ParseHeader(
+            media_log_, &mp3_parse_error_limit_, cur_buf, &header)) {
       continue;
+    }
 
     if (remaining_size < header.frame_size) {
       // Not a full frame: will resume when we have more data.
@@ -160,16 +162,16 @@ bool EsParserMpeg1Audio::LookForMpeg1AudioFrame(
 bool EsParserMpeg1Audio::UpdateAudioConfiguration(
     const uint8_t* mpeg1audio_header) {
   MPEG1AudioStreamParser::Header header;
-  if (!MPEG1AudioStreamParser::ParseHeader(media_log_, mpeg1audio_header,
-                                           &header)) {
+  if (!MPEG1AudioStreamParser::ParseHeader(media_log_, &mp3_parse_error_limit_,
+                                           mpeg1audio_header, &header)) {
     return false;
   }
 
   // TODO(damienv): Verify whether Android playback requires the extra data
   // field for Mpeg1 audio. If yes, we should generate this field.
   AudioDecoderConfig audio_decoder_config(
-      kCodecMP3, kSampleFormatS16, header.channel_layout, header.sample_rate,
-      EmptyExtraData(), EncryptionScheme::kUnencrypted);
+      AudioCodec::kMP3, kSampleFormatS16, header.channel_layout,
+      header.sample_rate, EmptyExtraData(), EncryptionScheme::kUnencrypted);
 
   if (!audio_decoder_config.IsValidConfig()) {
     DVLOG(1) << "Invalid config: "

@@ -541,4 +541,19 @@ TEST_F(SampleVectorTest, PersistentSampleVectorTestWithOutsideAlloc) {
   EXPECT_EQ(200, samples2.GetCount(8));
 }
 
+// Tests GetPeakBucketSize() returns accurate max bucket size.
+TEST_F(SampleVectorTest, GetPeakBucketSize) {
+  // Custom buckets: [1, 5) [5, 10) [10, 20)
+  BucketRanges ranges(4);
+  ranges.set_range(0, 1);
+  ranges.set_range(1, 5);
+  ranges.set_range(2, 10);
+  ranges.set_range(3, 20);
+  SampleVector samples(1, &ranges);
+  samples.Accumulate(3, 1);
+  samples.Accumulate(6, 2);
+  samples.Accumulate(12, 3);
+  EXPECT_EQ(3, samples.GetPeakBucketSize());
+}
+
 }  // namespace base

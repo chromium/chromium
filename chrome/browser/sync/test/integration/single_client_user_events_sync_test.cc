@@ -3,22 +3,22 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
-#include "chrome/browser/sync/test/integration/profile_sync_service_harness.h"
 #include "chrome/browser/sync/test/integration/sessions_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_integration_test_util.h"
+#include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/user_events_helper.h"
 #include "chrome/browser/sync/user_event_service_factory.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
 #include "components/sync_user_events/user_event_service.h"
+#include "content/public/test/browser_test.h"
 
 using sync_pb::CommitResponse;
 using sync_pb::SyncEntity;
@@ -35,18 +35,15 @@ CommitResponse::ResponseType BounceType(
 
 class SingleClientUserEventsSyncTest : public SyncTest {
  public:
-  SingleClientUserEventsSyncTest() : SyncTest(SINGLE_CLIENT) {
-    DisableVerifier();
-  }
+  SingleClientUserEventsSyncTest() : SyncTest(SINGLE_CLIENT) {}
+
+  ~SingleClientUserEventsSyncTest() override = default;
 
   bool ExpectUserEvents(std::vector<UserEventSpecifics> expected_specifics) {
     return UserEventEqualityChecker(GetSyncService(0), GetFakeServer(),
                                     expected_specifics)
         .Wait();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SingleClientUserEventsSyncTest);
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
@@ -64,21 +61,21 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Sanity) {
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
   ASSERT_TRUE(SetupSync());
   const UserEventSpecifics specifics1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics specifics2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
 
   GetFakeServer()->OverrideResponseType(
-      base::Bind(&BounceType, CommitResponse::TRANSIENT_ERROR));
+      base::BindRepeating(&BounceType, CommitResponse::TRANSIENT_ERROR));
   event_service->RecordUserEvent(specifics1);
 
   // This will block until we hit a TRANSIENT_ERROR, at which point we will
   // regain control and can switch back to SUCCESS.
   EXPECT_TRUE(ExpectUserEvents({specifics1}));
   GetFakeServer()->OverrideResponseType(
-      base::Bind(&BounceType, CommitResponse::SUCCESS));
+      base::BindRepeating(&BounceType, CommitResponse::SUCCESS));
   // Because the fake server records commits even on failure, we are able to
   // verify that the commit for this event reached the server twice.
   EXPECT_TRUE(ExpectUserEvents({specifics1, specifics1}));
@@ -89,19 +86,13 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetrySequential) {
   EXPECT_TRUE(ExpectUserEvents({specifics1, specifics1, specifics2}));
 }
 
-// Flaky (mostly) on ASan/TSan. http://crbug.com/998130
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)
-#define MAYBE_RetryParallel DISABLED_RetryParallel
-#else
-#define MAYBE_RetryParallel RetryParallel
-#endif
-IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, MAYBE_RetryParallel) {
+IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, RetryParallel) {
   ASSERT_TRUE(SetupSync());
 
   const UserEventSpecifics specifics1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics specifics2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
 
   syncer::UserEventService* event_service =
       browser_sync::UserEventServiceFactory::GetForProfile(GetProfile(0));
@@ -115,7 +106,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, MAYBE_RetryParallel) {
   UserEventSpecifics retry_specifics;
   GetFakeServer()->OverrideResponseType(base::BindLambdaForTesting(
       [&](const syncer::LoopbackServerEntity& entity) {
-        if (first) {
+        if (first && entity.GetModelType() == syncer::USER_EVENTS) {
           first = false;
           SyncEntity sync_entity;
           entity.SerializeAsProto(&sync_entity);
@@ -139,11 +130,11 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, MAYBE_RetryParallel) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
   const UserEventSpecifics test_event1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics test_event2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
   const UserEventSpecifics test_event3 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(3));
+      CreateTestEvent(base::Time() + base::Microseconds(3));
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
@@ -169,7 +160,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoHistory) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
   const UserEventSpecifics specifics =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(
       GetClient(0)->DisableSyncForType(syncer::UserSelectableType::kTabs));
@@ -184,9 +175,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, NoSessions) {
 
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
   const UserEventSpecifics test_event1 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
   const UserEventSpecifics test_event2 =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(2));
+      CreateTestEvent(base::Time() + base::Microseconds(2));
 
   ASSERT_TRUE(SetupSync());
   syncer::UserEventService* event_service =
@@ -210,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest, Encryption) {
 IN_PROC_BROWSER_TEST_F(SingleClientUserEventsSyncTest,
                        ShouldNotUploadInSyncPausedState) {
   const UserEventSpecifics test_event =
-      CreateTestEvent(base::Time() + base::TimeDelta::FromMicroseconds(1));
+      CreateTestEvent(base::Time() + base::Microseconds(1));
 
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(GetSyncService(0)->IsSyncFeatureActive());

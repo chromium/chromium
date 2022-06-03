@@ -9,9 +9,9 @@
 
 namespace chrome {
 
-MessageBoxResult ShowMessageBoxCocoa(const base::string16& message,
+MessageBoxResult ShowMessageBoxCocoa(const std::u16string& message,
                                      MessageBoxType type,
-                                     const base::string16& checkbox_text);
+                                     const std::u16string& checkbox_text);
 
 }  // namespace chrome
 

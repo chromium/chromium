@@ -32,13 +32,13 @@
 
 #include "third_party/blink/public/platform/web_font_description.h"
 #include "third_party/blink/renderer/platform/language.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #endif
 
@@ -55,12 +55,24 @@ struct SameSizeAsFontDescription {
   FieldsAsUnsignedType bitfields;
 };
 
-static_assert(sizeof(FontDescription) == sizeof(SameSizeAsFontDescription),
-              "FontDescription should stay small");
+ASSERT_SIZE(FontDescription, SameSizeAsFontDescription);
 
 TypesettingFeatures FontDescription::default_typesetting_features_ = 0;
 
 bool FontDescription::use_subpixel_text_positioning_ = false;
+
+// static
+FontDescription FontDescription::CreateHashTableEmptyValue() {
+  FontDescription result;
+  memset(&result, 0, sizeof(FontDescription));
+  DCHECK(result.IsHashTableEmptyValue());
+  return result;
+}
+
+FontDescription::FontDescription(WTF::HashTableDeletedValueType) {
+  memset(this, 0, sizeof(FontDescription));
+  fields_.hash_category_ = kHashDeletedValue;
+}
 
 FontDescription::FontDescription()
     : specified_size_(0),
@@ -94,6 +106,10 @@ FontDescription::FontDescription()
   fields_.variant_numeric_ = FontVariantNumeric().fields_as_unsigned_;
   fields_.subpixel_ascent_descent_ = false;
   fields_.font_optical_sizing_ = OpticalSizing::kAutoOpticalSizing;
+  fields_.hash_category_ = kHashRegularValue;
+  fields_.font_synthesis_weight_ = kAutoFontSynthesisWeight;
+  fields_.font_synthesis_style_ = kAutoFontSynthesisStyle;
+  fields_.font_synthesis_small_caps_ = kAutoFontSynthesisSmallCaps;
 }
 
 FontDescription::FontDescription(const FontDescription&) = default;
@@ -206,17 +222,35 @@ void FontDescription::SetVariantNumeric(
 float FontDescription::EffectiveFontSize() const {
   // Ensure that the effective precision matches the font-cache precision.
   // This guarantees that the same precision is used regardless of cache status.
+  // Note: HasSizeAdjust() is for the font-size-adjust property, not for the
+  // size-adjust descriptor.
   float computed_or_adjusted_size =
-      HasSizeAdjust() ? AdjustedSize() : ComputedSize();
+      HasSizeAdjust() || fields_.has_size_adjust_descriptor_ ? AdjustedSize()
+                                                             : ComputedSize();
   return floorf(computed_or_adjusted_size *
                 FontCacheKey::PrecisionMultiplier()) /
          FontCacheKey::PrecisionMultiplier();
 }
 
+FontDescription FontDescription::SizeAdjustedFontDescription(
+    float size_adjust) const {
+  // TODO(crbug.com/451346): The font-size-adjust property and size-adjust
+  // descriptor currently don't work together. For sanity, if both are set, we
+  // ignore size-adjust. Fix it when shipping font-size-adjust.
+  if (HasSizeAdjust())
+    return *this;
+
+  // size-adjust should be applied at most once.
+  DCHECK(!fields_.has_size_adjust_descriptor_);
+  FontDescription result(*this);
+  result.SetAdjustedSize(ComputedSize() * size_adjust);
+  result.fields_.has_size_adjust_descriptor_ = true;
+  return result;
+}
+
 FontCacheKey FontDescription::CacheKey(
     const FontFaceCreationParams& creation_params,
-    bool is_unique_match,
-    const FontSelectionRequest& font_selection_request) const {
+    bool is_unique_match) const {
   unsigned options =
       static_cast<unsigned>(fields_.font_optical_sizing_) << 7 |  // bit 8
       static_cast<unsigned>(fields_.synthetic_italic_) << 6 |     // bit 7
@@ -234,6 +268,12 @@ FontCacheKey FontDescription::CacheKey(
                          options | font_selection_request_.GetHash() << 9,
                          device_scale_factor_for_key, variation_settings_,
                          is_unique_match);
+#if defined(OS_ANDROID)
+  if (const LayoutLocale* locale = Locale()) {
+    if (FontCache::GetLocaleSpecificFamilyName(creation_params.Family()))
+      cache_key.SetLocale(locale->LocaleForSkFontMgr());
+  }
+#endif  // defined(OS_ANDROID)
   return cache_key;
 }
 
@@ -300,6 +340,18 @@ void FontDescription::UpdateTypesettingFeatures() {
     fields_.typesetting_features_ |= blink::kCaps;
 }
 
+namespace {
+
+// This converts -0.0 to 0.0, so that they have the same hash value. This
+// ensures that equal FontDescription have the same hash value.
+float NormalizeSign(float number) {
+  if (UNLIKELY(number == 0.0))
+    return 0.0;
+  return number;
+}
+
+}  // namespace
+
 unsigned FontDescription::StyleHashWithoutFamilyList() const {
   unsigned hash = 0;
   StringHasher string_hasher;
@@ -307,9 +359,7 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
   if (settings) {
     unsigned num_features = settings->size();
     for (unsigned i = 0; i < num_features; ++i) {
-      const AtomicString& tag = settings->at(i).Tag();
-      for (unsigned j = 0; j < tag.length(); j++)
-        string_hasher.AddCharacter(tag[j]);
+      WTF::AddIntToHash(hash, settings->at(i).Tag());
       WTF::AddIntToHash(hash, settings->at(i).Value());
     }
   }
@@ -324,17 +374,55 @@ unsigned FontDescription::StyleHashWithoutFamilyList() const {
   }
   WTF::AddIntToHash(hash, string_hasher.GetHash());
 
-  WTF::AddFloatToHash(hash, specified_size_);
-  WTF::AddFloatToHash(hash, computed_size_);
-  WTF::AddFloatToHash(hash, adjusted_size_);
-  WTF::AddFloatToHash(hash, size_adjust_);
-  WTF::AddFloatToHash(hash, letter_spacing_);
-  WTF::AddFloatToHash(hash, word_spacing_);
+  WTF::AddFloatToHash(hash, NormalizeSign(specified_size_));
+  WTF::AddFloatToHash(hash, NormalizeSign(computed_size_));
+  WTF::AddFloatToHash(hash, NormalizeSign(adjusted_size_));
+  WTF::AddFloatToHash(hash, NormalizeSign(size_adjust_));
+  WTF::AddFloatToHash(hash, NormalizeSign(letter_spacing_));
+  WTF::AddFloatToHash(hash, NormalizeSign(word_spacing_));
   WTF::AddIntToHash(hash, fields_as_unsigned_.parts[0]);
   WTF::AddIntToHash(hash, fields_as_unsigned_.parts[1]);
   WTF::AddIntToHash(hash, font_selection_request_.GetHash());
 
   return hash;
+}
+
+unsigned FontDescription::GetHash() const {
+  unsigned hash = StyleHashWithoutFamilyList();
+  for (const FontFamily* family = &family_list_; family;
+       family = family->Next()) {
+    if (family->FamilyName().IsEmpty())
+      continue;
+    WTF::AddIntToHash(hash, family->FamilyIsGeneric());
+    WTF::AddIntToHash(hash,
+                      WTF::AtomicStringHash::GetHash(family->FamilyName()));
+  }
+  return hash;
+}
+
+void FontDescription::SetOrientation(FontOrientation orientation) {
+  fields_.orientation_ = static_cast<unsigned>(orientation);
+  UpdateSyntheticOblique();
+}
+
+void FontDescription::SetStyle(FontSelectionValue value) {
+  font_selection_request_.slope = value;
+  original_slope = value;
+  UpdateSyntheticOblique();
+}
+
+void FontDescription::UpdateSyntheticOblique() {
+  // Doing synthetic oblique for vertical writing mode with upright text
+  // orientation when negative angle parameter of "oblique" keyword, e.g.
+  // "font-style: oblique -15deg" for simulating "tts:fontShear"[1][2], we
+  // need to have normal font style instead of italic/oblique.
+  // [1]
+  // https://www.w3.org/TR/2018/REC-ttml2-20181108/#style-attribute-fontShear
+  // [2] See http://crbug.com/1112923
+  fields_.synthetic_oblique_ =
+      IsVerticalAnyUpright() && original_slope < FontSelectionValue(0);
+  font_selection_request_.slope =
+      fields_.synthetic_oblique_ ? NormalSlopeValue() : original_slope;
 }
 
 SkFontStyle FontDescription::SkiaFontStyle() const {
@@ -436,8 +524,18 @@ String FontDescription::ToString(GenericFamilyType familyType) {
       return "Cursive";
     case GenericFamilyType::kFantasyFamily:
       return "Fantasy";
-    case GenericFamilyType::kPictographFamily:
-      return "Pictograph";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(LigaturesState state) {
+  switch (state) {
+    case LigaturesState::kNormalLigaturesState:
+      return "Normal";
+    case LigaturesState::kDisabledLigaturesState:
+      return "Disabled";
+    case LigaturesState::kEnabledLigaturesState:
+      return "Enabled";
   }
   return "Unknown";
 }
@@ -454,15 +552,26 @@ String FontDescription::ToString(Kerning kerning) {
   return "Unknown";
 }
 
-String FontDescription::ToString(LigaturesState state) {
-  switch (state) {
-    case LigaturesState::kNormalLigaturesState:
-      return "Normal";
-    case LigaturesState::kDisabledLigaturesState:
-      return "Disabled";
-    case LigaturesState::kEnabledLigaturesState:
-      return "Enabled";
-  }
+String FontDescription::ToString(FontSelectionValue selection_value) {
+  if (selection_value == UltraCondensedWidthValue())
+    return "Ultra-Condensed";
+  else if (selection_value == ExtraCondensedWidthValue())
+    return "Extra-Condensed";
+  else if (selection_value == CondensedWidthValue())
+    return "Condensed";
+  else if (selection_value == SemiCondensedWidthValue())
+    return "Semi-Condensed";
+  else if (selection_value == NormalWidthValue())
+    return "Normal";
+  else if (selection_value == SemiExpandedWidthValue())
+    return "Semi-Expanded";
+  else if (selection_value == ExpandedWidthValue())
+    return "Expanded";
+  else if (selection_value == ExtraExpandedWidthValue())
+    return "Extra-Expanded";
+  else if (selection_value == UltraExpandedWidthValue())
+    return "Ultra-Expanded";
+
   return "Unknown";
 }
 
@@ -482,6 +591,57 @@ String FontDescription::ToString(FontVariantCaps variant) {
       return "Unicase";
     case FontVariantCaps::kTitlingCaps:
       return "TitlingCaps";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToStringForIdl(FontVariantCaps variant) {
+  switch (variant) {
+    case FontVariantCaps::kCapsNormal:
+      return "normal";
+    case FontVariantCaps::kSmallCaps:
+      return "small-caps";
+    case FontVariantCaps::kAllSmallCaps:
+      return "all-small-caps";
+    case FontVariantCaps::kPetiteCaps:
+      return "petite-caps";
+    case FontVariantCaps::kAllPetiteCaps:
+      return "all-petite-caps";
+    case FontVariantCaps::kUnicase:
+      return "unicase";
+    case FontVariantCaps::kTitlingCaps:
+      return "titling-caps";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(FontSynthesisWeight font_synthesis_weight) {
+  switch (font_synthesis_weight) {
+    case FontSynthesisWeight::kAutoFontSynthesisWeight:
+      return "Auto";
+    case FontSynthesisWeight::kNoneFontSynthesisWeight:
+      return "None";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(FontSynthesisStyle font_synthesis_style) {
+  switch (font_synthesis_style) {
+    case FontSynthesisStyle::kAutoFontSynthesisStyle:
+      return "Auto";
+    case FontSynthesisStyle::kNoneFontSynthesisStyle:
+      return "None";
+  }
+  return "Unknown";
+}
+
+String FontDescription::ToString(
+    FontSynthesisSmallCaps font_synthesis_small_caps) {
+  switch (font_synthesis_small_caps) {
+    case FontSynthesisSmallCaps::kAutoFontSynthesisSmallCaps:
+      return "Auto";
+    case FontSynthesisSmallCaps::kNoneFontSynthesisSmallCaps:
+      return "None";
   }
   return "Unknown";
 }
@@ -534,7 +694,8 @@ String FontDescription::ToString() const {
       "keyword_size=%u, font_smoothing=%s, text_rendering=%s, "
       "synthetic_bold=%s, synthetic_italic=%s, subpixel_positioning=%s, "
       "subpixel_ascent_descent=%s, variant_numeric=[%s], "
-      "variant_east_asian=[%s], font_optical_sizing=%s",
+      "variant_east_asian=[%s], font_optical_sizing=%s, "
+      "font_synthesis_weight=%s, font_synthesis_style=%s",
       family_list_.ToString().Ascii().c_str(),
       (feature_settings_ ? feature_settings_->ToString().Ascii().c_str() : ""),
       (variation_settings_ ? variation_settings_->ToString().Ascii().c_str()
@@ -563,7 +724,9 @@ String FontDescription::ToString() const {
       ToBooleanString(SubpixelAscentDescent()),
       VariantNumeric().ToString().Ascii().c_str(),
       VariantEastAsian().ToString().Ascii().c_str(),
-      blink::ToString(FontOpticalSizing()).Ascii().c_str());
+      blink::ToString(FontOpticalSizing()).Ascii().c_str(),
+      FontDescription::ToString(GetFontSynthesisWeight()).Ascii().c_str(),
+      FontDescription::ToString(GetFontSynthesisStyle()).Ascii().c_str());
 }
 
 }  // namespace blink

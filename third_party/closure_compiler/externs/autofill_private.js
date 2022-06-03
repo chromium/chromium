@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,15 +11,14 @@
 
 /** @fileoverview Externs generated from namespace: autofillPrivate */
 
-/**
- * @const
- */
+/** @const */
 chrome.autofillPrivate = {};
 
 /**
  * @enum {string}
  */
 chrome.autofillPrivate.AddressField = {
+  HONORIFIC: 'HONORIFIC',
   FULL_NAME: 'FULL_NAME',
   COMPANY_NAME: 'COMPANY_NAME',
   ADDRESS_LINES: 'ADDRESS_LINES',
@@ -46,6 +45,7 @@ chrome.autofillPrivate.AutofillMetadata;
  * @typedef {{
  *   guid: (string|undefined),
  *   fullNames: (!Array<string>|undefined),
+ *   honorific: (string|undefined),
  *   companyName: (string|undefined),
  *   addressLines: (string|undefined),
  *   addressLevel1: (string|undefined),
@@ -102,6 +102,7 @@ chrome.autofillPrivate.AddressComponents;
  *   cardNumber: (string|undefined),
  *   expirationMonth: (string|undefined),
  *   expirationYear: (string|undefined),
+ *   nickname: (string|undefined),
  *   metadata: (!chrome.autofillPrivate.AutofillMetadata|undefined)
  * }}
  */
@@ -126,8 +127,8 @@ chrome.autofillPrivate.saveAddress = function(address) {};
 
 /**
  * Gets the list of all countries.
- * @param {function(!Array<!chrome.autofillPrivate.CountryEntry>):void} callback
- *     Callback which will be called with the countries.
+ * @param {function(!Array<!chrome.autofillPrivate.CountryEntry>): void}
+ *     callback Callback which will be called with the countries.
  */
 chrome.autofillPrivate.getCountryList = function(callback) {};
 
@@ -136,15 +137,15 @@ chrome.autofillPrivate.getCountryList = function(callback) {};
  * @param {string} countryCode A two-character string representing the address'
  *     country     whose components should be returned. See autofill_country.cc
  *     for a     list of valid codes.
- * @param {function(!chrome.autofillPrivate.AddressComponents):void} callback
+ * @param {function(!chrome.autofillPrivate.AddressComponents): void} callback
  *     Callback which will be called with components.
  */
 chrome.autofillPrivate.getAddressComponents = function(countryCode, callback) {};
 
 /**
  * Gets the list of addresses.
- * @param {function(!Array<!chrome.autofillPrivate.AddressEntry>):void} callback
- *     Callback which will be called with the list of addresses.
+ * @param {function(!Array<!chrome.autofillPrivate.AddressEntry>): void}
+ *     callback Callback which will be called with the list of addresses.
  */
 chrome.autofillPrivate.getAddressList = function(callback) {};
 
@@ -167,14 +168,14 @@ chrome.autofillPrivate.removeEntry = function(guid) {};
  * not be returned in the list of valid numbers.
  * @param {!chrome.autofillPrivate.ValidatePhoneParams} params The parameters to
  *     this function.
- * @param {function(!Array<string>):void} callback Callback which will be called
- *     with validated phone numbers.
+ * @param {function(!Array<string>): void} callback Callback which will be
+ *     called with validated phone numbers.
  */
 chrome.autofillPrivate.validatePhoneNumbers = function(params, callback) {};
 
 /**
  * Gets the list of credit cards.
- * @param {function(!Array<!chrome.autofillPrivate.CreditCardEntry>):void}
+ * @param {function(!Array<!chrome.autofillPrivate.CreditCardEntry>): void}
  *     callback Callback which will be called with the list of credit cards.
  */
 chrome.autofillPrivate.getCreditCardList = function(callback) {};
@@ -201,6 +202,13 @@ chrome.autofillPrivate.logServerCardLinkClicked = function() {};
  * @param {boolean} enabled
  */
 chrome.autofillPrivate.setCreditCardFIDOAuthEnabledState = function(enabled) {};
+
+/**
+ * Gets the list of UPI IDs (a.k.a. Virtual Payment Addresses).
+ * @param {function(!Array<string>): void} callback Callback which will be
+ *     called with the list of UPI IDs.
+ */
+chrome.autofillPrivate.getUpiIdList = function(callback) {};
 
 /**
  * Fired when the perosnal data has changed, meaning that an entry has been

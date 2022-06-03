@@ -219,6 +219,7 @@ WallpaperManager.prototype.getCollectionsInfo_ = function() {
                           var wallpaperInfo = {
                             // Use the next available unique id.
                             wallpaperId: this.imagesInfoCount_,
+                            assetId: imagesInfo[i]['assetId'],
                             baseURL: imagesInfo[i]['imageUrl'],
                             highResolutionURL: imagesInfo[i]['imageUrl'] +
                                 str('highResolutionSuffix'),
@@ -403,6 +404,18 @@ WallpaperManager.prototype.preDownloadDomInit_ = function() {
       window.clearTimeout(scrollTimer);
       scrollTimer = window.setTimeout(() => {
         imagePicker.classList.remove('show-scroll-bar');
+      }, 500);
+    };
+  }());
+
+  var dialogTopbar = this.document_.body.querySelector('.dialog-topbar');
+  dialogTopbar.addEventListener('scroll', function() {
+    var scrollTimer;
+    return () => {
+      dialogTopbar.classList.add('show-scroll-bar');
+      window.clearTimeout(scrollTimer);
+      scrollTimer = window.setTimeout(() => {
+        dialogTopbar.classList.remove('show-scroll-bar');
       }, 500);
     };
   }());
@@ -892,7 +905,8 @@ WallpaperManager.prototype.setSelectedOnlineWallpaper_ = function(
 
   var selectedGridItem = this.wallpaperGrid_.getListItem(selectedItem);
   chrome.wallpaperPrivate.setWallpaperIfExists(
-      selectedItem.highResolutionURL, selectedItem.layout, previewMode,
+      selectedItem.assetId || '', selectedItem.highResolutionURL,
+      selectedItem.collectionId || '', selectedItem.layout, previewMode,
       exists => {
         if (exists) {
           successCallback();
@@ -1098,6 +1112,7 @@ WallpaperManager.prototype.onPreviewModeStarted_ = function(
     });
   };
   this.addEventToButton_($('cancel-preview-wallpaper'), onCancelClicked);
+  window.addEventListener(Constants.ClosePreviewWallpaper, onCancelClicked);
 
   $('message-container').style.display = 'none';
 };
@@ -1366,7 +1381,7 @@ WallpaperManager.prototype.onCategoriesChange_ = function() {
           collectionName: str('customCategoryLabel'),
           fileName: imagePath.split(/[/\\]/).pop(),
           // Use file name as aria-label.
-          ariaLabel: function() {
+          ariaLabel() {
             return this.fileName;
           },
           previewable: true,
@@ -1645,15 +1660,10 @@ WallpaperManager.prototype.setDailyRefreshWallpaper_ = function() {
           }
 
           this.pendingDailyRefreshInfo_.resumeToken = nextResumeToken;
-          // Find the name of the collection based on its id for display
-          // purpose.
-          var collectionName;
-          for (var i = 0; i < this.collectionsInfo_.length; ++i) {
-            if (this.collectionsInfo_[i]['collectionId'] ===
-                this.pendingDailyRefreshInfo_.collectionId) {
-              collectionName = this.collectionsInfo_[i]['collectionName'];
-            }
-          }
+          // Find the collection based on its id for display purpose.
+          var collection = this.collectionsInfo_.find(
+              info => info['collectionId'] ===
+                  this.pendingDailyRefreshInfo_.collectionId);
           var dailyRefreshImageInfo = {
             highResolutionURL:
                 imageInfo['imageUrl'] + str('highResolutionSuffix'),
@@ -1661,7 +1671,9 @@ WallpaperManager.prototype.setDailyRefreshWallpaper_ = function() {
             source: Constants.WallpaperSourceEnum.Daily,
             displayText: imageInfo['displayText'],
             authorWebsite: imageInfo['actionUrl'],
-            collectionName: collectionName
+            collectionName: collection ? collection['collectionName'] :
+                                         undefined,
+            collectionId: collection ? collection['collectionId'] : undefined,
           };
 
           var previewMode = this.shouldPreviewWallpaper_();

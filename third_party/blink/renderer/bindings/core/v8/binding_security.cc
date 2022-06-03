@@ -30,11 +30,12 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/execution_context/agent.h"
 #include "third_party/blink/renderer/core/frame/dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -44,6 +45,7 @@
 #include "third_party/blink/renderer/core/html/html_frame_element_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 
 namespace blink {
@@ -53,8 +55,11 @@ namespace {
 // Documents that have the same WindowAgentFactory should be able to
 // share data with each other if they have the same Agent and are
 // SameOriginDomain.
-bool IsSameWindowAgentFactory(Document* doc1, Document* doc2) {
-  return doc1->GetWindowAgentFactory() == doc2->GetWindowAgentFactory();
+bool IsSameWindowAgentFactory(const LocalDOMWindow* window1,
+                              const LocalDOMWindow* window2) {
+  return window1->GetFrame() && window2->GetFrame() &&
+         &window1->GetFrame()->window_agent_factory() ==
+             &window2->GetFrame()->window_agent_factory();
 }
 
 }  // namespace
@@ -126,11 +131,11 @@ bool CanAccessWindowInternal(
     return false;
 
   const SecurityOrigin* accessing_origin =
-      accessing_window->document()->GetSecurityOrigin();
+      accessing_window->GetSecurityOrigin();
 
   SecurityOrigin::AccessResultDomainDetail detail;
   bool can_access = accessing_origin->CanAccess(
-      local_target_window->document()->GetSecurityOrigin(), detail);
+      local_target_window->GetSecurityOrigin(), detail);
   if (detail ==
           SecurityOrigin::AccessResultDomainDetail::kDomainSetByOnlyOneOrigin ||
       detail ==
@@ -142,14 +147,19 @@ bool CanAccessWindowInternal(
                    : WebFeature::kDocumentDomainBlockedCrossOriginAccess);
   }
   if (!can_access) {
-    // Ensure that if we got a cluster mismatch that it was due to a feature
+    // Ensure that if we got a cluster mismatch that it was due to a permissions
     // policy being enabled and not a logic bug.
     if (detail == SecurityOrigin::AccessResultDomainDetail::
                       kDomainNotRelevantAgentClusterMismatch) {
       // Assert that because the agent clusters are different than the
-      // WindowAgentFactories must also be different.
-      SECURITY_CHECK(!IsSameWindowAgentFactory(
-          accessing_window->document(), local_target_window->document()));
+      // WindowAgentFactories must also be different unless they differ in
+      // being explicitly origin keyed.
+      SECURITY_CHECK(
+          !IsSameWindowAgentFactory(accessing_window, local_target_window) ||
+          (accessing_window->GetAgent()->IsExplicitlyOriginKeyed() !=
+           local_target_window->GetAgent()->IsExplicitlyOriginKeyed()) ||
+          (WebTestSupport::IsRunningWebTest() &&
+           local_target_window->GetFrame()->PagePopupOwner()));
 
       *cross_document_access =
           DOMWindow::CrossDocumentAccessPolicy::kDisallowed;
@@ -159,9 +169,9 @@ bool CanAccessWindowInternal(
 
   // Notify the loader's client if the initial document has been accessed.
   LocalFrame* target_frame = local_target_window->GetFrame();
-  if (target_frame &&
-      target_frame->Loader().StateMachine()->IsDisplayingInitialEmptyDocument())
+  if (target_frame && target_frame->GetDocument()->IsInitialEmptyDocument()) {
     target_frame->Loader().DidAccessInitialDocument();
+  }
 
   return true;
 }
@@ -476,13 +486,10 @@ void BindingSecurity::FailedAccessCheckFor(v8::Isolate* isolate,
   auto* local_dom_window = CurrentDOMWindow(isolate);
   // Determine if the access check failure was because of cross-origin or if the
   // WindowAgentFactory is different. If the WindowAgentFactories are different
-  // it indicates that the "disallowdocumentaccess" attribute was used on an
-  // iframe somewhere in the ancestor chain so report the error as "restricted"
-  // instead of "cross-origin".
+  // so report the error as "restricted" instead of "cross-origin".
   DOMWindow::CrossDocumentAccessPolicy cross_document_access =
       (!target->ToLocalDOMWindow() ||
-       IsSameWindowAgentFactory(local_dom_window->document(),
-                                target->ToLocalDOMWindow()->document()))
+       IsSameWindowAgentFactory(local_dom_window, target->ToLocalDOMWindow()))
           ? DOMWindow::CrossDocumentAccessPolicy::kAllowed
           : DOMWindow::CrossDocumentAccessPolicy::kDisallowed;
 

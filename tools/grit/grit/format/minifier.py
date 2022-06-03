@@ -9,6 +9,8 @@ from os import path
 import subprocess
 import sys
 
+import six
+
 __js_minifier = None
 __css_minifier = None
 
@@ -21,6 +23,7 @@ def SetCssMinifier(minifier):
   __css_minifier = minifier.split()
 
 def Minify(source, filename):
+  """Minify |source| (bytes) from |filename| and return bytes."""
   file_type = path.splitext(filename)[1]
   minifier = None
   if file_type == '.js':

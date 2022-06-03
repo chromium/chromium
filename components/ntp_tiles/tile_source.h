@@ -14,16 +14,14 @@ namespace ntp_tiles {
 enum class TileSource {
   // Tile comes from the personal top sites list, based on local history.
   TOP_SITES,
-  // Tile comes from the suggestions service, based on synced history.
-  SUGGESTIONS_SERVICE,
   // Tile is regionally popular.
   POPULAR,
   // Tile is a popular site baked into the binary.
   POPULAR_BAKED_IN,
   // Tile is a custom link.
   CUSTOM_LINKS,
-  // Tile is on a custodian-managed whitelist.
-  WHITELIST,
+  // Tile is on a custodian-managed allowlist.
+  ALLOWLIST,
   // Tile containing the user-set home page is replacing the home page button.
   HOMEPAGE,
   // Tile comes from explore sites list.

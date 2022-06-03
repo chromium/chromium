@@ -18,12 +18,12 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/device_util_linux.h"
@@ -34,8 +34,11 @@
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
 #include "ui/events/ozone/evdev/touch_evdev_types.h"
 #include "ui/events/ozone/evdev/touch_filter/false_touch_finder.h"
+#include "ui/events/ozone/evdev/touch_filter/neural_stylus_palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_detection_filter_factory.h"
+#include "ui/events/ozone/features.h"
+#include "ui/events/types/event_type.h"
 #include "ui/ozone/public/input_controller.h"
 
 namespace {
@@ -65,11 +68,11 @@ int32_t AbsCodeToMtCode(int32_t code) {
 ui::EventPointerType GetEventPointerType(int tool_code) {
   switch (tool_code) {
     case BTN_TOOL_PEN:
-      return ui::EventPointerType::POINTER_TYPE_PEN;
+      return ui::EventPointerType::kPen;
     case BTN_TOOL_RUBBER:
-      return ui::EventPointerType::POINTER_TYPE_ERASER;
+      return ui::EventPointerType::kEraser;
     default:
-      return ui::EventPointerType::POINTER_TYPE_TOUCH;
+      return ui::EventPointerType::kTouch;
   }
 }
 
@@ -115,11 +118,44 @@ TouchEventConverterEvdev::TouchEventConverterEvdev(
       input_device_fd_(std::move(fd)),
       dispatcher_(dispatcher),
       palm_detection_filter_(
-          CreatePalmDetectionFilter(devinfo, shared_palm_state)) {
+          CreatePalmDetectionFilter(devinfo, shared_palm_state)),
+      palm_on_touch_major_max_(
+          base::FeatureList::IsEnabled(kEnablePalmOnMaxTouchMajor)),
+      palm_on_tool_type_palm_(
+          base::FeatureList::IsEnabled(kEnablePalmOnToolTypePalm)) {
+  if (base::FeatureList::IsEnabled(kEnableNeuralPalmDetectionFilter) &&
+      NeuralStylusPalmDetectionFilter::
+          CompatibleWithNeuralStylusPalmDetectionFilter(devinfo)) {
+    // When a neural net palm detector is enabled, we do not look at tool_type
+    // nor the max size of the touch as indicators of palm, merely the NN
+    // system.
+    palm_on_tool_type_palm_ = palm_on_touch_major_max_ = false;
+  }
   touch_evdev_debug_buffer_.Initialize(devinfo);
 }
 
 TouchEventConverterEvdev::~TouchEventConverterEvdev() {
+}
+
+// static
+std::unique_ptr<TouchEventConverterEvdev> TouchEventConverterEvdev::Create(
+    base::ScopedFD fd,
+    base::FilePath path,
+    int id,
+    const EventDeviceInfo& devinfo,
+    SharedPalmDetectionFilterState* shared_palm_state,
+    DeviceEventDispatcherEvdev* dispatcher) {
+  auto converter = std::make_unique<TouchEventConverterEvdev>(
+      std::move(fd), std::move(path), id, devinfo, shared_palm_state,
+      dispatcher);
+  converter->Initialize(devinfo);
+  if (!converter->GetTouchscreenSize().GetCheckedArea().IsValid()) {
+    LOG(WARNING) << "Ignoring touchscreen \"" << converter->input_device().name
+                 << "\" reporting invalid size "
+                 << converter->GetTouchscreenSize().ToString();
+    return nullptr;
+  }
+  return converter;
 }
 
 void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
@@ -146,6 +182,8 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
         std::min<int>(info.GetAbsMaximum(ABS_MT_SLOT) + 1, kNumTouchEvdevSlots);
     major_max_ = info.GetAbsMaximum(ABS_MT_TOUCH_MAJOR);
     current_slot_ = info.GetAbsValue(ABS_MT_SLOT);
+    orientation_min_ = info.GetAbsMinimum(ABS_MT_ORIENTATION);
+    orientation_max_ = info.GetAbsMaximum(ABS_MT_ORIENTATION);
   } else {
     pressure_min_ = info.GetAbsMinimum(ABS_PRESSURE);
     pressure_max_ = info.GetAbsMaximum(ABS_PRESSURE);
@@ -160,13 +198,17 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     tilt_x_range_ = info.GetAbsMaximum(ABS_TILT_X) - tilt_x_min_ + 1;
     tilt_y_range_ = info.GetAbsMaximum(ABS_TILT_Y) - tilt_y_min_ + 1;
 
+    // No orientation without mt.
+    orientation_min_ = orientation_max_ = 0;
     touch_points_ = 1;
     major_max_ = 0;
     current_slot_ = 0;
   }
 
-  touch_major_scale_ = GetFingerSizeScale(touch_major_res, x_res);
-  touch_minor_scale_ = GetFingerSizeScale(touch_minor_res, y_res);
+  x_scale_ = GetFingerSizeScale(touch_major_res, x_res) / 2.0f;
+  y_scale_ = GetFingerSizeScale(touch_minor_res, y_res) / 2.0f;
+  rotated_x_scale_ = GetFingerSizeScale(touch_minor_res, x_res) / 2.0f;
+  rotated_y_scale_ = GetFingerSizeScale(touch_major_res, y_res) / 2.0f;
 
   quirk_left_mouse_button_ =
       !has_mt_ && !info.HasKeyEvent(BTN_TOUCH) && info.HasKeyEvent(BTN_LEFT);
@@ -193,8 +235,8 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
           info.GetAbsMtSlotValueWithDefault(ABS_MT_TOUCH_MAJOR, i, 0);
       int touch_minor =
           info.GetAbsMtSlotValueWithDefault(ABS_MT_TOUCH_MINOR, i, 0);
-      events_[i].radius_x = touch_major * touch_major_scale_ / 2.0f;
-      events_[i].radius_y = touch_minor * touch_minor_scale_ / 2.0f;
+      events_[i].orientation =
+          info.GetAbsMtSlotValueWithDefault(ABS_MT_ORIENTATION, i, 0);
       events_[i].pressure = ScalePressure(
           info.GetAbsMtSlotValueWithDefault(ABS_MT_PRESSURE, i, 0));
       int tool_type = info.GetAbsMtSlotValueWithDefault(ABS_MT_TOOL_TYPE, i,
@@ -216,6 +258,7 @@ void TouchEventConverterEvdev::Initialize(const EventDeviceInfo& info) {
     events_[0].slot = 0;
     events_[0].radius_x = 0;
     events_[0].radius_y = 0;
+    events_[0].orientation = 0;
     events_[0].pressure = 0;
     events_[0].tool_code = 0;
     events_[0].tilt_x = 0;
@@ -359,8 +402,12 @@ void TouchEventConverterEvdev::ProcessKey(const input_event& input) {
     case BTN_TOOL_PEN:
     case BTN_TOOL_RUBBER:
       if (input.value > 0) {
+        if (events_[current_slot_].tool_code != 0)
+          break;
         events_[current_slot_].tool_code = input.code;
       } else {
+        if (events_[current_slot_].tool_code != input.code)
+          break;
         events_[current_slot_].tool_code = 0;
       }
       events_[current_slot_].altered = true;
@@ -378,15 +425,13 @@ void TouchEventConverterEvdev::ProcessKey(const input_event& input) {
 void TouchEventConverterEvdev::ProcessAbs(const input_event& input) {
   switch (input.code) {
     case ABS_MT_TOUCH_MAJOR:
-      // TODO(spang): If we have all of major, minor, and orientation,
-      // we can scale the ellipse correctly. However on the Pixel we get
-      // neither minor nor orientation, so this is all we can do.
-      events_[current_slot_].radius_x = input.value * touch_major_scale_ / 2.0f;
       events_[current_slot_].major = input.value;
       break;
     case ABS_MT_TOUCH_MINOR:
-      events_[current_slot_].radius_y = input.value * touch_minor_scale_ / 2.0f;
       events_[current_slot_].minor = input.value;
+      break;
+    case ABS_MT_ORIENTATION:
+      events_[current_slot_].orientation = input.value;
       break;
     case ABS_MT_POSITION_X:
       events_[current_slot_].x = input.value;
@@ -507,8 +552,12 @@ bool TouchEventConverterEvdev::MaybeCancelAllTouches() {
 }
 
 bool TouchEventConverterEvdev::IsPalm(const InProgressTouchEvdev& touch) {
-  return touch.tool_type == MT_TOOL_PALM ||
-         (major_max_ > 0 && touch.major == major_max_);
+  if (palm_on_tool_type_palm_ && touch.tool_type == MT_TOOL_PALM)
+    return true;
+  else if (palm_on_touch_major_max_ && major_max_ > 0 &&
+           touch.major == major_max_)
+    return true;
+  return false;
 }
 
 void TouchEventConverterEvdev::ReportEvents(base::TimeTicks timestamp) {
@@ -604,8 +653,10 @@ void TouchEventConverterEvdev::ProcessTouchEvent(InProgressTouchEvdev* event,
   // The tool type is fixed with the touch pressed event and does not change.
   if (event_type == ET_TOUCH_PRESSED)
     event->reported_tool_type = GetEventPointerType(event->tool_code);
-  if (event_type != ET_UNKNOWN)
+  if (event_type != ET_UNKNOWN) {
+    UpdateRadiusFromTouchWithOrientation(event);
     ReportTouchEvent(*event, event_type, timestamp);
+  }
 }
 
 void TouchEventConverterEvdev::UpdateTrackingId(int slot, int tracking_id) {
@@ -641,6 +692,23 @@ float TouchEventConverterEvdev::ScalePressure(int32_t value) const {
   if (pressure > 1.0)
     pressure = 1.0;
   return pressure;
+}
+
+bool TouchEventConverterEvdev::SupportsOrientation() const {
+  // TODO(b/185318572): Support more complex orientation reports than the
+  // simplified 0/1.
+  return orientation_max_ == 1 && orientation_min_ == 0;
+}
+
+void TouchEventConverterEvdev::UpdateRadiusFromTouchWithOrientation(
+    InProgressTouchEvdev* event) const {
+  if (!SupportsOrientation() || event->orientation == 1) {
+    event->radius_x = event->major * x_scale_;
+    event->radius_y = event->minor * y_scale_;
+  } else {
+    event->radius_x = event->minor * rotated_x_scale_;
+    event->radius_y = event->major * rotated_y_scale_;
+  }
 }
 
 int TouchEventConverterEvdev::NextTrackingId() {

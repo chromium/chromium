@@ -17,6 +17,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/base/video_frame.h"
 #include "media/base/video_types.h"
 #include "media/capture/mojom/image_capture_types.h"
 #include "media/capture/video/blob_utils.h"
@@ -66,6 +67,7 @@ struct {
   size_t num_planes;
 } constexpr kSupportedFormatsAndPlanarity[] = {
     {V4L2_PIX_FMT_YUV420, PIXEL_FORMAT_I420, 1},
+    {V4L2_PIX_FMT_NV12, PIXEL_FORMAT_NV12, 1},
     {V4L2_PIX_FMT_Y16, PIXEL_FORMAT_Y16, 1},
     {V4L2_PIX_FMT_Z16, PIXEL_FORMAT_Y16, 1},
     {V4L2_PIX_FMT_INVZ, PIXEL_FORMAT_Y16, 1},
@@ -141,7 +143,7 @@ bool IsSpecialControl(int control_id) {
 #if !defined(V4L2_CID_PANTILT_CMD)
 #define V4L2_CID_PANTILT_CMD (V4L2_CID_CAMERA_CLASS_BASE + 34)
 #endif
-bool IsBlacklistedControl(int control_id) {
+bool IsBlockedControl(int control_id) {
   switch (control_id) {
     case V4L2_CID_PAN_RELATIVE:
     case V4L2_CID_TILT_RELATIVE:
@@ -264,10 +266,18 @@ void V4L2CaptureDelegate::AllocateAndStart(
 
   ResetUserAndCameraControlsToDefault();
 
+  // In theory, checking for CAPTURE/OUTPUT in caps.capabilities should only
+  // be done if V4L2_CAP_DEVICE_CAPS is not set. However, this was not done
+  // in the past and it is unclear if it breaks with existing devices. And if
+  // a device is accepted incorrectly then it will not have any usable
+  // formats and is skipped anyways.
   v4l2_capability cap = {};
   if (!(DoIoctl(VIDIOC_QUERYCAP, &cap) == 0 &&
-        ((cap.capabilities & V4L2_CAP_VIDEO_CAPTURE) &&
-         !(cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)))) {
+        (((cap.capabilities & V4L2_CAP_VIDEO_CAPTURE) &&
+          !(cap.capabilities & V4L2_CAP_VIDEO_OUTPUT)) ||
+         ((cap.capabilities & V4L2_CAP_DEVICE_CAPS) &&
+          (cap.device_caps & V4L2_CAP_VIDEO_CAPTURE) &&
+          !(cap.device_caps & V4L2_CAP_VIDEO_OUTPUT))))) {
     device_fd_.reset();
     SetErrorState(VideoCaptureError::kV4L2ThisIsNotAV4L2VideoCaptureDevice,
                   FROM_HERE, "This is not a V4L2 video capture device");
@@ -516,6 +526,20 @@ void V4L2CaptureDelegate::SetPhotoOptions(
       DPLOG(ERROR) << "setting zoom to " << settings->zoom;
   }
 
+  if (settings->has_focus_mode &&
+      (settings->focus_mode == mojom::MeteringMode::MANUAL ||
+       settings->focus_mode == mojom::MeteringMode::CONTINUOUS)) {
+    v4l2_control auto_focus = {};
+    auto_focus.id = V4L2_CID_FOCUS_AUTO;
+    auto_focus.value =
+        settings->focus_mode == mojom::MeteringMode::MANUAL ? false : true;
+    if (DoIoctl(VIDIOC_S_CTRL, &auto_focus) < 0)
+      DPLOG(ERROR) << "setting focusMode to "
+                   << (settings->focus_mode == mojom::MeteringMode::MANUAL
+                           ? "manual"
+                           : "continuous");
+  }
+
   if (settings->has_focus_distance &&
       settings->focus_mode == mojom::MeteringMode::MANUAL) {
     v4l2_control set_focus_distance_ctrl = {};
@@ -716,7 +740,7 @@ void V4L2CaptureDelegate::ResetUserAndCameraControlsToDefault() {
 
       if (IsSpecialControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
         continue;
-      if (IsBlacklistedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
+      if (IsBlockedControl(range.id & ~V4L2_CTRL_FLAG_NEXT_CTRL))
         continue;
 
       struct v4l2_ext_control ext_control = {};
@@ -904,7 +928,9 @@ void V4L2CaptureDelegate::DoCapture() {
       client_->OnFrameDropped(
           VideoCaptureFrameDropReason::kV4L2BufferErrorFlagWasSet);
 #endif
-    } else if (buffer.bytesused < capture_format_.ImageAllocationSize()) {
+    } else if (buffer.bytesused <
+               media::VideoFrame::AllocationSize(capture_format_.pixel_format,
+                                                 capture_format_.frame_size)) {
       LOG(ERROR) << "Dequeued v4l2 buffer contains invalid length ("
                  << buffer.bytesused << " bytes).";
       buffer.bytesused = 0;
@@ -948,7 +974,9 @@ void V4L2CaptureDelegate::DoCapture() {
 
 bool V4L2CaptureDelegate::StopStream() {
   DCHECK(v4l2_task_runner_->BelongsToCurrentThread());
-  DCHECK(is_capturing_);
+  if (!is_capturing_)
+    return false;
+
   is_capturing_ = false;
 
   // The order is important: stop streaming, clear |buffer_pool_|,
@@ -977,7 +1005,6 @@ void V4L2CaptureDelegate::SetErrorState(VideoCaptureError error,
                                         const base::Location& from_here,
                                         const std::string& reason) {
   DCHECK(v4l2_task_runner_->BelongsToCurrentThread());
-  is_capturing_ = false;
   client_->OnError(error, from_here, reason);
 }
 

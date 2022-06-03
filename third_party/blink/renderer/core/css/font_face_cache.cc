@@ -157,11 +157,6 @@ CSSSegmentedFontFace* FontFaceCache::Get(
       segmented_faces_for_family->value->IsEmpty())
     return nullptr;
 
-  // TODO(crbug.com/1021568): Prevent `system-ui` from matching. Per spec,
-  // generic family names should not match web fonts unless they are quoted.
-  if (family == font_family_names::kSystemUi)
-    return nullptr;
-
   auto family_faces = segmented_faces_for_family->value;
 
   // Either add or retrieve a cache entry in the selection query cache for the
@@ -214,7 +209,7 @@ size_t FontFaceCache::GetNumSegmentedFacesForTesting() {
   return count;
 }
 
-void FontFaceCache::Trace(blink::Visitor* visitor) {
+void FontFaceCache::Trace(Visitor* visitor) const {
   visitor->Trace(segmented_faces_);
   visitor->Trace(font_selection_query_cache_);
   visitor->Trace(style_rule_to_font_face_);

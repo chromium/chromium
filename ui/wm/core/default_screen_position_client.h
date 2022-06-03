@@ -5,7 +5,6 @@
 #ifndef UI_WM_CORE_DEFAULT_SCREEN_POSITION_CLIENT_H_
 #define UI_WM_CORE_DEFAULT_SCREEN_POSITION_CLIENT_H_
 
-#include "base/macros.h"
 #include "ui/aura/client/screen_position_client.h"
 #include "ui/wm/core/wm_core_export.h"
 
@@ -16,7 +15,12 @@ namespace wm {
 class WM_CORE_EXPORT DefaultScreenPositionClient
     : public aura::client::ScreenPositionClient {
  public:
-  DefaultScreenPositionClient();
+  explicit DefaultScreenPositionClient(aura::Window* root_window);
+
+  DefaultScreenPositionClient(const DefaultScreenPositionClient&) = delete;
+  DefaultScreenPositionClient& operator=(const DefaultScreenPositionClient&) =
+      delete;
+
   ~DefaultScreenPositionClient() override;
 
   // aura::client::ScreenPositionClient overrides:
@@ -31,11 +35,12 @@ class WM_CORE_EXPORT DefaultScreenPositionClient
                  const display::Display& display) override;
 
  protected:
-  // Returns the origin of the host platform-window in system DIP coordinates.
-  virtual gfx::Point GetOriginInScreen(const aura::Window* root_window);
+  // aura::client::ScreenPositionClient:
+  gfx::Point GetRootWindowOriginInScreen(
+      const aura::Window* root_window) override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(DefaultScreenPositionClient);
+  aura::Window* root_window_;
 };
 
 }  // namespace wm

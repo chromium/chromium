@@ -37,13 +37,24 @@
 // Enables or disables the main thread watchdog. This will also start or stop
 // the monitoring of the main thread.
 - (void)setEnabled:(BOOL)enabled;
-// Prepare the UTE report before breakpad is allowed to upload reports.
-// Call completion on main thread when complete.
-// If this is called multiple timed before |completion| is called, only the
-// latest |completion| block will be called.
-// The function will queue the UTE report to be uploaded if there is no newer
-// crash report in the Breakpad directory.
+// Prepare the UTE report before the crash handler starts to uploading them.
+// If using Breakpad:
+// Call completion on main thread when complete. If this is called multiple
+// times before |completion| is called, only the latest |completion| block will
+// be called. The function will queue the UTE report to be uploaded if there is
+// no newer crash report in the Breakpad directory.
+// If using Crashpad:
+// Completion unused by Crashpad. Because -prepareCrashReportsForUpload is
+// called early enough on startup, Crashpad has not processed crash intermediate
+// dumps yet.  Since the UTE directory should be cleared to avoid duplicate UTE
+// reports, move any UTE reports from the previous session to a to-be-processed
+// location to be used by -processIntermediateDumps.
 - (void)prepareCrashReportsForUpload:(ProceduralBlock)completion;
+// Crashpad only. Tell Crashpad to process UTE intermediate dumps if there are
+// no newer crash reports. This should only be called after
+// crash_reporter::ProcessIntermediateDumps(), otherwise there would be no
+// way to see if a crash happened after the UTE report was generated.
+- (void)processIntermediateDumps;
 @end
 
 #endif  // IOS_CHROME_BROWSER_CRASH_REPORT_MAIN_THREAD_FREEZE_DETECTOR_H_

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<iframe srcdoc="
+<iframe srcdoc="<meta name='referrer' content='no-referrer-when-downgrade'>
 <base href='http://example.com/from/iframe.html'>
 <style>
 @font-face {
@@ -29,8 +29,10 @@
 "></iframe>
 
 <script>
-if (window.testRunner) {
+  if (window.testRunner) {
     testRunner.waitUntilDone();
-    document.fonts.ready.then(function() { testRunner.notifyDone(); });
-}
+    document.fonts.ready.then(function() {
+      testRunner.notifyDone();
+    });
+  }
 </script>

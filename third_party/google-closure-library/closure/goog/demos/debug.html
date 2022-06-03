@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<title>Debug</title>
+<script type="text/javascript" src="../base.js"></script>
+
+<script type="text/javascript">
+
+  goog.require('goog.debug');
+  goog.require('goog.debug.FancyWindow');
+  goog.require('goog.log');
+  /**
+   * Person - a sample person object.
+   * @param {string} name The name
+   * @param {number} age The age
+   */
+  var Person = function(name, age) {
+    this.name_ = name;
+    this.age_ = age;
+    this.address_ = null;
+    this.kids_ = [];
+
+    /**
+     * Set the address.
+     * @param {string} address The address to set
+     */
+    this.setAddress = function(address) {
+      this.address_ = address;
+    }
+
+    /**
+     * Add a child.
+     * @param {Object} child The child to add
+     */
+    this.addChild = function(child) {
+      this.kids_.push(child);
+    }
+
+    /**
+     * Create a string representation of the object.
+     * @return {string} The object as a string
+     */
+    this.toString = function() {
+      return 'Person name: ' + this.name_ + ' Age: ' + this.age_;
+    }
+  }
+
+  /**
+   * Demonstrate the debug options.
+   */
+  var demoDebug = function() {
+    // Create the debug window.
+    var debugWindow = new goog.debug.FancyWindow('main');
+    debugWindow.setEnabled(true);
+    debugWindow.init();
+
+    // Create a logger.
+    var theLogger = goog.log.getLogger('demo');
+    goog.log.info(theLogger, 'Logging examples');
+
+    // Create a simple object.
+    var someone = {'name': 'joe',
+        'age': 33,
+        'gender': 'm',
+        'kids': ['jen', 'sam', 'oliver'],
+        'address': '233 Great Road, Axtonhammer, MD'};
+
+    // Show the object, note that it will output '[object Object]'.
+    goog.log.info(theLogger, someone);
+    // Use expose to walk through the object and show all data.
+    goog.log.info(theLogger, 'Person: '+ goog.debug.expose(someone));
+
+    // Now create a Person object to demonstrate expose w/functions.
+    var pObj = new Person('fred', 2);
+    // Add a child, and an address.
+    pObj.addChild(someone);
+    pObj.setAddress('1 broadway, ny, ny');
+
+    // The toString will be called.
+    goog.log.info(theLogger, 'toString: '+ pObj);
+    // Does not show the functions by default.
+    goog.log.info(theLogger, 'expose (no functions): ' + goog.debug.expose(pObj));
+    // You can specify false if you really want to.
+    goog.log.info(theLogger, 'expose (no functions): ' + goog.debug.expose(pObj, false));
+    // Shows the functions as well.
+    goog.log.info(theLogger, 'expose (w/functions): ' + goog.debug.expose(pObj, true));
+
+    // Show deepExpose, which walks recursively through data.
+    goog.log.info(theLogger, 'deepExpose (no functions): '+ goog.debug.deepExpose(pObj));
+    // You can specify false if you really want to.
+    goog.log.info(theLogger, 'deepExpose (no functions): '+
+        goog.debug.deepExpose(pObj, false));
+    goog.log.info(theLogger, 'deepExpose (w/functions): '+
+        goog.debug.deepExpose(pObj, true));
+
+    goog.log.log(theLogger, goog.log.Level.SHOUT, 'shout');
+    goog.log.error(theLogger, 'severe');
+    goog.log.warning(theLogger, 'warning');
+    goog.log.info(theLogger, 'info');
+    goog.log.fine(theLogger, 'fine');
+  }
+
+
+</script>
+<body>
+Look in the log window for debugging examples.
+</body>
+<script>
+  // Call the demo method.
+  demoDebug();
+</script>
+</html>

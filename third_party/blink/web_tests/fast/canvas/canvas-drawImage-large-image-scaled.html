@@ -1,0 +1,24 @@
+<!DOCTYPE HTML>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<canvas height=1000 id=canvas canvas="">
+<script>
+test(function(t) {
+  var source = document.createElement('canvas');
+  source.width = 50;
+  source.height = 50;
+  var sCtx = source.getContext('2d');
+  sCtx.fillStyle = '#FF0000';
+  sCtx.fillRect(0, 0, 50, 50);
+
+  var canvas=document.getElementById('canvas');
+  var ctx=canvas.getContext('2d');
+
+  ctx.scale(1,1.1);
+  ctx.filter = 'invert(45%)';
+  ctx.shadowColor = 'lavenderblush';
+  ctx.shadowOffsetY = 124;
+
+  ctx.drawImage(source,100,Number.MAX_VALUE,100,100);
+}, 'Test if drawing an almost to the limit size image, scaled up, with a filter and shadow, crashes or not');
+</script>

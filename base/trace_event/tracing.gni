@@ -1,0 +1,21 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+declare_args() {
+  # Enable more trace events. Disabled by default due to binary size impact,
+  # but highly recommended for local development.
+  extended_tracing_enabled = false
+}
+
+# Separate block so that we can refer to extended_tracing_enabled's value.
+declare_args() {
+  # Whether OPTIONAL_TRACE_EVENT macros are included in the build or not.
+  # Disabled by default on Android and ChromeOS due to binary size impact,
+  # enabled everywhere else.
+  optional_trace_events_enabled =
+      (!is_android && !is_chromeos_ash) || extended_tracing_enabled
+}

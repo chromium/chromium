@@ -4,6 +4,8 @@
 
 #include "cc/test/test_layer_tree_host_base.h"
 
+#include <utility>
+
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "cc/test/fake_layer_tree_frame_sink.h"
@@ -73,9 +75,9 @@ std::unique_ptr<FakeLayerTreeHostImpl> TestLayerTreeHostBase::TakeHostImpl() {
 
 void TestLayerTreeHostBase::SetupDefaultTrees(const gfx::Size& layer_bounds) {
   scoped_refptr<FakeRasterSource> pending_raster_source =
-      FakeRasterSource::CreateFilled(layer_bounds);
+      FakeRasterSource::CreateFilledWithText(layer_bounds);
   scoped_refptr<FakeRasterSource> active_raster_source =
-      FakeRasterSource::CreateFilled(layer_bounds);
+      FakeRasterSource::CreateFilledWithText(layer_bounds);
 
   SetupTrees(std::move(pending_raster_source), std::move(active_raster_source));
 }
@@ -119,7 +121,9 @@ void TestLayerTreeHostBase::SetupPendingTree(
     auto* page_scale_layer = AddLayer<LayerImpl>(pending_tree);
     pending_layer_ = AddLayer<FakePictureLayerImpl>(pending_tree);
     pending_layer_->SetDrawsContent(true);
-    pending_layer_->SetScrollable(gfx::Size(1, 1));
+    // LCD-text tests require the layer to be initially opaque.
+    pending_layer_->SetContentsOpaque(true);
+    pending_layer_->SetSafeOpaqueBackgroundColor(SK_ColorWHITE);
 
     pending_tree->SetElementIdsForTesting();
     SetupRootProperties(pending_root);
@@ -127,7 +131,7 @@ void TestLayerTreeHostBase::SetupPendingTree(
     CreateTransformNode(page_scale_layer).in_subtree_of_page_scale_layer = true;
     CopyProperties(page_scale_layer, pending_layer_);
     CreateTransformNode(pending_layer_);
-    CreateScrollNode(pending_layer_);
+    CreateScrollNode(pending_layer_, gfx::Size(1, 1));
 
     auto viewport_property_ids = pending_tree->ViewportPropertyIdsForTesting();
     viewport_property_ids.page_scale_transform =

@@ -5,7 +5,6 @@
 #include "components/policy/core/common/proxy_policy_provider.h"
 #include <memory>
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/mock_configuration_policy_provider.h"
 #include "components/policy/core/common/policy_types.h"
@@ -24,6 +23,8 @@ class ProxyPolicyProviderTest : public testing::Test {
     proxy_provider_.Init(&schema_registry_);
     proxy_provider_.AddObserver(&observer_);
   }
+  ProxyPolicyProviderTest(const ProxyPolicyProviderTest&) = delete;
+  ProxyPolicyProviderTest& operator=(const ProxyPolicyProviderTest&) = delete;
 
   ~ProxyPolicyProviderTest() override {
     proxy_provider_.RemoveObserver(&observer_);
@@ -41,9 +42,6 @@ class ProxyPolicyProviderTest : public testing::Test {
     copy->CopyFrom(bundle);
     return copy;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProxyPolicyProviderTest);
 };
 
 TEST_F(ProxyPolicyProviderTest, Init) {
@@ -55,8 +53,7 @@ TEST_F(ProxyPolicyProviderTest, Delegate) {
   PolicyBundle bundle;
   bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .Set("policy", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-           POLICY_SOURCE_CLOUD, std::make_unique<base::Value>("value"),
-           nullptr);
+           POLICY_SOURCE_CLOUD, base::Value("value"), nullptr);
   mock_provider_.UpdatePolicy(CopyBundle(bundle));
 
   EXPECT_CALL(observer_, OnUpdatePolicy(&proxy_provider_));
@@ -67,8 +64,7 @@ TEST_F(ProxyPolicyProviderTest, Delegate) {
   EXPECT_CALL(observer_, OnUpdatePolicy(&proxy_provider_));
   bundle.Get(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
       .Set("policy", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-           POLICY_SOURCE_CLOUD, std::make_unique<base::Value>("new value"),
-           nullptr);
+           POLICY_SOURCE_CLOUD, base::Value("new value"), nullptr);
   mock_provider_.UpdatePolicy(CopyBundle(bundle));
   Mock::VerifyAndClearExpectations(&observer_);
   EXPECT_TRUE(bundle.Equals(proxy_provider_.policies()));
@@ -94,8 +90,7 @@ TEST_F(ProxyPolicyProviderTest, RefreshPolicies) {
   Mock::VerifyAndClearExpectations(&mock_provider_);
 
   EXPECT_CALL(observer_, OnUpdatePolicy(&proxy_provider_));
-  mock_provider_.UpdatePolicy(
-      std::unique_ptr<PolicyBundle>(new PolicyBundle()));
+  mock_provider_.UpdatePolicy(std::make_unique<PolicyBundle>());
   Mock::VerifyAndClearExpectations(&observer_);
 }
 

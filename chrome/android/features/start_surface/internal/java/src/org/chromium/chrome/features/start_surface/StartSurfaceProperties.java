@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.features.start_surface;
 
-import org.chromium.chrome.browser.feed.FeedSurfaceCoordinator;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -36,13 +35,18 @@ class StartSurfaceProperties {
             new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel.WritableBooleanPropertyKey IS_SHOWING_OVERVIEW =
             new PropertyModel.WritableBooleanPropertyKey();
+    public static final PropertyModel.WritableBooleanPropertyKey IS_SHOWING_STACK_TAB_SWITCHER =
+            new PropertyModel.WritableBooleanPropertyKey();
     public static final PropertyModel
-            .WritableObjectPropertyKey<FeedSurfaceCoordinator> FEED_SURFACE_COORDINATOR =
-            new PropertyModel.WritableObjectPropertyKey<FeedSurfaceCoordinator>();
-    public static final PropertyModel.WritableIntPropertyKey TOP_BAR_HEIGHT =
+            .WritableObjectPropertyKey<ExploreSurfaceCoordinator> EXPLORE_SURFACE_COORDINATOR =
+            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyModel.WritableIntPropertyKey TOP_MARGIN =
             new PropertyModel.WritableIntPropertyKey();
+    public static final PropertyModel.WritableObjectPropertyKey RESET_FEED_SURFACE_SCROLL_POSITION =
+            new PropertyModel.WritableObjectPropertyKey<>(true /* skipEquality */);
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {BOTTOM_BAR_CLICKLISTENER,
             BOTTOM_BAR_HEIGHT, BOTTOM_BAR_SELECTED_TAB_POSITION, IS_BOTTOM_BAR_VISIBLE,
             IS_EXPLORE_SURFACE_VISIBLE, IS_SECONDARY_SURFACE_VISIBLE, IS_SHOWING_OVERVIEW,
-            FEED_SURFACE_COORDINATOR, TOP_BAR_HEIGHT};
+            IS_SHOWING_STACK_TAB_SWITCHER, EXPLORE_SURFACE_COORDINATOR, TOP_MARGIN,
+            RESET_FEED_SURFACE_SCROLL_POSITION};
 }

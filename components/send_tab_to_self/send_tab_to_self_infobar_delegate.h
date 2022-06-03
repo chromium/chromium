@@ -6,9 +6,8 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_INFOBAR_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "components/infobars/core/infobar_delegate.h"
 
 namespace content {
@@ -27,10 +26,15 @@ class SendTabToSelfInfoBarDelegate : public infobars::InfoBarDelegate {
   static std::unique_ptr<SendTabToSelfInfoBarDelegate> Create(
       content::WebContents* web_contents,
       const SendTabToSelfEntry* entry);
+
+  SendTabToSelfInfoBarDelegate(const SendTabToSelfInfoBarDelegate&) = delete;
+  SendTabToSelfInfoBarDelegate& operator=(const SendTabToSelfInfoBarDelegate&) =
+      delete;
+
   ~SendTabToSelfInfoBarDelegate() override;
 
   // Returns the message to be shown in the infobar.
-  base::string16 GetInfobarMessage() const;
+  std::u16string GetInfobarMessage() const;
 
   // Opens a tab to the url of the shared |entry_|.
   void OpenTab();
@@ -47,8 +51,6 @@ class SendTabToSelfInfoBarDelegate : public infobars::InfoBarDelegate {
   content::WebContents* web_contents_ = nullptr;
   // The entry that was share to this device. Must outlive this instance.
   const SendTabToSelfEntry* entry_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(SendTabToSelfInfoBarDelegate);
 };
 
 }  // namespace send_tab_to_self

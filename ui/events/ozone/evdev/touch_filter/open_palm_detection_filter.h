@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(EVDEV) OpenPalmDetectionFilter
  public:
   explicit OpenPalmDetectionFilter(
       SharedPalmDetectionFilterState* shared_palm_state);
+
+  OpenPalmDetectionFilter(const OpenPalmDetectionFilter&) = delete;
+  OpenPalmDetectionFilter& operator=(const OpenPalmDetectionFilter&) = delete;
+
   ~OpenPalmDetectionFilter() override;
 
   void Filter(const std::vector<InProgressTouchEvdev>& touches,
@@ -31,9 +35,6 @@ class COMPONENT_EXPORT(EVDEV) OpenPalmDetectionFilter
 
   static const char kFilterName[];
   std::string FilterNameForTesting() const override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OpenPalmDetectionFilter);
 };
 
 }  // namespace ui

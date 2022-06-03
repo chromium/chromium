@@ -945,6 +945,7 @@ xmlHashAddEntry3
 xmlHashCopy
 xmlHashCreate
 xmlHashCreateDict
+xmlHashDefaultDeallocator
 xmlHashFree
 xmlHashLookup
 xmlHashLookup2

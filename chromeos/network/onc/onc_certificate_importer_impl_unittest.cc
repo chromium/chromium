@@ -5,10 +5,12 @@
 #include "chromeos/network/onc/onc_certificate_importer_impl.h"
 
 #include <cert.h>
+
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -37,12 +39,12 @@ class ONCCertificateImporterImplTest : public testing::Test {
     ASSERT_TRUE(private_nssdb_.is_open());
 
     task_runner_ = new base::TestSimpleTaskRunner();
-    thread_task_runner_handle_.reset(
-        new base::ThreadTaskRunnerHandle(task_runner_));
+    thread_task_runner_handle_ =
+        std::make_unique<base::ThreadTaskRunnerHandle>(task_runner_);
 
-    test_nssdb_.reset(new net::NSSCertDatabaseChromeOS(
+    test_nssdb_ = std::make_unique<net::NSSCertDatabaseChromeOS>(
         crypto::ScopedPK11Slot(PK11_ReferenceSlot(public_nssdb_.slot())),
-        crypto::ScopedPK11Slot(PK11_ReferenceSlot(private_nssdb_.slot()))));
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(private_nssdb_.slot())));
 
     // Test db should be empty at start of test.
     EXPECT_TRUE(ListCertsInPublicSlot().empty());
@@ -74,16 +76,13 @@ class ONCCertificateImporterImplTest : public testing::Test {
                                bool expected_import_success) {
     std::unique_ptr<base::DictionaryValue> onc =
         test_utils::ReadTestDictionary(filename);
-    std::unique_ptr<base::Value> certificates_value;
-    base::ListValue* certificates = NULL;
-    onc->RemoveWithoutPathExpansion(::onc::toplevel_config::kCertificates,
-                                    &certificates_value);
-    certificates_value.release()->GetAsList(&certificates);
-    onc_certificates_.reset(certificates);
+    absl::optional<base::Value> certificates_value =
+        onc->ExtractKey(::onc::toplevel_config::kCertificates);
+    onc_certificates_ = std::move(*certificates_value);
 
     CertificateImporterImpl importer(task_runner_, test_nssdb_.get());
     auto onc_parsed_certificates =
-        std::make_unique<OncParsedCertificates>(*certificates);
+        std::make_unique<OncParsedCertificates>(onc_certificates_);
     EXPECT_EQ(expected_parse_success, !onc_parsed_certificates->has_error());
     switch (import_type) {
       case ImportType::kClientCertificatesOnly:
@@ -132,9 +131,10 @@ class ONCCertificateImporterImplTest : public testing::Test {
                 certificate::GetCertType(private_list_[0].get()));
     }
 
-    base::DictionaryValue* certificate = NULL;
-    onc_certificates_->GetDictionary(0, &certificate);
-    certificate->GetStringWithoutPathExpansion(::onc::certificate::kGUID, guid);
+    const base::Value& certificate = onc_certificates_.GetList()[0];
+    const std::string* guid_value =
+        certificate.FindStringKey(::onc::certificate::kGUID);
+    *guid = *guid_value;
   }
 
   // Certificates and the NSSCertDatabase depend on these test DBs. Destroy them
@@ -145,7 +145,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<base::ThreadTaskRunnerHandle> thread_task_runner_handle_;
   std::unique_ptr<net::NSSCertDatabaseChromeOS> test_nssdb_;
-  std::unique_ptr<base::ListValue> onc_certificates_;
+  base::Value onc_certificates_;
   // List of certs in the nssdb's public slot.
   net::ScopedCERTCertificateList public_list_;
   // List of certs in the nssdb's "private" slot.
@@ -163,6 +163,8 @@ class ONCCertificateImporterImplTest : public testing::Test {
   net::ScopedCERTCertificateList ListCertsInSlot(PK11SlotInfo* slot) {
     net::ScopedCERTCertificateList result;
     CERTCertList* cert_list = PK11_ListCertsInSlot(slot);
+    if (!cert_list)
+      return result;
     for (CERTCertListNode* node = CERT_LIST_HEAD(cert_list);
          !CERT_LIST_END(node, cert_list);
          node = CERT_LIST_NEXT(node)) {
@@ -184,7 +186,7 @@ TEST_F(ONCCertificateImporterImplTest, MultipleCertificates) {
   AddCertificatesFromFile("managed_toplevel2.onc", ImportType::kAllCertificates,
                           true /* expected_parse_success */,
                           true /* expected_import_success */);
-  EXPECT_EQ(onc_certificates_->GetSize(), public_list_.size());
+  EXPECT_EQ(onc_certificates_.GetList().size(), public_list_.size());
   EXPECT_TRUE(private_list_.empty());
   EXPECT_EQ(2ul, public_list_.size());
 }
@@ -204,7 +206,7 @@ TEST_F(ONCCertificateImporterImplTest, MultipleCertificatesWithFailures) {
   AddCertificatesFromFile(
       "toplevel_partially_invalid.onc", ImportType::kAllCertificates,
       false /* expected_parse_success */, true /* expected_import_success */);
-  EXPECT_EQ(3ul, onc_certificates_->GetSize());
+  EXPECT_EQ(3ul, onc_certificates_.GetList().size());
   EXPECT_EQ(1ul, private_list_.size());
   EXPECT_TRUE(public_list_.empty());
 }

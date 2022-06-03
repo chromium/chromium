@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/webrtc/api/sctp_transport_interface.h"
 
 // The SctpTransportProxy class takes care of thread-jumping when
@@ -40,7 +42,7 @@ class SctpTransportProxy : public webrtc::SctpTransportObserverInterface {
     virtual void OnStartCompleted(webrtc::SctpTransportInformation info) = 0;
     // Called when a state change is signalled from transport.
     virtual void OnStateChange(webrtc::SctpTransportInformation info) = 0;
-    void Trace(blink::Visitor* visitor) override {}
+    void Trace(Visitor* visitor) const override {}
   };
 
   // Constructs a SctpTransportProxy.  The caller is responsible for keeping

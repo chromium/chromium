@@ -2,153 +2,194 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-Polymer({
-  is: 'cr-toolbar-search-field',
+import '../cr_icon_button/cr_icon_button.m.js';
+import '../cr_icons_css.m.js';
+import '../icons.m.js';
+import '../shared_style_css.m.js';
+import '../shared_vars_css.m.js';
+import '//resources/polymer/v3_0/paper-spinner/paper-spinner-lite.js';
 
-  behaviors: [CrSearchFieldBehavior],
+import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-  properties: {
-    narrow: {
-      type: Boolean,
-      reflectToAttribute: true,
-    },
+import {CrSearchFieldBehavior, CrSearchFieldBehaviorInterface} from '../cr_search_field/cr_search_field_behavior.js';
 
-    showingSearch: {
-      type: Boolean,
-      value: false,
-      notify: true,
-      observer: 'showingSearchChanged_',
-      reflectToAttribute: true
-    },
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {CrSearchFieldBehaviorInterface}
+ */
+const CrToolbarSearchFieldElementBase =
+    mixinBehaviors(CrSearchFieldBehavior, PolymerElement);
 
-    // Prompt text to display in the search field.
-    label: String,
+/** @polymer */
+export class CrToolbarSearchFieldElement extends
+    CrToolbarSearchFieldElementBase {
+  static get is() {
+    return 'cr-toolbar-search-field';
+  }
 
-    // Tooltip to display on the clear search button.
-    clearLabel: String,
+  static get template() {
+    return html`{__html_template__}`;
+  }
 
-    // When true, show a loading spinner to indicate that the backend is
-    // processing the search. Will only show if the search field is open.
-    spinnerActive: {type: Boolean, reflectToAttribute: true},
+  static get properties() {
+    return {
+      narrow: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
 
-    /** @private */
-    isSpinnerShown_: {
-      type: Boolean,
-      computed: 'computeIsSpinnerShown_(spinnerActive, showingSearch)'
-    },
+      showingSearch: {
+        type: Boolean,
+        value: false,
+        notify: true,
+        observer: 'showingSearchChanged_',
+        reflectToAttribute: true,
+      },
 
-    /** @private */
-    searchFocused_: {type: Boolean, value: false},
-  },
+      autofocus: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
 
-  listeners: {
-    // Deliberately uses 'click' instead of 'tap' to fix crbug.com/624356.
-    'click': 'showSearch_',
-  },
+      // Prompt text to display in the search field.
+      label: String,
+
+      // Tooltip to display on the clear search button.
+      clearLabel: String,
+
+      // When true, show a loading spinner to indicate that the backend is
+      // processing the search. Will only show if the search field is open.
+      spinnerActive: {type: Boolean, reflectToAttribute: true},
+
+      /** @private */
+      isSpinnerShown_: {
+        type: Boolean,
+        computed: 'computeIsSpinnerShown_(spinnerActive, showingSearch)'
+      },
+
+      /** @private */
+      searchFocused_: {type: Boolean, value: false},
+    };
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.addEventListener('click', e => this.showSearch_(e));
+  }
 
   /** @return {!HTMLInputElement} */
-  getSearchInput: function() {
+  getSearchInput() {
     return /** @type {!HTMLInputElement} */ (this.$.searchInput);
-  },
+  }
 
   /** @return {boolean} */
-  isSearchFocused: function() {
+  isSearchFocused() {
     return this.searchFocused_;
-  },
+  }
 
-  showAndFocus: function() {
+  showAndFocus() {
     this.showingSearch = true;
     this.focus_();
-  },
+  }
 
-  onSearchTermInput: function() {
+  onSearchTermInput() {
     CrSearchFieldBehavior.onSearchTermInput.call(this);
     this.showingSearch = this.hasSearchText || this.isSearchFocused();
-  },
+  }
 
   /** @private */
-  focus_: function() {
+  onSearchIconClicked_() {
+    this.dispatchEvent(new CustomEvent(
+        'search-icon-clicked', {bubbles: true, composed: true}));
+  }
+
+  /** @private */
+  focus_() {
     this.getSearchInput().focus();
-  },
+  }
 
   /**
    * @param {boolean} narrow
    * @return {number}
    * @private
    */
-  computeIconTabIndex_: function(narrow) {
+  computeIconTabIndex_(narrow) {
     return narrow && !this.hasSearchText ? 0 : -1;
-  },
+  }
 
   /**
    * @param {boolean} narrow
    * @return {string}
    * @private
    */
-  computeIconAriaHidden_: function(narrow) {
+  computeIconAriaHidden_(narrow) {
     return Boolean(!narrow || this.hasSearchText).toString();
-  },
+  }
 
   /**
    * @return {boolean}
    * @private
    */
-  computeIsSpinnerShown_: function() {
+  computeIsSpinnerShown_() {
     const showSpinner = this.spinnerActive && this.showingSearch;
     if (showSpinner) {
       this.$.spinnerTemplate.if = true;
     }
     return showSpinner;
-  },
+  }
 
   /** @private */
-  onInputFocus_: function() {
+  onInputFocus_() {
     this.searchFocused_ = true;
-  },
+  }
 
   /** @private */
-  onInputBlur_: function() {
+  onInputBlur_() {
     this.searchFocused_ = false;
     if (!this.hasSearchText) {
       this.showingSearch = false;
     }
-  },
+  }
 
   /** @private */
-  onSearchTermKeydown_: function(e) {
-    if (e.key == 'Escape') {
+  onSearchTermKeydown_(e) {
+    if (e.key === 'Escape') {
       this.showingSearch = false;
     }
-  },
+  }
 
   /**
    * @param {Event} e
    * @private
    */
-  showSearch_: function(e) {
-    if (e.target != this.$.clearSearch) {
+  showSearch_(e) {
+    if (e.target !== this.$.clearSearch) {
       this.showingSearch = true;
     }
-  },
+  }
 
   /**
    * @param {Event} e
    * @private
    */
-  clearSearch_: function(e) {
+  clearSearch_(e) {
     this.setValue('');
     this.focus_();
     this.spinnerActive = false;
-  },
+  }
 
   /**
    * @param {boolean} current
    * @param {boolean|undefined} previous
    * @private
    */
-  showingSearchChanged_: function(current, previous) {
+  showingSearchChanged_(current, previous) {
     // Prevent unnecessary 'search-changed' event from firing on startup.
-    if (previous == undefined) {
+    if (previous === undefined) {
       return;
     }
 
@@ -159,5 +200,8 @@ Polymer({
 
     this.setValue('');
     this.getSearchInput().blur();
-  },
-});
+  }
+}
+
+customElements.define(
+    CrToolbarSearchFieldElement.is, CrToolbarSearchFieldElement);

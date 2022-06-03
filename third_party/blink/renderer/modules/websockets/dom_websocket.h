@@ -31,13 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_DOM_WEBSOCKET_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_WEBSOCKETS_DOM_WEBSOCKET_H_
 
-#include <stddef.h>
-#include <stdint.h>
-#include <memory>
+#include <cstddef>
+#include <cstdint>
+
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/dom/events/event_listener.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer_view_helpers.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -60,14 +60,14 @@ class DOMArrayBuffer;
 class DOMArrayBufferView;
 class ExceptionState;
 class ExecutionContext;
-class StringOrStringSequence;
+class V8UnionStringOrStringSequence;
 
-class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
-                                    public ActiveScriptWrappable<DOMWebSocket>,
-                                    public ContextLifecycleStateObserver,
-                                    public WebSocketChannelClient {
+class MODULES_EXPORT DOMWebSocket
+    : public EventTargetWithInlineData,
+      public ActiveScriptWrappable<DOMWebSocket>,
+      public ExecutionContextLifecycleStateObserver,
+      public WebSocketChannelClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(DOMWebSocket);
 
  public:
   // These definitions are required by V8DOMWebSocket.
@@ -82,10 +82,10 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
   static DOMWebSocket* Create(ExecutionContext*,
                               const String& url,
                               ExceptionState&);
-  static DOMWebSocket* Create(ExecutionContext*,
+  static DOMWebSocket* Create(ExecutionContext* execution_context,
                               const String& url,
-                              const StringOrStringSequence& protocols,
-                              ExceptionState&);
+                              const V8UnionStringOrStringSequence* protocols,
+                              ExceptionState& exception_state);
 
   explicit DOMWebSocket(ExecutionContext*);
   ~DOMWebSocket() override;
@@ -127,8 +127,8 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  // ContextLifecycleStateObserver functions.
-  void ContextDestroyed(ExecutionContext*) override;
+  // ExecutionContextLifecycleStateObserver functions.
+  void ContextDestroyed() override;
   void ContextLifecycleStateChanged(mojom::FrameLifecycleState) override;
 
   // ScriptWrappable functions.
@@ -148,7 +148,7 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
                 uint16_t code,
                 const String& reason) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   // FIXME: This should inherit blink::EventQueue.
@@ -174,7 +174,7 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
 
     bool IsPaused();
 
-    void Trace(blink::Visitor*);
+    void Trace(Visitor*) const;
 
    private:
     enum State {
@@ -194,19 +194,12 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
     HeapDeque<Member<Event>> events_;
   };
 
-  enum WebSocketSendType {
-    kWebSocketSendTypeString,
-    kWebSocketSendTypeArrayBuffer,
-    kWebSocketSendTypeArrayBufferView,
-    kWebSocketSendTypeBlob,
-    kWebSocketSendTypeMax,
-  };
-
-  enum WebSocketReceiveType {
-    kWebSocketReceiveTypeString,
-    kWebSocketReceiveTypeArrayBuffer,
-    kWebSocketReceiveTypeBlob,
-    kWebSocketReceiveTypeMax,
+  enum class WebSocketSendType {
+    kString,
+    kArrayBuffer,
+    kArrayBufferView,
+    kBlob,
+    kMaxValue = kBlob,
   };
 
   enum BinaryType { kBinaryTypeBlob, kBinaryTypeArrayBuffer };
@@ -244,9 +237,6 @@ class MODULES_EXPORT DOMWebSocket : public EventTargetWithInlineData,
 
   void ReleaseChannel();
   void RecordSendTypeHistogram(WebSocketSendType);
-  void RecordSendMessageSizeHistogram(WebSocketSendType, size_t);
-  void RecordReceiveTypeHistogram(WebSocketReceiveType);
-  void RecordReceiveMessageSizeHistogram(WebSocketReceiveType, size_t);
 
   Member<WebSocketChannel> channel_;
 

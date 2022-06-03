@@ -7,16 +7,23 @@
 
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 
-@protocol ApplicationCommands;
-@protocol BrowserCommands;
-@protocol BrowsingDataCommands;
 @class ManageSyncSettingsCoordinator;
 
 // Delegate for ManageSyncSettingsCoordinator.
 @protocol ManageSyncSettingsCoordinatorDelegate <NSObject>
 
-// Called when the view controller is popped out from navigation controller.
-- (void)manageSyncSettingsCoordinatorWasPopped:
+// Called when the view controller is removed from its parent.
+- (void)manageSyncSettingsCoordinatorWasRemoved:
+    (ManageSyncSettingsCoordinator*)coordinator;
+
+// Title for the Sync Settings coordinator.
+// TODO(crbug.com/1222632): Remove property following the MICE Settings launch.
+@property(nonatomic, readonly) NSString* manageSyncSettingsCoordinatorTitle;
+
+@optional
+// Called when the view controller is about to open the Chrome Sync web page
+// URL.
+- (void)manageSyncSettingsCoordinatorNeedToOpenChromeSyncWebPage:
     (ManageSyncSettingsCoordinator*)coordinator;
 
 @end
@@ -26,12 +33,16 @@
 // relies on GoogleServicesSettingsCoordinator to commit the sync changes.
 @interface ManageSyncSettingsCoordinator : ChromeCoordinator
 
+- (instancetype)initWithBaseViewController:(UIViewController*)viewController
+                                   browser:(Browser*)browser NS_UNAVAILABLE;
+
+- (instancetype)initWithBaseNavigationController:
+                    (UINavigationController*)navigationController
+                                         browser:(Browser*)browser
+    NS_DESIGNATED_INITIALIZER;
+
 // Delegate.
 @property(nonatomic, weak) id<ManageSyncSettingsCoordinatorDelegate> delegate;
-// Global dispatcher.
-@property(nonatomic, weak)
-    id<ApplicationCommands, BrowserCommands, BrowsingDataCommands>
-        dispatcher;
 
 @end
 

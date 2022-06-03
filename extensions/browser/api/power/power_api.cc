@@ -5,7 +5,7 @@
 #include "extensions/browser/api/power/power_api.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/device_service.h"
@@ -39,7 +39,7 @@ base::LazyInstance<BrowserContextKeyedAPIFactory<PowerAPI>>::DestructorAtExit
 
 ExtensionFunction::ResponseAction PowerRequestKeepAwakeFunction::Run() {
   std::unique_ptr<api::power::RequestKeepAwake::Params> params(
-      api::power::RequestKeepAwake::Params::Create(*args_));
+      api::power::RequestKeepAwake::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
   PowerAPI::Get(browser_context())->AddRequest(extension_id(), params->level);
   return RespondNow(NoArguments());
@@ -72,16 +72,18 @@ void PowerAPI::RemoveRequest(const std::string& extension_id) {
 }
 
 void PowerAPI::SetWakeLockFunctionsForTesting(
-    const ActivateWakeLockFunction& activate_function,
-    const CancelWakeLockFunction& cancel_function) {
+    ActivateWakeLockFunction activate_function,
+    CancelWakeLockFunction cancel_function) {
   activate_wake_lock_function_ =
       !activate_function.is_null()
-          ? activate_function
-          : base::Bind(&PowerAPI::ActivateWakeLock, base::Unretained(this));
+          ? std::move(activate_function)
+          : base::BindRepeating(&PowerAPI::ActivateWakeLock,
+                                base::Unretained(this));
   cancel_wake_lock_function_ =
       !cancel_function.is_null()
-          ? cancel_function
-          : base::Bind(&PowerAPI::CancelWakeLock, base::Unretained(this));
+          ? std::move(cancel_function)
+          : base::BindRepeating(&PowerAPI::CancelWakeLock,
+                                base::Unretained(this));
 }
 
 void PowerAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
@@ -94,9 +96,10 @@ void PowerAPI::OnExtensionUnloaded(content::BrowserContext* browser_context,
 PowerAPI::PowerAPI(content::BrowserContext* context)
     : browser_context_(context),
       activate_wake_lock_function_(
-          base::Bind(&PowerAPI::ActivateWakeLock, base::Unretained(this))),
-      cancel_wake_lock_function_(
-          base::Bind(&PowerAPI::CancelWakeLock, base::Unretained(this))),
+          base::BindRepeating(&PowerAPI::ActivateWakeLock,
+                              base::Unretained(this))),
+      cancel_wake_lock_function_(base::BindRepeating(&PowerAPI::CancelWakeLock,
+                                                     base::Unretained(this))),
       is_wake_lock_active_(false),
       current_level_(api::power::LEVEL_SYSTEM) {
   ExtensionRegistry::Get(browser_context_)->AddObserver(this);

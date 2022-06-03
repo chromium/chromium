@@ -7,7 +7,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace sandbox {
 

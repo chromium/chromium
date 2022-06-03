@@ -6,13 +6,12 @@
 #define CHROME_BROWSER_METRICS_PLUGIN_METRICS_PROVIDER_H_
 
 #include <map>
+#include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
 #include "content/public/browser/browser_child_process_observer.h"
@@ -34,10 +33,14 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
                               public content::BrowserChildProcessObserver {
  public:
   explicit PluginMetricsProvider(PrefService* local_state);
+
+  PluginMetricsProvider(const PluginMetricsProvider&) = delete;
+  PluginMetricsProvider& operator=(const PluginMetricsProvider&) = delete;
+
   ~PluginMetricsProvider() override;
 
   // metrics::MetricsDataProvider:
-  void AsyncInit(const base::Closure& done_callback) override;
+  void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
   void ProvideStabilityMetrics(
@@ -67,7 +70,7 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   struct ChildProcessStats;
 
   // Receives the plugin list from the PluginService and calls |done_callback|.
-  void OnGotPlugins(const base::Closure& done_callback,
+  void OnGotPlugins(base::OnceClosure done_callback,
                     const std::vector<content::WebPluginInfo>& plugins);
 
   // Returns reference to ChildProcessStats corresponding to |data|.
@@ -78,7 +81,7 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   void RecordCurrentState();
 
   // content::BrowserChildProcessObserver:
-  void BrowserChildProcessHostConnected(
+  void BrowserChildProcessLaunchedAndConnected(
       const content::ChildProcessData& data) override;
   void BrowserChildProcessCrashed(
       const content::ChildProcessData& data,
@@ -104,11 +107,9 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   std::vector<content::WebPluginInfo> plugins_;
 
   // Buffer of child process notifications for quick access.
-  std::map<base::string16, ChildProcessStats> child_process_stats_buffer_;
+  std::map<std::u16string, ChildProcessStats> child_process_stats_buffer_;
 
   base::WeakPtrFactory<PluginMetricsProvider> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PluginMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_PLUGIN_METRICS_PROVIDER_H_

@@ -37,7 +37,7 @@ constexpr const char kRamVsSwapWeight[] = "ram_vs_swap_weight";
 constexpr const char kExtraFree[] = "extra_free";
 
 void OnSwapParameterSet(std::string parameter,
-                        base::Optional<std::string> res) {
+                        absl::optional<std::string> res) {
   LOG_IF(ERROR, !res.has_value())
       << "Setting swap paramter " << parameter << " failed.";
   LOG_IF(ERROR, res.has_value() && !res.value().empty())

@@ -66,7 +66,7 @@ class CollectionIndexCache {
   void NodeInserted();
   void NodeRemoved();
 
-  virtual void Trace(Visitor* visitor) { visitor->Trace(current_node_); }
+  virtual void Trace(Visitor* visitor) const { visitor->Trace(current_node_); }
 
  protected:
   ALWAYS_INLINE NodeType* CachedNode() const { return current_node_; }

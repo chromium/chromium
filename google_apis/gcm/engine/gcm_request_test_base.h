@@ -24,6 +24,10 @@ namespace gcm {
 class GCMRequestTestBase : public testing::Test {
  public:
   GCMRequestTestBase();
+
+  GCMRequestTestBase(const GCMRequestTestBase&) = delete;
+  GCMRequestTestBase& operator=(const GCMRequestTestBase&) = delete;
+
   ~GCMRequestTestBase() override;
 
   const net::BackoffEntry::Policy& GetBackoffPolicy() const;
@@ -69,8 +73,6 @@ class GCMRequestTestBase : public testing::Test {
 
   // Tracks the number of retries so far.
   int retry_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(GCMRequestTestBase);
 };
 
 }  // namespace gcm

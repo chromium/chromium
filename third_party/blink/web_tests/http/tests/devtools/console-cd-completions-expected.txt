@@ -7,9 +7,6 @@ myGlob completions:
 myGlobalVar
 myGlobalFunction
 myIFrame completions:
-self
-top
-window
 proxy completions:
 a
 window.counter = 0

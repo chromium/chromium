@@ -29,7 +29,7 @@
     Exposed=(Window,Worker),
     Serializable
 ] interface File : Blob {
-    [CallWith=ExecutionContext] constructor(sequence<BlobPart> fileBits, USVString fileName, optional FilePropertyBag options);
+    [CallWith=ExecutionContext] constructor(sequence<BlobPart> fileBits, USVString fileName, optional FilePropertyBag options = {});
     readonly attribute DOMString name;
     readonly attribute long long lastModified;
 

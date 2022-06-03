@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
@@ -30,6 +31,10 @@ class NET_EXPORT_PRIVATE HttpBasicState {
  public:
   HttpBasicState(std::unique_ptr<ClientSocketHandle> connection,
                  bool using_proxy);
+
+  HttpBasicState(const HttpBasicState&) = delete;
+  HttpBasicState& operator=(const HttpBasicState&) = delete;
+
   ~HttpBasicState();
 
   // Initialize() must be called before using any of the other methods.
@@ -66,6 +71,11 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   // ClientSocketHandle::is_reused().
   bool IsConnectionReused() const;
 
+  // Retrieves any DNS aliases for the remote endpoint. The alias chain order
+  // is preserved in reverse, from canonical name (i.e. address record name)
+  // through to query name.
+  const std::vector<std::string>& GetDnsAliases() const;
+
  private:
   scoped_refptr<GrowableIOBuffer> read_buf_;
 
@@ -79,8 +89,6 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   std::string request_method_;
 
   MutableNetworkTrafficAnnotationTag traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpBasicState);
 };
 
 }  // namespace net

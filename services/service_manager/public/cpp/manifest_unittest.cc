@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
-#include "base/stl_util.h"
 #include "services/service_manager/public/cpp/manifest_builder.h"
 #include "services/service_manager/public/mojom/connector.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"

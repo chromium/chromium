@@ -5,12 +5,29 @@
 #include "third_party/blink/renderer/core/animation/scroll_timeline_util.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
+#include "third_party/blink/renderer/core/animation/animation_test_helpers.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 
 namespace blink {
+
+namespace {
+
+HeapVector<Member<ScrollTimelineOffset>> CreateScrollOffsets(
+    ScrollTimelineOffset* start_scroll_offset,
+    ScrollTimelineOffset* end_scroll_offset) {
+  HeapVector<Member<ScrollTimelineOffset>> scroll_offsets;
+  scroll_offsets.push_back(start_scroll_offset);
+  scroll_offsets.push_back(end_scroll_offset);
+  return scroll_offsets;
+}
+
+}  // namespace
 
 namespace scroll_timeline_util {
 
@@ -21,6 +38,8 @@ using ScrollTimelineUtilTest = PageTestBase;
 // are tested in the GetOrientation* tests, and complex start/end scroll offset
 // resolutions are tested in blink::ScrollTimelineTest.
 TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
+  using animation_test_helpers::OffsetFromString;
+
   SetBodyInnerHTML(R"HTML(
     <style>
       #scroller {
@@ -36,26 +55,22 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimeline) {
   )HTML");
 
   Element* scroller = GetElementById("scroller");
-  base::Optional<CompositorElementId> element_id =
+  absl::optional<CompositorElementId> element_id =
       GetCompositorScrollElementId(scroller);
   ASSERT_TRUE(element_id.has_value());
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  options->setScrollSource(scroller);
-  const double time_range = 100;
-  options->setTimeRange(
-      DoubleOrScrollTimelineAutoKeyword::FromDouble(time_range));
+  options->setSource(scroller);
   options->setOrientation("block");
-  options->setStartScrollOffset("50px");
-  options->setEndScrollOffset("auto");
+  options->setScrollOffsets({OffsetFromString(GetDocument(), "50px"),
+                             OffsetFromString(GetDocument(), "auto")});
   ScrollTimeline* timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
-  std::unique_ptr<CompositorScrollTimeline> compositor_timeline =
+  scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
-  EXPECT_EQ(compositor_timeline->GetActiveIdForTest(), base::nullopt);
+  EXPECT_EQ(compositor_timeline->GetActiveIdForTest(), absl::nullopt);
   EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), element_id);
-  EXPECT_EQ(compositor_timeline->GetTimeRangeForTest(), time_range);
   EXPECT_EQ(compositor_timeline->GetDirectionForTest(),
             CompositorScrollTimeline::ScrollDown);
   EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), 50);
@@ -70,25 +85,27 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullParameter) {
 TEST_F(ScrollTimelineUtilTest,
        ToCompositorScrollTimelineDocumentTimelineParameter) {
   DocumentTimeline* timeline =
-      MakeGarbageCollected<DocumentTimeline>(MakeGarbageCollected<Document>());
+      MakeGarbageCollected<DocumentTimeline>(Document::CreateForTest());
   EXPECT_EQ(ToCompositorScrollTimeline(timeline), nullptr);
 }
 
-TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullScrollSource) {
+TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullSource) {
   // Directly call the constructor to make it easier to pass a null
-  // scrollSource. The alternative approach would require us to remove the
+  // source. The alternative approach would require us to remove the
   // documentElement from the document.
-  Element* scroll_source = nullptr;
-  CSSPrimitiveValue* start_scroll_offset = nullptr;
-  CSSPrimitiveValue* end_scroll_offset = nullptr;
+  Element* source = nullptr;
+  ScrollTimelineOffset* start_scroll_offset =
+      MakeGarbageCollected<ScrollTimelineOffset>();
+  ScrollTimelineOffset* end_scroll_offset =
+      MakeGarbageCollected<ScrollTimelineOffset>();
   ScrollTimeline* timeline = MakeGarbageCollected<ScrollTimeline>(
-      &GetDocument(), scroll_source, ScrollTimeline::Block, start_scroll_offset,
-      end_scroll_offset, 100, Timing::FillMode::NONE);
+      &GetDocument(), source, ScrollTimeline::Block,
+      CreateScrollOffsets(start_scroll_offset, end_scroll_offset));
 
-  std::unique_ptr<CompositorScrollTimeline> compositor_timeline =
+  scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
   ASSERT_TRUE(compositor_timeline.get());
-  EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), base::nullopt);
+  EXPECT_EQ(compositor_timeline->GetPendingIdForTest(), absl::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
@@ -96,21 +113,18 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullLayoutBox) {
   ASSERT_FALSE(div->GetLayoutBox());
 
   ScrollTimelineOptions* options = ScrollTimelineOptions::Create();
-  DoubleOrScrollTimelineAutoKeyword time_range =
-      DoubleOrScrollTimelineAutoKeyword::FromDouble(100);
-  options->setTimeRange(time_range);
-  options->setScrollSource(div);
+  options->setSource(div);
   ScrollTimeline* timeline =
       ScrollTimeline::Create(GetDocument(), options, ASSERT_NO_EXCEPTION);
 
-  std::unique_ptr<CompositorScrollTimeline> compositor_timeline =
+  scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);
   EXPECT_TRUE(compositor_timeline.get());
   // Here we just want to test the start/end scroll offset.
-  // ToCompositorScrollTimelineNullScrollSource covers the expected pending id
+  // ToCompositorScrollTimelineNullSource covers the expected pending id
   // and ConvertOrientationNullStyle covers the orientation conversion.
-  EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), base::nullopt);
-  EXPECT_EQ(compositor_timeline->GetEndScrollOffsetForTest(), base::nullopt);
+  EXPECT_EQ(compositor_timeline->GetStartScrollOffsetForTest(), absl::nullopt);
+  EXPECT_EQ(compositor_timeline->GetEndScrollOffsetForTest(), absl::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
@@ -121,7 +135,8 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
                                        WritingMode::kVerticalRl};
   Vector<TextDirection> directions = {TextDirection::kLtr, TextDirection::kRtl};
 
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
   for (const WritingMode& writing_mode : writing_modes) {
     for (const TextDirection& direction : directions) {
       style->SetWritingMode(writing_mode);
@@ -135,7 +150,8 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationPhysicalCases) {
 }
 
 TEST_F(ScrollTimelineUtilTest, ConvertOrientationLogical) {
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
 
   // horizontal-tb, ltr
   style->SetWritingMode(WritingMode::kHorizontalTb);
@@ -200,20 +216,20 @@ TEST_F(ScrollTimelineUtilTest, ConvertOrientationNullStyle) {
 }
 
 TEST_F(ScrollTimelineUtilTest, GetCompositorScrollElementIdNullNode) {
-  EXPECT_EQ(GetCompositorScrollElementId(nullptr), base::nullopt);
+  EXPECT_EQ(GetCompositorScrollElementId(nullptr), absl::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, GetCompositorScrollElementIdNullLayoutObject) {
   auto* div = MakeGarbageCollected<HTMLDivElement>(GetDocument());
   ASSERT_FALSE(div->GetLayoutObject());
-  EXPECT_EQ(GetCompositorScrollElementId(nullptr), base::nullopt);
+  EXPECT_EQ(GetCompositorScrollElementId(nullptr), absl::nullopt);
 }
 
 TEST_F(ScrollTimelineUtilTest, GetCompositorScrollElementIdNoUniqueId) {
   SetBodyInnerHTML("<div id='test'></div>");
   Element* test = GetElementById("test");
   ASSERT_TRUE(test->GetLayoutObject());
-  EXPECT_EQ(GetCompositorScrollElementId(test), base::nullopt);
+  EXPECT_EQ(GetCompositorScrollElementId(test), absl::nullopt);
 }
 
 }  // namespace scroll_timeline_util

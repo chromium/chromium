@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/ui/util/transparent_link_button.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #import "base/strings/sys_string_conversions.h"
 #include "url/gurl.h"
 

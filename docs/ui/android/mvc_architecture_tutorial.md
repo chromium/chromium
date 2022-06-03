@@ -6,8 +6,8 @@ A full explanation of the MVC framework can be found [here](https://docs.google.
 For this example, we’ll be implementing a simple progress bar; a rectangle that changes length based on the loading state of the underlying webpage.
 
 #### Additional Resources
-[Simple MVC lists](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md)
-[Testing MVC primer doc](https://docs.google.com/document/d/1Mel7f4lE_osFjnttkxu1wcUf_k9CmIzPv6oxwCw9tx4/edit#)
+* [Simple MVC lists](https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md)
+* [Testing MVC primer doc](https://docs.google.com/document/d/1Mel7f4lE_osFjnttkxu1wcUf_k9CmIzPv6oxwCw9tx4/edit#)
 
 #### File Structure
 The file structure of our component will be the following:
@@ -24,21 +24,19 @@ The class responsible for setting up the component. This should be the only publ
 ```java
 public class SimpleProgressCoordinator {
 
-   private SimpleProgressMediator mMediator;
+   private final SimpleProgressMediator mMediator;
+   private final View mView;
 
-   public SimpleProgressCoordinator (Tab tabProgressBarIsFor) {
+   public SimpleProgressCoordinator (Tab tabProgressBarIsFor, Context context) {
 
        PropertyModel model = new PropertyModel.Builder(SimpleProgressProperties.ALL_KEYS)
                .with(SimpleProgressProperties.PROGRESS_FRACTION, 0f)
                .with(SimpleProgressProperties.FOREGROUND_COLOR, Color.RED)
                .build();
 
-       // This view can come from multiple places, in this case we find it in the existing
-       // view hierarchy.
-       View view = tabProgressBarIsFor.getActivity().findViewById(
-               R.id.my_simple_progress_bar);
+       mView = LayoutInflater.from(context).inflate(R.layout.my_simple_progress_bar);
 
-       PropertyModelChangeProcessor.create(model, view, SimpleProgressViewBinder::bind);
+       PropertyModelChangeProcessor.create(model, mView, SimpleProgressViewBinder::bind);
 
        mMediator = new SimpleProgressMediator(model, tabProgressBarIsFor);
    }
@@ -46,8 +44,13 @@ public class SimpleProgressCoordinator {
    public void destroy() {
        mMediator.destroy();
    }
+
+   public View getView() {
+       return mView;
+   }
 }
 ```
+Note that there are several ways to acquire the view. If this MVC component owns its own layout file, then it should inflate the view, as shown above. #getView() allows the parent component's coordinator to add this component's view to the hierarchy. However, if the desired view for this MVC component is part of some other parent component's layout file, then the parent component should be responsible for calling findViewById() and passing the right view into this coordinator. See [this email thread](http://g/clank-frontend/u8x2PBa5EfI) for related discussion.
 
 #### SimpleProgressMediator
 The class that handles all of the signals coming from the outside world. External classes should never interact with this class directly.
@@ -55,9 +58,8 @@ The class that handles all of the signals coming from the outside world. Externa
 ```java
 class SimpleProgressMediator extends EmptyTabObserver {
 
-   private PropertyModel mModel;
-
-   private Tab mObservedTab;
+   private final PropertyModel mModel;
+   private final Tab mObservedTab;
 
    public SimpleProgressMediator(PropertyModel model, Tab tabProgressBarIsFor) {
        mModel = model;
@@ -118,4 +120,3 @@ class SimpleProgressProperties {
     public static final PropertyKey[] ALL_KEYS = {PROGRESS_FRACTION, FOREGROUND_COLOR};
 }
 ```
-

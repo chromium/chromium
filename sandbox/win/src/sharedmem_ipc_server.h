@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_SRC_SHAREDMEM_IPC_SERVER_H_
-#define SANDBOX_SRC_SHAREDMEM_IPC_SERVER_H_
+#ifndef SANDBOX_WIN_SRC_SHAREDMEM_IPC_SERVER_H_
+#define SANDBOX_WIN_SRC_SHAREDMEM_IPC_SERVER_H_
 
 #include <stdint.h>
 
@@ -16,6 +16,7 @@
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/sharedmem_ipc_client.h"
+#include "sandbox/win/src/threadpool.h"
 
 // IPC transport implementation that uses shared memory.
 // This is the server side
@@ -47,12 +48,15 @@ class SharedMemIPCServer {
   // everything is safe. If that changes, we should break this dependency and
   // duplicate the handle instead.
   // target_process_id: process id of the target process.
-  // thread_provider: a thread provider object.
+  // thread_pool: a thread pool object.
   // dispatcher: an object that can service IPC calls.
   SharedMemIPCServer(HANDLE target_process,
                      DWORD target_process_id,
-                     ThreadProvider* thread_provider,
+                     ThreadPool* thread_pool,
                      Dispatcher* dispatcher);
+
+  SharedMemIPCServer(const SharedMemIPCServer&) = delete;
+  SharedMemIPCServer& operator=(const SharedMemIPCServer&) = delete;
 
   ~SharedMemIPCServer();
 
@@ -64,9 +68,9 @@ class SharedMemIPCServer {
   // Allow tests to be marked DISABLED_. Note that FLAKY_ and FAILS_ prefixes
   // do not work with sandbox tests.
   FRIEND_TEST_ALL_PREFIXES(IPCTest, SharedMemServerTests);
-  // When an event fires (IPC request). A thread from the ThreadProvider
+  // When an event fires (IPC request). A thread from the ThreadPool
   // will call this function. The context parameter should be the same as
-  // provided when ThreadProvider::RegisterWait was called.
+  // provided when ThreadPool::RegisterWait was called.
   static void __stdcall ThreadPingEventReady(void* context, unsigned char);
 
   // Makes the client and server events. This function is called once
@@ -116,9 +120,9 @@ class SharedMemIPCServer {
   // Keeps track of the server side objects that are used to answer an IPC.
   std::list<std::unique_ptr<ServerControl>> server_contexts_;
 
-  // The thread provider provides the threads that call back into this object
+  // The thread pool provides the threads that call back into this object
   // when the IPC events fire.
-  ThreadProvider* thread_provider_;
+  ThreadPool* thread_pool_;
 
   // The IPC object is associated with a target process.
   HANDLE target_process_;
@@ -128,10 +132,8 @@ class SharedMemIPCServer {
 
   // The dispatcher handles 'ready' IPC calls.
   Dispatcher* call_dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedMemIPCServer);
 };
 
 }  // namespace sandbox
 
-#endif  // SANDBOX_SRC_SHAREDMEM_IPC_SERVER_H_
+#endif  // SANDBOX_WIN_SRC_SHAREDMEM_IPC_SERVER_H_

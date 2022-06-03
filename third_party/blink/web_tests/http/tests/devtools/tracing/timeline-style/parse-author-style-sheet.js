@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that ParseAuthorStyleSheet trace event is recorded.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
       function importStyle()

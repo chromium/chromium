@@ -28,7 +28,8 @@ class COMPONENT_EXPORT(MEDIA_MESSAGE_CENTER) MediaNotificationContainer {
       const media_session::mojom::MediaSessionInfoPtr& session_info) = 0;
 
   // Called when the metadata changes.
-  virtual void OnMediaSessionMetadataChanged() = 0;
+  virtual void OnMediaSessionMetadataChanged(
+      const media_session::MediaMetadata& metadata) = 0;
 
   // Called when the set of visible MediaSessionActions changes.
   virtual void OnVisibleActionsChanged(

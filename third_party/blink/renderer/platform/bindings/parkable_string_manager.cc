@@ -4,18 +4,20 @@
 
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 
+#include <algorithm>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string.h"
+#include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -24,12 +26,6 @@
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
 namespace blink {
-
-// Disabling this will cause parkable strings to never be compressed.
-// This is useful for headless mode + virtual time. Since virtual time advances
-// quickly, strings may be parked too eagerly in that mode.
-const base::Feature kCompressParkableStrings{"CompressParkableStrings",
-                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 struct ParkableStringManager::Statistics {
   size_t original_size;
@@ -40,18 +36,17 @@ struct ParkableStringManager::Statistics {
   size_t overhead_size;
   size_t total_size;
   int64_t savings_size;
+  size_t on_disk_size;
 };
 
 namespace {
 
 bool CompressionEnabled() {
-  return base::FeatureList::IsEnabled(kCompressParkableStrings);
+  return base::FeatureList::IsEnabled(features::kCompressParkableStrings);
 }
 
 class OnPurgeMemoryListener : public GarbageCollected<OnPurgeMemoryListener>,
                               public MemoryPressureListener {
-  USING_GARBAGE_COLLECTED_MIXIN(OnPurgeMemoryListener);
-
   void OnPurgeMemory() override {
     if (!CompressionEnabled()) {
       return;
@@ -60,19 +55,44 @@ class OnPurgeMemoryListener : public GarbageCollected<OnPurgeMemoryListener>,
   }
 };
 
+Vector<ParkableStringImpl*> EnumerateStrings(
+    const ParkableStringManager::StringMap& strings) {
+  WTF::Vector<ParkableStringImpl*> all_strings;
+  all_strings.ReserveCapacity(strings.size());
+
+  for (const auto& kv : strings)
+    all_strings.push_back(kv.value);
+
+  return all_strings;
+}
+
+void MoveString(ParkableStringImpl* string,
+                ParkableStringManager::StringMap* from,
+                ParkableStringManager::StringMap* to) {
+  auto it = from->find(string->digest());
+  DCHECK(it != from->end());
+  DCHECK_EQ(it->value, string);
+  from->erase(it);
+  auto insert_result = to->insert(string->digest(), string);
+  DCHECK(insert_result.is_new_entry);
+}
+
 }  // namespace
+
+const char* ParkableStringManager::kAllocatorDumpName = "parkable_strings";
 
 // Compares not the pointers, but the arrays. Uses pointers to save space.
 struct ParkableStringManager::SecureDigestHash {
   STATIC_ONLY(SecureDigestHash);
 
-  static unsigned GetHash(ParkableStringImpl::SecureDigest* const digest) {
+  static unsigned GetHash(
+      const ParkableStringImpl::SecureDigest* const digest) {
     // The first bytes of the hash are as good as anything else.
     return *reinterpret_cast<const unsigned*>(digest->data());
   }
 
-  static inline bool Equal(ParkableStringImpl::SecureDigest* const a,
-                           ParkableStringImpl::SecureDigest* const b) {
+  static inline bool Equal(const ParkableStringImpl::SecureDigest* const a,
+                           const ParkableStringImpl::SecureDigest* const b) {
     return a == b ||
            std::equal(a->data(), a->data() + ParkableStringImpl::kDigestSize,
                       b->data());
@@ -100,28 +120,17 @@ ParkableStringManagerDumpProvider::ParkableStringManagerDumpProvider() =
     default;
 
 ParkableStringManager& ParkableStringManager::Instance() {
-  DCHECK(IsMainThread());
   DEFINE_STATIC_LOCAL(ParkableStringManager, instance, ());
   return instance;
 }
 
 ParkableStringManager::~ParkableStringManager() = default;
 
-void ParkableStringManager::SetRendererBackgrounded(bool backgrounded) {
-  DCHECK(IsMainThread());
-  backgrounded_ = backgrounded;
-}
-
-bool ParkableStringManager::IsRendererBackgrounded() const {
-  DCHECK(IsMainThread());
-  return backgrounded_;
-}
-
 bool ParkableStringManager::OnMemoryDump(
     base::trace_event::ProcessMemoryDump* pmd) {
   DCHECK(IsMainThread());
   base::trace_event::MemoryAllocatorDump* dump =
-      pmd->CreateAllocatorDump("parkable_strings");
+      pmd->CreateAllocatorDump(kAllocatorDumpName);
 
   Statistics stats = ComputeStatistics();
 
@@ -134,6 +143,11 @@ bool ParkableStringManager::OnMemoryDump(
   // Has to be uint64_t.
   dump->AddScalar("savings_size", "bytes",
                   stats.savings_size > 0 ? stats.savings_size : 0);
+  dump->AddScalar("on_disk_size", "bytes", stats.on_disk_size);
+  dump->AddScalar("on_disk_footprint", "bytes",
+                  data_allocator().disk_footprint());
+  dump->AddScalar("on_disk_free_chunks", "bytes",
+                  data_allocator().free_chunks_size());
 
   pmd->AddSuballocation(dump->guid(),
                         WTF::Partitions::kAllocatedObjectPoolName);
@@ -167,10 +181,13 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
   if (it != parked_strings_.end())
     return it->value;
 
-  auto new_parkable = ParkableStringImpl::MakeParkable(std::move(string_impl),
-                                                       std::move(digest));
+  it = on_disk_strings_.find(digest.get());
+  if (it != on_disk_strings_.end())
+    return it->value;
 
   // No hit, new unparked string.
+  auto new_parkable = ParkableStringImpl::MakeParkable(std::move(string_impl),
+                                                       std::move(digest));
   auto insert_result =
       unparked_strings_.insert(new_parkable->digest(), new_parkable.get());
   DCHECK(insert_result.is_new_entry);
@@ -194,7 +211,7 @@ scoped_refptr<ParkableStringImpl> ParkableStringManager::Add(
         FROM_HERE,
         base::BindOnce(&ParkableStringManager::RecordStatisticsAfter5Minutes,
                        base::Unretained(this)),
-        base::TimeDelta::FromMinutes(5));
+        base::Minutes(5));
     has_posted_unparking_time_accounting_task_ = true;
   }
 
@@ -206,52 +223,54 @@ void ParkableStringManager::Remove(ParkableStringImpl* string) {
   DCHECK(string->may_be_parked());
   DCHECK(string->digest());
 
-  if (string->is_parked()) {
-    auto it = parked_strings_.find(string->digest());
-    DCHECK(it != parked_strings_.end());
-    parked_strings_.erase(it);
-  } else {
-    auto it = unparked_strings_.find(string->digest());
-    DCHECK(it != unparked_strings_.end());
-    unparked_strings_.erase(it);
-  }
+  StringMap* map = nullptr;
+  if (string->is_on_disk())
+    map = &on_disk_strings_;
+  else if (string->is_parked())
+    map = &parked_strings_;
+  else
+    map = &unparked_strings_;
+
+  auto it = map->find(string->digest());
+  DCHECK(it != map->end());
+  map->erase(it);
 }
 
 void ParkableStringManager::OnParked(ParkableStringImpl* newly_parked_string) {
   DCHECK(IsMainThread());
   DCHECK(newly_parked_string->may_be_parked());
   DCHECK(newly_parked_string->is_parked());
-  auto it = unparked_strings_.find(newly_parked_string->digest());
-  DCHECK(it != unparked_strings_.end());
-  DCHECK_EQ(it->value, newly_parked_string);
-  unparked_strings_.erase(it);
-  parked_strings_.insert(newly_parked_string->digest(), newly_parked_string);
+  MoveString(newly_parked_string, &unparked_strings_, &parked_strings_);
+}
+
+void ParkableStringManager::OnWrittenToDisk(
+    ParkableStringImpl* newly_written_string) {
+  DCHECK(IsMainThread());
+  DCHECK(newly_written_string->may_be_parked());
+  DCHECK(newly_written_string->is_on_disk());
+  MoveString(newly_written_string, &parked_strings_, &on_disk_strings_);
+}
+
+void ParkableStringManager::OnReadFromDisk(ParkableStringImpl* string) {
+  DCHECK(IsMainThread());
+  DCHECK(string->may_be_parked());
+  DCHECK(string->is_on_disk());
+  MoveString(string, &on_disk_strings_, &parked_strings_);
+  // Does not call ScheduleAgingTaskIfNeeded() since OnUnparked() will be called
+  // when the string is unparked (in the same main thread task).
 }
 
 void ParkableStringManager::OnUnparked(ParkableStringImpl* was_parked_string) {
   DCHECK(IsMainThread());
   DCHECK(was_parked_string->may_be_parked());
   DCHECK(!was_parked_string->is_parked());
-  auto it = parked_strings_.find(was_parked_string->digest());
-  DCHECK(it != parked_strings_.end());
-  DCHECK_EQ(it->value, was_parked_string);
-  parked_strings_.erase(it);
-  unparked_strings_.insert(was_parked_string->digest(), was_parked_string);
+  MoveString(was_parked_string, &parked_strings_, &unparked_strings_);
   ScheduleAgingTaskIfNeeded();
-}
-
-void ParkableStringManager::RecordUnparkingTime(
-    base::TimeDelta unparking_time) {
-  total_unparking_time_ += unparking_time;
 }
 
 void ParkableStringManager::ParkAll(ParkableStringImpl::ParkingMode mode) {
   DCHECK(IsMainThread());
   DCHECK(CompressionEnabled());
-
-  size_t total_size = 0;
-  for (const auto& kv : parked_strings_)
-    total_size += kv.value->CharactersSizeInBytes();
 
   // Parking may be synchronous, need to copy values first.
   // In case of synchronous parking, |ParkableStringImpl::Park()| calls
@@ -262,15 +281,16 @@ void ParkableStringManager::ParkAll(ParkableStringImpl::ParkingMode mode) {
   // and |unparked_strings_| can contain a few 10s of strings (and we will
   // trigger expensive compression), or this is a subsequent one, and
   // |unparked_strings_| will have few entries.
-  WTF::Vector<ParkableStringImpl*> unparked = GetUnparkedStrings();
+  auto unparked = EnumerateStrings(unparked_strings_);
 
   for (ParkableStringImpl* str : unparked) {
     str->Park(mode);
-    total_size += str->CharactersSizeInBytes();
   }
 }
 
 size_t ParkableStringManager::Size() const {
+  DCHECK(IsMainThread());
+
   return parked_strings_.size() + unparked_strings_.size();
 }
 
@@ -283,18 +303,38 @@ void ParkableStringManager::RecordStatisticsAfter5Minutes() const {
   }
   Statistics stats = ComputeStatistics();
   base::UmaHistogramCounts100000("Memory.ParkableString.TotalSizeKb.5min",
-                                 stats.original_size / 1000);
-  base::UmaHistogramCounts100000("Memory.ParkableString.CompressedSizeKb.5min",
-                                 stats.compressed_size / 1000);
+                                 static_cast<int>(stats.original_size / 1000));
+  base::UmaHistogramCounts100000(
+      "Memory.ParkableString.CompressedSizeKb.5min",
+      static_cast<int>(stats.compressed_size / 1000));
   size_t savings = stats.compressed_original_size - stats.compressed_size;
   base::UmaHistogramCounts100000("Memory.ParkableString.SavingsKb.5min",
-                                 savings / 1000);
-
+                                 static_cast<int>(savings / 1000));
   if (stats.compressed_original_size != 0) {
-    size_t ratio_percentage =
-        (100 * stats.compressed_size) / stats.compressed_original_size;
-    base::UmaHistogramPercentage("Memory.ParkableString.CompressionRatio.5min",
-                                 ratio_percentage);
+    int ratio_percentage = static_cast<int>((100 * stats.compressed_size) /
+                                            stats.compressed_original_size);
+    base::UmaHistogramPercentageObsoleteDoNotUse(
+        "Memory.ParkableString.CompressionRatio.5min", ratio_percentage);
+  }
+
+  // May not be usable, e.g. Incognito, permission or write failure.
+  base::UmaHistogramBoolean("Memory.ParkableString.DiskIsUsable.5min",
+                            data_allocator().may_write());
+  // These metrics only make sense if the disk allocator is used.
+  if (data_allocator().may_write()) {
+    base::UmaHistogramTimes("Memory.ParkableString.DiskWriteTime.5min",
+                            total_disk_write_time_);
+    base::UmaHistogramTimes("Memory.ParkableString.DiskReadTime.5min",
+                            total_disk_read_time_);
+
+    base::UmaHistogramCounts100000(
+        "Memory.ParkableString.MemorySavingsKb.5min",
+        std::max(0, static_cast<int>(stats.savings_size)) / 1000);
+    base::UmaHistogramCounts100000("Memory.ParkableString.OnDiskSizeKb.5min",
+                                   static_cast<int>(stats.on_disk_size / 1000));
+    base::UmaHistogramCounts100000(
+        "Memory.ParkableString.OnDiskFootprintKb.5min",
+        static_cast<int>(data_allocator().disk_footprint()) / 1000);
   }
 }
 
@@ -304,12 +344,22 @@ void ParkableStringManager::AgeStringsAndPark() {
   TRACE_EVENT0("blink", "ParkableStringManager::AgeStringsAndPark");
   has_pending_aging_task_ = false;
 
-  WTF::Vector<ParkableStringImpl*> unparked = GetUnparkedStrings();
+  auto unparked = EnumerateStrings(unparked_strings_);
+  auto parked = EnumerateStrings(parked_strings_);
+
   bool can_make_progress = false;
   for (ParkableStringImpl* str : unparked) {
     if (str->MaybeAgeOrParkString() ==
-        ParkableStringImpl::AgeOrParkResult::kSuccessOrTransientFailure)
+        ParkableStringImpl::AgeOrParkResult::kSuccessOrTransientFailure) {
       can_make_progress = true;
+    }
+  }
+
+  for (ParkableStringImpl* str : parked) {
+    if (str->MaybeAgeOrParkString() ==
+        ParkableStringImpl::AgeOrParkResult::kSuccessOrTransientFailure) {
+      can_make_progress = true;
+    }
   }
 
   // Some strings will never be parkable because there are lasting external
@@ -321,7 +371,9 @@ void ParkableStringManager::AgeStringsAndPark() {
   // we need to age and park strings after the renderer becomes idle, meaning
   // that this has to run when the idle tasks are not. As a consequence, it
   // is important to make sure that this will not reschedule tasks forever.
-  bool reschedule = !unparked_strings_.IsEmpty() && can_make_progress;
+  bool reschedule =
+      (!unparked_strings_.IsEmpty() || !parked_strings_.IsEmpty()) &&
+      can_make_progress;
   if (reschedule)
     ScheduleAgingTaskIfNeeded();
 }
@@ -339,7 +391,7 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
       FROM_HERE,
       base::BindOnce(&ParkableStringManager::AgeStringsAndPark,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(kAgingIntervalInSeconds));
+      base::Seconds(kAgingIntervalInSeconds));
   has_pending_aging_task_ = true;
 }
 
@@ -347,26 +399,7 @@ void ParkableStringManager::PurgeMemory() {
   DCHECK(IsMainThread());
   DCHECK(CompressionEnabled());
 
-  ParkAll(ParkableStringImpl::ParkingMode::kAlways);
-  // Critical memory pressure: drop compressed data for strings that we cannot
-  // park now.
-  //
-  // After |ParkAll()| has been called, parkable strings have either been parked
-  // synchronously (and no longer in |unparked_strings_|), or being parked and
-  // purging is a no-op.
-  if (!IsRendererBackgrounded()) {
-    for (const auto& kv : unparked_strings_)
-      kv.value->PurgeMemory();
-  }
-}
-
-Vector<ParkableStringImpl*> ParkableStringManager::GetUnparkedStrings() const {
-  WTF::Vector<ParkableStringImpl*> unparked;
-  unparked.ReserveCapacity(unparked_strings_.size());
-  for (const auto& kv : unparked_strings_)
-    unparked.push_back(kv.value);
-
-  return unparked;
+  ParkAll(ParkableStringImpl::ParkingMode::kCompress);
 }
 
 ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
@@ -375,7 +408,7 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
   // The digest has an inline capacity set to the digest size, hence sizeof() is
   // accurate.
   constexpr size_t kParkableStringImplActualSize =
-      sizeof(ParkableStringImpl) + sizeof(ParkableStringImpl::SecureDigest);
+      sizeof(ParkableStringImpl) + sizeof(ParkableStringImpl::ParkableMetadata);
 
   for (const auto& kv : unparked_strings_) {
     ParkableStringImpl* str = kv.value;
@@ -386,6 +419,18 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
 
     if (str->has_compressed_data())
       stats.overhead_size += str->compressed_size();
+
+    if (str->has_on_disk_data())
+      stats.on_disk_size += str->on_disk_size();
+
+    // Since ParkableStringManager wants to have a finer breakdown of memory
+    // footprint, this doesn't directly use
+    // |ParkableStringImpl::MemoryFootprintForDump()|. However we want the two
+    // computations to be consistent, hence the DCHECK().
+    size_t memory_footprint =
+        (str->has_compressed_data() ? str->compressed_size() : 0) + size +
+        kParkableStringImplActualSize;
+    DCHECK_EQ(memory_footprint, str->MemoryFootprintForDump());
   }
 
   for (const auto& kv : parked_strings_) {
@@ -395,6 +440,22 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
     stats.original_size += size;
     stats.compressed_size += str->compressed_size();
     stats.metadata_size += kParkableStringImplActualSize;
+
+    if (str->has_on_disk_data())
+      stats.on_disk_size += str->on_disk_size();
+
+    // See comment above.
+    size_t memory_footprint =
+        str->compressed_size() + kParkableStringImplActualSize;
+    DCHECK_EQ(memory_footprint, str->MemoryFootprintForDump());
+  }
+
+  for (const auto& kv : on_disk_strings_) {
+    ParkableStringImpl* str = kv.value;
+    size_t size = str->CharactersSizeInBytes();
+    stats.original_size += size;
+    stats.metadata_size += kParkableStringImplActualSize;
+    stats.on_disk_size += str->on_disk_size();
   }
 
   stats.total_size = stats.uncompressed_size + stats.compressed_size +
@@ -408,24 +469,23 @@ ParkableStringManager::Statistics ParkableStringManager::ComputeStatistics()
 }
 
 void ParkableStringManager::ResetForTesting() {
-  backgrounded_ = false;
   has_pending_aging_task_ = false;
   has_posted_unparking_time_accounting_task_ = false;
   did_register_memory_pressure_listener_ = false;
   total_unparking_time_ = base::TimeDelta();
   total_parking_thread_time_ = base::TimeDelta();
+  total_disk_read_time_ = base::TimeDelta();
+  total_disk_write_time_ = base::TimeDelta();
   unparked_strings_.clear();
   parked_strings_.clear();
+  on_disk_strings_.clear();
+  allocator_for_testing_ = nullptr;
 }
 
 ParkableStringManager::ParkableStringManager()
-    : backgrounded_(false),
-      has_pending_aging_task_(false),
+    : has_pending_aging_task_(false),
       has_posted_unparking_time_accounting_task_(false),
       did_register_memory_pressure_listener_(false),
-      total_unparking_time_(),
-      total_parking_thread_time_(),
-      unparked_strings_(),
-      parked_strings_() {}
+      allocator_for_testing_(nullptr) {}
 
 }  // namespace blink

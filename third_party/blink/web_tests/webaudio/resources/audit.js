@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// See https://github.com/web-platform-tests/wpt/issues/12781 for information on
+// the purpose of audit.js, and why testharness.js does not suffice.
 
 /**
  * @fileOverview  WebAudio layout test utility library. Built around W3C's
@@ -17,7 +19,7 @@
 
   // Selected methods from testharness.js.
   let testharnessProperties = [
-    'test', 'async_test', 'promise_test', 'promise_rejects', 'generate_tests',
+    'test', 'async_test', 'promise_test', 'promise_rejects_js', 'generate_tests',
     'setup', 'done', 'assert_true', 'assert_false'
   ];
 
@@ -79,6 +81,13 @@ window.Audit = (function() {
           targetString = String(target);
         } else {
           targetString = '' + String(target).split(/[\s\]]/)[1];
+        }
+        break;
+      case 'function':
+        if (Error.isPrototypeOf(target)) {
+          targetString = "EcmaScript error " + target.name;
+        } else {
+          targetString = String(target);
         }
         break;
       default:
@@ -268,9 +277,10 @@ window.Audit = (function() {
     /**
      * Check if |actual| operation wrapped in a function throws an exception
      * with a expected error type correctly. |expected| is optional. If it is an
-     * instance of DOMException, then the description can be provided to be more
-     * strict about the exception type. |expected| also can be other generic
-     * error types.
+     * instance of DOMException, then the description (second argument) can be
+     * provided to be more strict about the expected exception type. |expected|
+     * also can be other generic error types such as TypeError, RangeError or
+     * etc.
      *
      * @example
      *   should(() => { let a = b; }, 'A bad code').throw();
@@ -284,7 +294,7 @@ window.Audit = (function() {
      * @result
      *   "PASS   A bad code threw an exception of ReferenceError: b is not
      *       defined."
-     *   "PASS   A bad construction threw NotSupportedError."
+     *   "PASS   A bad construction threw DOMException:NotSupportedError."
      *   "PASS   Assigning d to c threw ReferenceError: d is not defined."
      *   "PASS   Assigning e to f threw ReferenceError: [error message
      *       omitted]."
@@ -310,11 +320,16 @@ window.Audit = (function() {
           didThrowCorrectly = true;
           passDetail = '${actual} threw ' + error.name + errorMessage + '.';
         } else if (this._expected === DOMException &&
-                   (this._expectedDescription === undefined ||
-                    this._expectedDescription === error.name)) {
-          // Handles DOMException with the associated name.
-          didThrowCorrectly = true;
-          passDetail = '${actual} threw ${expected}' + errorMessage + '.';
+                   this._expectedDescription !== undefined) {
+          // Handles DOMException with an expected exception name.
+          if (this._expectedDescription === error.name) {
+            didThrowCorrectly = true;
+            passDetail = '${actual} threw ${expected}' + errorMessage + '.';
+          } else {
+            didThrowCorrectly = false;
+            failDetail =
+                '${actual} threw "' + error.name + '" instead of ${expected}.';
+          }
         } else if (this._expected == error.constructor) {
           // Handler other error types.
           didThrowCorrectly = true;
@@ -364,7 +379,7 @@ window.Audit = (function() {
      *
      * @example
      *   should('My promise', promise).beResolve().then((result) => {
-     *     console.log(result);
+     *     log(result);
      *   });
      *
      * @result
@@ -1171,15 +1186,22 @@ window.Audit = (function() {
 
     // Run this task. |this| task will be passed into the user-supplied test
     // task function.
-    run() {
+    run(harnessTest) {
       this._state = TaskState.STARTED;
-
+      this._harnessTest = harnessTest;
       // Print out the task entry with label and description.
       _logPassed(
           '> [' + this._label + '] ' +
           (this._description ? this._description : ''));
 
-      this._taskFunction(this, this.should.bind(this));
+      return new Promise((resolve, reject) => {
+        this._resolve = resolve;
+        this._reject = reject;
+        let result = this._taskFunction(this, this.should.bind(this));
+        if (result && typeof result.then === "function") {
+          result.then(() => this.done()).catch(reject);
+        }
+      });
     }
 
     // Update the task success based on the individual assertion/test inside.
@@ -1195,6 +1217,7 @@ window.Audit = (function() {
 
     // Finish the current task and start the next one if available.
     done() {
+      assert_equals(this._state, TaskState.STARTED)
       this._state = TaskState.FINISHED;
 
       let message = '< [' + this._label + '] ';
@@ -1209,17 +1232,24 @@ window.Audit = (function() {
         _logFailed(message);
       }
 
-      this._taskRunner._runNextTask();
+      this._resolve();
     }
 
     // Runs |subTask| |time| milliseconds later. |setTimeout| is not allowed in
     // WPT linter, so a thin wrapper around the harness's |step_timeout| is
-    // used here.
+    // used here.  Returns a Promise which is resolved after |subTask| runs.
     timeout(subTask, time) {
-      async_test((test) => {
-        test.step_timeout(() => {
-          subTask();
-          test.done();
+      return new Promise(resolve => {
+        this._harnessTest.step_timeout(() => {
+          let result = subTask();
+          if (result && typeof result.then === "function") {
+            // Chain rejection directly to the harness test Promise, to report
+            // the rejection against the subtest even when the caller of
+            // timeout does not handle the rejection.
+            result.then(resolve, this._reject());
+          } else {
+            resolve();
+          }
         }, time);
       });
     }
@@ -1242,18 +1272,9 @@ window.Audit = (function() {
     constructor() {
       this._tasks = {};
       this._taskSequence = [];
-      this._currentTaskIndex = -1;
 
       // Configure testharness.js for the async operation.
       setup(new Function(), {explicit_done: true});
-    }
-
-    _runNextTask() {
-      if (this._currentTaskIndex < this._taskSequence.length) {
-        this._tasks[this._taskSequence[this._currentTaskIndex++]].run();
-      } else {
-        this._finish();
-      }
     }
 
     _finish() {
@@ -1273,13 +1294,13 @@ window.Audit = (function() {
             prefix + this._taskSequence.length + ' tasks ran successfully.');
       }
 
-      // From testharness.js, report back to the test infrastructure that
-      // the task runner completed all the tasks.
-      _testharnessDone();
+      return Promise.resolve();
     }
 
     // |taskLabel| can be either a string or a dictionary. See Task constructor
-    // for the detail.
+    // for the detail.  If |taskFunction| returns a thenable, then the task
+    // is considered complete when the thenable is fulfilled; otherwise the
+    // task must be completed with an explicit call to |task.done()|.
     define(taskLabel, taskFunction) {
       let task = new Task(this, taskLabel, taskFunction);
       if (this._tasks.hasOwnProperty(task.label)) {
@@ -1318,9 +1339,19 @@ window.Audit = (function() {
         return;
       }
 
-      // Start the first task.
-      this._currentTaskIndex = 0;
-      this._runNextTask();
+      for (let taskIndex in this._taskSequence) {
+        let task = this._tasks[this._taskSequence[taskIndex]];
+        // Some tests assume that tasks run in sequence, which is provided by
+        // promise_test().
+        promise_test((t) => task.run(t), `Executing "${task.label}"`);
+      }
+
+      // Schedule a summary report on completion.
+      promise_test(() => this._finish(), "Audit report");
+
+      // From testharness.js. The harness now need not wait for more subtests
+      // to be added.
+      _testharnessDone();
     }
   }
 

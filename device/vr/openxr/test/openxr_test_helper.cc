@@ -7,11 +7,12 @@
 #include <cmath>
 #include <limits>
 
+#include "device/vr/openxr/openxr_defs.h"
 #include "device/vr/openxr/openxr_util.h"
 #include "third_party/openxr/src/include/openxr/openxr_platform.h"
 #include "third_party/openxr/src/src/common/hex_and_handles.h"
-#include "ui/gfx/transform.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/geometry/transform_util.h"
 
 namespace {
 bool PathContainsString(const std::string& path, const std::string& s) {
@@ -35,8 +36,7 @@ OpenXrTestHelper::OpenXrTestHelper()
     // since openxr_statics is created first, so the first instance returned
     // should be a fake one since openxr_statics does not need to use
     // test_hook_;
-    : create_fake_instance_(true),
-      system_id_(0),
+    : system_id_(0),
       session_(XR_NULL_HANDLE),
       swapchain_(XR_NULL_HANDLE),
       session_state_(XR_SESSION_STATE_UNKNOWN),
@@ -44,8 +44,7 @@ OpenXrTestHelper::OpenXrTestHelper()
       acquired_swapchain_texture_(0),
       next_space_(0),
       next_predicted_display_time_(0),
-      interaction_profile_(
-          interaction_profile::kMicrosoftMotionControllerInteractionProfile) {}
+      interaction_profile_(device::kMicrosoftMotionInteractionProfilePath) {}
 
 OpenXrTestHelper::~OpenXrTestHelper() = default;
 
@@ -54,7 +53,6 @@ void OpenXrTestHelper::Reset() {
   swapchain_ = XR_NULL_HANDLE;
   session_state_ = XR_SESSION_STATE_UNKNOWN;
 
-  create_fake_instance_ = true;
   system_id_ = 0;
   frame_begin_ = false;
   d3d_device_ = nullptr;
@@ -94,46 +92,90 @@ void OpenXrTestHelper::SetTestHook(device::VRTestHook* hook) {
 }
 
 void OpenXrTestHelper::OnPresentedFrame() {
-  static uint32_t frame_id = 1;
+  DCHECK_NE(textures_arr_.size(), 0ull);
+  D3D11_TEXTURE2D_DESC desc;
+
+  device::SubmittedFrameData left_data = {};
+
+  textures_arr_[acquired_swapchain_texture_]->GetDesc(&desc);
+  left_data.image_width = desc.Width;
+  left_data.image_height = desc.Height;
+
+  device::SubmittedFrameData right_data = left_data;
+  left_data.left_eye = true;
+  right_data.left_eye = false;
+
+  CopyTextureDataIntoFrameData(&left_data, true);
+  CopyTextureDataIntoFrameData(&right_data, false);
 
   base::AutoLock auto_lock(lock_);
   if (!test_hook_)
     return;
 
-  // TODO(https://crbug.com/986621): The frame color is currently hard-coded to
-  // what the pixel tests expects. We should instead store the actual WebGL
-  // texture and read from it, which will also verify the correct swapchain
-  // texture was used.
+  test_hook_->OnFrameSubmitted(left_data);
+  test_hook_->OnFrameSubmitted(right_data);
+}
 
-  device::DeviceConfig device_config = test_hook_->WaitGetDeviceConfig();
-  device::SubmittedFrameData frame_data = {};
+void OpenXrTestHelper::CopyTextureDataIntoFrameData(
+    device::SubmittedFrameData* data,
+    bool left) {
+  DCHECK(d3d_device_);
+  DCHECK_NE(textures_arr_.size(), 0ull);
+  Microsoft::WRL::ComPtr<ID3D11DeviceContext> context;
+  d3d_device_->GetImmediateContext(&context);
 
-  if (std::abs(device_config.interpupillary_distance - 0.2f) <
-      std::numeric_limits<float>::epsilon()) {
-    // TestPresentationPoses sets the ipd to 0.2f, whereas tests by default have
-    // an ipd of 0.1f. This test has specific formulas to determine the colors,
-    // specified in test_webxr_poses.html.
-    frame_data.color = {
-        frame_id % 256, ((frame_id - frame_id % 256) / 256) % 256,
-        ((frame_id - frame_id % (256 * 256)) / (256 * 256)) % 256, 255};
+  constexpr size_t buffer_size = sizeof(device::SubmittedFrameData::raw_buffer);
+  constexpr size_t buffer_size_pixels = buffer_size / sizeof(device::Color);
+
+  // We copy the submitted texture to a new texture, so we can map it, and
+  // read back pixel data.
+  auto desc = CD3D11_TEXTURE2D_DESC();
+  desc.ArraySize = 1;
+  desc.Width = buffer_size_pixels;
+  desc.Height = 1;
+  desc.MipLevels = 1;
+  desc.SampleDesc.Count = 1;
+  desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  desc.Usage = D3D11_USAGE_STAGING;
+  desc.BindFlags = 0;
+  desc.CPUAccessFlags = D3D11_CPU_ACCESS_READ;
+
+  Microsoft::WRL::ComPtr<ID3D11Texture2D> texture_destination;
+  HRESULT hr =
+      d3d_device_->CreateTexture2D(&desc, nullptr, &texture_destination);
+  DCHECK_EQ(hr, S_OK);
+
+  // A strip of pixels along the top of the texture, however many will fit into
+  // our buffer.
+  D3D11_BOX box;
+  if (left) {
+    box = {0, 0, 0, buffer_size_pixels, 1, 1};
   } else {
-    // The WebXR tests by default clears to blue. TestPresentationPixels
-    // verifies this color.
-    frame_data.color = {0, 0, 255, 255};
+    box = {kDimension, 0, 0, kDimension + buffer_size_pixels, 1, 1};
   }
+  context->CopySubresourceRegion(
+      texture_destination.Get(), 0, 0, 0, 0,
+      textures_arr_[acquired_swapchain_texture_].Get(), 0, &box);
 
-  frame_data.left_eye = true;
-  test_hook_->OnFrameSubmitted(frame_data);
+  D3D11_MAPPED_SUBRESOURCE map_data = {};
+  hr = context->Map(texture_destination.Get(), 0, D3D11_MAP_READ, 0, &map_data);
+  DCHECK_EQ(hr, S_OK);
+  // We have a 1-pixel image, so store it in the provided SubmittedFrameData
+  // along with the raw data.
+  device::Color* color = static_cast<device::Color*>(map_data.pData);
+  data->color = color[0];
+  memcpy(&data->raw_buffer, map_data.pData, buffer_size);
 
-  frame_data.left_eye = false;
-  test_hook_->OnFrameSubmitted(frame_data);
-
-  frame_id++;
+  context->Unmap(texture_destination.Get(), 0);
 }
 
 XrSystemId OpenXrTestHelper::GetSystemId() {
   system_id_ = 1;
   return system_id_;
+}
+
+XrSystemProperties OpenXrTestHelper::GetSystemProperties() {
+  return kSystemProperties;
 }
 
 XrResult OpenXrTestHelper::GetSession(XrSession* session) {
@@ -153,16 +195,6 @@ XrSwapchain OpenXrTestHelper::GetSwapchain() {
 }
 
 XrInstance OpenXrTestHelper::CreateInstance() {
-  // Return the test helper object back to the OpenXrAPIWrapper so it can use
-  // it as the TestHookRegistration.However we have to return different instance
-  // for openxr_statics since openxr loader records instance created and
-  // detroyed. The first instance is used by openxr_statics which does not need
-  // to use test_hook_, So we can give it an arbitrary instance as long as
-  // ValidateInstance method remember it's an valid option.
-  if (create_fake_instance_) {
-    create_fake_instance_ = false;
-    return reinterpret_cast<XrInstance>(this + 1);
-  }
   return reinterpret_cast<XrInstance>(this);
 }
 
@@ -307,11 +339,12 @@ XrResult OpenXrTestHelper::CreateActionSpace(
 XrPath OpenXrTestHelper::GetPath(std::string path_string) {
   for (auto it = paths_.begin(); it != paths_.end(); it++) {
     if (it->compare(path_string) == 0) {
-      return it - paths_.begin();
+      return it - paths_.begin() + 1;
     }
   }
   paths_.emplace_back(path_string);
-  return paths_.size() - 1;
+  // path can't be 0 since 0 is reserved for XR_NULL_HANDLE
+  return paths_.size();
 }
 
 XrPath OpenXrTestHelper::GetCurrentInteractionProfile() {
@@ -329,8 +362,8 @@ XrResult OpenXrTestHelper::BeginSession() {
 }
 
 XrResult OpenXrTestHelper::EndSession() {
-  RETURN_IF_FALSE(IsSessionRunning(), XR_ERROR_SESSION_NOT_RUNNING,
-                  "EndSession session is not running");
+  // Per OpenXR 1.0 spec: "An application can only call xrEndSession when the
+  // session is in the XR_SESSION_STATE_STOPPING state"
   RETURN_IF(session_state_ != XR_SESSION_STATE_STOPPING,
             XR_ERROR_SESSION_NOT_STOPPING,
             "Session state is not XR_ERROR_SESSION_NOT_STOPPING");
@@ -458,8 +491,12 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
 
   switch (cur_action_properties.type) {
     case XR_ACTION_TYPE_FLOAT_INPUT: {
-      if (!PathContainsString(path_string, "/trigger")) {
-        NOTREACHED() << "Only trigger button has float action";
+      if (!(PathContainsString(path_string, "/trigger") ||
+            PathContainsString(path_string, "/squeeze") ||
+            PathContainsString(path_string, "/force") ||
+            PathContainsString(path_string, "/value"))) {
+        NOTREACHED() << "Found path with unsupported float action: "
+                     << path_string;
       }
       float_action_states_[action].isActive = data.is_valid;
       break;
@@ -479,8 +516,18 @@ XrResult OpenXrTestHelper::UpdateAction(XrAction action) {
       } else if (PathContainsString(path_string, "/select/")) {
         // for WMR simple controller select is mapped to test type trigger
         button_id = device::kAxisTrigger;
+      } else if (PathContainsString(path_string, "/thumbrest/")) {
+        button_id = device::kThumbRest;
+      } else if (PathContainsString(path_string, "/a/")) {
+        button_id = device::kA;
+      } else if (PathContainsString(path_string, "/b/")) {
+        button_id = device::kB;
+      } else if (PathContainsString(path_string, "/x/")) {
+        button_id = device::kX;
+      } else if (PathContainsString(path_string, "/y/")) {
+        button_id = device::kY;
       } else {
-        NOTREACHED() << "Curently test does not support this button";
+        NOTREACHED() << "Unrecognized boolean button: " << path_string;
       }
       uint64_t button_mask = XrButtonMaskFromId(button_id);
 
@@ -618,7 +665,7 @@ void OpenXrTestHelper::UpdateEventQueue() {
   }
 }
 
-base::Optional<gfx::Transform> OpenXrTestHelper::GetPose() {
+absl::optional<gfx::Transform> OpenXrTestHelper::GetPose() {
   base::AutoLock lock(lock_);
   if (test_hook_) {
     device::PoseFrameData pose_data = test_hook_->WaitGetPresentingPose();
@@ -626,7 +673,7 @@ base::Optional<gfx::Transform> OpenXrTestHelper::GetPose() {
       return PoseFrameDataToTransform(pose_data);
     }
   }
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
@@ -658,12 +705,28 @@ void OpenXrTestHelper::UpdateInteractionProfile(
     device_test::mojom::InteractionProfileType type) {
   switch (type) {
     case device_test::mojom::InteractionProfileType::kWMRMotion:
-      interaction_profile_ =
-          interaction_profile::kMicrosoftMotionControllerInteractionProfile;
+      interaction_profile_ = device::kMicrosoftMotionInteractionProfilePath;
       break;
     case device_test::mojom::InteractionProfileType::kKHRSimple:
-      interaction_profile_ =
-          interaction_profile::kKHRSimpleControllerInteractionProfile;
+      interaction_profile_ = device::kKHRSimpleInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kOculusTouch:
+      interaction_profile_ = device::kOculusTouchInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kValveIndex:
+      interaction_profile_ = device::kValveIndexInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kHTCVive:
+      interaction_profile_ = device::kHTCViveInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kSamsungOdyssey:
+      interaction_profile_ = device::kSamsungOdysseyInteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kHPReverbG2:
+      interaction_profile_ = device::kHPReverbG2InteractionProfilePath;
+      break;
+    case device_test::mojom::InteractionProfileType::kHandSelectGrasp:
+      interaction_profile_ = device::kHandSelectGraspInteractionProfilePath;
       break;
     case device_test::mojom::InteractionProfileType::kInvalid:
       NOTREACHED() << "Invalid EventData interaction_profile type";
@@ -674,16 +737,16 @@ void OpenXrTestHelper::UpdateInteractionProfile(
 void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
   DCHECK(pose != nullptr);
   *pose = device::PoseIdentity();
-  base::Optional<gfx::Transform> transform = base::nullopt;
+  absl::optional<gfx::Transform> transform = absl::nullopt;
 
   if (reference_spaces_.count(space) == 1) {
-    if (reference_spaces_.at(space).compare(kLocalReferenceSpacePath) == 0) {
-      // this locate space call try to get tranform from stage to local which we
+    if (reference_spaces_.at(space).compare(kStageReferenceSpacePath) == 0) {
+      // This locate space call wants the transform from local to stage which we
       // only need to give it identity matrix.
       transform = gfx::Transform();
     } else if (reference_spaces_.at(space).compare(kViewReferenceSpacePath) ==
                0) {
-      // this locate space try to locate transform of head pose
+      // This locate space call wants the transform of the head pose.
       transform = GetPose();
     } else {
       NOTREACHED()
@@ -723,7 +786,7 @@ void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
 }
 
 std::string OpenXrTestHelper::PathToString(XrPath path) const {
-  return paths_[path];
+  return paths_[path - 1];
 }
 
 bool OpenXrTestHelper::UpdateData() {
@@ -843,8 +906,7 @@ XrResult OpenXrTestHelper::ValidateInstance(XrInstance instance) const {
   // The Fake OpenXr Runtime returns this global OpenXrTestHelper object as the
   // instance value on xrCreateInstance.
 
-  RETURN_IF(reinterpret_cast<OpenXrTestHelper*>(instance) != this &&
-                reinterpret_cast<OpenXrTestHelper*>(instance) != (this + 1),
+  RETURN_IF(reinterpret_cast<OpenXrTestHelper*>(instance) != this,
             XR_ERROR_HANDLE_INVALID, "XrInstance invalid");
 
   return XR_SUCCESS;
@@ -887,7 +949,7 @@ XrResult OpenXrTestHelper::ValidateSpace(XrSpace space) const {
 }
 
 XrResult OpenXrTestHelper::ValidatePath(XrPath path) const {
-  RETURN_IF(path >= paths_.size(), XR_ERROR_PATH_INVALID, "XrPath invalid");
+  RETURN_IF(path > paths_.size(), XR_ERROR_PATH_INVALID, "XrPath invalid");
   return XR_SUCCESS;
 }
 

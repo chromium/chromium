@@ -5,13 +5,14 @@
 #ifndef CC_TREES_LAYER_TREE_FRAME_SINK_CLIENT_H_
 #define CC_TREES_LAYER_TREE_FRAME_SINK_CLIENT_H_
 
+#include <vector>
+
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "gpu/command_buffer/common/texture_in_use_response.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace gfx {
@@ -39,11 +40,11 @@ class CC_EXPORT LayerTreeFrameSinkClient {
   // called during SubmitCompositorFrame().
   // TODO(danakj): Just pass it into SubmitCompositorFrame(), with a
   // LayerTreeSetting to enable it or not.
-  virtual base::Optional<viz::HitTestRegionList> BuildHitTestData() = 0;
+  virtual absl::optional<viz::HitTestRegionList> BuildHitTestData() = 0;
 
   // Returns resources sent to SubmitCompositorFrame to be reused or freed.
   virtual void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) = 0;
+      std::vector<viz::ReturnedResource> resources) = 0;
 
   // If set, |callback| will be called subsequent to each new tree activation,
   // regardless of the compositor visibility or damage. |callback| must remain
@@ -86,6 +87,11 @@ class CC_EXPORT LayerTreeFrameSinkClient {
   virtual void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect,
       const gfx::Transform& transform) = 0;
+
+  // Notification that the compositor frame transition directive has been
+  // processed.
+  virtual void OnCompositorFrameTransitionDirectiveProcessed(
+      uint32_t sequence_id) {}
 
  protected:
   virtual ~LayerTreeFrameSinkClient() {}

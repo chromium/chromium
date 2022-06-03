@@ -9,15 +9,19 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/vector_icons.h"
+#include "ui/message_center/views/notification_view.h"
 #include "ui/message_center/views/relative_time_formatter.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/border.h"
@@ -43,11 +47,6 @@ constexpr gfx::Insets kHeaderOuterPadding(2, 2, 0, 2);
 
 constexpr int kInnerHeaderHeight = kHeaderHeight - kHeaderOuterPadding.height();
 
-// Default paddings of the views of texts. Adjusted on Windows.
-// Top: 9px = 11px (from the mock) - 2px (outer padding).
-// Buttom: 6px from the mock.
-constexpr gfx::Insets kTextViewPaddingDefault(9, 0, 6, 0);
-
 // Paddings of the app icon (small image).
 // Top: 8px = 10px (from the mock) - 2px (outer padding).
 // Bottom: 4px from the mock.
@@ -62,18 +61,29 @@ constexpr int kExpandIconSize = 8;
 constexpr gfx::Insets kExpandIconViewPadding(13, 2, 9, 0);
 
 // Bullet character. The divider symbol between different parts of the header.
-constexpr wchar_t kNotificationHeaderDivider[] = L" \u2022 ";
-
-// "Roboto-Regular, 12sp" is specified in the mock.
-constexpr int kHeaderTextFontSize = 12;
+constexpr char16_t kNotificationHeaderDivider[] = u" \u2022 ";
 
 // Minimum spacing before the control buttons.
 constexpr int kControlButtonSpacing = 16;
 
-// ExpandButtton forwards all mouse and key events to NotificationHeaderView,
-// but takes tab focus for accessibility purpose.
+void ConfigureLabel(views::Label* label,
+                    const gfx::FontList& font_list,
+                    const gfx::Insets& text_view_padding,
+                    bool auto_color_readability) {
+  if (auto_color_readability)
+    label->SetAutoColorReadabilityEnabled(false);
+  const int font_list_height = font_list.GetHeight();
+  label->SetFontList(font_list);
+  label->SetLineHeight(font_list_height);
+  label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
+  label->SetBorder(views::CreateEmptyBorder(text_view_padding));
+}
+
+// ExpandButton forwards all mouse and key events to NotificationHeaderView, but
+// takes tab focus for accessibility purpose.
 class ExpandButton : public views::ImageView {
  public:
+  METADATA_HEADER(ExpandButton);
   ExpandButton();
   ~ExpandButton() override;
 
@@ -81,6 +91,7 @@ class ExpandButton : public views::ImageView {
   void OnPaint(gfx::Canvas* canvas) override;
   void OnFocus() override;
   void OnBlur() override;
+  void OnThemeChanged() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
  private:
@@ -88,8 +99,6 @@ class ExpandButton : public views::ImageView {
 };
 
 ExpandButton::ExpandButton() {
-  focus_painter_ = views::Painter::CreateSolidFocusPainter(
-      kFocusBorderColor, gfx::Insets(0, 0, 1, 1));
   SetFocusBehavior(FocusBehavior::ALWAYS);
 }
 
@@ -112,61 +121,42 @@ void ExpandButton::OnBlur() {
   SchedulePaint();
 }
 
+void ExpandButton::OnThemeChanged() {
+  ImageView::OnThemeChanged();
+  focus_painter_ = views::Painter::CreateSolidFocusPainter(
+      GetColorProvider()->GetColor(ui::kColorFocusableBorderFocused),
+      gfx::Insets(0, 0, 1, 1));
+}
+
 void ExpandButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
   node_data->role = ax::mojom::Role::kButton;
   node_data->SetName(GetTooltipText(gfx::Point()));
 }
 
-gfx::FontList GetHeaderTextFontList() {
-  gfx::Font default_font;
-  int font_size_delta = kHeaderTextFontSize - default_font.GetFontSize();
-  gfx::Font font = default_font.Derive(font_size_delta, gfx::Font::NORMAL,
-                                       gfx::Font::Weight::NORMAL);
-  DCHECK_EQ(kHeaderTextFontSize, font.GetFontSize());
-  return gfx::FontList(font);
-}
-
-gfx::Insets CalculateTopPadding(int font_list_height) {
-#if defined(OS_WIN)
-  // On Windows, the fonts can have slightly different metrics reported,
-  // depending on where the code runs. In Chrome, DirectWrite is on, which means
-  // font metrics are reported from Skia, which rounds from float using ceil.
-  // In unit tests, however, GDI is used to report metrics, and the height
-  // reported there is consistent with other platforms. This means there is a
-  // difference of 1px in height between Chrome on Windows and everything else
-  // (where everything else includes unit tests on Windows). This 1px causes the
-  // text and everything else to stop aligning correctly, so we account for it
-  // by shrinking the top padding by 1.
-  if (font_list_height != 15) {
-    DCHECK_EQ(16, font_list_height);
-    return kTextViewPaddingDefault - gfx::Insets(1 /* top */, 0, 0, 0);
-  }
-#endif
-
-  DCHECK_EQ(15, font_list_height);
-  return kTextViewPaddingDefault;
-}
+BEGIN_METADATA(ExpandButton, views::ImageView)
+END_METADATA
 
 }  // namespace
 
-NotificationHeaderView::NotificationHeaderView(views::ButtonListener* listener)
-    : views::Button(listener) {
+NotificationHeaderView::NotificationHeaderView(PressedCallback callback)
+    : views::Button(std::move(callback)) {
   const views::FlexSpecification kAppNameFlex =
-      views::FlexSpecification::ForSizeRule(
-          views::MinimumFlexSizeRule::kScaleToZero,
-          views::MaximumFlexSizeRule::kPreferred)
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
           .WithOrder(1);
 
   const views::FlexSpecification kSpacerFlex =
-      views::FlexSpecification::ForSizeRule(
-          views::MinimumFlexSizeRule::kScaleToMinimum,
-          views::MaximumFlexSizeRule::kUnbounded)
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
+                               views::MaximumFlexSizeRule::kUnbounded)
           .WithOrder(2);
 
   auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
   layout->SetDefault(views::kMarginsKey, kHeaderSpacing);
   layout->SetInteriorMargin(kHeaderOuterPadding);
   layout->SetCollapseMargins(true);
+
+  // TODO(crbug/1241602): std::unique_ptr can be used in multiple places here.
+  // Also, consider using views::Builder<T>.
 
   // App icon view
   app_icon_view_ = new views::ImageView();
@@ -177,27 +167,13 @@ NotificationHeaderView::NotificationHeaderView(views::ButtonListener* listener)
   DCHECK_EQ(kInnerHeaderHeight, app_icon_view_->GetPreferredSize().height());
   AddChildView(app_icon_view_);
 
-  // Font list for text views.
-  gfx::FontList font_list = GetHeaderTextFontList();
-  const int font_list_height = font_list.GetHeight();
-  gfx::Insets text_view_padding(CalculateTopPadding(font_list_height));
-
-  auto create_label = [&font_list, font_list_height, text_view_padding]() {
-    auto* label = new views::Label();
-    label->SetFontList(font_list);
-    label->SetLineHeight(font_list_height);
-    label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-    label->SetBorder(views::CreateEmptyBorder(text_view_padding));
-    DCHECK_EQ(kInnerHeaderHeight, label->GetPreferredSize().height());
-    return label;
-  };
-
   // App name view
-  app_name_view_ = create_label();
+  auto app_name_view = std::make_unique<views::Label>();
   // Explicitly disable multiline to support proper text elision for URLs.
-  app_name_view_->SetMultiLine(false);
-  app_name_view_->SetProperty(views::kFlexBehaviorKey, kAppNameFlex);
-  AddChildView(app_name_view_);
+  app_name_view->SetMultiLine(false);
+  app_name_view->SetProperty(views::kFlexBehaviorKey, kAppNameFlex);
+  app_name_view->SetID(NotificationView::kAppNameView);
+  app_name_view_ = AddChildView(std::move(app_name_view));
 
   // Detail views which will be hidden in settings mode.
   detail_views_ = new views::View();
@@ -205,31 +181,35 @@ NotificationHeaderView::NotificationHeaderView(views::ButtonListener* listener)
       detail_views_->SetLayoutManager(std::make_unique<views::FlexLayout>());
   detail_layout->SetCollapseMargins(true);
   detail_layout->SetDefault(views::kMarginsKey, kHeaderSpacing);
+  detail_views_->SetID(NotificationView::kHeaderDetailViews);
   AddChildView(detail_views_);
 
   // Summary text divider
-  summary_text_divider_ = create_label();
-  summary_text_divider_->SetText(base::WideToUTF16(kNotificationHeaderDivider));
-  summary_text_divider_->SetVisible(false);
-  detail_views_->AddChildView(summary_text_divider_);
+  auto summary_text_divider = std::make_unique<views::Label>();
+  summary_text_divider->SetText(kNotificationHeaderDivider);
+  summary_text_divider->SetVisible(false);
+  summary_text_divider_ =
+      detail_views_->AddChildView(std::move(summary_text_divider));
 
   // Summary text view
-  summary_text_view_ = create_label();
-  summary_text_view_->SetVisible(false);
-  detail_views_->AddChildView(summary_text_view_);
+  auto summary_text_view = std::make_unique<views::Label>();
+  summary_text_view->SetVisible(false);
+  summary_text_view->SetID(NotificationView::kSummaryTextView);
+  summary_text_view_ =
+      detail_views_->AddChildView(std::move(summary_text_view));
 
   // Timestamp divider
-  timestamp_divider_ = create_label();
-  timestamp_divider_->SetText(base::WideToUTF16(kNotificationHeaderDivider));
-  timestamp_divider_->SetVisible(false);
-  detail_views_->AddChildView(timestamp_divider_);
+  auto timestamp_divider = std::make_unique<views::Label>();
+  timestamp_divider->SetText(kNotificationHeaderDivider);
+  timestamp_divider->SetVisible(false);
+  timestamp_divider_ =
+      detail_views_->AddChildView(std::move(timestamp_divider));
 
   // Timestamp view
-  timestamp_view_ = create_label();
-  timestamp_view_->SetVisible(false);
-  detail_views_->AddChildView(timestamp_view_);
+  auto timestamp_view = std::make_unique<views::Label>();
+  timestamp_view->SetVisible(false);
+  timestamp_view_ = detail_views_->AddChildView(std::move(timestamp_view));
 
-  // Expand button view
   expand_button_ = new ExpandButton();
   expand_button_->SetBorder(views::CreateEmptyBorder(kExpandIconViewPadding));
   expand_button_->SetVerticalAlignment(views::ImageView::Alignment::kLeading);
@@ -239,17 +219,35 @@ NotificationHeaderView::NotificationHeaderView(views::ButtonListener* listener)
   detail_views_->AddChildView(expand_button_);
 
   // Spacer between left-aligned views and right-aligned views
-  views::View* spacer = new views::View;
+  auto spacer = std::make_unique<views::View>();
   spacer->SetPreferredSize(
       gfx::Size(kControlButtonSpacing, kInnerHeaderHeight));
   spacer->SetProperty(views::kFlexBehaviorKey, kSpacerFlex);
-  AddChildView(spacer);
+  AddChildView(std::move(spacer));
 
-  SetAccentColor(accent_color_);
   SetPreferredSize(gfx::Size(kNotificationWidth, kHeaderHeight));
+
+  // Not focusable by default, only for accessibility.
+  SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 }
 
 NotificationHeaderView::~NotificationHeaderView() = default;
+
+void NotificationHeaderView::ConfigureLabelsStyle(
+    const gfx::FontList& font_list,
+    const gfx::Insets& text_view_padding,
+    bool auto_color_readability) {
+  ConfigureLabel(app_name_view_, font_list, text_view_padding,
+                 auto_color_readability);
+  ConfigureLabel(summary_text_view_, font_list, text_view_padding,
+                 auto_color_readability);
+  ConfigureLabel(summary_text_divider_, font_list, text_view_padding,
+                 auto_color_readability);
+  ConfigureLabel(timestamp_divider_, font_list, text_view_padding,
+                 auto_color_readability);
+  ConfigureLabel(timestamp_view_, font_list, text_view_padding,
+                 auto_color_readability);
+}
 
 void NotificationHeaderView::SetAppIcon(const gfx::ImageSkia& img) {
   app_icon_view_->SetImage(img);
@@ -257,12 +255,11 @@ void NotificationHeaderView::SetAppIcon(const gfx::ImageSkia& img) {
 }
 
 void NotificationHeaderView::ClearAppIcon() {
-  app_icon_view_->SetImage(
-      gfx::CreateVectorIcon(kProductIcon, kSmallImageSizeMD, accent_color_));
   using_default_app_icon_ = true;
+  UpdateColors();
 }
 
-void NotificationHeaderView::SetAppName(const base::string16& name) {
+void NotificationHeaderView::SetAppName(const std::u16string& name) {
   app_name_view_->SetText(name);
 }
 
@@ -278,26 +275,16 @@ void NotificationHeaderView::SetProgress(int progress) {
   UpdateSummaryTextVisibility();
 }
 
-void NotificationHeaderView::SetSummaryText(const base::string16& text) {
-  DCHECK(!has_progress_);
+void NotificationHeaderView::SetSummaryText(const std::u16string& text) {
   summary_text_view_->SetText(text);
-  UpdateSummaryTextVisibility();
-}
-
-void NotificationHeaderView::ClearProgress() {
-  summary_text_view_->SetText(base::string16());
   has_progress_ = false;
   UpdateSummaryTextVisibility();
 }
 
 void NotificationHeaderView::SetOverflowIndicator(int count) {
-  if (count > 0) {
-    summary_text_view_->SetText(l10n_util::GetStringFUTF16Int(
-        IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count));
-  } else {
-    summary_text_view_->SetText(base::string16());
-  }
-
+  summary_text_view_->SetText(l10n_util::GetStringFUTF16Int(
+      IDS_MESSAGE_CENTER_LIST_NOTIFICATION_HEADER_OVERFLOW_INDICATOR, count));
+  has_progress_ = false;
   UpdateSummaryTextVisibility();
 }
 
@@ -306,16 +293,20 @@ void NotificationHeaderView::GetAccessibleNodeData(ui::AXNodeData* node_data) {
 
   node_data->role = ax::mojom::Role::kGenericContainer;
   node_data->SetName(app_name_view_->GetText());
-  node_data->SetDescription(summary_text_view_->GetText() +
-                            base::ASCIIToUTF16(" ") +
+  node_data->SetDescription(summary_text_view_->GetText() + u" " +
                             timestamp_view_->GetText());
 
-  if (is_expanded_)
+  if (expand_button_ && is_expanded_)
     node_data->AddState(ax::mojom::State::kExpanded);
 }
 
+void NotificationHeaderView::OnThemeChanged() {
+  Button::OnThemeChanged();
+  UpdateColors();
+}
+
 void NotificationHeaderView::SetTimestamp(base::Time timestamp) {
-  base::string16 relative_time;
+  std::u16string relative_time;
   base::TimeDelta next_update;
   GetRelativeTimeStringAndNextUpdateTime(timestamp - base::Time::Now(),
                                          &relative_time, &next_update);
@@ -343,31 +334,25 @@ void NotificationHeaderView::SetDetailViewsVisible(bool visible) {
 }
 
 void NotificationHeaderView::SetExpandButtonEnabled(bool enabled) {
+  // We shouldn't execute this method if the expand button is not here.
+  DCHECK(expand_button_);
   expand_button_->SetVisible(enabled);
 }
 
 void NotificationHeaderView::SetExpanded(bool expanded) {
+  // We shouldn't execute this method if the expand button is not here.
+  DCHECK(expand_button_);
   is_expanded_ = expanded;
-  expand_button_->SetImage(gfx::CreateVectorIcon(
-      expanded ? kNotificationExpandLessIcon : kNotificationExpandMoreIcon,
-      kExpandIconSize, accent_color_));
-  expand_button_->set_tooltip_text(l10n_util::GetStringUTF16(
+  UpdateColors();
+  expand_button_->SetTooltipText(l10n_util::GetStringUTF16(
       expanded ? IDS_MESSAGE_CENTER_COLLAPSE_NOTIFICATION
                : IDS_MESSAGE_CENTER_EXPAND_NOTIFICATION));
   NotifyAccessibilityEvent(ax::mojom::Event::kStateChanged, true);
 }
 
-void NotificationHeaderView::SetAccentColor(SkColor color) {
-  accent_color_ = color;
-  app_name_view_->SetEnabledColor(accent_color_);
-  summary_text_view_->SetEnabledColor(accent_color_);
-  summary_text_divider_->SetEnabledColor(accent_color_);
-  SetExpanded(is_expanded_);
-
-  // If we are using the default app icon we should clear it so we refresh it
-  // with the new accent color.
-  if (using_default_app_icon_)
-    ClearAppIcon();
+void NotificationHeaderView::SetColor(absl::optional<SkColor> color) {
+  color_ = std::move(color);
+  UpdateColors();
 }
 
 void NotificationHeaderView::SetBackgroundColor(SkColor color) {
@@ -376,6 +361,7 @@ void NotificationHeaderView::SetBackgroundColor(SkColor color) {
   summary_text_view_->SetBackgroundColor(color);
   timestamp_divider_->SetBackgroundColor(color);
   timestamp_view_->SetBackgroundColor(color);
+  UpdateColors();
 }
 
 void NotificationHeaderView::SetSubpixelRenderingEnabled(bool enabled) {
@@ -386,20 +372,23 @@ void NotificationHeaderView::SetSubpixelRenderingEnabled(bool enabled) {
   timestamp_view_->SetSubpixelRenderingEnabled(enabled);
 }
 
-void NotificationHeaderView::HideAppIcon() {
-  app_icon_view_->SetVisible(false);
+void NotificationHeaderView::SetAppIconVisible(bool visible) {
+  app_icon_view_->SetVisible(visible);
 }
 
-const base::string16& NotificationHeaderView::app_name_for_testing() const {
+void NotificationHeaderView::SetIsInAshNotificationView(
+    bool is_in_ash_notification) {
+  is_in_ash_notification_ = is_in_ash_notification;
+  app_icon_view_->SetVisible(!is_in_ash_notification_);
+  expand_button_->SetVisible(!is_in_ash_notification_);
+}
+
+const std::u16string& NotificationHeaderView::app_name_for_testing() const {
   return app_name_view_->GetText();
 }
 
-const gfx::ImageSkia& NotificationHeaderView::app_icon_for_testing() const {
+gfx::ImageSkia NotificationHeaderView::app_icon_for_testing() const {
   return app_icon_view_->GetImage();
-}
-
-const base::string16& NotificationHeaderView::timestamp_for_testing() const {
-  return timestamp_view_->GetText();
 }
 
 void NotificationHeaderView::UpdateSummaryTextVisibility() {
@@ -414,5 +403,41 @@ void NotificationHeaderView::UpdateSummaryTextVisibility() {
   // TODO(crbug.com/991492): this should not be necessary.
   detail_views_->InvalidateLayout();
 }
+
+void NotificationHeaderView::UpdateColors() {
+  if (!GetWidget()) {
+    // Return early here since GetColorProvider() depends on the widget.
+    return;
+  }
+
+  SkColor color = color_.value_or(
+      GetColorProvider()->GetColor(ui::kColorNotificationHeaderForeground));
+
+  app_name_view_->SetEnabledColor(color);
+  summary_text_view_->SetEnabledColor(color);
+  summary_text_divider_->SetEnabledColor(color);
+  if (is_in_ash_notification_) {
+    timestamp_divider_->SetEnabledColor(color);
+    timestamp_view_->SetEnabledColor(color);
+  }
+
+  // Get actual color based on readablility requirements.
+  SkColor actual_color = app_name_view_->GetEnabledColor();
+
+  if (expand_button_) {
+    expand_button_->SetImage(
+        gfx::CreateVectorIcon(is_expanded_ ? kNotificationExpandLessIcon
+                                           : kNotificationExpandMoreIcon,
+                              kExpandIconSize, actual_color));
+  }
+
+  if (using_default_app_icon_ && app_icon_view_) {
+    app_icon_view_->SetImage(
+        gfx::CreateVectorIcon(kProductIcon, kSmallImageSizeMD, actual_color));
+  }
+}
+
+BEGIN_METADATA(NotificationHeaderView, views::Button)
+END_METADATA
 
 }  // namespace message_center

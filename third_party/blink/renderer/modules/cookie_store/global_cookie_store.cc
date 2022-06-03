@@ -25,8 +25,6 @@ template <typename T>
 class GlobalCookieStoreImpl final
     : public GarbageCollected<GlobalCookieStoreImpl<T>>,
       public Supplement<T> {
-  USING_GARBAGE_COLLECTED_MIXIN(GlobalCookieStoreImpl);
-
  public:
   static const char kSupplementName[];
 
@@ -54,14 +52,14 @@ class GlobalCookieStoreImpl final
       mojo::Remote<network::mojom::blink::RestrictedCookieManager> backend;
       execution_context->GetBrowserInterfaceBroker().GetInterface(
           backend.BindNewPipeAndPassReceiver(
-              execution_context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+              execution_context->GetTaskRunner(TaskType::kDOMManipulation)));
       cookie_store_ = MakeGarbageCollected<CookieStore>(execution_context,
                                                         std::move(backend));
     }
     return cookie_store_;
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(cookie_store_);
     Supplement<T>::Trace(visitor);
   }

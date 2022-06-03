@@ -4,27 +4,26 @@
 
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_controller.h"
 
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/frame/frame_console.h"
-#include "third_party/blink/renderer/core/frame/hosts_using_features.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_data.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_orientation_event_pump.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
-DeviceOrientationController::DeviceOrientationController(Document& document)
-    : DeviceSingleWindowEventController(document),
-      Supplement<Document>(document) {}
+DeviceOrientationController::DeviceOrientationController(LocalDOMWindow& window)
+    : DeviceSingleWindowEventController(window),
+      Supplement<LocalDOMWindow>(window) {}
 
 DeviceOrientationController::~DeviceOrientationController() = default;
 
@@ -38,12 +37,12 @@ const char DeviceOrientationController::kSupplementName[] =
     "DeviceOrientationController";
 
 DeviceOrientationController& DeviceOrientationController::From(
-    Document& document) {
+    LocalDOMWindow& window) {
   DeviceOrientationController* controller =
-      Supplement<Document>::From<DeviceOrientationController>(document);
+      Supplement<LocalDOMWindow>::From<DeviceOrientationController>(window);
   if (!controller) {
-    controller = MakeGarbageCollected<DeviceOrientationController>(document);
-    ProvideTo(document, controller);
+    controller = MakeGarbageCollected<DeviceOrientationController>(window);
+    ProvideTo(window, controller);
   }
   return *controller;
 }
@@ -54,33 +53,28 @@ void DeviceOrientationController::DidAddEventListener(
   if (event_type != EventTypeName())
     return;
 
-  // The document could be detached, e.g. if it is the `contentDocument` of an
+  // The window could be detached, e.g. if it is the `contentWindow` of an
   // <iframe> that has been removed from the DOM of its parent frame.
-  if (GetDocument().IsContextDestroyed())
+  if (GetWindow().IsContextDestroyed())
     return;
 
   // The API is not exposed to Workers or Worklets, so if the current realm
   // execution context is valid, it must have a responsible browsing context.
-  SECURITY_CHECK(GetDocument().GetFrame());
+  SECURITY_CHECK(GetWindow().GetFrame());
 
   // The event handler property on `window` is restricted to [SecureContext],
   // but nothing prevents a site from calling `window.addEventListener(...)`
   // from a non-secure browsing context.
-  if (!GetDocument().IsSecureContext())
+  if (!GetWindow().IsSecureContext())
     return;
 
-  UseCounter::Count(GetDocument(), WebFeature::kDeviceOrientationSecureOrigin);
+  UseCounter::Count(GetWindow(), WebFeature::kDeviceOrientationSecureOrigin);
 
   if (!has_event_listener_) {
-    if (!IsSameSecurityOriginAsMainFrame()) {
-      Platform::Current()->RecordRapporURL(
-          "DeviceSensors.DeviceOrientationCrossOrigin",
-          WebURL(GetDocument().Url()));
-    }
-
-    if (!CheckPolicyFeatures({mojom::FeaturePolicyFeature::kAccelerometer,
-                              mojom::FeaturePolicyFeature::kGyroscope})) {
-      LogToConsolePolicyFeaturesDisabled(GetDocument().GetFrame(),
+    if (!CheckPolicyFeatures(
+            {mojom::blink::PermissionsPolicyFeature::kAccelerometer,
+             mojom::blink::PermissionsPolicyFeature::kGyroscope})) {
+      LogToConsolePolicyFeaturesDisabled(*GetWindow().GetFrame(),
                                          EventTypeName());
       return;
     }
@@ -115,7 +109,7 @@ Event* DeviceOrientationController::LastEvent() const {
 }
 
 bool DeviceOrientationController::IsNullEvent(Event* event) const {
-  DeviceOrientationEvent* orientation_event = ToDeviceOrientationEvent(event);
+  auto* orientation_event = To<DeviceOrientationEvent>(event);
   return !orientation_event->Orientation()->CanProvideEventData();
 }
 
@@ -138,45 +132,36 @@ void DeviceOrientationController::ClearOverride() {
     DidUpdateData();
 }
 
-void DeviceOrientationController::Trace(blink::Visitor* visitor) {
+void DeviceOrientationController::Trace(Visitor* visitor) const {
   visitor->Trace(override_orientation_data_);
   visitor->Trace(orientation_event_pump_);
   DeviceSingleWindowEventController::Trace(visitor);
-  Supplement<Document>::Trace(visitor);
+  Supplement<LocalDOMWindow>::Trace(visitor);
 }
 
 void DeviceOrientationController::RegisterWithOrientationEventPump(
     bool absolute) {
-  // The document's frame may be null if the document was already shut down.
-  LocalFrame* frame = GetDocument().GetFrame();
   if (!orientation_event_pump_) {
-    if (!frame)
-      return;
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-        frame->GetTaskRunner(TaskType::kSensor);
-    orientation_event_pump_ =
-        MakeGarbageCollected<DeviceOrientationEventPump>(task_runner, absolute);
+    orientation_event_pump_ = MakeGarbageCollected<DeviceOrientationEventPump>(
+        *GetWindow().GetFrame(), absolute);
   }
-  // TODO(crbug.com/850619): Ensure a valid frame is passed.
   orientation_event_pump_->SetController(this);
 }
 
 // static
 void DeviceOrientationController::LogToConsolePolicyFeaturesDisabled(
-    LocalFrame* frame,
+    LocalFrame& frame,
     const AtomicString& event_name) {
-  if (!frame)
-    return;
   const String& message = String::Format(
-      "The %s events are blocked by feature policy. "
+      "The %s events are blocked by permissions policy. "
       "See "
-      "https://github.com/WICG/feature-policy/blob/master/"
+      "https://github.com/w3c/webappsec-permissions-policy/blob/master/"
       "features.md#sensor-features",
       event_name.Ascii().c_str());
-  ConsoleMessage* console_message = ConsoleMessage::Create(
+  auto* console_message = MakeGarbageCollected<ConsoleMessage>(
       mojom::ConsoleMessageSource::kJavaScript,
       mojom::ConsoleMessageLevel::kWarning, std::move(message));
-  frame->Console().AddMessage(console_message);
+  frame.Console().AddMessage(console_message);
 }
 
 }  // namespace blink

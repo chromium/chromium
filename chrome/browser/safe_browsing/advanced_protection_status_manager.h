@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_H_
 #define CHROME_BROWSER_SAFE_BROWSING_ADVANCED_PROTECTION_STATUS_MANAGER_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -32,20 +33,24 @@ class AdvancedProtectionStatusManager
  public:
   AdvancedProtectionStatusManager(PrefService* pref_service,
                                   signin::IdentityManager* identity_manager);
+
+  AdvancedProtectionStatusManager(const AdvancedProtectionStatusManager&) =
+      delete;
+  AdvancedProtectionStatusManager& operator=(
+      const AdvancedProtectionStatusManager&) = delete;
+
   ~AdvancedProtectionStatusManager() override;
 
-  // If the primary account of associated profile is requesting advanced
-  // protection verdicts.
-  bool RequestsAdvancedProtectionVerdicts();
-
-  bool is_under_advanced_protection() const {
-    return is_under_advanced_protection_;
-  }
+  // Returns whether the unconsented primary account of the associated profile
+  // is under Advanced Protection.
+  bool IsUnderAdvancedProtection() const;
 
   // KeyedService:
   void Shutdown() override;
 
   bool IsRefreshScheduled();
+
+  void SetAdvancedProtectionStatusForTesting(bool enrolled);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AdvancedProtectionStatusManagerTest,
@@ -87,8 +92,8 @@ class AdvancedProtectionStatusManager
   void UnsubscribeFromSigninEvents();
 
   // IdentityManager::Observer implementations.
-  void OnUnconsentedPrimaryAccountChanged(
-      const CoreAccountInfo& account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
   void OnExtendedAccountInfoRemoved(const AccountInfo& info) override;
 
@@ -143,8 +148,6 @@ class AdvancedProtectionStatusManager
   base::OneShotTimer timer_;
   base::Time last_refreshed_;
   base::TimeDelta minimum_delay_;
-
-  DISALLOW_COPY_AND_ASSIGN(AdvancedProtectionStatusManager);
 };
 
 }  // namespace safe_browsing

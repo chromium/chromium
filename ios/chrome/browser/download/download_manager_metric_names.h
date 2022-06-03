@@ -20,6 +20,32 @@ enum class DownloadedFileAction {
   Count
 };
 
+// Values of the UMA Download.IOSDownloadFileUI histogram. These values
+// are persisted to logs. Entries should not be renumbered and numeric values
+// should never be reused.
+enum class DownloadFileUI {
+  // Download UI is presented.
+  DownloadFilePresented = 0,
+  // Download started.
+  DownloadFileStarted = 1,
+  Count
+};
+
+// Values of the UMA Download.IOSDownloadFileUIGoogleDrive histogram. These
+// values are persisted to logs. Entries should not be renumbered and numeric
+// values should never be reused.
+enum class DownloadFileUIGoogleDrive {
+  // Google drive is already installed.
+  GoogleDriveAlreadyInstalled = 0,
+  // Google drive is not installed.
+  GoogleDriveNotInstalled = 1,
+  // Showing Google drive installator.
+  GoogleDriveInstallStarted = 2,
+  // Google drive is installed after showing installator.
+  GoogleDriveInstalledAfterDisplay = 3,
+  Count
+};
+
 // Values of the UMA Download.IOSDownloadFileResult histogram. This histogram is
 // reported only for started downloads. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.

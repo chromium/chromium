@@ -10,7 +10,7 @@
 
 #include "content/browser/renderer_host/event_with_latency_info.h"
 #include "content/common/content_export.h"
-#include "content/public/common/input_event_ack_state.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 namespace ui {
 class TouchEvent;
@@ -40,7 +40,7 @@ CONTENT_EXPORT bool MakeUITouchEventsFromWebTouchEvents(
 
 // Utility to map the event ack state from the renderer, returns true if the
 // event could be handled non-blocking.
-bool InputEventAckStateIsSetNonBlocking(InputEventAckState);
+bool InputEventResultStateIsSetNonBlocking(blink::mojom::InputEventResultState);
 
 }  // namespace content
 

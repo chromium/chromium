@@ -13,10 +13,12 @@ class FieldAliasExpander(object):
     should point to core/css/computed_style_field_aliases.json5) and uses that to
     inform which fields in a given property should be set.
     """
+
     def __init__(self, file_path):
         loaded_file = json5_generator.Json5File.load_from_files([file_path])
-        self._field_aliases = dict([(alias["name"], alias)
-                                    for alias in loaded_file.name_dictionaries])
+        self._field_aliases = dict([
+            (alias["name"], alias) for alias in loaded_file.name_dictionaries
+        ])
 
     def expand_field_alias(self, property_):
         """

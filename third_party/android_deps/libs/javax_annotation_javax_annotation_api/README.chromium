@@ -1,0 +1,13 @@
+Name: ${extension.name} API
+Short Name: javax.annotation-api
+URL: http://jcp.org/en/jsr/detail?id=250
+Version: 1.3.2
+License: CDDLv1.1
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Common Annotations for the JavaTM Platform API
+
+Local Modifications:
+No modifications.

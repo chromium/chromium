@@ -8,40 +8,49 @@ import android.content.Context;
 import android.net.Uri;
 import android.os.Environment;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
 
+import androidx.test.filters.MediumTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.TestFileUtil;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.TestContentProvider;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
-import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
+import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.net.test.EmbeddedTestServer;
 
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URLEncoder;
 
 /** Test suite for different Android URL schemes. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-@RetryOnFailure
+@Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class UrlSchemeTest {
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
+            new ChromeTabbedActivityTestRule();
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public final BlankCTATabInitialStateRule mInitialStateRule =
+            new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     private static final String SIMPLE_SRC = "simple.html";
     private static final String SIMPLE_IMAGE = "google.png";
@@ -50,7 +59,6 @@ public class UrlSchemeTest {
 
     @Before
     public void setUp() {
-        mActivityTestRule.startMainActivityFromLauncher();
         TestContentProvider.resetResourceRequestCounts(InstrumentationRegistry.getTargetContext());
         TestContentProvider.setDataFilePath(
                 InstrumentationRegistry.getTargetContext(), UrlUtils.getTestFilePath(""));
@@ -59,7 +67,7 @@ public class UrlSchemeTest {
 
     @After
     public void tearDown() {
-        mTestServer.stopAndDestroyServer();
+        if (mTestServer != null) mTestServer.stopAndDestroyServer();
     }
 
     /**
@@ -94,7 +102,7 @@ public class UrlSchemeTest {
     @Feature({"Navigation"})
     public void testContentUrlAccess() {
         String resource = SIMPLE_SRC;
-        mActivityTestRule.loadUrl(createContentUrl(resource));
+        sActivityTestRule.loadUrl(createContentUrl(resource));
         ensureResourceRequestCountInContentProviderNotLessThan(resource, 1);
     }
 
@@ -117,27 +125,100 @@ public class UrlSchemeTest {
                 + "  document.title = 'fail';"
                 + "}";
 
-        mActivityTestRule.loadUrl(createContentUrl(resource));
+        sActivityTestRule.loadUrl(createContentUrl(resource));
 
         // Make sure iframe is really loaded by verifying the title
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mActivityTestRule.getActivity().getActivityTab().getTitle().equals(
-                        "iframe loaded");
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ChromeTabUtils.getTitleOnUiThread(
+                                       sActivityTestRule.getActivity().getActivityTab()),
+                    Matchers.is("iframe loaded"));
         });
         // Make sure that content provider was asked to provide the content.
         ensureResourceRequestCountInContentProviderNotLessThan(iframe, 1);
-        mActivityTestRule.runJavaScriptCodeInCurrentTab(script);
+        sActivityTestRule.runJavaScriptCodeInCurrentTab(script);
 
         // Make sure content access failed by verifying that title is set to fail.
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mActivityTestRule.getActivity().getActivityTab().getTitle().equals("fail");
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ChromeTabUtils.getTitleOnUiThread(
+                                       sActivityTestRule.getActivity().getActivityTab()),
+                    Matchers.is("fail"));
         });
+    }
+
+    private String loadContentUrlToMakeCorsToContent(final String api, final String mode)
+            throws Throwable {
+        final String resource = "content_url_make_cors_to_content.html";
+        final String imageUrl = createContentUrl("google.png");
+
+        sActivityTestRule.loadUrl(createContentUrl(resource) + "?api=" + api + "&mode=" + mode
+                + "&url=" + URLEncoder.encode(imageUrl));
+
+        // Make sure the CORS request fail in the page.
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ChromeTabUtils.getTitleOnUiThread(
+                                       sActivityTestRule.getActivity().getActivityTab()),
+                    Matchers.not("running"));
+        });
+
+        // Make sure that content provider was asked to provide the content.
+        ensureResourceRequestCountInContentProviderNotLessThan(resource, 1);
+
+        return ChromeTabUtils.getTitleOnUiThread(sActivityTestRule.getActivity().getActivityTab());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"CORS"})
+    public void testContentUrlCanNotMakeXhrRequestToContentUrl() throws Throwable {
+        // The XMLHttpRequest can carry content:// URLs, but CORS requests for content:// are not
+        // permitted.
+        Assert.assertEquals("error", loadContentUrlToMakeCorsToContent("xhr", ""));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"CORS"})
+    public void testContentUrlCanNotMakeFetchCorsRequestToContentUrl() throws Throwable {
+        // The Fetch API does not support content:// scheme.
+        Assert.assertEquals("error", loadContentUrlToMakeCorsToContent("fetch", "cors"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"CORS"})
+    public void testContentUrlCanNotMakeFetchSameOriginRequestToContentUrl() throws Throwable {
+        // The Fetch API does not support content:// scheme.
+        Assert.assertEquals("error", loadContentUrlToMakeCorsToContent("fetch", "same-origin"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"CORS"})
+    public void testContentUrlCanNotMakeFetchNoCorsRequestToContentUrl() throws Throwable {
+        // The Fetch API does not support content:// scheme.
+        Assert.assertEquals("error", loadContentUrlToMakeCorsToContent("fetch", "no-cors"));
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"CORS"})
+    public void testContentUrlToLoadWorkerFromContent() throws Throwable {
+        final String resource = "content_url_load_content_worker.html";
+
+        sActivityTestRule.loadUrl(createContentUrl(resource));
+
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ChromeTabUtils.getTitleOnUiThread(
+                                       sActivityTestRule.getActivity().getActivityTab()),
+                    Matchers.not("running"));
+        });
+
+        // Make sure that content provider was asked to provide the content.
+        ensureResourceRequestCountInContentProviderNotLessThan(resource, 1);
+
+        Assert.assertEquals("exception",
+                ChromeTabUtils.getTitleOnUiThread(
+                        sActivityTestRule.getActivity().getActivityTab()));
     }
 
     /**
@@ -170,15 +251,13 @@ public class UrlSchemeTest {
                 + "  img.onload = function() { document.title = 'success' };"
                 + "  img.src = '" + createContentUrl(resource) + "';"
                 + "  document.body.appendChild(img);";
-        mActivityTestRule.loadUrl(url);
-        mActivityTestRule.runJavaScriptCodeInCurrentTab(script);
+        sActivityTestRule.loadUrl(url);
+        sActivityTestRule.runJavaScriptCodeInCurrentTab(script);
 
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mActivityTestRule.getActivity().getActivityTab().getTitle().equals(
-                        expectedTitle);
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(ChromeTabUtils.getTitleOnUiThread(
+                                       sActivityTestRule.getActivity().getActivityTab()),
+                    Matchers.is(expectedTitle));
         });
         ensureResourceRequestCountInContentProviderNotLessThan(resource, expectedLoadCount);
     }
@@ -191,7 +270,7 @@ public class UrlSchemeTest {
     @Feature({"Navigation"})
     public void testContentUrlFromData() {
         final String target = SIMPLE_IMAGE;
-        mActivityTestRule.loadUrl(
+        sActivityTestRule.loadUrl(
                 UrlUtils.encodeHtmlDataUri("<img src=\"" + createContentUrl(target) + "\">"));
         ensureResourceRequestCountInContentProvider(target, 0);
     }
@@ -208,16 +287,11 @@ public class UrlSchemeTest {
         try {
             TestFileUtil.createNewHtmlFile(
                     file, target, "<img src=\"" + createContentUrl(target) + "\">");
-            mActivityTestRule.loadUrl("file://" + file.getAbsolutePath());
+            sActivityTestRule.loadUrl("file://" + file.getAbsolutePath());
             ensureResourceRequestCountInContentProvider(target, 0);
         } finally {
             TestFileUtil.deleteFile(file);
         }
-    }
-
-    private String getTitleOnUiThread() {
-        return TestThreadUtils.runOnUiThreadBlockingNoException(
-                () -> mActivityTestRule.getActivity().getActivityTab().getTitle());
     }
 
     /**
@@ -232,8 +306,10 @@ public class UrlSchemeTest {
 
         try {
             TestFileUtil.createNewHtmlFile(file, "File", null);
-            mActivityTestRule.loadUrl("file://" + file.getAbsolutePath());
-            Assert.assertEquals("File", getTitleOnUiThread());
+            sActivityTestRule.loadUrl("file://" + file.getAbsolutePath());
+            Assert.assertEquals("File",
+                    ChromeTabUtils.getTitleOnUiThread(
+                            sActivityTestRule.getActivity().getActivityTab()));
         } finally {
             TestFileUtil.deleteFile(file);
         }

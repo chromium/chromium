@@ -64,20 +64,27 @@ class LayoutRubyAsInline final : public LayoutInline {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject* child) override;
 
-  const char* GetName() const override { return "LayoutRuby (inline)"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutRuby (inline)";
+  }
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectRuby || LayoutInline::IsOfType(type);
   }
-  bool CreatesAnonymousWrapper() const override { return true; }
+  bool CreatesAnonymousWrapper() const override {
+    NOT_DESTROYED();
+    return true;
+  }
 };
 
 // <ruby> when used as 'display:block' or 'display:inline-block'
-class LayoutRubyAsBlock final : public LayoutBlockFlow {
+class LayoutRubyAsBlock : public LayoutBlockFlow {
  public:
   LayoutRubyAsBlock(Element*);
   ~LayoutRubyAsBlock() override;
@@ -86,17 +93,27 @@ class LayoutRubyAsBlock final : public LayoutBlockFlow {
                 LayoutObject* before_child = nullptr) override;
   void RemoveChild(LayoutObject* child) override;
 
-  const char* GetName() const override { return "LayoutRuby (block)"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutRuby (block)";
+  }
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-
- private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectRuby || LayoutBlockFlow::IsOfType(type);
   }
-  bool CreatesAnonymousWrapper() const override { return true; }
-  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override { NOTREACHED(); }
+
+ private:
+  bool CreatesAnonymousWrapper() const override {
+    NOT_DESTROYED();
+    return true;
+  }
+  void RemoveLeftoverAnonymousBlock(LayoutBlock*) override {
+    NOT_DESTROYED();
+    NOTREACHED();
+  }
 };
 
 }  // namespace blink

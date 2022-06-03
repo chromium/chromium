@@ -188,6 +188,10 @@ export class PlaneNode extends Node {
     if(this.polygon)
       throw new Error(`Polygon is set on a plane where it shouldn't be!`);
 
+    if(polygon.length === 0) {
+      return Promise.resolve();
+    }
+
     this.createPlanePrimitive(polygon);
 
     // eagerly clean up render primitive's VAO

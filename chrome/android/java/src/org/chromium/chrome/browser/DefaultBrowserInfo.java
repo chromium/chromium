@@ -5,11 +5,9 @@
 package org.chromium.chrome.browser;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.IntDef;
@@ -17,7 +15,6 @@ import androidx.annotation.IntDef;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageManagerUtils;
-import org.chromium.base.library_loader.LibraryProcessType;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
@@ -36,11 +33,10 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.RejectedExecutionException;
 
 /**
- * A utility class for querying information about the default browser setting.
+ * A utility class for querying information about the default browser setting.\
+ * TODO(crbug.com/1112519): Remove this and replace with DefaultBrowserInfo2.
  */
 public final class DefaultBrowserInfo {
-    private static final String SAMPLE_URL = "https://www.madeupdomainforcheck123.chrome/";
-
     /**
      * A list of potential default browser states.  To add a type to this list please update
      * MobileDefaultBrowserState in histograms.xml and make sure to keep this list in sync.
@@ -98,12 +94,12 @@ public final class DefaultBrowserInfo {
                                 context, BuildInfo.getInstance().hostPackageLabel));
 
                         PackageManager pm = context.getPackageManager();
-                        ResolveInfo info = getResolveInfoForViewIntent();
+                        ResolveInfo info = PackageManagerUtils.resolveDefaultWebBrowserActivity();
 
                         // Caches whether Chrome is set as a default browser on the device.
                         boolean isDefault = info != null && info.match != 0
                                 && TextUtils.equals(
-                                           context.getPackageName(), info.activityInfo.packageName);
+                                        context.getPackageName(), info.activityInfo.packageName);
                         SharedPreferencesManager.getInstance().writeBoolean(
                                 ChromePreferenceKeys.CHROME_DEFAULT_BROWSER, isDefault);
 
@@ -129,19 +125,6 @@ public final class DefaultBrowserInfo {
     }
 
     /**
-     * @return Default ResolveInfo to handle a VIEW intent for a url.
-     */
-    private static ResolveInfo getResolveInfoForViewIntent() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(SAMPLE_URL));
-        return PackageManagerUtils.resolveActivity(intent, 0);
-    }
-
-    private static List<ResolveInfo> getResolveInfoListForViewIntent() {
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(SAMPLE_URL));
-        return PackageManagerUtils.queryIntentActivities(intent, PackageManager.MATCH_ALL);
-    }
-
-    /**
      * @return Title of the menu item for opening a link in the default browser.
      * @param forceChromeAsDefault Whether the Custom Tab is created by Chrome.
      */
@@ -164,8 +147,7 @@ public final class DefaultBrowserInfo {
      * Log statistics about the current default browser to UMA.
      */
     public static void logDefaultBrowserStats() {
-        assert BrowserStartupController.get(LibraryProcessType.PROCESS_BROWSER)
-                .isFullBrowserStarted();
+        assert BrowserStartupController.getInstance().isFullBrowserStarted();
 
         try {
             new AsyncTask<DefaultInfo>() {
@@ -176,7 +158,7 @@ public final class DefaultBrowserInfo {
                     DefaultInfo info = new DefaultInfo();
 
                     // Query the default handler first.
-                    ResolveInfo defaultRi = getResolveInfoForViewIntent();
+                    ResolveInfo defaultRi = PackageManagerUtils.resolveDefaultWebBrowserActivity();
                     if (defaultRi != null && defaultRi.match != 0) {
                         info.hasDefault = true;
                         info.isChromeDefault = isSamePackage(context, defaultRi);
@@ -185,10 +167,10 @@ public final class DefaultBrowserInfo {
 
                     // Query all other intent handlers.
                     Set<String> uniquePackages = new HashSet<>();
-                    List<ResolveInfo> ris = getResolveInfoListForViewIntent();
+                    List<ResolveInfo> ris = PackageManagerUtils.queryAllWebBrowsersInfo();
                     if (ris != null) {
                         for (ResolveInfo ri : ris) {
-                            String packageName = ri.activityInfo.applicationInfo.packageName;
+                            String packageName = ri.activityInfo.packageName;
                             if (!uniquePackages.add(packageName)) continue;
 
                             if (isSystemPackage(ri)) {
@@ -214,8 +196,7 @@ public final class DefaultBrowserInfo {
                     RecordHistogram.recordEnumeratedHistogram("Mobile.DefaultBrowser.State",
                             getDefaultBrowserUmaState(info), MobileDefaultBrowserState.NUM_ENTRIES);
                 }
-            }
-                    .executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
         } catch (RejectedExecutionException ex) {
             // Fail silently here since this is not a critical task.
         }

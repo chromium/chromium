@@ -22,6 +22,10 @@ namespace ipp_parser {
 class IppParser : public mojom::IppParser {
  public:
   explicit IppParser(mojo::PendingReceiver<mojom::IppParser> receiver);
+
+  IppParser(const IppParser&) = delete;
+  IppParser& operator=(const IppParser&) = delete;
+
   ~IppParser() override;
 
  private:
@@ -33,8 +37,6 @@ class IppParser : public mojom::IppParser {
                 ParseIppCallback callback) override;
 
   mojo::Receiver<mojom::IppParser> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(IppParser);
 };
 
 }  // namespace ipp_parser

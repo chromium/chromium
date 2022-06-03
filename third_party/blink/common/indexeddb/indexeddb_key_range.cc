@@ -4,7 +4,6 @@
 
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_range.h"
 
-#include "base/logging.h"
 #include "third_party/blink/public/common/indexeddb/web_idb_types.h"
 
 namespace blink {

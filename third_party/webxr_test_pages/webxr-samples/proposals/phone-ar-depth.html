@@ -1,0 +1,516 @@
+<!doctype html>
+<!--
+Copyright 2018 The Immersive Web Community Group
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+the Software, and to permit persons to whom the Software is furnished to do so,
+subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+-->
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1, user-scalable=no'>
+    <meta name='mobile-web-app-capable' content='yes'>
+    <meta name='apple-mobile-web-app-capable' content='yes'>
+
+    <meta http-equiv="origin-trial" content="As0BE09FBB6viNVrwWICektFyN2QlX8TMaTNjvpcGH4Jf7cmI3J4UYvtZQZvScykvRwtGkO4cacWZ3EvIiRUbgUAAABaeyJvcmlnaW4iOiJodHRwczovL3N0b3JhZ2UuZ29vZ2xlYXBpcy5jb206NDQzIiwiZmVhdHVyZSI6IldlYlhSRGVwdGgiLCJleHBpcnkiOjE2MTE3NzIwMTl9">
+
+    <title>AR Depth API</title>
+
+    <link href='../css/common.css' rel='stylesheet'></link>
+
+    <!--The polyfill is not needed for browser that have native API support,
+        but is linked by these samples for wider compatibility.-->
+    <!--script src='https://cdn.jsdelivr.net/npm/webxr-polyfill@latest/build/webxr-polyfill.js'></script-->
+    <script src='../js/xrray-polyfill.js' type='module'></script>
+    <script src='../js/webxr-polyfill.js'></script>
+
+    <script src='../js/webxr-button.js'></script>
+    <style>
+      #text-info {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: large;
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <details open>
+        <summary>AR Depth API - CPU access</summary>
+        <p>
+          This sample demonstrates use of a depth API in immersive-ar session.
+          The data will be accessed from a CPU.
+          <a class="back" href="./index.html">Back</a>
+        </p>
+      </details>
+    </header>
+    <div id="text-overlay">
+      <div id="text-info"></div>
+    </div>
+    <script id="vertexShader" type="x-shader/x-vertex">
+      precision mediump float;
+
+      attribute vec2 aVertexPosition;
+      attribute float aDepthDistance;
+
+      uniform float uPointSize;
+
+      varying float vDepthDistance;
+
+      void main(void) {
+        gl_PointSize = uPointSize;
+        gl_Position = vec4(aVertexPosition, -1.0, 1.0);
+        vDepthDistance = aDepthDistance;
+      }
+    </script>
+    <script id="fragmentShader" type="x-shader/x-fragment" src="../shaders/depth-api-cpu.frag"></script>
+    <script id="turboFragment" type="x-shader/x-fragment" src="../shaders/turbo.glsl"></script>
+
+    <script type="module" async>
+      import {mat4, vec3, mat3, vec2} from '../js/cottontail/src/math/gl-matrix.js';
+
+      // XR globals.
+      let xrButton = null;
+      let xrRefSpace = null;
+
+      // WebGL scene globals.
+      let gl = null;
+      let shaderProgram = null;
+      let programInfo = null;
+      let vertexBuffer = null;
+
+      // shader code
+      let vertexShaderSource = null;
+      let fragmentShaderSource = null;
+
+      const textOverlayElement = document.querySelector("#text-overlay");
+      if(!textOverlayElement) {
+        console.error("#text-overlay element not found!");
+        throw new Error("#text-overlay element not found!");
+      }
+
+      const textInfoElement = document.querySelector("#text-info");
+      if(!textInfoElement) {
+        console.error("#text-info element not found!");
+        throw new Error("#text-info element not found!");
+      }
+
+      function initXR() {
+        xrButton = new XRDeviceButton({
+          onRequestSession: onRequestSession,
+          onEndSession: onEndSession,
+          textEnterXRTitle: "START AR",
+          textXRNotFoundTitle: "AR NOT FOUND",
+          textExitXRTitle: "EXIT  AR",
+          supportedSessionTypes: ['immersive-ar']
+        });
+        document.querySelector('header').appendChild(xrButton.domElement);
+      }
+
+      function onRequestSession() {
+        // Requests an immersive session with environment integration.
+
+        let options = {
+          requiredFeatures: ['depth-sensing', 'dom-overlay'],
+          domOverlay: { root: textOverlayElement },
+          depthSensing: {
+            usagePreference: ["cpu-optimized"],
+            dataFormatPreference: ["luminance-alpha"],
+          }
+        };
+
+        navigator.xr.requestSession('immersive-ar', options).then((session) => {
+            session.mode = 'immersive-ar';
+            xrButton.setSession(session);
+
+            fetchShaders().then(() => {
+              onSessionStarted(session);
+            })
+        });
+      }
+
+      function onSessionStarted(session) {
+        session.addEventListener('end', onSessionEnded);
+
+        let canvas = document.createElement('canvas');
+        gl = canvas.getContext('webgl', {
+            xrCompatible: true
+        });
+
+        initializeGL();
+
+        session.updateRenderState({ baseLayer: new XRWebGLLayer(session, gl) });
+        session.requestReferenceSpace('local').then((refSpace) => {
+          xrRefSpace = refSpace;
+          session.requestAnimationFrame(onXRFrame);
+        });
+
+        if(session.depthUsage != "cpu-optimized") {
+          throw new Error("Unsupported depth API usage!");
+        }
+
+        if(session.depthDataFormat != "luminance-alpha") {
+          throw new Error("Unsupported depth data format!");
+        }
+      }
+
+      function onEndSession(session) {
+        session.end();
+      }
+
+      function onSessionEnded(event) {
+        xrButton.setSession(null);
+      }
+
+      // Helper, fetches shader source code based on the passed in ID of the <script> element.
+      // Will inspect src attribute value and issue fetch API call to obtain the script body.
+      async function fetchShader(id) {
+        const element = document.getElementById(id);
+        const url = element.src;
+
+        const response = await fetch(url);
+        const text = await response.text();
+
+        return text;
+      }
+
+      async function fetchShaders() {
+        vertexShaderSource = document.getElementById('vertexShader').textContent;
+        fragmentShaderSource = await fetchShader("fragmentShader") + "\n"
+                             + await fetchShader("turboFragment");
+
+      }
+
+      function initializeGL() {
+        shaderProgram = initShaderProgram(vertexShaderSource, fragmentShaderSource);
+
+        programInfo = {
+            program: shaderProgram,
+            attribLocations: {
+              vertexPosition: gl.getAttribLocation(shaderProgram, 'aVertexPosition'),
+              depthDistance: gl.getAttribLocation(shaderProgram, 'aDepthDistance'),
+            },
+            uniformLocations: {
+              pointSize: gl.getUniformLocation(shaderProgram, 'uPointSize'),
+              alpha: gl.getUniformLocation(shaderProgram, 'uAlpha'),
+            },
+        };
+
+        vertexBuffer = gl.createBuffer();
+      }
+
+      function initShaderProgram(vsSource, fsSource) {
+        const vertexShader = loadShader(gl.VERTEX_SHADER, vsSource);
+        const fragmentShader = loadShader(gl.FRAGMENT_SHADER, fsSource);
+
+        // Create the shader program
+        const shaderProgram = gl.createProgram();
+        gl.attachShader(shaderProgram, vertexShader);
+        gl.attachShader(shaderProgram, fragmentShader);
+        gl.linkProgram(shaderProgram);
+
+        // If creating the shader program failed, alert
+        if (!gl.getProgramParameter(shaderProgram, gl.LINK_STATUS)) {
+          alert("Unable to initialize the shader program: " +
+              gl.getProgramInfoLog(shaderProgram)
+          );
+          return null;
+        }
+
+        return shaderProgram;
+      }
+
+      function loadShader(type, source) {
+        const shader = gl.createShader(type);
+
+        gl.shaderSource(shader, source);
+        gl.compileShader(shader);
+
+        if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          alert(
+            "An error occurred compiling the shaders: " +
+              gl.getShaderInfoLog(shader)
+          );
+          gl.deleteShader(shader);
+          return null;
+        }
+
+        return shader;
+      }
+
+      // Component-wise multiplication of 2 vec3s:
+      function scaleByVec(out, lhs, rhs) {
+        out[0] = lhs[0] * rhs[0];
+        out[1] = lhs[1] * rhs[1];
+        out[2] = lhs[2] * rhs[2];
+
+        return out;
+      }
+
+      function clamp(out, input, lower_bound, upper_bound) {
+        out[0] = Math.max(lower_bound[0], Math.min(input[0], upper_bound[0]));
+        out[1] = Math.max(lower_bound[1], Math.min(input[1], upper_bound[1]));
+        out[2] = Math.max(lower_bound[2], Math.min(input[2], upper_bound[2]));
+
+        return out;
+      }
+
+      // Called every time a XRSession requests that a new frame be drawn.
+      function onXRFrame(t, frame) {
+        const session = frame.session;
+        session.requestAnimationFrame(onXRFrame);
+
+        const baseLayer = session.renderState.baseLayer;
+
+        const pose = frame.getViewerPose(xrRefSpace);
+
+        if (pose) {
+          gl.bindFramebuffer(gl.FRAMEBUFFER, session.renderState.baseLayer.framebuffer);
+
+          // Clear the framebuffer
+          gl.clearColor(0, 0, 0, 0);
+          gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+          for (const view of pose.views) {
+            const viewport = baseLayer.getViewport(view);
+            gl.viewport(viewport.x, viewport.y,
+                        viewport.width, viewport.height);
+
+            const depthData = frame.getDepthInformation(view);
+            if (depthData) {
+              textInfoElement.innerHTML = "";
+
+              renderDepthInformationCPU(depthData, view, viewport);
+            } else {
+              textInfoElement.innerHTML = "Depth data unavailable in the current frame!";
+            }
+          }
+        } else {
+          textInfoElement.innerHTML = "Pose unavailable in the current frame!";
+        }
+      }
+
+      function calculateVerticesFromDepth(depthData, viewport) {
+        // This function calculates vertices data going from depth buffer
+        // coordinates into normalized view coordinates to then fetch the
+        // distance using the XRCPUDepthInformation.getDepthInMeters() helper.
+        // The normalized view coordinates are then converted to NDC in order
+        // to produce the vertices data.
+
+        const RESOLUTION = 5;
+
+        const depth_width = depthData.width;
+        const depth_height = depthData.height;
+
+        const X_RANGE = depth_width;
+        const Y_RANGE = depth_height;
+
+        const vertices_data = [];
+
+        const norm_depth_from_norm_view = depthData.normDepthBufferFromNormView.matrix;
+        const norm_view_from_norm_depth = mat4.invert(mat4.create(), norm_depth_from_norm_view);
+
+        const inverse_depth_dimensions = vec3.fromValues(1.0 / depth_width,
+                                                         1.0 / depth_height,
+                                                         0);
+
+        for(let x = 0; x < X_RANGE; x = x + RESOLUTION) {
+          for(let y = 0; y < Y_RANGE; y = y + RESOLUTION) {
+
+            // We start with absolute depth buffer coordinates:
+            const depth_coords_depth_buffer = vec3.fromValues(x, y, 0);
+
+            // Normalize them by depth buffer dimensions:
+            const depth_cooords_norm_depth_buffer = scaleByVec(vec3.create(),
+                                                               depth_coords_depth_buffer,
+                                                               inverse_depth_dimensions);
+
+            // Transform to normalized view coordinates:
+            const depth_coords_view_norm = vec3.transformMat4(vec3.create(),
+                                                              depth_cooords_norm_depth_buffer,
+                                                              norm_view_from_norm_depth);
+
+            if(depth_coords_view_norm[0] < 0 || depth_coords_view_norm[0] > 1 ||
+               depth_coords_view_norm[1] < 0 || depth_coords_view_norm[1] > 1) {
+              continue;
+            }
+
+            // getDepthInMeters() accepts inputs in normalized view coordinate system
+            // that has origin in top left corner, X's grow to the right, and Y's grow
+            // downward.
+            const distance = depthData.getDepthInMeters(depth_coords_view_norm[0],
+                                                        depth_coords_view_norm[1]);
+
+            // We need to convert normalized view coordinates to normalized device coordinates,
+            // with the origin at the center of a cube with side length = 2 and Y growing upward.
+            const depth_coords_ndc = vec3.clone(depth_coords_view_norm);
+
+            // First, fix up the Y axis:
+            depth_coords_ndc[1] = 1 - depth_coords_ndc[1];
+
+            // Then, convert to range [-1, 1]:
+            depth_coords_ndc[0] = (2.0 * depth_coords_ndc[0]) - 1;
+            depth_coords_ndc[1] = (2.0 * depth_coords_ndc[1]) - 1;
+
+            if(depth_coords_ndc[0] > 1 || depth_coords_ndc[0] < -1 ||
+               depth_coords_ndc[1] > 1 || depth_coords_ndc[1] < -1) {
+              continue;
+            }
+
+            vertices_data.push(depth_coords_ndc[0], depth_coords_ndc[1], distance);
+          }
+        }
+
+        return vertices_data;
+      }
+
+      function calculateVerticesFromViewCoordinates(depthData, viewport) {
+        // This function calculates vertices data going directly from normalized
+        // view coordinates & using the XRCPUDepthInformation.getDepthInMeters()
+        // helper. Normalized view coordinates are then converted to NDC.
+
+        const smaller_dim = Math.min(viewport.width, viewport.height);
+        const larger_dim = Math.max(viewport.width, viewport.height);
+        const is_portrait = smaller_dim == viewport.width;
+
+        const larger_dim_resolution = (smaller_dim * 0.1) / larger_dim;
+
+        const X_RESOLUTION = is_portrait ? 0.1 : larger_dim_resolution;
+        const Y_RESOLUTION = is_portrait ? larger_dim_resolution : 0.1;
+
+        const X_RANGE = 1.0;
+        const Y_RANGE = 1.0;
+
+        const vertices_data = [];
+
+        for(let x = 0; x <= X_RANGE; x += X_RESOLUTION) {
+          for(let y = 0; y <= Y_RANGE; y += Y_RESOLUTION) {
+            const distance = depthData.getDepthInMeters(x, y);
+
+            // We need to convert normalized view coordinates to normalized device coordinates,
+            // with the origin at the center of a cube with side length = 2 and Y growing upward.
+            const depth_coords_ndc = vec3.fromValues(x, y, 0.0);
+
+            // First, fix up the Y axis:
+            depth_coords_ndc[1] = 1 - depth_coords_ndc[1];
+
+            // Then, convert to range [-1, 1]:
+            depth_coords_ndc[0] = (2.0 * depth_coords_ndc[0]) - 1;
+            depth_coords_ndc[1] = (2.0 * depth_coords_ndc[1]) - 1;
+
+            if(depth_coords_ndc[0] > 1 || depth_coords_ndc[0] < -1 ||
+               depth_coords_ndc[1] > 1 || depth_coords_ndc[1] < -1) {
+              continue;
+            }
+
+            vertices_data.push(depth_coords_ndc[0], depth_coords_ndc[1], distance);
+          }
+        }
+
+        return vertices_data;
+      }
+
+      function calculateVerticesFromViewCoordinatesSupersampled(depthData, viewport) {
+        // For verification only.
+
+        const smaller_depth_dim = Math.min(depthData.width, depthData.height);
+        const larger_depth_dim = Math.max(depthData.width, depthData.height);
+
+        const X_RANGE = 0.1;
+        const Y_RANGE = 0.1;
+
+        const NUM_SAMPLES_X = Math.trunc(4 * smaller_depth_dim);
+        const NUM_SAMPLES_Y = Math.trunc(4 * larger_depth_dim);
+
+        const vertices_data = [];
+
+        for(let x = 0; x <= X_RANGE; x += 1/NUM_SAMPLES_X) {
+          for(let y = 0; y <= X_RANGE; y += 1/NUM_SAMPLES_Y ) {
+            const distance = depthData.getDepthInMeters(x, y);
+
+            // We need to convert normalized view coordinates to normalized device coordinates,
+            // with the origin at the center of a cube with side length = 2 and Y growing upward.
+            const depth_coords_ndc = vec3.fromValues(x, y, 0.0);
+
+            // First, fix up the Y axis:
+            depth_coords_ndc[1] = 1 - depth_coords_ndc[1];
+
+            // Then, convert to range [-1, 1]:
+            depth_coords_ndc[0] = (2.0 * depth_coords_ndc[0]) - 1;
+            depth_coords_ndc[1] = (2.0 * depth_coords_ndc[1]) - 1;
+
+            if(depth_coords_ndc[0] > 1 || depth_coords_ndc[0] < -1 ||
+               depth_coords_ndc[1] > 1 || depth_coords_ndc[1] < -1) {
+              continue;
+            }
+
+            vertices_data.push(depth_coords_ndc[0], depth_coords_ndc[1], distance);
+          }
+        }
+
+        return vertices_data;
+      }
+
+      function renderDepthInformationCPU(depthData, view, viewport) {
+        const vertices_data = calculateVerticesFromViewCoordinates(depthData, viewport);
+
+        gl.useProgram(programInfo.program);
+
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices_data), gl.DYNAMIC_DRAW);
+
+        gl.vertexAttribPointer(
+          programInfo.attribLocations.vertexPosition,
+          2,      // 2 components
+          gl.FLOAT,
+          false,  // don't normalize
+          12,     // stride = 3 floats * 4 bytes
+          0       // start at offset 0 of the buffer
+        );
+        gl.enableVertexAttribArray(
+          programInfo.attribLocations.vertexPosition
+        );
+
+        gl.vertexAttribPointer(
+          programInfo.attribLocations.depthDistance,
+          1,      // 1 component
+          gl.FLOAT,
+          false,  // don't normalize
+          12,     // stride = 3 floats * 4 bytes
+          8       // start at offset of 2 floats * 4 bytes of the buffer
+        );
+        gl.enableVertexAttribArray(
+          programInfo.attribLocations.depthDistance
+        );
+
+        gl.uniform1f(programInfo.uniformLocations.pointSize,
+                     15.0);
+
+        gl.uniform1f(programInfo.uniformLocations.alpha,
+                     0.9);
+
+        gl.drawArrays(gl.POINTS, 0, vertices_data.length / 3);
+      }
+
+      // Start the XR application.
+      initXR();
+    </script>
+  </body>
+</html>

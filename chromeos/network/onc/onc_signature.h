@@ -13,11 +13,20 @@
 namespace chromeos {
 namespace onc {
 
+// Generates a default value for a field.
+// This is used so that static global base::Values can be avoided (which would
+// have a non-trivial destructor and are thus prohibited).
+using DefaultValueSetterFunc = base::Value (*)();
+
 struct OncValueSignature;
 
 struct OncFieldSignature {
   const char* onc_field_name;
   const OncValueSignature* value_signature;
+  // If this is non-null, it will be called if the field doesn't have a value
+  // after shill->onc translation and the returned value will be assigned to the
+  // field.
+  DefaultValueSetterFunc default_value_setter = nullptr;
 };
 
 struct COMPONENT_EXPORT(CHROMEOS_NETWORK) OncValueSignature {
@@ -50,6 +59,12 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const OncValueSignature kXAUTHSignature;
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const OncValueSignature kOpenVPNSignature;
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const OncValueSignature kWireGuardSignature;
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const OncValueSignature kWireGuardPeerSignature;
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const OncValueSignature kWireGuardPeerListSignature;
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const OncValueSignature kThirdPartyVPNSignature;
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
@@ -91,6 +106,10 @@ COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const OncValueSignature kNetworkConfigurationListSignature;
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const OncValueSignature kToplevelConfigurationSignature;
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const OncValueSignature kEAPSubjectAlternativeNameMatchListSignature;
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+extern const OncValueSignature kEAPSubjectAlternativeNameMatchSignature;
 
 // Derived "ONC with State" signatures.
 COMPONENT_EXPORT(CHROMEOS_NETWORK)

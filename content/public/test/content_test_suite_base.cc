@@ -19,7 +19,6 @@
 #include "content/renderer/in_process_renderer_thread.h"
 #include "content/utility/in_process_utility_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/base/material_design/material_design_controller.h"
 #include "ui/base/ui_base_paths.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
@@ -31,11 +30,11 @@ namespace content {
 namespace {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kDefault;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kDefault;
 #endif
 #endif
 
@@ -70,8 +69,6 @@ void ContentTestSuiteBase::Initialize() {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
   gin::V8Initializer::LoadV8Snapshot(kSnapshotType);
 #endif
-
-  ui::MaterialDesignController::Initialize();
 }
 
 void ContentTestSuiteBase::RegisterContentSchemes(
@@ -79,6 +76,10 @@ void ContentTestSuiteBase::RegisterContentSchemes(
   SetContentClient(content_client);
   content::RegisterContentSchemes();
   SetContentClient(nullptr);
+}
+
+void ContentTestSuiteBase::ReRegisterContentSchemes() {
+  content::ReRegisterContentSchemesForTests();
 }
 
 void ContentTestSuiteBase::RegisterInProcessThreads() {

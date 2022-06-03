@@ -7,7 +7,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/chrome_cleaner_navigation_util_win.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/srt_field_trial_win.h"
@@ -16,7 +15,6 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "components/component_updater/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "extensions/browser/extension_system.h"
 #include "ui/base/window_open_disposition.h"
 
 namespace safe_browsing {
@@ -73,7 +71,6 @@ ChromeCleanerDialogControllerImpl::~ChromeCleanerDialogControllerImpl() =
     default;
 
 void ChromeCleanerDialogControllerImpl::DialogShown() {
-  time_dialog_shown_ = base::Time::Now();
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.PromptDialog_Shown"));
 }
@@ -83,19 +80,13 @@ void ChromeCleanerDialogControllerImpl::Accept(bool logs_enabled) {
 
   RecordPromptDialogResponseHistogram(PROMPT_DIALOG_RESPONSE_ACCEPTED);
   RecordCleanupStartedHistogram(CLEANUP_STARTED_FROM_PROMPT_DIALOG);
-  UMA_HISTOGRAM_LONG_TIMES_100(
-      "SoftwareReporter.PromptDialog.TimeUntilDone_Accepted",
-      base::Time::Now() - time_dialog_shown_);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.PromptDialog_Accepted"));
 
   Profile* profile = browser_->profile();
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-
   cleaner_controller_->ReplyWithUserResponse(
-      profile, extension_service,
+      profile,
       logs_enabled
           ? ChromeCleanerController::UserResponse::kAcceptedWithLogs
           : ChromeCleanerController::UserResponse::kAcceptedWithoutLogs);
@@ -108,21 +99,13 @@ void ChromeCleanerDialogControllerImpl::Cancel() {
   DCHECK(browser_);
 
   RecordPromptDialogResponseHistogram(PROMPT_DIALOG_RESPONSE_CANCELLED);
-  DCHECK(!time_dialog_shown_.is_null());
-  UMA_HISTOGRAM_LONG_TIMES_100(
-      "SoftwareReporter.PromptDialog.TimeUntilDone_Canceled",
-      base::Time::Now() - time_dialog_shown_);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.PromptDialog_Canceled"));
 
   Profile* profile = browser_->profile();
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-
   cleaner_controller_->ReplyWithUserResponse(
-      profile, extension_service,
-      ChromeCleanerController::UserResponse::kDenied);
+      profile, ChromeCleanerController::UserResponse::kDenied);
   OnInteractionDone();
 }
 
@@ -130,21 +113,13 @@ void ChromeCleanerDialogControllerImpl::Close() {
   DCHECK(browser_);
 
   RecordPromptDialogResponseHistogram(PROMPT_DIALOG_RESPONSE_DISMISSED);
-  DCHECK(!time_dialog_shown_.is_null());
-  UMA_HISTOGRAM_LONG_TIMES_100(
-      "SoftwareReporter.PromptDialog.TimeUntilDone_Dismissed",
-      base::Time::Now() - time_dialog_shown_);
   base::RecordAction(
       base::UserMetricsAction("SoftwareReporter.PromptDialog_Dismissed"));
 
   Profile* profile = browser_->profile();
 
-  extensions::ExtensionService* extension_service =
-      extensions::ExtensionSystem::Get(profile)->extension_service();
-
   cleaner_controller_->ReplyWithUserResponse(
-      profile, extension_service,
-      ChromeCleanerController::UserResponse::kDismissed);
+      profile, ChromeCleanerController::UserResponse::kDismissed);
   OnInteractionDone();
 }
 
@@ -159,10 +134,6 @@ void ChromeCleanerDialogControllerImpl::ClosedWithoutUserInteraction() {
 void ChromeCleanerDialogControllerImpl::DetailsButtonClicked(
     bool logs_enabled) {
   RecordPromptDialogResponseHistogram(PROMPT_DIALOG_RESPONSE_DETAILS);
-  DCHECK(!time_dialog_shown_.is_null());
-  UMA_HISTOGRAM_LONG_TIMES_100(
-      "SoftwareReporter.PromptDialog.TimeUntilDone_DetailsButtonClicked",
-      base::Time::Now() - time_dialog_shown_);
   base::RecordAction(base::UserMetricsAction(
       "SoftwareReporter.PromptDialog_DetailsButtonClicked"));
 
@@ -220,8 +191,6 @@ void ChromeCleanerDialogControllerImpl::OnInfected(
     return;
   }
   ShowChromeCleanerPrompt();
-  RecordPromptShownWithTypeHistogram(
-      PromptTypeHistogramValue::PROMPT_TYPE_ON_TRANSITION_TO_INFECTED_STATE);
 }
 
 void ChromeCleanerDialogControllerImpl::OnCleaning(
@@ -244,8 +213,6 @@ void ChromeCleanerDialogControllerImpl::OnBrowserSetLastActive(
 
   browser_ = browser;
   ShowChromeCleanerPrompt();
-  RecordPromptShownWithTypeHistogram(
-      PromptTypeHistogramValue::PROMPT_TYPE_ON_BROWSER_WINDOW_AVAILABLE);
   prompt_pending_ = false;
   BrowserList::RemoveObserver(this);
 }

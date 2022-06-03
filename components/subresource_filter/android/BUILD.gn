@@ -1,0 +1,76 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+generate_jni("subresource_filter_jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/subresource_filter/AdsBlockedDialog.java",
+    "java/src/org/chromium/components/subresource_filter/AdsBlockedInfoBar.java",
+    "java/src/org/chromium/components/subresource_filter/SubresourceFilterFeatureList.java",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/components/subresource_filter/AdsBlockedDialog.java",
+    "java/src/org/chromium/components/subresource_filter/AdsBlockedInfoBar.java",
+    "java/src/org/chromium/components/subresource_filter/SubresourceFilterFeatureList.java",
+  ]
+  deps = [
+    ":java_resources",
+    ":subresource_filter_jni_headers",
+    "//base:base_java",
+    "//components/infobars/android:infobar_android_enums_java",
+    "//components/infobars/android:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.components.subresource_filter"
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "java/src/org/chromium/components/subresource_filter/AdsBlockedDialogTest.java" ]
+
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/androidx:androidx_test_core_java",
+    "//third_party/junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "ads_blocked_dialog.cc",
+    "ads_blocked_dialog.h",
+    "subresource_filter_feature_list.cc",
+  ]
+  deps = [
+    ":subresource_filter_jni_headers",
+    "//base",
+    "//components/subresource_filter/core/browser",
+    "//content/public/browser",
+    "//ui/android:android",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [ "java/res/values/ids.xml" ]
+
+  deps = [
+    "//components/browser_ui/strings/android:browser_ui_strings_grd",
+    "//components/browser_ui/styles/android:java_resources",
+    "//components/strings:components_strings_grd",
+  ]
+}

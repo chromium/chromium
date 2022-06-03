@@ -36,15 +36,33 @@
 namespace blink {
 
 class ExceptionState;
+class LocalFrame;
 class NavigatorContentUtilsClient;
+enum class ProtocolHandlerSecurityLevel;
+
+// Verify custom handler schemes for errors as described in
+// https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers.
+// Callers should surface an error with |error_message| if it returns false.
+bool VerifyCustomHandlerScheme(const String& scheme,
+                               String& error_message,
+                               ProtocolHandlerSecurityLevel security_level);
+
+// Verify custom handler URLs for syntax errors as described in
+// https://html.spec.whatwg.org/multipage/system-state.html#custom-handlers.
+// Callers should surface an error with |error_message| if it returns false.
+// |full_url| is calculated URL that needs to resolve to a valid URL.
+// |base_url| is used for the error message and is generally the Document URL.
+// |user_url| is the URL provided by the user, which may be relative.
+bool VerifyCustomHandlerURLSyntax(const KURL& full_url,
+                                  const KURL& base_url,
+                                  const String& user_url,
+                                  String& error_message);
 
 // It is owned by Navigator, and an instance is created lazily by calling
 // NavigatorContentUtils::From() via [register/unregister]ProtocolHandler.
 class MODULES_EXPORT NavigatorContentUtils final
     : public GarbageCollected<NavigatorContentUtils>,
       public Supplement<Navigator> {
-  USING_GARBAGE_COLLECTED_MIXIN(NavigatorContentUtils);
-
  public:
   static const char kSupplementName[];
 
@@ -56,14 +74,13 @@ class MODULES_EXPORT NavigatorContentUtils final
   static void registerProtocolHandler(Navigator&,
                                       const String& scheme,
                                       const String& url,
-                                      const String& title,
                                       ExceptionState&);
   static void unregisterProtocolHandler(Navigator&,
                                         const String& scheme,
                                         const String& url,
                                         ExceptionState&);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   void SetClientForTest(NavigatorContentUtilsClient* client) {
     client_ = client;

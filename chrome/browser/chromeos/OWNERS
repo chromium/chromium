@@ -5,12 +5,11 @@ per-file BUILD.gn=*
 achuith@chromium.org
 alemate@chromium.org
 jamescook@chromium.org
+khorimoto@chromium.org
 oshima@chromium.org
 satorux@chromium.org
-stevenjb@chromium.org
 xiyuan@chromium.org
-per-file *active_directory*=rsorokin@chromium.org
-per-file *active_directory*=fsandrade@chromium.org
-per-file *active_directory*=tomdobro@chromium.org
+per-file *active_directory*=file://chrome/browser/ash/authpolicy/OWNERS
 per-file tpm_firmware_update*=mnissler@chromium.org
-# COMPONENT: UI>Shell
+per-file note_taking*=glenrob@chromium.org
+per-file note_taking*=ericwilligers@chromium.org

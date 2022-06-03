@@ -27,18 +27,20 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_INLINE_CSS_STYLE_DECLARATION_H_
 
 #include "third_party/blink/renderer/core/css/abstract_property_set_css_style_declaration.h"
+#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 
 namespace blink {
-
-class Element;
 
 class InlineCSSStyleDeclaration final
     : public AbstractPropertySetCSSStyleDeclaration {
  public:
   explicit InlineCSSStyleDeclaration(Element* parent_element)
-      : parent_element_(parent_element) {}
+      : AbstractPropertySetCSSStyleDeclaration(
+            parent_element ? parent_element->GetExecutionContext() : nullptr),
+        parent_element_(parent_element) {}
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   MutableCSSPropertyValueSet& PropertySet() const override;

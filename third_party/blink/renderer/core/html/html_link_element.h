@@ -26,7 +26,7 @@
 
 #include <memory>
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/dom/dom_token_list.h"
@@ -38,18 +38,17 @@
 #include "third_party/blink/renderer/core/html/rel_list.h"
 #include "third_party/blink/renderer/core/loader/link_loader_client.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
 class KURL;
-class LinkImport;
 class LinkLoader;
 struct LinkLoadParameters;
 
 class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
                                           public LinkLoaderClient {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(HTMLLinkElement);
 
  public:
   HTMLLinkElement(Document&, const CreateElementFlags);
@@ -69,25 +68,22 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   DOMTokenList& relList() const {
     return static_cast<DOMTokenList&>(*rel_list_);
   }
-  String Scope() const { return scope_; }
 
   const AtomicString& GetType() const;
 
-  IconType GetIconType() const;
+  mojom::blink::FaviconIconType GetIconType() const;
 
   // the icon sizes as parsed from the HTML attribute
-  const Vector<IntSize>& IconSizes() const;
+  const Vector<gfx::Size>& IconSizes() const;
 
   bool Async() const;
 
   CSSStyleSheet* sheet() const {
     return GetLinkStyle() ? GetLinkStyle()->Sheet() : nullptr;
   }
-  Document* import() const;
 
   bool StyleSheetIsLoading() const;
 
-  bool IsImport() const { return GetLinkImport(); }
   bool IsDisabled() const {
     return GetLinkStyle() && GetLinkStyle()->IsDisabled();
   }
@@ -96,6 +92,15 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   }
 
   DOMTokenList* sizes() const;
+
+  // IDL method.
+  DOMTokenList* resources() const;
+  DOMTokenList* scopes() const;
+
+  const HashSet<KURL>& ValidResourceUrls() const {
+    return valid_resource_urls_;
+  }
+  const HashSet<KURL>& ValidScopeUrls() const { return valid_scope_urls_; }
 
   void ScheduleEvent();
 
@@ -108,20 +113,21 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   void LoadStylesheet(const LinkLoadParameters&,
                       const WTF::TextEncoding&,
                       FetchParameters::DeferOption,
-                      ResourceClient*);
+                      ResourceClient*,
+                      RenderBlockingBehavior render_blocking);
   bool IsAlternate() const {
-    return GetLinkStyle()->IsUnset() && rel_attribute_.IsAlternate();
+    return GetLinkStyle()->IsUnset() && rel_attribute_.IsAlternate() &&
+           !GetLinkStyle()->IsExplicitlyEnabled();
   }
   bool ShouldProcessStyle() {
     return LinkResourceToProcess() && GetLinkStyle();
   }
   bool IsCreatedByParser() const { return created_by_parser_; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   LinkStyle* GetLinkStyle() const;
-  LinkImport* GetLinkImport() const;
   LinkResource* LinkResourceToProcess();
 
   void Process();
@@ -148,10 +154,6 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   // From LinkLoaderClient
   void LinkLoaded() override;
   void LinkLoadingErrored() override;
-  void DidStartLinkPrerender() override;
-  void DidStopLinkPrerender() override;
-  void DidSendLoadForLinkPrerender() override;
-  void DidSendDOMContentLoadedForLinkPrerender() override;
   scoped_refptr<base::SingleThreadTaskRunner> GetLoadingTaskRunner() override;
 
   Member<LinkResource> link_;
@@ -164,10 +166,13 @@ class CORE_EXPORT HTMLLinkElement final : public HTMLElement,
   String importance_;
   network::mojom::ReferrerPolicy referrer_policy_;
   Member<DOMTokenList> sizes_;
-  Vector<IntSize> icon_sizes_;
+  Vector<gfx::Size> icon_sizes_;
   Member<RelList> rel_list_;
   LinkRelAttribute rel_attribute_;
-  String scope_;
+  Member<DOMTokenList> resources_;
+  HashSet<KURL> valid_resource_urls_;
+  Member<DOMTokenList> scopes_;
+  HashSet<KURL> valid_scope_urls_;
 
   bool created_by_parser_;
 };

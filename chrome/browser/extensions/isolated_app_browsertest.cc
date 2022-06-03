@@ -20,6 +20,7 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/browser/extension_host.h"
 #include "extensions/browser/extension_registry.h"
@@ -49,8 +50,9 @@ std::unique_ptr<net::test_server::HttpResponse> HandleExpectAndSetCookieRequest(
     const net::EmbeddedTestServer* test_server,
     const net::test_server::HttpRequest& request) {
   if (!base::StartsWith(request.relative_url, "/expect-and-set-cookie?",
-                        base::CompareCase::SENSITIVE))
-    return std::unique_ptr<net::test_server::HttpResponse>();
+                        base::CompareCase::SENSITIVE)) {
+    return nullptr;
+  }
 
   std::unique_ptr<net::test_server::BasicHttpResponse> http_response(
       new net::test_server::BasicHttpResponse);
@@ -106,8 +108,8 @@ class IsolatedAppTest : public ExtensionBrowserTest {
                                     const std::string& cookie) {
     int value_size;
     std::string actual_cookie;
-    ui_test_utils::GetCookies(contents->GetURL(), contents, &value_size,
-                              &actual_cookie);
+    ui_test_utils::GetCookies(contents->GetLastCommittedURL(), contents,
+                              &value_size, &actual_cookie);
     return actual_cookie.find(cookie) != std::string::npos;
   }
 
@@ -145,12 +147,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, CrossProcessClientRedirect) {
   GURL::Replacements replace_host;
   replace_host.SetHostStr("localhost");
   base_url = base_url.ReplaceComponents(replace_host);
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("app1/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           base_url.Resolve("app1/main.html")));
 
   // Redirect to app2.
   GURL redirect_url(embedded_test_server()->GetURL(
       "/extensions/isolated_apps/app2/redirect.html"));
-  ui_test_utils::NavigateToURL(browser(), redirect_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
 
   // Go back twice.
   // If bug fixed, we cannot go back anymore.
@@ -168,7 +171,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, CrossProcessClientRedirect) {
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("non_app/main.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   WebContents* tab0 = browser()->tab_strip_model()->GetWebContentsAt(1);
 
@@ -210,15 +213,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, CookieIsolation) {
   replace_host.SetHostStr("localhost");
   base_url = base_url.ReplaceComponents(replace_host);
 
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("app1/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           base_url.Resolve("app1/main.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("app2/main.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("non_app/main.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
 
@@ -303,15 +307,16 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, DISABLED_NoCookieIsolationWithoutApp) {
   replace_host.SetHostStr("localhost");
   base_url = base_url.ReplaceComponents(replace_host);
 
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("app1/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           base_url.Resolve("app1/main.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("app2/main.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("non_app/main.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   ASSERT_EQ(3, browser()->tab_strip_model()->count());
 
@@ -361,18 +366,11 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, DISABLED_NoCookieIsolationWithoutApp) {
   EXPECT_EQ("ls_normal", result);
 }
 
-// http://crbug.com/174926
-#if (defined(OS_WIN) && !defined(NDEBUG)) || defined(OS_MACOSX)
-#define MAYBE_SubresourceCookieIsolation DISABLED_SubresourceCookieIsolation
-#else
-#define MAYBE_SubresourceCookieIsolation SubresourceCookieIsolation
-#endif  // (defined(OS_WIN) && !defined(NDEBUG)) || defined(OS_MACOSX)
-
 // Tests that subresource and media requests use the app's cookie store.
 // See http://crbug.com/141172.
-IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_SubresourceCookieIsolation) {
-  embedded_test_server()->RegisterRequestHandler(
-      base::Bind(&HandleExpectAndSetCookieRequest, embedded_test_server()));
+IN_PROC_BROWSER_TEST_F(IsolatedAppTest, SubresourceCookieIsolation) {
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &HandleExpectAndSetCookieRequest, embedded_test_server()));
 
   ASSERT_TRUE(embedded_test_server()->Start());
 
@@ -388,14 +386,14 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_SubresourceCookieIsolation) {
   base_url = base_url.ReplaceComponents(replace_host);
 
   // First set cookies inside and outside the app.
-  ui_test_utils::NavigateToURL(
-      browser(), root_url.Resolve("expect-and-set-cookie?set=nonApp%3d1"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), root_url.Resolve("expect-and-set-cookie?set=nonApp%3d1")));
   WebContents* tab0 = browser()->tab_strip_model()->GetWebContentsAt(0);
   ASSERT_FALSE(GetInstalledApp(tab0));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("app1/main.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   WebContents* tab1 = browser()->tab_strip_model()->GetWebContentsAt(1);
   ASSERT_TRUE(GetInstalledApp(tab1));
 
@@ -415,8 +413,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_SubresourceCookieIsolation) {
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::Source<WebContents>(
           browser()->tab_strip_model()->GetActiveWebContents()));
-  ui_test_utils::NavigateToURL(
-      browser(), base_url.Resolve("app1/app_subresources.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("app1/app_subresources.html")));
   observer.Wait();
   EXPECT_FALSE(HasCookie(tab1, "nonAppMedia=1"));
   EXPECT_TRUE(HasCookie(tab1, "app1Media=1"));
@@ -426,21 +424,13 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_SubresourceCookieIsolation) {
   // Also create a non-app tab to ensure no new cookies were set in that jar.
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), root_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   WebContents* tab2 = browser()->tab_strip_model()->GetWebContentsAt(2);
   EXPECT_FALSE(HasCookie(tab2, "nonAppMedia=1"));
   EXPECT_FALSE(HasCookie(tab2, "app1Media=1"));
   EXPECT_FALSE(HasCookie(tab2, "nonAppImage=1"));
   EXPECT_FALSE(HasCookie(tab2, "app1Image=1"));
 }
-
-// Test is flaky on Windows.
-// http://crbug.com/247667
-#if defined(OS_WIN)
-#define MAYBE_IsolatedAppProcessModel DISABLED_IsolatedAppProcessModel
-#else
-#define MAYBE_IsolatedAppProcessModel IsolatedAppProcessModel
-#endif  // defined(OS_WIN)
 
 // This test used to check that isolated apps processes do not render top-level
 // non-app pages, and that this is true even in the case of the OAuth
@@ -450,7 +440,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_SubresourceCookieIsolation) {
 // isolated apps.  Therefore, this test is now checking that when an isolated
 // app window.opens a non-app same-site URL, the popup does stay in the
 // isolated app process.
-IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_IsolatedAppProcessModel) {
+IN_PROC_BROWSER_TEST_F(IsolatedAppTest, IsolatedAppProcessModel) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("isolated_apps/app1")));
@@ -463,11 +453,12 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_IsolatedAppProcessModel) {
   base_url = base_url.ReplaceComponents(replace_host);
 
   // Create three tabs in the isolated app in different ways.
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("app1/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           base_url.Resolve("app1/main.html")));
   ui_test_utils::NavigateToURLWithDisposition(
       browser(), base_url.Resolve("app1/main.html"),
       WindowOpenDisposition::NEW_FOREGROUND_TAB,
-      ui_test_utils::BROWSER_TEST_WAIT_FOR_NAVIGATION);
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
   // For the third tab, use window.open to keep it in process with an opener.
   OpenWindow(browser()->tab_strip_model()->GetWebContentsAt(0),
              base_url.Resolve("app1/main.html"), true, true, nullptr);
@@ -527,12 +518,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, MAYBE_IsolatedAppProcessModel) {
                               ->GetID());
 }
 
-// This test no longer passes, since we don't properly isolate sessionStorage
-// for isolated apps. This was broken as part of the changes for storage
-// partition support for webview tags.
-// TODO(nasko): If isolated apps is no longer developed, this test should be
-// removed. http://crbug.com/159932
-IN_PROC_BROWSER_TEST_F(IsolatedAppTest, DISABLED_SessionStorage) {
+IN_PROC_BROWSER_TEST_F(IsolatedAppTest, SessionStorage) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(LoadExtension(test_data_dir_.AppendASCII("isolated_apps/app1")));
@@ -547,18 +533,20 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, DISABLED_SessionStorage) {
 
   // Enter some state into sessionStorage three times on the same origin, but
   // for three URLs that correspond to app1, app2, and a non-isolated site.
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("app1/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           base_url.Resolve("app1/main.html")));
   ASSERT_TRUE(ExecuteScript(
       browser()->tab_strip_model()->GetWebContentsAt(0),
       "window.sessionStorage.setItem('testdata', 'ss_app1');"));
 
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("app2/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           base_url.Resolve("app2/main.html")));
   ASSERT_TRUE(ExecuteScript(
       browser()->tab_strip_model()->GetWebContentsAt(0),
       "window.sessionStorage.setItem('testdata', 'ss_app2');"));
 
-  ui_test_utils::NavigateToURL(
-      browser(), base_url.Resolve("non_app/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("non_app/main.html")));
   ASSERT_TRUE(ExecuteScript(
       browser()->tab_strip_model()->GetWebContentsAt(0),
       "window.sessionStorage.setItem('testdata', 'ss_normal');"));
@@ -569,20 +557,22 @@ IN_PROC_BROWSER_TEST_F(IsolatedAppTest, DISABLED_SessionStorage) {
       WrapForJavascriptAndExtract(
           "window.sessionStorage.getItem('testdata') || 'badval'");
   std::string result;
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("app1/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           base_url.Resolve("app1/main.html")));
   ASSERT_TRUE(ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetWebContentsAt(0),
       kRetrieveSessionStorage.c_str(), &result));
   EXPECT_EQ("ss_app1", result);
 
-  ui_test_utils::NavigateToURL(browser(), base_url.Resolve("app2/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
+                                           base_url.Resolve("app2/main.html")));
   ASSERT_TRUE(ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetWebContentsAt(0),
       kRetrieveSessionStorage.c_str(), &result));
   EXPECT_EQ("ss_app2", result);
 
-  ui_test_utils::NavigateToURL(
-      browser(), base_url.Resolve("non_app/main.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), base_url.Resolve("non_app/main.html")));
   ASSERT_TRUE(ExecuteScriptAndExtractString(
       browser()->tab_strip_model()->GetWebContentsAt(0),
       kRetrieveSessionStorage.c_str(), &result));

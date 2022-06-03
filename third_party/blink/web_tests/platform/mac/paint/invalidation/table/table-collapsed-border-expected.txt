@@ -1,106 +1,15 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableRow TR id='r2'",
-          "rect": [8, 210, 110, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 316, 101, 28],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 268, 101, 28],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 144, 101, 28],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 96, 101, 28],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 296, 101, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutTableRow TR id='r'",
-          "rect": [8, 124, 101, 20],
-          "reason": "geometry"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 58, 97, 28],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 10, 97, 28],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR",
-          "rect": [8, 38, 97, 20],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'ipsum dolor'",
-          "rect": [23, 297, 77, 18],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'ipsum dolor'",
-          "rect": [23, 125, 77, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sit amet'",
-          "rect": [23, 317, 51, 18],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sit amet'",
-          "rect": [23, 145, 51, 18],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Lorem'",
-          "rect": [23, 277, 43, 18],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'Lorem'",
-          "rect": [23, 105, 43, 18],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'dolor'",
-          "rect": [23, 211, 34, 18],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u00A0'",
-          "rect": [17, 211, 4, 18],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u00A0'",
-          "rect": [17, 125, 4, 18],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [8, 182, 110, 76],
+        [8, 268, 101, 76],
+        [8, 96, 101, 76],
+        [8, 10, 97, 76]
       ]
     }
   ]

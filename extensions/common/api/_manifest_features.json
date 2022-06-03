@@ -16,16 +16,15 @@
     "channel": "stable",
     "extension_types": ["legacy_packaged_app", "hosted_app", "platform_app"]
   },
-  // The default platform app CSP can only be overridden by whitelisted apps.
+  // The default platform app CSP can only be overridden by allowlisted apps.
   // This is a separate key from the top-level content_security_policy one since
-  // we can't combine type restrictions with whitelisted ID restrictions. If
-  // there is a need for additional whitelisted entries, the feature system
+  // we can't combine type restrictions with allowlisted ID restrictions. If
+  // there is a need for additional allowlisted entries, the feature system
   // should instead be extended to support OR-ing of restrictions.
   "app.content_security_policy": {
     "channel": "stable",
     "extension_types": ["platform_app"],
-    "min_manifest_version": 2,
-    "whitelist": [
+    "allowlist": [
       // Keep this list in sync with extensions_misc::kHangoutsExtensionIds but
       // omit the Packaged App ids.
       "53041A2FA309EECED01FFC751E7399186E860B2C",  // Hangouts Production.
@@ -38,27 +37,30 @@
   },
   "app.background": {
     "channel": "stable",
-    "extension_types": ["platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["platform_app"]
   },
+  "automation": [{
+    "channel": "dev",
+    "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
+  }, {
+    "channel": "stable",
+    "extension_types": ["extension", "legacy_packaged_app"],
+    "allowlist": [ "2FCBCE08B34CCA1728A85F1EFBD9A34DD2558B2E" ]
+  }],
   "background": {
     "channel": "stable",
     "extension_types": [
       // Platform apps specify their background page via app.background.
-      "extension", "legacy_packaged_app", "hosted_app", "login_screen_extension"
-    ]
+      "extension", "legacy_packaged_app", "hosted_app", "login_screen_extension", "chromeos_system_extension" ]
   },
   "background.persistent": {
     "channel": "stable",
     "extension_types": [
-      "extension", "legacy_packaged_app", "login_screen_extension"
-    ],
-    "min_manifest_version": 2
+      "extension", "legacy_packaged_app", "login_screen_extension" ]
   },
   "background.service_worker": {
-    "channel": "canary",
-    "extension_types": ["extension"],
-    "min_manifest_version": 2
+    "channel": "stable",
+    "extension_types": ["extension", "chromeos_system_extension"]
   },
   "bluetooth": [{
     // Note: The "bluetooth" manifest permission is used by the
@@ -71,7 +73,7 @@
     "channel": "stable",
     "extension_types": ["platform_app"],
     "platforms": ["linux"],
-    "whitelist": [
+    "allowlist": [
       "9E287A8257E58EFB13E89C86A4B75A3AC4B058D8",  // unit_tests browser_tests
       "1C93BD3CF875F4A73C0B2A163BB8FBDA8B8B3D80",  // http://crbug.com/396117
       "A3BC37E2148AC4E99BE4B16AF9D42DD1E592BBBE",  // http://crbug.com/396117
@@ -87,14 +89,14 @@
     "channel": "stable",
     "extension_types": ["extension"],
     "platforms": ["chromeos"],
-    "whitelist": [
+    "allowlist": [
       "75C7F4B720314B6CB1B5817CD86089DB95CD2461"  // http://crbug.com/899052
     ]
   }],
   "content_capabilities": [{
     "channel": "stable",
     "extension_types": ["extension"],
-    "whitelist": [
+    "allowlist": [
       "950D13BB9B4794F4CA2A68D3597E5DFAA47C88AE",  // Drive
       "0EEB39B7A9A52CAAE6A072F83320435749B184A4",  // http://crbug.com/481210
       "99717FF3BE1AFB5B343CDD024E53873C1783521B",  // http://crbug.com/838690
@@ -109,18 +111,27 @@
   "content_security_policy": {
     "channel": "stable",
     // Platform apps have a restricted content security policy that cannot be
-    // overriden (except for a whitelist of exceptions, see the
-    // app.content_security_policy whitelist).
-    "extension_types": ["extension", "legacy_packaged_app"]
+    // overriden (except for a allowlist of exceptions, see the
+    // app.content_security_policy allowlist).
+    "extension_types": [
+      "extension", "legacy_packaged_app", "login_screen_extension"
+    ]
+  },
+  "cross_origin_embedder_policy": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"]
+  },
+  "cross_origin_opener_policy": {
+    "channel": "stable",
+    "extension_types": ["extension", "platform_app"]
   },
   "current_locale": {
     "channel": "stable",
     "extension_types": "all"
   },
   "declarative_net_request": {
-    "channel": "beta",
-    "extension_types": ["extension"],
-    "min_manifest_version": 2
+    "channel": "stable",
+    "extension_types": ["extension"]
   },
   "default_locale": {
     "channel": "stable",
@@ -137,20 +148,21 @@
   "externally_connectable": {
     "channel": "stable",
     "extension_types": [
-      "extension", "hosted_app", "legacy_packaged_app", "platform_app"
+      "extension",
+      "hosted_app",
+      "legacy_packaged_app",
+      "platform_app",
+      "chromeos_system_extension"
     ]
   },
   "file_handlers": [
     {
       "channel": "stable",
-      "extension_types": [
-        "platform_app",
-        "hosted_app"  // This should be removed when bookmark apps have migrated off hosted apps.
-      ]
+      "extension_types": ["platform_app"]
     }, {
       "channel": "stable",
       "extension_types": [ "extension"],
-      "whitelist": [
+      "allowlist": [
         "2FC374607C2DF285634B67C64A2E356C607091C3",  // Quickoffice
         "3727DD3E564B6055387425027AD74C58784ACC15",  // Quickoffice internal
         "12E618C3C6E97495AAECF2AC12DEB082353241C6"   // QO component extension
@@ -158,7 +170,7 @@
     }
   ],
   "host_permissions": {
-    "channel": "dev",
+    "channel": "stable",
     "extension_types": ["extension"],
     "min_manifest_version": 3
   },
@@ -193,12 +205,23 @@
     "channel": "stable",
     "extension_types": ["platform_app"]
   },
-  "kiosk_enabled": {
-    "channel": "stable",
-    "extension_types": [
-      "platform_app"
-    ]
-  },
+  "kiosk_enabled": [
+    {
+      "channel": "stable",
+      "extension_types": [
+        "platform_app"
+      ]
+    },
+    {
+      "channel": "stable",
+      "extension_types": [
+        "extension"
+      ],
+      "session_types": [
+        "kiosk"
+      ]
+    }
+  ],
   "kiosk_only": {
     "channel": "stable",
     "extension_types": [
@@ -219,7 +242,7 @@
   "mime_types": {
     "channel": "stable",
     "extension_types": [ "extension", "legacy_packaged_app", "platform_app" ],
-    "whitelist": [
+    "allowlist": [
       "787000072C6FBB934AF5A42275CDE73FC977D995",  // browser_tests
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // QuickOffice
       "5D3851BEFF680AB6D954B76678EFCCE834465C23",  // QuickOffice Dev
@@ -231,7 +254,7 @@
   "mime_types_handler": {
     "channel": "stable",
     "extension_types": [ "extension", "legacy_packaged_app", "platform_app" ],
-    "whitelist": [
+    "allowlist": [
       "787000072C6FBB934AF5A42275CDE73FC977D995",  // browser_tests
       "2FC374607C2DF285634B67C64A2E356C607091C3",  // QuickOffice
       "12E618C3C6E97495AAECF2AC12DEB082353241C6",  // QuickOffice component extension
@@ -243,7 +266,8 @@
     "channel": "stable",
     "extension_types": [
       "extension", "legacy_packaged_app", "hosted_app", "platform_app"
-    ]
+    ],
+    "max_manifest_version": 2
   },
   "name": {
     "channel": "stable",
@@ -260,7 +284,7 @@
     "extension_types": [
       "extension", "platform_app"
     ],
-    "whitelist": [
+    "allowlist": [
       "F57FDBA2822F21B82A4C417405ABC51241CC6426",  // unit_tests
       "C41AD9DCD670210295614257EF8C9945AD68D86E",  // Google Now
       "64291898C201DAF15B090EC4B9EC270BEB6BE6FF",  // In-app payments support app.
@@ -296,30 +320,39 @@
       "legacy_packaged_app",
       "hosted_app",
       "platform_app",
-      "login_screen_extension"
+      "login_screen_extension",
+      "chromeos_system_extension"
     ]
   },
   "replacement_android_app": {
     "channel": "trunk",
-    "extension_types": ["platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["platform_app"]
   },
   "replacement_web_app": {
     "channel": "stable",
-    "extension_types": ["extension", "platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["extension", "platform_app"]
   },
   "sandbox": {
     "channel": "stable",
     "extension_types": [
       "extension", "platform_app", "legacy_packaged_app"
-    ],
-    "min_manifest_version": 2
+    ]
   },
-  "sockets": {
-    "channel": "stable",
-    "extension_types": ["platform_app"]
-  },
+  "sockets": [
+    {
+      "channel": "stable",
+      "extension_types": ["platform_app"]
+    },
+    {
+      "channel": "stable",
+      "extension_types": ["extension"],
+      "allowlist": [
+        "3BC1ED0B3E6EFDC7BD4D3D1D75D44B52DEE0A226",  // Secure Shell Ext (stable)
+        "38C361D4A0726CE45D3572D65071B6BDB3092371"   // Secure Shell Ext (dev)
+      ],
+      "disallow_for_service_workers": true
+    }
+  ],
   "usb_printers": {
     "channel": "stable",
     "extension_types": ["platform_app"]
@@ -347,7 +380,6 @@
   ],
   "webview": {
     "channel": "stable",
-    "extension_types": ["platform_app"],
-    "min_manifest_version": 2
+    "extension_types": ["platform_app"]
   }
 }

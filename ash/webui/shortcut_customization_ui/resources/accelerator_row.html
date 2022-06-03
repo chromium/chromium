@@ -1,0 +1,33 @@
+<style include="shortcut-customization-shared">
+  #container {
+    border-bottom: var(--cr-separator-line);
+    display: flex;
+    flex-direction: row;
+    padding-bottom: 10px;
+    padding-top: 10px;
+  }
+
+  #acceleratorViewList {
+    display: grid;
+    row-gap: 5px;
+    width: 50%;
+  }
+
+  #descriptionText {
+    width: 50%;
+  }
+</style>
+
+<div id="container">
+  <div id="descriptionText">[[description]]</div>
+  <div id="acceleratorViewList">
+    <template is="dom-repeat" items=[[acceleratorInfos]]>
+      <accelerator-view class="acceleratorItem" accelerator-info=[[item]]
+          action=[[action]] source=[[source]]>
+      </accelerator-view>
+    </template>
+  </div>
+  <div id="lockIconContainer" hidden="[[!isLocked_]]">
+    <iron-icon icon="shortcut-customization:lock"></iron-icon>
+  </div>
+</div>

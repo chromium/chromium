@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_extension.h"

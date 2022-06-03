@@ -1,0 +1,367 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AutoVisualizer
+    xmlns="http://schemas.microsoft.com/vstudio/debugger/natvis/2010">
+  <!--
+   !== USE_V8_OILPAN version of Member
+   !== Note: We need type cast to |raw_| because |raw_| is in base class
+   !== |cppgc::internal::MemberBase| instead of |BasicMember|.
+   !== See "v8/include/cppgc/member.h"
+   !-->
+  <Type Name="cppgc::internal::BasicMember&lt;*&gt;">
+    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_}</DisplayString>
+    <Expand>
+      <Item Name="Raw">($T1*)raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="cppgc::internal::BasicPersistent&lt;*&gt;">
+    <SmartPointer Usage="Minimal">($T1*)raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*($T1*)raw_}</DisplayString>
+    <Expand>
+      <Item Name="Raw">($T1*)raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">($T1*)raw_</ExpandedItem>
+    </Expand>
+  </Type>
+  <!--
+   !== !USE_V8_OILPAN version of Member
+   !== See "third_party/blink/renderer/platform/heap/impl/member.h"
+   !-->
+  <Type Name="blink::MemberBase&lt;*&gt;">
+    <SmartPointer Usage="Minimal">raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*raw_}</DisplayString>
+    <Expand>
+      <Item Name="Raw">raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">raw_</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="blink::PersistentBase&lt;*&gt;">
+    <SmartPointer Usage="Minimal">raw_</SmartPointer>
+    <DisplayString Condition="raw_ == 0">null</DisplayString>
+    <DisplayString>{*raw_}</DisplayString>
+    <Expand>
+      <Item Name="Raw">raw_</Item>
+      <ExpandedItem Condition="raw_ != 0">raw_</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="WTF::String">
+    <DisplayString Condition="impl_.ptr_ == 0">(null)</DisplayString>
+    <DisplayString IncludeView="bare">{*impl_.ptr_,view(bare)}</DisplayString>
+    <DisplayString>{*impl_.ptr_}</DisplayString>
+    <Expand>
+      <Item Name="Impl">impl_.ptr_</Item>
+      <ExpandedItem Condition="impl_.ptr_ != 0">impl_.ptr_</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="WTF::StringImpl">
+    <DisplayString IncludeView="bare"
+                   Condition="*(int*)&amp;hash_and_flags_ &amp; 1">
+        {(this+1),[length_]sb}</DisplayString>
+    <DisplayString IncludeView="bare"
+                   Condition="!(*(int*)&amp;hash_and_flags_ &amp; 1)">
+        {(this+1),[length_]sub}</DisplayString>
+    <DisplayString Condition="*(int*)&amp;hash_and_flags_ &amp; 1">
+        [{length_}] {(this+1),[length_]s}</DisplayString>
+    <DisplayString>[{length_}] {(this+1),[length_]su}</DisplayString>
+    <Expand>
+      <Item Name="Length">length_</Item>
+      <Item Name="AsciiText"
+            Condition="*(int*)&amp;hash_and_flags_ &amp; 1">
+        (char*)(this+1),[length_]s</Item>
+      <Item Name="UnicodeText"
+            Condition="(*(int*)&amp;hash_and_flags_ &amp; 1)==0">
+        (wchar_t*)(this+1),[length_]su</Item>
+      <Item Name="Is8Bit">*(int*)&amp;hash_and_flags_ &amp; 1</Item>
+      <Item Name="IsStatic">*(int*)&amp;hash_and_flags_ &amp; 2</Item>
+      <Item Name="IsAtomic">*(int*)&amp;hash_and_flags_ &amp; 4</Item>
+      <Item Name="AsciiCheckDone">*(int*)&amp;hash_and_flags_ &amp; 8</Item>
+      <Item Name="ContainsOnlyAscii">*(int*)&amp;hash_and_flags_ &amp; 16</Item>
+      <Item Name="HashRaw">*(int*)&amp;hash_and_flags_ >> 8</Item>
+    </Expand>
+  </Type>
+  <Type Name="WTF::AtomicString">
+    <DisplayString IncludeView="bare">{string_,view(bare)}</DisplayString>
+    <DisplayString>{string_}</DisplayString>
+  </Type>
+  <Type Name="WTF::Vector&lt;*&gt;">
+    <DisplayString Condition="size_==0">(empty)</DisplayString>
+    <DisplayString Condition="size_==1">[{size_}] {buffer_,1}</DisplayString>
+    <DisplayString Condition="size_==2">[{size_}] {buffer_,2}</DisplayString>
+    <DisplayString Condition="size_==3">[{size_}] {buffer_,3}</DisplayString>
+    <DisplayString Condition="size_==4">[{size_}] {buffer_,4}</DisplayString>
+    <DisplayString
+        Condition="size_>=5">[{size_}] {buffer_,4}...</DisplayString>
+    <Expand>
+      <Item Name="Buffer">buffer_</Item>
+      <Item Name="Size">size_</Item>
+      <Item Name="Capacity">capacity_</Item>
+      <ArrayItems Condition="size_>0">
+        <Size>size_</Size>
+        <ValuePointer>buffer_</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="WTF::HashTable&lt;*&gt;">
+    <DisplayString>keyCount={key_count_}, tableSize={table_size_}</DisplayString>
+    <Expand>
+      <ArrayItems Condition="table_size_>0">
+        <Size>table_size_</Size>
+        <ValuePointer>table_</ValuePointer>
+      </ArrayItems>
+    </Expand>
+  </Type>
+  <Type Name="WTF::RefPtr&lt;*&gt;">
+    <AlternativeType Name="WTF::PassRefPtr&lt;*&gt;"/>
+    <DisplayString Condition="ptr_ == 0">null</DisplayString>
+    <DisplayString>{*ptr_}</DisplayString>
+    <Expand>
+      <Item Name="Ptr">ptr_</Item>
+    </Expand>
+  </Type>
+  <Type Name="blink::LayoutUnit">
+    <DisplayString>{(float)value_ / 64}</DisplayString>
+    <Expand>
+      <Item Name="FloatVal">(float)value_ / 64</Item>
+      <Item Name="RawVal">value_</Item>
+    </Expand>
+  </Type>
+  <Type Name="blink::LayoutSize">
+    <AlternativeType Name="blink::IntSize"/>
+    <AlternativeType Name="blink::FloatSize"/>
+    <DisplayString>({width_}, {height_})</DisplayString>
+    <Expand>
+      <Item Name="Width">width_</Item>
+      <Item Name="Height">height_</Item>
+    </Expand>
+  </Type>
+  <Type Name="blink::LayoutPoint">
+    <AlternativeType Name="blink::IntPoint"/>
+    <AlternativeType Name="blink::FloatPoint"/>
+    <DisplayString>({x_}, {y_})</DisplayString>
+    <Expand>
+      <Item Name="X">x_</Item>
+      <Item Name="Y">y_</Item>
+    </Expand>
+  </Type>
+  <Type Name="blink::LayoutRect">
+    <AlternativeType Name="blink::IntRect"/>
+    <AlternativeType Name="blink::FloatRect"/>
+    <DisplayString>({location_.x_}, {location_.y_}) x ({size_.width_}, {size_.height_})</DisplayString>
+    <Expand>
+      <Item Name="Location">location_</Item>
+      <Item Name="Size">size_</Item>
+    </Expand>
+  </Type>
+  <Type Name="blink::Length">
+    <DisplayString Condition="is_float_">{(blink::Length::Type)type_} {float_value_}</DisplayString>
+    <DisplayString>{(blink::Length::Type)type_} {int_value_}</DisplayString>
+  </Type>
+  <Type Name="blink::LogicalOffset">
+    <DisplayString>({inline_offset}, {block_offset})</DisplayString>
+  </Type>
+  <Type Name="blink::LogicalSize">
+    <DisplayString>({inline_size} x {block_size})</DisplayString>
+  </Type>
+  <Type Name="blink::PhysicalOffset">
+    <DisplayString>({left}, {top})</DisplayString>
+  </Type>
+  <Type Name="blink::PhysicalSize">
+    <DisplayString>({width} x {height})</DisplayString>
+  </Type>
+  <!-- Component build version -->
+  <Type Name="blink::WebString">
+    <DisplayString>{(wtf.dll!WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
+  </Type>
+  <!-- Non-component build version -->
+  <Type Name="blink::WebString" Priority="Low">
+    <DisplayString>{(WTF::StringImpl*)(impl_.ptr_)}</DisplayString>
+  </Type>
+  <!-- DOM -->
+  <Type Name="blink::QualifiedName">
+    <DisplayString Condition="impl_.ptr_ == 0">(null)</DisplayString>
+    <DisplayString>{*impl_.ptr_}</DisplayString>
+  </Type>
+  <Type Name="blink::QualifiedName::QualifiedNameImpl">
+    <DisplayString>{local_name_,view(bare)}</DisplayString>
+  </Type>
+  <Type Name="blink::CharacterData">
+    <DisplayString>{data_,view(bare)}</DisplayString>
+  </Type>
+  <Type Name="blink::ContainerNode">
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>(blink::Node*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::Node*)next_.raw_</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <Type Name="blink::Element">
+    <DisplayString Condition="first_child_.raw_ != 0">&lt;{tag_name_}>{first_child_}</DisplayString>
+    <DisplayString>&lt;{tag_name_}></DisplayString>
+  </Type>
+  <!-- Layout: LayoutObject -->
+  <Type Name="blink::LayoutObject">
+    <DisplayString Condition="bitfields_.is_anonymous_">Anonymous</DisplayString>
+    <DisplayString>{node_}</DisplayString>
+  </Type>
+  <Type Name="blink::LayoutObjectChildList">
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>(blink::LayoutObject*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::LayoutObject*)next_.raw_</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <!-- Layout: InlineBox -->
+  <Type Name="blink::InlineBox">
+    <DisplayString>{line_layout_item_}</DisplayString>
+  </Type>
+  <Type Name="blink::InlineFlowBox">
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>(blink::InlineFlowBox*)first_child_.raw_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_.raw_</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <Type Name="blink::InlineBoxList&lt;blink::InlineFlowBox&gt;">
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>(blink::InlineFlowBox*)first_.raw_</HeadPointer>
+        <NextPointer>(blink::InlineFlowBox*)next_.raw_</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <Type Name="blink::LineLayoutItem">
+    <DisplayString>{layout_object_}</DisplayString>
+  </Type>
+  <!-- Layout: LayoutNG -->
+  <Type Name="blink::NGLayoutInputNode">
+    <DisplayString>{(NGLayoutInputNode::NGLayoutInputNodeType)type_} {box_}</DisplayString>
+  </Type>
+  <Type Name="blink::NGInlineItem">
+    <DisplayString>{(NGInlineItem::NGInlineItemType)type_} {start_offset_}-{end_offset_} {*layout_object_}</DisplayString>
+  </Type>
+  <Type Name="blink::NGFragment">
+    <DisplayString>{physical_fragment_}</DisplayString>
+  </Type>
+  <Type Name="blink::NGPaintFragment">
+    <DisplayString>{*physical_fragment_.ptr_}</DisplayString>
+    <Expand>
+      <Synthetic Name="Children">
+        <DisplayString>{first_child_.ptr_}</DisplayString>
+        <Expand>
+          <LinkedListItems>
+            <HeadPointer>first_child_.ptr_</HeadPointer>
+            <NextPointer>next_sibling_.ptr_</NextPointer>
+            <ValueNode>this</ValueNode>
+          </LinkedListItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+  <Type Name="blink::NGPhysicalFragment">
+    <Intrinsic Name="Type" Expression="(NGFragmentType)type_" />
+    <!-- Resolve subclasses because VS can't resolve automatically when without virtual functions -->
+    <MostDerivedType Condition="Type() == kFragmentBox">(NGPhysicalBoxFragment*)this</MostDerivedType>
+    <MostDerivedType Condition="Type() == kFragmentLineBox">(NGPhysicalLineBoxFragment*)this</MostDerivedType>
+    <DisplayString>{Type()} {size_} {*layout_object_}</DisplayString>
+  </Type>
+  <Type Name="blink::NGPhysicalBoxFragment">
+    <Intrinsic Name="BoxType" Expression="(NGBoxType)sub_type_" />
+    <DisplayString>{BoxType()} {size_} {*layout_object_}</DisplayString>
+    <Expand>
+      <Item Name="FragmentItems" Condition="const_has_fragment_items_">
+        *(NGFragmentItems*)(&amp;children_[const_num_children_])
+      </Item>
+      <Synthetic Name="Children">
+        <DisplayString>{const_num_children_}</DisplayString>
+        <Expand>
+          <ArrayItems>
+            <Size>const_num_children_</Size>
+            <ValuePointer>children_</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+      <ExpandedItem>this,!</ExpandedItem>
+    </Expand>
+  </Type>
+  <Type Name="blink::NGPhysicalLineBoxFragment">
+    <Intrinsic Name="LineBoxType" Expression="(NGLineBoxType)sub_type_" />
+    <DisplayString>{LineBoxType()} {size_} {*layout_object_}</DisplayString>
+  </Type>
+  <Type Name="blink::NGFragmentItem">
+    <Intrinsic Name="Type" Expression="(ItemType)type_" />
+    <Expand>
+      <Item Name="Type">Type()</Item>
+      <Item Name="TextType" Condition="Type() == kText">(blink::NGTextType)sub_type_</Item>
+      <Item Name="Text" Condition="Type() == kText">text_</Item>
+      <Item Name="SVGText" Condition="Type() == kSVGText">svg_text_</Item>
+      <Item Name="GeneratedText" Condition="Type() == kGeneratedText">generated_text_</Item>
+      <Item Name="LineBoxType" Condition="Type() == kLine">(NGPhysicalLineBoxFragment::NGLineBoxType)sub_type_</Item>
+      <Item Name="Line" Condition="Type() == kLine">line_</Item>
+      <Item Name="Box" Condition="Type() == kBox">box_</Item>
+      <Item Name="layout_object_">layout_object_</Item>
+      <Item Name="rect_">rect_</Item>
+      <Item Name="ink_overflow_type_">(NGInkOverflow::Type)ink_overflow_type_</Item>
+      <Item Name="is_dirty_">is_dirty_</Item>
+    </Expand>
+  </Type>
+  <Type Name="blink::NGFragmentItems">
+    <Expand>
+      <Item Name="text_content_">text_content_</Item>
+      <Synthetic Name="Items">
+        <DisplayString>{size_}</DisplayString>
+        <Expand>
+          <ArrayItems>
+            <Size>size_</Size>
+            <ValuePointer>items_</ValuePointer>
+          </ArrayItems>
+        </Expand>
+      </Synthetic>
+    </Expand>
+  </Type>
+  <!-- Layout: TextRun -->
+  <Type Name="blink::TextRun">
+    <DisplayString Condition="is_8bit_">{data_.characters8,[len_]s}</DisplayString>
+    <DisplayString>{(data_.characters16),[len_]su}</DisplayString>
+  </Type>
+  <Type Name="blink::BidiRun">
+    <DisplayString>{*box_} {start_}-{stop_}</DisplayString>
+  </Type>
+  <!-- Fonts -->
+  <Type Name="blink::Font">
+    <DisplayString>{font_description_}</DisplayString>
+  </Type>
+  <Type Name="blink::FontDescription">
+    <DisplayString>{computed_size_}px {family_list_}</DisplayString>
+  </Type>
+  <Type Name="blink::FontFamily">
+    <DisplayString Condition="next_.ptr_ == 0">{family_,view(bare)}</DisplayString>
+    <DisplayString>{family_,view(bare)}, {next_}</DisplayString>
+  </Type>
+  <Type Name="blink::SharedFontFamily">
+    <DisplayString Condition="next_.ptr_ == 0">{family_,view(bare)}</DisplayString>
+    <DisplayString>{family_,view(bare)}, {next_}</DisplayString>
+    <Expand>
+      <LinkedListItems>
+        <HeadPointer>this</HeadPointer>
+        <NextPointer>next_.ptr_</NextPointer>
+        <ValueNode>this</ValueNode>
+      </LinkedListItems>
+    </Expand>
+  </Type>
+  <Type Name="blink::SimpleFontData">
+    <DisplayString>{platform_data_}</DisplayString>
+  </Type>
+  <Type Name="blink::FontPlatformData">
+    <DisplayString>{*typeface_.ptr_}, {text_size_}px</DisplayString>
+  </Type>
+</AutoVisualizer>

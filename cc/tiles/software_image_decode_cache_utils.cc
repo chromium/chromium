@@ -5,17 +5,19 @@
 #include "cc/tiles/software_image_decode_cache_utils.h"
 
 #include <algorithm>
+#include <sstream>
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/memory/discardable_memory_allocator.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
 #include "base/trace_event/trace_event.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/tiles/mipmap_util.h"
-#include "ui/gfx/skia_util.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace cc {
 namespace {
@@ -147,13 +149,15 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
   DCHECK(!key.is_nearest_neighbor());
   SkPixmap target_pixmap(target_info, target_pixels->data(),
                          target_info.minRowBytes());
-  SkFilterQuality filter_quality = kMedium_SkFilterQuality;
+  PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kMedium;
   if (decoded_pixmap.colorType() == kRGBA_F16_SkColorType &&
       !ImageDecodeCacheUtils::CanResizeF16Image(filter_quality)) {
     result = ImageDecodeCacheUtils::ScaleToHalfFloatPixmapUsingN32Intermediate(
         decoded_pixmap, &target_pixmap, filter_quality);
   } else {
-    result = decoded_pixmap.scalePixels(target_pixmap, filter_quality);
+    result = decoded_pixmap.scalePixels(
+        target_pixmap,
+        PaintFlags::FilterQualityToSkSamplingOptions(filter_quality));
   }
   DCHECK(result) << key.ToString();
 
@@ -168,7 +172,7 @@ SoftwareImageDecodeCacheUtils::GenerateCacheEntryFromCandidate(
 SoftwareImageDecodeCacheUtils::CacheKey
 SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(const DrawImage& image,
                                                        SkColorType color_type) {
-  DCHECK(!image.paint_image().GetSkImage()->isTextureBacked());
+  DCHECK(!image.paint_image().IsTextureBacked());
 
   const PaintImage::FrameKey frame_key = image.frame_key();
   const PaintImage::Id stable_id = image.paint_image().stable_id();
@@ -195,7 +199,8 @@ SoftwareImageDecodeCacheUtils::CacheKey::FromDrawImage(const DrawImage& image,
   }
 
   ProcessingType type = kOriginal;
-  bool is_nearest_neighbor = image.filter_quality() == kNone_SkFilterQuality;
+  bool is_nearest_neighbor =
+      image.filter_quality() == PaintFlags::FilterQuality::kNone;
   int mip_level = MipMapUtil::GetLevelForSize(src_rect.size(), target_size);
   // If any of the following conditions hold, then use at most low filter
   // quality and adjust the target size to match the original image:
@@ -283,6 +288,10 @@ SoftwareImageDecodeCacheUtils::CacheKey::CacheKey(
 }
 
 SoftwareImageDecodeCacheUtils::CacheKey::CacheKey(const CacheKey& other) =
+    default;
+
+SoftwareImageDecodeCacheUtils::CacheKey&
+SoftwareImageDecodeCacheUtils::CacheKey::operator=(const CacheKey& other) =
     default;
 
 std::string SoftwareImageDecodeCacheUtils::CacheKey::ToString() const {

@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_MAC_KEYSTONE_GLUE_H_
 #define CHROME_BROWSER_MAC_KEYSTONE_GLUE_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 #if defined(__OBJC__)
 
@@ -14,7 +15,6 @@
 
 #include "base/mac/scoped_authorizationref.h"
 #import "base/mac/scoped_nsobject.h"
-#include "chrome/common/mac/staging_watcher.h"
 
 // Possible outcomes of various operations.  A version may accompany some of
 // these, but beware: a version is never required.  For statuses that can be
@@ -97,13 +97,10 @@ extern NSString* const kAutoupdateStatusErrorMessages;
 
   // YES if an update was ever successfully installed by -installUpdate.
   BOOL _updateSuccessfullyInstalled;
-
-  // The object to use to watch for the staging key.
-  base::scoped_nsobject<CrStagingKeyWatcher> _stagingKeyWatcher;
 }
 
 // Return the default Keystone Glue object.
-+ (id)defaultKeystoneGlue;
++ (KeystoneGlue*)defaultKeystoneGlue;
 
 // Load KeystoneRegistration.framework if present, call into it to register
 // with Keystone, and set up periodic activity pings.
@@ -214,7 +211,7 @@ std::string BrandCode();
 bool KeystoneEnabled();
 
 // The version of the application currently installed on disk.
-base::string16 CurrentlyInstalledVersion();
+std::u16string CurrentlyInstalledVersion();
 
 }  // namespace keystone_glue
 

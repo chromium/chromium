@@ -1,0 +1,131 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+import("//device/vr/buildflags/buildflags.gni")
+
+source_set("android_utils") {
+  sources = [
+    "webxr_utils.cc",
+    "webxr_utils.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/browser",
+  ]
+}
+
+source_set("android") {
+  sources = [
+    "ar_compositor_delegate_provider.cc",
+    "ar_compositor_delegate_provider.h",
+    "xr_install_helper_delegate.h",
+    "xr_install_infobar.cc",
+    "xr_install_infobar.h",
+  ]
+
+  if (enable_arcore) {
+    sources += [
+      "arcore_device_provider.cc",
+      "arcore_device_provider.h",
+      "arcore_install_helper.cc",
+      "arcore_install_helper.h",
+      "arcore_java_utils.cc",
+      "arcore_java_utils.h",
+    ]
+  }
+
+  deps = [
+    ":android_utils",
+    "//base",
+    "//components/infobars/android",
+    "//components/infobars/core",
+    "//components/resources:android_resources",
+    "//components/strings",
+    "//components/webxr:webxr",
+    "//content/public/browser",
+    "//ui/base",
+  ]
+
+  if (enable_arcore) {
+    deps += [
+      ":ar_jni_headers",
+      "//device/vr/android/arcore:arcore",
+      "//ui/android",
+    ]
+  }
+
+  libs = [ "android" ]
+}
+
+android_library("ar_java_interfaces") {
+  sources = [
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegate.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCompositorDelegateProvider.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArDelegate.java",
+  ]
+
+  deps = [
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+  ]
+}
+
+android_library("ar_java_base") {
+  deps = [
+    ":ar_java_base_resources",
+    ":ar_java_interfaces",
+    ":webxr_android_enums_java",
+    "//base:base_java",
+    "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
+    "//ui/android:ui_no_recycler_view_java",
+  ]
+
+  sources = [
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShim.java",
+    "//components/webxr/android/java/src/org/chromium/components/webxr/ArImmersiveOverlay.java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  resources_package = "org.chromium.components.webxr"
+}
+
+android_resources("ar_java_base_resources") {
+  deps = [ "//components/browser_ui/strings/android:browser_ui_strings_grd" ]
+}
+
+android_library("ar_java") {
+  deps = [
+    ":ar_java_base",
+    ":webxr_android_enums_java",
+    "//base:base_java",
+    "//third_party/arcore-android-sdk-client:com_google_ar_core_java",
+  ]
+
+  sources = [ "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreShimImpl.java" ]
+}
+
+if (enable_arcore) {
+  generate_jni("ar_jni_headers") {
+    sources = [
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreInstallUtils.java",
+      "//components/webxr/android/java/src/org/chromium/components/webxr/ArCoreJavaUtils.java",
+    ]
+  }
+}
+
+java_cpp_enum("webxr_android_enums") {
+  sources = [ "arcore_install_helper.h" ]
+}
+
+android_library("webxr_android_enums_java") {
+  deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+
+  srcjar_deps = [ ":webxr_android_enums" ]
+}

@@ -4,4 +4,8 @@ specific_include_rules = {
   "tab_usage_recorder_egtest\.mm": [
     "+ios/web/public/test/http_server",
   ],
+
+  "metrics_app_interface\.mm": [
+    "+third_party/zlib/google/compression_utils.h",
+  ],
 }

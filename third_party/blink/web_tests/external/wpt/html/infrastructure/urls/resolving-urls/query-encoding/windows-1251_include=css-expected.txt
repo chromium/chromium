@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+FAIL CSS <link> (windows-1251) #<id> { background-image:<url> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+PASS CSS <link> (utf-8) #<id> { background-image:<url> }
+FAIL CSS <style> #<id> { background-image:<url> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+FAIL CSS <link> (windows-1251) #<id> { border-image-source:<url> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+PASS CSS <link> (utf-8) #<id> { border-image-source:<url> }
+FAIL CSS <style> #<id> { border-image-source:<url> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+FAIL CSS <link> (windows-1251) #<id>::before { content:<url> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+PASS CSS <link> (utf-8) #<id>::before { content:<url> }
+FAIL CSS <style> #<id>::before { content:<url> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+FAIL CSS <link> (windows-1251) @font-face { font-family:<id>; src:<url> } #<id> { font-family:<id> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+PASS CSS <link> (utf-8) @font-face { font-family:<id>; src:<url> } #<id> { font-family:<id> }
+FAIL CSS <style> @font-face { font-family:<id>; src:<url> } #<id> { font-family:<id> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+FAIL CSS <link> (windows-1251) #<id> { display:list-item; list-style-image:<url> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+PASS CSS <link> (utf-8) #<id> { display:list-item; list-style-image:<url> }
+FAIL CSS <style> #<id> { display:list-item; list-style-image:<url> } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+PASS CSS <link> (windows-1251) @import <url>;
+PASS CSS <link> (utf-8) @import <url>;
+PASS CSS <style> @import <url>;
+FAIL CSS <link> (windows-1251) #<id> { cursor:<url>, pointer } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+PASS CSS <link> (utf-8) #<id> { cursor:<url>, pointer }
+FAIL CSS <style> #<id> { cursor:<url>, pointer } assert_equals: expected "%C3%A5" but got "%26%23229%3B"
+Harness: the test ran to completion.
+

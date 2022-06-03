@@ -9,7 +9,8 @@ import android.content.ContextWrapper;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.support.v4.content.ContextCompat;
+
+import androidx.core.content.ContextCompat;
 
 import org.chromium.android.support.PackageManagerWrapper;
 import org.chromium.base.Log;

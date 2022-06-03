@@ -9,7 +9,6 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/layers/layer_collections.h"
 #include "cc/resources/ui_resource_client.h"
@@ -47,6 +46,9 @@ class CompositorView : public content::CompositorClient,
                  ui::WindowAndroid* window_android,
                  TabContentManager* tab_content_manager);
 
+  CompositorView(const CompositorView&) = delete;
+  CompositorView& operator=(const CompositorView&) = delete;
+
   void Destroy(JNIEnv* env, const base::android::JavaParamRef<jobject>& object);
 
   ui::ResourceManager* GetResourceManager();
@@ -76,6 +78,19 @@ class CompositorView : public content::CompositorClient,
       const base::android::JavaParamRef<jobject>& jweb_contents,
       jint width,
       jint height);
+  void OnControlsResizeViewChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jweb_contents,
+      jboolean controls_resize_view);
+  void NotifyVirtualKeyboardOverlayRect(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      const base::android::JavaParamRef<jobject>& jweb_contents,
+      jint x,
+      jint y,
+      jint width,
+      jint height);
 
   void SetOverlayVideoMode(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& object,
@@ -97,6 +112,12 @@ class CompositorView : public content::CompositorClient,
   void EvictCachedBackBuffer(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& object);
+  void OnTabChanged(JNIEnv* env,
+                    const base::android::JavaParamRef<jobject>& object);
+  void PreserveChildSurfaceControls(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& object);
+  void SetDidSwapBuffersCallbackEnabled(JNIEnv* env, jboolean enable);
 
   // CompositorClient implementation:
   void RecreateSurface() override;
@@ -131,8 +152,6 @@ class CompositorView : public content::CompositorClient,
   bool overlay_immersive_ar_mode_;
 
   base::WeakPtrFactory<CompositorView> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorView);
 };
 
 }  // namespace android

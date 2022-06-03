@@ -9,6 +9,7 @@
 #include <cmath>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
@@ -75,6 +76,18 @@ TEST_F(GinJavaBridgeValueTest, BasicValues) {
   EXPECT_EQ(42, native_object_id);
 
   EXPECT_FALSE(undefined_value->GetAsNonFinite(&native_float));
+
+  std::unique_ptr<base::Value> in_uint32(GinJavaBridgeValue::CreateUInt32Value(
+      std::numeric_limits<uint32_t>::max()));
+  ASSERT_TRUE(in_uint32.get());
+  EXPECT_TRUE(GinJavaBridgeValue::ContainsGinJavaBridgeValue(in_uint32.get()));
+  std::unique_ptr<const GinJavaBridgeValue> uint32_value(
+      GinJavaBridgeValue::FromValue(in_uint32.get()));
+  ASSERT_TRUE(uint32_value.get());
+  EXPECT_TRUE(uint32_value->IsType(GinJavaBridgeValue::TYPE_UINT32));
+  uint32_t out_uint32_value;
+  EXPECT_TRUE(uint32_value->GetAsUInt32(&out_uint32_value));
+  EXPECT_EQ(std::numeric_limits<uint32_t>::max(), out_uint32_value);
 }
 
 TEST_F(GinJavaBridgeValueTest, BrokenValues) {
@@ -83,10 +96,8 @@ TEST_F(GinJavaBridgeValueTest, BrokenValues) {
       GinJavaBridgeValue::ContainsGinJavaBridgeValue(non_binary.get()));
 
   const char dummy_data[] = "\000\001\002\003\004\005\006\007\010\011\012\013";
-  std::unique_ptr<base::Value> broken_binary(
-      base::Value::CreateWithCopiedBuffer(dummy_data, sizeof(dummy_data)));
-  EXPECT_FALSE(
-      GinJavaBridgeValue::ContainsGinJavaBridgeValue(broken_binary.get()));
+  base::Value broken_binary(base::as_bytes(base::make_span(dummy_data)));
+  EXPECT_FALSE(GinJavaBridgeValue::ContainsGinJavaBridgeValue(&broken_binary));
 }
 
 }  // namespace

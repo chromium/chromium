@@ -5,6 +5,17 @@
 // <include src="saml_handler.js">
 // Note: webview_event_manager.js is already included by saml_handler.js.
 
+// clang-format off
+// #import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js'
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {$, appendParam} from 'chrome://resources/js/util.m.js';
+// #import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+
+// #import {SamlHandler, OnHeadersReceivedDetails} from './saml_handler.m.js';
+// #import {WebviewEventManager} from './webview_event_manager.m.js';
+// #import {PasswordAttributes} from './saml_password_attributes.m.js';
+// clang-format on
+
 /**
  * @fileoverview An UI component to authenticate to Chrome. The component hosts
  * IdP web pages in a webview. A client who is interested in monitoring
@@ -15,7 +26,86 @@
  */
 
 cr.define('cr.login', function() {
-  'use strict';
+  /* #ignore */ 'use strict';
+
+  /**
+   * Individual sync trusted vault key.
+   * @typedef {{
+   *   keyMaterial: ArrayBuffer,
+   *   version: number,
+   * }}
+   */
+  /* #export */ let SyncTrustedVaultKey;
+
+  /**
+   * Individual sync trusted recovery method.
+   * @typedef {{
+   *   publicKey: ArrayBuffer,
+   *   type: number,
+   * }}
+   */
+  /* #export */ let SyncTrustedRecoveryMethod;
+
+  /**
+   * Sync trusted vault encryption keys optionally passed with 'authCompleted'
+   * message.
+   * @typedef {{
+   *   obfuscatedGaiaId: string,
+   *   encryptionKeys: Array<SyncTrustedVaultKey>,
+   *   trustedRecoveryMethods: Array<SyncTrustedRecoveryMethod>
+   * }}
+   */
+  /* #export */ let SyncTrustedVaultKeys;
+
+  /**
+   * Credentials passed with 'authCompleted' message.
+   * @typedef {{
+   *   email: string,
+   *   gaiaId: string,
+   *   password: string,
+   *   usingSAML: boolean,
+   *   publicSAML: boolean,
+   *   chooseWhatToSync: boolean,
+   *   skipForNow: boolean,
+   *   sessionIndex: string,
+   *   trusted: boolean,
+   *   services: Array,
+   *   passwordAttributes: !PasswordAttributes,
+   *   syncTrustedVaultKeys: !SyncTrustedVaultKeys
+   * }}
+   */
+  /* #export */ let AuthCompletedCredentials;
+
+  /**
+   * Parameters for the authorization flow.
+   * @typedef {{
+   *   hl: string,
+   *   gaiaUrl: string,
+   *   authMode: AuthMode,
+   *   isLoginPrimaryAccount: boolean,
+   *   email: string,
+   *   constrained: string,
+   *   platformVersion: string,
+   *   readOnlyEmail: boolean,
+   *   service: string,
+   *   dontResizeNonEmbeddedPages: boolean,
+   *   clientId: string,
+   *   gaiaPath: string,
+   *   emailDomain: string,
+   *   showTos: string,
+   *   extractSamlPasswordAttributes: boolean,
+   *   flow: string,
+   *   ignoreCrOSIdpSetting: boolean,
+   *   enableGaiaActionButtons: boolean,
+   *   enterpriseEnrollmentDomain: string,
+   *   samlAclUrl: string,
+   *   isSupervisedUser: boolean,
+   *   isDeviceOwner: boolean,
+   *   ssoProfile: string,
+   *   enableCloseView: boolean,
+   * }}
+   */
+  /* #export */ let AuthParams;
 
   // TODO(rogerta): should use gaia URL from GaiaUrls::gaia_url() instead
   // of hardcoding the prod URL here.  As is, this does not work with staging
@@ -29,23 +119,29 @@ cr.define('cr.login', function() {
   const SAML_REDIRECTION_PATH = 'samlredirect';
   const BLANK_PAGE_URL = 'about:blank';
 
+  // Metric names for messages we get from Gaia.
+  const GAIA_MESSAGE_SAML_USER_INFO = 'ChromeOS.Gaia.Message.Saml.UserInfo';
+  const GAIA_MESSAGE_GAIA_USER_INFO = 'ChromeOS.Gaia.Message.Gaia.UserInfo';
+  const GAIA_MESSAGE_SAML_CLOSE_VIEW = 'ChromeOS.Gaia.Message.Saml.CloseView';
+  const GAIA_MESSAGE_GAIA_CLOSE_VIEW = 'ChromeOS.Gaia.Message.Gaia.CloseView';
+
   /**
    * The source URL parameter for the constrained signin flow.
    */
-  const CONSTRAINED_FLOW_SOURCE = 'chrome';
+  /* #export */ const CONSTRAINED_FLOW_SOURCE = 'chrome';
 
   /**
    * Enum for the authorization mode, must match AuthMode defined in
    * chrome/browser/ui/webui/inline_login_ui.cc.
    * @enum {number}
    */
-  const AuthMode = {DEFAULT: 0, OFFLINE: 1, DESKTOP: 2};
+  /* #export */ const AuthMode = {DEFAULT: 0, OFFLINE: 1, DESKTOP: 2};
 
   /**
    * Enum for the authorization type.
    * @enum {number}
    */
-  const AuthFlow = {DEFAULT: 0, SAML: 1};
+  /* #export */ const AuthFlow = {DEFAULT: 0, SAML: 1};
 
   /**
    * Supported Authenticator params.
@@ -68,8 +164,11 @@ cr.define('cr.login', function() {
                      // If this set to |false|, |confirmPasswordCallback| is
                      // not called before dispatching |authCopleted|.
                      // Default is |true|.
-    'flow',          // One of 'default', 'enterprise', or 'theftprotection'.
-    'enterpriseDisplayDomain',     // Current domain name to be displayed.
+    'flow',          // One of 'default', 'enterprise', or
+                     // 'cfm' or 'enterpriseLicense'.
+    'enterpriseDomainManager',     // Manager of the current domain. Can be
+                                   // either a domain name (foo.com) or an email
+                                   // address (admin@foo.com).
     'enterpriseEnrollmentDomain',  // Domain in which hosting device is (or
                                    // should be) enrolled.
     'emailDomain',                 // Value used to prefill domain for email.
@@ -78,8 +177,6 @@ cr.define('cr.login', function() {
     'platformVersion',           // Version of the OS build.
     'releaseChannel',            // Installation channel.
     'endpointGen',               // Current endpoint generation.
-    'menuGuestMode',             // Enables "Guest mode" menu item
-    'menuKeyboardOptions',       // Enables "Keyboard options" menu item
     'menuEnterpriseEnrollment',  // Enables "Enterprise enrollment" menu item.
     'lsbReleaseBoard',           // Chrome OS Release board name
     'isFirstUser',               // True if this is non-enterprise device,
@@ -90,6 +187,9 @@ cr.define('cr.login', function() {
     'ignoreCrOSIdpSetting',  // If set to true, causes Gaia to ignore 3P
                              // SAML IdP SSO redirection policies (and
                              // redirect to SAML IdPs by default).
+    'ssoProfile',            // An identifier for the device's managing OU's
+                             // SAML SSO setting. Used by the login screen to
+                             // pass to Gaia.
 
     // The email fields allow for the following possibilities:
     //
@@ -106,17 +206,37 @@ cr.define('cr.login', function() {
     // can still change it and then proceed.  This is used on desktop when the
     // user disconnects their profile then reconnects, to encourage them to use
     // the same account.
-    'email',
-    'readOnlyEmail',
-    'realm',
+    'email', 'readOnlyEmail', 'realm',
     // If the authentication is done via external IdP, 'startsOnSamlPage'
     // indicates whether the flow should start on the IdP page.
     'startsOnSamlPage',
     // SAML assertion consumer URL, used to detect when Gaia-less SAML flows end
     // (e.g. for SAML managed guest sessions).
     'samlAclUrl',
+    'isSupervisedUser',  // True if the user is supervised user.
+    'isDeviceOwner',     // True if the user is device owner.
+    'doSamlRedirect',    // True if the authentication is done via external IdP.
+    'enableCloseView',   // True if authenticator should wait for the closeView
+                         // message from Gaia.
+    'rart',              // Encrypted reauth request token.
   ];
 
+  // Timeout in ms to wait for the message from Gaia indicating end of the flow.
+  // Could be userInfo (The message is used to extract user services and to
+  // define whether or not the account is a child one) or closeView (specific
+  // message to indicate the end of the flow).
+  const GAIA_DONE_WAIT_TIMEOUT_MS = 5 * 1000;
+
+  /**
+   * Extract domain name from an URL.
+   * @param {string} url An URL string.
+   * @return {string} The host name of the URL.
+   */
+  function extractDomain(url) {
+    const a = document.createElement('a');
+    a.href = url;
+    return a.hostname;
+  }
 
   /**
    * Handlers for the HTML5 messages received from Gaia.
@@ -124,7 +244,7 @@ cr.define('cr.login', function() {
    * and the data field of the HTML5 Payload.
    */
   const messageHandlers = {
-    'attemptLogin': function(msg) {
+    'attemptLogin'(msg) {
       this.email_ = msg.email;
       if (this.authMode == AuthMode.DESKTOP) {
         this.password_ = msg.password;
@@ -135,70 +255,110 @@ cr.define('cr.login', function() {
       // We need to dispatch only first event, before user enters password.
       this.dispatchEvent(new CustomEvent('attemptLogin', {detail: msg.email}));
     },
-    'dialogShown': function(msg) {
+    'dialogShown'(msg) {
       this.dispatchEvent(new Event('dialogShown'));
     },
-    'dialogHidden': function(msg) {
+    'dialogHidden'(msg) {
       this.dispatchEvent(new Event('dialogHidden'));
     },
-    'backButton': function(msg) {
+    'backButton'(msg) {
       this.dispatchEvent(new CustomEvent('backButton', {detail: msg.show}));
     },
-    'showView': function(msg) {
+    'getAccounts'(msg) {
+      this.dispatchEvent(new Event('getAccounts'));
+    },
+    'showView'(msg) {
       this.dispatchEvent(new Event('showView'));
     },
-    'menuItemClicked': function(msg) {
+    'menuItemClicked'(msg) {
       this.dispatchEvent(
           new CustomEvent('menuItemClicked', {detail: msg.item}));
     },
-    'identifierEntered': function(msg) {
+    'identifierEntered'(msg) {
       this.dispatchEvent(new CustomEvent(
           'identifierEntered',
           {detail: {accountIdentifier: msg.accountIdentifier}}));
     },
-    'userInfo': function(msg) {
+    'userInfo'(msg) {
       this.services_ = msg.services;
+      if (!this.authCompletedFired_) {
+        const metric = this.authFlow == AuthFlow.SAML ?
+            GAIA_MESSAGE_SAML_USER_INFO :
+            GAIA_MESSAGE_GAIA_USER_INFO;
+        chrome.send('metricsHandler:recordBooleanHistogram', [metric, true]);
+      }
       if (this.email_ && this.gaiaId_ && this.sessionIndex_) {
         this.maybeCompleteAuth_();
       }
     },
-    'showIncognito': function(msg) {
+    'showIncognito'(msg) {
       this.dispatchEvent(new Event('showIncognito'));
     },
-    'setPrimaryActionLabel': function(msg) {
+    'setPrimaryActionLabel'(msg) {
       if (!this.enableGaiaActionButtons_) {
         return;
       }
       this.dispatchEvent(
           new CustomEvent('setPrimaryActionLabel', {detail: msg.value}));
     },
-    'setPrimaryActionEnabled': function(msg) {
+    'setPrimaryActionEnabled'(msg) {
       if (!this.enableGaiaActionButtons_) {
         return;
       }
       this.dispatchEvent(
           new CustomEvent('setPrimaryActionEnabled', {detail: msg.value}));
     },
-    'setSecondaryActionLabel': function(msg) {
+    'setSecondaryActionLabel'(msg) {
       if (!this.enableGaiaActionButtons_) {
         return;
       }
       this.dispatchEvent(
           new CustomEvent('setSecondaryActionLabel', {detail: msg.value}));
     },
-    'setSecondaryActionEnabled': function(msg) {
+    'setSecondaryActionEnabled'(msg) {
       if (!this.enableGaiaActionButtons_) {
         return;
       }
       this.dispatchEvent(
           new CustomEvent('setSecondaryActionEnabled', {detail: msg.value}));
     },
-    'setAllActionsEnabled': function(msg) {
+    'setAllActionsEnabled'(msg) {
       if (!this.enableGaiaActionButtons_) {
         return;
       }
       this.dispatchEvent(
           new CustomEvent('setAllActionsEnabled', {detail: msg.value}));
+    },
+    'removeUserByEmail'(msg) {
+      this.dispatchEvent(
+          new CustomEvent('removeUserByEmail', {detail: msg.email}));
+    },
+    'exit'(msg) {
+      this.dispatchEvent(new CustomEvent('exit'));
+    },
+    'syncTrustedVaultKeys'(msg) {
+      this.syncTrustedVaultKeys_ = msg.value;
+    },
+    'closeView'(msg) {
+      if (!this.enableCloseView_) {
+        return;
+      }
+
+      if (!this.services_) {
+        console.error('Authenticator: UserInfo should come before closeView');
+      }
+
+      if (!this.authCompletedFired_) {
+        const metric = this.authFlow == AuthFlow.SAML ?
+            GAIA_MESSAGE_SAML_CLOSE_VIEW :
+            GAIA_MESSAGE_GAIA_CLOSE_VIEW;
+        chrome.send('metricsHandler:recordBooleanHistogram', [metric, true]);
+      }
+
+      this.closeViewReceived_ = true;
+      if (this.email_ && this.gaiaId_ && this.sessionIndex_) {
+        this.maybeCompleteAuth_();
+      }
     }
   };
 
@@ -215,7 +375,7 @@ cr.define('cr.login', function() {
   /**
    * Initializes the authenticator component.
    */
-  class Authenticator extends cr.EventTarget {
+  /* #export */ class Authenticator extends cr.EventTarget {
     /**
      * @param {!WebView|string} webview The webview element or its ID to host
      *     IdP web pages.
@@ -230,6 +390,10 @@ cr.define('cr.login', function() {
       this.chooseWhatToSync_ = false;
       this.skipForNow_ = false;
       this.authFlow = AuthFlow.DEFAULT;
+      /** @type {AuthMode} */
+      this.authMode = AuthMode.DEFAULT;
+      this.dontResizeNonEmbeddedPages = false;
+
       this.authDomain = '';
       /**
        * @type {!cr.login.SamlHandler|undefined}
@@ -242,9 +406,16 @@ cr.define('cr.login', function() {
       this.reloadUrl_ = null;
       this.trusted_ = true;
       this.readyFired_ = false;
-      this.webview_ = typeof webview == 'string' ? $(webview) : webview;
+      this.authCompletedFired_ = false;
+      /**
+       * @private {WebView|undefined}
+       */
+      this.webview_ = typeof webview == 'string' ?
+          /** @type {WebView} */ ($(webview)) :
+          webview;
       assert(this.webview_);
       this.enableGaiaActionButtons_ = false;
+      this.enableCloseView_ = false;
       this.webviewEventManager_ = WebviewEventManager.create();
 
       this.clientId_ = null;
@@ -254,17 +425,19 @@ cr.define('cr.login', function() {
       this.onePasswordCallback = null;
       this.insecureContentBlockedCallback = null;
       this.samlApiUsedCallback = null;
+      this.recordSAMLProviderCallback = null;
       this.missingGaiaInfoCallback = null;
       /**
        * Callback allowing to request whether the specified user which
        * authenticates via SAML is a user without a password (neither a manually
        * entered one nor one provided via Credentials Passing API).
-       * @type {function(string, string, function(boolean))} Arguments are the
+       * @type {?function(string, string, function(boolean))} Arguments are the
        * e-mail, the GAIA ID, and the response callback.
        */
       this.getIsSamlUserPasswordlessCallback = null;
       this.needPassword = true;
       this.services_ = null;
+      this.gaiaDoneTimer_ = null;
       /**
        * Caches the result of |getIsSamlUserPasswordlessCallback| invocation for
        * the current user. Null if no result is obtained yet.
@@ -272,12 +445,17 @@ cr.define('cr.login', function() {
        * @private
        */
       this.isSamlUserPasswordless_ = null;
+      /** @private {boolean} */
+      this.isConstrainedWindow_ = false;
       this.samlAclUrl_ = null;
+      /** @private {?SyncTrustedVaultKeys} */
+      this.syncTrustedVaultKeys_ = null;
+      this.closeViewReceived_ = false;
 
       window.addEventListener(
-          'message', this.onMessageFromWebview_.bind(this), false);
-      window.addEventListener('focus', this.onFocus_.bind(this), false);
-      window.addEventListener('popstate', this.onPopState_.bind(this), false);
+          'message', e => this.onMessageFromWebview_(e), false);
+      window.addEventListener('focus', () => this.onFocus_(), false);
+      window.addEventListener('popstate', e => this.onPopState_(e), false);
 
       /**
        * @type {boolean}
@@ -288,7 +466,7 @@ cr.define('cr.login', function() {
         this.initializeAfterDomLoaded_();
       } else {
         document.addEventListener(
-            'DOMContentLoaded', this.initializeAfterDomLoaded_.bind(this));
+            'DOMContentLoaded', () => this.initializeAfterDomLoaded_());
       }
     }
 
@@ -310,7 +488,10 @@ cr.define('cr.login', function() {
       this.samlHandler_.reset();
       this.videoEnabled = false;
       this.services_ = null;
+      this.gaiaDoneTimer_ = null;
       this.isSamlUserPasswordless_ = null;
+      this.syncTrustedVaultKeys_ = null;
+      this.closeViewReceived_ = false;
     }
 
     /**
@@ -345,37 +526,36 @@ cr.define('cr.login', function() {
           new cr.login.SamlHandler(this.webview_, false /* startsOnSamlPage */);
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'insecureContentBlocked',
-          this.onInsecureContentBlocked_.bind(this));
+          e => this.onInsecureContentBlocked_(e));
       this.webviewEventManager_.addEventListener(
-          this.samlHandler_, 'authPageLoaded',
-          this.onAuthPageLoaded_.bind(this));
+          this.samlHandler_, 'authPageLoaded', e => this.onAuthPageLoaded_(e));
       this.webviewEventManager_.addEventListener(
-          this.samlHandler_, 'videoEnabled', this.onVideoEnabled_.bind(this));
+          this.samlHandler_, 'videoEnabled', e => this.onVideoEnabled_(e));
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'apiPasswordAdded',
-          this.onSamlApiPasswordAdded_.bind(this));
+          e => this.onSamlApiPasswordAdded_(e));
       this.webviewEventManager_.addEventListener(
           this.samlHandler_, 'challengeMachineKeyRequired',
-          this.onChallengeMachineKeyRequired_.bind(this));
+          e => this.onChallengeMachineKeyRequired_(e));
 
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'droplink', this.onDropLink_.bind(this));
+          this.webview_, 'droplink', e => this.onDropLink_(e));
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'newwindow', this.onNewWindow_.bind(this));
+          this.webview_, 'newwindow', e => this.onNewWindow_(e));
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'contentload', this.onContentLoad_.bind(this));
+          this.webview_, 'contentload', e => this.onContentLoad_(e));
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'loadabort', this.onLoadAbort_.bind(this));
+          this.webview_, 'loadabort', e => this.onLoadAbort_(e));
       this.webviewEventManager_.addEventListener(
-          this.webview_, 'loadcommit', this.onLoadCommit_.bind(this));
+          this.webview_, 'loadcommit', e => this.onLoadCommit_(e));
 
       this.webviewEventManager_.addWebRequestEventListener(
           this.webview_.request.onCompleted,
-          this.onRequestCompleted_.bind(this),
+          details => this.onRequestCompleted_(details),
           {urls: ['<all_urls>'], types: ['main_frame']}, ['responseHeaders']);
       this.webviewEventManager_.addWebRequestEventListener(
           this.webview_.request.onHeadersReceived,
-          this.onHeadersReceived_.bind(this),
+          details => this.onHeadersReceived_(details),
           {urls: ['<all_urls>'], types: ['main_frame', 'xmlhttprequest']},
           ['responseHeaders']);
     }
@@ -397,7 +577,8 @@ cr.define('cr.login', function() {
 
     /**
      * Re-binds to another webview.
-     * @param {Object} webview the new webview to be used by this Authenticator.
+     * @param {WebView} webview the new webview to be used by this
+     *     Authenticator.
      * @private
      */
     rebindWebview_(webview) {
@@ -454,18 +635,19 @@ cr.define('cr.login', function() {
 
         webivewParent.replaceChild(newWebview, this.webview_);
 
-        this.rebindWebview_(newWebview);
+        this.rebindWebview_(/** @type {WebView} */ (newWebview));
       }
     }
 
     /**
      * Loads the authenticator component with the given parameters.
      * @param {AuthMode} authMode Authorization mode.
-     * @param {Object} data Parameters for the authorization flow.
+     * @param {AuthParams} data Parameters for the authorization flow.
      */
     load(authMode, data) {
       this.authMode = authMode;
       this.resetStates();
+      this.authCompletedFired_ = false;
       // gaiaUrl parameter is used for testing. Once defined, it is never
       // changed.
       this.idpOrigin_ = data.gaiaUrl || IDP_ORIGIN;
@@ -473,6 +655,7 @@ cr.define('cr.login', function() {
       this.clientId_ = data.clientId;
       this.dontResizeNonEmbeddedPages = data.dontResizeNonEmbeddedPages;
       this.enableGaiaActionButtons_ = data.enableGaiaActionButtons;
+      this.enableCloseView_ = !!data.enableCloseView;
 
       this.initialFrameUrl_ = this.constructInitialFrameUrl_(data);
       this.reloadUrl_ = data.frameUrl || this.initialFrameUrl_;
@@ -512,14 +695,26 @@ cr.define('cr.login', function() {
      */
     reload() {
       this.resetStates();
+      this.authCompletedFired_ = false;
       this.webview_.src = this.reloadUrl_;
       this.isLoaded_ = true;
+    }
+
+    /**
+     * Called in response to 'getAccounts' event.
+     * @param {Array<string>} accounts list of emails
+     */
+    getAccountsResponse(accounts) {
+      this.sendMessageToWebview('accountsListed', accounts);
     }
 
     constructInitialFrameUrl_(data) {
       if (data.doSamlRedirect) {
         let url = this.idpOrigin_ + SAML_REDIRECTION_PATH;
         url = appendParam(url, 'domain', data.enterpriseEnrollmentDomain);
+        if (data.ssoProfile) {
+          url = appendParam(url, 'sso_profile', data.ssoProfile);
+        }
         url = appendParam(
             url, 'continue',
             data.gaiaUrl + 'programmatic_auth_chromeos?hl=' + data.hl +
@@ -543,8 +738,8 @@ cr.define('cr.login', function() {
       if (data.clientId) {
         url = appendParam(url, 'client_id', data.clientId);
       }
-      if (data.enterpriseDisplayDomain) {
-        url = appendParam(url, 'manageddomain', data.enterpriseDisplayDomain);
+      if (data.enterpriseDomainManager) {
+        url = appendParam(url, 'devicemanager', data.enterpriseDomainManager);
       }
       if (data.clientVersion) {
         url = appendParam(url, 'client_version', data.clientVersion);
@@ -558,26 +753,15 @@ cr.define('cr.login', function() {
       if (data.endpointGen) {
         url = appendParam(url, 'endpoint_gen', data.endpointGen);
       }
-      let mi = '';
-      if (data.menuGuestMode) {
-        mi += 'gm,';
-      }
-      if (data.menuKeyboardOptions) {
-        mi += 'ko,';
-      }
       if (data.menuEnterpriseEnrollment) {
-        mi += 'ee,';
-      }
-      if (mi.length) {
-        url = appendParam(url, 'mi', mi);
+        url = appendParam(url, 'mi', 'ee');
       }
 
+      if (data.lsbReleaseBoard) {
+        url = appendParam(url, 'chromeos_board', data.lsbReleaseBoard);
+      }
       if (data.isFirstUser) {
-        url = appendParam(url, 'is_first_user', true);
-
-        if (data.lsbReleaseBoard) {
-          url = appendParam(url, 'chromeos_board', data.lsbReleaseBoard);
-        }
+        url = appendParam(url, 'is_first_user', 'true');
       }
       if (data.obfuscatedOwnerId) {
         url = appendParam(url, 'obfuscated_owner_id', data.obfuscatedOwnerId);
@@ -602,17 +786,28 @@ cr.define('cr.login', function() {
         url = appendParam(url, 'flow', data.flow);
       }
       if (data.emailDomain) {
-        url = appendParam(url, 'emaildomain', data.emailDomain);
-        // ChromeOS embedded signin page uses 'hd' (hosted domain) as the query
-        // argument to show an email domain.
+        // Use 'hd' (hosted domain) as the argument to show an email domain.
         url = appendParam(url, 'hd', data.emailDomain);
+      }
+      if (data.showTos) {
+        url = appendParam(url, 'show_tos', data.showTos);
       }
       if (data.ignoreCrOSIdpSetting === true) {
         url = appendParam(url, 'ignoreCrOSIdpSetting', 'true');
       }
       if (data.enableGaiaActionButtons) {
-        url = appendParam(url, 'use_native_navigation', 1);
+        url = appendParam(url, 'use_native_navigation', '1');
       }
+      if (data.isSupervisedUser) {
+        url = appendParam(url, 'is_supervised', '1');
+      }
+      if (data.isDeviceOwner) {
+        url = appendParam(url, 'is_device_owner', '1');
+      }
+      if (data.rart) {
+        url = appendParam(url, 'rart', data.rart);
+      }
+
       return url;
     }
 
@@ -680,10 +875,9 @@ cr.define('cr.login', function() {
 
     /**
      * Invoked when the sign-in page takes focus.
-     * @param {object} e The focus event being triggered.
      * @private
      */
-    onFocus_(e) {
+    onFocus_() {
       if (this.authMode == AuthMode.DESKTOP &&
           document.activeElement == document.body) {
         this.webview_.focus();
@@ -692,7 +886,7 @@ cr.define('cr.login', function() {
 
     /**
      * Invoked when the history state is changed.
-     * @param {object} e The popstate event being triggered.
+     * @param {!Event} e The popstate event being triggered.
      * @private
      */
     onPopState_(e) {
@@ -706,10 +900,17 @@ cr.define('cr.login', function() {
      * Invoked when headers are received in the main frame of the webview. It
      * 1) reads the authenticated user info from a signin header,
      * 2) signals the start of a saml flow upon receiving a saml header.
-     * @return {!Object} Modified request headers.
+     * @param {OnHeadersReceivedDetails} details
      * @private
      */
     onHeadersReceived_(details) {
+      if (this.authCompletedFired_) {
+        // SIGN_IN_HEADER could be sent more thane once. Sometimes already
+        // after authentication completed. Return here to avoid triggering
+        // maybeCompleteAuth which shows "create your password screen" because
+        // scraped passwords are wiped at that point.
+        return;
+      }
       const currentUrl = details.url;
       if (currentUrl.lastIndexOf(this.idpOrigin_, 0) != 0) {
         return;
@@ -734,6 +935,7 @@ cr.define('cr.login', function() {
         } else if (headerName == LOCATION_HEADER) {
           // If the "choose what to sync" checkbox was clicked, then the
           // continue URL will contain a source=3 field.
+          assert(header.value !== undefined);
           const location = decodeURIComponent(header.value);
           this.chooseWhatToSync_ = !!location.match(/(\?|&)source=3($|&)/);
         }
@@ -742,7 +944,7 @@ cr.define('cr.login', function() {
 
     /**
      * Returns true if given HTML5 message is received from the webview element.
-     * @param {object} e Payload of the received HTML5 message.
+     * @param {Object} e Payload of the received HTML5 message.
      */
     isGaiaMessage(e) {
       if (!this.isWebviewEvent_(e)) {
@@ -764,7 +966,7 @@ cr.define('cr.login', function() {
 
     /**
      * Invoked when an HTML5 message is received from the webview element.
-     * @param {object} e Payload of the received HTML5 message.
+     * @param {Object} e Payload of the received HTML5 message.
      * @private
      */
     onMessageFromWebview_(e) {
@@ -774,6 +976,9 @@ cr.define('cr.login', function() {
 
       const msg = e.data;
       if (msg.method in messageHandlers) {
+        if (this.authCompletedFired_) {
+          console.warn(msg.method + ' message sent after auth completed');
+        }
         messageHandlers[msg.method].call(this, msg);
       } else if (!IGNORED_MESSAGES_FROM_GAIA.includes(msg.method)) {
         console.warn('Unrecognized message from GAIA: ' + msg.method);
@@ -781,11 +986,22 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Invoked to send a HTML5 message to the webview element.
-     * @param {object} e Payload of the HTML5 message.
+     * Invoked to send a HTML5 message with attached data to the webview
+     * element.
+     * @param {string} messageType Type of the HTML5 message.
+     * @param {Object=} messageData Data to be attached to the message.
      */
-    sendMessageToWebview(payload) {
+    sendMessageToWebview(messageType, messageData = null) {
       const currentUrl = this.webview_.src;
+      let payload = undefined;
+      if (messageData) {
+        payload = {type: messageType, data: messageData};
+      } else {
+        // TODO(crbug.com/1116343): Use new message format when it will be
+        // available in production.
+        payload = messageType;
+      }
+
       this.webview_.contentWindow.postMessage(payload, currentUrl);
     }
 
@@ -799,11 +1015,8 @@ cr.define('cr.login', function() {
         // does not expect it to be called immediately.
         // TODO(xiyuan): Change to synchronous call when iframe based code
         // is removed.
-        const invokeConfirmPassword =
-            (function() {
-              this.confirmPasswordCallback(
-                  this.email_, this.samlHandler_.scrapedPasswordCount);
-            }).bind(this);
+        const invokeConfirmPassword = () => this.confirmPasswordCallback(
+            this.email_, this.samlHandler_.scrapedPasswordCount);
         window.setTimeout(invokeConfirmPassword, 0);
         return;
       }
@@ -818,6 +1031,9 @@ cr.define('cr.login', function() {
      * @private
      */
     maybeCompleteAuth_() {
+      if (this.authCompletedFired_) {
+        return;
+      }
       const missingGaiaInfo =
           !this.email_ || !this.gaiaId_ || !this.sessionIndex_;
       if (missingGaiaInfo && !this.skipForNow_) {
@@ -828,15 +1044,28 @@ cr.define('cr.login', function() {
         this.webview_.src = this.initialFrameUrl_;
         return;
       }
-      // TODO(https://crbug.com/837107): remove this once API is fully
-      // stabilized.
-      // @example.com is used in tests.
-      if (!this.services_ && !this.email_.endsWith('@gmail.com') &&
-          !this.email_.endsWith('@example.com')) {
-        console.warn('Forcing empty services.');
-        this.services_ = [];
+
+      // Could be set either by `userInfo` message or by the
+      // `onGaiaDoneTimeout_`.
+      const userInfoAvailable = !!this.services_;
+
+      const gaiaDone = userInfoAvailable &&
+          (!this.enableCloseView_ || this.closeViewReceived_);
+
+      if (gaiaDone && this.gaiaDoneTimer_) {
+        window.clearTimeout(this.gaiaDoneTimer_);
+        this.gaiaDoneTimer_ = null;
       }
-      if (!this.services_) {
+
+      if (this.gaiaDoneTimer_) {
+        // Early out if `gaiaDoneTimer_` is running.
+        return;
+      }
+
+      if (!gaiaDone) {
+        // Start `gaiaDoneTimer_` if user info is not available.
+        this.gaiaDoneTimer_ = window.setTimeout(
+            () => this.onGaiaDoneTimeout_(), GAIA_DONE_WAIT_TIMEOUT_MS);
         return;
       }
 
@@ -851,6 +1080,12 @@ cr.define('cr.login', function() {
             this.onGotIsSamlUserPasswordless_.bind(
                 this, this.email_, this.gaiaId_));
         return;
+      }
+
+      if (this.recordSAMLProviderCallback && this.authFlow == AuthFlow.SAML) {
+        // Makes distinction between different SAML providers
+        this.recordSAMLProviderCallback(
+            this.samlHandler_.x509certificate || '');
       }
 
       if (this.isSamlUserPasswordless_ && this.authFlow == AuthFlow.SAML &&
@@ -1006,10 +1241,12 @@ cr.define('cr.login', function() {
               sessionIndex: this.sessionIndex_ || '',
               trusted: this.trusted_,
               services: this.services_ || [],
-              passwordAttributes: passwordAttributes
+              passwordAttributes: passwordAttributes,
+              syncTrustedVaultKeys: this.syncTrustedVaultKeys_ || {}
             }
           }));
       this.resetStates();
+      this.authCompletedFired_ = true;
     }
 
     /**
@@ -1041,7 +1278,6 @@ cr.define('cr.login', function() {
         return;
       }
 
-      this.authDomain = this.samlHandler_.authDomain;
       this.authFlow = AuthFlow.SAML;
 
       this.webview_.focus();
@@ -1057,10 +1293,12 @@ cr.define('cr.login', function() {
     }
 
     /**
-     * Invoked when |samlHandler_| fires 'apiPasswordAdded' event.
+     * Invoked when |samlHandler_| fires 'apiPasswordAdded' event. Could be from
+     * 3rd-party SAML IdP or Gaia which also uses the API.
      * @private
      */
     onSamlApiPasswordAdded_(e) {
+      this.dispatchEvent(new Event('apiPasswordAdded'));
       // Saml API 'add' password might be received after the 'loadcommit'
       // event. In such case, maybeCompleteAuth_ should be attempted again if
       // GAIA ID is available.
@@ -1123,13 +1361,6 @@ cr.define('cr.login', function() {
           console.error('Authenticator: contentWindow is null.');
         }
 
-        if (this.authMode == AuthMode.DEFAULT) {
-          chrome.send('metricsHandler:recordBooleanHistogram', [
-            'ChromeOS.GAIA.AuthenticatorContentWindowNull',
-            !this.webview_.contentWindow
-          ]);
-        }
-
         this.fireReadyEvent_();
         // Focus webview after dispatching event when webview is already
         // visible.
@@ -1151,6 +1382,14 @@ cr.define('cr.login', function() {
         return;
       }
 
+      // Ignore errors from subframe loads, as these should not cause an error
+      // screen to be displayed. When a subframe load is triggered, it means
+      // that the main frame load has succeeded, so the host is reachable in
+      // general.
+      if (!e.isTopLevel) {
+        return;
+      }
+
       this.dispatchEvent(new CustomEvent(
           'loadAbort', {detail: {error_code: e.code, src: e.url}}));
     }
@@ -1162,6 +1401,9 @@ cr.define('cr.login', function() {
     onLoadCommit_(e) {
       if (this.gaiaId_) {
         this.maybeCompleteAuth_();
+      }
+      if (e.isTopLevel) {
+        this.authDomain = extractDomain(e.url);
       }
     }
 
@@ -1176,8 +1418,37 @@ cr.define('cr.login', function() {
       const webviewWindow = this.webview_.contentWindow;
       return !!webviewWindow && webviewWindow === e.source;
     }
+
+    /**
+     * Callback for the user info message waiting timeout.
+     * @private
+     */
+    onGaiaDoneTimeout_() {
+      if (!this.services_) {
+        console.error('Gaia done timeout: Forcing empty services.');
+        this.services_ = [];
+        const metric = this.authFlow == AuthFlow.SAML ?
+            GAIA_MESSAGE_SAML_USER_INFO :
+            GAIA_MESSAGE_GAIA_USER_INFO;
+        chrome.send('metricsHandler:recordBooleanHistogram', [metric, false]);
+      }
+
+      if (this.enableCloseView_ && !this.closeViewReceived_) {
+        console.error('Gaia done timeout: closeView was not called.');
+        this.closeViewReceived_ = true;
+
+        const metric = this.authFlow == AuthFlow.SAML ?
+            GAIA_MESSAGE_SAML_CLOSE_VIEW :
+            GAIA_MESSAGE_GAIA_CLOSE_VIEW;
+        chrome.send('metricsHandler:recordBooleanHistogram', [metric, false]);
+      }
+
+      this.gaiaDoneTimer_ = null;
+      this.maybeCompleteAuth_();
+    }
   }
 
+  // #cr_define_end
   /**
    * The current auth flow of the hosted auth page.
    * @type {AuthFlow}

@@ -57,7 +57,7 @@ void AutoFetchCancellationComplete() {
   Java_AutoFetchNotifier_cancellationComplete(env);
 }
 
-void ShowAutoFetchCompleteNotification(const base::string16& pageTitle,
+void ShowAutoFetchCompleteNotification(const std::u16string& pageTitle,
                                        const std::string& original_url,
                                        const std::string& final_url,
                                        int android_tab_id,

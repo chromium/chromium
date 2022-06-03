@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/diagnostics/diagnostics_test.h"
 
 namespace diagnostics {
@@ -29,10 +30,10 @@ std::unique_ptr<DiagnosticsTest> MakeSqliteFaviconsDbTest();
 std::unique_ptr<DiagnosticsTest> MakeSqliteHistoryDbTest();
 std::unique_ptr<DiagnosticsTest> MakeSqliteTopSitesDbTest();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<DiagnosticsTest> MakeSqliteNssCertDbTest();
 std::unique_ptr<DiagnosticsTest> MakeSqliteNssKeyDbTest();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 std::unique_ptr<DiagnosticsTest> MakeSqliteWebDatabaseTrackerDbTest();
 std::unique_ptr<DiagnosticsTest> MakeSqliteWebDataDbTest();

@@ -10,11 +10,11 @@
 #include <utility>
 #include <vector>
 
-#include "base/containers/mru_cache.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/containers/lru_cache.h"
 #include "base/macros.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/time/tick_clock.h"
 #include "net/base/backoff_entry.h"
 #include "net/base/network_isolation_key.h"
@@ -49,17 +49,18 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
     DCHECK(cache);
   }
 
+  ReportingEndpointManagerImpl(const ReportingEndpointManagerImpl&) = delete;
+  ReportingEndpointManagerImpl& operator=(const ReportingEndpointManagerImpl&) =
+      delete;
+
   ~ReportingEndpointManagerImpl() override = default;
 
   const ReportingEndpoint FindEndpointForDelivery(
-      const NetworkIsolationKey& network_isolation_key,
-      const url::Origin& origin,
-      const std::string& group) override {
+      const ReportingEndpointGroupKey& group_key) override {
     // Get unexpired endpoints that apply to a delivery to |origin| and |group|.
     // May have been configured by a superdomain of |origin|.
     std::vector<ReportingEndpoint> endpoints =
-        cache_->GetCandidateEndpointsForDelivery(network_isolation_key, origin,
-                                                 group);
+        cache_->GetCandidateEndpointsForDelivery(group_key);
 
     // Highest-priority endpoint(s) that are not expired, failing, or
     // forbidden for use by the ReportingDelegate.
@@ -67,7 +68,7 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
     // Total weight of endpoints in |available_endpoints|.
     int total_weight = 0;
 
-    for (const ReportingEndpoint endpoint : endpoints) {
+    for (const ReportingEndpoint& endpoint : endpoints) {
       if (!delegate_->CanUseClient(endpoint.group_key.origin,
                                    endpoint.info.url)) {
         continue;
@@ -81,8 +82,8 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
 
       // This brings each match to the front of the MRU cache, so if an entry
       // frequently matches requests, it's more likely to stay in the cache.
-      auto endpoint_backoff_it = endpoint_backoff_.Get(
-          EndpointBackoffKey(network_isolation_key, endpoint.info.url));
+      auto endpoint_backoff_it = endpoint_backoff_.Get(EndpointBackoffKey(
+          group_key.network_isolation_key, endpoint.info.url));
       if (endpoint_backoff_it != endpoint_backoff_.end() &&
           endpoint_backoff_it->second->ShouldRejectRequest()) {
         continue;
@@ -154,10 +155,8 @@ class ReportingEndpointManagerImpl : public ReportingEndpointManager {
   // to be cleared as well.
   // TODO(chlily): clear this data when endpoints are deleted to avoid unbounded
   // growth of this map.
-  base::MRUCache<EndpointBackoffKey, std::unique_ptr<net::BackoffEntry>>
+  base::LRUCache<EndpointBackoffKey, std::unique_ptr<net::BackoffEntry>>
       endpoint_backoff_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReportingEndpointManagerImpl);
 };
 
 }  // namespace

@@ -6,12 +6,13 @@
 
 #include <string>
 
+#include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "components/cast_certificate/cast_cert_reader.h"
+#include "components/cast_certificate/cast_cert_test_helpers.h"
 #include "components/cast_certificate/cast_cert_validator.h"
-#include "components/cast_certificate/cast_cert_validator_test_helpers.h"
 #include "components/cast_certificate/cast_crl.h"
 #include "net/cert/internal/trust_store_in_memory.h"
 #include "net/cert/x509_certificate.h"
@@ -36,8 +37,9 @@ class CastAuthUtilTest : public testing::Test {
   static AuthResponse CreateAuthResponse(
       std::string* signed_data,
       cast::channel::HashAlgorithm digest_algorithm) {
-    auto chain = cast_certificate::testing::ReadCertificateChainFromFile(
-        "certificates/chromecast_gen1.pem");
+    auto chain = cast_certificate::ReadCertificateChainFromFile(
+        cast_certificate::testing::GetCastCertificatesSubDirectory()
+            .AppendASCII("chromecast_gen1.pem"));
     CHECK(!chain.empty());
 
     auto signature_data = cast_certificate::testing::ReadSignatureTestData(
@@ -186,12 +188,13 @@ TEST_F(CastAuthUtilTest, VerifySenderNonceMissing) {
 }
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateSuccess) {
-  auto tls_cert_der = cast_certificate::testing::ReadCertificateChainFromFile(
-      "certificates/test_tls_cert.pem");
+  auto tls_cert_der = cast_certificate::ReadCertificateChainFromFile(
+      cast_certificate::testing::GetCastCertificatesSubDirectory().AppendASCII(
+          "test_tls_cert.pem"));
 
   scoped_refptr<net::X509Certificate> tls_cert =
-      net::X509Certificate::CreateFromBytes(tls_cert_der[0].data(),
-                                            tls_cert_der[0].size());
+      net::X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(tls_cert_der[0])));
   std::string peer_cert_der;
   AuthResult result =
       VerifyTLSCertificate(*tls_cert, &peer_cert_der, tls_cert->valid_start());
@@ -199,32 +202,32 @@ TEST_F(CastAuthUtilTest, VerifyTLSCertificateSuccess) {
 }
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooEarly) {
-  auto tls_cert_der = cast_certificate::testing::ReadCertificateChainFromFile(
-      "certificates/test_tls_cert.pem");
+  auto tls_cert_der = cast_certificate::ReadCertificateChainFromFile(
+      cast_certificate::testing::GetCastCertificatesSubDirectory().AppendASCII(
+          "test_tls_cert.pem"));
 
   scoped_refptr<net::X509Certificate> tls_cert =
-      net::X509Certificate::CreateFromBytes(tls_cert_der[0].data(),
-                                            tls_cert_der[0].size());
+      net::X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(tls_cert_der[0])));
   std::string peer_cert_der;
   AuthResult result = VerifyTLSCertificate(
-      *tls_cert, &peer_cert_der,
-      tls_cert->valid_start() - base::TimeDelta::FromSeconds(1));
+      *tls_cert, &peer_cert_der, tls_cert->valid_start() - base::Seconds(1));
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_TLS_CERT_VALID_START_DATE_IN_FUTURE,
             result.error_type);
 }
 
 TEST_F(CastAuthUtilTest, VerifyTLSCertificateTooLate) {
-  auto tls_cert_der = cast_certificate::testing::ReadCertificateChainFromFile(
-      "certificates/test_tls_cert.pem");
+  auto tls_cert_der = cast_certificate::ReadCertificateChainFromFile(
+      cast_certificate::testing::GetCastCertificatesSubDirectory().AppendASCII(
+          "test_tls_cert.pem"));
 
   scoped_refptr<net::X509Certificate> tls_cert =
-      net::X509Certificate::CreateFromBytes(tls_cert_der[0].data(),
-                                            tls_cert_der[0].size());
+      net::X509Certificate::CreateFromBytes(
+          base::as_bytes(base::make_span(tls_cert_der[0])));
   std::string peer_cert_der;
   AuthResult result = VerifyTLSCertificate(
-      *tls_cert, &peer_cert_der,
-      tls_cert->valid_expiry() + base::TimeDelta::FromSeconds(2));
+      *tls_cert, &peer_cert_der, tls_cert->valid_expiry() + base::Seconds(2));
   EXPECT_FALSE(result.success());
   EXPECT_EQ(AuthResult::ERROR_TLS_CERT_EXPIRED, result.error_type);
 }
@@ -271,17 +274,14 @@ AuthResult TestVerifyRevocation(
 
 // Runs a single test case.
 bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
-  std::unique_ptr<net::TrustStore> crl_trust_store;
-  std::unique_ptr<net::TrustStore> cast_trust_store;
-  if (test_case.use_test_trust_anchors()) {
-    crl_trust_store = cast_certificate::testing::CreateTrustStoreFromFile(
-        "certificates/cast_crl_test_root_ca.pem");
-    cast_trust_store = cast_certificate::testing::CreateTrustStoreFromFile(
-        "certificates/cast_test_root_ca.pem");
-
-    EXPECT_TRUE(crl_trust_store.get());
-    EXPECT_TRUE(cast_trust_store.get());
-  }
+  std::unique_ptr<net::TrustStoreInMemory> cast_trust_store =
+      test_case.use_test_trust_anchors()
+          ? cast_certificate::testing::LoadTestCert("cast_test_root_ca.pem")
+          : nullptr;
+  std::unique_ptr<net::TrustStoreInMemory> crl_trust_store =
+      test_case.use_test_trust_anchors()
+          ? cast_certificate::testing::LoadTestCert("cast_crl_test_root_ca.pem")
+          : nullptr;
 
   std::vector<std::string> certificate_chain;
   for (auto const& cert : test_case.der_cert_path()) {
@@ -345,8 +345,12 @@ bool RunTest(const cast::certificate::DeviceCertTest& test_case) {
 // To see the description of the test, execute the test.
 // These tests are generated by a test generator in google3.
 void RunTestSuite(const std::string& test_suite_file_name) {
-  std::string testsuite_raw =
-      cast_certificate::testing::ReadTestFileToString(test_suite_file_name);
+  std::string testsuite_raw;
+  base::ReadFileToString(
+      cast_certificate::testing::GetCastCertificateDirectory().AppendASCII(
+          test_suite_file_name),
+      &testsuite_raw);
+
   cast::certificate::DeviceCertTestSuite test_suite;
   EXPECT_TRUE(test_suite.ParseFromString(testsuite_raw));
   uint16_t success = 0;

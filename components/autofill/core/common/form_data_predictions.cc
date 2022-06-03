@@ -20,15 +20,4 @@ FormDataPredictions& FormDataPredictions::operator=(FormDataPredictions&&) =
 
 FormDataPredictions::~FormDataPredictions() = default;
 
-bool FormDataPredictions::operator==(
-    const FormDataPredictions& predictions) const {
-  return (data.SameFormAs(predictions.data) &&
-          signature == predictions.signature && fields == predictions.fields);
-}
-
-bool FormDataPredictions::operator!=(
-    const FormDataPredictions& predictions) const {
-  return !operator==(predictions);
-}
-
 }  // namespace autofill

@@ -32,6 +32,7 @@
 
 [
     ActiveScriptWrappable,
+    Exposed=Window,
     SecureContext
 ] interface MIDIAccess : EventTarget {
     readonly attribute MIDIInputMap inputs;

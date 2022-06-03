@@ -1,0 +1,1 @@
+{"files": ["test.html", "test.rollup.js", "shared.rollup.js", "dir/element_in_dir.js", "dir/test_svg.svg"], "base_dir": "tools/tests/preprocessed" }

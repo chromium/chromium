@@ -20,9 +20,4 @@ FOO bAr, #inspected, MOO>BAR, htML div, Foo~Moo, MOO { (<style>)
 div { (user agent stylesheet)
     display: block;
 
-======== Inherited from html ========
-[expanded] 
-html { (user agent stylesheet)
-/-- overloaded --/     color: -internal-root-color;
-
 

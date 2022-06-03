@@ -8,9 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "build/build_config.h"
 #include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/importer_url_row.h"
@@ -20,10 +18,6 @@ class GURL;
 struct ImportedBookmarkEntry;
 struct ImporterAutofillFormDataEntry;
 
-namespace autofill {
-struct PasswordForm;
-}
-
 namespace importer {
 struct SearchEngineInfo;
 }
@@ -32,9 +26,11 @@ class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
  public:
   ImporterBridge();
 
-  virtual void AddBookmarks(
-      const std::vector<ImportedBookmarkEntry>& bookmarks,
-      const base::string16& first_folder_name) = 0;
+  ImporterBridge(const ImporterBridge&) = delete;
+  ImporterBridge& operator=(const ImporterBridge&) = delete;
+
+  virtual void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
+                            const std::u16string& first_folder_name) = 0;
 
   virtual void AddHomePage(const GURL& home_page) = 0;
 
@@ -48,12 +44,7 @@ class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
       const std::vector<importer::SearchEngineInfo>& search_engines,
       bool unique_on_host_and_path) = 0;
 
-  // The search_engine_data vector contains XML data retrieved from the Firefox
-  // profile and its sqlite db.
-  virtual void SetFirefoxSearchEnginesXMLData(
-      const std::vector<std::string>& search_engine_data) = 0;
-
-  virtual void SetPasswordForm(const autofill::PasswordForm& form) = 0;
+  virtual void SetPasswordForm(const importer::ImportedPasswordForm& form) = 0;
 
   virtual void SetAutofillFormData(
       const std::vector<ImporterAutofillFormDataEntry>& entries) = 0;
@@ -76,14 +67,12 @@ class ImporterBridge : public base::RefCountedThreadSafe<ImporterBridge> {
   // this calls the set of strings we've ported over to the external process.
   // It's good to avoid having to create a separate ResourceBundle for the
   // external import process, since the importer only needs a few strings.
-  virtual base::string16 GetLocalizedString(int message_id) = 0;
+  virtual std::u16string GetLocalizedString(int message_id) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<ImporterBridge>;
 
   virtual ~ImporterBridge();
-
-  DISALLOW_COPY_AND_ASSIGN(ImporterBridge);
 };
 
 #endif  // CHROME_COMMON_IMPORTER_IMPORTER_BRIDGE_H_

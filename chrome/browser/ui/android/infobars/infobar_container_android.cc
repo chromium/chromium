@@ -5,11 +5,12 @@
 #include "chrome/browser/ui/android/infobars/infobar_container_android.h"
 
 #include "base/android/jni_android.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/android/chrome_jni_headers/InfoBarContainer_jni.h"
-#include "chrome/browser/infobars/infobar_service.h"
-#include "chrome/browser/ui/android/infobars/infobar_android.h"
+#include "chrome/browser/android/resource_mapper.h"
+#include "components/infobars/android/infobar_android.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
 #include "content/public/browser/web_contents.h"
@@ -31,12 +32,12 @@ void InfoBarContainerAndroid::SetWebContents(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jobject>& web_contents) {
-  InfoBarService* infobar_service =
+  infobars::ContentInfoBarManager* infobar_manager =
       web_contents
-          ? InfoBarService::FromWebContents(
+          ? infobars::ContentInfoBarManager::FromWebContents(
                 content::WebContents::FromJavaWebContents(web_contents))
           : nullptr;
-  ChangeInfoBarManager(infobar_service);
+  ChangeInfoBarManager(infobar_manager);
 }
 
 void InfoBarContainerAndroid::Destroy(JNIEnv* env,
@@ -44,22 +45,15 @@ void InfoBarContainerAndroid::Destroy(JNIEnv* env,
   delete this;
 }
 
+// Creates the Java equivalent of |android_bar| and add it to the java
+// container.
 void InfoBarContainerAndroid::PlatformSpecificAddInfoBar(
     infobars::InfoBar* infobar,
     size_t position) {
   DCHECK(infobar);
-  InfoBarAndroid* android_bar = static_cast<InfoBarAndroid*>(infobar);
-  if (!android_bar) {
-    // TODO(bulach): CLANK: implement other types of InfoBars.
-    NOTIMPLEMENTED() << "CLANK: infobar identifier "
-                     << infobar->delegate()->GetIdentifier();
-    return;
-  }
+  infobars::InfoBarAndroid* android_bar =
+      static_cast<infobars::InfoBarAndroid*>(infobar);
 
-  AttachJavaInfoBar(android_bar);
-}
-
-void InfoBarContainerAndroid::AttachJavaInfoBar(InfoBarAndroid* android_bar) {
   if (android_bar->HasSetJavaInfoBar())
     return;
   JNIEnv* env = base::android::AttachCurrentThread();
@@ -68,13 +62,12 @@ void InfoBarContainerAndroid::AttachJavaInfoBar(InfoBarAndroid* android_bar) {
           env, weak_java_infobar_container_.get(env))) {
     base::UmaHistogramSparse("InfoBar.Shown.Hidden",
                              android_bar->delegate()->GetIdentifier());
-    uintptr_t native_ptr = Java_InfoBarContainer_getTopNativeInfoBarPtr(
-        env, weak_java_infobar_container_.get(env));
-    if (native_ptr) {
-      base::UmaHistogramSparse("InfoBar.Shown.Hiding",
-                               reinterpret_cast<InfoBarAndroid*>(native_ptr)
-                                   ->delegate()
-                                   ->GetIdentifier());
+    infobars::InfoBarDelegate::InfoBarIdentifier identifier =
+        static_cast<infobars::InfoBarDelegate::InfoBarIdentifier>(
+            Java_InfoBarContainer_getTopInfoBarIdentifier(
+                env, weak_java_infobar_container_.get(env)));
+    if (identifier != infobars::InfoBarDelegate::InfoBarIdentifier::INVALID) {
+      base::UmaHistogramSparse("InfoBar.Shown.Hiding", identifier);
     }
   } else {
     base::UmaHistogramSparse("InfoBar.Shown.Visible",
@@ -82,7 +75,8 @@ void InfoBarContainerAndroid::AttachJavaInfoBar(InfoBarAndroid* android_bar) {
   }
 
   base::android::ScopedJavaLocalRef<jobject> java_infobar =
-      android_bar->CreateRenderInfoBar(env);
+      android_bar->CreateRenderInfoBar(
+          env, base::BindRepeating(&ResourceMapper::MapToJavaDrawableId));
   android_bar->SetJavaInfoBar(java_infobar);
   Java_InfoBarContainer_addInfoBar(env, weak_java_infobar_container_.get(env),
                                    java_infobar);
@@ -91,13 +85,14 @@ void InfoBarContainerAndroid::AttachJavaInfoBar(InfoBarAndroid* android_bar) {
 void InfoBarContainerAndroid::PlatformSpecificReplaceInfoBar(
     infobars::InfoBar* old_infobar,
     infobars::InfoBar* new_infobar) {
-  static_cast<InfoBarAndroid*>(new_infobar)->PassJavaInfoBar(
-      static_cast<InfoBarAndroid*>(old_infobar));
+  static_cast<infobars::InfoBarAndroid*>(new_infobar)
+      ->PassJavaInfoBar(static_cast<infobars::InfoBarAndroid*>(old_infobar));
 }
 
 void InfoBarContainerAndroid::PlatformSpecificRemoveInfoBar(
     infobars::InfoBar* infobar) {
-  InfoBarAndroid* android_infobar = static_cast<InfoBarAndroid*>(infobar);
+  infobars::InfoBarAndroid* android_infobar =
+      static_cast<infobars::InfoBarAndroid*>(infobar);
   android_infobar->CloseJavaInfoBar();
 }
 

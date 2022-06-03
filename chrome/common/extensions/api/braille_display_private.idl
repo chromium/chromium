@@ -56,6 +56,8 @@ namespace brailleDisplayPrivate {
     long? textRowCount;
     // Number of columns of braille cells on the currently connected display.
     long? textColumnCount;
+    // The number of dots in a braille cell on the currently connected display.
+    long? cellSize;
   };
 
   callback DisplayStateCallback = void(DisplayState result);

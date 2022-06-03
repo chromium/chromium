@@ -21,7 +21,7 @@ function createBox(name) {
 }
 
 function runTest() {
-    var shadowRoot = host.createShadowRoot();
+    var shadowRoot = host.attachShadow({mode: 'open'});
     var shadowDiv = createBox('shadow');
     shadowRoot.appendChild(shadowDiv);
 

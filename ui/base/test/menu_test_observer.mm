@@ -4,7 +4,7 @@
 
 #import "ui/base/test/menu_test_observer.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "base/mac/objc_release_properties.h"
 
 @implementation MenuTestObserver

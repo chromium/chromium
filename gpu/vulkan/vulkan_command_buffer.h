@@ -5,11 +5,11 @@
 #ifndef GPU_VULKAN_VULKAN_COMMAND_BUFFER_H_
 #define GPU_VULKAN_VULKAN_COMMAND_BUFFER_H_
 
-#include <vulkan/vulkan.h>
+#include <vulkan/vulkan_core.h>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/component_export.h"
 #include "base/macros.h"
-#include "gpu/vulkan/vulkan_export.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 
 namespace gpu {
@@ -17,12 +17,15 @@ namespace gpu {
 class VulkanCommandPool;
 class VulkanDeviceQueue;
 
-class VULKAN_EXPORT VulkanCommandBuffer {
+class COMPONENT_EXPORT(VULKAN) VulkanCommandBuffer {
  public:
   VulkanCommandBuffer(VulkanDeviceQueue* device_queue,
                       VulkanCommandPool* command_pool,
-                      bool primary,
-                      bool use_protected_memory);
+                      bool primary);
+
+  VulkanCommandBuffer(const VulkanCommandBuffer&) = delete;
+  VulkanCommandBuffer& operator=(const VulkanCommandBuffer&) = delete;
+
   ~VulkanCommandBuffer();
 
   bool Initialize();
@@ -59,6 +62,12 @@ class VULKAN_EXPORT VulkanCommandBuffer {
                          uint32_t buffer_height,
                          uint32_t width,
                          uint32_t height);
+  void CopyImageToBuffer(VkBuffer buffer,
+                         VkImage image,
+                         uint32_t buffer_width,
+                         uint32_t buffer_height,
+                         uint32_t width,
+                         uint32_t height);
 
  private:
   friend class CommandBufferRecorderBase;
@@ -85,18 +94,15 @@ class VULKAN_EXPORT VulkanCommandBuffer {
   void ResetIfDirty();
 
   const bool primary_;
-  const bool use_protected_memory_;
   bool recording_ = false;
   RecordType record_type_ = RECORD_TYPE_EMPTY;
   VulkanDeviceQueue* device_queue_;
   VulkanCommandPool* command_pool_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
   VulkanFenceHelper::FenceHandle submission_fence_;
-
-  DISALLOW_COPY_AND_ASSIGN(VulkanCommandBuffer);
 };
 
-class VULKAN_EXPORT CommandBufferRecorderBase {
+class COMPONENT_EXPORT(VULKAN) CommandBufferRecorderBase {
  public:
   VkCommandBuffer handle() const { return handle_; }
 
@@ -127,24 +133,30 @@ class VULKAN_EXPORT CommandBufferRecorderBase {
   VkCommandBuffer handle_;
 };
 
-class VULKAN_EXPORT ScopedMultiUseCommandBufferRecorder
+class COMPONENT_EXPORT(VULKAN) ScopedMultiUseCommandBufferRecorder
     : public CommandBufferRecorderBase {
  public:
   ScopedMultiUseCommandBufferRecorder(VulkanCommandBuffer& command_buffer);
-  ~ScopedMultiUseCommandBufferRecorder() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedMultiUseCommandBufferRecorder);
+  ScopedMultiUseCommandBufferRecorder(
+      const ScopedMultiUseCommandBufferRecorder&) = delete;
+  ScopedMultiUseCommandBufferRecorder& operator=(
+      const ScopedMultiUseCommandBufferRecorder&) = delete;
+
+  ~ScopedMultiUseCommandBufferRecorder() override {}
 };
 
-class VULKAN_EXPORT ScopedSingleUseCommandBufferRecorder
+class COMPONENT_EXPORT(VULKAN) ScopedSingleUseCommandBufferRecorder
     : public CommandBufferRecorderBase {
  public:
   ScopedSingleUseCommandBufferRecorder(VulkanCommandBuffer& command_buffer);
-  ~ScopedSingleUseCommandBufferRecorder() override {}
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedSingleUseCommandBufferRecorder);
+  ScopedSingleUseCommandBufferRecorder(
+      const ScopedSingleUseCommandBufferRecorder&) = delete;
+  ScopedSingleUseCommandBufferRecorder& operator=(
+      const ScopedSingleUseCommandBufferRecorder&) = delete;
+
+  ~ScopedSingleUseCommandBufferRecorder() override {}
 };
 
 }  // namespace gpu

@@ -1,10 +1,11 @@
 // GENERATED CONTENT - DO NOT EDIT
-// Content was automatically extracted by Reffy into reffy-reports
-// (https://github.com/tidoust/reffy-reports)
+// Content was automatically extracted by Reffy into webref
+// (https://github.com/w3c/webref)
 // Source: UI Events (https://w3c.github.io/uievents/)
 
-[Constructor(DOMString type, optional UIEventInit eventInitDict), Exposed=Window]
+[Exposed=Window]
 interface UIEvent : Event {
+  constructor(DOMString type, optional UIEventInit eventInitDict = {});
   readonly attribute Window? view;
   readonly attribute long detail;
 };
@@ -14,8 +15,9 @@ dictionary UIEventInit : EventInit {
   long detail = 0;
 };
 
-[Constructor(DOMString type, optional FocusEventInit eventInitDict), Exposed=Window]
+[Exposed=Window]
 interface FocusEvent : UIEvent {
+  constructor(DOMString type, optional FocusEventInit eventInitDict = {});
   readonly attribute EventTarget? relatedTarget;
 };
 
@@ -23,8 +25,9 @@ dictionary FocusEventInit : UIEventInit {
   EventTarget? relatedTarget = null;
 };
 
-[Constructor(DOMString type, optional MouseEventInit eventInitDict), Exposed=Window]
+[Exposed=Window]
 interface MouseEvent : UIEvent {
+  constructor(DOMString type, optional MouseEventInit eventInitDict = {});
   readonly attribute long screenX;
   readonly attribute long screenY;
   readonly attribute long clientX;
@@ -72,8 +75,9 @@ dictionary EventModifierInit : UIEventInit {
   boolean modifierSymbolLock = false;
 };
 
-[Constructor(DOMString type, optional WheelEventInit eventInitDict), Exposed=Window]
+[Exposed=Window]
 interface WheelEvent : MouseEvent {
+  constructor(DOMString type, optional WheelEventInit eventInitDict = {});
   // DeltaModeCode
   const unsigned long DOM_DELTA_PIXEL = 0x00;
   const unsigned long DOM_DELTA_LINE  = 0x01;
@@ -92,21 +96,23 @@ dictionary WheelEventInit : MouseEventInit {
   unsigned long deltaMode = 0;
 };
 
-[Constructor(DOMString type, optional InputEventInit eventInitDict), Exposed=Window]
+[Exposed=Window]
 interface InputEvent : UIEvent {
+  constructor(DOMString type, optional InputEventInit eventInitDict = {});
   readonly attribute DOMString? data;
   readonly attribute boolean isComposing;
   readonly attribute DOMString inputType;
 };
 
 dictionary InputEventInit : UIEventInit {
-  DOMString? data = "";
+  DOMString? data = null;
   boolean isComposing = false;
   DOMString inputType = "";
 };
 
-[Constructor(DOMString type, optional KeyboardEventInit eventInitDict), Exposed=Window]
+[Exposed=Window]
 interface KeyboardEvent : UIEvent {
+  constructor(DOMString type, optional KeyboardEventInit eventInitDict = {});
   // KeyLocationCode
   const unsigned long DOM_KEY_LOCATION_STANDARD = 0x00;
   const unsigned long DOM_KEY_LOCATION_LEFT = 0x01;
@@ -136,8 +142,9 @@ dictionary KeyboardEventInit : EventModifierInit {
   boolean isComposing = false;
 };
 
-[Constructor(DOMString type, optional CompositionEventInit eventInitDict), Exposed=Window]
+[Exposed=Window]
 interface CompositionEvent : UIEvent {
+  constructor(DOMString type, optional CompositionEventInit eventInitDict = {});
   readonly attribute DOMString data;
 };
 
@@ -146,12 +153,96 @@ dictionary CompositionEventInit : UIEventInit {
 };
 
 partial interface UIEvent {
+  // Deprecated in this specification
+  undefined initUIEvent(DOMString typeArg,
+    optional boolean bubblesArg = false,
+    optional boolean cancelableArg = false,
+    optional Window? viewArg = null,
+    optional long detailArg = 0);
+};
+
+partial interface MouseEvent {
+  // Deprecated in this specification
+  undefined initMouseEvent(DOMString typeArg,
+    optional boolean bubblesArg = false,
+    optional boolean cancelableArg = false,
+    optional Window? viewArg = null,
+    optional long detailArg = 0,
+    optional long screenXArg = 0,
+    optional long screenYArg = 0,
+    optional long clientXArg = 0,
+    optional long clientYArg = 0,
+    optional boolean ctrlKeyArg = false,
+    optional boolean altKeyArg = false,
+    optional boolean shiftKeyArg = false,
+    optional boolean metaKeyArg = false,
+    optional short buttonArg = 0,
+    optional EventTarget? relatedTargetArg = null);
+};
+
+partial interface KeyboardEvent {
+  // Originally introduced (and deprecated) in this specification
+  undefined initKeyboardEvent(DOMString typeArg,
+    optional boolean bubblesArg = false,
+    optional boolean cancelableArg = false,
+    optional Window? viewArg = null,
+    optional DOMString keyArg = "",
+    optional unsigned long locationArg = 0,
+    optional boolean ctrlKey = false,
+    optional boolean altKey = false,
+    optional boolean shiftKey = false,
+    optional boolean metaKey = false);
+};
+
+partial interface CompositionEvent {
+  // Originally introduced (and deprecated) in this specification
+  undefined initCompositionEvent(DOMString typeArg,
+    optional boolean bubblesArg = false,
+    optional boolean cancelableArg = false,
+    optional WindowProxy? viewArg = null,
+    optional DOMString dataArg = "");
+};
+
+partial interface UIEvent {
   // The following support legacy user agents
   readonly attribute unsigned long which;
+};
+
+partial dictionary UIEventInit {
+  unsigned long which = 0;
 };
 
 partial interface KeyboardEvent {
   // The following support legacy user agents
   readonly attribute unsigned long charCode;
   readonly attribute unsigned long keyCode;
+};
+
+partial dictionary KeyboardEventInit {
+  // The following support legacy user agents
+  unsigned long charCode = 0;
+  unsigned long keyCode = 0;
+};
+
+[Exposed=Window]
+interface MutationEvent : Event {
+  // attrChangeType
+  const unsigned short MODIFICATION = 1;
+  const unsigned short ADDITION = 2;
+  const unsigned short REMOVAL = 3;
+
+  readonly attribute Node? relatedNode;
+  readonly attribute DOMString prevValue;
+  readonly attribute DOMString newValue;
+  readonly attribute DOMString attrName;
+  readonly attribute unsigned short attrChange;
+
+  undefined initMutationEvent(DOMString typeArg,
+    optional boolean bubblesArg = false,
+    optional boolean cancelableArg = false,
+    optional Node? relatedNodeArg = null,
+    optional DOMString prevValueArg = "",
+    optional DOMString newValueArg = "",
+    optional DOMString attrNameArg = "",
+    optional unsigned short attrChangeArg = 0);
 };

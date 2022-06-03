@@ -11,9 +11,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
+#include "chrome/browser/predictors/predictors_features.h"
 #include "sql/statement.h"
-
-using google::protobuf::MessageLite;
 
 namespace {
 
@@ -85,11 +84,11 @@ void ResourcePrefetchPredictorTables::SortOrigins(
 
 ResourcePrefetchPredictorTables::ResourcePrefetchPredictorTables(
     scoped_refptr<base::SequencedTaskRunner> db_task_runner)
-    : PredictorTableBase(db_task_runner) {
+    : sqlite_proto::TableManager(db_task_runner) {
   host_redirect_table_ =
-      std::make_unique<LoadingPredictorKeyValueTable<RedirectData>>(
+      std::make_unique<sqlite_proto::KeyValueTable<RedirectData>>(
           kHostRedirectTableName);
-  origin_table_ = std::make_unique<LoadingPredictorKeyValueTable<OriginData>>(
+  origin_table_ = std::make_unique<sqlite_proto::KeyValueTable<OriginData>>(
       kOriginTableName);
 }
 
@@ -110,36 +109,22 @@ float ResourcePrefetchPredictorTables::ComputeOriginScore(
   bool is_high_confidence = confidence > .75 && origin.number_of_hits() > 10;
   score += is_high_confidence * 1e6;
 
-  score += origin.always_access_network() * 1e4;
+  if (!base::FeatureList::IsEnabled(
+          features::kLoadingPredictorDisregardAlwaysAccessesNetwork)) {
+    score += origin.always_access_network() * 1e4;
+  }
+
   score += origin.accessed_network() * 1e2;
   score += 1e2 - origin.average_position();
 
   return score;
 }
 
-void ResourcePrefetchPredictorTables::ScheduleDBTask(
-    const base::Location& from_here,
-    DBTask task) {
-  GetTaskRunner()->PostTask(
-      from_here,
-      base::BindOnce(
-          &ResourcePrefetchPredictorTables::ExecuteDBTaskOnDBSequence, this,
-          std::move(task)));
-}
-
-void ResourcePrefetchPredictorTables::ExecuteDBTaskOnDBSequence(DBTask task) {
-  DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
-  if (CantAccessDatabase())
-    return;
-
-  std::move(task).Run(DB());
-}
-
-LoadingPredictorKeyValueTable<RedirectData>*
+sqlite_proto::KeyValueTable<RedirectData>*
 ResourcePrefetchPredictorTables::host_redirect_table() {
   return host_redirect_table_.get();
 }
-LoadingPredictorKeyValueTable<OriginData>*
+sqlite_proto::KeyValueTable<OriginData>*
 ResourcePrefetchPredictorTables::origin_table() {
   return origin_table_.get();
 }
@@ -213,7 +198,12 @@ bool ResourcePrefetchPredictorTables::SetDatabaseVersion(sql::Database* db,
   return statement.Run();
 }
 
-void ResourcePrefetchPredictorTables::CreateTableIfNonExistent() {
+void ResourcePrefetchPredictorTables::CreateOrClearTablesIfNecessary() {
+  // TODO(crbug.com/1229370): This method's logic is almost identical to
+  // sqlite_proto::ProtoTableManager::CreateOrClearTablesIfNecessary, so the two
+  // classes could probably share a common implementation wrapping
+  // sql::MetaTable.
+
   DCHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
   if (CantAccessDatabase())
     return;

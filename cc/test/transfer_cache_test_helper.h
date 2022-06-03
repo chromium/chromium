@@ -5,25 +5,26 @@
 #ifndef CC_TEST_TRANSFER_CACHE_TEST_HELPER_H_
 #define CC_TEST_TRANSFER_CACHE_TEST_HELPER_H_
 
+#include <limits>
 #include <map>
+#include <memory>
+#include <set>
 #include <vector>
 
 #include "base/containers/span.h"
 #include "cc/paint/transfer_cache_deserialize_helper.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
-#include "third_party/skia/include/gpu/GrContext.h"
-
-class GrContext;
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 
 namespace cc {
 
 class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
                                 public TransferCacheSerializeHelper {
  public:
-  explicit TransferCacheTestHelper(GrContext* context = nullptr);
+  explicit TransferCacheTestHelper(GrDirectContext* context = nullptr);
   ~TransferCacheTestHelper() override;
 
-  void SetGrContext(GrContext* context);
+  void SetGrContext(GrDirectContext* context);
   void SetCachedItemsLimit(size_t limit);
 
   // Direct Access API (simulates ContextSupport methods).
@@ -59,8 +60,8 @@ class TransferCacheTestHelper : public TransferCacheDeserializeHelper,
   std::set<EntryKey> locked_entries_;
   EntryKey last_added_entry_ = {TransferCacheEntryType::kRawMemory, ~0};
 
-  GrContext* context_ = nullptr;
-  sk_sp<GrContext> owned_context_;
+  GrDirectContext* context_ = nullptr;
+  sk_sp<GrDirectContext> owned_context_;
   size_t cached_items_limit_ = std::numeric_limits<size_t>::max();
 };
 

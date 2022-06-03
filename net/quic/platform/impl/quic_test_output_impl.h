@@ -5,18 +5,15 @@
 #ifndef NET_QUIC_PLATFORM_IMPL_QUIC_TEST_OUTPUT_IMPL_H_
 #define NET_QUIC_PLATFORM_IMPL_QUIC_TEST_OUTPUT_IMPL_H_
 
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
+#include "third_party/abseil-cpp/absl/strings/string_view.h"
 
 namespace quic {
 
-void QuicSaveTestOutputImpl(quiche::QuicheStringPiece filename,
-                            quiche::QuicheStringPiece data);
+void QuicSaveTestOutputImpl(absl::string_view filename, absl::string_view data);
 
-bool QuicLoadTestOutputImpl(quiche::QuicheStringPiece filename,
-                            std::string* data);
+bool QuicLoadTestOutputImpl(absl::string_view filename, std::string* data);
 
-void QuicRecordTraceImpl(quiche::QuicheStringPiece identifier,
-                         quiche::QuicheStringPiece data);
+void QuicRecordTraceImpl(absl::string_view identifier, absl::string_view data);
 
 }  // namespace quic
 

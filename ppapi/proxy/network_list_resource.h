@@ -7,9 +7,6 @@
 
 #include <stdint.h>
 
-#include <string>
-#include <vector>
-
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/private/ppb_net_address_private.h"
@@ -27,6 +24,10 @@ class NetworkListResource
  public:
   NetworkListResource(PP_Instance instance,
                       const SerializedNetworkList& list);
+
+  NetworkListResource(const NetworkListResource&) = delete;
+  NetworkListResource& operator=(const NetworkListResource&) = delete;
+
   ~NetworkListResource() override;
 
   // Resource override.
@@ -43,8 +44,6 @@ class NetworkListResource
 
  private:
   SerializedNetworkList list_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkListResource);
 };
 
 }  // namespace proxy

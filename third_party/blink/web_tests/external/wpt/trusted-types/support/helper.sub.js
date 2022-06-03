@@ -24,6 +24,18 @@ function createScriptURLJS(scripturl) {
   return scripturl.replace("scripturl", "successful");
 }
 
+function createHTMLJSWithThreeArguments(html0, html1, html2) {
+  return html0 + html1 + html2;
+}
+
+function createScriptJSWithThreeArguments(script0, script1, script2) {
+  return script0 + script1 + script2;
+}
+
+function createScriptURLJSWithThreeArguments(scripturl0, scripturl1, scripturl2) {
+  return scripturl0 + scripturl1 + scripturl2;
+}
+
 function createHTML_policy(win, c) {
   return win.trustedTypes.createPolicy('SomeHTMLPolicyName' + c, { createHTML: createHTMLJS });
 }
@@ -63,7 +75,7 @@ function assert_element_accepts_trusted_type(tag, attribute, value, expected) {
 function assert_throws_no_trusted_type(tag, attribute, value) {
   let elem = document.createElement(tag);
   let prev = elem[attribute];
-  assert_throws(new TypeError(), _ => {
+  assert_throws_js(TypeError, _ => {
     elem[attribute] = value;
   });
   assert_equals(elem[attribute], prev);
@@ -99,7 +111,7 @@ function assert_element_accepts_trusted_type_explicit_set(tag, attribute, value,
 function assert_throws_no_trusted_type_explicit_set(tag, attribute, value) {
   let elem = document.createElement(tag);
   let prev = elem[attribute];
-  assert_throws(new TypeError(), _ => {
+  assert_throws_js(TypeError, _ => {
     elem.setAttribute(attribute, value);
   });
   assert_equals(elem[attribute], prev);
@@ -141,7 +153,7 @@ function assert_element_accepts_trusted_type_set_ns(tag, attribute, value, expec
 
 function assert_throws_no_trusted_type_set_ns(tag, attribute, value) {
   let elem = document.createElement(tag);
-  assert_throws(new TypeError(), _ => {
+  assert_throws_js(TypeError, _ => {
     elem.setAttributeNS(namespace, attribute, value);
   });
 }

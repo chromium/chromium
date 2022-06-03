@@ -74,6 +74,12 @@ CWV_EXPORT
 // Results in No-op if the page was never translated.
 - (void)revertTranslation;
 
+// If the |delegate| was not offered to translate the page via the method
+// |translationController:canOfferTranslationFromLanguage:toLanguage:|, this
+// method may be called to manually trigger it.
+// Returns boolean indicating if a translation can be offered.
+- (BOOL)requestTranslationOffer;
+
 // Sets or retrieves translation policies associated with a specified language.
 // |pageLanguage| should be the language code of the language.
 - (void)setTranslationPolicy:(CWVTranslationPolicy*)policy

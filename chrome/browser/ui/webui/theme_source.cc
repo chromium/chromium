@@ -8,11 +8,10 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/resources_util.h"
-#include "chrome/browser/search/instant_io_context.h"
+#include "chrome/browser/search/instant_service.h"
 #include "chrome/browser/themes/browser_theme_pack.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -27,7 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "net/url_request/url_request.h"
+#include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -44,10 +43,9 @@ GURL GetThemeUrl(const std::string& path) {
 }
 
 bool IsNewTabCssPath(const std::string& path) {
-  static const char kNewTabCSSPath[] = "css/new_tab_theme.css";
-  static const char kIncognitoNewTabCSSPath[] =
-      "css/incognito_new_tab_theme.css";
-  return (path == kNewTabCSSPath) || (path == kIncognitoNewTabCSSPath);
+  static const char kNewTabThemeCssPath[] = "css/new_tab_theme.css";
+  static const char kIncognitoTabThemeCssPath[] = "css/incognito_tab_theme.css";
+  return path == kNewTabThemeCssPath || path == kIncognitoTabThemeCssPath;
 }
 
 void ProcessImageOnUiThread(const gfx::ImageSkia& image,
@@ -59,26 +57,22 @@ void ProcessImageOnUiThread(const gfx::ImageSkia& image,
       rep.GetBitmap(), false /* discard transparency */, &data->data());
 }
 
-void ProcessResourceOnUiThread(int resource_id,
-                               float scale,
-                               scoped_refptr<base::RefCountedBytes> data) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  ProcessImageOnUiThread(
-      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id),
-      scale, data);
-}
-
 }  // namespace
 
 ////////////////////////////////////////////////////////////////////////////////
 // ThemeSource, public:
 
-ThemeSource::ThemeSource(Profile* profile) : profile_(profile) {}
+ThemeSource::ThemeSource(Profile* profile)
+    : profile_(profile), serve_untrusted_(false) {}
+
+ThemeSource::ThemeSource(Profile* profile, bool serve_untrusted)
+    : profile_(profile), serve_untrusted_(serve_untrusted) {}
 
 ThemeSource::~ThemeSource() = default;
 
 std::string ThemeSource::GetSource() {
-  return chrome::kChromeUIThemeHost;
+  return serve_untrusted_ ? chrome::kChromeUIUntrustedThemeURL
+                          : chrome::kChromeUIThemeHost;
 }
 
 void ThemeSource::StartDataRequest(
@@ -97,9 +91,9 @@ void ThemeSource::StartDataRequest(
   if (IsNewTabCssPath(parsed_path)) {
     DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     NTPResourceCache::WindowType type =
-        NTPResourceCache::GetWindowType(profile_, /*render_host=*/nullptr);
+        NTPResourceCache::GetWindowType(profile_);
     NTPResourceCache* cache = NTPResourceCacheFactory::GetForProfile(profile_);
-    std::move(callback).Run(cache->GetNewTabCSS(type));
+    std::move(callback).Run(cache->GetNewTabCSS(type, wc_getter));
     return;
   }
 
@@ -140,8 +134,8 @@ void ThemeSource::StartDataRequest(
   // We don't want to clamp to the max scale factor, though, for devices that
   // use 2x scale without 2x data packs, as well as omnibox requests for larger
   // (but still reasonable) scales (see below).
-  const float max_scale = ui::GetScaleForScaleFactor(
-      ui::ResourceBundle::GetSharedInstance().GetMaxScaleFactor());
+  const float max_scale = ui::GetScaleForResourceScaleFactor(
+      ui::ResourceBundle::GetSharedInstance().GetMaxResourceScaleFactor());
   const float unreasonable_scale = max_scale * 32;
   // TODO(reveman): Add support frames beyond 0 (crbug.com/750064).
   if ((resource_id == -1) || (scale >= unreasonable_scale) || (frame > 0)) {
@@ -169,36 +163,17 @@ std::string ThemeSource::GetMimeType(const std::string& path) {
   return IsNewTabCssPath(parsed_path) ? "text/css" : "image/png";
 }
 
-scoped_refptr<base::SingleThreadTaskRunner>
-ThemeSource::TaskRunnerForRequestPath(const std::string& path) {
-  std::string parsed_path;
-  webui::ParsePathAndScale(GetThemeUrl(path), &parsed_path, nullptr);
-
-  if (IsNewTabCssPath(parsed_path)) {
-    // We'll get this data from the NTPResourceCache, which must be accessed on
-    // the UI thread.
-    return content::URLDataSource::TaskRunnerForRequestPath(path);
-  }
-
-  // If it's not a themeable image, we don't need to go to the UI thread.
-  int resource_id = ResourcesUtil::GetThemeResourceId(parsed_path);
-  return BrowserThemePack::IsPersistentImageID(resource_id)
-             ? content::URLDataSource::TaskRunnerForRequestPath(path)
-             : nullptr;
-}
-
 bool ThemeSource::AllowCaching() {
   return false;
 }
 
-bool ThemeSource::ShouldServiceRequest(
-    const GURL& url,
-    content::ResourceContext* resource_context,
-    int render_process_id) {
+bool ThemeSource::ShouldServiceRequest(const GURL& url,
+                                       content::BrowserContext* browser_context,
+                                       int render_process_id) {
   return url.SchemeIs(chrome::kChromeSearchScheme)
-             ? InstantIOContext::ShouldServiceRequest(url, resource_context,
-                                                      render_process_id)
-             : URLDataSource::ShouldServiceRequest(url, resource_context,
+             ? InstantService::ShouldServiceRequest(url, browser_context,
+                                                    render_process_id)
+             : URLDataSource::ShouldServiceRequest(url, browser_context,
                                                    render_process_id);
 }
 
@@ -209,15 +184,14 @@ void ThemeSource::SendThemeBitmap(
     content::URLDataSource::GotDataCallback callback,
     int resource_id,
     float scale) {
-  ui::ScaleFactor scale_factor = ui::GetSupportedScaleFactor(scale);
+  ui::ResourceScaleFactor scale_factor =
+      ui::GetSupportedResourceScaleFactor(scale);
   if (BrowserThemePack::IsPersistentImageID(resource_id)) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     scoped_refptr<base::RefCountedMemory> image_data(
         ThemeService::GetThemeProviderForProfile(profile_->GetOriginalProfile())
             .GetRawData(resource_id, scale_factor));
     std::move(callback).Run(image_data.get());
   } else {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
     const ui::ResourceBundle& rb = ui::ResourceBundle::GetSharedInstance();
     std::move(callback).Run(
         rb.LoadDataResourceBytesForScale(resource_id, scale_factor));
@@ -228,22 +202,18 @@ void ThemeSource::SendThemeImage(
     content::URLDataSource::GotDataCallback callback,
     int resource_id,
     float scale) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   scoped_refptr<base::RefCountedBytes> data(new base::RefCountedBytes());
   if (BrowserThemePack::IsPersistentImageID(resource_id)) {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
     const ui::ThemeProvider& tp = ThemeService::GetThemeProviderForProfile(
         profile_->GetOriginalProfile());
     ProcessImageOnUiThread(*tp.GetImageSkiaNamed(resource_id), scale, data);
-    std::move(callback).Run(data.get());
   } else {
-    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-    // Fetching image data in ResourceBundle should happen on the UI thread. See
-    // crbug.com/449277
-    base::PostTaskAndReply(
-        FROM_HERE, {content::BrowserThread::UI},
-        base::BindOnce(&ProcessResourceOnUiThread, resource_id, scale, data),
-        base::BindOnce(std::move(callback), data));
+    ProcessImageOnUiThread(
+        *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(resource_id),
+        scale, data);
   }
+  std::move(callback).Run(data.get());
 }
 
 std::string ThemeSource::GetAccessControlAllowOriginForOrigin(
@@ -256,4 +226,15 @@ std::string ThemeSource::GetAccessControlAllowOriginForOrigin(
   }
 
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
+}
+
+std::string ThemeSource::GetContentSecurityPolicy(
+    network::mojom::CSPDirectiveName directive) {
+  if (directive == network::mojom::CSPDirectiveName::DefaultSrc &&
+      serve_untrusted_) {
+    // TODO(https://crbug.com/1085327): Audit and tighten CSP.
+    return std::string();
+  }
+
+  return content::URLDataSource::GetContentSecurityPolicy(directive);
 }

@@ -39,6 +39,18 @@ Found results: 1
 filterText: -is:from-cache
 Found results: 3
 
+filterText: http
+Found results: 0
+
+filterText: http:
+Found results: 0
+
+filterText: http://
+Found results: 0
+
+filterText: http://127.0.0.1:8000/
+Found results: 4
+
 hide data URLs unchecked
 Found results: 6
 

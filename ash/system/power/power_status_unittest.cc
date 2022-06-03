@@ -1,4 +1,4 @@
-// Copyright (c) 2013 The Chromium Authors. All rights reserved.
+// Copyright (c) 2014 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -21,6 +21,10 @@ namespace {
 class TestObserver : public PowerStatus::Observer {
  public:
   TestObserver() : power_changed_count_(0) {}
+
+  TestObserver(const TestObserver&) = delete;
+  TestObserver& operator=(const TestObserver&) = delete;
+
   ~TestObserver() override = default;
 
   int power_changed_count() const { return power_changed_count_; }
@@ -30,8 +34,6 @@ class TestObserver : public PowerStatus::Observer {
 
  private:
   int power_changed_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestObserver);
 };
 
 }  // namespace
@@ -39,12 +41,16 @@ class TestObserver : public PowerStatus::Observer {
 class PowerStatusTest : public AshTestBase {
  public:
   PowerStatusTest() = default;
+
+  PowerStatusTest(const PowerStatusTest&) = delete;
+  PowerStatusTest& operator=(const PowerStatusTest&) = delete;
+
   ~PowerStatusTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
     power_status_ = PowerStatus::Get();
-    test_observer_.reset(new TestObserver);
+    test_observer_ = std::make_unique<TestObserver>();
     power_status_->AddObserver(test_observer_.get());
   }
 
@@ -57,9 +63,6 @@ class PowerStatusTest : public AshTestBase {
  protected:
   PowerStatus* power_status_ = nullptr;  // Not owned.
   std::unique_ptr<TestObserver> test_observer_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PowerStatusTest);
 };
 
 TEST_F(PowerStatusTest, InitializeAndUpdate) {
@@ -204,17 +207,17 @@ TEST_F(PowerStatusTest, BatteryImageInfoChargeLevel) {
   EXPECT_EQ(0, power_status_->GetBatteryImageInfo().charge_percent);
   gfx::Image empty_image = get_battery_image();
 
-  // 16% and 17% look different (assuming a height of 16, i.e. kTrayIconSize).
-  prop.set_battery_percent(16.0);
+  // 10% and 20% look different.
+  prop.set_battery_percent(10.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(16, power_status_->GetBatteryImageInfo().charge_percent);
-  gfx::Image image_16 = get_battery_image();
-  EXPECT_FALSE(gfx::test::AreImagesEqual(empty_image, image_16));
-  prop.set_battery_percent(17.0);
+  EXPECT_EQ(10.0, power_status_->GetBatteryImageInfo().charge_percent);
+  gfx::Image image_10 = get_battery_image();
+  EXPECT_FALSE(gfx::test::AreImagesEqual(empty_image, image_10));
+  prop.set_battery_percent(20.0);
   power_status_->SetProtoForTesting(prop);
-  EXPECT_EQ(17, power_status_->GetBatteryImageInfo().charge_percent);
-  gfx::Image image_17 = get_battery_image();
-  EXPECT_FALSE(gfx::test::AreImagesEqual(image_16, image_17));
+  EXPECT_EQ(20.0, power_status_->GetBatteryImageInfo().charge_percent);
+  gfx::Image image_20 = get_battery_image();
+  EXPECT_FALSE(gfx::test::AreImagesEqual(image_10, image_20));
 
   // 99% and 100% look different.
   prop.set_battery_percent(99.0);
@@ -230,14 +233,14 @@ TEST_F(PowerStatusTest, BatteryImageInfoChargeLevel) {
 
 // Tests that positive time-to-full and time-to-empty estimates are honored.
 TEST_F(PowerStatusTest, PositiveBatteryTimeEstimates) {
-  constexpr auto kTime = base::TimeDelta::FromSeconds(120);
+  constexpr auto kTime = base::Seconds(120);
 
   PowerSupplyProperties prop;
   prop.set_external_power(PowerSupplyProperties::AC);
   prop.set_battery_state(PowerSupplyProperties::CHARGING);
   prop.set_battery_time_to_full_sec(kTime.InSeconds());
   power_status_->SetProtoForTesting(prop);
-  base::Optional<base::TimeDelta> time = power_status_->GetBatteryTimeToFull();
+  absl::optional<base::TimeDelta> time = power_status_->GetBatteryTimeToFull();
   ASSERT_TRUE(time);
   EXPECT_EQ(kTime, *time);
 
@@ -261,7 +264,7 @@ TEST_F(PowerStatusTest, MissingBatteryTimeEstimates) {
   prop.set_external_power(PowerSupplyProperties::AC);
   prop.set_battery_state(PowerSupplyProperties::NOT_PRESENT);
   power_status_->SetProtoForTesting(prop);
-  base::Optional<base::TimeDelta> time = power_status_->GetBatteryTimeToFull();
+  absl::optional<base::TimeDelta> time = power_status_->GetBatteryTimeToFull();
   EXPECT_FALSE(time) << *time << " returned despite missing battery";
   time = power_status_->GetBatteryTimeToEmpty();
   EXPECT_FALSE(time) << *time << " returned despite missing battery";
@@ -281,6 +284,16 @@ TEST_F(PowerStatusTest, MissingBatteryTimeEstimates) {
   power_status_->SetProtoForTesting(prop);
   time = power_status_->GetBatteryTimeToEmpty();
   EXPECT_FALSE(time) << *time << " returned despite negative estimate";
+}
+
+TEST_F(PowerStatusTest, PreferredMinimumExternalPower) {
+  PowerSupplyProperties prop;
+  prop.set_external_power(PowerSupplyProperties::USB);
+  prop.set_battery_state(PowerSupplyProperties::NOT_PRESENT);
+  prop.set_preferred_minimum_external_power(23.45);
+  power_status_->SetProtoForTesting(prop);
+
+  EXPECT_EQ(23.45, power_status_->GetPreferredMinimumPower());
 }
 
 }  // namespace ash

@@ -32,9 +32,7 @@ config("crashpad_is_in_fuchsia") {
 
 group("default_exe_manifest_win") {
   if (crashpad_is_in_chromium) {
-    deps = [
-      "//build/win:default_exe_manifest",
-    ]
+    deps = [ "//build/win:default_exe_manifest" ]
   }
 }
 
@@ -54,7 +52,7 @@ if (crashpad_is_ios) {
       public_configs = [ "//build/config/compiler:enable_arc" ]
     } else if (crashpad_is_standalone) {
       public_configs =
-          [ "//third_party/mini_chromium/mini_chromium/build:ios_enable_arc" ]
+          [ "//third_party/mini_chromium/mini_chromium/build/config:ios_enable_arc" ]
     }
   }
 

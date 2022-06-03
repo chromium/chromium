@@ -1073,7 +1073,7 @@ static const uint16_t kCompositionsTree[] = {
     0x0041,  // capital a
     0x00C1,  // -> capital a with acute
     0x0043,  // capital c
-    0x00C7,  // -> capital c with cedilla
+    0x0106,  // -> capital c with acute
     0x0045,  // capital e
     0x00C9,  // -> capital e with acute
     0x0047,  // capital g
@@ -1107,7 +1107,7 @@ static const uint16_t kCompositionsTree[] = {
     0x0061,  // letter a
     0x00E1,  // -> letter a with acute
     0x0063,  // letter c
-    0x00E7,  // -> letter c with cedilla
+    0x0107,  // -> letter c with acute
     0x0065,  // letter e
     0x00E9,  // -> letter e with acute
     0x0067,  // letter g
@@ -17134,7 +17134,7 @@ static const uint16_t kCompositionsTree[] = {
     0x0041,  // capital a
     0x00C1,  // -> capital a with acute
     0x0043,  // capital c
-    0x00C7,  // -> capital c with cedilla
+    0x0106,  // -> capital c with acute
     0x0045,  // capital e
     0x00C9,  // -> capital e with acute
     0x0047,  // capital g
@@ -17170,7 +17170,7 @@ static const uint16_t kCompositionsTree[] = {
     0x0061,  // letter a
     0x00E1,  // -> letter a with acute
     0x0063,  // letter c
-    0x00E7,  // -> letter c with cedilla
+    0x0107,  // -> letter c with acute
     0x0065,  // letter e
     0x00E9,  // -> letter e with acute
     0x0067,  // letter g

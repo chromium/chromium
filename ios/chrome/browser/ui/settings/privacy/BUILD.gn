@@ -1,0 +1,108 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("privacy_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "handoff_table_view_controller.h",
+    "handoff_table_view_controller.mm",
+    "privacy_navigation_commands.h",
+    "privacy_table_view_controller.h",
+    "privacy_table_view_controller.mm",
+  ]
+  deps = [
+    "resources:accessory_checkmark",
+    "resources:accessory_no_checkmark",
+    "//base",
+    "//components/handoff",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/strings",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/policy:policy_util",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/colors",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/list_model",
+    "//ios/chrome/browser/ui/settings:constants",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/cells",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view:styler",
+    "//ios/chrome/browser/ui/table_view:utils",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/browser/ui/table_view/cells:cells_constants",
+    "//ios/chrome/common",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements:popover_label_view_controller",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+  ]
+  frameworks = [ "LocalAuthentication.framework" ]
+}
+
+source_set("privacy") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "privacy_coordinator.h",
+    "privacy_coordinator.mm",
+  ]
+  deps = [
+    ":privacy_ui",
+    "//components/content_settings/core/browser",
+    "//components/content_settings/core/common",
+    "//components/prefs",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/content_settings",
+    "//ios/chrome/browser/main:public",
+    "//ios/chrome/browser/ui:feature_flags",
+    "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/settings:settings_root",
+    "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/utils",
+    "//ios/chrome/browser/ui/table_view",
+    "//ios/chrome/browser/ui/table_view/cells",
+    "//ios/chrome/common/ui/reauthentication",
+    "//ui/base",
+  ]
+  frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "privacy_table_view_controller_unittest.mm" ]
+  deps = [
+    "//components/handoff",
+    "//components/prefs",
+    "//components/prefs/ios",
+    "//components/strings",
+    "//components/sync/driver:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/browsing_data:feature_flags",
+    "//ios/chrome/browser/main:test_support",
+    "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/ui/settings/privacy:privacy_ui",
+    "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//testing/gtest",
+    "//ui/base",
+  ]
+}

@@ -8,12 +8,15 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/rrect_f.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/native_pixmap.h"
+#include "ui/gfx/overlay_priority_hint.h"
 #include "ui/gfx/overlay_transform.h"
-
 namespace ui {
 
 enum OverlayStatus {
@@ -30,8 +33,8 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   ~OverlaySurfaceCandidate();
   OverlaySurfaceCandidate& operator=(const OverlaySurfaceCandidate& other);
 
-  // Note that |clip_rect|, |is_clipped| and |overlay_handled| are
-  // *not* used as part of the comparison.
+  // Note that |clip_rect|, |overlay_handled| and |native_pixmap| are *not* used
+  // as part of the comparison.
   bool operator<(const OverlaySurfaceCandidate& other) const;
 
   // Transformation to apply to layer during composition.
@@ -49,15 +52,31 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlaySurfaceCandidate {
   gfx::RectF display_rect;
   // Crop within the buffer to be placed inside |display_rect|.
   gfx::RectF crop_rect;
-  // Clip rect in the target content space after composition.
-  gfx::Rect clip_rect;
-  // If the quad is clipped after composition.
-  bool is_clipped = false;
+  // If the quad is clipped, the clip rect in the target content space after
+  // composition.
+  absl::optional<gfx::Rect> clip_rect;
   // If the quad doesn't require blending.
   bool is_opaque = false;
+  // Opacity of the overlay independent of buffer alpha. When rendered:
+  // src-alpha = |opacity| * buffer-component-alpha.
+  float opacity = 1.0f;
+  // Optionally contains a pointer to the NativePixmap corresponding to this
+  // candidate.
+  scoped_refptr<gfx::NativePixmap> native_pixmap;
+  // A unique ID corresponding to |native_pixmap|. The ID is not reused even if
+  // |native_pixmap| is destroyed. Zero if |native_pixmap| is null.
+  // TODO(samans): This will not be necessary once Ozone/DRM not longer uses a
+  // cache for overlay testing. https://crbug.com/1034559
+  uint32_t native_pixmap_unique_id = 0;
   // To be modified by the implementer if this candidate can go into
   // an overlay.
   bool overlay_handled = false;
+  // If this candidate requires an overlay for proper display.
+  bool requires_overlay = false;
+  // Hints for overlay prioritization when delegated composition is used.
+  gfx::OverlayPriorityHint priority_hint = gfx::OverlayPriorityHint::kNone;
+  // Specifies the rounded corners of overlay in radii.
+  gfx::RRectF rounded_corners;
 };
 
 using OverlaySurfaceCandidateList = std::vector<OverlaySurfaceCandidate>;

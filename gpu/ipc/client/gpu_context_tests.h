@@ -135,7 +135,7 @@ CONTEXT_TEST_F(SignalTest, InvalidSignalQueryUnboundTest) {
 // due to inconsistent initialization of InProcessCommandBuffer which
 // isn't used on that platform. Restrict it to Android for now.
 
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || defined(OS_WIN)
 
 class GpuFenceTest : public ContextTestBase {
  public:
@@ -189,7 +189,7 @@ CONTEXT_TEST_F(GpuFenceTest, BasicGpuFenceTest) {
   gl_->DestroyGpuFenceCHROMIUM(id2);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // defined(OS_ANDROID) || defined(OS_WIN)
 
 }  // namespace
 

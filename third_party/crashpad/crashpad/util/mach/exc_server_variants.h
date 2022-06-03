@@ -20,7 +20,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "util/mach/mach_extensions.h"
 #include "util/mach/mach_message_server.h"
 
@@ -115,6 +114,9 @@ class UniversalMachExcServer final : public MachMessageServer::Interface {
   //! \param[in] interface The interface to dispatch requests to. Weak.
   explicit UniversalMachExcServer(Interface* interface);
 
+  UniversalMachExcServer(const UniversalMachExcServer&) = delete;
+  UniversalMachExcServer& operator=(const UniversalMachExcServer&) = delete;
+
   ~UniversalMachExcServer();
 
   // MachMessageServer::Interface:
@@ -127,8 +129,6 @@ class UniversalMachExcServer final : public MachMessageServer::Interface {
 
  private:
   std::unique_ptr<internal::UniversalMachExcServerImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(UniversalMachExcServer);
 };
 
 //! \brief Computes an approriate successful return value for an exception

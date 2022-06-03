@@ -79,13 +79,15 @@ class DiagnosticsReporter {
   void UniquePtrUsedWithGC(const clang::Expr* expr,
                            const clang::FunctionDecl* bad_function,
                            const clang::CXXRecordDecl* gc_type);
-  void OptionalUsedWithGC(const clang::Expr* expr,
-                          const clang::CXXRecordDecl* optional,
-                          const clang::CXXRecordDecl* gc_type);
-  void MissingMixinMarker(const clang::CXXRecordDecl* bad_class,
-                          const clang::CXXRecordDecl* mixin_class,
-                          const clang::CXXBaseSpecifier* first_base);
-  void MissingMixinMarkerNote(const clang::CXXBaseSpecifier* base);
+  void OptionalFieldUsedWithGC(const clang::FieldDecl* decl,
+                               const clang::CXXRecordDecl* optional,
+                               const clang::CXXRecordDecl* gc_type);
+  void OptionalNewExprUsedWithGC(const clang::Expr* expr,
+                                 const clang::CXXRecordDecl* optional,
+                                 const clang::CXXRecordDecl* gc_type);
+  void VariantUsedWithGC(const clang::Expr* expr,
+                         const clang::CXXRecordDecl* variant,
+                         const clang::CXXRecordDecl* gc_type);
 
  private:
   clang::DiagnosticBuilder ReportDiagnostic(
@@ -125,6 +127,7 @@ class DiagnosticsReporter {
   unsigned diag_field_should_not_be_traced_note_;
   unsigned diag_raw_ptr_to_gc_managed_class_note_;
   unsigned diag_ref_ptr_to_gc_managed_class_note_;
+  unsigned diag_weak_ptr_to_gc_managed_class_note_;
   unsigned diag_reference_ptr_to_gc_managed_class_note_;
   unsigned diag_own_ptr_to_gc_managed_class_note_;
   unsigned diag_unique_ptr_to_gc_managed_class_note_;
@@ -139,11 +142,12 @@ class DiagnosticsReporter {
   unsigned diag_manual_dispatch_method_note_;
   unsigned diag_iterator_to_gc_managed_collection_note_;
   unsigned diag_trace_method_of_stack_allocated_parent_;
+  unsigned diag_member_in_stack_allocated_class_;
 
   unsigned diag_unique_ptr_used_with_gc_;
-  unsigned diag_optional_used_with_gc_;
-  unsigned diag_missing_mixin_marker_;
-  unsigned diag_missing_mixin_marker_note_;
+  unsigned diag_optional_field_used_with_gc_;
+  unsigned diag_optional_new_expr_used_with_gc_;
+  unsigned diag_variant_used_with_gc_;
 };
 
 #endif // TOOLS_BLINK_GC_PLUGIN_DIAGNOSTICS_REPORTER_H_

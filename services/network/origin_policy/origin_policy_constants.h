@@ -7,10 +7,6 @@
 
 namespace network {
 const char kOriginPolicyWellKnown[] = "/.well-known/origin-policy";
-const char kOriginPolicyDeletePolicy[] = "0";
-const char kOriginPolicyReportTo[] = "report-to";
-const char kOriginPolicyPolicy[] = "policy";
-const char kDefaultOriginPolicyVersion[] = "0";
 
 // Maximum policy size (implementation-defined limit in bytes).
 // (Limit copied from network::SimpleURLLoader::kMaxBoundedStringDownloadSize.)

@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_SANDBOX_SUPPORT_MAC_IMPL_H_
 #define CONTENT_BROWSER_SANDBOX_SUPPORT_MAC_IMPL_H_
 
-#include "base/macros.h"
 #include "content/common/sandbox_support_mac.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
@@ -20,20 +19,22 @@ namespace content {
 class SandboxSupportMacImpl : public mojom::SandboxSupportMac {
  public:
   SandboxSupportMacImpl();
+
+  SandboxSupportMacImpl(const SandboxSupportMacImpl&) = delete;
+  SandboxSupportMacImpl& operator=(const SandboxSupportMacImpl&) = delete;
+
   ~SandboxSupportMacImpl() override;
 
   void BindReceiver(mojo::PendingReceiver<mojom::SandboxSupportMac> receiver);
 
   // content::mojom::SandboxSupportMac:
   void GetSystemColors(GetSystemColorsCallback callback) override;
-  void LoadFont(const base::string16& font_name,
+  void LoadFont(const std::u16string& font_name,
                 float font_point_size,
                 LoadFontCallback callback) override;
 
  private:
   mojo::ReceiverSet<mojom::SandboxSupportMac> receivers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SandboxSupportMacImpl);
 };
 
 }  // namespace content

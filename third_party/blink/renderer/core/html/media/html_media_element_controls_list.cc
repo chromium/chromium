@@ -12,10 +12,11 @@ namespace {
 
 const char kNoDownload[] = "nodownload";
 const char kNoFullscreen[] = "nofullscreen";
+const char kNoPlaybackRate[] = "noplaybackrate";
 const char kNoRemotePlayback[] = "noremoteplayback";
 
 const char* const kSupportedTokens[] = {kNoDownload, kNoFullscreen,
-                                        kNoRemotePlayback};
+                                        kNoPlaybackRate, kNoRemotePlayback};
 
 }  // namespace
 
@@ -41,8 +42,17 @@ bool HTMLMediaElementControlsList::ShouldHideFullscreen() const {
   return contains(kNoFullscreen);
 }
 
+bool HTMLMediaElementControlsList::ShouldHidePlaybackRate() const {
+  return contains(kNoPlaybackRate);
+}
+
 bool HTMLMediaElementControlsList::ShouldHideRemotePlayback() const {
   return contains(kNoRemotePlayback);
+}
+
+bool HTMLMediaElementControlsList::CanShowAllControls() const {
+  return ShouldHideDownload() || ShouldHideFullscreen() ||
+         ShouldHidePlaybackRate() || ShouldHideRemotePlayback();
 }
 
 }  // namespace blink

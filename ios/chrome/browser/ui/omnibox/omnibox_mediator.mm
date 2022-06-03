@@ -13,9 +13,8 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/favicon/favicon_attributes.h"
-#include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
-#include "ios/public/provider/chrome/browser/images/branded_image_provider.h"
+#import "ios/chrome/common/ui/favicon/favicon_attributes.h"
+#import "ios/public/provider/chrome/browser/branded_images/branded_images_api.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -94,30 +93,26 @@ const CGFloat kOmniboxIconSize = 16;
 
 - (void)setLeftImageForAutocompleteType:(AutocompleteMatchType::Type)matchType
                              answerType:
-                                 (base::Optional<SuggestionAnswer::AnswerType>)
+                                 (absl::optional<SuggestionAnswer::AnswerType>)
                                      answerType
                              faviconURL:(GURL)faviconURL {
   UIImage* image = GetOmniboxSuggestionIconForAutocompleteMatchType(
       matchType, /* is_starred */ false);
   [self.consumer updateAutocompleteIcon:image];
 
-  if (base::FeatureList::IsEnabled(kNewOmniboxPopupLayout)) {
-    __weak OmniboxMediator* weakSelf = self;
+  __weak OmniboxMediator* weakSelf = self;
 
-    if (AutocompleteMatch::IsSearchType(matchType)) {
-      if (base::FeatureList::IsEnabled(kOmniboxUseDefaultSearchEngineFavicon)) {
-        // Show Default Search Engine favicon.
-        [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
-          [weakSelf.consumer updateAutocompleteIcon:image];
-        }];
-      }
-    } else {
-      // Show favicon.
-      [self loadFaviconByPageURL:faviconURL
-                      completion:^(UIImage* image) {
-                        [weakSelf.consumer updateAutocompleteIcon:image];
-                      }];
-    }
+  if (AutocompleteMatch::IsSearchType(matchType)) {
+    // Show Default Search Engine favicon.
+    [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
+      [weakSelf.consumer updateAutocompleteIcon:image];
+    }];
+  } else {
+    // Show favicon.
+    [self loadFaviconByPageURL:faviconURL
+                    completion:^(UIImage* image) {
+                      [weakSelf.consumer updateAutocompleteIcon:image];
+                    }];
   }
 }
 
@@ -127,12 +122,10 @@ const CGFloat kOmniboxIconSize = 16;
   [self.consumer updateAutocompleteIcon:image];
 
   __weak OmniboxMediator* weakSelf = self;
-  if (base::FeatureList::IsEnabled(kOmniboxUseDefaultSearchEngineFavicon)) {
-    // Show Default Search Engine favicon.
-    [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
-      [weakSelf.consumer updateAutocompleteIcon:image];
-    }];
-  }
+  // Show Default Search Engine favicon.
+  [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
+    [weakSelf.consumer updateAutocompleteIcon:image];
+  }];
 }
 
 // Loads a favicon for a given page URL.
@@ -180,15 +173,23 @@ const CGFloat kOmniboxIconSize = 16;
     }
   }
 
+  const TemplateURL* defaultProvider =
+      self.templateURLService
+          ? self.templateURLService->GetDefaultSearchProvider()
+          : nullptr;
+
+  if (!defaultProvider) {
+    // Service isn't available or default provider is disabled - either way we
+    // can't get the icon.
+    return;
+  }
+
   // When the DSE is Google, use the bundled icon.
-  if (self.templateURLService &&
-      self.templateURLService->GetDefaultSearchProvider() &&
-      self.templateURLService->GetDefaultSearchProvider()->GetEngineType(
-          self.templateURLService->search_terms_data()) ==
-          SEARCH_ENGINE_GOOGLE) {
-    UIImage* bundledLogo = ios::GetChromeBrowserProvider()
-                               ->GetBrandedImageProvider()
-                               ->GetOmniboxAnswerIcon();
+  if (defaultProvider && defaultProvider->GetEngineType(
+                             self.templateURLService->search_terms_data()) ==
+                             SEARCH_ENGINE_GOOGLE) {
+    UIImage* bundledLogo = ios::provider::GetBrandedImage(
+        ios::provider::BrandedImage::kOmniboxAnswer);
 
     if (bundledLogo) {
       self.currentDefaultSearchEngineFavicon = bundledLogo;
@@ -201,10 +202,6 @@ const CGFloat kOmniboxIconSize = 16;
 
   // Can't load favicons without a favicon loader.
   DCHECK(self.faviconLoader);
-  DCHECK(base::FeatureList::IsEnabled(kOmniboxUseDefaultSearchEngineFavicon));
-
-  const TemplateURL* defaultProvider =
-      self.templateURLService->GetDefaultSearchProvider();
 
   __weak __typeof(self) weakSelf = self;
   self.latestDefaultSearchEngine = defaultProvider;
@@ -229,7 +226,7 @@ const CGFloat kOmniboxIconSize = 16;
     // favicons may be fetched from Google server which doesn't suppoprt
     // icon URL.
     std::string emptyPageUrl = defaultProvider->url_ref().ReplaceSearchTerms(
-        TemplateURLRef::SearchTermsArgs(base::string16()),
+        TemplateURLRef::SearchTermsArgs(std::u16string()),
         _templateURLService->search_terms_data());
     self.faviconLoader->FaviconForPageUrl(
         GURL(emptyPageUrl), kOmniboxIconSize, kOmniboxIconSize,
@@ -247,17 +244,14 @@ const CGFloat kOmniboxIconSize = 16;
   [_consumer
       updateSearchByImageSupported:self.searchEngineSupportsSearchByImage];
 
-  if (base::FeatureList::IsEnabled(kNewOmniboxPopupLayout) &&
-      base::FeatureList::IsEnabled(kOmniboxUseDefaultSearchEngineFavicon)) {
-    // Show Default Search Engine favicon.
-    // Remember what is the Default Search Engine provider that the icon is
-    // for, in case the user changes Default Search Engine while this is being
-    // loaded.
-    __weak __typeof(self) weakSelf = self;
-    [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
-      [weakSelf.consumer setEmptyTextLeadingImage:image];
-    }];
-  }
+  // Show Default Search Engine favicon.
+  // Remember what is the Default Search Engine provider that the icon is
+  // for, in case the user changes Default Search Engine while this is being
+  // loaded.
+  __weak __typeof(self) weakSelf = self;
+  [self loadDefaultSearchEngineFaviconWithCompletion:^(UIImage* image) {
+    [weakSelf.consumer setEmptyTextLeadingImage:image];
+  }];
 }
 
 @end

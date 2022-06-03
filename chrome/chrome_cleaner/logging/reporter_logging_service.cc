@@ -8,8 +8,9 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/singleton.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/i18n.h"
 #include "base/win/windows_version.h"
@@ -120,15 +121,15 @@ ReporterLoggingService::~ReporterLoggingService() {
 void ReporterLoggingService::Initialize(RegistryLogger* registry_logger) {
   DCHECK(!initialized_) << "LoggingService already initialized.";
 
-  std::vector<base::string16> languages;
+  std::vector<std::wstring> languages;
   base::win::i18n::GetUserPreferredUILanguageList(&languages);
-  base::string16 version_string;
+  std::wstring version_string;
   bool version_string_succeeded =
       RetrieveChromeVersionAndInstalledDomain(&version_string, nullptr);
   int channel = 0;
   bool has_chrome_channel = GetChromeChannelFromCommandLine(&channel);
   Settings* settings = Settings::GetInstance();
-  base::string16 session_id = settings->session_id();
+  std::wstring session_id = settings->session_id();
   const Engine::Name engine = settings->engine();
   const std::string engine_version = settings->engine_version();
 
@@ -242,20 +243,20 @@ void ReporterLoggingService::SetExitCode(ResultCode exit_code) {
 }
 
 void ReporterLoggingService::AddLoadedModule(
-    const base::string16& /*name*/,
+    const std::wstring& /*name*/,
     ModuleHost /*host*/,
     const internal::FileInformation& /*file_information*/) {}
 
 void ReporterLoggingService::AddService(
-    const base::string16& /*display_name*/,
-    const base::string16& /*service_name*/,
+    const std::wstring& /*display_name*/,
+    const std::wstring& /*service_name*/,
     const internal::FileInformation& /*file_information*/) {}
 
 void ReporterLoggingService::AddInstalledProgram(
     const base::FilePath& /*folder_path*/) {}
 
 void ReporterLoggingService::AddProcess(
-    const base::string16& /*name*/,
+    const std::wstring& /*name*/,
     const internal::FileInformation& /*file_information*/) {}
 
 void ReporterLoggingService::AddRegistryValue(
@@ -263,34 +264,34 @@ void ReporterLoggingService::AddRegistryValue(
     const std::vector<internal::FileInformation>& /*file_informations*/) {}
 
 void ReporterLoggingService::AddLayeredServiceProvider(
-    const std::vector<base::string16>& /*guids*/,
+    const std::vector<std::wstring>& /*guids*/,
     const internal::FileInformation& /*file_information*/) {}
 
 void ReporterLoggingService::SetWinInetProxySettings(
-    const base::string16& /*config*/,
-    const base::string16& /*bypass*/,
-    const base::string16& /*auto_config_url*/,
+    const std::wstring& /*config*/,
+    const std::wstring& /*bypass*/,
+    const std::wstring& /*auto_config_url*/,
     bool /*autodetect*/) {}
 
 void ReporterLoggingService::SetWinHttpProxySettings(
-    const base::string16& /*config*/,
-    const base::string16& /*bypass*/) {}
+    const std::wstring& /*config*/,
+    const std::wstring& /*bypass*/) {}
 
 void ReporterLoggingService::AddInstalledExtension(
-    const base::string16& extension_id,
+    const std::wstring& extension_id,
     ExtensionInstallMethod install_method,
     const std::vector<internal::FileInformation>& extension_files) {}
 
 void ReporterLoggingService::AddScheduledTask(
-    const base::string16& /*name*/,
-    const base::string16& /*description*/,
+    const std::wstring& /*name*/,
+    const std::wstring& /*description*/,
     const std::vector<internal::FileInformation>& /*actions*/) {}
 
 void ReporterLoggingService::AddShortcutData(
-    const base::string16& /*lnk_path*/,
-    const base::string16& /*executable_path*/,
+    const std::wstring& /*lnk_path*/,
+    const std::wstring& /*executable_path*/,
     const std::string& /*executable _hash*/,
-    const std::vector<base::string16>& /*command_line_arguments*/) {}
+    const std::vector<std::wstring>& /*command_line_arguments*/) {}
 
 void ReporterLoggingService::SetFoundModifiedChromeShortcuts(
     bool found_modified_shortcuts) {

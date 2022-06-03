@@ -1,0 +1,8 @@
+Test that target evens are fired for service worker
+Started and attached to service_worker target
+Received workerRegistrationUpdated with scopeURL = http://127.0.0.1:8000/inspector-protocol/service-worker/resources/
+Stopped service worker and received Inspector.targetCrashed event
+
+Restarted service worker and received Inspector.targetReloadedAfterCrash event
+Unregistered service worker and received Target.targetDestroyed event for the worker: true
+

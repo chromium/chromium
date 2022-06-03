@@ -22,3 +22,5 @@ compile.sh.
 Local modifications:
 Changed JSDoc annotations and subtle code changes to make it compile with modern
 versions of Closure Compiler. TODO(dbeam): upstream to google code project.
+
+Added Trusted Types support to jstemplate.

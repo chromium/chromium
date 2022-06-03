@@ -6,7 +6,6 @@
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "chromeos/constants/chromeos_features.h"
 
 namespace ash {
 

@@ -5,18 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_WALLPAPER_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_WALLPAPER_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 
 namespace base {
 class ListValue;
-}
-
-namespace content {
-class WebUI;
-}
-
-class Profile;
+}  // namespace base
 
 namespace chromeos {
 namespace settings {
@@ -24,7 +17,11 @@ namespace settings {
 // Chrome "Personalization" settings page UI handler.
 class WallpaperHandler : public ::settings::SettingsPageUIHandler {
  public:
-  explicit WallpaperHandler(content::WebUI* webui);
+  WallpaperHandler();
+
+  WallpaperHandler(const WallpaperHandler&) = delete;
+  WallpaperHandler& operator=(const WallpaperHandler&) = delete;
+
   ~WallpaperHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -44,10 +41,6 @@ class WallpaperHandler : public ::settings::SettingsPageUIHandler {
 
   // Helper function to resolve the Javascript callback.
   void ResolveCallback(const base::Value& callback_id, bool result);
-
-  Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperHandler);
 };
 
 }  // namespace settings

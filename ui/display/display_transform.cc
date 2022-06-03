@@ -4,6 +4,7 @@
 
 #include "ui/display/display_transform.h"
 
+#include "base/notreached.h"
 #include "ui/gfx/overlay_transform_utils.h"
 
 namespace display {

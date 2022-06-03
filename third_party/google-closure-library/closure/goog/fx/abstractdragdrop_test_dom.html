@@ -1,0 +1,37 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style>
+ #cont {
+    position: relative;
+    border: 1px solid black;
+    height: 100px;
+    width: 100px;
+  }
+  #cont div {
+    position: absolute;
+    overflow: hidden;
+  }
+</style>
+<div id="cont" style="">
+</div>
+<button onclick="drawTargets(targets, 10)">
+ draw targets 1
+</button>
+<br/>
+<button onclick="drawTargets(targets2, 1)">
+ draw targets 2
+</button>
+<br/>
+<button onclick="drawTargets(targets3, 10)">
+ draw targets 3
+</button>
+<div id="container1">
+ <div id="child1">
+ </div>
+ <div id="child2">
+ </div>
+</div>

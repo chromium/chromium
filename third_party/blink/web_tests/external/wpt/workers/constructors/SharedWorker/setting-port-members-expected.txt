@@ -2,7 +2,7 @@ This is a testharness.js-based test.
 PASS postMessage
 PASS start
 PASS close
-FAIL onmessage assert_equals: {handleEvent:function(){}} expected null but got object "[object Object]"
+FAIL onmessage assert_equals: {handleEvent:() => {}} expected null but got object "[object Object]"
 PASS addEventListener
 PASS removeEventListener
 PASS despatchEvent

@@ -1,0 +1,7 @@
+kinuko@chromium.org
+lingqi@chromium.org
+nhiroki@chromium.org
+toyoshim@chromium.org
+
+per-file *.mojom=set noparent
+per-file *.mojom=file://ipc/SECURITY_OWNERS

@@ -81,7 +81,7 @@ void FileIconSource::FetchFileIcon(
     IconLoader::IconSize icon_size,
     content::URLDataSource::GotDataCallback callback) {
   IconManager* im = g_browser_process->icon_manager();
-  gfx::Image* icon = im->LookupIconFromFilepath(path, icon_size);
+  gfx::Image* icon = im->LookupIconFromFilepath(path, icon_size, scale_factor);
 
   if (icon) {
     scoped_refptr<base::RefCountedBytes> icon_data(new base::RefCountedBytes);
@@ -97,7 +97,7 @@ void FileIconSource::FetchFileIcon(
     details.scale_factor = scale_factor;
 
     // Icon was not in cache, go fetch it slowly.
-    im->LoadIcon(path, icon_size,
+    im->LoadIcon(path, icon_size, scale_factor,
                  base::BindOnce(&FileIconSource::OnFileIconDataAvailable,
                                 base::Unretained(this), std::move(details)),
                  &cancelable_task_tracker_);

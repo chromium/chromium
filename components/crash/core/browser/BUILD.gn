@@ -13,4 +13,12 @@ static_library("browser") {
     "//components/strings",
     "//components/upload_list",
   ]
+
+  if (!is_chromeos && !is_fuchsia) {
+    sources += [
+      "crash_upload_list_crashpad.cc",
+      "crash_upload_list_crashpad.h",
+    ]
+    deps += [ "//components/crash/core/app" ]
+  }
 }

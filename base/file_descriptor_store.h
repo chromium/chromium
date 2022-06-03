@@ -10,7 +10,6 @@
 
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 
 namespace base {
 
@@ -19,6 +18,8 @@ namespace base {
 // It is used to share file descriptors from a process to its child.
 class BASE_EXPORT FileDescriptorStore {
  public:
+  FileDescriptorStore(const FileDescriptorStore&) = delete;
+  FileDescriptorStore& operator=(const FileDescriptorStore&) = delete;
   struct Descriptor {
     Descriptor(const std::string& key, base::ScopedFD fd);
     Descriptor(const std::string& key,
@@ -64,8 +65,6 @@ class BASE_EXPORT FileDescriptorStore {
   ~FileDescriptorStore();
 
   Mapping descriptors_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileDescriptorStore);
 };
 
 }  // namespace base

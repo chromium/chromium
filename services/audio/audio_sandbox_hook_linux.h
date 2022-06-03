@@ -5,13 +5,13 @@
 #ifndef SERVICES_AUDIO_AUDIO_SANDBOX_HOOK_LINUX_H_
 #define SERVICES_AUDIO_AUDIO_SANDBOX_HOOK_LINUX_H_
 
-#include "services/service_manager/sandbox/linux/sandbox_linux.h"
+#include "sandbox/policy/linux/sandbox_linux.h"
 
 namespace audio {
 
 // Load audio shared libraries and setup allowed commands and filesystem
 // permissions for audio service sandboxed process.
-bool AudioPreSandboxHook(service_manager::SandboxLinux::Options options);
+bool AudioPreSandboxHook(sandbox::policy::SandboxLinux::Options options);
 
 }  // namespace audio
 

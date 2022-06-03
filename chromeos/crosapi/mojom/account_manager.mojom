@@ -1,0 +1,217 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+
+// Types of accounts which can be stored in Account Manager.
+// This must be kept in sync with
+// //ash/components/account_manager/tokens.proto
+[Stable, Extensible]
+enum AccountType {
+  kUnspecified = 0,
+  kGaia = 1,
+  kActiveDirectory = 2,
+};
+
+// Uniquely identifies an account in Account Manager.
+[Stable]
+struct AccountKey {
+  // |id| is obfuscated Gaia id for Gaia accounts.
+  // |id| is the object GUID for Microsoft Active Directory accounts.
+  string id@0;
+
+  // Type of the account - such as Gaia, or Microsoft Active Directory.
+  AccountType account_type@1;
+};
+
+// Information about an account in Account Manager.
+[Stable]
+struct Account {
+  // A unique identifier for this account.
+  AccountKey key@0;
+
+  // The raw, un-canonicalized email id (The.Rock@gmail.com, as opposed to
+  // therock@gmail.com) for this account.
+  string raw_email@1;
+};
+
+// See google_apis/gaia/google_service_auth_error.h
+// Currently sent from ash to lacros.
+// Next value: 14.
+[Stable]
+struct GoogleServiceAuthError {
+  [Stable, Extensible]
+  enum State {
+    kNone = 0,
+    kInvalidGaiaCredentials = 1,
+    kUserNotSignedUp = 2,
+    kConnectionFailed = 3,
+    // DEPRECATED kCaptchaRequired = 4,
+    // DEPRECATED kAccountDeleted = 5,
+    // DEPRECATED kAccountDisabled = 6,
+    kServiceUnavailable = 7,
+    // DEPRECATED kTwoFactor = 8,
+    kRequestCanceled = 9,
+    // DEPRECATED kHostedNotAllowedDeprecated = 10,
+    kUnexpectedServiceResponse = 11,
+    kServiceError = 12,
+    // DEPRECATED kWebLoginRequired = 13,
+  };
+
+  // Next value: 4.
+  [Stable, Extensible]
+  enum InvalidGaiaCredentialsReason {
+    kUnknown = 0,
+    kCredentialsRejectedByServer = 1,
+    kCredentialsRejectedByClient = 2,
+    kCredentialsMissing = 3,
+  };
+
+  State state@0;
+  // Network error is set only if `state` is set to `kConnectionFailed`.
+  // In case of no network error, `network_error` is set to 0.
+  int64 network_error@1;
+  string error_message@2;
+  InvalidGaiaCredentialsReason invalid_gaia_credentials_reason@3;
+};
+
+[Stable]
+struct AccountAdditionResult {
+  // The result of account addition request.
+  // Next value: 5.
+  [Stable, Extensible]
+  enum Status {
+    kSuccess = 0,
+    kAlreadyInProgress = 1,
+    kCancelledByUser = 2,
+    kNetworkError = 3,
+    kUnexpectedResponse = 4,
+  };
+
+  Status status@0;
+  // The account that was added.
+  Account? account@1;
+  // The error is set only if `status` is set to `kNetworkError`.
+  GoogleServiceAuthError? error@2;
+};
+
+// Next ordinal value: 3
+[Stable]
+struct AccessTokenInfo {
+  // OAuth2 access token.
+  string access_token@0;
+
+  // Expiration time of `access_token`. This value has a built-in safety margin
+  // so it can be used as-is.
+  mojo_base.mojom.Time expiration_time@1;
+
+  // Contains extra information regarding the user's currently registered
+  // services.
+  string id_token@2;
+};
+
+[Stable]
+union AccessTokenResult {
+  AccessTokenInfo access_token_info;
+  GoogleServiceAuthError error;
+};
+
+// Interface for observers of Chrome OS Account Manager.
+// This interface is implemented by lacros-chrome, and is used by ash-chrome to
+// send account update notifications.
+[Stable, Uuid="f75c4963-497b-411f-97ab-c53c7f6b46ed"]
+interface AccountManagerObserver {
+  // Called when the token for |account| is updated/inserted.
+  // Note: Observers which register with |AccountManager| before its
+  // initialization is complete will get notified when |AccountManager| is fully
+  // initialized.
+  // Note: Observers which register with |AccountManager| after its
+  // initialization is complete will not get an immediate
+  // notification-on-registration.
+  OnTokenUpserted@0(Account account);
+
+  // Called when an account has been removed from Account Manager.
+  // Note: Observers that may have cached access tokens for |account| must clear
+  // their cache entry for this |account| on receiving this callback.
+  OnAccountRemoved@1(Account account);
+};
+
+// Interface for Chrome OS Account Manager.
+// Chrome OS Account Manager is the source of truth for accounts on Chrome OS -
+// including ARC, and Chrome content area. It supports Google accounts and
+// Microsoft Active Directory accounts, as of this writing.
+// This interface is implemented by ash-chrome, and is used by lacros-chrome to
+// query accounts residing in the Chrome OS Account Manager.
+// ARC++ uses components/arc/mojom/auth.mojom to talk to the Chrome OS Account
+// Manager.
+//
+// Next version: 8
+// Next method id: 9
+[Stable, Uuid="85b9a674-9d8e-497f-98d5-22c8dca6f2b8"]
+interface AccountManager {
+  // Returns |true| if Chrome OS Account Manager has been fully initialized, and
+  // |false| otherwise.
+  IsInitialized@0() => (bool is_initialized);
+
+  // Creates and returns a new receiver for |AccountManagerObserver|.
+  // This API is supposed to be called by lacros-chrome, fairly early during its
+  // initialization, to receive updates related to accounts stored in Account
+  // Manager.
+  // The connection, and the corresponding remote, is destroyed when |receiver|
+  // is destroyed. This will happen automatically when lacros is shut down.
+  [MinVersion = 1]
+  AddObserver@1() => (pending_receiver<AccountManagerObserver> receiver);
+
+  // Returns the list of accounts in AccountManager. Can be invoked before the
+  // initialization is completed (in this case the callback will be invoked
+  // after the initialization is done).
+  [MinVersion = 2]
+  GetAccounts@2() => (array<Account> accounts);
+
+  // Launches account addition dialog and returns `result` with the added
+  // account.
+  [MinVersion = 3]
+  ShowAddAccountDialog@3() => (AccountAdditionResult result);
+
+  // Launches account reauthentication dialog for provided `email`.
+  [MinVersion = 3]
+  ShowReauthAccountDialog@4(string email) => ();
+
+  // Launches OS Settings > Accounts.
+  [MinVersion = 4]
+  ShowManageAccountsSettings@5();
+
+  // Returns a persistent error state for `account`. If `account` doesn't have
+  // a persistent error or AccountManager doesn't have such an account -
+  // `GoogleServiceAuthError` with `kNone` state will be returned.
+  [MinVersion = 5]
+  GetPersistentErrorForAccount@6(AccountKey account) =>
+      (GoogleServiceAuthError error);
+
+  // Returns a remote to an interface to fetch an access token for
+  // `account_key`, to be used by `oauth_consumer_name` OAuth2 client.
+  // `account_key` must be a Gaia account. If `account_key` is invalid or not
+  // known to Chrome OS Account Manager, fetching an access token via
+  // `AccessTokenFetcher` will result in an error (`kUserNotSignedUp`). If the
+  // account's refresh token is no longer valid, it will result in
+  // `kInvalidGaiaCredentials` error. See `GoogleServiceAuthError` for all error
+  // types.
+  [MinVersion = 6]
+  CreateAccessTokenFetcher@7(AccountKey account_key,
+      string oauth_consumer_name) =>
+          (pending_remote<AccessTokenFetcher> access_token_fetcher);
+};
+
+// Interface for fetching OAuth2 access tokens.
+[Stable, Uuid="71476f25-fb77-414f-848e-3e5368a9ee35"]
+interface AccessTokenFetcher {
+  // Starts the request for fetching an access token with the provided `scopes`.
+  // If `scopes` is empty, `access_token` will have the same scope as the
+  // underlying refresh token - login scope.
+  // Don't call this method multiple times - create a new `AccessTokenFetcher`
+  // instead.
+  Start@0(array<string> scopes) => (AccessTokenResult result);
+};

@@ -16,7 +16,7 @@
 @implementation SigninSettingsAppInterface
 
 + (void)setSettingsSigninPromoDisplayedCount:(int)displayedCount {
-  ios::ChromeBrowserState* browserState =
+  ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   PrefService* prefService = browserState->GetPrefs();
   prefService->SetInteger(prefs::kIosSettingsSigninPromoDisplayedCount,
@@ -24,7 +24,7 @@
 }
 
 + (int)settingsSigninPromoDisplayedCount {
-  ios::ChromeBrowserState* browserState =
+  ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   PrefService* prefService = browserState->GetPrefs();
   return prefService->GetInteger(prefs::kIosSettingsSigninPromoDisplayedCount);

@@ -21,7 +21,7 @@ goog.provide('{{enum_spec_parent}}.{{enum.name}}Spec');
 {{enum_name}} = {
   {# Set up the enum here, but fill out the values later. #}
 {%-   for field in enum.fields %}
-  {{field.name}}: 0,
+  {{field.name}}: {{field.numeric_value}},
 {%-   endfor %}
 {%-   if enum.min_value is not none %}
   MIN_VALUE: {{enum.min_value}},
@@ -30,16 +30,5 @@ goog.provide('{{enum_spec_parent}}.{{enum.name}}Spec');
   MAX_VALUE: {{enum.max_value}},
 {%-   endif %}
 };
-{%-   for field in enum.fields %}
-{# Suppress type checks since we're assigning number into an enum. #}
-/** @suppress {checkTypes} */
-{%-     if field.value %}
-{{enum_name}}.{{field.name}} = {{field.value|expression_to_text_lite}};
-{%-     elif loop.first %}
-{{enum_name}}.{{field.name}} = 0;
-{%-     else %}
-{{enum_name}}.{{field.name}} = {{enum_name}}.{{enum.fields[loop.index0 - 1].name}} + 1;
-{%-     endif %}
-{%-   endfor %}
 
 {%- endmacro %}

@@ -45,7 +45,7 @@ extern const StringTranslationEntry kNetworkTechnologyTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
 extern const StringTranslationEntry kRoamingStateTable[];
 COMPONENT_EXPORT(CHROMEOS_NETWORK)
-extern const StringTranslationEntry kTetheringStateTable[];
+extern const StringTranslationEntry kOpenVpnCompressionAlgorithmTable[];
 
 // A separate translation table for cellular properties that are stored in a
 // Shill Device instead of a Service. The |shill_property_name| entries

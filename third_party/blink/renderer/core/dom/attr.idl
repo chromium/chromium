@@ -26,7 +26,7 @@
     readonly attribute DOMString? prefix;
     readonly attribute DOMString localName;
     readonly attribute DOMString name;
-    [RaisesException=Setter, CEReactions, CustomElementCallbacks] attribute DOMString value;
+    [RaisesException=Setter, CEReactions] attribute DOMString value;
 
     readonly attribute Element? ownerElement;
 

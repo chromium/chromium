@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller_mock.h"
@@ -17,6 +16,7 @@
 #include "components/storage_monitor/storage_info.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/common/referrer.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/page_transition_types.h"
@@ -33,7 +33,7 @@ MediaGalleryPrefInfo MakePrefInfo(MediaGalleryPrefId id) {
   gallery.device_id = storage_monitor::StorageInfo::MakeDeviceId(
       storage_monitor::StorageInfo::FIXED_MASS_STORAGE,
       base::NumberToString(id));
-  gallery.display_name = base::ASCIIToUTF16("Display Name");
+  gallery.display_name = u"Display Name";
   return gallery;
 }
 
@@ -42,6 +42,12 @@ MediaGalleryPrefInfo MakePrefInfo(MediaGalleryPrefId id) {
 class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
  public:
   MediaGalleriesInteractiveDialogTest() {}
+
+  MediaGalleriesInteractiveDialogTest(
+      const MediaGalleriesInteractiveDialogTest&) = delete;
+  MediaGalleriesInteractiveDialogTest& operator=(
+      const MediaGalleriesInteractiveDialogTest&) = delete;
+
   ~MediaGalleriesInteractiveDialogTest() override {}
 
   void PreRunTestOnMainThread() override {
@@ -57,8 +63,7 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    std::vector<base::string16> headers = {base::string16(),
-                                           base::ASCIIToUTF16("header2")};
+    std::vector<std::u16string> headers = {std::u16string(), u"header2"};
     MediaGalleriesDialogController::Entries attached_permissions = {
         MediaGalleriesDialogController::Entry(MakePrefInfo(1), true),
         MediaGalleriesDialogController::Entry(MakePrefInfo(2), false)};
@@ -75,8 +80,6 @@ class MediaGalleriesInteractiveDialogTest : public DialogBrowserTest {
  private:
   testing::NiceMock<MediaGalleriesDialogControllerMock> controller_;
   std::unique_ptr<MediaGalleriesDialogViews> dialog_;
-
-  DISALLOW_COPY_AND_ASSIGN(MediaGalleriesInteractiveDialogTest);
 };
 
 IN_PROC_BROWSER_TEST_F(MediaGalleriesInteractiveDialogTest,

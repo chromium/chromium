@@ -1,0 +1,17 @@
+<!-- This is a test for the following bugfix: https://bugs.chromium.org/p/chromium/issues/detail?id=419108
+Previously, clicking the up button of the spin button element, and dragging your cursor upwards several pixels
+while maintaining mouseDown, would cause the down button of the spin button element to highlight as if it had
+been clicked. The desired behavior is to maintain the highlight of the up button of the spin button element.
+This test validates that behavior. -->
+
+<input id="num1" type="number" value="0">
+<div id = "numValue">input number value: 0</div>
+<script>
+    var num1 = document.getElementById("num1");
+    var mouseX = num1.offsetLeft + num1.offsetWidth - 5;
+    var mouseY = num1.offsetTop + 5;
+    eventSender.mouseMoveTo(mouseX, mouseY);
+    eventSender.mouseDown();
+    eventSender.mouseMoveTo(mouseX, mouseY + 10);
+    document.getElementById("numValue").innerHTML = `input number value: ${num1.value}`;
+</script>

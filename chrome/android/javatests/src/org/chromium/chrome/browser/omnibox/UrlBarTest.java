@@ -10,38 +10,43 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.text.Editable;
+import android.text.Selection;
 import android.text.TextUtils;
 import android.view.KeyEvent;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.BaseInputConnection;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.params.ParameterAnnotations.ClassParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlBarDelegate;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.OmniboxTestUtils;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.KeyUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.DummyUiActivityTestCase;
@@ -50,7 +55,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -74,7 +78,7 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     public UrlBarTest(boolean enableSpannableInline) {
         Map<String, Boolean> featureList = new HashMap<>();
         featureList.put(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE, enableSpannableInline);
-        ChromeFeatureList.setTestFeatures(featureList);
+        FeatureList.setTestFeatures(featureList);
     }
 
     @Override
@@ -199,10 +203,49 @@ public class UrlBarTest extends DummyUiActivityTestCase {
         return getAutocompleteState(() -> mUrlBar.setSelection(selectionStart, selectionEnd));
     }
 
+    private void assertAutocompleteSelectionRange(
+            int expectedSelectionStart, int expectedSelectionEnd) {
+        int[] selection = getSelectionRange();
+        Assert.assertEquals("Selection start did not match", expectedSelectionStart, selection[0]);
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)) {
+            Assert.assertEquals("Selection end did not match", expectedSelectionEnd, selection[1]);
+        }
+    }
+
+    private int[] getSelectionRange() {
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            int[] selection = new int[2];
+            CharSequence text = mUrlBar.getText();
+            selection[0] = Selection.getSelectionStart(text);
+            selection[1] = Selection.getSelectionEnd(text);
+            return selection;
+        });
+    }
+
+    private void setTextAndVerifyTextDirection(String text, int expectedDirection)
+            throws TimeoutException {
+        CallbackHelper directionCallback = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mUrlBar.setUrlDirectionListener((direction) -> {
+                if (direction == expectedDirection) directionCallback.notifyCalled();
+            });
+        });
+        setTextAndVerifyNoAutocomplete(text);
+        directionCallback.waitForFirst(
+                "Direction never reached expected direction: " + expectedDirection);
+        assertUrlDirection(expectedDirection);
+        TestThreadUtils.runOnUiThreadBlocking(() -> mUrlBar.setUrlDirectionListener(null));
+    }
+
+    private void assertUrlDirection(int expectedDirection) {
+        int actualDirection =
+                TestThreadUtils.runOnUiThreadBlockingNoException(() -> mUrlBar.getUrlDirection());
+        Assert.assertEquals(expectedDirection, actualDirection);
+    }
+
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     @DisabledTest
     public void testRefocusing() {
         Assert.assertFalse(OmniboxTestUtils.doesUrlBarHaveFocus(mUrlBar));
@@ -212,7 +255,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testAutocompleteUpdatedOnSetText() {
         toggleFocusAndIgnoreImeOperations(mUrlBar, true);
 
@@ -293,7 +335,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testAutocompleteUpdatedOnSelection() throws TimeoutException {
         toggleFocusAndIgnoreImeOperations(mUrlBar, true);
 
@@ -372,7 +413,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testSendCursorPosition() throws TimeoutException {
         final CallbackHelper autocompleteHelper = new CallbackHelper();
         final AtomicInteger cursorPositionUsed = new AtomicInteger();
@@ -447,7 +487,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testAutocompleteAllowedWhenReplacingText() throws TimeoutException {
         final String textToBeEntered = "c";
 
@@ -476,7 +515,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testSuggestionsUpdatedWhenDeletingInlineAutocomplete() throws TimeoutException {
         toggleFocusAndIgnoreImeOperations(mUrlBar, true);
 
@@ -500,12 +538,8 @@ public class UrlBarTest extends DummyUiActivityTestCase {
             }
         });
 
-        CriteriaHelper.pollUiThread(Criteria.equals("test", new Callable<String>() {
-            @Override
-            public String call() {
-                return mUrlBar.getText().toString();
-            }
-        }));
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mUrlBar.getText().toString(), Matchers.is("test")));
 
         autocompleteHelper.waitForCallback(0);
         Assert.assertTrue("Inline autocomplete incorrectly allowed after delete.",
@@ -515,7 +549,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testSelectionChangesIgnoredInBatchMode() {
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.SPANNABLE_INLINE_AUTOCOMPLETE)) {
             // Note: with the new model, we remove autocomplete text at the beginning of a batch
@@ -547,7 +580,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testBatchModeChangesTriggerCorrectSuggestions() {
         final AtomicReference<String> requestedAutocompleteText = new AtomicReference<String>();
         mUrlBar.setUrlTextChangeListener(
@@ -566,12 +598,8 @@ public class UrlBarTest extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mUrlBar.getInputConnection().endBatchEdit(); });
 
-        CriteriaHelper.pollUiThread(Criteria.equals("testy", new Callable<String>() {
-            @Override
-            public String call() {
-                return requestedAutocompleteText.get();
-            }
-        }));
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(requestedAutocompleteText.get(), Matchers.is("testy")));
 
         mUrlBar.setUrlTextChangeListener(null);
     }
@@ -579,7 +607,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    @RetryOnFailure
     public void testAutocompleteCorrectlyPerservedOnBatchMode() {
         toggleFocusAndIgnoreImeOperations(mUrlBar, true);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
@@ -651,7 +678,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    @RetryOnFailure
     public void testAutocompleteSpanClearedOnNonMatchingCommitText() {
         toggleFocusAndIgnoreImeOperations(mUrlBar, true);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
@@ -666,18 +692,13 @@ public class UrlBarTest extends DummyUiActivityTestCase {
             mUrlBar.getInputConnection().endBatchEdit();
         });
 
-        CriteriaHelper.pollUiThread(Criteria.equals("al", new Callable<String>() {
-            @Override
-            public String call() {
-                return mUrlBar.getText().toString();
-            }
-        }));
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mUrlBar.getText().toString(), Matchers.is("al")));
     }
 
     @Test
     @SmallTest
     @Feature({"Omnibox"})
-    @RetryOnFailure
     public void testAutocompleteClearedOnComposition() {
         toggleFocusAndIgnoreImeOperations(mUrlBar, true);
         OmniboxTestUtils.waitForFocusAndKeyboardActive(mUrlBar, true);
@@ -704,7 +725,6 @@ public class UrlBarTest extends DummyUiActivityTestCase {
     @Test
     @SmallTest
     @Feature("Omnibox")
-    @RetryOnFailure
     @Restriction({RESTRICTION_TYPE_NON_LOW_END_DEVICE}) // crbug.com/635714
     public void testDelayedCompositionCorrectedWithAutocomplete() {
         toggleFocusAndIgnoreImeOperations(mUrlBar, true);
@@ -836,5 +856,73 @@ public class UrlBarTest extends DummyUiActivityTestCase {
         Assert.assertEquals("chrome://fblahblahblah", urlText.toString());
         Assert.assertEquals(BaseInputConnection.getComposingSpanStart(urlText), 10);
         Assert.assertEquals(BaseInputConnection.getComposingSpanEnd(urlText), 22);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Omnibox"})
+    public void testUrlTextChangeListener() {
+        toggleFocusAndIgnoreImeOperations(mUrlBar, true);
+
+        UrlBar.UrlTextChangeListener listener = Mockito.mock(UrlBar.UrlTextChangeListener.class);
+        mUrlBar.setUrlTextChangeListener(listener);
+
+        setTextAndVerifyNoAutocomplete("onomatop");
+        Mockito.verify(listener).onTextChanged("onomatop", "onomatop");
+
+        // Setting autocomplete does not send a change update.
+        setAutocomplete("onomatop", "oeia");
+
+        setTextAndVerifyNoAutocomplete("");
+        Mockito.verify(listener).onTextChanged("", "");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Omnibox"})
+    public void testSetAutocompleteText_ShrinkingText() {
+        toggleFocusAndIgnoreImeOperations(mUrlBar, true);
+        setTextAndVerifyNoAutocomplete("test");
+        setAutocomplete("test", "ing is awesome");
+        setAutocomplete("test", "ing is hard");
+        setAutocomplete("test", "ingz");
+        assertAutocompleteSelectionRange(4, 8);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Omnibox"})
+    public void testSetAutocompleteText_GrowingText() {
+        toggleFocusAndIgnoreImeOperations(mUrlBar, true);
+        setTextAndVerifyNoAutocomplete("test");
+        setAutocomplete("test", "ingz");
+        setAutocomplete("test", "ing is hard");
+        setAutocomplete("test", "ing is awesome");
+        assertAutocompleteSelectionRange(4, 18);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Omnibox"})
+    public void testSetAutocompleteText_DuplicateText() {
+        toggleFocusAndIgnoreImeOperations(mUrlBar, true);
+        setTextAndVerifyNoAutocomplete("test");
+        setAutocomplete("test", "ingz");
+        setAutocomplete("test", "ingz");
+        setAutocomplete("test", "ingz");
+        assertAutocompleteSelectionRange(4, 8);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Omnibox"})
+    public void testUrlDirection() throws TimeoutException {
+        toggleFocusAndIgnoreImeOperations(mUrlBar, true);
+        assertUrlDirection(View.LAYOUT_DIRECTION_LOCALE);
+        setTextAndVerifyTextDirection("ل", View.LAYOUT_DIRECTION_RTL);
+        setTextAndVerifyTextDirection("a", View.LAYOUT_DIRECTION_LTR);
+        setTextAndVerifyTextDirection("للك", View.LAYOUT_DIRECTION_RTL);
+        setTextAndVerifyTextDirection("f", View.LAYOUT_DIRECTION_LTR);
+        setTextAndVerifyTextDirection("", View.LAYOUT_DIRECTION_LOCALE);
     }
 }

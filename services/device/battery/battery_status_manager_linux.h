@@ -5,7 +5,6 @@
 #define SERVICES_DEVICE_BATTERY_BATTERY_STATUS_MANAGER_LINUX_H_
 
 #include "services/device/battery/battery_status_manager.h"
-#include "services/device/public/mojom/battery_status.mojom.h"
 
 namespace base {
 class Thread;
@@ -47,6 +46,11 @@ class BatteryStatusManagerLinux : public BatteryStatusManager {
  public:
   explicit BatteryStatusManagerLinux(
       const BatteryStatusService::BatteryUpdateCallback& callback);
+
+  BatteryStatusManagerLinux(const BatteryStatusManagerLinux&) = delete;
+  BatteryStatusManagerLinux& operator=(const BatteryStatusManagerLinux&) =
+      delete;
+
   ~BatteryStatusManagerLinux() override;
 
  private:
@@ -68,8 +72,6 @@ class BatteryStatusManagerLinux : public BatteryStatusManager {
 
   BatteryStatusService::BatteryUpdateCallback callback_;
   std::unique_ptr<BatteryStatusNotificationThread> notifier_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(BatteryStatusManagerLinux);
 };
 
 }  // namespace device

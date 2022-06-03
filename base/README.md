@@ -7,10 +7,9 @@ Please add to it!
 Chromium is a very mature project. Most things that are generally useful are
 already here and things not here aren't generally useful.
 
-Base is pulled into many projects. For example, various ChromeOS daemons. So
-the bar for adding stuff is that it must have demonstrated wide
+The bar for adding stuff to base is that it must have demonstrated wide
 applicability. Prefer to add things closer to where they're used (i.e. "not
-base"), and pull into base only when needed.  In a project our size,
+base"), and pull into base only when needed. In a project our size,
 sometimes even duplication is OK and inevitable.
 
 Adding a new logging macro `DPVELOG_NE` is not more clear than just
@@ -20,6 +19,13 @@ if it makes your calling code longer. Just add it to your own code.
 If the code in question does not need to be used inside base, but will have
 multiple consumers across the codebase, consider placing it in a new directory
 under components/ instead.
+
+base is written for the Chromium project and is not intended to be used
+outside it.  Using base outside of src.git is explicitly not supported,
+and base makes no guarantees about API (or even ABI) stability (like all
+other code in Chromium).  New code that depends on base/ must be in
+src.git. Code that's not in src.git but pulled in through DEPS (for
+example, v8) cannot use base.
 
 ## Qualifications for being in //base OWNERS
   * interest and ability to learn low level/high detail/complex c++ stuff

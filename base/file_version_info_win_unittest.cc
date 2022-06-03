@@ -12,7 +12,6 @@
 
 #include "base/file_version_info.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
@@ -35,6 +34,8 @@ FilePath GetTestDataPath() {
 class FileVersionInfoFactory {
  public:
   explicit FileVersionInfoFactory(const FilePath& path) : path_(path) {}
+  FileVersionInfoFactory(const FileVersionInfoFactory&) = delete;
+  FileVersionInfoFactory& operator=(const FileVersionInfoFactory&) = delete;
 
   std::unique_ptr<FileVersionInfo> Create() const {
     return FileVersionInfo::CreateFileVersionInfo(path_);
@@ -42,8 +43,6 @@ class FileVersionInfoFactory {
 
  private:
   const FilePath path_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVersionInfoFactory);
 };
 
 class FileVersionInfoForModuleFactory {
@@ -56,6 +55,10 @@ class FileVersionInfoForModuleFactory {
                                  LOAD_LIBRARY_AS_IMAGE_RESOURCE)) {
     EXPECT_TRUE(library_.is_valid());
   }
+  FileVersionInfoForModuleFactory(const FileVersionInfoForModuleFactory&) =
+      delete;
+  FileVersionInfoForModuleFactory& operator=(
+      const FileVersionInfoForModuleFactory&) = delete;
 
   std::unique_ptr<FileVersionInfo> Create() const {
     return FileVersionInfo::CreateFileVersionInfoForModule(library_.get());
@@ -63,8 +66,6 @@ class FileVersionInfoForModuleFactory {
 
  private:
   const base::ScopedNativeLibrary library_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVersionInfoForModuleFactory);
 };
 
 template <typename T>
@@ -134,35 +135,26 @@ TYPED_TEST(FileVersionInfoTest, CustomProperties) {
   ASSERT_TRUE(version_info);
 
   // Test few existing properties.
-  base::string16 str;
+  std::u16string str;
   FileVersionInfoWin* version_info_win =
       static_cast<FileVersionInfoWin*>(version_info.get());
-  EXPECT_TRUE(
-      version_info_win->GetValue(STRING16_LITERAL("Custom prop 1"), &str));
-  EXPECT_EQ(STRING16_LITERAL("Un"), str);
-  EXPECT_EQ(STRING16_LITERAL("Un"), version_info_win->GetStringValue(
-                                        STRING16_LITERAL("Custom prop 1")));
+  EXPECT_TRUE(version_info_win->GetValue(u"Custom prop 1", &str));
+  EXPECT_EQ(u"Un", str);
+  EXPECT_EQ(u"Un", version_info_win->GetStringValue(u"Custom prop 1"));
 
-  EXPECT_TRUE(
-      version_info_win->GetValue(STRING16_LITERAL("Custom prop 2"), &str));
-  EXPECT_EQ(STRING16_LITERAL("Deux"), str);
-  EXPECT_EQ(STRING16_LITERAL("Deux"), version_info_win->GetStringValue(
-                                          STRING16_LITERAL("Custom prop 2")));
+  EXPECT_TRUE(version_info_win->GetValue(u"Custom prop 2", &str));
+  EXPECT_EQ(u"Deux", str);
+  EXPECT_EQ(u"Deux", version_info_win->GetStringValue(u"Custom prop 2"));
 
-  EXPECT_TRUE(
-      version_info_win->GetValue(STRING16_LITERAL("Custom prop 3"), &str));
-  EXPECT_EQ(
-      STRING16_LITERAL("1600 Amphitheatre Parkway Mountain View, CA 94043"),
-      str);
-  EXPECT_EQ(
-      STRING16_LITERAL("1600 Amphitheatre Parkway Mountain View, CA 94043"),
-      version_info_win->GetStringValue(STRING16_LITERAL("Custom prop 3")));
+  EXPECT_TRUE(version_info_win->GetValue(u"Custom prop 3", &str));
+  EXPECT_EQ(u"1600 Amphitheatre Parkway Mountain View, CA 94043", str);
+  EXPECT_EQ(u"1600 Amphitheatre Parkway Mountain View, CA 94043",
+            version_info_win->GetStringValue(u"Custom prop 3"));
 
   // Test an non-existing property.
-  EXPECT_FALSE(
-      version_info_win->GetValue(STRING16_LITERAL("Unknown property"), &str));
-  EXPECT_EQ(base::string16(), version_info_win->GetStringValue(
-                                  STRING16_LITERAL("Unknown property")));
+  EXPECT_FALSE(version_info_win->GetValue(u"Unknown property", &str));
+  EXPECT_EQ(std::u16string(),
+            version_info_win->GetStringValue(u"Unknown property"));
 
   EXPECT_EQ(base::Version(std::vector<uint32_t>{1, 0, 0, 1}),
             version_info_win->GetFileVersion());

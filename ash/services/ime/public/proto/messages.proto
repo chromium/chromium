@@ -1,0 +1,28 @@
+// Messages sent between the IME service and the shared library.
+// Although Chrome communicates with the IME service using Mojo, the shared
+// library is built in google3, which doesn't support Mojo yet. Hence, when the
+// IME service sends or receives messages via Mojo, it needs to convert the Mojo
+// calls into protos before forwarding to and from the shared library:
+//
+//      [Chrome] <---Mojo---> [IME Service] <---Proto---> [Shared Library]
+
+syntax = "proto2";
+
+package chromeos.ime;
+
+// The base message type for all communication between the IME service and the
+// shared library. The IME service and the shared library uses both a public and
+// private protocol, so Wrapper has fields for both. For the private messages,
+// Wrapper stores it as a serialized proto to keep the message private.
+message Wrapper {
+  oneof param {
+    PublicMessage public_message = 1;
+    bytes private_message = 2;
+  }
+}
+
+// Deprecated. Only private messages are supported now.
+// TODO(b/151884011): Remove this as part of the physical keyboard code rewrite.
+message PublicMessage {
+  reserved 1 to 18;
+}

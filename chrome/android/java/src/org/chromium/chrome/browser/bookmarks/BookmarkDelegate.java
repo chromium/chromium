@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import org.chromium.chrome.browser.favicon.LargeIconBridge;
-import org.chromium.chrome.browser.ui.widget.dragreorder.DragStateDelegate;
-import org.chromium.chrome.browser.widget.selection.SelectableListLayout;
-import org.chromium.chrome.browser.widget.selection.SelectionDelegate;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.widget.dragreorder.DragStateDelegate;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectableListLayout;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
+import org.chromium.components.favicon.LargeIconBridge;
 
 /**
  * Interface used by UI components in the main bookmarks UI to broadcast UI change notifications
@@ -59,10 +59,8 @@ interface BookmarkDelegate {
     /**
      * Closes the Bookmark UI (if on phone) and opens the given bookmark.
      * @param bookmark       bookmark to open.
-     * @param launchLocation The UI location where user tried to open bookmark. It is one of
-     *                       {@link BookmarkLaunchLocation} values
      */
-    void openBookmark(BookmarkId bookmark, int launchLocation);
+    void openBookmark(BookmarkId bookmark);
 
     /**
      * Shows the search UI.

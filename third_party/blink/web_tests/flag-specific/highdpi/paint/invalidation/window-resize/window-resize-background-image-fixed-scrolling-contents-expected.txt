@@ -1,0 +1,93 @@
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [900, 375],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 0, 878, 375]
+      ]
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [878, 4524]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [878, 0],
+      "bounds": [22, 375],
+      "contentsOpaque": true
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [600, 375],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 0, 600, 375]
+      ]
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [578, 4524]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [578, 0],
+      "bounds": [22, 375],
+      "contentsOpaque": true
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [600, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 0, 578, 900]
+      ]
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [578, 4524]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [578, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ]
+}
+{
+  "layers": [
+    {
+      "name": "LayoutView #document",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [0, 0, 1178, 900]
+      ]
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 4524]
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ]
+}
+

@@ -80,4 +80,16 @@ bool IsShowingBlockedInterceptionInterstitial(content::WebContents* tab) {
                                       "Anything you type, any pages you view");
 }
 
+bool IsShowingLegacyTLSInterstitial(content::WebContents* tab) {
+  return IsShowingInterstitial(tab) &&
+         IsInterstitialDisplayingText(tab->GetMainFrame(),
+                                      "outdated security configuration");
+}
+
+bool IsShowingHttpsFirstModeInterstitial(content::WebContents* tab) {
+  return IsShowingInterstitial(tab) &&
+         IsInterstitialDisplayingText(tab->GetMainFrame(),
+                                      "this site does not support HTTPS.");
+}
+
 }  // namespace chrome_browser_interstitials

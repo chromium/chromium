@@ -4,12 +4,13 @@
 
 #include "chrome/browser/ui/cocoa/first_run_dialog_controller.h"
 
+#include "base/i18n/rtl.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
+#include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/ui/cocoa/key_equivalent_constants.h"
-#include "chrome/browser/ui/cocoa/l10n_util.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
+#import "third_party/google_toolbox_for_mac/src/AppKit/GTMUILocalizerAndLayoutTweaker.h"
 #include "ui/base/cocoa/controls/button_utils.h"
 #include "ui/base/cocoa/controls/textfield_utils.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -19,9 +20,42 @@ namespace {
 
 // Return the internationalized message |message_id|, with the product name
 // substituted in for $1.
+std::u16string String16WithProductName(int message_id) {
+  return l10n_util::GetStringFUTF16(
+      message_id, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
+}
+
+// Return the internationalized message |message_id|, with the product name
+// substituted in for $1.
 NSString* NSStringWithProductName(int message_id) {
   return l10n_util::GetNSStringF(message_id,
                                  l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
+}
+
+// Reflows buttons. Requires them to be passed in vertical order, top down.
+CGFloat VerticallyReflowButtons(NSArray<NSButton*>* buttons) {
+  CGFloat localVerticalShift = 0;
+  for (NSButton* button in buttons) {
+    [GTMUILocalizerAndLayoutTweaker wrapButtonTitleForWidth:button];
+
+    NSRect oldFrame = button.frame;
+    [button sizeToFit];
+    NSRect newFrame = button.frame;
+    // -[NSControl sizeToFit], with no layout constraints, like here, will end
+    // up horizontally resizing and keeping the upper left corner in place.
+    // That wrecks RTL, and because all that's really needed is vertical
+    // resizing, reset the horizontal size.
+    newFrame.size.width = NSWidth(oldFrame);
+    button.frame = newFrame;
+
+    localVerticalShift += NSHeight(newFrame) - NSHeight(oldFrame);
+    if (localVerticalShift) {
+      NSPoint origin = button.frame.origin;
+      origin.y -= localVerticalShift;
+      [button setFrameOrigin:origin];
+    }
+  }
+  return localVerticalShift;
 }
 
 void MoveViewsVertically(NSArray* views, CGFloat distance) {
@@ -66,6 +100,8 @@ void CenterVertically(NSView* view) {
 }
 
 - (void)loadView {
+  const int kDialogWidth = 480;
+
   BOOL isDarkMode = NO;
   if (@available(macOS 10.14, *)) {
     NSAppearanceName appearance =
@@ -81,22 +117,27 @@ void CenterVertically(NSView* view) {
                                                          alpha:1.0]
                              : [NSColor whiteColor];
 
-  NSBox* topBox =
-      [[[NSBox alloc] initWithFrame:NSMakeRect(0, 137, 480, 52)] autorelease];
+  NSBox* topBox = [[[NSBox alloc]
+      initWithFrame:NSMakeRect(0, 137, kDialogWidth, 52)] autorelease];
   [topBox setFillColor:topBoxColor];
   [topBox setBoxType:NSBoxCustom];
   [topBox setBorderType:NSNoBorder];
   [topBox setContentViewMargins:NSZeroSize];
 
+  // This string starts with the app name, which is strongly LTR, so force the
+  // correct layout.
+  std::u16string completeInstallationString =
+      String16WithProductName(IDS_FIRSTRUN_DLG_MAC_COMPLETE_INSTALLATION_LABEL);
+  base::i18n::AdjustStringForLocaleDirection(&completeInstallationString);
   NSTextField* completionLabel = [TextFieldUtils
-      labelWithString:NSStringWithProductName(
-                          IDS_FIRSTRUN_DLG_MAC_COMPLETE_INSTALLATION_LABEL)];
-  [completionLabel setFrame:NSMakeRect(13, 25, 390, 17)];
+      labelWithString:base::SysUTF16ToNSString(completeInstallationString)];
+  [completionLabel setFrame:NSMakeRect(13, 25, kDialogWidth - 2 * 13, 17)];
 
   _defaultBrowserCheckbox = [ButtonUtils
       checkboxWithTitle:l10n_util::GetNSString(
                             IDS_FIRSTRUN_DLG_MAC_SET_DEFAULT_BROWSER_LABEL)];
-  [_defaultBrowserCheckbox setFrame:NSMakeRect(45, 107, 389, 18)];
+  [_defaultBrowserCheckbox
+      setFrame:NSMakeRect(45, 107, kDialogWidth - 2 * 45, 18)];
   [_defaultBrowserCheckbox setState:NSOnState];
   if (!_defaultBrowserCheckboxVisible)
     [_defaultBrowserCheckbox setHidden:YES];
@@ -105,7 +146,7 @@ void CenterVertically(NSView* view) {
       checkboxWithTitle:
           NSStringWithProductName(
               IDS_FIRSTRUN_DLG_MAC_OPTIONS_SEND_USAGE_STATS_LABEL)];
-  [_statsCheckbox setFrame:NSMakeRect(45, 82, 389, 19)];
+  [_statsCheckbox setFrame:NSMakeRect(45, 82, kDialogWidth - 2 * 45, 19)];
   if (_statsCheckboxInitiallyChecked)
     [_statsCheckbox setState:NSOnState];
 
@@ -117,19 +158,19 @@ void CenterVertically(NSView* view) {
   [startChromeButton setFrame:NSMakeRect(161, 12, 306, 32)];
   [startChromeButton setKeyEquivalent:kKeyEquivalentReturn];
 
-  NSBox* topSeparator =
-      [[[NSBox alloc] initWithFrame:NSMakeRect(0, 136, 480, 1)] autorelease];
+  NSBox* topSeparator = [[[NSBox alloc]
+      initWithFrame:NSMakeRect(0, 136, kDialogWidth, 1)] autorelease];
   [topSeparator setBoxType:NSBoxSeparator];
 
-  NSBox* bottomSeparator =
-      [[[NSBox alloc] initWithFrame:NSMakeRect(0, 55, 480, 5)] autorelease];
+  NSBox* bottomSeparator = [[[NSBox alloc]
+      initWithFrame:NSMakeRect(0, 55, kDialogWidth, 5)] autorelease];
   [bottomSeparator setBoxType:NSBoxSeparator];
 
   [topBox addSubview:completionLabel];
   CenterVertically(completionLabel);
 
   base::scoped_nsobject<NSView> content_view(
-      [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 480, 190)]);
+      [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kDialogWidth, 190)]);
   self.view = content_view.get();
   [self.view addSubview:topBox];
   [self.view addSubview:topSeparator];
@@ -143,8 +184,8 @@ void CenterVertically(NSView* view) {
   // in some locales. They may wrap onto additional lines, and in doing so cause
   // the rest of the dialog to need to be rearranged.
   {
-    CGFloat delta = cocoa_l10n_util::VerticallyReflowGroup(
-        @[ _defaultBrowserCheckbox, _statsCheckbox ]);
+    CGFloat delta =
+        VerticallyReflowButtons(@[ _defaultBrowserCheckbox, _statsCheckbox ]);
     if (delta) {
       // If reflowing the checkboxes produced a height delta, move the
       // checkboxes and the items above them in the content view upward, then
@@ -170,6 +211,8 @@ void CenterVertically(NSView* view) {
   [startChromeButton sizeToFit];
   NSRect frame = [startChromeButton frame];
   frame.origin.x += oldWidth - NSWidth([startChromeButton frame]);
+  if (base::i18n::IsRTL())
+    frame.origin.x = kDialogWidth - NSMaxX(frame);
   [startChromeButton setFrame:frame];
 
   // Lastly, if the default browser checkbox is actually invisible, move the
@@ -187,7 +230,7 @@ void CenterVertically(NSView* view) {
 }
 
 - (NSString*)windowTitle {
-  return NSStringWithProductName(IDS_FIRSTRUN_DLG_MAC_WINDOW_TITLE);
+  return l10n_util::GetNSString(IDS_FIRST_RUN_DIALOG_WINDOW_TITLE);
 }
 
 - (BOOL)isStatsReportingEnabled {

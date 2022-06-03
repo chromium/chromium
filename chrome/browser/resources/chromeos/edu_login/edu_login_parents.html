@@ -1,0 +1,77 @@
+<style include="edu-login-css">
+  .account-list-item {
+    align-items: center;
+    cursor: pointer;
+    display: flex;
+    min-height: 64px;
+    transition: background 200ms;
+  }
+
+  .main-padding {
+    margin-bottom: 16px;
+  }
+
+  .main-padding.account-list-item {
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+
+  .account-list-item:hover,
+  .account-list-item:focus {
+    background: var(--google-grey-100);
+  }
+
+  .account-list-item.selected {
+    background: var(--google-grey-200);
+  }
+
+  .account-info {
+    padding-inline-start: 24px;
+  }
+
+  .profile-icon {
+    --profile-icon-size: 36px;
+    height: var(--profile-icon-size);
+    width: var(--profile-icon-size);
+  }
+
+</style>
+
+<edu-login-template>
+  <span slot="main">
+    <div class="main-padding">
+      <if expr="_google_chrome">
+        <img class="google-logo"
+            src="chrome://chrome-signin/googleg.svg" alt="">
+      </if>
+      <h1>[[getTitle_()]]</h1>
+      <p id="reauth-message" hidden="[[!reauthFlow_]]">
+        [[getReauthMessage_()]]
+      </p>
+      <p>[[getBody_()]]</p>
+    </div>
+    <div>
+      <template is="dom-repeat" items="[[parents_]]">
+        <div role="button" tabindex="0"
+            id="account-list-item-[[index]]"
+            aria-label$="[[item.displayName]] [[item.email]]"
+            class$="account-list-item main-padding
+            [[getSelectedClass_(selectedParent, item)]]"
+            on-click="selectParent_" on-keydown="onParentSelectionKeydown_">
+          <div class="profile-icon" style="background-image:
+                  [[getIconImageSet_(item.profileImage)]]">
+          </div>
+          <div class="account-info text-elide">
+            <span>[[item.displayName]]</span>
+            <div class="secondary">[[item.email]]</div>
+          </div>
+        </div>
+      </template>
+    </div>
+  </span>
+  <span slot="buttons">
+    <edu-login-button button-type="next"
+        disabled="[[isNextDisabled_(selectedParent)]]">
+    </edu-login-button>
+  </span>
+</edu-login-template>

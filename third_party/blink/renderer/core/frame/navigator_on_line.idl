@@ -30,8 +30,6 @@
 
 // https://html.spec.whatwg.org/C/#navigator.online
 
-[
-    Exposed=(Window,Worker)
-] interface mixin NavigatorOnLine {
+interface mixin NavigatorOnLine {
     readonly attribute boolean onLine;
 };

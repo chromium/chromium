@@ -40,8 +40,8 @@ class KeywordMap {
     FLAG_REQUIRES_VALUE = 1,
     // The option allows invertion, e.g. 'image' and '~image'.
     FLAG_IS_TRISTATE = 2,
-    // The option can be used with whitelist rules only.
-    FLAG_IS_WHITELIST_ONLY = 4,
+    // The option can be used with allowlist rules only.
+    FLAG_IS_ALLOWLIST_ONLY = 4,
     // The option is not supposed to be used any more.
     FLAG_IS_DEPRECATED = 8,
     // The option is not supported yet.
@@ -62,7 +62,7 @@ class KeywordMap {
     explicit OptionDetails(
         url_pattern_index::proto::ActivationType activation_type)
         : type(OPTION_ACTIVATION_TYPE),
-          flags(FLAG_IS_WHITELIST_ONLY),
+          flags(FLAG_IS_ALLOWLIST_ONLY),
           activation_type(activation_type) {}
 
     // Creates a generic option.
@@ -73,7 +73,7 @@ class KeywordMap {
 
     bool requires_value() const { return flags & FLAG_REQUIRES_VALUE; }
     bool is_tristate() const { return flags & FLAG_IS_TRISTATE; }
-    bool is_whitelist_only() const { return flags & FLAG_IS_WHITELIST_ONLY; }
+    bool is_ALLOWLIST_ONLY() const { return flags & FLAG_IS_ALLOWLIST_ONLY; }
     bool is_deprecated() const { return flags & FLAG_IS_DEPRECATED; }
     bool is_not_supported() const { return flags & FLAG_IS_NOT_SUPPORTED; }
 
@@ -95,6 +95,10 @@ class KeywordMap {
 
   // Initializes the map with default keywords.
   KeywordMap();
+
+  KeywordMap(const KeywordMap&) = delete;
+  KeywordMap& operator=(const KeywordMap&) = delete;
+
   ~KeywordMap();
 
   // Returns detailed information associated with the provided |name| option.
@@ -106,8 +110,6 @@ class KeywordMap {
   void AddOption(base::StringPiece name, const OptionDetails& details);
 
   std::map<std::string, OptionDetails> options_;
-
-  DISALLOW_COPY_AND_ASSIGN(KeywordMap);
 };
 
 KeywordMap::KeywordMap() {
@@ -188,16 +190,16 @@ const char* RuleParser::GetParseErrorCodeDescription(
       return "Ok";
     case ParseError::EMPTY_RULE:
       return "The rule is empty";
-    case ParseError::BAD_WHITELIST_SYNTAX:
-      return "Wrong whitelist rule syntax";
+    case ParseError::BAD_ALLOWLIST_SYNTAX:
+      return "Wrong allowlist rule syntax";
     case ParseError::UNKNOWN_OPTION:
       return "Unknown URL rule option";
     case ParseError::NOT_A_TRISTATE_OPTION:
       return "Unexpected '~', the option is not invertable";
     case ParseError::DEPRECATED_OPTION:
       return "The option is deprecated";
-    case ParseError::WHITELIST_ONLY_OPTION:
-      return "The option can be used with whitelist rules only";
+    case ParseError::ALLOWLIST_ONLY_OPTION:
+      return "The option can be used with allowlist rules only";
     case ParseError::NO_VALUE_PROVIDED:
       return "Expected '=', the option requires a value";
     case ParseError::WRONG_CSS_RULE_DELIM:
@@ -259,15 +261,15 @@ RuleType RuleParser::ParseUrlRule(base::StringPiece origin,
   CHECK(!part.empty() && part.data() >= origin.data());
   url_rule_ = UrlRule();
 
-  // Check whether it's a whitelist rule.
+  // Check whether it's an allowlist rule.
   if (part[0] == '@') {
     part.remove_prefix(1);
     if (part.empty() || part[0] != '@') {
-      SetParseError(ParseError::BAD_WHITELIST_SYNTAX, origin, part.data());
+      SetParseError(ParseError::BAD_ALLOWLIST_SYNTAX, origin, part.data());
       return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
     }
     part.remove_prefix(1);
-    url_rule_.is_whitelist = true;
+    url_rule_.is_allowlist = true;
   }
 
   size_t options_start = part.rfind('$');
@@ -347,8 +349,8 @@ bool RuleParser::ParseUrlRuleOptions(base::StringPiece origin,
       return false;
     }
 
-    if (option_details->is_whitelist_only() && !url_rule_.is_whitelist) {
-      SetParseError(ParseError::WHITELIST_ONLY_OPTION, origin,
+    if (option_details->is_ALLOWLIST_ONLY() && !url_rule_.is_allowlist) {
+      SetParseError(ParseError::ALLOWLIST_ONLY_OPTION, origin,
                     option_name.data());
       return false;
     }
@@ -434,7 +436,7 @@ RuleType RuleParser::ParseCssRule(base::StringPiece origin,
     return url_pattern_index::proto::RULE_TYPE_UNSPECIFIED;
   }
   if (part[0] == '@') {
-    css_rule_.is_whitelist = true;
+    css_rule_.is_allowlist = true;
     part.remove_prefix(1);
   }
   if (part.empty() || part[0] != '#') {

@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "mojo/public/cpp/bindings/lib/binding_state.h"
+
+#include <memory>
+
 #include "mojo/public/cpp/bindings/lib/task_runner_helper.h"
 #include "mojo/public/cpp/bindings/mojo_buildflags.h"
 
@@ -36,9 +39,18 @@ void BindingStateBase::ResumeIncomingMethodCallProcessing() {
   router_->ResumeIncomingMethodCallProcessing();
 }
 
-bool BindingStateBase::WaitForIncomingMethodCall(MojoDeadline deadline) {
+bool BindingStateBase::WaitForIncomingMethodCall() {
   DCHECK(router_);
-  return router_->WaitForIncomingMessage(deadline);
+  return router_->WaitForIncomingMessage();
+}
+
+void BindingStateBase::PauseRemoteCallbacksUntilFlushCompletes(
+    PendingFlush flush) {
+  router_->PausePeerUntilFlushCompletes(std::move(flush));
+}
+
+void BindingStateBase::FlushAsync(AsyncFlusher flusher) {
+  router_->FlushAsync(std::move(flusher));
 }
 
 void BindingStateBase::Close() {
@@ -110,15 +122,15 @@ void BindingStateBase::BindInternal(
           : (has_sync_methods
                  ? MultiplexRouter::SINGLE_INTERFACE_WITH_SYNC_METHODS
                  : MultiplexRouter::SINGLE_INTERFACE);
-  router_ = new MultiplexRouter(std::move(receiver_state->pipe), config, false,
-                                sequenced_runner);
-  router_->SetMasterInterfaceName(interface_name);
+  router_ = MultiplexRouter::CreateAndStartReceiving(
+      std::move(receiver_state->pipe), config, false, sequenced_runner,
+      interface_name);
   router_->SetConnectionGroup(std::move(receiver_state->connection_group));
 
-  endpoint_client_.reset(new InterfaceEndpointClient(
-      router_->CreateLocalEndpointHandle(kMasterInterfaceId), stub,
+  endpoint_client_ = std::make_unique<InterfaceEndpointClient>(
+      router_->CreateLocalEndpointHandle(kPrimaryInterfaceId), stub,
       std::move(request_validator), has_sync_methods,
-      std::move(sequenced_runner), interface_version, interface_name));
+      std::move(sequenced_runner), interface_version, interface_name);
   endpoint_client_->SetIdleTrackingEnabledCallback(
       base::BindOnce(&MultiplexRouter::SetConnectionGroup, router_));
 

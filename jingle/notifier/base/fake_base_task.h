@@ -5,8 +5,8 @@
 // A stand-in for stuff that expects a weak pointer to a BaseTask for
 // testing.
 
-#ifndef JINGLE_NOTIFIER_FAKE_XMPP_CLIENT_H_
-#define JINGLE_NOTIFIER_FAKE_XMPP_CLIENT_H_
+#ifndef JINGLE_NOTIFIER_BASE_FAKE_BASE_TASK_H_
+#define JINGLE_NOTIFIER_BASE_FAKE_BASE_TASK_H_
 
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
@@ -21,6 +21,10 @@ namespace notifier {
 class FakeBaseTask {
  public:
   FakeBaseTask();
+
+  FakeBaseTask(const FakeBaseTask&) = delete;
+  FakeBaseTask& operator=(const FakeBaseTask&) = delete;
+
   ~FakeBaseTask();
 
   base::WeakPtr<jingle_xmpp::XmppTaskParentInterface> AsWeakPtr();
@@ -28,10 +32,8 @@ class FakeBaseTask {
  private:
   jingle_glue::TaskPump task_pump_;
   base::WeakPtr<jingle_xmpp::XmppTaskParentInterface> base_task_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBaseTask);
 };
 
 }  // namespace notifier
 
-#endif  // JINGLE_NOTIFIER_FAKE_XMPP_CLIENT_H_
+#endif  // JINGLE_NOTIFIER_BASE_FAKE_BASE_TASK_H_

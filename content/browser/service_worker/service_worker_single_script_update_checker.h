@@ -5,11 +5,11 @@
 #ifndef CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_SINGLE_SCRIPT_UPDATE_CHECKER_H_
 #define CONTENT_BROWSER_SERVICE_WORKER_SERVICE_WORKER_SINGLE_SCRIPT_UPDATE_CHECKER_H_
 
-#include "content/browser/service_worker/service_worker_disk_cache.h"
 #include "content/browser/service_worker/service_worker_updated_script_loader.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "services/network/public/cpp/cross_origin_resource_policy.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
@@ -21,7 +21,7 @@ class SharedURLLoaderFactory;
 
 namespace content {
 
-struct HttpResponseInfoIOBuffer;
+class BrowserContext;
 class ServiceWorkerCacheWriter;
 
 // Executes byte-for-byte update check of one script. This loads the script from
@@ -59,12 +59,12 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   struct CONTENT_EXPORT PausedState {
     PausedState(
         std::unique_ptr<ServiceWorkerCacheWriter> cache_writer,
-        std::unique_ptr<
-            ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper>
-            network_loader,
+        std::unique_ptr<blink::ThrottlingURLLoader> network_loader,
+        mojo::Remote<network::mojom::URLLoaderClient> network_client_remote,
         mojo::PendingReceiver<network::mojom::URLLoaderClient>
             network_client_receiver,
-        mojo::ScopedDataPipeConsumerHandle network_consumer,
+        scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer,
+        uint32_t consumed_bytes,
         ServiceWorkerUpdatedScriptLoader::LoaderState network_loader_state,
         ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state);
     PausedState(const PausedState& other) = delete;
@@ -72,12 +72,33 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
     ~PausedState();
 
     std::unique_ptr<ServiceWorkerCacheWriter> cache_writer;
-    std::unique_ptr<
-        ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper>
-        network_loader;
+    std::unique_ptr<blink::ThrottlingURLLoader> network_loader;
+    // The endpoint called by `network_loader`. That needs to be alive while
+    // `network_loader` is alive.
+    //
+    // We need to keep the mojo::Remote<network::mojom::URLLoaderClient> because
+    // `network_loader` keeps a pointer to the mojo::Remote. This means
+    // when ServiceWorkerSingleScriptUpdateChecker pauses loading the script
+    // and passes the state to SWUpdatedScriptLoader, the Mojo's pipe works as
+    // a queue that stores incoming method calls by ThrottlingURLLoader.
+    // Once the Mojo's receiver for network::mojom::URLLoaderClient is re-bound
+    // to SWUpdatedScriptLoader, the queued method calls are invoked.
+    // Note that this can't be mojo::PendingRemote because `network_loader`
+    // holds a raw pointer to the instance of `network_client_remote`.
+    mojo::Remote<network::mojom::URLLoaderClient> network_client_remote;
+    // The other side of endpoint for `network_loader`. This is connected to
+    // `network_client_remote`.
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         network_client_receiver;
-    mojo::ScopedDataPipeConsumerHandle network_consumer;
+
+    // The buffer which has a part of the body from the network which had a
+    // diff. This could be nullptr when the data from the network is smaller
+    // than the data in the disk.
+    scoped_refptr<network::MojoToNetPendingBuffer> pending_network_buffer;
+    // The number of bytes in |pending_network_buffer| that have already been
+    // processed by the cache writer.
+    uint32_t consumed_bytes;
+
     ServiceWorkerUpdatedScriptLoader::LoaderState network_loader_state;
     ServiceWorkerUpdatedScriptLoader::WriterState body_writer_state;
   };
@@ -93,6 +114,8 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
                                                  std::unique_ptr<FailureInfo>,
                                                  std::unique_ptr<PausedState>)>;
 
+  ServiceWorkerSingleScriptUpdateChecker() = delete;
+
   // Both |compare_reader| and |copy_reader| should be created from the same
   // resource ID, and this ID should locate where the script specified with
   // |script_url| is stored. |writer| should be created with a new resource ID.
@@ -104,22 +127,28 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
       const GURL& main_script_url,
       const GURL& scope,
       bool force_bypass_cache,
+      blink::mojom::ScriptType worker_script_type,
       blink::mojom::ServiceWorkerUpdateViaCache update_via_cache,
       const blink::mojom::FetchClientSettingsObjectPtr&
           fetch_client_settings_object,
       base::TimeDelta time_since_last_check,
-      const net::HttpRequestHeaders& default_headers,
-      ServiceWorkerUpdatedScriptLoader::BrowserContextGetter
-          browser_context_getter,
+      BrowserContext* browser_context,
       scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
-      std::unique_ptr<ServiceWorkerResponseReader> compare_reader,
-      std::unique_ptr<ServiceWorkerResponseReader> copy_reader,
-      std::unique_ptr<ServiceWorkerResponseWriter> writer,
+      mojo::Remote<storage::mojom::ServiceWorkerResourceReader> compare_reader,
+      mojo::Remote<storage::mojom::ServiceWorkerResourceReader> copy_reader,
+      mojo::Remote<storage::mojom::ServiceWorkerResourceWriter> writer,
+      int64_t write_resource_id,
       ResultCallback callback);
+
+  ServiceWorkerSingleScriptUpdateChecker(
+      const ServiceWorkerSingleScriptUpdateChecker&) = delete;
+  ServiceWorkerSingleScriptUpdateChecker& operator=(
+      const ServiceWorkerSingleScriptUpdateChecker&) = delete;
 
   ~ServiceWorkerSingleScriptUpdateChecker() override;
 
   // network::mojom::URLLoaderClient override:
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
   void OnReceiveResponse(
       network::mojom::URLResponseHeadPtr response_head) override;
   void OnReceiveRedirect(
@@ -135,13 +164,17 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   void OnComplete(const network::URLLoaderCompletionStatus& status) override;
 
   bool network_accessed() const { return network_accessed_; }
+  const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy()
+      const {
+    return cross_origin_embedder_policy_;
+  }
 
   static const char* ResultToString(Result result);
 
  private:
   class WrappedIOBuffer;
 
-  void WriteHeaders(scoped_refptr<HttpResponseInfoIOBuffer> info_buffer);
+  void WriteHeaders(network::mojom::URLResponseHeadPtr response_head);
   void OnWriteHeadersComplete(net::Error error);
 
   void MaybeStartNetworkConsumerHandleWatcher();
@@ -161,8 +194,11 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
             network::URLLoaderCompletionStatus network_status);
 
   // Called when the update check for this script succeeded. It calls Finish().
-  void Succeed(Result result);
-  void Finish(Result result, std::unique_ptr<FailureInfo> failure_info);
+  // |paused_state| should be set when result is kDifferent.
+  void Succeed(Result result, std::unique_ptr<PausedState> paused_state);
+  void Finish(Result result,
+              std::unique_ptr<PausedState> paused_state,
+              std::unique_ptr<FailureInfo> failure_info);
 
   const GURL script_url_;
   const bool is_main_script_;
@@ -171,10 +207,12 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
   const blink::mojom::ServiceWorkerUpdateViaCache update_via_cache_;
   const base::TimeDelta time_since_last_check_;
   bool network_accessed_ = false;
+  network::CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
 
-  std::unique_ptr<
-      ServiceWorkerUpdatedScriptLoader::ThrottlingURLLoaderCoreWrapper>
-      network_loader_;
+  std::unique_ptr<blink::ThrottlingURLLoader> network_loader_;
+  // The endpoint called by `network_loader_`. That needs to be alive while
+  // `network_loader_` is alive.
+  mojo::Remote<network::mojom::URLLoaderClient> network_client_remote_;
   mojo::Receiver<network::mojom::URLLoaderClient> network_client_receiver_{
       this};
   mojo::ScopedDataPipeConsumerHandle network_consumer_;
@@ -227,8 +265,6 @@ class CONTENT_EXPORT ServiceWorkerSingleScriptUpdateChecker
 
   base::WeakPtrFactory<ServiceWorkerSingleScriptUpdateChecker> weak_factory_{
       this};
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ServiceWorkerSingleScriptUpdateChecker);
 };
 
 }  // namespace content

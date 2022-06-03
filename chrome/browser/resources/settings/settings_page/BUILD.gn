@@ -2,47 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
 
-js_type_check("closure_compile") {
-  deps = [
-    ":main_page_behavior",
-    ":settings_animated_pages",
-    ":settings_section",
-    ":settings_subpage",
-  ]
-}
-
-js_library("main_page_behavior") {
-  deps = [
-    ":settings_section",
-    "..:route",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:util",
-  ]
-  externs_list = [ "$externs_path/pending.js" ]
-}
-
-js_library("settings_animated_pages") {
-  deps = [
-    ":settings_subpage",
-    "..:route",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
-  ]
-  externs_list = [ "$externs_path/pending_polymer.js" ]
-}
-
-js_library("settings_section") {
-}
-
-js_library("settings_subpage") {
-  deps = [
-    "..:route",
-    "//third_party/polymer/v1_0/components-chromium/iron-resizable-behavior:iron-resizable-behavior-extracted",
-    "//ui/webui/resources/cr_elements/cr_search_field:cr_search_field",
-    "//ui/webui/resources/js:assert",
-    "//ui/webui/resources/js:find_shortcut_behavior",
-    "//ui/webui/resources/js/cr/ui:focus_without_ink",
+html_to_js("web_components") {
+  js_files = [
+    "settings_animated_pages.ts",
+    "settings_section.ts",
+    "settings_subpage.ts",
   ]
 }

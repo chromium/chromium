@@ -7,7 +7,11 @@
 # in the context of the default_toolchain, so we can at least check for that.
 assert(current_toolchain == default_toolchain)
 
+import("//build/config/android/config.gni")
+import("//build/config/apple/symbols.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/compiler/compiler.gni")
+import("//build/config/coverage/coverage.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
 
@@ -22,43 +26,83 @@ declare_args() {
 if (concurrent_links == -1) {
   if (use_thin_lto) {
     _args = [ "--reserve_mem_gb=10" ]
+    if (use_goma_thin_lto) {
+      _args += [ "--thin-lto=goma" ]
+    } else {
+      _args += [ "--thin-lto=local" ]
+    }
     if (is_win) {
       # Based on measurements of linking chrome.dll and chrome_child.dll, plus
       # a little padding to account for future growth.
       _args += [ "--mem_per_link_gb=45" ]
     } else {
-      _args += [ "--mem_per_link_gb=10" ]
+      _args += [ "--mem_per_link_gb=16" ]
     }
-  } else if (use_sanitizer_coverage || use_fuzzing_engine) {
-    # Sanitizer coverage instrumentation increases linker memory consumption
+  } else if ((use_clang_coverage &&
+              # When coverage_instrumentation_input_file is not empty it means
+              # we're only instrumenting changed files and not using a lot of
+              # memory. Likewise, when it's empty we're building everything with
+              # coverage, which requires more memory.
+              coverage_instrumentation_input_file == "") ||
+             use_sanitizer_coverage || use_fuzzing_engine) {
+    # Full sanitizer coverage instrumentation increases linker memory consumption
     # significantly.
     _args = [ "--mem_per_link_gb=16" ]
   } else if (is_win && symbol_level == 1 && !is_debug && is_component_build) {
     _args = [ "--mem_per_link_gb=3" ]
   } else if (is_win) {
-    _args = [ "--mem_per_link_gb=5" ]
+    _args = [ "--mem_per_link_gb=6" ]
   } else if (is_mac) {
-    _args = [ "--mem_per_link_gb=4" ]
+    if (enable_dsyms) {
+      _args = [ "--mem_per_link_gb=12" ]
+    } else {
+      _args = [ "--mem_per_link_gb=4" ]
+    }
   } else if (is_android && !is_component_build && symbol_level == 2) {
     # Full debug symbols require large memory for link.
     _args = [ "--mem_per_link_gb=25" ]
-  } else if (is_android && !is_debug && !using_sanitizer && symbol_level < 2) {
-    # Increase the number of concurrent links for release bots. Debug builds
-    # make heavier use of ProGuard, and so should not be raised. Sanitizers also
-    # increase the memory overhead.
+  } else if (is_android && !is_debug && !using_sanitizer && is_java_debug &&
+             disable_android_lint && symbol_level < 2) {
     if (symbol_level == 1) {
       _args = [ "--mem_per_link_gb=6" ]
     } else {
       _args = [ "--mem_per_link_gb=4" ]
     }
-  } else if (is_linux && !is_chromeos && symbol_level == 0) {
+  } else if ((is_linux || is_chromeos_lacros) && symbol_level == 0) {
     # Memory consumption on link without debug symbols is low on linux.
     _args = [ "--mem_per_link_gb=3" ]
+  } else if (current_os == "zos") {
+    _args = [ "--mem_per_link_gb=1" ]
   } else {
     _args = []
   }
 
+  # For Android builds, we also need to be wary of:
+  # * ProGuard / R8
+  # * Android Lint
+  # These both have a peak usage of < 2GB, but that is still large enough for
+  # them to need to use a pool since they both typically happen at the
+  # same time as linking.
+  if (is_android) {
+    _args += [ "--secondary_mem_per_link=2" ]
+  }
+
   # TODO(crbug.com/617429) Pass more build configuration info to the script
   # so that we can compute better values.
-  concurrent_links = exec_script("get_concurrent_links.py", _args, "value")
+  _command_dict = exec_script("get_concurrent_links.py", _args, "scope")
+
+  concurrent_links = _command_dict.primary_pool_size
+  concurrent_links_logs = _command_dict.explanation
+
+  if (_command_dict.secondary_pool_size >= concurrent_links) {
+    # Have R8 / Lint share the link pool unless we would safely get more
+    # concurrency out of using a separate one.
+    # On low-RAM machines, this allows an apk's native library to link at the
+    # same time as its java is optimized with R8.
+    java_cmd_pool_size = _command_dict.secondary_pool_size
+  }
+} else {
+  assert(!use_thin_lto, "can't explicitly set concurrent_links with thinlto")
+  concurrent_links_logs =
+      [ "concurrent_links set by GN arg (value=$concurrent_links)" ]
 }

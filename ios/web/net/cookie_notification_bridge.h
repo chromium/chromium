@@ -18,6 +18,10 @@ namespace web {
 class CookieNotificationBridge {
  public:
   CookieNotificationBridge();
+
+  CookieNotificationBridge(const CookieNotificationBridge&) = delete;
+  CookieNotificationBridge& operator=(const CookieNotificationBridge&) = delete;
+
   ~CookieNotificationBridge();
 
  private:
@@ -26,8 +30,6 @@ class CookieNotificationBridge {
   // Token returned by NSNotificationCenter upon registration. Owned by the
   // bridge and used to unregister from NSNotificationCenter in destructor.
   __strong id<NSObject> registration_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieNotificationBridge);
 };
 
 }  // namespace web

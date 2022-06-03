@@ -4,7 +4,7 @@
 
 #include "media/cast/logging/proto/proto_utils.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 #define TO_PROTO_ENUM(enum)  \
   case enum:                 \

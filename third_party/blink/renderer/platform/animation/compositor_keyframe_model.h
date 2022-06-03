@@ -7,11 +7,11 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "cc/animation/keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/compositor_target_property.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
+#include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -33,15 +33,15 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
  public:
   using Direction = cc::KeyframeModel::Direction;
   using FillMode = cc::KeyframeModel::FillMode;
+  using TargetPropertyId = cc::KeyframeModel::TargetPropertyId;
 
-  // The |custom_property_name| has a default value of an empty string,
-  // indicating that the animated property is a native property. When it is an
-  // animated custom property, it should be the property name.
-  CompositorKeyframeModel(const CompositorAnimationCurve&,
-                          compositor_target_property::Type,
+  CompositorKeyframeModel(const CompositorAnimationCurve& curve,
                           int keyframe_model_id,
                           int group_id,
-                          const AtomicString& custom_property_name = "");
+                          cc::KeyframeModel::TargetPropertyId);
+
+  CompositorKeyframeModel(const CompositorKeyframeModel&) = delete;
+  CompositorKeyframeModel& operator=(const CompositorKeyframeModel&) = delete;
   ~CompositorKeyframeModel();
 
   // An id must be unique.
@@ -63,7 +63,7 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
   void SetStartTime(base::TimeTicks);
 
   double TimeOffset() const;
-  void SetTimeOffset(double monotonic_time);
+  void SetTimeOffset(base::TimeDelta monotonic_time);
 
   Direction GetDirection() const;
   void SetDirection(Direction);
@@ -88,8 +88,6 @@ class PLATFORM_EXPORT CompositorKeyframeModel {
 
  private:
   std::unique_ptr<cc::KeyframeModel> keyframe_model_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorKeyframeModel);
 };
 
 }  // namespace blink

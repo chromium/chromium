@@ -10,11 +10,12 @@
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop_current.h"
+#include "base/task/current_thread.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/devices/device_util_linux.h"
 #include "ui/events/devices/input_device.h"
+#include "ui/events/devices/stylus_state.h"
 #include "ui/events/event_utils.h"
 
 #ifndef input_event_sec
@@ -50,8 +51,11 @@ EventConverterEvdev::EventConverterEvdev(int fd,
 EventConverterEvdev::~EventConverterEvdev() {
 }
 
+void EventConverterEvdev::ApplyDeviceSettings(
+    const InputDeviceSettingsEvdev& settings) {}
+
 void EventConverterEvdev::Start() {
-  base::MessageLoopCurrentForUI::Get()->WatchFileDescriptor(
+  base::CurrentUIThread::Get()->WatchFileDescriptor(
       fd_, true, base::MessagePumpForUI::WATCH_READ, &controller_, this);
   watching_ = true;
 }
@@ -104,6 +108,10 @@ bool EventConverterEvdev::HasMouse() const {
   return false;
 }
 
+bool EventConverterEvdev::HasPointingStick() const {
+  return false;
+}
+
 bool EventConverterEvdev::HasTouchpad() const {
   return false;
 }
@@ -124,6 +132,15 @@ bool EventConverterEvdev::HasCapsLockLed() const {
   return false;
 }
 
+bool EventConverterEvdev::HasStylusSwitch() const {
+  return false;
+}
+
+ui::StylusState EventConverterEvdev::GetStylusSwitchState() {
+  NOTREACHED();
+  return ui::StylusState::REMOVED;
+}
+
 gfx::Size EventConverterEvdev::GetTouchscreenSize() const {
   NOTREACHED();
   return gfx::Size();
@@ -133,6 +150,20 @@ std::vector<ui::GamepadDevice::Axis> EventConverterEvdev::GetGamepadAxes()
     const {
   NOTREACHED();
   return std::vector<ui::GamepadDevice::Axis>();
+}
+
+bool EventConverterEvdev::GetGamepadRumbleCapability() const {
+  NOTREACHED();
+  return false;
+}
+
+void EventConverterEvdev::PlayVibrationEffect(uint8_t amplitude,
+                                              uint16_t duration_millis) {
+  NOTREACHED();
+}
+
+void EventConverterEvdev::StopVibration() {
+  NOTREACHED();
 }
 
 int EventConverterEvdev::GetTouchPoints() const {
@@ -182,7 +213,7 @@ base::TimeTicks EventConverterEvdev::TimeTicksFromInputEvent(
     const input_event& event) {
   base::TimeTicks timestamp =
       ui::EventTimeStampFromSeconds(event.input_event_sec) +
-      base::TimeDelta::FromMicroseconds(event.input_event_usec);
+      base::Microseconds(event.input_event_usec);
   ValidateEventTimeClock(&timestamp);
   return timestamp;
 }

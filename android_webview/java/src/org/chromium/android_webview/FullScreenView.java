@@ -29,11 +29,8 @@ public class FullScreenView extends FrameLayout {
     private final AwContents mAwContents;
     private InternalAccessAdapter mInternalAccessAdapter;
 
-    public FullScreenView(Context context, AwViewMethods awViewMethods, AwContents awContents,
-            int initialWidth, int initialHeight) {
+    public FullScreenView(Context context, AwViewMethods awViewMethods, AwContents awContents) {
         super(context);
-        setRight(initialWidth);
-        setBottom(initialHeight);
         setAwViewMethods(awViewMethods);
         mAwContents = awContents;
         mInternalAccessAdapter = new InternalAccessAdapter();
@@ -139,10 +136,7 @@ public class FullScreenView extends FrameLayout {
     @Override
     public void onSizeChanged(final int w, final int h, final int ow, final int oh) {
         super.onSizeChanged(w, h, ow, oh);
-        // Null check for setting initial size before mAwViewMethods is set.
-        if (mAwViewMethods != null) {
-            mAwViewMethods.onSizeChanged(w, h, ow, oh);
-        }
+        mAwViewMethods.onSizeChanged(w, h, ow, oh);
     }
 
     @Override

@@ -4,6 +4,7 @@
 
 #include "ui/base/cocoa/base_view.h"
 
+#include "base/check_op.h"
 #include "base/mac/mac_util.h"
 
 NSString* kViewDidBecomeFirstResponder =

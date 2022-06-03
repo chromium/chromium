@@ -6,7 +6,6 @@
 
 #include <cmath>
 
-#include "base/logging.h"
 #include "base/metrics/crc32.h"
 
 namespace base {

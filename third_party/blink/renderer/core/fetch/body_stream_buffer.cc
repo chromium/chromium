@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/fetch/body.h"
 #include "third_party/blink/renderer/core/fetch/bytes_consumer_tee.h"
+#include "third_party/blink/renderer/core/fetch/bytes_uploader.h"
 #include "third_party/blink/renderer/core/fetch/readable_stream_bytes_consumer.h"
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller_with_script_scope.h"
@@ -20,8 +21,8 @@
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/network/encoded_form_data.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 
@@ -29,17 +30,17 @@ namespace blink {
 
 class BodyStreamBuffer::LoaderClient final
     : public GarbageCollected<LoaderClient>,
-      public ContextLifecycleObserver,
+      public ExecutionContextLifecycleObserver,
       public FetchDataLoader::Client {
-  USING_GARBAGE_COLLECTED_MIXIN(LoaderClient);
-
  public:
   LoaderClient(ExecutionContext* execution_context,
                BodyStreamBuffer* buffer,
                FetchDataLoader::Client* client)
-      : ContextLifecycleObserver(execution_context),
+      : ExecutionContextLifecycleObserver(execution_context),
         buffer_(buffer),
         client_(client) {}
+  LoaderClient(const LoaderClient&) = delete;
+  LoaderClient& operator=(const LoaderClient&) = delete;
 
   void DidFetchDataLoadedBlobHandle(
       scoped_refptr<BlobDataHandle> blob_data_handle) override {
@@ -84,19 +85,18 @@ class BodyStreamBuffer::LoaderClient final
 
   void Abort() override { NOTREACHED(); }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(buffer_);
     visitor->Trace(client_);
-    ContextLifecycleObserver::Trace(visitor);
+    ExecutionContextLifecycleObserver::Trace(visitor);
     FetchDataLoader::Client::Trace(visitor);
   }
 
  private:
-  void ContextDestroyed(ExecutionContext*) override { buffer_->StopLoading(); }
+  void ContextDestroyed() override { buffer_->StopLoading(); }
 
   Member<BodyStreamBuffer> buffer_;
   Member<FetchDataLoader::Client> client_;
-  DISALLOW_COPY_AND_ASSIGN(LoaderClient);
 };
 
 // Use a Create() method to split construction from initialisation.
@@ -104,23 +104,32 @@ class BodyStreamBuffer::LoaderClient final
 // safe to do during construction.
 
 // static
-BodyStreamBuffer* BodyStreamBuffer::Create(ScriptState* script_state,
-                                           BytesConsumer* consumer,
-                                           AbortSignal* signal) {
-  auto* buffer = MakeGarbageCollected<BodyStreamBuffer>(PassKey(), script_state,
-                                                        consumer, signal);
+BodyStreamBuffer* BodyStreamBuffer::Create(
+    ScriptState* script_state,
+    BytesConsumer* consumer,
+    AbortSignal* signal,
+    ScriptCachedMetadataHandler* cached_metadata_handler,
+    scoped_refptr<BlobDataHandle> side_data_blob) {
+  auto* buffer = MakeGarbageCollected<BodyStreamBuffer>(
+      PassKey(), script_state, consumer, signal, cached_metadata_handler,
+      std::move(side_data_blob));
   buffer->Init();
   return buffer;
 }
 
-BodyStreamBuffer::BodyStreamBuffer(PassKey,
-                                   ScriptState* script_state,
-                                   BytesConsumer* consumer,
-                                   AbortSignal* signal)
+BodyStreamBuffer::BodyStreamBuffer(
+    PassKey,
+    ScriptState* script_state,
+    BytesConsumer* consumer,
+    AbortSignal* signal,
+    ScriptCachedMetadataHandler* cached_metadata_handler,
+    scoped_refptr<BlobDataHandle> side_data_blob)
     : UnderlyingSourceBase(script_state),
       script_state_(script_state),
       consumer_(consumer),
       signal_(signal),
+      cached_metadata_handler_(cached_metadata_handler),
+      side_data_blob_(std::move(side_data_blob)),
       made_from_readable_stream_(false) {}
 
 void BodyStreamBuffer::Init() {
@@ -150,26 +159,26 @@ void BodyStreamBuffer::Init() {
   OnStateChange();
 }
 
-BodyStreamBuffer::BodyStreamBuffer(ScriptState* script_state,
-                                   ReadableStream* stream)
+BodyStreamBuffer::BodyStreamBuffer(
+    ScriptState* script_state,
+    ReadableStream* stream,
+    ScriptCachedMetadataHandler* cached_metadata_handler,
+    scoped_refptr<BlobDataHandle> side_data_blob)
     : UnderlyingSourceBase(script_state),
       script_state_(script_state),
       stream_(stream),
       signal_(nullptr),
+      cached_metadata_handler_(cached_metadata_handler),
+      side_data_blob_(std::move(side_data_blob)),
       made_from_readable_stream_(true) {
   DCHECK(stream_);
 }
 
 scoped_refptr<BlobDataHandle> BodyStreamBuffer::DrainAsBlobDataHandle(
-    BytesConsumer::BlobSizePolicy policy,
-    ExceptionState& exception_state) {
-  DCHECK(!IsStreamLockedForDCheck(exception_state));
-  DCHECK(!IsStreamDisturbedForDCheck(exception_state));
-  const base::Optional<bool> is_closed = IsStreamClosed(exception_state);
-  if (exception_state.HadException() || is_closed.value())
-    return nullptr;
-  const base::Optional<bool> is_errored = IsStreamErrored(exception_state);
-  if (exception_state.HadException() || is_errored.value())
+    BytesConsumer::BlobSizePolicy policy) {
+  DCHECK(!IsStreamLocked());
+  DCHECK(!IsStreamDisturbed());
+  if (IsStreamClosed() || IsStreamErrored() || stream_broken_)
     return nullptr;
 
   if (made_from_readable_stream_)
@@ -178,23 +187,16 @@ scoped_refptr<BlobDataHandle> BodyStreamBuffer::DrainAsBlobDataHandle(
   scoped_refptr<BlobDataHandle> blob_data_handle =
       consumer_->DrainAsBlobDataHandle(policy);
   if (blob_data_handle) {
-    CloseAndLockAndDisturb(exception_state);
-    if (exception_state.HadException())
-      return nullptr;
+    CloseAndLockAndDisturb();
     return blob_data_handle;
   }
   return nullptr;
 }
 
-scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData(
-    ExceptionState& exception_state) {
-  DCHECK(!IsStreamLockedForDCheck(exception_state));
-  DCHECK(!IsStreamDisturbedForDCheck(exception_state));
-  const base::Optional<bool> is_closed = IsStreamClosed(exception_state);
-  if (exception_state.HadException() || is_closed.value())
-    return nullptr;
-  const base::Optional<bool> is_errored = IsStreamErrored(exception_state);
-  if (exception_state.HadException() || is_errored.value())
+scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData() {
+  DCHECK(!IsStreamLocked());
+  DCHECK(!IsStreamDisturbed());
+  if (IsStreamClosed() || IsStreamErrored() || stream_broken_)
     return nullptr;
 
   if (made_from_readable_stream_)
@@ -202,12 +204,23 @@ scoped_refptr<EncodedFormData> BodyStreamBuffer::DrainAsFormData(
 
   scoped_refptr<EncodedFormData> form_data = consumer_->DrainAsFormData();
   if (form_data) {
-    CloseAndLockAndDisturb(exception_state);
-    if (exception_state.HadException())
-      return nullptr;
+    CloseAndLockAndDisturb();
     return form_data;
   }
   return nullptr;
+}
+
+void BodyStreamBuffer::DrainAsChunkedDataPipeGetter(
+    ScriptState* script_state,
+    mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>
+        pending_receiver) {
+  DCHECK(!IsStreamLocked());
+  auto* consumer =
+      MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream_);
+  stream_uploader_ = MakeGarbageCollected<BytesUploader>(
+      consumer, std::move(pending_receiver),
+      ExecutionContext::From(script_state)
+          ->GetTaskRunner(TaskType::kNetworking));
 }
 
 void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
@@ -215,7 +228,6 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
                                     ExceptionState& exception_state) {
   DCHECK(!loader_);
   DCHECK(script_state_->ContextIsValid());
-  loader_ = loader;
   if (signal_) {
     if (signal_->aborted()) {
       client->Abort();
@@ -224,6 +236,7 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
     signal_->AddAlgorithm(
         WTF::Bind(&FetchDataLoader::Client::Abort, WrapWeakPersistent(client)));
   }
+  loader_ = loader;
   auto* handle = ReleaseHandle(exception_state);
   if (exception_state.HadException())
     return;
@@ -235,10 +248,12 @@ void BodyStreamBuffer::StartLoading(FetchDataLoader* loader,
 void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
                            BodyStreamBuffer** branch2,
                            ExceptionState& exception_state) {
-  DCHECK(!IsStreamLockedForDCheck(exception_state));
-  DCHECK(!IsStreamDisturbedForDCheck(exception_state));
+  DCHECK(!IsStreamLocked());
+  DCHECK(!IsStreamDisturbed());
   *branch1 = nullptr;
   *branch2 = nullptr;
+  auto* cached_metadata_handler = cached_metadata_handler_.Get();
+  scoped_refptr<BlobDataHandle> side_data_blob = TakeSideDataBlob();
 
   if (made_from_readable_stream_) {
     if (stream_broken_) {
@@ -258,8 +273,10 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
       return;
     }
 
-    *branch1 = MakeGarbageCollected<BodyStreamBuffer>(script_state_, stream1);
-    *branch2 = MakeGarbageCollected<BodyStreamBuffer>(script_state_, stream2);
+    *branch1 = MakeGarbageCollected<BodyStreamBuffer>(
+        script_state_, stream1, cached_metadata_handler, side_data_blob);
+    *branch2 = MakeGarbageCollected<BodyStreamBuffer>(
+        script_state_, stream2, cached_metadata_handler, side_data_blob);
     return;
   }
   BytesConsumer* dest1 = nullptr;
@@ -271,8 +288,10 @@ void BodyStreamBuffer::Tee(BodyStreamBuffer** branch1,
   }
   BytesConsumerTee(ExecutionContext::From(script_state_), handle, &dest1,
                    &dest2);
-  *branch1 = BodyStreamBuffer::Create(script_state_, dest1, signal_);
-  *branch2 = BodyStreamBuffer::Create(script_state_, dest2, signal_);
+  *branch1 = BodyStreamBuffer::Create(script_state_, dest1, signal_,
+                                      cached_metadata_handler, side_data_blob);
+  *branch2 = BodyStreamBuffer::Create(script_state_, dest2, signal_,
+                                      cached_metadata_handler, side_data_blob);
 }
 
 ScriptPromise BodyStreamBuffer::pull(ScriptState* script_state) {
@@ -323,77 +342,43 @@ bool BodyStreamBuffer::HasPendingActivity() const {
   return loader_;
 }
 
-void BodyStreamBuffer::ContextDestroyed(ExecutionContext* destroyed_context) {
+void BodyStreamBuffer::ContextDestroyed() {
   CancelConsumer();
-  UnderlyingSourceBase::ContextDestroyed(destroyed_context);
+  UnderlyingSourceBase::ContextDestroyed();
 }
 
-base::Optional<bool> BodyStreamBuffer::IsStreamReadable(
-    ExceptionState& exception_state) {
-  return BooleanStreamOperation(&ReadableStream::IsReadable, exception_state);
+bool BodyStreamBuffer::IsStreamReadable() const {
+  return stream_->IsReadable();
 }
 
-base::Optional<bool> BodyStreamBuffer::IsStreamClosed(
-    ExceptionState& exception_state) {
-  return BooleanStreamOperation(&ReadableStream::IsClosed, exception_state);
+bool BodyStreamBuffer::IsStreamClosed() const {
+  return stream_->IsClosed();
 }
 
-base::Optional<bool> BodyStreamBuffer::IsStreamErrored(
-    ExceptionState& exception_state) {
-  return BooleanStreamOperation(&ReadableStream::IsErrored, exception_state);
+bool BodyStreamBuffer::IsStreamErrored() const {
+  return stream_->IsErrored();
 }
 
-base::Optional<bool> BodyStreamBuffer::IsStreamLocked(
-    ExceptionState& exception_state) {
-  return BooleanStreamOperation(&ReadableStream::IsLocked, exception_state);
+bool BodyStreamBuffer::IsStreamLocked() const {
+  return stream_->IsLocked();
 }
 
-bool BodyStreamBuffer::IsStreamLockedForDCheck(
-    ExceptionState& exception_state) {
-  auto result = IsStreamLocked(exception_state);
-  return !result || *result;
+bool BodyStreamBuffer::IsStreamDisturbed() const {
+  return stream_->IsDisturbed();
 }
 
-base::Optional<bool> BodyStreamBuffer::IsStreamDisturbed(
-    ExceptionState& exception_state) {
-  return BooleanStreamOperation(&ReadableStream::IsDisturbed, exception_state);
-}
+void BodyStreamBuffer::CloseAndLockAndDisturb() {
+  DCHECK(!stream_broken_);
 
-bool BodyStreamBuffer::IsStreamDisturbedForDCheck(
-    ExceptionState& exception_state) {
-  auto result = IsStreamDisturbed(exception_state);
-  return !result || *result;
-}
+  cached_metadata_handler_ = nullptr;
 
-void BodyStreamBuffer::CloseAndLockAndDisturb(ExceptionState& exception_state) {
-  if (stream_broken_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Body stream has suffered a fatal error and cannot be disturbed");
-    return;
-  }
-
-  if (stream_->IsBroken()) {
-    stream_broken_ = true;
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Body stream has been lost and cannot be disturbed");
-    return;
-  }
-
-  base::Optional<bool> is_readable = IsStreamReadable(exception_state);
-  if (exception_state.HadException())
-    return;
-
-  DCHECK(is_readable.has_value());
-  if (is_readable.value()) {
+  if (IsStreamReadable()) {
     // Note that the stream cannot be "draining", because it doesn't have
     // the internal buffer.
     Close();
   }
-  DCHECK(!stream_broken_);
 
-  stream_->LockAndDisturb(script_state_, exception_state);
+  stream_->LockAndDisturb(script_state_);
 }
 
 bool BodyStreamBuffer::IsAborted() {
@@ -402,12 +387,18 @@ bool BodyStreamBuffer::IsAborted() {
   return signal_->aborted();
 }
 
-void BodyStreamBuffer::Trace(blink::Visitor* visitor) {
+scoped_refptr<BlobDataHandle> BodyStreamBuffer::TakeSideDataBlob() {
+  return std::move(side_data_blob_);
+}
+
+void BodyStreamBuffer::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(stream_);
+  visitor->Trace(stream_uploader_);
   visitor->Trace(consumer_);
   visitor->Trace(loader_);
   visitor->Trace(signal_);
+  visitor->Trace(cached_metadata_handler_);
   UnderlyingSourceBase::Trace(visitor);
 }
 
@@ -439,7 +430,17 @@ void BodyStreamBuffer::GetError() {
   CancelConsumer();
 }
 
+void BodyStreamBuffer::RaiseOOMError() {
+  {
+    ScriptState::Scope scope(script_state_);
+    Controller()->Error(V8ThrowException::CreateRangeError(
+        script_state_->GetIsolate(), "Array buffer allocation failed"));
+  }
+  CancelConsumer();
+}
+
 void BodyStreamBuffer::CancelConsumer() {
+  side_data_blob_.reset();
   if (consumer_) {
     consumer_->Cancel();
     consumer_ = nullptr;
@@ -459,10 +460,14 @@ void BodyStreamBuffer::ProcessData() {
       return;
     DOMUint8Array* array = nullptr;
     if (result == BytesConsumer::Result::kOk) {
-      array =
-          DOMUint8Array::Create(reinterpret_cast<const unsigned char*>(buffer),
-                                SafeCast<uint32_t>(available));
+      array = DOMUint8Array::CreateOrNull(
+          reinterpret_cast<const unsigned char*>(buffer),
+          SafeCast<uint32_t>(available));
       result = consumer_->EndRead(available);
+      if (!array) {
+        RaiseOOMError();
+        return;
+      }
     }
     switch (result) {
       case BytesConsumer::Result::kOk:
@@ -504,30 +509,10 @@ void BodyStreamBuffer::StopLoading() {
   loader_ = nullptr;
 }
 
-base::Optional<bool> BodyStreamBuffer::BooleanStreamOperation(
-    base::Optional<bool> (ReadableStream::*predicate)(ScriptState*,
-                                                      ExceptionState&) const,
-    ExceptionState& exception_state) {
-  if (stream_broken_) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kInvalidStateError,
-        "Body stream has suffered a fatal error and cannot be inspected");
-    return base::nullopt;
-  }
-  ScriptState::Scope scope(script_state_);
-  base::Optional<bool> result =
-      (stream_->*predicate)(script_state_, exception_state);
-  if (exception_state.HadException()) {
-    stream_broken_ = true;
-    return base::nullopt;
-  }
-  return result;
-}
-
 BytesConsumer* BodyStreamBuffer::ReleaseHandle(
     ExceptionState& exception_state) {
-  DCHECK(!IsStreamLockedForDCheck(exception_state));
-  DCHECK(!IsStreamDisturbedForDCheck(exception_state));
+  DCHECK(!IsStreamLocked());
+  DCHECK(!IsStreamDisturbed());
 
   if (stream_broken_) {
     exception_state.ThrowDOMException(
@@ -536,36 +521,38 @@ BytesConsumer* BodyStreamBuffer::ReleaseHandle(
     return nullptr;
   }
 
+  if (!GetExecutionContext()) {
+    // Avoid crashing if ContextDestroyed() has been called.
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "Cannot release body in a window or worker than has been detached");
+    return nullptr;
+  }
+
+  // Do this after state checks to avoid side-effects when the method does
+  // nothing.
+  side_data_blob_.reset();
+
   if (made_from_readable_stream_) {
+    DCHECK(script_state_->ContextIsValid());
     ScriptState::Scope scope(script_state_);
-    auto* consumer = MakeGarbageCollected<ReadableStreamBytesConsumer>(
-        script_state_, stream_, exception_state);
-    if (exception_state.HadException()) {
-      stream_broken_ = true;
-      return nullptr;
-    }
-    return consumer;
+    return MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state_,
+                                                             stream_);
   }
   // We need to call these before calling CloseAndLockAndDisturb.
-  const base::Optional<bool> is_closed = IsStreamClosed(exception_state);
-  if (exception_state.HadException())
-    return nullptr;
-  const base::Optional<bool> is_errored = IsStreamErrored(exception_state);
-  if (exception_state.HadException())
-    return nullptr;
+  const bool is_closed = IsStreamClosed();
+  const bool is_errored = IsStreamErrored();
 
   BytesConsumer* consumer = consumer_.Release();
 
-  CloseAndLockAndDisturb(exception_state);
-  if (exception_state.HadException())
-    return nullptr;
+  CloseAndLockAndDisturb();
 
-  if (is_closed.value()) {
+  if (is_closed) {
     // Note that the stream cannot be "draining", because it doesn't have
     // the internal buffer.
     return BytesConsumer::CreateClosed();
   }
-  if (is_errored.value())
+  if (is_errored)
     return BytesConsumer::CreateErrored(BytesConsumer::Error("error"));
 
   DCHECK(consumer);

@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/containers/contains.h"
 #include "base/time/default_clock.h"
 #include "base/unguessable_token.h"
 #include "chromeos/services/secure_channel/client_connection_parameters.h"
@@ -34,6 +34,9 @@ class FakeConnectionAttempt : public ConnectionAttempt<FailureDetailType> {
                                              base::DefaultClock::GetInstance(),
                                              connection_attempt_details),
         destructor_callback_(std::move(destructor_callback)) {}
+
+  FakeConnectionAttempt(const FakeConnectionAttempt&) = delete;
+  FakeConnectionAttempt& operator=(const FakeConnectionAttempt&) = delete;
 
   ~FakeConnectionAttempt() override {
     if (destructor_callback_)
@@ -85,8 +88,6 @@ class FakeConnectionAttempt : public ConnectionAttempt<FailureDetailType> {
 
   std::vector<std::unique_ptr<ClientConnectionParameters>>
       client_data_for_extraction_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeConnectionAttempt);
 };
 
 }  // namespace secure_channel

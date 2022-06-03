@@ -84,7 +84,7 @@ def main(args):
     raise Error('%s does not have "platforms" key.' % options.manifest_json)
 
   platforms = data['platforms']
-  if type(platforms) is not list:
+  if not isinstance(platforms, list):
     raise Error('Expected "platforms" key to be array.')
 
   if options.prefix:

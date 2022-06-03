@@ -18,33 +18,28 @@ class TestAppListControllerDelegate : public AppListControllerDelegate {
 
   int64_t GetAppListDisplayId() override;
   void DismissView() override;
-  gfx::NativeWindow GetAppListWindow() override;
+  aura::Window* GetAppListWindow() override;
   bool IsAppPinned(const std::string& app_id) override;
   void PinApp(const std::string& app_id) override;
   void UnpinApp(const std::string& app_id) override;
   Pinnable GetPinnable(const std::string& app_id) override;
   bool IsAppOpen(const std::string& app_id) const override;
-  bool CanDoShowAppInfoFlow() override;
   void DoShowAppInfoFlow(Profile* profile,
                          const std::string& extension_id) override;
-  void CreateNewWindow(Profile* profile, bool incognito) override;
+  void CreateNewWindow(bool incognito,
+                       bool should_trigger_session_restore) override;
   void OpenURL(Profile* profile,
                const GURL& url,
                ui::PageTransition transition,
                WindowOpenDisposition deposition) override;
-  void ActivateApp(Profile* profile,
-                   const extensions::Extension* extension,
-                   AppListSource source,
-                   int event_flags) override;
-  void LaunchApp(Profile* profile,
-                 const extensions::Extension* extension,
-                 AppListSource source,
-                 int event_flags,
-                 int64_t display_id) override;
 
+  void Reset();
+
+  bool did_dismiss_view() const { return did_dismiss_view_; }
   const GURL& last_opened_url() const { return last_opened_url_; }
 
  private:
+  bool did_dismiss_view_ = false;
   GURL last_opened_url_;
 };
 

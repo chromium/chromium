@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -8,8 +8,6 @@ Removes bundled libraries to make sure they are not used.
 
 See README for more details.
 """
-
-from __future__ import print_function
 
 import optparse
 import os.path
@@ -91,7 +89,7 @@ def DoMain(argv):
 
   # Fail if exclusion list contains stale entries - this helps keep it
   # up to date.
-  for exclusion, used in exclusion_used.iteritems():
+  for exclusion, used in exclusion_used.items():
     if not used:
       print('%s does not exist' % exclusion)
       exit_code = 1

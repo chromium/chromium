@@ -14,35 +14,34 @@ class YouTubeRestrictTest(ChromeEnterpriseTestCase):
 
   See https://cloud.google.com/docs/chrome-enterprise/policies/?policy=ForceYouTubeRestrict"""
 
-  RestrictedText = "This video is restricted. " \
-      + "Try signing in with a Google Apps account."
+  RestrictedText = "Restricted Mode is enabled by your network administrator"
 
   @before_all
   def setup(self):
-    self.InstallChrome('client2012')
-    self.InstallWebDriver('client2012')
+    self.InstallChrome(self.win_config['client'])
+    self.InstallWebDriver(self.win_config['client'])
 
   def openRestrictedVideo(self):
-    url = "https://www.youtube.com/watch?v=JtvhQ6klunk"
+    url = "https://www.youtube.com/results?search_query=restricted"
     dir = os.path.dirname(os.path.abspath(__file__))
     logging.info('Opening page: %s' % url)
-    output = self.RunWebDriverTest('client2012',
+    output = self.RunWebDriverTest(self.win_config['client'],
                                    os.path.join(dir, '../open_page.py'),
                                    ['--url', url, '--wait=5', '--text_only'])
     return output
 
   @test
   def test_UnrestrictedYouTubeCanWatchVideo(self):
-    self.SetPolicy('win2012-dc', 'ForceYouTubeRestrict', 0, 'DWORD')
-    self.RunCommand('client2012', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], 'ForceYouTubeRestrict', 0, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     output = self.openRestrictedVideo()
     self.assertNotIn(YouTubeRestrictTest.RestrictedText, output)
 
   @test
   def test_StrictRestrictedYouTubeCantWatchVideo(self):
-    self.SetPolicy('win2012-dc', 'ForceYouTubeRestrict', 2, 'DWORD')
-    self.RunCommand('client2012', 'gpupdate /force')
+    self.SetPolicy(self.win_config['dc'], 'ForceYouTubeRestrict', 2, 'DWORD')
+    self.RunCommand(self.win_config['client'], 'gpupdate /force')
 
     output = self.openRestrictedVideo()
     self.assertIn(YouTubeRestrictTest.RestrictedText, output)

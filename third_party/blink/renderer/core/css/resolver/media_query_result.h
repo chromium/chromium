@@ -28,12 +28,19 @@
 
 namespace blink {
 
-class MediaQueryResult {
+class CORE_EXPORT MediaQueryResult {
   DISALLOW_NEW();
 
  public:
   MediaQueryResult(const MediaQueryExp& expr, bool result)
       : expression_(expr), result_(result) {}
+
+  bool operator==(const MediaQueryResult& other) const {
+    return expression_ == other.expression_ && result_ == other.result_;
+  }
+  bool operator!=(const MediaQueryResult& other) const {
+    return !(*this == other);
+  }
 
   const MediaQueryExp& Expression() const { return expression_; }
 
@@ -44,6 +51,22 @@ class MediaQueryResult {
   bool result_;
 };
 
+class MediaQuerySetResult {
+  DISALLOW_NEW();
+
+ public:
+  MediaQuerySetResult(const MediaQuerySet& media_queries, bool result)
+      : media_queries_(&media_queries), result_(result) {}
+
+  const MediaQuerySet& MediaQueries() const { return *media_queries_; }
+
+  bool Result() const { return result_; }
+
+ private:
+  scoped_refptr<const MediaQuerySet> media_queries_;
+  bool result_;
+};
+
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_RESOLVER_MEDIA_QUERY_RESULT_H_

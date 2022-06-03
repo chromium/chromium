@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/markers/document_marker_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -72,7 +71,7 @@ void SplitTextNodeCommand::DoUnapply() {
   String prefix_text = text1_->data();
 
   text2_->insertData(0, prefix_text, ASSERT_NO_EXCEPTION);
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 
   GetDocument().Markers().MoveMarkers(*text1_, prefix_text.length(), *text2_);
   text1_->remove(ASSERT_NO_EXCEPTION);
@@ -98,10 +97,10 @@ void SplitTextNodeCommand::InsertText1AndTrimText2() {
   if (exception_state.HadException())
     return;
   text2_->deleteData(0, offset_, exception_state);
-  GetDocument().UpdateStyleAndLayout();
+  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
 }
 
-void SplitTextNodeCommand::Trace(Visitor* visitor) {
+void SplitTextNodeCommand::Trace(Visitor* visitor) const {
   visitor->Trace(text1_);
   visitor->Trace(text2_);
   SimpleEditCommand::Trace(visitor);

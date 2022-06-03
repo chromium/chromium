@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Hala! Nabigong mabuo ang random RSA pribadong key.</translation>
 <translation id="1445572445564823378">Pinapabagal ng extension na ito ang <ph name="PRODUCT_NAME" />. Dapat mo itong huwag paganahin upang ipanumbalik ang pagganap ng <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">Hindi sinusuportahan ang WebGL.</translation>
-<translation id="149347756975725155">Maaaring hindi mai-load ang icon ng extension '<ph name="ICON" />'.</translation>
 <translation id="1803557475693955505">Maaaring hindi mai-load ang pahina ng background '<ph name="BACKGROUND_PAGE" />'.</translation>
 <translation id="2159915644201199628">Hindi ma-decode ang larawan: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">Ginamit ang localization , subalit hindi natukoy ang default_locale sa manipesto.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Nabigong basahin ang pribadong key.</translation>
 <translation id="6391538222494443604">Dapat na umiiral ang direktoryo ng input.</translation>
 <translation id="641087317769093025">Hindi ma-unzip ang extension</translation>
-<translation id="6413453408918378296">Hindi masyadong malinaw ang icon '<ph name="ICON" />.'</translation>
 <translation id="6542618148162044354">Humihiling ang "<ph name="APP_NAME" />" ng access sa isa o higit pa sa iyong mga device:</translation>
 <translation id="657064425229075395">Hindi ma-load ang script ng background na '<ph name="BACKGROUND_SCRIPT" />'.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> mula sa <ph name="VENDOR_NAME" /> (serial number <ph name="SERIAL_NUMBER" />)</translation>

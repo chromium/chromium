@@ -8,7 +8,7 @@
 description("Ensures that DOMCharacterDataModified isn't fired inside shadows.");
 var fired = false;
 var host = document.getElementById("host");
-var shadow = host.createShadowRoot();
+var shadow = host.attachShadow({mode: 'open'});
 var div = document.createElement("div");
 div.addEventListener("DOMCharacterDataModified", function(evt) {
     fired = true;

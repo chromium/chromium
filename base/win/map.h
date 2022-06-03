@@ -10,6 +10,9 @@
 
 #include <map>
 
+#include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "base/stl_util.h"
 #include "base/win/vector.h"
 #include "base/win/winrt_foundation_helpers.h"
@@ -246,7 +249,7 @@ class Map
       map_->add_MapChanged(this, &map_changed_token_);
     }
 
-    ~MapView() {
+    ~MapView() override {
       if (map_)
         map_->remove_MapChanged(map_changed_token_);
     }
@@ -397,7 +400,7 @@ class Map
  private:
   ~Map() override {
     // Handlers should not outlive the Map. Furthermore, they must ensure
-    // they are unregistered before the the handler is destroyed. This implies
+    // they are unregistered before the handler is destroyed. This implies
     // there should be no handlers left when the Map is destructed.
     DCHECK(handlers_.empty());
   }

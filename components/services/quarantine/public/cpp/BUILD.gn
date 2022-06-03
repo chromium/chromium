@@ -11,8 +11,6 @@ if (is_win) {
       "quarantine_features_win.h",
     ]
 
-    public_deps = [
-      "//base",
-    ]
+    public_deps = [ "//base" ]
   }
 }

@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Specification at:
 // https://w3c.github.io/ambient-light/#ambient-light-sensor-interface
 
 [
     RuntimeEnabled=SensorExtraClasses,
     SecureContext,
-    MeasureAs=AmbientLightSensorConstructor,
     Exposed=Window
 ] interface AmbientLightSensor : Sensor {
-    [CallWith=ExecutionContext, RaisesException] constructor(optional SensorOptions sensorOptions);
+    [CallWith=ExecutionContext, RaisesException, MeasureAs=AmbientLightSensorConstructor] constructor(optional SensorOptions sensorOptions = {});
     readonly attribute unrestricted double? illuminance;
 };

@@ -12,7 +12,7 @@ var propertiesToVerify = [];
 
 function insertExpectedResult(path, expected)
 {
-    var propertyPath = path.join('.');
+    var propertyPath = getPropertyPath(path, path.length);
     propertiesToVerify.push({'property': "oldChildWindow." + propertyPath, 'expected': "newChildWindow." + propertyPath});
 }
 

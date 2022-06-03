@@ -20,21 +20,21 @@ class USBOutTransferResult final : public ScriptWrappable {
   }
 
   static USBOutTransferResult* Create(const String& status,
-                                      unsigned bytes_written) {
+                                      uint32_t bytes_written) {
     return MakeGarbageCollected<USBOutTransferResult>(status, bytes_written);
   }
 
-  USBOutTransferResult(const String& status, unsigned bytes_written)
+  USBOutTransferResult(const String& status, uint32_t bytes_written)
       : status_(status), bytes_written_(bytes_written) {}
 
   ~USBOutTransferResult() override = default;
 
   String status() const { return status_; }
-  unsigned bytesWritten() const { return bytes_written_; }
+  uint32_t bytesWritten() const { return bytes_written_; }
 
  private:
   const String status_;
-  const unsigned bytes_written_;
+  const uint32_t bytes_written_;
 };
 
 }  // namespace blink

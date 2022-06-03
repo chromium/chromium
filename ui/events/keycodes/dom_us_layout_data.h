@@ -14,7 +14,7 @@ namespace ui {
 // interpretation when there is no other way to map a physical key.
 const struct PrintableCodeEntry {
   DomCode dom_code;
-  base::char16 character[2];  // normal, shift
+  char16_t character[2];  // normal, shift
 } kPrintableCodeMap[] = {
     {DomCode::US_A, {'a', 'A'}},
     {DomCode::US_B, {'b', 'B'}},
@@ -65,7 +65,6 @@ const struct PrintableCodeEntry {
     {DomCode::PERIOD, {'.', '>'}},
     {DomCode::SLASH, {'/', '?'}},
     {DomCode::INTL_BACKSLASH, {'<', '>'}},
-    {DomCode::INTL_HASH, {'\\', '|'}},
     {DomCode::INTL_YEN, {0x00A5, '|'}},
     {DomCode::NUMPAD_DIVIDE, {'/', '/'}},
     {DomCode::NUMPAD_MULTIPLY, {'*', '*'}},
@@ -198,7 +197,7 @@ const struct NonPrintableCodeEntry {
     {DomCode::MAIL_SEND, DomKey::MAIL_SEND},
     {DomCode::MEDIA_FAST_FORWARD, DomKey::MEDIA_FAST_FORWARD},
     {DomCode::MEDIA_LAST, DomKey::MEDIA_LAST},
-    // {DomCode::MEDIA_PAUSE, DomKey::MEDIA_PAUSE},
+    {DomCode::MEDIA_PAUSE, DomKey::MEDIA_PAUSE},
     {DomCode::MEDIA_PLAY, DomKey::MEDIA_PLAY},
     {DomCode::MEDIA_PLAY_PAUSE, DomKey::MEDIA_PLAY_PAUSE},
     {DomCode::MEDIA_RECORD, DomKey::MEDIA_RECORD},
@@ -392,9 +391,8 @@ const struct DomKeyToKeyboardCodeEntry {
     // http://www.w3.org/TR/DOM-Level-3-Events-key/#keys-media-controller
 #if defined(OS_POSIX)
     {DomKey::MEDIA_FAST_FORWARD, VKEY_OEM_104},
-#endif
-    {DomKey::MEDIA_PLAY, VKEY_PLAY},
-#if defined(OS_POSIX)
+    {DomKey::MEDIA_PAUSE, VKEY_MEDIA_PAUSE},
+    {DomKey::MEDIA_PLAY, VKEY_MEDIA_PLAY},
     {DomKey::MEDIA_REWIND, VKEY_OEM_103},
 #endif
     {DomKey::ZOOM_TOGGLE, VKEY_ZOOM},
@@ -417,34 +415,40 @@ const struct DomCodeToKeyboardCodeEntry {
     // DomCode::SUSPEND                            0x000014 Suspend
     // DomCode::RESUME                             0x000015 Resume
     // DomCode::TURBO                              0x000016 Turbo
-    {DomCode::SLEEP, VKEY_SLEEP},               // 0x010082 Sleep
+#if defined(OS_POSIX)
+    {DomCode::PRIVACY_SCREEN_TOGGLE,
+     VKEY_PRIVACY_SCREEN_TOGGLE},  // 0x000017 PrivacyScreenToggle
+    {DomCode::MICROPHONE_MUTE_TOGGLE,
+     VKEY_MICROPHONE_MUTE_TOGGLE},  // 0x000018 MicrophoneMuteToggle
+#endif
+    {DomCode::SLEEP, VKEY_SLEEP},  // 0x010082 Sleep
     // DomCode::WAKE_UP                            0x010083 WakeUp
-    {DomCode::US_A, VKEY_A},                   // 0x070004 KeyA
-    {DomCode::US_B, VKEY_B},                   // 0x070005 KeyB
-    {DomCode::US_C, VKEY_C},                   // 0x070006 KeyC
-    {DomCode::US_D, VKEY_D},                   // 0x070007 KeyD
-    {DomCode::US_E, VKEY_E},                   // 0x070008 KeyE
-    {DomCode::US_F, VKEY_F},                   // 0x070009 KeyF
-    {DomCode::US_G, VKEY_G},                   // 0x07000A KeyG
-    {DomCode::US_H, VKEY_H},                   // 0x07000B KeyH
-    {DomCode::US_I, VKEY_I},                   // 0x07000C KeyI
-    {DomCode::US_J, VKEY_J},                   // 0x07000D KeyJ
-    {DomCode::US_K, VKEY_K},                   // 0x07000E KeyK
-    {DomCode::US_L, VKEY_L},                   // 0x07000F KeyL
-    {DomCode::US_M, VKEY_M},                   // 0x070010 KeyM
-    {DomCode::US_N, VKEY_N},                   // 0x070011 KeyN
-    {DomCode::US_O, VKEY_O},                   // 0x070012 KeyO
-    {DomCode::US_P, VKEY_P},                   // 0x070013 KeyP
-    {DomCode::US_Q, VKEY_Q},                   // 0x070014 KeyQ
-    {DomCode::US_R, VKEY_R},                   // 0x070015 KeyR
-    {DomCode::US_S, VKEY_S},                   // 0x070016 KeyS
-    {DomCode::US_T, VKEY_T},                   // 0x070017 KeyT
-    {DomCode::US_U, VKEY_U},                   // 0x070018 KeyU
-    {DomCode::US_V, VKEY_V},                   // 0x070019 KeyV
-    {DomCode::US_W, VKEY_W},                   // 0x07001A KeyW
-    {DomCode::US_X, VKEY_X},                   // 0x07001B KeyX
-    {DomCode::US_Y, VKEY_Y},                   // 0x07001C KeyY
-    {DomCode::US_Z, VKEY_Z},                   // 0x07001D KeyZ
+    {DomCode::US_A, VKEY_A},                    // 0x070004 KeyA
+    {DomCode::US_B, VKEY_B},                    // 0x070005 KeyB
+    {DomCode::US_C, VKEY_C},                    // 0x070006 KeyC
+    {DomCode::US_D, VKEY_D},                    // 0x070007 KeyD
+    {DomCode::US_E, VKEY_E},                    // 0x070008 KeyE
+    {DomCode::US_F, VKEY_F},                    // 0x070009 KeyF
+    {DomCode::US_G, VKEY_G},                    // 0x07000A KeyG
+    {DomCode::US_H, VKEY_H},                    // 0x07000B KeyH
+    {DomCode::US_I, VKEY_I},                    // 0x07000C KeyI
+    {DomCode::US_J, VKEY_J},                    // 0x07000D KeyJ
+    {DomCode::US_K, VKEY_K},                    // 0x07000E KeyK
+    {DomCode::US_L, VKEY_L},                    // 0x07000F KeyL
+    {DomCode::US_M, VKEY_M},                    // 0x070010 KeyM
+    {DomCode::US_N, VKEY_N},                    // 0x070011 KeyN
+    {DomCode::US_O, VKEY_O},                    // 0x070012 KeyO
+    {DomCode::US_P, VKEY_P},                    // 0x070013 KeyP
+    {DomCode::US_Q, VKEY_Q},                    // 0x070014 KeyQ
+    {DomCode::US_R, VKEY_R},                    // 0x070015 KeyR
+    {DomCode::US_S, VKEY_S},                    // 0x070016 KeyS
+    {DomCode::US_T, VKEY_T},                    // 0x070017 KeyT
+    {DomCode::US_U, VKEY_U},                    // 0x070018 KeyU
+    {DomCode::US_V, VKEY_V},                    // 0x070019 KeyV
+    {DomCode::US_W, VKEY_W},                    // 0x07001A KeyW
+    {DomCode::US_X, VKEY_X},                    // 0x07001B KeyX
+    {DomCode::US_Y, VKEY_Y},                    // 0x07001C KeyY
+    {DomCode::US_Z, VKEY_Z},                    // 0x07001D KeyZ
     {DomCode::DIGIT1, VKEY_1},                  // 0x07001E Digit1
     {DomCode::DIGIT2, VKEY_2},                  // 0x07001F Digit2
     {DomCode::DIGIT3, VKEY_3},                  // 0x070020 Digit3
@@ -465,7 +469,6 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::BRACKET_LEFT, VKEY_OEM_4},        // 0x07002F BracketLeft
     {DomCode::BRACKET_RIGHT, VKEY_OEM_6},       // 0x070030 BracketRight
     {DomCode::BACKSLASH, VKEY_OEM_5},           // 0x070031 Backslash
-    {DomCode::INTL_HASH, VKEY_OEM_5},           // 0x070032 IntlHash
     {DomCode::SEMICOLON, VKEY_OEM_1},           // 0x070033 Semicolon
     {DomCode::QUOTE, VKEY_OEM_7},               // 0x070034 Quote
     {DomCode::BACKQUOTE, VKEY_OEM_3},           // 0x070035 Backquote
@@ -518,49 +521,49 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::INTL_BACKSLASH, VKEY_OEM_102},    // 0x070064 IntlBackslash
     {DomCode::CONTEXT_MENU, VKEY_APPS},         // 0x070065 ContextMenu
 #if defined(OS_POSIX)
-    {DomCode::POWER, VKEY_POWER},               // 0x070066 Power
+    {DomCode::POWER, VKEY_POWER},  // 0x070066 Power
 #endif
     // DomCode::NUMPAD_EQUAL                       0x070067 NumpadEqual
-    {DomCode::F13, VKEY_F13},                   // 0x070068 F13
-    {DomCode::F14, VKEY_F14},                   // 0x070069 F14
-    {DomCode::F15, VKEY_F15},                   // 0x07006A F15
-    {DomCode::F16, VKEY_F16},                   // 0x07006B F16
-    {DomCode::F17, VKEY_F17},                   // 0x07006C F17
-    {DomCode::F18, VKEY_F18},                   // 0x07006D F18
-    {DomCode::F19, VKEY_F19},                   // 0x07006E F19
-    {DomCode::F20, VKEY_F20},                   // 0x07006F F20
-    {DomCode::F21, VKEY_F21},                   // 0x070070 F21
-    {DomCode::F22, VKEY_F22},                   // 0x070071 F22
-    {DomCode::F23, VKEY_F23},                   // 0x070072 F23
-    {DomCode::F24, VKEY_F24},                   // 0x070073 F24
-    {DomCode::OPEN, VKEY_EXECUTE},              // 0x070074 Open
-    {DomCode::HELP, VKEY_HELP},                 // 0x070075 Help
-    {DomCode::SELECT, VKEY_SELECT},             // 0x070077 Select
+    {DomCode::F13, VKEY_F13},        // 0x070068 F13
+    {DomCode::F14, VKEY_F14},        // 0x070069 F14
+    {DomCode::F15, VKEY_F15},        // 0x07006A F15
+    {DomCode::F16, VKEY_F16},        // 0x07006B F16
+    {DomCode::F17, VKEY_F17},        // 0x07006C F17
+    {DomCode::F18, VKEY_F18},        // 0x07006D F18
+    {DomCode::F19, VKEY_F19},        // 0x07006E F19
+    {DomCode::F20, VKEY_F20},        // 0x07006F F20
+    {DomCode::F21, VKEY_F21},        // 0x070070 F21
+    {DomCode::F22, VKEY_F22},        // 0x070071 F22
+    {DomCode::F23, VKEY_F23},        // 0x070072 F23
+    {DomCode::F24, VKEY_F24},        // 0x070073 F24
+    {DomCode::OPEN, VKEY_EXECUTE},   // 0x070074 Open
+    {DomCode::HELP, VKEY_HELP},      // 0x070075 Help
+    {DomCode::SELECT, VKEY_SELECT},  // 0x070077 Select
     // DomCode::AGAIN                              0x070079 Again
     // DomCode::UNDO                               0x07007A Undo
     // DomCode::CUT                                0x07007B Cut
     // DomCode::COPY                               0x07007C Copy
     // DomCode::PASTE                              0x07007D Paste
     // DomCode::FIND                               0x07007E Find
-    {DomCode::VOLUME_MUTE, VKEY_VOLUME_MUTE},   // 0x07007F VolumeMute
-    {DomCode::VOLUME_UP, VKEY_VOLUME_UP},       // 0x070080 VolumeUp
-    {DomCode::VOLUME_DOWN, VKEY_VOLUME_DOWN},   // 0x070081 VolumeDown
-    {DomCode::NUMPAD_COMMA, VKEY_OEM_COMMA},    // 0x070085 NumpadComma
-    {DomCode::INTL_RO, VKEY_OEM_102},           // 0x070087 IntlRo
-    {DomCode::KANA_MODE, VKEY_KANA},            // 0x070088 KanaMode
-    {DomCode::INTL_YEN, VKEY_OEM_5},            // 0x070089 IntlYen
-    {DomCode::CONVERT, VKEY_CONVERT},           // 0x07008A Convert
-    {DomCode::NON_CONVERT, VKEY_NONCONVERT},    // 0x07008B NonConvert
-    {DomCode::LANG1, VKEY_KANA},                // 0x070090 Lang1
-    {DomCode::LANG2, VKEY_KANJI},               // 0x070091 Lang2
+    {DomCode::VOLUME_MUTE, VKEY_VOLUME_MUTE},  // 0x07007F VolumeMute
+    {DomCode::VOLUME_UP, VKEY_VOLUME_UP},      // 0x070080 VolumeUp
+    {DomCode::VOLUME_DOWN, VKEY_VOLUME_DOWN},  // 0x070081 VolumeDown
+    {DomCode::NUMPAD_COMMA, VKEY_OEM_COMMA},   // 0x070085 NumpadComma
+    {DomCode::INTL_RO, VKEY_OEM_102},          // 0x070087 IntlRo
+    {DomCode::KANA_MODE, VKEY_KANA},           // 0x070088 KanaMode
+    {DomCode::INTL_YEN, VKEY_OEM_5},           // 0x070089 IntlYen
+    {DomCode::CONVERT, VKEY_CONVERT},          // 0x07008A Convert
+    {DomCode::NON_CONVERT, VKEY_NONCONVERT},   // 0x07008B NonConvert
+    {DomCode::LANG1, VKEY_KANA},               // 0x070090 Lang1
+    {DomCode::LANG2, VKEY_KANJI},              // 0x070091 Lang2
     // DomCode::LANG3                              0x070092 Lang3
     // DomCode::LANG4                              0x070093 Lang4
     // DomCode::LANG5                              0x070094 Lang5
-    {DomCode::ABORT, VKEY_CANCEL},              // 0x07009B Abort
+    {DomCode::ABORT, VKEY_CANCEL},  // 0x07009B Abort
     // DomCode::PROPS                              0x0700A3 Props
     // DomCode::NUMPAD_PAREN_LEFT                  0x0700B6 NumpadParenLeft
     // DomCode::NUMPAD_PAREN_RIGHT                 0x0700B7 NumpadParenRight
-    {DomCode::NUMPAD_BACKSPACE, VKEY_BACK},     // 0x0700BB NumpadBackspace
+    {DomCode::NUMPAD_BACKSPACE, VKEY_BACK},  // 0x0700BB NumpadBackspace
     // DomCode::NUMPAD_MEMORY_STORE                0x0700D0 NumpadMemoryStore
     // DomCode::NUMPAD_MEMORY_RECALL               0x0700D1 NumpadMemoryRecall
     // DomCode::NUMPAD_MEMORY_CLEAR                0x0700D2 NumpadMemoryClear
@@ -571,51 +574,48 @@ const struct DomCodeToKeyboardCodeEntry {
     {DomCode::CONTROL_LEFT, VKEY_LCONTROL},     // 0x0700E0 ControlLeft
     {DomCode::SHIFT_LEFT, VKEY_LSHIFT},         // 0x0700E1 ShiftLeft
     {DomCode::ALT_LEFT, VKEY_LMENU},            // 0x0700E2 AltLeft
-    {DomCode::META_LEFT, VKEY_LWIN},              // 0x0700E3 OSLeft
+    {DomCode::META_LEFT, VKEY_LWIN},            // 0x0700E3 OSLeft
     {DomCode::CONTROL_RIGHT, VKEY_RCONTROL},    // 0x0700E4 ControlRight
     {DomCode::SHIFT_RIGHT, VKEY_RSHIFT},        // 0x0700E5 ShiftRight
     {DomCode::ALT_RIGHT, VKEY_RMENU},           // 0x0700E6 AltRight
-    {DomCode::META_RIGHT, VKEY_RWIN},             // 0x0700E7 OSRight
+    {DomCode::META_RIGHT, VKEY_RWIN},           // 0x0700E7 OSRight
 #if defined(OS_POSIX)
-    {DomCode::BRIGHTNESS_UP,
-     VKEY_BRIGHTNESS_UP},                       // 0x0C006F BrightnessUp
+    {DomCode::BRIGHTNESS_UP, VKEY_BRIGHTNESS_UP},  // 0x0C006F BrightnessUp
     {DomCode::BRIGHTNESS_DOWN,
-     VKEY_BRIGHTNESS_DOWN},                     // 0x0C0070 BrightnessDown
+     VKEY_BRIGHTNESS_DOWN},                           // 0x0C0070 BrightnessDown
+    {DomCode::KBD_ILLUM_UP, VKEY_KBD_BRIGHTNESS_UP},  // 0x0C0079 KbdIllumUp
+    {DomCode::KBD_ILLUM_DOWN,
+     VKEY_KBD_BRIGHTNESS_DOWN},  // 0x0C007a KbdIllumDown
 #endif
     {DomCode::MEDIA_TRACK_NEXT,
-     VKEY_MEDIA_NEXT_TRACK},                    // 0x0C00B5 MediaTrackNext
+     VKEY_MEDIA_NEXT_TRACK},  // 0x0C00B5 MediaTrackNext
     {DomCode::MEDIA_TRACK_PREVIOUS,
-     VKEY_MEDIA_PREV_TRACK},                    // 0x0C00B6 MediaTrackPrevious
-    {DomCode::MEDIA_STOP, VKEY_MEDIA_STOP},     // 0x0C00B7 MediaStop
+     VKEY_MEDIA_PREV_TRACK},                 // 0x0C00B6 MediaTrackPrevious
+    {DomCode::MEDIA_STOP, VKEY_MEDIA_STOP},  // 0x0C00B7 MediaStop
     // DomCode::EJECT                              0x0C00B8 Eject
     {DomCode::MEDIA_PLAY_PAUSE,
-     VKEY_MEDIA_PLAY_PAUSE},                    // 0x0C00CD MediaPlayPause
+     VKEY_MEDIA_PLAY_PAUSE},  // 0x0C00CD MediaPlayPause
     {DomCode::MEDIA_SELECT,
-     VKEY_MEDIA_LAUNCH_MEDIA_SELECT},           // 0x0C0183 MediaSelect
-    {DomCode::LAUNCH_MAIL,
-     VKEY_MEDIA_LAUNCH_MAIL},                   // 0x0C018A LaunchMail
-    {DomCode::LAUNCH_APP2,
-     VKEY_MEDIA_LAUNCH_APP2},                   // 0x0C0192 LaunchApp2
-    {DomCode::LAUNCH_APP1,
-     VKEY_MEDIA_LAUNCH_APP1},                   // 0x0C0194 LaunchApp1
+     VKEY_MEDIA_LAUNCH_MEDIA_SELECT},                // 0x0C0183 MediaSelect
+    {DomCode::LAUNCH_MAIL, VKEY_MEDIA_LAUNCH_MAIL},  // 0x0C018A LaunchMail
+    {DomCode::LAUNCH_APP2, VKEY_MEDIA_LAUNCH_APP2},  // 0x0C0192 LaunchApp2
+    {DomCode::LAUNCH_APP1, VKEY_MEDIA_LAUNCH_APP1},  // 0x0C0194 LaunchApp1
 #if defined(OS_POSIX)
     {DomCode::LAUNCH_CONTROL_PANEL,
-     VKEY_SETTINGS},                            // 0x0C019F Launch Assistant
-    {DomCode::LAUNCH_ASSISTANT,
-     VKEY_ASSISTANT},                           // 0x0C01CB Launch Assistant
+     VKEY_SETTINGS},                              // 0x0C019F Launch Assistant
+    {DomCode::LAUNCH_ASSISTANT, VKEY_ASSISTANT},  // 0x0C01CB Launch Assistant
 #endif
-    {DomCode::BROWSER_SEARCH,
-     VKEY_BROWSER_SEARCH},                      // 0x0C0221 BrowserSearch
-    {DomCode::BROWSER_HOME, VKEY_BROWSER_HOME}, // 0x0C0223 BrowserHome
-    {DomCode::BROWSER_BACK, VKEY_BROWSER_BACK}, // 0x0C0224 BrowserBack
+    {DomCode::BROWSER_SEARCH, VKEY_BROWSER_SEARCH},  // 0x0C0221 BrowserSearch
+    {DomCode::BROWSER_HOME, VKEY_BROWSER_HOME},      // 0x0C0223 BrowserHome
+    {DomCode::BROWSER_BACK, VKEY_BROWSER_BACK},      // 0x0C0224 BrowserBack
     {DomCode::BROWSER_FORWARD,
-     VKEY_BROWSER_FORWARD},                     // 0x0C0225 BrowserForward
-    {DomCode::BROWSER_STOP, VKEY_BROWSER_STOP}, // 0x0C0226 BrowserStop
+     VKEY_BROWSER_FORWARD},                      // 0x0C0225 BrowserForward
+    {DomCode::BROWSER_STOP, VKEY_BROWSER_STOP},  // 0x0C0226 BrowserStop
     {DomCode::BROWSER_REFRESH,
-     VKEY_BROWSER_REFRESH},                     // 0x0C0227 BrowserRefresh
+     VKEY_BROWSER_REFRESH},  // 0x0C0227 BrowserRefresh
     {DomCode::BROWSER_FAVORITES,
-     VKEY_BROWSER_FAVORITES},                   // 0x0C022A BrowserFavorites
-    {DomCode::ZOOM_TOGGLE, VKEY_ZOOM},          // 0x0C0232 ZoomToggle
+     VKEY_BROWSER_FAVORITES},           // 0x0C022A BrowserFavorites
+    {DomCode::ZOOM_TOGGLE, VKEY_ZOOM},  // 0x0C0232 ZoomToggle
 };
 
 // This table, used by UsLayoutKeyboardCodeToDomCode(), maps legacy
@@ -647,8 +647,6 @@ const DomCodeToKeyboardCodeEntry kFallbackKeyboardCodeToDomCodeMap[] = {
     //  VKEY_OEM_104              // 0x0C00B3 MediaFastForward
     //
     // VKEYs with no corresponding DomCode, but a Linux evdev usage code:
-    //  VKEY_KBD_BRIGHTNESS_DOWN  //  evdev KEY_KBDILLUMDOWN
-    //  VKEY_KBD_BRIGHTNESS_UP    //  evdev KEY_KBDILLUMUP
     //  VKEY_WLAN                 //  evdev KEY_WLAN
     //
     // VKEYs with no corresponding DomCode and no obvious USB usage code:

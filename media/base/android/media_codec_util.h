@@ -11,17 +11,12 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "media/base/android/media_codec_direction.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/media_export.h"
 #include "media/base/video_codecs.h"
 
-class GURL;
-
 namespace media {
-
-class MediaCodecBridge;
 
 // WARNING: Not all methods on this class can be used in the renderer process,
 // only those which do not attempt to use MediaCodec or MediaCodecList.
@@ -45,17 +40,13 @@ class MEDIA_EXPORT MediaCodecUtil {
   // to mock BuildInfo instead.
   static bool IsMediaCodecAvailableFor(int sdk, const char* model);
 
-  // Returns true if MediaCodec.setParameters() is available on the device.
-  static bool SupportsSetParameters();
-
   // Returns true if MediaCodec supports CBCS Encryption.
   static bool PlatformSupportsCbcsEncryption(int sdk);
 
-  // Test whether a URL contains "m3u8".
-  static bool IsHLSURL(const GURL& url);
-
-  // Test whether the path of a URL ends with ".m3u8".
-  static bool IsHLSPath(const GURL& url);
+#if BUILDFLAG(ENABLE_PLATFORM_DOLBY_VISION)
+  // Indicates if Dolby Vision decoder is available on this device.
+  static bool IsDolbyVisionDecoderAvailable();
+#endif
 
   // Indicates if the vp8 decoder or encoder is available on this device.
   static bool IsVp8DecoderAvailable();
@@ -103,9 +94,10 @@ class MEDIA_EXPORT MediaCodecUtil {
 
   // Indicates if the h264 encoder is available on this device.
   //
-  // WARNING: This can't be used from the renderer process since it attempts to
-  // access MediaCodecList (which requires permissions).
-  static bool IsH264EncoderAvailable();
+  // WARNING: If |use_codec_list| is true, this can't be used from the renderer
+  // process since it attempts to access MediaCodecList (which requires
+  // permissions).
+  static bool IsH264EncoderAvailable(bool use_codec_list = true);
 
   // Returns a vector of supported codecs profiles and levels.
   //
@@ -129,15 +121,6 @@ class MEDIA_EXPORT MediaCodecUtil {
   // create a MediaCodec (which requires permissions) to get the codec name.
   static bool IsKnownUnaccelerated(VideoCodec codec,
                                    MediaCodecDirection direction);
-
-  // Indicates if the decoder is known to fail when flushed. (b/8125974,
-  // b/8347958)
-  // When true, the client should work around the issue by releasing the
-  // decoder and instantiating a new one rather than flushing the current one.
-  //
-  // WARNING: This can't be used from the renderer process since it attempts to
-  // create a MediaCodec (which requires permissions) to get the codec name.
-  static bool CodecNeedsFlushWorkaround(MediaCodecBridge* codec);
 };
 
 }  // namespace media

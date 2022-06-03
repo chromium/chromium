@@ -5,12 +5,13 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/storage_monitor/media_storage_util.h"
 #include "components/storage_monitor/removable_device_constants.h"
 #include "components/storage_monitor/storage_monitor.h"
@@ -42,8 +43,8 @@ class MediaStorageUtilTest : public testing::Test {
 
   void ProcessAttach(const std::string& id,
                      const base::FilePath::StringType& location) {
-    StorageInfo info(id, location, base::string16(), base::string16(),
-                     base::string16(), 0);
+    StorageInfo info(id, location, std::u16string(), std::u16string(),
+                     std::u16string(), 0);
     monitor_->receiver()->ProcessAttach(info);
   }
 
@@ -81,9 +82,8 @@ TEST_F(MediaStorageUtilTest, MediaDeviceAttached) {
   // Create a dummy mount point with DCIM Directory.
   base::FilePath mount_point(CreateMountPoint(true));
   ASSERT_FALSE(mount_point.empty());
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&MediaStorageUtilTest::CheckDCIMDeviceType,
                      base::Unretained(this), mount_point));
   RunUntilIdle();
@@ -95,9 +95,8 @@ TEST_F(MediaStorageUtilTest, NonMediaDeviceAttached) {
   // Create a dummy mount point without DCIM Directory.
   base::FilePath mount_point(CreateMountPoint(false));
   ASSERT_FALSE(mount_point.empty());
-  base::PostTask(
-      FROM_HERE,
-      {base::ThreadPool(), base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&MediaStorageUtilTest::CheckNonDCIMDeviceType,
                      base::Unretained(this), mount_point));
   RunUntilIdle();

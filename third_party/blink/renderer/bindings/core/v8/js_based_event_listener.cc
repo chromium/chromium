@@ -11,12 +11,10 @@
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 
 namespace blink {
-
-// extern
-const V8PrivateProperty::SymbolKey kPrivatePropertyGlobalEvent;
 
 JSBasedEventListener::JSBasedEventListener() {
   if (IsMainThread()) {
@@ -41,8 +39,8 @@ bool JSBasedEventListener::BelongsToTheCurrentWorld(
   // If currently parsing, the parser could be accessing this listener
   // outside of any v8 context; check if it belongs to the main world.
   if (!isolate->InContext() && execution_context &&
-      execution_context->IsDocument()) {
-    Document* document = To<Document>(execution_context);
+      IsA<LocalDOMWindow>(execution_context)) {
+    Document* document = To<LocalDOMWindow>(execution_context)->document();
     if (document->Parser() && document->Parser()->IsParsing())
       return GetWorld().IsMainWorld();
   }
@@ -122,25 +120,23 @@ void JSBasedEventListener::Invoke(
 
   // Step 6: Let |global| be listener callback’s associated Realm’s global
   // object.
-  v8::Local<v8::Object> global =
-      script_state_of_listener->GetContext()->Global();
+  LocalDOMWindow* window =
+      ToLocalDOMWindow(script_state_of_listener->GetContext());
 
-  // Step 8: If global is a Window object, then:
-  // Set currentEvent to global’s current event.
-  // If tuple’s item-in-shadow-tree is false, then set global’s current event to
-  // event.
-  V8PrivateProperty::Symbol event_symbol =
-      V8PrivateProperty::GetSymbol(isolate, kPrivatePropertyGlobalEvent);
-  ExecutionContext* execution_context_of_listener =
-      ExecutionContext::From(script_state_of_listener);
-  v8::Local<v8::Value> current_event;
-  if (execution_context_of_listener->IsDocument()) {
-    current_event = event_symbol.GetOrUndefined(global).ToLocalChecked();
-    // Expose the event object as |window.event|, except when the event's target
-    // is in a V1 shadow tree.
+  // Step 7: Let |current_event| be undefined.
+  Event* current_event = nullptr;
+
+  // Step 8: If |global| is a Window object, then:
+  if (window) {
+    // Step 8-1: Set |current_event| to |global|’s current event.
+    current_event = window->CurrentEvent();
+
+    // Step 8-2: If |struct|’s invocation-target-in-shadow-tree is false (i.e.,
+    // event's target is in a shadow tree), then set |global|’s current
+    // event to event.
     Node* target_node = event->target()->ToNode();
-    if (!(target_node && target_node->IsInV1ShadowTree()))
-      event_symbol.Set(global, js_event);
+    if (!(target_node && target_node->IsInShadowTree()))
+      window->SetCurrentEvent(event);
   }
 
   {
@@ -157,17 +153,12 @@ void JSBasedEventListener::Invoke(
       // Step 10-2: Set legacyOutputDidListenersThrowFlag if given.
       event->LegacySetDidListenersThrowFlag();
     }
-
-    // |event_symbol.Set(global, current_event)| cannot and does not have to be
-    // performed when the isolate is terminating.
-    if (isolate->IsExecutionTerminating())
-      return;
   }
 
   // Step 12: If |global| is a Window object, then set |global|’s current event
   // to |current_event|.
-  if (execution_context_of_listener->IsDocument())
-    event_symbol.Set(global, current_event);
+  if (window)
+    window->SetCurrentEvent(current_event);
 }
 
 std::unique_ptr<SourceLocation> JSBasedEventListener::GetSourceLocation(

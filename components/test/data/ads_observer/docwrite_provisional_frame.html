@@ -1,0 +1,21 @@
+<html>
+<body>
+<script src="ad_iframe_writer.js"></script>
+
+<script>
+  window.addEventListener('message', function(e) {
+    window.domAutomationController.send(e.data);
+  });
+
+  adIframe = createAdIframeWithSrc("/slow?100");
+  adIframe.id = "slow_frame";
+
+  // slow takes 100 seconds to load, plenty of time to overwrite the
+  // provisional load.
+  let doc = adIframe.contentDocument;
+  doc.open();
+  doc.write("<html>Rewritten. <img src=pixel.png> <img src=pixel2.png> <img src=pixel3.png onload='parent.postMessage(&quot;loaded&quot;, &quot;*&quot;);'></html>");
+  doc.close();
+</script>
+</body>
+</html>

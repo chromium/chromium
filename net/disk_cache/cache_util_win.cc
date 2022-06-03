@@ -16,8 +16,7 @@ namespace disk_cache {
 bool MoveCache(const base::FilePath& from_path, const base::FilePath& to_path) {
   // I don't want to use the shell version of move because if something goes
   // wrong, that version will attempt to move file by file and fail at the end.
-  if (!MoveFileEx(base::as_wcstr(from_path.value()),
-                  base::as_wcstr(to_path.value()), 0)) {
+  if (!MoveFileEx(from_path.value().c_str(), to_path.value().c_str(), 0)) {
     PLOG(ERROR) << "Unable to move the cache";
     return false;
   }
@@ -27,16 +26,16 @@ bool MoveCache(const base::FilePath& from_path, const base::FilePath& to_path) {
 bool DeleteCacheFile(const base::FilePath& name) {
   // We do a simple delete, without ever falling back to SHFileOperation, as the
   // version from base does.
-  if (!DeleteFile(base::as_wcstr(name.value()))) {
+  if (!DeleteFile(name.value().c_str())) {
     // There is an error, but we share delete access so let's see if there is a
     // file to open. Note that this code assumes that we have a handle to the
     // file at all times (even now), so nobody can have a handle that prevents
     // us from opening the file again (unless it was deleted).
     DWORD sharing = FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE;
     DWORD access = SYNCHRONIZE;
-    base::win::ScopedHandle file(CreateFile(base::as_wcstr(name.value()),
-                                            access, sharing, nullptr,
-                                            OPEN_EXISTING, 0, nullptr));
+    base::win::ScopedHandle file(CreateFile(name.value().c_str(), access,
+                                            sharing, nullptr, OPEN_EXISTING, 0,
+                                            nullptr));
     if (file.IsValid())
       return false;
 

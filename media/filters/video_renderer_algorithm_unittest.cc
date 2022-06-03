@@ -9,9 +9,9 @@
 #include <tuple>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "build/build_config.h"
@@ -39,9 +39,11 @@ class TickGenerator {
         microseconds_per_tick_(base::Time::kMicrosecondsPerSecond / hertz),
         base_time_(base_timestamp) {}
 
+  TickGenerator(const TickGenerator&) = delete;
+  TickGenerator& operator=(const TickGenerator&) = delete;
+
   base::TimeDelta interval(int tick_count) const {
-    return base::TimeDelta::FromMicroseconds(tick_count *
-                                             microseconds_per_tick_);
+    return base::Microseconds(tick_count * microseconds_per_tick_);
   }
 
   base::TimeTicks current() const { return base_time_ + interval(tick_count_); }
@@ -65,22 +67,25 @@ class TickGenerator {
   const double hertz_;
   const double microseconds_per_tick_;
   base::TimeTicks base_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(TickGenerator);
 };
 
 class VideoRendererAlgorithmTest : public testing::Test {
  public:
   VideoRendererAlgorithmTest()
       : tick_clock_(new base::SimpleTestTickClock()),
-        algorithm_(base::Bind(&WallClockTimeSource::GetWallClockTimes,
-                              base::Unretained(&time_source_)),
+        algorithm_(base::BindRepeating(&WallClockTimeSource::GetWallClockTimes,
+                                       base::Unretained(&time_source_)),
                    &media_log_) {
     // Always start the TickClock at a non-zero value since null values have
     // special connotations.
-    tick_clock_->Advance(base::TimeDelta::FromMicroseconds(10000));
+    tick_clock_->Advance(base::Microseconds(10000));
     time_source_.SetTickClockForTesting(tick_clock_.get());
   }
+
+  VideoRendererAlgorithmTest(const VideoRendererAlgorithmTest&) = delete;
+  VideoRendererAlgorithmTest& operator=(const VideoRendererAlgorithmTest&) =
+      delete;
+
   ~VideoRendererAlgorithmTest() override = default;
 
   scoped_refptr<VideoFrame> CreateFrame(base::TimeDelta timestamp) {
@@ -91,7 +96,7 @@ class VideoRendererAlgorithmTest : public testing::Test {
   }
 
   base::TimeDelta minimum_glitch_time() const {
-    return base::TimeDelta::FromSeconds(
+    return base::Seconds(
         VideoRendererAlgorithm::kMinimumAcceptableTimeBetweenGlitchesSecs);
   }
 
@@ -116,24 +121,11 @@ class VideoRendererAlgorithmTest : public testing::Test {
     if (!is_using_cadence())
       return false;
 
-    size_t size = algorithm_.cadence_estimator_.cadence_size_for_testing();
-    for (size_t i = 0; i < size; ++i) {
-      if (!algorithm_.cadence_estimator_.GetCadenceForFrame(i))
-        return true;
-    }
-
-    return false;
+    return algorithm_.cadence_estimator_.avg_cadence_for_testing() < 1.0;
   }
 
   double CadenceValue() const {
-    int num_render_intervals = 0;
-    size_t size = algorithm_.cadence_estimator_.cadence_size_for_testing();
-    for (size_t i = 0; i < size; ++i) {
-      num_render_intervals +=
-          algorithm_.cadence_estimator_.GetCadenceForFrame(i);
-    }
-
-    return (num_render_intervals + 0.0) / size;
+    return algorithm_.cadence_estimator_.avg_cadence_for_testing();
   }
 
   size_t frames_queued() const { return algorithm_.frame_queue_.size(); }
@@ -339,9 +331,6 @@ class VideoRendererAlgorithmTest : public testing::Test {
   std::unique_ptr<base::SimpleTestTickClock> tick_clock_;
   WallClockTimeSource time_source_;
   VideoRendererAlgorithm algorithm_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(VideoRendererAlgorithmTest);
 };
 
 TEST_F(VideoRendererAlgorithmTest, Empty) {
@@ -1020,16 +1009,14 @@ TEST_F(VideoRendererAlgorithmTest, BestFrameByCoverage) {
 
   // 49/51 coverage for frame 0 and frame 1 should be within tolerance such that
   // the earlier frame should still be chosen.
-  deadline_min = tg.current() + tg.interval(1) / 2 +
-                 base::TimeDelta::FromMicroseconds(250);
+  deadline_min = tg.current() + tg.interval(1) / 2 + base::Microseconds(250);
   deadline_max = deadline_min + tg.interval(1);
   EXPECT_EQ(0,
             FindBestFrameByCoverage(deadline_min, deadline_max, &second_best));
   EXPECT_EQ(1, second_best);
 
   // 48/52 coverage should result in the second frame being chosen.
-  deadline_min = tg.current() + tg.interval(1) / 2 +
-                 base::TimeDelta::FromMicroseconds(500);
+  deadline_min = tg.current() + tg.interval(1) / 2 + base::Microseconds(500);
   deadline_max = deadline_min + tg.interval(1);
   EXPECT_EQ(1,
             FindBestFrameByCoverage(deadline_min, deadline_max, &second_best));
@@ -1225,8 +1212,7 @@ TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFramesWithoutRendering) {
   // as effective since we know the duration of it. It is not removed since we
   // only have one frame in the queue though.
   auto frame = CreateFrame(tg.interval(0));
-  frame->metadata()->SetTimeDelta(VideoFrameMetadata::FRAME_DURATION,
-                                  tg.interval(1));
+  frame->metadata().frame_duration = tg.interval(1);
   algorithm_.EnqueueFrame(frame);
   ASSERT_EQ(0u, algorithm_.RemoveExpiredFrames(tg.current() + tg.interval(3)));
   EXPECT_EQ(0u, EffectiveFramesQueued());
@@ -1259,12 +1245,12 @@ TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFrames) {
   tg.step(2);
   // Two frames are removed, one displayed frame (which should not be counted as
   // dropped) and one undisplayed one.
-  ASSERT_EQ(1u, algorithm_.RemoveExpiredFrames(tg.current()));
+  ASSERT_EQ(2u, algorithm_.RemoveExpiredFrames(tg.current()));
   // Since we just removed the last rendered frame, OnLastFrameDropped() should
   // be ignored.
   algorithm_.OnLastFrameDropped();
   frame = RenderAndStep(&tg, &frames_dropped);
-  EXPECT_EQ(1u, frames_dropped);
+  EXPECT_EQ(0u, frames_dropped);
   EXPECT_EQ(2u, frames_queued());
   EXPECT_EQ(1u, EffectiveFramesQueued());
   ASSERT_TRUE(frame);
@@ -1350,6 +1336,45 @@ TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFramesCadence) {
   EXPECT_EQ(0u, EffectiveFramesQueued());
 }
 
+TEST_F(VideoRendererAlgorithmTest, RemoveExpiredFramesFractionalCadence) {
+  TickGenerator frame_tg(base::TimeTicks(), 60);
+  TickGenerator display_tg(tick_clock_->NowTicks(), 30);
+  disable_cadence_hysteresis();
+
+  constexpr size_t kFrameCount = 5;
+  for (size_t i = 0; i < kFrameCount; ++i)
+    algorithm_.EnqueueFrame(CreateFrame(frame_tg.interval(i)));
+
+  ASSERT_EQ(0u, algorithm_.RemoveExpiredFrames(display_tg.current()));
+  EXPECT_EQ(kFrameCount, EffectiveFramesQueued());
+
+  time_source_.StartTicking();
+
+  size_t frames_dropped = 0;
+  scoped_refptr<VideoFrame> frame = RenderAndStep(&display_tg, &frames_dropped);
+  ASSERT_TRUE(frame);
+  EXPECT_EQ(frame_tg.interval(0), frame->timestamp());
+  EXPECT_EQ(0u, frames_dropped);
+  ASSERT_TRUE(is_using_cadence());
+  EXPECT_EQ((kFrameCount - 1) / 2, EffectiveFramesQueued());
+  EXPECT_EQ(kFrameCount, frames_queued());
+
+  // Advance expiry enough that some frames are removed, but one remains and is
+  // still counted as effective.  1 undisplayed and 1 displayed frame will be
+  // expired.
+  ASSERT_EQ(1u, algorithm_.RemoveExpiredFrames(display_tg.current() +
+                                               display_tg.interval(1) +
+                                               max_acceptable_drift() * 1.25));
+  EXPECT_EQ(1u, frames_queued());
+  EXPECT_EQ(1u, EffectiveFramesQueued());
+
+  // Advancing expiry once more should mark the frame as ineffective.
+  display_tg.step(3);
+  ASSERT_EQ(0u, algorithm_.RemoveExpiredFrames(display_tg.current()));
+  EXPECT_EQ(1u, frames_queued());
+  EXPECT_EQ(0u, EffectiveFramesQueued());
+}
+
 class VideoRendererAlgorithmCadenceTest
     : public VideoRendererAlgorithmTest,
       public ::testing::WithParamInterface<::testing::tuple<double, double>> {};
@@ -1389,12 +1414,12 @@ TEST_F(VideoRendererAlgorithmTest, VariablePlaybackRateCadence) {
   TickGenerator frame_tg(base::TimeTicks(), NTSC(30));
   TickGenerator display_tg(tick_clock_->NowTicks(), 60);
 
-  const double kTestRates[] = {1.0, 2, 0.215, 0.5, 1.0, 3.15};
-  const bool kTestRateHasCadence[base::size(kTestRates)] = {true, true, true,
-                                                            true, true, false};
+  const double kPlaybackRates[] = {1.0, 2, 0.215, 0.5, 1.0, 3.15};
+  const bool kTestRateHasCadence[base::size(kPlaybackRates)] = {
+      true, true, true, true, true, false};
 
-  for (size_t i = 0; i < base::size(kTestRates); ++i) {
-    const double playback_rate = kTestRates[i];
+  for (size_t i = 0; i < base::size(kPlaybackRates); ++i) {
+    const double playback_rate = kPlaybackRates[i];
     SCOPED_TRACE(base::StringPrintf("Playback Rate: %.03f", playback_rate));
     time_source_.SetPlaybackRate(playback_rate);
     RunFramePumpTest(
@@ -1427,7 +1452,7 @@ TEST_F(VideoRendererAlgorithmTest, UglyTimestampsHaveCadence) {
   for (size_t i = 0; i < base::size(kBadTimestampsMs) * 2; ++i) {
     while (EffectiveFramesQueued() < 3) {
       algorithm_.EnqueueFrame(CreateFrame(timestamp));
-      timestamp += base::TimeDelta::FromMilliseconds(
+      timestamp += base::Milliseconds(
           kBadTimestampsMs[i % base::size(kBadTimestampsMs)]);
     }
 
@@ -1462,7 +1487,7 @@ TEST_F(VideoRendererAlgorithmTest, VariableFrameRateNoCadence) {
   for (size_t i = 0; i < base::size(kBadTimestampsMs);) {
     while (EffectiveFramesQueued() < 3) {
       algorithm_.EnqueueFrame(CreateFrame(timestamp));
-      timestamp += base::TimeDelta::FromMilliseconds(
+      timestamp += base::Milliseconds(
           kBadTimestampsMs[i % base::size(kBadTimestampsMs)]);
       ++i;
     }
@@ -1526,7 +1551,7 @@ TEST_F(VideoRendererAlgorithmTest, EnqueueFrames) {
   EXPECT_EQ(2, GetCurrentFrameDisplayCount());
 
   // Trying to add a frame < 1 ms after the last frame should drop the frame.
-  algorithm_.EnqueueFrame(CreateFrame(base::TimeDelta::FromMicroseconds(999)));
+  algorithm_.EnqueueFrame(CreateFrame(base::Microseconds(999)));
   rendered_frame = RenderAndStep(&tg, &frames_dropped);
   EXPECT_EQ(1u, frames_queued());
   EXPECT_EQ(frame_1, rendered_frame);
@@ -1539,7 +1564,7 @@ TEST_F(VideoRendererAlgorithmTest, EnqueueFrames) {
 
   // Trying to add a frame < 1 ms before the last frame should drop the frame.
   algorithm_.EnqueueFrame(
-      CreateFrame(tg.interval(1) - base::TimeDelta::FromMicroseconds(999)));
+      CreateFrame(tg.interval(1) - base::Microseconds(999)));
   rendered_frame = RenderAndStep(&tg, &frames_dropped);
   EXPECT_EQ(1u, frames_queued());
   EXPECT_EQ(frame_3, rendered_frame);
@@ -1570,7 +1595,7 @@ TEST_F(VideoRendererAlgorithmTest, CadenceForFutureFrames) {
 
   // Add some noise to the tick generator so it our first frame
   // doesn't line up evenly on a deadline.
-  tg.Reset(tg.current() + base::TimeDelta::FromMilliseconds(5));
+  tg.Reset(tg.current() + base::Milliseconds(5));
 
   // We're now at the first frame, cadence should be one, so
   // it should only be displayed once.
@@ -1598,8 +1623,7 @@ TEST_F(VideoRendererAlgorithmTest, InfiniteDurationMetadata) {
   TickGenerator tg(tick_clock_->NowTicks(), 50);
 
   auto frame = CreateFrame(kInfiniteDuration);
-  frame->metadata()->SetTimeDelta(VideoFrameMetadata::FRAME_DURATION,
-                                  tg.interval(1));
+  frame->metadata().frame_duration = tg.interval(1);
   algorithm_.EnqueueFrame(frame);
 
   // This should not crash or fail.
@@ -1612,8 +1636,7 @@ TEST_F(VideoRendererAlgorithmTest, UsesFrameDuration) {
   TickGenerator tg(tick_clock_->NowTicks(), 50);
 
   auto frame = CreateFrame(tg.interval(0));
-  frame->metadata()->SetTimeDelta(VideoFrameMetadata::FRAME_DURATION,
-                                  tg.interval(1));
+  frame->metadata().frame_duration = tg.interval(1);
   algorithm_.EnqueueFrame(frame);
 
   // This should not crash or fail.
@@ -1622,11 +1645,10 @@ TEST_F(VideoRendererAlgorithmTest, UsesFrameDuration) {
   EXPECT_EQ(tg.interval(1), algorithm_.average_frame_duration());
 
   // Add a bunch of normal frames and then one with a 3s duration.
-  constexpr base::TimeDelta kLongDuration = base::TimeDelta::FromSeconds(3);
+  constexpr base::TimeDelta kLongDuration = base::Seconds(3);
   for (int i = 1; i < 4; ++i) {
     frame = CreateFrame(tg.interval(i));
-    frame->metadata()->SetTimeDelta(VideoFrameMetadata::FRAME_DURATION,
-                                    i == 3 ? kLongDuration : tg.interval(1));
+    frame->metadata().frame_duration = i == 3 ? kLongDuration : tg.interval(1);
     algorithm_.EnqueueFrame(frame);
   }
 
@@ -1634,6 +1656,33 @@ TEST_F(VideoRendererAlgorithmTest, UsesFrameDuration) {
   EXPECT_EQ(tg.interval(1), algorithm_.average_frame_duration());
   EXPECT_EQ(algorithm_.last_frame_end_time(),
             base::TimeTicks() + kLongDuration + tg.interval(1) * 3);
+}
+
+// Check that VideoRendererAlgorithm correctly sets WALLCLOCK_FRAME_DURATION
+// for each frame.
+TEST_F(VideoRendererAlgorithmTest, WallClockDurationMetadataSet) {
+  int playback_rate = 4;
+  int frame_count = 10;
+  TickGenerator tg(tick_clock_->NowTicks(), 25);
+
+  time_source_.SetPlaybackRate(playback_rate);
+  auto intended_duration = tg.interval(1) / playback_rate;
+
+  for (int i = 0; i < frame_count; i++) {
+    auto frame = CreateFrame(tg.interval(i));
+    frame->metadata().frame_duration = tg.interval(1);
+    algorithm_.EnqueueFrame(frame);
+  }
+
+  for (int i = 0; i < frame_count; i++) {
+    size_t frames_dropped = 0;
+    auto frame = RenderAndStep(&tg, &frames_dropped);
+
+    SCOPED_TRACE(base::StringPrintf("Frame #%d", i));
+
+    EXPECT_EQ(*frame->metadata().wallclock_frame_duration, intended_duration);
+    EXPECT_EQ(algorithm_.average_frame_duration(), intended_duration);
+  }
 }
 
 }  // namespace media

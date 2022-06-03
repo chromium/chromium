@@ -5,18 +5,24 @@
   "tests": [
     {
       "app": "ios_chrome_integration_egtests",
-      "shard size": 7,
+      "swarming tasks": 3,
       "xcode parallelization": true,
       "shards": 1
     },
     {
+      "app": "ios_chrome_signin_egtests",
+      "xcode parallelization": true,
+      "xctest": true
+    },
+    {
       "app": "ios_chrome_ui_egtests",
-      "shard size": 7,
+      "swarming tasks": 5,
       "xcode parallelization": true,
       "shards": 2
     },
     {
       "app": "ios_web_shell_egtests",
+      "xcode parallelization": true,
       "xctest": true
     }
   ]

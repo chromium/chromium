@@ -6,9 +6,10 @@
 
 #include <deque>
 #include <mutex>
+#include <utility>
 
 #include "base/bind.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/browser/webview/proto/webview.grpc.pb.h"
 #include "chromecast/browser/webview/webview_window_manager.h"
 #include "third_party/grpc/src/include/grpcpp/grpcpp.h"
@@ -39,7 +40,6 @@ PlatformViewsRpcInstance::PlatformViewsRpcInstance(
 }
 
 PlatformViewsRpcInstance::~PlatformViewsRpcInstance() {
-  DCHECK(destroying_);
   if (controller_) {
     controller_.release()->Destroy();
   }
@@ -49,30 +49,23 @@ PlatformViewsRpcInstance::~PlatformViewsRpcInstance() {
 
 void PlatformViewsRpcInstance::FinishComplete(bool ok) {
   // Bounce off of the webview thread to allow it to complete any pending work.
-  destroying_ = true;
-  if (!send_pending_) {
-    task_runner_->DeleteSoon(FROM_HERE, this);
-  }
+  task_runner_->DeleteSoon(FROM_HERE, this);
 }
 
 void PlatformViewsRpcInstance::OnError(const std::string& error_message) {
   std::unique_lock<std::mutex> l(send_lock_);
   errored_ = true;
   error_message_ = error_message;
-
-  if (!send_pending_)
-    io_.Finish(grpc::Status(grpc::UNKNOWN, error_message_), &destroy_callback_);
-  send_pending_ = true;
 }
 
 void PlatformViewsRpcInstance::ProcessRequestOnControllerThread(
     std::unique_ptr<webview::WebviewRequest> request) {
-  controller_->ProcessRequest(*request.get());
+  if (!errored_)
+    controller_->ProcessRequest(*request.get());
 }
 
 void PlatformViewsRpcInstance::InitComplete(bool ok) {
   if (!ok) {
-    destroying_ = true;
     delete this;
     return;
   }
@@ -93,12 +86,19 @@ void PlatformViewsRpcInstance::ReadComplete(bool ok) {
         FROM_HERE,
         base::BindOnce(
             &PlatformViewsRpcInstance::ProcessRequestOnControllerThread,
-            base::Unretained(this), base::Passed(std::move(request_))));
+            base::Unretained(this), std::move(request_)));
 
     request_ = std::make_unique<webview::WebviewRequest>();
     std::unique_lock<std::mutex> l(send_lock_);
-    if (!errored_)
+    if (!errored_) {
       io_.Read(request_.get(), &read_callback_);
+    } else if (!send_pending_) {
+      io_.Finish(grpc::Status(grpc::UNKNOWN, error_message_),
+                 &destroy_callback_);
+    } else {
+      // There is a send in progress so let that completion send the Finish.
+      read_pending_ = false;
+    }
   } else if (!Initialize()) {
     io_.Finish(grpc::Status(grpc::FAILED_PRECONDITION, "Failed initialization"),
                &destroy_callback_);
@@ -110,12 +110,11 @@ void PlatformViewsRpcInstance::ReadComplete(bool ok) {
 void PlatformViewsRpcInstance::WriteComplete(bool ok) {
   std::unique_lock<std::mutex> l(send_lock_);
   send_pending_ = false;
-  if (destroying_) {
-    // It is possible for the read & finish to complete while a write is
-    // outstanding, in that case just re-call it to delete this instance.
-    FinishComplete(true);
-  } else if (errored_) {
-    io_.Finish(grpc::Status(grpc::UNKNOWN, error_message_), &destroy_callback_);
+  if (errored_) {
+    if (!read_pending_) {
+      io_.Finish(grpc::Status(grpc::UNKNOWN, error_message_),
+                 &destroy_callback_);
+    }
   } else if (!pending_messages_.empty()) {
     send_pending_ = true;
     io_.Write(*pending_messages_.front().get(), write_options_,
@@ -127,7 +126,7 @@ void PlatformViewsRpcInstance::WriteComplete(bool ok) {
 void PlatformViewsRpcInstance::EnqueueSend(
     std::unique_ptr<webview::WebviewResponse> response) {
   std::unique_lock<std::mutex> l(send_lock_);
-  if (errored_ || destroying_)
+  if (errored_)
     return;
   if (!send_pending_ && pending_messages_.empty()) {
     send_pending_ = true;

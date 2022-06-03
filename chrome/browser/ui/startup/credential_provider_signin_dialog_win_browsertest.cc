@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/startup/credential_provider_signin_dialog_win_test_data.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
-#include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "ui/views/controls/webview/web_dialog_view.h"
@@ -40,6 +40,12 @@ class SigninDialogLoadingStoppedObserver : public content::WebContentsObserver {
 };
 
 class CredentialProviderSigninDialogWinBaseTest : public InProcessBrowserTest {
+ public:
+  CredentialProviderSigninDialogWinBaseTest(
+      const CredentialProviderSigninDialogWinBaseTest&) = delete;
+  CredentialProviderSigninDialogWinBaseTest& operator=(
+      const CredentialProviderSigninDialogWinBaseTest&) = delete;
+
  protected:
   CredentialProviderSigninDialogWinBaseTest();
 
@@ -48,9 +54,6 @@ class CredentialProviderSigninDialogWinBaseTest : public InProcessBrowserTest {
 
   views::WebDialogView* web_view_ = nullptr;
   content::WebContents* web_contents_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderSigninDialogWinBaseTest);
 };
 
 CredentialProviderSigninDialogWinBaseTest::
@@ -73,6 +76,12 @@ void CredentialProviderSigninDialogWinBaseTest::WaitForDialogToLoad() {
 
 class CredentialProviderSigninDialogWinDialogTest
     : public CredentialProviderSigninDialogWinBaseTest {
+ public:
+  CredentialProviderSigninDialogWinDialogTest(
+      const CredentialProviderSigninDialogWinDialogTest&) = delete;
+  CredentialProviderSigninDialogWinDialogTest& operator=(
+      const CredentialProviderSigninDialogWinDialogTest&) = delete;
+
  protected:
   CredentialProviderSigninDialogWinDialogTest();
 
@@ -99,8 +108,6 @@ class CredentialProviderSigninDialogWinDialogTest
 
  private:
   base::OnceClosure signin_complete_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(CredentialProviderSigninDialogWinDialogTest);
 };
 
 CredentialProviderSigninDialogWinDialogTest::
@@ -139,7 +146,6 @@ void CredentialProviderSigninDialogWinDialogTest::ShowSigninDialog(
       base::BindOnce(
           &CredentialProviderSigninDialogWinDialogTest::HandleSignInComplete,
           base::Unretained(this)));
-
   web_contents_ = web_view_->web_contents();
 }
 
@@ -170,6 +176,27 @@ void CredentialProviderSigninDialogWinDialogTest::HandleSignInComplete(
 
   if (signin_complete_closure_)
     std::move(signin_complete_closure_).Run();
+}
+
+IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinDialogTest,
+                       ShowTosInUrlParams) {
+  base::CommandLine command_line =
+      base::CommandLine(base::CommandLine::NoProgram::NO_PROGRAM);
+  // Append show_tos switch and verify if the tos is part of URL.
+  const std::string show_tos = "1";
+  command_line.AppendSwitchASCII(::credential_provider::kShowTosSwitch,
+                                 show_tos);
+  ShowSigninDialog(command_line);
+  WaitForDialogToLoad();
+
+  EXPECT_TRUE(web_view_->GetDialogContentURL().has_query());
+  std::string query_parameters = web_view_->GetDialogContentURL().query();
+  EXPECT_TRUE(query_parameters.find("show_tos=1") != std::string::npos);
+
+  web_view_->GetWidget()->CloseWithReason(
+      views::Widget::ClosedReason::kEscKeyPressed);
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
 }
 
 IN_PROC_BROWSER_TEST_F(CredentialProviderSigninDialogWinDialogTest,
@@ -340,8 +367,8 @@ IN_PROC_BROWSER_TEST_P(CredentialProviderSigninDialogWinDialogExitCodeTest,
   base::Value signin_result = test_data_storage_.MakeValidSignInResponseValue();
 
   int expected_error_code = GetParam();
-  bool should_succeed =
-      expected_error_code == (int)credential_provider::kUiecSuccess;
+  bool should_succeed = expected_error_code ==
+                        static_cast<int>(credential_provider::kUiecSuccess);
   signin_result.SetKey(credential_provider::kKeyExitCode,
                        base::Value(expected_error_code));
 
@@ -397,14 +424,16 @@ INSTANTIATE_TEST_SUITE_P(
 
 class CredentialProviderSigninDialogWinIntegrationTestBase
     : public CredentialProviderSigninDialogWinBaseTest {
+ public:
+  CredentialProviderSigninDialogWinIntegrationTestBase(
+      const CredentialProviderSigninDialogWinIntegrationTestBase&) = delete;
+  CredentialProviderSigninDialogWinIntegrationTestBase& operator=(
+      const CredentialProviderSigninDialogWinIntegrationTestBase&) = delete;
+
  protected:
   CredentialProviderSigninDialogWinIntegrationTestBase();
   // InProcessBrowserTest:
   void SetUpCommandLine(base::CommandLine* command_line) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      CredentialProviderSigninDialogWinIntegrationTestBase);
 };
 
 CredentialProviderSigninDialogWinIntegrationTestBase::
@@ -420,12 +449,17 @@ void CredentialProviderSigninDialogWinIntegrationTestBase::SetUpCommandLine(
 // Chrome will not be running on Winlogon desktop.
 class CredentialProviderSigninDialogWinIntegrationDesktopVerificationTest
     : public CredentialProviderSigninDialogWinIntegrationTestBase {
+ public:
+  CredentialProviderSigninDialogWinIntegrationDesktopVerificationTest(
+      const CredentialProviderSigninDialogWinIntegrationDesktopVerificationTest&) =
+      delete;
+  CredentialProviderSigninDialogWinIntegrationDesktopVerificationTest&
+  operator=(
+      const CredentialProviderSigninDialogWinIntegrationDesktopVerificationTest&) =
+      delete;
+
  protected:
   CredentialProviderSigninDialogWinIntegrationDesktopVerificationTest();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      CredentialProviderSigninDialogWinIntegrationDesktopVerificationTest);
 };
 
 CredentialProviderSigninDialogWinIntegrationDesktopVerificationTest::
@@ -450,16 +484,20 @@ IN_PROC_BROWSER_TEST_F(
 // be displayed even when not running on Winlogon desktop.
 class CredentialProviderSigninDialogWinIntegrationDialogDisplayTest
     : public CredentialProviderSigninDialogWinIntegrationTestBase {
+ public:
+  CredentialProviderSigninDialogWinIntegrationDialogDisplayTest(
+      const CredentialProviderSigninDialogWinIntegrationDialogDisplayTest&) =
+      delete;
+  CredentialProviderSigninDialogWinIntegrationDialogDisplayTest& operator=(
+      const CredentialProviderSigninDialogWinIntegrationDialogDisplayTest&) =
+      delete;
+
  protected:
   CredentialProviderSigninDialogWinIntegrationDialogDisplayTest();
   ~CredentialProviderSigninDialogWinIntegrationDialogDisplayTest() override;
 
   // CredentialProviderSigninDialogWinBaseTest:
   void WaitForDialogToLoad() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(
-      CredentialProviderSigninDialogWinIntegrationDialogDisplayTest);
 };
 
 CredentialProviderSigninDialogWinIntegrationDialogDisplayTest::
@@ -500,8 +538,8 @@ IN_PROC_BROWSER_TEST_F(
     CredentialProviderSigninDialogWinIntegrationDialogDisplayTest,
     ShowDialogOnlyTest) {
   WaitForDialogToLoad();
-  EXPECT_TRUE(
-      ((Profile*)(web_contents_->GetBrowserContext()))->IsIncognitoProfile());
+  EXPECT_TRUE(reinterpret_cast<Profile*>(web_contents_->GetBrowserContext())
+                  ->IsIncognitoProfile());
   views::Widget::Widgets all_widgets = views::test::WidgetTest::GetAllWidgets();
   (*all_widgets.begin())->Close();
   RunUntilBrowserProcessQuits();

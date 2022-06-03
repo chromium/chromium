@@ -16,7 +16,8 @@ import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -26,15 +27,15 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.base.SplitCompatIntentService;
 import org.chromium.components.background_task_scheduler.TaskIds;
 import org.chromium.components.minidump_uploader.CrashTestRule;
 import org.chromium.components.minidump_uploader.CrashTestRule.MockCrashReportingPermissionManager;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable;
 import org.chromium.components.minidump_uploader.MinidumpUploadCallable.MinidumpUploadStatus;
 import org.chromium.components.minidump_uploader.util.CrashReportingPermissionManager;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.net.NetworkChangeNotifier;
 
 import java.io.File;
@@ -55,16 +56,20 @@ public class MinidumpUploadServiceTest {
     private static final int MAX_TIMEOUT_MS = 20000;
     private static final String BOUNDARY = "TESTBOUNDARY";
 
-    private static class TestMinidumpUploadService extends MinidumpUploadService {
+    private static class TestMinidumpUploadService extends MinidumpUploadServiceImpl {
         private final NetworkChangingPermissionManager mPermissionManager =
                 new NetworkChangingPermissionManager();
-        private TestMinidumpUploadService() {}
+        private TestMinidumpUploadService() {
+            setService(new SplitCompatIntentService(null, "Test"));
+        }
+
         private TestMinidumpUploadService(Context context) {
-            attachBaseContext(context);
+            this();
+            getService().attachBaseContextForTesting(context, this);
         }
 
         private void attachBaseContextLate(Context base) {
-            super.attachBaseContext(base);
+            getService().attachBaseContextForTesting(base, this);
         }
 
         private static class NetworkChangingPermissionManager
@@ -116,10 +121,10 @@ public class MinidumpUploadServiceTest {
             @Override
             public ComponentName startService(Intent intentToCheck) {
                 String filePath =
-                        intentToCheck.getStringExtra(MinidumpUploadService.FILE_TO_UPLOAD_KEY);
+                        intentToCheck.getStringExtra(MinidumpUploadServiceImpl.FILE_TO_UPLOAD_KEY);
                 // Assuming numServicesStart value corresponds to minidumpFiles index.
-                Assert.assertEquals("Action should be correct", MinidumpUploadService.ACTION_UPLOAD,
-                        intentToCheck.getAction());
+                Assert.assertEquals("Action should be correct",
+                        MinidumpUploadServiceImpl.ACTION_UPLOAD, intentToCheck.getAction());
                 Assert.assertTrue("Should not call service more than number of files",
                         numServiceStarts.incrementAndGet() <= minidumpFiles.length);
                 Assert.assertEquals("Minidump path should be the absolute path",
@@ -128,7 +133,7 @@ public class MinidumpUploadServiceTest {
             }
 
         };
-        MinidumpUploadService service = new TestMinidumpUploadService(context);
+        MinidumpUploadServiceImpl service = new TestMinidumpUploadService(context);
         for (File minidumpFile : minidumpFiles) {
             CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY);
         }
@@ -137,9 +142,8 @@ public class MinidumpUploadServiceTest {
         }
 
         // Run test.
-        service.onCreate();
         ContextUtils.initApplicationContextForTests(context);
-        MinidumpUploadService.tryUploadAllCrashDumps();
+        MinidumpUploadServiceImpl.tryUploadAllCrashDumps();
 
         // Verify.
         for (File minidumpFile : minidumpFiles) {
@@ -168,7 +172,7 @@ public class MinidumpUploadServiceTest {
         // Create |MAX_TRIES_ALLOWED| callables.
         final List<CountedMinidumpUploadCallable> callables =
                 new ArrayList<CountedMinidumpUploadCallable>();
-        for (int i = 0; i < MinidumpUploadService.MAX_TRIES_ALLOWED; i++) {
+        for (int i = 0; i < MinidumpUploadServiceImpl.MAX_TRIES_ALLOWED; i++) {
             callables.add(new CountedMinidumpUploadCallable(
                     "chromium_renderer-111.dmp1.try" + i, MinidumpUploadStatus.FAILURE, true));
         }
@@ -284,7 +288,7 @@ public class MinidumpUploadServiceTest {
             @Override
             public ComponentName startService(final Intent intentToCheck) {
                 Assert.assertTrue(
-                        MinidumpUploadService.ACTION_UPLOAD.equals(intentToCheck.getAction()));
+                        MinidumpUploadServiceImpl.ACTION_UPLOAD.equals(intentToCheck.getAction()));
                 // Post to the handler thread to run the retry intent.
                 mHandler.post(new Runnable() {
                     @Override
@@ -305,24 +309,18 @@ public class MinidumpUploadServiceTest {
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY);
 
         // Run test.
-        service.onCreate();
         ContextUtils.initApplicationContextForTests(context);
-        MinidumpUploadService.tryUploadCrashDump(minidumpFile);
+        MinidumpUploadServiceImpl.tryUploadCrashDump(minidumpFile);
 
         // Verify asynchronously.
-        CriteriaHelper.pollInstrumentationThread(
-                new Criteria("All callables should have a call-count of 1") {
-                    @Override
-                    public boolean isSatisfied() {
-                        for (CountedMinidumpUploadCallable callable : callables) {
-                            if (callable.mCalledCount != 1) {
-                                return false;
-                            }
-                        }
-                        return true;
-                    }
-                },
-                MAX_TIMEOUT_MS, CHECK_INTERVAL_MS);
+        CriteriaHelper.pollInstrumentationThread(() -> {
+            for (CountedMinidumpUploadCallable callable : callables) {
+                if (callable.mCalledCount != 1) {
+                    return false;
+                }
+            }
+            return true;
+        }, "All callables should have a call-count of 1", MAX_TIMEOUT_MS, CHECK_INTERVAL_MS);
     }
 
     @Test
@@ -346,9 +344,10 @@ public class MinidumpUploadServiceTest {
                         .getApplicationContext()) {
             @Override
             public ComponentName startService(Intent intentToCheck) {
-                Assert.assertEquals(MinidumpUploadService.ACTION_UPLOAD, intentToCheck.getAction());
+                Assert.assertEquals(
+                        MinidumpUploadServiceImpl.ACTION_UPLOAD, intentToCheck.getAction());
                 String filePath =
-                        intentToCheck.getStringExtra(MinidumpUploadService.FILE_TO_UPLOAD_KEY);
+                        intentToCheck.getStringExtra(MinidumpUploadServiceImpl.FILE_TO_UPLOAD_KEY);
                 Assert.assertEquals("Minidump path should be for a fresh upload",
                         expectedRenamedMinidumpFile.getAbsolutePath(), filePath);
                 setFlag(startServiceFlag);
@@ -358,7 +357,7 @@ public class MinidumpUploadServiceTest {
 
         // Run test.
         ContextUtils.initApplicationContextForTests(context);
-        MinidumpUploadService.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
+        MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
         Assert.assertTrue(
@@ -385,7 +384,7 @@ public class MinidumpUploadServiceTest {
 
         // Run test.
         ContextUtils.initApplicationContextForTests(context);
-        MinidumpUploadService.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
+        MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
         final File expectedRenamedMinidumpFile = new File(mTestRule.getCrashDir(),
@@ -417,9 +416,10 @@ public class MinidumpUploadServiceTest {
                         .getApplicationContext()) {
             @Override
             public ComponentName startService(Intent intentToCheck) {
-                Assert.assertEquals(MinidumpUploadService.ACTION_UPLOAD, intentToCheck.getAction());
+                Assert.assertEquals(
+                        MinidumpUploadServiceImpl.ACTION_UPLOAD, intentToCheck.getAction());
                 String filePath =
-                        intentToCheck.getStringExtra(MinidumpUploadService.FILE_TO_UPLOAD_KEY);
+                        intentToCheck.getStringExtra(MinidumpUploadServiceImpl.FILE_TO_UPLOAD_KEY);
                 Assert.assertEquals("Minidump path should be for a fresh upload",
                         expectedRenamedMinidumpFile.getAbsolutePath(), filePath);
                 setFlag(startServiceFlag);
@@ -429,7 +429,7 @@ public class MinidumpUploadServiceTest {
 
         // Run test.
         ContextUtils.initApplicationContextForTests(context);
-        MinidumpUploadService.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
+        MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
         Assert.assertTrue(
@@ -456,7 +456,7 @@ public class MinidumpUploadServiceTest {
 
         // Run test.
         ContextUtils.initApplicationContextForTests(context);
-        MinidumpUploadService.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
+        MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
         final File expectedRenamedMinidumpFile = new File(mTestRule.getCrashDir(),
@@ -488,7 +488,7 @@ public class MinidumpUploadServiceTest {
         };
 
         // Run test.
-        MinidumpUploadService.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
+        MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
         Assert.assertFalse(
@@ -509,7 +509,7 @@ public class MinidumpUploadServiceTest {
                                                        .getApplicationContext());
 
         // Run test.
-        MinidumpUploadService.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
+        MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
         Assert.assertFalse("Should not have tried to schedule an upload job",
@@ -542,7 +542,7 @@ public class MinidumpUploadServiceTest {
         };
 
         // Run test.
-        MinidumpUploadService.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
+        MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
         Assert.assertFalse(
@@ -568,7 +568,7 @@ public class MinidumpUploadServiceTest {
                                                        .getApplicationContext());
 
         // Run test.
-        MinidumpUploadService.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
+        MinidumpUploadServiceImpl.tryUploadCrashDumpWithLocalId("f297dbcba7a2d0bb");
 
         // Verify.
         Assert.assertFalse("Should not have tried to schedule an upload job",
@@ -582,8 +582,8 @@ public class MinidumpUploadServiceTest {
         final File minidumpFile =
                 new File(mTestRule.getCrashDir(), "chromium_renderer-123.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY, "browser");
-        Assert.assertEquals(MinidumpUploadService.ProcessType.BROWSER,
-                MinidumpUploadService.getCrashType(minidumpFile.getAbsolutePath()));
+        Assert.assertEquals(MinidumpUploadServiceImpl.ProcessType.BROWSER,
+                MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
     @Test
@@ -593,8 +593,8 @@ public class MinidumpUploadServiceTest {
         final File minidumpFile =
                 new File(mTestRule.getCrashDir(), "chromium_renderer-123.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY, "renderer");
-        Assert.assertEquals(MinidumpUploadService.ProcessType.RENDERER,
-                MinidumpUploadService.getCrashType(minidumpFile.getAbsolutePath()));
+        Assert.assertEquals(MinidumpUploadServiceImpl.ProcessType.RENDERER,
+                MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
     @Test
@@ -604,8 +604,8 @@ public class MinidumpUploadServiceTest {
         final File minidumpFile =
                 new File(mTestRule.getCrashDir(), "chromium_renderer-123.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY, "gpu-process");
-        Assert.assertEquals(MinidumpUploadService.ProcessType.GPU,
-                MinidumpUploadService.getCrashType(minidumpFile.getAbsolutePath()));
+        Assert.assertEquals(MinidumpUploadServiceImpl.ProcessType.GPU,
+                MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
     @Test
@@ -615,21 +615,22 @@ public class MinidumpUploadServiceTest {
         final File minidumpFile =
                 new File(mTestRule.getCrashDir(), "chromium_renderer-123.dmp.try0");
         CrashTestRule.setUpMinidumpFile(minidumpFile, BOUNDARY, "weird test type");
-        Assert.assertEquals(MinidumpUploadService.ProcessType.OTHER,
-                MinidumpUploadService.getCrashType(minidumpFile.getAbsolutePath()));
+        Assert.assertEquals(MinidumpUploadServiceImpl.ProcessType.OTHER,
+                MinidumpUploadServiceImpl.getCrashType(minidumpFile.getAbsolutePath()));
     }
 
     private class MinidumpPreparationContext extends AdvancedMockContext {
         /**
          * Field used in overridden versions of startService() so we can support retries.
          */
-        protected MinidumpUploadService mService;
+        protected MinidumpUploadServiceImpl mService;
 
         public MinidumpPreparationContext(Context targetContext) {
             this(targetContext, null);
         }
 
-        public MinidumpPreparationContext(Context targetContext, MinidumpUploadService service) {
+        public MinidumpPreparationContext(
+                Context targetContext, MinidumpUploadServiceImpl service) {
             super(targetContext);
             mService = service;
         }

@@ -8,7 +8,8 @@
 #import <Foundation/Foundation.h>
 #include <stddef.h>
 
-#include "base/strings/string16.h"
+#include <string>
+
 #include "base/time/time.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/navigation/referrer.h"
@@ -21,6 +22,8 @@ namespace web {
 
 // Current URL (std::string).
 extern NSString* const kNavigationItemStorageURLKey;
+// Current URL (std::string).
+extern NSString* const kNavigationItemStorageVirtualURLKey;
 // Page referrer URL (std::string).
 extern NSString* const kNavigationItemStorageReferrerURLKey;
 // Page referrer URL (NSURL). Deprecated, used for backward compatibility.
@@ -34,8 +37,6 @@ extern NSString* const kNavigationItemStorageTimestampKey;
 extern NSString* const kNavigationItemStorageTitleKey;
 // The PageDisplayState (NSDictionary).
 extern NSString* const kNavigationItemStoragePageDisplayStateKey;
-// POST request data (NSData).
-extern NSString* const kNavigationItemStoragePOSTDataKey;
 // HTTP request headers (NSDictionary).
 extern NSString* const kNavigationItemStorageHTTPRequestHeadersKey;
 // Whether or not to bypass showing the resubmit data confirmation when loading
@@ -44,20 +45,29 @@ extern NSString* const kNavigationItemStorageSkipRepostFormConfirmationKey;
 // The user agent type (std::string).
 extern NSString* const kNavigationItemStorageUserAgentTypeKey;
 
+// Constants for histogram names.
+extern const char kNavigationItemSerializedSizeHistogram[];
+extern const char kNavigationItemSerializedVirtualURLSizeHistogram[];
+extern const char kNavigationItemSerializedURLSizeHistogram[];
+extern const char kNavigationItemSerializedReferrerURLSizeHistogram[];
+extern const char kNavigationItemSerializedTitleSizeHistogram[];
+extern const char kNavigationItemSerializedDisplayStateSizeHistogram[];
+extern const char kNavigationItemSerializedRequestHeadersSizeHistogram[];
+
 }  // namespace web
 
 // NSCoding-compliant class used to serialize NavigationItem's persisted
 // properties.
 @interface CRWNavigationItemStorage : NSObject <NSCoding>
 
+@property(nonatomic, assign) GURL URL;
 @property(nonatomic, assign) GURL virtualURL;
 @property(nonatomic, assign) web::Referrer referrer;
 @property(nonatomic, assign) base::Time timestamp;
-@property(nonatomic, assign) base::string16 title;
+@property(nonatomic, assign) std::u16string title;
 @property(nonatomic, assign) web::PageDisplayState displayState;
 @property(nonatomic, assign) BOOL shouldSkipRepostFormConfirmation;
 @property(nonatomic, assign) web::UserAgentType userAgentType;
-@property(nonatomic, copy) NSData* POSTData;
 @property(nonatomic, copy) NSDictionary* HTTPRequestHeaders;
 
 @end

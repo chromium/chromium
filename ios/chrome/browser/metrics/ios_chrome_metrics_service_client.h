@@ -24,12 +24,9 @@
 #import "ios/chrome/browser/metrics/incognito_web_state_observer.h"
 #include "ios/web/public/deprecated/global_web_state_observer.h"
 
+class ChromeBrowserState;
 class IOSChromeStabilityMetricsProvider;
 class PrefRegistrySimple;
-
-namespace ios {
-class ChromeBrowserState;
-}
 
 namespace metrics {
 class MetricsService;
@@ -48,6 +45,10 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
                                       public ukm::UkmConsentStateObserver,
                                       public web::GlobalWebStateObserver {
  public:
+  IOSChromeMetricsServiceClient(const IOSChromeMetricsServiceClient&) = delete;
+  IOSChromeMetricsServiceClient& operator=(
+      const IOSChromeMetricsServiceClient&) = delete;
+
   ~IOSChromeMetricsServiceClient() override;
 
   // Factory function.
@@ -63,8 +64,10 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool GetBrand(std::string* brand_code) override;
   metrics::SystemProfileProto::Channel GetChannel() override;
+  bool IsExtendedStableChannel() override;
   std::string GetVersionString() override;
   void CollectFinalMetricsForLog(base::OnceClosure done_callback) override;
   std::unique_ptr<metrics::MetricsLogUploader> CreateUploader(
@@ -75,7 +78,6 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
   base::TimeDelta GetStandardUploadInterval() override;
-  void OnRendererProcessCrash() override;
   bool IsUkmAllowedForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
   std::string GetUploadSigningKey() override;
@@ -107,6 +109,14 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // Completes the two-phase initialization of IOSChromeMetricsServiceClient.
   void Initialize();
 
+  // Registers providers to the MetricsService. These provide data from
+  // alternate sources.
+  void RegisterMetricsServiceProviders();
+
+  // Registers providers to the UkmService. These provide data from alternate
+  // sources.
+  void RegisterUKMProviders();
+
   // Callbacks for various stages of final log info collection. Do not call
   // these directly.
   void CollectFinalHistograms();
@@ -120,7 +130,7 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
 
   // Register to observe events on a browser state's services.
   // Returns true if registration was successful.
-  bool RegisterForBrowserStateEvents(ios::ChromeBrowserState* browser_state);
+  bool RegisterForBrowserStateEvents(ChromeBrowserState* browser_state);
 
   // Called when a tab is parented.
   void OnTabParented(web::WebState* web_state);
@@ -149,21 +159,14 @@ class IOSChromeMetricsServiceClient : public IncognitoWebStateObserver,
   // Saved callback received from CollectFinalMetricsForLog().
   base::OnceClosure collect_final_metrics_done_callback_;
 
-  // Callback that is called when initial metrics gathering is complete.
-  base::Closure finished_init_task_callback_;
-
   // Subscription for receiving callbacks that a tab was parented.
-  std::unique_ptr<base::CallbackList<void(web::WebState*)>::Subscription>
-      tab_parented_subscription_;
+  base::CallbackListSubscription tab_parented_subscription_;
 
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-      omnibox_url_opened_subscription_;
+  base::CallbackListSubscription omnibox_url_opened_subscription_;
 
   base::WeakPtrFactory<IOSChromeMetricsServiceClient> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSChromeMetricsServiceClient);
 };
 
 #endif  // IOS_CHROME_BROWSER_METRICS_IOS_CHROME_METRICS_SERVICE_CLIENT_H_

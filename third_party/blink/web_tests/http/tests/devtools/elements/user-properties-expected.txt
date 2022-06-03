@@ -1,7 +1,7 @@
 Tests that DOMNode properly tracks own and descendants' user properties.
 
 attr1 set on aNode
-  <!doctype html>
+  <!DOCTYPE html>
 - <html> [subtreeMarkerCount:1]
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
@@ -16,7 +16,7 @@ attr1 set on aNode
       </body>
   </html>
 attr2 set on child2
-  <!doctype html>
+  <!DOCTYPE html>
 - <html> [subtreeMarkerCount:2]
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
@@ -31,7 +31,7 @@ attr2 set on child2
       </body>
   </html>
 attr1 set on child2
-  <!doctype html>
+  <!DOCTYPE html>
 - <html> [subtreeMarkerCount:3]
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
@@ -46,7 +46,7 @@ attr1 set on child2
       </body>
   </html>
 attr1 modified on aNode
-  <!doctype html>
+  <!DOCTYPE html>
 - <html> [subtreeMarkerCount:3]
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
@@ -61,7 +61,7 @@ attr1 modified on aNode
       </body>
   </html>
 attr2 modified on child2
-  <!doctype html>
+  <!DOCTYPE html>
 - <html> [subtreeMarkerCount:3]
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
@@ -76,7 +76,7 @@ attr2 modified on child2
       </body>
   </html>
 attr1 removed from aNode
-  <!doctype html>
+  <!DOCTYPE html>
 - <html> [subtreeMarkerCount:2]
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
@@ -91,7 +91,7 @@ attr1 removed from aNode
       </body>
   </html>
 aNode removed
-  <!doctype html>
+  <!DOCTYPE html>
 - <html> [subtreeMarkerCount:2]
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">
@@ -104,7 +104,7 @@ aNode removed
       </body>
   </html>
 child2 removed
-  <!doctype html>
+  <!DOCTYPE html>
 - <html> [subtreeMarkerCount:2]
     - <head>
           <base href="http://127.0.0.1:8000/devtools/elements/">

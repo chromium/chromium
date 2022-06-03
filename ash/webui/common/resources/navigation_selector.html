@@ -1,0 +1,63 @@
+<style include="cr-shared-style">
+:host {
+  --focus-border-width: 1px;
+}
+.navigation-item {
+  align-items: center;
+  border-block-end-width: var(--focus-border-width);
+  border-block-start-width: var(--focus-border-width);
+  border-color: transparent;
+  border-inline-end-width: var(--focus-border-width);
+  border-inline-start-width: 0;
+  border-radius: 0 20px 20px 0;
+  border-style: solid;
+  color: var(--cros-text-color-primary);
+  cursor: pointer;
+  display: flex;
+  font-weight: 500;
+  margin-bottom: 8px;
+  margin-inline-end: 2px;
+  min-height: 32px;
+  padding-inline-start: 20px;
+}
+
+div:hover:not(.selected).navigation-item {
+  background-color: var(--google-grey-100);
+}
+
+.navigation-item.selected {
+  background-color: var(--google-blue-50);
+  color: var(--google-blue-600);
+}
+
+iron-icon {
+  --iron-icon-fill-color: var(--cros-icon-color-primary);
+  --iron-icon-height: 20px;
+  --iron-icon-width: 20px;
+  margin-inline-end: 16px;
+  pointer-events: none;
+  vertical-align: top;
+}
+
+.navigation-item.selected > iron-icon {
+  --iron-icon-fill-color: var(--google-blue-600);
+}
+
+cr-expand-button {
+  padding-inline-start: 20px;
+}
+
+</style>
+
+<div id="navigationSelectorComponent">
+  <div id="navigationSelectorMenu">
+    <template id="selectorItems" is="dom-repeat" items="{{selectorItems}}">
+        <div class$="{{computeInitialClass_(item)}}" tabindex="0"
+            on-click="onSelected_">
+          <iron-icon class="icon" icon="[[item.icon]]" alt="">
+          </iron-icon>
+          [[item.name]]
+        </div>
+    </template>
+  </div>
+</div>

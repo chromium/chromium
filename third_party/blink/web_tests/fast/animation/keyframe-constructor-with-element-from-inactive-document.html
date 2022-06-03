@@ -1,0 +1,9 @@
+<iframe id="i"></iframe>
+PASS if no crash.
+<script>
+if (window.testRunner)
+  testRunner.dumpAsText();
+var el = i.contentDocument.documentElement;
+i.remove();
+new KeyframeEffect(el, [{left: '1px'}]); 
+</script>

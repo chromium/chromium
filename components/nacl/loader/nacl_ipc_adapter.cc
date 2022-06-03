@@ -14,9 +14,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/platform_shared_memory_region.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/tuple.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel.h"
@@ -69,11 +68,12 @@ struct DescThunker {
       : adapter(adapter_arg) {
   }
 
+  DescThunker(const DescThunker&) = delete;
+  DescThunker& operator=(const DescThunker&) = delete;
+
   ~DescThunker() { adapter->CloseChannel(); }
 
   scoped_refptr<NaClIPCAdapter> adapter;
-
-  DISALLOW_COPY_AND_ASSIGN(DescThunker);
 };
 
 NaClIPCAdapter* ToAdapter(void* handle) {
@@ -225,6 +225,10 @@ int TranslatePepperFileReadWriteOpenFlags(int32_t pp_open_flags) {
 class NaClDescWrapper {
  public:
   explicit NaClDescWrapper(NaClDesc* desc): desc_(desc) {}
+
+  NaClDescWrapper(const NaClDescWrapper&) = delete;
+  NaClDescWrapper& operator=(const NaClDescWrapper&) = delete;
+
   ~NaClDescWrapper() {
     NaClDescUnref(desc_);
   }
@@ -233,7 +237,6 @@ class NaClDescWrapper {
 
  private:
   NaClDesc* desc_;
-  DISALLOW_COPY_AND_ASSIGN(NaClDescWrapper);
 };
 
 std::unique_ptr<NaClDescWrapper> MakeShmRegionNaClDesc(
@@ -245,7 +248,7 @@ std::unique_ptr<NaClDescWrapper> MakeShmRegionNaClDesc(
   base::subtle::PlatformSharedMemoryRegion::ScopedPlatformHandle handle =
       region.PassPlatformHandle();
   return std::make_unique<NaClDescWrapper>(
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
       NaClDescImcShmMachMake(handle.release(),
 #elif defined(OS_WIN)
       NaClDescImcShmMake(handle.Take(),
@@ -356,8 +359,8 @@ NaClIPCAdapter::NaClIPCAdapter(
     : lock_(),
       cond_var_(&lock_),
       task_runner_(runner),
-      resolve_file_token_cb_(resolve_file_token_cb),
-      open_resource_cb_(open_resource_cb),
+      resolve_file_token_cb_(std::move(resolve_file_token_cb)),
+      open_resource_cb_(std::move(open_resource_cb)),
       locked_data_() {
   io_thread_data_.channel_ = IPC::Channel::CreateServer(handle, this, runner);
   // Note, we can not PostTask for ConnectChannelOnIOThread here. If we did,
@@ -527,11 +530,8 @@ bool NaClIPCAdapter::OnMessageReceived(const IPC::Message& msg) {
 
       // resolve_file_token_cb_ must be invoked from the I/O thread.
       resolve_file_token_cb_.Run(
-          token_lo,
-          token_hi,
-          base::Bind(&NaClIPCAdapter::SaveOpenResourceMessage,
-                     this,
-                     msg));
+          token_lo, token_hi,
+          base::BindOnce(&NaClIPCAdapter::SaveOpenResourceMessage, this, msg));
 
       // In this case, we don't release the message to NaCl untrusted code
       // immediately. We defer it until we get an async message back from the
@@ -565,13 +565,13 @@ bool NaClIPCAdapter::RewriteMessage(const IPC::Message& msg, uint32_t type) {
           break;
         }
         case ppapi::proxy::SerializedHandle::SOCKET: {
-          nacl_desc.reset(new NaClDescWrapper(NaClDescSyncSocketMake(
+          nacl_desc = std::make_unique<NaClDescWrapper>(NaClDescSyncSocketMake(
 #if defined(OS_WIN)
               handle.descriptor().GetHandle()
 #else
               handle.descriptor().fd
 #endif
-                  )));
+                  ));
           break;
         }
         case ppapi::proxy::SerializedHandle::FILE: {
@@ -589,7 +589,7 @@ bool NaClIPCAdapter::RewriteMessage(const IPC::Message& msg, uint32_t type) {
                 locked_data_.nacl_msg_scanner_.GetFile(handle.file_io()), desc);
           }
           if (desc)
-            nacl_desc.reset(new NaClDescWrapper(desc));
+            nacl_desc = std::make_unique<NaClDescWrapper>(desc);
           break;
         }
 
@@ -648,7 +648,7 @@ void NaClIPCAdapter::SaveOpenResourceMessage(
     ppapi::proxy::SerializedHandle orig_sh;
 
     // These CHECKs could fail if the renderer sends this process a malformed
-    // message, but that's OK becuase in general the renderer can cause the NaCl
+    // message, but that's OK because in general the renderer can cause the NaCl
     // loader process to exit.
     CHECK(IPC::ReadParam(&orig_msg, &iter, &token_lo));
     CHECK(IPC::ReadParam(&orig_msg, &iter, &token_hi));
@@ -818,7 +818,7 @@ void NaClIPCAdapter::SendMessageOnIOThread(
     // from the I/O thread.
     if (open_resource_cb_.Run(
             *message.get(), key,
-            base::Bind(&NaClIPCAdapter::SaveOpenResourceMessage, this))) {
+            base::BindOnce(&NaClIPCAdapter::SaveOpenResourceMessage, this))) {
       // The callback sent a reply to the untrusted side.
       return;
     }

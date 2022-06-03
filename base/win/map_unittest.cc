@@ -6,10 +6,12 @@
 
 #include <windows.foundation.h>
 
+#include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/core_winrt_util.h"
 #include "base/win/hstring_reference.h"
 #include "base/win/scoped_hstring.h"
+#include "base/win/scoped_winrt_initializer.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -214,7 +216,7 @@ class FakeMapChangedEventHandler
     EXPECT_HRESULT_SUCCEEDED(map_->add_MapChanged(this, &token_));
   }
 
-  ~FakeMapChangedEventHandler() {
+  ~FakeMapChangedEventHandler() override {
     EXPECT_HRESULT_SUCCEEDED(map_->remove_MapChanged(token_));
   }
 
@@ -476,12 +478,15 @@ TEST(MapTest, First) {
   EXPECT_HRESULT_SUCCEEDED(hr);
   EXPECT_EQ(20.3, value);
   hr = iterator->MoveNext(&has_current);
-  EXPECT_FALSE(SUCCEEDED(hr));
-  EXPECT_EQ(E_BOUNDS, hr);
+  EXPECT_HRESULT_SUCCEEDED(hr);
   EXPECT_FALSE(has_current);
   hr = iterator->get_Current(&current);
   EXPECT_FALSE(SUCCEEDED(hr));
   EXPECT_EQ(E_BOUNDS, hr);
+  hr = iterator->MoveNext(&has_current);
+  EXPECT_FALSE(SUCCEEDED(hr));
+  EXPECT_EQ(E_BOUNDS, hr);
+  EXPECT_FALSE(has_current);
 
   // Test invalidation.
   hr = map->First(&iterator);
@@ -506,7 +511,8 @@ TEST(MapTest, Properties) {
     return;
 
   ASSERT_TRUE(ResolveCoreWinRT());
-  ASSERT_HRESULT_SUCCEEDED(base::win::RoInitialize(RO_INIT_MULTITHREADED));
+  ScopedWinrtInitializer winrt_initializer;
+  ASSERT_TRUE(winrt_initializer.Succeeded());
 
   auto map = Make<Map<HSTRING, IInspectable*>>();
 

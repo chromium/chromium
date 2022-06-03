@@ -33,6 +33,7 @@
 
 #include <limits>
 
+#include "build/build_config.h"
 #include "third_party/blink/renderer/platform/fonts/font_face_creation_params.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/font_settings.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -51,12 +52,7 @@ struct FontCacheKey {
   DISALLOW_NEW();
 
  public:
-  FontCacheKey()
-      : creation_params_(),
-        font_size_(0),
-        options_(0),
-        device_scale_factor_(0),
-        is_unique_match_(false) {}
+  FontCacheKey() = default;
   FontCacheKey(FontFaceCreationParams creation_params,
                float font_size,
                unsigned options,
@@ -83,22 +79,35 @@ struct FontCacheKey {
     // Convert from float with 3 digit precision before hashing.
     unsigned device_scale_factor_hash = device_scale_factor_ * 1000;
     unsigned hash_codes[6] = {
-        creation_params_.GetHash(),
-        font_size_,
-        options_,
-        device_scale_factor_hash,
-        variation_settings_ ? variation_settings_->GetHash() : 0,
-        is_unique_match_};
+      creation_params_.GetHash(),
+      font_size_,
+      options_,
+      device_scale_factor_hash,
+#if defined(OS_ANDROID)
+      (locale_.IsEmpty() ? 0 : AtomicStringHash::GetHash(locale_)) ^
+#endif  // defined(OS_ANDROID)
+          (variation_settings_ ? variation_settings_->GetHash() : 0),
+      is_unique_match_
+    };
     return StringHasher::HashMemory<sizeof(hash_codes)>(hash_codes);
   }
 
   bool operator==(const FontCacheKey& other) const {
+    bool variation_settings_equal =
+        (!variation_settings_ && !other.variation_settings_) ||
+        (variation_settings_ && other.variation_settings_ &&
+         *variation_settings_ == *other.variation_settings_);
     return creation_params_ == other.creation_params_ &&
            font_size_ == other.font_size_ && options_ == other.options_ &&
            device_scale_factor_ == other.device_scale_factor_ &&
-           variation_settings_ == other.variation_settings_ &&
+#if defined(OS_ANDROID)
+           locale_ == other.locale_ &&
+#endif  // defined(OS_ANDROID)
+           variation_settings_equal &&
            is_unique_match_ == other.is_unique_match_;
   }
+
+  bool operator!=(const FontCacheKey& other) const { return !(*this == other); }
 
   static constexpr unsigned PrecisionMultiplier() {
     return kFontSizePrecisionMultiplier;
@@ -106,18 +115,26 @@ struct FontCacheKey {
 
   void ClearFontSize() { font_size_ = 0; }
 
- private:
+#if defined(OS_ANDROID)
+  // Set the locale if the font is locale-specific. This allows different
+  // |FontPlatformData| instances for each locale.
+  void SetLocale(const AtomicString& locale) { locale_ = locale.LowerASCII(); }
+#endif  // defined(OS_ANDROID)
 
+ private:
   FontFaceCreationParams creation_params_;
-  unsigned font_size_;
-  unsigned options_;
+  unsigned font_size_ = 0;
+  unsigned options_ = 0;
   // FontCacheKey is the key to retrieve FontPlatformData entries from the
   // FontCache. FontPlatformData queries the platform's font render style, which
   // is dependent on the device scale factor. That's why we need
   // device_scale_factor_ to be a part of computing the cache key.
-  float device_scale_factor_;
+  float device_scale_factor_ = 0;
+#if defined(OS_ANDROID)
+  AtomicString locale_;
+#endif  // defined(OS_ANDROID)
   scoped_refptr<FontVariationSettings> variation_settings_;
-  bool is_unique_match_;
+  bool is_unique_match_ = false;
 };
 
 struct FontCacheKeyHash {
@@ -140,5 +157,24 @@ struct FontCacheKeyTraits : WTF::SimpleClassHashTraits<FontCacheKey> {
 };
 
 }  // namespace blink
+
+namespace WTF {
+template <>
+struct DefaultHash<blink::FontCacheKey> {
+  STATIC_ONLY(DefaultHash);
+  typedef blink::FontCacheKeyHash Hash;
+};
+
+template <>
+struct HashTraits<blink::FontCacheKey>
+    : WTF::SimpleClassHashTraits<blink::FontCacheKey> {
+  STATIC_ONLY(HashTraits);
+
+  // std::string's empty state need not be zero in all implementations,
+  // and it is held within FontFaceCreationParams.
+  static const bool kEmptyValueIsZero = false;
+};
+
+}  // namespace WTF
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_CACHE_KEY_H_

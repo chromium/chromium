@@ -10,7 +10,6 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
-#include "base/strings/string16.h"
 
 namespace shell_integration {
 namespace win {
@@ -27,7 +26,7 @@ bool SetAsDefaultBrowserUsingIntentPicker();
 // The function takes care of making sure |on_finished_callback| will get called
 // exactly once when the interaction is finished.
 void SetAsDefaultBrowserUsingSystemSettings(
-    const base::Closure& on_finished_callback);
+    base::OnceClosure on_finished_callback);
 
 // Initiates an OS shell flow which (if followed by the user) should set
 // Chrome as the default handler for |protocol|. Returns false if the flow
@@ -42,36 +41,58 @@ bool SetAsDefaultProtocolClientUsingIntentPicker(const std::string& protocol);
 // will get called exactly once when the interaction is finished.
 void SetAsDefaultProtocolClientUsingSystemSettings(
     const std::string& protocol,
-    const base::Closure& on_finished_callback);
+    base::OnceClosure on_finished_callback);
 
-// Generates an application user model ID (AppUserModelId) for a given app
-// name and profile path. The returned app id is in the format of
-// "|app_name|[.<profile_id>]". "profile_id" is appended when user override
-// the default value.
-// Note: If the app has an installation specific suffix (e.g. on user-level
-// Chrome installs), |app_name| should already be suffixed, this method will
-// then further suffix it with the profile id as described above.
-base::string16 GetAppModelIdForProfile(const base::string16& app_name,
-                                       const base::FilePath& profile_path);
+// App windows on Windows have an App User Model Id (AUMI) property. This is set
+// in BrowserWindowPropertyManager::UpdateWindowProperties(), when a window is
+// opened. Windows desktop shortcuts have an app model property, and this should
+// match the open window's AUMI. Windows groups open windows with the same AUMI
+// to a taskbar icon. The two methods below are used  to create AUMI's for
+// shortcuts and open windows. There are two kinds of windows, Chromium windows,
+// i.e., browser windows, and app windows, which include web apps,
+// extensions, i.e., windows opened via --app-id or --app.
+
+// GetAppUserModelIdForBrowser constructs an AUMI for a browser window and
+// GetAppUserModelIdForApp constructs an AUMI for an app window. Each calls
+// ShellUtil::BuildAppUserModelId() to construct the AUMI out of component
+// strings.
+
+// Generates an application user model ID (AppUserModelId) for a given
+// app name and profile path. The returned app id format is
+// "<install_static::GetBaseAppId()>.|app_name|[.<profile_id>]".
+// |profile_id| is only appended when it's not the default profile.
+std::wstring GetAppUserModelIdForApp(const std::wstring& app_name,
+                                     const base::FilePath& profile_path);
 
 // Generates an application user model ID (AppUserModelId) for Chromium by
-// calling GetAppModelIdForProfile() with ShellUtil::GetAppId() as app_name.
-base::string16 GetChromiumModelIdForProfile(const base::FilePath& profile_path);
+// calling GetAppUserModelIdImpl() with ShellUtil::GetBrowserModelId() as
+// the app_name. The returned app id format is
+// "<install_static::GetBaseAppId()>[browser_suffix][.profile_id]"
+// |profile_id| is only appended when it's not the default profile.
+// browser_suffix is only appended to the BaseAppId if the installer
+// has set the kRegisterChromeBrowserSuffix command line switch, e.g.,
+// on user-level installs.
+std::wstring GetAppUserModelIdForBrowser(const base::FilePath& profile_path);
 
 // Returns the taskbar pin state of Chrome via the IsPinnedToTaskbarCallback.
 // The first bool is true if the state could be calculated, and the second bool
-// is true if Chrome is pinned to the taskbar.
+// is true if Chrome is pinned to the taskbar (without verb check).  The third
+// bool is true if Chrome is pinned to the taskbar (with verb check)
 // The ConnectionErrorCallback is called instead if something wrong happened
 // with the connection to the remote process.
-using ConnectionErrorCallback = base::Closure;
-using IsPinnedToTaskbarCallback = base::Callback<void(bool, bool)>;
-void GetIsPinnedToTaskbarState(
-    const ConnectionErrorCallback& on_error_callback,
-    const IsPinnedToTaskbarCallback& result_callback);
+using ConnectionErrorCallback = base::OnceClosure;
+using IsPinnedToTaskbarCallback = base::OnceCallback<void(bool, bool, bool)>;
+void GetIsPinnedToTaskbarState(ConnectionErrorCallback on_error_callback,
+                               IsPinnedToTaskbarCallback result_callback);
+
+// Unpins `shortcuts` from the taskbar, and run `completion_callback` when done.
+void UnpinShortcuts(const std::vector<base::FilePath>& shortcuts,
+                    base::OnceClosure completion_callback);
 
 // Migrates existing chrome taskbar pins by tagging them with correct app id.
-// see http://crbug.com/28104. Migrates taskbar pins via a task.
-void MigrateTaskbarPins();
+// see http://crbug.com/28104. Migrates taskbar pins via a task and runs
+// |completion_callback| on the calling sequence when done.
+void MigrateTaskbarPins(base::OnceClosure completion_callback);
 
 // Callback for MigrateTaskbarPins(). Exposed for testing.
 void MigrateTaskbarPinsCallback(const base::FilePath& pins_path,

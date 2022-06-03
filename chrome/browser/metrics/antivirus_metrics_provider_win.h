@@ -11,7 +11,6 @@
 
 #include "base/callback_forward.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "chrome/services/util_win/public/mojom/util_win.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -25,10 +24,14 @@ class AntiVirusMetricsProvider : public metrics::MetricsProvider {
       "ReportFullAVProductDetails", base::FEATURE_DISABLED_BY_DEFAULT};
 
   AntiVirusMetricsProvider();
+
+  AntiVirusMetricsProvider(const AntiVirusMetricsProvider&) = delete;
+  AntiVirusMetricsProvider& operator=(const AntiVirusMetricsProvider&) = delete;
+
   ~AntiVirusMetricsProvider() override;
 
   // metrics::MetricsDataProvider:
-  void AsyncInit(const base::Closure& done_callback) override;
+  void AsyncInit(base::OnceClosure done_callback) override;
   void ProvideSystemProfileMetrics(
       metrics::SystemProfileProto* system_profile_proto) override;
 
@@ -42,7 +45,7 @@ class AntiVirusMetricsProvider : public metrics::MetricsProvider {
   // |done_callback| is the callback that should be called once all metrics are
   // gathered.
   void GotAntiVirusProducts(
-      const base::Closure& done_callback,
+      base::OnceClosure done_callback,
       const std::vector<metrics::SystemProfileProto::AntiVirusProduct>& result);
 
   mojo::Remote<chrome::mojom::UtilWin> remote_util_win_;
@@ -51,8 +54,6 @@ class AntiVirusMetricsProvider : public metrics::MetricsProvider {
   std::vector<metrics::SystemProfileProto::AntiVirusProduct> av_products_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(AntiVirusMetricsProvider);
 };
 
 #endif  // CHROME_BROWSER_METRICS_ANTIVIRUS_METRICS_PROVIDER_WIN_H_

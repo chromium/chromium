@@ -1,0 +1,13 @@
+Name: asm
+Short Name: asm
+URL: http://asm.ow2.org/
+Version: 7.0
+License: BSD
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+ASM, a very small and fast Java bytecode manipulation framework
+
+Local Modifications:
+No modifications.

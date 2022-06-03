@@ -11,11 +11,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/process/launch.h"
 #include "base/test/gtest_util.h"
 #include "base/test/launcher/test_result.h"
@@ -125,6 +124,10 @@ class TestLauncher {
   TestLauncher(TestLauncherDelegate* launcher_delegate,
                size_t parallel_jobs,
                size_t retry_limit = 1U);
+
+  TestLauncher(const TestLauncher&) = delete;
+  TestLauncher& operator=(const TestLauncher&) = delete;
+
   // virtual to mock in testing.
   virtual ~TestLauncher();
 
@@ -135,22 +138,37 @@ class TestLauncher {
 
   // Launches a child process (assumed to be gtest-based binary) which runs
   // tests indicated by |test_names|.
-  // |task_runner| is used to post results back to the launcher
-  // on the main thread. |temp_dir| is used for child process files,
-  // such as user data, result file, and flag_file.
+  // |task_runner| is used to post results back to the launcher on the main
+  // thread. |task_temp_dir| is used for child process files such as user data,
+  // result file, and flag_file. |child_temp_dir|, if not empty, specifies a
+  // directory (within task_temp_dir) that the child process will use as its
+  // process-wide temporary directory.
   // virtual to mock in testing.
   virtual void LaunchChildGTestProcess(
       scoped_refptr<TaskRunner> task_runner,
       const std::vector<std::string>& test_names,
-      const FilePath& temp_dir);
+      const FilePath& task_temp_dir,
+      const FilePath& child_temp_dir);
 
   // Called when a test has finished running.
   void OnTestFinished(const TestResult& result);
+
+  // Returns true if child test processes should have dedicated temporary
+  // directories.
+  static constexpr bool SupportsPerChildTempDirs() {
+#if defined(OS_WIN)
+    return true;
+#else
+    // TODO(https://crbug.com/1038857): Enable for macOS, Linux, and Fuchsia.
+    return false;
+#endif
+  }
 
  private:
   bool Init(CommandLine* command_line) WARN_UNUSED_RESULT;
 
   // Gets tests from the delegate, and converts to TestInfo objects.
+  // Catches and logs uninstantiated parameterized tests.
   // Returns false if delegate fails to return tests.
   bool InitTests();
 
@@ -171,6 +189,9 @@ class TestLauncher {
 
   // Runs all tests in current iteration.
   void RunTests();
+
+  // Print test names that almost match a filter (matches *<filter>*).
+  void PrintFuzzyMatchingTestNames();
 
   // Retry to run tests that failed during RunTests.
   // Returns false if retry still fails or unable to start.
@@ -206,12 +227,17 @@ class TestLauncher {
   // EXPECT/ASSERT/DCHECK statements. Test launcher parses that
   // file to get additional information about test run (status,
   // error-messages, stack-traces and file/line for failures).
+  // |leaked_items| is the number of files and/or directories remaining in the
+  // child process's temporary directory upon its termination.
   void ProcessTestResults(const std::vector<std::string>& test_names,
                           const FilePath& result_file,
                           const std::string& output,
                           TimeDelta elapsed_time,
                           int exit_code,
-                          bool was_timeout);
+                          bool was_timeout,
+                          int leaked_items);
+
+  std::vector<std::string> CollectTests();
 
   // Make sure we don't accidentally call the wrong methods e.g. on the worker
   // pool thread.  Should be the first member so that it's destroyed last: when
@@ -254,8 +280,14 @@ class TestLauncher {
   // likely indicating a more systemic problem if widespread.
   size_t test_broken_count_;
 
+  // How many retries are left.
+  size_t retries_left_;
+
   // Maximum number of retries per iteration.
   size_t retry_limit_;
+
+  // Maximum number of output bytes per test.
+  size_t output_bytes_limit_;
 
   // If true will not early exit nor skip retries even if too many tests are
   // broken.
@@ -276,7 +308,7 @@ class TestLauncher {
   StdioRedirect print_test_stdio_;
 
   // Skip disabled tests unless explicitly requested.
-  bool skip_diabled_tests_;
+  bool skip_disabled_tests_;
 
   // Stop test iterations due to failure.
   bool stop_on_failure_;
@@ -290,15 +322,23 @@ class TestLauncher {
   // redirect stdio of subprocess
   bool redirect_stdio_;
 
-  DISALLOW_COPY_AND_ASSIGN(TestLauncher);
+  // Number of times all tests should be repeated during each iteration.
+  // 1 if gtest_repeat is not specified or gtest_break_on_failure is specified.
+  // Otherwise it matches gtest_repeat value.
+  int repeats_per_iteration_ = 1;
 };
 
 // Return the number of parallel jobs to use, or 0U in case of error.
-size_t NumParallelJobs();
+size_t NumParallelJobs(unsigned int cores_per_job);
 
 // Extract part from |full_output| that applies to |result|.
 std::string GetTestOutputSnippet(const TestResult& result,
                                  const std::string& full_output);
+
+// Truncates a snippet to approximately the allowed length, while trying to
+// retain fatal messages. Exposed for testing only.
+std::string TruncateSnippetFocused(const base::StringPiece snippet,
+                                   size_t byte_limit);
 
 }  // namespace base
 

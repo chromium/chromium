@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "components/services/patch/file_patcher_impl.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
@@ -25,8 +26,8 @@ void BindInProcessFilePatcher(
 
 mojo::PendingRemote<mojom::FilePatcher> LaunchInProcessFilePatcher() {
   mojo::PendingRemote<mojom::FilePatcher> remote;
-  base::CreateSequencedTaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::WithBaseSyncPrimitives()})
+  base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::WithBaseSyncPrimitives()})
       ->PostTask(FROM_HERE,
                  base::BindOnce(&BindInProcessFilePatcher,
                                 remote.InitWithNewPipeAndPassReceiver()));

@@ -1,0 +1,11 @@
+{
+  "name": "system.memory test",
+  "manifest_version": 2,
+  "version": "1.0",
+  "description": "Test system.memory API",
+  "permissions": ["system.memory"],
+  "background": {
+    "scripts": ["test_memory_api.js"],
+    "persistent": false
+  }
+}

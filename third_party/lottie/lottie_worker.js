@@ -12164,14 +12164,15 @@ var events = {
                                // initialized.
   RESIZED: 'resized',  // Sent when the animation has been resized.
   PLAYING: 'playing',  // Send when the animation started playing.
-  PAUSED: 'paused'  // Sent when the animation has paused.
+  PAUSED: 'paused',  // Sent when the animation has paused.
+  STOPPED: 'stopped',  // Sent when the animation has stopped.
 };
 
 /**
  * Returns the size of the canvas on which the current animation is running on.
  * @return {Object<string, number>} Returns the current size of canvas
  */
-getCurrentCanvasSize = function() {
+function getCurrentCanvasSize() {
   var canvas = currentAnimation.renderer.canvasContext.canvas;
   return {
     height: canvas.height,
@@ -12183,7 +12184,7 @@ getCurrentCanvasSize = function() {
  * Informs the parent thread that the canvas has been resized and also sends the
  * new size.
  */
-sendResizeEvent = function() {
+function sendResizeEvent() {
   var canvas = currentAnimation.renderer.canvasContext.canvas;
   postMessage({
     name: events.RESIZED,
@@ -12194,21 +12195,28 @@ sendResizeEvent = function() {
 /**
  * Informs the parent thread that the animation is playing.
  */
-sendPlayEvent = function() {
+function sendPlayEvent() {
   postMessage({name: events.PLAYING});
 }
 
 /**
  * Informs the parent thread that the animation is paused.
  */
-sendPauseEvent = function() {
+function sendPauseEvent() {
   postMessage({name: events.PAUSED});
+}
+
+/**
+ * Informs the parent thread that the animation is stopped.
+ */
+function sendStopEvent() {
+  postMessage({name: events.STOPPED});
 }
 
 /**
  * Informs the parent thread that the animation has finished initializing.
  */
-sendInitializedEvent = function() {
+function sendInitializedEvent() {
   var canvas = currentAnimation.renderer.canvasContext.canvas;
   postMessage({
     name: events.INITIALIZED,
@@ -12225,12 +12233,13 @@ sendInitializedEvent = function() {
  * @param {OffscreenCanvas} canvas The offsccreen canvas that will display the
  *     animation.
  */
-initAnimation = function(animationData, initParams, canvas) {
-  if (currentAnimation || !animationData || !initParams) {
+function initAnimation(animationData, initParams, canvas) {
+  if (!animationData || !initParams) {
     return;
   }
 
   var ctx = canvas.getContext("2d");
+
   currentAnimation = lottiejs.loadAnimation({
     renderer: 'canvas',
     loop: initParams.loop,
@@ -12261,7 +12270,7 @@ initAnimation = function(animationData, initParams, canvas) {
  * @param {OffscreenCanvas} canvas Draw size for this canvas is updated.
  * @param {Object<string, number>} size Draw size to update the canvas to.
  */
-updateCanvasSize = function(canvas, size) {
+function updateCanvasSize(canvas, size) {
   if (!size || !canvas) {
     return;
   }
@@ -12283,11 +12292,20 @@ updateCanvasSize = function(canvas, size) {
  * the state has changed.
  * @param {Object<string, bool>} control Has information about playing or
  *     pausing the animation.
+ * @param {HTMLCanvasElement} canvas the canvas on which the animation is drawn.
  */
-updateAnimationState = function(control) {
-  if (!control) {
+function updateAnimationState(control, canvas) {
+  if (!control || !currentAnimation) {
     return;
   }
+
+  if (control.stop) {
+    currentAnimation.stop();
+    canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+    sendStopEvent();
+    return;
+  }
+
   if (control.play && currentAnimation.isPaused) {
     currentAnimation.play();
     sendPlayEvent();
@@ -12309,7 +12327,14 @@ onmessage = function(evt) {
     return;
   }
 
+  // Stop and clear the current animation to initialize a new one with the
+  // provided animation data.
+  if (currentAnimation && evt.data.animationData) {
+    currentAnimation.stop();
+    currentAnimation = null;
+  }
+
   updateCanvasSize(canvas, evt.data.drawSize);
   initAnimation(evt.data.animationData, evt.data.params, canvas);
-  updateAnimationState(evt.data.control);
+  updateAnimationState(evt.data.control, canvas);
 };

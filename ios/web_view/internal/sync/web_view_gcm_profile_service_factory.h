@@ -29,6 +29,11 @@ class WebViewGCMProfileServiceFactory : public BrowserStateKeyedServiceFactory {
 
   static WebViewGCMProfileServiceFactory* GetInstance();
 
+  WebViewGCMProfileServiceFactory(const WebViewGCMProfileServiceFactory&) =
+      delete;
+  WebViewGCMProfileServiceFactory& operator=(
+      const WebViewGCMProfileServiceFactory&) = delete;
+
   // Returns a string like "org.chromium.chromewebview" that should be used as
   // the GCM category when an app_id is sent as a subtype instead of as a
   // category. This string must never change during the lifetime of an install,
@@ -45,8 +50,6 @@ class WebViewGCMProfileServiceFactory : public BrowserStateKeyedServiceFactory {
   // BrowserStateKeyedServiceFactory:
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewGCMProfileServiceFactory);
 };
 
 }  // namespace ios_web_view

@@ -4,10 +4,10 @@
 
 (async function() {
   TestRunner.addResult(`Tests history saving logic in TabbedEditorContainer.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
 
   function dumpHistory(history) {
-    TestRunner.addResult('  history = ' + JSON.stringify(history._serializeToObject()) + '');
+    TestRunner.addResult('  history = ' + JSON.stringify(history.serializeToObject()) + '');
   }
 
   function updateScrollAndSelectionAndDump(history, url, scrollLineNumber, selection) {

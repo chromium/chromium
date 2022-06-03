@@ -16,7 +16,7 @@ test(() => {
     // commands which mapped from key bindings.
     assert_selection(
         '<div contenteditable>one five| two three four</div>',
-        selection => {
+        (selection, testRunner) => {
             // "two three four" in the kill ring
             testRunner.execCommand('deleteToEndOfLine'); // Ctrl+K
             // cursor before "one"

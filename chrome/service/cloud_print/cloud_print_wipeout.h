@@ -8,7 +8,6 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
@@ -29,6 +28,10 @@ class CloudPrintWipeout : public CloudPrintURLFetcher::Delegate {
                     const GURL& cloud_print_server_url,
                     const net::PartialNetworkTrafficAnnotationTag&
                         partial_traffic_annotation);
+
+  CloudPrintWipeout(const CloudPrintWipeout&) = delete;
+  CloudPrintWipeout& operator=(const CloudPrintWipeout&) = delete;
+
   ~CloudPrintWipeout() override;
 
   void UnregisterPrinters(const std::string& auth_token,
@@ -42,7 +45,7 @@ class CloudPrintWipeout : public CloudPrintURLFetcher::Delegate {
       bool succeeded) override;
   void OnRequestGiveUp() override;
   CloudPrintURLFetcher::ResponseAction OnRequestAuthError() override;
-  std::string GetAuthHeader() override;
+  std::string GetAuthHeaderValue() override;
 
  private:
   void UnregisterNextPrinter();
@@ -59,11 +62,8 @@ class CloudPrintWipeout : public CloudPrintURLFetcher::Delegate {
   std::list<std::string> printer_ids_;
   // Partial network traffic annotation for network requests.
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPrintWipeout);
 };
 
 }  // namespace cloud_print
 
 #endif  // CHROME_SERVICE_CLOUD_PRINT_CLOUD_PRINT_WIPEOUT_H_
-

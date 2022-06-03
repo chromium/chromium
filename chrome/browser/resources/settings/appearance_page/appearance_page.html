@@ -1,29 +1,4 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_link_row/cr_link_row.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/cr_elements/md_select_css.html">
-<link rel="import" href="appearance_browser_proxy.html">
-<link rel="import" href="../controls/controlled_radio_button.html">
-<link rel="import" href="../controls/extension_controlled_indicator.html">
-<link rel="import" href="../controls/settings_dropdown_menu.html">
-<link rel="import" href="../controls/settings_radio_group.html">
-<link rel="import" href="../controls/settings_toggle_button.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_page/settings_animated_pages.html">
-<link rel="import" href="../settings_page/settings_subpage.html">
-<link rel="import" href="../settings_shared_css.html">
-<link rel="import" href="../settings_vars_css.html">
-<link rel="import" href="home_url_input.html">
-
-<if expr="chromeos">
-<link rel="import" href="../appearance_page/wallpaper_browser_proxy.html">
-</if>
-
-<dom-module id="settings-appearance-page">
-  <template>
-    <style include="settings-shared md-select iron-flex">
+    <style include="cr-shared-style settings-shared md-select iron-flex">
       /* Lines up with cr-input. */
       #custom-input {
         /* (cr-input line-height + cr-input top/bottom padding) / 2 -
@@ -47,26 +22,12 @@
     <settings-animated-pages id="pages" section="appearance"
         focus-config="[[focusConfig_]]">
       <div route-path="default">
-<if expr="chromeos">
-        <cr-link-row  id="wallpaperButton"
-            hidden="[[!pageVisibility.setWallpaper]]"
-            on-click="openWallpaperManager_" label="$i18n{setWallpaper}"
-            sub-label="$i18n{openWallpaperApp}"
-            disabled="[[isWallpaperPolicyControlled_]]" external>
-          <template is="dom-if" if="[[isWallpaperPolicyControlled_]]">
-            <cr-policy-indicator id="wallpaperPolicyIndicator"
-                indicator-type="devicePolicy">
-            </cr-policy-indicator>
-          </template>
-        </cr-link-row>
-        <div class="hr"></div>
-</if>
-        <div class="settings-row continuation" id="themeRow"
+        <div class="settings-row first" id="themeRow"
             hidden="[[!pageVisibility.setTheme]]">
           <cr-link-row class="first" hidden="[[!pageVisibility.setTheme]]"
               label="$i18n{themes}" sub-label="[[themeSublabel_]]"
               on-click="openThemeUrl_" external></cr-link-row>
-<if expr="not is_linux or chromeos">
+<if expr="not is_linux or chromeos or lacros">
           <template is="dom-if" if="[[prefs.extensions.theme.id.value]]">
             <div class="separator"></div>
             <cr-button id="useDefault" on-click="onUseDefaultTap_">
@@ -74,7 +35,7 @@
             </cr-button>
           </template>
 </if>
-<if expr="is_linux and not chromeos">
+<if expr="is_linux and not chromeos and not lacros">
           <div class="settings-row continuation"
               hidden="[[!showThemesSecondary_(
                   prefs.extensions.theme.id.value, useSystemTheme_)]]"
@@ -94,6 +55,11 @@
             </template>
           </div>
 </if>
+        </div>
+        <div
+            class="hr"
+            hidden="[[!showHr_(
+                pageVisibility.setTheme, pageVisibility.homeButton)]]">
         </div>
         <settings-toggle-button elide-label
             hidden="[[!pageVisibility.homeButton]]"
@@ -133,20 +99,27 @@
             </settings-radio-group>
           </div>
         </template>
-        <settings-toggle-button hidden="[[!pageVisibility.bookmarksBar]]"
+        <div
+            class="hr"
+            hidden="[[!showHr_(
+                pageVisibility.homeButton, pageVisibility.bookmarksBar)]]">
+        </div>
+        <settings-toggle-button
+            hidden="[[!pageVisibility.bookmarksBar]]"
             pref="{{prefs.bookmark_bar.show_on_all_tabs}}"
             label="$i18n{showBookmarksBar}">
         </settings-toggle-button>
-<if expr="is_linux and not chromeos">
+<if expr="is_linux and not chromeos and not lacros">
+        <div class="hr" hidden="[[!pageVisibility.bookmarksBar]]"></div>
         <settings-toggle-button
-            class$="[[getFirst_(pageVisibility.bookmarksBar)]]"
+            hidden="[[!showCustomChromeFrame_]]"
             pref="{{prefs.browser.custom_chrome_frame}}"
             label="$i18n{showWindowDecorations}"
             inverted>
         </settings-toggle-button>
 </if>
-        <div class="settings-box">
-          <div class="start settings-box-text" aria-hidden="true">
+        <div class="cr-row">
+          <div class="flex cr-padded-text" aria-hidden="true">
             $i18n{fontSize}
           </div>
           <settings-dropdown-menu id="defaultFontSize" label="$i18n{fontSize}"
@@ -158,8 +131,8 @@
             label="$i18n{customizeFonts}" on-click="onCustomizeFontsTap_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
-        <div class="settings-box" hidden="[[!pageVisibility.pageZoom]]">
-          <div id="pageZoom" class="start settings-box-text" aria-hidden="true">
+        <div class="cr-row" hidden="[[!pageVisibility.pageZoom]]">
+          <div id="pageZoom" class="flex cr-padded-text" aria-hidden="true">
             $i18n{pageZoom}
           </div>
           <select id="zoomLevel" class="md-select" aria-labelledby="pageZoom"
@@ -172,11 +145,21 @@
             </template>
           </select>
         </div>
+        <template is="dom-if" if="[[showReaderModeOption_]]">
+          <settings-toggle-button
+              class="hr"
+              pref="{{prefs.dom_distiller.offer_reader_mode}}"
+              label="$i18n{readerMode}"
+              sub-label="$i18n{readerModeDescription}">
+          </settings-toggle-button>
+        </template>
 <if expr="is_macosx">
-        <settings-toggle-button pref="{{prefs.webkit.webprefs.tabs_to_links}}"
+        <settings-toggle-button class="hr"
+            pref="{{prefs.webkit.webprefs.tabs_to_links}}"
             label="$i18n{tabsToLinks}">
         </settings-toggle-button>
-        <settings-toggle-button pref="{{prefs.browser.confirm_to_quit}}"
+        <settings-toggle-button class="hr"
+            pref="{{prefs.browser.confirm_to_quit}}"
             label="$i18n{warnBeforeQuitting}">
         </settings-toggle-button>
 </if>
@@ -190,6 +173,9 @@
         </settings-subpage>
       </template>
     </settings-animated-pages>
-  </template>
-  <script src="appearance_page.js"></script>
-</dom-module>
+    <template is="dom-if" if="[[showManagedThemeDialog_]]" restamp>
+      <managed-dialog on-close="onManagedDialogClosed_"
+          title="$i18n{themeManagedDialogTitle}"
+          body="$i18n{themeManagedDialogBody}">
+      </managed-dialog>
+    </template>

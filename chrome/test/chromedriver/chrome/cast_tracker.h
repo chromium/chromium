@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/devtools_event_listener.h"
 
@@ -18,6 +17,10 @@ class Status;
 class CastTracker : public DevToolsEventListener {
  public:
   explicit CastTracker(DevToolsClient* client);
+
+  CastTracker(const CastTracker&) = delete;
+  CastTracker& operator=(const CastTracker&) = delete;
+
   ~CastTracker() override;
 
   // DevToolsEventListener:
@@ -31,8 +34,6 @@ class CastTracker : public DevToolsEventListener {
  private:
   base::Value sinks_;
   base::Value issue_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastTracker);
 };
 
 #endif  // CHROME_TEST_CHROMEDRIVER_CHROME_CAST_TRACKER_H_

@@ -56,15 +56,16 @@ class BLINK_PLATFORM_EXPORT InterfaceRegistry {
   }
 
   template <typename Interface>
-  void AddInterface(WTF::CrossThreadRepeatingFunction<
-                        void(mojo::PendingReceiver<Interface>)> factory,
-                    scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-    AddInterface(Interface::Name_,
-                 ConvertToBaseRepeatingCallback(CrossThreadBind(
-                     &InterfaceRegistry::ForwardToCrossThreadInterfaceFactory<
-                         mojo::PendingReceiver<Interface>>,
-                     std::move(factory))),
-                 std::move(task_runner));
+  void AddInterface(
+      base::RepeatingCallback<void(mojo::PendingReceiver<Interface>)> factory,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+    DCHECK(task_runner->RunsTasksInCurrentSequence());
+    AddInterface(
+        Interface::Name_,
+        WTF::BindRepeating(&InterfaceRegistry::ForwardToInterfaceFactory<
+                               mojo::PendingReceiver<Interface>>,
+                           std::move(factory)),
+        std::move(task_runner));
   }
 
   template <typename Interface>
@@ -83,13 +84,6 @@ class BLINK_PLATFORM_EXPORT InterfaceRegistry {
   template <typename MojoType>
   static void ForwardToInterfaceFactory(
       base::RepeatingCallback<void(MojoType)> factory,
-      mojo::ScopedMessagePipeHandle handle) {
-    factory.Run(MojoType(std::move(handle)));
-  }
-
-  template <typename MojoType>
-  static void ForwardToCrossThreadInterfaceFactory(
-      const WTF::CrossThreadRepeatingFunction<void(MojoType)>& factory,
       mojo::ScopedMessagePipeHandle handle) {
     factory.Run(MojoType(std::move(handle)));
   }

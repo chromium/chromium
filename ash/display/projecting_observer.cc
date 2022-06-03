@@ -5,7 +5,7 @@
 #include "ash/display/projecting_observer.h"
 
 #include "ash/shell.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "ui/display/types/display_snapshot.h"
 

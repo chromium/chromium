@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chromecast/media/cma/base/balanced_media_task_runner_factory.h"
 #include "chromecast/media/cma/base/decoder_buffer_adapter.h"
 #include "chromecast/media/cma/base/simple_media_task_runner.h"
@@ -43,7 +43,7 @@ DemuxerStreamAdapter::~DemuxerStreamAdapter() {
   DCHECK(thread_checker_.CalledOnValidThread());
 }
 
-void DemuxerStreamAdapter::Read(const ReadCB& read_cb) {
+void DemuxerStreamAdapter::Read(ReadCB read_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
   DCHECK(flush_cb_.is_null());
@@ -51,18 +51,19 @@ void DemuxerStreamAdapter::Read(const ReadCB& read_cb) {
   // Support only one read at a time.
   DCHECK(!is_pending_read_);
   is_pending_read_ = true;
-  ReadInternal(read_cb);
+  ReadInternal(std::move(read_cb));
 }
 
-void DemuxerStreamAdapter::ReadInternal(const ReadCB& read_cb) {
+void DemuxerStreamAdapter::ReadInternal(ReadCB read_cb) {
   bool may_run_in_future = media_task_runner_->PostMediaTask(
       FROM_HERE,
-      base::Bind(&DemuxerStreamAdapter::RequestBuffer, weak_this_, read_cb),
+      base::BindOnce(&DemuxerStreamAdapter::RequestBuffer, weak_this_,
+                     std::move(read_cb)),
       max_pts_);
   DCHECK(may_run_in_future);
 }
 
-void DemuxerStreamAdapter::Flush(const base::Closure& flush_cb) {
+void DemuxerStreamAdapter::Flush(base::OnceClosure flush_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
   LOG(INFO) << __FUNCTION__;
 
@@ -81,7 +82,7 @@ void DemuxerStreamAdapter::Flush(const base::Closure& flush_cb) {
     // If there is a pending demuxer read, the implicit contract
     // is that the pending read must be completed before invoking the
     // flush callback.
-    flush_cb_ = flush_cb;
+    flush_cb_ = std::move(flush_cb);
     return;
   }
 
@@ -92,7 +93,7 @@ void DemuxerStreamAdapter::Flush(const base::Closure& flush_cb) {
   weak_this_ = weak_factory_.GetWeakPtr();
 
   LOG(INFO) << "Flush done";
-  flush_cb.Run();
+  std::move(flush_cb).Run();
 }
 
 void DemuxerStreamAdapter::ResetMediaTaskRunner() {
@@ -105,15 +106,15 @@ void DemuxerStreamAdapter::ResetMediaTaskRunner() {
   }
 }
 
-void DemuxerStreamAdapter::RequestBuffer(const ReadCB& read_cb) {
+void DemuxerStreamAdapter::RequestBuffer(ReadCB read_cb) {
   DCHECK(thread_checker_.CalledOnValidThread());
   is_pending_demuxer_read_ = true;
-  demuxer_stream_->Read(::media::BindToCurrentLoop(
-      base::Bind(&DemuxerStreamAdapter::OnNewBuffer, weak_this_, read_cb)));
+  demuxer_stream_->Read(::media::BindToCurrentLoop(base::BindOnce(
+      &DemuxerStreamAdapter::OnNewBuffer, weak_this_, std::move(read_cb))));
 }
 
 void DemuxerStreamAdapter::OnNewBuffer(
-    const ReadCB& read_cb,
+    ReadCB read_cb,
     ::media::DemuxerStream::Status status,
     scoped_refptr<::media::DecoderBuffer> input) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -140,7 +141,7 @@ void DemuxerStreamAdapter::OnNewBuffer(
       audio_config_ = demuxer_stream_->audio_decoder_config();
 
     // Got a new config, but we still need to get a frame.
-    ReadInternal(read_cb);
+    ReadInternal(std::move(read_cb));
     return;
   }
 
@@ -163,7 +164,7 @@ void DemuxerStreamAdapter::OnNewBuffer(
   is_pending_read_ = false;
   scoped_refptr<DecoderBufferBase> buffer(
       new DecoderBufferAdapter(std::move(input)));
-  read_cb.Run(buffer, audio_config_, video_config_);
+  std::move(read_cb).Run(buffer, audio_config_, video_config_);
 
   // Back to the default audio/video config:
   // an invalid audio/video config means there is no config update.

@@ -21,6 +21,10 @@ class CONTENT_EXPORT FlingScheduler : public FlingSchedulerBase,
                                       private ui::CompositorAnimationObserver {
  public:
   FlingScheduler(RenderWidgetHostImpl* host);
+
+  FlingScheduler(const FlingScheduler&) = delete;
+  FlingScheduler& operator=(const FlingScheduler&) = delete;
+
   ~FlingScheduler() override;
 
   // FlingControllerSchedulerClient
@@ -43,8 +47,6 @@ class CONTENT_EXPORT FlingScheduler : public FlingSchedulerBase,
   // ui::CompositorAnimationObserver
   void OnAnimationStep(base::TimeTicks timestamp) override;
   void OnCompositingShuttingDown(ui::Compositor* compositor) override;
-
-  DISALLOW_COPY_AND_ASSIGN(FlingScheduler);
 };
 
 }  // namespace content

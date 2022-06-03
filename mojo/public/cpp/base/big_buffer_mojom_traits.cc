@@ -4,7 +4,7 @@
 
 #include "mojo/public/cpp/base/big_buffer_mojom_traits.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "mojo/public/cpp/bindings/array_data_view.h"
 

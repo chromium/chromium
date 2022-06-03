@@ -2,45 +2,15 @@
   "layers": [
     {
       "name": "Scrolling background of LayoutView #document",
-      "bounds": [1026, 996],
+      "bounds": [1026, 1012],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'pservers-pattern-01-b \u2190'",
-          "rect": [208, 972, 173, 19],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment '\u2192 script-handle-01-b'",
-          "rect": [427, 972, 150, 19],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalBoxFragment LayoutInline A",
-          "rect": [383, 971, 42, 21],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'index'",
-          "rect": [384, 972, 40, 19],
-          "reason": "appeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'index'",
-          "rect": [384, 972, 40, 19],
-          "reason": "disappeared"
-        },
-        {
-          "object": "NGPhysicalTextFragment ' '",
-          "rect": [423, 972, 5, 19],
-          "reason": "geometry"
-        },
-        {
-          "object": "NGPhysicalTextFragment ' '",
-          "rect": [380, 972, 5, 19],
-          "reason": "geometry"
-        }
+      "invalidations": [
+        [208, 988, 173, 18],
+        [427, 988, 150, 18],
+        [382, 985, 45, 24],
+        [423, 988, 5, 18],
+        [380, 988, 5, 18]
       ],
       "transform": 1
     },
@@ -57,7 +27,8 @@
     {
       "name": "Scroll corner of LayoutView #document",
       "position": [785, 585],
-      "bounds": [15, 15]
+      "bounds": [15, 15],
+      "contentsOpaque": true
     }
   ],
   "transforms": [
@@ -67,7 +38,7 @@
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [0, -411, 0, 1]
+        [0, -427, 0, 1]
       ]
     }
   ]

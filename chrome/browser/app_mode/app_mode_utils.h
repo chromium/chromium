@@ -10,7 +10,7 @@
 namespace chrome {
 
 // Returns true if the given browser command is allowed in app mode.
-bool IsCommandAllowedInAppMode(int command_id);
+bool IsCommandAllowedInAppMode(int command_id, bool is_popup);
 
 // Returns true if the browser process is run in kiosk or forced app mode.
 bool IsRunningInAppMode();

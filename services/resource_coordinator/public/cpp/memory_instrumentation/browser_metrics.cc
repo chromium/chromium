@@ -18,6 +18,7 @@ const char kBrowserHistogramName[] = "Browser";
 const char kExtensionHistogramName[] = "Extension";
 const char kGpuHistogramName[] = "Gpu";
 const char kNetworkServiceHistogramName[] = "NetworkService";
+const char kPaintPreviewCompositorHistogramName[] = "PaintPreviewCompositor";
 const char kRendererHistogramName[] = "Renderer";
 const char kUtilityHistogramName[] = "Utility";
 
@@ -37,6 +38,8 @@ const char* HistogramProcessTypeToString(HistogramProcessType type) {
       return kGpuHistogramName;
     case HistogramProcessType::kNetworkService:
       return kNetworkServiceHistogramName;
+    case HistogramProcessType::kPaintPreviewCompositor:
+      return kPaintPreviewCompositorHistogramName;
     case HistogramProcessType::kRenderer:
       return kRendererHistogramName;
     case HistogramProcessType::kUtility:
@@ -51,9 +54,9 @@ std::string GetPrivateFootprintHistogramName(HistogramProcessType type) {
 
 base::TimeDelta GetDelayForNextMemoryLog() {
 #if defined(OS_ANDROID)
-  base::TimeDelta mean_time = base::TimeDelta::FromMinutes(5);
+  base::TimeDelta mean_time = base::Minutes(5);
 #else
-  base::TimeDelta mean_time = base::TimeDelta::FromMinutes(30);
+  base::TimeDelta mean_time = base::Minutes(30);
 #endif
   // Compute the actual delay before sampling using a Poisson process.
   double uniform = base::RandDouble();

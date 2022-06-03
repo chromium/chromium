@@ -26,4 +26,4 @@ struct iovec {
 #define PROVIDES_SOCKET_API
 #endif
 
-#endif  /* LIBRARIES_NACL_IO_OSSOCKET_H_ */
+#endif  // LIBRARIES_NACL_IO_OSSOCKET_H_

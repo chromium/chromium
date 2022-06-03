@@ -10,8 +10,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/json/json_file_value_serializer.h"
-#include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -19,20 +17,23 @@
 #include "chrome/common/importer/imported_bookmark_entry.h"
 #include "chrome/common/importer/importer_autofill_form_data_entry.h"
 #include "chrome/common/importer/importer_bridge.h"
+#include "chrome/common/importer/importer_data_types.h"
 #include "chrome/common/importer/importer_url_row.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/utility/importer/bookmark_html_reader.h"
 #include "chrome/utility/importer/favicon_reencode.h"
-#include "chrome/utility/importer/nss_decryptor.h"
-#include "components/autofill/core/common/password_form.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
 
+#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
+#include "chrome/utility/importer/nss_decryptor.h"
+#endif  // !defined(OS_MAC) && !defined(OS_FUCHSIA)
+
 namespace {
 
-// Original definition is in http://mxr.mozilla.org/firefox/source/toolkit/
-//  components/places/public/nsINavBookmarksService.idl
+// Original definition is in:
+//   toolkit/components/places/nsINavBookmarksService.idl
 enum BookmarkItemType {
   TYPE_BOOKMARK = 1,
   TYPE_FOLDER = 2,
@@ -55,8 +56,8 @@ void LoadDefaultBookmarks(const base::FilePath& app_path,
       base::RepeatingCallback<bool(void)>(),
       base::RepeatingCallback<bool(const GURL&)>(), file, &bookmarks,
       &search_engines, nullptr);
-  for (size_t i = 0; i < bookmarks.size(); ++i)
-    urls->insert(bookmarks[i].url);
+  for (const auto& bookmark : bookmarks)
+    urls->insert(bookmark.url);
 }
 
 // Returns true if |url| has a valid scheme that we allow to import. We
@@ -68,8 +69,8 @@ bool CanImportURL(const GURL& url) {
 
   // Filter out the URLs with unsupported schemes.
   const char* const kInvalidSchemes[] = {"wyciwyg", "place", "about", "chrome"};
-  for (size_t i = 0; i < base::size(kInvalidSchemes); ++i) {
-    if (url.SchemeIs(kInvalidSchemes[i]))
+  for (const auto* scheme : kInvalidSchemes) {
+    if (url.SchemeIs(scheme))
       return false;
   }
 
@@ -99,7 +100,7 @@ struct FirefoxImporter::BookmarkItem {
   int parent;
   int id;
   GURL url;
-  base::string16 title;
+  std::u16string title;
   BookmarkItemType type;
   std::string keyword;
   base::Time date_added;
@@ -107,11 +108,9 @@ struct FirefoxImporter::BookmarkItem {
   bool empty_folder;
 };
 
-FirefoxImporter::FirefoxImporter() {
-}
+FirefoxImporter::FirefoxImporter() = default;
 
-FirefoxImporter::~FirefoxImporter() {
-}
+FirefoxImporter::~FirefoxImporter() = default;
 
 void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
                                   uint16_t items,
@@ -150,16 +149,13 @@ void FirefoxImporter::StartImport(const importer::SourceProfile& source_profile,
     ImportBookmarks();
     bridge_->NotifyItemEnded(importer::FAVORITES);
   }
-  if ((items & importer::SEARCH_ENGINES) && !cancelled()) {
-    bridge_->NotifyItemStarted(importer::SEARCH_ENGINES);
-    ImportSearchEngines();
-    bridge_->NotifyItemEnded(importer::SEARCH_ENGINES);
-  }
+#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
   if ((items & importer::PASSWORDS) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::PASSWORDS);
     ImportPasswords();
     bridge_->NotifyItemEnded(importer::PASSWORDS);
   }
+#endif  // !defined(OS_MAC) && !defined(OS_FUCHSIA)
   if ((items & importer::AUTOFILL_FORM_DATA) && !cancelled()) {
     bridge_->NotifyItemStarted(importer::AUTOFILL_FORM_DATA);
     ImportAutofillFormData();
@@ -181,7 +177,7 @@ void FirefoxImporter::ImportHistory() {
   // redirect, bookmark, etc.) We eliminate some URLs like sub-frames and
   // redirects, since we don't want them to appear in history.
   // Firefox transition types are defined in:
-  //   toolkit/components/places/public/nsINavHistoryService.idl
+  //   toolkit/components/places/nsINavHistoryService.idl
   const char query[] =
       "SELECT h.url, h.title, h.visit_count, "
       "h.hidden, h.typed, v.visit_date "
@@ -254,8 +250,8 @@ void FirefoxImporter::ImportBookmarks() {
   std::vector<importer::SearchEngineInfo> search_engines;
   FaviconMap favicon_map;
 
-  // TODO(jcampan): http://b/issue?id=1196285 we do not support POST based
-  //                keywords yet.  We won't include them in the list.
+  // TODO(https://crbug.com/18107): We do not support POST based keywords yet.
+  // We won't include them in the list.
   std::set<int> post_keyword_ids;
   const char query[] =
       "SELECT b.id FROM moz_bookmarks b "
@@ -284,7 +280,7 @@ void FirefoxImporter::ImportBookmarks() {
         continue;
 
       // Find the bookmark path by tracing their links to parent folders.
-      std::vector<base::string16> path;
+      std::vector<std::u16string> path;
       BookmarkItem* child = item.get();
       bool found_path = false;
       bool is_in_toolbar = false;
@@ -357,7 +353,7 @@ void FirefoxImporter::ImportBookmarks() {
 
   // Write into profile.
   if (!bookmarks.empty() && !cancelled()) {
-    const base::string16& first_folder_name =
+    const std::u16string& first_folder_name =
         bridge_->GetLocalizedString(IDS_BOOKMARK_GROUP_FROM_FIREFOX);
     bridge_->AddBookmarks(bookmarks, first_folder_name);
   }
@@ -378,6 +374,7 @@ void FirefoxImporter::ImportBookmarks() {
   }
 }
 
+#if !defined(OS_MAC) && !defined(OS_FUCHSIA)
 void FirefoxImporter::ImportPasswords() {
   // Initializes NSS3.
   NSSDecryptor decryptor;
@@ -386,44 +383,24 @@ void FirefoxImporter::ImportPasswords() {
     return;
   }
 
-  std::vector<autofill::PasswordForm> forms;
-  base::FilePath source_path = source_path_;
-  const base::FilePath sqlite_file = source_path.AppendASCII("signons.sqlite");
-  const base::FilePath json_file = source_path.AppendASCII("logins.json");
-  const base::FilePath signon3_file = source_path.AppendASCII("signons3.txt");
-  const base::FilePath signon2_file = source_path.AppendASCII("signons2.txt");
-  if (base::PathExists(json_file)) {
-    // Since Firefox 32, passwords are in logins.json.
-    decryptor.ReadAndParseLogins(json_file, &forms);
-  } else if (base::PathExists(sqlite_file)) {
-    // Since Firefox 3.1, passwords are in signons.sqlite db.
-    decryptor.ReadAndParseSignons(sqlite_file, &forms);
-  } else if (base::PathExists(signon3_file)) {
-    // Firefox 3.0 uses signons3.txt to store the passwords.
-    decryptor.ParseSignons(signon3_file, &forms);
-  } else {
-    decryptor.ParseSignons(signon2_file, &forms);
-  }
+  // Since Firefox 32, passwords are in logins.json.
+  base::FilePath json_file = source_path_.AppendASCII("logins.json");
+  if (!base::PathExists(json_file))
+    return;
+
+  std::vector<importer::ImportedPasswordForm> forms;
+  decryptor.ReadAndParseLogins(json_file, &forms);
 
   if (!cancelled()) {
-    UMA_HISTOGRAM_COUNTS_10000("Import.NumberOfImportedPasswords.Firefox",
-                               forms.size());
-    for (size_t i = 0; i < forms.size(); ++i) {
-      if (!forms[i].username_value.empty() ||
-          !forms[i].password_value.empty() ||
-          forms[i].blacklisted_by_user) {
-        bridge_->SetPasswordForm(forms[i]);
+    for (const auto& form : forms) {
+      if (!form.username_value.empty() || !form.password_value.empty() ||
+          form.blocked_by_user) {
+        bridge_->SetPasswordForm(form);
       }
     }
   }
 }
-
-void FirefoxImporter::ImportSearchEngines() {
-  std::vector<std::string> search_engine_data;
-  GetSearchEnginesXMLData(&search_engine_data);
-
-  bridge_->SetFirefoxSearchEnginesXMLData(search_engine_data);
-}
+#endif  // !defined(OS_MAC) && !defined(OS_FUCHSIA)
 
 void FirefoxImporter::ImportHomepage() {
   GURL home_page = GetHomepage(source_path_);
@@ -465,215 +442,6 @@ void FirefoxImporter::ImportAutofillFormData() {
 
   if (!form_entries.empty() && !cancelled())
     bridge_->SetAutofillFormData(form_entries);
-}
-
-void FirefoxImporter::GetSearchEnginesXMLData(
-    std::vector<std::string>* search_engine_data) {
-  base::FilePath file = GetCopiedSourcePath("search.sqlite");
-  if (!base::PathExists(file)) {
-    // Since Firefox 3.5, search engines are no longer stored in search.sqlite.
-    // Instead, search.json is used for storing search engines.
-    GetSearchEnginesXMLDataFromJSON(search_engine_data);
-    return;
-  }
-
-  sql::Database db;
-  if (!db.Open(file))
-    return;
-
-  const char query[] =
-      "SELECT engineid FROM engine_data "
-      "WHERE engineid NOT IN "
-      "(SELECT engineid FROM engine_data "
-      "WHERE name='hidden') "
-      "ORDER BY value ASC";
-
-  sql::Statement s(db.GetUniqueStatement(query));
-  if (!s.is_valid())
-    return;
-
-  const base::FilePath searchplugins_path(FILE_PATH_LITERAL("searchplugins"));
-  // Search engine definitions are XMLs stored in two directories. Default
-  // engines are in the app directory (app_path_) and custom engines are
-  // in the profile directory (source_path_).
-
-  // Since Firefox 21, app_path_ engines are in 'browser' subdirectory:
-  base::FilePath app_path =
-      app_path_.AppendASCII("browser").Append(searchplugins_path);
-  if (!base::PathExists(app_path)) {
-    // This might be an older Firefox, try old location without the 'browser'
-    // path component:
-    app_path = app_path_.Append(searchplugins_path);
-  }
-
-  base::FilePath profile_path = source_path_.Append(searchplugins_path);
-
-  // Firefox doesn't store a search engine in its sqlite database unless the
-  // user has added a engine. So we get search engines from sqlite db as well
-  // as from the file system.
-  if (s.Step()) {
-    const std::string kAppPrefix("[app]/");
-    const std::string kProfilePrefix("[profile]/");
-    do {
-      base::FilePath file;
-      std::string engine(s.ColumnString(0));
-
-      // The string contains [app]/<name>.xml or [profile]/<name>.xml where
-      // the [app] and [profile] need to be replaced with the actual app or
-      // profile path.
-      size_t index = engine.find(kAppPrefix);
-      if (index != std::string::npos) {
-        // Remove '[app]/'.
-        file = app_path.AppendASCII(engine.substr(index + kAppPrefix.length()));
-      } else if ((index = engine.find(kProfilePrefix)) != std::string::npos) {
-        // Remove '[profile]/'.
-          file = profile_path.AppendASCII(
-              engine.substr(index + kProfilePrefix.length()));
-      } else {
-        // Looks like absolute path to the file.
-        file = base::FilePath::FromUTF8Unsafe(engine);
-      }
-      std::string file_data;
-      base::ReadFileToString(file, &file_data);
-      search_engine_data->push_back(file_data);
-    } while (s.Step() && !cancelled());
-  }
-
-#if defined(OS_POSIX)
-  // Ubuntu-flavored Firefox supports locale-specific search engines via
-  // locale-named subdirectories. They fall back to en-US.
-  // See http://crbug.com/53899
-  // TODO(jshin): we need to make sure our locale code matches that of
-  // Firefox.
-  DCHECK(!locale_.empty());
-  base::FilePath locale_app_path = app_path.AppendASCII(locale_);
-  base::FilePath default_locale_app_path = app_path.AppendASCII("en-US");
-  if (base::DirectoryExists(locale_app_path))
-    app_path = locale_app_path;
-  else if (base::DirectoryExists(default_locale_app_path))
-    app_path = default_locale_app_path;
-#endif
-
-  // Get search engine definition from file system.
-  base::FileEnumerator engines(app_path, false, base::FileEnumerator::FILES);
-  for (base::FilePath engine_path = engines.Next();
-       !engine_path.value().empty(); engine_path = engines.Next()) {
-    std::string file_data;
-    base::ReadFileToString(file, &file_data);
-    search_engine_data->push_back(file_data);
-  }
-}
-
-void FirefoxImporter::GetSearchEnginesXMLDataFromJSON(
-    std::vector<std::string>* search_engine_data) {
-  // search-metadata.json contains keywords for search engines. This
-  // file exists only if the user has set keywords for search engines.
-  base::FilePath search_metadata_json_file =
-      source_path_.AppendASCII("search-metadata.json");
-  JSONFileValueDeserializer metadata_deserializer(search_metadata_json_file);
-  std::unique_ptr<base::Value> metadata_root =
-      metadata_deserializer.Deserialize(NULL, NULL);
-  const base::DictionaryValue* search_metadata_root = NULL;
-  if (metadata_root)
-    metadata_root->GetAsDictionary(&search_metadata_root);
-
-  // search.json contains information about search engines to import.
-  base::FilePath search_json_file = source_path_.AppendASCII("search.json");
-  if (!base::PathExists(search_json_file))
-    return;
-
-  JSONFileValueDeserializer deserializer(search_json_file);
-  std::unique_ptr<base::Value> root = deserializer.Deserialize(NULL, NULL);
-  const base::DictionaryValue* search_root = NULL;
-  if (!root || !root->GetAsDictionary(&search_root))
-    return;
-
-  const std::string kDirectories("directories");
-  const base::DictionaryValue* search_directories = NULL;
-  if (!search_root->GetDictionary(kDirectories, &search_directories))
-    return;
-
-  // Dictionary |search_directories| contains a list of search engines
-  // (default and installed). The list can be found from key <engines>
-  // of the dictionary. Key <engines> is a grandchild of key <directories>.
-  // However, key <engines> parent's key is dynamic which depends on
-  // operating systems. For example,
-  //   Ubuntu (for default search engine):
-  //     /usr/lib/firefox/distribution/searchplugins/locale/en-US
-  //   Ubuntu (for installed search engines):
-  //     /home/<username>/.mozilla/firefox/lcd50n4n.default/searchplugins
-  //   Windows (for default search engine):
-  //     C:\\Program Files (x86)\\Mozilla Firefox\\browser\\searchplugins
-  // Therefore, it needs to be retrieved by searching.
-
-  for (base::DictionaryValue::Iterator it(*search_directories); !it.IsAtEnd();
-       it.Advance()) {
-    // The key of |it| may contains dot (.) which cannot be used as <key>
-    // for retrieving <engines>. Hence, it is needed to get |it| as dictionary.
-    // The resulted dictionary can be used for retrieving <engines>.
-    const std::string kEngines("engines");
-    const base::DictionaryValue* search_directory = NULL;
-    if (!it.value().GetAsDictionary(&search_directory))
-      continue;
-
-    const base::ListValue* search_engines = NULL;
-    if (!search_directory->GetList(kEngines, &search_engines))
-      continue;
-
-    const std::string kFilePath("filePath");
-    const std::string kHidden("_hidden");
-    for (size_t i = 0; i < search_engines->GetSize(); ++i) {
-      const base::DictionaryValue* engine_info = NULL;
-      if (!search_engines->GetDictionary(i, &engine_info))
-        continue;
-
-      bool is_hidden = false;
-      std::string file_path;
-      if (!engine_info->GetBoolean(kHidden, &is_hidden) ||
-          !engine_info->GetString(kFilePath, &file_path))
-        continue;
-
-      if (!is_hidden) {
-        const std::string kAppPrefix("[app]/");
-        const std::string kProfilePrefix("[profile]/");
-        base::FilePath xml_file = base::FilePath::FromUTF8Unsafe(file_path);
-
-        // If |file_path| contains [app] or [profile] then they need to be
-        // replaced with the actual app or profile path.
-        size_t index = file_path.find(kAppPrefix);
-        if (index != std::string::npos) {
-          // Replace '[app]/' with actual app path.
-          xml_file = app_path_.AppendASCII("searchplugins").AppendASCII(
-              file_path.substr(index + kAppPrefix.length()));
-        } else if ((index = file_path.find(kProfilePrefix)) !=
-                   std::string::npos) {
-          // Replace '[profile]/' with actual profile path.
-          xml_file = source_path_.AppendASCII("searchplugins").AppendASCII(
-              file_path.substr(index + kProfilePrefix.length()));
-        }
-
-        std::string file_data;
-        base::ReadFileToString(xml_file, &file_data);
-
-        // If a keyword is mentioned for this search engine, then add
-        // it to the XML string as an <Alias> element and use this updated
-        // string.
-        const base::DictionaryValue* search_xml_path = NULL;
-        if (search_metadata_root && search_metadata_root->HasKey(file_path) &&
-            search_metadata_root->GetDictionaryWithoutPathExpansion(
-                file_path, &search_xml_path)) {
-          std::string alias;
-          search_xml_path->GetString("alias", &alias);
-
-          // Add <Alias> element as the last child element.
-          size_t end_of_parent = file_data.find("</SearchPlugin>");
-          if (end_of_parent != std::string::npos && !alias.empty())
-            file_data.insert(end_of_parent, "<Alias>" + alias + "</Alias> \n");
-        }
-        search_engine_data->push_back(file_data);
-      }
-    }
-  }
 }
 
 int FirefoxImporter::LoadNodeIDByGUID(sql::Database* db,
@@ -770,7 +538,7 @@ void FirefoxImporter::GetWholeBookmarkFolder(sql::Database* db,
     item->empty_folder = true;
 
     temp_list.push_back(std::move(item));
-    if (empty_folder != NULL)
+    if (empty_folder)
       *empty_folder = false;
   }
 
@@ -795,8 +563,8 @@ void FirefoxImporter::LoadFavicons(
   if (!s.is_valid())
     return;
 
-  for (auto i = favicon_map.begin(); i != favicon_map.end(); ++i) {
-    s.BindInt64(0, i->first);
+  for (const auto& i : favicon_map) {
+    s.BindInt64(0, i.first);
     if (s.Step()) {
       std::vector<unsigned char> data;
       if (!s.ColumnBlobAsVector(1, &data))
@@ -806,7 +574,7 @@ void FirefoxImporter::LoadFavicons(
       if (!SetFaviconData(s.ColumnString(0), data, &usage_data))
         continue;
 
-      usage_data.urls = i->second;
+      usage_data.urls = i.second;
       favicons->push_back(usage_data);
     }
     s.Reset(true);

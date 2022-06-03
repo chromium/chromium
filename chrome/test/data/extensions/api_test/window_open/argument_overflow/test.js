@@ -6,11 +6,9 @@ function check_overflow_check(value) {
   try {
     chrome.windows.create({ "left": value }, function() { });
   } catch (e) {
-    var jsBindingsError = 'Value must fit in a 32-bit signed integer.';
-    var nativeBindingsError = 'Invalid type: expected integer, found number.';
+    var expectedError = 'Invalid type: expected integer, found number.';
     chrome.test.assertTrue(
-        e.message.indexOf(jsBindingsError) != -1 ||
-        e.message.indexOf(nativeBindingsError) != -1,
+        e.message.indexOf(expectedError) != -1,
         e.message);
     chrome.test.succeed();
     return;

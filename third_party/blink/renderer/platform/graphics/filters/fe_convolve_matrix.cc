@@ -27,9 +27,9 @@
 #include <memory>
 
 #include "base/numerics/checked_math.h"
+#include "base/stl_util.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
-#include "third_party/skia/include/effects/SkMatrixConvolutionImageFilter.h"
 
 namespace blink {
 
@@ -37,8 +37,8 @@ FEConvolveMatrix::FEConvolveMatrix(Filter* filter,
                                    const IntSize& kernel_size,
                                    float divisor,
                                    float bias,
-                                   const IntPoint& target_offset,
-                                   EdgeModeType edge_mode,
+                                   const gfx::Vector2d& target_offset,
+                                   FEConvolveMatrix::EdgeModeType edge_mode,
                                    bool preserve_alpha,
                                    const Vector<float>& kernel_matrix)
     : FilterEffect(filter),
@@ -54,7 +54,7 @@ FloatRect FEConvolveMatrix::MapEffect(const FloatRect& rect) const {
   if (!ParametersValid())
     return rect;
   FloatRect result = rect;
-  result.MoveBy(FloatPoint(-target_offset_));
+  result.Offset(FloatSize(-target_offset_));
   result.Expand(FloatSize(kernel_size_));
   return result;
 }
@@ -73,14 +73,14 @@ bool FEConvolveMatrix::SetBias(float bias) {
   return true;
 }
 
-bool FEConvolveMatrix::SetTargetOffset(const IntPoint& target_offset) {
+bool FEConvolveMatrix::SetTargetOffset(const gfx::Vector2d& target_offset) {
   if (target_offset_ == target_offset)
     return false;
   target_offset_ = target_offset;
   return true;
 }
 
-bool FEConvolveMatrix::SetEdgeMode(EdgeModeType edge_mode) {
+bool FEConvolveMatrix::SetEdgeMode(FEConvolveMatrix::EdgeModeType edge_mode) {
   if (edge_mode_ == edge_mode)
     return false;
   edge_mode_ = edge_mode;
@@ -94,17 +94,16 @@ bool FEConvolveMatrix::SetPreserveAlpha(bool preserve_alpha) {
   return true;
 }
 
-SkMatrixConvolutionImageFilter::TileMode ToSkiaTileMode(
-    EdgeModeType edge_mode) {
+static SkTileMode ToSkiaTileMode(FEConvolveMatrix::EdgeModeType edge_mode) {
   switch (edge_mode) {
-    case EDGEMODE_DUPLICATE:
-      return SkMatrixConvolutionImageFilter::kClamp_TileMode;
-    case EDGEMODE_WRAP:
-      return SkMatrixConvolutionImageFilter::kRepeat_TileMode;
-    case EDGEMODE_NONE:
-      return SkMatrixConvolutionImageFilter::kClampToBlack_TileMode;
+    case FEConvolveMatrix::EDGEMODE_DUPLICATE:
+      return SkTileMode::kClamp;
+    case FEConvolveMatrix::EDGEMODE_WRAP:
+      return SkTileMode::kRepeat;
+    case FEConvolveMatrix::EDGEMODE_NONE:
+      return SkTileMode::kDecal;
     default:
-      return SkMatrixConvolutionImageFilter::kClamp_TileMode;
+      return SkTileMode::kClamp;
   }
 }
 
@@ -116,9 +115,9 @@ bool FEConvolveMatrix::ParametersValid() const {
     return false;
   if (SafeCast<size_t>(kernel_area) != kernel_matrix_.size())
     return false;
-  if (target_offset_.X() < 0 || target_offset_.X() >= kernel_size_.Width())
+  if (target_offset_.x() < 0 || target_offset_.x() >= kernel_size_.width())
     return false;
-  if (target_offset_.Y() < 0 || target_offset_.Y() >= kernel_size_.Height())
+  if (target_offset_.y() < 0 || target_offset_.y() >= kernel_size_.height())
     return false;
   if (!divisor_)
     return false;
@@ -132,36 +131,36 @@ sk_sp<PaintFilter> FEConvolveMatrix::CreateImageFilter() {
   sk_sp<PaintFilter> input(paint_filter_builder::Build(
       InputEffect(0), OperatingInterpolationSpace()));
   SkISize kernel_size(
-      SkISize::Make(kernel_size_.Width(), kernel_size_.Height()));
+      SkISize::Make(kernel_size_.width(), kernel_size_.height()));
   // parametersValid() above checks that the kernel area fits in int.
   int num_elements = SafeCast<int>(kernel_size_.Area());
   SkScalar gain = SkFloatToScalar(1.0f / divisor_);
   SkScalar bias = SkFloatToScalar(bias_ * 255);
-  SkIPoint target = SkIPoint::Make(target_offset_.X(), target_offset_.Y());
-  MatrixConvolutionPaintFilter::TileMode tile_mode = ToSkiaTileMode(edge_mode_);
+  SkIPoint target = SkIPoint::Make(target_offset_.x(), target_offset_.y());
+  SkTileMode tile_mode = ToSkiaTileMode(edge_mode_);
   bool convolve_alpha = !preserve_alpha_;
   auto kernel = std::make_unique<SkScalar[]>(num_elements);
   for (int i = 0; i < num_elements; ++i)
     kernel[i] = SkFloatToScalar(kernel_matrix_[num_elements - 1 - i]);
-  PaintFilter::CropRect crop_rect = GetCropRect();
+  absl::optional<PaintFilter::CropRect> crop_rect = GetCropRect();
   return sk_make_sp<MatrixConvolutionPaintFilter>(
       kernel_size, kernel.get(), gain, bias, target, tile_mode, convolve_alpha,
-      std::move(input), &crop_rect);
+      std::move(input), base::OptionalOrNullptr(crop_rect));
 }
 
 static WTF::TextStream& operator<<(WTF::TextStream& ts,
-                                   const EdgeModeType& type) {
+                                   const FEConvolveMatrix::EdgeModeType& type) {
   switch (type) {
-    case EDGEMODE_UNKNOWN:
+    case FEConvolveMatrix::EDGEMODE_UNKNOWN:
       ts << "UNKNOWN";
       break;
-    case EDGEMODE_DUPLICATE:
+    case FEConvolveMatrix::EDGEMODE_DUPLICATE:
       ts << "DUPLICATE";
       break;
-    case EDGEMODE_WRAP:
+    case FEConvolveMatrix::EDGEMODE_WRAP:
       ts << "WRAP";
       break;
-    case EDGEMODE_NONE:
+    case FEConvolveMatrix::EDGEMODE_NONE:
       ts << "NONE";
       break;
   }
@@ -177,7 +176,7 @@ WTF::TextStream& FEConvolveMatrix::ExternalRepresentation(WTF::TextStream& ts,
      << "kernelMatrix=\"" << kernel_matrix_ << "\" "
      << "divisor=\"" << divisor_ << "\" "
      << "bias=\"" << bias_ << "\" "
-     << "target=\"" << target_offset_ << "\" "
+     << "target=\"" << target_offset_.ToString() << "\" "
      << "edgeMode=\"" << edge_mode_ << "\" "
      << "preserveAlpha=\"" << preserve_alpha_ << "\"]\n";
   InputEffect(0)->ExternalRepresentation(ts, indent + 1);

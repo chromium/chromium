@@ -1,0 +1,56 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<title>Low Latency WebGL Canvas with Rounded Corners Test</title>
+<style type="text/css">
+.nomargin {
+  margin: 0px auto;
+}
+.rounded-corner {
+  border-radius: 20px;
+}
+</style>
+<script>
+let g_swapsBeforeAck = 15;
+
+function waitForFinish()
+{
+  if (g_swapsBeforeAck == 0) {
+    domAutomationController.send("SUCCESS");
+  } else {
+    g_swapsBeforeAck--;
+    window.requestAnimationFrame(waitForFinish);
+  }
+}
+
+function main()
+{
+  let canvas_gl = document.getElementById("c3d");
+  let gl = canvas_gl.getContext("webgl", {"desynchronized": true});
+
+  let width = canvas_gl.width;
+  let height = canvas_gl.height;
+
+  gl.enable(gl.SCISSOR_TEST);
+  gl.scissor(0, 0, width, height);
+  gl.clearColor(1, 0, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  gl.scissor(0, 0, width / 2, height / 2);
+  gl.clearColor(0, 1, 0, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  gl.scissor(width / 2, height / 2, width / 2, height / 2);
+  gl.clearColor(0, 0, 1, 1);
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  waitForFinish();
+}
+</script>
+</head>
+<body onload="main()">
+<div id="container" style="position:absolute; top:0px; left:0px">
+<canvas id="c3d" width="100" height="100" class="nomargin rounded-corner"></canvas>
+</div>
+</body>
+</html>

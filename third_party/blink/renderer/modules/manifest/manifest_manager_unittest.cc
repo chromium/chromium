@@ -35,8 +35,8 @@ void RegisterMockedURL(const std::string& base_url,
 
 class MockManifestChangeNotifier : public ManifestChangeNotifier {
  public:
-  MockManifestChangeNotifier(LocalFrame& frame)
-      : ManifestChangeNotifier(frame), manifest_change_count_(0) {}
+  MockManifestChangeNotifier(LocalDOMWindow& window)
+      : ManifestChangeNotifier(window), manifest_change_count_(0) {}
   ~MockManifestChangeNotifier() override = default;
 
   // ManifestChangeNotifier:
@@ -53,26 +53,14 @@ class ManifestManagerTest : public PageTestBase {
   ManifestManagerTest() : base_url_("http://internal.test/") {}
   void SetUp() override {
     PageTestBase::SetUp(IntSize());
-    ManifestManager::ProvideTo(GetFrame());
   }
 
   void TearDown() override {
     ThreadState::Current()->CollectAllGarbageForTesting();
   }
 
-  ManifestManager* GetManifestManager(LocalFrame* frame = nullptr) {
-    return ManifestManager::From(frame ? *frame : GetFrame());
-  }
-
-  void SetMockManifestChangeNotifier(LocalFrame* frame) {
-    GetManifestManager(frame)->manifest_change_notifier_ =
-        MakeGarbageCollected<MockManifestChangeNotifier>(*frame);
-  }
-
-  int ManifestChangeCount(LocalFrame* frame) {
-    return static_cast<MockManifestChangeNotifier*>(
-               GetManifestManager(frame)->manifest_change_notifier_.Get())
-        ->ManifestChangeCount();
+  ManifestManager* GetManifestManager() {
+    return ManifestManager::From(*GetFrame().DomWindow());
   }
 
   std::string base_url_;
@@ -129,17 +117,38 @@ TEST_F(ManifestManagerTest, ManifestUseCredentials) {
   ASSERT_TRUE(GetManifestManager()->ManifestUseCredentials());
 }
 
+class OverrideManifestChangeNotifierClient
+    : public frame_test_helpers::TestWebFrameClient {
+ public:
+  void DidCreateDocumentElement() override {
+    if (!frame_)
+      return;
+    notifier_ =
+        MakeGarbageCollected<MockManifestChangeNotifier>(*frame_->DomWindow());
+    ManifestManager::From(*frame_->DomWindow())
+        ->SetManifestChangeNotifierForTest(notifier_);
+  }
+
+  void SetFrame(LocalFrame* frame) { frame_ = frame; }
+  MockManifestChangeNotifier* GetNotifier() { return notifier_.Get(); }
+
+ private:
+  Persistent<LocalFrame> frame_;
+  Persistent<MockManifestChangeNotifier> notifier_;
+};
+
 TEST_F(ManifestManagerTest, NotifyManifestChange) {
   RegisterMockedURL(base_url_, "link-manifest-change.html");
 
+  OverrideManifestChangeNotifierClient client;
   frame_test_helpers::WebViewHelper web_view_helper;
-  web_view_helper.Initialize();
+  web_view_helper.Initialize(&client);
 
   auto* frame = web_view_helper.GetWebView()->MainFrameImpl();
-  SetMockManifestChangeNotifier(frame->GetFrame());
+  client.SetFrame(frame->GetFrame());
   frame_test_helpers::LoadFrame(frame, base_url_ + "link-manifest-change.html");
 
-  EXPECT_EQ(14, ManifestChangeCount(frame->GetFrame()));
+  EXPECT_EQ(14, client.GetNotifier()->ManifestChangeCount());
 }
 
 }  // namespace blink

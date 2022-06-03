@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>Storage"
+}
+team_email: "storage-dev@chromium.org"

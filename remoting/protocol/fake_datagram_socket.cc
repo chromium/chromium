@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/base/address_list.h"
 #include "net/base/io_buffer.h"
@@ -148,7 +148,7 @@ FakeDatagramSocket* FakeDatagramChannelFactory::GetFakeChannel(
 
 void FakeDatagramChannelFactory::CreateChannel(
     const std::string& name,
-    const ChannelCreatedCallback& callback) {
+    ChannelCreatedCallback callback) {
   EXPECT_FALSE(channels_[name]);
 
   std::unique_ptr<FakeDatagramSocket> channel(new FakeDatagramSocket());
@@ -168,18 +168,18 @@ void FakeDatagramChannelFactory::CreateChannel(
         FROM_HERE,
         base::BindOnce(&FakeDatagramChannelFactory::NotifyChannelCreated,
                        weak_factory_.GetWeakPtr(), std::move(channel), name,
-                       callback));
+                       std::move(callback)));
   } else {
-    NotifyChannelCreated(std::move(channel), name, callback);
+    NotifyChannelCreated(std::move(channel), name, std::move(callback));
   }
 }
 
 void FakeDatagramChannelFactory::NotifyChannelCreated(
     std::unique_ptr<FakeDatagramSocket> owned_socket,
     const std::string& name,
-    const ChannelCreatedCallback& callback) {
+    ChannelCreatedCallback callback) {
   if (channels_.find(name) != channels_.end())
-    callback.Run(std::move(owned_socket));
+    std::move(callback).Run(std::move(owned_socket));
 }
 
 void FakeDatagramChannelFactory::CancelChannelCreation(

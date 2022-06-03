@@ -10,4 +10,9 @@ MockPlatformWindowDelegate::MockPlatformWindowDelegate() {}
 
 MockPlatformWindowDelegate::~MockPlatformWindowDelegate() {}
 
+bool operator==(const PlatformWindowDelegate::BoundsChange& bounds,
+                const gfx::Rect& rect) {
+  return bounds.bounds == rect;
+}
+
 }  // namespace ui

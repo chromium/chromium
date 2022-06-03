@@ -5,23 +5,12 @@
 #ifndef IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_VIEW_CONTROLLER_H_
 #define IOS_CHROME_BROWSER_UI_PASSWORDS_PASSWORD_BREACH_VIEW_CONTROLLER_H_
 
-#import <UIKit/UIKit.h>
+#import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_view_controller.h"
 
 #import "ios/chrome/browser/ui/passwords/password_breach_consumer.h"
 
-@protocol PasswordBreachActionHandler;
-
 @interface PasswordBreachViewController
-    : UIViewController <PasswordBreachConsumer>
-
-// The headline below the image.
-@property(nonatomic, readonly) NSString* titleString;
-
-// The help button item in the top left of the view.
-@property(nonatomic, readonly) UIBarButtonItem* helpButton;
-
-// The action handler for interactions in this View Controller.
-@property(nonatomic, weak) id<PasswordBreachActionHandler> actionHandler;
+    : ConfirmationAlertViewController <PasswordBreachConsumer>
 
 @end
 

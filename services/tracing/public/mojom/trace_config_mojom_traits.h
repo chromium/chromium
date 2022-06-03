@@ -13,7 +13,7 @@
 
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
-#include "services/tracing/public/mojom/perfetto_service.mojom.h"
+#include "services/tracing/public/mojom/perfetto_service.mojom-shared.h"
 #include "third_party/perfetto/include/perfetto/tracing/core/trace_config.h"
 
 namespace mojo {
@@ -107,6 +107,16 @@ class StructTraits<tracing::mojom::PerfettoBuiltinDataSourceDataView,
     return src.disable_system_info();
   }
 
+  static bool disable_service_events(
+      const perfetto::TraceConfig::BuiltinDataSource& src) {
+    return src.disable_service_events();
+  }
+
+  static int32_t primary_trace_clock_id(
+      const perfetto::TraceConfig::BuiltinDataSource& src) {
+    return src.primary_trace_clock();
+  }
+
   static bool Read(tracing::mojom::PerfettoBuiltinDataSourceDataView data,
                    perfetto::TraceConfig::BuiltinDataSource* out);
 };
@@ -151,6 +161,10 @@ class StructTraits<tracing::mojom::TraceConfigDataView, perfetto::TraceConfig> {
 
   static uint32_t duration_ms(const perfetto::TraceConfig& src) {
     return src.duration_ms();
+  }
+
+  static bool write_into_file(const perfetto::TraceConfig& src) {
+    return src.write_into_file();
   }
 
   static bool Read(tracing::mojom::TraceConfigDataView data,

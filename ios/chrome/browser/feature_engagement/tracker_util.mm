@@ -15,8 +15,7 @@
 
 namespace feature_engagement {
 
-void NotifyNewTabEvent(ios::ChromeBrowserState* browserState,
-                       bool isIncognito) {
+void NotifyNewTabEvent(ChromeBrowserState* browserState, bool isIncognito) {
   const char* const event =
       isIncognito ? feature_engagement::events::kIncognitoTabOpened
                   : feature_engagement::events::kNewTabOpened;
@@ -24,7 +23,7 @@ void NotifyNewTabEvent(ios::ChromeBrowserState* browserState,
       ->NotifyEvent(std::string(event));
 }
 
-void NotifyNewTabEventForCommand(ios::ChromeBrowserState* browserState,
+void NotifyNewTabEventForCommand(ChromeBrowserState* browserState,
                                  OpenNewTabCommand* command) {
   if (command.isUserInitiated) {
     NotifyNewTabEvent(browserState, command.inIncognito);

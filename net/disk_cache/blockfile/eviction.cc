@@ -33,20 +33,21 @@
 #include <limits>
 
 #include "base/bind.h"
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/location.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
 #include "net/disk_cache/blockfile/disk_format.h"
 #include "net/disk_cache/blockfile/entry_impl.h"
 #include "net/disk_cache/blockfile/experiments.h"
 #include "net/disk_cache/blockfile/histogram_macros.h"
-#include "net/disk_cache/blockfile/trace.h"
 
 // Provide a BackendImpl object to macros from histogram_macros.h.
 #define CACHE_UMA_BACKEND_IMPL_OBJ backend_
@@ -113,6 +114,7 @@ void Eviction::Stop() {
 }
 
 void Eviction::TrimCache(bool empty) {
+  TRACE_EVENT0("disk_cache", "Eviction::TrimCache");
   if (backend_->disabled_ || trimming_)
     return;
 
@@ -122,7 +124,6 @@ void Eviction::TrimCache(bool empty) {
   if (new_eviction_)
     return TrimCacheV2(empty);
 
-  Trace("*** Trim Cache ***");
   trimming_ = true;
   TimeTicks start = TimeTicks::Now();
   Rankings::ScopedRankingsBlock node(rankings_);
@@ -163,7 +164,6 @@ void Eviction::TrimCache(bool empty) {
   CACHE_UMA(COUNTS, "TrimItemsV1", 0, deleted_entries);
 
   trimming_ = false;
-  Trace("*** Trim Cache end ***");
   return;
 }
 
@@ -206,6 +206,8 @@ void Eviction::SetTestMode() {
 }
 
 void Eviction::TrimDeletedList(bool empty) {
+  TRACE_EVENT0("disk_cache", "Eviction::TrimDeletedList");
+
   DCHECK(test_mode_ && new_eviction_);
   TrimDeleted(empty);
 }
@@ -219,7 +221,7 @@ void Eviction::PostDelayedTrim() {
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&Eviction::DelayedTrim, ptr_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(1000));
+      base::Milliseconds(1000));
 }
 
 void Eviction::DelayedTrim() {
@@ -284,10 +286,8 @@ Rankings::List Eviction::GetListForEntry(EntryImpl* entry) {
 bool Eviction::EvictEntry(CacheRankingsBlock* node, bool empty,
                           Rankings::List list) {
   scoped_refptr<EntryImpl> entry = backend_->GetEnumeratedEntry(node, list);
-  if (!entry) {
-    Trace("NewEntry failed on Trim 0x%x", node->address().value());
+  if (!entry)
     return false;
-  }
 
   ReportTrimTimes(entry.get());
   if (empty || !new_eviction_) {
@@ -311,7 +311,8 @@ bool Eviction::EvictEntry(CacheRankingsBlock* node, bool empty,
 // -----------------------------------------------------------------------
 
 void Eviction::TrimCacheV2(bool empty) {
-  Trace("*** Trim Cache ***");
+  TRACE_EVENT0("disk_cache", "Eviction::TrimCacheV2");
+
   trimming_ = true;
   TimeTicks start = TimeTicks::Now();
 
@@ -389,7 +390,6 @@ void Eviction::TrimCacheV2(bool empty) {
   }
   CACHE_UMA(COUNTS, "TrimItemsV2", 0, deleted_entries);
 
-  Trace("*** Trim Cache end ***");
   trimming_ = false;
   return;
 }
@@ -489,7 +489,8 @@ Rankings::List Eviction::GetListForEntryV2(EntryImpl* entry) {
 // This is a minimal implementation that just discards the oldest nodes.
 // TODO(rvargas): Do something better here.
 void Eviction::TrimDeleted(bool empty) {
-  Trace("*** Trim Deleted ***");
+  TRACE_EVENT0("disk_cache", "Eviction::TrimDeleted");
+
   if (backend_->disabled_)
     return;
 
@@ -517,17 +518,14 @@ void Eviction::TrimDeleted(bool empty) {
 
   CACHE_UMA(AGE_MS, "TotalTrimDeletedTime", 0, start);
   CACHE_UMA(COUNTS, "TrimDeletedItems", 0, deleted_entries);
-  Trace("*** Trim Deleted end ***");
   return;
 }
 
 bool Eviction::RemoveDeletedNode(CacheRankingsBlock* node) {
   scoped_refptr<EntryImpl> entry =
       backend_->GetEnumeratedEntry(node, Rankings::DELETED);
-  if (!entry) {
-    Trace("NewEntry failed on Trim 0x%x", node->address().value());
+  if (!entry)
     return false;
-  }
 
   bool doomed = (entry->entry()->Data()->state == ENTRY_DOOMED);
   entry->entry()->Data()->state = ENTRY_DOOMED;

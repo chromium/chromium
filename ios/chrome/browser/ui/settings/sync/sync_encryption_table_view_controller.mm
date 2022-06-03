@@ -7,6 +7,8 @@
 #include <memory>
 
 #include "base/mac/foundation_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/google/core/common/google_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -17,19 +19,21 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
+#import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/sync/sync_observer_bridge.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/ui/settings/settings_controller_protocol.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_create_passphrase_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/sync/sync_encryption_passphrase_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/utils/settings_utils.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
+#import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
@@ -52,30 +56,33 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 }  // namespace
 
-@interface SyncEncryptionTableViewController () <SyncObserverModelBridge> {
-  ios::ChromeBrowserState* _browserState;
+@interface SyncEncryptionTableViewController () <SyncObserverModelBridge,
+                                                 SettingsControllerProtocol> {
   std::unique_ptr<SyncObserverBridge> _syncObserver;
-  BOOL _isUsingSecondaryPassphrase;
+  BOOL _isUsingExplicitPassphrase;
 }
+
+@property(nonatomic, assign, readonly) Browser* browser;
+
 @end
 
 @implementation SyncEncryptionTableViewController
 
-- (instancetype)initWithBrowserState:(ios::ChromeBrowserState*)browserState {
-  DCHECK(browserState);
-  UITableViewStyle style = base::FeatureList::IsEnabled(kSettingsRefresh)
-                               ? UITableViewStylePlain
-                               : UITableViewStyleGrouped;
-  self = [super initWithTableViewStyle:style
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+@synthesize browser = _browser;
+
+- (instancetype)initWithBrowser:(Browser*)browser {
+  DCHECK(browser);
+
+  self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
+    _browser = browser;
+    ChromeBrowserState* browserState = self.browser->GetBrowserState();
     self.title = l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_TITLE);
-    _browserState = browserState;
     syncer::SyncService* syncService =
-        ProfileSyncServiceFactory::GetForBrowserState(_browserState);
-    _isUsingSecondaryPassphrase =
+        SyncServiceFactory::GetForBrowserState(browserState);
+    _isUsingExplicitPassphrase =
         syncService->IsEngineInitialized() &&
-        syncService->GetUserSettings()->IsUsingSecondaryPassphrase();
+        syncService->GetUserSettings()->IsUsingExplicitPassphrase();
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
   }
   return self;
@@ -100,7 +107,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:[self passphraseItem]
       toSectionWithIdentifier:SectionIdentifierEncryption];
 
-  if (_isUsingSecondaryPassphrase) {
+  if (_isUsingExplicitPassphrase) {
     [model setFooter:[self footerItem]
         forSectionWithIdentifier:SectionIdentifierEncryption];
   }
@@ -114,8 +121,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* text = l10n_util::GetNSString(IDS_SYNC_BASIC_ENCRYPTION_DATA);
   return [self itemWithType:ItemTypeAccount
                        text:text
-                    checked:!_isUsingSecondaryPassphrase
-                    enabled:!_isUsingSecondaryPassphrase];
+                    checked:!_isUsingExplicitPassphrase
+                    enabled:!_isUsingExplicitPassphrase];
 }
 
 // Returns a passphrase item.
@@ -124,8 +131,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSString* text = l10n_util::GetNSString(IDS_SYNC_FULL_ENCRYPTION_DATA);
   return [self itemWithType:ItemTypePassphrase
                        text:text
-                    checked:_isUsingSecondaryPassphrase
-                    enabled:!_isUsingSecondaryPassphrase];
+                    checked:_isUsingExplicitPassphrase
+                    enabled:!_isUsingExplicitPassphrase];
 }
 
 // Returns a footer item with a link.
@@ -134,9 +141,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeFooter];
   footerItem.text =
       l10n_util::GetNSString(IDS_IOS_SYNC_ENCRYPTION_PASSPHRASE_HINT);
-  footerItem.linkURL = google_util::AppendGoogleLocaleParam(
+  footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
       GURL(kSyncGoogleDashboardURL),
-      GetApplicationContext()->GetApplicationLocale());
+      GetApplicationContext()->GetApplicationLocale())};
   return footerItem;
 }
 
@@ -158,6 +165,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (void)tableView:(UITableView*)tableView
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
+  DCHECK(self.browser) << "tableView:didSelectRowAtIndexPath called after "
+                          "-settingsWillBeDismissed";
   DCHECK_EQ(indexPath.section,
             [self.tableViewModel
                 sectionForSectionIdentifier:SectionIdentifierEncryption]);
@@ -166,13 +175,14 @@ typedef NS_ENUM(NSInteger, ItemType) {
   switch (item.type) {
     case ItemTypePassphrase: {
       DCHECK(switches::IsSyncAllowedByFlag());
+      ChromeBrowserState* browserState = self.browser->GetBrowserState();
       syncer::SyncService* service =
-          ProfileSyncServiceFactory::GetForBrowserState(_browserState);
+          SyncServiceFactory::GetForBrowserState(browserState);
       if (service->IsEngineInitialized() &&
-          !service->GetUserSettings()->IsUsingSecondaryPassphrase()) {
+          !service->GetUserSettings()->IsUsingExplicitPassphrase()) {
         SyncCreatePassphraseTableViewController* controller =
             [[SyncCreatePassphraseTableViewController alloc]
-                initWithBrowserState:_browserState];
+                initWithBrowser:self.browser];
         if (controller) {
           controller.dispatcher = self.dispatcher;
           [self.navigationController pushViewController:controller
@@ -190,16 +200,35 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [tableView deselectRowAtIndexPath:indexPath animated:NO];
 }
 
+#pragma mark - SettingsControllerProtocol callbacks
+
+- (void)reportDismissalUserAction {
+  base::RecordAction(
+      base::UserMetricsAction("MobileSyncEncryptionSettingsClose"));
+}
+
+- (void)reportBackUserAction {
+  NOTREACHED();
+}
+
+- (void)settingsWillBeDismissed {
+  _syncObserver.reset();
+  _browser = nil;
+}
+
 #pragma mark SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
+  DCHECK(self.browser)
+      << "onSyncStateChanged called after -settingsWillBeDismissed";
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   syncer::SyncService* service =
-      ProfileSyncServiceFactory::GetForBrowserState(_browserState);
-  BOOL isNowUsingSecondaryPassphrase =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  BOOL isNowUsingExplicitPassphrase =
       service->IsEngineInitialized() &&
-      service->GetUserSettings()->IsUsingSecondaryPassphrase();
-  if (_isUsingSecondaryPassphrase != isNowUsingSecondaryPassphrase) {
-    _isUsingSecondaryPassphrase = isNowUsingSecondaryPassphrase;
+      service->GetUserSettings()->IsUsingExplicitPassphrase();
+  if (_isUsingExplicitPassphrase != isNowUsingExplicitPassphrase) {
+    _isUsingExplicitPassphrase = isNowUsingExplicitPassphrase;
     [self reloadData];
   }
 }
@@ -215,8 +244,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   item.text = text;
   item.accessoryType = checked ? UITableViewCellAccessoryCheckmark
                                : UITableViewCellAccessoryNone;
-  item.textColor =
-      enabled ? UIColor.cr_labelColor : UIColor.cr_secondaryLabelColor;
+  item.textColor = enabled ? [UIColor colorNamed:kTextPrimaryColor]
+                           : [UIColor colorNamed:kTextSecondaryColor];
   item.enabled = enabled;
   return item;
 }

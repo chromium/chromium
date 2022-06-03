@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WELCOME_WELCOME_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_WELCOME_WELCOME_HANDLER_H_
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
@@ -14,15 +13,14 @@ class Profile;
 class GURL;
 
 // Handles actions on Welcome page.
-class WelcomeHandler : public content::WebUIMessageHandler,
-                       public LoginUIService::Observer {
+class WelcomeHandler : public content::WebUIMessageHandler {
  public:
   explicit WelcomeHandler(content::WebUI* web_ui);
-  ~WelcomeHandler() override;
 
-  // LoginUIService::Observer:
-  void OnSyncConfirmationUIClosed(
-      LoginUIService::SyncConfirmationUIClosedResult result) override;
+  WelcomeHandler(const WelcomeHandler&) = delete;
+  WelcomeHandler& operator=(const WelcomeHandler&) = delete;
+
+  ~WelcomeHandler() override;
 
   // content::WebUIMessageHandler:
   void RegisterMessages() override;
@@ -31,17 +29,18 @@ class WelcomeHandler : public content::WebUIMessageHandler,
   enum WelcomeResult {
     // User navigated away from page.
     DEFAULT = 0,
-    // User clicked the "No Thanks" button.
-    DECLINED = 1,
-    // User completed sign-in flow.
-    SIGNED_IN = 2,
-    // User attempted sign-in flow, then navigated away.
-    ATTEMPTED = 3,
-    // User attempted sign-in flow, then clicked "No Thanks."
-    ATTEMPTED_DECLINED = 4,
-
+    // User clicked the "Get Started" button.
+    DECLINED_SIGN_IN = 1,
+    // DEPRECATED: User completed sign-in flow.
+    // SIGNED_IN = 2,
+    // DEPRECATED: User attempted sign-in flow, then navigated away.
+    // ATTEMPTED = 3,
+    // DEPRECATED: User attempted sign-in flow, then clicked "No Thanks."
+    // ATTEMPTED_DECLINED = 4,
+    // User started the sign-in flow.
+    STARTED_SIGN_IN = 5,
     // New results must be added before this line, and should correspond to
-    // values in tools/metrics/histograms/histograms.xml.
+    // values in tools/metrics/histograms/enums.xml.
     WELCOME_RESULT_MAX
   };
 
@@ -54,14 +53,11 @@ class WelcomeHandler : public content::WebUIMessageHandler,
   Browser* GetBrowser();
 
   Profile* profile_;
-  LoginUIService* login_ui_service_;
   WelcomeResult result_;
 
   // Indicates whether this WelcomeHandler instance is spawned due to users
   // being redirected back to welcome page as part of the onboarding flow.
   bool is_redirected_welcome_impression_;
-
-  DISALLOW_COPY_AND_ASSIGN(WelcomeHandler);
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_WELCOME_WELCOME_HANDLER_H_

@@ -38,7 +38,7 @@
 <translation id="5173942593318174089">ไฮไลต์ตำแหน่งเคอร์เซอร์ที่มีภาพเคลื่อนไหว</translation>
 <translation id="5287723860611749454">&lt;p&gt;ใช้คีย์ลูกศรเพื่อเลื่อนไปยังส่วนต่างๆ ของเอกสาร &lt;/p&gt;&lt;p&gt;คลิกตำแหน่งหนึ่งๆ เพื่อย้ายเคอร์เซอร์ไปยังตำแหน่งนั้น&lt;/p&gt; &lt;p&gt;   กด &lt;span class='key'&gt;Shift&lt;/span&gt; + ลูกศร เพื่อเลือกข้อความ&lt;/p&gt;</translation>
 <translation id="5331422999063554397">สีสลับ</translation>
-<translation id="5555153510860501336">ปิดความเปรียบต่างสูงอยู่</translation>
+<translation id="5555153510860501336">ปิดโหมดคอนทราสต์สูงอยู่</translation>
 <translation id="5558600050691192317">คำสั่งแป้นพิมพ์</translation>
 <translation id="5594989420907487559">เรียกใช้ภาพเคลื่อนไหวเพียงครั้งเดียว หรือปิดใช้ภาพเคลื่อนไหวอย่างสมบูรณ์</translation>
 <translation id="5631241868147802353">รูปแบบชุดสีเริ่มต้น:</translation>
@@ -55,7 +55,7 @@
 <translation id="690628312087070417">เมื่อเครื่องหมาย caret ข้ามไปยังระยะที่ห่างมาก</translation>
 <translation id="6965382102122355670">ตกลง</translation>
 <translation id="7379645913608427028">ระดับ</translation>
-<translation id="7384431257964758081">เปิดความเปรียบต่างอยู่</translation>
+<translation id="7384431257964758081">เปิดโหมดคอนทราสต์อยู่</translation>
 <translation id="7586636300921797327">ขั้นตอนที่ 2: ปรับแถบเลื่อนจนสามารถเห็นดาวทั้งหมดได้ใน
         แถวที่เลือก</translation>
 <translation id="7658239707568436148">ยกเลิก</translation>
@@ -63,7 +63,7 @@
 <translation id="7942349550061667556">สีแดง</translation>
 <translation id="8260673944985561857">ตัวเลือกการเรียกดูด้วยแป้นพิมพ์</translation>
 <translation id="8321034316479930120">นโยบายภาพเคลื่อนไหว</translation>
-<translation id="8480209185614411573">ความเปรียบต่างสูง</translation>
+<translation id="8480209185614411573">คอนทราสต์สูง</translation>
 <translation id="8609925175482059018">กด &lt;span class='key'&gt;F7&lt;/span&gt; เพื่อเปิดการเรียกดูด้วยแป้นพิมพ์ กดอีกครั้งเพื่อปิด</translation>
 <translation id="894241283505723656">คำอธิบายแบบยาวในเมนูบริบท</translation>
 </translationbundle>

@@ -14,7 +14,7 @@
       var colorTest = async_test("Check that no stylesheets are applied when disabled");
       var testObj = new Object;
       for (var i=0; i<5; i++) {
-        testObj[i] = async_test("#s"+(i+1)+" accessible through document.styleSheets after disabling");
+        testObj[i] = async_test(`#s${i+1}${(i<3) ? ' NOT' : ''} accessible through document.styleSheets after disabling`);
       }
 
       onload = function(){
@@ -38,13 +38,18 @@
         colorTest.done();
 
         count = document.styleSheets.length;
+        assert_equals(count, 2); // Just the <style> nodes
         for (i=0; i<count; i++)
           testObj[document.styleSheets[i].ownerNode.id] = true;
 
         for (i=0; i<5; i++) {
           testObj[i].step(function(){
-            assert_true(testObj["s"+(i+1)]);
-          }, "Check if #s"+(i+1)+" is present in document.styleSheets after it is disabled");
+            if (i<3) {
+              assert_true(!testObj["s"+(i+1)]);
+            } else {
+              assert_true(testObj["s"+(i+1)]);
+            }
+          }, "Check if #s"+(i+1)+" is present in document.styleSheets for <style> but not <link> after it is disabled");
           testObj[i].done();
         }
       };

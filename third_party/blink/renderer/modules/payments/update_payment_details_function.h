@@ -28,7 +28,7 @@ class UpdatePaymentDetailsFunction : public ScriptFunction {
   UpdatePaymentDetailsFunction(ScriptState*,
                                PaymentRequestDelegate*,
                                ResolveType);
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
   ScriptValue Call(ScriptValue) override;
 
  private:

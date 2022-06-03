@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
+	<key>CFBundleIdentifier</key>
+	<string>${MAC_BUNDLE_IDENTIFIER}</string>
 	<key>CFBundleDisplayName</key>
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
@@ -14,5 +16,12 @@
 	<string>APPL</string>
 	<key>CFBundleVersion</key>
 	<string>1.0</string>
+	<key>LSUIElement</key>
+	<true/>
+  <key>NSAppTransportSecurity</key>
+  <dict>
+    <key>NSAllowsArbitraryLoads</key>
+    <true/>
+  </dict>
 </dict>
 </plist>

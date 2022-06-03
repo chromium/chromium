@@ -1,0 +1,16 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromecast_build.gni")
+import("//build/config/features.gni")
+
+declare_args() {
+  # Enable basic paint preview support. Does not work on iOS or Fuchsia. Should
+  # not be included with Chromecast. Not ready for shipping builds yet so
+  # include in unofficial builds.
+  # Used by //components/paint_preview and //third_party/harfbuzz-ng.
+  # TODO(bug/webrtc:11223) Move back this file in //components/paint_preview/
+  #     once WebRTC doesn't roll harfbuzz-ng anymore, for consistency sake.
+  enable_paint_preview = !is_chromecast && !is_ios && !is_fuchsia
+}

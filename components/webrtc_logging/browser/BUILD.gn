@@ -19,9 +19,7 @@ source_set("browser") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "log_cleanup_unittest.cc",
-  ]
+  sources = [ "log_cleanup_unittest.cc" ]
   deps = [
     ":browser",
     "//base",

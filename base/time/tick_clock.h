@@ -14,6 +14,11 @@ namespace base {
 // intended to be able to test the behavior of classes with respect to
 // non-decreasing time.
 //
+// Note: Overriding Time/TimeTicks altogether via
+// TaskEnvironment::TimeSource::MOCK_TIME is now the preferred way of overriding
+// time in unit tests. As such, there shouldn't be many new use cases for
+// TickClock/DefaultTickClock anymore.
+//
 // See DefaultTickClock (base/time/default_tick_clock.h) for the default
 // implementation that simply uses TimeTicks::Now().
 //

@@ -12,9 +12,11 @@ endif
 
 CRON_DIR = $(DESTDIR)/etc/cron.daily
 DOC_DIR = $(DESTDIR)/usr/share/doc/chrome-remote-desktop
+SYSTEMD_UNIT_DIR = $(DESTDIR)/lib/systemd/system
 INSTALL_DIR = $(DESTDIR)/opt/google/chrome-remote-desktop
 CHROME_NATIVE_MESSAGING_DIR = $(DESTDIR)/etc/opt/chrome/native-messaging-hosts
 FIREFOX_NATIVE_MESSAGING_DIR = $(DESTDIR)/usr/lib/mozilla/native-messaging-hosts
+SYSTEM_WIDE_DESKTOP_ENTRIES_DIR = $(DESTDIR)/usr/share/applications
 
 ME2ME_PROGNAME = $(BUILD_DIR)/remoting_me2me_host
 ME2ME_DEBUGFILE = $(ME2ME_PROGNAME).debug
@@ -26,6 +28,8 @@ ME2ME_NM_PROGNAME = $(BUILD_DIR)/remoting_native_messaging_host
 ME2ME_NM_DEBUGFILE = $(ME2ME_NM_PROGNAME).debug
 REMOTE_ASSISTANCE_PROGNAME = $(BUILD_DIR)/remote_assistance_host
 REMOTE_ASSISTANCE_DEBUGFILE = $(REMOTE_ASSISTANCE_PROGNAME).debug
+REMOTE_OPEN_URL_PROGNAME = $(BUILD_DIR)/remote_open_url
+REMOTE_OPEN_URL_DEBUGFILE = $(REMOTE_OPEN_URL_PROGNAME).debug
 
 all:
 
@@ -34,13 +38,19 @@ install:
 	install -d "$(DOC_DIR)"
 	install -d "$(INSTALL_DIR)"
 	install -d "$(INSTALL_DIR)/remoting_locales"
+	install -d "$(SYSTEMD_UNIT_DIR)"
 	install -d "$(CHROME_NATIVE_MESSAGING_DIR)"
 	install -d "$(FIREFOX_NATIVE_MESSAGING_DIR)"
+	install -d "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)"
 
 	install "$(SRC_DIR)/remoting/host/linux/linux_me2me_host.py" \
 	  "$(INSTALL_DIR)/chrome-remote-desktop"
 	install "$(SRC_DIR)/remoting/host/installer/linux/is-remoting-session" \
 	  "$(INSTALL_DIR)"
+	install "$(SRC_DIR)/remoting/host/installer/linux/Xsession" \
+	  "$(INSTALL_DIR)"
+	install "$(SRC_DIR)/remoting/host/linux/configure_url_forwarder.py" \
+	  "$(INSTALL_DIR)/configure-url-forwarder"
 
 	install -m 0644 \
 	  "$(BUILD_DIR)/remoting/com.google.chrome.remote_desktop.json" \
@@ -77,13 +87,28 @@ install:
 	eu-strip -f "$(REMOTE_ASSISTANCE_DEBUGFILE)" \
 	  "$(INSTALL_DIR)/remote-assistance-host"
 
+	install "$(REMOTE_OPEN_URL_PROGNAME)" \
+	  "$(INSTALL_DIR)/remote-open-url"
+	eu-strip -f "$(REMOTE_OPEN_URL_DEBUGFILE)" \
+	  "$(INSTALL_DIR)/remote-open-url"
+
 	install -m 0644 \
-          "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"
+	  "$(BUILD_DIR)/remoting/crd-url-forwarder.desktop" \
+	  "$(SYSTEM_WIDE_DESKTOP_ENTRIES_DIR)/crd-url-forwarder.desktop"
+
+	install -m 0644 \
+	  "$(BUILD_DIR)/icudtl.dat" "$(INSTALL_DIR)/icudtl.dat"
 
 	for locale in $$(ls $(BUILD_DIR)/remoting_locales); do \
 	  install "$(BUILD_DIR)/remoting_locales/$$locale" \
 	    "$(INSTALL_DIR)/remoting_locales/$$locale"; \
 	done
+
+	install -m 0644 \
+	  "$(SRC_DIR)/remoting/host/installer/linux/chrome-remote-desktop@.service" \
+	  "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop@.service"
+	# Mask the SysV-style init script under systemd so both don't end up enabled.
+	ln -s /dev/null "$(SYSTEMD_UNIT_DIR)/chrome-remote-desktop.service"
 
 	install $(BUILD_DIR)/remoting/installer/cron/chrome-remote-desktop \
 	  "$(CRON_DIR)/chrome-remote-desktop"

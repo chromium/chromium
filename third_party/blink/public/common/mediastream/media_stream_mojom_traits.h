@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIASTREAM_MEDIA_STREAM_MOJOM_TRAITS_H_
 #define THIRD_PARTY_BLINK_PUBLIC_COMMON_MEDIASTREAM_MEDIA_STREAM_MOJOM_TRAITS_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_controls.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -29,12 +30,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return device.video_facing;
   }
 
-  static const base::Optional<std::string>& group_id(
+  static const absl::optional<std::string>& group_id(
       const blink::MediaStreamDevice& device) {
     return device.group_id;
   }
 
-  static const base::Optional<std::string>& matched_output_device_id(
+  static const absl::optional<std::string>& matched_output_device_id(
       const blink::MediaStreamDevice& device) {
     return device.matched_output_device_id;
   }
@@ -48,12 +49,12 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::MediaStreamDeviceDataView,
     return device.input;
   }
 
-  static const base::Optional<base::UnguessableToken>& session_id(
+  static const absl::optional<base::UnguessableToken>& session_id(
       const blink::MediaStreamDevice& device) {
     return device.serializable_session_id();
   }
 
-  static const base::Optional<media::mojom::DisplayMediaInformationPtr>&
+  static const absl::optional<media::mojom::DisplayMediaInformationPtr>&
   display_media_info(const blink::MediaStreamDevice& device) {
     return device.display_media_info;
   }
@@ -101,6 +102,11 @@ struct BLINK_COMMON_EXPORT
 
   static bool disable_local_echo(const blink::StreamControls& controls) {
     return controls.disable_local_echo;
+  }
+
+  static bool request_pan_tilt_zoom_permission(
+      const blink::StreamControls& controls) {
+    return controls.request_pan_tilt_zoom_permission;
   }
 
   static bool Read(blink::mojom::StreamControlsDataView input,

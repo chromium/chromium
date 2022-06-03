@@ -11,20 +11,22 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+class ChromeBrowserState;
 class TemplateURLFetcher;
 
 namespace ios {
-
-class ChromeBrowserState;
-
 // Singleton that owns all TemplateURLFetchers and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class TemplateURLFetcherFactory : public BrowserStateKeyedServiceFactory {
  public:
   static TemplateURLFetcher* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+      ChromeBrowserState* browser_state);
 
   static TemplateURLFetcherFactory* GetInstance();
+
+  TemplateURLFetcherFactory(const TemplateURLFetcherFactory&) = delete;
+  TemplateURLFetcherFactory& operator=(const TemplateURLFetcherFactory&) =
+      delete;
 
  private:
   friend class base::NoDestructor<TemplateURLFetcherFactory>;
@@ -36,8 +38,6 @@ class TemplateURLFetcherFactory : public BrowserStateKeyedServiceFactory {
       web::BrowserState* context) const override;
   web::BrowserState* GetBrowserStateToUse(
       web::BrowserState* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TemplateURLFetcherFactory);
 };
 
 }  // namespace ios

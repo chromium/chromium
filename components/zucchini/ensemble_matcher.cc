@@ -7,9 +7,8 @@
 #include <algorithm>
 #include <limits>
 
+#include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
-#include "base/strings/stringprintf.h"
 
 namespace zucchini {
 

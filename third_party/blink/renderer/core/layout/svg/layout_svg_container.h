@@ -24,6 +24,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_CONTAINER_H_
 
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_model_object.h"
+#include "third_party/blink/renderer/core/layout/svg/svg_content_container.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -34,43 +36,63 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
  public:
   explicit LayoutSVGContainer(SVGElement*);
   ~LayoutSVGContainer() override;
+  void Trace(Visitor*) const override;
 
   // If you have a LayoutSVGContainer, use firstChild or lastChild instead.
   void SlowFirstChild() const = delete;
   void SlowLastChild() const = delete;
 
   LayoutObject* FirstChild() const {
-    DCHECK_EQ(Children(), VirtualChildren());
-    return Children()->FirstChild();
+    NOT_DESTROYED();
+    DCHECK_EQ(&content_.Children(), VirtualChildren());
+    return content_.Children().FirstChild();
   }
   LayoutObject* LastChild() const {
-    DCHECK_EQ(Children(), VirtualChildren());
-    return Children()->LastChild();
+    NOT_DESTROYED();
+    DCHECK_EQ(&content_.Children(), VirtualChildren());
+    return content_.Children().LastChild();
   }
 
   void Paint(const PaintInfo&) const override;
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
-  void SetNeedsBoundariesUpdate() final { needs_boundaries_update_ = true; }
+  void SetNeedsBoundariesUpdate() final {
+    NOT_DESTROYED();
+    needs_boundaries_update_ = true;
+  }
   bool DidScreenScaleFactorChange() const {
+    NOT_DESTROYED();
     return did_screen_scale_factor_change_;
   }
-  bool IsObjectBoundingBoxValid() const { return object_bounding_box_valid_; }
-
-  bool SelfWillPaint() const;
+  bool IsObjectBoundingBoxValid() const {
+    NOT_DESTROYED();
+    return object_bounding_box_valid_;
+  }
 
   bool HasNonIsolatedBlendingDescendants() const final;
 
-  const char* GetName() const override { return "LayoutSVGContainer"; }
-
-  FloatRect ObjectBoundingBox() const final { return object_bounding_box_; }
-
- protected:
-  LayoutObjectChildList* VirtualChildren() final { return Children(); }
-  const LayoutObjectChildList* VirtualChildren() const final {
-    return Children();
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGContainer";
   }
 
+  gfx::RectF ObjectBoundingBox() const final {
+    NOT_DESTROYED();
+    return content_.ObjectBoundingBox();
+  }
+
+ protected:
+  LayoutObjectChildList* VirtualChildren() final {
+    NOT_DESTROYED();
+    return &content_.Children();
+  }
+  const LayoutObjectChildList* VirtualChildren() const final {
+    NOT_DESTROYED();
+    return &content_.Children();
+  }
+  SVGContentContainer& Content() { return content_; }
+
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVGContainer ||
            LayoutSVGModelObject::IsOfType(type);
   }
@@ -80,7 +102,10 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
                 LayoutObject* before_child = nullptr) final;
   void RemoveChild(LayoutObject*) final;
 
-  FloatRect StrokeBoundingBox() const final { return stroke_bounding_box_; }
+  gfx::RectF StrokeBoundingBox() const final {
+    NOT_DESTROYED();
+    return content_.StrokeBoundingBox();
+  }
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
@@ -88,19 +113,14 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
                    HitTestAction) override;
 
   // Called during layout to update the local transform.
-  virtual SVGTransformChange CalculateLocalTransform();
+  virtual SVGTransformChange CalculateLocalTransform(bool bounds_changed);
 
-  void UpdateCachedBoundaries();
+  bool UpdateCachedBoundaries();
 
   void DescendantIsolationRequirementsChanged(DescendantIsolationState) final;
 
  private:
-  const LayoutObjectChildList* Children() const { return &children_; }
-  LayoutObjectChildList* Children() { return &children_; }
-
-  LayoutObjectChildList children_;
-  FloatRect object_bounding_box_;
-  FloatRect stroke_bounding_box_;
+  SVGContentContainer content_;
   bool object_bounding_box_valid_;
   bool needs_boundaries_update_ : 1;
   bool did_screen_scale_factor_change_ : 1;
@@ -108,7 +128,12 @@ class LayoutSVGContainer : public LayoutSVGModelObject {
   mutable bool has_non_isolated_blending_descendants_dirty_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGContainer, IsSVGContainer());
+template <>
+struct DowncastTraits<LayoutSVGContainer> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGContainer();
+  }
+};
 
 }  // namespace blink
 

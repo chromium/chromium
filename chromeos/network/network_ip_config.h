@@ -44,14 +44,6 @@ struct COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkIPConfig {
 
 typedef std::vector<NetworkIPConfig> NetworkIPConfigVector;
 
-// Used to return the list of IP configs and hardware address from an
-// asynchronous call to Shill. The hardware address is usually a MAC address
-// like "0011AA22BB33". |hardware_address| will be an empty string, if no
-// hardware address is found.
-typedef base::Callback<void(const NetworkIPConfigVector& ip_configs,
-                            const std::string& hardware_address)>
-    NetworkGetIPConfigsCallback;
-
 }  // namespace chromeos
 
 #endif  // CHROMEOS_NETWORK_NETWORK_IP_CONFIG_H_

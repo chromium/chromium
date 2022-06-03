@@ -16,8 +16,7 @@ namespace {
 // call this frequently.
 void CallUmaHistogramTimes(const std::string& name, base::TimeDelta duration) {
   base::HistogramBase* histogram = base::Histogram::FactoryTimeGet(
-      name, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromSeconds(10), 50,
+      name, base::Milliseconds(1), base::Seconds(10), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
   DCHECK(histogram);
   histogram->AddTime(duration);
@@ -40,7 +39,7 @@ WebuiLoadTimer::~WebuiLoadTimer() = default;
 
 void WebuiLoadTimer::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame() ||
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
       navigation_handle->IsSameDocument()) {
     return;
   }
@@ -55,7 +54,8 @@ void WebuiLoadTimer::DOMContentLoaded(
   CallUmaHistogramTimes(document_initial_load_uma_id_, timer_->Elapsed());
 }
 
-void WebuiLoadTimer::DocumentOnLoadCompletedInMainFrame() {
+void WebuiLoadTimer::DocumentOnLoadCompletedInMainFrame(
+    content::RenderFrameHost* render_frame_host) {
   // The WebContents could have been created for a child RenderFrameHost so it
   // would never receive a DidStartNavigation with the main frame, however it
   // will receive this callback.

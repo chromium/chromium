@@ -1,1 +1,0 @@
-CONSOLE ERROR: Feature policy violation: unoptimized-lossy-images is not allowed in this document.

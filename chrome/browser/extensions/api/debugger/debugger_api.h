@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/extensions/chrome_extension_function.h"
 #include "chrome/common/extensions/api/debugger.h"
 #include "content/public/browser/devtools_agent_host.h"
+#include "extensions/browser/extension_function.h"
 
 using extensions::api::debugger::Debuggee;
 
@@ -26,15 +26,15 @@ class DictionaryValue;
 namespace extensions {
 class ExtensionDevToolsClientHost;
 
-class DebuggerFunction : public ChromeAsyncExtensionFunction {
+class DebuggerFunction : public ExtensionFunction {
  protected:
   DebuggerFunction();
   ~DebuggerFunction() override;
 
-  void FormatErrorMessage(const std::string& format);
+  std::string FormatErrorMessage(const std::string& format);
 
-  bool InitAgentHost();
-  bool InitClientHost();
+  bool InitAgentHost(std::string* error);
+  bool InitClientHost(std::string* error);
   ExtensionDevToolsClientHost* FindClientHost();
 
   Debuggee debuggee_;
@@ -53,7 +53,7 @@ class DebuggerAttachFunction : public DebuggerFunction {
   ~DebuggerAttachFunction() override;
 
   // ExtensionFunction:
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 // Implements the debugger.detach() extension function.
@@ -67,7 +67,7 @@ class DebuggerDetachFunction : public DebuggerFunction {
   ~DebuggerDetachFunction() override;
 
   // ExtensionFunction:
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 // Implements the debugger.sendCommand() extension function.
@@ -83,7 +83,7 @@ class DebuggerSendCommandFunction : public DebuggerFunction {
   ~DebuggerSendCommandFunction() override;
 
   // ExtensionFunction:
-  bool RunAsync() override;
+  ResponseAction Run() override;
 };
 
 // Implements the debugger.getTargets() extension function.
@@ -97,10 +97,7 @@ class DebuggerGetTargetsFunction : public DebuggerFunction {
   ~DebuggerGetTargetsFunction() override;
 
   // ExtensionFunction:
-  bool RunAsync() override;
-
- private:
-  void SendTargetList(const content::DevToolsAgentHost::List& target_list);
+  ResponseAction Run() override;
 };
 
 }  // namespace extensions

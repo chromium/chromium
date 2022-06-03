@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+PASS naturalWidth and naturalHeight return correct values for an image without orientation metadata
+PASS naturalWidth and naturalHeight return re-oriented values for an image with orientation metadata
+FAIL naturalWidth and naturalHeight return re-oriented values for an image with orientation metadata even with image-orientation:none assert_equals: expected 144 but got 240
+Harness: the test ran to completion.
+

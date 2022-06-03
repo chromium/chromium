@@ -29,13 +29,13 @@
 
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/modules/webdatabase/database.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_manager.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_task.h"
 #include "third_party/blink/renderer/modules/webdatabase/database_thread.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -69,8 +69,8 @@ namespace blink {
 // 1. "outlive" the ExecutionContext.
 //    - This is needed because the DatabaseContext needs to remove itself from
 //    the
-//      ExecutionContext's ContextLifecycleObserver list and
-//      ContextLifecycleObserver
+//      ExecutionContext's ExecutionContextLifecycleObserver list and
+//      ExecutionContextLifecycleObserver
 //      list. This removal needs to be executed on the script's thread. Hence,
 //      we
 //      rely on the ExecutionContext's shutdown process to call
@@ -99,7 +99,7 @@ DatabaseContext* DatabaseContext::Create(ExecutionContext* context) {
 }
 
 DatabaseContext::DatabaseContext(ExecutionContext* context)
-    : ContextLifecycleObserver(context),
+    : ExecutionContextLifecycleObserver(context),
       has_open_databases_(false),
       has_requested_termination_(false) {
   DCHECK(IsMainThread());
@@ -115,9 +115,9 @@ DatabaseContext::~DatabaseContext() {
   DatabaseManager::Manager().DidDestructDatabaseContext();
 }
 
-void DatabaseContext::Trace(blink::Visitor* visitor) {
+void DatabaseContext::Trace(Visitor* visitor) const {
   visitor->Trace(database_thread_);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 // This is called if the associated ExecutionContext is destructing while
@@ -125,7 +125,7 @@ void DatabaseContext::Trace(blink::Visitor* visitor) {
 // To do this, we stop the database and let everything shutdown naturally
 // because the database closing process may still make use of this context.
 // It is not safe to just delete the context here.
-void DatabaseContext::ContextDestroyed(ExecutionContext*) {
+void DatabaseContext::ContextDestroyed() {
   StopDatabases();
   DatabaseManager::Manager().UnregisterDatabaseContext(this);
 }
@@ -175,7 +175,7 @@ void DatabaseContext::StopDatabases() {
 }
 
 bool DatabaseContext::AllowDatabaseAccess() const {
-  return To<Document>(GetExecutionContext())->IsActive();
+  return To<LocalDOMWindow>(GetExecutionContext())->document()->IsActive();
 }
 
 const SecurityOrigin* DatabaseContext::GetSecurityOrigin() const {

@@ -10,6 +10,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/circular_deque.h"
+#include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
@@ -31,7 +32,7 @@ class CanonicalCookie;
 
 namespace android_webview {
 
-// CookieManager creates and owns Webview's CookieStore, in addition to handling
+// CookieManager creates and owns WebView's CookieStore, in addition to handling
 // calls into the CookieStore from Java.
 //
 // Since Java calls can be made on the IO Thread, and must synchronously return
@@ -44,10 +45,11 @@ namespace android_webview {
 // Network Service is initialized. 2) The CookieManager is not used until after
 // the Network Service is initialized (during content initialization).
 //
-// Case 2) is straightforward: Once the NetworkContext and the
-// network::mojom::CookieManager are created, the AwContentBrowserClient calls
-// PassMojoCookieManagerToAwCookieManager, which ends up calling
-// CookieManager::SwapMojoCookieManagerAsync, setting the |mojo_cookie_manager_|
+// Case 2) is straightforward: When the
+// ContentBrowserClient::ConfigureNetworkContextParams was called
+// AwContentBrowserClient will finally call
+// CookieManager::SwapMojoCookieManagerAsync by calling
+// CookieManager::SetMojoCookieManager, setting the |mojo_cookie_manager_|
 // member of CookieManager (the AW one; it's an unfortunately overloaded term).
 //
 // In case 1), the CookieManager creates a provisional CookieStore
@@ -84,6 +86,9 @@ class CookieManager {
  public:
   static CookieManager* GetInstance();
 
+  CookieManager(const CookieManager&) = delete;
+  CookieManager& operator=(const CookieManager&) = delete;
+
   // Passes a |cookie_manager_remote|, which this will use for CookieManager
   // APIs going forward. Only called in the Network Service path, with the
   // intention this is called once during content initialization (when we create
@@ -92,6 +97,14 @@ class CookieManager {
   void SetMojoCookieManager(
       mojo::PendingRemote<network::mojom::CookieManager> cookie_manager_remote);
 
+  // Configure whether or not this CookieManager should workaround cookies
+  // specified for insecure URLs with the 'Secure' directive. See
+  // |workaround_http_secure_cookies_| for the default behavior. This should not
+  // be needed in production, as the default is the desirable behavior.
+  void SetWorkaroundHttpSecureCookiesForTesting(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& obj,
+      jboolean allow);
   void SetShouldAcceptCookies(JNIEnv* env,
                               const base::android::JavaParamRef<jobject>& obj,
                               jboolean accept);
@@ -183,14 +196,18 @@ class CookieManager {
                        const std::string& value,
                        base::OnceCallback<void(bool)> callback);
 
+  void SetWorkaroundHttpSecureCookiesAsyncHelper(bool allow,
+                                                 base::OnceClosure complete);
+
   void GotCookies(const std::vector<net::CanonicalCookie>& cookies);
   void GetCookieListAsyncHelper(const GURL& host,
                                 net::CookieList* result,
                                 base::OnceClosure complete);
-  void GetCookieListCompleted(base::OnceClosure complete,
-                              net::CookieList* result,
-                              const net::CookieStatusList& value,
-                              const net::CookieStatusList& excluded_cookies);
+  void GetCookieListCompleted(
+      base::OnceClosure complete,
+      net::CookieList* result,
+      const net::CookieAccessResultList& value,
+      const net::CookieAccessResultList& excluded_cookies);
 
   void RemoveSessionCookiesHelper(base::OnceCallback<void(bool)> callback);
   void RemoveAllCookiesHelper(base::OnceCallback<void(bool)> callback);
@@ -232,6 +249,12 @@ class CookieManager {
   // |cookie_store_task_runner_|.
   bool cookie_store_created_;
 
+  // Whether or not to workaround 'Secure' cookies set on insecure URLs. See
+  // MaybeFixUpSchemeForSecureCookieAndGetSameSite. Only accessed on
+  // |cookie_store_task_runner_|. Defaults to false starting for apps targeting
+  // >= R.
+  bool workaround_http_secure_cookies_;
+
   base::Thread cookie_store_client_thread_;
   base::Thread cookie_store_backend_thread_;
 
@@ -251,8 +274,6 @@ class CookieManager {
 
   // The CookieManager shared with the NetworkContext.
   mojo::Remote<network::mojom::CookieManager> mojo_cookie_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(CookieManager);
 };
 
 }  // namespace android_webview

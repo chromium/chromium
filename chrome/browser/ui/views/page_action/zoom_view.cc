@@ -13,11 +13,17 @@
 #include "components/zoom/zoom_controller.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/size.h"
 
-ZoomView::ZoomView(PageActionIconView::Delegate* delegate)
-    : PageActionIconView(nullptr, 0, delegate), icon_(&kZoomMinusIcon) {
+ZoomView::ZoomView(IconLabelBubbleView::Delegate* icon_label_bubble_delegate,
+                   PageActionIconView::Delegate* page_action_icon_delegate)
+    : PageActionIconView(nullptr,
+                         0,
+                         icon_label_bubble_delegate,
+                         page_action_icon_delegate),
+      icon_(&kZoomMinusIcon) {
   SetVisible(false);
 }
 
@@ -28,7 +34,7 @@ void ZoomView::UpdateImpl() {
 }
 
 bool ZoomView::ShouldBeVisible(bool can_show_bubble) const {
-  if (delegate()->IsLocationBarUserInputInProgress())
+  if (delegate()->ShouldHidePageActionIcons())
     return false;
 
   if (can_show_bubble)
@@ -70,8 +76,7 @@ void ZoomView::ZoomChangedForActiveTab(bool can_show_bubble) {
                                    zoom::ZoomController::ZOOM_BELOW_DEFAULT_ZOOM
                 ? &kZoomMinusIcon
                 : &kZoomPlusIcon;
-    if (GetNativeTheme())
-      UpdateIconImage();
+    UpdateIconImage();
 
     // Visibility must be enabled before the bubble is shown to ensure the
     // bubble anchors correctly.
@@ -95,7 +100,7 @@ void ZoomView::OnExecuting(PageActionIconView::ExecuteSource source) {
   ZoomBubbleView::ShowBubble(GetWebContents(), ZoomBubbleView::USER_GESTURE);
 }
 
-views::BubbleDialogDelegateView* ZoomView::GetBubble() const {
+views::BubbleDialogDelegate* ZoomView::GetBubble() const {
   return ZoomBubbleView::GetZoomBubble();
 }
 
@@ -103,7 +108,10 @@ const gfx::VectorIcon& ZoomView::GetVectorIcon() const {
   return *icon_;
 }
 
-base::string16 ZoomView::GetTextForTooltipAndAccessibleName() const {
+std::u16string ZoomView::GetTextForTooltipAndAccessibleName() const {
   return l10n_util::GetStringFUTF16(IDS_TOOLTIP_ZOOM,
                                     base::FormatPercent(current_zoom_percent_));
 }
+
+BEGIN_METADATA(ZoomView, PageActionIconView)
+END_METADATA

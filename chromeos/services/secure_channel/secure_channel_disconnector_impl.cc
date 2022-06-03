@@ -5,7 +5,6 @@
 #include "chromeos/services/secure_channel/secure_channel_disconnector_impl.h"
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
 namespace chromeos {
@@ -17,13 +16,12 @@ SecureChannelDisconnectorImpl::Factory*
     SecureChannelDisconnectorImpl::Factory::test_factory_ = nullptr;
 
 // static
-SecureChannelDisconnectorImpl::Factory*
-SecureChannelDisconnectorImpl::Factory::Get() {
+std::unique_ptr<SecureChannelDisconnector>
+SecureChannelDisconnectorImpl::Factory::Create() {
   if (test_factory_)
-    return test_factory_;
+    return test_factory_->CreateInstance();
 
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new SecureChannelDisconnectorImpl());
 }
 
 // static
@@ -33,11 +31,6 @@ void SecureChannelDisconnectorImpl::Factory::SetFactoryForTesting(
 }
 
 SecureChannelDisconnectorImpl::Factory::~Factory() = default;
-
-std::unique_ptr<SecureChannelDisconnector>
-SecureChannelDisconnectorImpl::Factory::BuildInstance() {
-  return base::WrapUnique(new SecureChannelDisconnectorImpl());
-}
 
 SecureChannelDisconnectorImpl::SecureChannelDisconnectorImpl() = default;
 

@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
@@ -39,7 +39,7 @@ const char kAppUrlHost[] = "apps.apple.com";
 
 const char kITunesProductIdPrefix[] = "id";
 const char kITunesAppPathIdentifier[] = "app";
-const size_t kITunesUrlPathMinComponentsCount = 3;
+const size_t kITunesUrlPathMinComponentsCount = 2;
 const size_t kITunesUrlRegionComponentDefaultIndex = 0;
 const size_t kITunesUrlMediaTypeComponentDefaultIndex = 1;
 
@@ -95,7 +95,7 @@ bool ITunesUrlsHandlerTabHelper::CanHandleUrl(const GURL& url) {
   if (!IsITunesProductUrl(url))
     return false;
   // Valid iTunes URL structure:
-  // HOST/OPTIONAL_REGION_CODE/MEDIA_TYPE/MEDIA_NAME/ID?PARAMETERS
+  // HOST/OPTIONAL_REGION_CODE/MEDIA_TYPE/OPTIONAL_MEDIA_NAME/ID?PARAMETERS
   // Check the URL media type, to determine if it is supported.
   std::vector<std::string> path_components = base::SplitString(
       url.path(), "/", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
@@ -111,23 +111,27 @@ bool ITunesUrlsHandlerTabHelper::CanHandleUrl(const GURL& url) {
   return path_components[media_type_index] == kITunesAppPathIdentifier;
 }
 
-bool ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
+void ITunesUrlsHandlerTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
-    const web::WebStatePolicyDecider::RequestInfo& request_info) {
+    web::WebStatePolicyDecider::RequestInfo request_info,
+    web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Don't Handle URLS in Off The record mode as this will open StoreKit with
   // Users' iTunes account. Also don't Handle navigations in iframe because they
   // may be spam, and they will be handled by other policy deciders.
   if (web_state()->GetBrowserState()->IsOffTheRecord() ||
       !request_info.target_frame_is_main) {
-    return true;
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
   }
 
   GURL request_url = net::GURLWithNSURL(request.URL);
-  if (!CanHandleUrl(request_url))
-    return true;
+  if (!CanHandleUrl(request_url)) {
+    return std::move(callback).Run(
+        web::WebStatePolicyDecider::PolicyDecision::Allow());
+  }
 
   HandleITunesUrl(request_url);
-  return false;
+  std::move(callback).Run(web::WebStatePolicyDecider::PolicyDecision::Cancel());
 }
 
 // private

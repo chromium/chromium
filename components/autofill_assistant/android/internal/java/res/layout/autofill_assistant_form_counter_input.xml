@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginStart="@dimen/autofill_assistant_bottombar_horizontal_spacing"
+    android:layout_marginEnd="12dp"
+    android:orientation="vertical">
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/autofill_assistant_form_counter_button_padding"
+        android:layout_marginBottom="4dp"
+        android:textAppearance="@style/TextAppearance.TextAccentMediumThick.Secondary"/>
+    <LinearLayout
+        android:id="@+id/expand_label_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_marginEnd="@dimen/autofill_assistant_form_counter_button_padding"
+        android:orientation="horizontal"
+        android:visibility="gone"
+        tools:ignore="UseCompoundDrawables">
+        <TextView
+            android:id="@+id/expand_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Blue"/>
+        <TextView
+            android:id="@+id/minimize_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.TextMedium.Blue"/>
+        <org.chromium.ui.widget.ChromeImageView
+            android:id="@+id/chevron"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:tint="@color/blue_when_enabled"
+            app:srcCompat="@drawable/ic_expand_more_black_24dp"
+            tools:ignore="ContentDescription"/>
+    </LinearLayout>
+</LinearLayout>

@@ -66,8 +66,7 @@ class UrlKeyedDataCollectionConsentHelperTest
 TEST_F(UrlKeyedDataCollectionConsentHelperTest, AnonymizedDataCollection) {
   std::unique_ptr<UrlKeyedDataCollectionConsentHelper> helper =
       UrlKeyedDataCollectionConsentHelper::
-          NewAnonymizedDataCollectionConsentHelper(&pref_service_,
-                                                   &sync_service_);
+          NewAnonymizedDataCollectionConsentHelper(&pref_service_);
   helper->AddObserver(this);
   EXPECT_FALSE(helper->IsEnabled());
   EXPECT_TRUE(state_changed_notifications_.empty());

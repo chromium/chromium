@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<style>
+div {
+  font-family: Times;
+  font-size: 100px;
+  line-height: 1;
+  font-variant-ligatures: discretionary-ligatures;
+  width: 300px;
+}
+div::selection {
+  color: white;
+  background: blue;
+}
+.small { font-size: 10%; }
+</style>
+<body>
+  <div id="target"><span class="small">x </span>ffi f ff fi ffi ffi</div>
+<script>
+select(0, 1);
+function select(start_offset, end_offset) {
+  let target = document.getElementById('target');
+  let textNode = target.lastChild;
+  let range = document.createRange();
+  range.setStart(textNode, start_offset);
+  range.setEnd(textNode, end_offset);
+  getSelection().addRange(range);
+}
+</script>
+</body>

@@ -12,13 +12,19 @@
 #include <memory>
 #include <vector>
 
+#include "base/at_exit.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/message_loop/message_pump_type.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/test/icu_test_util.h"
+#include "base/test/mock_callback.h"
+#include "base/test/task_environment.h"
+#include "base/test/test_timeouts.h"
 #include "mojo/core/embedder/embedder.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/ozone/platform/wayland/host/wayland_buffer_manager_host.h"
@@ -33,36 +39,73 @@ using testing::_;
 
 namespace {
 
+using TerminateGpuCallback = base::OnceCallback<void(std::string)>;
+
 // Copied from ui/ozone/test/mock_platform_window_delegate.h to avoid
 // dependency from the whole library (it causes link problems).
 class MockPlatformWindowDelegate : public ui::PlatformWindowDelegate {
  public:
   MockPlatformWindowDelegate() = default;
+
+  MockPlatformWindowDelegate(const MockPlatformWindowDelegate&) = delete;
+  MockPlatformWindowDelegate& operator=(const MockPlatformWindowDelegate&) =
+      delete;
+
   ~MockPlatformWindowDelegate() = default;
 
-  MOCK_METHOD1(OnBoundsChanged, void(const gfx::Rect& new_bounds));
+  MOCK_METHOD1(OnBoundsChanged, void(const BoundsChange& change));
   MOCK_METHOD1(OnDamageRect, void(const gfx::Rect& damaged_region));
   MOCK_METHOD1(DispatchEvent, void(ui::Event* event));
   MOCK_METHOD0(OnCloseRequest, void());
   MOCK_METHOD0(OnClosed, void());
-  MOCK_METHOD1(OnWindowStateChanged, void(ui::PlatformWindowState new_state));
+  MOCK_METHOD2(OnWindowStateChanged,
+               void(ui::PlatformWindowState old_state,
+                    ui::PlatformWindowState new_state));
   MOCK_METHOD0(OnLostCapture, void());
   MOCK_METHOD1(OnAcceleratedWidgetAvailable,
                void(gfx::AcceleratedWidget widget));
+  MOCK_METHOD0(OnWillDestroyAcceleratedWidget, void());
   MOCK_METHOD0(OnAcceleratedWidgetDestroyed, void());
   MOCK_METHOD1(OnActivationChanged, void(bool active));
+  MOCK_METHOD0(OnMouseEnter, void());
+};
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPlatformWindowDelegate);
+struct Environment {
+  Environment()
+      : task_environment((base::CommandLine::Init(0, nullptr),
+                          TestTimeouts::Initialize(),
+                          base::test::TaskEnvironment::MainThreadType::UI)) {
+    logging::SetMinLogLevel(logging::LOG_FATAL);
+
+    mojo::core::Init();
+  }
+
+  void SetTerminateGpuCallback(ui::WaylandBufferManagerHost* host) {
+    DCHECK(host);
+    host->SetTerminateGpuCallback(base::BindOnce(
+        &Environment::OnTerminateCallbackFired, base::Unretained(this)));
+  }
+
+  void OnTerminateCallbackFired(std::string message) { terminated = true; }
+
+  base::test::TaskEnvironment task_environment;
+  bool terminated = false;
 };
 
 }  // namespace
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
+  static Environment env;
+  DCHECK(!env.terminated);
+
+  // Required for ICU initialization.
+  static base::NoDestructor<base::AtExitManager> exit_manager;
   FuzzedDataProvider data_provider(data, size);
 
-  mojo::core::Init();
   base::CommandLine::Init(0, nullptr);
+
+  // Required for base::FormatNumber that WaylandBufferManagerHost uses.
+  base::test::InitializeICUForTesting();
 
   std::vector<uint32_t> known_fourccs{
       DRM_FORMAT_R8,          DRM_FORMAT_GR88,        DRM_FORMAT_ABGR8888,
@@ -70,21 +113,17 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       DRM_FORMAT_XRGB2101010, DRM_FORMAT_XBGR2101010, DRM_FORMAT_RGB565,
       DRM_FORMAT_NV12,        DRM_FORMAT_YVU420};
 
-  base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
-
   wl::TestWaylandServerThread server;
-  CHECK(server.Start(6));
+  CHECK(server.Start({.shell_version = wl::ShellVersion::kV6}));
 
   std::unique_ptr<ui::WaylandConnection> connection =
       std::make_unique<ui::WaylandConnection>();
   CHECK(connection->Initialize());
 
-  auto screen = connection->wayland_output_manager()->CreateWaylandScreen(
-      connection.get());
+  auto screen = connection->wayland_output_manager()->CreateWaylandScreen();
+  connection->wayland_output_manager()->InitWaylandScreen(screen.get());
 
   MockPlatformWindowDelegate delegate;
-  std::unique_ptr<ui::WaylandWindow> window =
-      std::make_unique<ui::WaylandWindow>(&delegate, connection.get());
   gfx::AcceleratedWidget widget = gfx::kNullAcceleratedWidget;
 
   EXPECT_CALL(delegate, OnAcceleratedWidgetAvailable(_))
@@ -92,11 +131,13 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   ui::PlatformWindowInitProperties properties;
   properties.bounds = gfx::Rect(0, 0, 800, 600);
   properties.type = ui::PlatformWindowType::kWindow;
-  CHECK(window->Initialize(std::move(properties)));
+  std::unique_ptr<ui::WaylandWindow> window = ui::WaylandWindow::Create(
+      &delegate, connection.get(), std::move(properties));
+
   CHECK_NE(widget, gfx::kNullAcceleratedWidget);
 
   // Wait until everything is initialised.
-  base::RunLoop().RunUntilIdle();
+  env.task_environment.RunUntilIdle();
 
   base::FilePath temp_dir, temp_path;
   base::ScopedFD fd =
@@ -113,7 +154,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   // real system so here is a hard limit of 500.
   const uint32_t kPlaneCount = data_provider.ConsumeIntegralInRange(1U, 500U);
   const uint32_t kFormat = known_fourccs[data_provider.ConsumeIntegralInRange(
-      0UL, known_fourccs.size() - 1)];
+      0UL, static_cast<unsigned long>(known_fourccs.size() - 1))];
 
   std::vector<uint32_t> strides(kPlaneCount);
   std::vector<uint32_t> offsets(kPlaneCount);
@@ -129,23 +170,29 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   const uint32_t kBufferId = 1;
 
-  EXPECT_CALL(*server.zwp_linux_dmabuf_v1(), CreateParams(_, _, _));
   auto* manager_host = connection->buffer_manager_host();
+  env.SetTerminateGpuCallback(manager_host);
   manager_host->CreateDmabufBasedBuffer(
-      widget, mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(fd))),
-      buffer_size, strides, offsets, modifiers, kFormat, kPlaneCount,
-      kBufferId);
+      mojo::PlatformHandle(std::move(fd)), buffer_size, strides, offsets,
+      modifiers, kFormat, kPlaneCount, kBufferId);
 
   // Wait until the buffers are created.
-  base::RunLoop().RunUntilIdle();
+  env.task_environment.RunUntilIdle();
+
+  // If the |manager_host| fires the terminate gpu callback, we need to set the
+  // callback again.
+  if (env.terminated)
+    env.SetTerminateGpuCallback(manager_host);
 
   manager_host->DestroyBuffer(widget, kBufferId);
-
   // Wait until the buffers are destroyed.
-  base::RunLoop().RunUntilIdle();
+  env.task_environment.RunUntilIdle();
 
   // Pause the server so it is not running when mock expectations are validated.
   server.Pause();
+
+  // Reset the value as |env| is a static object.
+  env.terminated = false;
 
   return 0;
 }

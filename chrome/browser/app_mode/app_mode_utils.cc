@@ -6,12 +6,11 @@
 
 #include <stddef.h>
 
+#include "base/check.h"
 #include "base/command_line.h"
-#include "base/logging.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/common/chrome_switches.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chrome {
 
@@ -19,11 +18,11 @@ namespace {
 
 // If the device is running in forced app mode, returns the ID of the app for
 // which the device is forced in app mode. Otherwise, returns nullopt.
-base::Optional<std::string> GetForcedAppModeApp() {
+absl::optional<std::string> GetForcedAppModeApp() {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kForceAppMode) ||
       !command_line->HasSwitch(switches::kAppId)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   return command_line->GetSwitchValueASCII(switches::kAppId);
@@ -31,10 +30,10 @@ base::Optional<std::string> GetForcedAppModeApp() {
 
 }  // namespace
 
-bool IsCommandAllowedInAppMode(int command_id) {
+bool IsCommandAllowedInAppMode(int command_id, bool is_popup) {
   DCHECK(IsRunningInForcedAppMode());
 
-  const int kAllowed[] = {
+  constexpr int kAllowed[] = {
       IDC_BACK,
       IDC_FORWARD,
       IDC_RELOAD,
@@ -50,10 +49,15 @@ bool IsCommandAllowedInAppMode(int command_id) {
       IDC_ZOOM_MINUS,
   };
 
-  for (size_t i = 0; i < base::size(kAllowed); ++i) {
-    if (kAllowed[i] == command_id)
-      return true;
-  }
+  constexpr int kAllowedPopup[] = {IDC_CLOSE_TAB};
+
+  if (std::find(std::cbegin(kAllowed), std::cend(kAllowed), command_id) !=
+      std::cend(kAllowed))
+    return true;
+  if (is_popup &&
+      std::find(std::cbegin(kAllowedPopup), std::cend(kAllowedPopup),
+                command_id) != std::cend(kAllowedPopup))
+    return true;
 
   return false;
 }
@@ -65,17 +69,14 @@ bool IsRunningInAppMode() {
 }
 
 bool IsRunningInForcedAppMode() {
-  return GetForcedAppModeApp().has_value() ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kForceAndroidAppMode) ||
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kForceWebAppMode);
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kForceAppMode);
 }
 
 bool IsRunningInForcedAppModeForApp(const std::string& app_id) {
   DCHECK(!app_id.empty());
 
-  base::Optional<std::string> forced_app_mode_app = GetForcedAppModeApp();
+  absl::optional<std::string> forced_app_mode_app = GetForcedAppModeApp();
   if (!forced_app_mode_app.has_value())
     return false;
 

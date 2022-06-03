@@ -24,6 +24,23 @@ class TaskRunner {
     virtual void Run() = 0;
   };
 
+  // This class is intended for use with base callback type. A template has been
+  // used to avoid introducing a hard dependency on Chromium base. It is used to
+  // convert a chromium-style callback to a Task as defined above.
+  template <typename T>
+  class CallbackTask : public Task {
+   public:
+    CallbackTask(T callback) : callback_(std::move(callback)) {}
+
+    ~CallbackTask() override = default;
+
+   private:
+    // TaskRunner::Task overrides:
+    void Run() override { std::move(callback_).Run(); }
+
+    T callback_;
+  };
+
   // Posts a task to the thread's task queue.  Delay of 0 could mean task
   // runs immediately (within the call to PostTask, if it's called on the
   // target thread) but there also could be some delay (the task could be added

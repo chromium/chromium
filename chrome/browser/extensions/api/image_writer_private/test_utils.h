@@ -14,6 +14,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/image_writer_utility_client.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -21,7 +22,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/disks/mock_disk_mount_manager.h"
 #endif
@@ -60,7 +61,7 @@ class MockOperationManager : public OperationManager {
                              const std::string& error_message));
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // A fake for the DiskMountManager that will successfully call the unmount
 // callback.
 class FakeDiskMountManager : public chromeos::disks::MockDiskMountManager {
@@ -90,19 +91,19 @@ class FakeImageWriterClient : public ImageWriterUtilityClient {
  public:
   FakeImageWriterClient();
 
-  void Write(const ProgressCallback& progress_callback,
-             const SuccessCallback& success_callback,
-             const ErrorCallback& error_callback,
+  void Write(ProgressCallback progress_callback,
+             SuccessCallback success_callback,
+             ErrorCallback error_callback,
              const base::FilePath& source,
              const base::FilePath& target) override;
 
-  void Verify(const ProgressCallback& progress_callback,
-              const SuccessCallback& success_callback,
-              const ErrorCallback& error_callback,
+  void Verify(ProgressCallback progress_callback,
+              SuccessCallback success_callback,
+              ErrorCallback error_callback,
               const base::FilePath& source,
               const base::FilePath& target) override;
 
-  void Cancel(const CancelCallback& cancel_callback) override;
+  void Cancel(CancelCallback cancel_callback) override;
 
   void Shutdown() override;
 
@@ -135,8 +136,8 @@ class FakeImageWriterClient : public ImageWriterUtilityClient {
   ErrorCallback error_callback_;
   CancelCallback cancel_callback_;
 
-  base::Optional<SimulateProgressInfo> simulate_on_write_;
-  base::Optional<SimulateProgressInfo> simulate_on_verify_;
+  absl::optional<SimulateProgressInfo> simulate_on_write_;
+  absl::optional<SimulateProgressInfo> simulate_on_verify_;
 };
 
 class ImageWriterTestUtils {
@@ -144,7 +145,7 @@ class ImageWriterTestUtils {
   ImageWriterTestUtils();
   virtual ~ImageWriterTestUtils();
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   using UtilityClientCreationCallback =
       base::OnceCallback<void(FakeImageWriterClient*)>;
   void RunOnUtilityClientCreation(UtilityClientCreationCallback callback);
@@ -185,7 +186,7 @@ class ImageWriterTestUtils {
   base::FilePath test_image_path_;
   base::FilePath test_device_path_;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<FakeImageWriterClient> client_;
   ImageWriterUtilityClient::ImageWriterUtilityClientFactory
       utility_client_factory_;
@@ -206,6 +207,8 @@ class ImageWriterUnitTestBase : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 };
+
+bool GetTestDataDirectory(base::FilePath* path);
 
 }  // namespace image_writer
 }  // namespace extensions

@@ -11,7 +11,7 @@ namespace ui {
 
 // Notifies the delegate about changed workspace. The delegate must be set in
 // WorkspaceExtension to be able to receive these changes.
-class COMPONENT_EXPORT(EXTENSIONS) WorkspaceExtensionDelegate {
+class COMPONENT_EXPORT(PLATFORM_WINDOW) WorkspaceExtensionDelegate {
  public:
   // Notifies the delegate if the window has changed the workspace it is
   // located in.

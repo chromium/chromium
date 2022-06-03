@@ -15,9 +15,6 @@ namespace blink {
 
 struct LogicalOffset;
 
-// TODO(wangxianzhu): Make it a constexpr when LayoutUnit allows it.
-#define kIndefiniteSize LayoutUnit(-1)
-
 // LogicalSize is the size of rect (typically a fragment) in the logical
 // coordinate system.
 // For more information about physical and logical coordinate systems, see:
@@ -27,7 +24,7 @@ struct CORE_EXPORT LogicalSize {
   constexpr LogicalSize(LayoutUnit inline_size, LayoutUnit block_size)
       : inline_size(inline_size), block_size(block_size) {}
 
-  // For testing only. It's defined in core/testing/core_unit_test_helpers.h.
+  // For testing only. It's defined in core/testing/core_unit_test_helper.h.
   inline LogicalSize(int inline_size, int block_size);
 
   // Use ToPhysicalSize to convert to a physical size.
@@ -47,7 +44,7 @@ struct CORE_EXPORT LogicalSize {
     return inline_size == LayoutUnit() || block_size == LayoutUnit();
   }
 
-  void Transpose() { std::swap(inline_size, block_size); }
+  static LogicalSize AspectRatioFromFloatSize(const FloatSize&);
 };
 
 inline LogicalSize& operator-=(LogicalSize& a, const NGBoxStrut& b) {

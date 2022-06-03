@@ -5,15 +5,12 @@
 #ifndef CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_IMPL_H_
 #define CHROMEOS_SERVICES_MULTIDEVICE_SETUP_HOST_BACKEND_DELEGATE_IMPL_H_
 
-#include "base/callback_forward.h"
-#include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
 #include "chromeos/services/multidevice_setup/host_backend_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
@@ -31,21 +28,30 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetFactoryForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<HostBackendDelegate> BuildInstance(
+    static std::unique_ptr<HostBackendDelegate> Create(
         EligibleHostDevicesProvider* eligible_host_devices_provider,
         PrefService* pref_service,
         device_sync::DeviceSyncClient* device_sync_client,
         std::unique_ptr<base::OneShotTimer> timer =
             std::make_unique<base::OneShotTimer>());
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<HostBackendDelegate> CreateInstance(
+        EligibleHostDevicesProvider* eligible_host_devices_provider,
+        PrefService* pref_service,
+        device_sync::DeviceSyncClient* device_sync_client,
+        std::unique_ptr<base::OneShotTimer> timer) = 0;
 
    private:
     static Factory* test_factory_;
   };
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
+
+  HostBackendDelegateImpl(const HostBackendDelegateImpl&) = delete;
+  HostBackendDelegateImpl& operator=(const HostBackendDelegateImpl&) = delete;
 
   ~HostBackendDelegateImpl() override;
 
@@ -58,11 +64,11 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
 
   // HostBackendDelegate:
   void AttemptToSetMultiDeviceHostOnBackend(
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device) override;
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device) override;
   bool HasPendingHostRequest() override;
-  base::Optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
+  absl::optional<multidevice::RemoteDeviceRef> GetPendingHostRequest()
       const override;
-  base::Optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
+  absl::optional<multidevice::RemoteDeviceRef> GetMultiDeviceHostFromBackend()
       const override;
 
   // DeviceSyncClient::Observer:
@@ -79,11 +85,11 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   // in the list of synced devices. If no such device exists, returns null.
   // TODO(https://crbug.com/1019206): When v1 DeviceSync is disabled, only look
   // up by Instance ID since all devices are guaranteed to have one.
-  base::Optional<multidevice::RemoteDeviceRef> FindDeviceById(
+  absl::optional<multidevice::RemoteDeviceRef> FindDeviceById(
       const std::string& id) const;
 
   void AttemptNetworkRequest(bool is_retry);
-  base::Optional<multidevice::RemoteDeviceRef> GetHostFromDeviceSync();
+  absl::optional<multidevice::RemoteDeviceRef> GetHostFromDeviceSync();
   void OnSetHostNetworkRequestFinished(
       multidevice::RemoteDeviceRef device_for_request,
       bool attempted_to_enable,
@@ -95,11 +101,9 @@ class HostBackendDelegateImpl : public HostBackendDelegate,
   std::unique_ptr<base::OneShotTimer> timer_;
 
   // The most-recent snapshot of the host on the back-end.
-  base::Optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
+  absl::optional<multidevice::RemoteDeviceRef> host_from_last_sync_;
 
   base::WeakPtrFactory<HostBackendDelegateImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HostBackendDelegateImpl);
 };
 
 }  // namespace multidevice_setup

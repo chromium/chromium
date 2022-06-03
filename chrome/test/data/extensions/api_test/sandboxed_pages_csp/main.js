@@ -10,12 +10,13 @@ onmessage = function(e) {
   chrome.test.succeed();
 };
 
-var loadIframeContentInSandboxedPage = function(localUrl, remoteUrl) {
+var loadIframeContentInSandboxedPage = function(
+    localUrl, remoteUrl, isManifestV3) {
   var sandboxedFrame = document.createElement('iframe');
   sandboxedFrame.src = 'sandboxed.html';
   sandboxedFrame.onload = function() {
     sandboxedFrame.contentWindow.postMessage(
-        JSON.stringify(['load', localUrl, remoteUrl]), '*');
+        JSON.stringify(['load', localUrl, remoteUrl, isManifestV3]), '*');
     sandboxedFrame.onload = null;
   };
   document.body.appendChild(sandboxedFrame);
@@ -29,7 +30,7 @@ onload = function() {
         var remoteUrl = 'http://localhost:' + config.testServer.port +
             '/extensions/api_test/sandboxed_pages_csp/' + REMOTE_FILE_NAME;
         loadIframeContentInSandboxedPage(
-            LOCAL_FILE_NAME, remoteUrl);
+            LOCAL_FILE_NAME, remoteUrl, config.customArg === 'manifest_v3');
       }
     ]);
   });

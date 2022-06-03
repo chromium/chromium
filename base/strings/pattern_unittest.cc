@@ -37,10 +37,8 @@ TEST(StringUtilTest, MatchPatternTest) {
   EXPECT_FALSE(MatchPattern("\xf4\x90\x80\x80", "\xf4\x90\x80\x80"));
 
   // Test UTF16 character matching.
-  EXPECT_TRUE(MatchPattern(UTF8ToUTF16("www.google.com"),
-                           UTF8ToUTF16("*.com")));
-  EXPECT_TRUE(MatchPattern(UTF8ToUTF16("Hello*1234"),
-                           UTF8ToUTF16("He??o\\*1*")));
+  EXPECT_TRUE(MatchPattern(u"www.google.com", u"*.com"));
+  EXPECT_TRUE(MatchPattern(u"Hello*1234", u"He??o\\*1*"));
 
   // Some test cases that might cause naive implementations to exhibit
   // exponential run time or fail.

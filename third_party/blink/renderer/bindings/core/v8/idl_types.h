@@ -6,146 +6,248 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_IDL_TYPES_H_
 
 #include <type_traits>
-#include "base/optional.h"
+
+#include "base/template_util.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types_base.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
+class EventListener;
 class ScriptPromise;
+class ScriptValue;
 
-// Boolean
+// The type names below are named as "IDL" prefix + Web IDL type name.
+// https://webidl.spec.whatwg.org/#dfn-type-name
+
+// any
+struct IDLAny final : public IDLBaseHelper<ScriptValue> {};
+
+// boolean
 struct IDLBoolean final : public IDLBaseHelper<bool> {};
 
+// Integer types
+
+namespace bindings {
+
+enum class IDLIntegerConvMode {
+  kDefault,
+  kClamp,
+  kEnforceRange,
+};
+
+}  // namespace bindings
+
+template <typename T,
+          bindings::IDLIntegerConvMode mode =
+              bindings::IDLIntegerConvMode::kDefault>
+struct IDLIntegerTypeBase final : public IDLBaseHelper<T> {};
+
 // Integers
-struct IDLByte final : public IDLBaseHelper<int8_t> {};
-struct IDLOctet final : public IDLBaseHelper<uint8_t> {};
-struct IDLShort final : public IDLBaseHelper<int16_t> {};
-struct IDLUnsignedShort final : public IDLBaseHelper<uint16_t> {};
-struct IDLLong final : public IDLBaseHelper<int32_t> {};
-struct IDLUnsignedLong final : public IDLBaseHelper<uint32_t> {};
-struct IDLLongLong final : public IDLBaseHelper<int64_t> {};
-struct IDLUnsignedLongLong final : public IDLBaseHelper<uint64_t> {};
+using IDLByte = IDLIntegerTypeBase<int8_t>;
+using IDLOctet = IDLIntegerTypeBase<uint8_t>;
+using IDLShort = IDLIntegerTypeBase<int16_t>;
+using IDLUnsignedShort = IDLIntegerTypeBase<uint16_t>;
+using IDLLong = IDLIntegerTypeBase<int32_t>;
+using IDLUnsignedLong = IDLIntegerTypeBase<uint32_t>;
+using IDLLongLong = IDLIntegerTypeBase<int64_t>;
+using IDLUnsignedLongLong = IDLIntegerTypeBase<uint64_t>;
 
 // [Clamp] Integers
-struct IDLByteClamp final : public IDLBaseHelper<int8_t> {};
-struct IDLOctetClamp final : public IDLBaseHelper<uint8_t> {};
-struct IDLShortClamp final : public IDLBaseHelper<int16_t> {};
-struct IDLUnsignedShortClamp final : public IDLBaseHelper<uint16_t> {};
-struct IDLLongClamp final : public IDLBaseHelper<int32_t> {};
-struct IDLUnsignedLongClamp final : public IDLBaseHelper<uint32_t> {};
-struct IDLLongLongClamp final : public IDLBaseHelper<int64_t> {};
-struct IDLUnsignedLongLongClamp final : public IDLBaseHelper<uint64_t> {};
+using IDLByteClamp =
+    IDLIntegerTypeBase<int8_t, bindings::IDLIntegerConvMode::kClamp>;
+using IDLOctetClamp =
+    IDLIntegerTypeBase<uint8_t, bindings::IDLIntegerConvMode::kClamp>;
+using IDLShortClamp =
+    IDLIntegerTypeBase<int16_t, bindings::IDLIntegerConvMode::kClamp>;
+using IDLUnsignedShortClamp =
+    IDLIntegerTypeBase<uint16_t, bindings::IDLIntegerConvMode::kClamp>;
+using IDLLongClamp =
+    IDLIntegerTypeBase<int32_t, bindings::IDLIntegerConvMode::kClamp>;
+using IDLUnsignedLongClamp =
+    IDLIntegerTypeBase<uint32_t, bindings::IDLIntegerConvMode::kClamp>;
+using IDLLongLongClamp =
+    IDLIntegerTypeBase<int64_t, bindings::IDLIntegerConvMode::kClamp>;
+using IDLUnsignedLongLongClamp =
+    IDLIntegerTypeBase<uint64_t, bindings::IDLIntegerConvMode::kClamp>;
 
 // [EnforceRange] Integers
-struct IDLByteEnforceRange final : public IDLBaseHelper<int8_t> {};
-struct IDLOctetEnforceRange final : public IDLBaseHelper<uint8_t> {};
-struct IDLShortEnforceRange final : public IDLBaseHelper<int16_t> {};
-struct IDLUnsignedShortEnforceRange final : public IDLBaseHelper<uint16_t> {};
-struct IDLLongEnforceRange final : public IDLBaseHelper<int32_t> {};
-struct IDLUnsignedLongEnforceRange final : public IDLBaseHelper<uint32_t> {};
-struct IDLLongLongEnforceRange final : public IDLBaseHelper<int64_t> {};
-struct IDLUnsignedLongLongEnforceRange final : public IDLBaseHelper<uint64_t> {
+using IDLByteEnforceRange =
+    IDLIntegerTypeBase<int8_t, bindings::IDLIntegerConvMode::kEnforceRange>;
+using IDLOctetEnforceRange =
+    IDLIntegerTypeBase<uint8_t, bindings::IDLIntegerConvMode::kEnforceRange>;
+using IDLShortEnforceRange =
+    IDLIntegerTypeBase<int16_t, bindings::IDLIntegerConvMode::kEnforceRange>;
+using IDLUnsignedShortEnforceRange =
+    IDLIntegerTypeBase<uint16_t, bindings::IDLIntegerConvMode::kEnforceRange>;
+using IDLLongEnforceRange =
+    IDLIntegerTypeBase<int32_t, bindings::IDLIntegerConvMode::kEnforceRange>;
+using IDLUnsignedLongEnforceRange =
+    IDLIntegerTypeBase<uint32_t, bindings::IDLIntegerConvMode::kEnforceRange>;
+using IDLLongLongEnforceRange =
+    IDLIntegerTypeBase<int64_t, bindings::IDLIntegerConvMode::kEnforceRange>;
+using IDLUnsignedLongLongEnforceRange =
+    IDLIntegerTypeBase<uint64_t, bindings::IDLIntegerConvMode::kEnforceRange>;
+
+// Floating point number types
+
+namespace bindings {
+
+enum class IDLFloatingPointNumberConvMode {
+  kDefault,
+  kUnrestricted,
 };
+
+}  // namespace bindings
+
+template <typename T,
+          bindings::IDLFloatingPointNumberConvMode mode =
+              bindings::IDLFloatingPointNumberConvMode::kDefault>
+struct IDLFloatingPointNumberTypeBase final : public IDLBaseHelper<T> {};
+
+// float
+using IDLFloat = IDLFloatingPointNumberTypeBase<float>;
+using IDLUnrestrictedFloat = IDLFloatingPointNumberTypeBase<
+    float,
+    bindings::IDLFloatingPointNumberConvMode::kUnrestricted>;
+
+// double
+using IDLDouble = IDLFloatingPointNumberTypeBase<double>;
+using IDLUnrestrictedDouble = IDLFloatingPointNumberTypeBase<
+    double,
+    bindings::IDLFloatingPointNumberConvMode::kUnrestricted>;
 
 // Strings
-// The "Base" classes are always templatized and require users to specify how JS
-// null and/or undefined are supposed to be handled.
-template <V8StringResourceMode Mode>
-struct IDLByteStringBase final : public IDLBaseHelper<String> {};
-template <V8StringResourceMode Mode>
-struct IDLStringBase final : public IDLBaseHelper<String> {};
-template <V8StringResourceMode Mode>
-struct IDLUSVStringBase final : public IDLBaseHelper<String> {};
 
-// Define non-template versions of the above for simplicity.
-using IDLByteString = IDLByteStringBase<V8StringResourceMode::kDefaultMode>;
-using IDLString = IDLStringBase<V8StringResourceMode::kDefaultMode>;
-using IDLUSVString = IDLUSVStringBase<V8StringResourceMode::kDefaultMode>;
+namespace bindings {
 
-// Nullable strings
-using IDLByteStringOrNull =
-    IDLByteStringBase<V8StringResourceMode::kTreatNullAndUndefinedAsNullString>;
-using IDLStringOrNull =
-    IDLStringBase<V8StringResourceMode::kTreatNullAndUndefinedAsNullString>;
-using IDLUSVStringOrNull =
-    IDLUSVStringBase<V8StringResourceMode::kTreatNullAndUndefinedAsNullString>;
-
-// [TreatNullAs] Strings
-using IDLStringTreatNullAsEmptyString =
-    IDLStringBase<V8StringResourceMode::kTreatNullAsEmptyString>;
-
-// Double
-struct IDLDouble final : public IDLBaseHelper<double> {};
-struct IDLUnrestrictedDouble final : public IDLBaseHelper<double> {};
-
-// Float
-struct IDLFloat final : public IDLBaseHelper<float> {};
-struct IDLUnrestrictedFloat final : public IDLBaseHelper<float> {};
-
-// Nullable Date
-struct IDLDateOrNull final : public IDLBaseHelper<base::Optional<base::Time>> {
+enum class IDLStringConvMode {
+  kDefault,
+  kNullable,
+  kTreatNullAsEmptyString,
 };
 
-// Promise
+}  // namespace bindings
+
+// Base class for IDL string types (except for enumeration types)
+struct IDLStringTypeBase : public IDLBaseHelper<String> {};
+
+// ByteString
+template <bindings::IDLStringConvMode mode>
+struct IDLByteStringBase final : public IDLStringTypeBase {};
+using IDLByteString = IDLByteStringBase<bindings::IDLStringConvMode::kDefault>;
+
+// DOMString
+template <bindings::IDLStringConvMode mode>
+struct IDLStringBase final : public IDLStringTypeBase {};
+using IDLString = IDLStringBase<bindings::IDLStringConvMode::kDefault>;
+using IDLStringTreatNullAsEmptyString =
+    IDLStringBase<bindings::IDLStringConvMode::kTreatNullAsEmptyString>;
+
+// USVString
+template <bindings::IDLStringConvMode mode>
+struct IDLUSVStringBase final : public IDLStringTypeBase {};
+using IDLUSVString = IDLUSVStringBase<bindings::IDLStringConvMode::kDefault>;
+
+// [StringContext=TrustedHTML] DOMString
+template <bindings::IDLStringConvMode mode>
+struct IDLStringStringContextTrustedHTMLBase final : public IDLStringTypeBase {
+};
+using IDLStringStringContextTrustedHTML = IDLStringStringContextTrustedHTMLBase<
+    bindings::IDLStringConvMode::kDefault>;
+using IDLStringStringContextTrustedHTMLTreatNullAsEmptyString =
+    IDLStringStringContextTrustedHTMLBase<
+        bindings::IDLStringConvMode::kTreatNullAsEmptyString>;
+
+// [StringContext=TrustedScript] DOMString
+template <bindings::IDLStringConvMode mode>
+struct IDLStringStringContextTrustedScriptBase final
+    : public IDLStringTypeBase {};
+using IDLStringStringContextTrustedScript =
+    IDLStringStringContextTrustedScriptBase<
+        bindings::IDLStringConvMode::kDefault>;
+using IDLStringStringContextTrustedScriptTreatNullAsEmptyString =
+    IDLStringStringContextTrustedScriptBase<
+        bindings::IDLStringConvMode::kTreatNullAsEmptyString>;
+
+// [StringContext=TrustedScriptURL] USVString
+template <bindings::IDLStringConvMode mode>
+struct IDLUSVStringStringContextTrustedScriptURLBase final
+    : public IDLStringTypeBase {};
+using IDLUSVStringStringContextTrustedScriptURL =
+    IDLUSVStringStringContextTrustedScriptURLBase<
+        bindings::IDLStringConvMode::kDefault>;
+
+// object
+struct IDLObject final : public IDLBaseHelper<ScriptValue> {};
+
+// Promise types
 struct IDLPromise final : public IDLBaseHelper<ScriptPromise> {};
 
-// Sequence
+// Sequence types
 template <typename T>
 struct IDLSequence final : public IDLBase {
-  using ImplType = VectorOf<typename NativeValueTraits<T>::ImplType>;
+  using ImplType =
+      VectorOf<std::remove_pointer_t<typename NativeValueTraits<T>::ImplType>>;
 };
 
-// Record
+// Frozen array types
+template <typename T>
+struct IDLArray final : public IDLBase {
+  using ImplType =
+      VectorOf<std::remove_pointer_t<typename NativeValueTraits<T>::ImplType>>;
+};
+
+// Record types
 template <typename Key, typename Value>
 struct IDLRecord final : public IDLBase {
-  static_assert(std::is_same<Key, IDLByteString>::value ||
-                    std::is_same<Key, IDLString>::value ||
-                    std::is_same<Key, IDLUSVString>::value,
+  static_assert(std::is_same<typename Key::ImplType, String>::value,
                 "IDLRecord keys must be of a WebIDL string type");
+  static_assert(
+      std::is_same<typename NativeValueTraits<Key>::ImplType, String>::value,
+      "IDLRecord keys must be of a WebIDL string type");
 
-  using ImplType =
-      VectorOfPairs<String, typename NativeValueTraits<Value>::ImplType>;
+  using ImplType = VectorOfPairs<
+      String,
+      std::remove_pointer_t<typename NativeValueTraits<Value>::ImplType>>;
 };
 
-// Nullable (T?).
-// https://heycam.github.io/webidl/#idl-nullable-type
-// Types without a built-in notion of nullability are mapped to
-// base::Optional<T>.
-template <typename InnerType, typename = void>
+// Nullable types
+template <typename T>
 struct IDLNullable final : public IDLBase {
- private:
-  using InnerTraits = NativeValueTraits<InnerType>;
-  using InnerResultType =
-      decltype(InnerTraits::NativeValue(std::declval<v8::Isolate*>(),
-                                        v8::Local<v8::Value>(),
-                                        std::declval<ExceptionState&>()));
-
- public:
-  using ResultType = base::Optional<std::decay_t<InnerResultType>>;
-  using ImplType = ResultType;
-  static inline ResultType NullValue() { return base::nullopt; }
+  using ImplType = std::conditional_t<
+      NativeValueTraits<T>::has_null_value,
+      typename NativeValueTraits<T>::ImplType,
+      absl::optional<typename NativeValueTraits<T>::ImplType>>;
 };
-template <typename InnerType>
-struct IDLNullable<InnerType,
-                   decltype(void(NativeValueTraits<InnerType>::NullValue()))>
-    final : public IDLBase {
- private:
-  using InnerTraits = NativeValueTraits<InnerType>;
-  using InnerResultType =
-      decltype(InnerTraits::NativeValue(std::declval<v8::Isolate*>(),
-                                        v8::Local<v8::Value>(),
-                                        std::declval<ExceptionState&>()));
 
- public:
-  using ResultType = InnerResultType;
-  using ImplType = typename InnerTraits::ImplType;
-  static inline ResultType NullValue() { return InnerTraits::NullValue(); }
+// Date
+struct IDLDate final : public IDLBaseHelper<base::Time> {};
+
+// EventHandler types
+struct IDLEventHandler final : public IDLBaseHelper<EventListener*> {};
+struct IDLOnBeforeUnloadEventHandler final
+    : public IDLBaseHelper<EventListener*> {};
+struct IDLOnErrorEventHandler final : public IDLBaseHelper<EventListener*> {};
+
+// IDL optional types
+//
+// IDLOptional represents an optional argument and supports a conversion from
+// ES undefined to "missing" special value.  The "missing" value might be
+// represented in Blink as absl::nullopt, nullptr, 0, etc. depending on a Blink
+// type.
+//
+// Note that IDLOptional is not meant to represent an optional dictionary
+// member.
+template <typename T>
+struct IDLOptional final : public IDLBase {
+  using ImplType = typename NativeValueTraits<T>::ImplType;
 };
 
 }  // namespace blink

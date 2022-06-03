@@ -1,0 +1,35 @@
+<style include="cr-shared-style shared-style">
+  :host {
+    display: flex;
+    flex: 1 0 100%;
+  }
+
+  #listContainer {
+    flex: 3;
+    height: 40vh;
+  }
+</style>
+
+<div class="column">
+  <cr-button on-click="onAddNotificationClick_" class="internals-button">
+    Add Notification
+  </cr-button>
+  <div class="label">
+    <span class="emphasize">Note:</span> A notification should include at least
+    one of Title, Text Content, and Shared Image so that it can be
+    rendered in the UI. When the notification is first sent, the notification
+    ID and Inline Reply ID will not be editable anymore. Sent notifications will
+    have a green background. To update a notification, change the fields and
+    click the Update button. To remove a notification, click the Remove button.
+  </div>
+</div>
+<div class="column" id="listContainer">
+  <template id="notificationList" is="dom-repeat"
+      items="{{notificationList_}}">
+    <notification-form class="notification" notification="{{item}}"
+        forbidden-ids="[[sentNotificationIds_]]"
+        forbidden-inline-reply-ids="[[sentInlineReplyIds_]]"
+        on-remove-notification="onRemoveNotification_">
+    </notification-form>
+  </template>
+</div>

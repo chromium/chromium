@@ -12,6 +12,9 @@ namespace web {
 class WebFrame;
 class WebState;
 
+// Returns the main WebFrame in |web_state|.
+WebFrame* GetMainFrame(WebState* web_state);
+
 // Returns the ID of the main WebFrame in |web_state|.
 // Returns "" if |web_state| does not have a main frame.
 std::string GetMainWebFrameId(WebState* web_state);

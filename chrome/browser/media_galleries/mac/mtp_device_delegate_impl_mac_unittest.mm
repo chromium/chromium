@@ -11,8 +11,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
-#include "base/macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/waitable_event.h"
 #include "chrome/browser/media_galleries/mac/mtp_device_delegate_impl_mac.h"
@@ -85,22 +83,19 @@ const char kTestFileContents[] = "test";
            downloadDelegate:(id<ICCameraDeviceDownloadDelegate>)downloadDelegate
         didDownloadSelector:(SEL)selector
                 contextInfo:(void*)contextInfo {
-  base::FilePath saveDir(base::SysNSStringToUTF8(
-      [[options objectForKey:ICDownloadsDirectoryURL] path]));
+  base::FilePath saveDir(
+      base::SysNSStringToUTF8([options[ICDownloadsDirectoryURL] path]));
   std::string saveAsFilename =
-      base::SysNSStringToUTF8([options objectForKey:ICSaveAsFilename]);
+      base::SysNSStringToUTF8(options[ICSaveAsFilename]);
   // It appears that the ImageCapture library adds an extension to the requested
   // filename. Do that here to require a rename.
   saveAsFilename += ".jpg";
   base::FilePath toBeSaved = saveDir.Append(saveAsFilename);
-  ASSERT_EQ(static_cast<int>(strlen(kTestFileContents)),
-            base::WriteFile(toBeSaved, kTestFileContents,
-                            strlen(kTestFileContents)));
+  ASSERT_TRUE(base::WriteFile(toBeSaved, kTestFileContents));
 
   NSMutableDictionary* returnOptions =
       [NSMutableDictionary dictionaryWithDictionary:options];
-  [returnOptions setObject:base::SysUTF8ToNSString(saveAsFilename)
-                    forKey:ICSavedFilename];
+  returnOptions[ICSavedFilename] = base::SysUTF8ToNSString(saveAsFilename);
 
   [static_cast<NSObject<ICCameraDeviceDownloadDelegate>*>(downloadDelegate)
    didDownloadFile:file
@@ -117,13 +112,13 @@ const char kTestFileContents[] = "test";
   base::scoped_nsobject<NSDate> _date;
 }
 
-- (id)init:(NSString*)name;
+- (instancetype)init:(NSString*)name;
 
 @end
 
 @implementation MockMTPICCameraFile
 
-- (id)init:(NSString*)name {
+- (instancetype)init:(NSString*)name {
   if ((self = [super init])) {
     base::scoped_nsobject<NSDateFormatter> iso8601day(
         [[NSDateFormatter alloc] init]);
@@ -159,6 +154,10 @@ const char kTestFileContents[] = "test";
 class MTPDeviceDelegateImplMacTest : public testing::Test {
  public:
   MTPDeviceDelegateImplMacTest() : camera_(NULL), delegate_(NULL) {}
+
+  MTPDeviceDelegateImplMacTest(const MTPDeviceDelegateImplMacTest&) = delete;
+  MTPDeviceDelegateImplMacTest& operator=(const MTPDeviceDelegateImplMacTest&) =
+      delete;
 
   void SetUp() override {
     storage_monitor::TestStorageMonitor* monitor =
@@ -233,13 +232,11 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
     base::WaitableEvent wait(base::WaitableEvent::ResetPolicy::MANUAL,
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     delegate_->GetFileInfo(
-      path,
-      base::Bind(&MTPDeviceDelegateImplMacTest::OnFileInfo,
-                 base::Unretained(this),
-                 &wait),
-      base::Bind(&MTPDeviceDelegateImplMacTest::OnError,
-                 base::Unretained(this),
-                 &wait));
+        path,
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnFileInfo,
+                       base::Unretained(this), &wait),
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnError,
+                       base::Unretained(this), &wait));
     task_environment_.RunUntilIdle();
     EXPECT_TRUE(wait.IsSignaled());
     *info = info_;
@@ -253,8 +250,8 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
         path,
         base::BindRepeating(&MTPDeviceDelegateImplMacTest::OnReadDir,
                             base::Unretained(this), &wait),
-        base::Bind(&MTPDeviceDelegateImplMacTest::OnError,
-                   base::Unretained(this), &wait));
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnError,
+                       base::Unretained(this), &wait));
     task_environment_.RunUntilIdle();
     wait.Wait();
     return error_;
@@ -267,12 +264,10 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
                              base::WaitableEvent::InitialState::NOT_SIGNALED);
     delegate_->CreateSnapshotFile(
         path, local_path,
-        base::Bind(&MTPDeviceDelegateImplMacTest::OnDownload,
-                   base::Unretained(this),
-                   &wait),
-        base::Bind(&MTPDeviceDelegateImplMacTest::OnError,
-                   base::Unretained(this),
-                   &wait));
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnDownload,
+                       base::Unretained(this), &wait),
+        base::BindOnce(&MTPDeviceDelegateImplMacTest::OnError,
+                       base::Unretained(this), &wait));
     task_environment_.RunUntilIdle();
     wait.Wait();
     return error_;
@@ -294,9 +289,6 @@ class MTPDeviceDelegateImplMacTest : public testing::Test {
 
   base::File::Error overlapped_error_;
   storage::AsyncFileUtil::EntryList overlapped_file_list_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MTPDeviceDelegateImplMacTest);
 };
 
 TEST_F(MTPDeviceDelegateImplMacTest, TestGetRootFileInfo) {
@@ -334,15 +326,15 @@ TEST_F(MTPDeviceDelegateImplMacTest, TestOverlappedReadDir) {
       base::FilePath(kDevicePath),
       base::BindRepeating(&MTPDeviceDelegateImplMacTest::OnReadDir,
                           base::Unretained(this), &wait),
-      base::Bind(&MTPDeviceDelegateImplMacTest::OnError, base::Unretained(this),
-                 &wait));
+      base::BindOnce(&MTPDeviceDelegateImplMacTest::OnError,
+                     base::Unretained(this), &wait));
 
   delegate_->ReadDirectory(
       base::FilePath(kDevicePath),
       base::BindRepeating(&MTPDeviceDelegateImplMacTest::OverlappedOnReadDir,
                           base::Unretained(this), &wait),
-      base::Bind(&MTPDeviceDelegateImplMacTest::OverlappedOnError,
-                 base::Unretained(this), &wait));
+      base::BindOnce(&MTPDeviceDelegateImplMacTest::OverlappedOnError,
+                     base::Unretained(this), &wait));
 
   // Signal the delegate that no files are coming.
   delegate_->NoMoreItems();

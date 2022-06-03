@@ -18,7 +18,7 @@ function createDivWithId(id)
 description("Tests to ensure ShadowRoot.getElementById works even if a ShadowRoot is orphan.");
 
 var host = document.createElement('div');
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 
 var shadowChild1 = createDivWithId('child1');
 var shadowChild2 = createDivWithId('child2');

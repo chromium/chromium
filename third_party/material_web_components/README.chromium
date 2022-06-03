@@ -1,0 +1,18 @@
+Name: Material Web Components
+Short Name: mwc
+URL: https://github.com/material-components/material-components-web-components
+Version: 0.20.0
+License: Apache 2.0
+License File: LICENSE
+Security Critical: no
+
+Description:
+This directory contains a copy of the lit-element framework and some elements
+from the Material Web Components catalog.
+
+Local Modifications:
+- Replaced CRLF line endings with LF line endings in text files.
+- Removed files that are not needed by Chromium, see rsync_exclude.txt.
+
+To restore the contents of the 'components-chromium' directory from scratch, run
+./reproduce.sh on a Linux machine.

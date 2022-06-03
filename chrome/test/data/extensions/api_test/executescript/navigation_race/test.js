@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+function executeCodeInTab(tabId, callback) {
+  chrome.tabs.executeScript(
+      tabId,
+      {code: "document.title = 'hi, I\\'m on ' + location;"},
+      callback);
+}
+
 chrome.test.getConfig(function(config) {
   var path = "/extensions/test_file.txt";
   var urlC = "http://c.com:" + config.testServer.port + path;

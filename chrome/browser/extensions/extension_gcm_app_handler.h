@@ -9,9 +9,8 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "components/gcm_driver/common/gcm_message.h"
 #include "components/gcm_driver/gcm_app_handler.h"
 #include "components/gcm_driver/gcm_client.h"
@@ -43,6 +42,10 @@ class ExtensionGCMAppHandler : public gcm::GCMAppHandler,
                                public ExtensionRegistryObserver {
  public:
   explicit ExtensionGCMAppHandler(content::BrowserContext* context);
+
+  ExtensionGCMAppHandler(const ExtensionGCMAppHandler&) = delete;
+  ExtensionGCMAppHandler& operator=(const ExtensionGCMAppHandler&) = delete;
+
   ~ExtensionGCMAppHandler() override;
 
   // BrowserContextKeyedAPI implementation.
@@ -98,14 +101,12 @@ class ExtensionGCMAppHandler : public gcm::GCMAppHandler,
   Profile* profile_;
 
   // Listen to extension load, unloaded notifications.
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   std::unique_ptr<extensions::GcmJsEventRouter> js_event_router_;
 
   base::WeakPtrFactory<ExtensionGCMAppHandler> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionGCMAppHandler);
 };
 
 }  // namespace extensions

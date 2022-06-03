@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// #import {FakeChromeEvent} from 'chrome://test/fake_chrome_event.js';
+
 /**
  * @fileoverview Fake implementation of chrome.quickUnlockPrivate for testing.
  */
@@ -20,7 +22,7 @@ cr.define('settings', function() {
    * @constructor
    * @implements {QuickUnlockPrivate}
    */
-  function FakeQuickUnlockPrivate() {
+  /* #export */ function FakeQuickUnlockPrivate() {
     /** @type {!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>} */
     this.availableModes = [chrome.quickUnlockPrivate.QuickUnlockMode.PIN];
     /** @type {!Array<!chrome.quickUnlockPrivate.QuickUnlockMode>} */
@@ -30,6 +32,8 @@ cr.define('settings', function() {
     /** @type {!chrome.quickUnlockPrivate.CredentialRequirements} */
     this.credentialRequirements = {minLength: 4, maxLength: 0};
     /** @type {boolean} */ this.lockScreenEnabled = false;
+    /** @type {boolean} */ this.pinAutosubmitEnabled = false;
+    /** @type {boolean} */ this.pinAuthenticationPossible = true;
   }
 
   function clearError_() {
@@ -39,7 +43,7 @@ cr.define('settings', function() {
   FakeQuickUnlockPrivate.prototype = {
     // Public testing methods.
     getFakeToken: function() {
-      return FAKE_TOKEN;
+      return {token: FAKE_TOKEN, lifetime: 0};
     },
 
     // Public fake API implementations.
@@ -49,7 +53,7 @@ cr.define('settings', function() {
      *     !Array<!chrome.quickUnlockPrivate.QuickUnlockMode>):void} onComplete
      */
     getAuthToken: function(password, onComplete) {
-      if (password != this.accountPassword) {
+      if (password !== this.accountPassword) {
         chrome.runtime.lastError = 'Incorrect Password';
         onComplete();
         return;
@@ -65,7 +69,7 @@ cr.define('settings', function() {
      * @param {function(boolean):void}= onComplete
      */
     setLockScreenEnabled: function(token, enabled, onComplete) {
-      if (token != FAKE_TOKEN) {
+      if (token !== FAKE_TOKEN) {
         chrome.runtime.lastError = 'Authentication token invalid';
       } else {
         // Note: Fake does not set pref value.
@@ -74,6 +78,38 @@ cr.define('settings', function() {
       }
       if (onComplete) {
         onComplete();
+      }
+    },
+
+    /**
+     * @override
+     * @param {string} token
+     * @param {string} pin
+     * @param {boolean} enabled
+     * @param {function(boolean):void} onComplete
+     */
+    setPinAutosubmitEnabled: function(token, pin, enabled, onComplete) {
+      if (token !== FAKE_TOKEN) {
+        chrome.runtime.lastError = 'Authentication token invalid';
+      } else {
+        this.pinAutosubmitEnabled = enabled && this.credentials[0] === pin;
+        clearError_();
+      }
+
+      if (onComplete) {
+        // Successful if disabling, or enabling with the correct pin.
+        const success = !enabled || this.pinAutosubmitEnabled;
+        onComplete(success);
+      }
+    },
+
+    /**
+     * @override
+     * @param {function(boolean):void} onComplete
+     */
+    canAuthenticatePin: function(onComplete) {
+      if (onComplete) {
+        onComplete(this.pinAuthenticationPossible);
       }
     },
 
@@ -105,7 +141,7 @@ cr.define('settings', function() {
      * @param {function(boolean):void} onComplete
      */
     setModes: function(token, modes, credentials, onComplete) {
-      if (token != FAKE_TOKEN) {
+      if (token !== FAKE_TOKEN) {
         chrome.runtime.lastError = 'Authentication token invalid';
         onComplete();
         return;
@@ -133,7 +169,7 @@ cr.define('settings', function() {
         errors.push(chrome.quickUnlockPrivate.CredentialProblem.TOO_SHORT);
       }
 
-      if (!!credential && this.credentialRequirements.maxLength != 0 &&
+      if (!!credential && this.credentialRequirements.maxLength !== 0 &&
           credential.length > this.credentialRequirements.maxLength) {
         errors.push(chrome.quickUnlockPrivate.CredentialProblem.TOO_LONG);
       }
@@ -163,5 +199,6 @@ cr.define('settings', function() {
   /** @type {!ChromeEvent} */
   FakeQuickUnlockPrivate.prototype.onActiveModesChanged = new FakeChromeEvent();
 
+  // #cr_define_end
   return {FakeQuickUnlockPrivate: FakeQuickUnlockPrivate};
 });

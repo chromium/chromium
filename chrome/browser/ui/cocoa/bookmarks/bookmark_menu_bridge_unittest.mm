@@ -2,17 +2,23 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
+
 #import <AppKit/AppKit.h>
 
+#include <string>
+
 #include "base/guid.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/ui/cocoa/bookmarks/bookmark_menu_bridge.h"
-#include "chrome/browser/ui/cocoa/test/cocoa_profile_test.h"
+#include "chrome/browser/bookmarks/bookmark_model_factory.h"
+#include "chrome/browser/bookmarks/managed_bookmark_service_factory.h"
+#include "chrome/browser/ui/cocoa/test/cocoa_test_helper.h"
+#include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"
@@ -21,22 +27,33 @@ using base::ASCIIToUTF16;
 using bookmarks::BookmarkModel;
 using bookmarks::BookmarkNode;
 
-// TODO(jrg): see refactor comment in bookmark_bar_state_controller_unittest.mm
-class BookmarkMenuBridgeTest : public CocoaProfileTest {
+class BookmarkMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
   BookmarkMenuBridgeTest() {}
 
-  void SetUp() override {
-     CocoaProfileTest::SetUp();
-     ASSERT_TRUE(profile());
+  BookmarkMenuBridgeTest(const BookmarkMenuBridgeTest&) = delete;
+  BookmarkMenuBridgeTest& operator=(const BookmarkMenuBridgeTest&) = delete;
 
-     menu_.reset([[NSMenu alloc] initWithTitle:@"test"]);
-     bridge_ = std::make_unique<BookmarkMenuBridge>(profile(), menu_);
+  void SetUp() override {
+    BrowserWithTestWindowTest::SetUp();
+
+    bookmarks::test::WaitForBookmarkModelToLoad(
+        BookmarkModelFactory::GetForBrowserContext(profile()));
+    menu_.reset([[NSMenu alloc] initWithTitle:@"test"]);
+
+    bridge_ = std::make_unique<BookmarkMenuBridge>(profile(), menu_);
   }
 
   void TearDown() override {
     bridge_ = nullptr;
-    CocoaProfileTest::TearDown();
+    BrowserWithTestWindowTest::TearDown();
+  }
+
+  TestingProfile::TestingFactories GetTestingFactories() override {
+    return {{BookmarkModelFactory::GetInstance(),
+             BookmarkModelFactory::GetDefaultFactory()},
+            {ManagedBookmarkServiceFactory::GetInstance(),
+             ManagedBookmarkServiceFactory::GetDefaultFactory()}};
   }
 
   void UpdateRootMenu() { bridge_->UpdateMenu(menu_, nullptr); }
@@ -76,7 +93,7 @@ class BookmarkMenuBridgeTest : public CocoaProfileTest {
   std::unique_ptr<BookmarkMenuBridge> bridge_;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(BookmarkMenuBridgeTest);
+  CocoaTestHelper cocoa_test_helper_;
 };
 
 TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
@@ -91,7 +108,7 @@ TEST_F(BookmarkMenuBridgeTest, TestBookmarkMenuAutoSeparator) {
   // a new separator and the new bookmark.
   const BookmarkNode* parent = model->bookmark_bar_node();
   const char* url = "http://www.zim-bop-a-dee.com/";
-  model->AddURL(parent, 0, ASCIIToUTF16("Bookmark"), GURL(url));
+  model->AddURL(parent, 0, u"Bookmark", GURL(url));
   UpdateRootMenu();
   EXPECT_EQ(2, [menu_ numberOfItems]);
   // Remove the new bookmark and reload and we should have 0 items again
@@ -124,7 +141,7 @@ TEST_F(BookmarkMenuBridgeTest, TestClearBookmarkMenu) {
 // Test invalidation
 TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
   BookmarkModel* model = bridge_->GetBookmarkModel();
-  model->AddURL(model->bookmark_bar_node(), 0, base::ASCIIToUTF16("Google"),
+  model->AddURL(model->bookmark_bar_node(), 0, u"Google",
                 GURL("https://google.com"));
   bridge_->BookmarkModelLoaded(model, false);
 
@@ -143,7 +160,7 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
 
   const BookmarkNode* parent = model->bookmark_bar_node();
   const char* url = "http://www.zim-bop-a-dee.com/";
-  model->AddURL(parent, 0, ASCIIToUTF16("Bookmark"), GURL(url));
+  model->AddURL(parent, 0, u"Bookmark", GURL(url));
 
   EXPECT_FALSE(menu_is_valid());
   UpdateRootMenu();
@@ -153,7 +170,7 @@ TEST_F(BookmarkMenuBridgeTest, TestInvalidation) {
 // Test that AddNodeToMenu() properly adds bookmark nodes as menus,
 // including the recursive case.
 TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
-  base::string16 empty;
+  std::u16string empty;
 
   BookmarkModel* model = bridge_->GetBookmarkModel();
   const BookmarkNode* root = model->bookmark_bar_node();
@@ -181,8 +198,7 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
   EXPECT_EQ((NSInteger)(prev_count + 3), [menu_ numberOfItems]);
 
   // Verify the 1st one is there with the right action.
-  NSMenuItem* item =
-      [menu_ itemWithTitle:[NSString stringWithUTF8String:short_url]];
+  NSMenuItem* item = [menu_ itemWithTitle:@(short_url)];
   EXPECT_TRUE(item);
   EXPECT_EQ(@selector(openBookmarkMenuItem:), [item action]);
   EXPECT_EQ(NO, [item hasSubmenu]);
@@ -207,11 +223,11 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
 
   // Make sure a short title looks fine
   NSString* s = [short_item title];
-  EXPECT_NSEQ([NSString stringWithUTF8String:short_url], s);
+  EXPECT_NSEQ(@(short_url), s);
 
   // Long titles are shortened, but only once drawn by AppKit.
   s = [long_item title];
-  EXPECT_NSEQ([NSString stringWithUTF8String:long_url], s);
+  EXPECT_NSEQ(@(long_url), s);
 
   // Confirm tooltips and confirm they are not trimmed (like the item
   // name might be).  Add tolerance for URL fixer-upping;
@@ -227,7 +243,7 @@ TEST_F(BookmarkMenuBridgeTest, TestAddNodeToMenu) {
 
 // Makes sure our internal map of BookmarkNode to NSMenuItem works.
 TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
-  base::string16 empty;
+  std::u16string empty;
   BookmarkModel* model = bridge_->GetBookmarkModel();
   EXPECT_TRUE(model);
   const BookmarkNode* bookmark_bar = model->bookmark_bar_node();
@@ -251,14 +267,14 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   // Since the folder is currently empty, a single node is added saying (empty).
   EXPECT_NSEQ(@"(empty)", [[submenu itemAtIndex:0] title]);
 
-  model->AddURL(folder, 0, ASCIIToUTF16("Test Item"), GURL("http://test"));
+  model->AddURL(folder, 0, u"Test Item", GURL("http://test"));
   UpdateRootMenu();
   // There will be a new submenu each time, Cocoa will update it if needed.
   bridge_->UpdateMenu([[menu_ itemAtIndex:1] submenu], folder);
 
   EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children().front().get()));
 
-  model->AddURL(folder, 1, ASCIIToUTF16("Test 2"), GURL("http://second-test"));
+  model->AddURL(folder, 1, u"Test 2", GURL("http://second-test"));
 
   UpdateRootMenu();
   base::scoped_nsobject<NSMenu> old_menu(
@@ -295,7 +311,7 @@ TEST_F(BookmarkMenuBridgeTest, TestGetMenuItemForNode) {
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), removed_node));
   EXPECT_TRUE(MenuItemForNode(bridge_.get(), folder->children()[0].get()));
 
-  const BookmarkNode empty_node(/*id=*/0, base::GenerateGUID(),
+  const BookmarkNode empty_node(/*id=*/0, base::GUID::GenerateRandomV4(),
                                 GURL("http://no-where/"));
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), &empty_node));
   EXPECT_FALSE(MenuItemForNode(bridge_.get(), nullptr));
@@ -331,8 +347,7 @@ TEST_F(BookmarkMenuBridgeTest, TestFaviconLoading) {
   EXPECT_TRUE(model && root);
 
   const BookmarkNode* node =
-      model->AddURL(root, 0, ASCIIToUTF16("Test Item"),
-                    GURL("http://favicon-test"));
+      model->AddURL(root, 0, u"Test Item", GURL("http://favicon-test"));
   UpdateRootMenu();
   NSMenuItem* item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_TRUE([item image]);
@@ -347,13 +362,12 @@ TEST_F(BookmarkMenuBridgeTest, TestChangeTitle) {
   EXPECT_TRUE(model && root);
 
   const BookmarkNode* node =
-      model->AddURL(root, 0, ASCIIToUTF16("Test Item"),
-                    GURL("http://title-test"));
+      model->AddURL(root, 0, u"Test Item", GURL("http://title-test"));
   UpdateRootMenu();
   NSMenuItem* item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_TRUE([item image]);
 
-  model->SetTitle(node, ASCIIToUTF16("New Title"));
+  model->SetTitle(node, u"New Title");
 
   item = [menu_ itemWithTitle:@"Test Item"];
   EXPECT_FALSE(item);

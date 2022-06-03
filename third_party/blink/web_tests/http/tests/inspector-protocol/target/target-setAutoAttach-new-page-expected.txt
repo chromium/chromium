@@ -1,0 +1,31 @@
+Tests that browser.Target.setAutoAttach() attaches to new page targets.
+Attached to the new page: {
+    method : Target.attachedToTarget
+    params : {
+        sessionId : <string>
+        targetInfo : {
+            attached : true
+            browserContextId : <string>
+            canAccessOpener : false
+            targetId : <string>
+            title : 
+            type : page
+            url : 
+        }
+        waitingForDebugger : true
+    }
+}
+Resumed
+
+
+New page location: {
+    id : <number>
+    result : {
+        result : {
+            type : string
+            value : http://127.0.0.1:8000/inspector-protocol/resources/test-page.html?newpage
+        }
+    }
+    sessionId : <string>
+}
+

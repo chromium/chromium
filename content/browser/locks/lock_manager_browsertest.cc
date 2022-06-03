@@ -4,17 +4,18 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
-#include "components/network_session_configurator/common/network_switches.h"
+#include "content/browser/feature_observer.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/lock_observer.h"
+#include "content/public/browser/feature_observer_client.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/content_mock_cert_verifier.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -31,33 +32,33 @@ namespace {
 
 class TestBrowserClient : public ContentBrowserClient {
  public:
-  explicit TestBrowserClient(LockObserver* lock_observer)
-      : lock_observer_(lock_observer) {}
+  explicit TestBrowserClient(FeatureObserverClient* feature_observer_client)
+      : feature_observer_client_(feature_observer_client) {}
   ~TestBrowserClient() override = default;
 
-  LockObserver* GetLockObserver() override { return lock_observer_; }
-
- private:
-  LockObserver* const lock_observer_;
+  FeatureObserverClient* GetFeatureObserverClient() override {
+    return feature_observer_client_;
+  }
 
   TestBrowserClient(const TestBrowserClient&) = delete;
   TestBrowserClient& operator=(const TestBrowserClient&) = delete;
+
+ private:
+  FeatureObserverClient* feature_observer_client_;
 };
 
-class MockObserver : public LockObserver {
+class MockObserverClient : public FeatureObserverClient {
  public:
-  MockObserver() = default;
-  ~MockObserver() = default;
+  MockObserverClient() = default;
+  ~MockObserverClient() override = default;
 
-  // LockObserver:
-  MOCK_METHOD2(OnFrameStartsHoldingWebLocks,
-               void(int render_process_id, int render_frame_id));
-  MOCK_METHOD2(OnFrameStopsHoldingWebLocks,
-               void(int render_process_id, int render_frame_id));
-  MOCK_METHOD2(OnFrameStartsHoldingIndexedDBConnections,
-               void(int render_process_id, int render_frame_id));
-  MOCK_METHOD2(OnFrameStopsHoldingIndexedDBConnections,
-               void(int render_process_id, int render_frame_id));
+  // PerformanceManagerFeatureObserver implementation:
+  MOCK_METHOD2(OnStartUsing,
+               void(GlobalRenderFrameHostId id,
+                    blink::mojom::ObservedFeatureType type));
+  MOCK_METHOD2(OnStopUsing,
+               void(GlobalRenderFrameHostId id,
+                    blink::mojom::ObservedFeatureType type));
 };
 
 void RunLoopWithTimeout() {
@@ -74,15 +75,12 @@ class LockManagerBrowserTest : public ContentBrowserTest {
   LockManagerBrowserTest() = default;
   ~LockManagerBrowserTest() override = default;
 
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    ContentBrowserTest::SetUpCommandLine(command_line);
-    // This is required to allow navigation to test https:// URLs. Web Locks are
-    // not exposed to http:// URLs.
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
+  LockManagerBrowserTest(const LockManagerBrowserTest&) = delete;
+  LockManagerBrowserTest& operator=(const LockManagerBrowserTest&) = delete;
 
   void SetUpOnMainThread() override {
     ContentBrowserTest::SetUpOnMainThread();
+    mock_cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 
     original_client_ = SetBrowserClientForTesting(&test_browser_client_);
 
@@ -95,6 +93,21 @@ class LockManagerBrowserTest : public ContentBrowserTest {
     ContentBrowserTest::TearDownOnMainThread();
     if (original_client_)
       SetBrowserClientForTesting(original_client_);
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    mock_cert_verifier_.SetUpCommandLine(command_line);
+  }
+
+  void SetUpInProcessBrowserTestFixture() override {
+    ContentBrowserTest::SetUpInProcessBrowserTestFixture();
+    mock_cert_verifier_.SetUpInProcessBrowserTestFixture();
+  }
+
+  void TearDownInProcessBrowserTestFixture() override {
+    ContentBrowserTest::TearDownInProcessBrowserTestFixture();
+    mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
   bool CheckShouldRunTestAndNavigate() const {
@@ -119,69 +132,71 @@ class LockManagerBrowserTest : public ContentBrowserTest {
     return server_.GetURL(hostname, "/locks/locks.html");
   }
 
-  testing::StrictMock<MockObserver> mock_observer_;
+  testing::StrictMock<MockObserverClient> mock_observer_client_;
 
  private:
+  content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
   ContentBrowserClient* original_client_ = nullptr;
-  TestBrowserClient test_browser_client_{&mock_observer_};
-
-  LockManagerBrowserTest(const LockManagerBrowserTest&) = delete;
-  LockManagerBrowserTest& operator=(const LockManagerBrowserTest&) = delete;
+  TestBrowserClient test_browser_client_{&mock_observer_client_};
 };
 
-// Verify that content::LockObserver is notified when a frame acquires a single
-// locks.
+// Verify that content::FeatureObserver is notified when a frame acquires a
+// single locks.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSingleLock) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  int frame_id = rfh->GetRoutingID();
-  int process_id = rfh->GetProcess()->GetID();
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Acquire a lock. Expect observer notification.
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_,
-                OnFrameStartsHoldingWebLocks(process_id, frame_id))
-        .WillOnce([&](int, int) { run_loop.Quit(); });
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStartUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "AcquireLock('lock_a');"));
-    // Quit when OnFrameStartsHoldingWebLocks(process_id, frame_id) is invoked.
+    // Quit when OnStartUsing is invoked.
     run_loop.Run();
   }
 
   {
     // Release a lock. Expect observer notification.
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_,
-                OnFrameStopsHoldingWebLocks(process_id, frame_id))
-        .WillOnce([&](int, int) { run_loop.Quit(); });
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStopUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "ReleaseLock('lock_a');"));
-    // Quit when OnFrameStopsHoldingWebLocks(process_id, frame_id) is invoked.
+    // Quit when OnStopUsing is invoked.
     run_loop.Run();
   }
 }
 
-// Verify that content::LockObserver is notified when a frame acquires multiple
-// locks (notifications only when the number of held locks switches between zero
-// and non-zero).
+// Verify that content::FeatureObserver is notified when a frame acquires
+// multiple locks (notifications only when the number of held locks switches
+// between zero and non-zero).
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverTwoLocks) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  int frame_id = rfh->GetRoutingID();
-  int process_id = rfh->GetProcess()->GetID();
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Acquire a lock. Expect observer notification.
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_,
-                OnFrameStartsHoldingWebLocks(process_id, frame_id))
-        .WillOnce([&](int, int) { run_loop.Quit(); });
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStartUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "AcquireLock('lock_a');"));
-    // Quit when OnFrameStartsHoldingWebLocks(process_id, frame_id) is invoked.
+    // Quit when OnStartUsing is invoked.
     run_loop.Run();
   }
 
@@ -199,65 +214,71 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverTwoLocks) {
     // Release a lock. Expect observer notification, because number of held
     // locks is now zero.
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_,
-                OnFrameStopsHoldingWebLocks(process_id, frame_id))
-        .WillOnce([&](int, int) { run_loop.Quit(); });
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStopUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "ReleaseLock('lock_b');"));
-    // Quit when OnFrameStopsHoldingWebLocks(process_id, frame_id) is invoked.
+    // Quit when OnStopUsing is invoked.
     run_loop.Run();
   }
 }
 
-// Verify that content::LockObserver is notified that a frame stopped holding
+// Verify that content::FeatureObserver is notified that a frame stopped holding
 // locks when it is navigated away.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverNavigate) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  int frame_id = rfh->GetRoutingID();
-  int process_id = rfh->GetProcess()->GetID();
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Acquire a lock. Expect observer notification.
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_,
-                OnFrameStartsHoldingWebLocks(process_id, frame_id))
-        .WillOnce([&](int, int) { run_loop.Quit(); });
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStartUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "AcquireLock('lock_a');"));
-    // Quit when OnFrameStartsHoldingWebLocks(process_id, frame_id) is invoked.
+    // Quit when OnStartUsing is invoked.
     run_loop.Run();
   }
   {
     // Navigate away. Expect observer notification.
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_,
-                OnFrameStopsHoldingWebLocks(process_id, frame_id))
-        .WillOnce([&](int, int) { run_loop.Quit(); });
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStopUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(NavigateToURL(shell(), GetLocksURL("b.com")));
-    // Quit when OnFrameStopsHoldingWebLocks(process_id, frame_id) is invoked.
+    // Quit when OnStopUsing is invoked.
     run_loop.Run();
   }
 }
 
-// Verify that content::LockObserver is notified when a frame steals a lock from
-// another frame.
+// Verify that content::FeatureObserver is notified when a frame steals a lock
+// from another frame.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverStealLock) {
   if (!CheckShouldRunTestAndNavigate())
     return;
 
   RenderFrameHost* rfh = shell()->web_contents()->GetMainFrame();
-  int frame_id = rfh->GetRoutingID();
-  int process_id = rfh->GetProcess()->GetID();
+  GlobalRenderFrameHostId rfh_id = rfh->GetGlobalId();
 
   {
     // Acquire a lock in first WebContents lock. Expect observer notification.
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_,
-                OnFrameStartsHoldingWebLocks(process_id, frame_id))
-        .WillOnce([&](int, int) { run_loop.Quit(); });
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStartUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
     EXPECT_TRUE(ExecJs(rfh, "AcquireLock('lock_a');"));
-    // Quit when OnFrameStartsHoldingWebLocks(process_id, frame_id) is invoked.
+    // Quit when OnStartUsing is invoked.
     run_loop.Run();
   }
 
@@ -267,29 +288,51 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverStealLock) {
                              GURL(), nullptr, gfx::Size());
   EXPECT_TRUE(NavigateToURL(other_shell, GetLocksURL("a.com")));
   RenderFrameHost* other_rfh = other_shell->web_contents()->GetMainFrame();
-  int other_frame_id = other_rfh->GetRoutingID();
-  int other_process_id = other_rfh->GetProcess()->GetID();
+  GlobalRenderFrameHostId other_rfh_id = other_rfh->GetGlobalId();
 
   {
     // Steal the lock from other WebContents. Expect observer notifications.
+    //
     base::RunLoop run_loop;
-    EXPECT_CALL(mock_observer_,
-                OnFrameStopsHoldingWebLocks(process_id, frame_id))
-        .WillOnce([&](int, int) {
-          EXPECT_CALL(mock_observer_, OnFrameStartsHoldingWebLocks(
-                                          other_process_id, other_frame_id))
-              .WillOnce([&](int, int) { run_loop.Quit(); });
-        });
+
+    // Wait for the thief and the victim to be notified, but in any order.
+    int callback_count = 0;
+    auto callback = [&](GlobalRenderFrameHostId,
+                        blink::mojom::ObservedFeatureType) {
+      callback_count++;
+      if (callback_count == 2)
+        run_loop.Quit();
+    };
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStopUsing(rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce(callback);
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStartUsing(other_rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce(callback);
+
     EXPECT_TRUE(ExecJs(other_rfh, "StealLock('lock_a');"));
-    // Quit when OnFrameStopsHoldingWebLocks(process_id, frame_id) and
-    // OnFrameStartsHoldingWebLocks(other_process_id, other_frame_id) are
-    // invoked.
+    // Quit after the lock has been released and then grabbed.
+    run_loop.Run();
+  }
+
+  {
+    // Release a lock. Expect observer notification.
+    base::RunLoop run_loop;
+    EXPECT_CALL(
+        mock_observer_client_,
+        OnStopUsing(other_rfh_id, blink::mojom::ObservedFeatureType::kWebLock))
+        .WillOnce([&](GlobalRenderFrameHostId,
+                      blink::mojom::ObservedFeatureType) { run_loop.Quit(); });
+    EXPECT_TRUE(ExecJs(other_rfh, "ReleaseLock('lock_a');"));
+    // Quit when OnStopUsing is invoked.
     run_loop.Run();
   }
 }
 
-// Verify that content::LockObserver is *not* notified when a lock is acquired
-// by a dedicated worker.
+// Verify that content::FeatureObserver is *not* notified when a lock is
+// acquired by a dedicated worker.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverDedicatedWorker) {
   if (!CheckShouldRunTestAndNavigate())
     return;
@@ -312,8 +355,8 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverDedicatedWorker) {
 
 // SharedWorkers are not enabled on Android. https://crbug.com/154571
 #if !defined(OS_ANDROID)
-// Verify that content::LockObserver is *not* notified when a lock is acquired
-// by a shared worker.
+// Verify that content::FeatureObserver is *not* notified when a lock is
+// acquired by a shared worker.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
   if (!CheckShouldRunTestAndNavigate())
     return;
@@ -335,8 +378,8 @@ IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverSharedWorker) {
 }
 #endif  // !defined(OS_ANDROID)
 
-// Verify that content::LockObserver is *not* notified when a lock is acquired
-// by a service worker.
+// Verify that content::FeatureObserver is *not* notified when a lock is
+// acquired by a service worker.
 IN_PROC_BROWSER_TEST_F(LockManagerBrowserTest, ObserverServiceWorker) {
   if (!CheckShouldRunTestAndNavigate())
     return;

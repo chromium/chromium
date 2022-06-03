@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/button.h"
 #include "chrome/browser/vr/elements/text.h"
 
@@ -17,16 +16,18 @@ namespace vr {
 class TextButton : public Button {
  public:
   TextButton(float text_height, AudioDelegate* audio_delegate);
+
+  TextButton(const TextButton&) = delete;
+  TextButton& operator=(const TextButton&) = delete;
+
   ~TextButton() override;
 
-  void SetText(const base::string16& text);
+  void SetText(const std::u16string& text);
 
  private:
   void OnSetColors(const ButtonColors& colors) override;
 
   Text* text_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TextButton);
 };
 
 }  // namespace vr

@@ -5,7 +5,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -17,13 +17,16 @@ FakePolicyInstance::FakePolicyInstance() = default;
 
 FakePolicyInstance::~FakePolicyInstance() = default;
 
-void FakePolicyInstance::InitDeprecated(mojom::PolicyHostPtr host_ptr) {
-  Init(std::move(host_ptr), base::DoNothing());
+void FakePolicyInstance::InitDeprecated(
+    mojo::PendingRemote<mojom::PolicyHost> host_remote) {
+  Init(std::move(host_remote), base::DoNothing());
 }
 
-void FakePolicyInstance::Init(mojom::PolicyHostPtr host_ptr,
-                              InitCallback callback) {
-  host_ptr_ = std::move(host_ptr);
+void FakePolicyInstance::Init(
+    mojo::PendingRemote<mojom::PolicyHost> host_remote,
+    InitCallback callback) {
+  host_remote_.reset();
+  host_remote_.Bind(std::move(host_remote));
   std::move(callback).Run();
 }
 
@@ -39,7 +42,7 @@ void FakePolicyInstance::OnCommandReceived(const std::string& command,
 
 void FakePolicyInstance::CallGetPolicies(
     mojom::PolicyHost::GetPoliciesCallback callback) {
-  host_ptr_->GetPolicies(std::move(callback));
+  host_remote_->GetPolicies(std::move(callback));
   base::RunLoop().RunUntilIdle();
 }
 

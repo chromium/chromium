@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++list
+++++++genericContainer ignored
+++++++++staticText name='0'
+++++++++++inlineTextBox name='0'

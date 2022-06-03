@@ -7,12 +7,11 @@
 #include <string>
 #include <utility>
 
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-using autofill::PasswordForm;
 using ::testing::ElementsAre;
 using ::testing::Pointee;
 

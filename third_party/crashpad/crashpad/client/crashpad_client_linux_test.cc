@@ -15,12 +15,14 @@
 #include "client/crashpad_client.h"
 
 #include <dlfcn.h>
+#include <signal.h>
 #include <stdlib.h>
 #include <sys/syscall.h>
 #include <sys/types.h>
 #include <unistd.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "client/annotation.h"
 #include "client/annotation_list.h"
 #include "client/crash_report_database.h"
@@ -29,6 +31,7 @@
 #include "snapshot/annotation_snapshot.h"
 #include "snapshot/minidump/process_snapshot_minidump.h"
 #include "snapshot/sanitized/sanitization_information.h"
+#include "test/errors.h"
 #include "test/multiprocess.h"
 #include "test/multiprocess_exec.h"
 #include "test/scoped_temp_dir.h"
@@ -38,9 +41,13 @@
 #include "util/linux/exception_handler_client.h"
 #include "util/linux/exception_information.h"
 #include "util/linux/socket.h"
+#include "util/misc/address_sanitizer.h"
 #include "util/misc/address_types.h"
 #include "util/misc/from_pointer_cast.h"
+#include "util/misc/memory_sanitizer.h"
+#include "util/posix/scoped_mmap.h"
 #include "util/posix/signals.h"
+#include "util/thread/thread.h"
 
 #if defined(OS_ANDROID)
 #include <android/set_abort_message.h>
@@ -55,30 +62,43 @@ namespace crashpad {
 namespace test {
 namespace {
 
+enum class CrashType : uint32_t {
+  kSimulated,
+  kBuiltinTrap,
+  kInfiniteRecursion,
+};
+
 struct StartHandlerForSelfTestOptions {
   bool start_handler_at_crash;
-  bool simulate_crash;
   bool set_first_chance_handler;
+  bool crash_non_main_thread;
+  bool client_uses_signals;
+  CrashType crash_type;
 };
 
 class StartHandlerForSelfTest
-    : public testing::TestWithParam<std::tuple<bool, bool, bool>> {
+    : public testing::TestWithParam<
+          std::tuple<bool, bool, bool, bool, CrashType>> {
  public:
   StartHandlerForSelfTest() = default;
+
+  StartHandlerForSelfTest(const StartHandlerForSelfTest&) = delete;
+  StartHandlerForSelfTest& operator=(const StartHandlerForSelfTest&) = delete;
+
   ~StartHandlerForSelfTest() = default;
 
   void SetUp() override {
     std::tie(options_.start_handler_at_crash,
-             options_.simulate_crash,
-             options_.set_first_chance_handler) = GetParam();
+             options_.set_first_chance_handler,
+             options_.crash_non_main_thread,
+             options_.client_uses_signals,
+             options_.crash_type) = GetParam();
   }
 
   const StartHandlerForSelfTestOptions& Options() const { return options_; }
 
  private:
   StartHandlerForSelfTestOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForSelfTest);
 };
 
 bool HandleCrashSuccessfully(int, siginfo_t*, ucontext_t*) {
@@ -88,14 +108,16 @@ bool HandleCrashSuccessfully(int, siginfo_t*, ucontext_t*) {
 bool InstallHandler(CrashpadClient* client,
                     bool start_at_crash,
                     const base::FilePath& handler_path,
-                    const base::FilePath& database_path) {
+                    const base::FilePath& database_path,
+                    const std::vector<base::FilePath>& attachments) {
   return start_at_crash
              ? client->StartHandlerAtCrash(handler_path,
                                            database_path,
                                            base::FilePath(),
                                            "",
                                            std::map<std::string, std::string>(),
-                                           std::vector<std::string>())
+                                           std::vector<std::string>(),
+                                           attachments)
              : client->StartHandler(handler_path,
                                     database_path,
                                     base::FilePath(),
@@ -103,15 +125,27 @@ bool InstallHandler(CrashpadClient* client,
                                     std::map<std::string, std::string>(),
                                     std::vector<std::string>(),
                                     false,
-                                    false);
+                                    false,
+                                    attachments);
 }
 
 constexpr char kTestAnnotationName[] = "name_of_annotation";
 constexpr char kTestAnnotationValue[] = "value_of_annotation";
+constexpr char kTestAttachmentName[] = "test_attachment";
+constexpr char kTestAttachmentContent[] = "attachment_content";
 
 #if defined(OS_ANDROID)
 constexpr char kTestAbortMessage[] = "test abort message";
 #endif
+
+void ValidateAttachment(const CrashReportDatabase::UploadReport* report) {
+  auto attachments = report->GetAttachments();
+  ASSERT_EQ(attachments.size(), 1u);
+  char buf[sizeof(kTestAttachmentContent)];
+  attachments.at(kTestAttachmentName)->Read(buf, sizeof(buf));
+  ASSERT_EQ(memcmp(kTestAttachmentContent, buf, sizeof(kTestAttachmentContent)),
+            0);
+}
 
 void ValidateDump(const CrashReportDatabase::UploadReport* report) {
   ProcessSnapshotMinidump minidump_snapshot;
@@ -128,6 +162,7 @@ void ValidateDump(const CrashReportDatabase::UploadReport* report) {
     EXPECT_EQ(kTestAbortMessage, abort_message->second);
   }
 #endif
+  ValidateAttachment(report);
 
   for (const ModuleSnapshot* module : minidump_snapshot.Modules()) {
     for (const AnnotationSnapshot& annotation : module->AnnotationObjects()) {
@@ -148,6 +183,100 @@ void ValidateDump(const CrashReportDatabase::UploadReport* report) {
   ADD_FAILURE();
 }
 
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Winfinite-recursion"
+int RecurseInfinitely(int* ptr) {
+  int buf[1 << 20];
+  return *ptr + RecurseInfinitely(buf);
+}
+#pragma clang diagnostic pop
+
+void DoCrash(const StartHandlerForSelfTestOptions& options,
+             CrashpadClient* client) {
+  switch (options.crash_type) {
+    case CrashType::kSimulated:
+      if (options.set_first_chance_handler) {
+        client->SetFirstChanceExceptionHandler(HandleCrashSuccessfully);
+      }
+      CRASHPAD_SIMULATE_CRASH();
+      break;
+
+    case CrashType::kBuiltinTrap:
+      __builtin_trap();
+
+    case CrashType::kInfiniteRecursion:
+      int val = 42;
+      exit(RecurseInfinitely(&val));
+  }
+}
+
+class ScopedAltSignalStack {
+ public:
+  ScopedAltSignalStack() = default;
+
+  ScopedAltSignalStack(const ScopedAltSignalStack&) = delete;
+  ScopedAltSignalStack& operator=(const ScopedAltSignalStack&) = delete;
+
+  ~ScopedAltSignalStack() {
+    if (stack_mem_.is_valid()) {
+      stack_t stack;
+      stack.ss_flags = SS_DISABLE;
+      if (sigaltstack(&stack, nullptr) != 0) {
+        ADD_FAILURE() << ErrnoMessage("sigaltstack");
+      }
+    }
+  }
+
+  void Initialize() {
+    ScopedMmap local_stack_mem;
+    constexpr size_t stack_size = MINSIGSTKSZ;
+    ASSERT_TRUE(local_stack_mem.ResetMmap(nullptr,
+                                          stack_size,
+                                          PROT_READ | PROT_WRITE,
+                                          MAP_PRIVATE | MAP_ANONYMOUS,
+                                          -1,
+                                          0));
+
+    stack_t stack;
+    stack.ss_sp = local_stack_mem.addr();
+    stack.ss_size = stack_size;
+    stack.ss_flags = 0;
+    ASSERT_EQ(sigaltstack(&stack, nullptr), 0) << ErrnoMessage("sigaltstack");
+    stack_mem_.ResetAddrLen(local_stack_mem.release(), stack_size);
+  }
+
+ private:
+  ScopedMmap stack_mem_;
+};
+
+class CrashThread : public Thread {
+ public:
+  CrashThread(const StartHandlerForSelfTestOptions& options,
+              CrashpadClient* client)
+      : client_signal_stack_(), options_(options), client_(client) {}
+
+  CrashThread(const CrashThread&) = delete;
+  CrashThread& operator=(const CrashThread&) = delete;
+
+ private:
+  void ThreadMain() override {
+    // It is only necessary to call InitializeSignalStackForThread() once, but
+    // should be harmless to call multiple times and durable against the client
+    // using sigaltstack() either before or after it is called.
+    CrashpadClient::InitializeSignalStackForThread();
+    if (options_.client_uses_signals) {
+      client_signal_stack_.Initialize();
+    }
+    CrashpadClient::InitializeSignalStackForThread();
+
+    DoCrash(options_, client_);
+  }
+
+  ScopedAltSignalStack client_signal_stack_;
+  const StartHandlerForSelfTestOptions& options_;
+  CrashpadClient* client_;
+};
+
 CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
   FileHandle in = StdioFileHandle(StdioStream::kStandardInput);
 
@@ -160,6 +289,25 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
   StartHandlerForSelfTestOptions options;
   CheckedReadFileExactly(in, &options, sizeof(options));
 
+  ScopedAltSignalStack client_signal_stack;
+  if (options.client_uses_signals) {
+    client_signal_stack.Initialize();
+
+    static Signals::OldActions old_actions;
+    static Signals::Handler client_handler =
+        [](int signo, siginfo_t* siginfo, void*) {
+          FileHandle out = StdioFileHandle(StdioStream::kStandardOutput);
+          char c = 0;
+          WriteFile(out, &c, sizeof(c));
+
+          Signals::RestoreHandlerAndReraiseSignalOnReturn(
+              siginfo, old_actions.ActionForSignal(signo));
+        };
+
+    CHECK(Signals::InstallCrashHandlers(
+        client_handler, SA_ONSTACK, &old_actions));
+  }
+
   base::FilePath handler_path = TestPaths::Executable().DirName().Append(
       FILE_PATH_LITERAL("crashpad_handler"));
 
@@ -168,11 +316,15 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
   static StringAnnotation<32> test_annotation(kTestAnnotationName);
   test_annotation.Set(kTestAnnotationValue);
 
+  const std::vector<base::FilePath> attachments = {
+      base::FilePath(temp_dir).Append(kTestAttachmentName)};
+
   crashpad::CrashpadClient client;
   if (!InstallHandler(&client,
                       options.start_handler_at_crash,
                       handler_path,
-                      base::FilePath(temp_dir))) {
+                      base::FilePath(temp_dir),
+                      attachments)) {
     return EXIT_FAILURE;
   }
 
@@ -182,17 +334,14 @@ CRASHPAD_CHILD_TEST_MAIN(StartHandlerForSelfTestChild) {
   }
 #endif
 
-  if (options.simulate_crash) {
-    if (options.set_first_chance_handler) {
-      client.SetFirstChanceExceptionHandler(HandleCrashSuccessfully);
-    }
-    CRASHPAD_SIMULATE_CRASH();
-    return EXIT_SUCCESS;
+  if (options.crash_non_main_thread) {
+    CrashThread thread(options, &client);
+    thread.Start();
+    thread.Join();
+  } else {
+    DoCrash(options, &client);
   }
 
-  __builtin_trap();
-
-  NOTREACHED();
   return EXIT_SUCCESS;
 }
 
@@ -201,10 +350,24 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
   StartHandlerForSelfInChildTest(const StartHandlerForSelfTestOptions& options)
       : MultiprocessExec(), options_(options) {
     SetChildTestMainFunction("StartHandlerForSelfTestChild");
-    if (!options.simulate_crash) {
-      SetExpectedChildTerminationBuiltinTrap();
+    switch (options.crash_type) {
+      case CrashType::kSimulated:
+        // kTerminationNormal, EXIT_SUCCESS
+        break;
+      case CrashType::kBuiltinTrap:
+        SetExpectedChildTerminationBuiltinTrap();
+        break;
+      case CrashType::kInfiniteRecursion:
+        SetExpectedChildTermination(TerminationReason::kTerminationSignal,
+                                    SIGSEGV);
+        break;
     }
   }
+
+  StartHandlerForSelfInChildTest(const StartHandlerForSelfInChildTest&) =
+      delete;
+  StartHandlerForSelfInChildTest& operator=(
+      const StartHandlerForSelfInChildTest&) = delete;
 
  private:
   void MultiprocessParent() override {
@@ -216,6 +379,23 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
         WritePipeHandle(), temp_dir.path().value().data(), temp_dir_length));
     ASSERT_TRUE(
         LoggingWriteFile(WritePipeHandle(), &options_, sizeof(options_)));
+
+    FileWriter writer;
+    base::FilePath test_attachment_path =
+        temp_dir.path().Append(kTestAttachmentName);
+    bool is_created = writer.Open(test_attachment_path,
+                                  FileWriteMode::kCreateOrFail,
+                                  FilePermissions::kOwnerOnly);
+    ASSERT_TRUE(is_created);
+    writer.Write(kTestAttachmentContent, sizeof(kTestAttachmentContent));
+    writer.Close();
+
+    if (options_.client_uses_signals && !options_.set_first_chance_handler &&
+        options_.crash_type != CrashType::kSimulated) {
+      // Wait for child's client signal handler.
+      char c;
+      EXPECT_TRUE(LoggingReadFileExactly(ReadPipeHandle(), &c, sizeof(c)));
+    }
 
     // Wait for child to finish.
     CheckedReadFileAtEOF(ReadPipeHandle());
@@ -244,29 +424,44 @@ class StartHandlerForSelfInChildTest : public MultiprocessExec {
   }
 
   StartHandlerForSelfTestOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForSelfInChildTest);
 };
 
 TEST_P(StartHandlerForSelfTest, StartHandlerInChild) {
-  if (Options().set_first_chance_handler && !Options().simulate_crash) {
+  if (Options().set_first_chance_handler &&
+      Options().crash_type != CrashType::kSimulated) {
     // TODO(jperaza): test first chance handlers with real crashes.
     return;
   }
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
+    defined(UNDEFINED_SANITIZER)
+  if (Options().crash_type == CrashType::kInfiniteRecursion) {
+    GTEST_SKIP();
+  }
+#endif  // defined(ADDRESS_SANITIZER)
   StartHandlerForSelfInChildTest test(Options());
   test.Run();
 }
 
-INSTANTIATE_TEST_SUITE_P(StartHandlerForSelfTestSuite,
-                         StartHandlerForSelfTest,
-                         testing::Combine(testing::Bool(),
-                                          testing::Bool(),
-                                          testing::Bool()));
+INSTANTIATE_TEST_SUITE_P(
+    StartHandlerForSelfTestSuite,
+    StartHandlerForSelfTest,
+    testing::Combine(testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Bool(),
+                     testing::Values(CrashType::kSimulated,
+                                     CrashType::kBuiltinTrap,
+                                     CrashType::kInfiniteRecursion)));
 
 // Test state for starting the handler for another process.
 class StartHandlerForClientTest {
  public:
   StartHandlerForClientTest() = default;
+
+  StartHandlerForClientTest(const StartHandlerForClientTest&) = delete;
+  StartHandlerForClientTest& operator=(const StartHandlerForClientTest&) =
+      delete;
+
   ~StartHandlerForClientTest() = default;
 
   bool Initialize(bool sanitize) {
@@ -330,6 +525,9 @@ class StartHandlerForClientTest {
   // more privileged, process.
   class SandboxedHandler {
    public:
+    SandboxedHandler(const SandboxedHandler&) = delete;
+    SandboxedHandler& operator=(const SandboxedHandler&) = delete;
+
     static SandboxedHandler* Get() {
       static SandboxedHandler* instance = new SandboxedHandler();
       return instance;
@@ -382,22 +580,22 @@ class StartHandlerForClientTest {
 
     FileHandle client_sock_;
     bool sanitize_;
-
-    DISALLOW_COPY_AND_ASSIGN(SandboxedHandler);
   };
 
   ScopedTempDir temp_dir_;
   ScopedFileHandle client_sock_;
   ScopedFileHandle server_sock_;
   bool sanitize_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForClientTest);
 };
 
 // Tests starting the handler for a child process.
 class StartHandlerForChildTest : public Multiprocess {
  public:
   StartHandlerForChildTest() = default;
+
+  StartHandlerForChildTest(const StartHandlerForChildTest&) = delete;
+  StartHandlerForChildTest& operator=(const StartHandlerForChildTest&) = delete;
+
   ~StartHandlerForChildTest() = default;
 
   bool Initialize(bool sanitize) {
@@ -424,8 +622,6 @@ class StartHandlerForChildTest : public Multiprocess {
   }
 
   StartHandlerForClientTest test_state_;
-
-  DISALLOW_COPY_AND_ASSIGN(StartHandlerForChildTest);
 };
 
 TEST(CrashpadClient, StartHandlerForChild) {

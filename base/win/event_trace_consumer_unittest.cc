@@ -3,18 +3,19 @@
 // found in the LICENSE file.
 //
 // Unit tests for event trace consumer base class.
-#include "base/win/event_trace_consumer.h"
 
-#include <list>
+#include "base/win/event_trace_consumer.h"
 
 #include <objbase.h>
 
+#include <list>
+
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/process/process_handle.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/win/event_trace_controller.h"
@@ -29,7 +30,7 @@ namespace win {
 
 namespace {
 
-typedef std::list<EVENT_TRACE> EventQueue;
+using EventQueue = std::list<EVENT_TRACE>;
 
 class TestConsumer : public EtwTraceConsumerBase<TestConsumer> {
  public:
@@ -37,6 +38,9 @@ class TestConsumer : public EtwTraceConsumerBase<TestConsumer> {
     sank_event_.Set(::CreateEvent(nullptr, TRUE, FALSE, nullptr));
     ClearQueue();
   }
+
+  TestConsumer(const TestConsumer&) = delete;
+  TestConsumer& operator=(const TestConsumer&) = delete;
 
   ~TestConsumer() {
     ClearQueue();
@@ -69,9 +73,6 @@ class TestConsumer : public EtwTraceConsumerBase<TestConsumer> {
 
   static ScopedHandle sank_event_;
   static EventQueue events_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestConsumer);
 };
 
 ScopedHandle TestConsumer::sank_event_;
@@ -199,7 +200,7 @@ class EtwTraceConsumerRealtimeTest : public EtwTraceConsumerBaseTest {
 
 TEST_F(EtwTraceConsumerRealtimeTest, ConsumerReturnsWhenSessionClosed) {
   EtwTraceController controller;
-  if (controller.StartRealtimeSession(session_name_.c_str(), 100 * 1024) ==
+  if (controller.StartRealtimeSession(session_name_.c_str(), 1024) ==
       E_ACCESSDENIED) {
     VLOG(1) << "You must be an administrator to run this test on Vista";
     return;
@@ -208,9 +209,14 @@ TEST_F(EtwTraceConsumerRealtimeTest, ConsumerReturnsWhenSessionClosed) {
   // Start the consumer_.
   ASSERT_HRESULT_SUCCEEDED(StartConsumerThread());
 
-  // Wait around for the consumer_ thread a bit.
+  // Wait around for the consumer_ thread a bit. This is inherently racy because
+  // the consumer thread says that it is ready and then calls Consume() which
+  // calls ::ProcessTrace. We need to call WaitForSingleObject after the call to
+  // ::ProcessTrace but there is no way to know when that call has been made.
+  // With a timeout of 50 ms this test was failing frequently when the system
+  // was under load. It is hoped that 500 ms will be enough.
   ASSERT_EQ(static_cast<DWORD>(WAIT_TIMEOUT),
-            ::WaitForSingleObject(consumer_thread_.Get(), 50));
+            ::WaitForSingleObject(consumer_thread_.Get(), 500));
   ASSERT_HRESULT_SUCCEEDED(controller.Stop(nullptr));
 
   // The consumer_ returns success on session stop.
@@ -230,7 +236,7 @@ DEFINE_GUID(
 
 TEST_F(EtwTraceConsumerRealtimeTest, ConsumeEvent) {
   EtwTraceController controller;
-  if (controller.StartRealtimeSession(session_name_.c_str(), 100 * 1024) ==
+  if (controller.StartRealtimeSession(session_name_.c_str(), 1024) ==
       E_ACCESSDENIED) {
     VLOG(1) << "You must be an administrator to run this test on Vista";
     return;
@@ -261,7 +267,7 @@ namespace {
 // the content comes through.
 class EtwTraceConsumerDataTest : public EtwTraceConsumerBaseTest {
  public:
-  EtwTraceConsumerDataTest() {}
+  EtwTraceConsumerDataTest() = default;
 
   void SetUp() override {
     EtwTraceConsumerBaseTest::SetUp();
@@ -276,7 +282,7 @@ class EtwTraceConsumerDataTest : public EtwTraceConsumerBaseTest {
   }
 
   void TearDown() override {
-    EXPECT_TRUE(DeleteFile(temp_file_, false));
+    EXPECT_TRUE(DeleteFile(temp_file_));
 
     EtwTraceConsumerBaseTest::TearDown();
   }
@@ -320,7 +326,7 @@ class EtwTraceConsumerDataTest : public EtwTraceConsumerBaseTest {
   }
 
   HRESULT RoundTripEvent(PEVENT_TRACE_HEADER header, PEVENT_TRACE* trace) {
-    DeleteFile(temp_file_, false);
+    DeleteFile(temp_file_);
 
     HRESULT hr = LogEventToTempSession(header);
     if (SUCCEEDED(hr))

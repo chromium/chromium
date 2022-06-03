@@ -3,27 +3,16 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
-import("//components/feature_engagement/features.gni")
 
 if (is_android) {
   import("//build/config/android/config.gni")
   import("//build/config/android/rules.gni")
 }
 
-buildflag_header("buildflags") {
-  header = "buildflags.h"
-  flags = [ "ENABLE_LEGACY_DESKTOP_IN_PRODUCT_HELP=$enable_legacy_desktop_in_product_help" ]
-}
-
 group("feature_engagement") {
-  public_deps = [
-    ":buildflags",
-    "//components/feature_engagement/public",
-  ]
+  public_deps = [ "//components/feature_engagement/public" ]
 
-  deps = [
-    "//components/feature_engagement/internal",
-  ]
+  deps = [ "//components/feature_engagement/internal" ]
 }
 
 group("unit_tests") {
@@ -34,17 +23,13 @@ group("unit_tests") {
     "//components/feature_engagement/public:unit_tests",
   ]
 
-  data_deps = [
-    ":components_unittests_gtest_filter",
-  ]
+  data_deps = [ ":components_unittests_gtest_filter" ]
 }
 
 source_set("components_unittests_gtest_filter") {
   testonly = true
 
-  data = [
-    "components_unittests.filter",
-  ]
+  data = [ "components_unittests.filter" ]
 }
 
 if (is_android) {

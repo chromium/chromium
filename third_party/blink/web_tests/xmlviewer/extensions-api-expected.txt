@@ -1,3 +1,0 @@
-Tests extensions hooks in xml viewer.
-
-SUCCESS

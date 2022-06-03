@@ -11,11 +11,16 @@
 #include "ash/public/cpp/ash_public_export.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/events/event.h"
+#include "ui/gfx/image/image_skia.h"
 
-class AppWindowLauncherItemController;
+class AppWindowShelfItemController;
+
+namespace aura {
+class Window;
+}  // namespace aura
 
 namespace gfx {
 class ImageSkia;
@@ -32,6 +37,10 @@ namespace ash {
 class ASH_PUBLIC_EXPORT ShelfItemDelegate {
  public:
   explicit ShelfItemDelegate(const ShelfID& shelf_id);
+
+  ShelfItemDelegate(const ShelfItemDelegate&) = delete;
+  ShelfItemDelegate& operator=(const ShelfItemDelegate&) = delete;
+
   virtual ~ShelfItemDelegate();
 
   const ShelfID& shelf_id() const { return shelf_id_; }
@@ -44,22 +53,40 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
     image_set_by_controller_ = image_set_by_controller;
   }
 
+  // A predicate to filter app menu items based on their associated windows. If
+  // true is returned, then the item should be included in the menu, otherwise
+  // it should be discarded.
+  using ItemFilterPredicate = base::RepeatingCallback<bool(aura::Window*)>;
+
   // Called when the user selects a shelf item. The event, display, and source
   // info should be provided if known; some implementations use these arguments.
   // Defaults: (nullptr, kInvalidDisplayId, LAUNCH_FROM_UNKNOWN)
   // The callback reports the action taken and any application menu to show.
   // NOTE: This codepath is not currently used for context menu triggering.
-  using AppMenuItem = std::pair<base::string16, gfx::ImageSkia>;
+  struct AppMenuItem {
+    // The ID that will be used by ShelfApplicationMenuModel to represent this
+    // item in the shelf app menu. This ID will be used when ExecuteCommand() is
+    // called when this item is selected from the menu.
+    int command_id;
+    // The title and icon shown for this item in the app menu.
+    std::u16string title;
+    gfx::ImageSkia icon;
+  };
   using AppMenuItems = std::vector<AppMenuItem>;
   using ItemSelectedCallback =
       base::OnceCallback<void(ShelfAction, AppMenuItems)>;
   virtual void ItemSelected(std::unique_ptr<ui::Event> event,
                             int64_t display_id,
                             ShelfLaunchSource source,
-                            ItemSelectedCallback callback);
+                            ItemSelectedCallback callback,
+                            const ItemFilterPredicate& filter_predicate);
 
   // Returns items for the application menu; used for convenience and testing.
-  virtual AppMenuItems GetAppMenuItems(int event_flags);
+  // |filter_predicate| is used to filter items out of the menu based on their
+  // corresponding windows.
+  virtual AppMenuItems GetAppMenuItems(
+      int event_flags,
+      const ItemFilterPredicate& filter_predicate);
 
   // Returns the context menu model; used to show ShelfItem context menus.
   using GetContextMenuCallback =
@@ -67,11 +94,8 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
   virtual void GetContextMenu(int64_t display_id,
                               GetContextMenuCallback callback);
 
-  // Returns nullptr if class is not AppWindowLauncherItemController.
-  virtual AppWindowLauncherItemController* AsAppWindowLauncherItemController();
-
-  // Attempts to execute a context menu command; returns true if it was run.
-  bool ExecuteContextMenuCommand(int64_t command_id, int32_t event_flags);
+  // Returns nullptr if class is not AppWindowShelfItemController.
+  virtual AppWindowShelfItemController* AsAppWindowShelfItemController();
 
   // Called on invocation of a shelf item's context or application menu command.
   // |from_context_menu| is true if the command came from a context menu, or
@@ -96,12 +120,7 @@ class ASH_PUBLIC_EXPORT ShelfItemDelegate {
   // Set to true if the launcher item image has been set by the controller.
   bool image_set_by_controller_ = false;
 
-  // The context menu model that was last shown for the associated shelf item.
-  std::unique_ptr<ui::SimpleMenuModel> context_menu_;
-
   base::WeakPtrFactory<ShelfItemDelegate> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShelfItemDelegate);
 };
 
 }  // namespace ash

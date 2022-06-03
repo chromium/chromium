@@ -6,35 +6,40 @@
 
 #include <memory>
 
+#include "base/auto_reset.h"
 #include "build/build_config.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_input_event.h"
 #include "third_party/blink/renderer/core/dom/element.h"
+#include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/html/html_dialog_element.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/input/event_handling_util.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/input/scroll_manager.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/core/layout/layout_text_control_single_line.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation_controller.h"
 #include "third_party/blink/renderer/platform/keyboard_codes.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
 #include "third_party/blink/renderer/platform/windows_keyboard_codes.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #import <Carbon/Carbon.h>
 #endif
 
@@ -43,11 +48,10 @@ namespace blink {
 namespace {
 
 const int kVKeyProcessKey = 229;
-const int kVKeySpatNavBack = 233;
 
 bool MapKeyCodeForScroll(int key_code,
                          WebInputEvent::Modifiers modifiers,
-                         ScrollDirection* scroll_direction,
+                         mojom::blink::ScrollDirection* scroll_direction,
                          ScrollGranularity* scroll_granularity,
                          WebFeature* scroll_use_uma) {
   if (modifiers & WebInputEvent::kShiftKey ||
@@ -74,42 +78,62 @@ bool MapKeyCodeForScroll(int key_code,
 
   switch (key_code) {
     case VKEY_LEFT:
-      *scroll_direction = kScrollLeftIgnoringWritingMode;
-      *scroll_granularity = ScrollGranularity::kScrollByLine;
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollLeftIgnoringWritingMode;
+      *scroll_granularity =
+          RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
+              ? ScrollGranularity::kScrollByPercentage
+              : ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_RIGHT:
-      *scroll_direction = kScrollRightIgnoringWritingMode;
-      *scroll_granularity = ScrollGranularity::kScrollByLine;
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollRightIgnoringWritingMode;
+      *scroll_granularity =
+          RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
+              ? ScrollGranularity::kScrollByPercentage
+              : ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_UP:
-      *scroll_direction = kScrollUpIgnoringWritingMode;
-      *scroll_granularity = ScrollGranularity::kScrollByLine;
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
+      *scroll_granularity =
+          RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
+              ? ScrollGranularity::kScrollByPercentage
+              : ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_DOWN:
-      *scroll_direction = kScrollDownIgnoringWritingMode;
-      *scroll_granularity = ScrollGranularity::kScrollByLine;
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
+      *scroll_granularity =
+          RuntimeEnabledFeatures::PercentBasedScrollingEnabled()
+              ? ScrollGranularity::kScrollByPercentage
+              : ScrollGranularity::kScrollByLine;
       *scroll_use_uma = WebFeature::kScrollByKeyboardArrowKeys;
       break;
     case VKEY_HOME:
-      *scroll_direction = kScrollUpIgnoringWritingMode;
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
       *scroll_granularity = ScrollGranularity::kScrollByDocument;
       *scroll_use_uma = WebFeature::kScrollByKeyboardHomeEndKeys;
       break;
     case VKEY_END:
-      *scroll_direction = kScrollDownIgnoringWritingMode;
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
       *scroll_granularity = ScrollGranularity::kScrollByDocument;
       *scroll_use_uma = WebFeature::kScrollByKeyboardHomeEndKeys;
       break;
     case VKEY_PRIOR:  // page up
-      *scroll_direction = kScrollUpIgnoringWritingMode;
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollUpIgnoringWritingMode;
       *scroll_granularity = ScrollGranularity::kScrollByPage;
       *scroll_use_uma = WebFeature::kScrollByKeyboardPageUpDownKeys;
       break;
     case VKEY_NEXT:  // page down
-      *scroll_direction = kScrollDownIgnoringWritingMode;
+      *scroll_direction =
+          mojom::blink::ScrollDirection::kScrollDownIgnoringWritingMode;
       *scroll_granularity = ScrollGranularity::kScrollByPage;
       *scroll_use_uma = WebFeature::kScrollByKeyboardPageUpDownKeys;
       break;
@@ -126,12 +150,13 @@ KeyboardEventManager::KeyboardEventManager(LocalFrame& frame,
                                            ScrollManager& scroll_manager)
     : frame_(frame), scroll_manager_(scroll_manager) {}
 
-void KeyboardEventManager::Trace(blink::Visitor* visitor) {
+void KeyboardEventManager::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(scroll_manager_);
 }
 
 bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
+  base::AutoReset<bool> is_handling_key_event(&is_handling_key_event_, true);
   // TODO: Ignoring the state of Shift key is what neither IE nor Firefox do.
   // IE matches lower and upper case access keys regardless of Shift key state -
   // but if both upper and lower case variants are present in a document, the
@@ -147,15 +172,14 @@ bool KeyboardEventManager::HandleAccessKey(const WebKeyboardEvent& evt) {
   if (!elem)
     return false;
   elem->focus(FocusParams(SelectionBehaviorOnFocus::kReset,
-                          kWebFocusTypeAccessKey, nullptr));
-  elem->AccessKeyAction(false);
+                          mojom::blink::FocusType::kAccessKey, nullptr));
+  elem->AccessKeyAction(SimulatedClickCreationScope::kFromUserAgent);
   return true;
 }
 
 WebInputEventResult KeyboardEventManager::KeyEvent(
     const WebKeyboardEvent& initial_key_event) {
-  frame_->GetChromeClient().ClearToolTip(*frame_);
-
+  base::AutoReset<bool> is_handling_key_event(&is_handling_key_event_, true);
   if (initial_key_event.windows_key_code == VK_CAPITAL)
     CapsLockStateMayHaveChanged();
 
@@ -163,8 +187,8 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
     DCHECK(RuntimeEnabledFeatures::MiddleClickAutoscrollEnabled());
     // If a key is pressed while the middleClickAutoscroll is in progress then
     // we want to stop.
-    if (initial_key_event.GetType() == WebInputEvent::kKeyDown ||
-        initial_key_event.GetType() == WebInputEvent::kRawKeyDown)
+    if (initial_key_event.GetType() == WebInputEvent::Type::kKeyDown ||
+        initial_key_event.GetType() == WebInputEvent::Type::kRawKeyDown)
       scroll_manager_->StopMiddleClickAutoscroll();
 
     // If we were in panscroll mode, we swallow the key event
@@ -184,10 +208,10 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
       static_cast<ui::DomKey>(initial_key_event.dom_key));
 
   if (!is_modifier && initial_key_event.dom_key != ui::DomKey::ESCAPE &&
-      (initial_key_event.GetType() == WebInputEvent::kKeyDown ||
-       initial_key_event.GetType() == WebInputEvent::kRawKeyDown)) {
+      (initial_key_event.GetType() == WebInputEvent::Type::kKeyDown ||
+       initial_key_event.GetType() == WebInputEvent::Type::kRawKeyDown)) {
     LocalFrame::NotifyUserActivation(
-        frame_,
+        frame_, mojom::blink::UserActivationNotificationType::kInteraction,
         RuntimeEnabledFeatures::BrowserVerifiedUserActivationKeyboardEnabled());
   }
 
@@ -201,7 +225,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   // currently match either Mac or Windows behavior, depending on whether they
   // send combined KeyDown events.
   bool matched_an_access_key = false;
-  if (initial_key_event.GetType() == WebInputEvent::kKeyDown)
+  if (initial_key_event.GetType() == WebInputEvent::Type::kKeyDown)
     matched_an_access_key = HandleAccessKey(initial_key_event);
 
   // Don't expose key events to pages while browsing on the drive-by web. This
@@ -215,8 +239,8 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
 
   if (!should_send_key_events_to_js &&
       frame_->GetDocument()->IsInWebAppScope()) {
-    DCHECK(frame_->View());
-    blink::mojom::DisplayMode display_mode = frame_->View()->DisplayMode();
+    mojom::blink::DisplayMode display_mode =
+        frame_->GetWidgetForLocalRoot()->DisplayMode();
     should_send_key_events_to_js =
         display_mode == blink::mojom::DisplayMode::kMinimalUi ||
         display_mode == blink::mojom::DisplayMode::kStandalone ||
@@ -250,8 +274,8 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
 
   // TODO: it would be fair to let an input method handle KeyUp events
   // before DOM dispatch.
-  if (initial_key_event.GetType() == WebInputEvent::kKeyUp ||
-      initial_key_event.GetType() == WebInputEvent::kChar) {
+  if (initial_key_event.GetType() == WebInputEvent::Type::kKeyUp ||
+      initial_key_event.GetType() == WebInputEvent::Type::kChar) {
     KeyboardEvent* dom_event = KeyboardEvent::Create(
         initial_key_event, frame_->GetDocument()->domWindow(),
         event_cancellable);
@@ -263,8 +287,8 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   }
 
   WebKeyboardEvent key_down_event = initial_key_event;
-  if (key_down_event.GetType() != WebInputEvent::kRawKeyDown)
-    key_down_event.SetType(WebInputEvent::kRawKeyDown);
+  if (key_down_event.GetType() != WebInputEvent::Type::kRawKeyDown)
+    key_down_event.SetType(WebInputEvent::Type::kRawKeyDown);
   KeyboardEvent* keydown = KeyboardEvent::Create(
       key_down_event, frame_->GetDocument()->domWindow(), event_cancellable);
   if (matched_an_access_key)
@@ -290,7 +314,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   if (changed_focused_frame)
     return WebInputEventResult::kHandledSystem;
 
-  if (initial_key_event.GetType() == WebInputEvent::kRawKeyDown)
+  if (initial_key_event.GetType() == WebInputEvent::Type::kRawKeyDown)
     return WebInputEventResult::kNotHandled;
 
   // Focus may have changed during keydown handling, so refetch node.
@@ -300,7 +324,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
   if (!node)
     return WebInputEventResult::kNotHandled;
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // According to NSEvents.h, OpenStep reserves the range 0xF700-0xF8FF for
   // function keys. However, some actual private use characters happen to be
   // in this range, e.g. the Apple logo (Option+Shift+K). 0xF7FF is an
@@ -312,7 +336,7 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
 #endif
 
   WebKeyboardEvent key_press_event = initial_key_event;
-  key_press_event.SetType(WebInputEvent::kChar);
+  key_press_event.SetType(WebInputEvent::Type::kChar);
   if (key_press_event.text[0] == 0)
     return WebInputEventResult::kNotHandled;
   KeyboardEvent* keypress = KeyboardEvent::Create(
@@ -326,10 +350,8 @@ WebInputEventResult KeyboardEventManager::KeyEvent(
 
 void KeyboardEventManager::CapsLockStateMayHaveChanged() {
   if (Element* element = frame_->GetDocument()->FocusedElement()) {
-    if (LayoutObject* r = element->GetLayoutObject()) {
-      if (r->IsTextField())
-        ToLayoutTextControlSingleLine(r)->CapsLockStateMayHaveChanged();
-    }
+    if (auto* text_control = DynamicTo<HTMLInputElement>(element))
+      text_control->CapsLockStateMayHaveChanged();
   }
 }
 
@@ -375,8 +397,6 @@ void KeyboardEventManager::DefaultKeyboardEventHandler(
       return;
     if (event->key() == "Enter") {
       DefaultEnterEventHandler(event);
-    } else if (event->keyCode() == kVKeySpatNavBack) {
-      DefaultSpatNavBackEventHandler(event);
     }
   }
 }
@@ -389,8 +409,10 @@ void KeyboardEventManager::DefaultSpaceEventHandler(
   if (event->ctrlKey() || event->metaKey() || event->altKey())
     return;
 
-  ScrollDirection direction = event->shiftKey() ? kScrollBlockDirectionBackward
-                                                : kScrollBlockDirectionForward;
+  mojom::blink::ScrollDirection direction =
+      event->shiftKey()
+          ? mojom::blink::ScrollDirection::kScrollBlockDirectionBackward
+          : mojom::blink::ScrollDirection::kScrollBlockDirectionForward;
 
   // TODO(bokan): enable scroll customization in this case. See
   // crbug.com/410974.
@@ -425,7 +447,7 @@ void KeyboardEventManager::DefaultArrowEventHandler(
   if (event->KeyEvent() && event->KeyEvent()->is_system_key)
     return;
 
-  ScrollDirection scroll_direction;
+  mojom::blink::ScrollDirection scroll_direction;
   ScrollGranularity scroll_granularity;
   WebFeature scroll_use_uma;
   if (!MapKeyCodeForScroll(event->keyCode(), event->GetModifiers(),
@@ -442,39 +464,80 @@ void KeyboardEventManager::DefaultArrowEventHandler(
 }
 
 void KeyboardEventManager::DefaultTabEventHandler(KeyboardEvent* event) {
+  // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
+  TRACE_EVENT0("input", "KeyboardEventManager::DefaultTabEventHandler");
   DCHECK_EQ(event->type(), event_type_names::kKeydown);
-
   // We should only advance focus on tabs if no special modifier keys are held
   // down.
-  if (event->ctrlKey() || event->metaKey())
+  if (event->ctrlKey() || event->metaKey()) {
+    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
+    TRACE_EVENT_INSTANT1(
+        "input", "KeyboardEventManager::DefaultTabEventHandler",
+        TRACE_EVENT_SCOPE_THREAD, "reason_tab_does_not_advance_focus",
+        (event->ctrlKey() ? (event->metaKey() ? "Ctrl+MetaKey+Tab" : "Ctrl+Tab")
+                          : "MetaKey+Tab"));
     return;
+  }
 
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
   // Option-Tab is a shortcut based on a system-wide preference on Mac but
   // should be ignored on all other platforms.
-  if (event->altKey())
+  if (event->altKey()) {
+    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
+    TRACE_EVENT_INSTANT1("input",
+                         "KeyboardEventManager::DefaultTabEventHandler",
+                         TRACE_EVENT_SCOPE_THREAD,
+                         "reason_tab_does_not_advance_focus", "Alt+Tab");
     return;
+  }
 #endif
 
   Page* page = frame_->GetPage();
-  if (!page)
+  if (!page) {
+    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
+    TRACE_EVENT_INSTANT1("input",
+                         "KeyboardEventManager::DefaultTabEventHandler",
+                         TRACE_EVENT_SCOPE_THREAD,
+                         "reason_tab_does_not_advance_focus", "Page is null");
     return;
-  if (!page->TabKeyCyclesThroughElements())
+  }
+  if (!page->TabKeyCyclesThroughElements()) {
+    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
+    TRACE_EVENT_INSTANT1(
+        "input", "KeyboardEventManager::DefaultTabEventHandler",
+        TRACE_EVENT_SCOPE_THREAD, "reason_tab_does_not_advance_focus",
+        "TabKeyCyclesThroughElements is false");
     return;
+  }
 
-  WebFocusType focus_type =
-      event->shiftKey() ? kWebFocusTypeBackward : kWebFocusTypeForward;
+  mojom::blink::FocusType focus_type = event->shiftKey()
+                                           ? mojom::blink::FocusType::kBackward
+                                           : mojom::blink::FocusType::kForward;
 
   // Tabs can be used in design mode editing.
-  if (frame_->GetDocument()->InDesignMode())
+  if (frame_->GetDocument()->InDesignMode()) {
+    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
+    TRACE_EVENT_INSTANT1(
+        "input", "KeyboardEventManager::DefaultTabEventHandler",
+        TRACE_EVENT_SCOPE_THREAD, "reason_tab_does_not_advance_focus",
+        "DesignMode is true");
     return;
+  }
 
   if (page->GetFocusController().AdvanceFocus(focus_type,
                                               frame_->GetDocument()
                                                   ->domWindow()
                                                   ->GetInputDeviceCapabilities()
-                                                  ->FiresTouchEvents(false)))
+                                                  ->FiresTouchEvents(false))) {
     event->SetDefaultHandled();
+  } else {
+    // TODO (liviutinta) remove TRACE after fixing crbug.com/1063548
+    TRACE_EVENT_INSTANT1(
+        "input", "KeyboardEventManager::DefaultTabEventHandler",
+        TRACE_EVENT_SCOPE_THREAD, "reason_tab_does_not_advance_focus",
+        "AdvanceFocus returned false");
+    return;
+  }
 }
 
 void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
@@ -489,34 +552,6 @@ void KeyboardEventManager::DefaultEscapeEventHandler(KeyboardEvent* event) {
 
   if (HTMLDialogElement* dialog = frame_->GetDocument()->ActiveModalDialog())
     dialog->DispatchEvent(*Event::CreateCancelable(event_type_names::kCancel));
-}
-
-bool KeyboardEventManager::DefaultSpatNavBackEventHandler(
-    KeyboardEvent* event) {
-  if (RuntimeEnabledFeatures::FallbackCursorModeEnabled()) {
-    bool handled = frame_->LocalFrameRoot()
-                       .GetEventHandler()
-                       .HandleFallbackCursorModeBackEvent();
-    if (handled) {
-      event->SetDefaultHandled();
-      return true;
-    }
-  }
-
-  if (IsSpatialNavigationEnabled(frame_) &&
-      !frame_->GetDocument()->InDesignMode()) {
-    Page* page = frame_->GetPage();
-    if (!page)
-      return false;
-    bool handled =
-        page->GetSpatialNavigationController().HandleEscapeKeyboardEvent(event);
-    if (handled) {
-      event->SetDefaultHandled();
-      return true;
-    }
-  }
-
-  return false;
 }
 
 void KeyboardEventManager::DefaultEnterEventHandler(KeyboardEvent* event) {
@@ -551,7 +586,7 @@ void KeyboardEventManager::SetCurrentCapsLockState(
 bool KeyboardEventManager::CurrentCapsLockState() {
   switch (g_override_caps_lock_state) {
     case OverrideCapsLockState::kDefault:
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
       return GetCurrentKeyModifiers() & alphaLock;
 #else
       // Caps lock state use is limited to Mac password input
@@ -567,8 +602,8 @@ bool KeyboardEventManager::CurrentCapsLockState() {
 }
 
 WebInputEvent::Modifiers KeyboardEventManager::GetCurrentModifierState() {
+#if defined(OS_MAC)
   unsigned modifiers = 0;
-#if defined(OS_MACOSX)
   UInt32 current_modifiers = GetCurrentKeyModifiers();
   if (current_modifiers & ::shiftKey)
     modifiers |= WebInputEvent::kShiftKey;
@@ -578,11 +613,11 @@ WebInputEvent::Modifiers KeyboardEventManager::GetCurrentModifierState() {
     modifiers |= WebInputEvent::kAltKey;
   if (current_modifiers & ::cmdKey)
     modifiers |= WebInputEvent::kMetaKey;
+  return static_cast<WebInputEvent::Modifiers>(modifiers);
 #else
   // TODO(crbug.com/538289): Implement on other platforms.
   return static_cast<WebInputEvent::Modifiers>(0);
 #endif
-  return static_cast<WebInputEvent::Modifiers>(modifiers);
 }
 
 }  // namespace blink

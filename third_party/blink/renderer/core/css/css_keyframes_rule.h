@@ -34,6 +34,7 @@
 
 namespace blink {
 
+class CascadeLayer;
 class CSSRuleList;
 class CSSKeyframeRule;
 class StyleRuleKeyframe;
@@ -52,7 +53,7 @@ class StyleRuleKeyframes final : public StyleRuleBase {
   void WrapperAppendKeyframe(StyleRuleKeyframe*);
   void WrapperRemoveKeyframe(unsigned);
 
-  String GetName() const { return name_; }
+  AtomicString GetName() const { return name_; }
   void SetName(const String& name) { name_ = AtomicString(name); }
 
   bool IsVendorPrefixed() const { return is_prefixed_; }
@@ -64,12 +65,16 @@ class StyleRuleKeyframes final : public StyleRuleBase {
     return MakeGarbageCollected<StyleRuleKeyframes>(*this);
   }
 
-  void TraceAfterDispatch(blink::Visitor*);
+  void SetCascadeLayer(const CascadeLayer* layer) { layer_ = layer; }
+  const CascadeLayer* GetCascadeLayer() const { return layer_; }
+
+  void TraceAfterDispatch(blink::Visitor*) const;
 
   void StyleChanged() { version_++; }
   unsigned Version() const { return version_; }
 
  private:
+  Member<const CascadeLayer> layer_;
   HeapVector<Member<StyleRuleKeyframe>> keyframes_;
   AtomicString name_;
   unsigned version_ : 31;
@@ -114,10 +119,10 @@ class CSSKeyframesRule final : public CSSRule {
 
   void StyleChanged() { keyframes_rule_->StyleChanged(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  CSSRule::Type type() const override { return kKeyframesRule; }
+  CSSRule::Type GetType() const override { return kKeyframesRule; }
 
   Member<StyleRuleKeyframes> keyframes_rule_;
   mutable HeapVector<Member<CSSKeyframeRule>> child_rule_cssom_wrappers_;
@@ -128,7 +133,7 @@ class CSSKeyframesRule final : public CSSRule {
 template <>
 struct DowncastTraits<CSSKeyframesRule> {
   static bool AllowFrom(const CSSRule& rule) {
-    return rule.type() == CSSRule::kKeyframesRule;
+    return rule.GetType() == CSSRule::kKeyframesRule;
   }
 };
 

@@ -9,7 +9,6 @@
 
 #include "cc/layers/layer.h"
 #include "components/viz/test/test_context_provider.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -23,24 +22,21 @@
 
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 
-// Integration tests of canvas painting code (in CAP mode).
+// Integration tests of canvas painting code.
 
 namespace blink {
 
-class HTMLCanvasPainterTestForCAP : public PaintControllerPaintTest {
- public:
-  HTMLCanvasPainterTestForCAP() {}
-
+class HTMLCanvasPainterTest : public PaintControllerPaintTestBase {
  protected:
   void SetUp() override {
     test_context_provider_ = viz::TestContextProvider::Create();
     InitializeSharedGpuContext(test_context_provider_.get());
-    PaintControllerPaintTest::SetUp();
+    PaintControllerPaintTestBase::SetUp();
   }
 
   void TearDown() override {
     SharedGpuContext::ResetForTesting();
-    PaintControllerPaintTest::TearDown();
+    PaintControllerPaintTestBase::TearDown();
   }
 
   FrameSettingOverrideFunction SettingOverrider() const override {
@@ -56,22 +52,19 @@ class HTMLCanvasPainterTestForCAP : public PaintControllerPaintTest {
 
   std::unique_ptr<Canvas2DLayerBridge> MakeCanvas2DLayerBridge(
       const IntSize& size) {
-    return std::make_unique<Canvas2DLayerBridge>(
-        size, Canvas2DLayerBridge::kForceAccelerationForTesting,
-        CanvasColorParams());
+    return std::make_unique<Canvas2DLayerBridge>(size, RasterMode::kGPU,
+                                                 kNonOpaque);
   }
 
  private:
   scoped_refptr<viz::TestContextProvider> test_context_provider_;
 };
 
-INSTANTIATE_CAP_TEST_SUITE_P(HTMLCanvasPainterTestForCAP);
-
-TEST_P(HTMLCanvasPainterTestForCAP, Canvas2DLayerAppearsInLayerTree) {
+TEST_F(HTMLCanvasPainterTest, Canvas2DLayerAppearsInLayerTree) {
   // Insert a <canvas> and force it into accelerated mode.
   // Not using SetBodyInnerHTML() because we need to test before document
   // lifecyle update.
-  GetDocument().body()->SetInnerHTMLFromString("<canvas width=300 height=200>");
+  GetDocument().body()->setInnerHTML("<canvas width=300 height=200>");
   auto* element = To<HTMLCanvasElement>(GetDocument().body()->firstChild());
   CanvasContextCreationAttributesCore attributes;
   attributes.alpha = true;

@@ -7,7 +7,6 @@
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/public/common/screen_orientation/web_screen_orientation_type.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 
@@ -23,6 +22,10 @@ class LockOrientationCallback final : public WebLockOrientationCallback {
 
  public:
   explicit LockOrientationCallback(ScriptPromiseResolver*);
+
+  LockOrientationCallback(const LockOrientationCallback&) = delete;
+  LockOrientationCallback& operator=(const LockOrientationCallback&) = delete;
+
   ~LockOrientationCallback() override;
 
   void OnSuccess() override;
@@ -30,8 +33,6 @@ class LockOrientationCallback final : public WebLockOrientationCallback {
 
  private:
   Persistent<ScriptPromiseResolver> resolver_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockOrientationCallback);
 };
 
 }  // namespace blink

@@ -6,14 +6,16 @@
 #ifndef RLZ_LIB_NET_RESPONSE_CHECK_H_
 #define RLZ_LIB_NET_RESPONSE_CHECK_H_
 
-#include <string>
+#include <stddef.h>
+
 #include "rlz/lib/rlz_api.h"
 
 // Checksum validation convenience call for RLZ network responses.
 namespace rlz_lib {
+
 // The maximum length of a ping response we will parse in bytes. If the response
 // is bigger, please break it up into separate calls.
-const size_t kMaxPingResponseLength = 0x4000;  // 16K
+constexpr size_t kMaxPingResponseLength = 0x4000;  // 16K
 
 // Checks if a ping response is valid - ie. it has a checksum line which
 // is the CRC-32 checksum of the message up to the checksum. If

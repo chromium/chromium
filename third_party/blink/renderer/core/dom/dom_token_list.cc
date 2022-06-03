@@ -78,7 +78,7 @@ bool CheckTokensSyntax(const Vector<String>& tokens,
 
 }  // anonymous namespace
 
-void DOMTokenList::Trace(Visitor* visitor) {
+void DOMTokenList::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   ScriptWrappable::Trace(visitor);
 }
@@ -255,14 +255,10 @@ void DOMTokenList::UpdateWithTokenSet(const SpaceSplitString& token_set) {
 }
 
 AtomicString DOMTokenList::value() const {
-  DCHECK_NE(attribute_name_, g_null_name)
-      << "The subclass of DOMTokenList should override value().";
   return element_->getAttribute(attribute_name_);
 }
 
 void DOMTokenList::setValue(const AtomicString& value) {
-  DCHECK_NE(attribute_name_, g_null_name)
-      << "The subclass of DOMTokenList should override setValue().";
   element_->setAttribute(attribute_name_, value);
   // setAttribute() will call DidUpdateAttributeValue().
 }

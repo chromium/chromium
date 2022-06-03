@@ -24,18 +24,12 @@ FakeServerHttpPostProviderFactory::FakeServerHttpPostProviderFactory(
     : fake_server_(fake_server),
       fake_server_task_runner_(fake_server_task_runner) {}
 
-FakeServerHttpPostProviderFactory::~FakeServerHttpPostProviderFactory() {}
+FakeServerHttpPostProviderFactory::~FakeServerHttpPostProviderFactory() =
+    default;
 
-syncer::HttpPostProviderInterface* FakeServerHttpPostProviderFactory::Create() {
-  FakeServerHttpPostProvider* http =
-      new FakeServerHttpPostProvider(fake_server_, fake_server_task_runner_);
-  http->AddRef();
-  return http;
-}
-
-void FakeServerHttpPostProviderFactory::Destroy(
-    syncer::HttpPostProviderInterface* http) {
-  static_cast<FakeServerHttpPostProvider*>(http)->Release();
+scoped_refptr<syncer::HttpPostProviderInterface>
+FakeServerHttpPostProviderFactory::Create() {
+  return new FakeServerHttpPostProvider(fake_server_, fake_server_task_runner_);
 }
 
 FakeServerHttpPostProvider::FakeServerHttpPostProvider(
@@ -48,7 +42,7 @@ FakeServerHttpPostProvider::FakeServerHttpPostProvider(
           base::WaitableEvent::InitialState::NOT_SIGNALED),
       aborted_(false) {}
 
-FakeServerHttpPostProvider::~FakeServerHttpPostProvider() {}
+FakeServerHttpPostProvider::~FakeServerHttpPostProvider() = default;
 
 void FakeServerHttpPostProvider::SetExtraRequestHeaders(const char* headers) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -57,12 +51,10 @@ void FakeServerHttpPostProvider::SetExtraRequestHeaders(const char* headers) {
   extra_request_headers_.assign(headers);
 }
 
-void FakeServerHttpPostProvider::SetURL(const char* url, int port) {
+void FakeServerHttpPostProvider::SetURL(const GURL& url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(pvalenzuela): Add assertions on these values.
-  request_url_.assign(url);
-  request_port_ = port;
+  request_url_ = url;
 }
 
 void FakeServerHttpPostProvider::SetPostPayload(const char* content_type,

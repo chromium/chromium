@@ -6,6 +6,7 @@
 
 #include <crt_externs.h>
 #include <mach/mach.h>
+#include <os/availability.h>
 #include <spawn.h>
 #include <string.h>
 #include <sys/syscall.h>
@@ -14,12 +15,11 @@
 #include "base/command_line.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
-#include "base/mac/availability.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/environment_internal.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/base_tracing.h"
 
 extern "C" {
 // Changes the current thread's directory to a path or directory file
@@ -34,13 +34,6 @@ int responsibility_spawnattrs_setdisclaim(posix_spawnattr_t attrs, int disclaim)
 }  // extern "C"
 
 namespace base {
-
-// Friend and derived class of ScopedAllowBaseSyncPrimitives which allows
-// GetAppOutputInternal() to join a process. GetAppOutputInternal() can't itself
-// be a friend of ScopedAllowBaseSyncPrimitives because it is in the anonymous
-// namespace.
-class GetAppOutputScopedAllowBaseSyncPrimitives
-    : public base::ScopedAllowBaseSyncPrimitives {};
 
 namespace {
 
@@ -71,6 +64,9 @@ class PosixSpawnFileActions {
     DPSXCHECK(posix_spawn_file_actions_init(&file_actions_));
   }
 
+  PosixSpawnFileActions(const PosixSpawnFileActions&) = delete;
+  PosixSpawnFileActions& operator=(const PosixSpawnFileActions&) = delete;
+
   ~PosixSpawnFileActions() {
     DPSXCHECK(posix_spawn_file_actions_destroy(&file_actions_));
   }
@@ -89,12 +85,14 @@ class PosixSpawnFileActions {
     DPSXCHECK(posix_spawn_file_actions_addinherit_np(&file_actions_, filedes));
   }
 
+  void Chdir(const char* path) API_AVAILABLE(macos(10.15)) {
+    DPSXCHECK(posix_spawn_file_actions_addchdir_np(&file_actions_, path));
+  }
+
   const posix_spawn_file_actions_t* get() const { return &file_actions_; }
 
  private:
   posix_spawn_file_actions_t file_actions_;
-
-  DISALLOW_COPY_AND_ASSIGN(PosixSpawnFileActions);
 };
 
 int ChangeCurrentThreadDirectory(const char* path) {
@@ -126,6 +124,8 @@ struct GetAppOutputOptions {
 
 bool GetAppOutputInternal(const std::vector<std::string>& argv,
                           GetAppOutputOptions* gao_options) {
+  TRACE_EVENT0("base", "GetAppOutput");
+
   ScopedFD read_fd, write_fd;
   {
     int pipefds[2];
@@ -167,8 +167,10 @@ bool GetAppOutputInternal(const std::vector<std::string>& argv,
     }
   } while (read_this_pass > 0);
 
-  // Reap the child process.
-  GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
+  // It is okay to allow this process to wait on the launched process as a
+  // process launched with GetAppOutput*() shouldn't wait back on the process
+  // that launched it.
+  internal::GetAppOutputScopedAllowBaseSyncPrimitives allow_wait;
   if (!process.WaitForExit(&gao_options->exit_code)) {
     return false;
   }
@@ -254,14 +256,25 @@ Process LaunchProcess(const std::vector<std::string>& argv,
                                     ? options.real_path.value().c_str()
                                     : argv_cstr[0];
 
-  // If the new program has specified its PWD, change the thread-specific
-  // working directory. The new process will inherit it during posix_spawnp().
+  if (__builtin_available(macOS 11.0, *)) {
+    if (options.enable_cpu_security_mitigations) {
+      DPSXCHECK(posix_spawnattr_set_csm_np(attr.get(), POSIX_SPAWN_NP_CSM_ALL));
+    }
+  }
+
   if (!options.current_directory.empty()) {
-    int rv =
-        ChangeCurrentThreadDirectory(options.current_directory.value().c_str());
-    if (rv != 0) {
-      DPLOG(ERROR) << "pthread_chdir_np";
-      return Process();
+    const char* chdir_str = options.current_directory.value().c_str();
+    if (__builtin_available(macOS 10.15, *)) {
+      file_actions.Chdir(chdir_str);
+    } else {
+      // If the chdir posix_spawn_file_actions extension is not available,
+      // change the thread-specific working directory. The new process will
+      // inherit it during posix_spawnp().
+      int rv = ChangeCurrentThreadDirectory(chdir_str);
+      if (rv != 0) {
+        DPLOG(ERROR) << "pthread_chdir_np";
+        return Process();
+      }
     }
   }
 
@@ -271,10 +284,10 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     // If |options.mach_ports_for_rendezvous| is specified : the server's lock
     // must be held for the duration of posix_spawnp() so that new child's PID
     // can be recorded with the set of ports.
-    const bool has_mac_ports_for_rendezvous =
+    const bool has_mach_ports_for_rendezvous =
         !options.mach_ports_for_rendezvous.empty();
     AutoLockMaybe rendezvous_lock(
-        has_mac_ports_for_rendezvous
+        has_mach_ports_for_rendezvous
             ? &MachPortRendezvousServer::GetInstance()->GetLock()
             : nullptr);
 
@@ -282,10 +295,11 @@ Process LaunchProcess(const std::vector<std::string>& argv,
     rv = posix_spawnp(&pid, executable_path, file_actions.get(), attr.get(),
                       &argv_cstr[0], new_environ);
 
-    if (has_mac_ports_for_rendezvous) {
-      auto* rendezvous = MachPortRendezvousServer::GetInstance();
+    if (has_mach_ports_for_rendezvous) {
       if (rv == 0) {
-        rendezvous->RegisterPortsForPid(pid, options.mach_ports_for_rendezvous);
+        MachPortRendezvousServer::GetInstance()->GetLock().AssertAcquired();
+        MachPortRendezvousServer::GetInstance()->RegisterPortsForPid(
+            pid, options.mach_ports_for_rendezvous);
       } else {
         // Because |options| is const-ref, the collection has to be copied here.
         // The caller expects to relinquish ownership of any strong rights if
@@ -301,7 +315,12 @@ Process LaunchProcess(const std::vector<std::string>& argv,
 
   // Restore the thread's working directory if it was changed.
   if (!options.current_directory.empty()) {
-    ResetCurrentThreadDirectory();
+    if (__builtin_available(macOS 10.15, *)) {
+      // Nothing to do because no global state was changed, but
+      // __builtin_available is special and cannot be negated.
+    } else {
+      ResetCurrentThreadDirectory();
+    }
   }
 
   if (rv != 0) {

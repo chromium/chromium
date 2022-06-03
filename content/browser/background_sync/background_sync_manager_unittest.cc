@@ -11,14 +11,13 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/simple_test_clock.h"
@@ -33,7 +32,6 @@
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_context_wrapper.h"
 #include "content/browser/service_worker/service_worker_registration_object_host.h"
-#include "content/browser/service_worker/service_worker_storage.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/background_sync_parameters.h"
 #include "content/public/browser/permission_type.h"
@@ -49,8 +47,10 @@
 #include "services/network/test/test_network_connection_tracker.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
+#include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
 
 namespace content {
 
@@ -59,8 +59,8 @@ namespace {
 using ::testing::_;
 using ::testing::Return;
 
-const char kScope1[] = "https://example.com/a";
-const char kScope2[] = "https://example.com/b";
+const char kScope1[] = "https://example.com/a/";
+const char kScope2[] = "https://example.com/b/";
 const char kScript1[] = "https://example.com/a/script.js";
 const char kScript2[] = "https://example.com/b/script.js";
 
@@ -116,7 +116,7 @@ class BackgroundSyncManagerTest
     // TODO(jkarlin): Create a new object with all of the necessary SW calls
     // so that we can inject test versions instead of bringing up all of this
     // extra SW stuff.
-    helper_.reset(new EmbeddedWorkerTestHelper(base::FilePath()));
+    helper_ = std::make_unique<EmbeddedWorkerTestHelper>(base::FilePath());
 
     std::unique_ptr<MockPermissionManager> mock_permission_manager(
         new testing::NiceMock<MockPermissionManager>());
@@ -135,8 +135,8 @@ class BackgroundSyncManagerTest
     // Create a StoragePartition with the correct BrowserContext so that the
     // BackgroundSyncManager can find the BrowserContext through it.
     storage_partition_impl_ = static_cast<StoragePartitionImpl*>(
-        BrowserContext::GetStoragePartitionForSite(
-            helper_->browser_context(), GURL("https://example.com")));
+        helper_->browser_context()->GetStoragePartitionForUrl(
+            GURL("https://example.com")));
     helper_->context_wrapper()->set_storage_partition(storage_partition_impl_);
 
     SetMaxSyncAttemptsAndRestartManager(1);
@@ -163,19 +163,23 @@ class BackgroundSyncManagerTest
     bool called_2 = false;
     blink::mojom::ServiceWorkerRegistrationOptions options1;
     options1.scope = GURL(kScope1);
+    blink::StorageKey key1(url::Origin::Create(GURL(kScope1)));
     blink::mojom::ServiceWorkerRegistrationOptions options2;
     options2.scope = GURL(kScope2);
+    blink::StorageKey key2(url::Origin::Create(GURL(kScope2)));
     helper_->context()->RegisterServiceWorker(
-        GURL(kScript1), options1,
+        GURL(kScript1), key1, options1,
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&RegisterServiceWorkerCallback, &called_1,
-                       &sw_registration_id_1_));
+                       &sw_registration_id_1_),
+        /*requesting_frame_id=*/GlobalRenderFrameHostId());
 
     helper_->context()->RegisterServiceWorker(
-        GURL(kScript2), options2,
+        GURL(kScript2), key2, options2,
         blink::mojom::FetchClientSettingsObject::New(),
         base::BindOnce(&RegisterServiceWorkerCallback, &called_2,
-                       &sw_registration_id_2_));
+                       &sw_registration_id_2_),
+        /*requesting_frame_id=*/GlobalRenderFrameHostId());
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(called_1);
     EXPECT_TRUE(called_2);
@@ -183,12 +187,12 @@ class BackgroundSyncManagerTest
     // Hang onto the registrations as they need to be "live" when
     // calling BackgroundSyncManager::Register.
     helper_->context_wrapper()->FindReadyRegistrationForId(
-        sw_registration_id_1_, GURL(kScope1).GetOrigin(),
+        sw_registration_id_1_, key1,
         base::BindOnce(FindServiceWorkerRegistrationCallback,
                        &sw_registration_1_));
 
     helper_->context_wrapper()->FindReadyRegistrationForId(
-        sw_registration_id_2_, GURL(kScope1).GetOrigin(),
+        sw_registration_id_2_, key1,
         base::BindOnce(FindServiceWorkerRegistrationCallback,
                        &sw_registration_2_));
     base::RunLoop().RunUntilIdle();
@@ -361,14 +365,14 @@ class BackgroundSyncManagerTest
     if (GetBackgroundSyncType(options) ==
         blink::mojom::BackgroundSyncType::ONE_SHOT) {
       test_background_sync_manager()->Register(
-          sw_registration_id, std::move(options),
+          sw_registration_id, options,
           base::BindOnce(&BackgroundSyncManagerTest::
                              StatusAndOneShotSyncRegistrationCallback,
                          base::Unretained(this), &was_called));
       callback_status = &one_shot_sync_callback_status_;
     } else {
       test_background_sync_manager()->Register(
-          sw_registration_id, std::move(options),
+          sw_registration_id, options,
           base::BindOnce(&BackgroundSyncManagerTest::
                              StatusAndPeriodicSyncRegistrationCallback,
                          base::Unretained(this), &was_called));
@@ -532,8 +536,10 @@ class BackgroundSyncManagerTest
 
   void UnregisterServiceWorker(uint64_t sw_registration_id) {
     bool called = false;
+    const GURL scope = ScopeForSWId(sw_registration_id);
     helper_->context()->UnregisterServiceWorker(
-        ScopeForSWId(sw_registration_id),
+        scope, blink::StorageKey(url::Origin::Create(scope)),
+        /*is_immediate=*/false,
         base::BindOnce(&UnregisterServiceWorkerCallback, &called));
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(called);
@@ -812,7 +818,7 @@ TEST_F(BackgroundSyncManagerTest, UnregistrationStopsPeriodicTasks) {
   EXPECT_EQ(0, periodic_sync_events_called_);
 
   // Advance clock.
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
 
@@ -821,7 +827,7 @@ TEST_F(BackgroundSyncManagerTest, UnregistrationStopsPeriodicTasks) {
   EXPECT_TRUE(Unregister(sync_options_2_));
 
   // Advance clock. Expect no increase in periodicSync events fired.
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1, periodic_sync_events_called_);
@@ -885,16 +891,16 @@ TEST_F(BackgroundSyncManagerTest, RegistrationIntact) {
 }
 
 TEST_F(BackgroundSyncManagerTest, RegisterWithoutLiveSWRegistration) {
-  // Get a provider host which is used to install the service worker.
+  // Get a worker host which is used to install the service worker.
   ASSERT_TRUE(sw_registration_1_->active_version());
   ASSERT_FALSE(sw_registration_1_->waiting_version());
   ASSERT_FALSE(sw_registration_1_->installing_version());
-  ServiceWorkerProviderHost* provider_host =
-      sw_registration_1_->active_version()->provider_host();
-  ASSERT_TRUE(provider_host);
+  ServiceWorkerHost* worker_host =
+      sw_registration_1_->active_version()->worker_host();
+  ASSERT_TRUE(worker_host);
 
   // Remove the registration object host.
-  provider_host->container_host()->registration_object_hosts_.clear();
+  worker_host->container_host()->registration_object_hosts_.clear();
 
   // Ensure |sw_registration_1_| is the last reference to the registration.
   ASSERT_TRUE(sw_registration_1_->HasOneRef());
@@ -921,7 +927,7 @@ TEST_F(BackgroundSyncManagerTest, RegisterBadBackend) {
 }
 
 TEST_F(BackgroundSyncManagerTest, RegisterPermissionDenied) {
-  GURL expected_origin = GURL(kScope1).GetOrigin();
+  GURL expected_origin = GURL(kScope1).DeprecatedGetOriginAsURL();
   MockPermissionManager* mock_permission_manager =
       GetPermissionControllerDelegate();
 
@@ -945,7 +951,7 @@ TEST_F(BackgroundSyncManagerTest, RegisterPermissionDenied) {
 }
 
 TEST_F(BackgroundSyncManagerTest, RegisterPermissionGranted) {
-  GURL expected_origin = GURL(kScope1).GetOrigin();
+  GURL expected_origin = GURL(kScope1).DeprecatedGetOriginAsURL();
   MockPermissionManager* mock_permission_manager =
       GetPermissionControllerDelegate();
 
@@ -1100,7 +1106,7 @@ TEST_F(BackgroundSyncManagerTest, RebootRecoveryPeriodicSync) {
 
   EXPECT_TRUE(GetRegistration(sync_options_1_));
   EXPECT_EQ(GetOriginForPeriodicSyncRegistration(),
-            url::Origin::Create(GURL(kScope1).GetOrigin()));
+            url::Origin::Create(GURL(kScope1).DeprecatedGetOriginAsURL()));
 }
 
 TEST_F(BackgroundSyncManagerTest, RebootRecoveryTwoServiceWorkers) {
@@ -1319,7 +1325,7 @@ TEST_F(BackgroundSyncManagerTest, FiresOnRegistration) {
 
 TEST_F(BackgroundSyncManagerTest, PeriodicSyncFiresWhenExpected) {
   InitPeriodicSyncEventTest();
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
 
   EXPECT_TRUE(Register(sync_options_2_));
@@ -1345,11 +1351,11 @@ TEST_F(BackgroundSyncManagerTest, PeriodicSyncFiresWhenExpected) {
 
 TEST_F(BackgroundSyncManagerTest, TestSupensionAndRevival) {
   InitPeriodicSyncEventTest();
-  auto thirteen_hours = base::TimeDelta::FromHours(13);
+  auto thirteen_hours = base::Hours(13);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
 
-  auto origin = url::Origin::Create(GURL(kScope1).GetOrigin());
+  auto origin = url::Origin::Create(GURL(kScope1).DeprecatedGetOriginAsURL());
 
   SuspendPeriodicSyncRegistrations({origin});
   EXPECT_TRUE(Register(sync_options_1_));
@@ -1382,11 +1388,11 @@ TEST_F(BackgroundSyncManagerTest, TestSupensionAndRevival) {
 
 TEST_F(BackgroundSyncManagerTest, UnregisterForOrigin) {
   InitPeriodicSyncEventTest();
-  auto thirteen_hours = base::TimeDelta::FromHours(13);
+  auto thirteen_hours = base::Hours(13);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
 
-  auto origin = url::Origin::Create(GURL(kScope1).GetOrigin());
+  auto origin = url::Origin::Create(GURL(kScope1).DeprecatedGetOriginAsURL());
 
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_TRUE(GetRegistration(sync_options_1_));
@@ -1683,10 +1689,10 @@ TEST_F(BackgroundSyncManagerTest, OverrideParameters) {
       GetController()->background_sync_parameters();
   parameters->disable = true;
   parameters->max_sync_attempts = 100;
-  parameters->initial_retry_delay = base::TimeDelta::FromMinutes(200);
+  parameters->initial_retry_delay = base::Minutes(200);
   parameters->retry_delay_factor = 300;
-  parameters->min_sync_recovery_time = base::TimeDelta::FromMinutes(400);
-  parameters->max_sync_event_duration = base::TimeDelta::FromMinutes(500);
+  parameters->min_sync_recovery_time = base::Minutes(400);
+  parameters->max_sync_event_duration = base::Minutes(500);
 
   // Restart the BackgroundSyncManager so that it updates its parameters.
   SetupBackgroundSyncManager();
@@ -1798,15 +1804,14 @@ TEST_F(BackgroundSyncManagerTest, WakeBrowserCalledForPeriodicSync) {
 
   // Register a periodic Background Sync but it can't fire due to lack of
   // network, wake up is required.
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
   Register(sync_options_1_);
   EXPECT_TRUE(IsBrowserWakeupForPeriodicSyncScheduled());
   EXPECT_TRUE(EqualsSoonestPeriodicSyncWakeupDelta(thirteen_hours));
 
   // Advance clock.
-  test_clock_.Advance(
-      base::TimeDelta::FromMilliseconds(thirteen_hours.InMilliseconds()));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours.InMilliseconds()));
 
   // Start the event but it will pause mid-sync due to
   // InitDelayedPeriodicSyncEventTest() above.
@@ -1843,7 +1848,7 @@ TEST_F(BackgroundSyncManagerTest, GetSoonestWakeupDeltaConsidersSyncType) {
   EXPECT_EQ(GetSoonestWakeupDelta(
                 blink::mojom::BackgroundSyncType::PERIODIC,
                 /* last_browser_wakeup_for_periodic_sync= */ base::Time()),
-            base::TimeDelta::FromMilliseconds(sync_options_2_.min_interval));
+            base::Milliseconds(sync_options_2_.min_interval));
 }
 
 TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaDecreasesWithTime) {
@@ -1857,17 +1862,17 @@ TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaDecreasesWithTime) {
       blink::mojom::BackgroundSyncType::PERIODIC,
       /* last_browser_wakeup_for_periodic_sync= */ base::Time());
 
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   base::TimeDelta soonest_wakeup_delta_2 = GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType::PERIODIC,
       /* last_browser_wakeup_for_periodic_sync= */ base::Time());
 
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   base::TimeDelta soonest_wakeup_delta_3 = GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType::PERIODIC,
       /* last_browser_wakeup_for_periodic_sync= */ base::Time());
 
-  test_clock_.Advance(base::TimeDelta::FromMilliseconds(thirteen_hours_ms));
+  test_clock_.Advance(base::Milliseconds(thirteen_hours_ms));
   base::TimeDelta soonest_wakeup_delta_4 = GetSoonestWakeupDelta(
       blink::mojom::BackgroundSyncType::PERIODIC,
       /* last_browser_wakeup_for_periodic_sync= */ base::Time());
@@ -1878,12 +1883,12 @@ TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaDecreasesWithTime) {
 }
 
 TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaAppliesBrowserWakeupLimit) {
-  base::TimeDelta twelve_hours = base::TimeDelta::FromHours(12);
+  base::TimeDelta twelve_hours = base::Hours(12);
   SetPeriodicSyncEventsMinIntervalAndRestartManager(twelve_hours);
 
   // Register a periodic sync.
   // Hour zero.
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_TRUE(GetRegistration(sync_options_1_));
@@ -1894,21 +1899,21 @@ TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaAppliesBrowserWakeupLimit) {
 
   // Advance the clock by an hour.
   // Hour 1. Expect soonest_wakeup_delta to now be 12.
-  base::TimeDelta one_hour = base::TimeDelta::FromHours(1);
+  base::TimeDelta one_hour = base::Hours(1);
   test_clock_.Advance(one_hour);
   EXPECT_EQ(GetSoonestWakeupDelta(
                 blink::mojom::BackgroundSyncType::PERIODIC,
                 /* last_browser_wakeup_for_periodic_sync= */ base::Time()),
             twelve_hours);
   // Advance the clock by 12 hours. Hour 13.
-  test_clock_.Advance(base::TimeDelta::FromHours(9));
+  test_clock_.Advance(base::Hours(9));
   base::Time browser_wakeup_time = test_clock_.Now();
-  test_clock_.Advance(base::TimeDelta::FromHours(3));
+  test_clock_.Advance(base::Hours(3));
   EXPECT_EQ(
       GetSoonestWakeupDelta(
           blink::mojom::BackgroundSyncType::PERIODIC,
           /* last_browser_wakeup_for_periodic_sync= */ browser_wakeup_time),
-      base::TimeDelta::FromHours(9));
+      base::Hours(9));
   EXPECT_EQ(GetSoonestWakeupDelta(
                 blink::mojom::BackgroundSyncType::PERIODIC,
                 /* last_browser_wakeup_for_periodic_sync= */ base::Time()),
@@ -1917,13 +1922,13 @@ TEST_F(BackgroundSyncManagerTest, SoonestWakeupDeltaAppliesBrowserWakeupLimit) {
 }
 
 TEST_F(BackgroundSyncManagerTest, StaggeredPeriodicSyncRegistrations) {
-  base::TimeDelta twelve_hours = base::TimeDelta::FromHours(12);
+  base::TimeDelta twelve_hours = base::Hours(12);
   SetPeriodicSyncEventsMinIntervalAndRestartManager(twelve_hours);
   InitPeriodicSyncEventTest();
   SetNetwork(network::mojom::ConnectionType::CONNECTION_NONE);
 
   // Register a periodic sync.
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_1_.min_interval = thirteen_hours.InMilliseconds();
   EXPECT_TRUE(Register(sync_options_1_));
   EXPECT_TRUE(GetRegistration(sync_options_1_));
@@ -1934,7 +1939,7 @@ TEST_F(BackgroundSyncManagerTest, StaggeredPeriodicSyncRegistrations) {
             thirteen_hours);
 
   // Advance the clock by an hour. Add another registration.
-  base::TimeDelta one_hour = base::TimeDelta::FromHours(1);
+  base::TimeDelta one_hour = base::Hours(1);
   test_clock_.Advance(one_hour);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
   EXPECT_EQ(GetSoonestWakeupDelta(
@@ -1984,7 +1989,7 @@ TEST_F(BackgroundSyncManagerTest, TwoFailedAttemptsForPeriodicSync) {
   SetMaxSyncAttemptsAndRestartManager(2);
   InitFailedPeriodicSyncEventTest();
 
-  base::TimeDelta thirteen_hours = base::TimeDelta::FromHours(13);
+  base::TimeDelta thirteen_hours = base::Hours(13);
   sync_options_2_.min_interval = thirteen_hours.InMilliseconds();
 
   EXPECT_TRUE(Register(sync_options_2_));
@@ -2001,9 +2006,8 @@ TEST_F(BackgroundSyncManagerTest, TwoFailedAttemptsForPeriodicSync) {
 
   // Since this one failed, a wakeup/delayed task will be scheduled for retries
   // after five minutes.
-  EXPECT_EQ(base::TimeDelta::FromMinutes(5),
-            delayed_periodic_sync_task_delta());
-  test_clock_.Advance(base::TimeDelta::FromMinutes(5));
+  EXPECT_EQ(base::Minutes(5), delayed_periodic_sync_task_delta());
+  test_clock_.Advance(base::Minutes(5));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
 
@@ -2012,14 +2016,14 @@ TEST_F(BackgroundSyncManagerTest, TwoFailedAttemptsForPeriodicSync) {
 
   // Second attempt would also fail, resetting to next thirteen_hours.
   // Expect nothing after just another hour.
-  test_clock_.Advance(base::TimeDelta::FromHours(1));
+  test_clock_.Advance(base::Hours(1));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(2, periodic_sync_events_called_);
 
   // Expect the next event after another twelve hours.
-  test_clock_.Advance(base::TimeDelta::FromHours(12));
+  test_clock_.Advance(base::Hours(12));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
 
@@ -2037,9 +2041,8 @@ TEST_F(BackgroundSyncManagerTest, TwoAttempts) {
   EXPECT_TRUE(IsDelayedTaskScheduledOneShotSync());
 
   // Make sure the delay is reasonable.
-  EXPECT_LT(base::TimeDelta::FromMinutes(1),
-            delayed_one_shot_sync_task_delta());
-  EXPECT_GT(base::TimeDelta::FromHours(1), delayed_one_shot_sync_task_delta());
+  EXPECT_LT(base::Minutes(1), delayed_one_shot_sync_task_delta());
+  EXPECT_GT(base::Hours(1), delayed_one_shot_sync_task_delta());
 
   // Fire again and this time it should permanently fail.
   test_clock_.Advance(delayed_one_shot_sync_task_delta());
@@ -2085,16 +2088,14 @@ TEST_F(BackgroundSyncManagerTest, WaitsFullDelayTime) {
 
   // Fire again one second before it's ready to retry. Expect it to reschedule
   // the delay timer for one more second.
-  test_clock_.Advance(delayed_one_shot_sync_task_delta() -
-                      base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(delayed_one_shot_sync_task_delta() - base::Seconds(1));
   FireReadyEvents();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetRegistration(sync_options_1_));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            delayed_one_shot_sync_task_delta());
+  EXPECT_EQ(base::Seconds(1), delayed_one_shot_sync_task_delta());
 
   // Fire one second later and it should fail permanently.
-  test_clock_.Advance(base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(base::Seconds(1));
   RunOneShotSyncDelayedTask();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(GetRegistration(sync_options_1_));
@@ -2130,12 +2131,11 @@ TEST_F(BackgroundSyncManagerTest, RescheduleOnBrowserRestart) {
   base::TimeDelta delta = delayed_one_shot_sync_task_delta();
   CreateBackgroundSyncManager();
   InitFailedSyncEventTest();
-  test_clock_.Advance(delta - base::TimeDelta::FromSeconds(1));
+  test_clock_.Advance(delta - base::Seconds(1));
   InitBackgroundSyncManager();
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(GetRegistration(sync_options_1_));
-  EXPECT_EQ(base::TimeDelta::FromSeconds(1),
-            delayed_one_shot_sync_task_delta());
+  EXPECT_EQ(base::Seconds(1), delayed_one_shot_sync_task_delta());
 }
 
 TEST_F(BackgroundSyncManagerTest, RetryIfClosedMidSync) {

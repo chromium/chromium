@@ -4,6 +4,7 @@
 
 #include "net/base/network_interfaces.h"
 
+#include "base/logging.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX)
@@ -43,10 +44,6 @@ NetworkInterface::~NetworkInterface() = default;
 ScopedWifiOptions::~ScopedWifiOptions() = default;
 
 std::string GetHostName() {
-#if defined(OS_NACL)
-  NOTIMPLEMENTED();
-  return std::string();
-#else  // defined(OS_NACL)
 #if defined(OS_WIN)
   EnsureWinsockInit();
 #endif
@@ -59,7 +56,6 @@ std::string GetHostName() {
     buffer[0] = '\0';
   }
   return std::string(buffer);
-#endif  // !defined(OS_NACL)
 }
 
 }  // namespace net

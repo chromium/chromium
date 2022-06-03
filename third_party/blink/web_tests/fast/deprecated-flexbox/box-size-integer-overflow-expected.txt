@@ -1,2 +1,0 @@
-	PASS
-The green box should be the full width of the page.

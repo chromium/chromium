@@ -1,61 +1,21 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'PASS '",
-          "rect": [0, 114, 194, 46],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGRoot (positioned) svg",
-          "rect": [0, 14, 194, 46],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGViewportContainer svg",
-          "rect": [310, 114, 92, 46],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGViewportContainer svg",
-          "rect": [310, 14, 92, 46],
-          "reason": "chunk appeared"
-        },
-        {
-          "object": "LayoutSVGForeignObject foreignObject",
-          "rect": [210, 113, 92, 46],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGForeignObject foreignObject",
-          "rect": [210, 13, 92, 46],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGContainer g id='text3g'",
-          "rect": [0, 3, 6, 2],
-          "reason": "chunk disappeared"
-        },
-        {
-          "object": "LayoutSVGViewportContainer svg",
-          "rect": [9, 3, 4, 2],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGForeignObject foreignObject",
-          "rect": [6, 3, 4, 2],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutSVGForeignObject foreignObject",
-          "rect": [0, 0, 1, 1],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [0, 114, 194, 46],
+        [0, 14, 194, 46],
+        [310, 114, 92, 46],
+        [310, 14, 92, 46],
+        [210, 113, 92, 46],
+        [210, 13, 92, 46],
+        [0, 3, 6, 2],
+        [9, 3, 4, 2],
+        [6, 3, 4, 2],
+        [0, 0, 1, 1]
       ]
     }
   ]

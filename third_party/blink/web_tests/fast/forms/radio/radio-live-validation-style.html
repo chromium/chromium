@@ -35,7 +35,7 @@ parent.innerHTML = '<input type=radio name=group1 required checked id=radio1>' +
     '<input type=radio name=group1 required id=radio3>';
 var radio2 = $('radio2');
 shouldBeFalse('$("radio1").remove(); radio2.webkitMatchesSelector(":valid")');
-shouldBeTrue('radio2.remove(); radio2.webkitMatchesSelector(":valid")');
+shouldBeFalse('radio2.remove(); radio2.webkitMatchesSelector(":valid")');
 debug('');
 
 debug('Removing a checked radio button from a required radio button group by name attribute change:');

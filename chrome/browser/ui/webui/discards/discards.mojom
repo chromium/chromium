@@ -9,80 +9,16 @@ import "mojo/public/mojom/base/process_id.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
-// Identical to content::Visibility.
+// Identical to content::Visibility. Sent from browser to the chrome://discards
+// WebUI.
 enum LifecycleUnitVisibility {
   HIDDEN = 0,
   OCCLUDED = 1,
   VISIBLE = 2,
 };
 
-struct SiteCharacteristicsFeature {
-  // The cumulative observation time for this feature in seconds, set to 0 once
-  // this feature has been observed.
-  int64 observation_duration;
-  // The time at which this feature has been used (set to 0 if it hasn't been
-  // used), in seconds since epoch.
-  int64 use_timestamp;
-};
-
-struct SiteCharacteristicsPerformanceMeasurement {
-  // A decaying average of the CPU usage measurements. Units: microseconds.
-  float avg_cpu_usage_us;
-  // A decaying average of the process footprint measurements. Units: kilobytes.
-  float avg_footprint_kb;
-  // A decaying average of the wall-clock load time duration of the tab.
-  // Units: microseconds.
-  float avg_load_duration_us;
-};
-
-struct SiteCharacteristicsDatabaseSize {
-  // The total number of rows in the database, or -1 if the value is not
-  // available.
-  int64 num_rows;
-
-  // The total size of the database on disk in kilobytes, or -1 if the value
-  // is not available.
-  int64 on_disk_size_kb;
-};
-
-// The data stored for a given origin, this should mirror the
-// SiteDataProto structure in
-// performance_manager/persistence/site_data/site_data.proto.
-struct SiteCharacteristicsDatabaseValue {
-  // The last time this site has been in the loaded state, in seconds since
-  // epoch.
-  uint32 last_loaded;
-
-  SiteCharacteristicsFeature updates_favicon_in_background;
-  SiteCharacteristicsFeature updates_title_in_background;
-  SiteCharacteristicsFeature uses_audio_in_background;
-
-  // Load time performance measurement estimates. This maintains a decaying
-  // average of the resource usage of a page until shortly after it becomes
-  // idle.
-  SiteCharacteristicsPerformanceMeasurement? load_time_estimates;
-};
-
-// Provides the key and miscellaneous in-memory only data pertaining to a
-// row that potentially exists in a database.
-struct SiteCharacteristicsDatabaseEntry {
-  // The origin associated with this row.
-  string origin;
-
-  // This row is pending flush to disk.
-  bool is_dirty;
-
-  // NULL if the database entry doesn't exist on disk or in memory.
-  SiteCharacteristicsDatabaseValue? value;
-};
-
-// Contains information about a specific DB instance.
-struct SiteCharacteristicsDatabase {
-  // Contains the entries requested.
-  array<SiteCharacteristicsDatabaseEntry> db_rows;
-};
-
-// Discard related information about a single tab in a browser.
+// Discard related information about a single tab in a browser. Sent from
+// browser to the chrome://discards WebUI.
 struct TabDiscardsInfo {
   // The URL associated with the tab. This corresponds to GetLastCommittedURL,
   // and is also what is visible in the Omnibox for a given tab.
@@ -95,10 +31,6 @@ struct TabDiscardsInfo {
   mojom.LifecycleUnitLoadingState loading_state;
   // The state of the LifecycleUnit.
   mojom.LifecycleUnitState state;
-  // Whether the tab can be frozen.
-  bool can_freeze;
-  // List of human-readable reasons why a tab can't be frozen.
-  array<string> cannot_freeze_reasons;
   // Whether the tab can be discarded.
   bool can_discard;
   // List of human-readable reasons why a tab can't be discarded.
@@ -141,85 +73,115 @@ interface DetailsProvider {
   // each tab currently open in the browser, across all profiles.
   GetTabDiscardsInfo() => (array<TabDiscardsInfo> infos);
 
-  // Returns the in-memory entries and the entries for the requested origins.
-  // Note that any entry may take some time to load from disk, and so there may
-  // not be any data for a given entry until on the second or subsequent
-  // requests.
-  GetSiteCharacteristicsDatabase(
-      array<string> explicitly_requested_origins) =>
-          (SiteCharacteristicsDatabase? result);
-
-  // Returns the size of the database in number of rows and kilobytes.
-  // Note that this may be fairly expensive to acquire, and so shouldn't be
-  // called frequently.
-  GetSiteCharacteristicsDatabaseSize() =>
-      (SiteCharacteristicsDatabaseSize? db_size);
-
   // Sets the auto-discardable state of a tab, as specified by its stable
   // |tab_id|, earlier returned by GetTabDiscardsInfo. Invokes a callback when
   // the change has been made.
   SetAutoDiscardable(int32 tab_id, bool is_auto_discardable) => ();
 
-  // Discards a tab given its |tab_id|. If |urgent| is specified the unload
-  // handlers will not be run, and the tab will be unloaded with prejudice.
+  // Discards a tab given its |tab_id|. The unload handlers will not be run, and
+  // the tab will be unloaded with prejudice.
   // Invokes a callback when the discard is complete.
-  DiscardById(int32 tab_id, bool urgent) => ();
-
-  // Freezes a tab given its |tab_id|.
-  FreezeById(int32 tab_id);
+  DiscardById(int32 tab_id) => ();
 
   // Loads a tab given its |tab_id|.
   LoadById(int32 tab_id);
 
-  // Discards the least important tab. If |urgent| is specified the unload
-  // handlers will not be run, and the tab will be unloaded with prejudice.
+  // Discards the least important tab.
   // This can fail to discard a tab if no tabs are currently considered
   // eligible for discard. Invokes a callback when the discard is complete, or
   // if the decision was made not to discard.
-  Discard(bool urgent) => ();
+  Discard() => ();
 };
 
-// Represents the momentary state of a Page node.
+// Represents the momentary state of a Page node. Sent from browser to the
+// chrome://discards WebUI via the GraphChangeStream (defined below).
 struct PageInfo {
   int64 id;
 
   url.mojom.Url main_frame_url;
 
-  // TODO(siggi): Estimate data.
+  // The id of the frame that opened this page via window.open, if any.
+  int64 opener_frame_id;
+
+  // The id of the frame that embedded this page, if any.
+  int64 embedder_frame_id;
+
+  // This field is a dictionary of values, where each value is generated by
+  // a performance_manager::NodeDataDescriber implementation and keyed by the
+  // name it registered with. The intent is for each describer to describe
+  // private node-related or node-attached data in some way, to allow presenting
+  // otherwise hidden state in the chrome://discards/graph view.
+  string description_json;
 };
 
-// Represents the momentary state of a Frame node.
+// Represents the momentary state of a Frame node. Sent from browser to the
+// chrome://discards WebUI via the GraphChangeStream (defined below).
 struct FrameInfo {
   int64 id;
 
+  // The last committed URL of this frame.
   url.mojom.Url url;
+
+  // The ID of the page node this frame is associated with.
   int64 page_id;
+
+  // The ID of the parent frame, if there is one. If not, this is a main frame.
   int64 parent_frame_id;
+
+  // The ID of the process in which this frame is hosted.
   int64 process_id;
+
+  // See PageInfo::description_json.
+  string description_json;
 };
 
-// Represents the momentary state of a Process node.
+// Represents the momentary state of a Process node. Sent from browser to the
+// chrome://discards WebUI via the GraphChangeStream (defined below).
 struct ProcessInfo {
   int64 id;
 
+  // The PID of the process associated with this node.
   mojo_base.mojom.ProcessId pid;
-  mojo_base.mojom.TimeDelta cumulative_cpu_usage;
+
+  // The private memory usage of this process in KB.
   uint64 private_footprint_kb;
+
+  // See PageInfo::description_json.
+  string description_json;
 };
 
-// Represents the momentary state of a Worker node.
+// Represents the momentary state of a Worker node. Sent from browser to the
+// chrome://discards WebUI via the GraphChangeStream (defined below).
 struct WorkerInfo {
   int64 id;
 
+  // The URL of the worker.
   url.mojom.Url url;
+
+  // The ID of the process is which this worker is hosted.
   int64 process_id;
 
+  // An array of frames (by ID) that are clients of this worker (the worker is
+  // doing work on behalf of this frame). See
+  // WorkerNode::GetClientFrames() for details.
   array<int64> client_frame_ids;
+
+  // An array of other workers (by ID) that are clients of this worker (the
+  // worker is doing work on behalf of these other workers). See
+  // WorkerNode::GetClientWorkers() for details.
   array<int64> client_worker_ids;
+
+  // An array of workers (by ID) that are children of this worker. This can
+  // occur with shared and service workers owning their own dedicated workers.
+  // See WorkerNode::GetChildWorkers() for details.
   array<int64> child_worker_ids;
+
+  // See PageInfo::description_json.
+  string description_json;
 };
 
-// Used to transport favicon data.
+// Used to transport favicon data. Sent from browser to the chrome://discards
+// WebUI via the GraphChangeStream (defined below).
 struct FavIconInfo {
   int64 node_id;
 
@@ -229,7 +191,11 @@ struct FavIconInfo {
 };
 
 // Implement to receive a stream of notifications when performance manager
-// graph nodes are created, changed or deleted.
+// graph nodes are created, changed or deleted. Implemented in Javascript code
+// running in the chrome://discards WebUI, with data routed to it from an
+// observer of the performance_manager::Graph in the browser. The implementation
+// is injected into the browser via the browser-exposed GraphDump interface,
+// defined below.
 interface GraphChangeStream {
   // The |frame| was created.
   FrameCreated(FrameInfo frame);
@@ -258,8 +224,21 @@ interface GraphChangeStream {
 };
 
 // This interface allows subscribing to a stream of events that track the state
-// of the performance manager graph.
+// of the performance manager graph. Implemented in browser code, and used from
+// Javascript code running in the chrome://discards WebUI.
 interface GraphDump {
   // Subscribes |change_subscriber| to a graph change stream.
   SubscribeToChanges(pending_remote<GraphChangeStream> change_subscriber);
+
+  // Requests the node descriptions for the nodes with IDs |node_ids|. If any
+  // ID in |node_ids| is invalid, e.g. is not the ID of an existent node,
+  // the result will omit that node ID. The result will also omit nodes that
+  // have no description.
+  // Each returned description is a dictionary of values, where each value is
+  // generated by a performance_manager::NodeDataDescriber implementation and
+  // keyed by the name it registered with. The intent is for each describer to
+  // describe private node-related or node-attached data in some way, to allow
+  // presenting otherwise hidden state in the chrome://discards/graph view.
+  RequestNodeDescriptions(array<int64> node_ids) =>
+      (map<int64, string> node_descriptions_json);
 };

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
-#define REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#ifndef REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#define REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_
 
 #include <memory>
 #include <string>
@@ -44,6 +44,11 @@ class PairingRegistryDelegateWin
     : public protocol::PairingRegistry::Delegate {
  public:
   PairingRegistryDelegateWin();
+
+  PairingRegistryDelegateWin(const PairingRegistryDelegateWin&) = delete;
+  PairingRegistryDelegateWin& operator=(const PairingRegistryDelegateWin&) =
+      delete;
+
   ~PairingRegistryDelegateWin() override;
 
   // Passes the root keys to be used to access the pairing registry store.
@@ -62,10 +67,8 @@ class PairingRegistryDelegateWin
  private:
   base::win::RegKey privileged_;
   base::win::RegKey unprivileged_;
-
-  DISALLOW_COPY_AND_ASSIGN(PairingRegistryDelegateWin);
 };
 
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_PAIRING_REGISTRY_DELEGATE_WIN_H_
+#endif  // REMOTING_HOST_PAIRING_REGISTRY_DELEGATE_WIN_H_

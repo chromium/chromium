@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<head>
+<title>Test popup menu is closed after dsf changes</title>
+<script src='../resources/picker-common.js'></script>
+</head>
+
+<div id="text" style="color:red">This text should be green if the test ran</div>
+
+<select id="menu">
+    <option value="one">One</option>
+    <option value="two">Two</option>
+</select>
+<script>
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+  }
+
+  function finishTest() {
+    if (window.testRunner) {
+      testRunner.notifyDone();
+    }
+  }
+
+  function startTest() {
+    text.style.color = 'green';
+    if (window.testRunner) {
+      testRunner.setBackingScaleFactor(2, finishTest);
+    }
+  }
+
+  openPicker(menu, startTest);
+</script>

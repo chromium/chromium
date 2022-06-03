@@ -25,8 +25,8 @@
 [
     LegacyTreatAsPartialInterface
 ] interface mixin ChildNode {
-    [Unscopable, RaisesException, CEReactions, CustomElementCallbacks] void before((Node or DOMString or TrustedScript) ... nodes);
-    [Unscopable, RaisesException, CEReactions, CustomElementCallbacks] void after((Node or DOMString or TrustedScript)... nodes);
-    [Unscopable, RaisesException, CEReactions, CustomElementCallbacks] void replaceWith((Node or DOMString or TrustedScript)... nodes);
-    [Unscopable, RaisesException, CEReactions, CustomElementCallbacks] void remove();
+    [Unscopable, RaisesException, CEReactions] void before((Node or DOMString or TrustedScript) ... nodes);
+    [Unscopable, RaisesException, CEReactions] void after((Node or DOMString or TrustedScript)... nodes);
+    [Unscopable, RaisesException, CEReactions] void replaceWith((Node or DOMString or TrustedScript)... nodes);
+    [Unscopable, RaisesException, CEReactions] void remove();
 };

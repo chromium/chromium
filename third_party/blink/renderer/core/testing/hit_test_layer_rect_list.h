@@ -51,7 +51,7 @@ class HitTestLayerRectList final : public ScriptWrappable {
   HitTestLayerRect* item(unsigned index);
   void Append(DOMRectReadOnly* layer_rect, DOMRectReadOnly* hit_test_rect);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<HitTestLayerRect>> list_;

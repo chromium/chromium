@@ -58,11 +58,10 @@ void ProxyEventRouter::OnProxyError(
   }
 }
 
-void ProxyEventRouter::OnPACScriptError(
-    EventRouterForwarder* event_router,
-    void* profile,
-    int line_number,
-    const base::string16& error) {
+void ProxyEventRouter::OnPACScriptError(EventRouterForwarder* event_router,
+                                        void* profile,
+                                        int line_number,
+                                        const std::u16string& error) {
   std::unique_ptr<base::ListValue> args(new base::ListValue());
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
   dict->SetBoolean(proxy_api_constants::kProxyEventFatal, false);
@@ -141,7 +140,8 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::ExtensionToBrowserPref(
 }
 
 std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
-    const base::Value* browser_pref) {
+    const base::Value* browser_pref,
+    bool is_incognito_profile) {
   CHECK(browser_pref->is_dict());
 
   // This is a dictionary wrapper that exposes the proxy configuration stored in
@@ -175,8 +175,9 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
           proxy_api_helpers::CreatePacScriptDict(config);
       if (!pac_dict)
         return nullptr;
-      extension_pref->Set(proxy_api_constants::kProxyConfigPacScript,
-                          std::move(pac_dict));
+      extension_pref->SetKey(
+          proxy_api_constants::kProxyConfigPacScript,
+          base::Value::FromUniquePtrValue(std::move(pac_dict)));
       break;
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
@@ -185,8 +186,9 @@ std::unique_ptr<base::Value> ProxyPrefTransformer::BrowserToExtensionPref(
           proxy_api_helpers::CreateProxyRulesDict(config);
       if (!proxy_rules_dict)
         return nullptr;
-      extension_pref->Set(proxy_api_constants::kProxyConfigRules,
-                          std::move(proxy_rules_dict));
+      extension_pref->SetKey(
+          proxy_api_constants::kProxyConfigRules,
+          base::Value::FromUniquePtrValue(std::move(proxy_rules_dict)));
       break;
     }
     case ProxyPrefs::kModeCount:

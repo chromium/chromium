@@ -4,7 +4,10 @@
 
 #include "ui/events/blink/web_input_event_builders_win.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/trace_event/trace_event.h"
 #include "base/win/windowsx_shim.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/display/win/screen_win.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/event_utils.h"
@@ -18,6 +21,7 @@ namespace ui {
 
 static const unsigned long kDefaultScrollLinesPerWheelDelta = 3;
 static const unsigned long kDefaultScrollCharsPerWheelDelta = 1;
+static const unsigned long kScrollPercentPerLineOrChar = 5;
 
 // WebMouseEvent --------------------------------------------------------------
 
@@ -42,7 +46,7 @@ WebMouseEvent WebMouseEventBuilder::Build(
   WebMouseEvent::Button button = WebMouseEvent::Button::kNoButton;
   switch (message) {
     case WM_MOUSEMOVE:
-      type = WebInputEvent::kMouseMove;
+      type = WebInputEvent::Type::kMouseMove;
       if (wparam & MK_LBUTTON)
         button = WebMouseEvent::Button::kLeft;
       else if (wparam & MK_MBUTTON)
@@ -56,7 +60,7 @@ WebMouseEvent WebMouseEventBuilder::Build(
     case WM_NCMOUSELEAVE:
       // TODO(rbyers): This should be MouseLeave but is disabled temporarily.
       // See http://crbug.com/450631
-      type = WebInputEvent::kMouseMove;
+      type = WebInputEvent::Type::kMouseMove;
       button = WebMouseEvent::Button::kNoButton;
       // set the current mouse position (relative to the client area of the
       // current window) since none is specified for this event
@@ -64,41 +68,41 @@ WebMouseEvent WebMouseEventBuilder::Build(
       break;
     case WM_LBUTTONDOWN:
     case WM_LBUTTONDBLCLK:
-      type = WebInputEvent::kMouseDown;
+      type = WebInputEvent::Type::kMouseDown;
       button = WebMouseEvent::Button::kLeft;
       break;
     case WM_MBUTTONDOWN:
     case WM_MBUTTONDBLCLK:
-      type = WebInputEvent::kMouseDown;
+      type = WebInputEvent::Type::kMouseDown;
       button = WebMouseEvent::Button::kMiddle;
       break;
     case WM_RBUTTONDOWN:
     case WM_RBUTTONDBLCLK:
-      type = WebInputEvent::kMouseDown;
+      type = WebInputEvent::Type::kMouseDown;
       button = WebMouseEvent::Button::kRight;
       break;
     case WM_XBUTTONDOWN:
     case WM_XBUTTONDBLCLK:
-      type = WebInputEvent::kMouseDown;
+      type = WebInputEvent::Type::kMouseDown;
       if ((HIWORD(wparam) & XBUTTON1))
         button = WebMouseEvent::Button::kBack;
       else if ((HIWORD(wparam) & XBUTTON2))
         button = WebMouseEvent::Button::kForward;
       break;
     case WM_LBUTTONUP:
-      type = WebInputEvent::kMouseUp;
+      type = WebInputEvent::Type::kMouseUp;
       button = WebMouseEvent::Button::kLeft;
       break;
     case WM_MBUTTONUP:
-      type = WebInputEvent::kMouseUp;
+      type = WebInputEvent::Type::kMouseUp;
       button = WebMouseEvent::Button::kMiddle;
       break;
     case WM_RBUTTONUP:
-      type = WebInputEvent::kMouseUp;
+      type = WebInputEvent::Type::kMouseUp;
       button = WebMouseEvent::Button::kRight;
       break;
     case WM_XBUTTONUP:
-      type = WebInputEvent::kMouseUp;
+      type = WebInputEvent::Type::kMouseUp;
       if ((HIWORD(wparam) & XBUTTON1))
         button = WebMouseEvent::Button::kBack;
       else if ((HIWORD(wparam) & XBUTTON2))
@@ -131,10 +135,9 @@ WebMouseEvent WebMouseEventBuilder::Build(
   result.button = button;
 
   // set position fields:
-  result.SetPositionInWidget(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+  POINT global_point = {GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)};
+  result.SetPositionInWidget(global_point.x, global_point.y);
 
-  POINT global_point = {result.PositionInWidget().x(),
-                        result.PositionInWidget().y()};
   ClientToScreen(hwnd, &global_point);
 
   // We need to convert the global point back to DIP before using it.
@@ -160,7 +163,7 @@ WebMouseEvent WebMouseEventBuilder::Build(
       ((current_time - g_last_click_time).InMilliseconds() >
        ::GetDoubleClickTime());
 
-  if (result.GetType() == WebInputEvent::kMouseDown) {
+  if (result.GetType() == WebInputEvent::Type::kMouseDown) {
     if (!cancel_previous_click && (result.button == last_click_button)) {
       ++g_last_click_count;
     } else {
@@ -170,8 +173,8 @@ WebMouseEvent WebMouseEventBuilder::Build(
     }
     g_last_click_time = current_time;
     last_click_button = result.button;
-  } else if (result.GetType() == WebInputEvent::kMouseMove ||
-             result.GetType() == WebInputEvent::kMouseLeave) {
+  } else if (result.GetType() == WebInputEvent::Type::kMouseMove ||
+             result.GetType() == WebInputEvent::Type::kMouseLeave) {
     if (cancel_previous_click) {
       g_last_click_count = 0;
       last_click_position_x = 0;
@@ -194,7 +197,7 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
     base::TimeTicks time_stamp,
     blink::WebPointerProperties::PointerType pointer_type) {
   WebMouseWheelEvent result(
-      WebInputEvent::kMouseWheel,
+      WebInputEvent::Type::kMouseWheel,
       ui::EventFlagsToWebEventModifiers(ui::GetModifiersFromKeyState()),
       time_stamp);
 
@@ -205,6 +208,7 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   UINT key_state;
   float wheel_delta;
   bool horizontal_scroll = false;
+  POINT client_point = {0};
   if ((message == WM_VSCROLL) || (message == WM_HSCROLL)) {
     // Synthesize mousewheel event from a scroll event.  This is needed to
     // simulate middle mouse scrolling in some laptops.  Use GetAsyncKeyState
@@ -217,9 +221,8 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
     // NOTE: There doesn't seem to be a way to query the mouse button state
     // in this case.
 
-    POINT cursor_position = {0};
-    GetCursorPos(&cursor_position);
-    result.SetPositionInScreen(cursor_position.x, cursor_position.y);
+    GetCursorPos(&client_point);
+    result.SetPositionInScreen(client_point.x, client_point.y);
 
     switch (LOWORD(wparam)) {
       case SB_LINEUP:  // == SB_LINELEFT
@@ -230,11 +233,11 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
         break;
       case SB_PAGEUP:
         wheel_delta = 1;
-        result.delta_units = ui::input_types::ScrollGranularity::kScrollByPage;
+        result.delta_units = ui::ScrollGranularity::kScrollByPage;
         break;
       case SB_PAGEDOWN:
         wheel_delta = -1;
-        result.delta_units = ui::input_types::ScrollGranularity::kScrollByPage;
+        result.delta_units = ui::ScrollGranularity::kScrollByPage;
         break;
       default:  // We don't supoprt SB_THUMBPOSITION or SB_THUMBTRACK here.
         wheel_delta = 0;
@@ -247,7 +250,8 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
     // Non-synthesized event; we can just read data off the event.
     key_state = GET_KEYSTATE_WPARAM(wparam);
 
-    result.SetPositionInScreen(GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam));
+    client_point = {GET_X_LPARAM(lparam), GET_Y_LPARAM(lparam)};
+    result.SetPositionInScreen(client_point.x, client_point.y);
 
     // Currently we leave hasPreciseScrollingDeltas false, even for trackpad
     // scrolls that generate WM_MOUSEWHEEL, since we don't have a good way to
@@ -275,43 +279,60 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   result.SetModifiers(modifiers);
 
   // Set coordinates by translating event coordinates from screen to client.
-  POINT client_point = {result.PositionInScreen().x(),
-                        result.PositionInScreen().y()};
   MapWindowPoints(0, hwnd, &client_point, 1);
   result.SetPositionInWidget(client_point.x, client_point.y);
 
-  // Convert wheel delta amount to a number of pixels to scroll.
-  //
-  // How many pixels should we scroll per line?  Gecko uses the height of the
-  // current line, which means scroll distance changes as you go through the
-  // page or go to different pages.  IE 8 is ~60 px/line, although the value
-  // seems to vary slightly by page and zoom level.  Also, IE defaults to
-  // smooth scrolling while Firefox doesn't, so it can get away with somewhat
-  // larger scroll values without feeling as jerky.  Here we use 100 px per
-  // three lines (the default scroll amount is three lines per wheel tick).
-  // Even though we have smooth scrolling, we don't make this as large as IE
-  // because subjectively IE feels like it scrolls farther than you want while
-  // reading articles.
-  static const float kScrollbarPixelsPerLine = 100.0f / 3.0f;
-  wheel_delta /= WHEEL_DELTA;
-  float scroll_delta = wheel_delta;
+  // |wheel_delta| is expressed in multiples or divisions of WHEEL_DELTA,
+  // divide this out here to get the number of wheel ticks.
+  float num_ticks = wheel_delta / WHEEL_DELTA;
+  float scroll_delta = num_ticks;
   if (horizontal_scroll) {
     unsigned long scroll_chars = kDefaultScrollCharsPerWheelDelta;
     SystemParametersInfo(SPI_GETWHEELSCROLLCHARS, 0, &scroll_chars, 0);
-    // TODO(pkasting): Should probably have a different multiplier
-    // scrollbarPixelsPerChar here.
-    scroll_delta *= static_cast<float>(scroll_chars) * kScrollbarPixelsPerLine;
+    TRACE_EVENT1("input", "WebMouseWheelEventBuilder::Build", "scroll_chars",
+                 scroll_chars);
+    base::UmaHistogramCounts10M("InputMethod.MouseWheel.ScrollCharacters",
+                                base::saturated_cast<int>(scroll_chars));
+    scroll_delta *= static_cast<float>(scroll_chars);
   } else {
     unsigned long scroll_lines = kDefaultScrollLinesPerWheelDelta;
     SystemParametersInfo(SPI_GETWHEELSCROLLLINES, 0, &scroll_lines, 0);
-    if (scroll_lines == WHEEL_PAGESCROLL) {
-      result.delta_units = ui::input_types::ScrollGranularity::kScrollByPage;
-    }
+    TRACE_EVENT1("input", "WebMouseWheelEventBuilder::Build", "scroll_lines",
+                 scroll_lines);
+    base::UmaHistogramCounts10M("InputMethod.MouseWheel.ScrollLines",
+                                base::saturated_cast<int>(scroll_lines));
+    if (scroll_lines == WHEEL_PAGESCROLL)
+      result.delta_units = ui::ScrollGranularity::kScrollByPage;
+    else
+      scroll_delta *= static_cast<float>(scroll_lines);
+  }
 
-    if (result.delta_units !=
-        ui::input_types::ScrollGranularity::kScrollByPage) {
-      scroll_delta *=
-          static_cast<float>(scroll_lines) * kScrollbarPixelsPerLine;
+  if (result.delta_units != ui::ScrollGranularity::kScrollByPage) {
+    if (base::FeatureList::IsEnabled(features::kPercentBasedScrolling)) {
+      // If percent-based scrolling is enabled, the scroll_delta represents
+      // the percentage amount (out of 1, i.e. 1 == 100%) the targeted scroller
+      // should scroll. This percentage will be resolved against the size of
+      // the scroller in the renderer process.
+      scroll_delta *= kScrollPercentPerLineOrChar / 100.f;
+      result.delta_units = ui::ScrollGranularity::kScrollByPercentage;
+    } else {
+      // Convert wheel delta amount to a number of pixels to scroll.
+      //
+      // How many pixels should we scroll per line?  Gecko uses the height of
+      // the current line, which means scroll distance changes as you go through
+      // the page or go to different pages.  IE 8 is ~60 px/line, although the
+      // value seems to vary slightly by page and zoom level.  Also, IE defaults
+      // to smooth scrolling while Firefox doesn't, so it can get away with
+      // somewhat larger scroll values without feeling as jerky.  Here we use
+      // 100 px per three lines (the default scroll amount is three lines per
+      // wheel tick). Even though we have smooth scrolling, we don't make this
+      // as large as IE because subjectively IE feels like it scrolls farther
+      // than you want while reading articles.
+      static const float kScrollbarPixelsPerLine = 100.0f / 3.0f;
+
+      // TODO(pkasting): Should probably have a different multiplier for
+      // horizontal scrolls here.
+      scroll_delta *= kScrollbarPixelsPerLine;
     }
   }
 
@@ -319,10 +340,10 @@ WebMouseWheelEvent WebMouseWheelEventBuilder::Build(
   // deltaY to mean "scroll up" and positive deltaX to mean "scroll left".
   if (horizontal_scroll) {
     result.delta_x = scroll_delta;
-    result.wheel_ticks_x = wheel_delta;
+    result.wheel_ticks_x = num_ticks;
   } else {
     result.delta_y = scroll_delta;
-    result.wheel_ticks_y = wheel_delta;
+    result.wheel_ticks_y = num_ticks;
   }
 
   return result;

@@ -1,0 +1,95 @@
+<style include="shortcut-customization-shared">
+  #acceleratorViewList {
+    display: grid;
+    row-gap: 5px;
+  }
+
+  #addIcon {
+    --iron-icon-fill-color: #1A73E8;
+    padding-top: 11px;
+  }
+
+  #addAcceleratorContainer {
+    padding-top: 12px;
+  }
+
+  #pendingAccelerator {
+    padding-top: 8px;
+  }
+
+  [slot='button-container'] {
+    --cr-dialog-button-container-padding-bottom: 20px;
+    --cr-dialog-button-container-padding-end: 24px;
+    --cr-dialog-button-container-padding-start: 24px;
+    --cr-dialog-button-container-padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  [slot='body'] {
+    height: 216px;
+  }
+
+  #dialogTitle {
+    --cr-dialog-title-slot-padding-bottom: 24px;
+    --cr-dialog-title-slot-padding-end: 24px;
+    --cr-dialog-title-slot-padding-start: 24px;
+    --cr-dialog-title-slot-padding-top: 24px;
+  }
+
+  [slot='button-container'] {
+    display: flex;
+    justify-content: space-between;
+  }
+</style>
+
+<cr-dialog id="editDialog" on-close="onDialogClose_">
+  <div id="dialogTitle" slot="title">
+    [[description]]
+  </div>
+  <div slot="body">
+    <div id="acceleratorViewList">
+      <template id="viewList" is="dom-repeat" items="[[acceleratorInfos]]">
+        <accelerator-edit-view class="acceleratorItem"
+            accelerator-info=[[item]]
+            action=[[action]]
+            source=[[source]]>
+        </accelerator-edit-view>
+      </template>
+    </div>
+    <template id="newAccelerator" is="dom-if"
+        if="[[!showAddButton_(pendingNewAcceleratorState_)]]" restamp>
+      <accelerator-edit-view id="pendingAccelerator"
+          view-state="{{pendingNewAcceleratorState_}}"
+          action=[[action]]
+          source=[[source]]>
+      </accelerator-edit-view>
+    </template>
+    <div id="addAcceleratorContainer"
+        hidden="[[!showAddButton_(pendingNewAcceleratorState_)]]">
+      <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked_">
+        <iron-icon id="addIcon" icon="shortcut-customization:add">
+        </iron-icon>
+        <!-- TODO(jimmyxgong): Localize this string -->
+        Add shortcut
+      </cr-button>
+    </div>
+
+  </div>
+  <div slot="button-container">
+    <div>
+      <cr-button id="restoreDefault" on-click="onRestoreDefaultButtonClicked_"
+          hidden$="[[isAcceleratorCapturing_]]">
+        <!-- TODO(jimmyxgong): i18n string -->
+        Restore defaults
+      </cr-button>
+    </div>
+    <div>
+      <cr-button id="doneButton" on-click="onDoneButtonClicked_"
+          disabled="[[isAcceleratorCapturing_]]">
+        <!-- TODO(jimmyxgong): Localize this string -->
+        Done
+      </cr-button>
+    </div>
+  </div>
+</cr-dialog>

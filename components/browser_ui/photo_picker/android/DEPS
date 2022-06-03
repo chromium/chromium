@@ -1,0 +1,8 @@
+include_rules = [
+  "+components/browser_ui/widget/android",
+  "+content/public/android",
+  "+content/public/test/android",
+  "+net/android",
+  "+sandbox",
+  "+ui/android",
+]

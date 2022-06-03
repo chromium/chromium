@@ -50,14 +50,14 @@
         <table id="measure" cellspacing="0" border="0" cellpadding="0">
             <tr><td>Measurement</td><td>table</td><td>...</td></tr>
         </table>
-        
+
         <script>
             var mainTable = document.getElementById('main');
             var measureTable = document.getElementById('measure');
             var rowHeights = [];
 
             function r(n) {
-                return Math.round(n * 1000) / 1000;
+                return Math.round(n * 10) / 10;
             }
 
             function computeHeights()
@@ -73,13 +73,13 @@
                     rowHeights.push(rect.bottom - rect.top);
                 }
             }
-            
+
 
             function testHeights(zoom)
             {
                 document.body.style.zoom = zoom;
                 computeHeights();
-                
+
                 var rows = mainTable.tBodies[0].rows;
                 for (var i = 0; i < rows.length; i++) {
                     var rowElement = rows[i];

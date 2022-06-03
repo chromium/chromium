@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+<vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    tools:targetApi="21">
+    <path
+        android:fillColor="#000000"
+        android:pathData="M20.01,5.01c-1.65,0-3,1.34-3,2.99H23C23,6.35,21.66,5.01,20.01,5.01z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M13.99,4.99C13.99,6.65,15.34,8,17,8V1.99C15.34,1.99,13.99,3.33,13.99,4.99z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M16.99,10.99c2.76,0,5.01,2.25,5.01,5.01S19.75,21,16.99,21s-5.01-2.25-5.01-5.01S14.23,10.99,16.99,10.99 M16.99,8.99 c-3.87,0-7.01,3.14-7.01,7.01c0,3.87,3.14,7.01,7.01,7.01s7.01-3.14,7.01-7.01C23.99,12.12,20.86,8.99,16.99,8.99L16.99,8.99z"/>
+    <path
+        android:fillColor="#000000"
+        android:pathData="M10.02,21H2v-9.79L4.72,5h3.5l2.37,5.37l1.52-1.52l-1.72-3.9C10.72,4.9,11,4.62,11,4.27V1.7C11,1.32,10.68,1,10.3,1H2.7 C2.32,1,2,1.32,2,1.7v2.56c0,0.35,0.23,0.62,0.56,0.68l-2.48,5.64C0.03,10.72,0,10.85,0,10.99V22c0,0.55,0.45,1,1,1h11.02 L10.02,21z"/>
+
+</vector>

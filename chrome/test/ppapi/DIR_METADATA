@@ -1,0 +1,4 @@
+monorail {
+  component: "Internals>Plugins>Pepper"
+}
+team_email: "pepper-dev@chromium.org"

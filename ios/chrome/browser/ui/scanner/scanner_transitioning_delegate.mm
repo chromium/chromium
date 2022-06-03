@@ -97,10 +97,6 @@ enum ScannerTransition { PRESENT, DISMISS };
                    completion:completion];
 }
 
-- (void)animationEnded:(BOOL)transitionCompleted {
-  return;
-}
-
 - (NSTimeInterval)transitionDuration:
     (id<UIViewControllerContextTransitioning>)transitionContext {
   return kDefaultDuration;

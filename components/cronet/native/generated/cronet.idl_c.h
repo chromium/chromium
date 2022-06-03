@@ -132,6 +132,12 @@ typedef enum Cronet_UrlRequestParams_REQUEST_PRIORITY {
   Cronet_UrlRequestParams_REQUEST_PRIORITY_REQUEST_PRIORITY_HIGHEST = 4,
 } Cronet_UrlRequestParams_REQUEST_PRIORITY;
 
+typedef enum Cronet_UrlRequestParams_IDEMPOTENCY {
+  Cronet_UrlRequestParams_IDEMPOTENCY_DEFAULT_IDEMPOTENCY = 0,
+  Cronet_UrlRequestParams_IDEMPOTENCY_IDEMPOTENT = 1,
+  Cronet_UrlRequestParams_IDEMPOTENCY_NOT_IDEMPOTENT = 2,
+} Cronet_UrlRequestParams_IDEMPOTENCY;
+
 typedef enum Cronet_RequestFinishedInfo_FINISHED_REASON {
   Cronet_RequestFinishedInfo_FINISHED_REASON_SUCCEEDED = 0,
   Cronet_RequestFinishedInfo_FINISHED_REASON_FAILED = 1,
@@ -1023,6 +1029,10 @@ CRONET_EXPORT
 void Cronet_UrlRequestParams_request_finished_executor_set(
     Cronet_UrlRequestParamsPtr self,
     const Cronet_ExecutorPtr request_finished_executor);
+CRONET_EXPORT
+void Cronet_UrlRequestParams_idempotency_set(
+    Cronet_UrlRequestParamsPtr self,
+    const Cronet_UrlRequestParams_IDEMPOTENCY idempotency);
 // Cronet_UrlRequestParams getters.
 CRONET_EXPORT
 Cronet_String Cronet_UrlRequestParams_http_method_get(
@@ -1067,6 +1077,9 @@ Cronet_UrlRequestParams_request_finished_listener_get(
     const Cronet_UrlRequestParamsPtr self);
 CRONET_EXPORT
 Cronet_ExecutorPtr Cronet_UrlRequestParams_request_finished_executor_get(
+    const Cronet_UrlRequestParamsPtr self);
+CRONET_EXPORT
+Cronet_UrlRequestParams_IDEMPOTENCY Cronet_UrlRequestParams_idempotency_get(
     const Cronet_UrlRequestParamsPtr self);
 
 ///////////////////////

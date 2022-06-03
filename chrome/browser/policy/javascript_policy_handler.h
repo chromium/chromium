@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_POLICY_JAVASCRIPT_POLICY_HANDLER_H_
 #define CHROME_BROWSER_POLICY_JAVASCRIPT_POLICY_HANDLER_H_
 
-#include "base/macros.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
 class PrefValueMap;
@@ -19,6 +18,8 @@ class PolicyMap;
 class JavascriptPolicyHandler : public ConfigurationPolicyHandler {
  public:
   JavascriptPolicyHandler();
+  JavascriptPolicyHandler(const JavascriptPolicyHandler&) = delete;
+  JavascriptPolicyHandler& operator=(const JavascriptPolicyHandler&) = delete;
   ~JavascriptPolicyHandler() override;
 
   // ConfigurationPolicyHandler methods:
@@ -26,9 +27,6 @@ class JavascriptPolicyHandler : public ConfigurationPolicyHandler {
                            PolicyErrorMap* errors) override;
   void ApplyPolicySettings(const PolicyMap& policies,
                            PrefValueMap* prefs) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(JavascriptPolicyHandler);
 };
 
 }  // namespace policy

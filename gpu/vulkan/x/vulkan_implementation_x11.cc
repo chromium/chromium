@@ -5,57 +5,51 @@
 #include "gpu/vulkan/x/vulkan_implementation_x11.h"
 
 #include "base/base_paths.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/logging.h"
-#include "base/optional.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
+#include "gpu/vulkan/vulkan_image.h"
 #include "gpu/vulkan/vulkan_instance.h"
-#include "gpu/vulkan/vulkan_posix_util.h"
 #include "gpu/vulkan/vulkan_surface.h"
 #include "gpu/vulkan/vulkan_util.h"
 #include "gpu/vulkan/x/vulkan_surface_x11.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/x/x11_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
+#include "ui/gfx/x/connection.h"
 
 namespace gpu {
 
 namespace {
 
-class ScopedUnsetDisplay {
- public:
-  ScopedUnsetDisplay() : display_(getenv("DISPLAY")) { unsetenv("DISPLAY"); }
-  ~ScopedUnsetDisplay() { setenv("DISPLAY", display_.c_str(), 1); }
-
- private:
-  std::string display_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedUnsetDisplay);
-};
-
 bool InitializeVulkanFunctionPointers(
     const base::FilePath& path,
     VulkanFunctionPointers* vulkan_function_pointers) {
   base::NativeLibraryLoadError native_library_load_error;
-  vulkan_function_pointers->vulkan_loader_library_ =
+  vulkan_function_pointers->vulkan_loader_library =
       base::LoadNativeLibrary(path, &native_library_load_error);
-  return vulkan_function_pointers->vulkan_loader_library_;
+  return !!vulkan_function_pointers->vulkan_loader_library;
 }
 
 }  // namespace
 
 VulkanImplementationX11::VulkanImplementationX11(bool use_swiftshader)
     : VulkanImplementation(use_swiftshader) {
-  gfx::GetXDisplay();
+  x11::Connection::Get();
 }
 
-VulkanImplementationX11::~VulkanImplementationX11() {}
+VulkanImplementationX11::~VulkanImplementationX11() = default;
 
 bool VulkanImplementationX11::InitializeVulkanInstance(bool using_surface) {
+  if (using_surface && !use_swiftshader() && !ui::IsVulkanSurfaceSupported())
+    using_surface = false;
   using_surface_ = using_surface;
   // Unset DISPLAY env, so the vulkan can be initialized successfully, if the X
   // server doesn't support Vulkan surface.
-  base::Optional<ScopedUnsetDisplay> unset_display;
+  absl::optional<ui::ScopedUnsetDisplay> unset_display;
   if (!using_surface_)
     unset_display.emplace();
 
@@ -64,7 +58,7 @@ bool VulkanImplementationX11::InitializeVulkanInstance(bool using_surface) {
       VK_KHR_EXTERNAL_SEMAPHORE_CAPABILITIES_EXTENSION_NAME};
   if (using_surface_) {
     required_extensions.push_back(VK_KHR_SURFACE_EXTENSION_NAME);
-    required_extensions.push_back(VK_KHR_XLIB_SURFACE_EXTENSION_NAME);
+    required_extensions.push_back(VK_KHR_XCB_SURFACE_EXTENSION_NAME);
   }
 
   VulkanFunctionPointers* vulkan_function_pointers =
@@ -94,9 +88,10 @@ VulkanInstance* VulkanImplementationX11::GetVulkanInstance() {
 
 std::unique_ptr<VulkanSurface> VulkanImplementationX11::CreateViewSurface(
     gfx::AcceleratedWidget window) {
-  DLOG_IF(FATAL, !using_surface_)
-      << "Flag --disable-vulkan-surface is provided.";
-  return VulkanSurfaceX11::Create(vulkan_instance_.vk_instance(), window);
+  if (!using_surface_)
+    return nullptr;
+  return VulkanSurfaceX11::Create(vulkan_instance_.vk_instance(),
+                                  static_cast<x11::Window>(window));
 }
 
 bool VulkanImplementationX11::GetPhysicalDevicePresentationSupport(
@@ -107,26 +102,31 @@ bool VulkanImplementationX11::GetPhysicalDevicePresentationSupport(
   // https://crbug.com/swiftshader/129
   if (use_swiftshader())
     return true;
-  XDisplay* display = gfx::GetXDisplay();
-  return vkGetPhysicalDeviceXlibPresentationSupportKHR(
-      device, queue_family_index, display,
-      XVisualIDFromVisual(DefaultVisual(display, DefaultScreen(display))));
+  auto* connection = x11::Connection::Get();
+  return vkGetPhysicalDeviceXcbPresentationSupportKHR(
+      device, queue_family_index,
+      connection->GetXlibDisplay().GetXcbConnection(),
+      static_cast<xcb_visualid_t>(connection->default_root_visual().visual_id));
 }
 
 std::vector<const char*>
 VulkanImplementationX11::GetRequiredDeviceExtensions() {
-  std::vector<const char*> extensions;
-  // TODO(samans): Add these extensions once Swiftshader supports them.
-  // https://crbug.com/963988
-  if (!use_swiftshader()) {
-    extensions.push_back(VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME);
-    extensions.push_back(VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME);
-    extensions.push_back(VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME);
-    extensions.push_back(VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME);
-  }
+  std::vector<const char*> extensions = {};
   if (using_surface_)
     extensions.push_back(VK_KHR_SWAPCHAIN_EXTENSION_NAME);
   return extensions;
+}
+
+std::vector<const char*>
+VulkanImplementationX11::GetOptionalDeviceExtensions() {
+  return {
+      VK_KHR_EXTERNAL_MEMORY_EXTENSION_NAME,
+      VK_KHR_EXTERNAL_MEMORY_FD_EXTENSION_NAME,
+      VK_KHR_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
+      VK_KHR_EXTERNAL_SEMAPHORE_FD_EXTENSION_NAME,
+      VK_KHR_INCREMENTAL_PRESENT_EXTENSION_NAME,
+      VK_EXT_IMAGE_DRM_FORMAT_MODIFIER_EXTENSION_NAME,
+  };
 }
 
 VkFence VulkanImplementationX11::CreateVkFenceForGpuFence(VkDevice vk_device) {
@@ -150,14 +150,14 @@ VkSemaphore VulkanImplementationX11::CreateExternalSemaphore(
 VkSemaphore VulkanImplementationX11::ImportSemaphoreHandle(
     VkDevice vk_device,
     SemaphoreHandle sync_handle) {
-  return ImportVkSemaphoreHandlePosix(vk_device, std::move(sync_handle));
+  return ImportVkSemaphoreHandle(vk_device, std::move(sync_handle));
 }
 
 SemaphoreHandle VulkanImplementationX11::GetSemaphoreHandle(
     VkDevice vk_device,
     VkSemaphore vk_semaphore) {
-  return GetVkSemaphoreHandlePosix(
-      vk_device, vk_semaphore, VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT);
+  return GetVkSemaphoreHandle(vk_device, vk_semaphore,
+                              VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_OPAQUE_FD_BIT);
 }
 
 VkExternalMemoryHandleTypeFlagBits
@@ -167,20 +167,27 @@ VulkanImplementationX11::GetExternalImageHandleType() {
 
 bool VulkanImplementationX11::CanImportGpuMemoryBuffer(
     gfx::GpuMemoryBufferType memory_buffer_type) {
+  if (memory_buffer_type == gfx::GpuMemoryBufferType::NATIVE_PIXMAP)
+    return true;
   return false;
 }
 
-bool VulkanImplementationX11::CreateImageFromGpuMemoryHandle(
-    VkDevice vk_device,
+std::unique_ptr<VulkanImage>
+VulkanImplementationX11::CreateImageFromGpuMemoryHandle(
+    VulkanDeviceQueue* device_queue,
     gfx::GpuMemoryBufferHandle gmb_handle,
     gfx::Size size,
-    VkImage* vk_image,
-    VkImageCreateInfo* vk_image_info,
-    VkDeviceMemory* vk_device_memory,
-    VkDeviceSize* mem_allocation_size,
-    base::Optional<VulkanYCbCrInfo>* ycbcr_info) {
-  NOTIMPLEMENTED();
-  return false;
+    VkFormat vk_format) {
+  constexpr auto kUsage =
+      VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT |
+      VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_TRANSFER_SRC_BIT;
+  auto tiling = gmb_handle.native_pixmap_handle.modifier ==
+                        gfx::NativePixmapHandle::kNoModifier
+                    ? VK_IMAGE_TILING_OPTIMAL
+                    : VK_IMAGE_TILING_DRM_FORMAT_MODIFIER_EXT;
+  return VulkanImage::CreateFromGpuMemoryBufferHandle(
+      device_queue, std::move(gmb_handle), size, vk_format, kUsage, /*flags=*/0,
+      tiling, VK_QUEUE_FAMILY_EXTERNAL);
 }
 
 }  // namespace gpu

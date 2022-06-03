@@ -1,10 +1,18 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 616],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='clipping-container'",
+      "position": [100, 100],
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 1
     },
     {
       "name": "LayoutBlockFlow DIV class='clipped-composited-child'",
@@ -14,6 +22,14 @@
       "transform": 1
     },
     {
+      "name": "LayoutBlockFlow (positioned) DIV class='clipping-container with-initial-clipping'",
+      "position": [100, 100],
+      "bounds": [100, 100],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 2
+    },
+    {
       "name": "LayoutBlockFlow DIV class='clipped-composited-child'",
       "bounds": [252, 252],
       "contentsOpaque": true,
@@ -21,10 +37,9 @@
       "transform": 2
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [

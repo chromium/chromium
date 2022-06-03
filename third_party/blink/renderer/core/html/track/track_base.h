@@ -53,7 +53,7 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
   }
   HTMLMediaElement* MediaElement() const { return media_element_; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   TrackBase(WebMediaPlayer::TrackType,
@@ -69,10 +69,6 @@ class CORE_EXPORT TrackBase : public Supplementable<TrackBase> {
   String id_;
   Member<HTMLMediaElement> media_element_;
 };
-
-#define DEFINE_TRACK_TYPE_CASTS(thisType, predicate)                           \
-  DEFINE_TYPE_CASTS(thisType, TrackBase, track, track->GetType() == predicate, \
-                    track.GetType() == predicate)
 
 }  // namespace blink
 

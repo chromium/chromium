@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Test named 'visibilityState & hidden should be affected by window being minimized/restored' specified 1 'cleanup' function, and 1 failed.
+FAIL visibilityState & hidden should be affected by window being minimized/restored promise_test: Unhandled rejection with value: object "Error: unimplemented"
+NOTRUN visibilitychange event should be fired when minimized/restored
+NOTRUN iframe should receive visibility events when top level window is shown/hidden
+Harness: the test ran to completion.
+

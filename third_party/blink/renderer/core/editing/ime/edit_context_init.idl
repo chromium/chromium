@@ -6,6 +6,11 @@ enum EditContextInputMode { "none", "text", "decimal", "search", "email", "numer
 enum EditContextEnterKeyHint { "enter", "done", "go", "next", "previous", "search", "send" };
 enum EditContextInputPanelPolicy { "auto", "manual" };
 
+// Iniitial parameters for EditContext interface.
+
+// Spec draft:
+// https://w3c.github.io/editing/docs/EditContext/index.html#the-editcontext-interface
+
 dictionary EditContextInit {
     DOMString text;
     unsigned long selectionStart;

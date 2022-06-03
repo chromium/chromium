@@ -5,9 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_INPUT_SOURCES_CHANGE_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_XR_XR_INPUT_SOURCES_CHANGE_EVENT_H_
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_xr_input_sources_change_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/modules/xr/xr_input_source.h"
-#include "third_party/blink/renderer/modules/xr/xr_input_sources_change_event_init.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 
 namespace blink {
@@ -45,7 +45,7 @@ class XRInputSourcesChangeEvent final : public Event {
 
   const AtomicString& InterfaceName() const override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   Member<XRSession> session_;

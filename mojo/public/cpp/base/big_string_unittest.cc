@@ -17,14 +17,14 @@ namespace big_string_unittest {
 TEST(BigStringTest, Empty) {
   std::string in;
   std::string out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString>(in, out));
   EXPECT_EQ(in, out);
 }
 
 TEST(BigStringTest, Short) {
   std::string in("hello world");
   std::string out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString>(in, out));
   EXPECT_EQ(in, out);
 }
 
@@ -35,7 +35,7 @@ TEST(BigStringTest, Long) {
   base::RandBytes(&in[0], kLargeStringSize);
 
   std::string out;
-  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString>(&in, &out));
+  ASSERT_TRUE(mojo::test::SerializeAndDeserialize<mojom::BigString>(in, out));
   EXPECT_EQ(in, out);
 }
 

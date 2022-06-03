@@ -9,6 +9,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
@@ -20,6 +21,7 @@ namespace extensions {
 
 namespace {
 
+const char kSubscribePageAction[] = "subscribe_page_action/src";
 const char kSubscribePage[] = "/subscribe.html";
 const char kFeedPageMultiRel[] = "/feeds/feed_multi_rel.html";
 const char kValidFeedNoLinks[] = "/feeds/feed_nolinks.xml";
@@ -72,13 +74,46 @@ GURL GetFeedUrl(net::EmbeddedTestServer* server,
     // sniffing won't work, in other words, as is the case for malformed feeds.
     return GURL(std::string(kExtensionScheme) + url::kStandardSchemeSeparator +
                 extension_id + std::string(kSubscribePage) + std::string("?") +
-                feed_url.spec() + std::string("&synchronous"));
+                feed_url.spec());
   } else {
     // Navigate to the feed content (which will cause the extension to try to
     // sniff the type and display the subscribe page in another tab.
     return GURL(feed_url.spec());
   }
 }
+
+class NamedFrameCreatedObserver : public content::WebContentsObserver {
+ public:
+  NamedFrameCreatedObserver(WebContents* web_contents,
+                            const std::string& frame_name)
+      : WebContentsObserver(web_contents), frame_name_(frame_name) {}
+
+  NamedFrameCreatedObserver(const NamedFrameCreatedObserver&) = delete;
+  NamedFrameCreatedObserver& operator=(const NamedFrameCreatedObserver&) =
+      delete;
+
+  content::RenderFrameHost* Wait() {
+    if (!frame_) {
+      run_loop_.Run();
+    }
+
+    return frame_;
+  }
+
+ private:
+  void RenderFrameCreated(
+      content::RenderFrameHost* render_frame_host) override {
+    if (render_frame_host->GetFrameName() != frame_name_)
+      return;
+
+    frame_ = render_frame_host;
+    run_loop_.Quit();
+  }
+
+  base::RunLoop run_loop_;
+  content::RenderFrameHost* frame_ = nullptr;
+  std::string frame_name_;
+};
 
 bool ValidatePageElement(content::RenderFrameHost* frame,
                          const std::string& javascript,
@@ -106,18 +141,30 @@ void NavigateToFeedAndValidate(net::EmbeddedTestServer* server,
                                const std::string& expected_feed_title,
                                const std::string& expected_item_title,
                                const std::string& expected_item_desc,
-                               const std::string& expected_error) {
+                               const std::string& expected_error,
+                               std::string expected_msg) {
   if (sniff_xml_type) {
     // TODO(finnur): Implement this is a non-flaky way.
   }
 
-  // Navigate to the subscribe page directly.
-  ui_test_utils::NavigateToURL(browser,
-                               GetFeedUrl(server, url, true, extension_id));
+  content::DOMMessageQueue message_queue;
 
   WebContents* tab = browser->tab_strip_model()->GetActiveWebContents();
+  NamedFrameCreatedObserver subframe_observer(tab, "preview");
+
+  // Navigate to the subscribe page directly.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser, GetFeedUrl(server, url, true, extension_id)));
+  ASSERT_TRUE(subframe_observer.Wait() != nullptr);
+
+  std::string message;
+  ASSERT_TRUE(message_queue.WaitForMessage(&message));
+  expected_msg = "\"" + expected_msg + "\"";
+  EXPECT_STREQ(expected_msg.c_str(), message.c_str());
+
   content::RenderFrameHost* frame = content::FrameMatchingPredicate(
-      tab, base::Bind(&content::FrameIsChildOfMainFrame));
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameMatchesName, "preview"));
   ASSERT_TRUE(ValidatePageElement(
       tab->GetMainFrame(), kScriptFeedTitle, expected_feed_title));
   ASSERT_TRUE(ValidatePageElement(frame, kScriptAnchor, expected_item_title));
@@ -133,80 +180,76 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSMultiRelLink) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   ASSERT_TRUE(LoadExtension(
-    test_data_dir_.AppendASCII("subscribe_page_action")));
+    test_data_dir_.AppendASCII(kSubscribePageAction)));
 
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(0));
 
   // Navigate to the feed page.
   GURL feed_url = embedded_test_server()->GetURL(kFeedPageMultiRel);
-  ui_test_utils::NavigateToURL(browser(), feed_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), feed_url));
   // We should now have one page action ready to go in the LocationBar.
   ASSERT_TRUE(WaitForPageActionVisibilityChangeTo(1));
 }
 
-// This test is flaky on all platforms; see http://crbug.com/340354
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed1) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed1) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
   NavigateToFeedAndValidate(embedded_test_server(), kValidFeed1, browser(), id,
                             true, "Feed for MyFeedTitle", "Title 1", "Desc",
-                            "No error");
+                            "No error", "PreviewReady");
 }
 
-// This test is flaky on all platforms; see http://crbug.com/340354
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed2) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed2) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
   NavigateToFeedAndValidate(embedded_test_server(), kValidFeed2, browser(), id,
                             true, "Feed for MyFeed2", "My item title1",
-                            "This is a summary.", "No error");
+                            "This is a summary.", "No error", "PreviewReady");
 }
 
-// This test is flaky on all platforms; see http://crbug.com/340354
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed3) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed3) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
   NavigateToFeedAndValidate(embedded_test_server(), kValidFeed3, browser(), id,
                             true, "Feed for Google Code buglist rss feed",
-                            "My dear title", "My dear content", "No error");
+                            "My dear title", "My dear content", "No error",
+                            "PreviewReady");
 }
 
-// This test is flaky on all platforms; see http://crbug.com/340354
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed4) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed4) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
   NavigateToFeedAndValidate(embedded_test_server(), kValidFeed4, browser(), id,
                             true, "Feed for Title chars <script> %23 stop",
                             "Title chars  %23 stop", "My dear content %23 stop",
-                            "No error");
+                            "No error", "PreviewReady");
 }
 
-// This test is flaky on all platforms; see http://crbug.com/340354
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed0) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed0) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
@@ -214,15 +257,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed0) {
   // trigger a NOTREACHED).
   NavigateToFeedAndValidate(embedded_test_server(), kValidFeed0, browser(), id,
                             true, "Feed for MyFeedTitle", "Title 1",
-                            "Desc VIDEO", "No error");
+                            "Desc VIDEO", "No error", "PreviewReady");
 }
 
-// This test is flaky on all platforms; see http://crbug.com/340354
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed5) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed5) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
@@ -230,29 +272,33 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed5) {
   NavigateToFeedAndValidate(
       embedded_test_server(), kValidFeed5, browser(), id, true,
       "Feed for Unknown feed name", "element 'anchor_0' not found",
-      "element 'desc_0' not found", "This feed contains no entries.");
+      "element 'desc_0' not found", "This feed contains no entries.", "Error");
 }
 
-// This test is flaky on all platforms; see http://crbug.com/340354
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, DISABLED_RSSParseFeedValidFeed6) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeed6) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
   // Feed that is technically invalid but still parseable.
   NavigateToFeedAndValidate(embedded_test_server(), kValidFeed6, browser(), id,
                             true, "Feed for MyFeedTitle", "Title 1", "Desc",
-                            "No error");
+                            "No error", "PreviewReady");
 }
+
+// TODO(finnur): Once we're able to Closure-compile (via the Chrome build
+//               process) the extension along with the HTML sanitizer, we should
+//               add a test to confirm <img src="foo.jpg" alt="foo" /> is
+//               preserved after sanitizing (the xkcd test).
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed1) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
@@ -260,14 +306,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed1) {
   NavigateToFeedAndValidate(
       embedded_test_server(), kInvalidFeed1, browser(), id, false,
       "Feed for Unknown feed name", "element 'anchor_0' not found",
-      "element 'desc_0' not found", "This feed contains no entries.");
+      "element 'desc_0' not found", "This feed contains no entries.", "Error");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed2) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
@@ -275,14 +321,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed2) {
   NavigateToFeedAndValidate(
       embedded_test_server(), kInvalidFeed2, browser(), id, false,
       "Feed for Unknown feed name", "element 'anchor_0' not found",
-      "element 'desc_0' not found", "This feed contains no entries.");
+      "element 'desc_0' not found", "This feed contains no entries.", "Error");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed3) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
@@ -290,14 +336,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed3) {
   NavigateToFeedAndValidate(
       embedded_test_server(), "/foo.xml", browser(), id, false,
       "Feed for Unknown feed name", "element 'anchor_0' not found",
-      "element 'desc_0' not found", "This feed contains no entries.");
+      "element 'desc_0' not found", "This feed contains no entries.", "Error");
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed4) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
@@ -311,23 +357,22 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedInvalidFeed4) {
   NavigateToFeedAndValidate(
       embedded_test_server(), kFeedTripleEncoded, browser(), id, true,
       "Feed for Unknown feed name", "element 'anchor_0' not found",
-      "element 'desc_0' not found", "This feed contains no entries.");
+      "element 'desc_0' not found", "This feed contains no entries.", "Error");
 }
 
-// This test is flaky on all platforms; see http://crbug.com/340354
-IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest,
-                       DISABLED_RSSParseFeedValidFeedNoLinks) {
+IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, RSSParseFeedValidFeedNoLinks) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   const Extension* extension = LoadExtension(
-      test_data_dir_.AppendASCII("subscribe_page_action"));
+      test_data_dir_.AppendASCII(kSubscribePageAction));
   ASSERT_TRUE(extension);
   std::string id = extension->id();
 
   // Valid feed but containing no links.
   NavigateToFeedAndValidate(embedded_test_server(), kValidFeedNoLinks,
                             browser(), id, true, "Feed for MyFeedTitle",
-                            "Title with no link", "Desc", "No error");
+                            "Title with no link", "Desc", "No error",
+                            "PreviewReady");
 }
 
 }  // namespace extensions

@@ -5,11 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_PERFORMANCE_MONITOR_H_
 
-#include "base/macros.h"
 #include "base/task/sequence_manager/task_time_observer.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document.h"
-#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread.h"
@@ -30,6 +28,8 @@ class V8Compile;
 class DOMWindow;
 class Document;
 class ExecutionContext;
+class Frame;
+class LocalFrame;
 class WindowPerformance;
 class SourceLocation;
 
@@ -63,7 +63,7 @@ class CORE_EXPORT PerformanceMonitor final
                                         const String& text,
                                         base::TimeDelta time,
                                         SourceLocation*) {}
-    void Trace(blink::Visitor* visitor) override {}
+    void Trace(Visitor* visitor) const override {}
   };
 
   static void ReportGenericViolation(ExecutionContext*,
@@ -101,10 +101,12 @@ class CORE_EXPORT PerformanceMonitor final
   void UnsubscribeAll(Client*);
   void Shutdown();
 
-  explicit PerformanceMonitor(LocalFrame*);
+  PerformanceMonitor(LocalFrame*, v8::Isolate*);
+  PerformanceMonitor(const PerformanceMonitor&) = delete;
+  PerformanceMonitor& operator=(const PerformanceMonitor&) = delete;
   ~PerformanceMonitor() override;
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
  private:
   friend class PerformanceMonitorTest;
@@ -152,6 +154,8 @@ class CORE_EXPORT PerformanceMonitor final
 
   Member<LocalFrame> local_root_;
   Member<ExecutionContext> task_execution_context_;
+  // This is needed for calling v8::metrics::LongTaskStats::Reset.
+  v8::Isolate* const isolate_;
   bool task_has_multiple_contexts_ = false;
   bool task_should_be_reported_ = false;
   using ClientThresholds = HeapHashMap<WeakMember<Client>, base::TimeDelta>;
@@ -160,8 +164,6 @@ class CORE_EXPORT PerformanceMonitor final
               typename DefaultHash<size_t>::Hash,
               WTF::UnsignedWithZeroKeyHashTraits<size_t>>
       subscriptions_;
-
-  DISALLOW_COPY_AND_ASSIGN(PerformanceMonitor);
 };
 
 }  // namespace blink

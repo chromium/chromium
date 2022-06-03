@@ -1,0 +1,27 @@
+This is a testharness.js-based test.
+PASS .flex-item 1
+PASS .flex-item 2
+PASS .flex-item 3
+PASS .flex-item 4
+PASS .flex-item 5
+PASS .flex-item 6
+PASS .flex-item 7
+FAIL .flex-item 8 assert_equals: 
+<div class="flex-item ortho-item" style="flex-basis: max-content; width: 300px;" data-expected-width="100">
+    <div class="inline-block"></div><div class="inline-block"></div>
+  </div>
+width expected 100 but got 0
+PASS .flex-item 9
+FAIL .flex-item 10 assert_equals: 
+<div class="flex-item ortho-item" style="flex-basis: min-content;" data-expected-height="50">
+    <div class="inline-block"></div><div class="inline-block"></div>
+  </div>
+height expected 50 but got 100
+PASS .flex-item 11
+FAIL .flex-item 12 assert_equals: 
+<div class="flex-item ortho-item" style="flex-basis: -moz-fit-content; flex-basis: fit-content;" data-expected-height="75">
+    <div class="inline-block"></div><div class="inline-block"></div>
+  </div>
+height expected 75 but got 100
+Harness: the test ran to completion.
+

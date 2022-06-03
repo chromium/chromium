@@ -5,6 +5,8 @@
 # Note that this build file assumes rlz_use_chrome_net which is a condition in
 # the GYP file, but is always true for Chrome builds.
 
+import("//build/config/chromeos/ui_mode.gni")
+import("//rlz/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
 config("rlz_lib_config") {
@@ -27,21 +29,17 @@ source_set("rlz_utils") {
     "lib/string_utils.h",
   ]
 
-  public_deps = [
-    "//base",
-  ]
+  public_deps = [ "//base" ]
 
   deps = [
+    "//build:chromeos_buildflags",
     "//third_party/zlib",
   ]
 }
 
-if (!is_android) {
+if (enable_rlz_support) {
   source_set("rlz_lib_no_network") {
     sources = [
-      "chromeos/lib/rlz_value_store_chromeos.cc",
-      "chromeos/lib/rlz_value_store_chromeos.h",
-      "ios/lib/machine_id_ios.cc",
       "lib/crc8.cc",
       "lib/crc8.h",
       "lib/machine_deal_win.h",
@@ -53,25 +51,24 @@ if (!is_android) {
       "lib/supplementary_branding.cc",
       "lib/supplementary_branding.h",
       "lib/time_util.h",
-      "mac/lib/machine_id_mac.cc",
-      "mac/lib/rlz_value_store_mac.h",
-      "mac/lib/rlz_value_store_mac.mm",
-      "win/lib/lib_mutex.cc",
-      "win/lib/lib_mutex.h",
-      "win/lib/machine_deal.cc",
-      "win/lib/machine_deal.h",
-      "win/lib/machine_id_win.cc",
-      "win/lib/process_info.cc",
-      "win/lib/process_info.h",
-      "win/lib/registry_util.cc",
-      "win/lib/registry_util.h",
-      "win/lib/rlz_lib_win.cc",
-      "win/lib/rlz_value_store_registry.cc",
-      "win/lib/rlz_value_store_registry.h",
     ]
 
     if (is_win) {
-      sources += [ "lib/time_util_win.cc" ]
+      sources += [
+        "lib/time_util_win.cc",
+        "win/lib/lib_mutex.cc",
+        "win/lib/lib_mutex.h",
+        "win/lib/machine_deal.cc",
+        "win/lib/machine_deal.h",
+        "win/lib/machine_id_win.cc",
+        "win/lib/process_info.cc",
+        "win/lib/process_info.h",
+        "win/lib/registry_util.cc",
+        "win/lib/registry_util.h",
+        "win/lib/rlz_lib_win.cc",
+        "win/lib/rlz_value_store_registry.cc",
+        "win/lib/rlz_value_store_registry.h",
+      ]
     } else {
       sources += [ "lib/time_util_base.cc" ]
     }
@@ -79,30 +76,36 @@ if (!is_android) {
     deps = [
       ":rlz_utils",
       "//base",
+      "//build:chromeos_buildflags",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
+      sources += [
+        "chromeos/lib/rlz_value_store_chromeos.cc",
+        "chromeos/lib/rlz_value_store_chromeos.h",
+      ]
       deps += [
         "//chromeos/dbus",
         "//chromeos/system",
       ]
     }
 
-    if (is_mac) {
-      libs = [
-        "Foundation.framework",
-        "IOKit.framework",
-      ]
-    }
-
-    if (is_ios) {
-      # These _mac files are also used on iOS.
-      set_sources_assignment_filter([])
+    if (is_apple) {
       sources += [
         "mac/lib/rlz_value_store_mac.h",
         "mac/lib/rlz_value_store_mac.mm",
       ]
-      set_sources_assignment_filter(sources_assignment_filter)
+
+      frameworks = [ "Foundation.framework" ]
+
+      if (is_mac) {
+        sources += [ "mac/lib/machine_id_mac.cc" ]
+        frameworks += [ "IOKit.framework" ]
+      }
+
+      if (is_ios) {
+        sources += [ "ios/lib/machine_id_ios.cc" ]
+      }
     }
 
     if (is_posix) {
@@ -121,9 +124,6 @@ if (!is_android) {
       "lib/rlz_lib.h",
     ]
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
     public_deps = [
       ":rlz_lib_no_network",
       "//base",
@@ -132,13 +132,14 @@ if (!is_android) {
     deps = [
       ":rlz_utils",
       "//base/third_party/dynamic_annotations",
+      "//build:chromeos_buildflags",
       "//net",
       "//services/network/public/cpp:cpp",
       "//services/network/public/mojom",
       "//url",
     ]
 
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//chromeos/dbus",
         "//chromeos/system",
@@ -161,8 +162,9 @@ if (!is_android) {
     ]
     deps = [
       ":rlz_lib",
+      "//build:chromeos_buildflags",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       public_deps += [ "//chromeos/system" ]
     }
   }
@@ -177,17 +179,18 @@ if (!is_android) {
       "lib/rlz_lib_test.cc",
       "lib/string_utils_unittest.cc",
       "test/rlz_unittest_main.cc",
-      "win/lib/machine_deal_test.cc",
     ]
 
-    # TODO(jschuh): crbug.com/167187 fix size_t to int truncations.
-    configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
+    if (is_win) {
+      sources += [ "win/lib/machine_deal_test.cc" ]
+    }
 
     deps = [
       ":rlz_lib",
       ":rlz_utils",
       ":test_support",
       "//base",
+      "//build:chromeos_buildflags",
       "//mojo/core/embedder",
       "//net:test_support",
       "//services/network:test_support",
@@ -195,7 +198,7 @@ if (!is_android) {
       "//testing/gtest",
       "//third_party/zlib",
     ]
-    if (is_chromeos) {
+    if (is_chromeos_ash) {
       deps += [
         "//chromeos/dbus:test_support",
         "//chromeos/system",
@@ -206,9 +209,7 @@ if (!is_android) {
 
 if (!is_ios && !is_android) {
   executable("rlz_id") {
-    sources = [
-      "examples/rlz_id.cc",
-    ]
+    sources = [ "examples/rlz_id.cc" ]
     deps = [
       ":rlz_lib",
       "//build/win:default_exe_manifest",

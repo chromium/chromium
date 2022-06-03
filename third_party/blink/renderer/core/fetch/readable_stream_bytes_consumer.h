@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_READABLE_STREAM_BYTES_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FETCH_READABLE_STREAM_BYTES_CONSUMER_H_
 
-#include <memory>
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
@@ -22,10 +21,13 @@ class ScriptState;
 
 // This class is a BytesConsumer pulling bytes from a ReadableStream.
 // The stream will be immediately locked by the consumer and will never be
-// released.
+// released. The stream must not be locked before this object is created.
 class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
  public:
-  ReadableStreamBytesConsumer(ScriptState*, ReadableStream*, ExceptionState&);
+  ReadableStreamBytesConsumer(ScriptState*, ReadableStream*);
+  ReadableStreamBytesConsumer(const ReadableStreamBytesConsumer&) = delete;
+  ReadableStreamBytesConsumer& operator=(const ReadableStreamBytesConsumer&) =
+      delete;
   ~ReadableStreamBytesConsumer() override;
 
   Result BeginRead(const char** buffer, size_t* available) override;
@@ -38,7 +40,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   Error GetError() const override;
   String DebugName() const override { return "ReadableStreamBytesConsumer"; }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   class OnFulfilled;
@@ -47,6 +49,7 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   void OnRead(DOMUint8Array*);
   void OnReadDone();
   void OnRejected();
+  void SetErrored();
   void Notify();
 
   Member<ReadableStreamDefaultReader> reader_;
@@ -56,7 +59,6 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   size_t pending_offset_ = 0;
   PublicState state_ = PublicState::kReadableOrWaiting;
   bool is_reading_ = false;
-  DISALLOW_COPY_AND_ASSIGN(ReadableStreamBytesConsumer);
 };
 
 }  // namespace blink

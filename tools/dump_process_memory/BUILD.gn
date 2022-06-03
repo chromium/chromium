@@ -3,16 +3,10 @@
 # found in the LICENSE file.
 
 executable("dump_process") {
-  sources = [
-    "dump_process.cc",
-  ]
-  deps = [
-    "//base",
-  ]
+  sources = [ "dump_process.cc" ]
+  deps = [ "//base" ]
 }
 
 group("all") {
-  deps = [
-    ":dump_process",
-  ]
+  deps = [ ":dump_process" ]
 }

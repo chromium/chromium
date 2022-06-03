@@ -1,0 +1,142 @@
+<?xml version="1.0" ?>
+<!DOCTYPE translationbundle>
+<translationbundle lang="fi">
+<translation id="1113173431709655881">Kameratila</translation>
+<translation id="1175958423215084756">Linkki havaittu. <ph name="HOSTNAME" /></translation>
+<translation id="1258009455399840361">Kierrä 90 astetta myötäpäivään</translation>
+<translation id="1276998909102132017">Gallerian kuvat</translation>
+<translation id="1300209025925956156">Skannaa dokumenttisi</translation>
+<translation id="1303487788671416818">Ota käyttöön täysikokoinen kuvakaappaus videosta</translation>
+<translation id="137991641490787891"><ph name="ASPECT_RATIO_WIDTH" />. Käytä valitsemalla Haku + vasen nuoli.</translation>
+<translation id="1430915738399379752">Tulosta</translation>
+<translation id="1467231725790366244"><ph name="CAMERA" /> on irrotettu.</translation>
+<translation id="1473110567575736769">3 sekunnin ajastin</translation>
+<translation id="1545749641540134597">Skannaa QR-koodi</translation>
+<translation id="1560052704389894104">GIF</translation>
+<translation id="1588438908519853928">Normaali</translation>
+<translation id="1620510694547887537">Kamera</translation>
+<translation id="1627744224761163218">4x4</translation>
+<translation id="1664224225747386870">Mitään ei kuvattu</translation>
+<translation id="1838104802459806957">Kallista ylöspäin</translation>
+<translation id="1851169887664797861">Lisää kameran säätimiä käytettävissä</translation>
+<translation id="1851616744363735765">KESKEYTETTY</translation>
+<translation id="1862930711583847113">Vienti epäonnistui: <ph name="FILE" /></translation>
+<translation id="1899697626337024495">Kuvaresoluutio</translation>
+<translation id="2022953316617983419">QR-koodi</translation>
+<translation id="2036868001356139588">Ajastimen kesto</translation>
+<translation id="2050339315714019657">Pystysuunta</translation>
+<translation id="2064538373111010176"><ph name="CAMERA" /> on aktiivinen.</translation>
+<translation id="2144806332417375165">Omat videoparametrit</translation>
+<translation id="2175927920773552910">QR-koodi</translation>
+<translation id="229579744168541441">Vie paikalliselle levylle</translation>
+<translation id="2320741269052147773">Panoroi vasemmalle</translation>
+<translation id="2501278716633472235">Takaisin</translation>
+<translation id="2501853267655415902">Tallennus lopetettu</translation>
+<translation id="2501953888035679275">Ota kuvia ja kuvaa videoita kameralla.</translation>
+<translation id="2517472476991765520">Etsi</translation>
+<translation id="2549985041256363841">Aloita tallennus</translation>
+<translation id="2599796128805996109">Takakamera</translation>
+<translation id="2759905922487820242"><ph name="CURRENT" />/<ph name="MAXIMAL" /> s</translation>
+<translation id="2761536921376153655">Hakutyyppi</translation>
+<translation id="2879583609344924966"><ph name="CAMERA" /> on kytketty.</translation>
+<translation id="2968794441791257519">Kameralla otetut kuvat ja videot siirretään Lataukset-kansioon. Voit käyttää niitä avaamalla Tiedostot.
+
+        Jos sovelluksella on tallennustilan käyttöoikeus, se voi käyttää kuvia ja videoita.</translation>
+<translation id="3067436040345934772">Panoroi oikealle</translation>
+<translation id="3081586908890909590">Vaihda videon kuvaamiseen</translation>
+<translation id="313467653172006084">30 FPS</translation>
+<translation id="3183731565330012717">Ruudukkotyyppi</translation>
+<translation id="3227137524299004712">Mikrofoni</translation>
+<translation id="3240426699337459095">Linkki kopioitu</translation>
+<translation id="3259149966178251584">Kameran resoluutio</translation>
+<translation id="3260401663013584785">Dokumenttia ei havaittu</translation>
+<translation id="3305962767867348165">Korjaa</translation>
+<translation id="3448774564454087943">Videota ei tallennettu, koska se on liian lyhyt</translation>
+<translation id="346539236881580388">Uusi otos</translation>
+<translation id="3517926952904427380">Muotokuvan ottaminen epäonnistui</translation>
+<translation id="3569311554794739032">Haluatko varmasti, että <ph name="FILE" /> poistetaan?</translation>
+<translation id="3573890771273113519">Vaihda skannaustilaan</translation>
+<translation id="3789724198583203151">Kierrä 90 astetta vastapäivään</translation>
+<translation id="3810838688059735925">Video</translation>
+<translation id="3838931309141338733">Skannaa viivakoodi</translation>
+<translation id="3892148308691398805">Kopioi teksti</translation>
+<translation id="4118525110028899586">Keskeytä tallennus</translation>
+<translation id="4121305183798804752">Dokumentti havaittiin</translation>
+<translation id="4269820728363426813">Kopioi linkin osoite</translation>
+<translation id="4279490309300973883">Peilaus päällä</translation>
+<translation id="4329152592498422850">Vaihda neliökuviin</translation>
+<translation id="4383571725254449280">Tulosta kehityslokit</translation>
+<translation id="4445542136948522167">Lopeta kuvan ottaminen</translation>
+<translation id="4497569853498380347">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseliä</translation>
+<translation id="4570032796877367747">Etukamera</translation>
+<translation id="4628948037717959914">Kuva</translation>
+<translation id="4649291346448517080">Tiedoston tallennus epäonnistui.</translation>
+<translation id="4890010094662541459">3x3</translation>
+<translation id="491895758387112773">Striimaa videotallenne useaan paikkaan</translation>
+<translation id="5057360777601936059">Kamerasi ei ole käytettävissä tällä hetkellä.
+        Tarkista, onko kamera yhdistetty oikein.</translation>
+<translation id="5152121255775685072">Siirry galleriaan</translation>
+<translation id="520537883758714667">Dokumenttien skannaus on nyt saatavilla</translation>
+<translation id="5317780077021120954">Tallenna</translation>
+<translation id="5444515100983837161">Aseta dokumentti niin, että kaikki reunat ovat kehyksen sisällä. Skannaus toimii parhaiten, kun dokumentti ja tausta ovat erivärisiä</translation>
+<translation id="5671277269877808209">Neliö</translation>
+<translation id="5746169159649715125">Tallenna PDF-muodossa</translation>
+<translation id="5753488212459587150">Ota asiantuntijatila käyttöön</translation>
+<translation id="5759254179196327752">Skannaa dokumentti</translation>
+<translation id="5775960006311140197">Asiantuntija-tila</translation>
+<translation id="5869546221129391014">Ruudukko</translation>
+<translation id="5975083100439434680">Loitonna</translation>
+<translation id="6073451960410192870">Lopeta tallennus</translation>
+<translation id="6197807149213783179">Tallenna sisällönkuvaustiedot</translation>
+<translation id="6233780560267770709">3x3</translation>
+<translation id="6243827288366940320">Kultainen leikkaus</translation>
+<translation id="6248749904681914629">Ulkoinen kamera</translation>
+<translation id="6353688143752491039">Kiitos, että annoit palautetta Kamera-sovelluksesta.
+
+Jos palautteesi koskee kuvan tai videon laatua, liitä mukaan esimerkkikuva tai ‑video ja kuvaile ongelmaa (esim. kuva on liian tumma, tai sitä ei ole tarkennettu kohteeseen).</translation>
+<translation id="6420689864531458495">(<ph name="ASPECT_RATIO_WIDTH" />:<ph name="ASPECT_RATIO_HEIGHT" /> – <ph name="WIDTH" />x<ph name="HEIGHT" />) <ph name="MEGAPIXEL" /> megapikseliä</translation>
+<translation id="6527303717912515753">Jaa</translation>
+<translation id="667999046851023355">Dokumentti</translation>
+<translation id="6681668084120808868">Ota kuva</translation>
+<translation id="6778482348691154169">Kuvan ottaminen epäonnistui</translation>
+<translation id="695140971690006676">Palauta kaikki</translation>
+<translation id="6965382102122355670">OK</translation>
+<translation id="698156982839284926">3 sekuntia</translation>
+<translation id="712848772518857951">Haluatko varmasti poistaa <ph name="COUNT" /> kohdetta?</translation>
+<translation id="7134221860976209830">10 sekunnin ajastin</translation>
+<translation id="7191890674911603392">Tietuetyyppi</translation>
+<translation id="7243947652761655814">Videon resoluutio</translation>
+<translation id="7337660886763914220">Tiedostojärjestelmän virheitä</translation>
+<translation id="7450541714075000668">Teksti kopioitu</translation>
+<translation id="7476762461674917065">Näytä GIF-tiedoston tallennusvaihtoehto</translation>
+<translation id="7488619942230388918">Kuvaa GIF-video</translation>
+<translation id="7557677699350329807">Vaihda seuraavaan kameraan</translation>
+<translation id="7607002721634913082">Keskeytetty</translation>
+<translation id="7608223098072244877">4x4</translation>
+<translation id="7649070708921625228">Ohje</translation>
+<translation id="7658239707568436148">Peru</translation>
+<translation id="7670511624014457267">60 FPS</translation>
+<translation id="7726641833034062494">Kuvaa normaali video</translation>
+<translation id="7983668134180549431">Tekstiä havaittu.</translation>
+<translation id="8067883171444229417">Toista video</translation>
+<translation id="8120146556401698679">Panoroi kallista zoomaa</translation>
+<translation id="8131740175452115882">Vahvista</translation>
+<translation id="8145038249676204903">Vaihda kuvan ottamiseen</translation>
+<translation id="8167081290930651932">Tallenna kuvana</translation>
+<translation id="8239780215768881278">Ota kuvakaappaus videosta</translation>
+<translation id="8261506727792406068">Poista</translation>
+<translation id="8425673304802773841">Kallista alaspäin</translation>
+<translation id="8428213095426709021">Asetukset</translation>
+<translation id="8687491812650032292">HD <ph name="HEIGHT" />p (<ph name="WIDTH" />:<ph name="HEIGHT" />)</translation>
+<translation id="8712637175834984815">Ymmärretty</translation>
+<translation id="8730621377337864115">Valmis</translation>
+<translation id="8732462232047530626">Esikatsele sisällönkuvaustiedot</translation>
+<translation id="8815966864175525708">Vaihda muotokuvatilaan</translation>
+<translation id="8828441885228359828">Jatka tallennusta</translation>
+<translation id="8870695351537079478">Tallennuksen aloittaminen epäonnistui</translation>
+<translation id="8903921497873541725">Lähennä</translation>
+<translation id="9045010116236796332">Aseta dokumentti niin, että kaikki reunat ovat kehyksen sisällä</translation>
+<translation id="9045155556724273246">10 sekuntia</translation>
+<translation id="906331135292332864">Käsitellään kuvaa…</translation>
+<translation id="945522503751344254">Lähetä palautetta</translation>
+</translationbundle>

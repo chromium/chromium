@@ -5,9 +5,7 @@
 import("//build/config/ios/rules.gni")
 import("//ios/build/chrome_build.gni")
 import("//ios/build/config.gni")
-import("//ios/third_party/earl_grey/ios_eg_test.gni")
 import("//ios/third_party/earl_grey2/ios_eg2_test.gni")
-import("//ios/third_party/firebase/firebase.gni")
 
 ios_app_bundle("showcase") {
   info_plist = "core/Info.plist"
@@ -16,35 +14,42 @@ ios_app_bundle("showcase") {
   deps = [
     ":features",
     "//ios/showcase/core:main",
+
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
   ]
   bundle_deps = [ "//ios/showcase/core/resources" ]
+  if (ios_enable_credential_provider_extension) {
+    bundle_deps +=
+        [ "//ios/chrome/credential_provider_extension:system_strings" ]
+  }
   assert_no_deps = ios_assert_no_deps
 }
 
 group("features") {
   deps = [
+    "//ios/chrome/app:enterprise_app_agent_ui",
     "//ios/showcase/alert",
     "//ios/showcase/badges",
     "//ios/showcase/bubble",
-    "//ios/showcase/content_suggestions",
+    "//ios/showcase/credential_provider",
+    "//ios/showcase/default_browser",
+    "//ios/showcase/discover_feed_preview",
+    "//ios/showcase/first_run",
+    "//ios/showcase/incognito_reauth",
     "//ios/showcase/infobars",
     "//ios/showcase/omnibox_popup",
-    "//ios/showcase/payments",
     "//ios/showcase/recent_tabs",
     "//ios/showcase/settings",
     "//ios/showcase/tab_grid",
     "//ios/showcase/text_badge_view",
     "//ios/showcase/uikit_table_view_cell",
-    "//ios/showcase/widget",
   ]
 }
 
 group("all_tests") {
   testonly = true
-  deps = [
-    ":ios_showcase_eg2tests",
-    ":ios_showcase_egtests",
-  ]
+  deps = [ ":ios_showcase_eg2tests" ]
 }
 
 ios_eg2_test_app_host("ios_showcase_eg2tests") {
@@ -55,6 +60,9 @@ ios_eg2_test_app_host("ios_showcase_eg2tests") {
     "//ios/showcase/core:main_eg2",
     "//ios/showcase/test:eg_app_support+eg2",
     "//ios/testing/earl_grey:eg_app_support+eg2",
+
+    # Use the chromium implementation of the provider API.
+    "//ios/chrome/browser/providers:chromium_providers",
   ]
   bundle_deps = [
     "//ios/chrome/app/resources",
@@ -62,13 +70,6 @@ ios_eg2_test_app_host("ios_showcase_eg2tests") {
     "//ios/third_party/earl_grey2:app_framework+bundle",
     "//ios/third_party/gtx:gtx+bundle",
   ]
-
-  # TODO(crbug.com/870935): This dependency of ios_showcase_egtests on
-  # Firebase SDK seems unnecessary. There must be some transitive
-  # dependencies that eventually led to ios/chrome/app:app_internal.
-  if (ios_enable_firebase_sdk) {
-    deps += [ "//ios/third_party/firebase" ]
-  }
 
   assert_no_deps = ios_assert_no_deps
 }
@@ -79,36 +80,14 @@ ios_eg2_test("ios_showcase_eg2tests_module") {
   xctest_bundle_principal_class = "ChromeEGTestBundleMain"
   deps = [
     "//ios/showcase/badges:eg2_tests",
-    "//ios/showcase/content_suggestions:eg2_tests",
+    "//ios/showcase/bubble:eg2_tests",
     "//ios/showcase/core:eg2_tests",
+    "//ios/showcase/credential_provider:eg2_tests",
+    "//ios/showcase/default_browser:eg2_tests",
+    "//ios/showcase/discover_feed_preview:eg2_tests",
     "//ios/showcase/infobars:eg2_tests",
+    "//ios/showcase/text_badge_view:eg2_tests",
   ]
   bundle_deps = [ "//ios/showcase/core/resources" ]
-}
-
-ios_eg_test("ios_showcase_egtests") {
-  info_plist = "core/Info.plist"
-  extra_substitutions = [ "IOS_BUNDLE_ID_PREFIX=$ios_app_bundle_id_prefix" ]
-  deps = [
-    ":features",
-    "//ios/showcase/core:main",
-
-    # Add all eg_tests targets below.
-    "//ios/showcase/badges:eg_tests",
-    "//ios/showcase/bubble:eg_tests",
-    "//ios/showcase/content_suggestions:eg_tests",
-    "//ios/showcase/core:eg_tests",
-    "//ios/showcase/infobars:eg_tests",
-    "//ios/showcase/payments:eg_tests",
-    "//ios/showcase/text_badge_view:eg_tests",
-  ]
-
-  # TODO(crbug.com/870935): This dependency of ios_showcase_egtests on
-  # Firebase SDK seems unnecessary. There must be some transitive
-  # dependencies that eventually led to ios/chrome/app:app_internal.
-  if (ios_enable_firebase_sdk) {
-    deps += [ "//ios/third_party/firebase" ]
-  }
-  bundle_deps = [ "//ios/showcase/core/resources" ]
-  assert_no_deps = ios_assert_no_deps
+  data_deps = [ ":ios_showcase_eg2tests" ]
 }

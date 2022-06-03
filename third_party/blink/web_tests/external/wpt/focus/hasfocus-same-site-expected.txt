@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Check result assert_equals: Check result expected "PASS" but got "FAIL: did not have initial focus"
+Harness: the test ran to completion.
+

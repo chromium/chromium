@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_TEST_EARL_GREY_WEB_VIEW_MATCHERS_H_
 #define IOS_WEB_PUBLIC_TEST_EARL_GREY_WEB_VIEW_MATCHERS_H_
 
-#include <string>
 
 #import <Foundation/Foundation.h>
 
@@ -20,9 +19,6 @@ id<GREYMatcher> WebViewInWebState(WebState* web_state);
 
 // Matcher for WKWebView's scroll view.
 id<GREYMatcher> WebViewScrollView(WebState* web_state);
-
-// Matcher for an interstitial page. Does not wait if the page is not displayed.
-id<GREYMatcher> Interstitial(WebState* web_state);
 
 }  // namespace web
 

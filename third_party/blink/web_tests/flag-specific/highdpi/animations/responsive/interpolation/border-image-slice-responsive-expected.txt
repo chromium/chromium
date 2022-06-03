@@ -1,0 +1,88 @@
+This is a testharness.js-based test.
+PASS This test uses responsive-test.js.
+PASS border-image-slice-responsive
+PASS border-image-slice-responsive 1
+PASS border-image-slice-responsive 2
+PASS border-image-slice-responsive 3
+PASS border-image-slice-responsive 4
+PASS border-image-slice-responsive 5
+PASS border-image-slice-responsive 6
+PASS border-image-slice-responsive 7
+PASS border-image-slice-responsive 8
+PASS border-image-slice-responsive 9
+PASS border-image-slice-responsive 10
+PASS border-image-slice-responsive 11
+PASS border-image-slice-responsive 12
+PASS border-image-slice-responsive 13
+PASS border-image-slice-responsive 14
+PASS border-image-slice-responsive 15
+PASS border-image-slice-responsive 16
+PASS border-image-slice-responsive 17
+PASS border-image-slice-responsive 18
+PASS border-image-slice-responsive 19
+PASS border-image-slice-responsive 20
+PASS border-image-slice-responsive 21
+PASS border-image-slice-responsive 22
+PASS border-image-slice-responsive 23
+PASS border-image-slice-responsive 24
+PASS border-image-slice-responsive 25
+PASS border-image-slice-responsive 26
+PASS border-image-slice-responsive 27
+PASS border-image-slice-responsive 28
+PASS border-image-slice-responsive 29
+PASS border-image-slice-responsive 30
+PASS border-image-slice-responsive 31
+PASS border-image-slice-responsive 32
+PASS border-image-slice-responsive 33
+PASS border-image-slice-responsive 34
+PASS border-image-slice-responsive 35
+PASS border-image-slice-responsive 36
+PASS Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10 20%"} changed to {"underlying":"10 20% fill"} at (0.25) is [10 20% fill]
+PASS border-image-slice-responsive 37
+FAIL Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10 20%"} changed to {"underlying":"10 20% fill"} at (0.75) is [110 120%] assert_equals: expected "110 120%" but got "165 120%"
+PASS border-image-slice-responsive 38
+PASS Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10 20%"} changed to {"underlying":"10% 20"} at (0.25) is [10% 20]
+PASS border-image-slice-responsive 39
+FAIL Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10 20%"} changed to {"underlying":"10% 20"} at (0.75) is [110 120%] assert_equals: expected "110 120%" but got "165 120%"
+PASS border-image-slice-responsive 40
+FAIL Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10 20% fill"} changed to {"underlying":"10 20%"} at (0.25) is [35 45%] assert_equals: expected "35 45%" but got "48.75 45%"
+PASS border-image-slice-responsive 41
+FAIL Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10 20% fill"} changed to {"underlying":"10 20%"} at (0.75) is [85 95%] assert_equals: expected "85 95%" but got "126.25 95%"
+PASS border-image-slice-responsive 42
+PASS Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10 20% fill"} changed to {"underlying":"10% 20"} at (0.25) is [10% 20]
+PASS border-image-slice-responsive 43
+FAIL Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10 20% fill"} changed to {"underlying":"10% 20"} at (0.75) is [110 120%] assert_equals: expected "110 120%" but got "165 120%"
+PASS border-image-slice-responsive 44
+FAIL Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10% 20"} changed to {"underlying":"10 20%"} at (0.25) is [35 45%] assert_equals: expected "35 45%" but got "48.75 45%"
+PASS border-image-slice-responsive 45
+FAIL Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10% 20"} changed to {"underlying":"10 20%"} at (0.75) is [85 95%] assert_equals: expected "85 95%" but got "126.25 95%"
+PASS border-image-slice-responsive 46
+PASS Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10% 20"} changed to {"underlying":"10 20% fill"} at (0.25) is [10 20% fill]
+PASS border-image-slice-responsive 47
+FAIL Animation on property <borderImageSlice> from neutral to [110 120%] with {"underlying":"10% 20"} changed to {"underlying":"10 20% fill"} at (0.75) is [110 120%] assert_equals: expected "110 120%" but got "165 120%"
+PASS border-image-slice-responsive 48
+PASS Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10 20% fill"} changed to {"inherited":"10% 20 fill"} at (0.25) is [10% 20 fill]
+PASS border-image-slice-responsive 49
+FAIL Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10 20% fill"} changed to {"inherited":"10% 20 fill"} at (0.75) is [110 120% fill] assert_equals: expected "110 120% fill" but got "165 120% fill"
+PASS border-image-slice-responsive 50
+PASS Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10 20% fill"} changed to {"inherited":"10 20%"} at (0.25) is [10 20%]
+PASS border-image-slice-responsive 51
+FAIL Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10 20% fill"} changed to {"inherited":"10 20%"} at (0.75) is [110 120% fill] assert_equals: expected "110 120% fill" but got "165 120% fill"
+PASS border-image-slice-responsive 52
+FAIL Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10% 20 fill"} changed to {"inherited":"10 20% fill"} at (0.25) is [35 45% fill] assert_equals: expected "35 45% fill" but got "48.75 45% fill"
+PASS border-image-slice-responsive 53
+FAIL Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10% 20 fill"} changed to {"inherited":"10 20% fill"} at (0.75) is [85 95% fill] assert_equals: expected "85 95% fill" but got "126.25 95% fill"
+PASS border-image-slice-responsive 54
+PASS Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10% 20 fill"} changed to {"inherited":"10 20%"} at (0.25) is [10 20%]
+PASS border-image-slice-responsive 55
+FAIL Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10% 20 fill"} changed to {"inherited":"10 20%"} at (0.75) is [110 120% fill] assert_equals: expected "110 120% fill" but got "165 120% fill"
+PASS border-image-slice-responsive 56
+FAIL Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10 20%"} changed to {"inherited":"10 20% fill"} at (0.25) is [35 45% fill] assert_equals: expected "35 45% fill" but got "48.75 45% fill"
+PASS border-image-slice-responsive 57
+FAIL Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10 20%"} changed to {"inherited":"10 20% fill"} at (0.75) is [85 95% fill] assert_equals: expected "85 95% fill" but got "126.25 95% fill"
+PASS border-image-slice-responsive 58
+PASS Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10 20%"} changed to {"inherited":"10% 20 fill"} at (0.25) is [10% 20 fill]
+PASS border-image-slice-responsive 59
+FAIL Animation on property <borderImageSlice> from [inherit] to [110 120% fill] with {"inherited":"10 20%"} changed to {"inherited":"10% 20 fill"} at (0.75) is [110 120% fill] assert_equals: expected "110 120% fill" but got "165 120% fill"
+Harness: the test ran to completion.
+

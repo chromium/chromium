@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
@@ -18,6 +17,7 @@
 #include "media/mojo/services/mojo_media_drm_storage.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -45,7 +45,7 @@ void CreateOriginId(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
 
 void CreateEmptyOriginId(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
   // |callback| has to fail in order to check if empty origin ID allowed.
-  std::move(callback).Run(false, base::nullopt);
+  std::move(callback).Run(false, absl::nullopt);
 }
 
 void CreateOriginIdAsync(MediaDrmStorageImpl::OriginIdObtainedCB callback) {
@@ -70,7 +70,7 @@ class MediaDrmStorageImplTest : public content::RenderViewHostTestHarness {
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
 
-    pref_service_.reset(new TestingPrefServiceSimple());
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     PrefRegistrySimple* registry = pref_service_->registry();
     MediaDrmStorageImpl::RegisterProfilePrefs(registry);
 
@@ -365,26 +365,31 @@ TEST_F(MediaDrmStorageImplTest, GetAllOrigins) {
   EXPECT_EQ(1u, origins.count(GURL(kTestOrigin)));
 }
 
-TEST_F(MediaDrmStorageImplTest, GetOriginsModifiedSince) {
+TEST_F(MediaDrmStorageImplTest, GetOriginsModifiedBetween) {
   base::Time start_time = base::Time::Now();
   OnProvisioned();
   base::RunLoop().RunUntilIdle();
 
+  // Should not be found before |start_time|.
+  std::vector<GURL> origins0 = MediaDrmStorageImpl::GetOriginsModifiedBetween(
+      pref_service_.get(), base::Time(), start_time);
+  EXPECT_EQ(origins0, std::vector<GURL>{});
+
   // Verify the origin is found from all time.
-  std::vector<GURL> origins1 = MediaDrmStorageImpl::GetOriginsModifiedSince(
-      pref_service_.get(), base::Time());
+  std::vector<GURL> origins1 = MediaDrmStorageImpl::GetOriginsModifiedBetween(
+      pref_service_.get(), base::Time(), base::Time::Max());
   EXPECT_EQ(origins1, std::vector<GURL>{GURL(kTestOrigin)});
 
   // Should also be found from |start_time|.
-  std::vector<GURL> origins2 = MediaDrmStorageImpl::GetOriginsModifiedSince(
-      pref_service_.get(), start_time);
+  std::vector<GURL> origins2 = MediaDrmStorageImpl::GetOriginsModifiedBetween(
+      pref_service_.get(), start_time, base::Time::Max());
   EXPECT_EQ(origins2, std::vector<GURL>{GURL(kTestOrigin)});
 
   // Should not be found from Now().
   base::Time check_time = base::Time::Now();
   EXPECT_GT(check_time, start_time);
-  std::vector<GURL> origins3 = MediaDrmStorageImpl::GetOriginsModifiedSince(
-      pref_service_.get(), check_time);
+  std::vector<GURL> origins3 = MediaDrmStorageImpl::GetOriginsModifiedBetween(
+      pref_service_.get(), check_time, base::Time::Max());
   EXPECT_EQ(origins3, std::vector<GURL>{});
 
   // Save a new session.
@@ -392,9 +397,16 @@ TEST_F(MediaDrmStorageImplTest, GetOriginsModifiedSince) {
   base::RunLoop().RunUntilIdle();
 
   // Now that a new session has been added, the origin should be found.
-  std::vector<GURL> origins4 = MediaDrmStorageImpl::GetOriginsModifiedSince(
-      pref_service_.get(), check_time);
+  std::vector<GURL> origins4 = MediaDrmStorageImpl::GetOriginsModifiedBetween(
+      pref_service_.get(), check_time, base::Time::Max());
   EXPECT_EQ(origins4, std::vector<GURL>{GURL(kTestOrigin)});
+
+  // Now that a new session has been added, the origin should be found between
+  // two points in time.
+  base::Time second_check_time = base::Time::Now();
+  std::vector<GURL> origins5 = MediaDrmStorageImpl::GetOriginsModifiedBetween(
+      pref_service_.get(), check_time, second_check_time);
+  EXPECT_EQ(origins5, std::vector<GURL>{GURL(kTestOrigin)});
 }
 
 TEST_F(MediaDrmStorageImplTest, AllowEmptyOriginId) {

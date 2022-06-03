@@ -64,32 +64,32 @@ function testPixelShadow(pixel, reference, alphaApprox) {
 
 testScenarios =
         [
-            ['TestAlphaShadow 1', ctx.getImageData(400, 150, 1, 1).data, [ 0, 0, 0, 0, 0], 0],
+            ['TestAlphaShadow 1', ctx.getImageData(400, 150, 1, 1).data, [ 0, 0, 0, 0], 0],
             ['TestAlphaShadow 2', ctx.getImageData(400, 75, 1, 1).data, [ 255,  0, 0, 64], 15],
             ['TestAlphaShadow 3', ctx.getImageData(400, 225, 1, 1).data, [ 255, 0, 0, 64], 15],
             ['TestAlphaShadow 4', ctx.getImageData(325, 150, 1, 1).data, [ 255, 0, 0, 64], 15],
             ['TestAlphaShadow 5', ctx.getImageData(475, 150, 1, 1).data, [ 255, 0, 0, 64], 15],
 
-            ['TestBlurryShadow 1', ctx.getImageData(400, 400, 1, 1).data, [ 0, 0, 0, 0, 0], 0],
+            ['TestBlurryShadow 1', ctx.getImageData(400, 400, 1, 1).data, [ 0, 0, 0, 0], 0],
             ['TestBlurryShadow 2', ctx.getImageData(400, 300, 1, 1).data, [ 255, 0, 0, 31], 15],
             ['TestBlurryShadow 3', ctx.getImageData(400, 500, 1, 1).data, [ 255, 0, 0, 31], 15],
             ['TestBlurryShadow 4', ctx.getImageData(300, 400, 1, 1).data, [ 255, 0, 0, 31], 15],
             ['TestBlurryShadow 5', ctx.getImageData(500, 400, 1, 1).data, [ 255, 0, 0, 31], 15],
 
-            ['TestRotatedAlphaShadow 1', ctx.getImageData(400, 650, 1, 1).data, [ 0, 0, 0, 0, 0], 0],
+            ['TestRotatedAlphaShadow 1', ctx.getImageData(400, 650, 1, 1).data, [ 0, 0, 0, 0], 0],
             ['TestRotatedAlphaShadow 2', ctx.getImageData(400, 575, 1, 1).data, [ 255, 0, 0, 64], 15],
             ['TestRotatedAlphaShadow 3', ctx.getImageData(400, 725, 1, 1).data, [ 255, 0, 0, 64], 15],
             ['TestRotatedAlphaShadow 4', ctx.getImageData(325, 650, 1, 1).data, [ 255, 0, 0, 64], 15],
             ['TestRotatedAlphaShadow 5', ctx.getImageData(475, 650, 1, 1).data, [ 255, 0, 0, 64], 15],
 
-            ['TestRotatedBlurryShadow 1', ctx.getImageData(400, 900, 1, 1).data, [ 0, 0, 0, 0, 0], 0],
+            ['TestRotatedBlurryShadow 1', ctx.getImageData(400, 900, 1, 1).data, [ 0, 0, 0, 0], 0],
             ['TestRotatedBlurryShadow 2', ctx.getImageData(400, 800, 1, 1).data, [ 255, 0, 0, 31], 15],
             ['TestRotatedBlurryShadow 3', ctx.getImageData(400, 1000, 1, 1).data, [ 255, 0, 0, 31], 15],
             ['TestRotatedBlurryShadow 4', ctx.getImageData(300, 900, 1, 1).data, [ 255, 0, 0, 31], 15],
-            ['TestRotatedBlurryShadow 5', ctx.getImageData(500, 900, 1, 1).data, [ 255, 0, 0, 31], 15],    
+            ['TestRotatedBlurryShadow 5', ctx.getImageData(500, 900, 1, 1).data, [ 255, 0, 0, 31], 15],
         ];
 
 generate_tests(testPixelShadow, testScenarios);
-        
+
  </script>
 </body>

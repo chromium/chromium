@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>Test that trial is not enabled by valid third-party token provided in markup</title>
+<!-- Generate this token with the command:
+generate_token.py http://127.0.0.1:8000 FrobulateThirdParty --version 3 --is-third-party --expire-timestamp=2000000000
+-->
+<meta http-equiv="origin-trial"
+  content="A00TXfHpKhqgUmsoAge38K+XbrqRLuXHm08I+FjloS9Ae+ZlAlQVtSNetjh4wZwc1FSKvK97ecqC1x3YVMcHjw4AAABxeyJvcmlnaW4iOiAiaHR0cDovLzEyNy4wLjAuMTo4MDAwIiwgImlzVGhpcmRQYXJ0eSI6IHRydWUsICJmZWF0dXJlIjogIkZyb2J1bGF0ZVRoaXJkUGFydHkiLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0=" />
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<script src="resources/origintrials.js"></script>
+<script>
+  // The trial should not be enabled, as third party tokens are only valid when
+  // injected by an external script.
+  expect_failure_third_party();
+</script>

@@ -59,20 +59,6 @@ struct TextInputState {
   [MinVersion=6] Range? composition_text_range;
 };
 
-// Represents the information of a key event.
-[MinVersion=7]
-struct KeyEventData {
-  // Whether the event is a press event or a release event.
-  bool pressed;
-  // The key touched in the event represented in |ui::KeyboardCode|.
-  int32 key_code;
-  // The flags for modifiers state.
-  bool is_shift_down;
-  bool is_control_down;
-  bool is_alt_down;
-  bool is_capslock_on;
-};
-
 // This interface provides methods to control a text field.
 // It is generated for each focused text field and passed to Android.
 // This interface will be closed when the focus moves to another text field.
@@ -135,7 +121,7 @@ interface InputMethodManagerHost {
 // Next method ID: 7
 interface InputMethodManagerInstance {
   // Establishes full-duplex communication with the host.
-  Init@0(InputMethodManagerHost host_ptr) => ();
+  Init@0(pending_remote<InputMethodManagerHost> host_remote) => ();
 
   // Enables/Disables an IME in Android. Calling this method will add/remove
   // the specified IME to/from ENABLED_INPUT_METHODS settings.
@@ -146,7 +132,7 @@ interface InputMethodManagerInstance {
 
   // Notifies Android's ArcInputMethodManagerService that
   // a text field is focused.
-  [MinVersion=2] Focus@3(InputConnection connection,
+  [MinVersion=2] Focus@3(pending_remote<InputConnection> connection,
                          TextInputState initial_state);
 
   // Sends the latest TextInputState of the active text field.

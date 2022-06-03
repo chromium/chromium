@@ -14,15 +14,19 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/values.h"
+#include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/api/declarative_net_request/request_action.h"
 #include "extensions/browser/api/web_request/web_request_resource_type.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "ipc/ipc_message.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -33,8 +37,6 @@ class ExtensionNavigationUIData;
 // Helper struct to initialize WebRequestInfo.
 struct WebRequestInfoInitParams {
   WebRequestInfoInitParams();
-  WebRequestInfoInitParams(WebRequestInfoInitParams&& other);
-  WebRequestInfoInitParams& operator=(WebRequestInfoInitParams&& other);
 
   // Initializes a WebRequestInfoInitParams from information provided over a
   // URLLoaderFactory interface.
@@ -43,25 +45,30 @@ struct WebRequestInfoInitParams {
       int render_process_id,
       int render_frame_id,
       std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data,
-      int32_t routing_id,
+      int32_t view_routing_id,
       const network::ResourceRequest& request,
       bool is_download,
       bool is_async,
       bool is_service_worker_script,
-      base::Optional<int64_t> navigation_id);
+      absl::optional<int64_t> navigation_id,
+      ukm::SourceIdObj ukm_source_id);
+
+  WebRequestInfoInitParams(const WebRequestInfoInitParams&) = delete;
+  WebRequestInfoInitParams(WebRequestInfoInitParams&& other);
+
+  WebRequestInfoInitParams& operator=(const WebRequestInfoInitParams&) = delete;
+  WebRequestInfoInitParams& operator=(WebRequestInfoInitParams&& other);
 
   ~WebRequestInfoInitParams();
 
   uint64_t id = 0;
   GURL url;
-  GURL site_for_cookies;
   int render_process_id = -1;
-  int routing_id = MSG_ROUTING_NONE;
+  int view_routing_id = MSG_ROUTING_NONE;
   int frame_id = -1;
   std::string method;
   bool is_navigation_request = false;
-  base::Optional<url::Origin> initiator;
-  content::ResourceType type = content::ResourceType::kSubResource;
+  absl::optional<url::Origin> initiator;
   WebRequestResourceType web_request_type = WebRequestResourceType::OTHER;
   bool is_async = false;
   net::HttpRequestHeaders extra_request_headers;
@@ -72,19 +79,22 @@ struct WebRequestInfoInitParams {
   int web_view_embedder_process_id = -1;
   ExtensionApiFrameIdMap::FrameData frame_data;
   bool is_service_worker_script = false;
-  base::Optional<int64_t> navigation_id;
+  absl::optional<int64_t> navigation_id;
+  ukm::SourceIdObj ukm_source_id = ukm::kInvalidSourceIdObj;
+  content::GlobalRenderFrameHostId parent_routing_id;
 
  private:
   void InitializeWebViewAndFrameData(
       const ExtensionNavigationUIData* navigation_ui_data);
-
-  DISALLOW_COPY_AND_ASSIGN(WebRequestInfoInitParams);
 };
 
 // A URL request representation used by WebRequest API internals. This structure
 // carries information about an in-progress request.
 struct WebRequestInfo {
   explicit WebRequestInfo(WebRequestInfoInitParams params);
+
+  WebRequestInfo(const WebRequestInfo&) = delete;
+  WebRequestInfo& operator=(const WebRequestInfo&) = delete;
 
   ~WebRequestInfo();
 
@@ -97,14 +107,13 @@ struct WebRequestInfo {
 
   // The URL of the request.
   const GURL url;
-  const GURL site_for_cookies;
 
   // The ID of the render process which initiated the request, or -1 of not
   // applicable (i.e. if initiated by the browser).
   const int render_process_id;
 
   // The routing ID of the object which initiated the request, if applicable.
-  const int routing_id = MSG_ROUTING_NONE;
+  const int view_routing_id = MSG_ROUTING_NONE;
 
   // The render frame ID of the frame which initiated this request, or -1 if
   // the request was not initiated by a frame.
@@ -118,17 +127,13 @@ struct WebRequestInfo {
 
   // The origin of the context which initiated the request. May be null for
   // browser-initiated requests such as navigations.
-  const base::Optional<url::Origin> initiator;
+  const absl::optional<url::Origin> initiator;
 
   // Extension API frame data corresponding to details of the frame which
   // initiate this request.
   ExtensionApiFrameIdMap::FrameData frame_data;
 
-  // The type of the request (e.g. main frame, subresource, XHR, etc).
-  const content::ResourceType type;
-
-  // A partially mirrored copy of |type| which is slightly less granular and
-  // which also identifies WebSocket requests separately from other types.
+  // The resource type being requested.
   const WebRequestResourceType web_request_type = WebRequestResourceType::OTHER;
 
   // Indicates if this request is asynchronous.
@@ -169,16 +174,22 @@ struct WebRequestInfo {
   // since this is lazily computed. Cached to avoid redundant computations.
   // Valid when not null. In case no actions are taken, populated with an empty
   // vector.
-  mutable base::Optional<std::vector<declarative_net_request::RequestAction>>
+  mutable absl::optional<std::vector<declarative_net_request::RequestAction>>
       dnr_actions;
 
   const bool is_service_worker_script;
 
   // Valid if this request corresponds to a navigation.
-  const base::Optional<int64_t> navigation_id;
+  const absl::optional<int64_t> navigation_id;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRequestInfo);
+  // UKM source to associate metrics with for this request.
+  const ukm::SourceIdObj ukm_source_id;
+
+  // ID of the RenderFrameHost corresponding to the parent frame. Only valid for
+  // document subresource and sub-frame requests.
+  // TODO(karandeepb, mcnee): For subresources, having "parent" in the name is
+  // misleading. This should be renamed to indicate that this is the initiator.
+  const content::GlobalRenderFrameHostId parent_routing_id;
 };
 
 }  // namespace extensions

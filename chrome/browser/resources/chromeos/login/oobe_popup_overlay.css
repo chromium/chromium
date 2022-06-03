@@ -4,7 +4,7 @@
 
 .popup-overlay {
   align-items: center;
-  background: rgba(0, 0, 0, .5);
+  background: rgba(32, 33, 36, 0.6); /* #202124 should match Gaia overlay*/
   bottom: 0;
   display: flex;
   justify-content: center;

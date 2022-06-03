@@ -17,7 +17,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/load_states.h"
 #include "net/base/net_export.h"
@@ -34,12 +33,6 @@
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_config.h"
 #include "net/websockets/websocket_handshake_stream_base.h"
-
-namespace base {
-namespace trace_event {
-class ProcessMemoryDump;
-}
-}
 
 namespace net {
 
@@ -60,6 +53,10 @@ class NET_EXPORT HttpStreamFactory {
   };
 
   explicit HttpStreamFactory(HttpNetworkSession* session);
+
+  HttpStreamFactory(const HttpStreamFactory&) = delete;
+  HttpStreamFactory& operator=(const HttpStreamFactory&) = delete;
+
   virtual ~HttpStreamFactory();
 
   void ProcessAlternativeServices(
@@ -113,11 +110,6 @@ class NET_EXPORT HttpStreamFactory {
   void PreconnectStreams(int num_streams, const HttpRequestInfo& info);
 
   const HostMappingRules* GetHostMappingRules() const;
-
-  // Dumps memory allocation stats. |parent_dump_absolute_name| is the name
-  // used by the parent MemoryAllocatorDump in the memory dump hierarchy.
-  void DumpMemoryStats(base::trace_event::ProcessMemoryDump* pmd,
-                       const std::string& parent_absolute_name) const;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HttpStreamRequestTest, SetPriority);
@@ -176,8 +168,6 @@ class NET_EXPORT HttpStreamFactory {
 
   // Factory used by job controllers for creating jobs.
   std::unique_ptr<JobFactory> job_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpStreamFactory);
 };
 
 }  // namespace net

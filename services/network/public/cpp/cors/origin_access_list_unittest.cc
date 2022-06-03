@@ -42,6 +42,9 @@ class OriginAccessListTest : public testing::Test {
         https_google_origin_(url::Origin::Create(GURL("https://google.com"))),
         source_origin_(url::Origin::Create(GURL("https://chromium.org"))) {}
 
+  OriginAccessListTest(const OriginAccessListTest&) = delete;
+  OriginAccessListTest& operator=(const OriginAccessListTest&) = delete;
+
   ~OriginAccessListTest() override = default;
 
  protected:
@@ -63,7 +66,7 @@ class OriginAccessListTest : public testing::Test {
   const url::Origin& source_origin() const { return source_origin_; }
   OriginAccessList::AccessState CheckAccess(
       const url::Origin& request_initiator,
-      const base::Optional<url::Origin>& isolated_world_origin,
+      const absl::optional<url::Origin>& isolated_world_origin,
       const GURL& url) {
     ResourceRequest request;
     request.url = url;
@@ -130,8 +133,6 @@ class OriginAccessListTest : public testing::Test {
   url::Origin source_origin_;
 
   OriginAccessList list_;
-
-  DISALLOW_COPY_AND_ASSIGN(OriginAccessListTest);
 };
 
 TEST_F(OriginAccessListTest, IsAccessAllowedWithPort) {
@@ -166,7 +167,7 @@ TEST_F(OriginAccessListTest, IsAccessAllowedForIsolatedWorldOrigin) {
   // request_initiator is the origin that should be used as a key for
   // OriginAccessList.
   EXPECT_EQ(OriginAccessList::AccessState::kAllowed,
-            CheckAccess(source_origin(), base::nullopt, target));
+            CheckAccess(source_origin(), absl::nullopt, target));
 
   // When request is made by a Chrome Extension content script,
   // isolated_world_origin is the origin that should be used as a key for

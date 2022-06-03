@@ -12,9 +12,9 @@ var protocolPreviousVersion = "1.2";
 var unsupportedMinorProtocolVersion = "1.5";
 var unsupportedMajorProtocolVersion = "100.0";
 
-var SILENT_FLAG_REQUIRED = "Cannot attach to this target unless " +
-    "'silent-debugger-extension-api' flag is enabled.";
 var DETACHED_WHILE_HANDLING = "Detached while handling command.";
+
+let openTab;
 
 chrome.test.getConfig(config => chrome.test.runTests([
 
@@ -92,86 +92,83 @@ chrome.test.getConfig(config => chrome.test.runTests([
         fail("Debugger is not attached to the tab with id: " + tabId + "."));
   },
 
-  function closeTab() {
-    chrome.tabs.create({url:"inspected.html"}, function(tab) {
-      function onDetach(debuggee, reason) {
-        chrome.test.assertEq(tab.id, debuggee.tabId);
-        chrome.test.assertEq("target_closed", reason);
-        chrome.debugger.onDetach.removeListener(onDetach);
-        chrome.test.succeed();
-      }
+  async function closeTab() {
+    ({openTab} = await import('/_test_resources/test_util/tabs_util.js'));
+    const tab = await openTab(chrome.runtime.getURL('inspected.html'));
+    function onDetach(debuggee, reason) {
+      chrome.test.assertEq(tab.id, debuggee.tabId);
+      chrome.test.assertEq("target_closed", reason);
+      chrome.debugger.onDetach.removeListener(onDetach);
+      chrome.test.succeed();
+    }
 
-      var debuggee2 = {tabId: tab.id};
-      chrome.debugger.attach(debuggee2, protocolVersion, function() {
-        chrome.debugger.onDetach.addListener(onDetach);
-        chrome.tabs.remove(tab.id);
-      });
-    });
-  },
-
-  function attachToWebUI() {
-    chrome.tabs.create({url:"chrome://version"}, function(tab) {
-      var debuggee = {tabId: tab.id};
-      chrome.debugger.attach(debuggee, protocolVersion,
-          fail("Cannot access a chrome:// URL"));
+    const debuggee2 = {tabId: tab.id};
+    chrome.debugger.attach(debuggee2, protocolVersion, function() {
+      chrome.debugger.onDetach.addListener(onDetach);
       chrome.tabs.remove(tab.id);
     });
   },
 
-  function navigateToWebUI() {
-    chrome.tabs.create({url:"inspected.html"}, function(tab) {
-      var debuggee = {tabId: tab.id};
-      chrome.debugger.attach(debuggee, protocolVersion, function() {
-        var responded = false;
+  async function attachToWebUI() {
+    const tab = await openTab('chrome://version');
+    const debuggee = {tabId: tab.id};
+    chrome.debugger.attach(debuggee, protocolVersion,
+        fail("Cannot access a chrome:// URL"));
+    chrome.tabs.remove(tab.id);
+  },
 
-        function onResponse() {
-          chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
-          responded = true;
-        }
+  async function navigateToWebUI() {
+    const tab = await openTab(chrome.runtime.getURL('inspected.html'));
+    const debuggee = {tabId: tab.id};
+    chrome.debugger.attach(debuggee, protocolVersion, function() {
+      var responded = false;
 
-        function onDetach(from, reason) {
-          chrome.debugger.onDetach.removeListener(onDetach);
-          chrome.test.assertTrue(responded);
-          chrome.test.assertEq(debuggee.tabId, from.tabId);
-          chrome.test.assertEq("target_closed", reason);
-          chrome.tabs.remove(tab.id, function() {
-            chrome.test.assertNoLastError();
-            chrome.test.succeed();
-          });
-        }
+      function onResponse() {
+        chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
+        responded = true;
+      }
 
-        chrome.test.assertNoLastError();
-        chrome.debugger.onDetach.addListener(onDetach);
-        chrome.debugger.sendCommand(
-          debuggee, "Page.navigate", {url: "chrome://version"}, onResponse);
-      });
+      function onDetach(from, reason) {
+        chrome.debugger.onDetach.removeListener(onDetach);
+        chrome.test.assertTrue(responded);
+        chrome.test.assertEq(debuggee.tabId, from.tabId);
+        chrome.test.assertEq("target_closed", reason);
+        chrome.tabs.remove(tab.id, function() {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+      }
+
+      chrome.test.assertNoLastError();
+      chrome.debugger.onDetach.addListener(onDetach);
+      chrome.debugger.sendCommand(
+        debuggee, "Page.navigate", {url: "chrome://version"}, onResponse);
     });
   },
 
-  function detachDuringCommand() {
-    chrome.tabs.create({url:"inspected.html"}, function(tab) {
-      var debuggee = {tabId: tab.id};
-      chrome.debugger.attach(debuggee, protocolVersion, function() {
-        var responded = false;
+  async function detachDuringCommand() {
+    const tab = await openTab(chrome.runtime.getURL('inspected.html'));
+    const debuggee = {tabId: tab.id};
+    chrome.debugger.attach(debuggee, protocolVersion, function() {
+      var responded = false;
 
-        function onResponse() {
-          chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
-          responded = true;
-        }
+      function onResponse() {
+        chrome.test.assertLastError(DETACHED_WHILE_HANDLING);
+        responded = true;
+      }
 
-        function onDetach() {
-          chrome.debugger.onDetach.removeListener(onDetach);
-          chrome.test.assertTrue(responded);
-          chrome.tabs.remove(tab.id, function() {
-            chrome.test.assertNoLastError();
-            chrome.test.succeed();
-          });
-        }
+      function onDetach() {
+        chrome.debugger.onDetach.removeListener(onDetach);
+        chrome.test.assertTrue(responded);
+        chrome.tabs.remove(tab.id, function() {
+          chrome.test.assertNoLastError();
+          chrome.test.succeed();
+        });
+      }
 
-        chrome.test.assertNoLastError();
-        chrome.debugger.sendCommand(debuggee, "command", null, onResponse);
-        chrome.debugger.detach(debuggee, onDetach);
-      });
+      chrome.test.assertNoLastError();
+      chrome.debugger.sendCommand(debuggee, "command", null, onResponse);
+      chrome.debugger.detach(debuggee, onDetach);
     });
   },
 
@@ -205,28 +202,22 @@ chrome.test.getConfig(config => chrome.test.runTests([
     chrome.debugger.detach(debuggee, pass());
   },
 
-  function createAndDiscoverTab() {
-    function onUpdated(tabId, changeInfo) {
-      if (changeInfo.status == 'loading')
-        return;
-      chrome.tabs.onUpdated.removeListener(onUpdated);
-      chrome.debugger.getTargets(function(targets) {
-        var page = targets.filter(
-            function(t) {
-              return t.type == 'page' &&
-                     t.tabId == tabId &&
-                     t.title == 'Test page';
-            })[0];
-        if (page) {
-          chrome.debugger.attach(
-              {targetId: page.id}, protocolVersion, pass());
-        } else {
-          chrome.test.fail("Cannot discover a newly created tab");
-        }
-      });
-    }
-    chrome.tabs.onUpdated.addListener(onUpdated);
-    chrome.tabs.create({url: "inspected.html"});
+  async function createAndDiscoverTab() {
+    const tab = await openTab(chrome.runtime.getURL('inspected.html'));
+    chrome.debugger.getTargets(function(targets) {
+      var page = targets.filter(
+          function(t) {
+            return t.type == 'page' &&
+                   t.tabId == tab.id &&
+                   t.title == 'Test page';
+          })[0];
+      if (page) {
+        chrome.debugger.attach(
+            {targetId: page.id}, protocolVersion, pass());
+      } else {
+        chrome.test.fail("Cannot discover a newly created tab");
+      }
+    });
   },
 
   function discoverWorker() {
@@ -250,56 +241,54 @@ chrome.test.getConfig(config => chrome.test.runTests([
     chrome.debugger.detach(debuggee, pass());
   },
 
-  function sendCommandDuringNavigation() {
-    chrome.tabs.create({url:"inspected.html"}, function(tab) {
-      var debuggee = {tabId: tab.id};
+  async function sendCommandDuringNavigation() {
+    const tab = await openTab(chrome.runtime.getURL('inspected.html'));
+    const debuggee = {tabId: tab.id};
 
-      function checkError() {
-        if (chrome.runtime.lastError) {
-          chrome.test.fail(chrome.runtime.lastError.message);
-        } else {
-          chrome.tabs.remove(tab.id);
-          chrome.test.succeed();
-        }
+    function checkError() {
+      if (chrome.runtime.lastError) {
+        chrome.test.fail(chrome.runtime.lastError.message);
+      } else {
+        chrome.tabs.remove(tab.id);
+        chrome.test.succeed();
       }
+    }
 
-      function onNavigateDone() {
-        chrome.debugger.sendCommand(debuggee, "Page.disable", null, checkError);
-      }
+    function onNavigateDone() {
+      chrome.debugger.sendCommand(debuggee, "Page.disable", null, checkError);
+    }
 
-      function onAttach() {
-        chrome.debugger.sendCommand(debuggee, "Page.enable");
-        chrome.debugger.sendCommand(
-            debuggee, "Page.navigate", {url:"about:blank"}, onNavigateDone);
-      }
+    function onAttach() {
+      chrome.debugger.sendCommand(debuggee, "Page.enable");
+      chrome.debugger.sendCommand(
+          debuggee, "Page.navigate", {url:"about:blank"}, onNavigateDone);
+    }
 
-      chrome.debugger.attach(debuggee, protocolVersion, onAttach);
-    });
+    chrome.debugger.attach(debuggee, protocolVersion, onAttach);
   },
 
-  function sendCommandToDataUri() {
-    chrome.tabs.create({url:"data:text/html,<h1>hi</h1>"}, function(tab) {
-      var debuggee = {tabId: tab.id};
+  async function sendCommandToDataUri() {
+    const tab = await openTab('data:text/html,<h1>hi</h1>');
+    const debuggee = {tabId: tab.id};
 
-      function checkError() {
-        if (chrome.runtime.lastError) {
-          chrome.test.fail(chrome.runtime.lastError.message);
-        } else {
-          chrome.tabs.remove(tab.id);
-          chrome.test.succeed();
-        }
+    function checkError() {
+      if (chrome.runtime.lastError) {
+        chrome.test.fail(chrome.runtime.lastError.message);
+      } else {
+        chrome.tabs.remove(tab.id);
+        chrome.test.succeed();
       }
+    }
 
-      function onAttach() {
-        chrome.debugger.sendCommand(debuggee, "Page.enable", null, checkError);
-      }
+    function onAttach() {
+      chrome.debugger.sendCommand(debuggee, "Page.enable", null, checkError);
+    }
 
-      chrome.debugger.attach(debuggee, protocolVersion, onAttach);
-    });
+    chrome.debugger.attach(debuggee, protocolVersion, onAttach);
   },
 
   // http://crbug.com/824174
-  function getResponseBodyInvalidChar() {
+  async function getResponseBodyInvalidChar() {
     let requestId;
 
     function onEvent(debuggeeId, message, params) {
@@ -319,105 +308,103 @@ chrome.test.getConfig(config => chrome.test.runTests([
     }
 
     chrome.debugger.onEvent.addListener(onEvent);
-    chrome.tabs.create({url: 'inspected.html'}, function(tab) {
-      const debuggee = {tabId: tab.id};
-      chrome.debugger.attach(debuggee, protocolVersion, function() {
-        chrome.debugger.sendCommand(
-            debuggee, 'Network.enable', null, function() {
-              chrome.debugger.sendCommand(
-                  debuggee, 'Page.enable', null, function() {
-                    // Navigate to a new page after attaching so we don't miss
-                    // any protocol events that we might have missed while
-                    // attaching to the first page.
-                    chrome.debugger.sendCommand(
-                        debuggee, 'Page.navigate',
-                        {url: window.location.origin + '/fetch.html'});
-                  });
-            });
-      });
+    const tab = await openTab(chrome.runtime.getURL('inspected.html'));
+    const debuggee = {tabId: tab.id};
+    chrome.debugger.attach(debuggee, protocolVersion, function() {
+      chrome.debugger.sendCommand(
+          debuggee, 'Network.enable', null, function() {
+            chrome.debugger.sendCommand(
+                debuggee, 'Page.enable', null, function() {
+                  // Navigate to a new page after attaching so we don't miss
+                  // any protocol events that we might have missed while
+                  // attaching to the first page.
+                  chrome.debugger.sendCommand(
+                      debuggee, 'Page.navigate',
+                      {url: window.location.origin + '/fetch.html'});
+                });
+          });
     });
   },
 
-  function offlineErrorPage() {
+  async function offlineErrorPage() {
     const url = 'http://127.0.0.1//extensions/api_test/debugger/inspected.html';
-    chrome.tabs.create({url: url}, function(tab) {
-      var debuggee = {tabId: tab.id};
-      var finished = false;
-      var failure = '';
-      var expectingFrameNavigated = false;
+    const tab = await openTab(url);
+    const debuggee = {tabId: tab.id};
+    var finished = false;
+    var failure = '';
+    var expectingFrameNavigated = false;
 
-      function finishIfError() {
-        if (chrome.runtime.lastError) {
-          failure = chrome.runtime.lastError.message;
-          finish(true);
-          return true;
-        }
-        return false;
-      }
-
-      function onAttach() {
-        chrome.debugger.sendCommand(debuggee, 'Network.enable', null,
-            finishIfError);
-        chrome.debugger.sendCommand(debuggee, 'Page.enable', null,
-            finishIfError);
-        var offlineParams = { offline: true, latency: 0,
-            downloadThroughput: 0, uploadThroughput: 0 };
-        chrome.debugger.sendCommand(debuggee,
-            'Network.emulateNetworkConditions',
-            offlineParams, onOffline);
-      }
-
-      function onOffline() {
-        if (finishIfError())
-          return;
-        expectingFrameNavigated = true;
-        chrome.debugger.sendCommand(debuggee, 'Page.reload', null,
-            finishIfError);
-      }
-
-      function finish(detach) {
-        if (finished)
-          return;
-        finished = true;
-        chrome.debugger.onDetach.removeListener(onDetach);
-        chrome.debugger.onEvent.removeListener(onEvent);
-        if (detach)
-          chrome.debugger.detach(debuggee);
-        chrome.tabs.remove(tab.id, () => {
-          if (failure)
-            chrome.test.fail(failure);
-          else
-            chrome.test.succeed();
-        });
-      }
-
-      function onDetach() {
-        failure = 'Detached before navigated to error page';
-        finish(false);
-      }
-
-      function onEvent(_, method, params) {
-        if (!expectingFrameNavigated || method !== 'Page.frameNavigated')
-          return;
-
-        if (finishIfError())
-          return;
-
-        expectingFrameNavigated = false;
-        chrome.debugger.sendCommand(
-            debuggee, 'Page.navigate', {url: 'about:blank'}, onNavigateDone);
-      }
-
-      function onNavigateDone() {
-        if (finishIfError())
-          return;
+    function finishIfError() {
+      if (chrome.runtime.lastError) {
+        failure = chrome.runtime.lastError.message;
         finish(true);
+        return true;
       }
+      return false;
+    }
 
-      chrome.debugger.onDetach.addListener(onDetach);
-      chrome.debugger.onEvent.addListener(onEvent);
-      chrome.debugger.attach(debuggee, protocolVersion, onAttach);
-    });
+    function onAttach() {
+      chrome.debugger.sendCommand(debuggee, 'Network.enable', null,
+          finishIfError);
+      chrome.debugger.sendCommand(debuggee, 'Page.enable', null,
+          finishIfError);
+      var offlineParams = { offline: true, latency: 0,
+          downloadThroughput: 0, uploadThroughput: 0 };
+      chrome.debugger.sendCommand(debuggee,
+          'Network.emulateNetworkConditions',
+          offlineParams, onOffline);
+    }
+
+    function onOffline() {
+      if (finishIfError())
+        return;
+      expectingFrameNavigated = true;
+      chrome.debugger.sendCommand(debuggee, 'Page.reload', null,
+          finishIfError);
+    }
+
+    function finish(detach) {
+      if (finished)
+        return;
+      finished = true;
+      chrome.debugger.onDetach.removeListener(onDetach);
+      chrome.debugger.onEvent.removeListener(onEvent);
+      if (detach)
+        chrome.debugger.detach(debuggee);
+      chrome.tabs.remove(tab.id, () => {
+        if (failure)
+          chrome.test.fail(failure);
+        else
+          chrome.test.succeed();
+      });
+    }
+
+    function onDetach() {
+      failure = 'Detached before navigated to error page';
+      finish(false);
+    }
+
+    function onEvent(_, method, params) {
+      if (!expectingFrameNavigated || method !== 'Page.frameNavigated')
+        return;
+
+      if (finishIfError())
+        return;
+
+      expectingFrameNavigated = false;
+      chrome.debugger.sendCommand(
+          debuggee, 'Page.navigate', {url: 'about:blank'}, onNavigateDone);
+    }
+
+    function onNavigateDone() {
+      if (finishIfError())
+        return;
+      finish(true);
+    }
+
+    chrome.debugger.onDetach.addListener(onDetach);
+    chrome.debugger.onEvent.addListener(onEvent);
+    chrome.debugger.attach(debuggee, protocolVersion, onAttach);
   },
 
   function autoAttachToOOPIF() {

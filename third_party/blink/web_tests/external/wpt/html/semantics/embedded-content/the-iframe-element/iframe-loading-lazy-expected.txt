@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+PASS In-viewport iframes load eagerly
+PASS Below-viewport iframes load lazily
+FAIL Below-viewport srcdoc iframes load lazily assert_true: The window load event should have fired before the below-viewport srcdoc iframe's subresource loads expected true got false
+FAIL Below-viewport data: url iframes load lazily assert_true: The window load event should have fired before the below-viewport data url iframe loads expected true got false
+FAIL Below-viewport blob url iframes load lazily assert_true: The window load event should have fired before the below-viewport blob url iframe loads expected true got false
+Harness: the test ran to completion.
+

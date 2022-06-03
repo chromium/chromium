@@ -12,7 +12,7 @@ There can be multiple owners of a benchmark, for example if there are multiple t
 ## How do I update the owner on a benchmark?
 
 ### Telemetry Benchmarks
-1. Open [`src/tools/perf/benchmarks/benchmark_name.py`](https://cs.chromium.org/chromium/src/tools/perf/benchmarks/), where `benchmark_name` is the part of the benchmark before the “.”, like `smoothness`  in `smoothness.top_25_smooth`.
+1. Open <benchmark_harness>.py under [`src/tools/perf/benchmarks/`](https://cs.chromium.org/chromium/src/tools/perf/benchmarks/). The <benchmark_harness> is the part of the benchmark name before the “.”. For example, when looking for 'blink_perf.paint', you need to open 'blink_perf.py'.
 1. Find the class for the benchmark. It has a `Name` method that should match the full name of the benchmark.
 1. Add a `benchmark.Info` decorator above the class.
 

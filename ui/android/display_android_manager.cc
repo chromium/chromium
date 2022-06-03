@@ -5,10 +5,13 @@
 #include "ui/android/display_android_manager.h"
 
 #include <jni.h>
+#include <initializer_list>
 #include <map>
 
 #include "base/android/jni_android.h"
-#include "base/stl_util.h"
+#include "base/trace_event/trace_event.h"
+#include "components/viz/common/features.h"
+#include "components/viz/common/viz_utils.h"
 #include "ui/android/screen_android.h"
 #include "ui/android/ui_android_jni_headers/DisplayAndroidManager_jni.h"
 #include "ui/android/window_android.h"
@@ -22,6 +25,7 @@ using display::Display;
 using display::DisplayList;
 
 void SetScreenAndroid(bool use_display_wide_color_gamut) {
+  TRACE_EVENT0("startup", "SetScreenAndroid");
   // Do not override existing Screen.
   DCHECK_EQ(display::Screen::GetScreen(), nullptr);
 
@@ -80,14 +84,30 @@ void DisplayAndroidManager::DoUpdateDisplay(display::Display* display,
                                             bool isWideColorGamut) {
   if (!Display::HasForceDeviceScaleFactor())
     display->set_device_scale_factor(dipScale);
-    if (isWideColorGamut) {
-      display->set_color_space(gfx::ColorSpace::CreateDisplayP3D65());
-    } else {
-      display->set_color_space(gfx::ColorSpace::CreateSRGB());
+
+  // TODO: Low-end devices should specify RGB_565 as the buffer format for
+  // opaque content.
+  if (isWideColorGamut) {
+    gfx::DisplayColorSpaces display_color_spaces{
+        gfx::ColorSpace::CreateDisplayP3D65(), gfx::BufferFormat::RGBA_8888};
+    if (features::IsDynamicColorGamutEnabled()) {
+      auto srgb = gfx::ColorSpace::CreateSRGB();
+      for (auto needs_alpha : {true, false}) {
+        display_color_spaces.SetOutputColorSpaceAndBufferFormat(
+            gfx::ContentColorUsage::kSRGB, needs_alpha, srgb,
+            gfx::BufferFormat::RGBA_8888);
+      }
     }
+    display->set_color_spaces(display_color_spaces);
+  } else {
+    display->set_color_spaces(gfx::DisplayColorSpaces(
+        gfx::ColorSpace::CreateSRGB(), gfx::BufferFormat::RGBA_8888));
+  }
 
   display->set_size_in_pixels(size_in_pixels);
   display->SetRotationAsDegree(rotationDegrees);
+  DCHECK_EQ(rotationDegrees, display->RotationAsDegree());
+  DCHECK_EQ(rotationDegrees, display->PanelRotationAsDegree());
   display->set_color_depth(bitsPerPixel);
   display->set_depth_per_component(bitsPerComponent);
   display->set_is_monochrome(bitsPerComponent == 0);

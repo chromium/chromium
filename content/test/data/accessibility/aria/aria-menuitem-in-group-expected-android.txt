@@ -1,0 +1,3 @@
+android.webkit.WebView focusable focused scrollable
+++android.view.View
+++++android.view.MenuItem role_description='menu item' clickable focusable name='Menu item'

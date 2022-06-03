@@ -21,8 +21,9 @@ import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Process;
-import android.support.test.filters.SmallTest;
 import android.support.test.runner.AndroidJUnit4;
+
+import androidx.test.filters.SmallTest;
 
 import org.json.JSONObject;
 import org.junit.After;
@@ -411,7 +412,7 @@ public class CronetUrlRequestContextTest {
         assertTrue(logFile.exists());
         assertTrue(logFile.length() != 0);
         assertFalse(hasBytesInNetLog(logFile));
-        FileUtils.recursivelyDeleteFile(netLogDir);
+        FileUtils.recursivelyDeleteFile(netLogDir, FileUtils.DELETE_ALL);
         assertFalse(netLogDir.exists());
     }
 
@@ -471,7 +472,7 @@ public class CronetUrlRequestContextTest {
         assertTrue(logFile.exists());
         assertTrue(logFile.length() != 0);
 
-        FileUtils.recursivelyDeleteFile(netLogDir);
+        FileUtils.recursivelyDeleteFile(netLogDir, FileUtils.DELETE_ALL);
         assertFalse(netLogDir.exists());
     }
 
@@ -567,9 +568,9 @@ public class CronetUrlRequestContextTest {
         assertTrue(containsStringInNetLog(logFile2, mUrl404));
         assertTrue(containsStringInNetLog(logFile2, mUrl500));
 
-        FileUtils.recursivelyDeleteFile(netLogDir1);
+        FileUtils.recursivelyDeleteFile(netLogDir1, FileUtils.DELETE_ALL);
         assertFalse(netLogDir1.exists());
-        FileUtils.recursivelyDeleteFile(netLogDir2);
+        FileUtils.recursivelyDeleteFile(netLogDir2, FileUtils.DELETE_ALL);
         assertFalse(netLogDir2.exists());
     }
 
@@ -743,7 +744,7 @@ public class CronetUrlRequestContextTest {
             assertEquals("Engine is shut down.", e.getMessage());
         }
         assertFalse(logFile.exists());
-        FileUtils.recursivelyDeleteFile(netLogDir);
+        FileUtils.recursivelyDeleteFile(netLogDir, FileUtils.DELETE_ALL);
         assertFalse(netLogDir.exists());
     }
 
@@ -801,7 +802,7 @@ public class CronetUrlRequestContextTest {
         assertTrue(logFile.exists());
         assertTrue(logFile.length() != 0);
         assertFalse(hasBytesInNetLog(logFile));
-        FileUtils.recursivelyDeleteFile(netLogDir);
+        FileUtils.recursivelyDeleteFile(netLogDir, FileUtils.DELETE_ALL);
         assertFalse(netLogDir.exists());
     }
 
@@ -861,7 +862,7 @@ public class CronetUrlRequestContextTest {
         assertTrue(logFile.exists());
         assertTrue(logFile.length() != 0);
         assertFalse(hasBytesInNetLog(logFile));
-        FileUtils.recursivelyDeleteFile(netLogDir);
+        FileUtils.recursivelyDeleteFile(netLogDir, FileUtils.DELETE_ALL);
         assertFalse(netLogDir.exists());
     }
 
@@ -916,7 +917,7 @@ public class CronetUrlRequestContextTest {
         assertTrue(logFile.exists());
         assertTrue(logFile.length() != 0);
         assertTrue(hasBytesInNetLog(logFile));
-        FileUtils.recursivelyDeleteFile(netLogDir);
+        FileUtils.recursivelyDeleteFile(netLogDir, FileUtils.DELETE_ALL);
         assertFalse(netLogDir.exists());
     }
 
@@ -1250,6 +1251,35 @@ public class CronetUrlRequestContextTest {
     // Verifies that CronetEngine.Builder config from testCronetEngineBuilderConfig() is properly
     // translated to a native UrlRequestContextConfig.
     private static native void nativeVerifyUrlRequestContextConfig(long config, String storagePath);
+
+    @Test
+    @SmallTest
+    @Feature({"Cronet"})
+    public void testCronetEngineQuicOffConfig() throws Exception {
+        // This is to prompt load of native library.
+        mTestRule.startCronetTestFramework();
+        // Verify CronetEngine.Builder config is passed down accurately to native code.
+        ExperimentalCronetEngine.Builder builder =
+                new ExperimentalCronetEngine.Builder(getContext());
+        builder.enableHttp2(false);
+        // QUIC is on by default. Disabling it here to make sure the built config can correctly
+        // reflect the change.
+        builder.enableQuic(false);
+        builder.enableHttpCache(HTTP_CACHE_IN_MEMORY, 54321);
+        builder.setExperimentalOptions("ijkl");
+        builder.setUserAgent("efgh");
+        builder.setStoragePath(getTestStorage(getContext()));
+        builder.enablePublicKeyPinningBypassForLocalTrustAnchors(false);
+        nativeVerifyUrlRequestContextQuicOffConfig(
+                CronetUrlRequestContext.createNativeUrlRequestContextConfig(
+                        (CronetEngineBuilderImpl) builder.mBuilderDelegate),
+                getTestStorage(getContext()));
+    }
+
+    // Verifies that CronetEngine.Builder config from testCronetEngineQuicOffConfig() is properly
+    // translated to a native UrlRequestContextConfig and QUIC is turned off.
+    private static native void nativeVerifyUrlRequestContextQuicOffConfig(
+            long config, String storagePath);
 
     private static class TestBadLibraryLoader extends CronetEngine.Builder.LibraryLoader {
         private boolean mWasCalled;

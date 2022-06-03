@@ -16,9 +16,6 @@
 # user's ID, but the effective user ID set to 0 (root).  bash -p is used on
 # the first line to prevent bash from setting the effective user ID to the
 # real user ID (dropping root privileges).
-#
-# TODO(mark): Remove this script when able.  See http://b/2285921 and
-# http://b/2289908.
 
 set -e
 
@@ -66,32 +63,6 @@ if [ ${#} -eq 2 ] ; then
   chown "root:wheel" "${SYSTEM_BRAND}" >& /dev/null
   chmod "a+r,u+w,go-w" "${SYSTEM_BRAND}" >& /dev/null
 
-fi
-
-OWNER_GROUP="root:admin"
-CHMOD_MODE="a+rX,u+w,go-w"
-
-LIB_GOOG="/Library/Google"
-if [ -d "${LIB_GOOG}" ] ; then
-  # Just work with the directory.  Don't do anything recursively here, so as
-  # to leave other things in /Library/Google alone.
-  chown -h "${OWNER_GROUP}" "${LIB_GOOG}" >& /dev/null
-  chmod -h "${CHMOD_MODE}" "${LIB_GOOG}" >& /dev/null
-
-  LIB_GOOG_GSU="${LIB_GOOG}/GoogleSoftwareUpdate"
-  if [ -d "${LIB_GOOG_GSU}" ] ; then
-    chown -Rh "${OWNER_GROUP}" "${LIB_GOOG_GSU}" >& /dev/null
-    chmod -R "${CHMOD_MODE}" "${LIB_GOOG_GSU}" >& /dev/null
-
-    # On the Mac, or at least on HFS+, symbolic link permissions are
-    # significant, but chmod -R and -h can't be used together.  Do another
-    # pass to fix the permissions on any symbolic links.
-    find "${LIB_GOOG_GSU}" -type l -exec chmod -h "${CHMOD_MODE}" {} + >& \
-        /dev/null
-
-    # TODO(mark): If GoogleSoftwareUpdate.bundle is missing, dump TicketStore
-    # too?
-  fi
 fi
 
 exit 0

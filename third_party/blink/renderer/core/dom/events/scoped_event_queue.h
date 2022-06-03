@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_SCOPED_EVENT_QUEUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_SCOPED_EVENT_QUEUE_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
@@ -45,6 +44,8 @@ class CORE_EXPORT ScopedEventQueue {
   USING_FAST_MALLOC(ScopedEventQueue);
 
  public:
+  ScopedEventQueue(const ScopedEventQueue&) = delete;
+  ScopedEventQueue& operator=(const ScopedEventQueue&) = delete;
   ~ScopedEventQueue();
 
   void EnqueueEvent(Event&);
@@ -64,7 +65,6 @@ class CORE_EXPORT ScopedEventQueue {
   unsigned scoping_level_;
 
   static ScopedEventQueue* instance_;
-  DISALLOW_COPY_AND_ASSIGN(ScopedEventQueue);
 };
 
 class EventQueueScope {
@@ -72,8 +72,9 @@ class EventQueueScope {
 
  public:
   EventQueueScope() { ScopedEventQueue::Instance()->IncrementScopingLevel(); }
+  EventQueueScope(const EventQueueScope&) = delete;
+  EventQueueScope& operator=(const EventQueueScope&) = delete;
   ~EventQueueScope() { ScopedEventQueue::Instance()->DecrementScopingLevel(); }
-  DISALLOW_COPY_AND_ASSIGN(EventQueueScope);
 };
 
 }  // namespace blink

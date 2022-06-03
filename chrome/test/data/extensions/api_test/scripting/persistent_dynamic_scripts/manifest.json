@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Persistent dynamic content script test extension",
+  "version": "0.1",
+  "description": "Tests that dynamic scripts can persist across sessions",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["*://hostperms.com/*"]
+}

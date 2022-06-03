@@ -18,7 +18,7 @@
 #include <stdint.h>
 #include <sys/types.h>
 
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "snapshot/memory_snapshot.h"
 #include "util/misc/address_types.h"
@@ -29,11 +29,15 @@ namespace crashpad {
 namespace internal {
 
 //! \brief A MemorySnapshot of a memory region in a process on the running
-//!     system. Used on Mac, Linux, Android, and Fuchsia, templated on the
-//!     platform-specific ProcessReader type.
+//!     system. Works on multiple platforms by using a platform-specific
+//!     ProcessMemory object.
 class MemorySnapshotGeneric final : public MemorySnapshot {
  public:
   MemorySnapshotGeneric() = default;
+
+  MemorySnapshotGeneric(const MemorySnapshotGeneric&) = delete;
+  MemorySnapshotGeneric& operator=(const MemorySnapshotGeneric&) = delete;
+
   ~MemorySnapshotGeneric() = default;
 
   //! \brief Initializes the object.
@@ -109,8 +113,6 @@ class MemorySnapshotGeneric final : public MemorySnapshot {
   VMAddress address_;
   size_t size_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(MemorySnapshotGeneric);
 };
 
 }  // namespace internal

@@ -44,7 +44,6 @@ class GlobalEventHandlers {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationiteration,
                                          kAnimationiteration)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(animationstart, kAnimationstart)
-  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(activateinvisible, kActivateinvisible)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(auxclick, kAuxclick)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(blur, kBlur)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(cancel, kCancel)
@@ -104,32 +103,44 @@ class GlobalEventHandlers {
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(pointerup, kPointerup)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(progress, kProgress)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(ratechange, kRatechange)
-  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(rendersubtreeactivation,
-                                         kRendersubtreeactivation)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(reset, kReset)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(resize, kResize)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(scroll, kScroll)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(scrollend, kScrollend)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(securitypolicyviolation,
+                                         kSecuritypolicyviolation)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(seeked, kSeeked)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(seeking, kSeeking)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(select, kSelect)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(selectionchange, kSelectionchange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(selectstart, kSelectstart)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(slotchange, kSlotchange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(stalled, kStalled)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(submit, kSubmit)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(suspend, kSuspend)
-  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(transitionend, kTransitionend)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(timeupdate, kTimeupdate)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(toggle, kToggle)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(touchcancel, kTouchcancel)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(touchend, kTouchend)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(touchmove, kTouchmove)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(touchstart, kTouchstart)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(transitioncancel, kTransitioncancel)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(transitionend, kTransitionend)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(transitionrun, kTransitionrun)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(transitionstart, kTransitionstart)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(volumechange, kVolumechange)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(waiting, kWaiting)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(webkitanimationend,
+                                         kWebkitAnimationEnd)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(webkitanimationiteration,
+                                         kWebkitAnimationIteration)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(webkitanimationstart,
+                                         kWebkitAnimationStart)
+  DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(webkittransitionend,
+                                         kWebkitTransitionEnd)
   DEFINE_STATIC_ATTRIBUTE_EVENT_LISTENER(wheel, kWheel)
 };
 
 }  // namespace
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_GLOBAL_EVENT_HANDLERS_H_

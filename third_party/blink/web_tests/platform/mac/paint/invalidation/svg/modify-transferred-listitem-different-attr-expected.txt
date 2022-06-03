@@ -1,66 +1,13 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox ' B C'",
-          "rect": [23, 8, 85, 24],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' B C'",
-          "rect": [23, 8, 85, 24],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' B C'",
-          "rect": [23, 8, 85, 24],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'A'",
-          "rect": [23, 8, 85, 24],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'A'",
-          "rect": [23, 8, 85, 24],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'A'",
-          "rect": [23, 8, 85, 24],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' B C'",
-          "rect": [23, 8, 80, 24],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'A'",
-          "rect": [23, 8, 80, 24],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' Y Z'",
-          "rect": [58, 45, 50, 27],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'X'",
-          "rect": [58, 45, 50, 27],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'X Y Z'",
-          "rect": [58, 45, 50, 17],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [23, 8, 85, 24],
+        [58, 45, 50, 27]
       ]
     }
   ]

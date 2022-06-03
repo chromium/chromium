@@ -21,13 +21,26 @@ Polymer({
       notify: true,
     },
 
+    /** @private {!Array<!chrome.languageSettingsPrivate.Language>} */
+    displayedLanguages_: {
+      type: Array,
+      computed: `getLanguages_(languages.supported, languages.enabled.*,
+          filterValue_)`,
+    },
+
+    /** @private {boolean} */
+    displayedLanguagesEmpty_: {
+      type: Boolean,
+      computed: 'isZero_(displayedLanguages_.length)',
+    },
+
     /** @type {!LanguageHelper} */
     languageHelper: Object,
 
     /** @private {!Set<string>} */
     languagesToAdd_: {
       type: Object,
-      value: function() {
+      value() {
         return new Set();
       },
     },
@@ -46,12 +59,12 @@ Polymer({
   },
 
   /** @override */
-  attached: function() {
+  attached() {
     this.$.dialog.showModal();
   },
 
   // Override FindShortcutBehavior methods.
-  handleFindShortcut: function(modalContextOpen) {
+  handleFindShortcut(modalContextOpen) {
     // Assumes this is the only open modal.
     const searchInput = this.$.search.getSearchInput();
     searchInput.scrollIntoViewIfNeeded();
@@ -62,8 +75,8 @@ Polymer({
   },
 
   // Override FindShortcutBehavior methods.
-  searchInputHasFocus: function() {
-    return this.$.search.getSearchInput() ==
+  searchInputHasFocus() {
+    return this.$.search.getSearchInput() ===
         this.$.search.shadowRoot.activeElement;
   },
 
@@ -71,7 +84,7 @@ Polymer({
    * @param {!CustomEvent<string>} e
    * @private
    */
-  onSearchChanged_: function(e) {
+  onSearchChanged_(e) {
     this.filterValue_ = e.detail;
   },
 
@@ -80,7 +93,7 @@ Polymer({
    *     languages to be displayed.
    * @private
    */
-  getLanguages_: function() {
+  getLanguages_() {
     const filterValue =
         this.filterValue_ ? this.filterValue_.toLowerCase() : null;
     return this.languages.supported.filter(language => {
@@ -102,10 +115,10 @@ Polymer({
    * @return {string} The text to be displayed.
    * @private
    */
-  getDisplayText_: function(language) {
+  getDisplayText_(language) {
     let displayText = language.displayName;
     // If the native name is different, add it.
-    if (language.displayName != language.nativeDisplayName) {
+    if (language.displayName !== language.nativeDisplayName) {
       displayText += ' - ' + language.nativeDisplayName;
     }
     return displayText;
@@ -117,7 +130,7 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  willAdd_: function(languageCode) {
+  willAdd_(languageCode) {
     return this.languagesToAdd_.has(languageCode);
   },
 
@@ -127,7 +140,7 @@ Polymer({
    *           target: !Element}} e
    * @private
    */
-  onLanguageCheckboxChange_: function(e) {
+  onLanguageCheckboxChange_(e) {
     // Add or remove the item to the Set. No need to worry about data binding:
     // willAdd_ is called to initialize the checkbox state (in case the
     // iron-list re-uses a previous checkbox), and the checkbox can only be
@@ -143,7 +156,7 @@ Polymer({
   },
 
   /** @private */
-  onCancelButtonTap_: function() {
+  onCancelButtonTap_() {
     this.$.dialog.close();
   },
 
@@ -151,7 +164,7 @@ Polymer({
    * Enables the checked languages.
    * @private
    */
-  onActionButtonTap_: function() {
+  onActionButtonTap_() {
     this.$.dialog.close();
     this.languagesToAdd_.forEach(languageCode => {
       this.languageHelper.enableLanguage(languageCode);
@@ -162,12 +175,21 @@ Polymer({
    * @param {!KeyboardEvent} e
    * @private
    */
-  onKeydown_: function(e) {
+  onKeydown_(e) {
     // Close dialog if 'esc' is pressed and the search box is already empty.
-    if (e.key == 'Escape' && !this.$.search.getValue().trim()) {
+    if (e.key === 'Escape' && !this.$.search.getValue().trim()) {
       this.$.dialog.close();
-    } else {
+    } else if (e.key !== 'PageDown' && e.key !== 'PageUp') {
       this.$.search.scrollIntoViewIfNeeded();
     }
+  },
+
+  /**
+   * @param {number} num
+   * @return {boolean}
+   * @private
+   */
+  isZero_(num) {
+    return num === 0;
   },
 });

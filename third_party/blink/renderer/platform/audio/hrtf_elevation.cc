@@ -154,14 +154,32 @@ bool HRTFElevation::CalculateKernelsForAzimuthElevation(
       AudioBus::CreateBufferFromRange(bus.get(), start_frame, stop_frame));
   scoped_refptr<AudioBus> response(AudioBus::CreateBySampleRateConverting(
       pre_sample_rate_converted_response.get(), false, sample_rate));
+
+  // Note that depending on the fftSize returned by the panner, we may be
+  // truncating the impulse response we just loaded in, or we might zero-pad it.
+  const unsigned fft_size = HRTFPanner::FftSizeForSampleRate(sample_rate);
+
+  if (2 * response->length() < fft_size) {
+    // Need to resize the response buffer length so that it fis the fft size.
+    // Create a new response of the right length and copy over the current
+    // response.
+    scoped_refptr<AudioBus> padded_response(
+        AudioBus::Create(response->NumberOfChannels(), fft_size / 2));
+    for (unsigned channel = 0; channel < response->NumberOfChannels();
+         ++channel) {
+      memcpy(padded_response->Channel(channel)->MutableData(),
+             response->Channel(channel)->Data(),
+             response->length() * sizeof(float));
+    }
+    response = padded_response;
+  }
+  DCHECK_GE(2 * response->length(), fft_size);
+
   AudioChannel* left_ear_impulse_response =
       response->Channel(AudioBus::kChannelLeft);
   AudioChannel* right_ear_impulse_response =
       response->Channel(AudioBus::kChannelRight);
 
-  // Note that depending on the fftSize returned by the panner, we may be
-  // truncating the impulse response we just loaded in.
-  const size_t fft_size = HRTFPanner::FftSizeForSampleRate(sample_rate);
   kernel_l = std::make_unique<HRTFKernel>(left_ear_impulse_response, fft_size,
                                           sample_rate);
   kernel_r = std::make_unique<HRTFKernel>(right_ear_impulse_response, fft_size,

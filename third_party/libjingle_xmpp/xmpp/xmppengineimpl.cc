@@ -14,7 +14,7 @@
 #include <sstream>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlprinter.h"
 #include "third_party/libjingle_xmpp/xmpp/constants.h"

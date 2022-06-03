@@ -125,17 +125,24 @@ trap '{
 
 all_platforms="-DCONFIG_SIZE_LIMIT=1"
 all_platforms+=" -DDECODE_HEIGHT_LIMIT=16384 -DDECODE_WIDTH_LIMIT=16384"
-all_platforms+=" -DCONFIG_AV1_ENCODER=0"
-all_platforms+=" -DCONFIG_LOWBITDEPTH=1"
+all_platforms+=" -DCONFIG_AV1_ENCODER=1"
 all_platforms+=" -DCONFIG_MAX_DECODE_PROFILE=0"
 all_platforms+=" -DCONFIG_NORMAL_TILE_MODE=1"
 all_platforms+=" -DCONFIG_LIBYUV=0"
+# Use low bit depth.
+all_platforms+=" -DCONFIG_AV1_HIGHBITDEPTH=0"
+# Use real-time only build.
+all_platforms+=" -DCONFIG_REALTIME_ONLY=1"
+all_platforms+=" -DCONFIG_AV1_TEMPORAL_DENOISING=1"
 # avx2 optimizations account for ~0.3mb of the decoder.
 #all_platforms+=" -DENABLE_AVX2=0"
 toolchain="-DCMAKE_TOOLCHAIN_FILE=${SRC}/build/cmake/toolchains"
 
 reset_dirs linux/generic
 gen_config_files linux/generic "-DAOM_TARGET_CPU=generic ${all_platforms}"
+# Strip .pl files from gni
+sed -i.bak '/\.pl",$/d' libaom_srcs.gni
+rm libaom_srcs.gni.bak
 # libaom_srcs.gni and aom_version.h are shared.
 cp libaom_srcs.gni "${BASE}"
 cp config/aom_version.h "${CFG}/config/"
@@ -175,6 +182,12 @@ gen_config_files linux/arm-neon-cpu-detect \
 
 reset_dirs linux/arm64
 gen_config_files linux/arm64 "${toolchain}/arm64-linux-gcc.cmake ${all_platforms}"
+
+reset_dirs ios/arm-neon
+gen_config_files ios/arm-neon "${toolchain}/armv7-ios.cmake ${all_platforms}"
+
+reset_dirs ios/arm64
+gen_config_files ios/arm64 "${toolchain}/arm64-ios.cmake ${all_platforms}"
 
 # Copy linux configurations and modify for Windows.
 reset_dirs win/arm64

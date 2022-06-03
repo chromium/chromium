@@ -28,14 +28,14 @@ TEST_F(DeveloperToolsPolicyHandlerTest, NewPolicyOverridesLegacyPolicy) {
   EXPECT_FALSE(store_->GetValue(prefs::kDevToolsAvailability, nullptr));
 
   PolicyMap policy;
-  policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
-             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(
-                 0 /*DeveloperToolsDisallowedForForceInstalledExtensions*/),
-             nullptr);
+  policy.Set(
+      key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
+      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+      base::Value(0 /*DeveloperToolsDisallowedForForceInstalledExtensions*/),
+      nullptr);
   policy.Set(key::kDeveloperToolsDisabled, POLICY_LEVEL_MANDATORY,
-             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(true), nullptr);
+             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+             nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
@@ -55,10 +55,10 @@ TEST_F(DeveloperToolsPolicyHandlerTest, LegacyPolicyAppliesIfNewPolicyInvalid) {
   PolicyMap policy;
   policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(5 /*out of range*/), nullptr);
+             base::Value(5 /*out of range*/), nullptr);
   policy.Set(key::kDeveloperToolsDisabled, POLICY_LEVEL_MANDATORY,
-             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(true), nullptr);
+             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+             nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
@@ -81,10 +81,10 @@ TEST_F(DeveloperToolsPolicyHandlerTest, NewPolicyAppliesIfLegacyPolicyInvalid) {
   PolicyMap policy;
   policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(1 /*kAllowed*/), nullptr);
+             base::Value(1 /*kAllowed*/), nullptr);
   policy.Set(key::kDeveloperToolsDisabled, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(4 /*wrong type*/), nullptr);
+             base::Value(4 /*wrong type*/), nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
@@ -97,11 +97,11 @@ TEST_F(DeveloperToolsPolicyHandlerTest, DisallowedForForceInstalledExtensions) {
   EXPECT_FALSE(store_->GetValue(prefs::kDevToolsAvailability, nullptr));
 
   PolicyMap policy;
-  policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
-             POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(
-                 0 /*DeveloperToolsDisallowedForForceInstalledExtensions*/),
-             nullptr);
+  policy.Set(
+      key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
+      POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+      base::Value(0 /*DeveloperToolsDisallowedForForceInstalledExtensions*/),
+      nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
@@ -121,8 +121,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, Allowed) {
   PolicyMap policy;
   policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(1 /*DeveloperToolsAllowed*/),
-             nullptr);
+             base::Value(1 /*DeveloperToolsAllowed*/), nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
@@ -142,7 +141,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, Disallowed) {
   PolicyMap policy;
   policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(2 /*Disallowed*/), nullptr);
+             base::Value(2 /*Disallowed*/), nullptr);
   UpdateProviderPolicy(policy);
   const base::Value* value = nullptr;
   ASSERT_TRUE(store_->GetValue(prefs::kDevToolsAvailability, &value));
@@ -165,7 +164,7 @@ TEST_F(DeveloperToolsPolicyHandlerTest, InvalidValue) {
   PolicyMap policy;
   policy.Set(key::kDeveloperToolsAvailability, POLICY_LEVEL_MANDATORY,
              POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
-             std::make_unique<base::Value>(5 /*out of range*/), nullptr);
+             base::Value(5 /*out of range*/), nullptr);
   UpdateProviderPolicy(policy);
   EXPECT_FALSE(store_->GetValue(prefs::kDevToolsAvailability, nullptr));
 

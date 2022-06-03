@@ -29,20 +29,34 @@ import java.util.Locale;
 public class FileUtils {
     private static final String TAG = "FileUtils";
 
+    public static Function<String, Boolean> DELETE_ALL = filepath -> true;
+
     /**
      * Delete the given File and (if it's a directory) everything within it.
      * @param currentFile The file or directory to delete. Does not need to exist.
-     * @return Whether currentFile does not exist afterwards.
+     * @param canDelete the {@link Function} function used to check if the file can be deleted.
+     * @return True if the files are deleted, or files reserved by |canDelete|, false if failed to
+     *         delete files.
+     * @note Caveat: Return values from recursive deletes are ignored.
+     * @note Caveat: |canDelete| is not robust; see https://crbug.com/1066733.
      */
-    public static boolean recursivelyDeleteFile(File currentFile) {
+    public static boolean recursivelyDeleteFile(
+            File currentFile, Function<String, Boolean> canDelete) {
         if (!currentFile.exists()) {
+            // This file could be a broken symlink, so try to delete. If we don't delete a broken
+            // symlink, the directory containing it cannot be deleted.
+            currentFile.delete();
             return true;
         }
+        if (canDelete != null && !canDelete.apply(currentFile.getPath())) {
+            return true;
+        }
+
         if (currentFile.isDirectory()) {
             File[] files = currentFile.listFiles();
             if (files != null) {
                 for (File file : files) {
-                    recursivelyDeleteFile(file);
+                    recursivelyDeleteFile(file, canDelete);
                 }
             }
         }
@@ -58,31 +72,40 @@ public class FileUtils {
      * Delete the given files or directories by calling {@link #recursivelyDeleteFile(File)}. This
      * supports deletion of content URIs.
      * @param filePaths The file paths or content URIs to delete.
+     * @param canDelete the {@link Function} function used to check if the file can be deleted.
      */
-    public static void batchDeleteFiles(List<String> filePaths) {
+    public static void batchDeleteFiles(
+            List<String> filePaths, Function<String, Boolean> canDelete) {
         for (String filePath : filePaths) {
+            if (canDelete != null && !canDelete.apply(filePath)) continue;
             if (ContentUriUtils.isContentUri(filePath)) {
                 ContentUriUtils.delete(filePath);
             } else {
                 File file = new File(filePath);
-                if (file.exists()) recursivelyDeleteFile(file);
+                if (file.exists()) recursivelyDeleteFile(file, canDelete);
             }
         }
     }
 
     /**
-     * Extracts an asset from the app's APK to a file.
-     * @param context
-     * @param assetName Name of the asset to extract.
-     * @param outFile File to extract the asset to.
-     * @return true on success.
+     * Get file size. If it is a directory, recursively get the size of all files within it.
+     * @param file The file or directory.
+     * @return The size in bytes.
      */
-    public static boolean extractAsset(Context context, String assetName, File outFile) {
-        try (InputStream inputStream = context.getAssets().open(assetName)) {
-            copyStreamToFile(inputStream, outFile);
-            return true;
-        } catch (IOException e) {
-            return false;
+    public static long getFileSizeBytes(File file) {
+        if (file == null) return 0L;
+        if (file.isDirectory()) {
+            long size = 0L;
+            final File[] files = file.listFiles();
+            if (files == null) {
+                return size;
+            }
+            for (File f : files) {
+                size += getFileSizeBytes(f);
+            }
+            return size;
+        } else {
+            return file.length();
         }
     }
 
@@ -150,13 +173,14 @@ public class FileUtils {
 
     /**
      * Returns the file extension, or an empty string if none.
-     * @param file Name of the file, with or without the full path.
+     * @param file Name of the file, with or without the full path (Unix style).
      * @return empty string if no extension, extension otherwise.
      */
     public static String getExtension(String file) {
-        int index = file.lastIndexOf('.');
-        if (index == -1) return "";
-        return file.substring(index + 1).toLowerCase(Locale.US);
+        int lastSep = file.lastIndexOf('/');
+        int lastDot = file.lastIndexOf('.');
+        if (lastSep >= lastDot) return ""; // Subsumes |lastDot == -1|.
+        return file.substring(lastDot + 1).toLowerCase(Locale.US);
     }
 
     /** Queries and decodes bitmap from content provider. */

@@ -1,8 +1,0 @@
-<html manifest="quota-origin-iframe-1.manifest">
-<script>
-// iframe-1 is expected to succeed.
-applicationCache.oncached = function() { parent.postMessage("PASS - cached iframe-1", "*"); };
-applicationCache.onerror = function() { parent.postMessage("FAIL - error caching iframe-1, expected this to succeed and fit in the quota", "*"); };
-applicationCache.onnoupdate = function() { parent.postMessage("FAIL - no update iframe-1, all caches should have been deleted before this test", "*"); };
-</script>
-</html>

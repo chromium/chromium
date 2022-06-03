@@ -1,0 +1,13 @@
+Name: firebase-common
+Short Name: firebase-common
+URL: https://firebase.google.com
+Version: 19.5.0
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Common classes for Firebase SDKs.
+
+Local Modifications:
+No modifications.

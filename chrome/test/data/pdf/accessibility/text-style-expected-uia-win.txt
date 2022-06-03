@@ -1,11 +1,10 @@
-group
-++document Name='PDF document containing 1 page'
-++++region Name='Page 1'
-++++++group IsControlElement=false
-++++++++description Name='Case 1<newline>'
-++++++group IsControlElement=false
-++++++++description Name='Case 2<newline>'
-++++++group IsControlElement=false
-++++++++description Name='Case 3<newline>'
-++++++group IsControlElement=false
-++++++++description Name='Case 4'
+Document Name='PDF document containing 1 page'
+++Group Name='Page 1'
+++++Group IsControlElement=false
+++++++Text Name='Case 1<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Case 2<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Case 3<newline>'
+++++Group IsControlElement=false
+++++++Text Name='Case 4'

@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
 #include "base/logging.h"
 #include "chrome/chrome_cleaner/test/test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +67,7 @@ std::vector<std::string>* ScopedTimedTaskLoggerTest::active_logging_messages_ =
 
 TEST_F(ScopedTimedTaskLoggerTest, CallbackCalled) {
   {
-    ScopedTimedTaskLogger timer(base::BindRepeating(
+    ScopedTimedTaskLogger timer(base::BindOnce(
         &ScopedTimedTaskLoggerTest::timer_callback, base::Unretained(this)));
   }
   EXPECT_TRUE(callback_called_);
@@ -75,9 +76,8 @@ TEST_F(ScopedTimedTaskLoggerTest, CallbackCalled) {
 TEST_F(ScopedTimedTaskLoggerTest, NoLog) {
   static const char kNoShow[] = "Should not show up";
   {
-    ScopedTimedTaskLogger no_logs(
-        base::BindRepeating(ScopedTimedTaskLogger::LogIfExceedThreshold,
-                            kNoShow, base::TimeDelta::FromDays(1)));
+    ScopedTimedTaskLogger no_logs(base::BindOnce(
+        ScopedTimedTaskLogger::LogIfExceedThreshold, kNoShow, base::Days(1)));
   }
   EXPECT_FALSE(LoggingMessagesContain(kNoShow));
 }
@@ -86,8 +86,8 @@ TEST_F(ScopedTimedTaskLoggerTest, Log) {
   static const char kShow[] = "Should show up";
   {
     ScopedTimedTaskLogger logs(
-        base::BindRepeating(ScopedTimedTaskLogger::LogIfExceedThreshold, kShow,
-                            base::TimeDelta::FromMilliseconds(0)));
+        base::BindOnce(ScopedTimedTaskLogger::LogIfExceedThreshold, kShow,
+                       base::Milliseconds(0)));
     ::Sleep(2);
   }
   EXPECT_TRUE(LoggingMessagesContain(kShow));

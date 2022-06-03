@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL WebSockets: Set-Cookie in response assert_unreached: error Reached unreachable code
+Harness: the test ran to completion.
+

@@ -12,12 +12,11 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
-#include "chrome/browser/ui/app_list/search/search_result_ranker/app_launch_data.h"
+#include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 
 class AppListModelUpdater;
 class ChromeSearchResult;
+class Profile;
 
 namespace app_list {
 
@@ -25,43 +24,54 @@ namespace test {
 FORWARD_DECLARE_TEST(MixerTest, Publish);
 }
 
+class ChipRanker;
+class SearchControllerImpl;
 class SearchProvider;
 class SearchResultRanker;
 enum class RankingItemType;
 
 // Mixer collects results from providers, sorts them and publishes them to the
 // SearchResults UI model. The targeted results have 6 slots to hold the
-// result. The search controller can specify any number of groups, each with a
-// different number of results and priority boost.
+// result.
 class Mixer {
  public:
-  explicit Mixer(AppListModelUpdater* model_updater);
+  Mixer(AppListModelUpdater* model_updater,
+        SearchControllerImpl* search_controller);
+
+  Mixer(const Mixer&) = delete;
+  Mixer& operator=(const Mixer&) = delete;
+
   ~Mixer();
 
   // Adds a new mixer group. A "soft" maximum of |max_results| results will be
   // chosen from this group (if 0, will allow unlimited results from this
   // group). If there aren't enough results from all groups, more than
-  // |max_results| may be chosen from this group. Each result in the group will
-  // have its score multiplied by |multiplier| and added by |boost|. Returns the
-  // group's group_id.
-  size_t AddGroup(size_t max_results, double multiplier, double boost);
+  // |max_results| may be chosen from this group. Returns the group's group_id.
+  size_t AddGroup(size_t max_results);
 
   // Associates a provider with a mixer group.
   void AddProviderToGroup(size_t group_id, SearchProvider* provider);
 
   // Collects the results, sorts and publishes them.
-  void MixAndPublish(size_t num_max_results, const base::string16& query);
+  void MixAndPublish(size_t num_max_results, const std::u16string& query);
 
   // Sets a SearchResultRanker to re-rank non-app search results before they are
   // published.
   void SetNonAppSearchResultRanker(std::unique_ptr<SearchResultRanker> ranker);
 
-  // Get a pointer to the SearchResultRanker owned by this object used for all
-  // non-app ranking.
-  SearchResultRanker* GetNonAppSearchResultRanker();
+  void InitializeRankers(Profile* profile);
+
+  SearchResultRanker* search_result_ranker() {
+    if (!search_result_ranker_)
+      return nullptr;
+    return search_result_ranker_.get();
+  }
+
+  // Sets a ChipRanker to re-rank chip results before they are published.
+  void SetChipRanker(std::unique_ptr<ChipRanker> ranker);
 
   // Handle a training signal.
-  void Train(const AppLaunchData& app_launch_data);
+  void Train(const LaunchData& launch_data);
 
   // Used for sorting and mixing results.
   struct SortData {
@@ -81,22 +91,16 @@ class Mixer {
   class Group;
   typedef std::vector<std::unique_ptr<Group>> Groups;
 
-  // Removes entries from |results| with duplicate IDs. When two or more results
-  // have the same ID, the earliest one in the |results| list is kept.
-  // NOTE: This is not necessarily the one with the highest *score*, as
-  // |results| may not have been sorted yet.
-  static void RemoveDuplicates(SortedResults* results);
+  void FetchResults(const std::u16string& query);
 
-  void FetchResults(const base::string16& query);
-
-  AppListModelUpdater* const model_updater_;  // Not owned.
+  AppListModelUpdater* const model_updater_;       // Not owned.
+  SearchControllerImpl* const search_controller_;  // Not owned.
 
   Groups groups_;
 
   // Adaptive models used for re-ranking search results.
-  std::unique_ptr<SearchResultRanker> non_app_ranker_;
-
-  DISALLOW_COPY_AND_ASSIGN(Mixer);
+  std::unique_ptr<SearchResultRanker> search_result_ranker_;
+  std::unique_ptr<ChipRanker> chip_ranker_;
 };
 
 }  // namespace app_list

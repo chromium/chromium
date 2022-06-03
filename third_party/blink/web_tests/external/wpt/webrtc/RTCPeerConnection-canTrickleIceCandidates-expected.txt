@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL canTrickleIceCandidates property is null prior to setRemoteDescription assert_equals: canTrickleIceCandidates property is null expected (object) null but got (undefined) undefined
-FAIL canTrickleIceCandidates property is true after setRemoteDescription with a=ice-options:trickle assert_true: canTrickleIceCandidates property is true after setRemoteDescription expected true got undefined
-FAIL canTrickleIceCandidates property is false after setRemoteDescription without a=ice-options:trickle assert_false: canTrickleIceCandidates property is false after setRemoteDescription expected false got undefined
-Harness: the test ran to completion.
-

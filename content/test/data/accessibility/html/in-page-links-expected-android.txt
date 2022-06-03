@@ -1,25 +1,31 @@
 android.webkit.WebView focusable focused scrollable
 ++android.view.View role_description='link' clickable focusable link name='Empty anchor'
-++android.view.View name=' '
+++++android.widget.TextView name='Empty anchor'
+++android.widget.TextView name=' '
 ++android.view.View role_description='link' clickable focusable link name='Anchor with content'
-++android.view.View name=' '
+++++android.widget.TextView name='Anchor with content'
+++android.widget.TextView name=' '
 ++android.view.View role_description='link' clickable focusable link name='Anchor with ID'
-++android.view.View name=' '
+++++android.widget.TextView name='Anchor with ID'
+++android.widget.TextView name=' '
 ++android.view.View role_description='link' clickable focusable link name='Empty span'
-++android.view.View name=' '
+++++android.widget.TextView name='Empty span'
+++android.widget.TextView name=' '
 ++android.view.View role_description='link' clickable focusable link name='Span with content'
-++android.view.View name=' '
+++++android.widget.TextView name='Span with content'
+++android.widget.TextView name=' '
 ++android.view.View role_description='link' clickable focusable link name='Paragraph with content'
+++++android.widget.TextView name='Paragraph with content'
 ++android.view.View
-++++android.view.View clickable
-++++android.view.View name='After empty anchor'
+++++android.widget.TextView
+++++android.widget.TextView name='After empty anchor'
 ++android.view.View
-++++android.view.View clickable name='Anchor with content'
+++++android.widget.TextView name='Anchor with content'
 ++android.view.View
-++++android.view.View clickable name='Anchor with ID'
+++++android.widget.TextView name='Anchor with ID'
 ++android.view.View
-++++android.view.View
-++++android.view.View name='After empty span'
+++++android.widget.TextView
+++++android.widget.TextView name='After empty span'
 ++android.view.View
-++++android.view.View name='Span with content'
-++android.view.View name='Paragraph with content'
+++++android.widget.TextView name='Span with content'
+++android.widget.TextView name='Paragraph with content'

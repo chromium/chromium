@@ -11,6 +11,7 @@
 // since webrtc's logging.h file may conflict with chromium.
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The following include come before including logging.h. It ensures that

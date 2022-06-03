@@ -4,9 +4,9 @@
 
 import("//build/config/features.gni")
 import(
-    "//chrome/browser/resources/chromeos/accessibility/chromevox/run_jsbundler.gni")
+    "//chrome/browser/resources/chromeos/accessibility/common/run_jsbundler.gni")
 import(
-    "//chrome/browser/resources/chromeos/accessibility/chromevox/strings/chromevox_strings.gni")
+    "//chrome/browser/resources/chromeos/accessibility/strings/accessibility_strings.gni")
 import("//chrome/common/features.gni")
 import("//chrome/test/base/js2gtest.gni")
 import("//chrome/test/base/js2gtest.gni")
@@ -231,7 +231,6 @@ group("chromevox") {
     ":chromevox_kbexplorer_script",
     ":chromevox_manifest",
     ":chromevox_options_script",
-    ":chromevox_strings",
     ":chromevoxclassic_liblouis",
   ]
 }
@@ -316,6 +315,7 @@ run_jsbundler("chromevox_copied_files") {
     "chromevox/injected/api_util.js",
     "chromevox/injected/mathjax.js",
     "chromevox/injected/mathjax_external_util.js",
+    "chromevox/injected/shadydom_loader.js",
     "cvox2/background/background.html",
     "cvox2/background/earcons/control.wav",
     "cvox2/background/earcons/selection.wav",
@@ -361,12 +361,8 @@ template("manifest") {
       version_file,
       version_script,
     ]
-    sources = [
-      template_file,
-    ]
-    outputs = [
-      output_file,
-    ]
+    sources = [ template_file ]
+    outputs = [ output_file ]
     args = [
       "--key=$key",
       "--version_file=" + rebase_path(version_file, root_build_dir),
@@ -394,9 +390,7 @@ template("generate_deps_js") {
     script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_deps.py"
     inputs = jsbundler_modules
     sources = invoker.sources
-    outputs = [
-      invoker.output_file,
-    ]
+    outputs = [ invoker.output_file ]
     args = [
       "-o",
       rebase_path(invoker.output_file, root_build_dir),
@@ -425,49 +419,35 @@ template("compress_js") {
 }
 
 compress_js("chromevox_content_script") {
-  sources = [
-    chromevox_content_script_loader_file,
-  ]
+  sources = [ chromevox_content_script_loader_file ]
   output_file = "$chromevox_out_dir/chromeVoxChromePageScript.js"
 }
 
 compress_js("chromevox_kbexplorer_script") {
-  sources = [
-    chromevox_kbexplorer_loader_file,
-  ]
+  sources = [ chromevox_kbexplorer_loader_file ]
   output_file = "$chromevox_out_dir/chromeVoxKbExplorerScript.js"
 }
 
 compress_js("chromevox_options_script") {
-  sources = [
-    chromevox_options_script_loader_file,
-  ]
+  sources = [ chromevox_options_script_loader_file ]
   output_file = "$chromevox_out_dir/chromeVoxChromeOptionsScript.js"
 }
 
 compress_js("chromevox_background_script") {
-  sources = [
-    chromevox_background_script_loader_file,
-  ]
+  sources = [ chromevox_background_script_loader_file ]
   output_file = "$chromevox_out_dir/chromeVox2ChromeBackgroundScript.js"
 }
 
-chromevox_strings("chromevox_strings") {
+accessibility_strings("accessibility_strings") {
   out_dir = chromevox_out_dir
 }
 
 action("chromevox_test_messages_js") {
   script = "//chrome/browser/resources/chromeos/accessibility/chromevox/tools/generate_test_messages.py"
-  sources = [
-    "$chromevox_out_dir/_locales/en/messages.json.gz",
-  ]
+  sources = [ "$chromevox_out_dir/_locales/en/messages.json.gz" ]
   output_file = "$root_out_dir/test_data/ui/accessibility/extensions/chromevoxclassic/host/testing/test_messages.js"
-  outputs = [
-    output_file,
-  ]
-  deps = [
-    ":chromevox_strings",
-  ]
+  outputs = [ output_file ]
+  deps = [ ":accessibility_strings" ]
   args = [
            "-o",
            rebase_path(output_file, root_build_dir),
@@ -491,15 +471,11 @@ generate_deps_js("chromevox_test_deps_js") {
     rebase_path("//", root_build_dir) + ":",
     rebase_path("$root_out_dir/test_data", root_build_dir) + ":",
   ]
-  deps = [
-    ":chromevox_test_messages_js",
-  ]
+  deps = [ ":chromevox_test_messages_js" ]
 }
 
 js_library("tree_walker") {
-  sources = [
-    "cvox2/background/tree_walker.js",
-  ]
+  sources = [ "cvox2/background/tree_walker.js" ]
   deps = [
     ":automation_predicate",
     ":constants",
@@ -511,12 +487,8 @@ js_library("tree_walker") {
 }
 
 js_library("automation_predicate") {
-  sources = [
-    "cvox2/background/automation_predicate.js",
-  ]
-  deps = [
-    ":constants",
-  ]
+  sources = [ "cvox2/background/automation_predicate.js" ]
+  deps = [ ":constants" ]
   externs_list = [
     "$externs_path/automation.js",
     "$externs_path/chrome_extensions.js",
@@ -524,9 +496,7 @@ js_library("automation_predicate") {
 }
 
 js_library("constants") {
-  sources = [
-    "cvox2/background/constants.js",
-  ]
+  sources = [ "cvox2/background/constants.js" ]
 }
 
 test("chromevox_tests") {
@@ -535,10 +505,10 @@ test("chromevox_tests") {
     "//chrome/browser/extensions/browsertest_util.h",
     "//chrome/browser/ui/webui/web_ui_test_handler.cc",
     "//chrome/browser/ui/webui/web_ui_test_handler.h",
+    "//chrome/test/base/devtools_listener.cc",
+    "//chrome/test/base/devtools_listener.h",
     "//chrome/test/base/extension_js_browser_test.cc",
     "//chrome/test/base/extension_js_browser_test.h",
-    "//chrome/test/base/extension_load_waiter_one_shot.cc",
-    "//chrome/test/base/extension_load_waiter_one_shot.h",
     "//chrome/test/base/javascript_browser_test.cc",
     "//chrome/test/base/javascript_browser_test.h",
     "//chrome/test/base/test_chrome_web_ui_controller_factory.cc",
@@ -549,21 +519,23 @@ test("chromevox_tests") {
 
   deps = [
     ":chromevox_unitjs_tests",
+    "//ash/constants",
     "//base",
     "//base:i18n",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//chrome:browser_tests_pak",
     "//chrome:packed_resources",
     "//chrome:resources",
     "//chrome:strings",
     "//chrome/browser",
-    "//chrome/browser/web_applications/components:components",
+    "//chrome/browser/web_applications",
     "//chrome/renderer",
     "//chrome/test:browser_tests_runner",
     "//chrome/test:test_support",
     "//chrome/test:test_support_ui",
     "//chrome/test/data:web_ui_test_bindings",
-    "//chromeos/constants:constants",
+    "//components/webapps/browser",
     "//content/test:test_support",
     "//extensions/browser:test_support",
     "//testing/gmock",
@@ -616,15 +588,13 @@ js2gtest("chromevox_unitjs_tests") {
     "walkers/word_walker_test.unitjs",
   ]
   gen_include_files = [
-    "//chrome/browser/resources/chromeos/accessibility/chromevox/testing/assert_additions.js",
-    "//chrome/browser/resources/chromeos/accessibility/chromevox/testing/callback_helper.js",
+    "//chrome/browser/resources/chromeos/accessibility/common/testing/assert_additions.js",
+    "//chrome/browser/resources/chromeos/accessibility/common/testing/callback_helper.js",
     "//ui/accessibility/extensions/chromevoxclassic/testing/chromevox_unittest_base.js",
   ]
 
   test_deps_js_outputs = get_target_outputs(":chromevox_test_deps_js")
   deps_js = test_deps_js_outputs[0]
-  deps = [
-    ":chromevox_test_deps_js",
-  ]
+  deps = [ ":chromevox_test_deps_js" ]
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 }

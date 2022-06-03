@@ -15,12 +15,12 @@ namespace extensions {
 using ShellRuntimeApiTest = ShellApiTest;
 
 IN_PROC_BROWSER_TEST_F(ShellRuntimeApiTest, RuntimeReload) {
-  const Extension* extension = nullptr;
+  scoped_refptr<const Extension> extension;
 
   // Load the extension and wait for it to be ready.
   {
     ResultCatcher catcher;
-    ASSERT_TRUE(extension = LoadExtension("extension"));
+    ASSERT_TRUE(extension = base::WrapRefCounted(LoadExtension("extension")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 
@@ -46,12 +46,12 @@ IN_PROC_BROWSER_TEST_F(ShellRuntimeApiTest, RuntimeReload) {
 }
 
 IN_PROC_BROWSER_TEST_F(ShellRuntimeApiTest, RuntimeReloadApp) {
-  const Extension* extension = nullptr;
+  scoped_refptr<const Extension> extension;
 
   // Load and launch the app and wait for it to create a window.
   {
     ResultCatcher catcher;
-    extension = LoadApp("platform_app");
+    extension = base::WrapRefCounted(LoadApp("platform_app"));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 

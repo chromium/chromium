@@ -1,0 +1,57 @@
+This is a test to make sure ch units work as intended.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS document.getElementById("box_mono_zero").clientWidth is 0
+PASS document.getElementById("box_mono_four1").clientWidth is document.getElementById("box_mono_four2").clientWidth
+PASS document.getElementById("box_monofallthrough_four1").clientWidth is document.getElementById("box_monofallthrough_four2").clientWidth
+PASS document.getElementById("mono_box_alphalen1").clientWidth is document.getElementById("mono_box_alphalen2").clientWidth
+PASS document.getElementById("box_one").clientWidth * 26 is document.getElementById("box_alphalen").clientWidth
+ document.getElementById("arial_box_one").clientWidth * 26 should be 225. Was 234.
+ document.getElementById("helvetica_box_one").clientWidth * 26 should be 225. Was 234.
+PASS document.getElementById("times_box_one").clientWidth * 4 is document.getElementById("box_times_four").clientWidth
+ document.getElementById("arial_box_one").clientWidth * 4 should be 35. Was 36.
+ document.getElementById("helvetica_box_one").clientWidth * 4 should be 35. Was 36.
+PASS document.getElementById("ref_box_arial_one").clientWidth is >= document.getElementById("box_arial_one").clientWidth
+PASS document.getElementById("ref_box_times_one").clientWidth is >= document.getElementById("box_times_one").clientWidth
+PASS document.getElementById("ref_box_sansserif_one").clientWidth is >= document.getElementById("box_sansserif_one").clientWidth
+PASS w1 !== w2 || h1 !== h2 is false
+PASS ps1h > ps2h && ps1h > ps3h is true
+PASS document.getElementById("box_mono_one").clientWidth is document.getElementById("box_mono").clientWidth
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+
+This is a test to make sure ch units work as intended. You should not see anything red on this page.
+
+Only 'PASS' should be visible:
+PASS
+PASS
+PASS
+PASS
+The whole lower case alphabet should be readable:
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+abcdefghijklmnopqrstuvwxyz
+Four zeroes should be visible, nothing else:
+0000
+0000
+0000
+There should be more than one green '|' visible (non-monospaced fonts):
+|||0
+|||
+|||0
+|||
+|||0
+|||
+This box has a 20px font size. The last two '0's should be the same size.
+0
+0
+0
+I'm a pseudo selected first line, I should be bigger than the rest.
+I'm the second line.
+Last in line. But one day... the throne will be mine!
+0

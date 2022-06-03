@@ -14,7 +14,10 @@
 
 #include "snapshot/minidump/minidump_context_converter.h"
 
-#include "base/stl_util.h"
+#include <string.h>
+
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "minidump/minidump_context.h"
 
 namespace crashpad {

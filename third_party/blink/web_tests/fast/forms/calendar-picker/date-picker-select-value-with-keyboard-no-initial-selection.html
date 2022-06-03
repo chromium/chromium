@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="date" id="date0" min="5000-02-14">
+<input type="date" id="date1" max="2019-02-21">
+<input type="date" id="date2">
+<input type="date" id="date3" min="2019-03-10" step="3" max="2019-04-10" value="2019-03-20">
+
+<script>
+promise_test(() => {
+  let dateElement = document.getElementById("date0");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+
+    // Note: test will need to be updated in the year 5000 :)
+    assert_equals(dateElement.value, "5000-02-14", "Date closest to present should be selected if user hits enter without other input");
+  });
+}, "Date picker: Picker should default to the day closest to min when it comes after the current date");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date1");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+
+    assert_equals(dateElement.value, "2019-02-21", "Date closest to present should be selected if user hits enter without other input");
+  });
+}, "Date picker: Picker should default to the day closest to max when it comes before the current date");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date2");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+
+    let splitDate = dateElement.value.split('-');
+    let actualDateString = new Date(splitDate[0], splitDate[1] - 1, [splitDate[2]]).toDateString();
+    let expectedDateString = new Date().toDateString();
+
+    assert_equals(actualDateString, expectedDateString, "Hitting Enter key when no value is selected should select current date");
+  });
+}, "Date picker: Picker should select current date when starting with no selection");
+
+promise_test(() => {
+  let dateElement = document.getElementById("date3");
+  return openPickerWithPromise(dateElement)
+  .then(() => {
+    eventSender.keyDown('Enter');
+    assert_equals(internals.pagePopupWindow, null, "Enter key should dismiss popup.");
+
+    assert_equals(dateElement.value, "2019-03-22", "Valid date closest to starting value should be selected if user hits enter without other input");
+  });
+}, "Date picker: If the input's initial value is invalid due to step attribute, should select the nearest valid date");
+
+</script>
+</body>
+</html>

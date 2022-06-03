@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "v8/include/v8.h"
 
@@ -74,7 +73,7 @@ ScriptValue ScriptPromiseTester::Value() const {
   return value_;
 }
 
-void ScriptPromiseTester::Trace(Visitor* visitor) {
+void ScriptPromiseTester::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(value_);
 }

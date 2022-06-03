@@ -5,7 +5,7 @@
 import("//build/config/ui.gni")
 import("//components/nacl/features.gni")
 
-assert(is_linux)
+assert(is_linux || is_chromeos)
 assert(enable_nacl)
 
 source_set("sandbox_linux") {

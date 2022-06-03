@@ -8,6 +8,7 @@
 
 #include "base/base64.h"
 #include "base/files/file_util.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/tools/transport_security_state_generator/spki_hash.h"
@@ -44,9 +45,8 @@ bool ParsePEM(base::StringPiece pem_input,
   base::StringPiece base64_encoded =
       pem_input.substr(base64_start_pos, block_end_pos - base64_start_pos);
 
-  if (!base::Base64Decode(
-          base::CollapseWhitespaceASCII(base64_encoded.as_string(), true),
-          der_output)) {
+  if (!base::Base64Decode(base::CollapseWhitespaceASCII(base64_encoded, true),
+                          der_output)) {
     return false;
   }
 

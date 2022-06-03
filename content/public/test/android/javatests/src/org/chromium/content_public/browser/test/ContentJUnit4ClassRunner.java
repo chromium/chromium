@@ -8,10 +8,7 @@ import android.support.test.InstrumentationRegistry;
 
 import org.junit.runners.model.InitializationError;
 
-import org.chromium.base.CommandLineInitUtil;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.BaseTestResult.PreTestHook;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.SkipCheck;
 import org.chromium.ui.test.util.UiDisableIfSkipCheck;
 import org.chromium.ui.test.util.UiRestrictionSkipCheck;
@@ -37,17 +34,12 @@ public class ContentJUnit4ClassRunner extends BaseJUnit4ClassRunner {
                 new UiRestrictionSkipCheck(InstrumentationRegistry.getTargetContext()),
                 new UiDisableIfSkipCheck(InstrumentationRegistry.getTargetContext()));
     }
+
     /**
      * Change this static function to add default {@code PreTestHook}s.
      */
     @Override
-    protected List<PreTestHook> getPreTestHooks() {
-        return addToList(super.getPreTestHooks(), CommandLineFlags.getRegistrationHook(),
-                new ChildProcessAllocatorSettingsHook());
-    }
-
-    @Override
-    protected void initCommandLineForTest() {
-        CommandLineInitUtil.initCommandLine(CommandLineFlags.getTestCmdLineFile());
+    protected List<TestHook> getPreTestHooks() {
+        return addToList(super.getPreTestHooks(), new ChildProcessAllocatorSettingsHook());
     }
 }

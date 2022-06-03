@@ -1,0 +1,36 @@
+Verify that tabs get merged when binding is added and removed.
+
+
+Running: addFileSystem
+
+Running: openNetworkTab
+SourceFrame: http://127.0.0.1:8000/devtools/persistence/resources/foo.js
+    selection: {"startLine":2,"startColumn":0,"endLine":2,"endColumn":5}
+    firstVisibleLine: 1
+    isDirty: false
+
+Running: openFileSystemTab
+SourceFrame: file:///var/www/devtools/persistence/resources/foo.js
+    selection: {"startLine":1,"startColumn":0,"endLine":2,"endColumn":5}
+    firstVisibleLine: 1
+    isDirty: false
+Opened tabs: 
+    file:///var/www/devtools/persistence/resources/foo.js
+    http://127.0.0.1:8000/devtools/persistence/resources/foo.js
+
+Running: addFileMapping
+Opened tabs: 
+    file:///var/www/devtools/persistence/resources/foo.js
+SourceFrame: file:///var/www/devtools/persistence/resources/foo.js
+    selection: {"startLine":1,"startColumn":0,"endLine":2,"endColumn":5}
+    firstVisibleLine: 1
+    isDirty: false
+
+Running: removeFileMapping
+Opened tabs: 
+    file:///var/www/devtools/persistence/resources/foo.js
+SourceFrame: file:///var/www/devtools/persistence/resources/foo.js
+    selection: {"startLine":1,"startColumn":0,"endLine":2,"endColumn":5}
+    firstVisibleLine: 1
+    isDirty: false
+

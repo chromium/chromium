@@ -223,209 +223,87 @@
   </tr>
 
 </table>
-<h3>PPB_TCPSocket</h3>
+<h3>PPB_TCPSocket and PPB_UDPSocket</h3>
+There is not a direct 1:1 mapping for migration. Instead, we have outlined some
+user scenarios below and what the recommended migration path is.
 <table>
   <tr bgcolor="#77ccff" style="color:white; font-weight: bold;">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">PPAPI Method </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">Assumes Threads </td>
-    <td style="font-size: 11px; padding: 5px;">Emscripten </td>
-    <td style="font-size: 11px; padding: 5px;">Web API </td>
-    <td style="font-size: 11px; padding: 5px;">Limitations </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Use Case</td>
+    <td style="font-size: 11px; padding: 5px;">Recommendations</td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Create </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcp.create </td>
-    <td style="font-size: 11px; padding: 5px;">WebSockets / WebRTC closest practical equivalent on open Web. </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Screen sharing</td>
+    <td style="font-size: 11px; padding: 5px;">
+      <a href="https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getDisplayMedia">
+        getDisplayMedia</a> and 
+      <a href="https://webrtc.org/">WebRTC</a> (
+      <a href="https://webrtc.github.io/samples/src/content/getusermedia/getdisplaymedia/">
+        demo</a>)
+    </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcpServer.create </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Loading from a
+    local server to minimize bandwidth usage</td>
+    <td style="font-size: 11px; padding: 5px;">XHR, Fetch, Streams, Service Worker, Cache APIs</td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Bind </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcpServer.create </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Loading from a
+    local instance of a web app / Connecting to a local instance of a web app</td>
+    <td style="font-size: 11px; padding: 5px;"><a href="https://webrtc.org/">WebRTC</a></td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Connect </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcp.connect </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Chat</td>
+    <td style="font-size: 11px; padding: 5px;">
+      <a href="https://developer.mozilla.org/ja/docs/Web/API/WebSockets_API">WebSocket</a>*
+    </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetLocalAddress </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.SocketInfo </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Realtime
+    audio/video communication</td>
+    <td style="font-size: 11px; padding: 5px;"><a href="https://webrtc.org/">WebRTC</a></td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetRemoteAddress </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.SocketInfo </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Collaboration</td>
+    <td style="font-size: 11px; padding: 5px;">
+      <a href="https://developer.mozilla.org/ja/docs/Web/API/WebSockets_API">WebSocket</a>*
+    </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Read </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">onReceive* Events </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Realtime
+    multiplayer games</td>
+    <td style="font-size: 11px; padding: 5px;">
+      <a href="https://github.com/WICG/web-transport/blob/master/README.md">WebTransport</a>**
+      unless P2P in which case <a href="https://webrtc.org/">WebRTC</a> (or
+      WebTransport over RTCIceTransport)
+    </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Write </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcp.send </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Realtime
+    interactive streaming</td>
+    <td style="font-size: 11px; padding: 5px;">
+      <a href="https://github.com/WICG/web-transport/blob/master/README.md">WebTransport</a>**
+    </td>
   </tr>
 
   <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Listen </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcpServer.listen </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Accept </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">onAccept* Events </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Close </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcp.close </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcpServer.close </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">SetOption </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcp.update </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;"> </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.tcpServer.update </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
+    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Communicating
+    with legacy server</td>
+    <td style="font-size: 11px; padding: 5px;">
+      Proxy server or middleware to do protocol conversion. Feedback to
+      <a href="http://bit.ly/network-api-gaps">bit.ly/network-api-gaps</a>
+    </td>
   </tr>
 
 </table>
-<h3>PPB_UDPSocket</h3>
-<table>
-  <tr bgcolor="#77ccff" style="color:white; font-weight: bold;">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">PPAPI Method </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">Assumes Threads </td>
-    <td style="font-size: 11px; padding: 5px;">Emscripten </td>
-    <td style="font-size: 11px; padding: 5px;">Web API </td>
-    <td style="font-size: 11px; padding: 5px;">Limitations </td>
-  </tr>
 
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Create </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.create </td>
-    <td bgcolor="#ffeecc" style="font-size: 11px; padding: 5px;">GAP (partial) - WebRTC closest practical open Web equivalent</td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Bind </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.bind </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">GetBoundAddress </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.SocketInfo </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">RecvFrom </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">onReceive* Events </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">SendTo </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.send </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">Close </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.close </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">SetOption </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.update </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">JoinGroup </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.joinGroup </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-  <tr bgcolor="#fcfcfc">
-    <td style="font-weight: bold; font-size: 11px; padding: 5px;">LeaveGroup </td>
-    <td style="width: 50px; text-align: center; font-size: 11px; padding: 5px;">x </td>
-    <td bgcolor="#ffcccc" style="font-size: 11px; padding: 5px;">GAP</td>
-    <td style="font-size: 11px; padding: 5px;">chrome.sockets.udp.leaveGroup </td>
-    <td style="font-size: 11px; padding: 5px;"> </td>
-  </tr>
-
-</table>
+  <i>*: Or WebTransport in the future</i><br>
+  <i>**: See <a href="https://chromestatus.com/features#webtransport">chromestatus</a> for 
+    availability</i>

@@ -23,7 +23,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -42,10 +41,6 @@ namespace blink {
 
 namespace {
 
-// TODO(crbug.com/1008708): Remove this flag when we're sure the new behavior
-// is better than the previous one.
-constexpr bool kRestoreOnLoad = true;
-
 inline HTMLFormElement* OwnerFormForState(const ListedElement& control) {
   // Assume controls with form attribute have no owners because we restore
   // state during parsing and form owners of such controls might be
@@ -62,8 +57,9 @@ const AtomicString& ControlType(const ListedElement& control) {
 }
 
 bool IsDirtyControl(const ListedElement& control) {
-  if (control.IsFormControlElementWithState())
-    return ToHTMLFormControlElementWithState(control).UserHasEditedTheField();
+  if (auto* form_control_element =
+          DynamicTo<HTMLFormControlElementWithState>(control))
+    return form_control_element->UserHasEditedTheField();
   if (control.IsElementInternals()) {
     // We have no ways to know the dirtiness of a form-associated custom
     // element.  Assume it is dirty if it has focus.
@@ -198,7 +194,7 @@ unsigned ControlKeyHash::GetHash(const ControlKey& key) {
 
 struct ControlKeyHashTraits : WTF::GenericHashTraits<ControlKey> {
   static void ConstructDeletedValue(ControlKey& slot, bool) {
-    new (NotNull, &slot) ControlKey(WTF::kHashTableDeletedValue);
+    new (NotNullTag::kNotNull, &slot) ControlKey(WTF::kHashTableDeletedValue);
   }
   static bool IsDeletedValue(const ControlKey& value) {
     return value.IsHashTableDeletedValue();
@@ -215,6 +211,8 @@ class SavedFormState {
 
  public:
   SavedFormState() : control_state_count_(0) {}
+  SavedFormState(const SavedFormState&) = delete;
+  SavedFormState& operator=(const SavedFormState&) = delete;
 
   static std::unique_ptr<SavedFormState> Deserialize(const Vector<String>&,
                                                      wtf_size_t& index);
@@ -235,8 +233,6 @@ class SavedFormState {
                                   ControlKeyHashTraits>;
   ControlStateMap state_for_new_controls_;
   wtf_size_t control_state_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavedFormState);
 };
 
 static bool IsNotFormControlTypeCharacter(UChar ch) {
@@ -336,8 +332,10 @@ Vector<String> SavedFormState::GetReferencedFilePaths() const {
 class FormKeyGenerator final : public GarbageCollected<FormKeyGenerator> {
  public:
   FormKeyGenerator() = default;
+  FormKeyGenerator(const FormKeyGenerator&) = delete;
+  FormKeyGenerator& operator=(const FormKeyGenerator&) = delete;
 
-  void Trace(Visitor* visitor) { visitor->Trace(form_to_key_map_); }
+  void Trace(Visitor* visitor) const { visitor->Trace(form_to_key_map_); }
   const AtomicString& FormKey(const ListedElement&);
   void WillDeleteForm(HTMLFormElement*);
 
@@ -346,8 +344,6 @@ class FormKeyGenerator final : public GarbageCollected<FormKeyGenerator> {
   using FormSignatureToNextIndexMap = HashMap<String, unsigned>;
   FormToKeyMap form_to_key_map_;
   FormSignatureToNextIndexMap form_signature_to_next_index_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FormKeyGenerator);
 };
 
 static inline void RecordFormStructure(const HTMLFormElement& form,
@@ -430,7 +426,7 @@ void FormKeyGenerator::WillDeleteForm(HTMLFormElement* form) {
 
 DocumentState::DocumentState(Document& document) : document_(document) {}
 
-void DocumentState::Trace(Visitor* visitor) {
+void DocumentState::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(control_list_);
 }
@@ -502,7 +498,7 @@ FormController::FormController(Document& document)
 
 FormController::~FormController() = default;
 
-void FormController::Trace(Visitor* visitor) {
+void FormController::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
   visitor->Trace(document_state_);
   visitor->Trace(form_key_generator_);
@@ -567,7 +563,7 @@ void FormController::WillDeleteForm(HTMLFormElement* form) {
 }
 
 void FormController::RestoreControlStateFor(ListedElement& control) {
-  if (kRestoreOnLoad && !document_->HasFinishedParsing())
+  if (!document_->HasFinishedParsing())
     return;
   if (OwnerFormForState(control))
     return;
@@ -575,7 +571,7 @@ void FormController::RestoreControlStateFor(ListedElement& control) {
 }
 
 void FormController::RestoreControlStateIn(HTMLFormElement& form) {
-  if (kRestoreOnLoad && !document_->HasFinishedParsing())
+  if (!document_->HasFinishedParsing())
     return;
   EventQueueScope scope;
   const ListedElement::List& elements = form.ListedElements();
@@ -619,16 +615,20 @@ void FormController::RestoreControlStateOnUpgrade(ListedElement& control) {
 }
 
 void FormController::ScheduleRestore() {
-  if (!kRestoreOnLoad)
-    return;
   document_->GetTaskRunner(TaskType::kInternalLoading)
       ->PostTask(FROM_HERE,
                  WTF::Bind(&FormController::RestoreAllControlsInDocumentOrder,
                            WrapPersistent(this)));
 }
 
+void FormController::RestoreImmediately() {
+  if (did_restore_all_ || !HasControlStates())
+    return;
+  RestoreAllControlsInDocumentOrder();
+}
+
 void FormController::RestoreAllControlsInDocumentOrder() {
-  if (!document_->IsActive())
+  if (!document_->IsActive() || did_restore_all_)
     return;
   HeapHashSet<Member<HTMLFormElement>> finished_forms;
   EventQueueScope scope;
@@ -639,6 +639,7 @@ void FormController::RestoreAllControlsInDocumentOrder() {
     else if (finished_forms.insert(owner).is_new_entry)
       RestoreControlStateIn(*owner);
   }
+  did_restore_all_ = true;
 }
 
 Vector<String> FormController::GetReferencedFilePaths(

@@ -37,7 +37,7 @@ namespace {
 
 bool ShouldDeleteUrl(base::Time begin,
                      base::Time end,
-                     const base::Optional<std::set<GURL>>& restrict_urls,
+                     const absl::optional<std::set<GURL>>& restrict_urls,
                      const GURL& url,
                      base::Time time_stamp) {
   return begin <= time_stamp && (time_stamp < end || end.is_null()) &&
@@ -48,7 +48,7 @@ bool ShouldDeleteUrl(base::Time begin,
 bool ShouldDeleteNavigationEntry(
     base::Time begin,
     base::Time end,
-    const base::Optional<std::set<GURL>>& restrict_urls,
+    const absl::optional<std::set<GURL>>& restrict_urls,
     content::NavigationEntry* entry) {
   return ShouldDeleteUrl(begin, end, restrict_urls, entry->GetURL(),
                          entry->GetTimestamp());
@@ -57,7 +57,7 @@ bool ShouldDeleteNavigationEntry(
 bool ShouldDeleteSerializedNavigationEntry(
     base::Time begin,
     base::Time end,
-    const base::Optional<std::set<GURL>>& restrict_urls,
+    const absl::optional<std::set<GURL>>& restrict_urls,
     const sessions::SerializedNavigationEntry& entry) {
   return ShouldDeleteUrl(begin, end, restrict_urls, entry.virtual_url(),
                          entry.timestamp());
@@ -75,10 +75,7 @@ bool UrlMatcherForSerializedNavigationEntry(
 }
 
 base::flat_set<GURL> CreateUrlSet(const history::URLRows& deleted_rows) {
-  std::vector<GURL> urls;
-  for (const history::URLRow& row : deleted_rows)
-    urls.push_back(row.url());
-  return base::flat_set<GURL>(std::move(urls));
+  return base::MakeFlatSet<GURL>(deleted_rows, {}, &history::URLRow::url);
 }
 
 void DeleteNavigationEntries(
@@ -95,7 +92,7 @@ void DeleteNavigationEntries(
 void DeleteTabNavigationEntries(
     Profile* profile,
     const history::DeletionTimeRange& time_range,
-    const base::Optional<std::set<GURL>>& restrict_urls,
+    const absl::optional<std::set<GURL>>& restrict_urls,
     const base::flat_set<GURL>& url_set) {
   auto predicate = time_range.IsValid()
                        ? base::BindRepeating(
@@ -113,8 +110,7 @@ void DeleteTabNavigationEntries(
           : base::BindRepeating(&UrlMatcherForSerializedNavigationEntry,
                                 std::cref(url_set));
 
-  for (auto it = TabModelList::begin(); it != TabModelList::end(); ++it) {
-    TabModel* tab_model = *it;
+  for (const TabModel* tab_model : TabModelList::models()) {
     if (tab_model->GetProfile() == profile) {
       for (int i = 0; i < tab_model->GetTabCount(); i++) {
         TabAndroid* tab = tab_model->GetTabAt(i);
@@ -156,6 +152,9 @@ class TabRestoreDeletionHelper : public sessions::TabRestoreServiceObserver {
     service->LoadTabsFromLastSession();
   }
 
+  TabRestoreDeletionHelper(const TabRestoreDeletionHelper&) = delete;
+  TabRestoreDeletionHelper& operator=(const TabRestoreDeletionHelper&) = delete;
+
   // sessions::TabRestoreServiceObserver:
   void TabRestoreServiceDestroyed(
       sessions::TabRestoreService* service) override {
@@ -172,14 +171,12 @@ class TabRestoreDeletionHelper : public sessions::TabRestoreServiceObserver {
 
   sessions::TabRestoreService* service_;
   sessions::TabRestoreService::DeletionPredicate deletion_predicate_;
-
-  DISALLOW_COPY_AND_ASSIGN(TabRestoreDeletionHelper);
 };
 
 void DeleteTabRestoreEntries(
     Profile* profile,
     const history::DeletionTimeRange& time_range,
-    const base::Optional<std::set<GURL>>& restrict_urls,
+    const absl::optional<std::set<GURL>>& restrict_urls,
     const base::flat_set<GURL>& url_set) {
   sessions::TabRestoreService* tab_service =
       TabRestoreServiceFactory::GetForProfile(profile);
@@ -216,7 +213,7 @@ namespace browsing_data {
 
 void RemoveNavigationEntries(Profile* profile,
                              const history::DeletionInfo& deletion_info) {
-  DCHECK(profile->IsRegularProfile());
+  DCHECK(!profile->IsOffTheRecord());
   DCHECK(!deletion_info.is_from_expiration());
 
   base::flat_set<GURL> url_set;

@@ -7,15 +7,16 @@
 
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 // Many APIs in ::dbus are required to be called from the same thread
 // (https://crbug.com/130984). Therefore, a SingleThreadedTaskRunner is
 // maintained and accessible through GetDBusTaskRunner(), from which all calls
 // to dbus on Linux have to be made.
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #error On ChromeOS, use DBusThreadManager instead.
 #endif
 

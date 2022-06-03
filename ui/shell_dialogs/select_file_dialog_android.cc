@@ -8,7 +8,8 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -47,7 +48,7 @@ void SelectFileDialogImpl::OnFileSelected(
   if (!file_name.empty())
     file_info.display_name = file_name;
 
-  listener_->FileSelectedWithExtraInfo(file_info, 0, NULL);
+  listener_->FileSelectedWithExtraInfo(file_info, 0, nullptr);
 }
 
 void SelectFileDialogImpl::OnMultipleFilesSelected(
@@ -82,14 +83,14 @@ void SelectFileDialogImpl::OnMultipleFilesSelected(
     selected_files.push_back(file_info);
   }
 
-  listener_->MultiFilesSelectedWithExtraInfo(selected_files, NULL);
+  listener_->MultiFilesSelectedWithExtraInfo(selected_files, nullptr);
 }
 
 void SelectFileDialogImpl::OnFileNotSelected(
     JNIEnv* env,
     const JavaParamRef<jobject>& java_object) {
   if (listener_)
-    listener_->FileSelectionCanceled(NULL);
+    listener_->FileSelectionCanceled(nullptr);
 }
 
 void SelectFileDialogImpl::OnContactsSelected(
@@ -106,12 +107,12 @@ bool SelectFileDialogImpl::IsRunning(gfx::NativeWindow) const {
 }
 
 void SelectFileDialogImpl::ListenerDestroyed() {
-  listener_ = NULL;
+  listener_ = nullptr;
 }
 
 void SelectFileDialogImpl::SelectFileImpl(
     SelectFileDialog::Type type,
-    const base::string16& title,
+    const std::u16string& title,
     const base::FilePath& default_path,
     const SelectFileDialog::FileTypeInfo* file_types,
     int file_type_index,
@@ -122,9 +123,9 @@ void SelectFileDialogImpl::SelectFileImpl(
 
   // The first element in the pair is a list of accepted types, the second
   // indicates whether the device's capture capabilities should be used.
-  typedef std::pair<std::vector<base::string16>, bool> AcceptTypes;
-  AcceptTypes accept_types = std::make_pair(std::vector<base::string16>(),
-                                            false);
+  typedef std::pair<std::vector<std::u16string>, bool> AcceptTypes;
+  AcceptTypes accept_types =
+      std::make_pair(std::vector<std::u16string>(), false);
 
   if (params)
     accept_types = *(reinterpret_cast<AcceptTypes*>(params));

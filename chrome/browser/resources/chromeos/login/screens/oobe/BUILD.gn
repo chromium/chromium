@@ -1,0 +1,294 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/test/base/js2gtest.gni")
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/polymer.gni")
+import("../../oobe_auto_imports.gni")
+
+group("polymer3_elements") {
+  public_deps = [
+    ":auto_enrollment_check_module",
+    ":demo_preferences_module",
+    ":demo_setup_module",
+    ":enable_debugging_module",
+    ":hid_detection_module",
+    ":oobe_eula_module",
+    ":packaged_license_module",
+    ":update_module",
+    ":welcome_dialog_module",
+    ":welcome_module",
+  ]
+}
+
+group("closure_compile") {
+  deps = [ ":closure_compile_local" ]
+}
+
+js_type_check("closure_compile_local") {
+  uses_legacy_modules = true
+  deps = [
+    ":oobe_network",
+  ]
+}
+
+js_type_check("closure_compile_module") {
+  is_polymer3 = true
+  closure_flags = default_closure_args
+  deps = [
+    ":auto_enrollment_check.m",
+    ":demo_preferences.m",
+    ":demo_setup.m",
+    ":enable_debugging.m",
+    ":hid_detection.m",
+    ":oobe_eula.m",
+    ":packaged_license.m",
+    ":update.m",
+    ":welcome.m",
+    ":welcome_dialog.m",
+  ]
+}
+
+###############################
+# Closure compiler libraries below
+
+js_library("oobe_network") {
+  deps = [
+    # TODO(crbug.com/251576): Restore when migrate to Polymer 3.
+    # "../../components:network_select_login",
+    "../../components/behaviors:login_screen_behavior",
+    "../../components/behaviors:oobe_dialog_host_behavior",
+    "../../components/behaviors:oobe_i18n_behavior",
+    "../../components/dialogs:oobe_adaptive_dialog",
+    "//ui/webui/resources/cr_components/chromeos/network:network_select",
+  ]
+}
+
+js_library("auto_enrollment_check.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/auto_enrollment_check.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  extra_deps = [ ":auto_enrollment_check_module" ]
+}
+
+js_library("demo_preferences.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_preferences.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":demo_preferences_module" ]
+}
+
+js_library("demo_setup.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/demo_setup.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/progress_list_item:progress_list_item.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":demo_setup_module" ]
+}
+
+js_library("enable_debugging.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/enable_debugging.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_loading_dialog.m",
+  ]
+  extra_deps = [ ":enable_debugging_module" ]
+}
+
+js_library("hid_detection.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/hid_detection.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":hid_detection_module" ]
+}
+
+js_library("oobe_eula.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/oobe_eula.m.js" ]
+  deps = [
+    "../../:display_manager.m",
+    "../../components:web_view_helper.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+
+  externs_list = [
+    "$externs_path/chrome_extensions.js",
+    "$externs_path/webview_tag.js",
+  ]
+  extra_deps = [ ":oobe_eula_module" ]
+}
+
+js_library("packaged_license.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/packaged_license.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":packaged_license_module" ]
+}
+
+js_library("update.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/update.m.js" ]
+  deps = [
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/oobe_slide:oobe_slide.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":update_module" ]
+}
+
+js_library("welcome.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome.m.js" ]
+  deps = [
+    ":welcome_dialog.m",
+    "../..:display_manager.m",
+    "../../components:oobe_select.m",
+    "../../components:oobe_types.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input",
+  ]
+  extra_deps = [ ":welcome_module" ]
+  externs_list = [ "$externs_path/tts.js" ]
+}
+
+js_library("welcome_dialog.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/welcome_dialog.m.js" ]
+  deps = [
+    "../../components:long_touch_detector.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_icon_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":welcome_dialog_module" ]
+  externs_list = [ "$externs_path/tts.js" ]
+}
+
+polymer_modulizer("auto_enrollment_check") {
+  js_file = "auto_enrollment_check.js"
+  html_file = "auto_enrollment_check.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("demo_preferences") {
+  js_file = "demo_preferences.js"
+  html_file = "demo_preferences.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("demo_setup") {
+  js_file = "demo_setup.js"
+  html_file = "demo_setup.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("enable_debugging") {
+  js_file = "enable_debugging.js"
+  html_file = "enable_debugging.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("hid_detection") {
+  js_file = "hid_detection.js"
+  html_file = "hid_detection.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("oobe_eula") {
+  js_file = "oobe_eula.js"
+  html_file = "oobe_eula.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("packaged_license") {
+  js_file = "packaged_license.js"
+  html_file = "packaged_license.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("update") {
+  js_file = "update.js"
+  html_file = "update.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("welcome") {
+  js_file = "welcome.js"
+  html_file = "welcome.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("welcome_dialog") {
+  js_file = "welcome_dialog.js"
+  html_file = "welcome_dialog.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}

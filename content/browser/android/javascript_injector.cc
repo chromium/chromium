@@ -5,6 +5,7 @@
 #include "content/browser/android/javascript_injector.h"
 
 #include "base/android/jni_string.h"
+#include "base/memory/ptr_util.h"
 #include "content/browser/android/java/gin_java_bridge_dispatcher_host.h"
 #include "content/public/android/content_jni_headers/JavascriptInjectorImpl_jni.h"
 
@@ -75,6 +76,6 @@ jlong JNI_JavascriptInjectorImpl_Init(
   return reinterpret_cast<intptr_t>(injector);
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(JavascriptInjector)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(JavascriptInjector);
 
 }  // namespace content

@@ -13,6 +13,14 @@ def main():
   parser = argparse.ArgumentParser(description=description)
   parser.add_argument('--output_dir',
                     help='Output directory for build products.')
+  parser.add_argument('--ios_simulator', action='store_true', default=False,
+                      help='Use "iphoneos" SDK instead of "macos".')
+  parser.add_argument('--asan', action='store_true', default=False,
+                      help='Make Asan build.')
+  parser.add_argument('--clean', action='store_true', default=False,
+                      help='Clean output directory before building.')
+  parser.add_argument('--debug', action='store_true', default=False,
+                      help='Make debug build.')
   parser.add_argument('-j',
                     help='Number of parallel jobs to run.')
   (opts, extra_args) = parser.parse_known_args()
@@ -20,18 +28,50 @@ def main():
   output_dir = opts.output_dir
   if not output_dir:
     # Use a default that matches what ninja uses.
+    platform_dir = 'iOS' if opts.ios_simulator else 'macOS'
     output_dir = os.path.realpath(os.path.join(
       os.path.dirname(__file__),
       '../../..',
-      'out', 'Debug-iphonesimulator', 'obj', 'ios', 'third_party', 'webkit'));
+      'out', 'Debug-iphonesimulator', 'obj',
+      'ios', 'third_party', 'webkit', platform_dir));
 
-  command = ['src/Tools/Scripts/build-webkit', '--debug', '--ios-simulator']
+  command = ['src/Tools/Scripts/build-webkit']
+
+  if opts.ios_simulator:
+    command.append('--ios-simulator')
+
+  if opts.debug:
+    command.append('--debug')
+
   if opts.j:
     command.extend(['-jobs', opts.j])
   command.extend(extra_args)
 
-  env = {'WEBKIT_OUTPUTDIR': output_dir}
+  env = {
+    'WEBKIT_OUTPUTDIR': output_dir,
+     # Needed for /bin/mkdir, /usr/bin/copypng, and /usr/sbin/sysctl.
+    'PATH': '/bin:/usr/bin:/usr/sbin',
+  }
   cwd = os.path.dirname(os.path.realpath(__file__))
+
+  if opts.clean:
+     clean_command = ['src/Tools/Scripts/clean-webkit']
+     proc = subprocess.Popen(clean_command, cwd=cwd, env=env)
+     proc.communicate()
+
+  if opts.asan:
+     config_command = ['src/Tools/Scripts/set-webkit-configuration', '--asan']
+     if opts.debug:
+       config_command.append('--debug')
+     proc = subprocess.Popen(config_command, cwd=cwd, env=env)
+     proc.communicate()
+     if proc.returncode:
+       return proc.returncode
+
+  # Enable rewriting WK_API_AVAILABLE() -> API_AVAILABLE().
+  if opts.ios_simulator:
+    command.append('WK_FRAMEWORK_HEADER_POSTPROCESSING_DISABLED=NO')
+
   proc = subprocess.Popen(command, cwd=cwd, env=env)
   proc.communicate()
   return proc.returncode

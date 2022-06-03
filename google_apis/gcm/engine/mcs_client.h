@@ -13,7 +13,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "google_apis/gcm/base/gcm_export.h"
@@ -73,7 +72,7 @@ class GCM_EXPORT MCSClient {
     APP_QUEUE_SIZE_LIMIT_REACHED,
     // Message too large to send.
     MESSAGE_TOO_LARGE,
-    // Message not send becuase of TTL = 0 and no working connection.
+    // Message not send because of TTL = 0 and no working connection.
     NO_CONNECTION_ON_ZERO_TTL,
     // Message exceeded TTL.
     TTL_EXCEEDED,
@@ -84,19 +83,22 @@ class GCM_EXPORT MCSClient {
     SEND_STATUS_COUNT
   };
 
-  // Callback for MCSClient's error conditions.
+  // Callback for MCSClient's error conditions. A repeating callback is used
+  // because occasionally multiple errors are reported, see crbug.com/1039598
+  // for more context.
   // TODO(fgorski): Keeping it as a callback with intention to add meaningful
   // error information.
-  typedef base::Callback<void()> ErrorCallback;
+  using ErrorCallback = base::RepeatingClosure;
   // Callback when a message is received.
-  typedef base::Callback<void(const MCSMessage& message)>
-      OnMessageReceivedCallback;
+  using OnMessageReceivedCallback =
+      base::RepeatingCallback<void(const MCSMessage& message)>;
   // Callback when a message is sent (and receipt has been acknowledged by
   // the MCS endpoint).
-  typedef base::Callback<void(int64_t user_serial_number,
-                              const std::string& app_id,
-                              const std::string& message_id,
-                              MessageSendStatus status)> OnMessageSentCallback;
+  using OnMessageSentCallback =
+      base::RepeatingCallback<void(int64_t user_serial_number,
+                                   const std::string& app_id,
+                                   const std::string& message_id,
+                                   MessageSendStatus status)>;
 
   MCSClient(const std::string& version_string,
             base::Clock* clock,
@@ -104,6 +106,10 @@ class GCM_EXPORT MCSClient {
             GCMStore* gcm_store,
             scoped_refptr<base::SequencedTaskRunner> io_task_runner,
             GCMStatsRecorder* recorder);
+
+  MCSClient(const MCSClient&) = delete;
+  MCSClient& operator=(const MCSClient&) = delete;
+
   virtual ~MCSClient();
 
   // Initialize the client. Will load any previous id/token information as well
@@ -310,8 +316,6 @@ class GCM_EXPORT MCSClient {
   GCMStatsRecorder* recorder_;
 
   base::WeakPtrFactory<MCSClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MCSClient);
 };
 
 } // namespace gcm

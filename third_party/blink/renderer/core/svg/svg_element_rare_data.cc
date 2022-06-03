@@ -27,19 +27,25 @@ SVGElementRareData::EnsureAnimatedSMILStyleProperties() {
   return animated_smil_style_properties_.Get();
 }
 
-ComputedStyle* SVGElementRareData::OverrideComputedStyle(
+const ComputedStyle* SVGElementRareData::OverrideComputedStyle(
     Element* element,
     const ComputedStyle* parent_style) {
   DCHECK(element);
-  if (!use_override_computed_style_)
-    return nullptr;
   if (!override_computed_style_ || needs_override_computed_style_update_) {
+    // TODO(crbug.com/1145970): Use actual StyleRecalcContext.
+    StyleRecalcContext style_recalc_context;
+
+    StyleRequest style_request;
+    style_request.parent_override = parent_style;
+    style_request.layout_parent_override = parent_style;
+    style_request.matching_behavior = kMatchAllRulesExcludingSMIL;
+
     // The style computed here contains no CSS Animations/Transitions or SMIL
     // induced rules - this is needed to compute the "base value" for the SMIL
     // animation sandwhich model.
     override_computed_style_ =
-        element->GetDocument().EnsureStyleResolver().StyleForElement(
-            element, parent_style, parent_style, kMatchAllRulesExcludingSMIL);
+        element->GetDocument().GetStyleResolver().ResolveStyle(
+            element, style_recalc_context, style_request);
     needs_override_computed_style_update_ = false;
   }
   DCHECK(override_computed_style_);
@@ -50,14 +56,14 @@ void SVGElementRareData::ClearOverriddenComputedStyle() {
   override_computed_style_ = nullptr;
 }
 
-SVGResourceClient& SVGElementRareData::EnsureSVGResourceClient(
+SVGElementResourceClient& SVGElementRareData::EnsureSVGResourceClient(
     SVGElement* element) {
   if (!resource_client_)
     resource_client_ = MakeGarbageCollected<SVGElementResourceClient>(element);
   return *resource_client_;
 }
 
-void SVGElementRareData::Trace(blink::Visitor* visitor) {
+void SVGElementRareData::Trace(Visitor* visitor) const {
   visitor->Trace(outgoing_references_);
   visitor->Trace(incoming_references_);
   visitor->Trace(animated_smil_style_properties_);

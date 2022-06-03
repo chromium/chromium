@@ -4,11 +4,11 @@
 
 (async function() {
   TestRunner.addResult(`Tests filtering of requests suitable for HAR.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   function checkURL(url) {
-    var request = new SDK.NetworkRequest(url, url, '', '', '');
+    var request = SDK.NetworkRequest.create(url, url, '', '', '');
     var result = Network.NetworkLogView.HTTPRequestsFilter(request);
     TestRunner.addResult((result ? '' : 'Non-') + 'HTTP request URL: ' + url);
   }

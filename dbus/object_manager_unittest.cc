@@ -7,13 +7,14 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_restrictions.h"
@@ -23,6 +24,7 @@
 #include "dbus/property.h"
 #include "dbus/test_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 
@@ -64,18 +66,18 @@ class ObjectManagerTest
 
   void SetUp() override {
     // Make the main thread not to allow IO.
-    base::ThreadRestrictions::SetIOAllowed(false);
+    disallow_blocking_.emplace();
 
     // Start the D-Bus thread.
-    dbus_thread_.reset(new base::Thread("D-Bus Thread"));
+    dbus_thread_ = std::make_unique<base::Thread>("D-Bus Thread");
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::IO;
-    ASSERT_TRUE(dbus_thread_->StartWithOptions(thread_options));
+    ASSERT_TRUE(dbus_thread_->StartWithOptions(std::move(thread_options)));
 
     // Start the test service, using the D-Bus thread.
     TestService::Options options;
     options.dbus_task_runner = dbus_thread_->task_runner();
-    test_service_.reset(new TestService(options));
+    test_service_ = std::make_unique<TestService>(options);
     ASSERT_TRUE(test_service_->StartService());
     test_service_->WaitUntilServiceIsStarted();
     ASSERT_TRUE(test_service_->HasDBusThread());
@@ -102,11 +104,9 @@ class ObjectManagerTest
     // Shut down the service.
     test_service_->ShutdownAndBlock();
 
-    // Reset to the default.
-    base::ThreadRestrictions::SetIOAllowed(true);
-
     // Stopping a thread is considered an IO operation, so do this after
     // allowing IO.
+    disallow_blocking_.reset();
     test_service_->Stop();
 
     base::RunLoop().RunUntilIdle();
@@ -165,7 +165,7 @@ class ObjectManagerTest
   void WaitForObject() {
     while (added_objects_.size() < kExpectedObjects ||
            updated_properties_.size() < kExpectedProperties) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
     for (size_t i = 0; i < kExpectedObjects; ++i)
@@ -176,7 +176,7 @@ class ObjectManagerTest
 
   void WaitForRemoveObject() {
     while (removed_objects_.size() < kExpectedObjects) {
-      run_loop_.reset(new base::RunLoop);
+      run_loop_ = std::make_unique<base::RunLoop>();
       run_loop_->Run();
     }
     for (size_t i = 0; i < kExpectedObjects; ++i)
@@ -184,7 +184,7 @@ class ObjectManagerTest
   }
 
   void WaitForMethodCallback() {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
     method_callback_called_ = false;
   }
@@ -206,6 +206,7 @@ class ObjectManagerTest
   }
 
   base::test::SingleThreadTaskEnvironment task_environment_;
+  absl::optional<base::ScopedDisallowBlocking> disallow_blocking_;
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<base::Thread> dbus_thread_;
   scoped_refptr<Bus> bus_;
@@ -383,10 +384,11 @@ TEST_F(ObjectManagerTest, OwnershipLostAndRegained) {
   ASSERT_EQ(1U, object_paths.size());
 }
 
-TEST_F(ObjectManagerTest, PropertiesChangedAsObjectsReceived) {
+// Flaky: crbug.com/1174515
+TEST_F(ObjectManagerTest, DISABLED_PropertiesChangedAsObjectsReceived) {
   // Remove the existing object manager.
   object_manager_->UnregisterInterface("org.chromium.TestInterface");
-  run_loop_.reset(new base::RunLoop);
+  run_loop_ = std::make_unique<base::RunLoop>();
   EXPECT_TRUE(bus_->RemoveObjectManager(
       test_service_->service_name(),
       ObjectPath("/org/chromium/TestService"),
@@ -409,10 +411,10 @@ TEST_F(ObjectManagerTest, PropertiesChangedAsObjectsReceived) {
       FROM_HERE,
       base::BindOnce(&ObjectManagerTest::PropertiesChangedTestTimeout,
                      base::Unretained(this)),
-      base::TimeDelta::FromSeconds(2));
+      base::Seconds(2));
 
   while (last_name_value_ != "ChangedTestServiceName" && !timeout_expired_) {
-    run_loop_.reset(new base::RunLoop);
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 }

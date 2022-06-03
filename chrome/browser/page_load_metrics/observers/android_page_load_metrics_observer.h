@@ -7,8 +7,6 @@
 
 #include <jni.h>
 
-#include "base/macros.h"
-#include "components/page_load_metrics/browser/observers/largest_contentful_paint_handler.h"
 #include "components/page_load_metrics/browser/page_load_metrics_observer.h"
 
 namespace network {
@@ -23,6 +21,11 @@ class AndroidPageLoadMetricsObserver
  public:
   AndroidPageLoadMetricsObserver();
 
+  AndroidPageLoadMetricsObserver(const AndroidPageLoadMetricsObserver&) =
+      delete;
+  AndroidPageLoadMetricsObserver& operator=(
+      const AndroidPageLoadMetricsObserver&) = delete;
+
   // page_load_metrics::PageLoadMetricsObserver:
   // PageLoadMetricsObserver lifecycle callbacks
   ObservePolicy OnStart(content::NavigationHandle* navigation_handle,
@@ -32,8 +35,6 @@ class AndroidPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
-  void OnDidFinishSubFrameNavigation(
-      content::NavigationHandle* navigation_handle) override;
   void OnComplete(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
@@ -48,9 +49,6 @@ class AndroidPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   void OnLoadedResource(const page_load_metrics::ExtraRequestCompleteInfo&
                             extra_request_complete_info) override;
-  void OnTimingUpdate(
-      content::RenderFrameHost* subframe_rfh,
-      const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
  protected:
   AndroidPageLoadMetricsObserver(
@@ -92,11 +90,6 @@ class AndroidPageLoadMetricsObserver
   int64_t navigation_id_ = -1;
 
   network::NetworkQualityTracker* network_quality_tracker_ = nullptr;
-
-  page_load_metrics::LargestContentfulPaintHandler
-      largest_contentful_paint_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(AndroidPageLoadMetricsObserver);
 };
 
 #endif  // CHROME_BROWSER_PAGE_LOAD_METRICS_OBSERVERS_ANDROID_PAGE_LOAD_METRICS_OBSERVER_H_

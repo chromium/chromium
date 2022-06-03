@@ -9,10 +9,9 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "media/base/bind_to_current_loop.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -32,6 +31,10 @@ class AudioDeviceListenerMacTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  AudioDeviceListenerMacTest(const AudioDeviceListenerMacTest&) = delete;
+  AudioDeviceListenerMacTest& operator=(const AudioDeviceListenerMacTest&) =
+      delete;
+
   virtual ~AudioDeviceListenerMacTest() {
     // It's important to destroy the device listener from the message loop in
     // order to ensure we don't end up with unbalanced TaskObserver calls.
@@ -45,11 +48,11 @@ class AudioDeviceListenerMacTest : public testing::Test {
   void CreateDeviceListener() {
     // Force a post task using BindToCurrentLoop() to ensure device listener
     // internals are working correctly.
-    device_listener_.reset(new AudioDeviceListenerMac(
+    device_listener_ = std::make_unique<AudioDeviceListenerMac>(
         BindToCurrentLoop(
             base::BindRepeating(&AudioDeviceListenerMacTest::OnDeviceChange,
                                 base::Unretained(this))),
-        true /* monitor_default_input */, true /* monitor_addition_removal */));
+        true /* monitor_default_input */, true /* monitor_addition_removal */);
   }
 
   void DestroyDeviceListener() { device_listener_.reset(); }
@@ -100,8 +103,6 @@ class AudioDeviceListenerMacTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<AudioDeviceListenerMac> device_listener_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceListenerMacTest);
 };
 
 // Simulate a device change event and ensure we get the right callback.

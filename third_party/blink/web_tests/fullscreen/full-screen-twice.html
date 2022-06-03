@@ -6,7 +6,7 @@
 
     var spanEnteredFullScreen = function() {
         testExpected("document.webkitCurrentFullScreenElement", span);
-        waitForEventAndEnd(document, "webkitfullscreenchange");
+        waitForEventOnceAndEnd(document, "webkitfullscreenchange");
         runWithKeyDown(function(){document.documentElement.webkitRequestFullScreen()});
     };
 

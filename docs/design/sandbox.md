@@ -17,7 +17,7 @@ make persistent changes to the computer or access information that is
 confidential. The architecture and exact assurances that the sandbox provides
 are dependent on the operating system. This document covers the Windows
 implementation as well as the general design. The Linux implementation is
-described [here](../linux_sandboxing.md), the OSX implementation
+described [here](../linux/sandboxing.md), the OSX implementation
 [here](http://dev.chromium.org/developers/design-documents/sandbox/osx-sandboxing-design).
 
 If you don't feel like reading this whole document you can read the
@@ -362,6 +362,13 @@ policies on the target process for enforcing security characteristics.
 * Compiler/Linker opt-in, not a run-time policy opt-in.  See
 [MSDN](https://msdn.microsoft.com/en-us/library/windows/desktop/mt637065(v=vs.85).aspx).
 
+#### CET Shadow Stack:
+
+* Available in Windows 10 2004 December Update.
+* Is not enabled in the renderer.  See
+[ticket](https://bugs.chromium.org/p/chromium/issues/detail?id=1136224),
+[MSDN](https://docs.microsoft.com/en-us/cpp/build/reference/cetcompat?view=vs-2019).
+
 #### Disable Font Loading:
 
 * &gt;= Win10
@@ -462,6 +469,14 @@ and supported actions.
 Rules can only be added before each target process is spawned, and cannot be
 modified while a target is running, but different targets can have different
 rules.
+
+### Diagnostics
+
+In Chromium, the policies associated with active processes can be viewed at
+chrome://sandbox. Tracing of the `sandbox` category will output the policy used
+when a process is launched. Tracing can be enabled using chrome://tracing or by
+using the `--trace-startup=-*,disabled-by-default-sandbox` command line flag.
+Trace output can be investigated with `//tools/win/trace-sandbox-viewer.py`.
 
 ## Target bootstrapping
 

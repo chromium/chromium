@@ -5,51 +5,38 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_HIT_TEST_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_HIT_TEST_DATA_H_
 
-#include "third_party/blink/renderer/platform/graphics/hit_test_rect.h"
+#include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
+#include "third_party/blink/renderer/platform/graphics/touch_action_rect.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 
 struct PLATFORM_EXPORT HitTestData {
-  Vector<HitTestRect> touch_action_rects;
-  struct ScrollHitTest {
-    const TransformPaintPropertyNode* scroll_offset;
-    IntRect scroll_container_bounds;
-    bool operator==(const ScrollHitTest& rhs) const {
-      return scroll_offset == rhs.scroll_offset &&
-             scroll_container_bounds == rhs.scroll_container_bounds;
-    }
-  };
-  base::Optional<ScrollHitTest> scroll_hit_test;
+  Vector<TouchActionRect> touch_action_rects;
+  Vector<gfx::Rect> wheel_event_rects;
 
-  HitTestData() = default;
-  HitTestData(const HitTestData& other)
-      : touch_action_rects(other.touch_action_rects),
-        scroll_hit_test(other.scroll_hit_test) {}
+  // If scroll_translation is nullptr or in pre-CompositeAfterPaint, this marks
+  // a region in which composited scroll is not allowed. In CompositeAfterPaint
+  // when scroll_translation is not nullptr, this is the bounds of the scroll
+  // container, and whether the region allows composited scrolling depends
+  // whether the scroll_translation is composited.
+  gfx::Rect scroll_hit_test_rect;
+  scoped_refptr<const TransformPaintPropertyNode> scroll_translation;
 
   bool operator==(const HitTestData& rhs) const {
     return touch_action_rects == rhs.touch_action_rects &&
-           scroll_hit_test == rhs.scroll_hit_test;
+           wheel_event_rects == rhs.wheel_event_rects &&
+           scroll_hit_test_rect == rhs.scroll_hit_test_rect &&
+           scroll_translation == rhs.scroll_translation;
   }
-
-  void AppendTouchActionRect(const HitTestRect& rect) {
-    touch_action_rects.push_back(rect);
-  }
-
-  void SetScrollHitTest(const TransformPaintPropertyNode* scroll_offset,
-                        const IntRect& scroll_container_bounds) {
-    DCHECK(!scroll_offset || scroll_offset->ScrollNode());
-    scroll_hit_test = base::make_optional(
-        ScrollHitTest{scroll_offset, scroll_container_bounds});
-  }
-
   bool operator!=(const HitTestData& rhs) const { return !(*this == rhs); }
 
   String ToString() const;
 };
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const HitTestData&);
+PLATFORM_EXPORT std::ostream& operator<<(std::ostream&, const HitTestData*);
 
 }  // namespace blink
 

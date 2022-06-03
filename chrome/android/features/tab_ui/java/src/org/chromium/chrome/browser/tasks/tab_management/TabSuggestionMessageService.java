@@ -10,6 +10,7 @@ import static org.chromium.chrome.browser.tasks.tab_management.suggestions.TabSu
 
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -28,25 +29,23 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * One of the concrete {@link MessageService} that only serve {@link MessageType.TAB_SUGGESTION}.
+ * One of the concrete {@link MessageService} that only serve {@link MessageType#TAB_SUGGESTION}.
  */
 public class TabSuggestionMessageService extends MessageService implements TabSuggestionsObserver {
     static final int CLOSE_SUGGESTION_ACTION_ENABLING_THRESHOLD = 1;
+    static final int GROUP_SUGGESTION_ACTION_ENABLING_THRESHOLD = 2;
+    private static boolean sSuggestionAvailableForTesting;
 
     /**
      * This is the data type that this MessageService is serving to its Observer.
      */
     public class TabSuggestionMessageData implements MessageData {
         private final TabSuggestion mTabSuggestion;
-        private final MessageCardView.ReviewActionProvider mReviewActionProvider;
-        private final MessageCardView.DismissActionProvider mDismissActionProvider;
-
-        public TabSuggestionMessageData(TabSuggestion tabSuggestion,
-                MessageCardView.ReviewActionProvider reviewActionProvider,
-                MessageCardView.DismissActionProvider dismissActionProvider) {
+        private final Callback<TabSuggestionFeedback> mTabSuggestionFeedback;
+        public TabSuggestionMessageData(
+                TabSuggestion tabSuggestion, Callback<TabSuggestionFeedback> feedbackCallback) {
             mTabSuggestion = tabSuggestion;
-            mReviewActionProvider = reviewActionProvider;
-            mDismissActionProvider = dismissActionProvider;
+            mTabSuggestionFeedback = feedbackCallback;
         }
 
         /**
@@ -57,11 +56,24 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
         }
 
         /**
+         * @return The suggested action type.
+         */
+        @TabSuggestion.TabSuggestionAction
+        public int getActionType() {
+            return mTabSuggestion.getAction();
+        }
+
+        /**
          * @return The {@link MessageCardView.ReviewActionProvider} for the associated
          *         {@link TabSuggestion}.
          */
         public MessageCardView.ReviewActionProvider getReviewActionProvider() {
-            return mReviewActionProvider;
+            return new MessageCardView.ReviewActionProvider() {
+                @Override
+                public void review() {
+                    TabSuggestionMessageService.this.review(mTabSuggestion, mTabSuggestionFeedback);
+                }
+            };
         }
 
         /**
@@ -69,7 +81,13 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
          *         {@link TabSuggestion}.
          */
         public MessageCardView.DismissActionProvider getDismissActionProvider() {
-            return mDismissActionProvider;
+            return new MessageCardView.DismissActionProvider() {
+                @Override
+                public void dismiss(int messageType) {
+                    TabSuggestionMessageService.this.dismiss(
+                            mTabSuggestion, mTabSuggestionFeedback);
+                }
+            };
         }
     }
 
@@ -77,9 +95,6 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     private final TabModelSelector mTabModelSelector;
     private TabSelectionEditorCoordinator
             .TabSelectionEditorController mTabSelectionEditorController;
-
-    private TabSuggestion mCurrentBestTabSuggestion;
-    private Callback<TabSuggestionFeedback> mCurrentTabSuggestionFeedback;
 
     public TabSuggestionMessageService(Context context, TabModelSelector tabModelSelector,
             TabSelectionEditorCoordinator
@@ -91,31 +106,48 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     }
 
     @VisibleForTesting
-    void review() {
-        assert mCurrentBestTabSuggestion != null;
-
-        mTabSelectionEditorController.configureToolbar(getActionString(mCurrentBestTabSuggestion),
-                getActionProvider(mCurrentBestTabSuggestion),
-                getEnablingThreshold(mCurrentBestTabSuggestion), getNavigationProvider());
+    void review(@NonNull TabSuggestion tabSuggestion,
+            @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
+        mTabSelectionEditorController.configureToolbar(getActionString(tabSuggestion),
+                getActionButtonContentDescriptionTemplate(tabSuggestion),
+                getActionProvider(tabSuggestion, feedbackCallback),
+                getEnablingThreshold(tabSuggestion),
+                getNavigationProvider(tabSuggestion, feedbackCallback));
 
         mTabSelectionEditorController.show(
-                getTabList(), mCurrentBestTabSuggestion.getTabsInfo().size());
+                getTabListFromSuggestion(tabSuggestion), tabSuggestion.getTabsInfo().size());
     }
 
     private String getActionString(TabSuggestion tabSuggestion) {
         switch (tabSuggestion.getAction()) {
             case TabSuggestion.TabSuggestionAction.CLOSE:
                 return mContext.getString(R.string.tab_suggestion_close_tab_action_button);
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return mContext.getString(R.string.tab_selection_editor_group);
             default:
                 assert false;
         }
         return null;
     }
 
+    private int getActionButtonContentDescriptionTemplate(TabSuggestion tabSuggestion) {
+        switch (tabSuggestion.getAction()) {
+            case TabSuggestion.TabSuggestionAction.CLOSE:
+                return R.plurals.accessibility_tab_suggestion_close_tab_action_button;
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return R.plurals.accessibility_tab_selection_editor_group_button;
+            default:
+                assert false;
+        }
+        return 0;
+    }
+
     private int getEnablingThreshold(TabSuggestion tabSuggestion) {
         switch (tabSuggestion.getAction()) {
             case TabSuggestion.TabSuggestionAction.CLOSE:
                 return CLOSE_SUGGESTION_ACTION_ENABLING_THRESHOLD;
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                return GROUP_SUGGESTION_ACTION_ENABLING_THRESHOLD;
             default:
                 assert false;
         }
@@ -123,51 +155,57 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     }
 
     @VisibleForTesting
-    TabSelectionEditorActionProvider getActionProvider(TabSuggestion tabSuggestion) {
+    TabSelectionEditorActionProvider getActionProvider(
+            TabSuggestion tabSuggestion, Callback<TabSuggestionFeedback> feedbackCallback) {
+        int action;
         switch (tabSuggestion.getAction()) {
             case TabSuggestion.TabSuggestionAction.CLOSE:
-                return new TabSelectionEditorActionProvider(mTabSelectionEditorController,
-                        TabSelectionEditorActionProvider.TabSelectionEditorAction.CLOSE) {
-                    @Override
-                    void processSelectedTabs(
-                            List<Tab> selectedTabs, TabModelSelector tabModelSelector) {
-                        int totalTabCountBeforeProcess =
-                                tabModelSelector.getCurrentModel().getCount();
-                        super.processSelectedTabs(selectedTabs, tabModelSelector);
-                        List<Integer> selectedTabIds = new ArrayList<>();
-                        for (int i = 0; i < selectedTabs.size(); i++) {
-                            selectedTabIds.add(selectedTabs.get(i).getId());
-                        }
-                        accepted(selectedTabIds, totalTabCountBeforeProcess);
-                    }
-                };
+                action = TabSelectionEditorActionProvider.TabSelectionEditorAction.CLOSE;
+                break;
+            case TabSuggestion.TabSuggestionAction.GROUP:
+                action = TabSelectionEditorActionProvider.TabSelectionEditorAction.GROUP;
+                break;
             default:
                 assert false;
+                return null;
         }
 
-        return null;
+        return new TabSelectionEditorActionProvider(mTabSelectionEditorController, action) {
+            @Override
+            void processSelectedTabs(List<Tab> selectedTabs, TabModelSelector tabModelSelector) {
+                int totalTabCountBeforeProcess = tabModelSelector.getCurrentModel().getCount();
+                List<Integer> selectedTabIds = new ArrayList<>();
+                for (int i = 0; i < selectedTabs.size(); i++) {
+                    selectedTabIds.add(selectedTabs.get(i).getId());
+                }
+                accept(selectedTabIds, totalTabCountBeforeProcess, tabSuggestion, feedbackCallback);
+
+                super.processSelectedTabs(selectedTabs, tabModelSelector);
+            }
+        };
     }
 
     @VisibleForTesting
-    TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider getNavigationProvider() {
+    TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider getNavigationProvider(
+            TabSuggestion tabSuggestion,
+            @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
         return new TabSelectionEditorCoordinator.TabSelectionEditorNavigationProvider(
                 mTabSelectionEditorController) {
             @Override
             public void goBack() {
                 super.goBack();
 
-                assert mCurrentTabSuggestionFeedback != null;
-                mCurrentTabSuggestionFeedback.onResult(
-                        new TabSuggestionFeedback(mCurrentBestTabSuggestion, DISMISSED, null, 0));
+                feedbackCallback.onResult(
+                        new TabSuggestionFeedback(tabSuggestion, DISMISSED, null, 0));
             }
         };
     }
 
-    private List<Tab> getTabList() {
+    private List<Tab> getTabListFromSuggestion(TabSuggestion tabSuggestion) {
         List<Tab> tabs = new ArrayList<>();
 
         Set<Integer> suggestedTabIds = new HashSet<>();
-        List<TabContext.TabInfo> suggestedTabInfo = mCurrentBestTabSuggestion.getTabsInfo();
+        List<TabContext.TabInfo> suggestedTabInfo = tabSuggestion.getTabsInfo();
         for (int i = 0; i < suggestedTabInfo.size(); i++) {
             suggestedTabIds.add(suggestedTabInfo.get(i).id);
             tabs.add(mTabModelSelector.getTabById(suggestedTabInfo.get(i).id));
@@ -191,16 +229,17 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
     }
 
     @VisibleForTesting
-    public void dismiss() {
-        assert mCurrentTabSuggestionFeedback != null;
-        mCurrentTabSuggestionFeedback.onResult(
-                new TabSuggestionFeedback(mCurrentBestTabSuggestion, NOT_CONSIDERED, null, 0));
+    public void dismiss(@NonNull TabSuggestion tabSuggestion,
+            @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
+        feedbackCallback.onResult(
+                new TabSuggestionFeedback(tabSuggestion, NOT_CONSIDERED, null, 0));
     }
 
-    private void accepted(List<Integer> selectedTabIds, int totalTabCount) {
-        assert mCurrentTabSuggestionFeedback != null;
-        mCurrentTabSuggestionFeedback.onResult(new TabSuggestionFeedback(
-                mCurrentBestTabSuggestion, ACCEPTED, selectedTabIds, totalTabCount));
+    private void accept(List<Integer> selectedTabIds, int totalTabCount,
+            @NonNull TabSuggestion tabSuggestion,
+            @NonNull Callback<TabSuggestionFeedback> feedbackCallback) {
+        feedbackCallback.onResult(
+                new TabSuggestionFeedback(tabSuggestion, ACCEPTED, selectedTabIds, totalTabCount));
     }
 
     // TabSuggestionObserver implementations.
@@ -209,15 +248,23 @@ public class TabSuggestionMessageService extends MessageService implements TabSu
             Callback<TabSuggestionFeedback> tabSuggestionFeedback) {
         if (tabSuggestions.size() == 0) return;
 
-        mCurrentBestTabSuggestion = tabSuggestions.get(0);
-        mCurrentTabSuggestionFeedback = tabSuggestionFeedback;
-        sendAvailabilityNotification(new TabSuggestionMessageData(
-                mCurrentBestTabSuggestion, this::review, (int messageType) -> dismiss()));
+        assert tabSuggestionFeedback != null;
+
+        sSuggestionAvailableForTesting = true;
+        for (TabSuggestion tabSuggestion : tabSuggestions) {
+            sendAvailabilityNotification(
+                    new TabSuggestionMessageData(tabSuggestion, tabSuggestionFeedback));
+        }
     }
 
     @Override
     public void onTabSuggestionInvalidated() {
-        mCurrentBestTabSuggestion = null;
+        sSuggestionAvailableForTesting = false;
         sendInvalidNotification();
+    }
+
+    @VisibleForTesting
+    public static boolean isSuggestionAvailableForTesting() {
+        return sSuggestionAvailableForTesting;
     }
 }

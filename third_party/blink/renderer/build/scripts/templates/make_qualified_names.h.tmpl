@@ -24,12 +24,12 @@ namespace {{cpp_namespace}} {
 {{symbol_export}}extern const WTF::AtomicString& {{namespace_prefix}}NamespaceURI;
 
 // Tags
-{% for tag in tags|sort %}
+{% for tag in tags|sort(attribute='name') %}
 {{symbol_export}}extern const blink::{{namespace}}QualifiedName& {{tag|symbol}}Tag;
 {% endfor %}
 
 // Attributes
-{% for attr in attrs|sort %}
+{% for attr in attrs|sort(attribute='name') %}
 {{symbol_export}}extern const blink::QualifiedName& {{attr|symbol}}Attr;
 {% endfor %}
 

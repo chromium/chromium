@@ -6,11 +6,14 @@ package org.chromium.chrome.browser.autofill_assistant.user_data.additional_sect
 
 import android.view.View;
 
+import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
+
 /** Interface for an additional section of the user data form. */
 public interface AssistantAdditionalSection {
     /** Delegate interface for generic key/value widgets. */
     interface Delegate {
-        void onValueChanged(String key, String value);
+        void onValueChanged(String key, AssistantValue value);
+        void onInputTextFocusChanged(boolean isFocused);
     }
 
     /** Returns the root view of the section. */

@@ -10,12 +10,13 @@ source_set("bookmarks") {
     "bookmark_model_factory.h",
     "bookmark_sync_service_factory.cc",
     "bookmark_sync_service_factory.h",
-    "startup_task_runner_service_factory.cc",
-    "startup_task_runner_service_factory.h",
+    "managed_bookmark_service_factory.h",
+    "managed_bookmark_service_factory.mm",
   ]
   deps = [
     "//base",
     "//components/bookmarks/browser",
+    "//components/bookmarks/managed",
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/history/core/browser",
@@ -28,16 +29,18 @@ source_set("bookmarks") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/history",
+    "//ios/chrome/browser/signin",
     "//ios/chrome/browser/undo",
+    "//ios/public/provider/chrome/browser",
+    "//ios/public/provider/chrome/browser/signin",
     "//ios/web",
   ]
-  public_deps = [
-    ":bookmarks_utils",
-  ]
+  public_deps = [ ":bookmarks_utils" ]
   allow_circular_includes_from = [
     "//ios/chrome/browser/history",
     ":bookmarks_utils",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 source_set("bookmarks_utils") {

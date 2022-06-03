@@ -30,25 +30,16 @@ that.)
   * **Security_Severity-Critical**: **Pri-0**.
   * **High** and **Medium**: **Pri-1**.
   * **Low**: **Pri-2**.
-* **Security_Impact-**{**Head**, **Beta**, **Stable**, **None**}: Designates
-which branch(es) were impacted by the bug. Only apply the label corresponding
-with the earliest affected branch. **None** means that a security bug is in a
-disabled feature, or otherwise doesn't impact Chrome. A disabled feature does
-not _guarantee_ impact **None**:
-    * The feature really must be disabled on 100% of devices. Specifically,
-      if the feature is controlled by field trials or some other network
-      configuration service, the feature must also be disabled by default in
-      the code, such that the code is inactive even on devices that can't
-      access the network configuration service.
-    * The feature control check must be somewhere that the attacker could not
-      have influenced. For example a privilege escalation from a lower-
-      privileged process to a higher-privileged process assumes that the lower-
-      privileged process is already compromised. The attacker could overwrite
-      memory for any feature checks performed within that lower-privileged
-      process; the bug only qualifies as impact **None** if checks are
-      performed in the higher-privileged process. (For example, in a
-      privilege escalation from the renderer to the browser process, the
-      checks would need to be in the browser process.)
+* **FoundIn-#**: Designates which milestones of Chrome are
+impacted by the bug. Multiple labels may be set, but the most important one
+is the earliest affected milestone. See
+[ChromiumDash](https://chromiumdash.appspot.com/releases?platform=Windows) for
+current releases.
+* **Security_Impact-**{**Head**, **Beta**, **Stable**, **Extended**, **None**}:
+Derived from **FoundIn**, this label specifies the earliest affected release
+channel. Should not normally be set by humans, except in the case of **None**
+which means that the bug is in a disabled feature, or otherwise doesn't impact
+Chrome: see the section below for more details.
     * Note that **Security_Severity** should still be set on
       **Security_Impact-None** issues, as if the feature were enabled or the
       code reachable.
@@ -64,6 +55,9 @@ guidelines are as follows:
     *security@chromium.org* is a member of that group so the former is a
     superset of the latter. **Restrict-View-SecurityNotify** is not suitable for
     sensitive bugs.
+  * **Restrict-View-SecurityNotifyWebRTC**: As above, but additionally
+    gives access to *security-notify@webrtc.org*, a community of downstream
+    WebRTC embedders.
   * **Restrict-View-Google**: Restricts access to users that are Google
     employees (but also via their *chromium.org* accounts). This should be used
     for bugs that aren't OK for external contributors to see (even if we trust
@@ -77,7 +71,7 @@ guidelines are as follows:
     decisions made externally, such as:
       * We receive advance notice of security bugs from an upstream open source
         project or Google partner and they organize a coordinated disclosure
-        process. We'd remove the restriction label if/when the embarge gets
+        process. We'd remove the restriction label if/when the embargo gets
         lifted.
       * The reporter indicates a preference to remain anonymous an the bug
         history would give away the reporter's identity (if they file using an
@@ -88,10 +82,15 @@ guidelines are as follows:
 * **reward-**{**topanel**, **unpaid**, **na**, **inprocess**, _#_}: Labels used
 in tracking bugs nominated for our [Vulnerability Reward
 Program](https://www.chromium.org/Home/chromium-security/vulnerability-rewards-program).
-If a bug is filed by a Google or Chromium user on behalf of an external party,
-but is not within scope for a vulnerability reward, nevertheless use **reward-na**
-to ensure that the report is still properly credited to the external reporter
-in the release notes.
+* **reward_to-**. If a bug is filed by a Google or Chromium user on behalf of
+an external party, use **reward_to** to ensure the report is still properly credited
+to the external reporter in the release notes. Normally, the latter half of this
+label would be an e-mail address with '@' replaced with '_at_'. But if the
+reporter was a whole organization or some other entity without a specific e-mail
+address, then **reward_to-external** is sufficient to ensure it is credited.
+Despite its name, you should add this label whether or not the reporter is
+in scope for the vulnerability rewards program, because external reports are
+credited in the release notes irrespective.
 * **M-#**: Target milestone for the fix.
 * Component: For bugs filed as **Type-Bug-Security**, we also want to track
 which component(s) the bug is in.
@@ -111,6 +110,53 @@ appropriate bug(s) with the label for easy searching.
 **Security_Impact**, **OS**, **Pri**, **M**, **Component**, and an
 **owner** set.
 
+### When to use Security_Impact-None {#TOC-Security_Impact-None}
+
+**Security_Impact-None** says that the bug can't affect any users running the
+default configuration of Chrome. It's most commonly used for cases where
+code is entirely disabled or absent in the production build.
+
+Other cases where it's OK to set **Security_Impact-None**:
+
+* The impacted code runs behind a feature flag which is *disabled by default*,
+  and the field trial configuration has not been switched on.
+* The impacted code only runs behind a command-line flag or `chrome://flags`
+  entry. (In particular, if a bug can only affect those who have
+  set `#enable-experimental-web-platform-features`, it is **Security_Impact-None**.
+* It's a V8 feature behind flags such as `--future`, `--es-staging` or
+  `--wasm-staging` or other experimental flags that are disabled by default.
+
+Cases where it's *not* OK to set **Security_Impact-None**:
+
+* Features enabled via normal UI or settings which users might happen across
+  in normal usage. For instance, accessibility features and the Chrome Labs
+  experimental features accessible from the toolbar.
+* Origin trials. Origin trials are only active on some websites, but the
+  affected code does run for Chrome users with the default Chrome configuration.
+* The impacted code runs behind a feature flag which is *enabled by default*,
+  even if that field trial configuration has been switched off. That's because
+  the code may be active for devices which can't access the field trial
+  configuration service.
+* The feature is turned on only for a small percent of users, e.g. 1%.
+* Feature or flag checks are done somewhere that the attacker could influence.
+  For example a privilege escalation from a lower-privileged process
+  (e.g. renderer) to a higher-privileged process (e.g. browser)
+  assumes that the lower-privileged process is already compromised. The
+  attacker could overwrite memory for any feature checks performed within
+  that lower-privileged process; the bug only qualifies as impact **None**
+  if checks are performed in the higher-privileged process.
+* If a bug involves a patch to a renderer or use of a flag to turn on
+  [MojoJS](../../mojo/public/js/README.md)
+  this may mean it's a simulation of a compromised renderer and the
+  bug may still be a valid [sandbox escape
+  bug](severity-guidelines.md#TOC-High-severity).
+
+It's important to get this right, because this label influences how rapidly
+we merge and release the fix. Ask for help if you're not sure.
+
+Some **Security_Impact-None** bugs may still be subject to VRP rewards, if
+those bugs are found in found in code that we're likely to enable in the future.
+
 ### OS Labels
 
 It can be hard to know which OS(s) a bug applies to. Here are some guidelines:
@@ -128,6 +174,24 @@ the pathname.)
 * Views code (e.g. `ui/message_center/views`) is used on Windows, Linux, Chrome
 OS, and perhaps Fuchsia (?). Views for macOS is increasingly a thing, but Cocoa
 code (e.g. `ui/message_center/cocoa`) is particular to macOS.
+
+## After the bug is fixed: Merge labels {#TOC-Merge-labels}
+
+Once you've landed a complete fix for a security bug, please immediately
+mark the bug as Fixed. Do not request merges: Sheriffbot will request
+appropriate merges to beta or stable according to our guidelines.
+However, it is really helpful if you comment upon any unusual stability or
+compatibility risks of merging.
+
+(Some Chromium teams traditionally deal with merges _before_ marking bugs as
+Fixed. Please don't do that for security bugs.)
+
+Please take the opportunity to consider whether there are any variants
+or related problems. It's very common for attackers to tweak working attack code
+to exploit a similar situation elsewhere. If you've even the remotest thought
+that there _might_ be equivalent patterns or variants elsewhere, file a bug
+with type=Bug-Security. It can be nearly blank. The important thing is to record
+the fact that something may need doing.
 
 ## Sheriffbot automation
 
@@ -153,19 +217,20 @@ release labels that are set on bugs not affecting stable.
 ### Remove Invalid **Security_Impact-X** Labels
 
 There should be exactly one **Security_Impact-X** label and it should be one of
-the 4 valid impact labels (None, Stable, Beta, Head). This rule removes any
-invalid and excess impact labels.
+the 5 valid impact labels (None, Extended, Stable, Beta, Head). This rule
+removes any invalid and excess impact labels.
 
-### Adjust **Security_Impact-X** To Match Milestone Labels
+### Adjust **Security_Impact-X** To Match FoundIn Labels
 
-Based on **M-#** milestone labels this rule assigns corresponding
+Based on **FoundIn-#** milestone labels this rule assigns corresponding
 **Security_Impact-X** labels if they are incorrect or absent.
+**Security_Impact-None** is never changed.
 
 ### Update **M-#** Labels
 
 Bugs that are labelled with milestones earlier than the current milestone will
 be relabeled to set the label for the current milestone and
-**Security_Impact-Stable**.
+**Security_Impact-Extended**.
 
 Bugs that carry a **Security_Impact-X** label but are missing a milestone label
 will be assigned the **M-#** label corresponding to the respective milestone.
@@ -185,7 +250,8 @@ be used.
 
 ### Drop **Restrict-View-{SecurityTeam,SecurityNotify}** From Old And Fixed Bugs
 
-Remove **Restrict-View-SecurityTeam** and **Restrict-View-SecurityNotify** from
+Remove **Restrict-View-SecurityTeam**, **Restrict-View-SecurityNotify** and
+**Restrict-View-SecurityNotifyWebRTC** from
 security bugs that have been closed (Fixed, Verified, Duplicate, WontFix,
 Invalid) more than 14 weeks ago and add the **allpublic** label to make the bugs
 accessible publicly. The idea here is that security bug fixes will generally
@@ -199,6 +265,7 @@ Replace **Restrict-View-SecurityTeam** with **Restrict-View-SecurityNotify** for
 fixed security bugs. Rationale is that while fixed bugs are generally not
 intended to become public immediately, we'd like to give access to external
 parties depending on Chromium via *security-notify@chromium.org*.
+(WebRTC bugs instead get set to **Restrict-View-SecurityNotifyWebRTC**).
 
 ### Set **Merge-Request-X** For Fixed Bugs
 
@@ -228,13 +295,15 @@ memory corruption against the latest (e.g.) M29 dev channel. The labels
 a novel and nasty-looking buffer overflow in the renderer process. ClusterFuzz
 also confirms that all current releases are affected. Since M27 is the current
 Stable release, and M28 is in Beta, we add the labels of the earliest affected
-release: **M-27**, **Security_Impact-Stable**. The severity of a buffer overflow
+release: **FoundIn-27**. The severity of a buffer overflow
 in a renderer implies **Security_Severity-High** and **Pri-1**. Any external
 report for a confirmed vulnerability needs **reward-topanel**. Sheriffbot will
 usually add it automatically. The stack trace provided by ClusterFuzz suggests
 that the bug is in the component **Blink>DOM**, and such bugs should be labeled
 as applying to all OSs except iOS (where Blink is not used): **OS-**{**Linux**,
-**Windows**, **Android**, **Chrome**, **Fuchsia**}.
+**Windows**, **Android**, **Chrome**, **Fuchsia**}. Sheriffbot will check
+whether 27 is the current extended stable, stable, beta or head milestone; let's
+assume **Security_Impact-Stable** is applied by Sheriffbot this time.
 1. Within a day or two, the sheriff was able to get the bug assigned and — oh
 joy! — fixed very quickly. When the bug's status changes to **Fixed**,
 Sheriffbot will add the **Merge-Requested** label, and will change

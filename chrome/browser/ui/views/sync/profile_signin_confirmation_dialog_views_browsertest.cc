@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "content/public/test/browser_test.h"
 
 namespace {
 
@@ -23,12 +24,12 @@ class TestSigninDialogDelegate : public ui::ProfileSigninConfirmationDelegate {
  public:
   TestSigninDialogDelegate() {}
 
+  TestSigninDialogDelegate(const TestSigninDialogDelegate&) = delete;
+  TestSigninDialogDelegate& operator=(const TestSigninDialogDelegate&) = delete;
+
   void OnCancelSignin() override {}
   void OnContinueSignin() override {}
   void OnSigninWithNewProfile() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestSigninDialogDelegate);
 };
 
 }  // namespace
@@ -37,29 +38,23 @@ class ProfileSigninConfirmationDialogTest : public DialogBrowserTest {
  public:
   ProfileSigninConfirmationDialogTest() {}
 
+  ProfileSigninConfirmationDialogTest(
+      const ProfileSigninConfirmationDialogTest&) = delete;
+  ProfileSigninConfirmationDialogTest& operator=(
+      const ProfileSigninConfirmationDialogTest&) = delete;
+
   void ShowUi(const std::string& name) override {
-    Profile* profile = browser()->profile();
-
-    // Add a bookmark to ensure CheckShouldPromptForNewProfile() returns true.
-    bookmarks::BookmarkModel* bookmarks =
-        BookmarkModelFactory::GetForBrowserContext(profile);
-    bookmarks->AddURL(bookmarks->bookmark_bar_node(), 0,
-                      base::ASCIIToUTF16("title"),
-                      GURL("http://www.example.com"));
-
     content::WebContents* web_contents =
         browser()->tab_strip_model()->GetActiveWebContents();
     TabDialogs::FromWebContents(web_contents)
         ->ShowProfileSigninConfirmation(
-            browser(), profile, "username@example.com",
+            browser(), "username@example.com",
+            /*prompt_for_new_profile=*/true,
             std::make_unique<TestSigninDialogDelegate>());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileSigninConfirmationDialogTest);
 };
 
-// Test that calls ShowUi("default").
+// Test that calls ShowUi("true").
 IN_PROC_BROWSER_TEST_F(ProfileSigninConfirmationDialogTest, InvokeUi_default) {
   ShowAndVerifyUi();
 }

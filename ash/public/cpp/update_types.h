@@ -5,29 +5,30 @@
 #ifndef ASH_PUBLIC_CPP_UPDATE_TYPES_H_
 #define ASH_PUBLIC_CPP_UPDATE_TYPES_H_
 
+#include "base/time/time.h"
+
 namespace ash {
 
 // Urgency of a pending software update. Sets the system tray update icon color.
 // These correspond to values in UpgradeDetector's
-// UpgradeNotificationAnnoyanceLevel enum. Their use is platform-specific. On
-// Chrome OS, kLow severity is issued when an update is detected. kElevated
-// follows after two days, and kHigh two days after that. These time deltas may
-// be overridden by administrators via the RelaunchNotificationPeriod policy
-// setting.
-// TODO(jamescook): UpgradeDetector::UpgradeNotificationAnnoyanceLevel could be
-// replaced with this if this moves into a component shared with non-ash chrome.
+// `UpgradeNotificationAnnoyanceLevel` enum. Their use is platform-specific.
+// Please refer to `UpgradeDetectorChromeos` for details.
+// TODO(jamescook): `UpgradeDetector::UpgradeNotificationAnnoyanceLevel` could
+// be replaced with this if this moves into a component shared with non-ash
+// chrome.
 enum class UpdateSeverity {
   kNone,
   kVeryLow,
   kLow,
   kElevated,
+  kGrace,
   kHigh,
   kCritical,
 };
 
 // The type of update being applied. Sets the string in the system tray.
 enum class UpdateType {
-  kFlash,
+  kLacros,  // Lacros browser, see //docs/lacros.md
   kSystem,
 };
 
@@ -36,6 +37,22 @@ enum class NotificationStyle {
   kDefault,
   kAdminRecommended,  // Relaunch Notification policy
   kAdminRequired,     // Relaunch Notification policy
+};
+
+// Notification state for system updates, set by policies.
+struct RelaunchNotificationState {
+  enum {
+    kNone,                   // Relaunch is not required.
+    kRecommendedNotOverdue,  // Relaunch is recommended but not overdue.
+    kRecommendedAndOverdue,  // Relaunch is recommended and overdue.
+    kRequired,               // Relaunch is required until
+                             // `rounded_time_until_reboot_required`.
+  } requirement_type = kNone;
+
+  // The remaining time until the device will restart itself, rounded to the
+  // nearest day, hour, minute, or second; depending on how far into the future
+  // it is.
+  base::TimeDelta rounded_time_until_reboot_required = base::TimeDelta();
 };
 
 }  // namespace ash

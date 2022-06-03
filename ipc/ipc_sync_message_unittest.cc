@@ -6,7 +6,7 @@
 // works.  This ensures that the macros and templates were defined correctly.
 // Doesn't test the IPC channel mechanism.
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ipc/ipc_message.h"
 #include "ipc/ipc_message_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"

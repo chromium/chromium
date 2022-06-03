@@ -51,6 +51,10 @@ class ShaderDiskCacheEntry : public base::ThreadChecker {
   ShaderDiskCacheEntry(ShaderDiskCache* cache,
                        const std::string& key,
                        const std::string& shader);
+
+  ShaderDiskCacheEntry(const ShaderDiskCacheEntry&) = delete;
+  ShaderDiskCacheEntry& operator=(const ShaderDiskCacheEntry&) = delete;
+
   ~ShaderDiskCacheEntry();
 
   void Cache();
@@ -75,8 +79,6 @@ class ShaderDiskCacheEntry : public base::ThreadChecker {
   disk_cache::Entry* entry_;
   base::WeakPtr<ShaderDiskCacheEntry> weak_ptr_;
   base::WeakPtrFactory<ShaderDiskCacheEntry> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderDiskCacheEntry);
 };
 
 // ShaderDiskReadHelper is used to load all of the cached shaders from the
@@ -86,6 +88,10 @@ class ShaderDiskReadHelper : public base::ThreadChecker {
   using ShaderLoadedCallback = ShaderDiskCache::ShaderLoadedCallback;
   ShaderDiskReadHelper(ShaderDiskCache* cache,
                        const ShaderLoadedCallback& callback);
+
+  ShaderDiskReadHelper(const ShaderDiskReadHelper&) = delete;
+  ShaderDiskReadHelper& operator=(const ShaderDiskReadHelper&) = delete;
+
   ~ShaderDiskReadHelper();
 
   void LoadCache();
@@ -113,8 +119,6 @@ class ShaderDiskReadHelper : public base::ThreadChecker {
   scoped_refptr<net::IOBufferWithSize> buf_;
   disk_cache::Entry* entry_;
   base::WeakPtrFactory<ShaderDiskReadHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderDiskReadHelper);
 };
 
 class ShaderClearHelper : public base::ThreadChecker {
@@ -125,6 +129,10 @@ class ShaderClearHelper : public base::ThreadChecker {
                     const base::Time& delete_begin,
                     const base::Time& delete_end,
                     base::OnceClosure callback);
+
+  ShaderClearHelper(const ShaderClearHelper&) = delete;
+  ShaderClearHelper& operator=(const ShaderClearHelper&) = delete;
+
   ~ShaderClearHelper();
 
   void Clear();
@@ -142,8 +150,6 @@ class ShaderClearHelper : public base::ThreadChecker {
   base::Time delete_end_;
   base::OnceClosure callback_;
   base::WeakPtrFactory<ShaderClearHelper> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ShaderClearHelper);
 };
 
 ////////////////////////////////////////////////////////////////////////////////

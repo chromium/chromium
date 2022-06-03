@@ -31,9 +31,29 @@ static_library("multidevice") {
     "//base:i18n",
     "//chromeos/components/multidevice/logging",
     "//chromeos/dbus",
-    "//chromeos/services/device_sync/proto",
+    "//chromeos/dbus/easy_unlock",
     "//chromeos/services/device_sync/proto:util",
     "//components/prefs",
+  ]
+
+  public_deps = [
+    "//base",
+    "//chromeos/services/device_sync/proto",
+    "//third_party/securemessage/proto",
+  ]
+}
+
+static_library("stub_multidevice_util") {
+  sources = [
+    "stub_multidevice_util.cc",
+    "stub_multidevice_util.h",
+  ]
+
+  deps = [
+    ":multidevice",
+    "//ash/constants",
+    "//base",
+    "//chromeos/services/device_sync/proto",
   ]
 }
 
@@ -47,9 +67,7 @@ static_library("test_support") {
     "remote_device_test_util.h",
   ]
 
-  public_deps = [
-    ":multidevice",
-  ]
+  public_deps = [ ":multidevice" ]
 
   deps = [
     "//base",

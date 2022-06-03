@@ -53,7 +53,6 @@ generator_sources = [
 copy("generator") {
   sources = generator_sources
 
-  outputs = [
-    "$root_out_dir/{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs =
+      [ "$root_out_dir/{{source_root_relative_dir}}/{{source_file_part}}" ]
 }

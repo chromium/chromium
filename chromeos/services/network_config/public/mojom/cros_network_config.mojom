@@ -12,6 +12,7 @@
 
 module chromeos.network_config.mojom;
 
+import "chromeos/services/network_config/public/mojom/network_types.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 
@@ -32,71 +33,14 @@ enum AuthenticationType {
   k8021x,
 };
 
-// Connection state of visible networks.
-enum ConnectionStateType {
-  kOnline,
-  kConnected,
-  kPortal,
-  kConnecting,
-  kNotConnected,
-};
-
-// Device / Technology state for devices.
-enum DeviceStateType {
-  kUninitialized,
+// Tri-state status of hidden_ssid.
+enum HiddenSsidMode {
+  // Let the platform decide based on the presence of the SSID in current scan.
+  kAutomatic,
+  // HiddenSSID = false
   kDisabled,
-  kEnabling,
+  // HiddenSSID = true
   kEnabled,
-  kProhibited,
-  // Not used in DeviceStateProperties, but useful when querying by type.
-  kUnavailable,
-};
-
-// The network technology type. NOTE: 'All' and 'Wireless' are only used by
-// FilterType for requesting groups of networks.
-enum NetworkType {
-  kAll,
-  kCellular,
-  kEthernet,
-  // Mobile includes Cellular, and Tether.
-  kMobile,
-  kTether,
-  kVPN,
-  // Wireles includes Cellular, Tether, and WiFi.
-  kWireless,
-  kWiFi,
-};
-
-// The ONC source for the network configuration, i.e. whether it is stored in
-// the User or Device profile and whether it was configured by policy.
-enum OncSource {
-  // The network is not remembered, or the property is not configurable.
-  kNone,
-  // The configuration is saved in the user profile.
-  kUser,
-  // The configuration is saved in the device profile.
-  kDevice,
-  // The configuration came from a user policy and is saved in the user profile.
-  kUserPolicy,
-  // The configuration came from a device policy and is saved in the device
-  // profile.
-  kDevicePolicy,
-};
-
-// The policy source for property values managed by policy.
-enum PolicySource {
-  // The property is not controlled by policy.
-  kNone,
-  // The property value came from a user policy and is enforced.
-  kUserPolicyEnforced,
-  // The property value came from a device policy and is enforced.
-  kDevicePolicyEnforced,
-  // The property value came from a user policy and is recommended.
-  kUserPolicyRecommended,
-  // The property value came from a device policy and is recommended.
-  kDevicePolicyRecommended,
-  // The property value came from an extension.
-  kActiveExtension,
 };
 
 enum ProxyMode {
@@ -126,6 +70,7 @@ enum VpnType {
   // Internal VPN types.
   kL2TPIPsec,
   kOpenVPN,
+  kWireGuard,
   // VPN provided by a Chrome Extension.
   kExtension,
   // VPN provided by an Arc++ app.
@@ -134,7 +79,9 @@ enum VpnType {
 
 // Filter used for requesting lists of network states.
 enum FilterType {
-  // Return active (Connected or Connecting) networks.
+  // Return active networks. A network is active when its ConnectionStateType
+  // != kNotConnected. The ConnectionStateType is defined in
+  // network_types.mojom.
   kActive,
   // Return visible (active, physically connected or in-range) networks.
   // Active networks will be listed first.
@@ -170,11 +117,37 @@ enum CertificateType {
   kUserCert,
 };
 
-struct CaptivePortalProvider {
-  // Id used to identify the captive portal provider (i.e. an extension id).
-  string id;
-  // Display name for the captive portal provider (i.e. extension name).
-  string name;
+// Reasons why the Cellular Device may have its scanning inhibited (i.e.,
+// temporarily stopped).
+enum InhibitReason {
+  // Not inhibited.
+  kNotInhibited,
+  // Inhibited because an eSIM profile is being installed.
+  kInstallingProfile,
+  // Inhibited because an eSIM profile is being renamed.
+  kRenamingProfile,
+  // Inhibited because an eSIM profile is being removed.
+  kRemovingProfile,
+  // Inhibited because a connection is in progress which requires that the
+  // device switch to a different eSIM profile.
+  kConnectingToProfile,
+  // Inhibited because the list of pending eSIM profiles is being refreshed by
+  // checking with an SMDS server.
+  kRefreshingProfileList,
+  // Inhibited because the EUICC memory is being reset.
+  kResettingEuiccMemory
+};
+
+// Always-on VPN operating mode.
+enum AlwaysOnVpnMode {
+  // Always-on VPN is disabled.
+  kOff,
+  // Always-on VPN is enabled, traffic goes through the tunnel as long as it is
+  // available, otherwise it falls back to the default network.
+  kBestEffort,
+  // Always-on VPN is enabled and traffic is blocked when the tunnel is not
+  // available.
+  kStrict,
 };
 
 // The SIM card lock status for Cellular networks.
@@ -187,7 +160,26 @@ struct SIMLockStatus {
   int32 retries_left;
 };
 
+// Details about a sim slot available on the device.
+struct SIMInfo {
+  // Slot identifier.
+  int32 slot_id;
+  // EID of EUICC at this slot. Empty if this is a physical SIM slot.
+  string eid;
+  // ICCID of the eSIM profile or the physical SIM
+  // card active on this slot when available from Shill.
+  string iccid;
+  // True when this slot is currently active.
+  bool is_primary;
+};
+
 struct CellularStateProperties {
+  // ICCID of the eSIM profile or the physical SIM that corresponds to this
+  // network.
+  string iccid;
+  // The EID of EUICC that this network is installed on. Empty if this network
+  // corresponds to a physical SIM.
+  string eid;
   // Enumerated ONC activation state.
   ActivationStateType activation_state = kUnknown;
   // ONC NetworkTechnology value.
@@ -237,6 +229,8 @@ struct WiFiStateProperties {
   int32 signal_strength;
   // The network SSID.
   string ssid;
+  // Whether the AP has a hidden SSID.
+  bool hidden_ssid;
 };
 
 union NetworkTypeStateProperties {
@@ -248,7 +242,6 @@ union NetworkTypeStateProperties {
 };
 
 struct NetworkStateProperties {
-  CaptivePortalProvider? captive_portal_provider;
   // True if the network is configured and may be connectable.
   bool connectable = false;
   // True if an explicit connect was requested. The network state may not be
@@ -261,6 +254,8 @@ struct NetworkStateProperties {
   string guid;
   // The human readable name of the network, e.g. WiFi SSID or network type.
   string name;
+  // The captive portal state when connectionState == kPortal.
+  PortalState portal_state = kUnknown;
   // The relative priority of the network. Larger values have higher priority.
   int32 priority;
   // The proxy mode affecting this network. Includes any settings that affect
@@ -289,6 +284,11 @@ struct DeviceStateProperties {
   bool scanning = false;
   // The SIM lock status if Type = Cellular and a SIM is present.
   SIMLockStatus? sim_lock_status;
+  // Details about the physical SIM and eSIM available on the device if Type =
+  // Cellular. Note that the array will be ordered by the |slot_id|.
+  array<SIMInfo>? sim_infos;
+  // The reason for cellular scans to be inhibited; only set if Type = Cellular.
+  InhibitReason inhibit_reason = kNotInhibited;
   // True when a SIM is required and not present.
   bool sim_absent = false;
   DeviceStateType device_state;
@@ -318,6 +318,13 @@ struct ApnProperties {
   string? name;
   string? password;
   string? username;
+  // The attach property uses a string? instead of an enum to allow for possible
+  // free-form entry in the future.
+  string? attach;
+};
+
+struct RoamingProperties {
+  bool allow_roaming;
 };
 
 struct CellularProviderProperties {
@@ -358,6 +365,22 @@ struct PaymentPortalProperties {
   string? url;
 };
 
+// WireGuard per-peer properties. These properties are opaquely passed as
+// strings to the platform daemon (e.g. Shill) and only from there are then
+// parsed syntacticly.
+// The syntax is as defined at https://www.wireguard.com/xplatform/.
+// Particularly, |allowed_ips| is a comma-separated string of CIDR prefixes,
+// and endpoint is a host name or IP address followed by ":port".
+struct WireGuardPeerProperties {
+  string public_key;
+  // Note: when read by UI, |preshared_key| contains a placeholder if set to
+  // avoid leaking secrets.
+  string? preshared_key;
+  string? allowed_ips;
+  string? endpoint;
+  int32 persistent_keepalive_interval;
+};
+
 // Managed property types. These types all share a common structure.
 // The structure differs from the structure used in //components/onc which
 // relies on optional boolean and integer values which are unsupported in mojo,
@@ -366,7 +389,7 @@ struct PaymentPortalProperties {
 // active_value: The value provided by the configuration manager (e.g. Shill).
 //     This will match |policy_value| when |policy_source| is enforced.
 // policy_source: The source of the value provided by policy when available,
-//     or kNone (see PolicySource).
+//     or kNone (see PolicySource in network_types.mojom).
 // policy_value: The value provided by policy when available.
 
 // Fundamental managed types.
@@ -405,6 +428,9 @@ struct ManagedApnProperties {
   ManagedString? name;
   ManagedString? password;
   ManagedString? username;
+  // The attach property uses a string? instead of an enum to allow for possible
+  // free-form entry in the future.
+  ManagedString? attach;
 };
 
 struct ManagedApnList {
@@ -431,8 +457,10 @@ struct ManagedEAPProperties {
   ManagedString? anonymous_identity;
   ManagedCertificatePattern? client_cert_pattern;
   ManagedString? client_cert_pkcs11_id;
+  ManagedString? client_cert_provisioning_profile_id;
   ManagedString? client_cert_ref;
   ManagedString? client_cert_type;
+  ManagedStringList? domain_suffix_match;
   ManagedString? identity;
   ManagedString? inner;
   ManagedString? outer;
@@ -441,10 +469,17 @@ struct ManagedEAPProperties {
   ManagedBoolean? save_credentials;
   ManagedStringList? server_ca_pems;
   ManagedStringList? server_ca_refs;
+  ManagedSubjectAltNameMatchList? subject_alt_name_match;
   ManagedString? subject_match;
   ManagedString? tls_version_max;
   ManagedBoolean? use_proactive_key_caching;
   ManagedBoolean? use_system_cas;
+};
+
+struct ManagedSubjectAltNameMatchList {
+  array<SubjectAltName> active_value;
+  PolicySource policy_source = kNone;
+  array<SubjectAltName> policy_value;
 };
 
 struct ManagedIPConfigProperties {
@@ -461,6 +496,7 @@ struct ManagedIPSecProperties {
   ManagedString authentication_type;
   ManagedCertificatePattern? client_cert_pattern;
   ManagedString? client_cert_pkcs11_id;
+  ManagedString? client_cert_provisioning_profile_id;
   ManagedString? client_cert_ref;
   ManagedString? client_cert_type;
   ManagedEAPProperties? eap;
@@ -512,10 +548,10 @@ struct ManagedOpenVPNProperties {
   ManagedString? cipher;
   ManagedString? client_cert_pkcs11_id;
   ManagedCertificatePattern? client_cert_pattern;
+  ManagedString? client_cert_provisioning_profile_id;
   ManagedString? client_cert_ref;
   ManagedString? client_cert_type;
-  ManagedString? comp_lzo;
-  ManagedBoolean? comp_no_adapt;
+  ManagedString? compression_algorithm;
   ManagedStringList? extra_hosts;
   ManagedBoolean? ignore_default_route;
   ManagedString? key_direction;
@@ -546,14 +582,32 @@ struct ManagedOpenVPNProperties {
   ManagedVerifyX509Properties? verify_x509;
 };
 
+struct ManagedWireGuardPeerList {
+  array<WireGuardPeerProperties> active_value;
+  PolicySource policy_source = kNone;
+  array<WireGuardPeerProperties>? policy_value;
+};
+
+struct ManagedWireGuardProperties {
+  // Note: |private_key| is not readable to avoid leaking secrets.
+  ManagedString? private_key;
+  ManagedString? public_key;
+  ManagedWireGuardPeerList peers;
+};
+
 // Managed NetworkType specific dictionaries.
 
 struct ManagedCellularProperties {
-  ManagedBoolean? auto_connect;
-  ManagedApnProperties? apn;
-  ManagedApnList? apn_list;
   ActivationStateType activation_state;
-  bool allow_roaming = false;
+  // Note: |sim_locked| field is not part of ONC spec.
+  bool sim_locked = false;
+  ManagedBoolean? allow_roaming;
+  ManagedApnList? apn_list;
+  ManagedBoolean? auto_connect;
+  // List of user-entered custom APN entries. Note: This field is not
+  // part of ONC spec.
+  array<ApnProperties>? custom_apn_list;
+  string? eid;
   string? esn;
   string? family;
   string? firmware_revision;
@@ -571,6 +625,8 @@ struct ManagedCellularProperties {
   string? network_technology;
   PaymentPortalProperties? payment_portal;
   string? roaming_state;
+  // The current user selected APN. This corresponds to APN field in ONC.
+  ManagedApnProperties? selected_apn;
   CellularProviderProperties? serving_operator;
   int32 signal_strength = 0;
   bool support_network_scan = false;
@@ -587,10 +643,13 @@ struct ManagedEthernetProperties {
 
 struct ManagedVPNProperties {
   ManagedBoolean? auto_connect;
+  // Note: in the case of WireGuard VPN |host| is not relevant and contains a
+  // placeholder value.
   ManagedString? host;
   ManagedIPSecProperties? ip_sec;
   ManagedL2TPProperties? l2tp;
   ManagedOpenVPNProperties? open_vpn;
+  ManagedWireGuardProperties? wireguard;
   ManagedString? provider_id;
   string provider_name;
   VpnType type;
@@ -603,16 +662,18 @@ struct ManagedWiFiProperties {
   ManagedEAPProperties? eap;
   int32 frequency = 0;
   array<int32>? frequency_list;
-  ManagedBoolean? ft_enabled;
   ManagedString? hex_ssid;
   ManagedBoolean? hidden_ssid;
   // Note: |passphrase| contains a placeholder if set to avoid leaking secrets.
   ManagedString? passphrase;
-  ManagedInt32? roam_threshold;
   ManagedString ssid;
   SecurityType security;
   int32 signal_strength = 0;
-  string? tethering_state;
+  // Indicates whether the network is eligible to be included in Chrome Sync.
+  bool is_syncable;
+  // True for unshared networks and for shared networks configured by the
+  // active user.  Updated whenever the passphrase is modified.
+  bool is_configured_by_active_user;
 };
 
 union NetworkTypeManagedProperties {
@@ -635,19 +696,22 @@ struct ManagedProperties {
   bool connectable = false;
   string? error_state;
   string guid;
-  ManagedString? ip_address_config_type;
+  ManagedString ip_address_config_type;
   array<IPConfigProperties>? ip_configs;
+  ManagedBoolean? metered;
   ManagedString? name;
-  ManagedString? name_servers_config_type;
+  ManagedString name_servers_config_type;
   ManagedInt32? priority;
   ManagedProxySettings? proxy_settings;
-  bool restricted_connectivity = false;
+  PortalState portal_state = kUnknown;
   ManagedIPConfigProperties? static_ip_config;
   IPConfigProperties? saved_ip_config;
   // |type| is explicitly provided here to simplify UI code and will always
   // match the type of |type_properties|, which will always be provided.
   NetworkType type;
   NetworkTypeManagedProperties type_properties;
+  // Represents when the traffic counters for a Service were last reset.
+  mojo_base.mojom.Time? traffic_counter_reset_time;
 };
 
 // Properties for SetProperties and ConfigureNetwork. All of the top level
@@ -657,14 +721,26 @@ struct ManagedProperties {
 // ensures that configurations are valid before translating and passing them to
 // Shill.
 
-// Wrapper to allow optional configuration auto_connect configuration.
+// Wrapper to allow optional auto_connect configuration.
 struct AutoConnectConfig {
   bool value;
 };
 
-// Wrapper to allow optional configuration priority configuration.
+// Wrapper to allow optional metered configuration.
+struct MeteredConfig {
+  bool value;
+};
+
+// Wrapper to allow optional priority configuration.
 struct PriorityConfig {
   int32 value;
+};
+
+// Wrapper to allow optional VpnType configuration. Note: only configuration of
+// internal VPN types (kOpenVPN and kL2TPIPsec) is supported.
+// TODO(657632): Remove wrapper once optional enums are supported.
+struct VpnTypeConfig {
+  VpnType value;
 };
 
 struct ProxyLocation {
@@ -690,14 +766,26 @@ struct EAPConfigProperties {
   string? anonymous_identity;
   string? client_cert_pkcs11_id;
   string? client_cert_type;
+  array<string> domain_suffix_match;
   string? identity;
   string? inner;
   string? outer;
   string? password;
   bool save_credentials = false;
   array<string>? server_ca_pems;
+  array<SubjectAltName> subject_alt_name_match;
   string? subject_match;
   bool use_system_cas = false;
+};
+
+struct SubjectAltName {
+  enum Type {
+    kEmail,
+    kDns,
+    kUri
+  };
+  Type type;
+  string value;
 };
 
 // Subset of currently implemented config properties in the UI. Additional
@@ -738,14 +826,29 @@ struct OpenVPNConfigProperties {
   string? user_authentication_type;
 };
 
+// The WireGuard config properties implemented in UI.
+struct WireGuardConfigProperties {
+  // Private key of local peer, or empty string to indicate a key should be
+  // generated by shill, or null to indicate the current stored key should be
+  // kept unchanged.
+  string? private_key;
+  // List of peers. See WireGuardPeerProperties for detail.
+  array<WireGuardPeerProperties>? peers;
+};
+
 // Only one of {Cellular|Ethernet|VPN|Wifi}ConfigProperties is allowed.
 // TODO(stevenjb): Make these a union.
 struct CellularConfigProperties {
   ApnProperties? apn;
+  // If not provided the default allow_roaming behavior will be used for the
+  // network.
+  RoamingProperties? roaming;
 };
 
 struct EthernetConfigProperties {
-  string authentication;
+  // |authentication| will default to "none" if not provided for new configs.
+  // TODO(657632): Use AuthenticationType here.
+  string? authentication;
   EAPConfigProperties? eap;
 };
 
@@ -754,16 +857,19 @@ struct VPNConfigProperties {
   IPSecConfigProperties? ip_sec;
   L2TPConfigProperties? l2tp;
   OpenVPNConfigProperties? open_vpn;
-  // For existing configurations, this must match the VPN type. Only
-  // configuration of internal VPN types (kOpenVPN and kL2TPIPsec) is supported.
-  VpnType type;
+  WireGuardConfigProperties? wireguard;
+  // |type| is required for new configs, optional otherwise.
+  VpnTypeConfig? type;
 };
 
 struct WiFiConfigProperties {
   EAPConfigProperties? eap;
   string? passphrase;
-  string ssid;
+  // |ssid| is required for new configurations, optional otherwise.
+  string? ssid;
   SecurityType security = kNone;
+  // Whether the AP has a hidden SSID.
+  HiddenSsidMode hidden_ssid = kAutomatic;
 };
 
 union NetworkTypeConfigProperties {
@@ -779,6 +885,7 @@ struct ConfigProperties {
   // preserve the existing guid.
   string? guid;
   string? ip_address_config_type;
+  MeteredConfig? metered;
   // Name is only required for new configurations.
   string? name;
   string? name_servers_config_type;
@@ -803,17 +910,21 @@ struct CellularSimState {
 // Properties provided by GetGlobalPolicy. These properties affect network
 // configuration as a whole instead of individual network configurations.
 struct GlobalPolicy {
+  // If true, only cellular networks present in policy may be connected to and
+  // no new networks may be added or configured.
+  bool allow_only_policy_cellular_networks = false;
+
   // If true, only policy networks may auto connect.
   bool allow_only_policy_networks_to_autoconnect = false;
 
-  // If true, only policy networks may be connected to and no new networks may
-  // be added or configured.
-  bool allow_only_policy_networks_to_connect = false;
+  // If true, only WiFi networks present in policy may be connected to and no
+  // new networks may be added or configured.
+  bool allow_only_policy_wifi_networks_to_connect = false;
 
   // If true and a managed network is available in the visible network list,
-  // only policy networks may be connected to and no new networks may be added
-  // or configured.
-  bool allow_only_policy_networks_to_connect_if_available = false;
+  // only WiFi networks present in policy may be connected to and no new
+  // networks may be added or configured.
+  bool allow_only_policy_wifi_networks_to_connect_if_available = false;
 
   // List of blocked networks which can not be connected to.
   array<string> blocked_hex_ssids;
@@ -857,11 +968,51 @@ struct NetworkCertificate {
   // This will be used in the appropriate ConfigProperties dictionary.
   // TODO(1006901): Use a union here instead once the issue is fixed.
   string pem_or_id;
+  // Whether the certificate is available for network authentication.
+  bool available_for_network_auth;
   // Whether the certificate is hardware backed.
   bool hardware_backed;
   // Whether the certificate is device wide (i.e. stored in a shared profile,
   // not a user specific profile).
   bool device_wide;
+};
+
+// Always-on VPN configuration obtained with GetAlwaysOnVpn and set using
+// SetAlwaysOnVpn for the purpose of enabling/disabling the feature and choosing
+// the service to be automatically started.
+struct AlwaysOnVpnProperties {
+  // Always-on VPN operating mode.
+  AlwaysOnVpnMode mode;
+  // GUID of the VPN service managed by always-on VPN. This can be configured
+  // independently of |mode|, but it expected to be only used when |mode| is not
+  // AlwaysOnVpnMode::kOff.
+  string service_guid;
+};
+
+// Source of the traffic. These sources are kept in sync with
+// third_party/cros_system_api/dbus/shill/dbus-constants.h.
+enum TrafficCounterSource {
+  kUnknown,
+  kChrome,
+  kUser,
+  kArc,
+  kCrosvm,
+  kPluginvm,
+  kUpdateEngine,
+  kVpn,
+  kSystem,
+};
+
+// Information about a traffic counter for a single source.
+struct TrafficCounter {
+  // Source of traffic.
+  TrafficCounterSource source;
+  // Corresponds to the number of bytes received by |source| since the last
+  // reset.
+  uint64 rx_bytes;
+  // Corresponds to the number of bytes transmitted by |source| since the last
+  // reset.
+  uint64 tx_bytes;
 };
 
 // Interface for fetching and setting network configuration properties, e.g.
@@ -940,6 +1091,9 @@ interface CrosNetworkConfig {
 
   // Requests a scan for new networks. If the list updates,
   // CrosNetworkConfigObserver::OnNetworkStateListChanged() will be signaled.
+  // Note: If |type| is Cellular, a mobile network scan will be requested
+  // if supported. This is disruptive and should only be triggered by an
+  // explicit user action.
   RequestNetworkScan(NetworkType type);
 
   // Returns the global policy properties. These properties are not expected to
@@ -970,6 +1124,23 @@ interface CrosNetworkConfig {
   // available for network configuration. See NetworkCerificate for more info.
   GetNetworkCertificates() => (array<NetworkCertificate> server_cas,
                                array<NetworkCertificate> user_certs);
+
+  // Returns the current always-on VPN configuration.
+  GetAlwaysOnVpn() => (AlwaysOnVpnProperties properties);
+
+  // Sets the always-on VPN mode and service with |properties.mode| and
+  // |properties.service_guid|. The service GUID must match a VPN service.
+  SetAlwaysOnVpn(AlwaysOnVpnProperties properties);
+
+  // Returns the list of supported VPN types.
+  GetSupportedVpnTypes() => (array<string> vpn_types);
+
+  // Requests traffic counters for a service with ID |guid|.
+  RequestTrafficCounters(string guid) =>
+    (array<TrafficCounter> traffic_counters);
+
+  // Resets traffic counters for a service with ID |guid|.
+  ResetTrafficCounters(string guid);
 };
 
 interface CrosNetworkConfigObserver {

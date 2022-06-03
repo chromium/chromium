@@ -8,10 +8,14 @@
 Invoked by GN from fuzzer_test.gni.
 """
 
-import ConfigParser
 import argparse
 import os
 import sys
+
+if sys.version_info.major == 2:
+    from ConfigParser import ConfigParser
+else:
+    from configparser import ConfigParser
 
 
 def AddSectionOptions(config, section_name, options):
@@ -40,6 +44,7 @@ def main():
   parser.add_argument('--asan_options', nargs='+', default=[])
   parser.add_argument('--msan_options', nargs='+', default=[])
   parser.add_argument('--ubsan_options', nargs='+', default=[])
+  parser.add_argument('--grammar_options', nargs='+', default=[])
   parser.add_argument(
       '--environment_variables',
       nargs='+',
@@ -49,10 +54,11 @@ def main():
 
   # Script shouldn't be invoked without any arguments, but just in case.
   if not (args.dict or args.libfuzzer_options or args.environment_variables or
-          args.asan_options or args.msan_options or args.ubsan_options):
+          args.asan_options or args.msan_options or args.ubsan_options or
+          args.grammar_options):
     return
 
-  config = ConfigParser.ConfigParser()
+  config = ConfigParser()
   libfuzzer_options = []
   if args.dict:
     libfuzzer_options.append(('dict', os.path.basename(args.dict)))
@@ -69,6 +75,9 @@ def main():
 
   AddSectionOptions(config, 'ubsan',
                     [option.split('=') for option in args.ubsan_options])
+
+  AddSectionOptions(config, 'grammar',
+                    [option.split('=') for option in args.grammar_options])
 
   AddSectionOptions(
       config, 'env',

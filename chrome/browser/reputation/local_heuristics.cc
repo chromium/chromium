@@ -4,27 +4,46 @@
 
 #include "chrome/browser/reputation/local_heuristics.h"
 
+#include "base/bind.h"
+#include "base/callback.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_split.h"
-#include "chrome/browser/lookalikes/lookalike_url_interstitial_page.h"
+#include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
 #include "chrome/common/chrome_features.h"
+#include "components/lookalikes/core/features.h"
+#include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/reputation/core/safety_tips_config.h"
 #include "components/security_state/core/features.h"
 #include "components/url_formatter/spoof_checks/top_domains/top_domain_util.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 
 namespace {
 
-using MatchType = LookalikeUrlInterstitialPage::MatchType;
-
 const base::FeatureParam<bool> kEnableLookalikeTopSites{
     &security_state::features::kSafetyTipUI, "topsites", true};
 const base::FeatureParam<bool> kEnableLookalikeEditDistance{
-    &security_state::features::kSafetyTipUI, "editdistance", true};
+    &security_state::features::kSafetyTipUI, "editdistance", false};
 const base::FeatureParam<bool> kEnableLookalikeEditDistanceSiteEngagement{
     &security_state::features::kSafetyTipUI, "editdistance_siteengagement",
     true};
+const base::FeatureParam<bool> kEnableTargetEmbeddingSafetyTips{
+    &lookalikes::features::kDetectTargetEmbeddingLookalikes, "safety_tips",
+    true};
+
+// Binary search through |words| to find |needle|.
+bool SortedWordListContains(const std::string& needle,
+                            const char* const words[],
+                            const size_t num_words) {
+  // We use a custom comparator for (char *) here, to avoid the costly
+  // construction of two std::strings every time two values are compared,
+  // and because (char *) orders by address, not lexicographically.
+  return std::binary_search(words, words + num_words, needle.c_str(),
+                            [](const char* str_one, const char* str_two) {
+                              return strcmp(str_one, str_two) < 0;
+                            });
+}
 
 }  // namespace
 
@@ -34,7 +53,7 @@ bool ShouldTriggerSafetyTipFromLookalike(
     const std::vector<DomainInfo>& engaged_sites,
     GURL* safe_url) {
   std::string matched_domain;
-  MatchType match_type;
+  LookalikeUrlMatchType match_type;
 
   // If the domain and registry is empty, this is a private domain and thus
   // should never be flagged as malicious.
@@ -42,34 +61,75 @@ bool ShouldTriggerSafetyTipFromLookalike(
     return false;
   }
 
-  if (!LookalikeUrlNavigationThrottle::GetMatchingDomain(
-          navigated_domain, engaged_sites, &matched_domain, &match_type)) {
+  auto* config = reputation::GetSafetyTipsRemoteConfigProto();
+  const LookalikeTargetAllowlistChecker in_target_allowlist =
+      base::BindRepeating(
+          &reputation::IsTargetHostAllowlistedBySafetyTipsComponent, config);
+  if (!GetMatchingDomain(navigated_domain, engaged_sites, in_target_allowlist,
+                         config, &matched_domain, &match_type)) {
     return false;
   }
 
   // If we're already displaying an interstitial, don't warn again.
-  if (LookalikeUrlNavigationThrottle::ShouldDisplayInterstitial(
-          match_type, navigated_domain)) {
+  if (ShouldBlockLookalikeUrlNavigation(match_type)) {
     return false;
   }
 
-  *safe_url = GURL(std::string(url::kHttpScheme) +
-                   url::kStandardSchemeSeparator + matched_domain);
+  // Use https: scheme for top domain matches. Otherwise, use the lookalike
+  // URL's scheme.
+  // TODO(crbug.com/1190309): If the match is against an engaged site, this
+  // should use the scheme of the engaged site instead.
+  const std::string scheme =
+      (match_type == LookalikeUrlMatchType::kEditDistance ||
+       match_type == LookalikeUrlMatchType::kSkeletonMatchTop500 ||
+       match_type == LookalikeUrlMatchType::kSkeletonMatchTop5k)
+          ? url::kHttpsScheme
+          : url.scheme();
+  *safe_url = GURL(scheme + url::kStandardSchemeSeparator + matched_domain);
+  // Safety Tips can be enabled by several features, with slightly different
+  // behavior for different experiments. The
+  // |kSafetyTipUIForSimplifiedDomainDisplay| feature enables specific lookalike
+  // Safety Tips and doesn't have parameters like the main |kSafetyTipUI|
+  // feature does.
+  bool is_safety_tip_for_simplified_domains_enabled =
+      base::FeatureList::IsEnabled(
+          security_state::features::kSafetyTipUIForSimplifiedDomainDisplay);
   switch (match_type) {
-    case MatchType::kTopSite:
-      return kEnableLookalikeTopSites.Get();
-    case MatchType::kEditDistance:
-      return kEnableLookalikeEditDistance.Get();
-    case MatchType::kEditDistanceSiteEngagement:
-      return kEnableLookalikeEditDistanceSiteEngagement.Get();
-    case MatchType::kSiteEngagement:
-      // We should only ever reach this case when the
-      // kLookalikeUrlNavigationSuggestionsUI feature is disabled. Otherwise, an
-      // interstitial will already be shown on the kSiteEngagement match type.
-      DCHECK(!base::FeatureList::IsEnabled(
-          features::kLookalikeUrlNavigationSuggestionsUI));
-      return true;
-    case MatchType::kNone:
+    case LookalikeUrlMatchType::kEditDistance:
+      return is_safety_tip_for_simplified_domains_enabled ||
+             kEnableLookalikeEditDistance.Get();
+    case LookalikeUrlMatchType::kEditDistanceSiteEngagement:
+      return is_safety_tip_for_simplified_domains_enabled ||
+             kEnableLookalikeEditDistanceSiteEngagement.Get();
+    case LookalikeUrlMatchType::kTargetEmbedding:
+      // Target Embedding should block URL Navigation.
+      return false;
+    case LookalikeUrlMatchType::kTargetEmbeddingForSafetyTips:
+      // Require that target embedding is enabled globally *and* the feature
+      // parameter for safety tips is enabled, too. This allows disabling only
+      // safety tips by enabling the feature and unsetting this parameter.
+      return base::FeatureList::IsEnabled(
+                 lookalikes::features::kDetectTargetEmbeddingLookalikes) &&
+             kEnableTargetEmbeddingSafetyTips.Get();
+    case LookalikeUrlMatchType::kSkeletonMatchTop5k:
+      return is_safety_tip_for_simplified_domains_enabled ||
+             kEnableLookalikeTopSites.Get();
+    case LookalikeUrlMatchType::kFailedSpoofChecks:
+      // For now, no safety tip is shown for domain names that fail spoof checks
+      // and don't have a suggested URL.
+      return false;
+    case LookalikeUrlMatchType::kSiteEngagement:
+    case LookalikeUrlMatchType::kSkeletonMatchTop500:
+      // We should only ever reach these cases when the lookalike interstitial
+      // is disabled. Now that interstitial is fully launched, this only happens
+      // in tests.
+      NOTREACHED();
+      return false;
+    case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
+    case LookalikeUrlMatchType::kCharacterSwapTop500:
+      // For now, no UI is shown for character swap matches.
+      return false;
+    case LookalikeUrlMatchType::kNone:
       NOTREACHED();
   }
 
@@ -82,12 +142,20 @@ bool ShouldTriggerSafetyTipFromKeywordInURL(
     const DomainInfo& navigated_domain,
     const char* const sensitive_keywords[],
     const size_t num_sensitive_keywords) {
+  return HostnameContainsKeyword(url, navigated_domain.domain_and_registry,
+                                 sensitive_keywords, num_sensitive_keywords,
+                                 /* search_e2ld = */ true);
+}
+
+bool HostnameContainsKeyword(const GURL& url,
+                             const std::string& eTLD_plus_one,
+                             const char* const keywords[],
+                             const size_t num_keywords,
+                             bool search_e2ld) {
   // We never want to trigger this heuristic on any non-http / https sites.
   if (!url.SchemeIsHTTPOrHTTPS()) {
     return false;
   }
-
-  std::string eTLD_plus_one = navigated_domain.domain_and_registry;
 
   // The URL's eTLD + 1 will be empty whenever we're given a host that's
   // invalid.
@@ -95,6 +163,8 @@ bool ShouldTriggerSafetyTipFromKeywordInURL(
     return false;
   }
 
+  // TODO(jdeblasio): This should use GetETLDPlusOne() from Lookalike Utils to
+  // benefit from de-facto-private registries.
   size_t registry_length = net::registry_controlled_domains::GetRegistryLength(
       url, net::registry_controlled_domains::EXCLUDE_UNKNOWN_REGISTRIES,
       net::registry_controlled_domains::EXCLUDE_PRIVATE_REGISTRIES);
@@ -104,34 +174,37 @@ bool ShouldTriggerSafetyTipFromKeywordInURL(
     return false;
   }
 
-  // "eTLD + 1 - 1": "www.google.com" -> "google.com" -> "google".
-  std::string eTLD_plusminus =
+  // e2LD: effective 2nd-level domain, e.g. "google" for "www.google.co.uk".
+  std::string e2LD =
       eTLD_plus_one.substr(0, eTLD_plus_one.size() - registry_length - 1);
+  // search_substr is the hostname except the eTLD (e.g. "www.google").
+  std::string search_substr =
+      url.host().substr(0, url.host().size() - registry_length - 1);
 
-  // We should never end up with a "." in our eTLD + 1 - 1.
-  DCHECK_EQ(eTLD_plusminus.find("."), std::string::npos);
-  // Any problems that would result in an empty eTLD + 1 - 1 should have been
-  // caught via the |eTLD_plus_one| check.
+  // We should never end up with a "." in our e2LD.
+  DCHECK_EQ(e2LD.find("."), std::string::npos);
+  // Any problems that would result in an empty e2LD should have been caught via
+  // the |eTLD_plus_one| check.
 
-  const std::vector<std::string> eTLD_plusminus_parts = base::SplitString(
-      eTLD_plusminus, "-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+  // If we want to exclude the e2LD, or if the e2LD is itself a keyword, then
+  // chop that off and only search the rest of it. Otherwise, we keep the full
+  // e2LD included to detect hyphenated spoofs (e.g. "evil-google.com").
+  if (!search_e2ld || SortedWordListContains(e2LD, keywords, num_keywords)) {
+    // If the user visited the eTLD+1 directly, bail here.
+    if (search_substr.size() == e2LD.size()) {
+      return false;
+    }
 
-  // We only care about finding a keyword here if there's more than one part to
-  // the tokenized eTLD + 1 - 1.
-  if (eTLD_plusminus_parts.size() <= 1) {
-    return false;
+    search_substr =
+        search_substr.substr(0, search_substr.size() - e2LD.size() - 1);
+    // e.g. search_substr goes from "www.google" -> "www".
   }
 
-  for (const auto& eTLD_plusminus_part : eTLD_plusminus_parts) {
-    // We use a custom comparator for (char *) here, to avoid the costly
-    // construction of two std::strings every time two values are compared,
-    // and because (char *) orders by address, not lexicographically.
-    if (std::binary_search(sensitive_keywords,
-                           sensitive_keywords + num_sensitive_keywords,
-                           eTLD_plusminus_part.c_str(),
-                           [](const char* str_one, const char* str_two) {
-                             return strcmp(str_one, str_two) < 0;
-                           })) {
+  const std::vector<std::string> search_parts = base::SplitString(
+      search_substr, ".-", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+
+  for (const auto& part : search_parts) {
+    if (SortedWordListContains(part, keywords, num_keywords)) {
       return true;
     }
   }

@@ -85,7 +85,7 @@ bool LocalMediaStreamAudioSource::EnsureSourceIsStarted() {
           << GetAudioParameters().AsHumanReadableString() << "}.";
 
   auto* web_frame =
-      static_cast<WebLocalFrame*>(WebFrame::FromFrame(consumer_frame_));
+      static_cast<WebLocalFrame*>(WebFrame::FromCoreFrame(consumer_frame_));
   source_ = Platform::Current()->NewAudioCapturerSource(
       web_frame, media::AudioSourceParameters(device().session_id()));
   source_->Initialize(GetAudioParameters(), this);
@@ -119,9 +119,14 @@ void LocalMediaStreamAudioSource::Capture(const media::AudioBus* audio_bus,
   DeliverDataToTracks(*audio_bus, audio_capture_time);
 }
 
-void LocalMediaStreamAudioSource::OnCaptureError(const std::string& why) {
-  WebRtcLogMessage("LocalMediaStreamAudioSource::OnCaptureError: " + why);
-  StopSourceOnError(why);
+void LocalMediaStreamAudioSource::OnCaptureError(
+    media::AudioCapturerSource::ErrorCode code,
+    const std::string& why) {
+  WebRtcLogMessage(
+      base::StringPrintf("LocalMediaStreamAudioSource::OnCaptureError: %d, %s",
+                         code, why.c_str()));
+
+  StopSourceOnError(code, why);
 }
 
 void LocalMediaStreamAudioSource::OnCaptureMuted(bool is_muted) {
@@ -141,7 +146,7 @@ void LocalMediaStreamAudioSource::ChangeSourceImpl(
 using EchoCancellationType =
     blink::AudioProcessingProperties::EchoCancellationType;
 
-base::Optional<blink::AudioProcessingProperties>
+absl::optional<blink::AudioProcessingProperties>
 LocalMediaStreamAudioSource::GetAudioProcessingProperties() const {
   blink::AudioProcessingProperties properties;
   properties.DisableDefaultProperties();

@@ -4,6 +4,7 @@
 
 #include "google_apis/gcm/engine/connection_factory_impl.h"
 
+#include <memory>
 #include <string>
 
 #include "base/bind.h"
@@ -17,6 +18,7 @@
 #include "google_apis/gcm/protocol/mcs.pb.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/proxy_fallback.h"
 #include "net/log/net_log_source_type.h"
@@ -26,6 +28,8 @@
 #include "net/ssl/ssl_config_service.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
+#include "url/gurl.h"
+#include "url/origin.h"
 
 namespace gcm {
 
@@ -44,8 +48,7 @@ const int kConnectionResetWindowSecs = 10;  // 10 seconds.
 bool ShouldRestorePreviousBackoff(const base::TimeTicks& login_time,
                                   const base::TimeTicks& now_ticks) {
   return !login_time.is_null() &&
-      now_ticks - login_time <=
-          base::TimeDelta::FromSeconds(kConnectionResetWindowSecs);
+         now_ticks - login_time <= base::Seconds(kConnectionResetWindowSecs);
 }
 
 }  // namespace
@@ -110,10 +113,9 @@ ConnectionHandler* ConnectionFactoryImpl::GetConnectionHandler() const {
 void ConnectionFactoryImpl::Connect() {
   if (!connection_handler_) {
     connection_handler_ = CreateConnectionHandler(
-        base::TimeDelta::FromMilliseconds(kReadTimeoutMs), read_callback_,
-        write_callback_,
-        base::Bind(&ConnectionFactoryImpl::ConnectionHandlerCallback,
-                   weak_ptr_factory_.GetWeakPtr()));
+        base::Milliseconds(kReadTimeoutMs), read_callback_, write_callback_,
+        base::BindRepeating(&ConnectionFactoryImpl::ConnectionHandlerCallback,
+                            weak_ptr_factory_.GetWeakPtr()));
   }
 
   if (connecting_ || waiting_for_backoff_)
@@ -204,10 +206,8 @@ void ConnectionFactoryImpl::SignalConnectionReset(
   recorder_->RecordConnectionResetSignaled(reason);
   if (!last_login_time_.is_null()) {
     UMA_HISTOGRAM_CUSTOM_TIMES("GCM.ConnectionUpTime",
-                               NowTicks() - last_login_time_,
-                               base::TimeDelta::FromSeconds(1),
-                               base::TimeDelta::FromHours(24),
-                               50);
+                               NowTicks() - last_login_time_, base::Seconds(1),
+                               base::Hours(24), 50);
     // |last_login_time_| will be reset below, before attempting the new
     // connection.
   }
@@ -359,8 +359,13 @@ void ConnectionFactoryImpl::StartConnection() {
   network::mojom::ProxyResolvingSocketOptionsPtr options =
       network::mojom::ProxyResolvingSocketOptions::New();
   options->use_tls = true;
+  // |current_endpoint| is always a Google URL, so this NetworkIsolationKey will
+  // be the same for all callers, and will allow pooling all connections to GCM
+  // in one socket connection, if an H2 or QUIC proxy is in use.
+  auto origin = url::Origin::Create(current_endpoint);
+  net::NetworkIsolationKey network_isolation_key(origin, origin);
   socket_factory_->CreateProxyResolvingSocket(
-      current_endpoint, std::move(options),
+      current_endpoint, std::move(network_isolation_key), std::move(options),
       net::MutableNetworkTrafficAnnotationTag(traffic_annotation),
       socket_.BindNewPipeAndPassReceiver(), mojo::NullRemote() /* observer */,
       base::BindOnce(&ConnectionFactoryImpl::OnConnectDone,
@@ -384,7 +389,7 @@ void ConnectionFactoryImpl::InitHandler(
 
 std::unique_ptr<net::BackoffEntry> ConnectionFactoryImpl::CreateBackoffEntry(
     const net::BackoffEntry::Policy* const policy) {
-  return std::unique_ptr<net::BackoffEntry>(new net::BackoffEntry(policy));
+  return std::make_unique<net::BackoffEntry>(policy);
 }
 
 std::unique_ptr<ConnectionHandler>
@@ -404,8 +409,8 @@ base::TimeTicks ConnectionFactoryImpl::NowTicks() {
 
 void ConnectionFactoryImpl::OnConnectDone(
     int result,
-    const base::Optional<net::IPEndPoint>& local_addr,
-    const base::Optional<net::IPEndPoint>& peer_addr,
+    const absl::optional<net::IPEndPoint>& local_addr,
+    const absl::optional<net::IPEndPoint>& peer_addr,
     mojo::ScopedDataPipeConsumerHandle receive_stream,
     mojo::ScopedDataPipeProducerHandle send_stream) {
   DCHECK_NE(net::ERR_IO_PENDING, result);

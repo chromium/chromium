@@ -6,45 +6,33 @@
 
 #include <utility>
 
+#include "ash/display/display_change_dialog.h"
+#include "ash/display/display_util.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/screen_layout_observer.h"
+#include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/base/l10n/time_format.h"
 #include "ui/display/display.h"
+#include "ui/display/display_features.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
-#include "ui/display/screen.h"
-#include "ui/message_center/message_center.h"
-#include "ui/message_center/public/cpp/notification.h"
-
-using message_center::Notification;
 
 namespace ash {
-namespace {
-
-const char kNotifierDisplayResolutionChange[] = "ash.display.resolution-change";
-
-bool g_use_timer = true;
-
-}  // namespace
-
-// static
-const int ResolutionNotificationController::kTimeoutInSec = 15;
-
-// static
-const char ResolutionNotificationController::kNotificationId[] =
-    "chrome://settings/display/resolution";
 
 struct ResolutionNotificationController::ResolutionChangeInfo {
   ResolutionChangeInfo(int64_t display_id,
                        const display::ManagedDisplayMode& old_resolution,
                        const display::ManagedDisplayMode& new_resolution,
                        base::OnceClosure accept_callback);
+
+  ResolutionChangeInfo(const ResolutionChangeInfo&) = delete;
+  ResolutionChangeInfo& operator=(const ResolutionChangeInfo&) = delete;
+
   ~ResolutionChangeInfo();
 
   // The id of the display where the resolution change happens.
@@ -62,17 +50,6 @@ struct ResolutionNotificationController::ResolutionChangeInfo {
 
   // The callback when accept is chosen.
   base::OnceClosure accept_callback;
-
-  // The remaining timeout in seconds. 0 if the change does not time out.
-  uint8_t timeout_count;
-
-  // The timer to invoke OnTimerTick() every second. This cannot be
-  // OneShotTimer since the message contains text "automatically closed in xx
-  // seconds..." which has to be updated every second.
-  base::RepeatingTimer timer;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResolutionChangeInfo);
 };
 
 ResolutionNotificationController::ResolutionChangeInfo::ResolutionChangeInfo(
@@ -83,44 +60,30 @@ ResolutionNotificationController::ResolutionChangeInfo::ResolutionChangeInfo(
     : display_id(display_id),
       old_resolution(old_resolution),
       new_resolution(new_resolution),
-      accept_callback(std::move(accept_callback)),
-      timeout_count(0) {
-  display::DisplayManager* display_manager = Shell::Get()->display_manager();
-  if (!display::Display::HasInternalDisplay() &&
-      display_manager->num_connected_displays() == 1u &&
-      Shell::Get()->session_controller()->login_status() !=
-          LoginStatus::KIOSK_APP) {
-    // Introduce a timeout if we have a single external display and the device
-    // is not in Kiosk mode. (The resolution change notification is invisible in
-    // Kiosk mode, so do not introduce the timeout in this case.)
-    timeout_count = kTimeoutInSec;
-  }
-}
+      accept_callback(std::move(accept_callback)) {}
 
 ResolutionNotificationController::ResolutionChangeInfo::
     ~ResolutionChangeInfo() = default;
 
 ResolutionNotificationController::ResolutionNotificationController() {
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
-  display::Screen::GetScreen()->AddObserver(this);
 }
 
 ResolutionNotificationController::~ResolutionNotificationController() {
   Shell::Get()->window_tree_host_manager()->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
 }
 
 bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
     int64_t display_id,
     const display::ManagedDisplayMode& old_resolution,
     const display::ManagedDisplayMode& new_resolution,
-    ash::mojom::DisplayConfigSource source,
+    mojom::DisplayConfigSource source,
     base::OnceClosure accept_callback) {
   Shell::Get()->screen_layout_observer()->SetDisplayChangedFromSettingsUI(
       display_id);
   display::DisplayManager* const display_manager =
       Shell::Get()->display_manager();
-  if (source == ash::mojom::DisplayConfigSource::kPolicy ||
+  if (source == mojom::DisplayConfigSource::kPolicy ||
       display::Display::IsInternalDisplayId(display_id)) {
     // We don't show notifications to confirm/revert the resolution change in
     // the case of an internal display or policy-forced changes.
@@ -132,7 +95,7 @@ bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
   // instead of the specified |old_resolution|.
   display::ManagedDisplayMode original_resolution;
   if (change_info_ && change_info_->display_id == display_id) {
-    DCHECK(change_info_->new_resolution.size() == old_resolution.size());
+    DCHECK_EQ(change_info_->new_resolution.size(), old_resolution.size());
     original_resolution = change_info_->old_resolution;
   }
 
@@ -159,92 +122,81 @@ bool ResolutionNotificationController::PrepareNotificationAndSetDisplayMode(
   return true;
 }
 
-bool ResolutionNotificationController::DoesNotificationTimeout() {
-  return change_info_ && change_info_->timeout_count > 0;
+bool ResolutionNotificationController::ShouldShowDisplayChangeDialog() const {
+  return change_info_ && Shell::Get()->session_controller()->login_status() !=
+                             LoginStatus::KIOSK_APP;
 }
 
-void ResolutionNotificationController::Close(bool by_user) {
-  if (by_user)
-    AcceptResolutionChange(false);
-}
+void ResolutionNotificationController::CreateOrReplaceModalDialog() {
+  if (confirmation_dialog_)
+    confirmation_dialog_->GetWidget()->CloseNow();
 
-void ResolutionNotificationController::Click(
-    const base::Optional<int>& button_index,
-    const base::Optional<base::string16>& reply) {
-  // If there's the timeout, the first button is "Accept". Otherwise the
-  // button click should be "Revert". Clicking on the body should accept.
-  if (!button_index || (DoesNotificationTimeout() && *button_index == 0))
-    AcceptResolutionChange(true);
-  else
-    RevertResolutionChange(false /* display_was_removed */);
-}
-
-void ResolutionNotificationController::CreateOrUpdateNotification(
-    bool enable_spoken_feedback) {
-  message_center::MessageCenter* message_center =
-      message_center::MessageCenter::Get();
-  if (!change_info_) {
-    message_center->RemoveNotification(kNotificationId, false /* by_user */);
+  if (!ShouldShowDisplayChangeDialog())
     return;
-  }
 
-  base::string16 timeout_message;
-  message_center::RichNotificationData data;
-  if (change_info_->timeout_count > 0) {
-    data.buttons.push_back(message_center::ButtonInfo(
-        l10n_util::GetStringUTF16(IDS_ASH_DISPLAY_RESOLUTION_CHANGE_ACCEPT)));
-    timeout_message = l10n_util::GetStringFUTF16(
-        IDS_ASH_DISPLAY_RESOLUTION_TIMEOUT,
-        ui::TimeFormat::Simple(
-            ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_LONG,
-            base::TimeDelta::FromSeconds(change_info_->timeout_count)));
-  }
-  data.buttons.push_back(message_center::ButtonInfo(
-      l10n_util::GetStringUTF16(IDS_ASH_DISPLAY_RESOLUTION_CHANGE_REVERT)));
-
-  data.should_make_spoken_feedback_for_popup_updates = enable_spoken_feedback;
-
-  const base::string16 display_name =
+  const std::u16string display_name =
       base::UTF8ToUTF16(Shell::Get()->display_manager()->GetDisplayNameForId(
           change_info_->display_id));
-  const base::string16 message =
-      (change_info_->new_resolution.size() ==
-       change_info_->current_resolution.size())
-          ? l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED, display_name,
-                base::UTF8ToUTF16(
-                    change_info_->new_resolution.size().ToString()))
-          : l10n_util::GetStringFUTF16(
-                IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TO_UNSUPPORTED,
-                display_name,
-                base::UTF8ToUTF16(
-                    change_info_->new_resolution.size().ToString()),
-                base::UTF8ToUTF16(
-                    change_info_->current_resolution.size().ToString()));
+  const std::u16string actual_display_size =
+      base::UTF8ToUTF16(change_info_->current_resolution.size().ToString());
+  const std::u16string requested_display_size =
+      base::UTF8ToUTF16(change_info_->new_resolution.size().ToString());
 
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
-      message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId, message,
-      timeout_message,
-      base::string16(),  // display_source
-      GURL(),
-      message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
-                                 kNotifierDisplayResolutionChange),
-      data,
-      base::MakeRefCounted<message_center::ThunkNotificationDelegate>(
-          weak_factory_.GetWeakPtr()),
-      kNotificationScreenIcon,
-      message_center::SystemNotificationWarningLevel::NORMAL);
-  notification->set_priority(message_center::SYSTEM_PRIORITY);
+  std::u16string dialog_title =
+      l10n_util::GetStringUTF16(IDS_ASH_RESOLUTION_CHANGE_DIALOG_TITLE);
 
-  message_center->AddNotification(std::move(notification));
+  // Construct the timeout message, leaving a placeholder for the countdown
+  // timer so that the string does not need to be completely rebuilt every
+  // timer tick.
+  constexpr char16_t kTimeoutPlaceHolder[] = u"$1";
+
+  std::u16string timeout_message_with_placeholder;
+  if (display::features::IsListAllDisplayModesEnabled()) {
+    dialog_title = l10n_util::GetStringUTF16(
+        IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE);
+
+    const std::u16string actual_refresh_rate = ConvertRefreshRateToString16(
+        change_info_->current_resolution.refresh_rate());
+    const std::u16string requested_refresh_rate = ConvertRefreshRateToString16(
+        change_info_->new_resolution.refresh_rate());
+
+    const bool no_fallback = actual_display_size == requested_display_size &&
+                             actual_refresh_rate == requested_refresh_rate;
+
+    timeout_message_with_placeholder =
+        no_fallback ? l10n_util::GetStringFUTF16(
+                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED,
+                          display_name, actual_display_size,
+                          actual_refresh_rate, kTimeoutPlaceHolder)
+                    : l10n_util::GetStringFUTF16(
+                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK,
+                          {display_name, requested_display_size,
+                           requested_refresh_rate, actual_display_size,
+                           actual_refresh_rate, kTimeoutPlaceHolder},
+                          /*offsets=*/nullptr);
+
+  } else {
+    timeout_message_with_placeholder =
+        actual_display_size == requested_display_size
+            ? l10n_util::GetStringFUTF16(
+                  IDS_ASH_RESOLUTION_CHANGE_DIALOG_CHANGED, display_name,
+                  actual_display_size, kTimeoutPlaceHolder)
+            : l10n_util::GetStringFUTF16(
+                  IDS_ASH_RESOLUTION_CHANGE_DIALOG_FALLBACK, display_name,
+                  requested_display_size, actual_display_size,
+                  kTimeoutPlaceHolder);
+  }
+
+  DisplayChangeDialog* dialog = new DisplayChangeDialog(
+      std::move(dialog_title), std::move(timeout_message_with_placeholder),
+      base::BindOnce(&ResolutionNotificationController::AcceptResolutionChange,
+                     weak_factory_.GetWeakPtr()),
+      base::BindOnce(&ResolutionNotificationController::RevertResolutionChange,
+                     weak_factory_.GetWeakPtr()));
+  confirmation_dialog_ = dialog->GetWeakPtr();
 }
 
-void ResolutionNotificationController::AcceptResolutionChange(
-    bool close_notification) {
-  if (close_notification) {
-    message_center::MessageCenter::Get()->RemoveNotification(
-        kNotificationId, false /* by_user */);
-  }
+void ResolutionNotificationController::AcceptResolutionChange() {
   if (!change_info_)
     return;
   base::OnceClosure callback = std::move(change_info_->accept_callback);
@@ -254,8 +206,6 @@ void ResolutionNotificationController::AcceptResolutionChange(
 
 void ResolutionNotificationController::RevertResolutionChange(
     bool display_was_removed) {
-  message_center::MessageCenter::Get()->RemoveNotification(kNotificationId,
-                                                           false /* by_user */);
   if (!change_info_)
     return;
   const int64_t display_id = change_info_->display_id;
@@ -275,20 +225,13 @@ void ResolutionNotificationController::RevertResolutionChange(
   }
 }
 
-void ResolutionNotificationController::OnTimerTick() {
-  if (!change_info_)
-    return;
-
-  if (--change_info_->timeout_count == 0)
-    RevertResolutionChange(false /* display_was_removed */);
-  else
-    CreateOrUpdateNotification(false);
-}
-
 void ResolutionNotificationController::OnDisplayRemoved(
     const display::Display& old_display) {
-  if (change_info_ && change_info_->display_id == old_display.id())
+  if (change_info_ && change_info_->display_id == old_display.id()) {
+    if (confirmation_dialog_)
+      confirmation_dialog_->GetWidget()->CloseNow();
     RevertResolutionChange(true /* display_was_removed */);
+  }
 }
 
 void ResolutionNotificationController::OnDisplayConfigurationChanged() {
@@ -301,15 +244,8 @@ void ResolutionNotificationController::OnDisplayConfigurationChanged() {
     change_info_->current_resolution = mode;
   }
 
-  CreateOrUpdateNotification(true);
-  if (g_use_timer && change_info_->timeout_count > 0) {
-    change_info_->timer.Start(FROM_HERE, base::TimeDelta::FromSeconds(1), this,
-                              &ResolutionNotificationController::OnTimerTick);
-  }
+  CreateOrReplaceModalDialog();
 }
 
-void ResolutionNotificationController::SuppressTimerForTest() {
-  g_use_timer = false;
-}
 
 }  // namespace ash

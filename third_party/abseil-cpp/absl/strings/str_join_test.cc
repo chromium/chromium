@@ -134,26 +134,26 @@ TEST(StrJoin, APIExamples) {
   //
 
   {
-    // Empty range yields an empty std::string.
+    // Empty range yields an empty string.
     std::vector<std::string> v;
     EXPECT_EQ("", absl::StrJoin(v, "-"));
   }
 
   {
-    // A range of 1 element gives a std::string with that element but no
+    // A range of 1 element gives a string with that element but no
     // separator.
     std::vector<std::string> v = {"foo"};
     EXPECT_EQ("foo", absl::StrJoin(v, "-"));
   }
 
   {
-    // A range with a single empty std::string element
+    // A range with a single empty string element
     std::vector<std::string> v = {""};
     EXPECT_EQ("", absl::StrJoin(v, "-"));
   }
 
   {
-    // A range with 2 elements, one of which is an empty std::string
+    // A range with 2 elements, one of which is an empty string
     std::vector<std::string> v = {"a", ""};
     EXPECT_EQ("a-", absl::StrJoin(v, "-"));
   }

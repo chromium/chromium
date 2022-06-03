@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/values.h"
 
 namespace signin_internals_util {
 

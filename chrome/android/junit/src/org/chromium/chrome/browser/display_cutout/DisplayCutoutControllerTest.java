@@ -10,10 +10,15 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.support.test.filters.SmallTest;
+import android.app.Activity;
+import android.view.Window;
+import android.view.WindowManager.LayoutParams;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -23,21 +28,36 @@ import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
 
 import org.chromium.blink.mojom.ViewportFit;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.InsetObserverView;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.components.browser_ui.display_cutout.DisplayCutoutController;
+import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
+import org.chromium.ui.base.WindowAndroid;
+
+import java.lang.ref.WeakReference;
 
 /**
  * Tests for {@link DisplayCutoutController} class.
  */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Ignore("https://crbug.com/1216298")
 public class DisplayCutoutControllerTest {
     @Mock
     private TabImpl mTab;
+
+    @Mock
+    private WebContents mWebContents;
+
+    @Mock
+    private WindowAndroid mWindowAndroid;
+
+    @Mock
+    private Window mWindow;
 
     @Captor
     private ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -48,35 +68,48 @@ public class DisplayCutoutControllerTest {
     @Mock
     private InsetObserverView mInsetObserver;
 
-    private DisplayCutoutController mDisplayCutoutController;
+    private DisplayCutoutTabHelper mDisplayCutoutTabHelper;
+    private DisplayCutoutController mController;
+
+    private WeakReference<Activity> mActivityRef;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
+        mActivityRef = new WeakReference<>(mChromeActivity);
+
         // Mock dependency on InsetObserverView.
-        when(mTab.getActivity()).thenReturn(mChromeActivity);
+
+        when(mChromeActivity.getWindow()).thenReturn(mWindow);
+        when(mWindow.getAttributes()).thenReturn(new LayoutParams());
+        when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
+        when(mTab.getWebContents()).thenReturn(mWebContents);
+        when(mWebContents.isFullscreenForCurrentTab()).thenReturn(true);
+        when(mWindowAndroid.getActivity()).thenReturn(mActivityRef);
         when(mChromeActivity.getInsetObserverView()).thenReturn(mInsetObserver);
 
-        mDisplayCutoutController = spy(new DisplayCutoutController(mTab));
+        mDisplayCutoutTabHelper = spy(new DisplayCutoutTabHelper(mTab));
+        mController = spy(mDisplayCutoutTabHelper.mCutoutController);
+        mDisplayCutoutTabHelper.mCutoutController = mController;
     }
 
     @Test
     @SmallTest
     public void testViewportFitUpdate() {
-        verify(mDisplayCutoutController, never()).maybeUpdateLayout();
+        verify(mController, never()).maybeUpdateLayout();
 
-        mDisplayCutoutController.setViewportFit(ViewportFit.COVER);
-        verify(mDisplayCutoutController).maybeUpdateLayout();
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER);
+        verify(mController).maybeUpdateLayout();
     }
 
     @Test
     @SmallTest
     public void testViewportFitUpdateNotChanged() {
-        verify(mDisplayCutoutController, never()).maybeUpdateLayout();
+        verify(mController, never()).maybeUpdateLayout();
 
-        mDisplayCutoutController.setViewportFit(ViewportFit.AUTO);
-        verify(mDisplayCutoutController, never()).maybeUpdateLayout();
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.AUTO);
+        verify(mController, never()).maybeUpdateLayout();
     }
 
     @Test
@@ -84,9 +117,9 @@ public class DisplayCutoutControllerTest {
     public void testCutoutModeWhenAutoAndInteractable() {
         when(mTab.isUserInteractable()).thenReturn(true);
 
-        mDisplayCutoutController.setViewportFit(ViewportFit.AUTO);
-        Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
-                mDisplayCutoutController.getDisplayCutoutMode());
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.AUTO);
+        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+                mController.computeDisplayCutoutMode());
     }
 
     @Test
@@ -94,9 +127,9 @@ public class DisplayCutoutControllerTest {
     public void testCutoutModeWhenCoverAndInteractable() {
         when(mTab.isUserInteractable()).thenReturn(true);
 
-        mDisplayCutoutController.setViewportFit(ViewportFit.COVER);
-        Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES",
-                mDisplayCutoutController.getDisplayCutoutMode());
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER);
+        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+                mController.computeDisplayCutoutMode());
     }
 
     @Test
@@ -104,9 +137,9 @@ public class DisplayCutoutControllerTest {
     public void testCutoutModeWhenCoverForcedAndInteractable() {
         when(mTab.isUserInteractable()).thenReturn(true);
 
-        mDisplayCutoutController.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
-        Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES",
-                mDisplayCutoutController.getDisplayCutoutMode());
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
+        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES,
+                mController.computeDisplayCutoutMode());
     }
 
     @Test
@@ -114,41 +147,41 @@ public class DisplayCutoutControllerTest {
     public void testCutoutModeWhenContainAndInteractable() {
         when(mTab.isUserInteractable()).thenReturn(true);
 
-        mDisplayCutoutController.setViewportFit(ViewportFit.CONTAIN);
-        Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER",
-                mDisplayCutoutController.getDisplayCutoutMode());
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.CONTAIN);
+        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_NEVER,
+                mController.computeDisplayCutoutMode());
     }
 
     @Test
     @SmallTest
     public void testCutoutModeWhenAutoAndNotInteractable() {
-        mDisplayCutoutController.setViewportFit(ViewportFit.AUTO);
-        Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
-                mDisplayCutoutController.getDisplayCutoutMode());
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.AUTO);
+        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+                mController.computeDisplayCutoutMode());
     }
 
     @Test
     @SmallTest
     public void testCutoutModeWhenCoverAndNotInteractable() {
-        mDisplayCutoutController.setViewportFit(ViewportFit.COVER);
-        Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
-                mDisplayCutoutController.getDisplayCutoutMode());
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER);
+        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+                mController.computeDisplayCutoutMode());
     }
 
     @Test
     @SmallTest
     public void testCutoutModeWhenCoverForcedAndNotInteractable() {
-        mDisplayCutoutController.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
-        Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
-                mDisplayCutoutController.getDisplayCutoutMode());
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.COVER_FORCED_BY_USER_AGENT);
+        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+                mController.computeDisplayCutoutMode());
     }
 
     @Test
     @SmallTest
     public void testCutoutModeWhenContainAndNotInteractable() {
-        mDisplayCutoutController.setViewportFit(ViewportFit.CONTAIN);
-        Assert.assertEquals("LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT",
-                mDisplayCutoutController.getDisplayCutoutMode());
+        mDisplayCutoutTabHelper.setViewportFit(ViewportFit.CONTAIN);
+        Assert.assertEquals(LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_DEFAULT,
+                mController.computeDisplayCutoutMode());
     }
 
     @Test
@@ -156,12 +189,12 @@ public class DisplayCutoutControllerTest {
     public void testLayoutOnInteractability_True() {
         // In this test we are checking for a side effect of maybeUpdateLayout.
         // This is because the tab observer holds a reference to the original
-        // mDisplayCutoutController and not the spied one.
+        // mDisplayCutoutTabHelper and not the spied one.
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         reset(mTab);
 
         mTabObserverCaptor.getValue().onInteractabilityChanged(mTab, true);
-        verify(mTab).getActivity();
+        verify(mWindow).getAttributes();
     }
 
     @Test
@@ -169,12 +202,24 @@ public class DisplayCutoutControllerTest {
     public void testLayoutOnInteractability_False() {
         // In this test we are checking for a side effect of maybeUpdateLayout.
         // This is because the tab observer holds a reference to the original
-        // mDisplayCutoutController and not the spied one.
+        // mDisplayCutoutTabHelper and not the spied one.
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         reset(mTab);
 
         mTabObserverCaptor.getValue().onInteractabilityChanged(mTab, false);
-        verify(mTab).getActivity();
+        verify(mWindow).getAttributes();
+    }
+
+    @Test
+    @SmallTest
+    public void testLayout_NoWindow() {
+        // Verify there's no crash when the tab's interactability changes after activity detachment.
+        verify(mTab).addObserver(mTabObserverCaptor.capture());
+        reset(mTab);
+
+        mTabObserverCaptor.getValue().onActivityAttachmentChanged(mTab, null);
+        mTabObserverCaptor.getValue().onInteractabilityChanged(mTab, false);
+        verify(mWindow, never()).getAttributes();
     }
 
     @Test
@@ -182,11 +227,11 @@ public class DisplayCutoutControllerTest {
     public void testLayoutOnShown() {
         // In this test we are checking for a side effect of maybeUpdateLayout.
         // This is because the tab observer holds a reference to the original
-        // mDisplayCutoutController and not the spied one.
+        // mDisplayCutoutTabHelper and not the spied one.
         verify(mTab).addObserver(mTabObserverCaptor.capture());
         reset(mTab);
 
         mTabObserverCaptor.getValue().onShown(mTab, TabSelectionType.FROM_NEW);
-        verify(mTab).getActivity();
+        verify(mWindow).getAttributes();
     }
 }

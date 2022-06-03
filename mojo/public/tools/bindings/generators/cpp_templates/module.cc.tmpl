@@ -15,11 +15,6 @@
 #if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunused-private-field"
-#elif defined(_MSC_VER)
-#pragma warning(push)
-#pragma warning(disable:4056)
-#pragma warning(disable:4065)
-#pragma warning(disable:4756)
 #endif
 
 #include "{{variant_path}}.h"
@@ -29,22 +24,28 @@
 #include <utility>
 
 #include "base/hash/md5_constexpr.h"
-#include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/common/task_annotator.h"
+#include "base/trace_event/trace_event.h"
+#include "base/trace_event/typed_macros.h"
 #include "mojo/public/cpp/bindings/lib/generated_code_util.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
+#include "mojo/public/cpp/bindings/lib/send_message_helper.h"
+#include "mojo/public/cpp/bindings/lib/proxy_to_responder.h"
 #include "mojo/public/cpp/bindings/lib/serialization_util.h"
 #include "mojo/public/cpp/bindings/lib/unserialized_message_context.h"
 #include "mojo/public/cpp/bindings/lib/validate_params.h"
-#include "mojo/public/cpp/bindings/lib/validation_context.h"
 #include "mojo/public/cpp/bindings/lib/validation_errors.h"
+#include "mojo/public/cpp/bindings/mojo_buildflags.h"
 #include "mojo/public/interfaces/bindings/interface_control_messages.mojom.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value.h"
 
 #include "{{module.path}}-params-data.h"
 #include "{{module.path}}-shared-message-ids.h"
 
 #include "{{variant_path}}-import-headers.h"
+#include "{{variant_path}}-test-utils.h"
 
 {%- if for_blink %}
 #include "mojo/public/cpp/bindings/lib/wtf_serialization.h"
@@ -58,12 +59,27 @@
 {%- endfor %}
 #endif
 
-{%- for namespace in namespaces_as_array %}
+
+{%- macro namespace_begin() %}
+{%-   for namespace in namespaces_as_array %}
 namespace {{namespace}} {
-{%- endfor %}
-{%- if variant %}
+{%-   endfor %}
+{%-   if variant %}
 namespace {{variant}} {
-{%- endif %}
+{%-   endif %}
+{%- endmacro %}
+
+{%- macro namespace_end() %}
+{%-   if variant %}
+}  // namespace {{variant}}
+{%-   endif %}
+{%-   for namespace in namespaces_as_array|reverse %}
+}  // namespace {{namespace}}
+{%-   endfor %}
+{%- endmacro %}
+
+
+{{namespace_begin()}}
 
 {#--- Constants #}
 {%- for constant in module.constants %}
@@ -100,12 +116,8 @@ constexpr {{constant.kind|cpp_pod_type}} {{struct.name}}::{{constant.name}};
 {%-   include "interface_definition.tmpl" %}
 {%- endfor %}
 
-{%- if variant %}
-}  // namespace {{variant}}
-{%- endif %}
-{%- for namespace in namespaces_as_array|reverse %}
-}  // namespace {{namespace}}
-{%- endfor %}
+{{namespace_end()}}
+
 
 namespace mojo {
 
@@ -123,8 +135,71 @@ namespace mojo {
 
 }  // namespace mojo
 
+
+// Symbols declared in the -test-utils.h header are defined here instead of a
+// separate .cc file to save compile time.
+
+{{namespace_begin()}}
+
+{%- import "interface_macros.tmpl" as interface_macros %}
+
+{%  for interface in interfaces %}
+
+{#--- Testing interceptor #}
+{%- for method in interface.methods %}
+void {{interface.name}}InterceptorForTesting::{{method.name}}({{interface_macros.declare_request_params("", method)}}) {
+  GetForwardingInterface()->{{method.name}}(
+    {%- for param in method.parameters -%}
+    std::move({{param.name}}){%- if not loop.last %}, {% endif %}
+    {%- endfor %}
+    {%-   if method.response_parameters != None -%}
+    {%-     if method.parameters %}, {% endif -%}
+    std::move(callback)
+    {%-   endif -%}
+  );
+}
+{%- endfor %}
+
+{#--- Async wait helper for testing #}
+{{interface.name}}AsyncWaiter::{{interface.name}}AsyncWaiter(
+    {{interface.name}}* proxy) : proxy_(proxy) {}
+
+{{interface.name}}AsyncWaiter::~{{interface.name}}AsyncWaiter() = default;
+
+{%  for method in interface.methods if method.response_parameters != None -%}
+void {{interface.name}}AsyncWaiter::{{method.name}}(
+    {{interface_macros.declare_sync_method_params("", method)}}) {
+  base::RunLoop loop;
+  proxy_->{{method.name}}(
+{%-   for param in method.parameters -%}
+      std::move({{param.name}}),
+{%-   endfor %}
+      base::BindOnce(
+          [](base::RunLoop* loop
+{%-   for param in method.response_parameters -%},
+             {{param.kind|cpp_wrapper_call_type}}* out_{{param.name}}
+{%    endfor -%}
+{%-   for param in method.response_parameters -%},
+             {{param.kind|cpp_wrapper_param_type}} {{param.name}}
+{%-   endfor %}) {
+{%-   for param in method.response_parameters -%}
+            *out_{{param.name}} = std::move({{param.name}});
+{%-   endfor %}
+            loop->Quit();
+          },
+          &loop
+{%-   for param in method.response_parameters -%},
+          out_{{param.name}}
+{%-   endfor %}));
+  loop.Run();
+}
+{% endfor %}
+
+{% endfor %}
+
+{{namespace_end()}}
+
+
 #if defined(__clang__)
 #pragma clang diagnostic pop
-#elif defined(_MSC_VER)
-#pragma warning(pop)
 #endif

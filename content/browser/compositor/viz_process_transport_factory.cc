@@ -10,17 +10,19 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/single_thread_task_runner.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/mojo_embedder/async_layer_tree_frame_sink.h"
 #include "cc/raster/single_thread_task_graph_runner.h"
+#include "components/viz/common/features.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/switches.h"
+#include "components/viz/host/compositing_mode_reporter_impl.h"
 #include "components/viz/host/gpu_host_impl.h"
+#include "components/viz/host/host_display_client.h"
 #include "components/viz/host/host_frame_sink_manager.h"
-#include "components/viz/service/display_embedder/compositing_mode_reporter_impl.h"
-#include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
+#include "components/viz/host/renderer_settings_creation.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/gpu/compositor_util.h"
 #include "content/browser/gpu/gpu_data_manager_impl.h"
@@ -28,6 +30,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/gpu_stream_constants.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
@@ -37,7 +40,6 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/compositor/reflector.h"
 
 #if defined(OS_WIN)
 #include "ui/gfx/win/rendering_window_manager.h"
@@ -50,14 +52,16 @@ namespace {
 // child process client id.
 constexpr uint32_t kBrowserClientId = 0u;
 
+static const char* kBrowser = "Browser";
+
 scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host,
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
-    bool support_locking,
-    bool support_gles2_interface,
-    bool support_raster_interface,
-    bool support_grcontext,
-    bool support_oop_rasterization,
+    bool supports_locking,
+    bool supports_gles2_interface,
+    bool supports_raster_interface,
+    bool supports_grcontext,
+    bool supports_oop_rasterization,
     viz::command_buffer_metrics::ContextType type) {
   constexpr bool kAutomaticFlushes = false;
 
@@ -70,9 +74,9 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   attributes.bind_generates_resource = false;
   attributes.lose_context_when_out_of_memory = true;
   attributes.buffer_preserved = false;
-  attributes.enable_gles2_interface = support_gles2_interface;
-  attributes.enable_raster_interface = support_raster_interface;
-  attributes.enable_oop_rasterization = support_oop_rasterization;
+  attributes.enable_gles2_interface = supports_gles2_interface;
+  attributes.enable_raster_interface = supports_raster_interface;
+  attributes.enable_oop_rasterization = supports_oop_rasterization;
 
   gpu::SharedMemoryLimits memory_limits =
       gpu::SharedMemoryLimits::ForDisplayCompositor();
@@ -81,7 +85,7 @@ scoped_refptr<viz::ContextProviderCommandBuffer> CreateContextProvider(
   return base::MakeRefCounted<viz::ContextProviderCommandBuffer>(
       std::move(gpu_channel_host), gpu_memory_buffer_manager,
       kGpuStreamIdDefault, kGpuStreamPriorityUI, gpu::kNullSurfaceHandle,
-      std::move(url), kAutomaticFlushes, support_locking, support_grcontext,
+      std::move(url), kAutomaticFlushes, supports_locking, supports_grcontext,
       memory_limits, attributes, type);
 }
 
@@ -95,6 +99,29 @@ bool IsWorkerContextLost(viz::RasterContextProvider* context_provider) {
   return lock.RasterInterface()->GetGraphicsResetStatusKHR() != GL_NO_ERROR;
 }
 
+class HostDisplayClient : public viz::HostDisplayClient {
+ public:
+  explicit HostDisplayClient(ui::Compositor* compositor)
+      : viz::HostDisplayClient(compositor->widget()), compositor_(compositor) {
+    ANALYZER_ALLOW_UNUSED(compositor_);
+  }
+  ~HostDisplayClient() override = default;
+  HostDisplayClient(const HostDisplayClient&) = delete;
+  HostDisplayClient& operator=(const HostDisplayClient&) = delete;
+
+  // viz::HostDisplayClient:
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  void DidCompleteSwapWithNewSize(const gfx::Size& size) override {
+    compositor_->OnCompleteSwapWithNewSize(size);
+  }
+#endif
+
+ private:
+  ui::Compositor* const compositor_;
+};
+
 }  // namespace
 
 VizProcessTransportFactory::VizProcessTransportFactory(
@@ -104,14 +131,14 @@ VizProcessTransportFactory::VizProcessTransportFactory(
     : gpu_channel_establish_factory_(gpu_channel_establish_factory),
       compositing_mode_reporter_(compositing_mode_reporter),
       task_graph_runner_(std::make_unique<cc::SingleThreadTaskGraphRunner>()),
-      context_factory_private_(
-          kBrowserClientId,
-          BrowserMainLoop::GetInstance()->host_frame_sink_manager(),
-          resize_task_runner) {
+      frame_sink_id_allocator_(kBrowserClientId),
+      host_frame_sink_manager_(
+          BrowserMainLoop::GetInstance()->host_frame_sink_manager()),
+      resize_task_runner_(resize_task_runner) {
   DCHECK(gpu_channel_establish_factory_);
   task_graph_runner_->Start("CompositorTileWorker1",
                             base::SimpleThread::Options());
-  context_factory_private_.GetHostFrameSinkManager()->SetConnectionLostCallback(
+  GetHostFrameSinkManager()->SetConnectionLostCallback(
       base::BindRepeating(&VizProcessTransportFactory::OnGpuProcessLost,
                           weak_ptr_factory_.GetWeakPtr()));
 
@@ -121,9 +148,6 @@ VizProcessTransportFactory::VizProcessTransportFactory(
 }
 
 VizProcessTransportFactory::~VizProcessTransportFactory() {
-  if (main_context_provider_)
-    main_context_provider_->RemoveObserver(this);
-
   task_graph_runner_->Shutdown();
 }
 
@@ -139,50 +163,20 @@ void VizProcessTransportFactory::ConnectHostFrameSinkManager() {
           frame_sink_manager_client.InitWithNewPipeAndPassReceiver();
 
   // Setup HostFrameSinkManager with interface endpoints.
-  context_factory_private_.GetHostFrameSinkManager()->BindAndSetManager(
-      std::move(frame_sink_manager_client_receiver),
-      context_factory_private_.resize_task_runner(),
+  GetHostFrameSinkManager()->BindAndSetManager(
+      std::move(frame_sink_manager_client_receiver), resize_task_runner_,
       std::move(frame_sink_manager));
 
-  if (GpuDataManagerImpl::GetInstance()->GpuProcessStartAllowed()) {
-    // Hop to the IO thread, then send the other side of interface to viz
-    // process.
-    auto connect_on_io_thread =
-        [](mojo::PendingReceiver<viz::mojom::FrameSinkManager> receiver,
-           mojo::PendingRemote<viz::mojom::FrameSinkManagerClient> client) {
-          // There should always be a GpuProcessHost instance, and GPU process,
-          // for running the compositor thread. The exception is during shutdown
-          // the GPU process won't be restarted and GpuProcessHost::Get() can
-          // return null.
-          auto* gpu_process_host = GpuProcessHost::Get();
-          if (gpu_process_host) {
-            gpu_process_host->gpu_host()->ConnectFrameSinkManager(
-                std::move(receiver), std::move(client));
-          }
-        };
-    base::PostTask(FROM_HERE, {BrowserThread::IO},
-                   base::BindOnce(connect_on_io_thread,
-                                  std::move(frame_sink_manager_receiver),
-                                  std::move(frame_sink_manager_client)));
-  } else {
-    DCHECK(!viz_compositor_thread_);
-
-    // GPU process access is disabled. Start a new thread to run the display
-    // compositor in-process and connect HostFrameSinkManager to it.
-    viz_compositor_thread_ =
-        std::make_unique<viz::VizCompositorThreadRunnerImpl>();
-
-    viz::mojom::FrameSinkManagerParamsPtr params =
-        viz::mojom::FrameSinkManagerParams::New();
-    params->restart_id = viz::BeginFrameSource::kNotRestartableId;
-    base::Optional<uint32_t> activation_deadline_in_frames =
-        switches::GetDeadlineToSynchronizeSurfaces();
-    params->use_activation_deadline = activation_deadline_in_frames.has_value();
-    params->activation_deadline_in_frames =
-        activation_deadline_in_frames.value_or(0u);
-    params->frame_sink_manager = std::move(frame_sink_manager_receiver);
-    params->frame_sink_manager_client = std::move(frame_sink_manager_client);
-    viz_compositor_thread_->CreateFrameSinkManager(std::move(params));
+  // There should always be a GpuProcessHost instance, and GPU process,
+  // for running the compositor thread. The exception is during shutdown
+  // the GPU process won't be restarted and GpuProcessHost::Get() can
+  // return null.
+  auto* gpu_process_host = GpuProcessHost::Get();
+  if (gpu_process_host) {
+    gpu_process_host->gpu_host()->ConnectFrameSinkManager(
+        std::move(frame_sink_manager_receiver),
+        std::move(frame_sink_manager_client),
+        GetHostFrameSinkManager()->debug_renderer_settings());
   }
 }
 
@@ -193,11 +187,7 @@ void VizProcessTransportFactory::CreateLayerTreeFrameSink(
       compositor->widget());
 #endif
 
-  // Create the data map entry so that we can set properties like output secure
-  // while we are waiting for the GpuChannel to be established.
-  context_factory_private_.AddCompositor(compositor.get());
-
-  if (IsGpuCompositingDisabled() || compositor->force_software_compositor()) {
+  if (is_gpu_compositing_disabled_ || compositor->force_software_compositor()) {
     OnEstablishedGpuChannel(compositor, nullptr);
     return;
   }
@@ -208,8 +198,11 @@ void VizProcessTransportFactory::CreateLayerTreeFrameSink(
 
 scoped_refptr<viz::ContextProvider>
 VizProcessTransportFactory::SharedMainThreadContextProvider() {
-  if (IsGpuCompositingDisabled())
+  if (is_gpu_compositing_disabled_)
     return nullptr;
+
+  if (main_context_provider_ && IsContextLost(main_context_provider_.get()))
+    main_context_provider_.reset();
 
   if (!main_context_provider_) {
     auto context_result = gpu::ContextResult::kTransientFailure;
@@ -235,7 +228,12 @@ VizProcessTransportFactory::SharedMainThreadRasterContextProvider() {
 }
 
 void VizProcessTransportFactory::RemoveCompositor(ui::Compositor* compositor) {
-  context_factory_private_.UnconfigureCompositor(compositor);
+#if defined(OS_WIN)
+  gfx::RenderingWindowManager::GetInstance()->UnregisterParent(
+      compositor->widget());
+#endif
+
+  compositor_data_map_.erase(compositor);
 }
 
 gpu::GpuMemoryBufferManager*
@@ -247,18 +245,21 @@ cc::TaskGraphRunner* VizProcessTransportFactory::GetTaskGraphRunner() {
   return task_graph_runner_.get();
 }
 
-void VizProcessTransportFactory::AddObserver(
-    ui::ContextFactoryObserver* observer) {
-  observer_list_.AddObserver(observer);
+viz::FrameSinkId VizProcessTransportFactory::AllocateFrameSinkId() {
+  return frame_sink_id_allocator_.NextFrameSinkId();
 }
 
-void VizProcessTransportFactory::RemoveObserver(
-    ui::ContextFactoryObserver* observer) {
-  observer_list_.RemoveObserver(observer);
+viz::SubtreeCaptureId VizProcessTransportFactory::AllocateSubtreeCaptureId() {
+  return subtree_capture_id_allocator_.NextSubtreeCaptureId();
+}
+
+viz::HostFrameSinkManager*
+VizProcessTransportFactory::GetHostFrameSinkManager() {
+  return host_frame_sink_manager_;
 }
 
 void VizProcessTransportFactory::DisableGpuCompositing() {
-  if (!IsGpuCompositingDisabled())
+  if (!is_gpu_compositing_disabled_)
     DisableGpuCompositing(nullptr);
 }
 
@@ -266,23 +267,9 @@ ui::ContextFactory* VizProcessTransportFactory::GetContextFactory() {
   return this;
 }
 
-ui::ContextFactoryPrivate*
-VizProcessTransportFactory::GetContextFactoryPrivate() {
-  return &context_factory_private_;
-}
-
-void VizProcessTransportFactory::OnContextLost() {
-  // PostTask to avoid destroying |main_context_provider_| while it's still
-  // informing observers about the context loss.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VizProcessTransportFactory::OnLostMainThreadSharedContext,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
 void VizProcessTransportFactory::DisableGpuCompositing(
     ui::Compositor* guilty_compositor) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ALLOW_UNUSED_LOCAL(compositing_mode_reporter_);
   // A fatal error has occurred and we can't fall back to software compositing
   // on CrOS. These can be unrecoverable hardware errors, or bugs that should
@@ -296,9 +283,9 @@ void VizProcessTransportFactory::DisableGpuCompositing(
     LOG(FATAL) << "Software compositing fallback is unavailable. Goodbye.";
   }
 
-  DLOG(ERROR) << "Switching to software compositing.";
+  DVLOG(1) << "Switching to software compositing.";
 
-  context_factory_private_.set_is_gpu_compositing_disabled(true);
+  is_gpu_compositing_disabled_ = true;
 
   // Change the result of GpuDataManagerImpl::IsGpuCompositingDisabled() before
   // notifying anything.
@@ -308,24 +295,23 @@ void VizProcessTransportFactory::DisableGpuCompositing(
 
   // Drop our reference on the gpu contexts for the compositors.
   worker_context_provider_.reset();
-  if (main_context_provider_) {
-    main_context_provider_->RemoveObserver(this);
-    main_context_provider_.reset();
-  }
+  main_context_provider_.reset();
 
-  // Consumers of the shared main thread context aren't CompositingModeWatchers,
-  // so inform them about the context loss due to switching to software
-  // compositing.
-  OnLostMainThreadSharedContext();
+  // ReleaseAcceleratedWidget() removes an entry from |compositor_data_map_|,
+  // so first copy the compositors to a new set.
+  base::flat_set<ui::Compositor*> all_compositors;
+  all_compositors.reserve(compositor_data_map_.size());
+  for (auto& pair : compositor_data_map_)
+    all_compositors.insert(pair.first);
 
-  // Reemove the FrameSink from every compositor that needs to fall back to
+  // Remove the FrameSink from every compositor that needs to fall back to
   // software compositing.
-  for (auto* compositor : context_factory_private_.GetAllCompositors()) {
+  for (auto* compositor : all_compositors) {
     // The |guilty_compositor| is in the process of setting up its FrameSink
     // so removing it from |compositor_data_map_| would be both pointless and
     // the cause of a crash.
     // Compositors with force_software_compositor() do not follow the global
-    // compositing mode, so they do not need to changed.
+    // compositing mode, so they do not need to be changed.
     if (compositor == guilty_compositor ||
         compositor->force_software_compositor())
       continue;
@@ -341,10 +327,6 @@ void VizProcessTransportFactory::DisableGpuCompositing(
 #endif
 }
 
-bool VizProcessTransportFactory::IsGpuCompositingDisabled() {
-  return context_factory_private_.is_gpu_compositing_disabled();
-}
-
 void VizProcessTransportFactory::OnGpuProcessLost() {
   // Reconnect HostFrameSinkManager to new GPU process.
   ConnectHostFrameSinkManager();
@@ -358,7 +340,7 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     return;
 
   bool gpu_compositing =
-      !IsGpuCompositingDisabled() && !compositor->force_software_compositor();
+      !is_gpu_compositing_disabled_ && !compositor->force_software_compositor();
 
   if (gpu_compositing) {
     auto context_result =
@@ -375,21 +357,101 @@ void VizProcessTransportFactory::OnEstablishedGpuChannel(
     }
   }
 
-  scoped_refptr<viz::ContextProvider> compositor_context;
-  scoped_refptr<viz::RasterContextProvider> worker_context;
+  scoped_refptr<viz::ContextProvider> context_provider;
+  scoped_refptr<viz::RasterContextProvider> worker_context_provider;
   if (gpu_compositing) {
     // Only pass the contexts to the compositor if it will use gpu compositing.
-    compositor_context = main_context_provider_;
-    worker_context = worker_context_provider_;
+    context_provider = main_context_provider_;
+    worker_context_provider = worker_context_provider_;
   }
-  context_factory_private_.ConfigureCompositor(
-      compositor, std::move(compositor_context), std::move(worker_context));
+
+#if defined(OS_WIN)
+  gfx::RenderingWindowManager::GetInstance()->RegisterParent(
+      compositor->widget());
+#endif
+  auto& compositor_data = compositor_data_map_[compositor];
+
+  auto root_params = viz::mojom::RootCompositorFrameSinkParams::New();
+  // Create interfaces for a root CompositorFrameSink.
+  mojo::PendingAssociatedRemote<viz::mojom::CompositorFrameSink> sink_remote;
+  root_params->compositor_frame_sink =
+      sink_remote.InitWithNewEndpointAndPassReceiver();
+  mojo::PendingReceiver<viz::mojom::CompositorFrameSinkClient> client_receiver =
+      root_params->compositor_frame_sink_client
+          .InitWithNewPipeAndPassReceiver();
+  compositor_data.display_private.reset();
+  root_params->display_private =
+      compositor_data.display_private.BindNewEndpointAndPassReceiver();
+  compositor_data.display_client =
+      std::make_unique<HostDisplayClient>(compositor);
+  root_params->display_client =
+      compositor_data.display_client->GetBoundRemote(resize_task_runner_);
+
+  if (compositor->use_external_begin_frame_control()) {
+    root_params->external_begin_frame_controller =
+        compositor_data.external_begin_frame_controller
+            .BindNewEndpointAndPassReceiver();
+  }
+
+  root_params->frame_sink_id = compositor->frame_sink_id();
+#if defined(GPU_SURFACE_HANDLE_IS_ACCELERATED_WINDOW)
+  root_params->widget = compositor->widget();
+#endif
+  root_params->gpu_compositing = gpu_compositing;
+  root_params->renderer_settings = viz::CreateRendererSettings();
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  if (command_line->HasSwitch(switches::kDisableFrameRateLimit))
+    root_params->disable_frame_rate_limit = true;
+
+  root_params->use_preferred_interval_for_video =
+      features::IsUsingPreferredIntervalForVideo();
+#if defined(OS_WIN)
+  root_params->set_present_duration_allowed =
+      features::ShouldUseSetPresentDuration();
+#endif  // OS_WIN
+
+  // Connects the viz process end of CompositorFrameSink message pipes. The
+  // browser compositor may request a new CompositorFrameSink on context loss,
+  // which will destroy the existing CompositorFrameSink.
+  GetHostFrameSinkManager()->CreateRootCompositorFrameSink(
+      std::move(root_params));
+
+  // Create LayerTreeFrameSink with the browser end of CompositorFrameSink.
+  cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
+  params.compositor_task_runner = compositor->task_runner();
+  params.gpu_memory_buffer_manager =
+      compositor->context_factory()->GetGpuMemoryBufferManager();
+  params.pipes.compositor_frame_sink_associated_remote = std::move(sink_remote);
+  params.pipes.client_receiver = std::move(client_receiver);
+  params.client_name = kBrowser;
+  auto frame_sink =
+      std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
+          std::move(context_provider), std::move(worker_context_provider),
+          &params);
+  compositor->SetLayerTreeFrameSink(std::move(frame_sink),
+                                    compositor_data.display_private.get());
+  if (compositor->use_external_begin_frame_control()) {
+    compositor->SetExternalBeginFrameController(
+        compositor_data.external_begin_frame_controller.get());
+  }
+
+#if defined(OS_WIN)
+  // Windows using the ANGLE D3D backend for compositing needs to disable swap
+  // on resize to avoid D3D scaling the framebuffer texture. This isn't a
+  // problem with software compositing or ANGLE D3D with direct composition.
+  bool using_angle_d3d_compositing =
+      gpu_compositing && !GpuDataManagerImpl::GetInstance()
+                              ->GetGPUInfo()
+                              .overlay_info.direct_composition;
+  compositor->SetShouldDisableSwapUntilResize(using_angle_d3d_compositing);
+#endif
 }
 
 gpu::ContextResult
 VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     scoped_refptr<gpu::GpuChannelHost> gpu_channel_host) {
-  DCHECK(!IsGpuCompositingDisabled());
+  DCHECK(!is_gpu_compositing_disabled_);
 
   // Fallback to software compositing if there is no IPC channel.
   if (!gpu_channel_host)
@@ -397,7 +459,7 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
 
   const auto& gpu_feature_info = gpu_channel_host->gpu_feature_info();
   // Fallback to software compositing if GPU compositing is blacklisted.
-  // TODO(sgilhuly): For now assume that if GL is blacklisted, then Vulkan is
+  // TODO(rivr): For now assume that if GL is blacklisted, then Vulkan is
   // also. Just check GL to see if GPU compositing is disabled.
   auto gpu_compositing_status =
       gpu_feature_info.status_values[gpu::GPU_FEATURE_TYPE_ACCELERATED_GL];
@@ -435,10 +497,8 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
     }
   }
 
-  if (main_context_provider_ && IsContextLost(main_context_provider_.get())) {
-    main_context_provider_->RemoveObserver(this);
+  if (main_context_provider_ && IsContextLost(main_context_provider_.get()))
     main_context_provider_.reset();
-  }
 
   if (!main_context_provider_) {
     constexpr bool kCompositorContextSupportsLocking = false;
@@ -454,31 +514,24 @@ VizProcessTransportFactory::TryCreateContextsForGpuCompositing(
         kCompositorContextSupportsRaster, kCompositorContextSupportsGrContext,
         kCompositorContextSupportsOOPR,
         viz::command_buffer_metrics::ContextType::BROWSER_MAIN_THREAD);
-    main_context_provider_->SetDefaultTaskRunner(
-        context_factory_private_.resize_task_runner());
+    main_context_provider_->SetDefaultTaskRunner(resize_task_runner_);
 
     auto context_result = main_context_provider_->BindToCurrentThread();
     if (context_result != gpu::ContextResult::kSuccess) {
       main_context_provider_.reset();
       return context_result;
     }
-
-    main_context_provider_->AddObserver(this);
   }
 
   return gpu::ContextResult::kSuccess;
 }
 
-void VizProcessTransportFactory::OnLostMainThreadSharedContext() {
-  // It's possible that |main_context_provider_| was already reset in
-  // OnEstablishedGpuChannel(), so check if it's lost before resetting here.
-  if (main_context_provider_ && IsContextLost(main_context_provider_.get())) {
-    main_context_provider_->RemoveObserver(this);
-    main_context_provider_.reset();
-  }
-
-  for (auto& observer : observer_list_)
-    observer.OnLostSharedContext();
-}
+VizProcessTransportFactory::CompositorData::CompositorData() = default;
+VizProcessTransportFactory::CompositorData::CompositorData(
+    CompositorData&& other) = default;
+VizProcessTransportFactory::CompositorData&
+VizProcessTransportFactory::CompositorData::operator=(CompositorData&& other) =
+    default;
+VizProcessTransportFactory::CompositorData::~CompositorData() = default;
 
 }  // namespace content

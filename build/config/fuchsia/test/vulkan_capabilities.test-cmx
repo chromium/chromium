@@ -1,0 +1,19 @@
+{
+  "facets": {
+    "fuchsia.test": {
+      "system-services": [
+        "fuchsia.sysmem.Allocator",
+        "fuchsia.vulkan.loader.Loader"
+      ]
+    }
+  },
+  "sandbox": {
+    "features": [
+      "vulkan"
+    ],
+    "services": [
+      "fuchsia.sysmem.Allocator",
+      "fuchsia.vulkan.loader.Loader"
+    ]
+  }
+}

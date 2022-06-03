@@ -1,0 +1,22 @@
+# crbug.com/1189746
+-org.chromium.net.NetworkChangeNotifierTest.testNetworkChangeNotifierJavaObservers
+
+# crbug.com/1189804
+-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputMode
+-org.chromium.content.browser.input.ImeInputModeTest.testShowAndHideInputModeWithPhysicalKeyboard
+
+# crbug.com/1220151
+-org.chromium.base.task.AsyncTaskTest.testChromeThreadPoolExecutorOsAsyncTask
+
+# crbug.com/1220155
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectionClearedAfterLossOfFocus
+-org.chromium.content.browser.ContentTextSelectionTest.testSelectionPreservedAfterLossOfFocusIfRequested
+
+# crbug.com/1233309
+-org.chromium.content.browser.GestureDetectorResetTest.testSeparateClicksAreRegisteredOnReload
+
+# crbug.com/1233311
+-org.chromium.content.browser.VideoFullscreenOrientationLockTest.testEnterExitFullscreenWithControlsButton
+
+# crbug.com/1233312
+-org.chromium.content.browser.font.AndroidFontLookupImplTest.testMatchLocalFontByUniqueName_Success

@@ -4,7 +4,9 @@
 
 (async function() {
   TestRunner.addResult(`This test verifies that the text editor can be read by assistive technology.\n`);
-  const editorFactory = await self.runtime.extension(UI.TextEditorFactory).instance()
+  await TestRunner.loadModule('text_editor');
+  await TestRunner.loadLegacyModule('text_editor');
+  const editorFactory = TextEditor.CodeMirrorTextEditorFactory.instance()
 
   let editor = editorFactory.createEditor({lineWrapping: false});
   editor.widget().show(UI.inspectorView.element);

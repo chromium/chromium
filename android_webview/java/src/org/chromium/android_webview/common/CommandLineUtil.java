@@ -18,10 +18,6 @@ public class CommandLineUtil {
 
     public static final String WEBVIEW_COMMAND_LINE_FILE = "/data/local/tmp/webview-command-line";
 
-    // same switch as kEnableCrashReporterForTesting in //base/base_switches.h
-    public static final String CRASH_UPLOADS_ENABLED_FOR_TESTING_SWITCH =
-            "enable-crash-reporter-for-testing";
-
     private static final String COMMAND_LINE_UTIL_INTERNAL =
             "org.chromium.android_webview.common.CommandLineUtilInternal";
 

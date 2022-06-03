@@ -18,9 +18,9 @@ struct ScopedPtrAVFree {
   void operator()(void* x) const;
 };
 
-// This assumes that the AVPacket being captured was allocated outside of
-// FFmpeg via the new operator.  Do not use this with AVPacket instances that
-// are allocated via malloc() or av_malloc().
+// This assumes that the ScopedAVPacket was created using MakeScopedAVPacket
+// from ffmpeg_demuxer.h. Do not use this with an AVPacket instance that was
+// allocated with new or manually av_malloc'd.
 struct ScopedPtrAVFreePacket {
   void operator()(void* x) const;
 };

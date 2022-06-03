@@ -1,0 +1,14 @@
+[Worker] Tests crypto.randomValues.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+Starting worker: random-values.js
+PASS [Worker] 'crypto' in self is true
+PASS [Worker] 'getRandomValues' in self.crypto is true
+PASS [Worker] self.crypto.__proto__.hasOwnProperty('getRandomValues') is true
+PASS [Worker] matchingBytes < 100 is true
+PASS [Worker] crypto.getRandomValues(new Uint8Array(new SharedArrayBuffer(100))) threw exception TypeError: Failed to execute 'getRandomValues' on 'Crypto': The provided ArrayBufferView value must not be shared..
+PASS successfullyParsed is true
+
+TEST COMPLETE
+

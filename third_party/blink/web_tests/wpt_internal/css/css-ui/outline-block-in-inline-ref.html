@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<style>
+section {
+  margin-bottom: 10px;
+  /* Prevent merging outlines to create ref without block-in-inline. */
+  line-height: 2;
+}
+.outline {
+  outline: solid blue 3px;
+}
+.outline-auto {
+  outline: auto;
+}
+</style>
+<body>
+  <section>
+    <span class="outline">test</span><br>
+    div<br>
+    <span class="outline">test</span><br>
+  </section>
+  <section>
+    <span class="outline-auto">test</span><br>
+    <div class="outline-auto">div</div>
+    <span class="outline-auto">test</span><br>
+  </section>
+  <section>
+    <span class="outline-auto">test</span><br>
+    <div class="outline-auto" style="width: 100px">div</div>
+    <span class="outline-auto">test</span><br>
+  </section>
+  <section>
+    <span class="outline-auto">test</span><br>
+    <div class="outline-auto" style="width: 100px; margin-left: 100px">div</div>
+    <span class="outline-auto">test</span><br>
+  </section>
+</body>

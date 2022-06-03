@@ -4,7 +4,7 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="support/helper.sub.js"></script>
 
-<meta http-equiv="Content-Security-Policy" content="trusted-types *">
+<meta http-equiv="Content-Security-Policy" content="require-trusted-types-for 'script';">
 <body>
 <div id="target"></div>
 <script>
@@ -66,7 +66,7 @@
         //     test_fn();
         //     assert_equals(element[property], value);
         //   } else {
-        //     assert_throws(..., test_fn, ...);
+        //     assert_throws_js(..., test_fn, ...);
         //   }
         //
         // Below is the same logic, but extended to handle the various edge
@@ -122,7 +122,7 @@
             }
             assert_equals("" + result_value, "" + value);
           } else {
-            assert_throws(new TypeError(), test_fn, "throws");
+            assert_throws_js(TypeError, test_fn, "throws");
           }
         }, `Test assignment of ${type ? type : "string"} on ${elem}.${property}`);
 
@@ -137,7 +137,7 @@
             test_fn();
             assert_equals("" + element.getAttribute(property), "" + value);
           } else {
-            assert_throws(new TypeError(), test_fn, "throws");
+            assert_throws_js(TypeError, test_fn, "throws");
           }
         }, `Test assignment of ${type ? type : "string"} on ${elem}.setAttribute(${property},..)`);
       }

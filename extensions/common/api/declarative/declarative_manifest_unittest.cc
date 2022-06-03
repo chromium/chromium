@@ -4,6 +4,7 @@
 
 #include <utility>
 
+#include "base/test/values_test_util.h"
 #include "extensions/browser/api_test_utils.h"
 #include "extensions/common/api/declarative/declarative_manifest_data.h"
 #include "extensions/common/manifest_test.h"
@@ -35,7 +36,7 @@ TEST_F(DeclarativeManifestTest, Valid) {
 
 TEST_F(DeclarativeManifestTest, ConditionMissingType) {
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest_data = ParseDictionary(
+  base::Value manifest_data = base::test::ParseJson(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -58,7 +59,7 @@ TEST_F(DeclarativeManifestTest, ConditionMissingType) {
 
 TEST_F(DeclarativeManifestTest, ConditionNotDictionary) {
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest_data = ParseDictionary(
+  base::Value manifest_data = base::test::ParseJson(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -79,7 +80,7 @@ TEST_F(DeclarativeManifestTest, ConditionNotDictionary) {
 
 TEST_F(DeclarativeManifestTest, ActionMissingType) {
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest_data = ParseDictionary(
+  base::Value manifest_data = base::test::ParseJson(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -101,7 +102,7 @@ TEST_F(DeclarativeManifestTest, ActionMissingType) {
 
 TEST_F(DeclarativeManifestTest, ActionNotDictionary) {
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest_data = ParseDictionary(
+  base::Value manifest_data = base::test::ParseJson(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -123,7 +124,7 @@ TEST_F(DeclarativeManifestTest, ActionNotDictionary) {
 
 TEST_F(DeclarativeManifestTest, EventRulesNotList) {
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest_data = ParseDictionary(
+  base::Value manifest_data = base::test::ParseJson(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -136,7 +137,7 @@ TEST_F(DeclarativeManifestTest, EventRulesNotList) {
 
 TEST_F(DeclarativeManifestTest, EventRuleNotDictionary) {
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest_data = ParseDictionary(
+  base::Value manifest_data = base::test::ParseJson(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -149,7 +150,7 @@ TEST_F(DeclarativeManifestTest, EventRuleNotDictionary) {
 
 TEST_F(DeclarativeManifestTest, EventMissingFromRule) {
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest_data = ParseDictionary(
+  base::Value manifest_data = base::test::ParseJson(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","
@@ -172,7 +173,7 @@ TEST_F(DeclarativeManifestTest, EventMissingFromRule) {
 
 TEST_F(DeclarativeManifestTest, RuleFailedToPopulate) {
   // Create extension
-  std::unique_ptr<base::DictionaryValue> manifest_data = ParseDictionary(
+  base::Value manifest_data = base::test::ParseJson(
       "{"
       "  \"name\": \"Test\","
       "  \"version\": \"1\","

@@ -33,6 +33,10 @@ class SeatbeltExtension;
 class SEATBELT_EXPORT SeatbeltExtensionToken {
  public:
   SeatbeltExtensionToken();
+
+  SeatbeltExtensionToken(const SeatbeltExtensionToken&) = delete;
+  SeatbeltExtensionToken& operator=(const SeatbeltExtensionToken&) = delete;
+
   ~SeatbeltExtensionToken();
 
   // Token objects are move-only types.
@@ -55,8 +59,6 @@ class SEATBELT_EXPORT SeatbeltExtensionToken {
 
  private:
   std::string token_;
-
-  DISALLOW_COPY_AND_ASSIGN(SeatbeltExtensionToken);
 };
 
 }  // namespace sandbox

@@ -28,11 +28,12 @@ class GrdHelperTest(unittest.TestCase):
     grd_dir = os.path.join(repo_root, 'tools', 'translation', 'testdata')
     messages = grd_helper.GetGrdMessages(
         os.path.join(grd_dir, 'test.grd'), grd_dir)
-    # Result should contain all messages from test.grd and part.grdp.
+    # Result should contain only the messages in test.grd. Even though the file
+    # includes part.grdp via a <part> tag, part.grdp's messages should not be
+    # listed here.
     self.assertTrue('IDS_TEST_STRING1' in messages)
     self.assertTrue('IDS_TEST_STRING2' in messages)
-    self.assertTrue('IDS_TEST_STRING_NON_TRANSLATEABLE' in messages)
-    self.assertTrue('IDS_PART_STRING_NON_TRANSLATEABLE' in messages)
+    self.assertFalse('IDS_TEST_STRING_NON_TRANSLATEABLE' in messages)
 
   def testReadGrdpMessages(self):
     messages = grd_helper.GetGrdpMessagesFromString(

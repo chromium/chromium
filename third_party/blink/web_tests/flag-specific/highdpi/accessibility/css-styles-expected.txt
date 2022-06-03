@@ -1,0 +1,22 @@
+This test ensures that various style attributes can be retrieved via the accessibility APIs.
+
+On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
+
+PASS axHeading.color is 16711680
+FAIL axHeading.fontSize should be 12. Was 18.
+PASS axParagraph.color is 65280
+FAIL axParagraph.fontSize should be 14. Was 21.
+PASS axButton.color is 255
+FAIL axButton.fontSize should be 16. Was 24.
+PASS axText.color is 255
+FAIL axText.fontSize should be 16. Was 24.
+PASS successfullyParsed is true
+
+TEST COMPLETE
+
+Heading.
+
+Line one.
+Line two.
+
+ 

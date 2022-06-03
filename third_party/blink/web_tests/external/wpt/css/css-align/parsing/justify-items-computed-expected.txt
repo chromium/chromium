@@ -1,0 +1,23 @@
+This is a testharness.js-based test.
+PASS Property justify-items value 'normal'
+PASS Property justify-items value 'stretch'
+PASS Property justify-items value 'baseline'
+FAIL Property justify-items value 'last baseline' assert_true: 'last baseline' is a supported value for justify-items. expected true got false
+PASS Property justify-items value 'center'
+PASS Property justify-items value 'start'
+PASS Property justify-items value 'end'
+PASS Property justify-items value 'self-start'
+PASS Property justify-items value 'self-end'
+PASS Property justify-items value 'flex-start'
+PASS Property justify-items value 'flex-end'
+PASS Property justify-items value 'unsafe center'
+PASS Property justify-items value 'safe self-end'
+PASS Property justify-items value 'right'
+PASS Property justify-items value 'safe left'
+PASS Property justify-items value 'legacy'
+PASS Property justify-items value 'legacy left'
+PASS Property justify-items value 'legacy right'
+PASS Property justify-items value 'legacy center'
+PASS justify-items legacy depends on inherited value
+Harness: the test ran to completion.
+

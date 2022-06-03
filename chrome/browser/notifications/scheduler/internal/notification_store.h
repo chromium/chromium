@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/notifications/proto/notification_entry.pb.h"
 #include "chrome/browser/notifications/scheduler/internal/collection_store.h"
@@ -34,6 +33,8 @@ class NotificationStore : public CollectionStore<NotificationEntry> {
   NotificationStore(
       std::unique_ptr<leveldb_proto::ProtoDatabase<proto::NotificationEntry,
                                                    NotificationEntry>> db);
+  NotificationStore(const NotificationStore&) = delete;
+  NotificationStore& operator=(const NotificationStore&) = delete;
   ~NotificationStore() override;
 
  private:
@@ -67,7 +68,6 @@ class NotificationStore : public CollectionStore<NotificationEntry> {
       db_;
 
   base::WeakPtrFactory<NotificationStore> weak_ptr_factory_{this};
-  DISALLOW_COPY_AND_ASSIGN(NotificationStore);
 };
 
 }  // namespace notifications

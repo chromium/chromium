@@ -11,9 +11,7 @@ import("//testing/test.gni")
 assert(use_alsa)
 
 cast_source_set("libcast_media_1.0_audio") {
-  sources = [
-    "cast_media_shlib.cc",
-  ]
+  sources = [ "cast_media_shlib.cc" ]
 
   deps = [
     ":volume_control",
@@ -55,6 +53,7 @@ cast_source_set("volume_control") {
   deps = [
     "//base",
     "//chromecast/base:chromecast_switches",
+    "//chromecast/base/metrics",
     "//chromecast/media/cma/backend:public",
     "//media",
   ]

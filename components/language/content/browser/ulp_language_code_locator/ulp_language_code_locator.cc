@@ -59,9 +59,12 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
   for (size_t index = 0; index < serialized_langtrees_.size(); index++) {
     std::string language;
 
-    const base::DictionaryValue* celllang_cached;
-    const bool is_cached =
-        celllangs_cached->GetDictionary(index, &celllang_cached);
+    bool is_cached = false;
+    const base::Value* celllang_cached = nullptr;
+    if (index < celllangs_cached->GetList().size()) {
+      celllang_cached = &celllangs_cached->GetList()[index];
+      is_cached = celllang_cached->is_dict();
+    }
 
     const std::string* token_cached =
         is_cached ? celllang_cached->FindStringKey(kCellTokenKey) : nullptr;

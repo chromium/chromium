@@ -1,0 +1,24 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://html.spec.whatwg.org/C/#imagebitmapsource
+typedef (HTMLImageElement or
+         SVGImageElement or
+         HTMLVideoElement or
+         HTMLCanvasElement or
+         Blob or
+         ImageData or
+         ImageBitmap or
+         OffscreenCanvas or
+         VideoFrame) ImageBitmapSource;
+
+[
+    ImplementedAs=ImageBitmapFactories
+] partial interface Window {
+  // https://html.spec.whatwg.org/#windoworworkerglobalscope
+  [CallWith=ScriptState, RaisesException] Promise<ImageBitmap> createImageBitmap(
+      ImageBitmapSource imageBitmap, optional ImageBitmapOptions options = {});
+  [CallWith=ScriptState, RaisesException] Promise<ImageBitmap> createImageBitmap(
+      ImageBitmapSource imageBitmap, long sx, long sy, long sw, long sh, optional ImageBitmapOptions options = {});
+};

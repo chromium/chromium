@@ -1,0 +1,20 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// Returned by the async iterator FontIterator as the entry value.
+// https://wicg.github.io/local-font-access/
+[
+    Exposed=(Window,Worker),
+    SecureContext,
+    RuntimeEnabled=FontAccess
+] interface FontMetadata {
+  readonly attribute USVString postscriptName;
+  readonly attribute USVString fullName;
+  readonly attribute USVString family;
+  readonly attribute USVString style;
+  readonly attribute boolean italic;
+  readonly attribute float stretch;
+  readonly attribute float weight;
+  [CallWith=ScriptState, Measure] Promise<Blob> blob();
+};

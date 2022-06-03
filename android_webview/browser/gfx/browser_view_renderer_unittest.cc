@@ -13,9 +13,9 @@
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/test/rendering_test.h"
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -50,16 +50,16 @@ class ActiveCompositorSwitchBeforeConstructionTest : public RenderingTest {
       case 1:
         EXPECT_TRUE(success);
         // Change compositor here. And do another ondraw.
-        // The previous active compositor id is 0, 0, now change it to 0, 1.
-        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(0, 1));
+        // The previous active compositor id is 1, 0, now change it to 1, 1.
+        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 1));
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
         break;
       case 2:
         // The 2nd ondraw is skipped because there is no active compositor at
         // the moment.
         EXPECT_FALSE(success);
-        new_compositor_.reset(
-            new content::TestSynchronousCompositor(viz::FrameSinkId(0, 1)));
+        new_compositor_ = std::make_unique<content::TestSynchronousCompositor>(
+            viz::FrameSinkId(1, 1));
         new_compositor_->SetClient(browser_view_renderer_.get());
         EXPECT_EQ(ActiveCompositor(), new_compositor_.get());
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
@@ -101,10 +101,10 @@ class ActiveCompositorSwitchAfterConstructionTest : public RenderingTest {
         EXPECT_TRUE(success);
         // Create a new compositor here. And switch it to be active.  And then
         // do another ondraw.
-        new_compositor_.reset(
-            new content::TestSynchronousCompositor(viz::FrameSinkId(0, 1)));
+        new_compositor_ = std::make_unique<content::TestSynchronousCompositor>(
+            viz::FrameSinkId(1, 1));
         new_compositor_->SetClient(browser_view_renderer_.get());
-        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(0, 1));
+        browser_view_renderer_->SetActiveFrameSinkId(viz::FrameSinkId(1, 1));
 
         EXPECT_EQ(ActiveCompositor(), new_compositor_.get());
         browser_view_renderer_->PostInvalidate(ActiveCompositor());
@@ -301,7 +301,6 @@ class TestAnimateOnScreenWithoutOnDraw : public RenderingTest {
         break;
       default:
         FAIL();
-        break;
     }
   }
 
@@ -359,8 +358,8 @@ RENDERING_TEST_F(CompositorNoFrameTest);
 
 class ClientIsVisibleOnConstructionTest : public RenderingTest {
   void SetUpTestHarness() override {
-    browser_view_renderer_.reset(
-        new BrowserViewRenderer(this, base::ThreadTaskRunnerHandle::Get()));
+    browser_view_renderer_ = std::make_unique<BrowserViewRenderer>(
+        this, base::ThreadTaskRunnerHandle::Get());
   }
 
   void StartTest() override {
@@ -466,6 +465,9 @@ class ResourceRenderingTest : public RenderingTest {
 
 class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
   struct FrameInfo {
+    FrameInfo(uint32_t frame_sink_id, viz::ResourceId id)
+        : layer_tree_frame_sink_id(frame_sink_id), resource_id(id) {}
+
     uint32_t layer_tree_frame_sink_id;
     viz::ResourceId resource_id;  // Each frame contains a single resource.
   };
@@ -474,9 +476,21 @@ class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
       int frame_number) override {
     static const FrameInfo infos[] = {
         // First output surface.
-        {0u, 1u}, {0u, 1u}, {0u, 2u}, {0u, 2u}, {0u, 3u}, {0u, 3u}, {0u, 4u},
+        {0u, viz::ResourceId(1u)},
+        {0u, viz::ResourceId(1u)},
+        {0u, viz::ResourceId(2u)},
+        {0u, viz::ResourceId(2u)},
+        {0u, viz::ResourceId(3u)},
+        {0u, viz::ResourceId(3u)},
+        {0u, viz::ResourceId(4u)},
         // Second output surface.
-        {1u, 1u}, {1u, 1u}, {1u, 2u}, {1u, 2u}, {1u, 3u}, {1u, 3u}, {1u, 4u},
+        {1u, viz::ResourceId(1u)},
+        {1u, viz::ResourceId(1u)},
+        {1u, viz::ResourceId(2u)},
+        {1u, viz::ResourceId(2u)},
+        {1u, viz::ResourceId(3u)},
+        {1u, viz::ResourceId(3u)},
+        {1u, viz::ResourceId(4u)},
     };
     if (frame_number >= static_cast<int>(base::size(infos))) {
       return nullptr;
@@ -679,7 +693,7 @@ class DidReachMaximalScrollOffsetTest : public RenderingTest {
     gfx::Vector2dF total_scroll_offset = kTotalScrollOffset;
     gfx::Vector2dF total_max_scroll_offset = kTotalMaxScrollOffset;
     gfx::SizeF scrollable_size = kScrollableSize;
-    // When --use-zoom-for-dsf is enabled, these value are in physical pixel.
+    // When --use-zoom-for-dsf is enabled, these values are in physical pixels.
     if (content::IsUseZoomForDSFEnabled()) {
       total_scroll_offset.Scale(kDipScale);
       total_max_scroll_offset.Scale(kDipScale);

@@ -1,0 +1,3 @@
+mixins: "//ui/accessibility/COMMON_METADATA"
+mixins: "//content/public/android/java/src/org/chromium/content/browser/accessibility/COMMON_METADATA"
+

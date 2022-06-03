@@ -8,11 +8,8 @@
 ../../../../ply/lex.py
 ../../../../ply/yacc.py
 ../../../../pyjson5/src/json5/__init__.py
-../../../../pyjson5/src/json5/arg_parser.py
-../../../../pyjson5/src/json5/host.py
 ../../../../pyjson5/src/json5/lib.py
 ../../../../pyjson5/src/json5/parser.py
-../../../../pyjson5/src/json5/tool.py
 ../../../../pyjson5/src/json5/version.py
 ../../build/scripts/blinkbuild/__init__.py
 ../../build/scripts/blinkbuild/name_style_converter.py
@@ -53,4 +50,3 @@ web_idl/runtime_enabled_features.py
 web_idl/typedef.py
 web_idl/union.py
 web_idl/user_defined_type.py
-web_idl/validator.py

@@ -16,6 +16,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/version.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/update_client/update_client.h"
 #include "url/gurl.h"
 
@@ -24,6 +25,10 @@ class PluginObserver;
 
 namespace policy {
 class ComponentUpdaterPolicyTest;
+}
+
+namespace speech {
+class SodaInstallerImpl;
 }
 
 namespace update_client {
@@ -48,16 +53,18 @@ using CrxUpdateItem = update_client::CrxUpdateItem;
 struct ComponentInfo {
   ComponentInfo(const std::string& id,
                 const std::string& fingerprint,
-                const base::string16& name,
+                const std::u16string& name,
                 const base::Version& version);
   ComponentInfo(const ComponentInfo& other);
+  ComponentInfo& operator=(const ComponentInfo& other);
   ComponentInfo(ComponentInfo&& other);
+  ComponentInfo& operator=(ComponentInfo&& other);
   ~ComponentInfo();
 
-  const std::string id;
-  const std::string fingerprint;
-  const base::string16 name;
-  const base::Version version;
+  std::string id;
+  std::string fingerprint;
+  std::u16string name;
+  base::Version version;
 };
 
 // The component update service is in charge of installing or upgrading
@@ -105,13 +112,6 @@ class ComponentUpdateService {
   // Returns a list of registered components.
   virtual std::vector<std::string> GetComponentIDs() const = 0;
 
-  // Returns a ComponentInfo describing a registered component that implements a
-  // handler for the specified |mime_type|. If multiple such components exist,
-  // returns information for the one that was most recently registered. If no
-  // such components exist, returns nullptr.
-  virtual std::unique_ptr<ComponentInfo> GetComponentForMimeType(
-      const std::string& mime_type) const = 0;
-
   // Returns a list of ComponentInfo objects describing all registered
   // components.
   virtual std::vector<ComponentInfo> GetComponents() const = 0;
@@ -135,7 +135,7 @@ class ComponentUpdateService {
   virtual void MaybeThrottle(const std::string& id,
                              base::OnceClosure callback) = 0;
 
-  virtual ~ComponentUpdateService() {}
+  virtual ~ComponentUpdateService() = default;
 
  private:
   // Returns details about registered component in the |item| parameter. The
@@ -143,6 +143,7 @@ class ComponentUpdateService {
   virtual bool GetComponentDetails(const std::string& id,
                                    CrxUpdateItem* item) const = 0;
 
+  friend class speech::SodaInstallerImpl;
   friend class ::ComponentsHandler;
   FRIEND_TEST_ALL_PREFIXES(ComponentInstallerTest, RegisterComponent);
 };
@@ -156,7 +157,7 @@ class OnDemandUpdater {
   // away.
   enum class Priority { BACKGROUND = 0, FOREGROUND = 1 };
 
-  virtual ~OnDemandUpdater() {}
+  virtual ~OnDemandUpdater() = default;
 
  private:
   friend class OnDemandTester;
@@ -165,9 +166,11 @@ class OnDemandUpdater {
   friend class ::ComponentsHandler;
   friend class ::PluginObserver;
   friend class SwReporterOnDemandFetcher;
-#if defined(OS_CHROMEOS)
+  friend class SodaComponentInstallerPolicy;
+  friend class SodaLanguagePackComponentInstallerPolicy;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   friend class CrOSComponentInstaller;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   friend class VrAssetsComponentInstallerPolicy;
 
   // Triggers an update check for a component. |id| is a value

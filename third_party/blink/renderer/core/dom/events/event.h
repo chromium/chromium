@@ -39,6 +39,7 @@ class EventDispatcher;
 class EventInit;
 class EventPath;
 class EventTarget;
+class Node;
 class ScriptState;
 class ScriptValue;
 
@@ -180,7 +181,6 @@ class CORE_EXPORT Event : public ScriptWrappable {
   bool bubbles() const { return bubbles_; }
   bool cancelable() const { return cancelable_; }
   bool composed() const { return composed_; }
-  bool IsScopedInV0() const;
 
   // Event creation timestamp in milliseconds. It returns a DOMHighResTimeStamp
   // using the platform timestamp (see |platform_time_stamp_|).
@@ -227,6 +227,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
   virtual bool IsClipboardEvent() const;
   virtual bool IsBeforeTextInsertedEvent() const;
 
+  virtual bool IsBeforeCreatePolicyEvent() const;
   virtual bool IsBeforeUnloadEvent() const;
   virtual bool IsErrorEvent() const;
 
@@ -249,11 +250,11 @@ class CORE_EXPORT Event : public ScriptWrappable {
   }
   void setCancelBubble(ScriptState*, bool);
 
-  Event* UnderlyingEvent() const { return underlying_event_.Get(); }
-  void SetUnderlyingEvent(Event*);
+  const Event* UnderlyingEvent() const { return underlying_event_.Get(); }
+  void SetUnderlyingEvent(const Event*);
 
   bool HasEventPath() { return event_path_; }
-  EventPath& GetEventPath() {
+  EventPath& GetEventPath() const {
     DCHECK(event_path_);
     return *event_path_;
   }
@@ -292,6 +293,10 @@ class CORE_EXPORT Event : public ScriptWrappable {
     legacy_did_listeners_throw_flag_ = true;
   }
 
+  void SetCopyEventPathFromUnderlyingEvent() {
+    copy_event_path_from_underlying_event_ = true;
+  }
+
   // In general, event listeners do not run when related execution contexts are
   // paused.  However, when this function returns true, event listeners ignore
   // the pause and run.
@@ -303,7 +308,7 @@ class CORE_EXPORT Event : public ScriptWrappable {
 
   probe::AsyncTaskId* async_task_id() { return &async_task_id_; }
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   virtual void ReceivedTarget();
@@ -322,7 +327,6 @@ class CORE_EXPORT Event : public ScriptWrappable {
   unsigned bubbles_ : 1;
   unsigned cancelable_ : 1;
   unsigned composed_ : 1;
-  unsigned is_event_type_scoped_in_v0_ : 1;
 
   unsigned propagation_stopped_ : 1;
   unsigned immediate_propagation_stopped_ : 1;
@@ -343,23 +347,21 @@ class CORE_EXPORT Event : public ScriptWrappable {
   unsigned fire_only_capture_listeners_at_target_ : 1;
   unsigned fire_only_non_capture_listeners_at_target_ : 1;
 
+  unsigned copy_event_path_from_underlying_event_ : 1;
+
   PassiveMode handling_passive_;
   uint8_t event_phase_;
   probe::AsyncTaskId async_task_id_;
 
   Member<EventTarget> current_target_;
   Member<EventTarget> target_;
-  Member<Event> underlying_event_;
+  Member<const Event> underlying_event_;
   Member<EventPath> event_path_;
   // The monotonic platform time in seconds, for input events it is the
   // event timestamp provided by the host OS and reported in the original
   // WebInputEvent instance.
   base::TimeTicks platform_time_stamp_;
 };
-
-#define DEFINE_EVENT_TYPE_CASTS(typeName)                          \
-  DEFINE_TYPE_CASTS(typeName, Event, event, event->Is##typeName(), \
-                    event.Is##typeName())
 
 }  // namespace blink
 

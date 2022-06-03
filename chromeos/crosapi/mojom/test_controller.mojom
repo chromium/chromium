@@ -1,0 +1,117 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+[Stable, Extensible]
+enum TouchEventType {
+  kUnknown = 0,
+  kPressed = 1,
+  kMoved = 2,
+  kReleased = 3,
+  // Touch events can be cancelled if mouse capture or touch capture changes in
+  // the middle of a gesture. For example, a long-press might change window or
+  // focus activation state in a way that cancels the gesture, even though the
+  // user has not released their finger. See ui::GestureRecognizer.
+  kCancelled = 4
+};
+
+// Augments a bool to include an 'unknown' value.
+[Stable, Extensible]
+enum OptionalBoolean {
+  [Default] kUnknown = 0,
+  kFalse,
+  kTrue,
+};
+
+// This interface is implemented by Ash-Chrome.
+// This interface provides tests a mechanism to mutate or query ash.
+// In the future, this interface may merge with an automation or a11y interface.
+// Next version: 7
+// Next method id: 13
+[Stable, Uuid="1f93f9d7-e466-466c-a675-c21b48cf30d3"]
+interface TestController {
+  // Clicks the middle of the window. Assumes that the window exists and is
+  // visible on screen. |window_id| should be obtained from
+  // PlatformWindow::GetWindowUniqueId(). A typical format might be:
+  // "org.chromium.lacros.9A82A161B2A0B9BADF75E9BB958B9FCB"
+  ClickWindow@1(string window_id);
+
+  // Checks whether an item with a given ID exists in the shelf.
+  [MinVersion=5]
+  DoesItemExistInShelf@9(string item_id) => (bool exists);
+
+  // Queries whether a window with the given |window_id| exists. |window_id|
+  // should be obtained from PlatformWindow::GetWindowUniqueId(). A typical
+  // format might be: "org.chromium.lacros.9A82A161B2A0B9BADF75E9BB958B9FCB"
+  DoesWindowExist@0(string window_id) => (bool exist);
+
+  // Causes ash to enter or exit overview mode. The callback is invoked after
+  // overview mode is entered (and the animation is finished).
+  [MinVersion=1]
+  EnterOverviewMode@2() => ();
+  [MinVersion=1]
+  ExitOverviewMode@3() => ();
+
+  // Causes ash to enter tablet mode. The callback is invoked after animations
+  // are finished. Note that tablet mode cannot be activated if mouse devices
+  // are connected; the callback will run, but ash will not be in tablet mode.
+  [MinVersion=2]
+  EnterTabletMode@4() => ();
+
+  // Causes ash to exit tablet mode. The callback is invoked after animations
+  // are finished.
+  [MinVersion=2]
+  ExitTabletMode@5() => ();
+
+  // Gets the context menu for a shelf item. This assumes the item is already in
+  // the shelf.
+  [MinVersion=7]
+  GetContextMenuForShelfItem@13(string item_id) => (array<string> items);
+
+  // Returns the value of the ash::kMinimizeOnBackKey property for the given
+  // window.
+  // This allows the client (eg lacros) to verify assumptions eg whether
+  // the current active tab should react to a system wide back gesture.
+  //
+  // Note: For simplicity, the return callback is called with `true` in case
+  // the property is not set, of the window is not found.
+  [MinVersion=4]
+  GetMinimizeOnBackKeyWindowProperty@10(string window_id)
+      => (OptionalBoolean value);
+
+  // Returns the position of a window's top-left corner in global "screen"
+  // coordinates in DIPs. By design, Wayland clients do not know the global
+  // position of their windows on the display. However, for window manager
+  // integration testing, some tests may need to assert a window is in a certain
+  // position (e.g. at the top of the display). Returns null if the window does
+  // not exist.
+  [MinVersion=3]
+  GetWindowPositionInScreen@8(string window_id) => (gfx.mojom.Point? position);
+
+  // Pins or unpins an item to the shelf. This assumes the item is already in
+  // the shelf. Returns |false| on any error.
+  [MinVersion=6]
+  PinOrUnpinItemInShelf@11(string item_id, bool pin) => (bool success);
+
+  // Simulates a user left-clicking an item in the shelf. This assumes the item
+  // is already in the shelf. Returns |false| on any error.
+  [MinVersion=6]
+  SelectItemInShelf@12(string item_id) => (bool success);
+
+  // Creates a touch event and dispatches it to the window with |window_id|.
+  // Returns immediately if the window does not exist. The |pointer_id|
+  // specifies which touch-point is involved in a multi-touch gesture.
+  // |pointer_id| is typically 0, meaning the first touch-point, usually the
+  // index finger. |location_in_window| is in DIPs, in coordinates relative to
+  // the window origin with 0,0 representing top-left. Note that the location
+  // is a float, as some input devices report sub-pixel positions for touch
+  // events.
+  [MinVersion=3]
+  SendTouchEvent@7(string window_id, TouchEventType type, uint8 pointer_id,
+                   gfx.mojom.PointF location_in_window) => ();
+
+};

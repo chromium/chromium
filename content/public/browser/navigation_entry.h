@@ -11,8 +11,6 @@
 #include <string>
 
 #include "base/memory/ref_counted_memory.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/supports_user_data.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -20,15 +18,19 @@
 #include "content/public/common/page_type.h"
 #include "content/public/common/referrer.h"
 #include "services/network/public/cpp/resource_request_body.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/page_transition_types.h"
 
 class GURL;
 
+namespace blink {
+class PageState;
+}
+
 namespace content {
 
-class BrowserContext;
-class PageState;
 struct FaviconStatus;
+class NavigationEntryRestoreContext;
 struct ReplacedNavigationEntryData;
 struct SSLStatus;
 
@@ -41,16 +43,6 @@ class NavigationEntry : public base::SupportsUserData {
   ~NavigationEntry() override {}
 
   CONTENT_EXPORT static std::unique_ptr<NavigationEntry> Create();
-
-  // Performs initialization of a restored NavigationEntry.
-  //
-  // An example of work performed by this method is recomputing SiteInstance
-  // information in some scenarios (see also https://crbug.com/1026474).
-  //
-  // This method needs to be called after |this| entry has been fully populated
-  // during session restore.  In particular, the SetURL and SetPageState calls
-  // should have already happened before calling InitRestoredEntry.
-  virtual void InitRestoredEntry(BrowserContext* browser_context) = 0;
 
   // Page-related stuff --------------------------------------------------------
 
@@ -105,25 +97,28 @@ class NavigationEntry : public base::SupportsUserData {
   // observers when the visible title changes. Only call
   // NavigationEntry::SetTitle() below directly when this entry is known not to
   // be visible.
-  virtual void SetTitle(const base::string16& title) = 0;
-  virtual const base::string16& GetTitle() = 0;
+  virtual void SetTitle(const std::u16string& title) = 0;
+  virtual const std::u16string& GetTitle() = 0;
 
   // Page state is an opaque blob created by Blink that represents the state of
   // the page. This includes form entries and scroll position for each frame.
   // We store it so that we can supply it back to Blink to restore form state
-  // properly when the user goes back and forward.
+  // properly when the user goes back and forward. |context| is an opaque object
+  // that tracks FrameNavigationEntries as they are created during page state
+  // initialization, and ensures equal entries are merged and shared.
   //
   // NOTE: This state is saved to disk and used to restore previous states.  If
   // the format is modified in the future, we should still be able to deal with
   // older versions.
-  virtual void SetPageState(const PageState& state) = 0;
-  virtual PageState GetPageState() = 0;
+  virtual void SetPageState(const blink::PageState& state,
+                            NavigationEntryRestoreContext* context) = 0;
+  virtual blink::PageState GetPageState() = 0;
 
   // Page-related helpers ------------------------------------------------------
 
   // Returns the title to be displayed on the tab. This could be the title of
   // the page if it is available or the URL.
-  virtual const base::string16& GetTitleForDisplay() = 0;
+  virtual const std::u16string& GetTitleForDisplay() = 0;
 
   // Returns true if the current tab is in view source mode. This will be false
   // if there is no navigation.
@@ -184,7 +179,7 @@ class NavigationEntry : public base::SupportsUserData {
   virtual const GURL& GetOriginalRequestURL() = 0;
 
   // Store whether or not we're overriding the user agent.
-  virtual void SetIsOverridingUserAgent(bool override) = 0;
+  virtual void SetIsOverridingUserAgent(bool override_ua) = 0;
   virtual bool GetIsOverridingUserAgent() = 0;
 
   // The time at which the last known local navigation has
@@ -223,7 +218,7 @@ class NavigationEntry : public base::SupportsUserData {
   // contains some information about the entry prior to being replaced. Even if
   // an entry is replaced multiple times, it represents data prior to the
   // *first* replace.
-  virtual const base::Optional<ReplacedNavigationEntryData>&
+  virtual const absl::optional<ReplacedNavigationEntryData>&
   GetReplacedEntryData() = 0;
 
   // True if this entry is restored and hasn't been loaded.

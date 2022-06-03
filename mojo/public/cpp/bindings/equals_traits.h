@@ -9,8 +9,8 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/optional.h"
 #include "mojo/public/cpp/bindings/lib/template_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -47,15 +47,15 @@ struct EqualsTraits<T, false> {
 };
 
 template <typename T>
-struct EqualsTraits<base::Optional<T>, false> {
-  static bool Equals(const base::Optional<T>& a, const base::Optional<T>& b) {
+struct EqualsTraits<absl::optional<T>, false> {
+  static bool Equals(const absl::optional<T>& a, const absl::optional<T>& b) {
     if (!a && !b)
       return true;
     if (!a || !b)
       return false;
 
     // NOTE: Not just Equals() because that's EqualsTraits<>::Equals() and we
-    // want mojo::Equals() for things like base::Optional<std::vector<T>>.
+    // want mojo::Equals() for things like absl::optional<std::vector<T>>.
     return mojo::Equals(*a, *b);
   }
 };

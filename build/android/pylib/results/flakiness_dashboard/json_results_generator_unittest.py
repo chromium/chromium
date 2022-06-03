@@ -114,7 +114,7 @@ class JSONGeneratorTest(unittest.TestCase):
     if tests_set or DISABLED_count:
       fixable = {}
       for fixable_items in buildinfo[JRG.FIXABLE]:
-        for (result_type, count) in fixable_items.iteritems():
+        for (result_type, count) in fixable_items.items():
           if result_type in fixable:
             fixable[result_type] = fixable[result_type] + count
           else:
@@ -138,7 +138,7 @@ class JSONGeneratorTest(unittest.TestCase):
 
     if failed_count_map:
       tests = buildinfo[JRG.TESTS]
-      for test_name in failed_count_map.iterkeys():
+      for test_name in failed_count_map.keys():
         test = self._FindTestInTrie(test_name, tests)
 
         failed = 0

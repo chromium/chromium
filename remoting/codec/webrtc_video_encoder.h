@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/callback.h"
 #include "base/time/time.h"
 #include "third_party/webrtc/api/video/video_codec_type.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
@@ -49,12 +50,41 @@ class WebrtcVideoEncoder {
     int vpx_max_quantizer = -1;
   };
 
+  // Information needed for sending video statistics for each encoded frame.
+  // The destructor is virtual so that implementations can derive from this
+  // class to attach more data to the frame.
+  struct FrameStats {
+    FrameStats() = default;
+    FrameStats(const FrameStats&) = default;
+    FrameStats& operator=(const FrameStats&) = default;
+    virtual ~FrameStats() = default;
+
+    // TODO(crbug.com/1192865): Consolidate all the per-frame statistics
+    // into a single struct in remoting/protocol.
+    base::TimeTicks capture_started_time;
+    base::TimeTicks capture_ended_time;
+    base::TimeTicks encode_started_time;
+    base::TimeTicks encode_ended_time;
+    base::TimeDelta send_pending_delay{base::TimeDelta::Max()};
+    base::TimeDelta rtt_estimate{base::TimeDelta::Max()};
+    int bandwidth_estimate_kbps = -1;
+  };
+
   struct EncodedFrame {
+    EncodedFrame();
+    EncodedFrame(const EncodedFrame&) = delete;
+    EncodedFrame(EncodedFrame&&);
+    EncodedFrame& operator=(const EncodedFrame&) = delete;
+    EncodedFrame& operator=(EncodedFrame&&);
+    ~EncodedFrame();
+
     webrtc::DesktopSize size;
     std::string data;
     bool key_frame;
     int quantizer;
     webrtc::VideoCodecType codec;
+
+    std::unique_ptr<FrameStats> stats;
   };
 
   enum class EncodeResult {

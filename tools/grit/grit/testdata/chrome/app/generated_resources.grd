@@ -46,7 +46,6 @@ are declared in build/common.gypi.
       <output filename="generated_resources_eu.pak" type="data_package" lang="eu" />
     </if>
     <output filename="generated_resources_fa.pak" type="data_package" lang="fa" />
-    <output filename="generated_resources_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="generated_resources_fi.pak" type="data_package" lang="fi" />
     <output filename="generated_resources_fil.pak" type="data_package" lang="fil" />
     <output filename="generated_resources_fr.pak" type="data_package" lang="fr" />
@@ -106,6 +105,10 @@ are declared in build/common.gypi.
     <output filename="generated_resources_vi.pak" type="data_package" lang="vi" />
     <output filename="generated_resources_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="generated_resources_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="generated_resources_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="generated_resources_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="resources/generated_resources_am.xtb" lang="am" />
@@ -175,7 +178,7 @@ are declared in build/common.gypi.
     <file path="resources/generated_resources_zh-CN.xtb" lang="zh-CN" />
     <file path="resources/generated_resources_zh-TW.xtb" lang="zh-TW" />
   </translations>
-  <release seq="1" allow_pseudo="false">
+  <release seq="1">
     <messages fallback_to_english="true">
       <!-- TODO add all of your "string table" messages here.  Remember to
       change nontranslateable parts of the messages into placeholders (using the

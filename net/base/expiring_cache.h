@@ -11,7 +11,6 @@
 #include <utility>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace net {
@@ -49,10 +48,10 @@ class NoopEvictionHandler {
 //                 std::less<base::TimeTicks> > cache(0);
 //   // Add a value that expires in 5 minutes
 //   cache.Put("key1", "value1", base::TimeTicks::Now(),
-//             base::TimeTicks::Now() + base::TimeDelta::FromMinutes(5));
+//             base::TimeTicks::Now() + base::Minutes(5));
 //   // Add another value that expires in 10 minutes.
 //   cache.Put("key2", "value2", base::TimeTicks::Now(),
-//             base::TimeTicks::Now() + base::TimeDelta::FromMinutes(10));
+//             base::TimeTicks::Now() + base::Minutes(10));
 //
 // Alternatively, there may be some more complex expiration criteria, at which
 // point a custom functor may be used:
@@ -74,6 +73,10 @@ template <typename KeyType,
                                                          ValueType,
                                                          ExpirationType> >
 class ExpiringCache {
+ public:
+  ExpiringCache(const ExpiringCache&) = delete;
+  ExpiringCache& operator=(const ExpiringCache&) = delete;
+
  private:
   // Intentionally violate the C++ Style Guide so that EntryMap is known to be
   // a dependent type. Without this, Clang's two-phase lookup complains when
@@ -96,7 +99,7 @@ class ExpiringCache {
         : cache_(cache),
           it_(cache_.entries_.begin()) {
     }
-    ~Iterator() {}
+    ~Iterator() = default;
 
     bool HasNext() const { return it_ != cache_.entries_.end(); }
     void Advance() { ++it_; }
@@ -211,8 +214,6 @@ class ExpiringCache {
   EntryMap entries_;
   ExpirationCompare expiration_comp_;
   EvictionHandler eviction_handler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExpiringCache);
 };
 
 }  // namespace net

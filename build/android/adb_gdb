@@ -581,32 +581,32 @@ get_ndk_toolchain_prebuilt () {
 get_ndk_toolchain_fullprefix () {
   local NDK_DIR="$1"
   local ARCH="$2"
-  local TARGET NAME HOST_OS HOST_ARCH GCC CONFIG
+  local TARGET NAME HOST_OS HOST_ARCH LD CONFIG
 
   # NOTE: This will need to be updated if the NDK changes the names or moves
   #        the location of its prebuilt toolchains.
   #
-  GCC=
+  LD=
   HOST_OS=$(get_ndk_host_system)
   HOST_ARCH=$(get_ndk_host_arch)
   CONFIG=$(get_arch_gnu_config $ARCH)
-  GCC=$(get_ndk_toolchain_prebuilt \
-        "$NDK_DIR" "$ARCH" "$HOST_OS-$HOST_ARCH/bin/$CONFIG-gcc")
-  if [ -z "$GCC" -a "$HOST_ARCH" = "x86_64" ]; then
-    GCC=$(get_ndk_toolchain_prebuilt \
-          "$NDK_DIR" "$ARCH" "$HOST_OS-x86/bin/$CONFIG-gcc")
+  LD=$(get_ndk_toolchain_prebuilt \
+        "$NDK_DIR" "$ARCH" "$HOST_OS-$HOST_ARCH/bin/$CONFIG-ld")
+  if [ -z "$LD" -a "$HOST_ARCH" = "x86_64" ]; then
+    LD=$(get_ndk_toolchain_prebuilt \
+         "$NDK_DIR" "$ARCH" "$HOST_OS-x86/bin/$CONFIG-ld")
   fi
-  if [ ! -f "$GCC" -a "$ARCH" = "x86" ]; then
+  if [ ! -f "$LD" -a "$ARCH" = "x86" ]; then
     # Special case, the x86 toolchain used to be incorrectly
     # named i686-android-linux-gcc!
-    GCC=$(get_ndk_toolchain_prebuilt \
-          "$NDK_DIR" "$ARCH" "$HOST_OS-x86/bin/i686-android-linux-gcc")
+    LD=$(get_ndk_toolchain_prebuilt \
+         "$NDK_DIR" "$ARCH" "$HOST_OS-x86/bin/i686-android-linux-ld")
   fi
-  if [ -z "$GCC" ]; then
+  if [ -z "$LD" ]; then
     panic "Cannot find Android NDK toolchain for '$ARCH' architecture. \
 Please verify your NDK installation!"
   fi
-  echo "${GCC%%gcc}"
+  echo "${LD%%ld}"
 }
 
 # $1: NDK install path
@@ -821,7 +821,7 @@ if [ "$PULL_LIBS" -a -z "$NO_PULL_LIBS" ]; then
   # Remove the fingerprint file in case pulling one of the libs fails.
   rm -f "$PULL_LIBS_DIR/build.fingerprint"
   SYSTEM_LIBS=$(echo "$MAPPINGS" | \
-      awk '$6 ~ /\/system\/.*\.so$/ { print $6; }' | sort -u)
+      awk '$6 ~ /\/(system|apex|vendor)\/.*\.so$/ { print $6; }' | sort -u)
   for SYSLIB in /system/bin/linker$SUFFIX_64_BIT $SYSTEM_LIBS; do
     echo "Pulling from device: $SYSLIB"
     DST_FILE=$PULL_LIBS_DIR$SYSLIB
@@ -986,7 +986,7 @@ EOF
   echo "GDB wrapper script: $SYM_GDB"
   echo "App executable: $SYM_EXE"
   echo "gdbinit: $SYM_INIT"
-  echo "Connect with vscode: https://chromium.googlesource.com/chromium/src/+/master/docs/vscode.md#Launch-Commands"
+  echo "Connect with vscode: https://chromium.googlesource.com/chromium/src/+/main/docs/vscode.md#Launch-Commands"
   echo "Showing gdbserver logs. Press Ctrl-C to disconnect."
   tail -f "$GDBSERVER_LOG"
 else

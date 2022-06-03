@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_MEMORY_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TIMING_MEMORY_INFO_H_
 
+#include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -62,9 +63,9 @@ class CORE_EXPORT MemoryInfo final : public ScriptWrappable {
 
   explicit MemoryInfo(Precision precision);
 
-  size_t totalJSHeapSize() const { return info_.total_js_heap_size; }
-  size_t usedJSHeapSize() const { return info_.used_js_heap_size; }
-  size_t jsHeapSizeLimit() const { return info_.js_heap_size_limit; }
+  uint64_t totalJSHeapSize() const { return info_.total_js_heap_size; }
+  uint64_t usedJSHeapSize() const { return info_.used_js_heap_size; }
+  uint64_t jsHeapSizeLimit() const { return info_.js_heap_size_limit; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(MemoryInfoTest, Bucketized);

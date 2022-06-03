@@ -31,9 +31,9 @@ promise_test(() => {
 // The deviceId constraint must be rejected, since the source of a track cannot
 // be changed with applyConstraints.
 promise_test(test => {
-  return promise_rejects(test,
-                         new OverconstrainedError('deviceId', ''),
-                         navigator.mediaDevices.getUserMedia({audio: true})
+  return promise_rejects_js(test,
+                            OverconstrainedError,
+                            navigator.mediaDevices.getUserMedia({audio: true})
       .then(s => {
     return s.getAudioTracks()[0].applyConstraints(
         { deviceId: {exact: 'mydevice-id'}});

@@ -44,8 +44,6 @@ quic::QuicConfig InitializeQuicConfig(const QuicParams& params) {
   quic::QuicConfig config;
   config.SetIdleNetworkTimeout(
       quic::QuicTime::Delta::FromMicroseconds(
-          params.idle_connection_timeout.InMicroseconds()),
-      quic::QuicTime::Delta::FromMicroseconds(
           params.idle_connection_timeout.InMicroseconds()));
   config.set_max_time_before_crypto_handshake(
       quic::QuicTime::Delta::FromMicroseconds(

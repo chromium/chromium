@@ -86,7 +86,7 @@ _xdg_glob_list_new (void)
   return new_element;
 }
 
-/* Frees glob_list and all of it's children */
+/* Frees glob_list and all of its children */
 static void
 _xdg_glob_list_free (XdgGlobList *glob_list)
 {

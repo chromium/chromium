@@ -3,6 +3,8 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 
+<!-- Please update R.dimens.touch_to_fill_sheet_height_single_credential
+     when modifying the margins image or text sizes. -->
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -23,12 +25,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.BlackHeadline" />
+        android:textAppearance="@style/TextAppearance.Headline.Primary" />
 
     <org.chromium.ui.widget.TextViewWithLeading
         android:id="@+id/touch_to_fill_sheet_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
-        android:textAppearance="@style/TextAppearance.BlackBody" />
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary" />
 </LinearLayout>

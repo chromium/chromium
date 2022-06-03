@@ -22,13 +22,13 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   ~FakeLayerTreeFrameSinkClient() override;
 
   void SetBeginFrameSource(viz::BeginFrameSource* source) override;
-  base::Optional<viz::HitTestRegionList> BuildHitTestData() override;
+  absl::optional<viz::HitTestRegionList> BuildHitTestData() override;
   void DidReceiveCompositorFrameAck() override;
   void DidPresentCompositorFrame(
       uint32_t frame_token,
       const viz::FrameTimingDetails& details) override {}
-  void ReclaimResources(
-      const std::vector<viz::ReturnedResource>& resources) override {}
+  void ReclaimResources(std::vector<viz::ReturnedResource> resources) override {
+  }
   void DidLoseLayerTreeFrameSink() override;
   void SetExternalTilePriorityConstraints(
       const gfx::Rect& viewport_rect_for_tile_priority,
@@ -53,7 +53,7 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   }
 
   void set_hit_test_region_list(
-      const base::Optional<viz::HitTestRegionList>& hit_test_region_list) {
+      const absl::optional<viz::HitTestRegionList>& hit_test_region_list) {
     hit_test_region_list_ = hit_test_region_list;
   }
 
@@ -62,7 +62,7 @@ class FakeLayerTreeFrameSinkClient : public LayerTreeFrameSinkClient {
   bool did_lose_layer_tree_frame_sink_called_ = false;
   ManagedMemoryPolicy memory_policy_{0};
   viz::BeginFrameSource* begin_frame_source_;
-  base::Optional<viz::HitTestRegionList> hit_test_region_list_;
+  absl::optional<viz::HitTestRegionList> hit_test_region_list_;
 };
 
 }  // namespace cc

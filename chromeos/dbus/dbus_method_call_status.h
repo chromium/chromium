@@ -12,7 +12,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace dbus {
 
@@ -22,20 +22,12 @@ class ObjectPath;
 
 namespace chromeos {
 
-// DEPRECATED. Migrating to DBusMethodCallback style.
-// TODO(hidehiko): Remove this when migration is completed.
-// An enum to describe whether or not a DBus method call succeeded.
-enum DBusMethodCallStatus {
-  DBUS_METHOD_CALL_FAILURE,
-  DBUS_METHOD_CALL_SUCCESS,
-};
-
 // Callback to handle response of methods with result.
 // If the method returns multiple values, std::tuple<...> will be used.
 // In case of error, nullopt should be passed.
 template <typename ResultType>
 using DBusMethodCallback =
-    base::OnceCallback<void(base::Optional<ResultType> result)>;
+    base::OnceCallback<void(absl::optional<ResultType> result)>;
 
 // Callback to handle response of methods without result.
 // |result| is true if the method call is successfully completed, otherwise
@@ -51,10 +43,13 @@ using ObjectPathCallback =
 using WaitForServiceToBeAvailableCallback =
     base::OnceCallback<void(bool service_is_available)>;
 
-// Returns an empty callback that does nothing.
-COMPONENT_EXPORT(CHROMEOS_DBUS)
-VoidDBusMethodCallback EmptyVoidDBusMethodCallback();
-
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::DBusMethodCallback;
+using ::chromeos::VoidDBusMethodCallback;
+using ::chromeos::WaitForServiceToBeAvailableCallback;
+}  // namespace ash
 
 #endif  // CHROMEOS_DBUS_DBUS_METHOD_CALL_STATUS_H_

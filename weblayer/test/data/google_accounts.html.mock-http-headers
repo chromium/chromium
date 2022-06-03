@@ -1,0 +1,2 @@
+HTTP/1.0 200 OK
+X-Chrome-Manage-Accounts: action=ADDSESSION,email=foo@bar.com,continue_url=https://blah.com,is_same_tab=true

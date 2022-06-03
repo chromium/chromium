@@ -1,4 +1,5 @@
 importScripts("/resources/testharness.js");
+importScripts("/resources/test-only-api.js");
 importScripts("resources/shapedetection-helpers.js");
 
 'use strict';
@@ -18,6 +19,12 @@ const imageBitmapTests =
         mockTestName: "BarcodeDetectionTest",
         resultSize: 2, // Number of barcodes
         detectorType: "Barcode"
+      },
+      {
+        createDetector: () => { return new TextDetector(); },
+        mockTestName: "TextDetectionTest",
+        resultSize: 2, // Number of text blocks
+        detectorType: "Text"
       }
     ];
 

@@ -5,12 +5,14 @@
 #include "chrome/browser/ui/media_router/media_router_file_dialog.h"
 
 #include <memory>
+#include <string>
+#include <utility>
 
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "chrome/common/media_router/issue.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/media_router/common/issue.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,6 +22,7 @@ using testing::_;
 using testing::ContainsRegex;
 using testing::Field;
 using testing::InvokeWithoutArgs;
+using testing::NiceMock;
 using testing::Return;
 using testing::Test;
 
@@ -79,7 +82,7 @@ class MediaRouterFileDialogTest : public Test {
   void SetUp() override {
     mock_delegate_ = std::make_unique<MockDelegate>();
 
-    auto temp_mock = std::make_unique<MockFileSystemDelegate>();
+    auto temp_mock = std::make_unique<NiceMock<MockFileSystemDelegate>>();
     mock_file_system_delegate = temp_mock.get();
 
     dialog_ = std::make_unique<MediaRouterFileDialog>(
@@ -109,7 +112,7 @@ class MediaRouterFileDialogTest : public Test {
   }
 
   void SelectFileAndExpectFailure(const base::FilePath& path) {
-    base::string16 path_name = path.BaseName().LossyDisplayName();
+    std::u16string path_name = path.BaseName().LossyDisplayName();
     std::string error_title = l10n_util::GetStringFUTF8(
         IDS_MEDIA_ROUTER_ISSUE_FILE_CAST_ERROR, path_name);
 

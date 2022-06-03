@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/files/file_path.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "remoting/base/auto_thread.h"
@@ -23,19 +22,23 @@ class PermissionWizard;
 class DaemonControllerDelegateMac : public DaemonController::Delegate {
  public:
   DaemonControllerDelegateMac();
+
+  DaemonControllerDelegateMac(const DaemonControllerDelegateMac&) = delete;
+  DaemonControllerDelegateMac& operator=(const DaemonControllerDelegateMac&) =
+      delete;
+
   ~DaemonControllerDelegateMac() override;
 
   // DaemonController::Delegate interface.
   DaemonController::State GetState() override;
   std::unique_ptr<base::DictionaryValue> GetConfig() override;
   void CheckPermission(bool it2me, DaemonController::BoolCallback) override;
-  void SetConfigAndStart(
-      std::unique_ptr<base::DictionaryValue> config,
-      bool consent,
-      const DaemonController::CompletionCallback& done) override;
+  void SetConfigAndStart(std::unique_ptr<base::DictionaryValue> config,
+                         bool consent,
+                         DaemonController::CompletionCallback done) override;
   void UpdateConfig(std::unique_ptr<base::DictionaryValue> config,
-                    const DaemonController::CompletionCallback& done) override;
-  void Stop(const DaemonController::CompletionCallback& done) override;
+                    DaemonController::CompletionCallback done) override;
+  void Stop(DaemonController::CompletionCallback done) override;
   DaemonController::UsageStatsConsent GetUsageStatsConsent() override;
 
  private:
@@ -45,8 +48,6 @@ class DaemonControllerDelegateMac : public DaemonController::Delegate {
   // thread.
   scoped_refptr<AutoThreadTaskRunner> io_task_runner_;
   AutoThread io_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(DaemonControllerDelegateMac);
 };
 
 }  // namespace remoting

@@ -10,14 +10,14 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "chrome/browser/media/router/discovery/dial/dial_url_fetcher.h"
 #include "chrome/browser/media/router/discovery/dial/parsed_dial_app_info.h"
 #include "chrome/browser/media/router/discovery/dial/safe_dial_app_info_parser.h"
-#include "chrome/common/media_router/discovery/media_sink_internal.h"
+#include "components/media_router/common/discovery/media_sink_internal.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace media_router {
@@ -27,15 +27,18 @@ namespace media_router {
 // numeric values should never be reused.
 enum class DialAppInfoResultCode {
   kOk = 0,
-  kNotFound = 1,
+  // kNotFound = 1, no longer used. Do not reuse the value 1.
   kNetworkError = 2,
   kParsingError = 3,
+  kHttpError = 4,
   kCount
 };
 
 struct DialAppInfoResult {
   DialAppInfoResult(std::unique_ptr<ParsedDialAppInfo> app_info,
-                    DialAppInfoResultCode result_code);
+                    DialAppInfoResultCode result_code,
+                    const std::string& error_message = "",
+                    absl::optional<int> http_error_code = absl::nullopt);
   DialAppInfoResult(DialAppInfoResult&& other);
   ~DialAppInfoResult();
 
@@ -44,6 +47,10 @@ struct DialAppInfoResult {
   std::unique_ptr<ParsedDialAppInfo> app_info;
   // |kOk| on success, a failure code otherwise.
   DialAppInfoResultCode result_code;
+  // Optionally set to provide additional information for an error.
+  std::string error_message;
+  // Set when |result_code| is |kHttpError|.
+  absl::optional<int> http_error_code;
 };
 
 // This class provides an API to fetch DIAL app info XML from an app URL and
@@ -63,6 +70,9 @@ class DialAppDiscoveryService {
                               DialAppInfoResult result)>;
 
   DialAppDiscoveryService();
+
+  DialAppDiscoveryService(const DialAppDiscoveryService&) = delete;
+  DialAppDiscoveryService& operator=(const DialAppDiscoveryService&) = delete;
 
   virtual ~DialAppDiscoveryService();
 
@@ -84,6 +94,10 @@ class DialAppDiscoveryService {
                    const std::string& app_name,
                    DialAppInfoCallback app_info_cb,
                    DialAppDiscoveryService* const service);
+
+    PendingRequest(const PendingRequest&) = delete;
+    PendingRequest& operator=(const PendingRequest&) = delete;
+
     ~PendingRequest();
 
     // Starts fetching the app info on |app_url_|.
@@ -97,10 +111,8 @@ class DialAppDiscoveryService {
     void OnDialAppInfoFetchComplete(const std::string& app_info_xml);
 
     // Invoked when HTTP GET request fails.
-    // |response_code|: The HTTP response code received.
-    // |error_message|: Error message from HTTP request.
-    void OnDialAppInfoFetchError(int response_code,
-                                 const std::string& error_message);
+    void OnDialAppInfoFetchError(const std::string& error_message,
+                                 absl::optional<int> http_response_code);
 
     // Invoked when SafeDialAppInfoParser finishes parsing app info XML.
     // |app_info|: Parsed app info from utility process, or nullptr if parsing
@@ -121,7 +133,6 @@ class DialAppDiscoveryService {
 
     SEQUENCE_CHECKER(sequence_checker_);
     base::WeakPtrFactory<PendingRequest> weak_ptr_factory_{this};
-    DISALLOW_COPY_AND_ASSIGN(PendingRequest);
   };
 
   friend class PendingRequest;
@@ -139,7 +150,6 @@ class DialAppDiscoveryService {
   std::unique_ptr<SafeDialAppInfoParser> parser_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-  DISALLOW_COPY_AND_ASSIGN(DialAppDiscoveryService);
 };
 
 }  // namespace media_router

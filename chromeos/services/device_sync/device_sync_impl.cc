@@ -4,17 +4,18 @@
 
 #include "chromeos/services/device_sync/device_sync_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
-#include "base/optional.h"
 #include "base/time/default_clock.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate_impl.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/device_sync/cryptauth_client_impl.h"
 #include "chromeos/services/device_sync/cryptauth_device_activity_getter_impl.h"
 #include "chromeos/services/device_sync/cryptauth_device_manager_impl.h"
@@ -26,7 +27,9 @@
 #include "chromeos/services/device_sync/cryptauth_feature_type.h"
 #include "chromeos/services/device_sync/cryptauth_gcm_manager_impl.h"
 #include "chromeos/services/device_sync/cryptauth_key_registry_impl.h"
+#include "chromeos/services/device_sync/cryptauth_metadata_syncer_impl.h"
 #include "chromeos/services/device_sync/cryptauth_scheduler_impl.h"
+#include "chromeos/services/device_sync/cryptauth_task_metrics_logger.h"
 #include "chromeos/services/device_sync/cryptauth_v2_device_manager_impl.h"
 #include "chromeos/services/device_sync/cryptauth_v2_enrollment_manager_impl.h"
 #include "chromeos/services/device_sync/device_sync_type_converters.h"
@@ -35,10 +38,13 @@
 #include "chromeos/services/device_sync/public/cpp/gcm_device_info_provider.h"
 #include "chromeos/services/device_sync/remote_device_provider_impl.h"
 #include "chromeos/services/device_sync/software_feature_manager_impl.h"
+#include "chromeos/services/device_sync/synced_bluetooth_address_tracker_impl.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -46,8 +52,15 @@ namespace device_sync {
 
 namespace {
 
-constexpr base::TimeDelta kSetFeatureEnabledTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kSetFeatureEnabledTimeout = base::Seconds(5);
+
+// Timeout value for asynchronous operation.
+// TODO(https://crbug.com/933656): Use async execution time metrics to tune
+// this timeout value.
+constexpr base::TimeDelta kWaitingForClientAppMetadataTimeout =
+    base::Seconds(60);
+
+constexpr base::TimeDelta kBaseRetryDelay = base::Seconds(5);
 
 // This enum is tied directly to a UMA enum defined in
 // //tools/metrics/histograms/enums.xml, and should always reflect it (do not
@@ -117,6 +130,42 @@ DeviceSyncRequestFailureReason GetDeviceSyncRequestFailureReason(
       return DeviceSyncRequestFailureReason::kUnknown;
   }
   NOTREACHED();
+}
+
+// The exponential back off is: base * 2^(num_failures - 1)
+base::TimeDelta GetRetryDelay(size_t num_failures) {
+  DCHECK_GT(num_failures, 0u);
+  return kBaseRetryDelay * (1 << (num_failures - 1));
+}
+
+void RecordGcmRegistrationMetrics(const base::TimeDelta& execution_time,
+                                  bool success) {
+  base::UmaHistogramCustomTimes(
+      "CryptAuth.DeviceSyncService.GcmRegistration.ExecutionTime",
+      execution_time, base::Seconds(1) /* min */, base::Minutes(10) /* max */,
+      100 /* buckets */);
+
+  base::UmaHistogramBoolean(
+      "CryptAuth.DeviceSyncService.GcmRegistration.Success", success);
+}
+
+void RecordClientAppMetadataFetchMetrics(const base::TimeDelta& execution_time,
+                                         CryptAuthAsyncTaskResult result) {
+  base::UmaHistogramCustomTimes(
+      "CryptAuth.DeviceSyncService.ClientAppMetadataFetch.ExecutionTime",
+      execution_time, base::Seconds(1) /* min */,
+      kWaitingForClientAppMetadataTimeout /* max */, 100 /* buckets */);
+
+  LogCryptAuthAsyncTaskSuccessMetric(
+      "CryptAuth.DeviceSyncService.ClientAppMetadataFetch.AsyncTaskResult",
+      result);
+}
+
+void RecordInitializationMetrics(const base::TimeDelta& execution_time) {
+  base::UmaHistogramCustomTimes(
+      "CryptAuth.DeviceSyncService.Initialization.ExecutionTime",
+      execution_time, base::Seconds(1) /* min */,
+      kWaitingForClientAppMetadataTimeout /* max */, 100 /* buckets */);
 }
 
 void RecordSetSoftwareFeatureStateResult(bool success) {
@@ -190,26 +239,11 @@ void RecordForceSyncNowResult(ForceCryptAuthOperationResult result) {
 }  // namespace
 
 // static
-DeviceSyncImpl::Factory* DeviceSyncImpl::Factory::test_factory_instance_ =
+DeviceSyncImpl::Factory* DeviceSyncImpl::Factory::custom_factory_instance_ =
     nullptr;
 
 // static
-DeviceSyncImpl::Factory* DeviceSyncImpl::Factory::Get() {
-  if (test_factory_instance_)
-    return test_factory_instance_;
-
-  static base::NoDestructor<Factory> factory;
-  return factory.get();
-}
-
-// static
-void DeviceSyncImpl::Factory::SetInstanceForTesting(Factory* test_factory) {
-  test_factory_instance_ = test_factory;
-}
-
-DeviceSyncImpl::Factory::~Factory() = default;
-
-std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::BuildInstance(
+std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::Create(
     signin::IdentityManager* identity_manager,
     gcm::GCMDriver* gcm_driver,
     PrefService* profile_prefs,
@@ -217,11 +251,30 @@ std::unique_ptr<DeviceSyncBase> DeviceSyncImpl::Factory::BuildInstance(
     ClientAppMetadataProvider* client_app_metadata_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     std::unique_ptr<base::OneShotTimer> timer) {
+  if (custom_factory_instance_) {
+    return custom_factory_instance_->CreateInstance(
+        identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
+        client_app_metadata_provider, std::move(url_loader_factory),
+        std::move(timer));
+  }
+
   return base::WrapUnique(new DeviceSyncImpl(
       identity_manager, gcm_driver, profile_prefs, gcm_device_info_provider,
       client_app_metadata_provider, std::move(url_loader_factory),
       base::DefaultClock::GetInstance(), std::move(timer)));
 }
+
+// static
+void DeviceSyncImpl::Factory::SetCustomFactory(Factory* custom_factory) {
+  custom_factory_instance_ = custom_factory;
+}
+
+// static
+bool DeviceSyncImpl::Factory::IsCustomFactorySet() {
+  return custom_factory_instance_ != nullptr;
+}
+
+DeviceSyncImpl::Factory::~Factory() = default;
 
 DeviceSyncImpl::PendingSetSoftwareFeatureRequest::
     PendingSetSoftwareFeatureRequest(
@@ -272,24 +325,6 @@ void DeviceSyncImpl::PendingSetSoftwareFeatureRequest::InvokeCallback(
   // Callback should only be invoked once.
   DCHECK(callback_);
   std::move(callback_).Run(result);
-}
-
-// static
-void DeviceSyncImpl::RegisterProfilePrefs(PrefRegistrySimple* registry) {
-  CryptAuthGCMManager::RegisterPrefs(registry);
-  CryptAuthDeviceManager::RegisterPrefs(registry);
-  if (base::FeatureList::IsEnabled(
-          chromeos::features::kCryptAuthV2Enrollment)) {
-    CryptAuthV2EnrollmentManagerImpl::RegisterPrefs(registry);
-    CryptAuthKeyRegistryImpl::RegisterPrefs(registry);
-    CryptAuthSchedulerImpl::RegisterPrefs(registry);
-  } else {
-    CryptAuthEnrollmentManagerImpl::RegisterPrefs(registry);
-  }
-
-  if (features::ShouldUseV2DeviceSync()) {
-    CryptAuthDeviceRegistryImpl::RegisterPrefs(registry);
-  }
 }
 
 DeviceSyncImpl::PendingSetFeatureStatusRequest::PendingSetFeatureStatusRequest(
@@ -386,20 +421,11 @@ DeviceSyncImpl::DeviceSyncImpl(
       client_app_metadata_provider_(client_app_metadata_provider),
       url_loader_factory_(std::move(url_loader_factory)),
       clock_(clock),
-      set_software_feature_timer_(std::move(timer)),
-      status_(Status::FETCHING_ACCOUNT_INFO) {
+      timer_(std::move(timer)) {
   DCHECK(profile_prefs_);
   PA_LOG(VERBOSE) << "DeviceSyncImpl: Initializing.";
-  CoreAccountInfo primary_account = identity_manager_->GetPrimaryAccountInfo();
-  if (primary_account.account_id.empty()) {
-    // Primary profile not loaded yet. This happens when adding a new account.
-    PA_LOG(VERBOSE) << "DeviceSyncImpl: Waiting for primary account info";
-    identity_manager_->AddObserver(this);
-  } else {
-    // Profile is ready immediately. This occurs during normal login and during
-    // the browser crash-and-restore flow.
-    ProcessPrimaryAccountInfo(primary_account);
-  }
+  initialization_start_timestamp_ = base::TimeTicks::Now();
+  RunNextInitializationStep();
 }
 
 DeviceSyncImpl::~DeviceSyncImpl() {
@@ -414,7 +440,7 @@ DeviceSyncImpl::~DeviceSyncImpl() {
 }
 
 void DeviceSyncImpl::ForceEnrollmentNow(ForceEnrollmentNowCallback callback) {
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::ForceEnrollmentNow() invoked before "
                     << "initialization was complete. Cannot force enrollment.";
     std::move(callback).Run(false /* success */);
@@ -424,14 +450,14 @@ void DeviceSyncImpl::ForceEnrollmentNow(ForceEnrollmentNowCallback callback) {
   }
 
   cryptauth_enrollment_manager_->ForceEnrollmentNow(
-      cryptauth::INVOCATION_REASON_MANUAL, base::nullopt /* session_id */);
+      cryptauth::INVOCATION_REASON_MANUAL, absl::nullopt /* session_id */);
   std::move(callback).Run(true /* success */);
   RecordForceEnrollmentNowResult(
       ForceCryptAuthOperationResult::kSuccess /* result */);
 }
 
 void DeviceSyncImpl::ForceSyncNow(ForceSyncNowCallback callback) {
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::ForceSyncNow() invoked before "
                     << "initialization was complete. Cannot force sync.";
     std::move(callback).Run(false /* success */);
@@ -440,11 +466,14 @@ void DeviceSyncImpl::ForceSyncNow(ForceSyncNowCallback callback) {
     return;
   }
 
-  cryptauth_device_manager_->ForceSyncNow(cryptauth::INVOCATION_REASON_MANUAL);
+  if (features::ShouldUseV1DeviceSync()) {
+    cryptauth_device_manager_->ForceSyncNow(
+        cryptauth::INVOCATION_REASON_MANUAL);
+  }
 
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_v2_device_manager_->ForceDeviceSyncNow(
-        cryptauthv2::ClientMetadata::MANUAL, base::nullopt /* session_id */);
+        cryptauthv2::ClientMetadata::MANUAL, absl::nullopt /* session_id */);
   }
 
   std::move(callback).Run(true /* success */);
@@ -454,11 +483,11 @@ void DeviceSyncImpl::ForceSyncNow(ForceSyncNowCallback callback) {
 
 void DeviceSyncImpl::GetLocalDeviceMetadata(
     GetLocalDeviceMetadataCallback callback) {
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::GetLocalDeviceMetadata() invoked "
                     << "before initialization was complete. Cannot return "
                     << "local device metadata.";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -468,10 +497,10 @@ void DeviceSyncImpl::GetLocalDeviceMetadata(
 }
 
 void DeviceSyncImpl::GetSyncedDevices(GetSyncedDevicesCallback callback) {
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::GetSyncedDevices() invoked before "
                     << "initialization was complete. Cannot return devices.";
-    std::move(callback).Run(base::nullopt);
+    std::move(callback).Run(absl::nullopt);
     return;
   }
 
@@ -486,7 +515,7 @@ void DeviceSyncImpl::SetSoftwareFeatureState(
     SetSoftwareFeatureStateCallback callback) {
   DCHECK(features::ShouldUseV1DeviceSync());
 
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::SetSoftwareFeatureState() invoked "
                     << "before initialization was complete. Cannot set state.";
     std::move(callback).Run(
@@ -508,10 +537,10 @@ void DeviceSyncImpl::SetSoftwareFeatureState(
 
   software_feature_manager_->SetSoftwareFeatureState(
       device_public_key, software_feature, enabled,
-      base::Bind(&DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess,
-                 weak_ptr_factory_.GetWeakPtr()),
-      base::Bind(&DeviceSyncImpl::OnSetSoftwareFeatureStateError,
-                 weak_ptr_factory_.GetWeakPtr(), request_id),
+      base::BindOnce(&DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&DeviceSyncImpl::OnSetSoftwareFeatureStateError,
+                     weak_ptr_factory_.GetWeakPtr(), request_id),
       is_exclusive);
 }
 
@@ -522,7 +551,7 @@ void DeviceSyncImpl::SetFeatureStatus(const std::string& device_instance_id,
   DCHECK(features::ShouldUseV2DeviceSync);
   DCHECK(!device_instance_id.empty());
 
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::SetFeatureStatus() invoked before "
                     << "initialization was complete. Cannot enable/disable "
                     << "feature.";
@@ -571,7 +600,7 @@ void DeviceSyncImpl::FindEligibleDevices(
     FindEligibleDevicesCallback callback) {
   DCHECK(features::ShouldUseV1DeviceSync());
 
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::FindEligibleDevices() invoked before "
                     << "initialization was complete. Cannot find devices.";
     std::move(callback).Run(
@@ -580,13 +609,15 @@ void DeviceSyncImpl::FindEligibleDevices(
     return;
   }
 
-  auto callback_holder = base::AdaptCallbackForRepeating(std::move(callback));
+  auto split_callback = base::SplitOnceCallback(std::move(callback));
   software_feature_manager_->FindEligibleDevices(
       software_feature,
-      base::Bind(&DeviceSyncImpl::OnFindEligibleDevicesSuccess,
-                 weak_ptr_factory_.GetWeakPtr(), callback_holder),
-      base::Bind(&DeviceSyncImpl::OnFindEligibleDevicesError,
-                 weak_ptr_factory_.GetWeakPtr(), callback_holder));
+      base::BindOnce(&DeviceSyncImpl::OnFindEligibleDevicesSuccess,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.first)),
+      base::BindOnce(&DeviceSyncImpl::OnFindEligibleDevicesError,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(split_callback.second)));
 }
 
 void DeviceSyncImpl::NotifyDevices(
@@ -596,7 +627,7 @@ void DeviceSyncImpl::NotifyDevices(
     NotifyDevicesCallback callback) {
   DCHECK(features::ShouldUseV2DeviceSync);
 
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::NotifyDevices() invoked before "
                     << "initialization was complete. Cannot notify devices.";
     std::move(callback).Run(
@@ -610,21 +641,21 @@ void DeviceSyncImpl::NotifyDevices(
   device_notifier_->NotifyDevices(
       device_instance_ids, target_service,
       CryptAuthFeatureTypeFromSoftwareFeature(feature),
-      base::Bind(&DeviceSyncImpl::OnNotifyDevicesSuccess,
-                 weak_ptr_factory_.GetWeakPtr(), request_id),
-      base::Bind(&DeviceSyncImpl::OnNotifyDevicesError,
-                 weak_ptr_factory_.GetWeakPtr(), request_id));
+      base::BindOnce(&DeviceSyncImpl::OnNotifyDevicesSuccess,
+                     weak_ptr_factory_.GetWeakPtr(), request_id),
+      base::BindOnce(&DeviceSyncImpl::OnNotifyDevicesError,
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void DeviceSyncImpl::GetDevicesActivityStatus(
     GetDevicesActivityStatusCallback callback) {
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING)
         << "DeviceSyncImpl::GetDevicesActivityStatus() invoked before "
         << "initialization was complete. Cannot get activity statuses.";
     std::move(callback).Run(
         mojom::NetworkRequestResult::kServiceNotYetInitialized,
-        base::nullopt /* device_activity_statuses */);
+        absl::nullopt /* device_activity_statuses */);
     return;
   }
 
@@ -634,33 +665,48 @@ void DeviceSyncImpl::GetDevicesActivityStatus(
 
   cryptauth_device_activity_getter_ =
       CryptAuthDeviceActivityGetterImpl::Factory::Create(
-          cryptauth_client_factory_.get(), client_app_metadata_provider_,
-          cryptauth_gcm_manager_.get());
+          client_app_metadata_->instance_id(),
+          client_app_metadata_->instance_id_token(),
+          cryptauth_client_factory_.get());
 
   cryptauth_device_activity_getter_->GetDevicesActivityStatus(
-      base::Bind(&DeviceSyncImpl::OnGetDevicesActivityStatusFinished,
-                 weak_ptr_factory_.GetWeakPtr(), request_id),
-      base::Bind(&DeviceSyncImpl::OnGetDevicesActivityStatusError,
-                 weak_ptr_factory_.GetWeakPtr(), request_id));
+      base::BindOnce(&DeviceSyncImpl::OnGetDevicesActivityStatusFinished,
+                     weak_ptr_factory_.GetWeakPtr(), request_id),
+      base::BindOnce(&DeviceSyncImpl::OnGetDevicesActivityStatusError,
+                     weak_ptr_factory_.GetWeakPtr(), request_id));
 }
 
 void DeviceSyncImpl::GetDebugInfo(GetDebugInfoCallback callback) {
-  if (status_ != Status::READY) {
+  if (status_ != InitializationStatus::kReady) {
     PA_LOG(WARNING) << "DeviceSyncImpl::GetDebugInfo() invoked before "
                     << "initialization was complete. Cannot provide info.";
     std::move(callback).Run(nullptr);
     return;
   }
 
-  std::move(callback).Run(mojom::DebugInfo::New(
-      cryptauth_enrollment_manager_->GetLastEnrollmentTime(),
-      cryptauth_enrollment_manager_->GetTimeToNextAttempt(),
-      cryptauth_enrollment_manager_->IsRecoveringFromFailure(),
-      cryptauth_enrollment_manager_->IsEnrollmentInProgress(),
-      cryptauth_device_manager_->GetLastSyncTime(),
-      cryptauth_device_manager_->GetTimeToNextAttempt(),
-      cryptauth_device_manager_->IsRecoveringFromFailure(),
-      cryptauth_device_manager_->IsSyncInProgress()));
+  if (features::ShouldUseV2DeviceSync()) {
+    std::move(callback).Run(mojom::DebugInfo::New(
+        cryptauth_enrollment_manager_->GetLastEnrollmentTime(),
+        cryptauth_enrollment_manager_->GetTimeToNextAttempt(),
+        cryptauth_enrollment_manager_->IsRecoveringFromFailure(),
+        cryptauth_enrollment_manager_->IsEnrollmentInProgress(),
+        cryptauth_v2_device_manager_->GetLastDeviceSyncTime().value_or(
+            base::Time()),
+        cryptauth_v2_device_manager_->GetTimeToNextAttempt().value_or(
+            base::TimeDelta::Max()),
+        cryptauth_v2_device_manager_->IsRecoveringFromFailure(),
+        cryptauth_v2_device_manager_->IsDeviceSyncInProgress()));
+  } else {
+    std::move(callback).Run(mojom::DebugInfo::New(
+        cryptauth_enrollment_manager_->GetLastEnrollmentTime(),
+        cryptauth_enrollment_manager_->GetTimeToNextAttempt(),
+        cryptauth_enrollment_manager_->IsRecoveringFromFailure(),
+        cryptauth_enrollment_manager_->IsEnrollmentInProgress(),
+        cryptauth_device_manager_->GetLastSyncTime(),
+        cryptauth_device_manager_->GetTimeToNextAttempt(),
+        cryptauth_device_manager_->IsRecoveringFromFailure(),
+        cryptauth_device_manager_->IsSyncInProgress()));
+  }
 }
 
 void DeviceSyncImpl::OnEnrollmentFinished(bool success) {
@@ -670,8 +716,8 @@ void DeviceSyncImpl::OnEnrollmentFinished(bool success) {
   if (!success)
     return;
 
-  if (status_ == Status::WAITING_FOR_ENROLLMENT)
-    CompleteInitializationAfterSuccessfulEnrollment();
+  if (status_ == InitializationStatus::kWaitingForEnrollment)
+    RunNextInitializationStep();
 
   NotifyOnEnrollmentFinished();
 }
@@ -738,15 +784,70 @@ void DeviceSyncImpl::Shutdown() {
   clock_ = nullptr;
 }
 
-void DeviceSyncImpl::OnPrimaryAccountSet(
-    const CoreAccountInfo& primary_account_info) {
-  PA_LOG(VERBOSE) << "DeviceSyncImpl: OnPrimaryAccountSet";
-  identity_manager_->RemoveObserver(this);
-  ProcessPrimaryAccountInfo(primary_account_info);
+void DeviceSyncImpl::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  PA_LOG(VERBOSE) << "DeviceSyncImpl: OnPrimaryAccountChanged";
+  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
+    case signin::PrimaryAccountChangeEvent::Type::kSet:
+      identity_manager_->RemoveObserver(this);
+      ProcessPrimaryAccountInfo(event.GetCurrentState().primary_account);
+      break;
+    case signin::PrimaryAccountChangeEvent::Type::kCleared:
+      FALLTHROUGH;
+    case signin::PrimaryAccountChangeEvent::Type::kNone:
+      // Ignored
+      break;
+  }
+}
+
+void DeviceSyncImpl::RunNextInitializationStep() {
+  switch (status_) {
+    case InitializationStatus::kNotStarted:
+      FetchAccountInfo();
+      break;
+    case InitializationStatus::kFetchingAccountInfo:
+      RegisterWithGcm();
+      break;
+    case InitializationStatus::kWaitingForGcmRegistration:
+      if (base::FeatureList::IsEnabled(
+              chromeos::features::kCryptAuthV2Enrollment)) {
+        FetchClientAppMetadata();
+      } else {
+        WaitForValidEnrollment();
+      }
+      break;
+    case InitializationStatus::kWaitingForClientAppMetadata:
+      WaitForValidEnrollment();
+      break;
+    case InitializationStatus::kWaitingForEnrollment:
+      CompleteInitializationAfterSuccessfulEnrollment();
+      break;
+    case InitializationStatus::kReady:
+      NOTREACHED();
+      break;
+  }
+}
+
+void DeviceSyncImpl::FetchAccountInfo() {
+  status_ = InitializationStatus::kFetchingAccountInfo;
+
+  // "Unconsented" because this feature is not tied to browser sync consent.
+  CoreAccountInfo primary_account =
+      identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (primary_account.account_id.empty()) {
+    // Primary profile not loaded yet. This happens when adding a new account.
+    PA_LOG(VERBOSE) << "DeviceSyncImpl: Waiting for primary account info";
+    identity_manager_->AddObserver(this);
+  } else {
+    // Profile is ready immediately. This occurs during normal login and during
+    // the browser crash-and-restore flow.
+    ProcessPrimaryAccountInfo(primary_account);
+  }
 }
 
 void DeviceSyncImpl::ProcessPrimaryAccountInfo(
     const CoreAccountInfo& primary_account_info) {
+  DCHECK_EQ(status_, InitializationStatus::kFetchingAccountInfo);
   if (primary_account_info.account_id.empty()) {
     PA_LOG(ERROR)
         << "No primary account information available; cannot proceed.";
@@ -760,12 +861,130 @@ void DeviceSyncImpl::ProcessPrimaryAccountInfo(
   }
 
   primary_account_info_ = primary_account_info;
+  PA_LOG(VERBOSE) << "DeviceSyncImpl: Profile initialized.";
 
-  DCHECK(status_ == Status::FETCHING_ACCOUNT_INFO);
-  status_ = Status::WAITING_FOR_ENROLLMENT;
+  RunNextInitializationStep();
+}
 
-  PA_LOG(VERBOSE) << "DeviceSyncImpl: Profile initialized; initializing "
-                  << "CryptAuth managers.";
+void DeviceSyncImpl::RegisterWithGcm() {
+  status_ = InitializationStatus::kWaitingForGcmRegistration;
+
+  if (!cryptauth_gcm_manager_) {
+    // Initialize |cryptauth_gcm_manager_| and have it start listening for GCM
+    // tickles.
+    cryptauth_gcm_manager_ =
+        CryptAuthGCMManagerImpl::Factory::Create(gcm_driver_, profile_prefs_);
+    cryptauth_gcm_manager_->StartListening();
+  }
+
+  // The device previously completed GCM registration.
+  if (!cryptauth_gcm_manager_->GetRegistrationId().empty()) {
+    RunNextInitializationStep();
+    return;
+  }
+
+  // The registration result is sent to observers via OnGCMRegistrationResult().
+  cryptauth_gcm_manager_->AddObserver(this);
+
+  DCHECK(cryptauth_gcm_manager_->IsListening());
+  PA_LOG(VERBOSE) << "DeviceSyncImpl: Registering with GCM.";
+  gcm_registration_start_timestamp_ = base::TimeTicks::Now();
+  cryptauth_gcm_manager_->RegisterWithGCM();
+}
+
+void DeviceSyncImpl::OnGCMRegistrationResult(bool success) {
+  if (status_ != InitializationStatus::kWaitingForGcmRegistration)
+    return;
+
+  cryptauth_gcm_manager_->RemoveObserver(this);
+
+  bool was_successful =
+      success && !cryptauth_gcm_manager_->GetRegistrationId().empty();
+  RecordGcmRegistrationMetrics(
+      base::TimeTicks::Now() - gcm_registration_start_timestamp_,
+      was_successful);
+
+  if (!was_successful) {
+    ++num_gcm_registration_failures_;
+    PA_LOG(ERROR) << "DeviceSyncImpl: GCM registration failed. Num failures: "
+                  << num_gcm_registration_failures_;
+    timer_->Start(FROM_HERE, GetRetryDelay(num_gcm_registration_failures_),
+                  base::BindOnce(&DeviceSyncImpl::RegisterWithGcm,
+                                 base::Unretained(this)));
+    return;
+  }
+
+  PA_LOG(VERBOSE) << "DeviceSyncImpl: GCM registration succeeded.";
+  RunNextInitializationStep();
+}
+
+void DeviceSyncImpl::FetchClientAppMetadata() {
+  DCHECK(
+      base::FeatureList::IsEnabled(chromeos::features::kCryptAuthV2Enrollment));
+  status_ = InitializationStatus::kWaitingForClientAppMetadata;
+
+  timer_->Start(FROM_HERE, kWaitingForClientAppMetadataTimeout,
+                base::BindOnce(&DeviceSyncImpl::OnClientAppMetadataFetchTimeout,
+                               weak_ptr_factory_.GetWeakPtr()));
+
+  // NOTE(crbug.com/1006280): It is very important that the GCM manager is
+  // listening before fetching ClientAppMetadata. Otherwise, the user's Instance
+  // ID, which is assumed to be stable, might be deleted.
+  DCHECK(cryptauth_gcm_manager_->IsListening());
+  PA_LOG(VERBOSE) << "DeviceSyncImpl: Fetching ClientAppMetadata.";
+  client_app_metadata_fetch_start_timestamp_ = base::TimeTicks::Now();
+  client_app_metadata_provider_->GetClientAppMetadata(
+      cryptauth_gcm_manager_->GetRegistrationId(),
+      base::BindOnce(&DeviceSyncImpl::OnClientAppMetadataFetched,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void DeviceSyncImpl::OnClientAppMetadataFetchTimeout() {
+  DCHECK_EQ(status_, InitializationStatus::kWaitingForClientAppMetadata);
+  weak_ptr_factory_.InvalidateWeakPtrs();
+  PA_LOG(VERBOSE) << "DeviceSyncImpl: ClientAppMetadata fetch timed out.";
+  RecordClientAppMetadataFetchMetrics(
+      base::TimeTicks::Now() - client_app_metadata_fetch_start_timestamp_,
+      CryptAuthAsyncTaskResult::kTimeout);
+
+  OnClientAppMetadataFetchFailure();
+}
+
+void DeviceSyncImpl::OnClientAppMetadataFetched(
+    const absl::optional<cryptauthv2::ClientAppMetadata>& client_app_metadata) {
+  DCHECK_EQ(status_, InitializationStatus::kWaitingForClientAppMetadata);
+  timer_->Stop();
+
+  bool success = client_app_metadata.has_value();
+  CryptAuthAsyncTaskResult result = success ? CryptAuthAsyncTaskResult::kSuccess
+                                            : CryptAuthAsyncTaskResult::kError;
+  RecordClientAppMetadataFetchMetrics(
+      base::TimeTicks::Now() - client_app_metadata_fetch_start_timestamp_,
+      result);
+
+  if (!success) {
+    OnClientAppMetadataFetchFailure();
+    return;
+  }
+
+  client_app_metadata_ = client_app_metadata;
+  RunNextInitializationStep();
+}
+
+void DeviceSyncImpl::OnClientAppMetadataFetchFailure() {
+  DCHECK_EQ(status_, InitializationStatus::kWaitingForClientAppMetadata);
+  ++num_client_app_metadata_fetch_failures_;
+  PA_LOG(ERROR)
+      << "DeviceSyncImpl: ClientAppMetadata fetch failed. Num failures: "
+      << num_client_app_metadata_fetch_failures_;
+  timer_->Start(FROM_HERE,
+                GetRetryDelay(num_client_app_metadata_fetch_failures_),
+                base::BindOnce(&DeviceSyncImpl::FetchClientAppMetadata,
+                               base::Unretained(this)));
+}
+
+void DeviceSyncImpl::WaitForValidEnrollment() {
+  status_ = InitializationStatus::kWaitingForEnrollment;
   InitializeCryptAuthManagementObjects();
 
   // If enrollment has not yet completed successfully, initialization cannot
@@ -776,17 +995,11 @@ void DeviceSyncImpl::ProcessPrimaryAccountInfo(
     return;
   }
 
-  CompleteInitializationAfterSuccessfulEnrollment();
+  RunNextInitializationStep();
 }
 
 void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
-  DCHECK(status_ == Status::WAITING_FOR_ENROLLMENT);
-
-  // Initialize |cryptauth_gcm_manager_| and have it start listening for GCM
-  // tickles.
-  cryptauth_gcm_manager_ = CryptAuthGCMManagerImpl::Factory::NewInstance(
-      gcm_driver_, profile_prefs_);
-  cryptauth_gcm_manager_->StartListening();
+  DCHECK_EQ(status_, InitializationStatus::kWaitingForEnrollment);
 
   cryptauth_client_factory_ = std::make_unique<CryptAuthClientFactoryImpl>(
       identity_manager_, url_loader_factory_,
@@ -797,23 +1010,23 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
   if (base::FeatureList::IsEnabled(
           chromeos::features::kCryptAuthV2Enrollment)) {
     cryptauth_key_registry_ =
-        CryptAuthKeyRegistryImpl::Factory::Get()->BuildInstance(profile_prefs_);
+        CryptAuthKeyRegistryImpl::Factory::Create(profile_prefs_);
 
     cryptauth_scheduler_ =
-        CryptAuthSchedulerImpl::Factory::Get()->BuildInstance(profile_prefs_);
+        CryptAuthSchedulerImpl::Factory::Create(profile_prefs_);
 
     cryptauth_enrollment_manager_ =
-        CryptAuthV2EnrollmentManagerImpl::Factory::Get()->BuildInstance(
-            client_app_metadata_provider_, cryptauth_key_registry_.get(),
+        CryptAuthV2EnrollmentManagerImpl::Factory::Create(
+            *client_app_metadata_, cryptauth_key_registry_.get(),
             cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
             cryptauth_scheduler_.get(), profile_prefs_, clock_);
   } else {
     cryptauth_enrollment_manager_ =
-        CryptAuthEnrollmentManagerImpl::Factory::NewInstance(
+        CryptAuthEnrollmentManagerImpl::Factory::Create(
             clock_,
             std::make_unique<CryptAuthEnrollerFactoryImpl>(
                 cryptauth_client_factory_.get()),
-            multidevice::SecureMessageDelegateImpl::Factory::NewInstance(),
+            multidevice::SecureMessageDelegateImpl::Factory::Create(),
             gcm_device_info_provider_->GetGcmDeviceInfo(),
             cryptauth_gcm_manager_.get(), profile_prefs_);
   }
@@ -821,20 +1034,21 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
   // Initialize v1 and v2 CryptAuth device managers (depending on feature
   // flags). Start() is not called yet since the device has not completed
   // enrollment.
-  cryptauth_device_manager_ = CryptAuthDeviceManagerImpl::Factory::NewInstance(
-      clock_, cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
-      profile_prefs_);
-
+  if (features::ShouldUseV1DeviceSync()) {
+    cryptauth_device_manager_ = CryptAuthDeviceManagerImpl::Factory::Create(
+        clock_, cryptauth_client_factory_.get(), cryptauth_gcm_manager_.get(),
+        profile_prefs_);
+  }
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_device_registry_ =
-        CryptAuthDeviceRegistryImpl::Factory::Get()->BuildInstance(
-            profile_prefs_);
+        CryptAuthDeviceRegistryImpl::Factory::Create(profile_prefs_);
 
     cryptauth_v2_device_manager_ =
-        CryptAuthV2DeviceManagerImpl::Factory::Get()->BuildInstance(
-            client_app_metadata_provider_, cryptauth_device_registry_.get(),
+        CryptAuthV2DeviceManagerImpl::Factory::Create(
+            *client_app_metadata_, cryptauth_device_registry_.get(),
             cryptauth_key_registry_.get(), cryptauth_client_factory_.get(),
-            cryptauth_gcm_manager_.get(), cryptauth_scheduler_.get());
+            cryptauth_gcm_manager_.get(), cryptauth_scheduler_.get(),
+            profile_prefs_);
   }
 
   cryptauth_enrollment_manager_->AddObserver(this);
@@ -842,48 +1056,52 @@ void DeviceSyncImpl::InitializeCryptAuthManagementObjects() {
 }
 
 void DeviceSyncImpl::CompleteInitializationAfterSuccessfulEnrollment() {
-  DCHECK(status_ == Status::WAITING_FOR_ENROLLMENT);
+  DCHECK_EQ(status_, InitializationStatus::kWaitingForEnrollment);
   DCHECK(cryptauth_enrollment_manager_->IsEnrollmentValid());
 
   // Now that enrollment has completed, the current device has been registered
   // with the CryptAuth back-end and can begin monitoring synced devices.
-  cryptauth_device_manager_->Start();
+  if (features::ShouldUseV1DeviceSync()) {
+    cryptauth_device_manager_->Start();
+  }
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_v2_device_manager_->Start();
   }
 
-  remote_device_provider_ = RemoteDeviceProviderImpl::Factory::NewInstance(
+  remote_device_provider_ = RemoteDeviceProviderImpl::Factory::Create(
       cryptauth_device_manager_.get(), cryptauth_v2_device_manager_.get(),
       primary_account_info_.email,
       cryptauth_enrollment_manager_->GetUserPrivateKey());
   remote_device_provider_->AddObserver(this);
 
   if (features::ShouldUseV2DeviceSync()) {
-    feature_status_setter_ =
-        CryptAuthFeatureStatusSetterImpl::Factory::Get()->BuildInstance(
-            client_app_metadata_provider_, cryptauth_client_factory_.get(),
-            cryptauth_gcm_manager_.get());
+    feature_status_setter_ = CryptAuthFeatureStatusSetterImpl::Factory::Create(
+        client_app_metadata_->instance_id(),
+        client_app_metadata_->instance_id_token(),
+        cryptauth_client_factory_.get());
 
-    device_notifier_ =
-        CryptAuthDeviceNotifierImpl::Factory::Get()->BuildInstance(
-            client_app_metadata_provider_, cryptauth_client_factory_.get(),
-            cryptauth_gcm_manager_.get());
+    device_notifier_ = CryptAuthDeviceNotifierImpl::Factory::Create(
+        client_app_metadata_->instance_id(),
+        client_app_metadata_->instance_id_token(),
+        cryptauth_client_factory_.get());
   }
 
-  // |feature_status_setter_| is null if v2 DeviceSync is disabled.
-  software_feature_manager_ = SoftwareFeatureManagerImpl::Factory::NewInstance(
-      cryptauth_client_factory_.get(), feature_status_setter_.get());
+  if (features::ShouldUseV1DeviceSync()) {
+    software_feature_manager_ = SoftwareFeatureManagerImpl::Factory::Create(
+        cryptauth_client_factory_.get(), feature_status_setter_.get());
+  }
 
-  status_ = Status::READY;
-
+  status_ = InitializationStatus::kReady;
   PA_LOG(VERBOSE) << "DeviceSyncImpl: CryptAuth Enrollment is valid; service "
                   << "fully initialized.";
+  RecordInitializationMetrics(base::TimeTicks::Now() -
+                              initialization_start_timestamp_);
 }
 
-base::Optional<multidevice::RemoteDevice>
+absl::optional<multidevice::RemoteDevice>
 DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
     const std::string& public_key) const {
-  DCHECK(status_ == Status::READY)
+  DCHECK_EQ(status_, InitializationStatus::kReady)
       << "DeviceSyncImpl::GetSyncedDeviceWithPublicKey() called before ready.";
 
   const auto& synced_devices = remote_device_provider_->GetSyncedDevices();
@@ -893,22 +1111,25 @@ DeviceSyncImpl::GetSyncedDeviceWithPublicKey(
                                });
 
   if (it == synced_devices.end())
-    return base::nullopt;
+    return absl::nullopt;
 
   return *it;
 }
 
 void DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess() {
+  DCHECK(features::ShouldUseV1DeviceSync());
+
   PA_LOG(VERBOSE) << "DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess(): "
                   << "Successfully completed SetSoftwareFeatureState() call; "
                   << "requesting force sync.";
+
   cryptauth_device_manager_->ForceSyncNow(
       cryptauth::INVOCATION_REASON_FEATURE_TOGGLED);
 
   if (features::ShouldUseV2DeviceSync()) {
     cryptauth_v2_device_manager_->ForceDeviceSyncNow(
         cryptauthv2::ClientMetadata::FEATURE_TOGGLED,
-        base::nullopt /* session_id */);
+        absl::nullopt /* session_id */);
   }
 
   RecordSetSoftwareFeatureStateResult(true /* success */);
@@ -917,6 +1138,8 @@ void DeviceSyncImpl::OnSetSoftwareFeatureStateSuccess() {
 void DeviceSyncImpl::OnSetSoftwareFeatureStateError(
     const base::UnguessableToken& request_id,
     NetworkRequestError error) {
+  DCHECK(features::ShouldUseV1DeviceSync());
+
   auto it = id_to_pending_set_software_feature_request_map_.find(request_id);
   if (it == id_to_pending_set_software_feature_request_map_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnSetSoftwareFeatureStateError(): "
@@ -938,22 +1161,27 @@ void DeviceSyncImpl::OnSetSoftwareFeatureStateError(
 }
 
 void DeviceSyncImpl::OnSetFeatureStatusSuccess() {
+  DCHECK(features::ShouldUseV2DeviceSync());
+
   PA_LOG(VERBOSE) << "DeviceSyncImpl::OnSetFeatureStatusSuccess(): "
                   << "Successfully completed SetFeatureStatus() call; "
                   << "requesting force sync.";
-  cryptauth_device_manager_->ForceSyncNow(
-      cryptauth::INVOCATION_REASON_FEATURE_TOGGLED);
 
-  if (features::ShouldUseV2DeviceSync()) {
-    cryptauth_v2_device_manager_->ForceDeviceSyncNow(
-        cryptauthv2::ClientMetadata::FEATURE_TOGGLED,
-        base::nullopt /* session_id */);
+  if (features::ShouldUseV1DeviceSync()) {
+    cryptauth_device_manager_->ForceSyncNow(
+        cryptauth::INVOCATION_REASON_FEATURE_TOGGLED);
   }
+
+  cryptauth_v2_device_manager_->ForceDeviceSyncNow(
+      cryptauthv2::ClientMetadata::FEATURE_TOGGLED,
+      absl::nullopt /* session_id */);
 }
 
 void DeviceSyncImpl::OnSetFeatureStatusError(
     const base::UnguessableToken& request_id,
     NetworkRequestError error) {
+  DCHECK(features::ShouldUseV2DeviceSync());
+
   auto it = id_to_pending_set_feature_status_request_map_.find(request_id);
   if (it == id_to_pending_set_feature_status_request_map_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnSetFeatureStatusError(): "
@@ -968,11 +1196,12 @@ void DeviceSyncImpl::OnSetFeatureStatusError(
 }
 
 void DeviceSyncImpl::OnFindEligibleDevicesSuccess(
-    const base::RepeatingCallback<void(mojom::NetworkRequestResult,
-                                       mojom::FindEligibleDevicesResponsePtr)>&
-        callback,
+    base::OnceCallback<void(mojom::NetworkRequestResult,
+                            mojom::FindEligibleDevicesResponsePtr)> callback,
     const std::vector<cryptauth::ExternalDeviceInfo>& eligible_device_infos,
     const std::vector<cryptauth::IneligibleDevice>& ineligible_devices) {
+  DCHECK(features::ShouldUseV1DeviceSync());
+
   std::vector<multidevice::RemoteDevice> eligible_remote_devices;
   for (const auto& eligible_device_info : eligible_device_infos) {
     auto possible_device =
@@ -997,20 +1226,22 @@ void DeviceSyncImpl::OnFindEligibleDevicesSuccess(
     }
   }
 
-  callback.Run(mojom::NetworkRequestResult::kSuccess,
-               mojom::FindEligibleDevicesResponse::New(
-                   eligible_remote_devices, ineligible_remote_devices));
+  std::move(callback).Run(
+      mojom::NetworkRequestResult::kSuccess,
+      mojom::FindEligibleDevicesResponse::New(eligible_remote_devices,
+                                              ineligible_remote_devices));
 
   RecordFindEligibleDevicesResult(true /* success */);
 }
 
 void DeviceSyncImpl::OnFindEligibleDevicesError(
-    const base::RepeatingCallback<void(mojom::NetworkRequestResult,
-                                       mojom::FindEligibleDevicesResponsePtr)>&
-        callback,
+    base::OnceCallback<void(mojom::NetworkRequestResult,
+                            mojom::FindEligibleDevicesResponsePtr)> callback,
     NetworkRequestError error) {
-  callback.Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error),
-               nullptr /* response */);
+  DCHECK(features::ShouldUseV1DeviceSync());
+
+  std::move(callback).Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error),
+                          nullptr /* response */);
 
   RecordFindEligibleDevicesResult(false /* success */);
   RecordFindEligibleDevicesResultFailureReason(
@@ -1020,6 +1251,8 @@ void DeviceSyncImpl::OnFindEligibleDevicesError(
 
 void DeviceSyncImpl::OnNotifyDevicesSuccess(
     const base::UnguessableToken& request_id) {
+  DCHECK(features::ShouldUseV2DeviceSync());
+
   auto it = pending_notify_devices_callbacks_.find(request_id);
   if (it == pending_notify_devices_callbacks_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnNotifyDevicesSuccess(): "
@@ -1035,6 +1268,8 @@ void DeviceSyncImpl::OnNotifyDevicesSuccess(
 void DeviceSyncImpl::OnNotifyDevicesError(
     const base::UnguessableToken& request_id,
     NetworkRequestError error) {
+  DCHECK(features::ShouldUseV2DeviceSync());
+
   auto it = pending_notify_devices_callbacks_.find(request_id);
   if (it == pending_notify_devices_callbacks_.end()) {
     PA_LOG(ERROR) << "DeviceSyncImpl::OnNotifyDevicesError(): "
@@ -1052,42 +1287,44 @@ void DeviceSyncImpl::OnGetDevicesActivityStatusFinished(
     const base::UnguessableToken& request_id,
     CryptAuthDeviceActivityGetter::DeviceActivityStatusResult
         device_activity_status_result) {
+  DCHECK(features::ShouldUseV2DeviceSync());
+
   auto iter = get_devices_activity_status_callbacks_.find(request_id);
   DCHECK(iter != get_devices_activity_status_callbacks_.end());
   std::move(iter->second)
       .Run(mojom::NetworkRequestResult::kSuccess,
-           base::make_optional(std::move(device_activity_status_result)));
+           absl::make_optional(std::move(device_activity_status_result)));
   get_devices_activity_status_callbacks_.erase(iter);
 }
 
 void DeviceSyncImpl::OnGetDevicesActivityStatusError(
     const base::UnguessableToken& request_id,
     NetworkRequestError error) {
+  DCHECK(features::ShouldUseV2DeviceSync());
+
   auto iter = get_devices_activity_status_callbacks_.find(request_id);
   DCHECK(iter != get_devices_activity_status_callbacks_.end());
   std::move(iter->second)
-      .Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error), base::nullopt);
+      .Run(mojo::ConvertTo<mojom::NetworkRequestResult>(error), absl::nullopt);
   get_devices_activity_status_callbacks_.erase(iter);
 }
 
 void DeviceSyncImpl::StartSetSoftwareFeatureTimer() {
-  set_software_feature_timer_->Start(
-      FROM_HERE, kSetFeatureEnabledTimeout,
-      base::Bind(&DeviceSyncImpl::OnSetSoftwareFeatureTimerFired,
-                 base::Unretained(this)));
+  timer_->Start(FROM_HERE, kSetFeatureEnabledTimeout,
+                base::BindOnce(&DeviceSyncImpl::OnSetSoftwareFeatureTimerFired,
+                               base::Unretained(this)));
 }
 
 void DeviceSyncImpl::OnSetSoftwareFeatureTimerFired() {
   if (id_to_pending_set_software_feature_request_map_.empty())
     return;
 
-  PA_LOG(WARNING)
-      << "DeviceSyncImpl::OnSetSoftwareFeatureTimerFired(): Timed out waiting "
-      << "for device feature states to update. Invoking failure "
-      << "callbacks.";
+  PA_LOG(WARNING) << "DeviceSyncImpl::OnSetSoftwareFeatureTimerFired(): "
+                  << "Timed out waiting for device feature states to update. "
+                  << "Invoking failure callbacks.";
 
-  // Any pending requests that are still present have timed out, so invoke their
-  // callbacks and remove them from the map.
+  // Any pending requests that are still present have timed out, so invoke
+  // their callbacks and remove them from the map.
   auto it = id_to_pending_set_software_feature_request_map_.begin();
   while (it != id_to_pending_set_software_feature_request_map_.end()) {
     RecordSetSoftwareFeatureStateResult(false /* success */);

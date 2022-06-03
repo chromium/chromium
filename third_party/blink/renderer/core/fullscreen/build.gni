@@ -1,0 +1,16 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+blink_core_sources_fullscreen = [
+  "document_fullscreen.cc",
+  "document_fullscreen.h",
+  "element_fullscreen.cc",
+  "element_fullscreen.h",
+  "fullscreen.cc",
+  "fullscreen.h",
+  "fullscreen_request_type.cc",
+  "fullscreen_request_type.h",
+  "scoped_allow_fullscreen.cc",
+  "scoped_allow_fullscreen.h",
+]

@@ -16,6 +16,7 @@
 #include "base/process/launch.h"
 #include "base/process/process.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/updater/action_handler.h"
@@ -48,9 +49,9 @@ void ActionHandler::Handle(const base::FilePath& action,
                            const std::string&,
                            Callback callback) {
   DCHECK(!action.empty());
-  PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::WithBaseSyncPrimitives(),
+      {base::MayBlock(), base::WithBaseSyncPrimitives(),
        base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&ActionHandler::RunCommand, action),
@@ -75,7 +76,7 @@ ActionHandler::Result ActionHandler::RunCommand(
   options.start_hidden = true;
   base::Process process = base::LaunchProcess(command_line, options);
   int exit_code = 0;
-  const base::TimeDelta kMaxWaitTime = base::TimeDelta::FromSeconds(600);
+  const base::TimeDelta kMaxWaitTime = base::Seconds(600);
   const bool succeeded =
       process.WaitForExitWithTimeout(kMaxWaitTime, &exit_code);
   return Result{succeeded, exit_code, 0};

@@ -6,6 +6,7 @@
 #define GPU_IPC_COMMON_MAILBOX_HOLDER_MOJOM_TRAITS_H_
 
 #include "gpu/command_buffer/common/mailbox_holder.h"
+#include "gpu/gpu_export.h"
 #include "gpu/ipc/common/mailbox_holder.mojom-shared.h"
 #include "gpu/ipc/common/mailbox_mojom_traits.h"
 #include "gpu/ipc/common/sync_token_mojom_traits.h"
@@ -13,7 +14,8 @@
 namespace mojo {
 
 template <>
-struct StructTraits<gpu::mojom::MailboxHolderDataView, gpu::MailboxHolder> {
+struct GPU_EXPORT
+    StructTraits<gpu::mojom::MailboxHolderDataView, gpu::MailboxHolder> {
   static const gpu::Mailbox& mailbox(const gpu::MailboxHolder& holder) {
     return holder.mailbox;
   }

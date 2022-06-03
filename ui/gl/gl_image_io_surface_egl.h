@@ -23,7 +23,7 @@ class GL_EXPORT GLImageIOSurfaceEGL : public GLImageIOSurface {
 
  protected:
   ~GLImageIOSurfaceEGL() override;
-  bool BindTexImageImpl(unsigned internalformat) override;
+  bool BindTexImageImpl(unsigned target, unsigned internalformat) override;
   bool CopyTexImage(unsigned target) override;
 
  private:
@@ -36,6 +36,7 @@ class GL_EXPORT GLImageIOSurfaceEGL : public GLImageIOSurface {
   EGLDisplay display_;
   EGLSurface pbuffer_;
   EGLConfig dummy_config_;
+  EGLint texture_target_;
   bool texture_bound_;
 };
 

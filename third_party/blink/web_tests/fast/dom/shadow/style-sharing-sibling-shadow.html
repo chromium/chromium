@@ -19,6 +19,6 @@ description("Siblings should only share if their host rules match");
 
 document.body.offsetTop;
 host = document.getElementById("sandbox").firstElementChild;
-host.createShadowRoot().innerHTML = "<style>:host { background: red; }</style>";
+host.attachShadow({mode: 'open'}).innerHTML = "<style>:host { background: red; }</style>";
 shouldBeEqualToString("getComputedStyle(host).backgroundColor", "rgb(255, 0, 0)");
 </script>

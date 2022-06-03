@@ -26,7 +26,8 @@
 // https://drafts.fxtf.org/filter-effects/#InterfaceSVGFEDisplacementMapElement
 
 [
-    DoNotCheckConstants
+    DoNotCheckConstants,
+    Exposed=Window
 ] interface SVGFEDisplacementMapElement : SVGElement {
     // Channel Selectors
     [MeasureAs=SVG1DOMFilter] const unsigned short SVG_CHANNEL_UNKNOWN = 0;

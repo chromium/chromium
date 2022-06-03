@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 
 <style>
+.scroller {
+  /* Opaque background by default. */
+  background: blue;
+  /* Stacking context by default. */
+  position: relative;
+  z-index: 1;
+}
+
 .transparent {
   opacity: 0.5;
 }
@@ -13,6 +21,10 @@
   background: rgba(255, 0, 0, 0.5);
 }
 
+.cant-paint-scrolling-background {
+  background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUg), white local
+}
+
 .border-radius {
   border: 2px solid;
   border-radius: 20px;
@@ -23,13 +35,16 @@
   clip: rect(0px,120px,120px,0px);
 }
 
-.clip-path{
+.clip-path {
   clip-path: circle(115px at 20px 20px);
 }
 
 .box-shadow {
   box-shadow: 10px 10px 5px #888888;
-  will-change:transform; /*This reason is not recorded for root layer*/
+}
+
+.inset-box-shadow {
+  box-shadow: 10px 10px 5px #888888 inset;
 }
 
 .composited {
@@ -38,6 +53,10 @@
 
 .content {
   height: 500px;
+}
+
+.non-stacking-context {
+  z-index: auto;
 }
 
 div {
@@ -52,9 +71,9 @@ body {
 }
 </style>
 
-<div id="scroller1">
+<div class="scroller" id="scroller1">
   <div class="content" id="content1"></div>
 </div>
-<div id="scroller2">
+<div class="scroller" id="scroller2">
   <div class="content"></div>
 </div>

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 304 tests; 298 PASS, 6 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 329 tests; 321 PASS, 8 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Loading data…
 PASS Parsing origin: <http://example	.
 org> against <http://example.org/foo/bar>
@@ -15,8 +15,8 @@ PASS Parsing origin: < foo.com  > against <http://example.org/foo/bar>
 FAIL Parsing origin: <a:	 foo.com> against <http://example.org/foo/bar> assert_equals: origin expected "null" but got "file://"
 PASS Parsing origin: <http://f:21/ b ? d # e > against <http://example.org/foo/bar>
 PASS Parsing origin: <http://f:/c> against <http://example.org/foo/bar>
-FAIL Parsing origin: <http://f:0/c> against <http://example.org/foo/bar> assert_equals: origin expected "http://f:0" but got "http://f"
-FAIL Parsing origin: <http://f:00000000000000/c> against <http://example.org/foo/bar> assert_equals: origin expected "http://f:0" but got "http://f"
+PASS Parsing origin: <http://f:0/c> against <http://example.org/foo/bar>
+PASS Parsing origin: <http://f:00000000000000/c> against <http://example.org/foo/bar>
 PASS Parsing origin: <http://f:00000000000000000000080/c> against <http://example.org/foo/bar>
 PASS Parsing origin: <http://f:
 /c> against <http://example.org/foo/bar>
@@ -37,6 +37,8 @@ PASS Parsing origin: <?> against <http://example.org/foo/bar>
 PASS Parsing origin: </> against <http://example.org/foo/bar>
 PASS Parsing origin: <:23> against <http://example.org/foo/bar>
 PASS Parsing origin: </:23> against <http://example.org/foo/bar>
+PASS Parsing origin: <\x> against <http://example.org/foo/bar>
+FAIL Parsing origin: <\\x\hello> against <http://example.org/foo/bar> assert_equals: origin expected "http://x" but got "file://"
 PASS Parsing origin: <::> against <http://example.org/foo/bar>
 PASS Parsing origin: <::23> against <http://example.org/foo/bar>
 PASS Parsing origin: <foo://> against <http://example.org/foo/bar>
@@ -219,7 +221,6 @@ PASS Parsing origin: <http://%30%78%63%30%2e%30%32%35%30.01%2e> against <http://
 PASS Parsing origin: <http://０Ｘｃ０．０２５０．０１> against <http://other.com/>
 PASS Parsing origin: <http://./> against <about:blank>
 PASS Parsing origin: <http://../> against <about:blank>
-PASS Parsing origin: <http://0..0x300/> against <about:blank>
 PASS Parsing origin: <http://foo:💩@example.com/bar> against <http://other.com/>
 PASS Parsing origin: <#> against <test:test>
 PASS Parsing origin: <#x> against <mailto:x@x.com>
@@ -256,13 +257,15 @@ PASS Parsing origin: <data:/../> against <about:blank>
 PASS Parsing origin: <javascript:/../> against <about:blank>
 PASS Parsing origin: <mailto:/../> against <about:blank>
 PASS Parsing origin: <sc://ñ.test/> against <about:blank>
-PASS Parsing origin: <sc://!"$&'()*+,-.;<=>^_`{|}~/> against <about:blank>
 PASS Parsing origin: <x> against <sc://ñ>
 PASS Parsing origin: <sc:\../> against <about:blank>
 PASS Parsing origin: <sc::a@example.net> against <about:blank>
 PASS Parsing origin: <wow:%NBD> against <about:blank>
 PASS Parsing origin: <wow:%1G> against <about:blank>
 PASS Parsing origin: <wow:￿> against <about:blank>
+FAIL Parsing origin: <http://example.com/U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿?U+d800𐟾U+dfff﷐﷏﷯ﷰ￾￿> against <about:blank> assert_equals: origin expected "http://example.com" but got "null"
+FAIL Parsing origin: <http://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "http://\x1f!\"$&'()*+,-.;=_`{}~" but got "null"
+PASS Parsing origin: <sc://!"$&'()*+,-.;=_`{}~/> against <about:blank>
 PASS Parsing origin: <ftp://%e2%98%83> against <about:blank>
 PASS Parsing origin: <https://%e2%98%83> against <about:blank>
 PASS Parsing origin: <http://127.0.0.1:10100/relative_import.html> against <about:blank>
@@ -284,17 +287,21 @@ PASS Parsing origin: <http://foo.bar/baz?qux#foo"bar> against <about:blank>
 PASS Parsing origin: <http://foo.bar/baz?qux#foo<bar> against <about:blank>
 PASS Parsing origin: <http://foo.bar/baz?qux#foo>bar> against <about:blank>
 PASS Parsing origin: <http://foo.bar/baz?qux#foo`bar> against <about:blank>
+PASS Parsing origin: <http://1.2.3.4/> against <http://other.com/>
+PASS Parsing origin: <http://1.2.3.4./> against <http://other.com/>
 PASS Parsing origin: <http://192.168.257> against <http://other.com/>
+PASS Parsing origin: <http://192.168.257.> against <http://other.com/>
 PASS Parsing origin: <http://192.168.257.com> against <http://other.com/>
 PASS Parsing origin: <http://256> against <http://other.com/>
 PASS Parsing origin: <http://256.com> against <http://other.com/>
 PASS Parsing origin: <http://999999999> against <http://other.com/>
+PASS Parsing origin: <http://999999999.> against <http://other.com/>
 PASS Parsing origin: <http://999999999.com> against <http://other.com/>
 PASS Parsing origin: <http://10000000000.com> against <http://other.com/>
 PASS Parsing origin: <http://4294967295> against <http://other.com/>
 PASS Parsing origin: <http://0xffffffff> against <http://other.com/>
-PASS Parsing origin: <http://256.256.256.256.256> against <http://other.com/>
 PASS Parsing origin: <https://0x.0x.0> against <about:blank>
+PASS Parsing origin: <asdf://%43%7C/> against <about:blank>
 PASS Parsing origin: <http://[1:0::]> against <http://example.net/>
 PASS Parsing origin: <sc://ñ> against <about:blank>
 PASS Parsing origin: <sc://ñ?x> against <about:blank>
@@ -313,5 +320,23 @@ PASS Parsing origin: <ldap://localhost:389/ou=People,o=JNDITutorial> against <ab
 PASS Parsing origin: <git+https://github.com/foo/bar> against <about:blank>
 PASS Parsing origin: <urn:ietf:rfc:2648> against <about:blank>
 PASS Parsing origin: <tag:joe@example.org,2001:foo/bar> against <about:blank>
+PASS Parsing origin: <blob:https://example.com:443/> against <about:blank>
+PASS Parsing origin: <blob:d3958f5c-0777-0845-9dcf-2cb28783acaf> against <about:blank>
+PASS Parsing origin: <blob:> against <about:blank>
+PASS Parsing origin: <non-special:cannot-be-a-base-url-\0~> against <about:blank>
+PASS Parsing origin: <https://www.example.com/path{path.html?query'=query#fragment<fragment> against <about:blank>
+PASS Parsing origin: <https://user:pass[@foo/bar> against <http://example.org>
+PASS Parsing origin: <foo:// !"$%&'()*+,-.;<=>@[\]^_`{|}~@host/> against <about:blank>
+PASS Parsing origin: <wss:// !"$%&'()*+,-.;<=>@[]^_`{|}~@host/> against <about:blank>
+PASS Parsing origin: <foo://joe: !"$%&'()*+,-.:;<=>@[\]^_`{|}~@host/> against <about:blank>
+PASS Parsing origin: <wss://joe: !"$%&'()*+,-.:;<=>@[]^_`{|}~@host/> against <about:blank>
+PASS Parsing origin: <foo://!"$%&'()*+,-.;=_`{}~/> against <about:blank>
+FAIL Parsing origin: <wss://!"$&'()*+,-.;=_`{}~/> against <about:blank> assert_equals: origin expected "wss://!\"$&'()*+,-.;=_`{}~" but got "null"
+PASS Parsing origin: <foo://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <wss://host/ !"$%&'()*+,-./:;<=>@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <foo://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <wss://host/dir/? !"$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <foo://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
+PASS Parsing origin: <wss://host/dir/# !"#$%&'()*+,-./:;<=>?@[\]^_`{|}~> against <about:blank>
 Harness: the test ran to completion.
 

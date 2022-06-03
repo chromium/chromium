@@ -1,4 +1,0 @@
-This test checks that scrollbar width should not be added to the width of fixed-width grid items.
-
-PASS
-PASS

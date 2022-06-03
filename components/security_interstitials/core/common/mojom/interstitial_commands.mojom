@@ -19,4 +19,6 @@ interface InterstitialCommands {
   OpenReportingPrivacy();
   OpenWhitepaper();
   ReportPhishingError();
+  // Opens the enhanced protection settings in a new tab.
+  OpenEnhancedProtectionSettings();
 };

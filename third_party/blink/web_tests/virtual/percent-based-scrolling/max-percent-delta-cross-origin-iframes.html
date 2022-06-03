@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/gesture-util.js"></script>
+<script src="../../resources/scrollbar-util.js"></script>
+
+<style>
+  .oop-iframe {
+    width: 200px;
+    height: 200px;
+    overflow: scroll;
+  }
+</style>
+
+<iframe id="target-iframe" class="oop-iframe"
+  src="http://localhost:8080/misc/resources/internal-iframe.html">
+</iframe>
+
+<script>
+
+// This test verifies that percent-based scroll deltas are corretly clamped in
+// cross-origin iframes (or out-of-process iframes - OOPIFS).
+// The expected upper-bound is percentage_delta * window.innerHeight.
+//
+// For this, it creates an out-of-process iframe (target-iframe) in the HTTP
+// server and scrolls it clicking on its scrollbar arrows and running a
+// mousewheel event hovering it.
+//
+// It waits for messages from the iframe with the scrolled deltas, since we
+// can't access them from the here.
+//
+// This makes necessary to run the tests by steps, waiting for messages with the
+// deltas. For this, we use a state-machine:
+
+// The test uses these 3 major states for waiting, and a final for checking:
+// 0. IDLE:
+//    waits for target-iframe.onload to click in the down arrow and
+//    move to state WAITING_ARROW.
+// 1. WAITING_ARROW:
+//    waits for target-iframe's message with the scroll delta until it reaches
+//    the expected value. Then, move to state CHECKING_SCROLL_STOP for 10 frames.
+//    If the scroll delta is updated, fails test. Otherwise, run smoothScroll
+//    and move to WAITING_MOUSEWHEEL.
+// 2. WAITING_MOUSEWHEEL:
+//    waits for target-iframe's message with the scroll delta until it reaches
+//    the expected value. Then moves to CHECKING_SCROLL_STOP for 10 frames.
+//    If the scroll delta is updated, fails. Otherwise test succeeds.
+const states = {
+  IDLE: 0,                  // waiting for test to begin.
+  WAITING_ARROW: 1,         // waiting for arrow scroll target delta.
+  WAITING_MOUSEWHEEL: 2,    // waiting for mousewheel scroll target delta.
+  CHECKING_SCROLL_STOP: 3,  // checking if scroll delta holds.
+};
+// the expected flow of the test is:
+// 1. startTest()
+// 2. runArrow()
+// {waits for message from internal-iframe with the scrolled delta}
+// 3. handleMessage()
+// {when the expected scroll delta is reached}
+// 4. checkScrollStopAndRunMousewheel()
+// 5. runMouseWheel()
+// {waits for message from internal-iframe with the scrolled delta}
+// 6. handleMessage()
+// {when the expected scroll delta is reached}
+// 7. checkScrollStopAndFinish()
+// on mac, we jump form 1 to 5, since it doesn't have scrollbar arrows.
+
+const MOUSEWHEEL_PERCENTAGE = 0.5;
+const TRACK_WIDTH = calculateScrollbarThickness();
+const BUTTON_WIDTH = TRACK_WIDTH;
+const SCROLL_CORNER = TRACK_WIDTH;
+
+const onMacPlatform = navigator.userAgent.includes("Mac OS X");
+
+var scroll_test = async_test("Verify that a subscroller inside a cross-origin"
+      + " iframe scrolls a maximum of 12.5% of the iframe");
+var state = states.IDLE;
+var iframe = document.getElementById("target-iframe");
+iframe.onload = startTest;
+
+// Scroll delta of target-iframe's subscroller. It is updated at handleMessage().
+var scroll_delta;
+
+function startTest() {
+  // Percent-based scrolling specific method.
+  if(!internals.runtimeFlags.percentBasedScrollingEnabled) {
+      scroll_test.name = "Percent-based scrolling disabled - test skipped "
+      scroll_test.done();
+      return;
+  }
+  else if (!internals.isSiteIsolated(iframe)) {
+      scroll_test.name = "No site isolation - test skipped"
+      scroll_test.done();
+      return;
+  }
+  else {
+    window.addEventListener("message", handleMessage);
+
+    // Skip arrow click, as Mac scrollbars doesn't have arrows.
+    onMacPlatform ? runMouseWheel() : runArrow();
+  }
+}
+
+function runArrow() {
+  console.log("Clicking arrow");
+  iframe.contentWindow.postMessage({ startScroll: true }, "*");
+
+  scrollerRect = iframe.getBoundingClientRect()
+  const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
+  const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+
+  state = states.WAITING_ARROW;
+  mouseClickOn(down_arrow_x, down_arrow_y);
+}
+
+async function checkScrollStopAndRunMouseWheel(targetScrollDelta) {
+  // Garantees that the previous scroll stopped.
+  state = states.CHECKING_SCROLL_STOP;
+  await conditionHolds(() => {
+    return scroll_delta == targetScrollDelta});
+
+  runMouseWheel();
+}
+
+async function runMouseWheel() {
+  console.log("Running mousewheel ", MOUSEWHEEL_PERCENTAGE * 100, "% = ",
+    MOUSEWHEEL_PERCENTAGE * iframe.clientHeight);
+
+  iframe.contentWindow.postMessage({ startScroll: true }, "*");
+  state = states.WAITING_MOUSEWHEEL;
+
+  scrollerRect = iframe.getBoundingClientRect()
+  const down_arrow_x = scrollerRect.right - BUTTON_WIDTH / 2;
+  const down_arrow_y = scrollerRect.bottom - SCROLL_CORNER - BUTTON_WIDTH / 2;
+  await smoothScroll(MOUSEWHEEL_PERCENTAGE,
+    scrollerRect.top + 10,
+    scrollerRect.left + 10,
+    GestureSourceType.MOUSE_INPUT,
+    "down",
+    SPEED_INSTANT /* speed_in_pixels_s */,
+    false /* precise_scrolling_deltas */,
+    false /* scroll_by_page */,
+    false /* cursor_visible */,
+    true /* scroll_by_percentage */);
+}
+
+async function checkScrollStopAndFinish(targetScrollDelta) {
+  // Guarantees that the previous scroll stopped.
+  state = states.CHECKING_SCROLL_STOP;
+  await conditionHolds(() => {
+    return scroll_delta == targetScrollDelta});
+  scroll_test.done();
+}
+
+function handleMessage(event) {
+  scroll_test.step(() => {
+    scroll_delta = event.data.deltaY;
+    switch(state) {
+      case states.WAITING_ARROW:
+        console.log("Arrow down: ", scroll_delta);
+        assert_less_than_equal(
+          scroll_delta,
+          SCROLLBAR_SCROLL_PERCENTAGE * window.innerHeight);
+        if (scroll_delta == SCROLLBAR_SCROLL_PERCENTAGE * window.innerHeight)
+          checkScrollStopAndRunMouseWheel(SCROLLBAR_SCROLL_PERCENTAGE * window.innerHeight);
+        break;
+      case states.WAITING_MOUSEWHEEL:
+        console.log("Mousewheel: ", scroll_delta);
+        assert_less_than_equal(
+          scroll_delta,
+          MOUSEWHEEL_PERCENTAGE * window.innerHeight);
+        if (event.data.deltaY == MOUSEWHEEL_PERCENTAGE * window.innerHeight)
+          checkScrollStopAndFinish(MOUSEWHEEL_PERCENTAGE * window.innerHeight);
+        break;
+      case states.CHECKING_SCROLL_STOP:
+        console.log(scroll_delta);
+    }
+  });
+}
+</script>

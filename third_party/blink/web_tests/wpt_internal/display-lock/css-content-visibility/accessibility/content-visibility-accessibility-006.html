@@ -1,0 +1,48 @@
+<!doctype HTML>
+<html>
+<meta charset="utf8">
+<title>Content Visibility: accessibility focus</title>
+<link rel="author" title="Aaron Leventhal" href="mailto:aleventhal@chromium.org">
+<link rel="help" href="https://github.com/WICG/display-locking">
+<meta name="assert" content="content-visibility auto accessible object subtrees are not destroyed after accessing name">
+
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+.spacer {
+  height: 3000px;
+}
+.auto {
+  content-visibility: auto;
+}
+</style>
+
+<div class=spacer></div>
+<div id="hidden" class=auto>
+  foo
+  <div id="child" tabindex="0">
+    bar
+  </div>
+</div>
+
+<script>
+function axElementById(id) {
+  return accessibilityController.accessibleElementById(id);
+}
+
+async_test((t) => {
+  let axHidden = axElementById("hidden");
+  t.step(() => {
+    // #hidden is locked, and thus is saved as an AXNodeObject instead of an AXLayoutObject,
+    // and has 3 child nodes: "foo" text, "<newline>" text, and #child node.
+    // Note that we have the separate <newline> text because it's an AXNodeObject and does
+    // not do whitespace collapsing (though this might change in the future)..
+    assert_equals(axHidden.childrenCount, 3, "Child count when hidden" );
+    // Referring to the name should have no effect on the number of children.
+    axHidden.childAtIndex(1).name;
+    assert_equals(axHidden.childrenCount, 3, "Child count when hidden, and accessing name of first child" );
+    t.done();
+  });
+}, "Accessiblility name calculation on child of content-visibility: auto does not destroy tree");
+
+</script>

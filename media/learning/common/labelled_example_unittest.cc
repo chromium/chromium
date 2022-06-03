@@ -4,6 +4,8 @@
 
 #include "media/learning/common/labelled_example.h"
 
+#include <algorithm>
+
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {

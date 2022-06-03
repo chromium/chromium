@@ -12,12 +12,14 @@
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
+#import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ios/testing/embedded_test_server_handlers.h"
 #include "ios/web/public/test/element_selector.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,7 +41,8 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
     const net::test_server::HttpRequest& request) {
   auto result = std::make_unique<net::test_server::BasicHttpResponse>();
   result->set_code(net::HTTP_OK);
-  result->set_content("<a id='download' href='/download?50000'>Download</a>");
+  result->set_content(
+      "<a id='download' href='/download-example?50000'>Download</a>");
   return result;
 }
 
@@ -47,11 +50,11 @@ std::unique_ptr<net::test_server::HttpResponse> GetResponse(
 bool WaitForOpenInButton() WARN_UNUSED_RESULT;
 bool WaitForOpenInButton() {
   // These downloads usually take longer and need a longer timeout.
-  const NSTimeInterval kLongDownloadTimeout = 35;
+  const NSTimeInterval kLongDownloadTimeout = 60;
   return base::test::ios::WaitUntilConditionOrTimeout(kLongDownloadTimeout, ^{
     NSError* error = nil;
     [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
-        assertWithMatcher:grey_notNil()
+        assertWithMatcher:grey_interactable()
                     error:&error];
     return (error == nil);
   });
@@ -64,7 +67,21 @@ bool WaitForDownloadButton() {
       base::test::ios::kWaitForPageLoadTimeout, ^{
         NSError* error = nil;
         [[EarlGrey selectElementWithMatcher:DownloadButton()]
-            assertWithMatcher:grey_notNil()
+            assertWithMatcher:grey_interactable()
+                        error:&error];
+        return (error == nil);
+      });
+}
+
+// Waits until Open in Downloads button is shown.
+bool WaitForOpenInDownloadsButton() WARN_UNUSED_RESULT;
+bool WaitForOpenInDownloadsButton() {
+  return base::test::ios::WaitUntilConditionOrTimeout(
+      base::test::ios::kWaitForUIElementTimeout, ^{
+        NSError* error = nil;
+        [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
+                                                IDS_IOS_OPEN_IN_DOWNLOADS))]
+            assertWithMatcher:grey_interactable()
                         error:&error];
         return (error == nil);
       });
@@ -85,9 +102,9 @@ bool WaitForDownloadButton() {
       base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/",
                           base::BindRepeating(&GetResponse)));
 
-  self.testServer->RegisterRequestHandler(
-      base::BindRepeating(&net::test_server::HandlePrefixedRequest, "/download",
-                          base::BindRepeating(&testing::HandleDownload)));
+  self.testServer->RegisterRequestHandler(base::BindRepeating(
+      &net::test_server::HandlePrefixedRequest, "/download-example",
+      base::BindRepeating(&testing::HandleDownload)));
 
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
@@ -110,7 +127,15 @@ bool WaitForDownloadButton() {
 // Tests sucessfull download up to the point where "Open in..." button is
 // presented. EarlGrey does not allow testing "Open in..." dialog, because it
 // is run in a separate process. Performs download in Incognito.
-- (void)testSucessfullDownloadInIncognito {
+#if !TARGET_IPHONE_SIMULATOR
+// TODO(crbug.com/1059320): Test consistently failing on device.
+#define MAYBE_testSucessfullDownloadInIncognito \
+  DISABLED_testSucessfullDownloadInIncognito
+#else
+#define MAYBE_testSucessfullDownloadInIncognito \
+  testSucessfullDownloadInIncognito
+#endif
+- (void)MAYBE_testSucessfullDownloadInIncognito {
   [ChromeEarlGrey openNewIncognitoTab];
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
   [ChromeEarlGrey waitForWebStateContainingText:"Download"];
@@ -164,7 +189,7 @@ bool WaitForDownloadButton() {
 
   // Load a URL in a separate Tab and close that tab.
   [ChromeEarlGrey loadURL:GURL(kChromeUITermsURL)];
-  const char kTermsText[] = "Google Chrome Terms of Service";
+  const char kTermsText[] = "Terms of Service";
   [ChromeEarlGrey waitForWebStateContainingText:kTermsText];
   [ChromeEarlGrey closeCurrentTab];
   GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
@@ -224,6 +249,35 @@ bool WaitForDownloadButton() {
   GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
 
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
+}
+
+// Tests that filename label and "Open in Downloads" button are showing.
+- (void)testVisibleFileNameAndOpenInDownloads {
+  // Apple is hiding UIActivityViewController's contents from the host app on
+  // iPad.
+  if ([ChromeEarlGrey isIPadIdiom])
+    EARL_GREY_TEST_SKIPPED(@"Test skipped on iPad.");
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:"Download"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"download"];
+
+  GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
+  [[EarlGrey selectElementWithMatcher:DownloadButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForOpenInButton(), @"Open in... button did not show up");
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::OpenInButton()]
+      performAction:grey_tap()];
+
+  GREYAssert(WaitForOpenInDownloadsButton(),
+             @"Open in Downloads button did not show up");
+
+  // Tests filename label.
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(grey_text(@"download-example"),
+                                          grey_sufficientlyVisible(), nil)]
+      assertWithMatcher:grey_notNil()];
 }
 
 @end

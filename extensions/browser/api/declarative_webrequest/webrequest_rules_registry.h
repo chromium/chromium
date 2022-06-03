@@ -73,6 +73,9 @@ class WebRequestRulesRegistry : public RulesRegistry {
                           RulesCacheDelegate* cache_delegate,
                           int rules_registry_id);
 
+  WebRequestRulesRegistry(const WebRequestRulesRegistry&) = delete;
+  WebRequestRulesRegistry& operator=(const WebRequestRulesRegistry&) = delete;
+
   // TODO(battre): This will become an implementation detail, because we need
   // a way to also execute the actions of the rules.
   std::set<const WebRequestRule*> GetMatches(
@@ -172,8 +175,6 @@ class WebRequestRulesRegistry : public RulesRegistry {
   url_matcher::URLMatcher url_matcher_;
 
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRequestRulesRegistry);
 };
 
 }  // namespace extensions

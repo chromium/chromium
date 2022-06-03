@@ -5,11 +5,13 @@
 #ifndef EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_CONSTANTS_H_
 #define EXTENSIONS_COMMON_API_DECLARATIVE_NET_REQUEST_CONSTANTS_H_
 
+#include "base/types/id_type.h"
+
 namespace extensions {
 namespace declarative_net_request {
 
 // Permission name.
-extern const char kAPIPermission[];
+extern const char kDeclarativeNetRequestPermission[];
 
 // Feedback permission name.
 extern const char kFeedbackAPIPermission[];
@@ -19,6 +21,17 @@ constexpr int kMinValidID = 1;
 
 // Minimum valid value of a declarative rule priority.
 constexpr int kMinValidPriority = 1;
+
+using RulesetID =
+    ::base::IdType<class RulesetIDTag, int, -2 /* invalid value */>;
+
+constexpr RulesetID kMinValidStaticRulesetID(1);
+constexpr RulesetID kDynamicRulesetID(0);
+constexpr RulesetID kSessionRulesetID(-1);
+
+// Prefix for reserved ruleset public IDs. Extensions can't specify static
+// rulesets beginning with this.
+constexpr char kReservedRulesetIDPrefix = '_';
 
 // Default priority used for rules when the priority is not explicity provided
 // by an extension.
@@ -36,9 +49,10 @@ extern const char kDomainsKey[];
 extern const char kExcludedDomainsKey[];
 extern const char kResourceTypesKey[];
 extern const char kExcludedResourceTypesKey[];
+extern const char kRequestMethodsKey[];
+extern const char kExcludedRequestMethodsKey[];
 extern const char kDomainTypeKey[];
 extern const char kRuleActionTypeKey[];
-extern const char kRemoveHeadersListKey[];
 extern const char kRedirectPath[];
 extern const char kExtensionPathPath[];
 extern const char kTransformSchemePath[];
@@ -64,8 +78,18 @@ extern const char kQueryTransformRemoveParamsKey[];
 extern const char kQueryTransformAddReplaceParamsKey[];
 extern const char kQueryKeyKey[];
 extern const char kQueryValueKey[];
+extern const char kQueryReplaceOnlyKey[];
 extern const char kRegexSubstitutionKey[];
 extern const char kRegexSubstitutionPath[];
+extern const char kRequestHeadersKey[];
+extern const char kResponseHeadersKey[];
+extern const char kRequestHeadersPath[];
+extern const char kResponseHeadersPath[];
+extern const char kHeaderNameKey[];
+extern const char kHeaderOperationKey[];
+extern const char kHeaderValueKey[];
+extern const char kTabIdsKey[];
+extern const char kExcludedTabIdsKey[];
 
 }  // namespace declarative_net_request
 }  // namespace extensions

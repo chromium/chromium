@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animated-vector
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:drawable="@drawable/circle_loader"
+    tools:targetApi="21">
+    <target
+        android:name="circlegreen"
+        android:animation="@anim/circle_loader_circlegreen_animation" />
+    <target
+        android:name="ellipse_path_2"
+        android:animation="@anim/circle_loader_ellipse_path_2_animation" />
+    <target
+        android:name="circleyellow"
+        android:animation="@anim/circle_loader_circleyellow_animation" />
+    <target
+        android:name="ellipse_path_3"
+        android:animation="@anim/circle_loader_ellipse_path_3_animation" />
+    <target
+        android:name="circlered"
+        android:animation="@anim/circle_loader_circlered_animation" />
+    <target
+        android:name="ellipse_path_4"
+        android:animation="@anim/circle_loader_ellipse_path_4_animation" />
+    <target
+        android:name="circleblue"
+        android:animation="@anim/circle_loader_circleblue_animation" />
+    <target
+        android:name="ellipse_path_5"
+        android:animation="@anim/circle_loader_ellipse_path_5_animation" />
+</animated-vector>

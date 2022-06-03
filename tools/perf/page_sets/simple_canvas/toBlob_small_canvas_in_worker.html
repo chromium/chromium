@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="resources/canvas_runner.js"></script>
+<script type="text/javascript" id="worker">
+/*
+    Because of task scheduling worker toBlob operations can be take an
+    unexpectedly long time, even for small canvases. crbug.com/1053477
+*/
+function offscreenCanvasToBlobOnWorker() {
+  const offscreenCanvas = new OffscreenCanvas(32, 32);
+  const ctx = offscreenCanvas.getContext("2d");
+  ctx.fillStyle = "red";
+  ctx.fillRect(0, 0, 32, 32);
+    offscreenCanvas.convertToBlob({type: "image/png"}).then((blob) => {
+      CanvasRunner.gc();
+    });
+}
+
+self.addEventListener("message", (e) => {
+  if (e.data == "load") {
+    postMessage("loaded");
+  }
+  if (e.data == "start") {
+    offscreenCanvasToBlobOnWorker;
+  }
+});
+</script>
+
+<script>
+  var myCanvas = document.createElement("canvas");
+  var context = myCanvas.getContext("2d");
+  var colourCounter = 0;
+  function invokeToBlobInWorker() {
+    const worker = new Worker(
+        URL.createObjectURL(
+            new Blob(
+                [document.querySelector("#worker").textContent],
+                {type: 'text/javascript'}
+            )
+        )
+    );
+    context.drawImage(myCanvas, 0, 0, 1, 1, 0, 0, 1, 1);
+    worker.postMessage("load");
+    worker.onmessage = e => {
+        if (e.data === "loaded")
+            worker.postMessage("start");
+        else
+            requestAnimationFrame(invokeToBlobInWorker);
+    }
+    worker.terminate();
+    requestAnimationFrame(invokeToBlobInWorker);
+}
+
+window.onload = function () {
+    document.body.appendChild(myCanvas);
+    context.fillStyle = 'green';
+    context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+    invokeToBlobInWorker();
+};
+</script>
+</body>
+</html>
+

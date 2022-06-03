@@ -1,0 +1,22 @@
+This is a testharness.js-based test.
+PASS location.hash : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS location.href : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS window.open : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS document.open : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS anchor : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS area : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS base : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS EventSource : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS frame : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS iframe : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS link : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS source : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS storage event : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS websocket url : unpaired surrogate codepoint should be replaced with U+FFFD
+PASS sendBeacon URL: unpaired surrogate codepoint should not make any exceptions.
+PASS RegisterProtocolHandler URL: unpaired surrogate codepoint should not make any exceptions.
+PASS UnregisterProtocolHandler URL: unpaired surrogate codepoint should not make any exceptions.
+PASS Document URLs: unpaired surrogate codepoint should be replaced with U+FFFD
+FAIL RTCDataChannel.send: unpaired surrogate codepoint should be replaced with U+FFFD. promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of undefined (reading 'negotiated')"
+Harness: the test ran to completion.
+

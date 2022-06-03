@@ -23,19 +23,21 @@ std::unique_ptr<ImageDecoder> CreateBMPDecoder() {
 }  // anonymous namespace
 
 TEST(BMPImageDecoderTest, isSizeAvailable) {
-  static constexpr char kBmpFile[] = "/images/resources/lenna.bmp";  // 256x256
+  // This image is 256x256.
+  static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
   scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
   ASSERT_TRUE(data.get());
 
   std::unique_ptr<ImageDecoder> decoder = CreateBMPDecoder();
   decoder->SetData(data.get(), true);
   EXPECT_TRUE(decoder->IsSizeAvailable());
-  EXPECT_EQ(256, decoder->Size().Width());
-  EXPECT_EQ(256, decoder->Size().Height());
+  EXPECT_EQ(256, decoder->Size().width());
+  EXPECT_EQ(256, decoder->Size().height());
 }
 
 TEST(BMPImageDecoderTest, parseAndDecode) {
-  static constexpr char kBmpFile[] = "/images/resources/lenna.bmp";  // 256x256
+  // This image is 256x256.
+  static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
   scoped_refptr<SharedBuffer> data = ReadFile(kBmpFile);
   ASSERT_TRUE(data.get());
 
@@ -81,7 +83,7 @@ TEST(BMPImageDecoderTest, int32MinHeight) {
 // size (when BMPImageDecoder stops while it may still have input data to
 // read) and a call to do a full decode.
 TEST(BMPImageDecoderTest, mergeBuffer) {
-  static constexpr char kBmpFile[] = "/images/resources/lenna.bmp";
+  static constexpr char kBmpFile[] = "/images/resources/gracehopper.bmp";
   TestMergeBuffer(&CreateBMPDecoder, kBmpFile);
 }
 

@@ -9,23 +9,24 @@
 #include <random>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/string_piece.h"
 #include "base/task/single_thread_task_executor.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/video_frame.h"
+#include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/webm_muxer.h"
 
 // Min and max number of encodec video/audio packets to send in the WebmMuxer.
 const int kMinNumIterations = 1;
 const int kMaxNumIterations = 10;
 
-static const int kSupportedVideoCodecs[] = {media::kCodecVP8, media::kCodecVP9,
-                                            media::kCodecH264};
-static const int kSupportedAudioCodecs[] = {media::kCodecOpus,
-                                            media::kCodecPCM};
+static const media::VideoCodec kSupportedVideoCodecs[] = {
+    media::VideoCodec::kVP8, media::VideoCodec::kVP9, media::VideoCodec::kH264};
+static const media::AudioCodec kSupportedAudioCodecs[] = {
+    media::AudioCodec::kOpus, media::AudioCodec::kPCM};
 
 static const int kSampleRatesInKHz[] = {48, 24, 16, 12, 8};
 
@@ -54,14 +55,15 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   }
 
   for (const auto& input_type : kVideoAudioInputTypes) {
-    const auto video_codec = static_cast<media::VideoCodec>(
-        kSupportedVideoCodecs[rng() % base::size(kSupportedVideoCodecs)]);
-    const auto audio_codec = static_cast<media::AudioCodec>(
-        kSupportedAudioCodecs[rng() % base::size(kSupportedAudioCodecs)]);
+    const auto video_codec =
+        kSupportedVideoCodecs[rng() % base::size(kSupportedVideoCodecs)];
+    const auto audio_codec =
+        kSupportedAudioCodecs[rng() % base::size(kSupportedAudioCodecs)];
     media::WebmMuxer muxer(audio_codec, input_type.has_video,
-                           input_type.has_audio, base::Bind(&OnWriteCallback));
-    base::RunLoop run_loop;
-    run_loop.RunUntilIdle();
+                           input_type.has_audio,
+                           std::make_unique<media::LiveWebmMuxerDelegate>(
+                               base::BindRepeating(&OnWriteCallback)));
+    base::RunLoop().RunUntilIdle();
 
     int num_iterations = kMinNumIterations + rng() % kMaxNumIterations;
     do {
@@ -77,8 +79,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         muxer.OnEncodedVideo(parameters, str,
                              has_alpha_frame ? str : std::string(),
                              base::TimeTicks(), is_key_frame);
-        base::RunLoop run_loop;
-        run_loop.RunUntilIdle();
+        base::RunLoop().RunUntilIdle();
       }
 
       if (input_type.has_audio) {
@@ -92,8 +93,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY, layout, sample_rate,
             60 * sample_rate);
         muxer.OnEncodedAudio(params, str, base::TimeTicks());
-        base::RunLoop run_loop;
-        run_loop.RunUntilIdle();
+        base::RunLoop().RunUntilIdle();
       }
     } while (num_iterations--);
   }

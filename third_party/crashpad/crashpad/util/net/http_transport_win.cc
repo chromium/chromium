@@ -22,10 +22,10 @@
 #include <wchar.h>
 #include <winhttp.h>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -97,7 +97,7 @@ std::string WinHttpMessage(const char* extra) {
                              0,
                              msgbuf,
                              static_cast<DWORD>(base::size(msgbuf)),
-                             NULL);
+                             nullptr);
   if (!len) {
     return base::StringPrintf("%s: error 0x%lx while retrieving error 0x%lx",
                               extra,
@@ -131,12 +131,13 @@ using ScopedHINTERNET = base::ScopedGeneric<HINTERNET, ScopedHINTERNETTraits>;
 class HTTPTransportWin final : public HTTPTransport {
  public:
   HTTPTransportWin();
+
+  HTTPTransportWin(const HTTPTransportWin&) = delete;
+  HTTPTransportWin& operator=(const HTTPTransportWin&) = delete;
+
   ~HTTPTransportWin() override;
 
   bool ExecuteSynchronously(std::string* response_body) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(HTTPTransportWin);
 };
 
 HTTPTransportWin::HTTPTransportWin() : HTTPTransport() {
@@ -146,7 +147,7 @@ HTTPTransportWin::~HTTPTransportWin() {
 }
 
 bool HTTPTransportWin::ExecuteSynchronously(std::string* response_body) {
-  ScopedHINTERNET session(WinHttpOpen(base::UTF8ToUTF16(UserAgent()).c_str(),
+  ScopedHINTERNET session(WinHttpOpen(base::UTF8ToWide(UserAgent()).c_str(),
                                       WINHTTP_ACCESS_TYPE_DEFAULT_PROXY,
                                       WINHTTP_NO_PROXY_NAME,
                                       WINHTTP_NO_PROXY_BYPASS,
@@ -171,7 +172,7 @@ bool HTTPTransportWin::ExecuteSynchronously(std::string* response_body) {
   url_components.dwHostNameLength = 1;
   url_components.dwUrlPathLength = 1;
   url_components.dwExtraInfoLength = 1;
-  std::wstring url_wide(base::UTF8ToUTF16(url()));
+  std::wstring url_wide(base::UTF8ToWide(url()));
   // dwFlags = ICU_REJECT_USERPWD fails on XP.
   if (!WinHttpCrackUrl(
           url_wide.c_str(), 0, 0, &url_components)) {
@@ -206,7 +207,7 @@ bool HTTPTransportWin::ExecuteSynchronously(std::string* response_body) {
 
   ScopedHINTERNET request(WinHttpOpenRequest(
       connect.get(),
-      base::UTF8ToUTF16(method()).c_str(),
+      base::UTF8ToWide(method()).c_str(),
       request_target.c_str(),
       nullptr,
       WINHTTP_NO_REFERER,
@@ -235,8 +236,8 @@ bool HTTPTransportWin::ExecuteSynchronously(std::string* response_body) {
       chunked = !base::StringToSizeT(pair.second, &content_length);
       DCHECK(!chunked);
     } else {
-      std::wstring header_string = base::UTF8ToUTF16(pair.first) + L": " +
-                                   base::UTF8ToUTF16(pair.second) + L"\r\n";
+      std::wstring header_string = base::UTF8ToWide(pair.first) + L": " +
+                                   base::UTF8ToWide(pair.second) + L"\r\n";
       if (!WinHttpAddRequestHeaders(
               request.get(),
               header_string.c_str(),

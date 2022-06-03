@@ -10,8 +10,7 @@
 #include "ash/ash_export.h"
 #include "base/callback_forward.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {
@@ -44,22 +43,29 @@ using OverviewInfo = base::flat_map<aura::Window*, OverviewItemInfo>;
 class ASH_EXPORT OverviewTestApi {
  public:
   OverviewTestApi();
+
+  OverviewTestApi(const OverviewTestApi&) = delete;
+  OverviewTestApi& operator=(const OverviewTestApi&) = delete;
+
   ~OverviewTestApi();
 
-  using DoneCallback = base::OnceCallback<void(bool)>;
+  using DoneCallback = base::OnceCallback<void(bool animation_succeeded)>;
 
-  // Set the overview mode state to |start|. Calls |done_callback| when it is
-  // done. |done_callback| will be called with a boolean if the animation
-  // is completed or canceled. If the overview mode state is already same to
-  // |start|, it does nothing but invokes |done_callback| with true.
+  // Set the overview mode state to |start|. |done_callback| will be invoked
+  // synchronously if the animation is already complete, and asynchronously if
+  // the overview state does not match |start|.
   void SetOverviewMode(bool start, DoneCallback done_callback);
 
-  // Returns overview info for the current overview items if overview is
-  // started. Otherwise, returns base::nullopt;
-  base::Optional<OverviewInfo> GetOverviewInfo() const;
+  // Runs the callback when overview is finished animating to |expected_state|.
+  // Passes true synchronously through |callback| if |expected_state| was
+  // already set. Otherwise |callback| is passed whether the animation succeeded
+  // asynchronously when the animation completes.
+  void WaitForOverviewState(OverviewAnimationState expected_state,
+                            DoneCallback callback);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(OverviewTestApi);
+  // Returns overview info for the current overview items if overview is
+  // started. Otherwise, returns absl::nullopt;
+  absl::optional<OverviewInfo> GetOverviewInfo() const;
 };
 
 }  // namespace ash

@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<body>
+<script>
+window.addEventListener('pageshow', e => {
+  if (parent.promiseResolver)
+    parent.promiseResolver(document.querySelector('select').value);
+});
+</script>
+<select>
+<option selected>o1</option>
+<option>o2</option>
+</select>
+</body>

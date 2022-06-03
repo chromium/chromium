@@ -27,4 +27,4 @@ extern const struct nacl_irt_ppapihook nacl_irt_ppapihook_pnacl_private;
 
 #endif
 
-#endif
+#endif  // PPAPI_NATIVE_CLIENT_SRC_UNTRUSTED_PNACL_IRT_SHIM_IRT_SHIM_PPAPI_H_

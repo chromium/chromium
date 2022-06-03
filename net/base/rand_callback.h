@@ -9,7 +9,7 @@
 
 namespace net {
 
-typedef base::Callback<int(int, int)> RandIntCallback;
+typedef base::RepeatingCallback<int(int, int)> RandIntCallback;
 
 }  // namespace net
 

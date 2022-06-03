@@ -1,0 +1,44 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/build/config.gni")
+import("//ios/web/js_compile.gni")
+
+source_set("window_error") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  deps = [
+    ":error_js",
+    "//base",
+    "//ios/web/public/js_messaging",
+    "//net",
+    "//url",
+  ]
+
+  sources = [
+    "window_error_java_script_feature.h",
+    "window_error_java_script_feature.mm",
+  ]
+}
+
+js_compile_bundle("error_js") {
+  visibility = [ ":window_error" ]
+  closure_entry_point = "__crWeb.error"
+
+  sources = [ "resources/error.js" ]
+}
+
+source_set("unittests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+
+  deps = [
+    ":window_error",
+    "//base/test:test_support",
+    "//ios/web/js_messaging:java_script_feature",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+
+  sources = [ "window_error_java_script_feature_unittest.mm" ]
+}

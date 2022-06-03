@@ -29,7 +29,7 @@ TEST(ThumbnailScoreTest, ShouldReplaceThumbnailWithTime) {
   // Use a really long time for the difference so we aren't sensitive to the
   // degrading schedule.
   base::Time now = base::Time::Now();
-  base::Time last_year = now - base::TimeDelta::FromDays(365);
+  base::Time last_year = now - base::Days(365);
 
   ThumbnailScore oldie_but_goodie(0.1, true, true, last_year);
   ThumbnailScore newie_but_crappie(0.9, true, true, now);

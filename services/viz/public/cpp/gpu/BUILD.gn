@@ -30,6 +30,7 @@ source_set("gpu") {
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//gpu",
     "//gpu/command_buffer/client",
     "//gpu/command_buffer/client:gles2_cmd_helper",
@@ -38,31 +39,25 @@ source_set("gpu") {
     "//gpu/command_buffer/client:raster_interface",
     "//gpu/command_buffer/client:webgpu",
     "//gpu/command_buffer/common:raster",
+    "//gpu/config",
     "//gpu/skia_bindings",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
     "//services/viz/public/mojom",
-    "//ui/base:features",
+    "//skia:buildflags",
     "//ui/gl",
   ]
-
-  if (use_aura || is_mac) {
-    public += [ "shared_worker_context_provider_factory.h" ]
-
-    sources += [ "shared_worker_context_provider_factory.cc" ]
-  }
 }
 
 source_set("tests") {
   testonly = true
 
-  sources = [
-    "gpu_unittest.cc",
-  ]
+  sources = [ "gpu_unittest.cc" ]
 
   deps = [
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//mojo/core/embedder",
     "//mojo/public/cpp/system",
     "//services/service_manager/public/cpp",
@@ -72,8 +67,4 @@ source_set("tests") {
     "//ui/gfx/geometry",
     "//ui/gfx/geometry/mojom",
   ]
-
-  if (use_x11) {
-    deps += [ "//ui/gfx/x" ]
-  }
 }

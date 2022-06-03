@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/test/task_environment.h"
 #include "chromeos/components/multidevice/remote_device_test_util.h"
 #include "chromeos/services/device_sync/public/cpp/fake_device_sync_client.h"
 #include "chromeos/services/multidevice_setup/fake_eligible_host_devices_provider.h"
@@ -27,6 +27,12 @@ const size_t kNumTestDevices = 5;
 }  // namespace
 
 class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
+ public:
+  MultiDeviceSetupHostStatusProviderImplTest(
+      const MultiDeviceSetupHostStatusProviderImplTest&) = delete;
+  MultiDeviceSetupHostStatusProviderImplTest& operator=(
+      const MultiDeviceSetupHostStatusProviderImplTest&) = delete;
+
  protected:
   MultiDeviceSetupHostStatusProviderImplTest()
       : test_devices_(
@@ -43,11 +49,10 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
         std::make_unique<device_sync::FakeDeviceSyncClient>();
     fake_device_sync_client_->set_synced_devices(test_devices_);
 
-    host_status_provider_ =
-        HostStatusProviderImpl::Factory::Get()->BuildInstance(
-            fake_eligible_host_devices_provider_.get(),
-            fake_host_backend_delegate_.get(), fake_host_verifier_.get(),
-            fake_device_sync_client_.get());
+    host_status_provider_ = HostStatusProviderImpl::Factory::Create(
+        fake_eligible_host_devices_provider_.get(),
+        fake_host_backend_delegate_.get(), fake_host_verifier_.get(),
+        fake_device_sync_client_.get());
 
     fake_observer_ = std::make_unique<FakeHostStatusProviderObserver>();
     host_status_provider_->AddObserver(fake_observer_.get());
@@ -67,8 +72,8 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
   // verifies that the observer received that update at the specified index.
   void VerifyCurrentStatus(
       mojom::HostStatus host_status,
-      const base::Optional<multidevice::RemoteDeviceRef>& host_device,
-      const base::Optional<size_t>& expected_observer_index) {
+      const absl::optional<multidevice::RemoteDeviceRef>& host_device,
+      const absl::optional<size_t>& expected_observer_index) {
     HostStatusProvider::HostStatusWithDevice status_with_device(host_status,
                                                                 host_device);
     EXPECT_EQ(status_with_device, host_status_provider_->GetHostWithStatus());
@@ -93,7 +98,13 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
 
   FakeHostVerifier* fake_host_verifier() { return fake_host_verifier_.get(); }
 
+  device_sync::FakeDeviceSyncClient* fake_device_sync_client() {
+    return fake_device_sync_client_.get();
+  }
+
  private:
+  base::test::TaskEnvironment task_environment_;
+
   multidevice::RemoteDeviceRefList test_devices_;
 
   std::unique_ptr<FakeEligibleHostDevicesProvider>
@@ -104,22 +115,20 @@ class MultiDeviceSetupHostStatusProviderImplTest : public testing::Test {
   std::unique_ptr<FakeHostStatusProviderObserver> fake_observer_;
 
   std::unique_ptr<HostStatusProvider> host_status_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(MultiDeviceSetupHostStatusProviderImplTest);
 };
 
 TEST_F(MultiDeviceSetupHostStatusProviderImplTest,
        IncreaseHostState_ThenDecrease) {
   VerifyCurrentStatus(mojom::HostStatus::kNoEligibleHosts,
-                      base::nullopt /* host_device */,
-                      base::nullopt /* expected_observer_index */);
+                      absl::nullopt /* host_device */,
+                      absl::nullopt /* expected_observer_index */);
 
   // Add eligible hosts to the account and verify that the status has been
   // updated accordingly.
   MakeDevicesEligibleHosts();
   EXPECT_EQ(1u, GetNumChangeEvents());
   VerifyCurrentStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                      base::nullopt /* host_device */,
+                      absl::nullopt /* host_device */,
                       0u /* expected_observer_index */);
 
   // Make a request to set the host, but do not complete it yet.
@@ -146,11 +155,19 @@ TEST_F(MultiDeviceSetupHostStatusProviderImplTest,
                       3u /* expected_observer_index */);
 }
 
+TEST_F(MultiDeviceSetupHostStatusProviderImplTest,
+       OnNewDevicesSyncedNotifiesHostStatusChange) {
+  MakeDevicesEligibleHosts();
+  EXPECT_EQ(1u, GetNumChangeEvents());
+  fake_device_sync_client()->NotifyNewDevicesSynced();
+  EXPECT_EQ(2u, GetNumChangeEvents());
+}
+
 TEST_F(MultiDeviceSetupHostStatusProviderImplTest, SetHostThenForget) {
   MakeDevicesEligibleHosts();
   EXPECT_EQ(1u, GetNumChangeEvents());
   VerifyCurrentStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                      base::nullopt /* host_device */,
+                      absl::nullopt /* host_device */,
                       0u /* expected_observer_index */);
 
   // Without first attempting to set the host on the back-end, set the device.
@@ -165,16 +182,16 @@ TEST_F(MultiDeviceSetupHostStatusProviderImplTest, SetHostThenForget) {
   // Now, start an attempt to remove the device on the back-end. This simulates
   // the user clicking "forget device" in settings.
   fake_host_backend_delegate()->AttemptToSetMultiDeviceHostOnBackend(
-      base::nullopt /* host_device */);
+      absl::nullopt /* host_device */);
   EXPECT_EQ(3u, GetNumChangeEvents());
   VerifyCurrentStatus(mojom::HostStatus::kEligibleHostExistsButNoHostSet,
-                      base::nullopt /* host_device */,
+                      absl::nullopt /* host_device */,
                       2u /* expected_observer_index */);
 
   // Complete the pending back-end request. In this case, the status should stay
   // the same, so the observer should not have received an additional event.
   fake_host_backend_delegate()->NotifyHostChangedOnBackend(
-      base::nullopt /* host_device_on_backend */);
+      absl::nullopt /* host_device_on_backend */);
   EXPECT_EQ(3u, GetNumChangeEvents());
 }
 

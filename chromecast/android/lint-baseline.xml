@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<issues format="5" by="lint 7.0.0" client="cli" variant="all" version="4.0.1">
+
+    <issue
+        id="MissingVersion"
+        message="Should set `android:versionCode` to specify the application version">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
+            line="2"/>
+    </issue>
+
+    <issue
+        id="MissingVersion"
+        message="Should set `android:versionName` to specify the application version">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
+            line="2"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/AudioSinkAudioTrackImpl.java"
+            line="248"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/AudioSinkAudioTrackImpl.java"
+            line="380"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/AudioSinkAudioTrackImpl.java"
+            line="479"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../chromecast/base/java/src/org/chromium/chromecast/base/CastSettingsManager.java"
+            line="151"/>
+    </issue>
+
+    <issue
+        id="ObsoleteSdkInt"
+        message="Unnecessary; SDK_INT is always >= 23">
+        <location
+            file="../../chromecast/media/cma/backend/android/java/src/org/chromium/chromecast/cma/backend/android/VolumeControl.java"
+            line="93"/>
+    </issue>
+
+    <issue
+        id="Overdraw"
+        message="Possible overdraw: Root element paints background `#FFFFFF` with a theme that also paints a background (inferred theme is `@style/CastShellTheme`)">
+        <location
+            file="../../chromecast/browser/android/apk/res/layout/cast_web_contents_activity.xml"
+            line="12"/>
+    </issue>
+
+    <issue
+        id="RtlEnabled"
+        message="The project references RTL attributes, but does not explicitly enable or disable RTL support with `android:supportsRtl` in the manifest">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"/>
+    </issue>
+
+</issues>

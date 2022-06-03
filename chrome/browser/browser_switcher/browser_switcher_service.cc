@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/syslog_logging.h"
 #include "chrome/browser/browser_switcher/alternative_browser_driver.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -23,17 +24,20 @@
 #include "content/public/browser/storage_partition.h"
 #include "net/base/load_flags.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
+#include "services/network/public/cpp/resource_request.h"
 
 namespace browser_switcher {
 
 namespace {
 
 // How long to wait after |BrowserSwitcherService| is created before initiating
-// the sitelist fetch.
-const base::TimeDelta kFetchSitelistDelay = base::TimeDelta::FromSeconds(60);
+// the sitelist fetch. Non-zero values are used for testing.
+//
+// TODO(nicolaso): get rid of this.
+const base::TimeDelta kFetchSitelistDelay = base::TimeDelta();
 
 // How long to wait after a fetch to re-fetch the sitelist to keep it fresh.
-const base::TimeDelta kRefreshSitelistDelay = base::TimeDelta::FromMinutes(30);
+const base::TimeDelta kRefreshSitelistDelay = base::Minutes(30);
 
 // How many times to re-try fetching the XML file for the sitelist.
 const int kFetchNumRetries = 1;
@@ -96,11 +100,10 @@ XmlDownloader::XmlDownloader(Profile* profile,
                              base::TimeDelta first_fetch_delay,
                              base::RepeatingCallback<void()> all_done_callback)
     : service_(service), all_done_callback_(std::move(all_done_callback)) {
-  file_url_factory_ =
-      content::CreateFileURLLoaderFactory(base::FilePath(), nullptr);
-  other_url_factory_ =
-      content::BrowserContext::GetDefaultStoragePartition(profile)
-          ->GetURLLoaderFactoryForBrowserProcess();
+  file_url_factory_.Bind(
+      content::CreateFileURLLoaderFactory(base::FilePath(), nullptr));
+  other_url_factory_ = profile->GetDefaultStoragePartition()
+                           ->GetURLLoaderFactoryForBrowserProcess();
 
   sources_ = service_->GetRulesetSources();
 
@@ -139,7 +142,8 @@ void XmlDownloader::FetchXml() {
     auto request = std::make_unique<network::ResourceRequest>();
     request->url = source.url;
     request->load_flags = net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
-    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    request->credentials_mode = network::mojom::CredentialsMode::kInclude;
+    request->priority = net::IDLE;
     source.url_loader = network::SimpleURLLoader::Create(std::move(request),
                                                          traffic_annotation);
     source.url_loader->SetRetryOptions(
@@ -220,14 +224,15 @@ BrowserSwitcherService::BrowserSwitcherService(Profile* profile)
       prefs_(profile),
       driver_(new AlternativeBrowserDriverImpl(&prefs_)),
       sitelist_(new BrowserSwitcherSitelistImpl(&prefs_)) {
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(&BrowserSwitcherService::Init,
-                                weak_ptr_factory_.GetWeakPtr()));
-
   prefs_subscription_ =
       prefs().RegisterPrefsChangedCallback(base::BindRepeating(
           &BrowserSwitcherService::OnBrowserSwitcherPrefsChanged,
           base::Unretained(this)));
+
+  if (prefs_.IsEnabled()) {
+    UMA_HISTOGRAM_ENUMERATION("BrowserSwitcher.AlternativeBrowser",
+                              driver_->GetBrowserType());
+  }
 }
 
 BrowserSwitcherService::~BrowserSwitcherService() = default;
@@ -235,6 +240,11 @@ BrowserSwitcherService::~BrowserSwitcherService() = default;
 void BrowserSwitcherService::Init() {
   LoadRulesFromPrefs();
   StartDownload(fetch_delay());
+}
+
+void BrowserSwitcherService::OnAllRulesetsLoadedForTesting(
+    base::OnceCallback<void()> cb) {
+  all_rulesets_loaded_callback_for_testing_ = std::move(cb);
 }
 
 void BrowserSwitcherService::StartDownload(base::TimeDelta delay) {
@@ -309,17 +319,19 @@ std::vector<RulesetSource> BrowserSwitcherService::GetRulesetSources() {
 void BrowserSwitcherService::LoadRulesFromPrefs() {
   if (prefs().GetExternalSitelistUrl().is_valid())
     sitelist()->SetExternalSitelist(
-        ParsedXml(prefs().GetCachedExternalSitelist(), base::nullopt));
+        ParsedXml(prefs().GetCachedExternalSitelist(), absl::nullopt));
   if (prefs().GetExternalGreylistUrl().is_valid())
     sitelist()->SetExternalGreylist(
-        ParsedXml(prefs().GetCachedExternalGreylist(), base::nullopt));
+        ParsedXml(prefs().GetCachedExternalGreylist(), absl::nullopt));
 }
 
 void BrowserSwitcherService::OnAllRulesetsParsed() {
   callback_list_.Notify(this);
+  if (all_rulesets_loaded_callback_for_testing_)
+    std::move(all_rulesets_loaded_callback_for_testing_).Run();
 }
 
-std::unique_ptr<BrowserSwitcherService::CallbackSubscription>
+base::CallbackListSubscription
 BrowserSwitcherService::RegisterAllRulesetsParsedCallback(
     AllRulesetsParsedCallback callback) {
   return callback_list_.Add(callback);
@@ -328,6 +340,20 @@ BrowserSwitcherService::RegisterAllRulesetsParsedCallback(
 void BrowserSwitcherService::OnBrowserSwitcherPrefsChanged(
     BrowserSwitcherPrefs* prefs,
     const std::vector<std::string>& changed_prefs) {
+  // Record |BrowserSwitcher.AlternativeBrowser| when the
+  // |BrowserSwitcherEnabled| or |AlternativeBrowserPath| policies change.
+  bool should_record_metrics =
+      changed_prefs.end() !=
+      std::find_if(changed_prefs.begin(), changed_prefs.end(),
+                   [](const std::string& pref) {
+                     return pref == prefs::kEnabled ||
+                            pref == prefs::kAlternativeBrowserPath;
+                   });
+  if (should_record_metrics && prefs_.IsEnabled()) {
+    UMA_HISTOGRAM_ENUMERATION("BrowserSwitcher.AlternativeBrowser",
+                              driver_->GetBrowserType());
+  }
+
   auto sources = GetRulesetSources();
 
   // Re-download if one of the URLs changed. O(n^2), with n <= 3.

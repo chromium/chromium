@@ -19,7 +19,8 @@ uint32_t MockTranslateRanker::GetModelVersion() const {
 }
 
 bool MockTranslateRanker::ShouldOfferTranslation(
-    metrics::TranslateEventProto* /*translate_event */) {
+    metrics::TranslateEventProto* /*translate_event */,
+    TranslateMetricsLogger* /*translate_metrics_logger*/) {
   return should_offer_translation_;
 }
 

@@ -11,7 +11,7 @@ their parent. crbug: 996992
 <span>some text</span>
 <div>
   <dialog>
-    <div id="dialog-text" tabindex="0">Dialog Text</div>
+    <div id="dialog-text" tabindex="0">Some Text</div>
   </dialog>
 </div>
 
@@ -19,7 +19,7 @@ their parent. crbug: 996992
 <script>
   function open_modal() {
     document.querySelector("dialog").showModal();
-    return "Dialog Text";
+    return "dialog";
   }
   function remove_span() {
     // Cause the root to be updated.

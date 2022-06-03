@@ -8,17 +8,17 @@
 SpellCheckResult::SpellCheckResult(Decoration d,
                                    int loc,
                                    int len,
-                                   const std::vector<base::string16>& rep)
+                                   const std::vector<std::u16string>& rep)
     : decoration(d), location(loc), length(len), replacements(rep) {}
 
 SpellCheckResult::SpellCheckResult(Decoration d,
                                    int loc,
                                    int len,
-                                   const base::string16& rep)
+                                   const std::u16string& rep)
     : decoration(d),
       location(loc),
       length(len),
-      replacements(std::vector<base::string16>({rep})) {}
+      replacements(std::vector<std::u16string>({rep})) {}
 
 SpellCheckResult::~SpellCheckResult() = default;
 

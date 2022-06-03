@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/decoder_buffer.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_export.h"
@@ -44,36 +43,37 @@ class DecodeTimestamp {
     return ts_ - rhs.ts_;
   }
 
-  DecodeTimestamp& operator+=(const base::TimeDelta& rhs) {
+  DecodeTimestamp& operator+=(base::TimeDelta rhs) {
     ts_ += rhs;
     return *this;
   }
 
-  DecodeTimestamp& operator-=(const base::TimeDelta& rhs)  {
+  DecodeTimestamp& operator-=(base::TimeDelta rhs) {
     ts_ -= rhs;
     return *this;
   }
 
-  DecodeTimestamp operator+(const base::TimeDelta& rhs) const {
+  DecodeTimestamp operator+(base::TimeDelta rhs) const {
     return DecodeTimestamp(ts_ + rhs);
   }
 
-  DecodeTimestamp operator-(const base::TimeDelta& rhs) const {
+  DecodeTimestamp operator-(base::TimeDelta rhs) const {
     return DecodeTimestamp(ts_ - rhs);
   }
 
-  int64_t operator/(const base::TimeDelta& rhs) const { return ts_ / rhs; }
+  double operator/(base::TimeDelta rhs) const { return ts_ / rhs; }
+  int64_t IntDiv(base::TimeDelta rhs) const { return ts_.IntDiv(rhs); }
 
   static DecodeTimestamp FromSecondsD(double seconds) {
-    return DecodeTimestamp(base::TimeDelta::FromSecondsD(seconds));
+    return DecodeTimestamp(base::Seconds(seconds));
   }
 
   static DecodeTimestamp FromMilliseconds(int64_t milliseconds) {
-    return DecodeTimestamp(base::TimeDelta::FromMilliseconds(milliseconds));
+    return DecodeTimestamp(base::Milliseconds(milliseconds));
   }
 
   static DecodeTimestamp FromMicroseconds(int64_t microseconds) {
-    return DecodeTimestamp(base::TimeDelta::FromMicroseconds(microseconds));
+    return DecodeTimestamp(base::Microseconds(microseconds));
   }
 
   // This method is used to explicitly call out when presentation timestamps
@@ -122,6 +122,9 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
                                                     bool is_key_frame,
                                                     Type type,
                                                     TrackId track_id);
+
+  StreamParserBuffer(const StreamParserBuffer&) = delete;
+  StreamParserBuffer& operator=(const StreamParserBuffer&) = delete;
 
   // Decode timestamp. If not explicitly set, or set to kNoTimestamp, the
   // value will be taken from the normal timestamp.
@@ -178,8 +181,6 @@ class MEDIA_EXPORT StreamParserBuffer : public DecoderBuffer {
   TrackId track_id_;
   scoped_refptr<StreamParserBuffer> preroll_buffer_;
   bool is_duration_estimated_;
-
-  DISALLOW_COPY_AND_ASSIGN(StreamParserBuffer);
 };
 
 }  // namespace media

@@ -18,12 +18,12 @@
  * Boston, MA 02110-1301, USA.
  */
 
-// https://w3c.github.io/uievents/#interface-KeyboardEvent
+// https://w3c.github.io/uievents/#interface-keyboardevent
 
 [
     Exposed=Window
 ] interface KeyboardEvent : UIEvent {
-    [CallWith=ScriptState] constructor(DOMString type, optional KeyboardEventInit eventInitDict);
+    [CallWith=ScriptState] constructor(DOMString type, optional KeyboardEventInit eventInitDict = {});
     // KeyLocationCode
     const unsigned long DOM_KEY_LOCATION_STANDARD = 0x00;
     const unsigned long DOM_KEY_LOCATION_LEFT     = 0x01;

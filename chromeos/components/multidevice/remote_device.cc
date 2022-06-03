@@ -5,7 +5,6 @@
 #include "chromeos/components/multidevice/remote_device.h"
 
 #include "base/base64.h"
-#include "base/stl_util.h"
 
 namespace chromeos {
 
@@ -37,7 +36,8 @@ RemoteDevice::RemoteDevice(
     const std::string& persistent_symmetric_key,
     int64_t last_update_time_millis,
     const std::map<SoftwareFeature, SoftwareFeatureState>& software_features,
-    const std::vector<BeaconSeed>& beacon_seeds)
+    const std::vector<BeaconSeed>& beacon_seeds,
+    const std::string& bluetooth_public_address)
     : user_email(user_email),
       instance_id(instance_id),
       name(name),
@@ -46,7 +46,8 @@ RemoteDevice::RemoteDevice(
       persistent_symmetric_key(persistent_symmetric_key),
       last_update_time_millis(last_update_time_millis),
       software_features(software_features),
-      beacon_seeds(beacon_seeds) {}
+      beacon_seeds(beacon_seeds),
+      bluetooth_public_address(bluetooth_public_address) {}
 
 RemoteDevice::RemoteDevice(const RemoteDevice& other) = default;
 
@@ -63,13 +64,11 @@ bool RemoteDevice::operator==(const RemoteDevice& other) const {
          persistent_symmetric_key == other.persistent_symmetric_key &&
          last_update_time_millis == other.last_update_time_millis &&
          software_features == other.software_features &&
-         beacon_seeds == other.beacon_seeds;
+         beacon_seeds == other.beacon_seeds &&
+         bluetooth_public_address == other.bluetooth_public_address;
 }
 
 bool RemoteDevice::operator<(const RemoteDevice& other) const {
-  // TODO(https://crbug.com/1019206): Only compare by Instance ID when v1
-  // DeviceSync is disabled since it is guaranteed to be set in v2 DeviceSync.
-
   if (!instance_id.empty() || !other.instance_id.empty())
     return instance_id.compare(other.instance_id) < 0;
 

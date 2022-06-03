@@ -5,7 +5,7 @@
       "src": "launcher-icon-1x.png",
       "sizes": "48x48",
       "type": "image/png",
-      "purpose": "any badge"
+      "purpose": "any monochrome"
     }
   ],
   "start_url": "manifest_test_page.html",

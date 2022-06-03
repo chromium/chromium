@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2015 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import html_checker
+from . import html_checker
 from os import path as os_path
 import re
 from sys import path as sys_path
-import test_util
+from . import test_util
 import unittest
 
 _HERE = os_path.dirname(os_path.abspath(__file__))

@@ -27,6 +27,9 @@ Aead::Aead(AeadAlgorithm algorithm) {
     case AES_256_GCM_SIV:
       aead_ = EVP_aead_aes_256_gcm_siv();
       break;
+    case CHACHA20_POLY1305:
+      aead_ = EVP_aead_chacha20_poly1305();
+      break;
   }
 }
 
@@ -84,7 +87,7 @@ bool Aead::Seal(base::StringPiece plaintext,
   return true;
 }
 
-base::Optional<std::vector<uint8_t>> Aead::Open(
+absl::optional<std::vector<uint8_t>> Aead::Open(
     base::span<const uint8_t> ciphertext,
     base::span<const uint8_t> nonce,
     base::span<const uint8_t> additional_data) const {
@@ -95,7 +98,7 @@ base::Optional<std::vector<uint8_t>> Aead::Open(
   size_t output_length;
   if (!Open(ciphertext, nonce, additional_data, ret.data(), &output_length,
             max_output_length)) {
-    return base::nullopt;
+    return absl::nullopt;
   }
 
   ret.resize(output_length);

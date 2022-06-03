@@ -4,12 +4,13 @@
 
 #include "chrome/installer/util/google_update_util.h"
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
-#include "base/strings/string16.h"
 #include "base/time/time.h"
 #include "base/win/win_util.h"
 #include "chrome/installer/util/google_update_settings.h"
@@ -24,10 +25,10 @@ const int kGoogleUpdateTimeoutMs = 20 * 1000;
 
 // Launches command |cmd_string|, and waits for |timeout| milliseconds before
 // timing out.  To wait indefinitely, one can set
-// |timeout| to be base::TimeDelta::FromMilliseconds(INFINITE).
+// |timeout| to be base::TimeDelta::Max().
 // Returns true if this executes successfully.
 // Returns false if command execution fails to execute, or times out.
-bool LaunchProcessAndWaitWithTimeout(const base::string16& cmd_string,
+bool LaunchProcessAndWaitWithTimeout(const std::wstring& cmd_string,
                                      base::TimeDelta timeout) {
   bool success = false;
   int exit_code = 0;
@@ -38,7 +39,7 @@ bool LaunchProcessAndWaitWithTimeout(const base::string16& cmd_string,
     PLOG(ERROR) << "Failed to launch (" << cmd_string << ")";
   } else if (!process.WaitForExitWithTimeout(timeout, &exit_code)) {
     // The GetExitCodeProcess failed or timed-out.
-    LOG(ERROR) <<"Command (" << cmd_string << ") is taking more than "
+    LOG(ERROR) << "Command (" << cmd_string << ") is taking more than "
                << timeout.InMilliseconds() << " milliseconds to complete.";
   } else if (exit_code != 0) {
     LOG(ERROR) << "Command (" << cmd_string << ") exited with code "
@@ -53,13 +54,13 @@ bool LaunchProcessAndWaitWithTimeout(const base::string16& cmd_string,
 
 bool UninstallGoogleUpdate(bool system_install) {
   bool success = false;
-  base::string16 cmd_string(
+  std::wstring cmd_string(
       GoogleUpdateSettings::GetUninstallCommandLine(system_install));
   if (cmd_string.empty()) {
     success = true;  // Nothing to; vacuous success.
   } else {
-    success = LaunchProcessAndWaitWithTimeout(cmd_string,
-        base::TimeDelta::FromMilliseconds(kGoogleUpdateTimeoutMs));
+    success = LaunchProcessAndWaitWithTimeout(
+        cmd_string, base::Milliseconds(kGoogleUpdateTimeoutMs));
   }
   return success;
 }
@@ -77,7 +78,7 @@ void ElevateIfNeededToReenableUpdates() {
 
   base::CommandLine cmd(exe_path);
   cmd.AppendSwitch(installer::switches::kReenableAutoupdates);
-  InstallUtil::AppendModeSwitch(&cmd);
+  InstallUtil::AppendModeAndChannelSwitches(&cmd);
   if (system_install)
     cmd.AppendSwitch(installer::switches::kSystemLevel);
   if (product_state.uninstall_command().HasSwitch(

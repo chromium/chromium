@@ -1,0 +1,15 @@
+Tests that two quota messages are handled correctly.
+
+Initial storage
+{
+  "usage": 0,
+  "quota": 1073741824,
+  "overrideActive": false
+}
+Applying override
+{
+  "usage": 0,
+  "quota": 9100,
+  "overrideActive": true
+}
+

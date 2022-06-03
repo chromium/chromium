@@ -9,10 +9,11 @@ import android.os.Bundle;
 import org.chromium.base.process_launcher.IParentProcess;
 
 interface IChildProcessService {
+  // |clazz| identifies the ClassLoader of the caller.
   // On the first call to this method, the service will record the calling PID
-  // and return true. Subsequent calls will only return true if the calling PID
-  // is the same as the recorded one.
-  boolean bindToCaller();
+  // and |clazz| and return true. Subsequent calls will only return true if the
+  // calling PID and |clazz| matches the recorded values.
+  boolean bindToCaller(in String clazz);
 
   // Sets up the initial IPC channel.
   oneway void setupConnection(in Bundle args, IParentProcess parentProcess,
@@ -26,4 +27,10 @@ interface IChildProcessService {
 
   // Dumps the stack for the child process without crashing it.
   oneway void dumpProcessStack();
+
+  // Takes the |bundle| potentially containing the shared memory region and
+  // uses it to replace the memory behind read only relocations in the child
+  // process. On error the bundle is silently ignored, disabling the memory
+  // optimization.
+  oneway void consumeRelroBundle(in Bundle bundle);
 }

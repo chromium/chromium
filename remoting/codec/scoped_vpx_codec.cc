@@ -4,7 +4,9 @@
 
 #include "remoting/codec/scoped_vpx_codec.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check_op.h"
 #include "third_party/libvpx/source/libvpx/vpx/vpx_codec.h"
 
 namespace remoting {

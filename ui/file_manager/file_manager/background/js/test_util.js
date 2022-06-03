@@ -2,19 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {FilesAppState} from '../../common/js/files_app_state.js';
+import {ProgressCenterItem} from '../../common/js/progress_center_common.js';
+import {util} from '../../common/js/util.js';
+
+import {background} from './background.js';
+import {launcher} from './launcher.js';
+import {test} from './test_util_base.js';
+
+export {test};
+
 /**
  * Opens the main Files app's window and waits until it is ready.
  *
- * @param {Object} appState App state.
+ * @param {!FilesAppState} appState App state.
  * @param {function(string)} callback Completion callback with the new window's
  *     App ID.
  */
 test.util.async.openMainWindow = (appState, callback) => {
-  launcher.launchFileManager(
-      appState,
-      undefined,  // opt_type
-      undefined,  // opt_id
-      callback);
+  launcher.launchFileManager(appState).then(callback);
 };
 
 /**
@@ -279,7 +285,7 @@ test.util.sync.getTreeItems = contentWindow => {
  * @return {!string} The URL of the last URL visited.
  */
 test.util.sync.getLastVisitedURL = contentWindow => {
-  return contentWindow.util.getLastVisitedURL();
+  return contentWindow.fileManager.getLastVisitedURL();
 };
 
 /**
@@ -343,43 +349,16 @@ test.util.sync.deleteFile = (contentWindow, filename) => {
  * @return {boolean} True if the command is executed successfully.
  */
 test.util.sync.execCommand = (contentWindow, command) => {
-  return contentWindow.document.execCommand(command);
+  const ret = contentWindow.document.execCommand(command);
+  if (!ret && contentWindow.isSWA) {
+    // TODO(b/191831968): Fix execCommand for SWA.
+    console.warn(
+        `execCommand(${command}) returned false for SWA, forcing ` +
+        `return value to true. b/191831968`);
+    return true;
+  }
+  return ret;
 };
-
-/**
- * Override the installWebstoreItem method in private api for test.
- *
- * @param {Window} contentWindow Window to be tested.
- * @param {string} expectedItemId Item ID to be called this method with.
- * @param {?string} intendedError Error message to be returned when the item id
- *     matches. 'null' represents no error.
- * @return {boolean} Always return true.
- */
-test.util.sync.overrideInstallWebstoreItemApi =
-    (contentWindow, expectedItemId, intendedError) => {
-      const setLastError = message => {
-        contentWindow.chrome.runtime.lastError =
-            message ? {message: message} : undefined;
-      };
-
-      const installWebstoreItem = (itemId, silentInstallation, callback) => {
-        setTimeout(() => {
-          if (itemId !== expectedItemId) {
-            setLastError('Invalid Chrome Web Store item ID');
-            callback();
-            return;
-          }
-
-          setLastError(intendedError);
-          callback();
-        }, 0);
-      };
-
-      test.util.executedTasks_ = [];
-      contentWindow.chrome.webstoreWidgetPrivate.installWebstoreItem =
-          installWebstoreItem;
-      return true;
-    };
 
 /**
  * Override the task-related methods in private api for test.
@@ -397,13 +376,14 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
     }, 0);
   };
 
-  const executeTask = (taskId, entry) => {
-    test.util.executedTasks_.push(taskId);
+  const executeTask = (descriptor, entries, callback) => {
+    test.util.executedTasks_.push({descriptor, entries, callback});
   };
 
-  const setDefaultTask = taskId => {
+  const setDefaultTask = descriptor => {
     for (let i = 0; i < taskList.length; i++) {
-      taskList[i].isDefault = taskList[i].taskId === taskId;
+      taskList[i].isDefault =
+          util.descriptorEqual(taskList[i].descriptor, descriptor);
     }
   };
 
@@ -417,35 +397,55 @@ test.util.sync.overrideTasks = (contentWindow, taskList) => {
 /**
  * Obtains the list of executed tasks.
  * @param {Window} contentWindow Window to be tested.
- * @return {Array<string>} List of executed task ID.
+ * @return {Array<!chrome.fileManagerPrivate.FileTaskDescriptor>} List of
+ *     executed tasks.
  */
 test.util.sync.getExecutedTasks = contentWindow => {
   if (!test.util.executedTasks_) {
     console.error('Please call overrideTasks() first.');
     return null;
   }
-  return test.util.executedTasks_;
+  return test.util.executedTasks_.map(task => task.descriptor);
 };
 
 /**
- * Runs the 'Move to profileId' menu.
- *
+ * Obtains the list of executed tasks.
  * @param {Window} contentWindow Window to be tested.
- * @param {string} profileId Destination profile's ID.
- * @return {boolean} True if the menu is found and run.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor the task to
+ *     check.
+ * @return {boolean} True if the task was executed.
  */
-test.util.sync.runVisitDesktopMenu = (contentWindow, profileId) => {
-  const list = contentWindow.document.querySelectorAll('.visit-desktop');
-  for (let i = 0; i < list.length; ++i) {
-    if (list[i].label.indexOf(profileId) != -1) {
-      const activateEvent = contentWindow.document.createEvent('Event');
-      activateEvent.initEvent('activate', false, false);
-      list[i].dispatchEvent(activateEvent);
-      return true;
-    }
+test.util.sync.taskWasExecuted = (contentWindow, descriptor) => {
+  if (!test.util.executedTasks_) {
+    console.error('Please call overrideTasks() first.');
+    return null;
   }
-  return false;
+  return !!test.util.executedTasks_.find(util.descriptorEqual.bind(descriptor));
 };
+
+/**
+ * Invokes an executed task with |responseArgs|.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {!chrome.fileManagerPrivate.FileTaskDescriptor} descriptor the task to
+ *     be replied to.
+ * @param {Array<Object>} responseArgs the arguments to inoke the callback with.
+ */
+test.util.sync.replyExecutedTask =
+    (contentWindow, descriptor, responseArgs) => {
+      if (!test.util.executedTasks_) {
+        console.error('Please call overrideTasks() first.');
+        return false;
+      }
+      const found = test.util.executedTasks_.find(
+          task => util.descriptorEqual(task.descriptor, descriptor));
+      if (!found) {
+        const {appId, taskType, actionId} = descriptor;
+        console.error(`No task with id ${appId}|${taskType}|${actionId}`);
+        return false;
+      }
+      found.callback(...responseArgs);
+      return true;
+    };
 
 /**
  * Calls the unload handler for the window.
@@ -456,20 +456,25 @@ test.util.sync.unload = contentWindow => {
 };
 
 /**
- * Obtains the path which is shown in the breadcrumb.
+ * Returns the path shown in the location line breadcrumb.
  *
  * @param {Window} contentWindow Window to be tested.
- * @return {string} Path which is shown in the breadcrumb.
+ * @return {string} The breadcrumb path.
  */
 test.util.sync.getBreadcrumbPath = contentWindow => {
   const breadcrumb =
       contentWindow.document.querySelector('#location-breadcrumbs');
-  const paths = breadcrumb.querySelectorAll('.breadcrumb-path');
+  if (!breadcrumb) {
+    return '';
+  }
 
   let path = '';
-  for (let i = 0; i < paths.length; i++) {
-    path += '/' + paths[i].textContent;
+
+  const crumbs = breadcrumb.querySelector('bread-crumb');
+  if (crumbs) {
+    path = '/' + crumbs.path;
   }
+
   return path;
 };
 
@@ -490,6 +495,7 @@ test.util.async.getPreferences = callback => {
 test.util.sync.overrideFormat = contentWindow => {
   contentWindow.chrome.fileManagerPrivate.formatVolume =
       (volumeId, filesystem, volumeLabel) => {};
+  return true;
 };
 
 /**
@@ -504,5 +510,397 @@ test.util.async.requestAnimationFrame = (contentWindow, callback) => {
   });
 };
 
-// Register the test utils.
-test.util.registerRemoteTestUtils();
+/**
+ * Set the window text direction to RTL and wait for the window to redraw.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {function(boolean)} callback Completion callback.
+ */
+test.util.async.renderWindowTextDirectionRTL = (contentWindow, callback) => {
+  contentWindow.document.documentElement.setAttribute('dir', 'rtl');
+  contentWindow.document.body.setAttribute('dir', 'rtl');
+  contentWindow.requestAnimationFrame(() => {
+    callback(true);
+  });
+};
+
+/**
+ * Maps the path to the replaced attribute to the PrepareFake instance that
+ * replaced it, to be able to restore the original value.
+ *
+ * @private {Object<string, test.util.PrepareFake>}
+ */
+test.util.backgroundReplacedObjects_ = {};
+
+/**
+ * Map the appId to a map of all fakes applied in the foreground window e.g.:
+ *  {'files#0': {'chrome.bla.api': FAKE}
+ *
+ * @private {Object<string, Object<string, test.util.PrepareFake>>}
+ */
+test.util.foregroundReplacedObjects_ = {};
+
+/**
+ * @param {string} attrName
+ * @param {*} staticValue
+ * @return {function(...)}
+ */
+test.util.staticFakeFactory = (attrName, staticValue) => {
+  const fake = (...args) => {
+    setTimeout(() => {
+      // Find the first callback.
+      for (const arg of args) {
+        if (typeof arg === 'function') {
+          console.warn(`staticFake for ${attrName} value: ${staticValue}`);
+          return arg(staticValue);
+        }
+      }
+      throw new Error(`Couldn't find callback for ${attrName}`);
+    }, 0);
+  };
+  return fake;
+};
+
+/**
+ * Registry of available fakes, it maps the an string ID to a factory function
+ * which returns the actual fake used to replace an implementation.
+ *
+ * @private {Object<string, function(string, *)>}
+ */
+test.util.fakes_ = {
+  'static_fake': test.util.staticFakeFactory,
+};
+
+/**
+ * @enum {string}
+ */
+test.util.FakeType = {
+  FOREGROUND_FAKE: 'FOREGROUND_FAKE',
+  BACKGROUND_FAKE: 'BACKGROUND_FAKE',
+};
+
+/**
+ * Class holds the information for applying and restoring fakes.
+ */
+test.util.PrepareFake = class {
+  /**
+   * @param {string} attrName Name of the attribute to be replaced by the fake
+   *   e.g.: "chrome.app.window.create".
+   * @param {string} fakeId The name of the fake to be used from
+   *   test.util.fakes_.
+   * @param {*} context The context where the attribute will be traversed from,
+   *   e.g.: Window object.
+   * @param {...} args Additinal args provided from the integration test to the
+   *   fake, e.g.: static return value.
+   */
+  constructor(attrName, fakeId, context, ...args) {
+    /**
+     * The instance of the fake to be used, ready to be used.
+     * @private {*}
+     */
+    this.fake_ = null;
+
+    /**
+     * The attribute name to be traversed in the |context_|.
+     * @private {string}
+     */
+    this.attrName_ = attrName;
+
+    /**
+     * The fake id the key to retrieve from test.util.fakes_.
+     * @private {string}
+     */
+    this.fakeId_ = fakeId;
+
+    /**
+     * The context where |attrName_| will be traversed from, e.g. Window.
+     * @private {*}
+     */
+    this.context_ = context;
+
+    /**
+     * After traversing |context_| the object that holds the attribute to be
+     * replaced by the fake.
+     * @private {*}
+     */
+    this.parentObject_ = null;
+
+    /**
+     * After traversing |context_| the attribute name in |parentObject_| that
+     * will be replaced by the fake.
+     * @private {string}
+     */
+    this.leafAttrName_ = '';
+
+    /**
+     * Additional data provided from integration tests to the fake constructor.
+     * @private {!Array}
+     */
+    this.args_ = args;
+
+    /**
+     * Original object that was replaced by the fake.
+     * @private {*}
+     */
+    this.original_ = null;
+
+    /**
+     * If this fake object has been constructed and everything initialized.
+     * @private {boolean}
+     */
+    this.prepared_ = false;
+
+    /**
+     * Counter to record the number of times the static fake is called.
+     * @private {number}
+     */
+    this.callCounter_ = 0;
+  }
+
+  /**
+   * Initializes the fake and traverse |context_| to be ready to replace the
+   * original implementation with the fake.
+   */
+  prepare() {
+    this.buildFake_();
+    this.traverseContext_();
+    this.prepared_ = true;
+  }
+
+  /**
+   * Replaces the original implementation with the fake.
+   * NOTE: It requires prepare() to have been called.
+   * @param {test.util.FakeType} fakeType Foreground or background fake.
+   * @param {Window} contentWindow Window to be tested.
+   */
+  replace(fakeType, contentWindow) {
+    const suffix = `for ${this.attrName_} ${this.fakeId_}`;
+    if (!this.prepared_) {
+      throw new Error(`PrepareFake prepare() not called ${suffix}`);
+    }
+    if (!this.parentObject_) {
+      throw new Error(`Missing parentObject_ ${suffix}`);
+    }
+    if (!this.fake_) {
+      throw new Error(`Missing fake_ ${suffix}`);
+    }
+    if (!this.leafAttrName_) {
+      throw new Error(`Missing leafAttrName_ ${suffix}`);
+    }
+
+    this.saveOriginal_(fakeType, contentWindow);
+    this.parentObject_[this.leafAttrName_] = (...args) => {
+      this.fake_(...args);
+      this.callCounter_++;
+    };
+  }
+
+  /**
+   * Restores the original implementation that had been rpeviously replaced by
+   * the fake.
+   */
+  restore() {
+    if (!this.original_) {
+      return;
+    }
+    this.parentObject_[this.leafAttrName_] = this.original_;
+    this.original_ = null;
+  }
+
+  /**
+   * Saves the original implementation to be able restore it later.
+   * @param {test.util.FakeType} fakeType Foreground or background fake.
+   * @param {Window} contentWindow Window to be tested.
+   */
+  saveOriginal_(fakeType, contentWindow) {
+    if (fakeType === test.util.FakeType.FOREGROUND_FAKE) {
+      const windowFakes =
+          test.util.foregroundReplacedObjects_[contentWindow.appID] || {};
+      test.util.foregroundReplacedObjects_[contentWindow.appID] = windowFakes;
+
+      // Only save once, otherwise it can save an object that is already fake.
+      if (!windowFakes[this.attrName_]) {
+        const original = this.parentObject_[this.leafAttrName_];
+        this.original_ = original;
+        windowFakes[this.attrName_] = this;
+      }
+      return;
+    }
+
+    if (fakeType === test.util.FakeType.BACKGROUND_FAKE) {
+      // Only save once, otherwise it can save an object that is already fake.
+      if (!test.util.backgroundReplacedObjects_[this.attrName_]) {
+        const original = this.parentObject_[this.leafAttrName_];
+        this.original_ = original;
+        test.util.backgroundReplacedObjects_[this.attrName_] = this;
+      }
+    }
+  }
+
+  /**
+   * Constructs the fake.
+   */
+  buildFake_() {
+    const factory = test.util.fakes_[this.fakeId_];
+    if (!factory) {
+      throw new Error(`Failed to find the fake factory for ${this.fakeId_}`);
+    }
+
+    this.fake_ = factory(this.attrName_, ...this.args_);
+  }
+
+  /**
+   * Finds the parent and the object to be replaced by fake.
+   */
+  traverseContext_() {
+    let target = this.context_;
+    let parentObj;
+    let attr = '';
+
+    for (const a of this.attrName_.split('.')) {
+      attr = a;
+      parentObj = target;
+      target = target[a];
+
+      if (target === undefined) {
+        throw new Error(`Couldn't find "${0}" from "${this.attrName_}"`);
+      }
+    }
+
+    this.parentObject_ = parentObj;
+    this.leafAttrName_ = attr;
+  }
+};
+
+/**
+ * Replaces implementations in the background page with fakes.
+ *
+ * @param {Object{<string, Array>}} fakeData An object mapping the path to the
+ * object to be replaced and the value is the Array with fake id and additinal
+ * arguments for the fake constructor, e.g.:
+ *   fakeData = {
+ *     'chrome.app.window.create' : [
+ *       'static_fake',
+ *       ['some static value', 'other arg'],
+ *     ]
+ *   }
+ *
+ *  This will replace the API 'chrome.app.window.create' with a static fake,
+ *  providing the additional data to static fake: ['some static value', 'other
+ *  value'].
+ */
+test.util.sync.backgroundFake = (fakeData) => {
+  for (const [path, mockValue] of Object.entries(fakeData)) {
+    const fakeId = mockValue[0];
+    const fakeArgs = mockValue[1] || [];
+
+    const fake = new test.util.PrepareFake(path, fakeId, window, ...fakeArgs);
+    fake.prepare();
+    fake.replace(test.util.FakeType.BACKGROUND_FAKE, window);
+  }
+};
+
+/**
+ * Removes all fakes that were applied to the background page.
+ */
+test.util.sync.removeAllBackgroundFakes = () => {
+  const savedFakes = Object.entries(test.util.backgroundReplacedObjects_);
+  let removedCount = 0;
+  for (const [path, fake] of savedFakes) {
+    fake.restore();
+    removedCount++;
+  }
+
+  return removedCount;
+};
+
+/**
+ * Replaces implementations in the foreground page with fakes.
+ *
+ * @param {Window} contentWindow Window to be tested.
+ * @param {Object{<string, Array>}} fakeData An object mapping the path to the
+ * object to be replaced and the value is the Array with fake id and additinal
+ * arguments for the fake constructor, e.g.:
+ *   fakeData = {
+ *     'chrome.app.window.create' : [
+ *       'static_fake',
+ *       ['some static value', 'other arg'],
+ *     ]
+ *   }
+ *
+ *  This will replace the API 'chrome.app.window.create' with a static fake,
+ *  providing the additional data to static fake: ['some static value', 'other
+ *  value'].
+ */
+test.util.sync.foregroundFake = (contentWindow, fakeData) => {
+  const entries = Object.entries(fakeData);
+  for (const [path, mockValue] of entries) {
+    const fakeId = mockValue[0];
+    const fakeArgs = mockValue[1] || [];
+    const fake =
+        new test.util.PrepareFake(path, fakeId, contentWindow, ...fakeArgs);
+    fake.prepare();
+    fake.replace(test.util.FakeType.FOREGROUND_FAKE, contentWindow);
+  }
+  return entries.length;
+};
+
+/**
+ * Removes all fakes that were applied to the foreground page.
+ * @param {Window} contentWindow Window to be tested.
+ */
+test.util.sync.removeAllForegroundFakes = (contentWindow) => {
+  const savedFakes =
+      Object.entries(test.util.foregroundReplacedObjects_[contentWindow.appID]);
+  let removedCount = 0;
+  for (const [path, fake] of savedFakes) {
+    fake.restore();
+    removedCount++;
+  }
+
+  return removedCount;
+};
+
+/**
+ * Obtains the number of times the static fake api is called.
+ * @param {Window} contentWindow Window to be tested.
+ * @param {string} fakedApi Path of the method that is faked.
+ * @return {number} Number of times the fake api called.
+ */
+test.util.sync.staticFakeCounter = (contentWindow, fakedApi) => {
+  const fake =
+      test.util.foregroundReplacedObjects_[contentWindow.appID][fakedApi];
+  return fake.callCounter_;
+};
+
+/**
+ * Send progress item to Foreground page to display.
+ * @param {string} id Progress item id.
+ * @param {ProgressItemType} type Type of progress item.
+ * @param {ProgressItemState} state State of the progress item.
+ * @param {string} message Message of the progress item.
+ * @param {number} remainingTime The remaining time of the progress in second.
+ * @param {number} progressMax Max value of the progress.
+ * @param {number} progressValue Current value of the progress.
+ * @param {number} count Number of items being processed.
+ */
+test.util.sync.sendProgressItem =
+    (id, type, state, message, remainingTime, progressMax = 1,
+     progressValue = 0, count = 1) => {
+      const item = new ProgressCenterItem();
+      item.id = id;
+      item.type = type;
+      item.state = state;
+      item.message = message;
+      item.remainingTime = remainingTime;
+      item.progressMax = progressMax;
+      item.progressValue = progressValue;
+      item.itemCount = count;
+
+      background.progressCenter.updateItem(item);
+      return true;
+    };
+
+// Register the test utils, however the SWA uses a different util.
+if (!window.isSWA) {
+  test.util.registerRemoteTestUtils();
+}

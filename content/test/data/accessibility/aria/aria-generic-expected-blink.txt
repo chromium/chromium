@@ -1,5 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer
-++++++staticText name='content'
-++++++++inlineTextBox name='content'
+++++genericContainer ignored
+++++++genericContainer hasAriaAttribute=true
+++++++++staticText name='content'
+++++++++++inlineTextBox name='content'

@@ -18,12 +18,12 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "rlz/lib/financial_ping.h"
 #include "rlz/lib/lib_values.h"
 #include "rlz/lib/net_response_check.h"
@@ -49,9 +49,9 @@
 #include "services/network/test/test_url_loader_factory.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/cxx17_backports.h"
 #include "base/files/important_file_writer.h"
-#include "base/stl_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/fake_debug_daemon_client.h"
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
@@ -220,7 +220,7 @@ TEST_F(RlzLibTest, SetAccessPointRlz) {
   EXPECT_STREQ("IeTbRlz", rlz_50);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(RlzLibTest, SetAccessPointRlzOnlyOnce) {
   // On Chrome OS, and RLZ string can ne set only once.
   char rlz_50[50];
@@ -484,7 +484,7 @@ TEST_F(RlzLibTest, ParsePingResponse) {
   EXPECT_TRUE(rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER,
                                          kPingResponse2));
   EXPECT_TRUE(rlz_lib::GetAccessPointRlz(rlz_lib::IETB_SEARCH_BOX, value, 50));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, the RLZ string is not modified by response once set.
   EXPECT_STREQ("1T4_____en__252", value);
 #else
@@ -495,7 +495,7 @@ TEST_F(RlzLibTest, ParsePingResponse) {
     "crc32: 0\r\n";  // Good RLZ - empty response.
   EXPECT_TRUE(rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER,
                                          kPingResponse3));
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, the RLZ string is not modified by response once set.
   EXPECT_STREQ("1T4_____en__252", value);
 #else
@@ -574,7 +574,7 @@ TEST_F(RlzLibTest, SendFinancialPing) {
     return;
 
 #if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
@@ -625,15 +625,13 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
   if (!rlz_lib::SupplementaryBranding::GetBrand().empty())
     return;
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
-  base::Thread::Options options;
-  options.message_pump_type = base::MessagePumpType::IO;
-
   base::Thread io_thread("rlz_unittest_io_thread");
-  ASSERT_TRUE(io_thread.StartWithOptions(options));
+  ASSERT_TRUE(io_thread.StartWithOptions(
+      base::Thread::Options(base::MessagePumpType::IO, 0)));
 
   network::TestURLLoaderFactory test_url_loader_factory;
   URLLoaderFactoryRAII set_factory(
@@ -1039,7 +1037,6 @@ TEST_F(RlzLibTest, ConcurrentStoreAccessWithProcessExitsWhileLockHeld) {
         EXPECT_TRUE(success);
         _exit(success ? 0 : 1);
       }
-      _exit(0);
     } else {
       // Parent.
       pids.push_back(pid);
@@ -1080,10 +1077,14 @@ TEST_F(RlzLibTest, LockAcquistionSucceedsButStoreFileCannotBeCreated) {
 
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
  public:
   TestDebugDaemonClient() = default;
+
+  TestDebugDaemonClient(const TestDebugDaemonClient&) = delete;
+  TestDebugDaemonClient& operator=(const TestDebugDaemonClient&) = delete;
+
   ~TestDebugDaemonClient() override = default;
 
   int num_set_rlz_ping_sent() const { return num_set_rlz_ping_sent_; }
@@ -1101,12 +1102,12 @@ class TestDebugDaemonClient : public chromeos::FakeDebugDaemonClient {
 
  private:
   int num_set_rlz_ping_sent_ = 0;
-  bool default_result_;
-  DISALLOW_COPY_AND_ASSIGN(TestDebugDaemonClient);
+  bool default_result_ = false;
 };
 
 TEST_F(RlzLibTest, SetRlzPingSent) {
   TestDebugDaemonClient* debug_daemon_client = new TestDebugDaemonClient;
+  chromeos::DBusThreadManager::Initialize();
   chromeos::DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
       std::unique_ptr<chromeos::DebugDaemonClient>(debug_daemon_client));
   const char* kPingResponse =
@@ -1127,6 +1128,7 @@ TEST_F(RlzLibTest, SetRlzPingSent) {
       rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER, kPingResponse));
   EXPECT_EQ(debug_daemon_client->num_set_rlz_ping_sent(),
             1 + rlz_lib::RlzValueStoreChromeOS::kMaxRetryCount);
+  chromeos::DBusThreadManager::Shutdown();
 }
 
 TEST_F(RlzLibTest, NoRecordCAFEvent) {

@@ -5,11 +5,12 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OUTPUT_SURFACE_FRAME_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OUTPUT_SURFACE_FRAME_H_
 
+#include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
 #include "components/viz/service/viz_service_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/delegated_ink_metadata.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/latency/latency_info.h"
@@ -22,6 +23,10 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
  public:
   OutputSurfaceFrame();
   OutputSurfaceFrame(OutputSurfaceFrame&& other);
+
+  OutputSurfaceFrame(const OutputSurfaceFrame&) = delete;
+  OutputSurfaceFrame& operator=(const OutputSurfaceFrame&) = delete;
+
   ~OutputSurfaceFrame();
 
   OutputSurfaceFrame& operator=(OutputSurfaceFrame&& other);
@@ -30,14 +35,14 @@ class VIZ_SERVICE_EXPORT OutputSurfaceFrame {
   // Providing both |sub_buffer_rect| and |content_bounds| is not supported;
   // if neither is present, regular swap is used.
   // Optional rect for partial or empty swap.
-  base::Optional<gfx::Rect> sub_buffer_rect;
+  absl::optional<gfx::Rect> sub_buffer_rect;
   // Optional content area for SwapWithBounds. Rectangles may overlap.
   std::vector<gfx::Rect> content_bounds;
   std::vector<ui::LatencyInfo> latency_info;
   bool top_controls_visible_height_changed = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(OutputSurfaceFrame);
+  // Metadata containing information to draw a delegated ink trail using
+  // platform APIs.
+  std::unique_ptr<gfx::DelegatedInkMetadata> delegated_ink_metadata;
 };
 
 }  // namespace viz

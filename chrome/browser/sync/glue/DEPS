@@ -1,5 +1,4 @@
 include_rules = [
   "-components/sync/engine",
   "-components/sync/sessions",
-  "-components/sync/syncable",
 ]

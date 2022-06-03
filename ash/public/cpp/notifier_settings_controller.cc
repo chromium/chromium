@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/notifier_settings_controller.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 

@@ -1,6 +1,8 @@
 {
   "GUID":"{64c4f86b-cf6a-4e4a-8eff-456def}",
+  "IPAddressConfigType":"DHCP",
   "Name":"OpenWrt",
+  "NameServersConfigType":"DHCP",
   "Type":"WiFi",
   "WiFi":{
     // Hex of the SSID field

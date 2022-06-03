@@ -22,14 +22,13 @@ class LazyImageHelper final {
   enum class Eligibility {
     kDisabled,
     kEnabledFullyDeferred,
-    kEnabledFetchPlaceholder,
   };
 
   static void StartMonitoring(Element* element);
   static void StopMonitoring(Element* element);
 
   static Eligibility DetermineEligibilityAndTrackVisibilityMetrics(
-      const LocalFrame& frame,
+      LocalFrame& frame,
       HTMLImageElement* html_image,
       const KURL& url);
 

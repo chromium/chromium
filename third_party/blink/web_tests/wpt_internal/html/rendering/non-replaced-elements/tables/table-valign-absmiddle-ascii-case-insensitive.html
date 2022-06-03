@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<link rel="help" href="https://html.spec.whatwg.org/#tables-2:presentational-hints">
+<link rel="help" href="https://drafts.csswg.org/selectors-4/#attribute-case">
+<meta name="assert" content="non-standard @valign values on table-related elements are ASCII case-insensitive">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<!--
+  Blink treats <foo valign="absmiddle"> as the same as <foo valign="middle">,
+  but the specification only mentions top, middle, bottom, and baseline.
+-->
+<table><tr><td valign="absmiddle">X</table>
+<table><tr><td valign="AbSMiDdLe">X</table>
+<table><tr><td valign="abſmiddle">X</table>
+<script>
+const td = document.querySelectorAll("td");
+
+test(() => {
+  assert_equals(getComputedStyle(td[0]).getPropertyValue("vertical-align"), "middle");
+
+  // vacuous: the default is currently middle [#tables-2], so even if the UA
+  // treats this as invalid, the observable behaviour would still be correct
+  assert_equals(getComputedStyle(td[1]).getPropertyValue("vertical-align"), "middle");
+
+  // vacuous: the default is currently middle [#tables-2], so even if the UA
+  // treats this as valid, the observable behaviour would still be correct
+  assert_equals(getComputedStyle(td[2]).getPropertyValue("vertical-align"), "middle");
+}, "keyword absmiddle");
+</script>

@@ -5,7 +5,5 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("cache_storage_proto") {
-  sources = [
-    "cache_storage.proto",
-  ]
+  sources = [ "cache_storage.proto" ]
 }

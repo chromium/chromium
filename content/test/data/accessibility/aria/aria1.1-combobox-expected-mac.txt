@@ -1,13 +1,13 @@
 AXWebArea
 ++AXGroup
 ++++AXStaticText AXValue='State'
-++AXGroup AXTitle='State'
-++++AXTextField AXLinkedUIElements=["AXList"]
+++AXComboBox AXTitle='State'
+++++AXTextField AXLinkedUIElements=[:6]
 ++AXList
 ++++AXStaticText AXValue='Alabama'
-++++AXStaticText AXValue='Alaska' AXFocused='1'
-++AXGroup AXTitle='State'
-++++AXTextField AXLinkedUIElements=["AXList"]
+++++AXStaticText AXFocused=1 AXValue='Alaska'
+++AXComboBox AXTitle='State'
+++++AXTextField AXLinkedUIElements=[:11]
 ++AXList
 ++++AXStaticText AXValue='Alabama'
 ++++AXStaticText AXValue='Alaska'

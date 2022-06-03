@@ -40,7 +40,7 @@
 
 <div class="float">
 
-<div class="grid" style="grid-template: 20px / 10px 5px;">
+<div class="grid" style="grid-template: 20px / 35px 5px;">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
@@ -52,11 +52,14 @@
     <div class="abs col2"></div>
 </div>
 
+<!-- Fails due to https://bugs.chromium.org/p/chromium/issues/detail?id=818401 -->
+<!--
 <div class="grid" style="grid-template: 20px / 85px 5px;">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
 </div>
+-->
 
 <div class="grid" style="grid-template: 20px / 5px 85px;">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
@@ -80,7 +83,7 @@
 
 <div class="float">
 
-<div class="grid" style="grid-template: 20px / repeat(2, 5px) 80px;">
+<div class="grid" style="grid-template: 20px / 17.5px 5px 67.5px;">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
@@ -94,14 +97,17 @@
     <div class="abs col3"></div>
 </div>
 
+<!-- Fails due to https://bugs.chromium.org/p/chromium/issues/detail?id=818401 -->
+<!--
 <div class="grid" style="grid-template: 20px / calc(85px / 2) 5px calc(85px / 2);">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
+-->
 
-<div class="grid" style="grid-template: 20px / 90px repeat(2, 5px);">
+<div class="grid" style="grid-template: 20px / 77.5px 5px 17.5px;">
     <div class="item" style="min-width: 15px;">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
@@ -115,12 +121,15 @@
     <div class="abs col3"></div>
 </div>
 
+<!-- Fails due to https://bugs.chromium.org/p/chromium/issues/detail?id=818401 -->
+<!--
 <div class="grid" style="grid-template: 20px / calc(105px/2) 5px calc(85px/2);" style="justify-items: start">
     <div class="item min-width-max-content">XXXX XXXX</div>
     <div class="abs col1"></div>
     <div class="abs col2"></div>
     <div class="abs col3"></div>
 </div>
+-->
 
 </div>
 

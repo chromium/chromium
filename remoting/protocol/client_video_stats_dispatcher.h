@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_CLIENT_VIDEO_STATE_DISPATCHER_H_
-#define REMOTING_PROTOCOL_CLIENT_VIDEO_STATE_DISPATCHER_H_
+#ifndef REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_
+#define REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_
 
 #include <list>
 
@@ -23,17 +23,20 @@ class ClientVideoStatsDispatcher : public ChannelDispatcherBase {
  public:
   ClientVideoStatsDispatcher(const std::string& stream_name,
                              VideoStatsStub* video_stats_stub);
+
+  ClientVideoStatsDispatcher(const ClientVideoStatsDispatcher&) = delete;
+  ClientVideoStatsDispatcher& operator=(const ClientVideoStatsDispatcher&) =
+      delete;
+
   ~ClientVideoStatsDispatcher() override;
 
  private:
   void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
 
   VideoStatsStub* video_stats_stub_;
-
-  DISALLOW_COPY_AND_ASSIGN(ClientVideoStatsDispatcher);
 };
 
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_CLIENT_VIDEO_STATE_DISPATCHER_H_
+#endif  // REMOTING_PROTOCOL_CLIENT_VIDEO_STATS_DISPATCHER_H_

@@ -6,9 +6,13 @@
 #define ASH_PUBLIC_CPP_SYSTEM_TRAY_TEST_API_H_
 
 #include <memory>
+#include <string>
 
 #include "ash/ash_export.h"
-#include "base/strings/string16.h"
+
+namespace message_center {
+class MessagePopupView;
+}
 
 namespace ash {
 
@@ -18,43 +22,55 @@ class ASH_EXPORT SystemTrayTestApi {
  public:
   static std::unique_ptr<SystemTrayTestApi> Create();
 
-  virtual ~SystemTrayTestApi() {}
-
-  // Disables animations (e.g. the tray view icon slide-in).
-  virtual void DisableAnimations() = 0;
+  SystemTrayTestApi();
+  ~SystemTrayTestApi();
 
   // Returns true if the system tray bubble menu is open.
-  virtual bool IsTrayBubbleOpen() = 0;
+  bool IsTrayBubbleOpen();
+
+  // Returns true if the system tray bubble menu is expanded.
+  bool IsTrayBubbleExpanded();
 
   // Shows the system tray bubble menu.
-  virtual void ShowBubble() = 0;
+  void ShowBubble();
 
   // Closes the system tray bubble menu.
-  virtual void CloseBubble() = 0;
+  void CloseBubble();
+
+  // Collapse the system tray bubble menu.
+  void CollapseBubble();
+
+  // Expand the system tray bubble menu.
+  void ExpandBubble();
 
   // Shows the submenu view for the given section of the bubble menu.
-  virtual void ShowAccessibilityDetailedView() = 0;
-  virtual void ShowNetworkDetailedView() = 0;
+  void ShowAccessibilityDetailedView();
+  void ShowNetworkDetailedView();
 
   // Returns true if the view exists in the bubble and is visible.
   // If |open_tray| is true, it also opens system tray bubble.
-  virtual bool IsBubbleViewVisible(int view_id, bool open_tray) = 0;
+  bool IsBubbleViewVisible(int view_id, bool open_tray);
 
   // Clicks the view |view_id|.
-  virtual void ClickBubbleView(int view_id) = 0;
+  void ClickBubbleView(int view_id);
 
   // Returns the tooltip for a bubble view, or the empty string if the view
   // does not exist.
-  virtual base::string16 GetBubbleViewTooltip(int view_id) = 0;
+  std::u16string GetBubbleViewTooltip(int view_id);
+
+  // Returns the text for a bubble view, or the empty string if the view
+  // does not exist. This method only works if the bubble view is a label.
+  std::u16string GetBubbleViewText(int view_id);
+
+  // Get the notification pop up view based on the notification id.
+  message_center::MessagePopupView* GetPopupViewForNotificationID(
+      const std::string& notification_id);
 
   // Returns true if the clock is using 24 hour time.
-  virtual bool Is24HourClock() = 0;
+  bool Is24HourClock();
 
   // Taps on the Select-to-Speak tray.
-  virtual void TapSelectToSpeakTray() = 0;
-
- protected:
-  SystemTrayTestApi() {}
+  void TapSelectToSpeakTray();
 };
 
 }  // namespace ash

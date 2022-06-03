@@ -13,7 +13,7 @@ DEFINE_EXPORTED_UI_CLASS_PROPERTY_TYPE(WM_PUBLIC_EXPORT, void**)
 namespace wm {
 
 DEFINE_UI_CLASS_PROPERTY_KEY(TooltipClient*, kRootWindowTooltipClientKey, NULL)
-DEFINE_UI_CLASS_PROPERTY_KEY(base::string16*, kTooltipTextKey, NULL)
+DEFINE_UI_CLASS_PROPERTY_KEY(std::u16string*, kTooltipTextKey, NULL)
 DEFINE_UI_CLASS_PROPERTY_KEY(void*, kTooltipIdKey, NULL)
 
 void SetTooltipClient(aura::Window* root_window, TooltipClient* client) {
@@ -28,7 +28,7 @@ TooltipClient* GetTooltipClient(aura::Window* root_window) {
       root_window->GetProperty(kRootWindowTooltipClientKey) : NULL;
 }
 
-void SetTooltipText(aura::Window* window, base::string16* tooltip_text) {
+void SetTooltipText(aura::Window* window, std::u16string* tooltip_text) {
   window->SetProperty(kTooltipTextKey, tooltip_text);
 }
 
@@ -37,9 +37,9 @@ void SetTooltipId(aura::Window* window, void* id) {
     window->SetProperty(kTooltipIdKey, id);
 }
 
-const base::string16 GetTooltipText(aura::Window* window) {
-  base::string16* string_ptr = window->GetProperty(kTooltipTextKey);
-  return string_ptr ? *string_ptr : base::string16();
+const std::u16string GetTooltipText(aura::Window* window) {
+  std::u16string* string_ptr = window->GetProperty(kTooltipTextKey);
+  return string_ptr ? *string_ptr : std::u16string();
 }
 
 const void* GetTooltipId(aura::Window* window) {

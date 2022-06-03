@@ -7,7 +7,6 @@
 
 #include "ash/accelerators/accelerator_table.h"
 #include "base/hash/md5.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -17,10 +16,10 @@ namespace ash {
 namespace {
 
 // The number of non-Search-based accelerators.
-constexpr int kNonSearchAcceleratorsNum = 94;
+constexpr int kNonSearchAcceleratorsNum = 104;
 // The hash of non-Search-based accelerators. See HashAcceleratorData().
 constexpr char kNonSearchAcceleratorsHash[] =
-    "6b85e809b6de996abea7e88c89215d0c";
+    "6b27f4e06b2cb15eb1d1597691269dbb";
 
 struct Cmp {
   bool operator()(const AcceleratorData& lhs,
@@ -33,14 +32,12 @@ struct Cmp {
 
 std::string AcceleratorDataToString(const AcceleratorData& accelerator) {
   return base::StringPrintf(
-      "trigger_on_press=%s keycode=%d shift=%s control=%s alt=%s search=%s "
-      "action=%d",
+      "trigger_on_press=%s keycode=%d shift=%s control=%s alt=%s search=%s",
       accelerator.trigger_on_press ? "true" : "false", accelerator.keycode,
       (accelerator.modifiers & ui::EF_SHIFT_DOWN) ? "true" : "false",
       (accelerator.modifiers & ui::EF_CONTROL_DOWN) ? "true" : "false",
       (accelerator.modifiers & ui::EF_ALT_DOWN) ? "true" : "false",
-      (accelerator.modifiers & ui::EF_COMMAND_DOWN) ? "true" : "false",
-      accelerator.action);
+      (accelerator.modifiers & ui::EF_COMMAND_DOWN) ? "true" : "false");
 }
 
 std::string HashAcceleratorData(
@@ -61,6 +58,11 @@ TEST(AcceleratorTableTest, CheckDuplicatedAccelerators) {
   std::set<AcceleratorData, Cmp> accelerators;
   for (size_t i = 0; i < kAcceleratorDataLength; ++i) {
     const AcceleratorData& entry = kAcceleratorData[i];
+    EXPECT_TRUE(accelerators.insert(entry).second)
+        << "Duplicated accelerator: " << AcceleratorDataToString(entry);
+  }
+  for (size_t i = 0; i < kDisableWithNewMappingAcceleratorDataLength; ++i) {
+    const AcceleratorData& entry = kDisableWithNewMappingAcceleratorData[i];
     EXPECT_TRUE(accelerators.insert(entry).second)
         << "Duplicated accelerator: " << AcceleratorDataToString(entry);
   }
@@ -140,6 +142,12 @@ TEST(AcceleratorTableTest, CheckSearchBasedAccelerators) {
   std::vector<AcceleratorData> non_search_accelerators;
   for (size_t i = 0; i < kAcceleratorDataLength; ++i) {
     const AcceleratorData& entry = kAcceleratorData[i];
+    if (entry.modifiers & ui::EF_COMMAND_DOWN)
+      continue;
+    non_search_accelerators.emplace_back(entry);
+  }
+  for (size_t i = 0; i < kDisableWithNewMappingAcceleratorDataLength; ++i) {
+    const AcceleratorData& entry = kDisableWithNewMappingAcceleratorData[i];
     if (entry.modifiers & ui::EF_COMMAND_DOWN)
       continue;
     non_search_accelerators.emplace_back(entry);

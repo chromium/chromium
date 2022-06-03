@@ -1,5 +1,6 @@
 (async function() {
   await TestRunner.loadModule('quick_open');
+  await TestRunner.loadLegacyModule('quick_open');
 
   TestRunner.addResult(
       'Test that FilteredListWidget.setProvider changes the provider.');

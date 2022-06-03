@@ -38,19 +38,13 @@
 
 namespace blink {
 
-void CharacterData::MakeParkableOrAtomize() {
+void CharacterData::MakeParkable() {
   if (is_parkable_)
     return;
 
-  // ParkableStrings have some overhead, don't pay it if we're not going to
-  // park a string at all.
-  if (ParkableStringManager::ShouldPark(*data_.Impl())) {
-    parkable_data_ = ParkableString(data_.ReleaseImpl());
-    data_ = String();
-    is_parkable_ = true;
-  } else {
-    data_ = AtomicString(data_);
-  }
+  parkable_data_ = ParkableString(data_.ReleaseImpl());
+  data_ = String();
+  is_parkable_ = true;
 }
 
 void CharacterData::setData(const String& data) {
@@ -233,8 +227,15 @@ void CharacterData::DidModifyData(const String& old_data, UpdateSource source) {
 
   if (parentNode()) {
     ContainerNode::ChildrenChange change = {
-        ContainerNode::kTextChanged, this, previousSibling(), nextSibling(),
-        ContainerNode::kChildrenChangeSourceAPI};
+        ContainerNode::ChildrenChangeType::kTextChanged,
+        source == kUpdateFromParser
+            ? ContainerNode::ChildrenChangeSource::kParser
+            : ContainerNode::ChildrenChangeSource::kAPI,
+        this,
+        previousSibling(),
+        nextSibling(),
+        {},
+        old_data};
     parentNode()->ChildrenChanged(change);
   }
 

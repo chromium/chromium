@@ -77,7 +77,7 @@ class CORE_EXPORT LiveNodeListBase : public GarbageCollectedMixin {
   static bool ShouldInvalidateTypeOnAttributeChange(NodeListInvalidationType,
                                                     const QualifiedName&);
 
-  void Trace(Visitor* visitor) override { visitor->Trace(owner_node_); }
+  void Trace(Visitor* visitor) const override { visitor->Trace(owner_node_); }
 
  protected:
   Document& GetDocument() const { return owner_node_->GetDocument(); }

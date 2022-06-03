@@ -33,9 +33,7 @@ template("shim_headers") {
   }
 
   group(target_name) {
-    deps = [
-      ":${action_name}",
-    ]
+    deps = [ ":${action_name}" ]
     all_dependent_configs = [ ":${config_name}" ]
   }
 }

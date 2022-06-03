@@ -14,6 +14,25 @@ _NEGATIVE_FILTER = [
     # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2532
     'SlowLoadingPageTest.testRefreshShouldBlockUntilPageLoads',
     'PageLoadingTest.testShouldTimeoutIfAPageTakesTooLongToRefresh',
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3457
+    'ReferrerTest.crossDomainHistoryNavigationWithADirectProxy',
+    'ReferrerTest.crossDomainHistoryNavigationWithoutAProxy',
+    'ReferrerTest.crossDomainHistoryNavigationWhenProxyInterceptsHostRequests',
+    'ReferrerTest.crossDomainHistoryNavigationWithAProxiedHost',
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3458
+    'TakesScreenshotTest.testShouldCaptureScreenshotOfAnElement',
+    'TakesScreenshotTest.testShouldCaptureScreenshotOfCurrentViewport',
+    'TakesScreenshotTest.testShouldCaptureScreenshotAtFramePageAfterSwitching',
+    'TakesScreenshotTest.testShouldCaptureScreenshotAtFramePage',
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3459
+    'ChromeDevToolsPerformanceTest.setTimeDomainTimeTickPerformance',
+    'ChromeDevToolsPerformanceTest.setTimeDomainsThreadTicksPerformance',
+    'ChromeDevToolsPerformanceTest.getMetricsByThreadTicks',
+    'ChromeDevToolsPerformanceTest.getMetricsByTimeTicks',
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3460
+    'ChromeDevToolsNetworkTest.verifyCertificatesAndOverrideUserAgent',
+    # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3461
+    'BasicMouseInterfaceTest.testMovingMouseToRelativeZeroElementOffset',
 ]
 
 _READY_TO_RUN_FILTER = [
@@ -25,6 +44,7 @@ _READY_TO_RUN_FILTER = [
     'BasicMouseInterfaceTest.testMoveMouseByOffsetOverAndOutOfAnElement',
     'BasicMouseInterfaceTest.testMovingMouseToRelativeElementOffset',
     'BasicMouseInterfaceTest.testMovingMouseToRelativeZeroElementOffset',
+    'ChromeOptionsFunctionalTest.canAddExtensionFromFile',
     'CombinedInputActionsTest.testClickAfterMoveToAnElementWithAnOffsetShouldUseLastMousePosition',
     'ContentEditableTest.appendsTextToEndOfContentEditableWithMultipleTextNodes',
     'ContentEditableTest.testShouldAppendToTinyMCE',
@@ -35,6 +55,7 @@ _READY_TO_RUN_FILTER = [
     'PageLoadingTest.testEagerStrategyShouldNotWaitForResources',
     'PageLoadingTest.testEagerStrategyShouldNotWaitForResourcesOnRefresh',
     'PageLoadingTest.testEagerStrategyShouldWaitForDocumentToBeLoaded',
+    'TextHandlingTest.canHandleTextTransformProperty',
     'WindowSwitchingTest.canOpenANewWindow',
     'LocationContextTest.testShouldSetAndGetLatitude',
     'LocationContextTest.testShouldSetAndGetLongitude',

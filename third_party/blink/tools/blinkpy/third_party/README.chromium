@@ -6,16 +6,6 @@ an entry in this file that refers to reliable documentation of the project's
 license terms on the web (and add a note pointing here in the README file in
 that directory).
 
-Name: autopep8
-Short Name: autopep8
-URL: https://pypi.python.org/packages/source/a/autopep8/autopep8-1.0.3.tar.gz#md5=7c16d385cf9ad7c1d7fbcfcea2588a56
-Version: 1.0.3
-License: MIT
-License File: NOT_SHIPPED
-Security Critical: no
-Description: Used to reformat python code via format_blinkpy.py
-Local Modifications: None
-
 Name: pep8 - A Python style guide checker
 Short Name: pep8
 URL: https://pypi.python.org/packages/source/p/pep8/pep8-1.5.7.tar.gz#md5=f6adbdd69365ecca20513c709f9b7c93
@@ -23,24 +13,8 @@ Version: 1.5.7
 License: MIT
 License File: NOT_SHIPPED
 Security Critical: no
-Description: Used during presubmit checks and via lint_blinkpy.py and
-    format_blinkpy.py. There is overlap between pep8 and pylint, but pep8
-    catches a bunch of stylistic issues that pylint doesn't (e.g., warning
-    about blank lines, various whitespace issues, etc.).
+Description: Used during presubmit checks and via lint_blinkpy.py.
+    There is overlap between pep8 and pylint, but pep8 catches a bunch of
+    stylistic issues that pylint doesn't (e.g., warning about blank lines,
+    various whitespace issues, etc.).
 Local Modifications: None
-
-Name: web-platform-tests - Test Suites for Web Platform specifications
-Short Name: wpt
-URL: https://github.com/web-platform-tests/wpt/
-Version: 3ee67ef03aeee31247ee1b5aca3e91ddef4fdfd8
-License: LICENSES FOR W3C TEST SUITES (https://www.w3.org/Consortium/Legal/2008/03-bsd-license.html)
-License File: wpt/wpt/LICENSE.md
-Security Critical: no
-Description: This includes code for the manifest tool, lint tool, and wptserve.
-    Used to run all supported web-platform-tests as part of Blink
-    web tests. The wpt/wpt directory only contains the tools, whereas
-    web_tests/external/wpt contains the tests. Also see wpt/README.chromium
-    for more details on maintenance.
-Local Modifications:
-- Removed all files except for those listed in wpt/WPTWhiteList.
-- Added --ignore-glob option for ignoring an extra glob of files (used for ignoring *-expected.txt).

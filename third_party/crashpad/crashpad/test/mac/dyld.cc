@@ -14,10 +14,10 @@
 
 #include "test/mac/dyld.h"
 
-#include <AvailabilityMacros.h>
+#include <Availability.h>
 #include <dlfcn.h>
-#include <mach/mach.h>
 #include <mach-o/dyld.h>
+#include <mach/mach.h>
 #include <stdint.h>
 
 #include "base/logging.h"
@@ -25,7 +25,7 @@
 #include "test/scoped_module_handle.h"
 #include "util/numeric/safe_assignment.h"
 
-#if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_13
+#if __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_13
 extern "C" {
 
 // A non-public dyld API, declared in 10.12.4
@@ -41,14 +41,14 @@ namespace crashpad {
 namespace test {
 
 const dyld_all_image_infos* DyldGetAllImageInfos() {
-#if MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_13
+#if __MAC_OS_X_VERSION_MAX_ALLOWED < __MAC_10_13
   // When building with the pre-10.13 SDK, the weak_import declaration above is
   // available and a symbol will be present in the SDK to link against. If the
   // old interface is also available at run time (running on pre-10.13), use it.
   if (_dyld_get_all_image_infos) {
     return _dyld_get_all_image_infos();
   }
-#elif MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_13
+#elif __MAC_OS_X_VERSION_MIN_REQUIRED < __MAC_10_13
   // When building with the 10.13 SDK or later, but able to run on pre-10.13,
   // look for _dyld_get_all_image_infos in the same module that provides
   // _dyld_image_count. There’s no symbol in the SDK to link against, so this is

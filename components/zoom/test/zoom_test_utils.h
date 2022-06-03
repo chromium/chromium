@@ -2,11 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_ZOOM_ZOOM_TEST_UTILS_H_
-#define COMPONENTS_ZOOM_ZOOM_TEST_UTILS_H_
+#ifndef COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_
+#define COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "components/zoom/zoom_controller.h"
 #include "components/zoom/zoom_observer.h"
 
@@ -39,6 +38,9 @@ class ZoomChangedWatcher : public zoom::ZoomObserver {
       content::WebContents* web_contents,
       const ZoomController::ZoomChangedEventData& expected_event_data);
 
+  ZoomChangedWatcher(const ZoomChangedWatcher&) = delete;
+  ZoomChangedWatcher& operator=(const ZoomChangedWatcher&) = delete;
+
   ~ZoomChangedWatcher() override;
 
   void Wait();
@@ -52,9 +54,7 @@ class ZoomChangedWatcher : public zoom::ZoomObserver {
   ZoomEventPred predicate_;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
   bool change_received_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ZoomChangedWatcher);
 };
 
 }  // namespace zoom
-#endif  // COMPONENTS_ZOOM_ZOOM_TEST_UTILS_H_
+#endif  // COMPONENTS_ZOOM_TEST_ZOOM_TEST_UTILS_H_

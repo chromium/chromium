@@ -1,4 +1,0 @@
-CONSOLE ERROR: line 13: Uncaught TypeError: container.createShadowRoot is not a function
-This test checks selecting from outside of a shadow tree and to inside of a shadow tree won't crash.
-
-PASS

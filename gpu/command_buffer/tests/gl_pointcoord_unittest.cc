@@ -66,7 +66,7 @@ GLfloat s2p(GLfloat s) {
 
 // crbug.com/162976
 // Flaky on Linux ATI bot.
-#if (defined(OS_LINUX) && defined(NDEBUG))
+#if ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(NDEBUG))
 #define MAYBE_RenderTo DISABLED_RenderTo
 #else
 #define MAYBE_RenderTo RenderTo

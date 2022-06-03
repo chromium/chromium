@@ -4,7 +4,7 @@
 
 [
     Exposed=Worker,
-    ImplementedAs=WorkerNavigatorNetworkInformation
+    ImplementedAs=NetworkInformation
 ] partial interface WorkerNavigator {
-    [CallWith=ScriptState, MeasureAs=NetInfo] readonly attribute NetworkInformation connection;
+    [MeasureAs=NetInfo] readonly attribute NetworkInformation connection;
 };

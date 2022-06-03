@@ -1,64 +1,66 @@
-<html>
-    <head>
-        <script src="../../resources/js-test.js"></script>
-        <script>
-            window.jsTestIsAsync = true;
-            var isMacOSX = navigator.userAgent.indexOf("Mac OS X") >= 0;
+<!DOCTYPE html>
+<script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<div style="height:900px;width:2400px">
+  <div style="background-color:red;height:900px;width:1200px;position:relative;left:0px;top:0px"></div>
+  <div style="background-color:green;height:900px;width:1200px;position:relative;left:1200px;top:-900px"></div>
+</div>
+<div style="height:900px;width:2400px">
+  <div style="background-color:blue;height:900px;width:1200px;position:relative;left:0px;top:0px"></div>
+  <div style="background-color:yellow;height:900px;width:1200px;position:relative;left:1200px;top:-900px"></div>
+</div>
 
-            var givenScrollTop = 2; // Only one page per event, so this should be interpreted as 1
-            var givenScrollLeft = 2;
+<script>
+var givenScrollDelta = 2;
+// Page scrolls 87.5% of window size (excluding scrollbars).
+var expectedScrollTop = (
+  document.documentElement.clientHeight * MIN_FRACTION_TO_STEP_WHEN_PAGING
+);
+var expectedScrollLeft = (
+  document.documentElement.clientWidth * MIN_FRACTION_TO_STEP_WHEN_PAGING
+);
+var last_event = null;
+var source = GestureSourceType.MOUSE_INPUT;
+const numTicks = givenScrollDelta / pixelsPerTick();
+const expectedWheelDelta = numTicks * LEGACY_MOUSE_WHEEL_TICK_MULTIPLIER;
 
-            var maxOverlapBetweenPages = 40;
+function mousewheelHandler(e) {
+    assert_equals(last_event, null);
+    last_event = e;
+}
 
-            // Window is 800x600. Page scrolls 87.5% of window size.
-            var expectedScrollTop = 600 * 0.875;
-            var expectedScrollLeft = 800 * 0.875;
+promise_test(async () => {
+    document.body.addEventListener("mousewheel", mousewheelHandler, false);
 
-            if (isMacOSX) {
-                // On Mac, there is a max overlap between pages that can affect the page scroll size.
-                expectedScrollTop = Math.max(expectedScrollTop, 600 - maxOverlapBetweenPages);
-                expectedScrollLeft = Math.max(expectedScrollLeft, 800 - maxOverlapBetweenPages);
-            }
+    // Wheel event will scroll by one page
+    await smoothScrollWithXY(
+      givenScrollDelta, givenScrollDelta, 100, 110, source,
+      SPEED_INSTANT, false, true
+    );
+    await waitForAnimationEndTimeBased(() => {
+      return document.scrollingElement.scrollLeft;
+    });
+    await waitForAnimationEndTimeBased(() => {
+      return document.scrollingElement.scrollTop;
+    });
 
-            var event;
-            var div;
+    // There is some minor inconsistency between main and compositor threads in
+    // which direction they round so allow up to one pixel of slack.
+    await conditionHolds(() => {
+      return (
+        approx_equals(
+          document.scrollingElement.scrollLeft, expectedScrollLeft, 1
+        ) &&
+        approx_equals(
+          document.scrollingElement.scrollTop, expectedScrollTop, 1
+      ));
+    });
 
-            function runTest()
-            {
-                document.body.addEventListener("mousewheel", mousewheelHandler, false);
-
-                if (window.eventSender) {
-                    eventSender.mouseMoveTo(100, 110);
-                    eventSender.continuousMouseScrollBy(-window.givenScrollLeft, -window.givenScrollTop, true);
-                }
-
-                shouldBecomeEqual("document.scrollingElement.scrollTop == window.expectedScrollTop && " +
-                    "document.scrollingElement.scrollLeft == window.expectedScrollLeft", "true", finishJSTest)
-            }
-
-            function mousewheelHandler(e)
-            {
-                event = e;
-                shouldBe("event.wheelDeltaY", "window.givenScrollTop * -3");
-                shouldBe("event.wheelDeltaX", "window.givenScrollLeft * -3");
-
-                if (e.wheelDeltaY)
-                    shouldBe("event.wheelDelta", "window.givenScrollTop * -3");
-                else
-                    shouldBe("event.wheelDelta", "window.givenScrollLeft * -3");
-            }
-        </script>
-    </head>
-
-    <body style="margin:0" onload="runTest()">
-        <div style="height:900px;width:2400px">
-          <div style="background-color:red;height:900px;width:1200px;position:relative;left:0px;top:0px"></div>
-          <div style="background-color:green;height:900px;width:1200px;position:relative;left:1200px;top:-900px"></div>
-        </div>
-        <div style="height:900px;width:2400px">
-          <div style="background-color:blue;height:900px;width:1200px;position:relative;left:0px;top:0px"></div>
-          <div style="background-color:yellow;height:900px;width:1200px;position:relative;left:1200px;top:-900px"></div>
-        </div>
-        <div id="console"></div>
-    </body>
-</html>
+    // When a user operates the device for scrolling to down, wheelDeltaX is negative, otherwise positive.
+    // https://developer.mozilla.org/en-US/docs/Web/API/Element/mousewheel_event.
+    assert_equals(last_event.wheelDeltaX, -Math.floor(expectedWheelDelta));
+    assert_equals(last_event.wheelDeltaY, -Math.floor(expectedWheelDelta));
+    assert_equals(last_event.wheelDelta, -Math.floor(expectedWheelDelta));
+}, 'This test checks one page of scroll on both x and y on document moves the content by 87.5% of window size.');
+</script>

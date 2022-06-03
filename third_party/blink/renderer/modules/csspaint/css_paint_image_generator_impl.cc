@@ -61,7 +61,7 @@ scoped_refptr<Image> CSSPaintImageGeneratorImpl::Paint(
 }
 
 bool CSSPaintImageGeneratorImpl::HasDocumentDefinition() const {
-  return paint_worklet_->GetDocumentDefinitionMap().at(name_);
+  return paint_worklet_->GetDocumentDefinitionMap().Contains(name_);
 }
 
 bool CSSPaintImageGeneratorImpl::GetValidDocumentDefinition(
@@ -138,7 +138,7 @@ int CSSPaintImageGeneratorImpl::WorkletId() const {
   return paint_worklet_->WorkletId();
 }
 
-void CSSPaintImageGeneratorImpl::Trace(blink::Visitor* visitor) {
+void CSSPaintImageGeneratorImpl::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   visitor->Trace(paint_worklet_);
   CSSPaintImageGenerator::Trace(visitor);

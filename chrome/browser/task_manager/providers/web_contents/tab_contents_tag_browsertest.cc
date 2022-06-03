@@ -4,9 +4,10 @@
 
 #include <stddef.h>
 
+#include "base/cxx17_backports.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
@@ -20,8 +21,11 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/favicon/core/favicon_driver.h"
 #include "components/favicon/core/favicon_driver_observer.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/favicon_status.h"
 #include "content/public/browser/navigation_entry.h"
+#include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/page_transition_types.h"
@@ -78,6 +82,9 @@ class FaviconWaiter : public favicon::FaviconDriverObserver {
     driver_->AddObserver(this);
   }
 
+  FaviconWaiter(const FaviconWaiter&) = delete;
+  FaviconWaiter& operator=(const FaviconWaiter&) = delete;
+
   void WaitForFaviconWithURL(const GURL& url) {
     if (GetCurrentFaviconURL() == url) {
       driver_->RemoveObserver(this);
@@ -114,9 +121,7 @@ class FaviconWaiter : public favicon::FaviconDriverObserver {
 
   favicon::ContentFaviconDriver* driver_;
   GURL target_favicon_url_;
-  base::Closure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(FaviconWaiter);
+  base::RepeatingClosure quit_closure_;
 };
 
 }  // namespace
@@ -126,6 +131,8 @@ class FaviconWaiter : public favicon::FaviconDriverObserver {
 class TabContentsTagTest : public InProcessBrowserTest {
  public:
   TabContentsTagTest() { EXPECT_TRUE(embedded_test_server()->Start()); }
+  TabContentsTagTest(const TabContentsTagTest&) = delete;
+  TabContentsTagTest& operator=(const TabContentsTagTest&) = delete;
   ~TabContentsTagTest() override {}
 
   void AddNewTestTabAt(int index, const char* test_page_file) {
@@ -136,7 +143,8 @@ class TabContentsTagTest : public InProcessBrowserTest {
   }
 
   void NavigateToUrl(const char* test_page_file) {
-    ui_test_utils::NavigateToURL(browser(), GetUrlOfFile(test_page_file));
+    ASSERT_TRUE(
+        ui_test_utils::NavigateToURL(browser(), GetUrlOfFile(test_page_file)));
   }
 
   void CloseTabAt(int index) {
@@ -144,9 +152,9 @@ class TabContentsTagTest : public InProcessBrowserTest {
                                                      TabStripModel::CLOSE_NONE);
   }
 
-  base::string16 GetTestPageExpectedTitle(const TestPageData& page_data) const {
+  std::u16string GetTestPageExpectedTitle(const TestPageData& page_data) const {
     // Pages with no title should fall back to their URL.
-    base::string16 title = base::UTF8ToUTF16(page_data.title);
+    std::u16string title = base::UTF8ToUTF16(page_data.title);
     if (title.empty()) {
       GURL url = GetUrlOfFile(page_data.page_file);
       return GetDefaultTitleForUrl(url);
@@ -156,15 +164,15 @@ class TabContentsTagTest : public InProcessBrowserTest {
 
   // Returns the expected title for |url| if |url| does not specify a custom
   // title (e.g. via the <title> tag).
-  base::string16 GetDefaultTitleForUrl(const GURL& url) const {
-    base::string16 title =
+  std::u16string GetDefaultTitleForUrl(const GURL& url) const {
+    std::u16string title =
         base::UTF8ToUTF16(url.host() + ":" + url.port() + url.path());
     return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX, title);
   }
 
-  base::string16 GetAboutBlankExpectedTitle() const {
+  std::u16string GetAboutBlankExpectedTitle() const {
     return l10n_util::GetStringFUTF16(IDS_TASK_MANAGER_TAB_PREFIX,
-                                      base::UTF8ToUTF16("about:blank"));
+                                      u"about:blank");
   }
 
   int tabs_count() const { return browser()->tab_strip_model()->count(); }
@@ -176,9 +184,6 @@ class TabContentsTagTest : public InProcessBrowserTest {
   GURL GetUrlOfFile(const char* test_page_file) const {
     return embedded_test_server()->GetURL(test_page_file);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabContentsTagTest);
 };
 
 // Tests that TabContentsTags are being recorded correctly by the
@@ -263,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, PostExistingTaskProviding) {
   // task manager.
   CloseTabAt(0);
   EXPECT_EQ(kTestPagesLength, task_manager.tasks().size());
-  const base::string16 closed_tab_title =
+  const std::u16string closed_tab_title =
       GetTestPageExpectedTitle(kTestPages[kTestPagesLength - 1]);
   for (const auto* task : task_manager.tasks())
     EXPECT_NE(closed_tab_title, task->title());
@@ -280,7 +285,7 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
 
   // Navigate to a page with a favicon.
   GURL favicon_page_url = GetUrlOfFile("/favicon/page_with_favicon.html");
-  ui_test_utils::NavigateToURL(browser(), favicon_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), favicon_page_url));
   ASSERT_GE(1U, task_manager.tasks().size());
   Task* task = task_manager.tasks().back();
   ASSERT_EQ(GetDefaultTitleForUrl(favicon_page_url), task->title());
@@ -311,7 +316,20 @@ IN_PROC_BROWSER_TEST_F(TabContentsTagTest, NavigateToPageNoFavicon) {
 
   // Navigate to a page without a favicon.
   GURL no_favicon_page_url = GetUrlOfFile("/title1.html");
-  ui_test_utils::NavigateToURL(browser(), no_favicon_page_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), no_favicon_page_url));
+
+  if (content::CanSameSiteMainFrameNavigationsChangeRenderFrameHosts()) {
+    // When ProactivelySwapBrowsingInstance or RenderDocument is enabled on
+    // same-site main frame navigations, we'll get a new task because we are
+    // changing RenderFrameHosts. Note that the previous page's task might still
+    // be around if the previous page is saved in the back-forward cache.
+    ASSERT_EQ(
+        content::BackForwardCache::IsSameSiteBackForwardCacheFeatureEnabled()
+            ? 2U
+            : 1U,
+        task_manager.tasks().size());
+    task = task_manager.tasks().front();
+  }
   ASSERT_EQ(GetDefaultTitleForUrl(no_favicon_page_url), task->title());
 
   // Check that the task manager uses the default favicon for the page.

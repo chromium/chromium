@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -22,9 +21,10 @@ class PlatformAppNavigationRedirector {
  public:
   static std::unique_ptr<content::NavigationThrottle> MaybeCreateThrottleFor(
       content::NavigationHandle* handle);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PlatformAppNavigationRedirector);
+  PlatformAppNavigationRedirector(const PlatformAppNavigationRedirector&) =
+      delete;
+  PlatformAppNavigationRedirector& operator=(
+      const PlatformAppNavigationRedirector&) = delete;
 };
 
 #endif  // CHROME_BROWSER_APPS_PLATFORM_APPS_PLATFORM_APP_NAVIGATION_REDIRECTOR_H_

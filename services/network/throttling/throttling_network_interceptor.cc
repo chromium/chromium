@@ -18,16 +18,11 @@ namespace network {
 
 namespace {
 
-int64_t kPacketSize = 1500;
+constexpr int64_t kPacketSize = 1500;
 
 base::TimeDelta CalculateTickLength(double throughput) {
-  if (!throughput)
-    return base::TimeDelta::FromMicroseconds(1);
-  int64_t us_tick_length = (1000000L * kPacketSize) / throughput;
-  DCHECK(us_tick_length != 0);
-  if (us_tick_length == 0)
-    us_tick_length = 1;
-  return base::TimeDelta::FromMicroseconds(us_tick_length);
+  return throughput ? base::Seconds(kPacketSize / throughput)
+                    : base::Microseconds(1);
 }
 
 }  // namespace
@@ -95,7 +90,7 @@ void ThrottlingNetworkInterceptor::UpdateConditions(
   latency_length_ = base::TimeDelta();
   double latency = conditions_->latency();
   if (latency > 0)
-    latency_length_ = base::TimeDelta::FromMillisecondsD(latency);
+    latency_length_ = base::Milliseconds(latency);
   ArmTimer(now);
 }
 
@@ -109,7 +104,7 @@ uint64_t ThrottlingNetworkInterceptor::UpdateThrottledRecords(
     return last_tick;
   }
 
-  int64_t new_tick = (now - offset_) / tick_length;
+  int64_t new_tick = (now - offset_).IntDiv(tick_length);
   int64_t ticks = new_tick - last_tick;
 
   int64_t length = records->size();
@@ -126,6 +121,8 @@ uint64_t ThrottlingNetworkInterceptor::UpdateThrottledRecords(
 }
 
 void ThrottlingNetworkInterceptor::UpdateThrottled(base::TimeTicks now) {
+  if (conditions_->offline())
+    return;
   download_last_tick_ = UpdateThrottledRecords(
       now, &download_, download_last_tick_, download_tick_length_);
   upload_last_tick_ = UpdateThrottledRecords(now, &upload_, upload_last_tick_,
@@ -134,6 +131,8 @@ void ThrottlingNetworkInterceptor::UpdateThrottled(base::TimeTicks now) {
 }
 
 void ThrottlingNetworkInterceptor::UpdateSuspended(base::TimeTicks now) {
+  if (conditions_->offline())
+    return;
   int64_t activation_baseline =
       (now - latency_length_ - base::TimeTicks()).InMicroseconds();
   ThrottleRecords suspended;
@@ -210,8 +209,7 @@ void ThrottlingNetworkInterceptor::ArmTimer(base::TimeTicks now) {
   }
   if (suspend_count) {
     base::TimeTicks activation_time =
-        base::TimeTicks() + base::TimeDelta::FromMicroseconds(min_baseline) +
-        latency_length_;
+        base::TimeTicks() + base::Microseconds(min_baseline) + latency_length_;
     if (activation_time < desired_time)
       desired_time = activation_time;
   }
@@ -231,12 +229,12 @@ int ThrottlingNetworkInterceptor::StartThrottle(
   if (result < 0)
     return result;
 
-  if (conditions_->offline())
-    return is_upload ? result : net::ERR_INTERNET_DISCONNECTED;
-
-  if (!conditions_->latency() &&
-      ((is_upload && !conditions_->upload_throughput()) ||
-       (!is_upload && !conditions_->download_throughput()))) {
+  if (conditions_->offline()) {
+    if (!suspend_when_offline_)
+      return is_upload ? result : net::ERR_INTERNET_DISCONNECTED;
+  } else if (!conditions_->latency() &&
+             ((is_upload && !conditions_->upload_throughput()) ||
+              (!is_upload && !conditions_->download_throughput()))) {
     return result;
   }
 
@@ -283,6 +281,10 @@ void ThrottlingNetworkInterceptor::RemoveRecord(
 
 bool ThrottlingNetworkInterceptor::IsOffline() {
   return conditions_->offline();
+}
+
+void ThrottlingNetworkInterceptor::SetSuspendWhenOffline(bool suspend) {
+  suspend_when_offline_ = suspend;
 }
 
 }  // namespace network

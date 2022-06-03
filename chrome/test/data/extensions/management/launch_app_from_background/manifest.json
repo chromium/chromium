@@ -4,6 +4,7 @@
   "manifest_version": 2,
   "permissions": ["management", "tabs"],
   "background": {
-    "page": "background.html"
+    "scripts": ["test.js"],
+    "persistent": true
   }
 }

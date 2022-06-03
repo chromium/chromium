@@ -1,0 +1,21 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+enum FocusType {
+  // Element::focus(), etc.
+  kNone = 0,
+  // Sequential navigation with TAB, or Shift + TAB.
+  kForward,
+  kBackward,
+  // Spatial navigation.
+  kSpatialNavigation,
+  // Mouse press
+  kMouse,
+  // Access key
+  kAccessKey,
+  // Re-focus by a page focus
+  kPage,
+};

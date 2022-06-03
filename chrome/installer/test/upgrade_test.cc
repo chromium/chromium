@@ -12,7 +12,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
-  const wchar_t kMiniInstallerExe[] = L"mini_installer.exe";
+const wchar_t kMiniInstallerExe[] = L"mini_installer.exe";
 }  // namespace
 
 // Boilerplate for a future upgrade scenario test.
@@ -23,22 +23,20 @@ class UpgradeTest : public testing::Test {
     base::FilePath dir_exe;
     ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &dir_exe));
     ASSERT_TRUE(base::CreateTemporaryFile(&next_mini_installer_path_));
-    ASSERT_TRUE(
-        upgrade_test::GenerateAlternateVersion(
-            dir_exe.Append(&kMiniInstallerExe[0]),
-            next_mini_installer_path_,
-            upgrade_test::NEXT_VERSION, NULL, NULL));
+    ASSERT_TRUE(upgrade_test::GenerateAlternateVersion(
+        dir_exe.Append(&kMiniInstallerExe[0]), next_mini_installer_path_,
+        upgrade_test::NEXT_VERSION, nullptr, nullptr));
   }
 
   // Clean up by deleting the created newer version of mini_installer.exe.
   static void TearDownTestCase() {
-    EXPECT_TRUE(base::DeleteFile(next_mini_installer_path_, false));
+    EXPECT_TRUE(base::DeleteFile(next_mini_installer_path_));
   }
+
  private:
   static base::FilePath next_mini_installer_path_;
 };  // class UpgradeTest
 
 base::FilePath UpgradeTest::next_mini_installer_path_;
 
-TEST_F(UpgradeTest, DoNothing) {
-}
+TEST_F(UpgradeTest, DoNothing) {}

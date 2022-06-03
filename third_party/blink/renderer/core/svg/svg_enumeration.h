@@ -39,35 +39,58 @@ namespace blink {
 
 class SVGEnumerationMap;
 
-class SVGEnumerationBase : public SVGPropertyBase {
+template <typename Enum>
+const SVGEnumerationMap& GetEnumerationMap();
+
+class SVGEnumeration : public SVGPropertyBase {
  public:
   // SVGEnumeration does not have a tear-off type.
   typedef void TearOffType;
   typedef uint16_t PrimitiveType;
 
-  ~SVGEnumerationBase() override;
+  SVGEnumeration(uint16_t value, const SVGEnumerationMap& map)
+      : value_(value), map_(map) {}
+
+  template <typename Enum>
+  explicit SVGEnumeration(Enum new_value)
+      : SVGEnumeration(new_value, GetEnumerationMap<Enum>()) {}
 
   uint16_t Value() const {
     return value_ <= MaxExposedEnumValue() ? value_ : 0;
   }
   void SetValue(uint16_t);
 
+  // Typed accessors. These should generally be used instead of the above ones.
+  template <typename Enum>
+  Enum EnumValue() const {
+    DCHECK_LE(value_, MaxInternalEnumValue());
+    return static_cast<Enum>(value_);
+  }
+  template <typename Enum>
+  void SetEnumValue(Enum value) {
+    SetValue(value);
+  }
+
   // SVGPropertyBase:
-  virtual SVGEnumerationBase* Clone() const = 0;
+  SVGEnumeration* Clone() const {
+    return MakeGarbageCollected<SVGEnumeration>(value_, map_);
+  }
   SVGPropertyBase* CloneForAnimation(const String&) const override;
 
   String ValueAsString() const override;
   SVGParsingError SetValueAsString(const String&);
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from,
-                              SVGPropertyBase* to,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement*) override;
-  float CalculateDistance(SVGPropertyBase* to, SVGElement*) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement*) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement*) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedEnumeration; }
   AnimatedPropertyType GetType() const override { return ClassType(); }
@@ -80,9 +103,6 @@ class SVGEnumerationBase : public SVGPropertyBase {
   static constexpr int kInitialValueBits = 3;
 
  protected:
-  SVGEnumerationBase(uint16_t value, const SVGEnumerationMap& map)
-      : value_(value), map_(map) {}
-
   // This is the maximum value of all the internal enumeration values.
   // This assumes that the map is sorted on the enumeration value.
   uint16_t MaxInternalEnumValue() const;
@@ -94,34 +114,9 @@ class SVGEnumerationBase : public SVGPropertyBase {
   const SVGEnumerationMap& map_;
 };
 
-template <typename Enum>
-const SVGEnumerationMap& GetEnumerationMap();
-
 #define DECLARE_SVG_ENUM_MAP(cpp_enum_type) \
   template <>                               \
   const SVGEnumerationMap& GetEnumerationMap<cpp_enum_type>()
-
-template <typename Enum>
-class SVGEnumeration : public SVGEnumerationBase {
- public:
-  explicit SVGEnumeration(Enum new_value)
-      : SVGEnumerationBase(new_value, GetEnumerationMap<Enum>()) {}
-  ~SVGEnumeration() override = default;
-
-  SVGEnumerationBase* Clone() const override {
-    return MakeGarbageCollected<SVGEnumeration>(EnumValue());
-  }
-
-  Enum EnumValue() const {
-    DCHECK_LE(value_, MaxInternalEnumValue());
-    return static_cast<Enum>(value_);
-  }
-
-  void SetEnumValue(Enum value) {
-    value_ = value;
-    NotifyChange();
-  }
-};
 
 }  // namespace blink
 

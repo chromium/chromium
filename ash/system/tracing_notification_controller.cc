@@ -59,12 +59,12 @@ void TracingNotificationController::OnTracingModeChanged() {
 }
 
 void TracingNotificationController::CreateNotification() {
-  std::unique_ptr<Notification> notification = ash::CreateSystemNotification(
+  std::unique_ptr<Notification> notification = CreateSystemNotification(
       message_center::NOTIFICATION_TYPE_SIMPLE, kNotificationId,
       l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_TRACING_NOTIFICATION_TITLE),
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_TRACING_NOTIFICATION_MESSAGE),
-      base::string16() /* display_source */, GURL(),
+      std::u16string() /* display_source */, GURL(),
       message_center::NotifierId(message_center::NotifierType::SYSTEM_COMPONENT,
                                  kNotifierId),
       message_center::RichNotificationData(),

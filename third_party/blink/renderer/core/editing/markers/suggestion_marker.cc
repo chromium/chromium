@@ -17,6 +17,8 @@ SuggestionMarker::SuggestionMarker(unsigned start_offset,
                       end_offset,
                       properties.UnderlineColor(),
                       properties.Thickness(),
+                      properties.UnderlineStyle(),
+                      properties.TextColor(),
                       properties.BackgroundColor()),
       tag_(NextTag()),
       suggestions_(properties.Suggestions()),
@@ -28,6 +30,10 @@ SuggestionMarker::SuggestionMarker(unsigned start_offset,
 
 int32_t SuggestionMarker::Tag() const {
   return tag_;
+}
+
+SuggestionMarker::SuggestionType SuggestionMarker::GetSuggestionType() const {
+  return suggestion_type_;
 }
 
 DocumentMarker::MarkerType SuggestionMarker::GetType() const {

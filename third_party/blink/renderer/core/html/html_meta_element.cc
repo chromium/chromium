@@ -22,7 +22,7 @@
 
 #include "third_party/blink/renderer/core/html/html_meta_element.h"
 
-#include "third_party/blink/public/platform/web_color_scheme.h"
+#include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/core/loader/http_equiv.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/weborigin/security_policy.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_to_number.h"
 
 namespace blink {
@@ -125,9 +127,9 @@ void HTMLMetaElement::ParseContentAttribute(
     String message =
         "Error parsing a meta element's content: ';' is not a valid key-value "
         "pair separator. Please use ',' instead.";
-    document->AddConsoleMessage(
-        ConsoleMessage::Create(mojom::ConsoleMessageSource::kRendering,
-                               mojom::ConsoleMessageLevel::kWarning, message));
+    document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+        mojom::ConsoleMessageSource::kRendering,
+        mojom::ConsoleMessageLevel::kWarning, message));
   }
 }
 
@@ -199,11 +201,12 @@ Length HTMLMetaElement::ParseViewportValueAsLength(Document* document,
   if (value < 0)
     return Length();  // auto
 
+  value = ClampLengthValue(value);
   if (document && document->GetPage()) {
     value = document->GetPage()->GetChromeClient().WindowToViewportScalar(
         document->GetFrame(), value);
   }
-  return Length::Fixed(ClampLengthValue(value));
+  return Length::Fixed(value);
 }
 
 float HTMLMetaElement::ParseViewportValueAsZoom(
@@ -430,9 +433,9 @@ void HTMLMetaElement::ReportViewportWarning(Document* document,
 
   // FIXME: This message should be moved off the console once a solution to
   // https://bugs.webkit.org/show_bug.cgi?id=103274 exists.
-  document->AddConsoleMessage(
-      ConsoleMessage::Create(mojom::ConsoleMessageSource::kRendering,
-                             ViewportErrorMessageLevel(error_code), message));
+  document->AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
+      mojom::ConsoleMessageSource::kRendering,
+      ViewportErrorMessageLevel(error_code), message));
 }
 
 void HTMLMetaElement::GetViewportDescriptionFromContentAttribute(
@@ -480,9 +483,12 @@ void HTMLMetaElement::NameRemoved(const AtomicString& name_value) {
     return;
   if (EqualIgnoringASCIICase(name_value, "theme-color") &&
       GetDocument().GetFrame()) {
-    GetDocument().GetFrame()->DidChangeThemeColor();
+    GetDocument().GetFrame()->DidChangeThemeColor(
+        /*update_theme_color_cache=*/true);
   } else if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
     GetDocument().ColorSchemeMetaChanged();
+  } else if (EqualIgnoringASCIICase(name_value, "battery-savings")) {
+    GetDocument().BatterySavingsMetaChanged();
   }
 }
 
@@ -497,6 +503,8 @@ void HTMLMetaElement::ParseAttribute(
     ProcessHttpEquiv();
   } else if (params.name == html_names::kHttpEquivAttr) {
     ProcessHttpEquiv();
+  } else if (params.name == html_names::kMediaAttr) {
+    ProcessContent();
   } else {
     HTMLElement::ParseAttribute(params);
   }
@@ -557,11 +565,16 @@ void HTMLMetaElement::ProcessContent() {
 
   if (EqualIgnoringASCIICase(name_value, "theme-color") &&
       GetDocument().GetFrame()) {
-    GetDocument().GetFrame()->DidChangeThemeColor();
+    GetDocument().GetFrame()->DidChangeThemeColor(
+        /*update_theme_color_cache=*/true);
     return;
   }
   if (EqualIgnoringASCIICase(name_value, "color-scheme")) {
     GetDocument().ColorSchemeMetaChanged();
+    return;
+  }
+  if (EqualIgnoringASCIICase(name_value, "battery-savings")) {
+    GetDocument().BatterySavingsMetaChanged();
     return;
   }
 
@@ -573,11 +586,17 @@ void HTMLMetaElement::ProcessContent() {
   if (EqualIgnoringASCIICase(name_value, "viewport")) {
     ProcessViewportContentAttribute(content_value,
                                     ViewportDescription::kViewportMeta);
-  } else if (EqualIgnoringASCIICase(name_value, "referrer")) {
+  } else if (EqualIgnoringASCIICase(name_value, "referrer") &&
+             GetExecutionContext()) {
     UseCounter::Count(&GetDocument(),
                       WebFeature::kHTMLMetaElementReferrerPolicy);
-    GetDocument().ParseAndSetReferrerPolicy(content_value,
-                                            true /* support legacy keywords */);
+    if (!IsDescendantOf(GetDocument().head())) {
+      UseCounter::Count(&GetDocument(),
+                        WebFeature::kHTMLMetaElementReferrerPolicyOutsideHead);
+    }
+
+    GetExecutionContext()->ParseAndSetReferrerPolicy(content_value,
+                                                     kPolicySourceMetaTag);
   } else if (EqualIgnoringASCIICase(name_value, "handheldfriendly") &&
              EqualIgnoringASCIICase(content_value, "true")) {
     ProcessViewportContentAttribute("width=device-width",
@@ -612,7 +631,11 @@ const AtomicString& HTMLMetaElement::HttpEquiv() const {
   return FastGetAttribute(html_names::kHttpEquivAttr);
 }
 
+const AtomicString& HTMLMetaElement::Media() const {
+  return FastGetAttribute(html_names::kMediaAttr);
+}
+
 const AtomicString& HTMLMetaElement::GetName() const {
   return FastGetAttribute(html_names::kNameAttr);
 }
-}
+}  // namespace blink

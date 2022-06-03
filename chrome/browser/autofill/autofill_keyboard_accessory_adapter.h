@@ -26,9 +26,13 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
                                          public AutofillPopupController {
  public:
   AutofillKeyboardAccessoryAdapter(
-      base::WeakPtr<AutofillPopupController> controller,
-      unsigned int animation_duration_millis,
-      bool should_limit_label_width);
+      base::WeakPtr<AutofillPopupController> controller);
+
+  AutofillKeyboardAccessoryAdapter(const AutofillKeyboardAccessoryAdapter&) =
+      delete;
+  AutofillKeyboardAccessoryAdapter& operator=(
+      const AutofillKeyboardAccessoryAdapter&) = delete;
+
   ~AutofillKeyboardAccessoryAdapter() override;
 
   // Interface describing the minimal capabilities for the native view.
@@ -36,9 +40,9 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
    public:
     virtual ~AccessoryView() = default;
 
-    // Initializes the Java-side of this bridge.
-    virtual void Initialize(unsigned int animation_duration_millis,
-                            bool should_limit_label_width) = 0;
+    // Initializes the Java-side of this bridge. Returns true after a successful
+    // creation and false otherwise.
+    virtual bool Initialize() = 0;
 
     // Requests to dismiss this view.
     virtual void Hide() = 0;
@@ -47,8 +51,8 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
     virtual void Show() = 0;
 
     // Ask to confirm a deletion. Triggers the callback upon confirmation.
-    virtual void ConfirmDeletion(const base::string16& confirmation_title,
-                                 const base::string16& confirmation_body,
+    virtual void ConfirmDeletion(const std::u16string& confirmation_title,
+                                 const std::u16string& confirmation_body,
                                  base::OnceClosure confirm_deletion) = 0;
   };
 
@@ -60,38 +64,35 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   // AutofillPopupView implementation.
   void Show() override;
   void Hide() override;
-  void OnSelectedRowChanged(base::Optional<int> previous_row_selection,
-                            base::Optional<int> current_row_selection) override;
+  void OnSelectedRowChanged(absl::optional<int> previous_row_selection,
+                            absl::optional<int> current_row_selection) override;
   void OnSuggestionsChanged() override;
-  base::Optional<int32_t> GetAxUniqueId() override;
+  absl::optional<int32_t> GetAxUniqueId() override;
 
   // AutofillPopupController implementation.
   // Hidden: void OnSuggestionsChanged() override;
   void AcceptSuggestion(int index) override;
   int GetLineCount() const override;
   const autofill::Suggestion& GetSuggestionAt(int row) const override;
-  const base::string16& GetElidedValueAt(int row) const override;
-  const base::string16& GetElidedLabelAt(int row) const override;
+  std::u16string GetSuggestionMainTextAt(int row) const override;
+  std::u16string GetSuggestionMinorTextAt(int row) const override;
+  const std::u16string& GetSuggestionLabelAt(int row) const override;
   bool GetRemovalConfirmationText(int index,
-                                  base::string16* title,
-                                  base::string16* body) override;
+                                  std::u16string* title,
+                                  std::u16string* body) override;
   bool RemoveSuggestion(int index) override;
-  void SetSelectedLine(base::Optional<int> selected_line) override;
-  base::Optional<int> selected_line() const override;
-  const AutofillPopupLayoutModel& layout_model() const override;
+  void SetSelectedLine(absl::optional<int> selected_line) override;
+  absl::optional<int> selected_line() const override;
+  PopupType GetPopupType() const override;
 
-  // AutofillPopupViewDelegate implementation
-  // Hidden: void Hide() override;
+  void Hide(PopupHidingReason reason) override;
   void ViewDestroyed() override;
-  void SetSelectionAtPoint(const gfx::Point& point) override;
-  bool AcceptSelectedLine() override;
   void SelectionCleared() override;
-  bool HasSelection() const override;
-  gfx::Rect popup_bounds() const override;
   gfx::NativeView container_view() const override;
+  content::WebContents* GetWebContents() const override;
   const gfx::RectF& element_bounds() const override;
   bool IsRTL() const override;
-  const std::vector<autofill::Suggestion> GetSuggestions() override;
+  std::vector<Suggestion> GetSuggestions() const override;
 
   void OnDeletionConfirmed(int index);
 
@@ -104,22 +105,14 @@ class AutofillKeyboardAccessoryAdapter : public AutofillPopupView,
   std::unique_ptr<AutofillKeyboardAccessoryAdapter::AccessoryView> view_;
 
   // The labels to be used for the input chips.
-  std::vector<base::string16> labels_;
-
-  // If 0, don't animate suggestion view.
-  const unsigned int animation_duration_millis_;
-
-  // If true, limits label width to 1/2 device's width.
-  const bool should_limit_label_width_;
+  std::vector<std::u16string> labels_;
 
   // Position that the front element has in the suggestion list returned by
   // controller_. It is used to determine the offset suggestions.
-  base::Optional<int> front_element_;
+  absl::optional<int> front_element_;
 
   base::WeakPtrFactory<AutofillKeyboardAccessoryAdapter> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(AutofillKeyboardAccessoryAdapter);
 };
 
 }  // namespace autofill

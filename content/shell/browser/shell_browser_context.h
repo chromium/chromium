@@ -9,7 +9,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/content_browser_client.h"
@@ -25,9 +24,7 @@ class ClientHintsControllerDelegate;
 class DownloadManagerDelegate;
 class PermissionControllerDelegate;
 class ShellDownloadManagerDelegate;
-#if !defined(OS_ANDROID)
 class ZoomLevelDelegate;
-#endif  // !defined(OS_ANDROID)
 
 class ShellBrowserContext : public BrowserContext {
  public:
@@ -35,24 +32,27 @@ class ShellBrowserContext : public BrowserContext {
   // CreateBrowserContextServices() for this BrowserContext.
   ShellBrowserContext(bool off_the_record,
                       bool delay_services_creation = false);
+
+  ShellBrowserContext(const ShellBrowserContext&) = delete;
+  ShellBrowserContext& operator=(const ShellBrowserContext&) = delete;
+
   ~ShellBrowserContext() override;
 
-  void set_guest_manager_for_testing(
-      BrowserPluginGuestManager* guest_manager) {
-    guest_manager_ = guest_manager;
+  void set_client_hints_controller_delegate(
+      ClientHintsControllerDelegate* delegate) {
+    client_hints_controller_delegate_ = delegate;
   }
 
   // BrowserContext implementation.
   base::FilePath GetPath() override;
-#if !defined(OS_ANDROID)
   std::unique_ptr<ZoomLevelDelegate> CreateZoomLevelDelegate(
       const base::FilePath& partition_path) override;
-#endif  // !defined(OS_ANDROID)
   bool IsOffTheRecord() override;
   DownloadManagerDelegate* GetDownloadManagerDelegate() override;
   ResourceContext* GetResourceContext() override;
   BrowserPluginGuestManager* GetGuestManager() override;
   storage::SpecialStoragePolicy* GetSpecialStoragePolicy() override;
+  PlatformNotificationService* GetPlatformNotificationService() override;
   PushMessagingService* GetPushMessagingService() override;
   StorageNotificationService* GetStorageNotificationService() override;
   SSLHostStateDelegate* GetSSLHostStateDelegate() override;
@@ -68,10 +68,11 @@ class ShellBrowserContext : public BrowserContext {
   class ShellResourceContext : public ResourceContext {
    public:
     ShellResourceContext();
-    ~ShellResourceContext() override;
 
-  private:
-    DISALLOW_COPY_AND_ASSIGN(ShellResourceContext);
+    ShellResourceContext(const ShellResourceContext&) = delete;
+    ShellResourceContext& operator=(const ShellResourceContext&) = delete;
+
+    ~ShellResourceContext() override;
   };
 
   bool ignore_certificate_errors() const { return ignore_certificate_errors_; }
@@ -88,13 +89,11 @@ class ShellBrowserContext : public BrowserContext {
   void InitWhileIOAllowed();
   void FinishInitWhileIOAllowed();
 
-  bool ignore_certificate_errors_;
-  bool off_the_record_;
+  const bool off_the_record_;
+  bool ignore_certificate_errors_ = false;
   base::FilePath path_;
-  BrowserPluginGuestManager* guest_manager_;
   std::unique_ptr<SimpleFactoryKey> key_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellBrowserContext);
+  ClientHintsControllerDelegate* client_hints_controller_delegate_ = nullptr;
 };
 
 }  // namespace content

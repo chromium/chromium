@@ -10,11 +10,11 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "chrome/browser/notifications/scheduler/public/notification_scheduler_types.h"
 
 namespace base {
 class Clock;
+class TimeDelta;
 }  // namespace base
 
 namespace notifications {

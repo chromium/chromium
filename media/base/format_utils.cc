@@ -8,7 +8,7 @@
 
 namespace media {
 
-base::Optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
+absl::optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
     gfx::BufferFormat format) {
   switch (format) {
     case gfx::BufferFormat::BGRX_8888:
@@ -34,14 +34,17 @@ base::Optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       return PIXEL_FORMAT_NV12;
 
+    case gfx::BufferFormat::P010:
+      return PIXEL_FORMAT_P016LE;
+
     default:
       DLOG(WARNING) << "Unsupported BufferFormat: "
                     << gfx::BufferFormatToString(format);
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 
-base::Optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
+absl::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
     VideoPixelFormat pixel_format) {
   switch (pixel_format) {
     case PIXEL_FORMAT_ARGB:
@@ -62,9 +65,12 @@ base::Optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
     case PIXEL_FORMAT_XBGR:
       return gfx::BufferFormat::RGBX_8888;
 
+    case PIXEL_FORMAT_P016LE:
+      return gfx::BufferFormat::P010;
+
     default:
       DLOG(WARNING) << "Unsupported VideoPixelFormat: " << pixel_format;
-      return base::nullopt;
+      return absl::nullopt;
   }
 }
 

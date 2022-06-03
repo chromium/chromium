@@ -18,7 +18,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/free_deleter.h"
 #include "gtest/gtest.h"
 #include "test/gtest_death.h"

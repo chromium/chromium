@@ -5,7 +5,6 @@
 #include "ppapi/proxy/isolated_file_system_private_resource.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/c/pp_file_info.h"
 #include "ppapi/proxy/file_system_resource.h"
@@ -47,10 +46,10 @@ int32_t IsolatedFileSystemPrivateResource::Open(
   if (!file_system_resource)
     return PP_ERROR_BADARGUMENT;
 
-  Call<PpapiPluginMsg_IsolatedFileSystem_BrowserOpenReply>(BROWSER,
-      PpapiHostMsg_IsolatedFileSystem_BrowserOpen(type),
-      base::Bind(&IsolatedFileSystemPrivateResource::OnBrowserOpenComplete,
-                 this, type, file_system_resource, callback));
+  Call<PpapiPluginMsg_IsolatedFileSystem_BrowserOpenReply>(
+      BROWSER, PpapiHostMsg_IsolatedFileSystem_BrowserOpen(type),
+      base::BindOnce(&IsolatedFileSystemPrivateResource::OnBrowserOpenComplete,
+                     this, type, file_system_resource, callback));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -73,8 +72,8 @@ void IsolatedFileSystemPrivateResource::OnBrowserOpenComplete(
   *file_system_resource = fs->GetReference();
   if (*file_system_resource == 0)
     callback->Run(PP_ERROR_FAILED);
-  fs->InitIsolatedFileSystem(
-      fsid, type, base::Bind(&RunTrackedCallback, callback));
+  fs->InitIsolatedFileSystem(fsid, type,
+                             base::BindOnce(&RunTrackedCallback, callback));
 }
 
 }  // namespace proxy

@@ -11,31 +11,34 @@
 #include "base/bind.h"
 #include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/display/renderer_settings.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "components/viz/common/gpu/context_lost_reason.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/common/viz_utils.h"
+#include "components/viz/service/display/display_compositor_memory_and_task_controller.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gles2_implementation.h"
 #include "gpu/command_buffer/client/raster_implementation_gles.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
-#include "gpu/command_buffer/common/skia_utils.h"
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_preferences.h"
+#include "gpu/config/skia_limits.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "gpu/ipc/in_process_command_buffer.h"
 #include "gpu/skia_bindings/gles2_implementation_with_grcontext_support.h"
 #include "gpu/skia_bindings/grcontext_for_gles2_interface.h"
 #include "third_party/khronos/GLES2/gl2.h"
 #include "third_party/khronos/GLES2/gl2ext.h"
-#include "third_party/skia/include/gpu/GrContext.h"
+#include "third_party/skia/include/gpu/GrDirectContext.h"
 #include "third_party/skia/include/gpu/gl/GrGLInterface.h"
 
 namespace viz {
@@ -48,7 +51,7 @@ gpu::ContextCreationAttribs CreateAttributes(
   gpu::ContextCreationAttribs attributes;
   attributes.alpha_size = requires_alpha_channel ? 8 : -1;
   attributes.depth_size = 0;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Chrome OS uses surfaceless when running on a real device and stencil
   // buffers can then be added dynamically so supporting them does not have an
   // impact on normal usage. If we are not running on a real Chrome OS device
@@ -112,12 +115,13 @@ VizProcessContextProvider::VizProcessContextProvider(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
+    DisplayCompositorMemoryAndTaskController* display_controller,
     const RendererSettings& renderer_settings)
     : attributes_(CreateAttributes(renderer_settings.requires_alpha_channel,
                                    renderer_settings)) {
   InitializeContext(std::move(task_executor), surface_handle,
                     gpu_memory_buffer_manager, image_factory,
-                    gpu_channel_manager_delegate,
+                    gpu_channel_manager_delegate, display_controller,
                     SharedMemoryLimitsForRendererSettings(renderer_settings));
 
   if (context_result_ == gpu::ContextResult::kSuccess) {
@@ -132,6 +136,8 @@ VizProcessContextProvider::VizProcessContextProvider(
     UmaRecordContextLost(CONTEXT_INIT_FAILED);
   }
 }
+
+VizProcessContextProvider::VizProcessContextProvider() = default;
 
 VizProcessContextProvider::~VizProcessContextProvider() {
   if (context_result_ == gpu::ContextResult::kSuccess) {
@@ -164,13 +170,13 @@ gpu::ContextSupport* VizProcessContextProvider::ContextSupport() {
   return gles2_implementation_.get();
 }
 
-class GrContext* VizProcessContextProvider::GrContext() {
+class GrDirectContext* VizProcessContextProvider::GrContext() {
   if (gr_context_)
     return gr_context_->get();
 
   size_t max_resource_cache_bytes;
   size_t max_glyph_cache_texture_bytes;
-  gpu::raster::DetermineGrCacheLimitsFromAvailableMemory(
+  gpu::DetermineGrCacheLimitsFromAvailableMemory(
       &max_resource_cache_bytes, &max_glyph_cache_texture_bytes);
 
   gr_context_ = std::make_unique<skia_bindings::GrContextForGLES2Interface>(
@@ -239,8 +245,11 @@ void VizProcessContextProvider::InitializeContext(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
+    DisplayCompositorMemoryAndTaskController* display_controller,
     const gpu::SharedMemoryLimits& mem_limits) {
   const bool is_offscreen = surface_handle == gpu::kNullSurfaceHandle;
+  DCHECK(display_controller);
+  gpu_task_scheduler_helper_ = display_controller->gpu_task_scheduler();
 
   command_buffer_ = std::make_unique<gpu::InProcessCommandBuffer>(
       task_executor,
@@ -248,7 +257,9 @@ void VizProcessContextProvider::InitializeContext(
   context_result_ = command_buffer_->Initialize(
       /*surface=*/nullptr, is_offscreen, surface_handle, attributes_,
       gpu_memory_buffer_manager, image_factory, gpu_channel_manager_delegate,
-      base::ThreadTaskRunnerHandle::Get(), nullptr, nullptr);
+      base::ThreadTaskRunnerHandle::Get(),
+      gpu_task_scheduler_helper_->GetTaskSequence(),
+      display_controller->controller_on_gpu(), nullptr, nullptr);
   if (context_result_ != gpu::ContextResult::kSuccess) {
     DLOG(ERROR) << "Failed to initialize InProcessCommmandBuffer";
     return;
@@ -262,6 +273,9 @@ void VizProcessContextProvider::InitializeContext(
     DLOG(ERROR) << "Failed to initialize GLES2CmdHelper";
     return;
   }
+
+  if (gpu_task_scheduler_helper_)
+    gpu_task_scheduler_helper_->Initialize(gles2_helper_.get());
 
   transfer_buffer_ = std::make_unique<gpu::TransferBuffer>(gles2_helper_.get());
 
@@ -324,6 +338,10 @@ bool VizProcessContextProvider::OnMemoryDump(
 
 base::ScopedClosureRunner VizProcessContextProvider::GetCacheBackBufferCb() {
   return command_buffer_->GetCacheBackBufferCb();
+}
+
+void VizProcessContextProvider::SetNeedsMeasureNextDrawLatency() {
+  return command_buffer_->SetNeedsMeasureNextDrawLatency();
 }
 
 }  // namespace viz

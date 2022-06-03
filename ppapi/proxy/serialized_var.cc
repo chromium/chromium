@@ -5,7 +5,8 @@
 #include "ppapi/proxy/serialized_var.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "ipc/ipc_message_utils.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/proxy/dispatcher.h"
@@ -119,7 +120,7 @@ void SerializedVar::Inner::WriteToMessage(base::Pickle* m) const {
       RawVarDataGraph::Create(var_, instance_);
   if (data) {
     m->WriteBool(true);  // Success.
-    data->Write(m, base::Bind(&DefaultHandleWriter));
+    data->Write(m, base::BindRepeating(&DefaultHandleWriter));
   } else {
     m->WriteBool(false);  // Failure.
   }

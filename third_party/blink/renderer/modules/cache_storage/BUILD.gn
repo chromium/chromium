@@ -24,7 +24,5 @@ blink_modules_sources("cache_storage") {
     "inspector_cache_storage_agent.h",
   ]
 
-  public_deps = [
-    "//third_party/blink/renderer/platform",
-  ]
+  public_deps = [ "//third_party/blink/renderer/platform" ]
 }

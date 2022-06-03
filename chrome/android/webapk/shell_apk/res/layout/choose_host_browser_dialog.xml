@@ -13,8 +13,8 @@
         android:id="@+id/desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/text_size_large"
-        android:textColor="@color/black_alpha_54"
+        android:textSize="@dimen/webapk_text_size_large"
+        android:textColor="@color/webapk_black_alpha_54"
         android:layout_marginBottom="12dp" />
 
     <ListView

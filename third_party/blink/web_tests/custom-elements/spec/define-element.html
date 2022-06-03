@@ -13,13 +13,13 @@
 'use strict';
 
 test_with_window((w) => {
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     w.customElements.define('a-a', 42);
   }, 'defining a number "constructor" should throw a TypeError');
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     w.customElements.define('a-a', () => {});
   }, 'defining an arrow function "constructor" should throw a TypeError');
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     w.customElements.define('a-a', { m() {} }.m);
   }, 'defining a concise method "constructor" should throw a TypeError');
 }, 'A "constructor" that is not a constructor');
@@ -47,7 +47,7 @@ test_with_window((w) => {
   ];
   class X extends w.HTMLElement {}
   invalid_names.forEach((name) => {
-    assert_throws_dom_exception(w, 'SYNTAX_ERR', () => {
+    assert_throws_dom('SYNTAX_ERR', w.DOMException, () => {
       w.customElements.define(name, X);
     })
   });
@@ -57,7 +57,7 @@ test_with_window((w) => {
   class X extends w.HTMLElement {}
   class Y extends w.HTMLElement {}
   w.customElements.define('a-a', X);
-  assert_throws_dom_exception(w, 'NotSupportedError', () => {
+  assert_throws_dom('NotSupportedError', w.DOMException, () => {
     w.customElements.define('a-a', Y);
   }, 'defining an element with a name that is already defined should throw ' +
      'a NotSupportedError');
@@ -68,7 +68,7 @@ test_with_window((w) => {
   let X = (function () {}).bind({});
   Object.defineProperty(X, 'prototype', {
     get() {
-      assert_throws_dom_exception(w, 'NotSupportedError', () => {
+      assert_throws_dom('NotSupportedError', w.DOMException, () => {
         w.customElements.define('a-a', Y);
       }, 'defining an element with a name that is being defined should ' +
          'throw a NotSupportedError');
@@ -82,7 +82,7 @@ test_with_window((w) => {
 test_with_window((w) => {
   class X extends w.HTMLElement {}
   w.customElements.define('a-a', X);
-  assert_throws_dom_exception(w, 'NotSupportedError', () => {
+  assert_throws_dom('NotSupportedError', w.DOMException, () => {
     w.customElements.define('a-b', X);
   }, 'defining an element with a constructor that is already in the ' +
      'registry should throw a NotSupportedError');
@@ -107,8 +107,8 @@ promise_test((t) => {
   .then(([w1, w2]) => {
     class X extends w2.HTMLElement { };
     w1.customElements.define('x-x', X);
-    assert_throws(
-      TypeError.prototype, () => new X(),
+    assert_throws_js(
+      w2.TypeError, () => new X(),
       'the current global object (w2) should not find the definition in w1');
   });
 }, 'HTMLElement constructor looks up definitions in the current global');
@@ -117,7 +117,7 @@ test_with_window((w) => {
   let X = (function () {}).bind({});
   Object.defineProperty(X, 'prototype', {
     get() {
-      assert_throws_dom_exception(w, 'NotSupportedError', () => {
+      assert_throws_dom('NotSupportedError', w.DOMException, () => {
         w.customElements.define('second-name', X);
       }, 'defining an element with a constructor that is being defined ' +
          'should throw a NotSupportedError');
@@ -132,7 +132,7 @@ test_with_window((w) => {
   let X = (function () {}).bind({});
   Object.defineProperty(X, 'prototype', {
     get() {
-      assert_throws_dom_exception(w, 'NotSupportedError', () => {
+      assert_throws_dom('NotSupportedError', w.DOMException, () => {
         w.customElements.define('second-name', class extends HTMLElement { });
       }, 'defining an element while element definition is running should ' +
          'throw a NotSupportedError');
@@ -180,7 +180,7 @@ test_with_window((w) => {
    '<first-name></first-name>');
 
 test_with_window((w) => {
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     let not_a_constructor = () => {};
     let invalid_name = 'annotation-xml';
     w.customElements.define(invalid_name, not_a_constructor);
@@ -189,7 +189,7 @@ test_with_window((w) => {
 
   class C extends w.HTMLElement {}
   w.customElements.define('a-a', C);
-  assert_throws_dom_exception(w, 'SYNTAX_ERR', () => {
+  assert_throws_dom('SYNTAX_ERR', w.DOMException, () => {
     let invalid_name = 'annotation-xml';
     let reused_constructor = C;
     w.customElements.define(invalid_name, reused_constructor);
@@ -265,10 +265,11 @@ test_with_window((w) => {
 test_with_window((w) => {
   class Y extends w.HTMLElement {}
   let X = (function () {}).bind({});
+  let exception = { name: 42 };
   Object.defineProperty(X, 'prototype', {
-    get() { throw { name: 42 }; }
+    get() { throw exception; }
   });
-  assert_throws({ name: 42 }, () => {
+  assert_throws_exactly(exception, () => {
     w.customElements.define('a-a', X);
   }, 'should rethrow constructor exception');
   w.customElements.define('a-a', Y);
@@ -278,10 +279,11 @@ test_with_window((w) => {
 // 14.1 Let prototype be Get(constructor, "prototype"). Rethrow any exceptions.
 test_with_window((w) => {
   let X = (function () {}).bind({});
+  let exception = {name: 'prototype throws' };
   Object.defineProperty(X, 'prototype', {
-    get() { throw { name: 'prototype throws' }; }
+    get() { throw exception; }
   });
-  assert_throws({ name: 'prototype throws' }, () => {
+  assert_throws_exactly(exception, () => {
     w.customElements.define('a-a', X);
   }, 'Exception from Get(constructor, prototype) should be rethrown');
 }, 'Rethrow any exceptions thrown while getting prototype');
@@ -290,7 +292,7 @@ test_with_window((w) => {
 test_with_window((w) => {
   function F() {}
   F.prototype = 42;
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     w.customElements.define('a-a', F);
   }, 'defining an element with a constructor with a prototype that is not an ' +
      'object should throw a TypeError');
@@ -305,10 +307,11 @@ let callbacks_in_reverse = ['attributeChangedCallback', 'disconnectedCallback', 
 function F_for_callbacks_in_reverse() {};
 callbacks_in_reverse.forEach((callback) => {
   test_with_window((w) => {
+    let exception = { name: callback };
     Object.defineProperty(F_for_callbacks_in_reverse.prototype, callback, {
-      get() { throw { name: callback }; }
+      get() { throw exception; }
     });
-    assert_throws({ name: callback }, () => {
+    assert_throws_exactly(exception, () => {
       w.customElements.define('a-a', F_for_callbacks_in_reverse);
     }, 'Exception from Get(prototype, callback) should be rethrown');
   }, 'Rethrow any exceptions thrown while retrieving ' + callback);
@@ -326,7 +329,7 @@ callbacks_in_reverse.forEach((callback) => {
       Object.defineProperty(F.prototype, callback, {
         get() { return {}; }
       });
-      assert_throws(TypeError.prototype, () => {
+      assert_throws_js(w.TypeError, () => {
         w.customElements.define('a-a', F);
       }, 'defining an element with a constructor with a callback that is ' +
        'not undefined and not callable should throw a TypeError');
@@ -336,12 +339,13 @@ callbacks_in_reverse.forEach((callback) => {
 // 14.9.2 Let observedAttributesIterable be Get(constructor, "observedAttributes").
 //        Rethrow any exceptions.
 test_with_window((w) => {
+  let exception = { name: 'observedAttributes throws' };
   class X extends w.HTMLElement{
     constructor() { super(); }
     attributeChangedCallback() {}
-    static get observedAttributes() { throw { name: 'observedAttributes throws' }; }
+    static get observedAttributes() { throw exception; }
   }
-  assert_throws({ name: 'observedAttributes throws' }, () => {
+  assert_throws_exactly(exception, () => {
     w.customElements.define('a-a', X);
   }, 'Exception from Get(constructor, observedAttributes) should be rethrown');
 }, 'Rethrow any exceptions thrown while getting observedAttributes');
@@ -376,7 +380,7 @@ test_with_window((w) => {
   let constructor = function () {};
   constructor.prototype.attributeChangedCallback = function () { };
   constructor.observedAttributes = {[Symbol.iterator]: 1};
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     w.customElements.define('a-a', constructor);
   }, 'converting value that is not an object should throw TypeError');
 }, 'Converting non-object observedAttributes to sequence<DOMString>');
@@ -387,7 +391,7 @@ test_with_window((w) => {
     attributeChangedCallback() {}
     static get observedAttributes() { return new RegExp(); }
   }
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     w.customElements.define('a-a', X);
   }, 'converting RegExp should throw TypeError');
 }, 'Converting regular expression observedAttributes to sequence<DOMString>');
@@ -396,7 +400,7 @@ test_with_window((w) => {
   let constructor = function () {};
   constructor.prototype.attributeChangedCallback = function () { };
   constructor.observedAttributes = {};
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(w.TypeError, () => {
     w.customElements.define('a-a', constructor);
   }, 'If iterator method is undefined, it should throw TypeError');
 }, 'Converting observedAttributes without iterator method to sequence<DOMString>');
@@ -425,7 +429,7 @@ test_with_window((w) => {
       return attributes;
     }
   }
-  assert_throws(TypeError.prototype, () => {
+  assert_throws_js(TypeError, () => {
     w.customElements.define('x-x', X);
   });
 }, 'Throwing an exception in observedAttributes');

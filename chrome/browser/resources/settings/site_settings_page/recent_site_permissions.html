@@ -1,0 +1,69 @@
+    <style include="cr-shared-style settings-shared">
+      site-favicon {
+        /** Pad the difference between --cr-link-row-icon-width and
+            site-favicon width to align with link rows */
+        padding-inline-end: 24px;
+      }
+
+      .link-button[disabled] {
+        cursor: auto;
+        pointer-events: none;
+      }
+
+      .incognito-icon {
+        cursor: auto;
+        pointer-events: auto;
+      }
+
+      .display-name {
+        flex: 1;
+        max-width: 100%;
+      }
+    </style>
+    <div id="noPermissionsText" class="list-frame"
+        hidden$="[[!noRecentPermissions]]">
+      <div class="list-item secondary">$i18n{noRecentPermissions}</div>
+    </div>
+    <template is="dom-repeat" id="recentPermissionsList"
+        items="[[recentSitePermissionsList_]]" on-dom-change="onDomChange_">
+      <div class$="cr-row link-button [[getClassForIndex_(index)]]"
+          on-click="onRecentSitePermissionClick_" actionable
+          disabled$="[[item.incognito]]">
+        <site-favicon url="[[item.origin]]"></site-favicon>
+        <div id="displayName_[[index]]" class="display-name cr-padded-text">
+          <div class="site-representation">
+            <span class="url-directionality">[[getDisplayName_(item)]]</span>
+            <span class="secondary"
+                hidden$="[[!getSiteScheme_(item)]]">
+            &nbsp;$i18nPolymer{siteSettingsSiteRepresentationSeparator}&nbsp;
+            </span>
+            <span class="secondary"
+                hidden$="[[!getSiteScheme_(item)]]">
+              [[getSiteScheme_(item)]]
+            </span>
+          </div>
+          <div class="second-line secondary">
+              [[getPermissionsText_(item)]]
+          </div>
+        </div>
+        <cr-icon-button id="siteEntryButton_[[index]]" class="subpage-arrow"
+            hidden$="[[item.incognito]]"
+            aria-label$="[[getDisplayName_(item)]]"
+            aria-describedby$="displayName_[[index]]"
+            focus-row-control focus-type="show-detail"></cr-icon-button>
+        <cr-tooltip-icon id="incognitoInfoIcon_[[index]]"
+            class="incognito-icon"
+            hidden$="[[!item.incognito]]"
+            disabled$="[[item.incognito]]"
+            icon-aria-label="$i18n{incognitoSiteExceptionDesc}"
+            icon-class="settings20:incognito"
+            on-click="onShowIncognitoTooltip_"
+            on-mouseenter="onShowIncognitoTooltip_"
+            on-focus="onShowIncognitoTooltip_"></cr-tooltip-icon>
+      </div>
+    </template>
+    <paper-tooltip id="tooltip"
+        fit-to-visible-bounds manual-mode
+        position="top">
+      $i18n{incognitoSiteExceptionDesc}
+    </paper-tooltip>

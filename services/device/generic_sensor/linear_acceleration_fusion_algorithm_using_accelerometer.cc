@@ -4,7 +4,7 @@
 
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "services/device/generic_sensor/platform_sensor_fusion.h"
 
 namespace device {

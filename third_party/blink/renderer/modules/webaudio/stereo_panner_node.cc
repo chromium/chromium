@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/modules/webaudio/stereo_panner_node.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_stereo_panner_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/modules/webaudio/audio_graph_tracer.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_input.h"
 #include "third_party/blink/renderer/modules/webaudio/audio_node_output.h"
 #include "third_party/blink/renderer/modules/webaudio/base_audio_context.h"
-#include "third_party/blink/renderer/modules/webaudio/stereo_panner_options.h"
 #include "third_party/blink/renderer/platform/audio/stereo_panner.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
@@ -21,7 +22,8 @@ StereoPannerHandler::StereoPannerHandler(AudioNode& node,
                                          AudioParamHandler& pan)
     : AudioHandler(kNodeTypeStereoPanner, node, sample_rate),
       pan_(&pan),
-      sample_accurate_pan_values_(audio_utilities::kRenderQuantumFrames) {
+      sample_accurate_pan_values_(
+          GetDeferredTaskHandler().RenderQuantumFrames()) {
   AddInput();
   AddOutput(2);
 
@@ -53,28 +55,36 @@ void StereoPannerHandler::Process(uint32_t frames_to_process) {
     return;
   }
 
-  AudioBus* input_bus = Input(0).Bus();
+  scoped_refptr<AudioBus> input_bus = Input(0).Bus();
   if (!input_bus) {
     output_bus->Zero();
     return;
   }
 
-  if (pan_->HasSampleAccurateValues()) {
+  bool is_sample_accurate = pan_->HasSampleAccurateValues();
+
+  if (is_sample_accurate && pan_->IsAudioRate()) {
     // Apply sample-accurate panning specified by AudioParam automation.
     DCHECK_LE(frames_to_process, sample_accurate_pan_values_.size());
     float* pan_values = sample_accurate_pan_values_.Data();
     pan_->CalculateSampleAccurateValues(pan_values, frames_to_process);
-    stereo_panner_->PanWithSampleAccurateValues(input_bus, output_bus,
+    stereo_panner_->PanWithSampleAccurateValues(input_bus.get(), output_bus,
                                                 pan_values, frames_to_process);
-  } else {
-    stereo_panner_->PanToTargetValue(input_bus, output_bus, pan_->Value(),
-                                     frames_to_process);
+    return;
   }
+
+  // The pan value is not sample-accurate or not a-rate.  In this case, we have
+  // a fixed pan value for the render and just need to incorporate any inputs to
+  // the value, if any.
+  float pan_value = is_sample_accurate ? pan_->FinalValue() : pan_->Value();
+
+  stereo_panner_->PanToTargetValue(input_bus.get(), output_bus, pan_value,
+                                   frames_to_process);
 }
 
 void StereoPannerHandler::ProcessOnlyAudioParams(uint32_t frames_to_process) {
-  float values[audio_utilities::kRenderQuantumFrames];
-  DCHECK_LE(frames_to_process, audio_utilities::kRenderQuantumFrames);
+  float values[GetDeferredTaskHandler().RenderQuantumFrames()];
+  DCHECK_LE(frames_to_process, GetDeferredTaskHandler().RenderQuantumFrames());
 
   pan_->CalculateSampleAccurateValues(values, frames_to_process);
 }
@@ -174,7 +184,7 @@ StereoPannerNode* StereoPannerNode::Create(BaseAudioContext* context,
   return node;
 }
 
-void StereoPannerNode::Trace(blink::Visitor* visitor) {
+void StereoPannerNode::Trace(Visitor* visitor) const {
   visitor->Trace(pan_);
   AudioNode::Trace(visitor);
 }

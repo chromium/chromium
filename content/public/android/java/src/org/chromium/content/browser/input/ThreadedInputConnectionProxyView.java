@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
  * This is a fake View that is only exposed to InputMethodManager.
  */
 public class ThreadedInputConnectionProxyView extends View {
-    private static final String TAG = "Ime";
+    private static final String TAG = "ImeProxyView";
     private static final boolean DEBUG_LOGS = false;
 
     private final Handler mImeThreadHandler;
@@ -55,6 +55,7 @@ public class ThreadedInputConnectionProxyView extends View {
     }
 
     public void onOriginalViewWindowFocusChanged(boolean gainFocus) {
+        if (DEBUG_LOGS) Log.w(TAG, "onOriginalViewWindowFocusChanged: " + gainFocus);
         mWindowFocused.set(gainFocus);
     }
 
@@ -100,17 +101,19 @@ public class ThreadedInputConnectionProxyView extends View {
 
     @Override
     public boolean hasWindowFocus() {
-        if (DEBUG_LOGS) Log.w(TAG, "hasWindowFocus");
-        return mWindowFocused.get();
+        boolean focused = mWindowFocused.get();
+        if (DEBUG_LOGS) Log.w(TAG, "hasWindowFocus: " + focused);
+        return focused;
     }
 
     @Override
     public View getRootView() {
-        if (DEBUG_LOGS) Log.w(TAG, "getRootView");
         // Returning a null here matches mCurRootView being null value in InputMethodManager,
         // which represents that the current focused window is not IME target window.
         // In this case, you are still able to type.
-        return mWindowFocused.get() ? mRootView.get() : null;
+        View rootView = mWindowFocused.get() ? mRootView.get() : null;
+        if (DEBUG_LOGS) Log.w(TAG, "getRootView: " + rootView);
+        return rootView;
     }
 
     @Override
@@ -122,8 +125,9 @@ public class ThreadedInputConnectionProxyView extends View {
 
     @Override
     public boolean isFocused() {
-        if (DEBUG_LOGS) Log.w(TAG, "isFocused");
-        return mFocused.get();
+        boolean focused = mFocused.get();
+        if (DEBUG_LOGS) Log.w(TAG, "isFocused: " + focused);
+        return focused;
     }
 
     @Override

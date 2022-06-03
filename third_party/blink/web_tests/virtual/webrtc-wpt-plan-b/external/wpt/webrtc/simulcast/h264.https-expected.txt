@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL H264 simulcast setup with two spatial layers promise_test: Unhandled rejection with value: object "InvalidStateError: Failed to execute 'addTransceiver' on 'RTCPeerConnection': This operation is only supported in 'unified-plan'."
+Harness: the test ran to completion.
+

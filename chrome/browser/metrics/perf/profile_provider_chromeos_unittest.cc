@@ -11,18 +11,14 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/task/post_task.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/metrics/perf/heap_collector.h"
 #include "chrome/browser/metrics/perf/metric_collector.h"
 #include "chrome/browser/metrics/perf/metric_provider.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "components/services/heap_profiling/public/cpp/settings.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -70,6 +66,9 @@ class TestMetricCollector : public internal::MetricCollector {
   explicit TestMetricCollector(const CollectionParams& collection_params)
       : internal::MetricCollector("UMA.CWP.TestData", collection_params) {}
 
+  TestMetricCollector(const TestMetricCollector&) = delete;
+  TestMetricCollector& operator=(const TestMetricCollector&) = delete;
+
   const char* ToolName() const override { return "test"; }
   base::WeakPtr<internal::MetricCollector> GetWeakPtr() override {
     return weak_factory_.GetWeakPtr();
@@ -88,13 +87,10 @@ class TestMetricCollector : public internal::MetricCollector {
 
  private:
   base::WeakPtrFactory<TestMetricCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TestMetricCollector);
 };
 
-const base::TimeDelta kPeriodicCollectionInterval =
-    base::TimeDelta::FromHours(1);
-const base::TimeDelta kMaxCollectionDelay = base::TimeDelta::FromSeconds(1);
+const base::TimeDelta kPeriodicCollectionInterval = base::Hours(1);
+const base::TimeDelta kMaxCollectionDelay = base::Seconds(1);
 
 // Allows access to some private methods for testing.
 class TestProfileProvider : public ProfileProvider {
@@ -112,9 +108,9 @@ class TestProfileProvider : public ProfileProvider {
 
     collectors_.clear();
     collectors_.push_back(std::make_unique<MetricProvider>(
-        std::make_unique<TestMetricCollector<100>>(test_params)));
+        std::make_unique<TestMetricCollector<100>>(test_params), nullptr));
     collectors_.push_back(std::make_unique<MetricProvider>(
-        std::make_unique<TestMetricCollector<200>>(test_params)));
+        std::make_unique<TestMetricCollector<200>>(test_params), nullptr));
   }
 
   using ProfileProvider::collectors_;
@@ -125,8 +121,8 @@ class TestProfileProvider : public ProfileProvider {
   using ProfileProvider::OnSessionRestoreDone;
   using ProfileProvider::SuspendDone;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestProfileProvider);
+  TestProfileProvider(const TestProfileProvider&) = delete;
+  TestProfileProvider& operator=(const TestProfileProvider&) = delete;
 };
 
 template <SampledProfile_TriggerEvent TRIGGER_TYPE>
@@ -153,6 +149,9 @@ class ProfileProviderTest : public testing::Test {
   ProfileProviderTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
+  ProfileProviderTest(const ProfileProviderTest&) = delete;
+  ProfileProviderTest& operator=(const ProfileProviderTest&) = delete;
+
   void SetUp() override {
     // ProfileProvider requires chromeos::LoginState and
     // chromeos::PowerManagerClient to be initialized.
@@ -176,8 +175,6 @@ class ProfileProviderTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
   std::unique_ptr<TestProfileProvider> profile_provider_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileProviderTest);
 };
 
 TEST_F(ProfileProviderTest, CheckSetup) {
@@ -226,7 +223,7 @@ TEST_F(ProfileProviderTest, UserLoginLogout) {
 
 TEST_F(ProfileProviderTest, SuspendDone_NoUserLoggedIn_NoCollection) {
   // No user is logged in, so no collection is done on resume from suspend.
-  profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
+  profile_provider_->SuspendDone(base::Minutes(10));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -246,7 +243,7 @@ TEST_F(ProfileProviderTest, CanceledSuspend_NoCollection) {
   }
 
   // Trigger a canceled suspend (zero sleep duration).
-  profile_provider_->SuspendDone(base::TimeDelta::FromSeconds(0));
+  profile_provider_->SuspendDone(base::Seconds(0));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -264,7 +261,7 @@ TEST_F(ProfileProviderTest, SuspendDone) {
       chromeos::LoginState::LOGGED_IN_USER_REGULAR);
 
   // Trigger a resume from suspend.
-  profile_provider_->SuspendDone(base::TimeDelta::FromMinutes(10));
+  profile_provider_->SuspendDone(base::Minutes(10));
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -277,7 +274,7 @@ TEST_F(ProfileProviderTest, SuspendDone) {
 
 TEST_F(ProfileProviderTest, OnSessionRestoreDone_NoUserLoggedIn_NoCollection) {
   // No user is logged in, so no collection is done on session restore.
-  profile_provider_->OnSessionRestoreDone(10);
+  profile_provider_->OnSessionRestoreDone(nullptr, 10);
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -297,7 +294,7 @@ TEST_F(ProfileProviderTest, OnSessionRestoreDone) {
   }
 
   // Trigger a session restore.
-  profile_provider_->OnSessionRestoreDone(10);
+  profile_provider_->OnSessionRestoreDone(nullptr, 10);
   // Run all pending tasks.
   task_environment_.FastForwardBy(kMaxCollectionDelay);
 
@@ -355,7 +352,7 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
   // Fast forward time to 1 second before the throttling duration is over.
   task_environment_.FastForwardBy(
       profile_provider_->jankiness_collection_min_interval() -
-      base::TimeDelta::FromSeconds(1));
+      base::Seconds(1));
 
   // This collection within the minimum interval should be throttled.
   profile_provider_->OnJankStarted();
@@ -366,7 +363,7 @@ TEST_F(ProfileProviderTest, JankinessCollectionThrottled) {
 
   // Move the clock forward past the throttling duration. The next JANKY_TASK
   // collection should succeed.
-  task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
 
   profile_provider_->OnJankStarted();
   task_environment_.RunUntilIdle();
@@ -406,11 +403,10 @@ class ProfileProviderJankinessTest : public ProfileProviderTest {
 TEST_F(ProfileProviderJankinessTest, JankMonitor_UI) {
   EXPECT_TRUE(profile_provider_->jank_monitor());
   // Post a janky task to the UI thread.
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
-      base::BindLambdaForTesting([&]() {
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
         // This is a janky task that runs for 2 seconds.
-        task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+        task_environment_.FastForwardBy(base::Seconds(2));
       }));
   task_environment_.RunUntilIdle();
 
@@ -425,11 +421,10 @@ TEST_F(ProfileProviderJankinessTest, JankMonitor_UI) {
 TEST_F(ProfileProviderJankinessTest, JankMonitor_IO) {
   EXPECT_TRUE(profile_provider_->jank_monitor());
   // Post a janky task to the IO thread.
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::IO},
-      base::BindLambdaForTesting([&]() {
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindLambdaForTesting([&]() {
         // This is a janky task that runs for 2 seconds.
-        task_environment_.FastForwardBy(base::TimeDelta::FromSeconds(2));
+        task_environment_.FastForwardBy(base::Seconds(2));
       }));
   task_environment_.RunUntilIdle();
 
@@ -458,7 +453,7 @@ TEST(ProfileProviderJankinessParamTest, SetFeatureParam) {
 
   // Get default minimum interval is expected to be 30 minutes.
   EXPECT_EQ(profile_provider->jankiness_collection_min_interval(),
-            base::TimeDelta::FromMinutes(30));
+            base::Minutes(30));
 
   profile_provider.reset();
 
@@ -475,7 +470,7 @@ TEST(ProfileProviderJankinessParamTest, SetFeatureParam) {
   profile_provider = std::make_unique<TestProfileProvider>();
   profile_provider->Init();
   EXPECT_EQ(profile_provider->jankiness_collection_min_interval(),
-            base::TimeDelta::FromSeconds(180));
+            base::Seconds(180));
 
   profile_provider.reset();
 
@@ -485,21 +480,24 @@ TEST(ProfileProviderJankinessParamTest, SetFeatureParam) {
 
 namespace {
 
-class TestParamsProfileProvider : public ProfileProvider {
+class TestStockProfileProvider : public ProfileProvider {
  public:
-  TestParamsProfileProvider() = default;
+  TestStockProfileProvider() = default;
 
   using ProfileProvider::collectors_;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestParamsProfileProvider);
+  TestStockProfileProvider(const TestStockProfileProvider&) = delete;
+  TestStockProfileProvider& operator=(const TestStockProfileProvider&) = delete;
 };
 
 }  // namespace
 
-class ProfileProviderFeatureParamsTest : public testing::Test {
+class ProfileProviderStockTest : public testing::Test {
  public:
-  ProfileProviderFeatureParamsTest() = default;
+  ProfileProviderStockTest() = default;
+
+  ProfileProviderStockTest(const ProfileProviderStockTest&) = delete;
+  ProfileProviderStockTest& operator=(const ProfileProviderStockTest&) = delete;
 
   void SetUp() override {
     // ProfileProvider requires chromeos::LoginState and
@@ -515,62 +513,16 @@ class ProfileProviderFeatureParamsTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ProfileProviderFeatureParamsTest);
 };
 
-TEST_F(ProfileProviderFeatureParamsTest, HeapCollectorDisabled) {
-  std::map<std::string, std::string> params;
-  params.insert(
-      std::make_pair(heap_profiling::kOOPHeapProfilingFeatureMode, "non-cwp"));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      heap_profiling::kOOPHeapProfilingFeature, params);
-
-  TestParamsProfileProvider profile_provider;
+TEST_F(ProfileProviderStockTest, CheckSetup) {
+  TestStockProfileProvider profile_provider;
   // We should have one collector registered.
   EXPECT_EQ(1u, profile_provider.collectors_.size());
 
-  // After initialization, we should still have a single collector, because the
-  // sampling factor param is set to 0.
+  // After initialization, we should still have a single collector.
   profile_provider.Init();
   EXPECT_EQ(1u, profile_provider.collectors_.size());
-
-  // Before destroying ScopedFeatureList, we need to finish SetUp() of each
-  // registered collector, which accesses field trial params on its own
-  // dedicated sequence.
-  task_environment_.RunUntilIdle();
-}
-
-TEST_F(ProfileProviderFeatureParamsTest, HeapCollectorEnabled) {
-  std::map<std::string, std::string> params;
-  params.insert(std::make_pair(heap_profiling::kOOPHeapProfilingFeatureMode,
-                               "cwp-tcmalloc"));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeatureWithParameters(
-      heap_profiling::kOOPHeapProfilingFeature, params);
-
-  TestParamsProfileProvider profile_provider;
-  // We should have one collector registered.
-  EXPECT_EQ(1u, profile_provider.collectors_.size());
-
-  // After initialization, if the new tcmalloc is enabled, we should have two
-  // collectors, because the sampling factor param is set to 1. Otherwise, we
-  // must still have one collector only.
-  profile_provider.Init();
-#if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
-  EXPECT_EQ(2u, profile_provider.collectors_.size());
-#else
-  EXPECT_EQ(1u, profile_provider.collectors_.size());
-#endif
-
-  // Before destroying ScopedFeatureList, we need to finish SetUp() of each
-  // registered collector, which accesses field trial params on its own
-  // dedicated sequence.
-  task_environment_.RunUntilIdle();
 }
 
 }  // namespace metrics

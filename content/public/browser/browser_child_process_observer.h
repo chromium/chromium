@@ -17,11 +17,6 @@ struct ChildProcessTerminationInfo;
 // interface; use RenderProcessHostObserver instead.
 class CONTENT_EXPORT BrowserChildProcessObserver {
  public:
-  // Called when a child process host has connected to a child process.
-  // Note that |data.handle| may be invalid, if the child process connects to
-  // the pipe before the process launcher's reply arrives.
-  virtual void BrowserChildProcessHostConnected(const ChildProcessData& data) {}
-
   // Called when a child process has successfully launched and has connected to
   // it child process host. The |data.handle| is guaranteed to be valid.
   virtual void BrowserChildProcessLaunchedAndConnected(

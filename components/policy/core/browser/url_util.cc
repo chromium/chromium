@@ -4,13 +4,14 @@
 
 #include "components/policy/core/browser/url_util.h"
 
+#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "components/google/core/common/google_util.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_matcher/url_matcher.h"
@@ -51,9 +52,6 @@ const char kGoogleWebCacheQueryPattern[] =
 const char kGoogleTranslateSubdomain[] = "translate.";
 const char kAlternateGoogleTranslateHost[] = "translate.googleusercontent.com";
 
-const char kDevToolsLegacyScheme[] = "chrome-devtools";
-const char kDevToolsScheme[] = "devtools";
-
 // Maximum filters per policy. Filters over this index are ignored.
 const size_t kMaxFiltersPerPolicy = 1000;
 
@@ -71,11 +69,11 @@ void ProcessQueryToConditions(
   url::Component query_left = url::MakeRange(0, query.length());
   url::Component key;
   url::Component value;
-  // Depending on the filter type being black-list or white-list, the matcher
-  // choose any or every match. The idea is a URL should be black-listed if
-  // there is any occurrence of the key value pair. It should be white-listed
+  // Depending on the filter type being block-list or allow-list, the matcher
+  // choose any or every match. The idea is a URL should be blocked if
+  // there is any occurrence of the key value pair. It should be allowed
   // only if every occurrence of the key is followed by the value. This avoids
-  // situations such as a user appending a white-listed video parameter in the
+  // situations such as a user appending an allowed video parameter in the
   // end of the query and watching a video of their choice (the last parameter
   // is ignored by some web servers like youtube's).
   URLQueryElementMatcherCondition::Type match_type =
@@ -110,6 +108,9 @@ void ProcessQueryToConditions(
 // singleton so the cached regexes are only created once.
 class EmbeddedURLExtractor {
  public:
+  EmbeddedURLExtractor(const EmbeddedURLExtractor&) = delete;
+  EmbeddedURLExtractor& operator=(const EmbeddedURLExtractor&) = delete;
+
   static EmbeddedURLExtractor* GetInstance() {
     static base::NoDestructor<EmbeddedURLExtractor> instance;
     return instance.get();
@@ -147,7 +148,7 @@ class EmbeddedURLExtractor {
     // ("webcache.googleusercontent.com/search?q=cache:...").
     std::string query;
     if (url.host_piece() == kGoogleWebCacheHost &&
-        url.path_piece().starts_with(kGoogleWebCachePathPrefix) &&
+        base::StartsWith(url.path_piece(), kGoogleWebCachePathPrefix) &&
         net::GetValueForKeyInQuery(url, "q", &query)) {
       std::string fingerprint;
       std::string scheme;
@@ -161,8 +162,7 @@ class EmbeddedURLExtractor {
     // Check for Google translate URLs ("translate.google.TLD/...?...&u=URL" or
     // "translate.googleusercontent.com/...?...&u=URL").
     bool is_translate = false;
-    if (base::StartsWith(url.host_piece(), kGoogleTranslateSubdomain,
-                         base::CompareCase::SENSITIVE)) {
+    if (base::StartsWith(url.host_piece(), kGoogleTranslateSubdomain)) {
       // Remove the "translate." prefix.
       GURL::Replacements replace;
       replace.SetHostStr(
@@ -176,8 +176,7 @@ class EmbeddedURLExtractor {
       is_translate = google_util::IsGoogleDomainUrl(
                          trimmed, google_util::DISALLOW_SUBDOMAIN,
                          google_util::DISALLOW_NON_STANDARD_PORTS) &&
-                     !base::StartsWith(trimmed.host_piece(), "www.",
-                                       base::CompareCase::SENSITIVE);
+                     !base::StartsWith(trimmed.host_piece(), "www.");
     }
     bool is_alternate_translate =
         url.host_piece() == kAlternateGoogleTranslateHost;
@@ -210,8 +209,6 @@ class EmbeddedURLExtractor {
   const re2::RE2 google_amp_cache_path_regex_;
   const re2::RE2 google_amp_viewer_path_regex_;
   const re2::RE2 google_web_cache_query_regex_;
-
-  DISALLOW_COPY_AND_ASSIGN(EmbeddedURLExtractor);
 };
 
 }  // namespace
@@ -231,12 +228,16 @@ GURL GetEmbeddedURL(const GURL& url) {
   return EmbeddedURLExtractor::GetInstance()->GetEmbeddedURL(url);
 }
 
+size_t GetMaxFiltersPerPolicy() {
+  return kMaxFiltersPerPolicy;
+}
+
 FilterComponents::FilterComponents()
     : port(0), match_subdomains(true), allow(true) {}
 FilterComponents::~FilterComponents() = default;
 FilterComponents::FilterComponents(FilterComponents&&) = default;
 
-bool FilterComponents::IsBlacklistWildcard() const {
+bool FilterComponents::IsBlocklistWildcard() const {
   return !allow && host.empty() && scheme.empty() && path.empty() &&
          query.empty() && port == 0 && number_of_key_value_pairs == 0 &&
          match_subdomains;
@@ -268,13 +269,13 @@ scoped_refptr<URLMatcherConditionSet> CreateConditionSet(
 
   std::unique_ptr<URLMatcherSchemeFilter> scheme_filter;
   if (!scheme.empty())
-    scheme_filter.reset(new URLMatcherSchemeFilter(scheme));
+    scheme_filter = std::make_unique<URLMatcherSchemeFilter>(scheme);
 
   std::unique_ptr<URLMatcherPortFilter> port_filter;
   if (port != 0) {
     std::vector<URLMatcherPortFilter::Range> ranges;
     ranges.push_back(URLMatcherPortFilter::CreateRange(port));
-    port_filter.reset(new URLMatcherPortFilter(ranges));
+    port_filter = std::make_unique<URLMatcherPortFilter>(ranges);
   }
 
   return base::MakeRefCounted<URLMatcherConditionSet>(
@@ -298,16 +299,6 @@ bool FilterToComponents(const std::string& filter,
   url::Parsed parsed;
   std::string lc_filter = base::ToLowerASCII(filter);
   const std::string url_scheme = url_formatter::SegmentURL(filter, &parsed);
-
-  // This is for backward compatibility between 'chrome-devtools' and 'devtools'
-  // schemes. url_formatter::SegmentURL will return 'devtools' if the filter's
-  // scheme is the deprecated 'chrome-devtools'. To comply with that
-  // transformation, since both schemes are equivalent, if the filter's scheme
-  // was 'chrome-devtools', it should be replaced by 'devtools'.
-  if (url_scheme == kDevToolsScheme &&
-      lc_filter.find(kDevToolsLegacyScheme) == 0) {
-    lc_filter.replace(0, 15, kDevToolsScheme);
-  }
 
   // Check if it's a scheme wildcard pattern. We support both versions
   // (scheme:* and scheme://*) the later being consistent with old filter
@@ -409,7 +400,7 @@ POLICY_EXPORT void AddFilters(URLMatcher* matcher,
                               std::map<url_matcher::URLMatcherConditionSet::ID,
                                        url_util::FilterComponents>* filters) {
   URLMatcherConditionSet::Vector all_conditions;
-  size_t size = std::min(kMaxFiltersPerPolicy, patterns->GetSize());
+  size_t size = std::min(kMaxFiltersPerPolicy, patterns->GetList().size());
   std::string pattern;
   scoped_refptr<URLMatcherConditionSet> condition_set;
   for (size_t i = 0; i < size; ++i) {

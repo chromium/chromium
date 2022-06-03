@@ -8,6 +8,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/display/display_configuration_controller.h"
 #include "ash/display/extended_mouse_warp_controller.h"
 #include "ash/display/null_mouse_warp_controller.h"
 #include "ash/display/unified_mouse_warp_controller.h"
@@ -17,14 +18,18 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/display.h"
+#include "ui/display/manager/display_layout_store.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/gfx/geometry/point.h"
@@ -139,7 +144,7 @@ void MoveCursorTo(AshWindowTreeHost* ash_host,
   }
 }
 
-void ShowDisplayErrorNotification(const base::string16& message,
+void ShowDisplayErrorNotification(const std::u16string& message,
                                   bool allow_feedback) {
   // Always remove the notification to make sure the notification appears
   // as a popup in any situation.
@@ -154,36 +159,63 @@ void ShowDisplayErrorNotification(const base::string16& message,
   }
 
   std::unique_ptr<message_center::Notification> notification =
-      ash::CreateSystemNotification(
+      CreateSystemNotification(
           message_center::NOTIFICATION_TYPE_SIMPLE, kDisplayErrorNotificationId,
-          base::string16(),  // title
+          std::u16string(),  // title
           message,
-          base::string16(),  // display_source
+          std::u16string(),  // display_source
           GURL(),
           message_center::NotifierId(
               message_center::NotifierType::SYSTEM_COMPONENT,
               kNotifierDisplayError),
           data,
           base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
-              base::BindRepeating([](base::Optional<int> button_index) {
+              base::BindRepeating([](absl::optional<int> button_index) {
                 if (button_index)
                   NewWindowDelegate::GetInstance()->OpenFeedbackPage();
               })),
           kNotificationMonitorWarningIcon,
           message_center::SystemNotificationWarningLevel::WARNING);
-  notification->set_priority(message_center::SYSTEM_PRIORITY);
   message_center::MessageCenter::Get()->AddNotification(
       std::move(notification));
 }
 
-base::string16 GetDisplayErrorNotificationMessageForTest() {
+bool IsRectContainedByAnyDisplay(const gfx::Rect& rect_in_screen) {
+  const std::vector<display::Display>& displays =
+      display::Screen::GetScreen()->GetAllDisplays();
+  for (const auto& display : displays) {
+    if (display.bounds().Contains(rect_in_screen))
+      return true;
+  }
+  return false;
+}
+
+std::u16string ConvertRefreshRateToString16(float refresh_rate) {
+  std::string str = base::StringPrintf("%.2f", refresh_rate);
+
+  // Remove the mantissa for whole numbers.
+  if (EndsWith(str, ".00", base::CompareCase::INSENSITIVE_ASCII))
+    str.erase(str.length() - 3);
+
+  return base::UTF8ToUTF16(str);
+}
+
+std::u16string GetDisplayErrorNotificationMessageForTest() {
   message_center::NotificationList::Notifications notifications =
       message_center::MessageCenter::Get()->GetVisibleNotifications();
   for (auto* const notification : notifications) {
     if (notification->id() == kDisplayErrorNotificationId)
       return notification->message();
   }
-  return base::string16();
+  return std::u16string();
+}
+
+bool ShouldUndoRotationForMirror() {
+  return Shell::Get()
+             ->display_manager()
+             ->layout_store()
+             ->forced_mirror_mode_for_tablet() ||
+         Shell::Get()->tablet_mode_controller()->is_in_tablet_physical_state();
 }
 
 }  // namespace ash

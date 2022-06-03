@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/logging.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/thunk/enter.h"
 #include "ppapi/thunk/ppb_input_event_api.h"

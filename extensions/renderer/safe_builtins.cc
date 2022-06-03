@@ -4,11 +4,21 @@
 
 #include "extensions/renderer/safe_builtins.h"
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "extensions/renderer/script_context.h"
 #include "extensions/renderer/v8_helpers.h"
+#include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
+#include "v8/include/v8-extension.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-isolate.h"
+#include "v8/include/v8-microtask-queue.h"
+#include "v8/include/v8-object.h"
+#include "v8/include/v8-primitive-object.h"
+#include "v8/include/v8-primitive.h"
+#include "v8/include/v8-template.h"
 
 namespace extensions {
 
@@ -176,6 +186,8 @@ class ExtensionImpl : public v8::Extension {
           info[2]->IsObject() &&  // args
           info[3]->IsInt32() &&   // first_arg_index
           info[4]->IsInt32());    // args_length
+    v8::MicrotasksScope microtasks(info.GetIsolate(),
+                                   v8::MicrotasksScope::kDoNotRunMicrotasks);
     v8::Local<v8::Function> function = info[0].As<v8::Function>();
     v8::Local<v8::Object> recv;
     if (info[1]->IsObject()) {
@@ -207,8 +219,6 @@ class ExtensionImpl : public v8::Extension {
         return;
     }
 
-    v8::MicrotasksScope microtasks(
-        info.GetIsolate(), v8::MicrotasksScope::kDoNotRunMicrotasks);
     v8::Local<v8::Value> return_value;
     if (function->Call(context, recv, argc, argv.get()).ToLocal(&return_value))
       info.GetReturnValue().Set(return_value);

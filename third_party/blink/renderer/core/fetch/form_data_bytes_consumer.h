@@ -16,6 +16,7 @@ namespace blink {
 class DOMArrayBuffer;
 class DOMArrayBufferView;
 class EncodedFormData;
+class ExecutionContext;
 
 class FormDataBytesConsumer final : public BytesConsumer {
  public:
@@ -54,7 +55,7 @@ class FormDataBytesConsumer final : public BytesConsumer {
   Error GetError() const override { return impl_->GetError(); }
   String DebugName() const override { return impl_->DebugName(); }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(impl_);
     BytesConsumer::Trace(visitor);
   }

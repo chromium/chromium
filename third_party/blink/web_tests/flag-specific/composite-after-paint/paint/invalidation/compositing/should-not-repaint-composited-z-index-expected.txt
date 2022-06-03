@@ -8,11 +8,22 @@
     },
     {
       "name": "LayoutNGBlockFlow DIV id='composited-box'",
-      "position": [8, 8],
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backfaceVisibility": "hidden",
-      "backgroundColor": "#008000"
+      "backgroundColor": "#008000",
+      "transform": 1
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [8, 8, 0, 1]
+      ]
     }
   ]
 }

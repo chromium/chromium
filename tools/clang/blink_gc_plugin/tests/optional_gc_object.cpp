@@ -6,14 +6,23 @@
 
 namespace blink {
 
+class WithOpt : public GarbageCollected<WithOpt> {
+ public:
+  virtual void Trace(Visitor*) const {}
+
+ private:
+  absl::optional<Base> optional_field_;  // Optional fields are disallowed.
+};
+
 void DisallowedUseOfUniquePtr() {
-  base::Optional<Base> optional_base;
+  absl::optional<Base> optional_base;  // Must be okay.
   (void)optional_base;
 
-  base::Optional<Derived> optional_derived;
+  absl::optional<Derived> optional_derived;  // Must also be okay.
   (void)optional_derived;
 
-  new base::Optional<Base>;
+  new absl::optional<Base>;  // New expression with gced optionals are not
+                             // allowed.
 }
 
 }  // namespace blink

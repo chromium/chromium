@@ -1,0 +1,111 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+template("test_resources") {
+  jinja_template_resources(target_name) {
+    forward_variables_from(invoker, "*")
+    testonly = true
+    variables = [ "resource_name=$resource_name" ]
+    res_dir = "java/res_template"
+    resources = [ "java/res_template/values/values.xml" ]
+  }
+}
+
+template("generate_dummy_android_library") {
+  # No underscores to avoid crbug.com/908819.
+  _generate_java_source_target_name = "${target_name}generatejavasource"
+  jinja_template(_generate_java_source_target_name) {
+    testonly = true
+    input = "java/src/org/chromium/build/classpath_order/Dummy.java.jinja2"
+    output = "$target_gen_dir/java/src/org/chromium/build/classpath_order/${invoker.class_name}.java"
+    variables = [ "class_name=${invoker.class_name}" ]
+  }
+
+  android_library(target_name) {
+    forward_variables_from(invoker, "*")
+
+    if (!defined(invoker.deps)) {
+      deps = []
+    }
+
+    sources = get_target_outputs(":${_generate_java_source_target_name}")
+    deps += [ ":${_generate_java_source_target_name}" ]
+  }
+}
+
+# Test that classpath order keeps resources accessible when multiple targets generate
+# resources for the same package. Specifically, test that an android_library precedes
+# its dependencies regardless of the relative lexographic order.
+
+test_resources("a1_dependency_resources") {
+  resource_name = "a1_dependency_resource"
+}
+
+generate_dummy_android_library("a1_dependency_java") {
+  testonly = true
+  class_name = "A1Dependency"
+  resources_package = "org.chromium.build.classpath_order.test1"
+  deps = [ ":a1_dependency_resources" ]
+}
+
+test_resources("z1_master_resources") {
+  resource_name = "z1_master_resource"
+  deps = [ ":a1_dependency_resources" ]
+}
+
+generate_dummy_android_library("z1_master_java") {
+  testonly = true
+  class_name = "Z1Master"
+  resources_package = "org.chromium.build.classpath_order.test1"
+  deps = [
+    ":a1_dependency_java",
+    ":z1_master_resources",
+  ]
+}
+
+test_resources("z2_dependency_resources") {
+  resource_name = "z2_dependency_resource"
+}
+
+generate_dummy_android_library("z2_dependency_java") {
+  testonly = true
+  class_name = "Z2Dependency"
+  resources_package = "org.chromium.build.classpath_order.test2"
+  deps = [ ":z2_dependency_resources" ]
+}
+
+test_resources("a2_master_resources") {
+  resource_name = "a2_master_resource"
+  deps = [ ":z2_dependency_resources" ]
+}
+
+generate_dummy_android_library("a2_master_java") {
+  testonly = true
+  class_name = "A2Master"
+  resources_package = "org.chromium.build.classpath_order.test2"
+  deps = [
+    ":a2_master_resources",
+    ":z2_dependency_java",
+  ]
+}
+
+java_library("junit_tests") {
+  bypass_platform_checks = true
+  testonly = true
+  sources =
+      [ "java/src/org/chromium/build/classpath_order/ClassPathOrderTest.java" ]
+  deps = [
+    ":a1_dependency_java",
+    ":a2_master_java",
+    ":z1_master_java",
+    ":z2_dependency_java",
+    "//testing/android/junit:junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
+}

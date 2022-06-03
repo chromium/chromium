@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.vr;
 
-import org.junit.Assert;
-
 import org.chromium.chrome.browser.vr.util.PermissionUtils;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.content_public.browser.WebContents;
@@ -23,8 +21,8 @@ public class WebXrArTestFramework extends WebXrTestFramework {
     }
 
     /**
-     * Requests an AR session, automatically giving consent when prompted.
-     * Causes a test failure if it is unable to do so, or if the consent prompt is missing.
+     * Requests an AR session, automatically granting permission when prompted.
+     * Causes a test failure if it is unable to do so, or if the permission prompt is missing.
      *
      * @param webContents The Webcontents to start the AR session in.
      */
@@ -35,40 +33,14 @@ public class WebXrArTestFramework extends WebXrTestFramework {
 
         enterSessionWithUserGesture(webContents);
 
-        // We expect a session consent prompt (in this case the AR-specific one), but should not
+        // We expect a session permissiom prompt (in this case the AR-specific one), but should not
         // get prompted for page camera permission.
-        if (shouldExpectConsentDialog()) {
-            PermissionUtils.waitForConsentPrompt(getRule().getActivity());
-            PermissionUtils.acceptConsentPrompt(getRule().getActivity());
+        if (shouldExpectPermissionPrompt()) {
+            PermissionUtils.waitForPermissionPrompt();
+            PermissionUtils.acceptPermissionPrompt();
         }
 
         pollJavaScriptBooleanOrFail("sessionInfos[sessionTypes.AR].currentSession != null",
-                POLL_TIMEOUT_LONG_MS, webContents);
-    }
-
-    /**
-     * Requests an AR session, then declines consent when prompted.
-     * Causes a test failure if there was no prompt, or if the session started without consent.
-     *
-     * @param webContents The Webcontents to start the AR session in.
-     */
-    public void enterSessionWithUserGestureAndDeclineConsentOrFail(WebContents webContents) {
-        if (!shouldExpectConsentDialog()) {
-            Assert.fail("Attempted to decline the consent dialog when it would not appear.");
-        }
-        runJavaScriptOrFail(
-                "sessionTypeToRequest = sessionTypes.AR", POLL_TIMEOUT_LONG_MS, webContents);
-
-        enterSessionWithUserGesture(webContents);
-
-        // We expect the AR-specific AR session consent prompt but should not get
-        // prompted for page camera permission.
-        PermissionUtils.waitForConsentPrompt(getRule().getActivity());
-        PermissionUtils.declineConsentPrompt(getRule().getActivity());
-
-        pollJavaScriptBooleanOrFail(
-                "sessionInfos[sessionTypes.AR].error != null", POLL_TIMEOUT_LONG_MS, webContents);
-        pollJavaScriptBooleanOrFail("sessionInfos[sessionTypes.AR].currentSession == null",
                 POLL_TIMEOUT_LONG_MS, webContents);
     }
 
@@ -90,14 +62,15 @@ public class WebXrArTestFramework extends WebXrTestFramework {
     }
 
     /**
-     * Checks whether an immersive AR session would trigger the consent dialog.
+     * Checks whether an immersive AR session would trigger the permission prompt.
      *
      * @param webContents The WebContents to check in.
-     * @return True if an immersive AR session request would trigger the consent dialog, otherwise
+     * @return True if an immersive AR session request would trigger the permission prompt,
+     *         otherwise
      *     false.
      */
     @Override
-    public boolean shouldExpectConsentDialog(WebContents webContents) {
-        return shouldExpectConsentDialog("sessionTypes.AR", webContents);
+    public boolean shouldExpectPermissionPrompt(WebContents webContents) {
+        return shouldExpectPermissionPrompt("sessionTypes.AR", webContents);
     }
 }

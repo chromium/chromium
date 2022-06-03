@@ -11,7 +11,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
-#include "base/task_runner_util.h"
+#include "base/task/task_runner_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/async_operation.h"
 #include "device/bluetooth/test/bluetooth_test.h"
@@ -73,7 +73,8 @@ HRESULT FakeBluetoothAdapterWinrt::get_IsLowEnergySupported(boolean* value) {
 
 HRESULT FakeBluetoothAdapterWinrt::get_IsPeripheralRoleSupported(
     boolean* value) {
-  return E_NOTIMPL;
+  *value = true;
+  return S_OK;
 }
 
 HRESULT FakeBluetoothAdapterWinrt::get_IsCentralRoleSupported(boolean* value) {

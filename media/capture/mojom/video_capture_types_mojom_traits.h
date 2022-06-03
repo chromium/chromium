@@ -6,16 +6,18 @@
 #define MEDIA_CAPTURE_MOJOM_VIDEO_CAPTURE_TYPES_MOJOM_TRAITS_H_
 
 #include "media/base/video_facing.h"
-#include "media/capture/mojom/video_capture_types.mojom.h"
+#include "media/capture/mojom/video_capture_types.mojom-shared.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video/video_capture_device_info.h"
+#include "media/capture/video/video_capture_feedback.h"
 #include "media/capture/video_capture_types.h"
 
 namespace mojo {
 
 template <>
-struct EnumTraits<media::mojom::ResolutionChangePolicy,
-                  media::ResolutionChangePolicy> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::ResolutionChangePolicy,
+               media::ResolutionChangePolicy> {
   static media::mojom::ResolutionChangePolicy ToMojom(
       media::ResolutionChangePolicy policy);
 
@@ -24,7 +26,8 @@ struct EnumTraits<media::mojom::ResolutionChangePolicy,
 };
 
 template <>
-struct EnumTraits<media::mojom::PowerLineFrequency, media::PowerLineFrequency> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::PowerLineFrequency, media::PowerLineFrequency> {
   static media::mojom::PowerLineFrequency ToMojom(
       media::PowerLineFrequency frequency);
 
@@ -33,8 +36,8 @@ struct EnumTraits<media::mojom::PowerLineFrequency, media::PowerLineFrequency> {
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoCapturePixelFormat,
-                  media::VideoPixelFormat> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::VideoCapturePixelFormat, media::VideoPixelFormat> {
   static media::mojom::VideoCapturePixelFormat ToMojom(
       media::VideoPixelFormat input);
   static bool FromMojom(media::mojom::VideoCapturePixelFormat input,
@@ -42,8 +45,9 @@ struct EnumTraits<media::mojom::VideoCapturePixelFormat,
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoCaptureBufferType,
-                  media::VideoCaptureBufferType> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::VideoCaptureBufferType,
+               media::VideoCaptureBufferType> {
   static media::mojom::VideoCaptureBufferType ToMojom(
       media::VideoCaptureBufferType buffer_type);
 
@@ -52,7 +56,8 @@ struct EnumTraits<media::mojom::VideoCaptureBufferType,
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError> {
   static media::mojom::VideoCaptureError ToMojom(
       media::VideoCaptureError buffer_type);
 
@@ -61,8 +66,9 @@ struct EnumTraits<media::mojom::VideoCaptureError, media::VideoCaptureError> {
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoCaptureFrameDropReason,
-                  media::VideoCaptureFrameDropReason> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::VideoCaptureFrameDropReason,
+               media::VideoCaptureFrameDropReason> {
   static media::mojom::VideoCaptureFrameDropReason ToMojom(
       media::VideoCaptureFrameDropReason buffer_type);
 
@@ -71,22 +77,25 @@ struct EnumTraits<media::mojom::VideoCaptureFrameDropReason,
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoFacingMode, media::VideoFacingMode> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::VideoFacingMode, media::VideoFacingMode> {
   static media::mojom::VideoFacingMode ToMojom(media::VideoFacingMode input);
   static bool FromMojom(media::mojom::VideoFacingMode input,
                         media::VideoFacingMode* output);
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::VideoCaptureApi, media::VideoCaptureApi> {
   static media::mojom::VideoCaptureApi ToMojom(media::VideoCaptureApi input);
   static bool FromMojom(media::mojom::VideoCaptureApi input,
                         media::VideoCaptureApi* output);
 };
 
 template <>
-struct EnumTraits<media::mojom::VideoCaptureTransportType,
-                  media::VideoCaptureTransportType> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    EnumTraits<media::mojom::VideoCaptureTransportType,
+               media::VideoCaptureTransportType> {
   static media::mojom::VideoCaptureTransportType ToMojom(
       media::VideoCaptureTransportType input);
   static bool FromMojom(media::mojom::VideoCaptureTransportType input,
@@ -94,8 +103,29 @@ struct EnumTraits<media::mojom::VideoCaptureTransportType,
 };
 
 template <>
-struct StructTraits<media::mojom::VideoCaptureFormatDataView,
-                    media::VideoCaptureFormat> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    StructTraits<media::mojom::VideoCaptureControlSupportDataView,
+                 media::VideoCaptureControlSupport> {
+  static bool pan(const media::VideoCaptureControlSupport& input) {
+    return input.pan;
+  }
+
+  static bool tilt(const media::VideoCaptureControlSupport& input) {
+    return input.tilt;
+  }
+
+  static bool zoom(const media::VideoCaptureControlSupport& input) {
+    return input.zoom;
+  }
+
+  static bool Read(media::mojom::VideoCaptureControlSupportDataView data,
+                   media::VideoCaptureControlSupport* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    StructTraits<media::mojom::VideoCaptureFormatDataView,
+                 media::VideoCaptureFormat> {
   static const gfx::Size& frame_size(const media::VideoCaptureFormat& format) {
     return format.frame_size;
   }
@@ -114,8 +144,9 @@ struct StructTraits<media::mojom::VideoCaptureFormatDataView,
 };
 
 template <>
-struct StructTraits<media::mojom::VideoCaptureParamsDataView,
-                    media::VideoCaptureParams> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    StructTraits<media::mojom::VideoCaptureParamsDataView,
+                 media::VideoCaptureParams> {
   static media::VideoCaptureFormat requested_format(
       const media::VideoCaptureParams& params) {
     return params.requested_format;
@@ -146,8 +177,9 @@ struct StructTraits<media::mojom::VideoCaptureParamsDataView,
 };
 
 template <>
-struct StructTraits<media::mojom::VideoCaptureDeviceDescriptorDataView,
-                    media::VideoCaptureDeviceDescriptor> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    StructTraits<media::mojom::VideoCaptureDeviceDescriptorDataView,
+                 media::VideoCaptureDeviceDescriptor> {
   static const std::string& display_name(
       const media::VideoCaptureDeviceDescriptor& input) {
     return input.display_name();
@@ -173,6 +205,11 @@ struct StructTraits<media::mojom::VideoCaptureDeviceDescriptorDataView,
     return input.capture_api;
   }
 
+  static media::VideoCaptureControlSupport control_support(
+      const media::VideoCaptureDeviceDescriptor& input) {
+    return input.control_support();
+  }
+
   static media::VideoCaptureTransportType transport_type(
       const media::VideoCaptureDeviceDescriptor& input) {
     return input.transport_type;
@@ -183,8 +220,9 @@ struct StructTraits<media::mojom::VideoCaptureDeviceDescriptorDataView,
 };
 
 template <>
-struct StructTraits<media::mojom::VideoCaptureDeviceInfoDataView,
-                    media::VideoCaptureDeviceInfo> {
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    StructTraits<media::mojom::VideoCaptureDeviceInfoDataView,
+                 media::VideoCaptureDeviceInfo> {
   static const media::VideoCaptureDeviceDescriptor& descriptor(
       const media::VideoCaptureDeviceInfo& input) {
     return input.descriptor;
@@ -197,6 +235,37 @@ struct StructTraits<media::mojom::VideoCaptureDeviceInfoDataView,
 
   static bool Read(media::mojom::VideoCaptureDeviceInfoDataView data,
                    media::VideoCaptureDeviceInfo* output);
+};
+
+template <>
+struct COMPONENT_EXPORT(MEDIA_CAPTURE_MOJOM_TRAITS)
+    StructTraits<media::mojom::VideoCaptureFeedbackDataView,
+                 media::VideoCaptureFeedback> {
+  static double resource_utilization(
+      const media::VideoCaptureFeedback& feedback) {
+    return feedback.resource_utilization;
+  }
+
+  static float max_framerate_fps(const media::VideoCaptureFeedback& feedback) {
+    return feedback.max_framerate_fps;
+  }
+
+  static int max_pixels(const media::VideoCaptureFeedback& feedback) {
+    return feedback.max_pixels;
+  }
+
+  static bool require_mapped_frame(
+      const media::VideoCaptureFeedback& feedback) {
+    return feedback.require_mapped_frame;
+  }
+
+  static const std::vector<gfx::Size>& mapped_sizes(
+      const media::VideoCaptureFeedback& feedback) {
+    return feedback.mapped_sizes;
+  }
+
+  static bool Read(media::mojom::VideoCaptureFeedbackDataView data,
+                   media::VideoCaptureFeedback* output);
 };
 }  // namespace mojo
 

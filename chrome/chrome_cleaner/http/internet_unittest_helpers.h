@@ -8,8 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/strings/string16.h"
-
 namespace chrome_cleaner {
 
 // Verifies that the supplied multipart MIME message body is plausibly
@@ -20,8 +18,8 @@ namespace chrome_cleaner {
 // @param file The file contents that are expdected to be encoded in the body.
 // @param file_part_name The name expected to be assigned to the file parameter.
 void ExpectMultipartMimeMessageIsPlausible(
-    const base::string16& boundary,
-    const std::map<base::string16, base::string16>& parameters,
+    const std::wstring& boundary,
+    const std::map<std::wstring, std::wstring>& parameters,
     const std::string& file,
     const std::string& file_part_name,
     const std::string& body);

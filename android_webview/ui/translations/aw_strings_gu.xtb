@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="gu">
-<translation id="6106989379647458772"><ph name="PAGE" /> પરનું વેબપેજ થોડી વાર માટે બંધ હોઈ શકે છે અથવા તે કાયમ માટે નવા વેબ ઍડ્રેસ પર ખસેડવામાં આવ્યું હોઈ શકે છે.</translation>
-<translation id="6312113039770857350">વેબપેજ ઉપલબ્ધ નથી</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> પરનું વેબપેજ લોડ કરી શકાયું નથી કારણ કે:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />સૂચનો:<ph name="MARKUP_2" />ખાતરી કરો કે તમારી પાસે ડેટા કનેક્શન છે<ph name="MARKUP_3" />આ વેબપેજને પછીથી ફરી લોડ કરો<ph name="MARKUP_4" />તમે દાખલ કરેલું ઍડ્રેસ તપાસો<ph name="MARKUP_5" /></translation>
 </translationbundle>

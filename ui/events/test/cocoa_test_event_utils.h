@@ -62,6 +62,9 @@ NSEvent* TestScrollEvent(NSPoint location,
                          NSEventPhase event_phase,
                          NSEventPhase momentum_phase);
 
+// Returns a key-down event with isARepeat:YES.
+NSEvent* KeyDownEventWithRepeat();
+
 // Returns a key event with the given character.
 NSEvent* KeyEventWithCharacter(unichar c);
 

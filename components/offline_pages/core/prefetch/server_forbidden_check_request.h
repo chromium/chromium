@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_SERVER_FORBIDDEN_CHECK_REQUEST_H_
 #define COMPONENTS_OFFLINE_PAGES_CORE_PREFETCH_SERVER_FORBIDDEN_CHECK_REQUEST_H_
 
-#include <vector>
-
 #include "components/offline_pages/core/prefetch/prefetch_network_request_factory.h"
 #include "components/offline_pages/core/prefetch/prefetch_service.h"
 #include "components/prefs/pref_service.h"

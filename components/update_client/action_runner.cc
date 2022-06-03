@@ -9,7 +9,8 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/location.h"
-#include "base/task/post_task.h"
+#include "base/logging.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "components/update_client/component.h"
 #include "components/update_client/task_traits.h"
@@ -38,7 +39,7 @@ void ActionRunner::Run(Callback callback) {
   callback_ = std::move(callback);
 
   // Resolve an absolute path for the file referred by the run action.
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
       base::BindOnce(
           [](const Component* component) {

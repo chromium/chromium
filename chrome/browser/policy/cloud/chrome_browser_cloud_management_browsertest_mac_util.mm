@@ -17,7 +17,7 @@ void PostAppControllerNSNotifications() {
                     object:nil];
 
   // Simulate the user hiding Chrome via Cmd+h when the dialog is displayed.
-  // The ExtensionAppShimHandler hasn't been created when the dialog is
+  // The AppShimManager hasn't been created when the dialog is
   // displayed, so it must be skipped.
   [[NSNotificationCenter defaultCenter]
       postNotificationName:NSApplicationWillHideNotification

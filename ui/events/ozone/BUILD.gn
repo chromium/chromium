@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
 import("//build/config/ui.gni")
 
@@ -11,8 +12,6 @@ component("ozone") {
   output_name = "events_ozone"
 
   sources = [
-    "chromeos/cursor_controller.cc",
-    "chromeos/cursor_controller.h",
     "device/device_event.cc",
     "device/device_event.h",
     "device/device_event_observer.h",
@@ -34,6 +33,7 @@ component("ozone") {
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//ui/display",
     "//ui/events",
     "//ui/events/devices",
@@ -41,6 +41,13 @@ component("ozone") {
   ]
 
   defines = [ "IS_EVENTS_OZONE_IMPL" ]
+
+  if (is_chromeos_ash) {
+    sources += [
+      "chromeos/cursor_controller.cc",
+      "chromeos/cursor_controller.h",
+    ]
+  }
 
   if (use_udev) {
     sources += [
@@ -66,11 +73,11 @@ source_set("unittests") {
     "//ui/gfx/geometry",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [ "chromeos/cursor_controller_unittest.cc" ]
   }
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [ "//ui/events/ozone/evdev:unittests" ]
   }
 }

@@ -22,6 +22,17 @@
   return hitView == self ? nil : hitView;
 }
 
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent*)event {
+  // Only register touches that land inside a subview.  Otherwise, return NO to
+  // allow touches to continue to the underlying UI.
+  for (UIView* subview in self.subviews) {
+    CGPoint adjustedPoint = [subview convertPoint:point fromView:self];
+    if ([subview pointInside:adjustedPoint withEvent:event])
+      return YES;
+  }
+  return NO;
+}
+
 - (void)didMoveToWindow {
   [super didMoveToWindow];
   [self.viewController.delegate containerViewController:self.viewController

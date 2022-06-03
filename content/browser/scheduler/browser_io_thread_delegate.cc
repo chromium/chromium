@@ -69,9 +69,8 @@ BrowserIOThreadDelegate::BrowserIOThreadDelegate(
 }
 
 void BrowserIOThreadDelegate::Init() {
-  task_queues_ = std::make_unique<BrowserTaskQueues>(
-      BrowserThread::IO, sequence_manager_,
-      sequence_manager_->GetRealTimeDomain());
+  task_queues_ =
+      std::make_unique<BrowserTaskQueues>(BrowserThread::IO, sequence_manager_);
   default_task_runner_ = task_queues_->GetHandle()->GetDefaultTaskRunner();
 }
 
@@ -110,12 +109,6 @@ void BrowserIOThreadDelegate::BindToCurrentThread(
   if (task_executor_) {
     base::SetTaskExecutorForCurrentThread(task_executor_);
   }
-}
-
-const scoped_refptr<base::SequencedTaskRunner>&
-BrowserIOThreadDelegate::GetTaskRunnerForCurrentTask() const {
-  DCHECK(sequence_manager_);
-  return sequence_manager_->GetTaskRunnerForCurrentTask();
 }
 
 }  // namespace content

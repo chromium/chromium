@@ -32,12 +32,8 @@
 
 namespace blink {
 
-SVGStringListTearOff::SVGStringListTearOff(
-    SVGStringListBase* target,
-    SVGAnimatedPropertyBase* binding,
-    PropertyIsAnimValType property_is_anim_val)
-    : SVGPropertyTearOff<SVGStringListBase>(target,
-                                            binding,
-                                            property_is_anim_val) {}
+SVGStringListTearOff::SVGStringListTearOff(SVGStringListBase* target,
+                                           SVGAnimatedPropertyBase* binding)
+    : SVGPropertyTearOffBase(binding, kPropertyIsNotAnimVal), list_(target) {}
 
 }  // namespace blink

@@ -5,8 +5,6 @@
 #ifndef NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_INPUT_FILE_PARSERS_H_
 #define NET_TOOLS_TRANSPORT_SECURITY_STATE_GENERATOR_INPUT_FILE_PARSERS_H_
 
-#include <string>
-
 #include "base/strings/string_piece.h"
 #include "net/tools/transport_security_state_generator/transport_security_state_entry.h"
 

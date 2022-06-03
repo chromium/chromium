@@ -6,9 +6,14 @@
 
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
+
 GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
-GEN('#include "services/network/public/cpp/features.h"');
+GEN('#include "chrome/browser/ui/ui_features.h"');
+GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "build/chromeos_buildflags.h"');
+
+/* eslint-disable no-var */
 
 /**
  * Basic test fixture for the MD chrome://extensions page. Installs no
@@ -21,14 +26,6 @@ const CrExtensionsBrowserTest = class extends PolymerTest {
   }
 
   /** @override */
-  get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
-  }
-
-  /** @override */
   get typedefCppFixture() {
     return 'ExtensionSettingsUIBrowserTest';
   }
@@ -36,11 +33,6 @@ const CrExtensionsBrowserTest = class extends PolymerTest {
   // The name of the mocha suite. Should be overriden by subclasses.
   get suiteName() {
     return null;
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['network::features::kOutOfBlinkCors']};
   }
 
   /** @param {string} testName The name of the test to run. */
@@ -64,7 +56,6 @@ const CrExtensionsBrowserTestWithInstalledExtension =
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Sidebar Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsSidebarTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -88,7 +79,6 @@ TEST_F('CrExtensionsSidebarTest', 'SetSelected', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Toolbar Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsToolbarTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -109,8 +99,13 @@ TEST_F('CrExtensionsToolbarTest', 'DevModeToggle', function() {
   this.runMochaTest(extension_toolbar_tests.TestNames.DevModeToggle);
 });
 
+TEST_F('CrExtensionsToolbarTest', 'FailedUpdateFiresLoadError', function() {
+  this.runMochaTest(
+      extension_toolbar_tests.TestNames.FailedUpdateFiresLoadError);
+});
+
 // TODO(crbug.com/882342) Disabled on other platforms but MacOS due to timeouts.
-GEN('#if !defined(OS_MACOSX)');
+GEN('#if !defined(OS_MAC)');
 GEN('#define MAYBE_ClickHandlers DISABLED_ClickHandlers');
 GEN('#else');
 GEN('#define MAYBE_ClickHandlers ClickHandlers');
@@ -119,7 +114,7 @@ TEST_F('CrExtensionsToolbarTest', 'MAYBE_ClickHandlers', function() {
   this.runMochaTest(extension_toolbar_tests.TestNames.ClickHandlers);
 });
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 TEST_F('CrExtensionsToolbarTest', 'KioskMode', function() {
   this.runMochaTest(extension_toolbar_tests.TestNames.KioskMode);
 });
@@ -128,7 +123,6 @@ GEN('#endif');
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsItemsTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -179,10 +173,13 @@ TEST_F('CrExtensionsItemsTest', 'HtmlInName', function() {
   this.runMochaTest(extension_item_tests.TestNames.HtmlInName);
 });
 
+TEST_F('CrExtensionsItemsTest', 'RepairButton', function() {
+  this.runMochaTest(extension_item_tests.TestNames.RepairButton);
+});
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Activity Log Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsActivityLogTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -197,7 +194,6 @@ TEST_F('CrExtensionsActivityLogTest', 'All', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Activity Log History Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsActivityLogHistoryTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -212,7 +208,6 @@ TEST_F('CrExtensionsActivityLogHistoryTest', 'All', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Activity Log History Item Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsActivityLogHistoryItemTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
@@ -228,7 +223,6 @@ TEST_F('CrExtensionsActivityLogHistoryItemTest', 'All', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Activity Log Stream Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsActivityLogStreamTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -243,7 +237,6 @@ TEST_F('CrExtensionsActivityLogStreamTest', 'All', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Activity Log Stream Item Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsActivityLogStreamItemTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
@@ -259,7 +252,6 @@ TEST_F('CrExtensionsActivityLogStreamItemTest', 'All', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Detail View Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsDetailViewTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -280,6 +272,12 @@ TEST_F('CrExtensionsDetailViewTest', 'LayoutSource', function() {
   this.runMochaTest(extension_detail_view_tests.TestNames.LayoutSource);
 });
 
+TEST_F(
+    'CrExtensionsDetailViewTest', 'SupervisedUserDisableReasons', function() {
+      this.runMochaTest(
+          extension_detail_view_tests.TestNames.SupervisedUserDisableReasons);
+    });
+
 TEST_F('CrExtensionsDetailViewTest', 'ClickableElements', function() {
   this.runMochaTest(extension_detail_view_tests.TestNames.ClickableElements);
 });
@@ -293,9 +291,22 @@ TEST_F('CrExtensionsDetailViewTest', 'Warnings', function() {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
+// Extension Site Access Tests
+
+var CrExtensionsSiteAccessTest = class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_access_test.js';
+  }
+};
+
+TEST_F('CrExtensionsSiteAccessTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsItemListTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -327,7 +338,6 @@ TEST_F('CrExtensionsItemListTest', 'LoadTimeData', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Load Error Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsLoadErrorTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -355,7 +365,6 @@ TEST_F('CrExtensionsLoadErrorTest', 'CodeSection', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Manager Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsManagerUnitTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -403,7 +412,6 @@ TEST_F('CrExtensionsManagerUnitTest', 'EnableAndDisable', function() {
   this.runMochaTest(extension_manager_unit_tests.TestNames.EnableAndDisable);
 });
 
-// eslint-disable-next-line no-var
 var CrExtensionsManagerUnitTestWithActivityLogFlag =
     class extends CrExtensionsManagerUnitTest {
   /** @override */
@@ -426,8 +434,7 @@ TEST_F(
           extension_manager_unit_tests.TestNames.UpdateFromActivityLog);
     });
 
-GEN('#if defined(OS_CHROMEOS)');
-// eslint-disable-next-line no-var
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrExtensionsKioskModeManagerUnitTest =
     class extends CrExtensionsManagerUnitTest {
   /** @override */
@@ -441,7 +448,6 @@ TEST_F('CrExtensionsKioskModeManagerUnitTest', 'KioskMode', function() {
 });
 GEN('#endif');
 
-// eslint-disable-next-line no-var
 var CrExtensionsManagerTestWithMultipleExtensionTypesInstalled =
     class extends CrExtensionsBrowserTest {
   /** @override */
@@ -487,7 +493,6 @@ TEST_F(
       this.runMochaTest(extension_manager_tests.TestNames.PageTitleUpdate);
     });
 
-// eslint-disable-next-line no-var
 var CrExtensionsManagerTestWithIdQueryParam =
     class extends CrExtensionsBrowserTestWithInstalledExtension {
   /** @override */
@@ -508,11 +513,19 @@ TEST_F(
           extension_manager_tests.TestNames.UrlNavigationToDetails);
     });
 
+// Disabled as flaky. TODO(crbug.com/1127741): Enable this test.
 TEST_F(
-    'CrExtensionsManagerTestWithIdQueryParam', 'UrlNavigationToActivityLogFail',
-    function() {
+    'CrExtensionsManagerTestWithIdQueryParam',
+    'DISABLED_UrlNavigationToActivityLogFail', function() {
       this.runMochaTest(
           extension_manager_tests.TestNames.UrlNavigationToActivityLogFail);
+    });
+
+TEST_F(
+    'CrExtensionsManagerTestWithIdQueryParam', 'UrlNavigationToSiteAccessFail',
+    function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.UrlNavigationToSiteAccessFail);
     });
 
 CrExtensionsManagerTestWithActivityLogFlag =
@@ -537,10 +550,29 @@ TEST_F(
           extension_manager_tests.TestNames.UrlNavigationToActivityLogSuccess);
     });
 
+CrExtensionsManagerTestWithNewSiteAccess =
+    class extends CrExtensionsManagerTestWithIdQueryParam {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/manager_test_with_new_site_access.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {enabled: ['features::kExtensionsMenuAccessControl']};
+  }
+};
+
+TEST_F(
+    'CrExtensionsManagerTestWithNewSiteAccess',
+    'UrlNavigationToSiteAccessSuccess', function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.UrlNavigationToSiteAccessSuccess);
+    });
+
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Keyboard Shortcuts Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsShortcutTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -569,27 +601,9 @@ TEST_F('CrExtensionsShortcutTest', 'ScopeChange', function() {
   this.runMochaTest(extension_shortcut_tests.TestNames.ScopeChange);
 });
 
-// eslint-disable-next-line no-var
-var CrExtensionsShortcutInputTest = class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/shortcut_input_test.js';
-  }
-
-  /** @override */
-  get suiteName() {
-    return extension_shortcut_input_tests.suiteName;
-  }
-};
-
-TEST_F('CrExtensionsShortcutInputTest', 'Basic', function() {
-  this.runMochaTest(extension_shortcut_input_tests.TestNames.Basic);
-});
-
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Pack Dialog Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsPackDialogTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -623,7 +637,7 @@ TEST_F('CrExtensionsPackDialogTest', 'PackError', function() {
 
 // Temporarily disabling on Mac due to flakiness.
 // http://crbug.com/877109
-GEN('#if defined(OS_MACOSX)');
+GEN('#if defined(OS_MAC)');
 GEN('#define MAYBE_PackWarning DISABLED_PackWarning');
 GEN('#else');
 GEN('#define MAYBE_PackWarning PackWarning');
@@ -635,7 +649,6 @@ TEST_F('CrExtensionsPackDialogTest', 'MAYBE_PackWarning', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Options Dialog Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsOptionsDialogTest = class extends CrExtensionsBrowserTest {
   /** @override */
   testGenPreamble() {
@@ -660,7 +673,6 @@ TEST_F('CrExtensionsOptionsDialogTest', 'DISABLED_Layout', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Error Page Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsErrorPageTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -688,7 +700,6 @@ TEST_F('CrExtensionsErrorPageTest', 'ErrorSelection', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Code Section Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsCodeSectionTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -712,7 +723,6 @@ TEST_F('CrExtensionsCodeSectionTest', 'LongSource', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Navigation Helper Tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsNavigationHelperTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -746,7 +756,6 @@ TEST_F('CrExtensionsNavigationHelperTest', 'SupportedRoutes', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // Error Console tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsErrorConsoleTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -756,7 +765,6 @@ var CrExtensionsErrorConsoleTest = class extends CrExtensionsBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('  SetDevModeEnabled(true);');
-    GEN('  EnableErrorConsole();');
     GEN('  InstallErrorsExtension();');
   }
 
@@ -773,7 +781,6 @@ TEST_F('CrExtensionsErrorConsoleTest', 'TestUpDownErrors', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // extensions-toggle-row tests.
 
-// eslint-disable-next-line no-var
 var CrExtensionsToggleRowTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -788,9 +795,8 @@ TEST_F('CrExtensionsToggleRowTest', 'ToggleRowTest', function() {
 ////////////////////////////////////////////////////////////////////////////////
 // kiosk mode tests.
 
-GEN('#if defined(OS_CHROMEOS)');
+GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 
-// eslint-disable-next-line no-var
 var CrExtensionsKioskModeTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -832,7 +838,6 @@ GEN('#endif');
 ////////////////////////////////////////////////////////////////////////////////
 // RuntimeHostsDialog tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsRuntimeHostsDialogTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
@@ -847,7 +852,6 @@ TEST_F('CrExtensionsRuntimeHostsDialogTest', 'All', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // RuntimeHostPermissions tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsRuntimeHostPermissionsTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
@@ -863,7 +867,6 @@ TEST_F('CrExtensionsRuntimeHostPermissionsTest', 'All', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // HostPermissionsToggleList tests
 
-// eslint-disable-next-line no-var
 var CrExtensionsHostPermissionsToggleListTest =
     class extends CrExtensionsBrowserTest {
   /** @override */

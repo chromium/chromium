@@ -9,12 +9,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 
 namespace extensions {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 namespace file_system_api {
 
 // Dispatches an event about a mounted or unmounted volume in the system to
@@ -22,15 +22,22 @@ namespace file_system_api {
 void DispatchVolumeListChangeEvent(content::BrowserContext* browser_context);
 
 }  // namespace file_system_api
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class ChromeFileSystemDelegate : public FileSystemDelegate {
  public:
   ChromeFileSystemDelegate();
+
+  ChromeFileSystemDelegate(const ChromeFileSystemDelegate&) = delete;
+  ChromeFileSystemDelegate& operator=(const ChromeFileSystemDelegate&) = delete;
+
   ~ChromeFileSystemDelegate() override;
 
   // FileSystemDelegate:
   base::FilePath GetDefaultDirectory() override;
+  base::FilePath GetManagedSaveAsDirectory(
+      content::BrowserContext* browser_context,
+      const Extension& extension) override;
   bool ShowSelectFileDialog(
       scoped_refptr<ExtensionFunction> extension_function,
       ui::SelectFileDialog::Type type,
@@ -39,12 +46,12 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
       FileSystemDelegate::FilesSelectedCallback files_selected_callback,
       base::OnceClosure file_selection_canceled_callback) override;
   void ConfirmSensitiveDirectoryAccess(bool has_write_permission,
-                                       const base::string16& app_name,
+                                       const std::u16string& app_name,
                                        content::WebContents* web_contents,
-                                       const base::Closure& on_accept,
-                                       const base::Closure& on_cancel) override;
+                                       base::OnceClosure on_accept,
+                                       base::OnceClosure on_cancel) override;
   int GetDescriptionIdForAcceptType(const std::string& accept_type) override;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   FileSystemDelegate::GrantVolumesMode GetGrantVolumesMode(
       content::BrowserContext* browser_context,
       content::RenderFrameHost* render_frame_host,
@@ -54,18 +61,15 @@ class ChromeFileSystemDelegate : public FileSystemDelegate {
                          const Extension& extension,
                          std::string volume_id,
                          bool writable,
-                         const FileSystemCallback& success_callback,
-                         const ErrorCallback& error_callback) override;
+                         FileSystemCallback success_callback,
+                         ErrorCallback error_callback) override;
   void GetVolumeList(content::BrowserContext* browser_context,
                      const Extension& extension,
-                     const VolumeListCallback& success_callback,
-                     const ErrorCallback& error_callback) override;
-#endif  // defined(OS_CHROMEOS)
+                     VolumeListCallback success_callback,
+                     ErrorCallback error_callback) override;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   SavedFilesServiceInterface* GetSavedFilesService(
       content::BrowserContext* browser_context) override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeFileSystemDelegate);
 };
 
 }  // namespace extensions

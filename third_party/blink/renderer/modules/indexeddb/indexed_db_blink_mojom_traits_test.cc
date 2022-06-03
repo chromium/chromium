@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/indexeddb/indexed_db_blink_mojom_traits.h"
 
 #include <random>
+#include <utility>
 
 #include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
@@ -24,7 +25,7 @@ namespace blink {
 TEST(IDBMojomTraitsTest, IDBKeyBinary) {
   // Generate test data.
   std::mt19937 rng(5);
-  size_t test_data_size = 10000;
+  wtf_size_t test_data_size = 10000;
   Vector<char> test_data(test_data_size);
   std::generate(test_data.begin(), test_data.end(), rng);
   scoped_refptr<SharedBuffer> input_data =
@@ -55,7 +56,7 @@ TEST(IDBMojomTraitsTest, IDBKeyBinary) {
 TEST(IDBMojomTraitsTest, IDBValue) {
   // Generate test data.
   std::mt19937 rng(5);
-  size_t test_data_size = 10000;
+  wtf_size_t test_data_size = 10000;
   Vector<char> test_data(test_data_size);
   std::generate(test_data.begin(), test_data.end(), rng);
   scoped_refptr<SharedBuffer> input_data =

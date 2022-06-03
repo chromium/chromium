@@ -15,8 +15,8 @@ ElementIntersectionObserverData::ElementIntersectionObserverData() = default;
 
 IntersectionObservation* ElementIntersectionObserverData::GetObservationFor(
     IntersectionObserver& observer) {
-  auto i = intersection_observations_.find(&observer);
-  if (i == intersection_observations_.end())
+  auto i = observations_.find(&observer);
+  if (i == observations_.end())
     return nullptr;
   return i->value;
 }
@@ -24,68 +24,69 @@ IntersectionObservation* ElementIntersectionObserverData::GetObservationFor(
 void ElementIntersectionObserverData::AddObservation(
     IntersectionObservation& observation) {
   DCHECK(observation.Observer());
-  intersection_observations_.insert(observation.Observer(), &observation);
+  observations_.insert(observation.Observer(), &observation);
 }
 
 void ElementIntersectionObserverData::AddObserver(
     IntersectionObserver& observer) {
-  intersection_observers_.insert(&observer);
-}
-
-bool ElementIntersectionObserverData::IsTargetOfImplicitRootObserver() const {
-  for (auto& entry : intersection_observations_) {
-    if (entry.key->RootIsImplicit())
-      return true;
-  }
-  return false;
+  observers_.insert(&observer);
 }
 
 void ElementIntersectionObserverData::RemoveObservation(
+    IntersectionObservation& observation) {
+  observations_.erase(observation.Observer());
+}
+
+void ElementIntersectionObserverData::RemoveObserver(
     IntersectionObserver& observer) {
-  intersection_observations_.erase(&observer);
+  observers_.erase(&observer);
+}
+
+void ElementIntersectionObserverData::TrackWithController(
+    IntersectionObserverController& controller) {
+  for (auto& entry : observations_)
+    controller.AddTrackedObservation(*entry.value);
+  for (auto& observer : observers_)
+    controller.AddTrackedObserver(*observer);
+}
+
+void ElementIntersectionObserverData::StopTrackingWithController(
+    IntersectionObserverController& controller) {
+  for (auto& entry : observations_)
+    controller.RemoveTrackedObservation(*entry.value);
+  for (auto& observer : observers_)
+    controller.RemoveTrackedObserver(*observer);
 }
 
 bool ElementIntersectionObserverData::ComputeIntersectionsForTarget(
     unsigned flags) {
   bool needs_occlusion_tracking = false;
-  for (auto& entry : intersection_observations_) {
+  absl::optional<base::TimeTicks> monotonic_time;
+  for (auto& entry : observations_) {
     needs_occlusion_tracking |= entry.key->NeedsOcclusionTracking();
-    entry.value->ComputeIntersection(flags);
+    entry.value->ComputeIntersection(flags, monotonic_time);
   }
-  return needs_occlusion_tracking;
-}
-
-bool ElementIntersectionObserverData::ComputeIntersectionsForLifecycleUpdate(
-    unsigned flags) {
-  bool needs_occlusion_tracking = false;
-
-  // Process explicit-root observers for which this element is root.
-  for (auto& observer : intersection_observers_) {
-    needs_occlusion_tracking |= observer->NeedsOcclusionTracking();
-    if (flags & IntersectionObservation::kExplicitRootObserversNeedUpdate) {
-      observer->ComputeIntersections(flags);
-    }
-  }
-
-  // Process implicit-root observations for which this element is target.
-  unsigned implicit_root_flags =
-      flags & ~IntersectionObservation::kExplicitRootObserversNeedUpdate;
-  needs_occlusion_tracking |=
-      ComputeIntersectionsForTarget(implicit_root_flags);
   return needs_occlusion_tracking;
 }
 
 bool ElementIntersectionObserverData::NeedsOcclusionTracking() const {
-  for (auto& entry : intersection_observations_) {
+  for (auto& entry : observations_) {
     if (entry.key->trackVisibility())
       return true;
   }
   return false;
 }
 
-void ElementIntersectionObserverData::Trace(blink::Visitor* visitor) {
-  visitor->Trace(intersection_observations_);
-  visitor->Trace(intersection_observers_);
+void ElementIntersectionObserverData::InvalidateCachedRects() {
+  for (auto& observer : observers_)
+    observer->InvalidateCachedRects();
+  for (auto& entry : observations_)
+    entry.value->InvalidateCachedRects();
+}
+
+void ElementIntersectionObserverData::Trace(Visitor* visitor) const {
+  visitor->Trace(observations_);
+  visitor->Trace(observers_);
 }
 
 }  // namespace blink

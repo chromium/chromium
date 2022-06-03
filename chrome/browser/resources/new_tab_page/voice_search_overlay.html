@@ -1,0 +1,239 @@
+<style include="cr-icons">
+  :host {
+    --receiving-audio-color: var(--google-red-refresh-500);
+    --speak-shown-duration: 2s;
+  }
+
+  .display-stack {
+    display: grid;
+  }
+
+  .display-stack > * {
+    grid-column-start: 1;
+    grid-row-start: 1;
+  }
+
+  #dialog {
+    align-items: center;
+    background-color: var(--ntp-background-override-color);
+    border: none;
+    display: flex;
+    height: 100%;
+    justify-content: center;
+    left: 0;
+    margin: 0;
+    max-height: initial;
+    max-width: initial;
+    padding: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  #closeButton {
+    --cr-icon-button-fill-color: var(--cr-secondary-text-color);
+    margin: 0;
+    position: absolute;
+    top: 16px;
+  }
+
+  :host-context([dir='ltr']) #closeButton {
+    right: 16px;
+  }
+
+  :host-context([dir='rtl']) #closeButton {
+    left: 16px;
+  }
+
+  #content {
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    width: 660px;
+  }
+
+  #texts {
+    color: var(--cr-secondary-text-color);
+    flex-grow: 1;
+    font-size: 32px;
+    text-align: start;
+  }
+
+  *[text] {
+    transition-delay: 200ms;
+    transition-duration: 500ms;
+    transition-property: opacity, padding-inline-start;
+    transition-timing-function: ease-out;
+    visibility: hidden;
+    width: 100%;
+  }
+
+  *[text='waiting'],
+  *[text='speak'] {
+    opacity: 0;
+    /* Hiding overflow to prevent jitter when the content area is narrow. */
+    overflow-x: hidden;
+    padding-inline-start: 50px;
+  }
+
+  *[text][visible] {
+    opacity: 1;
+    padding-inline-start: 0;
+    visibility: visible;
+  }
+
+  *[text='speak'][visible] #speak {
+    opacity: 0;
+    transition: opacity 0ms var(--speak-shown-duration);
+  }
+
+  *[text='speak'] #listening {
+    opacity: 0;
+  }
+
+  *[text='speak'][visible] #listening {
+    opacity: 1;
+    transition: opacity 750ms ease-out var(--speak-shown-duration);
+  }
+
+  #finalResult {
+    color: var(--cr-primary-text-color);
+  }
+
+  #errors,
+  #errorLinks {
+    display: inline;
+  }
+
+  #errorLinks a {
+    color: var(--cr-link-color);
+    font-size: 18px;
+    font-weight: 500;
+    margin-inline-start: 0.25em;
+    text-decoration: none;
+  }
+
+  #micContainer {
+    --mic-button-size: 165px;
+    --mic-container-size: 300px;
+    align-items: center;
+    flex-shrink: 0;
+    height: var(--mic-container-size);
+    justify-items: center;
+    width: var(--mic-container-size);
+  }
+
+  #micVolume {
+    --mic-volume-size: calc(var(--mic-button-size) +
+        var(--mic-volume-level) * (var(--mic-container-size) -
+            var(--mic-button-size)));
+    align-items: center;
+    background-color: var(--ntp-border-color);
+    border-radius: 50%;
+    display: flex;
+    height: var(--mic-volume-size);
+    justify-content: center;
+    transition-duration: var(--mic-volume-duration);
+    transition-property: height, width;
+    transition-timing-function: ease-in-out;
+    width: var(--mic-volume-size);
+  }
+
+  #micVolumeCutout {
+    background-color: var(--ntp-background-override-color);
+    border-radius: 50%;
+    height: var(--mic-button-size);
+    width: var(--mic-button-size);
+  }
+
+  #micButton {
+    border-radius: 50%;
+    height: var(--mic-button-size);
+    transition: background-color 200ms ease-in-out;
+    width: var(--mic-button-size);
+  }
+
+  .receiving #micButton {
+    background-color: var(--receiving-audio-color);
+    border-color: var(--receiving-audio-color);
+  }
+
+  #micIcon {
+    -webkit-mask-image: url(icons/mic.svg);
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-size: 100%;
+    background-color: var(--ntp-border-color);
+    height: 80px;
+    transition: background-color 200ms ease-in-out;
+    width: 80px;
+  }
+
+  .listening #micIcon {
+    background-color: var(--receiving-audio-color);
+  }
+
+  .receiving #micIcon {
+    background-color: white;
+  }
+</style>
+<dialog id="dialog" on-close="onOverlayClose_" on-click="onOverlayClick_"
+    on-keydown="onOverlayKeydown_">
+  <!-- Purely exists to capture focus upon opening the dialog. -->
+  <div tabindex="-1"></div>
+  <cr-icon-button id="closeButton" class="icon-clear" title="[[i18n('close')]]">
+  </cr-icon-button>
+  <div id="content">
+    <iron-selector id="texts" selected="[[getText_(state_)]]"
+        attr-for-selected="text" fallback-selection="none" aria-live="polite"
+        selected-attribute="visible" class="display-stack">
+      <div text="none"></div>
+      <div text="waiting">[[i18n('waiting')]]</div>
+      <div text="speak" class="display-stack">
+        <div id="speak">[[i18n('speak')]]</div>
+        <div id="listening">[[i18n('listening')]]</div>
+      </div>
+      <div text="result" aria-hidden="true">
+        <span id="finalResult">[[finalResult_]]</span>
+        <span>[[interimResult_]]</span>
+      </div>
+      <div text="error">
+        <iron-pages id="errors" selected="[[getErrorText_(error_)]]"
+            attr-for-selected="error" fallback-selection="other">
+          <span error="no-speech">[[i18n('noVoice')]]</span>
+          <span error="audio-capture">[[i18n('audioError')]]</span>
+          <span error="network">[[i18n('networkError')]]</span>
+          <span error="not-allowed">[[i18n('permissionError')]]</span>
+          <span error="language-not-supported">[[i18n('languageError')]]</span>
+          <span error="no-match">[[i18n('noTranslation')]]</span>
+          <span error="other">[[i18n('otherError')]]</span>
+        </iron-pages>
+        <iron-pages id="errorLinks" selected="[[getErrorLink_(error_)]]"
+            attr-for-selected="link" fallback-selection="none">
+          <span link="none"></span>
+          <a link="learn-more" target="_blank" href="[[helpUrl_]]"
+              on-click="onLearnMoreClick_" on-keydown="onLinkKeydown_"><!--
+            -->[[i18n('learnMore')]]
+          </a>
+          <a link="details" target="_blank" href="[[helpUrl_]]"
+              on-keydown="onLinkKeydown_"><!--
+            -->[[i18n('details')]]
+          </a>
+          <a link="try-again" id="retryLink" href="#"
+              on-click="onTryAgainClick_" on-keydown="onLinkKeydown_"><!--
+            -->[[i18n('tryAgain')]]
+          </a>
+        </iron-pages>
+      </div>
+    </iron-selector>
+    <div id="micContainer" class$="[[getMicClass_(state_)]] display-stack">
+      <div id="micVolume"
+          style="--mic-volume-level: [[micVolumeLevel_]];
+                --mic-volume-duration: [[micVolumeDuration_]]ms;">
+        <div id="micVolumeCutout">
+        </div>
+      </div>
+      <cr-button id="micButton" on-click="onMicClick_">
+        <div id="micIcon"></div>
+      </cr-button>
+    </div>
+  </div>
+</dialog>

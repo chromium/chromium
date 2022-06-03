@@ -9,11 +9,12 @@
 #include <vector>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/linux/gbm_buffer.h"
 #include "ui/gfx/native_pixmap.h"
+#include "ui/gfx/native_pixmap_handle.h"
+#include "ui/gfx/native_widget_types.h"
 
 namespace ui {
 
@@ -23,14 +24,31 @@ class GbmPixmapWayland : public gfx::NativePixmap {
  public:
   explicit GbmPixmapWayland(WaylandBufferManagerGpu* buffer_manager);
 
-  // Creates a buffer object and initializes the pixmap buffer.
-  bool InitializeBuffer(gfx::Size size,
-                        gfx::BufferFormat format,
-                        gfx::BufferUsage usage);
+  GbmPixmapWayland(const GbmPixmapWayland&) = delete;
+  GbmPixmapWayland& operator=(const GbmPixmapWayland&) = delete;
 
-  // The widget that this pixmap backs can be assigned later. Can be assigned
-  // only once.
-  void SetAcceleratedWiget(gfx::AcceleratedWidget widget);
+  // Creates a buffer object and initializes the pixmap buffer.
+  // |visible_area_size| represents a 'visible size', i.e., a buffer
+  // of size |size| may actually contain visible data only in the
+  // subregion of size |visible_area_size|. If |visible_area_size| is
+  // not provided, |size| is used. If |widget| is provided, browser
+  // side wl_buffer is also created. Otherwise, this pixmap
+  // behaves as a staging pixmap and mustn't be scheduled as an overlay.
+  bool InitializeBuffer(
+      gfx::AcceleratedWidget widget,
+      gfx::Size size,
+      gfx::BufferFormat format,
+      gfx::BufferUsage usage,
+      absl::optional<gfx::Size> visible_area_size = absl::nullopt);
+
+  // Creates a buffer object from native pixmap handle and initializes the
+  // pixmap buffer. If |widget| is provided, browser side wl_buffer is also
+  // created. Otherwise, this pixmap behaves as a staging pixmap and mustn't be
+  // scheduled as an overlay.
+  bool InitializeBufferFromHandle(gfx::AcceleratedWidget widget,
+                                  gfx::Size size,
+                                  gfx::BufferFormat format,
+                                  gfx::NativePixmapHandle handle);
 
   // gfx::NativePixmap overrides:
   bool AreDmaBufFdsValid() const override;
@@ -44,12 +62,9 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   gfx::Size GetBufferSize() const override;
   uint32_t GetUniqueId() const override;
   bool ScheduleOverlayPlane(gfx::AcceleratedWidget widget,
-                            int plane_z_order,
-                            gfx::OverlayTransform plane_transform,
-                            const gfx::Rect& display_bounds,
-                            const gfx::RectF& crop_rect,
-                            bool enable_blend,
-                            std::unique_ptr<gfx::GpuFence> gpu_fence) override;
+                            const gfx::OverlayPlaneData& overlay_plane_data,
+                            std::vector<gfx::GpuFence> acquire_fences,
+                            std::vector<gfx::GpuFence> release_fences) override;
   gfx::NativePixmapHandle ExportHandle() override;
 
  private:
@@ -67,7 +82,11 @@ class GbmPixmapWayland : public gfx::NativePixmap {
   // Represents widget this pixmap backs.
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
 
-  DISALLOW_COPY_AND_ASSIGN(GbmPixmapWayland);
+  // A unique ID to identify the buffer for this pixmap.
+  const uint32_t buffer_id_;
+
+  // Size of the visible area of the buffer.
+  gfx::Size visible_area_size_;
 };
 
 }  // namespace ui

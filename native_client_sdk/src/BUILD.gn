@@ -7,7 +7,7 @@ import("//components/nacl/features.gni")
 declare_args() {
   # Set to true if cross compiling trusted (e.g. building sel_ldr_arm on x86)
   # binaries is supported.
-  enable_cross_trusted = is_linux
+  enable_cross_trusted = is_linux || is_chromeos
 
   # Build the nacl SDK untrusted components.  This is disabled by default since
   # not all NaCl untrusted compilers are in goma (e.g arm-nacl-glibc)
@@ -28,7 +28,7 @@ if (enable_nacl) {
         "//native_client/src/trusted/service_runtime:sel_ldr",
         "//native_client/src/trusted/validator/driver:ncval_new",
       ]
-      if (is_linux) {
+      if (is_linux || is_chromeos) {
         deps += [ "//native_client/src/nonsfi/loader:nonsfi_loader" ]
       }
     }

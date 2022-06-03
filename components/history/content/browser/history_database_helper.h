@@ -13,7 +13,7 @@ namespace history {
 
 struct HistoryDatabaseParams;
 
-// Returns a HistoryDatabaseParams for |history_dir|.
+// Returns a HistoryDatabaseParams for `history_dir`.
 HistoryDatabaseParams HistoryDatabaseParamsForPath(
     const base::FilePath& history_dir);
 

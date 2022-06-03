@@ -11,7 +11,7 @@
 
 namespace blink {
 inline float Determinant(const FloatSize& a, const FloatSize& b) {
-  return a.Width() * b.Height() - a.Height() * b.Width();
+  return a.width() * b.height() - a.height() * b.width();
 }
 }  // namespace blink
 

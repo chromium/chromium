@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef PPAPI_PROXY_COMMAND_BUFFER_PROXY_H_
-#define PPAPI_PROXY_COMMAND_BUFFER_PROXY_H_
+#ifndef PPAPI_PROXY_PPAPI_COMMAND_BUFFER_PROXY_H_
+#define PPAPI_PROXY_PPAPI_COMMAND_BUFFER_PROXY_H_
 
 #include <stddef.h>
 #include <stdint.h>
@@ -38,6 +38,10 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
                           const gpu::Capabilities& capabilities,
                           SerializedHandle shared_state,
                           gpu::CommandBufferId command_buffer_id);
+
+  PpapiCommandBufferProxy(const PpapiCommandBufferProxy&) = delete;
+  PpapiCommandBufferProxy& operator=(const PpapiCommandBufferProxy&) = delete;
+
   ~PpapiCommandBufferProxy() override;
 
   // gpu::CommandBuffer implementation:
@@ -49,8 +53,11 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
                                 int32_t start,
                                 int32_t end) override;
   void SetGetBuffer(int32_t transfer_buffer_id) override;
-  scoped_refptr<gpu::Buffer> CreateTransferBuffer(uint32_t size,
-                                                  int32_t* id) override;
+  scoped_refptr<gpu::Buffer> CreateTransferBuffer(
+      uint32_t size,
+      int32_t* id,
+      gpu::TransferBufferAllocationOption option =
+          gpu::TransferBufferAllocationOption::kLoseContextOnOOM) override;
   void DestroyTransferBuffer(int32_t id) override;
 
   // gpu::GpuControl implementation:
@@ -100,17 +107,13 @@ class PPAPI_PROXY_EXPORT PpapiCommandBufferProxy : public gpu::CommandBuffer,
   InstanceData::FlushInfo* flush_info_;
   LockedSender* sender_;
 
-  base::Closure channel_error_callback_;
-
   uint64_t next_fence_sync_release_;
   uint64_t pending_fence_sync_release_;
   uint64_t flushed_fence_sync_release_;
   uint64_t validated_fence_sync_release_;
-
-  DISALLOW_COPY_AND_ASSIGN(PpapiCommandBufferProxy);
 };
 
 }  // namespace proxy
 }  // namespace ppapi
 
-#endif // PPAPI_PROXY_COMMAND_BUFFER_PROXY_H_
+#endif  // PPAPI_PROXY_PPAPI_COMMAND_BUFFER_PROXY_H_

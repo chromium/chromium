@@ -1,14 +1,13 @@
 function repaintTest() {
-    if (!window.eventSender)
+    if (!window.testRunner)
         return;
 
     for (i = 0; i < zoomCount; ++i) {
         if (window.shouldZoomOut)
-            eventSender.textZoomOut();
+            testRunner.textZoomOut();
         else
-            eventSender.textZoomIn();
+            testRunner.textZoomIn();
     }
 
-    if (window.testRunner)
-        testRunner.notifyDone();
+    testRunner.notifyDone();
 }

@@ -5,6 +5,8 @@
 #ifndef EXTENSIONS_BROWSER_APP_WINDOW_APP_DELEGATE_H_
 #define EXTENSIONS_BROWSER_APP_WINDOW_APP_DELEGATE_H_
 
+#include <memory>
+
 #include "base/callback_forward.h"
 #include "content/public/browser/media_stream_request.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -20,10 +22,8 @@ class FileChooserParams;
 namespace content {
 enum class PictureInPictureResult;
 class BrowserContext;
-class ColorChooser;
 class FileSelectListener;
 class RenderFrameHost;
-class RenderViewHost;
 class WebContents;
 struct OpenURLParams;
 }
@@ -49,7 +49,7 @@ class AppDelegate {
 
   // General initialization.
   virtual void InitWebContents(content::WebContents* web_contents) = 0;
-  virtual void RenderViewCreated(content::RenderViewHost* render_view_host) = 0;
+  virtual void RenderFrameCreated(content::RenderFrameHost* frame_host) = 0;
 
   // Resizes WebContents.
   virtual void ResizeWebContents(content::WebContents* web_contents,
@@ -63,17 +63,15 @@ class AppDelegate {
   virtual void AddNewContents(
       content::BrowserContext* context,
       std::unique_ptr<content::WebContents> new_contents,
+      const GURL& target_url,
       WindowOpenDisposition disposition,
       const gfx::Rect& initial_rect,
       bool user_gesture) = 0;
 
   // Feature support.
-  virtual content::ColorChooser* ShowColorChooser(
-      content::WebContents* web_contents,
-      SkColor initial_color) = 0;
   virtual void RunFileChooser(
       content::RenderFrameHost* render_frame_host,
-      std::unique_ptr<content::FileSelectListener> listener,
+      scoped_refptr<content::FileSelectListener> listener,
       const blink::mojom::FileChooserParams& params) = 0;
   virtual void RequestMediaAccessPermission(
       content::WebContents* web_contents,
@@ -93,7 +91,7 @@ class AppDelegate {
   virtual bool IsWebContentsVisible(content::WebContents* web_contents) = 0;
 
   // |callback| will be called when the process is about to terminate.
-  virtual void SetTerminatingCallback(const base::Closure& callback) = 0;
+  virtual void SetTerminatingCallback(base::OnceClosure callback) = 0;
 
   // Called when the app is hidden or shown.
   virtual void OnHide() = 0;

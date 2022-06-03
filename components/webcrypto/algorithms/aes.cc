@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
 #include "components/webcrypto/algorithms/secret_key_util.h"
 #include "components/webcrypto/algorithms/util.h"
 #include "components/webcrypto/blink_key_handle.h"

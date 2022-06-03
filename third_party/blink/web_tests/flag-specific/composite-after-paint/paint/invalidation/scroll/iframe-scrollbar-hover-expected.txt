@@ -5,12 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "VerticalScrollbar",
-          "rect": [187, 102, 15, 200],
-          "reason": "scroll control"
-        }
+      "invalidations": [
+        [187, 102, 15, 200]
       ]
     }
   ]

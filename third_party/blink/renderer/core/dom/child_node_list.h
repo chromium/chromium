@@ -60,7 +60,7 @@ class ChildNodeList final : public NodeList {
                                  Node& current_node,
                                  unsigned& current_offset) const;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool IsChildNodeList() const override { return true; }

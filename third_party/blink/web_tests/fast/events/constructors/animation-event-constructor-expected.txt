@@ -27,19 +27,19 @@ PASS new AnimationEvent('eventType', { elapsedTime: 0 }).elapsedTime is 0
 PASS new AnimationEvent('eventType', { elapsedTime: 123.45 }).elapsedTime is 123.45
 PASS new AnimationEvent('eventType', { elapsedTime: -123.45 }).elapsedTime is -123.45
 PASS new AnimationEvent('eventType', { elapsedTime: 18446744073709551615 }).elapsedTime is 18446744073709551615
-PASS new AnimationEvent('eventType', { elapsedTime: NaN }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': The provided double value is non-finite..
-PASS new AnimationEvent('eventType', { elapsedTime: Infinity }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': The provided double value is non-finite..
-PASS new AnimationEvent('eventType', { elapsedTime: -Infinity }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': The provided double value is non-finite..
+PASS new AnimationEvent('eventType', { elapsedTime: NaN }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': Failed to read the 'elapsedTime' property from 'AnimationEventInit': The provided double value is non-finite..
+PASS new AnimationEvent('eventType', { elapsedTime: Infinity }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': Failed to read the 'elapsedTime' property from 'AnimationEventInit': The provided double value is non-finite..
+PASS new AnimationEvent('eventType', { elapsedTime: -Infinity }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': Failed to read the 'elapsedTime' property from 'AnimationEventInit': The provided double value is non-finite..
 PASS new AnimationEvent('eventType', { elapsedTime: undefined }).elapsedTime is 0
 PASS new AnimationEvent('eventType', { elapsedTime: null }).elapsedTime is 0
 PASS new AnimationEvent('eventType', { elapsedTime: false }).elapsedTime is 0
 PASS new AnimationEvent('eventType', { elapsedTime: true }).elapsedTime is 1
 PASS new AnimationEvent('eventType', { elapsedTime: '' }).elapsedTime is 0
-PASS new AnimationEvent('eventType', { elapsedTime: 'doremi' }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': The provided double value is non-finite..
+PASS new AnimationEvent('eventType', { elapsedTime: 'doremi' }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': Failed to read the 'elapsedTime' property from 'AnimationEventInit': The provided double value is non-finite..
 PASS new AnimationEvent('eventType', { elapsedTime: [] }).elapsedTime is 0
 PASS new AnimationEvent('eventType', { elapsedTime: [123.45] }).elapsedTime is 123.45
-PASS new AnimationEvent('eventType', { elapsedTime: [123.45, 678.90] }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': The provided double value is non-finite..
-PASS new AnimationEvent('eventType', { elapsedTime: {doremi: 123.45} }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': The provided double value is non-finite..
+PASS new AnimationEvent('eventType', { elapsedTime: [123.45, 678.90] }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': Failed to read the 'elapsedTime' property from 'AnimationEventInit': The provided double value is non-finite..
+PASS new AnimationEvent('eventType', { elapsedTime: {doremi: 123.45} }).elapsedTime threw exception TypeError: Failed to construct 'AnimationEvent': Failed to read the 'elapsedTime' property from 'AnimationEventInit': The provided double value is non-finite..
 PASS new AnimationEvent('eventType', { elapsedTime: {valueOf: function () { return 123.45 } } }).elapsedTime is 123.45
 PASS new AnimationEvent('eventType', { bubbles: true, cancelable: true, animationName: 'doremi', elapsedTime: 123.45 }).bubbles is true
 PASS new AnimationEvent('eventType', { bubbles: true, cancelable: true, animationName: 'doremi', elapsedTime: 123.45 }).cancelable is true

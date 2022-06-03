@@ -8,16 +8,14 @@
 #include <list>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
-#include "base/time/time.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "chrome/service/cloud_print/job_status_updater.h"
 #include "chrome/service/cloud_print/printer_job_queue_handler.h"
-#include "net/url_request/url_request_status.h"
+#include "net/base/net_errors.h"
 #include "printing/backend/print_backend.h"
 #include "url/gurl.h"
 
@@ -92,13 +90,14 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
     PrinterInfoFromCloud(const PrinterInfoFromCloud& other);
   };
 
-  static void ReportsStats();
-
   PrinterJobHandler(const printing::PrinterBasicInfo& printer_info,
                     const PrinterInfoFromCloud& printer_info_from_server,
                     const GURL& cloud_print_server_url,
                     PrintSystem* print_system,
                     Delegate* delegate);
+
+  PrinterJobHandler(const PrinterJobHandler&) = delete;
+  PrinterJobHandler& operator=(const PrinterJobHandler&) = delete;
 
   bool Initialize();
 
@@ -111,13 +110,11 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
   // Shutdown everything (the process is exiting).
   void Shutdown();
 
-  base::TimeTicks last_job_fetch_time() const { return last_job_fetch_time_; }
-
   // CloudPrintURLFetcher::Delegate implementation.
   CloudPrintURLFetcher::ResponseAction HandleRawResponse(
       const net::URLFetcher* source,
       const GURL& url,
-      const net::URLRequestStatus& status,
+      net::Error error,
       int response_code,
       const std::string& data) override;
   CloudPrintURLFetcher::ResponseAction HandleRawData(
@@ -131,7 +128,7 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
       bool succeeded) override;
   void OnRequestGiveUp() override;
   CloudPrintURLFetcher::ResponseAction OnRequestAuthError() override;
-  std::string GetAuthHeader() override;
+  std::string GetAuthHeaderValue() override;
 
   // JobStatusUpdater::Delegate implementation
   bool OnJobCompleted(JobStatusUpdater* updater) override;
@@ -296,14 +293,7 @@ class PrinterJobHandler : public base::RefCountedThreadSafe<PrinterJobHandler>,
   // Manages parsing the job queue
   PrinterJobQueueHandler job_queue_handler_;
 
-  base::TimeTicks last_job_fetch_time_;
-
-  base::Time job_start_time_;
-  base::Time spooling_start_time_;
-
   base::WeakPtrFactory<PrinterJobHandler> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrinterJobHandler);
 };
 
 }  // namespace cloud_print

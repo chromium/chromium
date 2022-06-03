@@ -51,6 +51,7 @@ enum RTCDataChannelState {
              attribute EventHandler onopen;
              attribute EventHandler onbufferedamountlow;
              attribute EventHandler onerror;
+             attribute EventHandler onclosing;
              attribute EventHandler onclose;
     void close();
              attribute EventHandler onmessage;

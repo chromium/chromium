@@ -5,7 +5,9 @@
 package org.chromium.chrome.browser.payments;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
+
+import androidx.annotation.Nullable;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -15,68 +17,88 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.payments.PaymentAppFactory.PaymentAppCreatedCallback;
-import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.payments.AndroidPaymentAppFinder;
+import org.chromium.components.payments.AppCreationFailureReason;
+import org.chromium.components.payments.PaymentApp;
+import org.chromium.components.payments.PaymentAppFactoryDelegate;
+import org.chromium.components.payments.PaymentAppFactoryInterface;
+import org.chromium.components.payments.PaymentAppFactoryParams;
+import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.components.payments.PaymentManifestWebDataService;
+import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebContents;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.payments.mojom.PaymentDetailsModifier;
+import org.chromium.payments.mojom.PaymentItem;
+import org.chromium.payments.mojom.PaymentMethodData;
+import org.chromium.payments.mojom.PaymentOptions;
+import org.chromium.url.GURL;
+import org.chromium.url.Origin;
 
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 
 /** An integration test for the Android payment app finder. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @MediumTest
-public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
+public class AndroidPaymentAppFinderTest
+        implements PaymentAppFactoryDelegate, PaymentAppFactoryParams {
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     /** Simulates a package manager in memory. */
     private final MockPackageManagerDelegate mPackageManager = new MockPackageManagerDelegate();
 
     /** Downloads from the test server. */
     private static class TestServerDownloader extends PaymentManifestDownloader {
-        private URI mTestServerUri;
+        private GURL mTestServerUrl;
 
         /**
-         * @param uri The URI of the test server.
+         * @param url The URL of the test server.
          */
-        /* package */ void setTestServerUri(URI uri) {
-            assert mTestServerUri == null : "Test server URI should be set only once";
-            mTestServerUri = uri;
+        /* package */ void setTestServerUrl(GURL url) {
+            assert mTestServerUrl == null : "Test server URL should be set only once";
+            mTestServerUrl = url;
         }
 
         @Override
         public void downloadPaymentMethodManifest(
-                URI methodName, ManifestDownloadCallback callback) {
-            super.downloadPaymentMethodManifest(substituteTestServerUri(methodName), callback);
+                Origin merchantOrigin, GURL methodName, ManifestDownloadCallback callback) {
+            super.downloadPaymentMethodManifest(
+                    merchantOrigin, substituteTestServerUrl(methodName), callback);
         }
 
         @Override
-        public void downloadWebAppManifest(
-                URI webAppManifestUri, ManifestDownloadCallback callback) {
-            super.downloadWebAppManifest(substituteTestServerUri(webAppManifestUri), callback);
+        public void downloadWebAppManifest(Origin paymentMethodManifestOrigin,
+                GURL webAppManifestUrl, ManifestDownloadCallback callback) {
+            super.downloadWebAppManifest(paymentMethodManifestOrigin,
+                    substituteTestServerUrl(webAppManifestUrl), callback);
         }
 
-        private URI substituteTestServerUri(URI uri) {
-            try {
-                return new URI(uri.toString().replaceAll("https://", mTestServerUri.toString()));
-            } catch (URISyntaxException e) {
+        private GURL substituteTestServerUrl(GURL url) {
+            GURL changedUrl =
+                    new GURL(url.getSpec().replaceAll("https://", mTestServerUrl.getSpec()));
+            if (!changedUrl.isValid()) {
                 assert false;
                 return null;
             }
+            return changedUrl;
         }
     }
 
@@ -85,31 +107,120 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     private EmbeddedTestServer mServer;
     private List<PaymentApp> mPaymentApps;
     private boolean mAllPaymentAppsCreated;
+    private Map<String, PaymentMethodData> mMethodData;
+    private PaymentOptions mPaymentOptions;
+    private String mTwaPackageName;
 
-    // PaymentAppCreatedCallback
+    // PaymentAppFactoryDelegate implementation.
+    @Override
+    public PaymentAppFactoryParams getParams() {
+        return this;
+    }
+
+    // PaymentAppFactoryDelegate implementation.
+    @Override
+    public boolean hasClosed() {
+        return false;
+    }
+
+    // PaymentAppFactoryDelegate implementation.
     @Override
     public void onPaymentAppCreated(PaymentApp paymentApp) {
         mPaymentApps.add(paymentApp);
     }
 
-    // PaymentAppCreatedCallback
+    // PaymentAppFactoryDelegate implementation.
     @Override
-    public void onGetPaymentAppsError(String errorMessage) {}
+    public void onPaymentAppCreationError(
+            String errorMessage, @AppCreationFailureReason int errorReason) {}
 
-    // PaymentAppCreatedCallback
+    // PaymentAppFactoryDelegate implementation.
     @Override
-    public void onAllPaymentAppsCreated() {
+    public void onDoneCreatingPaymentApps(PaymentAppFactoryInterface unusedFactory) {
         mAllPaymentAppsCreated = true;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public WebContents getWebContents() {
+        return mActivityTestRule.getActivity().getCurrentWebContents();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public RenderFrameHost getRenderFrameHost() {
+        return getWebContents().getMainFrame();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public Map<String, PaymentDetailsModifier> getUnmodifiableModifiers() {
+        return Collections.unmodifiableMap(new HashMap<String, PaymentDetailsModifier>());
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public Origin getPaymentRequestSecurityOrigin() {
+        return PaymentManifestDownloader.createOpaqueOriginForTest();
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public String getTopLevelOrigin() {
+        return "https://top.level.origin";
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public String getPaymentRequestOrigin() {
+        return "https://payment.request.origin";
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public Map<String, PaymentMethodData> getMethodData() {
+        return mMethodData;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public PaymentItem getRawTotal() {
+        // This test doesn't need this value.
+        return null;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    public PaymentOptions getPaymentOptions() {
+        return mPaymentOptions;
+    }
+
+    public void setRequestShipping(boolean requestShipping) {
+        mPaymentOptions.requestShipping = requestShipping;
+    }
+
+    // PaymentAppFactoryParams implementation.
+    @Override
+    @Nullable
+    public String getTwaPackageName() {
+        return mTwaPackageName;
+    }
+
+    @Override
+    public boolean isOffTheRecord() {
+        return false;
     }
 
     @Before
     public void setUp() throws Throwable {
-        mRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startMainActivityOnBlankPage();
         mPackageManager.reset();
         mServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
-        mDownloader.setTestServerUri(new URI(mServer.getURL("/components/test/data/payments/")));
+        mDownloader.setTestServerUrl(new GURL(mServer.getURL("/components/test/data/payments/")));
         mPaymentApps = new ArrayList<>();
         mAllPaymentAppsCreated = false;
+        mPaymentOptions = new PaymentOptions();
+        mTwaPackageName = null;
     }
 
     @After
@@ -139,7 +250,33 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     public void testNoMetadata() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("basic-card");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", null /* no metadata */, "01");
+        mPackageManager.installPaymentApp(
+                "BobPay", "com.bobpay", null /* no metadata */, /*signature=*/"01");
+
+        findApps(methods);
+
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
+
+        mPaymentApps.clear();
+        mAllPaymentAppsCreated = false;
+
+        findApps(methods);
+
+        assertPaymentAppsCreated(/*no identifier*/);
+    }
+
+    /**
+     * Payment apps cannot use a payment method without explicit authorization.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testPaymentAppsRequireExplicitAuthorizationForPaymentMethods() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://frankpay.com/webpay");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
+                "" /* no default payment method name in metadata */, /*signature=*/"AA");
+        mPackageManager.setStringArrayMetaData(
+                "com.alicepay", new String[] {"https://frankpay.com/webpay"});
 
         findApps(methods);
 
@@ -153,99 +290,31 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Assert.assertTrue("No apps should still match the query", mPaymentApps.isEmpty());
     }
 
-    /**
-     * Payment apps without default payment method name in metadata should still be able to use
-     * non-URL payment method names.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testNoDefaultPaymentMethodNameWithNonUrlPaymentMethodName() throws Throwable {
-        Set<String> methods = new HashSet<>();
-        methods.add("basic-card");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
-                "" /* no default payment method name in metadata */, "AA");
-        mPackageManager.setStringArrayMetaData("com.alicepay", new String[] {"basic-card"});
-
-        findApps(methods);
-
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals(1, mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertEquals(
-                "basic-card", mPaymentApps.get(0).getAppMethodNames().iterator().next());
-
-        mPaymentApps.clear();
-        mAllPaymentAppsCreated = false;
-
-        findApps(methods);
-
-        Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals(1, mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertEquals(
-                "basic-card", mPaymentApps.get(0).getAppMethodNames().iterator().next());
-    }
-
-    /**
-     * Payment apps without default payment method name in metadata should still be able to use
-     * URL payment method names that support all origins.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testNoDefaultPaymentMethodNameWithUrlPaymentMethodNameThatSupportsAllOrigins()
-            throws Throwable {
-        Set<String> methods = new HashSet<>();
-        methods.add("https://frankpay.com/webpay");
-        mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
-                "" /* no default payment method name in metadata */, "AA");
-        mPackageManager.setStringArrayMetaData(
-                "com.alicepay", new String[] {"https://frankpay.com/webpay"});
-
-        findApps(methods);
-
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals(1, mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertEquals("https://frankpay.com/webpay",
-                mPaymentApps.get(0).getAppMethodNames().iterator().next());
-
-        mPaymentApps.clear();
-        mAllPaymentAppsCreated = false;
-
-        findApps(methods);
-
-        Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals(1, mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertEquals("https://frankpay.com/webpay",
-                mPaymentApps.get(0).getAppMethodNames().iterator().next());
-    }
-
     /** Payment apps without a human-readable name should be filtered out. */
     @Test
     @Feature({"Payments"})
     public void testEmptyLabel() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("basic-card");
-        mPackageManager.installPaymentApp(
-                "" /* empty label */, "com.bobpay", "basic-card", "01020304050607080900");
+        mPackageManager.installPaymentApp("" /* empty label */, "com.bobpay", "basic-card",
+                /*signature=*/"01020304050607080900");
 
         findApps(methods);
 
         Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
     }
 
-    /** Invalid and relative URIs cannot be used as payment method names. */
+    /** Invalid and relative URLs cannot be used as payment method names. */
     @Test
     @Feature({"Payments"})
     public void testInvalidPaymentMethodNames() throws Throwable {
         Set<String> methods = new HashSet<>();
-        methods.add("https://"); // Invalid URI.
-        methods.add("../index.html"); // Relative URI.
+        methods.add("https://"); // Invalid URL.
+        methods.add("../index.html"); // Relative URL.
         mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://", "01020304050607080900");
+                "BobPay", "com.bobpay", "https://", /*signature=*/"01020304050607080900");
         mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "../index.html", "ABCDEFABCDEFABCDEFAB");
+                "AlicePay", "com.alicepay", "../index.html", /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
 
@@ -260,35 +329,14 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         methods.add("basic-card");
         methods.add("incorrect-method-name"); // Even if merchant supports it, Chrome filters out
         // unknown non-URL method names.
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "incorrect-method-name", "01020304050607080900");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "incorrect-method-name", "ABCDEFABCDEFABCDEFAB");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "incorrect-method-name",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "incorrect-method-name",
+                /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
 
         Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
-    }
-
-    /**
-     * Test "basic-card" payment method with a payment app that supports IS_READY_TO_PAY service.
-     * Another non-payment app also supports IS_READY_TO_PAY service, but it should be filtered
-     * out, because it's not a payment app.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testOneBasicCardAppWithAFewIsReadyToPayServices() throws Throwable {
-        Set<String> methods = new HashSet<>();
-        methods.add("basic-card");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "basic-card", "01020304050607080900");
-        mPackageManager.addIsReadyToPayService("com.bobpay");
-        mPackageManager.addIsReadyToPayService("com.alicepay");
-
-        findApps(methods);
-
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
     }
 
     /**
@@ -302,13 +350,28 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     public void testOneUrlMethodNameApp() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
 
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
+    }
+
+    /** When Chrome is not running in TWA, the app store billing methods should be filtered out. */
+    @Test
+    @Feature({"Payments"})
+    public void testIgnoreAppStoreMethodsInNonTwa() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.com/webpay");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+
+        addAppStoreMethodAndFindApps(/*appStorePackageName=*/"com.bobpay",
+                /*appStorePaymentMethod=*/new GURL("https://bobpay.com/webpay"), methods);
+
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
     }
 
     /**
@@ -356,30 +419,6 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     }
 
     /**
-     * If two payment apps both support "basic-card" payment method name, then they both should be
-     * found.
-     */
-    @Test
-    @Feature({"Payments"})
-    public void testTwoBasicCardApps() throws Throwable {
-        Set<String> methods = new HashSet<>();
-        methods.add("basic-card");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "basic-card", "01020304050607080900");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "basic-card", "ABCDEFABCDEFABCDEFAB");
-
-        findApps(methods);
-
-        Assert.assertEquals("2 apps should match the query", 2, mPaymentApps.size());
-        Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
-    }
-
-    /**
      * Test https://davepay.com/webpay payment method, the "default_applications" of which
      * supports two different package names: one for production and one for development version
      * of the payment app. Both of these apps should be found. Repeated lookups should continue
@@ -391,16 +430,16 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Set<String> methods = new HashSet<>();
         methods.add("https://davepay.com/webpay");
         mPackageManager.installPaymentApp("DavePay", "com.davepay.prod",
-                "https://davepay.com/webpay", "44444444442222222222");
+                "https://davepay.com/webpay", /*signature=*/"44444444442222222222");
         mPackageManager.installPaymentApp("DavePay Dev", "com.davepay.dev",
-                "https://davepay.com/webpay", "44444444441111111111");
+                "https://davepay.com/webpay", /*signature=*/"44444444441111111111");
 
         findApps(methods);
 
         Assert.assertEquals("2 apps should match the query", 2, mPaymentApps.size());
         Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
+        appIdentifiers.add(mPaymentApps.get(0).getIdentifier());
+        appIdentifiers.add(mPaymentApps.get(1).getIdentifier());
         Assert.assertTrue(appIdentifiers.contains("com.davepay.prod"));
         Assert.assertTrue(appIdentifiers.contains("com.davepay.dev"));
 
@@ -411,8 +450,8 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
 
         Assert.assertEquals("2 apps should match the query again", 2, mPaymentApps.size());
         appIdentifiers.clear();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
+        appIdentifiers.add(mPaymentApps.get(0).getIdentifier());
+        appIdentifiers.add(mPaymentApps.get(1).getIdentifier());
         Assert.assertTrue(appIdentifiers.contains("com.davepay.prod"));
         Assert.assertTrue(appIdentifiers.contains("com.davepay.dev"));
     }
@@ -428,17 +467,17 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.com/webpay");
         methods.add("https://alicepay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", "ABCDEFABCDEFABCDEFAB");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+                /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
 
         Assert.assertEquals("2 apps should match the query", 2, mPaymentApps.size());
         Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
+        appIdentifiers.add(mPaymentApps.get(0).getIdentifier());
+        appIdentifiers.add(mPaymentApps.get(1).getIdentifier());
         Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
         Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
 
@@ -449,8 +488,8 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
 
         Assert.assertEquals("2 apps should match the query again", 2, mPaymentApps.size());
         appIdentifiers.clear();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
+        appIdentifiers.add(mPaymentApps.get(0).getIdentifier());
+        appIdentifiers.add(mPaymentApps.get(1).getIdentifier());
         Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
         Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
     }
@@ -466,15 +505,15 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.com/webpay");
         methods.add("https://not-valid.com/webpay");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
         mPackageManager.installPaymentApp("NotValid", "com.not-valid",
-                "https://not-valid.com/webpay", "ABCDEFABCDEFABCDEFAB");
+                "https://not-valid.com/webpay", /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
@@ -482,7 +521,7 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
     }
 
     /**
@@ -495,31 +534,21 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.com/webpay");
         methods.add("https://alicepay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", "ABCDEFABCDEFABCDEFAB");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+                /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
 
-        Assert.assertEquals("2 apps should match the query", 2, mPaymentApps.size());
-        Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
+        assertPaymentAppsCreated("com.bobpay", "com.alicepay");
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("2 apps should still match the query", 2, mPaymentApps.size());
-        appIdentifiers.clear();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
+        assertPaymentAppsCreated("com.bobpay", "com.alicepay");
     }
 
     /**
@@ -533,16 +562,16 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Set<String> methods = new HashSet<>();
         methods.add("https://charliepay.com/webpay");
         mPackageManager.installPaymentApp("CharliePay", "com.charliepay.dev",
-                "https://charliepay.com/webpay", "33333333333111111111");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", "ABCDEFABCDEFABCDEFAB");
+                "https://charliepay.com/webpay", /*signature=*/"33333333333111111111");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+                /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.charliepay.dev", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.charliepay.dev", mPaymentApps.get(0).getIdentifier());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
@@ -550,7 +579,7 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
-        Assert.assertEquals("com.charliepay.dev", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.charliepay.dev", mPaymentApps.get(0).getIdentifier());
     }
 
     /**
@@ -563,17 +592,17 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     public void testDavePayDev() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://davepay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "DavePay", "com.davepay.dev", "https://davepay.com/webpay", "44444444441111111111");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", "ABCDEFABCDEFABCDEFAB");
+        mPackageManager.installPaymentApp("DavePay", "com.davepay.dev",
+                "https://davepay.com/webpay", /*signature=*/"44444444441111111111");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+                /*signature=*/"ABCDEFABCDEFABCDEFAB");
 
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.davepay.dev", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.davepay.dev", mPaymentApps.get(0).getIdentifier());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
@@ -581,7 +610,7 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
-        Assert.assertEquals("com.davepay.dev", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.davepay.dev", mPaymentApps.get(0).getIdentifier());
     }
 
     /**
@@ -595,13 +624,13 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     public void testValidEvePay1() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://evepay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "EvePay", "com.evepay", "https://evepay.com/webpay", "55555555551111111111");
+        mPackageManager.installPaymentApp("EvePay", "com.evepay", "https://evepay.com/webpay",
+                /*signature=*/"55555555551111111111");
 
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.evepay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.evepay", mPaymentApps.get(0).getIdentifier());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
@@ -609,7 +638,7 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
-        Assert.assertEquals("com.evepay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.evepay", mPaymentApps.get(0).getIdentifier());
     }
 
     /**
@@ -623,13 +652,13 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     public void testValidEvePay2() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://evepay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "EvePay", "com.evepay", "https://evepay.com/webpay", "55555555552222222222");
+        mPackageManager.installPaymentApp("EvePay", "com.evepay", "https://evepay.com/webpay",
+                /*signature=*/"55555555552222222222");
 
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.evepay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.evepay", mPaymentApps.get(0).getIdentifier());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
@@ -637,7 +666,7 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query again", 1, mPaymentApps.size());
-        Assert.assertEquals("com.evepay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.evepay", mPaymentApps.get(0).getIdentifier());
     }
 
     /**
@@ -651,7 +680,7 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Set<String> methods = new HashSet<>();
         methods.add("https://evepay.com/webpay");
         mPackageManager.installPaymentApp(
-                "EvePay", "com.evepay", "https://evepay.com/webpay", "55");
+                "EvePay", "com.evepay", "https://evepay.com/webpay", /*signature=*/"55");
 
         findApps(methods);
 
@@ -665,20 +694,19 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     }
 
     /**
-     * Test https://frankpay.com/webpay payment method, which supports all apps without signature
-     * verification because https://frankpay.com/payment-manifest.json contains
-     * {"supported_origins": "*"}. Repeated app look ups should be successful.
+     * Test https://frankpay.com/webpay payment method, which is invalid because it contains
+     * {"supported_origins": "*"}. Repeated app look ups should find no payment apps.
      */
     @Test
     @Feature({"Payments"})
-    public void testFrankPaySupportsPaymentAppsFromAllOrigins() throws Throwable {
+    public void testFrankPayDoesNotMatchAnyPaymentApps() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://frankpay.com/webpay");
         mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", "00");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "basic-card", "11");
+                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", /*signature=*/"00");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "basic-card", /*signature=*/"11");
         mPackageManager.installPaymentApp(
-                "AlicePay", "com.charliepay", "invalid-payment-method-name", "22");
+                "AlicePay", "com.charliepay", "invalid-payment-method-name", /*signature=*/"22");
         mPackageManager.setStringArrayMetaData(
                 "com.alicepay", new String[] {"https://frankpay.com/webpay"});
         mPackageManager.setStringArrayMetaData(
@@ -688,38 +716,24 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
 
         findApps(methods);
 
-        Assert.assertEquals("3 apps should match the query", 3, mPaymentApps.size());
-        Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(2).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
-        Assert.assertTrue(appIdentifiers.contains("com.charliepay"));
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("3 apps should still match the query", 3, mPaymentApps.size());
-        appIdentifiers.clear();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(2).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
-        Assert.assertTrue(appIdentifiers.contains("com.charliepay"));
+        assertPaymentAppsCreated(/*no identifiers*/);
     }
 
     /**
-     * Verify that a payment app with an incorrect signature can support only
-     * {"supported_origins": "*"} payment methods, e.g., https://frankpay.com/webpay. Repeated app
-     * look ups should be successful.
+     * Verify unable to use a payment app that has wrong signature for default
+     * payment method and is not explicitly authorized to use any other method
+     * either.
      */
     @Test
     @Feature({"Payments"})
-    public void testMatchOnlyValidPaymentMethods() throws Throwable {
+    public void testInvalidSignatureAndPaymentMethodDoesNotMatchAnyPaymentApps() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://frankpay.com/webpay");
         methods.add("https://bobpay.com/webpay");
@@ -731,24 +745,14 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals("1 payment method should be enabled", 1,
-                mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertEquals("https://frankpay.com/webpay",
-                mPaymentApps.get(0).getAppMethodNames().iterator().next());
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals("1 payment method should still be enabled", 1,
-                mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertEquals("https://frankpay.com/webpay",
-                mPaymentApps.get(0).getAppMethodNames().iterator().next());
+        Assert.assertTrue("No apps should still match the query", mPaymentApps.isEmpty());
     }
 
     /**
@@ -762,8 +766,8 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Set<String> methods = new HashSet<>();
         methods.add("https://georgepay.com/webpay");
         // Valid AlicePay:
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", "ABCDEFABCDEFABCDEFAB");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+                /*signature=*/"ABCDEFABCDEFABCDEFAB");
         mPackageManager.setStringArrayMetaData(
                 "com.alicepay", new String[] {"https://georgepay.com/webpay"});
         // Invalid AlicePay:
@@ -772,28 +776,27 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         mPackageManager.setStringArrayMetaData(
                 "com.fake-alicepay", new String[] {"https://georgepay.com/webpay"});
         // Valid BobPay:
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.bobpay", new String[] {"https://georgepay.com/webpay"});
         // A "basic-card" app.
-        mPackageManager.installPaymentApp(
-                "CharliePay", "com.charliepay.dev", "basic-card", "33333333333111111111");
+        mPackageManager.installPaymentApp("CharliePay", "com.charliepay.dev", "basic-card",
+                /*signature=*/"33333333333111111111");
         mPackageManager.setStringArrayMetaData(
                 "com.charliepay.dev", new String[] {"https://georgepay.com/webpay"});
 
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getIdentifier());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getAppIdentifier());
+        assertPaymentAppsCreated("com.alicepay");
     }
 
     /**
@@ -835,19 +838,19 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         Set<String> methods = new HashSet<>();
         methods.add("https://bobpay.com/webpay");
         methods.add("https://georgepay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.bobpay", new String[] {"https://georgepay.com/webpay"});
 
         findApps(methods);
 
         Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
         Assert.assertEquals("1 payment method should be enabled", 1,
-                mPaymentApps.get(0).getAppMethodNames().size());
+                mPaymentApps.get(0).getInstrumentMethodNames().size());
         Assert.assertEquals("https://bobpay.com/webpay",
-                mPaymentApps.get(0).getAppMethodNames().iterator().next());
+                mPaymentApps.get(0).getInstrumentMethodNames().iterator().next());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
@@ -855,90 +858,66 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         findApps(methods);
 
         Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
         Assert.assertEquals("1 payment method should still be enabled", 1,
-                mPaymentApps.get(0).getAppMethodNames().size());
+                mPaymentApps.get(0).getInstrumentMethodNames().size());
         Assert.assertEquals("https://bobpay.com/webpay",
-                mPaymentApps.get(0).getAppMethodNames().iterator().next());
+                mPaymentApps.get(0).getInstrumentMethodNames().iterator().next());
     }
 
     /**
-     * Verify that HenryPay can use https://henrypay.com/webpay payment method name because it's
-     * a default application and BobPay can use it because
-     * https://henrypay.com/payment-manifest.json contains "supported_origins": "*". Repeated app
-     * look ups should succeed.
+     * Verify that HenryPay can not use https://henrypay.com/webpay payment method name
+     * and BobPay can not use it because https://henrypay.com/payment-manifest.json
+     * contains invalid "supported_origins": "*". Repeated app look ups should
+     * find no payment apps.
      */
     @Test
     @Feature({"Payments"})
-    public void testUrlPaymentMethodWithDefaultApplicationAndAllSupportedOrigins()
-            throws Throwable {
+    public void testUrlPaymentMethodWithDefaultApplication() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://henrypay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "HenryPay", "com.henrypay", "https://henrypay.com/webpay", "55555555551111111111");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
+        mPackageManager.installPaymentApp("HenryPay", "com.henrypay", "https://henrypay.com/webpay",
+                /*signature=*/"55555555551111111111");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.bobpay", new String[] {"https://henrypay.com/webpay"});
 
         findApps(methods);
 
-        Assert.assertEquals("2 apps should match the query", 2, mPaymentApps.size());
-        Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.henrypay"));
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("2 apps should still match the query", 2, mPaymentApps.size());
-        appIdentifiers.clear();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.henrypay"));
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
+        assertPaymentAppsCreated(/*no identifiers*/);
     }
 
     /**
-     * Verify that a payment app with a non-URI payment method name can use
-     * https://henrypay.com/webpay payment method name because
-     * https://henrypay.com/payment-manifest.json contains "supported_origins": "*". Repeated app
-     * look ups should succeed.
+     * Verify that no payment app can use https://henrypay.com/webpay, because it
+     * does not explicitly authorize any payment app.
      */
     @Test
     @Feature({"Payments"})
-    public void testNonUriDefaultPaymentMethodAppCanUseMethodThatSupportsAllOrigins()
-            throws Throwable {
+    public void testNonUriDefaultPaymentMethodAppCanUseMethod() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://henrypay.com/webpay");
-        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "basic-card", "AA");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "basic-card", /*signature=*/"AA");
         mPackageManager.setStringArrayMetaData(
                 "com.bobpay", new String[] {"https://henrypay.com/webpay"});
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals("1 payment method should be enabled", 1,
-                mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertEquals("https://henrypay.com/webpay",
-                mPaymentApps.get(0).getAppMethodNames().iterator().next());
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals("1 payment method should still be enabled", 1,
-                mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertEquals("https://henrypay.com/webpay",
-                mPaymentApps.get(0).getAppMethodNames().iterator().next());
+        Assert.assertTrue("No apps should still match the query", mPaymentApps.isEmpty());
     }
 
     /**
@@ -953,66 +932,392 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     public void testUrlPaymentMethodWithDefaultApplicationAndOneSupportedOrigin() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://ikepay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "IkePay", "com.ikepay", "https://ikepay.com/webpay", "66666666661111111111");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", "ABCDEFABCDEFABCDEFAB");
+        mPackageManager.installPaymentApp("IkePay", "com.ikepay", "https://ikepay.com/webpay",
+                /*signature=*/"66666666661111111111");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+                /*signature=*/"ABCDEFABCDEFABCDEFAB");
         mPackageManager.setStringArrayMetaData(
                 "com.alicepay", new String[] {"https://ikepay.com/webpay"});
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.bobpay", new String[] {"https://ikepay.com/webpay"});
 
         findApps(methods);
 
-        Assert.assertEquals("2 apps should match the query", 2, mPaymentApps.size());
-        Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.ikepay"));
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
+        assertPaymentAppsCreated("com.ikepay", "com.alicepay");
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("2 apps should still match the query", 2, mPaymentApps.size());
-        appIdentifiers.clear();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.ikepay"));
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
+        assertPaymentAppsCreated("com.ikepay", "com.alicepay");
     }
 
     /**
-     * Verify that a payment app with duplicate default and supported method can use its own
-     * default payment method, which supports all origins.
-     * Repeated app look ups should succeed.
+     * Verify that no payment app can use https://henrypay.com/webpay, because it
+     * does not explicitly authorize any payment app.
      */
     @Test
     @Feature({"Payments"})
-    public void testDuplicateDefaultAndSupportedMethodAndAllOriginsSupported() throws Throwable {
+    public void testDuplicateDefaultAndSupportedMethod() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://henrypay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "HenryPay", "com.henrypay", "https://henrypay.com/webpay", "55555555551111111111");
+        mPackageManager.installPaymentApp("HenryPay", "com.henrypay", "https://henrypay.com/webpay",
+                /*signature=*/"55555555551111111111");
         mPackageManager.setStringArrayMetaData(
                 "com.henrypay", new String[] {"https://henrypay.com/webpay"});
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.henrypay", mPaymentApps.get(0).getAppIdentifier());
+        Assert.assertTrue("No apps should match the query", mPaymentApps.isEmpty());
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.henrypay", mPaymentApps.get(0).getAppIdentifier());
+        assertPaymentAppsCreated(/*no identifiers*/);
+    }
+
+    /**
+     * The basic test for {@link AndroidPaymentAppFinder#findAndroidPaymentApps} to find a app-store
+     * (e.g., Google Store) billing app.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingApp() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.merchant.twa");
+    }
+
+    /**
+     * In the context of finding the app store billing app in TWA, test that the TWA's installer
+     * cannot be null. The special conditions about this test is that the installer package name is
+     * mocked to null.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppInstallerNotNull() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+
+        setMockTrustedWebActivity("com.merchant.twa", null);
+        findApps(methods);
+
+        assertNoPaymentAppsCreated();
+    }
+
+    /**
+     * In the context of finding the app store billing app in TWA, test that the TWA's installer
+     * is linked to a supported app store billing method. The special conditions about this test is
+     * that the installer package name is mocked to be an unknown app store.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppInstallerLinkedToSupportedMethod() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.unknown.appstore");
+        findApps(methods);
+
+        assertNoPaymentAppsCreated();
+    }
+
+    /**
+     * In the context of finding the app store billing app in TWA, test that the TWA's installer's
+     * app store method is the one that the TWA is requesting for payment. The special conditions
+     * about this test is that the finder adds a new app store, the installer package name is set to
+     * be the app store, but the app-store method that the TWA requests is not of the same store.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppInstallerMethodIsRequested() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "another.known.appstore");
+        addAppStoreMethodAndFindApps(/*appStorePackageName=*/"another.known.appstore",
+                /*appStorePaymentMethod=*/new GURL("https://another.known.appstore/billing"),
+                methods);
+
+        assertNoPaymentAppsCreated();
+    }
+
+    /**
+     * For finding app store billing app, test scenario where no payment app has been installed. The
+     * test setting intentionally omits the app installations.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppNoAppAvailable() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(methods);
+
+        assertPaymentAppsCreated(/*no identifiers*/);
+    }
+
+    /**
+     * For finding app store billing app, test scenario where the app's meta data is null. The test
+     * setting intentionally set the payment app's meta data to null.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppNullMetaData() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+
+        mPackageManager.installPaymentApp(
+                "MerchantTwaApp", "com.merchant.twa", null, /*signature=*/"01020304050607080900");
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(methods);
+
+        assertPaymentAppsCreated(/*no identifiers*/);
+    }
+
+    /**
+     * For finding app store billing app, test that the TWA only has default app store but no
+     * support the billing method in its Android manifest. The test setting intentionally omits the
+     * setting of the twa's supported methods.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppTwaHasDefaultAppStoreMethod() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.merchant.twa");
+    }
+
+    /**
+     * For finding app store billing app, test that the TWA has support the billing method but no
+     * default method in its manifest. The test setting intentionally set TWA's default method to a
+     * non-store method.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppTwaHasSupportedAppStoreMethod() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa", "an://invalid.url",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.merchant.twa");
+    }
+
+    /**
+     * For finding app store billing app, test that the TWA can request only the app store method of
+     * its installer app store. The test intentionally add another app store, request the methods of
+     * both stores, and set the twa to be installed from one of them.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppTwaCanSupportOnlyOneAppStoreMethods() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        methods.add("https://another.appstore.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://another.appstore.com/billing",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        addAppStoreMethodAndFindApps(
+                "com.another.appstore", new GURL("https://another.appstore.com/billing"), methods);
+
+        assertPaymentAppsCreated("com.merchant.twa");
+        assertPaymentAppHasMethods(mPaymentApps.get(0), "https://play.google.com/billing");
+    }
+
+    /**
+     * For finding app store billing app, test that Chrome must be in TWA to use app store billing.
+     * The test setting intentionally omits the twa mocking.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppMustInTwa() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        methods.add("https://bobpay.com/webpay");
+
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.bobpay");
+    }
+
+    /**
+     * For finding app store billing app, test that the payment request must support the app store
+     * billing method to be able to use it. The test setting intentionally omits the app store
+     * billing method in the payment request.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppNotRequested() throws Throwable {
+        Set<String> noRequestedMethod = new HashSet<>();
+        noRequestedMethod.add("https://bobpay.com/webpay");
+
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(noRequestedMethod);
+
+        assertPaymentAppsCreated("com.bobpay");
+    }
+
+    /**
+     * For finding app store billing app, test that Chrome can display payment apps of app-store
+     * billing method and the normal (non-billing) payment method at the same time. The test setting
+     * includes a normal native payment method and play billing method, and expects to see the
+     * payment apps of both are displayed.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppInclusiveForBillingAndNonBilling() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        methods.add("https://bobpay.com/webpay");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.merchant.twa", "com.bobpay");
+    }
+
+    /**
+     * For finding app store billing app, test that if delegation is requested along with the
+     * app-store billing method, the app-store billing method would be ignored. The test setting
+     * requests the shipping or payer contact delegation.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppDelegationRejectBilling() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        methods.add("https://bobpay.com/webpay");
+        setRequestShipping(true);
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.bobpay");
+    }
+
+    /**
+     * For finding app store billing app, test that the TWA's installer app store must be a
+     * allowlisted one. The test setting sets the twa installer app store to be an unsupported one.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppMustInSupportedAppStore() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://another.playstore.com/billing");
+        methods.add("https://bobpay.com/webpay");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://another.playstore.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://another.playstore.com/billing"});
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.bobpay", new String[] {"https://bobpay.com/webpay"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.another.appstore");
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.bobpay");
+    }
+
+    /**
+     * For finding app store billing app, test that the TWA can be installed from any source in
+     * debug. The test setting sets the twa to be installed from an arbitrary source, and set the
+     * debug mode enabled.
+     */
+    @Test
+    @Features.EnableFeatures({PaymentFeatureList.WEB_PAYMENTS_APP_STORE_BILLING_DEBUG})
+    @Feature({"Payments"})
+    public void testFindAppStoreBillingAppAllowedAnySourceInDebug() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+        mPackageManager.setStringArrayMetaData(
+                "com.merchant.twa", new String[] {"https://play.google.com/billing"});
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.arbitrary.appstore");
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.merchant.twa");
     }
 
     /**
@@ -1024,10 +1329,10 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
     public void testTwoAppsFromDifferentOriginsWithTheSamePaymentMethod() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("https://jonpay.com/webpay");
-        mPackageManager.installPaymentApp(
-                "AlicePay", "com.alicepay", "https://alicepay.com/webpay", "ABCDEFABCDEFABCDEFAB");
-        mPackageManager.installPaymentApp(
-                "BobPay", "com.bobpay", "https://bobpay.com/webpay", "01020304050607080900");
+        mPackageManager.installPaymentApp("AlicePay", "com.alicepay", "https://alicepay.com/webpay",
+                /*signature=*/"ABCDEFABCDEFABCDEFAB");
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                /*signature=*/"01020304050607080900");
         mPackageManager.setStringArrayMetaData(
                 "com.alicepay", new String[] {"https://jonpay.com/webpay"});
         mPackageManager.setStringArrayMetaData(
@@ -1035,32 +1340,20 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
 
         findApps(methods);
 
-        Assert.assertEquals("2 apps should match the query", 2, mPaymentApps.size());
-        Set<String> appIdentifiers = new HashSet<>();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
+        assertPaymentAppsCreated("com.alicepay", "com.bobpay");
 
         mPaymentApps.clear();
         mAllPaymentAppsCreated = false;
 
         findApps(methods);
 
-        Assert.assertEquals("2 apps should still match the query", 2, mPaymentApps.size());
-        appIdentifiers.clear();
-        appIdentifiers.add(mPaymentApps.get(0).getAppIdentifier());
-        appIdentifiers.add(mPaymentApps.get(1).getAppIdentifier());
-        Assert.assertTrue(appIdentifiers.contains("com.alicepay"));
-        Assert.assertTrue(appIdentifiers.contains("com.bobpay"));
+        assertPaymentAppsCreated("com.alicepay", "com.bobpay");
     }
 
-    /**
-     * All known payment method names are valid.
-     */
+    /** Non-URL payment methods are not supported. */
     @Test
     @Feature({"Payments"})
-    public void testAllKnownPaymentMethodNames() throws Throwable {
+    public void testNonUrlPaymentMethodNames() throws Throwable {
         Set<String> methods = new HashSet<>();
         methods.add("basic-card");
         methods.add("interledger");
@@ -1069,55 +1362,160 @@ public class AndroidPaymentAppFinderTest implements PaymentAppCreatedCallback {
         methods.add("tokenized-card");
         methods.add("not-supported");
         mPackageManager.installPaymentApp("AlicePay", "com.alicepay",
-                "" /* no default payment method name in metadata */, "AA");
+                "" /* no default payment method name in metadata */, /*signature=*/"AA");
         mPackageManager.setStringArrayMetaData("com.alicepay",
                 new String[] {"basic-card", "interledger", "payee-credit-transfer",
                         "payer-credit-transfer", "tokenized-card", "not-supported"});
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals(5, mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertTrue(mPaymentApps.get(0).getAppMethodNames().contains("basic-card"));
-        Assert.assertTrue(mPaymentApps.get(0).getAppMethodNames().contains("interledger"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getAppMethodNames().contains("payee-credit-transfer"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getAppMethodNames().contains("payer-credit-transfer"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getAppMethodNames().contains("tokenized-card"));
+        Assert.assertTrue(mPaymentApps.isEmpty());
+    }
 
-        mPaymentApps.clear();
-        mAllPaymentAppsCreated = false;
+    /**
+     * Test BobPay with https://bobpay.com/webpay payment method name, and supported delegations
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testPaymentAppWithSupportedDelegations() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.com/webpay");
+        String[] supportedDelegations = {
+                "shippingAddress", "payerName", "payerEmail", "payerPhone"};
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                supportedDelegations, /*signature=*/"01020304050607080900");
 
         findApps(methods);
 
-        Assert.assertEquals("1 app should still match the query", 1, mPaymentApps.size());
-        Assert.assertEquals("com.alicepay", mPaymentApps.get(0).getAppIdentifier());
-        Assert.assertEquals(5, mPaymentApps.get(0).getAppMethodNames().size());
-        Assert.assertTrue(mPaymentApps.get(0).getAppMethodNames().contains("basic-card"));
-        Assert.assertTrue(mPaymentApps.get(0).getAppMethodNames().contains("interledger"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getAppMethodNames().contains("payee-credit-transfer"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getAppMethodNames().contains("payer-credit-transfer"));
-        Assert.assertTrue(
-                mPaymentApps.get(0).getAppMethodNames().contains("tokenized-card"));
+        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
+
+        // Verify supported delegations
+        Assert.assertTrue(mPaymentApps.get(0).handlesShippingAddress());
+        Assert.assertTrue(mPaymentApps.get(0).handlesPayerName());
+        Assert.assertTrue(mPaymentApps.get(0).handlesPayerEmail());
+        Assert.assertTrue(mPaymentApps.get(0).handlesPayerPhone());
     }
 
-    private void findApps(final Set<String> methodNames) throws Throwable {
-        mRule.runOnUiThread(
-                ()
-                        -> AndroidPaymentAppFinder.find(mRule.getActivity().getCurrentWebContents(),
-                                methodNames, new PaymentManifestWebDataService(), mDownloader,
-                                new PaymentManifestParser(), mPackageManager,
-                                AndroidPaymentAppFinderTest.this));
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mAllPaymentAppsCreated;
+    /**
+     * Test that Chrome should not crash because of invalid supported delegations
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testPaymentAppWithInavalidDelegationValue() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://bobpay.com/webpay");
+        String[] invalidDelegations = {"invalidDelegation"};
+        mPackageManager.installPaymentApp("BobPay", "com.bobpay", "https://bobpay.com/webpay",
+                invalidDelegations, /*signature=*/"01020304050607080900");
+
+        findApps(methods);
+
+        Assert.assertEquals("1 app should match the query", 1, mPaymentApps.size());
+        Assert.assertEquals("com.bobpay", mPaymentApps.get(0).getIdentifier());
+
+        // Verify that invalid delegation values are ignored.
+        Assert.assertFalse(mPaymentApps.get(0).handlesShippingAddress());
+        Assert.assertFalse(mPaymentApps.get(0).handlesPayerName());
+        Assert.assertFalse(mPaymentApps.get(0).handlesPayerEmail());
+        Assert.assertFalse(mPaymentApps.get(0).handlesPayerPhone());
+    }
+
+    /**
+     * Test that the Play Billing app store payment app is marked as preferred.
+     */
+    @Test
+    @Feature({"Payments"})
+    public void testPreferredPaymentApp() throws Throwable {
+        Set<String> methods = new HashSet<>();
+        methods.add("https://play.google.com/billing");
+        mPackageManager.installPaymentApp("MerchantTwaApp", "com.merchant.twa",
+                "https://play.google.com/billing", /*signature=*/"01020304050607080900");
+
+        setMockTrustedWebActivity("com.merchant.twa", "com.android.vending");
+        findApps(methods);
+
+        assertPaymentAppsCreated("com.merchant.twa");
+
+        Assert.assertTrue(mPaymentApps.get(0).isPreferred());
+    }
+
+    private void findApps(Set<String> methodNames) throws Throwable {
+        addAppStoreMethodAndFindApps(
+                /*appStorePackageName=*/null, /*appStorePaymentMethod=*/null, methodNames);
+    }
+
+    private void addAppStoreMethodAndFindApps(String appStorePackageName,
+            GURL appStorePaymentMethod, Set<String> methodNames) throws Throwable {
+        mMethodData = buildMethodData(methodNames);
+        mActivityTestRule.runOnUiThread(() -> {
+            AndroidPaymentAppFinder finder =
+                    new AndroidPaymentAppFinder(new PaymentManifestWebDataService(getWebContents()),
+                            mDownloader, new PaymentManifestParser(), mPackageManager,
+                            /*delegate=*/AndroidPaymentAppFinderTest.this, /*factory=*/null);
+            finder.bypassIsReadyToPayServiceInTest();
+            if (appStorePackageName != null) {
+                assert appStorePaymentMethod != null;
+                assert appStorePaymentMethod.isValid();
+                finder.addAppStoreForTest(appStorePackageName, appStorePaymentMethod);
             }
+            finder.findAndroidPaymentApps();
         });
+        CriteriaHelper.pollInstrumentationThread(() -> mAllPaymentAppsCreated);
+    }
+
+    private static Map<String, PaymentMethodData> buildMethodData(Set<String> methodNames) {
+        Map<String, PaymentMethodData> result = new HashMap<>();
+        for (String methodName : methodNames) {
+            PaymentMethodData methodData = new PaymentMethodData();
+            methodData.supportedMethod = methodName;
+            result.put(methodName, methodData);
+        }
+        return result;
+    }
+
+    private void setMockTrustedWebActivity(String twaPackageName, String installerPackageName) {
+        mTwaPackageName = twaPackageName;
+        mPackageManager.mockInstallerForPackage(twaPackageName, installerPackageName);
+    }
+
+    private void assertPaymentAppsCreated(String... expectedIds) {
+        Set<String> ids = new HashSet<>();
+        for (PaymentApp app : mPaymentApps) {
+            ids.add(app.getIdentifier());
+        }
+        Assert.assertEquals(
+                String.format(Locale.getDefault(), "Expected %d apps, but got %d apps instead.",
+                        expectedIds.length, ids.size()),
+                expectedIds.length, ids.size());
+        for (String expectedId : expectedIds) {
+            Assert.assertTrue(String.format(Locale.getDefault(),
+                                      "Expected id %s is not found. "
+                                              + "Expected identifiers: %s. "
+                                              + "Actual identifiers: %s",
+                                      expectedId, Arrays.toString(expectedIds), ids.toString()),
+                    ids.contains(expectedId));
+        }
+    }
+
+    private void assertNoPaymentAppsCreated() {
+        assertPaymentAppsCreated();
+    }
+
+    private void assertPaymentAppHasMethods(PaymentApp app, String... expectedMethodNames) {
+        Set<String> methodNames = app.getInstrumentMethodNames();
+        Assert.assertEquals(String.format(Locale.getDefault(),
+                                    "Expected %d methods, but got %d methods instead.",
+                                    expectedMethodNames.length, methodNames.size()),
+                expectedMethodNames.length, methodNames.size());
+        for (String expectedId : expectedMethodNames) {
+            Assert.assertTrue(String.format(Locale.getDefault(),
+                                      "Expected method %s is not found. "
+                                              + "Expected methods: %s. "
+                                              + "Actual methods: %s",
+                                      expectedId, Arrays.toString(expectedMethodNames),
+                                      methodNames.toString()),
+                    methodNames.contains(expectedId));
+        }
     }
 }

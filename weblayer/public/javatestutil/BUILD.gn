@@ -1,0 +1,24 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/config.gni")
+import("//build/config/android/rules.gni")
+
+android_library("test_java") {
+  testonly = true
+  sources = [
+    "org/chromium/weblayer/SettingsTestUtils.java",
+    "org/chromium/weblayer/TestWebLayer.java",
+  ]
+
+  deps = [
+    "//base:base_java_test_support",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/junit:junit",
+    "//weblayer/browser/java:base_module_interfaces_java",
+    "//weblayer/browser/java:interfaces_java",
+    "//weblayer/browser/java:test_java",
+    "//weblayer/public/java",
+  ]
+}

@@ -5,9 +5,7 @@
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("proto") {
-  sources = [
-    "internal/proto/shared_db_metadata.proto",
-  ]
+  sources = [ "internal/proto/shared_db_metadata.proto" ]
 }
 
 component("leveldb_proto") {
@@ -42,9 +40,7 @@ component("leveldb_proto") {
     "public/shared_proto_database_client_list.h",
   ]
   defines = [ "IS_LEVELDB_PROTO_IMPL" ]
-  deps = [
-    ":proto",
-  ]
+  deps = [ ":proto" ]
 
   public_deps = [
     "//base",
@@ -55,9 +51,7 @@ component("leveldb_proto") {
 
 source_set("test_support") {
   testonly = true
-  sources = [
-    "testing/fake_db.h",
-  ]
+  sources = [ "testing/fake_db.h" ]
 
   public_deps = [
     ":leveldb_proto",

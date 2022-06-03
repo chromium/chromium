@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/multi_column_fragmentainer_group.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_set.h"
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
@@ -27,15 +28,16 @@ class MultiColumnFragmentainerGroupTest : public RenderingTest {
   static int GroupCount(const MultiColumnFragmentainerGroupList&);
 
  private:
-  LayoutMultiColumnFlowThread* flow_thread_;
-  LayoutMultiColumnSet* column_set_;
+  Persistent<LayoutMultiColumnFlowThread> flow_thread_;
+  Persistent<LayoutMultiColumnSet> column_set_;
 };
 
 void MultiColumnFragmentainerGroupTest::SetUp() {
   RenderingTest::SetUp();
-  scoped_refptr<ComputedStyle> style = ComputedStyle::Create();
-  flow_thread_ =
-      LayoutMultiColumnFlowThread::CreateAnonymous(GetDocument(), *style.get());
+  scoped_refptr<ComputedStyle> style =
+      GetDocument().GetStyleResolver().CreateComputedStyle();
+  flow_thread_ = LayoutMultiColumnFlowThread::CreateAnonymous(
+      GetDocument(), *style.get(), /* needs_paint_layer */ true);
   column_set_ = LayoutMultiColumnSet::CreateAnonymous(*flow_thread_,
                                                       *flow_thread_->Style());
 }
@@ -118,12 +120,12 @@ TEST_F(MultiColumnFragmentainerGroupTest, LotsOfContent) {
   ASSERT_TRUE(column_set);
   ASSERT_TRUE(column_set->IsLayoutMultiColumnSet());
   const auto& fragmentainer_group =
-      ToLayoutMultiColumnSet(column_set)->FirstFragmentainerGroup();
+      To<LayoutMultiColumnSet>(column_set)->FirstFragmentainerGroup();
   EXPECT_EQ(fragmentainer_group.ActualColumnCount(), 100U);
   EXPECT_EQ(fragmentainer_group.GroupLogicalHeight(), LayoutUnit(60));
-  auto overflow = ToLayoutBox(multicol)->LayoutOverflowRect();
-  EXPECT_EQ(ToLayoutBox(multicol)->LogicalWidth(), LayoutUnit(101));
-  EXPECT_EQ(ToLayoutBox(multicol)->LogicalHeight(), LayoutUnit(60));
+  auto overflow = To<LayoutBox>(multicol)->LayoutOverflowRect();
+  EXPECT_EQ(To<LayoutBox>(multicol)->LogicalWidth(), LayoutUnit(101));
+  EXPECT_EQ(To<LayoutBox>(multicol)->LogicalHeight(), LayoutUnit(60));
   EXPECT_EQ(overflow.Width(), LayoutUnit(3399));
   EXPECT_EQ(overflow.Height(), LayoutUnit(60));
 }
@@ -149,12 +151,12 @@ TEST_F(MultiColumnFragmentainerGroupTest, LotsOfNestedBlocksWithText) {
   ASSERT_TRUE(column_set);
   ASSERT_TRUE(column_set->IsLayoutMultiColumnSet());
   const auto& fragmentainer_group =
-      ToLayoutMultiColumnSet(column_set)->FirstFragmentainerGroup();
+      To<LayoutMultiColumnSet>(column_set)->FirstFragmentainerGroup();
   EXPECT_EQ(fragmentainer_group.ActualColumnCount(), 250U);
   EXPECT_EQ(fragmentainer_group.GroupLogicalHeight(), LayoutUnit(200));
-  auto overflow = ToLayoutBox(multicol)->LayoutOverflowRect();
-  EXPECT_EQ(ToLayoutBox(multicol)->LogicalWidth(), LayoutUnit(101));
-  EXPECT_EQ(ToLayoutBox(multicol)->LogicalHeight(), LayoutUnit(200));
+  auto overflow = To<LayoutBox>(multicol)->LayoutOverflowRect();
+  EXPECT_EQ(To<LayoutBox>(multicol)->LogicalWidth(), LayoutUnit(101));
+  EXPECT_EQ(To<LayoutBox>(multicol)->LogicalHeight(), LayoutUnit(200));
   EXPECT_EQ(overflow.Width(), LayoutUnit(8499));
   EXPECT_EQ(overflow.Height(), LayoutUnit(200));
 }
@@ -180,12 +182,12 @@ TEST_F(MultiColumnFragmentainerGroupTest, NestedBlocksWithLotsOfContent) {
   ASSERT_TRUE(column_set);
   ASSERT_TRUE(column_set->IsLayoutMultiColumnSet());
   const auto& fragmentainer_group =
-      ToLayoutMultiColumnSet(column_set)->FirstFragmentainerGroup();
+      To<LayoutMultiColumnSet>(column_set)->FirstFragmentainerGroup();
   EXPECT_EQ(fragmentainer_group.ActualColumnCount(), 100U);
   EXPECT_EQ(fragmentainer_group.GroupLogicalHeight(), LayoutUnit(60));
-  auto overflow = ToLayoutBox(multicol)->LayoutOverflowRect();
-  EXPECT_EQ(ToLayoutBox(multicol)->LogicalWidth(), LayoutUnit(101));
-  EXPECT_EQ(ToLayoutBox(multicol)->LogicalHeight(), LayoutUnit(60));
+  auto overflow = To<LayoutBox>(multicol)->LayoutOverflowRect();
+  EXPECT_EQ(To<LayoutBox>(multicol)->LogicalWidth(), LayoutUnit(101));
+  EXPECT_EQ(To<LayoutBox>(multicol)->LogicalHeight(), LayoutUnit(60));
   EXPECT_EQ(overflow.Width(), LayoutUnit(3399));
   EXPECT_EQ(overflow.Height(), LayoutUnit(60));
 }

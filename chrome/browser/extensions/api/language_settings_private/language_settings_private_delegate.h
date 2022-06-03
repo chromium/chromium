@@ -8,8 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/spellchecker/spellcheck_custom_dictionary.h"
 #include "chrome/browser/spellchecker/spellcheck_hunspell_dictionary.h"
 #include "chrome/common/extensions/api/language_settings_private.h"
@@ -19,8 +19,8 @@
 #include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/event_router.h"
 
-#if defined(OS_CHROMEOS)
-#include "ui/base/ime/chromeos/input_method_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ui/base/ime/ash/input_method_manager.h"
 #endif
 
 namespace content {
@@ -35,14 +35,20 @@ class LanguageSettingsPrivateDelegate
     : public KeyedService,
       public EventRouter::Observer,
       public content::NotificationObserver,
-#if defined(OS_CHROMEOS)
-      public chromeos::input_method::InputMethodManager::Observer,
-#endif  // defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      public ash::input_method::InputMethodManager::Observer,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       public SpellcheckHunspellDictionary::Observer,
       public SpellcheckCustomDictionary::Observer {
  public:
   static LanguageSettingsPrivateDelegate* Create(
       content::BrowserContext* browser_context);
+
+  LanguageSettingsPrivateDelegate(const LanguageSettingsPrivateDelegate&) =
+      delete;
+  LanguageSettingsPrivateDelegate& operator=(
+      const LanguageSettingsPrivateDelegate&) = delete;
+
   ~LanguageSettingsPrivateDelegate() override;
 
   // Returns the languages and statuses of the enabled spellcheck dictionaries.
@@ -68,14 +74,14 @@ class LanguageSettingsPrivateDelegate
   void OnListenerAdded(const EventListenerInfo& details) override;
   void OnListenerRemoved(const EventListenerInfo& details) override;
 
-#if defined(OS_CHROMEOS)
-  // chromeos::input_method::InputMethodManager::Observer implementation.
-  void InputMethodChanged(chromeos::input_method::InputMethodManager* manager,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // ash::input_method::InputMethodManager::Observer implementation.
+  void InputMethodChanged(ash::input_method::InputMethodManager* manager,
                           Profile* profile,
                           bool show_message) override;
   void OnInputMethodExtensionAdded(const std::string& extension_id) override;
   void OnInputMethodExtensionRemoved(const std::string& extension_id) override;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // SpellcheckHunspellDictionary::Observer implementation.
   void OnHunspellDictionaryInitialized(const std::string& language) override;
@@ -105,12 +111,12 @@ class LanguageSettingsPrivateDelegate
   // any observers.
   void StartOrStopListeningForSpellcheckChanges();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // If there are any JavaScript listeners registered for input method events,
   // ensures we are registered for change notifications. Otherwise, unregisters
   // any observers.
   void StartOrStopListeningForInputMethodChanges();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Handles the preference for which languages should be used for spellcheck
   // by resetting the dictionaries and broadcasting an event.
@@ -143,8 +149,6 @@ class LanguageSettingsPrivateDelegate
   content::NotificationRegistrar notification_registrar_;
 
   PrefChangeRegistrar pref_change_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(LanguageSettingsPrivateDelegate);
 };
 
 }  // namespace extensions

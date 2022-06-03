@@ -15,8 +15,13 @@ import android.widget.FrameLayout;
 import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.banners.SwipableOverlayView;
-import org.chromium.chrome.browser.fullscreen.ChromeFullscreenManager;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
+import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.components.browser_ui.banners.SwipableOverlayView;
+import org.chromium.components.infobars.InfoBar;
+import org.chromium.components.infobars.InfoBarAnimationListener;
+import org.chromium.components.infobars.InfoBarContainerLayout;
+import org.chromium.components.infobars.InfoBarUiItem;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
@@ -27,7 +32,7 @@ public class InfoBarContainerView extends SwipableOverlayView {
     /**
      * Observes container view changes.
      */
-    public interface ContainerViewObserver extends InfoBarContainer.InfoBarAnimationListener {
+    public interface ContainerViewObserver extends InfoBarAnimationListener {
         /**
          * Called when the height of shown content changed.
          * @param shownFraction The ratio of height of shown content to the height of the container
@@ -46,7 +51,7 @@ public class InfoBarContainerView extends SwipableOverlayView {
     /** Whether or not the InfoBarContainer is allowed to hide when the user scrolls. */
     private static boolean sIsAllowedToAutoHide = true;
 
-    private final ChromeFullscreenManager mChromeFullscreenManager;
+    private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final ContainerViewObserver mContainerViewObserver;
     private final InfoBarContainerLayout mLayout;
 
@@ -66,16 +71,16 @@ public class InfoBarContainerView extends SwipableOverlayView {
      * @param context The {@link Context} that this view is attached to.
      * @param containerViewObserver The {@link ContainerViewObserver} that gets notified on
      *                              container view changes.
-     * @param chromeFullscreenManager The {@link ChromeFullscreenManager} that provides browser
-     *                                control offsets.
+     * @param browserControlsStateProvider The {@link BrowserControlsStateProvider} that provides
+     *                                browser control offsets.
      * @param isTablet Whether this view is displayed on tablet or not.
      */
     InfoBarContainerView(@NonNull Context context,
             @NonNull ContainerViewObserver containerViewObserver,
-            @NonNull ChromeFullscreenManager chromeFullscreenManager, boolean isTablet) {
+            @NonNull BrowserControlsStateProvider browserControlsStateProvider, boolean isTablet) {
         super(context, null);
         mContainerViewObserver = containerViewObserver;
-        mChromeFullscreenManager = chromeFullscreenManager;
+        mBrowserControlsStateProvider = browserControlsStateProvider;
 
         // TODO(newt): move this workaround into the infobar views if/when they're scrollable.
         // Workaround for http://crbug.com/407149. See explanation in onMeasure() below.
@@ -84,16 +89,15 @@ public class InfoBarContainerView extends SwipableOverlayView {
         updateLayoutParams(context, isTablet);
 
         Runnable makeContainerVisibleRunnable = () -> runUpEventAnimation(true);
-        mLayout = new InfoBarContainerLayout(context, makeContainerVisibleRunnable,
-                new InfoBarContainer.InfoBarAnimationListener() {
+        mLayout = new InfoBarContainerLayout(
+                context, makeContainerVisibleRunnable, new InfoBarAnimationListener() {
                     @Override
                     public void notifyAnimationFinished(int animationType) {
                         mContainerViewObserver.notifyAnimationFinished(animationType);
                     }
 
                     @Override
-                    public void notifyAllAnimationsFinished(
-                            InfoBarContainerLayout.Item frontInfoBar) {
+                    public void notifyAllAnimationsFinished(InfoBarUiItem frontInfoBar) {
                         mContainerViewObserver.notifyAllAnimationsFinished(frontInfoBar);
                     }
                 });
@@ -125,7 +129,7 @@ public class InfoBarContainerView extends SwipableOverlayView {
 
     @Override
     protected boolean shouldConsumeScroll(int scrollOffsetY, int scrollExtentY) {
-        if (mChromeFullscreenManager.getBottomControlsHeight() <= 0) return true;
+        if (mBrowserControlsStateProvider.getBottomControlsHeight() <= 0) return true;
 
         boolean isScrollingDownward = scrollOffsetY > mLastScrollOffsetY;
         boolean didDirectionChange = isScrollingDownward != mIsScrollingDownward;
@@ -138,9 +142,10 @@ public class InfoBarContainerView extends SwipableOverlayView {
             return false;
         }
 
-        boolean areControlsCompletelyShown = mChromeFullscreenManager.getBottomControlOffset() > 0;
+        boolean areControlsCompletelyShown =
+                mBrowserControlsStateProvider.getBottomControlOffset() > 0;
         boolean areControlsCompletelyHidden =
-                mChromeFullscreenManager.areBrowserControlsOffScreen();
+                BrowserControlsUtils.areBrowserControlsOffScreen(mBrowserControlsStateProvider);
 
         if ((!mIsScrollingDownward && areControlsCompletelyShown)
                 || (mIsScrollingDownward && !areControlsCompletelyHidden)) {

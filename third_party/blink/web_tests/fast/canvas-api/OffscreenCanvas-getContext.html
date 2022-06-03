@@ -17,7 +17,7 @@ test(function() {
     aCanvas.width = 0; // Zero dimension is allowed.
     assert_equals(aCanvas.width, 0);
 
-    assert_throws(new TypeError(), function() { aCanvas.getContext('bogus'); }); 
+    assert_throws_js(TypeError, function() { aCanvas.getContext('bogus'); }); 
 
     // Tests object type of getContext('2d').
     var ctx = aCanvas.getContext('2d');

@@ -25,7 +25,7 @@ BufferingConfig::~BufferingConfig() {
 
 BufferingState::BufferingState(const std::string& stream_id,
                                const scoped_refptr<BufferingConfig>& config,
-                               const base::Closure& state_changed_cb,
+                               const base::RepeatingClosure& state_changed_cb,
                                const HighLevelBufferCB& high_level_buffer_cb)
     : stream_id_(stream_id),
       config_(config),

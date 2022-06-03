@@ -4,10 +4,9 @@
 
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_presentation_controller.h"
 
-#include "base/logging.h"
 #import "ios/chrome/browser/ui/infobars/presentation/infobar_modal_positioner.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -22,7 +21,33 @@ const CGFloat kPresentedViewMaxWidth = 394.0;
 const CGFloat kContainerCornerRadius = 13.0;
 }  // namespace
 
+@interface InfobarModalPresentationController ()
+// Delegate used to position the ModalInfobar.
+@property(nonatomic, weak) id<InfobarModalPositioner> modalPositioner;
+@end
+
 @implementation InfobarModalPresentationController
+
+- (instancetype)
+    initWithPresentedViewController:(UIViewController*)presentedViewController
+           presentingViewController:(UIViewController*)presentingViewController
+                    modalPositioner:
+                        (id<InfobarModalPositioner>)modalPositioner {
+  self = [super initWithPresentedViewController:presentedViewController
+                       presentingViewController:presentingViewController];
+  if (self) {
+    _modalPositioner = modalPositioner;
+  }
+  return self;
+}
+
+- (BOOL)shouldPresentInFullscreen {
+  // Don't present in fullscreen when modals are shown using OverlayPresenter
+  // so that banners presented are inserted into the correct place in the view
+  // hierarchy.  Returning NO adds the container view as a sibling view in front
+  // of the presenting view controller's view.
+  return NO;
+}
 
 - (void)presentationTransitionWillBegin {
   // Add a gesture recognizer to endEditing (thus hiding the keyboard) if a user
@@ -45,10 +70,11 @@ const CGFloat kContainerCornerRadius = 13.0;
   self.presentedView.clipsToBounds = YES;
   self.containerView.backgroundColor =
       [UIColor colorNamed:kScrimBackgroundColor];
+
+  [super containerViewWillLayoutSubviews];
 }
 
 - (CGRect)frameForPresentedView {
-  DCHECK(self.modalPositioner);
   CGRect safeAreaBounds = self.containerView.safeAreaLayoutGuide.layoutFrame;
   CGFloat safeAreaWidth = CGRectGetWidth(safeAreaBounds);
   CGFloat safeAreaHeight = CGRectGetHeight(safeAreaBounds);

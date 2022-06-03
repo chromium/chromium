@@ -284,22 +284,22 @@ static bool GetBordersFromFrameAttributeValue(const AtomicString& value,
   border_bottom = false;
   border_left = false;
 
-  if (DeprecatedEqualIgnoringCase(value, "above"))
+  if (EqualIgnoringASCIICase(value, "above"))
     border_top = true;
-  else if (DeprecatedEqualIgnoringCase(value, "below"))
+  else if (EqualIgnoringASCIICase(value, "below"))
     border_bottom = true;
-  else if (DeprecatedEqualIgnoringCase(value, "hsides"))
+  else if (EqualIgnoringASCIICase(value, "hsides"))
     border_top = border_bottom = true;
-  else if (DeprecatedEqualIgnoringCase(value, "vsides"))
+  else if (EqualIgnoringASCIICase(value, "vsides"))
     border_left = border_right = true;
-  else if (DeprecatedEqualIgnoringCase(value, "lhs"))
+  else if (EqualIgnoringASCIICase(value, "lhs"))
     border_left = true;
-  else if (DeprecatedEqualIgnoringCase(value, "rhs"))
+  else if (EqualIgnoringASCIICase(value, "rhs"))
     border_right = true;
-  else if (DeprecatedEqualIgnoringCase(value, "box") ||
-           DeprecatedEqualIgnoringCase(value, "border"))
+  else if (EqualIgnoringASCIICase(value, "box") ||
+           EqualIgnoringASCIICase(value, "border"))
     border_top = border_bottom = border_left = border_right = true;
-  else if (!DeprecatedEqualIgnoringCase(value, "void"))
+  else if (!EqualIgnoringASCIICase(value, "void"))
     return false;
   return true;
 }
@@ -309,7 +309,8 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kWidthAttr) {
-    AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value);
+    AddHTMLLengthToStyle(style, CSSPropertyID::kWidth, value,
+                         kAllowPercentageValues, kDontAllowZeroValues);
   } else if (name == html_names::kHeightAttr) {
     AddHTMLLengthToStyle(style, CSSPropertyID::kHeight, value);
   } else if (name == html_names::kBorderAttr) {
@@ -324,16 +325,13 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
   } else if (name == html_names::kBackgroundAttr) {
     String url = StripLeadingAndTrailingHTMLSpaces(value);
     if (!url.IsEmpty()) {
-      UseCounter::Count(
-          GetDocument(),
-          WebFeature::kHTMLTableElementPresentationAttributeBackground);
       CSSImageValue* image_value = MakeGarbageCollected<CSSImageValue>(
           AtomicString(url), GetDocument().CompleteURL(url),
-          Referrer(GetDocument().OutgoingReferrer(),
-                   GetDocument().GetReferrerPolicy()),
-          OriginClean::kTrue);
-      style->SetProperty(
-          CSSPropertyValue(GetCSSPropertyBackgroundImage(), *image_value));
+          Referrer(GetExecutionContext()->OutgoingReferrer(),
+                   GetExecutionContext()->GetReferrerPolicy()),
+          OriginClean::kTrue, false /* is_ad_related */);
+      style->SetProperty(CSSPropertyValue(
+          CSSPropertyName(CSSPropertyID::kBackgroundImage), *image_value));
     }
   } else if (name == html_names::kValignAttr) {
     if (!value.IsEmpty()) {
@@ -347,7 +345,7 @@ void HTMLTableElement::CollectStyleForPresentationAttribute(
     }
   } else if (name == html_names::kAlignAttr) {
     if (!value.IsEmpty()) {
-      if (DeprecatedEqualIgnoringCase(value, "center")) {
+      if (EqualIgnoringASCIICase(value, "center")) {
         AddPropertyToPresentationAttributeStyle(
             style, CSSPropertyID::kMarginInlineStart, CSSValueID::kAuto);
         AddPropertyToPresentationAttributeStyle(
@@ -425,15 +423,15 @@ void HTMLTableElement::ParseAttribute(
         params.new_value, border_top, border_right, border_bottom, border_left);
   } else if (name == html_names::kRulesAttr) {
     rules_attr_ = kUnsetRules;
-    if (DeprecatedEqualIgnoringCase(params.new_value, "none"))
+    if (EqualIgnoringASCIICase(params.new_value, "none"))
       rules_attr_ = kNoneRules;
-    else if (DeprecatedEqualIgnoringCase(params.new_value, "groups"))
+    else if (EqualIgnoringASCIICase(params.new_value, "groups"))
       rules_attr_ = kGroupsRules;
-    else if (DeprecatedEqualIgnoringCase(params.new_value, "rows"))
+    else if (EqualIgnoringASCIICase(params.new_value, "rows"))
       rules_attr_ = kRowsRules;
-    else if (DeprecatedEqualIgnoringCase(params.new_value, "cols"))
+    else if (EqualIgnoringASCIICase(params.new_value, "cols"))
       rules_attr_ = kColsRules;
-    else if (DeprecatedEqualIgnoringCase(params.new_value, "all"))
+    else if (EqualIgnoringASCIICase(params.new_value, "all"))
       rules_attr_ = kAllRules;
   } else if (params.name == html_names::kCellpaddingAttr) {
     if (!params.new_value.IsEmpty()) {
@@ -633,7 +631,7 @@ const AtomicString& HTMLTableElement::Summary() const {
   return FastGetAttribute(html_names::kSummaryAttr);
 }
 
-void HTMLTableElement::Trace(Visitor* visitor) {
+void HTMLTableElement::Trace(Visitor* visitor) const {
   visitor->Trace(shared_cell_style_);
   HTMLElement::Trace(visitor);
 }

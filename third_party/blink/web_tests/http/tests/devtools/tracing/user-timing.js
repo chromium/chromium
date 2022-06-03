@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests the instrumentation of a UserTiming events\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.evaluateInPagePromise(`
     function makeUserTimings()
@@ -46,7 +46,7 @@
     TestRunner.completeTest();
 
     function processAsyncEvent(event) {
-      if (!event._parsedCategories.has('blink.user_timing')) return;
+      if (!event.parsedCategories.has('blink.user_timing')) return;
 
       const roundedDuration = Math.round(event.duration / 100) * 100;
       TestRunner.addResult(`Got Async Event. Duration: ${roundedDuration}`);

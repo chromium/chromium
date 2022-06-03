@@ -4,6 +4,7 @@
 
 #include "base/android/task_scheduler/task_runner_android.h"
 
+#include "base/android/jni_string.h"
 #include "base/android/task_scheduler/post_task_android.h"
 #include "base/base_jni_headers/TaskRunnerImpl_jni.h"
 #include "base/bind.h"
@@ -16,16 +17,13 @@ namespace base {
 jlong JNI_TaskRunnerImpl_Init(
     JNIEnv* env,
     jint task_runner_type,
-    jboolean priority_set_explicitly,
     jint priority,
     jboolean may_block,
     jboolean thread_pool,
-    jboolean current_thread,
     jbyte extension_id,
     const base::android::JavaParamRef<jbyteArray>& extension_data) {
   TaskTraits task_traits = PostTaskAndroid::CreateTaskTraits(
-      env, priority_set_explicitly, priority, may_block, thread_pool,
-      current_thread, extension_id, extension_data);
+      env, priority, may_block, thread_pool, extension_id, extension_data);
   scoped_refptr<TaskRunner> task_runner;
   switch (static_cast<TaskRunnerType>(task_runner_type)) {
     case TaskRunnerType::BASE:
@@ -56,12 +54,15 @@ void TaskRunnerAndroid::Destroy(JNIEnv* env) {
 void TaskRunnerAndroid::PostDelayedTask(
     JNIEnv* env,
     const base::android::JavaRef<jobject>& task,
-    jlong delay) {
+    jlong delay,
+    jstring runnable_class_name) {
   task_runner_->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&PostTaskAndroid::RunJavaTask,
-                     base::android::ScopedJavaGlobalRef<jobject>(task)),
-      TimeDelta::FromMilliseconds(delay));
+      base::BindOnce(
+          &PostTaskAndroid::RunJavaTask,
+          base::android::ScopedJavaGlobalRef<jobject>(task),
+          android::ConvertJavaStringToUTF8(env, runnable_class_name)),
+      Milliseconds(delay));
 }
 
 bool TaskRunnerAndroid::BelongsToCurrentThread(JNIEnv* env) {

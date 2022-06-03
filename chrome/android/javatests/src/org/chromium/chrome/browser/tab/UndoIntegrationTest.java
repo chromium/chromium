@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.tab;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
 
-import android.support.test.filters.LargeTest;
+import androidx.test.filters.LargeTest;
 
+import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -15,18 +16,17 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.base.test.util.RetryOnFailure;
 import org.chromium.base.test.util.UrlUtils;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -70,7 +70,6 @@ public class UndoIntegrationTest {
     @FlakyTest(message = "https://crbug.com/679480")
     @LargeTest
     @Restriction(RESTRICTION_TYPE_NON_LOW_END_DEVICE)
-    @RetryOnFailure
     public void testAddNewContentsFromClosingTab() throws TimeoutException {
         mActivityTestRule.loadUrl(WINDOW_OPEN_BUTTON_URL);
 
@@ -89,11 +88,9 @@ public class UndoIntegrationTest {
         });
 
         // Give the model a chance to process the undo and close the tab.
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return !model.isClosurePending(tab.getId()) && model.getCount() == 0;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(model.isClosurePending(tab.getId()), Matchers.is(false));
+            Criteria.checkThat(model.getCount(), Matchers.is(0));
         });
 
         // Validate that the model doesn't contain the original tab or any newly opened tabs.

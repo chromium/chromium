@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/stl_util.h"
 
 namespace exo {
 
@@ -21,30 +20,32 @@ bool FrameSinkResourceManager::HasReleaseCallbackForResource(
 }
 void FrameSinkResourceManager::SetResourceReleaseCallback(
     viz::ResourceId id,
-    viz::ReleaseCallback callback) {
+    ReleaseCallback callback) {
   DCHECK(!callback.is_null());
   release_callbacks_[id] = std::move(callback);
 }
-int FrameSinkResourceManager::AllocateResourceId() {
-  return next_resource_id_++;
+viz::ResourceId FrameSinkResourceManager::AllocateResourceId() {
+  return id_generator_.GenerateNextId();
 }
 
 bool FrameSinkResourceManager::HasNoCallbacks() const {
   return release_callbacks_.empty();
 }
 
-void FrameSinkResourceManager::ReclaimResource(
-    const viz::ReturnedResource& resource) {
+void FrameSinkResourceManager::ReclaimResource(viz::ReturnedResource resource) {
   auto it = release_callbacks_.find(resource.id);
   if (it != release_callbacks_.end()) {
-    std::move(it->second).Run(resource.sync_token, resource.lost);
+    std::move(it->second).Run(std::move(resource));
     release_callbacks_.erase(it);
   }
 }
 
 void FrameSinkResourceManager::ClearAllCallbacks() {
   for (auto& callback : release_callbacks_)
-    std::move(callback.second).Run(gpu::SyncToken(), true /* lost */);
+    std::move(callback.second)
+        .Run(viz::ReturnedResource(viz::kInvalidResourceId, gpu::SyncToken(),
+                                   /*release_fence=*/gfx::GpuFenceHandle(),
+                                   /*count=*/0, /*lost=*/true));
   release_callbacks_.clear();
 }
 

@@ -1,0 +1,3 @@
+Tests that Frame objects include the registered domain of the frames URL
+Reported registered domain: devtools.test
+

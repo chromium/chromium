@@ -37,11 +37,10 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/notreached.h"
 #include "base/scoped_native_library.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_util_win.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_thread_priority.h"
 #include "base/threading/thread_restrictions.h"
@@ -78,7 +77,7 @@ bool SetPropVariantValueForPropertyStore(
   // See third_party/perl/c/i686-w64-mingw32/include/propkey.h for GUID and
   // PID definitions.
   DPLOG(ERROR) << "Failed to set property with GUID "
-               << String16FromGUID(property_key.fmtid) << " PID "
+               << WStringFromGUID(property_key.fmtid) << " PID "
                << property_key.pid;
 #endif
   return false;
@@ -289,7 +288,7 @@ bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
   // 3. If step 1 and 2 fail then we check attached keyboards and return true
   //    if we find ACPI\* or HID\VID* keyboards.
 
-  typedef BOOL(WINAPI * GetAutoRotationState)(PAR_STATE state);
+  using GetAutoRotationState = decltype(&::GetAutoRotationState);
   static const auto get_rotation_state = reinterpret_cast<GetAutoRotationState>(
       GetUser32FunctionPointer("GetAutoRotationState"));
   if (get_rotation_state) {
@@ -340,10 +339,8 @@ bool IsKeyboardPresentOnSlate(HWND hwnd, std::string* reason) {
     if (status == CR_SUCCESS) {
       // To reduce the scope of the hack we only look for ACPI and HID\\VID
       // prefixes in the keyboard device ids.
-      if (StartsWith(AsStringPiece16(device_id), STRING16_LITERAL("ACPI"),
-                     CompareCase::INSENSITIVE_ASCII) ||
-          StartsWith(AsStringPiece16(device_id), STRING16_LITERAL("HID\\VID"),
-                     CompareCase::INSENSITIVE_ASCII)) {
+      if (StartsWith(device_id, L"ACPI", CompareCase::INSENSITIVE_ASCII) ||
+          StartsWith(device_id, L"HID\\VID", CompareCase::INSENSITIVE_ASCII)) {
         if (reason) {
           *reason += "device: ";
           *reason += WideToUTF8(device_id);
@@ -450,10 +447,11 @@ bool SetClsidForPropertyStore(IPropertyStore* property_store,
 
 bool SetAppIdForPropertyStore(IPropertyStore* property_store,
                               const wchar_t* app_id) {
-  // App id should be less than 64 chars and contain no space. And recommended
+  // App id should be less than 128 chars and contain no space. And recommended
   // format is CompanyName.ProductName[.SubProduct.ProductNumber].
-  // See http://msdn.microsoft.com/en-us/library/dd378459%28VS.85%29.aspx
-  DCHECK_LT(lstrlen(app_id), 64);
+  // See
+  // https://docs.microsoft.com/en-us/windows/win32/shell/appids#how-to-form-an-application-defined-appusermodelid
+  DCHECK_LT(lstrlen(app_id), 128);
   DCHECK_EQ(wcschr(app_id, L' '), nullptr);
 
   return SetStringValueForPropertyStore(property_store, PKEY_AppUserModel_ID,
@@ -550,7 +548,7 @@ bool IsDeviceUsedAsATablet(std::string* reason) {
   // a convertible or a detachable.
   // See
   // https://msdn.microsoft.com/en-us/library/windows/desktop/dn629263(v=vs.85).aspx
-  typedef decltype(GetAutoRotationState)* GetAutoRotationStateType;
+  using GetAutoRotationStateType = decltype(GetAutoRotationState)*;
   static const auto get_auto_rotation_state_func =
       reinterpret_cast<GetAutoRotationStateType>(
           GetUser32FunctionPointer("GetAutoRotationState"));
@@ -601,8 +599,8 @@ bool IsUser32AndGdi32Available() {
     if (GetVersion() < Version::WIN8)
       return true;
 
-    typedef decltype(
-        GetProcessMitigationPolicy)* GetProcessMitigationPolicyType;
+    using GetProcessMitigationPolicyType =
+        decltype(GetProcessMitigationPolicy)*;
     GetProcessMitigationPolicyType get_process_mitigation_policy_func =
         reinterpret_cast<GetProcessMitigationPolicyType>(GetProcAddress(
             GetModuleHandle(L"kernel32.dll"), "GetProcessMitigationPolicy"));
@@ -722,7 +720,7 @@ void EnableHighDPISupport() {
   }
 }
 
-string16 String16FromGUID(REFGUID rguid) {
+std::wstring WStringFromGUID(REFGUID rguid) {
   // This constant counts the number of characters in the formatted string,
   // including the null termination character.
   constexpr int kGuidStringCharacters =
@@ -734,7 +732,7 @@ string16 String16FromGUID(REFGUID rguid) {
       rguid.Data2, rguid.Data3, rguid.Data4[0], rguid.Data4[1], rguid.Data4[2],
       rguid.Data4[3], rguid.Data4[4], rguid.Data4[5], rguid.Data4[6],
       rguid.Data4[7])));
-  return string16(as_u16cstr(guid_string), kGuidStringCharacters - 1);
+  return std::wstring(guid_string, kGuidStringCharacters - 1);
 }
 
 bool PinUser32(NativeLibraryLoadError* error) {

@@ -7,9 +7,10 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/optional.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
@@ -18,10 +19,18 @@
 #include "components/dom_distiller/content/browser/distillable_page_utils.h"
 #include "components/dom_distiller/core/dom_distiller_switches.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
+    defined(OS_WIN)
+#include "components/ukm/test_ukm_recorder.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#endif
 
 namespace dom_distiller {
 namespace {
@@ -29,8 +38,11 @@ namespace {
 using ::testing::_;
 using ::testing::AllOf;
 using ::testing::Field;
+using ::testing::InvokeWithoutArgs;
 using ::testing::Not;
 using ::testing::Optional;
+using ::testing::Pointee;
+using ::testing::SizeIs;
 
 const char kSimpleArticlePath[] = "/dom_distiller/simple_article.html";
 const char kSimpleArticleIFramePath[] =
@@ -51,14 +63,14 @@ class MockObserver : public DistillabilityObserver {
 // so 100ms should be pretty safe to catch extra calls.
 //
 // If there are no extra calls, changing this doesn't change the test result.
-const auto kWaitAfterLastCall = base::TimeDelta::FromMilliseconds(100);
+const auto kWaitAfterLastCall = base::Milliseconds(100);
 
 // Wait a bit if no calls are expected to make sure any unexpected calls are
 // caught. Expected calls happen within 100ms after content::WaitForLoadStop()
 // on linux release build, so 1s provides a safe margin.
 //
 // If there are no extra calls, changing this doesn't change the test result.
-const auto kWaitNoExpectedCall = base::TimeDelta::FromSeconds(1);
+const auto kWaitNoExpectedCall = base::Seconds(1);
 
 }  // namespace
 
@@ -72,7 +84,10 @@ class TestOption : public InProcessBrowserTest {
   }
 
   void SetUpOnMainThread() override {
-    ASSERT_TRUE(embedded_test_server()->Start());
+    https_server_ = std::make_unique<net::EmbeddedTestServer>(
+        net::EmbeddedTestServer::TYPE_HTTPS);
+    https_server_->ServeFilesFromSourceDirectory(GetChromeTestDataDir());
+    ASSERT_TRUE(https_server_->Start());
     web_contents_ = browser()->tab_strip_model()->GetActiveWebContents();
     AddObserver(web_contents_, &holder_);
   }
@@ -82,12 +97,12 @@ class TestOption : public InProcessBrowserTest {
 
     GURL article_url(url);
     if (base::StartsWith(url, "/", base::CompareCase::SENSITIVE)) {
-      article_url = embedded_test_server()->GetURL(url);
+      article_url = https_server()->GetURL(url);
     }
 
     // This blocks until the navigation has completely finished.
-    ui_test_utils::NavigateToURL(browser(), article_url);
-    content::WaitForLoadStop(web_contents_);
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url));
+    EXPECT_TRUE(content::WaitForLoadStop(web_contents_));
 
     if (!test_timeout.is_zero())
       QuitAfter(test_timeout);
@@ -99,14 +114,19 @@ class TestOption : public InProcessBrowserTest {
   void QuitSoon() { QuitAfter(kWaitAfterLastCall); }
 
   void QuitAfter(base::TimeDelta delta) {
-    DCHECK(delta > base::TimeDelta());
+    DCHECK(delta.is_positive());
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE, run_loop_->QuitClosure(), delta);
+  }
+
+  net::test_server::EmbeddedTestServer* https_server() {
+    return https_server_.get();
   }
 
   std::unique_ptr<base::RunLoop> run_loop_;
   MockObserver holder_;
   content::WebContents* web_contents_ = nullptr;
+  std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
 
 MATCHER(IsDistillable,
@@ -143,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAlways,
                        LocalUrlsDoNotCallObserver) {
   EXPECT_CALL(holder_, OnResult(_)).Times(0);
   NavigateAndWait("about:blank", kWaitNoExpectedCall);
-  EXPECT_EQ(GetLatestResult(web_contents_), base::nullopt);
+  EXPECT_EQ(GetLatestResult(web_contents_), absl::nullopt);
 }
 
 using DistillablePageUtilsBrowserTestNone =
@@ -152,7 +172,7 @@ using DistillablePageUtilsBrowserTestNone =
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestNone, NeverCallObserver) {
   EXPECT_CALL(holder_, OnResult(_)).Times(0);
   NavigateAndWait(kSimpleArticlePath, kWaitNoExpectedCall);
-  EXPECT_EQ(GetLatestResult(web_contents_), base::nullopt);
+  EXPECT_EQ(GetLatestResult(web_contents_), absl::nullopt);
 }
 
 using DistillablePageUtilsBrowserTestOGArticle =
@@ -258,5 +278,40 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
       GetLatestResult(web_contents_),
       Optional(AllOf(IsDistillable(), IsLast(), Not(IsMobileFriendly()))));
 }
+
+#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
+    defined(OS_WIN)
+IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
+                       RecordPageIsDistillableOnArticleLoad) {
+  ON_CALL(holder_, OnResult(IsLast()))
+      .WillByDefault(InvokeWithoutArgs(this, &TestOption::QuitSoon));
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  NavigateAndWait(kSimpleArticlePath, base::TimeDelta());
+
+  std::vector<const ukm::mojom::UkmEntry*> distillability_entries =
+      ukm_recorder.GetEntriesByName("ReaderModeReceivedDistillability");
+  ASSERT_THAT(distillability_entries, SizeIs(1));
+  EXPECT_THAT(ukm_recorder.GetEntryMetric(distillability_entries.front(),
+                                          "IsPageDistillable"),
+              Pointee(true));
+}
+
+IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
+                       RecordPageIsNotDistillableOnNonArticleLoad) {
+  ON_CALL(holder_, OnResult(IsLast()))
+      .WillByDefault(InvokeWithoutArgs(this, &TestOption::QuitSoon));
+
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+  NavigateAndWait(kNonArticlePath, base::TimeDelta());
+
+  std::vector<const ukm::mojom::UkmEntry*> distillability_entries =
+      ukm_recorder.GetEntriesByName("ReaderModeReceivedDistillability");
+  ASSERT_THAT(distillability_entries, SizeIs(1));
+  EXPECT_THAT(ukm_recorder.GetEntryMetric(distillability_entries.front(),
+                                          "IsPageDistillable"),
+              Pointee(false));
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_LINUX || OS_MACOS || OS_WIN
 
 }  // namespace dom_distiller

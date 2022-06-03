@@ -1,0 +1,12 @@
+{
+  "start_url": "/manifest/file-handler-manifest.html",
+  "file_handlers": [
+    {
+      "name": "name",
+      "action": "/manifest/files",
+      "accept": {
+        "image/png": ".png"
+      }
+    }
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "android-pixel2-perf-calibration": {
+    "gn_args": {
+      "chrome_pgo_phase": 0,
+      "clang_use_default_sample_profile": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "use_goma": true,
+      "use_py3_for_perf": true
+    }
+  },
+  "linux-perf-calibration": {
+    "gn_args": {
+      "chrome_pgo_phase": 0,
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "strip_absolute_paths_from_debug_symbols": true,
+      "symbol_level": 1,
+      "use_gnome_keyring": false,
+      "use_goma": true,
+      "use_py3_for_perf": true
+    }
+  }
+}

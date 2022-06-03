@@ -1,9 +1,3 @@
-Name: font-roboto
-Repository: https://github.com/PolymerElements/font-roboto.git
-Tree: v1.0.1
-Revision: 21ce9b51a417fa9995cf6606e886aba0728f70a1
-Tree link: https://github.com/PolymerElements/font-roboto/tree/v1.0.1
-
 Name: html-imports
 Repository: https://github.com/webcomponents/html-imports.git
 Tree: v1.2.0
@@ -70,23 +64,11 @@ Tree: v2.1.1
 Revision: 0f36a7d380e0edfd81344e6cdbc89519355df8bd
 Tree link: https://github.com/PolymerElements/iron-iconset-svg/tree/v2.1.1
 
-Name: iron-input
-Repository: https://github.com/PolymerElements/iron-input.git
-Tree: v2.1.3
-Revision: 72a4a9e898a4b825602eacd78944e8e25ee41f5c
-Tree link: https://github.com/PolymerElements/iron-input/tree/v2.1.3
-
 Name: iron-list
 Repository: https://github.com/PolymerElements/iron-list.git
 Tree: v2.0.20
 Revision: 22dd6cc83673a717b12b2d67a5ca9a32b0587ad9
 Tree link: https://github.com/PolymerElements/iron-list/tree/v2.0.20
-
-Name: iron-location
-Repository: https://github.com/PolymerElements/iron-location.git
-Tree: v2.0.3
-Revision: 1a0c6f979e3ae2f3040daab87c6005dca94d78c5
-Tree link: https://github.com/PolymerElements/iron-location/tree/v2.0.3
 
 Name: iron-media-query
 Repository: https://github.com/PolymerElements/iron-media-query.git
@@ -148,12 +130,6 @@ Tree: v2.0.0
 Revision: b972ff1579d882f3196713f8a72a8bf77aeba07c
 Tree link: https://github.com/PolymerElements/iron-test-helpers/tree/v2.0.0
 
-Name: iron-validatable-behavior
-Repository: https://github.com/PolymerElements/iron-validatable-behavior.git
-Tree: v2.1.0
-Revision: 4b6c1c53e44a3bbb31fcfd14ede2234645518c96
-Tree link: https://github.com/PolymerElements/iron-validatable-behavior/tree/v2.1.0
-
 Name: neon-animation
 Repository: https://github.com/PolymerElements/neon-animation.git
 Tree: v2.1.0
@@ -165,12 +141,6 @@ Repository: https://github.com/PolymerElements/paper-behaviors.git
 Tree: v2.1.0
 Revision: ddde7f8cf41078b7a7b724473558421d6bc37f57
 Tree link: https://github.com/PolymerElements/paper-behaviors/tree/v2.1.0
-
-Name: paper-input
-Repository: https://github.com/PolymerElements/paper-input.git
-Tree: v2.2.2
-Revision: a89e8f491d01c77e167a4361d0535683591e0a01
-Tree link: https://github.com/PolymerElements/paper-input/tree/v2.2.2
 
 Name: paper-progress
 Repository: https://github.com/PolymerElements/paper-progress.git
@@ -201,12 +171,6 @@ Repository: https://github.com/PolymerElements/paper-tooltip.git
 Tree: v2.1.1
 Revision: 8507ec69ec4c943da4ce7ea859f55db9ab9d28f5
 Tree link: https://github.com/PolymerElements/paper-tooltip/tree/v2.1.1
-
-Name: polymer
-Repository: https://github.com/Polymer/polymer.git
-Tree: v1.11.2
-Revision: 1dcf3839b3ce058d2d87737674a25ecdd7343f9a
-Tree link: https://github.com/Polymer/polymer/tree/v1.11.2
 
 Name: polymer
 Repository: https://github.com/Polymer/polymer.git

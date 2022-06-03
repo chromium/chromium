@@ -23,11 +23,6 @@ ShellDesktopControllerMac::~ShellDesktopControllerMac() {
   CloseAppWindows();
 }
 
-void ShellDesktopControllerMac::Run() {
-  base::RunLoop run_loop;
-  run_loop.Run();
-}
-
 void ShellDesktopControllerMac::AddAppWindow(AppWindow* app_window,
                                              gfx::NativeWindow window) {
   app_window_ = app_window;

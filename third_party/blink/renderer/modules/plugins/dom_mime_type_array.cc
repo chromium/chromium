@@ -20,25 +20,30 @@
 
 #include "third_party/blink/renderer/modules/plugins/dom_mime_type_array.h"
 
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/public/common/features.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/plugin_data.h"
+#include "third_party/blink/renderer/modules/plugins/dom_plugin_array.h"
+#include "third_party/blink/renderer/modules/plugins/navigator_plugins.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-DOMMimeTypeArray::DOMMimeTypeArray(LocalFrame* frame)
-    : ContextLifecycleObserver(frame ? frame->GetDocument() : nullptr),
-      PluginsChangedObserver(frame ? frame->GetPage() : nullptr) {
+DOMMimeTypeArray::DOMMimeTypeArray(LocalDOMWindow* window,
+                                   bool should_return_fixed_plugin_data)
+    : ExecutionContextLifecycleObserver(window),
+      PluginsChangedObserver(window ? window->GetFrame()->GetPage() : nullptr),
+      should_return_fixed_plugin_data_(should_return_fixed_plugin_data) {
   UpdatePluginData();
 }
 
-void DOMMimeTypeArray::Trace(blink::Visitor* visitor) {
+void DOMMimeTypeArray::Trace(Visitor* visitor) const {
   visitor->Trace(dom_mime_types_);
   ScriptWrappable::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 unsigned DOMMimeTypeArray::length() const {
@@ -50,13 +55,22 @@ DOMMimeType* DOMMimeTypeArray::item(unsigned index) {
     return nullptr;
   if (!dom_mime_types_[index]) {
     dom_mime_types_[index] = MakeGarbageCollected<DOMMimeType>(
-        GetFrame(), *GetPluginData()->Mimes()[index]);
+        DomWindow(), *GetPluginData()->Mimes()[index]);
   }
 
   return dom_mime_types_[index];
 }
 
 DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
+  if (should_return_fixed_plugin_data_) {
+    // I don't know why namedItem() and NamedPropertyEnumerator go directly to
+    // the plugin data, rather than using dom_mime_types_.
+    for (const auto& mimetype : dom_mime_types_) {
+      if (mimetype->type() == property_name)
+        return mimetype;
+    }
+    return nullptr;
+  }
   PluginData* data = GetPluginData();
   if (!data)
     return nullptr;
@@ -72,6 +86,12 @@ DOMMimeType* DOMMimeTypeArray::namedItem(const AtomicString& property_name) {
 
 void DOMMimeTypeArray::NamedPropertyEnumerator(Vector<String>& property_names,
                                                ExceptionState&) const {
+  if (should_return_fixed_plugin_data_) {
+    property_names.ReserveInitialCapacity(dom_mime_types_.size());
+    for (const auto& mimetype : dom_mime_types_)
+      property_names.UncheckedAppend(mimetype->type());
+    return;
+  }
   PluginData* data = GetPluginData();
   if (!data)
     return;
@@ -90,21 +110,26 @@ bool DOMMimeTypeArray::NamedPropertyQuery(const AtomicString& property_name,
 }
 
 PluginData* DOMMimeTypeArray::GetPluginData() const {
-  if (!GetFrame())
+  if (!DomWindow())
     return nullptr;
-  return GetFrame()->GetPluginData();
+  return DomWindow()->GetFrame()->GetPluginData();
 }
 
 void DOMMimeTypeArray::UpdatePluginData() {
-  PluginData* data = GetPluginData();
-  if (!data) {
-    dom_mime_types_.clear();
+  dom_mime_types_.clear();
+  if (should_return_fixed_plugin_data_) {
+    if (DomWindow()) {
+      dom_mime_types_ = NavigatorPlugins::plugins(*DomWindow()->navigator())
+                            ->GetFixedMimeTypeArray();
+    }
     return;
   }
+  PluginData* data = GetPluginData();
+  if (!data)
+    return;
 
   HeapVector<Member<DOMMimeType>> old_dom_mime_types(
       std::move(dom_mime_types_));
-  dom_mime_types_.clear();
   dom_mime_types_.resize(data->Mimes().size());
 
   for (Member<DOMMimeType>& mime : old_dom_mime_types) {
@@ -120,7 +145,7 @@ void DOMMimeTypeArray::UpdatePluginData() {
   }
 }
 
-void DOMMimeTypeArray::ContextDestroyed(ExecutionContext*) {
+void DOMMimeTypeArray::ContextDestroyed() {
   dom_mime_types_.clear();
 }
 

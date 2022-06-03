@@ -9,7 +9,6 @@ Canvas log:
             paint : {
                 blendMode : "Src"
                 color : "#00000000"
-                filterLevel : "None"
                 flags : "none"
                 strokeCap : "Butt"
                 strokeJoin : "Miter"
@@ -25,7 +24,6 @@ Canvas log:
         params : {
             paint : {
                 color : "#FF0000FF"
-                filterLevel : "Low"
                 flags : "AntiAlias"
                 strokeCap : "Butt"
                 strokeJoin : "Miter"
@@ -47,7 +45,6 @@ Canvas log:
         params : {
             paint : {
                 color : "#FFFF0000"
-                filterLevel : "Low"
                 flags : "AntiAlias"
                 strokeCap : "Butt"
                 strokeJoin : "Miter"
@@ -80,13 +77,16 @@ Canvas log:
             }
             paint : {
                 color : "#FF000000"
-                filterLevel : "Medium"
                 flags : "AntiAlias"
                 strokeCap : "Butt"
                 strokeJoin : "Miter"
                 strokeMiter : 4
                 strokeWidth : 0
                 styleName : "Fill"
+            }
+            sampling : {
+                filter : "kLinear"
+                mipmap : "kLinear"
             }
             src : {
                 bottom : 21
@@ -129,7 +129,6 @@ Canvas log:
         params : {
             paint : {
                 color : "#7F000000"
-                filterLevel : "Low"
                 flags : "AntiAlias"
                 strokeCap : "Butt"
                 strokeJoin : "Miter"

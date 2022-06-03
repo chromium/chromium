@@ -5,7 +5,7 @@
 #include "services/video_capture/push_video_stream_subscription_impl.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "services/video_capture/broadcasting_receiver.h"
 
 namespace video_capture {
@@ -160,6 +160,21 @@ void PushVideoStreamSubscriptionImpl::Close(CloseCallback callback) {
 void PushVideoStreamSubscriptionImpl::OnConnectionLost() {
   if (on_closed_handler_)
     std::move(on_closed_handler_).Run(base::DoNothing());
+}
+
+void PushVideoStreamSubscriptionImpl::ProcessFeedback(
+    const media::VideoCaptureFeedback& feedback) {
+  switch (status_) {
+    case Status::kCreationCallbackNotYetRun:  // Fall through.
+    case Status::kClosed:
+      // Ignore the call.
+      return;
+    case Status::kNotYetActivated:  // Fall through.
+    case Status::kActive:           // Fall through.
+    case Status::kSuspended:
+      (*device_)->ProcessFeedback(feedback);
+      return;
+  }
 }
 
 }  // namespace video_capture

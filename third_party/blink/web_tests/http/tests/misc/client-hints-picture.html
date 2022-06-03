@@ -13,11 +13,18 @@
         if (counter == 1) {
             assert_equals(message.data, "resize");
             ++counter;
-            document.getElementById("frame").style.width = "600px";
+            if (child.testRunner) {
+              // resizeTo() doesn't seem to trigger selection of different
+              // <source> otherwise.
+              child.testRunner.useUnfortunateSynchronousResizeMode();
+            }
+            child.resizeTo(600, 600);
         } else {
             assert_equals(message.data, "success");
             t.done();
         }
     }));
+
+    var child = window.open("resources/window-ch-with-picture.php", "_blank",
+                            "innerWidth=800, innerHeight=600");
 </script>
-<iframe src="resources/iframe-ch-with-picture.php" onerror="console.log('failed to load iframe');t.done()" id=frame style="width: 800px"></iframe>

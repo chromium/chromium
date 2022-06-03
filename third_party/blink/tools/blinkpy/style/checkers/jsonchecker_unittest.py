@@ -19,16 +19,15 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit test for jsonchecker.py."""
 
+import six
 import unittest
 
 from blinkpy.style.checkers import jsonchecker
 
 
 class MockErrorHandler(object):
-
     def __init__(self, handle_style_error):
         self.turned_off_filtering = False
         self._handle_style_error = handle_style_error
@@ -37,7 +36,8 @@ class MockErrorHandler(object):
         self.turned_off_filtering = True
 
     def __call__(self, line_number, category, confidence, message):
-        self._handle_style_error(self, line_number, category, confidence, message)
+        self._handle_style_error(self, line_number, category, confidence,
+                                 message)
         return True
 
 
@@ -52,11 +52,16 @@ class JSONCheckerTest(unittest.TestCase):
             (9, 'Expecting property name: line 9 column 21 (char 478)'),
         )
         for expected_line, message in tests:
-            self.assertEqual(expected_line, jsonchecker.JSONChecker.line_number_from_json_exception(ValueError(message)))
+            self.assertEqual(
+                expected_line,
+                jsonchecker.JSONChecker.line_number_from_json_exception(
+                    ValueError(message)))
 
     def assert_no_error(self, json_data):
-        def handle_style_error(mock_error_handler, line_number, category, confidence, message):
-            self.fail('Unexpected error: %d %s %d %s' % (line_number, category, confidence, message))
+        def handle_style_error(mock_error_handler, line_number, category,
+                               confidence, message):
+            self.fail('Unexpected error: %d %s %d %s' % (line_number, category,
+                                                         confidence, message))
 
         error_handler = MockErrorHandler(handle_style_error)
         checker = jsonchecker.JSONChecker('foo.json', error_handler)
@@ -64,7 +69,8 @@ class JSONCheckerTest(unittest.TestCase):
         self.assertTrue(error_handler.turned_off_filtering)
 
     def assert_error(self, expected_line_number, expected_category, json_data):
-        def handle_style_error(mock_error_handler, line_number, category, confidence, message):
+        def handle_style_error(mock_error_handler, line_number, category,
+                               confidence, message):
             mock_error_handler.had_error = True
             self.assertEqual(expected_line_number, line_number)
             self.assertEqual(expected_category, category)
@@ -82,7 +88,13 @@ class JSONCheckerTest(unittest.TestCase):
         pass
 
     def test_conflict_marker(self):
-        self.assert_error(0, 'json/syntax', '<<<<<<< HEAD\n{\n}\n')
+
+        # In python 3, this error line number is 1
+        expected_line = 1
+        if six.PY2:
+            expected_line = 0
+
+        self.assert_error(expected_line, 'json/syntax', '<<<<<<< HEAD\n{\n}\n')
 
     def test_single_quote(self):
         self.assert_error(2, 'json/syntax', "{\n'slaves': []\n}\n")

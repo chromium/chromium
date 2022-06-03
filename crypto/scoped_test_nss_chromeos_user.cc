@@ -4,7 +4,7 @@
 
 #include "crypto/scoped_test_nss_chromeos_user.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "crypto/nss_util.h"
 #include "crypto/nss_util_internal.h"
 

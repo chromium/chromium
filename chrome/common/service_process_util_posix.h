@@ -14,15 +14,15 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) && !defined(OS_MACOSX)
+#if defined(OS_POSIX) && !defined(OS_MAC)
 #include "chrome/common/multi_process_lock.h"
-MultiProcessLock* TakeServiceRunningLock(bool waiting);
+std::unique_ptr<MultiProcessLock> TakeServiceRunningLock();
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "base/files/file_path_watcher.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "chrome/common/mac/service_management.h"
@@ -34,7 +34,7 @@ class CommandLine;
 mac::services::JobOptions GetServiceProcessJobOptions(
     base::CommandLine* cmd_line,
     bool for_auto_launch);
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
 namespace base {
 class WaitableEvent;
@@ -70,7 +70,7 @@ struct ServiceProcessState::StateData {
   // to be monitoring it.
   void SignalReady(base::WaitableEvent* signal, bool* success);
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   bool WatchExecutable();
 
   mac::services::JobCheckinInfo job_info;

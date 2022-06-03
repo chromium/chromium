@@ -8,7 +8,7 @@
 
 <resources xmlns:tools="http://schemas.android.com/tools">
     <style name="DropdownPopupWindow" parent="@android:style/Widget.ListPopupWindow">
-        <item name="android:popupBackground">@drawable/popup_bg_tinted</item>
+        <item name="android:popupBackground">@drawable/dialog_bg_tinted</item>
     </style>
 
     <!-- Buttons -->
@@ -37,7 +37,7 @@
     <style name="FilledButton" parent="ButtonCompatBase" tools:ignore="UnusedResources">
         <item name="android:paddingStart">24dp</item>
         <item name="android:paddingEnd">24dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.WhiteButtonText</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Filled</item>
         <item name="buttonColor">@color/filled_button_bg</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
         <item name="buttonRaised">true</item>
@@ -48,13 +48,13 @@
     <style name="TextButton" parent="ButtonCompatBase" tools:ignore="UnusedResources">
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
-        <item name="android:textAppearance">@style/TextAppearance.BlueButtonText2</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Blue</item>
         <item name="buttonColor">@android:color/transparent</item>
         <item name="rippleColor">@color/text_button_ripple_color</item>
         <item name="buttonRaised">false</item>
     </style>
     <style name="TextButton.Inverse" tools:ignore="UnusedResources">
-        <item name="android:textAppearance">@style/TextAppearance.ButtonText.Inverse</item>
+        <item name="android:textAppearance">@style/TextAppearance.Button.Text.Inverse</item>
         <item name="rippleColor">@color/filled_button_ripple_color</item>
     </style>
 
@@ -83,12 +83,27 @@
     <style name="AssistiveChip" parent="Chip" tools:ignore="UnusedResources">
         <item name="cornerRadius">@dimen/chip_default_height</item>
     </style>
+    <style name="InputChipWithRemoveIcon" parent="InputChip" tools:ignore="UnusedResources">
+        <item name="iconWidth">28dp</item>
+        <item name="iconHeight">28dp</item>
+        <item name="useRoundedIcon">true</item>
+        <item name="endIconWidth">18dp</item>
+        <item name="endIconHeight">18dp</item>
+    </style>
 
     <style name="ChipTextView" tools:ignore="UnusedResources">
         <item name="android:gravity">center</item>
         <item name="android:maxLines">1</item>
         <item name="android:paddingStart">@dimen/chip_element_leading_padding</item>
         <item name="android:textAlignment">center</item>
+    </style>
+
+    <style name="MenuChip" parent="Chip">
+        <item name="cornerRadius">@dimen/chip_default_height</item>
+        <item name="primaryTextAppearance">@style/TextAppearance.MenuChip.Text.Blue</item>
+        <item name="chipColor">@color/menu_chip_background</item>
+        <item name="solidColorChip">true</item>
+        <item name="verticalInset">@dimen/menu_chip_vertical_inset</item>
     </style>
 
     <!-- Used by Chrome and Content -->
@@ -100,160 +115,256 @@
     <!-- This style is overridden downstream to set accent_font_medium as the font family. -->
     <style name="TextAppearance.AccentMediumStyle" parent="TextAppearance.RobotoMediumStyle" />
 
-    <!-- Black Text Styles -->
-    <!-- TODO(huayinz): remove tools:ignore once these text styles are all used in ui/android -->
-    <style name="TextAppearance.BlackHeadline" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_list</item>
-        <item name="android:textSize">@dimen/headline_size</item>
+    <!-- Base Text Styles -->
+    <!--
+      Define incomplete base text styles. The styles in this section are used
+      to create other text styles below and should not be used directly to style
+      text as they are missing textColor attributes
+    -->
+    <style name="TextAppearance.Headline">
         <item name="android:fontFamily">@font/accent_font</item>
+        <item name="android:textSize">@dimen/headline_size</item>
     </style>
-    <style name="TextAppearance.BlackTitle1" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_list</item>
+    <style name="TextAppearance.HeadlineThick" parent="TextAppearance.AccentMediumStyle">
+        <item name="android:textSize">@dimen/headline_size</item>
+    </style>
+    <style name="TextAppearance.TextLarge">
         <item name="android:textSize">@dimen/text_size_large</item>
     </style>
-    <style name="TextAppearance.BlackTitle2" parent="TextAppearance.RobotoMediumStyle" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_list</item>
+    <style name="TextAppearance.TextMediumThick" parent="TextAppearance.RobotoMediumStyle">
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
-    <style name="TextAppearance.BlackHint1" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
-    </style>
-    <style name="TextAppearance.BlackHint2" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
+    <style name="TextAppearance.TextAccentMediumThick" parent="TextAppearance.AccentMediumStyle">
         <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-    <style name="TextAppearance.BlackDisabledText1" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_tertiary</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
-    </style>
-    <style name="TextAppearance.BlackDisabledText2" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_tertiary</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
-    </style>
-    <style name="TextAppearance.BlackDisabledText3" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_tertiary</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-    <style name="TextAppearance.BlackBodyDefault" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_list</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-    <style name="TextAppearance.BlackBody" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-    <style name="TextAppearance.BlackCaptionDefault" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_list</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
-    </style>
-    <style name="TextAppearance.BlackCaption" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
-    </style>
-    <style name="TextAppearance.BlackButtonText" parent="TextAppearance.AccentMediumStyle" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-    <style name="TextAppearance.BlackLink" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-        <item name="android:textStyle">bold</item>
-    </style>
-    <style name="TextAppearance.BlackToolbarTitle" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_secondary_list</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
-        <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- White Text Styles -->
-    <style name="TextAppearance.WhiteHeadline" tools:ignore="UnusedResources">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/headline_size</item>
-        <item name="android:fontFamily">@font/accent_font</item>
-    </style>
-    <style name="TextAppearance.WhiteBodyIncognito" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/white_alpha_70</item>
+    <style name="TextAppearance.TextMedium">
         <item name="android:textSize">@dimen/text_size_medium</item>
     </style>
-    <style name="TextAppearance.WhiteBody" tools:ignore="UnusedResources">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+
+    <style name="TextAppearance.TextSmall">
+        <item name="android:textSize">@dimen/text_size_small</item>
     </style>
-    <style name="TextAppearance.WhiteTitle1" tools:ignore="UnusedResources">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
+
+    <!-- Non Adaptive Text Styles -->
+    <!--  Light version  -->
+    <style name="TextAppearance.Headline.Primary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
     </style>
-    <style name="TextAppearance.WhiteTitle2" parent="TextAppearance.RobotoMediumStyle" tools:ignore="UnusedResources">
-        <item name="android:textColor">@android:color/white</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+    <style name="TextAppearance.HeadlineThick.Primary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
     </style>
-    <style name="TextAppearance.WhiteButtonText" parent="TextAppearance.AccentMediumStyle">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+    <style name="TextAppearance.TextLarge.Primary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
     </style>
+    <style name="TextAppearance.TextMediumThick.Primary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Primary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Primary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_light_list</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Secondary.Baseline.Light"
+        parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge.Secondary.Baseline.Light"
+        parent="TextAppearance.TextLarge" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Secondary.Baseline.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge.Disabled.Baseline.Light" parent="TextAppearance.TextLarge"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_light</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Disabled.Baseline.Light" parent="TextAppearance.TextSmall"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_light</item>
+    </style>
+
     <style name="TextAppearance.WhiteLink" tools:ignore="UnusedResources">
         <item name="android:textColor">@android:color/white</item>
         <item name="android:textSize">@dimen/text_size_medium</item>
         <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Text styles used on dark background on light theme, and light background on dark theme. -->
-    <style name="TextAppearance.Headline.Inverse" parent="TextAppearance.WhiteHeadline" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.Body.Inverse" parent="TextAppearance.WhiteBody" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.Title2.Inverse" parent="TextAppearance.WhiteTitle2"
-        tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/default_text_color_inverse</item>
-    </style>
-    <style name="TextAppearance.ButtonText.Inverse" parent="TextAppearance.AccentMediumStyle">
-        <item name="android:textColor">@color/default_text_color_inverse_list</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+    <style name="TextAppearance.TextSmallThick.Secondary.Baseline.Light"
+        parent="TextAppearance.TextSmall">
+        <item name="android:textColor">@color/default_text_color_secondary_light_list</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
-    <!-- Blue Text Styles -->
-    <style name="TextAppearance.BlueTitle2" parent="TextAppearance.RobotoMediumStyle" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+    <!--  Dark version  -->
+    <style name="TextAppearance.Headline.Primary.Baseline.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_dark</item>
     </style>
-    <style name="TextAppearance.BlueButtonText1" parent="TextAppearance.AccentMediumStyle" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/modern_blue_300</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+    <style name="TextAppearance.TextLarge.Primary.Baseline.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_dark</item>
     </style>
-    <style name="TextAppearance.BlueButtonText2" parent="TextAppearance.AccentMediumStyle">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+    <style name="TextAppearance.TextMedium.Primary.Baseline.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_dark</item>
     </style>
-    <style name="TextAppearance.BlueLink1" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-        <item name="android:textSize">@dimen/text_size_large</item>
+    <style name="TextAppearance.TextSmall.Primary.Baseline.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_dark</item>
     </style>
-    <style name="TextAppearance.BlueLink2" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/blue_when_enabled</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+
+    <style name="TextAppearance.TextLarge.Secondary.Baseline.Dark"
+        parent="TextAppearance.TextLarge" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_dark</item>
     </style>
-    <style name="TextAppearance.BlueLink3" tools:ignore="UnusedResources">
+    <style name="TextAppearance.TextMedium.Secondary.Baseline.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_dark</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Secondary.Baseline.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_dark</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Secondary.Baseline.Dark"
+        parent="TextAppearance.TextMediumThick" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_secondary_dark</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge.Disabled.Baseline.Dark" parent="TextAppearance.TextLarge"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_dark</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Disabled.Baseline.Dark" parent="TextAppearance.TextMedium"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_dark</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Disabled.Baseline.Dark" parent="TextAppearance.TextSmall"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_disabled_dark</item>
+    </style>
+
+    <!-- Inverse text styles -->
+    <!-- Text styles used on dark background on light theme, and light background on dark theme. -->
+    <style name="TextAppearance.Headline.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_inverse</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_inverse</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_inverse</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Primary.Baseline.Inverse" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_inverse</item>
+    </style>
+
+    <!-- Blue And Button Text Styles -->
+    <style name="TextAppearance.TextLarge.Blue">
         <item name="android:textColor">@color/blue_when_enabled</item>
-        <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Blue">
+        <item name="android:textColor">@color/blue_when_enabled</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Blue">
+        <item name="android:textColor">@color/blue_when_enabled</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Blue">
+        <item name="android:textColor">@color/blue_when_enabled</item>
+    </style>
+
+    <style name="TextAppearance.TextMediumThick.Green">
+        <item name="android:textColor">@color/default_green</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Green.Dark">
+        <item name="android:textColor">@color/default_green_dark</item>
+    </style>
+
+    <style name="TextAppearance.Button.Text.Blue" parent="TextAppearance.TextAccentMediumThick"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/blue_when_enabled</item>
+    </style>
+    <style name="TextAppearance.Button.Text.Blue.Dark" parent="TextAppearance.TextAccentMediumThick"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/blue_when_enabled_dark</item>
+    </style>
+    <style name="TextAppearance.Button.Text.Filled" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+    </style>
+    <style name="TextAppearance.Button.Text.Inverse" parent="TextAppearance.TextAccentMediumThick"
+        tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_text_color_on_accent1_list</item>
+    </style>
+    <style name="TextAppearance.MenuChip.Text.Blue" parent="TextAppearance.Button.Text.Blue">
+       <item name="android:textSize">@dimen/text_size_small</item>
+    </style>
+
+    <!-- Blue Non Adaptive Text Styles -->
+    <style name="TextAppearance.TextMedium.Blue.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_light</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Blue.Light" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_light</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge.Blue.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_dark</item>
+    </style>
+    <style name="TextAppearance.TextMedium.Blue.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_dark</item>
+    </style>
+    <style name="TextAppearance.TextSmall.Blue.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_dark</item>
+    </style>
+    <style name="TextAppearance.TextMediumThick.Blue.Dark" tools:ignore="UnusedResources">
+        <item name="android:textColor">@color/default_icon_color_blue_dark</item>
+    </style>
+
+    <!-- Baseline or non-dynamic text styles -->
+
+    <!-- Primary text styles -->
+    <style name="TextAppearance.Headline.Primary.Baseline" parent="TextAppearance.Headline">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+    <style name="TextAppearance.HeadlineThick.Primary.Baseline" parent="TextAppearance.HeadlineThick">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+
+    <style name="TextAppearance.TextLarge.Primary.Baseline" parent="TextAppearance.TextLarge">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+
+    <style name="TextAppearance.TextMediumThick.Primary.Baseline" parent="TextAppearance.TextMediumThick">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+
+    <style name="TextAppearance.TextMedium.Primary.Baseline" parent="TextAppearance.TextMedium">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Primary.Baseline" parent="TextAppearance.TextSmall">
+        <item name="android:textColor">@color/default_text_color_list_baseline</item>
+    </style>
+
+    <!-- Secondary text styles -->
+    <style name="TextAppearance.TextMedium.Secondary.Baseline" parent="TextAppearance.TextMedium">
+        <item name="android:textColor">@color/default_text_color_secondary_list_baseline</item>
+    </style>
+
+    <style name="TextAppearance.TextSmall.Secondary.Baseline" parent="TextAppearance.TextSmall">
+        <item name="android:textColor">@color/default_text_color_secondary_list_baseline</item>
     </style>
 
     <!-- Error Text Styles -->
     <style name="TextAppearance.ErrorCaption" tools:ignore="UnusedResources">
-        <item name="android:textColor">@color/error_text_color</item>
+        <item name="android:textColor">@color/default_text_color_error</item>
         <item name="android:textSize">@dimen/text_size_small</item>
     </style>
 
     <!-- Chip Text Styles -->
-    <style name="TextAppearance.ChipText" parent="TextAppearance.AccentMediumStyle">
-        <item name="android:textColor">@color/chip_text_color</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
-    </style>
-    <style name="TextAppearance.ChipHint" parent="TextAppearance.AccentMediumStyle">
+    <style name="TextAppearance.ChipText" parent="TextAppearance.TextAccentMediumThick">
         <item name="android:textColor">@color/chip_text_color_secondary</item>
-        <item name="android:textSize">@dimen/text_size_medium</item>
+    </style>
+    <style name="TextAppearance.ChipHint" parent="TextAppearance.TextAccentMediumThick">
+        <item name="android:textColor">@color/chip_text_color_secondary</item>
     </style>
 
     <!-- Dividers -->

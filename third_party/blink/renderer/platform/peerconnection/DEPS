@@ -10,19 +10,25 @@ include_rules = [
     "+third_party/blink/renderer/platform/webrtc",
 
     # Dependencies.
+    "+base/containers/circular_deque.h",
     "+base/strings/string_number_conversions.h",
     "+base/strings/string_split.h",
+    "+base/task/task_traits.h",
     "+base/threading/thread_restrictions.h",
     "+media/base",
     "+media/capture/capture_switches.h",
+    "+media/capture/video/video_capture_feedback.h",
+    "+media/filters/decoder_stream.h",
     "+media/media_buildflags.h",
+    # This is only needed for a cast to DecoderFactory.
+    "+media/renderers/default_decoder_factory.h",
     "+media/video/gpu_video_accelerator_factories.h",
     "+media/video/video_decode_accelerator.h",
     "+media/video/h264_parser.h",
-    "+media/video/supported_video_decoder_config.h",
     "+media/video/video_encode_accelerator.h",
     "+third_party/blink/renderer/platform/bindings/script_wrappable.h",
     "+third_party/blink/renderer/platform/heap",
+    "+third_party/blink/renderer/platform/network/parsed_content_type.h",
     "+third_party/blink/renderer/platform/platform_export.h",
     "+third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h",
     "+third_party/blink/renderer/platform/wtf",
@@ -30,7 +36,6 @@ include_rules = [
 
 specific_include_rules = {
     ".*_test\.cc": [
-        "+base/task/task_traits.h",
         "+base/threading/thread.h",
         "+gpu/command_buffer/common/mailbox.h",
         "+media/video/mock_gpu_video_accelerator_factories.h",

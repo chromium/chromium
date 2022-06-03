@@ -16,17 +16,15 @@ void AssertNetworkConditionsCommand(
     const NetworkConditions& network_conditions) {
   ASSERT_EQ("Network.emulateNetworkConditions", command.method);
   bool offline;
-  double latency, download_throughput, upload_throughput;
   ASSERT_TRUE(command.params.GetBoolean("offline", &offline));
-  ASSERT_TRUE(command.params.GetDouble("latency", &latency));
-  ASSERT_TRUE(command.params.GetDouble("downloadThroughput",
-                                       &download_throughput));
-  ASSERT_TRUE(command.params.GetDouble("uploadThroughput",
-                                       &upload_throughput));
   ASSERT_EQ(network_conditions.offline, offline);
-  ASSERT_EQ(network_conditions.latency, latency);
-  ASSERT_EQ(network_conditions.download_throughput, download_throughput);
-  ASSERT_EQ(network_conditions.upload_throughput, upload_throughput);
+
+  ASSERT_EQ(network_conditions.latency,
+            command.params.FindDoubleKey("latency").value());
+  ASSERT_EQ(network_conditions.download_throughput,
+            command.params.FindDoubleKey("downloadThroughput").value());
+  ASSERT_EQ(network_conditions.upload_throughput,
+            command.params.FindDoubleKey("uploadThroughput").value());
 }
 
 }  // namespace

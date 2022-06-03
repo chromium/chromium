@@ -4,21 +4,24 @@
 
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe_mojom_traits.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace em = enterprise_management;
 
 namespace mojo {
 
-chromeos::cros_healthd::mojom::CpuArchitectureEnum
-EnumTraits<chromeos::cros_healthd::mojom::CpuArchitectureEnum,
-           enterprise_management::CpuInfo::Architecture>::
-    ToMojom(enterprise_management::CpuInfo::Architecture input) {
+chromeos::cros_healthd::mojom::CpuArchitectureEnum EnumTraits<
+    chromeos::cros_healthd::mojom::CpuArchitectureEnum,
+    em::CpuInfo::Architecture>::ToMojom(em::CpuInfo::Architecture input) {
   switch (input) {
-    case enterprise_management::CpuInfo::ARCHITECTURE_UNSPECIFIED:
+    case em::CpuInfo::ARCHITECTURE_UNSPECIFIED:
       return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kUnknown;
-    case enterprise_management::CpuInfo::X86_64:
+    case em::CpuInfo::X86_64:
       return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kX86_64;
+    case em::CpuInfo::AARCH64:
+      return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kAArch64;
+    case em::CpuInfo::ARMV7L:
+      return chromeos::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l;
   }
 
   NOTREACHED();
@@ -26,15 +29,21 @@ EnumTraits<chromeos::cros_healthd::mojom::CpuArchitectureEnum,
 }
 
 bool EnumTraits<chromeos::cros_healthd::mojom::CpuArchitectureEnum,
-                enterprise_management::CpuInfo::Architecture>::
+                em::CpuInfo::Architecture>::
     FromMojom(chromeos::cros_healthd::mojom::CpuArchitectureEnum input,
-              enterprise_management::CpuInfo::Architecture* out) {
+              em::CpuInfo::Architecture* out) {
   switch (input) {
     case chromeos::cros_healthd::mojom::CpuArchitectureEnum::kUnknown:
-      *out = enterprise_management::CpuInfo::ARCHITECTURE_UNSPECIFIED;
+      *out = em::CpuInfo::ARCHITECTURE_UNSPECIFIED;
       return true;
     case chromeos::cros_healthd::mojom::CpuArchitectureEnum::kX86_64:
-      *out = enterprise_management::CpuInfo::X86_64;
+      *out = em::CpuInfo::X86_64;
+      return true;
+    case chromeos::cros_healthd::mojom::CpuArchitectureEnum::kAArch64:
+      *out = em::CpuInfo::AARCH64;
+      return true;
+    case chromeos::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l:
+      *out = em::CpuInfo::ARMV7L;
       return true;
   }
 

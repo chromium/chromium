@@ -4,21 +4,24 @@
 
 (async function() {
   TestRunner.addResult(`Tests that the security details for an origin are updated if its security state changes.\n`);
-  await TestRunner.loadModule('security_test_runner');
+  await TestRunner.loadTestModule('security_test_runner');
   await TestRunner.showPanel('security');
 
   // Add a request without security details.
-  const request1 = new SDK.NetworkRequest(0, 'https://foo.test/foo.jpg', 'https://foo.test', 0, 0, null);
+  const request1 = SDK.NetworkRequest.create(
+      0, 'https://foo.test/foo.jpg', 'https://foo.test', 0, 0, null);
   request1.setSecurityState(Protocol.Security.SecurityState.Unknown);
   SecurityTestRunner.dispatchRequestFinished(request1);
 
   // Add an unrelated request.
-  const request2 = new SDK.NetworkRequest(0, 'https://bar.test/bar.jpg', 'https://bar.test', 0, 0, null);
+  const request2 = SDK.NetworkRequest.create(
+      0, 'https://bar.test/bar.jpg', 'https://bar.test', 0, 0, null);
   request2.setSecurityState(Protocol.Security.SecurityState.Unknown);
   SecurityTestRunner.dispatchRequestFinished(request2);
 
   // Add a request to the first origin, this time including security details.
-  const request3 = new SDK.NetworkRequest(0, 'https://foo.test/foo2.jpg', 'https://foo.test', 0, 0, null);
+  const request3 = SDK.NetworkRequest.create(
+      0, 'https://foo.test/foo2.jpg', 'https://foo.test', 0, 0, null);
   request3.setSecurityState(Protocol.Security.SecurityState.Secure);
   let securityDetails = {};
   securityDetails.protocol = 'TLS 1.2';
@@ -40,10 +43,10 @@
   TestRunner.addResult('Sidebar Origins --------------------------------');
   SecurityTestRunner.dumpSecurityPanelSidebarOrigins();
 
-  Security.SecurityPanel._instance()._sidebarTree._elementsByOrigin.get('https://foo.test').select();
+  Security.SecurityPanel.instance().sidebarTree.elementsByOrigin.get('https://foo.test').select();
 
   TestRunner.addResult('Origin view ------------------------------------');
-  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel._instance()._visibleView.contentElement);
+  TestRunner.dumpDeepInnerHTML(Security.SecurityPanel.instance().visibleView.contentElement);
 
   TestRunner.completeTest();
 })();

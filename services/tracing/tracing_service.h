@@ -12,9 +12,11 @@
 
 namespace tracing {
 
+class PerfettoService;
+
 class TracingService : public mojom::TracingService {
  public:
-  TracingService();
+  explicit TracingService(PerfettoService* = nullptr);
   explicit TracingService(
       mojo::PendingReceiver<mojom::TracingService> receiver);
   TracingService(const TracingService&) = delete;
@@ -31,6 +33,7 @@ class TracingService : public mojom::TracingService {
 
  private:
   mojo::Receiver<mojom::TracingService> receiver_{this};
+  PerfettoService* perfetto_service_;
 };
 
 }  // namespace tracing

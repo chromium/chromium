@@ -8,16 +8,17 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
-#include "ash/app_list/test/app_list_test_model.h"
+#include "ash/app_list/model/app_list_test_model.h"
 #include "ash/app_list/views/folder_header_view_delegate.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
+#include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/test/event_generator.h"
@@ -31,14 +32,13 @@ namespace {
 
 class TestFolderHeaderViewDelegate : public FolderHeaderViewDelegate {
  public:
-  TestFolderHeaderViewDelegate() {}
-  ~TestFolderHeaderViewDelegate() override {}
+  TestFolderHeaderViewDelegate() = default;
 
-  // FolderHeaderViewDelegate
-  void NavigateBack(AppListFolderItem* item,
-                    const ui::Event& event_flags) override {}
+  TestFolderHeaderViewDelegate(const TestFolderHeaderViewDelegate&) = delete;
+  TestFolderHeaderViewDelegate& operator=(const TestFolderHeaderViewDelegate&) =
+      delete;
 
-  void GiveBackFocusToSearchBox() override {}
+  ~TestFolderHeaderViewDelegate() override = default;
 
   void SetItemName(AppListFolderItem* item, const std::string& name) override {
     folder_name_ = name;
@@ -48,16 +48,18 @@ class TestFolderHeaderViewDelegate : public FolderHeaderViewDelegate {
 
  private:
   std::string folder_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestFolderHeaderViewDelegate);
 };
 
 }  // namespace
 
 class FolderHeaderViewTest : public views::ViewsTestBase {
  public:
-  FolderHeaderViewTest() {}
-  ~FolderHeaderViewTest() override {}
+  FolderHeaderViewTest() = default;
+
+  FolderHeaderViewTest(const FolderHeaderViewTest&) = delete;
+  FolderHeaderViewTest& operator=(const FolderHeaderViewTest&) = delete;
+
+  ~FolderHeaderViewTest() override = default;
 
   // testing::Test overrides:
   void SetUp() override {
@@ -74,22 +76,22 @@ class FolderHeaderViewTest : public views::ViewsTestBase {
     widget_->Init(std::move(params));
     widget_->Show();
 
-    folder_header_view_ = std::make_unique<FolderHeaderView>(delegate_.get());
     textfield_ = std::make_unique<views::Textfield>();
-    widget_->SetContentsView(folder_header_view_.get());
+    folder_header_view_ = widget_->SetContentsView(
+        std::make_unique<FolderHeaderView>(delegate_.get()));
   }
 
   void TearDown() override {
     widget_->Close();
+    widget_.reset();
     textfield_.reset();
-    folder_header_view_.reset();  // Release apps grid view before models.
     delegate_.reset();
     views::ViewsTestBase::TearDown();
   }
 
  protected:
   void UpdateFolderName(const std::string& name) {
-    base::string16 folder_name = base::UTF8ToUTF16(name);
+    std::u16string folder_name = base::UTF8ToUTF16(name);
     folder_header_view_->SetFolderNameForTest(folder_name);
     folder_header_view_->ContentsChanged(textfield_.get(), folder_name);
   }
@@ -107,18 +109,16 @@ class FolderHeaderViewTest : public views::ViewsTestBase {
         previous_cursor_position);
   }
 
-  void UpdatePreviousFolderName(const base::string16& previous_name) {
+  void UpdatePreviousFolderName(const std::u16string& previous_name) {
     folder_header_view_->SetPreviousFolderNameForTest(previous_name);
   }
 
+  TestAppListColorProvider color_provider_;  // Needed by AppListView.
   std::unique_ptr<AppListTestModel> model_;
-  std::unique_ptr<FolderHeaderView> folder_header_view_;
+  FolderHeaderView* folder_header_view_ = nullptr;  // owned by |widget_|.
   std::unique_ptr<TestFolderHeaderViewDelegate> delegate_;
   std::unique_ptr<views::Textfield> textfield_;
   std::unique_ptr<views::Widget> widget_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FolderHeaderViewTest);
 };
 
 TEST_F(FolderHeaderViewTest, SetFolderName) {
@@ -147,7 +147,7 @@ TEST_F(FolderHeaderViewTest, WhitespaceCollapsedWhenFolderNameViewLosesFocus) {
   EXPECT_EQ("N A", delegate_->folder_name());
 }
 
-TEST_F(FolderHeaderViewTest, MaxFoldernNameLength) {
+TEST_F(FolderHeaderViewTest, MaxFolderNameLength) {
   // Creating a folder with empty folder name.
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   folder_header_view_->SetFolderItem(folder_item);
@@ -158,13 +158,13 @@ TEST_F(FolderHeaderViewTest, MaxFoldernNameLength) {
   // If folder name is set beyond the maximum char limit, it should revert to
   // the previous valid folder name.
   std::string max_len_name;
-  for (size_t i = 0; i < AppListConfig::instance().max_folder_name_chars();
+  for (int i = 0; i < folder_header_view_->GetMaxFolderNameCharLengthForTest();
        ++i) {
     max_len_name += "a";
   }
   std::string too_long_name = max_len_name + "a";
   UpdatePreviousCursorPosition(0);
-  UpdatePreviousFolderName(base::string16());
+  UpdatePreviousFolderName(std::u16string());
 
   // Expect that the folder name does not change, and does not truncate
   UpdateFolderName(too_long_name);
@@ -188,40 +188,74 @@ TEST_F(FolderHeaderViewTest, OemFolderNameNotEditable) {
   EXPECT_FALSE(CanEditFolderName());
 }
 
-// Tests that folder name textfield is triggered when user touches on or near
-// the folder name. (see https://crbug.com/997364)
+namespace {
+
+// Sends a tap gesture with events corresponding to touch-down and touch-up.
+// This is a template to support a |handler| with an OnGestureEvent() method
+// that isn't a ui::EventHandler implementation.
+template <typename GestureHandler>
+void SendTap(GestureHandler* handler, const gfx::Point& location) {
+  ui::GestureEvent tap_down(
+      location.x(), location.y(), 0, base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP_DOWN));
+  handler->OnGestureEvent(&tap_down);
+  ui::GestureEvent tap_up(
+      location.x(), location.y(), 0, base::TimeTicks::Now(),
+      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP));
+  handler->OnGestureEvent(&tap_up);
+}
+
+template <typename EventHandler>
+void SendPress(EventHandler* handler, const gfx::Point& location) {
+  ui::MouseEvent press_down(ui::ET_MOUSE_PRESSED,
+                            gfx::PointF(location.x(), location.y()),
+                            gfx::PointF(0, 0), base::TimeTicks::Now(), 0, 0);
+  handler->OnMouseEvent(&press_down);
+  ui::MouseEvent press_up(ui::ET_MOUSE_RELEASED,
+                          gfx::PointF(location.x(), location.y()),
+                          gfx::PointF(0, 0), base::TimeTicks::Now(), 0, 0);
+  handler->OnMouseEvent(&press_up);
+}
+
+}  // namespace
+
+// Tests that when folder name is small, the folder name textfield is triggered
+// by only tap when on the textfieldd or near it to the left/right.
 TEST_F(FolderHeaderViewTest, TriggerFolderRenameAfterTappingNearFolderName) {
-  // Creating a folder with empty folder name.
+  // Create a folder with a small name.
   AppListFolderItem* folder_item = model_->CreateAndPopulateFolderWithApps(2);
   folder_header_view_->SetFolderItem(folder_item);
+  UpdateFolderName("ab");
 
   // Get in screen bounds of folder name
-  const gfx::Rect name_view_bounds =
-      folder_header_view_->GetFolderNameViewForTest()->GetBoundsInScreen();
+  views::View* name_view = folder_header_view_->GetFolderNameViewForTest();
+  const gfx::Rect name_view_bounds = name_view->GetBoundsInScreen();
 
   // Tap folder name and check that folder renaming is triggered.
-  gfx::Point name_center_point = name_view_bounds.CenterPoint();
-  ui::GestureEvent tap_center(
-      name_center_point.x(), name_center_point.y(), 0, base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP_DOWN));
-  folder_header_view_->GetFolderNameViewForTest()->OnGestureEvent(&tap_center);
+  SendTap(name_view, name_view_bounds.CenterPoint());
   base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(folder_header_view_->GetFolderNameViewForTest()->HasFocus());
+  EXPECT_TRUE(name_view->HasFocus());
 
   // Clear focus from the folder name.
   widget_->GetFocusManager()->ClearFocus();
-  ASSERT_FALSE(folder_header_view_->GetFolderNameViewForTest()->HasFocus());
+  ASSERT_FALSE(name_view->HasFocus());
 
   // Test that tapping near (but not directly on) the folder name still
   // triggers folder rename.
   // Tap folder name and check that folder renaming is triggered.
-  ui::GestureEvent tap_near(
-      name_view_bounds.top_right().x(), name_view_bounds.top_right().y(), 0,
-      base::TimeTicks::Now(),
-      ui::GestureEventDetails(ui::EventType::ET_GESTURE_TAP_DOWN));
-  widget_->OnGestureEvent(&tap_near);
+  gfx::Point right_of_name_view = name_view_bounds.right_center();
+  right_of_name_view.Offset(2, 0);
+  SendTap(widget_.get(), right_of_name_view);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(name_view->HasFocus());
 
-  EXPECT_TRUE(folder_header_view_->GetFolderNameViewForTest()->HasFocus());
+  // Clear focus from the folder name.
+  widget_->GetFocusManager()->ClearFocus();
+  ASSERT_FALSE(name_view->HasFocus());
+
+  // Test that clicking in the same spot won't trigger folder rename.
+  SendPress(widget_.get(), right_of_name_view);
+  EXPECT_FALSE(name_view->HasFocus());
 }
 
 }  // namespace test

@@ -1,7 +1,7 @@
 <span id="hostElement"></span><span id="closedHostElement"></span>
 <script src="elements-panel-shadow-selection-on-refresh.js"></script>
 <script>
-    var root = document.getElementById("hostElement").createShadowRoot();
+    var root = document.getElementById("hostElement").attachShadow({mode: 'open'});
     root.innerHTML = "<input type='text'>";
     var closedRoot = document.getElementById("closedHostElement").attachShadow({mode: 'closed'});
     closedRoot.innerHTML = "<button></button>";

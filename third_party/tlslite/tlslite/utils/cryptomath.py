@@ -73,6 +73,9 @@ def MD5(b):
 def SHA1(b):
     return bytearray(hashlib.sha1(compat26Str(b)).digest())
 
+def SHA256(b):
+    return bytearray(hashlib.sha256(compat26Str(b)).digest())
+
 def HMAC_MD5(k, b):
     k = compatHMAC(k)
     b = compatHMAC(b)

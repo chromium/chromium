@@ -8,9 +8,7 @@
 #include <map>
 #include <memory>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "components/content_settings/core/browser/content_settings_observable_provider.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -30,21 +28,24 @@ class DefaultProvider : public ObservableProvider {
  public:
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-  DefaultProvider(PrefService* prefs,
-                  bool incognito);
+  DefaultProvider(PrefService* prefs, bool off_the_record);
+
+  DefaultProvider(const DefaultProvider&) = delete;
+  DefaultProvider& operator=(const DefaultProvider&) = delete;
+
   ~DefaultProvider() override;
 
   // ProviderInterface implementations.
   std::unique_ptr<RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
-      const ResourceIdentifier& resource_identifier,
-      bool incognito) const override;
+      bool off_the_record) const override;
 
-  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
-                         const ContentSettingsPattern& secondary_pattern,
-                         ContentSettingsType content_type,
-                         const ResourceIdentifier& resource_identifier,
-                         std::unique_ptr<base::Value>&& value) override;
+  bool SetWebsiteSetting(
+      const ContentSettingsPattern& primary_pattern,
+      const ContentSettingsPattern& secondary_pattern,
+      ContentSettingsType content_type,
+      std::unique_ptr<base::Value>&& value,
+      const ContentSettingConstraints& constraint = {}) override;
 
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
 
@@ -73,15 +74,15 @@ class DefaultProvider : public ObservableProvider {
   void OnPreferenceChanged(const std::string& pref_name);
 
   // Clean up the obsolete preferences from the user's profile.
-  void DiscardObsoletePreferences();
+  void DiscardOrMigrateObsoletePreferences();
 
   // Copies of the pref data, so that we can read it on the IO thread.
   std::map<ContentSettingsType, std::unique_ptr<base::Value>> default_settings_;
 
   PrefService* prefs_;
 
-  // Whether this settings map is for an Incognito session.
-  const bool is_incognito_;
+  // Whether this settings map is for an off-the-record session.
+  const bool is_off_the_record_;
 
   // Used around accesses to the |default_settings_| object to guarantee
   // thread safety.
@@ -92,8 +93,6 @@ class DefaultProvider : public ObservableProvider {
   // Whether we are currently updating preferences, this is used to ignore
   // notifications from the preferences service that we triggered ourself.
   bool updating_preferences_;
-
-  DISALLOW_COPY_AND_ASSIGN(DefaultProvider);
 };
 
 }  // namespace content_settings

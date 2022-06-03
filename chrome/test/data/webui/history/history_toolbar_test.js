@@ -2,6 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+import {createHistoryEntry, createHistoryInfo} from 'chrome://test/history/test_util.js';
+import {flushTasks} from 'chrome://test/test_util.js';
+
 suite('history-toolbar', function() {
   let app;
   let element;
@@ -11,9 +17,9 @@ suite('history-toolbar', function() {
       [createHistoryEntry('2016-03-15', 'https://google.com')];
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     testService = new TestBrowserService();
-    history.BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     app = document.createElement('history-app');
     document.body.appendChild(app);
@@ -21,21 +27,22 @@ suite('history-toolbar', function() {
     toolbar = app.$.toolbar;
     return Promise
         .all([
-          history.ensureLazyLoaded(),
+          ensureLazyLoaded(),
           testService.whenCalled('queryHistory'),
         ])
-        .then(test_util.flushTasks);
+        .then(flushTasks);
   });
 
   test('selecting checkbox causes toolbar to change', function() {
     testService.setQueryResult(
         {info: createHistoryInfo(), value: TEST_HISTORY_RESULTS});
-    element.fire('query-history', true);
+    element.dispatchEvent(new CustomEvent(
+        'query-history', {bubbles: true, composed: true, detail: true}));
     return testService.whenCalled('queryHistoryContinuation')
-        .then(test_util.flushTasks)
+        .then(flushTasks)
         .then(function() {
-          const item = element.$$('history-item');
-          MockInteractions.tap(item.$.checkbox);
+          const item = element.shadowRoot.querySelector('history-item');
+          item.$.checkbox.click();
 
           // Ensure that when an item is selected that the count held by the
           // toolbar increases.
@@ -44,7 +51,7 @@ suite('history-toolbar', function() {
           // selected.
           assertTrue(toolbar.itemsSelected_);
 
-          MockInteractions.tap(item.$.checkbox);
+          item.$.checkbox.click();
 
           // Ensure that when an item is deselected the count held by the
           // toolbar decreases.
@@ -58,7 +65,9 @@ suite('history-toolbar', function() {
     testService.resetResolver('queryHistory');
     testService.setQueryResult(
         {info: createHistoryInfo('Test'), value: TEST_HISTORY_RESULTS});
-    toolbar.$$('cr-toolbar').fire('search-changed', 'Test');
+    toolbar.shadowRoot.querySelector('cr-toolbar')
+        .dispatchEvent(new CustomEvent(
+            'search-changed', {bubbles: true, composed: true, detail: 'Test'}));
     return testService.whenCalled('queryHistory').then(query => {
       assertEquals('Test', query);
     });
@@ -71,24 +80,19 @@ suite('history-toolbar', function() {
       info: createHistoryInfo('Test2'),
       value: TEST_HISTORY_RESULTS,
     });
-    toolbar.$$('cr-toolbar').fire('search-changed', 'Test2');
+    toolbar.shadowRoot.querySelector('cr-toolbar')
+        .dispatchEvent(new CustomEvent(
+            'search-changed',
+            {bubbles: true, composed: true, detail: 'Test2'}));
     return testService.whenCalled('queryHistory')
-        .then(test_util.flushTasks)
+        .then(flushTasks)
         .then(() => {
           assertTrue(toolbar.spinnerActive);
           testService.finishQueryHistory();
         })
-        .then(test_util.flushTasks)
+        .then(flushTasks)
         .then(() => {
           assertFalse(toolbar.spinnerActive);
         });
-  });
-
-  test('menu promo hides when drawer is opened', function() {
-    app.showMenuPromo_ = true;
-    app.hasDrawer_ = true;
-    Polymer.dom.flush();
-    MockInteractions.tap(toolbar.$['main-toolbar'].$$('#menuButton'));
-    assertFalse(app.showMenuPromo_);
   });
 });

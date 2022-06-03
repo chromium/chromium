@@ -77,9 +77,9 @@ void DeferredTaskHandler::BreakConnections() {
   // connection.
   wtf_size_t size = finished_source_handlers_.size();
   if (size > 0) {
-    for (auto* finished : finished_source_handlers_) {
-      active_source_handlers_.erase(finished);
+    for (auto finished : finished_source_handlers_) {
       finished->BreakConnectionWithLock();
+      active_source_handlers_.erase(finished);
     }
     finished_source_handlers_.clear();
   }
@@ -150,12 +150,27 @@ void DeferredTaskHandler::RemoveAutomaticPullNode(AudioHandler* node) {
   }
 }
 
+bool DeferredTaskHandler::HasAutomaticPullNodes() {
+  DCHECK(IsAudioThread());
+
+  MutexTryLocker try_locker(automatic_pull_handlers_lock_);
+
+  // This assumes there is one or more automatic pull nodes when the mutex
+  // is held by AddAutomaticPullNode() or RemoveAutomaticPullNode() method.
+  return try_locker.Locked() ? automatic_pull_handlers_.size() > 0 : true;
+}
+
 void DeferredTaskHandler::UpdateAutomaticPullNodes() {
+  DCHECK(IsAudioThread());
   AssertGraphOwner();
 
   if (automatic_pull_handlers_need_updating_) {
-    CopyToVector(automatic_pull_handlers_, rendering_automatic_pull_handlers_);
-    automatic_pull_handlers_need_updating_ = false;
+    MutexTryLocker try_locker(automatic_pull_handlers_lock_);
+    if (try_locker.Locked()) {
+      CopyToVector(automatic_pull_handlers_,
+                   rendering_automatic_pull_handlers_);
+      automatic_pull_handlers_need_updating_ = false;
+    }
   }
 }
 
@@ -163,9 +178,12 @@ void DeferredTaskHandler::ProcessAutomaticPullNodes(
     uint32_t frames_to_process) {
   DCHECK(IsAudioThread());
 
-  for (unsigned i = 0; i < rendering_automatic_pull_handlers_.size(); ++i) {
-    rendering_automatic_pull_handlers_[i]->ProcessIfNecessary(
-        frames_to_process);
+  MutexTryLocker try_locker(automatic_pull_handlers_lock_);
+  if (try_locker.Locked()) {
+    for (auto& rendering_automatic_pull_handler :
+         rendering_automatic_pull_handlers_) {
+      rendering_automatic_pull_handler->ProcessIfNecessary(frames_to_process);
+    }
   }
 }
 
@@ -293,10 +311,7 @@ void DeferredTaskHandler::HandleDeferredTasks() {
 }
 
 void DeferredTaskHandler::ContextWillBeDestroyed() {
-  for (auto& handler : rendering_orphan_handlers_)
-    handler->ClearContext();
-  for (auto& handler : deletable_orphan_handlers_)
-    handler->ClearContext();
+  ClearContextFromOrphanHandlers();
   ClearHandlersToBeDeleted();
   // Some handlers might live because of their cross thread tasks.
 }
@@ -338,7 +353,7 @@ void DeferredTaskHandler::RequestToDeleteHandlersOnMainThread() {
   PostCrossThreadTask(
       *task_runner_, FROM_HERE,
       CrossThreadBindOnce(&DeferredTaskHandler::DeleteHandlersOnMainThread,
-                          scoped_refptr<DeferredTaskHandler>(this)));
+                          AsWeakPtr()));
 }
 
 void DeferredTaskHandler::DeleteHandlersOnMainThread() {
@@ -350,13 +365,32 @@ void DeferredTaskHandler::DeleteHandlersOnMainThread() {
 
 void DeferredTaskHandler::ClearHandlersToBeDeleted() {
   DCHECK(IsMainThread());
+
+  {
+    MutexLocker locker(automatic_pull_handlers_lock_);
+    rendering_automatic_pull_handlers_.clear();
+  }
+
   GraphAutoLocker locker(*this);
   tail_processing_handlers_.clear();
   rendering_orphan_handlers_.clear();
   deletable_orphan_handlers_.clear();
   automatic_pull_handlers_.clear();
-  rendering_automatic_pull_handlers_.clear();
+  finished_source_handlers_.clear();
   active_source_handlers_.clear();
+}
+
+void DeferredTaskHandler::ClearContextFromOrphanHandlers() {
+  DCHECK(IsMainThread());
+
+  // |rendering_orphan_handlers_| and |deletable_orphan_handlers_| can
+  // be modified on the audio thread.
+  GraphAutoLocker locker(*this);
+
+  for (auto& handler : rendering_orphan_handlers_)
+    handler->ClearContext();
+  for (auto& handler : deletable_orphan_handlers_)
+    handler->ClearContext();
 }
 
 void DeferredTaskHandler::SetAudioThreadToCurrentThread() {

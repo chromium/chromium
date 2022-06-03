@@ -16,6 +16,8 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
+#include "base/logging.h"
+#include "base/macros.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/platform_thread.h"
 
@@ -97,8 +99,9 @@ bool RegisterSignalHandler(int signal_number, const SignalHandler& handler) {
     g_write_fd = pipe_fd[1];
 
     g_signal_listener->controller = base::FileDescriptorWatcher::WatchReadable(
-        g_read_fd, base::Bind(&SignalListener::OnFileCanReadWithoutBlocking,
-                              base::Unretained(g_signal_listener)));
+        g_read_fd,
+        base::BindRepeating(&SignalListener::OnFileCanReadWithoutBlocking,
+                            base::Unretained(g_signal_listener)));
   }
   if (signal(signal_number, GlobalSignalHandler) == SIG_ERR) {
     PLOG(ERROR) << "signal() failed";

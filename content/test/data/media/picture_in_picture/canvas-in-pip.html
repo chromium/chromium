@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+  <body />
+
+  <script>
+    const video = document.createElement('video');
+
+    async function start() {
+      const canvas = document.createElement('canvas');
+      canvas.getContext('2d').fillRect(0, 0, canvas.width, canvas.height);
+      video.srcObject = canvas.captureStream();
+      await video.play();
+      await video.requestPictureInPicture();
+      return true;
+    }
+  </script>
+</html>

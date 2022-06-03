@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/logging.h"
 #include "remoting/host/security_key/security_key_message.h"
 
 namespace remoting {

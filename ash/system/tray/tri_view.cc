@@ -5,7 +5,8 @@
 #include "ash/system/tray/tri_view.h"
 
 #include "ash/system/tray/size_range_layout.h"
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/border.h"
 #include "ui/views/layout/box_layout.h"
@@ -33,11 +34,11 @@ class RelayoutView : public views::View {
  public:
   RelayoutView() = default;
 
+  RelayoutView(const RelayoutView&) = delete;
+  RelayoutView& operator=(const RelayoutView&) = delete;
+
   // views::View:
   void ChildPreferredSizeChanged(View* child) override { Layout(); }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RelayoutView);
 };
 
 }  // namespace
@@ -109,8 +110,8 @@ void TriView::AddView(Container container, views::View* view) {
   GetContainer(container)->AddChildView(view);
 }
 
-void TriView::RemoveAllChildren(Container container, bool delete_children) {
-  GetContainer(container)->RemoveAllChildViews(delete_children);
+void TriView::AddViewAt(Container container, views::View* view, int index) {
+  GetContainer(container)->AddChildViewAt(view, index);
 }
 
 void TriView::SetInsets(const gfx::Insets& insets) {
@@ -158,6 +159,22 @@ void TriView::ViewHierarchyChanged(
 
 const char* TriView::GetClassName() const {
   return "TriView";
+}
+
+gfx::Rect TriView::GetAnchorBoundsInScreen() const {
+  gfx::Rect bounds = View::GetAnchorBoundsInScreen();
+
+  // Inset bounds a bit so that bubbles overlap the nominal empty space at
+  // the bottom of the TriView slightly.
+  // This specific piece of code was added to accommodate a specific refactoring
+  // where anchor insets had to be removed from
+  // NetworkStateListDetailedView::InfoBubble. This bubble is the only one I
+  // could find that directly anchors directly to a TriView.
+  // If there are other instantiations of TriView where this overlap doesn't
+  // make sense, the below inset could be settable on TriView and called from
+  // NetworkStateListDetailedView.
+  bounds.Inset(gfx::Insets(0, 0, 8, 0));
+  return bounds;
 }
 
 views::View* TriView::GetContainer(Container container) {

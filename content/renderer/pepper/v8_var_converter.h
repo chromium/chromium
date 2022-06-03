@@ -9,12 +9,11 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "content/common/content_export.h"
 #include "ppapi/c/pp_instance.h"
 #include "ppapi/c/pp_var.h"
 #include "ppapi/shared_impl/scoped_pp_var.h"
-#include "v8/include/v8.h"
+#include "v8/include/v8-forward.h"
 
 namespace content {
 
@@ -33,6 +32,10 @@ class CONTENT_EXPORT V8VarConverter {
   // Constructor for testing.
   V8VarConverter(PP_Instance instance,
                  std::unique_ptr<ResourceConverter> resource_converter);
+
+  V8VarConverter(const V8VarConverter&) = delete;
+  V8VarConverter& operator=(const V8VarConverter&) = delete;
+
   ~V8VarConverter();
 
   // Converts the given PP_Var to a v8::Value. True is returned upon success.
@@ -86,8 +89,6 @@ class CONTENT_EXPORT V8VarConverter {
 
   // The converter to use for converting V8 vars to resources.
   std::unique_ptr<ResourceConverter> resource_converter_;
-
-  DISALLOW_COPY_AND_ASSIGN(V8VarConverter);
 };
 
 }  // namespace content

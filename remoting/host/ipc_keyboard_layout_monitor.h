@@ -5,8 +5,6 @@
 #ifndef REMOTING_HOST_IPC_KEYBOARD_LAYOUT_MONITOR_H_
 #define REMOTING_HOST_IPC_KEYBOARD_LAYOUT_MONITOR_H_
 
-#include <memory>
-
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"

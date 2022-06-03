@@ -12,7 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "content/public/common/content_features.h"
@@ -33,7 +33,7 @@ constexpr FontExpectation kExpectedTestFonts[] = {{u8"CambriaMath", 1},
                                                   {u8"NSimSun", 1},
                                                   {u8"calibri-bolditalic", 0}};
 
-constexpr base::TimeDelta kTestingTimeout = base::TimeDelta::FromSeconds(10);
+constexpr base::TimeDelta kTestingTimeout = base::Seconds(10);
 
 class DWriteFontLookupTableBuilderTest : public testing::Test {
  public:
@@ -61,7 +61,7 @@ class DWriteFontLookupTableBuilderTest : public testing::Test {
     blink::FontTableMatcher font_table_matcher(font_table_memory.Map());
 
     for (auto& test_font_name_index : kExpectedTestFonts) {
-      base::Optional<blink::FontTableMatcher::MatchResult> match_result =
+      absl::optional<blink::FontTableMatcher::MatchResult> match_result =
           font_table_matcher.MatchName(test_font_name_index.font_name);
       ASSERT_TRUE(match_result) << "No font matched for font name: "
                                 << test_font_name_index.font_name;
@@ -118,7 +118,7 @@ TEST_P(DWriteFontLookupTableBuilderTimeoutTest, TestTimeout) {
         blink::FontTableMatcher font_table_matcher(font_table_memory.Map());
 
         for (auto& test_font_name_index : kExpectedTestFonts) {
-          base::Optional<blink::FontTableMatcher::MatchResult> match_result =
+          absl::optional<blink::FontTableMatcher::MatchResult> match_result =
               font_table_matcher.MatchName(test_font_name_index.font_name);
           ASSERT_TRUE(!match_result);
         }

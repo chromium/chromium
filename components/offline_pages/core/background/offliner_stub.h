@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/time/time.h"
 #include "components/offline_pages/core/background/offliner.h"
 
 namespace offline_pages {

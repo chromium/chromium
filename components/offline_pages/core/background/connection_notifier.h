@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_CONNECTION_NOTIFIER_H_
-#define COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_CONNECTION_NOTIFIER_H_
+#ifndef COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_CONNECTION_NOTIFIER_H_
+#define COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_CONNECTION_NOTIFIER_H_
 
 #include "base/callback.h"
 #include "net/base/network_change_notifier.h"
@@ -17,6 +17,10 @@ class ConnectionNotifier
   typedef base::OnceCallback<void()> ConnectedCallback;
 
   ConnectionNotifier(ConnectionNotifier::ConnectedCallback callback);
+
+  ConnectionNotifier(const ConnectionNotifier&) = delete;
+  ConnectionNotifier& operator=(const ConnectionNotifier&) = delete;
+
   ~ConnectionNotifier() override;
 
   // net::NetworkChangeNotifier::NetworkChangeObserver implementation.
@@ -25,10 +29,8 @@ class ConnectionNotifier
 
  private:
   base::OnceCallback<void()> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionNotifier);
 };
 
 }  // namespace offline_pages
 
-#endif  // COMPONENTS_OFFLINE_PAGES_BACKGROUND____CORE_BACKGROUND_CONNECTION_NOTIFIER_H_
+#endif  // COMPONENTS_OFFLINE_PAGES_CORE_BACKGROUND_CONNECTION_NOTIFIER_H_

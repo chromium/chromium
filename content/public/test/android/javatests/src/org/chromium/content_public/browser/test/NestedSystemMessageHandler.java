@@ -5,16 +5,12 @@
 package org.chromium.content_public.browser.test;
 
 import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.os.MessageQueue;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.test.util.LooperUtils;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 
 /**
  * Handles processing messages in nested run loops.
@@ -24,132 +20,43 @@ import java.lang.reflect.Method;
  * and dispatch them.
  */
 @JNINamespace("content")
-class NestedSystemMessageHandler {
-    // See org.chromium.base.SystemMessageHandler for more message ids.
-    // The id here should not conflict with the ones in SystemMessageHandler.
+public class NestedSystemMessageHandler {
     private static final int QUIT_MESSAGE = 10;
     private static final Handler sHandler = new Handler();
 
     private NestedSystemMessageHandler() {}
 
     /**
-     * Processes messages from the current MessageQueue till the queue becomes idle.
+     * Dispatches the first message from the current MessageQueue, blocking
+     * until a task becomes available if the queue is empty. Callbacks for
+     * other event handlers registered to the thread's looper (e.g.,
+     * MessagePumpAndroid) may also be processed as a side-effect.
+     *
+     * Returns true if task dispatching succeeded, or false if an exception was
+     * thrown.
      */
     @SuppressWarnings("unused")
     @CalledByNative
-    private boolean runNestedLoopTillIdle() {
-        boolean quitLoop = false;
-
-        MessageQueue queue = Looper.myQueue();
-        queue.addIdleHandler(new MessageQueue.IdleHandler() {
-            @Override
-            public boolean queueIdle() {
-                sHandler.sendMessage(sHandler.obtainMessage(QUIT_MESSAGE));
-                return false;
-            }
-        });
-
-        Class<?> messageQueueClazz = queue.getClass();
-        Method nextMethod = null;
+    private static boolean dispatchOneMessage() {
         try {
-            nextMethod = messageQueueClazz.getDeclaredMethod("next");
-        } catch (SecurityException e) {
+            LooperUtils.runSingleNestedLooperTask();
+        } catch (IllegalArgumentException | IllegalAccessException | SecurityException
+                | InvocationTargetException e) {
             e.printStackTrace();
             return false;
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-            return false;
-        }
-        nextMethod.setAccessible(true);
-
-        while (!quitLoop) {
-            Message msg = null;
-            try {
-                msg = (Message) nextMethod.invoke(queue);
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-                return false;
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-                return false;
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-                return false;
-            }
-
-            if (msg != null) {
-                if (msg.what == QUIT_MESSAGE) {
-                    quitLoop = true;
-                }
-                Class messageClazz = msg.getClass();
-                Field targetFiled = null;
-                try {
-                    targetFiled = messageClazz.getDeclaredField("target");
-                } catch (SecurityException e) {
-                    e.printStackTrace();
-                    return false;
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-                targetFiled.setAccessible(true);
-
-                Handler target = null;
-                try {
-                    target = (Handler) targetFiled.get(msg);
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                    return false;
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-
-                if (target == null) {
-                    // No target is a magic identifier for the quit message.
-                    quitLoop = true;
-                } else {
-                    target.dispatchMessage(msg);
-                }
-
-                // Unset in-use flag.
-                Field flagsField = null;
-                try {
-                    flagsField = messageClazz.getDeclaredField("flags");
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                    return false;
-                } catch (SecurityException e) {
-                    e.printStackTrace();
-                    return false;
-                } catch (NoSuchFieldException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-                flagsField.setAccessible(true);
-
-                try {
-                    Integer oldFlags = (Integer) flagsField.get(msg);
-                    flagsField.set(msg, oldFlags & ~(1 << 0 /* FLAG_IN_USE */));
-                } catch (IllegalArgumentException e) {
-                    e.printStackTrace();
-                    return false;
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                    return false;
-                }
-
-                msg.recycle();
-            } else {
-                quitLoop = true;
-            }
         }
         return true;
     }
 
+    /*
+     * Causes a previous call to dispatchOneMessage() to stop blocking and
+     * return.
+     */
     @SuppressWarnings("unused")
     @CalledByNative
-    private static NestedSystemMessageHandler create() {
-        return new NestedSystemMessageHandler();
+    private static void postQuitMessage() {
+        // Causes MessageQueue.next() to return in case it was blocking waiting
+        // for more messages.
+        sHandler.sendMessage(sHandler.obtainMessage(QUIT_MESSAGE));
     }
 }

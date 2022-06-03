@@ -6,8 +6,10 @@
 #define CC_RASTER_SINGLE_THREAD_TASK_GRAPH_RUNNER_H_
 
 #include <memory>
+#include <string>
 
 #include "base/synchronization/condition_variable.h"
+#include "base/thread_annotations.h"
 #include "base/threading/simple_thread.h"
 #include "cc/raster/task_graph_runner.h"
 #include "cc/raster/task_graph_work_queue.h"
@@ -42,7 +44,7 @@ class CC_EXPORT SingleThreadTaskGraphRunner
 
  private:
   // Returns true if there was a task to run.
-  bool RunTaskWithLockAcquired();
+  bool RunTaskWithLockAcquired() EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   std::unique_ptr<base::SimpleThread> thread_;
 
@@ -51,7 +53,7 @@ class CC_EXPORT SingleThreadTaskGraphRunner
   base::Lock lock_;
 
   // Stores the actual tasks to be run by this runner, sorted by priority.
-  TaskGraphWorkQueue work_queue_;
+  TaskGraphWorkQueue work_queue_ GUARDED_BY(lock_);
 
   // Condition variable that is waited on by Run() until new tasks are ready to
   // run or shutdown starts.
@@ -62,7 +64,7 @@ class CC_EXPORT SingleThreadTaskGraphRunner
   base::ConditionVariable has_namespaces_with_finished_running_tasks_cv_;
 
   // Set during shutdown. Tells Run() to return when no more tasks are pending.
-  bool shutdown_;
+  bool shutdown_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace cc

@@ -81,7 +81,7 @@ EntrySyncHeapVector DirectoryReaderSync::readEntries(
   return result;
 }
 
-void DirectoryReaderSync::Trace(blink::Visitor* visitor) {
+void DirectoryReaderSync::Trace(Visitor* visitor) const {
   visitor->Trace(entries_);
   DirectoryReaderBase::Trace(visitor);
 }

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+video {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+}
+iframe {
+  position: fixed;
+  margin-left: 25vw;
+  width: 50vw;
+  height: 100vh;
+  border: 0px;
+}
+p {
+  position: fixed;
+}
+div.bottom {
+  position: absolute;
+  top: 10000px;
+  left: 0px;
+  width: 1px;
+  height: 1px;
+}
+</style>
+
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../resources/overlay-interstitial-ad-testharness.js"></script>
+</head>
+<body marginwidth="0" marginheight="0">
+
+<!-- To trigger the first contentful paint at the very start -->
+<p>some content</p>
+
+<!-- The content video. -->
+<video controls></video>
+
+<!-- To be positioned further down in the main page to make the page scrollable -->
+<div class="bottom"></div>
+
+<script>
+promise_test(async function(t) {
+  // After 1500ms, force a layout update so that the interstitial detector
+  // would have been aware of the first meaningful paint (hadn't we skipped
+  // the detection in fullscreen video scenario).
+  await timeout(1500);
+  await forceLayoutUpdate();
+
+  // Create the overlay pop-up ad.
+  appendAdFrameTo(document.body);
+
+  // Force a layout update, so that the interstitial detector would have
+  // been aware of the overlay candidate (hadn't we skipped the detection in
+  // fullscreen video scenario).
+  await forceLayoutUpdate();
+
+  // Hide the pop-up.
+  document.getElementsByTagName('iframe')[0].style.display = 'none';
+
+  // Force a layout update, so that the interstitial detector would have
+  // been aware of the overlay candidate's dismissal (hadn't we skipped the
+  // detection in fullscreen video scenario).
+  await forceLayoutUpdate();
+
+  // Expect that the use counter kOverlayPopupAd is not recorded, as we
+  // skipped all previous detection due to there was a fullscreen video
+  // element.
+  assert_false(internals.isUseCounted(document, kOverlayPopupAd));
+}, "Test that we will skip the overlay-popup-ad detection if there's a dominant video element in the page.");
+
+</script>
+</body>
+</html>

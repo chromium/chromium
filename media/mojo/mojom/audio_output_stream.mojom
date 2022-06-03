@@ -75,8 +75,7 @@ interface AudioOutputStreamProvider {
   // output streams that are related during audio processing.
   // This method fails if it is called more than once.
   Acquire(AudioParameters params,
-          pending_remote<AudioOutputStreamProviderClient> client,
-          mojo_base.mojom.UnguessableToken? processing_id);
+          pending_remote<AudioOutputStreamProviderClient> client);
 };
 
 interface AudioOutputStreamProviderClient {

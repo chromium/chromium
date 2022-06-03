@@ -5,9 +5,11 @@
 #include <memory>
 
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/test/scoped_command_line.h"
 #include "components/component_updater/component_updater_command_line_config_policy.h"
+#include "components/component_updater/component_updater_switches.h"
 #include "components/component_updater/configurator_impl.h"
+#include "components/update_client/command_line_config_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace component_updater {
@@ -21,11 +23,14 @@ const int kDelayOneHour = kDelayOneMinute * 60;
 
 class ComponentUpdaterConfiguratorImplTest : public testing::Test {
  public:
-  ComponentUpdaterConfiguratorImplTest() {}
-  ~ComponentUpdaterConfiguratorImplTest() override {}
+  ComponentUpdaterConfiguratorImplTest() = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(ComponentUpdaterConfiguratorImplTest);
+  ComponentUpdaterConfiguratorImplTest(
+      const ComponentUpdaterConfiguratorImplTest&) = delete;
+  ComponentUpdaterConfiguratorImplTest& operator=(
+      const ComponentUpdaterConfiguratorImplTest&) = delete;
+
+  ~ComponentUpdaterConfiguratorImplTest() override = default;
 };
 
 TEST_F(ComponentUpdaterConfiguratorImplTest, FastUpdate) {
@@ -54,7 +59,7 @@ TEST_F(ComponentUpdaterConfiguratorImplTest, FastUpdateWithCustomPolicy) {
   class DefaultCommandLineConfigPolicy
       : public update_client::CommandLineConfigPolicy {
    public:
-    DefaultCommandLineConfigPolicy() {}
+    DefaultCommandLineConfigPolicy() = default;
 
     // update_client::CommandLineConfigPolicy overrides.
     bool BackgroundDownloadsEnabled() const override { return false; }
@@ -76,7 +81,7 @@ TEST_F(ComponentUpdaterConfiguratorImplTest, FastUpdateWithCustomPolicy) {
   class FastUpdateCommandLineConfigurator
       : public DefaultCommandLineConfigPolicy {
    public:
-    FastUpdateCommandLineConfigurator() {}
+    FastUpdateCommandLineConfigurator() = default;
 
     bool FastUpdate() const override { return true; }
   };
@@ -96,7 +101,7 @@ TEST_F(ComponentUpdaterConfiguratorImplTest, InitialDelay) {
   class CommandLineConfigPolicy
       : public update_client::CommandLineConfigPolicy {
    public:
-    CommandLineConfigPolicy() {}
+    CommandLineConfigPolicy() = default;
 
     // update_client::CommandLineConfigPolicy overrides.
     bool BackgroundDownloadsEnabled() const override { return false; }
@@ -105,15 +110,15 @@ TEST_F(ComponentUpdaterConfiguratorImplTest, InitialDelay) {
     bool PingsEnabled() const override { return false; }
     bool TestRequest() const override { return false; }
     GURL UrlSourceOverride() const override { return GURL(); }
-    int InitialDelay() const override { return initial_delay_; }
+    double InitialDelay() const override { return initial_delay_; }
 
     void set_fast_update(bool fast_update) { fast_update_ = fast_update; }
-    void set_initial_delay(int initial_delay) {
+    void set_initial_delay(double initial_delay) {
       initial_delay_ = initial_delay;
     }
 
    private:
-    int initial_delay_ = 0;
+    double initial_delay_ = 0;
     bool fast_update_ = false;
   };
 
@@ -137,6 +142,17 @@ TEST_F(ComponentUpdaterConfiguratorImplTest, InitialDelay) {
     config = std::make_unique<ConfiguratorImpl>(clcp, false);
     CHECK_EQ(2 * kDelayOneMinute, config->InitialDelay());
   }
+
+  {
+    base::test::ScopedCommandLine scoped_command_line;
+    base::CommandLine* command_line =
+        scoped_command_line.GetProcessCommandLine();
+    command_line->AppendSwitchASCII(switches::kComponentUpdater,
+                                    "initial-delay=3.14");
+    config = std::make_unique<ConfiguratorImpl>(
+        ComponentUpdaterCommandLineConfigPolicy(command_line), false);
+    CHECK_EQ(3.14, config->InitialDelay());
+  }
 }
 
 TEST_F(ComponentUpdaterConfiguratorImplTest, TestRequest) {
@@ -152,7 +168,7 @@ TEST_F(ComponentUpdaterConfiguratorImplTest, TestRequest) {
     bool PingsEnabled() const override { return false; }
     bool TestRequest() const override { return test_request_; }
     GURL UrlSourceOverride() const override { return GURL(); }
-    int InitialDelay() const override { return 0; }
+    double InitialDelay() const override { return 0; }
 
     void set_test_request(bool test_request) { test_request_ = test_request; }
 

@@ -3,39 +3,10 @@
 # found in the LICENSE file.
 
 devtools_domains = [
-  "accessibility",
-  "animation",
-  "application_cache",
-  "browser",
-  "cache_storage",
-  "console",
-  "css",
-  "database",
-  "debugger",
-  "device_orientation",
   "dom",
-  "dom_debugger",
-  "dom_snapshot",
-  "dom_storage",
-  "emulation",
-  "headless_experimental",
-  "heap_profiler",
-  "indexeddb",
   "input",
-  "inspector",
-  "io",
-  "layer_tree",
-  "log",
-  "memory",
-  "network",
-  "page",
-  "performance",
-  "profiler",
   "runtime",
-  "security",
-  "service_worker",
   "target",
-  "tracing",
 ]
 
 generated_devtools_api = []
@@ -53,9 +24,7 @@ foreach(domain, devtools_domains) {
 
 action("gen_devtools_client_api") {
   script = "devtools_api/client_api_generator.py"
-  deps = [
-    "//third_party/blink/public/devtools_protocol:protocol_version",
-  ]
+  deps = [ "//third_party/blink/public/devtools_protocol:protocol_version" ]
   inputs = [
     "$root_gen_dir/third_party/blink/public/devtools_protocol/protocol.json",
   ]

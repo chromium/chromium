@@ -4,9 +4,11 @@
 
 #include "third_party/blink/renderer/core/css/local_font_face_source.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/css/css_custom_font_data.h"
 #include "third_party/blink/renderer/core/css/css_font_face.h"
+#include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_description.h"
 #include "third_party/blink/renderer/platform/fonts/font_global_context.h"
@@ -14,7 +16,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_unique_name_lookup.h"
 #include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
-#include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -69,11 +70,24 @@ LocalFontFaceSource::CreateLoadingFallbackFontData(
 scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
     const FontDescription& font_description,
     const FontSelectionCapabilities&) {
-  if (!IsValid())
+  if (!IsValid()) {
+    ReportFontLookup(font_description, nullptr);
+    return nullptr;
+  }
+
+  bool local_fonts_enabled = true;
+  probe::LocalFontsEnabled(font_selector_->GetExecutionContext(),
+                           &local_fonts_enabled);
+
+  if (!local_fonts_enabled)
     return nullptr;
 
   if (IsValid() && IsLoading()) {
-    return CreateLoadingFallbackFontData(font_description);
+    scoped_refptr<SimpleFontData> fallback_font_data =
+        CreateLoadingFallbackFontData(font_description);
+    ReportFontLookup(font_description, fallback_font_data.get(),
+                     true /* is_loading_fallback */);
+    return fallback_font_data;
   }
 
   // FIXME(drott) crbug.com/627143: We still have the issue of matching
@@ -98,6 +112,7 @@ scoped_refptr<SimpleFontData> LocalFontFaceSource::CreateFontData(
           unstyled_description, font_name_,
           AlternateFontName::kLocalUniqueFace);
   histograms_.Record(font_data.get());
+  ReportFontLookup(unstyled_description, font_data.get());
   return font_data;
 }
 
@@ -118,7 +133,8 @@ void LocalFontFaceSource::NotifyFontUniqueNameLookupReady() {
   PruneTable();
 
   if (face_->FontLoaded(this)) {
-    font_selector_->FontFaceInvalidated();
+    font_selector_->FontFaceInvalidated(
+        FontInvalidationReason::kGeneralInvalidation);
   }
 }
 
@@ -138,15 +154,21 @@ void LocalFontFaceSource::LocalFontHistograms::Record(bool load_success) {
   if (reported_)
     return;
   reported_ = true;
-  DEFINE_STATIC_LOCAL(EnumerationHistogram, local_font_used_histogram,
-                      ("WebFont.LocalFontUsed", 2));
-  local_font_used_histogram.Count(load_success ? 1 : 0);
+  base::UmaHistogramBoolean("WebFont.LocalFontUsed", load_success);
 }
 
-void LocalFontFaceSource::Trace(blink::Visitor* visitor) {
+void LocalFontFaceSource::Trace(Visitor* visitor) const {
   visitor->Trace(face_);
   visitor->Trace(font_selector_);
   CSSFontFaceSource::Trace(visitor);
+}
+
+void LocalFontFaceSource::ReportFontLookup(
+    const FontDescription& font_description,
+    SimpleFontData* font_data,
+    bool is_loading_fallback) {
+  font_selector_->ReportFontLookupByUniqueNameOnly(
+      font_name_, font_description, font_data, is_loading_fallback);
 }
 
 }  // namespace blink

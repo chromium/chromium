@@ -179,6 +179,7 @@ h3 {
 }
 
 label.audio-focus-session,
+label.cdm,
 label.selectable-button {
   border: solid 1px #999;
   border-radius: 3px;
@@ -210,6 +211,7 @@ input.selectable-button:hover + label.selectable-button {
 }
 
 label.audio-focus-session,
+label.cdm,
 label.destructed-player {
   background-color: #EEE;
 }
@@ -238,17 +240,6 @@ label.destructed-player {
   list-style: none;
 }
 
-#devtools-notice-window {
-  background-color: rgb(252, 247, 134);
-  border: 1px solid black;
-  border-radius: 4px;
-  font-size: 10px;
-  height: 40px;
-  left: 50%;
-  line-height: 20px;
-  margin-inline-start: -300px;
-  position: fixed;
-  text-align: center;
-  top: 10px;
-  width: 450px;
+#cdm-list {
+  list-style: none;
 }

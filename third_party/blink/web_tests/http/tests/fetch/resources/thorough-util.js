@@ -1,40 +1,36 @@
-var SCOPE = BASE_ORIGIN +
-  '/fetch/resources/thorough-iframe.html?' + TEST_OPTIONS;
-var IFRAME_ORIGIN = BASE_ORIGIN;
-var BASE_URL = BASE_ORIGIN +
-  '/serviceworker/resources/fetch-access-control.php?';
-var OTHER_BASE_URL = OTHER_ORIGIN +
-  '/serviceworker/resources/fetch-access-control.php?';
-var BASE_URL_WITH_USERNAME = BASE_URL.replace('://', '://user@');
-var OTHER_BASE_URL_WITH_USERNAME = OTHER_BASE_URL.replace('://', '://user@');
-var BASE_URL_WITH_PASSWORD = BASE_URL.replace('://', '://user:pass@');
-var OTHER_BASE_URL_WITH_PASSWORD =
-  OTHER_BASE_URL.replace('://', '://user:pass@');
-var REDIRECT_URL = BASE_ORIGIN +
-  '/serviceworker/resources/redirect.php?Redirect=';
-var OTHER_REDIRECT_URL = OTHER_ORIGIN +
-  '/serviceworker/resources/redirect.php?Redirect=';
-var REDIRECT_LOOP_URL = BASE_ORIGIN +
-  '/fetch/resources/redirect-loop.php?Redirect=';
-var OTHER_REDIRECT_LOOP_URL = OTHER_ORIGIN +
-  '/fetch/resources/redirect-loop.php?Redirect=';
-var IFRAME_URL = SCOPE;
-var WORKER_URL = BASE_ORIGIN +
-  '/fetch/resources/thorough-worker.js?' +
-  TEST_OPTIONS;
+function get_thorough_test_options() {
+  var options = get_fetch_test_options();
+  var BASE_URL = options['BASE_ORIGIN'] +
+      '/serviceworker/resources/fetch-access-control.php?';
+  var OTHER_BASE_URL = options['OTHER_ORIGIN'] +
+      '/serviceworker/resources/fetch-access-control.php?';
+  var SCOPE = options['BASE_ORIGIN'] +
+      '/fetch/resources/thorough-iframe.html?' + options['TEST_OPTIONS'];
+  return Object.assign({
+    BASE_URL: BASE_URL,
+    OTHER_BASE_URL: OTHER_BASE_URL,
+    SCOPE: SCOPE,
+    IFRAME_ORIGIN: options['BASE_ORIGIN'],
+    BASE_URL_WITH_USERNAME: BASE_URL.replace('://', '://user@'),
+    OTHER_BASE_URL_WITH_USERNAME: OTHER_BASE_URL.replace('://', '://user@'),
+    BASE_URL_WITH_PASSWORD: BASE_URL.replace('://', '://user:pass@'),
+    OTHER_BASE_URL_WITH_PASSWORD: OTHER_BASE_URL.replace('://', '://user:pass@'),
+    REDIRECT_URL: options['BASE_ORIGIN'] +
+        '/serviceworker/resources/redirect.php?Redirect=',
+    OTHER_REDIRECT_URL: options['OTHER_ORIGIN'] +
+        '/serviceworker/resources/redirect.php?Redirect=',
+    REDIRECT_LOOP_URL: options['BASE_ORIGIN'] +
+        '/fetch/resources/redirect-loop.php?Redirect=',
+    OTHER_REDIRECT_LOOP_URL: options['OTHER_ORIGIN'] +
+        '/fetch/resources/redirect-loop.php?Redirect=',
+    IFRAME_URL: SCOPE,
+    WORKER_URL: options['BASE_ORIGIN'] +
+        '/fetch/resources/thorough-worker.js?' + options['TEST_OPTIONS']
+    }, options);
+}
 
 function onlyOnServiceWorkerProxiedTest(checkFuncs) {
   return [];
-}
-
-// Cookies accessed in a cross-site context must be marked SameSite=None and
-// Secure, so tests for cross-site cookies must only run on https.
-function shouldIncludeCrossSiteCookieTests() {
-  return TEST_OPTIONS.indexOf("-other-https") !== -1;
-}
-
-function onlyForCrossSiteCookieTest(checkFunc) {
-  return shouldIncludeCrossSiteCookieTests() ? checkFunc : cookieCheckNone;
 }
 
 // Functions to check the result from the ServiceWorker.
@@ -205,8 +201,9 @@ if (location.href.indexOf('base-https') >= 0)
 if (location.href.indexOf('other-https') >= 0)
   authCheck2 = checkJsonpAuth.bind(this, 'username2s', 'password2s', 'cookie2');
 
-function executeServiceWorkerProxiedTests(test_targets) {
+function executeServiceWorkerProxiedTests(test_targets, thorough_options) {
   var test = async_test('Verify access control of fetch() in a Service Worker');
+  var {WORKER_URL, IFRAME_ORIGIN, SCOPE} = thorough_options;
   test.step(function() {
       var worker = undefined;
       var frameWindow = {};

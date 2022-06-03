@@ -5,8 +5,8 @@
 #include "device/bluetooth/dbus/bluetooth_debug_manager_client.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/logging.h"
+#include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/macros.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -19,12 +19,8 @@ namespace bluez {
 // TODO(apusaka): move these consts to system_api/service_constants.h
 namespace {
 const char kBluetoothDebugObjectPath[] = "/org/chromium/Bluetooth";
-const uint8_t kMinDispatcherLevel = 0;
-const uint8_t kMinNewblueLevel = 0;
 const uint8_t kMinBluezLevel = 0;
 const uint8_t kMinKernelLevel = 0;
-const uint8_t kMaxDispatcherLevel = 0xff;
-const uint8_t kMaxNewblueLevel = 0xff;
 const uint8_t kMaxBluezLevel = 2;
 const uint8_t kMaxKernelLevel = 1;
 }  // namespace
@@ -40,26 +36,18 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
  public:
   BluetoothDebugManagerClientImpl() = default;
 
+  BluetoothDebugManagerClientImpl(const BluetoothDebugManagerClientImpl&) =
+      delete;
+  BluetoothDebugManagerClientImpl& operator=(
+      const BluetoothDebugManagerClientImpl&) = delete;
+
   ~BluetoothDebugManagerClientImpl() override = default;
 
   // BluetoothDebugManagerClient override.
-  void SetLogLevels(const uint8_t dispatcher_level,
-                    const uint8_t newblue_level,
-                    const uint8_t bluez_level,
+  void SetLogLevels(const uint8_t bluez_level,
                     const uint8_t kernel_level,
                     base::OnceClosure callback,
                     ErrorCallback error_callback) override {
-    if (kMinDispatcherLevel > dispatcher_level ||
-        kMaxDispatcherLevel < dispatcher_level) {
-      std::move(error_callback)
-          .Run(kInvalidArgumentError, "dispatcher_level is out of range.");
-      return;
-    }
-    if (kMinNewblueLevel > newblue_level || kMaxNewblueLevel < newblue_level) {
-      std::move(error_callback)
-          .Run(kInvalidArgumentError, "newblue_level is out of range.");
-      return;
-    }
     if (kMinBluezLevel > bluez_level || kMaxBluezLevel < bluez_level) {
       std::move(error_callback)
           .Run(kInvalidArgumentError, "bluez_level is out of range.");
@@ -75,8 +63,6 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
                                  bluetooth_debug::kSetLevels);
 
     dbus::MessageWriter writer(&method_call);
-    writer.AppendByte(dispatcher_level);
-    writer.AppendByte(newblue_level);
     writer.AppendByte(bluez_level);
     writer.AppendByte(kernel_level);
 
@@ -141,8 +127,6 @@ class BluetoothDebugManagerClientImpl : public BluetoothDebugManagerClient,
   dbus::ObjectManager* object_manager_;
 
   base::WeakPtrFactory<BluetoothDebugManagerClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothDebugManagerClientImpl);
 };
 
 BluetoothDebugManagerClient::BluetoothDebugManagerClient() = default;

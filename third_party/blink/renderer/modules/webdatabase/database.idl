@@ -28,16 +28,16 @@
 
 // https://www.w3.org/TR/webdatabase/#database
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface Database {
     readonly attribute DOMString version;
     // TODO(crbug.com/841185): |callback|, |errorCallback|, and
     // |successCallback| are not nullable in the spec.
-    [Measure] void changeVersion(DOMString oldVersion, DOMString newVersion, optional SQLTransactionCallback? callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
+    [Measure] void changeVersion(DOMString oldVersion, DOMString newVersion, optional SQLTransactionCallback? callback = null, optional SQLTransactionErrorCallback? errorCallback = null, optional VoidCallback? successCallback = null);
     // TODO(crbug.com/841185): |errorCallback| and |successCallback| are not
     // nullable in the spec.
-    [Measure] void transaction(SQLTransactionCallback callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
+    [Measure] void transaction(SQLTransactionCallback callback, optional SQLTransactionErrorCallback? errorCallback = null, optional VoidCallback? successCallback = null);
     // TODO(crbug.com/841185): |errorCallback| and |successCallback| are not
     // nullable in the spec.
-    [Measure] void readTransaction(SQLTransactionCallback callback, optional SQLTransactionErrorCallback? errorCallback, optional VoidCallback? successCallback);
+    [Measure] void readTransaction(SQLTransactionCallback callback, optional SQLTransactionErrorCallback? errorCallback = null, optional VoidCallback? successCallback = null);
 };

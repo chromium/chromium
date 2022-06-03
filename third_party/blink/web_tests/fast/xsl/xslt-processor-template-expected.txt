@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 18: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 This tests that XSLT transforms can traverse into XHTML template element content when applying XSL template. If the test succeeds, the transform will have swapped the position of the body spans (A and B) with the template content spans (C and D) and replaced the spans with divs.
 
 Body divs: CD, Template content divs: AB

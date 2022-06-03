@@ -71,5 +71,9 @@ int GetWirelessSignalStrength(const mojom::NetworkStateProperties* network) {
   return 0;
 }
 
+bool IsInhibited(const mojom::DeviceStateProperties* device) {
+  return device->inhibit_reason != mojom::InhibitReason::kNotInhibited;
+}
+
 }  // namespace network_config
 }  // namespace chromeos

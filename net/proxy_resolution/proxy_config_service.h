@@ -54,8 +54,8 @@ class NET_EXPORT ProxyConfigService {
   virtual ConfigAvailability GetLatestProxyConfig(
       ProxyConfigWithAnnotation* config) = 0;
 
-  // ProxyResolutionService will call this periodically during periods of
-  // activity. It can be used as a signal for polling-based implementations.
+  // ConfiguredProxyResolutionService will call this periodically during periods
+  // of activity. It can be used as a signal for polling-based implementations.
   //
   // Note that this is purely used as an optimization -- polling
   // implementations could simply set a global timer that goes off every

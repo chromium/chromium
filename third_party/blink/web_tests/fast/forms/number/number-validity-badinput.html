@@ -2,6 +2,12 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script>
+if (window.internals)
+    internals.runtimeFlags.langAttributeAwareFormControlUIEnabled = true;
+else
+    debug('Require testRunner.');
+</script>
 <style>
 :invalid {
   background-color: #ff0000;
@@ -12,6 +18,7 @@
 <div id=parent>
 <input type=number id=number>
 <input id=another>
+<input type="number" lang="ar-eg" id="number_ar">
 </div>
 <script>
 description('A number input fields with a bad input string should make validity.badInput true and have :invalid style.');
@@ -23,7 +30,7 @@ var invalidStyleColor = 'rgb(255, 0, 0)';
 
 var number = document.getElementById('number');
 number.focus();
-debug('Initial state. The elment has no value.');
+debug('Initial state. The element has no value.');
 shouldNotBe('colorOf(number)', 'invalidStyleColor');
 shouldBeFalse('number.validity.badInput');
 
@@ -40,8 +47,8 @@ shouldNotBe('colorOf(number)', 'invalidStyleColor');
 shouldBeFalse('number.validity.badInput');
 shouldBeEqualToString('number.value', '-1');
 
-debug("Type '-' additionally. The element becomes badInput again.");
-document.execCommand('InsertText', false, '-');
+debug("Type 'e' additionally. The element becomes badInput again.");
+document.execCommand('InsertText', false, 'e');
 shouldBe('colorOf(number)', 'invalidStyleColor');
 shouldBeTrue('number.validity.badInput');
 shouldBeEqualToString('number.value', '');
@@ -50,10 +57,10 @@ debug("The element losts focus. The element state should not be changed.");
 document.getElementById('another').focus();
 shouldBe('colorOf(number)', 'invalidStyleColor');
 shouldBeTrue('number.validity.badInput');
-// Visible value is '-1-'.
+// Visible value is '-1e'.
 number.focus();
 document.execCommand('SelectAll');
-shouldBeEqualToString('document.getSelection().toString()', '-1-');
+shouldBeEqualToString('document.getSelection().toString()', '-1e');
 shouldBeEqualToString('number.value', '');
 
 debug("The element losts a renderer. The element state should not be changed.");
@@ -64,8 +71,8 @@ number.focus();
 debug('A bad input should be cleared by value="".');
 shouldBeEqualToString('number.value = ""; document.execCommand("SelectAll"); document.getSelection().toString()', '');
 
-debug('Setting a valud value via |value| IDL attribute should clear badInput.');
-document.execCommand('InsertText', false, 'non-number');
+debug('Setting a valid value via |value| IDL attribute should clear badInput.');
+document.execCommand('InsertText', false, '-'); // Incomplete number
 shouldBeTrue('number.validity.badInput');
 shouldBeFalse('number.checkValidity()');
 number.value = '123';
@@ -93,6 +100,26 @@ debug("' +1. ' is not a badInput.");
 document.execCommand('InsertText', false, ' ');
 shouldBeFalse('number.validity.badInput');
 shouldBeEqualToString('number.value', '1');
+
+var number_ar = document.getElementById('number_ar');
+number_ar.focus();
+debug("Arabic number is not a badInput.");
+var arabicNum = Number(1.1).toLocaleString('ar-eg');
+document.execCommand('InsertText', false, arabicNum);
+// Windows seems to have issues with Arabic decimal separator, so use dot.
+var isWindows = (number_ar.value == '11');
+if (isWindows)
+{
+  arabicNum = arabicNum.replace(arabicNum[1], '.');
+  number_ar.value = "";
+  document.execCommand('InsertText', false, arabicNum);
+}
+shouldBeFalse('number_ar.validity.badInput');
+shouldBeEqualToString('number_ar.value', '1.1');
+debug("Arabic number with two decimal separators is a badInput.");
+document.execCommand('InsertText', false, arabicNum[1]);
+shouldBeTrue('number_ar.validity.badInput');
+shouldBeEqualToString('number_ar.value', '');
 
 document.getElementById('parent').innerHTML = '';
 </script>

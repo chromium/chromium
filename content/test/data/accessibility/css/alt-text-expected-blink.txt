@@ -1,0 +1,66 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer ignored
+++++++genericContainer
+++++++++genericContainer ignored
+++++++++++staticText name='item1item2'
+++++++++++++inlineTextBox name='item1item2'
+++++++++++image
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++staticText name='code'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++staticText ignored
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++image name='star'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++image
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++staticText name='a list of items'
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++image
+++++++++staticText name=' '
+++++++++++inlineTextBox name=' '
+++++++++genericContainer
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++genericContainer
+++++++++paragraph
+++++++++++staticText name='Some Text'
+++++++++++++inlineTextBox name='Some Text'
+++++++image name='alt'
+++++++genericContainer
+++++++++staticText name='DOM Text'
+++++++++++inlineTextBox name='DOM Text'
+++++++genericContainer
+++++++++staticText name='DOM Text'
+++++++++++inlineTextBox name='DOM Text'

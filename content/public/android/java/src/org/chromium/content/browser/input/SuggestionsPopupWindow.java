@@ -7,10 +7,7 @@ package org.chromium.content.browser.input;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.Rect;
-import android.graphics.drawable.ColorDrawable;
-import android.os.Build;
 import android.text.SpannableString;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -41,9 +38,6 @@ public abstract class SuggestionsPopupWindow
     private static final String ACTION_USER_DICTIONARY_INSERT =
             "com.android.settings.USER_DICTIONARY_INSERT";
     private static final String USER_DICTIONARY_EXTRA_WORD = "word";
-
-    // From Android Settings app's @integer/maximum_user_dictionary_word_length.
-    private static final int ADD_TO_DICTIONARY_MAX_LENGTH_ON_JELLY_BEAN = 48;
 
     private final Context mContext;
     protected final TextSuggestionHost mTextSuggestionHost;
@@ -118,22 +112,13 @@ public abstract class SuggestionsPopupWindow
         mPopupWindow = new PopupWindow();
         mPopupWindow.setWidth(ViewGroup.LayoutParams.WRAP_CONTENT);
         mPopupWindow.setHeight(ViewGroup.LayoutParams.WRAP_CONTENT);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            // Set the background on the PopupWindow instead of on mContentView (where we set it for
-            // pre-Lollipop) since the popup will not properly dismiss on pre-Marshmallow unless it
-            // has a background set.
-            mPopupWindow.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                    mContext.getResources(), R.drawable.floating_popup_background_light));
-            // On Lollipop and later, we use elevation to create a drop shadow effect.
-            // On pre-Lollipop, we instead use a background image on mContentView (in
-            // initContentView).
-            mPopupWindow.setElevation(mContext.getResources().getDimensionPixelSize(
-                    R.dimen.text_suggestion_popup_elevation));
-        } else {
-            // The PopupWindow does not properly dismiss pre-Marshmallow unless it has a background
-            // set.
-            mPopupWindow.setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        }
+        // Set the background on the PopupWindow instead of on mContentView (where we set it for
+        // pre-Lollipop) since the popup will not properly dismiss on pre-Marshmallow unless it
+        // has a background set.
+        mPopupWindow.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
+                mContext.getResources(), R.drawable.floating_popup_background));
+        mPopupWindow.setElevation(mContext.getResources().getDimensionPixelSize(
+                R.dimen.text_suggestion_popup_elevation));
 
         mPopupWindow.setInputMethodMode(PopupWindow.INPUT_METHOD_NOT_NEEDED);
         mPopupWindow.setFocusable(true);
@@ -146,13 +131,6 @@ public abstract class SuggestionsPopupWindow
                 (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mContentView =
                 (LinearLayout) inflater.inflate(R.layout.text_edit_suggestion_container, null);
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            // Set this on the content view instead of on the PopupWindow so we can retrieve the
-            // padding later.
-            mContentView.setBackground(ApiCompatibilityUtils.getDrawable(
-                    mContext.getResources(), R.drawable.popup_bg));
-        }
 
         // mPopupVerticalMargin is the minimum amount of space we want to have between the popup
         // and the top or bottom of the window.
@@ -206,20 +184,6 @@ public abstract class SuggestionsPopupWindow
         final Intent intent = new Intent(ACTION_USER_DICTIONARY_INSERT);
 
         String wordToAdd = mHighlightedText;
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            // There was a bug in Jelly Bean, fixed in the initial version of KitKat, that can cause
-            // a crash if the word we try to add is too long. The "add to dictionary" intent uses an
-            // EditText widget to show the word about to be added (and allow the user to edit it).
-            // It has a maximum length of 48 characters. If a word is longer than this, it will be
-            // truncated, but the intent will try to select the full length of the word, causing a
-            // crash.
-
-            // KitKit and later still truncate the word, but avoid the crash.
-            if (wordToAdd.length() > ADD_TO_DICTIONARY_MAX_LENGTH_ON_JELLY_BEAN) {
-                wordToAdd = wordToAdd.substring(0, ADD_TO_DICTIONARY_MAX_LENGTH_ON_JELLY_BEAN);
-            }
-        }
-
         intent.putExtra(USER_DICTIONARY_EXTRA_WORD, wordToAdd);
         intent.setFlags(intent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK);
         mContext.startActivity(intent);

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests WebInspector.RemoveObject.setPropertyValue implementation.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.evaluateInPagePromise(`
       var object1 = { foo: 1 };
       var object2 = { bar: 2 };
@@ -96,8 +96,8 @@
 
     function testReleaseObjectIsCalled(next) {
       // If failed, this test will time out.
-      TestRunner.addSniffer(TestRunner.RuntimeAgent, 'releaseObject', () => {
-        ConsoleTestRunner.dumpConsoleMessages();
+      TestRunner.addSniffer(TestRunner.RuntimeAgent, 'invoke_releaseObject', async () => {
+        await ConsoleTestRunner.dumpConsoleMessages();
         next();
       });
       obj1.setPropertyValue(nameFoo, '[1,2,3]');

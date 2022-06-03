@@ -76,7 +76,7 @@ const AtomicString& ExtendableEvent::InterfaceName() const {
   return event_interface_names::kExtendableEvent;
 }
 
-void ExtendableEvent::Trace(blink::Visitor* visitor) {
+void ExtendableEvent::Trace(Visitor* visitor) const {
   visitor->Trace(observer_);
   Event::Trace(visitor);
 }

@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -16,6 +15,10 @@ namespace mp2t {
 class MEDIA_EXPORT TimestampUnroller {
  public:
   TimestampUnroller();
+
+  TimestampUnroller(const TimestampUnroller&) = delete;
+  TimestampUnroller& operator=(const TimestampUnroller&) = delete;
+
   ~TimestampUnroller();
 
   // Given that |timestamp| is coded using 33 bits (accuracy of MPEG-2 TS
@@ -38,8 +41,6 @@ class MEDIA_EXPORT TimestampUnroller {
 
   // This is the last output of GetUnrolledTimestamp.
   int64_t previous_unrolled_timestamp_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimestampUnroller);
 };
 
 }  // namespace mp2t

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_UI_WEBUI_PREFS_INTERNALS_UI_H_
 #define IOS_CHROME_BROWSER_UI_WEBUI_PREFS_INTERNALS_UI_H_
 
+#include <string>
+
 #include "base/macros.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
 
@@ -16,11 +18,12 @@ class WebUIIOS;
 // prefs.
 class PrefsInternalsUI : public web::WebUIIOSController {
  public:
-  explicit PrefsInternalsUI(web::WebUIIOS* web_ui);
-  ~PrefsInternalsUI() override;
+  explicit PrefsInternalsUI(web::WebUIIOS* web_ui, const std::string& host);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(PrefsInternalsUI);
+  PrefsInternalsUI(const PrefsInternalsUI&) = delete;
+  PrefsInternalsUI& operator=(const PrefsInternalsUI&) = delete;
+
+  ~PrefsInternalsUI() override;
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_WEBUI_PREFS_INTERNALS_UI_H_

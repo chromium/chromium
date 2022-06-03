@@ -1,8 +1,0 @@
-Copyright 2012 Google Inc. All Rights Reserved.
-
-This directory contains the files required to build the example application for
-the Invalidation Client, the source code of which is located under
-../src/java/com/google/ipc/invalidation/examples/android2.
-
-To build the example, first run ./generate_protos.sh. Then, run ant debug or
-ant release to build the application.

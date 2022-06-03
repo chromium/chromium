@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -33,6 +32,9 @@ namespace {
 class PopupsOnlyUiControllerTest : public views::test::WidgetTest {
  public:
   PopupsOnlyUiControllerTest() = default;
+  PopupsOnlyUiControllerTest(const PopupsOnlyUiControllerTest&) = delete;
+  PopupsOnlyUiControllerTest& operator=(const PopupsOnlyUiControllerTest&) =
+      delete;
   ~PopupsOnlyUiControllerTest() override = default;
 
   void SetUp() override {
@@ -54,10 +56,8 @@ class PopupsOnlyUiControllerTest : public views::test::WidgetTest {
  protected:
   void AddNotification(const std::string& id) {
     auto notification = std::make_unique<Notification>(
-        message_center::NOTIFICATION_TYPE_SIMPLE, id,
-        base::ASCIIToUTF16("Test Web Notification"),
-        base::ASCIIToUTF16("Notification message body."), gfx::Image(),
-        base::ASCIIToUTF16("Some Chrome extension"),
+        message_center::NOTIFICATION_TYPE_SIMPLE, id, u"Test Web Notification",
+        u"Notification message body.", gfx::Image(), u"Some Chrome extension",
         GURL("chrome-extension://abbccedd"),
         NotifierId(message_center::NotifierType::APPLICATION, id),
         message_center::RichNotificationData(), nullptr);
@@ -68,9 +68,8 @@ class PopupsOnlyUiControllerTest : public views::test::WidgetTest {
   void UpdateNotification(const std::string& id) {
     auto notification = std::make_unique<Notification>(
         message_center::NOTIFICATION_TYPE_SIMPLE, id,
-        base::ASCIIToUTF16("Updated Test Web Notification"),
-        base::ASCIIToUTF16("Notification message body."), gfx::Image(),
-        base::ASCIIToUTF16("Some Chrome extension"),
+        u"Updated Test Web Notification", u"Notification message body.",
+        gfx::Image(), u"Some Chrome extension",
         GURL("chrome-extension://abbccedd"),
         NotifierId(message_center::NotifierType::APPLICATION, id),
         message_center::RichNotificationData(), nullptr);
@@ -85,9 +84,6 @@ class PopupsOnlyUiControllerTest : public views::test::WidgetTest {
   bool HasNotification(const std::string& id) {
     return !!MessageCenter::Get()->FindVisibleNotificationById(id);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PopupsOnlyUiControllerTest);
 };
 
 TEST_F(PopupsOnlyUiControllerTest, WebNotificationPopupBubble) {

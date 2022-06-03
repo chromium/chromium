@@ -6,10 +6,10 @@ package org.chromium.base.test.util;
 
 import android.content.SharedPreferences;
 
-import org.chromium.base.ObserverList;
-
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -23,8 +23,7 @@ public class InMemorySharedPreferences implements SharedPreferences {
 
     // Guarded on its own monitor.
     private final Map<String, Object> mData;
-    private final ObserverList<OnSharedPreferenceChangeListener> mObservers =
-            new ObserverList<OnSharedPreferenceChangeListener>();
+    private final List<OnSharedPreferenceChangeListener> mObservers = new ArrayList<>();
 
     public InMemorySharedPreferences() {
         mData = new HashMap<String, Object>();
@@ -107,7 +106,7 @@ public class InMemorySharedPreferences implements SharedPreferences {
             SharedPreferences.OnSharedPreferenceChangeListener
                     listener) {
         synchronized (mObservers) {
-            mObservers.addObserver(listener);
+            mObservers.add(listener);
         }
     }
 
@@ -115,7 +114,7 @@ public class InMemorySharedPreferences implements SharedPreferences {
     public void unregisterOnSharedPreferenceChangeListener(
             SharedPreferences.OnSharedPreferenceChangeListener listener) {
         synchronized (mObservers) {
-            mObservers.removeObserver(listener);
+            mObservers.remove(listener);
         }
     }
 

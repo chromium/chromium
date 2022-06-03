@@ -5,17 +5,16 @@
 #ifndef DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_DISCOVERY_MANAGER_MAC_H_
 #define DEVICE_BLUETOOTH_BLUETOOTH_LOW_ENERGY_DISCOVERY_MANAGER_MAC_H_
 
-#if defined(OS_IOS)
 #import <CoreBluetooth/CoreBluetooth.h>
-#else
-#import <IOBluetooth/IOBluetooth.h>
-#endif
 
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "base/macros.h"
 #include "build/build_config.h"
 #include "device/bluetooth/bluetooth_device.h"
+
+#if !defined(OS_IOS)
+#import <IOBluetooth/IOBluetooth.h>
+#endif
 
 namespace device {
 
@@ -33,6 +32,11 @@ class BluetoothLowEnergyDiscoveryManagerMac {
    protected:
     virtual ~Observer() {}
   };
+
+  BluetoothLowEnergyDiscoveryManagerMac(
+      const BluetoothLowEnergyDiscoveryManagerMac&) = delete;
+  BluetoothLowEnergyDiscoveryManagerMac& operator=(
+      const BluetoothLowEnergyDiscoveryManagerMac&) = delete;
 
   virtual ~BluetoothLowEnergyDiscoveryManagerMac();
 
@@ -86,8 +90,6 @@ class BluetoothLowEnergyDiscoveryManagerMac {
 
   // List of service UUIDs to scan.
   BluetoothDevice::UUIDList services_uuids_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothLowEnergyDiscoveryManagerMac);
 };
 
 }  // namespace device

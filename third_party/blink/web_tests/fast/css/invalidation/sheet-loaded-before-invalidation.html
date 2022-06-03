@@ -4,7 +4,7 @@ body:not(.ready) #content { color: red; }
 </style>
 <script>
 onload = function() {
-   var sr = document.getElementById('host').createShadowRoot();
+   var sr = document.getElementById('host').attachShadow({mode: 'open'});
    var style = document.createElement('style');
    style.innerHTML = "span { color: red; }";
 

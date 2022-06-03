@@ -12,14 +12,13 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/containers/circular_deque.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/incognito_observer.h"
 #include "chrome/browser/metrics/metrics_memory_details.h"
+#include "chrome/browser/privacy_budget/identifiability_study_state.h"
 #include "components/metrics/file_metrics_provider.h"
 #include "components/metrics/metrics_log_uploader.h"
 #include "components/metrics/metrics_service_client.h"
@@ -36,6 +35,10 @@ class PluginMetricsProvider;
 class Profile;
 class PrefRegistrySimple;
 
+namespace network_time {
+class NetworkTimeTracker;
+}  // namespace network_time
+
 namespace metrics {
 class MetricsService;
 class MetricsStateManager;
@@ -48,6 +51,10 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
                                    public ukm::HistoryDeleteObserver,
                                    public ukm::UkmConsentStateObserver {
  public:
+  ChromeMetricsServiceClient(const ChromeMetricsServiceClient&) = delete;
+  ChromeMetricsServiceClient& operator=(const ChromeMetricsServiceClient&) =
+      delete;
+
   ~ChromeMetricsServiceClient() override;
 
   // Factory function.
@@ -60,14 +67,16 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // metrics::MetricsServiceClient:
   metrics::MetricsService* GetMetricsService() override;
   ukm::UkmService* GetUkmService() override;
+  bool ShouldUploadMetricsForUserId(const uint64_t user_id) override;
   void SetMetricsClientId(const std::string& client_id) override;
   int32_t GetProduct() override;
   std::string GetApplicationLocale() override;
+  const network_time::NetworkTimeTracker* GetNetworkTimeTracker() override;
   bool GetBrand(std::string* brand_code) override;
   metrics::SystemProfileProto::Channel GetChannel() override;
+  bool IsExtendedStableChannel() override;
   std::string GetVersionString() override;
   void OnEnvironmentUpdate(std::string* serialized_environment) override;
-  void OnLogCleanShutdown() override;
   void CollectFinalMetricsForLog(base::OnceClosure done_callback) override;
   std::unique_ptr<metrics::MetricsLogUploader> CreateUploader(
       const GURL& server_url,
@@ -77,17 +86,20 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
       const metrics::MetricsLogUploader::UploadCallback& on_upload_complete)
       override;
   base::TimeDelta GetStandardUploadInterval() override;
+  void LoadingStateChanged(bool is_loading) override;
   void OnPluginLoadingError(const base::FilePath& plugin_path) override;
   bool IsReportingPolicyManaged() override;
   metrics::EnableMetricsDefault GetMetricsReportingDefaultState() override;
   bool IsUMACellularUploadLogicEnabled() override;
   bool IsUkmAllowedForAllProfiles() override;
+  bool IsUkmAllowedWithAppsForAllProfiles() override;
   bool IsUkmAllowedWithExtensionsForAllProfiles() override;
   bool AreNotificationListenersEnabledOnAllProfiles() override;
-  std::string GetAppPackageName() override;
+  std::string GetAppPackageNameIfLoggable() override;
   std::string GetUploadSigningKey() override;
   static void SetNotificationListenerSetupFailedForTesting(
       bool simulate_failure);
+  bool ShouldResetClientIdsOnClonedInstall() override;
 
   // ukm::HistoryDeleteObserver:
   void OnHistoryDeleted() override;
@@ -162,6 +174,9 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
 
   SEQUENCE_CHECKER(sequence_checker_);
 
+  // Chrome's privacy budget identifiability study state.
+  std::unique_ptr<IdentifiabilityStudyState> identifiability_study_state_;
+
   // Weak pointer to the MetricsStateManager.
   metrics::MetricsStateManager* const metrics_state_manager_;
 
@@ -194,22 +209,15 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   PluginMetricsProvider* plugin_metrics_provider_ = nullptr;
 #endif
 
-  // Callback to determine whether or not a cellular network is currently being
-  // used.
-  base::Callback<void(bool*)> cellular_callback_;
-
   // Subscription for receiving callbacks that a URL was opened from the
   // omnibox.
-  std::unique_ptr<base::CallbackList<void(OmniboxLog*)>::Subscription>
-      omnibox_url_opened_subscription_;
+  base::CallbackListSubscription omnibox_url_opened_subscription_;
 
 #if !defined(OS_ANDROID)
   std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;
 #endif
 
   base::WeakPtrFactory<ChromeMetricsServiceClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeMetricsServiceClient);
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_METRICS_SERVICE_CLIENT_H_

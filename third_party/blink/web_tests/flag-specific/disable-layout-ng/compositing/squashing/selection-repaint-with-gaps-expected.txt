@@ -1,28 +1,27 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='item')",
-      "position": [7, 27],
-      "bounds": [100, 210],
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'ipsum'",
-          "rect": [0, 80, 40, 39],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'lorem'",
-          "rect": [0, 80, 40, 39],
-          "reason": "geometry"
-        }
-      ],
+      "name": "LayoutBlockFlow DIV class='overlap'",
+      "bounds": [300, 500],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='item'",
+      "position": [15, 35],
+      "bounds": [100, 210],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 80, 40, 19],
+        [0, 99, 39, 20]
+      ]
     }
   ],
   "transforms": [
@@ -40,38 +39,29 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutBlockFlow (positioned) DIV class='item')",
-      "position": [7, 27],
-      "bounds": [100, 210],
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox 'ipsum'",
-          "rect": [0, 80, 42, 39],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'lorem'",
-          "rect": [0, 80, 42, 39],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'ipsum'",
-          "rect": [0, 160, 40, 39],
-          "reason": "geometry"
-        },
-        {
-          "object": "InlineTextBox 'lorem'",
-          "rect": [0, 160, 40, 39],
-          "reason": "geometry"
-        }
-      ],
+      "name": "LayoutBlockFlow DIV class='overlap'",
+      "bounds": [300, 500],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
       "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='item'",
+      "position": [15, 35],
+      "bounds": [100, 210],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 99, 42, 20],
+        [0, 160, 40, 19],
+        [0, 80, 40, 19],
+        [0, 179, 39, 20]
+      ]
     }
   ],
   "transforms": [

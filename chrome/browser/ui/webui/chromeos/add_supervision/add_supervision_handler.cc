@@ -8,10 +8,9 @@
 #include <utility>
 #include <vector>
 
-#include "base/stl_util.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/chromeos/arc/session/arc_session_manager.h"
+#include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service.h"
@@ -20,10 +19,12 @@
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision.mojom.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_handler_utils.h"
 #include "chrome/browser/ui/webui/chromeos/add_supervision/add_supervision_metrics_recorder.h"
-#include "chrome/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/scope_set.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -53,10 +54,13 @@ void AddSupervisionHandler::RequestClose(RequestCloseCallback callback) {
 void AddSupervisionHandler::GetInstalledArcApps(
     GetInstalledArcAppsCallback callback) {
   Profile* profile = Profile::FromWebUI(web_ui_);
-  apps::AppServiceProxy* proxy =
-      apps::AppServiceProxyFactory::GetForProfile(profile);
+  if (!profile) {
+    DLOG(WARNING) << "Profile not found in WebUI";
+    std::move(callback).Run({});
+    return;
+  }
 
-  if (arc::ArcSessionManager::Get() == nullptr) {
+  if (!arc::ArcSessionManager::Get()) {
     DLOG(WARNING) << "No ArcSessionManager available";
     std::move(callback).Run({});
     return;
@@ -69,15 +73,11 @@ void AddSupervisionHandler::GetInstalledArcApps(
   }
 
   std::vector<std::string> installed_arc_apps;
-
-  proxy->AppRegistryCache().ForEachApp(
-      [&installed_arc_apps, profile](const apps::AppUpdate& update) {
-        // We don't include "sticky" ARC apps because they are system-required
-        // apps that should not be offered for uninstallation. TODO(danan):
-        // check for stickyness via the App Service instead when that is
-        // available. (https://crbug.com/948408).
-        if (ShouldIncludeAppUpdate(update) &&
-            !arc::IsArcAppSticky(update.AppId(), profile)) {
+  apps::AppServiceProxyFactory::GetForProfile(profile)
+      ->AppRegistryCache()
+      .ForEachApp([&installed_arc_apps,
+                   profile](const apps::AppUpdate& update) {
+        if (ShouldIncludeAppUpdate(update)) {
           std::string package_name =
               arc::AppIdToArcPackageName(update.AppId(), profile);
           if (!package_name.empty())
@@ -89,7 +89,7 @@ void AddSupervisionHandler::GetInstalledArcApps(
 }
 
 void AddSupervisionHandler::GetOAuthToken(GetOAuthTokenCallback callback) {
-  identity::ScopeSet scopes;
+  signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kKidsSupervisionSetupChildOAuth2Scope);
   scopes.insert(GaiaConstants::kPeopleApiReadOnlyOAuth2Scope);
   scopes.insert(GaiaConstants::kAccountsReauthOAuth2Scope);
@@ -98,7 +98,8 @@ void AddSupervisionHandler::GetOAuthToken(GetOAuthTokenCallback callback) {
 
   oauth2_access_token_fetcher_ =
       identity_manager_->CreateAccessTokenFetcherForAccount(
-          identity_manager_->GetPrimaryAccountId(), "add_supervision", scopes,
+          identity_manager_->GetPrimaryAccountId(signin::ConsentLevel::kSync),
+          "add_supervision", scopes,
           base::BindOnce(&AddSupervisionHandler::OnAccessTokenFetchComplete,
                          weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
           signin::AccessTokenFetcher::Mode::kImmediate);

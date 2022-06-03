@@ -8,11 +8,16 @@
 #include <stdint.h>
 
 #include "base/memory/weak_ptr.h"
+#include "build/chromeos_buildflags.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/display/output_protection_delegate.h"
 #endif
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/crosapi/mojom/content_protection.mojom.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // A class to query output protection status and/or enable output protection.
 //
@@ -26,32 +31,38 @@
 // All methods except constructor should be invoked in UI thread.
 class OutputProtectionProxy {
  public:
-  typedef base::Callback<void(bool /* success */,
+  using QueryStatusCallback =
+      base::OnceCallback<void(bool /* success */,
                               uint32_t /* link_mask */,
-                              uint32_t /* protection_mask*/)>
-      QueryStatusCallback;
-  typedef base::Callback<void(bool /* success */)> EnableProtectionCallback;
+                              uint32_t /* protection_mask*/)>;
+  using EnableProtectionCallback = base::OnceCallback<void(bool /* success */)>;
 
   OutputProtectionProxy(int render_process_id, int render_frame_id);
   ~OutputProtectionProxy();
 
-  void QueryStatus(const QueryStatusCallback& callback);
+  void QueryStatus(QueryStatusCallback callback);
   void EnableProtection(uint32_t desired_method_mask,
-                        const EnableProtectionCallback& callback);
+                        EnableProtectionCallback callback);
 
  private:
   // Callbacks for QueryStatus(). It also checks the network link and adds it
   // to the |link_mask|.
-  void ProcessQueryStatusResult(const QueryStatusCallback& callback,
+  void ProcessQueryStatusResult(QueryStatusCallback callback,
                                 bool success,
                                 uint32_t link_mask,
                                 uint32_t protection_mask);
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void ProcessQueryStatusResultLacros(
+      QueryStatusCallback callback,
+      crosapi::mojom::ContentProtectionWindowStatusPtr window_status);
+#endif
 
   // Used to lookup the WebContents associated with the render frame.
   int render_process_id_;
   int render_frame_id_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::OutputProtectionDelegate output_protection_delegate_;
 #endif
 

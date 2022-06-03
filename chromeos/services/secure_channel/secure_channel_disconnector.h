@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 namespace chromeos {
 
 namespace secure_channel {
@@ -22,6 +20,10 @@ class SecureChannel;
 // https://crbug.com/763604.
 class SecureChannelDisconnector {
  public:
+  SecureChannelDisconnector(const SecureChannelDisconnector&) = delete;
+  SecureChannelDisconnector& operator=(const SecureChannelDisconnector&) =
+      delete;
+
   virtual ~SecureChannelDisconnector() = default;
 
   virtual void DisconnectSecureChannel(
@@ -29,9 +31,6 @@ class SecureChannelDisconnector {
 
  protected:
   SecureChannelDisconnector() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelDisconnector);
 };
 
 }  // namespace secure_channel

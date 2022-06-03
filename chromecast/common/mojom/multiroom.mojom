@@ -21,6 +21,9 @@ struct MultiroomInfo {
 
   // Intrinsic output delay of this device.
   mojo_base.mojom.TimeDelta output_delay;
+
+  // Desired audio output device ID. If this is empty, use the normal default.
+  string output_device_id;
 };
 
 interface MultiroomManager {

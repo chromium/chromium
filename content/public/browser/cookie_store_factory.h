@@ -23,10 +23,6 @@ class CookieStore;
 class NetLog;
 }
 
-namespace storage {
-class SpecialStoragePolicy;
-}
-
 namespace content {
 
 struct CONTENT_EXPORT CookieStoreConfig {
@@ -41,14 +37,12 @@ struct CONTENT_EXPORT CookieStoreConfig {
   // created using this config.
   CookieStoreConfig(const base::FilePath& path,
                     bool restore_old_session_cookies,
-                    bool persist_session_cookies,
-                    storage::SpecialStoragePolicy* storage_policy);
+                    bool persist_session_cookies);
   ~CookieStoreConfig();
 
   const base::FilePath path;
   const bool restore_old_session_cookies;
   const bool persist_session_cookies;
-  const scoped_refptr<storage::SpecialStoragePolicy> storage_policy;
 
   // The following are infrequently used cookie store parameters.
   // Rather than clutter the constructor API, these are assigned a default

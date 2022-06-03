@@ -4,6 +4,15 @@
 
 import("//build/config/linux/pkg_config.gni")
 
-pkg_config("libffi") {
-  packages = [ "libffi" ]
+if (default_toolchain == "//build/toolchain/cros:target") {
+  pkg_config("libffi") {
+    packages = [ "libffi" ]
+  }
+} else {
+  # On Linux, statically link libffi.  This is necessary to prevent a situation
+  # where the runtime version of libffi is different from the build-time version
+  # from the sysroot.
+  config("libffi") {
+    libs = [ ":libffi_pic.a" ]
+  }
 }

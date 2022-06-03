@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 #define COMPONENTS_GUEST_VIEW_BROWSER_GUEST_VIEW_H_
 
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/guest_view/browser/guest_view_manager.h"
 #include "content/public/browser/render_frame_host.h"
@@ -19,15 +18,12 @@ template <typename T>
 class GuestView : public GuestViewBase {
  public:
   static T* From(int embedder_process_id, int guest_instance_id) {
-    auto* guest = GuestViewBase::From(embedder_process_id, guest_instance_id);
-    if (!guest)
-      return nullptr;
-    return guest->As<T>();
+    return AsDerivedGuest(
+        GuestViewBase::From(embedder_process_id, guest_instance_id));
   }
 
   static T* FromWebContents(const content::WebContents* contents) {
-    auto* guest = GuestViewBase::FromWebContents(contents);
-    return guest ? guest->As<T>() : nullptr;
+    return AsDerivedGuest(GuestViewBase::FromWebContents(contents));
   }
 
   static T* FromFrameID(int render_process_id, int render_frame_id) {
@@ -41,16 +37,8 @@ class GuestView : public GuestViewBase {
     return FromWebContents(web_contents);
   }
 
-  T* GetOpener() const {
-    GuestViewBase* guest = GuestViewBase::GetOpener();
-    if (!guest)
-      return nullptr;
-    return guest->As<T>();
-  }
-
-  void SetOpener(T* opener) {
-    GuestViewBase::SetOpener(opener);
-  }
+  GuestView(const GuestView&) = delete;
+  GuestView& operator=(const GuestView&) = delete;
 
   // GuestViewBase implementation.
   const char* GetViewType() const final {
@@ -62,8 +50,23 @@ class GuestView : public GuestViewBase {
       : GuestViewBase(owner_web_contents) {}
   ~GuestView() override {}
 
+  T* GetOpener() const { return AsDerivedGuest(GuestViewBase::GetOpener()); }
+
+  void SetOpener(T* opener) { GuestViewBase::SetOpener(opener); }
+
  private:
-  DISALLOW_COPY_AND_ASSIGN(GuestView);
+  // Downcasts to a *ViewGuest if the GuestViewBase is of the derived view type.
+  // Otherwise, returns nullptr.
+  static T* AsDerivedGuest(GuestViewBase* guest) {
+    if (!guest)
+      return nullptr;
+
+    const bool same_type = !strcmp(guest->GetViewType(), T::Type);
+    if (!same_type)
+      return nullptr;
+
+    return static_cast<T*>(guest);
+  }
 };
 
 }  // namespace guest_view

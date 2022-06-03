@@ -26,6 +26,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_COORDINATES_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_COORDINATES_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -61,11 +62,11 @@ class GeolocationCoordinates : public ScriptWrappable {
 
   double latitude() const { return latitude_; }
   double longitude() const { return longitude_; }
-  double altitude(bool& is_null) const;
+  absl::optional<double> altitude() const;
   double accuracy() const { return accuracy_; }
-  double altitudeAccuracy(bool& is_null) const;
-  double heading(bool& is_null) const;
-  double speed(bool& is_null) const;
+  absl::optional<double> altitudeAccuracy() const;
+  absl::optional<double> heading() const;
+  absl::optional<double> speed() const;
 
  private:
   double latitude_;

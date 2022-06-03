@@ -23,6 +23,12 @@ class CloseBubbleOnTabActivationHelper : public TabStripModelObserver {
   CloseBubbleOnTabActivationHelper(
       views::BubbleDialogDelegateView* owner_bubble,
       Browser* browser);
+
+  CloseBubbleOnTabActivationHelper(const CloseBubbleOnTabActivationHelper&) =
+      delete;
+  CloseBubbleOnTabActivationHelper& operator=(
+      const CloseBubbleOnTabActivationHelper&) = delete;
+
   ~CloseBubbleOnTabActivationHelper() override;
 
   // TabStripModelObserver:
@@ -33,8 +39,7 @@ class CloseBubbleOnTabActivationHelper : public TabStripModelObserver {
 
  private:
   views::BubbleDialogDelegateView* owner_bubble_;  // weak, owns me.
-
-  DISALLOW_COPY_AND_ASSIGN(CloseBubbleOnTabActivationHelper);
+  Browser* browser_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CLOSE_BUBBLE_ON_TAB_ACTIVATION_HELPER_H_

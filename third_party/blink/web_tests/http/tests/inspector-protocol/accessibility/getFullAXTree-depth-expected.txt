@@ -1,0 +1,9 @@
+Tests Accessibility.getRootAXNode
+
+RootWebArea
+  generic
+    StaticText "Some text in a div, also a"
+    link "link"
+  button "Hello Button"
+    StaticText "Hello Button"
+

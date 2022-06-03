@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<body>
+  <button id="a">A</button>
+  <button id="b" autofocus>B</button>
+  <button id="c">C</button>
+  <script>
+    let focusEventDispatched = false;
+    let buttonWithAutofocus = document.querySelector('#b');
+
+    let focusPromise = new Promise(r => {
+      buttonWithAutofocus.onfocus = () => {
+        focusEventDispatched = true;
+        r(true);
+      }
+    });
+
+    async function rAF() {
+      return new Promise(r => {
+        window.requestAnimationFrame(() => r(true));
+      });
+    }
+
+    function checkActiveElement() {
+      return document.activeElement === buttonWithAutofocus;
+    }
+  </script>
+</body>

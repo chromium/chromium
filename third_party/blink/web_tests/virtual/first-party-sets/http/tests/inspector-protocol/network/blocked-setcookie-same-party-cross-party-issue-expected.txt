@@ -1,0 +1,51 @@
+Verifies that making cross-party requests which set SameParty cookies sends as a SameSite issue
+
+Javascript initiated subresource blocked set-cookies:[
+    [0] : {
+        blockedReasons : [
+            [0] : SamePartyFromCrossPartyContext
+        ]
+        cookie : {
+            domain : cookie.test
+            expires : -1
+            httpOnly : false
+            name : name
+            path : /inspector-protocol/network/resources
+            priority : Medium
+            sameParty : true
+            sameSite : None
+            secure : true
+            session : true
+            size : 9
+            sourcePort : 8443
+            sourceScheme : Secure
+            value : value
+        }
+        cookieLine : name=value; SameSite=None; SameParty; Secure
+    }
+]
+Issue reported: {
+    code : SameSiteCookieIssue
+    details : {
+        sameSiteCookieIssueDetails : {
+            cookie : {
+                domain : cookie.test
+                name : name
+                path : /inspector-protocol/network/resources
+            }
+            cookieExclusionReasons : [
+                [0] : ExcludeSamePartyCrossPartyContext
+            ]
+            cookieUrl : https://cookie.test:8443/inspector-protocol/network/resources/set-cookie.php?cookie=name%3Dvalue%3B%20SameSite%3DNone%3B%20SameParty%3B%20Secure
+            cookieWarningReasons : [
+            ]
+            operation : SetCookie
+            request : {
+                requestId : <string>
+                url : https://cookie.test:8443/inspector-protocol/network/resources/set-cookie.php?cookie=name%3Dvalue%3B%20SameSite%3DNone%3B%20SameParty%3B%20Secure
+            }
+            siteForCookies : https://thirdparty.test/
+        }
+    }
+}
+

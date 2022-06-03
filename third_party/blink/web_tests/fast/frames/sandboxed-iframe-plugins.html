@@ -1,53 +1,53 @@
-<html> 
+<html>
 <head>
 <script src="../../resources/js-test.js"></script>
-<script> 
-if (window.testRunner) 
-    testRunner.dumpAsText(); 
- 
-window.onload = function() { 
-    shouldBeTrue("(self.embedFrame1.document.getElementById('plugin').postMessage) != undefined");
-    shouldBeTrue("(self.embedFrame2.document.getElementById('plugin').postMessage) == undefined");
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
 
-    shouldBeTrue("(self.objectFrame1.document.getElementById('plugin').postMessage) != undefined");
-    shouldBeTrue("(self.objectFrame2.document.getElementById('plugin').postMessage) == undefined");
+window.onload = function() {
+  shouldBeTrue("(self.embedFrame1.document.getElementById('plugin').postMessage) != undefined");
+  shouldBeTrue("(self.embedFrame2.document.getElementById('plugin').postMessage) == undefined");
 
-    isSuccessfullyParsed();
-} 
+  shouldBeTrue("(self.objectFrame1.document.getElementById('plugin').postMessage) != undefined");
+  shouldBeTrue("(self.objectFrame2.document.getElementById('plugin').postMessage) == undefined");
+
+  isSuccessfullyParsed();
+}
 </script> 
 </head> 
  
 <body> 
-    <p id="description"></p>
- 
-    <div id="console"></div>
+  <p id="description"></p>
 
-    <!-- Embeds -->
+  <div id="console"></div>
 
-    <iframe name="embedFrame1"
-            style="width: 200px; height: 100px;"
-            src="resources/sandboxed-iframe-plugins-frame-embed.html">
-    </iframe>
-    <iframe name="embedFrame2"
-            style="width: 200px; height: 100px;"
-            sandbox="allow-same-origin"
-            src="resources/sandboxed-iframe-plugins-frame-embed.html">
-    </iframe>
+  <!-- Embeds -->
 
-    <!-- Objects -->
+  <iframe name="embedFrame1"
+          style="width: 200px; height: 100px;"
+          src="resources/sandboxed-iframe-plugins-frame-embed.html">
+  </iframe>
+  <iframe name="embedFrame2"
+          style="width: 200px; height: 100px;"
+          sandbox="allow-same-origin"
+          src="resources/sandboxed-iframe-plugins-frame-embed.html">
+  </iframe>
 
-    <iframe name="objectFrame1"
-            style="width: 200px; height: 100px;"
-            src="resources/sandboxed-iframe-plugins-frame-object.html">
-    </iframe>
-    <iframe name="objectFrame2"
-            style="width: 200px; height: 100px;"
-            sandbox="allow-same-origin"
-            src="resources/sandboxed-iframe-plugins-frame-object.html">
-    </iframe>
+  <!-- Objects -->
 
-    <script>
-    description("This test verifies that sandboxing of plugins works as intended. Two tests are made, each in one sandboxed and one non-sandboxed IFrame: embeds and objects.");
-    </script>
+  <iframe name="objectFrame1"
+          style="width: 200px; height: 100px;"
+          src="resources/sandboxed-iframe-plugins-frame-object.html">
+  </iframe>
+  <iframe name="objectFrame2"
+          style="width: 200px; height: 100px;"
+          sandbox="allow-same-origin"
+          src="resources/sandboxed-iframe-plugins-frame-object.html">
+  </iframe>
+
+  <script>
+  description("This test verifies that sandboxing of plugins works as intended. Two tests are made, each in one sandboxed and one non-sandboxed IFrame: embeds and objects.");
+  </script>
 </body> 
 </html> 

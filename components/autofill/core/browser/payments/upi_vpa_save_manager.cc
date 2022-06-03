@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/payments/upi_vpa_save_manager.h"
 
-#include "base/logging.h"
 #include "build/build_config.h"
 
 namespace autofill {

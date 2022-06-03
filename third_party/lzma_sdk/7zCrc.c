@@ -1,5 +1,5 @@
 /* 7zCrc.c -- CRC32 init
-2015-03-10 : Igor Pavlov : Public domain */
+2017-06-06 : Igor Pavlov : Public domain */
 
 #include "Precomp.h"
 
@@ -61,12 +61,12 @@ void MY_FAST_CALL CrcGenerateTable()
     UInt32 r = i;
     unsigned j;
     for (j = 0; j < 8; j++)
-      r = (r >> 1) ^ (kCrcPoly & ~((r & 1) - 1));
+      r = (r >> 1) ^ (kCrcPoly & ((UInt32)0 - (r & 1)));
     g_CrcTable[i] = r;
   }
-  for (; i < 256 * CRC_NUM_TABLES; i++)
+  for (i = 256; i < 256 * CRC_NUM_TABLES; i++)
   {
-    UInt32 r = g_CrcTable[i - 256];
+    UInt32 r = g_CrcTable[(size_t)i - 256];
     g_CrcTable[i] = g_CrcTable[r & 0xFF] ^ (r >> 8);
   }
 
@@ -86,8 +86,8 @@ void MY_FAST_CALL CrcGenerateTable()
   
       #ifdef MY_CPU_X86_OR_AMD64
       if (!CPU_Is_InOrder())
-        g_CrcUpdate = CrcUpdateT8;
       #endif
+        g_CrcUpdate = CrcUpdateT8;
     #endif
 
   #else
@@ -101,7 +101,7 @@ void MY_FAST_CALL CrcGenerateTable()
       g_CrcUpdate = CrcUpdateT4;
       #if CRC_NUM_TABLES >= 8
       g_CrcUpdateT8 = CrcUpdateT8;
-      // g_CrcUpdate = CrcUpdateT8;
+      g_CrcUpdate = CrcUpdateT8;
       #endif
     }
     else if (p[0] != 1 || p[1] != 2)
@@ -111,14 +111,14 @@ void MY_FAST_CALL CrcGenerateTable()
     {
       for (i = 256 * CRC_NUM_TABLES - 1; i >= 256; i--)
       {
-        UInt32 x = g_CrcTable[i - 256];
+        UInt32 x = g_CrcTable[(size_t)i - 256];
         g_CrcTable[i] = CRC_UINT32_SWAP(x);
       }
       g_CrcUpdateT4 = CrcUpdateT1_BeT4;
       g_CrcUpdate = CrcUpdateT1_BeT4;
       #if CRC_NUM_TABLES >= 8
       g_CrcUpdateT8 = CrcUpdateT1_BeT8;
-      // g_CrcUpdate = CrcUpdateT1_BeT8;
+      g_CrcUpdate = CrcUpdateT1_BeT8;
       #endif
     }
   }

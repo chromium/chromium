@@ -12,7 +12,7 @@
  *
  * If you are looking to add a user command, follow the below steps for best
  * integration with existing components:
- * 1. Add a command below in CommandStore.CMD_WHITELIST. Pick a
+ * 1. Add a command below in CommandStore.CMD_ALLOWLIST. Pick a
  * programmatic name and fill in each of the relevant JSON keys.
  * Be sure to add a msg id and define it in chromevox/messages/messages.js which
  * describes the command. Please also add a category msg id so that the command
@@ -38,15 +38,15 @@ goog.provide('CommandStore');
  * @return {Array<string>} The collection of categories.
  */
 CommandStore.categories = function() {
-  var categorySet = {};
-  for (var cmd in CommandStore.CMD_WHITELIST) {
-    var struct = CommandStore.CMD_WHITELIST[cmd];
+  const categorySet = {};
+  for (const cmd in CommandStore.CMD_ALLOWLIST) {
+    const struct = CommandStore.CMD_ALLOWLIST[cmd];
     if (struct.category) {
       categorySet[struct.category] = true;
     }
   }
-  var ret = [];
-  for (var category in categorySet) {
+  const ret = [];
+  for (const category in categorySet) {
     ret.push(category);
   }
   return ret;
@@ -59,7 +59,7 @@ CommandStore.categories = function() {
  * @return {string|undefined} The message id, if any.
  */
 CommandStore.messageForCommand = function(command) {
-  return (CommandStore.CMD_WHITELIST[command] || {}).msgId;
+  return (CommandStore.CMD_ALLOWLIST[command] || {}).msgId;
 };
 
 
@@ -69,7 +69,7 @@ CommandStore.messageForCommand = function(command) {
  * @return {string|undefined} The command, if any.
  */
 CommandStore.categoryForCommand = function(command) {
-  return (CommandStore.CMD_WHITELIST[command] || {}).category;
+  return (CommandStore.CMD_ALLOWLIST[command] || {}).category;
 };
 
 
@@ -79,14 +79,25 @@ CommandStore.categoryForCommand = function(command) {
  * @return {Array<string>} The commands, if any.
  */
 CommandStore.commandsForCategory = function(category) {
-  var ret = [];
-  for (var cmd in CommandStore.CMD_WHITELIST) {
-    var struct = CommandStore.CMD_WHITELIST[cmd];
-    if (category == struct.category) {
+  const ret = [];
+  for (const cmd in CommandStore.CMD_ALLOWLIST) {
+    const struct = CommandStore.CMD_ALLOWLIST[cmd];
+    if (category === struct.category) {
       ret.push(cmd);
     }
   }
   return ret;
+};
+
+/**
+ * @param {string} command The command to query.
+ * @return {boolean} Whether or not this command is denied in the OOBE.
+ */
+CommandStore.denyOOBE = function(command) {
+  if (!CommandStore.CMD_ALLOWLIST[command]) {
+    return false;
+  }
+  return !!CommandStore.CMD_ALLOWLIST[command].denyOOBE;
 };
 
 
@@ -102,7 +113,8 @@ CommandStore.commandsForCategory = function(category) {
  *                nodeList: (undefined|string),
  *                skipInput: (undefined|boolean),
  *                allowEvents: (undefined|boolean),
- *                disallowContinuation: (undefined|boolean)}>}
+ *                denyContinuation: (undefined|boolean),
+ *                denyOOBE: (undefined|boolean)}>}
  *  forward: Whether this command points forward.
  *  backward: Whether this command points backward. If neither forward or
  *            backward are specified, it stays facing in the current direction.
@@ -118,14 +130,14 @@ CommandStore.commandsForCategory = function(category) {
  *            showing a list of nodes.
  *  skipInput: Explicitly skips this command when text input has focus.
  *             Defaults to false.
- *  disallowOOBE: Explicitly disallows this command when on chrome://oobe/*.
+ *  denyOOBE: Explicitly denies this command when on chrome://oobe/*.
  *             Defaults to false.
  *  allowEvents: Allows EventWatcher to continue processing events which can
  * trump TTS.
- *  disallowContinuation: Disallows continuous read to proceed. Defaults to
+ *  denyContinuation: denies continuous read to proceed. Defaults to
  * false.
  */
-CommandStore.CMD_WHITELIST = {
+CommandStore.CMD_ALLOWLIST = {
   'toggleStickyMode':
       {announce: false, msgId: 'toggle_sticky_mode', category: 'modifier_keys'},
   'passThroughMode': {
@@ -136,7 +148,7 @@ CommandStore.CMD_WHITELIST = {
 
   'stopSpeech': {
     announce: false,
-    disallowContinuation: true,
+    denyContinuation: true,
     doDefault: true,
     msgId: 'stop_speech_key',
     category: 'controlling_speech'
@@ -198,13 +210,13 @@ CommandStore.CMD_WHITELIST = {
   'handleTab': {
     allowEvents: true,
     msgId: 'handle_tab_next',
-    disallowContinuation: true,
+    denyContinuation: true,
     category: 'navigation'
   },
   'handleTabPrev': {
     allowEvents: true,
     msgId: 'handle_tab_prev',
-    disallowContinuation: true,
+    denyContinuation: true,
     category: 'navigation'
   },
   'forward':
@@ -325,6 +337,18 @@ CommandStore.CMD_WHITELIST = {
     msgId: 'next_similar_item',
     category: 'navigation'
   },
+  'previousInvalidItem': {
+    backward: true,
+    announce: true,
+    msgId: 'previous_invalid_item',
+    category: 'navigation'
+  },
+  'nextInvalidItem': {
+    forward: true,
+    announce: true,
+    msgId: 'next_invalid_item',
+    category: 'navigation'
+  },
 
   'jumpToTop': {
     forward: true,
@@ -354,13 +378,13 @@ CommandStore.CMD_WHITELIST = {
 
   'forceClickOnCurrentItem': {
     announce: true,
-    disallowContinuation: true,
+    denyContinuation: true,
     allowEvents: true,
     msgId: 'force_click_on_current_item',
     category: 'actions'
   },
   'forceDoubleClickOnCurrentItem':
-      {announce: true, allowEvents: true, disallowContinuation: true},
+      {announce: true, allowEvents: true, denyContinuation: true},
 
   'readLinkURL':
       {announce: false, msgId: 'read_link_url', category: 'information'},
@@ -378,21 +402,20 @@ CommandStore.CMD_WHITELIST = {
 
   'toggleSearchWidget': {
     announce: false,
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'toggle_search_widget',
     category: 'information'
   },
 
-  'undarkenScreen': {msgId: 'undarken_screen'},
-
-  'darkenScreen': {msgId: 'darken_screen'},
+  'toggleScreen':
+      {announce: false, msgId: 'toggle_screen', category: 'modifier_keys'},
 
   'toggleBrailleTable':
       {msgId: 'toggle_braille_table', category: 'help_commands'},
 
   'toggleKeyboardHelp': {
     announce: false,
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'show_panel_menu',
     category: 'help_commands'
   },
@@ -401,55 +424,55 @@ CommandStore.CMD_WHITELIST = {
   'help': {
     announce: false,
     msgId: 'help',
-    disallowContinuation: true,
+    denyContinuation: true,
     category: 'help_commands'
   },
   'contextMenu': {
     announce: false,
     msgId: 'show_context_menu',
-    disallowContinuation: true,
+    denyContinuation: true,
     category: 'information'
   },
 
   'showOptionsPage': {
     announce: false,
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'show_options_page',
-    'disallowOOBE': true,
+    denyOOBE: true,
     category: 'help_commands'
   },
   'showLogPage': {
     announce: false,
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'show_log_page',
-    'disallowOOBE': true,
+    denyOOBE: true,
     category: 'help_commands'
   },
   'showKbExplorerPage': {
     announce: false,
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'show_kb_explorer_page',
-    'disallowOOBE': true,
+    denyOOBE: true,
     category: 'help_commands'
   },
   'showTtsSettings': {
     announce: false,
     msgId: 'show_tts_settings',
     category: 'help_commands',
-    disallowOOBE: true
+    denyOOBE: true
   },
   'toggleBrailleCaptions':
       {announce: false, msgId: 'braille_captions', category: 'help_commands'},
   'reportIssue': {
     announce: false,
-    disallowOOBE: true,
+    denyOOBE: true,
     msgId: 'panel_menu_item_report_issue',
     category: 'help_commands'
   },
 
   'showFormsList': {
     announce: false,
-    disallowContinuation: true,
+    denyContinuation: true,
     nodeList: 'formField',
     msgId: 'show_forms_list',
     category: 'overview'
@@ -457,28 +480,28 @@ CommandStore.CMD_WHITELIST = {
   'showHeadingsList': {
     announce: false,
     nodeList: 'heading',
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'show_headings_list',
     category: 'overview'
   },
   'showLandmarksList': {
     announce: false,
     nodeList: 'landmark',
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'show_landmarks_list',
     category: 'overview'
   },
   'showLinksList': {
     announce: false,
     nodeList: 'link',
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'show_links_list',
     category: 'overview'
   },
   'showTablesList': {
     announce: false,
     nodeList: 'table',
-    disallowContinuation: true,
+    denyContinuation: true,
     msgId: 'show_tables_list',
     category: 'overview'
   },

@@ -1,0 +1,25 @@
+<html>
+<body>
+<canvas id="c" width=200 height=200></canvas>
+<script>
+
+// Test Canvas retains its content from previous frame if canvas contains clip.
+var c2 = document.getElementById("c");
+var ctx = c2.getContext('2d');
+ctx.fillRect(0, 0, 200, 200);
+
+window.requestAnimationFrame( dt=> {
+  ctx.fillStyle="#FF0000";
+  ctx.rect(50, 50, 100, 100);
+  ctx.clip();
+  ctx.clearRect(0, 0, 200, 200);
+  ctx.fillRect(0, 0, 200, 200);
+  window.requestAnimationFrame (dt =>{
+    ctx.fillStyle="#00FF00";
+    ctx.fillRect(0, 0, 200, 200);
+  });
+});
+
+</script>
+</body>
+</html>

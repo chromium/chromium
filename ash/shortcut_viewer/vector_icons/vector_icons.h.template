@@ -1,0 +1,26 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// vector_icons.h.template is used to generate vector_icons.h. Edit the former
+// rather than the latter.
+
+#ifndef ASH_SHORTCUT_VIEWER_VECTOR_ICONS_VECTOR_ICONS_H_
+#define ASH_SHORTCUT_VIEWER_VECTOR_ICONS_VECTOR_ICONS_H_
+
+namespace gfx {
+struct VectorIcon;
+}
+
+#define VECTOR_ICON_TEMPLATE_H(icon_name) \
+extern const gfx::VectorIcon icon_name;
+
+namespace keyboard_shortcut_viewer {
+
+TEMPLATE_PLACEHOLDER
+
+}  // namespace keyboard_shortcut_viewer
+
+#undef VECTOR_ICON_TEMPLATE_H
+
+#endif  // ASH_SHORTCUT_VIEWER_VECTOR_ICONS_VECTOR_ICONS_H_

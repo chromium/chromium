@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2015 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:title="@string/all_sites">
+
+    <!-- A text message describing cookie settings. -->
+    <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="cookie_info_text"
+        android:summary="@string/website_settings_cookie_info"/>
+
+    <!-- A common binary toggle, only shown for specific categories that allow
+         turning default values for that category on/off.-->
+    <org.chromium.components.browser_ui.settings.ChromeSwitchPreference
+        android:key="binary_toggle"
+        android:defaultValue="true" />
+    <!-- A common Allow/Ask/Block 3-state toggle (radio group). Only shown when
+         the category requires these 3 states. Mutually exclusive with the
+         "binary_toggle" above and the "four_state_cookie_toggle" below. -->
+    <org.chromium.components.browser_ui.site_settings.TriStateSiteSettingsPreference
+        android:key="tri_state_toggle" />
+    <!-- A four state toggle for cookie preferences, only shown for the Cookies category. -->
+    <org.chromium.components.browser_ui.site_settings.FourStateCookieSettingsPreference
+        android:key="four_state_cookie_toggle" />
+
+    <!-- A checkbox for enabling a quiet ui for notification prompts. Only shown in the Notifications category. -->
+    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+        android:key="notifications_quiet_ui"
+        android:title="@string/website_settings_category_notifications_quiet"
+        android:defaultValue="false"
+        android:persistent="false" />
+    <!-- A toggle for enabling vibration in notifications. -->
+    <org.chromium.components.browser_ui.settings.ChromeBaseCheckBoxPreference
+        android:key="notifications_vibrate"
+        android:title="@string/enable_notifications_vibrate_title"
+        android:summary="@string/enable_notifications_vibrate_summary"
+        android:defaultValue="true" />
+    <!-- A hyperlink to explain more about Protected Media content settings. -->
+    <org.chromium.components.browser_ui.settings.LearnMorePreference
+        android:key="protected_content_learn_more" />
+
+    <!-- Collapsible headers for sorting preferences. -->
+    <org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup
+        android:key="managed_group" />
+    <org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup
+        android:key="blocked_group" />
+    <org.chromium.components.browser_ui.settings.ExpandablePreferenceGroup
+        android:key="allowed_group" />
+</PreferenceScreen>

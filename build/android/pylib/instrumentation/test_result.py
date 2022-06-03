@@ -2,19 +2,19 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+
 from pylib.base import base_test_result
 
 
 class InstrumentationTestResult(base_test_result.BaseTestResult):
   """Result information for a single instrumentation test."""
 
-  def __init__(self, full_name, test_type, start_date, dur, log=''):
+  def __init__(self, full_name, test_type, dur, log=''):
     """Construct an InstrumentationTestResult object.
 
     Args:
       full_name: Full name of the test.
       test_type: Type of the test result as defined in ResultType.
-      start_date: Date in milliseconds when the test began running.
       dur: Duration of the test run in milliseconds.
       log: A string listing any errors.
     """
@@ -27,4 +27,7 @@ class InstrumentationTestResult(base_test_result.BaseTestResult):
     else:
       self._class_name = full_name
       self._test_name = full_name
-    self._start_date = start_date
+
+  def SetDuration(self, duration):
+    """Set the test duration."""
+    self._duration = duration

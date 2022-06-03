@@ -10,6 +10,4 @@
    "WiFi.HiddenSSID": false,
    "WiFi.Frequency": 2412,
    "WiFi.FrequencyList": [2412, 5180],
-   "WiFi.FTEnabled": true,
-   "WiFi.RoamThreshold": 20
 }

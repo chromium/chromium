@@ -2,6 +2,7 @@
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
 <script src="../../../resources/gesture-util.js"></script>
+<script src="../../../virtual/percent-based-scrolling/resources/percent-based-util.js"></script>
 <style>
 body {
     height: 1000px;
@@ -28,9 +29,17 @@ body {
       await mouseMoveTo(40, 20);
 
       // Scroll before releasing the mouse.
-      await smoothScroll(40, 40, 20, GestureSourceType.MOUSE_INPUT, 'down',
-          SPEED_INSTANT);
-      await waitFor( () => {return scrollY == 40;});
+      const expectedScrollY = 40;
+      const { y: pixelsToScrollY } = calculatePixelsToScroll(
+        document.scrollingElement, 0, expectedScrollY
+      );
+      await smoothScroll(
+        pixelsToScrollY, 40, 20, GestureSourceType.MOUSE_INPUT, 'down',
+        SPEED_INSTANT
+      );
+      await waitForAnimationEndTimeBased(() => { return window.scrollY; });
+      // Windows and Linux values appear to be slightly different
+      assert_approx_equals(window.scrollY, expectedScrollY, 0.5);
   }, "This test verifies that text selection does not prevent smooth " +
     "scrolls running on the main thread.");
 </script>

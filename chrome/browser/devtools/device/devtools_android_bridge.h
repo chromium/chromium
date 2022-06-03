@@ -13,7 +13,6 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/device/android_device_manager.h"
@@ -48,6 +47,9 @@ class DevToolsAndroidBridge : public KeyedService {
     // Returns DevToolsAndroidBridge associated with |profile|.
     static DevToolsAndroidBridge* GetForProfile(Profile* profile);
 
+    Factory(const Factory&) = delete;
+    Factory& operator=(const Factory&) = delete;
+
    private:
     friend struct base::DefaultSingletonTraits<Factory>;
 
@@ -57,7 +59,6 @@ class DevToolsAndroidBridge : public KeyedService {
     // BrowserContextKeyedServiceFactory overrides:
     KeyedService* BuildServiceInstanceFor(
         content::BrowserContext* context) const override;
-    DISALLOW_COPY_AND_ASSIGN(Factory);
   };
 
   using RemotePage = DevToolsDeviceDiscovery::RemotePage;
@@ -68,9 +69,8 @@ class DevToolsAndroidBridge : public KeyedService {
   using RemoteDevices = DevToolsDeviceDiscovery::RemoteDevices;
   using CompleteDevice = DevToolsDeviceDiscovery::CompleteDevice;
   using CompleteDevices = DevToolsDeviceDiscovery::CompleteDevices;
-  using DeviceListCallback = DevToolsDeviceDiscovery::DeviceListCallback;
 
-  using JsonRequestCallback = base::Callback<void(int, const std::string&)>;
+  using JsonRequestCallback = base::OnceCallback<void(int, const std::string&)>;
 
   class DeviceListListener {
    public:
@@ -80,6 +80,10 @@ class DevToolsAndroidBridge : public KeyedService {
   };
 
   explicit DevToolsAndroidBridge(Profile* profile);
+
+  DevToolsAndroidBridge(const DevToolsAndroidBridge&) = delete;
+  DevToolsAndroidBridge& operator=(const DevToolsAndroidBridge&) = delete;
+
   void AddDeviceListListener(DeviceListListener* listener);
   void RemoveDeviceListListener(DeviceListListener* listener);
 
@@ -118,11 +122,10 @@ class DevToolsAndroidBridge : public KeyedService {
   }
 
   void set_task_scheduler_for_test(
-      base::Callback<void(const base::Closure&)> scheduler) {
+      base::RepeatingCallback<void(base::OnceClosure)> scheduler) {
     task_scheduler_ = scheduler;
   }
 
-  using RemotePageCallback = base::Callback<void(scoped_refptr<RemotePage>)>;
   void OpenRemotePage(scoped_refptr<RemoteBrowser> browser,
                       const std::string& url);
 
@@ -131,10 +134,10 @@ class DevToolsAndroidBridge : public KeyedService {
 
   void SendJsonRequest(const std::string& browser_id_str,
                        const std::string& url,
-                       const JsonRequestCallback& callback);
+                       JsonRequestCallback callback);
 
   using TCPProviderCallback =
-      base::Callback<void(scoped_refptr<TCPDeviceProvider>)>;
+      base::RepeatingCallback<void(scoped_refptr<TCPDeviceProvider>)>;
   void set_tcp_provider_callback_for_test(TCPProviderCallback callback);
   void set_usb_device_manager_for_test(
       mojo::PendingRemote<device::mojom::UsbDeviceManager> fake_usb_manager);
@@ -152,15 +155,12 @@ class DevToolsAndroidBridge : public KeyedService {
   void StopDeviceListPolling();
   bool NeedsDeviceListPolling();
 
-  void RequestDeviceList(const DeviceListCallback& callback);
   void ReceivedDeviceList(const CompleteDevices& complete_devices);
 
   void StartDeviceCountPolling();
   void StopDeviceCountPolling();
-  void RequestDeviceCount(const base::Callback<void(int)>& callback);
+  void RequestDeviceCount(base::RepeatingCallback<void(int)> callback);
   void ReceivedDeviceCount(int count);
-
-  static void ScheduleTaskDefault(const base::Closure& task);
 
   void CreateDeviceProviders();
 
@@ -180,8 +180,8 @@ class DevToolsAndroidBridge : public KeyedService {
 
   using DeviceCountListeners = std::vector<DeviceCountListener*>;
   DeviceCountListeners device_count_listeners_;
-  base::CancelableCallback<void(int)> device_count_callback_;
-  base::Callback<void(const base::Closure&)> task_scheduler_;
+  base::CancelableRepeatingCallback<void(int)> device_count_callback_;
+  base::RepeatingCallback<void(base::OnceClosure)> task_scheduler_;
 
   using PortForwardingListeners = std::vector<PortForwardingListener*>;
   PortForwardingListeners port_forwarding_listeners_;
@@ -194,8 +194,6 @@ class DevToolsAndroidBridge : public KeyedService {
   std::unique_ptr<DevToolsDeviceDiscovery> device_discovery_;
 
   base::WeakPtrFactory<DevToolsAndroidBridge> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsAndroidBridge);
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_DEVICE_DEVTOOLS_ANDROID_BRIDGE_H_

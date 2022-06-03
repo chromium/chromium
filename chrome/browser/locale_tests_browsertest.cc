@@ -7,10 +7,11 @@
 #include <memory>
 
 #include "base/command_line.h"
+#include "base/cxx17_backports.h"
 #include "base/environment.h"
-#include "base/stl_util.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "ui/base/ui_base_switches.h"
 
 namespace {
@@ -23,7 +24,7 @@ namespace {
 class ScopedLocale {
  public:
   explicit ScopedLocale(const char* locale) : locale_(locale) {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     old_locale_ = getenv("LC_ALL");
 
     static const struct {
@@ -46,7 +47,7 @@ class ScopedLocale {
   }
 
   ~ScopedLocale() {
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
     std::unique_ptr<base::Environment> env(base::Environment::Create());
     if (old_locale_) {
       env->SetVar("LC_ALL", old_locale_);
@@ -60,7 +61,7 @@ class ScopedLocale {
 
  private:
   std::string locale_;
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   const char* old_locale_;
 #endif
 };

@@ -75,7 +75,7 @@ _DEFAULT_PACKAGES_DICT = {
 
 _GN_ARGUMENTS_TO_UPDATE = {
     'build-tools': 'default_android_sdk_build_tools_version',
-    'tools': 'default_android_sdk_tools_version_suffix',
+    'tools': 'android_sdk_tools_version_suffix',
     'platforms': 'default_android_sdk_version',
 }
 

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE ldml SYSTEM "../../common/dtd/ldml.dtd">
+<!-- Copyright © 1991-2021 Unicode, Inc.
+For terms of use, see http://www.unicode.org/copyright.html
+SPDX-License-Identifier: Unicode-DFS-2016
+CLDR data files are interpreted according to the LDML specification (http://unicode.org/reports/tr35/)
+
+Derived short names and annotations, using GenerateDerivedAnnotations.java. See warnings in /annotations/ file.
+-->
+<ldml>
+	<identity>
+		<version number="$Revision$"/>
+		<language type="en"/>
+		<territory type="001"/>
+	</identity>
+	<annotations>
+		<annotation cp="🙌🏻">celebration | gesture | hand | hooray | light skin tone | woo hoo | yay</annotation>
+		<annotation cp="🙌🏼">celebration | gesture | hand | hooray | medium-light skin tone | woo hoo | yay</annotation>
+		<annotation cp="🙌🏽">celebration | gesture | hand | hooray | medium skin tone | woo hoo | yay</annotation>
+		<annotation cp="🙌🏾">celebration | gesture | hand | hooray | medium-dark skin tone | woo hoo | yay</annotation>
+		<annotation cp="🙌🏿">celebration | dark skin tone | gesture | hand | hooray | woo hoo | yay</annotation>
+		<annotation cp="🙏🏻">ask | hand | high 5 | high five | light skin tone | please | pray | thanks</annotation>
+		<annotation cp="🙏🏼">ask | hand | high 5 | high five | medium-light skin tone | please | pray | thanks</annotation>
+		<annotation cp="🙏🏽">ask | hand | high 5 | high five | medium skin tone | please | pray | thanks</annotation>
+		<annotation cp="🙏🏾">ask | hand | high 5 | high five | medium-dark skin tone | please | pray | thanks</annotation>
+		<annotation cp="🙏🏿">ask | dark skin tone | hand | high 5 | high five | please | pray | thanks</annotation>
+		<annotation cp="👬🏻">couple | Gemini | holding hands | light skin tone | man | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏻‍🤝‍👨🏼">couple | Gemini | holding hands | light skin tone | man | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏻‍🤝‍👨🏽">couple | Gemini | holding hands | light skin tone | man | medium skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏻‍🤝‍👨🏾">couple | Gemini | holding hands | light skin tone | man | medium-dark skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏻‍🤝‍👨🏿">couple | dark skin tone | Gemini | holding hands | light skin tone | man | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏼‍🤝‍👨🏻">couple | Gemini | holding hands | light skin tone | man | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👬🏼">couple | Gemini | holding hands | man | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏼‍🤝‍👨🏽">couple | Gemini | holding hands | man | medium skin tone | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏼‍🤝‍👨🏾">couple | Gemini | holding hands | man | medium-dark skin tone | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏼‍🤝‍👨🏿">couple | dark skin tone | Gemini | holding hands | man | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏽‍🤝‍👨🏻">couple | Gemini | holding hands | light skin tone | man | medium skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏽‍🤝‍👨🏼">couple | Gemini | holding hands | man | medium skin tone | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👬🏽">couple | Gemini | holding hands | man | medium skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏽‍🤝‍👨🏾">couple | Gemini | holding hands | man | medium skin tone | medium-dark skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏽‍🤝‍👨🏿">couple | dark skin tone | Gemini | holding hands | man | medium skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏾‍🤝‍👨🏻">couple | Gemini | holding hands | light skin tone | man | medium-dark skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏾‍🤝‍👨🏼">couple | Gemini | holding hands | man | medium-dark skin tone | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏾‍🤝‍👨🏽">couple | Gemini | holding hands | man | medium skin tone | medium-dark skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👬🏾">couple | Gemini | holding hands | man | medium-dark skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏾‍🤝‍👨🏿">couple | dark skin tone | Gemini | holding hands | man | medium-dark skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏿‍🤝‍👨🏻">couple | dark skin tone | Gemini | holding hands | light skin tone | man | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏿‍🤝‍👨🏼">couple | dark skin tone | Gemini | holding hands | man | medium-light skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏿‍🤝‍👨🏽">couple | dark skin tone | Gemini | holding hands | man | medium skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👨🏿‍🤝‍👨🏾">couple | dark skin tone | Gemini | holding hands | man | medium-dark skin tone | men holding hands | twins | zodiac</annotation>
+		<annotation cp="👬🏿">couple | dark skin tone | Gemini | holding hands | man | men holding hands | twins | zodiac</annotation>
+		<annotation cp="🇺🇲" type="tts">flag: US Outlying Islands</annotation>
+		<annotation cp="🇻🇮" type="tts">flag: US Virgin Islands</annotation>
+	</annotations>
+</ldml>

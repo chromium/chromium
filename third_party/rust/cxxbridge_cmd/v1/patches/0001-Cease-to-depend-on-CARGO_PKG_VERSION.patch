@@ -1,0 +1,39 @@
+From 39f51864c9edd00c352f51e72cf7399165e4a4b5 Mon Sep 17 00:00:00 2001
+From: Adrian Taylor <adetaylor@chromium.org>
+Date: Thu, 28 Oct 2021 14:28:22 -0700
+Subject: [PATCH] Cease to depend on CARGO_PKG_VERSION.
+
+This was correctly recognized by rustc and ninja as an environmental
+dependency which might change at any time, thus resulting in this
+code rebuilding each time.
+
+Change-Id: I55f55c1ff926494e3837d5428a75cf23415ab22c
+---
+ third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
+
+diff --git a/third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs b/third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs
+index c233ad77a968..bd8fbb935d13 100644
+--- a/third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs
++++ b/third_party/rust/cxxbridge_cmd/v1/crate/src/app.rs
+@@ -33,7 +33,7 @@ OPTIONS:
+ ";
+
+ fn app() -> App {
+-    let mut app = App::new("cxxbridge")
++    let app = App::new("cxxbridge")
+         .usage(USAGE)
+         .template(TEMPLATE)
+         .setting(AppSettings::NextLineHelp)
+@@ -44,9 +44,6 @@ fn app() -> App {
+         .arg(arg_output())
+         .help_message("Print help information.")
+         .version_message("Print version information.");
+-    if let Some(version) = option_env!("CARGO_PKG_VERSION") {
+-        app = app.version(version);
+-    }
+     app
+ }
+
+--
+2.33.0.1079.g6e70778dc9-goog

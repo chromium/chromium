@@ -29,7 +29,7 @@ public class ContentFeatureListImpl {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         boolean isEnabled(String featureName);
     }
 }

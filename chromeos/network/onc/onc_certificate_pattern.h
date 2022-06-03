@@ -9,8 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/optional.h"
 #include "components/certificate_matching/certificate_principal_pattern.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class Value;
@@ -57,7 +57,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) OncCertificatePattern {
   }
 
   // Reads a |OncCertificatePattern| from an ONC dictionary.
-  static base::Optional<OncCertificatePattern> ReadFromONCDictionary(
+  static absl::optional<OncCertificatePattern> ReadFromONCDictionary(
       const base::Value& dictionary);
 
  private:

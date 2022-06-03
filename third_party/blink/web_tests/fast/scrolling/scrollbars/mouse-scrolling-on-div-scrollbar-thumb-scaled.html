@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<title>Tests mouse interactions on a scrollbar thumbs under page scale.</title>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/gesture-util.js"></script>
+<script src="../../../resources/blink-coordinates-util.js"></script>
+<script src="../../../resources/scrollbar-util.js"></script>
+<style>
+html { overflow:scroll; }
+body { margin: 0 }
+.appearance {
+  width: 100px;
+  height: 100px;
+  overflow: scroll;
+  border: 1px solid black;
+}
+#standard {
+  position: absolute;
+  top: 100px;
+  left: 0px;
+}
+#rotated {
+  position: absolute;
+  top: 100px;
+  left: 105px;
+  transform:rotate(90deg);
+}
+.space {
+  height: 1000px;
+  width: 1000px;
+}
+</style>
+
+<div id="standard" class="appearance">
+  <div class="space"></div>
+</div>
+<div id="rotated" class="appearance">
+  <div class="space"></div>
+</div>
+<div style="height:8000px"></div>
+<script>
+let platform = navigator.userAgent.includes("Linux") ? "linux" :
+               navigator.userAgent.includes("Windows") ? "win" :
+               navigator.userAgent.includes("Mac OS X") ? "mac" :
+               (() => { throw "Platform unsupported. See crbug.com/953847"; })();
+
+window.onload = () => {
+  const PAGE_SCALE_FACTOR = 2;
+  internals.setPageScaleFactor(PAGE_SCALE_FACTOR);
+  const VISUAL_VIEWPORT_Y_OFFSET = 50;
+  internals.setVisualViewportOffset(0, VISUAL_VIEWPORT_Y_OFFSET);
+
+  const TRACK_WIDTH = calculateScrollbarThickness();
+  const BUTTON_WIDTH = calculateScrollbarButtonWidth();
+
+  const MOUSE_DELTA = 10;
+  const EXPECTED_SCROLL_DELTA = {linux: 183, win: 120, mac: 70}[platform];
+
+  promise_test (async (test) => {
+    let unreached_click = test.unreached_func("Scrollbars must be hit, preventing click events");
+    window.addEventListener("click", unreached_click);
+
+    const standardDiv = document.getElementById("standard");
+    resetScrollOffset(standardDiv);
+    let point = verticalThumb(standardDiv);
+    let {x, y} = scaleCssToDIPixels(point);
+
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+    await mouseMoveTo(x, y + MOUSE_DELTA, Buttons.LEFT);
+    await mouseUpAt(x, y + MOUSE_DELTA);
+    assert_approx_equals(standardDiv.scrollTop, EXPECTED_SCROLL_DELTA, 1, "Vertical thumb drag downwards did not scroll as expected");
+
+    window.removeEventListener("click", unreached_click);
+  }, "Test mouse drags while page scaled on div scrollbar thumb.");
+
+  promise_test(async (test) => {
+    const rotatedDiv = document.getElementById("rotated");
+    const rotatedRect = rotatedDiv.getBoundingClientRect();
+
+    let unreached_click = test.unreached_func("Scrollbars must be hit, preventing click events");
+    window.addEventListener("click", unreached_click);
+
+    // The scrollbar for a 90deg rotated div is at the bottom right of the
+    // div's client rect. Inset from the right by the button width (and a bit more) to
+    let x = rotatedRect.right - BUTTON_WIDTH - 2;
+    let y = rotatedRect.bottom - TRACK_WIDTH / 2 - VISUAL_VIEWPORT_Y_OFFSET;
+    x *= PAGE_SCALE_FACTOR;
+    y *= PAGE_SCALE_FACTOR;
+
+    resetScrollOffset(rotatedDiv);
+    await waitForCompositorCommit();
+
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+    await mouseMoveTo(x - MOUSE_DELTA, y, Buttons.LEFT);
+    await mouseUpAt(x - MOUSE_DELTA, y);
+    assert_approx_equals(rotatedDiv.scrollTop, EXPECTED_SCROLL_DELTA, 1, "Vertical thumb drag downwards on rotated scroller did not scroll as expected");
+
+    window.removeEventListener("click", unreached_click);
+  }, "Test mouse drags with page scale on div with rotation scrollbar thumb.");
+
+  promise_test(async (test) => {
+    let unreached_click = test.unreached_func("Scrollbars must be hit, preventing click events");
+    window.addEventListener("click", unreached_click);
+
+    const TOTAL_ROOT_SCROLL_DELTA = window.innerHeight - 3 * BUTTON_WIDTH;
+    const FIRST_DELTA = 10;
+
+    // Don't scale the points since the root viewport scrollbars are not scaled.
+    let { x, y } = verticalThumb(document.scrollingElement);
+
+    await mouseMoveTo(x, y);
+    await mouseDownAt(x, y);
+    await mouseMoveTo(x, y + FIRST_DELTA, Buttons.LEFT);
+    await mouseUpAt(x, y + FIRST_DELTA);
+
+    var EXPECTED_FIRST_VIEWPORT_DELTA = {linux: 200, win: 200, mac: 192}[platform];
+    if (internals.runtimeFlags.fractionalScrollOffsetsEnabled) {
+      EXPECTED_FIRST_VIEWPORT_DELTA = {linux: 199.5, win: 199.5, mac: 192}[platform];
+    }
+
+    assert_equals(document.scrollingElement.scrollTop, 0,
+        "Vertical thumb drag downwards on root scrollbars should not scroll layout viewport");
+    assert_approx_equals(visualViewport.pageTop, EXPECTED_FIRST_VIEWPORT_DELTA, 1,
+      "Vertical thumb drag downwards on root scroller did not scroll visual viewport as expected");
+
+    await mouseMoveTo(x, y + FIRST_DELTA);
+    await mouseDownAt(x, y + FIRST_DELTA);
+    await mouseMoveTo(x, y + TOTAL_ROOT_SCROLL_DELTA - FIRST_DELTA, Buttons.LEFT);
+    await mouseUpAt(x, y + TOTAL_ROOT_SCROLL_DELTA - FIRST_DELTA);
+
+    // There are differences between main thread vs. compositor thread, in that
+    // scrolling the root scrollbar on the main thread doesn't account for the
+    // visual viewport size in its offset calculations, so this test only passes
+    // when threaded compositing is enabled.
+    assert_equals(document.scrollingElement.scrollTop, 7400 + TRACK_WIDTH,
+        "Vertical thumb drag downwards on root scrollbars did not scroll layout viewport as expected");
+    assert_equals(visualViewport.pageTop, 7700 + TRACK_WIDTH,
+        "Vertical thumb drag downwards on root scroller did not scroll visual viewport as expected");
+
+    window.removeEventListener("click", unreached_click);
+  }, "Test mouse drags on root scrollbar thumb.");
+}
+</script>

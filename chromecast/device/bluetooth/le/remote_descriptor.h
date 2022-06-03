@@ -12,6 +12,7 @@
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "chromecast/device/bluetooth/le/ble_types.h"
 #include "chromecast/public/bluetooth/gatt.h"
 
 namespace chromecast {
@@ -33,6 +34,9 @@ class RemoteDescriptor : public base::RefCountedThreadSafe<RemoteDescriptor> {
       base::OnceCallback<void(bool, const std::vector<uint8_t>&)>;
   using StatusCallback = base::OnceCallback<void(bool)>;
 
+  RemoteDescriptor(const RemoteDescriptor&) = delete;
+  RemoteDescriptor& operator=(const RemoteDescriptor&) = delete;
+
   // Read the descriptor with |auth_req|. When completed, |callback| will be
   // called.
   virtual void ReadAuth(bluetooth_v2_shlib::Gatt::Client::AuthReq auth_req,
@@ -52,9 +56,8 @@ class RemoteDescriptor : public base::RefCountedThreadSafe<RemoteDescriptor> {
   virtual void Write(const std::vector<uint8_t>& value,
                      StatusCallback callback) = 0;
 
-  virtual const bluetooth_v2_shlib::Gatt::Descriptor& descriptor() const = 0;
   virtual const bluetooth_v2_shlib::Uuid uuid() const = 0;
-  virtual uint16_t handle() const = 0;
+  virtual HandleId handle() const = 0;
   virtual bluetooth_v2_shlib::Gatt::Permissions permissions() const = 0;
 
  protected:
@@ -62,9 +65,6 @@ class RemoteDescriptor : public base::RefCountedThreadSafe<RemoteDescriptor> {
 
   RemoteDescriptor() = default;
   virtual ~RemoteDescriptor() = default;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(RemoteDescriptor);
 };
 
 }  // namespace bluetooth

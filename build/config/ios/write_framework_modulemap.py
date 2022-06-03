@@ -5,22 +5,24 @@
 import os
 import sys
 
-def Main(framework):
-  # Find the name of the binary based on the part before the ".framework".
-  binary = os.path.basename(framework).split('.')[0]
-  module_path = os.path.join(framework, 'Modules');
-  if not os.path.exists(module_path):
-    os.mkdir(module_path)
-  module_template = 'framework module %s {\n' \
-                    '  umbrella header "%s.h"\n' \
-                    '\n' \
-                    '  export *\n' \
-                    '  module * { export * }\n' \
-                    '}\n' % (binary, binary)
+MODULE_MAP_TEMPLATE = '''\
+framework module %(framework_name)s {
+  umbrella header "%(framework_name)s.h"
 
-  module_file = open(os.path.join(module_path, 'module.modulemap'), 'w')
-  module_file.write(module_template)
-  module_file.close()
+  export *
+  module * { export * }
+}
+'''
+
+
+def Main(framework_name, modules_dir):
+  # Find the name of the binary based on the part before the ".framework".
+  if not os.path.isdir(modules_dir):
+    os.makedirs(modules_dir)
+
+  with open(os.path.join(modules_dir, 'module.modulemap'), 'w') as module_file:
+    module_file.write(MODULE_MAP_TEMPLATE % {'framework_name': framework_name})
+
 
 if __name__ == '__main__':
-  Main(sys.argv[1])
+  Main(*sys.argv[1:])

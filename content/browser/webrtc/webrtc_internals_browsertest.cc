@@ -12,6 +12,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -81,7 +82,7 @@ typedef std::map<string, std::vector<string> > StatsMap;
 
 class PeerConnectionEntry {
  public:
-  PeerConnectionEntry(int pid, int lid) : pid_(pid), lid_(lid) {}
+  PeerConnectionEntry(int rid, int lid) : rid_(rid), lid_(lid) {}
 
   void AddEvent(const string& type, const string& value) {
     EventEntry entry = {type, value};
@@ -90,19 +91,19 @@ class PeerConnectionEntry {
 
   string getIdString() const {
     std::stringstream ss;
-    ss << pid_ << "-" << lid_;
+    ss << rid_ << "-" << lid_;
     return ss.str();
   }
 
   string getLogIdString() const {
     std::stringstream ss;
-    ss << pid_ << "-" << lid_ << "-update-log";
+    ss << rid_ << "-" << lid_ << "-update-log";
     return ss.str();
   }
 
   string getAllUpdateString() const {
     std::stringstream ss;
-    ss << "{pid:" << pid_ << ", lid:" << lid_ << ", log:[";
+    ss << "{rid:" << rid_ << ", lid:" << lid_ << ", log:[";
     for (size_t i = 0; i < events_.size(); ++i) {
       ss << "{type:'" << events_[i].type <<
           "', value:'" << events_[i].value << "'},";
@@ -111,7 +112,7 @@ class PeerConnectionEntry {
     return ss.str();
   }
 
-  int pid_;
+  int rid_;
   int lid_;
   std::vector<EventEntry> events_;
   // This is a record of the history of stats value reported for each stats
@@ -123,19 +124,19 @@ class PeerConnectionEntry {
 
 class UserMediaRequestEntry {
  public:
-  UserMediaRequestEntry(int pid,
-                        int rid,
+  UserMediaRequestEntry(int rid,
+                        int pid,
                         const std::string& origin,
                         const std::string& audio_constraints,
                         const std::string& video_constraints)
-      : pid(pid),
-        rid(rid),
+      : rid(rid),
+        pid(pid),
         origin(origin),
         audio_constraints(audio_constraints),
         video_constraints(video_constraints) {}
 
-  int pid;
   int rid;
+  int pid;
   std::string origin;
   std::string audio_constraints;
   std::string video_constraints;
@@ -170,7 +171,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
   }
 
   void ExpectTitle(const std::string& expected_title) const {
-    base::string16 expected_title16(base::ASCIIToUTF16(expected_title));
+    std::u16string expected_title16(base::ASCIIToUTF16(expected_title));
     TitleWatcher title_watcher(shell()->web_contents(), expected_title16);
     EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
   }
@@ -178,35 +179,40 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
   // Execute the javascript of addPeerConnection.
   void ExecuteAddPeerConnectionJs(const PeerConnectionEntry& pc) {
     std::stringstream ss;
-    ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ << ", " <<
-           "url:'u', rtcConfiguration:'s', constraints:'c'}";
-    ASSERT_TRUE(ExecuteJavascript("addPeerConnection(" + ss.str() + ");"));
+    ss << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << ", pid:" << 0 << ", "
+       << "url:'u', rtcConfiguration:'s', constraints:'c'}";
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('add-peer-connection', " + ss.str() + ");"));
   }
 
   // Execute the javascript of removePeerConnection.
   void ExecuteRemovePeerConnectionJs(const PeerConnectionEntry& pc) {
     std::stringstream ss;
-    ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ << "}";
+    ss << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << "}";
 
-    ASSERT_TRUE(ExecuteJavascript("removePeerConnection(" + ss.str() + ");"));
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('remove-peer-connection', " + ss.str() +
+        ");"));
   }
 
   // Execute the javascript of addGetUserMedia.
   void ExecuteAddGetUserMediaJs(const UserMediaRequestEntry& request) {
     std::stringstream ss;
-    ss << "{pid:" << request.pid << ", rid:" << request.rid << ", origin:'"
+    ss << "{rid:" << request.rid << ", pid:" << request.pid << ", origin:'"
        << request.origin << "', audio:'" << request.audio_constraints
        << "', video:'" << request.video_constraints << "'}";
 
-    ASSERT_TRUE(ExecuteJavascript("addGetUserMedia(" + ss.str() + ");"));
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('add-get-user-media', " + ss.str() + ");"));
   }
 
   // Execute the javascript of removeGetUserMediaForRenderer.
   void ExecuteRemoveGetUserMediaForRendererJs(int rid) {
     std::stringstream ss;
     ss << "{rid:" << rid << "}";
-    ASSERT_TRUE(
-        ExecuteJavascript("removeGetUserMediaForRenderer(" + ss.str() + ");"));
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('remove-get-user-media-for-renderer', " +
+        ss.str() + ");"));
   }
 
   // Verifies that the DOM element with id |id| exists.
@@ -214,7 +220,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     bool result = false;
     ASSERT_TRUE(ExecuteScriptAndExtractBool(
         shell(),
-        "window.domAutomationController.send($('" + id + "') != null);",
+        "window.domAutomationController.send(document.getElementById('" + id +
+            "') != null);",
         &result));
     EXPECT_TRUE(result);
   }
@@ -224,7 +231,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     bool result = false;
     ASSERT_TRUE(ExecuteScriptAndExtractBool(
         shell(),
-        "window.domAutomationController.send($('" + id + "') == null);",
+        "window.domAutomationController.send(document.getElementById('" + id +
+            "') == null);",
         &result));
     EXPECT_TRUE(result);
   }
@@ -245,20 +253,22 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::ListValue* list_request =
         static_cast<base::ListValue*>(value_requests.get());
-    EXPECT_EQ(requests.size(), list_request->GetSize());
+    EXPECT_EQ(requests.size(), list_request->GetList().size());
 
     for (size_t i = 0; i < requests.size(); ++i) {
-      base::DictionaryValue* dict = nullptr;
-      ASSERT_TRUE(list_request->GetDictionary(i, &dict));
-      int pid, rid;
+      const base::Value& value = list_request->GetList()[i];
+      ASSERT_TRUE(value.is_dict());
+      absl::optional<int> rid = value.FindIntKey("rid");
+      absl::optional<int> pid = value.FindIntKey("pid");
       std::string origin, audio, video;
-      ASSERT_TRUE(dict->GetInteger("pid", &pid));
-      ASSERT_TRUE(dict->GetInteger("rid", &rid));
-      ASSERT_TRUE(dict->GetString("origin", &origin));
-      ASSERT_TRUE(dict->GetString("audio", &audio));
-      ASSERT_TRUE(dict->GetString("video", &video));
-      EXPECT_EQ(requests[i].pid, pid);
-      EXPECT_EQ(requests[i].rid, rid);
+      ASSERT_TRUE(rid);
+      ASSERT_TRUE(pid);
+      const base::DictionaryValue& dict = base::Value::AsDictionaryValue(value);
+      ASSERT_TRUE(dict.GetString("origin", &origin));
+      ASSERT_TRUE(dict.GetString("audio", &audio));
+      ASSERT_TRUE(dict.GetString("video", &video));
+      EXPECT_EQ(requests[i].rid, *rid);
+      EXPECT_EQ(requests[i].pid, *pid);
       EXPECT_EQ(requests[i].origin, origin);
       EXPECT_EQ(requests[i].audio_constraints, audio);
       EXPECT_EQ(requests[i].video_constraints, video);
@@ -268,7 +278,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     ASSERT_TRUE(
         ExecuteScriptAndExtractBool(shell(),
                                     "window.domAutomationController.send("
-                                    "    $('user-media-tab-id') != null);",
+                                    "    document.querySelector("
+                                    "    '#user-media-tab-id') != null);",
                                     &user_media_tab_existed));
     EXPECT_EQ(!requests.empty(), user_media_tab_existed);
 
@@ -277,7 +288,8 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
       ASSERT_TRUE(ExecuteScriptAndExtractInt(
           shell(),
           "window.domAutomationController.send("
-          "    $('user-media-tab-id').childNodes.length);",
+          "    document.querySelector('#user-media-tab-id')"
+          "        .childNodes.length);",
           &user_media_request_count));
       ASSERT_EQ(requests.size(), static_cast<size_t>(user_media_request_count));
     }
@@ -294,7 +306,9 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     string result;
     for (size_t i = 0; i < pc.events_.size(); ++i) {
       std::stringstream ss;
-      ss << "var row = $('" << log_id << "').rows[" << (i + 1) << "];"
+      ss << "var row = document.getElementById('" << log_id << "').rows["
+         << (i + 1)
+         << "];"
             "var cell = row.lastChild;"
             "window.domAutomationController.send(cell.firstChild.textContent);";
       ASSERT_TRUE(ExecuteScriptAndExtractString(shell(), ss.str(), &result));
@@ -308,9 +322,11 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     pc.AddEvent(type, value);
 
     std::stringstream ss;
-    ss << "{pid:" << pc.pid_ <<", lid:" << pc.lid_ <<
-         ", type:'" << type << "', value:'" << value << "'}";
-    ASSERT_TRUE(ExecuteJavascript("updatePeerConnection(" + ss.str() + ")"));
+    ss << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << ", type:'" << type
+       << "', value:'" << value << "'}";
+    ASSERT_TRUE(ExecuteJavascript(
+        "cr.webUIListenerCallback('update-peer-connection', " + ss.str() +
+        ")"));
 
     VerifyPeerConnectionEntry(pc);
   }
@@ -328,10 +344,10 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     }
     std::stringstream ss;
     ss << "(() => {\n";
-    ss << "  currentGetStatsMethod = OPTION_GETSTATS_LEGACY;\n";
-    ss << "  addLegacyStats({pid:" << pc.pid_ << ", lid:" << pc.lid_
-       << ", reports:[{id:'" << id << "', type:'" << type
-       << "', stats:" << stats.GetString() << "}]});\n";
+    ss << "  setCurrentGetStatsMethod(OPTION_GETSTATS_LEGACY);\n";
+    ss << "  cr.webUIListenerCallback('add-legacy-stats', "
+       << "{rid:" << pc.rid_ << ", lid:" << pc.lid_ << ", reports:[{id:'" << id
+       << "', type:'" << type << "', stats:" << stats.GetString() << "}]});\n";
     ss << "})()";
     ASSERT_TRUE(ExecuteJavascript(ss.str()));
     VerifyStatsTable(pc, entry);
@@ -362,10 +378,11 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
     string result;
     ASSERT_TRUE(ExecuteScriptAndExtractString(
         shell(),
-        "var row = $('" + table_id + "-" + name + "');"
-        "var name = row.cells[0].textContent;"
-        "var value = row.cells[1].textContent;"
-        "window.domAutomationController.send(name + ':' + value)",
+        "var row = document.getElementById('" + table_id + "-" + name +
+            "');"
+            "var name = row.cells[0].textContent;"
+            "var value = row.cells[1].textContent;"
+            "window.domAutomationController.send(name + ':' + value)",
         &result));
     EXPECT_EQ(name + ":" + value, result);
   }
@@ -447,7 +464,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::DictionaryValue* dict_dump =
         static_cast<base::DictionaryValue*>(dump);
-    EXPECT_EQ((size_t) peer_connection_number, dict_dump->size());
+    EXPECT_EQ((size_t)peer_connection_number, dict_dump->DictSize());
 
     base::DictionaryValue::Iterator it(*dict_dump);
     for (; !it.IsAtEnd(); it.Advance()) {
@@ -463,13 +480,13 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
       pc_dump->Get("updateLog", &value);
       EXPECT_EQ(base::Value::Type::LIST, value->type());
       base::ListValue* list = static_cast<base::ListValue*>(value);
-      EXPECT_EQ((size_t) update_number, list->GetSize());
+      EXPECT_EQ((size_t)update_number, list->GetList().size());
 
       // Verifies the number of stats tables.
       pc_dump->Get("stats", &value);
       EXPECT_EQ(base::Value::Type::DICTIONARY, value->type());
       base::DictionaryValue* dict = static_cast<base::DictionaryValue*>(value);
-      EXPECT_EQ((size_t) stats_number, dict->size());
+      EXPECT_EQ((size_t)stats_number, dict->DictSize());
     }
   }
 
@@ -496,7 +513,7 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::DictionaryValue* dataSeries =
         static_cast<base::DictionaryValue*>(value);
-    EXPECT_EQ(stats.values.size(), dataSeries->size());
+    EXPECT_EQ(stats.values.size(), dataSeries->DictSize());
   }
 };
 
@@ -535,7 +552,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   pc_1.AddEvent("e4", "v4");
   string pc_array = "[" + pc_0.getAllUpdateString() + ", " +
                           pc_1.getAllUpdateString() + "]";
-  EXPECT_TRUE(ExecuteJavascript("updateAllPeerConnections(" + pc_array + ");"));
+  EXPECT_TRUE(ExecuteJavascript(
+      "cr.webUIListenerCallback('update-all-peer-connections', " + pc_array +
+      ");"));
   VerifyPeerConnectionEntry(pc_0);
   VerifyPeerConnectionEntry(pc_1);
 }
@@ -564,6 +583,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, UpdatePeerConnection) {
   ExecuteAndVerifyUpdatePeerConnection(pc_2, "setRemoteDescription",
       ssrc1.GetSsrcAttributeString());
 
+  ExecuteAndVerifyUpdatePeerConnection(pc_2, "createAnswerOnSuccess",
+                                       ssrc2.GetSsrcAttributeString());
   ExecuteAndVerifyUpdatePeerConnection(pc_2, "setLocalDescription",
       ssrc2.GetSsrcAttributeString());
 
@@ -706,29 +727,33 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
       shell2,
       "window.domAutomationController.send("
-      "    $('peer-connections-list').getElementsByTagName('li').length);",
+      "    document.querySelector('#peer-connections-list')"
+      "        .getElementsByTagName('li').length);",
       &count));
   EXPECT_EQ(NUMBER_OF_PEER_CONNECTIONS, count);
 
   // Verifies the the event tables.
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
       shell2,
-      "window.domAutomationController.send($('peer-connections-list')"
-      "    .getElementsByClassName('update-log-table').length);",
+      "window.domAutomationController.send("
+      "    document.querySelector('#peer-connections-list')"
+      "        .getElementsByClassName('update-log-table').length);",
       &count));
   EXPECT_EQ(NUMBER_OF_PEER_CONNECTIONS, count);
 
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
       shell2,
-      "window.domAutomationController.send($('peer-connections-list')"
-      "    .getElementsByClassName('update-log-table')[0].rows.length);",
+      "window.domAutomationController.send("
+      "    document.querySelector('#peer-connections-list')"
+      "        .getElementsByClassName('update-log-table')[0].rows.length);",
       &count));
   EXPECT_GT(count, 1);
 
   ASSERT_TRUE(ExecuteScriptAndExtractInt(
       shell2,
-      "window.domAutomationController.send($('peer-connections-list')"
-      "    .getElementsByClassName('update-log-table')[1].rows.length);",
+      "window.domAutomationController.send("
+      "    document.querySelector('#peer-connections-list')"
+      "        .getElementsByClassName('update-log-table')[1].rows.length);",
       &count));
   EXPECT_GT(count, 1);
 
@@ -738,7 +763,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
     ASSERT_TRUE(ExecuteScriptAndExtractInt(
         shell2,
         "window.domAutomationController.send("
-        "    $('peer-connections-list').getElementsByClassName("
+        "    document.querySelector('#peer-connections-list')"
+        "        .getElementsByClassName("
         "        'stats-table-container').length);",
         &count));
   }
@@ -747,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest,
   bool result = false;
   ASSERT_TRUE(ExecuteScriptAndExtractBool(
       shell2,
-      "var tableContainers = $('peer-connections-list')"
+      "var tableContainers = document.querySelector('#peer-connections-list')"
       "    .getElementsByClassName('stats-table-container');"
       "var result = true;"
       "for (var i = 0; i < tableContainers.length && result; ++i) {"
@@ -780,7 +806,9 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcInternalsBrowserTest, CreatePageDump) {
   pc_1.AddEvent("e4", "v4");
   string pc_array =
       "[" + pc_0.getAllUpdateString() + ", " + pc_1.getAllUpdateString() + "]";
-  EXPECT_TRUE(ExecuteJavascript("updateAllPeerConnections(" + pc_array + ");"));
+  EXPECT_TRUE(ExecuteJavascript(
+      "cr.webUIListenerCallback('update-all-peer-connections', " + pc_array +
+      ");"));
 
   // Verifies the peer connection data store can be created without stats.
   string dump_json;

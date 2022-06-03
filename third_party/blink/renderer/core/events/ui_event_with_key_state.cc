@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_event_modifier_init.h"
 
 namespace blink {
 
@@ -75,7 +76,7 @@ void UIEventWithKeyState::DidCreateEventInIsolatedWorld(bool ctrl_key,
                                                         bool shift_key,
                                                         bool alt_key,
                                                         bool meta_key) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   const bool new_tab_modifier_set = meta_key;
 #else
   const bool new_tab_modifier_set = ctrl_key;
@@ -120,7 +121,7 @@ bool UIEventWithKeyState::getModifierState(const String& key_identifier) const {
       {"Meta", WebInputEvent::kMetaKey},
       {"AltGraph", WebInputEvent::kAltGrKey},
       {"Accel",
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
        WebInputEvent::kMetaKey
 #else
        WebInputEvent::kControlKey
@@ -154,10 +155,11 @@ void UIEventWithKeyState::InitModifiers(bool ctrl_key,
     modifiers_ |= WebInputEvent::kMetaKey;
 }
 
-UIEventWithKeyState* FindEventWithKeyState(Event* event) {
-  for (Event* e = event; e; e = e->UnderlyingEvent())
+const UIEventWithKeyState* FindEventWithKeyState(const Event* event) {
+  for (const Event* e = event; e; e = e->UnderlyingEvent()) {
     if (e->IsKeyboardEvent() || e->IsMouseEvent() || e->IsPointerEvent())
-      return static_cast<UIEventWithKeyState*>(e);
+      return static_cast<const UIEventWithKeyState*>(e);
+  }
   return nullptr;
 }
 

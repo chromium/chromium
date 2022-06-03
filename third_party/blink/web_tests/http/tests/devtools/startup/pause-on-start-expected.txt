@@ -1,4 +1,0 @@
-Tests that tools pause on start.
-
-noop
-

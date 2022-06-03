@@ -14,7 +14,7 @@ xxx_f(format_string, *args, **kwargs):
     The name is formatted with the given format string and arguments.
 """
 
-from blinkbuild.name_style_converter import NameStyleConverter
+from blinkbuild import name_style_converter
 
 
 def api_func(*args):
@@ -132,17 +132,27 @@ def namespace_f(format_string, *args, **kwargs):
 def _concat(style_func, args):
     assert callable(style_func)
 
-    return style_func(" ".join(map(str, args)))
+    return style_func(" ".join(map(_tokenize, args)))
 
 
 def _format(style_func, format_string, *args, **kwargs):
     assert callable(style_func)
     assert isinstance(format_string, str)
 
-    args = map(style_func, map(str, args))
-    for key, value in kwargs.iteritems():
-        kwargs[key] = style_func(str(value))
+    args = map(style_func, map(_tokenize, args))
+    for key, value in kwargs.items():
+        kwargs[key] = style_func(_tokenize(value))
     return format_string.format(*args, **kwargs)
+
+
+def _tokenize(s):
+    s = str(s)
+    if "_" in s and s.isupper():
+        # NameStyleConverter doesn't treat "ABC_DEF" as two tokens of "abc" and
+        # "def" while treating "abc_def" as "abc" and "def".  Help
+        # NameStyleConverter by lowering the string.
+        return s.lower()
+    return s
 
 
 class raw(object):
@@ -152,21 +162,27 @@ class raw(object):
     This class is pretending to be a module.
     """
 
+    _NameStyleConverter = name_style_converter.NameStyleConverter
+
     def __init__(self):
         assert False
 
     @staticmethod
+    def tokenize(name):
+        return name_style_converter.tokenize_name(name)
+
+    @staticmethod
     def snake_case(name):
-        return NameStyleConverter(name).to_snake_case()
+        return raw._NameStyleConverter(name).to_snake_case()
 
     @staticmethod
     def upper_camel_case(name):
-        return NameStyleConverter(name).to_upper_camel_case()
+        return raw._NameStyleConverter(name).to_upper_camel_case()
 
     @staticmethod
     def lower_camel_case(name):
-        return NameStyleConverter(name).to_lower_camel_case()
+        return raw._NameStyleConverter(name).to_lower_camel_case()
 
     @staticmethod
     def macro_case(name):
-        return NameStyleConverter(name).to_macro_case()
+        return raw._NameStyleConverter(name).to_macro_case()

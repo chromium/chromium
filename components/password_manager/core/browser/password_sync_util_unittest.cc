@@ -6,20 +6,15 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/sync_username_test_base.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
-#include "components/safe_browsing/common/safe_browsing_prefs.h"  // nogncheck
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
-
-using autofill::PasswordForm;
 using base::ASCIIToUTF16;
 
 namespace password_manager {
@@ -134,22 +129,6 @@ TEST_F(PasswordSyncUtilTest, IsSyncAccountEmail) {
         IsSyncAccountEmail(kTestCases[i].input_username, identity_manager()));
   }
 }
-
-#if defined(SYNC_PASSWORD_REUSE_DETECTION_ENABLED)
-class PasswordSyncUtilEnterpriseTest : public SyncUsernameTestBase {
- public:
-  void SetUp() override {
-    // prefs_ = std::make_unique<TestingPrefServiceSimple>();
-    prefs_.registry()->RegisterListPref(prefs::kPasswordProtectionLoginURLs);
-    prefs_.registry()->RegisterStringPref(
-        prefs::kPasswordProtectionChangePasswordURL, "");
-  }
-
- protected:
-  TestingPrefServiceSimple prefs_;
-};
-
-#endif  // SYNC_PASSWORD_REUSE_DETECTION_ENABLED
 
 }  // namespace sync_util
 }  // namespace password_manager

@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Oeps! Kon nie lukraak RSA private sleutel genereer nie.</translation>
 <translation id="1445572445564823378">Hierdie uitbreiding maak <ph name="PRODUCT_NAME" /> stadig. Jy moet dit deaktiveer om <ph name="PRODUCT_NAME" /> se prestasie te herstel.</translation>
 <translation id="1468038450257740950">WebGL word nie gesteun nie.</translation>
-<translation id="149347756975725155">Kon nie uitbreidingikoon "<ph name="ICON" />" laai nie.</translation>
 <translation id="1803557475693955505">Kon nie plaaslike agtergrondbladsy '<ph name="BACKGROUND_PAGE" />' laai nie.</translation>
 <translation id="2159915644201199628">Kon nie prent ontsyfer nie: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">Lokalisering is gebruik, maar verstek_ligging is nie in die manifes gespesifiseer nie.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Kon nie private sleutel lees nie.</translation>
 <translation id="6391538222494443604">Invoergids moet bestaan.</translation>
 <translation id="641087317769093025">Kon nie uitbreiding dekompakteer nie</translation>
-<translation id="6413453408918378296">Die ikoon is nie sigbaar genoeg nie "<ph name="ICON" />".</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" versoek tans toegang tot een of meer van jou toestelle:</translation>
 <translation id="657064425229075395">Kon nie agtergrondskrip "<ph name="BACKGROUND_SCRIPT" />" laai nie.</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> van <ph name="VENDOR_NAME" /> af (reeksnommer <ph name="SERIAL_NUMBER" />)</translation>

@@ -22,6 +22,10 @@ class BASE_EXPORT ScopedHardwareBufferHandle {
   // Takes ownership of |other|'s buffer reference. Does NOT acquire a new one.
   ScopedHardwareBufferHandle(ScopedHardwareBufferHandle&& other);
 
+  ScopedHardwareBufferHandle(const ScopedHardwareBufferHandle&) = delete;
+  ScopedHardwareBufferHandle& operator=(const ScopedHardwareBufferHandle&) =
+      delete;
+
   // Releases this handle's reference to the underlying buffer object if still
   // valid.
   ~ScopedHardwareBufferHandle();
@@ -80,8 +84,6 @@ class BASE_EXPORT ScopedHardwareBufferHandle {
   explicit ScopedHardwareBufferHandle(AHardwareBuffer* buffer);
 
   AHardwareBuffer* buffer_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedHardwareBufferHandle);
 };
 
 }  // namespace android

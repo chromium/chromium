@@ -1,4 +1,4 @@
-// Copyright 2017 The Chromium Authors. All rights reserved.
+// Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -11,9 +11,7 @@
 
 /** @fileoverview Externs generated from namespace: metricsPrivate */
 
-/**
- * @const
- */
+/** @const */
 chrome.metricsPrivate = {};
 
 /**
@@ -37,8 +35,33 @@ chrome.metricsPrivate.MetricTypeType = {
 chrome.metricsPrivate.MetricType;
 
 /**
+ * @typedef {{
+ *   min: number,
+ *   max: number,
+ *   count: number
+ * }}
+ */
+chrome.metricsPrivate.HistogramBucket;
+
+/**
+ * @typedef {{
+ *   sum: number,
+ *   buckets: !Array<!chrome.metricsPrivate.HistogramBucket>
+ * }}
+ */
+chrome.metricsPrivate.Histogram;
+
+/**
+ * Get details about a histogram displayed at chrome://histogram.
+ * @param {string} name Histogram name, e.g. 'Accessibility.CrosAutoclick'.
+ * @param {function(!chrome.metricsPrivate.Histogram): void} callback Invoked
+ *     with details.
+ */
+chrome.metricsPrivate.getHistogram = function(name, callback) {};
+
+/**
  * Returns true if the user opted in to sending crash reports.
- * @param {function(boolean):void} callback
+ * @param {function(boolean): void} callback
  */
 chrome.metricsPrivate.getIsCrashReportingEnabled = function(callback) {};
 
@@ -46,7 +69,7 @@ chrome.metricsPrivate.getIsCrashReportingEnabled = function(callback) {};
  * Returns the group name chosen for the named trial, or the empty string if the
  * trial does not exist or is not enabled.
  * @param {string} name
- * @param {function(string):void} callback
+ * @param {function(string): void} callback
  */
 chrome.metricsPrivate.getFieldTrial = function(name, callback) {};
 
@@ -54,7 +77,7 @@ chrome.metricsPrivate.getFieldTrial = function(name, callback) {};
  * Returns variation parameters for the named trial if available, or undefined
  * otherwise.
  * @param {string} name
- * @param {function((Object|undefined)):void} callback
+ * @param {function((Object|undefined)): void} callback
  */
 chrome.metricsPrivate.getVariationParams = function(name, callback) {};
 

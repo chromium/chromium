@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if !defined(OS_CHROMEOS)
-
 #include "services/device/time_zone_monitor/time_zone_monitor.h"
 
 #include <stddef.h>
@@ -13,11 +11,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
-#include "base/stl_util.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -34,6 +32,10 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
  public:
   TimeZoneMonitorLinux(
       scoped_refptr<base::SequencedTaskRunner> file_task_runner);
+
+  TimeZoneMonitorLinux(const TimeZoneMonitorLinux&) = delete;
+  TimeZoneMonitorLinux& operator=(const TimeZoneMonitorLinux&) = delete;
+
   ~TimeZoneMonitorLinux() override;
 
   void NotifyClientsFromImpl() {
@@ -61,8 +63,6 @@ class TimeZoneMonitorLinux : public TimeZoneMonitor {
 
  private:
   scoped_refptr<TimeZoneMonitorLinuxImpl> impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitorLinux);
 };
 
 namespace {
@@ -85,9 +85,12 @@ class TimeZoneMonitorLinuxImpl
     return impl;
   }
 
+  TimeZoneMonitorLinuxImpl(const TimeZoneMonitorLinuxImpl&) = delete;
+  TimeZoneMonitorLinuxImpl& operator=(const TimeZoneMonitorLinuxImpl&) = delete;
+
   void StopWatching() {
     DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
-    owner_ = NULL;
+    owner_ = nullptr;
     file_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&TimeZoneMonitorLinuxImpl::StopWatchingOnFileThread,
@@ -131,8 +134,9 @@ class TimeZoneMonitorLinuxImpl
     };
     for (size_t index = 0; index < base::size(kFilesToWatch); ++index) {
       file_path_watchers_.push_back(std::make_unique<base::FilePathWatcher>());
-      file_path_watchers_.back()->Watch(base::FilePath(kFilesToWatch[index]),
-                                        false, callback);
+      file_path_watchers_.back()->Watch(
+          base::FilePath(kFilesToWatch[index]),
+          base::FilePathWatcher::Type::kNonRecursive, callback);
     }
   }
 
@@ -162,8 +166,6 @@ class TimeZoneMonitorLinuxImpl
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
   scoped_refptr<base::SequencedTaskRunner> file_task_runner_;
   TimeZoneMonitorLinux* owner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitorLinuxImpl);
 };
 
 }  // namespace
@@ -203,5 +205,3 @@ std::unique_ptr<TimeZoneMonitor> TimeZoneMonitor::Create(
 }
 
 }  // namespace device
-
-#endif  // !OS_CHROMEOS

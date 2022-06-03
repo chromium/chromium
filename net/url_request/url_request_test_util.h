@@ -12,39 +12,41 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/time/time.h"
+#include "base/task/single_thread_task_runner.h"
 #include "net/base/io_buffer.h"
 #include "net/base/load_timing_info.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate_impl.h"
 #include "net/base/request_priority.h"
+#include "net/base/transport_info.h"
 #include "net/cert/cert_verifier.h"
 #include "net/cert/ct_policy_enforcer.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/cookies/same_party_context.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/ftp/ftp_network_layer.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_cache.h"
 #include "net/http/http_network_layer.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_request_headers.h"
-#include "net/proxy_resolution/proxy_resolution_service.h"
 #include "net/ssl/ssl_config_service_defaults.h"
+#include "net/test/embedded_test_server/default_handlers.h"
+#include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/embedded_test_server_connection_listener.h"
 #include "net/url_request/redirect_info.h"
 #include "net/url_request/url_request.h"
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "net/url_request/url_request_context_storage.h"
-#include "net/url_request/url_request_job_factory.h"
+#include "net/url_request/url_request_interceptor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_util.h"
 
 namespace net {
@@ -71,12 +73,12 @@ class TestURLRequestContext : public URLRequestContext {
   }
 
   void set_http_network_session_params(
-      std::unique_ptr<HttpNetworkSession::Params> session_params) {
+      std::unique_ptr<HttpNetworkSessionParams> session_params) {
     http_network_session_params_ = std::move(session_params);
   }
 
   void set_http_network_session_context(
-      std::unique_ptr<HttpNetworkSession::Context> session_context) {
+      std::unique_ptr<HttpNetworkSessionContext> session_context) {
     http_network_session_context_ = std::move(session_context);
   }
 
@@ -101,10 +103,10 @@ class TestURLRequestContext : public URLRequestContext {
   bool initialized_ = false;
 
   // Optional parameters to override default values.  Note that values in the
-  // HttpNetworkSession::Context that point to other objects the
+  // HttpNetworkSessionContext that point to other objects the
   // TestURLRequestContext creates will be overwritten.
-  std::unique_ptr<HttpNetworkSession::Params> http_network_session_params_;
-  std::unique_ptr<HttpNetworkSession::Context> http_network_session_context_;
+  std::unique_ptr<HttpNetworkSessionParams> http_network_session_params_;
+  std::unique_ptr<HttpNetworkSessionContext> http_network_session_context_;
 
   // Not owned:
   ClientSocketFactory* client_socket_factory_ = nullptr;
@@ -168,6 +170,9 @@ class TestDelegate : public URLRequest::Delegate {
     on_complete_ = std::move(on_complete);
   }
 
+  // Sets the result returned by subsequent calls to OnConnected().
+  void set_on_connected_result(int result) { on_connected_result_ = result; }
+
   void set_cancel_in_received_redirect(bool val) { cancel_in_rr_ = val; }
   void set_cancel_in_response_started(bool val) { cancel_in_rs_ = val; }
   void set_cancel_in_received_data(bool val) { cancel_in_rd_ = val; }
@@ -181,6 +186,16 @@ class TestDelegate : public URLRequest::Delegate {
   void set_credentials(const AuthCredentials& credentials) {
     credentials_ = credentials;
   }
+
+  // If true, the delegate will asynchronously run the callback passed in from
+  // URLRequest with `on_connected_result_`
+  void set_on_connected_run_callback(bool run_callback) {
+    on_connected_run_callback_ = run_callback;
+  }
+
+  // Returns the list of arguments with which OnConnected() was called.
+  // The arguments are listed in the same order as the calls were received.
+  const std::vector<TransportInfo>& transports() const { return transports_; }
 
   // query state
   const std::string& data_received() const { return data_received_; }
@@ -203,6 +218,9 @@ class TestDelegate : public URLRequest::Delegate {
   int request_status() const { return request_status_; }
 
   // URLRequest::Delegate:
+  int OnConnected(URLRequest* request,
+                  const TransportInfo& info,
+                  CompletionOnceCallback callback) override;
   void OnReceivedRedirect(URLRequest* request,
                           const RedirectInfo& redirect_info,
                           bool* defer_redirect) override;
@@ -224,6 +242,7 @@ class TestDelegate : public URLRequest::Delegate {
   virtual void OnResponseCompleted(URLRequest* request);
 
   // options for controlling behavior
+  int on_connected_result_ = OK;
   bool cancel_in_rr_ = false;
   bool cancel_in_rs_ = false;
   bool cancel_in_rd_ = false;
@@ -241,6 +260,7 @@ class TestDelegate : public URLRequest::Delegate {
   base::OnceClosure on_auth_required_;
 
   // tracks status of callbacks
+  std::vector<TransportInfo> transports_;
   int response_started_count_ = 0;
   int received_bytes_count_ = 0;
   int received_redirect_count_ = 0;
@@ -260,6 +280,8 @@ class TestDelegate : public URLRequest::Delegate {
   scoped_refptr<IOBuffer> buf_;
 
   RedirectInfo redirect_info_;
+
+  bool on_connected_run_callback_ = false;
 };
 
 //-----------------------------------------------------------------------------
@@ -292,7 +314,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   }
 
   void set_preserve_fragment_on_redirect_url(
-      const base::Optional<GURL>& preserve_fragment_on_redirect_url) {
+      const absl::optional<GURL>& preserve_fragment_on_redirect_url) {
     preserve_fragment_on_redirect_url_ = preserve_fragment_on_redirect_url;
   }
 
@@ -304,31 +326,21 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int destroyed_requests() const { return destroyed_requests_; }
   int completed_requests() const { return completed_requests_; }
   int canceled_requests() const { return canceled_requests_; }
-  int blocked_get_cookies_count() const { return blocked_get_cookies_count_; }
+  int blocked_annotate_cookies_count() const {
+    return blocked_annotate_cookies_count_;
+  }
   int blocked_set_cookie_count() const { return blocked_set_cookie_count_; }
   int set_cookie_count() const { return set_cookie_count_; }
-
-  void set_experimental_cookie_features_enabled(bool val) {
-    experimental_cookie_features_enabled_ = val;
-  }
 
   void set_cancel_request_with_policy_violating_referrer(bool val) {
     cancel_request_with_policy_violating_referrer_ = val;
   }
 
-  int before_send_headers_with_proxy_count() const {
-    return before_send_headers_with_proxy_count_;
-  }
   int before_start_transaction_count() const {
     return before_start_transaction_count_;
   }
 
   int headers_received_count() const { return headers_received_count_; }
-
-  // Last observed proxy in proxy header sent callback.
-  HostPortPair last_observed_proxy() {
-    return last_observed_proxy_;
-  }
 
   void set_before_start_transaction_fails() {
     before_start_transaction_fails_ = true;
@@ -339,28 +351,31 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int OnBeforeURLRequest(URLRequest* request,
                          CompletionOnceCallback callback,
                          GURL* new_url) override;
-  int OnBeforeStartTransaction(URLRequest* request,
-                               CompletionOnceCallback callback,
-                               HttpRequestHeaders* headers) override;
-  void OnBeforeSendHeaders(URLRequest* request,
-                           const ProxyInfo& proxy_info,
-                           const ProxyRetryInfoMap& proxy_retry_info,
-                           HttpRequestHeaders* headers) override;
+  int OnBeforeStartTransaction(
+      URLRequest* request,
+      const HttpRequestHeaders& headers,
+      OnBeforeStartTransactionCallback callback) override;
   int OnHeadersReceived(
       URLRequest* request,
       CompletionOnceCallback callback,
       const HttpResponseHeaders* original_response_headers,
       scoped_refptr<HttpResponseHeaders>* override_response_headers,
       const IPEndPoint& endpoint,
-      base::Optional<GURL>* preserve_fragment_on_redirect_url) override;
+      absl::optional<GURL>* preserve_fragment_on_redirect_url) override;
   void OnBeforeRedirect(URLRequest* request, const GURL& new_location) override;
   void OnResponseStarted(URLRequest* request, int net_error) override;
   void OnCompleted(URLRequest* request, bool started, int net_error) override;
   void OnURLRequestDestroyed(URLRequest* request) override;
-  void OnPACScriptError(int line_number, const base::string16& error) override;
-  bool OnCanGetCookies(const URLRequest& request,
-                       const CookieList& cookie_list,
-                       bool allowed_from_caller) override;
+  bool OnAnnotateAndMoveUserBlockedCookies(
+      const URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) override;
+  bool OnForcePrivacyMode(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      SamePartyContext::Type same_party_context_type) const override;
   bool OnCanSetCookie(const URLRequest& request,
                       const net::CanonicalCookie& cookie,
                       CookieOptions* options,
@@ -379,7 +394,7 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   GURL redirect_on_headers_received_url_;
   // URL to mark as retaining its fragment if redirected to at the
   // OnHeadersReceived() stage.
-  base::Optional<GURL> preserve_fragment_on_redirect_url_;
+  absl::optional<GURL> preserve_fragment_on_redirect_url_;
 
   int last_error_;
   int error_count_;
@@ -388,14 +403,11 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   int completed_requests_;
   int canceled_requests_;
   int cookie_options_bit_mask_;
-  int blocked_get_cookies_count_;
+  int blocked_annotate_cookies_count_;
   int blocked_set_cookie_count_;
   int set_cookie_count_;
-  int before_send_headers_with_proxy_count_;
   int before_start_transaction_count_;
   int headers_received_count_;
-  // Last observed proxy in before proxy header sent callback.
-  HostPortPair last_observed_proxy_;
 
   // NetworkDelegate callbacks happen in a particular order (e.g.
   // OnBeforeURLRequest is always called before OnBeforeStartTransaction).
@@ -410,28 +422,117 @@ class TestNetworkDelegate : public NetworkDelegateImpl {
   LoadTimingInfo load_timing_info_before_redirect_;
   bool has_load_timing_info_before_redirect_;
 
-  bool experimental_cookie_features_enabled_;           // false by default
   bool cancel_request_with_policy_violating_referrer_;  // false by default
   bool before_start_transaction_fails_;
   bool add_header_to_first_response_;
   int next_request_id_;
 };
 
-//-----------------------------------------------------------------------------
+// ----------------------------------------------------------------------------
 
-// A simple ProtocolHandler that returns a pre-built URLRequestJob only once.
-class TestJobInterceptor : public URLRequestJobFactory::ProtocolHandler {
+class FilteringTestNetworkDelegate : public TestNetworkDelegate {
  public:
-  TestJobInterceptor();
-  ~TestJobInterceptor() override;
+  FilteringTestNetworkDelegate();
+  ~FilteringTestNetworkDelegate() override;
 
-  URLRequestJob* MaybeCreateJob(
-      URLRequest* request,
-      NetworkDelegate* network_delegate) const override;
-  void set_main_intercept_job(std::unique_ptr<URLRequestJob> job);
+  bool OnCanSetCookie(const URLRequest& request,
+                      const net::CanonicalCookie& cookie,
+                      CookieOptions* options,
+                      bool allowed_from_caller) override;
+
+  void SetCookieFilter(std::string filter) {
+    cookie_name_filter_ = std::move(filter);
+  }
+
+  int set_cookie_called_count() { return set_cookie_called_count_; }
+
+  int blocked_set_cookie_count() { return blocked_set_cookie_count_; }
+
+  void ResetSetCookieCalledCount() { set_cookie_called_count_ = 0; }
+
+  void ResetBlockedSetCookieCount() { blocked_set_cookie_count_ = 0; }
+
+  bool OnAnnotateAndMoveUserBlockedCookies(
+      const URLRequest& request,
+      net::CookieAccessResultList& maybe_included_cookies,
+      net::CookieAccessResultList& excluded_cookies,
+      bool allowed_from_caller) override;
+
+  bool OnForcePrivacyMode(
+      const GURL& url,
+      const SiteForCookies& site_for_cookies,
+      const absl::optional<url::Origin>& top_frame_origin,
+      SamePartyContext::Type same_party_context_type) const override;
+
+  void set_block_annotate_cookies() { block_annotate_cookies_ = true; }
+
+  void unset_block_annotate_cookies() { block_annotate_cookies_ = false; }
+
+  int annotate_cookies_called_count() const {
+    return annotate_cookies_called_count_;
+  }
+
+  int blocked_annotate_cookies_count() const {
+    return blocked_annotate_cookies_count_;
+  }
+
+  void ResetAnnotateCookiesCalledCount() { annotate_cookies_called_count_ = 0; }
+
+  void ResetBlockedAnnotateCookiesCount() {
+    blocked_annotate_cookies_count_ = 0;
+  }
+
+  void set_block_get_cookies_by_name(bool block) {
+    block_get_cookies_by_name_ = block;
+  }
+
+  void set_force_privacy_mode(bool enabled) { force_privacy_mode_ = enabled; }
 
  private:
-  mutable std::unique_ptr<URLRequestJob> main_intercept_job_;
+  std::string cookie_name_filter_ = "";
+  int set_cookie_called_count_ = 0;
+  int blocked_set_cookie_count_ = 0;
+
+  bool block_annotate_cookies_ = false;
+  int annotate_cookies_called_count_ = 0;
+  int blocked_annotate_cookies_count_ = 0;
+  bool block_get_cookies_by_name_ = false;
+
+  bool force_privacy_mode_ = false;
+};
+
+// ----------------------------------------------------------------------------
+
+// Less verbose way of running a simple testserver.
+class HttpTestServer : public EmbeddedTestServer {
+ public:
+  explicit HttpTestServer(const base::FilePath& document_root) {
+    AddDefaultHandlers(document_root);
+  }
+
+  HttpTestServer() { RegisterDefaultHandlers(this); }
+};
+//-----------------------------------------------------------------------------
+
+class TestScopedURLInterceptor {
+ public:
+  // Sets up a URLRequestInterceptor that intercepts a single request for |url|,
+  // returning the provided job.
+  //
+  // On destruction, cleans makes sure the job was removed, and cleans up the
+  // interceptor. Other interceptors for the same URL may not be created until
+  // the interceptor is deleted.
+  TestScopedURLInterceptor(const GURL& url,
+                           std::unique_ptr<URLRequestJob> intercept_job);
+  ~TestScopedURLInterceptor();
+
+ private:
+  class TestRequestInterceptor;
+
+  GURL url_;
+
+  // This is owned by the URLFilter.
+  TestRequestInterceptor* interceptor_ = nullptr;
 };
 
 }  // namespace net

@@ -1,0 +1,4 @@
+mixins: "//content/browser/loader/COMMON_METADATA"
+monorail: {
+  component: "Internals>Services>Network"
+}

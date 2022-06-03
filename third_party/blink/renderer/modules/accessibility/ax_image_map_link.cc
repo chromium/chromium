@@ -28,12 +28,13 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_image_map_link.h"
 
+#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_layout_object.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
 #include "third_party/blink/renderer/platform/graphics/path.h"
-#include "third_party/skia/include/core/SkMatrix44.h"
 
 namespace blink {
 
@@ -50,24 +51,33 @@ HTMLMapElement* AXImageMapLink::MapElement() const {
   return Traversal<HTMLMapElement>::FirstAncestor(*area);
 }
 
-AXObject* AXImageMapLink::ComputeParent() const {
-  DCHECK(!IsDetached());
-  if (parent_)
-    return parent_;
+// static
+AXObject* AXImageMapLink::GetAXObjectForImageMap(AXObjectCacheImpl& cache,
+                                                 Node* area) {
+  DCHECK(area);
+  DCHECK(IsA<HTMLAreaElement>(area));
 
-  if (!MapElement())
+  HTMLMapElement* map = Traversal<HTMLMapElement>::FirstAncestor(*area);
+  if (!map)
     return nullptr;
 
-  return AXObjectCache().GetOrCreate(MapElement()->GetLayoutObject());
+  return cache.GetOrCreate(static_cast<Node*>(map->ImageElement()));
 }
 
-ax::mojom::Role AXImageMapLink::RoleValue() const {
-  const AtomicString& aria_role =
-      GetAOMPropertyOrARIAAttribute(AOMStringProperty::kRole);
-  if (!aria_role.IsEmpty())
-    return AXObject::AriaRoleToWebCoreRole(aria_role);
+ax::mojom::blink::Role AXImageMapLink::NativeRoleIgnoringAria() const {
+  // https://www.w3.org/TR/html-aam-1.0/#html-element-role-mappings
+  // <area> tags without an href should be treated as static text.
+  // If the area has child nodes, those will be rendered naturally, and the
+  // role needs to be a generic container role that allows children.
+  KURL url = Url();
+  bool has_url = !url.IsNull() && !url.IsEmpty();
+  if (has_url)
+    return ax::mojom::blink::Role::kLink;
 
-  return ax::mojom::Role::kLink;
+  if (!GetElement()->hasChildren())
+    return ax::mojom::blink::Role::kStaticText;
+
+  return ax::mojom::blink::Role::kGenericContainer;
 }
 
 bool AXImageMapLink::ComputeAccessibilityIsIgnored(
@@ -92,7 +102,7 @@ KURL AXImageMapLink::Url() const {
 
 void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
                                        FloatRect& out_bounds_in_container,
-                                       SkMatrix44& out_container_transform,
+                                       skia::Matrix44& out_container_transform,
                                        bool* clips_children) const {
   *out_container = nullptr;
   out_bounds_in_container = FloatRect();
@@ -104,19 +114,24 @@ void AXImageMapLink::GetRelativeBounds(AXObject** out_container,
     return;
 
   LayoutObject* layout_object;
-  if (parent_ && parent_->IsAXLayoutObject())
-    layout_object = ToAXLayoutObject(parent_)->GetLayoutObject();
+  if (auto* ax_object = DynamicTo<AXLayoutObject>(parent_.Get()))
+    layout_object = ax_object->GetLayoutObject();
   else
     layout_object = map->GetLayoutObject();
 
   if (!layout_object)
     return;
 
-  out_bounds_in_container = area->GetPath(layout_object).BoundingRect();
+  out_bounds_in_container =
+      FloatRect(area->GetPath(layout_object).BoundingRect());
   *out_container = AXObjectCache().GetOrCreate(layout_object);
 }
 
-void AXImageMapLink::Trace(blink::Visitor* visitor) {
+bool AXImageMapLink::IsImageMapLink() const {
+  return true;
+}
+
+void AXImageMapLink::Trace(Visitor* visitor) const {
   AXNodeObject::Trace(visitor);
 }
 

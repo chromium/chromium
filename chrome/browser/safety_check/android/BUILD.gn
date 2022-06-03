@@ -1,0 +1,143 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/android/rules.gni")
+
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckBridge.java",
+  ]
+}
+
+source_set("android") {
+  sources = [ "safety_check_bridge.cc" ]
+  deps = [
+    ":jni_headers",
+    "//chrome/browser/signin:identity_manager_provider",
+    "//components/password_manager/core/browser/leak_detection",
+    "//components/prefs",
+    "//components/safety_check",
+    "//components/user_prefs",
+    "//content/public/browser",
+  ]
+}
+
+android_library("java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckBridge.java",
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckCoordinator.java",
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckElementPreference.java",
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckMediator.java",
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckProperties.java",
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckSettingsFragment.java",
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckUpdatesDelegate.java",
+    "java/src/org/chromium/chrome/browser/safety_check/SafetyCheckViewBinder.java",
+  ]
+  deps = [
+    ":java_resources",
+    "//base:base_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_check:public_java",
+    "//chrome/browser/password_check/android:password_check_java_enums",
+    "//chrome/browser/password_manager/android:java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/safe_browsing/android:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/ui/android/signin:java",
+    "//components/browser_ui/settings/android:java",
+    "//components/password_manager/core/browser:password_manager_java_enums",
+    "//components/signin/public/android:java",
+    "//content/public/android:content_java",
+    "//third_party/android_deps:android_support_v7_appcompat_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_common_java8_java",
+    "//third_party/androidx:androidx_lifecycle_lifecycle_livedata_core_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//ui/android:ui_full_java",
+  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [
+    ":bulk_leak_check_service_enums",
+    ":safety_check_enums",
+  ]
+  resources_package = "org.chromium.chrome.browser.safety_check"
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/safety_check/SafetyCheckSettingsFragmentTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/password_check:public_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/settings:test_support_java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+  ]
+}
+
+android_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [ "javatests/src/org/chromium/chrome/browser/safety_check/SafetyCheckMediatorTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//base:base_junit_test_support",
+    "//base/test:test_support_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/password_check:public_java",
+    "//chrome/browser/password_check/android:password_check_java_enums",
+    "//chrome/browser/profiles/android:java",
+
+    # Robolectric needs the full PasswordCheckFactory implementation.
+    "//chrome/browser/password_check/android/internal:internal_factory_java",
+    "//chrome/browser/preferences:java",
+    "//chrome/browser/settings:java",
+    "//chrome/browser/ui/android/signin:java",
+    "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
+    "//content/public/android:content_full_java",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_full_java",
+  ]
+}
+
+android_resources("java_resources") {
+  sources = [
+    "java/res/layout/safety_check_bottom_elements.xml",
+    "java/res/layout/safety_check_status.xml",
+    "java/res/values/dimens.xml",
+    "java/res/xml/safety_check_preferences.xml",
+  ]
+  deps = [
+    "//chrome/browser/ui/android/strings:ui_strings_grd",
+    "//components/browser_ui/settings/android:java_resources",
+    "//components/browser_ui/styles/android:java_resources",
+  ]
+}
+
+java_cpp_enum("safety_check_enums") {
+  sources = [ "//components/safety_check/safety_check.h" ]
+}
+
+java_cpp_enum("bulk_leak_check_service_enums") {
+  sources = [ "//components/password_manager/core/browser/bulk_leak_check_service_interface.h" ]
+}

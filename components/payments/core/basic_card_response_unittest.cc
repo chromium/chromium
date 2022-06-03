@@ -18,39 +18,39 @@ TEST(PaymentRequestTest, BasicCardResponseEquality) {
   BasicCardResponse card_response2;
   EXPECT_EQ(card_response1, card_response2);
 
-  card_response1.cardholder_name = base::ASCIIToUTF16("Shadow Moon");
+  card_response1.cardholder_name = u"Shadow Moon";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.cardholder_name = base::ASCIIToUTF16("Mad Sweeney");
+  card_response2.cardholder_name = u"Mad Sweeney";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.cardholder_name = base::ASCIIToUTF16("Shadow Moon");
+  card_response2.cardholder_name = u"Shadow Moon";
   EXPECT_EQ(card_response1, card_response2);
 
-  card_response1.card_number = base::ASCIIToUTF16("4111111111111111");
+  card_response1.card_number = u"4111111111111111";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.card_number = base::ASCIIToUTF16("1111");
+  card_response2.card_number = u"1111";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.card_number = base::ASCIIToUTF16("4111111111111111");
+  card_response2.card_number = u"4111111111111111";
   EXPECT_EQ(card_response1, card_response2);
 
-  card_response1.expiry_month = base::ASCIIToUTF16("01");
+  card_response1.expiry_month = u"01";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.expiry_month = base::ASCIIToUTF16("11");
+  card_response2.expiry_month = u"11";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.expiry_month = base::ASCIIToUTF16("01");
+  card_response2.expiry_month = u"01";
   EXPECT_EQ(card_response1, card_response2);
 
-  card_response1.expiry_year = base::ASCIIToUTF16("27");
+  card_response1.expiry_year = u"27";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.expiry_year = base::ASCIIToUTF16("72");
+  card_response2.expiry_year = u"72";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.expiry_year = base::ASCIIToUTF16("27");
+  card_response2.expiry_year = u"27";
   EXPECT_EQ(card_response1, card_response2);
 
-  card_response1.expiry_year = base::ASCIIToUTF16("123");
+  card_response1.expiry_year = u"123";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.expiry_year = base::ASCIIToUTF16("999");
+  card_response2.expiry_year = u"999";
   EXPECT_NE(card_response1, card_response2);
-  card_response2.expiry_year = base::ASCIIToUTF16("123");
+  card_response2.expiry_year = u"123";
   EXPECT_EQ(card_response1, card_response2);
 
   mojom::PaymentAddressPtr billing_address1 = mojom::PaymentAddress::New();

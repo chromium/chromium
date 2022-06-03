@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<script src="../../resources/common.js"></script>
+<body>
+
+<!-- no style for reference -->
+<ul>
+  <li>Datetime-local: <input type="datetime-local" /></li>
+</ul>
+
+<!-- disabled, readonly -->
+<ul>
+  <li>Datetime-local disabled: <input type="datetime-local" disabled/></li>
+  <li>Datetime-local readonly: <input type="datetime-local" readonly/></li>
+</ul>
+
+<!-- RTL -->
+<ul>
+  <li>Datetime-local RTL: <input type="datetime-local" value="2019-02-14T13:02" dir="rtl"/></li>
+</ul>
+
+<!-- font-size, font-weight -->
+<ul>
+  <li>Datetime-local font-size, font-weight: <input type="datetime-local" value="2019-02-14T13:02" style="font-size: 36px; font-weight: bold;"/> </li>
+</ul>
+
+<!-- hover -->
+<ul>
+  <li>Datetime-local hover: <input type="datetime-local" id="hoverTarget" value="2019-02-14T13:02"/></li>
+</ul>
+
+<!-- small width -->
+<ul>
+  <li>Datetime-local width: 10px: <input type="datetime-local" style="width: 10px;"/> </li>
+</ul>
+
+<!-- zoom -->
+<ul>
+  <li>Datetime-local zoom: 1.5: <input type="datetime-local" style="zoom: 1.5;"/></li>
+  <li>Datetime-local zoom: 3: <input type="datetime-local" style="zoom: 3;"/></li>
+</ul>
+
+<script>
+
+runAfterLayoutAndPaint(function() {
+  var target = document.getElementById('hoverTarget');
+  hoverOverElement(target);
+}, true);
+
+</script>
+
+</body>

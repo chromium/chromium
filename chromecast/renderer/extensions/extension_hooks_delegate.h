@@ -21,6 +21,10 @@ class ExtensionHooksDelegate : public APIBindingHooksDelegate {
  public:
   explicit ExtensionHooksDelegate(
       NativeRendererMessagingService* messaging_service);
+
+  ExtensionHooksDelegate(const ExtensionHooksDelegate&) = delete;
+  ExtensionHooksDelegate& operator=(const ExtensionHooksDelegate&) = delete;
+
   ~ExtensionHooksDelegate() override;
 
   // APIBindingHooksDelegate:
@@ -57,8 +61,6 @@ class ExtensionHooksDelegate : public APIBindingHooksDelegate {
   // The messaging service to handle messaging calls.
   // Guaranteed to outlive this object.
   NativeRendererMessagingService* const messaging_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionHooksDelegate);
 };
 
 }  // namespace extensions

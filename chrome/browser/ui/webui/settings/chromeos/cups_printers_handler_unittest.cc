@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/values.h"
@@ -17,6 +17,7 @@
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "content/public/test/browser_task_environment.h"
@@ -60,7 +61,7 @@ void RemovedPrinter(base::OnceClosure quit_closure,
 
 class TestCupsPrintersManager : public StubCupsPrintersManager {
  public:
-  base::Optional<Printer> GetPrinter(const std::string& id) const override {
+  absl::optional<Printer> GetPrinter(const std::string& id) const override {
     return Printer();
   }
 };
@@ -108,7 +109,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
 
  protected:
   void SelectFileImpl(Type type,
-                      const base::string16& title,
+                      const std::u16string& title,
                       const base::FilePath& default_path,
                       const FileTypeInfo* file_types,
                       int file_type_index,
@@ -186,14 +187,14 @@ class CupsPrintersHandlerTest : public testing::Test {
  public:
   CupsPrintersHandlerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        profile_(),
+        profile_(std::make_unique<TestingProfile>()),
         web_ui_(),
         printers_handler_() {}
   ~CupsPrintersHandlerTest() override = default;
 
   void SetUp() override {
     printers_handler_ = CupsPrintersHandler::CreateForTesting(
-        &profile_, base::MakeRefCounted<FakePpdProvider>(),
+        profile_.get(), base::MakeRefCounted<FakePpdProvider>(),
         std::make_unique<StubPrinterConfigurer>(), &printers_manager_);
     printers_handler_->SetWebUIForTest(&web_ui_);
     printers_handler_->RegisterMessages();
@@ -202,7 +203,7 @@ class CupsPrintersHandlerTest : public testing::Test {
  protected:
   // Must outlive |profile_|.
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
+  std::unique_ptr<TestingProfile> profile_;
   content::TestWebUI web_ui_;
   std::unique_ptr<CupsPrintersHandler> printers_handler_;
   TestCupsPrintersManager printers_manager_;
@@ -210,6 +211,9 @@ class CupsPrintersHandlerTest : public testing::Test {
 
 TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   DBusThreadManager::Initialize();
+  chromeos::ConciergeClient::InitializeFake(
+      /*fake_cicerone_client=*/nullptr);
+
   DebugDaemonClient* client = DBusThreadManager::Get()->GetDebugDaemonClient();
   client->CupsAddAutoConfiguredPrinter("testprinter1", "fakeuri",
                                        base::BindOnce(&AddedPrinter));
@@ -230,16 +234,20 @@ TEST_F(CupsPrintersHandlerTest, RemoveCorrectPrinter) {
   bool expected = true;
   client->CupsRemovePrinter(
       "testprinter1",
-      base::BindRepeating(&RemovedPrinter, run_loop.QuitClosure(), &expected),
+      base::BindOnce(&RemovedPrinter, run_loop.QuitClosure(), &expected),
       base::DoNothing());
   run_loop.Run();
   EXPECT_FALSE(expected);
+
+  profile_.reset();
+  chromeos::ConciergeClient::Shutdown();
+  DBusThreadManager::Shutdown();
 }
 
 TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
-  DownloadCoreServiceFactory::GetForBrowserContext(&profile_)
+  DownloadCoreServiceFactory::GetForBrowserContext(profile_.get())
       ->SetDownloadManagerDelegateForTesting(
-          std::make_unique<ChromeDownloadManagerDelegate>(&profile_));
+          std::make_unique<ChromeDownloadManagerDelegate>(profile_.get()));
 
   ui::SelectFileDialog::FileTypeInfo expected_file_type_info;
   // We only allow .ppd and .ppd.gz file extensions for our file select dialog.
@@ -253,5 +261,6 @@ TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
   web_ui_.HandleReceivedMessage("selectPPDFile",
                                 &base::Value::AsListValue(args));
 }
+
 }  // namespace settings.
 }  // namespace chromeos.

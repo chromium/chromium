@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/webrtc-pc/#rtcprioritytype-enum
+// https://w3c.github.io/webrtc-priority/#rtc-priority-type
 enum RTCPriorityType {
     "very-low",
     "low",
@@ -12,14 +12,16 @@ enum RTCPriorityType {
 
 // https://w3c.github.io/webrtc-pc/#rtcrtpencodingparameters*
 dictionary RTCRtpEncodingParameters : RTCRtpCodingParameters {
-    //TODO(orphis): Missing codecPayloadType. https://crbug.com/857042
-    //TODO(orphis): Missing dtx. https://crbug.com/857044
     boolean         active = true;
+    unsigned long   maxBitrate;
+    double          scaleResolutionDownBy;
+    // https://w3c.github.io/webrtc-priority/#encoding-parameters
     RTCPriorityType priority = "low";
     RTCPriorityType networkPriority = "low";
-    //TODO(orphis): Missing ptime. https://crbug.com/857046
-    unsigned long   maxBitrate;
-    //TODO(orphis): Missing maxFramerate. https://crbug.com/857047
-    double          scaleResolutionDownBy;
+    // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpencodingparameters-maxframerate
+    double          maxFramerate;
+    // https://w3c.github.io/webrtc-svc/#dom-rtcrtpencodingparameters-scalabilitymode
     [RuntimeEnabled=RTCSvcScalabilityMode] DOMString scalabilityMode;
+    // https://w3c.github.io/webrtc-extensions/#dom-rtcrtpencodingparameters-adaptiveptime
+    boolean adaptivePtime = false;
 };

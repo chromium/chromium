@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "net/http/http_byte_range.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {

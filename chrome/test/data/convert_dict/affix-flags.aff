@@ -1,0 +1,6 @@
+# This file defines a group of affixes using the AF keyword.
+
+AF 3
+AF Foo
+AF Bar
+AF Foobar

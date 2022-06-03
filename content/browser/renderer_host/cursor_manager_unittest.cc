@@ -3,25 +3,23 @@
 // found in the LICENSE file.
 
 #include "content/browser/renderer_host/cursor_manager.h"
+#include <memory>
 
 #include "build/build_config.h"
-#include "content/browser/renderer_host/frame_token_message_queue.h"
-#include "content/browser/renderer_host/render_widget_host_delegate.h"
+#include "content/browser/renderer_host/agent_scheduling_group_host.h"
+#include "content/browser/renderer_host/mock_render_widget_host.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
-#include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/common/cursors/webcursor.h"
-#include "content/public/common/cursor_info.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/test/mock_render_widget_host_delegate.h"
-#include "content/test/mock_widget_impl.h"
 #include "content/test/test_render_view_host.h"
-#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
 
 // CursorManager is only instantiated on Aura and Mac.
-#if defined(USE_AURA) || defined(OS_MACOSX)
+#if defined(USE_AURA) || defined(OS_MAC)
 
 namespace content {
 
@@ -32,7 +30,7 @@ class MockRenderWidgetHostViewForCursors : public TestRenderWidgetHostView {
   MockRenderWidgetHostViewForCursors(RenderWidgetHost* host, bool top_view)
       : TestRenderWidgetHostView(host) {
     if (top_view)
-      cursor_manager_.reset(new CursorManager(this));
+      cursor_manager_ = std::make_unique<CursorManager>(this);
   }
 
   void DisplayCursor(const WebCursor& cursor) override {
@@ -48,63 +46,39 @@ class MockRenderWidgetHostViewForCursors : public TestRenderWidgetHostView {
   std::unique_ptr<CursorManager> cursor_manager_;
 };
 
-class MockRenderWidgetHost : public RenderWidgetHostImpl {
- public:
-  static MockRenderWidgetHost* Create(RenderWidgetHostDelegate* delegate,
-                                      RenderProcessHost* process,
-                                      int32_t routing_id) {
-    mojo::PendingRemote<mojom::Widget> widget;
-    std::unique_ptr<MockWidgetImpl> widget_impl =
-        std::make_unique<MockWidgetImpl>(
-            widget.InitWithNewPipeAndPassReceiver());
-
-    return new MockRenderWidgetHost(delegate, process, routing_id,
-                                    std::move(widget_impl), std::move(widget));
-  }
-
- private:
-  MockRenderWidgetHost(RenderWidgetHostDelegate* delegate,
-                       RenderProcessHost* process,
-                       int routing_id,
-                       std::unique_ptr<MockWidgetImpl> widget_impl,
-                       mojo::PendingRemote<mojom::Widget> widget)
-      : RenderWidgetHostImpl(delegate,
-                             process,
-                             routing_id,
-                             std::move(widget),
-                             /*hidden=*/false,
-                             std::make_unique<FrameTokenMessageQueue>()),
-        widget_impl_(std::move(widget_impl)) {}
-
-  std::unique_ptr<MockWidgetImpl> widget_impl_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockRenderWidgetHost);
-};
-
 class CursorManagerTest : public testing::Test {
  public:
-  CursorManagerTest() {}
+  CursorManagerTest() = default;
+
+  CursorManagerTest(const CursorManagerTest&) = delete;
+  CursorManagerTest& operator=(const CursorManagerTest&) = delete;
 
   void SetUp() override {
-    browser_context_.reset(new TestBrowserContext);
-    process_host_.reset(new MockRenderProcessHost(browser_context_.get()));
-    widget_host_.reset(MakeNewWidgetHost());
+    browser_context_ = std::make_unique<TestBrowserContext>();
+    process_host_ =
+        std::make_unique<MockRenderProcessHost>(browser_context_.get());
+    agent_scheduling_group_host_ =
+        std::make_unique<AgentSchedulingGroupHost>(*process_host_);
+    widget_host_ = MakeNewWidgetHost();
     top_view_ =
         new MockRenderWidgetHostViewForCursors(widget_host_.get(), true);
   }
 
-  RenderWidgetHostImpl* MakeNewWidgetHost() {
+  std::unique_ptr<RenderWidgetHostImpl> MakeNewWidgetHost() {
     int32_t routing_id = process_host_->GetNextRoutingID();
-    return MockRenderWidgetHost::Create(&delegate_, process_host_.get(),
-                                        routing_id);
+    return MockRenderWidgetHost::Create(
+        /*frame_tree=*/nullptr, &delegate_, *agent_scheduling_group_host_,
+        routing_id);
   }
 
   void TearDown() override {
     if (top_view_)
       delete top_view_;
 
-    widget_host_.reset();
-    process_host_.reset();
+    widget_host_ = nullptr;
+    process_host_->Cleanup();
+    agent_scheduling_group_host_ = nullptr;
+    process_host_ = nullptr;
   }
 
  protected:
@@ -112,6 +86,7 @@ class CursorManagerTest : public testing::Test {
 
   std::unique_ptr<BrowserContext> browser_context_;
   std::unique_ptr<MockRenderProcessHost> process_host_;
+  std::unique_ptr<AgentSchedulingGroupHost> agent_scheduling_group_host_;
   std::unique_ptr<RenderWidgetHostImpl> widget_host_;
 
   // Tests should set this to nullptr if they've already triggered its
@@ -119,9 +94,6 @@ class CursorManagerTest : public testing::Test {
   MockRenderWidgetHostViewForCursors* top_view_;
 
   MockRenderWidgetHostDelegate delegate_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CursorManagerTest);
 };
 
 }  // namespace
@@ -134,8 +106,7 @@ TEST_F(CursorManagerTest, CursorOnSingleView) {
   // The view should be using the default cursor.
   EXPECT_EQ(top_view_->cursor(), WebCursor());
 
-  CursorInfo cursor_info(ui::CursorType::kHand);
-  WebCursor cursor_hand(cursor_info);
+  WebCursor cursor_hand(ui::mojom::CursorType::kHand);
 
   // Update the view with a non-default cursor.
   top_view_->GetCursorManager()->UpdateCursor(top_view_, cursor_hand);
@@ -151,8 +122,7 @@ TEST_F(CursorManagerTest, CursorOverChildView) {
   std::unique_ptr<MockRenderWidgetHostViewForCursors> child_view(
       new MockRenderWidgetHostViewForCursors(widget_host.get(), false));
 
-  CursorInfo cursor_info(ui::CursorType::kHand);
-  WebCursor cursor_hand(cursor_info);
+  WebCursor cursor_hand(ui::mojom::CursorType::kHand);
 
   // Set the child frame's cursor to a hand. This should not propagate to the
   // top-level view without the mouse moving over the child frame.
@@ -179,14 +149,11 @@ TEST_F(CursorManagerTest, CursorOverMultipleChildViews) {
   std::unique_ptr<MockRenderWidgetHostViewForCursors> child_view2(
       new MockRenderWidgetHostViewForCursors(widget_host2.get(), false));
 
-  CursorInfo cursor_info_hand(ui::CursorType::kHand);
-  WebCursor cursor_hand(cursor_info_hand);
+  WebCursor cursor_hand(ui::mojom::CursorType::kHand);
 
-  CursorInfo cursor_info_cross(ui::CursorType::kCross);
-  WebCursor cursor_cross(cursor_info_cross);
+  WebCursor cursor_cross(ui::mojom::CursorType::kCross);
 
-  CursorInfo cursor_info_pointer(ui::CursorType::kPointer);
-  WebCursor cursor_pointer(cursor_info_pointer);
+  WebCursor cursor_pointer(ui::mojom::CursorType::kPointer);
 
   // Initialize each View to a different cursor.
   top_view_->GetCursorManager()->UpdateCursor(top_view_, cursor_hand);
@@ -221,4 +188,4 @@ TEST_F(CursorManagerTest, CursorOverMultipleChildViews) {
 
 }  // namespace content
 
-#endif  // defined(USE_AURA) || defined(OS_MACOSX)
+#endif  // defined(USE_AURA) || defined(OS_MAC)

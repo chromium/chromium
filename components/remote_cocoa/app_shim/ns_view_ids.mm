@@ -8,7 +8,7 @@
 #include <map>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/no_destructor.h"
 
 namespace remote_cocoa {

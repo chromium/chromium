@@ -1,0 +1,32 @@
+diff --git a/BUILD b/BUILD
+index 0a5c9eb..d836578 100644
+--- a/BUILD
++++ b/BUILD
+@@ -6,6 +6,11 @@ licenses(["notice"])
+
+ exports_files(["src/gflags_complections.sh", "COPYING.txt"])
+
++config_setting(
++    name = "android",
++    values = {"crosstool_top": "//external:android/crosstool"},
++)
++
+ load(":bazel/gflags.bzl", "gflags_sources", "gflags_library")
+ (hdrs, srcs) = gflags_sources(namespace=["gflags", "google"])
+ gflags_library(hdrs=hdrs, srcs=srcs, threads=0)
+diff --git a/bazel/gflags.bzl b/bazel/gflags.bzl
+index cd0edad..5c1d8b5 100644
+--- a/bazel/gflags.bzl
++++ b/bazel/gflags.bzl
+@@ -77,7 +77,10 @@ def gflags_library(hdrs=[], srcs=[], threads=1):
+     ]
+     linkopts = []
+     if threads:
+-        linkopts.append("-lpthread")
++        linkopts += select({
++            "//:android": [],
++            "//conditions:default": ["-lpthread"],
++        })
+     else:
+         name += "_nothreads"
+         copts.append("-DNO_THREADS")

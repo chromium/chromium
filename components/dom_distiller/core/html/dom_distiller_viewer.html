@@ -9,7 +9,9 @@ found in the LICENSE file.
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
   <meta name="theme-color" id="theme-color">
-  <title>$1</title>
+  <!-- Placeholder for CSP. -->
+  $1
+  <title>$i18n{title}</title>
   <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
       rel="stylesheet">
   <!-- Placeholder for CSS. -->
@@ -20,67 +22,53 @@ found in the LICENSE file.
     <div id="main-content">
       <div id="settings-container" class="desktop-only">
         <button id="settings-toggle" type="button"
-            aria-label="Adjust appearance settings" tabindex=0>
-          <i class="material-icons">text_format</i>
+            aria-label="$i18n{customizeAppearance}" tabindex=0>
+          <i class="material-icons">&#xE165</i>
         </button>
+        <div id="dialog-backdrop"></div>
         <dialog id="settings-dialog">
           <div id="settings-header">
-            <h2>Reader Mode Styling</h2>
-            <button id="close-settings-button" type="button" aria-label="Close settings"
-                tabindex=0>
-              <i class="material-icons">close</i>
-            </button>
+            <h1>$i18n{customizeAppearance}</h1>
           </div>
           <div id="settings-fields">
-            <div class="setting">
+            <div class="setting font-family-container">
               <label id="font-family-label" class="screen-reader-only">
-                Font Style
+                $i18n{fontStyle}
               </label>
               <select id="font-family-selection" aria-labelledby="font-family-label" name="font-family">
-                <option value="sans-serif" selected>Sans-serif font</option>
-                <option value="serif">Serif font</option>
-                <option value="monospace">Monospace font</option>
+                <option value="sans-serif" selected>$i18n{sansSerifFont}</option>
+                <option value="serif">$i18n{serifFont}</option>
+                <option value="monospace">$i18n{monospaceFont}</option>
               </select>
+              <i class="material-icons" id="arrow-drop-down">&#xe5c5</i>
             </div>
             <div class="setting">
               <fieldset id="theme-selection">
                 <legend class="screen-reader-only">
-                  Page Theme
+                  $i18n{pageColor}
                 </legend>
                 <ul>
                   <li class="theme-option">
-                    <label id="theme-option-light-label" class="screen-reader-only">
-                      Light
-                    </label>
                     <input type="radio" name="theme" value="light"
-                       aria-labelledby="theme-option-light-label"
-                       id="theme-option-light" class="light" checked>
-                    <div class="checkmark"><i class="material-icons">check_circle</i></div>
+                       aria-label="$i18n{light}" id="theme-option-light" class="light" checked>
+                    <div class="checkmark"><i class="material-icons" aria-hidden="true">&#xE86c</i></div>
                   </li>
                   <li class="theme-option">
-                    <label id="theme-option-sepia-label" class="screen-reader-only">
-                      Sepia
-                    </label>
                     <input type="radio" name="theme" value="sepia"
-                       aria-labelledby="theme-option-sepia-label"
-                       id="theme-option-sepia" class="sepia">
-                    <div class="checkmark"><i class="material-icons">check_circle</i></div>
+                       aria-label="$i18n{sepia}" id="theme-option-sepia" class="sepia">
+                    <div class="checkmark"><i class="material-icons" aria-hidden="true">&#xE86c</i></div>
                   </li>
                   <li class="theme-option">
-                    <label id="theme-option-dark-label" class="screen-reader-only">
-                      Dark
-                    </label>
                     <input type="radio" name="theme" value="dark"
-                       aria-labelledby="theme-option-dark-label"
-                       id="theme-option-dark" class="dark">
-                    <div class="checkmark"><i class="material-icons">check_circle</i></div>
+                       aria-label="$i18n{dark}" id="theme-option-dark" class="dark">
+                    <div class="checkmark"><i class="material-icons" aria-hidden="true">&#xE86c</i></div>
                   </li>
                 </ul>
               </fieldset>
             </div>
             <div class="setting" id="font-size-wrapper">
               <label id="font-size-label" class="screen-reader-only">
-                Font Size
+                $i18n{fontSize}
               </label>
               <input aria-labelledby="font-size-label"
                      id="font-size-selection"
@@ -91,11 +79,15 @@ found in the LICENSE file.
                      max="9"
                      value="2">
               <div class="label-container">
-                <span id="slider-label-min">Small</span>
-                <span id="slider-label-max">Large</span>
+                <span id="slider-label-min">$i18n{small}</span>
+                <span id="slider-label-max">$i18n{large}</span>
               </div>
             </div>
           </div>
+            <button id="close-settings-button" type="button"
+                aria-label="$i18n{close}" tabindex=0>
+              <i class="material-icons">close</i>
+            </button>
         </dialog>
       </div>
       <article>
@@ -103,16 +95,16 @@ found in the LICENSE file.
           <div id="title-collapse">
             <div class="vertical-center-outer">
               <div class="vertical-center-inner">
-                <h1 id="title-holder"><noscript>$4</noscript></h1>
+                <h1 id="title-holder"><noscript>$i18n{title}</noscript></h1>
               </div>
             </div>
           </div>
         </header>
-        <div id="content"><noscript>$5</noscript></div>
+        <div id="content"><noscript>$4</noscript></div>
       </article>
       <div id="loading-indicator" class="visible">
         <!-- SVG material loading spinner. -->
-        $6
+        $5
       </div>
     </div>
   </div>

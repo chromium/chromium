@@ -17,30 +17,16 @@ import android.system.Os;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.build.gtest_apk.NativeTestIntent;
 import org.chromium.test.reporter.TestStatusReporter;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Iterator;
 
 /**
  *  Helper to run tests inside Activity or NativeActivity.
  */
 @JNINamespace("testing::android")
 public class NativeTest {
-    public static final String EXTRA_COMMAND_LINE_FILE =
-            "org.chromium.native_test.NativeTest.CommandLineFile";
-    public static final String EXTRA_COMMAND_LINE_FLAGS =
-            "org.chromium.native_test.NativeTest.CommandLineFlags";
-    public static final String EXTRA_RUN_IN_SUB_THREAD =
-            "org.chromium.native_test.NativeTest.RunInSubThread";
-    public static final String EXTRA_SHARD =
-            "org.chromium.native_test.NativeTest.Shard";
-    public static final String EXTRA_STDOUT_FILE =
-            "org.chromium.native_test.NativeTest.StdoutFile";
-    public static final String EXTRA_COVERAGE_DEVICE_FILE =
-            "org.chromium.native_test.NativeTest.CoverageDeviceFile";
-
     private static final String TAG = "NativeTest";
 
     private String mCommandLineFilePath;
@@ -69,12 +55,35 @@ public class NativeTest {
     }
 
     public void preCreate(Activity activity) {
-        String coverageDeviceFile = activity.getIntent().getStringExtra(EXTRA_COVERAGE_DEVICE_FILE);
+        String coverageDeviceFile =
+                activity.getIntent().getStringExtra(NativeTestIntent.EXTRA_COVERAGE_DEVICE_FILE);
         if (coverageDeviceFile != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             try {
                 Os.setenv("LLVM_PROFILE_FILE", coverageDeviceFile, true);
             } catch (Exception e) {
                 Log.w(TAG, "failed to set LLVM_PROFILE_FILE", e);
+            }
+        }
+        // To use Os.setenv, need to check Android API level, because
+        // it requires API level 21 and Kitkat(API 19) doesn't match.
+        // See crbug.com/1042122.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            // Set TMPDIR to make perfetto_unittests not to use /data/local/tmp
+            // as temporary directory.
+            try {
+                Os.setenv(
+                        "TMPDIR", activity.getApplicationContext().getCacheDir().getPath(), false);
+            } catch (Exception e) {
+                // Need to use Exception for Android Kitkat, because
+                // Kitkat doesn't know ErrnoException is an exception class.
+                // When dalvikvm(Kitkat) verifies preCreate method, it finds
+                // that unknown method:Os.setenv is used without any exception
+                // class. So dalvikvm rejects preCreate method and also rejects
+                // NativeClass. All native tests will crash.
+                // The verification is executed before running preCreate.
+                // The above Build.VERSION check doesn't work to avoid
+                // the crash.
+                Log.w(TAG, "failed to set TMPDIR", e);
             }
         }
     }
@@ -97,7 +106,7 @@ public class NativeTest {
             }
         }
 
-        mCommandLineFilePath = intent.getStringExtra(EXTRA_COMMAND_LINE_FILE);
+        mCommandLineFilePath = intent.getStringExtra(NativeTestIntent.EXTRA_COMMAND_LINE_FILE);
         if (mCommandLineFilePath == null) {
             mCommandLineFilePath = "";
         } else {
@@ -109,25 +118,17 @@ public class NativeTest {
             Log.i(TAG, "command line file path: %s", mCommandLineFilePath);
         }
 
-        String commandLineFlags = intent.getStringExtra(EXTRA_COMMAND_LINE_FLAGS);
+        String commandLineFlags = intent.getStringExtra(NativeTestIntent.EXTRA_COMMAND_LINE_FLAGS);
         if (commandLineFlags != null) mCommandLineFlags.append(commandLineFlags);
 
-        mRunInSubThread = intent.hasExtra(EXTRA_RUN_IN_SUB_THREAD);
+        mRunInSubThread = intent.hasExtra(NativeTestIntent.EXTRA_RUN_IN_SUB_THREAD);
 
-        ArrayList<String> shard = intent.getStringArrayListExtra(EXTRA_SHARD);
-        if (shard != null) {
-            StringBuilder filterFlag = new StringBuilder();
-            filterFlag.append("--gtest_filter=");
-            for (Iterator<String> test_iter = shard.iterator(); test_iter.hasNext();) {
-                filterFlag.append(test_iter.next());
-                if (test_iter.hasNext()) {
-                    filterFlag.append(":");
-                }
-            }
-            appendCommandLineFlags(filterFlag.toString());
+        String gtestFilter = intent.getStringExtra(NativeTestIntent.EXTRA_GTEST_FILTER);
+        if (gtestFilter != null) {
+            appendCommandLineFlags("--gtest_filter=" + gtestFilter);
         }
 
-        mStdoutFilePath = intent.getStringExtra(EXTRA_STDOUT_FILE);
+        mStdoutFilePath = intent.getStringExtra(NativeTestIntent.EXTRA_STDOUT_FILE);
     }
 
     public void appendCommandLineFlags(String flags) {

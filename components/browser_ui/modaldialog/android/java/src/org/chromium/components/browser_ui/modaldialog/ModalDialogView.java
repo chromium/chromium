@@ -8,6 +8,7 @@ import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.text.TextUtils;
+import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,13 +17,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.IntDef;
+
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.components.browser_ui.widget.BoundedLinearLayout;
 import org.chromium.components.browser_ui.widget.FadingEdgeScrollView;
 import org.chromium.ui.UiUtils;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 
 /**
@@ -30,6 +36,19 @@ import java.lang.reflect.Field;
  */
 public class ModalDialogView extends BoundedLinearLayout implements View.OnClickListener {
     private static final String TAG = "ModalDialogView";
+    private static final String UMA_SECURITY_FILTERED_TOUCH_RESULT =
+            "Android.ModalDialog.SecurityFilteredTouchResult";
+
+    // Intdef with constants for recording the result of filtering touch events on security
+    // sensitive dialogs. Should stay in sync with the SecurityFilteredTouchResult enum defined in
+    // tools/metrics/histograms/enums.xml.
+    @IntDef({SecurityFilteredTouchResult.BLOCKED, SecurityFilteredTouchResult.HANDLED})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface SecurityFilteredTouchResult {
+        int HANDLED = 0;
+        int BLOCKED = 1;
+        int NUM_ENTRIES = 2;
+    }
 
     private ModalDialogProperties.Controller mController;
 
@@ -45,6 +64,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     private Callback<Integer> mOnButtonClickedCallback;
     private boolean mTitleScrollable;
     private boolean mFilterTouchForSecurity;
+    private boolean mFilteredTouchResultRecorded;
+    private Runnable mOnTouchFilteredCallback;
 
     /**
      * Constructor for inflating from XML.
@@ -69,6 +90,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
 
         mPositiveButton.setOnClickListener(this);
         mNegativeButton.setOnClickListener(this);
+        mMessageView.setMovementMethod(LinkMovementMethod.getInstance());
         updateContentVisibility();
         updateButtonVisibility();
 
@@ -90,6 +112,8 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.POSITIVE);
         } else if (view == mNegativeButton) {
             mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.NEGATIVE);
+        } else if (view == mTitleIcon) {
+            mOnButtonClickedCallback.onResult(ModalDialogProperties.ButtonType.TITLE_ICON);
         }
     }
 
@@ -128,6 +152,7 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
     public void setTitleIcon(Drawable drawable) {
         mTitleIcon.setImageDrawable(drawable);
         updateContentVisibility();
+        if (drawable != null) mTitleIcon.setOnClickListener(this);
     }
 
     /** @param titleScrollable Whether the title is scrollable with the message. */
@@ -188,13 +213,28 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
             // introduced on M+.
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;
 
+            boolean shouldBlockTouchEvent = false;
+
             try {
                 Field field = MotionEvent.class.getField("FLAG_WINDOW_IS_PARTIALLY_OBSCURED");
-                if ((ev.getFlags() & field.getInt(null)) != 0) return true;
+                if ((ev.getFlags() & field.getInt(null)) != 0) {
+                    shouldBlockTouchEvent = true;
+                }
+                if (ev.getAction() == MotionEvent.ACTION_DOWN && !mFilteredTouchResultRecorded) {
+                    mFilteredTouchResultRecorded = true;
+                    RecordHistogram.recordEnumeratedHistogram(UMA_SECURITY_FILTERED_TOUCH_RESULT,
+                            shouldBlockTouchEvent ? SecurityFilteredTouchResult.BLOCKED
+                                                  : SecurityFilteredTouchResult.HANDLED,
+                            SecurityFilteredTouchResult.NUM_ENTRIES);
+                }
+                if (shouldBlockTouchEvent && mOnTouchFilteredCallback != null
+                        && ev.getAction() == MotionEvent.ACTION_DOWN) {
+                    mOnTouchFilteredCallback.run();
+                }
             } catch (NoSuchFieldException | IllegalAccessException e) {
                 Log.e(TAG, "Reflection failure: " + e);
             }
-            return false;
+            return shouldBlockTouchEvent;
         };
 
         positiveButton.setFilterTouchesWhenObscured(true);
@@ -203,8 +243,16 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         negativeButton.setOnTouchListener(onTouchListener);
     }
 
+    /**
+     * @param callback The callback is called when touch event is filtered because of an overlay
+     *                 window.
+     */
+    void setOnTouchFilteredCallback(Runnable callback) {
+        mOnTouchFilteredCallback = callback;
+    }
+
     /** @param message The message in the dialog content. */
-    void setMessage(String message) {
+    void setMessage(CharSequence message) {
         mMessageView.setText(message);
         updateContentVisibility();
     }

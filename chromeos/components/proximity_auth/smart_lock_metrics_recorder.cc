@@ -4,29 +4,37 @@
 
 #include "chromeos/components/proximity_auth/smart_lock_metrics_recorder.h"
 
-#include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+
+SmartLockMetricsRecorder::UsageRecorder::UsageRecorder() = default;
+
+SmartLockMetricsRecorder::UsageRecorder::~UsageRecorder() = default;
 
 SmartLockMetricsRecorder::SmartLockMetricsRecorder() = default;
 
 SmartLockMetricsRecorder::~SmartLockMetricsRecorder() {}
 
+// static
 void SmartLockMetricsRecorder::RecordSmartLockUnlockAuthMethodChoice(
     SmartLockAuthMethodChoice auth_method_choice) {
   UMA_HISTOGRAM_ENUMERATION("SmartLock.AuthMethodChoice.Unlock",
                             auth_method_choice);
 }
 
+// static
 void SmartLockMetricsRecorder::RecordSmartLockSignInAuthMethodChoice(
     SmartLockAuthMethodChoice auth_method_choice) {
   UMA_HISTOGRAM_ENUMERATION("SmartLock.AuthMethodChoice.SignIn",
                             auth_method_choice);
 }
 
+// static
 void SmartLockMetricsRecorder::RecordAuthResultUnlockSuccess(bool success) {
+  RecordAuthResultSuccess(success);
   UMA_HISTOGRAM_BOOLEAN("SmartLock.AuthResult.Unlock", success);
 }
 
+// static
 void SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
     SmartLockAuthResultFailureReason failure_reason) {
   RecordAuthResultUnlockSuccess(false);
@@ -34,10 +42,13 @@ void SmartLockMetricsRecorder::RecordAuthResultUnlockFailure(
                             failure_reason);
 }
 
+// static
 void SmartLockMetricsRecorder::RecordAuthResultSignInSuccess(bool success) {
+  RecordAuthResultSuccess(success);
   UMA_HISTOGRAM_BOOLEAN("SmartLock.AuthResult.SignIn", success);
 }
 
+// static
 void SmartLockMetricsRecorder::RecordAuthResultSignInFailure(
     SmartLockAuthResultFailureReason failure_reason) {
   RecordAuthResultSignInSuccess(false);
@@ -45,14 +56,34 @@ void SmartLockMetricsRecorder::RecordAuthResultSignInFailure(
                             failure_reason);
 }
 
+// static
 void SmartLockMetricsRecorder::RecordAuthMethodChoiceUnlockPasswordState(
     SmartLockAuthEventPasswordState password_state) {
   UMA_HISTOGRAM_ENUMERATION("SmartLock.AuthMethodChoice.Unlock.PasswordState",
                             password_state);
 }
 
+// static
 void SmartLockMetricsRecorder::RecordAuthMethodChoiceSignInPasswordState(
     SmartLockAuthEventPasswordState password_state) {
   UMA_HISTOGRAM_ENUMERATION("SmartLock.AuthMethodChoice.SignIn.PasswordState",
                             password_state);
 }
+
+// static
+void SmartLockMetricsRecorder::SetUsageRecorderInstance(
+    SmartLockMetricsRecorder::UsageRecorder* usage_recorder) {
+  SmartLockMetricsRecorder::g_usage_recorder = usage_recorder;
+}
+
+// static
+void SmartLockMetricsRecorder::RecordAuthResultSuccess(bool success) {
+  UMA_HISTOGRAM_BOOLEAN("SmartLock.AuthResult", success);
+
+  if (SmartLockMetricsRecorder::g_usage_recorder) {
+    SmartLockMetricsRecorder::g_usage_recorder->RecordUsage(success);
+  }
+}
+
+SmartLockMetricsRecorder::UsageRecorder*
+    SmartLockMetricsRecorder::g_usage_recorder = nullptr;

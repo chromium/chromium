@@ -15,10 +15,8 @@
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -26,6 +24,7 @@
 #include "chromeos/dbus/power_manager/policy.pb.h"
 #include "chromeos/dbus/power_manager/power_supply_properties.pb.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class OneShotTimer;
@@ -40,6 +39,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
     : public PowerManagerClient {
  public:
   FakePowerManagerClient();
+
+  FakePowerManagerClient(const FakePowerManagerClient&) = delete;
+  FakePowerManagerClient& operator=(const FakePowerManagerClient&) = delete;
+
   ~FakePowerManagerClient() override;
 
   // Checks that FakePowerManagerClient was initialized and returns it.
@@ -79,6 +82,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void set_user_activity_callback(base::RepeatingClosure callback) {
     user_activity_callback_ = std::move(callback);
   }
+  void set_peripheral_battery_refresh_level(const std::string& address,
+                                            int level) {
+    peripheral_battery_refresh_levels_[address] = level;
+  }
 
   // PowerManagerClient overrides:
   void AddObserver(Observer* observer) override;
@@ -95,9 +102,11 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void IncreaseKeyboardBrightness() override;
   void GetKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback) override;
-  const base::Optional<power_manager::PowerSupplyProperties>& GetLastStatus()
+  const absl::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
       override;
   void RequestStatusUpdate() override;
+  void RequestAllPeripheralBatteryUpdate() override;
+  void RequestThermalState() override;
   void RequestSuspend() override;
   void RequestRestart(power_manager::RequestRestartReason reason,
                       const std::string& description) override;
@@ -129,6 +138,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void DeleteArcTimers(const std::string& tag,
                        VoidDBusMethodCallback callback) override;
   base::TimeDelta GetDarkSuspendDelayTimeout() override;
+  void RefreshBluetoothBattery(const std::string& address) override;
+  void SetExternalDisplayALSBrightness(bool enabled) override;
+  void GetExternalDisplayALSBrightness(
+      DBusMethodCallback<bool> callback) override;
 
   // Pops the first report from |video_activity_reports_|, returning whether the
   // activity was fullscreen or not. There must be at least one report.
@@ -183,11 +196,11 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // Sets the screen brightness percent to be returned.
   // The nullopt |percent| means an error. In case of success,
   // |percent| must be in the range of [0, 100].
-  void set_screen_brightness_percent(const base::Optional<double>& percent) {
+  void set_screen_brightness_percent(const absl::optional<double>& percent) {
     screen_brightness_percent_ = percent;
   }
 
-  void set_keyboard_brightness_percent(const base::Optional<double>& percent) {
+  void set_keyboard_brightness_percent(const absl::optional<double>& percent) {
     keyboard_brightness_percent_ = percent;
   }
 
@@ -217,7 +230,7 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   power_manager::PowerManagementPolicy policy_;
 
   // Power status received from the power manager.
-  base::Optional<power_manager::PowerSupplyProperties> props_;
+  absl::optional<power_manager::PowerSupplyProperties> props_;
 
   // Number of times that various methods have been called.
   int num_request_restart_calls_ = 0;
@@ -231,10 +244,10 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   int num_pending_suspend_readiness_callbacks_ = 0;
 
   // Current screen brightness in the range [0.0, 100.0].
-  base::Optional<double> screen_brightness_percent_;
+  absl::optional<double> screen_brightness_percent_;
 
   // Current keyboard brightness in the range [0.0, 100.0].
-  base::Optional<double> keyboard_brightness_percent_;
+  absl::optional<double> keyboard_brightness_percent_;
 
   // Last screen brightness requested via SetScreenBrightness().
   // Unlike |screen_brightness_percent_|, this value will not be changed by
@@ -308,13 +321,21 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   // If set then |StartArcTimer| returns failure.
   bool simulate_start_arc_timer_failure_ = false;
 
+  // Used in RefreshBluetoothBattery.
+  base::flat_map<std::string, int> peripheral_battery_refresh_levels_;
+
+  bool external_display_als_brightness_enabled_ = false;
+
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<FakePowerManagerClient> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FakePowerManagerClient);
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when moved to ash.
+namespace ash {
+using ::chromeos::FakePowerManagerClient;
+}
 
 #endif  // CHROMEOS_DBUS_POWER_FAKE_POWER_MANAGER_CLIENT_H_

@@ -13,12 +13,13 @@
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/values.h"
 #include "chromeos/dbus/shill/modem_messaging_client.h"
 #include "chromeos/dbus/shill/shill_device_client.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/sms_client.h"
+#include "components/device_event_log/device_event_log.h"
 #include "dbus/object_path.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
@@ -40,8 +41,6 @@ class NetworkSmsHandler::NetworkSmsDeviceHandler {
  public:
   NetworkSmsDeviceHandler() = default;
   virtual ~NetworkSmsDeviceHandler() = default;
-
-  virtual void RequestUpdate() = 0;
 };
 
 class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
@@ -51,16 +50,21 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
                                        const std::string& service_name,
                                        const dbus::ObjectPath& object_path);
 
-  void RequestUpdate() override;
+  ModemManager1NetworkSmsDeviceHandler(
+      const ModemManager1NetworkSmsDeviceHandler&) = delete;
+  ModemManager1NetworkSmsDeviceHandler& operator=(
+      const ModemManager1NetworkSmsDeviceHandler&) = delete;
+
+  ~ModemManager1NetworkSmsDeviceHandler() override;
 
  private:
-  void ListCallback(base::Optional<std::vector<dbus::ObjectPath>> paths);
+  void ListCallback(absl::optional<std::vector<dbus::ObjectPath>> paths);
   void SmsReceivedCallback(const dbus::ObjectPath& path, bool complete);
-  void GetCallback(const base::DictionaryValue& dictionary);
+  void GetCallback(const base::Value& dictionary);
   void DeleteMessages();
   void DeleteCallback(bool success);
   void GetMessages();
-  void MessageReceived(const base::DictionaryValue& dictionary);
+  void MessageReceived(const base::Value& dictionary);
 
   NetworkSmsHandler* host_;
   std::string service_name_;
@@ -71,8 +75,6 @@ class NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler
   base::circular_deque<dbus::ObjectPath> retrieval_queue_;
   base::WeakPtrFactory<ModemManager1NetworkSmsDeviceHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(ModemManager1NetworkSmsDeviceHandler);
 };
 
 NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
@@ -87,9 +89,10 @@ NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
   // Set the handler for received Sms messaages.
   ModemMessagingClient::Get()->SetSmsReceivedHandler(
       service_name_, object_path_,
-      base::Bind(&NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
-                     SmsReceivedCallback,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindRepeating(
+          &NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
+              SmsReceivedCallback,
+          weak_ptr_factory_.GetWeakPtr()));
 
   // List the existing messages.
   ModemMessagingClient::Get()->List(
@@ -99,18 +102,14 @@ NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::RequestUpdate() {
-  // Calling List using the service "AddSMS" causes the stub
-  // implementation to deliver new sms messages.
-  ModemMessagingClient::Get()->List(
-      std::string("AddSMS"), dbus::ObjectPath("/"),
-      base::BindOnce(&NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
-                         ListCallback,
-                     weak_ptr_factory_.GetWeakPtr()));
+NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
+    ~ModemManager1NetworkSmsDeviceHandler() {
+  ModemMessagingClient::Get()->ResetSmsReceivedHandler(service_name_,
+                                                       object_path_);
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::ListCallback(
-    base::Optional<std::vector<dbus::ObjectPath>> paths) {
+    absl::optional<std::vector<dbus::ObjectPath>> paths) {
   // This receives all messages, so clear any pending gets and deletes.
   retrieval_queue_.clear();
   delete_queue_.clear();
@@ -170,10 +169,8 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetMessages() {
   delete_queue_.push_back(sms_path);
 }
 
-void NetworkSmsHandler::
-ModemManager1NetworkSmsDeviceHandler::SmsReceivedCallback(
-    const dbus::ObjectPath& sms_path,
-    bool complete) {
+void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::
+    SmsReceivedCallback(const dbus::ObjectPath& sms_path, bool complete) {
   // Only handle complete messages.
   if (!complete)
     return;
@@ -183,29 +180,29 @@ ModemManager1NetworkSmsDeviceHandler::SmsReceivedCallback(
 }
 
 void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::GetCallback(
-    const base::DictionaryValue& dictionary) {
+    const base::Value& dictionary) {
   MessageReceived(dictionary);
   GetMessages();
 }
 
-void NetworkSmsHandler::
-ModemManager1NetworkSmsDeviceHandler::MessageReceived(
-    const base::DictionaryValue& dictionary) {
+void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::MessageReceived(
+    const base::Value& dictionary) {
   // The keys of the ModemManager1.SMS interface do not match the
   // exported keys, so a new dictionary is created with the expected
   // key namaes.
-  base::DictionaryValue new_dictionary;
-  std::string text, number, timestamp;
-  if (dictionary.GetStringWithoutPathExpansion(SMSClient::kSMSPropertyNumber,
-                                               &number))
-    new_dictionary.SetString(kNumberKey, number);
-  if (dictionary.GetStringWithoutPathExpansion(SMSClient::kSMSPropertyText,
-                                               &text))
-    new_dictionary.SetString(kTextKey, text);
-  // TODO(jglasgow): consider normalizing timestamp.
-  if (dictionary.GetStringWithoutPathExpansion(SMSClient::kSMSPropertyTimestamp,
-                                               &timestamp))
-    new_dictionary.SetString(kTimestampKey, timestamp);
+  base::Value new_dictionary(base::Value::Type::DICTIONARY);
+  const std::string* number =
+      dictionary.FindStringKey(SMSClient::kSMSPropertyNumber);
+  if (number)
+    new_dictionary.SetStringKey(kNumberKey, *number);
+  const std::string* text =
+      dictionary.FindStringKey(SMSClient::kSMSPropertyText);
+  if (text)
+    new_dictionary.SetStringKey(kTextKey, *text);
+  const std::string* timestamp =
+      dictionary.FindStringKey(SMSClient::kSMSPropertyTimestamp);
+  if (timestamp)
+    new_dictionary.SetStringKey(kTimestampKey, *timestamp);
   host_->MessageReceived(new_dictionary);
 }
 
@@ -216,6 +213,10 @@ NetworkSmsHandler::NetworkSmsHandler() {}
 
 NetworkSmsHandler::~NetworkSmsHandler() {
   ShillManagerClient::Get()->RemovePropertyChangedObserver(this);
+  if (!cellular_device_path_.empty()) {
+    ShillDeviceClient::Get()->RemovePropertyChangedObserver(
+        dbus::ObjectPath(cellular_device_path_), this);
+  }
 }
 
 void NetworkSmsHandler::Init() {
@@ -224,19 +225,13 @@ void NetworkSmsHandler::Init() {
   ShillManagerClient::Get()->AddPropertyChangedObserver(this);
   // Request network manager properties so that we can get the list of devices.
   ShillManagerClient::Get()->GetProperties(
-      base::Bind(&NetworkSmsHandler::ManagerPropertiesCallback,
-                 weak_ptr_factory_.GetWeakPtr()));
+      base::BindOnce(&NetworkSmsHandler::ManagerPropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
-void NetworkSmsHandler::RequestUpdate(bool request_existing) {
-  // If we already received messages and |request_existing| is true, send
-  // updates for existing messages.
+void NetworkSmsHandler::RequestUpdate() {
   for (const auto& message : received_messages_) {
-    NotifyMessageReceived(*message);
-  }
-  // Request updates from each device.
-  for (auto& handler : device_handlers_) {
-    handler->RequestUpdate();
+    NotifyMessageReceived(message);
   }
 }
 
@@ -250,106 +245,134 @@ void NetworkSmsHandler::RemoveObserver(Observer* observer) {
 
 void NetworkSmsHandler::OnPropertyChanged(const std::string& name,
                                           const base::Value& value) {
-  if (name != shill::kDevicesProperty)
+  // Device property change
+  if (name == shill::kDBusObjectProperty) {
+    OnObjectPathChanged(value);
     return;
-  const base::ListValue* devices = NULL;
-  if (!value.GetAsList(&devices) || !devices)
-    return;
-  UpdateDevices(devices);
+  }
+
+  // Manager property change
+  if (name == shill::kDevicesProperty && value.is_list()) {
+    UpdateDevices(value);
+  }
 }
 
 // Private methods
 
-void NetworkSmsHandler::AddReceivedMessage(
-    const base::DictionaryValue& message) {
+void NetworkSmsHandler::AddReceivedMessage(const base::Value& message) {
   if (received_messages_.size() >= kMaxReceivedMessages)
     received_messages_.erase(received_messages_.begin());
-  received_messages_.push_back(message.CreateDeepCopy());
+  received_messages_.push_back(message.Clone());
 }
 
-void NetworkSmsHandler::NotifyMessageReceived(
-    const base::DictionaryValue& message) {
+void NetworkSmsHandler::NotifyMessageReceived(const base::Value& message) {
   for (auto& observer : observers_)
     observer.MessageReceived(message);
 }
 
-void NetworkSmsHandler::MessageReceived(const base::DictionaryValue& message) {
+void NetworkSmsHandler::MessageReceived(const base::Value& message) {
   AddReceivedMessage(message);
   NotifyMessageReceived(message);
 }
 
 void NetworkSmsHandler::ManagerPropertiesCallback(
-    DBusMethodCallStatus call_status,
-    const base::DictionaryValue& properties) {
-  if (call_status != DBUS_METHOD_CALL_SUCCESS) {
-    LOG(ERROR) << "NetworkSmsHandler: Failed to get manager properties.";
+    absl::optional<base::Value> properties) {
+  if (!properties) {
+    NET_LOG(ERROR) << "NetworkSmsHandler: Failed to get manager properties.";
     return;
   }
-  const base::Value* value;
-  if (!properties.GetWithoutPathExpansion(shill::kDevicesProperty, &value) ||
-      !value->is_list()) {
-    LOG(ERROR) << "NetworkSmsHandler: No list value for: "
-               << shill::kDevicesProperty;
+  const base::Value* value = properties->FindListKey(shill::kDevicesProperty);
+  if (!value) {
+    NET_LOG(EVENT) << "NetworkSmsHandler: No list value for: "
+                   << shill::kDevicesProperty;
     return;
   }
-  const base::ListValue* devices = static_cast<const base::ListValue*>(value);
-  UpdateDevices(devices);
+  UpdateDevices(*value);
 }
 
-void NetworkSmsHandler::UpdateDevices(const base::ListValue* devices) {
-  for (base::ListValue::const_iterator iter = devices->begin();
-       iter != devices->end(); ++iter) {
-    std::string device_path;
-    iter->GetAsString(&device_path);
+void NetworkSmsHandler::UpdateDevices(const base::Value& devices) {
+  for (const auto& item : devices.GetList()) {
+    if (!item.is_string())
+      continue;
+
+    std::string device_path = item.GetString();
     if (!device_path.empty()) {
       // Request device properties.
-      VLOG(1) << "GetDeviceProperties: " << device_path;
+      NET_LOG(DEBUG) << "GetDeviceProperties: " << device_path;
       ShillDeviceClient::Get()->GetProperties(
           dbus::ObjectPath(device_path),
-          base::Bind(&NetworkSmsHandler::DevicePropertiesCallback,
-                     weak_ptr_factory_.GetWeakPtr(), device_path));
+          base::BindOnce(&NetworkSmsHandler::DevicePropertiesCallback,
+                         weak_ptr_factory_.GetWeakPtr(), device_path));
     }
   }
 }
 
 void NetworkSmsHandler::DevicePropertiesCallback(
     const std::string& device_path,
-    DBusMethodCallStatus call_status,
-    const base::DictionaryValue& properties) {
-  if (call_status != DBUS_METHOD_CALL_SUCCESS) {
-    LOG(ERROR) << "NetworkSmsHandler: ERROR: " << call_status
-               << " For: " << device_path;
+    absl::optional<base::Value> properties) {
+  if (!properties) {
+    NET_LOG(ERROR) << "NetworkSmsHandler error for: " << device_path;
     return;
   }
 
-  std::string device_type;
-  if (!properties.GetStringWithoutPathExpansion(
-          shill::kTypeProperty, &device_type)) {
-    LOG(ERROR) << "NetworkSmsHandler: No type for: " << device_path;
+  const std::string* device_type =
+      properties->FindStringKey(shill::kTypeProperty);
+  if (!device_type) {
+    NET_LOG(ERROR) << "NetworkSmsHandler: No type for: " << device_path;
     return;
   }
-  if (device_type != shill::kTypeCellular)
+  if (*device_type != shill::kTypeCellular)
     return;
 
-  std::string service_name;
-  if (!properties.GetStringWithoutPathExpansion(
-          shill::kDBusServiceProperty, &service_name)) {
-    LOG(ERROR) << "Device has no DBusService Property: " << device_path;
+  const std::string* service_name =
+      properties->FindStringKey(shill::kDBusServiceProperty);
+  if (!service_name) {
+    NET_LOG(ERROR) << "Device has no DBusService Property: " << device_path;
     return;
   }
 
-  std::string object_path_string;
-  if (!properties.GetStringWithoutPathExpansion(
-          shill::kDBusObjectProperty, &object_path_string)) {
-    LOG(ERROR) << "Device has no DBusObject Property: " << device_path;
+  if (*service_name != modemmanager::kModemManager1ServiceName)
+    return;
+
+  const std::string* object_path_string =
+      properties->FindStringKey(shill::kDBusObjectProperty);
+  if (!object_path_string) {
+    NET_LOG(ERROR) << "Device has no DBusObject Property: " << device_path;
     return;
   }
-  dbus::ObjectPath object_path(object_path_string);
-  if (service_name == modemmanager::kModemManager1ServiceName) {
-    device_handlers_.push_back(
-        std::make_unique<ModemManager1NetworkSmsDeviceHandler>(
-            this, service_name, object_path));
+  dbus::ObjectPath object_path(*object_path_string);
+
+  // Destroy |device_handler_| first to reset the current SmsReceivedHandler.
+  // Only one active handler is supported. TODO(crbug.com/1239418): Fix.
+  device_handler_.reset();
+  device_handler_ = std::make_unique<ModemManager1NetworkSmsDeviceHandler>(
+      this, *service_name, object_path);
+
+  if (!cellular_device_path_.empty()) {
+    ShillDeviceClient::Get()->RemovePropertyChangedObserver(
+        dbus::ObjectPath(cellular_device_path_), this);
   }
+  cellular_device_path_ = device_path;
+  ShillDeviceClient::Get()->AddPropertyChangedObserver(
+      dbus::ObjectPath(cellular_device_path_), this);
+}
+
+void NetworkSmsHandler::OnObjectPathChanged(const base::Value& object_path) {
+  // Remove the old handler.
+  device_handler_.reset();
+
+  std::string object_path_string =
+      object_path.is_string() ? object_path.GetString() : "";
+  // If the new object path is empty, there is no SIM. Don't create a new
+  // handler.
+  if (object_path_string.empty() || object_path_string == "/") {
+    return;
+  }
+
+  // Recreate handler for the new object path.
+  ShillManagerClient::Get()->GetProperties(
+      base::BindOnce(&NetworkSmsHandler::ManagerPropertiesCallback,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 }  // namespace chromeos

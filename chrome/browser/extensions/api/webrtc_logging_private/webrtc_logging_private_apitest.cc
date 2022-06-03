@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_writer.h"
 #include "base/strings/string_split.h"
@@ -31,6 +32,7 @@
 #include "components/policy/policy_constants.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/render_view_host.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/common/extension_builder.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -91,7 +93,7 @@ void InitializeTestMetaData(base::ListValue* parameters) {
   meta_data_entry->SetString("value", kTestLoggingSessionIdValue);
   std::unique_ptr<base::ListValue> meta_data(new base::ListValue());
   meta_data->Append(std::move(meta_data_entry));
-  meta_data_entry.reset(new base::DictionaryValue());
+  meta_data_entry = std::make_unique<base::DictionaryValue>();
   meta_data_entry->SetString("key", "url");
   meta_data_entry->SetString("value", kTestLoggingUrl);
   meta_data->Append(std::move(meta_data_entry));
@@ -100,8 +102,8 @@ void InitializeTestMetaData(base::ListValue* parameters) {
 
 class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
  protected:
-  void SetUp() override {
-    extensions::ExtensionApiTest::SetUp();
+  void SetUpOnMainThread() override {
+    ExtensionApiTest::SetUpOnMainThread();
     extension_ = extensions::ExtensionBuilder("Test").Build();
   }
 
@@ -150,7 +152,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
     request_info->SetInteger(
         "tabId", extensions::ExtensionTabUtil::GetTabId(web_contents()));
     parameters->Append(std::move(request_info));
-    parameters->AppendString(web_contents()->GetURL().GetOrigin().spec());
+    parameters->Append(web_contents()
+                           ->GetLastCommittedURL()
+                           .DeprecatedGetOriginAsURL()
+                           .spec());
   }
 
   // This function implicitly expects the function to succeed (test failure
@@ -260,8 +265,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StartRtpDump(bool incoming, bool outgoing) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendBoolean(incoming);
-    params.AppendBoolean(outgoing);
+    params.Append(incoming);
+    params.Append(outgoing);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStartRtpDumpFunction>(params);
@@ -276,8 +281,8 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StopRtpDump(bool incoming, bool outgoing) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendBoolean(incoming);
-    params.AppendBoolean(outgoing);
+    params.Append(incoming);
+    params.Append(outgoing);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStopRtpDumpFunction>(params);
@@ -292,7 +297,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StoreLog(const std::string& log_id) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(log_id);
+    params.Append(log_id);
     constexpr bool value_expected = false;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStoreFunction>(params);
@@ -307,7 +312,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool UploadStoredLog(const std::string& log_id, std::string* report_id) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(log_id);
+    params.Append(log_id);
     constexpr bool value_expected = true;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateUploadStoredFunction>(params);
@@ -325,7 +330,7 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
   bool StartAudioDebugRecordings(int seconds) {
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendInteger(seconds);
+    params.Append(seconds);
     constexpr bool value_expected = true;
     std::unique_ptr<base::Value> value =
         RunFunction<WebrtcLoggingPrivateStartAudioDebugRecordingsFunction>(
@@ -362,10 +367,10 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
 
     base::ListValue params;
     AppendTabIdAndUrl(&params);
-    params.AppendString(session_id);
-    params.AppendInteger(max_log_size_bytes);
-    params.AppendInteger(output_period_ms);
-    params.AppendInteger(web_app_id);
+    params.Append(session_id);
+    params.Append(max_log_size_bytes);
+    params.Append(output_period_ms);
+    params.Append(web_app_id);
 
     if (expect_success) {
       scoped_refptr<WebrtcLoggingPrivateStartEventLoggingFunction> function(
@@ -395,16 +400,21 @@ class WebrtcLoggingPrivateApiTest : public extensions::ExtensionApiTest {
 
   void SetUpPeerConnection(const std::string& session_id = "") {
     auto* manager = WebRtcEventLogManager::GetInstance();
-    auto* rph = web_contents()->GetRenderViewHost()->GetProcess();
 
-    const int render_process_id = rph->GetID();
+    content::RenderFrameHost* render_frame_host =
+        web_contents()->GetMainFrame();
+    const content::GlobalRenderFrameHostId frame_id =
+        render_frame_host->GetGlobalId();
+    const base::ProcessId pid =
+        render_frame_host->GetProcess()->GetProcess().Pid();
     const int lid = 0;
 
-    manager->PeerConnectionAdded(render_process_id, lid, base::NullCallback());
+    manager->OnPeerConnectionAdded(frame_id, lid, pid, /*url=*/std::string(),
+                                   /*rtc_configuration=*/std::string(),
+                                   /*constraints=*/std::string());
 
     if (!session_id.empty()) {
-      manager->PeerConnectionSessionIdSet(render_process_id, lid, session_id,
-                                          base::NullCallback());
+      manager->OnPeerConnectionSessionIdSet(frame_id, lid, session_id);
     }
   }
 
@@ -573,7 +583,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStartStopRtpDump) {
 IN_PROC_BROWSER_TEST_F(WebrtcLoggingPrivateApiTest, TestStoreWithoutLog) {
   base::ListValue parameters;
   AppendTabIdAndUrl(&parameters);
-  parameters.AppendString("MyLogId");
+  parameters.Append("MyLogId");
   scoped_refptr<WebrtcLoggingPrivateStoreFunction> store(
       CreateFunction<WebrtcLoggingPrivateStoreFunction>());
   const std::string error = utils::RunFunctionAndReturnError(
@@ -693,8 +703,9 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestBase
   }
 
   void SetUpInProcessBrowserTestFixture() override {
-    EXPECT_CALL(provider_, IsInitializationComplete(testing::_))
-        .WillRepeatedly(testing::Return(true));
+    provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
 
     policy::BrowserPolicyConnector::SetPolicyProviderForTesting(&provider_);
     policy::PolicyMap values;
@@ -702,8 +713,7 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestBase
     values.Set(policy::key::kWebRtcEventLogCollectionAllowed,
                policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
                policy::POLICY_SOURCE_ENTERPRISE_DEFAULT,
-               std::make_unique<base::Value>(WebRtcEventLogCollectionPolicy()),
-               nullptr);
+               base::Value(WebRtcEventLogCollectionPolicy()), nullptr);
 
     provider_.UpdateChromePolicy(values);
   }
@@ -717,7 +727,7 @@ class WebrtcLoggingPrivateApiStartEventLoggingTestBase
   virtual bool WebRtcEventLogCollectionPolicy() const = 0;
 
  private:
-  policy::MockConfigurationPolicyProvider provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> provider_;
 };
 
 // Test StartEventLogging's behavior when the feature is active (kill-switch
@@ -801,7 +811,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     WebrtcLoggingPrivateApiStartEventLoggingTestFeatureAndPolicyEnabled,
     StartEventLoggingForNeverAddedPeerConnectionFails) {
-  // Note that manager->PeerConnectionAdded() is not called.
+  // Note that manager->OnPeerConnectionAdded() is not called.
   const std::string session_id = "id";
   const int max_size_bytes = kMaxRemoteLogFileSizeBytes;
   constexpr bool expect_success = false;

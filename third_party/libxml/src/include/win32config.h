@@ -38,7 +38,7 @@
 #if defined(_MSC_VER) || defined(__BORLANDC__)
 /* MS C-runtime has functions which can be used in order to determine if
    a given floating-point variable contains NaN, (+-)INF. These are 
-   preferred, because floating-point technology is considered propriatary
+   preferred, because floating-point technology is considered proprietary
    by MS and we can assume that their functions know more about their 
    oddities than we do. */
 #include <float.h>

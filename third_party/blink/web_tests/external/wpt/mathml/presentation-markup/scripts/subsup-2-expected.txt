@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+PASS Respective horizontal positions
+PASS Alignment of the base on the baseline
+PASS Vertical position of scripts
+FAIL Width of scripted elements assert_approx_equals: width is determined by the left/right sides of base/script (+ some space after script) expected 40 +/- 3 but got 45
+FAIL Height of scripted elements assert_approx_equals: msup height is determined by the top/bottom sides of base/scripts expected 40 +/- 5 but got 50
+PASS Size of empty elements
+Harness: the test ran to completion.
+

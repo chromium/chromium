@@ -4,8 +4,8 @@
 
 package org.chromium.chrome.browser.bookmarks;
 
-import org.chromium.chrome.browser.widget.selection.SelectionDelegate.SelectionObserver;
 import org.chromium.components.bookmarks.BookmarkId;
+import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate.SelectionObserver;
 
 /**
  * Observer interface to get notification for UI mode changes, bookmark changes, and other related

@@ -1,21 +1,20 @@
-async function send_message_to_iframe(iframe, message, reply) {
+function send_message_to_iframe(iframe, message, reply) {
   if (reply === undefined) {
     reply = 'success';
   }
 
   return new Promise((resolve, reject) => {
-    let messageHandler = e => {
+    window.addEventListener('message', (e) => {
       if (e.data.command !== message.command) {
+        reject(`Expected reply with command '${message.command}', got '${e.data.command}' instead`);
         return;
       }
-      window.removeEventListener('message', messageHandler);
       if (e.data.result === reply) {
         resolve();
       } else {
-        reject();
+        reject(`Got unexpected reply '${e.data.result}' to command '${message.command}', expected '${reply}'`);
       }
-    }
-    window.addEventListener('message', messageHandler);
+    }, { once: true });
     iframe.contentWindow.postMessage(message, '*');
   });
 }
@@ -25,7 +24,7 @@ function run_generic_sensor_iframe_tests(sensorName) {
   const featurePolicies = get_feature_policies_for_sensor(sensorName);
 
   sensor_test(async t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     const iframe = document.createElement('iframe');
     iframe.allow = featurePolicies.join(';') + ';';
     iframe.src = 'https://{{domains[www1]}}:{{ports[https][0]}}/generic-sensor/resources/iframe_sensor_handler.html';
@@ -33,6 +32,10 @@ function run_generic_sensor_iframe_tests(sensorName) {
     // Create sensor inside cross-origin nested browsing context.
     const iframeLoadWatcher = new EventWatcher(t, iframe, 'load');
     document.body.appendChild(iframe);
+    t.add_cleanup(async () => {
+      await send_message_to_iframe(iframe, { command: 'reset_sensor_backend' });
+      iframe.parentNode.removeChild(iframe);
+    });
     await iframeLoadWatcher.wait_for('load');
     await send_message_to_iframe(iframe, {command: 'create_sensor',
                                           type: sensorName});
@@ -50,7 +53,6 @@ function run_generic_sensor_iframe_tests(sensorName) {
     // the top level browsing context are suspended.
     iframe.contentWindow.focus();
     await send_message_to_iframe(iframe, {command: 'start_sensor'});
-    assert_equals(cachedTimeStamp, sensor.timestamp);
 
     // Focus on the main frame, verify that sensor reading updates are resumed.
     window.focus();
@@ -60,15 +62,11 @@ function run_generic_sensor_iframe_tests(sensorName) {
 
     // Verify that sensor in cross-origin frame is suspended.
     await send_message_to_iframe(iframe, {command: 'is_sensor_suspended'}, true);
-    await send_message_to_iframe(iframe, {command: 'reset_sensor_backend'});
-
-    // Remove iframe from main document.
-    iframe.parentNode.removeChild(iframe);
   }, `${sensorName}: sensor is suspended and resumed when focus traverses from\
  to cross-origin frame`);
 
   sensor_test(async t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     const iframe = document.createElement('iframe');
     iframe.allow = featurePolicies.join(';') + ';';
     iframe.src = 'https://{{host}}:{{ports[https][0]}}/generic-sensor/resources/iframe_sensor_handler.html';
@@ -76,6 +74,10 @@ function run_generic_sensor_iframe_tests(sensorName) {
     // Create sensor inside same-origin nested browsing context.
     const iframeLoadWatcher = new EventWatcher(t, iframe, 'load');
     document.body.appendChild(iframe);
+    t.add_cleanup(async () => {
+      await send_message_to_iframe(iframe, { command: 'reset_sensor_backend' });
+      iframe.parentNode.removeChild(iframe);
+    });
     await iframeLoadWatcher.wait_for('load');
     await send_message_to_iframe(iframe, {command: 'create_sensor',
                                           type: sensorName});
@@ -124,15 +126,11 @@ function run_generic_sensor_iframe_tests(sensorName) {
     await sensorWatcher.wait_for('reading');
     assert_greater_than(sensor.timestamp, cachedTimeStamp);
     sensor.stop();
-    await send_message_to_iframe(iframe, {command: 'reset_sensor_backend'});
-
-    // Remove iframe from main document.
-    iframe.parentNode.removeChild(iframe);
   }, `${sensorName}: sensor is not suspended when focus traverses from\
  to same-origin frame`);
 
   sensor_test(async t => {
-    assert_true(sensorName in self);
+    assert_implements(sensorName in self, `${sensorName} is not supported.`);
     const iframe = document.createElement('iframe');
     iframe.allow = featurePolicies.join(';') + ';';
     iframe.src = 'https://{{host}}:{{ports[https][0]}}/generic-sensor/resources/iframe_sensor_handler.html';

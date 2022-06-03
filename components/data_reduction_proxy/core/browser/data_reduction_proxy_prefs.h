@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_DATA_REDUCTION_PROXY_CORE_BROWSER_DATA_REDUCTION_PROXY_PREFS_H_
 #define COMPONENTS_DATA_REDUCTION_PROXY_CORE_BROWSER_DATA_REDUCTION_PROXY_PREFS_H_
 
-#include "base/macros.h"
-
 namespace user_prefs {
 class PrefRegistrySyncable;
 }

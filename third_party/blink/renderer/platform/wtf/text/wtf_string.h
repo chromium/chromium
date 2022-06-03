@@ -27,6 +27,8 @@
 // on systems without case-sensitive file systems.
 
 #include <iosfwd>
+#include <type_traits>
+
 #include "base/containers/span.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -35,6 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_export.h"
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
+#include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 
 #ifdef __OBJC__
 #include <objc/objc.h>
@@ -43,12 +46,6 @@
 namespace WTF {
 
 struct StringHash;
-
-enum UTF8ConversionMode {
-  kLenientUTF8Conversion,
-  kStrictUTF8Conversion,
-  kStrictUTF8ConversionReplacingUnpairedSurrogatesWithFFFD
-};
 
 #define DISPATCH_CASE_OP(caseSensitivity, op, args)     \
   ((caseSensitivity == kTextCaseSensitive)              \
@@ -80,16 +77,16 @@ class WTF_EXPORT String {
 
   // Construct a string with UTF-16 data, from a null-terminated source.
   String(const UChar*);
-  String(const char16_t* chars)
-      : String(reinterpret_cast<const UChar*>(chars)) {}
 
   // Construct a string with latin1 data.
   String(const LChar* characters, unsigned length);
   String(const char* characters, unsigned length);
+  explicit String(const std::string& s) : String(s.c_str(), s.length()) {}
 
 #if defined(ARCH_CPU_64_BITS)
-  // Only define a size_t constructor if size_t is 64 bit otherwise
+  // Only define size_t constructors if size_t is 64 bit otherwise
   // we'd have a duplicate define.
+  String(const UChar* characters, size_t length);
   String(const char* characters, size_t length);
 #endif  // defined(ARCH_CPU_64_BITS)
 
@@ -102,6 +99,14 @@ class WTF_EXPORT String {
   // Construct a string referencing an existing StringImpl.
   String(StringImpl* impl) : impl_(impl) {}
   String(scoped_refptr<StringImpl> impl) : impl_(std::move(impl)) {}
+
+  // Copying a String is a relatively inexpensive, since the underlying data is
+  // immutable and refcounted.
+  String(const String&) = default;
+  String& operator=(const String&) = default;
+
+  String(String&&) noexcept = default;
+  String& operator=(String&&) = default;
 
   void swap(String& o) { impl_.swap(o.impl_); }
 
@@ -168,10 +173,12 @@ class WTF_EXPORT String {
 
   std::string Ascii() const WARN_UNUSED_RESULT;
   std::string Latin1() const WARN_UNUSED_RESULT;
-  std::string Utf8(UTF8ConversionMode = kLenientUTF8Conversion) const
-      WARN_UNUSED_RESULT;
+  std::string Utf8(UTF8ConversionMode mode = kLenientUTF8Conversion) const
+      WARN_UNUSED_RESULT {
+    return StringView(*this).Utf8(mode);
+  }
 
-  UChar operator[](unsigned index) const {
+  UChar operator[](wtf_size_t index) const {
     if (!impl_ || index >= impl_->length())
       return 0;
     return (*impl_)[index];
@@ -193,24 +200,26 @@ class WTF_EXPORT String {
       WARN_UNUSED_RESULT;
 
   // Find characters.
-  wtf_size_t find(UChar c, unsigned start = 0) const {
+  wtf_size_t find(UChar c, wtf_size_t start = 0) const {
     return impl_ ? impl_->Find(c, start) : kNotFound;
   }
-  wtf_size_t find(LChar c, unsigned start = 0) const {
+  wtf_size_t find(LChar c, wtf_size_t start = 0) const {
     return impl_ ? impl_->Find(c, start) : kNotFound;
   }
-  wtf_size_t find(char c, unsigned start = 0) const {
+  wtf_size_t find(char c, wtf_size_t start = 0) const {
     return find(static_cast<LChar>(c), start);
   }
   wtf_size_t Find(CharacterMatchFunctionPtr match_function,
-                  unsigned start = 0) const {
+                  wtf_size_t start = 0) const {
     return impl_ ? impl_->Find(match_function, start) : kNotFound;
   }
+  wtf_size_t Find(base::RepeatingCallback<bool(UChar)> match_callback,
+                  wtf_size_t index = 0) const;
 
   // Find substrings.
   wtf_size_t Find(
       const StringView& value,
-      unsigned start = 0,
+      wtf_size_t start = 0,
       TextCaseSensitivity case_sensitivity = kTextCaseSensitive) const {
     return impl_
                ? DISPATCH_CASE_OP(case_sensitivity, impl_->Find, (value, start))
@@ -422,6 +431,7 @@ class WTF_EXPORT String {
   int ToIntStrict(bool* ok = nullptr) const;
   unsigned ToUIntStrict(bool* ok = nullptr) const;
   unsigned HexToUIntStrict(bool* ok) const;
+  uint64_t HexToUInt64Strict(bool* ok) const;
   int64_t ToInt64Strict(bool* ok = nullptr) const;
   uint64_t ToUInt64Strict(bool* ok = nullptr) const;
 
@@ -521,6 +531,8 @@ class WTF_EXPORT String {
                                       length);
   }
 
+  bool IsLowerASCII() const { return !impl_ || impl_->IsLowerASCII(); }
+
   bool ContainsOnlyASCIIOrEmpty() const {
     return !impl_ || impl_->ContainsOnlyASCIIOrEmpty();
   }
@@ -537,6 +549,8 @@ class WTF_EXPORT String {
   // For use in the debugger.
   void Show() const;
 #endif
+
+  void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
   friend struct HashTraits<String>;
@@ -634,6 +648,11 @@ inline bool CodeUnitCompareLessThan(const String& a, const String& b) {
 
 WTF_EXPORT int CodeUnitCompareIgnoringASCIICase(const String&, const char*);
 
+inline bool CodeUnitCompareIgnoringASCIICaseLessThan(const String& a,
+                                                     const String& b) {
+  return CodeUnitCompareIgnoringASCIICase(a.Impl(), b.Impl()) < 0;
+}
+
 template <bool isSpecialCharacter(UChar)>
 inline bool String::IsAllSpecialCharacters() const {
   return StringView(*this).IsAllSpecialCharacters<isSpecialCharacter>();
@@ -694,7 +713,6 @@ using WTF::g_empty_string;
 using WTF::g_empty_string16_bit;
 using WTF::Equal;
 using WTF::Find;
-using WTF::IsSpaceOrNewline;
 
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_STRING_H_

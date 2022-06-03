@@ -4,8 +4,15 @@
 
 #include "ui/compositor/layer_owner.h"
 
+// layer_owner.h is a widely included header and its size impacts build
+// time. Try not to raise this limit unless necessary. See
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
+#pragma clang max_tokens_here 480000
+
 #include <utility>
 
+#include "ui/compositor/compositor.h"
+#include "ui/compositor/layer.h"
 
 namespace ui {
 
@@ -33,7 +40,7 @@ void LayerOwner::SetLayer(std::unique_ptr<Layer> layer) {
 
 std::unique_ptr<Layer> LayerOwner::AcquireLayer() {
   if (layer_owner_)
-    layer_owner_->owner_ = NULL;
+    layer_owner_->owner_ = nullptr;
   return std::move(layer_owner_);
 }
 
@@ -53,7 +60,7 @@ std::unique_ptr<Layer> LayerOwner::RecreateLayer() {
     return old_layer;
 
   LayerDelegate* old_delegate = old_layer->delegate();
-  old_layer->set_delegate(NULL);
+  old_layer->set_delegate(nullptr);
 
   SetLayer(old_layer->Clone());
 
@@ -88,7 +95,7 @@ std::unique_ptr<Layer> LayerOwner::RecreateLayer() {
 }
 
 void LayerOwner::DestroyLayer() {
-  layer_ = NULL;
+  layer_ = nullptr;
   layer_owner_.reset();
 }
 

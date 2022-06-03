@@ -8,13 +8,13 @@
 
 #include "base/bind.h"
 #include "base/hash/hash.h"
-#include "base/mac/sdk_forward_declarations.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_socket_mac.h"
+#include "device/bluetooth/public/cpp/bluetooth_address.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 // Undocumented API for accessing the Bluetooth transmit power level.
@@ -73,15 +73,21 @@ uint32_t BluetoothClassicDeviceMac::GetBluetoothClass() const {
   return [device_ classOfDevice];
 }
 
-void BluetoothClassicDeviceMac::CreateGattConnectionImpl() {
+void BluetoothClassicDeviceMac::CreateGattConnectionImpl(
+    absl::optional<BluetoothUUID> service_uuid) {
   // Classic devices do not support GATT connection.
-  DidFailToConnectGatt(ERROR_UNSUPPORTED_DEVICE);
+  DidConnectGatt(ERROR_UNSUPPORTED_DEVICE);
 }
 
 void BluetoothClassicDeviceMac::DisconnectGatt() {}
 
 std::string BluetoothClassicDeviceMac::GetAddress() const {
   return GetDeviceAddress(device_);
+}
+
+BluetoothDevice::AddressType BluetoothClassicDeviceMac::GetAddressType() const {
+  NOTIMPLEMENTED();
+  return ADDR_TYPE_UNKNOWN;
 }
 
 BluetoothDevice::VendorIDSource BluetoothClassicDeviceMac::GetVendorIDSource()
@@ -108,10 +114,10 @@ uint16_t BluetoothClassicDeviceMac::GetAppearance() const {
   return 0;
 }
 
-base::Optional<std::string> BluetoothClassicDeviceMac::GetName() const {
+absl::optional<std::string> BluetoothClassicDeviceMac::GetName() const {
   if ([device_ name])
     return base::SysNSStringToUTF8([device_ name]);
-  return base::nullopt;
+  return absl::nullopt;
 }
 
 bool BluetoothClassicDeviceMac::IsPaired() const {
@@ -150,12 +156,12 @@ BluetoothDevice::UUIDSet BluetoothClassicDeviceMac::GetUUIDs() const {
   return uuids;
 }
 
-base::Optional<int8_t> BluetoothClassicDeviceMac::GetInquiryRSSI() const {
-  return base::nullopt;
+absl::optional<int8_t> BluetoothClassicDeviceMac::GetInquiryRSSI() const {
+  return absl::nullopt;
 }
 
-base::Optional<int8_t> BluetoothClassicDeviceMac::GetInquiryTxPower() const {
-  return base::nullopt;
+absl::optional<int8_t> BluetoothClassicDeviceMac::GetInquiryTxPower() const {
+  return absl::nullopt;
 }
 
 bool BluetoothClassicDeviceMac::ExpectingPinCode() const {
@@ -174,10 +180,10 @@ bool BluetoothClassicDeviceMac::ExpectingConfirmation() const {
 }
 
 void BluetoothClassicDeviceMac::GetConnectionInfo(
-    const ConnectionInfoCallback& callback) {
+    ConnectionInfoCallback callback) {
   ConnectionInfo connection_info;
   if (![device_ isConnected]) {
-    callback.Run(connection_info);
+    std::move(callback).Run(connection_info);
     return;
   }
 
@@ -192,19 +198,18 @@ void BluetoothClassicDeviceMac::GetConnectionInfo(
   connection_info.max_transmit_power =
       GetHostTransmitPower(kReadMaximumTransmitPowerLevel);
 
-  callback.Run(connection_info);
+  std::move(callback).Run(connection_info);
 }
 
 void BluetoothClassicDeviceMac::SetConnectionLatency(
     ConnectionLatency connection_latency,
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+    base::OnceClosure callback,
+    ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
 
 void BluetoothClassicDeviceMac::Connect(PairingDelegate* pairing_delegate,
-                                        base::OnceClosure callback,
-                                        ConnectErrorCallback error_callback) {
+                                        ConnectCallback callback) {
   NOTIMPLEMENTED();
 }
 
@@ -228,38 +233,31 @@ void BluetoothClassicDeviceMac::CancelPairing() {
   NOTIMPLEMENTED();
 }
 
-void BluetoothClassicDeviceMac::Disconnect(
-    const base::Closure& callback,
-    const ErrorCallback& error_callback) {
+void BluetoothClassicDeviceMac::Disconnect(base::OnceClosure callback,
+                                           ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
 
-void BluetoothClassicDeviceMac::Forget(const base::Closure& callback,
-                                       const ErrorCallback& error_callback) {
+void BluetoothClassicDeviceMac::Forget(base::OnceClosure callback,
+                                       ErrorCallback error_callback) {
   NOTIMPLEMENTED();
 }
 
 void BluetoothClassicDeviceMac::ConnectToService(
     const BluetoothUUID& uuid,
-    const ConnectToServiceCallback& callback,
-    const ConnectToServiceErrorCallback& error_callback) {
+    ConnectToServiceCallback callback,
+    ConnectToServiceErrorCallback error_callback) {
   scoped_refptr<BluetoothSocketMac> socket = BluetoothSocketMac::CreateSocket();
-  socket->Connect(device_.get(), uuid, base::BindOnce(callback, socket),
-                  error_callback);
+  socket->Connect(device_.get(), uuid,
+                  base::BindOnce(std::move(callback), socket),
+                  std::move(error_callback));
 }
 
 void BluetoothClassicDeviceMac::ConnectToServiceInsecurely(
     const BluetoothUUID& uuid,
-    const ConnectToServiceCallback& callback,
-    const ConnectToServiceErrorCallback& error_callback) {
-  error_callback.Run(kApiUnavailable);
-}
-
-void BluetoothClassicDeviceMac::CreateGattConnection(
-    GattConnectionCallback callback,
-    ConnectErrorCallback error_callback) {
-  // TODO(armansito): Implement.
-  std::move(error_callback).Run(ERROR_UNSUPPORTED_DEVICE);
+    ConnectToServiceCallback callback,
+    ConnectToServiceErrorCallback error_callback) {
+  std::move(error_callback).Run(kApiUnavailable);
 }
 
 base::Time BluetoothClassicDeviceMac::GetLastUpdateTime() const {
@@ -294,7 +292,8 @@ int BluetoothClassicDeviceMac::GetHostTransmitPower(
 // static
 std::string BluetoothClassicDeviceMac::GetDeviceAddress(
     IOBluetoothDevice* device) {
-  return CanonicalizeAddress(base::SysNSStringToUTF8([device addressString]));
+  return CanonicalizeBluetoothAddress(
+      base::SysNSStringToUTF8([device addressString]));
 }
 
 }  // namespace device

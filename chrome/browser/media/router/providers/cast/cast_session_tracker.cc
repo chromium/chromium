@@ -5,7 +5,6 @@
 #include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
 
 #include "base/bind.h"
-#include "base/stl_util.h"
 #include "chrome/browser/media/router/providers/cast/chrome_cast_message_handler.h"
 #include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
 #include "components/cast_channel/cast_socket_service.h"
@@ -105,6 +104,7 @@ void CastSessionTracker::HandleReceiverStatusMessage(
 
 void CastSessionTracker::HandleMediaStatusMessage(const MediaSinkInternal& sink,
                                                   const base::Value& message) {
+  DVLOG(2) << "Initial MEDIA_STATUS: " << message;
   auto session_it = sessions_by_sink_id_.find(sink.sink().id());
   if (session_it == sessions_by_sink_id_.end()) {
     DVLOG(2) << "Got media status message, but no session for: "
@@ -131,37 +131,31 @@ void CastSessionTracker::HandleMediaStatusMessage(const MediaSinkInternal& sink,
     return;
   }
 
-  // First filter out any idle media objects.
-  updated_status->EraseListValueIf([](const base::Value& media) {
-    const std::string* player_state = media.FindStringKey("playerState");
-    return player_state && *player_state == "IDLE";
-  });
+  // Ensure every item in |updated_status| is a dictionary.
+  updated_status->EraseListValueIf(
+      [](auto const& media) { return !media.is_dict(); });
 
   base::Value::ListView media_list = updated_status->GetList();
-  if (media_list.size() > 1) {
-    DVLOG(2) << "Media list unexpectedly contains more than one live media: "
-             << media_list.size() << ", session: " << session_id;
-  }
 
   // Backfill messages from receivers to make them compatible with Cast SDK.
   for (auto& media : media_list) {
     media.SetKey("sessionId", base::Value(session_id));
-    const base::Value* supported_media_requests = media.FindKeyOfType(
-        "supportedMediaRequests", base::Value::Type::INTEGER);
-    if (!supported_media_requests)
+    const base::Value* supported_media_commands = media.FindKeyOfType(
+        "supportedMediaCommands", base::Value::Type::INTEGER);
+    if (!supported_media_commands)
       continue;
 
     media.SetKey(
-        "supportedMediaRequests",
-        SupportedMediaRequestsToListValue(supported_media_requests->GetInt()));
+        "supportedMediaCommands",
+        SupportedMediaCommandsToListValue(supported_media_commands->GetInt()));
   }
 
   CopySavedMediaFieldsToMediaList(session, media_list);
 
-  DVLOG(2) << "Final updated status: " << updated_status;
+  DVLOG(2) << "Final updated MEDIA_STATUS: " << *updated_status;
   session->UpdateMedia(*updated_status);
 
-  base::Optional<int> request_id =
+  absl::optional<int> request_id =
       cast_channel::GetRequestIdFromResponse(updated_message);
 
   // Notify observers of media update.
@@ -183,7 +177,7 @@ void CastSessionTracker::CopySavedMediaFieldsToMediaList(
   for (auto& media : media_list) {
     const base::Value* media_session_id_value =
         media.FindKeyOfType("mediaSessionId", base::Value::Type::INTEGER);
-    if (!media_session_id_value)
+    if (!media_session_id_value || media.FindKey("media"))
       continue;
 
     auto session_media_it = std::find_if(

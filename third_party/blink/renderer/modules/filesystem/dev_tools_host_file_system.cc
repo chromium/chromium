@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/filesystem/dev_tools_host_file_system.h"
 
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_host.h"
 #include "third_party/blink/renderer/core/page/page.h"
@@ -18,7 +18,7 @@ DOMFileSystem* DevToolsHostFileSystem::isolatedFileSystem(
     DevToolsHost& host,
     const String& file_system_name,
     const String& root_url) {
-  ExecutionContext* context = host.FrontendFrame()->GetDocument();
+  ExecutionContext* context = host.FrontendFrame()->DomWindow();
   return MakeGarbageCollected<DOMFileSystem>(
       context, file_system_name, mojom::blink::FileSystemType::kIsolated,
       KURL(root_url));
@@ -27,13 +27,13 @@ DOMFileSystem* DevToolsHostFileSystem::isolatedFileSystem(
 void DevToolsHostFileSystem::upgradeDraggedFileSystemPermissions(
     DevToolsHost& host,
     DOMFileSystem* dom_file_system) {
-  auto message = std::make_unique<JSONObject>();
-  message->SetInteger("id", 0);
-  message->SetString("method", "upgradeDraggedFileSystemPermissions");
-  auto params = std::make_unique<JSONArray>();
-  params->PushString(dom_file_system->RootURL().GetString());
-  message->SetArray("params", std::move(params));
-  host.sendMessageToEmbedder(message->ToJSONString());
+  base::Value message(base::Value::Type::DICTIONARY);
+  message.SetKey("id", base::Value(0));
+  message.SetKey("method", base::Value("upgradeDraggedFileSystemPermissions"));
+  base::Value params(base::Value::Type::LIST);
+  params.Append(base::Value(dom_file_system->RootURL().GetString().Utf8()));
+  message.SetKey("params", std::move(params));
+  host.sendMessageToEmbedder(std::move(message));
 }
 
 }  // namespace blink

@@ -6,7 +6,10 @@
 
 #include <ostream>
 
+#include "base/bind.h"
 #include "base/callback.h"
+#include "base/logging.h"
+#include "base/memory/ptr_util.h"
 #include "ui/gfx/presentation_feedback.h"
 
 namespace ash {
@@ -42,6 +45,12 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
     compositor_->AddObserver(this);
     VLOG(1) << "Start Recording Frame Time";
   }
+
+  PresentationTimeRecorderInternal(const PresentationTimeRecorderInternal&) =
+      delete;
+  PresentationTimeRecorderInternal& operator=(
+      const PresentationTimeRecorderInternal&) = delete;
+
   ~PresentationTimeRecorderInternal() override {
     VLOG(1) << "Finished Recording FrameTime: average latency="
             << average_latency_ms() << "ms, max latency=" << max_latency_ms()
@@ -65,6 +74,8 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
     DCHECK_EQ(compositor_, compositor);
     compositor_->RemoveObserver(this);
     compositor_ = nullptr;
+    if (!recording_)
+      delete this;
   }
 
   // Mark the recorder to be deleted when the last presentation feedback
@@ -121,8 +132,6 @@ class PresentationTimeRecorder::PresentationTimeRecorderInternal
 
   base::WeakPtrFactory<PresentationTimeRecorderInternal> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationTimeRecorderInternal);
 };
 
 bool PresentationTimeRecorder::PresentationTimeRecorderInternal::RequestNext() {
@@ -141,6 +150,7 @@ bool PresentationTimeRecorder::PresentationTimeRecorderInternal::RequestNext() {
   if (report_immediately_for_test) {
     state_ = COMMITTED;
     gfx::PresentationFeedback feedback;
+    feedback.timestamp = now;
     OnPresented(request_count_++, now, feedback);
     return true;
   }
@@ -168,7 +178,20 @@ void PresentationTimeRecorder::PresentationTimeRecorderInternal::OnPresented(
                  << ", flags=" << ToFlagString(feedback.flags);
     return;
   }
+  if (feedback.timestamp.is_null()) {
+    // TODO(b/165951963): ideally feedback.timestamp should not be null.
+    // Consider replacing this by DCHECK or CHECK.
+    LOG(ERROR) << "Invalid feedback timestamp (" << count << "):"
+               << " timestamp is not set";
+    return;
+  }
   const base::TimeDelta delta = feedback.timestamp - requested_time;
+  if (delta.InMilliseconds() < 0) {
+    LOG(ERROR) << "Invalid timestamp for presentation feedback (" << count
+               << "): requested_time=" << requested_time
+               << " feedback.timestamp=" << feedback.timestamp;
+    return;
+  }
   if (delta.InMilliseconds() > max_latency_ms_)
     max_latency_ms_ = delta.InMilliseconds();
 
@@ -205,8 +228,7 @@ namespace {
 
 base::HistogramBase* CreateTimesHistogram(const char* name) {
   return base::Histogram::FactoryTimeGet(
-      name, base::TimeDelta::FromMilliseconds(1),
-      base::TimeDelta::FromMilliseconds(200), 50,
+      name, base::Milliseconds(1), base::Milliseconds(200), 50,
       base::HistogramBase::kUmaTargetedHistogramFlag);
 }
 
@@ -216,9 +238,9 @@ class ASH_PUBLIC_EXPORT PresentationTimeHistogramRecorder
     : public PresentationTimeRecorder::PresentationTimeRecorderInternal {
  public:
   // |presentation_time_histogram_name| records latency reported on
-  // |ReportTime()| and |max_latency_histogram_name| records the maximum latency
-  // reported during the lifetime of this object.  Histogram names must be the
-  // name of the UMA histogram defined in histograms.xml.
+  // |ReportTime()|. If |max_latency_histogram_name| is not empty, it records
+  // the maximum latency reported during the lifetime of this object.  Histogram
+  // names must be the name of the UMA histogram defined in histograms.xml.
   PresentationTimeHistogramRecorder(
       ui::Compositor* compositor,
       const char* presentation_time_histogram_name,
@@ -228,11 +250,16 @@ class ASH_PUBLIC_EXPORT PresentationTimeHistogramRecorder
             CreateTimesHistogram(presentation_time_histogram_name)),
         max_latency_histogram_name_(max_latency_histogram_name) {}
 
+  PresentationTimeHistogramRecorder(const PresentationTimeHistogramRecorder&) =
+      delete;
+  PresentationTimeHistogramRecorder& operator=(
+      const PresentationTimeHistogramRecorder&) = delete;
+
   ~PresentationTimeHistogramRecorder() override {
-    if (success_count() > 0) {
+    if (success_count() > 0 && !max_latency_histogram_name_.empty()) {
       CreateTimesHistogram(max_latency_histogram_name_.c_str())
           ->AddTimeMillisecondsGranularity(
-              base::TimeDelta::FromMilliseconds(max_latency_ms()));
+              base::Milliseconds(max_latency_ms()));
     }
   }
 
@@ -244,8 +271,6 @@ class ASH_PUBLIC_EXPORT PresentationTimeHistogramRecorder
  private:
   base::HistogramBase* presentation_time_histogram_;
   std::string max_latency_histogram_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(PresentationTimeHistogramRecorder);
 };
 
 }  // namespace

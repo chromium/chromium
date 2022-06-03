@@ -4,6 +4,8 @@
 
 #include "content/browser/speech/tts_platform_impl.h"
 
+#include "base/no_destructor.h"
+
 namespace content {
 
 // Dummy implementation to prevent a browser crash, see crbug.com/1019511
@@ -11,10 +13,12 @@ namespace content {
 class TtsPlatformImplFuchsia : public TtsPlatformImpl {
  public:
   TtsPlatformImplFuchsia() = default;
-  ~TtsPlatformImplFuchsia() override = default;
+  TtsPlatformImplFuchsia(const TtsPlatformImplFuchsia&) = delete;
+  TtsPlatformImplFuchsia& operator=(const TtsPlatformImplFuchsia&) = delete;
 
   // TtsPlatform implementation.
-  bool PlatformImplAvailable() override { return false; }
+  bool PlatformImplSupported() override { return false; }
+  bool PlatformImplInitialized() override { return false; }
   void Speak(int utterance_id,
              const std::string& utterance,
              const std::string& lang,
@@ -31,11 +35,9 @@ class TtsPlatformImplFuchsia : public TtsPlatformImpl {
 
   // Get the single instance of this class.
   static TtsPlatformImplFuchsia* GetInstance() {
-    return base::Singleton<TtsPlatformImplFuchsia>::get();
+    static base::NoDestructor<TtsPlatformImplFuchsia> tts_platform;
+    return tts_platform.get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplFuchsia);
 };
 
 // static

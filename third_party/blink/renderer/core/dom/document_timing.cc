@@ -12,9 +12,12 @@
 
 namespace blink {
 
-DocumentTiming::DocumentTiming(Document& document) : document_(document) {}
+DocumentTiming::DocumentTiming(Document& document) : document_(document) {
+  if (document_->GetReadyState() == Document::kLoading)
+    MarkDomLoading();
+}
 
-void DocumentTiming::Trace(Visitor* visitor) {
+void DocumentTiming::Trace(Visitor* visitor) const {
   visitor->Trace(document_);
 }
 
@@ -68,14 +71,6 @@ void DocumentTiming::MarkDomComplete() {
   dom_complete_ = base::TimeTicks::Now();
   TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing,rail", "domComplete",
                                    dom_complete_, "frame",
-                                   ToTraceValue(GetFrame()));
-  NotifyDocumentTimingChanged();
-}
-
-void DocumentTiming::MarkFirstLayout() {
-  first_layout_ = base::TimeTicks::Now();
-  TRACE_EVENT_MARK_WITH_TIMESTAMP1("blink.user_timing,rail", "firstLayout",
-                                   first_layout_, "frame",
                                    ToTraceValue(GetFrame()));
   NotifyDocumentTimingChanged();
 }

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Author origin style rule overrides meta color-scheme. assert_equals: expected (string) "light" but got (undefined) undefined
-Harness: the test ran to completion.
-

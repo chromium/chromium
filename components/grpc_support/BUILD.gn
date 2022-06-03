@@ -1,7 +1,5 @@
 source_set("headers") {
-  public = [
-    "include/bidirectional_stream_c.h",
-  ]
+  public = [ "include/bidirectional_stream_c.h" ]
 }
 
 source_set("grpc_support") {
@@ -23,9 +21,7 @@ source_set("grpc_support") {
 # Depends on ":grpc_support" implementation.
 source_set("bidirectional_stream_unittest") {
   testonly = true
-  sources = [
-    "bidirectional_stream_unittest.cc",
-  ]
+  sources = [ "bidirectional_stream_unittest.cc" ]
 
   deps = [
     ":grpc_support",
@@ -34,17 +30,13 @@ source_set("bidirectional_stream_unittest") {
     "//net:test_support",
   ]
 
-  public_deps = [
-    "//components/grpc_support/test:get_stream_engine_header",
-  ]
+  public_deps = [ "//components/grpc_support/test:get_stream_engine_header" ]
 }
 
 # Depends on ":headers" to avoid ":grpc_support" implementation.
 source_set("bidirectional_stream_test") {
   testonly = true
-  sources = [
-    "bidirectional_stream_unittest.cc",
-  ]
+  sources = [ "bidirectional_stream_unittest.cc" ]
 
   deps = [
     ":headers",
@@ -53,7 +45,5 @@ source_set("bidirectional_stream_test") {
     "//net:test_support",
   ]
 
-  public_deps = [
-    "//components/grpc_support/test:get_stream_engine_header",
-  ]
+  public_deps = [ "//components/grpc_support/test:get_stream_engine_header" ]
 }

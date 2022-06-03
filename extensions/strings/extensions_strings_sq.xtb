@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">Gabim! Krijimi i çelësin privat të rastësishëm RSA dështoi.</translation>
 <translation id="1445572445564823378">Kjo shtesë po e ngadalëson <ph name="PRODUCT_NAME" />. Duhet ta çaktivizosh për të restauruar cilësinë e funksionimit të <ph name="PRODUCT_NAME" />.</translation>
 <translation id="1468038450257740950">WebGL nuk mbështetet.</translation>
-<translation id="149347756975725155">Nuk mundi të ngarkonte ikonën e shtesës "<ph name="ICON" />".</translation>
 <translation id="1803557475693955505">Faqja e sfondit "<ph name="BACKGROUND_PAGE" />" nuk mund të ngarkohej.</translation>
 <translation id="2159915644201199628">Nuk mund të dekodohet imazhi: "<ph name="IMAGE_NAME" />"</translation>
 <translation id="2350172092385603347">U përdor lokalizimi, por gjuha default_locale nuk ishte e specifikuar në manifest.</translation>
@@ -25,7 +24,7 @@
 <translation id="3561217442734750519">Vlera hyrëse për çelësin privat duhet të jetë një shteg i vlefshëm.</translation>
 <translation id="388442998277590542">Faqja e opsioneve <ph name="OPTIONS_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="3984413272403535372">Gabim gjatë nënshkrimit të shtesës.</translation>
-<translation id="39964277676607559">Nuk mundi të ngarkonte Javascript "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes.</translation>
+<translation id="39964277676607559">Nuk mundi të ngarkonte JavaScript "<ph name="RELATIVE_PATH" />" për skriptin e përmbajtjes.</translation>
 <translation id="4115165561519362854">Administratori i kësaj pajisjeje kërkon që <ph name="EXTENSION_NAME" /> të ketë një version minimal të <ph name="EXTENSION_VERSION" />. Nuk mund të aktivizohet derisa të jetë përditësuar në atë version (ose më të lartë).</translation>
 <translation id="4233778200880751280">Faqja informuese <ph name="ABOUT_PAGE" /> nuk mund të ngarkohej.</translation>
 <translation id="471800408830181311">Dështoi të nxjerrë çelësin privat.</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">Dështoi në leximin e çelësit privat.</translation>
 <translation id="6391538222494443604">Duhet të ekzistojë një direktori e hyrjes.</translation>
 <translation id="641087317769093025">Nuk mundi të shpaketonte shtesën</translation>
-<translation id="6413453408918378296">Ikona nuk është mjaft e dukshme "<ph name="ICON" />".</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" po kërkon qasje te një ose më shumë nga pajisjet e tua:</translation>
 <translation id="657064425229075395">Nuk mund ta ngarkojë skriptin e sfondit "<ph name="BACKGROUND_SCRIPT" />".</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> nga <ph name="VENDOR_NAME" /> (numri i serisë <ph name="SERIAL_NUMBER" />)</translation>

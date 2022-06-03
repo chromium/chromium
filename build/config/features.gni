@@ -26,11 +26,11 @@ declare_args() {
   proprietary_codecs = is_chrome_branded || is_chromecast
 
   # libudev usage. This currently only affects the content layer.
-  use_udev = is_linux && !is_chromecast
+  use_udev = (is_linux || is_chromeos) && !is_chromecast
 
-  use_dbus = is_linux && !is_chromecast
+  use_dbus = (is_linux || is_chromeos) && !is_chromecast
 
-  use_gio = is_linux && !is_chromeos && !is_chromecast
+  use_gio = is_linux && !is_chromecast
 }
 #
 # =============================================

@@ -8,13 +8,13 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/test/browser_test.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -42,16 +42,21 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
     test_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
   }
 
+  ImageFetcherImplBrowserTest(const ImageFetcherImplBrowserTest&) = delete;
+  ImageFetcherImplBrowserTest& operator=(const ImageFetcherImplBrowserTest&) =
+      delete;
+
   void SetUpInProcessBrowserTestFixture() override {
     ASSERT_TRUE(test_server_.Start());
   }
 
   ImageFetcher* CreateImageFetcher() {
-    ImageFetcher* fetcher = new ImageFetcherImpl(
-        std::make_unique<ImageDecoderImpl>(),
-        content::BrowserContext::GetDefaultStoragePartition(
-            browser()->profile())
-            ->GetURLLoaderFactoryForBrowserProcess());
+    ImageFetcher* fetcher =
+        new ImageFetcherImpl(std::make_unique<ImageDecoderImpl>(),
+                             browser()
+                                 ->profile()
+                                 ->GetDefaultStoragePartition()
+                                 ->GetURLLoaderFactoryForBrowserProcess());
     return fetcher;
   }
 
@@ -98,9 +103,6 @@ class ImageFetcherImplBrowserTest : public InProcessBrowserTest {
   int num_data_callback_null_called_;
 
   net::EmbeddedTestServer test_server_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ImageFetcherImplBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ImageFetcherImplBrowserTest, NormalFetch) {

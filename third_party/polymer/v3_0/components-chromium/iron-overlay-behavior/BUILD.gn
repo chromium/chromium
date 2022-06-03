@@ -1,4 +1,4 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 #
@@ -7,15 +7,11 @@
 import("//third_party/closure_compiler/compile_js.gni")
 
 js_library("iron-focusables-helper") {
-  deps = [
-    "../polymer:polymer_bundled",
-  ]
+  deps = [ "../polymer:polymer_bundled" ]
 }
 
 js_library("iron-overlay-backdrop") {
-  deps = [
-    "../polymer:polymer_bundled",
-  ]
+  deps = [ "../polymer:polymer_bundled" ]
 }
 
 js_library("iron-overlay-behavior") {
@@ -38,7 +34,5 @@ js_library("iron-overlay-manager") {
 }
 
 js_library("iron-scroll-manager") {
-  deps = [
-    "../polymer:polymer_bundled",
-  ]
+  deps = [ "../polymer:polymer_bundled" ]
 }

@@ -4,7 +4,7 @@
 
 #include "content/public/browser/context_factory.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "content/browser/compositor/image_transport_factory.h"
 
 namespace content {
@@ -12,11 +12,6 @@ namespace content {
 ui::ContextFactory* GetContextFactory() {
   DCHECK(ImageTransportFactory::GetInstance());
   return ImageTransportFactory::GetInstance()->GetContextFactory();
-}
-
-ui::ContextFactoryPrivate* GetContextFactoryPrivate() {
-  DCHECK(ImageTransportFactory::GetInstance());
-  return ImageTransportFactory::GetInstance()->GetContextFactoryPrivate();
 }
 
 }  // namespace content

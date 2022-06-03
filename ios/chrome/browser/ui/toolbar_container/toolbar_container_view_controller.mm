@@ -6,7 +6,7 @@
 
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/mac/foundation_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/toolbar_container/collapsing_toolbar_height_constraint.h"
@@ -14,7 +14,7 @@
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_container_view.h"
 #import "ios/chrome/browser/ui/toolbar_container/toolbar_height_range.h"
 #include "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

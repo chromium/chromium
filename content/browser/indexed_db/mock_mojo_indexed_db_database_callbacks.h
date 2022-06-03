@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -19,6 +18,12 @@ class MockMojoIndexedDBDatabaseCallbacks
     : public blink::mojom::IDBDatabaseCallbacks {
  public:
   MockMojoIndexedDBDatabaseCallbacks();
+
+  MockMojoIndexedDBDatabaseCallbacks(
+      const MockMojoIndexedDBDatabaseCallbacks&) = delete;
+  MockMojoIndexedDBDatabaseCallbacks& operator=(
+      const MockMojoIndexedDBDatabaseCallbacks&) = delete;
+
   ~MockMojoIndexedDBDatabaseCallbacks() override;
 
   mojo::PendingAssociatedRemote<blink::mojom::IDBDatabaseCallbacks>
@@ -29,19 +34,11 @@ class MockMojoIndexedDBDatabaseCallbacks
   MOCK_METHOD3(Abort,
                void(int64_t transaction_id,
                     blink::mojom::IDBException code,
-                    const base::string16& message));
+                    const std::u16string& message));
   MOCK_METHOD1(Complete, void(int64_t transaction_id));
-
-  MOCK_METHOD1(MockedChanges,
-               void(blink::mojom::IDBObserverChangesPtr* changes));
-  void Changes(blink::mojom::IDBObserverChangesPtr changes) override {
-    MockedChanges(&changes);
-  }
 
  private:
   mojo::AssociatedReceiver<blink::mojom::IDBDatabaseCallbacks> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(MockMojoIndexedDBDatabaseCallbacks);
 };
 
 }  // namespace content

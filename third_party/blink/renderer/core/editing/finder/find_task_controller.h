@@ -9,9 +9,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/position.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/scheduler/common/tracing_helper.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
+namespace {
+const int kInvalidFindIdentifier = -1;
+}
 
 class LocalFrame;
 class Range;
@@ -45,7 +49,8 @@ class CORE_EXPORT FindTaskController final
   // It is not necessary if the frame is invisible, for example, or if this
   // is a repeat search that already returned nothing last time the same prefix
   // was searched.
-  bool ShouldFindMatches(const String& search_text,
+  bool ShouldFindMatches(int identifier,
+                         const String& search_text,
                          const mojom::blink::FindOptions& options);
 
   // During a run of |idle_find_task|, we found a match.
@@ -59,30 +64,49 @@ class CORE_EXPORT FindTaskController final
                      const mojom::blink::FindOptions& options,
                      bool finished_whole_request,
                      PositionInFlatTree next_starting_position,
-                     int match_count);
+                     int match_count,
+                     bool aborted,
+                     base::TimeTicks task_start_time);
 
   Range* ResumeFindingFromRange() const { return resume_finding_from_range_; }
   int CurrentMatchCount() const { return current_match_count_; }
 
-  // Idle task, when invoked will search for a given text and notify us
+  // When invoked this will search for a given text and notify us
   // whenever a match is found or when it finishes, through FoundMatch and
   // DidFinishTask.
-  class IdleFindTask;
+  class FindTask;
 
-  void Trace(Visitor* visitor);
+  void Trace(Visitor* visitor) const;
 
   void ResetLastFindRequestCompletedWithNoMatches();
 
+  void InvokeFind(int identifier,
+                  const WebString& search_text_,
+                  mojom::blink::FindOptionsPtr options_);
+
+  int GetMatchYieldCheckInterval() const;
+
  private:
-  void RequestIdleFindTask(int identifier,
-                           const WebString& search_text,
-                           const mojom::blink::FindOptions& options);
+  void RequestFindTask(int identifier,
+                       const WebString& search_text,
+                       const mojom::blink::FindOptions& options);
+
+  enum class RequestEndState {
+    // The find-in-page request got aborted before going through every text in
+    // the document.
+    ABORTED,
+    // The find-in-page request finished going through every text in the
+    // document.
+    FINISHED,
+  };
+
+  void RecordRequestMetrics(RequestEndState request_end_state);
 
   Member<WebLocalFrameImpl> owner_frame_;
 
   Member<TextFinder> text_finder_;
 
-  Member<IdleFindTask> idle_find_task_;
+  Member<FindTask> find_task_;
 
   // Keeps track if there is any ongoing find effort or not.
   bool finding_in_progress_;
@@ -102,11 +126,24 @@ class CORE_EXPORT FindTaskController final
   // without finding any matches in this frame.
   bool last_find_request_completed_with_no_matches_;
 
+  // The identifier of the current find request, we should only run FindTasks
+  // that have the same identifier as this.
+  int current_find_identifier_ = kInvalidFindIdentifier;
+
+  // The start time of the current find-in-page request.
+  base::TimeTicks current_request_start_time_;
+  // The combined duration of all the tasks done for the current request.
+  base::TimeDelta total_task_duration_for_current_request_;
+  // The number of find-in-page tasks the current request has made.
+  int task_count_for_current_request_;
+
   // Keeps track of the last string this frame searched for. This is used for
   // short-circuiting searches in the following scenarios: When a frame has
   // been searched and returned 0 results, we don't need to search that frame
   // again if the user is just adding to the search (making it more specific).
   WTF::String last_search_string_;
+
+  int match_yield_check_interval_;
 };
 
 }  // namespace blink

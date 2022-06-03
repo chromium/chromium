@@ -4,11 +4,14 @@
 
 #include "base/threading/sequence_bound.h"
 
+#include <functional>
+#include <utility>
+
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/task_environment.h"
-#include "base/threading/thread_task_runner_handle.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,9 +33,13 @@ class SequenceBoundTest : public ::testing::Test {
     kOtherDtorValue = 444,
   };
 
-  void SetUp() override { task_runner_ = base::ThreadTaskRunnerHandle::Get(); }
-
-  void TearDown() override { task_environment_.RunUntilIdle(); }
+  void TearDown() override {
+    // Make sure that any objects owned by `SequenceBound` have been destroyed
+    // to avoid tripping leak detection.
+    RunLoop run_loop;
+    task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
 
   // Do-nothing base class, just so we can test assignment of derived classes.
   // It introduces a virtual destructor, so that casting derived classes to
@@ -66,16 +73,23 @@ class SequenceBoundTest : public ::testing::Test {
     MultiplyDerived(Value* ptr1, Value* ptr2) : Other(ptr1), Derived(ptr2) {}
   };
 
+  // TODO(dcheng): This isn't used, but upcasting to a virtual base class is
+  // unsafe and is currently unchecked! Add these safety checks back in.
   struct VirtuallyDerived : public virtual Base {};
 
   base::test::TaskEnvironment task_environment_;
-  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_ =
+      base::SequencedTaskRunnerHandle::Get();
+
   Value value_ = kInitialValue;
 };
 
 class BoxedValue {
  public:
   explicit BoxedValue(int initial_value) : value_(initial_value) {}
+
+  BoxedValue(const BoxedValue&) = delete;
+  BoxedValue& operator=(const BoxedValue&) = delete;
 
   ~BoxedValue() {
     if (destruction_callback_)
@@ -92,17 +106,15 @@ class BoxedValue {
  private:
   int value_ = 0;
   base::OnceClosure destruction_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(BoxedValue);
 };
 
 #if defined(OS_IOS) && !TARGET_OS_SIMULATOR
-#define MAYBE_ConstructThenPostThenReset FLAKY_ConstructThenPostThenReset
+#define MAYBE_ConstructAsyncCallReset FLAKY_ConstructAsyncCallReset
 #else
-#define MAYBE_ConstructThenPostThenReset ConstructThenPostThenReset
+#define MAYBE_ConstructAsyncCallReset ConstructAsyncCallReset
 #endif
 // https://crbug.com/899779 tracks test flakiness on iOS.
-TEST_F(SequenceBoundTest, MAYBE_ConstructThenPostThenReset) {
+TEST_F(SequenceBoundTest, MAYBE_ConstructAsyncCallReset) {
   auto derived = SequenceBound<Derived>(task_runner_, &value_);
   EXPECT_FALSE(derived.is_null());
   EXPECT_TRUE(derived);
@@ -113,7 +125,7 @@ TEST_F(SequenceBoundTest, MAYBE_ConstructThenPostThenReset) {
   EXPECT_EQ(value_, kDerivedCtorValue);
 
   // Post now that the object has been constructed.
-  derived.Post(FROM_HERE, &Derived::SetValue, kDifferentValue);
+  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
   EXPECT_EQ(value_, kDerivedCtorValue);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(value_, kDifferentValue);
@@ -132,7 +144,7 @@ TEST_F(SequenceBoundTest, PostBeforeConstruction) {
   // Construct an object and post a message to it, before construction has been
   // run on |task_runner_|.
   auto derived = SequenceBound<Derived>(task_runner_, &value_);
-  derived.Post(FROM_HERE, &Derived::SetValue, kDifferentValue);
+  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
   EXPECT_EQ(value_, kInitialValue);
   // Both construction and SetValue should run.
   base::RunLoop().RunUntilIdle();
@@ -284,7 +296,7 @@ TEST_F(SequenceBoundTest, MultiplyDerivedPostToLeftBaseClass) {
 
   // Cast to Other, the left base.
   SequenceBound<Other> other(std::move(mderived));
-  other.Post(FROM_HERE, &Other::SetValue, kDifferentValue);
+  other.AsyncCall(&Other::SetValue).WithArgs(kDifferentValue);
 
   base::RunLoop().RunUntilIdle();
 
@@ -303,7 +315,7 @@ TEST_F(SequenceBoundTest, MultiplyDerivedPostToRightBaseClass) {
       SequenceBound<MultiplyDerived>(task_runner_, &value1, &value2);
 
   SequenceBound<Derived> derived(std::move(mderived));
-  derived.Post(FROM_HERE, &Derived::SetValue, kDifferentValue);
+  derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
 
   base::RunLoop().RunUntilIdle();
 
@@ -333,30 +345,13 @@ TEST_F(SequenceBoundTest, ResetOnNullObjectWorks) {
   derived.Reset();
 }
 
-TEST_F(SequenceBoundTest, IsVirtualBaseClassOf) {
-  // Check that is_virtual_base_of<> works properly.
-
-  // Neither |Base| nor |Derived| is a virtual base of the other.
-  static_assert(!internal::is_virtual_base_of<Base, Derived>::value,
-                "|Base| shouldn't be a virtual base of |Derived|");
-  static_assert(!internal::is_virtual_base_of<Derived, Base>::value,
-                "|Derived| shouldn't be a virtual base of |Base|");
-
-  // |Base| should be a virtual base class of |VirtuallyDerived|, but not the
-  // other way.
-  static_assert(internal::is_virtual_base_of<Base, VirtuallyDerived>::value,
-                "|Base| should be a virtual base of |VirtuallyDerived|");
-  static_assert(!internal::is_virtual_base_of<VirtuallyDerived, Base>::value,
-                "|VirtuallyDerived shouldn't be a virtual base of |Base|");
-}
-
 TEST_F(SequenceBoundTest, LvalueConstructionParameter) {
   // Note here that |value_ptr| is an lvalue, while |&value| would be an rvalue.
   Value value = kInitialValue;
   Value* value_ptr = &value;
   SequenceBound<Derived> derived(task_runner_, value_ptr);
   {
-    derived.Post(FROM_HERE, &Derived::SetValue, kDifferentValue);
+    derived.AsyncCall(&Derived::SetValue).WithArgs(kDifferentValue);
     base::RunLoop run_loop;
     task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
     run_loop.Run();
@@ -376,36 +371,460 @@ TEST_F(SequenceBoundTest, PostTaskWithThisObject) {
   constexpr int kTestValue2 = 42;
   base::SequenceBound<BoxedValue> value(task_runner_, kTestValue1);
   base::RunLoop loop;
+  value.PostTaskWithThisObject(base::BindLambdaForTesting(
+      [&](const BoxedValue& v) { EXPECT_EQ(kTestValue1, v.value()); }));
+  value.PostTaskWithThisObject(base::BindLambdaForTesting(
+      [&](BoxedValue* v) { v->set_value(kTestValue2); }));
   value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](const BoxedValue& v) {
-        EXPECT_EQ(kTestValue1, v.value());
-      }));
-  value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting(
-                     [&](BoxedValue* v) { v->set_value(kTestValue2); }));
-  value.PostTaskWithThisObject(
-      FROM_HERE, base::BindLambdaForTesting([&](const BoxedValue& v) {
+      base::BindLambdaForTesting([&](const BoxedValue& v) {
         EXPECT_EQ(kTestValue2, v.value());
         loop.Quit();
       }));
   loop.Run();
 }
 
-TEST_F(SequenceBoundTest, ResetWithCallbackAfterDestruction) {
+TEST_F(SequenceBoundTest, SynchronouslyResetForTest) {
   base::SequenceBound<BoxedValue> value(task_runner_, 0);
 
-  // Verify that the callback passed to ResetWithCallbackAfterDestruction always
-  // does happen *after* destruction.
   bool destroyed = false;
-  value.Post(FROM_HERE, &BoxedValue::set_destruction_callback,
-             base::BindLambdaForTesting([&] { destroyed = true; }));
+  value.AsyncCall(&BoxedValue::set_destruction_callback)
+      .WithArgs(base::BindLambdaForTesting([&] { destroyed = true; }));
 
-  base::RunLoop loop;
-  value.ResetWithCallbackAfterDestruction(base::BindLambdaForTesting([&] {
-    EXPECT_TRUE(destroyed);
-    loop.Quit();
-  }));
-  loop.Run();
+  value.SynchronouslyResetForTest();
+  EXPECT_TRUE(destroyed);
+}
+
+TEST_F(SequenceBoundTest, SmallObject) {
+  class EmptyClass {};
+  SequenceBound<EmptyClass> value(task_runner_);
+  // Test passes if SequenceBound constructor does not crash in AlignedAlloc().
+}
+
+TEST_F(SequenceBoundTest, SelfMoveAssign) {
+  class EmptyClass {};
+  SequenceBound<EmptyClass> value(task_runner_);
+  EXPECT_FALSE(value.is_null());
+  // Clang has a warning for self-move, so be clever.
+  auto& actually_the_same_value = value;
+  value = std::move(actually_the_same_value);
+  // Note: in general, moved-from objects are in a valid but undefined state.
+  // This is merely a test that self-move doesn't result in something bad
+  // happening; this is not an assertion that self-move will always have this
+  // behavior.
+  EXPECT_TRUE(value.is_null());
+}
+
+namespace {
+
+class NoArgsVoidReturn {
+ public:
+  void Method() {
+    if (loop_)
+      loop_->Quit();
+  }
+  void ConstMethod() const {
+    if (loop_)
+      loop_->Quit();
+  }
+
+  void set_loop(RunLoop* loop) { loop_ = loop; }
+
+ private:
+  RunLoop* loop_ = nullptr;
+};
+
+class NoArgsIntReturn {
+ public:
+  int Method() { return 123; }
+  int ConstMethod() const { return 456; }
+};
+
+class IntArgVoidReturn {
+ public:
+  IntArgVoidReturn(int* method_called_with, int* const_method_called_with)
+      : method_called_with_(method_called_with),
+        const_method_called_with_(const_method_called_with) {}
+
+  void Method(int x) {
+    *method_called_with_ = x;
+    if (loop_)
+      loop_->Quit();
+  }
+  void ConstMethod(int x) const {
+    *const_method_called_with_ = x;
+    if (loop_)
+      loop_->Quit();
+  }
+
+  void set_loop(RunLoop* loop) { loop_ = loop; }
+
+ private:
+  int* const method_called_with_;
+  int* const const_method_called_with_;
+
+  RunLoop* loop_ = nullptr;
+};
+
+class IntArgIntReturn {
+ public:
+  int Method(int x) { return -x; }
+  int ConstMethod(int x) const { return -x; }
+};
+
+}  // namespace
+
+TEST_F(SequenceBoundTest, AsyncCallNoArgsNoThen) {
+  SequenceBound<NoArgsVoidReturn> s(task_runner_);
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&NoArgsVoidReturn::set_loop).WithArgs(&loop);
+    s.AsyncCall(&NoArgsVoidReturn::Method);
+    loop.Run();
+  }
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&NoArgsVoidReturn::set_loop).WithArgs(&loop);
+    s.AsyncCall(&NoArgsVoidReturn::ConstMethod);
+    loop.Run();
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallIntArgNoThen) {
+  int method_called_with = 0;
+  int const_method_called_with = 0;
+  SequenceBound<IntArgVoidReturn> s(task_runner_, &method_called_with,
+                                    &const_method_called_with);
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&IntArgVoidReturn::set_loop).WithArgs(&loop);
+    s.AsyncCall(&IntArgVoidReturn::Method).WithArgs(123);
+    loop.Run();
+    EXPECT_EQ(123, method_called_with);
+  }
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&IntArgVoidReturn::set_loop).WithArgs(&loop);
+    s.AsyncCall(&IntArgVoidReturn::ConstMethod).WithArgs(456);
+    loop.Run();
+    EXPECT_EQ(456, const_method_called_with);
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallNoArgsVoidThen) {
+  SequenceBound<NoArgsVoidReturn> s(task_runner_);
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&NoArgsVoidReturn::Method).Then(BindLambdaForTesting([&]() {
+      loop.Quit();
+    }));
+    loop.Run();
+  }
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&NoArgsVoidReturn::ConstMethod)
+        .Then(BindLambdaForTesting([&]() { loop.Quit(); }));
+    loop.Run();
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallNoArgsIntThen) {
+  SequenceBound<NoArgsIntReturn> s(task_runner_);
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&NoArgsIntReturn::Method)
+        .Then(BindLambdaForTesting([&](int result) {
+          EXPECT_EQ(123, result);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&NoArgsIntReturn::ConstMethod)
+        .Then(BindLambdaForTesting([&](int result) {
+          EXPECT_EQ(456, result);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallWithArgsVoidThen) {
+  int method_called_with = 0;
+  int const_method_called_with = 0;
+  SequenceBound<IntArgVoidReturn> s(task_runner_, &method_called_with,
+                                    &const_method_called_with);
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&IntArgVoidReturn::Method)
+        .WithArgs(123)
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_EQ(123, method_called_with);
+  }
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&IntArgVoidReturn::ConstMethod)
+        .WithArgs(456)
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_EQ(456, const_method_called_with);
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallWithArgsIntThen) {
+  SequenceBound<IntArgIntReturn> s(task_runner_);
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&IntArgIntReturn::Method)
+        .WithArgs(123)
+        .Then(BindLambdaForTesting([&](int result) {
+          EXPECT_EQ(-123, result);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+
+  {
+    RunLoop loop;
+    s.AsyncCall(&IntArgIntReturn::ConstMethod)
+        .WithArgs(456)
+        .Then(BindLambdaForTesting([&](int result) {
+          EXPECT_EQ(-456, result);
+          loop.Quit();
+        }));
+    loop.Run();
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallIsConstQualified) {
+  // Tests that both const and non-const methods may be called through a
+  // const-qualified SequenceBound.
+  const SequenceBound<NoArgsVoidReturn> s(task_runner_);
+  s.AsyncCall(&NoArgsVoidReturn::ConstMethod);
+  s.AsyncCall(&NoArgsVoidReturn::Method);
+}
+
+class IgnoreResultTestHelperWithNoArgs {
+ public:
+  explicit IgnoreResultTestHelperWithNoArgs(RunLoop* loop, bool* called)
+      : loop_(loop), called_(called) {}
+
+  int ConstMethod() const {
+    if (loop_) {
+      loop_->Quit();
+    }
+    if (called_) {
+      *called_ = true;
+    }
+    return 0;
+  }
+
+  int Method() {
+    if (loop_) {
+      loop_->Quit();
+    }
+    if (called_) {
+      *called_ = true;
+    }
+    return 0;
+  }
+
+ private:
+  RunLoop* const loop_ = nullptr;
+  bool* const called_ = nullptr;
+};
+
+TEST_F(SequenceBoundTest, AsyncCallIgnoreResultNoArgs) {
+  {
+    RunLoop loop;
+    SequenceBound<IgnoreResultTestHelperWithNoArgs> s(task_runner_, &loop,
+                                                      nullptr);
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithNoArgs::ConstMethod));
+    loop.Run();
+  }
+
+  {
+    RunLoop loop;
+    SequenceBound<IgnoreResultTestHelperWithNoArgs> s(task_runner_, &loop,
+                                                      nullptr);
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithNoArgs::Method));
+    loop.Run();
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallIgnoreResultThen) {
+  {
+    RunLoop loop;
+    bool called = false;
+    SequenceBound<IgnoreResultTestHelperWithNoArgs> s(task_runner_, nullptr,
+                                                      &called);
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithNoArgs::ConstMethod))
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_TRUE(called);
+  }
+
+  {
+    RunLoop loop;
+    bool called = false;
+    SequenceBound<IgnoreResultTestHelperWithNoArgs> s(task_runner_, nullptr,
+                                                      &called);
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithNoArgs::Method))
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_TRUE(called);
+  }
+}
+
+class IgnoreResultTestHelperWithArgs {
+ public:
+  IgnoreResultTestHelperWithArgs(RunLoop* loop, int& value)
+      : loop_(loop), value_(value) {}
+
+  int ConstMethod(int arg) const {
+    value_ = arg;
+    if (loop_) {
+      loop_->Quit();
+    }
+    return arg;
+  }
+
+  int Method(int arg) {
+    value_ = arg;
+    if (loop_) {
+      loop_->Quit();
+    }
+    return arg;
+  }
+
+ private:
+  RunLoop* const loop_ = nullptr;
+  int& value_;
+};
+
+TEST_F(SequenceBoundTest, AsyncCallIgnoreResultWithArgs) {
+  {
+    RunLoop loop;
+    int result = 0;
+    SequenceBound<IgnoreResultTestHelperWithArgs> s(task_runner_, &loop,
+                                                    std::ref(result));
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithArgs::ConstMethod))
+        .WithArgs(60);
+    loop.Run();
+    EXPECT_EQ(60, result);
+  }
+
+  {
+    RunLoop loop;
+    int result = 0;
+    SequenceBound<IgnoreResultTestHelperWithArgs> s(task_runner_, &loop,
+                                                    std::ref(result));
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithArgs::Method))
+        .WithArgs(06);
+    loop.Run();
+    EXPECT_EQ(06, result);
+  }
+}
+
+TEST_F(SequenceBoundTest, AsyncCallIgnoreResultWithArgsThen) {
+  {
+    RunLoop loop;
+    int result = 0;
+    SequenceBound<IgnoreResultTestHelperWithArgs> s(task_runner_, nullptr,
+                                                    std::ref(result));
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithArgs::ConstMethod))
+        .WithArgs(60)
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_EQ(60, result);
+  }
+
+  {
+    RunLoop loop;
+    int result = 0;
+    SequenceBound<IgnoreResultTestHelperWithArgs> s(task_runner_, nullptr,
+                                                    std::ref(result));
+    s.AsyncCall(IgnoreResult(&IgnoreResultTestHelperWithArgs::Method))
+        .WithArgs(06)
+        .Then(BindLambdaForTesting([&] { loop.Quit(); }));
+    loop.Run();
+    EXPECT_EQ(06, result);
+  }
+}
+
+// TODO(dcheng): Maybe use the nocompile harness here instead of being
+// "clever"...
+TEST_F(SequenceBoundTest, NoCompileTests) {
+  // TODO(dcheng): Test calling WithArgs() on a method that takes no arguments.
+  // Given:
+  //   class C {
+  //     void F();
+  //   };
+  //
+  // Then:
+  //   SequenceBound<C> s(...);
+  //   s.AsyncCall(&C::F).WithArgs(...);
+  //
+  // should not compile.
+  //
+  // TODO(dcheng): Test calling Then() before calling WithArgs().
+  // Given:
+  //   class C {
+  //     void F(int);
+  //   };
+  //
+  // Then:
+  //   SequenceBound<C> s(...);
+  //   s.AsyncCall(&C::F).Then(...).WithArgs(...);
+  //
+  // should not compile.
+  //
+}
+
+class SequenceBoundDeathTest : public ::testing::Test {
+ protected:
+  void TearDown() override {
+    // Make sure that any objects owned by `SequenceBound` have been destroyed
+    // to avoid tripping leak detection.
+    RunLoop run_loop;
+    task_runner_->PostTask(FROM_HERE, run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  // Death tests use fork(), which can interact (very) poorly with threads.
+  test::SingleThreadTaskEnvironment task_environment_;
+  scoped_refptr<SequencedTaskRunner> task_runner_ =
+      base::SequencedTaskRunnerHandle::Get();
+};
+
+TEST_F(SequenceBoundDeathTest, AsyncCallIntArgNoWithArgsShouldCheck) {
+  SequenceBound<IntArgIntReturn> s(task_runner_);
+  EXPECT_DEATH_IF_SUPPORTED(s.AsyncCall(&IntArgIntReturn::Method), "");
+}
+
+TEST_F(SequenceBoundDeathTest, AsyncCallIntReturnNoThenShouldCheck) {
+  {
+    SequenceBound<NoArgsIntReturn> s(task_runner_);
+    EXPECT_DEATH_IF_SUPPORTED(s.AsyncCall(&NoArgsIntReturn::Method), "");
+  }
+
+  {
+    SequenceBound<IntArgIntReturn> s(task_runner_);
+    EXPECT_DEATH_IF_SUPPORTED(s.AsyncCall(&IntArgIntReturn::Method).WithArgs(0),
+                              "");
+  }
 }
 
 }  // namespace base

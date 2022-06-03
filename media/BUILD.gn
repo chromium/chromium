@@ -5,6 +5,7 @@
 import("//build/buildflag_header.gni")
 import("//build/config/android/config.gni")
 import("//build/config/arm.gni")
+import("//build/config/chromecast_build.gni")
 import("//build/config/features.gni")
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
@@ -21,8 +22,8 @@ buildflag_header("media_buildflags") {
     "ALTERNATE_CDM_STORAGE_ID_KEY=\"$alternate_cdm_storage_id_key\"",
     "CDM_PLATFORM_SPECIFIC_PATH=\"$cdm_platform_specific_path\"",
     "ENABLE_PLATFORM_AC3_EAC3_AUDIO=$enable_platform_ac3_eac3_audio",
+    "ENABLE_CAST_AUDIO_RENDERER=$enable_cast_audio_renderer",
     "ENABLE_CDM_HOST_VERIFICATION=$enable_cdm_host_verification",
-    "ENABLE_CDM_PROXY=$enable_cdm_proxy",
     "ENABLE_CDM_STORAGE_ID=$enable_cdm_storage_id",
     "ENABLE_DAV1D_DECODER=$enable_dav1d_decoder",
     "ENABLE_AV1_DECODER=$enable_av1_decoder",
@@ -30,14 +31,24 @@ buildflag_header("media_buildflags") {
     "ENABLE_FFMPEG=$media_use_ffmpeg",
     "ENABLE_FFMPEG_VIDEO_DECODERS=$enable_ffmpeg_video_decoders",
     "ENABLE_PLATFORM_HEVC=$enable_platform_hevc",
+    "ENABLE_PLATFORM_HEVC_DECODING=$enable_platform_hevc_decoding",
+    "ENABLE_PLATFORM_ENCRYPTED_HEVC=$enable_platform_encrypted_hevc",
     "ENABLE_HLS_SAMPLE_AES=$enable_hls_sample_aes",
+    "ENABLE_HLS_DEMUXER=$enable_hls_demuxer",
+    "ENABLE_LIBGAV1_DECODER=$enable_libgav1_decoder",
     "ENABLE_LIBRARY_CDMS=$enable_library_cdms",
     "ENABLE_LIBVPX=$media_use_libvpx",
     "ENABLE_LOGGING_OVERRIDE=$enable_logging_override",
+    "ENABLE_MEDIA_DRM_STORAGE=$enable_media_drm_storage",
     "ENABLE_MEDIA_REMOTING=$enable_media_remoting",
     "ENABLE_MEDIA_REMOTING_RPC=$enable_media_remoting_rpc",
+    "ENABLE_OPENH264=$media_use_openh264",
     "ENABLE_PLATFORM_MPEG_H_AUDIO=$enable_platform_mpeg_h_audio",
     "ENABLE_MSE_MPEG2TS_STREAM_PARSER=$enable_mse_mpeg2ts_stream_parser",
+    "ENABLE_CAST_STREAMING_RENDERER=$enable_cast_streaming_renderer",
+    "USE_CHROMEOS_MEDIA_ACCELERATION=$use_vaapi||$use_v4l2_codec",
+    "USE_CHROMEOS_PROTECTED_AV1=$use_chromeos_protected_av1",
+    "USE_CHROMEOS_PROTECTED_MEDIA=$use_chromeos_protected_media",
     "USE_PROPRIETARY_CODECS=$proprietary_codecs",
   ]
 }
@@ -116,8 +127,12 @@ component("media") {
   ]
 
   # This must be included here since it actually depends on //media/base.
-  if (is_mac || is_ios) {
+  if (is_apple) {
     public_deps += [ "//media/base/mac" ]
+  }
+
+  if (use_ozone) {
+    deps += [ "//ui/ozone" ]
   }
 }
 
@@ -131,6 +146,7 @@ source_set("test_support") {
     "//media/base/android:test_support",
     "//media/filters:test_support",
     "//media/formats:test_support",
+    "//media/renderers:test_support",
     "//media/video:test_support",
   ]
 }
@@ -138,10 +154,13 @@ source_set("test_support") {
 # Contains tests for all targets in the "media" folder.
 # TODO(xhwang): Move mojo/capture/remoting tests here where applicable.
 test("media_unittests") {
+  use_xvfb = use_xvfb_in_this_config
+
   deps = [
     "//media/audio:unit_tests",
     "//media/base:unit_tests",
     "//media/capabilities:unit_tests",
+    "//media/cast/receiver:unit_tests",
     "//media/cdm:unit_tests",
     "//media/device_monitors:unit_tests",
     "//media/filters:unit_tests",
@@ -160,9 +179,10 @@ test("media_unittests") {
 
   data = [
     "test/data/",
+    "formats/mp4/h264_annex_b_fuzz_corpus/",
   ]
 
-  data_deps = []
+  data_deps = [ "//testing/buildbot/filters:media_unittests_filters" ]
 
   if (media_use_ffmpeg) {
     deps += [ "//media/ffmpeg:unit_tests" ]
@@ -177,6 +197,24 @@ test("media_unittests") {
       "//media/base/android:unit_tests",
       "//media/gpu:android_video_decode_accelerator_unittests",
       "//ui/android:ui_java",
+    ]
+  }
+
+  if (is_fuchsia) {
+    deps += [
+      "//media/fuchsia/audio:unittests",
+      "//media/fuchsia/cdm/service:unittests",
+    ]
+
+    additional_manifest_fragments = [
+      "//build/config/fuchsia/test/audio_capabilities.test-cmx",
+
+      # TODO(crbug.com/1185811): Figure out why
+      # PaintCanvasVideoRendererWithGLTest.CopyVideoFrameYUVDataToGLTexture
+      # crashes without "deprecated-ambient-replace-as-executable".
+      "//build/config/fuchsia/test/jit_capabilities.test-cmx",
+
+      "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
     ]
   }
 
@@ -210,9 +248,7 @@ test("media_perftests") {
   # This target should not require the Chrome executable to run.
   assert_no_deps = [ "//chrome" ]
 
-  data = [
-    "test/data/",
-  ]
+  data = [ "test/data/" ]
 
   data_deps = [
     # Needed for isolate script to execute.
@@ -262,6 +298,8 @@ component("shared_memory_support") {
     "base/vector_math.cc",
     "base/vector_math.h",
     "base/vector_math_testing.h",
+    "base/video_types.cc",
+    "base/video_types.h",
   ]
   if (is_mac) {
     # These need to be included here because audio_latency.cc depends on them.
@@ -282,6 +320,7 @@ component("shared_memory_support") {
   }
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//ui/gfx/geometry",
   ]
 }
@@ -308,19 +347,13 @@ if (media_use_ffmpeg && !is_android) {
 
 if (proprietary_codecs) {
   fuzzer_test("media_cenc_utils_fuzzer") {
-    sources = [
-      "cdm/cenc_utils_fuzzertest.cc",
-    ]
-    deps = [
-      ":media",
-    ]
+    sources = [ "cdm/cenc_utils_fuzzertest.cc" ]
+    deps = [ ":media" ]
   }
 }
 
 fuzzer_test("media_vp9_parser_fuzzer") {
-  sources = [
-    "filters/vp9_parser_fuzzertest.cc",
-  ]
+  sources = [ "filters/vp9_parser_fuzzertest.cc" ]
   deps = [
     ":test_support",
     "//base",
@@ -329,9 +362,7 @@ fuzzer_test("media_vp9_parser_fuzzer") {
 }
 
 fuzzer_test("media_vp9_parser_encrypted_fuzzer") {
-  sources = [
-    "filters/vp9_parser_encrypted_fuzzertest.cc",
-  ]
+  sources = [ "filters/vp9_parser_encrypted_fuzzertest.cc" ]
   deps = [
     ":test_support",
     "//base",
@@ -341,9 +372,7 @@ fuzzer_test("media_vp9_parser_encrypted_fuzzer") {
 }
 
 fuzzer_test("media_vpx_video_decoder_fuzzer") {
-  sources = [
-    "filters/vpx_video_decoder_fuzzertest.cc",
-  ]
+  sources = [ "filters/vpx_video_decoder_fuzzertest.cc" ]
   deps = [
     ":media",
     "//base",
@@ -354,9 +383,7 @@ fuzzer_test("media_vpx_video_decoder_fuzzer") {
 }
 
 fuzzer_test("media_webm_muxer_fuzzer") {
-  sources = [
-    "muxers/webm_muxer_fuzzertest.cc",
-  ]
+  sources = [ "muxers/webm_muxer_fuzzertest.cc" ]
   deps = [
     ":media",
     "//base",
@@ -365,9 +392,7 @@ fuzzer_test("media_webm_muxer_fuzzer") {
 }
 
 fuzzer_test("cbcs_decryptor_fuzzer") {
-  sources = [
-    "cdm/cbcs_decryptor_fuzzer.cc",
-  ]
+  sources = [ "cdm/cbcs_decryptor_fuzzer.cc" ]
   deps = [
     ":media",
     "//base",
@@ -376,9 +401,7 @@ fuzzer_test("cbcs_decryptor_fuzzer") {
 }
 
 fuzzer_test("cenc_decryptor_fuzzer") {
-  sources = [
-    "cdm/cenc_decryptor_fuzzer.cc",
-  ]
+  sources = [ "cdm/cenc_decryptor_fuzzer.cc" ]
   deps = [
     ":media",
     "//base",
@@ -387,9 +410,7 @@ fuzzer_test("cenc_decryptor_fuzzer") {
 }
 
 fuzzer_test("json_web_key_fuzzer") {
-  sources = [
-    "cdm/json_web_key_fuzzer.cc",
-  ]
+  sources = [ "cdm/json_web_key_fuzzer.cc" ]
   deps = [
     ":media",
     "//base",
@@ -398,9 +419,7 @@ fuzzer_test("json_web_key_fuzzer") {
 
 if (proprietary_codecs) {
   fuzzer_test("media_mp4_avcc_parser_fuzzer") {
-    sources = [
-      "formats/mp4/mp4_avcc_parser_fuzzer.cc",
-    ]
+    sources = [ "formats/mp4/mp4_avcc_parser_fuzzer.cc" ]
     deps = [
       ":media",
       "//base",
@@ -408,9 +427,7 @@ if (proprietary_codecs) {
   }
 
   fuzzer_test("media_mp4_box_reader_fuzzer") {
-    sources = [
-      "formats/mp4/mp4_box_reader_fuzzer.cc",
-    ]
+    sources = [ "formats/mp4/mp4_box_reader_fuzzer.cc" ]
     deps = [
       ":media",
       "//base",
@@ -422,9 +439,7 @@ if (proprietary_codecs) {
 
 if (enable_mse_mpeg2ts_stream_parser) {
   fuzzer_test("media_es_parser_adts_fuzzer") {
-    sources = [
-      "formats/mp2t/es_parser_adts_fuzzer.cc",
-    ]
+    sources = [ "formats/mp2t/es_parser_adts_fuzzer.cc" ]
     deps = [
       ":media",
       "//base",
@@ -432,9 +447,7 @@ if (enable_mse_mpeg2ts_stream_parser) {
   }
 
   fuzzer_test("media_es_parser_h264_fuzzer") {
-    sources = [
-      "formats/mp2t/es_parser_h264_fuzzer.cc",
-    ]
+    sources = [ "formats/mp2t/es_parser_h264_fuzzer.cc" ]
     deps = [
       ":media",
       "//base",
@@ -442,9 +455,7 @@ if (enable_mse_mpeg2ts_stream_parser) {
   }
 
   fuzzer_test("media_es_parser_mpeg1audio_fuzzer") {
-    sources = [
-      "formats/mp2t/es_parser_mpeg1audio_fuzzer.cc",
-    ]
+    sources = [ "formats/mp2t/es_parser_mpeg1audio_fuzzer.cc" ]
     deps = [
       ":media",
       "//base",

@@ -62,7 +62,7 @@ void TestPresentationPixelsImpl(WebXrVrBrowserTestBase* t,
   MyXRMock my_mock;
 
   // Load the test page, and enter presentation.
-  t->LoadUrlAndAwaitInitialization(t->GetFileUrlForHtmlTestFile(filename));
+  t->LoadFileAndAwaitInitialization(filename);
   t->EnterSessionWithUserGestureOrFail();
 
   // Wait for JavaScript to submit at least one frame.
@@ -87,7 +87,6 @@ void TestPresentationPixelsImpl(WebXrVrBrowserTestBase* t,
       << "Alpha channel of submitted color does not match expectation";
 }
 
-// TODO(crbug.com/986621) - OpenXR currently hard codes data
 WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestPresentationPixels) {
   TestPresentationPixelsImpl(t, "test_webxr_pixels");
 }

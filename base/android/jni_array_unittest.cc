@@ -13,8 +13,9 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -180,17 +181,26 @@ void CheckFloatConversion(
   }
 }
 
-TEST(JniArray, ArrayOfStringArrayConversion) {
-  std::vector<std::vector<string16>> kArrays = {
-      {ASCIIToUTF16("a"), ASCIIToUTF16("f")},
-      {ASCIIToUTF16("a"), ASCIIToUTF16("")},
-      {},
-      {ASCIIToUTF16("")}};
+TEST(JniArray, ArrayOfStringArrayConversionUTF8) {
+  std::vector<std::vector<std::string>> kArrays = {
+      {"a", "f"}, {"a", ""}, {}, {""}, {"今日は"}};
 
   JNIEnv* env = AttachCurrentThread();
   ScopedJavaLocalRef<jobjectArray> joa = ToJavaArrayOfStringArray(env, kArrays);
 
-  std::vector<std::vector<string16>> out;
+  std::vector<std::vector<std::string>> out;
+  Java2dStringArrayTo2dStringVector(env, joa, &out);
+  ASSERT_TRUE(kArrays == out);
+}
+
+TEST(JniArray, ArrayOfStringArrayConversionUTF16) {
+  std::vector<std::vector<std::u16string>> kArrays = {
+      {u"a", u"f"}, {u"a", u""}, {}, {u""}};
+
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobjectArray> joa = ToJavaArrayOfStringArray(env, kArrays);
+
+  std::vector<std::vector<std::u16string>> out;
   Java2dStringArrayTo2dStringVector(env, joa, &out);
   ASSERT_TRUE(kArrays == out);
 }
@@ -334,6 +344,23 @@ TEST(JniArray, JavaFloatArrayToFloatVector) {
   }
 }
 
+TEST(JniArray, JavaDoubleArrayToDoubleVector) {
+  const std::vector<double> kDoubles = {0.0, 0.5, -0.5,
+                                        std::numeric_limits<double>::min()};
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jdoubleArray> jdoubles(
+      env, env->NewDoubleArray(kDoubles.size()));
+  ASSERT_TRUE(jdoubles);
+
+  env->SetDoubleArrayRegion(jdoubles.obj(), 0, kDoubles.size(),
+                            reinterpret_cast<const jdouble*>(kDoubles.data()));
+  ASSERT_FALSE(HasException(env));
+
+  std::vector<double> doubles;
+  JavaDoubleArrayToDoubleVector(env, jdoubles, &doubles);
+  ASSERT_EQ(kDoubles, doubles);
+}
+
 TEST(JniArray, JavaArrayOfByteArrayToStringVector) {
   const int kMaxItems = 50;
   JNIEnv* env = AttachCurrentThread();
@@ -370,12 +397,49 @@ TEST(JniArray, JavaArrayOfByteArrayToStringVector) {
   }
 }
 
+TEST(JniArray, JavaArrayOfByteArrayToBytesVector) {
+  const size_t kMaxItems = 50;
+  const uint8_t kStep = 37;
+  JNIEnv* env = AttachCurrentThread();
+
+  // Create a byte[][] object.
+  ScopedJavaLocalRef<jclass> byte_array_clazz(env, env->FindClass("[B"));
+  ASSERT_TRUE(byte_array_clazz);
+
+  ScopedJavaLocalRef<jobjectArray> array(
+      env, env->NewObjectArray(kMaxItems, byte_array_clazz.obj(), nullptr));
+  ASSERT_TRUE(array);
+
+  // Create kMaxItems byte buffers with size |i|+1 on each step;
+  std::vector<std::vector<uint8_t>> input_bytes;
+  input_bytes.reserve(kMaxItems);
+  for (size_t i = 0; i < kMaxItems; ++i) {
+    std::vector<uint8_t> cur_bytes(i + 1);
+    for (size_t j = 0; j < cur_bytes.size(); ++j)
+      cur_bytes[j] = static_cast<uint8_t>(i + j * kStep);
+    ScopedJavaLocalRef<jbyteArray> byte_array =
+        ToJavaByteArray(env, cur_bytes.data(), cur_bytes.size());
+    ASSERT_TRUE(byte_array);
+
+    env->SetObjectArrayElement(array.obj(), i, byte_array.obj());
+    ASSERT_FALSE(HasException(env));
+
+    input_bytes.push_back(std::move(cur_bytes));
+  }
+  ASSERT_EQ(kMaxItems, input_bytes.size());
+
+  // Convert to std::vector<std::vector<uint8_t>>, check the content.
+  std::vector<std::vector<uint8_t>> result;
+  JavaArrayOfByteArrayToBytesVector(env, array, &result);
+
+  EXPECT_EQ(input_bytes.size(), result.size());
+  for (size_t i = 0; i < kMaxItems; ++i)
+    EXPECT_THAT(result[i], ::testing::ElementsAreArray(input_bytes.at(i)));
+}
+
 TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {
-  const std::vector<std::vector<string16>> kArrays = {
-      {ASCIIToUTF16("a"), ASCIIToUTF16("f")},
-      {ASCIIToUTF16("a"), ASCIIToUTF16("")},
-      {},
-      {ASCIIToUTF16("")}};
+  const std::vector<std::vector<std::u16string>> kArrays = {
+      {u"a", u"f"}, {u"a", u""}, {}, {u""}};
 
   JNIEnv* env = AttachCurrentThread();
 
@@ -389,7 +453,7 @@ TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {
   ASSERT_TRUE(string_clazz);
 
   for (size_t i = 0; i < kArrays.size(); ++i) {
-    const std::vector<string16>& child_data = kArrays[i];
+    const std::vector<std::u16string>& child_data = kArrays[i];
 
     ScopedJavaLocalRef<jobjectArray> child_array(
         env, env->NewObjectArray(child_data.size(), string_clazz.obj(), NULL));
@@ -404,7 +468,7 @@ TEST(JniArray, JavaArrayOfStringArrayToVectorOfStringVector) {
     env->SetObjectArrayElement(array.obj(), i, child_array.obj());
   }
 
-  std::vector<std::vector<string16>> vec;
+  std::vector<std::vector<std::u16string>> vec;
   Java2dStringArrayTo2dStringVector(env, array, &vec);
 
   ASSERT_EQ(kArrays, vec);
@@ -455,5 +519,62 @@ TEST(JniArray, JavaArrayOfIntArrayToIntVector) {
   CheckIntArrayConversion(env, int_array3, out[3], kLen3);
 }
 
+TEST(JniArray, ToJavaArrayOfObjectLocalRef) {
+  JNIEnv* env = AttachCurrentThread();
+
+  std::vector<ScopedJavaLocalRef<jobject>> objects = {
+      ScopedJavaLocalRef<jobject>(ConvertUTF8ToJavaString(env, "one")),
+      ScopedJavaLocalRef<jobject>(ConvertUTF8ToJavaString(env, "two")),
+      ScopedJavaLocalRef<jobject>(ConvertUTF8ToJavaString(env, "three")),
+  };
+
+  ScopedJavaLocalRef<jobjectArray> j_array = ToJavaArrayOfObjects(env, objects);
+  ASSERT_TRUE(j_array);
+
+  EXPECT_EQ("one",
+            ConvertJavaStringToUTF8(
+                env, ScopedJavaLocalRef<jstring>(
+                         env, static_cast<jstring>(env->GetObjectArrayElement(
+                                  j_array.obj(), 0)))));
+  EXPECT_EQ("two",
+            ConvertJavaStringToUTF8(
+                env, ScopedJavaLocalRef<jstring>(
+                         env, static_cast<jstring>(env->GetObjectArrayElement(
+                                  j_array.obj(), 1)))));
+  EXPECT_EQ("three",
+            ConvertJavaStringToUTF8(
+                env, ScopedJavaLocalRef<jstring>(
+                         env, static_cast<jstring>(env->GetObjectArrayElement(
+                                  j_array.obj(), 2)))));
+}
+
+TEST(JniArray, ToJavaArrayOfObjectGlobalRef) {
+  JNIEnv* env = AttachCurrentThread();
+
+  std::vector<ScopedJavaGlobalRef<jobject>> objects = {
+      ScopedJavaGlobalRef<jobject>(ConvertUTF8ToJavaString(env, "one")),
+      ScopedJavaGlobalRef<jobject>(ConvertUTF8ToJavaString(env, "two")),
+      ScopedJavaGlobalRef<jobject>(ConvertUTF8ToJavaString(env, "three")),
+  };
+
+  ScopedJavaLocalRef<jobjectArray> j_array = ToJavaArrayOfObjects(env, objects);
+  ASSERT_TRUE(j_array);
+
+  EXPECT_EQ("one",
+            ConvertJavaStringToUTF8(
+                env, ScopedJavaLocalRef<jstring>(
+                         env, static_cast<jstring>(env->GetObjectArrayElement(
+                                  j_array.obj(), 0)))));
+  EXPECT_EQ("two",
+            ConvertJavaStringToUTF8(
+                env, ScopedJavaLocalRef<jstring>(
+                         env, static_cast<jstring>(env->GetObjectArrayElement(
+                                  j_array.obj(), 1)))));
+  EXPECT_EQ("three",
+            ConvertJavaStringToUTF8(
+                env, ScopedJavaLocalRef<jstring>(
+                         env, static_cast<jstring>(env->GetObjectArrayElement(
+                                  j_array.obj(), 2)))));
+}
 }  // namespace android
 }  // namespace base

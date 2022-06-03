@@ -83,25 +83,11 @@ enum VideoPixelFormat {
   [MinVersion=2] PIXEL_FORMAT_XBGR = 28,
 };
 
-[Extensible]
-enum DecodeStatus {
-  // The values must match to the values in media::DecodeStatus
-  OK = 0,
-  ABORTED = 1,
-  DECODE_ERROR = 2,
-};
-
 // The offset and stride of a video frame plane. Both offset and stride must
 // be non negative.
 struct VideoFramePlane {
   int32 offset;
   int32 stride;
-};
-
-// The graphics dimension. Both width and height should be non-negative.
-struct Size {
-  int32 width;
-  int32 height;
 };
 
 // The information of a plane of a video frame that describes how physical
@@ -121,30 +107,4 @@ struct VideoFrameLayout {
   bool is_multi_planar;
   uint32 buffer_addr_align;
   uint64 modifier;
-};
-
-struct VideoFrame {
-  // Identifier of the buffer. The value of a valid frame should be non-zero.
-  uint64 id;
-  Rect visible_rect;
-  // timestamp in milliseconds.
-  int64 timestamp;
-};
-
-// Struct for storing bitstream buffer.
-struct DecoderBuffer {
-  // Field for a physical buffer. This buffer is passed over an interface from
-  // ARC++ to Chrome, with a callback method that will be run when the buffer is
-  // used and the file descriptor is closed.
-  handle handle_fd;
-  // Distance in bytes between the beginning of the buffer pointed by
-  // |handle_fd| and the beginning of bitstream buffer.
-  uint32 offset;
-  // Bitstream buffer size in bytes. The buffer length referred by |handle_fd|
-  // can be more than |offset| + |payload_size|.
-  uint32 payload_size;
-  // Whether the buffer is an end-of-stream (EOS) buffer.
-  bool end_of_stream;
-  // Timestamp in microseconds.
-  int64 timestamp;
 };

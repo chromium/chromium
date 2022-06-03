@@ -28,8 +28,6 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void SetNeedsCommitOnImplThread() override {}
   void SetNeedsPrepareTilesOnImplThread() override {}
   void SetVideoNeedsBeginFrames(bool needs_begin_frames) override {}
-  void PostAnimationEventsToMainThreadOnImplThread(
-      std::unique_ptr<MutatorEvents> events) override;
   bool IsInsideDraw() override;
   bool IsBeginMainFrameExpected() override;
   void RenewTreePriority() override {}
@@ -46,13 +44,20 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void NotifyImageDecodeRequestFinished() override {}
   void DidPresentCompositorFrameOnImplThread(
       uint32_t frame_token,
-      std::vector<LayerTreeHost::PresentationTimeCallback> callbacks,
+      PresentationTimeCallbackBuffer::PendingCallbacks activated,
       const viz::FrameTimingDetails& details) override {}
 
   void NotifyAnimationWorkletStateChange(AnimationWorkletMutationState state,
                                          ElementListType tree_type) override {}
   void NotifyPaintWorkletStateChange(
       Scheduler::PaintWorkletState state) override {}
+  void NotifyThroughputTrackerResults(CustomTrackerResults results) override {}
+  void DidObserveFirstScrollDelay(
+      base::TimeDelta first_scroll_delay,
+      base::TimeTicks first_scroll_timestamp) override {}
+  bool IsInSynchronousComposite() const override;
+  void FrameSinksToThrottleUpdated(
+      const base::flat_set<viz::FrameSinkId>& ids) override {}
 
   void reset_did_request_impl_side_invalidation() {
     did_request_impl_side_invalidation_ = false;
@@ -67,10 +72,15 @@ class FakeLayerTreeHostImplClient : public LayerTreeHostImplClient {
   void reset_ready_to_draw() { ready_to_draw_ = false; }
   bool ready_to_draw() const { return ready_to_draw_; }
 
+  void set_is_synchronous_composite(bool value) {
+    is_synchronous_composite_ = value;
+  }
+
  private:
   bool did_request_impl_side_invalidation_ = false;
   bool ready_to_activate_ = false;
   bool ready_to_draw_ = false;
+  bool is_synchronous_composite_ = false;
 };
 
 }  // namespace cc

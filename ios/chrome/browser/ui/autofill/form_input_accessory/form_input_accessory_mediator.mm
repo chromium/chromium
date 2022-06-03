@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_mediator.h"
 
 #include "base/ios/block_types.h"
+#include "base/ios/ios_util.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_block.h"
+#include "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/common/autofill_features.h"
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
+#import "components/autofill/ios/browser/form_suggestion.h"
+#import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #include "components/autofill/ios/form_util/form_activity_params.h"
@@ -20,21 +22,39 @@
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
 #import "ios/chrome/browser/autofill/manual_fill/passwords_fetcher.h"
 #import "ios/chrome/browser/passwords/password_generation_utils.h"
+#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_chromium_text_data.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_consumer.h"
-#import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_view.h"
+#import "ios/chrome/browser/ui/commands/security_alert_commands.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
+#import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/keyboard_observer_helper.h"
-#include "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/ui_util.h"
+#import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#import "ios/chrome/common/ui/elements/form_input_accessory_view.h"
+#include "ios/chrome/common/ui/reauthentication/reauthentication_event.h"
+#import "ios/chrome/common/ui/reauthentication/reauthentication_module.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/web/common/url_scheme_util.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frame.h"
 #include "ios/web/public/js_messaging/web_frames_manager.h"
 #import "ios/web/public/web_state.h"
+#include "ui/base/l10n/l10n_util_mac.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::UmaHistogramEnumeration;
+
+namespace {
+
+// Kill switch guarding a workaround for keyboard flicker, see crbug.com/1253561
+const base::Feature kFormInputKeyboardReloadInputViews{
+    "FormInputKeyboardReloadInputViews", base::FEATURE_ENABLED_BY_DEFAULT};
+
+}  // namespace
 
 @interface FormInputAccessoryMediator () <FormActivityObserver,
                                           FormInputAccessoryViewDelegate,
@@ -47,21 +67,15 @@
 // The main consumer for this mediator.
 @property(nonatomic, weak) id<FormInputAccessoryConsumer> consumer;
 
-// The delegate for this object.
-@property(nonatomic, weak) id<FormInputAccessoryMediatorDelegate> delegate;
+// The handler for this object.
+@property(nonatomic, weak) id<FormInputAccessoryMediatorHandler> handler;
 
 // The object that manages the currently-shown custom accessory view.
 @property(nonatomic, weak) id<FormInputSuggestionsProvider> currentProvider;
 
-// YES if the first responder is a text input other than the web view.
-@property(nonatomic, assign) BOOL editingUIKitTextInput;
-
 // The form input handler. This is in charge of form navigation.
 @property(nonatomic, strong)
-    FormInputAccessoryViewHandler* formInputAccessoryHandler;
-
-// The JS manager for interacting with the underlying form.
-@property(nonatomic, weak) JsSuggestionManager* JSSuggestionManager;
+    FormInputAccessoryViewHandler* formNavigationHandler;
 
 // The observer to determine when the keyboard dissapears and when it stays.
 @property(nonatomic, strong) KeyboardObserverHelper* keyboardObserver;
@@ -82,6 +96,12 @@
 
 // The WebState this instance is observing. Can be null.
 @property(nonatomic, assign) web::WebState* webState;
+
+// Reauthentication Module used for re-authentication.
+@property(nonatomic, strong) ReauthenticationModule* reauthenticationModule;
+
+// Used to present alerts.
+@property(nonatomic, weak) id<SecurityAlertCommands> securityAlertHandler;
 
 @end
 
@@ -119,17 +139,20 @@
 }
 
 - (instancetype)
-       initWithConsumer:(id<FormInputAccessoryConsumer>)consumer
-               delegate:(id<FormInputAccessoryMediatorDelegate>)delegate
-           webStateList:(WebStateList*)webStateList
-    personalDataManager:(autofill::PersonalDataManager*)personalDataManager
-          passwordStore:
-              (scoped_refptr<password_manager::PasswordStore>)passwordStore {
+          initWithConsumer:(id<FormInputAccessoryConsumer>)consumer
+                   handler:(id<FormInputAccessoryMediatorHandler>)handler
+              webStateList:(WebStateList*)webStateList
+       personalDataManager:(autofill::PersonalDataManager*)personalDataManager
+             passwordStore:
+                 (scoped_refptr<password_manager::PasswordStoreInterface>)
+                     passwordStore
+      securityAlertHandler:(id<SecurityAlertCommands>)securityAlertHandler
+    reauthenticationModule:(ReauthenticationModule*)reauthenticationModule {
   self = [super init];
   if (self) {
     _consumer = consumer;
     _consumer.navigationDelegate = self;
-    _delegate = delegate;
+    _handler = handler;
     if (webStateList) {
       _webStateList = webStateList;
       _webStateListObserver =
@@ -138,12 +161,6 @@
       web::WebState* webState = webStateList->GetActiveWebState();
       if (webState) {
         _webState = webState;
-        CRWJSInjectionReceiver* injectionReceiver =
-            webState->GetJSInjectionReceiver();
-        _JSSuggestionManager = base::mac::ObjCCastStrict<JsSuggestionManager>(
-            [injectionReceiver instanceOfClass:[JsSuggestionManager class]]);
-        [_JSSuggestionManager
-            setWebFramesManager:webState->GetWebFramesManager()];
         FormSuggestionTabHelper* tabHelper =
             FormSuggestionTabHelper::FromWebState(webState);
         if (tabHelper) {
@@ -157,18 +174,10 @@
         webState->AddObserver(_webStateObserverBridge.get());
       }
     }
-    _formInputAccessoryHandler = [[FormInputAccessoryViewHandler alloc] init];
-    _formInputAccessoryHandler.JSSuggestionManager = _JSSuggestionManager;
+    _formNavigationHandler = [[FormInputAccessoryViewHandler alloc] init];
+    _formNavigationHandler.webState = _webState;
 
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
-    [defaultCenter addObserver:self
-                      selector:@selector(handleTextInputDidBeginEditing:)
-                          name:UITextFieldTextDidBeginEditingNotification
-                        object:nil];
-    [defaultCenter addObserver:self
-                      selector:@selector(handleTextInputDidEndEditing:)
-                          name:UITextFieldTextDidEndEditingNotification
-                        object:nil];
     [defaultCenter addObserver:self
                       selector:@selector(applicationDidEnterBackground:)
                           name:UIApplicationDidEnterBackgroundNotification
@@ -204,6 +213,12 @@
       consumer.creditCardButtonHidden = YES;
       consumer.addressButtonHidden = YES;
     }
+    _reauthenticationModule = reauthenticationModule;
+    _securityAlertHandler = securityAlertHandler;
+
+    // Prevent a flicker from happening by starting with valid activity. This
+    // will get updated as soon as a form is interacted.
+    _validActivityForAccessoryView = YES;
   }
   return self;
 }
@@ -240,17 +255,15 @@
   }
 }
 
-#pragma mark - KeyboardObserverHelperConsumer
-
-- (void)keyboardDidStayOnScreen {
-  [self.consumer removeAnimationsOnKeyboardView];
+- (BOOL)lastFocusedFieldWasPassword {
+  return _lastSeenParams.field_type == autofill::kPasswordFieldType;
 }
 
+#pragma mark - KeyboardObserverHelperConsumer
+
 - (void)keyboardWillChangeToState:(KeyboardState)keyboardState {
-  [self updateSuggestionsIfNeeded];
-  [self.consumer keyboardWillChangeToState:keyboardState];
-  if (!keyboardState.isVisible) {
-    [self.delegate mediatorDidDetectKeyboardHide:self];
+  if (keyboardState.isVisible) {
+    [self updateSuggestionsIfNeeded];
   }
 }
 
@@ -271,12 +284,12 @@
   web::URLVerificationTrustLevel trustLevel;
   const GURL pageURL(webState->GetCurrentURL(&trustLevel));
   if (trustLevel != web::URLVerificationTrustLevel::kAbsolute) {
+    [self reset];
     return;
   }
 
   // Return early, pause and reset if the url is not HTML.
   if (!web::UrlHasWebScheme(pageURL) || !webState->ContentIsHTML()) {
-    [self pauseCustomKeyboardView];
     [self reset];
     return;
   }
@@ -287,8 +300,18 @@
     return;
   }
 
+  // Return early and reset if element is a picker.
+  if (params.field_type == "select-one") {
+    [self reset];
+    return;
+  }
+
   self.validActivityForAccessoryView = YES;
-  [self continueCustomKeyboardView];
+  static bool form_input_keyboard_reload_input_views_workaround =
+      base::FeatureList::IsEnabled(kFormInputKeyboardReloadInputViews);
+  if (!form_input_keyboard_reload_input_views_workaround) {
+    [GetFirstResponder() reloadInputViews];
+  }
 
   NSString* frameID;
   if (frame) {
@@ -296,7 +319,7 @@
   }
   DCHECK(frameID.length);
 
-  [self.formInputAccessoryHandler setLastFocusFormActivityWebFrameID:frameID];
+  [self.formNavigationHandler setLastFocusFormActivityWebFrameID:frameID];
   [self synchronizeNavigationControls];
 
   // Don't look for suggestions in the next events.
@@ -304,42 +327,51 @@
       params.type == "form_changed") {
     return;
   }
+
+  if (form_input_keyboard_reload_input_views_workaround &&
+      _lastSeenParams.field_type != params.field_type) {
+    [GetFirstResponder() reloadInputViews];
+  }
   _lastSeenParams = params;
   _hasLastSeenParams = YES;
-  [self.consumer prepareToShowSuggestions];
   [self retrieveSuggestionsForForm:params webState:webState];
 }
 
 #pragma mark - FormInputAccessoryViewDelegate
 
 - (void)formInputAccessoryViewDidTapNextButton:(FormInputAccessoryView*)sender {
-  [self.formInputAccessoryHandler selectNextElementWithButtonPress];
+  [self.formNavigationHandler selectNextElementWithButtonPress];
 }
 
 - (void)formInputAccessoryViewDidTapPreviousButton:
     (FormInputAccessoryView*)sender {
-  [self.formInputAccessoryHandler selectPreviousElementWithButtonPress];
+  [self.formNavigationHandler selectPreviousElementWithButtonPress];
 }
 
 - (void)formInputAccessoryViewDidTapCloseButton:
     (FormInputAccessoryView*)sender {
-  [self.formInputAccessoryHandler closeKeyboardWithButtonPress];
+  [self.formNavigationHandler closeKeyboardWithButtonPress];
+}
+
+- (FormInputAccessoryViewTextData*)textDataforFormInputAccessoryView:
+    (FormInputAccessoryView*)sender {
+  return ChromiumAccessoryViewTextData();
 }
 
 #pragma mark - CRWWebStateObserver
 
 - (void)webStateWasShown:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  [self continueCustomKeyboardView];
   [self updateSuggestionsIfNeeded];
 }
 
 - (void)webStateWasHidden:(web::WebState*)webState {
   DCHECK_EQ(_webState, webState);
-  [self pauseCustomKeyboardView];
+  [self reset];
 }
 
-- (void)webState:(web::WebState*)webState didLoadPageWithSuccess:(BOOL)success {
+- (void)webState:(web::WebState*)webState
+    didFinishNavigation:(web::NavigationContext*)navigation {
   DCHECK_EQ(_webState, webState);
   [self reset];
 }
@@ -355,7 +387,7 @@
     didChangeActiveWebState:(web::WebState*)newWebState
                 oldWebState:(web::WebState*)oldWebState
                     atIndex:(int)atIndex
-                     reason:(int)reason {
+                     reason:(ActiveWebStateChangeReason)reason {
   [self reset];
   [self updateWithNewWebState:newWebState];
 }
@@ -371,6 +403,27 @@
   [self updateSuggestionsIfNeeded];
 }
 
+- (BOOL)isInputAccessoryViewActive {
+  // Return early if there is no WebState.
+  if (!_webState) {
+    return NO;
+  }
+
+  // Return early if the URL can't be verified.
+  web::URLVerificationTrustLevel trustLevel;
+  const GURL pageURL(_webState->GetCurrentURL(&trustLevel));
+  if (trustLevel != web::URLVerificationTrustLevel::kAbsolute) {
+    return NO;
+  }
+
+  // Return early if the url is not HTML.
+  if (!web::UrlHasWebScheme(pageURL) || !_webState->ContentIsHTML()) {
+    return NO;
+  }
+
+  return self.validActivityForAccessoryView;
+}
+
 #pragma mark - Setters
 
 - (void)setCurrentProvider:(id<FormInputSuggestionsProvider>)currentProvider {
@@ -379,7 +432,7 @@
   }
   [_currentProvider inputAccessoryViewControllerDidReset];
   _currentProvider = currentProvider;
-  _currentProvider.formInputNavigator = self.formInputAccessoryHandler;
+  _currentProvider.formInputNavigator = self.formNavigationHandler;
 }
 
 #pragma mark - Private
@@ -390,39 +443,13 @@
   }
 }
 
-// Tells the consumer to pause the custom keyboard view.
-- (void)pauseCustomKeyboardView {
-  [self.consumer pauseCustomKeyboardView];
-}
-
-// Tells the consumer to continue the custom keyboard view if the last activity
-// is valid, the web state is visible, and there is no other text input.
-- (void)continueCustomKeyboardView {
-  // Return early if the form is not a supported one.
-  if (!self.validActivityForAccessoryView) {
-    return;
-  }
-
-  // Return early if the current webstate is not visible.
-  if (!self.webState || !self.webState->IsVisible()) {
-    return;
-  }
-
-  // Return early if the current text input is not the web view.
-  if (self.editingUIKitTextInput) {
-    return;
-  }
-
-  [self.consumer continueCustomKeyboardView];
-}
-
 // Update the status of the consumer form navigation buttons to match the
 // handler state.
 - (void)synchronizeNavigationControls {
   __weak __typeof(self) weakSelf = self;
-  [self.formInputAccessoryHandler
+  [self.formNavigationHandler
       fetchPreviousAndNextElementsPresenceWithCompletionHandler:^(
-          BOOL previousButtonEnabled, BOOL nextButtonEnabled) {
+          bool previousButtonEnabled, bool nextButtonEnabled) {
         weakSelf.consumer.formInputNextButtonEnabled = nextButtonEnabled;
         weakSelf.consumer.formInputPreviousButtonEnabled =
             previousButtonEnabled;
@@ -441,21 +468,14 @@
     webState->AddObserver(_webStateObserverBridge.get());
     _formActivityObserverBridge =
         std::make_unique<autofill::FormActivityObserverBridge>(webState, self);
-    CRWJSInjectionReceiver* injectionReceiver =
-        webState->GetJSInjectionReceiver();
-    self.JSSuggestionManager = base::mac::ObjCCastStrict<JsSuggestionManager>(
-        [injectionReceiver instanceOfClass:[JsSuggestionManager class]]);
-    [self.JSSuggestionManager
-        setWebFramesManager:webState->GetWebFramesManager()];
     FormSuggestionTabHelper* tabHelper =
         FormSuggestionTabHelper::FromWebState(webState);
     if (tabHelper) {
       self.provider = tabHelper->GetAccessoryViewProvider();
     }
-    _formInputAccessoryHandler.JSSuggestionManager = self.JSSuggestionManager;
+    _formNavigationHandler.webState = webState;
   } else {
     self.webState = nullptr;
-    self.JSSuggestionManager = nil;
     self.provider = nil;
   }
 }
@@ -465,9 +485,10 @@
 - (void)reset {
   _lastSeenParams = autofill::FormActivityParams();
   _hasLastSeenParams = NO;
+  [self.consumer showAccessorySuggestions:@[]];
 
-  [self.consumer restoreOriginalKeyboardView];
-  [self.formInputAccessoryHandler reset];
+  [self.handler resetFormInputView];
+  [self.formNavigationHandler reset];
 
   self.suggestionsDisabled = NO;
   self.currentProvider = nil;
@@ -507,38 +528,70 @@
     // If suggestions are enabled update |currentProvider|.
     self.currentProvider = provider;
     // Post it to the consumer.
-    [self.consumer showAccessorySuggestions:suggestions
-                           suggestionClient:provider];
+    [self.consumer showAccessorySuggestions:suggestions];
+    if (suggestions.count) {
+      if (provider.type == SuggestionProviderTypeAutofill) {
+        LogLikelyInterestedDefaultBrowserUserActivity(
+            DefaultPromoTypeMadeForIOS);
+      }
+    }
   }
 }
 
-// Inform the delegate that the app went to the background.
+// Handle applicationDidEnterBackground NSNotification.
 - (void)applicationDidEnterBackground:(NSNotification*)notification {
-  [self.delegate mediatorDidDetectMovingToBackground:self];
+  [self.handler resetFormInputView];
 }
 
-#pragma mark - Keyboard Notifications
+#pragma mark - FormSuggestionClient
 
-// When any text field or text view (e.g. omnibox, settings search bar)
-// begins editing, pause the consumer so it doesn't present the custom view over
-// the keyboard.
-- (void)handleTextInputDidBeginEditing:(NSNotification*)notification {
-  self.editingUIKitTextInput = YES;
-  [self pauseCustomKeyboardView];
-}
+- (void)didSelectSuggestion:(FormSuggestion*)formSuggestion {
+  UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
+                          ReauthenticationEvent::kAttempt);
+  __weak __typeof(self) weakSelf = self;
+  auto suggestionHandler = ^() {
+    if (weakSelf.currentProvider.type == SuggestionProviderTypePassword) {
+      LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoTypeStaySafe);
+    }
+    [weakSelf.currentProvider didSelectSuggestion:formSuggestion];
+  };
 
-// When any text field or text view (e.g. omnibox, settings, card unmask dialog)
-// ends editing, continue presenting.
-- (void)handleTextInputDidEndEditing:(NSNotification*)notification {
-  self.editingUIKitTextInput = NO;
-  [self continueCustomKeyboardView];
+  if (!formSuggestion.requiresReauth) {
+    UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
+                            ReauthenticationEvent::kSuccess);
+    suggestionHandler();
+    return;
+  }
+  if ([self.reauthenticationModule canAttemptReauth]) {
+    NSString* reason = l10n_util::GetNSString(IDS_IOS_AUTOFILL_REAUTH_REASON);
+    auto completionHandler = ^(ReauthenticationResult result) {
+      if (result != ReauthenticationResult::kFailure) {
+        UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
+                                ReauthenticationEvent::kSuccess);
+        suggestionHandler();
+      } else {
+        UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
+                                ReauthenticationEvent::kFailure);
+      }
+    };
+
+    [self.reauthenticationModule
+        attemptReauthWithLocalizedReason:reason
+                    canReusePreviousAuth:YES
+                                 handler:completionHandler];
+  } else {
+    UmaHistogramEnumeration("IOS.Reauth.Password.Autofill",
+                            ReauthenticationEvent::kMissingPasscode);
+    suggestionHandler();
+  }
 }
 
 #pragma mark - PasswordFetcherDelegate
 
 - (void)passwordFetcher:(PasswordFetcher*)passwordFetcher
       didFetchPasswords:
-          (std::vector<std::unique_ptr<autofill::PasswordForm>>)passwords {
+          (std::vector<std::unique_ptr<password_manager::PasswordForm>>)
+              passwords {
   self.consumer.passwordButtonHidden = passwords.empty();
 }
 
@@ -566,11 +619,6 @@
   _webState->AddObserver(_webStateObserverBridge.get());
   _formActivityObserverBridge =
       std::make_unique<autofill::FormActivityObserverBridge>(_webState, self);
-}
-
-- (void)injectSuggestionManager:(JsSuggestionManager*)JSSuggestionManager {
-  _JSSuggestionManager = JSSuggestionManager;
-  _formInputAccessoryHandler.JSSuggestionManager = _JSSuggestionManager;
 }
 
 - (void)injectProvider:(id<FormInputSuggestionsProvider>)provider {

@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "chrome/browser/vr/elements/controller.h"
 #include "chrome/browser/vr/elements/environment/background.h"
 #include "chrome/browser/vr/elements/environment/grid.h"
@@ -23,7 +22,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
-#include "ui/gfx/transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace gfx {
 class RectF;
@@ -51,6 +50,10 @@ class TransparentQuadRenderer;
 class UiElementRenderer {
  public:
   UiElementRenderer();
+
+  UiElementRenderer(const UiElementRenderer&) = delete;
+  UiElementRenderer& operator=(const UiElementRenderer&) = delete;
+
   VIRTUAL_FOR_MOCKS ~UiElementRenderer();
 
   VIRTUAL_FOR_MOCKS void DrawTexturedQuad(
@@ -146,8 +149,6 @@ class UiElementRenderer {
   std::unique_ptr<Stars::Renderer> stars_renderer_;
   std::unique_ptr<Background::Renderer> background_renderer_;
   std::unique_ptr<Keyboard::Renderer> keyboard_renderer_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiElementRenderer);
 };
 
 }  // namespace vr

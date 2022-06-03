@@ -12,17 +12,23 @@ namespace crash_keys {
 // reporting server. Returns the size of the union of all keys.
 void InitCrashKeysForWebViewTesting();
 
-extern const char* const kWebViewCrashKeyWhiteList[];
+extern const char* const kWebViewCrashKeyAllowList[];
 
 // Crash Key Name Constants ////////////////////////////////////////////////////
 
 // Application information.
 extern const char kAppPackageName[];
 extern const char kAppPackageVersionCode[];
+extern const char kAppProcessName[];
 
 extern const char kAndroidSdkInt[];
 
 extern const char kSupportLibraryWebkitVersion[];
+
+// Indicates whether weblayer and webview are running in the same process.
+// When this is true, crashes may be reported to both WebLayer and WebView,
+// regardless of whetere the crash happened.
+extern const char kWeblayerWebViewCompatMode[];
 
 }  // namespace crash_keys
 }  // namespace android_webview

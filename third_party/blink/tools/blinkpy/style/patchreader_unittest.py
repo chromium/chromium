@@ -35,11 +35,10 @@ from blinkpy.style.patchreader import PatchReader
 
 
 class PatchReaderTest(unittest.TestCase):
-
     class MockTextFileReader(object):
-
         def __init__(self):
-            self.passed_to_process_file = []  # A list of (file_path, line_numbers) pairs.
+            # A list of (file_path, line_numbers) pairs.
+            self.passed_to_process_file = []
             self.delete_only_file_count = 0  # A number of times count_delete_only_file() called.
 
         def process_file(self, file_path, line_numbers):
@@ -52,8 +51,10 @@ class PatchReaderTest(unittest.TestCase):
         self._file_reader = self.MockTextFileReader()
 
     def _assert_checked(self, passed_to_process_file, delete_only_file_count):
-        self.assertEqual(self._file_reader.passed_to_process_file, passed_to_process_file)
-        self.assertEqual(self._file_reader.delete_only_file_count, delete_only_file_count)
+        self.assertEqual(self._file_reader.passed_to_process_file,
+                         passed_to_process_file)
+        self.assertEqual(self._file_reader.delete_only_file_count,
+                         delete_only_file_count)
 
     def test_check_patch(self):
         PatchReader(self._file_reader).check(
@@ -78,7 +79,8 @@ class PatchReaderTest(unittest.TestCase):
             '@@ -1 +0,0 @@\n'
             '-foobar\n')
         # The deleted file isn't be processed.
-        self._assert_checked(passed_to_process_file=[], delete_only_file_count=1)
+        self._assert_checked(
+            passed_to_process_file=[], delete_only_file_count=1)
 
     def test_check_patch_with_png_deletion(self):
         PatchReader(self._file_reader).check(
@@ -86,4 +88,5 @@ class PatchReaderTest(unittest.TestCase):
             'deleted file mode 100644\n'
             'index ef65bee..0000000\n'
             'Binary files a/foo-expected.png and /dev/null differ\n')
-        self._assert_checked(passed_to_process_file=[], delete_only_file_count=1)
+        self._assert_checked(
+            passed_to_process_file=[], delete_only_file_count=1)

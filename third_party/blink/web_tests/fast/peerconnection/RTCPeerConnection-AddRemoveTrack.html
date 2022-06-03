@@ -52,7 +52,7 @@ promise_test(async t => {
   t.add_cleanup(() => pc.close());
   let [streamA, streamB] = await createStreams({audio:true, video:false}, 2);
   let track = streamA.getAudioTracks()[0];
-  assert_throws('NotSupportedError', () => {
+  assert_throws_dom('NotSupportedError', () => {
     pc.addTrack(track, streamA, streamB)
   });
 }, 'addTrack() for a single track and two streams (Plan B) throws NotSupportedError.');

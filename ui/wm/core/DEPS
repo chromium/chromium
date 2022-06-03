@@ -6,7 +6,6 @@ include_rules = [
   "+ui/base/hit_test.h",
   "+ui/base/ime",
   "+ui/base/resource",
-  "+ui/base/ui_base_switches_util.h",
   "+ui/base/ui_base_paths.h",
   "+ui/base/ui_base_types.h",
   "+ui/compositor",

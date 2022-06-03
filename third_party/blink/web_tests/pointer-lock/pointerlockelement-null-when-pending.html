@@ -24,14 +24,13 @@
         },
         function () {
             shouldBe("document.pointerLockElement", "null");
-            testRunner.didAcquirePointerLock();
+            testRunner.allowPointerLock();
             // doNextStep called from event handler set with expect...
         },
         function () {
             shouldBe("document.pointerLockElement", "targetDiv1");
             expectOnlyChangeEvent("Unlock.");
             document.exitPointerLock();
-            shouldBe("document.pointerLockElement", "targetDiv1");
             // doNextStep called from event handler set with expect...
         },
         function () {
@@ -39,7 +38,7 @@
             doNextStep();
         },
     ];
-    doNextStep();
+    doNextStepWithUserGesture();
 </script>
 </body>
 </html>

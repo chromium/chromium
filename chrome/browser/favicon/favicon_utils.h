@@ -29,10 +29,6 @@ void CreateContentFaviconDriverForWebContents(
 // of the url and the monogram is the first letter of the URL domain.
 SkBitmap GenerateMonogramFavicon(GURL url, int icon_size, int circle_size);
 
-// Returns whether the favicon should be displayed. If this returns false, no
-// space is provided for the favicon, and the favicon is never displayed.
-bool ShouldDisplayFavicon(content::WebContents* web_contents);
-
 // Retrieves the favicon from given WebContents. If contents contain a
 // network error, desaturate the favicon.
 gfx::Image TabFaviconFromWebContents(content::WebContents* contents);
@@ -40,6 +36,18 @@ gfx::Image TabFaviconFromWebContents(content::WebContents* contents);
 // Returns the image to use when no favicon is available, taking dark mode
 // into account if necessary.
 gfx::Image GetDefaultFavicon();
+
+// Saves the favicon for the last committed navigation entry to the favicon
+// database.
+void SaveFaviconEvenIfInIncognito(content::WebContents* contents);
+
+// Recolor favicon with |alternate_color| if contrast ratio is low between
+// source color and background |active_tab_background| or
+// |inactive_tab_background|.
+gfx::ImageSkia ThemeFavicon(const gfx::ImageSkia& source,
+                            SkColor alternate_color,
+                            SkColor active_tab_background,
+                            SkColor inactive_tab_background);
 
 }  // namespace favicon
 

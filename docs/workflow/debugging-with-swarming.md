@@ -16,7 +16,7 @@ of [Borg], or to [Kubernetes].
 An *isolate* is an archive containing all the files needed to do a specific task
 on the swarming infrastructure. It contains binaries as well as any libraries
 they link against or support data. An isolate can be thought of like a tarball,
-but held by the "isolate server" and identified by a hash of its contents. The
+but held by the CAS server and identified by a digest of its contents. The
 isolate also includes the command(s) to run, which is why the command is
 specified when building the isolate, not when executing it.
 
@@ -50,7 +50,7 @@ want to do is:
 or perhaps:
 
 ```
-  isolate = upload_to_isolate_server(target_you_built_locally)
+  isolate = upload_to_cas(target_you_built_locally)
   use_swarming_to_run(type, isolate)
 ```
 
@@ -70,11 +70,13 @@ $ tools/run-swarmed.py $outdir $target
 ```
 
 See the `--help` option of `run-swarmed.py` for more details about that script.
+Note you might need `--swarming-os Ubuntu-14.04` if you get an error like,
+`UnboundLocalError: local variable 'dbus_pid' referenced before assignment`.
 
 ### mb.py run
 
-Similar to `tools/run_swarmed.py`, `mb.py run` bundles much of the logic into a
-single command line. Unlike `tools/run_swarmed.py`, `mb.py run` allows the user
+Similar to `tools/run-swarmed.py`, `mb.py run` bundles much of the logic into a
+single command line. Unlike `tools/run-swarmed.py`, `mb.py run` allows the user
 to specify extra arguments to pass to the test, but has a messier command line.
 
 To use it, run:
@@ -150,30 +152,31 @@ for a platform you can't build for locally, does not yet exist.
 
 ## Authenticating
 
-You may need to log in to `https://isolateserver.appspot.com` to do this:
+You may need to log in to `https://chromium-swarm.appspot.com` to do this
 
 ```
-$ python tools/swarming_client/auth.py login \
-      --service=https://isolateserver.appspot.com
+$ tools/luci-go/isolate login
 ```
 
 Use your google.com account for this.
 
 ## Uploading an isolate
 
-You can then upload the resulting isolate to the isolate server:
+You can then upload the resulting isolate to the CAS server:
 
 ```
-$ tools/swarming_client/isolate.py archive \
-      -I https://isolateserver.appspot.com \
+$ tools/luci-go/isolate archive \
+      -cas-instance chroimum-swarm \
       -i $outdir/$target.isolate \
-      -s $outdir/$target.isolated
+      -dump-json $outdir/$target.archive.json
 ```
 
-The `isolate.py` tool will emit something like this:
+The archive json looks like this:
 
 ```
-e625130b712096e3908266252c8cd779d7f442f1  unit_tests
+{
+  "unit_tests": "5bee0815d2ddd2b876b49d4cce8aaa23de8a6f9e2dbf134ec409fbdc224e8c64/398"
+}
 ```
 
 Do not ctrl-c it after it does this, even if it seems to be hanging for a
@@ -181,16 +184,15 @@ minute - just let it finish.
 
 ## Running an isolate
 
-Now that the isolate is on the isolate server with hash `$hash` from the
+Now that the isolate is on the CAS server with digest `$digest` from the
 previous step, you can run on bots of your choice:
 
 ```
-$ tools/swarming_client/swarming.py trigger \
-    -S https://chromium-swarm.appspot.com \
-    -I https://isolateserver.appspot.com \
-    -d pool $pool \
+$ tools/luci-go/swarming trigger \
+    -server https://chromium-swarm.appspot.com \
+    -dimension pool=$pool \
     $criteria \
-    -s $hash
+    -digest $digest
 ```
 
 There are two more things you need to fill in here. The first is the pool name;
@@ -199,32 +201,33 @@ collection of hosts from which swarming will try to pick bots to run your tasks.
 
 The second is the criteria, which is how you specify which bot(s) you want your
 task scheduled on. These are specified via "dimensions", which are specified
-with `-d key val` or `--dimension=key val`. In fact, the `-d pool $pool` in the
+with `-dimension key=val`. In fact, the `-dimension pool=$pool` in the
 command above is selecting based on the "pool" dimension. There are a lot of
-possible dimensions; one useful one is "os", like `-d os Linux`. Examples of
+possible dimensions; one useful one is "os", like `-dimension os=Linux`. Examples of
 other dimensions include:
 
-* `-d os Mac10.13.6` to select a specific OS version
-* `-d device_type "Pixel 3"` to select a specific Android device type
-* `-d gpu 8086:1912` to select a specific GPU
+* `-dimension os=Mac10.13.6` to select a specific OS version
+* `-dimension device_type="Pixel 3"` to select a specific Android device type
+* `-dimension gpu=8086:1912` to select a specific GPU
 
 The [swarming bot list] allows you to see all the dimensions and the values they
 can take on.
 
+And you can pass shard number via env flags, e.g.
+
+* `-env GTEST_SHARD_INDEX=0` to specify which shard to run.
+* `-env GTEST_TOTAL_SHARDS=1` to specify total number of shards.
+
 If you need to pass additional arguments to the test, simply add
-`-- $extra_args` to the end of the `swarming.py trigger` command line - anything
+`-- $extra_args` to the end of the `swarming trigger` command line - anything
 after the `--` will be passed directly to the test.
 
-When you invoke `swarming.py trigger`, it will emit two pieces of information: a
-URL for the task it created, and a command you can run to collect the results of
-that task. For example:
+When you invoke `swarming trigger`, it will emit a piece of information: a
+command you can run to collect the results of that task. For example:
 
 ```
-Triggered task: ellyjones@chromium.org/os=Linux_pool=chromium.tests/e625130b712096e3908266252c8cd779d7f442f1
-To collect results, use:
-  tools/swarming_client/swarming.py collect -S https://chromium-swarm.appspot.com 46fc393777163310
-Or visit:
-  https://chromium-swarm.appspot.com/user/task/46fc393777163310
+To collect results use:
+  swarming collect -server https://chromium-swarm.appspot.com 4a0e739053fddd10
 ```
 
 The 'collect' command given there will block until the task is complete, then

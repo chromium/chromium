@@ -32,7 +32,6 @@ from functools import reduce
 
 
 class TestConfiguration(object):
-
     def __init__(self, version, architecture, build_type):
         self.version = version
         self.architecture = architecture
@@ -44,14 +43,14 @@ class TestConfiguration(object):
         return ['version', 'architecture', 'build_type']
 
     def items(self):
-        return self.__dict__.items()
+        return list(self.__dict__.items())
 
     def keys(self):
-        return self.__dict__.keys()
+        return list(self.__dict__.keys())
 
     def __str__(self):
-        return ('<%(version)s, %(architecture)s, %(build_type)s>' %
-                self.__dict__)
+        return (
+            '<%(version)s, %(architecture)s, %(build_type)s>' % self.__dict__)
 
     def __repr__(self):
         return "TestConfig(version='%(version)s', architecture='%(architecture)s', build_type='%(build_type)s')" % self.__dict__
@@ -64,11 +63,10 @@ class TestConfiguration(object):
 
     def values(self):
         """Returns the configuration values of this instance as a tuple."""
-        return self.__dict__.values()
+        return list(self.__dict__.values())
 
 
 class SpecifierSorter(object):
-
     def __init__(self, all_test_configurations=None, macros=None):
         self._specifier_to_category = {}
 
@@ -88,7 +86,8 @@ class SpecifierSorter(object):
             return
         # Assume well-formed macros.
         for macro, specifier_list in macros.items():
-            self.add_specifier(self.category_for_specifier(specifier_list[0]), macro)
+            self.add_specifier(
+                self.category_for_specifier(specifier_list[0]), macro)
 
     @classmethod
     def category_priority(cls, category):
@@ -101,9 +100,10 @@ class SpecifierSorter(object):
         return self._specifier_to_category.get(specifier)
 
     def sort_specifiers(self, specifiers):
-        category_slots = map(lambda x: [], TestConfiguration.category_order())
+        category_slots = [[] for x in TestConfiguration.category_order()]
         for specifier in specifiers:
-            category_slots[self.specifier_priority(specifier)].append(specifier)
+            category_slots[self.specifier_priority(specifier)].append(
+                specifier)
 
         def sort_and_return(result, specifier_list):
             specifier_list.sort()
@@ -113,7 +113,6 @@ class SpecifierSorter(object):
 
 
 class TestConfigurationConverter(object):
-
     def __init__(self, all_test_configurations, configuration_macros=None):
         self._all_test_configurations = all_test_configurations
         self.configuration_macros = configuration_macros or {}
@@ -125,22 +124,28 @@ class TestConfigurationConverter(object):
         matching_sets_by_category = {}
         for configuration in all_test_configurations:
             for category, specifier in configuration.items():
-                self._specifier_to_configuration_set.setdefault(specifier, set()).add(configuration)
+                self._specifier_to_configuration_set.setdefault(
+                    specifier, set()).add(configuration)
                 self._specifier_sorter.add_specifier(category, specifier)
-                self._collapsing_sets_by_category.setdefault(category, set()).add(specifier)
+                self._collapsing_sets_by_category.setdefault(
+                    category, set()).add(specifier)
                 # FIXME: This seems extra-awful.
                 for cat2, spec2 in configuration.items():
                     if category == cat2:
                         continue
-                    matching_sets_by_category.setdefault(specifier, {}).setdefault(cat2, set()).add(spec2)
+                    matching_sets_by_category.setdefault(
+                        specifier, {}).setdefault(cat2, set()).add(spec2)
         for collapsing_set in self._collapsing_sets_by_category.values():
-            self._collapsing_sets_by_size.setdefault(len(collapsing_set), set()).add(frozenset(collapsing_set))
+            self._collapsing_sets_by_size.setdefault(
+                len(collapsing_set), set()).add(frozenset(collapsing_set))
 
         for specifier, sets_by_category in matching_sets_by_category.items():
             for category, set_by_category in sets_by_category.items():
-                if len(set_by_category) == 1 and self._specifier_sorter.category_priority(
-                        category) > self._specifier_sorter.specifier_priority(specifier):
-                    self._junk_specifier_combinations[specifier] = set_by_category
+                if (len(set_by_category) == 1 and
+                        self._specifier_sorter.category_priority(category) >
+                        self._specifier_sorter.specifier_priority(specifier)):
+                    self._junk_specifier_combinations[specifier] = \
+                        set_by_category
 
         self._specifier_sorter.add_macros(configuration_macros)
 
@@ -160,15 +165,19 @@ class TestConfigurationConverter(object):
 
         for specifier in specifier_set:
             for expanded_specifier in self._expand_macros(specifier):
-                configurations = self._specifier_to_configuration_set.get(expanded_specifier)
+                configurations = self._specifier_to_configuration_set.get(
+                    expanded_specifier)
                 if not configurations:
                     if error_list is not None:
-                        error_list.append("Unrecognized specifier '" + expanded_specifier + "'")
+                        error_list.append("Unrecognized specifier '" +
+                                          expanded_specifier + "'")
                     return set()
-                category = self._specifier_sorter.category_for_specifier(expanded_specifier)
-                matching_sets.setdefault(category, set()).update(configurations)
+                category = self._specifier_sorter.category_for_specifier(
+                    expanded_specifier)
+                matching_sets.setdefault(category,
+                                         set()).update(configurations)
 
-        return reduce(set.intersection, matching_sets.values())
+        return reduce(set.intersection, list(matching_sets.values()))
 
     @classmethod
     def collapse_macros(cls, macros_dict, specifiers_list):
@@ -176,7 +185,8 @@ class TestConfigurationConverter(object):
             if len(macro) == 1:
                 continue
 
-            for combination in itertools.combinations(specifiers_list, len(macro)):
+            for combination in itertools.combinations(specifiers_list,
+                                                      len(macro)):
                 if cls.symmetric_difference(combination) == set(macro):
                     for item in combination:
                         specifiers_list.remove(item)
@@ -191,7 +201,9 @@ class TestConfigurationConverter(object):
                 macro_set = set(macro)
                 if macro_set.intersection(specifier_set) == macro_set:
                     specifiers_to_remove.append(specifier_set)
-                    specifiers_to_add.append(frozenset((set(specifier_set) - macro_set) | set([macro_specifier])))
+                    specifiers_to_add.append(
+                        frozenset((set(specifier_set) - macro_set)
+                                  | set([macro_specifier])))
             for specifier in specifiers_to_remove:
                 specifiers_list.remove(specifier)
             for specifier in specifiers_to_add:
@@ -202,7 +214,8 @@ class TestConfigurationConverter(object):
 
     @classmethod
     def intersect_combination(cls, combination):
-        return reduce(set.intersection, [set(specifiers) for specifiers in combination])
+        return reduce(set.intersection,
+                      [set(specifiers) for specifiers in combination])
 
     @classmethod
     def symmetric_difference(cls, iterable):
@@ -223,7 +236,8 @@ class TestConfigurationConverter(object):
         specifiers_list = []
         for config in test_configuration_set:
             values = set(config.values())
-            for specifier, junk_specifier_set in self._junk_specifier_combinations.items():
+            for specifier, junk_specifier_set in \
+                self._junk_specifier_combinations.items():
                 if specifier in values:
                     values -= junk_specifier_set
             specifiers_list.append(frozenset(values))
@@ -235,7 +249,8 @@ class TestConfigurationConverter(object):
                 if self.symmetric_difference(combination) in collapsing_sets:
                     for item in combination:
                         specifiers_list.remove(item)
-                    specifiers_list.append(frozenset(self.intersect_combination(combination)))
+                    specifiers_list.append(
+                        frozenset(self.intersect_combination(combination)))
                     return True
             return False
 
@@ -261,7 +276,7 @@ class TestConfigurationConverter(object):
 
         # 3) Abbreviate specifier sets by combining specifiers across categories.
         #   (win7, release), (win10, release) --> (win7, win10, release)
-        while try_abbreviating(self._collapsing_sets_by_size.values()):
+        while try_abbreviating(list(self._collapsing_sets_by_size.values())):
             pass
 
         # 4) Substitute specifier subsets that match macros within each set:
@@ -273,7 +288,8 @@ class TestConfigurationConverter(object):
         # 5) Collapsing macros may have created combinations the can now be abbreviated.
         #   (win7, release), (linux, x86, release), (linux, x86_64, release)
         #   --> (win7, release), (linux, release) --> (win7, linux, release)
-        while try_abbreviating([self._collapsing_sets_by_category['version'] | macro_keys]):
+        while try_abbreviating(
+            [self._collapsing_sets_by_category['version'] | macro_keys]):
             pass
 
         # 6) Remove cases where we have collapsed but have all macros.

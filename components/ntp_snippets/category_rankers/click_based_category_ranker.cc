@@ -8,6 +8,8 @@
 #include <string>
 #include <utility>
 
+#include "base/logging.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -51,8 +53,7 @@ const int kExtraPassingMargin = 2;
 const int kMinNumClicksToDecay = 30;
 
 // Time between two consecutive decays (assuming enough clicks).
-constexpr base::TimeDelta kTimeBetweenDecays =
-    base::TimeDelta::FromHours(24);  // 24 hours = 1 day
+constexpr auto kTimeBetweenDecays = base::Days(1);
 
 // Decay factor as a fraction. The current value approximates the seventh root
 // of 0.5. This yields a 50% decay per seven decays. Seven weak decays are used
@@ -348,11 +349,11 @@ bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
   result_categories->clear();
   const base::ListValue* list =
       pref_service_->GetList(prefs::kClickBasedCategoryRankerOrderWithClicks);
-  if (!list || list->GetSize() == 0) {
+  if (!list || list->GetList().size() == 0) {
     return false;
   }
 
-  for (const base::Value& value : *list) {
+  for (const base::Value& value : list->GetList()) {
     const base::DictionaryValue* dictionary;
     if (!value.GetAsDictionary(&dictionary)) {
       LOG(DFATAL) << "Failed to parse category data from prefs param "
@@ -360,19 +361,20 @@ bool ClickBasedCategoryRanker::ReadOrderFromPrefs(
                   << " into dictionary.";
       return false;
     }
-    int category_id, clicks;
-    if (!dictionary->GetInteger(kCategoryIdKey, &category_id)) {
+    absl::optional<int> category_id = dictionary->FindIntKey(kCategoryIdKey);
+    if (!category_id) {
       LOG(DFATAL) << "Dictionary does not have '" << kCategoryIdKey << "' key.";
       return false;
     }
-    if (!dictionary->GetInteger(kClicksKey, &clicks)) {
+    absl::optional<int> clicks = dictionary->FindIntKey(kClicksKey);
+    if (!clicks) {
       LOG(DFATAL) << "Dictionary does not have '" << kClicksKey << "' key.";
       return false;
     }
     base::Time last_dismissed = ParseLastDismissedDate(*dictionary);
-    Category category = Category::FromIDValue(category_id);
+    Category category = Category::FromIDValue(*category_id);
     result_categories->push_back(
-        RankedCategory(category, clicks, last_dismissed));
+        RankedCategory(category, *clicks, last_dismissed));
   }
   return true;
 }
@@ -455,7 +457,8 @@ bool ClickBasedCategoryRanker::DecayClicksIfNeeded() {
   }
   DCHECK_LE(last_decay, now);
 
-  int num_pending_decays = (now - last_decay) / kTimeBetweenDecays;
+  int num_pending_decays =
+      base::ClampFloor((now - last_decay) / kTimeBetweenDecays);
   int executed_decays = 0;
   while (executed_decays < num_pending_decays && IsEnoughClicksToDecay()) {
     for (RankedCategory& ranked_category : ordered_categories_) {

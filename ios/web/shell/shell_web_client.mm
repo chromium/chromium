@@ -58,13 +58,12 @@ ShellBrowserState* ShellWebClient::browser_state() const {
 }
 
 std::string ShellWebClient::GetUserAgent(UserAgentType type) const {
-  return web::BuildUserAgentFromProduct(UserAgentType::MOBILE,
-                                        "CriOS/36.77.34.45");
+  return web::BuildMobileUserAgent("CriOS/36.77.34.45");
 }
 
 base::StringPiece ShellWebClient::GetDataResource(
     int resource_id,
-    ui::ScaleFactor scale_factor) const {
+    ui::ResourceScaleFactor scale_factor) const {
   return ui::ResourceBundle::GetSharedInstance().GetRawDataResourceForScale(
       resource_id, scale_factor);
 }
@@ -84,36 +83,8 @@ void ShellWebClient::BindInterfaceReceiverFromMainFrame(
   }
 }
 
-void ShellWebClient::AllowCertificateError(
-    WebState*,
-    int /*cert_error*/,
-    const net::SSLInfo&,
-    const GURL&,
-    bool overridable,
-    int64_t /*navigation_id*/,
-    const base::Callback<void(bool)>& callback) {
-  base::Callback<void(bool)> block_callback(callback);
-  UIAlertController* alert = [UIAlertController
-      alertControllerWithTitle:@"Your connection is not private"
-                       message:nil
-                preferredStyle:UIAlertControllerStyleActionSheet];
-  [alert addAction:[UIAlertAction actionWithTitle:@"Go Back"
-                                            style:UIAlertActionStyleCancel
-                                          handler:^(UIAlertAction*) {
-                                            block_callback.Run(false);
-                                          }]];
-
-  if (overridable) {
-    [alert addAction:[UIAlertAction actionWithTitle:@"Continue"
-                                              style:UIAlertActionStyleDefault
-                                            handler:^(UIAlertAction*) {
-                                              block_callback.Run(true);
-                                            }]];
-  }
-  [[UIApplication sharedApplication].keyWindow.rootViewController
-      presentViewController:alert
-                   animated:YES
-                 completion:nil];
+bool ShellWebClient::EnableLongPressUIContextMenu() const {
+  return true;
 }
 
 }  // namespace web

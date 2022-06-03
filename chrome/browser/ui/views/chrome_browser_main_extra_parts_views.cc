@@ -7,33 +7,41 @@
 #include <utility>
 
 #include "base/command_line.h"
+#include "base/path_service.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
+#include "chrome/browser/ui/commander/commander.h"
 #include "chrome/browser/ui/views/chrome_constrained_window_views_client.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 #include "chrome/browser/ui/views/devtools_process_observer.h"
+#include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
 #include "chrome/browser/ui/views/relaunch_notification/relaunch_notification_controller.h"
+#include "chrome/common/chrome_paths.h"
 #include "components/constrained_window/constrained_window_views.h"
+#include "components/media_router/browser/media_router_dialog_controller.h"
 #include "components/ui_devtools/connector_delegate.h"
 #include "components/ui_devtools/switches.h"
 #include "components/ui_devtools/views/devtools_server_util.h"
 #include "content/public/browser/tracing_service.h"
-#include "services/service_manager/sandbox/switches.h"
-#include "ui/base/material_design/material_design_controller.h"
+#include "sandbox/policy/switches.h"
 
 #if defined(USE_AURA)
 #include "base/run_loop.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/viz/public/cpp/gpu/gpu.h"  // nogncheck
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/display/screen.h"
 #include "ui/views/widget/desktop_aura/desktop_screen.h"
+#endif
 #include "ui/wm/core/wm_state.h"
 #endif  // defined(USE_AURA)
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -43,7 +51,14 @@
 #include "chrome/grit/generated_resources.h"
 #include "content/public/common/content_switches.h"
 #include "ui/base/l10n/l10n_util.h"
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+
+namespace {
+
+// Owned by ChromeBrowserMainParts.
+ChromeBrowserMainExtraPartsViews* g_main_parts_views = nullptr;
+
+}  // namespace
 
 // This connector is used in ui_devtools's TracingAgent to hook up with the
 // tracing service.
@@ -58,10 +73,20 @@ class UiDevtoolsConnector : public ui_devtools::ConnectorDelegate {
   }
 };
 
-ChromeBrowserMainExtraPartsViews::ChromeBrowserMainExtraPartsViews() {}
+ChromeBrowserMainExtraPartsViews::ChromeBrowserMainExtraPartsViews() {
+  DCHECK(!g_main_parts_views);
+  g_main_parts_views = this;
+}
 
 ChromeBrowserMainExtraPartsViews::~ChromeBrowserMainExtraPartsViews() {
+  DCHECK_EQ(g_main_parts_views, this);
+  g_main_parts_views = nullptr;
   constrained_window::SetConstrainedWindowViewsClient(nullptr);
+}
+
+// static
+ChromeBrowserMainExtraPartsViews* ChromeBrowserMainExtraPartsViews::Get() {
+  return g_main_parts_views;
 }
 
 void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
@@ -71,11 +96,6 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
     views_delegate_ = std::make_unique<ChromeViewsDelegate>();
 
   SetConstrainedWindowViewsClient(CreateChromeConstrainedWindowViewsClient());
-
-  // The MaterialDesignController needs to look at command line flags, which
-  // are not available until this point. Now that they are, proceed with
-  // initializing the MaterialDesignController.
-  ui::MaterialDesignController::Initialize();
 
 #if defined(USE_AURA)
   wm_state_ = std::make_unique<wm::WMState>();
@@ -88,24 +108,35 @@ void ChromeBrowserMainExtraPartsViews::ToolkitInitialized() {
 }
 
 void ChromeBrowserMainExtraPartsViews::PreCreateThreads() {
-#if defined(USE_AURA) && !defined(OS_CHROMEOS)
-  views::InstallDesktopScreenIfNecessary();
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  // The Screen instance may already be set in tests.
+  if (!display::Screen::GetScreen())
+    screen_ = views::CreateDesktopScreen();
 #endif
 }
 
 void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
   if (ui_devtools::UiDevToolsServer::IsUiDevToolsEnabled(
           ui_devtools::switches::kEnableUiDevTools)) {
-    // Starts the UI Devtools server for browser UI (and Ash UI on Chrome OS).
-    auto connector = std::make_unique<UiDevtoolsConnector>();
-    devtools_server_ = ui_devtools::CreateUiDevToolsServerForViews(
-        g_browser_process->system_network_context_manager()->GetContext(),
-        std::move(connector));
-    devtools_process_observer_ = std::make_unique<DevtoolsProcessObserver>(
-        devtools_server_->tracing_agent());
+    CreateUiDevTools();
   }
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  media_router::MediaRouterDialogController::SetGetOrCreate(
+      base::BindRepeating([](content::WebContents* web_contents) {
+        DCHECK(web_contents);
+        media_router::MediaRouterDialogController* controller = nullptr;
+        // This call does nothing if the controller already exists.
+        media_router::MediaRouterDialogControllerViews::CreateForWebContents(
+            web_contents);
+        controller =
+            media_router::MediaRouterDialogControllerViews::FromWebContents(
+                web_contents);
+        return controller;
+      }));
+
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // On the Linux desktop, we want to prevent the user from logging in as root,
   // so that we don't destroy the profile. Now that we have some minimal ui
   // initialized, check to see if we're running as root and bail if we are.
@@ -121,12 +152,12 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
 
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
-  if (command_line.HasSwitch(service_manager::switches::kNoSandbox))
+  if (command_line.HasSwitch(sandbox::policy::switches::kNoSandbox))
     return;
 
-  base::string16 title = l10n_util::GetStringFUTF16(
+  std::u16string title = l10n_util::GetStringFUTF16(
       IDS_REFUSE_TO_RUN_AS_ROOT, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
-  base::string16 message = l10n_util::GetStringFUTF16(
+  std::u16string message = l10n_util::GetStringFUTF16(
       IDS_REFUSE_TO_RUN_AS_ROOT_2, l10n_util::GetStringUTF16(IDS_PRODUCT_NAME));
 
   chrome::ShowWarningMessageBox(NULL, title, message);
@@ -136,13 +167,15 @@ void ChromeBrowserMainExtraPartsViews::PreProfileInit() {
   base::RunLoop().RunUntilIdle();
 
   exit(EXIT_FAILURE);
-#endif  // defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 void ChromeBrowserMainExtraPartsViews::PostBrowserStart() {
   relaunch_notification_controller_ =
       std::make_unique<RelaunchNotificationController>(
           UpgradeDetector::GetInstance());
+  if (commander::IsEnabled())
+    commander::Commander::Get()->Initialize();
 }
 
 void ChromeBrowserMainExtraPartsViews::PostMainMessageLoopRun() {
@@ -150,4 +183,30 @@ void ChromeBrowserMainExtraPartsViews::PostMainMessageLoopRun() {
   // down explicitly here to avoid a case where such an event arrives during
   // shutdown.
   relaunch_notification_controller_.reset();
+}
+
+void ChromeBrowserMainExtraPartsViews::CreateUiDevTools() {
+  DCHECK(!devtools_server_);
+  DCHECK(!devtools_process_observer_);
+
+  // Starts the UI Devtools server for browser UI (and Ash UI on Chrome OS).
+  auto connector = std::make_unique<UiDevtoolsConnector>();
+  base::FilePath output_dir;
+  bool result = base::PathService::Get(chrome::DIR_USER_DATA, &output_dir);
+  DCHECK(result);
+  devtools_server_ = ui_devtools::CreateUiDevToolsServerForViews(
+      g_browser_process->system_network_context_manager()->GetContext(),
+      std::move(connector), output_dir);
+  devtools_process_observer_ = std::make_unique<DevtoolsProcessObserver>(
+      devtools_server_->tracing_agent());
+}
+
+const ui_devtools::UiDevToolsServer*
+ChromeBrowserMainExtraPartsViews::GetUiDevToolsServerInstance() {
+  return devtools_server_.get();
+}
+
+void ChromeBrowserMainExtraPartsViews::DestroyUiDevTools() {
+  devtools_process_observer_.reset();
+  devtools_server_.reset();
 }

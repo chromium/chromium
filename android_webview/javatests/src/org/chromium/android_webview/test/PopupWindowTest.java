@@ -4,10 +4,15 @@
 
 package org.chromium.android_webview.test;
 
+import android.graphics.Rect;
+import android.net.Uri;
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.webkit.JavascriptInterface;
 
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -16,15 +21,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.android_webview.JsReplyProxy;
+import org.chromium.android_webview.WebMessageListener;
 import org.chromium.android_webview.test.AwActivityTestRule.PopupInfo;
 import org.chromium.android_webview.test.TestAwContentsClient.ShouldInterceptRequestHelper;
 import org.chromium.android_webview.test.util.CommonResources;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.CriteriaNotSatisfiedException;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.RetryOnFailure;
+import org.chromium.content_public.browser.MessagePort;
 import org.chromium.content_public.browser.SelectionPopupController;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -32,6 +41,7 @@ import org.chromium.net.test.util.TestWebServer;
 
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -197,8 +207,14 @@ public class PopupWindowTest {
                     }
                 });
 
-        CriteriaHelper.pollUiThread(Criteria.equals(
-                myUserAgentString, () -> mActivityTestRule.getTitleOnUiThread(popupContents)));
+        CriteriaHelper.pollUiThread(() -> {
+            try {
+                Criteria.checkThat(mActivityTestRule.getTitleOnUiThread(popupContents),
+                        Matchers.is(myUserAgentString));
+            } catch (Exception e) {
+                throw new CriteriaNotSatisfiedException(e);
+            }
+        });
     }
 
     @Test
@@ -216,7 +232,7 @@ public class PopupWindowTest {
                         + "}</script>");
 
         mActivityTestRule.triggerPopup(mParentContents, mParentContentsClient, mWebServer,
-                parentPageHtml, null /* 204 response */, popupPath, "tryOpenWindow()");
+                parentPageHtml, "<html></html>", popupPath, "tryOpenWindow()");
         PopupInfo popupInfo = mActivityTestRule.createPopupContents(mParentContents);
         TestCallbackHelperContainer.OnPageFinishedHelper onPageFinishedHelper =
                 popupInfo.popupContentsClient.getOnPageFinishedHelper();
@@ -260,7 +276,6 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @RetryOnFailure
     public void testPopupWindowTextHandle() throws Throwable {
         final String popupPath = "/popup.html";
         final String parentPageHtml = CommonResources.makeHtmlPageFrom("", "<script>"
@@ -303,6 +318,7 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "https://crbug.com/1251900")
     public void testPopupWindowHasUserGestureForUserInitiated() throws Throwable {
         runPopupUserGestureTest(true);
     }
@@ -310,6 +326,7 @@ public class PopupWindowTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.Q, message = "https://crbug.com/1251900")
     public void testPopupWindowHasUserGestureForUserInitiatedNoOpener() throws Throwable {
         runPopupUserGestureTest(false);
     }
@@ -366,11 +383,164 @@ public class PopupWindowTest {
         Assert.assertFalse(onCreateWindowHelper.getIsUserGesture());
     }
 
+    private static class TestWebMessageListener implements WebMessageListener {
+        private LinkedBlockingQueue<Data> mQueue = new LinkedBlockingQueue<>();
+
+        public static class Data {
+            public String mMessage;
+            public boolean mIsMainFrame;
+            public JsReplyProxy mReplyProxy;
+
+            public Data(String message, boolean isMainFrame, JsReplyProxy replyProxy) {
+                mMessage = message;
+                mIsMainFrame = isMainFrame;
+                mReplyProxy = replyProxy;
+            }
+        }
+
+        @Override
+        public void onPostMessage(String message, Uri sourceOrigin, boolean isMainFrame,
+                JsReplyProxy replyProxy, MessagePort[] ports) {
+            mQueue.add(new Data(message, isMainFrame, replyProxy));
+        }
+
+        public Data waitForOnPostMessage() throws Exception {
+            return AwActivityTestRule.waitForNextQueueElement(mQueue);
+        }
+    }
+
+    // Regression test for crbug.com/1083819.
+    //
+    // The setup of this test is to have an iframe inside of a main frame, give the iframe user
+    // gesture, then window.open() on javascript: scheme. We are verifying that the
+    // JavaScript code isn't running in the main frame's context when
+    // getJavaScriptCanOpenWindowsAutomatically() is false.
+    //
+    // There are several steps in this test:
+    // 1. Load the web page (main.html), which has an cross-origin iframe (iframe.html).
+    // 2. main frame send a message to browser to establish the connection.
+    // 3. iframe send a message to browser to estiablish the connection and notify the location of
+    //    the |iframe_link| element.
+    // 4. Click the iframe_link element to give user gesture.
+    // 5. Browser waits until receives "clicked" message.
+    // 6. Browser asks the iframe to call window.open() and waits for the "done" message.
+    // 7. Browser asks the main frame to check if an element was injected and waits the result.
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    public void testSingleWindowModeJsInjection() throws Throwable {
+        // Choose a free port which is different from |mWebServer| so they have different origins.
+        TestWebServer crossOriginWebServer = TestWebServer.startAdditional();
+
+        final String windowOpenJavaScript = "javascript:{"
+                + "  let elem = document.createElement('p');"
+                + "  elem.setAttribute('id', 'inject');"
+                + "  document.body.append(elem);"
+                + "}";
+        final String iframeHtml = "<html><head>"
+                + "<script>"
+                + "  myObject.onmessage = function(e) {"
+                + "    window.open(\"" + windowOpenJavaScript + "\");"
+                + "    myObject.postMessage('done');"
+                + "  };"
+                + "  window.onload = function() {"
+                + "    let link = document.getElementById('iframe_link');"
+                + "    let rect = link.getBoundingClientRect();"
+                + "    let message = Math.round(rect.left) + ';' + Math.round(rect.top) + ';';"
+                + "    message += Math.round(rect.right) + ';' + Math.round(rect.bottom);"
+                + "    myObject.postMessage(message);"
+                + "  };"
+                + "</script>"
+                + "</head><body>"
+                + "  <div>I am iframe.</div>"
+                + "  <a href='#' id='iframe_link' onclick='myObject.postMessage(\"clicked\");'>"
+                + "   iframe link"
+                + "  </a>"
+                + "</body></html>";
+        final String iframeHtmlPath =
+                crossOriginWebServer.setResponse("/iframe.html", iframeHtml, null);
+        final String mainHtml = "<html><head><script>"
+                + "  myObject.onmessage = function(e) {"
+                + "    let elem = document.getElementById('inject');"
+                + "    if (elem) { myObject.postMessage('failed'); }"
+                + "    else { myObject.postMessage('succeed'); }"
+                + "  };"
+                + "  myObject.postMessage('init');"
+                + "</script></head><body>"
+                + "<iframe src='" + iframeHtmlPath + "'></iframe>"
+                + "<div>I am main frame</div>"
+                + "</body></html>";
+        final String mainHtmlPath = mWebServer.setResponse("/main.html", mainHtml, null);
+
+        TestWebMessageListener webMessageListener = new TestWebMessageListener();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mParentContents.getSettings().setJavaScriptEnabled(true);
+            // |false| is the default setting for setSupportMultipleWindows(), we explicitly set it
+            // to |false| here for better readability.
+            mParentContents.getSettings().setSupportMultipleWindows(false);
+            mParentContents.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
+            mParentContents.addWebMessageListener(
+                    "myObject", new String[] {"*"}, webMessageListener);
+        });
+
+        // Step 1.
+        mActivityTestRule.loadUrlSync(
+                mParentContents, mParentContentsClient.getOnPageFinishedHelper(), mainHtmlPath);
+
+        // Step 2 and 3, the sequence doesn't matter.
+        JsReplyProxy mainFrameReplyProxy = null;
+        JsReplyProxy iframeReplyProxy = null;
+        Rect rect = null;
+        for (int i = 0; i < 2; ++i) {
+            TestWebMessageListener.Data data = webMessageListener.waitForOnPostMessage();
+            if (data.mIsMainFrame) {
+                // The connection between browser and main frame established.
+                Assert.assertEquals("init", data.mMessage);
+                mainFrameReplyProxy = data.mReplyProxy;
+            } else {
+                // The connection between browser and iframe established.
+                iframeReplyProxy = data.mReplyProxy;
+                // iframe_link location.
+                String[] c = data.mMessage.split(";");
+                rect = new Rect(Integer.parseInt(c[0]), Integer.parseInt(c[1]),
+                        Integer.parseInt(c[2]), Integer.parseInt(c[3]));
+            }
+        }
+
+        Assert.assertNotNull("rect should not be null", rect);
+        Assert.assertNotNull("mainFrameReplyProxy should not be null.", mainFrameReplyProxy);
+        Assert.assertNotNull("iframeReplyProxy should not be null.", iframeReplyProxy);
+
+        // Step 4. Click iframe_link to give user gesture.
+        DOMUtils.clickRect(mParentContents.getWebContents(), rect);
+
+        // Step 5. Waits until the element got clicked.
+        TestWebMessageListener.Data clicked = webMessageListener.waitForOnPostMessage();
+        Assert.assertEquals("clicked", clicked.mMessage);
+
+        // Step 6. Send an arbitrary message to call window.open on javascript: URI.
+        iframeReplyProxy.postMessage("hello");
+        TestWebMessageListener.Data data = webMessageListener.waitForOnPostMessage();
+        Assert.assertEquals("done", data.mMessage);
+
+        // Step 7. Send an arbitrary message to trigger the check. Main frame will check if there is
+        // an injected element by running |windowOpenJavaScript|.
+        mainFrameReplyProxy.postMessage("hello");
+
+        // If |succeed| received, then there was no injection.
+        TestWebMessageListener.Data data2 = webMessageListener.waitForOnPostMessage();
+        Assert.assertEquals("succeed", data2.mMessage);
+
+        // Cleanup the test web server.
+        crossOriginWebServer.shutdown();
+    }
+
     // Copied from imeTest.java.
     private void assertWaitForSelectActionBarStatus(
             boolean show, final SelectionPopupController controller) {
-        CriteriaHelper.pollUiThread(
-                Criteria.equals(show, () -> controller.isSelectActionBarShowing()));
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(controller.isSelectActionBarShowing(), Matchers.is(show));
+        });
     }
 
     private void hideSelectActionMode(final SelectionPopupController controller) {

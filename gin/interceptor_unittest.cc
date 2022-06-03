@@ -2,14 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gin/interceptor.h"
+
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
-#include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/per_isolate_data.h"
 #include "gin/public/isolate_holder.h"
@@ -17,6 +16,8 @@
 #include "gin/try_catch.h"
 #include "gin/wrappable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-script.h"
 #include "v8/include/v8-util.h"
 
 namespace gin {
@@ -25,6 +26,9 @@ class MyInterceptor : public Wrappable<MyInterceptor>,
                       public NamedPropertyInterceptor,
                       public IndexedPropertyInterceptor {
  public:
+  MyInterceptor(const MyInterceptor&) = delete;
+  MyInterceptor& operator=(const MyInterceptor&) = delete;
+
   static WrapperInfo kWrapperInfo;
 
   static gin::Handle<MyInterceptor> Create(v8::Isolate* isolate) {
@@ -127,8 +131,6 @@ class MyInterceptor : public Wrappable<MyInterceptor>,
   int value_;
 
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
-
-  DISALLOW_COPY_AND_ASSIGN(MyInterceptor);
 };
 
 WrapperInfo MyInterceptor::kWrapperInfo = {kEmbedderNativeGin};

@@ -31,7 +31,7 @@ void LogMessage::AppendAsTraceFormat(std::string* out) const {
 
 void LogMessage::EstimateTraceMemoryOverhead(
     TraceEventMemoryOverhead* overhead) {
-  overhead->Add(TraceEventMemoryOverhead::kOther, sizeof(this));
+  overhead->Add(TraceEventMemoryOverhead::kOther, sizeof(*this));
   overhead->AddString(message_);
 }
 

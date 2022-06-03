@@ -11,19 +11,13 @@
 #include <string>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
 
 class ECPrivateKey;
 class ECSignatureCreator;
-
-class CRYPTO_EXPORT ECSignatureCreatorFactory {
- public:
-  virtual ~ECSignatureCreatorFactory() {}
-
-  virtual std::unique_ptr<ECSignatureCreator> Create(ECPrivateKey* key) = 0;
-};
 
 // Signs data using a bare private key (as opposed to a full certificate).
 // We need this class because SignatureCreator is hardcoded to use
@@ -38,20 +32,13 @@ class CRYPTO_EXPORT ECSignatureCreator {
   // pass in the hash algorithm identifier.
   static std::unique_ptr<ECSignatureCreator> Create(ECPrivateKey* key);
 
-  // Set a factory to make the Create function return non-standard
-  // ECSignatureCreator objects.  Because the ECDSA algorithm involves
-  // randomness, this is useful for higher-level tests that want to have
-  // deterministic mocked output to compare.
-  static void SetFactoryForTesting(ECSignatureCreatorFactory* factory);
-
-  // Signs |data_len| bytes from |data| and writes the results into
-  // |signature| as a DER encoded ECDSA-Sig-Value from RFC 3279.
+  // Signs |data| and writes the results into |signature| as a DER encoded
+  // ECDSA-Sig-Value from RFC 3279.
   //
   //  ECDSA-Sig-Value ::= SEQUENCE {
   //    r     INTEGER,
   //    s     INTEGER }
-  virtual bool Sign(const uint8_t* data,
-                    int data_len,
+  virtual bool Sign(base::span<const uint8_t> data,
                     std::vector<uint8_t>* signature) = 0;
 
   // DecodeSignature converts from a DER encoded ECDSA-Sig-Value (as produced

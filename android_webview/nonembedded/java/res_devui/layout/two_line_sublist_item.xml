@@ -13,21 +13,23 @@
     android:mode="twoLine"
     android:orientation="vertical">
 
-    <TextView android:id="@android:id/text1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceListItem"
-        android:textStyle="bold"
-        android:textAlignment="viewStart"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"/>
+        <TextView android:id="@android:id/text1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceListItem"
+            android:textStyle="bold"
+            android:textAlignment="viewStart"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"/>
 
-    <TextView android:id="@android:id/text2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceSmall"
-        android:textAlignment="viewStart"
-        android:paddingTop="4dp"
-        android:paddingBottom="4dp"/>
+        <TextView android:id="@android:id/text2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textAlignment="viewStart"
+            android:paddingTop="4dp"
+            android:paddingBottom="4dp"/>
+
+
 
 </LinearLayout>

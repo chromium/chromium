@@ -1,10 +1,9 @@
-CONSOLE WARNING: line 11: Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 Test for issue 432257: Matched properties cache should work for all property.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS window.getComputedStyle(targets[0]).width is "100px"
-PASS window.getComputedStyle(targets[1]).width is "100px"
+PASS window.getComputedStyle(test1.shadowRoot.firstChild).width is "100px"
+PASS window.getComputedStyle(test2.shadowRoot.firstChild).width is "100px"
 PASS successfullyParsed is true
 
 TEST COMPLETE

@@ -9,14 +9,15 @@
 #include "extensions/buildflags/buildflags.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/browser/permissions/permission_request_id.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/permissions/permission_request_id.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/guest_view/web_view/web_view_permission_helper.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/suggest_permission_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/extension.h"
+#include "extensions/common/mojom/view_type.mojom.h"
 
 using extensions::APIPermission;
 using extensions::ExtensionRegistry;
@@ -49,21 +50,20 @@ GeolocationPermissionContextExtensions::
 
 bool GeolocationPermissionContextExtensions::DecidePermission(
     content::WebContents* web_contents,
-    const PermissionRequestID& request_id,
-    int bridge_id,
+    const permissions::PermissionRequestID& request_id,
     const GURL& requesting_frame,
     bool user_gesture,
     base::OnceCallback<void(ContentSetting)>* callback,
     bool* permission_set,
     bool* new_permission) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  GURL requesting_frame_origin = requesting_frame.GetOrigin();
+  GURL requesting_frame_origin = requesting_frame.DeprecatedGetOriginAsURL();
 
   extensions::WebViewPermissionHelper* web_view_permission_helper =
       extensions::WebViewPermissionHelper::FromWebContents(web_contents);
   if (web_view_permission_helper) {
     web_view_permission_helper->RequestGeolocationPermission(
-        bridge_id, requesting_frame, user_gesture,
+        requesting_frame, user_gesture,
         base::BindOnce(&CallbackContentSettingWrapper, std::move(*callback)));
     *permission_set = false;
     *new_permission = false;
@@ -76,7 +76,7 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
         extension_registry->enabled_extensions().GetExtensionOrAppByURL(
             requesting_frame_origin);
     if (IsExtensionWithPermissionOrSuggestInConsole(
-            APIPermission::kGeolocation, extension,
+            extensions::mojom::APIPermissionID::kGeolocation, extension,
             web_contents->GetMainFrame())) {
       // Make sure the extension is in the calling process.
       if (extensions::ProcessMap::Get(profile_)->Contains(
@@ -88,9 +88,9 @@ bool GeolocationPermissionContextExtensions::DecidePermission(
     }
   }
 
-  extensions::ViewType view_type = extensions::GetViewType(web_contents);
-  if (view_type != extensions::VIEW_TYPE_TAB_CONTENTS &&
-      view_type != extensions::VIEW_TYPE_INVALID) {
+  extensions::mojom::ViewType view_type = extensions::GetViewType(web_contents);
+  if (view_type != extensions::mojom::ViewType::kTabContents &&
+      view_type != extensions::mojom::ViewType::kInvalid) {
     // The tab may have gone away, or the request may not be from a tab at all.
     // TODO(mpcomplete): the request could be from a background page or
     // extension popup (web_contents will have a different ViewType). But why do

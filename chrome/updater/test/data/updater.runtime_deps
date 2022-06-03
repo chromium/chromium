@@ -1,0 +1,8 @@
+./updater.exe
+./updater.exe.pdb
+./base.dll
+./base.dll.pdb
+msvcp140d.dll
+gen/mojo/public/interfaces/bindings/interface_control_messages.mojom.js
+icudtl.dat
+gen/chrome/updater/win/uninstall.cmd

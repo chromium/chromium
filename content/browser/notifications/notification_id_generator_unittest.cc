@@ -4,7 +4,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/notifications/notification_id_generator.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,14 +33,18 @@ class NotificationIdGeneratorTest : public ::testing::Test {
 // in exactly the same notification ids being generated.
 TEST_F(NotificationIdGeneratorTest, GenerateForPersistent_IsDetermenistic) {
   EXPECT_EQ(generator_.GenerateForPersistentNotification(
-                origin_.GetURL(), kExampleTag, kPersistentNotificationId),
+                origin_.GetURL(), kExampleTag, false /* is_shown_by_browser */,
+                kPersistentNotificationId),
             generator_.GenerateForPersistentNotification(
-                origin_.GetURL(), kExampleTag, kPersistentNotificationId));
+                origin_.GetURL(), kExampleTag, false /* is_shown_by_browser */,
+                kPersistentNotificationId));
 
   EXPECT_EQ(generator_.GenerateForPersistentNotification(
-                origin_.GetURL(), "" /* tag */, kPersistentNotificationId),
+                origin_.GetURL(), "" /* tag */, false /* is_shown_by_browser */,
+                kPersistentNotificationId),
             generator_.GenerateForPersistentNotification(
-                origin_.GetURL(), "" /* tag */, kPersistentNotificationId));
+                origin_.GetURL(), "" /* tag */, false /* is_shown_by_browser */,
+                kPersistentNotificationId));
 }
 
 // The origin of the notification will impact the generated notification id.
@@ -49,11 +52,12 @@ TEST_F(NotificationIdGeneratorTest, GenerateForPersistent_DifferentOrigins) {
   url::Origin different_origin(
       url::Origin::Create(GURL("https://example2.com")));
 
-  EXPECT_NE(
-      generator_.GenerateForPersistentNotification(
-          origin_.GetURL(), kExampleTag, kPersistentNotificationId),
-      generator_.GenerateForPersistentNotification(
-          different_origin.GetURL(), kExampleTag, kPersistentNotificationId));
+  EXPECT_NE(generator_.GenerateForPersistentNotification(
+                origin_.GetURL(), kExampleTag, false /* is_shown_by_browser */,
+                kPersistentNotificationId),
+            generator_.GenerateForPersistentNotification(
+                different_origin.GetURL(), kExampleTag,
+                false /* is_shown_by_browser */, kPersistentNotificationId));
 }
 
 // The tag, when non-empty, will impact the generated notification id.
@@ -61,18 +65,22 @@ TEST_F(NotificationIdGeneratorTest, GenerateForPersistent_DifferentTags) {
   const std::string& different_tag = std::string(kExampleTag) + "2";
 
   EXPECT_NE(generator_.GenerateForPersistentNotification(
-                origin_.GetURL(), kExampleTag, kPersistentNotificationId),
+                origin_.GetURL(), kExampleTag, false /* is_shown_by_browser */,
+                kPersistentNotificationId),
             generator_.GenerateForPersistentNotification(
-                origin_.GetURL(), different_tag, kPersistentNotificationId));
+                origin_.GetURL(), different_tag,
+                false /* is_shown_by_browser */, kPersistentNotificationId));
 }
 
 // The persistent or non-persistent notification id will impact the generated
 // notification id when the tag is empty.
 TEST_F(NotificationIdGeneratorTest, GenerateForPersistent_DifferentIds) {
   EXPECT_NE(generator_.GenerateForPersistentNotification(
-                origin_.GetURL(), "" /* tag */, kPersistentNotificationId),
+                origin_.GetURL(), "" /* tag */, false /* is_shown_by_browser */,
+                kPersistentNotificationId),
             generator_.GenerateForPersistentNotification(
-                origin_.GetURL(), "" /* tag */, kPersistentNotificationId + 1));
+                origin_.GetURL(), "" /* tag */, false /* is_shown_by_browser */,
+                kPersistentNotificationId + 1));
 }
 
 // Using a numeric tag that could resemble a persistent notification id should
@@ -81,9 +89,10 @@ TEST_F(NotificationIdGeneratorTest, GenerateForPersistent_NumericTagAmbiguity) {
   EXPECT_NE(
       generator_.GenerateForPersistentNotification(
           origin_.GetURL(), base::NumberToString(kPersistentNotificationId),
-          kPersistentNotificationId),
+          false /* is_shown_by_browser */, kPersistentNotificationId),
       generator_.GenerateForPersistentNotification(
-          origin_.GetURL(), "" /* tag */, kPersistentNotificationId));
+          origin_.GetURL(), "" /* tag */, false /* is_shown_by_browser */,
+          kPersistentNotificationId));
 }
 
 // Using port numbers and a tag which, when concatenated, could end up being
@@ -93,9 +102,11 @@ TEST_F(NotificationIdGeneratorTest, GenerateForPersistent_OriginPortAmbiguity) {
   GURL origin_8051("https://example.com:8051");
 
   EXPECT_NE(generator_.GenerateForPersistentNotification(
-                origin_805, "17", kPersistentNotificationId),
+                origin_805, "17", false /* is_shown_by_browser */,
+                kPersistentNotificationId),
             generator_.GenerateForPersistentNotification(
-                origin_8051, "7", kPersistentNotificationId));
+                origin_8051, "7", false /* is_shown_by_browser */,
+                kPersistentNotificationId));
 }
 
 // -----------------------------------------------------------------------------
@@ -142,7 +153,8 @@ TEST_F(NotificationIdGeneratorTest,
 // identify persistent and non-persistent notification IDs.
 TEST_F(NotificationIdGeneratorTest, DetectIdFormat) {
   std::string persistent_id = generator_.GenerateForPersistentNotification(
-      origin_.GetURL(), "" /* tag */, kPersistentNotificationId);
+      origin_.GetURL(), "" /* tag */, false /* is_shown_by_browser */,
+      kPersistentNotificationId);
 
   std::string non_persistent_id =
       generator_.GenerateForNonPersistentNotification(origin_, "token");
@@ -155,6 +167,24 @@ TEST_F(NotificationIdGeneratorTest, DetectIdFormat) {
       NotificationIdGenerator::IsNonPersistentNotification(non_persistent_id));
   EXPECT_FALSE(
       NotificationIdGenerator::IsPersistentNotification(non_persistent_id));
+}
+
+TEST_F(NotificationIdGeneratorTest, ShownByBrowser) {
+  std::string id = generator_.GenerateForPersistentNotification(
+      origin_.GetURL(), "" /* tag */, true /* is_shown_by_browser */,
+      kPersistentNotificationId);
+
+  // We should still be able to detect browser notifications as persistent.
+  EXPECT_TRUE(NotificationIdGenerator::IsPersistentNotification(id));
+  EXPECT_FALSE(NotificationIdGenerator::IsNonPersistentNotification(id));
+
+  // Browser vs non-browser ids should be different.
+  EXPECT_NE(generator_.GenerateForPersistentNotification(
+                origin_.GetURL(), kExampleTag, false /* is_shown_by_browser */,
+                kPersistentNotificationId),
+            generator_.GenerateForPersistentNotification(
+                origin_.GetURL(), kExampleTag, true /* is_shown_by_browser */,
+                kPersistentNotificationId));
 }
 
 }  // namespace

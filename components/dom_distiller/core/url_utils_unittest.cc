@@ -55,11 +55,27 @@ void AssertEqualExceptHost(const GURL& a, const GURL& b) {
 TEST(DomDistillerUrlUtilsTest, TestGetDistillerViewUrlFromUrl) {
   AssertEqualExceptHost(
       GURL("chrome-distiller://any/"
-           "?time=123&url=http%3A%2F%2Fexample.com%2Fpath%3Fq%3Dabc%26p%3D1%"
+           "?title=cats&time=123&url=http%3A%2F%2Fexample.com%2Fpath%3Fq%3Dabc%"
+           "26p%3D1%"
            "23anchor"),
       GetDistillerViewUrlFromUrl(
           kDomDistillerScheme, GURL("http://example.com/path?q=abc&p=1#anchor"),
-          123));
+          "cats", 123));
+}
+
+TEST(DomDistillerUrlUtilsTest, TestGetPageTitleFromDistillerUrl) {
+  // Ensure that odd characters make it through.
+  std::string title = "An Interesting Article: Cats >= Dogs!";
+  GURL distilled = GetDistillerViewUrlFromUrl(
+      kDomDistillerScheme, GURL("http://example.com/path?q=abc&p=1#anchor"),
+      title);
+  EXPECT_EQ(title, GetTitleFromDistillerUrl(distilled));
+
+  // Let's try some Unicode outside of BMP.
+  title = "Γάτα قط ねこ חתול ␡";
+  distilled = GetDistillerViewUrlFromUrl(
+      kDomDistillerScheme, GURL("http://example.com/article.html"), title);
+  EXPECT_EQ(title, GetTitleFromDistillerUrl(distilled));
 }
 
 std::string GetOriginalUrlFromDistillerUrl(const std::string& url) {
@@ -79,7 +95,8 @@ TEST(DomDistillerUrlUtilsTest, TestGetOriginalUrlFromDistillerUrl) {
 
 std::string ThroughDistiller(const std::string& url) {
   return GetOriginalUrlFromDistillerUrl(
-             GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url), 123))
+             GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url), "title",
+                                        123))
       .spec();
 }
 
@@ -102,7 +119,8 @@ TEST(DomDistillerUrlUtilsTest, TestDistillerEndToEnd) {
 
   // Tests a nested url.
   const std::string nested_url =
-      GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url)).spec();
+      GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url), "title")
+          .spec();
   EXPECT_EQ("", ThroughDistiller(nested_url));
   EXPECT_EQ(url, GetOriginalUrlFromDistillerUrl(nested_url));
 }
@@ -111,10 +129,32 @@ TEST(DomDistillerUrlUtilsTest, TestRejectInvalidURLs) {
   const std::string url = "http://example.com/";
   const std::string url2 = "http://example.org/";
   const GURL view_url =
-      GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url), 123);
+      GetDistillerViewUrlFromUrl(kDomDistillerScheme, GURL(url), "title", 123);
   GURL bad_view_url =
       net::AppendOrReplaceQueryParameter(view_url, kUrlKey, url2);
   EXPECT_EQ(GURL(), GetOriginalUrlFromDistillerUrl(bad_view_url));
+}
+
+TEST(DomDistillerUrlUtilsTest, TestRejectInvalidDistilledURLs) {
+  EXPECT_FALSE(IsDistilledPage(GURL("chrome-distiller://any")));
+  EXPECT_FALSE(IsDistilledPage(GURL("chrome-distiller://any/invalid")));
+  EXPECT_FALSE(
+      IsDistilledPage(GURL("chrome-distiller://any/?time=123&url=abc")));
+
+  EXPECT_FALSE(IsDistilledPage(GetDistillerViewUrlFromUrl(
+      "not-distiller", GURL("http://example.com/"), "title")));
+  EXPECT_FALSE(IsDistilledPage(GetDistillerViewUrlFromUrl(
+      kDomDistillerScheme, GURL("not-http://example.com/"), "title")));
+
+  EXPECT_TRUE(IsDistilledPage(GetDistillerViewUrlFromUrl(
+      kDomDistillerScheme, GURL("http://example.com/"), "title")));
+  EXPECT_TRUE(IsDistilledPage(GetDistillerViewUrlFromUrl(
+      kDomDistillerScheme, GURL("http://www.example.com/page.html"), "title")));
+  EXPECT_TRUE(IsDistilledPage(GetDistillerViewUrlFromUrl(
+      kDomDistillerScheme,
+      GURL("http://www.example.com/page.html?cats=1&dogs=2"), "title")));
+  EXPECT_TRUE(IsDistilledPage(GetDistillerViewUrlFromUrl(
+      kDomDistillerScheme, GURL("https://example.com/?params=any"), "title")));
 }
 }  // namespace url_utils
 

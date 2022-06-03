@@ -1,7 +1,15 @@
 <html>
 <head>
   <title>Prefetch Loader</title>
-  <link rel='prerender' href='REPLACE_WITH_PREFETCH_URL'/>
+  <script src="prerender_events_common.js"></script>
 </head>
-<body></body>
+<body>
+  <script>
+    var numLinksToInsert =
+        ExtractGetParameterBadlyAndInsecurely('links_to_insert', 1);
+    for (var i = 0; i < numLinksToInsert; ++i) {
+      AddPrerender('REPLACE_WITH_PREFETCH_URL', i);
+    }
+    </script>
+</body>
 </html>

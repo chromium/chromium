@@ -15,16 +15,12 @@ extern const char kDailyHttpContentLengthLastUpdateDate[];
 extern const char kDailyHttpOriginalContentLength[];
 extern const char kDailyHttpReceivedContentLength[];
 
-extern const char kDataReductionProxy[];
 extern const char kDataSaverEnabled[];
-extern const char kDataReductionProxyConfig[];
 extern const char kDataUsageReportingEnabled[];
 extern const char kDataReductionProxyWasEnabledBefore[];
 extern const char kDataReductionProxyLastEnabledTime[];
 extern const char kHttpOriginalContentLength[];
 extern const char kHttpReceivedContentLength[];
-extern const char kDataReductionProxyLastConfigRetrievalTime[];
-extern const char kNetworkProperties[];
 
 extern const char kThisWeekNumber[];
 extern const char kThisWeekServicesDownstreamBackgroundKB[];

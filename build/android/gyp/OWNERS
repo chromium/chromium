@@ -1,7 +1,6 @@
 agrieve@chromium.org
-estevenson@chromium.org
 digit@chromium.org
 smaier@chromium.org
 wnwen@chromium.org
 
-# COMPONENT: Build
+per-file create_unwind_table*.py=file://base/profiler/OWNERS

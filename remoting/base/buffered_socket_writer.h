@@ -25,17 +25,17 @@ namespace remoting {
 // BufferedSocketWriter implement write data queue for stream sockets.
 class BufferedSocketWriter {
  public:
-  typedef base::Callback<int(
+  typedef base::RepeatingCallback<int(
       const scoped_refptr<net::IOBuffer>& buf,
       int buf_len,
       net::CompletionOnceCallback callback,
       const net::NetworkTrafficAnnotationTag& traffic_annotation)>
       WriteCallback;
-  typedef base::Callback<void(int)> WriteFailedCallback;
+  typedef base::OnceCallback<void(int)> WriteFailedCallback;
 
   static std::unique_ptr<BufferedSocketWriter> CreateForSocket(
       net::Socket* socket,
-      const WriteFailedCallback& write_failed_callback);
+      WriteFailedCallback write_failed_callback);
 
   BufferedSocketWriter();
   virtual ~BufferedSocketWriter();
@@ -44,7 +44,7 @@ class BufferedSocketWriter {
   // socket. |write_failed_callback| is called when write operation fails.
   // Writing stops after the first failed write.
   void Start(const WriteCallback& write_callback,
-             const WriteFailedCallback& write_failed_callback);
+             WriteFailedCallback write_failed_callback);
 
   // Puts a new data chunk in the buffer. If called before Start() then all data
   // is buffered until Start().

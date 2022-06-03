@@ -42,9 +42,9 @@ function testNonNumericToNumericEnforceRange(attribute)
   convert(attribute, true, 1);
   convert(attribute, '', 0);
   convert(attribute, '1', 1);
-  assert_throws(new TypeError(), () => { converter[attribute] = 'abc' });
+  assert_throws_js(TypeError, () => { converter[attribute] = 'abc' });
   convert(attribute, null, 0);
-  assert_throws(new TypeError(), () => { converter[attribute] = undefined });
+  assert_throws_js(TypeError, () => { converter[attribute] = undefined });
 }
 
 test(() => {
@@ -80,7 +80,7 @@ test(() => {
   convert(type, -Infinity, 0);
   convert(type, NaN, 0);
   testNonNumericToNumeric(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -105,22 +105,22 @@ test(() => {
   convert(type, -0x8000);
   convert(type, -0x8001);
   convert(type, 0x7FFFFFFF);
-  assert_throws(new TypeError(), () => { converter[type] = 0x80000000 });
-  assert_throws(new TypeError(), () => { converter[type] = 0xFFFFFFFF });
+  assert_throws_js(TypeError, () => { converter[type] = 0x80000000 });
+  assert_throws_js(TypeError, () => { converter[type] = 0xFFFFFFFF });
   convert(type, -0x80000000);
-  assert_throws(new TypeError(), () => { converter[type] = 0x80000001 });
-  assert_throws(new TypeError(), () => { converter[type] = 0xDCBA9876543210 });
-  assert_throws(new TypeError(), () => { converter[type] = Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = 0x80000001 });
+  assert_throws_js(TypeError, () => { converter[type] = 0xDCBA9876543210 });
+  assert_throws_js(TypeError, () => { converter[type] = Number.MAX_VALUE });
   convert(type, Number.MIN_VALUE, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -Number.MAX_VALUE });
   convert(type, -Number.MIN_VALUE, 0);
   convert(type, 1.99, 1);
   convert(type, -1.99, -1);
-  assert_throws(new TypeError(), () => { converter[type] = Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = -Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = NaN });
+  assert_throws_js(TypeError, () => { converter[type] = Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = -Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = NaN });
   testNonNumericToNumericEnforceRange(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -160,7 +160,7 @@ test(() => {
   convert(type, -Infinity, 0);
   convert(type, NaN, 0);
   testNonNumericToNumeric(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -172,35 +172,35 @@ test(() => {
   verifyAttribute(type);
   convert(type, 0);
   convert(type, -0, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -1 });
+  assert_throws_js(TypeError, () => { converter[type] = -1 });
   convert(type, 1);
   convert(type, 0x7F);
   convert(type, 0x80);
   convert(type, 0xFF);
-  assert_throws(new TypeError(), () => { converter[type] = -0x80 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x81 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x80 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x81 });
   convert(type, 0x7FFF);
   convert(type, 0x8000);
   convert(type, 0xFFFF);
-  assert_throws(new TypeError(), () => { converter[type] = -0x8000 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x8001 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x8000 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x8001 });
   convert(type, 0x7FFFFFFF);
   convert(type, 0x80000000);
   convert(type, 0xFFFFFFFF);
-  assert_throws(new TypeError(), () => { converter[type] = -0x80000000 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x80000001 });
-  assert_throws(new TypeError(), () => { converter[type] = 0xDCBA9876543210 });
-  assert_throws(new TypeError(), () => { converter[type] = Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -0x80000000 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x80000001 });
+  assert_throws_js(TypeError, () => { converter[type] = 0xDCBA9876543210 });
+  assert_throws_js(TypeError, () => { converter[type] = Number.MAX_VALUE });
   convert(type, Number.MIN_VALUE, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -Number.MAX_VALUE });
   convert(type, -Number.MIN_VALUE, 0);
   convert(type, 1.99, 1);
-  assert_throws(new TypeError(), () => { converter[type] = -1.99 });
-  assert_throws(new TypeError(), () => { converter[type] = Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = -Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = NaN });
+  assert_throws_js(TypeError, () => { converter[type] = -1.99 });
+  assert_throws_js(TypeError, () => { converter[type] = Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = -Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = NaN });
   testNonNumericToNumericEnforceRange(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -244,7 +244,7 @@ test(() => {
   convert(type, -Infinity, 0);
   convert(type, NaN, 0);
   testNonNumericToNumeric(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -274,21 +274,21 @@ test(() => {
   convert(type, -0x80000000);
   convert(type, -0x80000001);
   convert(type, -Math.pow(2, 53) + 1);
-  assert_throws(new TypeError(), () => { converter[type] = -Math.pow(2, 53) });
+  assert_throws_js(TypeError, () => { converter[type] = -Math.pow(2, 53) });
   convert(type, Math.pow(2, 53) - 1);
-  assert_throws(new TypeError(), () => { converter[type] = Math.pow(2, 53) + 1 });
-  assert_throws(new TypeError(), () => { converter[type] = 0xDCBA9876543210 });
+  assert_throws_js(TypeError, () => { converter[type] = Math.pow(2, 53) + 1 });
+  assert_throws_js(TypeError, () => { converter[type] = 0xDCBA9876543210 });
   convert(type, Number.MIN_VALUE, 0);
   convert(type, -Number.MIN_VALUE, 0);
-  assert_throws(new TypeError(), () => { converter[type] = Number.MAX_VALUE });
-  assert_throws(new TypeError(), () => { converter[type] = -Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -Number.MAX_VALUE });
   convert(type, 1.99, 1);
   convert(type, -1.99, -1);
-  assert_throws(new TypeError(), () => { converter[type] = Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = -Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = NaN });
+  assert_throws_js(TypeError, () => { converter[type] = Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = -Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = NaN });
   testNonNumericToNumericEnforceRange(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -332,7 +332,7 @@ test(() => {
   convert(type, -Infinity, 0);
   convert(type, NaN, 0);
   testNonNumericToNumeric(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -344,39 +344,39 @@ test(() => {
   verifyAttribute(type);
   convert(type, 0);
   convert(type, -0, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -1 });
+  assert_throws_js(TypeError, () => { converter[type] = -1 });
   convert(type, 1);
   convert(type, 0x7F);
   convert(type, 0x80);
   convert(type, 0xFF);
-  assert_throws(new TypeError(), () => { converter[type] = -0x80 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x81 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x80 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x81 });
   convert(type, 0x7FFF);
   convert(type, 0x8000);
   convert(type, 0xFFFF);
-  assert_throws(new TypeError(), () => { converter[type] = -0x8000 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x8001 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x8000 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x8001 });
   convert(type, 0x7FFFFFFF);
   convert(type, 0x80000000);
   convert(type, 0xFFFFFFFF);
-  assert_throws(new TypeError(), () => { converter[type] = -0x80000000 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x80000001 });
-  assert_throws(new TypeError(), () => { converter[type] = -Math.pow(2, 53) + 1 });
-  assert_throws(new TypeError(), () => { converter[type] = -Math.pow(2, 53) });
+  assert_throws_js(TypeError, () => { converter[type] = -0x80000000 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x80000001 });
+  assert_throws_js(TypeError, () => { converter[type] = -Math.pow(2, 53) + 1 });
+  assert_throws_js(TypeError, () => { converter[type] = -Math.pow(2, 53) });
   convert(type, Math.pow(2, 53) - 1);
-  assert_throws(new TypeError(), () => { converter[type] = Math.pow(2, 53) });
-  assert_throws(new TypeError(), () => { converter[type] = 0xDCBA9876543210 });
+  assert_throws_js(TypeError, () => { converter[type] = Math.pow(2, 53) });
+  assert_throws_js(TypeError, () => { converter[type] = 0xDCBA9876543210 });
   convert(type, Number.MIN_VALUE, 0);
   convert(type, -Number.MIN_VALUE, 0);
-  assert_throws(new TypeError(), () => { converter[type] = Number.MAX_VALUE });
-  assert_throws(new TypeError(), () => { converter[type] = -Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -Number.MAX_VALUE });
   convert(type, 1.99, 1);
-  assert_throws(new TypeError(), () => { converter[type] = -1.99 });
-  assert_throws(new TypeError(), () => { converter[type] = Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = -Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = NaN });
+  assert_throws_js(TypeError, () => { converter[type] = -1.99 });
+  assert_throws_js(TypeError, () => { converter[type] = Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = -Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = NaN });
   testNonNumericToNumericEnforceRange(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -408,7 +408,7 @@ test(() => {
   convert(type, -Infinity, 0);
   convert(type, NaN, 0);
   testNonNumericToNumeric(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -423,23 +423,23 @@ test(() => {
   convert(type, -1);
   convert(type, 1);
   convert(type, 0x7F);
-  assert_throws(new TypeError(), () => { converter[type] = 0x80 });
+  assert_throws_js(TypeError, () => { converter[type] = 0x80 });
   convert(type, -0x7F);
   convert(type, -0x80);
-  assert_throws(new TypeError(), () => { converter[type] = -0x81 });
-  assert_throws(new TypeError(), () => { converter[type] = 0x1234 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x81 });
+  assert_throws_js(TypeError, () => { converter[type] = 0x1234 });
   convert(type, Number.MIN_VALUE, 0);
   convert(type, -Number.MIN_VALUE, 0);
-  assert_throws(new TypeError(), () => { converter[type] = Number.MAX_VALUE });
-  assert_throws(new TypeError(), () => { converter[type] = -Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -Number.MAX_VALUE });
   convert(type, 1.99, 1);
   convert(type, -1.99, -1);
-  assert_throws(new TypeError(), () => { converter[type] = 4660.99 });
-  assert_throws(new TypeError(), () => { converter[type] = Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = -Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = NaN });
+  assert_throws_js(TypeError, () => { converter[type] = 4660.99 });
+  assert_throws_js(TypeError, () => { converter[type] = Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = -Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = NaN });
   testNonNumericToNumericEnforceRange(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -473,7 +473,7 @@ test(() => {
   convert(type, -Infinity, 0);
   convert(type, NaN, 0);
   testNonNumericToNumeric(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -485,28 +485,28 @@ test(() => {
   verifyAttribute(type);
   convert(type, 0);
   convert(type, -0, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -1 });
+  assert_throws_js(TypeError, () => { converter[type] = -1 });
   convert(type, 1);
   convert(type, 0x7F);
   convert(type, 0x80);
   convert(type, 0xFF);
-  assert_throws(new TypeError(), () => { converter[type] = 0x100 });
-  assert_throws(new TypeError(), () => { converter[type] = 0x101 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x80 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x81 });
-  assert_throws(new TypeError(), () => { converter[type] = 0x1234 });
-  assert_throws(new TypeError(), () => { converter[type] = Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = 0x100 });
+  assert_throws_js(TypeError, () => { converter[type] = 0x101 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x80 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x81 });
+  assert_throws_js(TypeError, () => { converter[type] = 0x1234 });
+  assert_throws_js(TypeError, () => { converter[type] = Number.MAX_VALUE });
   convert(type, Number.MIN_VALUE, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -Number.MAX_VALUE });
   convert(type, -Number.MIN_VALUE, 0);
   convert(type, 1.99, 1);
-  assert_throws(new TypeError(), () => { converter[type] = -1.99 });
-  assert_throws(new TypeError(), () => { converter[type] = 4660.99 });
-  assert_throws(new TypeError(), () => { converter[type] = Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = -Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = NaN });
+  assert_throws_js(TypeError, () => { converter[type] = -1.99 });
+  assert_throws_js(TypeError, () => { converter[type] = 4660.99 });
+  assert_throws_js(TypeError, () => { converter[type] = Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = -Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = NaN });
   testNonNumericToNumericEnforceRange(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -541,7 +541,7 @@ test(() => {
   convert(type, -Infinity, 0);
   convert(type, NaN, 0);
   testNonNumericToNumeric(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -561,22 +561,22 @@ test(() => {
   convert(type, -0x80);
   convert(type, -0x81);
   convert(type, 0x7FFF);
-  assert_throws(new TypeError(), () => { converter[type] = 0x8000 });
-  assert_throws(new TypeError(), () => { converter[type] = 0xFFFF });
+  assert_throws_js(TypeError, () => { converter[type] = 0x8000 });
+  assert_throws_js(TypeError, () => { converter[type] = 0xFFFF });
   convert(type, -0x8000);
-  assert_throws(new TypeError(), () => { converter[type] = -0x8001 });
-  assert_throws(new TypeError(), () => { converter[type] = 0xDCBA9876543210 });
-  assert_throws(new TypeError(), () => { converter[type] = Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -0x8001 });
+  assert_throws_js(TypeError, () => { converter[type] = 0xDCBA9876543210 });
+  assert_throws_js(TypeError, () => { converter[type] = Number.MAX_VALUE });
   convert(type, Number.MIN_VALUE, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -Number.MAX_VALUE });
   convert(type, -Number.MIN_VALUE, 0);
   convert(type, 1.99, 1);
   convert(type, -1.99, -1);
-  assert_throws(new TypeError(), () => { converter[type] = Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = -Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = NaN });
+  assert_throws_js(TypeError, () => { converter[type] = Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = -Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = NaN });
   testNonNumericToNumericEnforceRange(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -612,7 +612,7 @@ test(() => {
   convert(type, -Infinity, 0);
   convert(type, NaN, 0);
   testNonNumericToNumeric(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -624,31 +624,31 @@ test(() => {
   verifyAttribute(type);
   convert(type, 0);
   convert(type, -0, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -1 });
+  assert_throws_js(TypeError, () => { converter[type] = -1 });
   convert(type, 1);
   convert(type, 0x7F);
   convert(type, 0x80);
   convert(type, 0xFF);
-  assert_throws(new TypeError(), () => { converter[type] = -0x80 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x81 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x80 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x81 });
   convert(type, 0x7FFF);
   convert(type, 0x8000);
   convert(type, 0xFFFF);
-  assert_throws(new TypeError(), () => { converter[type] = 0x10000 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x8000 });
-  assert_throws(new TypeError(), () => { converter[type] = -0x8001 });
+  assert_throws_js(TypeError, () => { converter[type] = 0x10000 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x8000 });
+  assert_throws_js(TypeError, () => { converter[type] = -0x8001 });
   convert(type, 0x3210);
-  assert_throws(new TypeError(), () => { converter[type] = Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = Number.MAX_VALUE });
   convert(type, Number.MIN_VALUE, 0);
-  assert_throws(new TypeError(), () => { converter[type] = -Number.MAX_VALUE });
+  assert_throws_js(TypeError, () => { converter[type] = -Number.MAX_VALUE });
   convert(type, -Number.MIN_VALUE, 0);
   convert(type, 1.99, 1);
-  assert_throws(new TypeError(), () => { converter[type] = -1.99 });
-  assert_throws(new TypeError(), () => { converter[type] = Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = -Infinity });
-  assert_throws(new TypeError(), () => { converter[type] = NaN });
+  assert_throws_js(TypeError, () => { converter[type] = -1.99 });
+  assert_throws_js(TypeError, () => { converter[type] = Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = -Infinity });
+  assert_throws_js(TypeError, () => { converter[type] = NaN });
   testNonNumericToNumericEnforceRange(type);
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter[type] = {
       valueOf: () => { throw new Error('custom') }
     }
@@ -658,8 +658,8 @@ test(() => {
 test(() => {
   converter.testByteString = '!@#123ABCabc\x00\x80\xFF\r\n\t';
   assert_equals(converter.testByteString, "!@#123ABCabc\x00\x80\xFF\r\n\t");
-  assert_throws(new TypeError(), () => { converter.testByteString = '\u0100' });
-  assert_throws(new Error(), () => {
+  assert_throws_js(TypeError, () => { converter.testByteString = '\u0100' });
+  assert_throws_js(Error, () => {
     converter.testByteString = {
       toString: () => { throw Error() }
     }
@@ -674,8 +674,8 @@ test(() => {
     assert_equals(converter.testByteString, test.expected);
   });
   converter.setTestByteString('abc');
-  assert_throws(new TypeError(), () => { converter.setTestByteString('\u0100') });
-  assert_throws(new TypeError(), () => { converter.setTestByteString() });
+  assert_throws_js(TypeError, () => { converter.setTestByteString('\u0100') });
+  assert_throws_js(TypeError, () => { converter.setTestByteString() });
   assert_equals(converter.testByteString, "abc");
 }, "Test conversion of ByteString types");
 
@@ -684,7 +684,7 @@ test(() => {
   assert_equals(converter.testUSVString, "!@#123ABCabc\x00\x80\xFF\r\n\t");
   converter.testUSVString = '\u0100';
   assert_equals(converter.testUSVString, "\u0100");
-  assert_throws(new Error(), () => {
+  assert_throws_js(Error, () => {
     converter.testUSVString = {
       toString: () => { throw Error() }
     }
@@ -709,7 +709,7 @@ test(() => {
   });
   converter.setTestUSVString('abc');
   converter.setTestUSVString('\u0100');
-  assert_throws(new TypeError(), () => { converter.setTestUSVString() });
+  assert_throws_js(TypeError, () => { converter.setTestUSVString() });
   assert_equals(converter.testUSVString, "\u0100");
 }, "Test conversion of USVString types");
 

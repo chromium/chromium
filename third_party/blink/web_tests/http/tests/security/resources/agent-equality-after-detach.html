@@ -14,15 +14,13 @@
 
 function run(evt) {
   let sub1 = document.getElementById('sub1');
-  let sub1_doc = sub1.contentDocument;
+  let sub1_window = sub1.contentWindow;
   sub1.remove();
-  let sub1_cloned_doc = sub1_doc.cloneNode();
 
   let message = [
     'same-origin detach test',
-    internals.getDocumentAgentId(document),
-    internals.getDocumentAgentId(sub1_doc),
-    internals.getDocumentAgentId(sub1_cloned_doc)
+    internals.getAgentId(window),
+    internals.getAgentId(sub1_window)
   ];
 
   window.parent.postMessage(message, '*');

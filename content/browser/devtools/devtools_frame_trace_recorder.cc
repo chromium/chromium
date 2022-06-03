@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "content/browser/devtools/devtools_traceable_screenshot.h"
-#include "content/browser/frame_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/gfx/geometry/size.h"
@@ -77,9 +77,8 @@ bool ScreenshotCategoryEnabled() {
 
 }  // namespace
 
-DevToolsFrameTraceRecorder::DevToolsFrameTraceRecorder() { }
-
-DevToolsFrameTraceRecorder::~DevToolsFrameTraceRecorder() { }
+DevToolsFrameTraceRecorder::DevToolsFrameTraceRecorder() = default;
+DevToolsFrameTraceRecorder::~DevToolsFrameTraceRecorder() = default;
 
 void DevToolsFrameTraceRecorder::OnSynchronousSwapCompositorFrame(
     RenderFrameHostImpl* host,

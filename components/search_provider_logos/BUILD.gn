@@ -4,8 +4,6 @@
 
 static_library("search_provider_logos") {
   sources = [
-    "features.cc",
-    "features.h",
     "fixed_logo_api.cc",
     "fixed_logo_api.h",
     "google_logo_api.cc",
@@ -76,10 +74,8 @@ bundle_data("unit_tests_bundle_data") {
     "//components/test/data/search_provider_logos/ddljson_ios4.json",
     "//components/test/data/search_provider_logos/ddljson_ios4_fp.json",
   ]
-  outputs = [
-    "{{bundle_resources_dir}}/" +
-        "{{source_root_relative_dir}}/{{source_file_part}}",
-  ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
 }
 
 source_set("unit_tests") {

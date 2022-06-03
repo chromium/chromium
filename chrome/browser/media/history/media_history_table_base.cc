@@ -4,7 +4,9 @@
 
 #include "chrome/browser/media/history/media_history_table_base.h"
 
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
+#include "sql/statement.h"
+#include "third_party/protobuf/src/google/protobuf/message_lite.h"
 
 namespace media_history {
 
@@ -18,12 +20,19 @@ MediaHistoryTableBase::MediaHistoryTableBase(
 
 MediaHistoryTableBase::~MediaHistoryTableBase() = default;
 
+void MediaHistoryTableBase::SetCancelled() {
+  cancelled_.Set();
+}
+
 sql::InitStatus MediaHistoryTableBase::Initialize(sql::Database* db) {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
   DCHECK(db);
 
   db_ = db;
-  return CreateTableIfNonExistent();
+
+  if (CanAccessDatabase())
+    return CreateTableIfNonExistent();
+  return sql::InitStatus::INIT_FAILURE;
 }
 
 sql::Database* MediaHistoryTableBase::DB() {
@@ -38,7 +47,29 @@ void MediaHistoryTableBase::ResetDB() {
 
 bool MediaHistoryTableBase::CanAccessDatabase() {
   DCHECK(db_task_runner_->RunsTasksInCurrentSequence());
-  return db_;
+  return !cancelled_.IsSet() && db_;
+}
+
+void MediaHistoryTableBase::BindProto(
+    sql::Statement& s,
+    int col,
+    const google::protobuf::MessageLite& protobuf) {
+  std::string out;
+  CHECK(protobuf.SerializeToString(&out));
+  s.BindBlob(col, out);
+}
+
+bool MediaHistoryTableBase::GetProto(sql::Statement& s,
+                                     int col,
+                                     google::protobuf::MessageLite& protobuf) {
+  std::string value;
+  s.ColumnBlobAsString(col, &value);
+  return protobuf.ParseFromString(value);
+}
+
+bool MediaHistoryTableBase::DeleteURL(const GURL& url) {
+  NOTREACHED();
+  return false;
 }
 
 }  // namespace media_history

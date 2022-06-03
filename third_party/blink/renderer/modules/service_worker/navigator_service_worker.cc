@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/service_worker/navigator_service_worker.h"
 
+#include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -15,82 +16,28 @@
 
 namespace blink {
 
-NavigatorServiceWorker::NavigatorServiceWorker(Navigator& navigator) {}
-
-NavigatorServiceWorker* NavigatorServiceWorker::From(Document& document) {
-  LocalFrame* frame = document.GetFrame();
-  if (!frame)
+ServiceWorkerContainer* NavigatorServiceWorker::From(LocalDOMWindow& window) {
+  if (!window.GetSecurityOrigin()->CanAccessServiceWorkers())
     return nullptr;
-
-  // TODO(kouhei): Remove below after M72, since the check is now done in
-  // RenderFrameImpl::CreateServiceWorkerProvider instead.
-  //
-  // Bail-out if we are about to be navigated away.
-  // We check that DocumentLoader is attached since:
-  // - This serves as the signal since the DocumentLoader is detached in
-  //   FrameLoader::PrepareForCommit().
-  // - Creating ServiceWorkerProvider in
-  //   RenderFrameImpl::CreateServiceWorkerProvider() assumes that there is a
-  //   DocumentLoader attached to the frame.
-  if (!frame->Loader().GetDocumentLoader())
-    return nullptr;
-
-  LocalDOMWindow* dom_window = frame->DomWindow();
-  if (!dom_window)
-    return nullptr;
-  Navigator& navigator = *dom_window->navigator();
-  return &From(navigator);
+  return ServiceWorkerContainer::From(window);
 }
-
-NavigatorServiceWorker& NavigatorServiceWorker::From(Navigator& navigator) {
-  NavigatorServiceWorker* supplement = ToNavigatorServiceWorker(navigator);
-  if (!supplement) {
-    supplement = MakeGarbageCollected<NavigatorServiceWorker>(navigator);
-    ProvideTo(navigator, supplement);
-  }
-  if (navigator.GetFrame() && navigator.GetFrame()
-                                  ->GetSecurityContext()
-                                  ->GetSecurityOrigin()
-                                  ->CanAccessServiceWorkers()) {
-    // Ensure ServiceWorkerContainer. It can be cleared regardless of
-    // |supplement|. See comments in NavigatorServiceWorker::serviceWorker() for
-    // details.
-    supplement->GetOrCreateContainer(navigator.GetFrame(), ASSERT_NO_EXCEPTION);
-  }
-  return *supplement;
-}
-
-NavigatorServiceWorker* NavigatorServiceWorker::ToNavigatorServiceWorker(
-    Navigator& navigator) {
-  return Supplement<Navigator>::From<NavigatorServiceWorker>(navigator);
-}
-
-const char NavigatorServiceWorker::kSupplementName[] = "NavigatorServiceWorker";
 
 // static
 ServiceWorkerContainer* NavigatorServiceWorker::serviceWorker(
     ScriptState* script_state,
     Navigator& navigator,
     ExceptionState& exception_state) {
-  ExecutionContext* execution_context = ExecutionContext::From(script_state);
-  DCHECK(!navigator.GetFrame() ||
-         execution_context->GetSecurityOrigin()->CanAccess(
-             navigator.GetFrame()->GetSecurityContext()->GetSecurityOrigin()));
-  return NavigatorServiceWorker::From(navigator).GetOrCreateContainer(
-      navigator.GetFrame(), exception_state);
-}
-
-ServiceWorkerContainer* NavigatorServiceWorker::GetOrCreateContainer(
-    LocalFrame* frame,
-    ExceptionState& exception_state) {
-  if (!frame)
+  if (!navigator.DomWindow())
     return nullptr;
+  LocalDOMWindow& window = *navigator.DomWindow();
+  DCHECK(ExecutionContext::From(script_state)
+             ->GetSecurityOrigin()
+             ->CanAccess(window.GetSecurityOrigin()));
 
-  if (!frame->GetSecurityContext()
-           ->GetSecurityOrigin()
-           ->CanAccessServiceWorkers()) {
+  auto* container = From(window);
+  if (!container) {
     String error_message;
-    if (frame->GetSecurityContext()->IsSandboxed(WebSandboxFlags::kOrigin)) {
+    if (window.IsSandboxed(network::mojom::blink::WebSandboxFlags::kOrigin)) {
       error_message =
           "Service worker is disabled because the context is sandboxed and "
           "lacks the 'allow-same-origin' flag.";
@@ -102,17 +49,10 @@ ServiceWorkerContainer* NavigatorServiceWorker::GetOrCreateContainer(
     return nullptr;
   }
 
-  if (frame->GetSecurityContext()->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(frame->GetDocument(),
-                      WebFeature::kFileAccessedServiceWorker);
-  }
+  if (window.GetSecurityOrigin()->IsLocal())
+    UseCounter::Count(window, WebFeature::kFileAccessedServiceWorker);
 
-  return ServiceWorkerContainer::From(
-      To<Document>(frame->DomWindow()->GetExecutionContext()));
-}
-
-void NavigatorServiceWorker::Trace(blink::Visitor* visitor) {
-  Supplement<Navigator>::Trace(visitor);
+  return container;
 }
 
 }  // namespace blink

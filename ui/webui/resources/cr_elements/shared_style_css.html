@@ -46,9 +46,11 @@
       [scrollable].can-scroll:not(.scrolled-to-bottom) {
         border-bottom-color: var(--scrollable-border-color);
       }
-      [scrollable] iron-list > :not(.no-outline):focus {
-        @apply --cr-list-item-focus;
-        @apply --cr-selectable-focus;
+      [scrollable] iron-list > :not(.no-outline):focus,
+      [selectable]:focus,
+      [selectable] > :focus {
+        background-color: var(--cr-focused-item-color);
+        outline: none;
       }
 
       .scroll-container {
@@ -57,12 +59,19 @@
         min-height: 1px;
       }
 
-      [selectable]:focus,
-      [selectable] > :focus {
-        @apply --cr-selectable-focus;
-      }
       [selectable] > * {
         cursor: pointer;
+      }
+
+      .cr-centered-card-container {
+        box-sizing: border-box;
+        display: block;
+        height: inherit;
+        margin: 0 auto;
+        max-width: var(--cr-centered-card-max-width);
+        min-width: 550px;
+        position: relative;
+        width: calc(100% * var(--cr-centered-card-width-percentage));
       }
 
       .cr-container-shadow {
@@ -91,12 +100,54 @@
         opacity: var(--cr-container-shadow-max-opacity);
       }
 
+      .cr-row {
+        align-items: center;
+        border-top: var(--cr-separator-line);
+        display: flex;
+        min-height: var(--cr-section-min-height);
+        padding: 0 var(--cr-section-padding);
+      }
+
+      .cr-row.first,
+      .cr-row.continuation {
+        border-top: none;
+      }
+
+      .cr-row-gap {
+        padding-inline-start: 16px;
+      }
+
+      .cr-button-gap {
+        margin-inline-start: 8px;
+      }
+
+      paper-tooltip {
+        --paper-tooltip: {
+          border-radius: var(--paper-tooltip-border-radius, 2px);
+          font-size: 92.31%;  /* Effectively 12px if the host default is 13px. */
+          font-weight: 500;
+          max-width: 330px;
+          min-width: var(--paper-tooltip-min-width, 200px);
+          padding: var(--paper-tooltip-padding, 10px 8px);
+        }
+      }
+
       /* Typography */
+
+      .cr-padded-text {
+        padding-block-end: var(--cr-section-vertical-padding);
+        padding-block-start: var(--cr-section-vertical-padding);
+      }
 
       .cr-title-text {
         color: var(--cr-title-text-color);
         font-size: 107.6923%; /* Go to 14px from 13px. */
         font-weight: 500;
+      }
+
+      .cr-secondary-text {
+        color: var(--cr-secondary-text-color);
+        font-weight: 400;
       }
 
       .cr-form-field-label {
@@ -107,6 +158,33 @@
         letter-spacing: .4px;
         line-height: var(--cr-form-field-label-line-height);
         margin-bottom: 8px;
+      }
+
+      .cr-vertical-tab {
+        align-items: center;
+        display: flex;
+      }
+
+      .cr-vertical-tab::before {
+        border-radius: 0 3px 3px 0;
+        content: '';
+        display: block;
+        flex-shrink: 0;
+        height: var(--cr-vertical-tab-height, 100%);
+        width: 4px;
+      }
+
+      .cr-vertical-tab.selected::before {
+        background: var(--cr-vertical-tab-selected-color, var(--cr-checked-color));
+      }
+
+      :host-context([dir=rtl]) .cr-vertical-tab::before {
+        /* Border-radius based on block/inline is not yet supported. */
+        transform: scaleX(-1);
+      }
+
+      .iph-anchor-highlight {
+        background-color: var(--cr-iph-anchor-highlight-color);
       }
     </style>
   </template>

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/core/layout/min_max_size.h"
+#include "third_party/blink/renderer/core/layout/min_max_sizes.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -11,7 +11,7 @@ namespace blink {
 namespace {
 
 TEST(NGUnitsTest, ShrinkToFit) {
-  MinMaxSize sizes;
+  MinMaxSizes sizes;
 
   sizes.min_size = LayoutUnit(100);
   sizes.max_size = LayoutUnit(200);

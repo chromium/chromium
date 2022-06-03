@@ -1,0 +1,34 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module extensions.mojom;
+
+// Icky RTTI used by a few systems to distinguish the host type of a given
+// WebContents.
+//
+// Do not change or reuse the the entry values in this list as this is used in
+// ExtensionViewType enum in tools/metrics/histograms/enums.xml.
+//
+// TODO(aa): Remove this and teach those systems to keep track of their own
+// data.
+//
+// The type of the view.
+enum ViewType {
+  kInvalid = 0,
+  kAppWindow = 1,
+  kBackgroundContents = 2,
+
+  // For custom parts of Chrome if no other type applies.
+  kComponent = 3,
+
+  kExtensionBackgroundPage = 4,
+  kExtensionDialog = 5,
+  kExtensionGuest = 6,
+  kExtensionPopup = 7,
+
+  // Panels were removed in https://crbug.com/571511.
+  // DEPRECATED_kPanel = 8,
+
+  kTabContents = 9,
+};

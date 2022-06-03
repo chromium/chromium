@@ -19,6 +19,9 @@ class PlatformSensorLinux : public PlatformSensor {
                       PlatformSensorProvider* provider,
                       const SensorInfoLinux* sensor_device);
 
+  PlatformSensorLinux(const PlatformSensorLinux&) = delete;
+  PlatformSensorLinux& operator=(const PlatformSensorLinux&) = delete;
+
   mojom::ReportingMode GetReportingMode() override;
 
   // Called by a sensor reader. Takes new readings.
@@ -49,8 +52,6 @@ class PlatformSensorLinux : public PlatformSensor {
   SensorReading old_values_;
 
   base::WeakPtrFactory<PlatformSensorLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PlatformSensorLinux);
 };
 
 }  // namespace device

@@ -4,52 +4,38 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chromecast_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
+import("//content/public/common/zygote/features.gni")
 import("//media/media_options.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 import("//ppapi/buildflags/buildflags.gni")
 import("//third_party/webrtc/webrtc.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 # See //content/BUILD.gn for how this works.
 group("common") {
   if (is_component_build) {
-    public_deps = [
-      "//content",
-    ]
+    public_deps = [ "//content" ]
   } else {
-    public_deps = [
-      ":common_sources",
-    ]
+    public_deps = [ ":common_sources" ]
   }
 }
 
 # This target allows other targets to depend on result_codes.h which is a
 # header-only dependency, without bringing in all of content.
 source_set("result_codes") {
-  sources = [
-    "result_codes.h",
-  ]
-
-  deps = [
-    "//services/service_manager/embedder:embedder_result_codes",
-  ]
+  sources = [ "result_codes.h" ]
 }
 
 # This target allows other targets to depend on content_descriptors.h which is
 # a header-only dependency, without bringing in all of content.
 source_set("content_descriptors") {
-  sources = [
-    "content_descriptors.h",
-  ]
-
-  # The header uses V8_USE_EXTERNAL_STARTUP_DATA.
-  public_configs = [ "//v8:external_startup_data" ]
-
-  deps = [
-    "//ipc",
-  ]
+  sources = [ "content_descriptors.h" ]
 }
 
 source_set("content_descriptor_keys") {
@@ -71,9 +57,7 @@ config("static_switches_defines") {
 # link to it, without depending on the rest of content. This is only for use
 # without content, or you will get multiply defined symbols.
 source_set("static_switches") {
-  public = [
-    "content_switches.h",
-  ]
+  public = [ "content_switches.h" ]
   sources = [
     "//content/common/content_export.h",
     "content_switches.cc",
@@ -83,46 +67,42 @@ source_set("static_switches") {
 
   # Deps required by the above headers.
   deps = [
+    "//build:chromeos_buildflags",
     "//media:media_buildflags",
   ]
 }
 
-# This target allows you to use the content_features constants and statically
-# link to it, without depending on the rest of content. This is only for use
-# without content, or you will get multiply defined symbols.
-source_set("static_features") {
-  public = [
-    "content_features.h",
-  ]
+# This target allows you to use the content MainFunctionParams struct and
+# statically link to it, without depending on the rest of content. This is only
+# for use without content, or you will get multiply defined symbols.
+source_set("static_main_function_params") {
+  public = [ "main_function_params.h" ]
   sources = [
     "//content/common/content_export.h",
-    "content_features.cc",
+    "main_function_params.cc",
+    "startup_data.h",
   ]
-  public_deps = [
-    "//base",
+  public_deps = [ "//base" ]
+
+  public_configs = [
+    ":static_switches_defines",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
   ]
-
-  public_configs = [ ":static_switches_defines" ]
-
-  if (is_chromeos) {
-    public_deps += [ "//media/capture/video/chromeos/public" ]
-  }
 }
 
-jumbo_source_set("common_sources") {
+source_set("common_sources") {
   # External code should depend on via ":common" above.
   visibility = [ "//content/*" ]
 
   sources = [
     "bindings_policy.h",
-    "browser_controls_state.h",
     "cdm_info.h",
     "child_process_host.h",
     "child_process_host_delegate.h",
+    "color_parser.h",
     "common_param_traits.cc",
     "common_param_traits.h",
     "common_param_traits_macros.h",
-    "common_sandbox_support_linux.h",
     "console_message_level.h",
     "content_client.cc",
     "content_client.h",
@@ -137,66 +117,44 @@ jumbo_source_set("common_sources") {
     "content_switch_dependent_feature_overrides.h",
     "content_switches.cc",
     "content_switches.h",
-    "context_menu_params.cc",
-    "context_menu_params.h",
-    "cursor_info.cc",
-    "cursor_info.h",
+    "custom_handlers/protocol_handler.cc",
+    "custom_handlers/protocol_handler.h",
     "drop_data.cc",
     "drop_data.h",
-    "favicon_url.cc",
-    "favicon_url.h",
-    "font_cache_dispatcher_win.h",
-    "frame_navigate_params.cc",
-    "frame_navigate_params.h",
-    "injection_test_mac.h",
-    "injection_test_win.h",
-    "input_event_ack_source.h",
     "input_event_ack_state.h",
     "isolated_world_ids.h",
     "javascript_dialog_type.h",
+    "main_function_params.cc",
     "main_function_params.h",
-    "menu_item.cc",
-    "menu_item.h",
     "mhtml_generation_params.cc",
     "mhtml_generation_params.h",
-    "navigation_policy.cc",
-    "navigation_policy.h",
     "network_service_util.cc",
     "network_service_util.h",
     "origin_util.h",
-    "page_importance_signals.h",
-    "page_state.cc",
-    "page_state.h",
     "page_type.h",
     "page_visibility_state.h",
     "page_zoom.h",
     "pepper_plugin_info.cc",
     "pepper_plugin_info.h",
     "persistent_notification_status.h",
-    "previews_state.cc",
-    "previews_state.h",
     "process_type.h",
     "profiling.cc",
     "profiling.h",
+    "pseudonymization_util.cc",
+    "pseudonymization_util.h",
     "referrer.cc",
     "referrer.h",
     "referrer_type_converters.cc",
     "referrer_type_converters.h",
-    "resource_intercept_policy.h",
-    "resource_request_body_android.cc",
-    "resource_request_body_android.h",
-    "resource_type.cc",
+    "resource_request_blocked_reason.h",
     "resource_usage_reporter_type_converters.cc",
     "resource_usage_reporter_type_converters.h",
     "result_codes.h",
     "sandbox_init.h",
     "sandboxed_process_launcher_delegate.cc",
     "sandboxed_process_launcher_delegate.h",
-    "screen_info.cc",
-    "screen_info.h",
-    "screen_orientation_values.h",
-    "service_manager_connection.h",
     "socket_permission_request.h",
+    "startup_data.h",
     "stop_find_action.h",
     "storage_quota_params.h",
     "three_d_api_types.h",
@@ -207,26 +165,39 @@ jumbo_source_set("common_sources") {
     "use_zoom_for_dsf_policy.cc",
     "use_zoom_for_dsf_policy.h",
     "user_agent.h",
-    "web_preferences.cc",
-    "web_preferences.h",
     "webplugininfo.cc",
     "webplugininfo.h",
     "webplugininfo_param_traits.h",
     "widget_type.h",
   ]
 
+  if (is_win) {
+    sources += [ "font_cache_dispatcher_win.h" ]
+  }
+
+  if (is_android) {
+    sources += [
+      "resource_request_body_android.cc",
+      "resource_request_body_android.h",
+    ]
+  }
+
   configs += [
     "//build/config:precompiled_headers",
     "//content:content_implementation",
   ]
 
-  public_configs = [ "//v8:external_startup_data" ]
+  public_configs = [
+    "//v8:external_startup_data",
+    "//tools/v8_context_snapshot:use_v8_context_snapshot",
+  ]
 
   public_deps = [
     ":interfaces",
-    ":resource_type_header",
-    ":service_names",
+    ":renderer_type",
+    ":trust_tokens_mojo_bindings",
     "//content/common",
+    "//content/public/common/zygote:buildflags",
     "//ipc",
     "//media/capture:capture_base",
     "//mojo/public/cpp/bindings",
@@ -238,12 +209,15 @@ jumbo_source_set("common_sources") {
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/mojom:mojom_platform_headers",
     "//ui/accessibility",
+    "//ui/base/cursor/mojom:cursor_type",
+    "//ui/gfx/geometry",
     "//ui/surface",
     "//url/ipc:url_ipc",
   ]
   deps = [
     ":content_descriptor_keys",
     "//build:branding_buildflags",
+    "//build:chromeos_buildflags",
 
     # This looks needless as we have //content/common in public_deps, but it's
     # needed because of allow_circular_includes_from.
@@ -253,15 +227,14 @@ jumbo_source_set("common_sources") {
     "//ppapi/buildflags",
     "//ppapi/c",
     "//services/network/public/cpp",
-    "//services/service_manager/embedder:embedder_result_codes",
     "//services/service_manager/public/cpp",
-    "//services/service_manager/zygote:zygote_buildflags",
     "//skia",
     "//storage/common",
     "//third_party/blink/public/common",
     "//third_party/icu",
     "//ui/accessibility",
     "//ui/base",
+    "//ui/base/cursor:cursor_base",
     "//ui/gfx",
     "//ui/gfx/ipc",
     "//ui/gfx/ipc/color",
@@ -277,12 +250,20 @@ jumbo_source_set("common_sources") {
     deps += [ "//content/public/android:jni" ]
   }
 
-  if (is_linux) {
-    deps += [ "//services/service_manager/zygote" ]
+  if (is_chromeos_ash) {
+    public_deps += [ "//media/capture/video/chromeos/public" ]
   }
 
-  if (is_chromeos) {
-    public_deps += [ "//media/capture/video/chromeos/public" ]
+  if (is_linux || is_chromeos) {
+    sources += [
+      "zygote/sandbox_support_linux.h",
+      "zygote/send_zygote_child_ping_linux.h",
+      "zygote/zygote_fork_delegate_linux.h",
+    ]
+  }
+
+  if (use_zygote_handle) {
+    sources += [ "zygote/zygote_handle.h" ]
   }
 
   if (rtc_use_pipewire) {
@@ -303,25 +284,22 @@ jumbo_source_set("common_sources") {
       "pepper_plugin_info.h",
     ]
   }
+
+  if (use_clang_profiling_inside_sandbox) {
+    sources += [ "profiling_utils.h" ]
+  }
 }
 
-# This target exists because mojo bindings use this header and depending
-# on the whole of content/common would create a dependency cycle
-# //content/public/common:resource_type_bindings ->
-# //content/public/common:common ->
-# //content:content
-# //content/public/app:both_sources ->
-# //content/public/common:common_sources ->
-# //content/public/common:interfaces ->
-# //content/public/common:resource_type_bindings ->
-source_set("resource_type_header") {
-  sources = [
-    "resource_type.h",
-  ]
-  public_deps = [
-    "//content:export",
-  ]
-}
+_common_param_traits_headers = [ "common_param_traits_macros.h" ]
+_common_param_traits_deps = [
+  "//ipc",
+  "//services/network/public/cpp:cpp_base",
+  "//services/network/public/mojom",
+  "//third_party/blink/public:blink_headers",
+  "//ui/accessibility:ax_enums_mojo",
+  "//ui/base",
+  "//ui/gfx/ipc",
+]
 
 mojom("interfaces") {
   # We don't want Blink variants of these bindings to be generated.
@@ -330,21 +308,16 @@ mojom("interfaces") {
   # Must depend on //content/public/common/ instead, for component build.
   visibility = [
     ":common_sources",
-    "//content/common/*",
     "//chrome/common:mojo_bindings",
     "//chrome/common:mojo_bindings_blink",
+    "//content/common/*",
     "//extensions/common:mojom",
     "//extensions/common:mojom_blink",
   ]
 
   sources = [
-    "browser_controls_state.mojom",
     "drop_data.mojom",
-    "fullscreen_video_element.mojom",
-    "resource_load_info.mojom",
     "resource_usage_reporter.mojom",
-    "transferrable_url_loader.mojom",
-    "was_activated_option.mojom",
     "webplugininfo.mojom",
     "window_container_type.mojom",
   ]
@@ -353,44 +326,82 @@ mojom("interfaces") {
     sources += [ "font_cache_win.mojom" ]
   }
 
-  public_deps = [
-    ":client_hints_mojom",
-    ":resource_type_bindings",
+  deps = [
     "//mojo/public/mojom/base:base",
     "//services/network/public/mojom",
-    "//services/network/public/mojom:mojom_ip_address",
-    "//services/network/public/mojom:websocket_mojom",
-    "//ui/accessibility:ax_enums_mojo",
     "//url/mojom:url_mojom_gurl",
-    "//url/mojom:url_mojom_origin",
+
+    # This dependency is really a dependency for the typemaps, but we need
+    # it here so that we can override it correctly for the component build.
+    "//third_party/blink/public/mojom:mojom_platform",
   ]
 
   component_output_prefix = "content_public_common_mojo_bindings"
   export_class_attribute = "CONTENT_EXPORT"
   export_define = "CONTENT_IMPLEMENTATION=1"
   export_header = "content/common/content_export.h"
+
+  overridden_deps = [ "//third_party/blink/public/mojom:mojom_platform" ]
+  component_deps = [ "//third_party/blink/public/common" ]
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "content.mojom.DropData"
+          cpp = "::content::DropData"
+        },
+      ]
+      traits_headers = [ "drop_data.h" ]
+      traits_private_headers = _common_param_traits_headers
+      traits_deps = _common_param_traits_deps
+    },
+    {
+      types = [
+        {
+          mojom = "content.mojom.WebPluginInfo"
+          cpp = "::content::WebPluginInfo"
+        },
+      ]
+      traits_headers = [ "webplugininfo.h" ]
+      traits_private_headers = [ "webplugininfo_param_traits.h" ]
+      traits_public_deps = [
+        "//base",
+        "//skia",
+      ]
+      traits_deps = [ "//ipc" ]
+    },
+  ]
 }
 
-mojom("client_hints_mojom") {
-  sources = [
-    "client_hints.mojom",
-  ]
-
+mojom("trust_tokens_mojo_bindings") {
+  generate_java = true
+  sources = [ "trust_tokens.mojom" ]
   public_deps = [
-    "//mojo/public/mojom/base",
-    "//third_party/blink/public/mojom:web_client_hints_types_mojo_bindings",
-    "//url/mojom:url_mojom_origin",
+    "//services/network/public/mojom",
+
+    # Generating Java code requires that we depend directly, not transitively,
+    # on this target, because it contains symbols needed by the generated Java
+    # classes.
+    "//services/network/public/mojom:url_loader_base",
   ]
 }
 
-mojom("service_names") {
-  sources = [
-    "service_names.mojom",
-  ]
+mojom("renderer_type") {
+  sources = [ "media_playback_renderer_type.mojom" ]
 }
 
-mojom("resource_type_bindings") {
-  sources = [
-    "resource_type.mojom",
-  ]
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":common_java" instead.
+    visibility = [ ":*" ]
+    sources = [ "//content/public/common/content_features.cc" ]
+    template = "//content/public/common/android/java_templates/ContentFeatures.java.tmpl"
+  }
+
+  android_library("common_java") {
+    # Right now, this only includes the Java features. But if we need more Java
+    # files, they should be added here as necessary.
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }

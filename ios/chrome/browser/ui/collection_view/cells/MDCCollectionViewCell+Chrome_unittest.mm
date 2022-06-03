@@ -4,7 +4,6 @@
 
 #import "ios/chrome/browser/ui/collection_view/cells/MDCCollectionViewCell+Chrome.h"
 
-#import "ios/chrome/browser/ui/collection_view/cells/collection_view_footer_item.h"
 #import "ios/chrome/browser/ui/collection_view/cells/collection_view_item.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -44,18 +43,6 @@ TEST_F(MDCCollectionViewCellChrome, PreferredHeightCallsConfigureCell) {
   [MDCCollectionViewCell cr_preferredHeightForWidth:0 forItem:item];
 
   EXPECT_EQ(1, item.configureCount);
-}
-
-TEST_F(MDCCollectionViewCellChrome, PreferredHeight) {
-  CollectionViewFooterItem* footerItem =
-      [[CollectionViewFooterItem alloc] initWithType:0];
-  footerItem.text = @"This is a pretty lengthy sentence.";
-  CGFloat (^heightForWidth)(CGFloat width) = ^(CGFloat width) {
-    return [MDCCollectionViewCell cr_preferredHeightForWidth:width
-                                                     forItem:footerItem];
-  };
-  EXPECT_NEAR(heightForWidth(300), 50, 5);
-  EXPECT_NEAR(heightForWidth(100), 115, 5);
 }
 
 }  // namespace

@@ -120,7 +120,7 @@ TEST(RuleTest, UrlRuleToString) {
   rule.url_pattern = "domain*.example.com^";
   rule.anchor_left = url_pattern_index::proto::ANCHOR_TYPE_SUBDOMAIN;
   rule.url_pattern_type = url_pattern_index::proto::URL_PATTERN_TYPE_WILDCARDED;
-  rule.is_whitelist = true;
+  rule.is_allowlist = true;
   rule.is_third_party = TriState::NO;
   rule.type_mask = kScript | kImage;
   rule.domains = {"example.com", "~exception.example.com"};
@@ -176,7 +176,7 @@ TEST(RuleTest, UrlRuleToString) {
 
 TEST(RuleTest, CssRuleToString) {
   CssRule rule;
-  rule.is_whitelist = true;
+  rule.is_allowlist = true;
   rule.domains = {"example.com", "~exception.example.com"};
   rule.css_selector = "#example-id";
 

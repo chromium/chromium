@@ -8,15 +8,10 @@
 #include <utility>
 
 #include "chrome/android/features/vr/jni_headers/VrModuleProvider_jni.h"
-#include "chrome/browser/android/vr/gvr_consent_helper_impl.h"
 #include "chrome/browser/android/vr/register_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "device/vr/buildflags/buildflags.h"
-
-#if BUILDFLAG(ENABLE_ARCORE)
-#include "chrome/browser/android/vr/arcore_device/arcore_consent_prompt.h"
-#endif
 
 namespace vr {
 
@@ -36,7 +31,7 @@ VrModuleProvider::~VrModuleProvider() {
                                         j_vr_module_provider_);
 }
 
-bool VrModuleProvider::ModuleInstalled() {
+bool VrModuleProvider::ModuleInstalled() const {
   return Java_VrModuleProvider_isModuleInstalled(
       base::android::AttachCurrentThread());
 }
@@ -83,13 +78,6 @@ std::unique_ptr<VrModuleProvider> VrModuleProviderFactory::CreateModuleProvider(
   DCHECK(tab);
 
   return std::make_unique<VrModuleProvider>(tab);
-}
-
-static void JNI_VrModuleProvider_Init(JNIEnv* env) {
-  GvrConsentHelper::SetInstance(std::make_unique<vr::GvrConsentHelperImpl>());
-#if BUILDFLAG(ENABLE_ARCORE)
-  ArCoreConsentPromptInterface::SetInstance(new ArCoreConsentPrompt());
-#endif
 }
 
 static void JNI_VrModuleProvider_RegisterJni(JNIEnv* env) {

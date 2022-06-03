@@ -8,11 +8,10 @@
 #include <string>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "chrome/browser/win/conflicts/module_info_util.h"
 #include "content/public/common/process_type.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // ModuleInfoKey and ModuleInfoData are used in pair by the ModuleDatabase to
 // maintain information about a module, usually in a std::map.
@@ -26,6 +25,8 @@ struct ModuleInfoKey {
 
   // Less-than operator allowing this object to be used in std::map.
   bool operator<(const ModuleInfoKey& mi) const;
+  // Allows comparing keys in DCHECKs.
+  bool operator==(const ModuleInfoKey& mi) const;
 
   // Full path to the module on disk. Part of the key for a ModuleInfo.
   base::FilePath module_path;
@@ -57,20 +58,20 @@ struct ModuleInspectionResult {
   ~ModuleInspectionResult();
 
   // The lowercase module path, not including the basename.
-  base::string16 location;
+  std::u16string location;
 
   // The basename of the module.
-  base::string16 basename;
+  std::u16string basename;
 
   // The name of the product the module belongs to.
-  base::string16 product_name;
+  std::u16string product_name;
 
   // The module file description.
-  base::string16 description;
+  std::u16string description;
 
   // The module version. This is usually in the form a.b.c.d (where a, b, c and
   // d are integers), but may also have fewer than 4 components.
-  base::string16 version;
+  std::u16string version;
 
   // The certificate info for the module.
   CertificateInfo certificate_info;
@@ -88,8 +89,8 @@ struct ModuleInfoData {
     kPropertyShellExtension = 1 << 1,
     // These modules are registered as an Input Method Editor.
     kPropertyIme = 1 << 2,
-    // The module was added to the module blacklist cache.
-    kPropertyAddedToBlacklist = 1 << 3,
+    // The module was added to the module blocklist cache.
+    kPropertyAddedToBlocklist = 1 << 3,
     // These modules were blocked from loading into the process.
     kPropertyBlocked = 1 << 4,
   };
@@ -109,7 +110,7 @@ struct ModuleInfoData {
   uint32_t module_properties;
 
   // The inspection result obtained via InspectModule().
-  base::Optional<ModuleInspectionResult> inspection_result;
+  absl::optional<ModuleInspectionResult> inspection_result;
 };
 
 // Given a module located at |module_path|, returns a populated

@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that page navigation initiated by JS is correctly reported.\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
   await TestRunner.navigatePromise('resources/initiator.html');
   TestRunner.runWhenPageLoads(step1);
@@ -29,7 +29,8 @@
   }
 
   function step1() {
-    var results = NetworkTestRunner.findRequestsByURLPattern(/\?foo/);
+    var results = NetworkTestRunner.findRequestsByURLPattern(/\?foo/).filter(
+        (e, i, a) => i % 2 == 0);
     TestRunner.assertEquals(1, results.length);
     dumpInitiator(results[0]);
     TestRunner.completeTest();

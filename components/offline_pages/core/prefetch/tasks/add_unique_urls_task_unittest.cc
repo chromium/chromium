@@ -33,7 +33,7 @@ const char kTestThumbnailURL[] = "http://thumbnail.com/";
 PrefetchURL PrefetchURL1() {
   return {kClientId1,
           GURL("https://www.url1.com/"),
-          base::UTF8ToUTF16("Title 1"),
+          u"Title 1",
           GURL("https://www.url1.com/thumbnail.png"),
           GURL("https://www.url1.com/favicon.png"),
           "snippet 1",
@@ -42,7 +42,7 @@ PrefetchURL PrefetchURL1() {
 PrefetchURL PrefetchURL2() {
   return {kClientId2,
           GURL("https://www.url2.com/"),
-          base::UTF8ToUTF16("Title 2"),
+          u"Title 2",
           GURL("https://www.url2.com/thumbnail.png"),
           GURL("https://www.url2.com/favicon.png"),
           "snippet 2",
@@ -51,7 +51,7 @@ PrefetchURL PrefetchURL2() {
 PrefetchURL PrefetchURL3() {
   return {kClientId3,
           GURL("https://www.url3.com/"),
-          base::UTF8ToUTF16("Title 3"),
+          u"Title 3",
           GURL("https://www.url3.com/thumbnail.png"),
           GURL("https://www.url3.com/favicon.png"),
           "snippet 3",
@@ -90,11 +90,13 @@ TEST_F(AddUniqueUrlsTaskTest, StoreFailure) {
 }
 
 TEST_F(AddUniqueUrlsTaskTest, AddTaskInEmptyStore) {
-  std::vector<PrefetchURL> urls;
   PrefetchURL url1 = PrefetchURL1();
   url1.thumbnail_url = GURL(kTestThumbnailURL);
-  urls.push_back(url1);
-  urls.push_back(PrefetchURL2());
+  // The third URL is empty, so it won't be added.
+  PrefetchURL url3 = PrefetchURL3();
+  url3.url = GURL();
+  std::vector<PrefetchURL> urls = {url1, PrefetchURL2(), url3};
+
   RunTask(std::make_unique<AddUniqueUrlsTask>(dispatcher(), store(),
                                               kTestNamespace, urls));
 
@@ -153,7 +155,7 @@ TEST_F(AddUniqueUrlsTaskTest, DontAddURLIfItAlreadyExists) {
 
   // Advance time by 1 hour to verify that timestamp of ID-1 is updated on the
   // next task execution.
-  clock.Advance(base::TimeDelta::FromHours(1));
+  clock.Advance(base::Hours(1));
   const base::Time later_time = clock.Now();
 
   // Turn ID-1 and ID-2 items into zombies.
@@ -180,11 +182,9 @@ TEST_F(AddUniqueUrlsTaskTest, DontAddURLIfItAlreadyExists) {
   // Note: as timestamps are inserted with microsecond variations, we're
   // comparing them using a safe range of 1 second.
   EXPECT_LE(later_time, items[kClientId1].creation_time);
-  EXPECT_GE(later_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId1].creation_time);
+  EXPECT_GE(later_time + base::Seconds(1), items[kClientId1].creation_time);
   EXPECT_LE(later_time, items[kClientId1].freshness_time);
-  EXPECT_GE(later_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId1].freshness_time);
+  EXPECT_GE(later_time + base::Seconds(1), items[kClientId1].freshness_time);
 
   // Previously existing ID-2 should not have been modified.
   ASSERT_GT(items.count(kClientId2), 0U);
@@ -193,11 +193,9 @@ TEST_F(AddUniqueUrlsTaskTest, DontAddURLIfItAlreadyExists) {
   EXPECT_EQ(PrefetchURL2().title, items[kClientId2].title);
   EXPECT_EQ(PrefetchItemState::ZOMBIE, items[kClientId2].state);
   EXPECT_LE(start_time, items[kClientId2].creation_time);
-  EXPECT_GE(start_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId2].creation_time);
+  EXPECT_GE(start_time + base::Seconds(1), items[kClientId2].creation_time);
   EXPECT_LE(start_time, items[kClientId2].freshness_time);
-  EXPECT_GE(start_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId2].freshness_time);
+  EXPECT_GE(start_time + base::Seconds(1), items[kClientId2].freshness_time);
 
   // Newly suggested ID-3 should be added.
   ASSERT_GT(items.count(kClientId3), 0U);
@@ -206,11 +204,9 @@ TEST_F(AddUniqueUrlsTaskTest, DontAddURLIfItAlreadyExists) {
   EXPECT_EQ(PrefetchURL3().title, items[kClientId3].title);
   EXPECT_EQ(PrefetchItemState::NEW_REQUEST, items[kClientId3].state);
   EXPECT_LE(later_time, items[kClientId3].creation_time);
-  EXPECT_GE(later_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId3].creation_time);
+  EXPECT_GE(later_time + base::Seconds(1), items[kClientId3].creation_time);
   EXPECT_LE(later_time, items[kClientId3].freshness_time);
-  EXPECT_GE(later_time + base::TimeDelta::FromSeconds(1),
-            items[kClientId3].freshness_time);
+  EXPECT_GE(later_time + base::Seconds(1), items[kClientId3].freshness_time);
 }
 
 }  // namespace offline_pages

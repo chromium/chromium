@@ -6,8 +6,8 @@
 
 #include "base/base_paths.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
@@ -18,6 +18,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_change_notifier.h"
 #include "net/http/http_status_code.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -33,9 +34,9 @@ class ChromeCleanerFetcherTest : public ::testing::Test {
 
   void TearDown() override {
     if (!downloaded_path_.empty()) {
-      base::DeleteFile(downloaded_path_, /*recursive=*/false);
+      base::DeleteFile(downloaded_path_);
       if (base::IsDirectoryEmpty(downloaded_path_.DirName()))
-        base::DeleteFile(downloaded_path_.DirName(), /*recursive=*/false);
+        base::DeleteFile(downloaded_path_.DirName());
     }
   }
 

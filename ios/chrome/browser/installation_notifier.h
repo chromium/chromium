@@ -33,6 +33,9 @@
 // registered observers need to know the accurate state of installed native
 // apps.
 - (void)checkNow;
+
+// Stops any queued polling.
+- (void)stopPolling;
 @end
 
 #endif  // IOS_CHROME_BROWSER_INSTALLATION_NOTIFIER_H_

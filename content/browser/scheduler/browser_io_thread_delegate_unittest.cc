@@ -25,8 +25,8 @@ TEST(BrowserIOThreadDelegateTest, CanPostTasksToThread) {
   handle->EnableAllQueues();
 
   base::Thread::Options options;
-  options.delegate = delegate.release();
-  thread.StartWithOptions(options);
+  options.delegate = std::move(delegate);
+  thread.StartWithOptions(std::move(options));
 
   auto runner =
       handle->GetBrowserTaskRunner(BrowserTaskQueues::QueueType::kDefault);
@@ -44,8 +44,8 @@ TEST(BrowserIOThreadDelegateTest, DefaultTaskRunnerIsAlwaysActive) {
   auto task_runner = delegate->GetDefaultTaskRunner();
 
   base::Thread::Options options;
-  options.delegate = delegate.release();
-  thread.StartWithOptions(options);
+  options.delegate = std::move(delegate);
+  thread.StartWithOptions(std::move(options));
 
   base::WaitableEvent event;
   task_runner->PostTask(FROM_HERE, base::BindOnce(&base::WaitableEvent::Signal,

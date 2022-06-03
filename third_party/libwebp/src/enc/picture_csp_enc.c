@@ -61,16 +61,14 @@ static int CheckNonOpaque(const uint8_t* alpha, int width, int height,
 // Checking for the presence of non-opaque alpha.
 int WebPPictureHasTransparency(const WebPPicture* picture) {
   if (picture == NULL) return 0;
-  if (!picture->use_argb) {
-    return CheckNonOpaque(picture->a, picture->width, picture->height,
-                          1, picture->a_stride);
-  } else {
+  if (picture->use_argb) {
     const int alpha_offset = ALPHA_OFFSET;
     return CheckNonOpaque((const uint8_t*)picture->argb + alpha_offset,
                           picture->width, picture->height,
                           4, picture->argb_stride * sizeof(*picture->argb));
   }
-  return 0;
+  return CheckNonOpaque(picture->a, picture->width, picture->height,
+                        1, picture->a_stride);
 }
 
 //------------------------------------------------------------------------------
@@ -90,8 +88,9 @@ int WebPPictureHasTransparency(const WebPPicture* picture) {
 static int kLinearToGammaTab[kGammaTabSize + 1];
 static uint16_t kGammaToLinearTab[256];
 static volatile int kGammaTablesOk = 0;
+static void InitGammaTables(void);
 
-static WEBP_TSAN_IGNORE_FUNCTION void InitGammaTables(void) {
+WEBP_DSP_INIT_FUNC(InitGammaTables) {
   if (!kGammaTablesOk) {
     int v;
     const double scale = (double)(1 << kGammaTabFix) / kGammaScale;
@@ -181,8 +180,9 @@ static uint32_t kLinearToGammaTabS[kGammaTabSize + 2];
 #define GAMMA_TO_LINEAR_BITS 14
 static uint32_t kGammaToLinearTabS[MAX_Y_T + 1];   // size scales with Y_FIX
 static volatile int kGammaTablesSOk = 0;
+static void InitGammaTablesS(void);
 
-static WEBP_TSAN_IGNORE_FUNCTION void InitGammaTablesS(void) {
+WEBP_DSP_INIT_FUNC(InitGammaTablesS) {
   assert(2 * GAMMA_TO_LINEAR_BITS < 32);  // we use uint32_t intermediate values
   if (!kGammaTablesSOk) {
     int v;
@@ -1054,7 +1054,7 @@ int WebPPictureYUVAToARGB(WebPPicture* picture) {
     const int height = picture->height;
     const int argb_stride = 4 * picture->argb_stride;
     uint8_t* dst = (uint8_t*)picture->argb;
-    const uint8_t *cur_u = picture->u, *cur_v = picture->v, *cur_y = picture->y;
+    const uint8_t* cur_u = picture->u, *cur_v = picture->v, *cur_y = picture->y;
     WebPUpsampleLinePairFunc upsample =
         WebPGetLinePairConverter(ALPHA_OFFSET > 0);
 

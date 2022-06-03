@@ -17,6 +17,7 @@
 #include <algorithm>
 
 #include "base/format_macros.h"
+#include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "util/numeric/checked_range.h"
 

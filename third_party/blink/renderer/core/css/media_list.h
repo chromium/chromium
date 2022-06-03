@@ -24,6 +24,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_query.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
@@ -35,6 +36,7 @@ namespace blink {
 class CSSRule;
 class CSSStyleSheet;
 class ExceptionState;
+class ExecutionContext;
 class MediaList;
 class MediaQuery;
 
@@ -43,17 +45,19 @@ class CORE_EXPORT MediaQuerySet : public RefCounted<MediaQuerySet> {
   static scoped_refptr<MediaQuerySet> Create() {
     return base::AdoptRef(new MediaQuerySet());
   }
-  static scoped_refptr<MediaQuerySet> Create(const String& media_string);
+  static scoped_refptr<MediaQuerySet> Create(const String& media_string,
+                                             const ExecutionContext*);
 
-  bool Set(const String&);
-  bool Add(const String&);
-  bool Remove(const String&);
+  bool Set(const String&, const ExecutionContext*);
+  bool Add(const String&, const ExecutionContext*);
+  bool Remove(const String&, const ExecutionContext*);
 
   void AddMediaQuery(std::unique_ptr<MediaQuery>);
 
   const Vector<std::unique_ptr<MediaQuery>>& QueryVector() const {
     return queries_;
   }
+  PhysicalAxes QueriedAxes() const;
 
   String MediaText() const;
 
@@ -77,11 +81,18 @@ class MediaList final : public ScriptWrappable {
 
   unsigned length() const { return media_queries_->QueryVector().size(); }
   String item(unsigned index) const;
-  void deleteMedium(const String& old_medium, ExceptionState&);
-  void appendMedium(const String& new_medium);
+  void deleteMedium(const ExecutionContext*,
+                    const String& old_medium,
+                    ExceptionState&);
+  void appendMedium(const ExecutionContext*, const String& new_medium);
 
-  String mediaText() const { return media_queries_->MediaText(); }
-  void setMediaText(const String&);
+  // Note that this getter doesn't require the ExecutionContext, but the
+  // attribute is marked as [CallWith=ExecutionContext] so that the setter can
+  // have access to the ExecutionContext.
+  String mediaText(const ExecutionContext*) const {
+    return media_queries_->MediaText();
+  }
+  void setMediaText(const ExecutionContext*, const String&);
 
   // Not part of CSSOM.
   CSSRule* ParentRule() const { return parent_rule_; }
@@ -91,7 +102,7 @@ class MediaList final : public ScriptWrappable {
 
   void Reattach(scoped_refptr<MediaQuerySet>);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   scoped_refptr<MediaQuerySet> media_queries_;
@@ -101,4 +112,4 @@ class MediaList final : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_MEDIA_LIST_H_

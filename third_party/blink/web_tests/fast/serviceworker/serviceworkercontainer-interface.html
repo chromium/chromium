@@ -5,9 +5,9 @@
 test(function() {
   assert_true('ServiceWorkerContainer' in window,
               'the constructor should be defined');
-  assert_throws(new TypeError, function() { new ServiceWorkerContainer(); },
-                'the constructor should not be callable with "new"');
-  assert_throws(new TypeError, function() { ServiceWorkerContainer(); },
-                'the constructor should not be callable');
+  assert_throws_js(TypeError, function() { new ServiceWorkerContainer(); },
+                   'the constructor should not be callable with "new"');
+  assert_throws_js(TypeError, function() { ServiceWorkerContainer(); },
+                   'the constructor should not be callable');
 }, 'ServiceWorkerContainer interface');
 </script>

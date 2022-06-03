@@ -7,7 +7,8 @@
 #include <algorithm>
 #include <cmath>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 
 namespace printing {
 

@@ -17,7 +17,7 @@ PASS image.data[1] is undefined
 PASS image.data[2] is undefined
 PASS image.data[3] is undefined
 PASS context.putImageData(image, 0, 0) threw exception InvalidStateError: Failed to execute 'putImageData' on 'CanvasRenderingContext2D': The source data has been detached..
-PASS Promise rejected as expected: InvalidStateError: The source data has been detached.
+PASS Promise rejected as expected: InvalidStateError: Failed to execute 'createImageBitmap' on 'Window': The source data has been detached.
 PASS successfullyParsed is true
 
 TEST COMPLETE

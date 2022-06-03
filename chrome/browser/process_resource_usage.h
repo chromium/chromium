@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "content/public/common/resource_usage_reporter.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -48,9 +47,10 @@
 //     mojo::PendingRemote<content::mojom::ResourceUsageReporter> service;
 //     mojo::PendingReceiver<content::mojom::ResourceUsageReporter> receiver =
 //         service.InitWithNewPipeAndPassReceiver();
-//     base::PostTask(
-//         FROM_HERE, {content::BrowserThread::IO},
-//         base::Bind(&Foo::ConnectToService, this, base::Passed(&receiver)));
+//     content::GetIOThreadTaskRunner({})->PostTask(
+//         FROM_HERE,
+//         base::BindOnce(&Foo::ConnectToService, this,
+//         base::Passed(&receiver)));
 //     resource_usage_.reset(new ProcessResourceUsage(std::move(service)));
 //   ...
 //
@@ -61,11 +61,15 @@ class ProcessResourceUsage {
   // Must be called from the same thread that created |service|.
   explicit ProcessResourceUsage(
       mojo::PendingRemote<content::mojom::ResourceUsageReporter> service);
+
+  ProcessResourceUsage(const ProcessResourceUsage&) = delete;
+  ProcessResourceUsage& operator=(const ProcessResourceUsage&) = delete;
+
   ~ProcessResourceUsage();
 
   // Refresh the resource usage information. |callback| is invoked when the
   // usage data is updated, or when the IPC connection is lost.
-  void Refresh(const base::Closure& callback);
+  void Refresh(base::OnceClosure callback);
 
   // Get V8 memory usage information.
   bool ReportsV8MemoryStats() const;
@@ -83,13 +87,11 @@ class ProcessResourceUsage {
 
   mojo::Remote<content::mojom::ResourceUsageReporter> service_;
   bool update_in_progress_;
-  base::circular_deque<base::Closure> refresh_callbacks_;
+  base::circular_deque<base::OnceClosure> refresh_callbacks_;
 
   content::mojom::ResourceUsageDataPtr stats_;
 
   base::ThreadChecker thread_checker_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProcessResourceUsage);
 };
 
 #endif  // CHROME_BROWSER_PROCESS_RESOURCE_USAGE_H_

@@ -8,9 +8,9 @@
 #include <stdint.h>
 #include <memory>
 #include <queue>
-#include <string>
 
 #include "base/callback.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/sequence_checker.h"
 #include "base/supports_user_data.h"
 #include "media/base/video_codecs.h"
@@ -60,6 +60,10 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
       std::unique_ptr<VideoDecodeStatsDB> db,
       learning::FeatureProviderFactoryCB feature_factory_cb =
           learning::FeatureProviderFactoryCB());
+
+  VideoDecodePerfHistory(const VideoDecodePerfHistory&) = delete;
+  VideoDecodePerfHistory& operator=(const VideoDecodePerfHistory&) = delete;
+
   ~VideoDecodePerfHistory() override;
 
   // Bind the mojo receiver to this instance. Single instance will be used to
@@ -99,6 +103,9 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   // Decode capabilities will be described as "smooth" whenever the percentage
   // of dropped frames is less-than-or-equal-to this value.
   static double GetMaxSmoothDroppedFramesPercent(bool is_eme);
+
+  // Returns current feature params.
+  static base::FieldTrialParams GetFieldTrialParams();
 
   // Track the status of database lazy initialization.
   enum InitStatus {
@@ -202,8 +209,6 @@ class MEDIA_MOJO_EXPORT VideoDecodePerfHistory
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<VideoDecodePerfHistory> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoDecodePerfHistory);
 };
 
 }  // namespace media

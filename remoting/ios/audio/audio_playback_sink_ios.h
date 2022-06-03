@@ -7,10 +7,6 @@
 
 #include <AudioToolbox/AudioToolbox.h>
 
-#include <list>
-#include <memory>
-#include <string>
-
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/client/audio/audio_playback_sink.h"
@@ -22,6 +18,10 @@ namespace remoting {
 class AudioPlaybackSinkIos : public AudioPlaybackSink {
  public:
   AudioPlaybackSinkIos();
+
+  AudioPlaybackSinkIos(const AudioPlaybackSinkIos&) = delete;
+  AudioPlaybackSinkIos& operator=(const AudioPlaybackSinkIos&) = delete;
+
   ~AudioPlaybackSinkIos() override;
 
   // AudioPlaybackSink implementations.
@@ -94,8 +94,6 @@ class AudioPlaybackSinkIos : public AudioPlaybackSink {
   State state_ = State::STOPPED;
 
   base::WeakPtrFactory<AudioPlaybackSinkIos> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPlaybackSinkIos);
 };
 
 }  // namespace remoting

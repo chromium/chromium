@@ -5,8 +5,8 @@
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
 
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
-#import "ios/chrome/browser/ui/util/dynamic_type_util.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
+#include "ios/components/ui_util/dynamic_type_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -37,7 +37,7 @@ CGFloat Interpolate(UIContentSizeCategory category,
 }  // namespace
 
 CGFloat ToolbarClampedFontSizeMultiplier(UIContentSizeCategory category) {
-  return SystemSuggestedFontSizeMultiplier(
+  return ui_util::SystemSuggestedFontSizeMultiplier(
       category, UIContentSizeCategoryLarge,
       UIContentSizeCategoryAccessibilityExtraLarge);
 }
@@ -50,13 +50,13 @@ CGFloat ToolbarCollapsedHeight(UIContentSizeCategory category) {
 
 CGFloat ToolbarExpandedHeight(UIContentSizeCategory category) {
   category = NormalizedCategory(category);
-  return Interpolate(category, kAdaptiveToolbarHeight,
-                     kNonDynamicToolbarHeight);
+  return Interpolate(category, kPrimaryToolbarHeight, kNonDynamicToolbarHeight);
 }
 
 CGFloat LocationBarHeight(UIContentSizeCategory category) {
   category = NormalizedCategory(category);
-  CGFloat verticalMargin = 2 * kAdaptiveLocationBarVerticalMargin;
+  CGFloat verticalMargin =
+      2 * kAdaptiveLocationBarVerticalMargin - kTopToolbarUnsplitMargin;
   CGFloat dynamicTypeVerticalAdjustment =
       (ToolbarClampedFontSizeMultiplier(category) - 1) *
       (kLocationBarVerticalMarginDynamicType +

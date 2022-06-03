@@ -3,6 +3,11 @@
       'resources/background-services.html',
       `Tests that background service events are received when appropriate.`);
 
+  await dp.Browser.grantPermissions({
+    origin: location.origin,
+    permissions: ['backgroundFetch'],
+  });
+
   await session.evaluateAsync('installSW()');
 
   let receivedEvent = false;

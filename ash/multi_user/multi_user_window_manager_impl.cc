@@ -17,7 +17,6 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/auto_reset.h"
-#include "base/macros.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
@@ -30,16 +29,13 @@ namespace ash {
 namespace {
 
 // The animation time for a single window that is fading in / out.
-constexpr base::TimeDelta kAnimationTime =
-    base::TimeDelta::FromMilliseconds(100);
+constexpr base::TimeDelta kAnimationTime = base::Milliseconds(100);
 
 // The animation time for the fade in and / or out when switching users.
-constexpr base::TimeDelta kUserFadeTime =
-    base::TimeDelta::FromMilliseconds(110);
+constexpr base::TimeDelta kUserFadeTime = base::Milliseconds(110);
 
 // The animation time in ms for a window which get teleported to another screen.
-constexpr base::TimeDelta kTeleportAnimationTime =
-    base::TimeDelta::FromMilliseconds(300);
+constexpr base::TimeDelta kTeleportAnimationTime = base::Milliseconds(300);
 
 MultiUserWindowManagerImpl* g_instance = nullptr;
 
@@ -75,6 +71,9 @@ class AnimationSetter {
     ::wm::SetWindowVisibilityAnimationDuration(window_, animation_time);
   }
 
+  AnimationSetter(const AnimationSetter&) = delete;
+  AnimationSetter& operator=(const AnimationSetter&) = delete;
+
   ~AnimationSetter() {
     ::wm::SetWindowVisibilityAnimationType(window_, previous_animation_type_);
     ::wm::SetWindowVisibilityAnimationDuration(window_,
@@ -90,8 +89,6 @@ class AnimationSetter {
 
   // Previous animation time.
   const base::TimeDelta previous_animation_time_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSetter);
 };
 
 MultiUserWindowManagerImpl::WindowEntry::WindowEntry(
@@ -161,7 +158,7 @@ void MultiUserWindowManagerImpl::SetWindowOwner(aura::Window* window,
   window_to_entry_[window] = std::move(window_entry_ptr);
 
   // Remember the initial visibility of the window.
-  window_entry->set_show(window->IsVisible());
+  window_entry->set_show(window->TargetVisibility());
 
   // Add observers to track state changes.
   window->AddObserver(this);
@@ -565,7 +562,7 @@ base::TimeDelta MultiUserWindowManagerImpl::GetAdjustedAnimationTime(
   return animation_speed_ == ANIMATION_SPEED_NORMAL
              ? default_time
              : (animation_speed_ == ANIMATION_SPEED_FAST
-                    ? base::TimeDelta::FromMilliseconds(10)
+                    ? base::Milliseconds(10)
                     : base::TimeDelta());
 }
 

@@ -94,26 +94,29 @@ Blob journals are zero-or-more instances of the structure:
 ```
 {
   database_id (VarInt),
-  blobKey (VarInt)
+  blob_number (VarInt)
 }
 ```
 
 There is no length prefix; just read until you run out of data.
 
-If the blobKey is `DatabaseMetaDataKey::kAllBlobsKey`, the whole
+If the blob_number is `DatabaseMetaDataKey::kAllBlobsNumber`, the whole
 database should be deleted.
 
-### BlobEntry (value)
+### ExternalObject (value)
 
-A blob entry is zero-or-more instances of the structure:
+A external object (a blob, a file, or a File System Access handle) is zero-or-more
+instances of the structure:
 
 ```
 {
-  is_file (Bool),
-  key (VarInt),
-  type (StringWithLength), // may be empty
-  /*for Blobs only*/ size (VarInt),
+  object_type (IndexedDBExternalObject::ObjectType as byte]),
+  /*for Blobs and Files only*/ blob_number (VarInt),
+  /*for Blobs and Files only*/ type (StringWithLength), // may be empty
+  /*for Blobs and Files only*/ size (VarInt),
   /*for Files only*/ filename (StringWithLength)
+  /*for Files only*/ lastModified (VarInt, in microseconds)
+  /*for File System Access Handles only*/ token (BinaryWithLength)
 }
 ```
 
@@ -294,15 +297,15 @@ key                                                  | value
 «database id, object store id, 2, user key (IDBKey)» | version (VarInt)
 
 
-## Blob entry table
-[`BlobEntryKey`]
+## External Object entry table
+[`ExternalObjectKey`]
 
 The reserved index id `3` is used in the prefix. The prefix is
 followed the encoded IDB primary key.
 
 key                                                  | value
 -----------------------------------------------------|-------
-«database id, object store id, 3, user key (IDBKey)» | BlobEntry
+«database id, object store id, 3, user key (IDBKey)» | ExternalObject
 
 
 ## Index data

@@ -2,19 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ui.gni")
+
+# X11-specific utility code which does not depend on //ui/events:events is kept
+# in this separate component, so that //ui/events:events can depend directly on
+# it without causing circular dep issues.
 component("x") {
   output_name = "events_x"
   sources = [
     "events_x_export.h",
     "events_x_utils.cc",
     "events_x_utils.h",
-    "x11_window_event_manager.cc",
-    "x11_window_event_manager.h",
   ]
   defines = [ "EVENTS_X_IMPLEMENTATION" ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//skia",
+    "//ui/base:features",
     "//ui/display",
     "//ui/events:events_base",
     "//ui/events/devices",
@@ -22,5 +27,4 @@ component("x") {
     "//ui/events/keycodes:x11",
     "//ui/gfx/x",
   ]
-  configs += [ "//build/config/linux:x11" ]
 }

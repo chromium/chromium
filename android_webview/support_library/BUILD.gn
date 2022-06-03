@@ -6,11 +6,12 @@ import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 
 android_library("support_lib_glue_java") {
-  java_files = [
+  sources = [
     "java/src/org/chromium/support_lib_glue/IsomorphicAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibJsReplyProxyAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibProxyControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibReflectionUtil.java",
+    "java/src/org/chromium/support_lib_glue/SupportLibScriptHandlerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerClientAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerControllerAdapter.java",
     "java/src/org/chromium/support_lib_glue/SupportLibServiceWorkerSettingsAdapter.java",
@@ -30,10 +31,12 @@ android_library("support_lib_glue_java") {
 
   deps = [
     "//android_webview:browser_java",
-    "//android_webview/glue:glue",
+    "//android_webview/glue:glue_java",
     "//android_webview/support_library/boundary_interfaces:boundary_interface_java",
     "//android_webview/support_library/callback:callback_java",
     "//base:base_java",
+    "//components/embedder_support/android:util_java",
     "//content/public/android:content_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }

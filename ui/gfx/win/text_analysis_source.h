@@ -8,8 +8,8 @@
 #include <dwrite.h>
 #include <wrl.h>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
 #include "ui/gfx/gfx_export.h"
 
 namespace gfx {
@@ -26,8 +26,8 @@ class TextAnalysisSource
   // Factory method to avoid exporting the class and all it derives from.
   static GFX_EXPORT HRESULT
   Create(IDWriteTextAnalysisSource** text_analysis_out,
-         const base::string16& text,
-         const base::string16& locale_name,
+         const std::wstring& text,
+         const std::wstring& locale_name,
          IDWriteNumberSubstitution* number_substitution,
          DWRITE_READING_DIRECTION reading_direction);
 
@@ -35,6 +35,9 @@ class TextAnalysisSource
   // are an error - it is only public because a WRL helper function creates the
   // objects.
   TextAnalysisSource();
+
+  TextAnalysisSource& operator=(const TextAnalysisSource&) = delete;
+
   // IDWriteTextAnalysisSource:
   HRESULT STDMETHODCALLTYPE GetLocaleName(UINT32 text_position,
                                           UINT32* text_length,
@@ -53,8 +56,8 @@ class TextAnalysisSource
                                                   UINT32* text_length) override;
 
   HRESULT STDMETHODCALLTYPE
-  RuntimeClassInitialize(const base::string16& text,
-                         const base::string16& locale_name,
+  RuntimeClassInitialize(const std::wstring& text,
+                         const std::wstring& locale_name,
                          IDWriteNumberSubstitution* number_substitution,
                          DWRITE_READING_DIRECTION reading_direction);
 
@@ -62,12 +65,10 @@ class TextAnalysisSource
   ~TextAnalysisSource() override;
 
  private:
-  base::string16 text_;
-  base::string16 locale_name_;
+  std::wstring text_;
+  std::wstring locale_name_;
   Microsoft::WRL::ComPtr<IDWriteNumberSubstitution> number_substitution_;
   DWRITE_READING_DIRECTION reading_direction_;
-
-  DISALLOW_ASSIGN(TextAnalysisSource);
 };
 
 }  // namespace win

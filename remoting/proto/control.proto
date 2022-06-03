@@ -110,6 +110,9 @@ message VideoTrackLayout {
 message VideoLayout {
   // Layout for each video track.
   repeated VideoTrackLayout video_track = 1;
+
+  // True if this display configuration supports capturing the entire desktop.
+  optional bool supports_full_desktop_capture = 2;
 }
 
 message SelectDesktopDisplayRequest {
@@ -159,4 +162,35 @@ message KeyboardLayout {
 
   // Map USB code to key behavior.
   map<uint32, KeyBehavior> keys = 1;
+}
+
+// Next ID: 2
+message TransportInfo {
+  // Transport layer protocol the message sender uses to connect to the relay
+  // server or the peer (if connection not relayed).
+  // Possible values are those defined in the protocol and relayProtocol fields
+  // in the RTCIceCandidateStats dictionary.
+  // If the host failed to get protocol using WebRTC API, this field will be set
+  // to "api-error".
+  optional string protocol = 1;
+}
+
+// Next ID: 5
+message PeerConnectionParameters {
+  // Sets preferred minimum and maximum bitrates. Unset fields means no
+  // preference on the bitrate. Clients might need to keep track of existing
+  // parameters if they need to do incremental changes.
+  optional int32 preferred_min_bitrate_bps = 1;
+  optional int32 preferred_max_bitrate_bps = 2;
+
+  // Requests an ICE restart. This causes the host to initiate a new SDP
+  // offer/answer exchange, and restarts the ICE gathering/connection sequence.
+  // This can be used to re-establish a connection, without needing to
+  // re-authenticate the user.
+  optional bool request_ice_restart = 3;
+
+  // Requests the host to initiate a new SDP offer/answer exchange, without
+  // restarting ICE. This can be used to change SDP configuration (for example,
+  // switching to a different codec), without needing a full reconnection.
+  optional bool request_sdp_restart = 4;
 }

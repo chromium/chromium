@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_FACE_SOURCE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -15,7 +16,7 @@ class Document;
 class FontFaceSet;
 class WorkerGlobalScope;
 
-class FontFaceSource {
+class CORE_EXPORT FontFaceSource {
   STATIC_ONLY(FontFaceSource);
 
  public:

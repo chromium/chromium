@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "ash/public/cpp/screen_backlight_observer.h"
 #include "ash/system/power/backlights_forced_off_setter.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 
 namespace ash {
@@ -27,19 +27,24 @@ class ScopedBacklightsForcedOff;
 // other things, when the stylus gets ejected) until the lock screen note is
 // visible. This is to prevent a flash of the lock screen UI as the lock screen
 // note app window is being shown.
-class LockScreenNoteDisplayStateHandler
-    : public BacklightsForcedOffSetter::Observer {
+class LockScreenNoteDisplayStateHandler : public ScreenBacklightObserver {
  public:
   explicit LockScreenNoteDisplayStateHandler(
       BacklightsForcedOffSetter* backlights_forced_off_setter);
+
+  LockScreenNoteDisplayStateHandler(const LockScreenNoteDisplayStateHandler&) =
+      delete;
+  LockScreenNoteDisplayStateHandler& operator=(
+      const LockScreenNoteDisplayStateHandler&) = delete;
+
   ~LockScreenNoteDisplayStateHandler() override;
 
   base::OneShotTimer* launch_timer_for_test() { return &launch_timer_; }
 
-  // BacklightsForcedOffSetter::Observer:
+  // ScreenBacklightObserver:
   void OnBacklightsForcedOffChanged(bool backlights_forced_off) override;
-  void OnScreenStateChanged(
-      BacklightsForcedOffSetter::ScreenState screen_state) override;
+  void OnScreenBacklightStateChanged(
+      ScreenBacklightState screen_backlight_state) override;
 
   // If lock screen note action is available, it requests a new lock screen note
   // with launch reason set to stylus eject.
@@ -82,13 +87,11 @@ class LockScreenNoteDisplayStateHandler
   // Timer used to set up timeout for lock screen note launch.
   base::OneShotTimer launch_timer_;
 
-  ScopedObserver<BacklightsForcedOffSetter, BacklightsForcedOffSetter::Observer>
-      backlights_forced_off_observer_;
+  base::ScopedObservation<BacklightsForcedOffSetter, ScreenBacklightObserver>
+      backlights_forced_off_observation_;
 
   base::WeakPtrFactory<LockScreenNoteDisplayStateHandler> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenNoteDisplayStateHandler);
 };
 
 }  // namespace ash

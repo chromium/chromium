@@ -108,18 +108,14 @@ class PrefValueStoreTest : public testing::Test {
     CreateUserPrefs();
     CreateRecommendedPrefs();
     CreateDefaultPrefs();
-    sync_associator_.reset(new MockPrefModelAssociator());
+    sync_associator_ = std::make_unique<MockPrefModelAssociator>();
 
     // Create a fresh PrefValueStore.
-    pref_value_store_.reset(
-        new PrefValueStore(managed_pref_store_.get(),
-                           supervised_user_pref_store_.get(),
-                           extension_pref_store_.get(),
-                           command_line_pref_store_.get(),
-                           user_pref_store_.get(),
-                           recommended_pref_store_.get(),
-                           default_pref_store_.get(),
-                           &pref_notifier_));
+    pref_value_store_ = std::make_unique<PrefValueStore>(
+        managed_pref_store_.get(), supervised_user_pref_store_.get(),
+        extension_pref_store_.get(), command_line_pref_store_.get(),
+        user_pref_store_.get(), recommended_pref_store_.get(),
+        default_pref_store_.get(), &pref_notifier_);
 
     pref_value_store_->set_callback(
         base::BindRepeating(&MockPrefModelAssociator::ProcessPrefChange,
@@ -272,52 +268,50 @@ TEST_F(PrefValueStoreTest, GetValue) {
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kManagedPref,
                                           base::Value::Type::STRING, &value));
-  std::string actual_str_value;
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(managed_pref::kManagedValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(managed_pref::kManagedValue, value->GetString());
 
   // Test getting a supervised user value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kSupervisedUserPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(supervised_user_pref::kSupervisedUserValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(supervised_user_pref::kSupervisedUserValue, value->GetString());
 
   // Test getting an extension value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kExtensionPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(extension_pref::kExtensionValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(extension_pref::kExtensionValue, value->GetString());
 
   // Test getting a command-line value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kCommandLinePref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(command_line_pref::kCommandLineValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(command_line_pref::kCommandLineValue, value->GetString());
 
   // Test getting a user-set value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kUserPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(user_pref::kUserValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(user_pref::kUserValue, value->GetString());
 
   // Test getting a user set value overwriting a recommended value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kRecommendedPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kRecommendedValue,
-            actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kRecommendedValue, value->GetString());
 
   // Test getting a default value.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetValue(prefs::kDefaultPref,
                                           base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(default_pref::kDefaultValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(default_pref::kDefaultValue, value->GetString());
 
   // Test getting a preference value that the |PrefValueStore|
   // does not contain.
@@ -340,50 +334,48 @@ TEST_F(PrefValueStoreTest, GetRecommendedValue) {
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kManagedPref,
       base::Value::Type::STRING, &value));
-  std::string actual_str_value;
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kManagedValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kManagedValue, value->GetString());
 
   // Test getting recommended value when a supervised user value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kSupervisedUserPref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kSupervisedUserValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kSupervisedUserValue, value->GetString());
 
   // Test getting recommended value when an extension value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kExtensionPref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kExtensionValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kExtensionValue, value->GetString());
 
   // Test getting recommended value when a command-line value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kCommandLinePref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kCommandLineValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kCommandLineValue, value->GetString());
 
   // Test getting recommended value when a user-set value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kUserPref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kUserValue, actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kUserValue, value->GetString());
 
   // Test getting recommended value when no higher-priority value is present.
   value = nullptr;
   ASSERT_TRUE(pref_value_store_->GetRecommendedValue(
       prefs::kRecommendedPref,
       base::Value::Type::STRING, &value));
-  EXPECT_TRUE(value->GetAsString(&actual_str_value));
-  EXPECT_EQ(recommended_pref::kRecommendedValue,
-            actual_str_value);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ(recommended_pref::kRecommendedValue, value->GetString());
 
   // Test getting recommended value when no recommended value is present.
   base::Value tmp_dummy_value(true);

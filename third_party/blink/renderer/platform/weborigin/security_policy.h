@@ -46,22 +46,10 @@ enum ReferrerPolicyLegacyKeywordsSupport {
   kDoNotSupportReferrerPolicyLegacyKeywords,
 };
 
-// The ReferrerPolicy enum contains a member kDefault, which not a real referrer
-// policy, but instead a value Blink uses to fallback to
-// kNoReferrerWhenDowngrade at certain times. The function below is provided so
-// that a referrer policy which may be kDefault can be resolved to a valid
-// value.
-PLATFORM_EXPORT network::mojom::ReferrerPolicy ReferrerPolicyResolveDefault(
-    network::mojom::ReferrerPolicy);
-
 class PLATFORM_EXPORT SecurityPolicy {
   STATIC_ONLY(SecurityPolicy);
 
  public:
-  // This must be called during initialization (before we create
-  // other threads).
-  static void Init();
-
   // True if the referrer should be omitted according to the
   // ReferrerPolicyNoReferrerWhenDowngrade. If you intend to send a
   // referrer header, you should use generateReferrer instead.
@@ -99,10 +87,6 @@ class PLATFORM_EXPORT SecurityPolicy {
   static bool IsOriginAccessToURLAllowed(const SecurityOrigin* active_origin,
                                          const KURL&);
 
-  static void AddOriginToTrustworthySafelist(const String&);
-  static bool IsOriginTrustworthySafelisted(const SecurityOrigin&);
-  static bool IsUrlTrustworthySafelisted(const KURL&);
-
   static bool ReferrerPolicyFromString(const String& policy,
                                        ReferrerPolicyLegacyKeywordsSupport,
                                        network::mojom::ReferrerPolicy* result);
@@ -111,6 +95,9 @@ class PLATFORM_EXPORT SecurityPolicy {
       const String& header_value,
       ReferrerPolicyLegacyKeywordsSupport,
       network::mojom::ReferrerPolicy* result);
+
+  static bool IsSharedArrayBufferAlwaysAllowedForOrigin(
+      const SecurityOrigin* origin);
 };
 
 }  // namespace blink

@@ -10,14 +10,14 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "chrome/browser/ui/android/infobars/confirm_infobar.h"
+#include "components/infobars/android/confirm_infobar.h"
 #include "components/infobars/core/infobar.h"
 
 class KnownInterceptionDisclosureInfoBarDelegate;
 
 // KnownInterceptionDisclosureInfoBar is a thin veneer over ConfirmInfoBar that
 // adds a discrete description (instead of just having a title).
-class KnownInterceptionDisclosureInfoBar : public ConfirmInfoBar {
+class KnownInterceptionDisclosureInfoBar : public infobars::ConfirmInfoBar {
  public:
   static std::unique_ptr<infobars::InfoBar> CreateInfoBar(
       std::unique_ptr<KnownInterceptionDisclosureInfoBarDelegate> delegate);
@@ -34,7 +34,8 @@ class KnownInterceptionDisclosureInfoBar : public ConfirmInfoBar {
 
   // ConfirmInfoBar:
   base::android::ScopedJavaLocalRef<jobject> CreateRenderInfoBar(
-      JNIEnv* env) override;
+      JNIEnv* env,
+      const ResourceIdMapper& resource_id_mapper) override;
 
   KnownInterceptionDisclosureInfoBarDelegate* GetDelegate();
 };

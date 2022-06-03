@@ -6,8 +6,9 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
-#include "third_party/blink/public/platform/web_touch_event.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 
 using blink::WebInputEvent;
 using blink::WebTouchEvent;
@@ -29,21 +30,22 @@ bool WebTouchEventTraits::AllTouchPointsHaveState(
 
 bool WebTouchEventTraits::IsTouchSequenceStart(const WebTouchEvent& event) {
   DCHECK(event.touches_length ||
-         event.GetType() == WebInputEvent::kTouchScrollStarted);
-  if (event.GetType() != WebInputEvent::kTouchStart)
+         event.GetType() == WebInputEvent::Type::kTouchScrollStarted);
+  if (event.GetType() != WebInputEvent::Type::kTouchStart)
     return false;
-  return AllTouchPointsHaveState(event, blink::WebTouchPoint::kStatePressed);
+  return AllTouchPointsHaveState(event,
+                                 blink::WebTouchPoint::State::kStatePressed);
 }
 
 bool WebTouchEventTraits::IsTouchSequenceEnd(const WebTouchEvent& event) {
-  if (event.GetType() != WebInputEvent::kTouchEnd &&
-      event.GetType() != WebInputEvent::kTouchCancel)
+  if (event.GetType() != WebInputEvent::Type::kTouchEnd &&
+      event.GetType() != WebInputEvent::Type::kTouchCancel)
     return false;
   if (!event.touches_length)
     return true;
   for (size_t i = 0; i < event.touches_length; ++i) {
-    if (event.touches[i].state != blink::WebTouchPoint::kStateReleased &&
-        event.touches[i].state != blink::WebTouchPoint::kStateCancelled)
+    if (event.touches[i].state != blink::WebTouchPoint::State::kStateReleased &&
+        event.touches[i].state != blink::WebTouchPoint::State::kStateCancelled)
       return false;
   }
   return true;
@@ -53,12 +55,12 @@ void WebTouchEventTraits::ResetType(WebInputEvent::Type type,
                                     base::TimeTicks timestamp,
                                     WebTouchEvent* event) {
   DCHECK(WebInputEvent::IsTouchEventType(type));
-  DCHECK(type != WebInputEvent::kTouchScrollStarted);
+  DCHECK(type != WebInputEvent::Type::kTouchScrollStarted);
 
   event->SetType(type);
-  event->dispatch_type = type == WebInputEvent::kTouchCancel
-                             ? WebInputEvent::kEventNonBlocking
-                             : WebInputEvent::kBlocking;
+  event->dispatch_type = type == WebInputEvent::Type::kTouchCancel
+                             ? WebInputEvent::DispatchType::kEventNonBlocking
+                             : WebInputEvent::DispatchType::kBlocking;
   event->SetTimeStamp(timestamp);
 }
 
@@ -67,19 +69,19 @@ void WebTouchEventTraits::ResetTypeAndTouchStates(WebInputEvent::Type type,
                                                   WebTouchEvent* event) {
   ResetType(type, timestamp, event);
 
-  WebTouchPoint::State newState = WebTouchPoint::kStateUndefined;
+  WebTouchPoint::State newState = WebTouchPoint::State::kStateUndefined;
   switch (event->GetType()) {
-    case WebInputEvent::kTouchStart:
-      newState = WebTouchPoint::kStatePressed;
+    case WebInputEvent::Type::kTouchStart:
+      newState = WebTouchPoint::State::kStatePressed;
       break;
-    case WebInputEvent::kTouchMove:
-      newState = WebTouchPoint::kStateMoved;
+    case WebInputEvent::Type::kTouchMove:
+      newState = WebTouchPoint::State::kStateMoved;
       break;
-    case WebInputEvent::kTouchEnd:
-      newState = WebTouchPoint::kStateReleased;
+    case WebInputEvent::Type::kTouchEnd:
+      newState = WebTouchPoint::State::kStateReleased;
       break;
-    case WebInputEvent::kTouchCancel:
-      newState = WebTouchPoint::kStateCancelled;
+    case WebInputEvent::Type::kTouchCancel:
+      newState = WebTouchPoint::State::kStateCancelled;
       break;
     default:
       NOTREACHED();

@@ -6,6 +6,7 @@
 
 #include "services/network/public/mojom/ip_address_space.mojom-blink.h"
 #include "services/network/public/mojom/referrer_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
 #include "third_party/blink/renderer/platform/loader/allowed_by_nosniff.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/https_state.h"
@@ -25,10 +26,10 @@ NullResourceFetcherProperties::NullResourceFetcherProperties()
               HttpsState::kNone,
               AllowedByNosniff::MimeTypeCheck::kStrict,
               network::mojom::IPAddressSpace::kPublic,
-              kLeaveInsecureRequestsAlone,
+              mojom::blink::InsecureRequestPolicy::kLeaveInsecureRequestsAlone,
               FetchClientSettingsObject::InsecureNavigationsSet())) {}
 
-void NullResourceFetcherProperties::Trace(Visitor* visitor) {
+void NullResourceFetcherProperties::Trace(Visitor* visitor) const {
   visitor->Trace(fetch_client_settings_object_);
   ResourceFetcherProperties::Trace(visitor);
 }

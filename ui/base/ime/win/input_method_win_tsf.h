@@ -7,8 +7,6 @@
 
 #include <windows.h>
 
-#include <string>
-
 #include "base/component_export.h"
 #include "ui/base/ime/win/input_method_win_base.h"
 
@@ -22,12 +20,16 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
  public:
   InputMethodWinTSF(internal::InputMethodDelegate* delegate,
                     HWND toplevel_window_handle);
+
+  InputMethodWinTSF(const InputMethodWinTSF&) = delete;
+  InputMethodWinTSF& operator=(const InputMethodWinTSF&) = delete;
+
   ~InputMethodWinTSF() override;
 
   // Overridden from InputMethod:
   void OnFocus() override;
   void OnBlur() override;
-  bool OnUntranslatedIMEMessage(const MSG event,
+  bool OnUntranslatedIMEMessage(const CHROME_MSG event,
                                 NativeEventResult* result) override;
   void OnTextInputTypeChanged(const TextInputClient* client) override;
   void OnCaretBoundsChanged(const TextInputClient* client) override;
@@ -41,18 +43,16 @@ class COMPONENT_EXPORT(UI_BASE_IME_WIN) InputMethodWinTSF
                                  TextInputClient* focused) override;
   void OnDidChangeFocusedClient(TextInputClient* focused_before,
                                 TextInputClient* focused) override;
-  void ConfirmCompositionText(bool reset_engine, bool keep_selection) override;
-
   void ShowVirtualKeyboardIfEnabled() override;
 
  private:
+  void ConfirmCompositionText();
+
   class TSFEventObserver;
 
   // TSF event router and observer.
   std::unique_ptr<TSFEventObserver> tsf_event_observer_;
   std::unique_ptr<TSFEventRouter> tsf_event_router_;
-
-  DISALLOW_COPY_AND_ASSIGN(InputMethodWinTSF);
 };
 
 }  // namespace ui

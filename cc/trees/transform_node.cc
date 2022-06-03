@@ -15,6 +15,7 @@ namespace cc {
 TransformNode::TransformNode()
     : id(TransformTree::kInvalidNodeId),
       parent_id(TransformTree::kInvalidNodeId),
+      parent_frame_id(TransformTree::kInvalidNodeId),
       sticky_position_constraint_id(-1),
       sorting_context_id(0),
       needs_local_transform_update(true),
@@ -26,19 +27,24 @@ TransformNode::TransformNode()
       to_screen_is_potentially_animated(false),
       flattens_inherited_transform(true),
       node_and_ancestors_are_flat(true),
-      node_and_ancestors_have_only_integer_translation(true),
       scrolls(false),
       should_be_snapped(false),
       moved_by_outer_viewport_bounds_delta_y(false),
       in_subtree_of_page_scale_layer(false),
       transform_changed(false),
-      maximum_animation_scale(kNotScaled),
-      starting_animation_scale(kNotScaled) {}
+      delegates_to_parent_for_backface(false),
+      will_change_transform(false),
+      node_or_ancestors_will_change_transform(false),
+      maximum_animation_scale(kInvalidScale) {}
 
 TransformNode::TransformNode(const TransformNode&) = default;
 
+TransformNode& TransformNode::operator=(const TransformNode&) = default;
+
+#if DCHECK_IS_ON()
 bool TransformNode::operator==(const TransformNode& other) const {
   return id == other.id && parent_id == other.parent_id &&
+         parent_frame_id == other.parent_frame_id &&
          element_id == other.element_id && local == other.local &&
          origin == other.origin && post_translation == other.post_translation &&
          to_parent == other.to_parent &&
@@ -54,20 +60,24 @@ bool TransformNode::operator==(const TransformNode& other) const {
              other.to_screen_is_potentially_animated &&
          flattens_inherited_transform == other.flattens_inherited_transform &&
          node_and_ancestors_are_flat == other.node_and_ancestors_are_flat &&
-         node_and_ancestors_have_only_integer_translation ==
-             other.node_and_ancestors_have_only_integer_translation &&
          scrolls == other.scrolls &&
          should_be_snapped == other.should_be_snapped &&
          moved_by_outer_viewport_bounds_delta_y ==
              other.moved_by_outer_viewport_bounds_delta_y &&
          in_subtree_of_page_scale_layer ==
              other.in_subtree_of_page_scale_layer &&
+         delegates_to_parent_for_backface ==
+             other.delegates_to_parent_for_backface &&
+         will_change_transform == other.will_change_transform &&
+         node_or_ancestors_will_change_transform ==
+             other.node_or_ancestors_will_change_transform &&
          transform_changed == other.transform_changed &&
          scroll_offset == other.scroll_offset &&
          snap_amount == other.snap_amount &&
          maximum_animation_scale == other.maximum_animation_scale &&
-         starting_animation_scale == other.starting_animation_scale;
+         visible_frame_element_id == other.visible_frame_element_id;
 }
+#endif  // DCHECK_IS_ON()
 
 void TransformNode::AsValueInto(base::trace_event::TracedValue* value) const {
   value->SetInteger("id", id);
@@ -77,8 +87,9 @@ void TransformNode::AsValueInto(base::trace_event::TracedValue* value) const {
   MathUtil::AddToTracedValue("origin", origin, value);
   MathUtil::AddToTracedValue("post_translation", post_translation, value);
   value->SetInteger("sorting_context_id", sorting_context_id);
-  value->SetInteger("flattens_inherited_transform",
+  value->SetBoolean("flattens_inherited_transform",
                     flattens_inherited_transform);
+  value->SetBoolean("will_change_transform", will_change_transform);
   MathUtil::AddToTracedValue("scroll_offset", scroll_offset, value);
   MathUtil::AddToTracedValue("snap_amount", snap_amount, value);
 }

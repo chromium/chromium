@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/login/localized_values_builder.h"
@@ -21,6 +20,7 @@ BaseWebUIHandler::~BaseWebUIHandler() = default;
 
 void BaseWebUIHandler::InitializeBase() {
   page_is_ready_ = true;
+  AllowJavascript();
   Initialize();
 }
 
@@ -42,8 +42,6 @@ void BaseWebUIHandler::ShowScreen(OobeScreenId screen) {
 
 void BaseWebUIHandler::ShowScreenWithData(OobeScreenId screen,
                                           const base::DictionaryValue* data) {
-  if (!web_ui())
-    return;
   base::DictionaryValue screen_params;
   screen_params.SetString("id", screen.name);
   if (data) {
@@ -52,15 +50,19 @@ void BaseWebUIHandler::ShowScreenWithData(OobeScreenId screen,
   CallJS("cr.ui.Oobe.showScreen", screen_params);
 }
 
-OobeUI* BaseWebUIHandler::GetOobeUI() const {
+OobeUI* BaseWebUIHandler::GetOobeUI() {
   return static_cast<OobeUI*>(web_ui()->GetController());
 }
 
-OobeScreenId BaseWebUIHandler::GetCurrentScreen() const {
+OobeScreenId BaseWebUIHandler::GetCurrentScreen() {
   OobeUI* oobe_ui = GetOobeUI();
   if (!oobe_ui)
     return OobeScreen::SCREEN_UNKNOWN;
   return oobe_ui->current_screen();
+}
+
+void BaseWebUIHandler::OnJavascriptDisallowed() {
+  javascript_disallowed_ = true;
 }
 
 void BaseWebUIHandler::InsertIntoList(std::vector<base::Value>*) {}
@@ -69,7 +71,7 @@ void BaseWebUIHandler::MaybeRecordIncomingEvent(
     const std::string& function_name,
     const base::ListValue* args) {
   if (js_calls_container_->record_all_events_for_test()) {
-    // Do a clone so |args| is still available for the actual handler.
+    // Do a clone so `args` is still available for the actual handler.
     std::vector<base::Value> arguments = args->Clone().TakeList();
     js_calls_container_->events()->emplace_back(
         JSCallsContainer::Event(JSCallsContainer::Event::Type::kIncoming,
@@ -79,7 +81,7 @@ void BaseWebUIHandler::MaybeRecordIncomingEvent(
 
 void BaseWebUIHandler::OnRawCallback(
     const std::string& function_name,
-    const content::WebUI::MessageCallback callback,
+    const content::WebUI::DeprecatedMessageCallback& callback,
     const base::ListValue* args) {
   MaybeRecordIncomingEvent(function_name, args);
   callback.Run(args);

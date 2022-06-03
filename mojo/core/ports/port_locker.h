@@ -29,6 +29,10 @@ class PortLocker {
   // |PortRef*|s. The sequence may be reordered by this constructor, and upon
   // return, all referenced ports' locks are held.
   PortLocker(const PortRef** port_refs, size_t num_ports);
+
+  PortLocker(const PortLocker&) = delete;
+  PortLocker& operator=(const PortLocker&) = delete;
+
   ~PortLocker();
 
   // Provides safe access to a PortRef's Port. Note that in release builds this
@@ -60,14 +64,16 @@ class PortLocker {
  private:
   const PortRef** const port_refs_;
   const size_t num_ports_;
-
-  DISALLOW_COPY_AND_ASSIGN(PortLocker);
 };
 
 // Convenience wrapper for a PortLocker that locks a single port.
 class SinglePortLocker {
  public:
   explicit SinglePortLocker(const PortRef* port_ref);
+
+  SinglePortLocker(const SinglePortLocker&) = delete;
+  SinglePortLocker& operator=(const SinglePortLocker&) = delete;
+
   ~SinglePortLocker();
 
   Port* port() const { return locker_.GetPort(*port_ref_); }
@@ -75,8 +81,6 @@ class SinglePortLocker {
  private:
   const PortRef* port_ref_;
   PortLocker locker_;
-
-  DISALLOW_COPY_AND_ASSIGN(SinglePortLocker);
 };
 
 }  // namespace ports

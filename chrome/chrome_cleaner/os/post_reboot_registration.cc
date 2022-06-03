@@ -6,9 +6,10 @@
 
 #include <windows.h>
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/registry.h"
 #include "chrome/chrome_cleaner/constants/chrome_cleaner_switches.h"
@@ -28,7 +29,7 @@ constexpr wchar_t kRunOnceKeyPath[] =
 }  // namespace
 
 PostRebootRegistration::PostRebootRegistration(
-    const base::string16& product_shortname)
+    const std::wstring& product_shortname)
     : product_shortname_(product_shortname) {}
 
 bool PostRebootRegistration::RegisterRunOnceOnRestart(
@@ -45,7 +46,7 @@ bool PostRebootRegistration::RegisterRunOnceOnRestart(
 
   base::win::RegKey run_once_key(HKEY_CURRENT_USER, kRunOnceKeyPath, KEY_WRITE);
   DCHECK(run_once_key.Valid());
-  base::string16 run_once_value(command_line.GetCommandLineString());
+  std::wstring run_once_value(command_line.GetCommandLineString());
   if (run_once_value.length() > 260) {
     LOG(ERROR) << "RunOnce value is too long: " << run_once_value.length()
                << " characters.";
@@ -55,8 +56,8 @@ bool PostRebootRegistration::RegisterRunOnceOnRestart(
   base::win::RegKey switches_key(HKEY_CURRENT_USER,
                                  GetPostRebootSwitchKeyPath().c_str(),
                                  KEY_SET_VALUE | KEY_WOW64_32KEY);
-  base::string16 switches_value(switches.GetCommandLineString());
-  if (switches_key.WriteValue(base::UTF8ToUTF16(cleanup_id).c_str(),
+  std::wstring switches_value(switches.GetCommandLineString());
+  if (switches_key.WriteValue(base::UTF8ToWide(cleanup_id).c_str(),
                               switches_value.c_str()) != ERROR_SUCCESS) {
     PLOG(ERROR) << "Failed to Write RunOnce value with: "
                 << SanitizeCommandLine(switches)
@@ -94,8 +95,8 @@ void PostRebootRegistration::UnregisterRunOnceOnRestart() {
   }
 }
 
-base::string16 PostRebootRegistration::RunOnceOnRestartRegisteredValue() {
-  base::string16 reg_value;
+std::wstring PostRebootRegistration::RunOnceOnRestartRegisteredValue() {
+  std::wstring reg_value;
   base::win::RegKey run_once_key(HKEY_CURRENT_USER, kRunOnceKeyPath, KEY_READ);
   if (run_once_key.Valid()) {
     // There is no need to check the return value, since ReadValue will leave
@@ -112,8 +113,8 @@ bool PostRebootRegistration::ReadRunOncePostRebootCommandLine(
                                  GetPostRebootSwitchKeyPath().c_str(),
                                  KEY_QUERY_VALUE | KEY_WOW64_32KEY);
 
-  base::string16 string_value;
-  if (switches_key.ReadValue(base::UTF8ToUTF16(cleanup_id).c_str(),
+  std::wstring string_value;
+  if (switches_key.ReadValue(base::UTF8ToWide(cleanup_id).c_str(),
                              &string_value) != ERROR_SUCCESS) {
     PLOG(ERROR) << "Failed to Read RunOnce reboot switches.";
     return false;
@@ -130,8 +131,8 @@ bool PostRebootRegistration::ReadRunOncePostRebootCommandLine(
 }
 
 // static
-base::string16 PostRebootRegistration::GetPostRebootSwitchKeyPath() {
-  base::string16 path(chrome_cleaner::kSoftwareRemovalToolRegistryKey);
+std::wstring PostRebootRegistration::GetPostRebootSwitchKeyPath() {
+  std::wstring path(chrome_cleaner::kSoftwareRemovalToolRegistryKey);
   path += L"\\";
   path += chrome_cleaner::kCleanerSubKey;
   path += L"\\";

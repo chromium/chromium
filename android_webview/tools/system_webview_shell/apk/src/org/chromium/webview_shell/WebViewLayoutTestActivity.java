@@ -14,7 +14,8 @@ import android.webkit.PermissionRequest;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
+
+import androidx.webkit.WebViewClientCompat;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,7 +44,7 @@ public class WebViewLayoutTestActivity extends Activity {
         WebSettings settings = mWebView.getSettings();
         initializeSettings(settings);
 
-        mWebView.setWebViewClient(new WebViewClient() {
+        mWebView.setWebViewClient(new WebViewClientCompat() {
             @SuppressWarnings("deprecation") // because we support api level 19 and up.
             @Override
             public boolean shouldOverrideUrlLoading(WebView webView, String url) {

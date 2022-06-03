@@ -8,7 +8,6 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
 #include "ppapi/c/pp_errors.h"
 #include "ppapi/shared_impl/array_writer.h"
 #include "ppapi/shared_impl/var.h"

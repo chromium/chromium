@@ -43,10 +43,9 @@ int32_t TCPServerSocketPrivateResource::Listen(
 
   // Send the request, the browser will call us back via ListenACK
   Call<PpapiPluginMsg_TCPServerSocket_ListenReply>(
-      BROWSER,
-      PpapiHostMsg_TCPServerSocket_Listen(*addr, backlog),
-      base::Bind(&TCPServerSocketPrivateResource::OnPluginMsgListenReply,
-                 base::Unretained(this)));
+      BROWSER, PpapiHostMsg_TCPServerSocket_Listen(*addr, backlog),
+      base::BindOnce(&TCPServerSocketPrivateResource::OnPluginMsgListenReply,
+                     base::Unretained(this)));
   return PP_OK_COMPLETIONPENDING;
 }
 
@@ -63,10 +62,9 @@ int32_t TCPServerSocketPrivateResource::Accept(
   accept_callback_ = callback;
 
   Call<PpapiPluginMsg_TCPServerSocket_AcceptReply>(
-      BROWSER,
-      PpapiHostMsg_TCPServerSocket_Accept(),
-      base::Bind(&TCPServerSocketPrivateResource::OnPluginMsgAcceptReply,
-                 base::Unretained(this), tcp_socket));
+      BROWSER, PpapiHostMsg_TCPServerSocket_Accept(),
+      base::BindOnce(&TCPServerSocketPrivateResource::OnPluginMsgAcceptReply,
+                     base::Unretained(this), tcp_socket));
   return PP_OK_COMPLETIONPENDING;
 }
 

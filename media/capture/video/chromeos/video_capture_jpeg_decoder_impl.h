@@ -12,7 +12,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -43,6 +42,11 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
       scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
       DecodeDoneCB decode_done_cb,
       base::RepeatingCallback<void(const std::string&)> send_log_message_cb);
+
+  VideoCaptureJpegDecoderImpl(const VideoCaptureJpegDecoderImpl&) = delete;
+  VideoCaptureJpegDecoderImpl& operator=(const VideoCaptureJpegDecoderImpl&) =
+      delete;
+
   ~VideoCaptureJpegDecoderImpl() override;
 
   // Implementation of VideoCaptureJpegDecoder:
@@ -87,11 +91,10 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
   const base::RepeatingCallback<void(const std::string&)> send_log_message_cb_;
   bool has_received_decoded_frame_;
 
-  // Guards |decode_done_closure_| and |decoder_status_|.
-  mutable base::Lock lock_;
-
   // The closure of |decode_done_cb_| with bound parameters.
-  base::OnceClosure decode_done_closure_;
+  mutable base::Lock lock_;
+  STATUS decoder_status_ GUARDED_BY(lock_);
+  base::OnceClosure decode_done_closure_ GUARDED_BY(lock_);
 
   // Next id for input BitstreamBuffer.
   int32_t next_task_id_;
@@ -104,13 +107,9 @@ class CAPTURE_EXPORT VideoCaptureJpegDecoderImpl
   base::UnsafeSharedMemoryRegion in_shared_region_;
   base::WritableSharedMemoryMapping in_shared_mapping_;
 
-  STATUS decoder_status_;
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<VideoCaptureJpegDecoderImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VideoCaptureJpegDecoderImpl);
 };
 
 }  // namespace media

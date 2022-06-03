@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chromeos/components/tether/gms_core_notifications_state_tracker.h"
 #include "ui/gfx/native_widget_types.h"
@@ -28,6 +27,10 @@ class InternetHandler
       public ::settings::SettingsPageUIHandler {
  public:
   explicit InternetHandler(Profile* profile);
+
+  InternetHandler(const InternetHandler&) = delete;
+  InternetHandler& operator=(const InternetHandler&) = delete;
+
   ~InternetHandler() override;
 
   // SettingsPageUIHandler implementation.
@@ -46,6 +49,7 @@ class InternetHandler
   void ConfigureThirdPartyVpn(const base::ListValue* args);
   void RequestGmsCoreNotificationsDisabledDeviceNames(
       const base::ListValue* args);
+  void ShowCarrierAccountDetail(const base::ListValue* args);
   void ShowCellularSetupUI(const base::ListValue* args);
 
   // Sets list of names of devices whose "Google Play Services" notifications
@@ -55,7 +59,7 @@ class InternetHandler
   // Sends the list of names.
   void SendGmsCoreNotificationsDisabledDeviceNames();
 
-  gfx::NativeWindow GetNativeWindow() const;
+  gfx::NativeWindow GetNativeWindow();
 
   void SetGmsCoreNotificationsStateTrackerForTesting(
       chromeos::tether::GmsCoreNotificationsStateTracker*
@@ -67,8 +71,6 @@ class InternetHandler
 
   chromeos::tether::GmsCoreNotificationsStateTracker*
       gms_core_notifications_state_tracker_;
-
-  DISALLOW_COPY_AND_ASSIGN(InternetHandler);
 };
 
 }  // namespace settings

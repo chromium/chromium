@@ -8,10 +8,10 @@
 
 #include <memory>
 
-#include "ash/public/cpp/wallpaper_types.h"
+#include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/wallpaper/wallpaper_utils/wallpaper_resizer_observer.h"
+#include "base/cxx17_backports.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -63,6 +63,10 @@ class WallpaperResizerTest : public testing::Test,
                              public WallpaperResizerObserver {
  public:
   WallpaperResizerTest() : worker_thread_("WallpaperResizerTest") {}
+
+  WallpaperResizerTest(const WallpaperResizerTest&) = delete;
+  WallpaperResizerTest& operator=(const WallpaperResizerTest&) = delete;
+
   ~WallpaperResizerTest() override {}
 
   void SetUp() override { ASSERT_TRUE(worker_thread_.Start()); }
@@ -70,11 +74,11 @@ class WallpaperResizerTest : public testing::Test,
   gfx::ImageSkia Resize(const gfx::ImageSkia& image,
                         const gfx::Size& target_size,
                         WallpaperLayout layout) {
-    std::unique_ptr<WallpaperResizer> resizer;
-    resizer.reset(new WallpaperResizer(
+    auto resizer = std::make_unique<WallpaperResizer>(
         image, target_size,
-        WallpaperInfo("", layout, DEFAULT, base::Time::Now().LocalMidnight()),
-        task_runner()));
+        WallpaperInfo("", layout, WallpaperType::kDefault,
+                      base::Time::Now().LocalMidnight()),
+        task_runner());
     resizer->AddObserver(this);
     resizer->StartResize();
     WaitForResize();
@@ -97,8 +101,6 @@ class WallpaperResizerTest : public testing::Test,
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> active_runloop_;
   base::Thread worker_thread_;
-
-  DISALLOW_COPY_AND_ASSIGN(WallpaperResizerTest);
 };
 
 TEST_F(WallpaperResizerTest, BasicResize) {
@@ -154,10 +156,11 @@ TEST_F(WallpaperResizerTest, ImageId) {
 
   // Create a WallpaperResizer and check that it reports an original image ID
   // both pre- and post-resize that matches the ID returned by GetImageId().
-  WallpaperResizer resizer(image, gfx::Size(10, 20),
-                           WallpaperInfo("", WALLPAPER_LAYOUT_STRETCH, DEFAULT,
-                                         base::Time::Now().LocalMidnight()),
-                           task_runner());
+  WallpaperResizer resizer(
+      image, gfx::Size(10, 20),
+      WallpaperInfo("", WALLPAPER_LAYOUT_STRETCH, WallpaperType::kDefault,
+                    base::Time::Now().LocalMidnight()),
+      task_runner());
   EXPECT_EQ(WallpaperResizer::GetImageId(image), resizer.original_image_id());
   resizer.AddObserver(this);
   resizer.StartResize();

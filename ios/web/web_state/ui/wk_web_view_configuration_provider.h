@@ -5,25 +5,31 @@
 #ifndef IOS_WEB_WEB_STATE_UI_WK_WEB_VIEW_CONFIGURATION_PROVIDER_H_
 #define IOS_WEB_WEB_STATE_UI_WK_WEB_VIEW_CONFIGURATION_PROVIDER_H_
 
+#include <CoreFoundation/CoreFoundation.h>
+
 #include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/supports_user_data.h"
 
 @class CRWWebUISchemeHandler;
-@class CRWWKScriptMessageRouter;
 @class WKWebViewConfiguration;
 
 namespace web {
 
 class BrowserState;
+class WKContentRuleListProvider;
 class WKWebViewConfigurationProviderObserver;
 
 // A provider class associated with a single web::BrowserState object. Manages
-// the lifetime and performs setup of WKWebViewConfiguration and
-// CRWWKScriptMessageRouter instances. Not threadsafe. Must be used only on the
-// main thread.
+// the lifetime and performs setup of WKWebViewConfiguration and instances. Not
+// threadsafe. Must be used only on the main thread.
 class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
  public:
+  WKWebViewConfigurationProvider(const WKWebViewConfigurationProvider&) =
+      delete;
+  WKWebViewConfigurationProvider& operator=(
+      const WKWebViewConfigurationProvider&) = delete;
+
   ~WKWebViewConfigurationProvider() override;
 
   // Returns a provider for the given |browser_state|. Lazily attaches one if it
@@ -58,14 +64,19 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // Callers must not retain the returned object.
   WKWebViewConfiguration* GetWebViewConfiguration();
 
-  // Returns CRWWKScriptMessafeRouter associated with WKWebViewConfiguration.
-  // Lazily creates the router. Callers must not retain the returned object
-  // (this will be enforced in debug builds).
-  CRWWKScriptMessageRouter* GetScriptMessageRouter();
+  // Returns WKContentRuleListProvider associated with WKWebViewConfiguration.
+  // Callers must not retain the returned object.
+  WKContentRuleListProvider* GetContentRuleListProvider();
 
-  // Purges config and router objects if they exist. When this method is called
-  // config and config's process pool must not be retained by anyone (this will
-  // be enforced in debug builds).
+  // Recreates and re-adds all injected Javascript into the current
+  // configuration. This will only affect WebStates that are loaded after a call
+  // to this function. All current WebStates will keep their existing Javascript
+  // until a reload.
+  void UpdateScripts();
+
+  // Purges config object if it exists. When this method is called, config and
+  // config's process pool must not be retained by anyone (this will be enforced
+  // in debug builds).
   void Purge();
 
   // Adds |observer| to monitor changes to the ConfigurationProvider.
@@ -79,8 +90,8 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   WKWebViewConfigurationProvider() = delete;
   CRWWebUISchemeHandler* scheme_handler_ = nil;
   WKWebViewConfiguration* configuration_ = nil;
-  CRWWKScriptMessageRouter* router_;
   BrowserState* browser_state_;
+  std::unique_ptr<WKContentRuleListProvider> content_rule_list_provider_;
 
   // A list of observers notified when WKWebViewConfiguration changes.
   // This observer list has its' check_empty flag set to false, because
@@ -88,8 +99,6 @@ class WKWebViewConfigurationProvider : public base::SupportsUserData::Data {
   // will add more complixity if they are destructed on the IO thread.
   base::ObserverList<WKWebViewConfigurationProviderObserver, false>::Unchecked
       observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(WKWebViewConfigurationProvider);
 };
 
 }  // namespace web

@@ -9,11 +9,10 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 
 namespace base {
 class Bus;
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace dbus {
@@ -29,8 +28,7 @@ namespace chromeos {
 // DBusThreadManager instance.
 class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
  public:
-  using GetAllCallback =
-      base::OnceCallback<void(const base::DictionaryValue& sms)>;
+  using GetAllCallback = base::OnceCallback<void(const base::Value& sms)>;
 
   static const char kSMSPropertyState[];
   static const char kSMSPropertyNumber[];
@@ -49,6 +47,9 @@ class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
   // Returns the global instance if initialized. May return null.
   static SMSClient* Get();
 
+  SMSClient(const SMSClient&) = delete;
+  SMSClient& operator=(const SMSClient&) = delete;
+
   // Calls GetAll method.  |callback| is called after the method call succeeds.
   virtual void GetAll(const std::string& service_name,
                       const dbus::ObjectPath& object_path,
@@ -58,9 +59,6 @@ class COMPONENT_EXPORT(SHILL_CLIENT) SMSClient {
   // Initialize/Shutdown should be used instead.
   SMSClient();
   virtual ~SMSClient();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SMSClient);
 };
 
 }  // namespace chromeos

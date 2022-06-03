@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -249,9 +249,13 @@ def _GetToolInfo(tool):
     return matches[0][1]
 
 
-def Main(args):
+def Main(args=None):
   """Parses arguments and does the appropriate thing."""
   util.ChangeStdoutEncoding()
+
+  # Support for setuptools console wrappers.
+  if args is None:
+    args = sys.argv[1:]
 
   options = Options()
   try:
@@ -315,9 +319,16 @@ def Main(args):
 
 
 if __name__ == '__main__':
-  sys.path.append(os.path.abspath(
-      os.path.join(os.path.dirname(__file__), '..', '..', 'diagnosis')))
-  import crbug_1001171
+  sys.path.append(
+      os.path.join(
+          os.path.dirname(
+              os.path.dirname(os.path.dirname(os.path.abspath(__file__)))),
+          'diagnosis'))
+  try:
+    import crbug_1001171
+    with crbug_1001171.DumpStateOnLookupError():
+      sys.exit(Main(sys.argv[1:]))
+  except ImportError:
+    pass
 
-  with crbug_1001171.DumpStateOnLookupError():
-    sys.exit(Main(sys.argv[1:]))
+  sys.exit(Main(sys.argv[1:]))

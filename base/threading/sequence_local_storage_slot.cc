@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "base/atomic_sequence_num.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace base {
 namespace internal {

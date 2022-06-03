@@ -63,7 +63,7 @@ class CORE_EXPORT CSSNumericLiteralValue : public CSSPrimitiveValue {
   String CustomCSSText() const;
   bool Equals(const CSSNumericLiteralValue& other) const;
 
-  void TraceAfterDispatch(blink::Visitor* visitor);
+  void TraceAfterDispatch(blink::Visitor* visitor) const;
 
  private:
   double num_;

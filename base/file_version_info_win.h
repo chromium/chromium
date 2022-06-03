@@ -15,7 +15,6 @@
 
 #include "base/base_export.h"
 #include "base/file_version_info.h"
-#include "base/macros.h"
 #include "base/version.h"
 
 struct tagVS_FIXEDFILEINFO;
@@ -23,28 +22,30 @@ typedef tagVS_FIXEDFILEINFO VS_FIXEDFILEINFO;
 
 class BASE_EXPORT FileVersionInfoWin : public FileVersionInfo {
  public:
+  FileVersionInfoWin(const FileVersionInfoWin&) = delete;
+  FileVersionInfoWin& operator=(const FileVersionInfoWin&) = delete;
   ~FileVersionInfoWin() override;
 
   // Accessors to the different version properties.
   // Returns an empty string if the property is not found.
-  base::string16 company_name() override;
-  base::string16 company_short_name() override;
-  base::string16 product_name() override;
-  base::string16 product_short_name() override;
-  base::string16 internal_name() override;
-  base::string16 product_version() override;
-  base::string16 special_build() override;
-  base::string16 original_filename() override;
-  base::string16 file_description() override;
-  base::string16 file_version() override;
+  std::u16string company_name() override;
+  std::u16string company_short_name() override;
+  std::u16string product_name() override;
+  std::u16string product_short_name() override;
+  std::u16string internal_name() override;
+  std::u16string product_version() override;
+  std::u16string special_build() override;
+  std::u16string original_filename() override;
+  std::u16string file_description() override;
+  std::u16string file_version() override;
 
   // Lets you access other properties not covered above. |value| is only
   // modified if GetValue() returns true.
-  bool GetValue(const base::char16* name, base::string16* value) const;
+  bool GetValue(const char16_t* name, std::u16string* value) const;
 
-  // Similar to GetValue but returns a string16 (empty string if the property
-  // does not exist).
-  base::string16 GetStringValue(const base::char16* name) const;
+  // Similar to GetValue but returns a std::u16string (empty string if the
+  // property does not exist).
+  std::u16string GetStringValue(const char16_t* name) const;
 
   // Get file version number in dotted version format.
   base::Version GetFileVersion() const;
@@ -70,8 +71,6 @@ class BASE_EXPORT FileVersionInfoWin : public FileVersionInfo {
 
   // This is a reference for a portion of |data_|.
   const VS_FIXEDFILEINFO& fixed_file_info_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileVersionInfoWin);
 };
 
 #endif  // BASE_FILE_VERSION_INFO_WIN_H_

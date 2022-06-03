@@ -33,7 +33,7 @@
     Transferable
 ] interface MessagePort : EventTarget {
     [CallWith=ScriptState, RaisesException, Measure] void postMessage(any message, sequence<object> transfer);
-    [CallWith=ScriptState, RaisesException, Measure] void postMessage(any message, optional PostMessageOptions options);
+    [CallWith=ScriptState, RaisesException, Measure] void postMessage(any message, optional PostMessageOptions options = {});
     [Measure] void start();
     [Measure] void close();
 

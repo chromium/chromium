@@ -4,9 +4,19 @@ Ash is the "Aura Shell", the window manager and system UI for Chrome OS.
 Ash uses the views UI toolkit (e.g. views::View, views::Widget, etc.) backed
 by the aura native widget and layer implementations.
 
+Dependencies
+------------
 Ash sits below chrome in the dependency graph (i.e. it cannot depend on code
-in //chrome). Code outside of Ash should depend solely on Ash's public
-interface, which is in ash/public.
+in //chrome). For historical reasons, ash has multiple dependency levels:
+
+*   General //ash code is on top (//ash/system, //ash/wm, etc.)
+*   //ash/components sit below //ash, see [README](/ash/components/README.md)
+*   //ash/constants sit near the bottom of the dependency graph, see
+    [README](/ash/constants/README.md)
+
+Access to Ash internals is controlled by DEPS files. Unless explicitly allowed
+by DEPS, code outside Ash should depend on the interfaces in //ash/public. Check
+with [OWNERS](/ash/OWNERS) if you have questions.
 
 Tests
 -----

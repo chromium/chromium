@@ -22,6 +22,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/self_owned_associated_receiver.h"
+#include "third_party/blink/public/mojom/input/input_handler.mojom.h"
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #include "ui/base/cocoa/remote_accessibility_api.h"
 #include "ui/events/cocoa/cocoa_event_utils.h"
@@ -46,12 +47,20 @@ class RenderWidgetHostNSViewBridgeOwner
                        base::Unretained(this)));
   }
 
+  RenderWidgetHostNSViewBridgeOwner(const RenderWidgetHostNSViewBridgeOwner&) =
+      delete;
+  RenderWidgetHostNSViewBridgeOwner& operator=(
+      const RenderWidgetHostNSViewBridgeOwner&) = delete;
+
  private:
   void OnMojoDisconnect() { delete this; }
 
-  std::unique_ptr<content::InputEvent> TranslateEvent(
+  std::unique_ptr<blink::WebCoalescedInputEvent> TranslateEvent(
       const blink::WebInputEvent& web_event) {
-    return std::make_unique<content::InputEvent>(web_event, ui::LatencyInfo());
+    return std::make_unique<blink::WebCoalescedInputEvent>(
+        web_event.Clone(), std::vector<std::unique_ptr<blink::WebInputEvent>>{},
+        std::vector<std::unique_ptr<blink::WebInputEvent>>{},
+        ui::LatencyInfo());
   }
 
   // RenderWidgetHostNSViewHostHelper implementation.
@@ -72,22 +81,25 @@ class RenderWidgetHostNSViewBridgeOwner
 
   void ForwardKeyboardEvent(const content::NativeWebKeyboardEvent& key_event,
                             const ui::LatencyInfo& latency_info) override {
-    std::vector<content::EditCommand> commands;
-    ForwardKeyboardEventWithCommands(key_event, latency_info, commands);
+    ForwardKeyboardEventWithCommands(
+        key_event, latency_info, std::vector<blink::mojom::EditCommandPtr>());
   }
   void ForwardKeyboardEventWithCommands(
       const content::NativeWebKeyboardEvent& key_event,
       const ui::LatencyInfo& latency_info,
-      const std::vector<content::EditCommand>& commands) override {
+      std::vector<blink::mojom::EditCommandPtr> edit_commands) override {
     const blink::WebKeyboardEvent* web_event =
         static_cast<const blink::WebKeyboardEvent*>(&key_event);
-    std::unique_ptr<content::InputEvent> input_event =
-        std::make_unique<content::InputEvent>(*web_event, latency_info);
+    std::unique_ptr<blink::WebCoalescedInputEvent> input_event =
+        std::make_unique<blink::WebCoalescedInputEvent>(
+            web_event->Clone(),
+            std::vector<std::unique_ptr<blink::WebInputEvent>>{},
+            std::vector<std::unique_ptr<blink::WebInputEvent>>{}, latency_info);
     std::vector<uint8_t> native_event_data =
         ui::EventToData(key_event.os_event);
     host_->ForwardKeyboardEventWithCommands(
         std::move(input_event), native_event_data, key_event.skip_in_browser,
-        commands);
+        std::move(edit_commands));
   }
   void RouteOrProcessMouseEvent(
       const blink::WebMouseEvent& web_event) override {
@@ -111,7 +123,7 @@ class RenderWidgetHostNSViewBridgeOwner
                     bool is_synthetically_injected) override {
     // The gesture type is not yet known, but assign a type to avoid
     // serialization asserts (the type will be stripped on the other side).
-    begin_event.SetType(blink::WebInputEvent::kGestureScrollBegin);
+    begin_event.SetType(blink::WebInputEvent::Type::kGestureScrollBegin);
     host_->GestureBegin(TranslateEvent(begin_event), is_synthetically_injected);
   }
   void GestureUpdate(blink::WebGestureEvent update_event) override {
@@ -128,8 +140,6 @@ class RenderWidgetHostNSViewBridgeOwner
   std::unique_ptr<RenderWidgetHostNSViewBridge> bridge_;
   base::scoped_nsobject<NSAccessibilityRemoteUIElement>
       remote_accessibility_element_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostNSViewBridgeOwner);
 };
 }
 

@@ -17,9 +17,7 @@ cast_source_set("post_processor_wrapper") {
 }
 
 cast_shared_library("libcast_governor_2.0") {
-  sources = [
-    "post_processor_name.cc",
-  ]
+  sources = [ "post_processor_name.cc" ]
   defines = [
     "DEFINED_POSTPROCESSOR_NAME=chromecast::media::Governor",
     "DEFINED_POSTPROCESSOR_HEADER=chromecast/media/cma/backend/mixer/post_processors/governor.h",
@@ -43,15 +41,15 @@ cast_source_set("governor") {
     "//base",
     "//chromecast/base",
     "//chromecast/media/base",
+    "//chromecast/media/base:slew_volume",
+    "//chromecast/media/cma/backend/mixer:post_processor_registry",
     "//chromecast/public/media",
   ]
   public_configs = [ "//chromecast/public:public_config" ]
 }
 
 cast_shared_library("libcast_saturated_gain_2.0") {
-  sources = [
-    "post_processor_name.cc",
-  ]
+  sources = [ "post_processor_name.cc" ]
   defines = [
     "DEFINED_POSTPROCESSOR_NAME=chromecast::media::SaturatedGain",
     "DEFINED_POSTPROCESSOR_HEADER=chromecast/media/cma/backend/mixer/post_processors/saturated_gain.h",
@@ -75,6 +73,8 @@ cast_source_set("saturated_gain") {
     "//base",
     "//chromecast/base",
     "//chromecast/media/base",
+    "//chromecast/media/base:slew_volume",
+    "//chromecast/media/cma/backend/mixer:post_processor_registry",
     "//chromecast/public/media",
   ]
   public_configs = [ "//chromecast/public:public_config" ]

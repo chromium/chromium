@@ -17,6 +17,9 @@ namespace blink {
 // to do this efficiently.
 class CORE_EXPORT SpellCheckMarkerListImpl : public DocumentMarkerList {
  public:
+  SpellCheckMarkerListImpl(const SpellCheckMarkerListImpl&) = delete;
+  SpellCheckMarkerListImpl& operator=(const SpellCheckMarkerListImpl&) = delete;
+
   // DocumentMarkerList implementations
   bool IsEmpty() const final;
 
@@ -37,7 +40,7 @@ class CORE_EXPORT SpellCheckMarkerListImpl : public DocumentMarkerList {
                     unsigned old_length,
                     unsigned new_length) final;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
   // SpellCheckMarkerListImpl-specific
   // Returns true if a marker was removed, false otherwise.
@@ -49,8 +52,6 @@ class CORE_EXPORT SpellCheckMarkerListImpl : public DocumentMarkerList {
 
  private:
   HeapVector<Member<DocumentMarker>> markers_;
-
-  DISALLOW_COPY_AND_ASSIGN(SpellCheckMarkerListImpl);
 };
 
 template <>

@@ -16,19 +16,16 @@ namespace blink {
 class StaleRevalidationResourceClient
     : public GarbageCollected<StaleRevalidationResourceClient>,
       public RawResourceClient {
-  USING_GARBAGE_COLLECTED_MIXIN(StaleRevalidationResourceClient);
-
  public:
   explicit StaleRevalidationResourceClient(Resource* stale_resource);
   ~StaleRevalidationResourceClient() override;
 
   // RawResourceClient overloads.
   void NotifyFinished(Resource* resource) override;
-  void Trace(blink::Visitor* visitor) override;
+  void Trace(Visitor* visitor) const override;
   String DebugName() const override;
 
  private:
-  base::TimeTicks start_time_;
   // |stale_resource_| is the original resource that will be removed from the
   // MemoryCache when this revalidation request is completed. Note that it is
   // different than the active resource for this resource client which accessed

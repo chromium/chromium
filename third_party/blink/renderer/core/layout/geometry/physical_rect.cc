@@ -13,13 +13,30 @@
 
 namespace blink {
 
-LogicalRect PhysicalRect::ConvertToLogical(WritingMode mode,
-                                           TextDirection direction,
-                                           PhysicalSize outer_size,
-                                           PhysicalSize inner_size) const {
-  return LogicalRect(
-      offset.ConvertToLogical(mode, direction, outer_size, inner_size),
-      size.ConvertToLogical(mode));
+PhysicalSize PhysicalRect::DistanceAsSize(PhysicalOffset target) const {
+  target -= offset;
+  PhysicalSize distance;
+  if (target.left < 0)
+    distance.width = -target.left;
+  else if (target.left > size.width)
+    distance.width = target.left - size.width;
+  if (target.top < 0)
+    distance.height = -target.top;
+  else if (target.top > size.height)
+    distance.height = target.top - size.height;
+  return distance;
+}
+
+LayoutUnit PhysicalRect::SquaredDistanceTo(const PhysicalOffset& point) const {
+  LayoutUnit x1 = X(), x2 = Right();
+  if (x1 > x2)
+    std::swap(x1, x2);
+  LayoutUnit diff_x = point.left - ClampTo<LayoutUnit>(point.left, x1, x2);
+  LayoutUnit y1 = Y(), y2 = Bottom();
+  if (y1 > y2)
+    std::swap(y1, y2);
+  LayoutUnit diff_y = point.top - ClampTo<LayoutUnit>(point.top, y1, y2);
+  return diff_x * diff_x + diff_y * diff_y;
 }
 
 bool PhysicalRect::Contains(const PhysicalRect& other) const {
@@ -67,8 +84,15 @@ void PhysicalRect::UniteEvenIfEmpty(const PhysicalRect& other) {
   LayoutUnit top = std::min(offset.top, other.offset.top);
   LayoutUnit right = std::max(Right(), other.Right());
   LayoutUnit bottom = std::max(Bottom(), other.Bottom());
-  offset = {left, top};
   size = {right - left, bottom - top};
+
+  // If either width or height are not saturated, right - width == left and
+  // bottom - height == top. If they are saturated, instead of using left/top
+  // directly for the offset, the subtraction results in the united rect to
+  // favor content in the positive directions.
+  // Note that this is just a heuristic as the true rect would normally be
+  // larger than the max LayoutUnit value.
+  offset = {right - size.width, bottom - size.height};
 }
 
 void PhysicalRect::Expand(const NGPhysicalBoxStrut& strut) {

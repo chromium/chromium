@@ -1,3 +1,0 @@
-This test checks that the grid's items are not affected by the 'float' and 'clear' properties.
-
-PASS

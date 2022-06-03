@@ -37,6 +37,9 @@ namespace test {
 // will be deprecated soon.
 class FrameRendererThumbnail : public FrameRenderer {
  public:
+  FrameRendererThumbnail(const FrameRendererThumbnail&) = delete;
+  FrameRendererThumbnail& operator=(const FrameRendererThumbnail&) = delete;
+
   ~FrameRendererThumbnail() override;
 
   // Create an instance of the thumbnail frame renderer.
@@ -128,8 +131,6 @@ class FrameRendererThumbnail : public FrameRenderer {
 
   SEQUENCE_CHECKER(client_sequence_checker_);
   SEQUENCE_CHECKER(renderer_sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(FrameRendererThumbnail);
 };
 
 }  // namespace test

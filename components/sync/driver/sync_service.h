@@ -7,37 +7,29 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
+#include "base/containers/enum_set.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/sync/base/enum_set.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/base/user_demographics.h"
 #include "components/sync/driver/sync_service_observer.h"
 
-struct CoreAccountId;
 struct CoreAccountInfo;
 class GoogleServiceAuthError;
 class GURL;
 
-namespace crypto {
-class ECPrivateKey;
-}  // namespace crypto
-
 namespace syncer {
 
-class JsController;
 class ProtocolEventObserver;
 class SyncCycleSnapshot;
+struct TypeEntitiesCount;
 struct SyncTokenStatus;
 class SyncUserSettings;
-class TypeDebugInfoObserver;
 struct SyncStatus;
-struct UserShare;
 
 // UIs that need to prevent Sync startup should hold an instance of this class
 // until the user has finished modifying sync settings. This is not an inner
@@ -46,12 +38,12 @@ class SyncSetupInProgressHandle {
  public:
   // UIs should not construct this directly, but instead call
   // SyncService::GetSetupInProgress().
-  explicit SyncSetupInProgressHandle(base::Closure on_destroy);
+  explicit SyncSetupInProgressHandle(base::OnceClosure on_destroy);
 
   ~SyncSetupInProgressHandle();
 
  private:
-  base::Closure on_destroy_;
+  base::OnceClosure on_destroy_;
 };
 
 // SyncService is the layer between browser subsystems like bookmarks and the
@@ -143,15 +135,11 @@ class SyncService : public KeyedService {
     // again until either the browser is restarted, or the user fully signs out
     // and back in again.
     DISABLE_REASON_UNRECOVERABLE_ERROR,
-    // Sync is paused because the user signed out on the web. This is different
-    // from NOT_SIGNED_IN: In this case, there *is* still a primary account, but
-    // it doesn't have valid credentials.
-    DISABLE_REASON_PAUSED,
-    DISABLE_REASON_LAST = DISABLE_REASON_PAUSED,
+    DISABLE_REASON_LAST = DISABLE_REASON_UNRECOVERABLE_ERROR,
   };
 
   using DisableReasonSet =
-      EnumSet<DisableReason, DISABLE_REASON_FIRST, DISABLE_REASON_LAST>;
+      base::EnumSet<DisableReason, DISABLE_REASON_FIRST, DISABLE_REASON_LAST>;
 
   // The overall state of Sync-the-transport, in ascending order of
   // "activeness". Note that this refers to the transport layer, which may be
@@ -160,6 +148,9 @@ class SyncService : public KeyedService {
     // Sync is inactive, e.g. due to enterprise policy, or simply because there
     // is no authenticated user.
     DISABLED,
+    // Sync is paused, e.g. because the user signed out on the web, and the
+    // engine is inactive.
+    PAUSED,
     // Sync's startup was deferred, so that it doesn't slow down browser
     // startup. Once the deferral time (usually 10s) expires, or something
     // requests immediate startup, Sync will actually start.
@@ -181,6 +172,9 @@ class SyncService : public KeyedService {
     // GetActiveDataTypes()).
     ACTIVE
   };
+
+  SyncService(const SyncService&) = delete;
+  SyncService& operator=(const SyncService&) = delete;
 
   ~SyncService() override {}
 
@@ -223,13 +217,14 @@ class SyncService : public KeyedService {
   // etc. is considered not granted.
   virtual bool IsLocalSyncEnabled() const = 0;
 
-  // Information about the currently signed in user.
-  CoreAccountId GetAuthenticatedAccountId() const;
-  virtual CoreAccountInfo GetAuthenticatedAccountInfo() const = 0;
-  // Whether the currently signed in user is the "primary" browser account (see
-  // IdentityManager). If this is false, then IsSyncFeatureEnabled will also be
-  // false, but Sync-the-transport might still run.
-  virtual bool IsAuthenticatedAccountPrimary() const = 0;
+  // Information about the primary account. Note that this account doesn't
+  // necessarily have Sync consent (in that case, only Sync-the-transport may be
+  // running).
+  virtual CoreAccountInfo GetAccountInfo() const = 0;
+  // Whether the primary account has consented to Sync (see IdentityManager). If
+  // this is false, then IsSyncFeatureEnabled will also be false, but
+  // Sync-the-transport might still run.
+  virtual bool HasSyncConsent() const = 0;
 
   // Returns whether the SyncService has completed at least one Sync cycle since
   // starting up (i.e. since browser startup or signin). This can be useful
@@ -251,21 +246,12 @@ class SyncService : public KeyedService {
   // Sync to work.
   virtual bool RequiresClientUpgrade() const = 0;
 
-  // Returns a high-entropy elliptic curve (EC) private key that is unique to a
-  // user and sync-ed across devices via Nigori. Populated when the transport
-  // state becomes CONFIGURING. Returns nullptr if not available. Consumers of
-  // this key should observe for changes via
-  // SyncServiceObserver::OnSyncCycleCompleted().
-  // TODO(crbug.com/1012226): Remove when VAPID migration is over.
-  virtual std::unique_ptr<crypto::ECPrivateKey>
-  GetExperimentalAuthenticationKey() const = 0;
-
   //////////////////////////////////////////////////////////////////////////////
   // DERIVED STATE ACCESS
   //////////////////////////////////////////////////////////////////////////////
 
   // Returns whether all conditions are satisfied for Sync-the-feature to start.
-  // This means that there is a primary account, no disable reasons, and
+  // This means that there is a Sync-consented account, no disable reasons, and
   // first-time Sync setup has been completed by the user.
   // Note: This does not imply that Sync is actually running. Check
   // IsSyncFeatureActive or GetTransportState to get the current state.
@@ -281,9 +267,9 @@ class SyncService : public KeyedService {
   bool IsEngineInitialized() const;
 
   // Returns whether Sync-the-feature can (attempt to) start. This means that
-  // there is a primary account and no disable reasons. It does *not* require
-  // first-time Sync setup to be complete, because that can only happen after
-  // the engine has started.
+  // there is a Sync-consented account and no disable reasons. It does *not*
+  // require first-time Sync setup to be complete, because that can only happen
+  // after the engine has started.
   // Note: This refers to Sync-the-feature. Sync-the-transport may be running
   // even if this is false.
   bool CanSyncFeatureStart() const;
@@ -317,10 +303,6 @@ class SyncService : public KeyedService {
   // DATA TYPE STATE
   //////////////////////////////////////////////////////////////////////////////
 
-  // Returns the set of data types that are supported in principle. These will
-  // typically only change via a command-line option.
-  virtual syncer::ModelTypeSet GetRegisteredDataTypes() const = 0;
-
   // Returns the set of types which are preferred for enabling. This is a
   // superset of the active types (see GetActiveDataTypes()). This also includes
   // any forced types.
@@ -336,11 +318,13 @@ class SyncService : public KeyedService {
   // ACTIONS / STATE CHANGE REQUESTS
   //////////////////////////////////////////////////////////////////////////////
 
-  // Stops sync and clears all local data. This usually gets called when the
-  // user fully signs out (i.e. removes the primary account).
-  // Note: This refers to Sync-the-feature. Sync-the-transport may remain active
-  // after calling this.
+  // Stops and disables Sync-the-feature and clears all local data.
+  // Sync-the-transport may remain active after calling this.
   virtual void StopAndClear() = 0;
+
+  // Controls whether sync is allowed at the platform level. If set to false
+  // sync will be disabled with DISABLE_REASON_PLATFORM_OVERRIDE.
+  virtual void SetSyncAllowedByPlatform(bool allowed) = 0;
 
   // Called when a datatype (SyncableService) has a need for sync to start
   // ASAP, presumably because a local change event has occurred but we're
@@ -368,18 +352,22 @@ class SyncService : public KeyedService {
   // page is opened.
   virtual void SetInvalidationsForSessionsEnabled(bool enabled) = 0;
 
-  //////////////////////////////////////////////////////////////////////////////
-  // USER DEMOGRAPHICS
-  //////////////////////////////////////////////////////////////////////////////
+  // Processes trusted vault encryption keys retrieved from the web. Unused and
+  // ignored on platforms where keys are retrieved by other means.
+  // |last_key_version| represents the key version of the last element in
+  // |keys| (unused if empty).
+  virtual void AddTrustedVaultDecryptionKeysFromWeb(
+      const std::string& gaia_id,
+      const std::vector<std::vector<uint8_t>>& keys,
+      int last_key_version) = 0;
 
-  // Gets the synced user’s noised birth year and gender, see doc of
-  // metrics::DemographicMetricsProvider in
-  // components/metrics/demographic_metrics_provider.h for more details. Returns
-  // an error status with an empty value when the user's birth year or gender
-  // cannot be provided. You need to provide an accurate |now| time that
-  // represents the current time.
-  virtual UserDemographicsResult GetUserNoisedBirthYearAndGender(
-      base::Time now) = 0;
+  // Registers a new trusted recovery method that can be used to retrieve
+  // trusted vault encryption keys.
+  virtual void AddTrustedVaultRecoveryMethodFromWeb(
+      const std::string& gaia_id,
+      const std::vector<uint8_t>& public_key,
+      int method_type_hint,
+      base::OnceClosure callback) = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // OBSERVERS
@@ -392,16 +380,6 @@ class SyncService : public KeyedService {
 
   // Returns true if |observer| has already been added as an observer.
   virtual bool HasObserver(const SyncServiceObserver* observer) const = 0;
-
-  //////////////////////////////////////////////////////////////////////////////
-  // ACCESS TO INNER OBJECTS
-  //////////////////////////////////////////////////////////////////////////////
-
-  // TODO(akalin): This is called mostly by ModelAssociators and
-  // tests.  Figure out how to pass the handle to the ModelAssociators
-  // directly, figure out how to expose this to tests, and remove this
-  // function.
-  virtual UserShare* GetUserShare() const = 0;
 
   //////////////////////////////////////////////////////////////////////////////
   // DETAILED STATE FOR DEBUG UI
@@ -430,10 +408,16 @@ class SyncService : public KeyedService {
   // the type's status, and <status> is one of "error", "warning" or "ok"
   // depending on the type's current status.
   //
-  // This function is used by about_sync_util.cc to help populate the about:sync
-  // page.  It returns a ListValue rather than a DictionaryValue in part to make
-  // it easier to iterate over its elements when constructing that page.
+  // This function is used by sync_internals_util.cc to help populate the
+  // chrome://sync-internals page.  It returns a ListValue rather than a
+  // DictionaryValue in part to make it easier to iterate over its elements when
+  // constructing that page.
   virtual std::unique_ptr<base::Value> GetTypeStatusMapForDebugging() = 0;
+
+  // Retrieves the TypeEntitiesCount for all registered data types.
+  virtual void GetEntityCountsForDebugging(
+      base::OnceCallback<void(const std::vector<TypeEntitiesCount>&)> callback)
+      const = 0;
 
   virtual const GURL& GetSyncServiceUrlForDebugging() const = 0;
 
@@ -443,11 +427,6 @@ class SyncService : public KeyedService {
   virtual void AddProtocolEventObserver(ProtocolEventObserver* observer) = 0;
   virtual void RemoveProtocolEventObserver(ProtocolEventObserver* observer) = 0;
 
-  virtual void AddTypeDebugInfoObserver(TypeDebugInfoObserver* observer) = 0;
-  virtual void RemoveTypeDebugInfoObserver(TypeDebugInfoObserver* observer) = 0;
-
-  virtual base::WeakPtr<JsController> GetJsController() = 0;
-
   // Asynchronously fetches base::Value representations of all sync nodes and
   // returns them to the specified callback on this thread.
   //
@@ -455,14 +434,10 @@ class SyncService : public KeyedService {
   // For safety, the callback should be bound to some sort of WeakPtr<> or
   // scoped_refptr<>.
   virtual void GetAllNodesForDebugging(
-      const base::Callback<void(std::unique_ptr<base::ListValue>)>&
-          callback) = 0;
+      base::OnceCallback<void(std::unique_ptr<base::ListValue>)> callback) = 0;
 
  protected:
   SyncService() {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SyncService);
 };
 
 }  // namespace syncer

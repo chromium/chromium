@@ -24,7 +24,7 @@ struct ScopedIOObjectTraits {
   static void Release(IOT iot) { IOObjectRelease(iot); }
 };
 
-}  // namespce internal
+}  // namespace internal
 
 // Just like ScopedCFTypeRef but for io_object_t and subclasses.
 template <typename IOT>

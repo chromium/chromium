@@ -14,12 +14,13 @@ namespace blink {
 // ResourceFinishObserver is different from ResourceClient in several ways.
 //  - NotifyFinished is dispatched asynchronously.
 //  - ResourceFinishObservers will be removed from Resource when the load
-//  finishes. - This class is not intended to be "subclassed" per each Resource
-//  subclass.
+//  finishes.
+//  - This class is not intended to be "subclassed" per each Resource subclass.
 //    There is no ImageResourceFinishObserver, for example.
 // ResourceFinishObserver should be quite simple. All notifications must be
 // notified AFTER the loading finishes.
-class PLATFORM_EXPORT ResourceFinishObserver : public GarbageCollectedMixin {
+class PLATFORM_EXPORT ResourceFinishObserver
+    : public GarbageCollected<ResourceFinishObserver> {
  public:
   virtual ~ResourceFinishObserver() = default;
 
@@ -30,7 +31,7 @@ class PLATFORM_EXPORT ResourceFinishObserver : public GarbageCollectedMixin {
   // Name for debugging
   virtual String DebugName() const = 0;
 
-  void Trace(blink::Visitor* visitor) override {}
+  virtual void Trace(Visitor* visitor) const {}
 };
 
 }  // namespace blink

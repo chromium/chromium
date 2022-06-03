@@ -12,13 +12,11 @@
 #include <memory>
 #include <utility>
 
+#include "base/check_op.h"
 #include "base/compiler_specific.h"
 #include "base/files/file.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
@@ -105,16 +103,12 @@ TransactionalLevelDBDatabase::~TransactionalLevelDBDatabase() {
 
 leveldb::Status TransactionalLevelDBDatabase::Put(const StringPiece& key,
                                                   std::string* value) {
-  base::TimeTicks begin_time = base::TimeTicks::Now();
-
   leveldb::WriteOptions write_options;
   write_options.sync = kSyncWrites;
 
   const leveldb::Status s =
       db()->Put(write_options, leveldb_env::MakeSlice(key),
                 leveldb_env::MakeSlice(*value));
-  UMA_HISTOGRAM_TIMES("WebCore.IndexedDB.LevelDB.PutTime",
-                      base::TimeTicks::Now() - begin_time);
   EvictAllIterators();
   last_modified_ = clock_->Now();
   return s;

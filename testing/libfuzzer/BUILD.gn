@@ -17,6 +17,9 @@ source_set("libfuzzer_main") {
   sources = []
   if (use_libfuzzer) {
     deps += [ "//third_party/libFuzzer:libfuzzer" ]
+    if (is_ios) {
+      deps += [ "//testing/libfuzzer/fuzzer_support_ios:libfuzzer_main_ios" ]
+    }
   } else if (use_afl) {
     deps += [ "//third_party/libFuzzer:afl_driver" ]
   } else {
@@ -28,9 +31,7 @@ source_set("libfuzzer_main") {
     # appropriate parameter passing to run the target in an isolate. This
     # directive makes this script and its dependencies to be included in the
     # target's isolate.
-    data = [
-      "//tools/code_coverage/",
-    ]
+    data = [ "//tools/code_coverage/" ]
   }
 }
 

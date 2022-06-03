@@ -18,6 +18,10 @@ namespace system_logs {
 class BasicLogSource : public SystemLogsSource {
  public:
   explicit BasicLogSource(content::BrowserContext* browser_context);
+
+  BasicLogSource(const BasicLogSource&) = delete;
+  BasicLogSource& operator=(const BasicLogSource&) = delete;
+
   ~BasicLogSource() override;
 
   // SystemLogsSource:
@@ -28,8 +32,6 @@ class BasicLogSource : public SystemLogsSource {
   void PopulateExtensionInfoLogs(SystemLogsResponse* response);
 
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(BasicLogSource);
 };
 
 }  // namespace system_logs

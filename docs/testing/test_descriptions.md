@@ -14,7 +14,6 @@ See [Testing and infrastructure](https://sites.google.com/a/chromium.org/dev/dev
 |blink\_platform\_unittests| |
 |breakpad\_unittests     | |
 |[browser\_tests](https://sites.google.com/a/chromium.org/dev/developers/testing/browser-tests)|Tests the browser UI. Can not inject user input or depend on focus/activation behavior because it can be run in parallel processes and/or with a locked screen, headless etc. For tests sensitive to that, use interactive\_ui\_tests. For example, when tests need to navigate to chrome://hang (see chrome/browser/ui/webui/ntp/new\_tab\_ui\_uitest.cc)|
-|cacheinvalidation\_unittests| |
 |chromedriver\_unittests | |
 |content\_browsertests   |Similar to browser\_tests, but with a minimal shell contained entirely within content/. This test, as well as the entire content module, has no dependencies on chrome/.|
 |content\_gl\_tests      | |
@@ -57,4 +56,4 @@ See [Testing and infrastructure](https://sites.google.com/a/chromium.org/dev/dev
 |views\_unittests        | |
 |wav\_ola\_test          | |
 |webkit\_unit\_tests     | |
-|webui tests             | Special type of browser\_tests used for [WebUI features](https://chromium.googlesource.com/chromium/src/+/master/docs/webui_explainer.md), see [here](https://docs.google.com/document/d/1Z18WTNv28z5FW3smNEm_GtsfVD2IL-CmmAikwjw3ryo/edit#) for more information on known issues with WebUI test infrastructure. |
+|webui tests             | Special type of browser\_tests used for [WebUI features](https://chromium.googlesource.com/chromium/src/+/main/docs/webui_explainer.md), see [here](https://docs.google.com/document/d/1Z18WTNv28z5FW3smNEm_GtsfVD2IL-CmmAikwjw3ryo/edit#) for more information on known issues with WebUI test infrastructure. |

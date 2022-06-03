@@ -45,9 +45,7 @@ int WebEventButtonToUIEventButtonFlags(blink::WebMouseEvent::Button button) {
 SyntheticGestureTargetAura::SyntheticGestureTargetAura(
     RenderWidgetHostImpl* host)
     : SyntheticGestureTargetBase(host) {
-  ScreenInfo screen_info;
-  host->GetScreenInfo(&screen_info);
-  device_scale_factor_ = screen_info.device_scale_factor;
+  device_scale_factor_ = host->GetDeviceScaleFactor();
 }
 
 void SyntheticGestureTargetAura::DispatchWebTouchEventToPlatform(
@@ -83,19 +81,20 @@ void SyntheticGestureTargetAura::DispatchWebMouseWheelEventToPlatform(
     return;
   }
   base::TimeTicks timestamp = web_wheel.TimeStamp();
-  int modifiers = ui::EF_NONE;
-  if (web_wheel.delta_units ==
-      ui::input_types::ScrollGranularity::kScrollByPrecisePixel) {
+  int modifiers = ui::WebEventModifiersToEventFlags(web_wheel.GetModifiers());
+  if (web_wheel.delta_units == ui::ScrollGranularity::kScrollByPrecisePixel) {
     modifiers |= ui::EF_PRECISION_SCROLLING_DELTA;
-  } else if (web_wheel.delta_units ==
-             ui::input_types::ScrollGranularity::kScrollByPage) {
+  } else if (web_wheel.delta_units == ui::ScrollGranularity::kScrollByPage) {
     modifiers |= ui::EF_SCROLL_BY_PAGE;
   }
 
+  float delta_x = web_wheel.delta_x + wheel_precision_x_;
+  float delta_y = web_wheel.delta_y + wheel_precision_y_;
   ui::MouseWheelEvent wheel_event(
-      gfx::Vector2d(web_wheel.delta_x, web_wheel.delta_y),
-      web_wheel.PositionInWidget(), web_wheel.PositionInWidget(), timestamp,
-      modifiers, ui::EF_NONE);
+      gfx::Vector2d(delta_x, delta_y), web_wheel.PositionInWidget(),
+      web_wheel.PositionInWidget(), timestamp, modifiers, ui::EF_NONE);
+  wheel_precision_x_ = delta_x - wheel_event.x_offset();
+  wheel_precision_y_ = delta_y - wheel_event.y_offset();
 
   aura::Window* window = GetWindow();
   wheel_event.ConvertLocationToTarget(window, window->GetRootWindow());
@@ -110,7 +109,7 @@ void SyntheticGestureTargetAura::DispatchWebGestureEventToPlatform(
     const ui::LatencyInfo& latency_info) {
   DCHECK(blink::WebInputEvent::IsPinchGestureEventType(web_gesture.GetType()) ||
          blink::WebInputEvent::IsFlingGestureEventType(web_gesture.GetType()));
-  ui::EventType event_type = ui::WebEventTypeToEventType(web_gesture.GetType());
+  ui::EventType event_type = web_gesture.GetTypeAsUiEventType();
   int flags = ui::WebEventModifiersToEventFlags(web_gesture.GetModifiers());
   aura::Window* window = GetWindow();
 
@@ -122,7 +121,7 @@ void SyntheticGestureTargetAura::DispatchWebGestureEventToPlatform(
 
     ui::GestureEvent pinch_event(web_gesture.PositionInWidget().x(),
                                  web_gesture.PositionInWidget().y(), flags,
-                                 ui::EventTimeForNow(), pinch_details);
+                                 web_gesture.TimeStamp(), pinch_details);
 
     pinch_event.ConvertLocationToTarget(window, window->GetRootWindow());
     event_injector_.Inject(window->GetHost(), &pinch_event);
@@ -130,12 +129,12 @@ void SyntheticGestureTargetAura::DispatchWebGestureEventToPlatform(
   }
 
   ui::EventMomentumPhase momentum_phase =
-      web_gesture.GetType() == blink::WebInputEvent::kGestureFlingStart
+      web_gesture.GetType() == blink::WebInputEvent::Type::kGestureFlingStart
           ? ui::EventMomentumPhase::BEGAN
           : ui::EventMomentumPhase::END;
   ui::ScrollEvent scroll_event(event_type, web_gesture.PositionInWidget(),
                                web_gesture.PositionInWidget(),
-                               ui::EventTimeForNow(), flags,
+                               web_gesture.TimeStamp(), flags,
                                web_gesture.data.fling_start.velocity_x,
                                web_gesture.data.fling_start.velocity_y, 0, 0, 2,
                                momentum_phase, ui::ScrollEventPhase::kNone);
@@ -146,11 +145,13 @@ void SyntheticGestureTargetAura::DispatchWebGestureEventToPlatform(
 void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
     const blink::WebMouseEvent& web_mouse_event,
     const ui::LatencyInfo& latency_info) {
-  ui::EventType event_type =
-      ui::WebEventTypeToEventType(web_mouse_event.GetType());
+  ui::EventType event_type = web_mouse_event.GetTypeAsUiEventType();
   int flags = ui::WebEventModifiersToEventFlags(web_mouse_event.GetModifiers());
   ui::PointerDetails pointer_details(
-      ui::WebPointerTypeToEventPointerType(web_mouse_event.pointer_type));
+      ui::WebPointerTypeToEventPointerType(web_mouse_event.pointer_type),
+      web_mouse_event.id, 0, 0, web_mouse_event.force, web_mouse_event.twist,
+      web_mouse_event.tilt_x, web_mouse_event.tilt_y,
+      web_mouse_event.tangential_pressure);
   int changed_button_flags = 0;
   if (event_type == ui::ET_MOUSE_PRESSED ||
       event_type == ui::ET_MOUSE_RELEASED) {
@@ -159,8 +160,8 @@ void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
   }
   ui::MouseEvent mouse_event(event_type, web_mouse_event.PositionInWidget(),
                              web_mouse_event.PositionInWidget(),
-                             ui::EventTimeForNow(), flags, changed_button_flags,
-                             pointer_details);
+                             web_mouse_event.TimeStamp(), flags,
+                             changed_button_flags, pointer_details);
 
   aura::Window* window = GetWindow();
   mouse_event.ConvertLocationToTarget(window, window->GetRootWindow());
@@ -171,9 +172,9 @@ void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
     return;
 }
 
-SyntheticGestureParams::GestureSourceType
+content::mojom::GestureSourceType
 SyntheticGestureTargetAura::GetDefaultSyntheticGestureSourceType() const {
-  return SyntheticGestureParams::TOUCH_INPUT;
+  return content::mojom::GestureSourceType::kMouseInput;
 }
 
 float SyntheticGestureTargetAura::GetTouchSlopInDips() const {

@@ -6,33 +6,18 @@
 
 namespace switches {
 
-// TODO(crbug.com/657130): Sync integration tests depend on the precommit get
-// updates because invalidations aren't working for them. Therefore, they pass
-// the command line switch to enable this feature. Once sync integrations test
-// support invalidation, this should be removed.
-// Enables feature to perform GetUpdate requests before every commit.
-const char kSyncEnableGetUpdatesBeforeCommit[] =
-    "sync-enable-get-update-before-commits";
-
 const base::Feature kSyncResetPollIntervalOnStart{
     "SyncResetPollIntervalOnStart", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Whether encryption keys should be derived using scrypt when a new custom
-// passphrase is set. If disabled, the old PBKDF2 key derivation method will be
-// used instead. Note that disabling this feature does not disable deriving keys
-// via scrypt when we receive a remote Nigori node that specifies it as the key
-// derivation method.
-const base::Feature kSyncUseScryptForNewCustomPassphrases{
-    "SyncUseScryptForNewCustomPassphrases", base::FEATURE_ENABLED_BY_DEFAULT};
+// Causes Sync to ignore updates encrypted with keys that have been missing for
+// too long from this client; Sync will proceed normally as if those updates
+// didn't exist.
+const base::Feature kIgnoreSyncEncryptionKeysLongMissing{
+    "IgnoreSyncEncryptionKeysLongMissing", base::FEATURE_DISABLED_BY_DEFAULT};
 
-const base::Feature kSyncSupportTrustedVaultPassphrase{
-    "SyncSupportTrustedVaultPassphrase", base::FEATURE_DISABLED_BY_DEFAULT};
-
-// If enabled sync cycle ends by collecting contributions from all datatypes
-// and having less than max_commit_batch_size() entries to commit. If disabled
-// it ends when attempt to collect contributions returned no entries to commit.
-// TODO(crbug.com/1022293): Remove this flag after M82 or so.
-const base::Feature kSyncPreventCommitsBypassingNudgeDelay{
-    "SyncPreventCommitsBypassingNudgeDelay", base::FEATURE_ENABLED_BY_DEFAULT};
+// The threshold for kIgnoreSyncEncryptionKeysLongMissing to start ignoring keys
+// (measured in number of GetUpdatesResponses messages).
+const base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
+    &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 50};
 
 }  // namespace switches

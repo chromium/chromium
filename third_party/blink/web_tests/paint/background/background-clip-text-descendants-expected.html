@@ -3,22 +3,18 @@
 body {
   font-size: 40px;
 }
-.transformed {
-  transform: translateX(0);
-}
 .clip-text {
   background: blue;
   -webkit-background-clip: text;
   color: rgba(255,0,0,0.5);
-  clear: both;
 }
 </style>
 Passes if all texts are purple.
 <div class="clip-text">Block</div>
 <div class="clip-text">Block transformed</div>
-<div><div class="clip-text" style="float:left">Float</div><br></div>
-<div><div class="clip-text" style="float:left">Float transformed</div><br></div>
+<div class="clip-text">Float</div>
+<div class="clip-text">Float transformed</div>
 <table><tr><td class="clip-text">Table</td></tr></table>
 <table><tr><td class="clip-text">Table transformed</td></tr></table>
-<div class="clip-text"><div style="display: inline-block">Inline block</div></div>
-<div class="clip-text"><div style="display: inline-block">Inline block transformed</div></div>
+<div class="clip-text">Inline block</div>
+<div class="clip-text">Inline block transformed</div>

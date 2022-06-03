@@ -7,10 +7,13 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <cstring>
 #include <string>
 
 #include "base/build_time.h"
+#include "base/command_line.h"
 #include "base/cpu.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_flattener.h"
 #include "base/metrics/histogram_functions.h"
@@ -19,10 +22,13 @@
 #include "base/metrics/histogram_snapshot_manager.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
+#include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
+#include "base/time/clock.h"
+#include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/metrics/delegating_provider.h"
 #include "components/metrics/environment_recorder.h"
 #include "components/metrics/histogram_encoder.h"
@@ -31,6 +37,8 @@
 #include "components/metrics/metrics_service_client.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/variations/hashing.h"
+#include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "third_party/metrics_proto/histogram_event.pb.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 #include "third_party/metrics_proto/user_action_event.pb.h"
@@ -48,12 +56,33 @@ using base::SampleCountIterator;
 
 namespace metrics {
 
+LogMetadata::LogMetadata()
+    : samples_count(absl::nullopt), user_id(absl::nullopt) {}
+LogMetadata::LogMetadata(
+    const absl::optional<base::HistogramBase::Count> samples_count,
+    const absl::optional<uint64_t> user_id)
+    : samples_count(samples_count), user_id(user_id) {}
+LogMetadata::LogMetadata(const LogMetadata& other) = default;
+LogMetadata::~LogMetadata() = default;
+
+void LogMetadata::AddSampleCount(base::HistogramBase::Count sample_count) {
+  if (samples_count.has_value()) {
+    samples_count = samples_count.value() + sample_count;
+  } else {
+    samples_count = sample_count;
+  }
+}
+
 namespace {
 
 // A simple class to write histogram data to a log.
 class IndependentFlattener : public base::HistogramFlattener {
  public:
   explicit IndependentFlattener(MetricsLog* log) : log_(log) {}
+
+  IndependentFlattener(const IndependentFlattener&) = delete;
+  IndependentFlattener& operator=(const IndependentFlattener&) = delete;
+
   ~IndependentFlattener() override {}
 
   // base::HistogramFlattener:
@@ -64,12 +93,64 @@ class IndependentFlattener : public base::HistogramFlattener {
 
  private:
   MetricsLog* const log_;
-
-  DISALLOW_COPY_AND_ASSIGN(IndependentFlattener);
 };
 
+// Convenience function to return the given time at a resolution in seconds.
+static int64_t ToMonotonicSeconds(base::TimeTicks time_ticks) {
+  return (time_ticks - base::TimeTicks()).InSeconds();
+}
+
+// Populates |time| with information about the current time and, if
+// |record_time_zone| is true, the time zone.
+void RecordCurrentTime(
+    const base::Clock* clock,
+    const network_time::NetworkTimeTracker* network_time_tracker,
+    bool record_time_zone,
+    metrics::ChromeUserMetricsExtension::RealLocalTime* time) {
+  // Record the current time and the clock used to determine the time.
+  base::Time now;
+  // TODO(http://crbug.com/1257449): Enable network time on Android.
+  now = clock->Now();
+  time->set_time_source(
+      metrics::ChromeUserMetricsExtension::RealLocalTime::CLIENT_CLOCK);
+  time->set_time_sec(now.ToTimeT());
+
+  if (record_time_zone) {
+    // Determine time zone offset from GMT and store it.
+    int32_t raw_offset, dst_offset;
+    UErrorCode status = U_ZERO_ERROR;
+    // Ask for a new time zone object each time; don't cache it, as time zones
+    // may change while Chrome is running.
+    std::unique_ptr<icu::TimeZone> time_zone(icu::TimeZone::createDefault());
+    time_zone->getOffset(now.ToDoubleT() * base::Time::kMillisecondsPerSecond,
+                         false,  // interpret |now| as from UTC/GMT
+                         raw_offset, dst_offset, status);
+    base::TimeDelta time_zone_offset =
+        base::Milliseconds(raw_offset + dst_offset);
+    if (U_FAILURE(status)) {
+      DVLOG(1) << "Failed to get time zone offset, error code: " << status;
+      // The fallback case is to get the raw timezone offset ignoring the
+      // daylight saving time.
+      time_zone_offset = base::Milliseconds(time_zone->getRawOffset());
+    }
+    time->set_time_zone_offset_from_gmt_sec(time_zone_offset.InSeconds());
+  }
+}
 
 }  // namespace
+
+namespace internal {
+
+SystemProfileProto::InstallerPackage ToInstallerPackage(
+    base::StringPiece installer_package_name) {
+  if (installer_package_name.empty())
+    return SystemProfileProto::INSTALLER_PACKAGE_NONE;
+  if (installer_package_name == "com.android.vending")
+    return SystemProfileProto::INSTALLER_PACKAGE_GOOGLE_PLAY_STORE;
+  return SystemProfileProto::INSTALLER_PACKAGE_OTHER;
+}
+
+}  // namespace internal
 
 MetricsLog::IndependentMetricsLoader::IndependentMetricsLoader(
     std::unique_ptr<MetricsLog> log)
@@ -94,13 +175,37 @@ MetricsLog::MetricsLog(const std::string& client_id,
                        int session_id,
                        LogType log_type,
                        MetricsServiceClient* client)
+    : MetricsLog(client_id,
+                 session_id,
+                 log_type,
+                 base::DefaultClock::GetInstance(),
+                 client->GetNetworkTimeTracker(),
+                 client) {}
+
+MetricsLog::MetricsLog(const std::string& client_id,
+                       int session_id,
+                       LogType log_type,
+                       base::Clock* clock,
+                       const network_time::NetworkTimeTracker* network_clock,
+                       MetricsServiceClient* client)
     : closed_(false),
       log_type_(log_type),
       client_(client),
       creation_time_(base::TimeTicks::Now()),
-      has_environment_(false) {
+      has_environment_(false),
+      clock_(clock),
+      network_clock_(network_clock) {
   uma_proto_.set_client_id(Hash(client_id));
   uma_proto_.set_session_id(session_id);
+
+  if (log_type == MetricsLog::ONGOING_LOG) {
+    // Don't record the time when creating a log because creating a log happens
+    // on startups and setting the timezone requires ICU initialization that is
+    // too expensive to run during this critical time.
+    RecordCurrentTime(clock_, network_clock_,
+                      /*record_time_zone=*/false,
+                      uma_proto_.mutable_time_log_created());
+  }
 
   const int32_t product = client_->GetProduct();
   // Only set the product if it differs from the default value.
@@ -108,11 +213,13 @@ MetricsLog::MetricsLog(const std::string& client_id,
     uma_proto_.set_product(product);
 
   SystemProfileProto* system_profile = uma_proto()->mutable_system_profile();
+  // Record the unhashed the client_id to system profile. This is used to
+  // simulate field trial assignments for the client.
+  system_profile->set_client_uuid(client_id);
   RecordCoreSystemProfile(client_, system_profile);
 }
 
-MetricsLog::~MetricsLog() {
-}
+MetricsLog::~MetricsLog() = default;
 
 // static
 void MetricsLog::RegisterPrefs(PrefRegistrySimple* registry) {
@@ -144,35 +251,53 @@ int64_t MetricsLog::GetBuildTime() {
 
 // static
 int64_t MetricsLog::GetCurrentTime() {
-  return (base::TimeTicks::Now() - base::TimeTicks()).InSeconds();
+  return ToMonotonicSeconds(base::TimeTicks::Now());
 }
 
-void MetricsLog::RecordUserAction(const std::string& key) {
+void MetricsLog::RecordUserAction(const std::string& key,
+                                  base::TimeTicks action_time) {
   DCHECK(!closed_);
 
   UserActionEventProto* user_action = uma_proto_.add_user_action_event();
   user_action->set_name_hash(Hash(key));
-  user_action->set_time_sec(GetCurrentTime());
+  user_action->set_time_sec(ToMonotonicSeconds(action_time));
+  base::UmaHistogramBoolean("UMA.UserActionsCount", true);
 }
 
 // static
 void MetricsLog::RecordCoreSystemProfile(MetricsServiceClient* client,
                                          SystemProfileProto* system_profile) {
-  RecordCoreSystemProfile(client->GetVersionString(), client->GetChannel(),
-                          client->GetApplicationLocale(),
-                          client->GetAppPackageName(), system_profile);
+  RecordCoreSystemProfile(
+      client->GetVersionString(), client->GetChannel(),
+      client->IsExtendedStableChannel(), client->GetApplicationLocale(),
+      client->GetAppPackageNameIfLoggable(), system_profile);
+
+  std::string brand_code;
+  if (client->GetBrand(&brand_code))
+    system_profile->set_brand_code(brand_code);
+
+  // Records 32-bit hashes of the command line keys.
+  const auto command_line_switches =
+      base::CommandLine::ForCurrentProcess()->GetSwitches();
+  for (const auto& command_line_switch : command_line_switches) {
+    system_profile->add_command_line_key_hash(
+        variations::HashName(command_line_switch.first));
+  }
 }
 
 // static
 void MetricsLog::RecordCoreSystemProfile(
     const std::string& version,
     metrics::SystemProfileProto::Channel channel,
+    bool is_extended_stable_channel,
     const std::string& application_locale,
     const std::string& package_name,
     SystemProfileProto* system_profile) {
   system_profile->set_build_timestamp(metrics::MetricsLog::GetBuildTime());
   system_profile->set_app_version(version);
   system_profile->set_channel(channel);
+  if (is_extended_stable_channel)
+    system_profile->set_is_extended_stable_channel(true);
   system_profile->set_application_locale(application_locale);
 
 #if defined(ADDRESS_SANITIZER) || DCHECK_IS_ON()
@@ -182,37 +307,54 @@ void MetricsLog::RecordCoreSystemProfile(
 
   metrics::SystemProfileProto::Hardware* hardware =
       system_profile->mutable_hardware();
-#if !defined(OS_IOS)
-  // On iOS, OperatingSystemArchitecture() returns values like iPad4,4 which is
-  // not the actual CPU architecture. Don't set it until the API is fixed. See
-  // crbug.com/370104 for details.
   hardware->set_cpu_architecture(base::SysInfo::OperatingSystemArchitecture());
-#endif
+  auto app_os_arch = base::SysInfo::ProcessCPUArchitecture();
+  if (!app_os_arch.empty())
+    hardware->set_app_cpu_architecture(app_os_arch);
   hardware->set_system_ram_mb(base::SysInfo::AmountOfPhysicalMemoryMB());
+#if defined(OS_IOS)
+  // Remove any trailing null characters.
+  // TODO(crbug/1247379): Verify that this is WAI. If so, inline this into
+  // iOS's implementation of HardwareModelName().
+  const std::string hardware_class = base::SysInfo::HardwareModelName();
+  hardware->set_hardware_class(
+      hardware_class.substr(0, strlen(hardware_class.c_str())));
+#else
   hardware->set_hardware_class(base::SysInfo::HardwareModelName());
+#endif  // defined(OS_IOS)
 #if defined(OS_WIN)
   hardware->set_dll_base(reinterpret_cast<uint64_t>(CURRENT_MODULE()));
 #endif
 
   metrics::SystemProfileProto::OS* os = system_profile->mutable_os();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // The Lacros browser runs on Chrome OS, but reports a special OS name to
+  // differentiate itself from the built-in ash browser + window manager binary.
+  os->set_name("Lacros");
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
+  os->set_name("CrOS");
+#else
   os->set_name(base::SysInfo::OperatingSystemName());
+#endif
   os->set_version(base::SysInfo::OperatingSystemVersion());
 
 // On ChromeOS, KernelVersion refers to the Linux kernel version and
 // OperatingSystemVersion refers to the ChromeOS release version.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   os->set_kernel_version(base::SysInfo::KernelVersion());
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Linux operating system version is copied over into kernel version to be
   // consistent.
   os->set_kernel_version(base::SysInfo::OperatingSystemVersion());
 #endif
 
 #if defined(OS_ANDROID)
-  os->set_build_fingerprint(
-      base::android::BuildInfo::GetInstance()->android_build_fp());
+  const auto* build_info = base::android::BuildInfo::GetInstance();
+  os->set_build_fingerprint(build_info->android_build_fp());
   if (!package_name.empty() && package_name != "com.android.chrome")
     system_profile->set_app_package_name(package_name);
+  system_profile->set_installer_package(
+      internal::ToInstallerPackage(build_info->installer_package_name()));
 #elif defined(OS_IOS)
   os->set_build_number(base::SysInfo::GetIOSBuildNumber());
 #endif
@@ -221,6 +363,7 @@ void MetricsLog::RecordCoreSystemProfile(
 void MetricsLog::RecordHistogramDelta(const std::string& histogram_name,
                                       const base::HistogramSamples& snapshot) {
   DCHECK(!closed_);
+  log_metadata_.AddSampleCount(snapshot.TotalCount());
   EncodeHistogramDelta(histogram_name, snapshot, &uma_proto_);
 }
 
@@ -298,7 +441,7 @@ const SystemProfileProto& MetricsLog::RecordEnvironment(
   //
   // The |has_environment| case will happen on the very first log, where we
   // call RecordEnvironment() in order to persist the system profile in the
-  // persistent hitograms .pma file.
+  // persistent histograms .pma file.
   if (has_environment_) {
     uma_proto_.clear_system_profile();
     MetricsLog::RecordCoreSystemProfile(client_,
@@ -311,32 +454,36 @@ const SystemProfileProto& MetricsLog::RecordEnvironment(
   WriteMetricsEnableDefault(client_->GetMetricsReportingDefaultState(),
                             system_profile);
 
-  std::string brand_code;
-  if (client_->GetBrand(&brand_code))
-    system_profile->set_brand_code(brand_code);
-
   delegating_provider->ProvideSystemProfileMetricsWithLogCreationTime(
       creation_time_, system_profile);
 
   return *system_profile;
 }
 
-bool MetricsLog::LoadSavedEnvironmentFromPrefs(PrefService* local_state,
-                                               std::string* app_version) {
+bool MetricsLog::LoadSavedEnvironmentFromPrefs(PrefService* local_state) {
   DCHECK(!has_environment_);
   has_environment_ = true;
-  app_version->clear();
 
   SystemProfileProto* system_profile = uma_proto()->mutable_system_profile();
   EnvironmentRecorder recorder(local_state);
-  bool success = recorder.LoadEnvironmentFromPrefs(system_profile);
-  if (success)
-    *app_version = system_profile->app_version();
-  return success;
+  return recorder.LoadEnvironmentFromPrefs(system_profile);
+}
+
+void MetricsLog::RecordLogWrittenByAppVersionIfNeeded() {
+  DCHECK(!closed_);
+  std::string current_version = client_->GetVersionString();
+  if (uma_proto()->system_profile().app_version() != current_version)
+    uma_proto()->mutable_system_profile()->set_log_written_by_app_version(
+        current_version);
 }
 
 void MetricsLog::CloseLog() {
   DCHECK(!closed_);
+  if (log_type_ == MetricsLog::ONGOING_LOG) {
+    RecordCurrentTime(clock_, network_clock_,
+                      /*record_time_zone=*/true,
+                      uma_proto_.mutable_time_log_closed());
+  }
   closed_ = true;
 }
 

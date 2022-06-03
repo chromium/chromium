@@ -18,7 +18,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -27,10 +26,11 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/save_page_type.h"
-#include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/referrer.h"
 #include "net/base/net_errors.h"
+#include "services/data_decoder/public/mojom/web_bundler.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-forward.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -41,13 +41,12 @@ class DownloadItemImpl;
 
 namespace content {
 class DownloadManagerImpl;
+class Page;
 class FrameTreeNode;
 class RenderFrameHostImpl;
-struct SavableSubframe;
 class SaveFileManager;
 class SaveItem;
 class SavePackage;
-class WebContents;
 
 // SavePackage manages the process of saving a page as only-HTML, complete-HTML
 // or MHTML and provides status information about the job.
@@ -65,7 +64,6 @@ class WebContents;
 // saving job, and exist for the duration of one contents's life time.
 class CONTENT_EXPORT SavePackage
     : public base::RefCountedThreadSafe<SavePackage>,
-      public WebContentsObserver,
       public base::SupportsWeakPtr<SavePackage> {
  public:
   enum WaitState {
@@ -90,7 +88,10 @@ class CONTENT_EXPORT SavePackage
   // Constructor for user initiated page saving. This constructor results in a
   // SavePackage that will generate and sanitize a suggested name for the user
   // in the "Save As" dialog box.
-  explicit SavePackage(WebContents* web_contents);
+  explicit SavePackage(Page& page);
+
+  SavePackage(const SavePackage&) = delete;
+  SavePackage& operator=(const SavePackage&) = delete;
 
   // Initialize the SavePackage. Returns true if it initializes properly.  Need
   // to make sure that this method must be called in the UI thread because using
@@ -126,6 +127,17 @@ class CONTENT_EXPORT SavePackage
 
   void GetSaveInfo();
 
+  // Response from |sender| frame to GetSavableResourceLinks request.
+  void SavableResourceLinksResponse(
+      RenderFrameHostImpl* sender,
+      const std::vector<GURL>& resources_list,
+      blink::mojom::ReferrerPtr referrer,
+      const std::vector<blink::mojom::SavableSubframePtr>& subframes);
+
+  // Response to GetSavableResourceLinks that indicates an error when processing
+  // the frame associated with |sender|.
+  void SavableResourceLinksError(RenderFrameHostImpl* sender);
+
  private:
   friend class base::RefCountedThreadSafe<SavePackage>;
 
@@ -151,25 +163,42 @@ class CONTENT_EXPORT SavePackage
 
   // Used only for testing. Bypasses the file and directory name generation /
   // sanitization by providing well known paths better suited for tests.
-  SavePackage(WebContents* web_contents,
+  SavePackage(Page& page,
               SavePageType save_type,
               const base::FilePath& file_full_path,
               const base::FilePath& directory_full_path);
 
-  ~SavePackage() override;
+  ~SavePackage();
 
   void InitWithDownloadItem(
       SavePackageDownloadCreatedCallback download_created_callback,
       download::DownloadItemImpl* item);
 
-  // Callback for WebContents::GenerateMHTML().
-  void OnMHTMLGenerated(int64_t size);
+  // Callback for WebContents::GenerateMHTML() and
+  // WebContents::GenerateWebBundle().
+  void OnMHTMLOrWebBundleGenerated(int64_t size);
+
+  // Callback for WebContents::GenerateWebBundle().
+  void OnWebBundleGenerated(uint64_t size,
+                            data_decoder::mojom::WebBundlerError error);
 
   // Notes from Init() above applies here as well.
   void InternalInit();
 
   void Stop(bool cancel_download_item);
   void CheckFinish();
+
+  // Callback used to check if renaming is allowed once paths to saved filed
+  // have been obtained from `file_manager`.
+  void CheckRenameAllowedForPaths(
+      base::flat_map<base::FilePath, base::FilePath> tmp_paths_to_final_paths);
+
+  // Called by CheckRenameAllowedForPaths after checking if the final renaming
+  // step should happen or not.
+  void RenameIfAllowed(bool allowed);
+
+  // Clears the associated page.
+  void ClearPage();
 
   // Initiate a saving job of a specific URL. We send the request to
   // SaveFileManager, which will dispatch it to different approach according to
@@ -179,10 +208,6 @@ class CONTENT_EXPORT SavePackage
 
   // Continue processing the save page job after one SaveItem has been finished.
   void DoSavingProcess();
-
-  // WebContentsObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message,
-                         RenderFrameHost* render_frame_host) override;
 
   // Update the download history of this item upon completion.
   void FinalizeDownloadEntry();
@@ -227,18 +252,12 @@ class CONTENT_EXPORT SavePackage
   // and pending responses are counted/tracked by
   // CompleteSavableResourceLinksResponse.
   //
-  // OnSavableResourceLinksResponse creates SaveItems for each savable resource
+  // SavableResourceLinksResponse creates SaveItems for each savable resource
   // and each subframe - these SaveItems get enqueued into |waiting_item_queue_|
   // with the help of CreatePendingSaveItem, EnqueueSavableResource,
   // EnqueueFrame.
   void GetSavableResourceLinks();
-
-  // Response from |sender| frame to GetSavableResourceLinks request.
-  void OnSavableResourceLinksResponse(
-      RenderFrameHostImpl* sender,
-      const std::vector<GURL>& resources_list,
-      const Referrer& referrer,
-      const std::vector<SavableSubframe>& subframes);
+  void GetSavableResourceLinksForRenderFrameHost(RenderFrameHost* rfh);
 
   // Helper for finding or creating a SaveItem with the given parameters.
   SaveItem* CreatePendingSaveItem(
@@ -266,13 +285,9 @@ class CONTENT_EXPORT SavePackage
                     int frame_tree_node_id,
                     const GURL& frame_original_url);
 
-  // Response to GetSavableResourceLinks that indicates an error when processing
-  // the frame associated with |sender|.
-  void OnSavableResourceLinksError(RenderFrameHostImpl* sender);
-
   // Helper tracking how many |number_of_frames_pending_response_| we have
   // left and kicking off the next phase after we got all the
-  // OnSavableResourceLinksResponse messages we were waiting for.
+  // SavableResourceLinks reply messages we were waiting for.
   void CompleteSavableResourceLinksResponse();
 
   // For each frame in the current page, ask the renderer process associated
@@ -283,12 +298,23 @@ class CONTENT_EXPORT SavePackage
   // with resource links replaced with a link to a locally saved copy.
   void GetSerializedHtmlWithLocalLinksForFrame(FrameTreeNode* target_tree_node);
 
-  // Routes html data (sent by renderer process in response to
-  // GetSerializedHtmlWithLocalLinksForFrame above) to the associated local file
-  // (and also keeps track of when all frames have been completed).
-  void OnSerializedHtmlWithLocalLinksResponse(RenderFrameHostImpl* sender,
-                                              const std::string& data,
-                                              bool end_of_data);
+  // Called when receiving a response to GetSerializedHtmlWithLocalLinks() from
+  // the renderer, including in |data| the amount of content serialized so far.
+  void OnDidReceiveSerializedHtmlData(base::WeakPtr<RenderFrameHostImpl> sender,
+                                      const std::string& data);
+
+  // Called right after the last  response to GetSerializedHtmlWithLocalLinks()
+  // has been received from the renderer, so that the SaveFileManager can also
+  // be notified that the entire process is over.
+  void OnDidFinishedSerializingHtmlData(
+      base::WeakPtr<RenderFrameHostImpl> sender);
+
+  // Helper function to lookup the right SaveItem for a given RenderFrameHost
+  // from the |frame_tree_node_id_to_save_item_| map. Used to avoid duplication
+  // and meant to be used from the DidReceiveData() and Done() callbacks used
+  // along with the call to the remote GetSerializedHtmlWithLocalLinks() method.
+  const SaveItem* LookupSaveItemForSender(
+      base::WeakPtr<RenderFrameHostImpl> sender);
 
   // Look up SaveItem by save item id from in progress map.
   SaveItem* LookupInProgressSaveItem(SaveItemId save_item_id);
@@ -296,11 +322,11 @@ class CONTENT_EXPORT SavePackage
   // Remove SaveItem from in progress map and put it to saved map.
   void PutInProgressItemToSavedMap(SaveItem* save_item);
 
-  // Retrieves the URL to be saved from the WebContents.
-  static GURL GetUrlToBeSaved(WebContents* web_contents);
+  // Retrieves the URL to be saved from the main frame.
+  static GURL GetUrlToBeSaved(RenderFrameHost* main_frame);
 
   static base::FilePath CreateDirectoryOnFileThread(
-      const base::string16& title,
+      const std::u16string& title,
       const GURL& page_url,
       bool can_save_as_complete,
       const std::string& mime_type,
@@ -331,6 +357,10 @@ class CONTENT_EXPORT SavePackage
   // files is presented as the total and received bytes.
   int64_t CurrentSpeed() const;
 
+  // The current page, may be null if the primary page has been navigated away
+  // or destroyed.
+  Page* page_;
+
   // A queue for items we are about to start saving.
   base::circular_deque<std::unique_ptr<SaveItem>> waiting_item_queue_;
 
@@ -347,7 +377,7 @@ class CONTENT_EXPORT SavePackage
   std::map<GURL, SaveItem*> url_to_save_item_;
 
   // Map used to route responses from a given a subframe (i.e.
-  // OnSerializedHtmlWithLocalLinksResponse) to the right SaveItem.
+  // GetSerializedHtmlWithLocalLinksResponse) to the right SaveItem.
   // Note that |frame_tree_node_id_to_save_item_| does NOT own SaveItems - they
   // remain owned by waiting_item_queue_, in_progress_items_, etc.
   std::unordered_map<int, SaveItem*> frame_tree_node_id_to_save_item_;
@@ -379,7 +409,7 @@ class CONTENT_EXPORT SavePackage
   base::FilePath saved_main_directory_path_;
 
   // The title of the page the user wants to save.
-  const base::string16 title_;
+  const std::u16string title_;
 
   // Used to calculate package download speed (in files per second).
   const base::TimeTicks start_tick_;
@@ -420,8 +450,6 @@ class CONTENT_EXPORT SavePackage
   // UKM IDs for reporting.
   ukm::SourceId ukm_source_id_;
   uint64_t ukm_download_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(SavePackage);
 };
 
 }  // namespace content

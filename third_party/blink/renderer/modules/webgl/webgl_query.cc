@@ -16,14 +16,8 @@ WebGLQuery::WebGLQuery(WebGL2RenderingContextBase* ctx)
       target_(0),
       can_update_availability_(false),
       query_result_available_(false),
-      query_result_(0) {
-  if (ctx->canvas()) {
-    task_runner_ =
-        ctx->canvas()->GetDocument().GetTaskRunner(TaskType::kInternalDefault);
-  } else {
-    // Fallback for OffscreenCanvas (no frame scheduler)
-    task_runner_ = Thread::Current()->GetTaskRunner();
-  }
+      query_result_(0),
+      task_runner_(ctx->GetContextTaskRunner()) {
   GLuint query;
   ctx->ContextGL()->GenQueriesEXT(1, &query);
   SetObject(query);

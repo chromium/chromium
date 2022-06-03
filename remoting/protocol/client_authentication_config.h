@@ -8,22 +8,26 @@
 #include <string>
 
 #include "base/callback.h"
+#include "remoting/protocol/token_validator.h"
 
 namespace remoting {
 namespace protocol {
 
-typedef base::Callback<void(const std::string& secret)> SecretFetchedCallback;
-typedef base::Callback<void(
+typedef base::RepeatingCallback<void(const std::string& secret)>
+    SecretFetchedCallback;
+typedef base::RepeatingCallback<void(
     bool pairing_supported,
-    const SecretFetchedCallback& secret_fetched_callback)> FetchSecretCallback;
+    const SecretFetchedCallback& secret_fetched_callback)>
+    FetchSecretCallback;
 
 // Callback passed to |FetchTokenCallback|, and called once the client
 // authentication finishes. |token| is an opaque string that should be sent
-// directly to the host. |shared_secret| should be used by the client to
-// create a V2Authenticator. In case of failure, the callback is called with
-// an empty |token| and |shared_secret|.
-typedef base::Callback<void(const std::string& token,
-                            const std::string& shared_secret)>
+// directly to the host. |validation_result.success()| should be used by the
+// client to create a V2Authenticator. In case of failure, the callback is
+// called with an empty |token| and |validation_result.is_error()| is true.
+typedef base::RepeatingCallback<void(
+    const std::string& token,
+    const TokenValidator::ValidationResult& validation_result)>
     ThirdPartyTokenFetchedCallback;
 
 // Fetches a third party token from |token_url|. |host_public_key| is sent to
@@ -32,7 +36,7 @@ typedef base::Callback<void(const std::string& token,
 // "hostjid:abc@example.com/123 clientjid:def@example.org/456".
 // |token_fetched_callback| is called when the client authentication ends, on
 // the same thread on which FetchThirdPartyTokenCallback was originally called.
-typedef base::Callback<void(
+typedef base::RepeatingCallback<void(
     const std::string& token_url,
     const std::string& scope,
     const ThirdPartyTokenFetchedCallback& token_fetched_callback)>

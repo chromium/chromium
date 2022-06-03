@@ -5,8 +5,9 @@
 #include "chrome/browser/offline_pages/offline_page_url_loader.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/offline_pages/offline_page_utils.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
@@ -14,18 +15,19 @@
 #include "components/offline_pages/core/offline_page_item.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/previews_state.h"
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/io_buffer.h"
-#include "net/url_request/url_request.h"
+#include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/loader/previews_state.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace offline_pages {
 
 namespace {
 
-constexpr size_t kBufferSize = 4096;
+constexpr uint32_t kBufferSize = 4096;
 
 content::WebContents* GetWebContents(int frame_tree_node_id) {
   return content::WebContents::FromFrameTreeNodeId(frame_tree_node_id);
@@ -39,7 +41,7 @@ net::RedirectInfo CreateRedirectInfo(const GURL& redirected_url,
                                      int response_code) {
   net::RedirectInfo redirect_info;
   redirect_info.new_url = redirected_url;
-  redirect_info.new_referrer_policy = net::URLRequest::NO_REFERRER;
+  redirect_info.new_referrer_policy = net::ReferrerPolicy::NO_REFERRER;
   redirect_info.new_method = "GET";
   redirect_info.status_code = response_code;
   redirect_info.new_site_for_cookies =
@@ -50,7 +52,7 @@ net::RedirectInfo CreateRedirectInfo(const GURL& redirected_url,
 bool ShouldCreateLoader(const network::ResourceRequest& resource_request) {
   // Ignore the requests not for the main frame.
   if (resource_request.resource_type !=
-      static_cast<int>(content::ResourceType::kMainFrame))
+      static_cast<int>(blink::mojom::ResourceType::kMainFrame))
     return false;
 
   // Ignore non-http/https requests.
@@ -90,9 +92,7 @@ OfflinePageURLLoader::OfflinePageURLLoader(
     : navigation_ui_data_(navigation_ui_data),
       frame_tree_node_id_(frame_tree_node_id),
       transition_type_(tentative_resource_request.transition_type),
-      loader_callback_(std::move(callback)),
-      is_offline_preview_allowed_(tentative_resource_request.previews_state &
-                                  content::OFFLINE_PAGE_ON) {
+      loader_callback_(std::move(callback)) {
   // TODO(crbug.com/876527): Figure out how offline page interception should
   // interact with URLLoaderThrottles. It might be incorrect to use
   // |tentative_resource_request.headers| here, since throttles can rewrite
@@ -113,7 +113,8 @@ void OfflinePageURLLoader::SetTabIdGetterForTesting(
 void OfflinePageURLLoader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
-    const base::Optional<GURL>& new_url) {
+    const net::HttpRequestHeaders& modified_cors_exempt_headers,
+    const absl::optional<GURL>& new_url) {
   NOTREACHED();
 }
 
@@ -204,24 +205,20 @@ void OfflinePageURLLoader::SetOfflinePageNavigationUIData(
   navigation_data->SetOfflinePageNavigationUIData(std::move(offline_page_data));
 }
 
-bool OfflinePageURLLoader::ShouldAllowPreview() const {
-  return is_offline_preview_allowed_;
-}
-
 int OfflinePageURLLoader::GetPageTransition() const {
   return transition_type_;
 }
 
 OfflinePageRequestHandler::Delegate::WebContentsGetter
 OfflinePageURLLoader::GetWebContentsGetter() const {
-  return base::Bind(&GetWebContents, frame_tree_node_id_);
+  return base::BindRepeating(&GetWebContents, frame_tree_node_id_);
 }
 
 OfflinePageRequestHandler::Delegate::TabIdGetter
 OfflinePageURLLoader::GetTabIdGetter() const {
   if (!tab_id_getter_.is_null())
     return tab_id_getter_;
-  return base::Bind(&GetTabId);
+  return base::BindRepeating(&GetTabId);
 }
 
 void OfflinePageURLLoader::ReadRawData() {
@@ -257,8 +254,9 @@ void OfflinePageURLLoader::OnReceiveResponse(
       &OfflinePageURLLoader::OnMojoDisconnect, weak_ptr_factory_.GetWeakPtr()));
   client_.Bind(std::move(client));
 
-  mojo::DataPipe pipe(kBufferSize);
-  if (!pipe.consumer_handle.is_valid()) {
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  if (mojo::CreateDataPipe(kBufferSize, producer_handle_, consumer_handle) !=
+      MOJO_RESULT_OK) {
     Finish(net::ERR_FAILED);
     return;
   }
@@ -286,9 +284,7 @@ void OfflinePageURLLoader::OnReceiveResponse(
   response_head->content_length = file_size;
 
   client_->OnReceiveResponse(std::move(response_head));
-  client_->OnStartLoadingResponseBody(std::move(pipe.consumer_handle));
-
-  producer_handle_ = std::move(pipe.producer_handle);
+  client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(
       FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,

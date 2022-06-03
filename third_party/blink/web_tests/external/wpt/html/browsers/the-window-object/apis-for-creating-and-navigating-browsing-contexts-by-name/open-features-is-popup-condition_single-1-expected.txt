@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS undefined should set BarProp visibility to true
+PASS "popup" should set BarProp visibility to false
+PASS "popup=1" should set BarProp visibility to false
+FAIL "popup=0" should set BarProp visibility to true assert_equals: window.locationbar.visible expected true but got false
+FAIL "location" should set BarProp visibility to false assert_equals: window.locationbar.visible expected false but got true
+FAIL "location=yes" should set BarProp visibility to false assert_equals: window.locationbar.visible expected false but got true
+PASS "location=no" should set BarProp visibility to false
+FAIL "toolbar" should set BarProp visibility to false assert_equals: window.locationbar.visible expected false but got true
+FAIL "toolbar=yes" should set BarProp visibility to false assert_equals: window.locationbar.visible expected false but got true
+PASS "toolbar=no" should set BarProp visibility to false
+FAIL "menubar" should set BarProp visibility to false assert_equals: window.menubar.visible expected false but got true
+FAIL "menubar=yes" should set BarProp visibility to false assert_equals: window.menubar.visible expected false but got true
+PASS "menubar=no" should set BarProp visibility to false
+PASS "resizable" should set BarProp visibility to false
+PASS "resizable=yes" should set BarProp visibility to false
+PASS "resizable=no" should set BarProp visibility to false
+Harness: the test ran to completion.
+

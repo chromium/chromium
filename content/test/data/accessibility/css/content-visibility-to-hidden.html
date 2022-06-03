@@ -1,0 +1,27 @@
+<!--
+@BLINK-ALLOW:className*
+@WAIT-FOR:done
+-->
+<style>
+.hidden {
+  content-visibility: hidden;
+}
+</style>
+<div id="container">
+  <div role="group" id="target" aria-labelledby="target_label">
+    target
+    <div id="child">
+      child
+    </div>
+    <div id="target_label">Label</div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(() => {
+      document.querySelector('#target').classList.add("hidden");
+      document.title='done';
+    }, 50);
+  });
+</script>

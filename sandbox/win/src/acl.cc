@@ -7,8 +7,9 @@
 #include <aclapi.h>
 #include <sddl.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/free_deleter.h"
+#include "base/notreached.h"
 
 namespace sandbox {
 

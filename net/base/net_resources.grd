@@ -9,7 +9,7 @@
   <translations />
   <release seq="1">
     <includes>
-      <include name="IDR_DIR_HEADER_HTML" file="dir_header.html" type="BINDATA" compress="gzip" />
+      <include name="IDR_DIR_HEADER_HTML" file="dir_header.html" type="BINDATA" />
     </includes>
   </release>
 </grit>

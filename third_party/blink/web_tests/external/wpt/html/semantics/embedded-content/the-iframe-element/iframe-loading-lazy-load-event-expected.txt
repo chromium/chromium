@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL In-viewport loading=lazy iframe does not block the load event assert_true: The visible iframe should not block the load event expected true got false
+FAIL In-viewport loading=lazy visibility:hidden iframe does not block the load event assert_true: The hidden iframe should not block the load event expected true got false
+Harness: the test ran to completion.
+

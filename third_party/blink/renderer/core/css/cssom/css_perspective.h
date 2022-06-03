@@ -5,7 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_PERSPECTIVE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_PERSPECTIVE_H_
 
-#include "base/macros.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_string.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/cssom/css_numeric_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_component.h"
@@ -23,16 +23,18 @@ class CORE_EXPORT CSSPerspective final : public CSSTransformComponent {
 
  public:
   // Constructor defined in the IDL.
-  static CSSPerspective* Create(CSSNumericValue*, ExceptionState&);
+  static CSSPerspective* Create(V8CSSPerspectiveValue*, ExceptionState&);
 
   // Blink-internal ways of creating CSSPerspectives.
   static CSSPerspective* FromCSSValue(const CSSFunctionValue&);
 
-  CSSPerspective(CSSNumericValue* length);
+  explicit CSSPerspective(V8CSSPerspectiveValue* length);
+  CSSPerspective(const CSSPerspective&) = delete;
+  CSSPerspective& operator=(const CSSPerspective&) = delete;
 
   // Getters and setters for attributes defined in the IDL.
-  CSSNumericValue* length() { return length_.Get(); }
-  void setLength(CSSNumericValue*, ExceptionState&);
+  V8CSSPerspectiveValue* length() { return length_.Get(); }
+  void setLength(V8CSSPerspectiveValue*, ExceptionState&);
 
   // From CSSTransformComponent
   // Setting is2D for CSSPerspective does nothing.
@@ -45,16 +47,15 @@ class CORE_EXPORT CSSPerspective final : public CSSTransformComponent {
   TransformComponentType GetType() const final { return kPerspectiveType; }
   const CSSFunctionValue* ToCSSValue() const final;
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(length_);
     CSSTransformComponent::Trace(visitor);
   }
 
  private:
-  Member<CSSNumericValue> length_;
-  DISALLOW_COPY_AND_ASSIGN(CSSPerspective);
+  Member<V8CSSPerspectiveValue> length_;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSSOM_CSS_PERSPECTIVE_H_

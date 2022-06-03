@@ -1,0 +1,8 @@
+Tests accessibility of console containing an error message using the axe-core linter.
+invalidVar123
+VM:1 Uncaught ReferenceError: invalidVar123 is not defined
+    at <anonymous>:1:1
+(anonymous) @ VM:1
+aXe violations: []
+
+

@@ -17,10 +17,11 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
-#include "base/sequenced_task_runner.h"
 #include "base/synchronization/lock.h"
 #include "base/task/post_task.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "base/thread_annotations.h"
 
 namespace net {
@@ -43,10 +44,12 @@ class SSLKeyLoggerImpl::Core
     // waiting to flush these to disk, but some buggy antiviruses point this at
     // a pipe and hang, so we avoid blocking shutdown. If writing to a real
     // file, writes should complete quickly enough that this does not matter.
-    task_runner_ = base::CreateSequencedTaskRunner(
-        {base::ThreadPool(), base::MayBlock(),
-         base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+        {base::MayBlock(), base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
   }
+
+  Core(const Core&) = delete;
+  Core& operator=(const Core&) = delete;
 
   void SetFile(base::File file) {
     file_.reset(base::FileToFILE(std::move(file), "a"));
@@ -116,8 +119,6 @@ class SSLKeyLoggerImpl::Core
   base::Lock lock_;
   bool lines_dropped_ GUARDED_BY(lock_) = false;
   std::vector<std::string> buffer_ GUARDED_BY(lock_);
-
-  DISALLOW_COPY_AND_ASSIGN(Core);
 };
 
 SSLKeyLoggerImpl::SSLKeyLoggerImpl(const base::FilePath& path)

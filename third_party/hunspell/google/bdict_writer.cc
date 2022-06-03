@@ -7,7 +7,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/stringprintf.h"
 #include "third_party/hunspell/google/bdict.h"
 

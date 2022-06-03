@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser;
 
-import android.support.test.filters.SmallTest;
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -15,6 +15,7 @@ import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.MetricsUtils;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
@@ -40,34 +41,35 @@ public class RestoreHistogramTest {
     @SmallTest
     public void testHistogramWriter() {
         LibraryLoader.getInstance().ensureInitialized();
-        MetricsUtils.HistogramDelta noRestoreDelta =
-                new MetricsUtils.HistogramDelta(ChromeBackupAgent.HISTOGRAM_ANDROID_RESTORE_RESULT,
-                        ChromeBackupAgent.RestoreStatus.NO_RESTORE);
-        MetricsUtils.HistogramDelta restoreCompletedDelta =
-                new MetricsUtils.HistogramDelta(ChromeBackupAgent.HISTOGRAM_ANDROID_RESTORE_RESULT,
-                        ChromeBackupAgent.RestoreStatus.RESTORE_COMPLETED);
-        MetricsUtils.HistogramDelta restoreStatusRecorded =
-                new MetricsUtils.HistogramDelta(ChromeBackupAgent.HISTOGRAM_ANDROID_RESTORE_RESULT,
-                        ChromeBackupAgent.RestoreStatus.RESTORE_STATUS_RECORDED);
+        MetricsUtils.HistogramDelta noRestoreDelta = new MetricsUtils.HistogramDelta(
+                ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
+                ChromeBackupAgentImpl.RestoreStatus.NO_RESTORE);
+        MetricsUtils.HistogramDelta restoreCompletedDelta = new MetricsUtils.HistogramDelta(
+                ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
+                ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED);
+        MetricsUtils.HistogramDelta restoreStatusRecorded = new MetricsUtils.HistogramDelta(
+                ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
+                ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED);
 
         // Check behavior with no preference set
-        ChromeBackupAgent.recordRestoreHistogram();
+        ChromeBackupAgentImpl.recordRestoreHistogram();
         Assert.assertEquals(1, noRestoreDelta.getDelta());
         Assert.assertEquals(0, restoreCompletedDelta.getDelta());
-        Assert.assertEquals(ChromeBackupAgent.RestoreStatus.RESTORE_STATUS_RECORDED,
-                ChromeBackupAgent.getRestoreStatus());
+        Assert.assertEquals(ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED,
+                ChromeBackupAgentImpl.getRestoreStatus());
 
         // Check behavior with a restore status
-        ChromeBackupAgent.setRestoreStatus(ChromeBackupAgent.RestoreStatus.RESTORE_COMPLETED);
-        ChromeBackupAgent.recordRestoreHistogram();
+        ChromeBackupAgentImpl.setRestoreStatus(
+                ChromeBackupAgentImpl.RestoreStatus.RESTORE_COMPLETED);
+        ChromeBackupAgentImpl.recordRestoreHistogram();
         Assert.assertEquals(1, noRestoreDelta.getDelta());
         Assert.assertEquals(1, restoreCompletedDelta.getDelta());
-        Assert.assertEquals(ChromeBackupAgent.RestoreStatus.RESTORE_STATUS_RECORDED,
-                ChromeBackupAgent.getRestoreStatus());
+        Assert.assertEquals(ChromeBackupAgentImpl.RestoreStatus.RESTORE_STATUS_RECORDED,
+                ChromeBackupAgentImpl.getRestoreStatus());
 
         // Second call should record nothing (note this assumes it doesn't record something totally
         // random)
-        ChromeBackupAgent.recordRestoreHistogram();
+        ChromeBackupAgentImpl.recordRestoreHistogram();
         Assert.assertEquals(0, restoreStatusRecorded.getDelta());
     }
 
@@ -81,9 +83,9 @@ public class RestoreHistogramTest {
     @SmallTest
     public void testWritingHistogramAtStartup() throws InterruptedException {
         LibraryLoader.getInstance().ensureInitialized();
-        MetricsUtils.HistogramDelta noRestoreDelta =
-                new MetricsUtils.HistogramDelta(ChromeBackupAgent.HISTOGRAM_ANDROID_RESTORE_RESULT,
-                        ChromeBackupAgent.RestoreStatus.NO_RESTORE);
+        MetricsUtils.HistogramDelta noRestoreDelta = new MetricsUtils.HistogramDelta(
+                ChromeBackupAgentImpl.HISTOGRAM_ANDROID_RESTORE_RESULT,
+                ChromeBackupAgentImpl.RestoreStatus.NO_RESTORE);
 
         // Histogram should be written the first time the activity is started.
         mActivityTestRule.startMainActivityOnBlankPage();

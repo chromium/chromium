@@ -2,10 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {util} from '../../common/js/util.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {MetadataModel} from './metadata/metadata_model.js';
+import {FileMetadataFormatter} from './ui/file_metadata_formatter.js';
+import {ListContainer} from './ui/list_container.js';
+
 /**
  * Controller for list contents update.
  */
-class MetadataUpdateController {
+export class MetadataUpdateController {
   /**
    * @param {!ListContainer} listContainer
    * @param {!DirectoryModel} directoryModel

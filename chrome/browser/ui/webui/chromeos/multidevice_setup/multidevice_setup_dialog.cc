@@ -4,18 +4,22 @@
 
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_dialog.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/window_backdrop.h"
 #include "ash/public/cpp/window_properties.h"
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
-#include "chrome/browser/chromeos/multidevice_setup/multidevice_setup_service_factory.h"
+#include "chrome/browser/ash/login/ui/oobe_dialog_size_utils.h"
+#include "chrome/browser/ash/multidevice_setup/multidevice_setup_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_handler.h"
 #include "chrome/browser/ui/webui/chromeos/multidevice_setup/multidevice_setup_localized_strings_provider.h"
 #include "chrome/browser/ui/webui/metrics_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -35,31 +39,31 @@ namespace chromeos {
 
 namespace multidevice_setup {
 
-namespace {
-
-constexpr int kPreferredDialogHeightPx = 640;
-constexpr int kPreferredDialogWidthPx = 768;
-
-}  // namespace
-
 // static
 MultiDeviceSetupDialog* MultiDeviceSetupDialog::current_instance_ = nullptr;
 
 // static
+gfx::NativeWindow MultiDeviceSetupDialog::containing_window_ = nullptr;
+
+// static
 void MultiDeviceSetupDialog::Show() {
-  // The dialog is already showing, so there is nothing to do.
-  if (current_instance_)
+  // Focus the window hosting the dialog that has already been created.
+  if (containing_window_) {
+    DCHECK(current_instance_);
+    containing_window_->Focus();
     return;
+  }
 
   current_instance_ = new MultiDeviceSetupDialog();
-  gfx::NativeWindow window = chrome::ShowWebDialog(
-      nullptr /* parent */, ProfileManager::GetActiveUserProfile(),
-      current_instance_);
+  current_instance_->ShowSystemDialogForBrowserContext(
+      ProfileManager::GetActiveUserProfile(), nullptr);
+
+  containing_window_ = current_instance_->dialog_window();
 
   // Remove the black backdrop behind the dialog window which appears in tablet
   // and full-screen mode.
-  window->SetProperty(ash::kBackdropWindowMode,
-                      ash::BackdropWindowMode::kDisabled);
+  ash::WindowBackdrop::Get(containing_window_)
+      ->SetBackdropMode(ash::WindowBackdrop::BackdropMode::kDisabled);
 }
 
 // static
@@ -79,7 +83,7 @@ void MultiDeviceSetupDialog::AddOnCloseCallback(base::OnceClosure callback) {
 
 MultiDeviceSetupDialog::MultiDeviceSetupDialog()
     : SystemWebDialogDelegate(GURL(chrome::kChromeUIMultiDeviceSetupUrl),
-                              base::string16()) {}
+                              std::u16string()) {}
 
 MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
   for (auto& callback : on_close_callbacks_)
@@ -87,19 +91,14 @@ MultiDeviceSetupDialog::~MultiDeviceSetupDialog() {
 }
 
 void MultiDeviceSetupDialog::GetDialogSize(gfx::Size* size) const {
-  // Note: The size is calculated once based on the current screen orientation
-  // and is not ever updated. It might be possible to resize the dialog upon
-  // each screen rotation, but https://crbug.com/1030993 prevents this from
-  // working.
-  // TODO(https://crbug.com/1030993): Explore resizing the dialog dynamically.
-  static const gfx::Size dialog_size = ComputeDialogSizeForInternalScreen(
-      gfx::Size(kPreferredDialogWidthPx, kPreferredDialogHeightPx));
+  const gfx::Size dialog_size = CalculateOobeDialogSizeForPrimaryDisplay();
   size->SetSize(dialog_size.width(), dialog_size.height());
 }
 
 void MultiDeviceSetupDialog::OnDialogClosed(const std::string& json_retval) {
   DCHECK(this == current_instance_);
   current_instance_ = nullptr;
+  containing_window_ = nullptr;
 
   // Note: The call below deletes |this|, so there is no further need to keep
   // track of the pointer.
@@ -111,31 +110,25 @@ MultiDeviceSetupDialogUI::MultiDeviceSetupDialogUI(content::WebUI* web_ui)
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(chrome::kChromeUIMultiDeviceSetupHost);
 
+  source->DisableTrustedTypesCSP();
+
   chromeos::multidevice_setup::AddLocalizedStrings(source);
   source->UseStringsJs();
-  source->SetDefaultResource(
-      IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
 
-  // Note: The |kMultiDeviceSetupResourcesSize| and |kMultideviceSetupResources|
-  // fields are defined in the generated file
-  // chrome/grit/multidevice_setup_resources_map.h.
-  for (size_t i = 0; i < kMultideviceSetupResourcesSize; ++i) {
-    source->AddResourcePath(kMultideviceSetupResources[i].name,
-                            kMultideviceSetupResources[i].value);
-  }
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kMultideviceSetupResources,
+                      kMultideviceSetupResourcesSize),
+      IDR_MULTIDEVICE_SETUP_MULTIDEVICE_SETUP_DIALOG_HTML);
 
   web_ui->AddMessageHandler(std::make_unique<MultideviceSetupHandler>());
   web_ui->AddMessageHandler(std::make_unique<MetricsHandler>());
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
-
-  // Add Mojo bindings to this WebUI so that Mojo calls can occur in JavaScript.
-  AddHandlerToRegistry(base::BindRepeating(
-      &MultiDeviceSetupDialogUI::BindMultiDeviceSetup, base::Unretained(this)));
 }
 
 MultiDeviceSetupDialogUI::~MultiDeviceSetupDialogUI() = default;
 
-void MultiDeviceSetupDialogUI::BindMultiDeviceSetup(
+void MultiDeviceSetupDialogUI::BindInterface(
     mojo::PendingReceiver<chromeos::multidevice_setup::mojom::MultiDeviceSetup>
         receiver) {
   MultiDeviceSetupService* service =
@@ -144,6 +137,8 @@ void MultiDeviceSetupDialogUI::BindMultiDeviceSetup(
   if (service)
     service->BindMultiDeviceSetup(std::move(receiver));
 }
+
+WEB_UI_CONTROLLER_TYPE_IMPL(MultiDeviceSetupDialogUI)
 
 }  // namespace multidevice_setup
 

@@ -6,32 +6,23 @@
 #define CONTENT_PUBLIC_BROWSER_TRACING_DELEGATE_H_
 
 #include <memory>
-#include <string>
 
 #include "base/callback.h"
 #include "content/common/content_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
-class DictionaryValue;
-}
-
-namespace network {
-class SharedURLLoaderFactory;
-}
+class Value;
+}  // namespace base
 
 namespace content {
 class BackgroundTracingConfig;
-class TraceUploader;
 
 // This can be implemented by the embedder to provide functionality for the
 // about://tracing WebUI.
 class CONTENT_EXPORT TracingDelegate {
  public:
   virtual ~TracingDelegate() {}
-
-  // Provide trace uploading functionality; see trace_uploader.h.
-  virtual std::unique_ptr<TraceUploader> GetTraceUploader(
-      scoped_refptr<network::SharedURLLoaderFactory>) = 0;
 
   // This can be used to veto a particular background tracing scenario.
   virtual bool IsAllowedToBeginBackgroundScenario(
@@ -40,12 +31,15 @@ class CONTENT_EXPORT TracingDelegate {
 
   virtual bool IsAllowedToEndBackgroundScenario(
       const content::BackgroundTracingConfig& config,
-      bool requires_anonymized_data);
+      bool requires_anonymized_data,
+      bool is_crash_scenario);
 
-  virtual bool IsProfileLoaded();
+  // Whether system-wide performance trace collection using the external system
+  // tracing service is enabled.
+  virtual bool IsSystemWideTracingEnabled();
 
   // Used to add any additional metadata to traces.
-  virtual std::unique_ptr<base::DictionaryValue> GenerateMetadataDict();
+  virtual absl::optional<base::Value> GenerateMetadataDict();
 };
 
 }  // namespace content

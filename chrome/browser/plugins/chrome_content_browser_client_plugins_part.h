@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_PLUGINS_CHROME_CONTENT_BROWSER_CLIENT_PLUGINS_PART_H_
 #define CHROME_BROWSER_PLUGINS_CHROME_CONTENT_BROWSER_CLIENT_PLUGINS_PART_H_
 
-#include "base/macros.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "content/public/browser/browser_ppapi_host.h"
 #include "content/public/common/socket_permission_request.h"
@@ -17,20 +16,24 @@ class ChromeContentBrowserClientPluginsPart
     : public ChromeContentBrowserClientParts {
  public:
   ChromeContentBrowserClientPluginsPart();
+
+  ChromeContentBrowserClientPluginsPart(
+      const ChromeContentBrowserClientPluginsPart&) = delete;
+  ChromeContentBrowserClientPluginsPart& operator=(
+      const ChromeContentBrowserClientPluginsPart&) = delete;
+
   ~ChromeContentBrowserClientPluginsPart() override;
 
   // Corresponding to the ChromeContentBrowserClient function of the same name.
   static bool IsPluginAllowedToUseDevChannelAPIs(
       content::BrowserContext* browser_context,
-      const GURL& url,
-      const std::set<std::string>& allowed_dev_channel_origins);
+      const GURL& url);
 
   static bool AllowPepperSocketAPI(
       content::BrowserContext* browser_context,
       const GURL& url,
       bool private_api,
-      const content::SocketPermissionRequest* params,
-      const std::set<std::string>& allowed_socket_origin);
+      const content::SocketPermissionRequest* params);
 
   static bool IsPepperVpnProviderAPIAllowed(
       content::BrowserContext* browser_context,
@@ -38,8 +41,7 @@ class ChromeContentBrowserClientPluginsPart
 
   static bool IsPluginAllowedToCallRequestOSFileHandle(
       content::BrowserContext* browser_context,
-      const GURL& url,
-      const std::set<std::string>& allowed_file_handle_origins);
+      const GURL& url);
 
   static void DidCreatePpapiPlugin(content::BrowserPpapiHost* browser_host);
 
@@ -48,8 +50,6 @@ class ChromeContentBrowserClientPluginsPart
       service_manager::BinderRegistry* registry,
       blink::AssociatedInterfaceRegistry* associated_registry,
       content::RenderProcessHost* render_process_host) override;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeContentBrowserClientPluginsPart);
 };
 
 }  // namespace plugins

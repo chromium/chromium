@@ -3,5 +3,5 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <resources>
-    <drawable name="bg_white_dialog">@drawable/popup_bg_tinted</drawable>
+    <drawable name="bg_white_dialog">@drawable/dialog_bg_tinted</drawable>
 </resources>

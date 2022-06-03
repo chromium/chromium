@@ -9,7 +9,7 @@
 #include "cc/layers/surface_layer.h"
 #include "chrome/android/chrome_jni_headers/PictureInPictureActivity_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/android/thin_webview/compositor_view.h"
+#include "components/thin_webview/compositor_view.h"
 #include "content/public/browser/overlay_window.h"
 #include "content/public/browser/picture_in_picture_window_controller.h"
 #include "ui/android/window_android_compositor.h"
@@ -35,7 +35,7 @@ OverlayWindowAndroid::OverlayWindowAndroid(
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_createActivity(
       env, reinterpret_cast<intptr_t>(this),
-      TabAndroid::FromWebContents(controller_->GetInitiatorWebContents())
+      TabAndroid::FromWebContents(controller_->GetWebContents())
           ->GetJavaObject());
 }
 
@@ -52,6 +52,9 @@ void OverlayWindowAndroid::OnActivityStart(
   java_ref_ = JavaObjectWeakGlobalRef(env, obj);
   window_android_ = ui::WindowAndroid::FromJavaWindowAndroid(jwindow_android);
   window_android_->AddObserver(this);
+
+  Java_PictureInPictureActivity_setPlayPauseButtonVisibility(
+      env, java_ref_.get(env), is_play_pause_button_visible_);
 
   if (video_size_.IsEmpty())
     return;
@@ -82,8 +85,8 @@ void OverlayWindowAndroid::Destroy(JNIEnv* env) {
     window_android_ = nullptr;
   }
 
-  controller_->CloseAndFocusInitiator();
-  controller_->OnWindowDestroyed();
+  controller_->FocusInitiator();
+  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
 }
 
 void OverlayWindowAndroid::Play(JNIEnv* env) {
@@ -113,6 +116,16 @@ void OverlayWindowAndroid::OnViewSizeChanged(JNIEnv* env,
 }
 
 void OverlayWindowAndroid::Close() {
+  CloseInternal();
+  controller_->OnWindowDestroyed(/*should_pause_video=*/true);
+}
+
+void OverlayWindowAndroid::Hide() {
+  CloseInternal();
+  controller_->OnWindowDestroyed(/*should_pause_video=*/false);
+}
+
+void OverlayWindowAndroid::CloseInternal() {
   if (java_ref_.is_uninitialized())
     return;
 
@@ -121,11 +134,6 @@ void OverlayWindowAndroid::Close() {
   window_android_ = nullptr;
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_close(env, java_ref_.get(env));
-  controller_->OnWindowDestroyed();
-}
-
-void OverlayWindowAndroid::Hide() {
-  Close();
 }
 
 bool OverlayWindowAndroid::IsActive() {
@@ -153,6 +161,16 @@ void OverlayWindowAndroid::UpdateVideoSize(const gfx::Size& natural_size) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PictureInPictureActivity_updateVideoSize(
       env, java_ref_.get(env), natural_size.width(), natural_size.height());
+}
+
+void OverlayWindowAndroid::SetPlayPauseButtonVisibility(bool is_visible) {
+  is_play_pause_button_visible_ = is_visible;
+  if (java_ref_.is_uninitialized())
+    return;
+
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_PictureInPictureActivity_setPlayPauseButtonVisibility(
+      env, java_ref_.get(env), is_visible);
 }
 
 void OverlayWindowAndroid::SetSurfaceId(const viz::SurfaceId& surface_id) {

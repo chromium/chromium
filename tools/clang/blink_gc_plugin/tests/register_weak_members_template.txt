@@ -1,6 +1,6 @@
 In file included from register_weak_members_template.cpp:5:
 ./register_weak_members_template.h:19:3: warning: [blink-gc] Class 'HasUntracedWeakMembers' has untraced fields that require tracing.
-  void Trace(Visitor* visitor) {
+  void Trace(Visitor* visitor) const {
   ^
 ./register_weak_members_template.h:28:3: note: [blink-gc] Untraced field 'x_' declared here:
   WeakMember<X> x_;

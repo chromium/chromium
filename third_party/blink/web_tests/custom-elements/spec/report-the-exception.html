@@ -147,11 +147,6 @@ function assert_type_error_event(error) {
   assert_equals(error.error.name, 'TypeError');
 }
 
-function assert_invalid_state_dom_error_event(error) {
-  assert_not_muted_error_event(error);
-  assert_equals(error.error.name, 'InvalidStateError');
-}
-
 test_with_window((w) => {
   // "create an element" 6.1.3, throw a TypeError.
   // https://dom.spec.whatwg.org/#concept-create-element
@@ -160,10 +155,10 @@ test_with_window((w) => {
   constructor_returns_bad_object + instantiate);
 
 test_with_window((w) => {
-  // "upgrade an element" 10, throw an InvalidStateError DOMException.
+  // "upgrade an element" 10, throw a TypeError.
   // https://html.spec.whatwg.org/multipage/scripting.html#upgrades
   w.document.body.innerHTML = instantiate;
-  assert_invalid_state_dom_error_event(w.errors[0]);
+  assert_type_error_event(w.errors[0]);
 }, 'Upgrade reaction invokes the constructor that returns a bad object',
   constructor_returns_bad_object);
 </script>

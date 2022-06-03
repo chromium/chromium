@@ -10,22 +10,20 @@
 #include <vector>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/supports_user_data.h"
 #include "components/feature_engagement/public/tracker.h"
 
 namespace feature_engagement {
 class AvailabilityModel;
-class Configuration;
 class ConditionValidator;
+class Configuration;
 class DisplayLockController;
 class DisplayLockHandle;
 class EventModel;
 class TimeProvider;
 
 // The internal implementation of the Tracker.
-class TrackerImpl : public Tracker, public base::SupportsUserData {
+class TrackerImpl : public Tracker {
  public:
   TrackerImpl(std::unique_ptr<EventModel> event_model,
               std::unique_ptr<AvailabilityModel> availability_model,
@@ -33,15 +31,25 @@ class TrackerImpl : public Tracker, public base::SupportsUserData {
               std::unique_ptr<DisplayLockController> display_lock_controller,
               std::unique_ptr<ConditionValidator> condition_validator,
               std::unique_ptr<TimeProvider> time_provider);
+
+  TrackerImpl(const TrackerImpl&) = delete;
+  TrackerImpl& operator=(const TrackerImpl&) = delete;
+
   ~TrackerImpl() override;
 
   // Tracker implementation.
   void NotifyEvent(const std::string& event) override;
   bool ShouldTriggerHelpUI(const base::Feature& feature) override;
+  TriggerDetails ShouldTriggerHelpUIWithSnooze(
+      const base::Feature& feature) override;
   bool WouldTriggerHelpUI(const base::Feature& feature) const override;
   Tracker::TriggerState GetTriggerState(
       const base::Feature& feature) const override;
+  bool HasEverTriggered(const base::Feature& feature,
+                        bool from_window) const override;
   void Dismissed(const base::Feature& feature) override;
+  void DismissedWithSnooze(const base::Feature& feature,
+                           absl::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
@@ -95,8 +103,6 @@ class TrackerImpl : public Tracker, public base::SupportsUserData {
   std::vector<OnInitializedCallback> on_initialized_callbacks_;
 
   base::WeakPtrFactory<TrackerImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(TrackerImpl);
 };
 
 }  // namespace feature_engagement

@@ -2,15 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://w3c.github.io/webpayments-methods-card/#basiccardrequest
-
-enum BasicCardType {
-    "credit",
-    "debit",
-    "prepaid"
-};
+// https://w3c.github.io/payment-method-basic-card/#basiccardrequest-dictionary
 
 dictionary BasicCardRequest {
-    sequence<DOMString> supportedNetworks;
-    sequence<BasicCardType> supportedTypes;
+    sequence<DOMString> supportedNetworks = [];
 };

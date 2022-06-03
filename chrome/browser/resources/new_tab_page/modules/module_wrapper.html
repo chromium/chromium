@@ -1,0 +1,26 @@
+<style>
+  :host {
+    background-color: var(--ntp-background-override-color);
+    border: solid var(--ntp-border-color) 1px;
+    border-radius: var(--ntp-module-border-radius);
+    box-sizing: border-box;
+    display: block;
+    overflow: hidden;
+    position: relative;
+  }
+
+  #impressionProbe {
+    height: 27px;
+    pointer-events: none;
+    position: absolute;
+    width: 100%;
+  }
+
+  #moduleElement {
+    align-items: center;
+    display: flex;
+    justify-content: center;
+  }
+</style>
+<div id="impressionProbe"></div>
+<div id="moduleElement"></div>

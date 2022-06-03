@@ -89,7 +89,7 @@ bool StructTraits<content_settings::mojom::ContentSettingPatternSourceDataView,
   return data.ReadPrimaryPattern(&out->primary_pattern) &&
          data.ReadSecondaryPattern(&out->secondary_pattern) &&
          data.ReadSettingValue(&out->setting_value) &&
-         data.ReadSource(&out->source);
+         data.ReadExpiration(&out->expiration) && data.ReadSource(&out->source);
 }
 
 // static
@@ -99,9 +99,9 @@ bool StructTraits<content_settings::mojom::RendererContentSettingRulesDataView,
          RendererContentSettingRules* out) {
   return data.ReadImageRules(&out->image_rules) &&
          data.ReadScriptRules(&out->script_rules) &&
-         data.ReadClientHintsRules(&out->client_hints_rules) &&
          data.ReadPopupRedirectRules(&out->popup_redirect_rules) &&
-         data.ReadMixedContentRules(&out->mixed_content_rules);
+         data.ReadMixedContentRules(&out->mixed_content_rules) &&
+         data.ReadAutoDarkContentRules(&out->auto_dark_content_rules);
 }
 
 }  // namespace mojo

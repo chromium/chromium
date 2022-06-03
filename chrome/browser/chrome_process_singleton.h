@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "chrome/browser/process_singleton.h"
 #include "chrome/browser/process_singleton_modal_dialog_lock.h"
 #include "chrome/browser/process_singleton_startup_lock.h"
@@ -30,6 +29,9 @@ class ChromeProcessSingleton {
       const base::FilePath& user_data_dir,
       const ProcessSingleton::NotificationCallback& notification_callback);
 
+  ChromeProcessSingleton(const ChromeProcessSingleton&) = delete;
+  ChromeProcessSingleton& operator=(const ChromeProcessSingleton&) = delete;
+
   ~ChromeProcessSingleton();
 
   // Notify another process, if available. Otherwise sets ourselves as the
@@ -44,7 +46,8 @@ class ChromeProcessSingleton {
 
   // Receives a callback to be run to close the active modal dialog, or an empty
   // closure if the active dialog is dismissed.
-  void SetModalDialogNotificationHandler(base::Closure notification_handler);
+  void SetModalDialogNotificationHandler(
+      base::RepeatingClosure notification_handler);
 
   // Executes previously queued command-line invocations and allows future
   // invocations to be executed immediately.
@@ -63,8 +66,6 @@ class ChromeProcessSingleton {
 
   // The basic ProcessSingleton
   ProcessSingleton process_singleton_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeProcessSingleton);
 };
 
 #endif  // CHROME_BROWSER_CHROME_PROCESS_SINGLETON_H_

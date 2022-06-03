@@ -7,7 +7,7 @@
 #include <limits>
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_input_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
 
 using blink::WebGestureEvent;
 using blink::WebInputEvent;
@@ -25,20 +25,18 @@ using EventWithLatencyInfoTest = testing::Test;
 TouchEventWithLatencyInfo CreateTouchEvent(WebInputEvent::Type type,
                                            double timestamp,
                                            unsigned touch_count = 1) {
-  TouchEventWithLatencyInfo touch(
-      type, WebInputEvent::kNoModifiers,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp),
-      ui::LatencyInfo());
+  TouchEventWithLatencyInfo touch(type, WebInputEvent::kNoModifiers,
+                                  base::TimeTicks() + base::Seconds(timestamp),
+                                  ui::LatencyInfo());
   touch.event.touches_length = touch_count;
   return touch;
 }
 
 MouseEventWithLatencyInfo CreateMouseEvent(WebInputEvent::Type type,
                                            double timestamp) {
-  return MouseEventWithLatencyInfo(
-      type, WebInputEvent::kNoModifiers,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp),
-      ui::LatencyInfo());
+  return MouseEventWithLatencyInfo(type, WebInputEvent::kNoModifiers,
+                                   base::TimeTicks() + base::Seconds(timestamp),
+                                   ui::LatencyInfo());
 }
 
 MouseWheelEventWithLatencyInfo CreateMouseWheelEvent(
@@ -47,9 +45,8 @@ MouseWheelEventWithLatencyInfo CreateMouseWheelEvent(
     float deltaY = 0.0f,
     int modifiers = WebInputEvent::kNoModifiers) {
   MouseWheelEventWithLatencyInfo mouse_wheel(
-      WebInputEvent::kMouseWheel, modifiers,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp),
-      ui::LatencyInfo());
+      WebInputEvent::Type::kMouseWheel, modifiers,
+      base::TimeTicks() + base::Seconds(timestamp), ui::LatencyInfo());
   mouse_wheel.event.delta_x = deltaX;
   mouse_wheel.event.delta_y = deltaY;
   return mouse_wheel;
@@ -61,17 +58,16 @@ GestureEventWithLatencyInfo CreateGestureEvent(WebInputEvent::Type type,
                                                float y = 0.0f) {
   GestureEventWithLatencyInfo gesture(
       type, WebInputEvent::kNoModifiers,
-      base::TimeTicks() + base::TimeDelta::FromSecondsD(timestamp),
-      ui::LatencyInfo());
+      base::TimeTicks() + base::Seconds(timestamp), ui::LatencyInfo());
   gesture.event.SetPositionInWidget(gfx::PointF(x, y));
   return gesture;
 }
 
 TEST_F(EventWithLatencyInfoTest, TimestampCoalescingForMouseEvent) {
   MouseEventWithLatencyInfo mouse_0 =
-      CreateMouseEvent(WebInputEvent::kMouseMove, 5.0);
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove, 5.0);
   MouseEventWithLatencyInfo mouse_1 =
-      CreateMouseEvent(WebInputEvent::kMouseMove, 10.0);
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove, 10.0);
 
   ASSERT_TRUE(mouse_0.CanCoalesceWith(mouse_1));
   mouse_0.CoalesceWith(mouse_1);
@@ -91,9 +87,9 @@ TEST_F(EventWithLatencyInfoTest, TimestampCoalescingForMouseWheelEvent) {
 
 TEST_F(EventWithLatencyInfoTest, TimestampCoalescingForTouchEvent) {
   TouchEventWithLatencyInfo touch_0 =
-      CreateTouchEvent(WebInputEvent::kTouchMove, 5.0);
+      CreateTouchEvent(WebInputEvent::Type::kTouchMove, 5.0);
   TouchEventWithLatencyInfo touch_1 =
-      CreateTouchEvent(WebInputEvent::kTouchMove, 10.0);
+      CreateTouchEvent(WebInputEvent::Type::kTouchMove, 10.0);
 
   ASSERT_TRUE(touch_0.CanCoalesceWith(touch_1));
   touch_0.CoalesceWith(touch_1);
@@ -103,9 +99,9 @@ TEST_F(EventWithLatencyInfoTest, TimestampCoalescingForTouchEvent) {
 
 TEST_F(EventWithLatencyInfoTest, TimestampCoalescingForGestureEvent) {
   GestureEventWithLatencyInfo scroll_0 =
-      CreateGestureEvent(WebInputEvent::kGestureScrollUpdate, 5.0);
+      CreateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 5.0);
   GestureEventWithLatencyInfo scroll_1 =
-      CreateGestureEvent(WebInputEvent::kGestureScrollUpdate, 10.0);
+      CreateGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, 10.0);
 
   ASSERT_TRUE(scroll_0.CanCoalesceWith(scroll_1));
   scroll_0.CoalesceWith(scroll_1);
@@ -115,11 +111,11 @@ TEST_F(EventWithLatencyInfoTest, TimestampCoalescingForGestureEvent) {
 
 TEST_F(EventWithLatencyInfoTest, LatencyInfoCoalescing) {
   MouseEventWithLatencyInfo mouse_0 =
-      CreateMouseEvent(WebInputEvent::kMouseMove, 5.0);
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove, 5.0);
   mouse_0.latency.AddLatencyNumberWithTimestamp(
       ui::INPUT_EVENT_LATENCY_ORIGINAL_COMPONENT, base::TimeTicks());
   MouseEventWithLatencyInfo mouse_1 =
-      CreateMouseEvent(WebInputEvent::kMouseMove, 10.0);
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove, 10.0);
 
   ASSERT_TRUE(mouse_0.CanCoalesceWith(mouse_1));
 
@@ -166,8 +162,10 @@ void Coalesce(const T& event_to_coalesce, T* event) {
 }
 
 TEST_F(EventWithLatencyInfoTest, TouchEventCoalescing) {
-  TouchEventWithLatencyInfo touch0 = CreateTouch(WebInputEvent::kTouchStart);
-  TouchEventWithLatencyInfo touch1 = CreateTouch(WebInputEvent::kTouchMove);
+  TouchEventWithLatencyInfo touch0 =
+      CreateTouch(WebInputEvent::Type::kTouchStart);
+  TouchEventWithLatencyInfo touch1 =
+      CreateTouch(WebInputEvent::Type::kTouchMove);
 
   // Non touch-moves won't coalesce.
   EXPECT_FALSE(CanCoalesce(touch0, touch0));
@@ -179,78 +177,81 @@ TEST_F(EventWithLatencyInfoTest, TouchEventCoalescing) {
   EXPECT_TRUE(CanCoalesce(touch1, touch1));
 
   // Touch moves with different touch ids should not coalesce.
-  touch0 = CreateTouch(WebInputEvent::kTouchMove);
-  touch1 = CreateTouch(WebInputEvent::kTouchMove);
+  touch0 = CreateTouch(WebInputEvent::Type::kTouchMove);
+  touch1 = CreateTouch(WebInputEvent::Type::kTouchMove);
   touch0.event.touches[0].id = 7;
   EXPECT_FALSE(CanCoalesce(touch0, touch1));
-  touch0 = CreateTouch(WebInputEvent::kTouchMove, 2);
-  touch1 = CreateTouch(WebInputEvent::kTouchMove, 2);
+  touch0 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
+  touch1 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
   touch0.event.touches[0].id = 1;
   touch1.event.touches[0].id = 0;
   EXPECT_FALSE(CanCoalesce(touch0, touch1));
 
   // Touch moves with different touch lengths should not coalesce.
-  touch0 = CreateTouch(WebInputEvent::kTouchMove, 1);
-  touch1 = CreateTouch(WebInputEvent::kTouchMove, 2);
+  touch0 = CreateTouch(WebInputEvent::Type::kTouchMove, 1);
+  touch1 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
   EXPECT_FALSE(CanCoalesce(touch0, touch1));
 
   // Touch moves with identical touch ids in different orders should coalesce.
-  touch0 = CreateTouch(WebInputEvent::kTouchMove, 2);
-  touch1 = CreateTouch(WebInputEvent::kTouchMove, 2);
+  touch0 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
+  touch1 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
   touch0.event.touches[0] = touch1.event.touches[1] =
-      CreateTouchPoint(WebTouchPoint::kStateMoved, 1);
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 1);
   touch0.event.touches[1] = touch1.event.touches[0] =
-      CreateTouchPoint(WebTouchPoint::kStateMoved, 0);
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 0);
   EXPECT_TRUE(CanCoalesce(touch0, touch1));
 
   // Pointers with the same ID's should coalesce.
-  touch0 = CreateTouch(WebInputEvent::kTouchMove, 2);
-  touch1 = CreateTouch(WebInputEvent::kTouchMove, 2);
+  touch0 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
+  touch1 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
   touch0.event.touches[0] = touch1.event.touches[1] =
-      CreateTouchPoint(WebTouchPoint::kStateMoved, 1);
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 1);
   Coalesce(touch0, &touch1);
   ASSERT_EQ(1, touch1.event.touches[0].id);
   ASSERT_EQ(0, touch1.event.touches[1].id);
-  EXPECT_EQ(WebTouchPoint::kStateUndefined, touch1.event.touches[1].state);
-  EXPECT_EQ(WebTouchPoint::kStateMoved, touch1.event.touches[0].state);
+  EXPECT_EQ(WebTouchPoint::State::kStateUndefined,
+            touch1.event.touches[1].state);
+  EXPECT_EQ(WebTouchPoint::State::kStateMoved, touch1.event.touches[0].state);
 
   // Movement from now-stationary pointers should be preserved.
-  touch0 = touch1 = CreateTouch(WebInputEvent::kTouchMove, 2);
-  touch0.event.touches[0] = CreateTouchPoint(WebTouchPoint::kStateMoved, 1);
+  touch0 = touch1 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
+  touch0.event.touches[0] =
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 1);
   touch1.event.touches[1] =
-      CreateTouchPoint(WebTouchPoint::kStateStationary, 1);
+      CreateTouchPoint(WebTouchPoint::State::kStateStationary, 1);
   touch0.event.touches[1] =
-      CreateTouchPoint(WebTouchPoint::kStateStationary, 0);
-  touch1.event.touches[0] = CreateTouchPoint(WebTouchPoint::kStateMoved, 0);
+      CreateTouchPoint(WebTouchPoint::State::kStateStationary, 0);
+  touch1.event.touches[0] =
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 0);
   Coalesce(touch0, &touch1);
   ASSERT_EQ(1, touch1.event.touches[0].id);
   ASSERT_EQ(0, touch1.event.touches[1].id);
-  EXPECT_EQ(WebTouchPoint::kStateMoved, touch1.event.touches[0].state);
-  EXPECT_EQ(WebTouchPoint::kStateMoved, touch1.event.touches[1].state);
+  EXPECT_EQ(WebTouchPoint::State::kStateMoved, touch1.event.touches[0].state);
+  EXPECT_EQ(WebTouchPoint::State::kStateMoved, touch1.event.touches[1].state);
 
   // Touch moves with different dispatchTypes coalesce.
-  touch0 = CreateTouch(WebInputEvent::kTouchMove, 2);
+  touch0 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
   touch0.event.dispatch_type = WebInputEvent::DispatchType::kBlocking;
-  touch1 = CreateTouch(WebInputEvent::kTouchMove, 2);
+  touch1 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
   touch1.event.dispatch_type = WebInputEvent::DispatchType::kEventNonBlocking;
   touch0.event.touches[0] = touch1.event.touches[1] =
-      CreateTouchPoint(WebTouchPoint::kStateMoved, 1);
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 1);
   touch0.event.touches[1] = touch1.event.touches[0] =
-      CreateTouchPoint(WebTouchPoint::kStateMoved, 0);
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 0);
   EXPECT_TRUE(CanCoalesce(touch0, touch1));
   Coalesce(touch0, &touch1);
   ASSERT_EQ(WebInputEvent::DispatchType::kBlocking, touch1.event.dispatch_type);
 
-  touch0 = CreateTouch(WebInputEvent::kTouchMove, 2);
+  touch0 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
   touch0.event.dispatch_type =
       WebInputEvent::DispatchType::kListenersForcedNonBlockingDueToFling;
-  touch1 = CreateTouch(WebInputEvent::kTouchMove, 2);
+  touch1 = CreateTouch(WebInputEvent::Type::kTouchMove, 2);
   touch1.event.dispatch_type =
       WebInputEvent::DispatchType::kListenersNonBlockingPassive;
   touch0.event.touches[0] = touch1.event.touches[1] =
-      CreateTouchPoint(WebTouchPoint::kStateMoved, 1);
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 1);
   touch0.event.touches[1] = touch1.event.touches[0] =
-      CreateTouchPoint(WebTouchPoint::kStateMoved, 0);
+      CreateTouchPoint(WebTouchPoint::State::kStateMoved, 0);
   EXPECT_TRUE(CanCoalesce(touch0, touch1));
   Coalesce(touch0, &touch1);
   ASSERT_EQ(WebInputEvent::DispatchType::kListenersNonBlockingPassive,
@@ -259,9 +260,9 @@ TEST_F(EventWithLatencyInfoTest, TouchEventCoalescing) {
 
 TEST_F(EventWithLatencyInfoTest, PinchEventCoalescing) {
   GestureEventWithLatencyInfo pinch0 =
-      CreateGesture(WebInputEvent::kGesturePinchBegin, 1, 1);
+      CreateGesture(WebInputEvent::Type::kGesturePinchBegin, 1, 1);
   GestureEventWithLatencyInfo pinch1 =
-      CreateGesture(WebInputEvent::kGesturePinchUpdate, 2, 2);
+      CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 2, 2);
 
   // Only GesturePinchUpdate's coalesce.
   EXPECT_FALSE(CanCoalesce(pinch0, pinch0));
@@ -270,15 +271,15 @@ TEST_F(EventWithLatencyInfoTest, PinchEventCoalescing) {
   EXPECT_FALSE(CanCoalesce(pinch0, pinch1));
 
   // Pinches with different focal points should not coalesce.
-  pinch0 = CreateGesture(WebInputEvent::kGesturePinchUpdate, 1, 1);
-  pinch1 = CreateGesture(WebInputEvent::kGesturePinchUpdate, 2, 2);
+  pinch0 = CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 1, 1);
+  pinch1 = CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 2, 2);
   EXPECT_FALSE(CanCoalesce(pinch0, pinch1));
   EXPECT_TRUE(CanCoalesce(pinch0, pinch0));
 
   // Coalesced scales are multiplicative.
-  pinch0 = CreateGesture(WebInputEvent::kGesturePinchUpdate, 1, 1);
+  pinch0 = CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 1, 1);
   pinch0.event.data.pinch_update.scale = 2.f;
-  pinch1 = CreateGesture(WebInputEvent::kGesturePinchUpdate, 1, 1);
+  pinch1 = CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 1, 1);
   pinch1.event.data.pinch_update.scale = 3.f;
   EXPECT_TRUE(CanCoalesce(pinch0, pinch0));
   Coalesce(pinch0, &pinch1);
@@ -286,18 +287,18 @@ TEST_F(EventWithLatencyInfoTest, PinchEventCoalescing) {
 
   // Scales have a minimum value and can never reach 0.
   ASSERT_GT(numeric_limits<float>::min(), 0);
-  pinch0 = CreateGesture(WebInputEvent::kGesturePinchUpdate, 1, 1);
+  pinch0 = CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 1, 1);
   pinch0.event.data.pinch_update.scale = numeric_limits<float>::min() * 2.0f;
-  pinch1 = CreateGesture(WebInputEvent::kGesturePinchUpdate, 1, 1);
+  pinch1 = CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 1, 1);
   pinch1.event.data.pinch_update.scale = numeric_limits<float>::min() * 5.0f;
   EXPECT_TRUE(CanCoalesce(pinch0, pinch1));
   Coalesce(pinch0, &pinch1);
   EXPECT_EQ(numeric_limits<float>::min(), pinch1.event.data.pinch_update.scale);
 
   // Scales have a maximum value and can never reach Infinity.
-  pinch0 = CreateGesture(WebInputEvent::kGesturePinchUpdate, 1, 1);
+  pinch0 = CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 1, 1);
   pinch0.event.data.pinch_update.scale = numeric_limits<float>::max() / 2.0f;
-  pinch1 = CreateGesture(WebInputEvent::kGesturePinchUpdate, 1, 1);
+  pinch1 = CreateGesture(WebInputEvent::Type::kGesturePinchUpdate, 1, 1);
   pinch1.event.data.pinch_update.scale = 10.0f;
   EXPECT_TRUE(CanCoalesce(pinch0, pinch1));
   Coalesce(pinch0, &pinch1);

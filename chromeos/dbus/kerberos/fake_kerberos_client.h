@@ -10,10 +10,10 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/optional.h"
 #include "chromeos/dbus/kerberos/kerberos_client.h"
 #include "chromeos/dbus/kerberos/kerberos_service.pb.h"
 #include "dbus/object_proxy.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromeos {
 
@@ -22,6 +22,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
       public KerberosClient::TestInterface {
  public:
   FakeKerberosClient();
+
+  FakeKerberosClient(const FakeKerberosClient&) = delete;
+  FakeKerberosClient& operator=(const FakeKerberosClient&) = delete;
+
   ~FakeKerberosClient() override;
 
   // KerberosClient:
@@ -53,6 +57,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
   void StartRecordingFunctionCalls() override;
   std::string StopRecordingAndGetRecordedFunctionCalls() override;
   std::size_t GetNumberOfAccounts() const override;
+  void SetSimulatedNumberOfNetworkFailures(int number_of_failures) override;
 
  private:
   using RepeatedAccountField =
@@ -79,6 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
 
     explicit AccountData(const std::string& principal_name);
     AccountData(const AccountData& other);
+    AccountData& operator=(const AccountData& other);
 
     // Only compares principal_name. For finding and erasing in vectors.
     bool operator==(const AccountData& other) const;
@@ -105,15 +111,17 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS) FakeKerberosClient
   std::vector<AccountData> accounts_;
 
   // For recording which methods have been called (for testing).
-  base::Optional<std::string> recorded_function_calls_;
+  absl::optional<std::string> recorded_function_calls_;
 
   // Fake delay for any asynchronous operation.
-  base::TimeDelta mTaskDelay = base::TimeDelta::FromMilliseconds(100);
+  base::TimeDelta task_delay_ = base::Milliseconds(100);
+
+  // The simulated number of network failures on |AcquireKerberosTgt()| (for
+  // testing).
+  int simulated_number_of_network_failures_ = 0;
 
   KerberosFilesChangedCallback kerberos_files_changed_callback_;
   KerberosTicketExpiringCallback kerberos_ticket_expiring_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeKerberosClient);
 };
 
 }  // namespace chromeos

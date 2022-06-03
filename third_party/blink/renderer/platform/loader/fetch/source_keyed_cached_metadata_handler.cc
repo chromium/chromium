@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/source_keyed_cached_metadata_handler.h"
 
-#include "base/bit_cast.h"
 #include "third_party/blink/renderer/platform/crypto.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_hasher.h"
@@ -18,7 +17,7 @@ const size_t SourceKeyedCachedMetadataHandler::kKeySize;
 class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
     : public SingleCachedMetadataHandler {
  public:
-  void Trace(Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(parent_);
     SingleCachedMetadataHandler::Trace(visitor);
   }
@@ -26,30 +25,35 @@ class SourceKeyedCachedMetadataHandler::SingleKeyHandler final
   SingleKeyHandler(SourceKeyedCachedMetadataHandler* parent, Key key)
       : parent_(parent), key_(key) {}
 
-  void SetCachedMetadata(uint32_t data_type_id,
+  void SetCachedMetadata(CodeCacheHost* code_cache_host,
+                         uint32_t data_type_id,
                          const uint8_t* data,
-                         size_t size,
-                         CacheType cache_type) override {
+                         size_t size) override {
     DCHECK(!parent_->cached_metadata_map_.Contains(key_));
     parent_->cached_metadata_map_.insert(
         key_, CachedMetadata::Create(data_type_id, data, size));
-    if (cache_type == CachedMetadataHandler::kSendToPlatform)
-      parent_->SendToPlatform();
+    if (!disable_send_to_platform_for_testing_)
+      parent_->SendToPlatform(code_cache_host);
   }
 
-  void ClearCachedMetadata(CacheType cache_type) override {
+  void ClearCachedMetadata(CodeCacheHost* code_cache_host,
+                           ClearCacheType cache_type) override {
+    if (cache_type == kDiscardLocally)
+      return;
     parent_->cached_metadata_map_.erase(key_);
-    if (cache_type == CachedMetadataHandler::kSendToPlatform)
-      parent_->SendToPlatform();
+    if (cache_type == CachedMetadataHandler::kClearPersistentStorage)
+      parent_->SendToPlatform(code_cache_host);
   }
 
   scoped_refptr<CachedMetadata> GetCachedMetadata(
-      uint32_t data_type_id) const override {
-    scoped_refptr<CachedMetadata> cached_metadata =
-        parent_->cached_metadata_map_.at(key_);
-    if (!cached_metadata || cached_metadata->DataTypeID() != data_type_id)
+      uint32_t data_type_id,
+      GetCachedMetadataBehavior behavior = kCrashIfUnchecked) const override {
+    const auto it = parent_->cached_metadata_map_.find(key_);
+    if (it == parent_->cached_metadata_map_.end() ||
+        it->value->DataTypeID() != data_type_id) {
       return nullptr;
-    return cached_metadata;
+    }
+    return it->value;
   }
 
   String Encoding() const override { return parent_->Encoding(); }
@@ -104,10 +108,13 @@ SingleCachedMetadataHandler* SourceKeyedCachedMetadataHandler::HandlerForSource(
 }
 
 void SourceKeyedCachedMetadataHandler::ClearCachedMetadata(
-    CachedMetadataHandler::CacheType cache_type) {
+    CodeCacheHost* code_cache_host,
+    CachedMetadataHandler::ClearCacheType cache_type) {
+  if (cache_type == kDiscardLocally)
+    return;
   cached_metadata_map_.clear();
-  if (cache_type == CachedMetadataHandler::kSendToPlatform)
-    SendToPlatform();
+  if (cache_type == CachedMetadataHandler::kClearPersistentStorage)
+    SendToPlatform(code_cache_host);
 }
 
 String SourceKeyedCachedMetadataHandler::Encoding() const {
@@ -223,12 +230,13 @@ void SourceKeyedCachedMetadataHandler::SetSerializedCachedMetadata(
   }
 }
 
-void SourceKeyedCachedMetadataHandler::SendToPlatform() {
+void SourceKeyedCachedMetadataHandler::SendToPlatform(
+    CodeCacheHost* code_cache_host) {
   if (!sender_)
     return;
 
   if (cached_metadata_map_.IsEmpty()) {
-    sender_->Send(nullptr, 0);
+    sender_->Send(code_cache_host, nullptr, 0);
   } else {
     Vector<uint8_t> serialized_data;
     uint32_t marker = CachedMetadataHandler::kSourceKeyedMap;
@@ -241,10 +249,12 @@ void SourceKeyedCachedMetadataHandler::SendToPlatform() {
       base::span<const uint8_t> data = metadata.value->SerializedData();
       size_t entry_size = data.size();
       serialized_data.Append(reinterpret_cast<const uint8_t*>(&entry_size),
-                             sizeof(entry_size));
-      serialized_data.Append(data.data(), data.size());
+                             static_cast<wtf_size_t>(sizeof(entry_size)));
+      serialized_data.Append(data.data(),
+                             base::checked_cast<wtf_size_t>(data.size()));
     }
-    sender_->Send(serialized_data.data(), serialized_data.size());
+    sender_->Send(code_cache_host, serialized_data.data(),
+                  serialized_data.size());
   }
 }
 

@@ -5,27 +5,27 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_MEDIA_LOG_SERVICE_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_MEDIA_LOG_SERVICE_H_
 
-#include <stdint.h>
+#include <memory>
 
-#include "base/macros.h"
 #include "media/base/media_log.h"
 #include "media/mojo/mojom/media_log.mojom.h"
 
 namespace media {
 
 // Implementation of a mojom::MediaLog service which wraps a media::MediaLog.
-class MojoMediaLogService : public mojom::MediaLog {
+class MojoMediaLogService final : public mojom::MediaLog {
  public:
-  explicit MojoMediaLogService(media::MediaLog* media_log);
+  explicit MojoMediaLogService(std::unique_ptr<media::MediaLog> media_log);
+  MojoMediaLogService(const MojoMediaLogService&) = delete;
+  MojoMediaLogService& operator=(const MojoMediaLogService&) = delete;
   ~MojoMediaLogService() final;
 
   // mojom::MediaLog implementation
-  void AddEvent(const media::MediaLogEvent& event) final;
+  void AddLogRecord(const MediaLogRecord& event) final;
 
  private:
-  media::MediaLog* media_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(MojoMediaLogService);
+  // `media::` is needed to be distinguished from `mojom::MediaLog`.
+  std::unique_ptr<media::MediaLog> media_log_;
 };
 
 }  // namespace media

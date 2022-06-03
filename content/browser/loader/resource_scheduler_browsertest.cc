@@ -5,6 +5,7 @@
 #include <map>
 #include <string>
 
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -16,6 +17,11 @@ namespace content {
 namespace {
 
 class ResourceSchedulerBrowserTest : public ContentBrowserTest {
+ public:
+  ResourceSchedulerBrowserTest(const ResourceSchedulerBrowserTest&) = delete;
+  ResourceSchedulerBrowserTest& operator=(const ResourceSchedulerBrowserTest&) =
+      delete;
+
  protected:
   ResourceSchedulerBrowserTest() {}
   ~ResourceSchedulerBrowserTest() override {}
@@ -23,9 +29,6 @@ class ResourceSchedulerBrowserTest : public ContentBrowserTest {
   void SetUpInProcessBrowserTestFixture() override {
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ResourceSchedulerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
@@ -35,10 +38,8 @@ IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
 
   Shell* otr_browser = CreateOffTheRecordBrowser();
   EXPECT_TRUE(NavigateToURL(otr_browser, url));
-  int data = -1;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractInt(otr_browser, "getResourceNumber()", &data));
-  EXPECT_EQ(9, data);
+  EXPECT_EQ(9, EvalJs(otr_browser, "getResourceNumber()",
+                      EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
@@ -47,10 +48,8 @@ IN_PROC_BROWSER_TEST_F(ResourceSchedulerBrowserTest,
       "/resource_loading/resource_loading_non_mobile.html"));
   Shell* browser = shell();
   EXPECT_TRUE(NavigateToURL(browser, url));
-  int data = -1;
-  EXPECT_TRUE(
-      ExecuteScriptAndExtractInt(browser, "getResourceNumber()", &data));
-  EXPECT_EQ(9, data);
+  EXPECT_EQ(9, EvalJs(browser, "getResourceNumber()",
+                      EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
 }  // anonymous namespace

@@ -9,10 +9,13 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/posix/unix_domain_socket.h"
+#include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
@@ -28,8 +31,7 @@ FakePowerManagerClient* g_instance = nullptr;
 constexpr double kUsbMinAcWatts = 24;
 
 // The time power manager will wait before resuspending from a dark resume.
-constexpr base::TimeDelta kDarkSuspendDelayTimeout =
-    base::TimeDelta::FromSeconds(20);
+constexpr base::TimeDelta kDarkSuspendDelayTimeout = base::Seconds(20);
 
 // Callback fired when timer started through |StartArcTimer| expires. In
 // non-test environments this does a potentially blocking call on the UI
@@ -68,6 +70,11 @@ base::TimeDelta ClockNow(clockid_t clk_id) {
     return base::TimeDelta();
   }
   return base::TimeDelta::FromTimeSpec(ts);
+}
+
+std::string SysnameFromBluetoothAddress(const std::string& address) {
+  return "/sys/class/power_supply/hid-" + base::ToLowerASCII(address) +
+         "-battery";
 }
 
 }  // namespace
@@ -153,7 +160,7 @@ void FakePowerManagerClient::GetKeyboardBrightnessPercent(
       base::BindOnce(std::move(callback), keyboard_brightness_percent_));
 }
 
-const base::Optional<power_manager::PowerSupplyProperties>&
+const absl::optional<power_manager::PowerSupplyProperties>&
 FakePowerManagerClient::GetLastStatus() {
   return props_;
 }
@@ -166,6 +173,10 @@ void FakePowerManagerClient::RequestStatusUpdate() {
       FROM_HERE, base::BindOnce(&FakePowerManagerClient::NotifyObservers,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
+
+void FakePowerManagerClient::RequestAllPeripheralBatteryUpdate() {}
+
+void FakePowerManagerClient::RequestThermalState() {}
 
 void FakePowerManagerClient::RequestSuspend() {}
 
@@ -372,6 +383,33 @@ void FakePowerManagerClient::DeleteArcTimers(const std::string& tag,
 
 base::TimeDelta FakePowerManagerClient::GetDarkSuspendDelayTimeout() {
   return kDarkSuspendDelayTimeout;
+}
+
+void FakePowerManagerClient::RefreshBluetoothBattery(
+    const std::string& address) {
+  if (!base::Contains(peripheral_battery_refresh_levels_, address))
+    return;
+
+  for (auto& observer : observers_) {
+    observer.PeripheralBatteryStatusReceived(
+        SysnameFromBluetoothAddress(address), "somename",
+        peripheral_battery_refresh_levels_[address],
+        power_manager::
+            PeripheralBatteryStatus_ChargeStatus_CHARGE_STATUS_UNKNOWN,
+        /*serial_number=*/"",
+        /*active_update=*/true);
+  }
+}
+
+void FakePowerManagerClient::SetExternalDisplayALSBrightness(bool enabled) {
+  external_display_als_brightness_enabled_ = enabled;
+}
+
+void FakePowerManagerClient::GetExternalDisplayALSBrightness(
+    DBusMethodCallback<bool> callback) {
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                external_display_als_brightness_enabled_));
 }
 
 bool FakePowerManagerClient::PopVideoActivityReport() {

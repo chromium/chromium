@@ -9,239 +9,160 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>gif</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>image/gif</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>GIF image</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>GIFf</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.compuserve.gif</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>html</string>
-				<string>htm</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/html</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>HTML document</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>HTML</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.html</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>xhtml</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/xhtml</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>XHTML document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.xhtml</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>js</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>application/x-javascript</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>JavaScript script</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.netscape.javascript-source</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>jpg</string>
-				<string>jpeg</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>image/jpeg</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>JPEG image</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>JPEG</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.jpeg</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>mhtml</string>
-				<string>mht</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>multipart/related</string>
-				<string>application/x-mimearchive</string>
-				<string>message/rfc822</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>MHTML document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.ietf.mhtml</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>oga</string>
-				<string>ogg</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>audio/ogg</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>HTML5 Audio (Ogg)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.xiph.ogg-audio</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>ogv</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>video/ogg</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>HTML5 Video (Ogg)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.xiph.ogv</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>png</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>image/png</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>PNG image</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>PNGf</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.png</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>svg</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>image/svg+xml</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>SVG document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.svg-image</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>txt</string>
-				<string>text</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>text/plain</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>Plain text document</string>
-			<key>CFBundleTypeOSTypes</key>
-			<array>
-				<string>TEXT</string>
-			</array>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.text</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>webm</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>video/webm</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>HTML5 Video (WebM)</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.webmproject.webm</string>
+			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>webp</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>image/webp</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>WebP image</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>org.webmproject.webp</string>
+			</array>
 		</dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
@@ -252,20 +173,16 @@
 			</array>
 		</dict>
 		<dict>
-			<key>CFBundleTypeExtensions</key>
-			<array>
-				<string>pdf</string>
-			</array>
 			<key>CFBundleTypeIconFile</key>
 			<string>document.icns</string>
-			<key>CFBundleTypeMIMETypes</key>
-			<array>
-				<string>application/pdf</string>
-			</array>
 			<key>CFBundleTypeName</key>
 			<string>PDF Document</string>
 			<key>CFBundleTypeRole</key>
 			<string>Viewer</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>com.adobe.pdf</string>
+			</array>
 		</dict>
 	</array>
 	<key>CFBundleExecutable</key>
@@ -286,6 +203,13 @@
 	<true/>
 	<key>OSAScriptingDefinition</key>
 	<string>scripting.sdef</string>
+	<key>ASWebAuthenticationSessionWebBrowserSupportCapabilities</key>
+	<dict>
+		<key>IsSupported</key>
+		<true/>
+		<key>EphemeralBrowserSessionIsSupported</key>
+		<true/>
+	</dict>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -295,14 +219,6 @@
 			<array>
 				<string>http</string>
 				<string>https</string>
-			</array>
-		</dict>
-		<dict>
-			<key>CFBundleURLName</key>
-			<string>FTP site URL</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>ftp</string>
 			</array>
 		</dict>
 		<dict>
@@ -353,9 +269,120 @@
 			</dict>
 		</dict>
 	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.data</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>MIME HTML document</string>
+			<key>UTTypeIconFile</key>
+			<string>document.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.ietf.mhtml</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>com.apple.ostype</key>
+				<string>MHTM</string>
+				<key>public.filename-extension</key>
+				<array>
+					<string>mht</string>
+					<string>mhtml</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.audio</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Ogg Audio</string>
+			<key>UTTypeIconFile</key>
+			<string>document.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.xiph.ogg-audio</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://xiph.org/ogg</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ogg</string>
+					<string>oga</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.movie</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>Ogg Video</string>
+			<key>UTTypeIconFile</key>
+			<string>document.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.xiph.ogv</string>
+			<key>UTTypeReferenceURL</key>
+			<string>http://xiph.org/ogg</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>ogm</string>
+					<string>ogv</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.movie</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>HTML5 Video (WebM)</string>
+			<key>UTTypeIconFile</key>
+			<string>document.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.webmproject.webm</string>
+			<key>UTTypeReferenceURL</key>
+			<string>https://www.webmproject.org/docs/container/</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>webm</string>
+				</array>
+			</dict>
+		</dict>
+		<dict>
+			<key>UTTypeConformsTo</key>
+			<array>
+				<string>public.image</string>
+			</array>
+			<key>UTTypeDescription</key>
+			<string>WebP image</string>
+			<key>UTTypeIconFile</key>
+			<string>document.icns</string>
+			<key>UTTypeIdentifier</key>
+			<string>org.webmproject.webp</string>
+			<key>UTTypeReferenceURL</key>
+			<string>https://developers.google.com/speed/webp/docs/riff_container</string>
+			<key>UTTypeTagSpecification</key>
+			<dict>
+				<key>public.filename-extension</key>
+				<array>
+					<string>webp</string>
+				</array>
+			</dict>
+		</dict>
+	</array>
 	<key>NSUserNotificationAlertStyle</key>
 	<string>banner</string>
-	<key>NSRequiresAquaSystemAppearance</key>
-	<false/>
+	<key>GPUEjectPolicy</key>
+	<string>wait</string>
 </dict>
 </plist>

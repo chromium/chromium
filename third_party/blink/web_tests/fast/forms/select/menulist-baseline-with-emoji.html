@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<body>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+
+<div>
+<select><option>Dog 🐶 ypqtib</option></select>
+<select><option>Dog ypqtib</option></select>
+</div>
+
+<script>
+test(() => {
+  const selects = document.querySelectorAll('select');
+  assert_equals(selects[0].offsetTop, selects[1].offsetTop);
+}, '<select> with/without emojis should have identical baselines');
+</script>
+</body>

@@ -4,16 +4,17 @@
 
 #include "chrome/chrome_cleaner/parsers/shortcut_parser/target/lnk_parser.h"
 
+#include <string.h>
 #include <windows.h>
 
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_handle.h"
 
@@ -49,9 +50,9 @@ bool ReadUnsignedShort(const std::vector<BYTE>& buffer,
   return true;
 }
 
-bool NullTerminatedASCIIBufferToString16(const std::vector<BYTE>& buffer,
-                                         DWORD* current_byte,
-                                         base::string16* parsed_string) {
+bool NullTerminatedASCIIBufferToWString(const std::vector<BYTE>& buffer,
+                                        DWORD* current_byte,
+                                        std::wstring* parsed_string) {
   const DWORD string_start = *current_byte;
   const int kMaxCharactersToRead = buffer.size() - *current_byte;
   int string_size =
@@ -72,9 +73,9 @@ bool NullTerminatedASCIIBufferToString16(const std::vector<BYTE>& buffer,
   return true;
 }
 
-bool NullTerminatedUtf16BufferToString16(const std::vector<BYTE>& buffer,
-                                         DWORD* current_byte,
-                                         base::string16* parsed_string) {
+bool NullTerminatedUtf16BufferToWString(const std::vector<BYTE>& buffer,
+                                        DWORD* current_byte,
+                                        std::wstring* parsed_string) {
   const DWORD string_start = *current_byte;
   const int kMaxWideCharactersToRead =
       (buffer.size() - *current_byte) / sizeof(wchar_t);
@@ -92,26 +93,26 @@ bool NullTerminatedUtf16BufferToString16(const std::vector<BYTE>& buffer,
   *current_byte += (string_size + 1) * sizeof(wchar_t);
   const wchar_t* string_ptr =
       reinterpret_cast<const wchar_t*>(buffer.data() + string_start);
-  base::WideToUTF16(string_ptr, string_size, parsed_string);
+  parsed_string->assign(string_ptr, string_size);
   return true;
 }
 
 // Retrieves a null terminated string from the provided |buffer| and also
 // modifies the value of |current_byte| to point to the next byte after the
 // string.
-bool NullTerminatedStringToString16(const std::vector<BYTE>& buffer,
-                                    bool is_unicode,
-                                    DWORD* current_byte,
-                                    base::string16* parsed_string) {
+bool NullTerminatedStringToWString(const std::vector<BYTE>& buffer,
+                                   bool is_unicode,
+                                   DWORD* current_byte,
+                                   std::wstring* parsed_string) {
   if (*current_byte >= buffer.size()) {
     LOG(ERROR) << "Error parsing null terminated string";
     return false;
   }
 
-  return (is_unicode) ? NullTerminatedUtf16BufferToString16(
-                            buffer, current_byte, parsed_string)
-                      : NullTerminatedASCIIBufferToString16(
-                            buffer, current_byte, parsed_string);
+  return (is_unicode) ? NullTerminatedUtf16BufferToWString(buffer, current_byte,
+                                                           parsed_string)
+                      : NullTerminatedASCIIBufferToWString(buffer, current_byte,
+                                                           parsed_string);
 }
 
 // Reads the size of a string structure and then moves the value of
@@ -139,7 +140,7 @@ bool SkipUtf16StringStructure(const std::vector<BYTE>& buffer,
 // and then moves the value of current_byte to the end of it.
 bool ReadUtf16StringStructure(const std::vector<BYTE>& buffer,
                               DWORD* current_byte,
-                              base::string16* parsed_string) {
+                              std::wstring* parsed_string) {
   uint16_t string_size;
   if (!ReadUnsignedShort(buffer, current_byte, &string_size)) {
     LOG(ERROR) << "Error reading string structure";
@@ -159,7 +160,7 @@ bool ReadUtf16StringStructure(const std::vector<BYTE>& buffer,
 
   const wchar_t* string_ptr =
       reinterpret_cast<const wchar_t*>(buffer.data() + *current_byte);
-  base::WideToUTF16(string_ptr, string_size, parsed_string);
+  parsed_string->assign(string_ptr, string_size);
   *current_byte += string_size * sizeof(wchar_t);
   return true;
 }
@@ -293,19 +294,19 @@ mojom::LnkParsingResult internal::ParseLnkBytes(
 
   current_byte = structure_beginning + path_prefix_offset;
 
-  base::string16 prefix_string;
-  if (!NullTerminatedStringToString16(file_buffer, is_unicode, &current_byte,
-                                      &prefix_string)) {
+  std::wstring prefix_string;
+  if (!NullTerminatedStringToWString(file_buffer, is_unicode, &current_byte,
+                                     &prefix_string)) {
     LOG(ERROR) << "Error parsing path prefix";
     return mojom::LnkParsingResult::BAD_FORMAT;
   }
 
   // Recover the path by appending the suffix to the prefix.
   current_byte = structure_beginning + path_suffix_offset;
-  base::string16 suffix_string;
+  std::wstring suffix_string;
 
-  if (!NullTerminatedStringToString16(file_buffer, is_unicode, &current_byte,
-                                      &suffix_string)) {
+  if (!NullTerminatedStringToWString(file_buffer, is_unicode, &current_byte,
+                                     &suffix_string)) {
     LOG(ERROR) << "Error parsing path suffix";
     return mojom::LnkParsingResult::BAD_FORMAT;
   }
@@ -326,7 +327,8 @@ mojom::LnkParsingResult internal::ParseLnkBytes(
   }
 
   if (has_working_dir &&
-      !SkipUtf16StringStructure(file_buffer, &current_byte)) {
+      !ReadUtf16StringStructure(file_buffer, &current_byte,
+                                &parsed_shortcut->working_dir)) {
     return mojom::LnkParsingResult::BAD_FORMAT;
   }
 
@@ -339,15 +341,21 @@ mojom::LnkParsingResult internal::ParseLnkBytes(
   }
 
   // Retrieve the icon location.
-  if (has_icon_location &&
-      !ReadUtf16StringStructure(file_buffer, &current_byte,
-                                &parsed_shortcut->icon_location)) {
-    LOG(ERROR) << "Error reading icon location";
-    return mojom::LnkParsingResult::BAD_FORMAT;
+  if (has_icon_location) {
+    if (!ReadUtf16StringStructure(file_buffer, &current_byte,
+                                  &parsed_shortcut->icon_location)) {
+      LOG(ERROR) << "Error reading icon location";
+      return mojom::LnkParsingResult::BAD_FORMAT;
+    } else {
+      parsed_shortcut->icon_index = lnk_file_header->icon_index;
+    }
   }
 
   return mojom::LnkParsingResult::SUCCESS;
 }
+
+ParsedLnkFile::ParsedLnkFile() {}
+ParsedLnkFile::~ParsedLnkFile() {}
 
 // Please note that the documentation used to write this parser was obtained
 // from the following link:

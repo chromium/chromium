@@ -26,9 +26,10 @@
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sqlite_statement.h"
 
 #include <memory>
+
+#include "base/notreached.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sql_log.h"
 #include "third_party/blink/renderer/modules/webdatabase/sqlite/sql_value.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/sqlite/sqlite3.h"
 
 // SQLite 3.6.16 makes sqlite3_prepare_v2 automatically retry preparing the

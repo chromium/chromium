@@ -4,30 +4,32 @@
 
 #include "ash/system/accessibility/autoclick_scroll_view.h"
 
-#include "ash/autoclick/autoclick_controller.h"
+#include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/accessibility/autoclick_menu_bubble_controller.h"
+#include "ash/system/accessibility/floating_menu_button.h"
 #include "ash/system/unified/custom_shape_button.h"
-#include "ash/system/unified/top_shortcut_button.h"
-#include "ash/system/unified/unified_system_tray_view.h"
-#include "base/macros.h"
+#include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
+#include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/views/animation/ink_drop_mask.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view.h"
 
 namespace ash {
 
 using ContentLayerType = AshColorProvider::ContentLayerType;
-using AshColorMode = AshColorProvider::AshColorMode;
 
 namespace {
 
@@ -38,36 +40,39 @@ constexpr int kScrollPadButtonHypotenuseDips = 192;
 constexpr int kScrollPadIconPadding = 30;
 
 SkColor HoveredButtonColor() {
-  const AshColorProvider::RippleAttributes attributes =
-      AshColorProvider::Get()->GetRippleAttributes(
-          UnifiedSystemTrayView::GetBackgroundColor());
-  return SkColorSetA(attributes.base_color, 255 * attributes.highlight_opacity);
+  const std::pair<SkColor, float> base_color_and_opacity =
+      AshColorProvider::Get()->GetInkDropBaseColorAndOpacity();
+  return SkColorSetA(base_color_and_opacity.first,
+                     255 * base_color_and_opacity.second);
 }
 
 }  // namespace
 
 // The close button for the automatic clicks scroll bubble.
-class AutoclickScrollCloseButton : public TopShortcutButton,
-                                   public views::ButtonListener {
+class AutoclickScrollCloseButton : public FloatingMenuButton {
  public:
-  explicit AutoclickScrollCloseButton()
-      : TopShortcutButton(this, IDS_ASH_AUTOCLICK_SCROLL_CLOSE) {
+  METADATA_HEADER(AutoclickScrollCloseButton);
+
+  AutoclickScrollCloseButton()
+      : FloatingMenuButton(
+            base::BindRepeating(&AutoclickScrollCloseButton::OnButtonPressed,
+                                base::Unretained(this)),
+            kAutoclickCloseIcon,
+            IDS_ASH_AUTOCLICK_SCROLL_CLOSE,
+            /*flip_for_rtl=*/false,
+            kScrollButtonCloseSizeDips,
+            /*draw_highlight=*/false,
+            /*is_a11y_togglable=*/false) {
     views::View::SetID(
         static_cast<int>(AutoclickScrollView::ButtonId::kCloseScroll));
-    EnableCanvasFlippingForRTLUI(false);
-    SetPreferredSize(
-        gfx::Size(kScrollButtonCloseSizeDips, kScrollButtonCloseSizeDips));
-    SetImage(views::Button::STATE_NORMAL,
-             gfx::CreateVectorIcon(
-                 kAutoclickCloseIcon,
-                 AshColorProvider::Get()->GetContentLayerColor(
-                     ContentLayerType::kIconPrimary, AshColorMode::kDark)));
   }
+  AutoclickScrollCloseButton(const AutoclickScrollCloseButton&) = delete;
+  AutoclickScrollCloseButton& operator=(const AutoclickScrollCloseButton&) =
+      delete;
 
   ~AutoclickScrollCloseButton() override = default;
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
+  void OnButtonPressed() {
     Shell::Get()->autoclick_controller()->DoScrollAction(
         AutoclickController::ScrollPadAction::kScrollClose);
     base::RecordAction(base::UserMetricsAction(
@@ -85,14 +90,7 @@ class AutoclickScrollCloseButton : public TopShortcutButton,
     SchedulePaint();
   }
 
-  // views::ImageButton:
-  std::unique_ptr<views::InkDropMask> CreateInkDropMask() const override {
-    gfx::Rect bounds = GetContentsBounds();
-    return std::make_unique<views::CircleInkDropMask>(
-        size(), bounds.CenterPoint(), bounds.width() / 2);
-  }
-
-  // TopShortcutButton:
+  // FloatingMenuButton:
   void PaintButtonContents(gfx::Canvas* canvas) override {
     if (hovered_) {
       gfx::Rect rect(GetContentsBounds());
@@ -106,44 +104,41 @@ class AutoclickScrollCloseButton : public TopShortcutButton,
     views::ImageButton::PaintButtonContents(canvas);
   }
 
-  const char* GetClassName() const override {
-    return "AutoclickScrollCloseButton";
-  }
-
  private:
   bool hovered_ = false;
-  DISALLOW_COPY_AND_ASSIGN(AutoclickScrollCloseButton);
 };
+
+BEGIN_METADATA(AutoclickScrollCloseButton, FloatingMenuButton)
+END_METADATA
 
 // A single scroll button (up/down/left/right) for automatic clicks scroll
 // bubble. Subclasses a MaskedTargeterDelegate in order to only get events over
 // the button's custom shape, rather than over the whole rectangle which
 // encloses the button.
 class AutoclickScrollButton : public CustomShapeButton,
-                              public views::MaskedTargeterDelegate,
-                              public views::ButtonListener {
+                              public views::MaskedTargeterDelegate {
  public:
+  METADATA_HEADER(AutoclickScrollButton);
   AutoclickScrollButton(AutoclickController::ScrollPadAction action,
                         const gfx::VectorIcon& icon,
                         int accessible_name_id,
                         AutoclickScrollView::ButtonId id)
-      : CustomShapeButton(this), action_(action) {
+      : CustomShapeButton(
+            base::BindRepeating(&AutoclickScrollButton::OnButtonPressed,
+                                base::Unretained(this))),
+        action_(action),
+        icon_(icon) {
     views::View::SetID(static_cast<int>(id));
     SetTooltipText(l10n_util::GetStringUTF16(accessible_name_id));
     // Disable canvas flipping, as scroll left should always be left no matter
     // the language orientation.
-    EnableCanvasFlippingForRTLUI(false);
+    SetFlipCanvasOnPaintForRTLUI(false);
     scroll_hover_timer_ = std::make_unique<base::RetainingOneShotTimer>(
         FROM_HERE,
-        base::TimeDelta::FromMilliseconds(
+        base::Milliseconds(
             int64_t{AutoclickScrollView::kAutoclickScrollDelayMs}),
         base::BindRepeating(&AutoclickScrollButton::DoScrollAction,
                             base::Unretained(this)));
-    SetImage(
-        views::Button::STATE_NORMAL,
-        gfx::CreateVectorIcon(
-            icon, AshColorProvider::Get()->GetContentLayerColor(
-                      ContentLayerType::kIconPrimary, AshColorMode::kDark)));
     if (action_ == AutoclickController::ScrollPadAction::kScrollLeft ||
         action_ == AutoclickController::ScrollPadAction::kScrollRight) {
       size_ = gfx::Size(kScrollPadButtonHypotenuseDips / 2,
@@ -155,9 +150,13 @@ class AutoclickScrollButton : public CustomShapeButton,
     }
     SetPreferredSize(size_);
 
-    set_clip_path(CreateCustomShapePath(gfx::Rect(GetPreferredSize())));
+    SetClipPath(CreateCustomShapePath(gfx::Rect(GetPreferredSize())));
     SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(), 0.f);
   }
+  AutoclickScrollButton(const AutoclickScrollButton&) = delete;
+  AutoclickScrollButton& operator=(const AutoclickScrollButton&) = delete;
 
   ~AutoclickScrollButton() override {
     Shell::Get()->autoclick_controller()->OnExitedScrollButton();
@@ -193,14 +192,20 @@ class AutoclickScrollButton : public CustomShapeButton,
     scroll_hover_timer_->Reset();
   }
 
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override {
-    ProcessAction(action_);
-  }
+  void OnButtonPressed() { ProcessAction(action_); }
 
   // CustomShapeButton:
   SkPath CreateCustomShapePath(const gfx::Rect& bounds) const override {
     return ComputePath(true /* all_edges */);
+  }
+
+  void OnThemeChanged() override {
+    CustomShapeButton::OnThemeChanged();
+    SetImage(views::Button::STATE_NORMAL,
+             gfx::CreateVectorIcon(
+                 icon_, AshColorProvider::Get()->GetContentLayerColor(
+                            ContentLayerType::kIconColorPrimary)));
+    SchedulePaint();
   }
 
   // Computes the path which is the outline of this button. If |all_edges|,
@@ -262,7 +267,7 @@ class AutoclickScrollButton : public CustomShapeButton,
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(kScrollpadStrokeWidthDips);
     flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
-        ContentLayerType::kSeparator, AshColorMode::kDark));
+        ContentLayerType::kSeparatorColor));
     canvas->DrawPath(ComputePath(false /* only drawn edges */), flags);
 
     gfx::ImageSkia img = GetImageToPaint();
@@ -319,16 +324,16 @@ class AutoclickScrollButton : public CustomShapeButton,
     SchedulePaint();
   }
 
-  const char* GetClassName() const override { return "AutoclickScrollButton"; }
-
  private:
   const AutoclickController::ScrollPadAction action_;
   gfx::Size size_;
   std::unique_ptr<base::RetainingOneShotTimer> scroll_hover_timer_;
   bool active_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(AutoclickScrollButton);
+  const gfx::VectorIcon& icon_;
 };
+
+BEGIN_METADATA(AutoclickScrollButton, CustomShapeButton)
+END_METADATA
 
 // ------ AutoclickScrollBubbleView  ------ //
 
@@ -345,8 +350,8 @@ void AutoclickScrollBubbleView::UpdateAnchorRect(
       GetWidget()->GetLayer()->GetAnimator());
   settings.SetPreemptionStrategy(
       ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
-  settings.SetTransitionDuration(base::TimeDelta::FromMilliseconds(
-      AutoclickMenuBubbleController::kAnimationDurationMs));
+  settings.SetTransitionDuration(
+      base::Milliseconds(AutoclickMenuBubbleController::kAnimationDurationMs));
   settings.SetTweenType(gfx::Tween::EASE_OUT);
   // SetAnchorRect will resize, so set the arrow without reizing to avoid a
   // double animation.

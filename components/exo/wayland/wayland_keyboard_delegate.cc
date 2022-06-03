@@ -4,12 +4,21 @@
 
 #include "components/exo/wayland/wayland_keyboard_delegate.h"
 
+#include <cstring>
+
 #include <wayland-server-core.h>
 #include <wayland-server-protocol-core.h>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/unsafe_shared_memory_region.h"
+#include "base/numerics/safe_conversions.h"
 #include "components/exo/wayland/serial_tracker.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/events/keycodes/dom/keycode_converter.h"
+
+#if BUILDFLAG(USE_XKBCOMMON)
+#include <xkbcommon/xkbcommon.h>
+#endif
 
 namespace exo {
 namespace wayland {
@@ -18,27 +27,9 @@ namespace wayland {
 
 WaylandKeyboardDelegate::WaylandKeyboardDelegate(wl_resource* keyboard_resource,
                                                  SerialTracker* serial_tracker)
-    : keyboard_resource_(keyboard_resource),
-      xkb_context_(xkb_context_new(XKB_CONTEXT_NO_FLAGS)),
-      serial_tracker_(serial_tracker) {
-#if defined(OS_CHROMEOS)
-  ash::ImeControllerImpl* ime_controller = ash::Shell::Get()->ime_controller();
-  ime_controller->AddObserver(this);
-  SendNamedLayout(ime_controller->keyboard_layout_name());
-#else
-  SendLayout(nullptr);
-#endif
-}
+    : keyboard_resource_(keyboard_resource), serial_tracker_(serial_tracker) {}
 
-#if defined(OS_CHROMEOS)
-WaylandKeyboardDelegate::~WaylandKeyboardDelegate() {
-  ash::Shell::Get()->ime_controller()->RemoveObserver(this);
-}
-#endif
-
-void WaylandKeyboardDelegate::OnKeyboardDestroying(Keyboard* keyboard) {
-  delete this;
-}
+WaylandKeyboardDelegate::~WaylandKeyboardDelegate() = default;
 
 bool WaylandKeyboardDelegate::CanAcceptKeyboardEventsForSurface(
     Surface* surface) const {
@@ -51,7 +42,7 @@ bool WaylandKeyboardDelegate::CanAcceptKeyboardEventsForSurface(
 
 void WaylandKeyboardDelegate::OnKeyboardEnter(
     Surface* surface,
-    const base::flat_map<ui::DomCode, ui::DomCode>& pressed_keys) {
+    const base::flat_map<ui::DomCode, KeyState>& pressed_keys) {
   wl_resource* surface_resource = GetSurfaceResource(surface);
   DCHECK(surface_resource);
   wl_array keys;
@@ -60,7 +51,7 @@ void WaylandKeyboardDelegate::OnKeyboardEnter(
     uint32_t* value =
         static_cast<uint32_t*>(wl_array_add(&keys, sizeof(uint32_t)));
     DCHECK(value);
-    *value = DomCodeToKey(entry.second);
+    *value = ui::KeycodeConverter::DomCodeToEvdevCode(entry.second.code);
   }
   wl_keyboard_send_enter(
       keyboard_resource_,
@@ -81,133 +72,110 @@ void WaylandKeyboardDelegate::OnKeyboardLeave(Surface* surface) {
 }
 
 uint32_t WaylandKeyboardDelegate::OnKeyboardKey(base::TimeTicks time_stamp,
-                                                ui::DomCode key,
+                                                ui::DomCode code,
                                                 bool pressed) {
-  uint32_t serial =
-      serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT);
+  uint32_t serial = serial_tracker_->MaybeNextKeySerial();
+  serial_tracker_->ResetKeySerial();
   SendTimestamp(time_stamp);
   wl_keyboard_send_key(
       keyboard_resource_, serial, TimeTicksToMilliseconds(time_stamp),
-      DomCodeToKey(key),
+      ui::KeycodeConverter::DomCodeToEvdevCode(code),
       pressed ? WL_KEYBOARD_KEY_STATE_PRESSED : WL_KEYBOARD_KEY_STATE_RELEASED);
   // Unlike normal wayland clients, the X11 server tries to maintain its own
   // modifier state, which it updates based on key events. To prevent numlock
   // presses from allowing numpad keys to be interpreted as directions, we
   // re-send the modifier state after a numlock press.
-  if (key == ui::DomCode::NUM_LOCK)
+  if (code == ui::DomCode::NUM_LOCK)
     SendKeyboardModifiers();
   wl_client_flush(client());
   return serial;
 }
 
-void WaylandKeyboardDelegate::OnKeyboardModifiers(int modifier_flags) {
-  // CrOS treats numlock as always on, but its event flags actually have that
-  // key disabled, (i.e. chromeos apps specially handle numpad key events as
-  // though numlock is on). In order to get the same result from the linux apps,
-  // we need to ensure they always treat numlock as on.
-  modifier_flags_ = modifier_flags | ui::EF_NUM_LOCK_ON;
+void WaylandKeyboardDelegate::OnKeyboardModifiers(
+    const KeyboardModifiers& modifiers) {
+  // Send the update only when they're different.
+  if (current_modifiers_ == modifiers)
+    return;
+  current_modifiers_ = modifiers;
   SendKeyboardModifiers();
 }
 
-#if defined(OS_CHROMEOS)
-void WaylandKeyboardDelegate::OnCapsLockChanged(bool enabled) {}
-
-void WaylandKeyboardDelegate::OnKeyboardLayoutNameChanged(
-    const std::string& layout_name) {
-  SendNamedLayout(layout_name);
-}
-#endif
-
-uint32_t WaylandKeyboardDelegate::DomCodeToKey(ui::DomCode code) const {
-  // This assumes KeycodeConverter has been built with evdev/xkb codes.
-  xkb_keycode_t xkb_keycode = static_cast<xkb_keycode_t>(
-      ui::KeycodeConverter::DomCodeToNativeKeycode(code));
-
-  // Keycodes are offset by 8 in Xkb.
-  DCHECK_GE(xkb_keycode, 8u);
-  return xkb_keycode - 8;
-}
-
-uint32_t WaylandKeyboardDelegate::ModifierFlagsToXkbModifiers() {
-  struct {
-    ui::EventFlags flag;
-    const char* xkb_name;
-  } modifiers[] = {
-      {ui::EF_SHIFT_DOWN, XKB_MOD_NAME_SHIFT},
-      {ui::EF_CONTROL_DOWN, XKB_MOD_NAME_CTRL},
-      {ui::EF_ALT_DOWN, XKB_MOD_NAME_ALT},
-      {ui::EF_COMMAND_DOWN, XKB_MOD_NAME_LOGO},
-      {ui::EF_ALTGR_DOWN, "Mod5"},
-      {ui::EF_MOD3_DOWN, "Mod3"},
-      {ui::EF_NUM_LOCK_ON, XKB_MOD_NAME_NUM},
-      {ui::EF_CAPS_LOCK_ON, XKB_MOD_NAME_CAPS},
-  };
-  uint32_t xkb_modifiers = 0;
-  for (auto modifier : modifiers) {
-    if (modifier_flags_ & modifier.flag) {
-      xkb_modifiers |=
-          1 << xkb_keymap_mod_get_index(xkb_keymap_.get(), modifier.xkb_name);
-    }
-  }
-  return xkb_modifiers;
-}
-
-void WaylandKeyboardDelegate::SendKeyboardModifiers() {
-  xkb_state_update_mask(xkb_state_.get(), ModifierFlagsToXkbModifiers(), 0, 0,
-                        0, 0, 0);
-  wl_keyboard_send_modifiers(
-      keyboard_resource_,
-      serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),
-      xkb_state_serialize_mods(xkb_state_.get(), XKB_STATE_MODS_DEPRESSED),
-      xkb_state_serialize_mods(xkb_state_.get(), XKB_STATE_MODS_LOCKED),
-      xkb_state_serialize_mods(xkb_state_.get(), XKB_STATE_MODS_LATCHED),
-      xkb_state_serialize_layout(xkb_state_.get(), XKB_STATE_LAYOUT_EFFECTIVE));
-  wl_client_flush(client());
-}
-
-#if defined(OS_CHROMEOS)
-void WaylandKeyboardDelegate::SendNamedLayout(const std::string& layout_name) {
-  std::string layout_id, layout_variant;
-  ui::XkbKeyboardLayoutEngine::ParseLayoutName(layout_name, &layout_id,
-                                               &layout_variant);
-  xkb_rule_names names = {.rules = nullptr,
-                          .model = "pc101",
-                          .layout = layout_id.c_str(),
-                          .variant = layout_variant.c_str(),
-                          .options = ""};
-  SendLayout(&names);
-}
-#endif
-
-void WaylandKeyboardDelegate::SendLayout(const xkb_rule_names* names) {
-  xkb_keymap_.reset(xkb_keymap_new_from_names(xkb_context_.get(), names,
-                                              XKB_KEYMAP_COMPILE_NO_FLAGS));
-  xkb_state_.reset(xkb_state_new(xkb_keymap_.get()));
-  std::unique_ptr<char, base::FreeDeleter> keymap_string(
-      xkb_keymap_get_as_string(xkb_keymap_.get(), XKB_KEYMAP_FORMAT_TEXT_V1));
-  DCHECK(keymap_string.get());
-  size_t keymap_size = strlen(keymap_string.get()) + 1;
-
+void WaylandKeyboardDelegate::OnKeyboardLayoutUpdated(
+    base::StringPiece keymap) {
+  // Sent the content of |keymap| with trailing '\0' termination via shared
+  // memory.
   base::UnsafeSharedMemoryRegion shared_keymap_region =
-      base::UnsafeSharedMemoryRegion::Create(keymap_size);
+      base::UnsafeSharedMemoryRegion::Create(keymap.size() + 1);
   base::WritableSharedMemoryMapping shared_keymap = shared_keymap_region.Map();
   base::subtle::PlatformSharedMemoryRegion platform_shared_keymap =
       base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
           std::move(shared_keymap_region));
   DCHECK(shared_keymap.IsValid());
 
-  memcpy(shared_keymap.memory(), keymap_string.get(), keymap_size);
+  std::memcpy(shared_keymap.memory(), keymap.data(), keymap.size());
+  static_cast<uint8_t*>(shared_keymap.memory())[keymap.size()] = '\0';
   wl_keyboard_send_keymap(keyboard_resource_, WL_KEYBOARD_KEYMAP_FORMAT_XKB_V1,
                           platform_shared_keymap.GetPlatformHandle().fd,
-                          keymap_size);
+                          keymap.size() + 1);
   wl_client_flush(client());
+}
+
+void WaylandKeyboardDelegate::SendKeyboardModifiers() {
+  wl_keyboard_send_modifiers(
+      keyboard_resource_,
+      serial_tracker_->GetNextSerial(SerialTracker::EventType::OTHER_EVENT),
+      current_modifiers_.depressed, current_modifiers_.locked,
+      current_modifiers_.latched, current_modifiers_.group);
+  wl_client_flush(client());
+}
+
+// Convert from ChromeOS's key repeat interval to Wayland's key repeat rate.
+// For example, an interval of 500ms is a rate of 1000/500 = 2 Hz.
+//
+// Known issue: A 2000ms interval is 0.5 Hz. This rounds to 1 Hz, which
+// is twice as fast. This is not fixable without Wayland spec changes.
+int32_t GetWaylandRepeatRate(bool enabled, base::TimeDelta interval) {
+  DCHECK(interval.InMillisecondsF() > 0.0);
+  int32_t rate;
+  if (enabled) {
+    // Most of ChromeOS's interval options divide perfectly into 1000,
+    // but a few do need rounding.
+    rate = base::ClampRound<int32_t>(interval.ToHz());
+
+    // Avoid disabling key repeat if the interval is >2000ms.
+    rate = std::max(1, rate);
+  } else {
+    // Disables key repeat, as documented in Wayland spec.
+    rate = 0;
+  }
+  return rate;
+}
+
+// Expose GetWaylandRepeatRate() to tests.
+int32_t GetWaylandRepeatRateForTesting(bool enabled, base::TimeDelta interval) {
+  return GetWaylandRepeatRate(enabled, interval);
+}
+
+void WaylandKeyboardDelegate::OnKeyRepeatSettingsChanged(
+    bool enabled,
+    base::TimeDelta delay,
+    base::TimeDelta interval) {
+  // delay may be zero, but not negative (per Wayland spec).
+  DCHECK_GE(delay.InMilliseconds(), 0);
+
+  uint32_t version = wl_resource_get_version(keyboard_resource_);
+  if (version >= WL_KEYBOARD_REPEAT_INFO_SINCE_VERSION) {
+    wl_keyboard_send_repeat_info(keyboard_resource_,
+                                 GetWaylandRepeatRate(enabled, interval),
+                                 static_cast<int32_t>(delay.InMilliseconds()));
+  }
 }
 
 wl_client* WaylandKeyboardDelegate::client() const {
   return wl_resource_get_client(keyboard_resource_);
 }
 
-#endif
+#endif  // BUILDFLAG(USE_XKBCOMMON)
 
 }  // namespace wayland
 }  // namespace exo

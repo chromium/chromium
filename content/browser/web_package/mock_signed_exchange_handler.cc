@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/strings/stringprintf.h"
+#include "content/browser/web_package/prefetched_signed_exchange_cache_entry.h"
 #include "content/browser/web_package/signed_exchange_cert_fetcher_factory.h"
 #include "net/filter/source_stream.h"
 #include "net/http/http_response_headers.h"
@@ -20,8 +20,8 @@ MockSignedExchangeHandlerParams::MockSignedExchangeHandlerParams(
     net::Error error,
     const GURL& inner_url,
     const std::string& mime_type,
-    std::vector<std::string> response_headers,
-    base::Optional<net::SHA256HashValue> header_integrity,
+    std::vector<std::pair<std::string, std::string>> response_headers,
+    const net::SHA256HashValue& header_integrity,
     const base::Time& signature_expire_time)
     : outer_url(outer_url),
       result(result),
@@ -29,10 +29,9 @@ MockSignedExchangeHandlerParams::MockSignedExchangeHandlerParams(
       inner_url(inner_url),
       mime_type(mime_type),
       response_headers(std::move(response_headers)),
-      header_integrity(std::move(header_integrity)),
+      header_integrity(header_integrity),
       signature_expire_time(signature_expire_time.is_null()
-                                ? base::Time::Now() +
-                                      base::TimeDelta::FromDays(1)
+                                ? base::Time::Now() + base::Days(1)
                                 : signature_expire_time) {}
 
 MockSignedExchangeHandlerParams::MockSignedExchangeHandlerParams(
@@ -44,16 +43,17 @@ MockSignedExchangeHandler::MockSignedExchangeHandler(
     std::unique_ptr<net::SourceStream> body,
     ExchangeHeadersCallback headers_callback)
     : header_integrity_(params.header_integrity),
-      signature_expire_time_(params.signature_expire_time) {
+      signature_expire_time_(params.signature_expire_time),
+      cert_url_(params.outer_url.Resolve("mock_cert")),
+      cert_server_ip_address_(net::IPAddress::IPv4Localhost()) {
   auto head = network::mojom::URLResponseHead::New();
   if (params.error == net::OK) {
     head->headers =
         base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
     head->mime_type = params.mime_type;
-    head->headers->AddHeader(
-        base::StringPrintf("Content-type: %s", params.mime_type.c_str()));
+    head->headers->SetHeader("Content-type", params.mime_type);
     for (const auto& header : params.response_headers)
-      head->headers->AddHeader(header);
+      head->headers->AddHeader(header.first, header.second);
     head->is_signed_exchange_inner_response = true;
     head->content_length = head->headers->GetContentLength();
   }
@@ -63,13 +63,14 @@ MockSignedExchangeHandler::MockSignedExchangeHandler(
                      params.inner_url, std::move(head), std::move(body)));
 }
 
-base::Optional<net::SHA256HashValue>
-MockSignedExchangeHandler::ComputeHeaderIntegrity() const {
-  return header_integrity_;
-}
-
-base::Time MockSignedExchangeHandler::GetSignatureExpireTime() const {
-  return signature_expire_time_;
+bool MockSignedExchangeHandler::GetSignedExchangeInfoForPrefetchCache(
+    PrefetchedSignedExchangeCacheEntry& entry) const {
+  entry.SetHeaderIntegrity(
+      std::make_unique<net::SHA256HashValue>(header_integrity_));
+  entry.SetSignatureExpireTime(signature_expire_time_);
+  entry.SetCertUrl(cert_url_);
+  entry.SetCertServerIPAddress(cert_server_ip_address_);
+  return true;
 }
 
 MockSignedExchangeHandler::~MockSignedExchangeHandler() {}

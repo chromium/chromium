@@ -4,7 +4,8 @@
 
 #include "services/network/ssl_config_type_converter.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 
 namespace mojo {
 
@@ -29,13 +30,14 @@ net::SSLContextConfig MojoSSLConfigToSSLContextConfig(
 
   net_config.version_min =
       MojoSSLVersionToNetSSLVersion(mojo_config->version_min);
+  net_config.version_min_warn =
+      MojoSSLVersionToNetSSLVersion(mojo_config->version_min_warn);
   net_config.version_max =
       MojoSSLVersionToNetSSLVersion(mojo_config->version_max);
   DCHECK_LE(net_config.version_min, net_config.version_max);
 
   net_config.disabled_cipher_suites = mojo_config->disabled_cipher_suites;
-  net_config.tls13_hardening_for_local_anchors_enabled =
-      mojo_config->tls13_hardening_for_local_anchors_enabled;
+  net_config.cecpq2_enabled = mojo_config->cecpq2_enabled;
   return net_config;
 }
 

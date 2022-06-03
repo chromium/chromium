@@ -19,12 +19,23 @@ TEST(AdvancedProtectionStatusManagerFactoryTest, OffTheRecordUseSameService) {
   std::unique_ptr<TestingProfile> testing_profile = builder.Build();
 
   // The regular profile and the off-the-record profile must be different.
-  ASSERT_NE(testing_profile.get(), testing_profile->GetOffTheRecordProfile());
+  ASSERT_NE(testing_profile.get(),
+            testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true));
 
-  EXPECT_EQ(AdvancedProtectionStatusManagerFactory::GetForProfile(
-                testing_profile.get()),
-            AdvancedProtectionStatusManagerFactory::GetForProfile(
-                testing_profile->GetOffTheRecordProfile()));
+  EXPECT_EQ(
+      AdvancedProtectionStatusManagerFactory::GetForProfile(
+          testing_profile.get()),
+      AdvancedProtectionStatusManagerFactory::GetForProfile(
+          testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)));
+
+  // Two different off-the-record profiles must be different.
+  EXPECT_EQ(
+      AdvancedProtectionStatusManagerFactory::GetForProfile(
+          testing_profile->GetPrimaryOTRProfile(/*create_if_needed=*/true)),
+      AdvancedProtectionStatusManagerFactory::GetForProfile(
+          testing_profile->GetOffTheRecordProfile(
+              Profile::OTRProfileID::CreateUniqueForTesting(),
+              /*create_if_needed=*/true)));
 }
 
 }  // namespace safe_browsing

@@ -9,6 +9,9 @@ for more details on the presubmit API built into depot_tools.
 """
 
 
+USE_PYTHON3 = True
+
+
 def CommonChecks(input_api, output_api):
   output = []
   output.extend(input_api.canned_checks.RunPylint(input_api, output_api))

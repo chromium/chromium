@@ -4,6 +4,7 @@
 
 #include "chrome/browser/extensions/api/settings_private/settings_private_event_router_factory.h"
 
+#include "chrome/browser/extensions/api/settings_private/generated_prefs_factory.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_delegate_factory.h"
 #include "chrome/browser/extensions/api/settings_private/settings_private_event_router.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
@@ -33,6 +34,7 @@ SettingsPrivateEventRouterFactory::SettingsPrivateEventRouterFactory()
           BrowserContextDependencyManager::GetInstance()) {
   DependsOn(ExtensionsBrowserClient::Get()->GetExtensionSystemFactory());
   DependsOn(EventRouterFactory::GetInstance());
+  DependsOn(settings_private::GeneratedPrefsFactory::GetInstance());
   DependsOn(SettingsPrivateDelegateFactory::GetInstance());
 }
 

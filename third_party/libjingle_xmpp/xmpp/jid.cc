@@ -15,6 +15,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/check.h"
 #include "base/logging.h"
 #include "third_party/libjingle_xmpp/xmpp/constants.h"
 

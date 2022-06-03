@@ -6,14 +6,17 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "chromeos/printing/cups_printer_status.h"
 #include "chromeos/printing/printer_configuration.h"
-#include "chromeos/printing/uri_components.h"
-
-using base::DictionaryValue;
+#include "chromeos/printing/uri.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/url_constants.h"
 
 namespace chromeos {
 
@@ -34,62 +37,48 @@ const char kPpdResource[] = "ppd_resource";
 const char kAutoconf[] = "autoconf";
 const char kGuid[] = "guid";
 
-// Returns true if the uri was retrieved, is valid, and was set on |printer|.
-// Returns false otherwise.
-bool SetUri(const DictionaryValue& dict, Printer* printer) {
-  std::string uri;
-  if (!dict.GetString(kUri, &uri)) {
-    LOG(WARNING) << "Uri required";
-    return false;
-  }
-
-  if (!chromeos::ParseUri(uri).has_value()) {
-    LOG(WARNING) << "Uri is malformed";
-    return false;
-  }
-
-  printer->set_uri(uri);
-  return true;
-}
-
 // Populates the |printer| object with corresponding fields from |value|.
 // Returns false if |value| is missing a required field.
-bool DictionaryToPrinter(const DictionaryValue& value, Printer* printer) {
+bool DictionaryToPrinter(const base::Value& value, Printer* printer) {
   // Mandatory fields
-  std::string display_name;
-  if (value.GetString(kDisplayName, &display_name)) {
-    printer->set_display_name(display_name);
+  const std::string* display_name = value.FindStringKey(kDisplayName);
+  if (display_name) {
+    printer->set_display_name(*display_name);
   } else {
     LOG(WARNING) << "Display name required";
     return false;
   }
 
-  if (!SetUri(value, printer)) {
+  const std::string* uri = value.FindStringKey(kUri);
+  if (uri) {
+    std::string message;
+    if (!printer->SetUri(*uri, &message)) {
+      LOG(WARNING) << message;
+      return false;
+    }
+  } else {
+    LOG(WARNING) << "Uri required";
     return false;
   }
 
   // Optional fields
-  std::string description;
-  if (value.GetString(kDescription, &description))
-    printer->set_description(description);
+  const std::string* description = value.FindStringKey(kDescription);
+  if (description)
+    printer->set_description(*description);
 
-  std::string manufacturer;
-  if (value.GetString(kManufacturer, &manufacturer))
-    printer->set_manufacturer(manufacturer);
+  const std::string* manufacturer = value.FindStringKey(kManufacturer);
+  const std::string* model = value.FindStringKey(kModel);
 
-  std::string model;
-  if (value.GetString(kModel, &model))
-    printer->set_model(model);
-
-  std::string make_and_model = manufacturer;
-  if (!manufacturer.empty() && !model.empty())
+  std::string make_and_model = manufacturer ? *manufacturer : std::string();
+  if (!make_and_model.empty() && model && !model->empty())
     make_and_model.append(" ");
-  make_and_model.append(model);
+  if (model)
+    make_and_model.append(*model);
   printer->set_make_and_model(make_and_model);
 
-  std::string uuid;
-  if (value.GetString(kUUID, &uuid))
-    printer->set_uuid(uuid);
+  const std::string* uuid = value.FindStringKey(kUUID);
+  if (uuid)
+    printer->set_uuid(*uuid);
 
   return true;
 }
@@ -97,45 +86,48 @@ bool DictionaryToPrinter(const DictionaryValue& value, Printer* printer) {
 // Create an empty CupsPrinterInfo dictionary value. It should be consistent
 // with the fields in js side. See cups_printers_browser_proxy.js for the
 // definition of CupsPrintersInfo.
-std::unique_ptr<base::DictionaryValue> CreateEmptyPrinterInfo() {
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      std::make_unique<base::DictionaryValue>();
-  printer_info->SetString("ppdManufacturer", "");
-  printer_info->SetString("ppdModel", "");
-  printer_info->SetString("printerAddress", "");
-  printer_info->SetBoolean("printerPpdReference.autoconf", false);
-  printer_info->SetString("printerDescription", "");
-  printer_info->SetString("printerId", "");
-  printer_info->SetString("printerManufacturer", "");
-  printer_info->SetString("printerModel", "");
-  printer_info->SetString("printerMakeAndModel", "");
-  printer_info->SetString("printerName", "");
-  printer_info->SetString("printerPPDPath", "");
-  printer_info->SetString("printerProtocol", "ipp");
-  printer_info->SetString("printerQueue", "");
-  printer_info->SetString("printerStatus", "");
+base::Value CreateEmptyPrinterInfo() {
+  base::Value printer_info(base::Value::Type::DICTIONARY);
+  printer_info.SetBoolKey("isManaged", false);
+  printer_info.SetStringKey("ppdManufacturer", "");
+  printer_info.SetStringKey("ppdModel", "");
+  printer_info.SetStringKey("printerAddress", "");
+  printer_info.SetBoolPath("printerPpdReference.autoconf", false);
+  printer_info.SetStringKey("printerDescription", "");
+  printer_info.SetStringKey("printerId", "");
+  printer_info.SetStringKey("printerMakeAndModel", "");
+  printer_info.SetStringKey("printerName", "");
+  printer_info.SetStringKey("printerPPDPath", "");
+  printer_info.SetStringKey("printerProtocol", "ipp");
+  printer_info.SetStringKey("printerQueue", "");
+  printer_info.SetStringKey("printerStatus", "");
   return printer_info;
 }
 
 // Formats a host and port string. The |port| portion is omitted if it is
 // unspecified or invalid.
-std::string PrinterAddress(const std::string& host, int port) {
-  if (port != url::PORT_UNSPECIFIED && port != url::PORT_INVALID) {
-    return base::StringPrintf("%s:%d", host.c_str(), port);
+std::string PrinterAddress(const Uri& uri) {
+  const int port = uri.GetPort();
+  if (port > -1) {
+    return base::StringPrintf("%s:%d", uri.GetHostEncoded().c_str(), port);
   }
-
-  return host;
+  return uri.GetHostEncoded();
 }
 
 }  // namespace
 
 const char kPrinterId[] = "id";
 
-std::unique_ptr<Printer> RecommendedPrinterToPrinter(
-    const base::DictionaryValue& pref) {
+std::unique_ptr<Printer> RecommendedPrinterToPrinter(const base::Value& pref) {
   std::string id;
   // Printer id comes from the id or guid field depending on the source.
-  if (!pref.GetString(kPrinterId, &id) && !pref.GetString(kGuid, &id)) {
+  const std::string* printer_id = pref.FindStringKey(kPrinterId);
+  const std::string* printer_guid = pref.FindStringKey(kGuid);
+  if (printer_id) {
+    id = *printer_id;
+  } else if (printer_guid) {
+    id = *printer_guid;
+  } else {
     LOG(WARNING) << "Record id required";
     return nullptr;
   }
@@ -148,15 +140,15 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
 
   printer->set_source(Printer::SRC_POLICY);
 
-  const DictionaryValue* ppd;
-  if (pref.GetDictionary(kPpdResource, &ppd)) {
+  const base::Value* ppd = pref.FindDictKey(kPpdResource);
+  if (ppd) {
     Printer::PpdReference* ppd_reference = printer->mutable_ppd_reference();
-    std::string make_and_model;
-    if (ppd->GetString(kEffectiveModel, &make_and_model))
-      ppd_reference->effective_make_and_model = make_and_model;
-    bool autoconf;
-    if (ppd->GetBoolean(kAutoconf, &autoconf))
-      ppd_reference->autoconf = autoconf;
+    const std::string* make_and_model = ppd->FindStringKey(kEffectiveModel);
+    if (make_and_model)
+      ppd_reference->effective_make_and_model = *make_and_model;
+    absl::optional<bool> autoconf = ppd->FindBoolKey(kAutoconf);
+    if (autoconf.has_value())
+      ppd_reference->autoconf = *autoconf;
   }
   if (!printer->ppd_reference().autoconf &&
       printer->ppd_reference().effective_make_and_model.empty()) {
@@ -176,56 +168,70 @@ std::unique_ptr<Printer> RecommendedPrinterToPrinter(
   return printer;
 }
 
-std::unique_ptr<base::DictionaryValue> GetCupsPrinterInfo(
-    const Printer& printer) {
-  std::unique_ptr<base::DictionaryValue> printer_info =
-      CreateEmptyPrinterInfo();
+base::Value GetCupsPrinterInfo(const Printer& printer) {
+  base::Value printer_info = CreateEmptyPrinterInfo();
 
-  printer_info->SetString("printerId", printer.id());
-  printer_info->SetString("printerName", printer.display_name());
-  printer_info->SetString("printerDescription", printer.description());
-  printer_info->SetString("printerManufacturer", printer.manufacturer());
-  printer_info->SetString("printerModel", printer.model());
-  printer_info->SetString("printerMakeAndModel", printer.make_and_model());
+  printer_info.SetBoolKey("isManaged",
+                          printer.source() == Printer::Source::SRC_POLICY);
+  printer_info.SetStringKey("printerId", printer.id());
+  printer_info.SetStringKey("printerName", printer.display_name());
+  printer_info.SetStringKey("printerDescription", printer.description());
+  printer_info.SetStringKey("printerMakeAndModel", printer.make_and_model());
   // NOTE: This assumes the the function IsIppEverywhere() simply returns
   // |printer.ppd_reference_.autoconf|. If the implementation of
   // IsIppEverywhere() changes this will need to be changed as well.
-  printer_info->SetBoolean("printerPpdReference.autoconf",
+  printer_info.SetBoolPath("printerPpdReference.autoconf",
                            printer.IsIppEverywhere());
-  printer_info->SetString("printerPPDPath",
-                          printer.ppd_reference().user_supplied_ppd_url);
+  printer_info.SetStringKey("printerPPDPath",
+                            printer.ppd_reference().user_supplied_ppd_url);
+  printer_info.SetStringKey("printServerUri", printer.print_server_uri());
 
-  auto optional = printer.GetUriComponents();
-  if (!optional.has_value()) {
+  if (!printer.HasUri()) {
     // Uri is invalid so we set default values.
     LOG(WARNING) << "Could not parse uri.  Defaulting values";
-    printer_info->SetString("printerAddress", "");
-    printer_info->SetString("printerQueue", "");
-    printer_info->SetString("printerProtocol",
-                            "ipp");  // IPP is our default protocol.
+    printer_info.SetStringKey("printerAddress", "");
+    printer_info.SetStringKey("printerQueue", "");
+    printer_info.SetStringKey("printerProtocol",
+                              "ipp");  // IPP is our default protocol.
     return printer_info;
   }
 
-  UriComponents uri = optional.value();
-
-  if (base::ToLowerASCII(uri.scheme()) == "usb") {
-    // USB has URI path (and, maybe, query) components that aren't really
-    // associated with a queue -- the mapping between printing semantics and URI
-    // semantics breaks down a bit here.  From the user's point of view, the
-    // entire host/path/query block is the printer address for USB.
-    printer_info->SetString("printerAddress",
-                            printer.uri().substr(strlen("usb://")));
-    printer_info->SetString("ppdManufacturer", printer.manufacturer());
-  } else {
-    printer_info->SetString("printerAddress",
-                            PrinterAddress(uri.host(), uri.port()));
-    if (!uri.path().empty()) {
-      printer_info->SetString("printerQueue", uri.path().substr(1));
-    }
-  }
-  printer_info->SetString("printerProtocol", base::ToLowerASCII(uri.scheme()));
+  if (printer.IsUsbProtocol())
+    printer_info.SetStringKey("ppdManufacturer",
+                              printer.usb_printer_manufacturer());
+  printer_info.SetStringKey("printerProtocol", printer.uri().GetScheme());
+  printer_info.SetStringKey("printerAddress", PrinterAddress(printer.uri()));
+  std::string printer_queue = printer.uri().GetPathEncodedAsString();
+  if (!printer_queue.empty())
+    printer_queue = printer_queue.substr(1);  // removes the leading '/'
+  if (!printer.uri().GetQueryEncodedAsString().empty())
+    printer_queue += "?" + printer.uri().GetQueryEncodedAsString();
+  printer_info.SetStringKey("printerQueue", printer_queue);
 
   return printer_info;
 }
 
+base::Value CreateCupsPrinterStatusDictionary(
+    const CupsPrinterStatus& cups_printer_status) {
+  base::Value printer_status(base::Value::Type::DICTIONARY);
+
+  printer_status.SetKey("printerId",
+                        base::Value(cups_printer_status.GetPrinterId()));
+  printer_status.SetKey(
+      "timestamp",
+      base::Value(cups_printer_status.GetTimestamp().ToJsTimeIgnoringNull()));
+
+  base::Value status_reasons(base::Value::Type::LIST);
+  for (auto reason : cups_printer_status.GetStatusReasons()) {
+    base::Value status_reason(base::Value::Type::DICTIONARY);
+    status_reason.SetKey("reason",
+                         base::Value(static_cast<int>(reason.GetReason())));
+    status_reason.SetKey("severity",
+                         base::Value(static_cast<int>(reason.GetSeverity())));
+    status_reasons.Append(std::move(status_reason));
+  }
+  printer_status.SetKey("statusReasons", std::move(status_reasons));
+
+  return printer_status;
+}
 }  // namespace chromeos

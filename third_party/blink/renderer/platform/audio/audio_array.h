@@ -31,11 +31,11 @@
 
 #include <string.h>
 
-#include "base/macros.h"
 #include "base/numerics/checked_math.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
+#include "third_party/blink/renderer/platform/wtf/assertions.h"
 
 namespace blink {
 
@@ -49,6 +49,8 @@ class AudioArray {
       : allocation_(nullptr), aligned_data_(nullptr), size_(0) {
     Allocate(n);
   }
+  AudioArray(const AudioArray&) = delete;
+  AudioArray& operator=(const AudioArray&) = delete;
 
   ~AudioArray() { WTF::Partitions::FastFree(allocation_); }
 
@@ -62,6 +64,8 @@ class AudioArray {
     CHECK_LE(n, std::numeric_limits<unsigned>::max() / sizeof(T));
     uint32_t initial_size = static_cast<uint32_t>(sizeof(T) * n);
 
+    // Minimmum alignment requirements for arrays so that we can use
+    // SIMD.
 #if defined(ARCH_CPU_X86_FAMILY) || defined(WTF_USE_WEBAUDIO_FFMPEG)
     const unsigned kAlignment = 32;
 #else
@@ -71,32 +75,17 @@ class AudioArray {
     if (allocation_)
       WTF::Partitions::FastFree(allocation_);
 
-    bool is_allocation_good = false;
+    // Always allocate extra space so that we are guaranteed to get
+    // the desired alignment.  Some memory is wasted, but it should be
+    // small since most arrays are probably at least 128 floats (or
+    // doubles).
+    unsigned total = base::CheckAdd(initial_size, kAlignment).ValueOrDie();
+    allocation_ = static_cast<T*>(WTF::Partitions::FastZeroedMalloc(
+        total, WTF_HEAP_PROFILER_TYPE_NAME(AudioArray<T>)));
+    CHECK(allocation_);
 
-    while (!is_allocation_good) {
-      // Initially we try to allocate the exact size, but if it's not aligned
-      // then we'll have to reallocate and from then on allocate extra.
-      static unsigned extra_allocation_bytes = 0;
-
-      unsigned total =
-          base::CheckAdd(initial_size, extra_allocation_bytes).ValueOrDie();
-      T* allocation = static_cast<T*>(WTF::Partitions::FastZeroedMalloc(
-          total, WTF_HEAP_PROFILER_TYPE_NAME(AudioArray<T>)));
-      CHECK(allocation);
-
-      T* aligned_data = AlignedAddress(allocation, kAlignment);
-
-      if (aligned_data == allocation || extra_allocation_bytes == kAlignment) {
-        allocation_ = allocation;
-        aligned_data_ = aligned_data;
-        size_ = static_cast<uint32_t>(n);
-        is_allocation_good = true;
-      } else {
-        // always allocate extra after the first alignment failure.
-        extra_allocation_bytes = kAlignment;
-        WTF::Partitions::FastFree(allocation);
-      }
-    }
+    aligned_data_ = AlignedAddress(allocation_, kAlignment);
+    size_ = static_cast<uint32_t>(n);
   }
 
   T* Data() { return aligned_data_; }
@@ -114,32 +103,34 @@ class AudioArray {
 
   void Zero() {
     // This multiplication is made safe by the check in Allocate().
-    memset(this->Data(), 0, sizeof(T) * this->size());
+    memset(Data(), 0, sizeof(T) * size());
   }
 
   void ZeroRange(unsigned start, unsigned end) {
-    bool is_safe = (start <= end) && (end <= this->size());
+    bool is_safe = (start <= end) && (end <= size());
     DCHECK(is_safe);
     if (!is_safe)
       return;
 
     // This expression cannot overflow because end - start cannot be
     // greater than m_size, which is safe due to the check in Allocate().
-    memset(this->Data() + start, 0, sizeof(T) * (end - start));
+    memset(Data() + start, 0, sizeof(T) * (end - start));
   }
 
   void CopyToRange(const T* source_data, unsigned start, unsigned end) {
-    bool is_safe = (start <= end) && (end <= this->size());
+    bool is_safe = (start <= end) && (end <= size());
     DCHECK(is_safe);
     if (!is_safe)
       return;
 
     // This expression cannot overflow because end - start cannot be
     // greater than m_size, which is safe due to the check in Allocate().
-    memcpy(this->Data() + start, source_data, sizeof(T) * (end - start));
+    memcpy(Data() + start, source_data, sizeof(T) * (end - start));
   }
 
  private:
+  // Return an address that is aligned to an |alignment| boundary.
+  // |alignment| MUST be a power of two!
   static T* AlignedAddress(T* address, intptr_t alignment) {
     intptr_t value = reinterpret_cast<intptr_t>(address);
     return reinterpret_cast<T*>((value + alignment - 1) & ~(alignment - 1));
@@ -148,8 +139,6 @@ class AudioArray {
   T* allocation_;
   T* aligned_data_;
   uint32_t size_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioArray);
 };
 
 typedef AudioArray<float> AudioFloatArray;

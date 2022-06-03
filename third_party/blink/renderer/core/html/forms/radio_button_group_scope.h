@@ -36,7 +36,7 @@ class RadioButtonGroupScope {
 
  public:
   RadioButtonGroupScope();
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
   void AddButton(HTMLInputElement*);
   void UpdateCheckedState(HTMLInputElement*);
   void RequiredAttributeChanged(HTMLInputElement*);
@@ -46,6 +46,8 @@ class RadioButtonGroupScope {
   unsigned GroupSizeFor(const HTMLInputElement*) const;
 
  private:
+  RadioButtonGroup* FindGroupByName(const AtomicString&) const;
+
   using NameToGroupMap = HeapHashMap<AtomicString, Member<RadioButtonGroup>>;
   Member<NameToGroupMap> name_to_group_map_;
 };

@@ -23,23 +23,16 @@ GPU_EXPORT extern const char kEnableGPUDriverDebugLogging[];
 GPU_EXPORT extern const char kDisableGpuProgramCache[];
 GPU_EXPORT extern const char kEnforceGLMinimums[];
 GPU_EXPORT extern const char kForceGpuMemAvailableMb[];
+GPU_EXPORT extern const char kForceGpuMemDiscardableLimitMb[];
+GPU_EXPORT extern const char kForceMaxTextureSize[];
 GPU_EXPORT extern const char kGpuProgramCacheSizeKb[];
 GPU_EXPORT extern const char kDisableGpuShaderDiskCache[];
 GPU_EXPORT extern const char kEnableThreadedTextureMailboxes[];
 GPU_EXPORT extern const char kGLShaderIntermOutput[];
-GPU_EXPORT extern const char kEmulateShaderPrecision[];
-GPU_EXPORT extern const char kGrContextType[];
-GPU_EXPORT extern const char kGrContextTypeGL[];
-GPU_EXPORT extern const char kGrContextTypeVulkan[];
-GPU_EXPORT extern const char kGrContextTypeMetal[];
-GPU_EXPORT extern const char kGrContextTypeDawn[];
-GPU_EXPORT extern const char kVulkanImplementationNameNative[];
 GPU_EXPORT extern const char kUseVulkan[];
 GPU_EXPORT extern const char kVulkanImplementationNameNative[];
 GPU_EXPORT extern const char kVulkanImplementationNameSwiftshader[];
-GPU_EXPORT extern const char kEnforceVulkanProtectedMemory[];
 GPU_EXPORT extern const char kDisableVulkanSurface[];
-GPU_EXPORT extern const char kDisableVulkanFallbackToGLForTesting[];
 
 }  // namespace switches
 

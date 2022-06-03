@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// #import {assert} from 'chrome://resources/js/assert.m.js';
-// #import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 /**
  * @typedef {{resolver: !PromiseResolver,
- *            callCount: number}}
+ *            args: !Array<*>,
+ *            resultMapper: (!Function|undefined)}}
  */
 let MethodData;
 
@@ -39,12 +40,12 @@ let MethodData;
  * });
  * --------------------------------------------------------------------------
  */
-/* #export */ class TestBrowserProxy {
+export class TestBrowserProxy {
   /**
-   * @param {!Array<string>} methodNames Names of all methods whose calls
+   * @param {!Array<string>=} methodNames Names of all methods whose calls
    *     need to be tracked.
    */
-  constructor(methodNames) {
+  constructor(methodNames = []) {
     /** @private {!Map<string, !MethodData>} */
     this.resolverMap_ = new Map();
     methodNames.forEach(methodName => {
@@ -53,19 +54,52 @@ let MethodData;
   }
 
   /**
+   * Creates a |TestBrowserProxy|, which has mock functions for all functions of
+   * class |clazz|.
+   * @param {Object} clazz
+   * @return {TestBrowserProxy}
+   */
+  static fromClass(clazz) {
+    const methodNames = Object.getOwnPropertyNames(clazz.prototype)
+                            .filter(methodName => methodName !== 'constructor');
+    const proxy = new TestBrowserProxy(methodNames);
+    proxy.mockMethods_(methodNames);
+    return proxy;
+  }
+
+  /**
+   * Creates a mock implementation for each method name. These mocks allow tests
+   * to either set a result when the mock is called using
+   * |setResultFor(methodName)|, or set a result mapper function that will be
+   * invoked when a method is called using |setResultMapperFor(methodName)|.
+   * @param {!Array<string>} methodNames
+   * @private
+   * @suppress {checkTypes}
+   */
+  mockMethods_(methodNames) {
+    methodNames.forEach(methodName => {
+      this[methodName] = (...args) => this.methodCalled(methodName, ...args);
+    });
+  }
+
+  /**
    * Called by subclasses when a tracked method is called from the code that
    * is being tested.
    * @param {string} methodName
-   * @param {*=} opt_arg Optional argument to be forwarded to the testing
-   *     code, useful for checking whether the proxy method was called with
-   *     the expected arguments.
-   * @protected
+   * @param {...} args Arguments to be forwarded to the testing code, useful for
+   *     checking whether the proxy method was called with the expected
+   *     arguments.
+   * @return {*} If set the result registered via |setResult[Mapper]For|.
    */
-  methodCalled(methodName, opt_arg) {
+  methodCalled(methodName, ...args) {
     const methodData = this.resolverMap_.get(methodName);
-    methodData.callCount += 1;
+    const storedArgs = args.length === 1 ? args[0] : args;
+    methodData.args.push(storedArgs);
     this.resolverMap_.set(methodName, methodData);
-    methodData.resolver.resolve(opt_arg);
+    methodData.resolver.resolve(storedArgs);
+    if (methodData.resultMapper) {
+      return methodData.resultMapper(...args);
+    }
   }
 
   /**
@@ -98,10 +132,40 @@ let MethodData;
   /**
    * Get number of times method is called.
    * @param {string} methodName
-   * @return {!boolean}
+   * @return {number}
    */
   getCallCount(methodName) {
-    return this.getMethodData_(methodName).callCount;
+    return this.getMethodData_(methodName).args.length;
+  }
+
+  /**
+   * Returns the arguments of calls made to |method|.
+   * @param {string} methodName
+   * @return {!Array<*>}
+   */
+  getArgs(methodName) {
+    return this.getMethodData_(methodName).args;
+  }
+
+  /**
+   * Sets a function |resultMapper| that is called with the original arguments
+   * passed to method named |methodName|. This allows a test to return a unique
+   * object each method invovation or have the returned value be different based
+   * on the arguments.
+   * @param {string} methodName
+   * @param {!Function} resultMapper
+   */
+  setResultMapperFor(methodName, resultMapper) {
+    this.getMethodData_(methodName).resultMapper = resultMapper;
+  }
+
+  /**
+   * Sets the return value of a method.
+   * @param {string} methodName
+   * @param {*} value
+   */
+  setResultFor(methodName, value) {
+    this.getMethodData_(methodName).resultMapper = () => value;
   }
 
   /**
@@ -125,6 +189,6 @@ let MethodData;
    */
   createMethodData_(methodName) {
     this.resolverMap_.set(
-        methodName, {resolver: new PromiseResolver(), callCount: 0});
+        methodName, {resolver: new PromiseResolver(), args: []});
   }
 }

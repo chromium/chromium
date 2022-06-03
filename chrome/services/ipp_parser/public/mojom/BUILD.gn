@@ -6,11 +6,10 @@ import("//build/config/features.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
-  sources = [
-    "ipp_parser.mojom",
-  ]
+  sources = [ "ipp_parser.mojom" ]
 
   public_deps = [
     "//mojo/public/mojom/base",
+    "//sandbox/policy/mojom",
   ]
 }

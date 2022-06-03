@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_INVALIDATION_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_
 #define CHROME_BROWSER_INVALIDATION_PROFILE_INVALIDATION_PROVIDER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -34,6 +33,11 @@ class ProfileInvalidationProviderFactory
 
   static ProfileInvalidationProviderFactory* GetInstance();
 
+  ProfileInvalidationProviderFactory(
+      const ProfileInvalidationProviderFactory&) = delete;
+  ProfileInvalidationProviderFactory& operator=(
+      const ProfileInvalidationProviderFactory&) = delete;
+
   // Switches service creation to go through |testing_factory| for all browser
   // contexts.
   void RegisterTestingFactory(TestingFactory testing_factory);
@@ -50,10 +54,10 @@ class ProfileInvalidationProviderFactory
   // BrowserContextKeyedServiceFactory:
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
+  void RegisterProfilePrefs(
+      user_prefs::PrefRegistrySyncable* registry) override;
 
   TestingFactory testing_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileInvalidationProviderFactory);
 };
 
 }  // namespace invalidation

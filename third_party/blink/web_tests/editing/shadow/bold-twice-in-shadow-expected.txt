@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 20: Element.createShadowRoot is deprecated and will be removed in M80, around February 2020. Please use Element.attachShadow instead. See https://www.chromestatus.com/features/4507242028072960 and https://developers.google.com/web/updates/2019/07/web-components-time-to-upgrade for more details.
 Applying document.execCommand('Bold') to elements having insertion points (<shadow> or <content>) shoud not cause a crash.
 
 To test manually, make a selection from somewhere in "nested before" to somehwere in "nested after", then press Ctrl+B twice. It should not cause a crash.

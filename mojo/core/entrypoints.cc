@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/no_destructor.h"
 #include "mojo/core/core.h"
 #include "mojo/public/c/system/buffer.h"
 #include "mojo/public/c/system/data_pipe.h"
@@ -350,6 +351,12 @@ MojoResult MojoShutdownImpl(const MojoShutdownOptions* options) {
   return MOJO_RESULT_UNIMPLEMENTED;
 }
 
+MojoResult MojoSetDefaultProcessErrorHandlerImpl(
+    MojoDefaultProcessErrorHandler handler,
+    const MojoSetDefaultProcessErrorHandlerOptions* options) {
+  return g_core->SetDefaultProcessErrorHandler(handler, options);
+}
+
 }  // extern "C"
 
 MojoSystemThunks g_thunks = {sizeof(MojoSystemThunks),
@@ -396,7 +403,8 @@ MojoSystemThunks g_thunks = {sizeof(MojoSystemThunks),
                              MojoAcceptInvitationImpl,
                              MojoSetQuotaImpl,
                              MojoQueryQuotaImpl,
-                             MojoShutdownImpl};
+                             MojoShutdownImpl,
+                             MojoSetDefaultProcessErrorHandlerImpl};
 
 }  // namespace
 
@@ -409,7 +417,8 @@ Core* Core::Get() {
 }
 
 void InitializeCore() {
-  g_core = new Core;
+  static base::NoDestructor<Core> core_instance;
+  g_core = core_instance.get();
 }
 
 const MojoSystemThunks& GetSystemThunks() {

@@ -6,9 +6,11 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_selector_list.h"
+#include "third_party/blink/renderer/core/css/css_test_helpers.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -21,6 +23,28 @@ typedef struct {
   const int a;
   const int b;
 } ANPlusBTestCase;
+
+struct SelectorTestCase {
+  // The input string to parse as a selector list.
+  const char* input;
+
+  // The expected serialization of the parsed selector list. If nullptr, then
+  // the expected serialization is the same as the input value.
+  //
+  // For selector list that are expected to fail parsing, use the empty
+  // string "".
+  const char* expected = nullptr;
+};
+
+class SelectorParseTest : public ::testing::TestWithParam<SelectorTestCase> {};
+
+TEST_P(SelectorParseTest, Parse) {
+  auto param = GetParam();
+  SCOPED_TRACE(param.input);
+  CSSSelectorList list = css_test_helpers::ParseSelectorList(param.input);
+  const char* expected = param.expected ? param.expected : param.input;
+  EXPECT_EQ(String(expected), list.SelectorsText());
+}
 
 TEST(CSSSelectorParserTest, ValidANPlusB) {
   ANPlusBTestCase test_cases[] = {
@@ -113,28 +137,6 @@ TEST(CSSSelectorParserTest, InvalidANPlusB) {
     CSSParserTokenRange range(tokens);
     bool passed = CSSSelectorParser::ConsumeANPlusB(range, ab);
     EXPECT_FALSE(passed);
-  }
-}
-
-TEST(CSSSelectorParserTest, ShadowDomPseudoInCompound) {
-  const char* test_cases[][2] = {{"::content", "::content"},
-                                 {".a::content", ".a::content"},
-                                 {"::content.a", "::content.a"},
-                                 {"::content.a.b", "::content.a.b"},
-                                 {".a::content.b", ".a::content.b"},
-                                 {"::content:not(#id)", "::content:not(#id)"}};
-
-  for (auto** test_case : test_cases) {
-    SCOPED_TRACE(test_case[0]);
-    CSSTokenizer tokenizer(test_case[0]);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
-        range,
-        MakeGarbageCollected<CSSParserContext>(
-            kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr);
-    EXPECT_EQ(test_case[1], list.SelectorsText());
   }
 }
 
@@ -236,22 +238,6 @@ TEST(CSSSelectorParserTest, WorkaroundForInvalidCustomPseudoInUAStyle) {
   }
 }
 
-TEST(CSSSelectorParserTest, ValidPseudoElementInNonRightmostCompound) {
-  const char* test_cases[] = {"::content *", "::content div::before"};
-
-  for (auto* test_case : test_cases) {
-    CSSTokenizer tokenizer(test_case);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorList list = CSSSelectorParser::ParseSelector(
-        range,
-        MakeGarbageCollected<CSSParserContext>(
-            kHTMLStandardMode, SecureContextMode::kInsecureContext),
-        nullptr);
-    EXPECT_TRUE(list.IsValid());
-  }
-}
-
 TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
   const char* test_cases[] = {"::-webkit-volume-slider *", "::before *",
                               "::-webkit-scrollbar *", "::cue *",
@@ -272,6 +258,23 @@ TEST(CSSSelectorParserTest, InvalidPseudoElementInNonRightmostCompound) {
 
 TEST(CSSSelectorParserTest, UnresolvedNamespacePrefix) {
   const char* test_cases[] = {"ns|div", "div ns|div", "div ns|div "};
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+
+  for (auto* test_case : test_cases) {
+    CSSTokenizer tokenizer(test_case);
+    const auto tokens = tokenizer.TokenizeToEOF();
+    CSSParserTokenRange range(tokens);
+    CSSSelectorList list =
+        CSSSelectorParser::ParseSelector(range, context, sheet);
+    EXPECT_FALSE(list.IsValid());
+  }
+}
+
+TEST(CSSSelectorParserTest, UnexpectedPipe) {
+  const char* test_cases[] = {"div | .c", "| div", " | div"};
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
       kHTMLStandardMode, SecureContextMode::kInsecureContext);
@@ -368,114 +371,147 @@ TEST(CSSSelectorParserTest, InternalPseudo) {
   }
 }
 
-TEST(CSSSelectorParserTest, InvalidNestingPseudoIs) {
-  // :is() is currently not supported within these pseudo classes as they
-  // currently do not support complex selector arguments (:is() does
-  // support this and the expansion of :is() may provide complex selector
-  // arguments to these pseudo classes). Most of these test cases should
-  // eventually be removed once they support complex selector arguments.
-  const char* test_cases[] = {":-webkit-any(:is(.a))",
-                              "::cue(:is(.a))",
-                              ":cue(:is(.a))",
-                              ":host(:is(.a))",
-                              ":host-context(:is(.a))",
-                              ":lang(:is(.a))",
-                              ":not(:is(.a))",
-                              ":nth-child(:is(.a))",
-                              ":nth-last-child(:is(.a))",
-                              ":nth-last-of-type(:is(.a))",
-                              ":nth-of-type(:is(.a))",
-                              "::slotted(:is(.a))"};
+// Pseudo-elements are not valid within :is() as per the spec:
+// https://drafts.csswg.org/selectors-4/#matches
+static const SelectorTestCase invalid_pseudo_is_argments_data[] = {
+    // clang-format off
+    {":is(::-webkit-progress-bar)", ":is()"},
+    {":is(::-webkit-progress-value)", ":is()"},
+    {":is(::-webkit-slider-runnable-track)", ":is()"},
+    {":is(::-webkit-slider-thumb)", ":is()"},
+    {":is(::after)", ":is()"},
+    {":is(::backdrop)", ":is()"},
+    {":is(::before)", ":is()"},
+    {":is(::cue)", ":is()"},
+    {":is(::first-letter)", ":is()"},
+    {":is(::first-line)", ":is()"},
+    {":is(::grammar-error)", ":is()"},
+    {":is(::marker)", ":is()"},
+    {":is(::placeholder)", ":is()"},
+    {":is(::selection)", ":is()"},
+    {":is(::slotted)", ":is()"},
+    {":is(::spelling-error)", ":is()"},
+    {":is(:after)", ":is()"},
+    {":is(:before)", ":is()"},
+    {":is(:cue)", ":is()"},
+    {":is(:first-letter)", ":is()"},
+    {":is(:first-line)", ":is()"},
+    // clang-format on
+};
 
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+INSTANTIATE_TEST_SUITE_P(InvalidPseudoIsArguments,
+                         SelectorParseTest,
+                         testing::ValuesIn(invalid_pseudo_is_argments_data));
 
-  for (auto* test_case : test_cases) {
-    SCOPED_TRACE(test_case);
-    CSSTokenizer tokenizer(test_case);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
-        CSSSelectorParser::ParseSelector(range, context, sheet);
-    EXPECT_FALSE(list.IsValid());
-  }
-}
+static const SelectorTestCase is_where_nesting_data[] = {
+    // clang-format off
+    // These pseudos only accept compound selectors:
+    {"::slotted(:is(.a .b))", "::slotted(:is())"},
+    {"::slotted(:is(.a + .b))", "::slotted(:is())"},
+    {"::slotted(:is(.a, .b + .c))", "::slotted(:is(.a))"},
+    {":host(:is(.a .b))", ":host(:is())"},
+    {":host(:is(.a + .b))", ":host(:is())"},
+    {":host(:is(.a, .b + .c))", ":host(:is(.a))"},
+    {":host-context(:is(.a .b))", ":host-context(:is())"},
+    {":host-context(:is(.a + .b))", ":host-context(:is())"},
+    {":host-context(:is(.a, .b + .c))", ":host-context(:is(.a))"},
+    {"::cue(:is(.a .b))", "::cue(:is())"},
+    {"::cue(:is(.a + .b))", "::cue(:is())"},
+    {"::cue(:is(.a, .b + .c))", "::cue(:is(.a))"},
+    // Only user-action pseudos + :--state are allowed after kPseudoPart:
+    {"::part(foo):is(.a)", "::part(foo):is()"},
+    {"::part(foo):is(.a:hover)", "::part(foo):is()"},
+    {"::part(foo):is(:hover.a)", "::part(foo):is()"},
+    {"::part(foo):is(:hover + .a)", "::part(foo):is()"},
+    {"::part(foo):is(.a + :hover)", "::part(foo):is()"},
+    {"::part(foo):is(:hover:enabled)", "::part(foo):is()"},
+    {"::part(foo):is(:enabled:hover)", "::part(foo):is()"},
+    {"::part(foo):is(:hover, :where(.a))",
+     "::part(foo):is(:hover, :where())"},
+    {"::part(foo):is(:hover, .a)", "::part(foo):is(:hover)"},
+    {"::part(foo):is(:--bar, .a)", "::part(foo):is(:--bar)"},
+    {"::part(foo):is(:enabled)", "::part(foo):is()"},
+    // Only scrollbar pseudos after kPseudoScrollbar:
+    {"::-webkit-scrollbar:is(:focus)", "::-webkit-scrollbar:is()"},
+    // Only :window-inactive after kPseudoSelection:
+    {"::selection:is(:focus)", "::selection:is()"},
+    // Only user-action pseudos after webkit pseudos:
+    {"::-webkit-input-placeholder:is(:enabled)",
+     "::-webkit-input-placeholder:is()"},
+    {"::-webkit-input-placeholder:is(:not(:enabled))",
+     "::-webkit-input-placeholder:is()"},
 
-TEST(CSSSelectorParserTest, InvalidPseudoIsArguments) {
-  // Pseudo-elements are not valid within :is() as per the spec:
-  // https://drafts.csswg.org/selectors-4/#matches
-  const char* test_cases[] = {":is(::-webkit-progress-bar)",
-                              ":is(::-webkit-progress-value)",
-                              ":is(::-webkit-slider-runnable-track)",
-                              ":is(::-webkit-slider-thumb)",
-                              ":is(::after)",
-                              ":is(::backdrop)",
-                              ":is(::before)",
-                              ":is(::cue)",
-                              ":is(::first-letter)",
-                              ":is(::first-line)",
-                              ":is(::grammar-error)",
-                              ":is(::marker)",
-                              ":is(::placeholder)",
-                              ":is(::selection)",
-                              ":is(::slotted)",
-                              ":is(::spelling-error)",
-                              ":is(:after)",
-                              ":is(:before)",
-                              ":is(:cue)",
-                              ":is(:first-letter)",
-                              ":is(:first-line)"};
+    // Valid selectors:
+    {":is(.a, .b)"},
+    {":is(.a\n)", ":is(.a)"},
+    {":is(.a .b, .c)"},
+    {":is(.a :is(.b .c), .d)"},
+    {":is(.a :where(.b .c), .d)"},
+    {":where(.a :is(.b .c), .d)"},
+    {":not(:is(.a))"},
+    {":not(:is(.a, .b))"},
+    {":not(:is(.a + .b, .c .d))"},
+    {":not(:where(:not(.a)))"},
+    {"::slotted(:is(.a))"},
+    {"::slotted(:is(div.a))"},
+    {"::slotted(:is(.a, .b))"},
+    {":host(:is(.a))"},
+    {":host(:is(div.a))"},
+    {":host(:is(.a, .b))"},
+    {":host(:is(.a\n))", ":host(:is(.a))"},
+    {":host-context(:is(.a))"},
+    {":host-context(:is(div.a))"},
+    {":host-context(:is(.a, .b))"},
+    {"::cue(:is(.a))"},
+    {"::cue(:is(div.a))"},
+    {"::cue(:is(.a, .b))"},
+    {"::part(foo):is(:hover)"},
+    {"::part(foo):is(:hover:focus)"},
+    {"::part(foo):is(:is(:hover))"},
+    {"::part(foo):is(:focus, :hover)"},
+    {"::part(foo):is(:focus, :is(:hover))"},
+    {"::part(foo):is(:focus, :--bar)"},
+    {"::-webkit-scrollbar:is(:enabled)"},
+    {"::selection:is(:window-inactive)"},
+    {"::-webkit-input-placeholder:is(:hover)"},
+    {"::-webkit-input-placeholder:is(:not(:hover))"},
+    {"::-webkit-input-placeholder:where(:hover)"},
+    {"::-webkit-input-placeholder:is()"},
+    {"::-webkit-input-placeholder:is(:where(:hover))"},
+    // clang-format on
+};
 
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+INSTANTIATE_TEST_SUITE_P(NestedSelectorValidity,
+                         SelectorParseTest,
+                         testing::ValuesIn(is_where_nesting_data));
 
-  for (auto* test_case : test_cases) {
-    SCOPED_TRACE(test_case);
-    CSSTokenizer tokenizer(test_case);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
-        CSSSelectorParser::ParseSelector(range, context, sheet);
-    EXPECT_FALSE(list.IsValid());
-  }
-}
+static const SelectorTestCase is_where_forgiving_data[] = {
+    // clang-format off
+    {":is():where()"},
+    {":is(.a, .b):where(.c)"},
+    {":is(.a, :unknown, .b)", ":is(.a, .b)"},
+    {":where(.a, :unknown, .b)", ":where(.a, .b)"},
+    {":is(.a, :unknown)", ":is(.a)"},
+    {":is(:unknown, .a)", ":is(.a)"},
+    {":is(:unknown)", ":is()"},
+    {":is(:unknown, :where(.a))", ":is(:where(.a))"},
+    {":is(:unknown, :where(:unknown))", ":is(:where())"},
+    {":is(.a, :is(.b, :unknown), .c)", ":is(.a, :is(.b), .c)"},
+    {":host(:is(.a, .b + .c, .d))", ":host(:is(.a, .d))"},
+    {":is(,,  ,, )", ":is()"},
+    {":is(.a,,,,)", ":is(.a)"},
+    {":is(,,.a,,)", ":is(.a)"},
+    {":is(,,,,.a)", ":is(.a)"},
+    {":is(@x {,.b,}, .a)", ":is(.a)"},
+    {":is({,.b,} @x, .a)", ":is(.a)"},
+    {":is((@x), .a)", ":is(.a)"},
+    {":is((.b), .a)", ":is(.a)"},
+    // clang-format on
+};
 
-TEST(CSSSelectorParserTest, InvalidNestingPseudoWhere) {
-  // :where() is currently not supported within these pseudo classes as they
-  // currently do not support complex selector arguments (:where() does support
-  // this and the expansion of :where() may provide complex selector arguments
-  // to these pseudo classes). Most of these test cases should eventually be
-  // removed once they support complex selector arguments.
-  const char* test_cases[] = {":-webkit-any(:where(.a))",
-                              "::cue(:where(.a))",
-                              ":cue(:where(.a))",
-                              ":host(:where(.a))",
-                              ":host-context(:where(.a))",
-                              ":lang(:where(.a))",
-                              ":not(:where(.a))",
-                              ":nth-child(:where(.a))",
-                              ":nth-last-child(:where(.a))",
-                              ":nth-last-of-type(:where(.a))",
-                              ":nth-of-type(:where(.a))",
-                              "::slotted(:where(.a))"};
-
-  auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kInsecureContext);
-  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
-
-  for (const char* test_case : test_cases) {
-    SCOPED_TRACE(test_case);
-    CSSTokenizer tokenizer(test_case);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorList list =
-        CSSSelectorParser::ParseSelector(range, context, sheet);
-    EXPECT_FALSE(list.IsValid());
-  }
-}
-
+INSTANTIATE_TEST_SUITE_P(IsWhereForgiving,
+                         SelectorParseTest,
+                         testing::ValuesIn(is_where_forgiving_data));
 namespace {
 
 const auto TagLocalName = [](const CSSSelector* selector) {
@@ -587,25 +623,31 @@ TEST(CSSSelectorParserTest, ShadowPartAndBeforeAfterPseudoElementValid) {
   }
 }
 
-TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
+static bool IsCounted(const char* selector,
+                      CSSParserMode mode,
+                      WebFeature feature) {
   auto dummy_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
   Document* doc = &dummy_holder->GetDocument();
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
   auto* context = MakeGarbageCollected<CSSParserContext>(
-      kHTMLStandardMode, SecureContextMode::kSecureContext,
-      CSSParserContext::kLiveProfile, doc);
+      mode, SecureContextMode::kSecureContext, CSSParserContext::kLiveProfile,
+      doc);
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
 
-  auto ExpectCount = [doc, context, sheet](const char* selector,
-                                           WebFeature feature) {
-    EXPECT_FALSE(doc->IsUseCounted(feature));
+  DCHECK(!doc->IsUseCounted(feature));
 
-    CSSTokenizer tokenizer(selector);
-    const auto tokens = tokenizer.TokenizeToEOF();
-    CSSParserTokenRange range(tokens);
-    CSSSelectorParser::ParseSelector(range, context, sheet);
+  CSSTokenizer tokenizer(selector);
+  const auto tokens = tokenizer.TokenizeToEOF();
+  CSSParserTokenRange range(tokens);
+  CSSSelectorParser::ParseSelector(range, context, sheet);
 
-    EXPECT_TRUE(doc->IsUseCounted(feature));
+  return doc->IsUseCounted(feature);
+}
+
+TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
+  auto ExpectCount = [](const char* selector, WebFeature feature) {
+    SCOPED_TRACE(selector);
+    EXPECT_TRUE(IsCounted(selector, kHTMLStandardMode, feature));
   };
 
   ExpectCount("::cue", WebFeature::kCSSSelectorCue);
@@ -645,8 +687,6 @@ TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
               WebFeature::kCSSSelectorWebkitDatetimeEditWeekField);
   ExpectCount("::-webkit-datetime-edit-year-field",
               WebFeature::kCSSSelectorWebkitDatetimeEditYearField);
-  ExpectCount("::-webkit-details-marker",
-              WebFeature::kCSSSelectorWebkitDetailsMarker);
   ExpectCount("::-webkit-file-upload-button",
               WebFeature::kCSSSelectorWebkitFileUploadButton);
   ExpectCount("::-webkit-inner-spin-button",
@@ -723,6 +763,30 @@ TEST(CSSSelectorParserTest, UseCountShadowPseudo) {
               WebFeature::kCSSSelectorWebkitUnknownPseudo);
 }
 
+TEST(CSSSelectorParserTest, IsWhereUseCount) {
+  const auto is_feature = WebFeature::kCSSSelectorPseudoIs;
+  EXPECT_FALSE(IsCounted(".a", kHTMLStandardMode, is_feature));
+  EXPECT_FALSE(IsCounted(":not(.a)", kHTMLStandardMode, is_feature));
+  EXPECT_FALSE(IsCounted(":where(.a)", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(":is()", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(":is(.a)", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(":not(:is(.a))", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(".a:is(.b)", kHTMLStandardMode, is_feature));
+  EXPECT_TRUE(IsCounted(":is(.a).b", kHTMLStandardMode, is_feature));
+  EXPECT_FALSE(IsCounted(":is(.a)", kUASheetMode, is_feature));
+
+  const auto where_feature = WebFeature::kCSSSelectorPseudoWhere;
+  EXPECT_FALSE(IsCounted(".a", kHTMLStandardMode, where_feature));
+  EXPECT_FALSE(IsCounted(":not(.a)", kHTMLStandardMode, where_feature));
+  EXPECT_FALSE(IsCounted(":is(.a)", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(":where()", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(":where(.a)", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(":not(:where(.a))", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(".a:where(.b)", kHTMLStandardMode, where_feature));
+  EXPECT_TRUE(IsCounted(":where(.a).b", kHTMLStandardMode, where_feature));
+  EXPECT_FALSE(IsCounted(":where(.a)", kUASheetMode, where_feature));
+}
+
 TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
   struct ShadowCombinatorTest {
     const char* input;
@@ -733,7 +797,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
       {
           "*::placeholder",
           {
-              {"placeholder", CSSSelector::kShadowPseudo},
+              {"placeholder", CSSSelector::kUAShadow},
               {g_null_atom, CSSSelector::kSubSelector},
           },
       },
@@ -747,7 +811,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
       {
           "::slotted(*)::placeholder",
           {
-              {"placeholder", CSSSelector::kShadowPseudo},
+              {"placeholder", CSSSelector::kUAShadow},
               {"slotted", CSSSelector::kShadowSlot},
               {g_null_atom, CSSSelector::kSubSelector},
           },
@@ -762,7 +826,7 @@ TEST(CSSSelectorParserTest, ImplicitShadowCrossingCombinators) {
       {
           "video::-webkit-media-controls",
           {
-              {"-webkit-media-controls", CSSSelector::kShadowPseudo},
+              {"-webkit-media-controls", CSSSelector::kUAShadow},
               {"video", CSSSelector::kSubSelector},
           },
       },

@@ -15,7 +15,6 @@
 
 #include "base/files/file_path.h"
 #include "base/macros.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "net/base/network_change_notifier.h"
 #include "net/log/net_log.h"
@@ -24,6 +23,7 @@
 #include "net/nqe/network_quality_estimator.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -39,18 +39,20 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   TestNetworkQualityEstimator(
       const std::map<std::string, std::string>& variation_params,
       bool allow_local_host_requests_for_tests,
-      bool allow_smaller_responses_for_tests,
-      std::unique_ptr<RecordingBoundTestNetLog> net_log);
+      bool allow_smaller_responses_for_tests);
 
   TestNetworkQualityEstimator(
       const std::map<std::string, std::string>& variation_params,
       bool allow_local_host_requests_for_tests,
       bool allow_smaller_responses_for_tests,
-      bool suppress_notifications_for_testing,
-      std::unique_ptr<RecordingBoundTestNetLog> net_log);
+      bool suppress_notifications_for_testing);
 
   explicit TestNetworkQualityEstimator(
       std::unique_ptr<NetworkQualityEstimatorParams> params);
+
+  TestNetworkQualityEstimator(const TestNetworkQualityEstimator&) = delete;
+  TestNetworkQualityEstimator& operator=(const TestNetworkQualityEstimator&) =
+      delete;
 
   ~TestNetworkQualityEstimator() override;
 
@@ -136,7 +138,7 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
     recent_transport_rtt_ = recent_transport_rtt;
   }
 
-  base::Optional<base::TimeDelta> GetTransportRTT() const override;
+  absl::optional<base::TimeDelta> GetTransportRTT() const override;
 
   void set_start_time_null_downlink_throughput_kbps(
       int32_t downlink_throughput_kbps) {
@@ -211,12 +213,13 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
     transport_rtt_observation_count_last_ect_computation_ = count;
   }
 
-  void SetCurrentSignalStrength(int32_t signal_strength);
-
   // Returns count of ping RTTs received from H2/spdy connections.
   size_t ping_rtt_received_count() const { return ping_rtt_received_count_; }
 
   const NetworkQualityEstimatorParams* params() const;
+
+  void RecordSpdyPingLatency(const HostPortPair& host_port_pair,
+                             base::TimeDelta rtt) override;
 
   using NetworkQualityEstimator::SetTickClockForTesting;
   using NetworkQualityEstimator::OnConnectionTypeChanged;
@@ -231,27 +234,19 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
     explicit LocalHttpTestServer(const base::FilePath& document_root);
   };
 
-  TestNetworkQualityEstimator(
-      std::unique_ptr<NetworkQualityEstimatorParams> params,
-      std::unique_ptr<RecordingBoundTestNetLog> net_log);
-
-  void RecordSpdyPingLatency(const HostPortPair& host_port_pair,
-                             base::TimeDelta rtt) override;
-
   // NetworkQualityEstimator implementation that returns the overridden
   // network id and signal strength (instead of invoking platform APIs).
   nqe::internal::NetworkID GetCurrentNetworkID() const override;
-  int32_t GetCurrentSignalStrength() const override;
 
-  base::Optional<net::EffectiveConnectionType> GetOverrideECT() const override;
+  absl::optional<net::EffectiveConnectionType> GetOverrideECT() const override;
 
-  // Net log provided to network quality estimator.
-  std::unique_ptr<net::RecordingBoundTestNetLog> net_log_;
+  // Net log observer used to test correctness of NetLog entries.
+  net::RecordingNetLogObserver net_log_observer_;
 
   // If set, GetEffectiveConnectionType() and GetRecentEffectiveConnectionType()
   // would return the set values, respectively.
-  base::Optional<EffectiveConnectionType> effective_connection_type_;
-  base::Optional<EffectiveConnectionType> recent_effective_connection_type_;
+  absl::optional<EffectiveConnectionType> effective_connection_type_;
+  absl::optional<EffectiveConnectionType> recent_effective_connection_type_;
 
   NetworkChangeNotifier::ConnectionType current_network_type_;
   std::string current_network_id_;
@@ -259,29 +254,27 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
   // If set, GetRecentHttpRTT() would return one of the set values.
   // |start_time_null_http_rtt_| is returned if the |start_time| is null.
   // Otherwise, |recent_http_rtt_| is returned.
-  base::Optional<base::TimeDelta> start_time_null_http_rtt_;
-  base::Optional<base::TimeDelta> recent_http_rtt_;
+  absl::optional<base::TimeDelta> start_time_null_http_rtt_;
+  absl::optional<base::TimeDelta> recent_http_rtt_;
 
   // If set, GetRecentTransportRTT() would return one of the set values.
   // |start_time_null_transport_rtt_| is returned if the |start_time| is null.
   // Otherwise, |recent_transport_rtt_| is returned.
-  base::Optional<base::TimeDelta> start_time_null_transport_rtt_;
-  base::Optional<base::TimeDelta> recent_transport_rtt_;
+  absl::optional<base::TimeDelta> start_time_null_transport_rtt_;
+  absl::optional<base::TimeDelta> recent_transport_rtt_;
 
   // If set, GetRecentDownlinkThroughputKbps() would return one of the set
   // values. |start_time_null_downlink_throughput_kbps_| is returned if the
   // |start_time| is null. Otherwise, |recent_downlink_throughput_kbps_| is
   // returned.
-  base::Optional<int32_t> start_time_null_downlink_throughput_kbps_;
-  base::Optional<int32_t> recent_downlink_throughput_kbps_;
+  absl::optional<int32_t> start_time_null_downlink_throughput_kbps_;
+  absl::optional<int32_t> recent_downlink_throughput_kbps_;
 
   // If set, GetRTTEstimateInternal() would return the set value.
-  base::Optional<base::TimeDelta> rtt_estimate_internal_;
+  absl::optional<base::TimeDelta> rtt_estimate_internal_;
 
   // If set, GetRTTEstimateInternal() would return the set value.
-  base::Optional<base::TimeDelta> start_time_null_end_to_end_rtt_;
-
-  int32_t current_cellular_signal_strength_ = INT32_MIN;
+  absl::optional<base::TimeDelta> start_time_null_end_to_end_rtt_;
 
   LocalHttpTestServer embedded_test_server_;
 
@@ -290,9 +283,7 @@ class TestNetworkQualityEstimator : public NetworkQualityEstimator {
 
   size_t ping_rtt_received_count_ = 0;
 
-  base::Optional<size_t> transport_rtt_observation_count_last_ect_computation_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestNetworkQualityEstimator);
+  absl::optional<size_t> transport_rtt_observation_count_last_ect_computation_;
 };
 
 }  // namespace net

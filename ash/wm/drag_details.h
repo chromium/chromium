@@ -5,8 +5,8 @@
 #ifndef ASH_WM_DRAG_DETAILS_H_
 #define ASH_WM_DRAG_DETAILS_H_
 
-#include "ash/ash_export.h"
-#include "ash/public/cpp/window_state_type.h"
+#include "chromeos/ui/base/window_state_type.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/wm/public/window_move_client.h"
 
@@ -16,37 +16,31 @@ class Window;
 
 namespace ash {
 
-struct ASH_EXPORT DragDetails {
+struct DragDetails {
   DragDetails(aura::Window* window,
-              const gfx::Point& location,
+              const gfx::PointF& location,
               int window_component,
               // TODO(sky): make wm type.
               ::wm::WindowMoveSource source);
   ~DragDetails();
 
-  ash::WindowStateType initial_state_type;
+  const chromeos::WindowStateType initial_state_type;
 
   // Initial bounds of the window in parent coordinates.
   const gfx::Rect initial_bounds_in_parent;
 
-  // Restore bounds (in screen coordinates) of the window before the drag
-  // started. Only set if the window is being dragged.
-  gfx::Rect restore_bounds;
+  // Restore bounds in parent coordinates of the window before the drag
+  // started. Only set if the window is being dragged from the caption.
+  const gfx::Rect restore_bounds_in_parent;
 
   // Location passed to the constructor, in |window->parent()|'s coordinates.
-  const gfx::Point initial_location_in_parent;
-
-  // Initial opacity of the window.
-  const float initial_opacity;
+  const gfx::PointF initial_location_in_parent;
 
   // The component the user pressed on.
   const int window_component;
 
   // Bitmask of the |kBoundsChange_| constants.
   const int bounds_change;
-
-  // Bitmask of the |kBoundsChangeDirection_| constants.
-  const int position_change_direction;
 
   // Bitmask of the |kBoundsChangeDirection_| constants.
   const int size_change_direction;

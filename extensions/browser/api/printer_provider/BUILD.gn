@@ -13,17 +13,22 @@ source_set("printer_provider") {
     "printer_provider_api.h",
     "printer_provider_api_factory.cc",
     "printer_provider_api_factory.h",
+    "printer_provider_internal_api.cc",
+    "printer_provider_internal_api.h",
+    "printer_provider_internal_api_observer.h",
     "printer_provider_print_job.cc",
     "printer_provider_print_job.h",
   ]
 
   deps = [
+    "//components/keyed_service/content",
+    "//content/public/browser",
+    "//extensions/browser/api",
+    "//extensions/common",
     "//extensions/common/api",
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom:usb",
   ]
 
-  public_deps = [
-    "//extensions/browser:browser_sources",
-  ]
+  public_deps = [ "//extensions/browser:browser_sources" ]
 }

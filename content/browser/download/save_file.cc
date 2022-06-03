@@ -5,10 +5,11 @@
 #include "content/browser/download/save_file.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/optional.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "components/download/public/common/download_item.h"
 #include "components/download/public/common/download_task_runner.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 
@@ -62,10 +63,15 @@ void SaveFile::Finish() {
   file_.Finish();
 }
 
-void SaveFile::AnnotateWithSourceInformation() {
-  // TODO(gbillock): If this method is called, it should set the
-  // file_.SetClientGuid() method first.
-  NOTREACHED();
+void SaveFile::AnnotateWithSourceInformation(
+    const std::string& client_guid,
+    const GURL& source_url,
+    const GURL& referrer_url,
+    mojo::PendingRemote<quarantine::mojom::Quarantine> remote_quarantine,
+    download::BaseFile::OnAnnotationDoneCallback on_annotation_done_callback) {
+  file_.AnnotateWithSourceInformation(client_guid, source_url, referrer_url,
+                                      std::move(remote_quarantine),
+                                      std::move(on_annotation_done_callback));
 }
 
 base::FilePath SaveFile::FullPath() const {

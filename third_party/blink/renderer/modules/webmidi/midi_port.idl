@@ -54,6 +54,7 @@ enum MIDIPortType {
 
 [
     ActiveScriptWrappable,
+    Exposed=Window,
     SecureContext
 ] interface MIDIPort : EventTarget {
     readonly attribute MIDIPortConnectionState connection;

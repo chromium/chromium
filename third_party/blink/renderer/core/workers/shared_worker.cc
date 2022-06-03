@@ -32,13 +32,20 @@
 #include "third_party/blink/renderer/core/workers/shared_worker.h"
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/blob/blob_utils.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
+#include "third_party/blink/public/mojom/worker/shared_worker_info.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_string_workeroptions.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_worker_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fileapi/public_url_manager.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/messaging/message_channel.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/script/script.h"
 #include "third_party/blink/renderer/core/workers/shared_worker_client_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -49,11 +56,11 @@ namespace blink {
 
 namespace {
 
-void RecordSharedWorkerUsage(Document* document) {
-  UseCounter::Count(document, WebFeature::kSharedWorkerStart);
+void RecordSharedWorkerUsage(LocalDOMWindow* window) {
+  UseCounter::Count(window, WebFeature::kSharedWorkerStart);
 
-  if (document->IsCrossSiteSubframe())
-    UseCounter::Count(document, WebFeature::kThirdPartySharedWorker);
+  if (window->IsCrossSiteSubframe())
+    UseCounter::Count(window, WebFeature::kThirdPartySharedWorker);
 }
 
 }  // namespace
@@ -63,26 +70,20 @@ SharedWorker::SharedWorker(ExecutionContext* context)
       is_being_connected_(false),
       feature_handle_for_scheduler_(context->GetScheduler()->RegisterFeature(
           SchedulingPolicy::Feature::kSharedWorker,
-          {SchedulingPolicy::RecordMetricsForBackForwardCache()})) {}
+          {SchedulingPolicy::DisableBackForwardCache()})) {}
 
-SharedWorker* SharedWorker::Create(ExecutionContext* context,
-                                   const String& url,
-                                   ExceptionState& exception_state) {
-  return SharedWorker::Create(context, url, /*name=*/String(), exception_state);
-}
-
-SharedWorker* SharedWorker::Create(ExecutionContext* context,
-                                   const String& url,
-                                   const String& name,
-                                   ExceptionState& exception_state) {
+SharedWorker* SharedWorker::Create(
+    ExecutionContext* context,
+    const String& url,
+    const V8UnionStringOrWorkerOptions* name_or_options,
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
   // We don't currently support nested workers, so workers can only be created
-  // from documents.
-  Document* document = To<Document>(context);
-  DCHECK(document);
+  // from windows.
+  LocalDOMWindow* window = To<LocalDOMWindow>(context);
 
-  RecordSharedWorkerUsage(document);
+  RecordSharedWorkerUsage(window);
 
   SharedWorker* worker = MakeGarbageCollected<SharedWorker>(context);
   worker->UpdateStateIfNeeded();
@@ -91,38 +92,53 @@ SharedWorker* SharedWorker::Create(ExecutionContext* context,
   worker->port_ = channel->port1();
   MessagePortChannel remote_port = channel->port2()->Disentangle();
 
-  if (!document->GetSecurityOrigin()->CanAccessSharedWorkers()) {
+  if (!window->GetSecurityOrigin()->CanAccessSharedWorkers()) {
     exception_state.ThrowSecurityError(
         "Access to shared workers is denied to origin '" +
-        document->GetSecurityOrigin()->ToString() + "'.");
+        window->GetSecurityOrigin()->ToString() + "'.");
     return nullptr;
-  } else if (document->GetSecurityOrigin()->IsLocal()) {
-    UseCounter::Count(document, WebFeature::kFileAccessedSharedWorker);
+  } else if (window->GetSecurityOrigin()->IsLocal()) {
+    UseCounter::Count(window, WebFeature::kFileAccessedSharedWorker);
   }
 
-  KURL script_url = ResolveURL(context, url, exception_state,
-                               mojom::RequestContextType::SHARED_WORKER);
+  KURL script_url = ResolveURL(context, url, exception_state);
   if (script_url.IsEmpty())
     return nullptr;
 
   mojo::PendingRemote<mojom::blink::BlobURLToken> blob_url_token;
   if (script_url.ProtocolIs("blob")) {
-    document->GetPublicURLManager().Resolve(
+    window->GetPublicURLManager().Resolve(
         script_url, blob_url_token.InitWithNewPipeAndPassReceiver());
   }
 
-  // |name| should not be null according to the HTML spec, but the current impl
-  // wrongly allows it when |name| is omitted. See TODO comment in
-  // shared_worker.idl.
-  // TODO(nhiroki): Stop assigning null to |name| as a default value, and remove
-  // this hack.
-  String worker_name = "";
-  if (!name.IsNull())
-    worker_name = name;
+  auto options = mojom::blink::WorkerOptions::New();
+  switch (name_or_options->GetContentType()) {
+    case V8UnionStringOrWorkerOptions::ContentType::kString:
+      options->name = name_or_options->GetAsString();
+      break;
+    case V8UnionStringOrWorkerOptions::ContentType::kWorkerOptions: {
+      WorkerOptions* worker_options = name_or_options->GetAsWorkerOptions();
+      options->name = worker_options->name();
+      absl::optional<mojom::blink::ScriptType> type_result =
+          Script::ParseScriptType(worker_options->type());
+      DCHECK(type_result);
+      options->type = type_result.value();
+      absl::optional<network::mojom::CredentialsMode> credentials_result =
+          Request::ParseCredentialsMode(worker_options->credentials());
+      DCHECK(credentials_result);
+      options->credentials = credentials_result.value();
+      break;
+    }
+  }
+  DCHECK(!options->name.IsNull());
+  if (options->type == mojom::blink::ScriptType::kClassic)
+    UseCounter::Count(window, WebFeature::kClassicSharedWorker);
+  else if (options->type == mojom::blink::ScriptType::kModule)
+    UseCounter::Count(window, WebFeature::kModuleSharedWorker);
 
-  SharedWorkerClientHolder::From(*document)->Connect(
+  SharedWorkerClientHolder::From(*window)->Connect(
       worker, std::move(remote_port), script_url, std::move(blob_url_token),
-      worker_name);
+      std::move(options), context->UkmSourceID());
 
   return worker;
 }
@@ -140,7 +156,7 @@ bool SharedWorker::HasPendingActivity() const {
 void SharedWorker::ContextLifecycleStateChanged(
     mojom::FrameLifecycleState state) {}
 
-void SharedWorker::Trace(blink::Visitor* visitor) {
+void SharedWorker::Trace(Visitor* visitor) const {
   visitor->Trace(port_);
   AbstractWorker::Trace(visitor);
   Supplementable<SharedWorker>::Trace(visitor);

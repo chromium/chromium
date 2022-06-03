@@ -2,95 +2,29 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * FilesMessage template.
- * @const @type {string}
- */
-const filesMessageTemplate = `
-  <style>
-    :host([hidden]) {
-      display: none;
-    }
+import {assert} from 'chrome://resources/js/assert.m.js';
 
-    :host {
-      border-top: 1px solid var(--google-grey-refresh-300);
-      border-bottom: 1px solid var(--google-grey-refresh-300);
-      color: var(--cr-primary-text-color);
-      display: flex;
-      justify-content: space-between;
-      white-space: nowrap;
-      padding: 5px 0px;
-      height: 36px;
-    }
+import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-    cr-icon-button:not([iron-icon]) {
-      visibility: hidden;
-      width: 16px;
-      margin: 0px;
-    }
-
-    cr-icon-button[iron-icon] {
-      margin: 0px 8px;
-    }
-
-    cr-icon-button[role=img] {
-      --iron-icon-fill-color: var(--google-red-600);
-      pointer-events: none;
-    }
-
-    #text[aria-label]::after {
-      content: attr(aria-label);
-    }
-
-    #text[aria-label] {
-      margin-inline-end: 8px;
-    }
-
-    #dismiss:not([aria-label]), #action:not([aria-label]) {
-      display: none;
-    }
-
-    #dismiss[aria-label]::after, #action[aria-label]::after {
-      content: attr(aria-label);
-    }
-
-    #dismiss, #action {
-      padding: 0px calc(12px - 1px);
-    }
-  </style>
-
-  <div role='alert'>
-    <cr-icon-button id='icon'></cr-icon-button>
-    <span id='text'></span>
-  </div>
-  <div>
-    <cr-button id='dismiss'></cr-button>
-    <cr-button id='action'></cr-button>
-    <cr-icon-button id='close'></cr-icon-button>
-  </div>
-`;
+/** @type {!HTMLTemplateElement} */
+const htmlTemplate = html`{__html_template__}`;
 
 /**
  * FilesMessage.
  */
-class FilesMessage extends HTMLElement {
+export class FilesMessage extends HTMLElement {
   constructor() {
     super();
-    this.createElement_();
+
+    // Create element content.
+    const fragment = htmlTemplate.content.cloneNode(true);
+    this.attachShadow({mode: 'open'}).appendChild(fragment);
 
     /**
      * FilesMessage visual signals user callback.
      * @private @type {!function(*)}
      */
     this.signal_ = console.log;
-  }
-
-  /**
-   * Creates FilesMessage element.
-   * @private
-   */
-  createElement_() {
-    this.attachShadow({mode: 'open'}).innerHTML = filesMessageTemplate;
   }
 
   /**
@@ -252,3 +186,5 @@ class FilesMessage extends HTMLElement {
 }
 
 customElements.define('files-message', FilesMessage);
+
+//# sourceURL=//ui/file_manager/file_manager/foreground/elements/files_message.js

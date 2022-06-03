@@ -5,22 +5,25 @@
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 
 #include "base/metrics/histogram_macros.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/avatar_menu.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/themes/custom_theme_supplier.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_types.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/web_apps/web_app_frame_toolbar_view.h"
+#include "chrome/browser/ui/views/frame/tab_strip_region_view.h"
+#include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/grit/theme_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/theme_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
@@ -38,15 +41,18 @@
 // static
 constexpr int BrowserNonClientFrameView::kMinimumDragHeight;
 
+
 BrowserNonClientFrameView::BrowserNonClientFrameView(BrowserFrame* frame,
                                                      BrowserView* browser_view)
     : frame_(frame), browser_view_(browser_view) {
+  DCHECK(frame_);
+  DCHECK(browser_view_);
+
   // The profile manager may by null in tests.
   if (g_browser_process->profile_manager()) {
     g_browser_process->profile_manager()->
         GetProfileAttributesStorage().AddObserver(this);
   }
-  MaybeObserveTabstrip();
 }
 
 BrowserNonClientFrameView::~BrowserNonClientFrameView() {
@@ -55,21 +61,29 @@ BrowserNonClientFrameView::~BrowserNonClientFrameView() {
     g_browser_process->profile_manager()->
         GetProfileAttributesStorage().RemoveObserver(this);
   }
+
+  // WebAppFrameToolbarView::ToolbarButtonContainer is an
+  // ImmersiveModeController::Observer, so it must be destroyed before the
+  // BrowserView destroys the ImmersiveModeController.
+  delete web_app_frame_toolbar_;
 }
 
 void BrowserNonClientFrameView::OnBrowserViewInitViewsComplete() {
-  MaybeObserveTabstrip();
   UpdateMinimumSize();
 }
 
-void BrowserNonClientFrameView::OnFullscreenStateChanged() {}
+void BrowserNonClientFrameView::OnFullscreenStateChanged() {
+  if (frame_->IsFullscreen())
+    browser_view_->HideDownloadShelf();
+  else
+    browser_view_->UnhideDownloadShelf();
+}
 
 bool BrowserNonClientFrameView::CaptionButtonsOnLeadingEdge() const {
   return false;
 }
 
-void BrowserNonClientFrameView::UpdateFullscreenTopUI(
-    bool needs_check_tab_fullscreen) {}
+void BrowserNonClientFrameView::UpdateFullscreenTopUI() {}
 
 bool BrowserNonClientFrameView::ShouldHideTopUIForFullscreen() const {
   return frame_->IsFullscreen();
@@ -80,17 +94,17 @@ bool BrowserNonClientFrameView::CanUserExitFullscreen() const {
 }
 
 bool BrowserNonClientFrameView::IsFrameCondensed() const {
-  return frame_ && (frame_->IsMaximized() || frame_->IsFullscreen());
+  return frame_->IsMaximized() || frame_->IsFullscreen();
 }
 
 bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
-  DCHECK(browser_view_->IsTabStripVisible());
+  DCHECK(browser_view_->GetSupportsTabStrip());
 
   TabStrip* const tab_strip = browser_view_->tabstrip();
 
   const bool active = ShouldPaintAsActive(active_state);
-  const base::Optional<int> bg_id =
+  const absl::optional<int> bg_id =
       tab_strip->GetCustomBackgroundId(active_state);
   if (bg_id.has_value()) {
     // If the theme has a custom tab background image, assume tab shapes are
@@ -105,7 +119,7 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
     // Inactive tab background images are copied from the active ones, so in the
     // inactive case, check the active image as well.
     if (!active) {
-      const int active_id = browser_view_->IsIncognito()
+      const int active_id = browser_view_->GetIncognito()
                                 ? IDR_THEME_TAB_BACKGROUND_INCOGNITO
                                 : IDR_THEME_TAB_BACKGROUND;
       if (tp->HasCustomImage(active_id))
@@ -130,8 +144,9 @@ bool BrowserNonClientFrameView::EverHasVisibleBackgroundTabShapes() const {
 }
 
 bool BrowserNonClientFrameView::CanDrawStrokes() const {
-  // Web apps should not draw strokes, as they don't have a tab strip.
-  return !browser_view_->browser()->app_controller();
+  // Web apps should not draw strokes if they don't have a tab strip.
+  return !browser_view_->browser()->app_controller() ||
+         browser_view_->browser()->app_controller()->has_tab_strip();
 }
 
 SkColor BrowserNonClientFrameView::GetCaptionColor(
@@ -141,30 +156,16 @@ SkColor BrowserNonClientFrameView::GetCaptionColor(
 
 SkColor BrowserNonClientFrameView::GetFrameColor(
     BrowserFrameActiveState active_state) const {
-  ThemeProperties::OverwritableByUserThemeProperty color_id;
-
-  color_id = ShouldPaintAsActive(active_state)
-                 ? ThemeProperties::COLOR_FRAME
-                 : ThemeProperties::COLOR_FRAME_INACTIVE;
-
-  if (frame_->ShouldUseTheme())
-    return GetThemeProviderForProfile()->GetColor(color_id);
-
-  // Use app theme color if it is set, but not for apps with tabs.
-  web_app::AppBrowserController* app_controller =
-      browser_view_->browser()->app_controller();
-  if (app_controller && app_controller->GetThemeColor() &&
-      !app_controller->has_tab_strip())
-    return *app_controller->GetThemeColor();
-
-  return GetUnthemedColor(color_id);
+  return GetFrameThemeProvider()->GetColor(
+      ShouldPaintAsActive(active_state)
+          ? ThemeProperties::COLOR_FRAME_ACTIVE
+          : ThemeProperties::COLOR_FRAME_INACTIVE);
 }
 
 void BrowserNonClientFrameView::UpdateFrameColor() {
   // Only web-app windows support dynamic frame colors set by HTML meta tags.
-  if (!web_app_frame_toolbar_)
-    return;
-  web_app_frame_toolbar_->UpdateCaptionColors();
+  if (web_app_frame_toolbar_)
+    web_app_frame_toolbar_->UpdateCaptionColors();
   SchedulePaint();
 }
 
@@ -175,14 +176,14 @@ SkColor BrowserNonClientFrameView::GetToolbarTopSeparatorColor() const {
           : ThemeProperties::COLOR_TOOLBAR_TOP_SEPARATOR_INACTIVE;
   // The vertical tab separator might show through the stroke if the stroke
   // color is translucent.  To prevent this, always use an opaque stroke color.
-  return color_utils::GetResultingPaintColor(GetThemeOrDefaultColor(color_id),
-                                             GetFrameColor());
+  return color_utils::GetResultingPaintColor(
+      GetFrameThemeProvider()->GetColor(color_id), GetFrameColor());
 }
 
-base::Optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
+absl::optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
     BrowserFrameActiveState active_state) const {
   const ui::ThemeProvider* tp = GetThemeProvider();
-  const bool incognito = browser_view_->IsIncognito();
+  const bool incognito = browser_view_->GetIncognito();
   const bool active = ShouldPaintAsActive(active_state);
   const int active_id =
       incognito ? IDR_THEME_TAB_BACKGROUND_INCOGNITO : IDR_THEME_TAB_BACKGROUND;
@@ -201,10 +202,16 @@ base::Optional<int> BrowserNonClientFrameView::GetCustomBackgroundId(
       tp->HasCustomImage(id) || (!active && tp->HasCustomImage(active_id)) ||
       tp->HasCustomImage(IDR_THEME_FRAME) ||
       (incognito && tp->HasCustomImage(IDR_THEME_FRAME_INCOGNITO));
-  return has_custom_image ? base::make_optional(id) : base::nullopt;
+  return has_custom_image ? absl::make_optional(id) : absl::nullopt;
 }
 
 void BrowserNonClientFrameView::UpdateMinimumSize() {}
+
+void BrowserNonClientFrameView::SetWindowControlsOverlayToggleVisible(
+    bool visible) {
+  DCHECK(browser_view_->AppUsesWindowControlsOverlay());
+  web_app_frame_toolbar_->SetWindowControlsOverlayToggleVisible(visible);
+}
 
 void BrowserNonClientFrameView::Layout() {
   // BrowserView updates most UI visibility on layout based on fullscreen
@@ -243,6 +250,22 @@ void BrowserNonClientFrameView::ResetWindowControls() {
     web_app_frame_toolbar_->UpdateStatusIconsVisibility();
 }
 
+TabSearchBubbleHost* BrowserNonClientFrameView::GetTabSearchBubbleHost() {
+  return nullptr;
+}
+
+void BrowserNonClientFrameView::PaintAsActiveChanged() {
+  // The toolbar top separator color (used as the stroke around the tabs and
+  // the new tab button) needs to be recalculated.
+  browser_view_->tab_strip_region_view()->FrameColorsChanged();
+
+  if (web_app_frame_toolbar_)
+    web_app_frame_toolbar_->SetPaintAsActive(ShouldPaintAsActive());
+
+  // Changing the activation state may change the visible frame color.
+  SchedulePaint();
+}
+
 bool BrowserNonClientFrameView::ShouldPaintAsActive(
     BrowserFrameActiveState active_state) const {
   return (active_state == BrowserFrameActiveState::kUseCurrent)
@@ -252,22 +275,22 @@ bool BrowserNonClientFrameView::ShouldPaintAsActive(
 
 gfx::ImageSkia BrowserNonClientFrameView::GetFrameImage(
     BrowserFrameActiveState active_state) const {
-  const ui::ThemeProvider* tp = GetThemeProviderForProfile();
+  const ui::ThemeProvider* tp = GetFrameThemeProvider();
   const int frame_image_id = ShouldPaintAsActive(active_state)
                                  ? IDR_THEME_FRAME
                                  : IDR_THEME_FRAME_INACTIVE;
-  return frame_->ShouldUseTheme() && (tp->HasCustomImage(frame_image_id) ||
-                                      tp->HasCustomImage(IDR_THEME_FRAME))
+  return (tp->HasCustomImage(frame_image_id) ||
+          tp->HasCustomImage(IDR_THEME_FRAME))
              ? *tp->GetImageSkiaNamed(frame_image_id)
              : gfx::ImageSkia();
 }
 
 gfx::ImageSkia BrowserNonClientFrameView::GetFrameOverlayImage(
     BrowserFrameActiveState active_state) const {
-  if (browser_view_->IsIncognito() || !browser_view_->IsBrowserTypeNormal())
+  if (browser_view_->GetIncognito() || !browser_view_->GetIsNormalType())
     return gfx::ImageSkia();
 
-  const ui::ThemeProvider* tp = GetThemeProviderForProfile();
+  const ui::ThemeProvider* tp = GetFrameThemeProvider();
   const int frame_overlay_image_id = ShouldPaintAsActive(active_state)
                                          ? IDR_THEME_FRAME_OVERLAY
                                          : IDR_THEME_FRAME_OVERLAY_INACTIVE;
@@ -281,75 +304,6 @@ void BrowserNonClientFrameView::ChildPreferredSizeChanged(views::View* child) {
     Layout();
 }
 
-void BrowserNonClientFrameView::PaintAsActiveChanged(bool active) {
-  // The toolbar top separator color (used as the stroke around the tabs and
-  // the new tab button) needs to be recalculated.
-  browser_view_->tabstrip()->FrameColorsChanged();
-
-  if (web_app_frame_toolbar_)
-    web_app_frame_toolbar_->SetPaintAsActive(active);
-
-  // Changing the activation state may change the visible frame color.
-  SchedulePaint();
-}
-
-bool BrowserNonClientFrameView::DoesIntersectRect(const views::View* target,
-                                                  const gfx::Rect& rect) const {
-  DCHECK_EQ(target, this);
-  if (!views::ViewTargeterDelegate::DoesIntersectRect(this, rect)) {
-    // |rect| is outside the frame's bounds.
-    return false;
-  }
-
-  bool should_leave_to_top_container = false;
-#if defined(OS_CHROMEOS)
-  // In immersive mode, the caption buttons container is reparented to the
-  // TopContainerView and hence |rect| should not be claimed here.  See
-  // BrowserNonClientFrameViewAsh::OnImmersiveRevealStarted().
-  should_leave_to_top_container =
-      browser_view_->immersive_mode_controller()->IsRevealed();
-#endif  // defined(OS_CHROMEOS)
-
-  if (!browser_view_->IsTabStripVisible()) {
-    // Claim |rect| if it is above the top of the topmost client area view.
-    return !should_leave_to_top_container && (rect.y() < GetTopInset(false));
-  }
-
-  // If the rect is outside the bounds of the client area, claim it.
-  gfx::RectF rect_in_client_view_coords_f(rect);
-  View::ConvertRectToTarget(this, frame_->client_view(),
-                            &rect_in_client_view_coords_f);
-  gfx::Rect rect_in_client_view_coords =
-      gfx::ToEnclosingRect(rect_in_client_view_coords_f);
-  if (!frame_->client_view()->HitTestRect(rect_in_client_view_coords))
-    return true;
-
-  // Otherwise, claim |rect| only if it is above the bottom of the tabstrip in
-  // a non-tab portion.
-  TabStrip* tabstrip = browser_view_->tabstrip();
-  // The tabstrip may not be in a Widget (e.g. when switching into immersive
-  // reveal).
-  if (tabstrip->GetWidget()) {
-    gfx::RectF rect_in_tabstrip_coords_f(rect);
-    View::ConvertRectToTarget(this, tabstrip, &rect_in_tabstrip_coords_f);
-    gfx::Rect rect_in_tabstrip_coords =
-        gfx::ToEnclosingRect(rect_in_tabstrip_coords_f);
-    if (rect_in_tabstrip_coords.y() >= tabstrip->GetLocalBounds().bottom()) {
-      // |rect| is below the tabstrip.
-      return false;
-    }
-
-    if (tabstrip->HitTestRect(rect_in_tabstrip_coords)) {
-      // Claim |rect| if it is in a non-tab portion of the tabstrip.
-      return tabstrip->IsRectInWindowCaption(rect_in_tabstrip_coords);
-    }
-  }
-
-  // We claim |rect| because it is above the bottom of the tabstrip, but
-  // not in the tabstrip itself.
-  return !should_leave_to_top_container;
-}
-
 void BrowserNonClientFrameView::OnProfileAdded(
     const base::FilePath& profile_path) {
   OnProfileAvatarChanged(profile_path);
@@ -357,7 +311,7 @@ void BrowserNonClientFrameView::OnProfileAdded(
 
 void BrowserNonClientFrameView::OnProfileWasRemoved(
     const base::FilePath& profile_path,
-    const base::string16& profile_name) {
+    const std::u16string& profile_name) {
   OnProfileAvatarChanged(profile_path);
 }
 
@@ -379,41 +333,22 @@ void BrowserNonClientFrameView::OnProfileHighResAvatarLoaded(
 
 #if defined(OS_WIN)
 int BrowserNonClientFrameView::GetSystemMenuY() const {
-  if (!browser_view()->IsTabStripVisible())
+  if (!browser_view()->GetTabStripVisible())
     return GetTopInset(false);
-  return GetBoundsForTabStripRegion(browser_view()->tabstrip()).bottom() -
+  return GetBoundsForTabStripRegion(
+             browser_view()->tab_strip_region_view()->GetMinimumSize())
+             .bottom() -
          GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP);
 }
 #endif
 
-void BrowserNonClientFrameView::MaybeObserveTabstrip() {
-  if (browser_view_->tabstrip()) {
-    DCHECK(!tab_strip_observer_.IsObserving(browser_view_->tabstrip()));
-    tab_strip_observer_.Add(browser_view_->tabstrip());
-  }
-}
-
-const ui::ThemeProvider*
-BrowserNonClientFrameView::GetThemeProviderForProfile() const {
-  // Because the frame's accessor reads the ThemeProvider from the profile and
-  // not the widget, it can be called even before we're in a view hierarchy.
+const ui::ThemeProvider* BrowserNonClientFrameView::GetFrameThemeProvider()
+    const {
+  // The |frame_| theme provider is obtained from the profile rather than the
+  // widget. This is done this way because it can happen prior to being inserted
+  // into the view hierarchy.
   return frame_->GetThemeProvider();
 }
 
-SkColor BrowserNonClientFrameView::GetThemeOrDefaultColor(int color_id) const {
-  if (!frame_->ShouldUseTheme())
-    return GetUnthemedColor(color_id);
-
-  // During shutdown, there may no longer be a widget, and thus no theme
-  // provider.
-  const auto* theme_provider = GetThemeProvider();
-  return theme_provider ? theme_provider->GetColor(color_id)
-                        : gfx::kPlaceholderColor;
-}
-
-SkColor BrowserNonClientFrameView::GetUnthemedColor(int color_id) const {
-  DCHECK(!frame_->ShouldUseTheme());
-  return ThemeProperties::GetDefaultColor(
-      color_id, browser_view_->IsIncognito(),
-      GetNativeTheme()->ShouldUseDarkColors());
-}
+BEGIN_METADATA(BrowserNonClientFrameView, views::NonClientFrameView)
+END_METADATA

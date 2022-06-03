@@ -4,11 +4,6 @@
 
 source_set("common") {
   sources = [
-    "create_video_encoder_params.cc",
-    "create_video_encoder_params.h",
-    "media_message_generator.cc",
-    "media_message_generator.h",
-    "media_messages.h",
     "media_param_traits.cc",
     "media_param_traits.h",
     "media_param_traits_macros.h",

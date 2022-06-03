@@ -2,12 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
 #include "chrome/browser/ui/browser.h"
@@ -26,16 +24,20 @@ class SubresourceFilterWorkerFetchBrowserTest
     : public SubresourceFilterBrowserTest {
  public:
   SubresourceFilterWorkerFetchBrowserTest() = default;
+
+  SubresourceFilterWorkerFetchBrowserTest(
+      const SubresourceFilterWorkerFetchBrowserTest&) = delete;
+  SubresourceFilterWorkerFetchBrowserTest& operator=(
+      const SubresourceFilterWorkerFetchBrowserTest&) = delete;
+
   ~SubresourceFilterWorkerFetchBrowserTest() override = default;
 
  protected:
   void RunTest(const std::string& document_path,
                const std::string& filter_path) {
-    const base::string16 fetch_succeeded_title =
-        base::ASCIIToUTF16("FetchSucceeded");
-    const base::string16 fetch_failed_title = base::ASCIIToUTF16("FetchFailed");
-    const base::string16 fetch_partially_failed_title =
-        base::ASCIIToUTF16("FetchPartiallyFailed");
+    const std::u16string fetch_succeeded_title = u"FetchSucceeded";
+    const std::u16string fetch_failed_title = u"FetchFailed";
+    const std::u16string fetch_partially_failed_title = u"FetchPartiallyFailed";
 
     GURL url(GetTestUrl(document_path));
     ConfigureAsPhishingURL(url);
@@ -49,7 +51,7 @@ class SubresourceFilterWorkerFetchBrowserTest
           fetch_succeeded_title);
       title_watcher.AlsoWaitForTitle(fetch_failed_title);
       title_watcher.AlsoWaitForTitle(fetch_partially_failed_title);
-      ui_test_utils::NavigateToURL(browser(), url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       EXPECT_EQ(fetch_succeeded_title, title_watcher.WaitAndGetTitle());
     }
     ClearTitle();
@@ -63,19 +65,16 @@ class SubresourceFilterWorkerFetchBrowserTest
           fetch_succeeded_title);
       title_watcher.AlsoWaitForTitle(fetch_failed_title);
       title_watcher.AlsoWaitForTitle(fetch_partially_failed_title);
-      ui_test_utils::NavigateToURL(browser(), url);
+      ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
       EXPECT_EQ(fetch_failed_title, title_watcher.WaitAndGetTitle());
     }
     ClearTitle();
   }
 
   void ClearTitle() {
-    ASSERT_TRUE(content::ExecuteScript(web_contents()->GetMainFrame(),
-                                       "document.title = \"\";"));
+    ASSERT_TRUE(content::ExecJs(web_contents()->GetMainFrame(),
+                                "document.title = \"\";"));
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SubresourceFilterWorkerFetchBrowserTest);
 };
 
 // TODO(https://crbug.com/1011208): Add more tests for workers like top-level

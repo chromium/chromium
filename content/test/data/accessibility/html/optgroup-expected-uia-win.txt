@@ -1,15 +1,15 @@
-document
-++group IsControlElement=false
-++++listbox Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.IsReadOnly=false
-++++++group Name='Enabled'
-++++++++description Name='Enabled' IsControlElement=false
-++++++option Name='One' SelectionItem.IsSelected=false
-++++++option Name='Two' SelectionItem.IsSelected=false
-++++++option Name='Three' SelectionItem.IsSelected=false
-++++++option Name='Four' SelectionItem.IsSelected=false
-++++++group Name='Disabled'
-++++++++description Name='Disabled' IsControlElement=false
-++++++option Name='One' IsEnabled=false
-++++++option Name='Two' IsEnabled=false
-++++++option Name='Three' IsEnabled=false
-++++++option Name='Four' IsEnabled=false
+Document Value.IsReadOnly=true
+++Group IsControlElement=false
+++++List Selection.CanSelectMultiple=false Selection.IsSelectionRequired=false Value.IsReadOnly=false
+++++++Group Name='Enabled'
+++++++++Text Name='Enabled' IsControlElement=false
+++++++ListItem Name='One' SelectionItem.IsSelected=false
+++++++ListItem Name='Two' SelectionItem.IsSelected=false
+++++++ListItem Name='Three' SelectionItem.IsSelected=false
+++++++ListItem Name='Four' SelectionItem.IsSelected=false
+++++++Group Name='Disabled'
+++++++++Text Name='Disabled' IsControlElement=false
+++++++ListItem Name='One' IsEnabled=false
+++++++ListItem Name='Two' IsEnabled=false
+++++++ListItem Name='Three' IsEnabled=false
+++++++ListItem Name='Four' IsEnabled=false

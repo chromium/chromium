@@ -10,11 +10,11 @@
 #include <tuple>
 
 #include "base/macros.h"
-#include "base/optional.h"
 #include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/net_export.h"
 #include "net/base/sys_addrinfo.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -47,7 +47,7 @@ class NET_EXPORT_PRIVATE AddressInfo {
 
   // Constructors
   using AddressInfoAndResult = std::
-      tuple<base::Optional<AddressInfo>, int /* err */, int /* os_error */>;
+      tuple<absl::optional<AddressInfo>, int /* err */, int /* os_error */>;
   // Invokes AddrInfoGetter with provided |host| and |hints|. If |getter| is
   // null, the system's getaddrinfo will be invoked. (A non-null |getter| is
   // primarily for tests).
@@ -56,8 +56,12 @@ class NET_EXPORT_PRIVATE AddressInfo {
       const addrinfo& hints,
       std::unique_ptr<AddrInfoGetter> getter = nullptr);
 
+  AddressInfo(const AddressInfo&) = delete;
+  AddressInfo& operator=(const AddressInfo&) = delete;
+
   AddressInfo(AddressInfo&& other);
   AddressInfo& operator=(AddressInfo&& other);
+
   ~AddressInfo();
 
   // Accessors
@@ -65,7 +69,7 @@ class NET_EXPORT_PRIVATE AddressInfo {
   const_iterator end() const;
 
   // Methods
-  base::Optional<std::string> GetCanonicalName() const;
+  absl::optional<std::string> GetCanonicalName() const;
   bool IsAllLocalhostOfOneFamily() const;
   AddressList CreateAddressList() const;
 
@@ -76,22 +80,22 @@ class NET_EXPORT_PRIVATE AddressInfo {
   // Data.
   addrinfo* ai_;  // Never null (except after move)
   std::unique_ptr<AddrInfoGetter> getter_;
-
-  DISALLOW_COPY_AND_ASSIGN(AddressInfo);
 };
 
 // Encapsulates calls to getaddrinfo and freeaddrinfo for tests.
 class NET_EXPORT_PRIVATE AddrInfoGetter {
  public:
   AddrInfoGetter();
+
+  AddrInfoGetter(const AddrInfoGetter&) = delete;
+  AddrInfoGetter& operator=(const AddrInfoGetter&) = delete;
+
   // Virtual for tests.
   virtual ~AddrInfoGetter();
   virtual addrinfo* getaddrinfo(const std::string& host,
                                 const addrinfo* hints,
                                 int* out_os_error);
   virtual void freeaddrinfo(addrinfo* ai);
-
-  DISALLOW_COPY_AND_ASSIGN(AddrInfoGetter);
 };
 
 }  // namespace net

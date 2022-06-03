@@ -5,30 +5,52 @@
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 
 #include <sstream>
+#include <string>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/logging.h"
-#include "base/run_loop.h"
-#include "base/time/time.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/timer/timer.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
 
-constexpr base::TimeDelta kTimeout = base::TimeDelta::FromSeconds(30);
+constexpr base::TimeDelta kDefaultTimeout = base::Seconds(30);
+
+base::TimeDelta GetTimeoutFromCommandLineOrDefault() {
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kStatusChangeCheckerTimeoutInSeconds)) {
+    return kDefaultTimeout;
+  }
+  std::string timeout_string(
+      base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+          switches::kStatusChangeCheckerTimeoutInSeconds));
+  int timeout_in_seconds = 0;
+  if (!base::StringToInt(timeout_string, &timeout_in_seconds)) {
+    LOG(FATAL) << "Timeout value \"" << timeout_string << "\" was parsed as "
+               << timeout_in_seconds;
+  }
+  return base::Seconds(timeout_in_seconds);
+}
 
 }  // namespace
 
-StatusChangeChecker::StatusChangeChecker()
-    : run_loop_(base::RunLoop::Type::kNestableTasksAllowed),
-      timed_out_(false) {}
+const char switches::kStatusChangeCheckerTimeoutInSeconds[] =
+    "sync-status-change-checker-timeout";
 
-StatusChangeChecker::~StatusChangeChecker() {}
+StatusChangeChecker::StatusChangeChecker()
+    : timeout_(GetTimeoutFromCommandLineOrDefault()),
+      run_loop_(base::RunLoop::Type::kNestableTasksAllowed) {}
+
+StatusChangeChecker::~StatusChangeChecker() = default;
 
 bool StatusChangeChecker::Wait() {
   std::ostringstream s;
   if (IsExitConditionSatisfied(&s)) {
     DVLOG(1) << "Already satisfied: " << s.str();
+    wait_done_called_ = true;
+    WaitDone();
   } else {
     DVLOG(1) << "Blocking: " << s.str();
     StartBlockingWait();
@@ -41,8 +63,16 @@ bool StatusChangeChecker::TimedOut() const {
 }
 
 void StatusChangeChecker::StopWaiting() {
-  if (run_loop_.running())
+  if (run_loop_.running()) {
+    // Note that we can get here multiple times in some situations, because
+    // RunLoop::Quit() doesn't guarantee that it actually quits immediately.
+    // Make sure that WaitDone() still gets called only once.
+    if (!wait_done_called_) {
+      wait_done_called_ = true;
+      WaitDone();
+    }
     run_loop_.Quit();
+  }
 }
 
 void StatusChangeChecker::CheckExitCondition() {
@@ -63,9 +93,9 @@ void StatusChangeChecker::StartBlockingWait() {
   DCHECK(!run_loop_.running());
 
   base::OneShotTimer timer;
-  timer.Start(FROM_HERE, kTimeout,
-              base::BindRepeating(&StatusChangeChecker::OnTimeout,
-                                  base::Unretained(this)));
+  timer.Start(
+      FROM_HERE, timeout_,
+      base::BindOnce(&StatusChangeChecker::OnTimeout, base::Unretained(this)));
 
   run_loop_.Run();
 }

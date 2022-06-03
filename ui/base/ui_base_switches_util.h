@@ -5,11 +5,12 @@
 #ifndef UI_BASE_UI_BASE_SWITCHES_UTIL_H_
 #define UI_BASE_UI_BASE_SWITCHES_UTIL_H_
 
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace switches {
 
-UI_BASE_EXPORT bool IsTouchDragDropEnabled();
+COMPONENT_EXPORT(UI_BASE) bool IsElasticOverscrollEnabled();
+COMPONENT_EXPORT(UI_BASE) bool IsTouchDragDropEnabled();
 
 }  // namespace switches
 

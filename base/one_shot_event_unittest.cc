@@ -6,7 +6,7 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +24,8 @@ class RefCountedClass : public base::RefCounted<RefCountedClass> {
       : did_delete_instance_(did_delete_instance) {
     DCHECK(!*did_delete_instance_);
   }
+  RefCountedClass(const RefCountedClass&) = delete;
+  RefCountedClass& operator=(const RefCountedClass&) = delete;
 
   void PerformTask() { did_perform_task_ = true; }
   bool did_perform_task() const { return did_perform_task_; }
@@ -36,8 +38,6 @@ class RefCountedClass : public base::RefCounted<RefCountedClass> {
   bool* const did_delete_instance_;  // Not owned.
 
   bool did_perform_task_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(RefCountedClass);
 };
 
 TEST(OneShotEventTest, RecordsSignal) {

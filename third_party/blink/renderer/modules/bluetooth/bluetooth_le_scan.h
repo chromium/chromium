@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_BLUETOOTH_BLUETOOTH_LE_SCAN_H_
 
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_bluetooth_le_scan_filter_init.h"
 #include "third_party/blink/renderer/modules/bluetooth/bluetooth.h"
-#include "third_party/blink/renderer/modules/bluetooth/bluetooth_le_scan_filter_init.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -29,7 +29,7 @@ class BluetoothLEScan final : public ScriptWrappable {
   bool stop();
 
   // Interface required by garbage collection.
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   mojo::ReceiverId id_;

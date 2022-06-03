@@ -1,7 +1,11 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-'use strict';
+
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {remoteCall, setupAndWaitUntilReady} from './background.js';
 
 testcase.installLinuxPackageDialog = async () => {
   const fake = '#directory-tree .tree-item [root-type-icon="crostini"]';
@@ -11,7 +15,6 @@ testcase.installLinuxPackageDialog = async () => {
   // one is visible at a time.
   const dialog = '#install-linux-package-dialog';
   const okButton = dialog + ' .cr-dialog-ok:not([hidden])';
-
 
   const appId = await setupAndWaitUntilReady(RootPath.DOWNLOADS);
 
@@ -33,6 +36,7 @@ testcase.installLinuxPackageDialog = async () => {
 
   // Ensure package install dialog is shown.
   await remoteCall.waitForElement(appId, dialog);
+  const caller = getCaller();
   await repeatUntil(async () => {
     const elements = await remoteCall.callRemoteTestUtil(
         'queryAllElements', appId, ['.install-linux-package-details-frame']);
@@ -45,7 +49,7 @@ testcase.installLinuxPackageDialog = async () => {
              'Application: Fake Package' +
              'Version: 1.0' +
              'Description: A package that is fake') ||
-        pending('Waiting for installation to start.');
+        pending(caller, 'Waiting for installation to start.');
   });
 
   // Begin installation.
@@ -58,7 +62,7 @@ testcase.installLinuxPackageDialog = async () => {
         'queryAllElements', appId, ['.cr-dialog-text']);
     return elements[0] &&
         elements[0].text == 'Installation successfully started.' ||
-        pending('Waiting for installation to start.');
+        pending(caller, 'Waiting for installation to start.');
   });
 
   // Dismiss dialog

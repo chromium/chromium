@@ -4,8 +4,8 @@
 
 // This file contains Chromium-specific GL extensions declarations.
 
-#ifndef GPU_GL_GLEXTCHROMIUM_H_
-#define GPU_GL_GLEXTCHROMIUM_H_
+#ifndef UI_GL_GL_GLEXTCHROMIUM_H_
+#define UI_GL_GL_GLEXTCHROMIUM_H_
 
 #ifdef __cplusplus
 extern "C" {
@@ -23,4 +23,4 @@ extern "C" {
 }
 #endif
 
-#endif  // GPU_GL_GLEXTCHROMIUM_H_
+#endif  // UI_GL_GL_GLEXTCHROMIUM_H_

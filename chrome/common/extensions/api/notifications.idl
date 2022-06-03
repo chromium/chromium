@@ -175,7 +175,7 @@ namespace notifications {
     static void clear(DOMString notificationId,
                       optional ClearCallback callback);
 
-    // Retrieves all the notifications.
+    // Retrieves all the notifications of this app or extension.
     // |callback|: Returns the set of notification_ids currently in the system.
     static void getAll(GetAllCallback callback);
 

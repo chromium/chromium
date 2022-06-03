@@ -13,8 +13,8 @@
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate_mock.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/autofill/core/common/password_form.h"
 #include "components/password_manager/core/browser/password_bubble_experiment.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -29,26 +29,26 @@ using testing::ElementsAre;
 using testing::Pointee;
 using testing::StrictMock;
 
-const char kUsername[] = "user1";
-const char kUsername2[] = "user2";
+const char16_t kUsername[] = u"user1";
+const char16_t kUsername2[] = u"user2";
 
 class MockPasswordPrompt : public AccountChooserPrompt,
                            public AutoSigninFirstRunPrompt {
  public:
   MockPasswordPrompt() = default;
 
+  MockPasswordPrompt(const MockPasswordPrompt&) = delete;
+  MockPasswordPrompt& operator=(const MockPasswordPrompt&) = delete;
+
   MOCK_METHOD0(ShowAccountChooser, void());
   MOCK_METHOD0(ShowAutoSigninPrompt, void());
   MOCK_METHOD0(ControllerGone, void());
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPasswordPrompt);
 };
 
-autofill::PasswordForm GetLocalForm() {
-  autofill::PasswordForm form;
-  form.username_value = base::ASCIIToUTF16(kUsername);
-  form.origin = GURL("http://example.com");
+password_manager::PasswordForm GetLocalForm() {
+  password_manager::PasswordForm form;
+  form.username_value = kUsername;
+  form.url = GURL("http://example.com");
   return form;
 }
 
@@ -75,13 +75,15 @@ class CredentialManagerDialogControllerTest : public testing::Test {
 TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooser) {
   base::HistogramTester histogram_tester;
   StrictMock<MockPasswordPrompt> prompt;
-  autofill::PasswordForm local_form = GetLocalForm();
-  autofill::PasswordForm local_form2 = local_form;
-  local_form2.username_value = base::ASCIIToUTF16(kUsername2);
-  std::vector<std::unique_ptr<autofill::PasswordForm>> locals;
-  locals.push_back(std::make_unique<autofill::PasswordForm>(local_form));
-  locals.push_back(std::make_unique<autofill::PasswordForm>(local_form2));
-  autofill::PasswordForm* local_form_ptr = locals[0].get();
+  password_manager::PasswordForm local_form = GetLocalForm();
+  password_manager::PasswordForm local_form2 = local_form;
+  local_form2.username_value = kUsername2;
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(local_form));
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(local_form2));
+  password_manager::PasswordForm* local_form_ptr = locals[0].get();
 
   EXPECT_CALL(prompt, ShowAccountChooser());
   controller().ShowAccountChooser(&prompt, std::move(locals));
@@ -108,9 +110,10 @@ TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooser) {
 TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooserAndSignIn) {
   base::HistogramTester histogram_tester;
   StrictMock<MockPasswordPrompt> prompt;
-  autofill::PasswordForm local_form = GetLocalForm();
-  std::vector<std::unique_ptr<autofill::PasswordForm>> locals;
-  locals.push_back(std::make_unique<autofill::PasswordForm>(local_form));
+  password_manager::PasswordForm local_form = GetLocalForm();
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(local_form));
 
   EXPECT_CALL(prompt, ShowAccountChooser());
   controller().ShowAccountChooser(&prompt, std::move(locals));
@@ -134,8 +137,9 @@ TEST_F(CredentialManagerDialogControllerTest, ShowAccountChooserAndSignIn) {
 TEST_F(CredentialManagerDialogControllerTest, AccountChooserClosed) {
   base::HistogramTester histogram_tester;
   StrictMock<MockPasswordPrompt> prompt;
-  std::vector<std::unique_ptr<autofill::PasswordForm>> locals;
-  locals.push_back(std::make_unique<autofill::PasswordForm>(GetLocalForm()));
+  std::vector<std::unique_ptr<password_manager::PasswordForm>> locals;
+  locals.push_back(
+      std::make_unique<password_manager::PasswordForm>(GetLocalForm()));
   EXPECT_CALL(prompt, ShowAccountChooser());
   controller().ShowAccountChooser(&prompt, std::move(locals));
 

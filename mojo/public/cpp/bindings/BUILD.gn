@@ -2,12 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//base/trace_event/tracing.gni")
 import("//build/buildflag_header.gni")
+import("//build/config/compiler/compiler.gni")
 import("//build/config/nacl/config.gni")
 import("//tools/ipc_fuzzer/ipc_fuzzer.gni")
 
 declare_args() {
-  enable_mojo_tracing = false
+  enable_mojo_tracing = extended_tracing_enabled
 
   # enable_random_mojo_delays starts a task runner that periodically pauses
   # random Mojo bindings and later resumes them, in order to test whether parts
@@ -55,14 +57,14 @@ component("bindings_base") {
     "lib/bindings_internal.h",
     "lib/buffer.cc",
     "lib/buffer.h",
-    "lib/fixed_buffer.cc",
-    "lib/fixed_buffer.h",
+    "lib/handle_serialization.cc",
     "lib/handle_serialization.h",
     "lib/hash_util.h",
     "lib/map_data_internal.h",
     "lib/map_serialization.h",
     "lib/may_auto_lock.h",
     "lib/message.cc",
+    "lib/message_fragment.h",
     "lib/message_header_validator.cc",
     "lib/message_internal.cc",
     "lib/message_internal.h",
@@ -70,15 +72,16 @@ component("bindings_base") {
     "lib/pending_receiver_state.h",
     "lib/pending_remote_state.cc",
     "lib/pending_remote_state.h",
+    "lib/proxy_to_responder.cc",
+    "lib/proxy_to_responder.h",
     "lib/scoped_interface_endpoint_handle.cc",
+    "lib/send_message_helper.cc",
+    "lib/send_message_helper.h",
     "lib/serialization.h",
-    "lib/serialization_context.cc",
-    "lib/serialization_context.h",
     "lib/serialization_forward.h",
     "lib/serialization_util.h",
     "lib/string_serialization.h",
     "lib/template_util.h",
-    "lib/tracing_helper.h",
     "lib/unserialized_message_context.cc",
     "lib/unserialized_message_context.h",
     "lib/validate_params.h",
@@ -95,6 +98,8 @@ component("bindings_base") {
     "message.h",
     "message_header_validator.h",
     "scoped_interface_endpoint_handle.h",
+    "scoped_message_error_crash_key.cc",
+    "scoped_message_error_crash_key.h",
     "string_data_view.h",
     "string_traits.h",
     "string_traits_stl.h",
@@ -102,6 +107,7 @@ component("bindings_base") {
     "struct_forward.h",
     "struct_ptr.h",
     "struct_traits.h",
+    "tracing_helpers.h",
     "type_converter.h",
     "union_traits.h",
   ]
@@ -117,37 +123,39 @@ component("bindings_base") {
   if (enable_ipc_fuzzer) {
     all_dependent_configs = [ "//tools/ipc_fuzzer:ipc_fuzzer_config" ]
   }
+
+  if (!is_debug && !optimize_for_size) {
+    configs -= [ "//build/config/compiler:default_optimization" ]
+    configs += [ "//build/config/compiler:optimize_max" ]
+  }
 }
 
 component("bindings") {
   sources = [
-    "associated_binding.h",
-    "associated_binding_set.h",
-    "associated_interface_ptr.h",
     "associated_interface_ptr_info.h",
     "associated_interface_request.h",
     "associated_receiver.h",
     "associated_receiver_set.h",
     "associated_remote.h",
-    "binder_map.cc",
+    "async_flusher.cc",
+    "async_flusher.h",
     "binder_map.h",
-    "binding.h",
-    "binding_set.h",
     "callback_helpers.h",
     "connection_error_callback.h",
     "connector.h",
+    "generic_pending_associated_receiver.cc",
+    "generic_pending_associated_receiver.h",
     "generic_pending_receiver.cc",
     "generic_pending_receiver.h",
     "interface_endpoint_client.h",
     "interface_endpoint_controller.h",
     "interface_ptr.h",
     "interface_ptr_info.h",
-    "interface_ptr_set.h",
     "interface_request.h",
-    "lib/associated_binding.cc",
-    "lib/associated_interface_ptr.cc",
     "lib/associated_interface_ptr_state.cc",
     "lib/associated_interface_ptr_state.h",
+    "lib/associated_receiver.cc",
+    "lib/binder_map_internal.h",
     "lib/binding_state.cc",
     "lib/binding_state.h",
     "lib/connector.cc",
@@ -179,10 +187,14 @@ component("bindings") {
     "lib/sync_handle_watcher.cc",
     "lib/task_runner_helper.cc",
     "lib/task_runner_helper.h",
+    "lib/thread_safe_forwarder_base.cc",
+    "lib/thread_safe_forwarder_base.h",
     "message_dispatcher.h",
     "native_enum.h",
     "pending_associated_receiver.h",
     "pending_associated_remote.h",
+    "pending_flush.cc",
+    "pending_flush.h",
     "pending_receiver.h",
     "pending_remote.h",
     "pipe_control_message_handler.h",
@@ -190,6 +202,7 @@ component("bindings") {
     "pipe_control_message_proxy.h",
     "raw_ptr_impl_ref_traits.h",
     "receiver.h",
+    "receiver_set.cc",
     "receiver_set.h",
     "remote.h",
     "remote_set.h",
@@ -200,16 +213,11 @@ component("bindings") {
     "service_factory.h",
     "shared_associated_remote.h",
     "shared_remote.h",
-    "strong_associated_binding.h",
-    "strong_binding.h",
-    "strong_binding_set.h",
     "sync_call_restrictions.h",
     "sync_event_watcher.h",
     "sync_handle_registry.h",
     "sync_handle_watcher.h",
-    "thread_safe_forwarder_base.cc",
-    "thread_safe_forwarder_base.h",
-    "thread_safe_interface_ptr.h",
+    "thread_safe_proxy.h",
     "unique_associated_receiver_set.h",
     "unique_ptr_impl_ref_traits.h",
     "unique_receiver_set.h",
@@ -233,16 +241,13 @@ component("bindings") {
     ":bindings_base",
     ":struct_traits",
     "//base",
-    "//base/util/type_safety",
     "//ipc:message_support",
     "//ipc:param_traits",
     "//mojo/public/cpp/system",
     "//mojo/public/interfaces/bindings",
   ]
 
-  deps = [
-    "//ipc:native_handle_type_converters",
-  ]
+  deps = [ "//ipc:native_handle_type_converters" ]
 
   defines = [ "IS_MOJO_CPP_BINDINGS_IMPL" ]
 }
@@ -260,7 +265,6 @@ source_set("struct_traits") {
 }
 
 if (!is_ios) {
-  # TODO(yzshen): crbug.com/617718 Consider moving this into blink.
   component("wtf_support") {
     sources = [
       "array_traits_web_vector.h",
@@ -282,7 +286,5 @@ if (!is_ios) {
       "//third_party/blink/renderer/platform:platform_export",
       "//third_party/blink/renderer/platform/wtf",
     ]
-
-    public_configs = [ "//third_party/blink/renderer:config" ]
   }
 }

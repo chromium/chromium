@@ -6,8 +6,8 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/chrome/common/ui_util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -90,18 +90,18 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
   _textLabel.lineBreakMode = NSLineBreakByWordWrapping;
   _textLabel.font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   _textLabel.adjustsFontForContentSizeCategory = YES;
-  _textLabel.textColor = UIColor.cr_labelColor;
+  _textLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
 
   _leadingDetailTextLabel.numberOfLines = 0;
   _leadingDetailTextLabel.lineBreakMode = NSLineBreakByWordWrapping;
   _leadingDetailTextLabel.font =
       [UIFont preferredFontForTextStyle:kTableViewSublabelFontStyle];
   _leadingDetailTextLabel.adjustsFontForContentSizeCategory = YES;
-  _leadingDetailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+  _leadingDetailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 
   _trailingDetailTextLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  _trailingDetailTextLabel.textColor = UIColor.cr_secondaryLabelColor;
+  _trailingDetailTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
 }
 
 // Sets constraints on subviews.
@@ -118,7 +118,7 @@ const CGFloat kCompressionResistanceAdditionalPriority = 1;
                                  constant:-kTableViewHorizontalSpacing],
     [_trailingDetailTextLabel.trailingAnchor
         constraintEqualToAnchor:contentView.trailingAnchor
-                       constant:-kTableViewHorizontalSpacing],
+                       constant:-kTableViewTrailingContentPadding],
 
     // Make sure that the detail text doesn't take too much space.
     [_trailingDetailTextLabel.widthAnchor

@@ -1,0 +1,197 @@
+Tests highlights for display locking.
+
+container{
+  "paths": [
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        18,
+        "L",
+        8,
+        18,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        18,
+        "L",
+        8,
+        18,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        18,
+        "L",
+        8,
+        18,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        18,
+        "L",
+        8,
+        18,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "container",
+    "nodeWidth": "784",
+    "nodeHeight": "10",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGGrid",
+    "isLocked": true,
+    "showAccessibilityInfo": true
+  }
+}
+child{
+  "paths": [
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        18,
+        "L",
+        8,
+        18,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        18,
+        "L",
+        8,
+        18,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        18,
+        "L",
+        8,
+        18,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        8,
+        8,
+        "L",
+        792,
+        8,
+        "L",
+        792,
+        18,
+        "L",
+        8,
+        18,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "container",
+    "nodeWidth": "784",
+    "nodeHeight": "10",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutNGGrid",
+    "isLockedAncestor": true,
+    "showAccessibilityInfo": true
+  }
+}
+

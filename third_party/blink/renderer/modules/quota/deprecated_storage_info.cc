@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/modules/quota/deprecated_storage_info.h"
 
 #include "base/location.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
@@ -53,7 +54,8 @@ void DeprecatedStorageInfo::queryUsageAndQuota(
                     WebFeature::kQuotaRead);
   // Dispatching the request to DeprecatedStorageQuota, as this interface is
   // deprecated in favor of DeprecatedStorageQuota.
-  DeprecatedStorageQuota* storage_quota = GetStorageQuota(storage_type);
+  DeprecatedStorageQuota* storage_quota =
+      GetStorageQuota(storage_type, ExecutionContext::From(script_state));
   if (!storage_quota) {
     // Unknown storage type is requested.
     DeprecatedStorageQuota::EnqueueStorageErrorCallback(
@@ -76,7 +78,8 @@ void DeprecatedStorageInfo::requestQuota(
                     WebFeature::kQuotaRead);
   // Dispatching the request to DeprecatedStorageQuota, as this interface is
   // deprecated in favor of DeprecatedStorageQuota.
-  DeprecatedStorageQuota* storage_quota = GetStorageQuota(storage_type);
+  DeprecatedStorageQuota* storage_quota =
+      GetStorageQuota(storage_type, ExecutionContext::From(script_state));
   if (!storage_quota) {
     // Unknown storage type is requested.
     DeprecatedStorageQuota::EnqueueStorageErrorCallback(
@@ -88,25 +91,30 @@ void DeprecatedStorageInfo::requestQuota(
 }
 
 DeprecatedStorageQuota* DeprecatedStorageInfo::GetStorageQuota(
-    int storage_type) {
+    int storage_type,
+    ExecutionContext* execution_context) {
   switch (storage_type) {
     case kTemporary:
       if (!temporary_storage_) {
         temporary_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
-            DeprecatedStorageQuota::kTemporary);
+            DeprecatedStorageQuota::kTemporary, execution_context);
       }
       return temporary_storage_.Get();
     case kPersistent:
+      if (base::FeatureList::IsEnabled(
+              blink::features::kPersistentQuotaIsTemporaryQuota)) {
+        return GetStorageQuota(kTemporary, execution_context);
+      }
       if (!persistent_storage_) {
         persistent_storage_ = MakeGarbageCollected<DeprecatedStorageQuota>(
-            DeprecatedStorageQuota::kPersistent);
+            DeprecatedStorageQuota::kPersistent, execution_context);
       }
       return persistent_storage_.Get();
   }
   return nullptr;
 }
 
-void DeprecatedStorageInfo::Trace(blink::Visitor* visitor) {
+void DeprecatedStorageInfo::Trace(Visitor* visitor) const {
   visitor->Trace(temporary_storage_);
   visitor->Trace(persistent_storage_);
   ScriptWrappable::Trace(visitor);

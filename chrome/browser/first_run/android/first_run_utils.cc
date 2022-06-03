@@ -6,6 +6,8 @@
 
 #include "chrome/android/chrome_jni_headers/FirstRunUtils_jni.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/first_run/android/first_run_prefs.h"
+#include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_resource/web_resource_pref_names.h"
 
@@ -15,4 +17,11 @@ static jboolean JNI_FirstRunUtils_GetFirstRunEulaAccepted(JNIEnv* env) {
 
 static void JNI_FirstRunUtils_SetEulaAccepted(JNIEnv* env) {
   g_browser_process->local_state()->SetBoolean(prefs::kEulaAccepted, true);
+}
+
+static jboolean JNI_FirstRunUtils_GetCctTosDialogEnabled(JNIEnv* env) {
+  int behavior = g_browser_process->local_state()->GetInteger(
+      first_run::kTosDialogBehavior);
+  return static_cast<first_run::TosDialogBehavior>(behavior) !=
+         first_run::TosDialogBehavior::SKIP;
 }

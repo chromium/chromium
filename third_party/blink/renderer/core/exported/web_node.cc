@@ -49,9 +49,10 @@
 #include "third_party/blink/renderer/core/exported/web_plugin_container_impl.h"
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
-#include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
-#include "third_party/blink/renderer/core/layout/layout_object.h"
+#include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/bindings/to_v8.h"
 
 namespace blink {
 
@@ -150,6 +151,16 @@ bool WebNode::IsInsideFocusableElementOrARIAWidget() const {
       *this->ConstUnwrap<Node>());
 }
 
+v8::Local<v8::Value> WebNode::ToV8Value(v8::Local<v8::Object> creation_context,
+                                        v8::Isolate* isolate) {
+  // We no longer use |creation_context| because it's often misused and points
+  // to a context faked by user script.
+  DCHECK(creation_context->CreationContext() == isolate->GetCurrentContext());
+  if (!private_.Get())
+    return v8::Local<v8::Value>();
+  return ToV8(private_.Get(), isolate->GetCurrentContext()->Global(), isolate);
+}
+
 bool WebNode::IsElementNode() const {
   return private_->IsElementNode();
 }
@@ -165,11 +176,10 @@ bool WebNode::IsDocumentTypeNode() const {
 void WebNode::SimulateClick() {
   private_->GetExecutionContext()
       ->GetTaskRunner(TaskType::kUserInteraction)
-      ->PostTask(
-          FROM_HERE,
-          WTF::Bind(&Node::DispatchSimulatedClick,
-                    WrapWeakPersistent(private_.Get()), nullptr, kSendNoEvents,
-                    SimulatedClickCreationScope::kFromUserAgent));
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(&Node::DispatchSimulatedClick,
+                           WrapWeakPersistent(private_.Get()), nullptr,
+                           SimulatedClickCreationScope::kFromUserAgent));
 }
 
 WebElementCollection WebNode::GetElementsByHTMLTagName(
@@ -207,6 +217,13 @@ WebVector<WebElement> WebNode::QuerySelectorAll(
 
 bool WebNode::Focused() const {
   return private_->IsFocused();
+}
+
+uint64_t WebNode::ScrollingElementIdForTesting() const {
+  return private_->GetLayoutBox()
+      ->GetScrollableArea()
+      ->GetScrollElementId()
+      .GetStableId();
 }
 
 WebPluginContainer* WebNode::PluginContainer() const {

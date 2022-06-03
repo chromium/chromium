@@ -8,28 +8,62 @@
 #include <memory>
 #include <vector>
 
+#include "base/observer_list.h"
+#include "base/scoped_observation.h"
+#include "chrome/browser/hid/hid_chooser_context.h"
+#include "components/permissions/object_permission_context_base.h"
 #include "content/public/browser/hid_delegate.h"
 
-class ChromeHidDelegate : public content::HidDelegate {
+class ChromeHidDelegate
+    : public content::HidDelegate,
+      public permissions::ObjectPermissionContextBase::PermissionObserver,
+      public HidChooserContext::DeviceObserver {
  public:
   ChromeHidDelegate();
+  ChromeHidDelegate(ChromeHidDelegate&) = delete;
+  ChromeHidDelegate& operator=(ChromeHidDelegate&) = delete;
   ~ChromeHidDelegate() override;
 
   std::unique_ptr<content::HidChooser> RunChooser(
-      content::RenderFrameHost* frame,
+      content::RenderFrameHost* render_frame_host,
       std::vector<blink::mojom::HidDeviceFilterPtr> filters,
       content::HidChooser::Callback callback) override;
   bool CanRequestDevicePermission(
-      content::WebContents* web_contents,
-      const url::Origin& requesting_origin) override;
-  bool HasDevicePermission(content::WebContents* web_contents,
-                           const url::Origin& requesting_origin,
+      content::RenderFrameHost* render_frame_host) override;
+  bool HasDevicePermission(content::RenderFrameHost* render_frame_host,
                            const device::mojom::HidDeviceInfo& device) override;
   device::mojom::HidManager* GetHidManager(
-      content::WebContents* web_contents) override;
+      content::RenderFrameHost* render_frame_host) override;
+  void AddObserver(content::RenderFrameHost* render_frame_host,
+                   content::HidDelegate::Observer* observer) override;
+  void RemoveObserver(content::RenderFrameHost* render_frame_host,
+                      content::HidDelegate::Observer* observer) override;
+  const device::mojom::HidDeviceInfo* GetDeviceInfo(
+      content::RenderFrameHost* render_frame_host,
+      const std::string& guid) override;
+  bool IsFidoAllowedForOrigin(const url::Origin& origin) override;
+
+  // permissions::ObjectPermissionContextBase::PermissionObserver:
+  void OnPermissionRevoked(const url::Origin& origin) override;
+
+  // HidChooserContext::DeviceObserver:
+  void OnDeviceAdded(const device::mojom::HidDeviceInfo&) override;
+  void OnDeviceRemoved(const device::mojom::HidDeviceInfo&) override;
+  void OnDeviceChanged(const device::mojom::HidDeviceInfo&) override;
+  void OnHidManagerConnectionError() override;
+  void OnHidChooserContextShutdown() override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeHidDelegate);
+  base::ScopedObservation<HidChooserContext,
+                          HidChooserContext::DeviceObserver,
+                          &HidChooserContext::AddDeviceObserver,
+                          &HidChooserContext::RemoveDeviceObserver>
+      device_observation_{this};
+  base::ScopedObservation<
+      permissions::ObjectPermissionContextBase,
+      permissions::ObjectPermissionContextBase::PermissionObserver>
+      permission_observation_{this};
+  base::ObserverList<content::HidDelegate::Observer> observer_list_;
 };
 
 #endif  // CHROME_BROWSER_HID_CHROME_HID_DELEGATE_H_

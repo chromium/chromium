@@ -7,10 +7,11 @@
 #include <cstdint>
 #include <utility>
 
-#include "base/stl_util.h"
-#include "chrome/updater/win/ui/constants.h"
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "chrome/updater/win/ui/ui.h"
-#include "chrome/updater/win/ui/util.h"
+#include "chrome/updater/win/ui/ui_constants.h"
+#include "chrome/updater/win/ui/ui_util.h"
 
 namespace updater {
 namespace ui {
@@ -33,7 +34,7 @@ uint8_t AlphaScaleToAlphaValue(int alpha_scale) {
 
 }  // namespace
 
-SplashScreen::SplashScreen(const base::string16& bundle_name)
+SplashScreen::SplashScreen(const std::u16string& bundle_name)
     : timer_created_(false), alpha_index_(0) {
   title_ = GetInstallerDisplayName(bundle_name);
   SwitchToState(WindowState::STATE_CREATED);
@@ -41,6 +42,9 @@ SplashScreen::SplashScreen(const base::string16& bundle_name)
 
 SplashScreen::~SplashScreen() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+
+  // TODO(crbug.com/1059094) this assert may fire when the dtor is called
+  // while the window is fading out.
   DCHECK(state_ == WindowState::STATE_CREATED ||
          state_ == WindowState::STATE_CLOSED);
 }
@@ -58,6 +62,7 @@ void SplashScreen::Show() {
 }
 
 void SplashScreen::Dismiss(base::OnceClosure on_close_closure) {
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   on_close_closure_ = std::move(on_close_closure);
   switch (state_) {
     case WindowState::STATE_CREATED:
@@ -93,7 +98,7 @@ HRESULT SplashScreen::Initialize() {
 
   EnableSystemButtons(false);
 
-  base::string16 text;
+  std::wstring text;
   LoadString(IDS_SPLASH_SCREEN_MESSAGE, &text);
   CWindow text_wnd = GetDlgItem(IDC_INSTALLER_STATE_TEXT);
   text_wnd.SetWindowText(text.c_str());

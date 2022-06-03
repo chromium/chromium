@@ -1,6 +1,6 @@
 /*
  * runtest.c: C program to run libxml2 regression tests without
- *            requiring make or Python, and reducing platform dependancies
+ *            requiring make or Python, and reducing platform dependencies
  *            to a strict minimum.
  *
  * To compile on Unixes:
@@ -95,7 +95,7 @@ typedef int (*functest) (const char *filename, const char *result,
 typedef struct testDesc testDesc;
 typedef testDesc *testDescPtr;
 struct testDesc {
-    const char *desc; /* descripton of the test */
+    const char *desc; /* description of the test */
     functest    func; /* function implementing the test */
     const char *in;   /* glob to path for input files */
     const char *out;  /* output directory */
@@ -105,6 +105,7 @@ struct testDesc {
 };
 
 static int update_results = 0;
+static char* temp_directory = NULL;
 static int checkTestFile(const char *filename);
 
 #if defined(_WIN32) && !defined(__CYGWIN__)
@@ -880,6 +881,8 @@ internalSubsetDebug(void *ctx ATTRIBUTE_UNUSED, const xmlChar *name,
     callbacks++;
     if (quiet)
 	return;
+    if (name == NULL)
+        name = BAD_CAST "(null)";
     fprintf(SAXdebug, "SAX.internalSubset(%s,", name);
     if (ExternalID == NULL)
 	fprintf(SAXdebug, " ,");
@@ -1697,7 +1700,7 @@ saxParseTest(const char *filename, const char *result,
     char *temp;
 
     nb_tests++;
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "out of memory\n");
         fatalError();
@@ -1816,7 +1819,7 @@ oldParseTest(const char *filename, const char *result,
 #endif
     if (doc == NULL)
         return(1);
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "out of memory\n");
         fatalError();
@@ -2028,7 +2031,7 @@ noentParseTest(const char *filename, const char *result,
     doc = xmlReadFile(filename, NULL, options);
     if (doc == NULL)
         return(1);
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -2105,15 +2108,15 @@ errParseTest(const char *filename, const char *result, const char *err,
 	    xmlDocDumpMemory(doc, (xmlChar **) &base, &size);
 	}
 	res = compareFileMem(result, base, size);
-	if (res != 0) {
-	    fprintf(stderr, "Result for %s failed in %s\n", filename, result);
-	    return(-1);
-	}
     }
     if (doc != NULL) {
 	if (base != NULL)
 	    xmlFree((char *)base);
 	xmlFreeDoc(doc);
+    }
+    if (res != 0) {
+        fprintf(stderr, "Result for %s failed in %s\n", filename, result);
+        return(-1);
     }
     if (err != NULL) {
 	res = compareFileMem(err, testErrors, testErrorsSize);
@@ -2175,7 +2178,7 @@ streamProcessTest(const char *filename, const char *result, const char *err,
 
     nb_tests++;
     if (result != NULL) {
-	temp = resultFilename(filename, "", ".res");
+	temp = resultFilename(filename, temp_directory, ".res");
 	if (temp == NULL) {
 	    fprintf(stderr, "Out of memory\n");
 	    fatalError();
@@ -2404,7 +2407,7 @@ xpathCommonTest(const char *filename, const char *result,
     int len, ret = 0;
     char *temp;
 
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -2603,7 +2606,7 @@ xmlidDocTest(const char *filename,
 	return(-1);
     }
 
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -2701,7 +2704,7 @@ uriCommonTest(const char *filename,
     char str[1024];
     int res = 0, i, ret;
 
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -3005,7 +3008,7 @@ schemasOneTest(const char *sch,
 	return(-1);
     }
 
-    temp = resultFilename(result, "", ".res");
+    temp = resultFilename(result, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -3176,7 +3179,7 @@ rngOneTest(const char *sch,
 	return(-1);
     }
 
-    temp = resultFilename(result, "", ".res");
+    temp = resultFilename(result, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -3391,7 +3394,7 @@ rngStreamTest(const char *filename,
 	}
 	reader = xmlReaderForFile(instance, NULL, options);
 	if (reader == NULL) {
-	    fprintf(stderr, "Failed to build reder for %s\n", instance);
+	    fprintf(stderr, "Failed to build reader for %s\n", instance);
 	}
 	if (disable_err == 1)
 	    ret = streamProcessTest(instance, result, NULL, reader, filename,
@@ -3526,7 +3529,7 @@ patternTest(const char *filename,
         fprintf(stderr, "Failed to open %s\n", filename);
 	return(-1);
     }
-    temp = resultFilename(filename, "", ".res");
+    temp = resultFilename(filename, temp_directory, ".res");
     if (temp == NULL) {
         fprintf(stderr, "Out of memory\n");
         fatalError();
@@ -4246,6 +4249,9 @@ testDesc testDescriptions[] = {
     { "Error cases regression tests",
       errParseTest, "./test/errors/*.xml", "result/errors/", "", ".err",
       0 },
+    { "Error cases regression tests with entity substitution",
+      errParseTest, "./test/errors/*.xml", "result/errors/", NULL, ".ent",
+      XML_PARSE_NOENT },
     { "Error cases regression tests (old 1.0)",
       errParseTest, "./test/errors10/*.xml", "result/errors10/", "", ".err",
       XML_PARSE_OLD10 },
@@ -4547,6 +4553,10 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
     setvbuf(stderr, NULL, _IONBF, 0);
 #endif
 
+#if defined(_MSC_VER) && _MSC_VER >= 1400 && _MSC_VER < 1900
+    _set_output_format(_TWO_DIGIT_EXPONENT);
+#endif
+
     initializeLibxml2();
 
     for (a = 1; a < argc;a++) {
@@ -4556,6 +4566,8 @@ main(int argc ATTRIBUTE_UNUSED, char **argv ATTRIBUTE_UNUSED) {
 	    update_results = 1;
         else if (!strcmp(argv[a], "-quiet"))
 	    tests_quiet = 1;
+        else if (!strcmp(argv[a], "--out"))
+	    temp_directory = argv[++a];
 	else {
 	    for (i = 0; testDescriptions[i].func != NULL; i++) {
 	        if (strstr(testDescriptions[i].desc, argv[a])) {

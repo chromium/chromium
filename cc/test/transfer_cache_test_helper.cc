@@ -4,15 +4,18 @@
 
 #include "cc/test/transfer_cache_test_helper.h"
 
+#include <memory>
+#include <utility>
+
+#include "base/check.h"
 #include "base/containers/span.h"
-#include "base/logging.h"
 
 namespace cc {
 
-TransferCacheTestHelper::TransferCacheTestHelper(GrContext* context)
+TransferCacheTestHelper::TransferCacheTestHelper(GrDirectContext* context)
     : context_(context) {
   if (!context_) {
-    owned_context_ = GrContext::MakeMock(nullptr);
+    owned_context_ = GrDirectContext::MakeMock(nullptr);
     context_ = owned_context_.get();
   }
 }
@@ -68,7 +71,7 @@ void TransferCacheTestHelper::DeleteEntryDirect(const EntryKey& key) {
   entries_.erase(key);
 }
 
-void TransferCacheTestHelper::SetGrContext(GrContext* context) {
+void TransferCacheTestHelper::SetGrContext(GrDirectContext* context) {
   context_ = context;
 }
 

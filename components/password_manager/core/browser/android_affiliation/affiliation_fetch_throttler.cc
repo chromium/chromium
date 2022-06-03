@@ -7,9 +7,9 @@
 #include <stdint.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/rand_util.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -68,7 +68,6 @@ AffiliationFetchThrottler::AffiliationFetchThrottler(
   // Start observing before querying the current connectivity state, so that if
   // the state changes concurrently in-between, it will not go unnoticed.
   network_connection_tracker_->AddNetworkConnectionObserver(this);
-  has_network_connectivity_ = !network_connection_tracker_->IsOffline();
 }
 
 AffiliationFetchThrottler::~AffiliationFetchThrottler() {
@@ -80,6 +79,8 @@ void AffiliationFetchThrottler::SignalNetworkRequestNeeded() {
     return;
 
   state_ = FETCH_NEEDED;
+  has_network_connectivity_ = !network_connection_tracker_->IsOffline();
+
   if (has_network_connectivity_)
     EnsureCallbackIsScheduled();
 }
@@ -139,9 +140,9 @@ void AffiliationFetchThrottler::OnConnectionChanged(
 
   double grace_ms = kGracePeriodAfterReconnectMs *
                     (1 - base::RandDouble() * kBackoffPolicy.jitter_factor);
-  exponential_backoff_->SetCustomReleaseTime(std::max(
-      exponential_backoff_->GetReleaseTime(),
-      tick_clock_->NowTicks() + base::TimeDelta::FromMillisecondsD(grace_ms)));
+  exponential_backoff_->SetCustomReleaseTime(
+      std::max(exponential_backoff_->GetReleaseTime(),
+               tick_clock_->NowTicks() + base::Milliseconds(grace_ms)));
 
   if (state_ == FETCH_NEEDED)
     EnsureCallbackIsScheduled();

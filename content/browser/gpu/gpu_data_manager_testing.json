@@ -4,14 +4,14 @@
   "entries": [
     {
       "id": 1,
-      "description": "GpuDataManagerImplPrivateTest.GpuSideBlacklisting.0",
+      "description": "GpuDataManagerImplPrivateTest.GpuSideBlocklisting.0",
       "features": [
         "accelerated_webgl"
       ]
     },
     {
       "id": 2,
-      "description": "GpuDataManagerImplPrivateTest.GpuSideBlacklisting.1",
+      "description": "GpuDataManagerImplPrivateTest.GpuSideBlocklisting.1",
       "gl_renderer": ".*GeForce.*",
       "features": [
         "accelerated_2d_canvas"
@@ -19,14 +19,14 @@
     },
     {
       "id": 3,
-      "description": "GpuDataManagerImplPrivateTest.GpuSideBlacklistingWebGL.0",
+      "description": "GpuDataManagerImplPrivateTest.GpuSideBlocklistingWebGL.0",
       "features": [
         "accelerated_2d_canvas"
       ]
     },
     {
       "id": 4,
-      "description": "GpuDataManagerImplPrivateTest.GpuSideBlacklistingWebGL.1",
+      "description": "GpuDataManagerImplPrivateTest.GpuSideBlocklistingWebGL.1",
       "gl_renderer": ".*GeForce.*",
       "features": [
         "accelerated_webgl",
@@ -47,18 +47,9 @@
     },
     {
       "id": 6,
-      "description": "GpuDataManagerImplPrivateTest.BlacklistAllFeatures",
+      "description": "GpuDataManagerImplPrivateTest.BlocklistAllFeatures",
       "features": [
         "all"
-      ]
-    },
-    {
-      "id": 7,
-      "description": "GpuDataManagerImplPrivateTest.UpdateActiveGpu",
-      "vendor_id": "0x8086",
-      "multi_gpu_category": "active",
-      "features": [
-        "accelerated_webgl"
       ]
     }
   ]

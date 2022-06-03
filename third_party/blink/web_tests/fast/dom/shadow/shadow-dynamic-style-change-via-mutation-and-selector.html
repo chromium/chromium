@@ -7,7 +7,7 @@ function test() {
     document.documentElement.appendChild(foo);
 
     var bar = document.createElement('div');
-    var barShadow = bar.createShadowRoot();
+    var barShadow = bar.attachShadow({mode: 'open'});
     bar.setAttribute('class', 'bar');
     document.documentElement.appendChild(bar);
 

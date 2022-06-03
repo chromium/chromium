@@ -1,0 +1,81 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1178, 984],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutNGBlockFlow MAT id='scroller'",
+      "bounds": [540, 960],
+      "transform": 2
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [518, 0],
+      "bounds": [22, 960],
+      "transform": 2
+    },
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [518, 3027],
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (sticky positioned) DIV id='sticky'",
+      "bounds": [518, 27],
+      "transform": 4
+    },
+    {
+      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "position": [1178, 0],
+      "bounds": [22, 900],
+      "contentsOpaque": true
+    }
+  ],
+  "transforms": [
+    {
+      "id": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, -0.0666666666666667],
+        [0, 0, 0, 1]
+      ],
+      "origin": [282, 492]
+    },
+    {
+      "id": 2,
+      "parent": 1,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [12, 12, 0, 1]
+      ],
+      "flattenInheritedTransform": false
+    },
+    {
+      "id": 3,
+      "parent": 2,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, -52.5, 0, 1]
+      ]
+    },
+    {
+      "id": 4,
+      "parent": 3,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 52.5, 0, 1]
+      ]
+    }
+  ]
+}
+

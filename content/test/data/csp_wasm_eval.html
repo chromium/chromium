@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+<html>
+  <script>
+    WebAssembly.compile(new Uint8Array(
+        // The smallest possible Wasm module. Just the header
+        // (0, "A", "S", "M"), and the version (0x1).
+        [0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00]));
+  </script>
+</html>

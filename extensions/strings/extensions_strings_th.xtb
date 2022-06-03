@@ -7,7 +7,6 @@
 <translation id="1420684932347524586">อ้าว! ไม่สามารถสร้างคีย์ส่วนตัว RSA แบบสุ่มได้</translation>
 <translation id="1445572445564823378">ส่วนขยายนี้จะทำให้ <ph name="PRODUCT_NAME" /> ทำงานช้าลง คุณควรปิดใช้งานส่วนขยายเพื่อให้ประสิทธิภาพการทำงานของ <ph name="PRODUCT_NAME" /> กลับมาเป็นปกติ</translation>
 <translation id="1468038450257740950">WebGL ไม่ไ้ด้รับการสนับสนุน</translation>
-<translation id="149347756975725155">ไม่สามารถโหลดไอคอนส่วนขยาย "<ph name="ICON" />"</translation>
 <translation id="1803557475693955505">ไม่สามารถโหลดหน้าพื้นหลัง "<ph name="BACKGROUND_PAGE" />"</translation>
 <translation id="2159915644201199628">ไม่สามารถถอดรหัสภาพ: '<ph name="IMAGE_NAME" />'</translation>
 <translation id="2350172092385603347">ใช้การแปลภาษาท้องถิ่นแล้ว แต่ไม่ได้ระบุ default_locale ในมานิเฟสต์</translation>
@@ -44,7 +43,6 @@
 <translation id="6322279351188361895">ไม่สามารถอ่านคีย์ส่วนตัว</translation>
 <translation id="6391538222494443604">ไดเรกทอรีที่ป้อนต้องมีอยู่จริง</translation>
 <translation id="641087317769093025">ไม่สามารถแตกไฟล์ซิปส่วนขยาย</translation>
-<translation id="6413453408918378296">ไอคอน "<ph name="ICON" />" ไม่ค่อยชัดเจน</translation>
 <translation id="6542618148162044354">"<ph name="APP_NAME" />" ขอสิทธิ์ในการเข้าถึงอุปกรณ์ของคุณอย่างน้อย 1 เครื่อง:</translation>
 <translation id="657064425229075395">ไม่สามารถโหลดสคริปต์พื้นหลัง "<ph name="BACKGROUND_SCRIPT" />"</translation>
 <translation id="6580950983454333167"><ph name="PRODUCT_NAME" /> จาก <ph name="VENDOR_NAME" /> (หมายเลขซีเรียล <ph name="SERIAL_NUMBER" />)</translation>

@@ -3,12 +3,13 @@
 // found in the LICENSE file.
 
 #include "base/strings/string_split.h"
+#include "net/third_party/quiche/src/quic/platform/api/quic_default_proof_providers.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_system_event_loop.h"
 #include "net/tools/quic/quic_transport_simple_server.h"
 #include "url/gurl.h"
 
-DEFINE_QUIC_COMMAND_LINE_FLAG(int, port, 20557, "The port to listen on.");
+DEFINE_QUIC_COMMAND_LINE_FLAG(uint16_t, port, 20557, "The port to listen on.");
 
 DEFINE_QUIC_COMMAND_LINE_FLAG(std::string,
                               accepted_origins,
@@ -39,6 +40,14 @@ int main(int argc, char** argv) {
   }
 
   net::QuicTransportSimpleServer server(GetQuicFlag(FLAGS_port),
-                                        accepted_origins);
-  return server.Run();
+                                        accepted_origins,
+                                        quic::CreateDefaultProofSource());
+  server.set_read_error_callback(
+      base::BindOnce([](int /*result*/) { exit(EXIT_FAILURE); }));
+  if (server.Start() != EXIT_SUCCESS)
+    return EXIT_FAILURE;
+
+  base::RunLoop run_loop;
+  run_loop.Run();
+  return EXIT_SUCCESS;
 }

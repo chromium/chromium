@@ -33,8 +33,8 @@ import org.robolectric.shadows.ShadowActivityManager;
 import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.ShadowPackageManager;
 
+import org.chromium.components.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
-import org.chromium.webapk.lib.common.WebApkMetaDataKeys;
 import org.chromium.webapk.shell_apk.CustomAndroidOsShadowAsyncTask;
 import org.chromium.webapk.shell_apk.HostBrowserUtils;
 import org.chromium.webapk.shell_apk.LaunchHostBrowserSelector;
@@ -95,6 +95,7 @@ public final class SplashActivityTest {
 
         Bundle metadata = new Bundle();
         metadata.putString(WebApkMetaDataKeys.START_URL, "https://pwa.rocks/");
+        metadata.putBoolean(WebApkMetaDataKeys.IS_NEW_STYLE_WEBAPK, true);
         WebApkTestHelper.registerWebApkWithMetaData(appContext.getPackageName(), metadata, null);
 
         // Install browser.

@@ -21,7 +21,7 @@ void* __real_malloc(size_t);
 void* __real_calloc(size_t, size_t);
 void* __real_realloc(void*, size_t);
 void* __real_memalign(size_t, size_t);
-void* __real_free(void*);
+void __real_free(void*);
 }  // extern "C"
 
 namespace {
@@ -61,6 +61,7 @@ void RealFree(const AllocatorDispatch*, void* address, void* context) {
 
 const AllocatorDispatch AllocatorDispatch::default_dispatch = {
     &RealMalloc,   /* alloc_function */
+    &RealMalloc,   /* alloc_unchecked_function */
     &RealCalloc,   /* alloc_zero_initialized_function */
     &RealMemalign, /* alloc_aligned_function */
     &RealRealloc,  /* realloc_function */

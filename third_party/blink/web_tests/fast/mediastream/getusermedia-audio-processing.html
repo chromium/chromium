@@ -1,0 +1,90 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+
+promise_test(async t => {
+  // Use ideal constraints to allow the browser to select any settings, but
+  // verify that the requested ones are actually selected.
+  let stream1 = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: "default",
+      echoCancellation: true,
+      autoGainControl: true,
+      noiseSuppression: true,
+    }
+  });
+  let track1 = stream1.getTracks()[0];
+  t.add_cleanup(() => track1.stop());
+  let settings1 = track1.getSettings();
+  assert_equals(settings1.deviceId, "default", "settings1.deviceId");
+  assert_true(settings1.echoCancellation, "settings1.echoCancellation");
+  assert_true(settings1.autoGainControl, "settings1.autoGainControl");
+  assert_true(settings1.noiseSuppression, "settings1.noiseSuppression");
+
+  let stream2 = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: "default",
+      echoCancellation: false,
+      autoGainControl: false,
+      noiseSuppression: false,
+    }
+  });
+  let track2 = stream2.getTracks()[0];
+  t.add_cleanup(() => track2.stop());
+  let settings2 = track2.getSettings();
+  assert_equals(settings2.deviceId, "default", "settings2.deviceId");
+  assert_false(settings2.echoCancellation, "settings2.echoCancellation");
+  assert_false(settings2.autoGainControl, "settings2.autoGainControl");
+  assert_false(settings2.noiseSuppression, "settings2.noiseSuppression");
+
+  assert_equals(track1.readyState, "live", "track1.readyState");
+  assert_equals(track2.readyState, "live", "track2.readyState");
+}, 'getUserMedia() allows opening a device with full processing and then with no processing simultaneously');
+
+promise_test(async t => {
+  // Use ideal constraints to allow the browser to select any settings, but
+  // verify that the requested ones are actually selected.
+  let stream1 = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: "default",
+      echoCancellation: false,
+      autoGainControl: false,
+      noiseSuppression: false,
+    }
+  });
+  let track1 = stream1.getTracks()[0];
+  t.add_cleanup(() => track1.stop());
+  let settings1 = track1.getSettings();
+  assert_equals(settings1.deviceId, "default", "settings1.deviceId");
+  assert_false(settings1.echoCancellation, "settings1.echoCancellation");
+  assert_false(settings1.autoGainControl, "settings1.autoGainControl");
+  assert_false(settings1.noiseSuppression, "settings1.noiseSuppression");
+
+  let stream2 = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      deviceId: "default",
+      echoCancellation: true,
+      autoGainControl: true,
+      noiseSuppression: true,
+    }
+  });
+  let track2 = stream2.getTracks()[0];
+  t.add_cleanup(() => track2.stop());
+  let settings2 = track2.getSettings();
+  assert_equals(settings2.deviceId, "default", "settings2.deviceId");
+  assert_true(settings2.echoCancellation, "settings2.echoCancellation");
+  assert_true(settings2.autoGainControl, "settings2.autoGainControl");
+  assert_true(settings2.noiseSuppression, "settings2.noiseSuppression");
+
+  assert_equals(track1.readyState, "live", "track1.readyState");
+  assert_equals(track2.readyState, "live", "track2.readyState");
+}, 'getUserMedia() allows opening a device with no processing and then with full processing simultaneously');
+
+</script>
+</body>
+</html>

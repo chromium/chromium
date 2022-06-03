@@ -7,9 +7,8 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/device/public/cpp/generic_sensor/sensor_traits.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -135,6 +134,14 @@ void FakeSensorProvider::GetSensor(mojom::SensorType type,
             linear_acceleration_sensor_reading_);
       }
       break;
+    case mojom::SensorType::GRAVITY:
+      if (gravity_sensor_is_available_) {
+        sensor =
+            std::make_unique<FakeSensor>(mojom::SensorType::GRAVITY, buffer);
+        gravity_sensor_ = sensor.get();
+        gravity_sensor_->SetReading(gravity_sensor_reading_);
+      }
+      break;
     case mojom::SensorType::GYROSCOPE:
       if (gyroscope_is_available_) {
         sensor =
@@ -191,6 +198,10 @@ void FakeSensorProvider::Bind(
   receivers_.Add(this, std::move(receiver));
 }
 
+bool FakeSensorProvider::is_bound() const {
+  return !receivers_.empty();
+}
+
 void FakeSensorProvider::SetAmbientLightSensorData(double value) {
   ambient_light_sensor_reading_.als.timestamp =
       (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
@@ -213,6 +224,14 @@ void FakeSensorProvider::SetLinearAccelerationSensorData(double x,
   linear_acceleration_sensor_reading_.accel.x = x;
   linear_acceleration_sensor_reading_.accel.y = y;
   linear_acceleration_sensor_reading_.accel.z = z;
+}
+
+void FakeSensorProvider::SetGravitySensorData(double x, double y, double z) {
+  gravity_sensor_reading_.raw.timestamp =
+      (base::TimeTicks::Now() - base::TimeTicks()).InSecondsF();
+  gravity_sensor_reading_.accel.x = x;
+  gravity_sensor_reading_.accel.y = y;
+  gravity_sensor_reading_.accel.z = z;
 }
 
 void FakeSensorProvider::SetGyroscopeData(double x, double y, double z) {
@@ -261,6 +280,12 @@ void FakeSensorProvider::UpdateLinearAccelerationSensorData(double x,
   SetLinearAccelerationSensorData(x, y, z);
   EXPECT_TRUE(linear_acceleration_sensor_);
   linear_acceleration_sensor_->SetReading(linear_acceleration_sensor_reading_);
+}
+
+void FakeSensorProvider::UpdateGravitySensorData(double x, double y, double z) {
+  SetGravitySensorData(x, y, z);
+  EXPECT_TRUE(gravity_sensor_);
+  gravity_sensor_->SetReading(gravity_sensor_reading_);
 }
 
 void FakeSensorProvider::UpdateGyroscopeData(double x, double y, double z) {

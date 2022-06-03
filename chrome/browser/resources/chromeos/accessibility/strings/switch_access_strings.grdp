@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<grit-part>
+  <message desc="The product name for Switch Access." name="IDS_SWITCH_ACCESS_NAME">
+    Switch Access
+  </message>
+  <message desc="The description for Switch Access." name="IDS_SWITCH_ACCESS_DESCRIPTION">
+    Control the device with just 1 or 2 switches
+  </message>
+  <message desc="The title of the Switch Access menu to select which action to perform on an element." name="IDS_SWITCH_ACCESS_MENU_TITLE">
+    Switch Access Menu
+  </message>
+  <message desc="The Switch Access action to perform the default action on the current element, similar to a click or tap. Should be short." name="IDS_SWITCH_ACCESS_SELECT">
+    Select
+  </message>
+  <message desc="The Switch Access action to open the onscreen keyboard and begin entering text in the selected text input element. Should be short." name="IDS_SWITCH_ACCESS_OPEN_KEYBOARD">
+    Keyboard
+  </message>
+  <message desc="The Switch Access action to increment the selected input element. Should be short." name="IDS_SWITCH_ACCESS_INCREMENT">
+    Increment
+  </message>
+  <message desc="The Switch Access action to decrement the selected input element. Should be short." name="IDS_SWITCH_ACCESS_DECREMENT">
+    Decrement
+  </message>
+  <message desc="The Switch Access action to scroll the selected element down. Should be short." name="IDS_SWITCH_ACCESS_SCROLL_DOWN">
+    Scroll down
+  </message>
+  <message desc="The Switch Access action to scroll the selected element up. Should be short." name="IDS_SWITCH_ACCESS_SCROLL_UP">
+    Scroll up
+  </message>
+  <message desc="The Switch Access action to scroll the selected element right. Should be short." name="IDS_SWITCH_ACCESS_SCROLL_RIGHT">
+    Scroll right
+  </message>
+  <message desc="The Switch Access action to scroll the selected element left. Should be short." name="IDS_SWITCH_ACCESS_SCROLL_LEFT">
+    Scroll left
+  </message>
+  <message desc="The Switch Access action to scroll the selected element logically forward (generally either down or right, depending on the context). Should be short." name="IDS_SWITCH_ACCESS_SCROLL_FORWARD">
+    Scroll forward
+  </message>
+  <message desc="The Switch Access action to scroll the selected element logically backward (generally either up or left, depending on the context). Should be short." name="IDS_SWITCH_ACCESS_SCROLL_BACKWARD">
+    Scroll backward
+  </message>
+  <message desc="The Switch Access action to speak to type in the selected text input element. Ideally the same as the name of the standalone Dictation feature (IDS_ASH_STATUS_TRAY_ACCESSIBILITY_DICTATION). Should be short." name="IDS_SWITCH_ACCESS_DICTATION">
+    Dictation
+  </message>
+  <message desc="The Switch Access action to show the system context menu, as when a user right-clicks on the focused element. Should be short." name="IDS_SWITCH_ACCESS_SHOW_CONTEXT_MENU">
+    Context menu
+  </message>
+  <message desc="The Switch Access action to open the Switch Access settings page. Should be short." name="IDS_SWITCH_ACCESS_SETTINGS_ACTION">
+    Settings
+  </message>
+  <message desc="The Switch Access action to show the text navigation menu for moving the text caret within a text element." name="IDS_SWITCH_ACCESS_MOVE_CURSOR">
+    Move cursor
+  </message>
+  <message desc="The Switch Access action for moving the text caret to the beginning of the text element." name="IDS_SWITCH_ACCESS_JUMP_TO_BEGINNING_OF_TEXT">
+    Jump to beginning
+  </message>
+  <message desc="The Switch Access action for moving the text caret to the end of the text element." name="IDS_SWITCH_ACCESS_JUMP_TO_END_OF_TEXT">
+    Jump to end
+  </message>
+  <message desc="The Switch Access action for moving the text caret backward one character." name="IDS_SWITCH_ACCESS_MOVE_BACKWARD_ONE_CHAR_OF_TEXT">
+    Move backward one char
+  </message>
+  <message desc="The Switch Access action for moving the text caret backward one word." name="IDS_SWITCH_ACCESS_MOVE_BACKWARD_ONE_WORD_OF_TEXT">
+    Move backward one word
+  </message>
+  <message desc="The Switch Access action for moving the text caret forward one character." name="IDS_SWITCH_ACCESS_MOVE_FORWARD_ONE_CHAR_OF_TEXT">
+    Move forward one char
+  </message>
+  <message desc="The Switch Access action for moving the text caret forward one word." name="IDS_SWITCH_ACCESS_MOVE_FORWARD_ONE_WORD_OF_TEXT">
+    Move forward one word
+  </message>
+  <message desc="The Switch Access action for moving the text caret down one line." name="IDS_SWITCH_ACCESS_MOVE_DOWN_ONE_LINE_OF_TEXT">
+    Move down one line
+  </message>
+  <message desc="The Switch Access action for moving the text caret up one line." name="IDS_SWITCH_ACCESS_MOVE_UP_ONE_LINE_OF_TEXT">
+    Move up one line
+  </message>
+  <message desc="The Switch Access action to set the beginning of a text selection area." name="IDS_SWITCH_ACCESS_SELECTION_START">
+    Selection start
+  </message>
+  <message desc="The Switch Access action to set the end of a text selection area." name="IDS_SWITCH_ACCESS_SELECTION_END">
+    Selection end
+  </message>
+  <message desc="The Switch Access action to cut text." name="IDS_SWITCH_ACCESS_CUT">
+    Cut
+  </message>
+  <message desc="The Switch Access action to copy text." name="IDS_SWITCH_ACCESS_COPY">
+    Copy
+  </message>
+  <message desc="The Switch Access action to paste text." name="IDS_SWITCH_ACCESS_PASTE">
+    Paste
+  </message>
+</grit-part>

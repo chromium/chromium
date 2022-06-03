@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -47,12 +46,17 @@ class ConnectionManager {
 
  public:
   ConnectionManager();
+
+  ConnectionManager(const ConnectionManager&) = delete;
+  ConnectionManager& operator=(const ConnectionManager&) = delete;
+
   ~ConnectionManager();
 
   // Dumping is asynchronous so will not be complete when this function
   // returns. The dump is complete when the callback provided in the args is
   // fired.
   void DumpProcessesForTracing(bool strip_path_from_mapped_files,
+                               bool write_proto,
                                DumpProcessesForTracingCallback callback,
                                VmRegions vm_regions);
 
@@ -109,8 +113,6 @@ class ConnectionManager {
 
   // Must be the last.
   base::WeakPtrFactory<ConnectionManager> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ConnectionManager);
 };
 
 }  // namespace heap_profiling

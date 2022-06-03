@@ -11,9 +11,7 @@ source_set("ipc") {
     "latency_info_param_traits_macros.h",
   ]
 
-  public_deps = [
-    "//ui/latency",
-  ]
+  public_deps = [ "//ui/latency" ]
 
   deps = [
     "//base",

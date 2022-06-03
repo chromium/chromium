@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef SANDBOX_FUZZER_TYPES_H_
-#define SANDBOX_FUZZER_TYPES_H_
+#ifndef SANDBOX_WIN_FUZZER_FUZZER_TYPES_H_
+#define SANDBOX_WIN_FUZZER_FUZZER_TYPES_H_
 
 #include <stdint.h>
 #include <string.h>
@@ -32,6 +32,7 @@ typedef uint32_t ULONG;
 typedef uint32_t* ULONG_PTR;
 typedef LONG NTSTATUS;
 typedef void PROCESS_INFORMATION;
+typedef uintptr_t SOCKET;
 
 // __stdcall is used in one place. TODO(wfh): replace with WINAPI.
 #define __stdcall
@@ -44,4 +45,4 @@ struct NtExports {
 };
 
 }  // namespace sandbox
-#endif  // SANDBOX_FUZZER_TYPES_H_
+#endif  // SANDBOX_WIN_FUZZER_FUZZER_TYPES_H_

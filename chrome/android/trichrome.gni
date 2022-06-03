@@ -2,11 +2,13 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//base/android/proguard/proguard.gni")
+import("//build/config/android/abi.gni")
 import("//build/config/android/config.gni")
 import("//build/config/android/rules.gni")
 import("//build/util/version.gni")
 import("//chrome/android/chrome_public_apk_tmpl.gni")
+import("//chrome/android/modules/buildflags.gni")
+import("//device/vr/buildflags/buildflags.gni")
 
 if (!defined(default_trichrome_certdigest)) {
   default_trichrome_certdigest =
@@ -33,7 +35,7 @@ trichrome_jinja_variables = [
   "trichrome_library=$trichrome_library_package",
   "trichrome_certdigest=$trichrome_certdigest",
   "use32bitAbi=android:use32bitAbi=\"true\"",
-  "include_arcore_manifest_flag=true",
+  "zygote_preload_class=org.chromium.chrome.app.TrichromeZygotePreload",
 ]
 
 trichrome_synchronized_proguard =
@@ -46,11 +48,9 @@ template("trichrome_library_apk_tmpl") {
                              "android_manifest",
                              "android_manifest_dep",
                              "apk_name",
+                             "expected_android_manifest",
+                             "expected_libs_and_assets",
                              "min_sdk_version",
-                             "proguard_jar_path",
-                             "shared_resources_whitelist_target",
-                             "shared_resources_whitelist_locales",
-                             "static_library_dependent_targets",
                              "target_sdk_version",
                            ])
 
@@ -64,6 +64,19 @@ template("trichrome_library_apk_tmpl") {
       # TODO(crbug.com/956839): Remove this once R8 fixes the class merging
       # and/or inlining bugs.
       disable_r8_outlining = true
+      if (defined(invoker.webview_target) && defined(invoker.chrome_target)) {
+        shared_resources_allowlist_locales = locales
+        static_library_dependent_targets = [
+          {
+            name = invoker.webview_target
+            is_resource_ids_provider = true
+          },
+          {
+            name = invoker.chrome_target
+            is_resource_ids_provider = false
+          },
+        ]
+      }
     } else {
       # TODO(crbug.com/901465): Remove r_java_root_package_name once shared
       # Java code is moved to the shared library even in debug.
@@ -99,12 +112,12 @@ template("trichrome_library_apk_tmpl") {
     }
 
     min_sdk_version = 29
-    target_sdk_version = android_sdk_version
-    if (!enable_trichrome_synchronized_proguard) {
-      generate_buildconfig_java = false
-    } else {
+
+    if (trichrome_synchronized_proguard) {
       product_version_resources_dep =
           "//chrome/android:product_version_resources"
+    } else {
+      generate_buildconfig_java = false
     }
 
     # TODO(torne): using icon_resources just to get a temporary icon
@@ -112,11 +125,6 @@ template("trichrome_library_apk_tmpl") {
       "//android_webview/nonembedded:icon_resources",
       "//third_party/icu:icu_assets",
     ]
-
-    _native_lib_file =
-        rebase_path("$root_gen_dir/CHROME_VERSION.json", root_out_dir)
-    native_lib_version_arg = "@FileArg($_native_lib_file:full-quoted)"
-    native_lib_version_rule = "//build/util:chrome_version_json"
 
     # Flag whether additional deps and libs should be included for each ABI.
     _include_primary_support = false
@@ -152,11 +160,6 @@ template("trichrome_library_apk_tmpl") {
         "//third_party/crashpad/crashpad/handler:crashpad_handler_trampoline",
       ]
       loadable_modules = [ "$root_out_dir/libcrashpad_handler_trampoline.so" ]
-
-      if (chromium_linker_supported) {
-        deps += [ "//base/android/linker:chromium_android_linker" ]
-        loadable_modules += [ "$root_out_dir/libchromium_android_linker.so" ]
-      }
     }
     if (_include_secondary_support) {
       _trampoline =
@@ -169,12 +172,38 @@ template("trichrome_library_apk_tmpl") {
       _secondary_out_dir = get_label_info(_trampoline, "root_out_dir")
       secondary_abi_loadable_modules =
           [ "$_secondary_out_dir/libcrashpad_handler_trampoline.so" ]
+    }
 
-      if (chromium_linker_supported) {
-        deps += [ "//base/android/linker:chromium_android_linker" +
-                  "($android_secondary_abi_toolchain)" ]
-        secondary_abi_loadable_modules +=
-            [ "$_secondary_out_dir/libchromium_android_linker.so" ]
+    if (enable_arcore) {
+      _libarcore_dir = get_label_info(
+                           "//third_party/arcore-android-sdk-client:com_google_ar_core_java($default_toolchain)",
+                           "target_out_dir") + "/com_google_ar_core_java/jni"
+      not_needed([ "_libarcore_dir" ])
+
+      _arcore_extra_deps = [ "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar" ]
+      not_needed([ "_arcore_extra_deps" ])
+
+      if (_include_primary_support) {
+        loadable_modules +=
+            [ "$_libarcore_dir/$android_app_abi/libarcore_sdk_c.so" ]
+        deps += _arcore_extra_deps
+      }
+      if (_include_secondary_support) {
+        if (enable_arcore) {
+          secondary_abi_loadable_modules += [
+            "$_libarcore_dir/$android_app_secondary_abi/libarcore_sdk_c.so",
+          ]
+          deps += _arcore_extra_deps
+        }
+      }
+    }
+
+    # http://crbug.com/1042107.
+    if (is_component_build) {
+      if (android_64bit_target_cpu && invoker.is_64_bit_browser) {
+        main_component_library = "libmonochrome_64.cr.so"
+      } else {
+        main_component_library = "libmonochrome.cr.so"
       }
     }
 
@@ -183,11 +212,11 @@ template("trichrome_library_apk_tmpl") {
       proguard_configs = [
         "//base/android/proguard/chromium_apk.flags",
         "//base/android/proguard/chromium_code.flags",
-        "//chrome/android/java/trichrome.flags",
+        "//chrome/android/proguard/trichrome.flags",
       ]
       if (trichrome_synchronized_proguard) {
         proguard_configs += [
-          "//chrome/android/java/static_library_dex_reference_workarounds.flags",
+          "//chrome/android/proguard/static_library_dex_reference_workarounds.flags",
           "//base/android/proguard/enable_obfuscation.flags",
         ]
       } else {
@@ -195,10 +224,36 @@ template("trichrome_library_apk_tmpl") {
         # workaround for crbug.com/1012842. There were naming conflicts between
         # Library and Chrome, since each Proguard run doesn't know about the
         # other, and thus handed out the first names (a, b, c) to both.
-        proguard_configs +=
-            [ "//base/android/proguard/disable_all_obfuscation.flags" ]
+        proguard_enable_obfuscation = false
       }
     }
     deps += [ "//chrome/android:trichrome_dummy_resources" ]
   }
+}
+
+# An .ssargs file is a text file to specify multiple input files with respective
+# parameters, and is used by SuperSize-archive to create multi-container .size
+# files. This is used to support SuperSize on Trichrome.
+template("write_ssargs_trichrome") {
+  if (target_cpu == "arm64" || target_cpu == "x64") {
+    # Ignore secondary abi libmonochrome in library apk in favor of primary one
+    # in TrichromeWebView.
+    _library_args = " --no-native"
+  } else {
+    _library_args = ""
+  }
+
+  # Base names (i.e., no full path) are used because .ssargs files specifies
+  # files using paths relative to itself. It is expected for |ssargs_path| to
+  # be in the same directory as all Trichrome files whose sizes are measured
+  # by SuperSize.
+  _lines = [
+    "# Written by build target \"${target_name}.\"",
+    "Library -f ${invoker.trichrome_library_basename}$_library_args",
+    "# Add --no-native to Chrome as workaround for crbug.com/1103271.",
+    "Chrome -f ${invoker.trichrome_chrome_basename} --no-native",
+    "WebView -f ${invoker.trichrome_webview_basename}",
+  ]
+
+  write_file(invoker.ssargs_path, _lines)
 }

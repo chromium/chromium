@@ -7,7 +7,7 @@ jsTestIsAsync = true;
 
 function runTest() {
     var host = document.getElementById('host');
-    var sr = host.createShadowRoot();
+    var sr = host.attachShadow({mode: 'open'});
     sr.innerHTML = '<style>@host { }</style><style></style>';
     var style = document.createElement('style');
     sr.insertBefore(style, sr.lastElementChild);

@@ -7,7 +7,7 @@
 
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "third_party/blink/public/platform/web_touch_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 
 namespace blink {
 class WebTouchEvent;

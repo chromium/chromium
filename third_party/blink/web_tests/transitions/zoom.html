@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<script src="../resources/testharness.js"></script>
+<script src="../resources/testharnessreport.js"></script>
+<style>
+div {
+  transition-property: margin-left, transform;
+  transition-duration: 5s;
+}
+</style>
+
+
+<div id="control">control</div>
+<div id="target1" style="margin-left: 100px;">100px</div>
+<div id="target2" style="margin-left: 50%;">50%</div>
+<div id="target3" style="transform: translateX(100px);">50%</div>
+
+
+<script>
+test(() => {
+  let target = document.getElementById("target1");
+  getComputedStyle(target).marginLeft;
+  target.style.zoom = "2.0";
+  assert_equals(target.getAnimations().length, 0);
+}, "zooming should not trigger a transition on an absolute length;");
+
+test(() => {
+  let target = document.getElementById("target2");
+  getComputedStyle(target).marginLeft;
+  target.style.zoom = "2.0";
+  assert_equals(target.getAnimations().length, 0);
+}, "zooming should not trigger a transition on a percentage length;");
+
+test(() => {
+  let target = document.getElementById("target3");
+  getComputedStyle(target).marginLeft;
+  target.style.zoom = "2.0";
+  assert_equals(target.getAnimations().length, 0);
+}, "zooming should not trigger a transition on a transform;");
+</script>

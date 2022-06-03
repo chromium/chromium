@@ -9,8 +9,11 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
+#include "base/strings/utf_string_conversions.h"
+#include "base/trace_event/trace_event.h"
 #include "third_party/icu/source/i18n/unicode/timezone.h"
 #include "ui/gfx/win/singleton_hwnd_observer.h"
 
@@ -20,30 +23,77 @@ class TimeZoneMonitorWin : public TimeZoneMonitor {
  public:
   TimeZoneMonitorWin()
       : TimeZoneMonitor(),
-        singleton_hwnd_observer_(new gfx::SingletonHwndObserver(
+        singleton_hwnd_observer_(
             base::BindRepeating(&TimeZoneMonitorWin::OnWndProc,
-                                base::Unretained(this)))) {}
+                                base::Unretained(this))),
+        current_platform_timezone_(GetPlatformTimeZone()) {}
+  TimeZoneMonitorWin(const TimeZoneMonitorWin&) = delete;
+  TimeZoneMonitorWin& operator=(const TimeZoneMonitorWin&) = delete;
 
-  ~TimeZoneMonitorWin() override {}
+  ~TimeZoneMonitorWin() override = default;
 
  private:
   void OnWndProc(HWND hwnd, UINT message, WPARAM wparam, LPARAM lparam) {
-    if (message != WM_TIMECHANGE) {
-      return;
-    }
+    if (message == WM_TIMECHANGE && !pending_update_notification_tasks_) {
+      // Traces show that in some cases there are multiple WM_TIMECHANGE while
+      // performing a power resume. Only sending one is enough
+      // (http://crbug.com/1074036).
+      pending_update_notification_tasks_ = true;
 
-    UpdateIcuAndNotifyClients(DetectHostTimeZoneFromIcu());
+      // The notifications are sent through a delayed task to avoid running
+      // the observers code while the computer is still suspended. The thread
+      // controller is not dispatching delayed tasks uuntil the power resume
+      // signal is received.
+      constexpr auto kMinimalPostTaskDelay = base::Milliseconds(1);
+      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&TimeZoneMonitorWin::OnWmTimechangeReceived,
+                         weak_ptr_factory_.GetWeakPtr()),
+          kMinimalPostTaskDelay);
+    }
   }
 
-  std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
+  // Returns the platform specific string for the time zone. Do not rely on the
+  // ICU library since it's taking into account other sources for time zone like
+  // the TZ environment. This avoid loading the ICU library if not required.
+  std::string GetPlatformTimeZone() {
+    std::string timezone;
+    TIME_ZONE_INFORMATION time_zone_information;
+    if (::GetTimeZoneInformation(&time_zone_information) !=
+        TIME_ZONE_ID_INVALID) {
+      // StandardName field may be empty.
+      timezone = base::WideToUTF8(time_zone_information.StandardName);
+    }
+    return timezone;
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(TimeZoneMonitorWin);
+  void OnWmTimechangeReceived() {
+    TRACE_EVENT0("device", "TimeZoneMonitorWin::OnTimechangeReceived");
+
+    // Only dispatch time zone notifications when the platform time zone has
+    // changed. Windows API is sending WM_TIMECHANGE messages each time a
+    // time property has changed which is common during a power suspend/resume
+    // transition even if the time zone stayed the same. As a good example, any
+    // NTP update may trigger a WM_TIMECHANGE message.
+    const std::string timezone = GetPlatformTimeZone();
+    if (timezone.empty() || current_platform_timezone_ != timezone) {
+      UpdateIcuAndNotifyClients(DetectHostTimeZoneFromIcu());
+      current_platform_timezone_ = timezone;
+    }
+
+    pending_update_notification_tasks_ = false;
+  }
+
+  gfx::SingletonHwndObserver singleton_hwnd_observer_;
+  bool pending_update_notification_tasks_ = false;
+  std::string current_platform_timezone_;
+  base::WeakPtrFactory<TimeZoneMonitorWin> weak_ptr_factory_{this};
 };
 
 // static
 std::unique_ptr<TimeZoneMonitor> TimeZoneMonitor::Create(
     scoped_refptr<base::SequencedTaskRunner> file_task_runner) {
-  return std::unique_ptr<TimeZoneMonitor>(new TimeZoneMonitorWin());
+  return std::make_unique<TimeZoneMonitorWin>();
 }
 
 }  // namespace device

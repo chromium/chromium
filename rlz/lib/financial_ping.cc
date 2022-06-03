@@ -11,15 +11,17 @@
 #include <memory>
 
 #include "base/atomicops.h"
+#include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/memory/ref_counted.h"
-#include "base/stl_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -30,8 +32,10 @@
 #include "rlz/lib/rlz_value_store.h"
 #include "rlz/lib/string_utils.h"
 #include "rlz/lib/time_util.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 #if !defined(OS_WIN)
 #include "base/time/time.h"
@@ -164,21 +168,6 @@ bool FinancialPing::FormRequest(Product product,
 }
 
 #if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-// The pointer to URLRequestContextGetter used by FinancialPing::PingServer().
-// It is atomic pointer because it can be accessed and modified by multiple
-// threads.
-AtomicWord g_URLLoaderFactory;
-
-bool FinancialPing::SetURLLoaderFactory(
-    network::mojom::URLLoaderFactory* factory) {
-  base::subtle::Release_Store(&g_URLLoaderFactory,
-                              reinterpret_cast<AtomicWord>(factory));
-  return true;
-}
-
-// Signal to stop the ShutdownCheck() task.
-AtomicWord g_cancelShutdownCheck;
-
 namespace {
 
 // A waitable event used to detect when either:
@@ -249,22 +238,32 @@ bool send_financial_ping_interrupted_for_test = false;
 }  // namespace
 
 #if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-void ShutdownCheck(scoped_refptr<RefCountedWaitableEvent> event) {
-  if (base::subtle::Acquire_Load(&g_cancelShutdownCheck))
-    return;
 
-  if (!base::subtle::Acquire_Load(&g_URLLoaderFactory)) {
+// The signal for the current ping request. It can be used to cancel the request
+// in case of a shutdown.
+scoped_refptr<RefCountedWaitableEvent>& GetPingResultEvent() {
+  static base::NoDestructor<scoped_refptr<RefCountedWaitableEvent>>
+      g_pingResultEvent;
+  return *g_pingResultEvent;
+}
+
+// The pointer to URLRequestContextGetter used by FinancialPing::PingServer().
+// It is atomic pointer because it can be accessed and modified by multiple
+// threads.
+AtomicWord g_URLLoaderFactory;
+
+bool FinancialPing::SetURLLoaderFactory(
+    network::mojom::URLLoaderFactory* factory) {
+  base::subtle::Release_Store(&g_URLLoaderFactory,
+                              reinterpret_cast<AtomicWord>(factory));
+  scoped_refptr<RefCountedWaitableEvent> event = GetPingResultEvent();
+  if (!factory && event) {
     send_financial_ping_interrupted_for_test = true;
     event->SignalShutdown();
-    return;
   }
-  // How frequently the financial ping thread should check
-  // the shutdown condition?
-  const base::TimeDelta kInterval = base::TimeDelta::FromMilliseconds(500);
-  base::PostDelayedTask(FROM_HERE,
-                        {base::ThreadPool(), base::TaskPriority::BEST_EFFORT},
-                        base::BindOnce(&ShutdownCheck, event), kInterval);
+  return true;
 }
+
 #endif
 
 void PingRlzServer(std::string url,
@@ -388,19 +387,15 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
   // Use a waitable event to cause this function to block, to match the
   // wininet implementation.
   auto event = base::MakeRefCounted<RefCountedWaitableEvent>();
-
-  base::subtle::Release_Store(&g_cancelShutdownCheck, 0);
-
-  base::PostTask(FROM_HERE,
-                 {base::ThreadPool(), base::TaskPriority::BEST_EFFORT},
-                 base::BindOnce(&ShutdownCheck, event));
+  scoped_refptr<RefCountedWaitableEvent>& event_ref = GetPingResultEvent();
+  event_ref = event;
 
   // PingRlzServer must be run in a separate sequence so that the TimedWait()
   // call below does not block the URL fetch response from being handled by
   // the URL delegate.
   scoped_refptr<base::SequencedTaskRunner> background_runner(
-      base::CreateSequencedTaskRunner(
-          {base::ThreadPool(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN,
            base::TaskPriority::BEST_EFFORT}));
   background_runner->PostTask(FROM_HERE,
                               base::BindOnce(&PingRlzServer, url, event));
@@ -408,11 +403,10 @@ FinancialPing::PingResponse FinancialPing::PingServer(const char* request,
   bool is_signaled;
   {
     base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
-    is_signaled = event->TimedWait(base::TimeDelta::FromMinutes(5));
+    is_signaled = event->TimedWait(base::Minutes(5));
   }
 
-  base::subtle::Release_Store(&g_cancelShutdownCheck, 1);
-
+  event_ref.reset();
   if (!is_signaled)
     return PING_FAILURE;
 

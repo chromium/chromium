@@ -74,37 +74,37 @@ const displayInfocard = (() => {
     }
 
     /**
-     * Updates the path text, which shows the idPath for directory nodes, and
-     * srcPath / component for symbol nodes.
+     * Updates the details text, which shows the idPath for directory nodes, or
+     * {container (if nonempty), srcPath, component, fullName} for symbol nodes.
      * @param {TreeNode} node
      */
-    _updatePaths(node) {
-      let pathFragment;
+    _updateDetails(node) {
+      // List of window.Nodes, but called |elements| to avoid confusion.
+      const elements = [];
+
       // srcPath is set only for leaf nodes.
       if (node.srcPath) {
-        pathFragment = dom.createFragment([
-            dom.textElement('span', 'Path: ', 'symbol-name-info'),
-            document.createTextNode(node.srcPath),
-            document.createElement('br'),
-            dom.textElement('span', 'Component: ', 'symbol-name-info'),
-            document.createTextNode(node.component || '(No component)'),
-            document.createElement('br'),
-            dom.textElement('span', 'Full Name: ', 'symbol-name-info'),
-            document.createTextNode(node.fullName || ''),
-            document.createElement('br'),
-        ]);
+        const add_field = (title, text) => {
+          const div = document.createElement('div');
+          div.appendChild(dom.textElement('span', title, 'symbol-name-info'));
+          div.appendChild(document.createTextNode(text));
+          elements.push(div);
+        };
+        if (node.container !== '') add_field('Container: ', node.container);
+        add_field('Path: ', node.srcPath);
+        add_field('Component: ', node.component || '(No component)');
+        add_field('Full Name: ', node.fullName || '');
+
       } else {
         const path = node.idPath.slice(0, node.shortNameIndex);
+        elements.push(document.createTextNode(path));
         const boldShortName = dom.textElement(
             'span', node.fullName || shortName(node), 'symbol-name-info');
-        pathFragment = dom.createFragment([
-          document.createTextNode(path),
-          boldShortName,
-        ]);
+        elements.push(boldShortName);
       }
 
-      // Update DOM
-      dom.replace(this._pathInfo, pathFragment);
+      // Update DOM.
+      dom.replace(this._pathInfo, dom.createFragment(elements));
     }
 
     /**
@@ -158,7 +158,7 @@ const displayInfocard = (() => {
 
       // Update DOM
       this._updateSize(node);
-      this._updatePaths(node);
+      this._updateDetails(node);
       if (type !== this._lastType) {
         // No need to create a new icon if it is identical.
         const icon = getIconTemplate(type);
@@ -191,7 +191,7 @@ const displayInfocard = (() => {
     }
   }
 
-  class ContainerInfocard extends Infocard {
+  class ArtifactInfocard extends Infocard {
     constructor(id) {
       super(id);
       this._tableBody = this._infocard.querySelector('tbody');
@@ -199,7 +199,7 @@ const displayInfocard = (() => {
       this._ctx = this._infocard.querySelector('canvas').getContext('2d');
 
       /**
-       * @type {{[type:string]: HTMLTableRowElement}} Rows in the container
+       * @type {{[type:string]: HTMLTableRowElement}} Rows in the artifact
        * infocard that represent a particular symbol type.
        */
       this._infoRows = {
@@ -236,8 +236,8 @@ const displayInfocard = (() => {
       icon.classList.add('canvas-overlay');
     }
 
-    _flagsString(containerNode) {
-      const flags = super._flagsString(containerNode);
+    _flagsString(artifactNode) {
+      const flags = super._flagsString(artifactNode);
       return flags ? `- contains ${flags}` : '';
     }
 
@@ -279,9 +279,9 @@ const displayInfocard = (() => {
      * Update a row in the breakdown table with the given values.
      * @param {HTMLTableRowElement} row
      * @param {{size:number,count:number} | null} stats Total size of the
-     * symbols of a given type in a container.
+     *   symbols of a given type in the artifact.
      * @param {number} percentage How much the size represents in relation to
-     * the total size of the symbols in the container.
+     *   the total size of the symbols in the artifact.
      */
     _updateBreakdownRow(row, stats, percentage) {
       if (stats == null || stats.size === 0) {
@@ -340,12 +340,12 @@ const displayInfocard = (() => {
     }
 
     /**
-     * Update DOM for the container infocard
-     * @param {TreeNode} containerNode
+     * Update DOM for the artifact infocard
+     * @param {TreeNode} artifactNode
      */
-    _updateInfocard(containerNode) {
+    _updateInfocard(artifactNode) {
       const extraRows = Object.assign({}, this._infoRows);
-      const statsEntries = Object.entries(containerNode.childStats).sort(
+      const statsEntries = Object.entries(artifactNode.childStats).sort(
         (a, b) => b[1].size - a[1].size
       );
       const diffMode = state.has('diff_mode');
@@ -376,7 +376,7 @@ const displayInfocard = (() => {
       }
 
       // Update DOM
-      super._updateInfocard(containerNode);
+      super._updateInfocard(artifactNode);
       let angleStart = 0;
       for (const [type, stats] of statsEntries) {
         delete extraRows[type];
@@ -404,7 +404,7 @@ const displayInfocard = (() => {
     }
   }
 
-  const _containerInfo = new ContainerInfocard('infocard-container');
+  const _artifactInfo = new ArtifactInfocard('infocard-artifact');
   const _symbolInfo = new SymbolInfocard('infocard-symbol');
 
   /**
@@ -412,14 +412,14 @@ const displayInfocard = (() => {
    * @param {TreeNode} node
    */
   function displayInfocard(node) {
-    if (_CONTAINER_TYPE_SET.has(node.type[0])) {
-      _containerInfo.updateInfocard(node);
-      _containerInfo.setHidden(false);
+    if (_ARTIFACT_TYPE_SET.has(node.type[0])) {
+      _artifactInfo.updateInfocard(node);
+      _artifactInfo.setHidden(false);
       _symbolInfo.setHidden(true);
     } else {
       _symbolInfo.updateInfocard(node);
       _symbolInfo.setHidden(false);
-      _containerInfo.setHidden(true);
+      _artifactInfo.setHidden(true);
     }
   }
 

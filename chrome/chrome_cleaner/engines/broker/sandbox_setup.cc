@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/chrome_cleaner/buildflags.h"
@@ -22,12 +22,11 @@
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/chrome_cleaner/engines/target/engine_commands_impl.h"  // nogncheck
 #include "chrome/chrome_cleaner/engines/target/engine_delegate.h"  // nogncheck
 #include "chrome/chrome_cleaner/engines/target/engine_delegate_factory.h"  // nogncheck
 #include "chrome/chrome_cleaner/engines/target/libraries.h"  // nogncheck
-#include "mojo/public/cpp/bindings/interface_request.h"
 #endif
 
 namespace chrome_cleaner {
@@ -66,7 +65,7 @@ ResultCode SpawnWithoutSandboxForTesting(
             new EngineCommandsImpl(engine_delegate,
                                    engine_client->engine_commands_remote()
                                        ->BindNewPipeAndPassReceiver(),
-                                   task_runner, base::DoNothing::Repeatedly());
+                                   task_runner, base::DoNothing());
           },
           engine_client, CreateEngineDelegate(engine_name), mojo_task_runner));
 
@@ -101,7 +100,7 @@ ResultCode EngineSandboxSetupHooks::UpdateSandboxPolicy(
 
   // Propagate engine selection switches to the sandbox target.
   command_line->AppendSwitchNative(
-      kEngineSwitch, base::NumberToString16(Settings::GetInstance()->engine()));
+      kEngineSwitch, base::NumberToWString(Settings::GetInstance()->engine()));
 
   return RESULT_CODE_SUCCESS;
 }

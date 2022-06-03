@@ -8,15 +8,16 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
+#include "base/time/time.h"
 #include "chrome/browser/touch_to_fill/android/jni_headers/Credential_jni.h"
 #include "chrome/browser/touch_to_fill/android/jni_headers/TouchToFillBridge_jni.h"
-#include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"
+#include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"  // nogncheck
 #include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
+#include "url/android/gurl_android.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -42,26 +43,36 @@ UiCredential ConvertJavaCredential(JNIEnv* env,
       UiCredential::IsPublicSuffixMatch(
           Java_Credential_isPublicSuffixMatch(env, credential)),
       UiCredential::IsAffiliationBasedMatch(
-          Java_Credential_isAffiliationBasedMatch(env, credential)));
+          Java_Credential_isAffiliationBasedMatch(env, credential)),
+      base::Time::FromJavaTime(
+          Java_Credential_lastUsedMsSinceEpoch(env, credential)));
 }
 
 }  // namespace
 
 TouchToFillViewImpl::TouchToFillViewImpl(TouchToFillController* controller)
-    : controller_(controller) {
-  java_object_ = Java_TouchToFillBridge_create(
-      AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
-      controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
-}
+    : controller_(controller) {}
 
 TouchToFillViewImpl::~TouchToFillViewImpl() {
-  Java_TouchToFillBridge_destroy(AttachCurrentThread(), java_object_);
+  if (java_object_internal_) {
+    // Don't create an object just for destruction.
+    Java_TouchToFillBridge_destroy(AttachCurrentThread(),
+                                   java_object_internal_);
+  }
 }
 
 void TouchToFillViewImpl::Show(
     const GURL& url,
     IsOriginSecure is_origin_secure,
     base::span<const password_manager::UiCredential> credentials) {
+  if (!RecreateJavaObject()) {
+    // It's possible that the constructor cannot access the bottom sheet clank
+    // component. That case may be temporary but we can't let users in a waiting
+    // state so report that TouchToFill is dismissed in order to show the normal
+    // Android keyboard (plus keyboard accessory) instead.
+    controller_->OnDismiss();
+    return;
+  }
   // Serialize the |credentials| span into a Java array and instruct the bridge
   // to show it together with |url| to the user.
   JNIEnv* env = AttachCurrentThread();
@@ -76,11 +87,13 @@ void TouchToFillViewImpl::Show(
         ConvertUTF16ToJavaString(env, GetDisplayUsername(credential)),
         ConvertUTF8ToJavaString(env, credential.origin().Serialize()),
         credential.is_public_suffix_match().value(),
-        credential.is_affiliation_based_match().value());
+        credential.is_affiliation_based_match().value(),
+        credential.last_used().ToJavaTime());
   }
 
   Java_TouchToFillBridge_showCredentials(
-      env, java_object_, ConvertUTF8ToJavaString(env, url.spec()),
+      env, java_object_internal_, url::GURLAndroid::FromNativeGURL(env, url),
+
       is_origin_secure.value(), credential_array);
 }
 
@@ -104,4 +117,19 @@ void TouchToFillViewImpl::OnManagePasswordsSelected(JNIEnv* env) {
 
 void TouchToFillViewImpl::OnDismiss(JNIEnv* env) {
   OnDismiss();
+}
+
+bool TouchToFillViewImpl::RecreateJavaObject() {
+  if (controller_->GetNativeView() == nullptr ||
+      controller_->GetNativeView()->GetWindowAndroid() == nullptr) {
+    return false;  // No window attached (yet or anymore).
+  }
+  if (java_object_internal_) {
+    Java_TouchToFillBridge_destroy(AttachCurrentThread(),
+                                   java_object_internal_);
+  }
+  java_object_internal_ = Java_TouchToFillBridge_create(
+      AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
+      controller_->GetNativeView()->GetWindowAndroid()->GetJavaObject());
+  return !!java_object_internal_;
 }

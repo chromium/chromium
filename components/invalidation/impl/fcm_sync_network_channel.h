@@ -5,19 +5,20 @@
 #ifndef COMPONENTS_INVALIDATION_IMPL_FCM_SYNC_NETWORK_CHANNEL_H_
 #define COMPONENTS_INVALIDATION_IMPL_FCM_SYNC_NETWORK_CHANNEL_H_
 
+#include <string>
+
 #include "base/callback.h"
 #include "base/observer_list.h"
 #include "base/values.h"
 #include "components/invalidation/impl/channels_states.h"
-#include "components/invalidation/impl/network_channel.h"
 
-namespace syncer {
+namespace invalidation {
 
 // FCMSyncNetworkChannel implements common tasks needed from the network by
 // client:
 //  - registering message callbacks
 //  - notifying on network problems
-class FCMSyncNetworkChannel : public NetworkChannel {
+class FCMSyncNetworkChannel {
  public:
   class Observer {
    public:
@@ -25,14 +26,36 @@ class FCMSyncNetworkChannel : public NetworkChannel {
         FcmChannelState invalidator_state) = 0;
   };
 
+  // See SetMessageReceiver below.
+  //   payload - additional info specific to the invalidation
+  //   private_topic - the internal (to FCM) representation for the public topic
+  //   public_topic - the topic which was invalidated, e.g. in case of Chrome
+  //                  Sync it'll be BOOKMARK or PASSWORD
+  //   version - version number of the invalidation
+  using MessageCallback =
+      base::RepeatingCallback<void(const std::string& payload,
+                                   const std::string& private_topic,
+                                   const std::string& public_topic,
+                                   int64_t version)>;
+
+  using TokenCallback = base::RepeatingCallback<void(const std::string& token)>;
+
   FCMSyncNetworkChannel();
-  ~FCMSyncNetworkChannel() override;
+  virtual ~FCMSyncNetworkChannel();
 
   virtual void StartListening() = 0;
   virtual void StopListening() = 0;
 
-  void SetMessageReceiver(MessageCallback incoming_receiver) override;
-  void SetTokenReceiver(TokenCallback token_receiver) override;
+  // Sets the receiver to which messages from the data center will be delivered.
+  // The callback will be invoked whenever an invalidation message is received
+  // from FCM. It is *not* guaranteed to be invoked exactly once or in-order
+  // (with respect to the invalidation's version number).
+  void SetMessageReceiver(MessageCallback incoming_receiver);
+
+  // Sets the receiver to which FCM registration token will be delivered.
+  // The callback will be invoked whenever a new InstanceID token becomes
+  // available.
+  void SetTokenReceiver(TokenCallback token_receiver);
 
   // Classes interested in network channel state changes should implement
   // FCMSyncNetworkChannel::Observer and register here.
@@ -46,11 +69,6 @@ class FCMSyncNetworkChannel : public NetworkChannel {
           callback) = 0;
 
  protected:
-  // Subclass should call NotifyNetworkStatusChange to notify about network
-  // changes. This triggers cacheinvalidation to try resending failed message
-  // ahead of schedule when client comes online or IP address changes.
-  void NotifyNetworkStatusChange(bool online);
-
   // Subclass should notify about connection state through
   // NotifyChannelStateChange. If communication doesn't work and it is possible
   // that invalidations from server will not reach this client then channel
@@ -78,6 +96,7 @@ class FCMSyncNetworkChannel : public NetworkChannel {
 
   base::ObserverList<Observer>::Unchecked observers_;
 };
-}  // namespace syncer
+
+}  // namespace invalidation
 
 #endif  // COMPONENTS_INVALIDATION_IMPL_FCM_SYNC_NETWORK_CHANNEL_H_

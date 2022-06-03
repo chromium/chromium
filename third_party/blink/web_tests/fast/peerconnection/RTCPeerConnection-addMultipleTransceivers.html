@@ -1,0 +1,117 @@
+<!doctype html>
+<meta charset=utf-8>
+<meta name="timeout" content="long">
+<title>RTCPeerConnection.addTransceiver multiple times</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../external/wpt/webrtc/RTCPeerConnection-helper.js"></script>
+<script>
+
+'use strict';
+
+const reasonableNegotiationTimeMs = 1000;
+const reasonableTotalTestTimeMs = 2000;  // The overall time for a test of this type is 10 secs, so timeout must be small
+
+function maybeLog(arg) {
+  // Uncomment to get performance recordings on console
+  // console.log(arg);
+}
+
+function noteTime(str, base) {
+  const nowTime = performance.now();
+  maybeLog(str + ' ' + (nowTime - base.old));
+  base.old = nowTime;
+}
+
+
+async function doNegotiation(caller, callee) {
+  const startTime = performance.now();
+  let curTime =  {old: startTime};
+  const offer = await caller.createOffer();
+  noteTime('caller.createOffer', curTime);
+  await caller.setLocalDescription(offer);
+  noteTime('caller.SLD', curTime);
+  await callee.setRemoteDescription(offer);
+  noteTime('callee.SRD', curTime);
+  const answer = await callee.createAnswer();
+  noteTime('callee.createAnswer', curTime);
+  await callee.setLocalDescription(answer);
+  noteTime('callee.SLD', curTime);
+  await caller.setRemoteDescription(answer);
+  noteTime('caller.SRD', curTime);
+  return performance.now() - startTime;
+}
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const testStartTime = performance.now();
+    let timeTakenMs = 0;
+    let count = 0;
+    while (timeTakenMs < reasonableNegotiationTimeMs &&
+           performance.now() - testStartTime < reasonableTotalTestTimeMs) {
+      count += 1;
+      caller.addTransceiver('audio');
+      timeTakenMs = await doNegotiation(caller, callee);
+      maybeLog('Audio: Count ' + count +  ', timeTakenMs is ' + timeTakenMs);
+      assert_equals(callee.getReceivers().length, count);
+    }
+    assert_greater_than_equal(count, 9);
+  }, 'Adding multiple audio tracks with AddTransceiver(), one at a time');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const kTrackCount = 10;
+    for (let count = 1; count <= kTrackCount; count++) {
+      caller.addTransceiver('audio');
+    }
+    const timeTakenMs = await doNegotiation(caller, callee);
+    assert_equals(caller.getSenders().length, kTrackCount);
+    assert_equals(callee.getReceivers().length, kTrackCount);
+    assert_less_than(timeTakenMs, reasonableNegotiationTimeMs);
+  }, 'Adding multiple audio tracks with AddTransceiver(), all at once');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const testStartTime = performance.now();
+    let timeTakenMs = 0;
+    let count = 0;
+    while (timeTakenMs < reasonableNegotiationTimeMs &&
+           performance.now() - testStartTime < reasonableTotalTestTimeMs) {
+      count += 1;
+      caller.addTransceiver('video');
+      timeTakenMs = await doNegotiation(caller, callee);
+      maybeLog('Video: Count ' + count +  ', timeTakenMs is ' + timeTakenMs);
+      assert_equals(callee.getReceivers().length, count);
+    }
+    assert_greater_than_equal(count, 4);
+  }, 'Adding multiple video tracks with AddTransceiver(), one at a time');
+
+  promise_test(async t => {
+    const caller = new RTCPeerConnection();
+    t.add_cleanup(() => caller.close());
+    const callee = new RTCPeerConnection();
+    t.add_cleanup(() => callee.close());
+
+    const kTrackCount = 3;
+    for (let count = 1; count <= kTrackCount; count++) {
+      caller.addTransceiver('video');
+    }
+    const timeTakenMs = await doNegotiation(caller, callee);
+    assert_equals(caller.getSenders().length, kTrackCount);
+    assert_equals(callee.getReceivers().length, kTrackCount);
+    assert_less_than(timeTakenMs, reasonableNegotiationTimeMs);
+  }, 'Adding multiple video tracks with AddTransceiver(), all at once');
+
+</script>

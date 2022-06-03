@@ -66,12 +66,8 @@ var expected = {
       "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
       "bounds": [100, 100],
       "backgroundColor": "#0000FF80",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='child1'",
-          "rect": [20, 20, 10, 10],
-          "reason": "background"
-        }
+      "invalidations": [
+        [20, 20, 10, 10]
       ],
       "transform": 2
     },
@@ -79,20 +75,6 @@ var expected = {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrollable'",
       "bounds": [302, 302],
       "transform": 3
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
-      "bounds": [200, 200],
-      "contentsOpaque": true,
-      "backgroundColor": "#FFFF00",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='child2'",
-          "rect": [20, 20, 10, 10],
-          "reason": "background"
-        }
-      ],
-      "transform": 6
     },
     {
       "name": "Horizontal Scrollbar Layer",
@@ -105,6 +87,16 @@ var expected = {
       "position": [301, 1],
       "bounds": [0, 300],
       "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
+      "invalidations": [
+        [20, 20, 10, 10]
+      ],
+      "transform": 6
     },
     {
       "name": "Vertical Scrollbar Layer",
@@ -189,12 +181,8 @@ var actual = {
       "name": "LayoutNGBlockFlow (positioned) DIV id='container'",
       "bounds": [100, 100],
       "backgroundColor": "#0000FF80",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='child1'",
-          "rect": [20, 20, 10, 10],
-          "reason": "background"
-        }
+      "invalidations": [
+        [20, 20, 10, 10]
       ],
       "transform": 2
     },
@@ -202,20 +190,6 @@ var actual = {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrollable'",
       "bounds": [302, 302],
       "transform": 3
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
-      "bounds": [200, 200],
-      "contentsOpaque": true,
-      "backgroundColor": "#FFFF00",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV id='child2'",
-          "rect": [20, 20, 10, 10],
-          "reason": "background"
-        }
-      ],
-      "transform": 6
     },
     {
       "name": "Horizontal Scrollbar Layer",
@@ -228,6 +202,16 @@ var actual = {
       "position": [301, 1],
       "bounds": [0, 300],
       "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='transform'",
+      "bounds": [200, 200],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFF00",
+      "invalidations": [
+        [20, 20, 10, 10]
+      ],
+      "transform": 6
     },
     {
       "name": "Vertical Scrollbar Layer",
@@ -326,15 +310,8 @@ function draw_layer_rects(context, transforms, layer) {
     }
     if (layer.position)
         context.translate(layer.position[0], layer.position[1]);
-
-    if (layer.paintInvalidations) {
-        var rects = [];
-        for (var i = 0; i < layer.paintInvalidations.length; ++i) {
-            if (layer.paintInvalidations[i].rect)
-                rects.push(layer.paintInvalidations[i].rect);
-        }
-        draw_rects(context, rects);
-    }
+    if (layer.invalidations)
+        draw_rects(context, layer.invalidations);
     context.restore();
 }
 

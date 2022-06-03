@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+PASS Property justify-self value 'auto'
+PASS Property justify-self value 'normal'
+PASS Property justify-self value 'stretch'
+PASS Property justify-self value 'baseline'
+FAIL Property justify-self value 'last baseline' assert_true: 'last baseline' is a supported value for justify-self. expected true got false
+PASS Property justify-self value 'center'
+PASS Property justify-self value 'start'
+PASS Property justify-self value 'end'
+PASS Property justify-self value 'self-start'
+PASS Property justify-self value 'self-end'
+PASS Property justify-self value 'flex-start'
+PASS Property justify-self value 'flex-end'
+PASS Property justify-self value 'unsafe center'
+PASS Property justify-self value 'safe self-end'
+PASS Property justify-self value 'left'
+PASS Property justify-self value 'unsafe right'
+Harness: the test ran to completion.
+

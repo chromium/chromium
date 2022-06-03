@@ -4,11 +4,12 @@
 
 #include "base/synchronization/condition_variable.h"
 
-#include "base/optional.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #include <windows.h>
 
@@ -27,16 +28,17 @@ ConditionVariable::ConditionVariable(Lock* user_lock)
 ConditionVariable::~ConditionVariable() = default;
 
 void ConditionVariable::Wait() {
-  TimedWait(TimeDelta::FromMilliseconds(INFINITE));
+  TimedWait(TimeDelta::Max());
 }
 
 void ConditionVariable::TimedWait(const TimeDelta& max_time) {
-  Optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
+  absl::optional<internal::ScopedBlockingCallWithBaseSyncPrimitives>
       scoped_blocking_call;
   if (waiting_is_blocking_)
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
 
-  DWORD timeout = static_cast<DWORD>(max_time.InMilliseconds());
+  // Limit timeout to INFINITE.
+  DWORD timeout = saturated_cast<DWORD>(max_time.InMilliseconds());
 
 #if DCHECK_IS_ON()
   user_lock_->CheckHeldAndUnmark();

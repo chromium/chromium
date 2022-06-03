@@ -6,18 +6,22 @@
 #define CONTENT_PUBLIC_BROWSER_BROWSER_ACCESSIBILITY_STATE_H_
 
 #include "base/callback_forward.h"
-
+#include "base/callback_list.h"
+#include "build/build_config.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/browser_context.h"
 #include "ui/accessibility/ax_mode.h"
 
 namespace content {
+
+struct FocusedNodeDetails;
 
 // The BrowserAccessibilityState class is used to determine if the browser
 // should be customized for users with assistive technology, such as screen
 // readers.
 class CONTENT_EXPORT BrowserAccessibilityState {
  public:
-  virtual ~BrowserAccessibilityState() { }
+  virtual ~BrowserAccessibilityState() = default;
 
   // Returns the singleton instance.
   static BrowserAccessibilityState* GetInstance();
@@ -65,8 +69,51 @@ class CONTENT_EXPORT BrowserAccessibilityState {
   // thread, for example something that may block or run slowly.
   virtual void AddOtherThreadHistogramCallback(base::OnceClosure callback) = 0;
 
+  // Fire frequent metrics signals to ensure users keeping browser open multiple
+  // days are counted each day, not only at launch. This is necessary, because
+  // UMA only aggregates uniques on a daily basis,
+  virtual void UpdateUniqueUserHistograms() = 0;
+
   virtual void UpdateHistogramsForTesting() = 0;
+
+  // Update BrowserAccessibilityState with the current status of caret browsing.
+  virtual void SetCaretBrowsingState(bool enabled) = 0;
+
+#if defined(OS_ANDROID)
+  // Update BrowserAccessibilityState with the current state of accessibility
+  // image labels. Used exclusively on Android.
+  virtual void SetImageLabelsModeForProfile(bool enabled,
+                                            BrowserContext* profile) = 0;
+#endif
+
+  using FocusChangedCallback =
+      base::RepeatingCallback<void(const FocusedNodeDetails&)>;
+
+  // Registers a callback method that is called whenever the focused element
+  // has changed inside a WebContents.
+  virtual base::CallbackListSubscription RegisterFocusChangedCallback(
+      FocusChangedCallback callback) = 0;
 };
+
+namespace testing {
+
+class CONTENT_EXPORT ScopedContentAXModeSetter {
+ public:
+  explicit ScopedContentAXModeSetter(ui::AXMode mode) : mode_(mode) {
+    BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(mode);
+  }
+  ~ScopedContentAXModeSetter() { ResetMode(); }
+
+  void ResetMode() {
+    BrowserAccessibilityState::GetInstance()->RemoveAccessibilityModeFlags(
+        mode_);
+  }
+
+ private:
+  ui::AXMode mode_;
+};
+
+}  // namespace testing
 
 }  // namespace content
 

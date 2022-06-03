@@ -4,7 +4,7 @@
 
 #include "ios/chrome/browser/autocomplete/autocomplete_provider_client_impl.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/core/service_access_type.h"
@@ -17,19 +17,23 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/autocomplete/autocomplete_classifier_factory.h"
 #include "ios/chrome/browser/autocomplete/in_memory_url_index_factory.h"
+#include "ios/chrome/browser/autocomplete/remote_suggestions_service_factory.h"
 #include "ios/chrome/browser/autocomplete/shortcuts_backend_factory.h"
+#include "ios/chrome/browser/autocomplete/tab_matcher_impl.h"
 #include "ios/chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/chrome/browser/history/top_sites_factory.h"
+#import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/main/browser_list.h"
+#import "ios/chrome/browser/main/browser_list_factory.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/identity_manager_factory.h"
-#include "ios/chrome/browser/sync/profile_sync_service_factory.h"
-#import "ios/chrome/browser/tabs/tab_model.h"
-#import "ios/chrome/browser/tabs/tab_model_list.h"
+#include "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -37,12 +41,15 @@
 #endif
 
 AutocompleteProviderClientImpl::AutocompleteProviderClientImpl(
-    ios::ChromeBrowserState* browser_state)
+    ChromeBrowserState* browser_state)
     : browser_state_(browser_state),
-      url_consent_helper_(unified_consent::UrlKeyedDataCollectionConsentHelper::
-                              NewPersonalizedDataCollectionConsentHelper(
-                                  ProfileSyncServiceFactory::GetForBrowserState(
-                                      browser_state_))) {}
+      url_consent_helper_(
+          unified_consent::UrlKeyedDataCollectionConsentHelper::
+              NewPersonalizedDataCollectionConsentHelper(
+                  SyncServiceFactory::GetForBrowserState(browser_state_))),
+      omnibox_triggered_feature_service_(
+          std::make_unique<OmniboxTriggeredFeatureService>()),
+      tab_matcher_(browser_state_) {}
 
 AutocompleteProviderClientImpl::~AutocompleteProviderClientImpl() {}
 
@@ -51,8 +58,12 @@ AutocompleteProviderClientImpl::GetURLLoaderFactory() {
   return browser_state_->GetSharedURLLoaderFactory();
 }
 
-PrefService* AutocompleteProviderClientImpl::GetPrefs() {
+PrefService* AutocompleteProviderClientImpl::GetPrefs() const {
   return browser_state_->GetPrefs();
+}
+
+PrefService* AutocompleteProviderClientImpl::GetLocalState() {
+  return GetApplicationContext()->GetLocalState();
 }
 
 const AutocompleteSchemeClassifier&
@@ -101,7 +112,8 @@ AutocompleteProviderClientImpl::GetTemplateURLService() const {
 RemoteSuggestionsService*
 AutocompleteProviderClientImpl::GetRemoteSuggestionsService(
     bool create_if_necessary) const {
-  return nullptr;
+  return RemoteSuggestionsServiceFactory::GetForBrowserState(
+      browser_state_, create_if_necessary);
 }
 
 DocumentSuggestionsService*
@@ -111,7 +123,6 @@ AutocompleteProviderClientImpl::GetDocumentSuggestionsService(
 }
 
 OmniboxPedalProvider* AutocompleteProviderClientImpl::GetPedalProvider() const {
-  NOTREACHED();
   return nullptr;
 }
 
@@ -132,6 +143,16 @@ AutocompleteProviderClientImpl::GetKeywordExtensionsDelegate(
   return nullptr;
 }
 
+query_tiles::TileService* AutocompleteProviderClientImpl::GetQueryTileService()
+    const {
+  return nullptr;
+}
+
+OmniboxTriggeredFeatureService*
+AutocompleteProviderClientImpl::GetOmniboxTriggeredFeatureService() const {
+  return omnibox_triggered_feature_service_.get();
+}
+
 std::string AutocompleteProviderClientImpl::GetAcceptLanguages() const {
   return browser_state_->GetPrefs()->GetString(
       language::prefs::kAcceptLanguages);
@@ -142,19 +163,19 @@ AutocompleteProviderClientImpl::GetEmbedderRepresentationOfAboutScheme() const {
   return kChromeUIScheme;
 }
 
-std::vector<base::string16> AutocompleteProviderClientImpl::GetBuiltinURLs() {
+std::vector<std::u16string> AutocompleteProviderClientImpl::GetBuiltinURLs() {
   std::vector<std::string> chrome_builtins(
       kChromeHostURLs, kChromeHostURLs + kNumberOfChromeHostURLs);
   std::sort(chrome_builtins.begin(), chrome_builtins.end());
 
-  std::vector<base::string16> builtins;
+  std::vector<std::u16string> builtins;
   for (auto& url : chrome_builtins) {
     builtins.push_back(base::ASCIIToUTF16(url));
   }
   return builtins;
 }
 
-std::vector<base::string16>
+std::vector<std::u16string>
 AutocompleteProviderClientImpl::GetBuiltinsToProvideAsUserTypes() {
   return {base::ASCIIToUTF16(kChromeUIChromeURLsURL),
           base::ASCIIToUTF16(kChromeUIVersionURL)};
@@ -163,6 +184,11 @@ AutocompleteProviderClientImpl::GetBuiltinsToProvideAsUserTypes() {
 component_updater::ComponentUpdateService*
 AutocompleteProviderClientImpl::GetComponentUpdateService() {
   return GetApplicationContext()->GetComponentUpdateService();
+}
+
+signin::IdentityManager* AutocompleteProviderClientImpl::GetIdentityManager()
+    const {
+  return IdentityManagerFactory::GetForBrowserState(browser_state_);
 }
 
 bool AutocompleteProviderClientImpl::IsOffTheRecord() const {
@@ -181,17 +207,18 @@ bool AutocompleteProviderClientImpl::IsPersonalizedUrlDataCollectionActive()
 bool AutocompleteProviderClientImpl::IsAuthenticated() const {
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForBrowserState(browser_state_);
-  return identity_manager != nullptr && identity_manager->HasPrimaryAccount();
+  return identity_manager &&
+         identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
 }
 
 bool AutocompleteProviderClientImpl::IsSyncActive() const {
   syncer::SyncService* sync =
-      ProfileSyncServiceFactory::GetForBrowserState(browser_state_);
+      SyncServiceFactory::GetForBrowserState(browser_state_);
   return sync && sync->IsSyncFeatureActive();
 }
 
 void AutocompleteProviderClientImpl::Classify(
-    const base::string16& text,
+    const std::u16string& text,
     bool prefer_keyword,
     bool allow_exact_keyword_match,
     metrics::OmniboxEventProto::PageClassification page_classification,
@@ -204,18 +231,12 @@ void AutocompleteProviderClientImpl::Classify(
 
 void AutocompleteProviderClientImpl::DeleteMatchingURLsForKeywordFromHistory(
     history::KeywordID keyword_id,
-    const base::string16& term) {
+    const std::u16string& term) {
   GetHistoryService()->DeleteMatchingURLsForKeyword(keyword_id, term);
 }
 
 void AutocompleteProviderClientImpl::PrefetchImage(const GURL& url) {}
 
-bool AutocompleteProviderClientImpl::IsTabOpenWithURL(
-    const GURL& url,
-    const AutocompleteInput* input) {
-  TabModel* tab_model =
-      TabModelList::GetLastActiveTabModelForChromeBrowserState(browser_state_);
-  WebStateList* web_state_list = tab_model.webStateList;
-  return web_state_list && web_state_list->GetIndexOfInactiveWebStateWithURL(
-                               url) != WebStateList::kInvalidIndex;
+const TabMatcher& AutocompleteProviderClientImpl::GetTabMatcher() const {
+  return tab_matcher_;
 }

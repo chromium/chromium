@@ -18,7 +18,7 @@ namespace extensions {
 using AccessibilityPrivateHooksDelegateTest =
     NativeExtensionBindingsSystemUnittest;
 
-TEST_F(AccessibilityPrivateHooksDelegateTest, TestGetDisplayLanguage) {
+TEST_F(AccessibilityPrivateHooksDelegateTest, TestGetDisplayNameForLocale) {
   // Initialize bindings system.
   bindings_system()
       ->api_system()
@@ -31,7 +31,7 @@ TEST_F(AccessibilityPrivateHooksDelegateTest, TestGetDisplayLanguage) {
   scoped_refptr<const Extension> extension =
       ExtensionBuilder("testExtension")
           .AddPermission("accessibilityPrivate")
-          .SetLocation(Manifest::COMPONENT)
+          .SetLocation(mojom::ManifestLocation::kComponent)
           .Build();
   RegisterExtension(extension);
   v8::HandleScope handle_scope(isolate());
@@ -50,30 +50,35 @@ TEST_F(AccessibilityPrivateHooksDelegateTest, TestGetDisplayLanguage) {
   ASSERT_TRUE(availability.is_available()) << availability.message();
 
   // Setup function that will run extension api.
-  auto run_get_display_language = [context](const char* args) {
+  auto run_get_display_locale = [context](const char* args) {
     SCOPED_TRACE(args);
-    constexpr char kRunGetDisplayLanguageFunction[] =
+    constexpr char kRunGetDisplayLocale[] =
         R"((function() {
-          return chrome.accessibilityPrivate.getDisplayLanguage(%s);
+          return chrome.accessibilityPrivate.getDisplayNameForLocale(%s);
         }))";
     v8::Local<v8::Function> function = FunctionFromString(
-        context, base::StringPrintf(kRunGetDisplayLanguageFunction, args));
+        context, base::StringPrintf(kRunGetDisplayLocale, args));
     v8::Local<v8::Value> result = RunFunction(function, context, 0, nullptr);
     return V8ToString(result, context);
   };
 
   // Test behavior.
-  EXPECT_EQ(R"("")", run_get_display_language("'',''"));
-  EXPECT_EQ(R"("")", run_get_display_language("'not a language code','ja-JP'"));
-  EXPECT_EQ(R"("")",
-            run_get_display_language("'zh-TW', 'not a language code'"));
-  EXPECT_EQ(R"("English")", run_get_display_language("'en','en'"));
-  EXPECT_EQ(R"("English")", run_get_display_language("'en-US','en'"));
-  EXPECT_EQ(R"("français")", run_get_display_language("'fr','fr'"));
-  EXPECT_EQ(R"("español")", run_get_display_language("'es','es'"));
-  EXPECT_EQ(R"("日本語")", run_get_display_language("'ja','ja'"));
-  EXPECT_EQ(R"("anglais")", run_get_display_language("'en','fr'"));
-  EXPECT_EQ(R"("Japanese")", run_get_display_language("'ja','en'"));
+  EXPECT_EQ(R"("")", run_get_display_locale("'', ''"));
+  EXPECT_EQ(R"("")", run_get_display_locale("'not a locale code', 'ja-JP'"));
+  EXPECT_EQ(R"|("Chinese (Traditional)")|",
+            run_get_display_locale("'zh-TW', 'en'"));
+  EXPECT_EQ(R"("")", run_get_display_locale("'zh-TW', 'not a locale code'"));
+  EXPECT_EQ(R"("English")", run_get_display_locale("'en', 'en'"));
+  EXPECT_EQ(R"|("English (United States)")|",
+            run_get_display_locale("'en-US', 'en'"));
+  EXPECT_EQ(R"("français")", run_get_display_locale("'fr', 'fr-FR'"));
+  EXPECT_EQ(R"|("français (France)")|",
+            run_get_display_locale("'fr-FR', 'fr-FR'"));
+  EXPECT_EQ(R"|("francés (Francia)")|",
+            run_get_display_locale("'fr-FR', 'es'"));
+  EXPECT_EQ(R"("日本語")", run_get_display_locale("'ja', 'ja'"));
+  EXPECT_EQ(R"("anglais")", run_get_display_locale("'en', 'fr-CA'"));
+  EXPECT_EQ(R"("Japanese")", run_get_display_locale("'ja', 'en'"));
 }
 
 }  // namespace extensions

@@ -22,12 +22,16 @@ class WebSubThread;
 class WebMainLoop {
  public:
   explicit WebMainLoop();
+
+  WebMainLoop(const WebMainLoop&) = delete;
+  WebMainLoop& operator=(const WebMainLoop&) = delete;
+
   virtual ~WebMainLoop();
 
   void Init();
 
   void EarlyInitialization();
-  void MainMessageLoopStart();
+  void CreateMainMessageLoop();
 
   // Creates and starts running the tasks needed to complete startup.
   void CreateStartupTasks();
@@ -58,7 +62,7 @@ class WebMainLoop {
   // True if the non-UI threads were created.
   bool created_threads_;
 
-  // Members initialized in |MainMessageLoopStart()| ---------------------------
+  // Members initialized in |CreateMainMessageLoop()| --------------------------
   // The SingleThreadTaskExecutor and NetworkChangeNotifier are not owned by the
   // WebMainLoop but still need to be destroyed in correct order so use
   // ScopedClosureRunner.
@@ -78,8 +82,6 @@ class WebMainLoop {
 
   // Members initialized in |WebThreadsStarted()| --------------------------
   std::unique_ptr<CookieNotificationBridge> cookie_notification_bridge_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebMainLoop);
 };
 
 }  // namespace web

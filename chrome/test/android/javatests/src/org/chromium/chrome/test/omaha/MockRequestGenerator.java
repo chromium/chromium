@@ -14,8 +14,6 @@ public class MockRequestGenerator extends RequestGenerator {
         HANDSET, TABLET
     }
 
-    public enum SignedInStatus { TRUE, FALSE }
-
     public static final String UUID_PHONE = "uuid_phone";
     public static final String UUID_TABLET = "uuid_tablet";
     public static final String SERVER_URL = "http://totallylegitserver.com";
@@ -25,17 +23,12 @@ public class MockRequestGenerator extends RequestGenerator {
     private static final String DEVICE_ID = "some-arbitrary-device-id";
     private static final String LANGUAGE = "zz-ZZ";
     private static final String ADDITIONAL_PARAMETERS = "chromium; manufacturer; model";
-    private static final int DOWNLOAD_MANAGER_STATE = 42;
 
     private final boolean mIsOnTablet;
 
-    private final boolean mIsSignedIn;
-
-    public MockRequestGenerator(
-            Context context, DeviceType deviceType, SignedInStatus signInStatus) {
+    public MockRequestGenerator(Context context, DeviceType deviceType) {
         super(context);
         mIsOnTablet = deviceType == DeviceType.TABLET;
-        mIsSignedIn = signInStatus == SignedInStatus.TRUE;
     }
 
     @Override
@@ -69,18 +62,8 @@ public class MockRequestGenerator extends RequestGenerator {
     }
 
     @Override
-    public int getDownloadManagerState() {
-        return DOWNLOAD_MANAGER_STATE;
-    }
-
-    @Override
     public String getLanguage() {
         return LANGUAGE;
-    }
-
-    @Override
-    public int getNumSignedIn() {
-        return mIsSignedIn ? 1 : 0;
     }
 
     @Override

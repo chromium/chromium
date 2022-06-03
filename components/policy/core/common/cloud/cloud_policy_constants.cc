@@ -7,8 +7,8 @@
 #include <stdint.h>
 
 #include "base/command_line.h"
-#include "base/logging.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/policy/core/common/policy_switches.h"
 
 namespace policy {
@@ -36,13 +36,17 @@ const char kEnrollmentTokenAuthHeaderPrefix[] = "GoogleEnrollmentToken token=";
 
 // String constants for the device and app type we report to the server.
 const char kValueAppType[] = "Chrome";
+const char kValueBrowserUploadPublicKey[] = "browser_public_key_upload";
 const char kValueDeviceType[] = "2";
 const char kValueRequestAutoEnrollment[] = "enterprise_check";
+const char kValueRequestPsmHasDeviceState[] = "enterprise_psm_check";
+const char kValueCheckUserAccount[] = "check_user_account";
 const char kValueRequestPolicy[] = "policy";
 const char kValueRequestRegister[] = "register";
 const char kValueRequestApiAuthorization[] = "api_authorization";
 const char kValueRequestUnregister[] = "unregister";
 const char kValueRequestUploadCertificate[] = "cert_upload";
+const char kValueRequestUploadEuiccInfo[] = "upload_euicc_info";
 const char kValueRequestDeviceStateRetrieval[] = "device_state_retrieval";
 const char kValueRequestUploadStatus[] = "status_upload";
 const char kValueRequestRemoteCommands[] = "remote_commands";
@@ -65,9 +69,10 @@ const char kValueRequestInitialEnrollmentStateRetrieval[] =
 const char kValueRequestUploadPolicyValidationReport[] =
     "policy_validation_report";
 const char kValueRequestPublicSamlUser[] = "public_saml_user_request";
+const char kValueRequestCertProvisioningRequest[] = "client_cert_provisioning";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kChromeUserPolicyType[] = "google/chromeos/user";
 #elif defined(OS_ANDROID)
 const char kChromeUserPolicyType[] = "google/android/user";
@@ -82,9 +87,16 @@ const char kChromeSigninExtensionPolicyType[] =
     "google/chromeos/signinextension";
 const char kChromeMachineLevelUserCloudPolicyType[] =
     "google/chrome/machine-level-user";
+const char kChromeMachineLevelUserCloudPolicyAndroidType[] =
+    "google/chrome/machine-level-user-android";
+const char kChromeMachineLevelUserCloudPolicyIOSType[] =
+    "google/chrome/machine-level-user-ios";
 const char kChromeMachineLevelExtensionCloudPolicyType[] =
     "google/chrome/machine-level-extension";
 const char kChromeRemoteCommandPolicyType[] = "google/chromeos/remotecommand";
+
+const char kChromeMachineLevelUserCloudPolicyTypeBase64[] =
+    "Z29vZ2xlL2Nocm9tZS9tYWNoaW5lLWxldmVsLXVzZXI=";
 
 }  // namespace dm_protocol
 
@@ -123,6 +135,11 @@ std::string GetPolicyVerificationKey() {
   return std::string(reinterpret_cast<const char*>(kPolicyVerificationKey),
                      sizeof(kPolicyVerificationKey));
 }
+// Notes from the past: When the key is rotated in the future, the old one may
+// still worth being kept to verified any existing policy cache so that browser
+// can load it one last time. However, it really depends on the reason of the
+// rotation. From a different angle, if a key is no longer trusted, so should
+// anything bound to it.
 
 const char kPolicyFCMInvalidationSenderID[] = "1013309121859";
 

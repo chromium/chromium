@@ -1,0 +1,15 @@
+Name: Mustache templates for Python
+Short Name: Chevron
+URL: https://github.com/noahmorrison/chevron/archive/refs/tags/0.13.1.zip
+Version: 0.13.1
+Date: Oct 3, 2018
+License: MIT
+License File: NOT_SHIPPED
+Security Critical: No
+
+Description:
+A python implementation of the mustache templating language.
+
+Local Modifications:
+ * Manually applied py3 fix: https://github.com/noahmorrison/chevron/commit/b4a350a3a09e810fe41fd0987d5a19132d64baa3
+ * Removed tests and dotfiles.

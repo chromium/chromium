@@ -19,11 +19,14 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/single_thread_task_runner.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chromecast/base/cast_paths.h"
 #include "chromecast/base/pref_names.h"
 #include "chromecast/base/version.h"
+#include "chromecast/crash/build_info.h"
 #include "chromecast/crash/cast_crashdump_uploader.h"
 #include "chromecast/crash/linux/dump_info.h"
 #include "chromecast/public/cast_sys_info.h"
@@ -73,7 +76,7 @@ bool IsDumpObsolete(const DumpInfo& dump) {
 MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
                                    const std::string& server_url,
                                    CastCrashdumpUploader* const uploader,
-                                   const PrefServiceGeneratorCallback callback)
+                                   PrefServiceGeneratorCallback callback)
     : release_channel_(sys_info->GetSystemReleaseChannel()),
       product_name_(sys_info->GetProductName()),
       device_model_(sys_info->GetDeviceModel()),
@@ -83,18 +86,17 @@ MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
       system_version_(sys_info->GetSystemBuildNumber()),
       upload_location_(!server_url.empty() ? server_url
                                            : kCrashServerProduction),
-      last_upload_ratelimited_(true),
       reboot_scheduled_(false),
       filestate_initialized_(false),
       uploader_(uploader),
-      pref_service_generator_(callback) {}
+      pref_service_generator_(std::move(callback)) {}
 
 MinidumpUploader::MinidumpUploader(CastSysInfo* sys_info,
                                    const std::string& server_url)
     : MinidumpUploader(sys_info,
                        server_url,
                        nullptr,
-                       base::Bind(&CreatePrefService)) {}
+                       base::BindRepeating(&CreatePrefService)) {}
 
 MinidumpUploader::~MinidumpUploader() {}
 
@@ -139,6 +141,7 @@ bool MinidumpUploader::DoWork() {
     const DumpInfo& dump = *(dumps.front());
     const base::FilePath dump_path(dump.crashed_process_dump());
     base::FilePath log_path(dump.logfile());
+    const std::vector<std::string>& attachments(dump.attachments());
 
     bool ignore_and_erase_dump = false;
     if (!opt_in_stats) {
@@ -150,30 +153,30 @@ bool MinidumpUploader::DoWork() {
       ignore_and_erase_dump = true;
     }
 
-    // Ratelimiting persists across reboots, thus we to keep track of
-    // last_upload_ratelimited_ to detect when we first become ratelimited.
-    // Otherwise once ratelimited, we will reboot every time we try to upload a
-    // dump.
-    if (CanUploadDump()) {
-      last_upload_ratelimited_ = false;
-    } else {
-      LOG(INFO) << "Can't upload dump: Ratelimited.";
+    // Ratelimiting persists across reboots.
+    if (reboot_scheduled_) {
+      LOG(INFO) << "Already rate limited with a reboot scheduled, removing "
+                   "crash dump";
       ignore_and_erase_dump = true;
-
-      // If the last upload wasn't ratelimited and this one is, then this is the
-      // first time we reached the ratelimit. Reboot the device.
-      if (!last_upload_ratelimited_)
-        reboot_scheduled_ = true;
-
-      last_upload_ratelimited_ = true;
+    } else if (CanUploadDump()) {
+      // Record dump for ratelimiting
+      IncrementNumDumpsInCurrentPeriod();
+    } else {
+      LOG(INFO) << "Can't upload dump due to rate limit, will reboot";
+      ResetRateLimitPeriod();
+      ignore_and_erase_dump = true;
+      reboot_scheduled_ = true;
     }
 
-    // Record dump for ratelimiting
-    IncrementNumDumpsInCurrentPeriod();
-
     if (ignore_and_erase_dump) {
-      base::DeleteFile(dump_path, false);
-      base::DeleteFile(log_path, false);
+      base::DeleteFile(dump_path);
+      base::DeleteFile(log_path);
+      for (const auto& attachment : attachments) {
+        base::FilePath attachment_path(attachment);
+        if (attachment_path.DirName() == dump_path.DirName()) {
+          base::DeleteFile(attachment_path);
+        }
+      }
       dumps.erase(dumps.begin());
       continue;
     }
@@ -184,6 +187,12 @@ bool MinidumpUploader::DoWork() {
     if (!dump_path.empty() && !base::GetFileSize(dump_path, &size)) {
       // either the file does not exist, or there was an error logging its
       // path, or settings its permission; regardless, we can't upload it.
+      for (const auto& attachment : attachments) {
+        base::FilePath attachment_path(attachment);
+        if (attachment_path.DirName() == dump_path.DirName()) {
+          base::DeleteFile(attachment_path);
+        }
+      }
       dumps.erase(dumps.begin());
       continue;
     }
@@ -203,19 +212,25 @@ bool MinidumpUploader::DoWork() {
     std::stringstream uptime_stream;
     uptime_stream << dump.params().process_uptime;
 
-    const std::string version(dump.params().cast_release_version + "." +
-                              dump.params().cast_build_number +
-                              dump.params().suffix);
     // attempt to upload
     LOG(INFO) << "Uploading crash to " << upload_location_;
     CastCrashdumpData crashdump_data;
     crashdump_data.product = kProductName;
-    crashdump_data.version = version;
+    crashdump_data.version = GetVersionString();
     crashdump_data.guid = client_id;
     crashdump_data.ptime = uptime_stream.str();
     crashdump_data.comments = comment.str();
     crashdump_data.minidump_pathname = dump_path.value();
     crashdump_data.crash_server = upload_location_;
+
+    // set upload_file parameter based on exec_name
+    std::string upload_filename;
+    if (dump.params().exec_name == "kernel") {
+      upload_filename = "upload_file_ramoops";
+    } else {
+      upload_filename = "upload_file_minidump";
+    }
+    crashdump_data.upload_filename = std::move(upload_filename);
 
     // Depending on if a testing CastCrashdumpUploader object has been set,
     // assign |g| as a reference to the correct object.
@@ -228,15 +243,24 @@ bool MinidumpUploader::DoWork() {
       comment << "Could not attach log file " << log_path.value() << ". ";
     }
 
+    int attachment_count = 0;
+    for (const auto& attachment : attachments) {
+      std::string label =
+          "attachment_" + base::NumberToString(attachment_count++);
+      g.AddAttachment(label, attachment);
+    }
+
     // Dump some Android properties directly into product data.
     g.SetParameter("ro.revision", board_revision_);
     g.SetParameter("ro.product.release.track", release_channel_);
     g.SetParameter("ro.hardware", board_name_);
     g.SetParameter("ro.product.name", product_name_);
+    g.SetParameter("device", product_name_);
     g.SetParameter("ro.product.model", device_model_);
     g.SetParameter("ro.product.manufacturer", manufacturer_);
     g.SetParameter("ro.system.version", system_version_);
     g.SetParameter("release.virtual-channel", virtual_channel);
+    g.SetParameter("ro.build.type", GetBuildVariant());
     if (pref_service->HasPrefPath(kLatestUiVersion)) {
       g.SetParameter("ui.version",
                      pref_service->GetString(kLatestUiVersion));
@@ -254,6 +278,27 @@ bool MinidumpUploader::DoWork() {
     if (!dump.params().reason.empty()) {
       g.SetParameter("reason", dump.params().reason);
     }
+    if (!dump.params().exec_name.empty()) {
+      g.SetParameter("exec_name", dump.params().exec_name);
+    }
+    if (!dump.params().stadia_session_id.empty()) {
+      g.SetParameter("stadia_session_id", dump.params().stadia_session_id);
+    }
+    if (!dump.params().extra_info.empty()) {
+      std::vector<std::string> pairs = base::SplitString(dump.params().extra_info,
+                                                         " ",
+                                                         base::TRIM_WHITESPACE,
+                                                         base::SPLIT_WANT_NONEMPTY
+                                                        );
+      for (const auto& pair : pairs) {
+        std::vector<std::string> key_value =
+                base::SplitString(pair, "=", base::TRIM_WHITESPACE,
+                                  base::SPLIT_WANT_NONEMPTY);
+        if (key_value.size() == 2) {
+          g.SetParameter(key_value[0], key_value[1]);
+        }
+      }
+    }
 
     std::string response;
     if (!g.Upload(&response)) {
@@ -261,6 +306,8 @@ bool MinidumpUploader::DoWork() {
       // Save our state by flushing our dumps to the lockfile
       // We'll come back around later and try again.
       LOG(ERROR) << "Upload report failed. response: " << response;
+      // The increment will happen when it retries the upload.
+      DecrementNumDumpsInCurrentPeriod();
       SetCurrentDumps(dumps);
       return true;
     }
@@ -271,14 +318,25 @@ bool MinidumpUploader::DoWork() {
     // delete the dump if it exists in /data/minidumps.
     // (We may use a fake dump file which should not be deleted.)
     if (!dump_path.empty() && dump_path.DirName() == dump_path_ &&
-        !base::DeleteFile(dump_path, false)) {
+        !base::DeleteFile(dump_path)) {
       LOG(WARNING) << "remove dump " << dump_path.value() << " failed"
                    << strerror(errno);
     }
     // delete the log if exists
-    if (!log_path.empty() && !base::DeleteFile(log_path, false)) {
+    if (!log_path.empty() && !base::DeleteFile(log_path)) {
       LOG(WARNING) << "remove log " << log_path.value() << " failed"
                    << strerror(errno);
+    }
+    // delete the attachments
+    if (!dump_path.empty()) {
+      for (const auto& attachment : attachments) {
+        base::FilePath attachment_path(attachment);
+        if (attachment_path.DirName() == dump_path.DirName() &&
+            !base::DeleteFile(attachment_path)) {
+          LOG(WARNING) << "remove attachment " << attachment << " failed"
+                       << strerror(errno);
+        }
+      }
     }
     ++num_uploaded;
   }

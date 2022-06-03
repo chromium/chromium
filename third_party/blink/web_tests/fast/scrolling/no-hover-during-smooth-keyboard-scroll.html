@@ -2,6 +2,7 @@
 <script src='../../resources/testharness.js'></script>
 <script src='../../resources/testharnessreport.js'></script>
 <script src='../../resources/gesture-util.js'></script>
+<script src="../../resources/scrollbar-util.js"></script>
 
 <style>
   body, html {
@@ -38,17 +39,21 @@
 <div class="hoverme">hover over me</div>
 
 <script>
-  const elementHeight = 50;
+  let elementHeight = 50;
 
   window.onload = async () => {
+    array = document.getElementsByClassName('hoverme');
+
+    // resize elements so 4 keyboard scrolls end up at 4th element.
+    if (internals.runtimeFlags.percentBasedScrollingEnabled) {
+      scroll_delta = getScrollbarButtonScrollDelta(document.documentElement);
+      elementHeight = scroll_delta.y * 1.25;
+      for (i = 0; i < array.length; i++)
+        array[i].style.height = elementHeight + "px";
+    }
 
     promise_test(async () => {
-      if (window.internals) {
-        internals.runtimeFlags.updateHoverAtBeginFrameEnabled = true;
-      }
-
       await waitForCompositorCommit();
-      array = document.getElementsByClassName('hoverme');
 
       let x = array[0].offsetLeft + 10;
       let y = array[0].offsetTop + 25;
@@ -59,20 +64,26 @@
       assert_false(array[1].matches(":hover"));
       assert_equals(document.scrollingElement.scrollTop, 0);
 
-      // Keyboard scroll end up at 4th element. Hover state does not update during scrolling,
-      // only the 4th element has a hover effect.
+      // Keyboard scroll end up at 4th element. Hover state does not update
+      // during scrolling, only the 4th element has a hover effect. We wait for
+      // the end of each scroll animation for consistency; Mac differs from
+      // other platforms in how ongoing scroll animations are updated.
       eventSender.keyDown('ArrowDown');
+      await waitForAnimationEndTimeBased(() => { return document.scrollingElement.scrollTop; });
       eventSender.keyDown('ArrowDown');
+      await waitForAnimationEndTimeBased(() => { return document.scrollingElement.scrollTop; });
       eventSender.keyDown('ArrowDown');
+      await waitForAnimationEndTimeBased(() => { return document.scrollingElement.scrollTop; });
       eventSender.keyDown('ArrowDown');
-      // Wait enough time to see if we fire a fake mouse move event to update the hover state.
-      await waitForAnimationEnd(() => { return document.scrollingElement.scrollTop; }, 300, 15);
+      await waitForAnimationEndTimeBased(() => { return document.scrollingElement.scrollTop; });
+
+      // Make sure we update the  hover state when the scroll animation is finished.
       assert_approx_equals(document.scrollingElement.scrollTop, 3 * elementHeight, 25);
-      assert_false(array[0].matches(":hover"));
-      assert_false(array[1].matches(":hover"));
-      assert_false(array[2].matches(":hover"));
-      assert_true(array[3].matches(":hover"));
-      assert_false(array[4].matches(":hover"));
+      assert_false(array[0].matches(":hover"), "first element unexpectedly hovered");
+      assert_false(array[1].matches(":hover"), "second element unexpectedly hovered");
+      assert_false(array[2].matches(":hover"), "third element unexpectedly hovered");
+      assert_true(array[3].matches(":hover"), "expected element not hovered");
+      assert_false(array[4].matches(":hover"), "fifth element unexpectedly hovered");
     }, 'Keyboard smooth scroll on the page, no hover update during scrolling, but updating hover at the end of scroll.');
   }
 

@@ -2,17 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
 
-# Reset sources_assignment_filter for the BUILD.gn file to prevent
-# regression during the migration of Chromium away from the feature.
-# See docs/no_sources_assignment_filter.md for more information.
-# TODO(crbug.com/1018739): remove this when migration is done.
-set_sources_assignment_filter([])
-
-jumbo_component("native_theme") {
+component("native_theme") {
   sources = [
     "caption_style.cc",
     "caption_style.h",
@@ -22,11 +15,16 @@ jumbo_component("native_theme") {
     "native_theme.h",
     "native_theme_base.cc",
     "native_theme_base.h",
+    "native_theme_color_id.h",
     "native_theme_export.h",
     "native_theme_features.cc",
     "native_theme_features.h",
     "native_theme_observer.cc",
     "native_theme_observer.h",
+    "native_theme_utils.cc",
+    "native_theme_utils.h",
+    "themed_vector_icon.cc",
+    "themed_vector_icon.h",
   ]
 
   if (is_android) {
@@ -37,6 +35,11 @@ jumbo_component("native_theme") {
   }
 
   if (is_mac) {
+    frameworks = [
+      "CoreGraphics.framework",
+      "AppKit.framework",
+      "MediaAccessibility.framework",
+    ]
     sources += [
       "caption_style_mac.mm",
       "native_theme_mac.h",
@@ -52,40 +55,33 @@ jumbo_component("native_theme") {
     sources += [
       "native_theme_aura.cc",
       "native_theme_aura.h",
-      "native_theme_dark_aura.cc",
-      "native_theme_dark_aura.h",
       "overlay_scrollbar_constants_aura.h",
     ]
   }
 
   defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
 
-  public_deps = [
-    "//skia",
-  ]
+  public_deps = [ "//skia" ]
 
   deps = [
     "//base",
     "//base/third_party/dynamic_annotations",
+    "//build:chromeos_buildflags",
     "//cc/paint",
     "//ui/base",
+    "//ui/color",
+
+    # http://crbug.com/730719 - No !is_android to work around gn --check.
+    "//ui/color:mixers",
     "//ui/display",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/resources",
   ]
-
-  if (is_mac) {
-    libs = [
-      "CoreGraphics.framework",
-      "AppKit.framework",
-      "MediaAccessibility.framework",
-    ]
-  }
 }
 
 if (is_win) {
-  jumbo_component("native_theme_browser") {
+  component("native_theme_browser") {
     defines = [ "NATIVE_THEME_IMPLEMENTATION" ]
 
     # These files cannot work in the renderer on Windows.
@@ -106,11 +102,11 @@ if (is_win) {
     libs = [ "uxtheme.lib" ]
   }
 } else {
-  jumbo_source_set("native_theme_browser") {
+  source_set("native_theme_browser") {
   }
 }
 
-jumbo_source_set("test_support") {
+source_set("test_support") {
   testonly = true
 
   deps = [
@@ -125,14 +121,12 @@ jumbo_source_set("test_support") {
 }
 
 test("native_theme_unittests") {
-  sources = []
+  use_xvfb = use_xvfb_in_this_config
+
+  sources = [ "themed_vector_icon_unittest.cc" ]
 
   if (use_aura) {
     sources += [ "native_theme_aura_unittest.cc" ]
-  }
-
-  if (is_mac) {
-    sources += [ "native_theme_mac_unittest.cc" ]
   }
 
   if (is_win) {
@@ -145,6 +139,7 @@ test("native_theme_unittests") {
   deps = [
     ":native_theme",
     ":native_theme_browser",
+    ":test_support",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//skia",
@@ -152,4 +147,12 @@ test("native_theme_unittests") {
     "//ui/base",
     "//ui/gfx/geometry:geometry",
   ]
+
+  if (is_mac) {
+    sources += [ "native_theme_mac_unittest.mm" ]
+    deps += [
+      "//ui/color",
+      "//ui/gfx:test_support",
+    ]
+  }
 }

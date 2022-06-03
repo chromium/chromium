@@ -72,6 +72,8 @@ class FontDataCache {
 
  public:
   FontDataCache() = default;
+  FontDataCache(const FontDataCache&) = delete;
+  FontDataCache& operator=(const FontDataCache&) = delete;
 
   scoped_refptr<SimpleFontData> Get(const FontPlatformData*,
                                     ShouldRetain = kRetain,
@@ -92,10 +94,8 @@ class FontDataCache {
       Cache;
   Cache cache_;
   LinkedHashSet<scoped_refptr<SimpleFontData>> inactive_font_data_;
-
-  DISALLOW_COPY_AND_ASSIGN(FontDataCache);
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_CACHE_H_

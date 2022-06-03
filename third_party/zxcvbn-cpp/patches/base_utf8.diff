@@ -1,0 +1,155 @@
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
+index 107bce0af064..349c2a5448ae 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.cpp
+@@ -8,72 +8,53 @@
+ 
+ #include <cassert>
+ 
+-#include "base/no_destructor.h"
++#include "base/strings/string_piece.h"
++#include "base/strings/string_util.h"
++#include "base/strings/utf_string_conversion_utils.h"
+ 
+ namespace zxcvbn {
+ 
+ namespace util {
+ 
++bool utf8_valid(std::string::const_iterator start,
++                std::string::const_iterator end) {
++  return base::IsStringUTF8(base::MakeStringPiece(start, end));
++}
++
++bool utf8_valid(const std::string & str) {
++  return utf8_valid(str.begin(), str.end());
++}
++
+ std::string ascii_lower(const std::string & in) {
+-  const char A = 0x41, Z = 0x5A;
+-  const char a = 0x61;
+-  auto result = in;
+-  std::transform(result.begin(), result.end(), result.begin(),
+-                 [&] (char c) {
+-                   return (c >= A && c <= Z
+-                           ? c - A + a
+-                           : c);
+-                 });
+-  return result;
++  return base::ToLowerASCII(in);
+ }
+ 
+ std::string reverse_string(const std::string & in) {
++  if (!utf8_valid(in))
++    return std::string(in.rbegin(), in.rend());
++
+   std::wstring_convert<std::codecvt_utf8<char32_t>, char32_t> conv;
+   auto ret = conv.from_bytes(in);
+   std::reverse(ret.begin(), ret.end());
+   return conv.to_bytes(ret);
+ }
+ 
+-const std::codecvt_utf8<char32_t>& char32_conv() {
+-  static base::NoDestructor<std::codecvt_utf8<char32_t>> char32_conv;
+-  return *char32_conv;
+-}
++template<class It>
++std::pair<char32_t, It> _utf8_decode(It it, It end) {
++  assert(it != end);
++  const char* src = &*it;
++  int32_t src_len = std::distance(it, end);
++  int32_t char_index = 0;
++  uint32_t code_point_out;
+ 
+-bool utf8_valid(std::string::const_iterator start,
+-                std::string::const_iterator end) {
+-  while (start != end) {
+-    std::mbstate_t st;
+-
+-    const char *from = &*start;
+-    const char *from_end = &*end;
+-    const char *from_next;
+-
+-    char32_t new_char;
+-    char32_t *to_next;
+-
+-    auto res = char32_conv().in(st, from, from_end, from_next, &new_char,
+-                                &new_char + 1, to_next);
+-    if (!((res == std::codecvt_utf8<char32_t>::result::partial &&
+-           from_next != from_end) ||
+-          (res == std::codecvt_utf8<char32_t>::result::ok &&
+-           from_next == from_end))) {
+-      return false;
+-    }
+-    start += (from_next - from);
+-  }
+-  return true;
++  base::ReadUnicodeCharacter(src, src_len, &char_index, &code_point_out);
++  return {code_point_out, it + ++char_index};
+ }
+ 
+-bool utf8_valid(const std::string & str) {
+-  return utf8_valid(str.begin(), str.end());
+-}
+ 
+ template<class It>
+ It _utf8_iter(It start, It end) {
+-  assert(start != end);
+-  std::mbstate_t st;
+-  auto amt = char32_conv().length(st, &*start, &*end, 1);
+-  return start + amt;
++  return _utf8_decode(start, end).second;
+ }
+ 
+ std::string::iterator utf8_iter(std::string::iterator start,
+@@ -104,38 +85,6 @@ std::string::size_type character_len(const std::string & str) {
+   return character_len(str, 0, str.size());
+ }
+ 
+-template<class It>
+-std::pair<char32_t, It> _utf8_decode(It it, It end) {
+-  std::mbstate_t st;
+-  char32_t new_char;
+-  char32_t *to_next;
+-
+-  assert(it != end);
+-
+-  const char *from = &*it;
+-  const char *from_end = &*end;
+-  const char *from_next;
+-  auto res = char32_conv().in(st, from, from_end, from_next, &new_char,
+-                              &new_char + 1, to_next);
+-  assert((res == std::codecvt_utf8<char32_t>::result::partial &&
+-          from_next != from_end) ||
+-         (res == std::codecvt_utf8<char32_t>::result::ok &&
+-          from_next == from_end));
+-  (void) res;
+-
+-  return std::make_pair(new_char, it + (from_next - from));
+-}
+-
+-std::pair<char32_t, std::string::iterator> utf8_decode(std::string::iterator start,
+-                                                       std::string::iterator end) {
+-  return _utf8_decode(start, end);
+-}
+-
+-std::pair<char32_t, std::string::const_iterator> utf8_decode(std::string::const_iterator start,
+-                                                             std::string::const_iterator end) {
+-  return _utf8_decode(start, end);
+-}
+-
+ char32_t utf8_decode(const std::string & start,
+                      std::string::size_type & idx) {
+   auto ret = _utf8_decode(start.begin() + idx, start.end());
+diff --git a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
+index b784c1f6c1d2..90fa99816c92 100644
+--- a/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
++++ b/third_party/zxcvbn-cpp/native-src/zxcvbn/util.hpp
+@@ -29,8 +29,6 @@ std::string::size_type character_len(const std::string &,
+                                      std::string::size_type end) __attribute__((pure));
+ std::string::size_type character_len(const std::string &)  __attribute__((pure));
+ 
+-std::pair<char32_t, std::string::iterator> utf8_decode(std::string::iterator);
+-std::pair<char32_t, std::string::const_iterator> utf8_decode(std::string::const_iterator);
+ char32_t utf8_decode(const std::string & start,
+                      std::string::size_type & idx);
+ 

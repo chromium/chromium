@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../resources/common.js"></script>
+<script src="../resources/picker-common.js"></script>
+<script src="../calendar-picker/resources/calendar-picker-common.js"></script>
+</head>
+<body>
+<input type="datetime-local" id="datetime-local" value="2019-02-14T13:02">
+<script>
+
+let t = async_test('Test cancel select value in datetime-local popup');
+
+function selectValue() {
+  let dateTimeElement = document.getElementById("datetime-local");
+  
+  assert_equals(dateTimeElement.value, "2019-02-14T13:02");
+  assert_not_equals(internals.pagePopupWindow, null);
+
+  clickDayCellAt(3, 4);
+  clickTimeCellAt(0, 4);
+  clickTimeCellAt(1, 1);
+  assert_equals(dateTimeElement.value, "2019-02-27T17:03");
+
+  // First escape resets popup to original value
+  eventSender.keyDown('Escape');
+  assert_equals(dateTimeElement.value, "2019-02-14T13:02");
+  assert_not_equals(internals.pagePopupWindow, null);
+
+  // Second escape closes the popup
+  eventSender.keyDown('Escape');
+  assert_equals(internals.pagePopupWindow, null);
+  t.done();
+}
+
+t.step(() => {
+  openPicker(document.getElementById('datetime-local'), t.step_func(selectValue));
+});
+</script>
+</body>
+</html>

@@ -9,9 +9,8 @@
 #include <stdint.h>
 
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "services/device/hid/hid_connection.h"
 
 namespace base {
@@ -25,7 +24,11 @@ class HidConnectionLinux : public HidConnection {
   HidConnectionLinux(
       scoped_refptr<HidDeviceInfo> device_info,
       base::ScopedFD fd,
-      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner);
+      scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
+      bool allow_protected_reports,
+      bool allow_fido_reports);
+  HidConnectionLinux(HidConnectionLinux&) = delete;
+  HidConnectionLinux& operator=(HidConnectionLinux&) = delete;
 
  private:
   friend class base::RefCountedThreadSafe<HidConnectionLinux>;
@@ -50,8 +53,6 @@ class HidConnectionLinux : public HidConnection {
   const scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
 
   base::WeakPtrFactory<HidConnectionLinux> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(HidConnectionLinux);
 };
 
 }  // namespace device

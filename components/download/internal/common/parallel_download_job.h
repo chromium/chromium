@@ -7,9 +7,7 @@
 
 #include <memory>
 #include <unordered_map>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "components/download/internal/common/download_job_impl.h"
@@ -29,8 +27,6 @@ class COMPONENTS_DOWNLOAD_EXPORT ParallelDownloadJob
     : public DownloadJobImpl,
       public DownloadWorker::Delegate {
  public:
-  // TODO(qinmin): Remove |url_request_context_getter| once network service is
-  // enabled.
   ParallelDownloadJob(
       DownloadItem* download_item,
       CancelRequestCallback cancel_request_callback,
@@ -38,6 +34,10 @@ class COMPONENTS_DOWNLOAD_EXPORT ParallelDownloadJob
       URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
           url_loader_factory_provider,
       DownloadJobFactory::WakeLockProviderBinder wake_lock_provider_binder);
+
+  ParallelDownloadJob(const ParallelDownloadJob&) = delete;
+  ParallelDownloadJob& operator=(const ParallelDownloadJob&) = delete;
+
   ~ParallelDownloadJob() override;
 
   // DownloadJobImpl implementation.
@@ -112,9 +112,6 @@ class COMPONENTS_DOWNLOAD_EXPORT ParallelDownloadJob
   // If the download progress is canceled.
   bool is_canceled_;
 
-  // Whether the server accepts range requests.
-  RangeRequestSupportType range_support_;
-
   // URLLoaderFactoryProvider to retrieve the URLLoaderFactory and issue
   // parallel requests.
   URLLoaderFactoryProvider::URLLoaderFactoryProviderPtr
@@ -123,8 +120,6 @@ class COMPONENTS_DOWNLOAD_EXPORT ParallelDownloadJob
   // Callbac used for binding WakeLockProvider receivers as needed by each
   // subrequest.
   const DownloadJobFactory::WakeLockProviderBinder wake_lock_provider_binder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ParallelDownloadJob);
 };
 
 }  //  namespace download

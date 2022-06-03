@@ -15,6 +15,11 @@ DefaultEventGeneratorDelegate::DefaultEventGeneratorDelegate(
     gfx::NativeWindow root_window)
     : root_window_(root_window) {}
 
+void DefaultEventGeneratorDelegate::SetTargetWindow(
+    gfx::NativeWindow target_window) {
+  root_window_ = target_window->GetRootWindow();
+}
+
 ui::EventTarget* DefaultEventGeneratorDelegate::GetTargetAt(
     const gfx::Point& location) {
   return root_window_->GetHost()->window();

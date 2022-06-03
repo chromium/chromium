@@ -7,12 +7,10 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/service/cloud_print/cloud_print_url_fetcher.h"
 #include "chrome/service/cloud_print/print_system.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
-#include "net/url_request/url_request_status.h"
 #include "url/gurl.h"
 
 namespace cloud_print {
@@ -42,6 +40,9 @@ class JobStatusUpdater : public base::RefCountedThreadSafe<JobStatusUpdater>,
                    const net::PartialNetworkTrafficAnnotationTag&
                        partial_traffic_annotation);
 
+  JobStatusUpdater(const JobStatusUpdater&) = delete;
+  JobStatusUpdater& operator=(const JobStatusUpdater&) = delete;
+
   // Checks the status of the local print job and sends an update.
   void UpdateStatus();
   void Stop();
@@ -53,17 +54,12 @@ class JobStatusUpdater : public base::RefCountedThreadSafe<JobStatusUpdater>,
       const base::Value& json_data,
       bool succeeded) override;
   CloudPrintURLFetcher::ResponseAction OnRequestAuthError() override;
-  std::string GetAuthHeader() override;
-
-  base::Time start_time() const {
-    return start_time_;
-  }
+  std::string GetAuthHeaderValue() override;
 
  private:
   friend class base::RefCountedThreadSafe<JobStatusUpdater>;
   ~JobStatusUpdater() override;
 
-  base::Time start_time_;
   const std::string printer_name_;
   const std::string job_id_;
   const PlatformJobId local_job_id_;
@@ -77,8 +73,6 @@ class JobStatusUpdater : public base::RefCountedThreadSafe<JobStatusUpdater>,
   bool stopped_ = false;
   // Partial network traffic annotation for network requests.
   const net::PartialNetworkTrafficAnnotationTag partial_traffic_annotation_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobStatusUpdater);
 };
 
 }  // namespace cloud_print

@@ -5,7 +5,7 @@ assertSVGResponsive({
   targetTag: 'path',
   property: 'd',
   getter(target) {
-    return target.getAttribute('d');
+    return getComputedStyle(target).getPropertyValue('d');
   },
   from: 'm 10 10 h 100',
   to: neutralKeyframe,
@@ -34,7 +34,7 @@ assertSVGResponsive({
   targetTag: 'path',
   property: 'd',
   getter(target) {
-    return target.getAttribute('d');
+    return getComputedStyle(target).getPropertyValue('d');
   },
   from: '',
   to: neutralKeyframe,

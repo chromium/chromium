@@ -9,7 +9,9 @@
 
 #include "base/files/file_path.h"
 #include "base/files/memory_mapped_file.h"
+#include "media/base/video_transformation.h"
 #include "media/base/video_types.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -21,6 +23,10 @@ namespace test {
 class Image {
  public:
   explicit Image(const base::FilePath& file_path);
+
+  Image(const Image&) = delete;
+  Image& operator=(const Image&) = delete;
+
   ~Image();
 
   // Load the image file and accompanying metadata from disk.
@@ -42,6 +48,10 @@ class Image {
   VideoPixelFormat PixelFormat() const;
   // Get the image size.
   const gfx::Size& Size() const;
+  // Get the visible rectangle of the image.
+  const gfx::Rect& VisibleRect() const;
+  // Get the image rotation info.
+  VideoRotation Rotation() const;
   // Get the image checksum.
   const char* Checksum() const;
 
@@ -57,10 +67,12 @@ class Image {
   VideoPixelFormat pixel_format_ = PIXEL_FORMAT_UNKNOWN;
   // The image size.
   gfx::Size size_;
+  // The visible rectangle of the image.
+  gfx::Rect visible_rect_;
+  // The rotation info of image.
+  VideoRotation rotation_;
   // The image md5 checksum.
   std::string checksum_;
-
-  DISALLOW_COPY_AND_ASSIGN(Image);
 };
 
 }  // namespace test

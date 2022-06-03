@@ -1,7 +1,6 @@
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """A utility class for interacting with a local checkout of the Web Platform Tests."""
 
 import logging
@@ -19,7 +18,6 @@ _log = logging.getLogger(__name__)
 
 
 class LocalWPT(object):
-
     def __init__(self, host, gh_token=None, path='/tmp/wpt'):
         """Initializes a LocalWPT instance.
 
@@ -47,9 +45,12 @@ class LocalWPT(object):
         else:
             remote_url = WPT_MIRROR_URL
             _log.info('No credentials given, using wpt mirror URL.')
-            _log.info('It is possible for the mirror to be delayed; see https://crbug.com/698272.')
+            _log.info(
+                'It is possible for the mirror to be delayed; see https://crbug.com/698272.'
+            )
         # Do not use self.run here because self.path doesn't exist yet.
-        self.host.executive.run_command(['git', 'clone', remote_url, self.path])
+        self.host.executive.run_command(
+            ['git', 'clone', remote_url, self.path])
 
         _log.info('Setting git user name & email in %s', self.path)
         self.run(['git', 'config', 'user.name', DEFAULT_WPT_COMMITTER_NAME])
@@ -58,7 +59,8 @@ class LocalWPT(object):
     def run(self, command, **kwargs):
         """Runs a command in the local WPT directory."""
         # TODO(robertma): Migrate to blinkpy.common.checkout.Git. (crbug.com/676399)
-        return self.host.executive.run_command(command, cwd=self.path, **kwargs)
+        return self.host.executive.run_command(
+            command, cwd=self.path, **kwargs)
 
     def clean(self):
         """Resets git to a clean state, on origin/master with no changed files."""
@@ -66,7 +68,12 @@ class LocalWPT(object):
         self.run(['git', 'clean', '-fdx'])
         self.run(['git', 'checkout', 'origin/master'])
 
-    def create_branch_with_patch(self, branch_name, message, patch, author, force_push=False):
+    def create_branch_with_patch(self,
+                                 branch_name,
+                                 message,
+                                 patch,
+                                 author,
+                                 force_push=False):
         """Commits the given patch and pushes to the upstream repo.
 
         Args:
@@ -157,9 +164,9 @@ class LocalWPT(object):
         This doesn't include the given commit, and this assumes that the given
         commit is on the the master branch.
         """
-        return len(self.run([
-            'git', 'rev-list', '{}..origin/master'.format(commit)
-        ]).splitlines())
+        return len(
+            self.run(['git', 'rev-list',
+                      '{}..origin/master'.format(commit)]).splitlines())
 
     def _most_recent_log_matching(self, grep_str):
         """Finds the most recent commit whose message contains the given pattern.
@@ -184,7 +191,8 @@ class LocalWPT(object):
             A list of (SHA, commit subject) pairs ordered reverse-chronologically.
         """
         revision_range = revision_start + '..' + revision_end
-        output = self.run(['git', 'rev-list', '--pretty=oneline', revision_range])
+        output = self.run(
+            ['git', 'rev-list', '--pretty=oneline', revision_range])
         commits = []
         for line in output.splitlines():
             # Split at the first space.
@@ -193,7 +201,10 @@ class LocalWPT(object):
 
     def is_commit_affecting_directory(self, commit, directory):
         """Checks if a commit affects a directory."""
-        exit_code = self.run(['git', 'diff-tree', '--quiet', '--no-commit-id', commit, '--', directory],
+        exit_code = self.run([
+            'git', 'diff-tree', '--quiet', '--no-commit-id', '-r', commit,
+            '--', directory
+        ],
                              return_exit_code=True)
         return exit_code == 1
 
@@ -216,4 +227,5 @@ class LocalWPT(object):
         Returns:
             A string of the matched commit log, empty if not found.
         """
-        return self._most_recent_log_matching('^Cr-Commit-Position: %s' % commit_position)
+        return self._most_recent_log_matching(
+            '^Cr-Commit-Position: %s' % commit_position)

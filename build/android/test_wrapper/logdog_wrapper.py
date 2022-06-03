@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -34,11 +34,17 @@ LOGDOG_TERMINATION_TIMEOUT = 30
 def CommandParser():
   # Parses the command line arguments being passed in
   parser = argparse.ArgumentParser()
-  parser.add_argument(
+  wrapped = parser.add_mutually_exclusive_group()
+  wrapped.add_argument(
       '--target',
-      help='The test target to be run. If not set, any extra '
-      'args passed to this script are assumed to be the '
-      'full test command to run.')
+      help='The test target to be run. If neither target nor script are set,'
+      ' any extra args passed to this script are assumed to be the'
+      ' full test command to run.')
+  wrapped.add_argument(
+      '--script',
+      help='The script target to be run. If neither target nor script are set,'
+      ' any extra args passed to this script are assumed to be the'
+      ' full test command to run.')
   parser.add_argument('--logdog-bin-cmd', required=True,
                       help='The logdog bin cmd.')
   return parser
@@ -72,6 +78,9 @@ def main():
   logging.basicConfig(level=logging.INFO)
   if args.target:
     test_cmd = [os.path.join('bin', 'run_%s' % args.target), '-v']
+    test_cmd += extra_cmd_args
+  elif args.script:
+    test_cmd = [args.script]
     test_cmd += extra_cmd_args
   else:
     test_cmd = extra_cmd_args

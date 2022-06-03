@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "remoting/protocol/session_plugin.h"
 #include "remoting/protocol/video_stream.h"
@@ -95,9 +95,9 @@ SynchronousPairingRegistry::~SynchronousPairingRegistry() = default;
 void SynchronousPairingRegistry::PostTask(
     const scoped_refptr<base::SingleThreadTaskRunner>& task_runner,
     const base::Location& from_here,
-    const base::Closure& task) {
+    base::OnceClosure task) {
   DCHECK(task_runner->BelongsToCurrentThread());
-  task.Run();
+  std::move(task).Run();
 }
 
 }  // namespace protocol

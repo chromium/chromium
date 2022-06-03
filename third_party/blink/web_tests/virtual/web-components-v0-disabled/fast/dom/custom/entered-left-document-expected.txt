@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL entered, left callbacks should only be invoked when entering or leaving a document with a view docB.registerElement is not a function
-Harness: the test ran to completion.
-

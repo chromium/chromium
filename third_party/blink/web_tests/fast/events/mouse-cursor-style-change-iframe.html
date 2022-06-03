@@ -46,11 +46,11 @@
         frame.onload = function() {
             debug('Mouse moved to cursor changing div');
             eventSender.mouseMoveTo(100, container.offsetTop + 5);
-            shouldBeEqualToString('internals.getCurrentCursorInfo()', 'type=Hand hotSpot=0,0');
+            shouldBeEqualToString('internals.getCurrentCursorInfo()', 'type=Hand');
 
             debug('Changing cursor style');
             container.classList.add('wait');
-            expectCursorUpdate('type=Wait hotSpot=0,0', function() {
+            expectCursorUpdate('type=Wait', function() {
                 debug('');
 
                 debug('Now move mouse onto iframe above cursor changing div');
@@ -59,12 +59,12 @@
                 shouldBe('document.elementFromPoint(100, y)', 'frame');
                 shouldBeTrue('document.elementsFromPoint(100, y).indexOf(container) > 0');
                 shouldBeFalse('internals.cursorUpdatePending');
-                shouldBeEqualToString('internals.getCurrentCursorInfo()', 'type=IBeam hotSpot=0,0');
+                shouldBeEqualToString('internals.getCurrentCursorInfo()', 'type=IBeam');
                 debug('');
 
                 debug('Changing cursor style of the background should not affect the cursor as it sits over the iframe');
                 container.classList.remove('wait');
-                expectCursorUpdate('type=IBeam hotSpot=0,0', function() {
+                expectCursorUpdate('type=IBeam', function() {
                     finishJSTest();
                 }); 
             });

@@ -4,6 +4,9 @@
 
 package org.chromium.chrome.browser.autofill_assistant.user_data;
 
+import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.JNINamespace;
+
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -17,6 +20,7 @@ import java.util.TimeZone;
  * Note that this class does not make any guarantees with respect to the validity of the represented
  * date/time.
  */
+@JNINamespace("autofill_assistant")
 public class AssistantDateTime {
     /** Year, e.g., 2019. */
     private int mYear;
@@ -31,12 +35,7 @@ public class AssistantDateTime {
     /** Second in [0-59]. */
     private int mSecond;
 
-    public AssistantDateTime(Calendar calendar) {
-        this(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH),
-                calendar.get(Calendar.DAY_OF_MONTH), calendar.get(Calendar.HOUR_OF_DAY),
-                calendar.get(Calendar.MINUTE), calendar.get(Calendar.SECOND));
-    }
-
+    @CalledByNative
     public AssistantDateTime(int year, int month, int day, int hour, int minute, int second) {
         set(year, month, day, hour, minute, second);
     }
@@ -81,14 +80,17 @@ public class AssistantDateTime {
         return calendar.getTimeInMillis();
     }
 
+    @CalledByNative
     public int getYear() {
         return mYear;
     }
 
+    @CalledByNative
     public int getMonth() {
         return mMonth;
     }
 
+    @CalledByNative
     public int getDay() {
         return mDay;
     }

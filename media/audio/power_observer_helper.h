@@ -7,23 +7,26 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "media/base/media_export.h"
 
 namespace media {
 
-// Helper class that implements PowerObserver and handles threading. A task
-// runner is given, on which suspend and resume notification callbacks are run.
-// It also provides a function to check if we are suspending on the task runner.
+// Helper class that implements PowerSuspendObserver and handles threading. A
+// task runner is given, on which suspend and resume notification callbacks are
+// run. It also provides a function to check if we are suspending on the task
+// runner.
 // Note that on Linux suspend/resume information is not supported.
-class MEDIA_EXPORT PowerObserverHelper : public base::PowerObserver {
+class MEDIA_EXPORT PowerObserverHelper : public base::PowerSuspendObserver {
  public:
   PowerObserverHelper(scoped_refptr<base::SequencedTaskRunner> task_runner,
                       base::RepeatingClosure suspend_callback,
                       base::RepeatingClosure resume_callback);
+
+  PowerObserverHelper(const PowerObserverHelper&) = delete;
+  PowerObserverHelper& operator=(const PowerObserverHelper&) = delete;
 
   ~PowerObserverHelper() override;
 
@@ -57,7 +60,7 @@ class MEDIA_EXPORT PowerObserverHelper : public base::PowerObserver {
   base::RepeatingClosure suspend_callback_;
   base::RepeatingClosure resume_callback_;
 
-  // base::PowerObserver implementation.
+  // base::PowerSuspendObserver implementation.
   void OnSuspend() override;
   void OnResume() override;
 
@@ -65,8 +68,6 @@ class MEDIA_EXPORT PowerObserverHelper : public base::PowerObserver {
   bool is_suspending_ = false;
 
   base::WeakPtrFactory<PowerObserverHelper> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PowerObserverHelper);
 };
 
 }  // namespace media

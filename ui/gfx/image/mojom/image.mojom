@@ -6,9 +6,13 @@ module gfx.mojom;
 
 import "skia/public/mojom/bitmap.mojom";
 
+[Stable]
 struct ImageSkiaRep {
-  // Transport of the bitmap in this representation.
-  skia.mojom.Bitmap bitmap;
+  // Transport of the bitmap in this representation. The type here is
+  // BitmapWithArbitraryBpp because this structure is marked Stable, however
+  // only N32-format bitmaps are allowed, similar to the skia.mojom.BitmapN32
+  // type.
+  skia.mojom.BitmapWithArbitraryBpp bitmap;
 
   // Corresponding scale of the bitmap or 0 if unscaled.
   float scale;
@@ -17,6 +21,7 @@ struct ImageSkiaRep {
 // Mojo transport for an ImageSkia via shared buffer. Note that transporting an
 // ImageSkia over mojo will load all of its image representations for supported
 // scales.
+[Stable]
 struct ImageSkia {
   array<ImageSkiaRep> image_reps;
 };

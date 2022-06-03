@@ -19,20 +19,21 @@ void VirtualKeyboardModel::RemoveObserver(
   observers_.RemoveObserver(observer);
 }
 
-void VirtualKeyboardModel::SetInputMethodSurfaceManagerObserver(
-    ArcInputMethodSurfaceManager* input_method_surface_manager) {
-  DCHECK(input_method_surface_manager);
-  input_method_surface_manager->AddObserver(this);
+void VirtualKeyboardModel::SetInputMethodBoundsTrackerObserver(
+    ArcInputMethodBoundsTracker* input_method_bounds_tracker) {
+  DCHECK(input_method_bounds_tracker);
+  input_method_bounds_tracker->AddObserver(this);
 }
 
-void VirtualKeyboardModel::RemoveInputMethodSurfaceManagerObserver(
-    ArcInputMethodSurfaceManager* input_method_surface_manager) {
-  DCHECK(input_method_surface_manager);
-  input_method_surface_manager->RemoveObserver(this);
+void VirtualKeyboardModel::RemoveInputMethodBoundsTrackerObserver(
+    ArcInputMethodBoundsTracker* input_method_bounds_tracker) {
+  DCHECK(input_method_bounds_tracker);
+  input_method_bounds_tracker->RemoveObserver(this);
 }
 
-void VirtualKeyboardModel::OnArcInputMethodSurfaceBoundsChanged(
+void VirtualKeyboardModel::OnArcInputMethodBoundsChanged(
     const gfx::Rect& bounds) {
+  arc_keyboard_bounds_ = bounds;
   const bool new_visible = !bounds.IsEmpty();
   if (visible_ == new_visible)
     return;

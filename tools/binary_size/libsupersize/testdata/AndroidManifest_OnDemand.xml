@@ -1,0 +1,9 @@
+N: android=http://schemas.android.com/apk/res/android (line=2)
+  N: dist=http://schemas.android.com/apk/distribution (line=2)
+    E: manifest (line=2)
+      A: http://schemas.android.com/apk/res/android:isFeatureSplit(0x0101055b)=true
+        E: http://schemas.android.com/apk/distribution:module (line=8)
+          A: http://schemas.android.com/apk/distribution:onDemand=true
+            E: http://schemas.android.com/apk/distribution:fusing (line=9)
+              A: http://schemas.android.com/apk/distribution:include=true
+        E: application (line=12)

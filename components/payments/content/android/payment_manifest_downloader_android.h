@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/android/jni_android.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 
@@ -27,18 +26,27 @@ class PaymentManifestDownloaderAndroid {
   PaymentManifestDownloaderAndroid(
       std::unique_ptr<ErrorLogger> log,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
+  PaymentManifestDownloaderAndroid(const PaymentManifestDownloaderAndroid&) =
+      delete;
+  PaymentManifestDownloaderAndroid& operator=(
+      const PaymentManifestDownloaderAndroid&) = delete;
+
   ~PaymentManifestDownloaderAndroid();
 
   void DownloadPaymentMethodManifest(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jobject>& juri,
+      const base::android::JavaParamRef<jobject>& jmerchant_origin,
+      const base::android::JavaParamRef<jobject>& jurl,
       const base::android::JavaParamRef<jobject>& jcallback);
 
   void DownloadWebAppManifest(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jcaller,
-      const base::android::JavaParamRef<jobject>& juri,
+      const base::android::JavaParamRef<jobject>&
+          jpayment_method_manifest_origin,
+      const base::android::JavaParamRef<jobject>& jurl,
       const base::android::JavaParamRef<jobject>& jcallback);
 
   // Deletes this object.
@@ -47,8 +55,6 @@ class PaymentManifestDownloaderAndroid {
 
  private:
   PaymentManifestDownloader downloader_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestDownloaderAndroid);
 };
 
 }  // namespace payments

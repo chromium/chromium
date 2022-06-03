@@ -6,8 +6,9 @@ package org.chromium.chrome.browser.webapps;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
-import android.support.test.filters.SmallTest;
 import android.view.ViewGroup;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -16,8 +17,8 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.ShortcutHelper;
+import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 
 /**
@@ -37,7 +38,7 @@ public class WebappSplashScreenBackgroundColorTest {
                 mActivityTestRule
                         .createIntent()
                         // This is setting Color.GREEN with 50% opacity.
-                        .putExtra(ShortcutHelper.EXTRA_BACKGROUND_COLOR, 0x8000FF00L));
+                        .putExtra(WebappConstants.EXTRA_BACKGROUND_COLOR, 0x8000FF00L));
 
         ColorDrawable background = (ColorDrawable) splashScreen.getBackground();
 

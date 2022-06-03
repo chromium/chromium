@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2019 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<!-- Identifiers in this file match those in autofill_assistant_form_checkbox.xml -->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/descriptions"
+    android:layout_width="0dp"
+    android:layout_weight="1.0"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="fill_horizontal|center_vertical">
+
+    <TextView
+        android:id="@+id/label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.AssistantBlackTitle"/>
+    <TextView
+        android:id="@+id/description_line_1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+    <TextView
+        android:id="@+id/description_line_2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextAppearance.TextMedium.Secondary"/>
+</LinearLayout>

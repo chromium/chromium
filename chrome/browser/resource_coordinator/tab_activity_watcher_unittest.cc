@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
-#include "chrome/browser/engagement/site_engagement_service.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/tab_activity_watcher.h"
 #include "chrome/browser/resource_coordinator/tab_lifecycle_unit.h"
@@ -24,6 +24,7 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/site_engagement/content/site_engagement_service.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -33,8 +34,8 @@
 #include "services/metrics/public/cpp/ukm_source.h"
 #include "services/metrics/public/mojom/ukm_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/platform/web_input_event.h"
-#include "third_party/blink/public/platform/web_mouse_event.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 
 using blink::WebInputEvent;
 using content::WebContentsTester;
@@ -47,13 +48,15 @@ namespace {
 
 const char* kTabMetricsEntryName = TabManager_TabMetrics::kEntryName;
 
-const int64_t kIdShift = 1 << 13;
+const int64_t kIdShift = 1 << 16;
 
 // Test URLs need to be from different origins to test site engagement score.
-const GURL kTestUrls[] = {
-    GURL("https://test1.example.com"), GURL("https://test3.example.com"),
-    GURL("https://test2.example.com"), GURL("https://test4.example.com"),
-};
+const std::vector<GURL>& TestUrls() {
+  static base::NoDestructor<std::vector<GURL>> test_urls{
+      {GURL("https://test1.example.com"), GURL("https://test3.example.com"),
+       GURL("https://test2.example.com"), GURL("https://test4.example.com")}};
+  return *test_urls;
+}
 
 // The default metric values for a tab.
 const UkmMetricMap kBasicMetricValues({
@@ -80,17 +83,23 @@ class TabActivityWatcherTest : public ChromeRenderViewHostTestHarness {
  public:
   TabActivityWatcherTest() = default;
   // Reset TabActivityWatcher with given |params|.
+  // This should only be called from test constructors, to avoid tsan data races
+  // with the  FeatureList.
   void SetParams(const base::FieldTrialParams& params) {
     feature_list_.InitAndEnableFeatureWithParameters(features::kTabRanker,
                                                      params);
     TabActivityWatcher::GetInstance()->ResetForTesting();
   }
+
+  TabActivityWatcherTest(const TabActivityWatcherTest&) = delete;
+  TabActivityWatcherTest& operator=(const TabActivityWatcherTest&) = delete;
+
   ~TabActivityWatcherTest() override = default;
 
   LifecycleUnit* AddNewTab(TabStripModel* tab_strip_model, int i) {
     LifecycleUnit* result = TabLifecycleUnitSource::GetTabLifecycleUnit(
         tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                          GURL(kTestUrls[i])));
+                                                          TestUrls()[i]));
     if (i == 0)
       tab_strip_model->ActivateTabAt(i);
     else
@@ -100,7 +109,7 @@ class TabActivityWatcherTest : public ChromeRenderViewHostTestHarness {
   }
 
   // Calculate reactivation score of the |lifecycle_unit| using tab_ranker.
-  base::Optional<float> GetReactivationScore(
+  absl::optional<float> GetReactivationScore(
       LifecycleUnit* const lifecycle_unit) {
     return TabActivityWatcher::GetInstance()->CalculateReactivationScore(
         lifecycle_unit->AsTabLifecycleUnitExternal()->GetWebContents());
@@ -110,17 +119,19 @@ class TabActivityWatcherTest : public ChromeRenderViewHostTestHarness {
   UkmEntryChecker ukm_entry_checker_;
   TabActivitySimulator tab_activity_simulator_;
   base::test::ScopedFeatureList feature_list_;
+};
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabActivityWatcherTest);
+class TabActivityWatcherScorerType0Test : public TabActivityWatcherTest {
+ public:
+  TabActivityWatcherScorerType0Test() { SetParams({{"scorer_type", "0"}}); }
 };
 
 // Test that lifecycleunits are sorted with high activation score first order.
-TEST_F(TabActivityWatcherTest, LogAndMaybeSortLifecycleUnitWithTabRanker) {
-  SetParams({{"scorer_type", "0"}});
+TEST_F(TabActivityWatcherScorerType0Test,
+       LogAndMaybeSortLifecycleUnitWithTabRanker) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
   TabStripModel* tab_strip_model = browser->tab_strip_model();
 
   // Create lifecycleunits.
@@ -141,12 +152,16 @@ TEST_F(TabActivityWatcherTest, LogAndMaybeSortLifecycleUnitWithTabRanker) {
   tab_strip_model->CloseAllTabs();
 }
 
+class TabActivityWatcherScorerType3Test : public TabActivityWatcherTest {
+ public:
+  TabActivityWatcherScorerType3Test() { SetParams({{"scorer_type", "3"}}); }
+};
+
 // Test that lifecycleunits are sorted with high frecency score first order.
-TEST_F(TabActivityWatcherTest, SortLifecycleUnitWithFrecencyScorer) {
-  SetParams({{"scorer_type", "3"}});
+TEST_F(TabActivityWatcherScorerType3Test, SortLifecycleUnitWithFrecencyScorer) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
   TabStripModel* tab_strip_model = browser->tab_strip_model();
 
   // Create lifecycleunits.
@@ -177,11 +192,10 @@ TEST_F(TabActivityWatcherTest, SortLifecycleUnitWithFrecencyScorer) {
 }
 
 // Test that frecency scores are calculated correctly.
-TEST_F(TabActivityWatcherTest, GetFrecencyScore) {
-  SetParams({{"scorer_type", "3"}});
+TEST_F(TabActivityWatcherScorerType3Test, GetFrecencyScore) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
   TabStripModel* tab_strip_model = browser->tab_strip_model();
 
   LifecycleUnit* tab0 = AddNewTab(tab_strip_model, 0);
@@ -214,14 +228,20 @@ TEST_F(TabActivityWatcherTest, GetFrecencyScore) {
   tab_strip_model->CloseAllTabs();
 }
 
+class TabActiveWatcherDisableBackgroundLogTest : public TabActivityWatcherTest {
+ public:
+  TabActiveWatcherDisableBackgroundLogTest() {
+    SetParams({{"disable_background_log_with_TabRanker", "true"}});
+  }
+};
+
 // Test that lifecycleunits are correctly logged inside
 // LogAndMaybeSortLifecycleUnitWithTabRanker.
-TEST_F(TabActivityWatcherTest,
+TEST_F(TabActiveWatcherDisableBackgroundLogTest,
        LogInsideLogAndMaybeSortLifecycleUnitWithTabRanker) {
-  SetParams({{"disable_background_log_with_TabRanker", "true"}});
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
   TabStripModel* tab_strip_model = browser->tab_strip_model();
 
   // Create lifecycleunits.
@@ -237,7 +257,7 @@ TEST_F(TabActivityWatcherTest,
   {
     SCOPED_TRACE("");
     ukm_entry_checker_.ExpectNewEntry(
-        kTabMetricsEntryName, kTestUrls[0],
+        kTabMetricsEntryName, TestUrls()[0],
         {
             {TabManager_TabMetrics::kQueryIdName, 1 * kIdShift},
             {TabManager_TabMetrics::kLabelIdName, 2 * kIdShift},
@@ -251,7 +271,7 @@ TEST_F(TabActivityWatcherTest,
   {
     SCOPED_TRACE("");
     ukm_entry_checker_.ExpectNewEntry(
-        kTabMetricsEntryName, kTestUrls[0],
+        kTabMetricsEntryName, TestUrls()[0],
         {
             {TabManager_TabMetrics::kQueryIdName, 3 * kIdShift},
             {TabManager_TabMetrics::kLabelIdName, 2 * kIdShift + 1},
@@ -280,14 +300,14 @@ TEST_F(TabActivityWatcherTest,
               2);
 
     ukm_entry_checker_.ExpectNewEntry(
-        kTabMetricsEntryName, kTestUrls[0],
+        kTabMetricsEntryName, TestUrls()[0],
         {
             {TabManager_TabMetrics::kQueryIdName, 5 * kIdShift},
             {TabManager_TabMetrics::kLabelIdName, 2 * kIdShift + 2},
         });
 
     ukm_entry_checker_.ExpectNewEntry(
-        kTabMetricsEntryName, kTestUrls[1],
+        kTabMetricsEntryName, TestUrls()[1],
         {
             {TabManager_TabMetrics::kQueryIdName, 5 * kIdShift},
             {TabManager_TabMetrics::kLabelIdName, 6 * kIdShift},
@@ -304,6 +324,10 @@ class TabMetricsTest : public TabActivityWatcherTest {
     SetParams({{"scorer_type", "0"},
                {"disable_background_log_with_TabRanker", "false"}});
   }
+
+  TabMetricsTest(const TabMetricsTest&) = delete;
+  TabMetricsTest& operator=(const TabMetricsTest&) = delete;
+
   ~TabMetricsTest() override = default;
 
  protected:
@@ -320,20 +344,17 @@ class TabMetricsTest : public TabActivityWatcherTest {
  protected:
   const char* kEntryName = TabManager_TabMetrics::kEntryName;
   size_t num_previous_entries = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TabMetricsTest);
 };
 
 TEST_F(TabMetricsTest, Basic) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   content::WebContents* fg_contents =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[0]));
+                                                        TestUrls()[0]);
   tab_strip_model->ActivateTabAt(0);
   WebContentsTester::For(fg_contents)->TestSetIsLoading(false);
 
@@ -344,21 +365,21 @@ TEST_F(TabMetricsTest, Basic) {
   // when it stops loading.
   content::WebContents* bg_contents =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[1]));
+                                                        TestUrls()[1]);
   WebContentsTester::For(bg_contents)->TestSetIsLoading(false);
-  ExpectNewEntry(kTestUrls[1], kBasicMetricValues);
+  ExpectNewEntry(TestUrls()[1], kBasicMetricValues);
 
   // Activating a tab logs the deactivated tab.
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 1);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[0], kBasicMetricValues);
+    ExpectNewEntry(TestUrls()[0], kBasicMetricValues);
   }
 
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 0);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[1], kBasicMetricValues);
+    ExpectNewEntry(TestUrls()[1], kBasicMetricValues);
   }
 
   // Closing the tabs destroys the WebContentses but should not trigger logging.
@@ -371,27 +392,27 @@ TEST_F(TabMetricsTest, Basic) {
 TEST_F(TabMetricsTest, TabEvents) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   content::WebContents* test_contents_1 =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[0]));
+                                                        TestUrls()[0]);
   tab_strip_model->ActivateTabAt(0);
 
   // Opening the background tab triggers logging once the page finishes loading.
   content::WebContents* test_contents_2 =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[1]));
+                                                        TestUrls()[1]);
   EXPECT_EQ(0, ukm_entry_checker_.NumNewEntriesRecorded(kEntryName));
   WebContentsTester::For(test_contents_2)->TestSetIsLoading(false);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(GURL(kTestUrls[1]), kBasicMetricValues);
+    ExpectNewEntry(TestUrls()[1], kBasicMetricValues);
   }
 
   // Navigating the active tab doesn't trigger logging.
-  WebContentsTester::For(test_contents_1)->NavigateAndCommit(kTestUrls[2]);
+  WebContentsTester::For(test_contents_1)->NavigateAndCommit(TestUrls()[2]);
   EXPECT_EQ(0, ukm_entry_checker_.NumNewEntriesRecorded(kEntryName));
 
   // Pinning the active tab doesn't trigger logging.
@@ -404,26 +425,26 @@ TEST_F(TabMetricsTest, TabEvents) {
   expected_metrics[TabManager_TabMetrics::kIsPinnedName] = 1;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(GURL(kTestUrls[1]), expected_metrics);
+    ExpectNewEntry(TestUrls()[1], expected_metrics);
   }
   tab_strip_model->SetTabPinned(1, false);
   expected_metrics[TabManager_TabMetrics::kIsPinnedName] = 0;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(GURL(kTestUrls[1]), kBasicMetricValues);
+    ExpectNewEntry(TestUrls()[1], kBasicMetricValues);
   }
 
   // Navigating the background tab triggers logging once the page finishes
   // loading.
   auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
-      kTestUrls[0], test_contents_2);
+      TestUrls()[0], test_contents_2);
   navigation->SetKeepLoading(true);
   navigation->Commit();
   EXPECT_EQ(0, ukm_entry_checker_.NumNewEntriesRecorded(kEntryName));
   navigation->StopLoading();
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(GURL(kTestUrls[0]), kBasicMetricValues);
+    ExpectNewEntry(TestUrls()[0], kBasicMetricValues);
   }
 
   tab_strip_model->CloseAllTabs();
@@ -433,12 +454,12 @@ TEST_F(TabMetricsTest, TabEvents) {
 TEST_F(TabMetricsTest, TabMetrics) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   content::WebContents* test_contents_1 =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[0]));
+                                                        TestUrls()[0]);
   tab_strip_model->ActivateTabAt(0);
 
   // Expected metrics for tab event.
@@ -447,15 +468,16 @@ TEST_F(TabMetricsTest, TabMetrics) {
   // Load background contents and verify UKM entry.
   content::WebContents* test_contents_2 =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[1]));
+                                                        TestUrls()[1]);
   WebContentsTester::For(test_contents_2)->TestSetIsLoading(false);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[1], expected_metrics);
+    ExpectNewEntry(TestUrls()[1], expected_metrics);
   }
 
   // Site engagement score should round down to the nearest 10.
-  SiteEngagementService::Get(profile())->ResetBaseScoreForURL(kTestUrls[1], 45);
+  site_engagement::SiteEngagementService::Get(profile())->ResetBaseScoreForURL(
+      TestUrls()[1], 45);
   expected_metrics[TabManager_TabMetrics::kSiteEngagementScoreName] = 40;
 
   auto* audible_helper_2 =
@@ -468,30 +490,30 @@ TEST_F(TabMetricsTest, TabMetrics) {
   expected_metrics[TabManager_TabMetrics::kIsPinnedName] = 1;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[1], expected_metrics);
+    ExpectNewEntry(TestUrls()[1], expected_metrics);
   }
 
   // Unset WasRecentlyAudible and navigate the background tab to a new domain.
   // Site engagement score for the new domain is 0.
   audible_helper_2->SetNotRecentlyAudibleForTesting();
   expected_metrics[TabManager_TabMetrics::kWasRecentlyAudibleName] = 0;
-  WebContentsTester::For(test_contents_2)->NavigateAndCommit(kTestUrls[2]);
+  WebContentsTester::For(test_contents_2)->NavigateAndCommit(TestUrls()[2]);
   expected_metrics[TabManager_TabMetrics::kSiteEngagementScoreName] = 0;
 
   WebContentsTester::For(test_contents_2)->TestSetIsLoading(false);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[2], expected_metrics);
+    ExpectNewEntry(TestUrls()[2], expected_metrics);
   }
 
   // Navigate the active tab and switch away from it. The entry should reflect
   // the new URL (even when the page hasn't finished loading).
-  WebContentsTester::For(test_contents_1)->NavigateAndCommit(kTestUrls[2]);
+  WebContentsTester::For(test_contents_1)->NavigateAndCommit(TestUrls()[2]);
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 0);
   {
     SCOPED_TRACE("");
     // This tab still has the default metrics.
-    ExpectNewEntry(kTestUrls[2], kBasicMetricValues);
+    ExpectNewEntry(TestUrls()[2], kBasicMetricValues);
   }
 
   tab_strip_model->CloseAllTabs();
@@ -502,15 +524,15 @@ TEST_F(TabMetricsTest, TabMetrics) {
 TEST_F(TabMetricsTest, InputEvents) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   content::WebContents* test_contents_1 =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[0]));
+                                                        TestUrls()[0]);
   content::WebContents* test_contents_2 =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[1]));
+                                                        TestUrls()[1]);
 
   // RunUntilIdle is needed because the widget input handler is initialized
   // asynchronously via mojo (see SetupWidgetInputHandler).
@@ -522,57 +544,63 @@ TEST_F(TabMetricsTest, InputEvents) {
 
   // Fake some input events.
   content::RenderWidgetHost* widget_1 =
-      test_contents_1->GetRenderViewHost()->GetWidget();
-  widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::kMouseDown));
-  widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::kMouseUp));
-  widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::kMouseMove));
+      test_contents_1->GetMainFrame()->GetRenderViewHost()->GetWidget();
+  widget_1->ForwardMouseEvent(
+      CreateMouseEvent(WebInputEvent::Type::kMouseDown));
+  widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::Type::kMouseUp));
+  widget_1->ForwardMouseEvent(
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove));
   expected_metrics_1[TabManager_TabMetrics::kMouseEventCountName] = 3;
 
   // Switch to the background tab. The current tab is deactivated and logged.
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 1);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[0], expected_metrics_1);
+    ExpectNewEntry(TestUrls()[0], expected_metrics_1);
   }
 
   // The second tab's counts are independent of the other's.
   content::RenderWidgetHost* widget_2 =
-      test_contents_2->GetRenderViewHost()->GetWidget();
-  widget_2->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::kMouseMove));
+      test_contents_2->GetMainFrame()->GetRenderViewHost()->GetWidget();
+  widget_2->ForwardMouseEvent(
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove));
   expected_metrics_2[TabManager_TabMetrics::kMouseEventCountName] = 1;
 
   // Switch back to the first tab to log the second tab.
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 0);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[1], expected_metrics_2);
+    ExpectNewEntry(TestUrls()[1], expected_metrics_2);
   }
 
   // New events are added to the first tab's existing counts.
-  widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::kMouseMove));
-  widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::kMouseMove));
+  widget_1->ForwardMouseEvent(
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove));
+  widget_1->ForwardMouseEvent(
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove));
   expected_metrics_1[TabManager_TabMetrics::kMouseEventCountName] = 5;
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 1);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[0], expected_metrics_1);
+    ExpectNewEntry(TestUrls()[0], expected_metrics_1);
   }
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 0);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[1], expected_metrics_2);
+    ExpectNewEntry(TestUrls()[1], expected_metrics_2);
   }
 
   // After a navigation, test that the counts are reset.
-  WebContentsTester::For(test_contents_1)->NavigateAndCommit(kTestUrls[2]);
+  WebContentsTester::For(test_contents_1)->NavigateAndCommit(TestUrls()[2]);
   // The widget may have been invalidated by the navigation.
-  widget_1 = test_contents_1->GetRenderViewHost()->GetWidget();
-  widget_1->ForwardMouseEvent(CreateMouseEvent(WebInputEvent::kMouseMove));
+  widget_1 = test_contents_1->GetMainFrame()->GetRenderViewHost()->GetWidget();
+  widget_1->ForwardMouseEvent(
+      CreateMouseEvent(WebInputEvent::Type::kMouseMove));
   expected_metrics_1[TabManager_TabMetrics::kMouseEventCountName] = 1;
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 1);
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[2], expected_metrics_1);
+    ExpectNewEntry(TestUrls()[2], expected_metrics_1);
   }
 
   tab_strip_model->CloseAllTabs();
@@ -584,12 +612,12 @@ TEST_F(TabMetricsTest, InputEvents) {
 TEST_F(TabMetricsTest, DISABLED_HideWebContents) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   content::WebContents* test_contents =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[0]));
+                                                        TestUrls()[0]);
   tab_strip_model->ActivateTabAt(0);
 
   // Hiding the window doesn't trigger a log entry, unless the window was
@@ -607,12 +635,12 @@ TEST_F(TabMetricsTest, DISABLED_HideWebContents) {
 // Tests navigation-related metrics.
 TEST_F(TabMetricsTest, Navigations) {
   Browser::CreateParams params(profile(), true);
-  auto browser = CreateBrowserWithTestWindowForParams(&params);
+  auto browser = CreateBrowserWithTestWindowForParams(params);
   TabStripModel* tab_strip_model = browser->tab_strip_model();
 
   // Set up first tab.
   tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                    GURL(kTestUrls[0]));
+                                                    TestUrls()[0]);
   tab_strip_model->ActivateTabAt(0);
 
   // Expected metrics for tab event.
@@ -621,12 +649,12 @@ TEST_F(TabMetricsTest, Navigations) {
   // Load background contents and verify UKM entry.
   content::WebContents* test_contents =
       tab_activity_simulator_.AddWebContentsAndNavigate(
-          tab_strip_model, GURL(kTestUrls[1]),
+          tab_strip_model, TestUrls()[1],
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
   expected_metrics[TabManager_TabMetrics::kPageTransitionCoreTypeName] =
-      base::nullopt;
+      absl::nullopt;
   expected_metrics[TabManager_TabMetrics::kPageTransitionFromAddressBarName] =
       true;
   expected_metrics[TabManager_TabMetrics::kPageTransitionIsRedirectName] =
@@ -634,12 +662,12 @@ TEST_F(TabMetricsTest, Navigations) {
   expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName] = 1;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[1], expected_metrics);
+    ExpectNewEntry(TestUrls()[1], expected_metrics);
   }
 
   // Navigate background tab (not all transition types make sense in the
   // background, but this is simpler than juggling two tabs to trigger logging).
-  tab_activity_simulator_.Navigate(test_contents, kTestUrls[2],
+  tab_activity_simulator_.Navigate(test_contents, TestUrls()[2],
                                    ui::PAGE_TRANSITION_LINK);
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
   expected_metrics[TabManager_TabMetrics::kPageTransitionCoreTypeName] =
@@ -651,11 +679,11 @@ TEST_F(TabMetricsTest, Navigations) {
   expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value()++;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[2], expected_metrics);
+    ExpectNewEntry(TestUrls()[2], expected_metrics);
   }
 
   tab_activity_simulator_.Navigate(
-      test_contents, kTestUrls[0],
+      test_contents, TestUrls()[0],
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_LINK |
                                 ui::PAGE_TRANSITION_SERVER_REDIRECT));
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
@@ -667,25 +695,25 @@ TEST_F(TabMetricsTest, Navigations) {
   expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value()++;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[0], expected_metrics);
+    ExpectNewEntry(TestUrls()[0], expected_metrics);
   }
 
-  tab_activity_simulator_.Navigate(test_contents, kTestUrls[0],
+  tab_activity_simulator_.Navigate(test_contents, TestUrls()[0],
                                    ui::PAGE_TRANSITION_RELOAD);
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
   expected_metrics[TabManager_TabMetrics::kPageTransitionCoreTypeName] =
       ui::PAGE_TRANSITION_RELOAD;
-  expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value()++;
+  expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value();
   expected_metrics[TabManager_TabMetrics::kPageTransitionFromAddressBarName] =
       false;
   expected_metrics[TabManager_TabMetrics::kPageTransitionIsRedirectName] =
       false;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[0], expected_metrics);
+    ExpectNewEntry(TestUrls()[0], expected_metrics);
   }
 
-  tab_activity_simulator_.Navigate(test_contents, kTestUrls[1],
+  tab_activity_simulator_.Navigate(test_contents, TestUrls()[1],
                                    ui::PAGE_TRANSITION_AUTO_BOOKMARK);
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
   expected_metrics[TabManager_TabMetrics::kPageTransitionCoreTypeName] =
@@ -695,34 +723,34 @@ TEST_F(TabMetricsTest, Navigations) {
   expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value()++;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[1], expected_metrics);
+    ExpectNewEntry(TestUrls()[1], expected_metrics);
   }
 
-  tab_activity_simulator_.Navigate(test_contents, kTestUrls[1],
+  tab_activity_simulator_.Navigate(test_contents, TestUrls()[1],
                                    ui::PAGE_TRANSITION_FORM_SUBMIT);
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
   expected_metrics[TabManager_TabMetrics::kPageTransitionCoreTypeName] =
       ui::PAGE_TRANSITION_FORM_SUBMIT;
-  expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value()++;
+  expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value();
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[1], expected_metrics);
+    ExpectNewEntry(TestUrls()[1], expected_metrics);
   }
 
   // Test non-reportable core type.
   tab_activity_simulator_.Navigate(
-      test_contents, kTestUrls[0],
+      test_contents, TestUrls()[0],
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_KEYWORD |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR));
   WebContentsTester::For(test_contents)->TestSetIsLoading(false);
   expected_metrics[TabManager_TabMetrics::kPageTransitionCoreTypeName] =
-      base::nullopt;
+      absl::nullopt;
   expected_metrics[TabManager_TabMetrics::kPageTransitionFromAddressBarName] =
       true;
   expected_metrics[TabManager_TabMetrics::kNavigationEntryCountName].value()++;
   {
     SCOPED_TRACE("");
-    ExpectNewEntry(kTestUrls[0], expected_metrics);
+    ExpectNewEntry(TestUrls()[0], expected_metrics);
   }
 
   tab_strip_model->CloseAllTabs();
@@ -733,12 +761,12 @@ TEST_F(TabMetricsTest, Navigations) {
 TEST_F(TabMetricsTest, ReplaceForegroundTab) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   content::WebContents* orig_contents =
       tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                        GURL(kTestUrls[0]));
+                                                        TestUrls()[0]);
   tab_strip_model->ActivateTabAt(0);
   WebContentsTester::For(orig_contents)->TestSetIsLoading(false);
 
@@ -750,7 +778,7 @@ TEST_F(TabMetricsTest, ReplaceForegroundTab) {
   // Normally this happens when the browser or prerenderer attaches tab helpers.
   ukm::InitializeSourceUrlRecorderForWebContents(new_contents.get());
 
-  tab_activity_simulator_.Navigate(new_contents.get(), GURL(kTestUrls[1]));
+  tab_activity_simulator_.Navigate(new_contents.get(), TestUrls()[1]);
   WebContentsTester::For(new_contents.get())->TestSetIsLoading(false);
 
   // Replace and delete the old contents.
@@ -764,13 +792,13 @@ TEST_F(TabMetricsTest, ReplaceForegroundTab) {
 
   // Add a new tab so the first tab is backgrounded.
   tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                    GURL(kTestUrls[2]));
+                                                    TestUrls()[2]);
   tab_activity_simulator_.SwitchToTabAt(tab_strip_model, 1);
   {
     SCOPED_TRACE("");
     // Replaced tab uses the orig source_id; so the metrics is logged to
-    // kTestUrls[0].
-    ExpectNewEntry(kTestUrls[0], kBasicMetricValues);
+    // TestUrls()[0].
+    ExpectNewEntry(TestUrls()[0], kBasicMetricValues);
   }
 
   tab_strip_model->CloseAllTabs();
@@ -787,24 +815,26 @@ class ForegroundedOrClosedTest : public TabActivityWatcherTest {
     SetParams({{"scorer_type", "0"},
                {"disable_background_log_with_TabRanker", "false"}});
   }
+
+  ForegroundedOrClosedTest(const ForegroundedOrClosedTest&) = delete;
+  ForegroundedOrClosedTest& operator=(const ForegroundedOrClosedTest&) = delete;
+
   ~ForegroundedOrClosedTest() override = default;
 
  protected:
   const char* kEntryName = ForegroundedOrClosed::kEntryName;
 
-  void AdvanceClock() { test_clock_.Advance(base::TimeDelta::FromSeconds(1)); }
+  void AdvanceClock() { test_clock_.Advance(base::Seconds(1)); }
 
  private:
   base::SimpleTestTickClock test_clock_;
   resource_coordinator::ScopedSetTickClockForTesting
       scoped_set_tick_clock_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForegroundedOrClosedTest);
 };
 
 // Tests TabManager.Backgrounded.ForegroundedOrClosed UKM logging.
 // Flaky on ChromeOS. http://crbug.com/924864
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_SingleTab DISABLED_SingleTab
 #else
 #define MAYBE_SingleTab SingleTab
@@ -812,11 +842,11 @@ class ForegroundedOrClosedTest : public TabActivityWatcherTest {
 TEST_F(ForegroundedOrClosedTest, MAYBE_SingleTab) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                    GURL(kTestUrls[0]));
+                                                    TestUrls()[0]);
 
   // The tab is in the foreground, so it isn't logged as a background tab.
   tab_strip_model->CloseWebContentsAt(0, TabStripModel::CLOSE_USER_GESTURE);
@@ -827,17 +857,17 @@ TEST_F(ForegroundedOrClosedTest, MAYBE_SingleTab) {
 TEST_F(ForegroundedOrClosedTest, MultipleTabs) {
   Browser::CreateParams params(profile(), true);
   std::unique_ptr<Browser> browser =
-      CreateBrowserWithTestWindowForParams(&params);
+      CreateBrowserWithTestWindowForParams(params);
 
   TabStripModel* tab_strip_model = browser->tab_strip_model();
   tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                    GURL(kTestUrls[0]));
+                                                    TestUrls()[0]);
   tab_strip_model->ActivateTabAt(0);
   tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                    GURL(kTestUrls[1]));
+                                                    TestUrls()[1]);
   AdvanceClock();
   tab_activity_simulator_.AddWebContentsAndNavigate(tab_strip_model,
-                                                    GURL(kTestUrls[2]));
+                                                    TestUrls()[2]);
   AdvanceClock();
   // MRU ordering by tab indices:
   // 0 (foreground), 2 (created last), 1 (created first),
@@ -847,7 +877,7 @@ TEST_F(ForegroundedOrClosedTest, MultipleTabs) {
   {
     SCOPED_TRACE("");
     ukm_entry_checker_.ExpectNewEntry(
-        kEntryName, kTestUrls[2],
+        kEntryName, TestUrls()[2],
         {
             {ForegroundedOrClosed::kIsForegroundedName, 1},
         });
@@ -861,7 +891,7 @@ TEST_F(ForegroundedOrClosedTest, MultipleTabs) {
   {
     SCOPED_TRACE("");
     ukm_entry_checker_.ExpectNewEntry(
-        kEntryName, kTestUrls[1],
+        kEntryName, TestUrls()[1],
         {
             {ForegroundedOrClosed::kIsForegroundedName, 1},
         });
@@ -876,14 +906,14 @@ TEST_F(ForegroundedOrClosedTest, MultipleTabs) {
     SCOPED_TRACE("");
     // The rightmost tab was in the background and was closed.
     ukm_entry_checker_.ExpectNewEntry(
-        kEntryName, kTestUrls[2],
+        kEntryName, TestUrls()[2],
         {
             {ForegroundedOrClosed::kIsForegroundedName, 0},
         });
 
     // The leftmost tab was in the background and was closed.
     ukm_entry_checker_.ExpectNewEntry(
-        kEntryName, kTestUrls[0],
+        kEntryName, TestUrls()[0],
         {
             {ForegroundedOrClosed::kIsForegroundedName, 0},
         });

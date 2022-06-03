@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/logging.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/check.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/aura/window.h"
@@ -28,6 +27,9 @@ using ui_controls::UP;
 class UIControlsWin : public UIControlsAura {
  public:
   UIControlsWin() {}
+
+  UIControlsWin(const UIControlsWin&) = delete;
+  UIControlsWin& operator=(const UIControlsWin&) = delete;
 
   // UIControlsAura overrides:
   bool SendKeyPress(gfx::NativeWindow native_window,
@@ -55,12 +57,12 @@ class UIControlsWin : public UIControlsAura {
     return ui_controls::internal::SendKeyPressImpl(window, key, control, shift,
                                                    alt, std::move(task));
   }
-  bool SendMouseMove(long screen_x, long screen_y) override {
+  bool SendMouseMove(int screen_x, int screen_y) override {
     return ui_controls::internal::SendMouseMoveImpl(screen_x, screen_y,
                                                     base::OnceClosure());
   }
-  bool SendMouseMoveNotifyWhenDone(long screen_x,
-                                   long screen_y,
+  bool SendMouseMoveNotifyWhenDone(int screen_x,
+                                   int screen_y,
                                    base::OnceClosure task) override {
     return ui_controls::internal::SendMouseMoveImpl(screen_x, screen_y,
                                                     std::move(task));
@@ -84,9 +86,6 @@ class UIControlsWin : public UIControlsAura {
   bool SendTouchEvents(int action, int num, int x, int y) override {
     return ui_controls::internal::SendTouchEventsImpl(action, num, x, y);
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(UIControlsWin);
 };
 
 }  // namespace

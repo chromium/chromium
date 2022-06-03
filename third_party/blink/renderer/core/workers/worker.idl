@@ -32,11 +32,11 @@
     Exposed=(Window,DedicatedWorker),
     ImplementedAs=DedicatedWorker
 ] interface Worker : EventTarget {
-    [CallWith=ExecutionContext, RaisesException] constructor(DOMString scriptURL, optional WorkerOptions options);
+    [CallWith=ExecutionContext, RaisesException] constructor(ScriptURLString scriptURL, optional WorkerOptions options = {});
     void terminate();
 
     [CallWith=ScriptState, RaisesException] void postMessage(any message, sequence<object> transfer);
-    [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options);
+    [CallWith=ScriptState, RaisesException] void postMessage(any message, optional PostMessageOptions options = {});
     attribute EventHandler onmessage;
 };
 

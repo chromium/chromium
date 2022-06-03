@@ -2,16 +2,20 @@
 
 include_rules = [
   "+cc",
-  "-components/viz/common/features.h",
-  "-components/viz/common/switches.h",
+  "+components/power_scheduler",
   "-components/viz/service",
+  "+components/viz/service/debugger/viz_debugger.h",
+  "+components/viz/service/gl/gpu_service_impl.h",
   "+components/viz/service/viz_service_export.h",
+  "+components/viz/service/display_embedder/compositor_gpu_thread.h",
   "+gpu/config/gpu_feature_info.h",
   "+gpu/ipc/common/surface_handle.h",
   "+services/viz/privileged/mojom",
   "+services/viz/public/mojom",
+  "+skia/ext",
   "+third_party/skia",
   "+ui/latency",
+  "+ui/ozone/buildflags.h",
   "+ui/ozone/public",
 ]
 

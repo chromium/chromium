@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
-#define REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
+#ifndef REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_
+#define REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_
 
 #include <string>
 
@@ -17,6 +17,10 @@ namespace protocol {
 class RejectingAuthenticator : public Authenticator {
  public:
   RejectingAuthenticator(RejectionReason rejection_reason);
+
+  RejectingAuthenticator(const RejectingAuthenticator&) = delete;
+  RejectingAuthenticator& operator=(const RejectingAuthenticator&) = delete;
+
   ~RejectingAuthenticator() override;
 
   // Authenticator interface
@@ -24,7 +28,7 @@ class RejectingAuthenticator : public Authenticator {
   bool started() const override;
   RejectionReason rejection_reason() const override;
   void ProcessMessage(const jingle_xmpp::XmlElement* message,
-                      const base::Closure& resume_callback) override;
+                      base::OnceClosure resume_callback) override;
   std::unique_ptr<jingle_xmpp::XmlElement> GetNextMessage() override;
   const std::string& GetAuthKey() const override;
   std::unique_ptr<ChannelAuthenticator> CreateChannelAuthenticator()
@@ -34,11 +38,9 @@ class RejectingAuthenticator : public Authenticator {
   RejectionReason rejection_reason_;
   State state_ = WAITING_MESSAGE;
   std::string auth_key_;
-
-  DISALLOW_COPY_AND_ASSIGN(RejectingAuthenticator);
 };
 
 }  // namespace protocol
 }  // namespace remoting
 
-#endif  // REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_FACTORY_H_
+#endif  // REMOTING_PROTOCOL_REJECTING_AUTHENTICATOR_H_

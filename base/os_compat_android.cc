@@ -8,8 +8,10 @@
 #include <errno.h>
 #include <limits.h>
 #include <math.h>
+#include <sys/stat.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#include "base/strings/string_util.h"
 
 #if !defined(__LP64__)
 #include <time64.h>
@@ -18,7 +20,6 @@
 #include "base/files/file.h"
 #include "base/rand_util.h"
 #include "base/strings/string_piece.h"
-#include "base/strings/stringprintf.h"
 
 extern "C" {
 // There is no futimes() avaiable in Bionic, so we provide our own
@@ -124,7 +125,7 @@ char* mkdtemp(char* path) {
   // The last six characters of 'path' must be XXXXXX.
   const base::StringPiece kSuffix("XXXXXX");
   const int kSuffixLen = kSuffix.length();
-  if (!base::StringPiece(path, path_len).ends_with(kSuffix)) {
+  if (!base::EndsWith(base::StringPiece(path, path_len), kSuffix)) {
     errno = EINVAL;
     return nullptr;
   }

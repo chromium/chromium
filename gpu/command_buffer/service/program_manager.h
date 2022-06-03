@@ -13,7 +13,7 @@
 #include <string>
 #include <vector>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/common_decoder.h"
@@ -77,13 +77,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
 
   enum VaryingsPackingOption { kCountOnlyStaticallyUsed, kCountAll };
 
-  struct FragmentInputInfo {
-    FragmentInputInfo(GLenum _type, GLuint _location)
-        : type(_type), location(_location) {}
-    FragmentInputInfo() : type(GL_NONE), location(0) {}
-    GLenum type;
-    GLuint location;
-  };
   struct ProgramOutputInfo {
     ProgramOutputInfo(GLuint _color_name,
                       GLuint _index,
@@ -195,9 +188,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   typedef std::vector<ShaderVariableLocationEntry<UniformInfo>>
       UniformLocationVector;
   typedef std::vector<VertexAttrib> AttribInfoVector;
-  typedef std::vector<FragmentInputInfo> FragmentInputInfoVector;
-  typedef std::vector<ShaderVariableLocationEntry<FragmentInputInfo>>
-      FragmentInputLocationVector;
   typedef std::vector<ProgramOutputInfo> ProgramOutputInfoVector;
   typedef std::vector<int> SamplerIndices;
   typedef std::map<std::string, GLint> LocationMap;
@@ -257,11 +247,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   // If the hashed name is not found, return nullptr.
   const sh::InterfaceBlock* GetInterfaceBlockInfo(
       const std::string& hashed_name) const;
-
-  const FragmentInputInfo* GetFragmentInputInfoByFakeLocation(
-      GLint fake_location) const;
-
-  bool IsInactiveFragmentInputLocationByFakeLocation(GLint fake_location) const;
 
   // Gets the fake location of a uniform by name.
   GLint GetUniformFakeLocation(const std::string& name) const;
@@ -360,10 +345,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   // Detects if the shader version combination is not valid.
   bool DetectShaderVersionMismatch() const;
 
-  // Sets fragment input-location binding from a
-  // glBindFragmentInputLocationCHROMIUM() call.
-  void SetFragmentInputLocationBinding(const std::string& name, GLint location);
-
   // Sets program output variable location. Also sets color index to zero.
   void SetProgramOutputLocationBinding(const std::string& name,
                                        GLuint colorName);
@@ -396,11 +377,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   // Return true if a varying is statically used in fragment shader, but it
   // is not declared in vertex shader.
   bool DetectVaryingsMismatch(std::string* conflicting_name) const;
-
-  // Detects if there are fragment input location conflicts from
-  // glBindFragmentInputLocationCHROMIUM() calls.
-  // We only consider the statically used fragment inputs in the program.
-  bool DetectFragmentInputLocationBindingConflicts() const;
 
   // Detects if there are program output location conflicts from
   // glBindFragDataLocation and ..LocationIndexedEXT calls.
@@ -510,7 +486,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   // Updates the program info after a successful link.
   void Update();
   bool UpdateUniforms();
-  void UpdateFragmentInputs();
   void UpdateProgramOutputs();
   void UpdateFragmentOutputBaseTypes();
   void UpdateVertexInputBaseTypes();
@@ -589,9 +564,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   // The indices of the uniforms that are samplers.
   SamplerIndices sampler_indices_;
 
-  FragmentInputInfoVector fragment_input_infos_;
-  FragmentInputLocationVector fragment_input_locations_;
-
   ProgramOutputInfoVector program_output_infos_;
 
   // The program this Program is tracking.
@@ -642,10 +614,6 @@ class GPU_GLES2_EXPORT Program : public base::RefCounted<Program> {
   // is calculated at DrawArrays{Instanced} time by multiplying vertex count.
   std::vector<GLsizeiptr> transform_feedback_data_size_per_vertex_;
 
-  // Fragment input-location binding map from
-  // glBindFragmentInputLocationCHROMIUM() calls.
-  LocationMap bind_fragment_input_location_map_;
-
   // output variable - (location,index) binding map from
   // glBindFragDataLocation() and ..IndexedEXT() calls.
   LocationIndexMap bind_program_output_location_index_map_;
@@ -685,6 +653,10 @@ class GPU_GLES2_EXPORT ProgramManager {
                  const GpuPreferences& gpu_preferences,
                  FeatureInfo* feature_info,
                  gl::ProgressReporter* progress_reporter);
+
+  ProgramManager(const ProgramManager&) = delete;
+  ProgramManager& operator=(const ProgramManager&) = delete;
+
   ~ProgramManager();
 
   // Must call before destruction.
@@ -784,8 +756,6 @@ class GPU_GLES2_EXPORT ProgramManager {
   // preventing time-outs when destruction takes a long time. May be null when
   // using in-process command buffer.
   gl::ProgressReporter* progress_reporter_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProgramManager);
 };
 
 inline const FeatureInfo& Program::feature_info() const {

@@ -7,11 +7,21 @@
 namespace chromeos {
 namespace switches {
 
-// Used in CryptohomeClient to determine which Google Privacy CA to use for
+// Used in AttestationClient to determine which Google Privacy CA to use for
 // attestation.
 const char kAttestationServer[] = "attestation-server";
 
+// Enables BIOD fake behavior. If the switch is set, fake biod D-Bus client is
+// initialized and BIOD events do not reach chrome.
+const char kBiodFake[] = "biod-fake";
+
+// Enables cros disks fake behavior. If the switch is set, fake cros disk D-Bus
+// client is initialized and USB events do not reach chrome.
+const char kCrosDisksFake[] = "cros-disks-fake";
+
 // Forces the stub implementation of D-Bus clients.
+// Using stub D-Bus clients is the default for non-Chrome OS environment, to use
+// real D-Bus clients in non-Chrome OS environment, set this flag to "never".
 const char kDbusStub[] = "dbus-stub";
 
 // Path to a OOBE configuration JSON file (used by FakeOobeConfigurationClient).
@@ -33,6 +43,12 @@ const char kFakeOobeConfiguration[] = "fake-oobe-configuration-file";
 //  'cellular=LTE' - Cellular is initially connected, technology is LTE
 //  'interactive=3' - Interactive mode, connect/scan/etc requests take 3 secs
 const char kShillStub[] = "shill-stub";
+
+// Enables Hermes fake behavior. By default, no carrier profiles are setup.
+// If a value of "on" is passed for this switch, then hermes fakes are
+// initialized with a single installed carrier profile. Fake cellular service
+// corresponding to carrier profiles are also setup in Shill.
+const char kHermesFake[] = "hermes-fake";
 
 // Sends test messages on first call to RequestUpdate (stub only).
 const char kSmsTestMessages[] = "sms-test-messages";

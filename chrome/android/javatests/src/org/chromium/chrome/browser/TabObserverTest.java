@@ -8,17 +8,20 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -56,9 +59,11 @@ public class TabObserverTest {
     public void setUp() throws Exception {
         mActivityTestRule.startMainActivityOnBlankPage();
         mTabObserver = new TestTabObserver();
-        mTab = mActivityTestRule.getActivity().getActivityTab();
-        mTab.addObserver(mTabObserver);
-        mActivity = mActivityTestRule.getActivity();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mTab = mActivityTestRule.getActivity().getActivityTab();
+            mTab.addObserver(mTabObserver);
+            mActivity = mActivityTestRule.getActivity();
+        });
     }
 
     @Test
@@ -101,5 +106,14 @@ public class TabObserverTest {
         // The original tab should be hidden.
         interactabilityHelper.waitForCallback(interactableCallCount);
         assertFalse("Tab should not be interactable.", mTab.isUserInteractable());
+    }
+
+    @Test
+    @SmallTest
+    public void testTabDetach_observerUnregistered() {
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            mTab.updateAttachment(null, null);
+            assertFalse(mTab.hasObserver(mTabObserver));
+        });
     }
 }

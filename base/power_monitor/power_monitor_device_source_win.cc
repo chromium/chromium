@@ -4,11 +4,13 @@
 
 #include "base/power_monitor/power_monitor_device_source.h"
 
-#include "base/message_loop/message_loop_current.h"
+#include <string>
+
+#include "base/logging.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
+#include "base/task/current_thread.h"
 #include "base/win/wrapped_window_proc.h"
 
 namespace base {
@@ -19,7 +21,7 @@ void ProcessPowerEventHelper(PowerMonitorSource::PowerEvent event) {
 
 namespace {
 
-const char16 kWindowClassName[] = STRING16_LITERAL("Base_PowerMessageWindow");
+constexpr wchar_t kWindowClassName[] = L"Base_PowerMessageWindow";
 
 void ProcessWmPowerBroadcastMessage(WPARAM event_id) {
   PowerMonitorSource::PowerEvent power_event;
@@ -56,7 +58,7 @@ void ProcessWmPowerBroadcastMessage(WPARAM event_id) {
 
 // Function to query the system to see if it is currently running on
 // battery power.  Returns true if running on battery.
-bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
+bool PowerMonitorDeviceSource::IsOnBatteryPower() {
   SYSTEM_POWER_STATUS status;
   if (!GetSystemPowerStatus(&status)) {
     DPLOG(ERROR) << "GetSystemPowerStatus failed";
@@ -67,7 +69,7 @@ bool PowerMonitorDeviceSource::IsOnBatteryPowerImpl() {
 
 PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow()
     : instance_(NULL), message_hwnd_(NULL) {
-  if (!MessageLoopCurrentForUI::IsSet()) {
+  if (!CurrentUIThread::IsSet()) {
     // Creating this window in (e.g.) a renderer inhibits shutdown on Windows.
     // See http://crbug.com/230122. TODO(vandebo): http://crbug.com/236031
     DLOG(ERROR)
@@ -86,14 +88,14 @@ PowerMonitorDeviceSource::PowerMessageWindow::PowerMessageWindow()
   DCHECK(clazz);
 
   message_hwnd_ =
-      CreateWindowEx(WS_EX_NOACTIVATE, as_wcstr(kWindowClassName), NULL,
-                     WS_POPUP, 0, 0, 0, 0, NULL, NULL, instance_, NULL);
+      CreateWindowEx(WS_EX_NOACTIVATE, kWindowClassName, NULL, WS_POPUP, 0, 0,
+                     0, 0, NULL, NULL, instance_, NULL);
 }
 
 PowerMonitorDeviceSource::PowerMessageWindow::~PowerMessageWindow() {
   if (message_hwnd_) {
     DestroyWindow(message_hwnd_);
-    UnregisterClass(as_wcstr(kWindowClassName), instance_);
+    UnregisterClass(kWindowClassName, instance_);
   }
 }
 

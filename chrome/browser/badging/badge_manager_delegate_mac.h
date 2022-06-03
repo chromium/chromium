@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/optional.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
 
 class Profile;

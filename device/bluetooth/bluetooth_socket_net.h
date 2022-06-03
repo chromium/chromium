@@ -11,7 +11,7 @@
 #include "base/containers/queue.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "device/bluetooth/bluetooth_socket_thread.h"
 #include "net/socket/tcp_socket.h"
@@ -29,16 +29,18 @@ namespace device {
 // performed on a separate thread.
 class BluetoothSocketNet : public BluetoothSocket {
  public:
+  BluetoothSocketNet(const BluetoothSocketNet&) = delete;
+  BluetoothSocketNet& operator=(const BluetoothSocketNet&) = delete;
+
   // BluetoothSocket:
-  void Close() override;
-  void Disconnect(const base::Closure& callback) override;
+  void Disconnect(base::OnceClosure callback) override;
   void Receive(int buffer_size,
-               const ReceiveCompletionCallback& success_callback,
-               const ReceiveErrorCompletionCallback& error_callback) override;
+               ReceiveCompletionCallback success_callback,
+               ReceiveErrorCompletionCallback error_callback) override;
   void Send(scoped_refptr<net::IOBuffer> buffer,
             int buffer_size,
-            const SendCompletionCallback& success_callback,
-            const ErrorCompletionCallback& error_callback) override;
+            SendCompletionCallback success_callback,
+            ErrorCompletionCallback error_callback) override;
 
  protected:
   BluetoothSocketNet(scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
@@ -63,8 +65,8 @@ class BluetoothSocketNet : public BluetoothSocket {
   void ResetTCPSocket();
   void SetTCPSocket(std::unique_ptr<net::TCPSocket> tcp_socket);
 
-  void PostSuccess(const base::Closure& callback);
-  void PostErrorCompletion(const ErrorCompletionCallback& callback,
+  void PostSuccess(base::OnceClosure callback);
+  void PostErrorCompletion(ErrorCompletionCallback callback,
                            const std::string& error);
 
  private:
@@ -78,33 +80,29 @@ class BluetoothSocketNet : public BluetoothSocket {
     ErrorCompletionCallback error_callback;
   };
 
-  void DoClose();
-  void DoDisconnect(const base::Closure& callback);
+  void DoDisconnect(base::OnceClosure callback);
   void DoReceive(int buffer_size,
-                 const ReceiveCompletionCallback& success_callback,
-                 const ReceiveErrorCompletionCallback& error_callback);
-  void OnSocketReadComplete(
-      const ReceiveCompletionCallback& success_callback,
-      const ReceiveErrorCompletionCallback& error_callback,
-      int read_result);
+                 ReceiveCompletionCallback success_callback,
+                 ReceiveErrorCompletionCallback error_callback);
+  void OnSocketReadComplete(ReceiveCompletionCallback success_callback,
+                            ReceiveErrorCompletionCallback error_callback,
+                            int read_result);
   void DoSend(scoped_refptr<net::IOBuffer> buffer,
               int buffer_size,
-              const SendCompletionCallback& success_callback,
-              const ErrorCompletionCallback& error_callback);
+              SendCompletionCallback success_callback,
+              ErrorCompletionCallback error_callback);
   void SendFrontWriteRequest();
-  void OnSocketWriteComplete(const SendCompletionCallback& success_callback,
-                             const ErrorCompletionCallback& error_callback,
+  void OnSocketWriteComplete(SendCompletionCallback success_callback,
+                             ErrorCompletionCallback error_callback,
                              int send_result);
 
-  void PostReceiveCompletion(const ReceiveCompletionCallback& callback,
+  void PostReceiveCompletion(ReceiveCompletionCallback callback,
                              int io_buffer_size,
                              scoped_refptr<net::IOBuffer> io_buffer);
-  void PostReceiveErrorCompletion(
-      const ReceiveErrorCompletionCallback& callback,
-      ErrorReason reason,
-      const std::string& error_message);
-  void PostSendCompletion(const SendCompletionCallback& callback,
-                          int bytes_written);
+  void PostReceiveErrorCompletion(ReceiveErrorCompletionCallback callback,
+                                  ErrorReason reason,
+                                  const std::string& error_message);
+  void PostSendCompletion(SendCompletionCallback callback, int bytes_written);
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<BluetoothSocketThread> socket_thread_;
@@ -112,8 +110,7 @@ class BluetoothSocketNet : public BluetoothSocket {
   std::unique_ptr<net::TCPSocket> tcp_socket_;
   scoped_refptr<net::IOBufferWithSize> read_buffer_;
   base::queue<std::unique_ptr<WriteRequest>> write_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothSocketNet);
+  std::unique_ptr<WriteRequest> pending_write_request_;
 };
 
 }  // namespace device

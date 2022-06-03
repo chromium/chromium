@@ -8,7 +8,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -141,7 +141,7 @@ namespace {
 std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
     const std::string& extension_id,
     const base::DictionaryValue* file_browser_handler,
-    base::string16* error) {
+    std::u16string* error) {
   std::unique_ptr<FileBrowserHandler> result(new FileBrowserHandler());
   result->set_extension_id(extension_id);
 
@@ -169,11 +169,11 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
   if (file_browser_handler->HasKey(keys::kFileAccessList)) {
     if (!file_browser_handler->GetList(keys::kFileAccessList,
                                        &access_list_value) ||
-        access_list_value->empty()) {
+        access_list_value->GetList().empty()) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileAccessList);
       return nullptr;
     }
-    for (size_t i = 0; i < access_list_value->GetSize(); ++i) {
+    for (size_t i = 0; i < access_list_value->GetList().size(); ++i) {
       std::string access;
       if (!access_list_value->GetString(i, &access) ||
           result->AddFileAccessPermission(access)) {
@@ -197,7 +197,7 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
       *error = base::ASCIIToUTF16(errors::kInvalidFileFiltersList);
       return nullptr;
     }
-    for (size_t i = 0; i < file_filters->GetSize(); ++i) {
+    for (size_t i = 0; i < file_filters->GetList().size(); ++i) {
       std::string filter;
       if (!file_filters->GetString(i, &filter)) {
         *error = extensions::ErrorUtils::FormatErrorMessageUTF16(
@@ -249,12 +249,11 @@ std::unique_ptr<FileBrowserHandler> LoadFileBrowserHandler(
 }
 
 // Loads FileBrowserHandlers from |extension_actions| into a list in |result|.
-bool LoadFileBrowserHandlers(
-    const std::string& extension_id,
-    const base::ListValue* extension_actions,
-    FileBrowserHandler::List* result,
-    base::string16* error) {
-  for (const auto& entry : *extension_actions) {
+bool LoadFileBrowserHandlers(const std::string& extension_id,
+                             const base::ListValue* extension_actions,
+                             FileBrowserHandler::List* result,
+                             std::u16string* error) {
+  for (const auto& entry : extension_actions->GetList()) {
     const base::DictionaryValue* dict;
     if (!entry.GetAsDictionary(&dict)) {
       *error = base::ASCIIToUTF16(errors::kInvalidFileBrowserHandler);
@@ -272,7 +271,7 @@ bool LoadFileBrowserHandlers(
 }  // namespace
 
 bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
-                                     base::string16* error) {
+                                     std::u16string* error) {
   const base::Value* file_browser_handlers_value = nullptr;
   if (!extension->manifest()->Get(keys::kFileBrowserHandlers,
                                   &file_browser_handlers_value)) {
@@ -280,7 +279,7 @@ bool FileBrowserHandlerParser::Parse(extensions::Extension* extension,
   }
 
   if (!extensions::PermissionsParser::HasAPIPermission(
-          extension, extensions::APIPermission::ID::kFileBrowserHandler)) {
+          extension, extensions::mojom::APIPermissionID::kFileBrowserHandler)) {
     extension->AddInstallWarning(extensions::InstallWarning(
         errors::kInvalidFileBrowserHandlerMissingPermission));
     return true;

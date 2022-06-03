@@ -1,8 +1,4 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="tr">
-<translation id="6106989379647458772"><ph name="PAGE" /> adresindeki web sayfası geçici olarak kullanılamıyor veya kalıcı olarak yeni bir web adresine taşınmış olabilir.</translation>
-<translation id="6312113039770857350">Web sayfası mevcut değil</translation>
-<translation id="8681531050781943054"><ph name="PAGE" /> adresindeki web sayfası şu nedenle yüklenemedi:</translation>
-<translation id="8963213021028234748"><ph name="MARKUP_1" />Öneriler:<ph name="MARKUP_2" />Veri bağlantınızın olduğundan emin olun<ph name="MARKUP_3" />Bu web sayfasını daha sonra yükleyin<ph name="MARKUP_4" />Girdiğiniz adresi kontrol edin<ph name="MARKUP_5" /></translation>
 </translationbundle>

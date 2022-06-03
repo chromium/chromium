@@ -1,26 +1,12 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableSection THEAD",
-          "rect": [8, 82, 56, 26],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableSection TFOOT",
-          "rect": [8, 132, 56, 24],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableSection TBODY",
-          "rect": [8, 108, 56, 24],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [8, 82, 56, 74]
       ]
     }
   ]

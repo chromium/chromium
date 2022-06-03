@@ -5,6 +5,8 @@
 #ifndef CC_LAYERS_PAINTED_SCROLLBAR_LAYER_H_
 #define CC_LAYERS_PAINTED_SCROLLBAR_LAYER_H_
 
+#include <memory>
+
 #include "cc/cc_export.h"
 #include "cc/input/scrollbar.h"
 #include "cc/layers/layer.h"
@@ -13,10 +15,17 @@
 
 namespace cc {
 
+// Generic scrollbar layer for cases not covered by PaintedOverlayScrollbarLayer
+// or SolidColorScrollbarLayer. This is not used for CSS-styled scrollbars. In
+// practice, this is used for overlay and non-overlay scrollbars on MacOS, as
+// well as non-overlay scrollbars on Win/Linux.
 class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
  public:
   std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
 
+  static scoped_refptr<PaintedScrollbarLayer> CreateOrReuse(
+      scoped_refptr<Scrollbar> scrollbar,
+      PaintedScrollbarLayer* existing_layer);
   static scoped_refptr<PaintedScrollbarLayer> Create(
       scoped_refptr<Scrollbar> scrollbar);
 
@@ -26,11 +35,14 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   bool OpacityCanAnimateOnImplThread() const override;
   bool Update() override;
   void SetLayerTreeHost(LayerTreeHost* host) override;
-  void PushPropertiesTo(LayerImpl* layer) override;
+  void PushPropertiesTo(LayerImpl* layer,
+                        const CommitState& commit_state) override;
 
   const gfx::Size& internal_content_bounds() const {
     return internal_content_bounds_;
   }
+
+  ScrollbarLayerType GetScrollbarLayerType() const override;
 
  protected:
   explicit PaintedScrollbarLayer(scoped_refptr<Scrollbar> scrollbar);
@@ -43,8 +55,8 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   UIResourceId thumb_resource_id() {
     return thumb_resource_.get() ? thumb_resource_->id() : 0;
   }
-  void UpdateInternalContentScale();
-  void UpdateThumbAndTrackGeometry();
+  bool UpdateInternalContentScale();
+  bool UpdateThumbAndTrackGeometry();
 
  private:
   gfx::Size LayerSizeToContentSize(const gfx::Size& layer_size) const;
@@ -75,8 +87,9 @@ class CC_EXPORT PaintedScrollbarLayer : public ScrollbarLayerBase {
   gfx::Rect track_rect_;
   gfx::Rect back_button_rect_;
   gfx::Rect forward_button_rect_;
-  float thumb_opacity_;
+  float painted_opacity_;
   bool has_thumb_;
+  bool jump_on_track_click_;
 
   const bool supports_drag_snap_back_;
   const bool is_overlay_;

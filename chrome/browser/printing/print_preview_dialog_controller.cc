@@ -4,18 +4,17 @@
 
 #include "chrome/browser/printing/print_preview_dialog_controller.h"
 
-#include <stddef.h>
-
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
-#include "base/path_service.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/containers/contains.h"
+#include "base/memory/weak_ptr.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/printing/print_view_manager.h"
@@ -23,22 +22,19 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/webui/chrome_web_contents_handler.h"
 #include "chrome/browser/ui/webui/constrained_web_dialog_ui.h"
 #include "chrome/browser/ui/webui/print_preview/print_preview_ui.h"
-#include "chrome/common/chrome_paths.h"
-#include "chrome/common/url_constants.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/guest_view/browser/guest_view_base.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
 #include "content/public/browser/host_zoom_map.h"
-#include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_details.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
-#include "content/public/browser/web_contents_observer.h"
+#include "content/public/browser/web_ui.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -46,8 +42,8 @@
 #include "chrome/browser/win/conflicts/module_database.h"
 #endif
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/arc/print_spooler/print_session_impl.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/arc/print_spooler/print_session_impl.h"
 #endif
 
 using content::NavigationController;
@@ -64,7 +60,7 @@ PrintPreviewUI* GetPrintPreviewUIForDialog(WebContents* dialog) {
                 : nullptr;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void CloseArcPrintSession(WebContents* initiator) {
   WebContents* outermost_web_contents =
       guest_view::GuestViewBase::GetTopLevelWebContents(initiator);
@@ -76,15 +72,19 @@ void CloseArcPrintSession(WebContents* initiator) {
 #endif
 
 // A ui::WebDialogDelegate that specifies the print preview dialog appearance.
-class PrintPreviewDialogDelegate : public ui::WebDialogDelegate,
-                                   public content::WebContentsObserver {
+class PrintPreviewDialogDelegate : public ui::WebDialogDelegate {
  public:
   explicit PrintPreviewDialogDelegate(WebContents* initiator);
+
+  PrintPreviewDialogDelegate(const PrintPreviewDialogDelegate&) = delete;
+  PrintPreviewDialogDelegate& operator=(const PrintPreviewDialogDelegate&) =
+      delete;
+
   ~PrintPreviewDialogDelegate() override;
 
   ui::ModalType GetDialogModalType() const override;
-  base::string16 GetDialogTitle() const override;
-  base::string16 GetAccessibleDialogTitle() const override;
+  std::u16string GetDialogTitle() const override;
+  std::u16string GetAccessibleDialogTitle() const override;
   GURL GetDialogContentURL() const override;
   void GetWebUIMessageHandlers(
       std::vector<WebUIMessageHandler*>* handlers) const override;
@@ -96,15 +96,14 @@ class PrintPreviewDialogDelegate : public ui::WebDialogDelegate,
   bool ShouldShowDialogTitle() const override;
 
  private:
-  WebContents* initiator() const { return web_contents(); }
+  WebContents* initiator() const { return web_contents_.get(); }
 
+  base::WeakPtr<content::WebContents> web_contents_;
   bool on_dialog_closed_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(PrintPreviewDialogDelegate);
 };
 
 PrintPreviewDialogDelegate::PrintPreviewDialogDelegate(WebContents* initiator)
-    : content::WebContentsObserver(initiator) {}
+    : web_contents_(initiator->GetWeakPtr()) {}
 
 PrintPreviewDialogDelegate::~PrintPreviewDialogDelegate() = default;
 
@@ -114,12 +113,12 @@ ui::ModalType PrintPreviewDialogDelegate::GetDialogModalType() const {
   return ui::MODAL_TYPE_WINDOW;
 }
 
-base::string16 PrintPreviewDialogDelegate::GetDialogTitle() const {
+std::u16string PrintPreviewDialogDelegate::GetDialogTitle() const {
   // Only used on Windows? UI folks prefer no title.
-  return base::string16();
+  return std::u16string();
 }
 
-base::string16 PrintPreviewDialogDelegate::GetAccessibleDialogTitle() const {
+std::u16string PrintPreviewDialogDelegate::GetAccessibleDialogTitle() const {
   return l10n_util::GetStringUTF16(IDS_PRINT_PREVIEW_TITLE);
 }
 
@@ -193,54 +192,10 @@ bool PrintPreviewDialogDelegate::ShouldShowDialogTitle() const {
 
 }  // namespace
 
-// PrintPreviewDialogController::WebContentsObserver ---------------------------
-
-class PrintPreviewDialogController::WebContentsObserver
-    : public content::WebContentsObserver {
- public:
-  WebContentsObserver(PrintPreviewDialogController* controller,
-                      content::WebContents* web_contents);
-  ~WebContentsObserver() override;
-
-  // content::WebContentsObserver:
-  void RenderProcessGone(base::TerminationStatus status) override;
-  void NavigationEntryCommitted(
-      const content::LoadCommittedDetails& load_details) override;
-  void WebContentsDestroyed() override;
-
- private:
-  PrintPreviewDialogController* const controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebContentsObserver);
-};
-
-PrintPreviewDialogController::WebContentsObserver::WebContentsObserver(
-    PrintPreviewDialogController* controller,
-    content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents), controller_(controller) {}
-
-PrintPreviewDialogController::WebContentsObserver::~WebContentsObserver() =
-    default;
-
-void PrintPreviewDialogController::WebContentsObserver::RenderProcessGone(
-    base::TerminationStatus status) {
-  controller_->OnRendererProcessClosed(
-      web_contents()->GetMainFrame()->GetProcess());
-}
-
-void PrintPreviewDialogController::WebContentsObserver::
-    NavigationEntryCommitted(
-        const content::LoadCommittedDetails& load_details) {
-  controller_->OnNavEntryCommitted(web_contents(), load_details);
-}
-
-void PrintPreviewDialogController::WebContentsObserver::WebContentsDestroyed() {
-  controller_->OnWebContentsDestroyed(web_contents());
-}
-
 // PrintPreviewDialogController ------------------------------------------------
 
-PrintPreviewDialogController::PrintPreviewDialogController() = default;
+PrintPreviewDialogController::PrintPreviewDialogController()
+    : web_contents_collection_(this) {}
 
 // static
 PrintPreviewDialogController* PrintPreviewDialogController::GetInstance() {
@@ -252,10 +207,10 @@ PrintPreviewDialogController* PrintPreviewDialogController::GetInstance() {
 // static
 void PrintPreviewDialogController::PrintPreview(WebContents* initiator) {
 #if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  ModuleDatabase::GetInstance()->DisableThirdPartyBlocking();
+  ModuleDatabase::DisableThirdPartyBlocking();
 #endif
 
-  if (initiator->ShowingInterstitialPage() || initiator->IsCrashed())
+  if (initiator->IsCrashed())
     return;
 
   PrintPreviewDialogController* dialog_controller = GetInstance();
@@ -285,19 +240,16 @@ WebContents* PrintPreviewDialogController::GetOrCreatePreviewDialog(
 
 WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
     WebContents* contents) const {
-  // |preview_dialog_map_| is keyed by the preview dialog, so if find()
-  // succeeds, then |contents| is the preview dialog.
-  auto it = preview_dialog_map_.find(contents);
-  if (it != preview_dialog_map_.end())
+  // |preview_dialog_map_| is keyed by the preview dialog, so if
+  // base::Contains() succeeds, then |contents| is the preview dialog.
+  if (base::Contains(preview_dialog_map_, contents))
     return contents;
 
-  for (it = preview_dialog_map_.begin();
-       it != preview_dialog_map_.end();
-       ++it) {
+  for (const auto& it : preview_dialog_map_) {
     // If |contents| is an initiator.
-    if (contents == it->second) {
+    if (contents == it.second) {
       // Return the associated preview dialog.
-      return it->first;
+      return it.first;
     }
   }
   return nullptr;
@@ -306,7 +258,7 @@ WebContents* PrintPreviewDialogController::GetPrintPreviewForContents(
 WebContents* PrintPreviewDialogController::GetInitiator(
     WebContents* preview_dialog) {
   auto it = preview_dialog_map_.find(preview_dialog);
-  return (it != preview_dialog_map_.end()) ? it->second : nullptr;
+  return it != preview_dialog_map_.end() ? it->second : nullptr;
 }
 
 void PrintPreviewDialogController::ForEachPreviewDialog(
@@ -317,8 +269,8 @@ void PrintPreviewDialogController::ForEachPreviewDialog(
 
 // static
 bool PrintPreviewDialogController::IsPrintPreviewURL(const GURL& url) {
-  return (url.SchemeIs(content::kChromeUIScheme) &&
-          url.host_piece() == chrome::kChromeUIPrintHost);
+  return url.SchemeIs(content::kChromeUIScheme) &&
+         url.host_piece() == chrome::kChromeUIPrintHost;
 }
 
 void PrintPreviewDialogController::EraseInitiatorInfo(
@@ -327,14 +279,17 @@ void PrintPreviewDialogController::EraseInitiatorInfo(
   if (it == preview_dialog_map_.end())
     return;
 
-  RemoveObserver(it->second);
-  preview_dialog_map_[preview_dialog] = nullptr;
+  web_contents_collection_.StopObserving(it->second);
+  it->second = nullptr;
 }
 
 PrintPreviewDialogController::~PrintPreviewDialogController() = default;
 
-void PrintPreviewDialogController::OnRendererProcessClosed(
-    content::RenderProcessHost* rph) {
+void PrintPreviewDialogController::RenderProcessGone(
+    content::WebContents* web_contents,
+    base::TerminationStatus status) {
+  content::RenderProcessHost* rph = web_contents->GetMainFrame()->GetProcess();
+
   // Store contents in a vector and deal with them after iterating through
   // |preview_dialog_map_| because RemoveFoo() can change |preview_dialog_map_|.
   std::vector<WebContents*> closed_initiators;
@@ -359,8 +314,7 @@ void PrintPreviewDialogController::OnRendererProcessClosed(
     RemoveInitiator(initiator);
 }
 
-void PrintPreviewDialogController::OnWebContentsDestroyed(
-    WebContents* contents) {
+void PrintPreviewDialogController::WebContentsDestroyed(WebContents* contents) {
   WebContents* preview_dialog = GetPrintPreviewForContents(contents);
   if (!preview_dialog) {
     NOTREACHED();
@@ -373,7 +327,7 @@ void PrintPreviewDialogController::OnWebContentsDestroyed(
     RemoveInitiator(contents);
 }
 
-void PrintPreviewDialogController::OnNavEntryCommitted(
+void PrintPreviewDialogController::NavigationEntryCommitted(
     WebContents* contents,
     const content::LoadCommittedDetails& details) {
   WebContents* preview_dialog = GetPrintPreviewForContents(contents);
@@ -391,12 +345,11 @@ void PrintPreviewDialogController::OnNavEntryCommitted(
 void PrintPreviewDialogController::OnInitiatorNavigated(
     WebContents* initiator,
     const content::LoadCommittedDetails& details) {
-  if (details.type == content::NAVIGATION_TYPE_EXISTING_PAGE) {
+  if (details.type == content::NAVIGATION_TYPE_EXISTING_ENTRY) {
     static const ui::PageTransition kTransitions[] = {
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        ui::PAGE_TRANSITION_LINK,
-    };
+        ui::PAGE_TRANSITION_LINK, ui::PAGE_TRANSITION_AUTO_BOOKMARK};
     ui::PageTransition type = details.entry->GetTransitionType();
     for (ui::PageTransition transition : kTransitions) {
       if (ui::PageTransitionTypeIncludingQualifiersIs(type, transition))
@@ -415,7 +368,7 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
   // New |preview_dialog| is created. Don't update/erase map entry.
   if (waiting_for_new_preview_page_ &&
       ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_AUTO_TOPLEVEL) &&
-      details.type == content::NAVIGATION_TYPE_NEW_PAGE) {
+      details.type == content::NAVIGATION_TYPE_NEW_ENTRY) {
     waiting_for_new_preview_page_ = false;
     SaveInitiatorTitle(preview_dialog);
     return;
@@ -424,8 +377,8 @@ void PrintPreviewDialogController::OnPreviewDialogNavigated(
   // Cloud print sign-in causes a reload.
   if (!waiting_for_new_preview_page_ &&
       ui::PageTransitionCoreTypeIs(type, ui::PAGE_TRANSITION_RELOAD) &&
-      details.type == content::NAVIGATION_TYPE_EXISTING_PAGE &&
-      IsPrintPreviewURL(details.previous_url)) {
+      details.type == content::NAVIGATION_TYPE_EXISTING_ENTRY &&
+      IsPrintPreviewURL(details.previous_main_frame_url)) {
     return;
   }
 
@@ -460,8 +413,8 @@ WebContents* PrintPreviewDialogController::CreatePrintPreviewDialog(
   // Make the print preview WebContents show up in the task manager.
   task_manager::WebContentsTags::CreateForPrintingContents(preview_dialog);
 
-  AddObserver(initiator);
-  AddObserver(preview_dialog);
+  web_contents_collection_.StartObserving(initiator);
+  web_contents_collection_.StartObserving(preview_dialog);
 
   return preview_dialog;
 }
@@ -480,18 +433,6 @@ void PrintPreviewDialogController::SaveInitiatorTitle(
       PrintViewManager::FromWebContents(initiator)->RenderSourceName());
 }
 
-void PrintPreviewDialogController::AddObserver(WebContents* contents) {
-  auto emplace_result = web_contents_observers_.emplace(
-      std::piecewise_construct, std::forward_as_tuple(contents),
-      std::forward_as_tuple(
-          std::make_unique<WebContentsObserver>(this, contents)));
-  DCHECK(emplace_result.second);
-}
-
-void PrintPreviewDialogController::RemoveObserver(WebContents* contents) {
-  web_contents_observers_.erase(contents);
-}
-
 void PrintPreviewDialogController::RemoveInitiator(
     WebContents* initiator) {
   WebContents* preview_dialog = GetPrintPreviewForContents(initiator);
@@ -500,11 +441,11 @@ void PrintPreviewDialogController::RemoveInitiator(
   // and reaches RemovePreviewDialog(), it does not attempt to also remove the
   // initiator's observers.
   preview_dialog_map_[preview_dialog] = nullptr;
-  RemoveObserver(initiator);
+  web_contents_collection_.StopObserving(initiator);
 
   PrintViewManager::FromWebContents(initiator)->PrintPreviewDone();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   CloseArcPrintSession(initiator);
 #endif
 
@@ -519,16 +460,16 @@ void PrintPreviewDialogController::RemovePreviewDialog(
   // Remove the initiator's observers before erasing the mapping.
   WebContents* initiator = GetInitiator(preview_dialog);
   if (initiator) {
-    RemoveObserver(initiator);
+    web_contents_collection_.StopObserving(initiator);
     PrintViewManager::FromWebContents(initiator)->PrintPreviewDone();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     CloseArcPrintSession(initiator);
 #endif
   }
 
   preview_dialog_map_.erase(preview_dialog);
-  RemoveObserver(preview_dialog);
+  web_contents_collection_.StopObserving(preview_dialog);
 }
 
 }  // namespace printing

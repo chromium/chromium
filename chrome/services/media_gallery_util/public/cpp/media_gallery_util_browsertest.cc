@@ -8,6 +8,7 @@
 #include "base/run_loop.h"
 #include "chrome/services/media_gallery_util/public/cpp/media_parser_provider.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "content/public/test/browser_test.h"
 #include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"

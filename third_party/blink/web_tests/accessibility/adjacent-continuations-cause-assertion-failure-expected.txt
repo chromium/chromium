@@ -1,24 +1,20 @@
 x
 y
 z
-End of test
 
 Make sure that a debug assert is not triggered when constructing the accessibility tree for this page.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-AXRole: AXWebArea
+AXRole: AXGenericContainer
     AXRole: AXGenericContainer
-        AXRole: AXGenericContainer
-        AXRole: AXStaticText "x"
-            AXRole: AXInlineTextBox "x"
-        AXRole: AXGenericContainer
-            AXRole: AXStaticText "y"
-                AXRole: AXInlineTextBox "y"
-        AXRole: AXStaticText "z"
-            AXRole: AXInlineTextBox "z"
-        AXRole: AXGenericContainer
-            AXRole: AXStaticText "End of test"
+    AXRole: AXStaticText "x"
+        AXRole: AXInlineTextBox "x"
+    AXRole: AXGenericContainer
+        AXRole: AXStaticText "y"
+            AXRole: AXInlineTextBox "y"
+    AXRole: AXStaticText "z"
+        AXRole: AXInlineTextBox "z"
 
 PASS successfullyParsed is true
 

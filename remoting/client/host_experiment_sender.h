@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef REMOTING_CLIENT_HOST_EXPERIMENT_CONTROLLER_H_
-#define REMOTING_CLIENT_HOST_EXPERIMENT_CONTROLLER_H_
+#ifndef REMOTING_CLIENT_HOST_EXPERIMENT_SENDER_H_
+#define REMOTING_CLIENT_HOST_EXPERIMENT_SENDER_H_
 
 #include <memory>
 #include <string>
@@ -32,4 +32,4 @@ class HostExperimentSender : public protocol::SessionPlugin {
 
 }  // namespace remoting
 
-#endif  // REMOTING_CLIENT_HOST_EXPERIMENT_CONTROLLER_H_
+#endif  // REMOTING_CLIENT_HOST_EXPERIMENT_SENDER_H_

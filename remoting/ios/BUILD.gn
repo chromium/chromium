@@ -17,9 +17,7 @@ group("all") {
 group("all_test") {
   testonly = true
 
-  deps = [
-    ":ios_core_unit_tests",
-  ]
+  deps = [ ":ios_core_unit_tests" ]
 }
 
 source_set("ios_core") {
@@ -39,10 +37,12 @@ source_set("ios_core") {
 
   deps = [
     "//base",
+    "//remoting/client",
+    "//remoting/client/input",
     "//remoting/protocol",
   ]
 
-  libs = [
+  frameworks = [
     "CoreGraphics.framework",
     "GLKit.framework",
     "OpenGLES.framework",
@@ -75,8 +75,9 @@ source_set("ios_core_unit_tests") {
 
 test("ios_remoting_unittests") {
   deps = [
-    "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//ios/third_party/material_components_ios:material_components_ios+link",
+    "//remoting/base:run_all_unittests",
     "//remoting/ios/audio:unit_tests",
     "//remoting/ios/facade:unit_tests",
     "//remoting/ios/persistence:unit_tests",
@@ -93,14 +94,8 @@ test("ios_remoting_unittests") {
 
 foreach(locale, remoting_locales_with_underscores) {
   bundle_data("unittests_locale_${locale}_bundle_data") {
-    sources = [
-      "$root_out_dir/remoting/resources/$locale.lproj/locale.pak",
-    ]
-    outputs = [
-      "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}",
-    ]
-    public_deps = [
-      "//remoting/resources:copy_locales",
-    ]
+    sources = [ "$root_out_dir/remoting/resources/$locale.lproj/locale.pak" ]
+    outputs = [ "{{bundle_resources_dir}}/$locale.lproj/{{source_file_part}}" ]
+    public_deps = [ "//remoting/resources:copy_locales" ]
   }
 }

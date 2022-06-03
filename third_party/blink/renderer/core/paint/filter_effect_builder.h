@@ -31,7 +31,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/skia/include/effects/SkBlurImageFilter.h"
+#include "third_party/skia/include/core/SkTileMode.h"
 
 namespace blink {
 
@@ -41,7 +41,6 @@ class FilterEffect;
 class FilterOperations;
 class FloatRect;
 class ReferenceFilterOperation;
-class SVGFilterElement;
 class SVGFilterGraphNodeMap;
 
 class CORE_EXPORT FilterEffectBuilder final {
@@ -52,10 +51,9 @@ class CORE_EXPORT FilterEffectBuilder final {
                       float zoom,
                       const PaintFlags* fill_flags = nullptr,
                       const PaintFlags* stroke_flags = nullptr,
-                      SkBlurImageFilter::TileMode blur_tile_mode =
-                          SkBlurImageFilter::kClampToBlack_TileMode);
+                      SkTileMode blur_tile_mode = SkTileMode::kDecal);
 
-  Filter* BuildReferenceFilter(SVGFilterElement&,
+  Filter* BuildReferenceFilter(const ReferenceFilterOperation&,
                                FilterEffect* previous_effect,
                                SVGFilterGraphNodeMap* = nullptr) const;
 
@@ -64,15 +62,17 @@ class CORE_EXPORT FilterEffectBuilder final {
   CompositorFilterOperations BuildFilterOperations(
       const FilterOperations&) const;
 
- private:
-  Filter* BuildReferenceFilter(const ReferenceFilterOperation&,
-                               FilterEffect* previous_effect) const;
+  void SetShorthandScale(float shorthand_scale) {
+    shorthand_scale_ = shorthand_scale;
+  }
 
-  FloatRect reference_box_;
-  float zoom_;
+ private:
+  const FloatRect reference_box_;
+  const float zoom_;
+  float shorthand_scale_;  // Scale factor for shorthand filter functions.
   const PaintFlags* fill_flags_;
   const PaintFlags* stroke_flags_;
-  const SkBlurImageFilter::TileMode blur_tile_mode_;
+  const SkTileMode blur_tile_mode_;
 };
 
 }  // namespace blink

@@ -1,0 +1,1 @@
+EVENT_SYSTEM_ALERT on <div#a> role=ROLE_SYSTEM_ALERT

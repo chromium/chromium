@@ -34,27 +34,38 @@ class SVGSVGElement;
 class LayoutSVGViewportContainer final : public LayoutSVGContainer {
  public:
   explicit LayoutSVGViewportContainer(SVGSVGElement*);
-  FloatRect Viewport() const { return viewport_; }
+  gfx::RectF Viewport() const {
+    NOT_DESTROYED();
+    return viewport_;
+  }
 
-  bool IsLayoutSizeChanged() const { return is_layout_size_changed_; }
+  bool IsLayoutSizeChanged() const {
+    NOT_DESTROYED();
+    return is_layout_size_changed_;
+  }
 
   void SetNeedsTransformUpdate() override;
 
-  const char* GetName() const override { return "LayoutSVGViewportContainer"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGViewportContainer";
+  }
 
   AffineTransform LocalToSVGParentTransform() const override {
+    NOT_DESTROYED();
     return local_to_parent_transform_;
   }
 
  private:
   bool IsOfType(LayoutObjectType type) const override {
+    NOT_DESTROYED();
     return type == kLayoutObjectSVGViewportContainer ||
            LayoutSVGContainer::IsOfType(type);
   }
 
   void UpdateLayout() override;
 
-  SVGTransformChange CalculateLocalTransform() override;
+  SVGTransformChange CalculateLocalTransform(bool bounds_changed) override;
 
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
@@ -63,14 +74,18 @@ class LayoutSVGViewportContainer final : public LayoutSVGContainer {
 
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;
 
-  FloatRect viewport_;
+  gfx::RectF viewport_;
   mutable AffineTransform local_to_parent_transform_;
   bool is_layout_size_changed_ : 1;
   bool needs_transform_update_ : 1;
 };
 
-DEFINE_LAYOUT_OBJECT_TYPE_CASTS(LayoutSVGViewportContainer,
-                                IsSVGViewportContainer());
+template <>
+struct DowncastTraits<LayoutSVGViewportContainer> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsSVGViewportContainer();
+  }
+};
 
 }  // namespace blink
 

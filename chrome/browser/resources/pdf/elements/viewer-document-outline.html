@@ -1,0 +1,10 @@
+<style include="pdf-shared">
+  :host {
+    display: block;
+    padding-inline-end: 20px;
+    padding-top: 20px;
+  }
+</style>
+<template is="dom-repeat" items="[[bookmarks]]">
+  <viewer-bookmark bookmark="[[item]]" depth="0"></viewer-bookmark>
+</template>

@@ -11,11 +11,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/json/json_reader.h"
-#include "base/stl_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -26,6 +26,7 @@
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,10 +67,10 @@ class TestingSpellingServiceClient : public SpellingServiceClient {
   }
 
   void VerifyResponse(bool success,
-                      const base::string16& request_text,
+                      const std::u16string& request_text,
                       const std::vector<SpellCheckResult>& results) {
     EXPECT_EQ(success_, success);
-    base::string16 text(base::UTF8ToUTF16(sanitized_request_text_));
+    std::u16string text(base::UTF8ToUTF16(sanitized_request_text_));
     for (auto it = results.begin(); it != results.end(); ++it) {
       text.replace(it->location, it->length, it->replacements[0]);
     }
@@ -88,7 +89,7 @@ class TestingSpellingServiceClient : public SpellingServiceClient {
  private:
   bool success_;
   std::string sanitized_request_text_;
-  base::string16 corrected_text_;
+  std::u16string corrected_text_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
 };
@@ -101,7 +102,7 @@ class SpellingServiceClientTest
  public:
   void OnTextCheckComplete(int tag,
                            bool success,
-                           const base::string16& text,
+                           const std::u16string& text,
                            const std::vector<SpellCheckResult>& results) {
     client_.VerifyResponse(success, text, results);
   }
@@ -186,7 +187,7 @@ TEST_P(SpellingServiceClientTest, RequestTextCheck) {
                                      test_case.corrected_text);
 
   base::ListValue dictionary;
-  dictionary.AppendString(test_case.language);
+  dictionary.Append(test_case.language);
   pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
 
   client_.RequestTextCheck(
@@ -373,7 +374,7 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   // superset of suggest.
   for (size_t i = 0; i < base::size(kSupported); ++i) {
     base::ListValue dictionary;
-    dictionary.AppendString(kSupported[i]);
+    dictionary.Append(kSupported[i]);
     pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
 
     EXPECT_FALSE(client_.IsAvailable(&profile_, kSuggest));
@@ -391,7 +392,7 @@ TEST_F(SpellingServiceClientTest, AvailableServices) {
   for (size_t i = 0; i < base::size(kUnsupported); ++i) {
     SCOPED_TRACE(std::string("Expected language ") + kUnsupported[i]);
     base::ListValue dictionary;
-    dictionary.AppendString(kUnsupported[i]);
+    dictionary.Append(kUnsupported[i]);
     pref->Set(spellcheck::prefs::kSpellCheckDictionaries, dictionary);
 
     EXPECT_TRUE(client_.IsAvailable(&profile_, kSuggest));

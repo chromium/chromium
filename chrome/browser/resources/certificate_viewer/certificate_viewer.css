@@ -1,0 +1,132 @@
+/* Copyright 2012 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* Using 100% width within body should exclude margins. */
+html,
+body {
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+}
+
+h3 {
+  font-size: 100%;
+  margin-bottom: 15px;
+  margin-top: 17px;
+}
+
+#usages-title {
+  /* Workaround until webkit bug https://bugs.webkit.org/show_bug.cgi?id=80537
+   * is resolved. */
+  padding-top: 17px;
+}
+
+#tabbox {
+  height: 100%;
+  width: 100%;
+}
+
+#tabpanels {
+  overflow: auto;
+}
+
+#usages,
+#cert-field-value {
+  padding-inline-start: 15px;
+  white-space: pre-wrap;
+}
+
+#general h3 {
+  margin-bottom: 16px;
+  margin-top: 32px;
+}
+
+.groups {
+  display: table;
+}
+
+.groups > * {
+  display: table-row;
+}
+
+#usages,
+.groups > div > div {
+  color: #616161;
+  line-height: 18px;
+  padding-inline-start: 20px;
+}
+
+.attribute {
+  display: table-cell;
+  white-space: nowrap;
+}
+
+.value {
+  display: table-cell;
+  white-space: pre-wrap;
+}
+
+/* Used so that 100% width within tabpanel will correspond to usable space. */
+tabpanel {
+  position: relative;
+}
+
+.vertical-box {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  position: relative;
+  width: 100%;
+}
+
+/* The minimum heights defined for the three sections are calculated based on
+ * the percentage of rendered height at 100% scaling. The dialog height is
+ * defined in CertificateViewerDialog::GetDialogSize. */
+#hierarchy-section {
+  height: 20%;
+  min-height: 117px;
+  top: 0;
+}
+
+#cert-fields-section {
+  height: 50%;
+  min-height: 294px;
+}
+
+#cert-field-value-section {
+  bottom: 0;
+  height: 30%;
+  min-height: 126px;
+}
+
+.section-contents {
+  background: #fff;
+  border: 1px solid #c8c8c8;
+  flex: 1 1 auto;
+  /* Scrolling should be enabled on all tree views and value field. */
+  overflow: auto;
+}
+
+.tree-row[selected] {
+  background-color: #f0f0f0;
+  background-image: none;
+}
+
+.tree-item > .tree-row {
+  border: 0;
+  border-radius: 0;
+  line-height: 29px;
+}
+
+#export {
+  float: right;
+  margin-bottom: 20px;
+  margin-inline-start: 1px;
+  margin-top: 10px;
+}
+

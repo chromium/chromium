@@ -21,16 +21,12 @@
 // added, |addedInBackground| is set to YES if the tab is added in background.
 // NO otherwise.
 - (void)setTabCount:(int)tabCount addedInBackground:(BOOL)addedInBackground;
-// Sets the bookmarks status of the page.
-- (void)setPageBookmarked:(BOOL)bookmarked;
 // Sets whether the voice search is enabled or not.
 - (void)setVoiceSearchEnabled:(BOOL)enabled;
 // Sets whether the share menu is enabled.
 - (void)setShareMenuEnabled:(BOOL)enabled;
 // Sets whether the toolbar is displaying for an NTP.
 - (void)setIsNTP:(BOOL)isNTP;
-// Sets the image for the search button of the toolbar.
-- (void)setSearchIcon:(UIImage*)searchIcon;
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TOOLBAR_TOOLBAR_CONSUMER_H_

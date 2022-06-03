@@ -5,16 +5,14 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_GROUP_CONTROLLER_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_GROUP_CONTROLLER_H_
 
-#include <memory>
-
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/disconnect_reason.h"
 #include "mojo/public/cpp/bindings/interface_id.h"
 #include "mojo/public/cpp/bindings/scoped_interface_endpoint_handle.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace mojo {
 
@@ -38,7 +36,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) AssociatedGroupController
   // Creates an interface endpoint handle from a given interface ID. The handle
   // joins this associated group.
   // Typically, this method is used to (1) create an endpoint handle for the
-  // master interface; or (2) create an endpoint handle on receiving an
+  // primary interface; or (2) create an endpoint handle on receiving an
   // interface ID from the message pipe.
   //
   // On failure, the method returns an invalid handle. Usually that is because
@@ -49,7 +47,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) AssociatedGroupController
   // Closes an interface endpoint handle.
   virtual void CloseEndpointHandle(
       InterfaceId id,
-      const base::Optional<DisconnectReason>& reason) = 0;
+      const absl::optional<DisconnectReason>& reason) = 0;
 
   // Attaches a client to the specified endpoint to send and receive messages.
   // The returned object is still owned by the controller. It must only be used

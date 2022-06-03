@@ -17,7 +17,7 @@ namespace extensions {
 namespace error_test_util {
 
 namespace {
-const char kDefaultStackTrace[] = "function_name (https://url.com:1:1)";
+const char16_t kDefaultStackTrace[] = u"function_name (https://url.com:1:1)";
 }
 
 std::unique_ptr<ExtensionError> CreateNewRuntimeError(
@@ -26,14 +26,13 @@ std::unique_ptr<ExtensionError> CreateNewRuntimeError(
     bool from_incognito) {
   StackTrace stack_trace;
   std::unique_ptr<StackFrame> frame =
-      StackFrame::CreateFromText(base::ASCIIToUTF16(kDefaultStackTrace));
+      StackFrame::CreateFromText(kDefaultStackTrace);
   CHECK(frame.get());
   stack_trace.push_back(*frame);
 
-  base::string16 source =
+  std::u16string source =
       base::UTF8ToUTF16(std::string(kExtensionScheme) +
-                            url::kStandardSchemeSeparator +
-                            extension_id);
+                        url::kStandardSchemeSeparator + extension_id);
 
   return std::unique_ptr<ExtensionError>(
       new RuntimeError(extension_id, from_incognito, source,
@@ -55,7 +54,7 @@ std::unique_ptr<ExtensionError> CreateNewManifestError(
     const std::string& message) {
   return std::unique_ptr<ExtensionError>(
       new ManifestError(extension_id, base::UTF8ToUTF16(message),
-                        base::string16(), base::string16()));
+                        std::u16string(), std::u16string()));
 }
 
 }  // namespace error_test_util

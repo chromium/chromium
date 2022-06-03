@@ -6,12 +6,11 @@
 
 namespace blink {
 
-void ExternBase::Trace(Visitor* visitor) {
+void ExternBase::Trace(Visitor* visitor) const {
   // Missing visitor->Trace(x_base_).
 }
 
-void ExternDerived::Trace(Visitor* visitor) {
+void ExternDerived::Trace(Visitor* visitor) const {
   // Missing visitor->Trace(x_derived_) and ExternBase::Trace(visitor).
 }
-
 }

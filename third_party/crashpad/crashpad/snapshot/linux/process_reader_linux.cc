@@ -125,7 +125,8 @@ void ProcessReaderLinux::Thread::InitializeStackFromSP(
     LOG(WARNING) << "no stack mapping";
     return;
   }
-  LinuxVMAddress stack_region_start = stack_pointer;
+  LinuxVMAddress stack_region_start =
+      reader->Memory()->PointerToAddress(stack_pointer);
 
   // We've hit what looks like a guard page; skip to the end and check for a
   // mapped stack region.
@@ -177,11 +178,11 @@ void ProcessReaderLinux::Thread::InitializeStackFromSP(
   // at the high-address end of the stack so we can try using that to shrink
   // the stack region.
   stack_region_size = stack_end - stack_region_address;
-  if (tid != reader->ProcessID() &&
-      thread_info.thread_specific_data_address > stack_region_address &&
-      thread_info.thread_specific_data_address < stack_end) {
-    stack_region_size =
-        thread_info.thread_specific_data_address - stack_region_address;
+  VMAddress tls_address = reader->Memory()->PointerToAddress(
+      thread_info.thread_specific_data_address);
+  if (tid != reader->ProcessID() && tls_address > stack_region_address &&
+      tls_address < stack_end) {
+    stack_region_size = tls_address - stack_region_address;
   }
 }
 
@@ -439,7 +440,7 @@ void ProcessReaderLinux::InitializeModules() {
       if (parsed_exe->Initialize(
               range,
               mapping->range.Base(),
-              /* verbose= */ possible_mappings->Count() == 1) &&
+              /* verbose= */ possible_mappings->Count() == 0) &&
           parsed_exe->GetProgramHeaderTableAddress() == phdrs) {
         exe_mapping = mapping;
         exe_reader = std::move(parsed_exe);
@@ -508,7 +509,7 @@ void ProcessReaderLinux::InitializeModules() {
         if (parsed_module->Initialize(
                 range,
                 mapping->range.Base(),
-                /* verbose= */ possible_mappings->Count() == 1) &&
+                /* verbose= */ possible_mappings->Count() == 0) &&
             parsed_module->GetDynamicArrayAddress(&dynamic_address) &&
             dynamic_address == entry.dynamic_array) {
           module_mapping = mapping;

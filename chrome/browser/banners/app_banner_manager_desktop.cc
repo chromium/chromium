@@ -4,28 +4,35 @@
 
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 
+#include <string>
+
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
-#include "chrome/browser/banners/app_banner_metrics.h"
-#include "chrome/browser/banners/app_banner_settings_helper.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
-#include "chrome/browser/web_applications/components/web_app_constants.h"
-#include "chrome/browser/web_applications/components/web_app_helpers.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/manifest/manifest_util.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
+#include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/chromeos/arc/arc_util.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
@@ -33,24 +40,44 @@ namespace {
 // https://github.com/w3c/manifest/wiki/Platforms
 const char kPlatformChromeWebStore[] = "chrome_web_store";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kPlatformPlay[] = "play";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 bool gDisableTriggeringForTesting = false;
 
 }  // namespace
 
-namespace banners {
+namespace webapps {
+
+AppBannerManagerDesktop::CreateAppBannerManagerForTesting
+    AppBannerManagerDesktop::override_app_banner_manager_desktop_for_testing_ =
+        nullptr;
 
 // static
-AppBannerManager* AppBannerManager::FromWebContents(
+void AppBannerManagerDesktop::CreateForWebContents(
     content::WebContents* web_contents) {
-  return AppBannerManagerDesktop::FromWebContents(web_contents);
+  if (FromWebContents(web_contents))
+    return;
+
+  if (override_app_banner_manager_desktop_for_testing_) {
+    web_contents->SetUserData(
+        UserDataKey(),
+        override_app_banner_manager_desktop_for_testing_(web_contents));
+    return;
+  }
+  web_contents->SetUserData(
+      UserDataKey(),
+      base::WrapUnique(new AppBannerManagerDesktop(web_contents)));
 }
 
 void AppBannerManagerDesktop::DisableTriggeringForTesting() {
   gDisableTriggeringForTesting = true;
+}
+
+TestAppBannerManagerDesktop*
+AppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
+  return nullptr;
 }
 
 AppBannerManagerDesktop::AppBannerManagerDesktop(
@@ -59,10 +86,10 @@ AppBannerManagerDesktop::AppBannerManagerDesktop(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   extension_registry_ = extensions::ExtensionRegistry::Get(profile);
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(profile);
+  auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // May be null in unit tests e.g. TabDesktopMediaListTest.*.
   if (provider)
-    registrar_observer_.Add(&provider->registrar());
+    registrar_observation_.Observe(&provider->registrar());
 }
 
 AppBannerManagerDesktop::~AppBannerManagerDesktop() { }
@@ -75,61 +102,73 @@ void AppBannerManagerDesktop::InvalidateWeakPtrs() {
   weak_factory_.InvalidateWeakPtrs();
 }
 
-bool AppBannerManagerDesktop::IsSupportedAppPlatform(
-    const base::string16& platform) const {
+bool AppBannerManagerDesktop::IsSupportedNonWebAppPlatform(
+    const std::u16string& platform) const {
   if (base::EqualsASCII(platform, kPlatformChromeWebStore))
     return true;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::EqualsASCII(platform, kPlatformPlay) &&
       arc::IsArcAllowedForProfile(
           Profile::FromBrowserContext(web_contents()->GetBrowserContext()))) {
     return true;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return false;
 }
 
-bool AppBannerManagerDesktop::IsRelatedAppInstalled(
+bool AppBannerManagerDesktop::IsRelatedNonWebAppInstalled(
     const blink::Manifest::RelatedApplication& related_app) const {
-  std::string id = base::UTF16ToUTF8(related_app.id.string());
-  if (id.empty())
+  if (!related_app.id || related_app.id->empty() || !related_app.platform ||
+      related_app.platform->empty()) {
     return false;
+  }
 
-  const base::string16& platform = related_app.platform.string();
+  const std::string id = base::UTF16ToUTF8(*related_app.id);
+  const std::u16string& platform = *related_app.platform;
 
   if (base::EqualsASCII(platform, kPlatformChromeWebStore)) {
     return extension_registry_->GetExtensionById(
                id, extensions::ExtensionRegistry::ENABLED) != nullptr;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (base::EqualsASCII(platform, kPlatformPlay)) {
     ArcAppListPrefs* arc_app_list_prefs =
         ArcAppListPrefs::Get(web_contents()->GetBrowserContext());
     return arc_app_list_prefs && arc_app_list_prefs->GetPackage(id) != nullptr;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   return false;
 }
 
-web_app::AppRegistrar& AppBannerManagerDesktop::registrar() {
-  auto* provider = web_app::WebAppProviderBase::GetProviderBase(
+bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
+  return web_app::FindInstalledAppWithUrlInScope(
+             Profile::FromBrowserContext(web_contents()->GetBrowserContext()),
+             manifest().start_url)
+      .has_value();
+}
+
+std::string AppBannerManagerDesktop::GetAppIdentifier() {
+  DCHECK(!blink::IsEmptyManifest(manifest()));
+  return web_app::GenerateAppIdUnhashedFromManifest(manifest());
+}
+
+web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {
+  auto* provider = web_app::WebAppProvider::GetForWebApps(
       Profile::FromBrowserContext(web_contents()->GetBrowserContext()));
   DCHECK(provider);
   return provider->registrar();
 }
 
-bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() {
-  DCHECK(!manifest_.IsEmpty());
-  return registrar().IsLocallyInstalled(manifest_.start_url);
-}
-
 bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
-  web_app::AppId app_id = web_app::GenerateAppIdFromURL(manifest_.start_url);
-  DCHECK(registrar().IsLocallyInstalled(app_id));
+  // Only allow replacement install if this specific app is already installed.
+  web_app::AppId app_id = web_app::GenerateAppIdFromManifest(manifest());
+  if (!registrar().IsLocallyInstalled(app_id))
+    return false;
+
   auto display_mode = registrar().GetAppUserDisplayMode(app_id);
   return display_mode == blink::mojom::DisplayMode::kBrowser;
 }
@@ -154,7 +193,7 @@ void AppBannerManagerDesktop::OnEngagementEvent(
     content::WebContents* web_contents,
     const GURL& url,
     double score,
-    SiteEngagementService::EngagementType type) {
+    site_engagement::EngagementType type) {
   if (gDisableTriggeringForTesting)
     return;
 
@@ -163,17 +202,33 @@ void AppBannerManagerDesktop::OnEngagementEvent(
 
 void AppBannerManagerDesktop::OnWebAppInstalled(
     const web_app::AppId& installed_app_id) {
-  base::Optional<web_app::AppId> app_id =
+  absl::optional<web_app::AppId> app_id =
       registrar().FindAppWithUrlInScope(validated_url_);
   if (app_id.has_value() && *app_id == installed_app_id &&
       registrar().GetAppUserDisplayMode(*app_id) ==
           blink::mojom::DisplayMode::kStandalone) {
-    OnInstall(registrar().GetAppDisplayMode(*app_id));
+    OnInstall(registrar().GetEffectiveDisplayModeFromManifest(*app_id));
+    SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
   }
 }
 
+void AppBannerManagerDesktop::OnWebAppWillBeUninstalled(
+    const web_app::AppId& app_id) {
+  // WebAppTabHelper has a app_id but it is reset during
+  // OnWebAppWillBeUninstalled so using FindAppWithUrlInScope.
+  auto local_app_id = registrar().FindAppWithUrlInScope(validated_url());
+  if (app_id == local_app_id)
+    uninstalling_app_id_ = app_id;
+}
+
+void AppBannerManagerDesktop::OnWebAppUninstalled(
+    const web_app::AppId& app_id) {
+  if (uninstalling_app_id_ == app_id)
+    RecheckInstallabilityForLoadedPage(validated_url(), true);
+}
+
 void AppBannerManagerDesktop::OnAppRegistrarDestroyed() {
-  registrar_observer_.RemoveAll();
+  registrar_observation_.Reset();
 }
 
 void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
@@ -182,7 +237,7 @@ void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
 
   // TODO(loyso): Take appropriate action if WebApps disabled for profile.
   web_app::CreateWebAppFromManifest(
-      contents, install_source,
+      contents, /*bypass_service_worker_check=*/false, install_source,
       base::BindOnce(&AppBannerManagerDesktop::DidFinishCreatingWebApp,
                      weak_factory_.GetWeakPtr()));
 }
@@ -209,6 +264,6 @@ void AppBannerManagerDesktop::DidFinishCreatingWebApp(
   }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerDesktop)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AppBannerManagerDesktop);
 
-}  // namespace banners
+}  // namespace webapps

@@ -15,11 +15,11 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/run_loop.h"
-#include "base/stl_util.h"
 #include "base/time/time.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -60,9 +60,41 @@ class TestGamepadObserver : public ui::GamepadObserver {
 }  // namespace
 
 namespace ui {
+
+class TestGamepadEventConverterEvdev : public ui::GamepadEventConverterEvdev {
+ public:
+  TestGamepadEventConverterEvdev(base::ScopedFD fd,
+                                 base::FilePath path,
+                                 int id,
+                                 const EventDeviceInfo& info,
+                                 DeviceEventDispatcherEvdev* dispatcher)
+      : GamepadEventConverterEvdev(std::move(fd), path, id, info, dispatcher) {}
+
+  int UploadFfEffect(const base::ScopedFD& fd,
+                     struct ff_effect* effect) override {
+    uploaded_ff_effects_.push_back(*effect);
+    return kEffectId;
+  }
+
+  ssize_t WriteEvent(const base::ScopedFD& fd,
+                     const struct input_event& event) override {
+    written_input_events_.push_back(event);
+    return 0;
+  }
+
+  int kEffectId = 0;
+  std::vector<ff_effect> uploaded_ff_effects_;
+  std::vector<input_event> written_input_events_;
+};
+
 class GamepadEventConverterEvdevTest : public testing::Test {
  public:
   GamepadEventConverterEvdevTest() {}
+
+  GamepadEventConverterEvdevTest(const GamepadEventConverterEvdevTest&) =
+      delete;
+  GamepadEventConverterEvdevTest& operator=(
+      const GamepadEventConverterEvdevTest&) = delete;
 
   // Overriden from testing::Test:
   void SetUp() override {
@@ -77,7 +109,7 @@ class GamepadEventConverterEvdevTest : public testing::Test {
         ui::CreateDeviceEventDispatcherEvdevForTest(event_factory_.get());
   }
 
-  std::unique_ptr<ui::GamepadEventConverterEvdev> CreateDevice(
+  std::unique_ptr<ui::TestGamepadEventConverterEvdev> CreateDevice(
       const ui::DeviceCapabilities& caps) {
     int evdev_io[2];
     if (pipe(evdev_io))
@@ -87,7 +119,7 @@ class GamepadEventConverterEvdevTest : public testing::Test {
 
     ui::EventDeviceInfo devinfo;
     CapabilitiesToDeviceInfo(caps, &devinfo);
-    return std::make_unique<ui::GamepadEventConverterEvdev>(
+    return std::make_unique<ui::TestGamepadEventConverterEvdev>(
         std::move(events_in), base::FilePath(kTestDevicePath), 1, devinfo,
         dispatcher_.get());
   }
@@ -95,13 +127,11 @@ class GamepadEventConverterEvdevTest : public testing::Test {
  private:
   void DispatchEventForTest(ui::Event* event) {}
 
-  std::unique_ptr<ui::GamepadEventConverterEvdev> gamepad_evdev_;
+  std::unique_ptr<ui::TestGamepadEventConverterEvdev> gamepad_evdev_;
   std::unique_ptr<ui::DeviceManager> device_manager_;
   std::unique_ptr<ui::KeyboardLayoutEngine> keyboard_layout_engine_;
   std::unique_ptr<ui::EventFactoryEvdev> event_factory_;
   std::unique_ptr<ui::DeviceEventDispatcherEvdev> dispatcher_;
-
-  DISALLOW_COPY_AND_ASSIGN(GamepadEventConverterEvdevTest);
 };
 
 struct ExpectedEvent {
@@ -110,9 +140,20 @@ struct ExpectedEvent {
   double value;
 };
 
+struct ExpectedVibrationEvent {
+  uint16_t code;
+  double value;
+};
+
+struct ExpectedVibrationEffect {
+  uint16_t duration;
+  double strong_magnitude;
+  double weak_magnitude;
+};
+
 TEST_F(GamepadEventConverterEvdevTest, XboxGamepadEvents) {
   TestGamepadObserver observer;
-  std::unique_ptr<ui::GamepadEventConverterEvdev> dev =
+  std::unique_ptr<ui::TestGamepadEventConverterEvdev> dev =
       CreateDevice(kXboxGamepad);
 
   struct input_event mock_kernel_queue[] = {
@@ -178,6 +219,37 @@ TEST_F(GamepadEventConverterEvdevTest, XboxGamepadEvents) {
     EXPECT_EQ(expected_events[i].code, observer.events[i].code());
     EXPECT_FLOAT_EQ(expected_events[i].value, observer.events[i].value());
   }
+}
+
+TEST_F(GamepadEventConverterEvdevTest, XboxGamepadVibrationEvents) {
+  TestGamepadObserver observer;
+  std::unique_ptr<ui::TestGamepadEventConverterEvdev> dev =
+      CreateDevice(kXboxGamepad);
+
+  struct ExpectedVibrationEvent expected_events[] = {
+      {static_cast<uint16_t>(dev->kEffectId), 1},
+      {static_cast<uint16_t>(dev->kEffectId), 0}};
+  struct ExpectedVibrationEffect expected_effect = {10000, 0x8080, 0x8080};
+
+  dev->PlayVibrationEffect(0x80, 10000);
+  EXPECT_EQ(1UL, dev->written_input_events_.size());
+
+  input_event received_vibration_event = dev->written_input_events_[0];
+  EXPECT_EQ(expected_events[0].code, received_vibration_event.code);
+  EXPECT_EQ(expected_events[0].value, received_vibration_event.value);
+
+  ff_effect received_effect = dev->uploaded_ff_effects_[0];
+  EXPECT_EQ(expected_effect.duration, received_effect.replay.length);
+  EXPECT_EQ(expected_effect.strong_magnitude,
+            received_effect.u.rumble.strong_magnitude);
+  EXPECT_EQ(expected_effect.weak_magnitude,
+            received_effect.u.rumble.weak_magnitude);
+
+  dev->StopVibration();
+  EXPECT_EQ(2UL, dev->written_input_events_.size());
+  input_event received_cancel_event = dev->written_input_events_[1];
+  EXPECT_EQ(expected_events[1].code, received_cancel_event.code);
+  EXPECT_EQ(expected_events[1].value, received_cancel_event.value);
 }
 
 }  // namespace ui

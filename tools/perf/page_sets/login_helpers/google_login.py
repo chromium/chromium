@@ -3,6 +3,8 @@
 # found in the LICENSE file.
 from page_sets.login_helpers import login_utils
 
+from page_sets.helpers import override_online
+
 # Selectors for the email, password, and next buttons for google login flow.
 # Use multiple selectors to allow for different versions of the site.
 _EMAIL_SELECTOR = ','.join([
@@ -56,8 +58,9 @@ def BaseLoginGoogle(action_runner,
       credential, credentials_path=credentials_path)
 
   action_runner.Navigate(
-       'https://accounts.google.com/ServiceLogin?continue='
-       'https%3A%2F%2Faccounts.google.com%2FManageAccount')
+      'https://accounts.google.com/ServiceLogin?continue='
+      'https%3A%2F%2Faccounts.google.com%2FManageAccount',
+      override_online.ALWAYS_ONLINE)
 
   # Wait until either the email or password input is visible.
   action_runner.WaitForJavaScriptCondition('{{ @a }} || {{ @b }}',

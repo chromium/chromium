@@ -17,18 +17,20 @@ class ZipArchiverImpl : public mojom::ZipArchiver {
  public:
   ZipArchiverImpl(mojo::PendingReceiver<mojom::ZipArchiver> receiver,
                   base::OnceClosure connection_error_handler);
+
+  ZipArchiverImpl(const ZipArchiverImpl&) = delete;
+  ZipArchiverImpl& operator=(const ZipArchiverImpl&) = delete;
+
   ~ZipArchiverImpl() override;
 
-  void Archive(mojo::ScopedHandle src_file_handle,
-               mojo::ScopedHandle zip_file_handle,
+  void Archive(mojo::PlatformHandle src_file_handle,
+               mojo::PlatformHandle zip_file_handle,
                const std::string& filename_in_zip,
                const std::string& password,
                ArchiveCallback callback) override;
 
  private:
   mojo::Receiver<mojom::ZipArchiver> receiver_;
-
-  DISALLOW_COPY_AND_ASSIGN(ZipArchiverImpl);
 };
 
 }  // namespace chrome_cleaner

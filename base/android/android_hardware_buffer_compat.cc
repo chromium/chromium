@@ -7,7 +7,7 @@
 #include <dlfcn.h>
 
 #include "base/android/build_info.h"
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace base {
 
@@ -64,8 +64,8 @@ bool AndroidHardwareBufferCompat::IsSupportAvailable() {
 
 // static
 AndroidHardwareBufferCompat& AndroidHardwareBufferCompat::GetInstance() {
-  static base::NoDestructor<AndroidHardwareBufferCompat> compat;
-  return *compat;
+  static AndroidHardwareBufferCompat compat;
+  return compat;
 }
 
 void AndroidHardwareBufferCompat::Allocate(const AHardwareBuffer_Desc* desc,
@@ -76,6 +76,11 @@ void AndroidHardwareBufferCompat::Allocate(const AHardwareBuffer_Desc* desc,
 
 void AndroidHardwareBufferCompat::Acquire(AHardwareBuffer* buffer) {
   DCHECK(IsSupportAvailable());
+
+  // Null |buffer| is not allowed by |acquire_| and it fails somewhere in
+  // android framework code. Hence adding a DCHECK here for documenting this
+  // info and fail before.
+  DCHECK(buffer);
   acquire_(buffer);
 }
 

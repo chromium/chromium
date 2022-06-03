@@ -1,7 +1,0 @@
-CACHE MANIFEST # v1
-/media-resources/media-file.js
-/media-resources/content/test.mp4
-/media-resources/content/test.ogv
-
-/resources/testharness.js
-/resources/testharnessreport.js

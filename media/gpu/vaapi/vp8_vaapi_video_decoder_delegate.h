@@ -13,6 +13,7 @@
 
 namespace media {
 
+class ScopedVABuffer;
 class VP8Picture;
 
 class VP8VaapiVideoDecoderDelegate : public VP8Decoder::VP8Accelerator,
@@ -21,15 +22,26 @@ class VP8VaapiVideoDecoderDelegate : public VP8Decoder::VP8Accelerator,
   VP8VaapiVideoDecoderDelegate(DecodeSurfaceHandler<VASurface>* const vaapi_dec,
                                scoped_refptr<VaapiWrapper> vaapi_wrapper);
 
+  VP8VaapiVideoDecoderDelegate(const VP8VaapiVideoDecoderDelegate&) = delete;
+  VP8VaapiVideoDecoderDelegate& operator=(const VP8VaapiVideoDecoderDelegate&) =
+      delete;
+
   ~VP8VaapiVideoDecoderDelegate() override;
 
   // VP8Decoder::VP8Accelerator implementation.
   scoped_refptr<VP8Picture> CreateVP8Picture() override;
   bool SubmitDecode(scoped_refptr<VP8Picture> picture,
                     const Vp8ReferenceFrameVector& reference_frames) override;
-  bool OutputPicture(const scoped_refptr<VP8Picture>& pic) override;
+  bool OutputPicture(scoped_refptr<VP8Picture> pic) override;
 
-  DISALLOW_COPY_AND_ASSIGN(VP8VaapiVideoDecoderDelegate);
+  // VaapiVideoDecoderDelegate impl.
+  void OnVAContextDestructionSoon() override;
+
+ private:
+  std::unique_ptr<ScopedVABuffer> iq_matrix_;
+  std::unique_ptr<ScopedVABuffer> prob_buffer_;
+  std::unique_ptr<ScopedVABuffer> picture_params_;
+  std::unique_ptr<ScopedVABuffer> slice_params_;
 };
 
 }  // namespace media

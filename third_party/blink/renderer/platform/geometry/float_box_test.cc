@@ -32,14 +32,14 @@ namespace blink {
 
 TEST(FloatBoxTest, SimpleCreationTest) {
   FloatBox box(1, 2, 3, 4, 5, 6);
-  EXPECT_EQ(1, box.X());
-  EXPECT_EQ(2, box.Y());
-  EXPECT_EQ(3, box.Z());
-  EXPECT_EQ(4, box.Width());
-  EXPECT_EQ(5, box.Height());
-  EXPECT_EQ(6, box.Depth());
-  EXPECT_EQ(5, box.Right());
-  EXPECT_EQ(7, box.Bottom());
+  EXPECT_EQ(1, box.x());
+  EXPECT_EQ(2, box.y());
+  EXPECT_EQ(3, box.z());
+  EXPECT_EQ(4, box.width());
+  EXPECT_EQ(5, box.height());
+  EXPECT_EQ(6, box.depth());
+  EXPECT_EQ(5, box.right());
+  EXPECT_EQ(7, box.bottom());
   EXPECT_EQ(9, box.front());
 }
 
@@ -48,7 +48,7 @@ TEST(FloatBoxTest, PositionTest) {
   box.Move(FloatPoint3D(1, 2, 3));
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(1, 2, 3, 4, 4, 4), box);
-  box.SetOrigin(FloatPoint3D(-1, -2, -3));
+  box.set_origin(FloatPoint3D(-1, -2, -3));
   box.Move(FloatPoint3D(-1, -2, -3));
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-2, -4, -6, 4, 4, 4), box);
@@ -58,7 +58,7 @@ TEST(FloatBoxTest, CopyTest) {
   FloatBox box(1, 2, 3, 4, 4, 4);
   FloatBox box2(box);
   EXPECT_EQ(box, box2);
-  box.SetSize(FloatPoint3D(3, 3, 3));
+  box.set_size(FloatPoint3D(3, 3, 3));
   EXPECT_NE(box, box2);
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(1, 2, 3, 3, 3, 3), box);
@@ -97,13 +97,13 @@ TEST(FloatBoxTest, UnionTest) {
   FloatBox box;
   EXPECT_TRUE(box.IsEmpty());
   FloatBox unioned_box(3, 5, 6, 5, 3, 9);
-  box.UnionBounds(unioned_box);
+  box.Union(unioned_box);
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual, unioned_box, box);
 
-  box.UnionBounds(FloatBox());
+  box.Union(FloatBox());
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual, unioned_box, box);
 
-  box.UnionBounds(FloatBox(0, 0, 0, 1, 1, 1));
+  box.Union(FloatBox(0, 0, 0, 1, 1, 1));
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, 0, 0, 8, 8, 15), box);
 }

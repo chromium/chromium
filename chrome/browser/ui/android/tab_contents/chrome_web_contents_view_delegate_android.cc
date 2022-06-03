@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/android/tab_contents/chrome_web_contents_view_delegate_android.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "chrome/browser/ui/android/context_menu_helper.h"
+#include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_view_delegate.h"
-#include "content/public/common/context_menu_params.h"
 
 ChromeWebContentsViewDelegateAndroid::ChromeWebContentsViewDelegateAndroid(
     content::WebContents* web_contents)
@@ -27,7 +27,7 @@ ChromeWebContentsViewDelegateAndroid::GetDragDestDelegate() {
 }
 
 void ChromeWebContentsViewDelegateAndroid::ShowContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // TODO(dtrainor, kouhei): Give WebView a Populator/delegate so it can use
   // the same context menu code.

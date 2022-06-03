@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include "base/files/file_path.h"
-#include "base/strings/string16.h"
 #include "chrome/chrome_cleaner/os/scoped_service_handle.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,16 +24,16 @@ class TestScopedServiceHandle : public ScopedServiceHandle {
   ::testing::AssertionResult StopAndDelete();
   void Close();
 
-  const base::char16* service_name() const { return service_name_.c_str(); }
+  const wchar_t* service_name() const { return service_name_.c_str(); }
 
  private:
-  base::string16 service_name_;
+  std::wstring service_name_;
 };
 
 // Returns a random string that is not an existing service name. This is a
 // best-effort check as a service with that name could be created before the
 // function returns.
-base::string16 RandomUnusedServiceNameForTesting();
+std::wstring RandomUnusedServiceNameForTesting();
 
 // Tries to stop any copies of the test service executable that are running.
 // Returns false if an executable remains running.

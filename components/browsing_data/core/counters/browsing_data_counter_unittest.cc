@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -25,16 +25,13 @@ namespace {
 
 static const char* kTestingDatatypePref = "counter.testing.datatype";
 
-void IgnoreResult(std::unique_ptr<BrowsingDataCounter::Result> result) {
-}
-
 class MockBrowsingDataCounter : public BrowsingDataCounter {
  public:
-  MockBrowsingDataCounter() {}
-  ~MockBrowsingDataCounter() override {}
+  MockBrowsingDataCounter() = default;
+  ~MockBrowsingDataCounter() override = default;
 
   // There are two overloaded ReportResult methods. We need to disambiguate
-  // between them to be able to bind one of them in base::Bind().
+  // between them to be able to bind one of them in base::BindOnce().
   using ReportResultType =
       void(MockBrowsingDataCounter::*)(BrowsingDataCounter::ResultInt);
 
@@ -53,7 +50,7 @@ class MockBrowsingDataCounter : public BrowsingDataCounter {
                            &MockBrowsingDataCounter::ReportResult),
                        base::Unretained(this),
                        static_cast<BrowsingDataCounter::ResultInt>(0)),
-        base::TimeDelta::FromMilliseconds(delay_ms_));
+        base::Milliseconds(delay_ms_));
   }
 
   void OnInitialized() override {}
@@ -66,7 +63,7 @@ class MockBrowsingDataCounter : public BrowsingDataCounter {
 
   // Blocks the UI thread until the counter has finished.
   void WaitForResult() {
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -83,14 +80,14 @@ class BrowsingDataCounterTest : public testing::Test {
  public:
   void SetUp() override {
     testing::Test::SetUp();
-    pref_service_.reset(new TestingPrefServiceSimple());
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     pref_service_->registry()->RegisterBooleanPref(kTestingDatatypePref, true);
     pref_service_->registry()->RegisterIntegerPref(prefs::kDeleteTimePeriod, 0);
 
-    counter_.reset(new MockBrowsingDataCounter());
+    counter_ = std::make_unique<MockBrowsingDataCounter>();
     counter_->Init(pref_service_.get(),
                    browsing_data::ClearBrowsingDataTab::ADVANCED,
-                   base::Bind(&IgnoreResult));
+                   base::DoNothing());
   }
 
   void TearDown() override {

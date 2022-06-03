@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <memory>
+
 #include <vector>
 
 #include "base/bind.h"
@@ -30,16 +32,14 @@ const int kCompatibleVersion = 1;
 
 }  // namespace
 
-AffiliationDatabase::AffiliationDatabase() {
-}
+AffiliationDatabase::AffiliationDatabase() = default;
 
-AffiliationDatabase::~AffiliationDatabase() {
-}
+AffiliationDatabase::~AffiliationDatabase() = default;
 
 bool AffiliationDatabase::Init(const base::FilePath& path) {
-  sql_connection_.reset(new sql::Database);
+  sql_connection_ = std::make_unique<sql::Database>();
   sql_connection_->set_histogram_tag("Affiliation");
-  sql_connection_->set_error_callback(base::Bind(
+  sql_connection_->set_error_callback(base::BindRepeating(
       &AffiliationDatabase::SQLErrorCallback, base::Unretained(this)));
 
   if (!sql_connection_->Open(path))

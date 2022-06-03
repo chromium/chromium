@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/html/html_image_loader.h"
 #include "third_party/blink/renderer/core/html/html_object_element.h"
@@ -42,17 +43,14 @@ namespace blink {
 
 HTMLEmbedElement::HTMLEmbedElement(Document& document,
                                    const CreateElementFlags flags)
-    : HTMLPlugInElement(html_names::kEmbedTag,
-                        document,
-                        flags,
-                        kShouldPreferPlugInsForImages) {
+    : HTMLPlugInElement(html_names::kEmbedTag, document, flags) {
   EnsureUserAgentShadowRoot();
 }
 
 const AttrNameToTrustedType& HTMLEmbedElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", SpecificTrustedType::kTrustedScriptURL}}));
+                      ({{"src", SpecificTrustedType::kScriptURL}}));
   return attribute_map;
 }
 
@@ -60,10 +58,8 @@ static inline LayoutEmbeddedContent* FindPartLayoutObject(const Node* n) {
   if (!n->GetLayoutObject())
     n = Traversal<HTMLObjectElement>::FirstAncestor(*n);
 
-  if (n && n->GetLayoutObject() &&
-      n->GetLayoutObject()->IsLayoutEmbeddedContent())
-    return ToLayoutEmbeddedContent(n->GetLayoutObject());
-
+  if (n)
+    return DynamicTo<LayoutEmbeddedContent>(n->GetLayoutObject());
   return nullptr;
 }
 
@@ -83,8 +79,8 @@ void HTMLEmbedElement::CollectStyleForPresentationAttribute(
     const AtomicString& value,
     MutableCSSPropertyValueSet* style) {
   if (name == html_names::kHiddenAttr) {
-    if (DeprecatedEqualIgnoringCase(value, "yes") ||
-        DeprecatedEqualIgnoringCase(value, "true")) {
+    if (EqualIgnoringASCIICase(value, "yes") ||
+        EqualIgnoringASCIICase(value, "true")) {
       AddPropertyToPresentationAttributeStyle(
           style, CSSPropertyID::kWidth, 0,
           CSSPrimitiveValue::UnitType::kPixels);
@@ -104,9 +100,9 @@ void HTMLEmbedElement::ParseAttribute(
     wtf_size_t pos = service_type_.Find(";");
     if (pos != kNotFound)
       SetServiceType(service_type_.Left(pos));
+    SetDisposeView();
     if (GetLayoutObject()) {
       SetNeedsPluginUpdate(true);
-      SetDisposeView();
       GetLayoutObject()->SetNeedsLayoutAndFullPaintInvalidation(
           "Embed type changed");
     }
@@ -116,18 +112,25 @@ void HTMLEmbedElement::ParseAttribute(
     SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
     SetDisposeView();
   } else if (params.name == html_names::kSrcAttr) {
+    // https://html.spec.whatwg.org/multipage/iframe-embed-object.html#the-embed-element
+    // The spec says that when the url attribute is changed and the embed
+    // element is "potentially active," we should run the embed element setup
+    // steps.
+    // We don't follow the "potentially active" definition precisely here, but
+    // it works.
     SetUrl(StripLeadingAndTrailingHTMLSpaces(params.new_value));
+    SetDisposeView();
     if (GetLayoutObject() && IsImageType()) {
-      SetDisposeView();
       if (!image_loader_)
         image_loader_ = MakeGarbageCollected<HTMLImageLoader>(this);
       image_loader_->UpdateFromElement(ImageLoader::kUpdateIgnorePreviousError);
     } else if (GetLayoutObject()) {
-      // Check if this Embed can transition from potentially-active to active
-      if (FastHasAttribute(html_names::kTypeAttr)) {
-        SetNeedsPluginUpdate(true);
-        ReattachOnPluginChangeIfNeeded();
+      if (!FastHasAttribute(html_names::kTypeAttr)) {
+        UseCounter::Count(GetDocument(),
+                          WebFeature::kEmbedElementWithoutTypeSrcChanged);
       }
+      SetNeedsPluginUpdate(true);
+      ReattachOnPluginChangeIfNeeded();
     }
   } else {
     HTMLPlugInElement::ParseAttribute(params);

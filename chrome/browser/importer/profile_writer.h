@@ -5,12 +5,10 @@
 #ifndef CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_
 #define CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_
 
+#include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
-#include "base/strings/string16.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/history/core/browser/history_types.h"
@@ -21,15 +19,21 @@ struct ImportedBookmarkEntry;
 class Profile;
 
 namespace autofill {
-struct PasswordForm;
 class AutofillEntry;
 }
+
+namespace password_manager {
+struct PasswordForm;
+}  // namespace password_manager
 
 // ProfileWriter encapsulates profile for writing entries into it.
 // This object must be invoked on UI thread.
 class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
  public:
   explicit ProfileWriter(Profile* profile);
+
+  ProfileWriter(const ProfileWriter&) = delete;
+  ProfileWriter& operator=(const ProfileWriter&) = delete;
 
   // These functions return true if the corresponding model has been loaded.
   // If the models haven't been loaded, the importer waits to run until they've
@@ -38,7 +42,7 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
   virtual bool TemplateURLServiceIsLoaded() const;
 
   // Helper methods for adding data to local stores.
-  virtual void AddPasswordForm(const autofill::PasswordForm& form);
+  virtual void AddPasswordForm(const password_manager::PasswordForm& form);
 
   virtual void AddHistoryPage(const history::URLRows& page,
                               history::VisitSource visit_source);
@@ -63,9 +67,8 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
   // For example, if |first_folder_name| is 'Imported from IE' and a folder with
   // the name 'Imported from IE' already exists in the bookmarks toolbar, then
   // we will instead create a subfolder named 'Imported from IE (1)'.
-  virtual void AddBookmarks(
-      const std::vector<ImportedBookmarkEntry>& bookmarks,
-      const base::string16& top_level_folder_name);
+  virtual void AddBookmarks(const std::vector<ImportedBookmarkEntry>& bookmarks,
+                            const std::u16string& top_level_folder_name);
 
   virtual void AddFavicons(const favicon_base::FaviconUsageDataList& favicons);
 
@@ -91,8 +94,6 @@ class ProfileWriter : public base::RefCountedThreadSafe<ProfileWriter> {
 
  private:
   Profile* const profile_;
-
-  DISALLOW_COPY_AND_ASSIGN(ProfileWriter);
 };
 
 #endif  // CHROME_BROWSER_IMPORTER_PROFILE_WRITER_H_

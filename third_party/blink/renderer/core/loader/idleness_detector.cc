@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/loader/idleness_detector.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/time/default_tick_clock.h"
 #include "third_party/blink/public/platform/modules/service_worker/web_service_worker_network_provider.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -200,8 +200,8 @@ IdlenessDetector::IdlenessDetector(LocalFrame* local_frame,
           this,
           &IdlenessDetector::NetworkQuietTimerFired) {
   if (local_frame->GetSettings()) {
-    network_quiet_window_ = base::TimeDelta::FromSecondsD(
-        local_frame->GetSettings()->GetNetworkQuietTimeout());
+    network_quiet_window_ =
+        base::Seconds(local_frame->GetSettings()->GetNetworkQuietTimeout());
   }
 }
 
@@ -221,8 +221,9 @@ void IdlenessDetector::NetworkQuietTimerFired(TimerBase*) {
   }
 }
 
-void IdlenessDetector::Trace(blink::Visitor* visitor) {
+void IdlenessDetector::Trace(Visitor* visitor) const {
   visitor->Trace(local_frame_);
+  visitor->Trace(network_quiet_timer_);
 }
 
 }  // namespace blink

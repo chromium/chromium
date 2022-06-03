@@ -8,33 +8,52 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
+#include "content/common/web_ui.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "content/public/renderer/render_frame_observer_tracker.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_receiver.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 
 namespace content {
 
 class WebUIExtensionData
     : public RenderFrameObserver,
-      public RenderFrameObserverTracker<WebUIExtensionData> {
+      public RenderFrameObserverTracker<WebUIExtensionData>,
+      public mojom::WebUI {
  public:
-  explicit WebUIExtensionData(RenderFrame* render_frame);
+  static void Create(RenderFrame* render_frame,
+                     mojo::PendingAssociatedReceiver<mojom::WebUI> receiver,
+                     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
+
+  WebUIExtensionData() = delete;
+
+  WebUIExtensionData(const WebUIExtensionData&) = delete;
+  WebUIExtensionData& operator=(const WebUIExtensionData&) = delete;
+
   ~WebUIExtensionData() override;
 
   // Returns value for a given |key|. Will return an empty string if no such key
   // exists in the |variable_map_|.
   std::string GetValue(const std::string& key) const;
 
- private:
-  // RenderFrameObserver implementation.
-  bool OnMessageReceived(const IPC::Message& message) override;
-  void OnDestruct() override;
+  void SendMessage(const std::string& message,
+                   std::unique_ptr<base::ListValue> args);
 
-  void OnSetWebUIProperty(const std::string& name, const std::string& value);
+ private:
+  // Use Create() instead.
+  WebUIExtensionData(RenderFrame* render_frame,
+                     mojo::PendingAssociatedRemote<mojom::WebUIHost> remote);
+
+  // mojom::WebUI:
+  void SetProperty(const std::string& name, const std::string& value) override;
+
+  // RenderFrameObserver:
+  void OnDestruct() override;
 
   std::map<std::string, std::string> variable_map_;
 
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebUIExtensionData);
+  mojo::AssociatedRemote<mojom::WebUIHost> remote_;
 };
 
 }  // namespace content

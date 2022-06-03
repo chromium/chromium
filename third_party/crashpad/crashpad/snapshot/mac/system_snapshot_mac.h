@@ -19,7 +19,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "snapshot/system_snapshot.h"
 #include "util/misc/initialization_state_dcheck.h"
 
@@ -33,6 +32,10 @@ namespace internal {
 class SystemSnapshotMac final : public SystemSnapshot {
  public:
   SystemSnapshotMac();
+
+  SystemSnapshotMac(const SystemSnapshotMac&) = delete;
+  SystemSnapshotMac& operator=(const SystemSnapshotMac&) = delete;
+
   ~SystemSnapshotMac() override;
 
   //! \brief Initializes the object.
@@ -91,8 +94,6 @@ class SystemSnapshotMac final : public SystemSnapshot {
   int os_version_bugfix_;
   bool os_server_;
   InitializationStateDcheck initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemSnapshotMac);
 };
 
 }  // namespace internal

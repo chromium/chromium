@@ -7,27 +7,27 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #define IPC_MESSAGE_IMPL
-#undef SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
+#undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
 
 // Generate ipc protobuf traits write methods.
 #include "chrome/common/safe_browsing/protobuf_message_write_macros.h"
 namespace IPC {
-#undef SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
+#undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
 }  // namespace IPC
 
 // Generate ipc protobuf traits read methods.
 #include "chrome/common/safe_browsing/protobuf_message_read_macros.h"
 namespace IPC {
-#undef SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
+#undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
 }  // namespace IPC
 
 // Generate ipc protobuf traits log methods.
 #include "chrome/common/safe_browsing/protobuf_message_log_macros.h"
 namespace IPC {
-#undef SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
+#undef CHROME_COMMON_SAFE_BROWSING_IPC_PROTOBUF_MESSAGE_TEST_MESSAGES_H_
 #include "chrome/common/safe_browsing/ipc_protobuf_message_test_messages.h"
 }  // namespace IPC
 

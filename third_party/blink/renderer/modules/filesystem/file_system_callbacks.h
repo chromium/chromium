@@ -31,8 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_SYSTEM_CALLBACKS_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_FILE_SYSTEM_CALLBACKS_H_
 
-#include <memory>
-
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_void_callback.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_entry_callback.h"
@@ -80,9 +78,7 @@ class SnapshotFileCallbackBase {
   virtual ~SnapshotFileCallbackBase() = default;
 
   // Called when a snapshot file is created successfully.
-  virtual void DidCreateSnapshotFile(
-      const FileMetadata&,
-      scoped_refptr<BlobDataHandle> snapshot) = 0;
+  virtual void DidCreateSnapshotFile(const FileMetadata&) = 0;
 
   virtual void DidFail(base::File::Error error) = 0;
 };
@@ -245,8 +241,7 @@ class SnapshotFileCallback final : public SnapshotFileCallbackBase,
                        ExecutionContext*);
 
   // Called when a snapshot file is created successfully.
-  void DidCreateSnapshotFile(const FileMetadata&,
-                             scoped_refptr<BlobDataHandle> snapshot) override;
+  void DidCreateSnapshotFile(const FileMetadata&) override;
 
   // Called when a request operation has failed.
   void DidFail(base::File::Error error) override;

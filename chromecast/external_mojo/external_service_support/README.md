@@ -12,9 +12,10 @@ The 'ChromiumServiceWrapper' class is intended to allow Mojo services that were
 intended to be embedded into cast_shell (or other ServiceManager embedder) to
 be moved into a completely separate process. It forwards 'BindInterface()'
 calls to the 'service_manager::Service' API. You can use
-'CreateChromiumServiceRequest()' to create a 'service_manager::ServiceRequest'
-to emulate the normal service creation flow; the
-'service_manager::Service::OnStart()' method will be called automatically.
+'CreateChromiumServiceReceiver()' to create a
+'mojo::PendingReceiver<service_manager::Service>' to emulate the normal service
+creation flow; the 'service_manager::Service::OnStart()' method will be called
+automatically.
 
 The 'standalone_mojo_broker' is intended for use on platforms where there is no
 cast_shell running; this allows Mojo services outside of cast_shell to

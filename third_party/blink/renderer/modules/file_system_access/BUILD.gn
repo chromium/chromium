@@ -1,0 +1,61 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/blink/renderer/modules/modules.gni")
+
+blink_modules_sources("file_system_access") {
+  sources = [
+    "data_transfer_item_file_system_access.cc",
+    "data_transfer_item_file_system_access.h",
+    "file_system_access_capacity_tracker.cc",
+    "file_system_access_capacity_tracker.h",
+    "file_system_access_error.cc",
+    "file_system_access_error.h",
+    "file_system_access_file_delegate.h",
+    "file_system_access_incognito_file_delegate.cc",
+    "file_system_access_incognito_file_delegate.h",
+    "file_system_access_regular_file_delegate.cc",
+    "file_system_access_regular_file_delegate.h",
+    "file_system_directory_handle.cc",
+    "file_system_directory_handle.h",
+    "file_system_directory_iterator.cc",
+    "file_system_directory_iterator.h",
+    "file_system_file_handle.cc",
+    "file_system_file_handle.h",
+    "file_system_handle.cc",
+    "file_system_handle.h",
+    "file_system_sync_access_handle.cc",
+    "file_system_sync_access_handle.h",
+    "file_system_underlying_sink.cc",
+    "file_system_underlying_sink.h",
+    "file_system_writable_file_stream.cc",
+    "file_system_writable_file_stream.h",
+    "global_file_system_access.cc",
+    "global_file_system_access.h",
+    "storage_manager_file_system_access.cc",
+    "storage_manager_file_system_access.h",
+  ]
+
+  deps = [ "//third_party/blink/renderer/platform" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "global_file_system_access_test.cc" ]
+
+  configs += [
+    "//third_party/blink/renderer:config",
+    "//third_party/blink/renderer:inside_blink",
+    "//third_party/blink/renderer/core:blink_core_pch",
+  ]
+
+  deps = [
+    "//testing/gtest",
+    "//third_party/blink/renderer/core:unit_test_support",
+    "//third_party/blink/renderer/modules",
+    "//third_party/blink/renderer/platform",
+    "//third_party/blink/renderer/platform:test_support",
+    "//third_party/blink/renderer/platform/wtf",
+  ]
+}

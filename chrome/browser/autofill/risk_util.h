@@ -17,6 +17,8 @@ class WebContents;
 
 namespace autofill {
 
+namespace risk_util {
+
 // Loads risk data for the client, getting the device's risk fingerprint before
 // calling |callback|. |obfuscated_gaia_id| is used in the fingerprinting
 // process if provided. |web_contents| is used during fingerprinting as well,
@@ -25,6 +27,8 @@ namespace autofill {
 void LoadRiskData(uint64_t obfuscated_gaia_id,
                   content::WebContents* web_contents,
                   base::OnceCallback<void(const std::string&)> callback);
+
+}  // namespace risk_util
 
 }  // namespace autofill
 

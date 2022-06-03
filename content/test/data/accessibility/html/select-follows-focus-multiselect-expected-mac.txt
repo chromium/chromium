@@ -1,0 +1,6 @@
+AXWebArea AXSelected=0
+++AXTabGroup AXSelected=0
+++++AXRadioButton AXSelected=0 AXTitle='tab1' AXValue=0
+++++AXRadioButton AXSelected=1 AXTitle='tab2' AXValue=1
+++++AXRadioButton AXSelected=0 AXTitle='tab3' AXValue=0
+++AXStaticText AXSelected=0 AXValue='Done'

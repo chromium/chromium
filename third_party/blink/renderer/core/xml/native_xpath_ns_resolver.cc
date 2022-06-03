@@ -42,7 +42,7 @@ AtomicString NativeXPathNSResolver::lookupNamespaceURI(const String& prefix) {
   return node_ ? node_->lookupNamespaceURI(prefix) : g_null_atom;
 }
 
-void NativeXPathNSResolver::Trace(blink::Visitor* visitor) {
+void NativeXPathNSResolver::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
   XPathNSResolver::Trace(visitor);
 }

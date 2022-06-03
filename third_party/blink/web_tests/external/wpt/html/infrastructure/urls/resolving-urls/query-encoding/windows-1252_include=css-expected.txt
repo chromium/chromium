@@ -1,0 +1,24 @@
+This is a testharness.js-based test.
+FAIL CSS <link> (windows-1252) #<id> { background-image:<url> } assert_equals: expected "%C3%A5" but got "%E5"
+PASS CSS <link> (utf-8) #<id> { background-image:<url> }
+FAIL CSS <style> #<id> { background-image:<url> } assert_equals: expected "%C3%A5" but got "%E5"
+FAIL CSS <link> (windows-1252) #<id> { border-image-source:<url> } assert_equals: expected "%C3%A5" but got "%E5"
+PASS CSS <link> (utf-8) #<id> { border-image-source:<url> }
+FAIL CSS <style> #<id> { border-image-source:<url> } assert_equals: expected "%C3%A5" but got "%E5"
+FAIL CSS <link> (windows-1252) #<id>::before { content:<url> } assert_equals: expected "%C3%A5" but got "%E5"
+PASS CSS <link> (utf-8) #<id>::before { content:<url> }
+FAIL CSS <style> #<id>::before { content:<url> } assert_equals: expected "%C3%A5" but got "%E5"
+FAIL CSS <link> (windows-1252) @font-face { font-family:<id>; src:<url> } #<id> { font-family:<id> } assert_equals: expected "%C3%A5" but got "%E5"
+PASS CSS <link> (utf-8) @font-face { font-family:<id>; src:<url> } #<id> { font-family:<id> }
+FAIL CSS <style> @font-face { font-family:<id>; src:<url> } #<id> { font-family:<id> } assert_equals: expected "%C3%A5" but got "%E5"
+FAIL CSS <link> (windows-1252) #<id> { display:list-item; list-style-image:<url> } assert_equals: expected "%C3%A5" but got "%E5"
+PASS CSS <link> (utf-8) #<id> { display:list-item; list-style-image:<url> }
+FAIL CSS <style> #<id> { display:list-item; list-style-image:<url> } assert_equals: expected "%C3%A5" but got "%E5"
+PASS CSS <link> (windows-1252) @import <url>;
+PASS CSS <link> (utf-8) @import <url>;
+PASS CSS <style> @import <url>;
+FAIL CSS <link> (windows-1252) #<id> { cursor:<url>, pointer } assert_equals: expected "%C3%A5" but got "%E5"
+PASS CSS <link> (utf-8) #<id> { cursor:<url>, pointer }
+FAIL CSS <style> #<id> { cursor:<url>, pointer } assert_equals: expected "%C3%A5" but got "%E5"
+Harness: the test ran to completion.
+

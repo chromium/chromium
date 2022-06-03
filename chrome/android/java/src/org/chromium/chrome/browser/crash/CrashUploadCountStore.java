@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.crash;
 
-import org.chromium.chrome.browser.crash.MinidumpUploadService.ProcessType;
+import org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl.ProcessType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 

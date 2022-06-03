@@ -5,8 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_COPY_TEXTURE_CHROMIUM_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GLES2_CMD_COPY_TEXTURE_CHROMIUM_H_
 
-#include <vector>
-
 #include "base/macros.h"
 #include "gpu/command_buffer/common/gles2_cmd_utils.h"
 #include "gpu/command_buffer/service/feature_info.h"
@@ -47,6 +45,11 @@ enum class CopyTextureMethod {
 // The target of |dest_id| texture must be GL_TEXTURE_2D.
 class GPU_GLES2_EXPORT CopyTextureCHROMIUMResourceManager {
  public:
+  CopyTextureCHROMIUMResourceManager(
+      const CopyTextureCHROMIUMResourceManager&) = delete;
+  CopyTextureCHROMIUMResourceManager& operator=(
+      const CopyTextureCHROMIUMResourceManager&) = delete;
+
   virtual ~CopyTextureCHROMIUMResourceManager();
 
   // Factory generating a real implementation.
@@ -103,65 +106,11 @@ class GPU_GLES2_EXPORT CopyTextureCHROMIUMResourceManager {
       CopyTextureMethod method,
       CopyTexImageResourceManager* luma_emulation_blitter) = 0;
 
-  virtual void DoCopySubTextureWithTransform(
-      DecoderContext* decoder,
-      GLenum source_target,
-      GLuint source_id,
-      GLint source_level,
-      GLenum source_internal_format,
-      GLenum dest_target,
-      GLuint dest_id,
-      GLint dest_level,
-      GLenum dest_internal_format,
-      GLint xoffset,
-      GLint yoffset,
-      GLint x,
-      GLint y,
-      GLsizei width,
-      GLsizei height,
-      GLsizei dest_width,
-      GLsizei dest_height,
-      GLsizei source_width,
-      GLsizei source_height,
-      bool flip_y,
-      bool premultiply_alpha,
-      bool unpremultiply_alpha,
-      bool dither,
-      const GLfloat transform_matrix[16],
-      CopyTexImageResourceManager* luma_emulation_blitter) = 0;
-
-  // This will apply a transform on the texture coordinates before sampling
-  // the source texture and copying to the destination texture. The transform
-  // matrix should be given in column-major form, so it can be passed
-  // directly to GL.
-  virtual void DoCopyTextureWithTransform(
-      DecoderContext* decoder,
-      GLenum source_target,
-      GLuint source_id,
-      GLint source_level,
-      GLenum source_format,
-      GLenum dest_target,
-      GLuint dest_id,
-      GLint dest_level,
-      GLenum dest_format,
-      GLsizei width,
-      GLsizei height,
-      bool flip_y,
-      bool premultiply_alpha,
-      bool unpremultiply_alpha,
-      bool dither,
-      const GLfloat transform_matrix[16],
-      CopyTextureMethod method,
-      CopyTexImageResourceManager* luma_emulation_blitter) = 0;
-
   // The attributes used during invocation of the extension.
   static const GLuint kVertexPositionAttrib = 0;
 
  protected:
   CopyTextureCHROMIUMResourceManager();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CopyTextureCHROMIUMResourceManager);
 };
 
 }  // namespace gles2

@@ -1,7 +1,0 @@
-- Infobars is a layered component
-(https://sites.google.com/a/chromium.org/dev/developers/design-documents/layered-components-design)
-to enable it to be shared cleanly on iOS.
-
-Directory structure:
-core/: shared code that does not depend on src/content/
-content/: Driver for the shared code based on the content layer.

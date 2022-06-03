@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests that console.trace dumps stack trace with source URLs and line numbers.\n`);
 
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
     function b()
@@ -19,8 +19,8 @@
     }
   `);
 
-  function callback() {
-    ConsoleTestRunner.dumpConsoleMessages();
+  async function callback() {
+    await ConsoleTestRunner.dumpConsoleMessages();
     TestRunner.completeTest();
   }
   TestRunner.evaluateInPage('setTimeout(a, 0)');

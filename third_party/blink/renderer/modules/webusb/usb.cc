@@ -10,18 +10,19 @@
 #include "services/device/public/mojom/usb_device.mojom-blink.h"
 #include "services/device/public/mojom/usb_enumeration_options.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/public/mojom/feature_policy/feature_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_usb_device_filter.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_usb_device_request_options.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
-#include "third_party/blink/renderer/core/frame/frame.h"
+#include "third_party/blink/renderer/core/execution_context/navigator_base.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/webusb/usb_connection_event.h"
 #include "third_party/blink/renderer/modules/webusb/usb_device.h"
-#include "third_party/blink/renderer/modules/webusb/usb_device_filter.h"
-#include "third_party/blink/renderer/modules/webusb/usb_device_request_options.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
@@ -35,7 +36,7 @@ namespace blink {
 namespace {
 
 const char kFeaturePolicyBlocked[] =
-    "Access to the feature \"usb\" is disallowed by feature policy.";
+    "Access to the feature \"usb\" is disallowed by permissions policy.";
 const char kNoDeviceSelected[] = "No device selected.";
 
 void RejectWithTypeError(const String& error_details,
@@ -92,19 +93,28 @@ UsbDeviceFilterPtr ConvertDeviceFilter(const USBDeviceFilter* filter,
 
 }  // namespace
 
-USB::USB(ExecutionContext& context) : ContextLifecycleObserver(&context) {}
+const char USB::kSupplementName[] = "USB";
+
+USB* USB::usb(NavigatorBase& navigator) {
+  USB* usb = Supplement<NavigatorBase>::From<USB>(navigator);
+  if (!usb) {
+    usb = MakeGarbageCollected<USB>(navigator);
+    ProvideTo(navigator, usb);
+  }
+  return usb;
+}
+
+USB::USB(NavigatorBase& navigator)
+    : Supplement<NavigatorBase>(navigator),
+      ExecutionContextLifecycleObserver(navigator.GetExecutionContext()),
+      service_(navigator.GetExecutionContext()),
+      client_receiver_(this, navigator.GetExecutionContext()) {}
 
 USB::~USB() {
   // |service_| may still be valid but there should be no more outstanding
   // requests to them because each holds a persistent handle to this object.
   DCHECK(get_devices_requests_.IsEmpty());
   DCHECK(get_permission_requests_.IsEmpty());
-}
-
-void USB::Dispose() {
-  // The pipe to this object must be closed when is marked unreachable to
-  // prevent messages from being dispatched before lazy sweeping.
-  client_receiver_.reset();
 }
 
 ScriptPromise USB::getDevices(ScriptState* script_state,
@@ -133,8 +143,7 @@ ScriptPromise USB::getDevices(ScriptState* script_state,
 ScriptPromise USB::requestDevice(ScriptState* script_state,
                                  const USBDeviceRequestOptions* options,
                                  ExceptionState& exception_state) {
-  LocalFrame* frame = GetFrame();
-  if (!frame || !frame->GetDocument()) {
+  if (!DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotSupportedError,
         "The implementation did not support the requested type of object or "
@@ -149,7 +158,7 @@ ScriptPromise USB::requestDevice(ScriptState* script_state,
 
   EnsureServiceConnection();
 
-  if (!LocalFrame::HasTransientUserActivation(frame)) {
+  if (!LocalFrame::HasTransientUserActivation(DomWindow()->GetFrame())) {
     exception_state.ThrowSecurityError(
         "Must be handling a user gesture to show a permission request.");
     return ScriptPromise();
@@ -178,29 +187,30 @@ ScriptPromise USB::requestDevice(ScriptState* script_state,
 }
 
 ExecutionContext* USB::GetExecutionContext() const {
-  return ContextLifecycleObserver::GetExecutionContext();
+  return ExecutionContextLifecycleObserver::GetExecutionContext();
 }
 
 const AtomicString& USB::InterfaceName() const {
   return event_target_names::kUSB;
 }
 
-void USB::ContextDestroyed(ExecutionContext*) {
-  service_.reset();
+void USB::ContextDestroyed() {
   get_devices_requests_.clear();
   get_permission_requests_.clear();
 }
 
 USBDevice* USB::GetOrCreateDevice(UsbDeviceInfoPtr device_info) {
-  USBDevice* device = device_cache_.at(device_info->guid);
-  if (!device) {
-    String guid = device_info->guid;
-    mojo::PendingRemote<UsbDevice> pipe;
-    service_->GetDevice(guid, pipe.InitWithNewPipeAndPassReceiver());
-    device = MakeGarbageCollected<USBDevice>(
-        std::move(device_info), std::move(pipe), GetExecutionContext());
-    device_cache_.insert(guid, device);
+  auto it = device_cache_.find(device_info->guid);
+  if (it != device_cache_.end()) {
+    return it->value;
   }
+
+  String guid = device_info->guid;
+  mojo::PendingRemote<UsbDevice> pipe;
+  service_->GetDevice(guid, pipe.InitWithNewPipeAndPassReceiver());
+  USBDevice* device = MakeGarbageCollected<USBDevice>(
+      std::move(device_info), std::move(pipe), GetExecutionContext());
+  device_cache_.insert(guid, device);
   return device;
 }
 
@@ -221,7 +231,7 @@ void USB::OnGetPermission(ScriptPromiseResolver* resolver,
 
   EnsureServiceConnection();
 
-  if (service_ && device_info) {
+  if (service_.is_bound() && device_info) {
     resolver->Resolve(GetOrCreateDevice(std::move(device_info)));
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -231,7 +241,7 @@ void USB::OnGetPermission(ScriptPromiseResolver* resolver,
 }
 
 void USB::OnDeviceAdded(UsbDeviceInfoPtr device_info) {
-  if (!service_)
+  if (!service_.is_bound())
     return;
 
   DispatchEvent(*USBConnectionEvent::Create(
@@ -240,8 +250,11 @@ void USB::OnDeviceAdded(UsbDeviceInfoPtr device_info) {
 
 void USB::OnDeviceRemoved(UsbDeviceInfoPtr device_info) {
   String guid = device_info->guid;
-  USBDevice* device = device_cache_.at(guid);
-  if (!device) {
+  USBDevice* device = nullptr;
+  const auto it = device_cache_.find(guid);
+  if (it != device_cache_.end()) {
+    device = it->value;
+  } else {
     device = MakeGarbageCollected<USBDevice>(
         std::move(device_info), mojo::NullRemote(), GetExecutionContext());
   }
@@ -253,15 +266,22 @@ void USB::OnDeviceRemoved(UsbDeviceInfoPtr device_info) {
 void USB::OnServiceConnectionError() {
   service_.reset();
   client_receiver_.reset();
-  for (ScriptPromiseResolver* resolver : get_devices_requests_)
-    resolver->Resolve(HeapVector<Member<USBDevice>>(0));
-  get_devices_requests_.clear();
 
-  for (ScriptPromiseResolver* resolver : get_permission_requests_) {
+  // Move the set to a local variable to prevent script execution in Resolve()
+  // from invalidating the iterator used by the loop.
+  HeapHashSet<Member<ScriptPromiseResolver>> get_devices_requests;
+  get_devices_requests.swap(get_devices_requests_);
+  for (auto& resolver : get_devices_requests)
+    resolver->Resolve(HeapVector<Member<USBDevice>>(0));
+
+  // Move the set to a local variable to prevent script execution in Reject()
+  // from invalidating the iterator used by the loop.
+  HeapHashSet<Member<ScriptPromiseResolver>> get_permission_requests;
+  get_permission_requests.swap(get_permission_requests_);
+  for (auto& resolver : get_permission_requests) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotFoundError, kNoDeviceSelected));
   }
-  get_permission_requests_.clear();
 }
 
 void USB::AddedEventListener(const AtomicString& event_type,
@@ -279,7 +299,7 @@ void USB::AddedEventListener(const AtomicString& event_type,
 }
 
 void USB::EnsureServiceConnection() {
-  if (service_)
+  if (service_.is_bound())
     return;
 
   DCHECK(IsContextSupported());
@@ -307,7 +327,7 @@ bool USB::IsContextSupported() const {
   if (!context)
     return false;
 
-  DCHECK(context->IsDocument() || context->IsDedicatedWorkerGlobalScope());
+  DCHECK(context->IsWindow() || context->IsDedicatedWorkerGlobalScope());
   DCHECK(!context->IsDedicatedWorkerGlobalScope() ||
          RuntimeEnabledFeatures::WebUSBOnDedicatedWorkersEnabled());
 
@@ -316,15 +336,18 @@ bool USB::IsContextSupported() const {
 
 bool USB::IsFeatureEnabled(ReportOptions report_options) const {
   return GetExecutionContext()->IsFeatureEnabled(
-      mojom::FeaturePolicyFeature::kUsb, report_options);
+      mojom::blink::PermissionsPolicyFeature::kUsb, report_options);
 }
 
-void USB::Trace(blink::Visitor* visitor) {
+void USB::Trace(Visitor* visitor) const {
+  visitor->Trace(service_);
   visitor->Trace(get_devices_requests_);
   visitor->Trace(get_permission_requests_);
+  visitor->Trace(client_receiver_);
   visitor->Trace(device_cache_);
   EventTargetWithInlineData::Trace(visitor);
-  ContextLifecycleObserver::Trace(visitor);
+  Supplement<NavigatorBase>::Trace(visitor);
+  ExecutionContextLifecycleObserver::Trace(visitor);
 }
 
 }  // namespace blink

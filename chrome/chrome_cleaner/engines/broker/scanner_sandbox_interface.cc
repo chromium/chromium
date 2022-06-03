@@ -15,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_util.h"
 #include "base/win/scoped_co_mem.h"
 #include "base/win/scoped_handle.h"
@@ -50,7 +49,7 @@ bool SandboxKnownFolderIdToPathServiceKey(KnownFolder folder_id,
       *path_service_key = base::DIR_PROGRAM_FILESX86;
       return true;
     case KnownFolder::kAppData:
-      *path_service_key = base::DIR_APP_DATA;
+      *path_service_key = base::DIR_ROAMING_APP_DATA;
       return true;
     default:
       LOG(ERROR) << "Unknown SandboxKnownFolderId given, " << folder_id;
@@ -81,7 +80,7 @@ NTSTATUS NtQueryInformationProcess(HANDLE ProcessHandle,
 // Returns true on success.
 bool GetCommandLineUsingProcessInformation(base::ProcessId pid,
                                            bool* feature_available,
-                                           base::string16* process_cmd) {
+                                           std::wstring* process_cmd) {
   DCHECK(feature_available);
   DCHECK(process_cmd);
   *feature_available = true;
@@ -183,7 +182,7 @@ bool ReadStructFromProcess(HANDLE process, LPCVOID base_address, T* dest) {
 // GetCommandLineUsingProcessInformation instead whenever possible.
 // IMPORTANT: get security review when changing this function. Or better yet,
 // move it to its own sandbox process.
-bool GetCommandLineLegacy(base::ProcessId pid, base::string16* process_cmd) {
+bool GetCommandLineLegacy(base::ProcessId pid, std::wstring* process_cmd) {
   DCHECK(process_cmd);
 
   base::win::ScopedHandle process(
@@ -357,7 +356,7 @@ bool SandboxGetTasks(
 
   std::unique_ptr<chrome_cleaner::TaskScheduler> task_scheduler(
       chrome_cleaner::TaskScheduler::CreateInstance());
-  std::vector<base::string16> registered_task_names;
+  std::vector<std::wstring> registered_task_names;
   if (!task_scheduler->GetTaskNameList(&registered_task_names)) {
     LOG(ERROR) << "Failed to enumerate scheduled tasks.";
     return false;
@@ -386,7 +385,7 @@ bool SandboxGetProcessImagePath(base::ProcessId pid,
   if (!process.IsValid())
     return false;
 
-  base::string16 image_path_str;
+  std::wstring image_path_str;
   if (!chrome_cleaner::GetProcessExecutablePath(process.Get(), &image_path_str))
     return false;
 
@@ -395,7 +394,7 @@ bool SandboxGetProcessImagePath(base::ProcessId pid,
 }
 
 bool SandboxGetLoadedModules(base::ProcessId pid,
-                             std::set<base::string16>* module_names) {
+                             std::set<std::wstring>* module_names) {
   if (!module_names)
     return false;
 
@@ -417,7 +416,7 @@ bool SandboxGetLoadedModules(base::ProcessId pid,
 }
 
 bool SandboxGetProcessCommandLine(base::ProcessId pid,
-                                  base::string16* command_line) {
+                                  std::wstring* command_line) {
   if (!command_line)
     return false;
 
@@ -521,7 +520,7 @@ base::win::ScopedHandle SandboxOpenReadOnlyFile(const base::FilePath& file_name,
 }
 
 uint32_t SandboxOpenReadOnlyRegistry(HANDLE root_key,
-                                     const base::string16& sub_key,
+                                     const std::wstring& sub_key,
                                      uint32_t dw_access,
                                      HKEY* registry_handle) {
   if (registry_handle == nullptr) {
@@ -563,7 +562,7 @@ uint32_t SandboxOpenReadOnlyRegistry(HANDLE root_key,
 
 uint32_t SandboxNtOpenReadOnlyRegistry(
     HANDLE root_key,
-    const chrome_cleaner::String16EmbeddedNulls& sub_key,
+    const chrome_cleaner::WStringEmbeddedNulls& sub_key,
     uint32_t dw_access,
     HANDLE* registry_handle) {
   if (registry_handle == nullptr) {

@@ -31,20 +31,22 @@ finally:
   sys.path.pop(0)
 
 _platforms = [
-  'android',
-  'android_webview',
-  'chromeos',
-  'fuchsia',
-  'ios',
-  'linux',
-  'mac',
-  'windows',
+    'android',
+    'android_weblayer',
+    'android_webview',
+    'chromeos',
+    'chromeos_lacros',
+    'fuchsia',
+    'ios',
+    'linux',
+    'mac',
+    'windows',
 ]
 
 _form_factors = [
-  'desktop',
-  'phone',
-  'tablet',
+    'desktop',
+    'phone',
+    'tablet',
 ]
 
 # Convert a platform argument to the matching Platform enum value in
@@ -58,17 +60,18 @@ def _FormFactorEnumValue(form_factor):
   return 'Study::' + form_factor.upper()
 
 def _Load(filename):
-  """Loads a JSON file into a Python object and return this object.
-  """
+  """Loads a JSON file into a Python object and return this object."""
   with open(filename, 'r') as handle:
     result = json.loads(json_comment_eater.Nom(handle.read()))
   return result
 
-def _LoadFieldTrialConfig(filename, platforms):
+
+def _LoadFieldTrialConfig(filename, platforms, invert):
   """Loads a field trial config JSON and converts it into a format that can be
   used by json_to_struct.
   """
-  return _FieldTrialConfigToDescription(_Load(filename), platforms)
+  return _FieldTrialConfigToDescription(_Load(filename), platforms, invert)
+
 
 def _ConvertOverrideUIStrings(override_ui_strings):
   """Converts override_ui_strings to formatted dicts."""
@@ -82,80 +85,104 @@ def _ConvertOverrideUIStrings(override_ui_strings):
 
 def _CreateExperiment(experiment_data,
                       platforms,
+                      form_factors,
                       is_low_end_device,
-                      form_factors):
+                      invert=False):
+  """Creates an experiment dictionary with all necessary information.
+
+  Args:
+    experiment_data: An experiment json config.
+    platforms: A list of platforms for this trial. This should be
+      a subset of |_platforms|.
+    form_factors: A list of form factors for this trial. This should be
+      a subset of |_form_factors|.
+    is_low_end_device: An optional parameter. This can either be True or
+      False. None if not specified.
+    invert: An optional parameter. If set, inverts the enabled and disabled
+      set of experiments. Controlled by a GN flag.
+
+  Returns:
+    An experiment dict.
+  """
   experiment = {
     'name': experiment_data['name'],
     'platforms': [_PlatformEnumValue(p) for p in platforms],
-    'is_low_end_device': is_low_end_device,
     'form_factors': [_FormFactorEnumValue(f) for f in form_factors],
   }
+  if is_low_end_device is not None:
+    experiment['is_low_end_device'] = str(is_low_end_device).lower()
   forcing_flags_data = experiment_data.get('forcing_flag')
   if forcing_flags_data:
     experiment['forcing_flag'] = forcing_flags_data
+  min_os_version_data = experiment_data.get('min_os_version')
+  if min_os_version_data:
+    experiment['min_os_version'] = min_os_version_data
   params_data = experiment_data.get('params')
   if (params_data):
     experiment['params'] = [{'key': param, 'value': params_data[param]}
                           for param in sorted(params_data.keys())];
   enable_features_data = experiment_data.get('enable_features')
-  if enable_features_data:
-    experiment['enable_features'] = enable_features_data
   disable_features_data = experiment_data.get('disable_features')
-  if disable_features_data:
-    experiment['disable_features'] = disable_features_data
+  if enable_features_data or (invert and disable_features_data):
+    experiment['enable_features'] = (disable_features_data
+                                     if invert else enable_features_data)
+  if disable_features_data or (invert and enable_features_data):
+    experiment['disable_features'] = (enable_features_data
+                                      if invert else disable_features_data)
   override_ui_strings = experiment_data.get('override_ui_strings')
   if override_ui_strings:
     experiment['override_ui_string'] = _ConvertOverrideUIStrings(
         override_ui_strings)
   return experiment
 
-def _CreateTrial(study_name, experiment_configs, platforms):
-  """Returns the applicable experiments for |study_name| and |platforms|. This
-  iterates through all of the experiment_configs for |study_name| and picks out
-  the applicable experiments based off of the valid platforms and device
-  type settings if specified.
+
+def _CreateTrial(study_name, experiment_configs, platforms, invert):
+  """Returns the applicable experiments for |study_name| and |platforms|.
+
+  This iterates through all of the experiment_configs for |study_name|
+  and picks out the applicable experiments based off of the valid platforms
+  and device type settings if specified.
   """
   experiments = []
   for config in experiment_configs:
     platform_intersection = [p for p in platforms if p in config['platforms']]
-    is_low_end_device = 'Study::OPTIONAL_BOOL_MISSING'
-    if 'is_low_end_device' in config:
-      is_low_end_device = ('Study::OPTIONAL_BOOL_TRUE'
-                           if config['is_low_end_device']
-                           else 'Study::OPTIONAL_BOOL_FALSE')
 
     if platform_intersection:
-      experiments += [_CreateExperiment(
-                          e,
-                          platform_intersection,
-                          is_low_end_device,
-                          config.get('form_factors', []))
-                      for e in config['experiments']]
+      experiments += [
+          _CreateExperiment(e,
+                            platform_intersection,
+                            config.get('form_factors', []),
+                            config.get('is_low_end_device'),
+                            invert=invert) for e in config['experiments']
+      ]
   return {
     'name': study_name,
     'experiments': experiments,
   }
 
-def _GenerateTrials(config, platforms):
+
+def _GenerateTrials(config, platforms, invert):
   for study_name in sorted(config.keys()):
-    study = _CreateTrial(study_name, config[study_name], platforms)
+    study = _CreateTrial(study_name, config[study_name], platforms, invert)
     # To avoid converting studies with empty experiments (e.g. the study doesn't
     # apply to the target platforms), this generator only yields studies that
     # have non-empty experiments.
     if study['experiments']:
       yield study
 
-def ConfigToStudies(config, platforms):
-  """Returns the applicable studies from config for the platforms."""
-  return [study for study in _GenerateTrials(config, platforms)]
 
-def _FieldTrialConfigToDescription(config, platforms):
+def ConfigToStudies(config, platforms, invert):
+  """Returns the applicable studies from config for the platforms."""
+  return [study for study in _GenerateTrials(config, platforms, invert)]
+
+
+def _FieldTrialConfigToDescription(config, platforms, invert):
   return {
-    'elements': {
-      'kFieldTrialConfig': {
-        'studies': ConfigToStudies(config, platforms)
+      'elements': {
+          'kFieldTrialConfig': {
+              'studies': ConfigToStudies(config, platforms, invert)
+          }
       }
-    }
   }
 
 def main(arguments):
@@ -176,6 +203,12 @@ def main(arguments):
       'mandatory.')
   parser.add_option('-y', '--year',
       help='year to put in the copy-right.')
+  parser.add_option(
+      '--invert_fieldtrials',
+      action='store_true',
+      help=
+      "Inverts the enabled and disabled experiments for existing field trials.")
+
   (opts, args) = parser.parse_args(args=arguments)
 
   if not opts.schema:
@@ -197,7 +230,8 @@ def main(arguments):
     basepath = ''
 
   schema = _Load(opts.schema)
-  description = _LoadFieldTrialConfig(description_filename, opts.platform)
+  description = _LoadFieldTrialConfig(description_filename, opts.platform,
+                                      opts.invert_fieldtrials)
   json_to_struct.GenerateStruct(
       basepath, output_root, opts.namespace, schema, description,
       os.path.split(description_filename)[1], os.path.split(opts.schema)[1],

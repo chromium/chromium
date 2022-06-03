@@ -7,30 +7,34 @@
 
 #include "base/callback.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
-#include "base/optional.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller_test.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
+#include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_host.h"
-#include "chrome/browser/ui/views/fullscreen_control/fullscreen_control_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/fullscreen_control/fullscreen_control_view.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
+#include "ui/gfx/animation/animation_test_api.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/view.h"
 #include "url/gurl.h"
 
@@ -41,13 +45,17 @@
 
 namespace {
 
-constexpr base::TimeDelta kPopupEventTimeout = base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kPopupEventTimeout = base::Seconds(5);
 
 }  // namespace
 
 class FullscreenControlViewTest : public InProcessBrowserTest {
  public:
   FullscreenControlViewTest() = default;
+
+  FullscreenControlViewTest(const FullscreenControlViewTest&) = delete;
+  FullscreenControlViewTest& operator=(const FullscreenControlViewTest&) =
+      delete;
 
   void SetUp() override {
     // It is important to disable system keyboard lock as low-level test
@@ -88,11 +96,17 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
   }
 
   views::Button* GetFullscreenExitButton() {
-    return GetFullscreenControlView()->exit_fullscreen_button();
+    return GetFullscreenControlView()->exit_fullscreen_button_for_testing();
   }
 
   ExclusiveAccessManager* GetExclusiveAccessManager() {
     return browser()->exclusive_access_manager();
+  }
+
+  ExclusiveAccessBubbleViews* GetExclusiveAccessBubble() {
+    BrowserView* browser_view =
+        BrowserView::GetBrowserViewForBrowser(browser());
+    return browser_view->exclusive_access_bubble();
   }
 
   KeyboardLockController* GetKeyboardLockController() {
@@ -107,17 +121,27 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 
   void EnterActiveTabFullscreen() {
     FullscreenNotificationObserver fullscreen_observer(browser());
-    content::WebContentsDelegate* delegate =
-        static_cast<content::WebContentsDelegate*>(browser());
-    delegate->EnterFullscreenModeForTab(GetActiveWebContents(),
-                                        GURL("about:blank"),
-                                        blink::mojom::FullscreenOptions());
+    auto* delegate = static_cast<content::WebContentsDelegate*>(browser());
+    delegate->EnterFullscreenModeForTab(GetActiveWebContents()->GetMainFrame(),
+                                        {});
     fullscreen_observer.Wait();
     ASSERT_TRUE(delegate->IsFullscreenForTabOrPending(GetActiveWebContents()));
   }
 
+  void EnterActiveTabFullscreenAndFinishPromptAnimation() {
+    EnterActiveTabFullscreen();
+    FinishPromptAnimation();
+  }
+
+  void FinishPromptAnimation() {
+    gfx::AnimationTestApi animation_api(
+        GetExclusiveAccessBubble()->animation_for_test());
+    base::TimeTicks far_future = base::TimeTicks::Now() + base::Days(1);
+    animation_api.Step(far_future);
+  }
+
   bool EnableKeyboardLock() {
-    base::Optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
+    absl::optional<base::flat_set<ui::DomCode>> codes({ui::DomCode::ESCAPE});
     return content::RequestKeyboardLock(GetActiveWebContents(),
                                         std::move(codes));
   }
@@ -145,16 +169,22 @@ class FullscreenControlViewTest : public InProcessBrowserTest {
 #if defined(USE_AURA)
   std::unique_ptr<aura::test::TestCursorClient> cursor_client_;
 #endif
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenControlViewTest);
 };
 
 // Creating the popup on Mac increases the memory use by ~2MB so it should be
 // lazily loaded only when necessary. This test verifies that the popup is not
 // immediately created when FullscreenControlHost is created.
+// Disabled on Lacros due to flaky. crbug.com/1254453
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_NoFullscreenPopupOnBrowserFullscreen \
+  DISABLED_NoFullscreenPopupOnBrowserFullscreen
+#else
+#define MAYBE_NoFullscreenPopupOnBrowserFullscreen \
+  NoFullscreenPopupOnBrowserFullscreen
+#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
-                       NoFullscreenPopupOnBrowserFullscreen) {
-  EnterActiveTabFullscreen();
+                       MAYBE_NoFullscreenPopupOnBrowserFullscreen) {
+  EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   DCHECK(browser_view);
   ASSERT_TRUE(browser_view->IsFullscreen());
@@ -164,10 +194,16 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
 // These four tests which cover the mouse/touch fullscreen UI are covering
 // behavior that doesn't exist on Mac - Mac has its own native fullscreen exit
 // UI. See IsExitUiEnabled() in FullscreenControlHost.
-#if !defined(OS_MACOSX)
+#if !defined(OS_MAC)
 
-IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MouseExitFullscreen) {
-  EnterActiveTabFullscreen();
+// Disabled on Lacros due to flaky. crbug.com/1254453
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_MouseExitFullscreen DISABLED_MouseExitFullscreen
+#else
+#define MAYBE_MouseExitFullscreen MouseExitFullscreen
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_MouseExitFullscreen) {
+  EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
 
@@ -187,8 +223,8 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MouseExitFullscreen) {
   ui::MouseEvent mouse_click(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                              base::TimeTicks(), ui::EF_LEFT_MOUSE_BUTTON,
                              ui::EF_LEFT_MOUSE_BUTTON);
-  GetFullscreenControlView()->ButtonPressed(GetFullscreenExitButton(),
-                                            mouse_click);
+  views::test::ButtonTestApi(GetFullscreenExitButton())
+      .NotifyClick(mouse_click);
 
   ASSERT_FALSE(GetFullscreenControlHost());
   ASSERT_FALSE(browser_view->IsFullscreen());
@@ -196,7 +232,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MouseExitFullscreen) {
 
 IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
                        MouseExitFullscreen_TimeoutAndRetrigger) {
-  EnterActiveTabFullscreen();
+  EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
 
@@ -248,8 +284,67 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   ASSERT_TRUE(browser_view->IsFullscreen());
 }
 
-IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
+// Disabled on Lacros due to flaky. crbug.com/1254453
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea \
+  DISABLED_MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea
+#else
+#define MAYBE_MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea \
+  MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea
+#endif
+IN_PROC_BROWSER_TEST_F(
+    FullscreenControlViewTest,
+    MAYBE_MouseOnTopWhenPromptIsShowing_ButtonNotShownUntilMouseLeavesBufferArea) {
   EnterActiveTabFullscreen();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
+  ASSERT_TRUE(browser_view->IsFullscreen());
+
+  FullscreenControlHost* host = GetFullscreenControlHost();
+  host->Hide(false);
+  ASSERT_FALSE(host->IsVisible());
+
+  // Simulate moving the mouse to the top of the screen, which will not trigger
+  // the fullscreen exit UI yet since the prompt is still showing.
+  ui::MouseEvent mouse_move(ui::ET_MOUSE_MOVED, gfx::Point(1, 1), gfx::Point(),
+                            base::TimeTicks(), 0, 0);
+  host->OnMouseEvent(mouse_move);
+  ASSERT_FALSE(host->IsVisible());
+
+  // This still doesn't trigger the UI since the prompt is still showing.
+  mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(2, 1),
+                              gfx::Point(), base::TimeTicks(), 0, 0);
+  host->OnMouseEvent(mouse_move);
+  ASSERT_FALSE(host->IsVisible());
+
+  FinishPromptAnimation();
+
+  // This still doesn't trigger the UI since it's in cooldown mode.
+  mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(3, 1),
+                              gfx::Point(), base::TimeTicks(), 0, 0);
+  host->OnMouseEvent(mouse_move);
+  ASSERT_FALSE(host->IsVisible());
+
+  // Move the cursor out of the buffer area, which will have no effect.
+  mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(2, 1000),
+                              gfx::Point(), base::TimeTicks(), 0, 0);
+  host->OnMouseEvent(mouse_move);
+  ASSERT_FALSE(host->IsVisible());
+
+  // The UI should be triggered now.
+  mouse_move = ui::MouseEvent(ui::ET_MOUSE_MOVED, gfx::Point(1, 1),
+                              gfx::Point(), base::TimeTicks(), 0, 0);
+  host->OnMouseEvent(mouse_move);
+  ASSERT_TRUE(host->IsVisible());
+}
+
+// Disabled on Lacros due to flaky. crbug.com/1254453
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_TouchPopupInteraction DISABLED_TouchPopupInteraction
+#else
+#define MAYBE_TouchPopupInteraction TouchPopupInteraction
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, MAYBE_TouchPopupInteraction) {
+  EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
 
@@ -260,12 +355,12 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   // Simulate a short tap that doesn't trigger the popup.
   ui::TouchEvent touch_event(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
 
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_RELEASED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
 
   ASSERT_FALSE(host->IsVisible());
@@ -273,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   // Simulate a press-and-hold.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
 
   ui::GestureEvent gesture(1, 1, 0, ui::EventTimeForNow(),
@@ -284,14 +379,14 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   RunLoopUntilVisibilityChanges();
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_RELEASED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
   ASSERT_TRUE(host->IsVisible());
 
   // Simulate pressing outside the popup, which should hide the popup.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
   RunLoopUntilVisibilityChanges();
   ASSERT_FALSE(host->IsVisible());
@@ -299,7 +394,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   // Simulate a press-and-hold again.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
 
   gesture =
@@ -311,7 +406,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
 
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_RELEASED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
   ASSERT_TRUE(host->IsVisible());
 
@@ -319,17 +414,25 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, TouchPopupInteraction) {
   // browser to exit fullscreen and destroy the exit control and its host.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
-  GetFullscreenControlView()->ButtonPressed(GetFullscreenExitButton(),
-                                            touch_event);
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
+  views::test::ButtonTestApi(GetFullscreenExitButton())
+      .NotifyClick(touch_event);
 
   ASSERT_FALSE(GetFullscreenControlHost());
   ASSERT_FALSE(browser_view->IsFullscreen());
 }
 
+// Disabled on Lacros due to flaky. crbug.com/1254453
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_MouseAndTouchInteraction_NoInterference \
+  DISABLED_MouseAndTouchInteraction_NoInterference
+#else
+#define MAYBE_MouseAndTouchInteraction_NoInterference \
+  MouseAndTouchInteraction_NoInterference
+#endif
 IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
-                       MouseAndTouchInteraction_NoInterference) {
-  EnterActiveTabFullscreen();
+                       MAYBE_MouseAndTouchInteraction_NoInterference) {
+  EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
 
@@ -347,7 +450,7 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   // Simulate a press-and-hold.
   ui::TouchEvent touch_event(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
   ui::GestureEvent gesture(1, 1, 0, ui::EventTimeForNow(),
                            ui::GestureEventDetails(ui::ET_GESTURE_LONG_PRESS));
@@ -363,14 +466,14 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   // Release the touch, which should have no effect.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_RELEASED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
   ASSERT_FALSE(host->IsVisible());
 
   // Simulate a press-and-hold to trigger the UI.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
   gesture =
       ui::GestureEvent(1, 1, 0, ui::EventTimeForNow(),
@@ -396,15 +499,22 @@ IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
   // Press outside the popup, which should hide the popup.
   touch_event = ui::TouchEvent(
       ui::ET_TOUCH_PRESSED, gfx::Point(1, 1), ui::EventTimeForNow(),
-      ui::PointerDetails(ui::EventPointerType::POINTER_TYPE_TOUCH, 0));
+      ui::PointerDetails(ui::EventPointerType::kTouch, 0));
   host->OnTouchEvent(touch_event);
   RunLoopUntilVisibilityChanges();
   ASSERT_FALSE(host->IsVisible());
 }
 #endif
 
-IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest, KeyboardPopupInteraction) {
-  EnterActiveTabFullscreen();
+// Disabled on Lacros due to flaky. crbug.com/1254453
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#define MAYBE_KeyboardPopupInteraction DISABLED_KeyboardPopupInteraction
+#else
+#define MAYBE_KeyboardPopupInteraction KeyboardPopupInteraction
+#endif
+IN_PROC_BROWSER_TEST_F(FullscreenControlViewTest,
+                       MAYBE_KeyboardPopupInteraction) {
+  EnterActiveTabFullscreenAndFinishPromptAnimation();
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
   ASSERT_TRUE(browser_view->IsFullscreen());
 

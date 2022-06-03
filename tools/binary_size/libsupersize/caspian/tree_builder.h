@@ -19,13 +19,15 @@
 namespace caspian {
 class TreeBuilder {
  public:
+  using FilterFunc = std::function<bool(const GroupedPath&, const BaseSymbol&)>;
+
   explicit TreeBuilder(SizeInfo* size_info);
   explicit TreeBuilder(DeltaSizeInfo* size_info);
   ~TreeBuilder();
   void Build(std::unique_ptr<BaseLens> lens,
              char separator,
              bool method_count_mode,
-             std::vector<std::function<bool(const BaseSymbol&)>> filters);
+             std::vector<FilterFunc> filters);
   TreeNode* Find(std::string_view path);
   Json::Value Open(const char* path);
 
@@ -37,9 +39,10 @@ class TreeBuilder {
 
   void AttachToParent(TreeNode* child, TreeNode* parent);
 
-  ContainerType ContainerTypeFromChild(GroupedPath child_path) const;
+  ArtifactType ArtifactTypeFromChild(GroupedPath child_path) const;
 
-  bool ShouldIncludeSymbol(const BaseSymbol& symbol) const;
+  bool ShouldIncludeSymbol(const GroupedPath& id_path,
+                           const BaseSymbol& symbol) const;
 
   // Merges dex method symbols into containers based on the class of the dex
   // method.
@@ -61,7 +64,7 @@ class TreeBuilder {
   // Note that we split paths on '/' no matter the value of separator, since
   // when grouping by component, paths look like Component>path/to/file.
   char sep_;
-  std::vector<std::function<bool(const BaseSymbol&)>> filters_;
+  std::vector<FilterFunc> filters_;
   std::vector<const BaseSymbol*> symbols_;
 };  // TreeBuilder
 }  // namespace caspian

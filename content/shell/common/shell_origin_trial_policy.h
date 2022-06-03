@@ -5,7 +5,8 @@
 #ifndef CONTENT_SHELL_COMMON_SHELL_ORIGIN_TRIAL_POLICY_H_
 #define CONTENT_SHELL_COMMON_SHELL_ORIGIN_TRIAL_POLICY_H_
 
-#include "base/macros.h"
+#include <vector>
+
 #include "base/strings/string_piece.h"
 #include "third_party/blink/public/common/origin_trials/origin_trial_policy.h"
 
@@ -14,17 +15,20 @@ namespace content {
 class ShellOriginTrialPolicy : public blink::OriginTrialPolicy {
  public:
   ShellOriginTrialPolicy();
+
+  ShellOriginTrialPolicy(const ShellOriginTrialPolicy&) = delete;
+  ShellOriginTrialPolicy& operator=(const ShellOriginTrialPolicy&) = delete;
+
   ~ShellOriginTrialPolicy() override;
 
   // blink::OriginTrialPolicy interface
   bool IsOriginTrialsSupported() const override;
-  std::vector<base::StringPiece> GetPublicKeys() const override;
+  const std::vector<blink::OriginTrialPublicKey>& GetPublicKeys()
+      const override;
   bool IsOriginSecure(const GURL& url) const override;
 
  private:
-  std::vector<base::StringPiece> public_keys_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellOriginTrialPolicy);
+  std::vector<blink::OriginTrialPublicKey> public_keys_;
 };
 
 }  // namespace content

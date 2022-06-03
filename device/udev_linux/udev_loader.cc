@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "device/udev_linux/udev0_loader.h"
 #include "device/udev_linux/udev1_loader.h"
 
@@ -23,20 +23,27 @@ UdevLoader* UdevLoader::Get() {
   if (g_udev_loader)
     return g_udev_loader;
 
-  std::unique_ptr<UdevLoader> udev_loader;
-  udev_loader.reset(new Udev1Loader);
+  std::unique_ptr<UdevLoader> udev_loader = std::make_unique<Udev1Loader>();
   if (udev_loader->Init()) {
     g_udev_loader = udev_loader.release();
     return g_udev_loader;
   }
 
-  udev_loader.reset(new Udev0Loader);
+  udev_loader = std::make_unique<Udev0Loader>();
   if (udev_loader->Init()) {
     g_udev_loader = udev_loader.release();
     return g_udev_loader;
   }
   CHECK(false);
-  return NULL;
+  return nullptr;
+}
+
+// static
+void UdevLoader::SetForTesting(UdevLoader* loader, bool delete_previous) {
+  if (g_udev_loader && delete_previous)
+    delete g_udev_loader;
+
+  g_udev_loader = loader;
 }
 
 UdevLoader::~UdevLoader() = default;

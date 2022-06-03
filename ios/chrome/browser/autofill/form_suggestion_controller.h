@@ -7,9 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
-#include <string>
 
-#import "components/autofill/ios/browser/js_suggestion_manager.h"
 #import "ios/chrome/browser/autofill/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/form_suggestion_client.h"
 #import "ios/chrome/browser/autofill/form_suggestion_view.h"
@@ -51,12 +49,6 @@ class WebState;
 @end
 
 @interface FormSuggestionController (ForTesting)
-
-// Initializes a new controller in the same way as the public initializer, but
-// supports specifying a JsSuggestionManager for testing.
-- (instancetype)initWithWebState:(web::WebState*)webState
-                       providers:(NSArray*)providers
-             JsSuggestionManager:(JsSuggestionManager*)jsSuggestionManager;
 
 // Overrides the web view proxy.
 - (void)setWebViewProxy:(id<CRWWebViewProxy>)webViewProxy;

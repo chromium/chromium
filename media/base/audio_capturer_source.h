@@ -18,11 +18,21 @@ namespace media {
 class AudioProcessorControls;
 
 // AudioCapturerSource is an interface representing the source for
-// captured audio.  An implementation will periodically call Capture() on a
-// callback object.
+// captured audio. An implementation will periodically call
+// `CaptureCallback::Capture()` to pass the audio samples. All methods must be
+// called on the same thread. The supplied `CaptureCallback` will be called on
+// the same thread, except `Capture()`. Implementations should use a dedicated
+// thread to receive the stream and call `CaptureCallback::Capture()` in order
+// to ensure that the client receives the stream without delays.
 class AudioCapturerSource
     : public base::RefCountedThreadSafe<media::AudioCapturerSource> {
  public:
+  enum class ErrorCode {
+    kUnknown = 0,
+    kSystemPermissions = 1,
+    kDeviceInUse = 2,
+  };
+
   class CaptureCallback {
    public:
     // Signals that audio recording has been started.  Called asynchronously
@@ -33,14 +43,15 @@ class AudioCapturerSource
     // notification.
     virtual void OnCaptureStarted() {}
 
-    // Callback to deliver the captured data from the OS.
+    // Callback to deliver the captured data from the stream. Called from a
+    // thread that's different from the thread used for all other methods.
     virtual void Capture(const AudioBus* audio_source,
                          base::TimeTicks audio_capture_time,
                          double volume,
                          bool key_pressed) = 0;
 
     // Signals an error has occurred.
-    virtual void OnCaptureError(const std::string& message) = 0;
+    virtual void OnCaptureError(ErrorCode code, const std::string& message) = 0;
 
     // Signals the muted state has changed. May be called before
     // OnCaptureStarted.

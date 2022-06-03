@@ -1,4 +1,5 @@
-// META: global=jsshell
+// META: global=window,dedicatedworker,jsshell
+// META: script=/wasm/jsapi/wasm-module-builder.js
 // META: script=assertions.js
 
 function nulls(n) {
@@ -8,7 +9,7 @@ function nulls(n) {
 test(() => {
   const argument = { "element": "anyfunc", "initial": 5 };
   const table = new WebAssembly.Table(argument);
-  assert_throws(new TypeError(), () => table.grow());
+  assert_throws_js(TypeError, () => table.grow());
 }, "Missing arguments");
 
 test(t => {
@@ -32,7 +33,7 @@ test(t => {
   const fn = WebAssembly.Table.prototype.grow;
 
   for (const thisValue of thisValues) {
-    assert_throws(new TypeError(), () => fn.call(thisValue, argument), `this=${format_value(thisValue)}`);
+    assert_throws_js(TypeError, () => fn.call(thisValue, argument), `this=${format_value(thisValue)}`);
   }
 }, "Branding");
 
@@ -61,7 +62,7 @@ test(() => {
   const table = new WebAssembly.Table(argument);
   assert_equal_to_array(table, nulls(2), "before");
 
-  assert_throws(new RangeError(), () => table.grow(4));
+  assert_throws_js(RangeError, () => table.grow(4));
   assert_equal_to_array(table, nulls(2), "after");
 }, "Exceeded maximum");
 
@@ -81,7 +82,7 @@ for (const value of outOfRangeValues) {
   test(() => {
     const argument = { "element": "anyfunc", "initial": 1 };
     const table = new WebAssembly.Table(argument);
-    assert_throws(new TypeError(), () => table.grow(value));
+    assert_throws_js(TypeError, () => table.grow(value));
   }, `Out-of-range argument: ${format_value(value)}`);
 }
 
@@ -94,3 +95,32 @@ test(() => {
   assert_equals(result, 5);
   assert_equal_to_array(table, nulls(8), "after");
 }, "Stray argument");
+
+test(() => {
+  const builder = new WasmModuleBuilder();
+  builder
+    .addFunction("fn", kSig_v_v)
+    .addBody([])
+    .exportFunc();
+  const bin = builder.toBuffer()
+  const argument = { "element": "anyfunc", "initial": 1 };
+  const table = new WebAssembly.Table(argument);
+  const fn = new WebAssembly.Instance(new WebAssembly.Module(bin)).exports.fn;
+  const result = table.grow(2, fn);
+  assert_equals(result, 1);
+  assert_equals(table.get(0), null);
+  assert_equals(table.get(1), fn);
+  assert_equals(table.get(2), fn);
+}, "Grow with exported-function argument");
+
+test(() => {
+  const argument = { "element": "anyfunc", "initial": 1 };
+  const table = new WebAssembly.Table(argument);
+  assert_throws_js(TypeError, () => table.grow(2, {}));
+}, "Grow with non-function argument");
+
+test(() => {
+  const argument = { "element": "anyfunc", "initial": 1 };
+  const table = new WebAssembly.Table(argument);
+  assert_throws_js(TypeError, () => table.grow(2, () => true));
+}, "Grow with JS-function argument");

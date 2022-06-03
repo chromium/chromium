@@ -4,13 +4,13 @@
 
 #include <algorithm>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/task_manager/mock_web_contents_task_manager.h"
 #include "chrome/common/chrome_switches.h"
+#include "content/public/test/browser_test.h"
 #include "extensions/browser/test_image_loader.h"
 #include "extensions/common/constants.h"
 #include "ui/gfx/image/image.h"
@@ -20,18 +20,12 @@ namespace task_manager {
 
 class ExtensionTagsTest : public extensions::ExtensionBrowserTest {
  public:
-  ExtensionTagsTest() {}
-  ~ExtensionTagsTest() override {}
+  ExtensionTagsTest() = default;
+  ExtensionTagsTest(const ExtensionTagsTest&) = delete;
+  ExtensionTagsTest& operator=(const ExtensionTagsTest&) = delete;
+  ~ExtensionTagsTest() override = default;
 
  protected:
-  // extensions::ExtensionBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
-
-    // Do not launch device discovery process.
-    command_line->AppendSwitch(switches::kDisableDeviceDiscoveryNotifications);
-  }
-
   // If no extension task was found, a nullptr will be returned.
   Task* FindAndGetExtensionTask(
       const MockWebContentsTaskManager& task_manager) {
@@ -45,9 +39,6 @@ class ExtensionTagsTest : public extensions::ExtensionBrowserTest {
   const std::vector<WebContentsTag*>& tracked_tags() const {
     return WebContentsTagsManager::GetInstance()->tracked_tags();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExtensionTagsTest);
 };
 
 // Tests loading, disabling, enabling and unloading extensions and how that will
@@ -118,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionTagsTest,
   ASSERT_EQ(1U, task_manager.tasks().size());
   const Task* about_blank_task = task_manager.tasks().back();
   EXPECT_EQ(Task::RENDERER, about_blank_task->GetType());
-  EXPECT_EQ(base::UTF8ToUTF16("Tab: about:blank"), about_blank_task->title());
+  EXPECT_EQ(u"Tab: about:blank", about_blank_task->title());
 
   // Reload the extension, the task manager should show it again.
   ReloadExtension(extension->id());

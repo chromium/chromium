@@ -22,6 +22,32 @@
 
 namespace crashpad {
 
+bool PtraceAttach(pid_t pid, bool can_log) {
+  if (ptrace(PTRACE_ATTACH, pid, nullptr, nullptr) != 0) {
+    PLOG_IF(ERROR, can_log) << "ptrace";
+    return false;
+  }
+
+  int status;
+  if (HANDLE_EINTR(waitpid(pid, &status, __WALL)) < 0) {
+    PLOG_IF(ERROR, can_log) << "waitpid";
+    return false;
+  }
+  if (!WIFSTOPPED(status)) {
+    LOG_IF(ERROR, can_log) << "process not stopped";
+    return false;
+  }
+  return true;
+}
+
+bool PtraceDetach(pid_t pid, bool can_log) {
+  if (pid >= 0 && ptrace(PTRACE_DETACH, pid, nullptr, nullptr) != 0) {
+    PLOG_IF(ERROR, can_log) << "ptrace";
+    return false;
+  }
+  return true;
+}
+
 ScopedPtraceAttach::ScopedPtraceAttach()
     : pid_(-1) {}
 
@@ -30,8 +56,7 @@ ScopedPtraceAttach::~ScopedPtraceAttach() {
 }
 
 bool ScopedPtraceAttach::Reset() {
-  if (pid_ >= 0 && ptrace(PTRACE_DETACH, pid_, nullptr, nullptr) != 0) {
-    PLOG(ERROR) << "ptrace";
+  if (!PtraceDetach(pid_, true)) {
     return false;
   }
   pid_ = -1;
@@ -41,21 +66,11 @@ bool ScopedPtraceAttach::Reset() {
 bool ScopedPtraceAttach::ResetAttach(pid_t pid) {
   Reset();
 
-  if (ptrace(PTRACE_ATTACH, pid, nullptr, nullptr) != 0) {
-    PLOG(ERROR) << "ptrace";
+  if (!PtraceAttach(pid, true)) {
     return false;
   }
-  pid_ = pid;
 
-  int status;
-  if (HANDLE_EINTR(waitpid(pid_, &status, __WALL)) < 0) {
-    PLOG(ERROR) << "waitpid";
-    return false;
-  }
-  if (!WIFSTOPPED(status)) {
-    LOG(ERROR) << "process not stopped";
-    return false;
-  }
+  pid_ = pid;
   return true;
 }
 

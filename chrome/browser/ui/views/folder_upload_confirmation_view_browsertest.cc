@@ -9,6 +9,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
 #include "ui/views/controls/button/label_button.h"
 
@@ -26,6 +27,11 @@ class FolderUploadConfirmationViewTest : public DialogBrowserTest {
       test_files_.push_back(file_info);
     }
   }
+
+  FolderUploadConfirmationViewTest(const FolderUploadConfirmationViewTest&) =
+      delete;
+  FolderUploadConfirmationViewTest& operator=(
+      const FolderUploadConfirmationViewTest&) = delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -50,8 +56,6 @@ class FolderUploadConfirmationViewTest : public DialogBrowserTest {
 
   bool callback_called_ = false;
   std::vector<ui::SelectedFileInfo> callback_files_;
-
-  DISALLOW_COPY_AND_ASSIGN(FolderUploadConfirmationViewTest);
 };
 
 IN_PROC_BROWSER_TEST_F(FolderUploadConfirmationViewTest,

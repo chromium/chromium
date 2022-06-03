@@ -1,0 +1,59 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto3";
+
+option optimize_for = LITE_RUNTIME;
+
+package query_tiles.proto;
+
+// URL and id of the image to be displayed on tiles.
+message TileImage {
+  // URL of the image.
+  string url = 1;
+}
+
+// Information about each tile.
+message TileInfo {
+  // id of the tile.
+  string tile_id = 1;
+
+  // The whole query string that will be sent to the search engine if
+  // user starts searching on this tile.
+  string query_string = 2;
+
+  // Images for this tile. Could be more than one images so that
+  // client can use fallback URLs if the first one doesn't work. Ordered by
+  // confidence score from high to low.
+  repeated TileImage tile_images = 3;
+
+  // Text to be displayed on the image, translated to the
+  // language given in |GetQueryTilesRequest|.
+  string display_text = 4;
+
+  // Text for accessibility purpose.
+  string accessibility_text = 5;
+
+  // Whether this is a top level tile.
+  bool is_top_level = 6;
+
+  // A list sub tiles.
+  repeated string sub_tile_ids = 7;
+
+  // Additional params for the search query.
+  repeated string search_params = 8;
+}
+
+// A group of tile info for a given locale.
+message TileInfoGroup {
+  repeated TileInfo tiles = 1;
+
+  // Language for this tile group.
+  string locale = 2;
+}
+
+// Response from the server.
+message ServerResponse {
+  TileInfoGroup tile_group = 1;
+}

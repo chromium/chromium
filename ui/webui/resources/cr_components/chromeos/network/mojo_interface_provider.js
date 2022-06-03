@@ -2,15 +2,25 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+// #import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-lite.js';
+// #import 'chrome://resources/mojo/services/network/public/mojom/ip_address.mojom-lite.js';
+// #import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
+// #import 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-lite.js';
+// clang-format on
+
+// #import {addSingletonGetter} from '../../../js/cr.m.js';
+
 cr.define('network_config', function() {
   /** @interface */
-  class MojoInterfaceProvider {
+  /* #export */ class MojoInterfaceProvider {
     /** @return {!chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
     getMojoServiceRemote() {}
   }
 
   /** @implements {network_config.MojoInterfaceProvider} */
-  class MojoInterfaceProviderImpl {
+  /* #export */ class MojoInterfaceProviderImpl {
     constructor() {
       /** @private {?chromeos.networkConfig.mojom.CrosNetworkConfigRemote} */
       this.remote_ = null;
@@ -29,6 +39,7 @@ cr.define('network_config', function() {
 
   cr.addSingletonGetter(MojoInterfaceProviderImpl);
 
+  // #cr_define_end
   return {
     MojoInterfaceProvider: MojoInterfaceProvider,
     MojoInterfaceProviderImpl: MojoInterfaceProviderImpl,

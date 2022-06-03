@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
@@ -13,6 +14,7 @@
 #include "chromecast/chromecast_buildflags.h"
 #include "content/public/browser/media_session.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "media/base/test_data_util.h"
 #include "url/gurl.h"
@@ -21,9 +23,15 @@
 namespace chromecast {
 namespace shell {
 
+// TODO(crbug.com/1057860): Move relevant tests to components/browsertests so
+// there is common coverage of MediaBlocker across platforms.
 class CastMediaBlockerBrowserTest : public CastBrowserTest {
  public:
   CastMediaBlockerBrowserTest() {}
+
+  CastMediaBlockerBrowserTest(const CastMediaBlockerBrowserTest&) = delete;
+  CastMediaBlockerBrowserTest& operator=(const CastMediaBlockerBrowserTest&) =
+      delete;
 
  protected:
   // CastBrowserTest implementation.
@@ -38,12 +46,12 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
     query_params.push_back(std::make_pair(tag, media_file));
     query_params.push_back(std::make_pair("loop", "true"));
 
-    std::string query = media::GetURLQueryString(query_params);
+    std::string query = ::media::GetURLQueryString(query_params);
     GURL gurl = content::GetFileUrlWithQuery(
-        media::GetTestDataFilePath("player.html"), query);
+        ::media::GetTestDataFilePath("player.html"), query);
 
     web_contents_ = NavigateToURL(gurl);
-    WaitForLoadStop(web_contents_);
+    EXPECT_TRUE(WaitForLoadStop(web_contents_));
 
     blocker_ = std::make_unique<CastMediaBlocker>(web_contents_);
   }
@@ -56,8 +64,7 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
       LOG(INFO) << "Checking media blocking, re-try = " << i;
       base::RunLoop run_loop(base::RunLoop::Type::kNestableTasksAllowed);
       base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(),
-          base::TimeDelta::FromMilliseconds(100));
+          FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(100));
       run_loop.Run();
 
       const std::string command =
@@ -82,8 +89,6 @@ class CastMediaBlockerBrowserTest : public CastBrowserTest {
  private:
   content::WebContents* web_contents_;
   std::unique_ptr<CastMediaBlocker> blocker_;
-
-  DISALLOW_COPY_AND_ASSIGN(CastMediaBlockerBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(CastMediaBlockerBrowserTest, Audio_BlockUnblock) {

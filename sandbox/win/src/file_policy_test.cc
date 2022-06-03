@@ -89,14 +89,11 @@ SBOX_TESTS_COMMAND int File_Win32Create(int argc, wchar_t** argv) {
   if (INVALID_HANDLE_VALUE != file) {
     ::CloseHandle(file);
     return SBOX_TEST_SUCCEEDED;
-  } else {
-    if (ERROR_ACCESS_DENIED == ::GetLastError()) {
-      return SBOX_TEST_DENIED;
-    } else {
-      return SBOX_TEST_FAILED;
-    }
   }
-  return SBOX_TEST_SUCCEEDED;
+  if (ERROR_ACCESS_DENIED == ::GetLastError()) {
+    return SBOX_TEST_DENIED;
+  }
+  return SBOX_TEST_FAILED;
 }
 
 // Creates the file in parameter using the NtCreateFile api and returns if the

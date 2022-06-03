@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+
+<head>
+    <meta name="color-scheme" content="light dark">
+    <script src="../../../../resources/run-after-layout-and-paint.js"></script>
+    <script>
+        // TODO(wangxianzhu): Direct invalidation of overflow control cc::Layers
+        // are not tracked by under-invaldiation checking.
+        if (window.internals)
+            internals.runtimeFlags.paintUnderInvalidationCheckingEnabled = false;
+
+        function endTest() {
+            if (window.testRunner)
+                testRunner.notifyDone();
+        }
+
+        function doTest() {
+            window.internals.setForcedColorsAndDarkPreferredColorScheme(document);
+            runAfterLayoutAndPaint(endTest);
+        }
+
+        runAfterLayoutAndPaint(doTest);
+
+        if (window.testRunner)
+            testRunner.waitUntilDone();
+    </script>
+</head>
+
+<body style="height:5000px; width:5000px">
+    <div style="width: 200px; height: 200px; overflow: scroll; background: white">
+        <div style="height: 1000px; width: 1000px"></div>
+    </div>
+    <div style="width: 200px; height: 200px; overflow: scroll">
+        <div style="height: 1000px; width: 1000px"></div>
+    </div>
+</body>

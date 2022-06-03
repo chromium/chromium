@@ -1,4 +1,6 @@
 include_rules = [
+  # For DisabledReasonId used in protocol/page_hander.cc.
+  "+components/back_forward_cache/disabled_reason_id.h",
   # For parsing and validating fido enums in protocol/webauthn_handler.cc.
   "+device/fido/fido_constants.h",
   "+device/fido/fido_parsing_utils.h",
@@ -8,3 +10,9 @@ include_rules = [
   # For VirtualU2fDevice::IsTransportSupported used in protocol/webauthn_handler.cc.
   "+device/fido/virtual_u2f_device.h",
 ]
+
+specific_include_rules = {
+  "tracing_handler\.cc": [
+    "+third_party/perfetto"
+  ]
+}

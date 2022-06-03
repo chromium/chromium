@@ -11,6 +11,8 @@ argument.  The list of known devices will be written to a C-style string to be
 parsed with JSONReader.
 """
 
+from __future__ import print_function
+
 import json
 import optparse
 import os
@@ -42,7 +44,7 @@ def main():
     # The version file should have 4 lines, with format like MAJOR=63
     components = version_file.readline().split('=')
     if len(components) != 2 or components[0].strip() != part:
-      print 'Bad version file'
+      print('Bad version file')
       return 1
     version.append(components[1].strip())
   # Join parts of version together using '.' as separator

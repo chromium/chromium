@@ -92,7 +92,7 @@ message AutofillRandomizedValue {
   //
   // BIT_K encodings:
   //    each randomized bit i in |encoded_bits| corresponds to bit k of the byte
-  //    at the corresponsding offset i of the original metadata value, up to
+  //    at the corresponding offset i of the original metadata value, up to
   //    i=64 (8 bytes).
   //
   // EVEN_BITS encoding:
@@ -103,7 +103,7 @@ message AutofillRandomizedValue {
   //     each randomized bit i in |encoded_bits| corresponds to bit 2*i+1 of the
   //     original metadata value, up to i=256 (32 bytes).
   //
-  // ALL_BITS encding:
+  // ALL_BITS encoding:
   //     each bit i in |encoded_bits| corresponds to bit i of the original
   //     metadata value, up to i=512 (64 bytes).
   //
@@ -115,6 +115,25 @@ message AutofillRandomizedValue {
   // transmitted as noise. For all of the other encodings, the encoded bits
   // does not encode any full bytes.
   optional bytes encoded_bits = 2;
+
+  // 32-bit checksum before randomization (passed in clear text). Note that
+  // this value may not be present; for now, it is only stored for metadata
+  // values of type FORM_URL.
+  optional fixed32 checksum = 3;
+}
+
+// Describes how the button is implemented in HTML source. Corresponds to
+// the mojo ButtonTitleType enum defined in
+// components/autofill/core/common/mojom/autofill_types.mojom.h
+enum ButtonTitleType {
+  NONE = 0;
+  BUTTON_ELEMENT_SUBMIT_TYPE = 1;  // <button type='submit'>
+  BUTTON_ELEMENT_BUTTON_TYPE = 2;  // <button type='button'>
+  INPUT_ELEMENT_SUBMIT_TYPE = 3;   // <input type='submit'>
+  INPUT_ELEMENT_BUTTON_TYPE = 4;   // <input type='button'>
+  HYPERLINK = 5;                   // e.g. <a class='button'>
+  DIV = 6;                         // e.g. <div id='submit'>
+  SPAN = 7;                        // e.g. <span name='btn'>
 }
 
 // The collection of autofill field metadata to be sent using randomization.
@@ -127,6 +146,23 @@ message AutofillRandomizedFormMetadata {
 
   // Form element action. Example: <form action="XXXXXXXX">
   optional AutofillRandomizedValue action = 3;
+
+  // Location of form as URL.
+  optional AutofillRandomizedValue url = 4;
+
+  // Information about a button's title (sync with another ButtonTitle in this
+  // proto).
+  message ButtonTitle {
+    // Text showed on the button.
+    optional AutofillRandomizedValue title = 1;
+
+    // Describes how the button is implemented in HTML source.
+    optional ButtonTitleType type = 2;
+  }
+  // Titles of form's buttons. Example: <input type="submit" value="XXXXX">
+  repeated ButtonTitle button_title = 5;
+
+  reserved 6;
 }
 
 // The collection of autofill field metadata to be sent using randomization.
@@ -186,14 +222,14 @@ message AutofillRandomizedFieldMetadata {
 
 // This message contains information about the field types in a single form.
 // It is sent by the toolbar to contribute to the field type statistics.
-// Next available id: 41
+// Next available id: 42
 message AutofillUploadContents {
   required string client_version = 1;
   required fixed64 form_signature = 2;
 
   // The secondary form signature is calculated based on field types instead of
   // names and is used if the primary one is unstable, i.e. the field names
-  // change on every page load.
+  // change on every page load. Not used currently.
   optional fixed64 secondary_form_signature = 34;
 
   // True if the autofill feature was used to fill this form, false otherwise.
@@ -293,13 +329,14 @@ message AutofillUploadContents {
     message AutofillTypeValiditiesPair {
       // Type of the field, e.g. what type of personal data the user entered in
       // that field before form submission. A list of all data types can be
-      // found in:
+      // found in: components/autofill/core/browser/field_types.h
       required int32 type = 1;
       // The validity of the type, which is determined based on the validity of
       // the user's profile data. A list of all validity states can be found
-      // here: components/autofill/core/browser/field_types.h
+      // here: components/autofill/core/browser/data_model/autofill_data_model.h
       // The validity state of a type is used to experiment if only using valid
       // data would result in better predictions.
+      // TODO(crbug.com/1174203): Remove the validity.
       repeated int32 validity = 2;
     }
     // A list of possible types for the field with their corresponding validity
@@ -310,13 +347,28 @@ message AutofillUploadContents {
     // or automatic fillings. This field is used to detect static
     // placeholders.
     optional uint32 initial_value_hash = 40;
+
+    // The type of the username first flow signal.
+    enum SingleUsernameVoteType {
+      DEFAULT = 0;
+      // Votes with low confidence (i.e. recorded if Save/Update prompt was
+      // accepted without username edits).
+      WEAK = 1;
+      // Votes with high confidence (i.e. recorded if Save/Update prompt was
+      // accepted after username edits).
+      STRONG = 2;
+    }
+
+    // The type of the username first flow vote signal, set iff |autofill_type|
+    // is SINGLE_USERNAME or NOT_USERNAME.
+    optional SingleUsernameVoteType single_username_vote_type = 41;
   }
   // Signature of the form action host (e.g. Hash64Bit("example.com")).
   optional fixed64 action_signature = 13;
 
-  // Signature of the form which is used for password generation debugging.
-  // Currently is used when password generated on a password field of a
-  // registration form is used on a password field of a login form.
+  // Signature of the form. This is currently used when password generated on a
+  // password field of a registration form is used on a password field of a
+  // login form.
   optional fixed64 login_form_signature = 14;
 
   // Whether a form submission event was observed.
@@ -371,6 +423,7 @@ message AutofillUploadContents {
     DEPRECATED_FILLED_FORM_ON_START_PROVISIONAL_LOAD = 8;            // unused
     DEPRECATED_FILLED_INPUT_ELEMENTS_ON_START_PROVISIONAL_LOAD = 9;  // unused
     PROBABLE_FORM_SUBMISSION = 10;
+    CHANGE_PASSWORD_FORM_CLEARED = 11;
   }
 
   // The type of the event that was taken as an indication that the form has
@@ -383,24 +436,13 @@ message AutofillUploadContents {
   // Form-level metadata observed by the client, randomized.
   optional AutofillRandomizedFormMetadata randomized_form_metadata = 32;
 
-  // Information about a button's title.
+  // Information about a button's title (sync with another ButtonTitle in this
+  // proto).
   message ButtonTitle {
     // Text showed on the button.
     optional string title = 1;
 
-    // Describes how the button is implemented in HTML source. Corresponds to
-    // the mojo ButtonTitleType enum defined in
-    // components/autofill/core/common/mojom/autofill_types.mojom.h
-    enum ButtonTitleType {
-      NONE = 0;
-      BUTTON_ELEMENT_SUBMIT_TYPE = 1;  // <button type='submit'>
-      BUTTON_ELEMENT_BUTTON_TYPE = 2;  // <button type='button'>
-      INPUT_ELEMENT_SUBMIT_TYPE = 3;   // <input type='submit'>
-      INPUT_ELEMENT_BUTTON_TYPE = 4;   // <input type='button'>
-      HYPERLINK = 5;                   // e.g. <a class='button'>
-      DIV = 6;                         // e.g. <div id='submit'>
-      SPAN = 7;                        // e.g. <span name='btn'>
-    }
+    // Describes how the button is implemented in HTML source.
     optional ButtonTitleType type = 2;
   }
   // Titles of form's buttons.
@@ -412,6 +454,39 @@ message AutofillUploadContents {
 
   // Captures whether or not this upload was a candidate for throttling.
   optional bool was_throttleable = 38;
+
+  // Type of the value seen in the potential single username field.
+  enum ValueType {
+    TYPE_UNSPECIFIED = 0;
+    NO_VALUE_TYPE = 1;
+    STORED_FOR_CURRENT_DOMAIN = 2;
+    // TODO(crbug.com/959776) Not used yet. Check against all domains to be
+    // implemented.
+    STORED_FOR_ANOTHER_DOMAIN = 3;
+    EMAIL = 4;
+    PHONE = 5;
+    USERNAME_LIKE = 6;
+    VALUE_WITH_NO_WHITESPACE = 7;
+    VALUE_WITH_WHITESPACE = 8;
+  }
+  // Information received from user interaction with the prompt.
+  enum SingleUsernamePromptEdit {
+    EDIT_UNSPECIFIED = 0;
+    NOT_EDITED_POSITIVE = 1;
+    NOT_EDITED_NEGATIVE = 2;
+    EDITED_POSITIVE = 3;
+    EDITED_NEGATIVE = 4;
+  }
+  message SingleUsernameData {
+    optional fixed64 username_form_signature = 1;
+    optional fixed32 username_field_signature = 2;
+    optional ValueType value_type = 3;
+    optional SingleUsernamePromptEdit prompt_edit = 4;
+  }
+  // This message is recorded on forms that do not have a username field.
+  // The message contains data on a preceding form with potential username
+  // field.
+  optional SingleUsernameData single_username_data = 42;
 }
 
 // This proto contains information about the validity of each field in an

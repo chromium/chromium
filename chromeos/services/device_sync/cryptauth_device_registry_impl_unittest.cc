@@ -9,7 +9,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -35,6 +34,12 @@ const char kInstanceId1[] = "instance_id_1";
 }  // namespace
 
 class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
+ public:
+  DeviceSyncCryptAuthDeviceRegistryImplTest(
+      const DeviceSyncCryptAuthDeviceRegistryImplTest&) = delete;
+  DeviceSyncCryptAuthDeviceRegistryImplTest& operator=(
+      const DeviceSyncCryptAuthDeviceRegistryImplTest&) = delete;
+
  protected:
   DeviceSyncCryptAuthDeviceRegistryImplTest() = default;
 
@@ -46,8 +51,7 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
 
   void CreateDeviceRegistry() {
     device_registry_ =
-        CryptAuthDeviceRegistryImpl::Factory::Get()->BuildInstance(
-            &pref_service_);
+        CryptAuthDeviceRegistryImpl::Factory::Create(&pref_service_);
   }
 
   const CryptAuthDevice& GetDeviceForTest(size_t index) const {
@@ -78,7 +82,7 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
                           kFakeFeatureStates0),
           CryptAuthDevice(kInstanceId1, kDeviceName1,
                           kDeviceBetterTogetherPublicKey1, kLastUpdateTime1,
-                          base::nullopt /* better_together_device_metadata */,
+                          absl::nullopt /* better_together_device_metadata */,
                           kFakeFeatureStates1)};
     }());
 
@@ -115,8 +119,6 @@ class DeviceSyncCryptAuthDeviceRegistryImplTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 
   std::unique_ptr<CryptAuthDeviceRegistry> device_registry_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncCryptAuthDeviceRegistryImplTest);
 };
 
 TEST_F(DeviceSyncCryptAuthDeviceRegistryImplTest, AddAndGetDevices) {

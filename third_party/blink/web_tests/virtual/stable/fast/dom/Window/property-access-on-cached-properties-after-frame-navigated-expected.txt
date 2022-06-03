@@ -1,18 +1,8 @@
-CONSOLE WARNING: line 124: 'window.webkitStorageInfo' is deprecated. Please use 'navigator.webkitTemporaryStorage' or 'navigator.webkitPersistentStorage' instead.
-CONSOLE WARNING: line 124: Application Cache API use is deprecated and will be removed in M82, around April 2020. See https://www.chromestatus.com/features/6192449487634432 for more details.
 Tests access of cached DOMWindow properties after the associated frame is navigated. Test should not crash and properties should be set to sane defaults.
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS window.cached_applicationCache.oncached is null
-PASS window.cached_applicationCache.onchecking is null
-PASS window.cached_applicationCache.ondownloading is null
-PASS window.cached_applicationCache.onerror is null
-PASS window.cached_applicationCache.onnoupdate is null
-PASS window.cached_applicationCache.onobsolete is null
-PASS window.cached_applicationCache.onprogress is null
-PASS window.cached_applicationCache.onupdateready is null
-PASS window.cached_applicationCache.status is 0
+PASS window.cached_cookieStore.onchange is null
 FAIL window.cached_location.hash should be  (of type string). Was undefined (of type undefined).
 FAIL window.cached_location.host should be  (of type string). Was undefined (of type undefined).
 FAIL window.cached_location.hostname should be  (of type string). Was undefined (of type undefined).
@@ -35,19 +25,26 @@ PASS window.cached_navigator.hardwareConcurrency is window.navigator.hardwareCon
 PASS window.cached_navigator.language is window.navigator.language
 PASS window.cached_navigator.maxTouchPoints is 0
 PASS window.cached_navigator.onLine is window.navigator.onLine
+PASS window.cached_navigator.pdfViewerEnabled is false
 PASS window.cached_navigator.platform is window.navigator.platform
 PASS window.cached_navigator.product is window.navigator.product
 PASS window.cached_navigator.productSub is window.navigator.productSub
 PASS window.cached_navigator.userAgent is ''
 PASS window.cached_navigator.vendor is window.navigator.vendor
 PASS window.cached_navigator.vendorSub is ''
+PASS window.cached_navigator.webdriver is false
 PASS window.cached_navigator_connection.onchange is null
 PASS window.cached_navigator_connection.saveData is false
+PASS window.cached_navigator_hid.onconnect is null
+PASS window.cached_navigator_hid.ondisconnect is null
+PASS window.cached_navigator_managed.onmanagedconfigurationchange is null
 PASS window.cached_navigator_mediaDevices.ondevicechange is null
 PASS window.cached_navigator_mediaSession.metadata is null
 PASS window.cached_navigator_mediaSession.playbackState is 'none'
 PASS window.cached_navigator_presentation.defaultRequest is null
 PASS window.cached_navigator_presentation.receiver is null
+PASS window.cached_navigator_serial.onconnect is null
+PASS window.cached_navigator_serial.ondisconnect is null
 PASS window.cached_navigator_serviceWorker.controller is null
 PASS window.cached_navigator_serviceWorker.oncontrollerchange is null
 PASS window.cached_navigator_serviceWorker.onmessage is null
@@ -56,6 +53,20 @@ PASS window.cached_navigator_usb.onconnect is null
 PASS window.cached_navigator_usb.ondisconnect is null
 PASS window.cached_navigator_userActivation.hasBeenActive is false
 PASS window.cached_navigator_userActivation.isActive is false
+PASS window.cached_navigator_userAgentData.brands[0].brand is ''
+PASS window.cached_navigator_userAgentData.brands[0].version is ''
+PASS window.cached_navigator_userAgentData.mobile is false
+PASS window.cached_navigator_userAgentData.platform is ''
+PASS window.cached_navigator_virtualKeyboard.boundingRect.bottom is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.height is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.left is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.right is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.top is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.width is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.x is 0
+PASS window.cached_navigator_virtualKeyboard.boundingRect.y is 0
+PASS window.cached_navigator_virtualKeyboard.ongeometrychange is null
+PASS window.cached_navigator_virtualKeyboard.overlaysContent is false
 PASS window.cached_navigator_xr.ondevicechange is null
 PASS window.cached_performance.onresourcetimingbufferfull is null
 PASS window.cached_performance_navigation.redirectCount is 0
@@ -101,6 +112,7 @@ PASS window.cached_speechSynthesis.speaking is false
 PASS window.cached_statusbar.visible is false
 PASS window.cached_styleMedia.type is ''
 PASS window.cached_toolbar.visible is false
+PASS window.cached_trustedTypes.defaultPolicy is null
 PASS window.cached_visualViewport.height is 0
 PASS window.cached_visualViewport.offsetLeft is 0
 PASS window.cached_visualViewport.offsetTop is 0

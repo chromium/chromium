@@ -34,6 +34,12 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattManagerClient
     : public BluetoothGattManagerClient {
  public:
   FakeBluetoothGattManagerClient();
+
+  FakeBluetoothGattManagerClient(const FakeBluetoothGattManagerClient&) =
+      delete;
+  FakeBluetoothGattManagerClient& operator=(
+      const FakeBluetoothGattManagerClient&) = delete;
+
   ~FakeBluetoothGattManagerClient() override;
 
   // DBusClient override.
@@ -43,11 +49,11 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattManagerClient
   void RegisterApplication(const dbus::ObjectPath& adapter_object_path,
                            const dbus::ObjectPath& application_path,
                            const Options& options,
-                           const base::Closure& callback,
+                           base::OnceClosure callback,
                            ErrorCallback error_callback) override;
   void UnregisterApplication(const dbus::ObjectPath& adapter_object_path,
                              const dbus::ObjectPath& application_path,
-                             const base::Closure& callback,
+                             base::OnceClosure callback,
                              ErrorCallback error_callback) override;
 
   // Register, unregister, and retrieve pointers to application service
@@ -123,8 +129,6 @@ class DEVICE_BLUETOOTH_EXPORT FakeBluetoothGattManagerClient
   ServiceMap service_map_;
   CharacteristicMap characteristic_map_;
   DescriptorMap descriptor_map_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeBluetoothGattManagerClient);
 };
 
 }  // namespace bluez

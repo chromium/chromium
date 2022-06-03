@@ -1,11 +1,11 @@
-// META: global=worker,jsshell
+// META: global=window,worker,jsshell
 'use strict';
 
 const error1 = new Error('a unique string');
 error1.name = 'error1';
 
 test(() => {
-  assert_throws(error1, () => {
+  assert_throws_exactly(error1, () => {
     new WritableStream({}, {
       get size() {
         throw error1;
@@ -16,13 +16,13 @@ test(() => {
 }, 'Writable stream: throwing strategy.size getter');
 
 test(() => {
-  assert_throws(new TypeError(), () => {
+  assert_throws_js(TypeError, () => {
     new WritableStream({}, { size: 'a string' });
   });
 }, 'reject any non-function value for strategy.size');
 
 test(() => {
-  assert_throws(error1, () => {
+  assert_throws_exactly(error1, () => {
     new WritableStream({}, {
       size() {
         return 1;
@@ -37,7 +37,7 @@ test(() => {
 test(() => {
 
   for (const highWaterMark of [-1, -Infinity, NaN, 'foo', {}]) {
-    assert_throws(new RangeError(), () => {
+    assert_throws_js(RangeError, () => {
       new WritableStream({}, {
         size() {
           return 1;
@@ -58,9 +58,9 @@ promise_test(t => {
 
   const writer = ws.getWriter();
 
-  const p1 = promise_rejects(t, error1, writer.write('a'), 'write should reject with the thrown error');
+  const p1 = promise_rejects_exactly(t, error1, writer.write('a'), 'write should reject with the thrown error');
 
-  const p2 = promise_rejects(t, error1, writer.closed, 'closed should reject with the thrown error');
+  const p2 = promise_rejects_exactly(t, error1, writer.closed, 'closed should reject with the thrown error');
 
   return Promise.all([p1, p2]);
 }, 'Writable stream: throwing strategy.size method');
@@ -88,7 +88,7 @@ promise_test(() => {
 }, 'Writable stream: invalid strategy.size return value');
 
 test(() => {
-  assert_throws(new TypeError(), () => new WritableStream(undefined, {
+  assert_throws_js(TypeError, () => new WritableStream(undefined, {
     size: 'not a function',
     highWaterMark: NaN
   }), 'WritableStream constructor should throw a TypeError');

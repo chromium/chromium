@@ -40,7 +40,9 @@ bool UserContext::operator==(const UserContext& context) const {
          context.is_using_oauth_ == is_using_oauth_ &&
          context.auth_flow_ == auth_flow_ && context.user_type_ == user_type_ &&
          context.public_session_locale_ == public_session_locale_ &&
-         context.public_session_input_method_ == public_session_input_method_;
+         context.public_session_input_method_ == public_session_input_method_ &&
+         context.login_input_method_id_used_ == login_input_method_id_used_ &&
+         context.authsession_id_ == authsession_id_;
 }
 
 bool UserContext::operator!=(const UserContext& context) const {
@@ -137,14 +139,31 @@ const std::string& UserContext::GetGAPSCookie() const {
   return gaps_cookie_;
 }
 
-const base::Optional<password_manager::PasswordHashData>&
+const std::string& UserContext::GetReauthProofToken() const {
+  return reauth_proof_token_;
+}
+
+const absl::optional<password_manager::PasswordHashData>&
 UserContext::GetSyncPasswordData() const {
   return sync_password_data_;
 }
 
-const base::Optional<SamlPasswordAttributes>&
+const absl::optional<SamlPasswordAttributes>&
 UserContext::GetSamlPasswordAttributes() const {
   return saml_password_attributes_;
+}
+
+const absl::optional<SyncTrustedVaultKeys>&
+UserContext::GetSyncTrustedVaultKeys() const {
+  return sync_trusted_vault_keys_;
+}
+
+bool UserContext::IsLockableManagedGuestSession() const {
+  return !managed_guest_session_launch_extension_id_.empty();
+}
+
+std::string UserContext::GetManagedGuestSessionLaunchExtensionId() const {
+  return managed_guest_session_launch_extension_id_;
 }
 
 bool UserContext::HasCredentials() const {
@@ -221,6 +240,10 @@ void UserContext::SetGAPSCookie(const std::string& gaps_cookie) {
   gaps_cookie_ = gaps_cookie;
 }
 
+void UserContext::SetReauthProofToken(const std::string& reauth_proof_token) {
+  reauth_proof_token_ = reauth_proof_token;
+}
+
 void UserContext::SetSyncPasswordData(
     const password_manager::PasswordHashData& sync_password_data) {
   sync_password_data_ = {sync_password_data};
@@ -231,9 +254,39 @@ void UserContext::SetSamlPasswordAttributes(
   saml_password_attributes_ = saml_password_attributes;
 }
 
+void UserContext::SetSyncTrustedVaultKeys(
+    const SyncTrustedVaultKeys& sync_trusted_vault_keys) {
+  sync_trusted_vault_keys_ = sync_trusted_vault_keys;
+}
+
 void UserContext::SetIsUnderAdvancedProtection(
     bool is_under_advanced_protection) {
   is_under_advanced_protection_ = is_under_advanced_protection;
+}
+
+void UserContext::SetManagedGuestSessionLaunchExtensionId(
+    const std::string& managed_guest_session_launch_extension_id) {
+  managed_guest_session_launch_extension_id_ =
+      managed_guest_session_launch_extension_id;
+}
+
+void UserContext::SetLoginInputMethodIdUsed(
+    const std::string& input_method_id) {
+  DCHECK(login_input_method_id_used_.empty());
+  login_input_method_id_used_ = input_method_id;
+}
+
+const std::string& UserContext::GetLoginInputMethodIdUsed() const {
+  return login_input_method_id_used_;
+}
+
+void UserContext::SetAuthSessionId(const std::string& authsession_id) {
+  DCHECK(authsession_id_.empty());
+  authsession_id_ = authsession_id;
+}
+
+const std::string& UserContext::GetAuthSessionId() const {
+  return authsession_id_;
 }
 
 void UserContext::ClearSecrets() {
@@ -241,6 +294,8 @@ void UserContext::ClearSecrets() {
   password_key_.ClearSecret();
   auth_code_.clear();
   refresh_token_.clear();
+  sync_trusted_vault_keys_.reset();
+  authsession_id_.clear();
 }
 
 }  // namespace chromeos

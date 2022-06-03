@@ -5,25 +5,26 @@
 #include "third_party/blink/renderer/core/css/css_syntax_string_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_syntax_component.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 
 namespace blink {
 
 class CSSSyntaxStringParserTest : public testing::Test {
  public:
-  base::Optional<CSSSyntaxComponent> ParseSingleComponent(
+  absl::optional<CSSSyntaxComponent> ParseSingleComponent(
       const String& syntax) {
     auto definition = CSSSyntaxStringParser(syntax).Parse();
     if (!definition)
-      return base::nullopt;
+      return absl::nullopt;
     if (definition->Components().size() != 1)
-      return base::nullopt;
+      return absl::nullopt;
     return definition->Components()[0];
   }
 
-  base::Optional<CSSSyntaxType> ParseSingleType(const String& syntax) {
+  absl::optional<CSSSyntaxType> ParseSingleType(const String& syntax) {
     auto component = ParseSingleComponent(syntax);
-    return component ? base::make_optional(component->GetType())
-                     : base::nullopt;
+    return component ? absl::make_optional(component->GetType())
+                     : absl::nullopt;
   }
 
   String ParseSingleIdent(const String& syntax) {
@@ -47,6 +48,7 @@ class CSSSyntaxStringParserTest : public testing::Test {
 
 TEST_F(CSSSyntaxStringParserTest, UniversalDescriptor) {
   auto universal = CreateUniversalDescriptor();
+  EXPECT_TRUE(universal.IsUniversal());
   EXPECT_EQ(universal, *CSSSyntaxStringParser("*").Parse());
   EXPECT_EQ(universal, *CSSSyntaxStringParser(" * ").Parse());
   EXPECT_EQ(universal, *CSSSyntaxStringParser("\r*\r\n").Parse());
@@ -118,6 +120,8 @@ TEST_F(CSSSyntaxStringParserTest, InvalidIdents) {
   EXPECT_FALSE(CSSSyntaxStringParser("initial").Parse());
   EXPECT_FALSE(CSSSyntaxStringParser("inherit").Parse());
   EXPECT_FALSE(CSSSyntaxStringParser("unset").Parse());
+  EXPECT_FALSE(CSSSyntaxStringParser("default").Parse());
+  EXPECT_FALSE(CSSSyntaxStringParser("revert").Parse());
 }
 
 TEST_F(CSSSyntaxStringParserTest, Combinator) {

@@ -8,6 +8,8 @@
 #include <cmath>
 #include <memory>
 
+#include "base/check_op.h"
+
 namespace ash {
 namespace {
 

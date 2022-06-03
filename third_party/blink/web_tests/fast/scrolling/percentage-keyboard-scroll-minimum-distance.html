@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../../resources/run-after-layout-and-paint.js"></script>
+<div id="scroller" tabindex=1 style="width: 5px; height: 5px; overflow: scroll;">
+  <div style="width: 1000px; height:1000px;"></div>
+</div>
+<script>
+  "use strict";
+
+  function runTest() {
+    if (window.eventSender && window.internals) {
+      internals.settings.setScrollAnimatorEnabled(false);
+      internals.settings.setHideScrollbars(true);
+
+      test(() => {
+        const scroller = document.getElementById("scroller");
+
+        scroller.focus();
+        assert_equals(document.activeElement.id, "scroller");
+        eventSender.keyDown("ArrowDown");
+        eventSender.keyDown("ArrowRight");
+
+        assert_greater_than(scroller.scrollTop, 0);
+        assert_greater_than(scroller.scrollLeft, 0);
+      }, "Ensure percent-based keyboard scroll can always scroll, even on small scrollers.");
+    }
+  }
+  addEventListener('load', runTest);
+</script>

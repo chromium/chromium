@@ -7,11 +7,14 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_layout.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
 // View that can be laid out in the tabstrip.
 class TabSlotView : public views::View {
  public:
+  METADATA_HEADER(TabSlotView);
+
   enum class ViewType {
     kTab,
     kTabGroupHeader,
@@ -29,10 +32,10 @@ class TabSlotView : public views::View {
   virtual TabSizeInfo GetTabSizeInfo() const = 0;
 
   // Used to set the tab group that this view belongs to.
-  void set_group(base::Optional<tab_groups::TabGroupId> group) {
+  void set_group(absl::optional<tab_groups::TabGroupId> group) {
     group_ = group;
   }
-  base::Optional<tab_groups::TabGroupId> group() const { return group_; }
+  absl::optional<tab_groups::TabGroupId> group() const { return group_; }
 
   // Used to mark the view as having been detached.  Once this has happened, the
   // view should be invisibly closed.  This is irreversible.
@@ -43,14 +46,23 @@ class TabSlotView : public views::View {
   void set_dragging(bool dragging) { dragging_ = dragging; }
   bool dragging() const { return dragging_; }
 
+  void set_animating(bool animating) { animating_ = animating; }
+  bool animating() const { return animating_; }
+
+  // views::View:
+  gfx::Rect GetAnchorBoundsInScreen() const override;
+
  private:
-  base::Optional<tab_groups::TabGroupId> group_;
+  absl::optional<tab_groups::TabGroupId> group_;
 
   // True if the view has been detached.
   bool detached_ = false;
 
   // True if the tab is being dragged.
   bool dragging_ = false;
+
+  // True if the tab's bounds are being animated by the tabstrip.
+  bool animating_ = false;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TABS_TAB_SLOT_VIEW_H_

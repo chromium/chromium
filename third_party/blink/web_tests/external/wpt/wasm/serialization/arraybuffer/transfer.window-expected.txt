@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-FAIL transfer assert_throws: function "() => {
+FAIL transfer assert_throws_js: function "() => {
     postMessage('foo', '*', [buffer]);
   }" did not throw
 Harness: the test ran to completion.

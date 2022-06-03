@@ -31,58 +31,59 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_POINT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_POINT_H_
 
-#include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
-#include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "third_party/blink/renderer/core/svg/properties/svg_listable_property.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
-class AffineTransform;
 class SVGPointTearOff;
 
-class SVGPoint final : public SVGPropertyHelper<SVGPoint> {
+class SVGPoint final : public SVGListablePropertyBase {
  public:
   typedef SVGPointTearOff TearOffType;
 
   SVGPoint();
-  explicit SVGPoint(const FloatPoint&);
+  explicit SVGPoint(const gfx::PointF&);
 
   SVGPoint* Clone() const;
+  SVGPropertyBase* CloneForAnimation(const String&) const override;
 
-  const FloatPoint& Value() const { return value_; }
-  void SetValue(const FloatPoint& value) { value_ = value; }
+  const gfx::PointF& Value() const { return value_; }
+  void SetValue(const gfx::PointF& value) { value_ = value; }
 
-  float X() const { return value_.X(); }
-  float Y() const { return value_.Y(); }
-  void SetX(float f) { value_.SetX(f); }
-  void SetY(float f) { value_.SetY(f); }
-
-  FloatPoint MatrixTransform(const AffineTransform&) const;
+  float X() const { return value_.x(); }
+  float Y() const { return value_.y(); }
+  void SetX(float f) { value_.set_x(f); }
+  void SetY(float f) { value_.set_y(f); }
 
   String ValueAsString() const override;
-  SVGParsingError SetValueAsString(const String&);
 
-  void Add(SVGPropertyBase*, SVGElement*) override;
-  void CalculateAnimatedValue(const SVGAnimateElement&,
-                              float percentage,
-                              unsigned repeat_count,
-                              SVGPropertyBase* from,
-                              SVGPropertyBase* to,
-                              SVGPropertyBase* to_at_end_of_duration_value,
-                              SVGElement* context_element) override;
-  float CalculateDistance(SVGPropertyBase* to,
-                          SVGElement* context_element) override;
+  void Add(const SVGPropertyBase*, const SVGElement*) override;
+  void CalculateAnimatedValue(
+      const SMILAnimationEffectParameters&,
+      float percentage,
+      unsigned repeat_count,
+      const SVGPropertyBase* from,
+      const SVGPropertyBase* to,
+      const SVGPropertyBase* to_at_end_of_duration_value,
+      const SVGElement* context_element) override;
+  float CalculateDistance(const SVGPropertyBase* to,
+                          const SVGElement* context_element) const override;
 
   static AnimatedPropertyType ClassType() { return kAnimatedPoint; }
+  AnimatedPropertyType GetType() const override { return ClassType(); }
 
  private:
-  template <typename CharType>
-  SVGParsingError Parse(const CharType*& ptr, const CharType* end);
-
-  FloatPoint value_;
+  gfx::PointF value_;
 };
 
-DEFINE_SVG_PROPERTY_TYPE_CASTS(SVGPoint);
+template <>
+struct DowncastTraits<SVGPoint> {
+  static bool AllowFrom(const SVGPropertyBase& value) {
+    return value.GetType() == SVGPoint::ClassType();
+  }
+};
 
 }  // namespace blink
 

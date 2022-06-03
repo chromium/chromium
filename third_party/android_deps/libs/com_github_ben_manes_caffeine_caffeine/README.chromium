@@ -1,0 +1,13 @@
+Name: Caffeine cache
+Short Name: caffeine
+URL: https://github.com/ben-manes/caffeine
+Version: 2.8.8
+License: Apache License, Version 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+A high performance caching library
+
+Local Modifications:
+No modifications.

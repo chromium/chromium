@@ -5,9 +5,13 @@
 package org.chromium.ui.base;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
+
+import androidx.core.content.ContextCompat;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -18,8 +22,12 @@ import org.robolectric.shadows.ShadowMimeTypeMap;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Tests logic in the SelectFileDialog class.
@@ -152,5 +160,144 @@ public class SelectFileDialogTest {
                 "///storage/emulated/0/DCIM/Camera/IMG_0.jpg");
         assertEquals(task.mFilePaths[1].toString(),
                 "///storage/emulated/0/DCIM/Camera/IMG_1.jpg");
+    }
+
+    private void testFilePath(
+            String path, SelectFileDialog selectFileDialog, boolean expectedPass) {
+        Uri[] uris = new Uri[1];
+        uris[0] = Uri.fromFile(new File(path));
+
+        SelectFileDialog.FilePathSelectedTask task = selectFileDialog.new FilePathSelectedTask(
+                ContextUtils.getApplicationContext(), path, null);
+        SelectFileDialog.GetDisplayNameTask task2 =
+                selectFileDialog.new GetDisplayNameTask(ContextUtils.getApplicationContext(),
+                        /* isMultiple = */ false, uris);
+        assertEquals(expectedPass, task.doInBackground());
+        assertEquals(expectedPass, null != task2.doInBackground());
+    }
+
+    @Test
+    public void testFilePathTasks() throws IOException {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+
+        // Obtain the data directory for RoboElectric. It should look something like:
+        //   /tmp/robolectric-Method_[testName][number]/org.chromium.test.ui-dataDir
+        // ... where [testName] is the name of this test function and [number] is a unique id.
+        String dataDir =
+                ContextCompat.getDataDir(ContextUtils.getApplicationContext()).getCanonicalPath();
+
+        // Passing in the data directory itself should fail.
+        testFilePath(dataDir, selectFileDialog, /* expectedPass= */ false);
+        // Passing in a subdirectory of the data directory should also fail.
+        testFilePath(dataDir + "/tmp/xyz.jpg", selectFileDialog, /* expectedPass= */ false);
+        // The parent directory of the data directory should, however, succeed.
+        testFilePath(dataDir + "/../xyz.jpg", selectFileDialog, /* expectedPass= */ true);
+        // Another way of specifying the data directory (should fail).
+        testFilePath(dataDir + "/tmp/../xyz.jpg", selectFileDialog, /* expectedPass= */ false);
+        // The directory outside the data directory should succeed.
+        testFilePath("/data/local/tmp.jpg", selectFileDialog, /* expectedPass= */ true);
+
+        Path path = new File(dataDir).toPath();
+        String parent = path.getParent().toString();
+        String lastComponent = path.getName(path.getNameCount() - 1).toString();
+
+        // Make sure that base/./dataDir is treated the same as base/dataDir (and fail the request).
+        testFilePath(parent + "/./" + lastComponent + "/xyz.jpg", selectFileDialog,
+                /* expectedPass= */ false);
+        // Make sure that dataDir/../dataDir is treated the same as dataDir (and fail the request).
+        testFilePath(dataDir + "/../" + lastComponent + "/xyz.jpg", selectFileDialog,
+                /* expectedPass= */ false);
+    }
+
+    @Test
+    public void testShowTypes() {
+        SelectFileDialog selectFileDialog = new SelectFileDialog(0);
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("image/jpeg"));
+        assertTrue(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("image/jpeg", "image/png"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("image/*", "image/jpeg"));
+        // Note: image/jpeg is part of image/* so this counts as a single type.
+        assertTrue(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("image/*", "video/mp4"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertTrue(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("image/jpeg", "video/mp4"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertTrue(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("video/mp4"));
+        assertTrue(selectFileDialog.acceptsSingleType());
+        assertFalse(selectFileDialog.shouldShowImageTypes());
+        assertTrue(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("video/mp4", "video/*"));
+        // Note: video/mp4 is part of video/* so this counts as a single type.
+        assertTrue(selectFileDialog.acceptsSingleType());
+        assertFalse(selectFileDialog.shouldShowImageTypes());
+        assertTrue(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("audio/wave", "audio/mpeg", "audio/*"));
+        // Note: both audio/wave and audio/mpeg are part of audio/* so this counts as a single type.
+        assertTrue(selectFileDialog.acceptsSingleType());
+        assertFalse(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertTrue(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("audio/wave", "audio/mpeg"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertFalse(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertTrue(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("*/*"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertTrue(selectFileDialog.shouldShowVideoTypes());
+        assertTrue(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Collections.emptyList());
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertTrue(selectFileDialog.shouldShowVideoTypes());
+        assertTrue(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("image//png", "image/", "image"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertTrue(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("/image", "/"));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertFalse(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
+
+        selectFileDialog.setFileTypesForTests(Arrays.asList("/", ""));
+        assertFalse(selectFileDialog.acceptsSingleType());
+        assertFalse(selectFileDialog.shouldShowImageTypes());
+        assertFalse(selectFileDialog.shouldShowVideoTypes());
+        assertFalse(selectFileDialog.shouldShowAudioTypes());
     }
 }

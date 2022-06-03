@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "content/browser/webrtc/webrtc_webcam_browsertest.h"
 #include "content/public/common/content_features.h"
-#include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
@@ -23,15 +23,16 @@
 
 namespace content {
 
-// Disable FocusDistance test which fails with Logitec cameras.
+// Disable FocusDistance test which fails with Logitech cameras.
 // TODO(crbug.com/957020): renable these tests when we have a way to detect
 // which device is connected and hence avoid running it if the camera is
 // Logitech.
 #define MAYBE_ManipulateFocusDistance DISABLED_ManipulateFocusDistance
 
-#if defined(OS_ANDROID)
 // TODO(crbug.com/793859): Re-enable test on Android as soon as the cause for
 // the bug is understood and fixed.
+// TODO(crbug.com/1187247): Flaky on Linux/Windows.
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_WIN)
 #define MAYBE_ManipulatePan DISABLED_ManipulatePan
 #define MAYBE_ManipulateZoom DISABLED_ManipulateZoom
 #else
@@ -41,13 +42,13 @@ namespace content {
 
 // TODO(crbug.com/793859, crbug.com/986602): This test is broken on Android
 // (see above) and flaky on Linux.
-#if defined(OS_ANDROID) || defined(OS_LINUX)
+#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_ManipulateExposureTime DISABLED_ManipulateExposureTime
 #else
 #define MAYBE_ManipulateExposureTime ManipulateExposureTime
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 // See crbug/986470
 #define MAYBE_GetPhotoSettings DISABLED_GetPhotoSettings
 #define MAYBE_GetTrackSettings DISABLED_GetTrackSettings
@@ -92,6 +93,12 @@ class WebRtcImageCaptureBrowserTestBase
     : public UsingRealWebcam_WebRtcWebcamBrowserTest {
  public:
   WebRtcImageCaptureBrowserTestBase() = default;
+
+  WebRtcImageCaptureBrowserTestBase(const WebRtcImageCaptureBrowserTestBase&) =
+      delete;
+  WebRtcImageCaptureBrowserTestBase& operator=(
+      const WebRtcImageCaptureBrowserTestBase&) = delete;
+
   ~WebRtcImageCaptureBrowserTestBase() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -99,10 +106,6 @@ class WebRtcImageCaptureBrowserTestBase
 
     ASSERT_FALSE(base::CommandLine::ForCurrentProcess()->HasSwitch(
         switches::kUseFakeDeviceForMediaStream));
-
-    // Enable Pan/Tilt for testing.
-    command_line->AppendSwitchASCII(switches::kEnableBlinkFeatures,
-                                    "MediaCapturePanTilt");
   }
 
   void SetUp() override {
@@ -131,15 +134,12 @@ class WebRtcImageCaptureBrowserTestBase
 
     LookupAndLogNameAndIdOfFirstCamera();
 
-    std::string result;
-    if (!ExecuteScriptAndExtractString(shell(), command, &result))
-      return false;
+    std::string result =
+        EvalJs(shell(), command, EXECUTE_SCRIPT_USE_MANUAL_REPLY)
+            .ExtractString();
     DLOG_IF(ERROR, result != "OK") << result;
     return result == "OK";
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebRtcImageCaptureBrowserTestBase);
 };
 
 // Test fixture for setting up a capture device (real or fake) that successfully
@@ -170,6 +170,11 @@ class WebRtcImageCaptureSucceedsBrowserTest
                                           features_to_disable);
   }
 
+  WebRtcImageCaptureSucceedsBrowserTest(
+      const WebRtcImageCaptureSucceedsBrowserTest&) = delete;
+  WebRtcImageCaptureSucceedsBrowserTest& operator=(
+      const WebRtcImageCaptureSucceedsBrowserTest&) = delete;
+
   ~WebRtcImageCaptureSucceedsBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -185,12 +190,10 @@ class WebRtcImageCaptureSucceedsBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcImageCaptureSucceedsBrowserTest);
 };
 
 // TODO(crbug.com/998305): Flaky on Linux.
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_GetPhotoCapabilities DISABLED_GetPhotoCapabilities
 #else
 #define MAYBE_GetPhotoCapabilities GetPhotoCapabilities
@@ -209,18 +212,30 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest,
       RunImageCaptureTestCase("testCreateAndGetPhotoSettingsSucceeds()"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, TakePhoto) {
+// TODO(crbug.com/1187247): Flaky on Linux/Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_TakePhoto DISABLED_TakePhoto
+#else
+#define MAYBE_TakePhoto TakePhoto
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, MAYBE_TakePhoto) {
   embedded_test_server()->StartAcceptingConnections();
   ASSERT_TRUE(RunImageCaptureTestCase("testCreateAndTakePhotoSucceeds()"));
 }
 
-IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, GrabFrame) {
+// TODO(crbug.com/1187247): Flaky on Linux/Windows.
+#if defined(OS_LINUX) || defined(OS_WIN)
+#define MAYBE_GrabFrame DISABLED_GrabFrame
+#else
+#define MAYBE_GrabFrame GrabFrame
+#endif
+IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest, MAYBE_GrabFrame) {
   embedded_test_server()->StartAcceptingConnections();
   ASSERT_TRUE(RunImageCaptureTestCase("testCreateAndGrabFrameSucceeds()"));
 }
 
 // Flaky. crbug.com/998116
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define MAYBE_GetTrackCapabilities DISABLED_GetTrackCapabilities
 #else
 #define MAYBE_GetTrackCapabilities GetTrackCapabilities
@@ -246,7 +261,7 @@ IN_PROC_BROWSER_TEST_P(WebRtcImageCaptureSucceedsBrowserTest,
 // TODO(crbug.com/998304): Flaky on Linux.
 // TODO(crbug.com/793859): Re-enable test on Android as soon as the cause for
 // the bug is understood and fixed.
-#if defined(OS_LINUX) || defined(OS_ANDROID)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
 #define MAYBE_ManipulateTilt DISABLED_ManipulateTilt
 #else
 #define MAYBE_ManipulateTilt ManipulateTilt
@@ -288,8 +303,8 @@ INSTANTIATE_TEST_SUITE_P(
 // API has already been implemented.
 // Note, these tests must be run sequentially, since multiple parallel test runs
 // competing for a single physical webcam typically causes failures.
-#if defined(OS_LINUX) || defined(OS_MACOSX) || defined(OS_ANDROID) || \
-    defined(OS_WIN)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+    defined(OS_ANDROID) || defined(OS_WIN)
 
 const TargetVideoCaptureImplementation
     kTargetVideoCaptureImplementationsForRealWebcam[] = {
@@ -324,6 +339,11 @@ class WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest
     }
   }
 
+  WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest(
+      const WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest&) = delete;
+  WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest& operator=(
+      const WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest&) = delete;
+
   ~WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest() override {}
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -336,8 +356,6 @@ class WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebRtcImageCaptureCustomConfigFakeDeviceBrowserTest);
 };
 
 struct GetPhotoStateFailsConfigTraits {

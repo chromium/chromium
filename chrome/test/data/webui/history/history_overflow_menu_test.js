@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {BrowserService, ensureLazyLoaded} from 'chrome://history/history.js';
+import {TestBrowserService} from 'chrome://test/history/test_browser_service.js';
+
 suite('#overflow-menu', function() {
   let listContainer;
   let sharedMenu;
@@ -10,19 +13,18 @@ suite('#overflow-menu', function() {
   let target2;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     const testService = new TestBrowserService();
-    history.BrowserService.instance_ = testService;
+    BrowserService.setInstance(testService);
 
     const app = document.createElement('history-app');
     document.body.appendChild(app);
     return Promise
         .all([
           testService.whenCalled('queryHistory'),
-          history.ensureLazyLoaded(),
+          ensureLazyLoaded(),
         ])
         .then(function() {
-          element = app.$.history;
           listContainer = app.$['history'];
           const element1 = document.createElement('div');
           const element2 = document.createElement('div');
@@ -37,7 +39,8 @@ suite('#overflow-menu', function() {
 
   test('opening and closing menu', function() {
     const detail1 = {target: target1};
-    listContainer.fire('open-menu', detail1);
+    listContainer.dispatchEvent(new CustomEvent(
+        'open-menu', {bubbles: true, composed: true, detail: detail1}));
     assertTrue(sharedMenu.open);
     assertEquals(detail1, listContainer.actionMenuModel_);
 
@@ -45,7 +48,8 @@ suite('#overflow-menu', function() {
     assertFalse(sharedMenu.open);
 
     const detail2 = {target: target2};
-    listContainer.fire('open-menu', detail2);
+    listContainer.dispatchEvent(new CustomEvent(
+        'open-menu', {bubbles: true, composed: true, detail: detail2}));
     assertEquals(detail2, listContainer.actionMenuModel_);
     assertTrue(sharedMenu.open);
 

@@ -7,7 +7,6 @@
 
 #include "ash/public/cpp/keyboard/keyboard_types.h"
 #include "base/callback.h"
-#include "base/optional.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace keyboard {
@@ -24,16 +23,16 @@ class QueuedContainerType {
  public:
   QueuedContainerType(KeyboardUIController* controller,
                       ContainerType container_type,
-                      base::Optional<gfx::Rect> bounds,
+                      gfx::Rect bounds,
                       base::OnceCallback<void(bool success)> callback);
   ~QueuedContainerType();
   ContainerType container_type() { return container_type_; }
-  base::Optional<gfx::Rect> target_bounds() { return bounds_; }
+  gfx::Rect target_bounds() { return bounds_; }
 
  private:
   KeyboardUIController* controller_;
   ContainerType container_type_;
-  base::Optional<gfx::Rect> bounds_;
+  gfx::Rect bounds_;
   base::OnceCallback<void(bool success)> callback_;
 };
 

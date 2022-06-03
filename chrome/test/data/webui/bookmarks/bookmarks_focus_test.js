@@ -8,29 +8,18 @@
  */
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
-GEN('#include "services/network/public/cpp/features.h"');
+
+GEN('#include "content/public/test/browser_test.h"');
+
+/* eslint-disable no-var */
 
 const BookmarksFocusTest = class extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
     throw 'this is abstract and should be overriden by subclasses';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['network::features::kOutOfBlinkCors']};
-  }
 };
 
-// eslint-disable-next-line no-var
 var BookmarksFolderNodeFocusTest = class extends BookmarksFocusTest {
   /** @override */
   get browsePreload() {
@@ -44,7 +33,6 @@ TEST_F('BookmarksFolderNodeFocusTest', 'MAYBE_All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksListFocusTest = class extends BookmarksFocusTest {
   /** @override */
   get browsePreload() {
@@ -58,7 +46,6 @@ TEST_F('BookmarksListFocusTest', 'MAYBE_All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var BookmarksDialogFocusManagerTest = class extends BookmarksFocusTest {
   /** @override */
   get browsePreload() {

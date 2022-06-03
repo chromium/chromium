@@ -8,18 +8,20 @@
 #include "base/no_destructor.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
+namespace breadcrumbs {
 class BreadcrumbManagerKeyedService;
+}  // namespace breadcrumbs
 
-namespace ios {
-class ChromeBrowserState;
-}
+namespace web {
+class BrowserState;
+}  // namespace web
 
 class BreadcrumbManagerKeyedServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
   static BreadcrumbManagerKeyedServiceFactory* GetInstance();
-  static BreadcrumbManagerKeyedService* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state);
+  static breadcrumbs::BreadcrumbManagerKeyedService* GetForBrowserState(
+      web::BrowserState* browser_state);
 
  private:
   friend class base::NoDestructor<BreadcrumbManagerKeyedServiceFactory>;

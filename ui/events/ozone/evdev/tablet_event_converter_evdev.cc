@@ -8,6 +8,7 @@
 #include <linux/input.h>
 #include <stddef.h>
 
+#include "base/logging.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/events/event.h"
 #include "ui/events/ozone/evdev/device_event_dispatcher_evdev.h"
@@ -23,8 +24,8 @@ float ScaleTilt(int value, int min_value, int num_values) {
 
 EventPointerType GetToolType(int button_tool) {
   if (button_tool == BTN_TOOL_RUBBER)
-    return EventPointerType::POINTER_TYPE_ERASER;
-  return EventPointerType::POINTER_TYPE_PEN;
+    return EventPointerType::kEraser;
+  return EventPointerType::kPen;
 }
 
 }  // namespace
@@ -195,7 +196,7 @@ void TabletEventConverterEvdev::DispatchMouseButton(const input_event& input) {
 
   dispatcher_->DispatchMouseButtonEvent(MouseButtonEventParams(
       input_device_.id, EF_NONE, cursor_->GetLocation(), button, down,
-      false /* allow_remap */,
+      MouseButtonMapType::kNone,
       PointerDetails(GetToolType(stylus_), /* pointer_id*/ 0,
                      /* radius_x */ 0.0f, /* radius_y */ 0.0f, pressure_,
                      /* twist */ 0.0f, tilt_x_, tilt_y_),
@@ -219,6 +220,7 @@ void TabletEventConverterEvdev::FlushEvents(const input_event& input) {
 
   dispatcher_->DispatchMouseMoveEvent(MouseMoveEventParams(
       input_device_.id, EF_NONE, cursor_->GetLocation(),
+      /* ordinal_delta */ nullptr,
       PointerDetails(GetToolType(stylus_), /* pointer_id*/ 0,
                      /* radius_x */ 0.0f, /* radius_y */ 0.0f, pressure_,
                      /* twist */ 0.0f, tilt_x_, tilt_y_),

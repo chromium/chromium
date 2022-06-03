@@ -34,10 +34,9 @@ int32_t PrintingResource::GetDefaultPrintSettings(
     SendCreate(BROWSER, PpapiHostMsg_Printing_Create());
 
   Call<PpapiPluginMsg_Printing_GetDefaultPrintSettingsReply>(
-      BROWSER,
-      PpapiHostMsg_Printing_GetDefaultPrintSettings(),
-      base::Bind(&PrintingResource::OnPluginMsgGetDefaultPrintSettingsReply,
-          this, print_settings, callback));
+      BROWSER, PpapiHostMsg_Printing_GetDefaultPrintSettings(),
+      base::BindOnce(&PrintingResource::OnPluginMsgGetDefaultPrintSettingsReply,
+                     this, print_settings, callback));
   return PP_OK_COMPLETIONPENDING;
 }
 

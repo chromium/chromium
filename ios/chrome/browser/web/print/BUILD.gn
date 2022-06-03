@@ -1,0 +1,56 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ios/web/js_compile.gni")
+
+source_set("print") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "print_java_script_feature.h",
+    "print_java_script_feature.mm",
+    "print_tab_helper.h",
+    "print_tab_helper.mm",
+    "web_state_printer.h",
+  ]
+  deps = [
+    ":print_js",
+    "//base",
+    "//components/prefs",
+    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/browser_state",
+    "//ios/web/public",
+    "//ios/web/public/js_messaging",
+  ]
+  frameworks = [ "Foundation.framework" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "print_java_script_feature_unittest.mm",
+    "print_tab_helper_unittest.mm",
+  ]
+  deps = [
+    ":print",
+    "//base",
+    "//base/test:test_support",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//ios/chrome/browser:pref_names",
+    "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/prefs:browser_prefs",
+    "//ios/chrome/browser/web:test_support",
+    "//ios/chrome/test/fakes",
+    "//ios/web/public/test",
+    "//testing/gtest",
+  ]
+}
+
+js_compile_bundle("print_js") {
+  visibility = [ ":print" ]
+  closure_entry_point = "__crWeb.print"
+
+  sources = [ "resources/print.js" ]
+}

@@ -18,6 +18,9 @@ class BubbleCloserTest : public CocoaTest {
 
   BubbleCloserTest() = default;
 
+  BubbleCloserTest(const BubbleCloserTest&) = delete;
+  BubbleCloserTest& operator=(const BubbleCloserTest&) = delete;
+
   void SetUp() override {
     CocoaTest::SetUp();
     bubble_window_.reset([[NSWindow alloc]
@@ -61,8 +64,6 @@ class BubbleCloserTest : public CocoaTest {
   base::scoped_nsobject<NSWindow> bubble_window_;
   std::unique_ptr<BubbleCloser> bubble_closer_;
   int click_outside_count_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleCloserTest);
 };
 
 // Test for lifetime issues around NSEvent monitors.

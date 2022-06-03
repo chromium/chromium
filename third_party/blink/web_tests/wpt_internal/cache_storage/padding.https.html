@@ -1,0 +1,237 @@
+<!doctype html>
+<title>Cache Storage: verify cache_storage padding behavior</title>
+<link rel="help" href="https://w3c.github.io/ServiceWorker/#cache-interface">
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/common/get-host-info.sub.js"></script>
+<script src="/service-workers/service-worker/resources/test-helpers.sub.js"></script>
+<script>
+'use strict';
+
+const tmp_url = new URL('resources/simple.js', self.location);
+tmp_url.hostname = get_host_info().REMOTE_HOST;
+const TARGET_URL = tmp_url.href;
+
+async function usage(init) {
+  const cache = await caches.open('padding');
+  if (!init.mode)
+    init.mode = 'no-cors';
+  let r = await fetch(TARGET_URL, init);
+  if (init.mode == 'no-cors')
+    assert_equals(r.type, 'opaque');
+  const clone = r.clone();
+  // Note, this stores the response under a Request key that has a different
+  // url than what we fetched above.  This is purposeful to ensure
+  // that we are varying on how the Response was loaded and not on the Request
+  // key.
+  const cache_url = '/foo';
+  await cache.put(cache_url, r);
+  const usage1 = (await navigator.storage.estimate()).usageDetails.caches;
+  await cache.delete(cache_url);
+
+  await cache.put(cache_url, clone);
+  const usage2 = (await navigator.storage.estimate()).usageDetails.caches;
+  await cache.delete(cache_url);
+
+  assert_equals(usage1, usage2, 'cloned response have the same padding size');
+  return usage1;
+}
+
+promise_test(async t => {
+  const usage1 = await usage({ cache: 'reload' });
+  const usage2 = await usage({ cache: 'reload' });
+  assert_not_equals(usage1, usage2,
+                    'Responses loaded from network should have different ' +
+                    'padding size.');
+}, 'Cache padding varies if loaded from network.');
+
+promise_test(async t => {
+  // populate http cache
+  await usage({ cache: 'reload' });
+
+  const cache_usage1 = await usage({ cache: 'force-cache' });
+  const cache_usage2 = await usage({ cache: 'force-cache' });
+
+  assert_equals(cache_usage1, cache_usage2,
+                'Responses loaded from http cache should have the same ' +
+                'padding size.');
+
+  // repopulate http cache
+  await usage({ cache: 'reload' });
+
+  const cache_usage3 = await usage({ cache: 'force-cache' });
+  const cache_usage4 = await usage({ cache: 'force-cache' });
+
+  assert_not_equals(cache_usage1, cache_usage3,
+                    'An updated http cache entry should result in a ' +
+                    'different padding size.');
+  assert_equals(cache_usage3, cache_usage4,
+                'Responses loaded from http cache should have the same ' +
+                'padding size.');
+}, 'Cache padding is stable if loaded from http cache.');
+
+promise_test(async t => {
+  // Determine the actual size difference between GET and HEAD requests.
+  const cors_get_usage = await usage({ mode: 'cors', method: 'GET' });
+  const cors_head_usage = await usage({ mode: 'cors', method: 'HEAD' });
+  const cors_diff = cors_get_usage - cors_head_usage;
+
+  const net_get_usage = await usage({ method: 'GET', cache: 'reload' });
+  const net_head_usage = await usage({ method: 'HEAD', cache: 'reload' });
+  const opaque_net_diff = net_get_usage - net_head_usage;
+
+  assert_not_equals(net_get_usage, net_head_usage,
+                    'Responses loaded from network with different methods ' +
+                    'should have different padding size.');
+  assert_not_equals(opaque_net_diff, cors_diff,
+                    'Responses loaded from network with different methods ' +
+                    'should have usages that differ more than actual ' +
+                    'response size.');
+
+  // populate http cache
+  await usage({ cache: 'reload' });
+
+  const cache_get_usage = await usage({ method: 'GET', cache: 'force-cache' });
+  const cache_head_usage = await usage({ method: 'HEAD', cache: 'force-cache' });
+  const opaque_cache_diff = cache_get_usage - cache_head_usage;
+
+  assert_not_equals(cache_get_usage, cache_head_usage,
+                    'Responses loaded from http cache with different methods ' +
+                    'should have the different padding size.');
+  assert_not_equals(opaque_cache_diff, cors_diff,
+                    'Responses loaded from http cache with different methods ' +
+                    'should have usages that differ more than actual ' +
+                    'response size.');
+}, 'Cache padding varies with request method.');
+
+promise_test(async t => {
+  const cache1 = await caches.open('padding');
+  const cache2 = await caches.open('padding-2');
+
+  const net_response = await fetch(TARGET_URL, { mode: 'no-cors',
+                                                 cache: 'reload' });
+  await cache1.put(TARGET_URL, net_response);
+  const usage1 = (await navigator.storage.estimate()).usageDetails.caches;
+
+  const cache_response = await cache1.match(TARGET_URL);
+  await cache2.put(TARGET_URL, cache_response);
+  await cache1.delete(TARGET_URL);
+  const usage2 = (await navigator.storage.estimate()).usageDetails.caches;
+  await cache2.delete(TARGET_URL);
+
+  assert_equals(usage1, usage2,
+                'The padding value should follow a response loaded from ' +
+                'cache_storage.');
+
+}, 'Cache padding follows a response loaded from cache_storage.');
+
+promise_test(async t => {
+  const script = './resources/padding-fetch-sw.js';
+  const scope = './resources/padding-fetch-frame.html';
+
+  // Setup a service worker.
+  const reg = await service_worker_unregister_and_register(t, script, scope);
+  t.add_cleanup(() => reg.unregister());
+  await wait_for_state(t, reg.installing, 'activated');
+
+  // Setup an iframe controlled by the service worker.
+  const frame = await with_iframe(scope);
+  t.add_cleanup(() => frame.remove());
+
+  // The service worker will send a padded usage value via postMessage.
+  // Prepare to receive this message.
+  const message_promise = new Promise(resolve => {
+    frame.contentWindow.navigator.serviceWorker.addEventListener('message',
+        evt => {
+          if (!('usage' in evt.data))
+            return;
+          resolve(evt.data.usage);
+        });
+  });
+
+  // Fetch an opaque response from the network.  This will hit the
+  // service worker fetch handler which will compute a padded usage
+  // value before allowing this outer fetch to resolve.  The SW
+  // usage value is sent via an out-of-band postMessage.
+  const request = new Request(TARGET_URL, { mode: 'no-cors',
+                                            cache: 'reload' });
+  const net_response = await frame.contentWindow.fetch(request);
+
+  // Compute a padded usage value based on the response returned from our
+  // outer fetch.
+  const cache = await caches.open('padding');
+  // Make sure to use the URL and not the full request.  The main window
+  // and service worker requests may have different headers which can
+  // throw off the size comparison.
+  await cache.put(request.url, net_response);
+  const usage = (await navigator.storage.estimate()).usageDetails.caches;
+  await cache.delete(request.url);
+
+  // Compare our usage against the service worker usage.  They should be the
+  // same.  While a random padding is generated when a response is loaded
+  // over the network, that padding will be propagated through the service
+  // worker boundary to the outer fetch.
+  const sw_usage = await message_promise;
+  assert_equals(usage, sw_usage,
+                'The padding should propogate through the service worker ' +
+                'respondWith().');
+
+}, 'Cache padding propagates through a service worker respondWith().');
+
+promise_test(async t => {
+  const script = './resources/padding-install-sw.js';
+  const scope = './resources/padding-install-frame.html';
+
+  // populate http cache
+  await usage({ cache: 'reload' });
+
+  // Get usage for a response stored on the main thread.  This will
+  // not include any code cache.
+  const main_window_usage = await usage({ cache: 'force-cache' });
+
+  // A utility function for creating a promise that waits for a message
+  // from the service worker sending usage information.
+  function make_message_promise() {
+    return new Promise(resolve => {
+      navigator.serviceWorker.addEventListener('message',
+          function onMessage(evt) {
+            if (!('usage' in evt.data))
+              return;
+            navigator.serviceWorker.removeEventListener('message', onMessage);
+            resolve(evt.data.usage);
+          });
+    });
+  }
+
+  // Prepare to get a usage value from the service worker.
+  const message_promise_1 = make_message_promise();
+
+  // Register a service worker that stores and computes usage in its install
+  // event.  This will result in code cache being stored as side data.
+  const reg_1 = await service_worker_unregister_and_register(t, script, scope);
+  t.add_cleanup(() => reg_1.unregister());
+  await wait_for_state(t, reg_1.installing, 'activated');
+
+  // Wait for the service worker usage including code cache.
+  const sw_usage_1 = await message_promise_1;
+
+  assert_true(sw_usage_1 > main_window_usage,
+              'Usage with code cache should always be greater than ' +
+              'main_window_usage.');
+
+  // Prepare to get another usage value from a service worker.
+  const message_promise_2 = make_message_promise();
+
+  // Register a second service worker to get another usage with code cache.
+  const reg_2 = await service_worker_unregister_and_register(t, script, scope + '-2');
+  t.add_cleanup(() => reg_2.unregister());
+  await wait_for_state(t, reg_2.installing, 'activated');
+
+  // The usage with code cache should be stable.
+  const sw_usage_2 = await message_promise_2;
+  assert_equals(sw_usage_1, sw_usage_2,
+                'Usage with code cache should be stable for a response ' +
+                'loaded from http cache.');
+}, 'Code cache padding should be stable.');
+
+</script>

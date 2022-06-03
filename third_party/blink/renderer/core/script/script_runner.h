@@ -27,10 +27,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_SCRIPT_RUNNER_H_
 
 #include "base/location.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/context_lifecycle_state_observer.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_state_observer.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
@@ -42,70 +41,42 @@ class Document;
 class PendingScript;
 class ScriptLoader;
 
-class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
-                                       public ContextLifecycleStateObserver,
-                                       public NameClient {
-  USING_GARBAGE_COLLECTED_MIXIN(ScriptRunner);
-
+class CORE_EXPORT ScriptRunner final
+    : public GarbageCollected<ScriptRunner>,
+      public NameClient {
  public:
   explicit ScriptRunner(Document*);
+  ~ScriptRunner() override = default;
+  ScriptRunner(const ScriptRunner&) = delete;
+  ScriptRunner& operator=(const ScriptRunner&) = delete;
 
   void QueueScriptForExecution(PendingScript*);
-  bool HasPendingScripts() const {
-    return !pending_in_order_scripts_.IsEmpty() ||
-           !pending_async_scripts_.IsEmpty();
-  }
-  void SetForceDeferredExecution(bool force_deferred);
   void NotifyScriptReady(PendingScript*);
-
-  void ContextLifecycleStateChanged(mojom::FrameLifecycleState) final;
 
   static void MovePendingScript(Document&, Document&, ScriptLoader*);
 
-  void Trace(Visitor*) override;
+  void SetTaskRunnerForTesting(base::SingleThreadTaskRunner* task_runner) {
+    task_runner_ = task_runner;
+  }
+
+  void Trace(Visitor*) const;
   const char* NameInHeapSnapshot() const override { return "ScriptRunner"; }
 
  private:
-  class Task;
-
   void MovePendingScript(ScriptRunner*, PendingScript*);
   bool RemovePendingInOrderScript(PendingScript*);
-  void ScheduleReadyInOrderScripts();
 
-  void PostTask(const base::Location&);
-  void PostTasksForReadyScripts(const base::Location&);
-
-  // Execute the first task in in_order_scripts_to_execute_soon_.
-  // Returns true if task was run, and false otherwise.
-  bool ExecuteInOrderTask();
-
-  // Execute any task in async_scripts_to_execute_soon_.
-  // Returns true if task was run, and false otherwise.
-  bool ExecuteAsyncTask();
-
-  void ExecuteTask();
-
-  bool IsExecutionSuspended();
+  // Execute the given pending script.
+  void ExecutePendingScript(PendingScript*);
 
   Member<Document> document_;
 
+  // https://html.spec.whatwg.org/#list-of-scripts-that-will-execute-in-order-as-soon-as-possible
   HeapDeque<Member<PendingScript>> pending_in_order_scripts_;
+  // https://html.spec.whatwg.org/#set-of-scripts-that-will-execute-as-soon-as-possible
   HeapHashSet<Member<PendingScript>> pending_async_scripts_;
 
-  // http://www.whatwg.org/specs/web-apps/current-work/#set-of-scripts-that-will-execute-as-soon-as-possible
-  HeapDeque<Member<PendingScript>> async_scripts_to_execute_soon_;
-  HeapDeque<Member<PendingScript>> in_order_scripts_to_execute_soon_;
-
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  int number_of_in_order_scripts_with_pending_notification_ = 0;
-
-  // Whether script execution is suspended due to there being force deferred
-  // scripts that have not yet been executed. This is expected to be in sync
-  // with HTMLParserScriptRunner::suspended_async_script_execution_.
-  bool is_force_deferred_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptRunner);
 };
 
 }  // namespace blink

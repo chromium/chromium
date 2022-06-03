@@ -128,16 +128,19 @@ declare_args() {
   # release (!is_debug). This might be better expressed as a tri-state
   # (debug, release, official) but for historical reasons there are two
   # separate flags.
+  #
+  # IMPORTANT NOTE: (!is_debug) is *not* sufficient to get satisfying
+  # performance. In particular, DCHECK()s are still enabled for release builds,
+  # which can halve overall performance, and do increase memory usage. Always
+  # set "is_official_build" to true for any build intended to ship to end-users.
   is_official_build = false
-
-  # Whether we're a traditional desktop unix.
-  is_desktop_linux = current_os == "linux"
 
   # Set to true when compiling with the Clang compiler.
   is_clang = current_os != "linux" ||
              (current_cpu != "s390x" && current_cpu != "s390" &&
               current_cpu != "ppc64" && current_cpu != "ppc" &&
-              current_cpu != "mips" && current_cpu != "mips64")
+              current_cpu != "mips" && current_cpu != "mips64" &&
+              current_cpu != "riscv64")
 
   # Allows the path to a custom target toolchain to be injected as a single
   # argument, and set as the default toolchain.
@@ -161,7 +164,7 @@ declare_args() {
   # When false, components will be linked statically.
   #
   # For more information see
-  # https://chromium.googlesource.com/chromium/src/+/master/docs/component_build.md
+  # https://chromium.googlesource.com/chromium/src/+/main/docs/component_build.md
   is_component_build = is_debug && current_os != "ios"
 }
 
@@ -213,6 +216,8 @@ if (host_toolchain == "") {
     }
   } else if (host_os == "aix") {
     host_toolchain = "//build/toolchain/aix:$host_cpu"
+  } else if (host_os == "zos") {
+    host_toolchain = "//build/toolchain/zos:$host_cpu"
   } else {
     assert(false, "Unsupported host_os: $host_os")
   }
@@ -234,10 +239,11 @@ if (target_os == "android") {
 } else if (target_os == "fuchsia") {
   _default_toolchain = "//build/toolchain/fuchsia:$target_cpu"
 } else if (target_os == "ios") {
-  _default_toolchain = "//build/toolchain/mac:ios_clang_$target_cpu"
+  _default_toolchain = "//build/toolchain/ios:ios_clang_$target_cpu"
 } else if (target_os == "mac") {
-  assert(host_os == "mac", "Mac cross-compiles are unsupported.")
-  _default_toolchain = host_toolchain
+  assert(host_os == "mac" || host_os == "linux",
+         "Mac cross-compiles are unsupported.")
+  _default_toolchain = "//build/toolchain/mac:clang_$target_cpu"
 } else if (target_os == "win") {
   # On Windows, we use the same toolchain for host and target by default.
   # Beware, win cross builds have some caveats, see docs/win_cross.md
@@ -254,6 +260,8 @@ if (target_os == "android") {
   _default_toolchain = "//build/toolchain/win:uwp_$target_cpu"
 } else if (target_os == "aix") {
   _default_toolchain = "//build/toolchain/aix:$target_cpu"
+} else if (target_os == "zos") {
+  _default_toolchain = "//build/toolchain/zos:$target_cpu"
 } else {
   assert(false, "Unsupported target_os: $target_os")
 }
@@ -276,9 +284,9 @@ if (custom_toolchain != "") {
 # - is_android, is_chromeos, is_ios, and is_win should be obvious.
 # - is_mac is set only for desktop Mac. It is not set on iOS.
 # - is_posix is true for mac and any Unix-like system (basically everything
-#   except Windows).
-# - is_linux is true for desktop Linux and ChromeOS, but not Android (which is
-#   generally too different despite being based on the Linux kernel).
+#   except Fuchsia and Windows).
+# - is_linux is true for desktop Linux, but not for ChromeOS nor Android (which
+#   is generally too different despite being based on the Linux kernel).
 #
 # Do not add more is_* variants here for random lesser-used Unix systems like
 # aix or one of the BSDs. If you need to check these, just check the
@@ -288,117 +296,13 @@ is_android = current_os == "android"
 is_chromeos = current_os == "chromeos"
 is_fuchsia = current_os == "fuchsia"
 is_ios = current_os == "ios"
-is_linux = current_os == "chromeos" || current_os == "linux"
+is_linux = current_os == "linux"
 is_mac = current_os == "mac"
 is_nacl = current_os == "nacl"
 is_win = current_os == "win" || current_os == "winuwp"
 
+is_apple = is_ios || is_mac
 is_posix = !is_win && !is_fuchsia
-
-# =============================================================================
-# SOURCES FILTERS
-# =============================================================================
-#
-# These patterns filter out platform-specific files when assigning to the
-# sources variable. The magic variable |sources_assignment_filter| is applied
-# to each assignment or appending to the sources variable and matches are
-# automatically removed.
-#
-# Note that the patterns are NOT regular expressions. Only "*" and "\b" (path
-# boundary = end of string or slash) are supported, and the entire string
-# must match the pattern (so you need "*.cc" to match all .cc files, for
-# example).
-
-# DO NOT ADD MORE PATTERNS TO THIS LIST, see set_sources_assignment_filter call
-# below.
-sources_assignment_filter = []
-
-if (!is_win) {
-  sources_assignment_filter += [
-    "*_win.cc",
-    "*_win.h",
-    "*_win_unittest.cc",
-    "*\bwin/*",
-    "*.def",
-    "*.rc",
-  ]
-}
-if (!is_mac) {
-  sources_assignment_filter += [
-    "*_mac.h",
-    "*_mac.cc",
-    "*_mac.mm",
-    "*_mac_unittest.h",
-    "*_mac_unittest.cc",
-    "*_mac_unittest.mm",
-    "*\bmac/*",
-    "*_cocoa.h",
-    "*_cocoa.cc",
-    "*_cocoa.mm",
-    "*_cocoa_unittest.h",
-    "*_cocoa_unittest.cc",
-    "*_cocoa_unittest.mm",
-    "*\bcocoa/*",
-  ]
-}
-if (!is_ios) {
-  sources_assignment_filter += [
-    "*_ios.h",
-    "*_ios.cc",
-    "*_ios.mm",
-    "*_ios_unittest.h",
-    "*_ios_unittest.cc",
-    "*_ios_unittest.mm",
-    "*\bios/*",
-  ]
-}
-if (!is_mac && !is_ios) {
-  sources_assignment_filter += [ "*.mm" ]
-}
-if (!is_linux) {
-  sources_assignment_filter += [
-    "*_linux.h",
-    "*_linux.cc",
-    "*_linux_unittest.h",
-    "*_linux_unittest.cc",
-    "*\blinux/*",
-  ]
-}
-if (!is_android) {
-  sources_assignment_filter += [
-    "*_android.h",
-    "*_android.cc",
-    "*_android_unittest.h",
-    "*_android_unittest.cc",
-    "*\bandroid/*",
-  ]
-}
-if (!is_chromeos) {
-  sources_assignment_filter += [
-    "*_chromeos.h",
-    "*_chromeos.cc",
-    "*_chromeos_unittest.h",
-    "*_chromeos_unittest.cc",
-    "*\bchromeos/*",
-  ]
-}
-
-# DO NOT ADD MORE PATTERNS TO THIS LIST, see set_sources_assignment_filter call
-# below.
-
-# Actually save this list.
-#
-# These patterns are executed for every file in the source tree of every run.
-# Therefore, adding more patterns slows down the build for everybody. We should
-# only add automatic patterns for configurations affecting hundreds of files
-# across many projects in the tree.
-#
-# Therefore, we only add rules to this list corresponding to platforms on the
-# Chromium waterfall.  This is not for non-officially-supported platforms
-# (FreeBSD, etc.) toolkits, (X11, GTK, etc.), or features. For these cases,
-# write a conditional in the target to remove the file(s) from the list when
-# your platform/toolkit/feature doesn't apply.
-set_sources_assignment_filter(sources_assignment_filter)
 
 # =============================================================================
 # TARGET DEFAULTS
@@ -422,6 +326,7 @@ default_compiler_configs = [
   "//build/config:feature_flags",
   "//build/config/compiler:afdo",
   "//build/config/compiler:afdo_optimize_size",
+  "//build/config/compiler:cet_shadow_stack",
   "//build/config/compiler:compiler",
   "//build/config/compiler:compiler_arm_fpu",
   "//build/config/compiler:compiler_arm_thumb",
@@ -435,13 +340,17 @@ default_compiler_configs = [
   "//build/config/compiler:no_rtti",
   "//build/config/compiler:runtime_library",
   "//build/config/compiler:thin_archive",
+  "//build/config/compiler:thinlto_optimize_default",
   "//build/config/compiler:default_init_stack_vars",
+  "//build/config/compiler:no_unresolved_symbols",
+  "//build/config/compiler/pgo:default_pgo_flags",
   "//build/config/coverage:default_coverage",
   "//build/config/sanitizers:default_sanitizer_flags",
 ]
 
 if (is_win) {
   default_compiler_configs += [
+    "//build/config/win:default_cfg_compiler",
     "//build/config/win:default_crt",
     "//build/config/win:lean_and_mean",
     "//build/config/win:nominmax",
@@ -466,11 +375,6 @@ if (is_android) {
       [ "//build/config/android:default_orderfile_instrumentation" ]
 }
 
-if (is_win) {
-  default_compiler_configs +=
-      [ "//build/config/win:default_cygprofile_instrumentation" ]
-}
-
 if (is_clang && !is_nacl) {
   default_compiler_configs += [
     "//build/config/clang:find_bad_constructs",
@@ -490,6 +394,12 @@ set_defaults("static_library") {
   configs = default_compiler_configs
 }
 set_defaults("source_set") {
+  configs = default_compiler_configs
+}
+set_defaults("rust_library") {
+  configs = default_compiler_configs
+}
+set_defaults("rust_proc_macro") {
   configs = default_compiler_configs
 }
 
@@ -518,8 +428,8 @@ default_executable_configs = default_compiler_configs + [
                              ] + _linker_configs
 
 if (is_win) {
-  # Currently only turn on linker CFI for executables, and position it so it can
-  # be removed when needed.
+  # Turn on linker CFI for executables, and position it so it can be removed
+  # if needed.
   default_executable_configs += [ "//build/config/win:cfi_linker" ]
 }
 
@@ -533,6 +443,11 @@ default_shared_library_configs = default_compiler_configs + [
                                    "//build/config:default_libs",
                                    "//build/config:shared_library_config",
                                  ] + _linker_configs
+if (is_win) {
+  # Turn on linker CFI for DLLs, and position it so it can be removed if needed.
+  default_shared_library_configs += [ "//build/config/win:cfi_linker" ]
+}
+
 if (is_android) {
   # Strip native JNI exports from shared libraries by default. Binaries that
   # want this can remove this config.
@@ -551,6 +466,18 @@ set_defaults("loadable_module") {
   }
 }
 
+# A helper for forwarding testonly and visibility.
+# Forwarding "*" does not include variables from outer scopes (to avoid copying
+# all globals into each template invocation), so it will not pick up
+# file-scoped or outer-template-scoped variables. Normally this behavior is
+# desired, but "visibility" and "testonly" are commonly defined in outer scopes.
+# Explicitly forwarding them in forward_variables_from() works around this
+# nuance. See //build/docs/writing_gn_templates.md#using-forward_variables_from
+TESTONLY_AND_VISIBILITY = [
+  "testonly",
+  "visibility",
+]
+
 # Sets default dependencies for executable and shared_library targets.
 #
 # Variables
@@ -565,9 +492,13 @@ foreach(_target_type,
           "shared_library",
         ]) {
   template(_target_type) {
+    # Alias "target_name" because it is clobbered by forward_variables_from().
     _target_name = target_name
     target(_target_type, _target_name) {
-      forward_variables_from(invoker, "*", [ "no_default_deps" ])
+      forward_variables_from(invoker,
+                             "*",
+                             TESTONLY_AND_VISIBILITY + [ "no_default_deps" ])
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       if (!defined(deps)) {
         deps = []
       }
@@ -584,10 +515,9 @@ foreach(_target_type,
       # On Android, write shared library output file to metadata. We will use
       # this information to, for instance, collect all shared libraries that
       # should be packaged into an APK.
-      if (!defined(invoker.metadata) && is_android && (_target_type ==
-                                                       "shared_library" ||
-                                                       _target_type ==
-                                                       "loadable_module")) {
+      if (!defined(invoker.metadata) && is_android &&
+          (_target_type == "shared_library" ||
+           _target_type == "loadable_module")) {
         _output_name = _target_name
         if (defined(invoker.output_name)) {
           _output_name = invoker.output_name
@@ -640,7 +570,7 @@ template("component") {
     assert(invoker.static_component_type == "static_library" ||
            invoker.static_component_type == "source_set")
     _component_mode = invoker.static_component_type
-  } else if (!defined(invoker.sources)) {
+  } else if (!defined(invoker.sources) || invoker.sources == []) {
     # When there are no sources defined, use a source set to avoid creating
     # an empty static library (which generally don't work).
     _component_mode = "source_set"
@@ -648,15 +578,8 @@ template("component") {
     _component_mode = "static_library"
   }
   target(_component_mode, target_name) {
-    # Explicitly forward visibility, implicitly forward everything else.
-    # Forwarding "*" doesn't recurse into nested scopes (to avoid copying all
-    # globals into each template invocation), so won't pick up file-scoped
-    # variables. Normally this isn't too bad, but visibility is commonly
-    # defined at the file scope. Explicitly forwarding visibility and then
-    # excluding it from the "*" set works around this problem.
-    # See http://crbug.com/594610
-    forward_variables_from(invoker, [ "visibility" ])
-    forward_variables_from(invoker, "*", [ "visibility" ])
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
   }
 }
 

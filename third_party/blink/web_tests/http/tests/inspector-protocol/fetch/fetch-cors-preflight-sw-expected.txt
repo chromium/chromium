@@ -1,0 +1,7 @@
+Tests that Fetch intercepts CORS preflight requests from service workers correctly.
+[sw] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.js, type: Other
+[sw] Request to http://127.0.0.1:8000/inspector-protocol/fetch/resources/service-worker.html, type: XHR
+[sw] Request to http://localhost:8000/inspector-protocol/network/resources/post-echo.pl, type: XHR
+[sw] Request to http://localhost:8000/inspector-protocol/network/resources/post-echo.pl, type: XHR
+fetch response: response body
+

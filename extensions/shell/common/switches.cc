@@ -4,10 +4,12 @@
 
 #include "extensions/shell/common/switches.h"
 
+#include "build/chromeos_buildflags.h"
+
 namespace extensions {
 namespace switches {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Allow roaming in the cellular network.
 const char kAppShellAllowRoaming[] = "app-shell-allow-roaming";
 
@@ -18,7 +20,9 @@ const char kAppShellHostWindowSize[] = "app-shell-host-window-size";
 const char kAppShellPreferredNetwork[] = "app-shell-preferred-network";
 #endif
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // The directory breakpad should store minidumps in.
 const char kCrashDumpsDir[] = "crash-dumps-dir";
 

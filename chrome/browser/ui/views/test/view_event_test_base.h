@@ -8,35 +8,31 @@
 // We only want to use ViewEventTestBase in test targets which properly
 // isolate each test case by running each test in a separate process.
 // This way if a test hangs the test launcher can reliably terminate it.
-#if defined(HAS_OUT_OF_PROC_TEST_RUNNER)
+#if !defined(HAS_OUT_OF_PROC_TEST_RUNNER)
+#error Can't reliably terminate hanging event tests without OOP test runner.
+#endif
 
 #include <memory>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
-#include "chrome/test/views/chrome_test_views_delegate.h"
-#include "content/public/test/browser_task_environment.h"
-#include "testing/gtest/include/gtest/gtest.h"
-#include "ui/views/widget/widget_delegate.h"
+#include "build/chromeos_buildflags.h"
+#include "chrome/test/views/chrome_views_test_base.h"
 
-#if defined(OS_WIN)
-#include "ui/base/win/scoped_ole_initializer.h"
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+namespace display {
+class Screen;
+}
 #endif
 
 namespace gfx {
 class Size;
 }
 
-namespace ui {
-class TestContextFactories;
-}
-
-class ViewEventTestPlatformPart;
+class TestBaseWidgetDelegate;
 
 // Base class for Views based tests that dispatch events.
 //
@@ -70,39 +66,36 @@ class ViewEventTestPlatformPart;
 // driven from observer callbacks and posted on the task runner returned by
 // GetDragTaskRunner().
 
-class ViewEventTestBase : public views::WidgetDelegate, public testing::Test {
+class ViewEventTestBase : public ChromeViewsTestBase {
  public:
   ViewEventTestBase();
-
-  // Invoke when done either because of failure or success. Quits the message
-  // loop.
-  void Done();
+  ViewEventTestBase(const ViewEventTestBase&) = delete;
+  ViewEventTestBase& operator=(const ViewEventTestBase&) = delete;
+  ~ViewEventTestBase() override;
 
   static void SetUpTestCase();
 
-  // Creates a window.
+  // ChromeViewsTestBase:
   void SetUp() override;
-
-  // Destroys the window.
   void TearDown() override;
+  views::Widget::InitParams CreateParams(
+      views::Widget::InitParams::Type type) override;
+
+  // Returns the view that is added to the window.
+  virtual std::unique_ptr<views::View> CreateContentsView() = 0;
 
   // Returns an empty Size. Subclasses that want a preferred size other than
   // that of the View returned by CreateContentsView should override this
   // appropriately.
   virtual gfx::Size GetPreferredSizeForContents() const;
 
-  // Overridden from views::WidgetDelegate:
-  bool CanResize() const override;
-  views::View* GetContentsView() override;
-  const views::Widget* GetWidget() const override;
-  views::Widget* GetWidget() override;
+  // Invoke when done either because of failure or success. Quits the message
+  // loop.
+  void Done();
+
+  views::Widget* window() { return window_; }
 
  protected:
-  ~ViewEventTestBase() override;
-
-  // Returns the view that is added to the window.
-  virtual views::View* CreateContentsView() = 0;
-
   // Called once the message loop is running.
   virtual void DoTestOnMessageLoop() = 0;
 
@@ -123,41 +116,27 @@ class ViewEventTestBase : public views::WidgetDelegate, public testing::Test {
   // Returns a task runner to use for drag-related mouse events.
   scoped_refptr<base::SingleThreadTaskRunner> GetDragTaskRunner();
 
-  views::Widget* window_ = nullptr;
-
  private:
+  friend class TestBaseWidgetDelegate;
+
   // Callback from CreateEventTask. Runs the supplied task and if there are
   // failures invokes Done.
   void RunTestMethod(base::OnceClosure task);
 
-  // The content of the Window.
-  views::View* content_view_ = nullptr;
+#if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<display::Screen> screen_;
+#endif
 
   // Thread for posting background drag events.
   std::unique_ptr<base::Thread> drag_event_thread_;
 
-  content::BrowserTaskEnvironment task_environment_;
-
-#if defined(OS_WIN)
-  ui::ScopedOleInitializer ole_initializer_;
-#endif
-
-  std::unique_ptr<ui::TestContextFactories> context_factories_;
-
-  std::unique_ptr<ViewEventTestPlatformPart> platform_part_;
-
-  ChromeTestViewsDelegate views_delegate_;
-
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewEventTestBase);
+  views::Widget* window_ = nullptr;
 };
 
 // Convenience macro for defining a ViewEventTestBase. See class description
 // of ViewEventTestBase for details.
 #define VIEW_TEST(test_class, name) \
   TEST_F(test_class, name) { StartMessageLoopAndRunTest(); }
-
-#endif  // defined(HAS_OUT_OF_PROC_TEST_RUNNER)
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TEST_VIEW_EVENT_TEST_BASE_H_

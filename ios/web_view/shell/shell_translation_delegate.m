@@ -29,6 +29,7 @@
 - (void)translationController:(CWVTranslationController*)controller
     canOfferTranslationFromLanguage:(CWVTranslationLanguage*)pageLanguage
                          toLanguage:(CWVTranslationLanguage*)userLanguage {
+  NSLog(@"%@:%@:%@", NSStringFromSelector(_cmd), pageLanguage, userLanguage);
   __weak ShellTranslationDelegate* weakSelf = self;
 
   self.beforeTranslateActionSheet = [UIAlertController
@@ -36,8 +37,8 @@
                        message:@"Pick Translate Action"
                 preferredStyle:UIAlertControllerStyleActionSheet];
   _beforeTranslateActionSheet.popoverPresentationController.sourceView =
-      UIApplication.sharedApplication.keyWindow;
-  CGRect bounds = UIApplication.sharedApplication.keyWindow.bounds;
+      [self anyKeyWindow];
+  CGRect bounds = [self anyKeyWindow].bounds;
   _beforeTranslateActionSheet.popoverPresentationController.sourceRect =
       CGRectMake(CGRectGetWidth(bounds) / 2, 60, 1, 1);
   UIAlertAction* cancelAction =
@@ -96,10 +97,41 @@
               }];
   [_beforeTranslateActionSheet addAction:neverTranslateAction];
 
-  [[UIApplication sharedApplication].keyWindow.rootViewController
+  [[self anyKeyWindow].rootViewController
       presentViewController:_beforeTranslateActionSheet
                    animated:YES
                  completion:nil];
+}
+
+- (void)translationController:(CWVTranslationController*)controller
+    didStartTranslationFromLanguage:(CWVTranslationLanguage*)sourceLanguage
+                         toLanguage:(CWVTranslationLanguage*)targetLanguage
+                      userInitiated:(BOOL)userInitiated {
+  NSLog(@"%@:%@:%@:%@", NSStringFromSelector(_cmd), sourceLanguage,
+        targetLanguage, @(userInitiated));
+}
+
+- (void)translationController:(CWVTranslationController*)controller
+    didFinishTranslationFromLanguage:(CWVTranslationLanguage*)sourceLanguage
+                          toLanguage:(CWVTranslationLanguage*)targetLanguage
+                               error:(nullable NSError*)error {
+  NSLog(@"%@:%@:%@:%@", NSStringFromSelector(_cmd), sourceLanguage,
+        targetLanguage, error);
+}
+
+#pragma mark - Private
+
+- (UIWindow*)anyKeyWindow {
+#if !defined(__IPHONE_13_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_13_0
+  return [UIApplication sharedApplication].keyWindow;
+#else
+  NSArray<UIWindow*>* windows = [UIApplication sharedApplication].windows;
+  for (UIWindow* window in windows) {
+    if (window.isKeyWindow)
+      return window;
+  }
+  return nil;
+#endif
 }
 
 @end

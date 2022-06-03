@@ -5,22 +5,28 @@
 #ifndef CONTENT_PUBLIC_BROWSER_WEB_UI_URL_LOADER_FACTORY_H_
 #define CONTENT_PUBLIC_BROWSER_WEB_UI_URL_LOADER_FACTORY_H_
 
-#include <memory>
 #include <string>
 
 #include "base/containers/flat_set.h"
 #include "content/common/content_export.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 
 namespace content {
 class RenderFrameHost;
 
-// Create a URLLoaderFactory for loading resources matching the specified
-// |scheme| and also from a "pseudo host" matching one in |allowed_hosts|.
-CONTENT_EXPORT std::unique_ptr<network::mojom::URLLoaderFactory>
-CreateWebUIURLLoader(RenderFrameHost* render_frame_host,
-                     const std::string& scheme,
-                     base::flat_set<std::string> allowed_hosts);
+// Create and bind a URLLoaderFactory for loading resources matching the
+// specified |scheme| and also from a "pseudo host" matching one in
+// |allowed_hosts|.
+//
+// The factory will only create loaders for requests with the same scheme as
+// |scheme|. This is needed because there is more than one scheme used for
+// WebUI, and not all have WebUI bindings.
+CONTENT_EXPORT
+mojo::PendingRemote<network::mojom::URLLoaderFactory>
+CreateWebUIURLLoaderFactory(RenderFrameHost* render_frame_host,
+                            const std::string& scheme,
+                            base::flat_set<std::string> allowed_hosts);
 
 }  // namespace content
 

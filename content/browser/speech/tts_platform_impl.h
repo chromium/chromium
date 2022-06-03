@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/browser/tts_platform.h"
 
@@ -18,13 +17,22 @@ class TtsPlatformImpl : public TtsPlatform {
  public:
   static TtsPlatformImpl* GetInstance();
 
+  TtsPlatformImpl(const TtsPlatformImpl&) = delete;
+  TtsPlatformImpl& operator=(const TtsPlatformImpl&) = delete;
+
   // TtsPlatform overrides.
-  bool LoadBuiltInTtsEngine(BrowserContext* browser_context) override;
+  void LoadBuiltInTtsEngine(BrowserContext* browser_context) override;
   void WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                    const VoiceData& voice_data) override;
   std::string GetError() override;
   void ClearError() override;
   void SetError(const std::string& error) override;
+  void Shutdown() override;
+  bool PreferEngineDelegateVoices() override;
+  void GetVoicesForBrowserContext(
+      content::BrowserContext* browser_context,
+      const GURL& source_url,
+      std::vector<content::VoiceData>* out_voices) override {}
 
  protected:
   TtsPlatformImpl() {}
@@ -34,8 +42,6 @@ class TtsPlatformImpl : public TtsPlatform {
   virtual ~TtsPlatformImpl() {}
 
   std::string error_;
-
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImpl);
 };
 
 }  // namespace content

@@ -20,11 +20,21 @@ function_registration("api_registration") {
   schema_include_rules = chrome_extensions_api_schema_include_rules
 
   deps = [
+    # This is not directly included by the target, but specified here
+    # to avoid cyclic dependency chain related to private_membership
+    # protos.
+    "//components/policy/proto",
+
     # Different APIs include headers from these targets.
+    "//chrome/common",
     "//chrome/common:mojo_bindings",
+    "//components/omnibox/browser",
+    "//components/translate/core/browser",
     "//components/zoom",
     "//content/public/browser",
     "//extensions/browser",
+    "//extensions/browser/api:api_implementations",
+    "//extensions/common/api",
 
     # Different APIs include some headers from chrome/common that in turn
     # include generated headers from these targets.
@@ -35,5 +45,4 @@ function_registration("api_registration") {
     "//third_party/metrics_proto",
     "//ui/accessibility:ax_enums_mojo",
   ]
-  deps += [ "//extensions/common/api" ]
 }

@@ -7,7 +7,7 @@
 #import <objc/runtime.h>
 
 #include "base/strings/sys_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #import "ios/web_view/internal/utils/nsobject_description_utils.h"
 
@@ -16,11 +16,11 @@
 #endif
 
 @implementation CWVPassword {
-  autofill::PasswordForm _passwordForm;
+  password_manager::PasswordForm _passwordForm;
 }
 
 - (instancetype)initWithPasswordForm:
-    (const autofill::PasswordForm&)passwordForm {
+    (const password_manager::PasswordForm&)passwordForm {
   self = [super init];
   if (self) {
     _passwordForm = passwordForm;
@@ -34,22 +34,33 @@
 
 #pragma mark - Public
 
+- (BOOL)isBlocked {
+  return _passwordForm.blocked_by_user;
+}
+
 - (NSString*)username {
-  if (self.blacklisted) {
+  if (self.blocked) {
     return nil;
   }
   return base::SysUTF16ToNSString(_passwordForm.username_value);
 }
 
 - (NSString*)password {
-  if (self.blacklisted) {
+  if (self.blocked) {
     return nil;
   }
   return base::SysUTF16ToNSString(_passwordForm.password_value);
 }
 
-- (BOOL)isBlacklisted {
-  return _passwordForm.blacklisted_by_user;
+- (NSString*)keychainIdentifier {
+  if (self.blocked) {
+    return nil;
+  }
+  // On iOS, the LoginDatabase uses Keychain API to store passwords. The
+  // "encrypted" version of the password is a unique ID (UUID) that is
+  // stored as an attribute along with the password in the keychain.
+  // See login_database_ios.cc for more info.
+  return base::SysUTF8ToNSString(_passwordForm.encrypted_password);
 }
 
 #pragma mark - NSObject
@@ -62,7 +73,7 @@
 
 #pragma mark - Internal
 
-- (autofill::PasswordForm*)internalPasswordForm {
+- (password_manager::PasswordForm*)internalPasswordForm {
   return &_passwordForm;
 }
 

@@ -51,12 +51,12 @@ will-change: transform;
     function executeTestCases()
     {
         internals.startTrackingRepaints(document);
-        document.getElementById('Case1').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case1').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         internals.startTrackingRepaints(document);
         document.querySelector("#inner").style.backgroundColor = 'red';
-        document.getElementById('Case2').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+        document.getElementById('Case2').textContent = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
         internals.stopTrackingRepaints(document);
 
         // Display the test results only after test is done so that it does not affect repaint rect results.

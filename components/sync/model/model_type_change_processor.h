@@ -10,12 +10,11 @@
 
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/entity_data.h"
 #include "components/sync/model/model_error.h"
 #include "components/sync/model/model_type_controller_delegate.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace syncer {
 
@@ -23,12 +22,13 @@ class ClientTagHash;
 class MetadataBatch;
 class MetadataChangeList;
 class ModelTypeSyncBridge;
+struct EntityData;
 
 // Interface used by the ModelTypeSyncBridge to inform sync of local changes.
 class ModelTypeChangeProcessor {
  public:
-  ModelTypeChangeProcessor();
-  virtual ~ModelTypeChangeProcessor();
+  ModelTypeChangeProcessor() = default;
+  virtual ~ModelTypeChangeProcessor() = default;
 
   // Inform the processor of a new or updated entity. The |entity_data| param
   // does not need to be fully set, but it should at least have specifics and
@@ -62,18 +62,14 @@ class ModelTypeChangeProcessor {
   virtual void UntrackEntityForStorageKey(const std::string& storage_key) = 0;
 
   // Remove entity metadata and do not track the entity, exactly like
-  // UntrackEntityForStorageKey() above. This function should only be called by
-  // datatypes that can't generate storage keys. The call is ignored if
-  // |client_tag_hash| is unknown.
+  // UntrackEntityForStorageKey() above. This method may be called even if
+  // entity does not have storage key. The call is ignored if |client_tag_hash|
+  // is unknown.
   virtual void UntrackEntityForClientTagHash(
       const ClientTagHash& client_tag_hash) = 0;
 
   // Returns true if a tracked entity has local changes. A commit may or may not
   // be in progress at this time.
-  // TODO(mastiz): The only user of this is HISTORY_DELETE_DIRECTIVES which
-  // needs it for a rather questionable reason. Revisit this, for example by
-  // moving the SyncableService to history's backend thread, and leveraging
-  // USS's ability to delete local data upcon commit completion.
   virtual bool IsEntityUnsynced(const std::string& storage_key) = 0;
 
   // Returns the creation timestamp of the sync entity, or a null time if the
@@ -103,7 +99,7 @@ class ModelTypeChangeProcessor {
   // currently up to date and accurately tracking the model type's data. If
   // false, and ModelReadyToSync() has already been called, then Put and Delete
   // will no-op and can be omitted by bridge.
-  virtual bool IsTrackingMetadata() = 0;
+  virtual bool IsTrackingMetadata() const = 0;
 
   // Returns the account ID for which metadata is being tracked, or empty if not
   // tracking metadata.
@@ -122,7 +118,7 @@ class ModelTypeChangeProcessor {
 
   // Returns whether the processor has encountered any error, either reported
   // by the bridge via ReportError() or by other means.
-  virtual base::Optional<ModelError> GetError() const = 0;
+  virtual absl::optional<ModelError> GetError() const = 0;
 
   // Returns the delegate for the controller.
   virtual base::WeakPtr<ModelTypeControllerDelegate>

@@ -1,0 +1,59 @@
+{
+  "android-cfi-builder-perf-fyi": {
+    "gn_args": {
+      "clang_use_default_sample_profile": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "thin_lto_enable_optimizations": true,
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "android_arm64-cfi-builder-perf-fyi": {
+    "gn_args": {
+      "clang_use_default_sample_profile": false,
+      "ffmpeg_branding": "Chrome",
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "android",
+      "thin_lto_enable_optimizations": true,
+      "use_goma": true,
+      "use_thin_lto": true
+    }
+  },
+  "chromeos-kevin-builder-perf-fyi": {
+    "args_file": "//build/args/chromeos/kevin.gni",
+    "gn_args": {
+      "dcheck_always_on": false,
+      "exclude_unwind_tables": false,
+      "is_chrome_branded": true,
+      "is_chromeos_device": true,
+      "is_official_build": true,
+      "ozone_platform_headless": true,
+      "use_goma": true
+    }
+  },
+  "fuchsia-builder-perf-fyi": {
+    "gn_args": {
+      "ffmpeg_branding": "Chrome",
+      "fuchsia_additional_boot_images": [
+        "//third_party/fuchsia-sdk/images-internal/astro-release/"
+      ],
+      "is_chrome_branded": true,
+      "is_official_build": true,
+      "proprietary_codecs": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "target_os": "fuchsia",
+      "test_isolate_uses_emulator": false,
+      "use_goma": true
+    }
+  }
+}

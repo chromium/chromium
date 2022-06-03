@@ -6,24 +6,29 @@
 
 #include <stddef.h>
 
+#include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "ui/accessibility/ax_node_data.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/animation/ink_drop_impl.h"
-#include "ui/views/animation/ink_drop_mask.h"
 #include "ui/views/animation/ink_drop_ripple.h"
 #include "ui/views/controls/button/label_button_border.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/layout/layout_provider.h"
-#include "ui/views/metadata/metadata_impl_macros.h"
 #include "ui/views/painter.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "ui/views/style/platform_style.h"
@@ -44,14 +49,33 @@ class Checkbox::FocusRingHighlightPathGenerator
   }
 };
 
-Checkbox::Checkbox(const base::string16& label, ButtonListener* listener)
-    : LabelButton(listener, label), checked_(false), label_ax_id_(0) {
+Checkbox::Checkbox(const std::u16string& label,
+                   PressedCallback callback,
+                   int button_context)
+    : LabelButton(std::move(callback), label, button_context) {
+  SetImageCentered(false);
   SetHorizontalAlignment(gfx::ALIGN_LEFT);
-  SetFocusForPlatform();
 
-  set_request_focus_on_press(false);
-  SetInkDropMode(InkDropMode::ON);
-  set_has_ink_drop_action_on_click(true);
+  SetRequestFocusOnPress(false);
+  InkDrop::Get(this)->SetMode(views::InkDropHost::InkDropMode::ON);
+  SetHasInkDropActionOnClick(true);
+  InkDrop::UseInkDropWithoutAutoHighlight(InkDrop::Get(this),
+                                          /*highlight_on_hover=*/false);
+  InkDrop::Get(this)->SetCreateRippleCallback(base::BindRepeating(
+      [](Checkbox* host) {
+        // The "small" size is 21dp, the large size is 1.33 * 21dp = 28dp.
+        return InkDrop::Get(host)->CreateSquareRipple(
+            host->image()->GetMirroredContentsBounds().CenterPoint(),
+            gfx::Size(21, 21));
+      },
+      this));
+  InkDrop::Get(this)->SetBaseColorCallback(base::BindRepeating(
+      [](Checkbox* host) {
+        // Usually ink-drop ripples match the text color. Checkboxes use the
+        // color of the unchecked, enabled icon.
+        return host->GetIconImageColor(IconState::ENABLED);
+      },
+      this));
 
   // Limit the checkbox height to match the legacy appearance.
   const gfx::Size preferred_size(LabelButton::CalculatePreferredSize());
@@ -60,8 +84,12 @@ Checkbox::Checkbox(const base::string16& label, ButtonListener* listener)
   // Checkboxes always have a focus ring, even when the platform otherwise
   // doesn't generally use them for buttons.
   SetInstallFocusRingOnFocus(true);
-  focus_ring()->SetPathGenerator(
+  FocusRing::Get(this)->SetPathGenerator(
       std::make_unique<FocusRingHighlightPathGenerator>());
+
+  // Avoid the default ink-drop mask to allow the ripple effect to extend beyond
+  // the checkbox view (otherwise it gets clipped which looks weird).
+  views::InstallEmptyHighlightPathGenerator(this);
 }
 
 Checkbox::~Checkbox() = default;
@@ -79,6 +107,11 @@ bool Checkbox::GetChecked() const {
   return checked_;
 }
 
+base::CallbackListSubscription Checkbox::AddCheckedChangedCallback(
+    PropertyChangedCallback callback) {
+  return AddPropertyChangedCallback(&checked_, callback);
+}
+
 void Checkbox::SetMultiLine(bool multi_line) {
   if (GetMultiLine() == multi_line)
     return;
@@ -94,9 +127,11 @@ bool Checkbox::GetMultiLine() const {
 
 void Checkbox::SetAssociatedLabel(View* labelling_view) {
   DCHECK(labelling_view);
-  label_ax_id_ = labelling_view->GetViewAccessibility().GetUniqueId().Get();
+  GetViewAccessibility().OverrideLabelledBy(labelling_view);
   ui::AXNodeData node_data;
   labelling_view->GetAccessibleNodeData(&node_data);
+  // Labelled-by relations are not common practice in native UI, so we also
+  // set the checkbox accessible name for ATs which don't support that.
   // TODO(aleventhal) automatically handle setting the name from the related
   // label in ViewAccessibility and have it update the name if the text of the
   // associated label changes.
@@ -116,40 +151,6 @@ void Checkbox::GetAccessibleNodeData(ui::AXNodeData* node_data) {
                                         ? ax::mojom::DefaultActionVerb::kUncheck
                                         : ax::mojom::DefaultActionVerb::kCheck);
   }
-  if (label_ax_id_) {
-    node_data->AddIntListAttribute(ax::mojom::IntListAttribute::kLabelledbyIds,
-                                   {label_ax_id_});
-  }
-}
-
-void Checkbox::OnThemeChanged() {
-  LabelButton::OnThemeChanged();
-  UpdateImage();
-}
-
-std::unique_ptr<InkDrop> Checkbox::CreateInkDrop() {
-  std::unique_ptr<InkDropImpl> ink_drop = CreateDefaultInkDropImpl();
-  ink_drop->SetShowHighlightOnHover(false);
-  ink_drop->SetAutoHighlightMode(InkDropImpl::AutoHighlightMode::NONE);
-  return ink_drop;
-}
-
-std::unique_ptr<InkDropRipple> Checkbox::CreateInkDropRipple() const {
-  // The "small" size is 21dp, the large size is 1.33 * 21dp = 28dp.
-  return CreateSquareInkDropRipple(image()->GetMirroredBounds().CenterPoint(),
-                                   gfx::Size(21, 21));
-}
-
-std::unique_ptr<InkDropMask> Checkbox::CreateInkDropMask() const {
-  // Avoid the default ink-drop mask to allow the ripple effect to extend beyond
-  // the checkbox view (otherwise it gets clipped which looks weird).
-  return nullptr;
-}
-
-SkColor Checkbox::GetInkDropBaseColor() const {
-  // Usually ink-drop ripples match the text color. Checkboxes use the color of
-  // the unchecked, enabled icon.
-  return GetIconImageColor(IconState::ENABLED);
 }
 
 gfx::ImageSkia Checkbox::GetImage(ButtonState for_state) const {
@@ -170,27 +171,31 @@ std::unique_ptr<LabelButtonBorder> Checkbox::CreateDefaultBorder() const {
   return border;
 }
 
+void Checkbox::OnThemeChanged() {
+  LabelButton::OnThemeChanged();
+  UpdateImage();
+}
+
 SkPath Checkbox::GetFocusRingPath() const {
   SkPath path;
-  gfx::Rect bounds = image()->GetMirroredBounds();
+  gfx::Rect bounds = image()->GetMirroredContentsBounds();
   bounds.Inset(1, 1);
   path.addRect(RectToSkRect(bounds));
   return path;
 }
 
-const gfx::VectorIcon& Checkbox::GetVectorIcon() const {
-  return GetChecked() ? kCheckboxActiveIcon : kCheckboxNormalIcon;
-}
-
 SkColor Checkbox::GetIconImageColor(int icon_state) const {
-  const SkColor active_color = GetNativeTheme()->GetSystemColor(
-      (icon_state & IconState::CHECKED)
-          ? ui::NativeTheme::kColorId_ButtonEnabledColor
-          : ui::NativeTheme::kColorId_ButtonUncheckedColor);
+  const SkColor active_color = GetColorProvider()->GetColor(
+      (icon_state & IconState::CHECKED) ? ui::kColorButtonForegroundChecked
+                                        : ui::kColorButtonForegroundUnchecked);
   return (icon_state & IconState::ENABLED)
              ? active_color
              : color_utils::BlendTowardMaxContrast(active_color,
                                                    gfx::kDisabledControlAlpha);
+}
+
+const gfx::VectorIcon& Checkbox::GetVectorIcon() const {
+  return GetChecked() ? kCheckboxActiveIcon : kCheckboxNormalIcon;
 }
 
 void Checkbox::NotifyClick(const ui::Event& event) {
@@ -207,10 +212,9 @@ void Checkbox::GetExtraParams(ui::NativeTheme::ExtraParams* params) const {
   params->button.checked = GetChecked();
 }
 
-BEGIN_METADATA(Checkbox)
-METADATA_PARENT_CLASS(LabelButton)
-ADD_PROPERTY_METADATA(Checkbox, bool, Checked)
-ADD_PROPERTY_METADATA(Checkbox, bool, MultiLine)
-END_METADATA()
+BEGIN_METADATA(Checkbox, LabelButton)
+ADD_PROPERTY_METADATA(bool, Checked)
+ADD_PROPERTY_METADATA(bool, MultiLine)
+END_METADATA
 
 }  // namespace views

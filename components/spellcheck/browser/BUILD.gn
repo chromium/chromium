@@ -10,6 +10,7 @@ if (is_android) {
 
 source_set("browser") {
   sources = [
+    "platform_spell_checker.h",
     "pref_names.cc",
     "pref_names.h",
     "spell_check_host_impl.cc",
@@ -18,10 +19,6 @@ source_set("browser") {
     "spellcheck_host_metrics.cc",
     "spellcheck_host_metrics.h",
     "spellcheck_platform.h",
-    "spellcheck_platform_android.cc",
-    "spellcheck_platform_mac.mm",
-    "spellchecker_session_bridge_android.cc",
-    "spellchecker_session_bridge_android.h",
   ]
 
   if (enable_spelling_service) {
@@ -32,7 +29,11 @@ source_set("browser") {
   }
 
   if (is_win) {
-    sources += [ "spellcheck_platform_win.cc" ]
+    sources += [
+      "spellcheck_platform_win.cc",
+      "windows_spell_checker.cc",
+      "windows_spell_checker.h",
+    ]
   }
 
   public_deps = [
@@ -48,20 +49,34 @@ source_set("browser") {
     "//google_apis",
     "//net",
     "//services/network/public/cpp",
+    "//services/network/public/mojom",
   ]
 
+  if (is_mac) {
+    sources += [ "spellcheck_platform_mac.mm" ]
+  }
+
   if (is_android) {
+    sources += [
+      "spellcheck_platform_android.cc",
+      "spellchecker_session_bridge_android.cc",
+      "spellchecker_session_bridge_android.h",
+    ]
     deps += [ "android:jni_headers" ]
   }
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "spellcheck_host_metrics_unittest.cc",
-    "spellcheck_platform_mac_unittest.cc",
-    "spellcheck_platform_win_unittest.cc",
-  ]
+  sources = [ "spellcheck_host_metrics_unittest.cc" ]
+
+  if (is_win) {
+    sources += [ "windows_spell_checker_unittest.cc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "spellcheck_platform_mac_unittest.cc" ]
+  }
 
   deps = [
     ":browser",

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/fetch/fetch_response_data.h"
 
+#include "base/test/scoped_feature_list.h"
+#include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_response.mojom-blink.h"
 #include "third_party/blink/renderer/core/fetch/fetch_header_list.h"
@@ -261,6 +263,40 @@ TEST_F(FetchResponseDataTest, ToFetchAPIResponseOpaqueRedirectType) {
 TEST_F(FetchResponseDataTest, DefaultResponseTime) {
   FetchResponseData* internal_response = CreateInternalResponse();
   EXPECT_FALSE(internal_response->ResponseTime().is_null());
+}
+
+TEST_F(FetchResponseDataTest, ContentSecurityPolicy) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  FetchResponseData* internal_response = CreateInternalResponse();
+  internal_response->HeaderList()->Append("content-security-policy",
+                                          "frame-ancestors 'none'");
+  internal_response->HeaderList()->Append("content-security-policy-report-only",
+                                          "frame-ancestors 'none'");
+
+  mojom::blink::FetchAPIResponsePtr fetch_api_response =
+      internal_response->PopulateFetchAPIResponse(
+          KURL("https://www.example.org"));
+  auto& csp = fetch_api_response->parsed_headers->content_security_policy;
+
+  EXPECT_EQ(csp.size(), 2U);
+  EXPECT_EQ(csp[0]->header->type,
+            network::mojom::ContentSecurityPolicyType::kEnforce);
+  EXPECT_EQ(csp[1]->header->type,
+            network::mojom::ContentSecurityPolicyType::kReport);
+}
+
+TEST_F(FetchResponseDataTest, AuthChallengeInfo) {
+  FetchResponseData* internal_response = CreateInternalResponse();
+  net::AuthChallengeInfo auth_challenge_info;
+  auth_challenge_info.is_proxy = true;
+  auth_challenge_info.challenge = "foobar";
+  internal_response->SetAuthChallengeInfo(auth_challenge_info);
+
+  mojom::blink::FetchAPIResponsePtr fetch_api_response =
+      internal_response->PopulateFetchAPIResponse(KURL());
+  ASSERT_TRUE(fetch_api_response->auth_challenge_info.has_value());
+  EXPECT_TRUE(fetch_api_response->auth_challenge_info->is_proxy);
+  EXPECT_EQ("foobar", fetch_api_response->auth_challenge_info->challenge);
 }
 
 }  // namespace blink

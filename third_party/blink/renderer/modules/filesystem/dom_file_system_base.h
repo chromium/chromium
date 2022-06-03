@@ -32,9 +32,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_FILESYSTEM_DOM_FILE_SYSTEM_BASE_H_
 
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-blink-forward.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_file_system_flags.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
 #include "third_party/blink/renderer/modules/filesystem/file_system_callbacks.h"
-#include "third_party/blink/renderer/modules/filesystem/file_system_flags.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -152,7 +152,7 @@ class MODULES_EXPORT DOMFileSystemBase : public ScriptWrappable {
                      EntriesCallbacks::ErrorCallback,
                      SynchronousType = kAsynchronous);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   DOMFileSystemBase(ExecutionContext*,

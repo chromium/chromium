@@ -10,7 +10,7 @@ console.log(1,
 ...data
 
 const process = window.setTimeout(
-handler,?timeout,...arguments
+callback,ms,...args
 
 document.body.addEventListener(
 type,listener,?options

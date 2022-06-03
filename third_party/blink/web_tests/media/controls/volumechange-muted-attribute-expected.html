@@ -13,5 +13,12 @@
   enableTestMode(video);
   video.src = '../content/test.ogv';
   video.muted = true;
+
+  if (window.testRunner) {
+    testRunner.waitUntilDone();
+    video.requestVideoFrameCallback(() => {
+      testRunner.notifyDone();
+    });
+  }
 </script>
 </html>

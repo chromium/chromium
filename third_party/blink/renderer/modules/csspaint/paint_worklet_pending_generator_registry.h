@@ -22,10 +22,15 @@ class PaintWorkletPendingGeneratorRegistry
  public:
   PaintWorkletPendingGeneratorRegistry() = default;
 
+  PaintWorkletPendingGeneratorRegistry(
+      const PaintWorkletPendingGeneratorRegistry&) = delete;
+  PaintWorkletPendingGeneratorRegistry& operator=(
+      const PaintWorkletPendingGeneratorRegistry&) = delete;
+
   void NotifyGeneratorReady(const String& name);
   void AddPendingGenerator(const String& name, CSSPaintImageGeneratorImpl*);
 
-  void Trace(blink::Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   // The map of CSSPaintImageGeneratorImpl which are waiting for a
@@ -34,8 +39,6 @@ class PaintWorkletPendingGeneratorRegistry
   using GeneratorHashSet = HeapHashSet<WeakMember<CSSPaintImageGeneratorImpl>>;
   using PendingGeneratorMap = HeapHashMap<String, Member<GeneratorHashSet>>;
   PendingGeneratorMap pending_generators_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaintWorkletPendingGeneratorRegistry);
 };
 
 }  // namespace blink

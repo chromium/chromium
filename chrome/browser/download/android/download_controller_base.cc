@@ -6,7 +6,6 @@
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/web_contents.h"
-#include "net/url_request/url_request.h"
 
 const char kOMADrmMessageMimeType[] = "application/vnd.oma.drm.message";
 const char kOMADrmContentMimeType[] = "application/vnd.oma.drm.content";

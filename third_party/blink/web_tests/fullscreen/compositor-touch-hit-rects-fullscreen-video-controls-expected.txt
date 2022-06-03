@@ -2,6 +2,7 @@ This test makes sure that touch hit rects are reported for fullscreen HTML5 vide
 
 Should have single rect on document before fullscreen
 handler: layer(800x600) has hit test rect (0,0 800x600)
+handler: layer(800x600) has hit test rect (0,0 800x600)
 
 EVENT(webkitfullscreenchange)
 Should keep rect on document
@@ -10,5 +11,6 @@ handler: layer(800x600) has hit test rect (0,0 800x600)
 handler: layer(800x600) has hit test rect (0,0 800x600)
 handler: layer(800x600) has hit test rect (0,0 800x600)
 
+Found composited video layer, as expected
 END OF TEST
 

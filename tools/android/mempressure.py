@@ -1,9 +1,7 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
-from __future__ import print_function
 
 import collections
 import logging
@@ -50,13 +48,13 @@ def main(argv):
                            help=('Simulate Activity#onTrimMemory(...) with ' +
                                  ', '.join(ACTION_TRIM.keys())),
                            type='string')
-  option_parser.add_option('-b',
-                           '--browser',
-                           default=DEFAULT_BROWSER,
-                           help=('Which browser to use. One of ' +
-                                 ', '.join(constants.PACKAGE_INFO.keys()) +
-                                 ' [default: %default]'),
-                           type='string')
+  option_parser.add_option(
+      '-b',
+      '--browser',
+      default=DEFAULT_BROWSER,
+      help=('Which browser to use. One of ' +
+            ', '.join(constants.PACKAGE_INFO.keys()) + ' [default: %default]'),
+      type='string')
 
   (options, args) = option_parser.parse_args(argv)
 

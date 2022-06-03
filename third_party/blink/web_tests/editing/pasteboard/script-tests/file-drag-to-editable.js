@@ -5,7 +5,8 @@ editableArea.contentEditable = true;
 editableArea.style.background = 'green';
 editableArea.style.height = '100px';
 editableArea.style.width = '100px';
-// Important that we put this at the top of the doc so that logging does not cause it to go out of view (where it can't be dragged to)
+// Important that we put this at the top of the doc so that logging does not
+// cause it to go out of view (where it can't be dragged to).
 document.body.insertBefore(editableArea, document.body.firstChild);
 
 function moveMouseToCenterOfElement(element)
@@ -25,15 +26,18 @@ function dragFilesOntoEditableArea(files)
 
 function runTest()
 {
+    window.attemptedSameTabFileNavigation = false;
     window.onbeforeunload = function() {
-        window.attemptedFileNavigation = true;
+        window.attemptedSameTabFileNavigation = true;
 
-        // Don't remove the editable node, since we want to make sure there no stray file URLs were
-        // inserted during the drop.
+        // Don't remove the editable node, since we want to make sure no stray
+        // file URLs were inserted during the drop.
     };
     dragFilesOntoEditableArea(['DRTFakeFile']);
 
-    shouldBeTrue("window.attemptedFileNavigation");
+    // The file load should occur in a new tab (crbug.com/451659), so we
+    // should not attempt to navigate this tab.
+    shouldBeFalse("window.attemptedSameTabFileNavigation");
     finishJSTest();
 }
 

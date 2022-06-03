@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<body>
+<video src="../tulip2.webm"></video>
+<video src="../tulip2.webm"></video>
+<iframe src="data:text/html,<video src='../tulip2.webm'></video>"></iframe>
+</body>
+<script>
+  const videos = document.querySelectorAll('video');
+  videos[0].addEventListener('playing', e => {
+    document.title = 'videos[0] playing';
+  });
+  videos[0].addEventListener('enterpictureinpicture', e => {
+    document.title = 'videos[0] entered picture-in-picture';
+  });
+  videos[1].addEventListener('playing', e => {
+    document.title = 'videos[1] playing';
+  });
+  videos[1].addEventListener('enterpictureinpicture', e => {
+    document.title = 'videos[1] entered picture-in-picture';
+  });
+
+  let iframeVideos = [];
+  if (window.top == window.self) {
+    const iframe = document.createElement('iframe');
+    iframe.src = 'two-videos.html';
+    document.body.appendChild(iframe);
+    iframe.addEventListener('load', () => {
+      document.title = 'iframe loaded';
+
+      iframeVideos = iframe.contentDocument.querySelectorAll('video');
+      iframeVideos[0].addEventListener('playing', e => {
+        document.title = 'iframeVideos[0] playing';
+      });
+      iframeVideos[0].addEventListener('enterpictureinpicture', e => {
+        document.title = 'iframeVideos[0] entered picture-in-picture';
+      });
+    });
+  }
+</script>
+</html>

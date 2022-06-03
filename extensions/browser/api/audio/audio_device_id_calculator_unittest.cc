@@ -4,6 +4,8 @@
 
 #include "extensions/browser/api/audio/audio_device_id_calculator.h"
 
+#include <memory>
+
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -21,6 +23,12 @@ class TestExtensionsBrowserClientWithPrefService
   explicit TestExtensionsBrowserClientWithPrefService(
       content::BrowserContext* main_context)
       : TestExtensionsBrowserClient(main_context) {}
+
+  TestExtensionsBrowserClientWithPrefService(
+      const TestExtensionsBrowserClientWithPrefService&) = delete;
+  TestExtensionsBrowserClientWithPrefService& operator=(
+      const TestExtensionsBrowserClientWithPrefService&) = delete;
+
   ~TestExtensionsBrowserClientWithPrefService() override {}
 
   // ExtensionsBrowserClient override:
@@ -33,13 +41,16 @@ class TestExtensionsBrowserClientWithPrefService
 
  private:
   TestingPrefServiceSimple pref_service_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionsBrowserClientWithPrefService);
 };
 
 class AudioDeviceIdCalculatorTest : public testing::Test {
  public:
   AudioDeviceIdCalculatorTest() : test_browser_client_(&browser_context_) {}
+
+  AudioDeviceIdCalculatorTest(const AudioDeviceIdCalculatorTest&) = delete;
+  AudioDeviceIdCalculatorTest& operator=(const AudioDeviceIdCalculatorTest&) =
+      delete;
+
   ~AudioDeviceIdCalculatorTest() override {}
 
   void SetUp() override {
@@ -56,8 +67,6 @@ class AudioDeviceIdCalculatorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   content::TestBrowserContext browser_context_;
   TestExtensionsBrowserClientWithPrefService test_browser_client_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioDeviceIdCalculatorTest);
 };
 
 }  // namespace
@@ -78,7 +87,7 @@ TEST_F(AudioDeviceIdCalculatorTest, Test) {
 
   // Reset the calculator and test adding stable IDs does not produce ID
   // conflicting with previously added ones.
-  calculator.reset(new AudioDeviceIdCalculator(browser_context()));
+  calculator = std::make_unique<AudioDeviceIdCalculator>(browser_context());
   EXPECT_EQ("3", calculator->GetStableDeviceId(22222));
   EXPECT_EQ("4", calculator->GetStableDeviceId(33333));
 

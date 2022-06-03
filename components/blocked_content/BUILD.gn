@@ -1,0 +1,113 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("blocked_content") {
+  sources = [
+    "list_item_position.cc",
+    "list_item_position.h",
+    "popup_blocker.cc",
+    "popup_blocker.h",
+    "popup_blocker_tab_helper.cc",
+    "popup_blocker_tab_helper.h",
+    "popup_navigation_delegate.h",
+    "popup_opener_tab_helper.cc",
+    "popup_opener_tab_helper.h",
+    "popup_tracker.cc",
+    "popup_tracker.h",
+    "pref_names.cc",
+    "pref_names.h",
+    "safe_browsing_triggered_popup_blocker.cc",
+    "safe_browsing_triggered_popup_blocker.h",
+    "url_list_manager.cc",
+    "url_list_manager.h",
+  ]
+  deps = [
+    "//base",
+    "//build:chromeos_buildflags",
+    "//components/back_forward_cache",
+    "//components/content_settings/browser",
+    "//components/content_settings/core/browser",
+    "//components/embedder_support",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/safe_browsing/core/browser/db:util",
+    "//components/subresource_filter/content/browser",
+    "//components/ukm/content",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//services/metrics/public/cpp:ukm_builders",
+    "//third_party/blink/public/common",
+  ]
+  if (is_android) {
+    sources += [
+      "android/popup_blocked_helper.cc",
+      "android/popup_blocked_helper.h",
+      "android/popup_blocked_infobar_delegate.cc",
+      "android/popup_blocked_infobar_delegate.h",
+      "android/popup_blocked_message_delegate.cc",
+      "android/popup_blocked_message_delegate.h",
+    ]
+    deps += [
+      "//components/infobars/android",
+      "//components/infobars/content",
+      "//components/infobars/core",
+      "//components/messages/android",
+      "//components/messages/android:feature_flags",
+      "//components/resources:android_resources",
+      "//components/strings:components_strings_grit",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test/test_popup_navigation_delegate.cc",
+    "test/test_popup_navigation_delegate.h",
+  ]
+  deps = [
+    ":blocked_content",
+    "//third_party/blink/public/common",
+    "//url",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "popup_blocker_tab_helper_unittest.cc",
+    "safe_browsing_triggered_popup_blocker_unittest.cc",
+    "subresource_filter_abusive_unittest.cc",
+  ]
+  deps = [
+    ":blocked_content",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//components/content_settings/browser",
+    "//components/content_settings/browser:test_support",
+    "//components/content_settings/core/browser",
+    "//components/subresource_filter/content/browser",
+    "//components/subresource_filter/content/browser:test_support",
+    "//components/subresource_filter/core/browser",
+    "//components/subresource_filter/core/browser:test_support",
+    "//components/sync_preferences:test_support",
+    "//components/user_prefs",
+    "//components/variations:test_support",
+    "//content/test:test_support",
+    "//net:test_support",
+    "//testing/gtest",
+  ]
+  if (is_android) {
+    sources += [
+      "android/popup_blocked_infobar_delegate_unittest.cc",
+      "android/popup_blocked_message_delegate_unittest.cc",
+    ]
+    deps += [
+      "//components/infobars/content",
+      "//components/messages/android:test_support",
+      "//components/strings:components_strings_grit",
+    ]
+  }
+}

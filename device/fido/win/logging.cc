@@ -6,8 +6,6 @@
 
 #include <string>
 
-#include "base/logging.h"
-#include "base/strings/string16.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece_forward.h"
 #include "base/strings/string_util.h"
@@ -21,38 +19,40 @@ constexpr char kSep[] = ", ";
 // quote characters.
 std::string Quoted(base::StringPiece in) {
   std::string result;
-  base::ReplaceChars(in.as_string(), "\\", "\\\\", &result);
+  base::ReplaceChars(in, "\\", "\\\\", &result);
   base::ReplaceChars(result, "\"", "\\\"", &result);
   return "\"" + result + "\"";
 }
 
-base::string16 Quoted16(const base::StringPiece16 in) {
-  base::string16 result;
-  base::ReplaceChars(in.as_string(), STRING16_LITERAL("\\"),
-                     STRING16_LITERAL("\\\\"), &result);
-  base::ReplaceChars(result, STRING16_LITERAL("\""), STRING16_LITERAL("\\\""),
-                     &result);
-  return STRING16_LITERAL("\"") + result + STRING16_LITERAL("\"");
+std::wstring Quoted(base::WStringPiece in) {
+  std::wstring result;
+  base::ReplaceChars(in, L"\\", L"\\\\", &result);
+  base::ReplaceChars(result, L"\"", L"\\\"", &result);
+  return L"\"" + result + L"\"";
+}
+
+std::wstring Quoted(const wchar_t* in) {
+  return Quoted(base::WStringPiece(in ? in : L""));
 }
 
 }  // namespace
 
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_RP_ENTITY_INFORMATION& in) {
-  return out << "{" << in.dwVersion << kSep << Quoted16(in.pwszId) << kSep
-             << Quoted16(in.pwszName) << kSep << Quoted16(in.pwszIcon) << "}";
+  return out << "{" << in.dwVersion << kSep << Quoted(in.pwszId) << kSep
+             << Quoted(in.pwszName) << kSep << Quoted(in.pwszIcon) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_USER_ENTITY_INFORMATION& in) {
   return out << "{" << in.dwVersion << kSep << base::HexEncode(in.pbId, in.cbId)
-             << kSep << Quoted16(in.pwszName) << kSep << Quoted16(in.pwszIcon)
-             << kSep << Quoted16(in.pwszDisplayName) << "}";
+             << kSep << Quoted(in.pwszName) << kSep << Quoted(in.pwszIcon)
+             << kSep << Quoted(in.pwszDisplayName) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_COSE_CREDENTIAL_PARAMETER& in) {
-  return out << "{" << in.dwVersion << kSep << Quoted16(in.pwszCredentialType)
+  return out << "{" << in.dwVersion << kSep << Quoted(in.pwszCredentialType)
              << kSep << in.lAlg << "}";
 }
 
@@ -69,12 +69,12 @@ std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CLIENT_DATA& in) {
   return out << "{" << in.dwVersion << kSep
              << Quoted({reinterpret_cast<char*>(in.pbClientDataJSON),
                         in.cbClientDataJSON})
-             << kSep << Quoted16(in.pwszHashAlgId) << "}";
+             << kSep << Quoted(in.pwszHashAlgId) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CREDENTIAL& in) {
   return out << "{" << in.dwVersion << kSep << base::HexEncode(in.pbId, in.cbId)
-             << kSep << Quoted16(in.pwszCredentialType) << "}";
+             << kSep << Quoted(in.pwszCredentialType) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CREDENTIALS& in) {
@@ -87,8 +87,8 @@ std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CREDENTIALS& in) {
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_CREDENTIAL_EX& in) {
   return out << "{" << in.dwVersion << kSep << base::HexEncode(in.pbId, in.cbId)
-             << kSep << Quoted16(in.pwszCredentialType) << kSep
-             << in.dwTransports << "}";
+             << kSep << Quoted(in.pwszCredentialType) << kSep << in.dwTransports
+             << "}";
 }
 
 std::ostream& operator<<(std::ostream& out,
@@ -101,7 +101,7 @@ std::ostream& operator<<(std::ostream& out,
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_EXTENSION& in) {
-  return out << "{" << Quoted16(in.pwszExtensionIdentifier) << "}";
+  return out << "{" << Quoted(in.pwszExtensionIdentifier) << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, const WEBAUTHN_EXTENSIONS& in) {
@@ -122,7 +122,7 @@ std::ostream& operator<<(
   if (in.dwVersion < WEBAUTHN_AUTHENTICATOR_GET_ASSERTION_OPTIONS_VERSION_2) {
     return out << "}";
   }
-  out << kSep << Quoted16(in.pwszU2fAppId);
+  out << kSep << Quoted(in.pwszU2fAppId);
   if (in.pbU2fAppId) {
     out << ", &" << *in.pbU2fAppId;
   } else {
@@ -164,7 +164,7 @@ std::ostream& operator<<(
 
 std::ostream& operator<<(std::ostream& out,
                          const WEBAUTHN_CREDENTIAL_ATTESTATION& in) {
-  out << "{" << in.dwVersion << kSep << Quoted16(in.pwszFormatType) << kSep
+  out << "{" << in.dwVersion << kSep << Quoted(in.pwszFormatType) << kSep
       << base::HexEncode(in.pbAuthenticatorData, in.cbAuthenticatorData) << kSep
       << base::HexEncode(in.pbAttestation, in.cbAttestation) << kSep
       << in.dwAttestationDecodeType << kSep

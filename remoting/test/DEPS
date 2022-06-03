@@ -11,6 +11,7 @@ include_rules = [
   "+remoting/signaling",
   "+ui/gfx",
   "+ui/events/keycodes/dom",
+  "+ui/events/platform/x11",
   "+services/network",
   "+third_party/skia",
 ]

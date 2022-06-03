@@ -4,106 +4,119 @@
 
 #include "chromeos/printing/printer_configuration.h"
 
+#include "base/containers/fixed_flat_set.h"
 #include "base/guid.h"
-#include "base/optional.h"
+#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "chromeos/printing/printing_constants.h"
-#include "chromeos/printing/uri_components.h"
+#include "chromeos/printing/uri.h"
 #include "net/base/ip_endpoint.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/third_party/mozilla/url_parse.h"
 #include "url/url_constants.h"
 
 namespace chromeos {
 
+namespace {
+std::string ToString(Uri::ParserStatus status) {
+  switch (status) {
+    case Uri::ParserStatus::kInvalidPercentEncoding:
+      return "invalid percent encoding";
+    case Uri::ParserStatus::kDisallowedASCIICharacter:
+      return "disallowed ASCII character";
+    case Uri::ParserStatus::kInvalidUTF8Character:
+      return "invalid UTF-8 character";
+    case Uri::ParserStatus::kInvalidScheme:
+      return "invalid scheme";
+    case Uri::ParserStatus::kInvalidPortNumber:
+      return "invalid port number";
+    case Uri::ParserStatus::kRelativePathsNotAllowed:
+      return "relative paths not allowed";
+    case Uri::ParserStatus::kEmptySegmentInPath:
+      return "empty segment in path";
+    case Uri::ParserStatus::kEmptyParameterNameInQuery:
+      return "empty parameter name in query";
+    case Uri::ParserStatus::kNoErrors:
+      return "no errors";
+  }
+  return "unknown error";
+}
+}  // namespace
+
+std::string ToString(PrinterClass pclass) {
+  switch (pclass) {
+    case PrinterClass::kEnterprise:
+      return "Enterprise";
+    case PrinterClass::kAutomatic:
+      return "Automatic";
+    case PrinterClass::kDiscovered:
+      return "Discovered";
+    case PrinterClass::kSaved:
+      return "Saved";
+  }
+  NOTREACHED();
+  return "";
+}
+
+bool IsValidPrinterUri(const Uri& uri, std::string* error_message) {
+  static constexpr auto kKnownSchemes =
+      base::MakeFixedFlatSet<base::StringPiece>(
+          {"http", "https", "ipp", "ipps", "ippusb", "lpd", "socket", "usb"});
+  static const std::string kPrefix = "Malformed printer URI: ";
+
+  if (!kKnownSchemes.contains(uri.GetScheme())) {
+    if (error_message)
+      *error_message = kPrefix + "unknown or missing scheme";
+    return false;
+  }
+
+  // Only printer URIs with the lpd scheme are allowed to have Userinfo.
+  if (!uri.GetUserinfo().empty() && uri.GetScheme() != "lpd") {
+    if (error_message)
+      *error_message = kPrefix + "user info is not allowed for this scheme";
+    return false;
+  }
+
+  if (uri.GetHost().empty()) {
+    if (error_message)
+      *error_message = kPrefix + "missing host";
+    return false;
+  }
+
+  if (uri.GetScheme() == "ippusb" || uri.GetScheme() == "usb") {
+    if (uri.GetPort() > -1) {
+      if (error_message)
+        *error_message = kPrefix + "port is not allowed for this scheme";
+      return false;
+    }
+    if (uri.GetPath().empty()) {
+      if (error_message)
+        *error_message = kPrefix + "path is required for this scheme";
+      return false;
+    }
+  }
+
+  if (uri.GetScheme() == "socket" && !uri.GetPath().empty()) {
+    if (error_message)
+      *error_message = kPrefix + "path is not allowed for this scheme";
+    return false;
+  }
+
+  if (!uri.GetFragment().empty()) {
+    if (error_message)
+      *error_message = kPrefix + "fragment is not allowed";
+    return false;
+  }
+
+  return true;
+}
+
 bool Printer::PpdReference::IsFilled() const {
   return autoconf || !user_supplied_ppd_url.empty() ||
          !effective_make_and_model.empty();
 }
-
-// Returns true if the scheme is both valid and non-empty.
-bool IsSchemeValid(const url::Parsed& parsed) {
-  return parsed.scheme.is_valid() && parsed.scheme.is_nonempty();
-}
-
-// Returns true if |parsed| contains a valid port. A valid port is one that
-// either contains a valid value or is completely missing.
-bool IsPortValid(const url::Parsed& parsed) {
-  // A length of -1 indicates that the port is missing.
-  return parsed.port.len == -1 ||
-         (parsed.port.is_valid() && parsed.port.is_nonempty());
-}
-
-// Returns |printer_uri| broken into components if it represents a valid uri. A
-// valid uri contains a scheme, host, and a valid or missing port number.
-// Optionally, the uri contains a path.
-base::Optional<UriComponents> ParseUri(const std::string& printer_uri) {
-  const char* uri_ptr = printer_uri.c_str();
-  url::Parsed parsed;
-  url::ParseStandardURL(uri_ptr, printer_uri.length(), &parsed);
-  if (!IsSchemeValid(parsed) || !parsed.host.is_valid() ||
-      !IsPortValid(parsed)) {
-    LOG(WARNING) << "Could not parse printer uri";
-    return {};
-  }
-  base::StringPiece scheme(&uri_ptr[parsed.scheme.begin], parsed.scheme.len);
-  base::StringPiece host(&uri_ptr[parsed.host.begin], parsed.host.len);
-  base::StringPiece path =
-      parsed.path.is_valid()
-          ? base::StringPiece(&uri_ptr[parsed.path.begin], parsed.path.len)
-          : "";
-
-  int port = ParsePort(uri_ptr, parsed.port);
-  if (port == url::SpecialPort::PORT_INVALID) {
-    LOG(WARNING) << "Port is invalid";
-    return {};
-  }
-  // Port not specified.
-  if (port == url::SpecialPort::PORT_UNSPECIFIED) {
-    if (scheme == kIppScheme) {
-      port = kIppPort;
-    } else if (scheme == kIppsScheme) {
-      port = kIppsPort;
-    }
-  }
-
-  bool encrypted = scheme != kIppScheme;
-  return UriComponents(encrypted, scheme.as_string(), host.as_string(), port,
-                       path.as_string());
-}
-
-namespace {
-
-// Returns the index of the first character representing the hostname in |uri|.
-// Returns npos if the start of the hostname is not found.
-//
-// We should use GURL to do this except that uri could start with ipp:// which
-// is not a standard url scheme (according to GURL).
-size_t HostnameStart(base::StringPiece uri) {
-  size_t scheme_separator_start = uri.find(url::kStandardSchemeSeparator);
-  if (scheme_separator_start == base::StringPiece::npos) {
-    return base::StringPiece::npos;
-  }
-  return scheme_separator_start + strlen(url::kStandardSchemeSeparator);
-}
-
-base::StringPiece HostAndPort(base::StringPiece uri) {
-  size_t hostname_start = HostnameStart(uri);
-  if (hostname_start == base::StringPiece::npos) {
-    return "";
-  }
-
-  size_t hostname_end = uri.find("/", hostname_start);
-  if (hostname_end == base::StringPiece::npos) {
-    // No trailing slash.  Use end of string.
-    hostname_end = uri.size();
-  }
-
-  CHECK_GT(hostname_end, hostname_start);
-  return uri.substr(hostname_start, hostname_end - hostname_start);
-}
-
-}  // namespace
 
 Printer::Printer() : id_(base::GenerateGUID()), source_(SRC_USER_PREFS) {}
 
@@ -118,58 +131,75 @@ Printer& Printer::operator=(const Printer& other) = default;
 
 Printer::~Printer() = default;
 
+bool Printer::SetUri(const Uri& uri, std::string* error_message) {
+  if (!IsValidPrinterUri(uri, error_message))
+    return false;
+  uri_ = uri;
+  return true;
+}
+
+bool Printer::SetUri(const std::string& uri, std::string* error_message) {
+  Uri parsed_uri(uri);
+  const Uri::ParserError& parser_status = parsed_uri.GetLastParsingError();
+  if (parser_status.status == Uri::ParserStatus::kNoErrors)
+    return SetUri(parsed_uri, error_message);
+  if (error_message) {
+    *error_message = "Malformed URI: " + ToString(parser_status.status);
+  }
+  return false;
+}
+
 bool Printer::IsIppEverywhere() const {
   return ppd_reference_.autoconf;
 }
 
 net::HostPortPair Printer::GetHostAndPort() const {
-  if (uri_.empty()) {
+  if (!HasUri()) {
     return net::HostPortPair();
   }
 
-  return net::HostPortPair::FromString(HostAndPort(uri_).as_string());
+  return net::HostPortPair(uri_.GetHost(), uri_.GetPort());
 }
 
-std::string Printer::ReplaceHostAndPort(const net::IPEndPoint& ip) const {
-  if (uri_.empty()) {
-    return "";
+Uri Printer::ReplaceHostAndPort(const net::IPEndPoint& ip) const {
+  if (!HasUri()) {
+    return Uri();
   }
 
-  size_t hostname_start = HostnameStart(uri_);
-  if (hostname_start == base::StringPiece::npos) {
-    return "";
+  const std::string host = ip.ToStringWithoutPort();
+  if (host.empty()) {
+    return Uri();
   }
-  size_t host_port_len = HostAndPort(uri_).length();
-  return base::JoinString({uri_.substr(0, hostname_start), ip.ToString(),
-                           uri_.substr(hostname_start + host_port_len)},
-                          "");
+  Uri uri = uri_;
+  uri.SetHost(host);
+  uri.SetPort(ip.port());
+
+  return uri;
 }
 
 Printer::PrinterProtocol Printer::GetProtocol() const {
-  const base::StringPiece uri(uri_);
-
-  if (uri.starts_with("usb:"))
+  if (uri_.GetScheme() == "usb")
     return PrinterProtocol::kUsb;
 
-  if (uri.starts_with("ipp:"))
+  if (uri_.GetScheme() == "ipp")
     return PrinterProtocol::kIpp;
 
-  if (uri.starts_with("ipps:"))
+  if (uri_.GetScheme() == "ipps")
     return PrinterProtocol::kIpps;
 
-  if (uri.starts_with("http:"))
+  if (uri_.GetScheme() == "http")
     return PrinterProtocol::kHttp;
 
-  if (uri.starts_with("https:"))
+  if (uri_.GetScheme() == "https")
     return PrinterProtocol::kHttps;
 
-  if (uri.starts_with("socket:"))
+  if (uri_.GetScheme() == "socket")
     return PrinterProtocol::kSocket;
 
-  if (uri.starts_with("lpd:"))
+  if (uri_.GetScheme() == "lpd")
     return PrinterProtocol::kLpd;
 
-  if (uri.starts_with("ippusb:"))
+  if (uri_.GetScheme() == "ippusb")
     return PrinterProtocol::kIppUsb;
 
   return PrinterProtocol::kUnknown;
@@ -201,8 +231,21 @@ bool Printer::IsUsbProtocol() const {
   }
 }
 
-base::Optional<UriComponents> Printer::GetUriComponents() const {
-  return chromeos::ParseUri(uri_);
+bool Printer::HasSecureProtocol() const {
+  Printer::PrinterProtocol current_protocol = GetProtocol();
+  switch (current_protocol) {
+    case PrinterProtocol::kUsb:
+    case PrinterProtocol::kIpps:
+    case PrinterProtocol::kHttps:
+    case PrinterProtocol::kIppUsb:
+      return true;
+    default:
+      return false;
+  }
+}
+
+bool Printer::IsZeroconf() const {
+  return base::EndsWith(uri_.GetHost(), ".local");
 }
 
 }  // namespace chromeos

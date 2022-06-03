@@ -7,8 +7,10 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/command_line.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/url_constants.h"
@@ -63,6 +65,10 @@ class TestDevToolsDataSource : public DevToolsDataSource {
 };
 
 class DevToolsUIDataSourceTest : public testing::Test {
+ public:
+  DevToolsUIDataSourceTest(const DevToolsUIDataSourceTest&) = delete;
+  DevToolsUIDataSourceTest& operator=(const DevToolsUIDataSourceTest&) = delete;
+
  protected:
   DevToolsUIDataSourceTest() {}
   ~DevToolsUIDataSourceTest() override = default;
@@ -89,25 +95,22 @@ class DevToolsUIDataSourceTest : public testing::Test {
     content::WebContents::Getter wc_getter;
     data_source()->StartDataRequest(
         GURL("chrome://any-host/" + trimmed_path), std::move(wc_getter),
-        base::BindRepeating(&DevToolsUIDataSourceTest::OnDataReceived,
-                            base::Unretained(this)));
+        base::BindOnce(&DevToolsUIDataSourceTest::OnDataReceived,
+                       base::Unretained(this)));
   }
 
  private:
   void OnDataReceived(scoped_refptr<base::RefCountedMemory> bytes) {
     data_received_ = true;
-    if (bytes.get() != nullptr) {
-      data_ = base::StringPiece(reinterpret_cast<const char*>(bytes->front()),
-                                bytes->size())
-                  .as_string();
+    if (bytes.get()) {
+      data_ = std::string(base::StringPiece(
+          reinterpret_cast<const char*>(bytes->front()), bytes->size()));
     }
   }
 
   std::unique_ptr<TestDevToolsDataSource> devtools_data_source_;
   bool data_received_ = false;
   std::string data_;
-
-  DISALLOW_COPY_AND_ASSIGN(DevToolsUIDataSourceTest);
 };
 
 // devtools/bundled path.
@@ -128,7 +131,7 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsBundledURLWithQueryParam) {
   EXPECT_FALSE(data().empty());
 }
 
-TEST_F(DevToolsUIDataSourceTest, TestDevToolsBundledURLWithSwitch) {
+TEST_F(DevToolsUIDataSourceTest, TestDevToolsBundledFileURLWithSwitch) {
 #if defined(OS_WIN)
   const char* flag_value = "file://C:/tmp/";
 #else
@@ -141,6 +144,17 @@ TEST_F(DevToolsUIDataSourceTest, TestDevToolsBundledURLWithSwitch) {
   StartRequest(path.path());
   EXPECT_TRUE(data_received());
   EXPECT_EQ(data(), "file: devtools_app.html");
+}
+
+TEST_F(DevToolsUIDataSourceTest, TestDevToolsBundledRemoteURLWithSwitch) {
+  const char* flag_value = "http://example.com/example/path/";
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kCustomDevtoolsFrontend, flag_value);
+  const GURL path =
+      DevToolsUrl().Resolve(DevToolsBundledPath(kDevToolsUITestFrontEndUrl));
+  StartRequest(path.path());
+  EXPECT_TRUE(data_received());
+  EXPECT_EQ(data(), "url: http://example.com/example/path/devtools_app.html");
 }
 
 TEST_F(DevToolsUIDataSourceTest, TestDevToolsInvalidBundledURL) {

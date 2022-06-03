@@ -1,0 +1,16 @@
+This is a testharness.js-based test.
+PASS Event constructors
+PASS Event constructors 1
+FAIL Event constructors 2 assert_true: expected true got false
+FAIL Event constructors 3 assert_true: expected true got false
+PASS Event constructors 4
+PASS Event constructors 5
+PASS Event constructors 6
+PASS Event constructors 7
+PASS Event constructors 8
+PASS Event constructors 9
+PASS Event constructors 10
+PASS Event constructors 11
+PASS Event constructors 12
+Harness: the test ran to completion.
+

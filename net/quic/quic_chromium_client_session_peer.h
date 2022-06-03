@@ -21,6 +21,10 @@ namespace test {
 
 class QuicChromiumClientSessionPeer {
  public:
+  QuicChromiumClientSessionPeer(const QuicChromiumClientSessionPeer&) = delete;
+  QuicChromiumClientSessionPeer& operator=(
+      const QuicChromiumClientSessionPeer&) = delete;
+
   static void SetHostname(QuicChromiumClientSession* session,
                           const std::string& hostname);
 
@@ -34,8 +38,7 @@ class QuicChromiumClientSessionPeer {
 
   static bool GetSessionGoingAway(QuicChromiumClientSession* session);
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(QuicChromiumClientSessionPeer);
+  static bool DoesSessionAllowPortMigration(QuicChromiumClientSession* session);
 };
 
 }  // namespace test

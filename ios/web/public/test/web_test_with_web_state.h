@@ -14,8 +14,11 @@
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
 
+@class WKContentWorld;
+
 namespace web {
 
+class JavaScriptFeature;
 class WebClient;
 class WebState;
 
@@ -40,10 +43,6 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   // Adds a pending item to the NavigationManager associated with the WebState.
   void AddPendingItem(const GURL& url, ui::PageTransition transition);
 
-  // Adds a transient item to the NavigationManager associated with the
-  // WebState.
-  void AddTransientItem(const GURL& url);
-
   // Loads the specified HTML content with URL into the WebState.
   void LoadHtml(NSString* html, const GURL& url);
   // Loads the specified HTML content into the WebState, using test url name.
@@ -61,8 +60,29 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   // Blocks until known NSRunLoop-based have completed, known message-loop-based
   // background tasks have completed and |condition| evaluates to true.
   void WaitForCondition(ConditionBlock condition);
+  // Blocks until web_state() navigation and background tasks are
+  // completed. Returns false when timed out.
+  bool WaitUntilLoaded();
+  // Synchronously returns the result of the executed JavaScript function by
+  // calling |function| with |parameters| in the main frame of |web_state()|.
+  std::unique_ptr<base::Value> CallJavaScriptFunction(
+      const std::string& function,
+      const std::vector<base::Value>& parameters);
+  std::unique_ptr<base::Value> CallJavaScriptFunctionForFeature(
+      const std::string& function,
+      const std::vector<base::Value>& parameters,
+      JavaScriptFeature* feature);
   // Synchronously executes JavaScript and returns result as id.
   id ExecuteJavaScript(NSString* script);
+  // Synchronously executes JavaScript in the content world associated with
+  // |feature| and returns the result as id.
+  id ExecuteJavaScriptForFeature(NSString* script, JavaScriptFeature* feature)
+      API_AVAILABLE(ios(14.0));
+#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
+  // Synchronously executes |script| in |content_world| and returns result.
+  id ExecuteJavaScript(WKContentWorld* content_world, NSString* script)
+      API_AVAILABLE(ios(14.0));
+#endif  // defined(__IPHONE14_0)
 
   // Returns the base URL of the loaded page.
   std::string BaseUrl() const;

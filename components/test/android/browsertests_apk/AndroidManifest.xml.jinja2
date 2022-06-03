@@ -13,6 +13,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS"/>
     <uses-permission android:name="android.permission.RECORD_AUDIO"/>
     <uses-permission android:name="android.permission.VIBRATE"/>
@@ -26,6 +27,7 @@
                   android:theme="@android:style/Theme.Holo.Light.NoActionBar"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize"
                   android:hardwareAccelerated="true"
+                  android:exported="true"
                   android:process=":test_process">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -60,7 +62,7 @@
         {% endfor %}
     </application>
 
-    <instrumentation android:name="org.chromium.native_test.NativeTestInstrumentationTestRunner"
+    <instrumentation android:name="org.chromium.build.gtest_apk.NativeTestInstrumentationTestRunner"
             android:label="ComponentsBrowserTests"
             android:targetPackage="org.chromium.components_browsertests_apk"
             chromium-junit3="true"/>

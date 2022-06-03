@@ -8,6 +8,7 @@
 
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "components/translate/core/browser/translate_step.h"
 
 namespace {
 
@@ -17,12 +18,14 @@ ShowTranslateBubbleResult ShowDefault(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors::Type error_type,
+    bool is_user_gesture) {
   // |window| might be null when testing.
   if (!window)
     return ShowTranslateBubbleResult::BROWSER_WINDOW_NOT_VALID;
   return window->ShowTranslateBubble(web_contents, step, source_language,
-                                     target_language, error_type, false);
+                                     target_language, error_type,
+                                     is_user_gesture);
 }
 
 }  // namespace
@@ -37,7 +40,8 @@ ShowTranslateBubbleResult TranslateBubbleFactory::Show(
     translate::TranslateStep step,
     const std::string& source_language,
     const std::string& target_language,
-    translate::TranslateErrors::Type error_type) {
+    translate::TranslateErrors::Type error_type,
+    bool is_user_gesture) {
   if (current_factory_) {
     return current_factory_->ShowImplementation(window, web_contents, step,
                                                 source_language,
@@ -45,7 +49,7 @@ ShowTranslateBubbleResult TranslateBubbleFactory::Show(
   }
 
   return ShowDefault(window, web_contents, step, source_language,
-                     target_language, error_type);
+                     target_language, error_type, is_user_gesture);
 }
 
 // static

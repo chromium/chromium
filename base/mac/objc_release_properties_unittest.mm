@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/mac/objc_release_properties.h"
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
 

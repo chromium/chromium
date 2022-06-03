@@ -1,0 +1,8 @@
+specific_include_rules = {
+  ".*_test\.mm": [
+    "+third_party/ocmock",
+  ],
+  ".*_mock\.(mm|h)": [
+    "+third_party/ocmock",
+  ],
+}

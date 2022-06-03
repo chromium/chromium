@@ -10,24 +10,26 @@
 #include <memory>
 #include <utility>
 
+#include "ash/accessibility/magnifier/fullscreen_magnifier_controller.h"
+#include "ash/accessibility/magnifier/partial_magnifier_controller.h"
 #include "ash/display/cursor_window_controller.h"
 #include "ash/display/mirror_window_controller.h"
 #include "ash/display/root_window_transformers.h"
+#include "ash/frame_throttler/frame_throttling_controller.h"
 #include "ash/host/ash_window_tree_host.h"
 #include "ash/host/ash_window_tree_host_init_params.h"
 #include "ash/host/root_window_transformer.h"
-#include "ash/magnifier/magnification_controller.h"
-#include "ash/magnifier/partial_magnification_controller.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/root_window_controller.h"
 #include "ash/root_window_settings.h"
+#include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "ash/shell_state.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/wm/window_util.h"
+#include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -42,7 +44,6 @@
 #include "ui/base/ime/init/input_method_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
-#include "ui/base/ui_base_switches_util.h"
 #include "ui/compositor/compositor.h"
 #include "ui/compositor/compositor_switches.h"
 #include "ui/display/display.h"
@@ -69,16 +70,20 @@ int64_t primary_display_id = -1;
 // The default memory limit: 512mb.
 const char kUICompositorDefaultMemoryLimitMB[] = "512";
 
+// An UMA signal for the current effective resolution is sent at this rate. This
+// keeps track of the effective resolution most used on internal display by the
+// user.
+constexpr base::TimeDelta kEffectiveResolutionRepeatingDelay =
+    base::Minutes(30);
+
 display::DisplayManager* GetDisplayManager() {
   return Shell::Get()->display_manager();
 }
 
 void SetDisplayPropertiesOnHost(AshWindowTreeHost* ash_host,
                                 const display::Display& display) {
-  display::ManagedDisplayInfo info =
-      GetDisplayManager()->GetDisplayInfo(display.id());
   const display::Display::Rotation effective_rotation =
-      info.GetLogicalActiveRotation();
+      display.panel_rotation();
   aura::WindowTreeHost* host = ash_host->AsWindowTreeHost();
   ash_host->SetCursorConfig(display, effective_rotation);
   std::unique_ptr<RootWindowTransformer> transformer(
@@ -102,6 +107,47 @@ aura::Window* GetWindow(AshWindowTreeHost* ash_host) {
   return ash_host->AsWindowTreeHost()->window();
 }
 
+// Returns the index to the enum - |EffectiveResolution|. The enum value
+// represents the resolution that exactly matches the primary display's
+// effective resolution.
+int GetEffectiveResolutionUMAIndex(const display::Display& display) {
+  const gfx::Size effective_size = display.size();
+
+  // The UMA enum index for portrait mode has 1 subtracted from itself. This
+  // differentiates it from the landscape mode.
+  return effective_size.width() > effective_size.height()
+             ? effective_size.width() * effective_size.height()
+             : effective_size.width() * effective_size.height() - 1;
+}
+
+void RepeatingEffectiveResolutionUMA(base::RepeatingTimer* timer,
+                                     bool is_first_run) {
+  display::Display internal_display;
+  const auto* session_controller = Shell::Get()->session_controller();
+
+  // Record the UMA only when this is an active user session and the
+  // internal display is present.
+  if (display::Display::HasInternalDisplay() &&
+      display::Screen::GetScreen()->GetDisplayWithDisplayId(
+          display::Display::InternalDisplayId(), &internal_display) &&
+      session_controller->IsActiveUserSessionStarted() &&
+      session_controller->GetSessionState() ==
+          session_manager::SessionState::ACTIVE) {
+    base::UmaHistogramSparse(
+        "Ash.Display.InternalDisplay.ActiveEffectiveResolution",
+        GetEffectiveResolutionUMAIndex(internal_display));
+  }
+
+  // The first run of the repeating timer is half the actual delay. Reset the
+  // timer after the first run with the correct delay.
+  if (is_first_run && timer) {
+    timer->Start(
+        FROM_HERE, kEffectiveResolutionRepeatingDelay,
+        base::BindRepeating(&RepeatingEffectiveResolutionUMA,
+                            nullptr /*timer=*/, false /*is_first_run=*/));
+  }
+}
+
 }  // namespace
 
 // A utility class to store/restore focused/active window
@@ -114,6 +160,9 @@ class FocusActivationStore {
         focus_client_(nullptr),
         focused_(nullptr),
         active_(nullptr) {}
+
+  FocusActivationStore(const FocusActivationStore&) = delete;
+  FocusActivationStore& operator=(const FocusActivationStore&) = delete;
 
   void Store(bool clear_focus) {
     if (!activation_client_) {
@@ -168,8 +217,6 @@ class FocusActivationStore {
   aura::WindowTracker tracker_;
   aura::Window* focused_;
   aura::Window* active_;
-
-  DISALLOW_COPY_AND_ASSIGN(FocusActivationStore);
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -189,17 +236,28 @@ WindowTreeHostManager::WindowTreeHostManager()
 WindowTreeHostManager::~WindowTreeHostManager() = default;
 
 void WindowTreeHostManager::Start() {
-  display::Screen::GetScreen()->AddObserver(this);
+  display_observer_.emplace(this);
   Shell::Get()
       ->display_configurator()
       ->content_protection_manager()
       ->AddObserver(this);
   Shell::Get()->display_manager()->set_delegate(this);
+
+  // Start a repeating timer to send UMA at fixed intervals. The first run is at
+  // half the delay time.
+  effective_resolution_UMA_timer_ = std::make_unique<base::RepeatingTimer>();
+  effective_resolution_UMA_timer_->Start(
+      FROM_HERE, kEffectiveResolutionRepeatingDelay / 2,
+      base::BindRepeating(&RepeatingEffectiveResolutionUMA,
+                          effective_resolution_UMA_timer_.get(),
+                          true /*is_first_run=*/));
 }
 
 void WindowTreeHostManager::Shutdown() {
   for (auto& observer : observers_)
     observer.OnWindowTreeHostManagerShutdown();
+
+  effective_resolution_UMA_timer_->Reset();
 
   // Unset the display manager's delegate here because
   // DisplayManager outlives WindowTreeHostManager.
@@ -212,7 +270,7 @@ void WindowTreeHostManager::Shutdown() {
       ->display_configurator()
       ->content_protection_manager()
       ->RemoveObserver(this);
-  display::Screen::GetScreen()->RemoveObserver(this);
+  display_observer_.reset();
 
   int64_t primary_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
 
@@ -232,7 +290,7 @@ void WindowTreeHostManager::Shutdown() {
   }
   CHECK(primary_rwc);
 
-  Shell::Get()->shell_state()->SetRootWindowForNewWindows(nullptr);
+  Shell::SetRootWindowForNewWindows(nullptr);
   for (auto* rwc : to_delete)
     delete rwc;
   delete primary_rwc;
@@ -479,10 +537,10 @@ void WindowTreeHostManager::OnDisplayAdded(const display::Display& display) {
 
     // Magnifier controllers keep pointers to the current root window.
     // Update them here to avoid accessing them later.
-    Shell::Get()->magnification_controller()->SwitchTargetRootWindow(
+    Shell::Get()->fullscreen_magnifier_controller()->SwitchTargetRootWindow(
         ash_host->AsWindowTreeHost()->window(), false);
     Shell::Get()
-        ->partial_magnification_controller()
+        ->partial_magnifier_controller()
         ->SwitchTargetRootWindowIfNeeded(
             ash_host->AsWindowTreeHost()->window());
 
@@ -554,8 +612,7 @@ void WindowTreeHostManager::DeleteHost(AshWindowTreeHost* host_to_delete) {
     primary_tree_host_for_replace_ = nullptr;
   DCHECK_EQ(primary_root_after_host_deletion, Shell::GetPrimaryRootWindow());
   if (Shell::GetRootWindowForNewWindows() == root_being_deleted) {
-    Shell::Get()->shell_state()->SetRootWindowForNewWindows(
-        primary_root_after_host_deletion);
+    Shell::SetRootWindowForNewWindows(primary_root_after_host_deletion);
   }
   // NOTE: ShelfWidget is gone, but Shelf still exists until this task runs.
   base::ThreadTaskRunnerHandle::Get()->DeleteSoon(FROM_HERE, controller);
@@ -735,7 +792,7 @@ void WindowTreeHostManager::SetPrimaryDisplayId(int64_t id) {
   GetRootWindowSettings(non_primary_window)->display_id =
       old_primary_display.id();
 
-  base::string16 old_primary_title = primary_window->GetTitle();
+  std::u16string old_primary_title = primary_window->GetTitle();
   primary_window->SetTitle(non_primary_window->GetTitle());
   non_primary_window->SetTitle(old_primary_title);
 
@@ -813,6 +870,7 @@ AshWindowTreeHost* WindowTreeHostManager::AddWindowTreeHostForDisplay(
   AshWindowTreeHost* ash_host =
       AshWindowTreeHost::Create(params_with_bounds).release();
   aura::WindowTreeHost* host = ash_host->AsWindowTreeHost();
+  Shell::Get()->frame_throttling_controller()->OnWindowTreeHostCreated(host);
   DCHECK(!host->has_input_method());
   if (!input_method_) {  // Singleton input method instance for Ash.
     input_method_ = ui::CreateInputMethod(this, host->GetAcceleratedWidget());

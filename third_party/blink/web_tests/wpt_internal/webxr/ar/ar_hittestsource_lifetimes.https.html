@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script>let additionalChromiumResources = ["../resources/xr-internal-device-mocking.js"];</script>
+<script src="/webxr/resources/webxr_util.js"></script>
+<script src="/webxr/resources/webxr_test_constants.js"></script>
+<script src="/webxr/resources/webxr_test_constants_fake_world.js"></script>
+<script src="/webxr/resources/webxr_test_asserts.js"></script>
+
+<script>
+// Because WebXR Test API hit test extensions do not yet cover the hit test source lifetimes,
+// this is an internal, Chrome-only WPT.
+
+// 1m above world origin.
+const VIEWER_ORIGIN_TRANSFORM = {
+  position: [0, 1, 0],
+  orientation: [0, 0, 0, 1],
+};
+
+// 0.25m above world origin.
+const FLOOR_ORIGIN_TRANSFORM = {
+  position: [0, -0.25, 0],
+  orientation: [0, 0, 0, 1],
+};
+
+const fakeDeviceInitParams = {
+  supportedModes: ["immersive-ar"],
+  views: VALID_VIEWS,
+  floorOrigin: FLOOR_ORIGIN_TRANSFORM,    // aka mojo_from_floor
+  viewerOrigin: VIEWER_ORIGIN_TRANSFORM,  // aka mojo_from_viewer
+  supportedFeatures: ALL_FEATURES,
+  world: createFakeWorld(5.0, 2.0, 5.0),  // webxr_test_constants_fake_world.js has detailed description of the fake world
+};
+
+const test_function_generator = function(isTransientTest, isGarbageCollectionTest) {
+  return function(session, fakeDeviceController, t) {
+
+    let controller = null;
+    fakeDeviceController.setHitTestSourceCreationCallback((params, htsController) => {
+      controller = htsController;
+      return Promise.resolve(true);
+    });
+
+    return session.requestReferenceSpace('local').then((localSpace) => {
+      const validation_function = (hitTestSource) => {
+        const spinRAF = function() {
+          session.requestAnimationFrame(spinRAF);
+        };
+
+        const rAFcb = function(time, frame) {
+          session.requestAnimationFrame(spinRAF);
+
+          const hitTestResults = isTransientTest ? frame.getHitTestResultsForTransientInput(hitTestSource)
+                                                 : frame.getHitTestResults(hitTestSource);
+
+          t.step(() => {
+            assert_not_equals(hitTestResults, null, "Results should be non-null!");
+          });
+
+          if(isGarbageCollectionTest) {
+            hitTestSource = null;
+            self.gc();
+          } else {
+            hitTestSource.cancel();
+          }
+        };
+
+        session.requestAnimationFrame(rAFcb);
+
+        return t.step_wait(() => controller.deleted);
+      };
+
+      // Same validation will happen both in transient and non-transient variant
+      if(isTransientTest) {
+        return session.requestHitTestSourceForTransientInput({
+          profile: "generic-touchscreen",
+          offsetRay: new XRRay(),
+        }).then(validation_function);
+      } else {
+        return session.requestHitTestSource({
+          space: localSpace,
+          offsetRay: new XRRay(),
+        }).then(validation_function);
+      }
+    }); // return session.requestReferenceSpace('local').then((localSpace) => { ...
+  };  // return function(session, fakeDeviceController, t) { ...
+}
+
+xr_session_promise_test("Ensures hit test source cancellation propagates to the device when manually cancelled.",
+  test_function_generator(/*isTransientTest=*/false, /*isGarbageCollectionTest=*/false),
+  fakeDeviceInitParams,
+  'immersive-ar', { 'requiredFeatures': ['hit-test'] });
+
+xr_session_promise_test("Ensures transient input hit test source cancellation propagates to the device when manually cancelled.",
+  test_function_generator(/*isTransientTest=*/true, /*isGarbageCollectionTest=*/false),
+  fakeDeviceInitParams,
+  'immersive-ar', { 'requiredFeatures': ['hit-test'] });
+
+if(self.gc) {
+  xr_session_promise_test("Ensures hit test source cancellation propagates to the device when relying on GC",
+    test_function_generator(/*isTransientTest=*/false, /*isGarbageCollectionTest=*/true),
+    fakeDeviceInitParams,
+    'immersive-ar', { 'requiredFeatures': ['hit-test'] });
+
+  xr_session_promise_test("Ensures transient input hit test source cancellation propagates to the device when relying on GC",
+    test_function_generator(/*isTransientTest=*/true, /*isGarbageCollectionTest=*/true),
+    fakeDeviceInitParams,
+    'immersive-ar', { 'requiredFeatures': ['hit-test'] });
+}
+
+</script>

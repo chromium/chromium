@@ -49,7 +49,7 @@
             android:scaleType="center"
             android:contentDescription="@string/accessibility_toolbar_btn_menu"
             android:paddingStart="2dp"
-            app:tint="@color/tint_on_dark_bg"
+            app:tint="@color/default_icon_color_light_tint_list"
             />
     </LinearLayout>
 </org.chromium.chrome.browser.ui.tablet.emptybackground.EmptyBackgroundViewTablet>

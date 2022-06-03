@@ -8,7 +8,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_registrar.h"
 #include "base/android/library_loader/library_loader_hooks.h"
-#include "base/macros.h"
 
 // This is called by the VM when the shared library is first loaded.
 // Checks the available version of JNI. Also, caches Java reflection artifacts.

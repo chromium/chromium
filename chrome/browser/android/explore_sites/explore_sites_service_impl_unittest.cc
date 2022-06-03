@@ -5,13 +5,13 @@
 #include "chrome/browser/android/explore_sites/explore_sites_service_impl.h"
 
 #include "base/bind.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_entropy_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
-#include "chrome/browser/android/chrome_feature_list.h"
 #include "chrome/browser/android/explore_sites/catalog.pb.h"
+#include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -41,6 +41,11 @@ using testing::Not;
 class ExploreSitesServiceImplTest : public testing::Test {
  public:
   ExploreSitesServiceImplTest();
+
+  ExploreSitesServiceImplTest(const ExploreSitesServiceImplTest&) = delete;
+  ExploreSitesServiceImplTest& operator=(const ExploreSitesServiceImplTest&) =
+      delete;
+
   ~ExploreSitesServiceImplTest() override = default;
 
   void SetUp() override {
@@ -127,13 +132,17 @@ class ExploreSitesServiceImplTest : public testing::Test {
     explicit TestURLLoaderFactoryGetter(
         scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
         : url_loader_factory_(url_loader_factory) {}
+
+    TestURLLoaderFactoryGetter(const TestURLLoaderFactoryGetter&) = delete;
+    TestURLLoaderFactoryGetter& operator=(const TestURLLoaderFactoryGetter&) =
+        delete;
+
     scoped_refptr<network::SharedURLLoaderFactory> GetFactory() override {
       return url_loader_factory_;
     }
 
    private:
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-    DISALLOW_COPY_AND_ASSIGN(TestURLLoaderFactoryGetter);
   };
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -154,8 +163,6 @@ class ExploreSitesServiceImplTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::SingleThreadTaskEnvironment::MainThreadType::IO,
       base::test::SingleThreadTaskEnvironment::TimeSource::MOCK_TIME};
-
-  DISALLOW_COPY_AND_ASSIGN(ExploreSitesServiceImplTest);
 };
 
 ExploreSitesServiceImplTest::ExploreSitesServiceImplTest()
@@ -574,7 +581,7 @@ TEST_F(ExploreSitesServiceImplTest, UnparseableCatalogHistograms) {
                                   ExploreSitesCatalogError::kParseFailure, 1);
 }
 
-TEST_F(ExploreSitesServiceImplTest, BlacklistNonCanonicalUrls) {
+TEST_F(ExploreSitesServiceImplTest, BlockNonCanonicalUrls) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(chrome::android::kExploreSites);
 
@@ -597,7 +604,7 @@ TEST_F(ExploreSitesServiceImplTest, BlacklistNonCanonicalUrls) {
   // This will fail if canonicalization does not work correctly because
   // kSite1Url is the canonicalized version of the URL inserted in to the
   // database.
-  service()->BlacklistSite(kSite1Url);
+  service()->BlockSite(kSite1Url);
   PumpLoop();
 
   service()->GetCatalog(base::BindOnce(
@@ -605,8 +612,8 @@ TEST_F(ExploreSitesServiceImplTest, BlacklistNonCanonicalUrls) {
   PumpLoop();
 
   EXPECT_EQ(2U, database_categories()->at(0).sites.size());
-  EXPECT_TRUE(database_categories()->at(0).sites.at(0).is_blacklisted);
-  EXPECT_FALSE(database_categories()->at(0).sites.at(1).is_blacklisted);
+  EXPECT_TRUE(database_categories()->at(0).sites.at(0).is_blocked);
+  EXPECT_FALSE(database_categories()->at(0).sites.at(1).is_blocked);
 }
 
 TEST_F(ExploreSitesServiceImplTest, CountryCodeDefault) {

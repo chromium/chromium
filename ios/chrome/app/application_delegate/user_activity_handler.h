@@ -7,7 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/app/application_delegate/app_state_observer.h"
+
 @protocol BrowserInterfaceProvider;
+@protocol ConnectionInformation;
+class ChromeBrowserState;
+class PrefService;
 @protocol StartupInformation;
 @protocol TabOpening;
 
@@ -18,21 +23,29 @@
 @interface UserActivityHandler : NSObject
 
 // If the userActivity is a Handoff or an opening from Spotlight, opens a new
-// tab or setup startupParameters to open it later.
-// Returns wether it could continue userActivity.
+// tab or setup startupParameters to open it later. If a new tab must be
+// opened immediately (e.g. if a Siri Shortcut was triggered by the user while
+// Chrome was already in the foreground), it will be done with the provided
+// |browserState|. Returns wether it could continue userActivity.
 + (BOOL)continueUserActivity:(NSUserActivity*)userActivity
          applicationIsActive:(BOOL)applicationIsActive
                    tabOpener:(id<TabOpening>)tabOpener
-          startupInformation:(id<StartupInformation>)startupInformation;
+       connectionInformation:(id<ConnectionInformation>)connectionInformation
+          startupInformation:(id<StartupInformation>)startupInformation
+                browserState:(ChromeBrowserState*)browserState
+                   initStage:(InitStage)initStage;
 
 // Handles the 3D touch application static items. If the First Run UI is active,
 // |completionHandler| will be called with NO.
 + (void)performActionForShortcutItem:(UIApplicationShortcutItem*)shortcutItem
                    completionHandler:(void (^)(BOOL succeeded))completionHandler
                            tabOpener:(id<TabOpening>)tabOpener
+               connectionInformation:
+                   (id<ConnectionInformation>)connectionInformation
                   startupInformation:(id<StartupInformation>)startupInformation
                    interfaceProvider:
-                       (id<BrowserInterfaceProvider>)interfaceProvider;
+                       (id<BrowserInterfaceProvider>)interfaceProvider
+                           initStage:(InitStage)initStage;
 
 // Returns YES if Chrome is passing a Handoff to itself or if it is an opening
 // from Spotlight.
@@ -40,10 +53,17 @@
 
 // Opens a new Tab or routes to correct Tab.
 + (void)handleStartupParametersWithTabOpener:(id<TabOpening>)tabOpener
+                       connectionInformation:
+                           (id<ConnectionInformation>)connectionInformation
                           startupInformation:
                               (id<StartupInformation>)startupInformation
-                           interfaceProvider:
-                               (id<BrowserInterfaceProvider>)interfaceProvider;
+                                browserState:(ChromeBrowserState*)browserState
+                                   initStage:(InitStage)initStage;
+
+// Return YES if the user intends to open links in a certain mode and the
+// browser will proceed the request.
++ (BOOL)canProceedWithUserActivity:(NSUserActivity*)userActivity
+                       prefService:(PrefService*)prefService;
 
 @end
 

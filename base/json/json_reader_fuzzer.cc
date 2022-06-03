@@ -5,6 +5,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/values.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 
@@ -24,7 +25,6 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   JSONReader::ValueWithError json_val =
       JSONReader::ReadAndReturnValueWithError(input_string, options);
-
   if (json_val.value) {
     // Check that the value can be serialized and deserialized back to an
     // equivalent |Value|.
@@ -32,7 +32,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
     std::string serialized;
     CHECK(JSONWriter::Write(value, &serialized));
 
-    Optional<Value> deserialized = JSONReader::Read(StringPiece(serialized));
+    absl::optional<Value> deserialized =
+        JSONReader::Read(StringPiece(serialized));
     CHECK(deserialized);
     CHECK(value.Equals(&deserialized.value()));
   }

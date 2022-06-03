@@ -16,29 +16,31 @@
  */
 #ifndef __XML_C14N_H__
 #define __XML_C14N_H__
+
+#include <libxml/xmlversion.h>
+
 #ifdef LIBXML_C14N_ENABLED
 #ifdef LIBXML_OUTPUT_ENABLED
+
+#include <libxml/tree.h>
+#include <libxml/xpath.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif /* __cplusplus */
 
-#include <libxml/xmlversion.h>
-#include <libxml/tree.h>
-#include <libxml/xpath.h>
-
 /*
- * XML Canonicazation
+ * XML Canonicalization
  * http://www.w3.org/TR/xml-c14n
  *
- * Exclusive XML Canonicazation
+ * Exclusive XML Canonicalization
  * http://www.w3.org/TR/xml-exc-c14n
  *
  * Canonical form of an XML document could be created if and only if
  *  a) default attributes (if any) are added to all nodes
  *  b) all character and parsed entity references are resolved
- * In order to achive this in libxml2 the document MUST be loaded with
- * following global setings:
+ * In order to achieve this in libxml2 the document MUST be loaded with
+ * following global settings:
  *
  *    xmlLoadExtDtdDefaultValue = XML_DETECT_IDS | XML_COMPLETE_ATTRS;
  *    xmlSubstituteEntitiesDefault(1);
@@ -59,7 +61,7 @@ extern "C" {
  *
  */
 typedef enum {
-    XML_C14N_1_0            = 0,    /* Origianal C14N 1.0 spec */
+    XML_C14N_1_0            = 0,    /* Original C14N 1.0 spec */
     XML_C14N_EXCLUSIVE_1_0  = 1,    /* Exclusive C14N 1.0 spec */
     XML_C14N_1_1            = 2     /* C14N 1.1 spec */
 } xmlC14NMode;
@@ -96,7 +98,7 @@ XMLPUBFUN int XMLCALL
 /**
  * xmlC14NIsVisibleCallback:
  * @user_data: user data
- * @node: the curent node
+ * @node: the current node
  * @parent: the parent node
  *
  * Signature for a C14N callback on visible nodes

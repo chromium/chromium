@@ -4,21 +4,23 @@
 
 #include "ash/login/ui/lock_screen_media_controls_view.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/login/ui/fake_login_detachable_base_model.h"
 #include "ash/login/ui/lock_contents_view.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/media_controls_header_view.h"
-#include "ash/public/cpp/ash_features.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/power_monitor_test_base.h"
+#include "base/test/power_monitor_test.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "components/media_message_center/media_controls_progress_view.h"
 #include "services/media_session/public/cpp/test/test_media_controller.h"
 #include "services/media_session/public/mojom/media_session.mojom.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/layer_observer.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -40,7 +42,7 @@ const int kAppIconSize = 20;
 constexpr int kArtworkViewHeight = 48;
 constexpr int kArtworkCornerRadius = 4;
 
-const base::string16 kTestAppName = base::ASCIIToUTF16("Test app");
+const std::u16string kTestAppName = u"Test app";
 
 MediaSessionAction kActionButtonOrder[] = {
     MediaSessionAction::kPreviousTrack, MediaSessionAction::kSeekBackward,
@@ -53,18 +55,29 @@ bool IsMediaButtonType(const char* class_name) {
          class_name == views::ToggleImageButton::kViewClassName;
 }
 
-class AnimationWaiter : public ui::LayerAnimationObserver {
+class AnimationWaiter : public ui::LayerAnimationObserver,
+                        public ui::LayerObserver {
  public:
-  explicit AnimationWaiter(views::View* host)
-      : animator_(host->layer()->GetAnimator()) {
-    animator_->AddObserver(this);
+  explicit AnimationWaiter(views::View* host) : layer_(host->layer()) {
+    layer_->AddObserver(this);
+    layer_->GetAnimator()->AddObserver(this);
   }
-  ~AnimationWaiter() override { animator_->RemoveObserver(this); }
+
+  AnimationWaiter(const AnimationWaiter&) = delete;
+  AnimationWaiter& operator=(const AnimationWaiter&) = delete;
+
+  ~AnimationWaiter() override {
+    if (layer_) {
+      layer_->RemoveObserver(this);
+      layer_->GetAnimator()->RemoveObserver(this);
+    }
+  }
 
   // ui::LayerAnimationObserver:
   void OnLayerAnimationEnded(ui::LayerAnimationSequence* sequence) override {
-    if (!animator_->is_animating()) {
-      animator_->RemoveObserver(this);
+    if (!layer_->GetAnimator()->is_animating()) {
+      layer_->GetAnimator()->RemoveObserver(this);
+      layer_->RemoveObserver(this);
       run_loop_.Quit();
     }
   }
@@ -72,13 +85,17 @@ class AnimationWaiter : public ui::LayerAnimationObserver {
   void OnLayerAnimationScheduled(
       ui::LayerAnimationSequence* sequence) override {}
 
+  void LayerDestroyed(ui::Layer* layer) override {
+    layer_->RemoveObserver(this);
+    layer_->GetAnimator()->RemoveObserver(this);
+    layer_ = nullptr;
+  }
+
   void Wait() { run_loop_.Run(); }
 
  private:
-  ui::LayerAnimator* animator_;
+  ui::Layer* layer_;
   base::RunLoop run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationWaiter);
 };
 
 }  // namespace
@@ -86,15 +103,17 @@ class AnimationWaiter : public ui::LayerAnimationObserver {
 class LockScreenMediaControlsViewTest : public LoginTestBase {
  public:
   LockScreenMediaControlsViewTest() = default;
+
+  LockScreenMediaControlsViewTest(const LockScreenMediaControlsViewTest&) =
+      delete;
+  LockScreenMediaControlsViewTest& operator=(
+      const LockScreenMediaControlsViewTest&) = delete;
+
   ~LockScreenMediaControlsViewTest() override = default;
 
   void SetUp() override {
     // Enable media controls.
     feature_list.InitAndEnableFeature(features::kLockScreenMediaControls);
-
-    auto power_source = std::make_unique<base::PowerMonitorTestSource>();
-    power_source_ = power_source.get();
-    base::PowerMonitor::Initialize(std::move(power_source));
 
     LoginTestBase::SetUp();
 
@@ -112,7 +131,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
 
     media_controls_view_ = lock_contents.media_controls_view();
 
-    animation_waiter_ = new AnimationWaiter(contents_view());
+    animation_waiter_ = std::make_unique<AnimationWaiter>(contents_view());
 
     // Inject the test media controller into the media controls view.
     media_controller_ = std::make_unique<TestMediaController>();
@@ -121,11 +140,10 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   }
 
   void TearDown() override {
+    animation_waiter_.reset();
     actions_.clear();
 
     LoginTestBase::TearDown();
-
-    base::PowerMonitor::ShutdownForTesting();
   }
 
   void EnableAllActions() {
@@ -247,7 +265,7 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return header_row()->app_icon_for_testing();
   }
 
-  const base::string16& GetAppName() const {
+  const std::u16string& GetAppName() const {
     return header_row()->app_name_for_testing();
   }
 
@@ -255,10 +273,9 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
     return media_controls_view_->GetArtworkClipPath();
   }
 
-  base::PowerMonitorTestSource& GetTestPowerSource() { return *power_source_; }
-
   LockScreenMediaControlsView* media_controls_view_ = nullptr;
-  AnimationWaiter* animation_waiter_ = nullptr;
+  std::unique_ptr<AnimationWaiter> animation_waiter_;
+  base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
  private:
   void NotifyUpdatedActions() {
@@ -271,9 +288,6 @@ class LockScreenMediaControlsViewTest : public LoginTestBase {
   LockContentsView* lock_contents_view_ = nullptr;
   std::unique_ptr<TestMediaController> media_controller_;
   std::set<MediaSessionAction> actions_;
-  base::PowerMonitorTestSource* power_source_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenMediaControlsViewTest);
 };
 
 TEST_F(LockScreenMediaControlsViewTest, DoNotUpdateMetadataBetweenSessions) {
@@ -283,23 +297,23 @@ TEST_F(LockScreenMediaControlsViewTest, DoNotUpdateMetadataBetweenSessions) {
   // Set metadata for current session
   media_session::MediaMetadata metadata;
   metadata.source_title = kTestAppName;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   media_controls_view_->MediaSessionMetadataChanged(metadata);
 
   // Simulate new media session starting.
-  metadata.source_title = base::ASCIIToUTF16("AppName2");
-  metadata.title = base::ASCIIToUTF16("title2");
-  metadata.artist = base::ASCIIToUTF16("artist2");
+  metadata.source_title = u"AppName2";
+  metadata.title = u"title2";
+  metadata.artist = u"artist2";
 
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
   media_controls_view_->MediaSessionMetadataChanged(metadata);
 
   EXPECT_EQ(kTestAppName, GetAppName());
-  EXPECT_EQ(base::ASCIIToUTF16("title"), title_label()->GetText());
-  EXPECT_EQ(base::ASCIIToUTF16("artist"), artist_label()->GetText());
+  EXPECT_EQ(u"title", title_label()->GetText());
+  EXPECT_EQ(u"artist", artist_label()->GetText());
 }
 
 TEST_F(LockScreenMediaControlsViewTest, DoNotUpdateArtworkBetweenSessions) {
@@ -424,7 +438,7 @@ TEST_F(LockScreenMediaControlsViewTest, PlayPauseButtonTooltipCheck) {
   EnableAction(MediaSessionAction::kPause);
 
   auto* button = GetButtonForAction(MediaSessionAction::kPause);
-  base::string16 tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(tooltip.empty());
 
   media_session::mojom::MediaSessionInfoPtr session_info(
@@ -433,7 +447,7 @@ TEST_F(LockScreenMediaControlsViewTest, PlayPauseButtonTooltipCheck) {
       media_session::mojom::MediaPlaybackState::kPaused;
   media_controls_view_->MediaSessionInfoChanged(session_info.Clone());
 
-  base::string16 new_tooltip = button->GetTooltipText(gfx::Point());
+  std::u16string new_tooltip = button->GetTooltipText(gfx::Point());
   EXPECT_FALSE(new_tooltip.empty());
   EXPECT_NE(tooltip, new_tooltip);
 }
@@ -446,8 +460,8 @@ TEST_F(LockScreenMediaControlsViewTest, ProgressBarVisibility) {
   EXPECT_FALSE(progress_view()->GetVisible());
 
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(300) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(300), /*end_of_media=*/false);
 
   // Simulate position changing.
   media_controls_view_->MediaSessionPositionChanged(media_position);
@@ -456,7 +470,7 @@ TEST_F(LockScreenMediaControlsViewTest, ProgressBarVisibility) {
   EXPECT_TRUE(progress_view()->GetVisible());
 
   // Simulate position turning null.
-  media_controls_view_->MediaSessionPositionChanged(base::nullopt);
+  media_controls_view_->MediaSessionPositionChanged(absl::nullopt);
 
   // Verify that the progress is hidden again.
   EXPECT_FALSE(progress_view()->GetVisible());
@@ -696,8 +710,8 @@ TEST_F(LockScreenMediaControlsViewTest, UpdateMetadata) {
       GetAppName());
 
   metadata.source_title = kTestAppName;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
 
   media_controls_view_->MediaSessionMetadataChanged(metadata);
 
@@ -839,15 +853,15 @@ TEST_F(LockScreenMediaControlsViewTest, AccessibleNodeData) {
 
   // Update the metadata.
   media_session::MediaMetadata metadata;
-  metadata.title = base::ASCIIToUTF16("title");
-  metadata.artist = base::ASCIIToUTF16("artist");
+  metadata.title = u"title";
+  metadata.artist = u"artist";
   media_controls_view_->MediaSessionMetadataChanged(metadata);
   media_controls_view_->GetAccessibleNodeData(&data);
 
   // Verify that the accessible name updates with the metadata.
   EXPECT_TRUE(
       data.HasStringAttribute(ax::mojom::StringAttribute::kRoleDescription));
-  EXPECT_EQ(base::ASCIIToUTF16("title - artist"),
+  EXPECT_EQ(u"title - artist",
             data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
@@ -862,7 +876,7 @@ TEST_F(LockScreenMediaControlsViewTest, DismissControlsVelocity) {
   // Simulate scroll with velocity past the threshold.
   ui::test::EventGenerator* generator = GetEventGenerator();
   generator->GestureScrollSequence(scroll_start, scroll_end,
-                                   base::TimeDelta::FromMilliseconds(100), 3);
+                                   base::Milliseconds(100), 3);
 
   animation_waiter_->Wait();
 
@@ -881,8 +895,8 @@ TEST_F(LockScreenMediaControlsViewTest, DismissControlsDistance) {
 
   // Simulate scroll with distance past the threshold.
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->GestureScrollSequence(scroll_start, scroll_end,
-                                   base::TimeDelta::FromSeconds(3), 3);
+  generator->GestureScrollSequence(scroll_start, scroll_end, base::Seconds(3),
+                                   3);
 
   animation_waiter_->Wait();
 
@@ -905,8 +919,8 @@ TEST_F(LockScreenMediaControlsViewTest, DragReset) {
 
   // Simulate scroll with neither distance nor velocity past the thresholds.
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->GestureScrollSequence(scroll_start, scroll_end,
-                                   base::TimeDelta::FromSeconds(3), 3);
+  generator->GestureScrollSequence(scroll_start, scroll_end, base::Seconds(3),
+                                   3);
 
   animation_waiter_->Wait();
 
@@ -931,8 +945,8 @@ TEST_F(LockScreenMediaControlsViewTest, DragBounds) {
 
   // Simulate scroll that attempts to go below the view bounds.
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->GestureScrollSequence(scroll_start, scroll_end,
-                                   base::TimeDelta::FromSeconds(3), 3);
+  generator->GestureScrollSequence(scroll_start, scroll_end, base::Seconds(3),
+                                   3);
 
   animation_waiter_->Wait();
 
@@ -951,8 +965,8 @@ TEST_F(LockScreenMediaControlsViewTest, SeekToClick) {
   EXPECT_EQ(0, media_controller()->seek_to_count());
 
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(100) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
 
   // Simulate initial position change.
   media_controls_view_->MediaSessionPositionChanged(media_position);
@@ -965,8 +979,7 @@ TEST_F(LockScreenMediaControlsViewTest, SeekToClick) {
   // Verify the media was seeked to its halfway point.
   media_controls_view_->FlushForTesting();
   EXPECT_EQ(1, media_controller()->seek_to_count());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(300),
-            media_controller()->seek_to_time());
+  EXPECT_EQ(base::Seconds(300), media_controller()->seek_to_time());
 
   tester.ExpectUniqueSample(
       LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
@@ -982,8 +995,8 @@ TEST_F(LockScreenMediaControlsViewTest, SeekToTouch) {
   EXPECT_EQ(0, media_controller()->seek_to_count());
 
   media_session::MediaPosition media_position(
-      1 /* playback_rate */, base::TimeDelta::FromSeconds(600) /* duration */,
-      base::TimeDelta::FromSeconds(100) /* position */);
+      /*playback_rate=*/1, /*duration=*/base::Seconds(600),
+      /*position=*/base::Seconds(100), /*end_of_media=*/false);
 
   // Simulate initial position change.
   media_controls_view_->MediaSessionPositionChanged(media_position);
@@ -995,8 +1008,7 @@ TEST_F(LockScreenMediaControlsViewTest, SeekToTouch) {
   // Verify the media was seeked to its halfway point.
   media_controls_view_->FlushForTesting();
   EXPECT_EQ(1, media_controller()->seek_to_count());
-  EXPECT_EQ(base::TimeDelta::FromSeconds(300),
-            media_controller()->seek_to_time());
+  EXPECT_EQ(base::Seconds(300), media_controller()->seek_to_time());
 
   tester.ExpectUniqueSample(
       LockScreenMediaControlsView::kMediaControlsUserActionHistogramName,
@@ -1112,7 +1124,7 @@ TEST_F(LockScreenMediaControlsViewTest, Histogram_Hide_SessionChanged) {
       media_session::mojom::MediaPlaybackState::kPlaying);
 
   // Simulate media session stopping and delay.
-  media_controls_view_->MediaSessionChanged(base::nullopt);
+  media_controls_view_->MediaSessionChanged(absl::nullopt);
   mock_timer->Fire();
 
   SimulateSessionUnlock();
@@ -1170,7 +1182,7 @@ TEST_F(LockScreenMediaControlsViewTest, Histogram_Hide_DeviceSleep) {
   SimulateMediaSessionChanged(
       media_session::mojom::MediaPlaybackState::kPlaying);
 
-  GetTestPowerSource().GenerateSuspendEvent();
+  test_power_monitor_source_.GenerateSuspendEvent();
 
   SimulateSessionUnlock();
 

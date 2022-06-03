@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "components/payments/content/utility/payment_manifest_parser.h"
+#include "content/public/test/browser_test.h"
 
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -47,10 +49,13 @@ std::string CreatePaymentMethodManifestJson(
 // Test fixture for payment manifest parser.
 class PaymentManifestParserTest : public InProcessBrowserTest {
  public:
-  PaymentManifestParserTest()
-      : parser_(std::make_unique<ErrorLogger>()),
-        all_origins_supported_(false) {}
-  ~PaymentManifestParserTest() override {}
+  PaymentManifestParserTest() : parser_(std::make_unique<ErrorLogger>()) {}
+
+  PaymentManifestParserTest(const PaymentManifestParserTest&) = delete;
+  PaymentManifestParserTest& operator=(const PaymentManifestParserTest&) =
+      delete;
+
+  ~PaymentManifestParserTest() override = default;
 
   // Sends the |content| to the utility process to parse as a web app manifest
   // and waits until the utility process responds.
@@ -68,7 +73,7 @@ class PaymentManifestParserTest : public InProcessBrowserTest {
   void ParsePaymentMethodManifest(const std::string& content) {
     base::RunLoop run_loop;
     parser_.ParsePaymentMethodManifest(
-        content, base::BindOnce(
+        GURL("https://alicepay.com/"), content, base::BindOnce(
                      &PaymentManifestParserTest::OnPaymentMethodManifestParsed,
                      base::Unretained(this), run_loop.QuitClosure()));
     run_loop.Run();
@@ -89,40 +94,31 @@ class PaymentManifestParserTest : public InProcessBrowserTest {
     return supported_origins_;
   }
 
-  // Whether the parsed payment method manifest allows all origins to use the
-  // payment method.
-  bool all_origins_supported() const { return all_origins_supported_; }
-
  private:
   // Called after the utility process has parsed the web app manifest.
   void OnWebAppManifestParsed(
-      const base::Closure& resume_test,
+      base::OnceClosure resume_test,
       const std::vector<WebAppManifestSection>& web_app_manifest) {
     web_app_manifest_ = std::move(web_app_manifest);
     DCHECK(!resume_test.is_null());
-    resume_test.Run();
+    std::move(resume_test).Run();
   }
 
   // Called after the utility process has parsed the payment method manifest.
   void OnPaymentMethodManifestParsed(
-      const base::Closure& resume_test,
+      base::OnceClosure resume_test,
       const std::vector<GURL>& web_app_manifest_urls,
-      const std::vector<url::Origin>& supported_origins,
-      bool all_origins_supported) {
+      const std::vector<url::Origin>& supported_origins) {
     web_app_manifest_urls_ = web_app_manifest_urls;
     supported_origins_ = supported_origins;
-    all_origins_supported_ = all_origins_supported;
     DCHECK(!resume_test.is_null());
-    resume_test.Run();
+    std::move(resume_test).Run();
   }
 
   PaymentManifestParser parser_;
   std::vector<WebAppManifestSection> web_app_manifest_;
   std::vector<GURL> web_app_manifest_urls_;
   std::vector<url::Origin> supported_origins_;
-  bool all_origins_supported_;
-
-  DISALLOW_COPY_AND_ASSIGN(PaymentManifestParserTest);
 };
 
 // Handles a a manifest with 100 web app URLs.
@@ -191,7 +187,6 @@ IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, AllOriginsSupported) {
 
   EXPECT_TRUE(web_app_manifest_urls().empty());
   EXPECT_TRUE(supported_origins().empty());
-  EXPECT_TRUE(all_origins_supported());
 }
 
 // Verify that the utility process correctly parses a payment method manifest
@@ -208,7 +203,6 @@ IN_PROC_BROWSER_TEST_F(PaymentManifestParserTest, UrlsAndOrigins) {
   EXPECT_EQ(std::vector<url::Origin>(
                 1, url::Origin::Create(GURL("https://bobpay.com"))),
             supported_origins());
-  EXPECT_FALSE(all_origins_supported());
 }
 
 // Verifies a valid web app manifest is parsed correctly.

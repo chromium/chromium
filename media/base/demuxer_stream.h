@@ -7,7 +7,6 @@
 
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/video_transformation.h"
 
@@ -72,10 +71,6 @@ class MEDIA_EXPORT DemuxerStream {
   // or the end of the stream if the first parameter is kOk. NULL otherwise.
   typedef base::OnceCallback<void(Status, scoped_refptr<DecoderBuffer>)> ReadCB;
   virtual void Read(ReadCB read_cb) = 0;
-
-  // Returns true if a Read() call has been made but the |read_cb| has not yet
-  // been run.
-  virtual bool IsReadPending() const = 0;
 
   // Returns the audio/video decoder configuration. It is an error to call the
   // audio method on a video stream and vice versa. After |kConfigChanged| is

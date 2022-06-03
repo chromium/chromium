@@ -22,6 +22,10 @@ class LoadTimingTabHelper : public web::WebStateUserData<LoadTimingTabHelper>,
                             public web::WebStateObserver {
  public:
   explicit LoadTimingTabHelper(web::WebState* web_state);
+
+  LoadTimingTabHelper(const LoadTimingTabHelper&) = delete;
+  LoadTimingTabHelper& operator=(const LoadTimingTabHelper&) = delete;
+
   ~LoadTimingTabHelper() override;
 
   // Starts timer.
@@ -53,8 +57,6 @@ class LoadTimingTabHelper : public web::WebStateUserData<LoadTimingTabHelper>,
   base::TimeTicks load_start_time_;
 
   WEB_STATE_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(LoadTimingTabHelper);
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_LOAD_TIMING_TAB_HELPER_H_

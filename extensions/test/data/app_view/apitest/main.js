@@ -107,7 +107,7 @@ function testAppViewWithUndefinedDataShouldSucceed(appToEmbed) {
   var appview = new AppView();
   LOG('appToEmbed  ' + appToEmbed);
   document.body.appendChild(appview);
-  // Step 1: Attempt to connect to a non-existant app (abc123).
+  // Step 1: Attempt to connect to a non-existent app (abc123).
   LOG('Attempting to connect to non-existent app.');
   appview.connect('abc123', undefined, function(success) {
     // Make sure we fail.
@@ -132,12 +132,29 @@ function testAppViewWithUndefinedDataShouldSucceed(appToEmbed) {
   });
 };
 
+function testAppViewNoEmbedRequestListener(appToEmbed) {
+  var appview = new AppView();
+  LOG('appToEmbed  ' + appToEmbed);
+  document.body.appendChild(appview);
+  LOG('Attempting to connect to app that does not listen for embed requests.');
+  appview.connect(appToEmbed, null, (success) => {
+    if (success) {
+      LOG('Should not have connected.');
+      embedder.test.fail();
+    } else {
+      LOG('Connection was correctly rejected.');
+      embedder.test.succeed();
+    }
+  });
+};
+
 embedder.test.testList = {
   'testAppViewGoodDataShouldSucceed': testAppViewGoodDataShouldSucceed,
   'testAppViewMediaRequest': testAppViewMediaRequest,
   'testAppViewRefusedDataShouldFail': testAppViewRefusedDataShouldFail,
   'testAppViewWithUndefinedDataShouldSucceed':
-      testAppViewWithUndefinedDataShouldSucceed
+      testAppViewWithUndefinedDataShouldSucceed,
+  'testAppViewNoEmbedRequestListener': testAppViewNoEmbedRequestListener
 };
 
 onload = function() {

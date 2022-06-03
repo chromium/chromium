@@ -32,7 +32,7 @@ typedef void (^URLOpenerBlock)(NSURL* URL);
 // Prepares a command to search for |image|.
 - (void)prepareToSearchImage:(UIImage*)image;
 
-// Launches the main app and execute the rceiver.
+// Launches the main app and execute the receiver.
 - (void)executeInApp;
 
 @end

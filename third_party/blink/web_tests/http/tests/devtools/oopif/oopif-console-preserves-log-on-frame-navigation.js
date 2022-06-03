@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that console preserves log on oopif navigation`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
 
   Common.settingForTest('preserveConsoleLog').set(false);
@@ -12,6 +12,6 @@
   await TestRunner.evaluateInPage(`console.log('Before navigation')`);
   await TestRunner.addIframe('http://devtools.oopif.test:8000/devtools/oopif/resources/empty.html');
   await TestRunner.evaluateInPage(`console.log('After navigation')`);
-  ConsoleTestRunner.dumpConsoleMessages();
+  await ConsoleTestRunner.dumpConsoleMessages();
   TestRunner.completeTest();
 })();

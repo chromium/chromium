@@ -4,7 +4,7 @@
 
 #include "components/nacl/loader/nacl_main_platform_delegate.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "content/public/common/main_function_params.h"
 #include "sandbox/win/src/sandbox.h"
 

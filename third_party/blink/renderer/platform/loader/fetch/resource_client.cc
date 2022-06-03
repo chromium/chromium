@@ -29,7 +29,7 @@
 
 namespace blink {
 
-void ResourceClient::Trace(Visitor* visitor) {
+void ResourceClient::Trace(Visitor* visitor) const {
   visitor->Trace(resource_);
 }
 
@@ -45,6 +45,19 @@ void ResourceClient::SetResource(Resource* new_resource,
   resource_ = new_resource;
   if (resource_)
     resource_->AddClient(this, task_runner);
+}
+
+void ResourceClient::Prefinalize() {
+  // This is conceptually equivalent to ClearResource(), but skips the most of
+  // Resource::RemoveClient() (particularly Contains() calls) to avoid check
+  // failures in V8-side. DidRemoveClientOrObserver() is still called here to
+  // notify resource of client removal. Removing `this` from the `resource_`'s
+  // clients is done through weak pointers, and thus this shouldn't be called
+  // other than as prefinalizers.
+  if (Resource* old_resource = resource_.Release()) {
+    old_resource->DidRemoveClientOrObserver();
+  }
+  resource_ = nullptr;
 }
 
 }  //  namespace blink

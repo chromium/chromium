@@ -1,15 +1,14 @@
 Name: Android SDK
 URL: http://developer.android.com/sdk/index.html
-Version: 29
-  Android SDK Build-tools 29.0.2
-  Android SDK Emulator 29.1.12
-  Android SDK Platform-tools 29.0.5
-  Android SDK Platform API 29
-  Android SDK Sources 29
-  Android SDK Tools 26.1.1
-  Android Lint 26.4.0-alpha04
-  Google Cloud Messaging 3
-  SDK Patch Applier v4
+Version: 31
+  Android SDK Build-Tools 31.0.0
+  Android SDK Command-line Tools 5.0
+  Android SDK Emulator 30.7.5
+  Android SDK Patch Applier v4
+  Android SDK Platform-Tools 31.0.3
+  Android SDK Platform API 31
+  Android SDK Sources 30
+  Google Cloud Messaging for Android Library, rev 3
 Security Critical: no
 License: Apache Version 2.0
 
@@ -18,31 +17,29 @@ The Android SDK provide API libraries and developer tools necessary to
 build, test and debug for Android.
 
 Local Modifications:
-
 - public/
-  - Included the Android support library and required extras packages.
   - Added extras/chromium/.
-  - Added build-tools/25.0.2/lib/dx.jar for //third_party/byte_buddy
-- public/tools-lint/
-  - Go to go/studio-master-grid
-  - Find the first green build under sdk_tools_linux
-  - Email tnorbye@google.com and cc android-devtools@ to determine if that build
-    can be used publicly.
-  - Click through to Artifacts.
-  - Click the copy icon at the right for sdk-repo-linux-tools-XXXXXXX.zip
-  - Use the copied command to download the zip.
-  - Unzip and rename tools to tools-lint and move to the right spot in our repo.
-  - Create CL and carbon copy tnorbye@google.com
-
-No other modifications has been made to the public Android SDK.
 
 Update Instructions:
-
-* public/tools/bin/sdkmanager --list  # Look for "Installed packages:"
-* Prepare the CIPD yaml files for packages that need update and add them
-  to android-sdk-packager buildbucket configuation file.
-  Submit the changes into gerrit (See crrev.com/c/1803895 as a reference)
-* Wait till the builder android-sdk-packager create new CIPD packages
-* Update //DEPS with InstanceIds from the CIPD
-* Update versions in this README.chromium.
-  * The overall Version field should corresponde to the Platform API version.
+* What to update:
+  * public/cmdline-tools/latest/bin/sdkmanager --list
+    * Note the 'Available Updates:' section of the output.
+* How to update packages:
+  * Find the latest build on the android-sdk-packager builder. Get the CIPD
+    instance id from its logs and update //DEPS:
+    https://ci.chromium.org/p/chromium/builders/ci/android-sdk-packager
+  * Run `gclient sync` to fetch the updated files for the new instances in
+    //DEPS.
+  * Run `public/cmdline-tools/latest/bin/sdkmanager --list_installed` and make
+    sure that the packages are the new version.
+  * Run `cat public/cmdline-tools/latest/source.properties` to check the
+    version of cmdline-tools (this is not included in --list_installed).
+  * Update this file with the new version.
+* Adding new sdk packages:
+  * Prepare the CIPD yaml files for packages in the cipd/ directory.
+  * Add them to android-sdk-packager buildbucket configuation file:
+    infra/config/subprojects/chromium/master-only/ci.star
+  * Submit the changes into gerrit (See crrev.com/c/2241994 as a reference)
+  * Follow the update instructions to get a build from the CI builder.
+* Updating this file:
+  * The overall Version field should correspond to the Platform API version.

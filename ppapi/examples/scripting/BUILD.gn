@@ -6,10 +6,6 @@ import("//ppapi/examples/ppapi_example.gni")
 
 ppapi_example("scripting") {
   output_name = "ppapi_example_post_message"
-  sources = [
-    "post_message.cc",
-  ]
-  deps = [
-    "//ppapi/cpp",
-  ]
+  sources = [ "post_message.cc" ]
+  deps = [ "//ppapi/cpp" ]
 }

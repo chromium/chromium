@@ -1,32 +1,12 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
-# Use of this source code is governed by a BSD-style license that can be
+# Copyright 2021 The Chromium Authors.All rights reserved.
+# Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
+source_set("constants") {
+  deps = [ "//base" ]
 
-component("constants") {
-  output_name = "chromeos_constants"
-  defines = [ "IS_CHROMEOS_CONSTANTS_IMPL" ]
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//build:branding_buildflags",
-    "//chromeos/dbus/constants",
-    "//third_party/icu",
-  ]
   sources = [
-    "chromeos_constants.cc",
-    "chromeos_constants.h",
     "chromeos_features.cc",
     "chromeos_features.h",
-    "chromeos_paths.cc",
-    "chromeos_paths.h",
-    "chromeos_pref_names.cc",
-    "chromeos_pref_names.h",
-    "chromeos_switches.cc",
-    "chromeos_switches.h",
-    "devicetype.cc",
-    "devicetype.h",
-    "security_token_pin_types.h",
   ]
 }

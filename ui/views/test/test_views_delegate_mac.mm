@@ -29,8 +29,4 @@ ui::ContextFactory* TestViewsDelegate::GetContextFactory() {
   return context_factory_;
 }
 
-ui::ContextFactoryPrivate* TestViewsDelegate::GetContextFactoryPrivate() {
-  return context_factory_private_;
-}
-
 }  // namespace views

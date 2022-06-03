@@ -5,13 +5,13 @@
 package org.chromium.chrome.browser.keyboard_accessory.sheet_tabs;
 
 import android.content.Context;
-import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
+import androidx.recyclerview.widget.RecyclerView;
 
-import org.chromium.chrome.browser.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryAction;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
 import org.chromium.chrome.browser.keyboard_accessory.R;
@@ -27,8 +27,10 @@ import org.chromium.ui.modelutil.SimpleRecyclerViewMcp;
  */
 public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordinator {
     private final AccessorySheetTabModel mModel = new AccessorySheetTabModel();
-    private final AccessorySheetTabMediator mMediator = new AccessorySheetTabMediator(mModel,
-            AccessoryTabType.PASSWORDS, Type.PASSWORD_INFO, AccessoryAction.MANAGE_PASSWORDS);
+    private final PasswordAccessorySheetMediator mMediator =
+            new PasswordAccessorySheetMediator(mModel, AccessoryTabType.PASSWORDS,
+                    Type.PASSWORD_INFO, AccessoryAction.MANAGE_PASSWORDS, this::onToggleChanged);
+    private final Context mContext;
 
     /**
      * Creates the passwords tab.
@@ -37,11 +39,12 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
      */
     public PasswordAccessorySheetCoordinator(
             Context context, @Nullable RecyclerView.OnScrollListener scrollListener) {
-        super(context.getString(R.string.prefs_saved_passwords_title),
+        super(context.getString(R.string.password_settings_title),
                 IconProvider.getIcon(context, R.drawable.ic_vpn_key_grey),
                 context.getString(R.string.password_accessory_sheet_toggle),
                 context.getString(R.string.password_accessory_sheet_opened),
                 R.layout.password_accessory_sheet, AccessoryTabType.PASSWORDS, scrollListener);
+        mContext = context;
     }
 
     @Override
@@ -57,6 +60,11 @@ public class PasswordAccessorySheetCoordinator extends AccessorySheetTabCoordina
     @Override
     protected AccessorySheetTabMediator getMediator() {
         return mMediator;
+    }
+
+    private void onToggleChanged(boolean enabled) {
+        getTab().setIcon(IconProvider.getIcon(
+                mContext, enabled ? R.drawable.ic_vpn_key_grey : R.drawable.ic_vpn_key_off));
     }
 
     /**

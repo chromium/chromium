@@ -19,4 +19,7 @@ const char kAlwaysTrue[] = "alwaystrue";
 const char kNone[] = "none";
 }  // namespace reader_mode_heuristics
 
+const char kReaderModeDiscoverabilityParamName[] = "discoverability";
+const char kReaderModeOfferInSettings[] = "offer-in-settings";
+
 }  // namespace switches

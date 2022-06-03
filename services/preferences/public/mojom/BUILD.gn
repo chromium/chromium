@@ -9,7 +9,5 @@ mojom("mojom") {
     "preferences.mojom",
     "tracked_preference_validation_delegate.mojom",
   ]
-  public_deps = [
-    "//mojo/public/mojom/base",
-  ]
+  public_deps = [ "//mojo/public/mojom/base" ]
 }

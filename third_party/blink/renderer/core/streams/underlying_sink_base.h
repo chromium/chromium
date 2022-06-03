@@ -6,15 +6,16 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STREAMS_UNDERLYING_SINK_BASE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/streams/writable_stream_default_controller.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
-class ScriptValue;
+class ExceptionState;
 class ScriptState;
+class WritableStreamDefaultController;
 
 class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -26,28 +27,32 @@ class CORE_EXPORT UnderlyingSinkBase : public ScriptWrappable {
   // |controller| and are called from IDL. Also we define virtual |start| and
   // |write| which take WritableStreamDefaultController.
   virtual ScriptPromise start(ScriptState*,
-                              WritableStreamDefaultController*) = 0;
+                              WritableStreamDefaultController*,
+                              ExceptionState&) = 0;
   virtual ScriptPromise write(ScriptState*,
                               ScriptValue chunk,
-                              WritableStreamDefaultController*) = 0;
-  virtual ScriptPromise close(ScriptState*) = 0;
-  virtual ScriptPromise abort(ScriptState*, ScriptValue reason) = 0;
+                              WritableStreamDefaultController*,
+                              ExceptionState&) = 0;
+  virtual ScriptPromise close(ScriptState*, ExceptionState&) = 0;
+  virtual ScriptPromise abort(ScriptState*,
+                              ScriptValue reason,
+                              ExceptionState&) = 0;
 
-  ScriptPromise start(ScriptState* script_state, ScriptValue controller) {
-    controller_ = WritableStreamDefaultController::From(controller);
-    return start(script_state, controller_);
-  }
+  ScriptPromise start(ScriptState*, ScriptValue controller, ExceptionState&);
+
   ScriptPromise write(ScriptState* script_state,
                       ScriptValue chunk,
-                      ScriptValue controller) {
+                      ScriptValue controller,
+                      ExceptionState& exception_state) {
     DCHECK(controller_);
-    return write(script_state, chunk, controller_);
+    return write(script_state, chunk, controller_, exception_state);
   }
 
-  void Trace(Visitor* visitor) override {
-    visitor->Trace(controller_);
-    ScriptWrappable::Trace(visitor);
-  }
+  // Returns a JavaScript "undefined" value. This is required by the
+  // WritableStream Create() method.
+  ScriptValue type(ScriptState*) const;
+
+  void Trace(Visitor*) const override;
 
  protected:
   WritableStreamDefaultController* Controller() const { return controller_; }

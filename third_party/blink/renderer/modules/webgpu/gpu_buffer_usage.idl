@@ -4,17 +4,18 @@
 
 // https://gpuweb.github.io/gpuweb/
 
-typedef unsigned long GPUBufferUsageFlags;
+typedef [EnforceRange] unsigned long GPUBufferUsageFlags;
 [
     Exposed(Window WebGPU, Worker WebGPU)
 ] interface GPUBufferUsage {
-    const GPUBufferUsageFlags MAP_READ = 1;
-    const GPUBufferUsageFlags MAP_WRITE = 2;
-    const GPUBufferUsageFlags COPY_SRC = 4;
-    const GPUBufferUsageFlags COPY_DST = 8;
-    const GPUBufferUsageFlags INDEX = 16;
-    const GPUBufferUsageFlags VERTEX = 32;
-    const GPUBufferUsageFlags UNIFORM = 64;
-    const GPUBufferUsageFlags STORAGE = 128;
-    const GPUBufferUsageFlags INDIRECT = 256;
+    const unsigned long MAP_READ = 1;
+    const unsigned long MAP_WRITE = 2;
+    const unsigned long COPY_SRC = 4;
+    const unsigned long COPY_DST = 8;
+    const unsigned long INDEX = 16;
+    const unsigned long VERTEX = 32;
+    const unsigned long UNIFORM = 64;
+    const unsigned long STORAGE = 128;
+    const unsigned long INDIRECT = 256;
+    const unsigned long QUERY_RESOLVE = 512;
 };

@@ -13,7 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/unsafe_shared_memory_region.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 
 namespace media {
@@ -31,7 +31,9 @@ enum Codec {
   CODEC_VIDEO_VP8,
   CODEC_VIDEO_H264,
   CODEC_VIDEO_REMOTE,
-  CODEC_LAST = CODEC_VIDEO_REMOTE
+  CODEC_VIDEO_VP9,
+  CODEC_VIDEO_AV1,
+  CODEC_LAST = CODEC_VIDEO_AV1
 };
 
 // Describes the content being transported over RTP streams.
@@ -60,7 +62,11 @@ enum class RtpPayloadType {
   // in-sequence. No assumptions about the data can be made.
   REMOTE_VIDEO = 102,
 
-  LAST = REMOTE_VIDEO
+  VIDEO_VP9 = 103,
+
+  VIDEO_AV1 = 104,
+
+  LAST = VIDEO_AV1
 };
 
 // TODO(miu): Eliminate these after moving "default config" into the top-level
@@ -245,18 +251,13 @@ struct FrameReceiverConfig {
   std::string aes_iv_mask;
 };
 
-// TODO(miu): Remove the CreateVEA callbacks.  http://crbug.com/454029
-typedef base::Callback<void(scoped_refptr<base::SingleThreadTaskRunner>,
-                            std::unique_ptr<media::VideoEncodeAccelerator>)>
+typedef base::OnceCallback<void(scoped_refptr<base::SingleThreadTaskRunner>,
+                                std::unique_ptr<media::VideoEncodeAccelerator>)>
     ReceiveVideoEncodeAcceleratorCallback;
-typedef base::Callback<void(const ReceiveVideoEncodeAcceleratorCallback&)>
+typedef base::RepeatingCallback<void(ReceiveVideoEncodeAcceleratorCallback)>
     CreateVideoEncodeAcceleratorCallback;
-typedef base::Callback<void(base::UnsafeSharedMemoryRegion)>
+typedef base::OnceCallback<void(base::UnsafeSharedMemoryRegion)>
     ReceiveVideoEncodeMemoryCallback;
-typedef base::Callback<void(size_t size,
-                            const ReceiveVideoEncodeMemoryCallback&)>
-    CreateVideoEncodeMemoryCallback;
-
 }  // namespace cast
 }  // namespace media
 

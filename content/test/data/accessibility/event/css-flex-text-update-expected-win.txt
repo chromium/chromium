@@ -1,0 +1,2 @@
+IA2_EVENT_TEXT_INSERTED on <div#app> role=ROLE_SYSTEM_GROUPING new_text={'<obj>new' start=0 end=4}
+IA2_EVENT_TEXT_REMOVED on <div#app> role=ROLE_SYSTEM_GROUPING old_text={'<obj>old' start=0 end=4}

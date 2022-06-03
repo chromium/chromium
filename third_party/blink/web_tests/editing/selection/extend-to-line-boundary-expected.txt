@@ -1,6 +1,0 @@
-PASS for LTR
-PASS for RTL
-
-
-the quick brown fox jumps the quick brown fox jumps the quick brown fox jumps
-שוּרה שוּרה שוּרה שוּרה שוּרה שוּרה שוּרה שוּרה שוּרה

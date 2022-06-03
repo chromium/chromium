@@ -3,10 +3,6 @@
 # found in the LICENSE file.
 
 copy("annotations_xml") {
-  sources = [
-    "annotations.xml",
-  ]
-  outputs = [
-    "$target_out_dir/annotations.xml",
-  ]
+  sources = [ "annotations.xml" ]
+  outputs = [ "$target_out_dir/annotations.xml" ]
 }

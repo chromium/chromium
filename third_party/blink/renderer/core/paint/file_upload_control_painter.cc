@@ -4,10 +4,12 @@
 
 #include "third_party/blink/renderer/core/paint/file_upload_control_painter.h"
 
-#include "base/optional.h"
-#include "third_party/blink/renderer/core/layout/layout_button.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 #include "third_party/blink/renderer/core/layout/layout_file_upload_control.h"
 #include "third_party/blink/renderer/core/layout/text_run_constructor.h"
+#include "third_party/blink/renderer/core/paint/box_painter.h"
+#include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_timing_detector.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
@@ -45,7 +47,8 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
                            : 0;
     LayoutUnit button_and_spacing_width(
         button_width + LayoutFileUploadControl::kAfterButtonSpacing);
-    float text_width = font.Width(text_run);
+    FloatRect text_bounds;
+    float text_width = font.Width(text_run, nullptr, &text_bounds);
     LayoutUnit text_x;
     if (layout_file_upload_control_.StyleRef().IsLeftToRightDirection())
       text_x = content_left + button_and_spacing_width;
@@ -57,8 +60,7 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
     LayoutUnit text_y;
     // We want to match the button's baseline
     // FIXME: Make this work with transforms.
-    if (LayoutButton* button_layout_object =
-            ToLayoutButton(button->GetLayoutObject()))
+    if (LayoutBox* button_layout_object = button->GetLayoutBox())
       text_y = paint_offset.top + layout_file_upload_control_.BorderTop() +
                layout_file_upload_control_.PaddingTop() +
                button_layout_object->BaselinePosition(
@@ -71,21 +73,24 @@ void FileUploadControlPainter::PaintObject(const PaintInfo& paint_info,
     TextRunPaintInfo text_run_paint_info(text_run);
 
     // Draw the filename.
-    DrawingRecorder recorder(paint_info.context, layout_file_upload_control_,
-                             paint_info.phase);
+    BoxDrawingRecorder recorder(paint_info.context, layout_file_upload_control_,
+                                paint_info.phase, paint_offset);
     paint_info.context.SetFillColor(
         layout_file_upload_control_.ResolveColor(GetCSSPropertyColor()));
     paint_info.context.DrawBidiText(
         font, text_run_paint_info,
-        FloatPoint(RoundToInt(text_x), RoundToInt(text_y)));
+        FloatPoint(RoundToInt(text_x), RoundToInt(text_y)),
+        PaintAutoDarkMode(layout_file_upload_control_.StyleRef(),
+                          DarkModeFilter::ElementRole::kText));
     if (!font.ShouldSkipDrawing()) {
       ScopedPaintTimingDetectorBlockPaintHook
           scoped_paint_timing_detector_block_paint_hook;
       scoped_paint_timing_detector_block_paint_hook.EmplaceIfNeeded(
           layout_file_upload_control_, paint_info.context.GetPaintController()
                                            .CurrentPaintChunkProperties());
+      text_bounds.Offset(text_x, text_y);
       PaintTimingDetector::NotifyTextPaint(
-          layout_file_upload_control_.FragmentsVisualRectBoundingBox());
+          ToGfxRect(EnclosingIntRect(text_bounds)));
     }
   }
 

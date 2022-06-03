@@ -4,10 +4,10 @@
 
 package org.chromium.chrome.browser.datareduction;
 
+import org.chromium.chrome.browser.about_settings.AboutSettingsBridge;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.settings.about.AboutSettingsBridge;
 
 /**
  * Helper functions for displaying the various data reduction proxy promos. The promo screens

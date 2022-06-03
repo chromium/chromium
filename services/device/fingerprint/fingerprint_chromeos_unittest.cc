@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/macros.h"
+#include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/biod/fake_biod_client.h"
@@ -21,6 +22,10 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   explicit FakeFingerprintObserver(
       mojo::PendingReceiver<mojom::FingerprintObserver> receiver)
       : receiver_(this, std::move(receiver)) {}
+
+  FakeFingerprintObserver(const FakeFingerprintObserver&) = delete;
+  FakeFingerprintObserver& operator=(const FakeFingerprintObserver&) = delete;
+
   ~FakeFingerprintObserver() override {}
 
   // mojom::FingerprintObserver
@@ -53,13 +58,14 @@ class FakeFingerprintObserver : public mojom::FingerprintObserver {
   int auth_scan_dones_ = 0;    // Count of auth scan done signal received.
   int restarts_ = 0;           // Count of restart signal received.
   int session_failures_ = 0;   // Count of session failed signal received.
-
-  DISALLOW_COPY_AND_ASSIGN(FakeFingerprintObserver);
 };
 
 class FingerprintChromeOSTest : public testing::Test {
  public:
   FingerprintChromeOSTest() = default;
+
+  FingerprintChromeOSTest(const FingerprintChromeOSTest&) = delete;
+  FingerprintChromeOSTest& operator=(const FingerprintChromeOSTest&) = delete;
 
   ~FingerprintChromeOSTest() override = default;
 
@@ -131,8 +137,6 @@ class FingerprintChromeOSTest : public testing::Test {
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<FingerprintChromeOS> fingerprint_;
   int get_records_results_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(FingerprintChromeOSTest);
 };
 
 TEST_F(FingerprintChromeOSTest, FingerprintObserverTest) {

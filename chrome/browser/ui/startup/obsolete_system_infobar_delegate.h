@@ -5,33 +5,37 @@
 #ifndef CHROME_BROWSER_UI_STARTUP_OBSOLETE_SYSTEM_INFOBAR_DELEGATE_H_
 #define CHROME_BROWSER_UI_STARTUP_OBSOLETE_SYSTEM_INFOBAR_DELEGATE_H_
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/strings/string16.h"
+#include <string>
+
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "url/gurl.h"
 
-class InfoBarService;
+namespace infobars {
+class ContentInfoBarManager;
+}
 
 // An infobar that displays a message saying the system (OS or hardware) is
 // obsolete, along with a "Learn More" link.
 class ObsoleteSystemInfoBarDelegate : public ConfirmInfoBarDelegate {
  public:
   // Creates an obsolete system infobar and delegate and adds the infobar to
-  // |infobar_service|.
-  static void Create(InfoBarService* infobar_service);
+  // |infobar_manager|.
+  static void Create(infobars::ContentInfoBarManager* infobar_manager);
+
+  ObsoleteSystemInfoBarDelegate(const ObsoleteSystemInfoBarDelegate&) = delete;
+  ObsoleteSystemInfoBarDelegate& operator=(
+      const ObsoleteSystemInfoBarDelegate&) = delete;
 
  private:
   ObsoleteSystemInfoBarDelegate();
-  ~ObsoleteSystemInfoBarDelegate() override;
+  ~ObsoleteSystemInfoBarDelegate() override = default;
 
   infobars::InfoBarDelegate::InfoBarIdentifier GetIdentifier() const override;
-  base::string16 GetMessageText() const override;
-  int GetButtons() const override;
-  base::string16 GetLinkText() const override;
+  std::u16string GetLinkText() const override;
   GURL GetLinkURL() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(ObsoleteSystemInfoBarDelegate);
+  std::u16string GetMessageText() const override;
+  int GetButtons() const override;
+  bool ShouldExpire(const NavigationDetails& details) const override;
 };
 
 #endif  // CHROME_BROWSER_UI_STARTUP_OBSOLETE_SYSTEM_INFOBAR_DELEGATE_H_

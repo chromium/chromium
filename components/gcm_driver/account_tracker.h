@@ -7,7 +7,6 @@
 
 #include <map>
 #include <memory>
-#include <string>
 #include <vector>
 
 #include "base/observer_list.h"
@@ -46,10 +45,8 @@ class AccountTracker : public signin::IdentityManager::Observer {
   };
 
   // signin::IdentityManager::Observer implementation.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
-  void OnPrimaryAccountCleared(
-      const CoreAccountInfo& previous_primary_account_info) override;
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
   void OnRefreshTokenRemovedForAccount(

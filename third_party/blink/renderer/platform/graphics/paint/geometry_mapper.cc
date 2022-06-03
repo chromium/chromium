@@ -9,12 +9,50 @@
 
 namespace blink {
 
+namespace {
+
+// Walk up from the local transform to the ancestor. If the last transform
+// before hitting the ancestor is a fixed node, expand based on the min and
+// max scroll offsets.
+void ExpandFixedBoundsInScroller(const TransformPaintPropertyNode* local,
+                                 const TransformPaintPropertyNode* ancestor,
+                                 FloatClipRect& rect_to_map) {
+  const TransformPaintPropertyNode* current = local->UnaliasedParent();
+  const TransformPaintPropertyNode* previous = local;
+  while (current != nullptr && current != ancestor) {
+    previous = current;
+    current = current->UnaliasedParent();
+  }
+
+  const auto* node = previous->ScrollTranslationForFixed();
+  if (!node)
+    return;
+
+  DCHECK(node->ScrollNode());
+
+  // First move the rect back to the min scroll offset, by accounting for the
+  // current scroll offset.
+  rect_to_map.Rect().Offset(node->Translation2D());
+
+  // Calculate the max scroll offset and expand by that amount. The max scroll
+  // offset is the contents size minus one viewport's worth of space (i.e. the
+  // container rect size).
+  gfx::Size expansion = node->ScrollNode()->ContentsRect().size() -
+                        node->ScrollNode()->ContainerRect().size();
+  rect_to_map.Rect().Outset(0, 0, expansion.width(), expansion.height());
+}
+
+}  // namespace
+
 GeometryMapper::Translation2DOrMatrix
 GeometryMapper::SourceToDestinationProjection(
     const TransformPaintPropertyNode& source,
     const TransformPaintPropertyNode& destination) {
-  bool success;
-  return SourceToDestinationProjectionInternal(source, destination, success);
+  bool has_animation = false;
+  bool has_fixed = false;
+  bool success = false;
+  return SourceToDestinationProjectionInternal(
+      source, destination, has_animation, has_fixed, success);
 }
 
 // Returns flatten(destination_to_screen)^-1 * flatten(source_to_screen)
@@ -58,45 +96,51 @@ GeometryMapper::SourceToDestinationProjection(
 // [3] Flatten lemma: https://goo.gl/DNKyOc
 GeometryMapper::Translation2DOrMatrix
 GeometryMapper::SourceToDestinationProjectionInternal(
-    const TransformPaintPropertyNode& source_arg,
-    const TransformPaintPropertyNode& destination_arg,
+    const TransformPaintPropertyNode& source,
+    const TransformPaintPropertyNode& destination,
+    bool& has_animation,
+    bool& has_fixed,
     bool& success) {
-  const auto& source = source_arg.Unalias();
-  const auto& destination = destination_arg.Unalias();
+  has_animation = false;
+  has_fixed = false;
+  success = true;
 
-  if (&source == &destination) {
-    success = true;
+  if (&source == &destination)
     return Translation2DOrMatrix();
-  }
 
   if (source.Parent() && &destination == &source.Parent()->Unalias()) {
+    has_fixed = source.RequiresCompositingForFixedPosition();
     if (source.IsIdentityOr2DTranslation()) {
-      success = true;
+      // We always use full matrix for animating transforms.
+      DCHECK(!source.HasActiveTransformAnimation());
       return Translation2DOrMatrix(source.Translation2D());
     }
     // The result will be translate(origin)*matrix*translate(-origin) which
     // equals to matrix if the origin is zero or if the matrix is just
     // identity or 2d translation.
     if (source.Origin().IsZero()) {
-      success = true;
+      has_animation = source.HasActiveTransformAnimation();
       return Translation2DOrMatrix(source.Matrix());
     }
   }
 
   if (destination.IsIdentityOr2DTranslation() && destination.Parent() &&
       &source == &destination.Parent()->Unalias()) {
-    success = true;
+    // We always use full matrix for animating transforms.
+    DCHECK(!destination.HasActiveTransformAnimation());
     return Translation2DOrMatrix(-destination.Translation2D());
   }
 
   const auto& source_cache = source.GetTransformCache();
   const auto& destination_cache = destination.GetTransformCache();
 
+  has_fixed |= source_cache.has_fixed();
+
   // Case 1a (fast path of case 1b): check if source and destination are under
   // the same 2d translation root.
   if (source_cache.root_of_2d_translation() ==
       destination_cache.root_of_2d_translation()) {
-    success = true;
+    // We always use full matrix for animating transforms.
     return Translation2DOrMatrix(source_cache.to_2d_translation_root() -
                                  destination_cache.to_2d_translation_root());
   }
@@ -105,7 +149,8 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   // Even if destination may have invertible screen projection,
   // this formula is likely to be numerically more stable.
   if (source_cache.plane_root() == destination_cache.plane_root()) {
-    success = true;
+    has_animation = source_cache.has_animation_to_plane_root() ||
+                    destination_cache.has_animation_to_plane_root();
     if (&source == destination_cache.plane_root()) {
       return Translation2DOrMatrix(destination_cache.from_plane_root());
     }
@@ -124,6 +169,8 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   // Screen transform data are updated lazily because they are rarely used.
   source.UpdateScreenTransform();
   destination.UpdateScreenTransform();
+  has_animation = source_cache.has_animation_to_screen() ||
+                  destination_cache.has_animation_to_screen();
   if (!destination_cache.projection_from_screen_is_valid()) {
     success = false;
     return Translation2DOrMatrix();
@@ -132,7 +179,6 @@ GeometryMapper::SourceToDestinationProjectionInternal(
   // Case 3: Compute:
   // flatten(destination_to_screen)^-1 * flatten(source_to_screen)
   const auto& root = TransformPaintPropertyNode::Root();
-  success = true;
   if (&source == &root)
     return Translation2DOrMatrix(destination_cache.projection_from_screen());
   TransformationMatrix matrix;
@@ -147,11 +193,12 @@ bool GeometryMapper::LocalToAncestorVisualRect(
     const PropertyTreeState& ancestor_state,
     FloatClipRect& mapping_rect,
     OverlayScrollbarClipBehavior clip_behavior,
-    InclusiveIntersectOrNot inclusive_behavior) {
+    InclusiveIntersectOrNot inclusive_behavior,
+    ExpandVisualRectForCompositingOverlapOrNot expand) {
   bool success = false;
-  bool result = LocalToAncestorVisualRectInternal(local_state, ancestor_state,
-                                                  mapping_rect, clip_behavior,
-                                                  inclusive_behavior, success);
+  bool result = LocalToAncestorVisualRectInternal(
+      local_state, ancestor_state, mapping_rect, clip_behavior,
+      inclusive_behavior, expand, success);
   DCHECK(success);
   return result;
 }
@@ -162,20 +209,24 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     FloatClipRect& rect_to_map,
     OverlayScrollbarClipBehavior clip_behavior,
     InclusiveIntersectOrNot inclusive_behavior,
+    ExpandVisualRectForCompositingOverlapOrNot expand,
     bool& success) {
   if (local_state == ancestor_state) {
     success = true;
     return true;
   }
 
-  if (&local_state.Effect().Unalias() != &ancestor_state.Effect().Unalias()) {
+  if (&local_state.Effect() != &ancestor_state.Effect()) {
     return SlowLocalToAncestorVisualRectWithEffects(
         local_state, ancestor_state, rect_to_map, clip_behavior,
-        inclusive_behavior, success);
+        inclusive_behavior, expand, success);
   }
 
+  bool has_animation = false;
+  bool has_fixed = false;
   const auto& translation_2d_or_matrix = SourceToDestinationProjectionInternal(
-      local_state.Transform(), ancestor_state.Transform(), success);
+      local_state.Transform(), ancestor_state.Transform(), has_animation,
+      has_fixed, success);
   if (!success) {
     // A failure implies either source-to-plane or destination-to-plane being
     // singular. A notable example of singular source-to-plane from valid CSS:
@@ -189,14 +240,26 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     // </div>
     // Either way, the element won't be renderable thus returning empty rect.
     success = true;
-    rect_to_map = FloatClipRect(FloatRect());
+    rect_to_map = FloatClipRect(gfx::RectF());
     return false;
   }
-  translation_2d_or_matrix.MapFloatClipRect(rect_to_map);
+
+  if (has_animation && expand == kExpandVisualRectForCompositingOverlap) {
+    // Assume during the animation the transform can map |rect_to_map| to
+    // anywhere. Ancestor clips will still apply.
+    // TODO(crbug.com/1026653): Use animation bounds instead of infinite rect.
+    rect_to_map = InfiniteLooseFloatClipRect();
+  } else {
+    translation_2d_or_matrix.MapFloatClipRect(rect_to_map);
+    if (has_fixed && expand == kExpandVisualRectForCompositingOverlap) {
+      ExpandFixedBoundsInScroller(&local_state.Transform(),
+                                  &ancestor_state.Transform(), rect_to_map);
+    }
+  }
 
   FloatClipRect clip_rect = LocalToAncestorClipRectInternal(
       local_state.Clip(), ancestor_state.Clip(), ancestor_state.Transform(),
-      clip_behavior, inclusive_behavior, success);
+      clip_behavior, inclusive_behavior, expand, success);
   if (success) {
     // This is where we propagate the roundedness and tightness of |clip_rect|
     // to |rect_to_map|.
@@ -206,16 +269,13 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
     return !rect_to_map.Rect().IsEmpty();
   }
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // On SPv1 we may fail when the paint invalidation container creates an
-    // overflow clip (in ancestor_state) which is not in localState of an
-    // out-of-flow positioned descendant. See crbug.com/513108 and web test
-    // compositing/overflow/handle-non-ancestor-clip-parent.html (run with
-    // --enable-prefer-compositing-to-lcd-text) for details.
-    // Ignore it for SPv1 for now.
-    success = true;
-    rect_to_map.ClearIsTight();
-  }
+  // TODO(crbug.com/803649): We still have clip hierarchy issues with fragment
+  // clips. See crbug.com/1228364 for the test cases. Will remove the following
+  // statement (leaving success==false) after both CompositeAfterPaint and
+  // LayoutNGBlockFragmentation are fully launched.
+  success = true;
+
+  rect_to_map.ClearIsTight();
   return !rect_to_map.Rect().IsEmpty();
 }
 
@@ -225,28 +285,40 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithEffects(
     FloatClipRect& mapping_rect,
     OverlayScrollbarClipBehavior clip_behavior,
     InclusiveIntersectOrNot inclusive_behavior,
+    ExpandVisualRectForCompositingOverlapOrNot expand,
     bool& success) {
   PropertyTreeState last_transform_and_clip_state(
       local_state.Transform(), local_state.Clip(),
       EffectPaintPropertyNode::Root());
 
-  const auto& ancestor_effect = ancestor_state.Effect().Unalias();
-  for (const auto* effect = &local_state.Effect().Unalias();
+  const auto& ancestor_effect = ancestor_state.Effect();
+  for (const auto* effect = &local_state.Effect();
        effect && effect != &ancestor_effect;
-       effect = SafeUnalias(effect->Parent())) {
+       effect = effect->UnaliasedParent()) {
+    if (effect->HasActiveFilterAnimation() &&
+        expand == kExpandVisualRectForCompositingOverlap) {
+      // Assume during the animation the filter can map |rect_to_map| to
+      // anywhere. Ancestor clips will still apply.
+      // TODO(crbug.com/1026653): Use animation bounds instead of infinite rect.
+      mapping_rect = InfiniteLooseFloatClipRect();
+      last_transform_and_clip_state.SetTransform(
+          effect->LocalTransformSpace().Unalias());
+      last_transform_and_clip_state.SetClip(effect->OutputClip()->Unalias());
+      continue;
+    }
+
     if (!effect->HasFilterThatMovesPixels())
       continue;
 
-    DCHECK(effect->OutputClip());
-    PropertyTreeState transform_and_clip_state(effect->LocalTransformSpace(),
-                                               *effect->OutputClip(),
-                                               EffectPaintPropertyNode::Root());
+    PropertyTreeState transform_and_clip_state(
+        effect->LocalTransformSpace().Unalias(),
+        effect->OutputClip()->Unalias(), EffectPaintPropertyNode::Root());
     bool intersects = LocalToAncestorVisualRectInternal(
         last_transform_and_clip_state, transform_and_clip_state, mapping_rect,
-        clip_behavior, inclusive_behavior, success);
+        clip_behavior, inclusive_behavior, expand, success);
     if (!success || !intersects) {
       success = true;
-      mapping_rect = FloatClipRect(FloatRect());
+      mapping_rect = FloatClipRect(gfx::RectF());
       return false;
     }
 
@@ -259,7 +331,7 @@ bool GeometryMapper::SlowLocalToAncestorVisualRectWithEffects(
       EffectPaintPropertyNode::Root());
   bool intersects = LocalToAncestorVisualRectInternal(
       last_transform_and_clip_state, final_transform_and_clip_state,
-      mapping_rect, clip_behavior, inclusive_behavior, success);
+      mapping_rect, clip_behavior, inclusive_behavior, expand, success);
 
   // Many effects (e.g. filters, clip-paths) can make a clip rect not tight.
   mapping_rect.ClearIsTight();
@@ -270,52 +342,51 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRect(
     const PropertyTreeState& local_state,
     const PropertyTreeState& ancestor_state,
     OverlayScrollbarClipBehavior clip_behavior) {
-  const auto& local_clip = local_state.Clip().Unalias();
-  const auto& ancestor_clip = ancestor_state.Clip().Unalias();
+  const auto& local_clip = local_state.Clip();
+  const auto& ancestor_clip = ancestor_state.Clip();
   if (&local_clip == &ancestor_clip)
     return FloatClipRect();
 
   bool success = false;
   auto result = LocalToAncestorClipRectInternal(
       local_clip, ancestor_clip, ancestor_state.Transform(), clip_behavior,
-      kNonInclusiveIntersect, success);
+      kNonInclusiveIntersect, kDontExpandVisualRectForCompositingOverlap,
+      success);
   DCHECK(success);
 
   // Many effects (e.g. filters, clip-paths) can make a clip rect not tight.
-  if (&local_state.Effect().Unalias() != &ancestor_state.Effect().Unalias())
+  if (&local_state.Effect() != &ancestor_state.Effect())
     result.ClearIsTight();
 
   return result;
 }
 
-static FloatClipRect GetClipRect(const ClipPaintPropertyNode& clip_node_arg,
+static FloatClipRect GetClipRect(const ClipPaintPropertyNode& clip_node,
                                  OverlayScrollbarClipBehavior clip_behavior) {
-  const auto& clip_node = clip_node_arg.Unalias();
-  FloatClipRect clip_rect(
+  // TODO(crbug.com/1248598): Do we need to use PaintClipRect when mapping for
+  // painting/compositing?
+  FloatClipRect clip_rect =
       UNLIKELY(clip_behavior == kExcludeOverlayScrollbarSizeForHitTesting)
-          ? clip_node.ClipRectExcludingOverlayScrollbars()
-          : FloatClipRect(clip_node.ClipRect()));
+          ? clip_node.LayoutClipRectExcludingOverlayScrollbars()
+          : clip_node.LayoutClipRect();
   if (clip_node.ClipPath())
     clip_rect.ClearIsTight();
   return clip_rect;
 }
 
 FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
-    const ClipPaintPropertyNode& descendant_clip_arg,
-    const ClipPaintPropertyNode& ancestor_clip_arg,
-    const TransformPaintPropertyNode& ancestor_transform_arg,
+    const ClipPaintPropertyNode& descendant_clip,
+    const ClipPaintPropertyNode& ancestor_clip,
+    const TransformPaintPropertyNode& ancestor_transform,
     OverlayScrollbarClipBehavior clip_behavior,
     InclusiveIntersectOrNot inclusive_behavior,
+    ExpandVisualRectForCompositingOverlapOrNot expand,
     bool& success) {
-  const auto& descendant_clip = descendant_clip_arg.Unalias();
-  const auto& ancestor_clip = ancestor_clip_arg.Unalias();
-
   if (&descendant_clip == &ancestor_clip) {
     success = true;
     return FloatClipRect();
   }
-  const auto& ancestor_transform = ancestor_transform_arg.Unalias();
-  if (SafeUnalias(descendant_clip.Parent()) == &ancestor_clip &&
+  if (descendant_clip.UnaliasedParent() == &ancestor_clip &&
       &descendant_clip.LocalTransformSpace() == &ancestor_transform) {
     success = true;
     return GetClipRect(descendant_clip, clip_behavior);
@@ -330,46 +401,52 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
   // Iterate over the path from localState.clip to ancestor_state.clip. Stop if
   // we've found a memoized (precomputed) clip for any particular node.
   while (clip_node && clip_node != &ancestor_clip) {
-    const FloatClipRect* cached_clip = nullptr;
+    const GeometryMapperClipCache::ClipCacheEntry* cached_clip = nullptr;
     // Inclusive intersected clips are not cached at present.
     if (inclusive_behavior != kInclusiveIntersect)
       cached_clip = clip_node->GetClipCache().GetCachedClip(clip_and_transform);
 
+    if (cached_clip && cached_clip->has_transform_animation &&
+        expand == kExpandVisualRectForCompositingOverlap) {
+      // Don't use cached clip if it's transformed by any animating transform.
+      cached_clip = nullptr;
+    }
+
     if (cached_clip) {
-      clip = *cached_clip;
+      clip = cached_clip->clip_rect;
       break;
     }
 
     intermediate_nodes.push_back(clip_node);
-    clip_node = SafeUnalias(clip_node->Parent());
+    clip_node = clip_node->UnaliasedParent();
   }
   if (!clip_node) {
-    success = false;
-    if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      // On SPv1 we may fail when the paint invalidation container creates an
-      // overflow clip (in ancestor_state) which is not in localState of an
-      // out-of-flow positioned descendant. See crbug.com/513108 and layout
-      // test compositing/overflow/handle-non-ancestor-clip-parent.html (run
-      // with --enable-prefer-compositing-to-lcd-text) for details.
-      // Ignore it for SPv1 for now.
-      success = true;
-    }
-    FloatClipRect loose_infinite;
-    loose_infinite.ClearIsTight();
-    return loose_infinite;
+    // TODO(crbug.com/803649): We still have clip hierarchy issues with
+    // fragment clips. See crbug.com/1228364 for the test cases. Will change
+    // the following to "success = false" after both CompositeAfterPaint and
+    // LayoutNGBlockFragmentation are fully launched.
+    success = true;
+    return InfiniteLooseFloatClipRect();
   }
 
   // Iterate down from the top intermediate node found in the previous loop,
   // computing and memoizing clip rects as we go.
   for (auto it = intermediate_nodes.rbegin(); it != intermediate_nodes.rend();
        ++it) {
+    bool has_animation = false;
+    bool has_fixed = false;
     const auto& translation_2d_or_matrix =
-        SourceToDestinationProjectionInternal((*it)->LocalTransformSpace(),
-                                              ancestor_transform, success);
+        SourceToDestinationProjectionInternal(
+            (*it)->LocalTransformSpace().Unalias(), ancestor_transform,
+            has_animation, has_fixed, success);
     if (!success) {
       success = true;
-      return FloatClipRect(FloatRect());
+      return FloatClipRect(gfx::RectF());
     }
+
+    // Don't apply this clip if it's transformed by any animating transform.
+    if (has_animation && expand == kExpandVisualRectForCompositingOverlap)
+      continue;
 
     // This is where we generate the roundedness and tightness of clip rect
     // from clip and transform properties, and propagate them to |clip|.
@@ -380,13 +457,18 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
     } else {
       clip.Intersect(mapped_rect);
       // Inclusive intersected clips are not cached at present.
-      (*it)->GetClipCache().SetCachedClip(clip_and_transform, clip);
+      (*it)->GetClipCache().SetCachedClip(
+          GeometryMapperClipCache::ClipCacheEntry{clip_and_transform, clip,
+                                                  has_animation});
     }
   }
-  // Inclusive intersected clips are not cached at present.
+  // Clips that are inclusive intersected or expanded for animation are not
+  // cached at present.
   DCHECK(inclusive_behavior == kInclusiveIntersect ||
-         *descendant_clip.GetClipCache().GetCachedClip(clip_and_transform) ==
-             clip);
+         expand == kExpandVisualRectForCompositingOverlap ||
+         descendant_clip.GetClipCache()
+                 .GetCachedClip(clip_and_transform)
+                 ->clip_rect == clip);
   success = true;
   return clip;
 }

@@ -11,6 +11,10 @@
 
 namespace webui {
 
+// Opens a new window for |profile|, or:
+// - if the profile is locked, opens the user manager instead
+// - if the profile picker is already open, focuses it instead
+// Exposed for testing.
 void OpenNewWindowForProfile(Profile* profile);
 
 // Deletes the profile at the given |file_path|.

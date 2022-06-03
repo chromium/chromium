@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/trace_event/traced_value.h"
@@ -14,7 +15,8 @@
 #include "chrome/browser/android/vr/gvr_util.h"
 #include "chrome/browser/vr/gl_texture_location.h"
 #include "chrome/browser/vr/vr_geometry_util.h"
-#include "chrome/browser/vr/vr_gl_util.h"
+#include "device/vr/android/web_xr_presentation_state.h"
+#include "device/vr/vr_gl_util.h"
 #include "third_party/skia/include/core/SkImageEncoder.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 #include "ui/gfx/geometry/angle_conversions.h"
@@ -159,12 +161,20 @@ void GvrGraphicsDelegate::Init(
 
 void GvrGraphicsDelegate::InitializeGl(gfx::AcceleratedWidget window,
                                        bool start_in_webxr_mode) {
+  // We can only share native GL resources with GVR, and GVR doesn't support
+  // ANGLE, so disable it.
+  // TODO(crbug.com/1170580): support ANGLE with cardboard?
+  gl::init::DisableANGLE();
+
   if (gl::GetGLImplementation() == gl::kGLImplementationNone &&
       !gl::init::InitializeGLOneOff()) {
     LOG(ERROR) << "gl::init::InitializeGLOneOff failed";
     browser_->ForceExitVr();
     return;
   }
+
+  DCHECK(gl::GetGLImplementation() != gl::kGLImplementationEGLANGLE);
+
   scoped_refptr<gl::GLSurface> surface;
   if (window) {
     DCHECK(!surfaceless_rendering_);
@@ -336,9 +346,11 @@ void GvrGraphicsDelegate::InitializeRenderer(bool start_in_webxr_mode) {
   float scale = low_density_ ? kLowDpiDefaultRenderTargetSizeScale
                              : kDefaultRenderTargetSizeScale;
 
-  render_size_default_ = {max_size.width * scale, max_size.height * scale};
-  render_size_webvr_ui_ = {max_size.width / kWebVrBrowserUiSizeFactor,
-                           max_size.height / kWebVrBrowserUiSizeFactor};
+  render_size_default_ = {base::ClampRound(max_size.width * scale),
+                          base::ClampRound(max_size.height * scale)};
+  render_size_webvr_ui_ = {
+      base::ClampRound(max_size.width / kWebVrBrowserUiSizeFactor),
+      base::ClampRound(max_size.height / kWebVrBrowserUiSizeFactor)};
 
   specs[kMultiSampleBuffer].SetSamples(2);
   specs[kMultiSampleBuffer].SetDepthStencilFormat(
@@ -361,7 +373,7 @@ void GvrGraphicsDelegate::InitializeRenderer(bool start_in_webxr_mode) {
 
   UpdateViewports();
 
-  browser_->GvrDelegateReady(gvr_api_->GetViewerType());
+  browser_->GvrDelegateReady();
 }
 
 void GvrGraphicsDelegate::UpdateViewports() {
@@ -442,8 +454,10 @@ void GvrGraphicsDelegate::ResizeForBrowser() {
                              {target_size.width(), target_size.height()});
   }
   size = swap_chain_.GetBufferSize(kNoMultiSampleBuffer);
-  target_size = {content_tex_buffer_size_.width() * kContentVignetteScale,
-                 content_tex_buffer_size_.height() * kContentVignetteScale};
+  target_size = {base::ClampRound(content_tex_buffer_size_.width() *
+                                  kContentVignetteScale),
+                 base::ClampRound(content_tex_buffer_size_.height() *
+                                  kContentVignetteScale)};
   if (size.width != target_size.width() ||
       size.height != target_size.height()) {
     swap_chain_.ResizeBuffer(kNoMultiSampleBuffer,
@@ -655,7 +669,7 @@ void GvrGraphicsDelegate::GetContentQuadDrawParams(Transform* uv_transform,
 void GvrGraphicsDelegate::GetWebXrDrawParams(int* texture_id,
                                              Transform* uv_transform) {
   if (webxr_use_shared_buffer_draw_) {
-    WebXrSharedBuffer* buffer =
+    device::WebXrSharedBuffer* buffer =
         webxr_->GetProcessingFrame()->shared_buffer.get();
     CHECK(buffer);
     *texture_id = buffer->local_texture;

@@ -2,11 +2,6 @@
     "images": [
         {
             "idiom": "universal",
-            "scale": "1x",
-            "filename": "toolbar_share.png"
-        },
-        {
-            "idiom": "universal",
             "scale": "2x",
             "filename": "toolbar_share@2x.png"
         },

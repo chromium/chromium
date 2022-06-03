@@ -9,6 +9,7 @@
 #include "chrome/credential_provider/gaiacp/stdafx.h"
 
 #include "chrome/credential_provider/gaiacp/gaia_credential_provider_i.h"
+#include "chrome/credential_provider/gaiacp/scoped_handle.h"
 
 #include "base/at_exit.h"
 
@@ -43,10 +44,24 @@ class CGaiaCredentialProviderModule
   // validity is up to date.
   void RefreshTokenHandleValidity();
 
+  // Fires a thread and checks the status of GCPW extensioon and runs it if not
+  // running.
+  void CheckGCPWExtension();
+
+  // Initializes the crash reporting for the module. Initialization happens only
+  // once even if the function is called multiple times.
+  void InitializeCrashReporting();
+
+  // Logs the details of the module such as version, loading process.
+  void LogProcessDetails();
+
  private:
   std::unique_ptr<base::AtExitManager> exit_manager_;
   bool is_testing_ = false;
   bool token_handle_validity_refreshed_ = false;
+  base::win::ScopedHandle::Handle gcpw_extension_checker_thread_handle_;
+  volatile long gcpw_extension_check_performed_;
+  volatile long crashpad_initialized_ = 0;
 };
 
 }  // namespace credential_provider

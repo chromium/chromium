@@ -7,7 +7,6 @@
 
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/arc/mojom/rotation_lock.mojom.h"
 #include "components/arc/session/connection_observer.h"
@@ -33,9 +32,15 @@ class ArcRotationLockBridge
   // or nullptr if the browser |context| is not allowed to use ARC.
   static ArcRotationLockBridge* GetForBrowserContext(
       content::BrowserContext* context);
+  static ArcRotationLockBridge* GetForBrowserContextForTesting(
+      content::BrowserContext* context);
 
   ArcRotationLockBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
+
+  ArcRotationLockBridge(const ArcRotationLockBridge&) = delete;
+  ArcRotationLockBridge& operator=(const ArcRotationLockBridge&) = delete;
+
   ~ArcRotationLockBridge() override;
 
   // ConnectionObserver<mojom::RotationLockInstance>:
@@ -53,8 +58,6 @@ class ArcRotationLockBridge
   THREAD_CHECKER(thread_checker_);
 
   ArcBridgeService* const arc_bridge_service_;  // Owned by ArcServiceManager.
-
-  DISALLOW_COPY_AND_ASSIGN(ArcRotationLockBridge);
 };
 
 }  // namespace arc

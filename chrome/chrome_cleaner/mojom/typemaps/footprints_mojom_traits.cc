@@ -29,8 +29,8 @@ bool StructTraits<chrome_cleaner::mojom::FilePathDataView,
 #if defined(OS_WIN)
   ArrayDataView<uint16_t> view;
   path_view.GetValueDataView(&view);
-  base::FilePath path = base::FilePath(base::string16(
-      reinterpret_cast<const base::char16*>(view.data()), view.size()));
+  base::FilePath path = base::FilePath(
+      std::wstring(reinterpret_cast<const wchar_t*>(view.data()), view.size()));
   *out = std::move(path);
   return true;
 #else
@@ -41,8 +41,8 @@ bool StructTraits<chrome_cleaner::mojom::FilePathDataView,
 
 // static
 base::span<const uint16_t>
-StructTraits<chrome_cleaner::mojom::RegistryKeyDataView, base::string16>::value(
-    const base::string16& registry_key) {
+StructTraits<chrome_cleaner::mojom::RegistryKeyDataView, std::wstring>::value(
+    const std::wstring& registry_key) {
 #if defined(OS_WIN)
   return base::make_span(reinterpret_cast<const uint16_t*>(registry_key.data()),
                          registry_key.size());
@@ -53,14 +53,15 @@ StructTraits<chrome_cleaner::mojom::RegistryKeyDataView, base::string16>::value(
 }
 
 // static
-bool StructTraits<chrome_cleaner::mojom::RegistryKeyDataView, base::string16>::
-    Read(chrome_cleaner::mojom::RegistryKeyDataView registry_key_view,
-         base::string16* out) {
+bool StructTraits<chrome_cleaner::mojom::RegistryKeyDataView,
+                  std::wstring>::Read(chrome_cleaner::mojom::RegistryKeyDataView
+                                          registry_key_view,
+                                      std::wstring* out) {
 #if defined(OS_WIN)
   ArrayDataView<uint16_t> view;
   registry_key_view.GetValueDataView(&view);
-  base::string16 registry_key = base::string16(
-      reinterpret_cast<const base::char16*>(view.data()), view.size());
+  std::wstring registry_key =
+      std::wstring(reinterpret_cast<const wchar_t*>(view.data()), view.size());
   *out = std::move(registry_key);
   return true;
 #else
@@ -71,8 +72,8 @@ bool StructTraits<chrome_cleaner::mojom::RegistryKeyDataView, base::string16>::
 
 // static
 base::span<const uint16_t>
-StructTraits<chrome_cleaner::mojom::ExtensionIdDataView, base::string16>::value(
-    const base::string16& extension_id) {
+StructTraits<chrome_cleaner::mojom::ExtensionIdDataView, std::wstring>::value(
+    const std::wstring& extension_id) {
 #if defined(OS_WIN)
   return base::make_span(reinterpret_cast<const uint16_t*>(extension_id.data()),
                          extension_id.size());
@@ -83,14 +84,15 @@ StructTraits<chrome_cleaner::mojom::ExtensionIdDataView, base::string16>::value(
 }
 
 // static
-bool StructTraits<chrome_cleaner::mojom::ExtensionIdDataView, base::string16>::
-    Read(chrome_cleaner::mojom::ExtensionIdDataView extension_id_view,
-         base::string16* out) {
+bool StructTraits<chrome_cleaner::mojom::ExtensionIdDataView,
+                  std::wstring>::Read(chrome_cleaner::mojom::ExtensionIdDataView
+                                          extension_id_view,
+                                      std::wstring* out) {
 #if defined(OS_WIN)
   ArrayDataView<uint16_t> view;
   extension_id_view.GetValueDataView(&view);
-  base::string16 extension_id = base::string16(
-      reinterpret_cast<const base::char16*>(view.data()), view.size());
+  std::wstring extension_id =
+      std::wstring(reinterpret_cast<const wchar_t*>(view.data()), view.size());
   *out = std::move(extension_id);
   return true;
 #else

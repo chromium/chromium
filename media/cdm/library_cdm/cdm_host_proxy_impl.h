@@ -7,9 +7,6 @@
 
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
 
-#include "base/logging.h"
-#include "base/macros.h"
-
 namespace media {
 
 // A templated implementation of CdmHostProxy to forward Host calls to the
@@ -18,6 +15,10 @@ template <typename HostInterface>
 class CdmHostProxyImpl : public CdmHostProxy {
  public:
   explicit CdmHostProxyImpl(HostInterface* host) : host_(host) {}
+
+  CdmHostProxyImpl(const CdmHostProxyImpl&) = delete;
+  CdmHostProxyImpl& operator=(const CdmHostProxyImpl&) = delete;
+
   ~CdmHostProxyImpl() override {}
 
   void OnInitialized(bool success) final {
@@ -110,28 +111,13 @@ class CdmHostProxyImpl : public CdmHostProxy {
     return host_->CreateFileIO(client);
   }
 
-  cdm::CdmProxy* RequestCdmProxy(cdm::CdmProxyClient* client) final {
-    return host_->RequestCdmProxy(client);
-  }
-
   void RequestStorageId(uint32_t version) final {
     host_->RequestStorageId(version);
   }
 
  private:
   HostInterface* const host_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(CdmHostProxyImpl);
 };
-
-// Specialization for cdm::Host_10 methods.
-
-template <>
-cdm::CdmProxy* CdmHostProxyImpl<cdm::Host_10>::RequestCdmProxy(
-    cdm::CdmProxyClient* /* client */) {
-  NOTREACHED() << "cdm::ContentDecryptionModule_10 CDM should never call this.";
-  return nullptr;
-}
 
 }  // namespace media
 

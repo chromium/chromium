@@ -8,9 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -24,11 +23,13 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_web_ui_override_registrar.h"
 #include "chrome/browser/extensions/load_error_reporter.h"
-#include "chrome/browser/extensions/ntp_overridden_bubble_delegate.h"
 #include "chrome/browser/extensions/proxy_overridden_bubble_delegate.h"
 #include "chrome/browser/extensions/settings_api_bubble_delegate.h"
 #include "chrome/browser/extensions/suspicious_extension_bubble_delegate.h"
+#include "chrome/browser/extensions/test_extension_message_bubble_delegate.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model_factory.h"
 #include "chrome/common/chrome_features.h"
@@ -36,6 +37,7 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/proxy_config/proxy_config_pref_names.h"
 #include "components/version_info/version_info.h"
+#include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_pref_value_map.h"
 #include "extensions/browser/extension_pref_value_map_factory.h"
@@ -49,6 +51,8 @@
 #include "extensions/common/features/feature_channel.h"
 #include "extensions/common/value_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
@@ -83,6 +87,12 @@ class TestExtensionMessageBubbleController :
         action_button_callback_count_(0),
         dismiss_button_callback_count_(0),
         link_click_callback_count_(0) {}
+
+  TestExtensionMessageBubbleController(
+      const TestExtensionMessageBubbleController&) = delete;
+  TestExtensionMessageBubbleController& operator=(
+      const TestExtensionMessageBubbleController&) = delete;
+
   ~TestExtensionMessageBubbleController() override {}
 
   // ExtensionMessageBubbleController:
@@ -108,8 +118,6 @@ class TestExtensionMessageBubbleController :
   size_t action_button_callback_count_;
   size_t dismiss_button_callback_count_;
   size_t link_click_callback_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestExtensionMessageBubbleController);
 };
 
 // A fake bubble used for testing the controller. Takes an action that specifies
@@ -130,6 +138,10 @@ class FakeExtensionMessageBubble {
         action_(BUBBLE_ACTION_CLICK_ACTION_BUTTON),
         controller_(nullptr) {}
 
+  FakeExtensionMessageBubble(const FakeExtensionMessageBubble&) = delete;
+  FakeExtensionMessageBubble& operator=(const FakeExtensionMessageBubble&) =
+      delete;
+
   void set_action_on_show(ExtensionBubbleAction action) {
     action_ = action;
   }
@@ -140,8 +152,8 @@ class FakeExtensionMessageBubble {
   bool is_closed() { return is_closed_; }
 
   void Show() {
-    controller_->OnShown(
-        base::Bind(&FakeExtensionMessageBubble::Close, base::Unretained(this)));
+    controller_->OnShown(base::BindOnce(&FakeExtensionMessageBubble::Close,
+                                        base::Unretained(this)));
 
     // Depending on the user action, the bubble may be closed as result.
     switch (action_) {
@@ -176,8 +188,6 @@ class FakeExtensionMessageBubble {
   bool is_closed_;
   ExtensionBubbleAction action_;
   ExtensionMessageBubbleController* controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeExtensionMessageBubble);
 };
 
 class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
@@ -186,7 +196,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
 
   testing::AssertionResult LoadGenericExtension(const std::string& index,
                                                 const std::string& id,
-                                                Manifest::Location location) {
+                                                ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(DictionaryBuilder()
                             .Set("name", std::string("Extension " + index))
@@ -202,10 +212,9 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     return testing::AssertionFailure() << "Could not install extension: " << id;
   }
 
-  testing::AssertionResult LoadExtensionWithAction(
-      const std::string& index,
-      const std::string& id,
-      Manifest::Location location) {
+  testing::AssertionResult LoadExtensionWithAction(const std::string& index,
+                                                   const std::string& id,
+                                                   ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(
         DictionaryBuilder()
@@ -228,7 +237,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   testing::AssertionResult LoadExtensionOverridingHome(
       const std::string& index,
       const std::string& id,
-      Manifest::Location location) {
+      ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(DictionaryBuilder()
                             .Set("name", std::string("Extension " + index))
@@ -251,7 +260,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   testing::AssertionResult LoadExtensionOverridingStart(
       const std::string& index,
       const std::string& id,
-      Manifest::Location location) {
+      ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(
         DictionaryBuilder()
@@ -276,7 +285,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   testing::AssertionResult LoadExtensionOverridingNtp(
       const std::string& index,
       const std::string& id,
-      Manifest::Location location) {
+      ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(
         DictionaryBuilder()
@@ -299,7 +308,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
   testing::AssertionResult LoadExtensionOverridingProxy(
       const std::string& index,
       const std::string& id,
-      Manifest::Location location) {
+      ManifestLocation location) {
     ExtensionBuilder builder;
     builder.SetManifest(
         DictionaryBuilder()
@@ -352,18 +361,40 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
         profile(), base::BindRepeating(&BuildToolbarModel));
   }
 
+  ExtensionMessageBubbleTest(const ExtensionMessageBubbleTest&) = delete;
+  ExtensionMessageBubbleTest& operator=(const ExtensionMessageBubbleTest&) =
+      delete;
+
   ~ExtensionMessageBubbleTest() override {}
 
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
-    command_line_.reset(new base::CommandLine(base::CommandLine::NO_PROGRAM));
+    command_line_ =
+        std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
     ExtensionMessageBubbleController::set_should_ignore_learn_more_for_testing(
         true);
+    // Prevent the Profile from getting deleted before TearDown() is complete,
+    // since WaitForStorageCleanup() relies on an active Profile. See the
+    // DestroyProfileOnBrowserClose flag.
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile(), ProfileKeepAliveOrigin::kBrowserWindow);
   }
 
   void TearDown() override {
     ExtensionMessageBubbleController::set_should_ignore_learn_more_for_testing(
         false);
+    WaitForStorageCleanup();
+    // Clean up global state for the delegates. Since profiles are stored in
+    // global variables, they can be shared between tests and cause
+    // unpredicatable behavior.
+    DevModeBubbleDelegate(profile()).ClearProfileSetForTesting();
+    ProxyOverriddenBubbleDelegate(profile()).ClearProfileSetForTesting();
+    for (auto type : {BUBBLE_TYPE_HOME_PAGE, BUBBLE_TYPE_SEARCH_ENGINE,
+                      BUBBLE_TYPE_STARTUP_PAGES}) {
+      SettingsApiBubbleDelegate(profile(), type).ClearProfileSetForTesting();
+    }
+    SuspiciousExtensionBubbleDelegate(profile()).ClearProfileSetForTesting();
+    profile_keep_alive_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
 
@@ -372,7 +403,7 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
       const std::string& extension_name) {
     controller->SetIsActiveBubble();
     EXPECT_TRUE(controller->ShouldShow());
-    std::vector<base::string16> override_extensions =
+    std::vector<std::u16string> override_extensions =
         controller->GetExtensionList();
     ASSERT_EQ(1U, override_extensions.size());
     EXPECT_EQ(base::UTF8ToUTF16(extension_name), override_extensions[0]);
@@ -396,50 +427,44 @@ class ExtensionMessageBubbleTest : public BrowserWithTestWindowTest {
     EXPECT_FALSE(controller->ShouldShow());
   }
 
+  void WaitForStorageCleanup() {
+    content::StoragePartition* partition =
+        profile()->GetDefaultStoragePartition();
+    if (partition)
+      partition->WaitForDeletionTasksForTesting();
+  }
+
  protected:
   ExtensionService* service_;
 
  private:
   std::unique_ptr<base::CommandLine> command_line_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionMessageBubbleTest);
+  std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive_;
 };
 
-class ExtensionMessageBubbleTestWithParam
-    : public ExtensionMessageBubbleTest,
-      public ::testing::WithParamInterface<bool> {};
-
 // Test that the bubble correctly treats dismissal due to deactivation.
-// Currently, the NTP bubble is the only one that has flexible behavior (toggled
-// by a feature).
-// TODO(https://crbug.com/836332): Re-enable once not flaky.
-TEST_P(ExtensionMessageBubbleTestWithParam,
-       DISABLED_BubbleCorrectlyReshowsOnDeactivationDismissal) {
-  const bool kAcknowledgeOnDeactivate = GetParam();
-  base::test::ScopedFeatureList feature_list;
-  if (kAcknowledgeOnDeactivate) {
-    feature_list.InitAndEnableFeature(
-        features::kAcknowledgeNtpOverrideOnDeactivate);
-  } else {
-    feature_list.InitAndDisableFeature(
-        features::kAcknowledgeNtpOverrideOnDeactivate);
-  }
-
+TEST_F(ExtensionMessageBubbleTest,
+       BubbleDoesNotAcknowledgeExtensionOnDeactivationDismissal) {
   Init();
 
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::INTERNAL));
-  ASSERT_TRUE(LoadExtensionOverridingNtp("2", kId2, Manifest::INTERNAL));
-  std::unique_ptr<TestExtensionMessageBubbleController> controller(
-      new TestExtensionMessageBubbleController(
-          new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Alpha").Build();
+  service_->AddExtension(extension.get());
+  auto test_delegate = std::make_unique<TestExtensionMessageBubbleDelegate>(
+      browser()->profile());
+  test_delegate->IncludeExtensionId(extension->id());
+
+  auto* test_delegate_raw = test_delegate.get();
+  auto controller = std::make_unique<TestExtensionMessageBubbleController>(
+      test_delegate.release(), browser());
+
   controller->SetIsActiveBubble();
 
-  // The list will contain one enabled unpacked extension (ext 2).
+  // The list will contain the single extension.
   EXPECT_TRUE(controller->ShouldShow());
-  std::vector<base::string16> override_extensions =
+  std::vector<std::u16string> listed_extensions =
       controller->GetExtensionList();
-  ASSERT_EQ(1U, override_extensions.size());
-  EXPECT_EQ(base::ASCIIToUTF16("Extension 2"), override_extensions[0]);
+  ASSERT_EQ(1U, listed_extensions.size());
+  EXPECT_EQ(u"Alpha", listed_extensions[0]);
   EXPECT_EQ(0U, controller->link_click_count());
   EXPECT_EQ(0U, controller->dismiss_click_count());
   EXPECT_EQ(0U, controller->action_click_count());
@@ -454,56 +479,10 @@ TEST_P(ExtensionMessageBubbleTestWithParam,
   EXPECT_EQ(0U, controller->action_click_count());
   EXPECT_EQ(1U, controller->dismiss_click_count());
 
-  // No extension should have become disabled.
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2));
-
-  if (kAcknowledgeOnDeactivate) {
-    EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-
-    controller.reset(new TestExtensionMessageBubbleController(
-        new ProxyOverriddenBubbleDelegate(browser()->profile()), browser()));
-    controller->delegate()->ClearProfileSetForTesting();
-    controller->SetIsActiveBubble();
-    EXPECT_FALSE(controller->ShouldShow());
-  } else {
-    // Since the bubble was dismissed due to deactivation, the extension should
-    // not have been acknowledged.
-    EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-
-    bubble.set_action_on_show(
-        FakeExtensionMessageBubble::BUBBLE_ACTION_DISMISS_DEACTIVATION);
-    controller.reset(new TestExtensionMessageBubbleController(
-        new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
-    controller->SetIsActiveBubble();
-    // The bubble shouldn't show again for the same profile (we don't want to
-    // be annoying).
-    EXPECT_FALSE(controller->ShouldShow());
-    controller->delegate()->ClearProfileSetForTesting();
-    EXPECT_TRUE(controller->ShouldShow());
-    // Explicitly click the dismiss button. The extension should be
-    // acknowledged.
-    bubble.set_controller(controller.get());
-    bubble.set_action_on_show(
-        FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_DISMISS_BUTTON);
-    bubble.Show();
-    EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  }
-
-  // Uninstall the current ntp-controlling extension, allowing the other to
-  // take control.
-  service_->UninstallExtension(kId2, UNINSTALL_REASON_FOR_TESTING, nullptr);
-
-  // Even though we already showed for the given profile, we should show
-  // again, because it's a different extension.
-  controller.reset(new TestExtensionMessageBubbleController(
-      new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
-  EXPECT_TRUE(controller->ShouldShow());
+  // Since the bubble was dismissed due to deactivation, the extension should
+  // not have been acknowledged.
+  EXPECT_FALSE(test_delegate_raw->WasExtensionAcknowledged(extension->id()));
 }
-
-INSTANTIATE_TEST_SUITE_P(ExtensionMessageBubbleTest,
-                         ExtensionMessageBubbleTestWithParam,
-                         testing::Bool());
 
 // The feature this is meant to test is only enacted on Windows, but it should
 // pass on all platforms.
@@ -511,9 +490,11 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
   Init();
   // Add three extensions, and control two of them in this test (extension 1
   // and 2).
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::COMMAND_LINE));
-  ASSERT_TRUE(LoadGenericExtension("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadGenericExtension("3", kId3, Manifest::EXTERNAL_POLICY));
+  ASSERT_TRUE(
+      LoadExtensionWithAction("1", kId1, ManifestLocation::kCommandLine));
+  ASSERT_TRUE(LoadGenericExtension("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadGenericExtension("3", kId3, ManifestLocation::kExternalPolicy));
 
   std::unique_ptr<TestExtensionMessageBubbleController> controller(
       new TestExtensionMessageBubbleController(
@@ -529,7 +510,7 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
 
   EXPECT_FALSE(controller->ShouldShow());
-  std::vector<base::string16> suspicious_extensions =
+  std::vector<std::u16string> suspicious_extensions =
       controller->GetExtensionList();
   EXPECT_EQ(0U, suspicious_extensions.size());
   EXPECT_EQ(0U, controller->link_click_count());
@@ -540,16 +521,14 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
 
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new SuspiciousExtensionBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   controller->delegate()->ClearProfileSetForTesting();
   EXPECT_TRUE(controller->ShouldShow());
   suspicious_extensions = controller->GetExtensionList();
   ASSERT_EQ(1U, suspicious_extensions.size());
-  EXPECT_TRUE(base::ASCIIToUTF16("Extension 1") == suspicious_extensions[0]);
+  EXPECT_TRUE(u"Extension 1" == suspicious_extensions[0]);
   bubble.set_controller(controller.get());
   bubble.Show();  // Simulate showing the bubble.
   EXPECT_EQ(0U, controller->link_click_count());
@@ -566,17 +545,15 @@ TEST_F(ExtensionMessageBubbleTest, WipeoutControllerTest) {
 
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new SuspiciousExtensionBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   controller->delegate()->ClearProfileSetForTesting();
   EXPECT_TRUE(controller->ShouldShow());
   suspicious_extensions = controller->GetExtensionList();
   ASSERT_EQ(2U, suspicious_extensions.size());
-  EXPECT_TRUE(base::ASCIIToUTF16("Extension 1") == suspicious_extensions[1]);
-  EXPECT_TRUE(base::ASCIIToUTF16("Extension 2") == suspicious_extensions[0]);
+  EXPECT_TRUE(u"Extension 1" == suspicious_extensions[1]);
+  EXPECT_TRUE(u"Extension 2" == suspicious_extensions[0]);
   bubble.set_controller(controller.get());
   bubble.Show();  // Simulate showing the bubble.
   EXPECT_EQ(1U, controller->link_click_count());
@@ -593,9 +570,11 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   // Add three extensions, and control two of them in this test (extension 1
   // and 2). Extension 1 is a regular extension, Extension 2 is UNPACKED so it
   // counts as a DevMode extension.
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::COMMAND_LINE));
-  ASSERT_TRUE(LoadGenericExtension("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadGenericExtension("3", kId3, Manifest::EXTERNAL_POLICY));
+  ASSERT_TRUE(
+      LoadExtensionWithAction("1", kId1, ManifestLocation::kCommandLine));
+  ASSERT_TRUE(LoadGenericExtension("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadGenericExtension("3", kId3, ManifestLocation::kExternalPolicy));
 
   std::unique_ptr<TestExtensionMessageBubbleController> controller(
       new TestExtensionMessageBubbleController(
@@ -604,11 +583,11 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
 
   // The list will contain one enabled unpacked extension.
   EXPECT_TRUE(controller->ShouldShow());
-  std::vector<base::string16> dev_mode_extensions =
+  std::vector<std::u16string> dev_mode_extensions =
       controller->GetExtensionList();
   ASSERT_EQ(2U, dev_mode_extensions.size());
-  EXPECT_TRUE(base::ASCIIToUTF16("Extension 2") == dev_mode_extensions[0]);
-  EXPECT_TRUE(base::ASCIIToUTF16("Extension 1") == dev_mode_extensions[1]);
+  EXPECT_TRUE(u"Extension 2" == dev_mode_extensions[0]);
+  EXPECT_TRUE(u"Extension 1" == dev_mode_extensions[1]);
   EXPECT_EQ(0U, controller->link_click_count());
   EXPECT_EQ(0U, controller->dismiss_click_count());
   EXPECT_EQ(0U, controller->action_click_count());
@@ -629,10 +608,8 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   // Do it again, but now press different button (Disable).
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new DevModeBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new DevModeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   // Most bubbles would want to show again as long as the extensions weren't
   // acknowledged and the bubble wasn't dismissed due to deactivation. Since dev
@@ -659,10 +636,8 @@ TEST_F(ExtensionMessageBubbleTest, DevModeControllerTest) {
   service_->DisableExtension(kId1, disable_reason::DISABLE_USER_ACTION);
   service_->DisableExtension(kId2, disable_reason::DISABLE_USER_ACTION);
 
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new DevModeBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new DevModeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   controller->delegate()->ClearProfileSetForTesting();
   EXPECT_FALSE(controller->ShouldShow());
@@ -678,7 +653,7 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
       FeatureSwitch::force_dev_mode_highlighting(), true);
   Init();
 
-  ASSERT_TRUE(LoadGenericExtension("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadGenericExtension("1", kId1, ManifestLocation::kUnpacked));
 
   auto get_controller = [](Browser* browser) {
     auto controller = std::make_unique<TestExtensionMessageBubbleController>(
@@ -706,7 +681,8 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
 
   {
     // Construct an off-the-record profile and browser.
-    Profile* off_the_record_profile = profile()->GetOffTheRecordProfile();
+    Profile* off_the_record_profile =
+        profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
     ToolbarActionsModelFactory::GetInstance()->SetTestingFactory(
         off_the_record_profile, base::BindRepeating(&BuildToolbarModel));
@@ -740,17 +716,13 @@ TEST_F(ExtensionMessageBubbleTest, ShowDevModeBubbleOncePerOriginalProfile) {
 }
 
 // The feature this is meant to test is only implemented on Windows and Mac.
-#if defined(OS_WIN) || defined(OS_MACOSX)
-#define MAYBE_SettingsApiControllerTest SettingsApiControllerTest
-#else
-#define MAYBE_SettingsApiControllerTest DISABLED_SettingsApiControllerTest
-#endif
+#if defined(OS_WIN) || defined(OS_MAC)
 
-TEST_F(ExtensionMessageBubbleTest, MAYBE_SettingsApiControllerTest) {
-#if defined(OS_MACOSX)
+TEST_F(ExtensionMessageBubbleTest, SettingsApiControllerTest) {
+#if defined(OS_MAC)
   // On Mac, this API is limited to trunk.
   ScopedCurrentChannel scoped_channel(version_info::Channel::UNKNOWN);
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
   Init();
 
@@ -760,10 +732,12 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_SettingsApiControllerTest) {
         // Load two extensions overriding home page and one overriding something
         // unrelated (to check for interference). Extension 2 should still win
         // on the home page setting.
-        ASSERT_TRUE(LoadExtensionOverridingHome("1", kId1, Manifest::UNPACKED));
-        ASSERT_TRUE(LoadExtensionOverridingHome("2", kId2, Manifest::UNPACKED));
-        ASSERT_TRUE(
-            LoadExtensionOverridingStart("3", kId3, Manifest::UNPACKED));
+        ASSERT_TRUE(LoadExtensionOverridingHome("1", kId1,
+                                                ManifestLocation::kUnpacked));
+        ASSERT_TRUE(LoadExtensionOverridingHome("2", kId2,
+                                                ManifestLocation::kUnpacked));
+        ASSERT_TRUE(LoadExtensionOverridingStart("3", kId3,
+                                                 ManifestLocation::kUnpacked));
         break;
       case BUBBLE_TYPE_SEARCH_ENGINE:
         // We deliberately skip testing the search engine since it relies on
@@ -776,11 +750,12 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_SettingsApiControllerTest) {
         // Load two extensions overriding start page and one overriding
         // something unrelated (to check for interference). Extension 2 should
         // still win on the startup page setting.
-        ASSERT_TRUE(
-            LoadExtensionOverridingStart("1", kId1, Manifest::UNPACKED));
-        ASSERT_TRUE(
-            LoadExtensionOverridingStart("2", kId2, Manifest::UNPACKED));
-        ASSERT_TRUE(LoadExtensionOverridingHome("3", kId3, Manifest::UNPACKED));
+        ASSERT_TRUE(LoadExtensionOverridingStart("1", kId1,
+                                                 ManifestLocation::kUnpacked));
+        ASSERT_TRUE(LoadExtensionOverridingStart("2", kId2,
+                                                 ManifestLocation::kUnpacked));
+        ASSERT_TRUE(LoadExtensionOverridingHome("3", kId3,
+                                                ManifestLocation::kUnpacked));
         break;
       default:
         NOTREACHED();
@@ -796,11 +771,10 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_SettingsApiControllerTest) {
 
     // The list will contain one enabled unpacked extension (ext 2).
     EXPECT_TRUE(controller->ShouldShow());
-    std::vector<base::string16> override_extensions =
+    std::vector<std::u16string> override_extensions =
         controller->GetExtensionList();
     ASSERT_EQ(1U, override_extensions.size());
-    EXPECT_TRUE(base::ASCIIToUTF16("Extension 2") ==
-                override_extensions[0].c_str());
+    EXPECT_TRUE(u"Extension 2" == override_extensions[0]);
     EXPECT_EQ(0U, controller->link_click_count());
     EXPECT_EQ(0U, controller->dismiss_click_count());
     EXPECT_EQ(0U, controller->action_click_count());
@@ -829,10 +803,8 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_SettingsApiControllerTest) {
     // Simulate clicking the learn more link to dismiss it.
     bubble.set_action_on_show(
         FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-    controller.reset(
-        new TestExtensionMessageBubbleController(
-            new SettingsApiBubbleDelegate(browser()->profile(), type),
-            browser()));
+    controller = std::make_unique<TestExtensionMessageBubbleController>(
+        new SettingsApiBubbleDelegate(browser()->profile(), type), browser());
     controller->SetIsActiveBubble();
     bubble.set_controller(controller.get());
     bubble.Show();
@@ -853,10 +825,8 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_SettingsApiControllerTest) {
     // Do it again, but now opt to disable the extension.
     bubble.set_action_on_show(
         FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-    controller.reset(
-        new TestExtensionMessageBubbleController(
-            new SettingsApiBubbleDelegate(browser()->profile(), type),
-            browser()));
+    controller = std::make_unique<TestExtensionMessageBubbleController>(
+        new SettingsApiBubbleDelegate(browser()->profile(), type), browser());
     controller->SetIsActiveBubble();
     EXPECT_TRUE(controller->ShouldShow());
     override_extensions = controller->GetExtensionList();
@@ -888,16 +858,21 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_SettingsApiControllerTest) {
   }
 }
 
+#endif  // defined(OS_WIN) || defined(OS_MAC)
+
 // Tests that a displayed extension bubble will be closed after its associated
 // enabled extension is uninstalled.
-// TODO(https://crbug.com/836332): Re-enable once not flaky.
-TEST_F(ExtensionMessageBubbleTest,
-       DISABLED_TestBubbleClosedAfterEnabledExtensionUninstall) {
+TEST_F(ExtensionMessageBubbleTest, BubbleClosedAfterEnabledExtensionUninstall) {
   Init();
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::UNPACKED));
+
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Alpha").Build();
+  service_->AddExtension(extension.get());
+  auto test_delegate = std::make_unique<TestExtensionMessageBubbleDelegate>(
+      browser()->profile());
+  test_delegate->IncludeExtensionId(extension->id());
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new NtpOverriddenBubbleDelegate(browser()->profile()), browser());
+      test_delegate.release(), browser());
   controller->SetIsActiveBubble();
 
   EXPECT_TRUE(controller->ShouldShow());
@@ -912,7 +887,8 @@ TEST_F(ExtensionMessageBubbleTest,
   EXPECT_FALSE(bubble.is_closed());
 
   // Uninstall the extension.
-  service_->UninstallExtension(kId1, UNINSTALL_REASON_FOR_TESTING, nullptr);
+  service_->UninstallExtension(extension->id(), UNINSTALL_REASON_FOR_TESTING,
+                               nullptr);
   ASSERT_EQ(0U, controller->GetExtensionList().size());
 
   // The bubble should be closed after the extension is uninstalled.
@@ -924,11 +900,11 @@ TEST_F(ExtensionMessageBubbleTest,
 // Tests that a displayed extension bubble will be closed after its associated
 // disabled extension is uninstalled. Here a suspicious bubble controller is
 // tested, which can display bubbles for disabled extensions.
-// TODO(https://crbug.com/836332): Re-enable once not flaky.
 TEST_F(ExtensionMessageBubbleTest,
-       DISABLED_TestBubbleClosedAfterDisabledExtensionUninstall) {
+       BubbleClosedAfterDisabledExtensionUninstall) {
   Init();
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::COMMAND_LINE));
+  ASSERT_TRUE(
+      LoadExtensionOverridingNtp("1", kId1, ManifestLocation::kCommandLine));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser());
@@ -942,7 +918,7 @@ TEST_F(ExtensionMessageBubbleTest,
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
 
   EXPECT_FALSE(controller->ShouldShow());
-  std::vector<base::string16> suspicious_extensions =
+  std::vector<std::u16string> suspicious_extensions =
       controller->GetExtensionList();
   EXPECT_EQ(0U, suspicious_extensions.size());
 
@@ -951,14 +927,14 @@ TEST_F(ExtensionMessageBubbleTest,
 
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
   EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  controller.reset(new TestExtensionMessageBubbleController(
-      new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new SuspiciousExtensionBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   controller->delegate()->ClearProfileSetForTesting();
   EXPECT_TRUE(controller->ShouldShow());
   suspicious_extensions = controller->GetExtensionList();
   ASSERT_EQ(1U, suspicious_extensions.size());
-  EXPECT_TRUE(base::ASCIIToUTF16("Extension 1") == suspicious_extensions[0]);
+  EXPECT_TRUE(u"Extension 1" == suspicious_extensions[0]);
   bubble.set_controller(controller.get());
   bubble.set_action_on_show(FakeExtensionMessageBubble::BUBBLE_ACTION_IGNORE);
   bubble.Show();  // Simulate showing the bubble.
@@ -978,15 +954,13 @@ TEST_F(ExtensionMessageBubbleTest,
 // Tests that a bubble associated with multiple extensions remains shown after
 // one of its associated extensions is uninstalled. Also tests that the bubble
 // closes when all of its associated extensions are uninstalled.
-// Flaky: https://crbug.com/836332
-TEST_F(ExtensionMessageBubbleTest,
-       DISABLED_TestBubbleShownForMultipleExtensions) {
+TEST_F(ExtensionMessageBubbleTest, BubbleShownForMultipleExtensions) {
   FeatureSwitch::ScopedOverride force_dev_mode_highlighting(
       FeatureSwitch::force_dev_mode_highlighting(), true);
   Init();
-  ASSERT_TRUE(LoadGenericExtension("1", kId1, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadGenericExtension("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadGenericExtension("3", kId3, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadGenericExtension("1", kId1, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(LoadGenericExtension("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(LoadGenericExtension("3", kId3, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new DevModeBubbleDelegate(browser()->profile()), browser());
@@ -1022,157 +996,6 @@ TEST_F(ExtensionMessageBubbleTest,
   controller.reset();
 }
 
-// The feature this is meant to test is only enacted on Windows, but it should
-// pass on all platforms.
-// TODO(https://crbug.com/836332): Re-enable once not flaky.
-TEST_F(ExtensionMessageBubbleTest, DISABLED_NtpOverriddenControllerTest) {
-  Init();
-  // Load two extensions overriding new tab page and one overriding something
-  // unrelated (to check for interference). Extension 2 should still win
-  // on the new tab page setting.
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadExtensionOverridingNtp("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadExtensionOverridingStart("3", kId3, Manifest::UNPACKED));
-
-  std::unique_ptr<TestExtensionMessageBubbleController> controller(
-      new TestExtensionMessageBubbleController(
-          new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
-  controller->SetIsActiveBubble();
-
-  // The list will contain one enabled unpacked extension (ext 2).
-  EXPECT_TRUE(controller->ShouldShow());
-  std::vector<base::string16> override_extensions =
-      controller->GetExtensionList();
-  ASSERT_EQ(1U, override_extensions.size());
-  EXPECT_TRUE(base::ASCIIToUTF16("Extension 2") ==
-              override_extensions[0].c_str());
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-
-  // Simulate showing the bubble and dismissing it.
-  FakeExtensionMessageBubble bubble;
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_DISMISS_BUTTON);
-  EXPECT_TRUE(controller->ShouldShow());
-  bubble.set_controller(controller.get());
-  bubble.Show();
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-  EXPECT_EQ(1U, controller->dismiss_click_count());
-  // No extension should have become disabled.
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
-  // Only extension 2 should have been acknowledged.
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-  // Clean up after ourselves.
-  controller->delegate()->SetBubbleInfoBeenAcknowledged(kId2, false);
-
-  // Simulate clicking the learn more link to dismiss it.
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new NtpOverriddenBubbleDelegate(browser()->profile()),
-          browser()));
-  controller->SetIsActiveBubble();
-  EXPECT_TRUE(controller->ShouldShow());
-  bubble.set_controller(controller.get());
-  bubble.Show();
-  EXPECT_EQ(1U, controller->link_click_count());
-  EXPECT_EQ(0U, controller->action_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  // No extension should have become disabled.
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
-  // Only extension 2 should have been acknowledged.
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_TRUE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-  // Clean up after ourselves.
-  controller->delegate()->SetBubbleInfoBeenAcknowledged(kId2, false);
-
-  // Do it again, but now opt to disable the extension.
-  bubble.set_action_on_show(
-      FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new NtpOverriddenBubbleDelegate(browser()->profile()),
-          browser()));
-  controller->SetIsActiveBubble();
-  EXPECT_TRUE(controller->ShouldShow());
-  override_extensions = controller->GetExtensionList();
-  EXPECT_EQ(1U, override_extensions.size());
-  bubble.set_controller(controller.get());
-  bubble.Show();  // Simulate showing the bubble.
-  EXPECT_EQ(0U, controller->link_click_count());
-  EXPECT_EQ(1U, controller->action_click_count());
-  EXPECT_EQ(0U, controller->dismiss_click_count());
-  // Only extension 2 should have become disabled.
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1) != NULL);
-  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId2) != NULL);
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3) != NULL);
-  // No extension should have been acknowledged (it got disabled).
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId1));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId2));
-  EXPECT_FALSE(controller->delegate()->HasBubbleInfoBeenAcknowledged(kId3));
-
-  // Clean up after ourselves.
-  service_->UninstallExtension(kId1,
-                               extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-  service_->UninstallExtension(kId2,
-                               extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-  service_->UninstallExtension(kId3,
-                               extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-}
-
-// Tests that the NTP override bubble is shown (on the new tab page) each time
-// an NTP overriding extension is installed for a single profile. Note that the
-// NTP bubble is only implemented on Windows and ChromeOs, but this test should
-// still pass on Linux and Mac.
-// TODO(https://crbug.com/836332): Re-enable once not flaky.
-TEST_F(ExtensionMessageBubbleTest,
-       DISABLED_ShowNtpBubblePerProfilePerExtensionTest) {
-  Init();
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::UNPACKED));
-  std::unique_ptr<TestExtensionMessageBubbleController> controller(
-      std::make_unique<TestExtensionMessageBubbleController>(
-          new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
-  ShowAndDismissBubbleByDeactivation(controller.get(), "Extension 1");
-
-  ASSERT_TRUE(LoadExtensionOverridingNtp("2", kId2, Manifest::UNPACKED));
-  controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new NtpOverriddenBubbleDelegate(browser()->profile()), browser());
-  ShowAndDismissBubbleByDeactivation(controller.get(), "Extension 2");
-
-  ASSERT_TRUE(LoadExtensionOverridingNtp("3", kId3, Manifest::UNPACKED));
-  controller = std::make_unique<TestExtensionMessageBubbleController>(
-      new NtpOverriddenBubbleDelegate(browser()->profile()), browser());
-  ShowAndDismissBubbleByDeactivation(controller.get(), "Extension 3");
-
-  // No extension should have become disabled.
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId1));
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId2));
-  EXPECT_TRUE(registry->enabled_extensions().GetByID(kId3));
-
-  // Clean up after ourselves.
-  service_->UninstallExtension(kId1, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-  service_->UninstallExtension(kId2, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-  service_->UninstallExtension(kId3, extensions::UNINSTALL_REASON_FOR_TESTING,
-                               NULL);
-}
-
 void SetInstallTime(const std::string& extension_id,
                     const base::Time& time,
                     ExtensionPrefs* prefs) {
@@ -1182,7 +1005,7 @@ void SetInstallTime(const std::string& extension_id,
 }
 
 // The feature this is meant to test is only implemented on Windows and Mac.
-#if defined(OS_WIN) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_MAC)
 // http://crbug.com/397426
 #define MAYBE_ProxyOverriddenControllerTest DISABLED_ProxyOverriddenControllerTest
 #else
@@ -1190,24 +1013,27 @@ void SetInstallTime(const std::string& extension_id,
 #endif
 
 TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // On Mac, this API is limited to trunk.
   ScopedCurrentChannel scoped_channel(version_info::Channel::UNKNOWN);
-#endif  // OS_MACOSX
+#endif  // OS_MAC
 
   Init();
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   // Load two extensions overriding proxy and one overriding something
   // unrelated (to check for interference). Extension 2 should still win
   // on the proxy setting.
-  ASSERT_TRUE(LoadExtensionOverridingProxy("1", kId1, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadExtensionOverridingProxy("2", kId2, Manifest::UNPACKED));
-  ASSERT_TRUE(LoadExtensionOverridingStart("3", kId3, Manifest::UNPACKED));
+  ASSERT_TRUE(
+      LoadExtensionOverridingProxy("1", kId1, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadExtensionOverridingProxy("2", kId2, ManifestLocation::kUnpacked));
+  ASSERT_TRUE(
+      LoadExtensionOverridingStart("3", kId3, ManifestLocation::kUnpacked));
 
   // The bubble will not show if the extension was installed in the last 7 days
   // so we artificially set the install time to simulate an old install during
   // testing.
-  base::Time old_enough = base::Time::Now() - base::TimeDelta::FromDays(8);
+  base::Time old_enough = base::Time::Now() - base::Days(8);
   SetInstallTime(kId1, old_enough, prefs);
   SetInstallTime(kId2, base::Time::Now(), prefs);
   SetInstallTime(kId3, old_enough, prefs);
@@ -1225,10 +1051,10 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // The list will contain one enabled unpacked extension (ext 2).
   EXPECT_TRUE(controller->ShouldShow());
   EXPECT_FALSE(controller->ShouldShow());
-  std::vector<base::string16> override_extensions =
+  std::vector<std::u16string> override_extensions =
       controller->GetExtensionList();
   ASSERT_EQ(1U, override_extensions.size());
-  EXPECT_EQ(base::ASCIIToUTF16("Extension 2"), override_extensions[0]);
+  EXPECT_EQ(u"Extension 2", override_extensions[0]);
   EXPECT_EQ(0U, controller->link_click_count());
   EXPECT_EQ(0U, controller->dismiss_click_count());
   EXPECT_EQ(0U, controller->action_click_count());
@@ -1257,10 +1083,8 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // Simulate clicking the learn more link to dismiss it.
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_LINK);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new ProxyOverriddenBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new ProxyOverriddenBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   bubble.set_controller(controller.get());
@@ -1282,10 +1106,8 @@ TEST_F(ExtensionMessageBubbleTest, MAYBE_ProxyOverriddenControllerTest) {
   // Do it again, but now opt to disable the extension.
   bubble.set_action_on_show(
       FakeExtensionMessageBubble::BUBBLE_ACTION_CLICK_ACTION_BUTTON);
-  controller.reset(
-      new TestExtensionMessageBubbleController(
-          new ProxyOverriddenBubbleDelegate(browser()->profile()),
-          browser()));
+  controller = std::make_unique<TestExtensionMessageBubbleController>(
+      new ProxyOverriddenBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   override_extensions = controller->GetExtensionList();
@@ -1326,55 +1148,43 @@ TEST_F(ExtensionMessageBubbleTest, TestBubbleOutlivesBrowser) {
   ToolbarActionsModel* model = ToolbarActionsModel::Get(profile());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new DevModeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   EXPECT_EQ(1u, model->action_ids().size());
-  controller->HighlightExtensionsIfNecessary();
-  EXPECT_TRUE(model->is_highlighting());
+  EXPECT_TRUE(model->has_active_bubble());
   set_browser(nullptr);
-  EXPECT_FALSE(model->is_highlighting());
+  EXPECT_FALSE(model->has_active_bubble());
   controller.reset();
 }
-
-// Fails on linux-chromeos-rel: crbug.com/839371
-#if defined(OS_CHROMEOS)
-#define MAYBE_TestUninstallExtensionAfterBrowserDestroyed \
-  DISABLED_TestUninstallExtensionAfterBrowserDestroyed
-#else
-// TODO(https://crbug.com/836332): Re-enable once not flaky.
-#define MAYBE_TestUninstallExtensionAfterBrowserDestroyed \
-  DISABLED_TestUninstallExtensionAfterBrowserDestroyed
-#endif  // defined(OS_CHROMEOS)
 
 // Tests that when an extension -- associated with a bubble controller -- is
 // uninstalling after the browser is destroyed, the controller does not access
 // the associated browser object and therefore, no use-after-free occurs.
 // crbug.com/756316
 TEST_F(ExtensionMessageBubbleTest,
-       MAYBE_TestUninstallExtensionAfterBrowserDestroyed) {
+       TestUninstallExtensionAfterBrowserDestroyed) {
   FeatureSwitch::ScopedOverride force_dev_mode_highlighting(
       FeatureSwitch::force_dev_mode_highlighting(), true);
   Init();
   ToolbarActionsModel* model = ToolbarActionsModel::Get(profile());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new DevModeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   EXPECT_EQ(1u, model->action_ids().size());
-  controller->HighlightExtensionsIfNecessary();
-  EXPECT_TRUE(model->is_highlighting());
+  EXPECT_TRUE(model->has_active_bubble());
   set_browser(nullptr);
   service_->UninstallExtension(kId1, extensions::UNINSTALL_REASON_FOR_TESTING,
                                nullptr);
-  EXPECT_FALSE(model->is_highlighting());
+  EXPECT_FALSE(model->has_active_bubble());
   controller.reset();
 }
 
@@ -1389,42 +1199,43 @@ TEST_F(ExtensionMessageBubbleTest,
   ToolbarActionsModel* model = ToolbarActionsModel::Get(profile());
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, Manifest::UNPACKED));
+  ASSERT_TRUE(LoadExtensionWithAction("1", kId1, ManifestLocation::kUnpacked));
 
   auto controller = std::make_unique<TestExtensionMessageBubbleController>(
       new DevModeBubbleDelegate(browser()->profile()), browser());
   controller->SetIsActiveBubble();
   EXPECT_TRUE(controller->ShouldShow());
   EXPECT_EQ(1u, model->action_ids().size());
-  controller->HighlightExtensionsIfNecessary();
-  EXPECT_TRUE(model->is_highlighting());
+  EXPECT_TRUE(model->has_active_bubble());
   set_browser(nullptr);
   service_->DisableExtension(kId1, disable_reason::DISABLE_USER_ACTION);
-  EXPECT_FALSE(model->is_highlighting());
+  EXPECT_FALSE(model->has_active_bubble());
   controller.reset();
 }
 
 // Tests if that ShouldShow() returns false if the bubble's associated extension
 // has been removed.
-TEST_F(ExtensionMessageBubbleTest, TestShouldShowMethod) {
+TEST_F(ExtensionMessageBubbleTest,
+       ShouldShowReturnsFalseIfExtensionIsDisabled) {
   Init();
-  ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
-  ASSERT_TRUE(LoadExtensionOverridingNtp("1", kId1, Manifest::UNPACKED));
-  ASSERT_TRUE(registry->enabled_extensions().GetByID(kId1));
 
-  std::unique_ptr<TestExtensionMessageBubbleController> ntp_bubble_controller(
-      new TestExtensionMessageBubbleController(
-          new NtpOverriddenBubbleDelegate(browser()->profile()), browser()));
+  scoped_refptr<const Extension> extension = ExtensionBuilder("Alpha").Build();
+  service_->AddExtension(extension.get());
+  auto test_delegate = std::make_unique<TestExtensionMessageBubbleDelegate>(
+      browser()->profile());
+  test_delegate->IncludeExtensionId(extension->id());
 
-  ASSERT_EQ(1u, ntp_bubble_controller->GetExtensionIdList().size());
-  EXPECT_EQ(kId1, ntp_bubble_controller->GetExtensionIdList()[0]);
-  EXPECT_TRUE(ntp_bubble_controller->ShouldShow());
+  auto controller = std::make_unique<TestExtensionMessageBubbleController>(
+      test_delegate.release(), browser());
 
-  // Disable the extension for being from outside the webstore.
-  service_->DisableExtension(kId1,
-                             extensions::disable_reason::DISABLE_NOT_VERIFIED);
-  EXPECT_TRUE(registry->disabled_extensions().GetByID(kId1));
-  EXPECT_FALSE(ntp_bubble_controller->ShouldShow());
+  ASSERT_EQ(1u, controller->GetExtensionIdList().size());
+  EXPECT_EQ(extension->id(), controller->GetExtensionIdList()[0]);
+  EXPECT_TRUE(controller->ShouldShow());
+
+  // Disable the extension.
+  service_->DisableExtension(extension->id(),
+                             extensions::disable_reason::DISABLE_USER_ACTION);
+  EXPECT_FALSE(controller->ShouldShow());
 }
 
 }  // namespace extensions

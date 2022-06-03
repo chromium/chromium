@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "third_party/dom_distiller_js/dom_distiller.pb.h"
 #include "ui/gfx/geometry/size.h"
@@ -20,7 +20,7 @@ namespace dom_distiller {
 
 class SourcePageHandle {
  public:
-  virtual ~SourcePageHandle() {}
+  virtual ~SourcePageHandle() = default;
 };
 
 // Injects JavaScript into a page, and uses it to extract and return long-form
@@ -30,10 +30,9 @@ class SourcePageHandle {
 // thrown away without ever being used.
 class DistillerPage {
  public:
-  typedef base::Callback<void(
+  using DistillerPageCallback = base::OnceCallback<void(
       std::unique_ptr<proto::DomDistillerResult> distilled_page,
-      bool distillation_successful)>
-      DistillerPageCallback;
+      bool distillation_successful)>;
 
   DistillerPage();
   virtual ~DistillerPage();
@@ -44,12 +43,15 @@ class DistillerPage {
   // extract the same content.
   void DistillPage(const GURL& url,
                    const proto::DomDistillerOptions options,
-                   const DistillerPageCallback& callback);
+                   DistillerPageCallback callback);
 
   // Called when the JavaScript execution completes. |page_url| is the url of
   // the distilled page. |value| contains data returned by the script.
   virtual void OnDistillationDone(const GURL& page_url,
                                   const base::Value* value);
+
+  DistillerPage(const DistillerPage&) = delete;
+  DistillerPage& operator=(const DistillerPage&) = delete;
 
  protected:
   // Called by |DistillPage| to carry out platform-specific instructions to load
@@ -65,7 +67,6 @@ class DistillerPage {
   bool ready_;
   DistillerPageCallback distiller_page_callback_;
   base::TimeTicks distillation_start_;
-  DISALLOW_COPY_AND_ASSIGN(DistillerPage);
 };
 
 // Factory for generating a |DistillerPage|.

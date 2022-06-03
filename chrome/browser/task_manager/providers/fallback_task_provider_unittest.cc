@@ -4,7 +4,8 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/containers/contains.h"
+#include "base/containers/cxx20_erase.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "chrome/browser/task_manager/providers/fallback_task_provider.h"
@@ -21,11 +22,13 @@ class FakeTask : public Task {
  public:
   FakeTask(base::ProcessId process_id, Type type, const std::string& title)
       : Task(base::ASCIIToUTF16(title),
-             "FakeTask",
              nullptr,
              base::kNullProcessHandle,
              process_id),
         type_(type) {}
+
+  FakeTask(const FakeTask&) = delete;
+  FakeTask& operator=(const FakeTask&) = delete;
 
   Type GetType() const override { return type_; }
 
@@ -37,14 +40,15 @@ class FakeTask : public Task {
 
  private:
   Type type_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTask);
 };
 
 class FakeTaskProvider : public TaskProvider {
  public:
-  FakeTaskProvider() {}
-  ~FakeTaskProvider() override {}
+  FakeTaskProvider() = default;
+  FakeTaskProvider(const FakeTaskProvider&) = delete;
+  FakeTaskProvider& operator=(const FakeTaskProvider&) = delete;
+  ~FakeTaskProvider() override = default;
+
   Task* GetTaskOfUrlRequest(int child_id, int route_id) override {
     return nullptr;
   }
@@ -69,8 +73,6 @@ class FakeTaskProvider : public TaskProvider {
   void StopUpdating() override {}
 
   std::vector<Task*> task_provider_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FakeTaskProvider);
 };
 
 // Defines a test for the child process task provider and the child process
@@ -79,14 +81,19 @@ class FallbackTaskProviderTest : public testing::Test,
                                  public TaskProviderObserver {
  public:
   FallbackTaskProviderTest() {
-    std::unique_ptr<TaskProvider> primary_subprovider(new FakeTaskProvider());
-    std::unique_ptr<TaskProvider> secondary_subprovider(new FakeTaskProvider());
-    task_provider_ =
-        std::unique_ptr<FallbackTaskProvider>(new FallbackTaskProvider(
-            std::move(primary_subprovider), std::move(secondary_subprovider)));
+    std::vector<std::unique_ptr<TaskProvider>> primary_subproviders;
+    primary_subproviders.push_back(std::make_unique<FakeTaskProvider>());
+    primary_subproviders.push_back(std::make_unique<FakeTaskProvider>());
+
+    task_provider_ = std::make_unique<FallbackTaskProvider>(
+        std::move(primary_subproviders), std::make_unique<FakeTaskProvider>());
+
+    task_provider_->allow_fallback_for_testing_ = true;
   }
 
-  ~FallbackTaskProviderTest() override {}
+  FallbackTaskProviderTest(const FallbackTaskProviderTest&) = delete;
+  FallbackTaskProviderTest& operator=(const FallbackTaskProviderTest&) = delete;
+  ~FallbackTaskProviderTest() override = default;
 
   // task_manager::TaskProviderObserver:
   void TaskAdded(Task* task) override {
@@ -99,34 +106,51 @@ class FallbackTaskProviderTest : public testing::Test,
     base::Erase(seen_tasks_, task);
   }
 
-  // This adds tasks to the |primary_subprovider|.
-  void PrimaryTaskAdded(Task* task) {
+  // This adds tasks to the first primary subprovider.
+  void FirstPrimaryTaskAdded(Task* task) {
     DCHECK(task);
     static_cast<FakeTaskProvider*>(
-        task_provider_.get()->primary_source()->subprovider())
+        task_provider_->primary_sources_[0]->subprovider())
         ->TaskAdded(task);
   }
-  // This removes tasks from the |primary_subprovider|.
-  void PrimaryTaskRemoved(Task* task) {
+
+  // This removes tasks from the first primary subprovider.
+  void FirstPrimaryTaskRemoved(Task* task) {
     DCHECK(task);
     static_cast<FakeTaskProvider*>(
-        task_provider_.get()->primary_source()->subprovider())
+        task_provider_->primary_sources_[0]->subprovider())
         ->TaskRemoved(task);
   }
 
-  // This adds tasks to the |secondary_subprovider|.
-  void SecondaryTaskAdded(Task* task) {
+  // This adds tasks to the second primary subprovider.
+  void SecondPrimaryTaskAdded(Task* task) {
     DCHECK(task);
     static_cast<FakeTaskProvider*>(
-        task_provider_.get()->secondary_source()->subprovider())
+        task_provider_->primary_sources_[1]->subprovider())
         ->TaskAdded(task);
   }
 
-  // This removes tasks from the |secondary_subprovider|.
+  // This removes tasks from the second primary subprovider.
+  void SecondPrimaryTaskRemoved(Task* task) {
+    DCHECK(task);
+    static_cast<FakeTaskProvider*>(
+        task_provider_->primary_sources_[1]->subprovider())
+        ->TaskRemoved(task);
+  }
+
+  // This adds tasks to the secondary subprovider.
+  void SecondaryTaskAdded(Task* task) {
+    DCHECK(task);
+    static_cast<FakeTaskProvider*>(
+        task_provider_->secondary_source_->subprovider())
+        ->TaskAdded(task);
+  }
+
+  // This removes tasks from the secondary subprovider.
   void SecondaryTaskRemoved(Task* task) {
     DCHECK(task);
     static_cast<FakeTaskProvider*>(
-        task_provider_.get()->secondary_source()->subprovider())
+        task_provider_->secondary_source_->subprovider())
         ->TaskRemoved(task);
   }
 
@@ -139,10 +163,10 @@ class FallbackTaskProviderTest : public testing::Test,
     return result;
   }
 
-  void StartUpdating() { task_provider_.get()->SetObserver(this); }
+  void StartUpdating() { task_provider_->SetObserver(this); }
 
   void StopUpdating() {
-    task_provider_.get()->ClearObserver();
+    task_provider_->ClearObserver();
     seen_tasks_.clear();
   }
 
@@ -153,19 +177,23 @@ class FallbackTaskProviderTest : public testing::Test,
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<FallbackTaskProvider> task_provider_;
   std::vector<Task*> seen_tasks_;
-
-  DISALLOW_COPY_AND_ASSIGN(FallbackTaskProviderTest);
 };
 
 TEST_F(FallbackTaskProviderTest, BasicTest) {
-  base::TimeDelta delay = base::TimeDelta::FromMilliseconds(750);
+  // The delay for showing a secondary source is 750ms; delay 1000ms to ensure
+  // we see them.
+  base::TimeDelta delay = base::Milliseconds(1000);
   base::ScopedMockTimeMessageLoopTaskRunner mock_main_runner;
   StartUpdating();
-  // In this secondary tasks are named starting with "S" followed by a
-  // underscore with the next number being the Pid followed by the a underscore
-  // and then the number of processes with that pid that have been created. For
-  // instance the first secondary task with Pid of 1 and will be named "S_1_1".
-  // Similarly for the third primary process with a Pid of 7 would be "P_7_3".
+
+  // There are two primary task providers and one secondary task provider. The
+  // naming convention here is "P_x_y". P is either P or Q for the two primary
+  // providers, and S for the secondary provider. The x is the PID of the
+  // process, and the y is the task index hosted within the process. For
+  // example, the first secondary task with process PID of 1 will be named
+  // "S_1_1". Similarly, the third primary task from the first primary provider
+  // with process PID of 7 would be "P_7_3".
+
   FakeTask fake_secondary_task_1_1(1, Task::RENDERER, "S_1_1");
   SecondaryTaskAdded(&fake_secondary_task_1_1);
   mock_main_runner->FastForwardBy(delay);
@@ -180,7 +208,7 @@ TEST_F(FallbackTaskProviderTest, BasicTest) {
       DumpSeenTasks());
 
   FakeTask fake_primary_task_1_1(1, Task::RENDERER, "P_1_1");
-  PrimaryTaskAdded(&fake_primary_task_1_1);
+  FirstPrimaryTaskAdded(&fake_primary_task_1_1);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ("P_1_1\n", DumpSeenTasks());
 
@@ -197,20 +225,20 @@ TEST_F(FallbackTaskProviderTest, BasicTest) {
       "S_2_1\n",
       DumpSeenTasks());
 
-  FakeTask fake_primary_task_3_1(3, Task::RENDERER, "P_3_1");
-  PrimaryTaskAdded(&fake_primary_task_3_1);
+  FakeTask fake_primary_task_3_1(3, Task::RENDERER, "Q_3_1");
+  SecondPrimaryTaskAdded(&fake_primary_task_3_1);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
       "P_1_1\n"
       "S_2_1\n"
-      "P_3_1\n",
+      "Q_3_1\n",
       DumpSeenTasks());
 
-  PrimaryTaskRemoved(&fake_primary_task_1_1);
+  FirstPrimaryTaskRemoved(&fake_primary_task_1_1);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
       "S_2_1\n"
-      "P_3_1\n"
+      "Q_3_1\n"
       "S_1_1\n"
       "S_1_2\n"
       "S_1_3\n",
@@ -224,34 +252,34 @@ TEST_F(FallbackTaskProviderTest, BasicTest) {
   StartUpdating();
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
-      "P_3_1\n"
+      "Q_3_1\n"
       "S_1_1\n"
       "S_1_2\n"
       "S_1_3\n"
       "S_2_1\n",
       DumpSeenTasks());
 
-  PrimaryTaskAdded(&fake_primary_task_1_1);
+  FirstPrimaryTaskAdded(&fake_primary_task_1_1);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
-      "P_3_1\n"
+      "Q_3_1\n"
       "S_2_1\n"
       "P_1_1\n",
       DumpSeenTasks());
 
   FakeTask fake_primary_task_1_2(1, Task::RENDERER, "P_1_2");
-  PrimaryTaskAdded(&fake_primary_task_1_2);
+  FirstPrimaryTaskAdded(&fake_primary_task_1_2);
   EXPECT_EQ(
-      "P_3_1\n"
+      "Q_3_1\n"
       "S_2_1\n"
       "P_1_1\n"
       "P_1_2\n",
       DumpSeenTasks());
 
-  PrimaryTaskRemoved(&fake_primary_task_1_1);
+  FirstPrimaryTaskRemoved(&fake_primary_task_1_1);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
-      "P_3_1\n"
+      "Q_3_1\n"
       "S_2_1\n"
       "P_1_2\n",
       DumpSeenTasks());
@@ -259,26 +287,26 @@ TEST_F(FallbackTaskProviderTest, BasicTest) {
   SecondaryTaskRemoved(&fake_secondary_task_2_1);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
-      "P_3_1\n"
+      "Q_3_1\n"
       "P_1_2\n",
       DumpSeenTasks());
 
   SecondaryTaskRemoved(&fake_secondary_task_1_1);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
-      "P_3_1\n"
+      "Q_3_1\n"
       "P_1_2\n",
       DumpSeenTasks());
 
-  PrimaryTaskRemoved(&fake_primary_task_1_2);
+  FirstPrimaryTaskRemoved(&fake_primary_task_1_2);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
-      "P_3_1\n"
+      "Q_3_1\n"
       "S_1_2\n"
       "S_1_3\n",
       DumpSeenTasks());
 
-  PrimaryTaskRemoved(&fake_primary_task_3_1);
+  SecondPrimaryTaskRemoved(&fake_primary_task_3_1);
   mock_main_runner->FastForwardBy(delay);
   EXPECT_EQ(
       "S_1_2\n"

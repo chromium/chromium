@@ -4,6 +4,7 @@
 
 #include "remoting/test/cyclic_frame_generator.h"
 
+#include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
 #include "remoting/test/frame_generator_util.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
@@ -49,13 +50,13 @@ std::unique_ptr<webrtc::DesktopFrame> CyclicFrameGenerator::GenerateFrame(
     webrtc::SharedMemoryFactory* shared_memory_factory) {
   base::TimeTicks now = clock_->NowTicks();
 
-  int frame_id = (now - started_time_) / cursor_blink_period_;
+  int frame_id = base::ClampFloor((now - started_time_) / cursor_blink_period_);
   int reference_frame =
-      ((now - started_time_) / frame_cycle_period_) % reference_frames_.size();
+      base::ClampFloor((now - started_time_) / frame_cycle_period_) %
+      reference_frames_.size();
   bool cursor_state = frame_id % 2;
 
-  std::unique_ptr<webrtc::DesktopFrame> frame(
-      new webrtc::BasicDesktopFrame(screen_size_));
+  auto frame = std::make_unique<webrtc::BasicDesktopFrame>(screen_size_);
   frame->CopyPixelsFrom(*reference_frames_[reference_frame],
                         webrtc::DesktopVector(),
                         webrtc::DesktopRect::MakeSize(screen_size_));
@@ -89,17 +90,17 @@ std::unique_ptr<webrtc::DesktopFrame> CyclicFrameGenerator::GenerateFrame(
 
 CyclicFrameGenerator::ChangeInfoList CyclicFrameGenerator::GetChangeList(
     base::TimeTicks timestamp) {
-  int frame_id = (timestamp - started_time_) / cursor_blink_period_;
+  int frame_id =
+      base::ClampFloor((timestamp - started_time_) / cursor_blink_period_);
   CHECK_GE(frame_id, last_identifier_frame_);
 
   ChangeInfoList result;
+  const int frames_in_cycle =
+      base::ClampFloor(frame_cycle_period_ / cursor_blink_period_);
   for (int i = last_identifier_frame_ + 1; i <= frame_id; ++i) {
-    ChangeType type = (i % (frame_cycle_period_ / cursor_blink_period_) == 0)
-                          ? ChangeType::FULL
-                          : ChangeType::CURSOR;
-    base::TimeTicks timestamp =
-        started_time_ + i * base::TimeDelta(cursor_blink_period_);
-    result.push_back(ChangeInfo(type, timestamp));
+    ChangeType type =
+        (i % frames_in_cycle == 0) ? ChangeType::FULL : ChangeType::CURSOR;
+    result.emplace_back(type, started_time_ + i * cursor_blink_period_);
   }
   last_identifier_frame_ = frame_id;
 

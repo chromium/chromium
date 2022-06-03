@@ -25,13 +25,13 @@ TEST(CallbackTrackerTest, AbortAll) {
 
   bool aborted = false;
   bool invoked = false;
-  base::Closure callback = tracker.Register(base::Bind(&Receiver, &aborted),
-                                            base::Bind(&Receiver, &invoked));
+  base::OnceClosure callback = tracker.Register(
+      base::BindOnce(&Receiver, &aborted), base::BindOnce(&Receiver, &invoked));
   tracker.AbortAll();
   EXPECT_TRUE(aborted);
   EXPECT_FALSE(invoked);
 
-  callback.Run();
+  std::move(callback).Run();
   EXPECT_TRUE(aborted);
   EXPECT_FALSE(invoked);
 }
@@ -41,16 +41,11 @@ TEST(CallbackTrackerTest, Invoke) {
 
   bool aborted = false;
   bool invoked = false;
-  base::Closure callback = tracker.Register(base::Bind(&Receiver, &aborted),
-                                            base::Bind(&Receiver, &invoked));
-  callback.Run();
+  base::OnceClosure callback = tracker.Register(
+      base::BindOnce(&Receiver, &aborted), base::BindOnce(&Receiver, &invoked));
+  std::move(callback).Run();
   EXPECT_FALSE(aborted);
   EXPECT_TRUE(invoked);
-
-  // Second call should not do anything.
-  invoked = false;
-  callback.Run();
-  EXPECT_FALSE(invoked);
 
   tracker.AbortAll();
   EXPECT_FALSE(aborted);

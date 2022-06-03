@@ -64,7 +64,7 @@ class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
  public:
   FakeKeepAliveOperationFactory()
       : num_created_(0), num_deleted_(0), last_created_(nullptr) {}
-  ~FakeKeepAliveOperationFactory() = default;
+  ~FakeKeepAliveOperationFactory() override = default;
 
   uint32_t num_created() { return num_created_; }
 
@@ -75,7 +75,7 @@ class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
   void OnOperationDeleted() override { num_deleted_++; }
 
  protected:
-  std::unique_ptr<KeepAliveOperation> BuildInstance(
+  std::unique_ptr<KeepAliveOperation> CreateInstance(
       multidevice::RemoteDeviceRef device_to_connect,
       device_sync::DeviceSyncClient* device_sync_client,
       secure_channel::SecureChannelClient* secure_channel_client) override {
@@ -94,6 +94,10 @@ class FakeKeepAliveOperationFactory final : public KeepAliveOperation::Factory,
 }  // namespace
 
 class KeepAliveSchedulerTest : public testing::Test {
+ public:
+  KeepAliveSchedulerTest(const KeepAliveSchedulerTest&) = delete;
+  KeepAliveSchedulerTest& operator=(const KeepAliveSchedulerTest&) = delete;
+
  protected:
   KeepAliveSchedulerTest()
       : test_devices_(multidevice::CreateRemoteDeviceRefListForTest(2)) {}
@@ -111,7 +115,7 @@ class KeepAliveSchedulerTest : public testing::Test {
 
     fake_operation_factory_ =
         base::WrapUnique(new FakeKeepAliveOperationFactory());
-    KeepAliveOperation::Factory::SetInstanceForTesting(
+    KeepAliveOperation::Factory::SetFactoryForTesting(
         fake_operation_factory_.get());
 
     scheduler_ = base::WrapUnique(new KeepAliveScheduler(
@@ -125,8 +129,7 @@ class KeepAliveSchedulerTest : public testing::Test {
     EXPECT_EQ(is_running, mock_timer_->IsRunning());
 
     if (is_running) {
-      EXPECT_EQ(base::TimeDelta::FromMinutes(
-                    KeepAliveScheduler::kKeepAliveIntervalMinutes),
+      EXPECT_EQ(base::Minutes(KeepAliveScheduler::kKeepAliveIntervalMinutes),
                 mock_timer_->GetCurrentDelay());
     }
   }
@@ -168,9 +171,6 @@ class KeepAliveSchedulerTest : public testing::Test {
   std::unique_ptr<FakeKeepAliveOperationFactory> fake_operation_factory_;
 
   std::unique_ptr<KeepAliveScheduler> scheduler_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(KeepAliveSchedulerTest);
 };
 
 TEST_F(KeepAliveSchedulerTest, DISABLED_TestSendTickle_OneActiveHost) {

@@ -16,10 +16,8 @@ ctx.clear(ctx.COLOR_BUFFER_BIT);
 if (!window.testRunner) {
     testFailed("Requires window.testRunner");
 } else {
-    testRunner.setPrinting();
     testRunner.waitUntilDone();
-    testRunner.capturePixelsAsyncThen(function() {
-      testRunner.clearPrinting();
+    testRunner.capturePrintingPixelsThen(() => {
       testPassed("Printed without crashing.");
       testRunner.notifyDone();
     });

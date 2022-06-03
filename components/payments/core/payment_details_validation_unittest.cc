@@ -44,16 +44,22 @@ class PaymentDetailsValidationTest
     : public ::testing::TestWithParam<PaymentDetailsValidationTestCase> {};
 
 TEST_P(PaymentDetailsValidationTest, Test) {
-  auto value = base::JSONReader::ReadDeprecated(GetParam().details);
-  ASSERT_NE(nullptr, value.get()) << "Should be in JSON format";
-  auto dictionary = base::DictionaryValue::From(std::move(value));
-  ASSERT_NE(nullptr, dictionary.get()) << "Should be a dictionary";
+  absl::optional<base::Value> value =
+      base::JSONReader::Read(GetParam().details);
+  ASSERT_TRUE(value.has_value()) << "Should be in JSON format";
+  ASSERT_TRUE(value->is_dict());
   PaymentDetails details;
-  ASSERT_TRUE(
-      details.FromDictionaryValue(*dictionary, GetParam().require_total));
+  ASSERT_TRUE(details.FromValue(*value, GetParam().require_total));
   std::string unused;
 
   EXPECT_EQ(GetParam().expect_valid, ValidatePaymentDetails(details, &unused));
+}
+
+TEST(PaymentDetailsValidationTest, TestNonDict) {
+  // Make sure that FromValue on a non-dict doesn't crash.
+  PaymentDetails details;
+  EXPECT_FALSE(details.FromValue(base::Value("hello"),
+                                 /*requires_total=*/false));
 }
 
 INSTANTIATE_TEST_SUITE_P(

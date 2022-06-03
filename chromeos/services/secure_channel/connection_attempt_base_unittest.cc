@@ -13,7 +13,6 @@
 #include "chromeos/services/secure_channel/ble_initiator_failure_type.h"
 #include "chromeos/services/secure_channel/connection_attempt_details.h"
 #include "chromeos/services/secure_channel/connection_details.h"
-#include "chromeos/services/secure_channel/connection_medium.h"
 #include "chromeos/services/secure_channel/connection_role.h"
 #include "chromeos/services/secure_channel/device_id_pair.h"
 #include "chromeos/services/secure_channel/fake_authenticated_channel.h"
@@ -23,6 +22,7 @@
 #include "chromeos/services/secure_channel/fake_connection_delegate.h"
 #include "chromeos/services/secure_channel/fake_pending_connection_request.h"
 #include "chromeos/services/secure_channel/pending_connection_request_delegate.h"
+#include "chromeos/services/secure_channel/public/cpp/shared/connection_medium.h"
 #include "chromeos/services/secure_channel/public/cpp/shared/connection_priority.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -47,6 +47,9 @@ class TestConnectionAttempt
                                      kTestLocalDeviceId,
                                      ConnectionMedium::kBluetoothLowEnergy,
                                      ConnectionRole::kListenerRole)) {}
+
+  TestConnectionAttempt(const TestConnectionAttempt&) = delete;
+  TestConnectionAttempt& operator=(const TestConnectionAttempt&) = delete;
 
   ~TestConnectionAttempt() override = default;
 
@@ -76,13 +79,17 @@ class TestConnectionAttempt
 
   FakeConnectToDeviceOperation<BleInitiatorFailureType>* fake_operation_ =
       nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(TestConnectionAttempt);
 };
 
 }  // namespace
 
 class SecureChannelConnectionAttemptBaseTest : public testing::Test {
+ public:
+  SecureChannelConnectionAttemptBaseTest(
+      const SecureChannelConnectionAttemptBaseTest&) = delete;
+  SecureChannelConnectionAttemptBaseTest& operator=(
+      const SecureChannelConnectionAttemptBaseTest&) = delete;
+
  protected:
   SecureChannelConnectionAttemptBaseTest() = default;
   ~SecureChannelConnectionAttemptBaseTest() override = default;
@@ -227,8 +234,6 @@ class SecureChannelConnectionAttemptBaseTest : public testing::Test {
   bool is_extract_client_data_test_ = false;
 
   std::unique_ptr<TestConnectionAttempt> connection_attempt_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelConnectionAttemptBaseTest);
 };
 
 TEST_F(SecureChannelConnectionAttemptBaseTest, SingleRequest_Success) {

@@ -10,9 +10,6 @@ enum class InfobarOverlayType : short {
   // Used to create banner overlays that are displayed in
   // OverlayModality::kInfobarBanner.
   kBanner,
-  // Used to create detail action sheet overlays that are displayed in
-  // OverlayModality::kInfobarModal.
-  kDetailSheet,
   // Used to create modal overlays that are displayed in
   // OverlayModality::kInfobarModal.
   kModal,

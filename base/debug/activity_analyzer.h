@@ -70,6 +70,9 @@ class BASE_EXPORT ThreadActivityAnalyzer {
   ThreadActivityAnalyzer(PersistentMemoryAllocator* allocator,
                          PersistentMemoryAllocator::Reference reference);
 
+  ThreadActivityAnalyzer(const ThreadActivityAnalyzer&) = delete;
+  ThreadActivityAnalyzer& operator=(const ThreadActivityAnalyzer&) = delete;
+
   ~ThreadActivityAnalyzer();
 
   // Adds information from the global analyzer.
@@ -111,8 +114,6 @@ class BASE_EXPORT ThreadActivityAnalyzer {
   // A reference into a persistent memory allocator, used by the global
   // analyzer to know where this tracker came from.
   PersistentMemoryAllocator::Reference allocator_reference_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadActivityAnalyzer);
 };
 
 
@@ -135,6 +136,9 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   // Creates a global analyzer from a persistent memory allocator.
   explicit GlobalActivityAnalyzer(
       std::unique_ptr<PersistentMemoryAllocator> allocator);
+
+  GlobalActivityAnalyzer(const GlobalActivityAnalyzer&) = delete;
+  GlobalActivityAnalyzer& operator=(const GlobalActivityAnalyzer&) = delete;
 
   ~GlobalActivityAnalyzer();
 
@@ -247,8 +251,6 @@ class BASE_EXPORT GlobalActivityAnalyzer {
   // first/next iteration.
   AnalyzerMap::iterator analyzers_iterator_;
   int64_t analyzers_iterator_pid_;
-
-  DISALLOW_COPY_AND_ASSIGN(GlobalActivityAnalyzer);
 };
 
 }  // namespace debug

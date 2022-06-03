@@ -1,0 +1,8 @@
+Test that matching styles report nested pseudo element styles.
+
+=== Dump matching styles for #for-pseudo::before::marker ===
+
+
+=== Dump matching styles for #for-pseudo::after::marker ===
+
+

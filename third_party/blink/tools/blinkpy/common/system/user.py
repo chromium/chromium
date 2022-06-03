@@ -33,6 +33,8 @@ import re
 import sys
 import webbrowser
 
+from six.moves import input
+
 from blinkpy.common.system.executive import Executive
 from blinkpy.common.system.filesystem import FileSystem
 from blinkpy.common.system.platform_info import PlatformInfo
@@ -47,11 +49,12 @@ class User(object):
     def __init__(self, platform_info=None):
         # We cannot get the PlatformInfo object from a SystemHost because
         # User is part of SystemHost itself.
-        self._platform_info = platform_info or PlatformInfo(sys, platform, FileSystem(), Executive())
+        self._platform_info = platform_info or PlatformInfo(
+            sys, platform, FileSystem(), Executive())
 
     # FIXME: These are @classmethods because bugzilla.py doesn't have a Tool object (thus no User instance).
     @classmethod
-    def prompt(cls, message, repeat=1, input_func=raw_input):
+    def prompt(cls, message, repeat=1, input_func=input):
         response = None
         while repeat and not response:
             repeat -= 1
@@ -59,11 +62,13 @@ class User(object):
         return response
 
     @classmethod
-    def _wait_on_list_response(cls, list_items, can_choose_multiple, input_func):
+    def _wait_on_list_response(cls, list_items, can_choose_multiple,
+                               input_func):
         while True:
             if can_choose_multiple:
                 response = cls.prompt(
-                    'Enter one or more numbers (comma-separated) or ranges (e.g. 3-7), or \'all\': ', input_func=input_func)
+                    'Enter one or more numbers (comma-separated) or ranges (e.g. 3-7), or \'all\': ',
+                    input_func=input_func)
                 if not response.strip() or response == 'all':
                     return list_items
 
@@ -81,21 +86,28 @@ class User(object):
                 return [list_items[i] for i in indices]
             else:
                 try:
-                    result = int(cls.prompt('Enter a number: ', input_func=input_func)) - 1
+                    result = int(
+                        cls.prompt('Enter a number: ',
+                                   input_func=input_func)) - 1
                 except ValueError:
                     continue
                 return list_items[result]
 
     @classmethod
-    def prompt_with_list(cls, list_title, list_items, can_choose_multiple=False, input_func=raw_input):
-        print list_title
+    def prompt_with_list(cls,
+                         list_title,
+                         list_items,
+                         can_choose_multiple=False,
+                         input_func=input):
+        print(list_title)
         i = 0
         for item in list_items:
             i += 1
-            print '%2d. %s' % (i, item)
-        return cls._wait_on_list_response(list_items, can_choose_multiple, input_func)
+            print('%2d. %s' % (i, item))
+        return cls._wait_on_list_response(list_items, can_choose_multiple,
+                                          input_func)
 
-    def confirm(self, message=None, default=DEFAULT_YES, input_func=raw_input):
+    def confirm(self, message=None, default=DEFAULT_YES, input_func=input):
         if not message:
             message = 'Continue?'
         choice = {'y': 'Y/n', 'n': 'y/N'}[default]
@@ -111,7 +123,8 @@ class User(object):
         # tends to autolaunch dbus: if this happens inside testing/xvfb.py, that
         # often causes problems when the autolaunched dbus exits, as dbus sends
         # a kill signal to all killable processes on exit (!!!).
-        if self._platform_info.is_linux() and 'DBUS_SESSION_BUS_ADDRESS' not in os.environ:
+        if (self._platform_info.is_linux()
+                and 'DBUS_SESSION_BUS_ADDRESS' not in os.environ):
             _log.warning('dbus is not running, not showing results...')
             return False
         try:

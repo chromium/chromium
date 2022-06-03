@@ -4,7 +4,8 @@
 
 #include "chrome/browser/ui/app_list/page_break_constants.h"
 
-#include "base/stl_util.h"
+#include "base/containers/contains.h"
+#include "base/cxx17_backports.h"
 
 namespace app_list {
 

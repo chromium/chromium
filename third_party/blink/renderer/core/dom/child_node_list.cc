@@ -79,7 +79,7 @@ Node* ChildNodeList::TraverseBackwardToOffset(unsigned offset,
   return nullptr;
 }
 
-void ChildNodeList::Trace(Visitor* visitor) {
+void ChildNodeList::Trace(Visitor* visitor) const {
   visitor->Trace(parent_);
   visitor->Trace(collection_index_cache_);
   NodeList::Trace(visitor);

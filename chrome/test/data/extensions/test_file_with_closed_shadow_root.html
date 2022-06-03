@@ -1,0 +1,10 @@
+<html>
+Test file!
+<div id="host"> </div>
+<script>
+  var host = document.getElementById('host');
+  var shadowRoot = host.attachShadow({mode: 'closed'});
+  shadowRoot.appendChild(document.createElement('div'));
+  shadowRoot.appendChild(document.createElement('div'));
+</script>
+</html>

@@ -22,6 +22,9 @@ class BackgroundPageWatcher : public ProcessManagerObserver {
   BackgroundPageWatcher(ProcessManager* process_manager,
                         const Extension* extension);
 
+  BackgroundPageWatcher(const BackgroundPageWatcher&) = delete;
+  BackgroundPageWatcher& operator=(const BackgroundPageWatcher&) = delete;
+
   ~BackgroundPageWatcher() override;
 
   // Returns when the background page is open. If the background page is
@@ -49,11 +52,9 @@ class BackgroundPageWatcher : public ProcessManagerObserver {
 
   ProcessManager* process_manager_;
   const std::string extension_id_;
-  base::Closure quit_run_loop_;
+  base::OnceClosure quit_run_loop_;
   bool is_waiting_for_open_;
   bool is_waiting_for_close_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundPageWatcher);
 };
 
 }  // namespace extensions

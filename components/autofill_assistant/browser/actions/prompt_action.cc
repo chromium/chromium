@@ -11,9 +11,11 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
+#include "base/strings/string_number_conversions.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
-#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/element_precondition.h"
+#include "components/autofill_assistant/browser/web/element.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -25,37 +27,53 @@ PromptAction::PromptAction(ActionDelegate* delegate, const ActionProto& proto)
 
 PromptAction::~PromptAction() {}
 
+bool PromptAction::ShouldInterruptOnPause() const {
+  return true;
+}
+
 void PromptAction::InternalProcessAction(ProcessActionCallback callback) {
+  callback_ = std::move(callback);
   if (proto_.prompt().choices_size() == 0) {
-    UpdateProcessedAction(INVALID_ACTION);
-    std::move(callback).Run(std::move(processed_action_proto_));
+    EndAction(ClientStatus(INVALID_ACTION));
     return;
   }
 
-  callback_ = std::move(callback);
   if (proto_.prompt().has_message()) {
     // TODO(b/144468818): Deprecate and remove message from this action and use
     // tell instead.
     delegate_->SetStatusMessage(proto_.prompt().message());
   }
 
-  SetupPreconditions();
+  if (proto_.prompt().browse_mode()) {
+    delegate_->SetBrowseDomainsAllowlist(
+        {proto_.prompt().browse_domains_allowlist().begin(),
+         proto_.prompt().browse_domains_allowlist().end()});
+  }
+
+  SetupConditions();
   UpdateUserActions();
 
-  if (HasNonemptyPreconditions() || HasAutoSelect() ||
+  wait_time_stopwatch_.Start();
+  if (HasNonemptyPreconditions() || auto_select_ ||
       proto_.prompt().allow_interrupt()) {
-    delegate_->WaitForDom(base::TimeDelta::Max(),
-                          proto_.prompt().allow_interrupt(),
-                          base::BindRepeating(&PromptAction::RegisterChecks,
-                                              weak_ptr_factory_.GetWeakPtr()),
-                          base::BindOnce(&PromptAction::OnDoneWaitForDom,
-                                         weak_ptr_factory_.GetWeakPtr()));
+    delegate_->WaitForDom(
+        base::TimeDelta::Max(), proto_.prompt().allow_interrupt(),
+        /* observer= */ nullptr,
+        base::BindRepeating(&PromptAction::RegisterChecks,
+                            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&PromptAction::OnWaitForElementTimed,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::BindOnce(&PromptAction::OnDoneWaitForDom,
+                                      weak_ptr_factory_.GetWeakPtr())));
   }
 }
 
 void PromptAction::RegisterChecks(
     BatchElementChecker* checker,
     base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback) {
+  last_period_stopwatch_.Stop();
+  last_checks_stopwatch_.Reset();
+  last_checks_stopwatch_.Start();
   if (!callback_) {
     // Action is done; checks aren't necessary anymore.
     std::move(wait_for_dom_callback).Run(OkClientStatus());
@@ -70,33 +88,44 @@ void PromptAction::RegisterChecks(
                                             weak_ptr_factory_.GetWeakPtr(), i));
   }
 
-  auto_select_choice_index_ = -1;
-  for (int i = 0; i < proto_.prompt().choices_size(); i++) {
-    Selector selector =
-        Selector(proto_.prompt().choices(i).auto_select_if_element_exists());
-    if (selector.empty())
-      continue;
-
-    checker->AddElementCheck(
-        selector, base::BindOnce(&PromptAction::OnAutoSelectElementExists,
-                                 weak_ptr_factory_.GetWeakPtr(), i));
+  if (auto_select_) {
+    auto_select_->Check(checker,
+                        base::BindOnce(&PromptAction::OnAutoSelectCondition,
+                                       weak_ptr_factory_.GetWeakPtr()));
   }
-
   checker->AddAllDoneCallback(base::BindOnce(&PromptAction::OnElementChecksDone,
                                              weak_ptr_factory_.GetWeakPtr(),
                                              std::move(wait_for_dom_callback)));
 }
 
-void PromptAction::SetupPreconditions() {
+void PromptAction::SetupConditions() {
   int choice_count = proto_.prompt().choices_size();
   preconditions_.resize(choice_count);
   precondition_results_.resize(choice_count);
+  positive_precondition_changes_.resize(choice_count);
+  precondition_stopwatches_.resize(choice_count);
+
   for (int i = 0; i < choice_count; i++) {
     auto& choice_proto = proto_.prompt().choices(i);
-    preconditions_[i] = std::make_unique<ElementPrecondition>(
-        choice_proto.show_only_if_element_exists(),
-        choice_proto.show_only_if_form_value_matches());
+    preconditions_[i] =
+        std::make_unique<ElementPrecondition>(choice_proto.show_only_when());
     precondition_results_[i] = preconditions_[i]->empty();
+    positive_precondition_changes_[i] = false;
+  }
+
+  ElementConditionsProto auto_select;
+  for (int i = 0; i < choice_count; i++) {
+    auto& choice_proto = proto_.prompt().choices(i);
+    if (choice_proto.has_auto_select_when()) {
+      ElementConditionProto* condition = auto_select.add_conditions();
+      *condition = choice_proto.auto_select_when();
+      condition->set_payload(base::NumberToString(i));
+    }
+  }
+  if (!auto_select.conditions().empty()) {
+    ElementConditionProto auto_select_condition;
+    *auto_select_condition.mutable_any_of() = auto_select;
+    auto_select_ = std::make_unique<ElementPrecondition>(auto_select_condition);
   }
 }
 
@@ -108,11 +137,17 @@ bool PromptAction::HasNonemptyPreconditions() {
   return false;
 }
 
-void PromptAction::OnPreconditionResult(size_t choice_index, bool result) {
-  if (precondition_results_[choice_index] == result)
+void PromptAction::OnPreconditionResult(
+    size_t choice_index,
+    const ClientStatus& status,
+    const std::vector<std::string>& ignored_payloads,
+    const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
+  bool precondition_is_met = status.ok();
+  if (precondition_results_[choice_index] == precondition_is_met)
     return;
 
-  precondition_results_[choice_index] = result;
+  precondition_results_[choice_index] = precondition_is_met;
+  positive_precondition_changes_[choice_index] = precondition_is_met;
   precondition_changed_ = true;
 }
 
@@ -122,7 +157,9 @@ void PromptAction::UpdateUserActions() {
   auto user_actions = std::make_unique<std::vector<UserAction>>();
   for (int i = 0; i < proto_.prompt().choices_size(); i++) {
     auto& choice_proto = proto_.prompt().choices(i);
-    UserAction user_action(choice_proto.chip(), choice_proto.direct_action());
+    UserAction user_action(choice_proto.chip(),
+                           /* enabled = */ true,
+                           /* identifier = */ std::string());
     if (!user_action.has_triggers())
       continue;
 
@@ -135,25 +172,45 @@ void PromptAction::UpdateUserActions() {
                                            weak_ptr_factory_.GetWeakPtr(), i));
     user_actions->emplace_back(std::move(user_action));
   }
-  delegate_->Prompt(std::move(user_actions));
+  base::OnceCallback<void()> end_on_navigation_callback;
+  if (proto_.prompt().end_on_navigation()) {
+    end_on_navigation_callback = base::BindOnce(
+        &PromptAction::OnNavigationEnded, weak_ptr_factory_.GetWeakPtr());
+  }
+  delegate_->Prompt(
+      std::move(user_actions), proto_.prompt().disable_force_expand_sheet(),
+      std::move(end_on_navigation_callback), proto_.prompt().browse_mode(),
+      proto_.prompt().browse_mode_invisible());
   precondition_changed_ = false;
 }
 
-bool PromptAction::HasAutoSelect() {
+void PromptAction::UpdateTimings() {
   for (int i = 0; i < proto_.prompt().choices_size(); i++) {
-    Selector selector =
-        Selector(proto_.prompt().choices(i).auto_select_if_element_exists());
-    if (!selector.empty())
-      return true;
+    if (!precondition_results_[i]) {
+      precondition_stopwatches_[i].Reset();
+    } else if (positive_precondition_changes_[i]) {
+      positive_precondition_changes_[i] = false;
+      // The precondition now contains the duration of the wait for dom
+      // operation retry period plus the time that it took to perform the actual
+      // checks. We want to instead record only half of the period plus the
+      // checks.
+      precondition_stopwatches_[i].AddTime(last_checks_stopwatch_);
+      precondition_stopwatches_[i].AddTime(
+          last_period_stopwatch_.TotalElapsed() / 2);
+    }
   }
-  return false;
 }
 
-void PromptAction::OnAutoSelectElementExists(
-    int choice_index,
-    const ClientStatus& element_status) {
-  if (element_status.ok())
-    auto_select_choice_index_ = choice_index;
+void PromptAction::OnAutoSelectCondition(
+    const ClientStatus& status,
+    const std::vector<std::string>& payloads,
+    const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements) {
+  if (payloads.empty())
+    return;
+
+  // We want to select the first matching choice, so only the first entry of
+  // payloads matter.
+  base::StringToInt(payloads[0], &auto_select_choice_index_);
 
   // Calling OnSuggestionChosen() is delayed until try_done, as it indirectly
   // deletes the batch element checker, which isn't supported from an element
@@ -162,8 +219,14 @@ void PromptAction::OnAutoSelectElementExists(
 
 void PromptAction::OnElementChecksDone(
     base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback) {
-  if (precondition_changed_)
+  last_checks_stopwatch_.Stop();
+  if (precondition_changed_) {
     UpdateUserActions();
+  }
+
+  UpdateTimings();
+  last_period_stopwatch_.Reset();
+  last_period_stopwatch_.Start();
 
   // Calling wait_for_dom_callback with successful status is a way of asking the
   // WaitForDom to end gracefully and call OnDoneWaitForDom with the status.
@@ -180,11 +243,17 @@ void PromptAction::OnElementChecksDone(
 }
 
 void PromptAction::OnDoneWaitForDom(const ClientStatus& status) {
-  // Status doesn't matter; it's just forwarded from AutoSelectDone.
-  if (auto_select_choice_index_ >= 0) {
-    delegate_->CancelPrompt();
-    OnSuggestionChosen(auto_select_choice_index_);
+  if (!callback_) {
+    return;
   }
+  // Status comes either from AutoSelectDone(), from checking the selector, or
+  // from an interrupt failure. Special-case the AutoSelectDone() case.
+  if (auto_select_choice_index_ >= 0) {
+    OnSuggestionChosen(auto_select_choice_index_);
+    return;
+  }
+  // Everything else should be forwarded.
+  EndAction(status);
 }
 
 void PromptAction::OnSuggestionChosen(int choice_index) {
@@ -192,12 +261,40 @@ void PromptAction::OnSuggestionChosen(int choice_index) {
     NOTREACHED();
     return;
   }
+
+  if (auto_select_choice_index_ < 0) {
+    wait_time_stopwatch_.Stop();
+    action_stopwatch_.TransferToWaitTime(wait_time_stopwatch_.TotalElapsed());
+    action_stopwatch_.TransferToActiveTime(
+        precondition_stopwatches_[choice_index].TotalElapsed());
+  }
+
   DCHECK(choice_index >= 0 && choice_index <= proto_.prompt().choices_size());
 
-  PromptProto::Choice choice;
-  UpdateProcessedAction(ACTION_APPLIED);
-  *processed_action_proto_->mutable_prompt_choice() =
-      proto_.prompt().choices(choice_index);
+  processed_action_proto_->mutable_prompt_choice()->set_server_payload(
+      proto_.prompt().choices(choice_index).server_payload());
+  EndAction(ClientStatus(ACTION_APPLIED));
+}
+
+void PromptAction::OnNavigationEnded() {
+  if (!callback_) {
+    NOTREACHED();
+    return;
+  }
+  action_stopwatch_.TransferToWaitTime(wait_time_stopwatch_.TotalElapsed());
+
+  processed_action_proto_->mutable_prompt_choice()->set_navigation_ended(true);
+  EndAction(ClientStatus(ACTION_APPLIED));
+}
+
+void PromptAction::EndAction(const ClientStatus& status) {
+  delegate_->CleanUpAfterPrompt();
+  // Clear the allowlist when a browse action is done.
+  if (proto_.prompt().browse_mode()) {
+    delegate_->SetBrowseDomainsAllowlist({});
+  }
+  UpdateProcessedAction(status);
   std::move(callback_).Run(std::move(processed_action_proto_));
 }
+
 }  // namespace autofill_assistant

@@ -58,6 +58,20 @@ TEST(TemplateExpressionsTest, ReplaceTemplateExpressionsRaw) {
             ReplaceTemplateExpressions("$i18nRaw{rawSample}", substitutions));
 }
 
+TEST(TemplateExpressionsTest, ReplaceTemplateExpressionsSkipPlaceholderCheck) {
+  static TemplateReplacements substitutions;
+  substitutions["rawSample"] = "$1";
+  // Skips DCHECK if |skip_unexpected_placeholder_check| is true.
+  ReplaceTemplateExpressions("$i18nRaw{rawSample}", substitutions,
+                             /* skip_unexpected_placeholder_check= */ true);
+  EXPECT_DCHECK_DEATH(ReplaceTemplateExpressions(
+      "$i18nRaw{rawSample}", substitutions,
+      /* skip_unexpected_placeholder_check= */ false));
+  // |skip_unexpected_placeholder_check|'s default value is false.
+  EXPECT_DCHECK_DEATH(
+      ReplaceTemplateExpressions("$i18nRaw{rawSample}", substitutions));
+}
+
 TEST(TemplateExpressionsTest, ReplaceTemplateExpressionsPolymerQuoting) {
   static TemplateReplacements substitutions;
   substitutions["singleSample"] = "don't do it";
@@ -76,14 +90,14 @@ TEST(TemplateExpressionsTest, ReplaceTemplateExpressionsPolymerQuoting) {
 
 TEST(TemplateExpressionsTest, ReplaceTemplateExpressionsPolymerMixed) {
   static TemplateReplacements substitutions;
-  substitutions["punctuationSample"] = "a\"b'c<d>e&f,g";
+  substitutions["punctuationSample"] = R"(a"b'c<d>e&f,g)";
   substitutions["htmlSample"] = "<div>hello</div>";
-  EXPECT_EQ("a&quot;b\\'c<d>e&f\\\\,g",
+  EXPECT_EQ(R"(a&quot;b\'c<d>e&f\,g)",
             ReplaceTemplateExpressions("$i18nPolymer{punctuationSample}",
                                        substitutions));
   EXPECT_EQ("<div>hello</div>", ReplaceTemplateExpressions(
                                     "$i18nPolymer{htmlSample}", substitutions));
-  EXPECT_EQ("multiple: <div>hello</div>, a&quot;b\\'c<d>e&f\\\\,g.",
+  EXPECT_EQ(R"(multiple: <div>hello</div>, a&quot;b\'c<d>e&f\,g.)",
             ReplaceTemplateExpressions("multiple: $i18nPolymer{htmlSample}, "
                                        "$i18nPolymer{punctuationSample}.",
                                        substitutions));
@@ -552,6 +566,35 @@ TEST(TemplateExpressionsTest, JSMultipleTemplates) {
        "Polymer({_template:html`<!--_html_template_start_--><div>number</div>"
        "<!--_html_template_end_-->`,is:'bar-element',});"}};
 
+  std::string formatted;
+  for (const TestCase test_case : kTestCases) {
+    ASSERT_TRUE(ReplaceTemplateExpressionsInJS(test_case.js_in, substitutions,
+                                               &formatted));
+    EXPECT_EQ(test_case.expected_out, formatted);
+    formatted.clear();
+  }
+}
+
+TEST(TemplateExpressionsTest, ReplaceTemplateExpressionsPolymerQuotingJS) {
+  static TemplateReplacements substitutions;
+  substitutions["quotesAndCommas"] = R"(don't "moo", they said)";
+  substitutions["backslashes"] = R"(\ \\ \n \r \t \b \f \0)";
+  const TestCase kTestCases[] = {
+      // Case: quotesAndCommas
+      {R"(<!--_html_template_start_-->
+       <div>[[Call('$i18nPolymer{quotesAndCommas}')]]</div>
+       <!--_html_template_end_-->)",
+       R"(<!--_html_template_start_-->
+       <div>[[Call('don\\'t &quot;moo&quot;\\, they said')]]</div>
+       <!--_html_template_end_-->)"},
+      // Case: backslashes
+      {R"(<!--_html_template_start_-->
+       <div>[[Call('$i18nPolymer{backslashes}')]]</div>
+       <!--_html_template_end_-->)",
+       R"(<!--_html_template_start_-->
+       <div>[[Call('\\\\ \\\\\\\\ \\\\n \\\\r \\\\t \\\\b \\\\f \\\\0')]]</div>
+       <!--_html_template_end_-->)"},
+  };
   std::string formatted;
   for (const TestCase test_case : kTestCases) {
     ASSERT_TRUE(ReplaceTemplateExpressionsInJS(test_case.js_in, substitutions,

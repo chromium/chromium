@@ -6,14 +6,19 @@
 
 #include <utility>
 
+#include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "content/common/service_worker/service_worker_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/origin_util.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "content/renderer/loader/web_url_loader_impl.h"
 #include "content/renderer/render_frame_impl.h"
 #include "content/renderer/render_thread_impl.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "third_party/blink/public/mojom/timing/worker_timing_container.mojom.h"
+#include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
+#include "third_party/blink/public/platform/web_url_loader.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
 namespace content {
@@ -61,17 +66,17 @@ class ServiceWorkerNetworkProviderForFrame::NewDocumentObserver
 std::unique_ptr<ServiceWorkerNetworkProviderForFrame>
 ServiceWorkerNetworkProviderForFrame::Create(
     RenderFrameImpl* frame,
-    blink::mojom::ServiceWorkerProviderInfoForClientPtr provider_info,
+    blink::mojom::ServiceWorkerContainerInfoForClientPtr container_info,
     blink::mojom::ControllerServiceWorkerInfoPtr controller_info,
     scoped_refptr<network::SharedURLLoaderFactory> fallback_loader_factory) {
-  DCHECK(provider_info);
+  DCHECK(container_info);
 
   auto provider =
       base::WrapUnique(new ServiceWorkerNetworkProviderForFrame(frame));
   provider->context_ = base::MakeRefCounted<ServiceWorkerProviderContext>(
-      blink::mojom::ServiceWorkerProviderType::kForWindow,
-      std::move(provider_info->client_receiver),
-      std::move(provider_info->host_remote), std::move(controller_info),
+      blink::mojom::ServiceWorkerContainerType::kForWindow,
+      std::move(container_info->client_receiver),
+      std::move(container_info->host_remote), std::move(controller_info),
       std::move(fallback_loader_factory));
 
   return provider;
@@ -105,7 +110,12 @@ std::unique_ptr<blink::WebURLLoader>
 ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
     const blink::WebURLRequest& request,
     std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
-        task_runner_handle) {
+        freezable_task_runner_handle,
+    std::unique_ptr<blink::scheduler::WebResourceLoadingTaskRunnerHandle>
+        unfreezable_task_runner_handle,
+    blink::CrossVariantMojoRemote<blink::mojom::KeepAliveHandleInterfaceBase>
+        keep_alive_handle,
+    blink::WebBackForwardCacheLoaderHelper back_forward_cache_loader_helper) {
   // RenderThreadImpl is nullptr in some tests.
   if (!RenderThreadImpl::current())
     return nullptr;
@@ -115,7 +125,7 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
   if (!context() || !context()->GetSubresourceLoaderFactory())
     return nullptr;
 
-  // If the URL is not http(s) or otherwise whitelisted, do not intercept the
+  // If the URL is not http(s) or otherwise allowed, do not intercept the
   // request. Schemes like 'blob' and 'file' are not eligible to be intercepted
   // by service workers.
   // TODO(falken): Let ServiceWorkerSubresourceLoaderFactory handle the request
@@ -129,6 +139,21 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
   if (request.GetSkipServiceWorker())
     return nullptr;
 
+  if (observer_ && observer_->render_frame()
+                       ->GetWebFrame()
+                       ->ServiceWorkerSubresourceFilterEnabled()) {
+    const std::string subresource_filter = context()->subresource_filter();
+    // If the document has a subresource filter set and the requested URL does
+    // not match it, do not intercept the request.
+    if (!subresource_filter.empty() &&
+        gurl.ref().find(subresource_filter) == std::string::npos) {
+      observer_->ReportFeatureUsage(
+          blink::mojom::WebFeature::
+              kServiceWorkerSubresourceFilterBypassedRequest);
+      return nullptr;
+    }
+  }
+
   // Record use counter for intercepting requests from opaque stylesheets.
   // TODO(crbug.com/898497): Remove this feature usage once we have enough data.
   if (observer_ && request.IsFromOriginDirtyStyleSheet()) {
@@ -137,22 +162,24 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
             kServiceWorkerInterceptedRequestFromOriginDirtyStyleSheet);
   }
 
-  mojo::PendingRemote<mojom::KeepAliveHandle> keep_alive_handle;
-  if (request.GetKeepalive()) {
-    // This cast is safe because NewDocumentObserver is always created with a
-    // RenderFrameImpl.
-    auto* render_frame_impl =
-        static_cast<RenderFrameImpl*>(observer_->render_frame());
-    render_frame_impl->GetFrameHost()->IssueKeepAliveHandle(
-        keep_alive_handle.InitWithNewPipeAndPassReceiver());
-  }
+  std::vector<std::string> cors_exempt_header_list =
+      RenderThreadImpl::current()->cors_exempt_header_list();
+  blink::WebVector<blink::WebString> web_cors_exempt_header_list(
+      cors_exempt_header_list.size());
+  std::transform(cors_exempt_header_list.begin(), cors_exempt_header_list.end(),
+                 web_cors_exempt_header_list.begin(), [](const std::string& h) {
+                   return blink::WebString::FromLatin1(h);
+                 });
 
   // Create our own SubresourceLoader to route the request to the controller
   // ServiceWorker.
-  return std::make_unique<WebURLLoaderImpl>(
-      RenderThreadImpl::current()->resource_dispatcher(),
-      std::move(task_runner_handle), context()->GetSubresourceLoaderFactory(),
-      std::move(keep_alive_handle));
+  return std::make_unique<blink::WebURLLoader>(
+      web_cors_exempt_header_list,
+      /*terminate_sync_load_event=*/nullptr,
+      std::move(freezable_task_runner_handle),
+      std::move(unfreezable_task_runner_handle),
+      context()->GetSubresourceLoaderFactory(), std::move(keep_alive_handle),
+      back_forward_cache_loader_helper);
 }
 
 blink::mojom::ControllerServiceWorkerMode
@@ -174,14 +201,13 @@ void ServiceWorkerNetworkProviderForFrame::DispatchNetworkQuiet() {
   context()->DispatchNetworkQuiet();
 }
 
-mojo::ScopedMessagePipeHandle
+blink::CrossVariantMojoReceiver<
+    blink::mojom::WorkerTimingContainerInterfaceBase>
 ServiceWorkerNetworkProviderForFrame::TakePendingWorkerTimingReceiver(
     int request_id) {
   if (!context())
     return {};
-  auto worker_timing_receiver =
-      context()->TakePendingWorkerTimingReceiver(request_id);
-  return worker_timing_receiver.PassPipe();
+  return context()->TakePendingWorkerTimingReceiver(request_id);
 }
 
 void ServiceWorkerNetworkProviderForFrame::NotifyExecutionReady() {

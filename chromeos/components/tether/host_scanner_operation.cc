@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/default_clock.h"
@@ -84,41 +85,32 @@ HostScannerOperation::Factory*
     HostScannerOperation::Factory::factory_instance_ = nullptr;
 
 // static
-std::unique_ptr<HostScannerOperation>
-HostScannerOperation::Factory::NewInstance(
+std::unique_ptr<HostScannerOperation> HostScannerOperation::Factory::Create(
     const multidevice::RemoteDeviceRefList& devices_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     HostScanDevicePrioritizer* host_scan_device_prioritizer,
     TetherHostResponseRecorder* tether_host_response_recorder,
     ConnectionPreserver* connection_preserver) {
-  if (!factory_instance_) {
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(
+        devices_to_connect, device_sync_client, secure_channel_client,
+        host_scan_device_prioritizer, tether_host_response_recorder,
+        connection_preserver);
   }
-  return factory_instance_->BuildInstance(
-      devices_to_connect, device_sync_client, secure_channel_client,
-      host_scan_device_prioritizer, tether_host_response_recorder,
-      connection_preserver);
-}
 
-// static
-void HostScannerOperation::Factory::SetInstanceForTesting(Factory* factory) {
-  factory_instance_ = factory;
-}
-
-std::unique_ptr<HostScannerOperation>
-HostScannerOperation::Factory::BuildInstance(
-    const multidevice::RemoteDeviceRefList& devices_to_connect,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
-    HostScanDevicePrioritizer* host_scan_device_prioritizer,
-    TetherHostResponseRecorder* tether_host_response_recorder,
-    ConnectionPreserver* connection_preserver) {
   return base::WrapUnique(new HostScannerOperation(
       devices_to_connect, device_sync_client, secure_channel_client,
       host_scan_device_prioritizer, tether_host_response_recorder,
       connection_preserver));
 }
+
+// static
+void HostScannerOperation::Factory::SetFactoryForTesting(Factory* factory) {
+  factory_instance_ = factory;
+}
+
+HostScannerOperation::Factory::~Factory() = default;
 
 HostScannerOperation::ScannedDeviceInfo::ScannedDeviceInfo(
     multidevice::RemoteDeviceRef remote_device,

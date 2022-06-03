@@ -17,34 +17,35 @@ goog.require('Spannable');
 
 /**
  * Attached to the value region of a braille spannable.
- * @param {number} offset The offset of the span into the value.
- * @constructor
  */
-ValueSpan = function(offset) {
+ValueSpan = class {
   /**
-   * The offset of the span into the value.
-   * @type {number}
+   * @param {number} offset The offset of the span into the value.
    */
-  this.offset = offset;
-};
+  constructor(offset) {
+    /**
+     * The offset of the span into the value.
+     * @type {number}
+     */
+    this.offset = offset;
+  }
 
+  /**
+   * Creates a value span from a json serializable object.
+   * @param {!Object} obj The json serializable object to convert.
+   * @return {!ValueSpan} The value span.
+   */
+  static fromJson(obj) {
+    return new ValueSpan(obj.offset);
+  }
 
-/**
- * Creates a value span from a json serializable object.
- * @param {!Object} obj The json serializable object to convert.
- * @return {!ValueSpan} The value span.
- */
-ValueSpan.fromJson = function(obj) {
-  return new ValueSpan(obj.offset);
-};
-
-
-/**
- * Converts this object to a json serializable object.
- * @return {!Object} The JSON representation.
- */
-ValueSpan.prototype.toJson = function() {
-  return this;
+  /**
+   * Converts this object to a json serializable object.
+   * @return {!Object} The JSON representation.
+   */
+  toJson() {
+    return this;
+  }
 };
 
 
@@ -54,9 +55,10 @@ Spannable.registerSerializableSpan(
 
 /**
  * Attached to the selected text within a value.
- * @constructor
  */
-ValueSelectionSpan = function() {};
+ValueSelectionSpan = class {
+  constructor() {}
+};
 
 
 Spannable.registerStatelessSerializableSpan(
@@ -67,20 +69,24 @@ Spannable.registerStatelessSerializableSpan(
  * Causes raw cells to be added when translating from text to braille.
  * This is supported by the {@code ExpandingBrailleTranslator}
  * class.
- * @constructor
  */
-ExtraCellsSpan = function() {
-  /** @type {ArrayBuffer} */
-  this.cells = new Uint8Array(0).buffer;
+ExtraCellsSpan = class {
+  constructor() {
+    /** @type {ArrayBuffer} */
+    this.cells = new Uint8Array(0).buffer;
+  }
 };
 
 
 /**
  * Indicates a text form during translation in Liblouis.
- * @param {LibLouis.FormType} formType
- * @constructor
  */
-BrailleTextStyleSpan = function(formType) {
-  /** @type {LibLouis.FormType} */
-  this.formType = formType;
+BrailleTextStyleSpan = class {
+  /**
+   * @param {LibLouis.FormType} formType
+   */
+  constructor(formType) {
+    /** @type {LibLouis.FormType} */
+    this.formType = formType;
+  }
 };

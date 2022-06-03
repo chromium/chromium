@@ -4,7 +4,8 @@
 
 #include <algorithm>
 
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "skia/ext/convolver.h"
 #include "skia/ext/convolver_SSE2.h"
 #include "skia/ext/convolver_mips_dspr2.h"

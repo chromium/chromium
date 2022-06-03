@@ -33,7 +33,7 @@ from blinkpy.common.net.web_test_results import WebTestResults
 
 class WebTestResultsTest(unittest.TestCase):
     # The real files have no whitespace, but newlines make this much more readable.
-    example_full_results_json = """ADD_RESULTS({
+    example_full_results_json = b"""ADD_RESULTS({
     "tests": {
         "fast": {
             "dom": {
@@ -126,57 +126,92 @@ class WebTestResultsTest(unittest.TestCase):
         self.assertIsNone(WebTestResults.results_from_string(''))
 
     def test_was_interrupted(self):
-        self.assertTrue(WebTestResults.results_from_string(
-            'ADD_RESULTS({"tests":{},"interrupted":true});').run_was_interrupted())
-        self.assertFalse(WebTestResults.results_from_string(
-            'ADD_RESULTS({"tests":{},"interrupted":false});').run_was_interrupted())
+        self.assertTrue(
+            WebTestResults.results_from_string(
+                b'ADD_RESULTS({"tests":{},"interrupted":true});').
+            run_was_interrupted())
+        self.assertFalse(
+            WebTestResults.results_from_string(
+                b'ADD_RESULTS({"tests":{},"interrupted":false});').
+            run_was_interrupted())
 
     def test_chromium_revision(self):
-        self.assertEqual(WebTestResults.results_from_string(self.example_full_results_json).chromium_revision(), 1234)
+        self.assertEqual(
+            WebTestResults.results_from_string(
+                self.example_full_results_json).chromium_revision(), 1234)
 
     def test_didnt_run_as_expected_results(self):
-        results = WebTestResults.results_from_string(self.example_full_results_json)
-        self.assertEqual(
-            [r.test_name() for r in results.didnt_run_as_expected_results()],
-            [
-                'fast/dom/many-mismatches.html',
-                'fast/dom/mismatch-implicit-baseline.html',
-                'fast/dom/missing-text.html',
-                'fast/dom/prototype-slow.html',
-                'fast/dom/reference-mismatch.html',
-                'fast/dom/unexpected-flaky.html',
-                'fast/dom/unexpected-pass.html',
-                'svg/dynamic-updates/SVGFEDropShadowElement-dom-stdDeviation-attr.html',
-            ])
+        results = WebTestResults.results_from_string(
+            self.example_full_results_json)
+        self.assertEqual([
+            r.test_name() for r in results.didnt_run_as_expected_results()
+        ], [
+            'fast/dom/many-mismatches.html',
+            'fast/dom/mismatch-implicit-baseline.html',
+            'fast/dom/missing-text.html',
+            'fast/dom/prototype-slow.html',
+            'fast/dom/reference-mismatch.html',
+            'fast/dom/unexpected-flaky.html',
+            'fast/dom/unexpected-pass.html',
+            'svg/dynamic-updates/SVGFEDropShadowElement-dom-stdDeviation-attr.html',
+        ])
 
     def test_result_for_test_non_existent(self):
-        results = WebTestResults.results_from_string(self.example_full_results_json)
+        results = WebTestResults.results_from_string(
+            self.example_full_results_json)
         self.assertFalse(results.result_for_test('nonexistent.html'))
 
     # The following are tests for a single WebTestResult.
 
     def test_actual_results(self):
-        results = WebTestResults.results_from_string(self.example_full_results_json)
-        self.assertEqual(results.result_for_test('fast/dom/unexpected-pass.html').actual_results(), 'PASS')
-        self.assertEqual(results.result_for_test('fast/dom/unexpected-flaky.html').actual_results(), 'PASS FAIL')
+        results = WebTestResults.results_from_string(
+            self.example_full_results_json)
+        self.assertEqual(
+            results.result_for_test('fast/dom/unexpected-pass.html').
+            actual_results(), 'PASS')
+        self.assertEqual(
+            results.result_for_test('fast/dom/unexpected-flaky.html').
+            actual_results(), 'PASS FAIL')
 
     def test_expected_results(self):
-        results = WebTestResults.results_from_string(self.example_full_results_json)
-        self.assertEqual(results.result_for_test('fast/dom/many-mismatches.html').expected_results(), 'PASS')
-        self.assertEqual(results.result_for_test('fast/dom/expected-flaky.html').expected_results(), 'PASS FAIL')
+        results = WebTestResults.results_from_string(
+            self.example_full_results_json)
+        self.assertEqual(
+            results.result_for_test('fast/dom/many-mismatches.html').
+            expected_results(), 'PASS')
+        self.assertEqual(
+            results.result_for_test('fast/dom/expected-flaky.html').
+            expected_results(), 'PASS FAIL')
 
     def test_has_non_reftest_mismatch(self):
-        results = WebTestResults.results_from_string(self.example_full_results_json)
-        self.assertTrue(results.result_for_test('fast/dom/many-mismatches.html').has_non_reftest_mismatch())
-        self.assertTrue(results.result_for_test('fast/dom/mismatch-implicit-baseline.html').has_non_reftest_mismatch())
-        self.assertFalse(results.result_for_test('fast/dom/reference-mismatch.html').has_non_reftest_mismatch())
+        results = WebTestResults.results_from_string(
+            self.example_full_results_json)
+        self.assertTrue(
+            results.result_for_test('fast/dom/many-mismatches.html').
+            has_non_reftest_mismatch())
+        self.assertTrue(
+            results.result_for_test('fast/dom/mismatch-implicit-baseline.html'
+                                    ).has_non_reftest_mismatch())
+        self.assertFalse(
+            results.result_for_test('fast/dom/reference-mismatch.html').
+            has_non_reftest_mismatch())
 
     def test_is_missing_baseline(self):
-        results = WebTestResults.results_from_string(self.example_full_results_json)
-        self.assertTrue(results.result_for_test('fast/dom/missing-text.html').is_missing_baseline())
-        self.assertFalse(results.result_for_test('fast/dom/many-mismatches.html').is_missing_baseline())
+        results = WebTestResults.results_from_string(
+            self.example_full_results_json)
+        self.assertTrue(
+            results.result_for_test('fast/dom/missing-text.html').
+            is_missing_baseline())
+        self.assertFalse(
+            results.result_for_test('fast/dom/many-mismatches.html').
+            is_missing_baseline())
 
     def test_suffixes_for_test_result(self):
-        results = WebTestResults.results_from_string(self.example_full_results_json)
-        self.assertSetEqual(results.result_for_test('fast/dom/many-mismatches.html').suffixes_for_test_result(), {'txt', 'png'})
-        self.assertSetEqual(results.result_for_test('fast/dom/missing-text.html').suffixes_for_test_result(), {'txt'})
+        results = WebTestResults.results_from_string(
+            self.example_full_results_json)
+        self.assertSetEqual(
+            results.result_for_test('fast/dom/many-mismatches.html').
+            suffixes_for_test_result(), {'txt', 'png'})
+        self.assertSetEqual(
+            results.result_for_test('fast/dom/missing-text.html').
+            suffixes_for_test_result(), {'txt'})

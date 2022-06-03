@@ -32,8 +32,8 @@ namespace blink {
 // The painting of a layer occurs in 5 phases, Each involves a recursive
 // descent into the layer's layout objects in painting order:
 //  1. Background phase: backgrounds and borders of all blocks are painted.
-//     Inlines are not painted at all. Touch-action hit test rects are also
-//     painted during this phase (see: paint/README.md#hit-test-painting).
+//     Inlines are not painted at all. Touch-action and wheel hit test rects are
+//     also painted during this phase (see: paint/README.md#hit-test-painting).
 //  2. ForcedColorsModeBackplate phase: a readability backplate is painted
 //     behind all inline text, split by paragraph. This phase should only paint
 //     content when in forced colors mode to ensure readability for text above
@@ -93,7 +93,7 @@ enum class PaintPhase {
 
   // The below are auxiliary phases which are used to paint special effects.
   kOverlayOverflowControls,
-  kSelection,
+  kSelectionDragImage,
   kTextClip,
   kMask,
 
@@ -128,17 +128,14 @@ enum GlobalPaintFlag {
   // Used when painting selection as part of a drag-image. This
   // flag disables a lot of the painting code and specifically
   // triggers a PaintPhaseSelection.
-  kGlobalPaintSelectionOnly = 1 << 0,
+  kGlobalPaintSelectionDragImageOnly = 1 << 0,
   // Used when painting a drag-image or printing in order to
   // ignore the hardware layers and paint the whole tree
   // into the topmost layer.
   kGlobalPaintFlattenCompositingLayers = 1 << 1,
-  // Used when printing in order to adapt the output to the medium, for
-  // instance by not painting shadows and selections on text.
-  kGlobalPaintPrinting = 1 << 2,
   // Used when printing or painting a preview to in order to add URL
   // metadata for links.
-  kGlobalPaintAddUrlMetadata = 1 << 3
+  kGlobalPaintAddUrlMetadata = 1 << 2
 };
 
 typedef unsigned GlobalPaintFlags;

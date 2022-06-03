@@ -190,7 +190,7 @@ public class CallbackHelper {
                     Assert.fail(s);
                 }
             }
-            if (callCountWhenDoneWaiting > mCallCount) {
+            if (timer.isTimedOut()) {
                 throw new TimeoutException(msg == null ? "waitForCallback timed out!" : msg);
             }
         }
@@ -225,6 +225,30 @@ public class CallbackHelper {
      */
     public void waitForCallback(int currentCallCount) throws TimeoutException {
         waitForCallback(null, currentCallCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /**
+     * Blocks until the next time the callback is called.
+     * @param msg The error message to use if the callback times out.
+     * @throws TimeoutException
+     */
+    public void waitForNext(String msg) throws TimeoutException {
+        waitForCallback(msg, mCallCount, 1, WAIT_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+    }
+
+    /** @see #waitForNext(String) */
+    public void waitForNext() throws TimeoutException {
+        waitForNext(null);
+    }
+
+    /**
+     * Blocks until the next time the callback is called.
+     * @param timeout timeout value for all callbacks to occur.
+     * @param unit timeout unit.
+     * @throws TimeoutException
+     */
+    public void waitForNext(long timeout, TimeUnit unit) throws TimeoutException {
+        waitForCallback(null, mCallCount, 1, timeout, unit);
     }
 
     /**

@@ -5,6 +5,7 @@
 #include "content/browser/locks/lock_manager.h"
 
 #include <algorithm>
+#include <list>
 #include <memory>
 #include <tuple>
 #include <unordered_set>
@@ -12,11 +13,10 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/containers/contains.h"
 #include "base/guid.h"
-#include "base/stl_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
-#include "content/public/browser/lock_observer.h"
 #include "content/public/common/content_client.h"
 #include "ipc/ipc_message.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
@@ -52,6 +52,9 @@ class LockHandleImpl final : public blink::mojom::LockHandle {
                  int64_t lock_id)
       : context_(context), origin_(origin), lock_id_(lock_id) {}
 
+  LockHandleImpl(const LockHandleImpl&) = delete;
+  LockHandleImpl& operator=(const LockHandleImpl&) = delete;
+
   ~LockHandleImpl() override {
     if (context_)
       context_->ReleaseLock(origin_, lock_id_);
@@ -65,8 +68,6 @@ class LockHandleImpl final : public blink::mojom::LockHandle {
   base::WeakPtr<LockManager> context_;
   const url::Origin origin_;
   const int64_t lock_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(LockHandleImpl);
 };
 
 }  // namespace
@@ -85,16 +86,7 @@ class LockManager::Lock {
         mode_(mode),
         lock_id_(lock_id),
         client_id_(receiver_state.client_id),
-        execution_context_(receiver_state.execution_context),
         request_(std::move(request)) {}
-
-  ~Lock() {
-    // If the lock was ever granted, decrement the number of held locks for the
-    // frame.
-    if (lock_manager_) {
-      lock_manager_->DecrementLocksHeldByFrame(execution_context_);
-    }
-  }
 
   // Grant a lock request. This mints a LockHandle and returns it over the
   // request pipe.
@@ -105,7 +97,6 @@ class LockManager::Lock {
     DCHECK(!handle_);
 
     lock_manager_ = lock_manager->weak_ptr_factory_.GetWeakPtr();
-    lock_manager_->IncrementLocksHeldByFrame(execution_context_);
 
     mojo::PendingAssociatedRemote<blink::mojom::LockHandle> remote;
     handle_ = LockHandleImpl::Create(lock_manager_, origin, lock_id_, &remote);
@@ -139,7 +130,6 @@ class LockManager::Lock {
   const LockMode mode_;
   const int64_t lock_id_;
   const std::string client_id_;
-  const ExecutionContext execution_context_;
   // Set only once the lock is granted.
   base::WeakPtr<LockManager> lock_manager_;
 
@@ -153,7 +143,7 @@ class LockManager::Lock {
   mojo::SelfOwnedAssociatedReceiverRef<blink::mojom::LockHandle> handle_;
 };
 
-LockManager::LockManager() {}
+LockManager::LockManager() = default;
 
 LockManager::~LockManager() = default;
 
@@ -161,7 +151,8 @@ LockManager::~LockManager() = default;
 // for a given origin.
 class LockManager::OriginState {
  public:
-  OriginState(LockManager* lock_manager) : lock_manager_(lock_manager) {}
+  explicit OriginState(LockManager* lock_manager)
+      : lock_manager_(lock_manager) {}
   ~OriginState() = default;
 
   // Helper function for breaking the lock at the front of a given request
@@ -275,7 +266,7 @@ class LockManager::OriginState {
     }
   }
 
-  bool IsEmpty() { return lock_id_to_iterator_.empty(); }
+  bool IsEmpty() const { return lock_id_to_iterator_.empty(); }
 
   std::pair<std::vector<blink::mojom::LockInfoPtr>,
             std::vector<blink::mojom::LockInfoPtr>>
@@ -312,7 +303,7 @@ class LockManager::OriginState {
 
   // Any OriginState is owned by a LockManager so a raw pointer back to an
   // OriginState's owning LockManager is safe.
-  LockManager* lock_manager_;
+  LockManager* const lock_manager_;
 };
 
 void LockManager::BindReceiver(
@@ -326,8 +317,7 @@ void LockManager::BindReceiver(
   // and be the same opaque string seen in Service Worker client ids.
   const std::string client_id = base::GenerateGUID();
 
-  receivers_.Add(this, std::move(receiver),
-                 {client_id, {render_process_id, render_frame_id}, origin});
+  receivers_.Add(this, std::move(receiver), {client_id, origin});
 }
 
 void LockManager::RequestLock(
@@ -398,63 +388,10 @@ void LockManager::QueryState(QueryStateCallback callback) {
                           std::move(requested_held_pair.second));
 }
 
-bool LockManager::ExecutionContext::IsWorker() const {
-  return render_frame_id == MSG_ROUTING_NONE;
-}
-
 int64_t LockManager::NextLockId() {
   int64_t lock_id = ++next_lock_id_;
   DCHECK_GT(lock_id, kPreemptiveLockId);
   return lock_id;
-}
-
-void LockManager::IncrementLocksHeldByFrame(
-    const ExecutionContext& execution_context) {
-  // Locks held by workers are not tracked because there is no current use case.
-  // If we had a use case, we would need to find a type to identify a frame OR a
-  // worker.
-  if (execution_context.IsWorker())
-    return;
-
-  int previous_num_locks = num_locks_held_by_frame_[execution_context]++;
-
-  if (previous_num_locks > 0)
-    return;
-
-  LockObserver* observer = GetContentClient()->browser()->GetLockObserver();
-  if (observer) {
-    observer->OnFrameStartsHoldingWebLocks(execution_context.render_process_id,
-                                           execution_context.render_frame_id);
-  }
-}
-
-void LockManager::DecrementLocksHeldByFrame(
-    const ExecutionContext& execution_context) {
-  if (execution_context.IsWorker())
-    return;
-
-  auto it = num_locks_held_by_frame_.find(execution_context);
-  DCHECK(it != num_locks_held_by_frame_.end());
-  DCHECK_GT(it->second, 0);
-
-  --it->second;
-  if (it->second > 0)
-    return;
-
-  num_locks_held_by_frame_.erase(it);
-
-  LockObserver* observer = GetContentClient()->browser()->GetLockObserver();
-  if (observer) {
-    observer->OnFrameStopsHoldingWebLocks(execution_context.render_process_id,
-                                          execution_context.render_frame_id);
-  }
-}
-
-bool LockManager::ExecutionContextComparator::operator()(
-    const ExecutionContext& left,
-    const ExecutionContext& right) const {
-  return std::tie(left.render_process_id, left.render_frame_id) <
-         std::tie(right.render_process_id, right.render_frame_id);
 }
 
 }  // namespace content

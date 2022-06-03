@@ -16,7 +16,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -24,14 +25,13 @@
 #include "base/linux_util.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/message_loop/message_loop_current.h"
 #include "base/path_service.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/rand_util.h"
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
-#include "base/task/post_task.h"
+#include "base/task/current_thread.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -52,7 +52,7 @@
 #endif
 
 #if defined(OS_ANDROID)
-#include "components/crash/content/app/crashpad.h"
+#include "components/crash/core/app/crashpad.h"
 #include "third_party/crashpad/crashpad/client/crashpad_client.h"  // nogncheck
 #include "third_party/crashpad/crashpad/util/posix/signals.h"      // nogncheck
 #endif
@@ -84,9 +84,9 @@ const int kRetryIntervalTranslatingTidInMs = 100;
 void CrashDumpTask(CrashHandlerHostLinux* handler,
                    std::unique_ptr<BreakpadInfo> info) {
   if (handler->IsShuttingDown() && info->upload) {
-    base::DeleteFile(base::FilePath(info->filename), false);
+    base::DeleteFile(base::FilePath(info->filename));
 #if defined(ADDRESS_SANITIZER)
-    base::DeleteFile(base::FilePath(info->log_filename), false);
+    base::DeleteFile(base::FilePath(info->log_filename));
 #endif
     return;
   }
@@ -118,9 +118,8 @@ CrashHandlerHostLinux::CrashHandlerHostLinux(const std::string& process_type,
       upload_(upload),
 #endif
       fd_watch_controller_(FROM_HERE),
-      blocking_task_runner_(
-          base::CreateSequencedTaskRunner({base::ThreadPool(), base::MayBlock(),
-                                           base::TaskPriority::USER_VISIBLE})) {
+      blocking_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
   int fds[2];
   // We use SOCK_SEQPACKET rather than SOCK_DGRAM to prevent the process from
   // sending datagrams to other sockets on the system. The sandbox may prevent
@@ -137,8 +136,8 @@ CrashHandlerHostLinux::CrashHandlerHostLinux(const std::string& process_type,
   process_socket_ = fds[0];
   browser_socket_ = fds[1];
 
-  base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
+  content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&CrashHandlerHostLinux::Init, base::Unretained(this)));
 }
 
@@ -154,7 +153,7 @@ void CrashHandlerHostLinux::StartUploaderThread() {
 }
 
 void CrashHandlerHostLinux::Init() {
-  base::MessageLoopCurrentForIO ml = base::MessageLoopCurrentForIO::Get();
+  base::CurrentIOThread ml = base::CurrentIOThread::Get();
   CHECK(ml->WatchFileDescriptor(browser_socket_, true /* persistent */,
                                 base::MessagePumpForIO::WATCH_READ,
                                 &fd_watch_controller_, this));
@@ -173,7 +172,7 @@ void CrashHandlerHostLinux::OnFileCanReadWithoutBlocking(int fd) {
   // for writing the minidump as well as a file descriptor and a credentials
   // block so that they can't lie about their pid.
   //
-  // The message sender is in components/crash/content/app/breakpad_linux.cc.
+  // The message sender is in components/crash/core/app/breakpad_linux.cc.
 
   struct msghdr msg = {nullptr};
   struct iovec iov[kCrashIovSize];
@@ -351,7 +350,7 @@ void CrashHandlerHostLinux::FindCrashingThreadAndDump(
                        std::move(asan_report),
 #endif
                        uptime, oom_size, signal_fd, attempt),
-        base::TimeDelta::FromMilliseconds(kRetryIntervalTranslatingTidInMs));
+        base::Milliseconds(kRetryIntervalTranslatingTidInMs));
     return;
   }
 
@@ -526,8 +525,8 @@ CrashHandlerHost* CrashHandlerHost::Get() {
 }
 
 int CrashHandlerHost::GetDeathSignalSocket() {
-  static bool initialized = base::PostTask(
-      FROM_HERE, {BrowserThread::IO},
+  static bool initialized = content::GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&CrashHandlerHost::Init, base::Unretained(this)));
   DCHECK(initialized);
 
@@ -559,7 +558,7 @@ CrashHandlerHost::CrashHandlerHost()
 }
 
 void CrashHandlerHost::Init() {
-  base::MessageLoopCurrentForIO ml = base::MessageLoopCurrentForIO::Get();
+  base::CurrentIOThread ml = base::CurrentIOThread::Get();
   CHECK(ml->WatchFileDescriptor(browser_socket_.get(), /* persistent= */ true,
                                 base::MessagePumpForIO::WATCH_READ,
                                 &fd_watch_controller_, this));
@@ -567,7 +566,8 @@ void CrashHandlerHost::Init() {
 }
 
 bool CrashHandlerHost::ReceiveClientMessage(int client_fd,
-                                            base::ScopedFD* handler_fd) {
+                                            base::ScopedFD* handler_fd,
+                                            bool* write_minidump_to_database) {
   int signo;
   unsigned char request_dump;
   iovec iov[2];
@@ -622,11 +622,8 @@ bool CrashHandlerHost::ReceiveClientMessage(int client_fd,
     NotifyCrashSignalObservers(child_pid, signo);
   }
 
-  if (!request_dump) {
-    return false;
-  }
-
   handler_fd->reset(child_fd.release());
+  *write_minidump_to_database = request_dump;
   return true;
 }
 
@@ -646,12 +643,13 @@ void CrashHandlerHost::OnFileCanReadWithoutBlocking(int fd) {
   DCHECK_EQ(browser_socket_.get(), fd);
 
   base::ScopedFD handler_fd;
-  if (!ReceiveClientMessage(fd, &handler_fd)) {
+  bool write_minidump_to_database = false;
+  if (!ReceiveClientMessage(fd, &handler_fd, &write_minidump_to_database)) {
     return;
   }
 
-  bool result =
-      crash_reporter::internal::StartHandlerForClient(handler_fd.get());
+  bool result = crash_reporter::internal::StartHandlerForClient(
+      handler_fd.get(), write_minidump_to_database);
   DCHECK(result);
 }
 

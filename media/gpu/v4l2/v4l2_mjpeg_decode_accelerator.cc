@@ -15,13 +15,13 @@
 
 #include "base/big_endian.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 #include "base/files/scoped_file.h"
+#include "base/memory/page_size.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/process/process_metrics.h"
-#include "base/stl_util.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "media/base/bind_to_current_loop.h"
 #include "media/base/bitstream_buffer.h"
 #include "media/base/unaligned_shared_memory.h"
 #include "media/base/video_frame.h"
@@ -136,6 +136,9 @@ const uint8_t kDefaultDhtSeg[] = {
 
 class V4L2MjpegDecodeAccelerator::JobRecord {
  public:
+  JobRecord(const JobRecord&) = delete;
+  JobRecord& operator=(const JobRecord&) = delete;
+
   virtual ~JobRecord() = default;
 
   // Task ID passed from Decode() call.
@@ -154,8 +157,6 @@ class V4L2MjpegDecodeAccelerator::JobRecord {
 
  protected:
   JobRecord() = default;
-
-  DISALLOW_COPY_AND_ASSIGN(JobRecord);
 };
 
 // Job record when the client uses BitstreamBuffer as input in Decode().
@@ -170,6 +171,9 @@ class JobRecordBitstreamBuffer : public V4L2MjpegDecodeAccelerator::JobRecord {
         offset_(bitstream_buffer.offset()),
         out_frame_(video_frame) {}
 
+  JobRecordBitstreamBuffer(const JobRecordBitstreamBuffer&) = delete;
+  JobRecordBitstreamBuffer& operator=(const JobRecordBitstreamBuffer&) = delete;
+
   int32_t task_id() const override { return task_id_; }
   size_t size() const override { return shm_.size(); }
   off_t offset() const override { return offset_; }
@@ -183,8 +187,6 @@ class JobRecordBitstreamBuffer : public V4L2MjpegDecodeAccelerator::JobRecord {
   UnalignedSharedMemory shm_;
   off_t offset_;
   scoped_refptr<VideoFrame> out_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobRecordBitstreamBuffer);
 };
 
 // Job record when the client uses DMA buffer as input in Decode().
@@ -201,6 +203,9 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
         offset_(src_offset),
         mapped_addr_(nullptr),
         out_frame_(std::move(dst_frame)) {}
+
+  JobRecordDmaBuf(const JobRecordDmaBuf&) = delete;
+  JobRecordDmaBuf& operator=(const JobRecordDmaBuf&) = delete;
 
   ~JobRecordDmaBuf() {
     if (mapped_addr_) {
@@ -242,8 +247,6 @@ class JobRecordDmaBuf : public V4L2MjpegDecodeAccelerator::JobRecord {
   off_t offset_;
   void* mapped_addr_;
   scoped_refptr<VideoFrame> out_frame_;
-
-  DISALLOW_COPY_AND_ASSIGN(JobRecordDmaBuf);
 };
 
 V4L2MjpegDecodeAccelerator::BufferRecord::BufferRecord() : at_device(false) {
@@ -314,13 +317,14 @@ void V4L2MjpegDecodeAccelerator::PostNotifyError(int32_t task_id, Error error) {
                                 weak_ptr_, task_id, error));
 }
 
-bool V4L2MjpegDecodeAccelerator::Initialize(
-    chromeos_camera::MjpegDecodeAccelerator::Client* client) {
+void V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner(
+    chromeos_camera::MjpegDecodeAccelerator::Client* client,
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
   DCHECK(child_task_runner_->BelongsToCurrentThread());
-
   if (!device_->Open(V4L2Device::Type::kJpegDecoder, V4L2_PIX_FMT_JPEG)) {
     VLOGF(1) << "Failed to open device";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
 
   // Capabilities check.
@@ -329,12 +333,14 @@ bool V4L2MjpegDecodeAccelerator::Initialize(
   memset(&caps, 0, sizeof(caps));
   if (device_->Ioctl(VIDIOC_QUERYCAP, &caps) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_QUERYCAP";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
   if ((caps.capabilities & kCapsRequired) != kCapsRequired) {
     VLOGF(1) << "VIDIOC_QUERYCAP, caps check failed: 0x" << std::hex
              << caps.capabilities;
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
 
   // Subscribe to the source change event.
@@ -343,12 +349,14 @@ bool V4L2MjpegDecodeAccelerator::Initialize(
   sub.type = V4L2_EVENT_SOURCE_CHANGE;
   if (device_->Ioctl(VIDIOC_SUBSCRIBE_EVENT, &sub) != 0) {
     VPLOGF(1) << "ioctl() failed: VIDIOC_SUBSCRIBE_EVENT";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
 
   if (!decoder_thread_.Start()) {
     VLOGF(1) << "decoder thread failed to start";
-    return false;
+    std::move(init_cb).Run(false);
+    return;
   }
   client_ = client;
   decoder_task_runner_ = decoder_thread_.task_runner();
@@ -358,7 +366,21 @@ bool V4L2MjpegDecodeAccelerator::Initialize(
                                 base::Unretained(this)));
 
   VLOGF(2) << "V4L2MjpegDecodeAccelerator initialized.";
-  return true;
+  std::move(init_cb).Run(true);
+}
+
+void V4L2MjpegDecodeAccelerator::InitializeAsync(
+    chromeos_camera::MjpegDecodeAccelerator::Client* client,
+    chromeos_camera::MjpegDecodeAccelerator::InitCB init_cb) {
+  DCHECK(child_task_runner_->BelongsToCurrentThread());
+
+  // To guarantee that the caller receives an asynchronous call after the
+  // return path, we are making use of InitializeOnTaskRunner.
+  child_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&V4L2MjpegDecodeAccelerator::InitializeOnTaskRunner,
+                     weak_factory_.GetWeakPtr(), client,
+                     BindToCurrentLoop(std::move(init_cb))));
 }
 
 void V4L2MjpegDecodeAccelerator::Decode(BitstreamBuffer bitstream_buffer,
@@ -756,19 +778,16 @@ void V4L2MjpegDecodeAccelerator::DevicePollTask() {
 bool V4L2MjpegDecodeAccelerator::DequeueSourceChangeEvent() {
   DCHECK(decoder_task_runner_->BelongsToCurrentThread());
 
-  struct v4l2_event ev;
-  memset(&ev, 0, sizeof(ev));
-
-  if (device_->Ioctl(VIDIOC_DQEVENT, &ev) == 0) {
-    if (ev.type == V4L2_EVENT_SOURCE_CHANGE) {
-      VLOGF(2) << ": got source change event: " << ev.u.src_change.changes;
-      if (ev.u.src_change.changes &
-          (V4L2_EVENT_SRC_CH_RESOLUTION | V4L2_EVENT_SRC_CH_PIXELFORMAT)) {
+  if (absl::optional<struct v4l2_event> event = device_->DequeueEvent()) {
+    if (event->type == V4L2_EVENT_SOURCE_CHANGE) {
+      VLOGF(2) << ": got source change event: " << event->u.src_change.changes;
+      if (event->u.src_change.changes & V4L2_EVENT_SRC_CH_RESOLUTION) {
         return true;
       }
       VLOGF(1) << "unexpected source change event.";
     } else {
-      VLOGF(1) << "got an event (" << ev.type << ") we haven't subscribed to.";
+      VLOGF(1) << "got an event (" << event->type
+               << ") we haven't subscribed to.";
     }
   } else {
     VLOGF(1) << "dequeue event failed.";

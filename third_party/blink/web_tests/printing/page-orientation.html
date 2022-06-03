@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+      testRunner.setPrinting();
+</script>
+<style>
+  @page clockwise {
+      page-orientation: rotate-right;
+  }
+  @page counter-clockwise {
+      page-orientation: rotate-left;
+  }
+</style>
+<div>
+  A normal page.
+</div>
+<div style="page:clockwise;">
+  This page is rotated clockwise.
+</div>
+<div style="page:counter-clockwise;">
+  This page is rotated counter-clockwise.
+</div>
+<div>
+  A normal page again.
+</div>

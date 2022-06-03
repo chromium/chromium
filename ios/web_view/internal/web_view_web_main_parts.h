@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_WEB_VIEW_WEB_MAIN_PARTS_H_
 #define IOS_WEB_VIEW_INTERNAL_WEB_VIEW_WEB_MAIN_PARTS_H_
 
-#include <memory>
 
 #include "base/macros.h"
 #include "base/metrics/field_trial.h"
@@ -17,11 +16,15 @@ namespace ios_web_view {
 class WebViewWebMainParts : public web::WebMainParts {
  public:
   WebViewWebMainParts();
+
+  WebViewWebMainParts(const WebViewWebMainParts&) = delete;
+  WebViewWebMainParts& operator=(const WebViewWebMainParts&) = delete;
+
   ~WebViewWebMainParts() override;
 
  private:
   // web::WebMainParts implementation.
-  void PreMainMessageLoopStart() override;
+  void PreCreateMainMessageLoop() override;
   void PreCreateThreads() override;
   void PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
@@ -35,8 +38,6 @@ class WebViewWebMainParts : public web::WebMainParts {
   // Dummy FieldTrialList instance for code that consumes variations data,
   // although ios WebView does not support variations.
   base::FieldTrialList field_trial_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(WebViewWebMainParts);
 };
 
 }  // namespace ios_web_view

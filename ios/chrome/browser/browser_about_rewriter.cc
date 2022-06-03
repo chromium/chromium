@@ -6,12 +6,13 @@
 
 #include <string>
 
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
-#include "base/stl_util.h"
 #include "components/url_formatter/url_fixer.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
+#include "ios/components/webui/web_ui_url_constants.h"
 #include "url/url_constants.h"
 
 namespace {
@@ -47,7 +48,7 @@ bool WillHandleWebBrowserAboutURL(GURL* url, web::BrowserState* browser_state) {
 
   // Translate chrome://newtab back into about://newtab so the WebState shows a
   // blank page under the NTP.
-  if (url->GetOrigin() == kChromeUINewTabURL) {
+  if (url->DeprecatedGetOriginAsURL() == kChromeUINewTabURL) {
     GURL::Replacements replacements;
     replacements.SetSchemeStr(url::kAboutScheme);
     *url = url->ReplaceComponents(replacements);

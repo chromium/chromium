@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_SECURE_CHANNEL_BLE_SYNCHRONIZER_BASE_H_
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "device/bluetooth/bluetooth_adapter.h"
@@ -25,18 +24,21 @@ namespace secure_channel {
 class BleSynchronizerBase {
  public:
   BleSynchronizerBase();
+
+  BleSynchronizerBase(const BleSynchronizerBase&) = delete;
+  BleSynchronizerBase& operator=(const BleSynchronizerBase&) = delete;
+
   virtual ~BleSynchronizerBase();
 
   // Advertisement wrappers.
   void RegisterAdvertisement(
       std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data,
-      const device::BluetoothAdapter::CreateAdvertisementCallback& callback,
-      const device::BluetoothAdapter::AdvertisementErrorCallback&
-          error_callback);
+      device::BluetoothAdapter::CreateAdvertisementCallback callback,
+      device::BluetoothAdapter::AdvertisementErrorCallback error_callback);
   void UnregisterAdvertisement(
       scoped_refptr<device::BluetoothAdvertisement> advertisement,
-      const device::BluetoothAdvertisement::SuccessCallback& success_callback,
-      const device::BluetoothAdvertisement::ErrorCallback& error_callback);
+      device::BluetoothAdvertisement::SuccessCallback success_callback,
+      device::BluetoothAdvertisement::ErrorCallback error_callback);
 
   // Discovery session wrappers.
   void StartDiscoverySession(
@@ -44,8 +46,8 @@ class BleSynchronizerBase {
       device::BluetoothAdapter::ErrorCallback error_callback);
   void StopDiscoverySession(
       base::WeakPtr<device::BluetoothDiscoverySession> discovery_session,
-      const base::Closure& callback,
-      const device::BluetoothDiscoverySession::ErrorCallback& error_callback);
+      base::OnceClosure callback,
+      device::BluetoothDiscoverySession::ErrorCallback error_callback);
 
  protected:
   enum class CommandType {
@@ -59,9 +61,8 @@ class BleSynchronizerBase {
     RegisterArgs(
         std::unique_ptr<device::BluetoothAdvertisement::Data>
             advertisement_data,
-        const device::BluetoothAdapter::CreateAdvertisementCallback& callback,
-        const device::BluetoothAdapter::AdvertisementErrorCallback&
-            error_callback);
+        device::BluetoothAdapter::CreateAdvertisementCallback callback,
+        device::BluetoothAdapter::AdvertisementErrorCallback error_callback);
     virtual ~RegisterArgs();
 
     std::unique_ptr<device::BluetoothAdvertisement::Data> advertisement_data;
@@ -72,8 +73,8 @@ class BleSynchronizerBase {
   struct UnregisterArgs {
     UnregisterArgs(
         scoped_refptr<device::BluetoothAdvertisement> advertisement,
-        const device::BluetoothAdvertisement::SuccessCallback& callback,
-        const device::BluetoothAdvertisement::ErrorCallback& error_callback);
+        device::BluetoothAdvertisement::SuccessCallback callback,
+        device::BluetoothAdvertisement::ErrorCallback error_callback);
     virtual ~UnregisterArgs();
 
     scoped_refptr<device::BluetoothAdvertisement> advertisement;
@@ -94,12 +95,12 @@ class BleSynchronizerBase {
   struct StopDiscoveryArgs {
     StopDiscoveryArgs(
         base::WeakPtr<device::BluetoothDiscoverySession> discovery_session,
-        const base::Closure& callback,
-        const device::BluetoothDiscoverySession::ErrorCallback& error_callback);
+        base::OnceClosure callback,
+        device::BluetoothDiscoverySession::ErrorCallback error_callback);
     virtual ~StopDiscoveryArgs();
 
     base::WeakPtr<device::BluetoothDiscoverySession> discovery_session;
-    base::Closure callback;
+    base::OnceClosure callback;
     device::BluetoothDiscoverySession::ErrorCallback error_callback;
   };
 
@@ -126,8 +127,6 @@ class BleSynchronizerBase {
 
  private:
   std::deque<std::unique_ptr<Command>> command_queue_;
-
-  DISALLOW_COPY_AND_ASSIGN(BleSynchronizerBase);
 };
 
 }  // namespace secure_channel

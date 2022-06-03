@@ -8,7 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
@@ -119,9 +119,9 @@ void NetworkQualityTracker::OnNetworkQualityChanged(
     return;
 
   // If the RTT values are unavailable, set them to value 0.
-  if (http_rtt < base::TimeDelta())
+  if (http_rtt.is_negative())
     http_rtt = base::TimeDelta();
-  if (transport_rtt < base::TimeDelta())
+  if (transport_rtt.is_negative())
     transport_rtt = base::TimeDelta();
 
   // If the bandwidth value is unavailable, set it to the maximum possible
@@ -165,9 +165,9 @@ void NetworkQualityTracker::InitializeMojoChannel() {
 
   // base::Unretained is safe as destruction of the
   // NetworkQualityTracker will also destroy the |receiver_|.
-  receiver_.set_disconnect_handler(base::BindRepeating(
-      &NetworkQualityTracker::HandleNetworkServicePipeBroken,
-      base::Unretained(this)));
+  receiver_.set_disconnect_handler(
+      base::BindOnce(&NetworkQualityTracker::HandleNetworkServicePipeBroken,
+                     base::Unretained(this)));
 }
 
 void NetworkQualityTracker::HandleNetworkServicePipeBroken() {

@@ -9,6 +9,7 @@
 
 #include <stdint.h>
 
+#include <cstring>
 #include <string>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/capabilities.h"
 #include "gpu/command_buffer/common/command_buffer_id.h"
@@ -68,6 +68,7 @@ struct GPU_GLES2_EXPORT DisallowedFeatures {
     oes_texture_half_float_linear = false;
     ext_float_blend = false;
     oes_fbo_render_mipmap = false;
+    oes_draw_buffers_indexed = false;
   }
 
   bool operator==(const DisallowedFeatures& other) const {
@@ -84,6 +85,7 @@ struct GPU_GLES2_EXPORT DisallowedFeatures {
   bool oes_texture_half_float_linear = false;
   bool ext_float_blend = false;
   bool oes_fbo_render_mipmap = false;
+  bool oes_draw_buffers_indexed = false;
 };
 
 // This class implements the DecoderContext interface, decoding GLES2
@@ -103,6 +105,9 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
                               CommandBufferServiceBase* command_buffer_service,
                               Outputter* outputter,
                               ContextGroup* group);
+
+  GLES2Decoder(const GLES2Decoder&) = delete;
+  GLES2Decoder& operator=(const GLES2Decoder&) = delete;
 
   ~GLES2Decoder() override;
 
@@ -210,8 +215,6 @@ class GPU_GLES2_EXPORT GLES2Decoder : public CommonDecoder,
   bool debug_ = false;
   bool log_commands_ = false;
   Outputter* outputter_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(GLES2Decoder);
 };
 
 }  // namespace gles2

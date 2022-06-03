@@ -16,6 +16,7 @@ WidgetDeletionObserver::WidgetDeletionObserver(Widget* widget)
 
 WidgetDeletionObserver::~WidgetDeletionObserver() {
   CleanupWidget();
+  CHECK(!IsInObserverList());
 }
 
 void WidgetDeletionObserver::OnWidgetDestroying(Widget* widget) {

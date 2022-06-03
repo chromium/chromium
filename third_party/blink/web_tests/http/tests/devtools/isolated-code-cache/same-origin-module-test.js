@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests V8 code cache for javascript resources\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   // Clear browser cache to avoid any existing entries for the fetched
@@ -55,8 +55,9 @@
   await TestRunner.addIframe(scope);
 
   await PerformanceTestRunner.stopTimeline();
-  PerformanceTestRunner.printTimelineRecordsWithDetails(
-      TimelineModel.TimelineModel.RecordType.CompileModule);
+  await PerformanceTestRunner.printTimelineRecordsWithDetails(
+      TimelineModel.TimelineModel.RecordType.CompileModule,
+      TimelineModel.TimelineModel.RecordType.CacheModule);
 
   TestRunner.addResult('-----------------------------------------------');
   TestRunner.completeTest();

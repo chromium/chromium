@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,27 +10,8 @@
       "name": "LayoutNGBlockFlow DIV id='target'",
       "bounds": [600, 400],
       "backfaceVisibility": "hidden",
-      "paintInvalidations": [
-        {
-          "object": "NGPhysicalTextFragment 'Lorem ipsum dolor'",
-          "rect": [520, 0, 80, 340],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'adipiscing elit.'",
-          "rect": [520, 0, 80, 340],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'consectetur'",
-          "rect": [520, 0, 80, 340],
-          "reason": "style change"
-        },
-        {
-          "object": "NGPhysicalTextFragment 'sit amet,'",
-          "rect": [520, 0, 80, 340],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [520, 0, 80, 340]
       ],
       "transform": 1
     }

@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/ukm/ukm_recorder_impl.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -26,7 +25,26 @@ namespace ukm {
 // Wraps an UkmRecorder with additional accessors used for testing.
 class TestUkmRecorder : public UkmRecorderImpl {
  public:
+  using HumanReadableUkmMetrics = std::map<std::string, int64_t>;
+
+  struct HumanReadableUkmEntry {
+    HumanReadableUkmEntry();
+    HumanReadableUkmEntry(ukm::SourceId source_id,
+                          HumanReadableUkmMetrics ukm_metrics);
+    ~HumanReadableUkmEntry();
+    HumanReadableUkmEntry(const HumanReadableUkmEntry&);
+
+    bool operator==(const HumanReadableUkmEntry& other) const;
+
+    ukm::SourceId source_id = kInvalidSourceId;
+    HumanReadableUkmMetrics metrics;
+  };
+
   TestUkmRecorder();
+
+  TestUkmRecorder(const TestUkmRecorder&) = delete;
+  TestUkmRecorder& operator=(const TestUkmRecorder&) = delete;
+
   ~TestUkmRecorder() override;
 
   bool ShouldRestrictToWhitelistedSourceIds() const override;
@@ -85,11 +103,28 @@ class TestUkmRecorder : public UkmRecorderImpl {
   static const int64_t* GetEntryMetric(const mojom::UkmEntry* entry,
                                        base::StringPiece metric_name);
 
+  // A test helper returning all metrics for all entries with a given name in a
+  // human-readable form, allowing to write clearer test expectations.
+  std::vector<HumanReadableUkmMetrics> GetMetrics(
+      std::string entry_name,
+      const std::vector<std::string>& metric_names) const;
+
+  // A test helper returning all entries for a given name in a human-readable
+  // form, allowing to write clearer test expectations.
+  std::vector<HumanReadableUkmEntry> GetEntries(
+      std::string entry_name,
+      const std::vector<std::string>& metric_names) const;
+
+  // A test helper returning all logged metrics with the given |metric_name| for
+  // the entry with the given |entry_name|, filtered to remove any empty
+  // HumanReadableUkmEntry results.
+  std::vector<HumanReadableUkmMetrics> FilteredHumanReadableMetricForEntry(
+      const std::string& entry_name,
+      const std::string& metric_name) const;
+
  private:
   uint64_t entry_hash_to_wait_for_ = 0;
   base::OnceClosure on_add_entry_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestUkmRecorder);
 };
 
 // Similar to a TestUkmRecorder, but also sets itself as the global UkmRecorder

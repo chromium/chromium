@@ -14,7 +14,7 @@
     fragment.appendChild(dialog);
 
     var dialogHost = document.getElementById('dialog-host');
-    var root = dialogHost.createShadowRoot();
+    var root = dialogHost.attachShadow({mode: 'open'});
     root.appendChild(fragment);
     // This test passes if it does not crash.
   }, 'Append fragment with dialog to shadow root');

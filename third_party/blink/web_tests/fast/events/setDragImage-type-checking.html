@@ -7,10 +7,10 @@
 async_test(function () {
   var dragger = document.getElementById("dragger");
   dragger.addEventListener("dragstart", this.step_func_done(function(event) {
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       event.dataTransfer.setDragImage(null, 0, 0);
     }, "throw if image argument is null");
-    assert_throws(new TypeError(), function() {
+    assert_throws_js(TypeError, function() {
       event.dataTransfer.setDragImage(dragger.firstChild, 0, 0);
     }, "throw if image argument is a Text node");
     // A generic non-HTML/SVG Element should not throw.

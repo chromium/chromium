@@ -18,6 +18,9 @@ namespace container_names {
 // done at the end of the list (before CONTAINER_MAX). This list must be kept in
 // sync with the enum definition "MediaContainers" in
 // tools/metrics/histograms/histograms.xml.
+//
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+// GENERATED_JAVA_PREFIX_TO_STRIP: CONTAINER_
 enum MediaContainerName {
   CONTAINER_UNKNOWN,       // Unknown
   CONTAINER_AAC,           // AAC (Advanced Audio Coding)
@@ -59,7 +62,7 @@ enum MediaContainerName {
   CONTAINER_WTV,           // WTV (Windows Television)
   CONTAINER_DASH,          // DASH (MPEG-DASH)
   CONTAINER_SMOOTHSTREAM,  // SmoothStreaming
-  CONTAINER_MAX = CONTAINER_SMOOTHSTREAM  // Must be last
+  CONTAINER_MAX = CONTAINER_SMOOTHSTREAM,  // Must be last
 };
 
 // Minimum size considered for processing.

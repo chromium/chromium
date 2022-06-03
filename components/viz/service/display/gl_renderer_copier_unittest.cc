@@ -11,7 +11,9 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/run_loop.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
+#include "components/viz/common/frame_sinks/copy_output_util.h"
 #include "components/viz/test/test_context_provider.h"
 #include "components/viz/test/test_gles2_interface.h"
 #include "gpu/GLES2/gl2extchromium.h"
@@ -62,11 +64,11 @@ class GLRendererCopierTest : public testing::Test {
   using ReusableThings = GLRendererCopier::ReusableThings;
 
   void SetUp() override {
-    auto context_provider = TestContextProvider::Create(
+    context_provider_ = TestContextProvider::Create(
         std::make_unique<CopierTestGLES2Interface>());
-    context_provider->BindToCurrentThread();
-    copier_ = std::make_unique<GLRendererCopier>(std::move(context_provider),
-                                                 nullptr);
+    context_provider_->BindToCurrentThread();
+    copier_ =
+        std::make_unique<GLRendererCopier>(context_provider_.get(), nullptr);
   }
 
   void TearDown() override { copier_.reset(); }
@@ -102,6 +104,7 @@ class GLRendererCopierTest : public testing::Test {
   static constexpr int kKeepalivePeriod = GLRendererCopier::kKeepalivePeriod;
 
  private:
+  scoped_refptr<ContextProvider> context_provider_;
   std::unique_ptr<GLRendererCopier> copier_;
 };
 
@@ -113,7 +116,7 @@ TEST_F(GLRendererCopierTest, ReusesThingsFromSameSource) {
   const base::UnguessableToken no_source;
   EXPECT_EQ(0u, GetCopierCacheSize());
   auto things = TakeReusableThingsOrCreate(no_source);
-  EXPECT_TRUE(!!things);
+  EXPECT_TRUE(things);
   StashReusableThingsOrDelete(no_source, std::move(things));
   EXPECT_EQ(nullptr, PeekReusableThings(no_source));
   EXPECT_EQ(0u, GetCopierCacheSize());
@@ -122,7 +125,7 @@ TEST_F(GLRendererCopierTest, ReusesThingsFromSameSource) {
   const auto source = base::UnguessableToken::Create();
   things = TakeReusableThingsOrCreate(source);
   ReusableThings* things_raw_ptr = things.get();
-  EXPECT_TRUE(!!things_raw_ptr);
+  EXPECT_TRUE(things_raw_ptr);
   StashReusableThingsOrDelete(source, std::move(things));
   EXPECT_EQ(things_raw_ptr, PeekReusableThings(source));
   EXPECT_EQ(1u, GetCopierCacheSize());
@@ -131,7 +134,7 @@ TEST_F(GLRendererCopierTest, ReusesThingsFromSameSource) {
   const auto source2 = base::UnguessableToken::Create();
   things = TakeReusableThingsOrCreate(source2);
   things_raw_ptr = things.get();
-  EXPECT_TRUE(!!things_raw_ptr);
+  EXPECT_TRUE(things_raw_ptr);
   EXPECT_EQ(1u, GetCopierCacheSize());
   StashReusableThingsOrDelete(source2, std::move(things));
   EXPECT_EQ(things_raw_ptr, PeekReusableThings(source2));
@@ -144,14 +147,14 @@ TEST_F(GLRendererCopierTest, FreesUnusedResources) {
   const base::UnguessableToken source = base::UnguessableToken::Create();
   EXPECT_EQ(0u, GetCopierCacheSize());
   StashReusableThingsOrDelete(source, TakeReusableThingsOrCreate(source));
-  EXPECT_TRUE(!!PeekReusableThings(source));
+  EXPECT_TRUE(PeekReusableThings(source));
   EXPECT_EQ(1u, GetCopierCacheSize());
 
   // Call FreesUnusedCachedResources() the maximum number of times before the
   // cache entry would be considered for freeing.
   for (int i = 0; i < kKeepalivePeriod - 1; ++i) {
     FreeUnusedCachedResources();
-    EXPECT_TRUE(!!PeekReusableThings(source));
+    EXPECT_TRUE(PeekReusableThings(source));
     EXPECT_EQ(1u, GetCopierCacheSize());
     if (HasFailure())
       break;
@@ -160,7 +163,7 @@ TEST_F(GLRendererCopierTest, FreesUnusedResources) {
   // Calling FreeUnusedCachedResources() just one more time should cause the
   // cache entry to be freed.
   FreeUnusedCachedResources();
-  EXPECT_FALSE(!!PeekReusableThings(source));
+  EXPECT_FALSE(PeekReusableThings(source));
   EXPECT_EQ(0u, GetCopierCacheSize());
 }
 
@@ -182,6 +185,40 @@ TEST_F(GLRendererCopierTest, FallsBackOnRGBAForReadbackFormat_BadFormat) {
 TEST_F(GLRendererCopierTest, FallsBackOnRGBAForReadbackFormat_BadType) {
   test_gl()->SetOptimalReadbackFormat(GL_BGRA_EXT, GL_UNSIGNED_SHORT);
   EXPECT_EQ(static_cast<GLenum>(GL_RGBA), GetOptimalReadbackFormat());
+}
+
+// Tests that copying from a source with a color space that can't be converted
+// to a SkColorSpace will fallback to a transform to sRGB.
+TEST_F(GLRendererCopierTest, FallsBackToSRGBForInvalidSkColorSpaces) {
+  std::unique_ptr<CopyOutputResult> result;
+  base::RunLoop loop;
+  auto request = std::make_unique<CopyOutputRequest>(
+      CopyOutputRequest::ResultFormat::RGBA,
+      CopyOutputRequest::ResultDestination::kSystemMemory,
+      base::BindOnce(
+          [](std::unique_ptr<CopyOutputResult>* result_out,
+             base::OnceClosure quit_closure,
+             std::unique_ptr<CopyOutputResult> result_from_copier) {
+            *result_out = std::move(result_from_copier);
+            std::move(quit_closure).Run();
+          },
+          &result, loop.QuitClosure()));
+  gfx::Rect bounds(50, 50);
+  copy_output::RenderPassGeometry geometry;
+  geometry.result_bounds = bounds;
+  geometry.result_selection = bounds;
+  geometry.sampling_bounds = bounds;
+  gfx::ColorSpace hdr_color_space = gfx::ColorSpace::CreatePiecewiseHDR(
+      gfx::ColorSpace::PrimaryID::BT2020, 0.5, 1.5);
+
+  copier()->CopyFromTextureOrFramebuffer(std::move(request), geometry, GL_RGBA,
+      0, gfx::Size(50, 50), false, hdr_color_space);
+  loop.Run();
+
+  auto scoped_bitmap = result->ScopedAccessSkBitmap();
+  SkBitmap result_bitmap = scoped_bitmap.bitmap();
+  ASSERT_NE(nullptr, result_bitmap.colorSpace());
+  EXPECT_TRUE(result_bitmap.colorSpace()->isSRGB());
 }
 
 }  // namespace viz

@@ -1,0 +1,99 @@
+
+
+div{
+  "paths": [
+    {
+      "path": [
+        "M",
+        205,
+        100,
+        "L",
+        205,
+        180,
+        "L",
+        105,
+        180,
+        "L",
+        105,
+        100,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 0, 0, 0)",
+      "outlineColor": "rgba(128, 0, 0, 0)",
+      "name": "content"
+    },
+    {
+      "path": [
+        "M",
+        205,
+        100,
+        "L",
+        205,
+        180,
+        "L",
+        105,
+        180,
+        "L",
+        105,
+        100,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 255, 0, 0)",
+      "name": "padding"
+    },
+    {
+      "path": [
+        "M",
+        205,
+        100,
+        "L",
+        205,
+        180,
+        "L",
+        105,
+        180,
+        "L",
+        105,
+        100,
+        "Z"
+      ],
+      "fillColor": "rgba(0, 0, 255, 0)",
+      "name": "border"
+    },
+    {
+      "path": [
+        "M",
+        205,
+        100,
+        "L",
+        205,
+        180,
+        "L",
+        105,
+        180,
+        "L",
+        105,
+        100,
+        "Z"
+      ],
+      "fillColor": "rgba(255, 255, 255, 0)",
+      "name": "margin"
+    }
+  ],
+  "showRulers": true,
+  "showExtensionLines": true,
+  "showAccessibilityInfo": true,
+  "colorFormat": "hex",
+  "elementInfo": {
+    "tagName": "div",
+    "idValue": "div",
+    "nodeWidth": "100",
+    "nodeHeight": "80",
+    "isKeyboardFocusable": false,
+    "accessibleName": "",
+    "accessibleRole": "generic",
+    "layoutObjectName": "LayoutBlockFlow",
+    "showAccessibilityInfo": true
+  }
+}
+

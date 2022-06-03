@@ -1,12 +1,11 @@
-<!DOCTYPE html>
+<!doctype html>
 <html manifest="/security/powerfulFeatureRestrictions/resources/simple.manifest">
 <head>
 <title>Old Powerful Features on an Insecure Origin</title>
-</head>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/resources/get-host-info.js"></script>
-
+</head>
 <body>
 <div id="target"></div>
 <script>
@@ -45,6 +44,10 @@ if (window.location.origin != get_host_info().UNAUTHENTICATED_ORIGIN) {
     test(function() {
       assert_false('requestMediaKeySystemAccess' in navigator);
     }, 'requestMediaKeySystemAccess');
+
+    test(function() {
+      assert_false('applicationCache' in window);
+    }, 'applicationCache');
 }
 </script>
 </body>

@@ -4,7 +4,7 @@
 
 #include "jingle/notifier/base/notifier_options_util.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "jingle/notifier/base/const_communicator.h"
 #include "jingle/notifier/base/notifier_options.h"
 #include "third_party/libjingle_xmpp/xmpp/constants.h"

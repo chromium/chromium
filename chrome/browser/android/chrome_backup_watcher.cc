@@ -27,7 +27,7 @@ ChromeBackupWatcher::ChromeBackupWatcher(Profile* profile) {
   registrar_.Init(profile->GetPrefs());
   base::RepeatingClosure callback =
       base::BindRepeating(&BackupPrefsChanged, java_watcher_);
-  for (const std::string pref_name : GetBackupPrefNames()) {
+  for (const std::string& pref_name : GetBackupPrefNames()) {
     registrar_.Add(pref_name, callback);
   }
 }

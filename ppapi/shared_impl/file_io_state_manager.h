@@ -19,6 +19,10 @@ namespace ppapi {
 class PPAPI_SHARED_EXPORT FileIOStateManager {
  public:
   FileIOStateManager();
+
+  FileIOStateManager(const FileIOStateManager&) = delete;
+  FileIOStateManager& operator=(const FileIOStateManager&) = delete;
+
   ~FileIOStateManager();
 
   enum OperationType {
@@ -59,8 +63,6 @@ class PPAPI_SHARED_EXPORT FileIOStateManager {
 
   // Set to true when the file has been successfully opened.
   bool file_open_;
-
-  DISALLOW_COPY_AND_ASSIGN(FileIOStateManager);
 };
 
 }  // namespace ppapi

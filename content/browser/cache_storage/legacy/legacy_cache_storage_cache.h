@@ -14,9 +14,9 @@
 #include "base/callback.h"
 #include "base/containers/id_map.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/optional.h"
+#include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
+#include "content/browser/cache_storage/blob_storage_context_wrapper.h"
 #include "content/browser/cache_storage/cache_storage_cache.h"
 #include "content/browser/cache_storage/cache_storage_handle.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
@@ -24,13 +24,10 @@
 #include "net/base/completion_once_callback.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom.h"
 #include "third_party/blink/public/mojom/quota/quota_types.mojom.h"
-#include "url/origin.h"
-
-namespace crypto {
-class SymmetricKey;
-}
 
 namespace storage {
 class QuotaManagerProxy;
@@ -41,13 +38,11 @@ class CacheStorageBlobToDiskCache;
 class CacheStorageCacheEntryHandler;
 class CacheStorageCacheObserver;
 class CacheStorageScheduler;
-enum class CacheStorageOwner;
 class LegacyCacheStorage;
 struct PutContext;
 
 namespace proto {
 class CacheMetadata;
-class CacheResponse;
 }  // namespace proto
 
 namespace cache_storage_cache_unittest {
@@ -63,17 +58,16 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   using SizePaddingCallback = base::OnceCallback<void(int64_t, int64_t)>;
 
   static std::unique_ptr<LegacyCacheStorageCache> CreateMemoryCache(
-      const url::Origin& origin,
-      CacheStorageOwner owner,
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
       const std::string& cache_name,
       LegacyCacheStorage* cache_storage,
       scoped_refptr<base::SequencedTaskRunner> scheduler_task_runner,
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
-      scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
-      std::unique_ptr<crypto::SymmetricKey> cache_padding_key);
+      scoped_refptr<BlobStorageContextWrapper> blob_storage_context);
   static std::unique_ptr<LegacyCacheStorageCache> CreatePersistentCache(
-      const url::Origin& origin,
-      CacheStorageOwner owner,
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
       const std::string& cache_name,
       LegacyCacheStorage* cache_storage,
       const base::FilePath& path,
@@ -81,12 +75,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       int64_t cache_size,
-      int64_t cache_padding,
-      std::unique_ptr<crypto::SymmetricKey> cache_padding_key);
-  static int64_t CalculateResponsePadding(
-      const blink::mojom::FetchAPIResponse& response,
-      const crypto::SymmetricKey* padding_key,
-      int side_data_size);
+      int64_t cache_padding);
   static int32_t GetResponsePaddingVersion();
 
   void Match(blink::mojom::FetchAPIRequestPtr request,
@@ -118,25 +107,12 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       int64_t trace_id,
       VerboseErrorCallback callback,
       BadMessageCallback bad_message_callback,
-      base::Optional<std::string> message,
+      absl::optional<std::string> message,
       uint64_t space_required,
       uint64_t side_data_size,
       blink::mojom::QuotaStatusCode status_code,
       int64_t usage,
       int64_t quota);
-  // Callback passed to operations. If |error| is a real error, invokes
-  // |error_callback|. Always invokes |completion_closure| to signal
-  // completion.
-  void BatchDidOneOperation(base::OnceClosure completion_closure,
-                            VerboseErrorCallback error_callback,
-                            base::Optional<std::string> message,
-                            int64_t trace_id,
-                            blink::mojom::CacheStorageError error);
-  // Callback invoked once all BatchDidOneOperation() calls have run.
-  // Invokes |error_callback|.
-  void BatchDidAllOperations(VerboseErrorCallback error_callback,
-                             base::Optional<std::string> message,
-                             int64_t trace_id);
 
   void Keys(blink::mojom::FetchAPIRequestPtr request,
             blink::mojom::CacheQueryOptionsPtr options,
@@ -147,11 +123,15 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   // will exit early. Close should only be called once per CacheStorageCache.
   void Close(base::OnceClosure callback);
 
-  // The size of the cache's contents.
+  // The size of the cache's contents.  The callback reports the padded
+  // size.  If you want the unpadded size you may call the cache_size()
+  // getter method on the cache object when the callback is invoked; the
+  // getter will have an up-to-date value at that point.
   void Size(SizeCallback callback);
 
   // Gets the cache's size, closes the backend, and then runs |callback| with
-  // the cache's size.
+  // the cache's size.  As per the comment for Size(), this also returns the
+  // padded size.
   void GetSizeThenClose(SizeCallback callback);
 
   void Put(blink::mojom::FetchAPIRequestPtr request,
@@ -166,6 +146,9 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   InitState GetInitState() const override;
 
+  LegacyCacheStorageCache(const LegacyCacheStorageCache&) = delete;
+  LegacyCacheStorageCache& operator=(const LegacyCacheStorageCache&) = delete;
+
   // Async operations in progress will cancel and not run their callbacks.
   ~LegacyCacheStorageCache() override;
 
@@ -176,10 +159,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   int64_t cache_size() const { return cache_size_; }
 
   int64_t cache_padding() const { return cache_padding_; }
-
-  const crypto::SymmetricKey* cache_padding_key() const {
-    return cache_padding_key_.get();
-  }
 
   // Return the total cache size (actual size + padding). If either is unknown
   // then CacheStorage::kSizeUnknown is returned.
@@ -231,6 +210,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   struct QueryCacheContext;
   struct QueryCacheResult;
+  struct BatchInfo;
 
   using QueryTypes = int32_t;
   using QueryCacheResults = std::vector<QueryCacheResult>;
@@ -243,8 +223,8 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       base::IDMap<std::unique_ptr<CacheStorageBlobToDiskCache>>;
 
   LegacyCacheStorageCache(
-      const url::Origin& origin,
-      CacheStorageOwner owner,
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
       const std::string& cache_name,
       const base::FilePath& path,
       LegacyCacheStorage* cache_storage,
@@ -252,8 +232,13 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       scoped_refptr<storage::QuotaManagerProxy> quota_manager_proxy,
       scoped_refptr<BlobStorageContextWrapper> blob_storage_context,
       int64_t cache_size,
-      int64_t cache_padding,
-      std::unique_ptr<crypto::SymmetricKey> cache_padding_key);
+      int64_t cache_padding);
+
+  // Callback passed to operations. If |error| is a real error, invokes
+  // |error_callback|. Always invokes |completion_closure| to signal
+  // completion.
+  void BatchDidOneOperation(BatchInfo& batch_status,
+                            blink::mojom::CacheStorageError error);
 
   // Runs |callback| with matching requests/response data. The data provided
   // in the QueryCacheResults depends on the |query_type|. If |query_type| is
@@ -264,6 +249,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   void QueryCache(blink::mojom::FetchAPIRequestPtr request,
                   blink::mojom::CacheQueryOptionsPtr options,
                   QueryTypes query_types,
+                  CacheStorageSchedulerPriority priority,
                   QueryCacheCallback callback);
   void QueryCacheDidOpenFastPath(
       std::unique_ptr<QueryCacheContext> query_cache_context,
@@ -277,6 +263,10 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       std::unique_ptr<QueryCacheContext> query_cache_context,
       disk_cache::ScopedEntryPtr entry,
       std::unique_ptr<proto::CacheMetadata> metadata);
+  void QueryCacheUpgradePadding(
+      std::unique_ptr<QueryCacheContext> query_cache_context,
+      disk_cache::ScopedEntryPtr entry,
+      std::unique_ptr<proto::CacheMetadata> metadata);
   static bool QueryCacheResultCompare(const QueryCacheResult& lhs,
                                       const QueryCacheResult& rhs);
   static size_t EstimatedResponseSizeWithoutBlob(
@@ -286,6 +276,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   void MatchImpl(blink::mojom::FetchAPIRequestPtr request,
                  blink::mojom::CacheQueryOptionsPtr match_options,
                  int64_t trace_id,
+                 CacheStorageSchedulerPriority priority,
                  ResponseCallback callback);
   void MatchDidMatchAll(
       ResponseCallback callback,
@@ -296,12 +287,20 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   void MatchAllImpl(blink::mojom::FetchAPIRequestPtr request,
                     blink::mojom::CacheQueryOptionsPtr options,
                     int64_t trace_id,
+                    CacheStorageSchedulerPriority priority,
                     ResponsesCallback callback);
   void MatchAllDidQueryCache(
       ResponsesCallback callback,
       int64_t trace_id,
       blink::mojom::CacheStorageError error,
       std::unique_ptr<QueryCacheResults> query_cache_results);
+
+  // Utility method to write metadata headers to an entry.
+  using WriteMetadataCallback =
+      base::OnceCallback<void(int exepected_bytes, int rv)>;
+  void WriteMetadata(disk_cache::Entry* entry,
+                     const proto::CacheMetadata& metadata,
+                     WriteMetadataCallback callback);
 
   // WriteSideData callbacks
   void WriteSideDataDidGetQuota(ErrorCallback callback,
@@ -348,12 +347,19 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
       ErrorCallback callback,
       ScopedWritableEntry entry,
       int expected_bytes,
-      std::unique_ptr<content::proto::CacheResponse> response,
-      int side_data_size_before_write,
+      std::unique_ptr<content::proto::CacheMetadata> metadata,
       int64_t trace_id,
       int rv);
+  void WriteSideDataDidWriteMetadata(ErrorCallback callback,
+                                     ScopedWritableEntry entry,
+                                     int64_t padding,
+                                     int64_t side_data_padding,
+                                     int expected_bytes,
+                                     int rv);
   void WriteSideDataComplete(ErrorCallback callback,
                              ScopedWritableEntry entry,
+                             int64_t padding,
+                             int64_t side_data_padding,
                              blink::mojom::CacheStorageError error);
 
   // Puts the request and response object in the cache. The response body (if
@@ -372,6 +378,8 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   void PutDidCreateEntry(std::unique_ptr<PutContext> put_context,
                          disk_cache::EntryResult result);
   void PutDidWriteHeaders(std::unique_ptr<PutContext> put_context,
+                          int64_t padding,
+                          int64_t side_data_padding,
                           int expected_bytes,
                           int rv);
   void PutWriteBlobToCache(std::unique_ptr<PutContext> put_context,
@@ -395,6 +403,7 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   void UpdateCacheSizeGotSize(CacheStorageCacheHandle,
                               base::OnceClosure callback,
                               int64_t current_cache_size);
+  void UpdateCacheSizeNotifiedStorageModified(base::OnceClosure callback);
 
   // GetAllMatchedEntries callbacks.
   void GetAllMatchedEntriesImpl(blink::mojom::FetchAPIRequestPtr request,
@@ -505,8 +514,8 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   // Be sure to check |backend_state_| before use.
   std::unique_ptr<disk_cache::Backend> backend_;
 
-  url::Origin origin_;
-  CacheStorageOwner owner_;
+  blink::StorageKey storage_key_;
+  storage::mojom::CacheStorageOwner owner_;
   const std::string cache_name_;
   base::FilePath path_;
 
@@ -526,7 +535,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
   // The actual cache size (not including padding).
   int64_t cache_size_;
   int64_t cache_padding_ = 0;
-  std::unique_ptr<crypto::SymmetricKey> cache_padding_key_;
   int64_t last_reported_size_ = 0;
   size_t max_query_size_bytes_;
   size_t handle_ref_count_ = 0;
@@ -546,8 +554,6 @@ class CONTENT_EXPORT LegacyCacheStorageCache : public CacheStorageCache {
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<LegacyCacheStorageCache> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LegacyCacheStorageCache);
 };
 
 }  // namespace content

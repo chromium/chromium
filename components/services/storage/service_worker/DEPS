@@ -1,0 +1,13 @@
+include_rules = [
+  "+net/base",
+  "+net/disk_cache",
+  "+net/http/http_response_info.h",
+  "+services/network/public/cpp",
+  "+services/network/public/mojom",
+]
+specific_include_rules = {
+  ".*_unittest.cc": [
+    "+net/http/http_util.h",
+    "+net/test",
+  ],
+}

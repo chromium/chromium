@@ -47,7 +47,7 @@ const PepperPluginInfo* PepperPluginRegistry::GetInfoForPlugin(
 
 PluginModule* PepperPluginRegistry::GetLiveModule(
     const base::FilePath& path,
-    const base::Optional<url::Origin>& origin_lock) {
+    const absl::optional<url::Origin>& origin_lock) {
   auto module_iter = live_modules_.find({path, origin_lock});
   if (module_iter == live_modules_.end())
     return nullptr;
@@ -74,7 +74,7 @@ PluginModule* PepperPluginRegistry::GetLiveModule(
 
 void PepperPluginRegistry::AddLiveModule(
     const base::FilePath& path,
-    const base::Optional<url::Origin>& origin_lock,
+    const absl::optional<url::Origin>& origin_lock,
     PluginModule* module) {
   DCHECK(live_modules_.find({path, origin_lock}) == live_modules_.end());
   live_modules_[{path, origin_lock}] = module;
@@ -120,7 +120,7 @@ void PepperPluginRegistry::Initialize() {
     auto module = base::MakeRefCounted<PluginModule>(
         current.name, current.version, current.path,
         ppapi::PpapiPermissions(current.permissions));
-    AddLiveModule(current.path, base::Optional<url::Origin>(), module.get());
+    AddLiveModule(current.path, absl::optional<url::Origin>(), module.get());
     if (current.is_internal) {
       if (!module->InitAsInternalPlugin(current.internal_entry_points)) {
         DVLOG(1) << "Failed to load pepper module: " << current.path.value();

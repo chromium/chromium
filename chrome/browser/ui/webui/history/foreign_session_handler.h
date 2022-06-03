@@ -10,13 +10,15 @@
 #include <vector>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/sessions/session_service.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
-#include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_message_handler.h"
+
+namespace content {
+class WebUI;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
@@ -48,8 +50,13 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   // WebUIMessageHandler implementation.
   void RegisterMessages() override;
   void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
 
   ForeignSessionHandler();
+
+  ForeignSessionHandler(const ForeignSessionHandler&) = delete;
+  ForeignSessionHandler& operator=(const ForeignSessionHandler&) = delete;
+
   ~ForeignSessionHandler() override;
 
   void InitializeForeignSessions();
@@ -70,13 +77,15 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
   static sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate(
       content::WebUI* web_ui);
 
+  void SetWebUIForTesting(content::WebUI* web_ui) { set_web_ui(web_ui); }
+
  private:
   void OnForeignSessionUpdated();
 
   base::Value GetForeignSessions();
 
   // Returns a string used to show the user when a session was last modified.
-  base::string16 FormatSessionTime(const base::Time& time);
+  std::u16string FormatSessionTime(const base::Time& time);
 
   // Determines which session is to be opened, and then calls
   // OpenForeignSession, to begin the process of opening a new browser window.
@@ -96,16 +105,9 @@ class ForeignSessionHandler : public content::WebUIMessageHandler {
 
   void HandleSetForeignSessionCollapsed(const base::ListValue* args);
 
-  // The time at which this WebUI was created. Used to calculate how long
-  // the WebUI was present before the sessions data was visible.
-  base::TimeTicks load_attempt_time_;
-
   base::Value initial_session_list_;
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      foreign_session_updated_subscription_;
-
-  DISALLOW_COPY_AND_ASSIGN(ForeignSessionHandler);
+  base::CallbackListSubscription foreign_session_updated_subscription_;
 };
 
 }  // namespace browser_sync

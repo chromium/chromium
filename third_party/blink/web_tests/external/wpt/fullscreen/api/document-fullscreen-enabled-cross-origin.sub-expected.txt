@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-FAIL Fullscreen enabled test: same-origin-default assert_equals: same-origin-default frame fullscreenEnabled expected false but got true
-PASS Fullscreen enabled test: same-origin-allow
-PASS Fullscreen enabled test: cross-origin-default
-PASS Fullscreen enabled test: cross-origin-allow
-Harness: the test ran to completion.
-

@@ -5,17 +5,9 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV class='child scale'",
-          "rect": [9, 58, 40, 40],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutNGBlockFlow (relative positioned) DIV class='child scale'",
-          "rect": [8, 58, 40, 40],
-          "reason": "paint property change"
-        }
+      "invalidations": [
+        [9, 58, 40, 40],
+        [8, 58, 40, 40]
       ]
     }
   ]

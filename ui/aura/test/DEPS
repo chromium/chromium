@@ -4,5 +4,5 @@ include_rules = [
   "+mojo/core/embedder/embedder.h",
   "+services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h",
   "+ui/gl",
-  "+ui/wm/core/wm_state.h",
+  "+ui/wm/core",
 ]

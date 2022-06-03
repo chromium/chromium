@@ -9,7 +9,7 @@
         android:color="@color/chip_text_color_selected"
         android:state_selected="true" android:state_enabled="false"/>
     <item android:alpha="@dimen/default_disabled_alpha"
-        android:color="@color/chip_text_color_default" android:state_enabled="false" />
+        android:color="@color/default_chip_assistive_text_color" android:state_enabled="false" />
     <item android:color="@color/chip_text_color_selected" android:state_selected="true" />
-    <item android:color="@color/chip_text_color_default" />
+    <item android:color="@color/default_chip_assistive_text_color" />
 </selector>

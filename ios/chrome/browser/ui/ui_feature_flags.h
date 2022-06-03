@@ -5,42 +5,81 @@
 #ifndef IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_
 #define IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_
 
+#include "Availability.h"
 #include "base/feature_list.h"
 
-// Feature to retain the contentView in the browser container.
-extern const base::Feature kBrowserContainerKeepsContentView;
+// Allows the user to track product prices through Chrome.
+// Use IsPriceAlertsEnabled in price_alert_util rather than depending
+// on this directly.
+extern const base::Feature kCommercePriceTracking;
 
-// Feature to show most visited sites and collection shortcuts in the omnibox
-// popup instead of ZeroSuggest.
-extern const base::Feature kOmniboxPopupShortcutIconsInZeroState;
+// Feature to open tab switcher after sliding down the toolbar.
+extern const base::Feature kExpandedTabStrip;
 
-// Feature to take snapshots using |-drawViewHierarchy:|.
-extern const base::Feature kSnapshotDrawView;
+// Test-only: Feature flag used to verify that EG2 can trigger flags. Must be
+// always disabled by default, because it is used to verify that enabling
+// features in tests works.
+extern const base::Feature kTestFeature;
 
-// Feature to apply UI Refresh theme to the settings.
-extern const base::Feature kSettingsRefresh;
+// Feature flag to enable Shared Highlighting (Link to Text).
+extern const base::Feature kSharedHighlightingIOS;
 
-// Feature to display the new omnibox popup design with favicons, search engine
-// favicon in the omnibox, rich entities support, new layout.
-extern const base::Feature kNewOmniboxPopupLayout;
+// Feature flag for testing the 'default browser' screen in FRE and different
+// experiments to suggest the users to update the default browser in the
+// Settings.app.
+extern const base::Feature kEnableFREDefaultBrowserScreenTesting;
 
-// Feature to display the omnibox with default search engine favicon
-// in the omnibox.
-extern const base::Feature kOmniboxUseDefaultSearchEngineFavicon;
+// Feature flag that enables using the FRE UI module to show first run screens.
+extern const base::Feature kEnableFREUIModuleIOS;
 
-// Feature flag for the language settings page.
-extern const base::Feature kLanguageSettings;
+// Feature flag that enables using the strings of the previous sync screen in
+// the current FRE.
+extern const base::Feature kOldSyncStringFRE;
 
-// Feature flag for embedders to block restore urls.
-extern const base::Feature kEmbedderBlockRestoreUrl;
+// TODO(crbug.com/1128242): Remove this flag after the refactoring work is
+// finished. Flag to modernize the tabstrip without disturbing the existing one.
+extern const base::Feature kModernTabStrip;
 
-// Feature flag disabling animation on low battery.
-extern const base::Feature kDisableAnimationOnLowBattery;
+// Enables the usage of dark mode color while in Incognito mode.
+extern const base::Feature kIncognitoBrandConsistencyForIOS;
 
-// Feature flag to use the unstacked tabstrip when voiceover is enabled.
-extern const base::Feature kVoiceOverUnstackedTabstrip;
+// Feature flag to enable revamped Incognito NTP page.
+extern const base::Feature kIncognitoNtpRevamp;
 
-// Feature flag to always force an unstacked tabstrip.
-extern const base::Feature kForceUnstackedTabstrip;
+// Feature flag that experiments with the default browser fullscreen promo UI.
+extern const base::Feature kDefaultBrowserFullscreenPromoExperiment;
+
+// Feature flag that swaps the omnibox textfield implementation.
+extern const base::Feature kIOSNewOmniboxImplementation;
+
+// Feature flag that fixes omnibox behavior when using iOS native dictation
+extern const base::Feature kIOSOmniboxAllowEditsDuringDictation;
+
+// Feature flag that enables persisting the Crash Restore Infobar across
+// navigations.
+extern const base::Feature kIOSPersistCrashRestore;
+
+// Enables the Search History Link in Clear Browsing Data for iOS.
+extern const base::Feature kSearchHistoryLinkIOS;
+
+// Feature flag to enable removing any entry points to the history UI from
+// Incognito mode.
+extern const base::Feature kUpdateHistoryEntryPointsInIncognito;
+
+// Feature to update context menu actions.
+extern const base::Feature kContextMenuActionsRefresh;
+
+// Feature flag to enable using Lens to search for images.
+extern const base::Feature kUseLensToSearchForImage;
+
+// Feature flag to enable promotional view for Passwords In Other Apps in
+// Settings.
+extern const base::Feature kCredentialProviderExtensionPromo;
+
+// Feature flag to enable duplicate NTP cleanup.
+extern const base::Feature kRemoveExcessNTPs;
+
+// Whether the ContextMenuActionsRefresh flag is enabled.
+bool IsContextMenuActionsRefreshEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_UI_FEATURE_FLAGS_H_

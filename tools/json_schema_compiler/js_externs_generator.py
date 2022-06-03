@@ -20,7 +20,7 @@ import re
 NOTE = """// NOTE: The format of types has changed. 'FooType' is now
 //   'chrome.%s.FooType'.
 // Please run the closure compiler before committing changes.
-// See https://chromium.googlesource.com/chromium/src/+/master/docs/closure_compilation.md
+// See https://chromium.googlesource.com/chromium/src/+/main/docs/closure_compilation.md
 """
 
 class JsExternsGenerator(object):
@@ -52,6 +52,9 @@ class _Generator(object):
 
     for js_type in self._namespace.types.values():
       self._AppendType(c, js_type)
+
+    for prop in self._namespace.properties.values():
+      self._AppendProperty(c, prop)
 
     for function in self._namespace.functions.values():
       self._AppendFunction(c, function)
@@ -162,11 +165,21 @@ class _Generator(object):
 
     c.Append('@typedef {')
     if properties:
-        self._js_util.AppendObjectDefinition(
-                c, self._namespace.name, properties, new_line=False)
+      self._js_util.AppendObjectDefinition(
+              c, self._namespace.name, properties, new_line=False)
     else:
-        c.Append('Object', new_line=False)
+      c.Append('Object', new_line=False)
     c.Append('}', new_line=False)
+
+  def _AppendProperty(self, c, prop):
+    """Appends the code representing a top-level property, including its
+       documentation. For example:
+
+       /** @type {string} */
+       chrome.runtime.id;
+    """
+    self._AppendTypeJsDoc(c, prop.type_, prop.optional)
+    c.Append()
 
   def _AppendFunction(self, c, function):
     """Appends the code representing a function, including its documentation.
@@ -203,14 +216,10 @@ class _Generator(object):
     """Appends the code creating namespace object.
        For example:
 
-       /**
-        * @const
-        */
+       /** @const */
        chrome.bookmarks = {};
     """
-    c.Append("""/**
- * @const
- */""")
+    c.Append('/** @const */')
     c.Append('chrome.%s = {};' % self._namespace.name)
     c.Append()
 
@@ -218,9 +227,12 @@ class _Generator(object):
     """Returns the function params string for function.
     """
     params = function.params[:]
-    if function.callback:
-      params.append(function.callback)
-    return ', '.join(param.name for param in params)
+    param_names = [param.name for param in params]
+    # TODO(https://crbug.com/1142991): Update this to represent promises better,
+    # rather than just appended as a callback.
+    if function.returns_async:
+      param_names.append(function.returns_async.name)
+    return ', '.join(param_names)
 
   def _GetNamespace(self):
     """Returns the namespace to be prepended to a top-level typedef.

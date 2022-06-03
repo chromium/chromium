@@ -58,4 +58,4 @@ class BLINK_EXPORT WebAssociatedURLLoader {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ASSOCIATED_URL_LOADER_H_

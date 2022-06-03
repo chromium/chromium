@@ -14,6 +14,7 @@
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "net/base/mac/url_conversions.h"
 #include "net/cookies/canonical_cookie.h"
+#include "net/cookies/cookie_constants.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,22 +42,28 @@ bool ShouldIncludeForRequestUrl(NSHTTPCookie* cookie, const GURL& url) {
   // of rewriting the checks here, the function converts the NSHTTPCookie to
   // canonical cookie and provide it with dummy CookieOption, so when iOS starts
   // to support cookieOptions this function can be modified to support that.
-  net::CanonicalCookie canonical_cookie =
+  std::unique_ptr<net::CanonicalCookie> canonical_cookie =
       net::CanonicalCookieFromSystemCookie(cookie, base::Time());
+  if (!canonical_cookie)
+    return false;
   // Cookies handled by this method are app specific cookies, so it's safe to
   // use strict same site context.
   net::CookieOptions options = net::CookieOptions::MakeAllInclusive();
   net::CookieAccessSemantics cookie_access_semantics =
       net::CookieAccessSemantics::LEGACY;
-  if (@available(iOS 13, *)) {
-    // Using |UNKNOWN| semantics to allow the experiment to switch between non
-    // legacy (where cookies that don't have a specific same-site access policy
-    // and not secure will not be included), and legacy mode.
-    cookie_access_semantics = net::CookieAccessSemantics::UNKNOWN;
-  }
-  return canonical_cookie
-      .IncludeForRequestURL(url, options, cookie_access_semantics)
-      .IsInclude();
+
+  // Using |UNKNOWN| semantics to allow the experiment to switch between non
+  // legacy (where cookies that don't have a specific same-site access policy
+  // and not secure will not be included), and legacy mode.
+  cookie_access_semantics = net::CookieAccessSemantics::UNKNOWN;
+
+  // No extra trustworthy URLs.
+  bool delegate_treats_url_as_trustworthy = false;
+  net::CookieAccessParams params = {
+      cookie_access_semantics, delegate_treats_url_as_trustworthy,
+      net::CookieSamePartyStatus::kNoSamePartyEnforcement};
+  return canonical_cookie->IncludeForRequestURL(url, options, params)
+      .status.IsInclude();
 }
 
 }  // namespace

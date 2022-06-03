@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests fetch() breakpoints.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.evaluateInPagePromise(`
       function sendRequest(url)
       {
@@ -12,14 +12,15 @@
       }
   `);
 
+  await TestRunner.showPanel('sources');
   SourcesTestRunner.runDebuggerTestSuite([
     function testFetchBreakpoint(next) {
       SDK.domDebuggerManager.addXHRBreakpoint('foo', true);
       SourcesTestRunner.waitUntilPaused(step1);
       TestRunner.evaluateInPageWithTimeout('sendRequest(\'/foo?a=b\')');
 
-      function step1(callFrames) {
-        SourcesTestRunner.captureStackTrace(callFrames);
+      async function step1(callFrames) {
+        await SourcesTestRunner.captureStackTrace(callFrames);
         SourcesTestRunner.resumeExecution(step2);
       }
 

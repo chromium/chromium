@@ -1,0 +1,425 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+//
+// Next MinVersion: 12
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "mojo/public/mojom/base/unguessable_token.mojom";
+import "ui/gfx/image/mojom/image.mojom";
+import "url/mojom/url.mojom";
+
+// Information about an app. See components/services/app_service/README.md.
+
+// This struct is used to transport App data between lacros-chrome and
+// ash-chrome. It is intended to be the minimal subset of apps::mojom::App
+// required for this purpose, and exists to allow apps::mojom::App to not have
+// to be versioned.
+// See components/services/app_service/public/mojom/types.mojom for details
+// for the structs in this file.
+[Stable]
+struct App {
+  AppType app_type@0;
+  string app_id@1;
+
+  // The fields above are mandatory. Everything else below is optional.
+
+  Readiness readiness@2;
+  string? name@3;
+  string? short_name@4;
+
+  // An optional, publisher-specific ID for this app, e.g. for Android apps,
+  // this field contains the Android package name, and for web apps, it
+  // contains the start URL.
+  string? publisher_id@5;
+  string? description@6;
+  string? version@7;
+  array<string> additional_search_terms@8;
+  IconKey? icon_key@9;
+  mojo_base.mojom.Time? last_launch_time@10;
+  mojo_base.mojom.Time? install_time@11;
+
+  // Whether the app was installed by sync, policy or as a default app.
+  InstallReason install_reason@12;
+  OptionalBool recommendable@13;
+  OptionalBool searchable@14;
+  OptionalBool show_in_launcher@15;
+  OptionalBool show_in_shelf@16;
+  OptionalBool show_in_search@17;
+  OptionalBool show_in_management@18;
+
+  // Whether the app icon should add the notification badging.
+  OptionalBool has_badge@19;
+
+  // Paused apps cannot be launched, and any running apps that become paused
+  // will be stopped. This is independent of whether or not the app is ready to
+  // be launched (defined by the Readiness field).
+  OptionalBool paused@20;
+
+  // This vector stores all the intent filters defined in this app. Each
+  // intent filter defines a matching criteria for whether an intent can
+  // be handled by this app. One app can have multiple intent filters.
+  array<IntentFilter> intent_filters@21;
+
+  // Whether the app's display mode is in the browser or otherwise.
+  [MinVersion=2]
+  WindowMode window_mode@22;
+
+  // An optional ID used for policy to identify the app.
+  // For web apps, it contains the install URL.
+  [MinVersion=7]
+  string? policy_id@23;
+
+  // This vector must be treated atomically, if there is a permission
+  // change, the publisher must send through the entire list of permissions.
+  // Should contain no duplicate IDs.
+  // If null during updates, Subscriber can assume no changes.
+  // There is no guarantee that this is sorted by any criteria.
+  [MinVersion=8]
+  array<Permission>? permissions@24;
+
+  [MinVersion=11]
+  // Whether the app publisher allows the app to be uninstalled.
+  OptionalBool allow_uninstall@25;
+};
+
+// The types of apps available in the registry.
+[Stable, Extensible]
+enum AppType {
+  [Default] kUnknown = 0,
+  kArc,           // Android app.
+  kWeb,           // Web app.
+  kSystemWeb,     // System web app.
+  [MinVersion=1]
+  kStandaloneBrowserExtension,     // Extension based app.
+};
+
+// Whether an app is ready to launch, i.e. installed.
+[Stable, Extensible]
+enum Readiness {
+  [Default] kUnknown = 0,
+  kReady,                // Installed and launchable.
+  kDisabledByBlocklist,  // Disabled by SafeBrowsing.
+  kDisabledByPolicy,     // Disabled by admin policy.
+  kDisabledByUser,       // Disabled by explicit user action.
+  kTerminated,           // Renderer process crashed.
+  kUninstalledByUser,
+  // Removed apps are purged from the registry cache and have their
+  // associated memory freed. Subscribers are not notified of removed
+  // apps, so publishers must set the app as uninstalled before
+  // removing it.
+  kRemoved,
+  [MinVersion=1] kUninstalledByMigration,
+};
+
+// The reason why the app was installed.
+[Stable, Extensible, RenamedFrom="crosapi.mojom.InstallSource"]
+enum InstallReason {
+  [Default] kUnknown = 0,
+  kSystem,     // Installed with the system and is considered a part of the OS.
+  kPolicy,     // Installed by policy.
+  kOem,        // Installed by an OEM.
+  kDefault,    // Preinstalled by default, but is not considered a system app.
+  kSync,       // Installed by sync.
+  kUser,       // Installed by user action.
+  [MinVersion=7] kSubApp,     // Installed by the SubApp API call.
+};
+
+// Augments a bool to include an 'unknown' value.
+[Stable, Extensible]
+enum OptionalBool {
+  [Default] kUnknown = 0,
+  kFalse,
+  kTrue,
+};
+
+[Stable]
+struct IconKey {
+  // A timeline value for icons that do not change.
+  const uint64 kDoesNotChangeOverTime = 0;
+
+  // A monotonically increasing number so that, after an icon update, a new
+  // IconKey, one that is different in terms of field-by-field equality, can be
+  // broadcast by a Publisher.
+  //
+  // The exact value of the number isn't important, only that newer IconKey's
+  // (those that were created more recently) have a larger timeline than older
+  // IconKey's.
+  //
+  // This is, in some sense, *a* version number, but the field is not called
+  // "version", to avoid any possible confusion that it encodes *the* app's
+  // version number, e.g. the "2.3.5" in "FooBar version 2.3.5 is installed".
+  //
+  // For example, if an app is disabled for some reason (so that its icon is
+  // grayed out), this would result in a different timeline even though the
+  // app's version is unchanged.
+  uint64 timeline;
+
+  // A bitmask of icon post-processing effects, such as desaturation to gray
+  // and rounding the corners.
+  // The mask enum apps::IconEffects is defined in
+  // chrome/browser/apps/app_service/app_icon/app_icon_factory.h and will remain
+  // stable.
+  uint32 icon_effects;
+};
+
+// The intent filter matching condition types.
+[Stable, Extensible]
+enum ConditionType {
+  [Default] kScheme,  // Matches the URL scheme (e.g. https, tel).
+  kHost,              // Matches the URL host (e.g. www.google.com).
+  kPattern,           // Matches the URL pattern (e.g. /abc/*).
+  kAction,            // Matches the action type (e.g. view, send).
+  kMimeType,          // Matches the top-level mime type (e.g. text/plain).
+  [MinVersion=1] kFileExtension,  // Deprecated.
+  [MinVersion=4] kFile            // Matches against all files.
+};
+
+// The pattern match type for intent filter pattern condition.
+[Stable, Extensible]
+enum PatternMatchType {
+  [Default] kNone = 0,
+  kLiteral,
+  kPrefix,
+  kGlob,
+  kMimeType,
+  [MinVersion=1] kFileExtension,
+  [MinVersion=6] kIsDirectory,
+};
+
+// For pattern type of condition, the value match will be based on the pattern
+// match type. If the match_type is kNone, then an exact match with the value
+// will be required.
+[Stable]
+struct ConditionValue {
+  string value;
+  PatternMatchType match_type; // This will be None for non pattern conditions.
+};
+
+// The condition for an intent filter. It matches if the intent contains this
+// condition type and the corresponding value matches with any of the
+// condition_values.
+[Stable]
+struct Condition {
+  ConditionType condition_type;
+  array<ConditionValue> condition_values;
+};
+
+// An intent filter is defined by an app, and contains a list of conditions that
+// an intent needs to match. If all conditions match, then this intent filter
+// matches against an intent.
+[Stable]
+struct IntentFilter {
+  array<Condition> conditions;
+
+  // Activity which registered this filter. We only fill this field for ARC
+  // share intent filters.
+  string? activity_name;
+
+  // The label shown to the user for this activity.
+  string? activity_label;
+};
+
+// What caused the app to be uninstalled.
+[Stable, Extensible]
+enum UninstallSource {
+  [Default] kUnknown = 0,
+  kAppList,       // Uninstall by the user from the App List (Launcher)
+  kAppManagement, // Uninstall by the user from the App Management page
+  kShelf,         // Uninstall by the user from the Shelf
+  kMigration,     // Uninstall by app migration.
+};
+
+// Information about whether an app is accessing some capability, e.g. camera,
+// microphone.
+[Stable]
+struct CapabilityAccess {
+  string app_id;
+
+  // Whether the app is accessing camera.
+  OptionalBool camera;
+
+  // Whether the app is accessing microphone.
+  OptionalBool microphone;
+};
+
+[Stable, Extensible]
+enum IconType {
+  // Sentinel value used in error cases.
+  [Default] kUnknown,
+  // Icon as an uncompressed gfx::ImageSkia with no standard Chrome OS mask.
+  kUncompressed,
+  // Icon as compressed bytes in PNG format with no standard Chrome OS mask.
+  kCompressed,
+  // Icon as an uncompressed gfx::ImageSkia with the standard Chrome OS mask
+  // applied. This is the default suggested icon type.
+  kStandard,
+};
+
+// The icon value for each app.
+[Stable]
+struct IconValue {
+  // The icon format and whether it uses Chrome OS mask.
+  IconType icon_type;
+  // The uncompressed icon data in gfx::ImageSkia format.
+  gfx.mojom.ImageSkia? uncompressed;
+  // The compressed icon data in PNG format.
+  array<uint8>? compressed;
+  // Whether this icon data is a placeholder icon.
+  bool is_placeholder_icon;
+};
+
+// MenuItems are used to populate context menus.
+[Stable]
+struct MenuItems {
+  array<MenuItem> items@0;
+};
+
+// The context menu model for each app. For web apps currently it's the info
+// for shortcut items.
+[Stable]
+struct MenuItem {
+  string label@0;                      // The string label, may be empty.
+  gfx.mojom.ImageSkia? image@1;        // The image icon, may be null.
+  [MinVersion=3]string? id@2;          // The id of the item.
+};
+
+[Stable, Extensible]
+// The mode that the app will be opened in (e.g. standalone window or browser
+// tab).
+enum WindowMode {
+  [Default] kUnknown = 0,
+  // Opens in a standalone window
+  kWindow,
+  // Opens in the default web browser
+  kBrowser,
+  // Opens in a tabbed app window
+  kTabbedWindow,
+};
+
+// Metadata for a single file shared through an intent.
+[Stable]
+struct IntentFile {
+  // The file path of the file to share.
+  mojo_base.mojom.FilePath file_path;
+};
+
+// Action and resource handling request. This should
+// be kept in sync with ConvertIntentToValue and ConvertValueToIntent in
+// components/services/app_service/public/cpp/intent_util.*
+[Stable]
+struct Intent {
+  string action@0;       // Intent action. e.g. view, send.
+  url.mojom.Url? url@1;  // The URL of the intent. e.g. https://www.google.com/.
+  string? mime_type@2;   // MIME type. e.g. text/plain, image/*.
+  string? share_text@3;  // Text to share. e.g. Share link to other app.
+  string? share_title@4; // Title for the share.
+  // The files to view or share.
+  [MinVersion=5]array<IntentFile>? files@5;
+};
+
+// The result from launching an app.
+[Stable]
+struct LaunchResult {
+  // The id to represent which instance the app is launched in.
+  mojo_base.mojom.UnguessableToken instance_id@0;
+};
+
+// Enumeration of app launch sources.
+[Stable, Extensible]
+enum LaunchSource {
+  [Default] kUnknown = 0,
+  kFromAppListGrid,              // Grid of apps, not the search box.
+  kFromAppListGridContextMenu,   // Grid of apps; context menu.
+  kFromAppListQuery,             // Query-dependent results (larger icons).
+  kFromAppListQueryContextMenu,  // Query-dependent results; context menu.
+  kFromAppListRecommendation,    // Query-less recommendations (smaller
+                                 // icons).
+  kFromParentalControls,         // Parental Controls Settings Section and
+                                 // Per App time notification.
+  kFromShelf,                    // Shelf.
+  kFromFileManager,              // FileManager.
+  kFromLink,                     // Left-clicking on links in the browser.
+  kFromOmnibox,                  // Enter URL in the Omnibox in the
+                                 // browser.
+  kFromChromeInternal,           // Chrome internal call.
+  kFromKeyboard,                 // Keyboard shortcut for opening app.
+  kFromOtherApp,                 // Clicking link in another app or webui.
+  kFromMenu,                     // Menu.
+  kFromInstalledNotification,    // Installed notification
+  kFromTest,                     // Test
+  kFromArc,                      // Arc.
+  kFromSharesheet,               // Sharesheet.
+  kFromReleaseNotesNotification, // Release Notes Notification.
+  kFromFullRestore,              // Full restore.
+  kFromSmartTextContextMenu,     // Smart text selection context menu.
+  kFromDiscoverTabNotification,  // Discover Tab Notification.
+  [MinVersion=10] kFromManagementApi,            // Management API.
+  [MinVersion=10] kFromKiosk,                    // Kiosk.
+  [MinVersion=10] kFromNewTabPage,               // New tab page.
+  [MinVersion=10] kFromIntentUrl,                // Intent Url.
+  [MinVersion=10] kFromOsLogin,                  // Run on OS login.
+  [MinVersion=10] kFromProtocolHandler,          // Protocol handler.
+  [MinVersion=10] kFromUrlHandler,               // Url handler.
+};
+
+[Stable]
+// The parameters to launch an app.
+struct LaunchParams {
+  string app_id@0;               // The app id of the app.
+  LaunchSource launch_source@1;  // The app launch source.
+  Intent? intent@2;              // The intent the app will launch with.
+};
+
+[Stable]
+struct Permission {
+  PermissionType permission_type@0;
+  PermissionValue value@1;
+  // If the permission is managed by an enterprise policy.
+  bool is_managed@2;
+};
+
+// The types of permissions in App Service.
+[Stable, Extensible]
+enum PermissionType {
+  [Default] kUnknown              = 0,
+  kCamera                         = 1,
+  kLocation                       = 2,
+  kMicrophone                     = 3,
+  kNotifications                  = 4,
+  [MinVersion=9] kContacts        = 5,
+  [MinVersion=9] kStorage         = 6,
+};
+
+[Stable]
+enum TriState {
+  kAllow,
+  kBlock,
+  kAsk,
+};
+
+[Stable]
+union PermissionValue {
+  bool bool_value;
+  TriState tristate_value;
+};
+
+// Represents changes which have been made to the preferred apps list, both
+// adding new filters and removing existing filters. The map is keyed by
+// |app_id|, and the value is the list of the filters that is added/removed
+// for that |app_id|.
+[Stable]
+struct PreferredAppChanges {
+  map<string, array<IntentFilter>> added_filters;
+  map<string, array<IntentFilter>> removed_filters;
+};
+
+// Represents the entry of the preferred apps list.
+[Stable]
+struct PreferredApp {
+  IntentFilter intent_filter;
+  string app_id;
+};

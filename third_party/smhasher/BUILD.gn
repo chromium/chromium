@@ -19,21 +19,3 @@ static_library("murmurhash3") {
   configs -= [ "//build/config/compiler:chromium_code" ]
   configs += [ "//build/config/compiler:no_chromium_code" ]
 }
-
-static_library("pmurhash") {
-  sources = [
-    "src/PMurHash.c",
-    "src/PMurHash.h",
-  ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-}
-
-static_library("cityhash") {
-  sources = [
-    "src/City.cpp",
-    "src/City.h",
-  ]
-  configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [ "//build/config/compiler:no_chromium_code" ]
-}

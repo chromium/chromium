@@ -3,5 +3,6 @@ include_rules = [
   "+third_party/skia/include",
   "+ui/gfx/codec",
   "+ui/gfx/geometry/rect_f.h",
-  "+ui/gl/gl_switches.h"
+  "+ui/gl/gl_switches.h",
+  "+third_party/barhopper/barhopper",
 ]

@@ -13,11 +13,12 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "build/build_config.h"
-#include "components/crash/content/app/crash_reporter_client.h"
-#include "components/crash/content/app/crashpad.h"
+#include "components/crash/core/app/crash_reporter_client.h"
+#include "components/crash/core/app/crashpad.h"
 #include "components/version_info/android/channel_getter.h"
 #include "components/version_info/version_info.h"
 #include "components/version_info/version_info_values.h"
+#include "weblayer/common/crash_reporter/crash_keys.h"
 #include "weblayer/common/weblayer_paths.h"
 
 namespace weblayer {
@@ -27,6 +28,9 @@ namespace {
 class CrashReporterClientImpl : public crash_reporter::CrashReporterClient {
  public:
   CrashReporterClientImpl() = default;
+
+  CrashReporterClientImpl(const CrashReporterClientImpl&) = delete;
+  CrashReporterClientImpl& operator=(const CrashReporterClientImpl&) = delete;
 
   // crash_reporter::CrashReporterClient implementation.
   bool IsRunningUnattended() override { return false; }
@@ -41,25 +45,26 @@ class CrashReporterClientImpl : public crash_reporter::CrashReporterClient {
   }
 
   bool GetCrashDumpLocation(base::FilePath* crash_dir) override {
-    return base::PathService::Get(weblayer::DIR_CRASH_DUMPS, crash_dir);
+    return base::PathService::Get(DIR_CRASH_DUMPS, crash_dir);
   }
 
-  void GetSanitizationInformation(const char* const** annotations_whitelist,
+  void GetSanitizationInformation(const char* const** crash_key_allowlist,
                                   void** target_module,
                                   bool* sanitize_stacks) override {
-    // TODO(tobiasjs) implement appropriate crash filtering.
-    *annotations_whitelist = nullptr;
+    *crash_key_allowlist = crash_keys::kWebLayerCrashKeyAllowList;
+#if defined(COMPONENT_BUILD)
     *target_module = nullptr;
-    *sanitize_stacks = false;
+#else
+    // The supplied address is used to identify the .so containing WebLayer.
+    *target_module = reinterpret_cast<void*>(&EnableCrashReporter);
+#endif
+    *sanitize_stacks = true;
   }
 
   static CrashReporterClientImpl* Get() {
     static base::NoDestructor<CrashReporterClientImpl> crash_reporter_client;
     return crash_reporter_client.get();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CrashReporterClientImpl);
 };
 
 }  // namespace

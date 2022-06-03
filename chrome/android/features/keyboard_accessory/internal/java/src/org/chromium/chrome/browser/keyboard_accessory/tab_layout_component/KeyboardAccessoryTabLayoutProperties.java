@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
 
-import android.support.design.widget.TabLayout;
+import com.google.android.material.tabs.TabLayout;
 
 import org.chromium.chrome.browser.keyboard_accessory.data.KeyboardAccessoryData;
 import org.chromium.ui.modelutil.ListModel;

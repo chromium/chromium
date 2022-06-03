@@ -4,7 +4,6 @@
 
 #include "ppapi/proxy/interface_proxy.h"
 
-#include "base/logging.h"
 #include "ppapi/proxy/dispatcher.h"
 
 namespace ppapi {

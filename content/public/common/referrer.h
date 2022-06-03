@@ -5,12 +5,12 @@
 #ifndef CONTENT_PUBLIC_COMMON_REFERRER_H_
 #define CONTENT_PUBLIC_COMMON_REFERRER_H_
 
-#include "base/logging.h"
 #include "content/common/content_export.h"
-#include "net/url_request/url_request.h"
+#include "net/url_request/referrer_policy.h"
 #include "services/network/public/mojom/referrer_policy.mojom-shared.h"
-#include "third_party/blink/public/mojom/referrer.mojom-forward.h"
+#include "third_party/blink/public/mojom/loader/referrer.mojom-forward.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -47,20 +47,8 @@ struct CONTENT_EXPORT Referrer {
       const url::Origin& initiator,
       network::mojom::ReferrerPolicy policy);
 
-  static net::URLRequest::ReferrerPolicy ReferrerPolicyForUrlRequest(
+  static net::ReferrerPolicy ReferrerPolicyForUrlRequest(
       network::mojom::ReferrerPolicy referrer_policy);
-
-  static network::mojom::ReferrerPolicy NetReferrerPolicyToBlinkReferrerPolicy(
-      net::URLRequest::ReferrerPolicy net_policy);
-
-  static net::URLRequest::ReferrerPolicy GetDefaultReferrerPolicy();
-
-  // Configures retaining the pre-M80 default referrer
-  // policy of no-referrer-when-downgrade.
-  // TODO(crbug.com/1016541): After M82, remove when the corresponding
-  // enterprise policy has been deleted.
-  static void SetForceLegacyDefaultReferrerPolicy(bool force);
-  static bool ShouldForceLegacyDefaultReferrerPolicy();
 
   // Validates |policy| to make sure it represents one of the valid
   // net::mojom::ReferrerPolicy enum values and returns it.  The relatively safe

@@ -7,10 +7,10 @@
 #include <windows.h>
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
-#include "base/sequenced_task_runner.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 
@@ -24,7 +24,7 @@ HANDLE CreatePowerRequest(POWER_REQUEST_TYPE type,
     return INVALID_HANDLE_VALUE;
   }
 
-  base::string16 wide_description = base::ASCIIToUTF16(description);
+  std::wstring wide_description = base::ASCIIToWide(description);
   REASON_CONTEXT context = {0};
   context.Version = POWER_REQUEST_CONTEXT_VERSION;
   context.Flags = POWER_REQUEST_CONTEXT_SIMPLE_STRING;
@@ -69,6 +69,9 @@ class PowerSaveBlocker::Delegate
         description_(description),
         ui_task_runner_(ui_task_runner) {}
 
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
+
   // Does the actual work to apply or remove the desired power save block.
   void ApplyBlock();
   void RemoveBlock();
@@ -84,8 +87,6 @@ class PowerSaveBlocker::Delegate
   const std::string description_;
   base::win::ScopedHandle handle_;
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 void PowerSaveBlocker::Delegate::ApplyBlock() {

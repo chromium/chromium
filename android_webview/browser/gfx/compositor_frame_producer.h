@@ -21,10 +21,9 @@ class CompositorFrameConsumer;
 class CompositorFrameProducer {
  public:
   virtual base::WeakPtr<CompositorFrameProducer> GetWeakPtr() = 0;
-  virtual void ReturnUsedResources(
-      const std::vector<viz::ReturnedResource>& resources,
-      const viz::FrameSinkId& frame_sink_id,
-      uint32_t layer_tree_frame_sink_id) = 0;
+  virtual void ReturnUsedResources(std::vector<viz::ReturnedResource> resources,
+                                   const viz::FrameSinkId& frame_sink_id,
+                                   uint32_t layer_tree_frame_sink_id) = 0;
   virtual void OnParentDrawDataUpdated(
       CompositorFrameConsumer* compositor_frame_consumer) = 0;
   virtual void OnViewTreeForceDarkStateChanged(

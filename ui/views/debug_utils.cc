@@ -7,11 +7,12 @@
 #include <ostream>
 
 #include "base/logging.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/view.h"
 
 #if !defined(NDEBUG)
 #include "ui/gfx/geometry/angle_conversions.h"
-#include "ui/gfx/transform_util.h"
+#include "ui/gfx/geometry/transform_util.h"
 #endif
 
 namespace views {
@@ -144,10 +145,14 @@ std::string PrintViewGraphImpl(const View* view) {
 
 void PrintViewHierarchy(const View* view) {
   std::ostringstream out;
-  out << "View hierarchy:\n";
-  PrintViewHierarchyImp(view, 0, &out);
+  PrintViewHierarchy(view, &out);
   // Error so users in the field can generate and upload logs.
   LOG(ERROR) << out.str();
+}
+
+void PrintViewHierarchy(const View* view, std::ostringstream* out) {
+  *out << "View hierarchy:\n";
+  PrintViewHierarchyImp(view, 0, out);
 }
 
 void PrintFocusHierarchy(const View* view) {

@@ -31,14 +31,14 @@ test(function() {
     var canvas2a = createCanvas(50, 50);
     var offscreenCanvas2a;
     var ctx = canvas2a.getContext("2d");
-    assert_throws("InvalidStateError", function() {
+    assert_throws_dom("InvalidStateError", function() {
         offscreenCanvas2a = canvas2a.transferControlToOffscreen();
         assert_false("transferControlToOffscreen from a canvas with context didn't throw an exception.");
     }, "transferControlToOffscreen from a canvas with context throws an exception");
 
     var canvas2b = createCanvas(10, 10);
     var offscreenCanvas2b = canvas2b.transferControlToOffscreen();
-    assert_throws("InvalidStateError", function() {
+    assert_throws_dom("InvalidStateError", function() {
         var anotherOffscreenCanvas = canvas2b.transferControlToOffscreen();
     }, "canvas.transferControlToOffscreen() is not allowed to called more than once for the same canvas.");
 }, "Tests whether transferControlToOffscreen throws exception correctly."); 
@@ -46,7 +46,7 @@ test(function() {
 test(function() {
     var canvas4 = createCanvas(10, 10);
     var offscreenCanvas4 = canvas4.transferControlToOffscreen();
-    assert_throws("InvalidStateError", function() {
+    assert_throws_dom("InvalidStateError", function() {
         canvas4.getContext("2d");
     }, "canvas.getContext() is not allowed after transferring control to offscreen.");
 }, "Test that getContext throw an exception if called after transferControlToOffscreen.");

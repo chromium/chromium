@@ -17,19 +17,14 @@
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/single_thread_task_runner.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_path.h"
 #include "dbus/object_proxy.h"
+#include "ui/display/screen.h"
 #include "ui/gfx/switches.h"
-
-#if defined(USE_X11)
-#include <X11/extensions/scrnsaver.h>
-
-#include "ui/gfx/x/x11_types.h"  // nogncheck
-#endif
 
 namespace device {
 
@@ -131,38 +126,11 @@ void GetDbusStringsForApi(DBusAPI api,
   NOTREACHED();
 }
 
-#if defined(USE_X11)
-// Check whether the X11 Screen Saver Extension can be used to disable the
-// screen saver. Must be called on the UI thread.
-bool X11ScreenSaverAvailable() {
-  // X Screen Saver isn't accessible in headless mode.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-    return false;
-  XDisplay* display = gfx::GetXDisplay();
-  int dummy;
-  int major;
-  int minor;
-
-  if (!XScreenSaverQueryExtension(display, &dummy, &dummy))
-    return false;
-
-  if (!XScreenSaverQueryVersion(display, &major, &minor))
-    return false;
-
-  return major > 1 || (major == 1 && minor >= 1);
+void SetScreenSaverSuspended(bool suspend) {
+  // The screen can be nullptr in tests.
+  if (auto* const screen = display::Screen::GetScreen())
+    screen->SetScreenSaverSuspended(suspend);
 }
-
-// Wrapper for XScreenSaverSuspend. Checks whether the X11 Screen Saver
-// Extension is available first. If it isn't, this is a no-op.  Must be called
-// on the UI thread.
-void X11ScreenSaverSuspendSet(bool suspend) {
-  if (!X11ScreenSaverAvailable())
-    return;
-
-  XDisplay* display = gfx::GetXDisplay();
-  XScreenSaverSuspend(display, suspend);
-}
-#endif
 
 }  // namespace
 
@@ -174,6 +142,9 @@ class PowerSaveBlocker::Delegate
            const std::string& description,
            scoped_refptr<base::SequencedTaskRunner> ui_task_runner,
            scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner);
+
+  Delegate(const Delegate&) = delete;
+  Delegate& operator=(const Delegate&) = delete;
 
   // Post a task to initialize the delegate on the UI thread, which will itself
   // then post a task to apply the power save block on the blocking task runner.
@@ -220,8 +191,6 @@ class PowerSaveBlocker::Delegate
 
   scoped_refptr<base::SequencedTaskRunner> ui_task_runner_;
   scoped_refptr<base::SingleThreadTaskRunner> blocking_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(Delegate);
 };
 
 PowerSaveBlocker::Delegate::Delegate(
@@ -243,10 +212,8 @@ void PowerSaveBlocker::Delegate::Init() {
         FROM_HERE, base::BindOnce(&Delegate::ApplyBlock, this));
   }
 
-#if defined(USE_X11)
   ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(X11ScreenSaverSuspendSet, true));
-#endif
+                            base::BindOnce(SetScreenSaverSuspended, true));
 }
 
 void PowerSaveBlocker::Delegate::CleanUp() {
@@ -255,10 +222,8 @@ void PowerSaveBlocker::Delegate::CleanUp() {
         FROM_HERE, base::BindOnce(&Delegate::RemoveBlock, this));
   }
 
-#if defined(USE_X11)
   ui_task_runner_->PostTask(FROM_HERE,
-                            base::BindOnce(X11ScreenSaverSuspendSet, false));
-#endif
+                            base::BindOnce(SetScreenSaverSuspended, false));
 }
 
 bool PowerSaveBlocker::Delegate::ShouldBlock() const {

@@ -6,7 +6,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "sandbox/mac/seatbelt.h"
 #include "sandbox/mac/system_services.h"
 
@@ -29,6 +29,7 @@ void DisableSystemServices() {
   CHECK_EQ(result, kCGErrorSuccess);
 
   sandbox::DisableLaunchServices();
+  sandbox::DisableCoreServicesCheckFix();
 }
 
 }  // namespace

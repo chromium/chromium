@@ -4,7 +4,7 @@
 
 package org.chromium.content.browser;
 
-import android.support.test.filters.MediumTest;
+import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -62,7 +62,7 @@ public class VSyncPausedTest {
 
     @After
     public void tearDown() {
-        mObserver.destroy();
+        TestThreadUtils.runOnUiThreadBlocking(() -> mObserver.destroy());
     }
 
     @Test

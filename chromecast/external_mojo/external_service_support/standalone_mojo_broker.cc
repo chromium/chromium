@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -10,7 +11,10 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
+#include "base/task/thread_pool/thread_pool_instance.h"
+#include "chromecast/external_mojo/external_service_support/external_connector_impl.h"
 #include "chromecast/external_mojo/external_service_support/process_setup.h"
+#include "chromecast/external_mojo/external_service_support/tracing_client.h"
 #include "chromecast/external_mojo/public/cpp/common.h"
 #include "chromecast/external_mojo/public/cpp/external_mojo_broker.h"
 #include "mojo/core/embedder/embedder.h"
@@ -33,10 +37,20 @@ int main(int argc, char** argv) {
       io_task_executor.task_runner(),
       mojo::core::ScopedIPCSupport::ShutdownPolicy::CLEAN);
 
+  base::ThreadPoolInstance::CreateAndStartWithDefaultParams(
+      "StandaloneMojoBroker");
+
   chromecast::external_mojo::ExternalMojoBroker broker(
       chromecast::external_mojo::GetBrokerPath());
 
+  chromecast::external_service_support::ExternalConnectorImpl tracing_connector(
+      broker.CreateConnector());
+  auto tracing_client =
+      chromecast::external_service_support::TracingClient::Create(
+          &tracing_connector);
+
   run_loop.Run();
+  base::ThreadPoolInstance::Get()->Shutdown();
 
   return 0;
 }

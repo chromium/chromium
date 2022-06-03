@@ -5,9 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGL_IMAGE_CONVERSION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_GPU_WEBGL_IMAGE_CONVERSION_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/image_pixel_locker.h"
 #include "third_party/blink/renderer/platform/heap/heap.h"
@@ -136,6 +135,8 @@ class PLATFORM_EXPORT WebGLImageConversion final {
                    ImageHtmlDomSource,
                    bool premultiply_alpha,
                    bool ignore_color_space);
+    ImageExtractor(const ImageExtractor&) = delete;
+    ImageExtractor& operator=(const ImageExtractor&) = delete;
 
     const void* ImagePixelData() {
       return image_pixel_locker_ ? image_pixel_locker_->Pixels() : nullptr;
@@ -155,15 +156,13 @@ class PLATFORM_EXPORT WebGLImageConversion final {
     void ExtractImage(bool premultiply_alpha, bool ignore_color_space);
 
     Image* image_;
-    base::Optional<ImagePixelLocker> image_pixel_locker_;
+    absl::optional<ImagePixelLocker> image_pixel_locker_;
     ImageHtmlDomSource image_html_dom_source_;
     unsigned image_width_;
     unsigned image_height_;
     DataFormat image_source_format_;
     AlphaOp alpha_op_;
     unsigned image_source_unpack_alignment_;
-
-    DISALLOW_COPY_AND_ASSIGN(ImageExtractor);
   };
 
   // Computes the components per pixel and bytes per component
@@ -194,12 +193,14 @@ class PLATFORM_EXPORT WebGLImageConversion final {
                                         unsigned* padding_in_bytes,
                                         unsigned* skip_size_in_bytes);
 
-  // Check if the format is one of the formats from the ImageData or DOM
-  // elements. The format from ImageData is always RGBA8. The formats from DOM
-  // elements vary with Graphics ports, but can only be RGBA8 or BGRA8.
-  static ALWAYS_INLINE bool SrcFormatComeFromDOMElementOrImageData(
+  // Check if the format is one of the formats from ImageData DOM elements, or
+  // ImageBitmap. The format from ImageData is always RGBA8. The formats from
+  // DOM elements vary with Graphics ports, but can only be RGBA8 or BGRA8.
+  // ImageBitmap can use RGBA16F when colorspace conversion is performed.
+  static ALWAYS_INLINE bool SrcFormatComesFromDOMElementOrImageData(
       DataFormat src_format) {
-    return src_format == kDataFormatBGRA8 || src_format == kDataFormatRGBA8;
+    return src_format == kDataFormatBGRA8 || src_format == kDataFormatRGBA8 ||
+           src_format == kDataFormatRGBA16F;
   }
 
   // The input can be either format or internalformat.
@@ -230,7 +231,7 @@ class PLATFORM_EXPORT WebGLImageConversion final {
   // packing the pixel data according to the given format and type,
   // and obeying the flipY and premultiplyAlpha flags. Returns true
   // upon success.
-  static bool ExtractImageData(const uint8_t* image_data,
+  static bool ExtractImageData(const void* image_data,
                                DataFormat source_data_format,
                                const IntSize& image_data_size,
                                const IntRect& source_image_sub_rectangle,
@@ -267,7 +268,7 @@ class PLATFORM_EXPORT WebGLImageConversion final {
   // data is tightly packed. Non-zero values may take a slow path. Destination
   // data will have no gaps between rows. Implemented in
   // GraphicsContext3DImagePacking.cpp.
-  static bool PackPixels(const uint8_t* source_data,
+  static bool PackPixels(const void* source_data,
                          DataFormat source_data_format,
                          unsigned source_data_width,
                          unsigned source_data_height,

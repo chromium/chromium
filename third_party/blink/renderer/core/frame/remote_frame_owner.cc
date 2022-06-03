@@ -4,44 +4,42 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame_owner.h"
 
-#include "third_party/blink/public/platform/web_resource_timing_info.h"
+#include "third_party/blink/public/mojom/frame/intrinsic_sizing_info.mojom-blink.h"
 #include "third_party/blink/public/web/web_local_frame_client.h"
-#include "third_party/blink/renderer/core/exported/web_remote_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
-#include "third_party/blink/renderer/core/frame/web_frame_widget_base.h"
+#include "third_party/blink/renderer/core/frame/web_frame_widget_impl.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
+#include "third_party/blink/renderer/core/frame/web_remote_frame_impl.h"
 #include "third_party/blink/renderer/core/layout/intrinsic_sizing_info.h"
 #include "third_party/blink/renderer/core/timing/performance.h"
+#include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
 
 namespace blink {
 
 RemoteFrameOwner::RemoteFrameOwner(
     const FramePolicy& frame_policy,
-    const WebFrameOwnerProperties& frame_owner_properties,
-    FrameOwnerElementType frame_owner_element_type)
+    const WebFrameOwnerProperties& frame_owner_properties)
     : frame_policy_(frame_policy),
       browsing_context_container_name_(
           static_cast<String>(frame_owner_properties.name)),
-      scrolling_(
-          static_cast<ScrollbarMode>(frame_owner_properties.scrolling_mode)),
+      scrollbar_(frame_owner_properties.scrollbar_mode),
       margin_width_(frame_owner_properties.margin_width),
       margin_height_(frame_owner_properties.margin_height),
       allow_fullscreen_(frame_owner_properties.allow_fullscreen),
       allow_payment_request_(frame_owner_properties.allow_payment_request),
       is_display_none_(frame_owner_properties.is_display_none),
-      needs_occlusion_tracking_(false),
-      required_csp_(frame_owner_properties.required_csp),
-      frame_owner_element_type_(frame_owner_element_type) {}
+      color_scheme_(frame_owner_properties.color_scheme),
+      needs_occlusion_tracking_(false) {}
 
-void RemoteFrameOwner::Trace(blink::Visitor* visitor) {
+void RemoteFrameOwner::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   FrameOwner::Trace(visitor);
 }
 
-void RemoteFrameOwner::SetScrollingMode(
-    WebFrameOwnerProperties::ScrollingMode mode) {
-  scrolling_ = static_cast<ScrollbarMode>(mode);
+void RemoteFrameOwner::SetScrollbarMode(mojom::blink::ScrollbarMode mode) {
+  scrollbar_ = mode;
 }
 
 void RemoteFrameOwner::SetContentFrame(Frame& frame) {
@@ -55,27 +53,17 @@ void RemoteFrameOwner::ClearContentFrame() {
 
 void RemoteFrameOwner::AddResourceTiming(const ResourceTimingInfo& info) {
   LocalFrame* frame = To<LocalFrame>(frame_.Get());
-  WebResourceTimingInfo resource_timing = Performance::GenerateResourceTiming(
-      *frame->Tree().Parent()->GetSecurityContext()->GetSecurityOrigin(), info,
-      *frame->GetDocument());
-  frame->Client()->ForwardResourceTimingToParent(resource_timing);
+  mojom::blink::ResourceTimingInfoPtr resource_timing =
+      Performance::GenerateResourceTiming(
+          *frame->Tree().Parent()->GetSecurityContext()->GetSecurityOrigin(),
+          info, *frame->DomWindow());
+  frame->GetLocalFrameHostRemote().ForwardResourceTimingToParent(
+      std::move(resource_timing));
 }
 
 void RemoteFrameOwner::DispatchLoad() {
-  WebLocalFrameImpl* web_frame =
-      WebLocalFrameImpl::FromFrame(To<LocalFrame>(*frame_));
-  web_frame->Client()->DispatchLoad();
-}
-
-void RemoteFrameOwner::RenderFallbackContent(Frame* failed_frame) {
-  if (frame_owner_element_type_ != FrameOwnerElementType::kObject)
-    return;
-  DCHECK(failed_frame->IsLocalFrame());
-  LocalFrame* local_frame = To<LocalFrame>(failed_frame);
-  DCHECK(local_frame->IsProvisional() || ContentFrame() == local_frame);
-  WebLocalFrameImpl::FromFrame(local_frame)
-      ->Client()
-      ->RenderFallbackContentInParentProcess();
+  auto& local_frame_host = To<LocalFrame>(*frame_).GetLocalFrameHostRemote();
+  local_frame_host.DispatchLoad();
 }
 
 void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
@@ -86,9 +74,14 @@ void RemoteFrameOwner::IntrinsicSizingInfoChanged() {
   // By virtue of having been invoked, GetIntrinsicSizingInfo() should always
   // succeed here.
   DCHECK(result);
+
+  auto sizing_info = mojom::blink::IntrinsicSizingInfo::New(
+      ToGfxSizeF(intrinsic_sizing_info.size),
+      ToGfxSizeF(intrinsic_sizing_info.aspect_ratio),
+      intrinsic_sizing_info.has_width, intrinsic_sizing_info.has_height);
   WebLocalFrameImpl::FromFrame(local_frame)
       ->FrameWidgetImpl()
-      ->IntrinsicSizingInfoChanged(intrinsic_sizing_info);
+      ->IntrinsicSizingInfoChanged(std::move(sizing_info));
 }
 
 void RemoteFrameOwner::SetNeedsOcclusionTracking(bool needs_tracking) {

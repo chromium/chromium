@@ -31,6 +31,7 @@
 #endif
 
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/gc_plugin_ignore.h"
 
 namespace WTF {
 
@@ -86,11 +87,11 @@ class PODInterval {
   // UserData type is a pointer or other type which can be initialized
   // with 0.
   PODInterval(const T& low, const T& high)
-      : low_(low), high_(high), data_(0), max_high_(high) {}
+      : low_(low), high_(high), data_(0), min_low_(low), max_high_(high) {}
 
   // Constructor from two endpoints plus explicit user data.
   PODInterval(const T& low, const T& high, const UserData data)
-      : low_(low), high_(high), data_(data), max_high_(high) {}
+      : low_(low), high_(high), data_(data), min_low_(low), max_high_(high) {}
 
   const T& Low() const { return low_; }
   const T& High() const { return high_; }
@@ -119,6 +120,9 @@ class PODInterval {
             Data() == other.Data());
   }
 
+  const T& MinLow() const { return min_low_; }
+  void SetMinLow(const T& min_low) { min_low_ = min_low; }
+
   const T& MaxHigh() const { return max_high_; }
   void SetMaxHigh(const T& max_high) { max_high_ = max_high; }
 
@@ -132,6 +136,8 @@ class PODInterval {
     builder.Append(ValueToString<T>::ToString(High()));
     builder.Append("), data=");
     builder.Append(ValueToString<UserData>::ToString(Data()));
+    builder.Append(", minLow=");
+    builder.Append(ValueToString<T>::ToString(MinLow()));
     builder.Append(", maxHigh=");
     builder.Append(ValueToString<T>::ToString(MaxHigh()));
     builder.Append(']');
@@ -142,12 +148,8 @@ class PODInterval {
  private:
   T low_;
   T high_;
-// https://crbug.com/513116.
-#if defined(__clang__)
-  __attribute__((annotate("blink_gc_plugin_ignore"))) UserData data_;
-#else
-  UserData data_;
-#endif
+  GC_PLUGIN_IGNORE("https://crbug.com/513116") UserData data_;
+  T min_low_;
   T max_high_;
 };
 

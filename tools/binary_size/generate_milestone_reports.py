@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -21,8 +21,6 @@ can be uploaded to the destination bucket.
 Reports can be uploaded automatically with the --sync flag. Otherwise, they can
 be uploaded at a later point.
 """
-
-from __future__ import print_function
 
 import argparse
 import collections
@@ -47,8 +45,11 @@ _GSUTIL = os.path.join(_DIR_SOURCE_ROOT, 'third_party', 'depot_tools',
 _PUSH_URL = 'gs://chrome-supersize/milestones/'
 
 _DESIRED_CPUS = ['arm', 'arm_64']
-# Measure Chrome.apk since it's not a bundle.
-_DESIRED_APKS = ['Monochrome.apk', 'Chrome.apk', 'AndroidWebview.apk']
+_DESIRED_APKS = [
+    'ChromeModern.apk', 'Monochrome.apk', 'AndroidWebview.apk',
+    'TrichromeGoogle'
+]
+
 # Versions are manually gathered from
 # https://omahaproxy.appspot.com/history?os=android&channel=stable
 _DESIRED_VERSIONS = [
@@ -71,27 +72,51 @@ _DESIRED_VERSIONS = [
     '76.0.3809.132',
     '77.0.3865.115',
     '78.0.3904.62',
-    '79.0.3945.2',  # Canary
+    '79.0.3945.136',
+    '80.0.3987.99',
+    '81.0.4044.138',
+    '83.0.4103.60',
+    '84.0.4147.89',
+    '85.0.4183.81',
+    '86.0.4240.198',
+    '87.0.4280.66',
+    '88.0.4324.93',
+    '89.0.4389.105',
+    '90.0.4430.82',
+    '91.0.4472.120',
+    '92.0.4515.70',
+    '93.0.4577.37',
+    '94.0.4606.6',
+    '94.0.4606.85',
+    '95.0.4638.7',
+    '96.0.4664.6',
+    '97.0.4692.9',
 ]
 
 
-def _VersionTuple(version):
-  return tuple(int(x) for x in version.split('.'))
+def _VersionMajor(version):
+  return tuple(int(x) for x in version.split('.'))[0]
 
 
 def _IsBundle(apk, version):
-  return apk == 'Monochrome.apk' and _VersionTuple(version) >= (73,)
+  version = _VersionMajor(version)
+  if apk == 'ChromeModern.apk' and version >= 73:
+    return True
+  if apk == 'Monochrome.apk' and version >= 73:
+    return True
+  if apk == 'AndroidWebview.apk' and version >= 89:
+    return True
+  return False
 
 
 def _EnumerateReports():
   for cpu, apk in itertools.product(_DESIRED_CPUS, _DESIRED_APKS):
-    # KitKat doesn't support arm64.
-    if cpu == 'arm_64' and apk == 'Chrome.apk':
-      continue
     versions = _DESIRED_VERSIONS
     # Webview .size files do not exist before M71.
     if apk == 'AndroidWebview.apk':
-      versions = [v for v in versions if _VersionTuple(v) >= (71,)]
+      versions = [v for v in versions if _VersionMajor(v) >= 71]
+    elif apk == 'TrichromeGoogle':
+      versions = [v for v in versions if _VersionMajor(v) >= 88]
 
     for version in versions:
       yield Report(cpu, apk, version)
@@ -99,11 +124,19 @@ def _EnumerateReports():
 
 class Report(collections.namedtuple('Report', 'cpu,apk,version')):
 
-  @property
-  def size_file_subpath(self):
-    ret = '{version}/{cpu}/{apk}.size'.format(**self._asdict())
-    if _IsBundle(self.apk, self.version):
+  def GetSizeFileSubpath(self, local):
+    # TrichromeGoogle at older milestones lived in a subdir.
+    if not local and self.apk == 'TrichromeGoogle' and _VersionMajor(
+        self.version) < 91:
+      template = '{version}/{cpu}/for-signing-only/{apk}.size'
+    else:
+      template = '{version}/{cpu}/{apk}.size'
+
+    ret = template.format(**self._asdict())
+
+    if not local and _IsBundle(self.apk, self.version):
       ret = ret.replace('.apk', '.minimal.apks')
+
     return ret
 
 
@@ -137,8 +170,7 @@ def _DownloadOneSizeFile(arg_tuples):
 def _DownloadSizeFiles(base_url, reports):
   temp_dir = tempfile.mkdtemp()
   try:
-    subpaths = set(x.size_file_subpath for x in reports)
-    logging.warning('Downloading %d .size files', len(subpaths))
+    subpaths = set(x.GetSizeFileSubpath(local=False) for x in reports)
     arg_tuples = ((p, temp_dir, base_url) for p in subpaths)
     for _ in _Shard(_DownloadOneSizeFile, arg_tuples):
       pass
@@ -165,19 +197,16 @@ def _BuildOneReport(report, output_directory, size_file_directory):
   # Newer Monochrome builds are minimal builds, with names like
   # "Monochrome.minimal.apks.size". Standardize to "Monochrome.apk.size".
   local_size_path = os.path.join(output_directory,
-                                 report.size_file_subpath).replace(
-                                     'minimal.apks', 'apk')
-
+                                 report.GetSizeFileSubpath(local=True))
   _MakeDirectory(os.path.dirname(local_size_path))
 
-  size_file = os.path.join(size_file_directory, report.size_file_subpath)
+  size_file = os.path.join(size_file_directory,
+                           report.GetSizeFileSubpath(local=False))
   shutil.copyfile(size_file, local_size_path)
 
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.add_argument(
-      'directory', help='Directory to save report files to (must not exist).')
   parser.add_argument(
       '--size-file-bucket',
       required=True,
@@ -186,54 +215,37 @@ def main():
       '--sync',
       action='store_true',
       help='Sync data files to GCS (otherwise just prints out command to run).')
-  parser.add_argument(
-      '--skip-existing',
-      action='store_true',
-      help='Used to control skipping existing reports, now does nothing.')
-
   args = parser.parse_args()
 
   size_file_bucket = args.size_file_bucket.rstrip('/')
   if not size_file_bucket.startswith('gs://'):
     parser.error('Size file bucket must start with gs://')
 
-  _MakeDirectory(args.directory)
-  if os.listdir(args.directory):
-    parser.error('Directory must be empty')
-
   reports_to_make = set(_EnumerateReports())
 
+  logging.warning('Downloading %d size files.', len(reports_to_make))
   with _DownloadSizeFiles(args.size_file_bucket, reports_to_make) as sizes_dir:
-    logging.warning('Downloading %d size files.', len(reports_to_make))
 
-    for i, r in enumerate(reports_to_make):
-      _BuildOneReport(r, args.directory, sizes_dir)
-      sys.stdout.write('\rGenerated {} of {}'.format(i + 1,
-                                                     len(reports_to_make)))
-      sys.stdout.flush()
-    sys.stdout.write('\n')
+    staging_dir = os.path.join(sizes_dir, 'staging')
+    _MakeDirectory(staging_dir)
 
-  _WriteMilestonesJson(os.path.join(args.directory, 'milestones.json'))
+    for r in reports_to_make:
+      _BuildOneReport(r, staging_dir, sizes_dir)
 
-  logging.warning('Reports saved to %s', args.directory)
-  cmd = [
-      _GSUTIL,
-      '-m',
-      'rsync',
-      '-J',
-      '-a',
-      'public-read',
-      '-r',
-      args.directory,
-      _PUSH_URL,
-  ]
+    _WriteMilestonesJson(os.path.join(staging_dir, 'milestones.json'))
 
-  if args.sync:
-    subprocess.check_call(cmd)
-  else:
-    print()
-    print('Sync files by running:')
-    print('   ', ' '.join(cmd))
+    if args.sync:
+      subprocess.check_call(
+          [_GSUTIL, '-m', 'rsync', '-r', staging_dir, _PUSH_URL])
+      milestones_json = _PUSH_URL + 'milestones.json'
+      # The main index.html page has no authentication code, so make .json file
+      # world-readable.
+      subprocess.check_call(
+          [_GSUTIL, 'acl', 'set', '-a', 'public-read', milestones_json])
+      subprocess.check_call(
+          [_GSUTIL, 'setmeta', '-h', 'Cache-Control:no-cache', milestones_json])
+    else:
+      logging.warning('Finished dry run. Run with --sync to upload.')
 
 
 if __name__ == '__main__':

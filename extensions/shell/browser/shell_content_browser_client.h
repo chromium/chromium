@@ -13,7 +13,7 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "storage/browser/quota/quota_settings.h"
+#include "services/metrics/public/cpp/ukm_source_id.h"
 
 class GURL;
 
@@ -21,9 +21,19 @@ namespace base {
 class CommandLine;
 }
 
+namespace blink {
+class AssociatedInterfaceRegistry;
+}
+
 namespace content {
 class BrowserContext;
 }
+
+namespace service_manager {
+template <typename...>
+class BinderRegistryWithArgs;
+using BinderRegistry = BinderRegistryWithArgs<>;
+}  // namespace service_manager
 
 namespace extensions {
 class Extension;
@@ -35,6 +45,11 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
  public:
   explicit ShellContentBrowserClient(
       ShellBrowserMainDelegate* browser_main_delegate);
+
+  ShellContentBrowserClient(const ShellContentBrowserClient&) = delete;
+  ShellContentBrowserClient& operator=(const ShellContentBrowserClient&) =
+      delete;
+
   ~ShellContentBrowserClient() override;
 
   // Returns the single instance.
@@ -45,14 +60,10 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
 
   // content::ContentBrowserClient overrides.
   std::unique_ptr<content::BrowserMainParts> CreateBrowserMainParts(
-      const content::MainFunctionParams& parameters) override;
+      content::MainFunctionParams parameters) override;
   void RenderProcessWillLaunch(content::RenderProcessHost* host) override;
   bool ShouldUseProcessPerSite(content::BrowserContext* browser_context,
-                               const GURL& effective_url) override;
-  void GetQuotaSettings(
-      content::BrowserContext* context,
-      content::StoragePartition* partition,
-      storage::OptionalQuotaSettingsCallback callback) override;
+                               const GURL& site_url) override;
   bool IsHandledURL(const GURL& url) override;
   void SiteInstanceGotProcess(content::SiteInstance* site_instance) override;
   void SiteInstanceDeleting(content::SiteInstance* site_instance) override;
@@ -64,7 +75,16 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       int plugin_process_id) override;
   void GetAdditionalAllowedSchemesForFileSystem(
       std::vector<std::string>* additional_schemes) override;
-  content::DevToolsManagerDelegate* GetDevToolsManagerDelegate() override;
+  std::unique_ptr<content::DevToolsManagerDelegate>
+  CreateDevToolsManagerDelegate() override;
+  void ExposeInterfacesToRenderer(
+      service_manager::BinderRegistry* registry,
+      blink::AssociatedInterfaceRegistry* associated_registry,
+      content::RenderProcessHost* render_process_host) override;
+  bool BindAssociatedReceiverFromFrame(
+      content::RenderFrameHost* render_frame_host,
+      const std::string& interface_name,
+      mojo::ScopedInterfaceEndpointHandle* handle) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -72,6 +92,7 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       content::NavigationHandle* navigation_handle) override;
   void RegisterNonNetworkNavigationURLLoaderFactories(
       int frame_tree_node_id,
+      ukm::SourceIdObj ukm_source_id,
       NonNetworkURLLoaderFactoryMap* factories) override;
   void RegisterNonNetworkWorkerMainResourceURLLoaderFactories(
       content::BrowserContext* browser_context,
@@ -89,21 +110,25 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       int render_process_id,
       URLLoaderFactoryType type,
       const url::Origin& request_initiator,
-      base::Optional<int64_t> navigation_id,
+      absl::optional<int64_t> navigation_id,
+      ukm::SourceIdObj ukm_source_id,
       mojo::PendingReceiver<network::mojom::URLLoaderFactory>* factory_receiver,
       mojo::PendingRemote<network::mojom::TrustedURLLoaderHeaderClient>*
           header_client,
       bool* bypass_redirect_checks,
+      bool* disable_secure_dns,
       network::mojom::URLLoaderFactoryOverridePtr* factory_override) override;
   bool HandleExternalProtocol(
       const GURL& url,
-      content::WebContents::OnceGetter web_contents_getter,
+      content::WebContents::Getter web_contents_getter,
       int child_id,
+      int frame_tree_node_id,
       content::NavigationUIData* navigation_data,
       bool is_main_frame,
+      network::mojom::WebSandboxFlags sandbox_flags,
       ui::PageTransition page_transition,
       bool has_user_gesture,
-      const base::Optional<url::Origin>& initiating_origin,
+      const absl::optional<url::Origin>& initiating_origin,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override;
   void OverrideURLLoaderFactoryParams(
@@ -111,12 +136,13 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& origin,
       bool is_for_isolated_world,
       network::mojom::URLLoaderFactoryParams* factory_params) override;
+  base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   std::string GetUserAgent() override;
 
  protected:
   // Subclasses may wish to provide their own ShellBrowserMainParts.
   virtual std::unique_ptr<ShellBrowserMainParts> CreateShellBrowserMainParts(
-      const content::MainFunctionParams& parameters,
+      content::MainFunctionParams parameters,
       ShellBrowserMainDelegate* browser_main_delegate);
 
  private:
@@ -131,8 +157,6 @@ class ShellContentBrowserClient : public content::ContentBrowserClient {
 
   // Owned by ShellBrowserMainParts.
   ShellBrowserMainDelegate* browser_main_delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellContentBrowserClient);
 };
 
 }  // namespace extensions

@@ -9,14 +9,13 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
-#include "base/stl_util.h"
-#include "base/task/post_task.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -37,7 +36,6 @@
 
 #define FPL FILE_PATH_LITERAL
 
-using content::BrowserThread;
 using storage::FileSystemContext;
 using storage::FileSystemURL;
 using storage::FileSystemURLSet;
@@ -70,8 +68,8 @@ class LocalFileSyncContextTest : public testing::Test {
     in_memory_env_ = leveldb_chrome::NewMemEnv("LocalFileSyncContextTest");
 
     ui_task_runner_ = base::ThreadTaskRunnerHandle::Get();
-    io_task_runner_ = base::CreateSingleThreadTaskRunner({BrowserThread::IO});
-    file_task_runner_ = base::CreateSingleThreadTaskRunner({BrowserThread::IO});
+    io_task_runner_ = content::GetIOThreadTaskRunner({});
+    file_task_runner_ = content::GetIOThreadTaskRunner({});
   }
 
   void TearDown() override { RevokeSyncableFileSystem(); }
@@ -87,11 +85,9 @@ class LocalFileSyncContextTest : public testing::Test {
     status_ = SYNC_STATUS_UNKNOWN;
     has_inflight_prepare_for_sync_ = true;
     sync_context_->PrepareForSync(
-        file_system_context,
-        url,
-        sync_mode,
-        base::Bind(&LocalFileSyncContextTest::DidPrepareForSync,
-                   base::Unretained(this), metadata, changes, snapshot));
+        file_system_context, url, sync_mode,
+        base::BindOnce(&LocalFileSyncContextTest::DidPrepareForSync,
+                       base::Unretained(this), metadata, changes, snapshot));
   }
 
   SyncStatusCode PrepareForSync(FileSystemContext* file_system_context,
@@ -106,17 +102,17 @@ class LocalFileSyncContextTest : public testing::Test {
     return status_;
   }
 
-  base::Closure GetPrepareForSyncClosure(
+  base::OnceClosure GetPrepareForSyncClosure(
       FileSystemContext* file_system_context,
       const FileSystemURL& url,
       LocalFileSyncContext::SyncMode sync_mode,
       SyncFileMetadata* metadata,
       FileChangeList* changes,
       storage::ScopedFile* snapshot) {
-    return base::Bind(&LocalFileSyncContextTest::StartPrepareForSync,
-                      base::Unretained(this),
-                      base::Unretained(file_system_context),
-                      url, sync_mode, metadata, changes, snapshot);
+    return base::BindOnce(&LocalFileSyncContextTest::StartPrepareForSync,
+                          base::Unretained(this),
+                          base::Unretained(file_system_context), url, sync_mode,
+                          metadata, changes, snapshot);
   }
 
   void DidPrepareForSync(SyncFileMetadata* metadata_out,
@@ -155,9 +151,9 @@ class LocalFileSyncContextTest : public testing::Test {
     status_ = SYNC_STATUS_UNKNOWN;
     sync_context_->ApplyRemoteChange(
         file_system_context, change, local_path, url,
-        base::Bind(&LocalFileSyncContextTest::DidApplyRemoteChange,
-                   base::Unretained(this),
-                   base::RetainedRef(file_system_context), url));
+        base::BindOnce(&LocalFileSyncContextTest::DidApplyRemoteChange,
+                       base::Unretained(this),
+                       base::RetainedRef(file_system_context), url));
     base::RunLoop().Run();
     return status_;
   }
@@ -187,8 +183,9 @@ class LocalFileSyncContextTest : public testing::Test {
     ASSERT_TRUE(io_task_runner_->RunsTasksInCurrentSequence());
     file_error_ = base::File::FILE_ERROR_FAILED;
     file_system->operation_runner()->Truncate(
-        url, 1, base::Bind(&LocalFileSyncContextTest::DidModifyFile,
-                           base::Unretained(this)));
+        url, 1,
+        base::BindOnce(&LocalFileSyncContextTest::DidModifyFile,
+                       base::Unretained(this)));
   }
 
   base::File::Error WaitUntilModifyFileIsDone() {

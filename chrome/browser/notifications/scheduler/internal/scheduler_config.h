@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 
 namespace notifications {
@@ -50,6 +49,8 @@ struct SchedulerConfig {
   static std::unique_ptr<SchedulerConfig> CreateFromFinch();
 
   SchedulerConfig();
+  SchedulerConfig(const SchedulerConfig&) = delete;
+  SchedulerConfig& operator=(const SchedulerConfig&) = delete;
   ~SchedulerConfig();
 
   // Maximum number of all types of notifications shown to the user per day.
@@ -83,9 +84,6 @@ struct SchedulerConfig {
 
   // The time window to launch the background task.
   base::TimeDelta background_task_window_duration;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SchedulerConfig);
 };
 
 }  // namespace notifications

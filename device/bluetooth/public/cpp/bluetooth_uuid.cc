@@ -6,7 +6,10 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
+#include <ostream>
+#include <string>
+
+#include "base/check_op.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -15,7 +18,6 @@
 #if defined(OS_WIN)
 #include <objbase.h>
 
-#include "base/strings/string16.h"
 #include "base/win/win_util.h"
 #endif  // defined(OS_WIN)
 
@@ -80,11 +82,11 @@ BluetoothUUID::BluetoothUUID(const std::string& uuid) {
 
 #if defined(OS_WIN)
 BluetoothUUID::BluetoothUUID(GUID uuid) {
-  auto buffer = base::win::String16FromGUID(uuid);
+  auto buffer = base::win::WStringFromGUID(uuid);
   DCHECK_EQ('{', buffer[0]);
   DCHECK_EQ('}', buffer[37]);
 
-  GetCanonicalUuid(base::UTF16ToUTF8(buffer.substr(1, 36)), &value_,
+  GetCanonicalUuid(base::WideToUTF8(buffer.substr(1, 36)), &value_,
                    &canonical_value_, &format_);
   DCHECK_EQ(kFormat128Bit, format_);
 }
@@ -98,8 +100,7 @@ BluetoothUUID::~BluetoothUUID() = default;
 // static
 GUID BluetoothUUID::GetCanonicalValueAsGUID(base::StringPiece uuid) {
   DCHECK_EQ(36u, uuid.size());
-  base::string16 braced_uuid =
-      STRING16_LITERAL('{') + base::UTF8ToUTF16(uuid) + STRING16_LITERAL('}');
+  std::u16string braced_uuid = u'{' + base::UTF8ToUTF16(uuid) + u'}';
   GUID guid;
   CHECK_EQ(NOERROR, ::CLSIDFromString(base::as_wcstr(braced_uuid), &guid));
   return guid;

@@ -16,4 +16,14 @@ autofill_assistant_module_desc = {
   java_deps = [ "//chrome/android/features/autofill_assistant:java" ]
   android_manifest =
       "//chrome/android/features/autofill_assistant/java/AndroidManifest.xml"
+  uses_split = "chrome"
+}
+
+# Trichrome requires min-sdk version of 29, hence the duplicate but slightly
+# different manifests.
+autofill_assistant_module_trichrome_desc = {
+  name = "autofill_assistant"
+  java_deps = [ "//chrome/android/features/autofill_assistant:java" ]
+  android_manifest = "//chrome/android/features/autofill_assistant/java/AndroidManifestTrichrome.xml"
+  uses_split = "chrome"
 }

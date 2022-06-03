@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/native_widget_types.h"
 
@@ -39,7 +40,7 @@ namespace ui_controls {
 // tests.
 void EnableUIControls();
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 bool IsUIControlsEnabled();
 #endif
 
@@ -62,12 +63,12 @@ bool SendKeyPressNotifyWhenDone(gfx::NativeWindow window,
                                 base::OnceClosure task);
 
 // Simulate a mouse move.
-bool SendMouseMove(long screen_x, long screen_y);
+bool SendMouseMove(int screen_x, int screen_y);
 
 // Returns false on Windows if the desired position is not over a window
 // belonging to the current process.
-bool SendMouseMoveNotifyWhenDone(long screen_x,
-                                 long screen_y,
+bool SendMouseMoveNotifyWhenDone(int screen_x,
+                                 int screen_y,
                                  base::OnceClosure task);
 
 enum MouseButton {
@@ -117,7 +118,7 @@ bool SendMouseClick(MouseButton type);
 // pointers, |screen_x| and |screen_y| are the screen coordinates of a touch
 // pointer.
 bool SendTouchEvents(int action, int num, int screen_x, int screen_y);
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS_ASH)
 // Sends a TouchEvent to the window system. |action| is a bitmask of the
 // TouchType constants that indicates what events are generated, |id| identifies
 // the touch point.
@@ -135,7 +136,7 @@ class UIControlsAura;
 void InstallUIControlsAura(UIControlsAura* instance);
 #endif
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 // Returns true when tests need to use extra Tab and Shift-Tab key events
 // to traverse to the desired item; because the application is configured to
 // traverse more elements for accessibility reasons.

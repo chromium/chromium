@@ -2,3 +2,9 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++ROLE_SYSTEM_PUSHBUTTON name='Native button' FOCUSABLE
 ++ROLE_SYSTEM_PUSHBUTTON name='ARIA button'
 ++ROLE_SYSTEM_PUSHBUTTON name='Clicky button' localized_extended_role='Clicky'
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_STATICTEXT name='foo'
+++IA2_ROLE_SECTION name='bar' FOCUSABLE
+++++ROLE_SYSTEM_STATICTEXT name='bar'
+++IA2_ROLE_PARAGRAPH localized_extended_role='Texty'
+++++ROLE_SYSTEM_STATICTEXT name='baz'

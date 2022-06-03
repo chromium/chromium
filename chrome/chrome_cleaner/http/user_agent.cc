@@ -4,14 +4,14 @@
 
 #include "chrome/chrome_cleaner/http/user_agent.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 
 namespace chrome_cleaner {
 
 namespace {
 
-const base::char16* ArchitectureToString(UserAgent::Architecture architecture) {
+const wchar_t* ArchitectureToString(UserAgent::Architecture architecture) {
   switch (architecture) {
     case UserAgent::WOW64:
       return L"; WOW64";
@@ -29,8 +29,8 @@ const base::char16* ArchitectureToString(UserAgent::Architecture architecture) {
 
 }  // namespace
 
-UserAgent::UserAgent(const base::string16& product_name,
-                     const base::string16& product_version)
+UserAgent::UserAgent(base::WStringPiece product_name,
+                     base::WStringPiece product_version)
     : product_name_(product_name),
       product_version_(product_version),
       os_major_version_(0),
@@ -39,10 +39,10 @@ UserAgent::UserAgent(const base::string16& product_name,
 
 UserAgent::~UserAgent() {}
 
-base::string16 UserAgent::AsString() {
+std::wstring UserAgent::AsString() {
   return product_name_ + L"/" + product_version_ + L" (Windows NT " +
-         base::NumberToString16(os_major_version_) + L"." +
-         base::NumberToString16(os_minor_version_) +
+         base::NumberToWString(os_major_version_) + L"." +
+         base::NumberToWString(os_minor_version_) +
          ArchitectureToString(architecture_) + L") WinHTTP/" + winhttp_version_;
 }
 

@@ -9,8 +9,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
-#include "base/time/time.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/bubble/bubble_border.h"
@@ -20,30 +19,38 @@
 #include "ui/views/input_event_activation_protector.h"
 #include "ui/views/window/non_client_view.h"
 
+namespace gfx {
+class RoundedCornersF;
+}
+
 namespace views {
 
 class FootnoteContainerView;
 class ImageView;
 
 // The non-client frame view of bubble-styled widgets.
-class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
-                                     public ButtonListener {
+class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView {
  public:
-  enum class PreferredArrowAdjustment { kMirror, kOffset };
+  METADATA_HEADER(BubbleFrameView);
 
-  // Internal class name.
-  static const char kViewClassName[];
+  enum class PreferredArrowAdjustment { kMirror, kOffset };
 
   BubbleFrameView(const gfx::Insets& title_margins,
                   const gfx::Insets& content_margins);
+  BubbleFrameView(const BubbleFrameView&) = delete;
+  BubbleFrameView& operator=(BubbleFrameView&) = delete;
   ~BubbleFrameView() override;
 
   static std::unique_ptr<Label> CreateDefaultTitleLabel(
-      const base::string16& title_text);
+      const std::u16string& title_text);
 
   // Creates a close button used in the corner of the dialog.
-  static std::unique_ptr<Button> CreateCloseButton(ButtonListener* listener,
-                                                   bool should_use_dark_colors);
+  static std::unique_ptr<Button> CreateCloseButton(
+      Button::PressedCallback callback);
+
+  // Creates a minimize button used in the corner of the dialog.
+  static std::unique_ptr<Button> CreateMinimizeButton(
+      Button::PressedCallback callback);
 
   // NonClientFrameView:
   gfx::Rect GetBoundsForClientView() const override;
@@ -56,6 +63,7 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   void UpdateWindowIcon() override;
   void UpdateWindowTitle() override;
   void SizeConstraintsChanged() override;
+  void InsertClientView(ClientView* client_view) override;
 
   // Sets a custom view to be the dialog title instead of the |default_title_|
   // label. If there is an existing title view it will be deleted.
@@ -63,10 +71,12 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
 
   // Updates the current progress value of |progress_indicator_|. If progress is
   // absent, hides |the progress_indicator|.
-  void SetProgress(base::Optional<double> progress);
+  void SetProgress(absl::optional<double> progress);
+  // Returns the current progress value of |progress_indicator_| if
+  // |progress_indicator_| is visible.
+  absl::optional<double> GetProgress() const;
 
   // View:
-  const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   gfx::Size GetMinimumSize() const override;
   gfx::Size GetMaximumSize() const override;
@@ -77,9 +87,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   void ViewHierarchyChanged(
       const ViewHierarchyChangedDetails& details) override;
   void VisibilityChanged(View* starting_from, bool is_visible) override;
-
-  // ButtonListener:
-  void ButtonPressed(Button* sender, const ui::Event& event) override;
 
   // Use SetBubbleBorder() not SetBorder().
   void SetBubbleBorder(std::unique_ptr<BubbleBorder> border);
@@ -92,7 +99,8 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
         static_cast<const BubbleFrameView*>(this)->title());
   }
 
-  gfx::Insets content_margins() const { return content_margins_; }
+  void SetContentMargins(const gfx::Insets& content_margins);
+  gfx::Insets GetContentMargins() const;
 
   // Sets a custom header view for the dialog. If there is an existing header
   // view it will be deleted. The header view will be inserted above the title,
@@ -109,13 +117,11 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   // FootnoteContainerView. An example footnote would be some help text.
   void SetFootnoteView(std::unique_ptr<View> view);
   View* GetFootnoteView() const;
-  void set_footnote_margins(const gfx::Insets& footnote_margins) {
-    footnote_margins_ = footnote_margins;
-  }
+  void SetFootnoteMargins(const gfx::Insets& footnote_margins);
+  gfx::Insets GetFootnoteMargins() const;
 
-  void set_preferred_arrow_adjustment(PreferredArrowAdjustment adjustment) {
-    preferred_arrow_adjustment_ = adjustment;
-  }
+  void SetPreferredArrowAdjustment(PreferredArrowAdjustment adjustment);
+  PreferredArrowAdjustment GetPreferredArrowAdjustment() const;
 
   // TODO(crbug.com/1007604): remove this in favor of using
   // Widget::InitParams::accept_events. In the mean time, don't add new uses of
@@ -125,18 +131,27 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
     hit_test_transparent_ = hit_test_transparent;
   }
 
-  // Get/set the corner radius of the bubble border.
-  int corner_radius() const {
-    return bubble_border_ ? bubble_border_->corner_radius() : 0;
-  }
+  // Set the corner radius of the bubble border.
   void SetCornerRadius(int radius);
+  int GetCornerRadius() const;
 
   // Set the arrow of the bubble border.
   void SetArrow(BubbleBorder::Arrow arrow);
+  BubbleBorder::Arrow GetArrow() const;
+
+  // Specify whether the frame should include a visible, caret-shaped arrow.
+  void SetDisplayVisibleArrow(bool display_visible_arrow);
+  bool GetDisplayVisibleArrow() const;
 
   // Set the background color of the bubble border.
   void SetBackgroundColor(SkColor color);
   SkColor GetBackgroundColor() const;
+
+  // For masking reasons, the ClientView may be painted to a textured layer. To
+  // ensure bubbles that rely on the frame background color continue to work as
+  // expected, we must set the background of the ClientView to match that of the
+  // BubbleFrameView.
+  void UpdateClientViewBackground();
 
   // Given the size of the contents and the rect to point at, returns the bounds
   // of the bubble window. The bubble's arrow location may change if the bubble
@@ -171,13 +186,22 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   bool IsCloseButtonVisible() const;
   gfx::Rect GetCloseButtonMirroredBounds() const;
 
+  // Helper function that gives the corner radius values that should be applied
+  // to the BubbleFrameView's client view. These values depend on the amount of
+  // inset present on the client view and the presence of header and footer
+  // views.
+  gfx::RoundedCornersF GetClientCornerRadii() const;
+
   BubbleBorder* bubble_border_for_testing() const { return bubble_border_; }
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest, RemoveFootnoteView);
   FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest, LayoutWithIcon);
   FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest, LayoutWithProgressIndicator);
-  FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest, IgnorePossiblyUnintendedClicks);
+  FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest,
+                           IgnorePossiblyUnintendedClicksClose);
+  FRIEND_TEST_ALL_PREFIXES(BubbleFrameViewTest,
+                           IgnorePossiblyUnintendedClicksMinimize);
   FRIEND_TEST_ALL_PREFIXES(BubbleDelegateTest, CloseReasons);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, CloseMethods);
   FRIEND_TEST_ALL_PREFIXES(BubbleDialogDelegateViewTest, CreateDelegate);
@@ -220,6 +244,12 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   // if there is no header view or if it is not visible.
   int GetHeaderHeightForFrameWidth(int frame_width) const;
 
+  // Updates the corner radius of a layer backed client view for MD rounded
+  // corners.
+  // TODO(tluk): Use this and remove the need for GetClientMask() for clipping
+  // client views to the bubble border's bounds.
+  void UpdateClientLayerCornerRadius();
+
   // The bubble border.
   BubbleBorder* bubble_border_ = nullptr;
 
@@ -244,6 +274,9 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   // The optional close button (the X).
   Button* close_ = nullptr;
 
+  // The optional minimize button.
+  Button* minimize_ = nullptr;
+
   // The optional progress bar. Used to indicate bubble pending state. By
   // default it is invisible.
   ProgressBar* progress_indicator_ = nullptr;
@@ -264,8 +297,6 @@ class VIEWS_EXPORT BubbleFrameView : public NonClientFrameView,
   bool hit_test_transparent_ = false;
 
   InputEventActivationProtector input_protector_;
-
-  DISALLOW_COPY_AND_ASSIGN(BubbleFrameView);
 };
 
 }  // namespace views

@@ -10,8 +10,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/macros.h"
-#include "base/scoped_observer.h"
-#include "base/strings/string16.h"
+#include "base/scoped_observation.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/api/management/management_api_delegate.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -20,6 +19,7 @@
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "extensions/browser/preload_check.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace extensions {
@@ -114,7 +114,17 @@ class ManagementSetEnabledFunction : public ExtensionFunction {
  private:
   void OnInstallPromptDone(bool did_accept);
 
+  bool HasUnsupportedRequirements(const std::string& extension_id);
+
   void OnRequirementsChecked(const PreloadCheck::Errors& errors);
+
+  // Called when the user dismisses the Parent Permission Dialog.
+  void OnParentPermissionDialogDone(
+      SupervisedUserExtensionsDelegate::ParentPermissionDialogResult result);
+
+  // Called when the user dismisses the Extension Install Blocked By Parent
+  // Dialog.
+  void OnBlockedByParentDialogDone();
 
   std::string extension_id_;
 
@@ -128,7 +138,7 @@ class ManagementUninstallFunctionBase : public ExtensionFunction {
   ManagementUninstallFunctionBase();
 
   void OnExtensionUninstallDialogClosed(bool did_start_uninstall,
-                                        const base::string16& error);
+                                        const std::u16string& error);
 
  protected:
   ~ManagementUninstallFunctionBase() override;
@@ -268,6 +278,10 @@ class ManagementInstallReplacementWebAppFunction : public ExtensionFunction {
 class ManagementEventRouter : public ExtensionRegistryObserver {
  public:
   explicit ManagementEventRouter(content::BrowserContext* context);
+
+  ManagementEventRouter(const ManagementEventRouter&) = delete;
+  ManagementEventRouter& operator=(const ManagementEventRouter&) = delete;
+
   ~ManagementEventRouter() override;
 
  private:
@@ -291,16 +305,18 @@ class ManagementEventRouter : public ExtensionRegistryObserver {
 
   content::BrowserContext* browser_context_;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementEventRouter);
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 };
 
 class ManagementAPI : public BrowserContextKeyedAPI,
                       public EventRouter::Observer {
  public:
   explicit ManagementAPI(content::BrowserContext* context);
+
+  ManagementAPI(const ManagementAPI&) = delete;
+  ManagementAPI& operator=(const ManagementAPI&) = delete;
+
   ~ManagementAPI() override;
 
   // KeyedService implementation.
@@ -314,6 +330,21 @@ class ManagementAPI : public BrowserContextKeyedAPI,
 
   // Returns the ManagementAPI delegate.
   const ManagementAPIDelegate* GetDelegate() const { return delegate_.get(); }
+
+  // Returns the SupervisedUserService delegate, which might be null depending
+  // on the extensions embedder.
+  SupervisedUserExtensionsDelegate* GetSupervisedUserExtensionsDelegate()
+      const {
+    return supervised_user_extensions_delegate_.get();
+  }
+
+  void set_delegate_for_test(std::unique_ptr<ManagementAPIDelegate> delegate) {
+    delegate_ = std::move(delegate);
+  }
+  void set_supervised_user_extensions_delegate_for_test(
+      std::unique_ptr<SupervisedUserExtensionsDelegate> delegate) {
+    supervised_user_extensions_delegate_ = std::move(delegate);
+  }
 
  private:
   friend class BrowserContextKeyedAPIFactory<ManagementAPI>;
@@ -329,8 +360,8 @@ class ManagementAPI : public BrowserContextKeyedAPI,
   std::unique_ptr<ManagementEventRouter> management_event_router_;
 
   std::unique_ptr<ManagementAPIDelegate> delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(ManagementAPI);
+  std::unique_ptr<SupervisedUserExtensionsDelegate>
+      supervised_user_extensions_delegate_;
 };
 
 }  // namespace extensions

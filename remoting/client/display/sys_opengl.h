@@ -9,11 +9,11 @@
 
 #if defined(OS_IOS)
 #include <OpenGLES/ES3/gl.h>
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
 #define GL_GLEXT_PROTOTYPES
 #include <GL/gl.h>
 #include <GL/glext.h>
-#elif defined(OS_MACOSX)
+#elif defined(OS_MAC)
 #define GL_GLEXT_PROTOTYPES
 #include <OpenGL/gl.h>
 #include <OpenGL/glext.h>

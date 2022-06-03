@@ -108,8 +108,8 @@ public class CustomTabActivityTabProvider {
     }
 
     public void swapTab(@Nullable Tab tab) {
-        assert mTab != null : "swapTab shouldn't be called before setInitialTab";
         if (mTab == tab) return;
+        assert mTab != null : "swapTab shouldn't be called before setInitialTab";
         mTab = tab;
         if (mTab == null) {
             for (Observer observer : mObservers) {

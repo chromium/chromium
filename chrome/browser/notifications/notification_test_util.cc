@@ -4,19 +4,14 @@
 
 #include "chrome/browser/notifications/notification_test_util.h"
 
+#include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "content/public/test/test_utils.h"
 
-#if !defined(OS_ANDROID)
-#include "chrome/browser/ui/browser.h"
-#endif
-
-// -----------------------------------------------------------------------------
-
 StubNotificationUIManager::StubNotificationUIManager() {}
 
-StubNotificationUIManager::~StubNotificationUIManager() {}
+StubNotificationUIManager::~StubNotificationUIManager() = default;
 
 unsigned int StubNotificationUIManager::GetNotificationCount() const {
   return notifications_.size();
@@ -28,14 +23,9 @@ StubNotificationUIManager::GetNotificationAt(unsigned int index) const {
   return notifications_[index].first;
 }
 
-void StubNotificationUIManager::SetNotificationAddedCallback(
-    const base::Closure& callback) {
-  notification_added_callback_ = callback;
-}
-
 bool StubNotificationUIManager::SilentDismissById(
     const std::string& delegate_id,
-    ProfileID profile_id) {
+    ProfileNotification::ProfileID profile_id) {
   auto iter = notifications_.begin();
   for (; iter != notifications_.end(); ++iter) {
     if (iter->first.id() != delegate_id || iter->second != profile_id)
@@ -52,19 +42,15 @@ void StubNotificationUIManager::Add(
   if (is_shutdown_started_)
     return;
 
-  notifications_.push_back(std::make_pair(
-      notification, NotificationUIManager::GetProfileID(profile)));
-
-  if (!notification_added_callback_.is_null()) {
-    notification_added_callback_.Run();
-    notification_added_callback_.Reset();
-  }
+  notifications_.push_back(
+      std::make_pair(notification, ProfileNotification::GetProfileID(profile)));
 }
 
 bool StubNotificationUIManager::Update(
     const message_center::Notification& notification,
     Profile* profile) {
-  const ProfileID profile_id = NotificationUIManager::GetProfileID(profile);
+  const ProfileNotification::ProfileID profile_id =
+      ProfileNotification::GetProfileID(profile);
 
   auto iter = notifications_.begin();
   for (; iter != notifications_.end(); ++iter) {
@@ -83,7 +69,7 @@ bool StubNotificationUIManager::Update(
 
 const message_center::Notification* StubNotificationUIManager::FindById(
     const std::string& delegate_id,
-    ProfileID profile_id) const {
+    ProfileNotification::ProfileID profile_id) const {
   auto iter = notifications_.begin();
   for (; iter != notifications_.end(); ++iter) {
     if (iter->first.id() != delegate_id || iter->second != profile_id)
@@ -95,8 +81,9 @@ const message_center::Notification* StubNotificationUIManager::FindById(
   return nullptr;
 }
 
-bool StubNotificationUIManager::CancelById(const std::string& delegate_id,
-                                           ProfileID profile_id) {
+bool StubNotificationUIManager::CancelById(
+    const std::string& delegate_id,
+    ProfileNotification::ProfileID profile_id) {
   auto iter = notifications_.begin();
   for (; iter != notifications_.end(); ++iter) {
     if (iter->first.id() != delegate_id || iter->second != profile_id)
@@ -111,7 +98,7 @@ bool StubNotificationUIManager::CancelById(const std::string& delegate_id,
 }
 
 std::set<std::string> StubNotificationUIManager::GetAllIdsByProfile(
-    ProfileID profile_id) {
+    ProfileNotification::ProfileID profile_id) {
   std::set<std::string> delegate_ids;
   for (const auto& pair : notifications_) {
     if (pair.second == profile_id)
@@ -137,7 +124,6 @@ void StubNotificationUIManager::StartShutdown() {
   CancelAll();
 }
 
-#if !defined(OS_ANDROID)
 FullscreenStateWaiter::FullscreenStateWaiter(
     Browser* browser, bool desired_state)
     : browser_(browser),
@@ -149,4 +135,3 @@ void FullscreenStateWaiter::Wait() {
     content::RunAllPendingInMessageLoop();
   }
 }
-#endif

@@ -4,207 +4,187 @@
 
 #include "ash/wm/splitview/split_view_highlight_view.h"
 
+#include "ash/display/screen_orientation_controller.h"
+#include "ash/display/screen_orientation_controller_test_api.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/splitview/split_view_constants.h"
-#include "ash/wm/splitview/split_view_highlight_view_test_api.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/test/icu_test_util.h"
-#include "ui/gfx/transform.h"
+#include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
+#include "ui/display/test/display_manager_test_api.h"
+#include "ui/views/widget/widget.h"
+#include "ui/views/widget/widget_delegate.h"
 
 namespace ash {
-
-namespace {
-
-gfx::Transform GetTransform(views::View* view) {
-  DCHECK(view && view->layer());
-  return view->layer()->transform();
-}
-
-}  // namespace
 
 class SplitViewHighlightViewTest : public AshTestBase {
  public:
   SplitViewHighlightViewTest() = default;
   ~SplitViewHighlightViewTest() override = default;
 
-  SplitViewHighlightView* left_highlight() { return left_highlight_.get(); }
-  SplitViewHighlightView* right_highlight() { return right_highlight_.get(); }
+  SplitViewHighlightViewTest(const SplitViewHighlightViewTest&) = delete;
+  SplitViewHighlightViewTest& operator=(const SplitViewHighlightViewTest&) =
+      delete;
 
-  // test::AshTestBase:
+  // AshTestBase:
   void SetUp() override {
     AshTestBase::SetUp();
 
-    left_highlight_ = std::make_unique<SplitViewHighlightView>(false);
-    right_highlight_ = std::make_unique<SplitViewHighlightView>(true);
+    widget_ = CreateTestWidget();
+    left_highlight_ =
+        widget_->widget_delegate()->GetContentsView()->AddChildView(
+            std::make_unique<SplitViewHighlightView>(false));
+    right_highlight_ =
+        widget_->widget_delegate()->GetContentsView()->AddChildView(
+            std::make_unique<SplitViewHighlightView>(true));
   }
 
- private:
-  std::unique_ptr<SplitViewHighlightView> left_highlight_;
-  std::unique_ptr<SplitViewHighlightView> right_highlight_;
+  void SetLeftBounds(const gfx::Rect& bounds, bool animate) {
+    SetBounds(bounds, /*is_left=*/true, animate);
+  }
 
-  DISALLOW_COPY_AND_ASSIGN(SplitViewHighlightViewTest);
+  void SetRightBounds(const gfx::Rect& bounds, bool animate) {
+    SetBounds(bounds, /*is_left=*/false, animate);
+  }
+
+ protected:
+  SplitViewHighlightView* left_highlight_;
+  SplitViewHighlightView* right_highlight_;
+  std::unique_ptr<views::Widget> widget_;
+
+ private:
+  void SetBounds(const gfx::Rect& bounds, bool is_left, bool animate) {
+    // The animation type only determines the duration and tween. For testing,
+    // any valid animation type would work.
+    auto animation_type =
+        animate ? absl::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN)
+                : absl::nullopt;
+    auto* highlight_view = is_left ? left_highlight_ : right_highlight_;
+    highlight_view->SetBounds(bounds, animation_type);
+  }
 };
 
-// Tests setting and animating bounds for the split view highlight view in
-// landscape mode.
-TEST_F(SplitViewHighlightViewTest, LandscapeBounds) {
-  const gfx::Rect bounds(0, 0, 100, 100);
-  left_highlight()->SetBounds(bounds, /*landscape=*/true,
-                              /*animation_type=*/base::nullopt);
+TEST_F(SplitViewHighlightViewTest, HighlightGrows) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  // Tests that setting bounds without animations in landscape mode will set the
-  // bounds of the components correctly, without any transforms.
-  SplitViewHighlightViewTestApi test_api(left_highlight());
-  EXPECT_EQ(gfx::Rect(0, 0, 14, 100), test_api.GetLeftTopView()->bounds());
-  EXPECT_EQ(gfx::Rect(4, 0, 92, 100), test_api.GetMiddleView()->bounds());
-  EXPECT_EQ(gfx::Rect(86, 0, 14, 100), test_api.GetRightBottomView()->bounds());
-  EXPECT_TRUE(GetTransform(test_api.GetLeftTopView()).IsIdentity());
-  EXPECT_TRUE(GetTransform(test_api.GetMiddleView()).IsIdentity());
-  EXPECT_TRUE(GetTransform(test_api.GetRightBottomView()).IsIdentity());
+  // Tests that before animating, we set the bounds to the desired bounds and
+  // clip the rect to the size of the old bounds.
+  gfx::Rect start_bounds(100, 100);
+  gfx::Rect end_bounds(200, 100);
+  SetLeftBounds(start_bounds, /*animate=*/false);
+  SetLeftBounds(end_bounds, /*animate=*/true);
+  EXPECT_EQ(end_bounds, left_highlight_->bounds());
+  EXPECT_EQ(start_bounds, left_highlight_->layer()->clip_rect());
 
-  // Tests that after animating to new bounds, the components have the same
-  // bounds, but have transforms.
-  const gfx::Rect new_bounds(0, 0, 200, 100);
-  left_highlight()->SetBounds(
-      new_bounds, /*landscape=*/true, /*animation_type=*/
-      base::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(gfx::Rect(0, 0, 14, 100), test_api.GetLeftTopView()->bounds());
-  EXPECT_EQ(gfx::Rect(4, 0, 92, 100), test_api.GetMiddleView()->bounds());
-  EXPECT_EQ(gfx::Rect(86, 0, 14, 100), test_api.GetRightBottomView()->bounds());
-  EXPECT_TRUE(GetTransform(test_api.GetLeftTopView()).IsIdentity());
-  gfx::Transform expected_middle_transform;
-  expected_middle_transform.Scale(2.16, 1);
-  EXPECT_TRUE(GetTransform(test_api.GetMiddleView())
-                  .ApproximatelyEqual(expected_middle_transform));
-  gfx::Transform expected_end_transform;
-  expected_end_transform.Translate(100, 0);
-  EXPECT_TRUE(GetTransform(test_api.GetRightBottomView())
-                  .ApproximatelyEqual(expected_end_transform));
+  // After the animation is finished the clip rect should be removed.
+  left_highlight_->layer()->GetAnimator()->StopAnimating();
+  EXPECT_EQ(gfx::Rect(), left_highlight_->layer()->clip_rect());
+
+  // Tests that for right highlights, the clip is shifted as the animation is
+  // mirrored.
+  start_bounds = gfx::Rect(100, 0, 100, 100);
+  end_bounds = gfx::Rect(200, 100);
+  SetRightBounds(start_bounds, /*animate=*/false);
+  SetRightBounds(end_bounds, /*animate=*/true);
+  EXPECT_EQ(end_bounds, right_highlight_->bounds());
+  EXPECT_EQ(start_bounds, right_highlight_->layer()->clip_rect());
+
+  // After the animation is finished the clip rect should be removed.
+  right_highlight_->layer()->GetAnimator()->StopAnimating();
+  EXPECT_EQ(gfx::Rect(), right_highlight_->layer()->clip_rect());
 }
 
-// Tests setting and animating bounds for the split view highlight view in
-// landscape mode for rtl languages.
-TEST_F(SplitViewHighlightViewTest, LandscapeBoundsInRtl) {
+TEST_F(SplitViewHighlightViewTest, HighlightShrinks) {
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Tests that when the highlight shrinks, the bounds do not get set until the
+  // animation is complete.
+  gfx::Rect start_bounds(200, 100);
+  gfx::Rect end_bounds(100, 100);
+  SetLeftBounds(start_bounds, /*animate=*/false);
+  SetLeftBounds(end_bounds, /*animate=*/true);
+  EXPECT_EQ(start_bounds, left_highlight_->bounds());
+  EXPECT_EQ(start_bounds, left_highlight_->layer()->clip_rect());
+
+  // After the animation is finished the clip rect should be removed and the
+  // bounds should be set.
+  left_highlight_->layer()->GetAnimator()->StopAnimating();
+  EXPECT_EQ(end_bounds, left_highlight_->bounds());
+  EXPECT_EQ(gfx::Rect(), left_highlight_->layer()->clip_rect());
+}
+
+TEST_F(SplitViewHighlightViewTest, PortraitMode) {
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  // Set display to portrait mode.
+  int64_t display_id = display::Screen::GetScreen()->GetPrimaryDisplay().id();
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  display::test::ScopedSetInternalDisplayId set_internal(display_manager,
+                                                         display_id);
+  ScreenOrientationControllerTestApi test_api(
+      Shell::Get()->screen_orientation_controller());
+  test_api.SetDisplayRotation(display::Display::ROTATE_90,
+                              display::Display::RotationSource::ACTIVE);
+
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  for (bool is_rtl : {false, true}) {
+    // RTL should not affect portrait highlights.
+    base::test::ScopedRestoreICUDefaultLocale scoped_locale(is_rtl ? "he"
+                                                                   : "en_US");
+    SCOPED_TRACE(is_rtl ? "RTL" : "LTR");
+
+    // Tests that before animating, we set the bounds to the desired bounds and
+    // clip the rect to the size of the old bounds.
+    gfx::Rect start_bounds(100, 100);
+    gfx::Rect end_bounds(100, 200);
+    SetLeftBounds(start_bounds, /*animate=*/false);
+    SetLeftBounds(end_bounds, /*animate=*/true);
+    EXPECT_EQ(end_bounds, left_highlight_->bounds());
+    EXPECT_EQ(start_bounds, left_highlight_->layer()->clip_rect());
+
+    // After the animation is finished the clip rect should be removed.
+    left_highlight_->layer()->GetAnimator()->StopAnimating();
+    EXPECT_EQ(gfx::Rect(), left_highlight_->layer()->clip_rect());
+
+    // Tests that for bottom highlights, the clip is shifted as the animation is
+    // comes from bottom up instead of top down.
+    start_bounds = gfx::Rect(0, 100, 100, 100);
+    end_bounds = gfx::Rect(200, 100);
+    SetRightBounds(start_bounds, /*animate=*/false);
+    SetRightBounds(end_bounds, /*animate=*/true);
+    EXPECT_EQ(end_bounds, right_highlight_->bounds());
+    EXPECT_EQ(start_bounds, right_highlight_->layer()->clip_rect());
+
+    // After the animation is finished the clip rect should be removed.
+    right_highlight_->layer()->GetAnimator()->StopAnimating();
+    EXPECT_EQ(gfx::Rect(), right_highlight_->layer()->clip_rect());
+  }
+}
+
+// Tests that the highlights work as in expected in RTL.
+TEST_F(SplitViewHighlightViewTest, HighlightInRtl) {
   base::test::ScopedRestoreICUDefaultLocale scoped_locale("he");
+  ui::ScopedAnimationDurationScaleMode scoped_animation_duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  const gfx::Rect bounds(0, 0, 100, 100);
-  left_highlight()->SetBounds(bounds, /*landscape=*/true,
-                              /*animation_type=*/base::nullopt);
+  // In RTL, the right highlight gets mirrored bounds, so its start and end
+  // bounds will have the same origin.
+  const gfx::Rect start_bounds(0, 0, 100, 100);
+  const gfx::Rect end_bounds(0, 0, 200, 100);
+  SetRightBounds(start_bounds, /*animate=*/false);
+  SetRightBounds(end_bounds, /*animate=*/true);
+  EXPECT_EQ(end_bounds, right_highlight_->bounds());
+  EXPECT_EQ(gfx::Rect(100, 0, 100, 100),
+            right_highlight_->layer()->clip_rect());
 
-  // Tests that setting bounds without animations in landscape mode will set the
-  // bounds of the components correctly, without any transforms. In rtl, the
-  // bounds of the outer components are swapped.
-  SplitViewHighlightViewTestApi test_api(left_highlight());
-  EXPECT_EQ(gfx::Rect(86, 0, 14, 100), test_api.GetLeftTopView()->bounds());
-  EXPECT_EQ(gfx::Rect(4, 0, 92, 100), test_api.GetMiddleView()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 14, 100), test_api.GetRightBottomView()->bounds());
-  EXPECT_TRUE(GetTransform(test_api.GetLeftTopView()).IsIdentity());
-  EXPECT_TRUE(GetTransform(test_api.GetMiddleView()).IsIdentity());
-  EXPECT_TRUE(GetTransform(test_api.GetRightBottomView()).IsIdentity());
-
-  // Tests that after animating to new bounds, the components have the same
-  // bounds, but have transforms. In rtl the beginning element is the one that
-  // is translated instead. The middle element has a extra translation in its
-  // transform to account for the flipped scaling.
-  const gfx::Rect new_bounds(0, 0, 200, 100);
-  left_highlight()->SetBounds(
-      new_bounds, /*landscape=*/true, /*animation_type=*/
-      base::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(gfx::Rect(86, 0, 14, 100), test_api.GetLeftTopView()->bounds());
-  EXPECT_EQ(gfx::Rect(4, 0, 92, 100), test_api.GetMiddleView()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 0, 14, 100), test_api.GetRightBottomView()->bounds());
-  gfx::Transform expected_begin_transform;
-  expected_begin_transform.Translate(-100, 0);
-  EXPECT_TRUE(GetTransform(test_api.GetLeftTopView())
-                  .ApproximatelyEqual(expected_begin_transform));
-  gfx::Transform expected_middle_transform;
-  expected_middle_transform.Translate(-100, 0);
-  expected_middle_transform.Scale(2.16, 1);
-  EXPECT_TRUE(GetTransform(test_api.GetMiddleView())
-                  .ApproximatelyEqual(expected_middle_transform));
-  EXPECT_TRUE(GetTransform(test_api.GetRightBottomView()).IsIdentity());
-}
-
-class SplitViewHighlightViewPortraitTest
-    : public SplitViewHighlightViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  SplitViewHighlightViewPortraitTest()
-      : scoped_locale_(GetParam() ? "he" : "") {}
-  ~SplitViewHighlightViewPortraitTest() override = default;
-
- private:
-  // Restores locale to the default when destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale scoped_locale_;
-
-  DISALLOW_COPY_AND_ASSIGN(SplitViewHighlightViewPortraitTest);
-};
-
-// Tests setting and animating bounds for the split view highlight view in
-// portrait mode. The bounds should remain the same in ltr or rtl.
-TEST_P(SplitViewHighlightViewPortraitTest, Bounds) {
-  const gfx::Rect bounds(0, 0, 100, 100);
-  left_highlight()->SetBounds(bounds, /*landscape=*/false,
-                              /*animation_type=*/base::nullopt);
-
-  SplitViewHighlightViewTestApi test_api(left_highlight());
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 14), test_api.GetLeftTopView()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 4, 100, 92), test_api.GetMiddleView()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 86, 100, 14), test_api.GetRightBottomView()->bounds());
-
-  const gfx::Rect new_bounds(0, 0, 100, 200);
-  left_highlight()->SetBounds(
-      new_bounds, /*landscape=*/false, /*animation_type=*/
-      base::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(gfx::Rect(0, 0, 100, 14), test_api.GetLeftTopView()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 4, 100, 92), test_api.GetMiddleView()->bounds());
-  EXPECT_EQ(gfx::Rect(0, 86, 100, 14), test_api.GetRightBottomView()->bounds());
-  EXPECT_TRUE(GetTransform(test_api.GetLeftTopView()).IsIdentity());
-  gfx::Transform expected_middle_transform;
-  expected_middle_transform.Scale(1, 2.16);
-  EXPECT_TRUE(GetTransform(test_api.GetMiddleView())
-                  .ApproximatelyEqual(expected_middle_transform));
-  gfx::Transform expected_end_transform;
-  expected_end_transform.Translate(0, 100);
-  EXPECT_TRUE(GetTransform(test_api.GetRightBottomView())
-                  .ApproximatelyEqual(expected_end_transform));
-}
-
-INSTANTIATE_TEST_SUITE_P(Bounds,
-                         SplitViewHighlightViewPortraitTest,
-                         testing::Bool());
-
-TEST_F(SplitViewHighlightViewTest, RightBounds) {
-  const gfx::Rect bounds(100, 0, 100, 100);
-  right_highlight()->SetBounds(bounds, /*landscape=*/true,
-                               /*animation_type=*/base::nullopt);
-
-  SplitViewHighlightViewTestApi test_api(right_highlight());
-  EXPECT_EQ(gfx::Rect(0, 0, 14, 100), test_api.GetLeftTopView()->bounds());
-  EXPECT_EQ(gfx::Rect(4, 0, 92, 100), test_api.GetMiddleView()->bounds());
-  EXPECT_EQ(gfx::Rect(86, 0, 14, 100), test_api.GetRightBottomView()->bounds());
-
-  const gfx::Rect new_bounds(0, 0, 200, 100);
-  right_highlight()->SetBounds(
-      new_bounds, /*landscape=*/true, /*animation_type=*/
-      base::make_optional(SPLITVIEW_ANIMATION_PREVIEW_AREA_SLIDE_IN));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(gfx::Rect(100, 0, 14, 100), test_api.GetLeftTopView()->bounds());
-  EXPECT_EQ(gfx::Rect(104, 0, 92, 100), test_api.GetMiddleView()->bounds());
-  EXPECT_EQ(gfx::Rect(186, 0, 14, 100),
-            test_api.GetRightBottomView()->bounds());
-  gfx::Transform expected_begin_transform;
-  expected_begin_transform.Translate(-100, 0);
-  EXPECT_TRUE(GetTransform(test_api.GetLeftTopView())
-                  .ApproximatelyEqual(expected_begin_transform));
-  gfx::Transform expected_middle_transform;
-  expected_middle_transform.Translate(-100, 0);
-  expected_middle_transform.Scale(2.16, 1);
-  EXPECT_TRUE(GetTransform(test_api.GetMiddleView())
-                  .ApproximatelyEqual(expected_middle_transform));
-  EXPECT_TRUE(GetTransform(test_api.GetRightBottomView()).IsIdentity());
+  right_highlight_->layer()->GetAnimator()->StopAnimating();
+  EXPECT_EQ(gfx::Rect(), right_highlight_->layer()->clip_rect());
 }
 
 }  // namespace ash

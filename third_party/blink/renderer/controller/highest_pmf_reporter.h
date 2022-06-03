@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace base {
+class SingleThreadTaskRunner;
 class TickClock;
 }
 
@@ -31,7 +32,7 @@ class CONTROLLER_EXPORT HighestPmfReporter
 
   // The constructor for testing.
   HighestPmfReporter(
-      scoped_refptr<base::TestMockTimeTaskRunner> task_runner_for_testing,
+      scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing,
       const base::TickClock* clock);
 
   friend class MockHighestPmfReporter;

@@ -66,6 +66,6 @@ function appendElementToOpenShadowRoot(childId) {
 </div>
 <div id="hostElement"></div>
 <script>
-var root = document.getElementById("hostElement").createShadowRoot();
+var root = document.getElementById("hostElement").attachShadow({mode: "open"});
 root.innerHTML = "<div id='outerElement' style='red'><input id='input'/></div>";
 </script>

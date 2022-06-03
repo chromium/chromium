@@ -6,12 +6,14 @@
 
 #include <type_traits>
 
-#include "base/logging.h"
+#include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/constants/chromeos_features.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #endif
 
 namespace syncer {
@@ -34,6 +36,7 @@ constexpr char kExtensionsTypeName[] = "extensions";
 constexpr char kAppsTypeName[] = "apps";
 constexpr char kReadingListTypeName[] = "readingList";
 constexpr char kTabsTypeName[] = "tabs";
+constexpr char kWifiConfigurationsTypeName[] = "wifiConfigurations";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
   // UserSelectableTypeInfo::type_name is used in js code and shouldn't be
@@ -44,10 +47,17 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kPreferences: {
       ModelTypeSet model_types = {PREFERENCES, DICTIONARY, PRIORITY_PREFERENCES,
                                   SEARCH_ENGINES};
-#if defined(OS_CHROMEOS)
-      // SplitSettingsSync makes Printers a separate OS setting.
-      if (!chromeos::features::IsSplitSettingsSyncEnabled())
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      if (!chromeos::features::IsSyncSettingsCategorizationEnabled()) {
+        // SyncSettingsCategorization makes Printers a separate OS setting.
         model_types.Put(PRINTERS);
+
+        // Workspace desk template is an OS-only feature. When
+        // SyncSettingsCategorization is disabled, WORKSPACE_DESK should be
+        // enabled with user preferences. Otherwise, WORKSPACE_DESK should be
+        // enabled with OS preferences below.
+        model_types.Put(WORKSPACE_DESK);
+      }
 #endif
       return {kPreferencesTypeName, PREFERENCES, model_types};
     }
@@ -57,21 +67,20 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       return {kAutofillTypeName,
               AUTOFILL,
               {AUTOFILL, AUTOFILL_PROFILE, AUTOFILL_WALLET_DATA,
-               AUTOFILL_WALLET_METADATA}};
+               AUTOFILL_WALLET_METADATA, AUTOFILL_WALLET_OFFER}};
     case UserSelectableType::kThemes:
       return {kThemesTypeName, THEMES, {THEMES}};
     case UserSelectableType::kHistory:
       return {kTypedUrlsTypeName,
               TYPED_URLS,
-              {TYPED_URLS, HISTORY_DELETE_DIRECTIVES, SESSIONS, FAVICON_IMAGES,
-               FAVICON_TRACKING, USER_EVENTS}};
+              {TYPED_URLS, HISTORY_DELETE_DIRECTIVES, SESSIONS, USER_EVENTS}};
     case UserSelectableType::kExtensions:
       return {
           kExtensionsTypeName, EXTENSIONS, {EXTENSIONS, EXTENSION_SETTINGS}};
     case UserSelectableType::kApps: {
-#if defined(OS_CHROMEOS)
-      // SplitSettingsSync moves apps to Chrome OS settings.
-      if (chromeos::features::IsSplitSettingsSyncEnabled()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // SyncSettingsCategorization moves apps to Chrome OS settings.
+      if (chromeos::features::IsSyncSettingsCategorizationEnabled()) {
         return {kAppsTypeName, UNSPECIFIED};
       } else {
         return {kAppsTypeName,
@@ -85,33 +94,49 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
     case UserSelectableType::kReadingList:
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs:
-      return {kTabsTypeName,
-              PROXY_TABS,
-              {PROXY_TABS, SESSIONS, FAVICON_IMAGES, FAVICON_TRACKING,
-               SEND_TAB_TO_SELF}};
+      return {
+          kTabsTypeName, PROXY_TABS, {PROXY_TABS, SESSIONS, SEND_TAB_TO_SELF}};
+    case UserSelectableType::kWifiConfigurations: {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // SyncSettingsCategorization moves Wi-Fi configurations to Chrome OS
+      // settings.
+      if (chromeos::features::IsSyncSettingsCategorizationEnabled())
+        return {kWifiConfigurationsTypeName, UNSPECIFIED};
+#endif
+      return {kWifiConfigurationsTypeName,
+              WIFI_CONFIGURATIONS,
+              {WIFI_CONFIGURATIONS}};
+    }
   }
   NOTREACHED();
   return {nullptr, UNSPECIFIED};
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kOsAppsTypeName[] = "osApps";
+constexpr char kOsPreferencesTypeName[] = "osPreferences";
+constexpr char kOsWifiConfigurationsTypeName[] = "osWifiConfigurations";
+
 UserSelectableTypeInfo GetUserSelectableOsTypeInfo(UserSelectableOsType type) {
   // UserSelectableTypeInfo::type_name is used in js code and shouldn't be
   // changed without updating js part.
   switch (type) {
     case UserSelectableOsType::kOsApps:
-      return {"osApps",
+      return {kOsAppsTypeName,
               APPS,
               {APP_LIST, APPS, APP_SETTINGS, ARC_PACKAGE, WEB_APPS}};
     case UserSelectableOsType::kOsPreferences:
-      return {"osPreferences",
-              OS_PREFERENCES,
-              {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS}};
-    case UserSelectableOsType::kWifiConfigurations:
-      return {"wifiConfigurations", WIFI_CONFIGURATIONS, {WIFI_CONFIGURATIONS}};
+      return {
+          kOsPreferencesTypeName,
+          OS_PREFERENCES,
+          {OS_PREFERENCES, OS_PRIORITY_PREFERENCES, PRINTERS, WORKSPACE_DESK}};
+    case UserSelectableOsType::kOsWifiConfigurations:
+      return {kOsWifiConfigurationsTypeName,
+              WIFI_CONFIGURATIONS,
+              {WIFI_CONFIGURATIONS}};
   }
 }
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -119,7 +144,8 @@ const char* GetUserSelectableTypeName(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).type_name;
 }
 
-UserSelectableType GetUserSelectableTypeFromString(const std::string& type) {
+absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
+    const std::string& type) {
   if (type == kBookmarksTypeName) {
     return UserSelectableType::kBookmarks;
   }
@@ -150,8 +176,10 @@ UserSelectableType GetUserSelectableTypeFromString(const std::string& type) {
   if (type == kTabsTypeName) {
     return UserSelectableType::kTabs;
   }
-  NOTREACHED();
-  return UserSelectableType::kLastType;
+  if (type == kWifiConfigurationsTypeName) {
+    return UserSelectableType::kWifiConfigurations;
+  }
+  return absl::nullopt;
 }
 
 std::string UserSelectableTypeSetToString(UserSelectableTypeSet types) {
@@ -173,16 +201,52 @@ ModelType UserSelectableTypeToCanonicalModelType(UserSelectableType type) {
   return GetUserSelectableTypeInfo(type).canonical_model_type;
 }
 
-int UserSelectableTypeToHistogramInt(UserSelectableType type) {
-  // TODO(crbug.com/1007293): Use ModelTypeHistogramValue instead of casting to
-  // int.
-  return static_cast<int>(
-      ModelTypeHistogramValue(UserSelectableTypeToCanonicalModelType(type)));
-}
-
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 const char* GetUserSelectableOsTypeName(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).type_name;
+}
+
+std::string UserSelectableOsTypeSetToString(UserSelectableOsTypeSet types) {
+  std::string result;
+  for (UserSelectableOsType type : types) {
+    if (!result.empty()) {
+      result += ", ";
+    }
+    result += GetUserSelectableOsTypeName(type);
+  }
+  return result;
+}
+
+absl::optional<UserSelectableOsType> GetUserSelectableOsTypeFromString(
+    const std::string& type) {
+  if (type == kOsAppsTypeName) {
+    return UserSelectableOsType::kOsApps;
+  }
+  if (type == kOsPreferencesTypeName) {
+    return UserSelectableOsType::kOsPreferences;
+  }
+  if (type == kOsWifiConfigurationsTypeName) {
+    return UserSelectableOsType::kOsWifiConfigurations;
+  }
+
+  // Some pref types migrated from browser prefs to OS prefs. Map the browser
+  // type name to the OS type so that enterprise policy SyncTypesListDisabled
+  // still applies to the migrated names during SyncSettingsCategorization
+  // roll-out.
+  // TODO(https://crbug.com/1059309): Rename "osApps" to "apps" and
+  // "osWifiConfigurations" to "wifiConfigurations" after
+  // SyncSettingsCategorization is the default, and remove the mapping for
+  // "preferences".
+  if (type == kAppsTypeName) {
+    return UserSelectableOsType::kOsApps;
+  }
+  if (type == kWifiConfigurationsTypeName) {
+    return UserSelectableOsType::kOsWifiConfigurations;
+  }
+  if (type == kPreferencesTypeName) {
+    return UserSelectableOsType::kOsPreferences;
+  }
+  return absl::nullopt;
 }
 
 ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type) {
@@ -192,6 +256,6 @@ ModelTypeSet UserSelectableOsTypeToAllModelTypes(UserSelectableOsType type) {
 ModelType UserSelectableOsTypeToCanonicalModelType(UserSelectableOsType type) {
   return GetUserSelectableOsTypeInfo(type).canonical_model_type;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace syncer

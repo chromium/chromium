@@ -9,10 +9,12 @@
 #include <utility>
 #include <vector>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check_op.h"
+#include "base/containers/contains.h"
+#include "base/notreached.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/mock_peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/mock_rtc_peer_connection_handler_platform.h"
 #include "third_party/blink/renderer/platform/peerconnection/webrtc_util.h"
 #include "third_party/webrtc/api/rtp_receiver_interface.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
@@ -236,10 +238,10 @@ FakeRtpTransceiver::FakeRtpTransceiver(
     cricket::MediaType media_type,
     rtc::scoped_refptr<FakeRtpSender> sender,
     rtc::scoped_refptr<FakeRtpReceiver> receiver,
-    base::Optional<std::string> mid,
+    absl::optional<std::string> mid,
     bool stopped,
     webrtc::RtpTransceiverDirection direction,
-    base::Optional<webrtc::RtpTransceiverDirection> current_direction)
+    absl::optional<webrtc::RtpTransceiverDirection> current_direction)
     : media_type_(media_type),
       sender_(std::move(sender)),
       receiver_(std::move(receiver)),
@@ -248,7 +250,17 @@ FakeRtpTransceiver::FakeRtpTransceiver(
       direction_(direction),
       current_direction_(blink::ToAbslOptional(current_direction)) {}
 
-FakeRtpTransceiver::~FakeRtpTransceiver() {}
+FakeRtpTransceiver::~FakeRtpTransceiver() = default;
+
+void FakeRtpTransceiver::ReplaceWith(const FakeRtpTransceiver& other) {
+  media_type_ = other.media_type_;
+  sender_ = other.sender_;
+  receiver_ = other.receiver_;
+  mid_ = other.mid_;
+  stopped_ = other.stopped_;
+  direction_ = other.direction_;
+  current_direction_ = other.current_direction_;
+}
 
 cricket::MediaType FakeRtpTransceiver::media_type() const {
   return media_type_;
@@ -313,16 +325,24 @@ const char MockPeerConnectionImpl::kDummyAnswer[] = "dummy answer";
 MockPeerConnectionImpl::MockPeerConnectionImpl(
     MockPeerConnectionDependencyFactory* factory,
     webrtc::PeerConnectionObserver* observer)
-    : dependency_factory_(factory),
-      remote_streams_(new rtc::RefCountedObject<MockStreamCollection>),
+    : remote_streams_(new rtc::RefCountedObject<MockStreamCollection>),
       hint_audio_(false),
       hint_video_(false),
       getstats_result_(true),
       sdp_mline_index_(-1),
       observer_(observer) {
+  // TODO(hbos): Remove once no longer mandatory to implement.
   ON_CALL(*this, SetLocalDescription(_, _))
       .WillByDefault(testing::Invoke(
           this, &MockPeerConnectionImpl::SetLocalDescriptionWorker));
+  ON_CALL(*this, SetLocalDescriptionForMock(_, _))
+      .WillByDefault(testing::Invoke(
+          [this](
+              std::unique_ptr<webrtc::SessionDescriptionInterface>* desc,
+              rtc::scoped_refptr<webrtc::SetLocalDescriptionObserverInterface>*
+                  observer) {
+            SetLocalDescriptionWorker(nullptr, desc->release());
+          }));
   // TODO(hbos): Remove once no longer mandatory to implement.
   ON_CALL(*this, SetRemoteDescription(_, _))
       .WillByDefault(testing::Invoke(
@@ -483,18 +503,16 @@ void MockPeerConnectionImpl::CreateOffer(
     CreateSessionDescriptionObserver* observer,
     const RTCOfferAnswerOptions& options) {
   DCHECK(observer);
-  created_sessiondescription_.reset(
-      dependency_factory_->CreateSessionDescription("unknown", kDummyOffer,
-                                                    nullptr));
+  created_sessiondescription_ =
+      MockParsedSessionDescription("unknown", kDummyAnswer).release();
 }
 
 void MockPeerConnectionImpl::CreateAnswer(
     CreateSessionDescriptionObserver* observer,
     const RTCOfferAnswerOptions& options) {
   DCHECK(observer);
-  created_sessiondescription_.reset(
-      dependency_factory_->CreateSessionDescription("unknown", kDummyAnswer,
-                                                    nullptr));
+  created_sessiondescription_ =
+      MockParsedSessionDescription("unknown", kDummyAnswer).release();
 }
 
 void MockPeerConnectionImpl::SetLocalDescriptionWorker(

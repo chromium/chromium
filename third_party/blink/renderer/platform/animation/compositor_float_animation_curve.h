@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
@@ -16,7 +15,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
-namespace cc {
+namespace gfx {
 class KeyframedFloatAnimationCurve;
 }
 
@@ -31,6 +30,9 @@ class PLATFORM_EXPORT CompositorFloatAnimationCurve
     : public CompositorAnimationCurve {
  public:
   CompositorFloatAnimationCurve();
+  CompositorFloatAnimationCurve(const CompositorFloatAnimationCurve&) = delete;
+  CompositorFloatAnimationCurve& operator=(
+      const CompositorFloatAnimationCurve&) = delete;
   ~CompositorFloatAnimationCurve() override;
 
   void AddKeyframe(const CompositorFloatKeyframe&);
@@ -39,10 +41,10 @@ class PLATFORM_EXPORT CompositorFloatAnimationCurve
   float GetValue(double time) const;
 
   // CompositorAnimationCurve implementation.
-  std::unique_ptr<cc::AnimationCurve> CloneToAnimationCurve() const override;
+  std::unique_ptr<gfx::AnimationCurve> CloneToAnimationCurve() const override;
 
   static std::unique_ptr<CompositorFloatAnimationCurve> CreateForTesting(
-      std::unique_ptr<cc::KeyframedFloatAnimationCurve>);
+      std::unique_ptr<gfx::KeyframedFloatAnimationCurve>);
 
   using Keyframes = Vector<std::unique_ptr<CompositorFloatKeyframe>>;
   Keyframes KeyframesForTesting() const;
@@ -51,11 +53,9 @@ class PLATFORM_EXPORT CompositorFloatAnimationCurve
 
  private:
   CompositorFloatAnimationCurve(
-      std::unique_ptr<cc::KeyframedFloatAnimationCurve>);
+      std::unique_ptr<gfx::KeyframedFloatAnimationCurve>);
 
-  std::unique_ptr<cc::KeyframedFloatAnimationCurve> curve_;
-
-  DISALLOW_COPY_AND_ASSIGN(CompositorFloatAnimationCurve);
+  std::unique_ptr<gfx::KeyframedFloatAnimationCurve> curve_;
 };
 
 }  // namespace blink

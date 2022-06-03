@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/web_state_list/active_web_state_observation_forwarder.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -13,14 +13,14 @@
 ActiveWebStateObservationForwarder::ActiveWebStateObservationForwarder(
     WebStateList* web_state_list,
     web::WebStateObserver* observer)
-    : web_state_observer_(observer) {
+    : web_state_observation_(observer) {
   DCHECK(observer);
   DCHECK(web_state_list);
-  web_state_list_observer_.Add(web_state_list);
+  web_state_list_observation_.Observe(web_state_list);
 
   web::WebState* active_web_state = web_state_list->GetActiveWebState();
   if (active_web_state) {
-    web_state_observer_.Add(active_web_state);
+    web_state_observation_.Observe(active_web_state);
   }
 }
 
@@ -31,12 +31,8 @@ void ActiveWebStateObservationForwarder::WebStateActivatedAt(
     web::WebState* old_web_state,
     web::WebState* new_web_state,
     int active_index,
-    int reason) {
-  if (old_web_state) {
-    web_state_observer_.Remove(old_web_state);
-  }
-
-  if (new_web_state) {
-    web_state_observer_.Add(new_web_state);
-  }
+    ActiveWebStateChangeReason reason) {
+  web_state_observation_.Reset();
+  if (new_web_state)
+    web_state_observation_.Observe(new_web_state);
 }

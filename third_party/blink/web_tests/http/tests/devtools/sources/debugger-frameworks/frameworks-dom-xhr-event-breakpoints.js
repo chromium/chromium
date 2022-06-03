@@ -5,8 +5,8 @@
 (async function() {
   TestRunner.addResult(
       `Tests framework black-boxing on DOM, XHR and Event breakpoints.\n`);
-  await TestRunner.loadModule('elements_test_runner');
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.loadHTML(`
       <div id="rootElement"></div>
@@ -90,7 +90,7 @@
 
       function step1(node) {
         TestRunner.domDebuggerModel.setDOMBreakpoint(
-            node, SDK.DOMDebuggerModel.DOMBreakpoint.Type.SubtreeModified);
+            node, Protocol.DOMDebugger.DOMBreakpointType.SubtreeModified);
         TestRunner.evaluateInPageWithTimeout(
             'appendElement(\'rootElement\', \'childElement\')');
         SourcesTestRunner.waitUntilPausedAndDumpStackAndResume(next);

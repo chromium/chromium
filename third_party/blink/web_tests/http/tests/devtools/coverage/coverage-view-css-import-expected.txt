@@ -1,0 +1,10 @@
+Test if coverage view also shows completly uncovered css files
+
+Make sure all files are shown even when not covered so far
+.../devtools/coverage/resources/css-coverage-import.html CSS used: 0 unused: 27 total: 27
+.../devtools/coverage/resources/used.css CSS used: 24 unused: 0 total: 24
+Make sure files are added as they are loaded on reload
+Page reloaded.
+.../devtools/coverage/resources/css-coverage-import.html CSS used: 0 unused: 27 total: 27
+.../devtools/coverage/resources/used.css CSS used: 24 unused: 0 total: 24
+

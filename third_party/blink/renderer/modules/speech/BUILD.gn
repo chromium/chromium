@@ -7,8 +7,6 @@ import("//third_party/blink/renderer/modules/modules.gni")
 blink_modules_sources("speech") {
   sources = [
     "dom_window_speech.h",
-    "dom_window_speech_synthesis.cc",
-    "dom_window_speech_synthesis.h",
     "speech_grammar.cc",
     "speech_grammar.h",
     "speech_grammar_list.cc",

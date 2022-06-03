@@ -6,39 +6,42 @@
 
 #include "base/callback.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/permissions/permission_request.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/permissions/permission_request.h"
+#include "components/permissions/request_type.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/origin.h"
 
-// AttestationPermissionRequest is a delegate class that provides information
+// U2fApiPermissionRequest is a delegate class that provides information
 // and callbacks to the PermissionRequestManager.
 //
 // PermissionRequestManager has a reference to this object and so this object
 // must outlive it. Since attestation requests are never canceled,
-// PermissionRequestManager guarentees that |RequestFinished| will always,
-// eventually, be called. This object uses that fact to delete itself during
-// |RequestFinished| and thus owns itself.
-class AttestationPermissionRequest : public PermissionRequest {
+// PermissionRequestManager guarantees that `PermissionRequest::RequestFinished`
+// will always, eventually, be called. This object uses that fact to delete
+// itself during `DeleteRequest` and thus owns itself.
+class U2fApiPermissionRequest : public permissions::PermissionRequest {
  public:
-  AttestationPermissionRequest(const url::Origin& origin,
-                               base::OnceCallback<void(bool)> callback)
-      : origin_(origin), callback_(std::move(callback)) {}
+  U2fApiPermissionRequest(permissions::RequestType type,
+                          const url::Origin& requesting_origin,
+                          base::OnceCallback<void(bool)> callback)
+      : PermissionRequest(
+            requesting_origin.GetURL(),
+            type,
+            /*has_gesture=*/false,
+            base::BindOnce(&U2fApiPermissionRequest::PermissionDecided,
+                           base::Unretained(this)),
+            base::BindOnce(&U2fApiPermissionRequest::DeleteRequest,
+                           base::Unretained(this))),
+        callback_(std::move(callback)) {}
+  ~U2fApiPermissionRequest() override = default;
 
-  PermissionRequest::IconId GetIconId() const override {
-    return kUsbSecurityKeyIcon;
+  void PermissionDecided(ContentSetting result, bool is_one_time) {
+    DCHECK(!is_one_time);
+    std::move(callback_).Run(result == CONTENT_SETTING_ALLOW);
   }
 
-  base::string16 GetMessageTextFragment() const override {
-    return l10n_util::GetStringUTF16(
-        IDS_SECURITY_KEY_ATTESTATION_PERMISSION_FRAGMENT);
-  }
-  GURL GetOrigin() const override { return origin_.GetURL(); }
-  void PermissionGranted() override { std::move(callback_).Run(true); }
-  void PermissionDenied() override { std::move(callback_).Run(false); }
-  void Cancelled() override { std::move(callback_).Run(false); }
-
-  void RequestFinished() override {
+  void DeleteRequest() {
     // callback_ may not have run if the prompt was ignored. (I.e. the tab was
     // closed while the prompt was displayed.)
     if (callback_)
@@ -46,21 +49,21 @@ class AttestationPermissionRequest : public PermissionRequest {
     delete this;
   }
 
-  PermissionRequestType GetPermissionRequestType() const override {
-    return PermissionRequestType::PERMISSION_SECURITY_KEY_ATTESTATION;
-  }
-
  private:
-  ~AttestationPermissionRequest() override = default;
-
-  const url::Origin origin_;
   base::OnceCallback<void(bool)> callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AttestationPermissionRequest);
 };
 
-PermissionRequest* NewAttestationPermissionRequest(
+permissions::PermissionRequest* NewAttestationPermissionRequest(
     const url::Origin& origin,
     base::OnceCallback<void(bool)> callback) {
-  return new AttestationPermissionRequest(origin, std::move(callback));
+  return new U2fApiPermissionRequest(
+      permissions::RequestType::kSecurityAttestation, origin,
+      std::move(callback));
+}
+
+permissions::PermissionRequest* NewU2fApiPermissionRequest(
+    const url::Origin& origin,
+    base::OnceCallback<void(bool)> callback) {
+  return new U2fApiPermissionRequest(permissions::RequestType::kU2fApiRequest,
+                                     origin, std::move(callback));
 }

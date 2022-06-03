@@ -4,7 +4,8 @@
 
 #include "ui/views/widget/desktop_aura/desktop_drop_target_win.h"
 
-#include "base/metrics/histogram_macros.h"
+#include <utility>
+
 #include "base/win/win_util.h"
 #include "ui/aura/client/drag_drop_client.h"
 #include "ui/aura/client/drag_drop_delegate.h"
@@ -12,6 +13,7 @@
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
+#include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/dragdrop/os_exchange_data_provider_win.h"
 #include "ui/events/event_constants.h"
 
@@ -22,8 +24,7 @@ using ui::OSExchangeDataProviderWin;
 
 namespace {
 
-int ConvertKeyStateToAuraEventFlags(DWORD key_state)
-{
+int ConvertKeyStateToAuraEventFlags(DWORD key_state) {
   int flags = 0;
 
   if (key_state & MK_CONTROL)
@@ -77,10 +78,8 @@ DWORD DesktopDropTargetWin::OnDragOver(IDataObject* data_object,
   DragDropDelegate* delegate;
   Translate(data_object, key_state, position, effect, &data, &event, &delegate);
   if (delegate)
-    drag_operation = delegate->OnDragUpdated(*event);
+    drag_operation = delegate->OnDragUpdated(*event).drag_operation;
 
-  UMA_HISTOGRAM_BOOLEAN("Event.DragDrop.AcceptDragUpdate",
-                        drag_operation != ui::DragDropTypes::DRAG_NONE);
   return ui::DragDropTypes::DragOperationToDropEffect(drag_operation);
 }
 
@@ -92,24 +91,19 @@ DWORD DesktopDropTargetWin::OnDrop(IDataObject* data_object,
                                    DWORD key_state,
                                    POINT position,
                                    DWORD effect) {
-  int drag_operation = ui::DragDropTypes::DRAG_NONE;
+  auto drag_operation = ui::mojom::DragOperation::kNone;
   std::unique_ptr<OSExchangeData> data;
   std::unique_ptr<ui::DropTargetEvent> event;
   DragDropDelegate* delegate;
   Translate(data_object, key_state, position, effect, &data, &event, &delegate);
-  if (delegate) {
+  if (delegate)
     drag_operation = delegate->OnPerformDrop(*event, std::move(data));
-    DragDropClient* client = aura::client::GetDragDropClient(root_window_);
-    if (client && !client->IsDragDropInProgress() &&
-        drag_operation != ui::DragDropTypes::DRAG_NONE) {
-      UMA_HISTOGRAM_COUNTS_1M("Event.DragDrop.ExternalOriginDrop", 1);
-    }
-  }
   if (target_window_) {
     target_window_->RemoveObserver(this);
     target_window_ = nullptr;
   }
-  return ui::DragDropTypes::DragOperationToDropEffect(drag_operation);
+  return ui::DragDropTypes::DragOperationToDropEffect(
+      static_cast<int>(drag_operation));
 }
 
 void DesktopDropTargetWin::OnWindowDestroyed(aura::Window* window) {

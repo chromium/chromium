@@ -1,0 +1,4 @@
+include_rules = [
+  "+components/version_info/version_info.h",
+  "+ios/web/public/test/web_task_environment.h",
+]

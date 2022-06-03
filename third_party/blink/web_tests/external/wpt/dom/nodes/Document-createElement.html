@@ -145,9 +145,10 @@ invalid.forEach(function(arg) {
     async_test(function(testObj) {
       window.addEventListener("load", function() {
         testObj.step(function() {
-          var doc = getWin(desc).document;
-          assert_throws("InvalidCharacterError",
-                        function() { doc.createElement(arg) })
+          let win = getWin(desc);
+          let doc = win.document;
+          assert_throws_dom("InvalidCharacterError", win.DOMException,
+                            function() { doc.createElement(arg) })
         });
         testObj.done();
       });

@@ -4,7 +4,7 @@ Case 1, original layer tree:
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -17,10 +17,11 @@ Case 1, original layer tree:
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
-      "position": [80, 80],
-      "bounds": [260, 260],
-      "transform": 1
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "position": [180, 180],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [
@@ -40,7 +41,7 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -60,10 +61,11 @@ Case 2: hovering over the "middle" element (causes that div to become its own co
       "transform": 2
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle2')",
-      "position": [80, 80],
-      "bounds": [180, 180],
-      "transform": 2
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle2'",
+      "position": [200, 200],
+      "bounds": [120, 120],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [
@@ -92,7 +94,7 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -105,10 +107,11 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
-      "position": [80, 80],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "position": [180, 180],
       "bounds": [100, 100],
-      "transform": 1
+      "contentsOpaque": true,
+      "backgroundColor": "#00FF00"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box middle2'",
@@ -118,10 +121,11 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
       "transform": 2
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box top')",
-      "position": [80, 80],
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
+      "position": [220, 220],
       "bounds": [100, 100],
-      "transform": 2
+      "contentsOpaque": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [
@@ -140,7 +144,7 @@ Case 3: hovering over the "middle2" element (causes that div to become its own c
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [260, 260, 0, 1]
+        [200, 200, 0, 1]
       ]
     }
   ]
@@ -150,7 +154,7 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -163,10 +167,11 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
-      "position": [80, 80],
-      "bounds": [180, 180],
-      "transform": 1
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "position": [180, 180],
+      "bounds": [120, 120],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#FF00FF"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV class='box top'",
@@ -192,7 +197,7 @@ Case 4: hovering over the "top" element (causes that div to become its own compo
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
-        [340, 340, 0, 1]
+        [220, 220, 0, 1]
       ]
     }
   ]
@@ -202,7 +207,7 @@ Case 5: back to situation in case 1
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -215,10 +220,11 @@ Case 5: back to situation in case 1
       "transform": 1
     },
     {
-      "name": "Squashing Layer (first squashed layer: LayoutNGBlockFlow (positioned) DIV class='box middle')",
-      "position": [80, 80],
-      "bounds": [260, 260],
-      "transform": 1
+      "name": "LayoutNGBlockFlow (positioned) DIV class='box middle'",
+      "position": [180, 180],
+      "bounds": [140, 140],
+      "contentsOpaqueForText": true,
+      "backgroundColor": "#00FFFF"
     }
   ],
   "transforms": [

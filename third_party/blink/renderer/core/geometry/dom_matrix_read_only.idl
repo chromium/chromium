@@ -9,7 +9,7 @@
     Serializable
 ] interface DOMMatrixReadOnly {
     [CallWith=ExecutionContext, RaisesException] constructor(optional (DOMString or sequence<unrestricted double>) init);
-    [RaisesException, NewObject] static DOMMatrixReadOnly fromMatrix(optional DOMMatrixInit other);
+    [RaisesException, NewObject] static DOMMatrixReadOnly fromMatrix(optional DOMMatrixInit other = {});
     [RaisesException, NewObject] static DOMMatrixReadOnly fromFloat32Array(Float32Array array32);
     [RaisesException, NewObject] static DOMMatrixReadOnly fromFloat64Array(Float64Array array64);
 
@@ -68,12 +68,12 @@
                               optional unrestricted double angle = 0);
     DOMMatrix skewX(optional unrestricted double sx = 0);
     DOMMatrix skewY(optional unrestricted double sy = 0);
-    [RaisesException] DOMMatrix multiply(optional DOMMatrixInit other);
+    [RaisesException] DOMMatrix multiply(optional DOMMatrixInit other = {});
     DOMMatrix flipX();
     DOMMatrix flipY();
     DOMMatrix inverse();
 
-    DOMPoint transformPoint(optional DOMPointInit point);
+    DOMPoint transformPoint(optional DOMPointInit point = {});
     Float32Array toFloat32Array();
     Float64Array toFloat64Array();
     [Exposed=Window, RaisesException] stringifier;

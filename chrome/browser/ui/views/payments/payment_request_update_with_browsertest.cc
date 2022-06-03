@@ -7,12 +7,18 @@
 #include "chrome/browser/ui/views/payments/payment_request_dialog_view_ids.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace payments {
 
 class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
+ public:
+  PaymentRequestUpdateWithTest(const PaymentRequestUpdateWithTest&) = delete;
+  PaymentRequestUpdateWithTest& operator=(const PaymentRequestUpdateWithTest&) =
+      delete;
+
  protected:
   PaymentRequestUpdateWithTest() {}
 
@@ -25,9 +31,6 @@ class PaymentRequestUpdateWithTest : public PaymentRequestBrowserTestBase {
 
     WaitForObservedEvent();
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PaymentRequestUpdateWithTest);
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithEmpty) {
@@ -42,14 +45,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithEmpty) {
   RunJavaScriptFunctionToOpenPaymentRequestUI("updateWithEmpty");
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
   OpenShippingAddressSectionScreen();
@@ -68,17 +68,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithEmpty) {
   WaitForAnimation();
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   ExpectBodyContains({"freeShipping"});
 }
@@ -95,14 +92,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithTotal) {
   RunJavaScriptFunctionToOpenPaymentRequestUI("updateWithTotal");
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
   OpenShippingAddressSectionScreen();
@@ -121,17 +115,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithTotal) {
   WaitForAnimation();
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$10.00"),
+  EXPECT_EQ(u"$10.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   ExpectBodyContains({"freeShipping"});
 }
@@ -148,14 +139,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithDisplayItems) {
   RunJavaScriptFunctionToOpenPaymentRequestUI("updateWithDisplayItems");
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
   OpenShippingAddressSectionScreen();
@@ -174,17 +162,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithDisplayItems) {
   WaitForAnimation();
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   ExpectBodyContains({"freeShipping"});
 }
@@ -202,14 +187,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest,
   RunJavaScriptFunctionToOpenPaymentRequestUI("updateWithShippingOptions");
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
   OpenShippingAddressSectionScreen();
@@ -228,17 +210,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest,
   WaitForAnimation();
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   ExpectBodyContains({"updatedShipping"});
 }
@@ -255,14 +234,11 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithModifiers) {
   RunJavaScriptFunctionToOpenPaymentRequestUI("updateWithModifiers");
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$5.00"),
+  EXPECT_EQ(u"$5.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("$0.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"$0.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
   OpenShippingAddressSectionScreen();
@@ -281,17 +257,14 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithModifiers) {
   WaitForAnimation();
 
   OpenOrderSummaryScreen();
-  EXPECT_EQ(base::ASCIIToUTF16("$4.00"),
+  EXPECT_EQ(u"$4.00",
             GetLabelText(DialogViewID::ORDER_SUMMARY_TOTAL_AMOUNT_LABEL));
-  EXPECT_EQ(base::ASCIIToUTF16("$2.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
-  EXPECT_EQ(base::ASCIIToUTF16("$3.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
-  EXPECT_EQ(base::ASCIIToUTF16("-$1.00"),
-            GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
+  EXPECT_EQ(u"$2.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_1));
+  EXPECT_EQ(u"$3.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_2));
+  EXPECT_EQ(u"-$1.00", GetLabelText(DialogViewID::ORDER_SUMMARY_LINE_ITEM_3));
   ClickOnBackArrow();
 
-  PayWithCreditCardAndWait(base::ASCIIToUTF16("123"));
+  PayWithCreditCardAndWait(u"123");
 
   ExpectBodyContains({"freeShipping"});
 }
@@ -323,7 +296,7 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestUpdateWithTest, UpdateWithError) {
   // updated) and this hits a DCHECK.
   WaitForAnimation();
 
-  EXPECT_EQ(base::ASCIIToUTF16("This is an error for a browsertest"),
+  EXPECT_EQ(u"This is an error for a browsertest",
             GetLabelText(DialogViewID::WARNING_LABEL));
 }
 

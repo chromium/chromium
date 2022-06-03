@@ -64,7 +64,7 @@ extern "C" {
 /**Export control for opus functions */
 
 #ifndef OPUS_EXPORT
-# if defined(WIN32)
+# if defined(_WIN32)
 #  if defined(OPUS_BUILD) && defined(DLL_EXPORT)
 #   define OPUS_EXPORT __declspec(dllexport)
 #  else
@@ -169,6 +169,9 @@ extern "C" {
 #define OPUS_SET_PHASE_INVERSION_DISABLED_REQUEST 4046
 #define OPUS_GET_PHASE_INVERSION_DISABLED_REQUEST 4047
 #define OPUS_GET_IN_DTX_REQUEST              4049
+
+/** Defines for the presence of extended APIs. */
+#define OPUS_HAVE_OPUS_PROJECTION_H
 
 /* Macros to trigger compilation errors when the wrong types are provided to a CTL */
 #define __opus_check_int(x) (((void)((x) == (opus_int32)0)), (opus_int32)(x))

@@ -7,7 +7,7 @@
 #include <cmath>
 #include <limits>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -288,6 +288,13 @@ TEST(Vector2dTest, IntegerOverflow) {
   test = Vector2d(-10, -20);
   test -= Vector2d(int_max, int_max);
   EXPECT_EQ(test, min_vector);
+
+  test = Vector2d();
+  test -= Vector2d(int_min, int_min);
+  EXPECT_EQ(test, max_vector);
+
+  test = -Vector2d(int_min, int_min);
+  EXPECT_EQ(test, max_vector);
 }
 
 }  // namespace gfx

@@ -57,33 +57,37 @@ SearchEnginesHandler::~SearchEnginesHandler() {
 }
 
 void SearchEnginesHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "getSearchEnginesList",
       base::BindRepeating(&SearchEnginesHandler::HandleGetSearchEnginesList,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "setDefaultSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleSetDefaultSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "setIsActiveSearchEngine",
+      base::BindRepeating(&SearchEnginesHandler::HandleSetIsActiveSearchEngine,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
       "removeSearchEngine",
       base::BindRepeating(&SearchEnginesHandler::HandleRemoveSearchEngine,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "validateSearchEngineInput",
       base::BindRepeating(
           &SearchEnginesHandler::HandleValidateSearchEngineInput,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "searchEngineEditStarted",
       base::BindRepeating(&SearchEnginesHandler::HandleSearchEngineEditStarted,
                           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "searchEngineEditCancelled",
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCancelled,
           base::Unretained(this)));
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "searchEngineEditCompleted",
       base::BindRepeating(
           &SearchEnginesHandler::HandleSearchEngineEditCompleted,
@@ -108,7 +112,7 @@ SearchEnginesHandler::GetSearchEnginesList() {
       list_controller_.table_model()->IndexOfTemplateURL(default_engine);
 
   // Build the first list (default search engines).
-  auto defaults = std::make_unique<base::ListValue>();
+  base::ListValue defaults;
   int last_default_engine_index =
       list_controller_.table_model()->last_search_engine_index();
 
@@ -117,37 +121,51 @@ SearchEnginesHandler::GetSearchEnginesList() {
 
   for (int i = 0; i < last_default_engine_index; ++i) {
     // Third argument is false, as the engine is not from an extension.
-    defaults->Append(CreateDictionaryForEngine(i, i == default_index));
+    defaults.Append(CreateDictionaryForEngine(i, i == default_index));
+  }
+
+  // Build the second list (active search engines). This will not have any
+  // entries if the new Search Engines page is not enabled.
+  base::ListValue actives;
+  int last_active_engine_index =
+      list_controller_.table_model()->last_active_engine_index();
+
+  CHECK_LE(last_default_engine_index, last_active_engine_index);
+  for (int i = std::max(last_default_engine_index, 0);
+       i < last_active_engine_index; ++i) {
+    // Third argument is false, as the engine is not from an extension.
+    actives.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
   // Build the second list (other search engines).
-  auto others = std::make_unique<base::ListValue>();
+  base::ListValue others;
   int last_other_engine_index =
       list_controller_.table_model()->last_other_engine_index();
 
   // Sanity check for https://crbug.com/781703.
-  CHECK_LE(last_default_engine_index, last_other_engine_index);
+  CHECK_LE(last_active_engine_index, last_other_engine_index);
 
-  for (int i = std::max(last_default_engine_index, 0);
+  for (int i = std::max(last_active_engine_index, 0);
        i < last_other_engine_index; ++i) {
-    others->Append(CreateDictionaryForEngine(i, i == default_index));
+    others.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
   // Build the third list (omnibox extensions).
-  auto extensions = std::make_unique<base::ListValue>();
+  base::ListValue extensions;
   int engine_count = list_controller_.table_model()->RowCount();
 
   // Sanity check for https://crbug.com/781703.
   CHECK_LE(last_other_engine_index, engine_count);
 
   for (int i = std::max(last_other_engine_index, 0); i < engine_count; ++i) {
-    extensions->Append(CreateDictionaryForEngine(i, i == default_index));
+    extensions.Append(CreateDictionaryForEngine(i, i == default_index));
   }
 
   auto search_engines_info = std::make_unique<base::DictionaryValue>();
-  search_engines_info->Set("defaults", std::move(defaults));
-  search_engines_info->Set("others", std::move(others));
-  search_engines_info->Set("extensions", std::move(extensions));
+  search_engines_info->SetKey("defaults", std::move(defaults));
+  search_engines_info->SetKey("actives", std::move(actives));
+  search_engines_info->SetKey("others", std::move(others));
+  search_engines_info->SetKey("extensions", std::move(extensions));
   return search_engines_info;
 }
 
@@ -205,6 +223,10 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
                    list_controller_.CanMakeDefault(template_url));
   dict->SetBoolean("default", is_default);
   dict->SetBoolean("canBeEdited", list_controller_.CanEdit(template_url));
+  dict->SetBoolean("canBeActivated",
+                   list_controller_.CanActivate(template_url));
+  dict->SetBoolean("canBeDeactivated",
+                   list_controller_.CanDeactivate(template_url));
   TemplateURL::Type type = template_url->type();
   dict->SetBoolean("isOmniboxExtension",
                    type == TemplateURL::OMNIBOX_API_EXTENSION);
@@ -229,11 +251,10 @@ SearchEnginesHandler::CreateDictionaryForEngine(int index, bool is_default) {
 
 void SearchEnginesHandler::HandleGetSearchEnginesList(
     const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetSize());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetList().size());
+  const base::Value& callback_id = args->GetList()[0];
   AllowJavascript();
-  ResolveJavascriptCallback(*callback_id, *GetSearchEnginesList());
+  ResolveJavascriptCallback(callback_id, *GetSearchEnginesList());
 }
 
 void SearchEnginesHandler::HandleSetDefaultSearchEngine(
@@ -249,6 +270,18 @@ void SearchEnginesHandler::HandleSetDefaultSearchEngine(
   list_controller_.MakeDefaultTemplateURL(index);
 
   base::RecordAction(base::UserMetricsAction("Options_SearchEngineSetDefault"));
+}
+
+void SearchEnginesHandler::HandleSetIsActiveSearchEngine(
+    const base::ListValue* args) {
+  CHECK_EQ(2U, args->GetList().size());
+  const int index = args->GetList()[0].GetInt();
+  const bool is_active = args->GetList()[1].GetBool();
+
+  if (index < 0 || index >= list_controller_.table_model()->RowCount())
+    return;
+
+  list_controller_.SetIsActiveTemplateURL(index, is_active);
 }
 
 void SearchEnginesHandler::HandleRemoveSearchEngine(
@@ -288,8 +321,8 @@ void SearchEnginesHandler::HandleSearchEngineEditStarted(
 }
 
 void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
-                                           const base::string16& title,
-                                           const base::string16& keyword,
+                                           const std::u16string& title,
+                                           const std::u16string& keyword,
                                            const std::string& url) {
   DCHECK(!url.empty());
   if (template_url)
@@ -302,16 +335,13 @@ void SearchEnginesHandler::OnEditedKeyword(TemplateURL* template_url,
 
 void SearchEnginesHandler::HandleValidateSearchEngineInput(
     const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetSize());
+  CHECK_EQ(3U, args->GetList().size());
 
-  const base::Value* callback_id;
-  std::string field_name;
-  std::string field_value;
-  CHECK(args->Get(0, &callback_id));
-  CHECK(args->GetString(1, &field_name));
-  CHECK(args->GetString(2, &field_value));
+  const base::Value& callback_id = args->GetList()[0];
+  const std::string& field_name = args->GetList()[1].GetString();
+  const std::string& field_value = args->GetList()[2].GetString();
   ResolveJavascriptCallback(
-      *callback_id, base::Value(CheckFieldValidity(field_name, field_value)));
+      callback_id, base::Value(CheckFieldValidity(field_name, field_value)));
 }
 
 bool SearchEnginesHandler::CheckFieldValidity(const std::string& field_name,
@@ -344,12 +374,9 @@ void SearchEnginesHandler::HandleSearchEngineEditCompleted(
     const base::ListValue* args) {
   if (!edit_controller_.get())
     return;
-  std::string search_engine;
-  std::string keyword;
-  std::string query_url;
-  CHECK(args->GetString(0, &search_engine));
-  CHECK(args->GetString(1, &keyword));
-  CHECK(args->GetString(2, &query_url));
+  const std::string& search_engine = args->GetList()[0].GetString();
+  const std::string& keyword = args->GetList()[1].GetString();
+  const std::string& query_url = args->GetList()[2].GetString();
 
   // Recheck validity. It's possible to get here with invalid input if e.g. the
   // user calls the right JS functions directly from the web inspector.

@@ -1,2 +1,3 @@
 file://apps/OWNERS
-# COMPONENT: Platform>Apps>Foundation
+
+per-file icon_standardizer*=mmourgos@chromium.org

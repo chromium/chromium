@@ -35,8 +35,10 @@ function startTest()
     // WindowProxy.
     // https://html.spec.whatwg.org/multipage/browsers.html#dom-top
     // https://html.spec.whatwg.org/multipage/browsers.html#dom-parent
-    shouldBeNull(parent, "parent");
-    shouldBeNull(top, "top");
+    // However, when navigated, the WindowProxy's browsing context still exists.
+    // When the iframe is removed, |parent| and |top| are null.
+    shouldBeNonNull(parent, "parent");
+    shouldBeNonNull(top, "top");
   };
   location = 'data:text/html,<body>Testing...</body>';
 }

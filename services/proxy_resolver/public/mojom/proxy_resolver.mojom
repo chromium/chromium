@@ -7,6 +7,7 @@
 // TODO(amistry): Resolve the conflict between these two sets of definitions.
 module proxy_resolver.mojom;
 
+import "sandbox/policy/mojom/sandbox.mojom";
 import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/network_isolation_key.mojom";
 import "url/mojom/url.mojom";
@@ -85,6 +86,8 @@ interface ProxyResolverRequestClient {
 //
 // Destroying |client| before its ReportResult method is invoked may cancel
 // creation of the ProxyResolverFactory.
+// Note: on Android this lives in the browser process.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService]
 interface ProxyResolverFactory {
   CreateResolver(string pac_script,
                  pending_receiver<ProxyResolver> receiver,

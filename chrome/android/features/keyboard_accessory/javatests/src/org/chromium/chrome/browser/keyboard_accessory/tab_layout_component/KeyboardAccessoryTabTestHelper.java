@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.keyboard_accessory.tab_layout_component;
 
-import static android.support.test.espresso.matcher.ViewMatchers.isAssignableFrom;
+import static androidx.test.espresso.matcher.ViewMatchers.isAssignableFrom;
 
 import android.view.View;
 

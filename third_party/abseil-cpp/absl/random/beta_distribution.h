@@ -22,12 +22,14 @@
 #include <ostream>
 #include <type_traits>
 
-#include "absl/random/internal/distribution_impl.h"
+#include "absl/meta/type_traits.h"
 #include "absl/random/internal/fast_uniform_bits.h"
 #include "absl/random/internal/fastmath.h"
+#include "absl/random/internal/generate_real.h"
 #include "absl/random/internal/iostream_state_saver.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // absl::beta_distribution:
 // Generate a floating-point variate conforming to a Beta distribution:
@@ -129,7 +131,7 @@ class beta_distribution {
    private:
     friend class beta_distribution;
 
-#ifdef COMPILER_MSVC
+#ifdef _MSC_VER
     // MSVC does not have constexpr implementations for std::log and std::exp
     // so they are computed at runtime.
 #define ABSL_RANDOM_INTERNAL_LOG_EXP_CONSTEXPR
@@ -275,15 +277,21 @@ typename beta_distribution<RealType>::result_type
 beta_distribution<RealType>::AlgorithmJoehnk(
     URBG& g,  // NOLINT(runtime/references)
     const param_type& p) {
+  using random_internal::GeneratePositiveTag;
+  using random_internal::GenerateRealFromBits;
+  using real_type =
+      absl::conditional_t<std::is_same<RealType, float>::value, float, double>;
+
   // Based on Joehnk, M. D. Erzeugung von betaverteilten und gammaverteilten
   // Zufallszahlen. Metrika 8.1 (1964): 5-15.
   // This method is described in Knuth, Vol 2 (Third Edition), pp 134.
-  using RandU64ToReal = typename random_internal::RandU64ToReal<result_type>;
-  using random_internal::PositiveValueT;
+
   result_type u, v, x, y, z;
   for (;;) {
-    u = RandU64ToReal::template Value<PositiveValueT, false>(fast_u64_(g));
-    v = RandU64ToReal::template Value<PositiveValueT, false>(fast_u64_(g));
+    u = GenerateRealFromBits<real_type, GeneratePositiveTag, false>(
+        fast_u64_(g));
+    v = GenerateRealFromBits<real_type, GeneratePositiveTag, false>(
+        fast_u64_(g));
 
     // Direct method. std::pow is slow for float, so rely on the optimizer to
     // remove the std::pow() path for that case.
@@ -327,12 +335,14 @@ typename beta_distribution<RealType>::result_type
 beta_distribution<RealType>::AlgorithmCheng(
     URBG& g,  // NOLINT(runtime/references)
     const param_type& p) {
+  using random_internal::GeneratePositiveTag;
+  using random_internal::GenerateRealFromBits;
+  using real_type =
+      absl::conditional_t<std::is_same<RealType, float>::value, float, double>;
+
   // Based on Cheng, Russell CH. Generating beta variates with nonintegral
   // shape parameters. Communications of the ACM 21.4 (1978): 317-322.
   // (https://dl.acm.org/citation.cfm?id=359482).
-  using RandU64ToReal = typename random_internal::RandU64ToReal<result_type>;
-  using random_internal::PositiveValueT;
-
   static constexpr result_type kLogFour =
       result_type(1.3862943611198906188344642429163531361);  // log(4)
   static constexpr result_type kS =
@@ -341,8 +351,10 @@ beta_distribution<RealType>::AlgorithmCheng(
   const bool use_algorithm_ba = (p.method_ == param_type::CHENG_BA);
   result_type u1, u2, v, w, z, r, s, t, bw_inv, lhs;
   for (;;) {
-    u1 = RandU64ToReal::template Value<PositiveValueT, false>(fast_u64_(g));
-    u2 = RandU64ToReal::template Value<PositiveValueT, false>(fast_u64_(g));
+    u1 = GenerateRealFromBits<real_type, GeneratePositiveTag, false>(
+        fast_u64_(g));
+    u2 = GenerateRealFromBits<real_type, GeneratePositiveTag, false>(
+        fast_u64_(g));
     v = p.y_ * std::log(u1 / (1 - u1));
     w = p.a_ * std::exp(v);
     bw_inv = result_type(1) / (p.b_ + w);
@@ -409,6 +421,7 @@ std::basic_istream<CharT, Traits>& operator>>(
   return is;
 }
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_BETA_DISTRIBUTION_H_

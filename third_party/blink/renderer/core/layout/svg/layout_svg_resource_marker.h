@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/svg/svg_marker_element.h"
 #include "third_party/blink/renderer/platform/geometry/float_rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -33,25 +34,32 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
   explicit LayoutSVGResourceMarker(SVGMarkerElement*);
   ~LayoutSVGResourceMarker() override;
 
-  const char* GetName() const override { return "LayoutSVGResourceMarker"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutSVGResourceMarker";
+  }
 
-  void RemoveAllClientsFromCache(bool mark_for_invalidation = true) override;
+  void RemoveAllClientsFromCache() override;
 
   // Calculates marker boundaries, mapped to the target element's coordinate
   // space.
-  FloatRect MarkerBoundaries(
+  gfx::RectF MarkerBoundaries(
       const AffineTransform& marker_transformation) const;
   AffineTransform MarkerTransformation(const MarkerPosition&,
                                        float stroke_width) const;
 
   AffineTransform LocalToSVGParentTransform() const final {
+    NOT_DESTROYED();
     return local_to_parent_transform_;
   }
   void SetNeedsTransformUpdate() final;
 
   // The viewport origin is (0,0) and not the reference point because each
   // marker instance includes the reference in markerTransformation().
-  FloatRect Viewport() const { return FloatRect(FloatPoint(), viewport_size_); }
+  gfx::RectF Viewport() const {
+    NOT_DESTROYED();
+    return gfx::RectF(viewport_size_);
+  }
 
   bool ShouldPaint() const;
 
@@ -61,20 +69,29 @@ class LayoutSVGResourceMarker final : public LayoutSVGResourceContainer {
   SVGMarkerOrientType OrientType() const;
 
   static const LayoutSVGResourceType kResourceType = kMarkerResourceType;
-  LayoutSVGResourceType ResourceType() const override { return kResourceType; }
+  LayoutSVGResourceType ResourceType() const override {
+    NOT_DESTROYED();
+    return kResourceType;
+  }
 
  private:
   void UpdateLayout() override;
-  SVGTransformChange CalculateLocalTransform() final;
+  SVGTransformChange CalculateLocalTransform(bool bounds_changed) final;
+  bool FindCycleFromSelf() const override;
 
   AffineTransform local_to_parent_transform_;
-  FloatSize viewport_size_;
+  gfx::SizeF viewport_size_;
   bool needs_transform_update_;
+  bool is_in_layout_;
 };
 
-DEFINE_LAYOUT_SVG_RESOURCE_TYPE_CASTS(LayoutSVGResourceMarker,
-                                      kMarkerResourceType);
+template <>
+struct DowncastTraits<LayoutSVGResourceMarker> {
+  static bool AllowFrom(const LayoutSVGResourceContainer& container) {
+    return container.ResourceType() == kMarkerResourceType;
+  }
+};
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_SVG_LAYOUT_SVG_RESOURCE_MARKER_H_

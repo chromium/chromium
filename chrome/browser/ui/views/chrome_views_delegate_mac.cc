@@ -5,7 +5,11 @@
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
 
 #include "base/feature_list.h"
-#include "chrome/common/chrome_features.h"
+#include "content/public/browser/context_factory.h"
+
+ui::ContextFactory* ChromeViewsDelegate::GetContextFactory() {
+  return content::GetContextFactory();
+}
 
 views::NativeWidget* ChromeViewsDelegate::CreateNativeWidget(
     views::Widget::InitParams* params,

@@ -31,8 +31,13 @@
 class TestInput(object):
     """Groups information about a test for easy passing of data."""
 
-    def __init__(self, test_name, timeout_ms=None, requires_lock=None,
-                 reference_files=None, retry_attempt=0, requires_force_overwrite=False):
+    def __init__(self,
+                 test_name,
+                 timeout_ms=None,
+                 requires_lock=None,
+                 reference_files=None,
+                 retry_attempt=0,
+                 requires_force_overwrite=False):
         # TestInput objects are normally constructed by the manager and passed
         # to the workers, but these some fields are set lazily in the workers
         # where possible, because they require us to look at the filesystem,
@@ -46,10 +51,7 @@ class TestInput(object):
 
     def __repr__(self):
         return (
-            "TestInput('%s', timeout_ms=%s, requires_lock=%s, reference_files=%s, retry_attempt=%d, requires_force_overwrite=%s)" % (
-                self.test_name,
-                self.timeout_ms,
-                self.requires_lock,
-                self.reference_files,
-                self.retry_attempt,
-                self.requires_force_overwrite))
+            "TestInput('%s', timeout_ms=%s, requires_lock=%s, reference_files=%s, retry_attempt=%d, requires_force_overwrite=%s)"
+            % (self.test_name, self.timeout_ms, self.requires_lock,
+               self.reference_files, self.retry_attempt,
+               self.requires_force_overwrite))

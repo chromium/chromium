@@ -4,8 +4,10 @@
 
 #include "ash/metrics/pointer_metrics_recorder.h"
 
+#include <memory>
+
+#include "ash/constants/app_types.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
-#include "ash/public/cpp/app_types.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
@@ -27,6 +29,11 @@ const char kCombinationHistogramName[] =
 class PointerMetricsRecorderTest : public AshTestBase {
  public:
   PointerMetricsRecorderTest();
+
+  PointerMetricsRecorderTest(const PointerMetricsRecorderTest&) = delete;
+  PointerMetricsRecorderTest& operator=(const PointerMetricsRecorderTest&) =
+      delete;
+
   ~PointerMetricsRecorderTest() override;
 
   // AshTestBase:
@@ -46,9 +53,6 @@ class PointerMetricsRecorderTest : public AshTestBase {
 
   // Where down events are dispatched to.
   std::unique_ptr<views::Widget> widget_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(PointerMetricsRecorderTest);
 };
 
 PointerMetricsRecorderTest::PointerMetricsRecorderTest() = default;
@@ -57,8 +61,8 @@ PointerMetricsRecorderTest::~PointerMetricsRecorderTest() = default;
 
 void PointerMetricsRecorderTest::SetUp() {
   AshTestBase::SetUp();
-  pointer_metrics_recorder_.reset(new PointerMetricsRecorder());
-  histogram_tester_.reset(new base::HistogramTester());
+  pointer_metrics_recorder_ = std::make_unique<PointerMetricsRecorder>();
+  histogram_tester_ = std::make_unique<base::HistogramTester>();
   widget_ = CreateTestWidget();
 }
 
@@ -91,7 +95,7 @@ void PointerMetricsRecorderTest::CreateDownEvent(
     test_api.SetDisplayRotation(rotation,
                                 display::Display::RotationSource::ACTIVE);
   }
-  if (pointer_type == ui::EventPointerType::POINTER_TYPE_MOUSE) {
+  if (pointer_type == ui::EventPointerType::kMouse) {
     ui::MouseEvent mouse_down(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
                               base::TimeTicks(), 0, 0);
     ui::Event::DispatcherApi(&mouse_down).set_target(window);
@@ -126,282 +130,282 @@ TEST_F(PointerMetricsRecorderTest, DownEventPerCombination) {
   display::test::ScopedSetInternalDisplayId set_internal(display_manager,
                                                          display_id);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
-                  DownEventFormFactor::kClamshell, AppType::NON_APP);
+  CreateDownEvent(ui::EventPointerType::kMouse, DownEventFormFactor::kClamshell,
+                  AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppMouseClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModeLandscape, AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppMouseTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModePortrait, AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppMouseTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
-                  DownEventFormFactor::kClamshell, AppType::NON_APP);
+  CreateDownEvent(ui::EventPointerType::kPen, DownEventFormFactor::kClamshell,
+                  AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModeLandscape, AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModePortrait, AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                  DownEventFormFactor::kClamshell, AppType::NON_APP);
+  CreateDownEvent(ui::EventPointerType::kTouch, DownEventFormFactor::kClamshell,
+                  AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModeLandscape, AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModePortrait, AppType::NON_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kNonAppStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
-                  DownEventFormFactor::kClamshell, AppType::BROWSER);
+  CreateDownEvent(ui::EventPointerType::kMouse, DownEventFormFactor::kClamshell,
+                  AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserMouseClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModeLandscape, AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserMouseTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModePortrait, AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserMouseTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
-                  DownEventFormFactor::kClamshell, AppType::BROWSER);
+  CreateDownEvent(ui::EventPointerType::kPen, DownEventFormFactor::kClamshell,
+                  AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModeLandscape, AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModePortrait, AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                  DownEventFormFactor::kClamshell, AppType::BROWSER);
+  CreateDownEvent(ui::EventPointerType::kTouch, DownEventFormFactor::kClamshell,
+                  AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModeLandscape, AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModePortrait, AppType::BROWSER);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kBrowserStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
-                  DownEventFormFactor::kClamshell, AppType::CHROME_APP);
+  CreateDownEvent(ui::EventPointerType::kMouse, DownEventFormFactor::kClamshell,
+                  AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppMouseClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModeLandscape,
                   AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppMouseTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModePortrait,
                   AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppMouseTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
-                  DownEventFormFactor::kClamshell, AppType::CHROME_APP);
+  CreateDownEvent(ui::EventPointerType::kPen, DownEventFormFactor::kClamshell,
+                  AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModeLandscape,
                   AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModePortrait,
                   AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                  DownEventFormFactor::kClamshell, AppType::CHROME_APP);
+  CreateDownEvent(ui::EventPointerType::kTouch, DownEventFormFactor::kClamshell,
+                  AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModeLandscape,
                   AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModePortrait,
                   AppType::CHROME_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kChromeAppStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
-                  DownEventFormFactor::kClamshell, AppType::ARC_APP);
+  CreateDownEvent(ui::EventPointerType::kMouse, DownEventFormFactor::kClamshell,
+                  AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppMouseClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModeLandscape, AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppMouseTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModePortrait, AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppMouseTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
-                  DownEventFormFactor::kClamshell, AppType::ARC_APP);
+  CreateDownEvent(ui::EventPointerType::kPen, DownEventFormFactor::kClamshell,
+                  AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModeLandscape, AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModePortrait, AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                  DownEventFormFactor::kClamshell, AppType::ARC_APP);
+  CreateDownEvent(ui::EventPointerType::kTouch, DownEventFormFactor::kClamshell,
+                  AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModeLandscape, AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModePortrait, AppType::ARC_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kArcAppStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
-                  DownEventFormFactor::kClamshell, AppType::CROSTINI_APP);
+  CreateDownEvent(ui::EventPointerType::kMouse, DownEventFormFactor::kClamshell,
+                  AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kCrostiniAppMouseClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModeLandscape,
                   AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kCrostiniAppMouseTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_MOUSE,
+  CreateDownEvent(ui::EventPointerType::kMouse,
                   DownEventFormFactor::kTabletModePortrait,
                   AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kCrostiniAppMouseTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
-                  DownEventFormFactor::kClamshell, AppType::CROSTINI_APP);
+  CreateDownEvent(ui::EventPointerType::kPen, DownEventFormFactor::kClamshell,
+                  AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kCrostiniAppStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModeLandscape,
                   AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kCrostiniAppStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_PEN,
+  CreateDownEvent(ui::EventPointerType::kPen,
                   DownEventFormFactor::kTabletModePortrait,
                   AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kCrostiniAppStylusTabletPortrait), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
-                  DownEventFormFactor::kClamshell, AppType::CROSTINI_APP);
+  CreateDownEvent(ui::EventPointerType::kTouch, DownEventFormFactor::kClamshell,
+                  AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kCrostiniAppStylusClamshell), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModeLandscape,
                   AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(
       kCombinationHistogramName,
       static_cast<int>(DownEventMetric2::kCrostiniAppStylusTabletLandscape), 1);
 
-  CreateDownEvent(ui::EventPointerType::POINTER_TYPE_TOUCH,
+  CreateDownEvent(ui::EventPointerType::kTouch,
                   DownEventFormFactor::kTabletModePortrait,
                   AppType::CROSTINI_APP);
   histogram_tester_->ExpectBucketCount(

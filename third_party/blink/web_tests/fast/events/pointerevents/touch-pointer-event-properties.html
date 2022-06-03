@@ -4,6 +4,9 @@
 <h1>Test that pointer properties propagates from touches to PointerEvents</h1>
 <div id="target0" style="height: 100px;"></div>
 <script>
+
+// TODO(crbug.com/1076938): This test cannot be automated using current test_driver APIs.
+
 window.name = "mainWindow";
 async_test(function() {
   if (!window.eventSender) {

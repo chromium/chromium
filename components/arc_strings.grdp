@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- ARC app compatibility mode -->
+  <message name="IDS_ASH_ARC_APP_COMPAT_DISABLED_COMPAT_MODE_BUTTON_TOOLTIP_PHONE" desc="Tooltip text that describes the compatibility mode button only supports the phone size">
+    This app supports only this size.
+  </message>
+  <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_TITLE" desc="Dialog title that asks user if they want to enable resizing of the ARC application.">
+    Allow resizing?
+  </message>
+  <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_BODY" desc="Dialog body that asks user if they want to enable resizing of the ARC application.">
+    This app is designed for mobile and may not resize well. The app may experience issues or restart.
+  </message>
+  <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_ACCEPT" desc="Label for button to proceed to enable resizing of the ARC application.">
+    Allow
+  </message>
+  <message name="IDS_ASH_ARC_APP_COMPAT_RESIZE_CONFIRM_DONT_ASK_ME" desc="Label for check box that prevents the dialog from being shown in the future">
+    Don’t ask again for this app
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_FILE_PREPARATION_PROGRESS" desc="Label for progress bar that shows file preparation progress during Nearby Share from the ARC application.">
+    Preparing file
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_FILES_PREPARATION_PROGRESS" desc="Label for progress bar that shows files preparation progress during Nearby Share from the ARC application.">
+    Preparing files
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_ERROR_DIALOG_MESSAGE" desc="Dialog body that tells the user there was an error while sharing text and/or files.">
+    Something went wrong while using Nearby Share
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_TITLE" desc="Dialog title that tells the user Nearby Share failed due to low disk space.">
+    Free up space
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_MESSAGE" desc="Dialog body that tells the user Nearby Share failed due to low disk space while sharing a file(s).">
+    {NUM_FILES, plural,
+      =1 {To send this file using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE">$1<ex>20MB</ex></ph>) on your device}
+      other {To send these files using Nearby Share, free up space (<ph name="DISK_SPACE_SIZE">$1<ex>20MB</ex></ph>) on your device}}
+  </message>
+  <message name="IDS_ASH_ARC_NEARBY_SHARE_LOW_DISK_SPACE_DIALOG_STORAGE_BUTTON" desc="Label for button to acknowledge Nearby Share failed due to low disk space and open the Storage management settings page.">
+    Storage management
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_PHONE" desc="Item in a list of possible sizes for the app. Makes the app in a portrait, phone size.">
+    Phone
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TABLET" desc="Item in a list of possible sizes for the app. Makes the app bigger and wider in a tablet size.">
+    Tablet
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZABLE" desc="Item in a list of possible sizes for the app. Makes the app resizable.">
+    Resizable
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_RESIZE_SETTINGS" desc="Label for the button to allow the user to go to resize settings.">
+    Settings
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_RESIZE_TOGGLE_MENU_TITLE" desc="Title for the menu window that shows predefined resize buttons.">
+    Resize toggle menu
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_TITLE" desc="A Dialog title of splash screen to advertise the app is designed for mobile.">
+    This app is designed for mobile
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_BODY" desc="A Dialog body of splash screen to advertise resize-lock feature.">
+    <ph name="APP_NAME">$1<ex>Gmail app</ex></ph> may not resize well. Use preset window sizes to prevent the app from experiencing issues.
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_BODY_UNRESIZABLE" desc="A dialog body of splash screen to tell users that the app window cannot be resized.">
+    This app can't be resized.
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_CLOSE" desc="A label of the button for the user to accept and dismiss a splash screen message.">
+    Got it
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_SPLASH_SCREEN_LINK" desc="Text of link to app settings.">
+    Settings
+  </message>
+  <message name="IDS_ARC_COMPAT_MODE_DISABLE_RESIZE_LOCK_TOAST" desc="Toast message shown to the user when the user makes the app resizable.">
+    You can now resize the app
+  </message>
+
+  <!-- ARC ghost window -->
+  <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_ICON" desc="The icon of launching app.">
+    App icon
+  </message>
+  <message name="IDS_ARC_GHOST_WINDOW_APP_LAUNCHING_THROBBER" desc="The throbber of launching app.">
+    App launching throbber
+  </message>
+</grit-part>

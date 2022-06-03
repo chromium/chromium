@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL Must have a onmerchantvalidation IDL attribute assert_idl_attribute: property "onmerchantvalidation" not found in prototype chain
+FAIL onmerchantvalidation attribute is a generic handler for "merchantvalidation" assert_true: event did not fire expected true got false
+FAIL onmerchantvalidation attribute is a handler for MerchantValidationEvent assert_true: event did not fire expected true got false
+FAIL onmerchantvalidation attribute and listeners both work assert_true: onmerchantvalidation must receive the event expected true got false
+Harness: the test ran to completion.
+

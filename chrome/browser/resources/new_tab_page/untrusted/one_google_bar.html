@@ -1,0 +1,35 @@
+<!doctype html>
+<html dir="$i18n{textdirection}">
+  <head>
+    <meta charset="utf-8">
+    <style>
+      body {
+        margin:  0;
+        overflow: hidden;
+      }
+
+      .fade-in {
+        animation: fadeIn 200ms;
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+        }
+        100% {
+          opacity: 1;
+        }
+      }
+
+      $i18nRaw{inHeadStyle}
+    </style>
+    <script>$i18nRaw{inHeadScript}</script>
+  </head>
+  <body>
+    $i18nRaw{barHtml}
+    <script>$i18nRaw{afterBarScript}</script>
+    $i18nRaw{endOfBodyHtml}
+    <script>$i18nRaw{endOfBodyScript}</script>
+    <script type="module" src="one_google_bar.js"></script>
+  </body>
+</html>

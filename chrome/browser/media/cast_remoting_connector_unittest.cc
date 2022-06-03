@@ -13,13 +13,12 @@
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
-#include "chrome/browser/media/router/test/mock_media_router.h"
-#include "chrome/common/media_router/media_route.h"
-#include "chrome/common/media_router/media_source.h"
+#include "components/media_router/browser/test/mock_media_router.h"
+#include "components/media_router/common/media_route.h"
+#include "components/media_router/common/media_source.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
-#include "media/mojo/mojom/mirror_service_remoting.mojom.h"
 #include "media/mojo/mojom/remoting.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,54 +48,10 @@ RemotingSinkMetadataPtr GetDefaultSinkMetadata() {
   return metadata;
 }
 
-// Implements basic functionality of a subset of the MediaRouter for use by the
-// unit tests in this module. Note that MockMediaRouter will complain at runtime
-// if any methods were called that should not have been called.
-class FakeMediaRouter : public media_router::MockMediaRouter {
- public:
-  FakeMediaRouter() {}
-  ~FakeMediaRouter() final {}
-
-  void RegisterRemotingSource(SessionID tab_id,
-                              CastRemotingConnector* remoting_source) final {
-    EXPECT_FALSE(tab_id_.is_valid());
-    tab_id_ = tab_id;
-    connector_ = remoting_source;
-  }
-
-  void UnregisterRemotingSource(SessionID tab_id) final {
-    EXPECT_EQ(tab_id, tab_id_);
-    tab_id_ = SessionID::InvalidValue();
-    connector_ = nullptr;
-  }
-
-  void OnMediaRemoterCreated(
-      SessionID tab_id,
-      mojo::PendingRemote<media::mojom::MirrorServiceRemoter> remoter,
-      mojo::PendingReceiver<media::mojom::MirrorServiceRemotingSource>
-          remoting_source) {
-    if (tab_id != tab_id_)
-      return;
-
-    EXPECT_TRUE(connector_);
-    connector_->ConnectToService(std::move(remoting_source),
-                                 std::move(remoter));
-  }
-
-  // Get the registered tab ID.
-  SessionID tab_id() const { return tab_id_; }
-
- private:
-  SessionID tab_id_ = SessionID::InvalidValue();
-  CastRemotingConnector* connector_ = nullptr;
-
-  base::WeakPtrFactory<FakeMediaRouter> weak_factory_{this};
-};
-
-class MockRemotingSource : public media::mojom::RemotingSource {
+class MockRemotingSource final : public media::mojom::RemotingSource {
  public:
   MockRemotingSource() {}
-  ~MockRemotingSource() final {}
+  ~MockRemotingSource() override {}
 
   void Bind(mojo::PendingReceiver<media::mojom::RemotingSource> receiver) {
     receiver_.Bind(std::move(receiver));
@@ -116,69 +71,35 @@ class MockRemotingSource : public media::mojom::RemotingSource {
   mojo::Receiver<media::mojom::RemotingSource> receiver_{this};
 };
 
-// TODO(crbug.com/1015486): Remove the media::mojom::MirrorServiceRemoter
-// implementation after Mirroring Service is launched.
-class MockMediaRemoter final : public media::mojom::MirrorServiceRemoter,
-                               public media::mojom::Remoter {
+class MockMediaRemoter final : public media::mojom::Remoter {
  public:
-  // TODO(crbug.com/1015486): Remove this ctor after Mirroring Service is
-  // launched.
-  explicit MockMediaRemoter(FakeMediaRouter* media_router) {
-    mojo::PendingRemote<media::mojom::MirrorServiceRemoter> pending_remoter;
-    deprecated_receiver_.Bind(pending_remoter.InitWithNewPipeAndPassReceiver());
-    media_router->OnMediaRemoterCreated(
-        kRemotingTabId, std::move(pending_remoter),
-        deprecated_source_.BindNewPipeAndPassReceiver());
-  }
-
   explicit MockMediaRemoter(CastRemotingConnector* connector) {
     connector->ConnectWithMediaRemoter(receiver_.BindNewPipeAndPassRemote(),
                                        source_.BindNewPipeAndPassReceiver());
   }
 
-  ~MockMediaRemoter() final {}
+  ~MockMediaRemoter() override {}
 
   void OnSinkAvailable() {
-    if (deprecated_source_) {
-      EXPECT_FALSE(source_);
-      deprecated_source_->OnSinkAvailable(GetDefaultSinkMetadata());
-    } else {
-      EXPECT_TRUE(source_);
-      source_->OnSinkAvailable(GetDefaultSinkMetadata());
-    }
+    EXPECT_TRUE(source_);
+    source_->OnSinkAvailable(GetDefaultSinkMetadata());
   }
 
   void SendMessageToSource(const std::vector<uint8_t>& message) {
-    if (deprecated_source_) {
-      EXPECT_FALSE(source_);
-      deprecated_source_->OnMessageFromSink(message);
-    } else {
-      EXPECT_TRUE(source_);
-      source_->OnMessageFromSink(message);
-    }
+    EXPECT_TRUE(source_);
+    source_->OnMessageFromSink(message);
   }
 
   void OnStopped(RemotingStopReason reason) {
-    if (deprecated_source_) {
-      EXPECT_FALSE(source_);
-      deprecated_source_->OnStopped(reason);
-    } else {
-      EXPECT_TRUE(source_);
-      source_->OnStopped(reason);
-    }
+    EXPECT_TRUE(source_);
+    source_->OnStopped(reason);
   }
 
   void OnError() {
-    if (deprecated_source_) {
-      EXPECT_FALSE(source_);
-      deprecated_source_->OnError();
-    } else {
-      EXPECT_TRUE(source_);
-      source_->OnStopped(RemotingStopReason::UNEXPECTED_FAILURE);
-    }
+    EXPECT_TRUE(source_);
+    source_->OnStopped(RemotingStopReason::UNEXPECTED_FAILURE);
   }
 
-  // media::mojom::MirrorServiceRemoter implementation.
   // media::mojom::Remoter implementation.
   MOCK_METHOD0(RequestStart, void());
   MOCK_METHOD1(Stop, void(RemotingStopReason));
@@ -192,11 +113,6 @@ class MockMediaRemoter final : public media::mojom::MirrorServiceRemoter,
       source_->OnStarted();
   }
 
-  // media::mojom::MirrorServiceRemoter implementation.
-  void StartDataStreams(bool audio,
-                        bool video,
-                        StartDataStreamsCallback callback) override {}
-
   // media::mojom::Remoter implementation.
   MOCK_METHOD4(
       StartDataStreams,
@@ -208,10 +124,6 @@ class MockMediaRemoter final : public media::mojom::MirrorServiceRemoter,
                video_sender_receiver));
 
  private:
-  // TODO(crbug.com/1015486): Remove these after Mirroring Service is launched.
-  mojo::Receiver<media::mojom::MirrorServiceRemoter> deprecated_receiver_{this};
-  mojo::Remote<media::mojom::MirrorServiceRemotingSource> deprecated_source_;
-
   mojo::Receiver<media::mojom::Remoter> receiver_{this};
   mojo::Remote<media::mojom::RemotingSource> source_;
 };
@@ -265,13 +177,9 @@ class CastRemotingConnectorTest : public ::testing::Test {
 
   CastRemotingConnector* GetConnector() const { return connector_.get(); }
 
-  FakeMediaRouter* GetMediaRouter() const {
-    return const_cast<FakeMediaRouter*>(&media_router_);
-  }
-
  private:
   content::BrowserTaskEnvironment task_environment_;
-  FakeMediaRouter media_router_;
+  media_router::MockMediaRouter media_router_;
   sync_preferences::TestingPrefServiceSyncable pref_service_;
   std::unique_ptr<CastRemotingConnector> connector_;
 };
@@ -392,7 +300,8 @@ TEST_F(CastRemotingConnectorTest, NoPermissionToStart) {
   std::unique_ptr<MockMediaRemoter> media_remoter =
       std::make_unique<MockMediaRemoter>(GetConnector());
 
-  EXPECT_CALL(source, OnStartFailed(RemotingStartFailReason::ROUTE_TERMINATED))
+  EXPECT_CALL(source,
+              OnStartFailed(RemotingStartFailReason::REMOTING_NOT_PERMITTED))
       .Times(1);
   remoter->Start();
   RunUntilIdle();
@@ -496,12 +405,12 @@ TEST_P(CastRemotingConnectorFullSessionTest, GoesThroughAllTheMotions) {
 
       // Since remoting is stopped, any further messaging in either direction
       // must be dropped.
-      const std::vector<uint8_t> message_to_sink = { 1, 6, 1, 8, 0, 3 };
-      const std::vector<uint8_t> message_to_source = { 6, 2, 8, 3, 1, 8 };
+      const std::vector<uint8_t> dropped_message_to_sink = {1, 6, 1, 8, 0, 3};
+      const std::vector<uint8_t> dropped_message_to_source = {6, 2, 8, 3, 1, 8};
       EXPECT_CALL(*source, OnMessageFromSink(_)).Times(0);
       EXPECT_CALL(*media_remoter, SendMessageToSink(_)).Times(0);
-      remoter->SendMessageToSink(message_to_sink);
-      media_remoter->SendMessageToSource(message_to_source);
+      remoter->SendMessageToSink(dropped_message_to_sink);
+      media_remoter->SendMessageToSource(dropped_message_to_source);
       RunUntilIdle();
 
       // When the sink is ready, the Cast Provider sends a notification to the
@@ -574,12 +483,12 @@ TEST_P(CastRemotingConnectorFullSessionTest, GoesThroughAllTheMotions) {
 
       // Since remoting is stopped, any further messaging in either direction
       // must be dropped.
-      const std::vector<uint8_t> message_to_sink = { 1, 6, 1, 8, 0, 3 };
-      const std::vector<uint8_t> message_to_source = { 6, 2, 8, 3, 1, 8 };
+      const std::vector<uint8_t> dropped_message_to_sink = {1, 6, 1, 8, 0, 3};
+      const std::vector<uint8_t> dropped_message_to_source = {6, 2, 8, 3, 1, 8};
       EXPECT_CALL(*source, OnMessageFromSink(_)).Times(0);
       EXPECT_CALL(*media_remoter, SendMessageToSink(_)).Times(0);
-      remoter->SendMessageToSink(message_to_sink);
-      media_remoter->SendMessageToSource(message_to_source);
+      remoter->SendMessageToSink(dropped_message_to_sink);
+      media_remoter->SendMessageToSource(dropped_message_to_source);
       RunUntilIdle();
 
       // When the sink is no longer available, the Cast Provider notifies the

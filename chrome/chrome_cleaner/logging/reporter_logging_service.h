@@ -10,11 +10,9 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread_checker.h"
-#include "base/values.h"
 #include "chrome/chrome_cleaner/logging/detailed_info_sampler.h"
 #include "chrome/chrome_cleaner/logging/logging_service_api.h"
 #include "chrome/chrome_cleaner/logging/proto/reporter_logs.pb.h"
@@ -33,6 +31,9 @@ class ReporterLoggingService : public LoggingServiceAPI {
   // Return the singleton instance which will get destroyed by the AtExitMgr.
   static ReporterLoggingService* GetInstance();
 
+  ReporterLoggingService(const ReporterLoggingService&) = delete;
+  ReporterLoggingService& operator=(const ReporterLoggingService&) = delete;
+
   // LoggingServiceAPI.
   void Initialize(RegistryLogger* registry_logger) override;
   void Terminate() override;
@@ -50,41 +51,41 @@ class ReporterLoggingService : public LoggingServiceAPI {
   void AddDetectedUwS(const UwS& uws) override;
   void SetExitCode(ResultCode exit_code) override;
   void AddLoadedModule(
-      const base::string16& name,
+      const std::wstring& name,
       ModuleHost host,
       const internal::FileInformation& file_information) override;
   void AddInstalledProgram(const base::FilePath& folder_path) override;
-  void AddService(const base::string16& display_name,
-                  const base::string16& service_name,
+  void AddService(const std::wstring& display_name,
+                  const std::wstring& service_name,
                   const internal::FileInformation& file_information) override;
-  void AddProcess(const base::string16& name,
+  void AddProcess(const std::wstring& name,
                   const internal::FileInformation& file_information) override;
   void AddRegistryValue(
       const internal::RegistryValue& registry_value,
       const std::vector<internal::FileInformation>& file_informations) override;
   void AddLayeredServiceProvider(
-      const std::vector<base::string16>& guids,
+      const std::vector<std::wstring>& guids,
       const internal::FileInformation& file_information) override;
-  void SetWinInetProxySettings(const base::string16& config,
-                               const base::string16& bypass,
-                               const base::string16& auto_config_url,
+  void SetWinInetProxySettings(const std::wstring& config,
+                               const std::wstring& bypass,
+                               const std::wstring& auto_config_url,
                                bool autodetect) override;
-  void SetWinHttpProxySettings(const base::string16& config,
-                               const base::string16& bypass) override;
+  void SetWinHttpProxySettings(const std::wstring& config,
+                               const std::wstring& bypass) override;
   void AddInstalledExtension(
-      const base::string16& extension_id,
+      const std::wstring& extension_id,
       ExtensionInstallMethod install_method,
       const std::vector<internal::FileInformation>& extension_files) override;
   void AddScheduledTask(
-      const base::string16& name,
-      const base::string16& description,
+      const std::wstring& name,
+      const std::wstring& description,
       const std::vector<internal::FileInformation>& actions) override;
 
   void AddShortcutData(
-      const base::string16& lnk_path,
-      const base::string16& executable_path,
+      const std::wstring& lnk_path,
+      const std::wstring& executable_path,
       const std::string& executable_hash,
-      const std::vector<base::string16>& command_line_arguments) override;
+      const std::vector<std::wstring>& command_line_arguments) override;
 
   void SetFoundModifiedChromeShortcuts(bool found_modified_shortcuts) override;
 
@@ -135,8 +136,6 @@ class ReporterLoggingService : public LoggingServiceAPI {
 
   // Sampler to choose which files to log detailed info for.
   DetailedInfoSampler sampler_;
-
-  DISALLOW_COPY_AND_ASSIGN(ReporterLoggingService);
 };
 
 }  // namespace chrome_cleaner

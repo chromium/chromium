@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src='../../../resources/testharness.js'></script>
+<script src='../../../resources/testharnessreport.js'></script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#000000'>
+<script>
+'use strict';
+
+promise_test(() => {
+  let colorControl = document.getElementById('color');
+  return openPickerWithPromise(colorControl)
+  .then(() => {
+    internals.pagePopupWindow.focus();
+    const popupDocument = internals.pagePopupWindow.document;
+    const formatToggler = popupDocument.querySelector('format-toggler');
+    formatToggler.click();  // first click changes format to HSL
+    formatToggler.click();  // second click changes format to Hex
+
+    eventSender.keyDown('Escape');
+    assert_equals(internals.pagePopupWindow, null, 'Single escape should close popup if manual color entry format but not color value changed');
+  });
+}, "Color picker: Format changes with no color value change don't affect escape behavior");
+
+</script>
+</body>
+</html>

@@ -9,7 +9,7 @@
 #include <set>
 
 #include "base/callback.h"
-#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
@@ -18,27 +18,31 @@
 
 namespace content {
 
+class BrowserContext;
 class ServiceWorkerContextWrapper;
 
-// This class is used to take messages from BackgroundSyncManager on the
-// service worker core thread and pass them on BackgroundSyncController on the
-// UI thread through its Core class which lives on the UI thread. This is owned
-// by the BackgroundSyncManager.
+// This class is used to take messages from BackgroundSyncManager and pass them
+// on BackgroundSyncController. It is owned by the BackgroundSyncManager and
+// lives on the UI thread.
 //
-// TODO(crbug.com/824858): This class should be unnecessary after the service
-// worker core thread moves to the UI thread.
+// TODO(crbug.com/824858): This class was previously needed because
+// BackgroundSyncManager and BackgroundSyncController were on different threads.
+// It should no longer be needed.
 class CONTENT_EXPORT BackgroundSyncProxy {
  public:
   explicit BackgroundSyncProxy(
       scoped_refptr<ServiceWorkerContextWrapper> service_worker_context);
+
+  BackgroundSyncProxy(const BackgroundSyncProxy&) = delete;
+  BackgroundSyncProxy& operator=(const BackgroundSyncProxy&) = delete;
+
   virtual ~BackgroundSyncProxy();
 
   virtual void ScheduleDelayedProcessing(
       blink::mojom::BackgroundSyncType sync_type,
       base::TimeDelta delay,
       base::OnceClosure delayed_task);
-  virtual void CancelDelayedProcessing(
-      blink::mojom::BackgroundSyncType sync_type);
+  void CancelDelayedProcessing(blink::mojom::BackgroundSyncType sync_type);
   void SendSuspendedPeriodicSyncOrigins(
       std::set<url::Origin> suspended_origins);
   void SendRegisteredPeriodicSyncOrigins(
@@ -47,15 +51,10 @@ class CONTENT_EXPORT BackgroundSyncProxy {
   void RemoveFromTrackedOrigins(url::Origin origin);
 
  private:
-  // Constructed on the service worker core thread, lives and dies on the UI
-  // thread.
-  class Core;
+  BrowserContext* browser_context();
 
-  std::unique_ptr<Core, BrowserThread::DeleteOnUIThread> ui_core_;
-  base::WeakPtr<Core> ui_core_weak_ptr_;
-  base::WeakPtrFactory<BackgroundSyncProxy> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundSyncProxy);
+  SEQUENCE_CHECKER(sequence_checker_);
+  scoped_refptr<ServiceWorkerContextWrapper> service_worker_context_;
 };
 
 }  // namespace content

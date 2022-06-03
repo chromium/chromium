@@ -4,8 +4,8 @@
 
 GEN('#include "chrome/browser/ui/browser.h"');
 GEN('#include "chrome/browser/ui/browser_commands.h"');
-GEN('#include "chrome/browser/ui/exclusive_access/' +
-    'fullscreen_controller_test.h"');
+GEN('#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"');
+GEN('#include "content/public/test/browser_test.h"');
 
 /**
  * Fixture for ChromeOs WebUI OOBE testing.
@@ -138,7 +138,7 @@ TEST_F('OobeWebUITest', 'DISABLED_OobeEula', function() {
 
 // Fails on chromeos, http://crbug.com/665315
 TEST_F('OobeWebUITest', 'DISABLED_OobeUpdate', function() {
-  Oobe.getInstance().showScreen({'id':'update'});
+  Oobe.getInstance().showScreen({'id':'oobe-update'});
 });
 
 // Fails on chromeos, http://crbug.com/665315
@@ -177,12 +177,6 @@ TEST_F('OobeWebUITest', 'DISABLED_OobeSupervisedUsers3', function() {
 // other way to initialize the appropriate C++ handlers.
 TEST_F('OobeWebUITest', 'DISABLED_OobeUserImage', function() {
   Oobe.getInstance().showScreen({'id':'user-image'});
-});
-
-// TODO: figure out what state to mock in order for this
-// screen to show up.
-TEST_F('OobeWebUITest', 'DISABLED_OobeAccountPicker', function() {
-  Oobe.getInstance().showScreen({'id':'account-picker'});
 });
 
 // Fails on chromeos, http://crbug.com/665315

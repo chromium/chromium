@@ -7,13 +7,15 @@
 
 #include <string>
 
-#include "base/strings/string16.h"
+#include "base/containers/span.h"
 
 namespace base {
 struct Feature;
 }
 
 namespace flags_ui {
+
+extern const char kMultiSeparatorChar;
 
 // Generic experiment choice option names.
 extern const char kGenericExperimentChoiceDefault[];
@@ -27,7 +29,7 @@ extern const char kGenericExperimentChoiceAutomatic[];
 // about_flags entries or deleted. Most feature entries should only be around
 // for a few milestones, until their full launch.
 struct FeatureEntry {
-  enum Type {
+  enum Type : unsigned short {
     // A feature with a single flag value.
     //
     // For new entries, it is recommended to instead use FEATURE_VALUE macro
@@ -72,13 +74,15 @@ struct FeatureEntry {
     // passed from the server in a trial config). When set to Enabled, the
     // feature is overriden to be enabled and empty set of parameters is used
     // boiling down to the default behavior in the code.
-    // TODO(crbug.com/805766): The resulting chrome://flags entries will not work on Chrome OS
-    // devices (but will work in the CrOS-emulated build on Linux).
+    // TODO(crbug.com/805766): The resulting chrome://flags entries will not
+    // work on Chrome OS devices (but will work in the CrOS-emulated build on
+    // Linux).
     FEATURE_WITH_PARAMS_VALUE,
 
-    // Corresponds to a command line switch where the value is treatead as a
-    // list of url::Origins. Default state is disabled like SINGLE_VALUE.
-    ORIGIN_LIST_VALUE
+    // Corresponds to a command line switch where the value is treated as a list
+    // of url::Origins. (Lists will not be reordered.) Default state is
+    // disabled like SINGLE_VALUE.
+    ORIGIN_LIST_VALUE,
   };
 
   // Describes state of a feature.
@@ -103,14 +107,14 @@ struct FeatureEntry {
     const char* command_line_value;
   };
 
-  // Configures one parameter for FEATURE_WITH_VARIATIONS_VALUE.
+  // Configures one parameter for FEATURE_WITH_PARAMS_VALUE.
   struct FeatureParam {
     const char* param_name;
     const char* param_value;
   };
 
   // Specified one variation (list of parameter values) for
-  // FEATURE_WITH_VARIATIONS_VALUE.
+  // FEATURE_WITH_PARAMS_VALUE.
   struct FeatureVariation {
     // Text that denotes the variation in chrome://flags. For each variation,
     // the user is shown an option labeled "Enabled <description_text>" (with
@@ -122,7 +126,7 @@ struct FeatureEntry {
     const FeatureParam* params;
     int num_params;
     // A variation id number in the format of
-    // VariationsHttpHeaderProvider::ForceVariationIds() or nullptr if you do
+    // VariationsIdsProvider::ForceVariationIds() or nullptr if you do
     // not need to set any variation_id for this feature variation.
     const char* variation_id;
   };
@@ -140,51 +144,58 @@ struct FeatureEntry {
 
   // The platforms the feature is available on.
   // Needs to be more than a compile-time #ifdef because of profile sync.
-  unsigned supported_platforms;  // bitmask
+  unsigned short supported_platforms;  // bitmask
 
   // Type of entry.
   Type type;
 
-  // The commandline switch and value that are added when this flag is active.
-  // This is different from |internal_name| so that the commandline flag can be
-  // renamed without breaking the prefs file.
-  // This is used if type is SINGLE_VALUE or ENABLE_DISABLE_VALUE.
-  const char* command_line_switch;
+  union {
+    struct {
+      // The commandline switch and value that are added when this flag is
+      // active. This is different from |internal_name| so that the commandline
+      // flag can be renamed without breaking the prefs file. This is used if
+      // type is SINGLE_VALUE or ENABLE_DISABLE_VALUE.
+      const char* command_line_switch;
 
-  // Simple switches that have no value should use "" for command_line_value.
-  const char* command_line_value;
+      // Simple switches that have no value should use "" for
+      // command_line_value.
+      const char* command_line_value;
 
-  // For ENABLE_DISABLE_VALUE, the command line switch and value to explicitly
-  // disable the feature.
-  const char* disable_command_line_switch;
-  const char* disable_command_line_value;
+      // For ENABLE_DISABLE_VALUE, the command line switch and value to
+      // explicitly disable the feature.
+      const char* disable_command_line_switch;
+      const char* disable_command_line_value;
+    } switches;
 
-  // For FEATURE_VALUE or FEATURE_WITH_VARIATIONS_VALUE, the base::Feature this
-  // entry corresponds to. The same feature must not be used in multiple
-  // FeatureEntries.
-  const base::Feature* feature;
+    struct {
+      // For FEATURE_VALUE or FEATURE_WITH_PARAMS_VALUE, the base::Feature
+      // this entry corresponds to. The same feature must not be used in
+      // multiple FeatureEntries.
+      const base::Feature* feature;
 
-  // Number of options to choose from. This is used if type is MULTI_VALUE,
-  // ENABLE_DISABLE_VALUE, FEATURE_VALUE, or FEATURE_WITH_VARIATIONS_VALUE.
-  int num_options;
+      // This describes the options if type is FEATURE_WITH_PARAMS_VALUE.
+      // The first variation is the default "Enabled" variation, its
+      // description_id is disregarded.
+      base::span<const FeatureVariation> feature_variations;
 
-  // This describes the options if type is MULTI_VALUE.
-  const Choice* choices;
+      // The name of the FieldTrial in which the selected variation parameters
+      // should be registered. This is used if type is
+      // FEATURE_WITH_PARAMS_VALUE.
+      const char* feature_trial_name;
+    } feature;
 
-  // This describes the options if type is FEATURE_WITH_VARIATIONS_VALUE.
-  // The first variation is the default "Enabled" variation, its description_id
-  // is disregarded.
-  const FeatureVariation* feature_variations;
-
-  // The name of the FieldTrial in which the selected variation parameters
-  // should be registered. This is used if type is
-  // FEATURE_WITH_VARIATIONS_VALUE.
-  const char* feature_trial_name;
+    // This describes the options if type is MULTI_VALUE.
+    base::span<const Choice> choices;
+  };
 
   // Check whether internal |name| matches this FeatureEntry. Depending on the
   // type of entry, this compared it to either |internal_name| or the values
   // produced by NameForOption().
   bool InternalNameMatches(const std::string& name) const;
+
+  // Number of options to choose from. This is used if type is MULTI_VALUE,
+  // ENABLE_DISABLE_VALUE, FEATURE_VALUE, or FEATURE_WITH_PARAMS_VALUE.
+  int NumOptions() const;
 
   // Returns the name used in prefs for the option at the specified |index|.
   // Only used for types that use |num_options|.
@@ -192,19 +203,19 @@ struct FeatureEntry {
 
   // Returns the human readable description for the option at |index|.
   // Only used for types that use |num_options|.
-  base::string16 DescriptionForOption(int index) const;
+  std::u16string DescriptionForOption(int index) const;
 
   // Returns the choice for the option at |index|. Only applicable for type
   // FEATURE_MULTI.
   const FeatureEntry::Choice& ChoiceForOption(int index) const;
 
   // Returns the state of the feature at |index|. Only applicable for types
-  // FEATURE_VALUE and FEATURE_WITH_VARIATIONS_VALUE.
+  // FEATURE_VALUE and FEATURE_WITH_PARAMS_VALUE.
   FeatureEntry::FeatureState StateForOption(int index) const;
 
   // Returns the variation for the option at |index| or nullptr if there is no
   // variation associated at |index|. Only applicable for types FEATURE_VALUE
-  // and FEATURE_WITH_VARIATIONS_VALUE.
+  // and FEATURE_WITH_PARAMS_VALUE.
   const FeatureEntry::FeatureVariation* VariationForOption(int index) const;
 };
 

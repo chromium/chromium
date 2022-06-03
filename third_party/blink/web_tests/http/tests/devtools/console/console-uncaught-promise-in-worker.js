@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that uncaught promise rejections happenned in workers are logged into console.\n`);
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.showPanel('console');
   await TestRunner.evaluateInPagePromise(`
       var worker;
@@ -29,8 +29,8 @@
     ConsoleTestRunner.expandConsoleMessages(dump);
   }
 
-  function dump() {
-    ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
+  async function dump() {
+    await ConsoleTestRunner.dumpConsoleMessagesIgnoreErrorStackFrames();
     TestRunner.completeTest();
   }
 })();

@@ -14,9 +14,7 @@
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_icon_formatter.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/ui_util.h"
-#import "ios/chrome/common/colors/UIColor+cr_semantic_colors.h"
-#import "ios/chrome/common/colors/dynamic_color_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -24,16 +22,12 @@
 
 namespace {
 // The color of the main text of a suggest cell.
-UIColor* SuggestionTextColor(bool incognito) {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:kTextPrimaryColor], incognito,
-      [UIColor colorNamed:kTextPrimaryDarkColor]);
+UIColor* SuggestionTextColor() {
+  return [UIColor colorNamed:kTextPrimaryColor];
 }
 // The color of the detail text of a suggest cell.
-UIColor* SuggestionDetailTextColor(bool incognito) {
-  return color::DarkModeDynamicColor(
-      [UIColor colorNamed:kTextSecondaryColor], incognito,
-      [UIColor colorNamed:kTextSecondaryDarkColor]);
+UIColor* SuggestionDetailTextColor() {
+  return [UIColor colorNamed:kTextSecondaryColor];
 }
 // The color of the text in the portion of a search suggestion that matches the
 // omnibox input text.
@@ -44,11 +38,6 @@ UIColor* DimColorIncognito() {
   return UIColor.whiteColor;
 }
 
-// Temporary convenience accessor for this flag.
-// Cleanup along with feature: crbug.com/945334.
-bool ShouldUseNewFormatting() {
-  return base::FeatureList::IsEnabled(kNewOmniboxPopupLayout);
-}
 }  // namespace
 
 @implementation AutocompleteMatchFormatter {
@@ -87,8 +76,7 @@ bool ShouldUseNewFormatting() {
 - (BOOL)hasImage {
   BOOL hasAnswerImage =
       self.hasAnswer && _match.answer->second_line().image_url().is_valid();
-  BOOL hasRichEntityImage =
-      ShouldUseNewFormatting() && !_match.image_url.empty();
+  BOOL hasRichEntityImage = !_match.image_url.is_empty();
   return hasAnswerImage || hasRichEntityImage;
 }
 
@@ -98,13 +86,12 @@ bool ShouldUseNewFormatting() {
 
 - (NSAttributedString*)detailText {
   if (self.hasAnswer) {
-    if (ShouldUseNewFormatting() &&
-        !_match.answer->IsExceptedFromLineReversal()) {
+    if (!_match.answer->IsExceptedFromLineReversal()) {
       NSAttributedString* detailBaseText = [self
           attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
                      classifications:&_match.contents_class
                            smallFont:NO
-                               color:SuggestionDetailTextColor(self.incognito)
+                               color:SuggestionDetailTextColor()
                             dimColor:DimColor()];
       return [self addExtraTextFromAnswerLine:_match.answer->first_line()
                            toAttributedString:detailBaseText
@@ -131,9 +118,9 @@ bool ShouldUseNewFormatting() {
     // instead.
     UIColor* suggestionDetailTextColor = nil;
     if (_match.type == AutocompleteMatchType::SEARCH_SUGGEST_ENTITY) {
-      suggestionDetailTextColor = SuggestionTextColor(self.incognito);
+      suggestionDetailTextColor = SuggestionTextColor();
     } else {
-      suggestionDetailTextColor = SuggestionDetailTextColor(self.incognito);
+      suggestionDetailTextColor = SuggestionDetailTextColor();
     }
     DCHECK(suggestionDetailTextColor);
     return [self attributedStringWithString:detailText
@@ -148,7 +135,6 @@ bool ShouldUseNewFormatting() {
   OmniboxIconFormatter* icon =
       [[OmniboxIconFormatter alloc] initWithMatch:_match];
   icon.defaultSearchEngineIsGoogle = self.defaultSearchEngineIsGoogle;
-  icon.incognito = self.incognito;
   return icon;
 }
 
@@ -165,12 +151,11 @@ bool ShouldUseNewFormatting() {
 
 - (NSAttributedString*)text {
   if (self.hasAnswer) {
-    if (ShouldUseNewFormatting() &&
-        !_match.answer->IsExceptedFromLineReversal()) {
+    if (!_match.answer->IsExceptedFromLineReversal()) {
       return [self attributedStringWithAnswerLine:_match.answer->second_line()
                            useDeemphasizedStyling:NO];
     } else {
-      UIColor* suggestionTextColor = SuggestionTextColor(self.incognito);
+      UIColor* suggestionTextColor = SuggestionTextColor();
       UIColor* dimColor = self.incognito ? DimColorIncognito() : DimColor();
       NSAttributedString* attributedBaseText = [self
           attributedStringWithString:base::SysUTF16ToNSString(_match.contents)
@@ -185,7 +170,7 @@ bool ShouldUseNewFormatting() {
   } else {
     // The text should be search term (|_match.contents|) for searches,
     // otherwise page title (|_match.description|).
-    base::string16 textString =
+    std::u16string textString =
         !self.isURL ? _match.contents : _match.description;
     NSString* text = base::SysUTF16ToNSString(textString);
 
@@ -196,7 +181,7 @@ bool ShouldUseNewFormatting() {
 
     const ACMatchClassifications* textClassifications =
         !self.isURL ? &_match.contents_class : &_match.description_class;
-    UIColor* suggestionTextColor = SuggestionTextColor(self.incognito);
+    UIColor* suggestionTextColor = SuggestionTextColor();
     UIColor* dimColor = self.incognito ? DimColorIncognito() : DimColor();
 
     return [self attributedStringWithString:text
@@ -251,7 +236,20 @@ bool ShouldUseNewFormatting() {
 }
 
 - (BOOL)isTabMatch {
-  return _match.has_tab_match;
+  return _match.has_tab_match.value_or(false);
+}
+
+#pragma mark tail suggest
+
+- (BOOL)isTailSuggestion {
+  return _match.type == AutocompleteMatchType::SEARCH_SUGGEST_TAIL;
+}
+
+- (NSString*)commonPrefix {
+  if (![self isTailSuggestion]) {
+    return @"";
+  }
+  return base::SysUTF16ToNSString(_match.tail_suggest_common_prefix);
 }
 
 #pragma mark helpers
@@ -263,7 +261,7 @@ bool ShouldUseNewFormatting() {
   NSMutableAttributedString* result =
       [[NSMutableAttributedString alloc] initWithString:@""];
 
-  for (const auto field : line.text_fields()) {
+  for (const auto& field : line.text_fields()) {
     [result appendAttributedString:
                 [self attributedStringForTextfield:&field
                             useDeemphasizedStyling:useDeemphasizedStyling]];
@@ -309,76 +307,17 @@ bool ShouldUseNewFormatting() {
 - (NSAttributedString*)
     attributedStringForTextfield:(const SuggestionAnswer::TextField*)field
           useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
-  const base::string16& string = field->text();
+  const std::u16string& string = field->text();
 
   NSString* unescapedString =
       base::SysUTF16ToNSString(net::UnescapeForHTML(string));
 
   NSDictionary* attributes =
-      ShouldUseNewFormatting()
-          ? [self formattingAttributesForSuggestionStyle:field->style()
-                                  useDeemphasizedStyling:useDeemphasizedStyling]
-          : [self attributesForSuggestionType:field->type()];
+      [self formattingAttributesForSuggestionStyle:field->style()
+                            useDeemphasizedStyling:useDeemphasizedStyling];
 
   return [[NSAttributedString alloc] initWithString:unescapedString
                                          attributes:attributes];
-}
-
-- (NSDictionary<NSAttributedStringKey, id>*)attributesForSuggestionType:
-    (int)type {
-  DCHECK(!ShouldUseNewFormatting());
-  // Answer types, sizes and colors specified at http://goto.google.com/ais_api.
-  UIColor* detailTextColor = SuggestionDetailTextColor(self.incognito);
-  switch (type) {
-    case SuggestionAnswer::TOP_ALIGNED:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:12],
-        NSBaselineOffsetAttributeName : @10.0f,
-        NSForegroundColorAttributeName : detailTextColor,
-      };
-    case SuggestionAnswer::DESCRIPTION_POSITIVE:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:16],
-        NSForegroundColorAttributeName : [UIColor colorNamed:kGreenColor],
-      };
-    case SuggestionAnswer::DESCRIPTION_NEGATIVE:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:16],
-        NSForegroundColorAttributeName : [UIColor colorNamed:kRedColor],
-      };
-    case SuggestionAnswer::PERSONALIZED_SUGGESTION:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:16],
-      };
-    case SuggestionAnswer::ANSWER_TEXT_MEDIUM:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:20],
-
-        NSForegroundColorAttributeName : detailTextColor,
-      };
-    case SuggestionAnswer::ANSWER_TEXT_LARGE:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:24],
-        NSForegroundColorAttributeName : detailTextColor,
-      };
-    case SuggestionAnswer::SUGGESTION_SECONDARY_TEXT_SMALL:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:12],
-        NSForegroundColorAttributeName : detailTextColor,
-      };
-    case SuggestionAnswer::SUGGESTION_SECONDARY_TEXT_MEDIUM:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:14],
-        NSForegroundColorAttributeName : detailTextColor,
-      };
-    case SuggestionAnswer::SUGGESTION:
-      // Fall through.
-    default:
-      return @{
-        NSFontAttributeName : [UIFont systemFontOfSize:16],
-        NSForegroundColorAttributeName : SuggestionTextColor(self.incognito),
-      };
-  }
 }
 
 // Return correct formatting attributes for the given style.
@@ -388,7 +327,6 @@ bool ShouldUseNewFormatting() {
 - (NSDictionary<NSAttributedStringKey, id>*)
     formattingAttributesForSuggestionStyle:(SuggestionAnswer::TextStyle)style
                     useDeemphasizedStyling:(BOOL)useDeemphasizedStyling {
-  DCHECK(ShouldUseNewFormatting());
   UIFontDescriptor* defaultFontDescriptor =
       useDeemphasizedStyling
           ? [[UIFontDescriptor
@@ -397,9 +335,8 @@ bool ShouldUseNewFormatting() {
                     UIFontDescriptorTraitTightLeading]
           : [UIFontDescriptor
                 preferredFontDescriptorWithTextStyle:UIFontTextStyleBody];
-  UIColor* defaultColor = useDeemphasizedStyling
-                              ? SuggestionDetailTextColor(self.incognito)
-                              : SuggestionTextColor(self.incognito);
+  UIColor* defaultColor = useDeemphasizedStyling ? SuggestionDetailTextColor()
+                                                 : SuggestionTextColor();
 
   switch (style) {
     case SuggestionAnswer::TextStyle::NORMAL:
@@ -479,15 +416,9 @@ bool ShouldUseNewFormatting() {
     return nil;
 
   UIFont* fontRef;
-  if (ShouldUseNewFormatting()) {
-    fontRef =
-        smallFont
-            ? [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
-            : [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  } else {
-    fontRef =
-        smallFont ? [UIFont systemFontOfSize:15] : [UIFont systemFontOfSize:17];
-  }
+  fontRef = smallFont
+                ? [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline]
+                : [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
 
   NSMutableAttributedString* styledText =
       [[NSMutableAttributedString alloc] initWithString:text];
@@ -501,16 +432,10 @@ bool ShouldUseNewFormatting() {
 
   if (classifications != NULL) {
     UIFont* boldFontRef;
-    if (ShouldUseNewFormatting()) {
-      UIFontDescriptor* fontDescriptor = fontRef.fontDescriptor;
-      UIFontDescriptor* boldFontDescriptor = [fontDescriptor
-          fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
-      boldFontRef = [UIFont fontWithDescriptor:boldFontDescriptor size:0];
-    } else {
-      UIFontWeight boldFontWeight = UIFontWeightMedium;
-      boldFontRef = [UIFont systemFontOfSize:fontRef.pointSize
-                                      weight:boldFontWeight];
-    }
+    UIFontDescriptor* fontDescriptor = fontRef.fontDescriptor;
+    UIFontDescriptor* boldFontDescriptor = [fontDescriptor
+        fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+    boldFontRef = [UIFont fontWithDescriptor:boldFontDescriptor size:0];
 
     for (ACMatchClassifications::const_iterator i = classifications->begin();
          i != classifications->end(); ++i) {

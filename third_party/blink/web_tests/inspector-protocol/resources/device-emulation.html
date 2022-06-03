@@ -111,6 +111,28 @@ function dumpMetrics(full)
     return results.join("\n");
 }
 
+function dumpWindowSegments() {
+    let output = [];
+    output.push("Main frame segments:");
+    output = output.concat(dumpWindowSegmentsForWindow(this));
+    output.push("Iframe segments:");
+    output = output.concat(dumpWindowSegmentsForWindow(window.frames[0]));
+    return output.join("\n");
+}
+
+function dumpWindowSegmentsForWindow(window_object) {
+    let output = [];
+    let segments = window_object.visualViewport.segments;
+    output.push(segments ? segments.length : 0);
+    if (segments) {
+      segments.forEach((segment) => {
+          let segmentString = `${segment.x} ${segment.y} ${segment.width} ${segment.height}`;
+          output.push(segmentString);
+      });
+    }
+    return output;
+}
+
 function testJS(expr, unit)
 {
     if (unit === undefined)
@@ -209,5 +231,6 @@ body.small {
 </head>
 
 <body>
+<iframe src="about:blank"></iframe>
 </body>
 </html>

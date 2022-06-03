@@ -5,22 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTableRow TR id='row1'",
-          "rect": [8, 8, 200, 300],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR id='row3'",
-          "rect": [8, 207, 200, 101],
-          "reason": "style change"
-        },
-        {
-          "object": "LayoutTableRow TR id='row2'",
-          "rect": [8, 107, 200, 101],
-          "reason": "style change"
-        }
+      "invalidations": [
+        [8, 8, 200, 300]
       ]
     }
   ]

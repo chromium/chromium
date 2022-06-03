@@ -9,9 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
-#include "chrome/services/app_service/public/mojom/types.mojom.h"
-#include "ui/gfx/image/image.h"
+#include "ui/base/models/image_model.h"
 
 namespace apps {
 
@@ -41,8 +39,8 @@ enum class PreferredPlatform {
   // Either there was an error or there is no preferred app at all.
   NONE,
 
-  // The preferred app is Chrome.
-  NATIVE_CHROME,
+  // The preferred app is Chrome browser.
+  CHROME_BROWSER,
 
   // The preferred app is an ARC app.
   ARC,
@@ -73,35 +71,35 @@ enum class PickerEntryType {
   kArc,
   kWeb,
   kDevice,
-  kMacNative,
+  kMacOs,
 };
 
 // Represents the data required to display an app in a picker to the user.
 struct IntentPickerAppInfo {
   IntentPickerAppInfo(PickerEntryType type,
-                      const gfx::Image& icon,
+                      const ui::ImageModel& icon_model,
                       const std::string& launch_name,
                       const std::string& display_name);
 
   IntentPickerAppInfo(IntentPickerAppInfo&& other);
 
+  IntentPickerAppInfo(const IntentPickerAppInfo&) = delete;
+  IntentPickerAppInfo& operator=(const IntentPickerAppInfo&) = delete;
   IntentPickerAppInfo& operator=(IntentPickerAppInfo&& other);
 
   // The type of app that this object represents.
   PickerEntryType type;
 
-  // The icon to be displayed for this app in the picker.
-  gfx::Image icon;
+  // The icon ImageModel to be displayed for this app in the picker.
+  ui::ImageModel icon_model;
 
   // The string used to launch this app. Represents an Android package name when
-  // |type| is kArc, and when |type| is kMacNative, it is the file path of the
+  // |type| is kArc, and when |type| is kMacOs, it is the file path of the
   // native app to use.
   std::string launch_name;
 
   // The string shown to the user to identify this app in the intent picker.
   std::string display_name;
-
-  DISALLOW_COPY_AND_ASSIGN(IntentPickerAppInfo);
 };
 
 // Callback to allow app-platform-specific code to asynchronously signal what

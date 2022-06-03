@@ -16,8 +16,9 @@ TEST(TaskbarIconFinder, Simple) {
   base::test::TaskEnvironment task_environment;
   base::RunLoop run_loop;
 
-  FindTaskbarIcon(base::Bind([](base::Closure quit_closure,
-                                const gfx::Rect& rect) { quit_closure.Run(); },
-                             run_loop.QuitWhenIdleClosure()));
+  FindTaskbarIcon(
+      base::BindOnce([](base::OnceClosure quit,
+                        const gfx::Rect& rect) { std::move(quit).Run(); },
+                     run_loop.QuitWhenIdleClosure()));
   run_loop.Run();
 }

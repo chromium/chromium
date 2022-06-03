@@ -5,21 +5,28 @@
 syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
+option java_package = "org.chromium.components.metrics";
 
 package ukm;
 
 import "ukm/aggregate.proto";
 import "ukm/entry.proto";
 import "ukm/source.proto";
+import "chrome_user_metrics_extension.proto";
 import "system_profile.proto";
 import "user_demographics.proto";
 
 // This is the message type sent from Chrome to the UKM collector.
-// Next tag: 12
+// Next tag: 13
 message Report {
   // A unique identifier for a Chrome install. This ID should be used only
   // in UKM reports, and not linked to any other data sources.
   optional fixed64 client_id = 1;
+
+  // The product corresponding to this log. Note: The default value is Chrome,
+  // so Chrome products will not transmit this field.
+  optional metrics.ChromeUserMetricsExtension.Product product = 12
+      [default = CHROME];
 
   // The session id for this record. This id is unique within a
   // particular Chrome session. The client keeps track of the session id
@@ -31,7 +38,7 @@ message Report {
   // one within a session.
   optional int32 report_id = 6;
 
-  // Indicates that recording was continously enabled for the period of time
+  // Indicates that recording was continuously enabled for the period of time
   // captured in this report.
   optional bool is_continuous = 8;
 

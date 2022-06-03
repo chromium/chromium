@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "base/macros.h"
+#include "ash/frame_throttler/frame_throttling_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -18,7 +18,8 @@ namespace exo {
 // Multiplexes vsync parameter updates from the display compositor to exo
 // clients using the zcr_vsync_feedback_v1 protocol. Will maintain an IPC
 // connection to the display compositor only when necessary.
-class VSyncTimingManager : public viz::mojom::VSyncParameterObserver {
+class VSyncTimingManager : public viz::mojom::VSyncParameterObserver,
+                           public ash::FrameThrottlingObserver {
  public:
   // Will be notified about changes in vsync parameters.
   class Observer {
@@ -39,19 +40,34 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver {
   };
 
   explicit VSyncTimingManager(Delegate* delegate);
+
+  VSyncTimingManager(const VSyncTimingManager&) = delete;
+  VSyncTimingManager& operator=(const VSyncTimingManager&) = delete;
+
   ~VSyncTimingManager() override;
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
+
+  base::TimeDelta throttled_interval() const { return throttled_interval_; }
 
  private:
   // Overridden from viz::mojom::VSyncParameterObserver:
   void OnUpdateVSyncParameters(base::TimeTicks timebase,
                                base::TimeDelta interval) override;
 
+  // Overridden from ash::FrameThrottlingObserver
+  void OnThrottlingStarted(const std::vector<aura::Window*>& windows,
+                           uint8_t fps) override;
+  void OnThrottlingEnded() override;
+
   void InitializeConnection();
   void MaybeInitializeConnection();
   void OnConnectionError();
+
+  base::TimeDelta throttled_interval_;
+  base::TimeDelta last_interval_;
+  base::TimeTicks last_timebase_;
 
   Delegate* const delegate_;
 
@@ -60,8 +76,6 @@ class VSyncTimingManager : public viz::mojom::VSyncParameterObserver {
   mojo::Receiver<viz::mojom::VSyncParameterObserver> receiver_{this};
 
   base::WeakPtrFactory<VSyncTimingManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(VSyncTimingManager);
 };
 
 }  // namespace exo

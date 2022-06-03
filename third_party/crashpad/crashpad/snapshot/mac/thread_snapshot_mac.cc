@@ -14,7 +14,7 @@
 
 #include "snapshot/mac/thread_snapshot_mac.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "snapshot/mac/cpu_context_mac.h"
 #include "snapshot/mac/process_reader_mac.h"
 
@@ -75,6 +75,18 @@ bool ThreadSnapshotMac::Initialize(
                             &process_reader_thread.float_context.f32,
                             &process_reader_thread.debug_context.d32);
   }
+#elif defined(ARCH_CPU_ARM64)
+  context_.architecture = kCPUArchitectureARM64;
+  context_.arm64 = &context_union_.arm64;
+  InitializeCPUContextARM64(context_.arm64,
+                            THREAD_STATE_NONE,
+                            nullptr,
+                            0,
+                            &process_reader_thread.thread_context,
+                            &process_reader_thread.float_context,
+                            &process_reader_thread.debug_context);
+#else
+#error Port to your CPU architecture
 #endif
 
   INITIALIZATION_STATE_SET_VALID(initialized_);

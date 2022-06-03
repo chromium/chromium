@@ -18,7 +18,7 @@ static FakeScriptCommand* kFakeCurrentCommand;
 
 @implementation FakeScriptCommand
 
-- (id)init {
+- (instancetype)init {
   if ((self = [super init])) {
     _originalMethod = class_getClassMethod([NSScriptCommand class],
                                            @selector(currentCommand));

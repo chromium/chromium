@@ -13,6 +13,7 @@
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "ui/base/resource/resource_handle.h"
@@ -43,19 +44,19 @@ base::FilePath GetResourcesPakFilePath(NSString* name, NSString* mac_locale) {
 }  // namespace
 
 void ResourceBundle::LoadCommonResources() {
-  if (IsScaleFactorSupported(SCALE_FACTOR_100P)) {
+  if (IsScaleFactorSupported(k100Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_100_percent", nil),
-                        SCALE_FACTOR_100P);
+                        k100Percent);
   }
 
-  if (IsScaleFactorSupported(SCALE_FACTOR_200P)) {
+  if (IsScaleFactorSupported(k200Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_200_percent", nil),
-                        SCALE_FACTOR_200P);
+                        k200Percent);
   }
 
-  if (IsScaleFactorSupported(SCALE_FACTOR_300P)) {
+  if (IsScaleFactorSupported(k300Percent)) {
     AddDataPackFromPath(GetResourcesPakFilePath(@"chrome_300_percent", nil),
-                        SCALE_FACTOR_300P);
+                        k300Percent);
   }
 }
 
@@ -80,14 +81,8 @@ base::FilePath ResourceBundle::GetLocaleFilePath(
         locale_file_path, app_locale);
   }
 
-  // Don't try to load empty values or values that are not absolute paths.
-  if (locale_file_path.empty() || !locale_file_path.IsAbsolute())
-    return base::FilePath();
-
-  if (!base::PathExists(locale_file_path))
-    return base::FilePath();
-
-  return locale_file_path;
+  // Don't try to load from paths that are not absolute.
+  return locale_file_path.IsAbsolute() ? locale_file_path : base::FilePath();
 }
 
 gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
@@ -107,7 +102,7 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
     // Load the raw data from the resource pack at the current supported scale
     // factor.  This code assumes that only one of the possible scale factors is
     // supported at runtime, based on the device resolution.
-    ui::ScaleFactor scale_factor = GetMaxScaleFactor();
+    ui::ResourceScaleFactor scale_factor = GetMaxResourceScaleFactor();
 
     scoped_refptr<base::RefCountedMemory> data(
         LoadDataResourceBytesForScale(resource_id, scale_factor));
@@ -123,7 +118,7 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
 
     bool is_fallback = PNGContainsFallbackMarker(data->front(), data->size());
     // Create the image from the data.
-    CGFloat target_scale = ui::GetScaleForScaleFactor(scale_factor);
+    CGFloat target_scale = ui::GetScaleForResourceScaleFactor(scale_factor);
     CGFloat source_scale = is_fallback ? 1.0 : target_scale;
     base::scoped_nsobject<UIImage> ui_image(
         [[UIImage alloc] initWithData:ns_data scale:source_scale]);
@@ -164,8 +159,6 @@ gfx::Image& ResourceBundle::GetNativeImageNamed(int resource_id) {
 
     image = gfx::Image(ui_image);
   }
-
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   auto inserted = images_.emplace(resource_id, image);
   DCHECK(inserted.second);

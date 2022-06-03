@@ -217,7 +217,6 @@ bool ValidationTestInputParser::GetNextItem(Range* range) {
       return true;
     }
   }
-  return false;
 }
 
 bool ValidationTestInputParser::ParseItem(const Range& range) {

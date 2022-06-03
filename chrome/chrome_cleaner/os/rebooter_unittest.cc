@@ -69,8 +69,8 @@ TEST_F(RebooterTest, RegisterPostRebootRun) {
                                              /*logs_uploads_allowed=*/false));
 
   std::string switch_str(kPostRebootSwitchesInOtherRegistryKeySwitch);
-  EXPECT_TRUE(RunOnceCommandLineContains(
-      TEST_PRODUCT_SHORTNAME_STRING, base::UTF8ToUTF16(switch_str).c_str()));
+  EXPECT_TRUE(RunOnceCommandLineContains(TEST_PRODUCT_SHORTNAME_STRING,
+                                         base::UTF8ToWide(switch_str).c_str()));
 
   EXPECT_TRUE(
       RunOnceOverrideCommandLineContains(kTestCleanupId, kExpectedTestSwitch));

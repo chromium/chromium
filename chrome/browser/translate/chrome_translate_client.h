@@ -9,11 +9,13 @@
 #include <string>
 
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/gtest_prod_util.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/translate/translate_bubble_model.h"
+#include "components/autofill_assistant/browser/public/runtime_observer.h"
 #include "components/language/core/browser/url_language_histogram.h"
 #include "components/translate/content/browser/content_translate_driver.h"
+#include "components/translate/content/browser/per_frame_content_translate_driver.h"
 #include "components/translate/core/browser/translate_client.h"
 #include "components/translate/core/browser/translate_step.h"
 #include "components/translate/core/common/translate_errors.h"
@@ -40,20 +42,26 @@ enum class ShowTranslateBubbleResult;
 
 class ChromeTranslateClient
     : public translate::TranslateClient,
-      public translate::ContentTranslateDriver::Observer,
+      public translate::TranslateDriver::LanguageDetectionObserver,
       public content::WebContentsObserver,
-      public content::WebContentsUserData<ChromeTranslateClient> {
+      public content::WebContentsUserData<ChromeTranslateClient>,
+      public autofill_assistant::RuntimeObserver {
  public:
+  ChromeTranslateClient(const ChromeTranslateClient&) = delete;
+  ChromeTranslateClient& operator=(const ChromeTranslateClient&) = delete;
+
   ~ChromeTranslateClient() override;
 
   // Gets the LanguageState associated with the page.
-  translate::LanguageState& GetLanguageState();
+  const translate::LanguageState& GetLanguageState();
 
   // Returns the ContentTranslateDriver instance associated with this
   // WebContents.
-  translate::ContentTranslateDriver* translate_driver() {
-    return &translate_driver_;
-  }
+  translate::ContentTranslateDriver* translate_driver();
+
+  // Returns the PerFrameContentTranslateDriver instance, if any, associated
+  // with this WebContents.
+  translate::PerFrameContentTranslateDriver* per_frame_translate_driver();
 
   // Helper method to return a new TranslatePrefs instance.
   static std::unique_ptr<translate::TranslatePrefs> CreateTranslatePrefs(
@@ -76,10 +84,6 @@ class ChromeTranslateClient
 
   // Gets the associated TranslateManager.
   translate::TranslateManager* GetTranslateManager();
-
-  // Gets the associated WebContents. Returns NULL if the WebContents is being
-  // destroyed.
-  content::WebContents* GetWebContents();
 
   // TranslateClient implementation.
   translate::TranslateDriver* GetTranslateDriver() override;
@@ -104,11 +108,14 @@ class ChromeTranslateClient
                        translate::TranslateErrors::Type error_type,
                        bool triggered_from_menu) override;
   bool IsTranslatableURL(const GURL& url) override;
-  void ShowReportLanguageDetectionErrorUI(const GURL& report_url) override;
+  bool IsAutofillAssistantRunning() const override;
 
-  // ContentTranslateDriver::Observer implementation.
+  // TranslateDriver::LanguageDetectionObserver implementation.
   void OnLanguageDetermined(
       const translate::LanguageDetectionDetails& details) override;
+
+  // autofill_assistant::RuntimeObserver implementation.
+  void OnStateChanged(autofill_assistant::UIState state) override;
 
  private:
   explicit ChromeTranslateClient(content::WebContents* web_contents);
@@ -131,10 +138,13 @@ class ChromeTranslateClient
       translate::TranslateStep step,
       const std::string& source_language,
       const std::string& target_language,
-      translate::TranslateErrors::Type error_type);
+      translate::TranslateErrors::Type error_type,
+      bool is_user_gesture);
 #endif
 
-  translate::ContentTranslateDriver translate_driver_;
+  std::unique_ptr<translate::ContentTranslateDriver> translate_driver_;
+  std::unique_ptr<translate::PerFrameContentTranslateDriver>
+      per_frame_translate_driver_;
   std::unique_ptr<translate::TranslateManager> translate_manager_;
 
 #if defined(OS_ANDROID)
@@ -144,8 +154,6 @@ class ChromeTranslateClient
 #endif
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
-
-  DISALLOW_COPY_AND_ASSIGN(ChromeTranslateClient);
 };
 
 #endif  // CHROME_BROWSER_TRANSLATE_CHROME_TRANSLATE_CLIENT_H_

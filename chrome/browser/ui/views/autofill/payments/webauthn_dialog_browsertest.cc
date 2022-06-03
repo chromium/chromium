@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_controller_impl.h"
 #include "chrome/browser/ui/autofill/payments/webauthn_dialog_view.h"
@@ -9,6 +10,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/autofill/payments/webauthn_dialog_view_impl.h"
+#include "content/public/test/browser_test.h"
 
 namespace autofill {
 
@@ -22,6 +24,10 @@ constexpr char kVerifyDialogName[] = "Verify";
 class WebauthnDialogBrowserTest : public DialogBrowserTest {
  public:
   WebauthnDialogBrowserTest() = default;
+
+  WebauthnDialogBrowserTest(const WebauthnDialogBrowserTest&) = delete;
+  WebauthnDialogBrowserTest& operator=(const WebauthnDialogBrowserTest&) =
+      delete;
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
@@ -57,9 +63,6 @@ class WebauthnDialogBrowserTest : public DialogBrowserTest {
     return WebauthnDialogControllerImpl::FromWebContents(
         browser()->tab_strip_model()->GetActiveWebContents());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(WebauthnDialogBrowserTest);
 };
 
 IN_PROC_BROWSER_TEST_F(WebauthnDialogBrowserTest, InvokeUi_Offer) {

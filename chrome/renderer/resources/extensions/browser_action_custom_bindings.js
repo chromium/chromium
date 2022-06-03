@@ -14,6 +14,9 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     setIcon(details, function(args) {
       bindingUtil.sendRequest(
           'browserAction.setIcon', [args, callback], undefined);
+    }.bind(this), function (errorMessage) {
+      // Propagate the error message.
+      bindingUtil.runCallbackWithLastError(errorMessage, callback);
     }.bind(this));
   });
 

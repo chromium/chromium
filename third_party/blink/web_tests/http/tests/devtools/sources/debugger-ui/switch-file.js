@@ -4,7 +4,8 @@
 
 (async function() {
   TestRunner.addResult(`Tests how switch to next file with the same name and different extension feature works.\n`);
-  await TestRunner.loadModule('sdk_test_runner');
+  await TestRunner.loadTestModule('sdk_test_runner');
+  await TestRunner.loadLegacyModule('sources');
   await TestRunner.showPanel('sources');
 
   var files = [
@@ -31,7 +32,7 @@
 
   TestRunner.addResult('Dumping next file for each file:');
   for (var uiSourceCode of uiSourceCodes) {
-    var nextUISourceCode = Sources.SourcesView.SwitchFileActionDelegate._nextFile(uiSourceCode);
+    var nextUISourceCode = Sources.SourcesView.SwitchFileActionDelegate.nextFile(uiSourceCode);
     var nextURI = nextUISourceCode ? nextUISourceCode.url() : '<none>';
     TestRunner.addResult(`Next file for ${uiSourceCode.url()} is ${nextURI}.`);
   }

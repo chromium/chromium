@@ -12,8 +12,6 @@ import tempfile
 
 REPOSITORY_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(__file__), os.pardir, os.pardir, os.pardir))
-DOCLAVA_DIR = os.path.join(REPOSITORY_ROOT, 'buildtools', 'android', 'doclava')
-SDK_DIR = os.path.join(REPOSITORY_ROOT, 'third_party', 'android_sdk', 'public')
 
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'build/android/gyp'))
 sys.path.insert(0, os.path.join(REPOSITORY_ROOT, 'net/tools/net_docs'))
@@ -24,6 +22,17 @@ from markdown.postprocessors import Postprocessor
 from markdown.extensions import Extension
 # pylint: enable=wrong-import-position
 
+DOCLAVA_DIR = os.path.join(REPOSITORY_ROOT, 'buildtools', 'android', 'doclava')
+SDK_DIR = os.path.join(REPOSITORY_ROOT, 'third_party', 'android_sdk', 'public')
+JAVADOC_PATH = os.path.join(build_utils.JAVA_HOME, 'bin', 'javadoc')
+
+JAVADOC_WARNING = """\
+javadoc: warning - The old Doclet and Taglet APIs in the packages
+com.sun.javadoc, com.sun.tools.doclets and their implementations
+are planned to be removed in a future JDK release. These
+components have been superseded by the new APIs in jdk.javadoc.doclet.
+Users are strongly recommended to migrate to the new APIs.
+"""
 
 class CronetPostprocessor(Postprocessor):
   def run(self, text):
@@ -48,8 +57,9 @@ def GenerateJavadoc(options, src_dir, output_dir):
   build_utils.DeleteDirectory(output_dir)
   build_utils.MakeDirectory(output_dir)
   javadoc_cmd = [
-    'javadoc',
+    os.path.abspath(JAVADOC_PATH),
     '-d', output_dir,
+    '-quiet',
     '-overview', overview_file,
     '-doclet', 'com.google.doclava.Doclava',
     '-docletpath',
@@ -58,7 +68,7 @@ def GenerateJavadoc(options, src_dir, output_dir):
     '-title', 'Cronet API',
     '-federate', 'Android', 'https://developer.android.com/',
     '-federationapi', 'Android', os.path.join(DOCLAVA_DIR, 'current.txt'),
-    '-bootclasspath',
+    '-classpath',
     '%s:%s' % (os.path.abspath(android_sdk_jar),
                os.path.abspath(options.support_annotations_jar)),
   ]
@@ -67,8 +77,11 @@ def GenerateJavadoc(options, src_dir, output_dir):
       if filename.endswith(".java"):
         javadoc_cmd += [os.path.join(subdir, filename)]
   try:
+    def stderr_filter(stderr):
+      return stderr.replace(JAVADOC_WARNING, '')
+
     build_utils.CheckOutput(javadoc_cmd, cwd=working_dir,
-        fail_func=lambda ret, stderr: (ret != 0 or not stderr is ''))
+                            stderr_filter=stderr_filter)
   except build_utils.CalledProcessError:
     build_utils.DeleteDirectory(output_dir)
     raise

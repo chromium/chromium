@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<title>goog.dom.FontSizeMonitor Demo</title>
+<script src="../base.js"></script>
+<script>
+
+goog.require('goog.events');
+goog.require('goog.dom.FontSizeMonitor');
+
+</script>
+</head>
+<body>
+<p>Post Hoc Ergo Propter Hoc</p>
+<script>
+
+var fsm = new goog.dom.FontSizeMonitor();
+goog.events.listen(fsm, goog.dom.FontSizeMonitor.EventType.CHANGE, function() {
+  alert('The font size was changed');
+});
+
+</script>
+</body>
+</html>

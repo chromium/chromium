@@ -15,6 +15,7 @@
 
 namespace media {
 
+class AAudioDestructionHelper;
 class AudioManagerAndroid;
 
 class AAudioOutputStream : public MuteableAudioOutputStream {
@@ -22,6 +23,10 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
   AAudioOutputStream(AudioManagerAndroid* manager,
                      const AudioParameters& params,
                      aaudio_usage_t usage);
+
+  AAudioOutputStream(const AAudioOutputStream&) = delete;
+  AAudioOutputStream& operator=(const AAudioOutputStream&) = delete;
+
   ~AAudioOutputStream() override;
 
   // Implementation of MuteableAudioOutputStream.
@@ -60,6 +65,10 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
 
   AAudioStream* aaudio_stream_ = nullptr;
 
+  // Bound to the audio data callback. Outlives |this| in case the callbacks
+  // continue after |this| is destroyed. See crbug.com/1183255.
+  std::unique_ptr<AAudioDestructionHelper> destruction_helper_;
+
   // Lock protects all members below which may be read concurrently from the
   // audio manager thread and the OS provided audio thread.
   base::Lock lock_;
@@ -67,8 +76,7 @@ class AAudioOutputStream : public MuteableAudioOutputStream {
   AudioSourceCallback* callback_ GUARDED_BY(lock_) = nullptr;
   bool muted_ GUARDED_BY(lock_) = false;
   double volume_ GUARDED_BY(lock_) = 1.0;
-
-  DISALLOW_COPY_AND_ASSIGN(AAudioOutputStream);
+  bool device_changed_ GUARDED_BY(lock_) = false;
 };
 
 }  // namespace media

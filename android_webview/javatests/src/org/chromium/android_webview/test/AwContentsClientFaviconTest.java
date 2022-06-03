@@ -8,7 +8,8 @@ import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.support.test.filters.SmallTest;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Assert;

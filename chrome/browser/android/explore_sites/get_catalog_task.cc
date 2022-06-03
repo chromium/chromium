@@ -5,6 +5,7 @@
 #include "chrome/browser/android/explore_sites/get_catalog_task.h"
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "chrome/browser/android/explore_sites/explore_sites_schema.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -25,9 +26,9 @@ ORDER BY category_id ASC;)";
 
 static const char kSelectSiteSql[] =
     R"(SELECT site_id, sites.url, title,
-    site_blacklist.url IS NOT NULL as blacklisted
+    site_blocklist.url IS NOT NULL as blocked
 FROM sites
-LEFT JOIN site_blacklist ON (sites.url = site_blacklist.url)
+LEFT JOIN site_blocklist ON (sites.url = site_blocklist.url)
 WHERE category_id = ? ;)";
 
 const char kDeleteSiteSql[] = R"(DELETE FROM sites
@@ -146,12 +147,11 @@ GetCatalogSync(bool update_current, sql::Database* db) {
     site_statement.BindInt64(0, category.category_id);
 
     while (site_statement.Step()) {
-      category.sites.emplace_back(
-          site_statement.ColumnInt(0),  // site_id
-          category.category_id,
-          GURL(site_statement.ColumnString(1)),  // url
-          site_statement.ColumnString(2),        // title
-          site_statement.ColumnBool(3));         // is_blacklisted
+      category.sites.emplace_back(site_statement.ColumnInt(0),  // site_id
+                                  category.category_id,
+                                  GURL(site_statement.ColumnString(1)),  // url
+                                  site_statement.ColumnString(2),  // title
+                                  site_statement.ColumnBool(3));   // is_blocked
     }
     if (!site_statement.Succeeded())
       return std::make_pair(GetCatalogStatus::kFailed, nullptr);

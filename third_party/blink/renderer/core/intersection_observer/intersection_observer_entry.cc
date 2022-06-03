@@ -30,7 +30,7 @@ DOMRectReadOnly* IntersectionObserverEntry::intersectionRect() const {
       FloatRect(geometry_.IntersectionRect()));
 }
 
-void IntersectionObserverEntry::Trace(blink::Visitor* visitor) {
+void IntersectionObserverEntry::Trace(Visitor* visitor) const {
   visitor->Trace(target_);
   ScriptWrappable::Trace(visitor);
 }

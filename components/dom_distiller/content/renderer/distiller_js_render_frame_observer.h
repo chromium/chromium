@@ -6,9 +6,7 @@
 #define COMPONENTS_DOM_DISTILLER_CONTENT_RENDERER_DISTILLER_JS_RENDER_FRAME_OBSERVER_H_
 
 #include "base/memory/weak_ptr.h"
-#include "components/dom_distiller/content/common/mojom/distiller_javascript_service.mojom.h"
 #include "components/dom_distiller/content/renderer/distiller_native_javascript.h"
-#include "components/dom_distiller/content/renderer/distiller_page_notifier_service_impl.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -18,31 +16,21 @@
 namespace dom_distiller {
 
 // DistillerJsRenderFrame observer waits for a page to be loaded and then
-// tried to connect to a mojo service hosted in the browser process. The
-// service will tell this render process if the current page is a distiller
-// page.
+// adds the Javascript distiller object if it is a distilled page.
 class DistillerJsRenderFrameObserver : public content::RenderFrameObserver {
  public:
   DistillerJsRenderFrameObserver(content::RenderFrame* render_frame,
-                                 const int32_t distiller_isolated_world_id,
-                                 service_manager::BinderRegistry* registry);
+                                 const int32_t distiller_isolated_world_id);
   ~DistillerJsRenderFrameObserver() override;
 
   // RenderFrameObserver implementation.
   void DidStartNavigation(
       const GURL& url,
-      base::Optional<blink::WebNavigationType> navigation_type) override;
-  void DidFinishLoad() override;
+      absl::optional<blink::WebNavigationType> navigation_type) override;
   void DidCreateScriptContext(v8::Local<v8::Context> context,
                               int32_t world_id) override;
 
-  // Flag the current page as a distiller page.
-  void SetIsDistillerPage();
-
  private:
-  void CreateDistillerPageNotifierService(
-      mojo::PendingReceiver<mojom::DistillerPageNotifierService> receiver);
-
   // RenderFrameObserver implementation.
   void OnDestruct() override;
 
@@ -52,13 +40,8 @@ class DistillerJsRenderFrameObserver : public content::RenderFrameObserver {
   // Track if the current page is distilled. This is needed for testing.
   bool is_distiller_page_;
 
-  // True if a load is in progress and we are currently able to bind requests
-  // for mojom::DistillerPageNotifierService.
-  bool load_active_ = false;
-
   // Handle to "distiller" JavaScript object functionality.
   std::unique_ptr<DistillerNativeJavaScript> native_javascript_handle_;
-  base::WeakPtrFactory<DistillerJsRenderFrameObserver> weak_factory_{this};
 };
 
 }  // namespace dom_distiller

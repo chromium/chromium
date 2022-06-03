@@ -1,0 +1,135 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//third_party/blink/public/public_features.gni")
+
+mojom_component("tokens") {
+  output_prefix = "tokens_mojom"
+  macro_prefix = "TOKENS_MOJOM"
+
+  sources = [ "tokens.mojom" ]
+
+  shared_cpp_typemaps = [
+    {
+      types = [
+        # FRAME TOKENS
+        {
+          mojom = "blink.mojom.LocalFrameToken"
+          cpp = "::blink::LocalFrameToken"
+        },
+        {
+          mojom = "blink.mojom.RemoteFrameToken"
+          cpp = "::blink::RemoteFrameToken"
+        },
+        {
+          mojom = "blink.mojom.FrameToken"
+          cpp = "::blink::FrameToken"
+        },
+
+        # WORKER TOKENS
+        {
+          mojom = "blink.mojom.DedicatedWorkerToken"
+          cpp = "::blink::DedicatedWorkerToken"
+        },
+        {
+          mojom = "blink.mojom.ServiceWorkerToken"
+          cpp = "::blink::ServiceWorkerToken"
+        },
+        {
+          mojom = "blink.mojom.SharedWorkerToken"
+          cpp = "::blink::SharedWorkerToken"
+        },
+        {
+          mojom = "blink.mojom.WorkerToken"
+          cpp = "::blink::WorkerToken"
+        },
+
+        # WORKLET TOKENS
+        {
+          mojom = "blink.mojom.AnimationWorkletToken"
+          cpp = "::blink::AnimationWorkletToken"
+        },
+        {
+          mojom = "blink.mojom.AudioWorkletToken"
+          cpp = "::blink::AudioWorkletToken"
+        },
+        {
+          mojom = "blink.mojom.PaintWorkletToken"
+          cpp = "::blink::PaintWorkletToken"
+        },
+        {
+          mojom = "blink.mojom.WorkletToken"
+          cpp = "::blink::WorkletToken"
+        },
+
+        # OTHER TOKENS
+        #
+        # Keep this section last.
+        #
+        # If you have multiple tokens that make a thematic group, please lift
+        # them to their own section, in alphabetical order. If adding a new
+        # token here, please keep the following list in alphabetic order.
+        {
+          mojom = "blink.mojom.ExecutionContextToken"
+          cpp = "::blink::ExecutionContextToken"
+        },
+        {
+          mojom = "blink.mojom.PortalToken"
+          cpp = "::blink::PortalToken"
+        },
+        {
+          mojom = "blink.mojom.V8ContextToken"
+          cpp = "::blink::V8ContextToken"
+        },
+        {
+          mojom = "blink.mojom.ClipboardSequenceNumberToken"
+          cpp = "::blink::ClipboardSequenceNumberToken"
+        },
+      ]
+      traits_headers = [
+        "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",
+        "//third_party/blink/public/common/tokens/tokens_mojom_traits.h",
+      ]
+      traits_public_deps = [ ":tokens_traits" ]
+    },
+  ]
+
+  cpp_typemaps = shared_cpp_typemaps
+  blink_cpp_typemaps = shared_cpp_typemaps
+
+  public_deps = [ "//mojo/public/mojom/base" ]
+
+  export_class_attribute = "BLINK_COMMON_EXPORT"
+  export_define = "BLINK_COMMON_IMPLEMENTATION=1"
+  export_header = "third_party/blink/public/common/common_export.h"
+
+  export_class_attribute_blink = "PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
+
+  generate_java = true
+}
+
+source_set("tokens_traits_headers") {
+  configs += [ "//third_party/blink/common:blink_common_implementation" ]
+
+  sources = [
+    "//third_party/blink/public/common/tokens/token_mojom_traits_helper.h",
+    "//third_party/blink/public/common/tokens/tokens_mojom_traits.h",
+  ]
+
+  public_deps = [
+    ":tokens_shared",
+    "//third_party/blink/public/common/tokens:tokens_headers",
+  ]
+}
+
+component("tokens_traits") {
+  configs += [ "//third_party/blink/common:blink_common_implementation" ]
+
+  sources = [ "//third_party/blink/common/tokens/tokens_mojom_traits.cc" ]
+
+  public_deps = [ ":tokens_traits_headers" ]
+}

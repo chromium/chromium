@@ -28,7 +28,7 @@
 [
     Exposed=Window, SecureContext
 ] interface DeviceMotionEvent : Event {
-    constructor(DOMString type, optional DeviceMotionEventInit eventInitDict);
+    constructor(DOMString type, optional DeviceMotionEventInit eventInitDict = {});
     readonly attribute DeviceMotionEventAcceleration? acceleration;
     readonly attribute DeviceMotionEventAcceleration? accelerationIncludingGravity;
     readonly attribute DeviceMotionEventRotationRate? rotationRate;

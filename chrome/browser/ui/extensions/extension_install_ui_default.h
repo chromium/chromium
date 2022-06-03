@@ -6,18 +6,23 @@
 #define CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "extensions/browser/install/extension_install_ui.h"
 
 namespace content {
 class BrowserContext;
 }
 
+class Browser;
 class Profile;
 
 class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
  public:
   explicit ExtensionInstallUIDefault(content::BrowserContext* context);
+
+  ExtensionInstallUIDefault(const ExtensionInstallUIDefault&) = delete;
+  ExtensionInstallUIDefault& operator=(const ExtensionInstallUIDefault&) =
+      delete;
+
   ~ExtensionInstallUIDefault() override;
 
   // ExtensionInstallUI:
@@ -29,6 +34,13 @@ class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
   void SetSkipPostInstallUI(bool skip_ui) override;
   gfx::NativeWindow GetDefaultInstallDialogParent() override;
 
+  // Show the platform-specific bubble UI. This method has different
+  // implementations on different platforms, controlled by build flags.
+  static void ShowPlatformBubble(
+      scoped_refptr<const extensions::Extension> extension,
+      Browser* browser,
+      const SkBitmap& icon);
+
  private:
   Profile* profile_;
 
@@ -38,8 +50,6 @@ class ExtensionInstallUIDefault : public extensions::ExtensionInstallUI {
   // Whether to show an installed bubble on app install, or use the default
   // action of opening a new tab page.
   bool use_app_installed_bubble_;
-
-  DISALLOW_COPY_AND_ASSIGN(ExtensionInstallUIDefault);
 };
 
 #endif  // CHROME_BROWSER_UI_EXTENSIONS_EXTENSION_INSTALL_UI_DEFAULT_H_

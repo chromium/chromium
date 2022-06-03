@@ -3,11 +3,10 @@
 // found in the LICENSE file.
 
 #include <string>
-#include <vector>
 
-#include "base/logging.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
@@ -16,13 +15,20 @@
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_registry.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+// Cannot use an anonymous namespace because WebsiteSettingsRegistry's
+// constructor and destructor are private.
 namespace content_settings {
+
+using ::testing::Contains;
+using ::testing::ElementsAre;
 
 class ContentSettingsRegistryTest : public testing::Test {
  protected:
   ContentSettingsRegistryTest() : registry_(&website_settings_registry_) {}
+
   ContentSettingsRegistry* registry() { return &registry_; }
   WebsiteSettingsRegistry* website_settings_registry() {
     return &website_settings_registry_;
@@ -44,8 +50,8 @@ TEST_F(ContentSettingsRegistryTest, GetPlatformDependent) {
   EXPECT_FALSE(registry()->Get(ContentSettingsType::IMAGES));
 #endif
 
-// Protected media identifier only get registered on android and chromeos.
-#if defined(ANDROID) || defined(OS_CHROMEOS)
+// Protected media identifier only registered on Android, Chrome OS and Windows.
+#if defined(ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
   EXPECT_TRUE(registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
 #else
   EXPECT_FALSE(
@@ -62,11 +68,7 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
       registry()->Get(ContentSettingsType::COOKIES);
   ASSERT_TRUE(info);
 
-  // Check that the whitelisted types are correct.
-  std::vector<std::string> expected_whitelist;
-  expected_whitelist.push_back("chrome");
-  expected_whitelist.push_back("devtools");
-  EXPECT_EQ(expected_whitelist, info->whitelisted_schemes());
+  EXPECT_THAT(info->allowlisted_schemes(), ElementsAre("chrome", "devtools"));
 
   // Check the other properties are populated correctly.
   EXPECT_TRUE(info->IsSettingValid(CONTENT_SETTING_SESSION_ONLY));
@@ -82,10 +84,9 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
             website_settings_info->pref_name());
   EXPECT_EQ("profile.default_content_setting_values.cookies",
             website_settings_info->default_value_pref_name());
-  int setting;
-  ASSERT_TRUE(
-      website_settings_info->initial_default_value()->GetAsInteger(&setting));
-  EXPECT_EQ(CONTENT_SETTING_ALLOW, setting);
+  ASSERT_TRUE(website_settings_info->initial_default_value()->is_int());
+  EXPECT_EQ(CONTENT_SETTING_ALLOW,
+            website_settings_info->initial_default_value()->GetInt());
 #if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_EQ(PrefRegistry::NO_REGISTRATION_FLAGS,
             website_settings_info->GetPrefRegistrationFlags());
@@ -100,26 +101,16 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
 }
 
 TEST_F(ContentSettingsRegistryTest, Iteration) {
-  // Check that plugins and cookies settings appear once during iteration.
-  bool plugins_found = false;
+  // Check that cookies settings appear once during iteration.
   bool cookies_found = false;
   for (const ContentSettingsInfo* info : *registry()) {
     ContentSettingsType type = info->website_settings_info()->type();
     EXPECT_EQ(registry()->Get(type), info);
-    if (type == ContentSettingsType::PLUGINS) {
-      EXPECT_FALSE(plugins_found);
-      plugins_found = true;
-    } else if (type == ContentSettingsType::COOKIES) {
+    if (type == ContentSettingsType::COOKIES) {
       EXPECT_FALSE(cookies_found);
       cookies_found = true;
     }
   }
-
-#if defined(OS_ANDROID) || defined(OS_IOS)
-  EXPECT_FALSE(plugins_found);
-#else
-  EXPECT_TRUE(plugins_found);
-#endif
 
   EXPECT_TRUE(cookies_found);
 }
@@ -130,19 +121,22 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
   // These settings are safe to inherit in incognito mode because they only
   // disable features like popup blocking, download blocking or ad blocking.
   // They do not allow access to user data.
-  const ContentSettingsType whitelist[] = {
-      ContentSettingsType::PLUGINS,              //
-      ContentSettingsType::POPUPS,               //
-      ContentSettingsType::AUTOMATIC_DOWNLOADS,  //
-      ContentSettingsType::ADS,                  //
-      ContentSettingsType::DURABLE_STORAGE,      //
+  const ContentSettingsType safe_types[] = {
+      ContentSettingsType::POPUPS,
+      ContentSettingsType::AUTOMATIC_DOWNLOADS,
+      ContentSettingsType::ADS,
+      ContentSettingsType::DURABLE_STORAGE,
       ContentSettingsType::LEGACY_COOKIE_ACCESS,
+      ContentSettingsType::STORAGE_ACCESS,
+      ContentSettingsType::INSECURE_PRIVATE_NETWORK,
+      ContentSettingsType::REQUEST_DESKTOP_SITE,
   };
 
   for (const ContentSettingsInfo* info : *registry()) {
     SCOPED_TRACE("Content setting: " + info->website_settings_info()->name());
     // TODO(crbug.com/781756): Check IsSettingValid() because "protocol-handler"
     // and "mixed-script" don't have a proper initial default value.
+
     if (info->IsSettingValid(CONTENT_SETTING_ALLOW) &&
         info->GetInitialDefaultSetting() == CONTENT_SETTING_ALLOW) {
       // ALLOW-by-default settings are not affected by incognito_behavior, so
@@ -151,10 +145,11 @@ TEST_F(ContentSettingsRegistryTest, Inheritance) {
                 ContentSettingsInfo::INHERIT_IN_INCOGNITO);
       continue;
     }
+
     if (info->incognito_behavior() ==
-            ContentSettingsInfo::INHERIT_IN_INCOGNITO &&
-        !base::Contains(whitelist, info->website_settings_info()->type()))
-      FAIL() << "Content setting not whitelisted.";
+        ContentSettingsInfo::INHERIT_IN_INCOGNITO) {
+      EXPECT_THAT(safe_types, Contains(info->website_settings_info()->type()));
+    }
   }
 }
 
@@ -171,8 +166,13 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   info = registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
+  EXPECT_TRUE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
+#endif
+
+#if !defined(OS_IOS) && !defined(OS_ANDROID)
+  info = registry()->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 }
@@ -195,6 +195,11 @@ TEST_F(ContentSettingsRegistryTest, GetInitialDefaultSetting) {
   const ContentSettingsInfo* popups =
       registry()->Get(ContentSettingsType::POPUPS);
   EXPECT_EQ(CONTENT_SETTING_BLOCK, popups->GetInitialDefaultSetting());
+
+  const ContentSettingsInfo* insecure_private_network =
+      registry()->Get(ContentSettingsType::INSECURE_PRIVATE_NETWORK);
+  EXPECT_EQ(CONTENT_SETTING_BLOCK,
+            insecure_private_network->GetInitialDefaultSetting());
 }
 
 }  // namespace content_settings

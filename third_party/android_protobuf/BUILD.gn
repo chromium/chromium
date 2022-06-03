@@ -28,9 +28,7 @@ if (current_toolchain == host_toolchain) {
       ":android_protoc_warnings",
     ]
 
-    deps = [
-      "//third_party/zlib",
-    ]
+    deps = [ "//third_party/zlib" ]
 
     sources = [
       "src/src/google/protobuf/compiler/code_generator.cc",
@@ -147,7 +145,7 @@ if (is_android) {
 
   android_library("protobuf_nano_javalib") {
     chromium_code = false
-    java_files = [
+    sources = [
       "src/java/src/device/main/java/com/google/protobuf/nano/android/ParcelableExtendableMessageNano.java",
       "src/java/src/device/main/java/com/google/protobuf/nano/android/ParcelableMessageNano.java",
       "src/java/src/device/main/java/com/google/protobuf/nano/android/ParcelableMessageNanoCreator.java",

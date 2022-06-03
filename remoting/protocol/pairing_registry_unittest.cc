@@ -30,6 +30,11 @@ using remoting::protocol::PairingRegistry;
 class MockPairingRegistryCallbacks {
  public:
   MockPairingRegistryCallbacks() = default;
+
+  MockPairingRegistryCallbacks(const MockPairingRegistryCallbacks&) = delete;
+  MockPairingRegistryCallbacks& operator=(const MockPairingRegistryCallbacks&) =
+      delete;
+
   virtual ~MockPairingRegistryCallbacks() = default;
 
   MOCK_METHOD1(DoneCallback, void(bool));
@@ -39,9 +44,6 @@ class MockPairingRegistryCallbacks {
   void GetAllPairingsCallback(std::unique_ptr<base::ListValue> pairings) {
     GetAllPairingsCallbackPtr(pairings.get());
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(MockPairingRegistryCallbacks);
 };
 
 // Verify that a pairing Dictionary has correct entries, but doesn't include
@@ -97,17 +99,17 @@ TEST_F(PairingRegistryTest, CreateAndGetPairings) {
 
   EXPECT_NE(pairing_1.shared_secret(), pairing_2.shared_secret());
 
-  registry->GetPairing(pairing_1.client_id(),
-                       base::Bind(&PairingRegistryTest::ExpectSecret,
-                                  base::Unretained(this),
-                                  pairing_1.shared_secret()));
+  registry->GetPairing(
+      pairing_1.client_id(),
+      base::BindOnce(&PairingRegistryTest::ExpectSecret, base::Unretained(this),
+                     pairing_1.shared_secret()));
   EXPECT_EQ(1, callback_count_);
 
   // Check that the second client is paired with a different shared secret.
-  registry->GetPairing(pairing_2.client_id(),
-                       base::Bind(&PairingRegistryTest::ExpectSecret,
-                                  base::Unretained(this),
-                                  pairing_2.shared_secret()));
+  registry->GetPairing(
+      pairing_2.client_id(),
+      base::BindOnce(&PairingRegistryTest::ExpectSecret, base::Unretained(this),
+                     pairing_2.shared_secret()));
   EXPECT_EQ(2, callback_count_);
 }
 
@@ -117,15 +119,18 @@ TEST_F(PairingRegistryTest, GetAllPairings) {
   PairingRegistry::Pairing pairing_1 = registry->CreatePairing("client1");
   PairingRegistry::Pairing pairing_2 = registry->CreatePairing("client2");
 
-  registry->GetAllPairings(
-      base::Bind(&PairingRegistryTest::set_pairings,
-                 base::Unretained(this)));
+  registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
+                                          base::Unretained(this)));
 
-  ASSERT_EQ(2u, pairings_->GetSize());
-  const base::DictionaryValue* actual_pairing_1;
-  const base::DictionaryValue* actual_pairing_2;
-  ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_1));
-  ASSERT_TRUE(pairings_->GetDictionary(1, &actual_pairing_2));
+  ASSERT_EQ(2u, pairings_->GetList().size());
+  const base::Value& actual_pairing_1_value = pairings_->GetList()[0];
+  ASSERT_TRUE(actual_pairing_1_value.is_dict());
+  const base::Value& actual_pairing_2_value = pairings_->GetList()[1];
+  ASSERT_TRUE(actual_pairing_2_value.is_dict());
+  const base::DictionaryValue* actual_pairing_1 =
+      &base::Value::AsDictionaryValue(actual_pairing_1_value);
+  const base::DictionaryValue* actual_pairing_2 =
+      &base::Value::AsDictionaryValue(actual_pairing_2_value);
 
   // Ordering is not guaranteed, so swap if necessary.
   std::string actual_client_id;
@@ -147,20 +152,21 @@ TEST_F(PairingRegistryTest, DeletePairing) {
 
   registry->DeletePairing(
       pairing_1.client_id(),
-      base::Bind(&PairingRegistryTest::ExpectSaveSuccess,
-                 base::Unretained(this)));
+      base::BindOnce(&PairingRegistryTest::ExpectSaveSuccess,
+                     base::Unretained(this)));
 
   // Re-read the list, and verify it only has the pairing_2 client.
-  registry->GetAllPairings(
-      base::Bind(&PairingRegistryTest::set_pairings,
-                 base::Unretained(this)));
+  registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
+                                          base::Unretained(this)));
 
-  ASSERT_EQ(1u, pairings_->GetSize());
-  const base::DictionaryValue* actual_pairing_2;
-  ASSERT_TRUE(pairings_->GetDictionary(0, &actual_pairing_2));
+  ASSERT_EQ(1u, pairings_->GetList().size());
+  const base::Value& actual_pairing_2_value = pairings_->GetList()[0];
+  ASSERT_TRUE(actual_pairing_2_value.is_dict());
+  const base::DictionaryValue& actual_pairing_2 =
+      base::Value::AsDictionaryValue(actual_pairing_2_value);
   std::string actual_client_id;
-  ASSERT_TRUE(actual_pairing_2->GetString(PairingRegistry::kClientIdKey,
-                                          &actual_client_id));
+  ASSERT_TRUE(actual_pairing_2.GetString(PairingRegistry::kClientIdKey,
+                                         &actual_client_id));
   EXPECT_EQ(pairing_2.client_id(), actual_client_id);
 }
 
@@ -170,16 +176,14 @@ TEST_F(PairingRegistryTest, ClearAllPairings) {
   PairingRegistry::Pairing pairing_1 = registry->CreatePairing("client1");
   PairingRegistry::Pairing pairing_2 = registry->CreatePairing("client2");
 
-  registry->ClearAllPairings(
-      base::Bind(&PairingRegistryTest::ExpectSaveSuccess,
-                 base::Unretained(this)));
+  registry->ClearAllPairings(base::BindOnce(
+      &PairingRegistryTest::ExpectSaveSuccess, base::Unretained(this)));
 
   // Re-read the list, and verify it is empty.
-  registry->GetAllPairings(
-      base::Bind(&PairingRegistryTest::set_pairings,
-                 base::Unretained(this)));
+  registry->GetAllPairings(base::BindOnce(&PairingRegistryTest::set_pairings,
+                                          base::Unretained(this)));
 
-  EXPECT_TRUE(pairings_->empty());
+  EXPECT_TRUE(pairings_->GetList().empty());
 }
 
 ACTION_P(QuitMessageLoop, callback) {
@@ -191,7 +195,7 @@ MATCHER_P(EqualsClientName, client_name, "") {
 }
 
 MATCHER(NoPairings, "") {
-  return arg->empty();
+  return arg->GetList().empty();
 }
 
 TEST_F(PairingRegistryTest, SerializedRequests) {
@@ -222,35 +226,35 @@ TEST_F(PairingRegistryTest, SerializedRequests) {
   PairingRegistry::Pairing pairing_2 = registry->CreatePairing("client2");
   registry->GetPairing(
       pairing_1.client_id(),
-      base::Bind(&MockPairingRegistryCallbacks::GetPairingCallback,
-                 base::Unretained(&callbacks)));
+      base::BindOnce(&MockPairingRegistryCallbacks::GetPairingCallback,
+                     base::Unretained(&callbacks)));
   registry->GetPairing(
       pairing_2.client_id(),
-      base::Bind(&MockPairingRegistryCallbacks::GetPairingCallback,
-                 base::Unretained(&callbacks)));
+      base::BindOnce(&MockPairingRegistryCallbacks::GetPairingCallback,
+                     base::Unretained(&callbacks)));
   registry->DeletePairing(
       pairing_2.client_id(),
-      base::Bind(&MockPairingRegistryCallbacks::DoneCallback,
-                 base::Unretained(&callbacks)));
+      base::BindOnce(&MockPairingRegistryCallbacks::DoneCallback,
+                     base::Unretained(&callbacks)));
   registry->GetPairing(
       pairing_1.client_id(),
-      base::Bind(&MockPairingRegistryCallbacks::GetPairingCallback,
-                 base::Unretained(&callbacks)));
+      base::BindOnce(&MockPairingRegistryCallbacks::GetPairingCallback,
+                     base::Unretained(&callbacks)));
   registry->GetPairing(
       pairing_2.client_id(),
-      base::Bind(&MockPairingRegistryCallbacks::GetPairingCallback,
-                 base::Unretained(&callbacks)));
+      base::BindOnce(&MockPairingRegistryCallbacks::GetPairingCallback,
+                     base::Unretained(&callbacks)));
   registry->ClearAllPairings(
-      base::Bind(&MockPairingRegistryCallbacks::DoneCallback,
-                 base::Unretained(&callbacks)));
+      base::BindOnce(&MockPairingRegistryCallbacks::DoneCallback,
+                     base::Unretained(&callbacks)));
   registry->GetAllPairings(
-      base::Bind(&MockPairingRegistryCallbacks::GetAllPairingsCallback,
-                 base::Unretained(&callbacks)));
+      base::BindOnce(&MockPairingRegistryCallbacks::GetAllPairingsCallback,
+                     base::Unretained(&callbacks)));
   PairingRegistry::Pairing pairing_3 = registry->CreatePairing("client3");
   registry->GetPairing(
       pairing_3.client_id(),
-      base::Bind(&MockPairingRegistryCallbacks::GetPairingCallback,
-                 base::Unretained(&callbacks)));
+      base::BindOnce(&MockPairingRegistryCallbacks::GetPairingCallback,
+                     base::Unretained(&callbacks)));
 
   run_loop_.Run();
 }

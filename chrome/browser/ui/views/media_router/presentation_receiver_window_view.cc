@@ -5,20 +5,20 @@
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_view.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check.h"
+#include "base/notreached.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/mixed_content_settings_tab_helper.h"
-#include "chrome/browser/content_settings/tab_specific_content_settings.h"
-#include "chrome/browser/infobars/infobar_service.h"
+#include "chrome/browser/content_settings/page_specific_content_settings_delegate.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
-#include "chrome/browser/subresource_filter/chrome_subresource_filter_client.h"
+#include "chrome/browser/subresource_filter/chrome_content_subresource_filter_web_contents_helper_factory.h"
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/autofill/chrome_autofill_client.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
-#include "chrome/browser/ui/blocked_content/popup_blocker_tab_helper.h"
 #include "chrome/browser/ui/media_router/presentation_receiver_window_delegate.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/search/search_tab_helper.h"
@@ -26,10 +26,16 @@
 #include "chrome/browser/ui/views/accelerator_table.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/media_router/presentation_receiver_window_frame.h"
+#include "components/autofill/content/browser/content_autofill_driver_factory.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/blocked_content/popup_blocker_tab_helper.h"
+#include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/infobars/content/content_infobar_manager.h"
 #include "components/omnibox/browser/location_bar_model_impl.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_constants.h"
 #include "ui/base/accelerators/accelerator_manager.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/controls/webview/webview.h"
@@ -37,14 +43,14 @@
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/window_properties.h"
 #include "base/callback.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
@@ -53,7 +59,7 @@
 
 using content::WebContents;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 // Observes the NativeWindow hosting the receiver view to look for fullscreen
 // state changes.  This helps monitor fullscreen changes that don't go through
 // the normal key accelerator to display and hide the location bar.
@@ -62,8 +68,11 @@ class FullscreenWindowObserver : public aura::WindowObserver {
   FullscreenWindowObserver(aura::Window* observed_window,
                            base::RepeatingClosure on_fullscreen_change)
       : on_fullscreen_change_(on_fullscreen_change) {
-    observed_window_.Add(observed_window);
+    window_observation_.Observe(observed_window);
   }
+
+  FullscreenWindowObserver(const FullscreenWindowObserver&) = delete;
+  FullscreenWindowObserver& operator=(const FullscreenWindowObserver&) = delete;
 
   ~FullscreenWindowObserver() override = default;
 
@@ -84,14 +93,14 @@ class FullscreenWindowObserver : public aura::WindowObserver {
   }
 
   void OnWindowDestroying(aura::Window* window) override {
-    observed_window_.Remove(window);
+    DCHECK(window_observation_.IsObserving());
+    window_observation_.Reset();
   }
 
   base::RepeatingClosure on_fullscreen_change_;
 
-  ScopedObserver<aura::Window, aura::WindowObserver> observed_window_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(FullscreenWindowObserver);
+  base::ScopedObservation<aura::Window, aura::WindowObserver>
+      window_observation_{this};
 };
 
 #endif
@@ -106,6 +115,20 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
                                                  content::kMaxURLDisplayChars)),
       command_updater_(this),
       exclusive_access_manager_(this) {
+  SetHasWindowSizeControls(true);
+
+  // TODO(pbos): See if this can retain SetOwnedByWidget(true) and get deleted
+  // through WidgetDelegate::DeleteDelegate(). This requires confirming that
+  // delegate_->WindowClosed() is safe to call before this deletes.
+  SetOwnedByWidget(false);
+  RegisterDeleteDelegateCallback(base::BindOnce(
+      [](PresentationReceiverWindowView* dialog) {
+        auto* const delegate = dialog->delegate_;
+        delete dialog;
+        delegate->WindowClosed();
+      },
+      this));
+
   DCHECK(frame);
   DCHECK(delegate);
 }
@@ -113,7 +136,7 @@ PresentationReceiverWindowView::PresentationReceiverWindowView(
 PresentationReceiverWindowView::~PresentationReceiverWindowView() = default;
 
 void PresentationReceiverWindowView::Init() {
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // On macOS, the mapping between accelerators and commands is dynamic and user
   // configurable. We fetch and use the default mapping.
   bool result = GetDefaultMacAcceleratorForCommandId(IDC_FULLSCREEN,
@@ -139,9 +162,18 @@ void PresentationReceiverWindowView::Init() {
   auto* const web_contents = GetWebContents();
   DCHECK(web_contents);
 
+  // ContentInfoBarManager comes before common tab helpers since
+  // ContentSubresourceFilterThrottleManager has it as a dependency.
+  infobars::ContentInfoBarManager::CreateForWebContents(web_contents);
+
   SecurityStateTabHelper::CreateForWebContents(web_contents);
   ChromeTranslateClient::CreateForWebContents(web_contents);
   autofill::ChromeAutofillClient::CreateForWebContents(web_contents);
+  autofill::ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
+      web_contents,
+      autofill::ChromeAutofillClient::FromWebContents(web_contents),
+      g_browser_process->GetApplicationLocale(),
+      autofill::BrowserAutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER);
   ChromePasswordManagerClient::CreateForWebContentsWithAutofillClient(
       web_contents,
       autofill::ChromeAutofillClient::FromWebContents(web_contents));
@@ -149,11 +181,13 @@ void PresentationReceiverWindowView::Init() {
   SearchTabHelper::CreateForWebContents(web_contents);
   TabDialogs::CreateForWebContents(web_contents);
   FramebustBlockTabHelper::CreateForWebContents(web_contents);
-  ChromeSubresourceFilterClient::CreateForWebContents(web_contents);
-  InfoBarService::CreateForWebContents(web_contents);
+  CreateSubresourceFilterWebContentsHelper(web_contents);
   MixedContentSettingsTabHelper::CreateForWebContents(web_contents);
-  PopupBlockerTabHelper::CreateForWebContents(web_contents);
-  TabSpecificContentSettings::CreateForWebContents(web_contents);
+  blocked_content::PopupBlockerTabHelper::CreateForWebContents(web_contents);
+  content_settings::PageSpecificContentSettings::CreateForWebContents(
+      web_contents,
+      std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
+          web_contents));
 
   auto* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -175,7 +209,7 @@ void PresentationReceiverWindowView::Init() {
 
   location_bar_view_->Init();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   window_observer_ = std::make_unique<FullscreenWindowObserver>(
       GetWidget()->GetNativeWindow(),
       base::BindRepeating(&PresentationReceiverWindowView::OnFullscreenChanged,
@@ -243,25 +277,7 @@ WebContents* PresentationReceiverWindowView::GetActiveWebContents() const {
   return delegate_->web_contents();
 }
 
-bool PresentationReceiverWindowView::CanResize() const {
-  return true;
-}
-
-bool PresentationReceiverWindowView::CanMaximize() const {
-  return true;
-}
-
-bool PresentationReceiverWindowView::CanMinimize() const {
-  return true;
-}
-
-void PresentationReceiverWindowView::DeleteDelegate() {
-  auto* const delegate = delegate_;
-  delete this;
-  delegate->WindowClosed();
-}
-
-base::string16 PresentationReceiverWindowView::GetWindowTitle() const {
+std::u16string PresentationReceiverWindowView::GetWindowTitle() const {
   return delegate_->web_contents()->GetTitle();
 }
 
@@ -283,9 +299,10 @@ bool PresentationReceiverWindowView::IsFullscreen() const {
 
 void PresentationReceiverWindowView::EnterFullscreen(
     const GURL& url,
-    ExclusiveAccessBubbleType bubble_type) {
+    ExclusiveAccessBubbleType bubble_type,
+    const int64_t display_id) {
   frame_->SetFullscreen(true);
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   OnFullscreenChanged();
 #endif
   UpdateExclusiveAccessExitBubbleContent(url, bubble_type,
@@ -295,7 +312,7 @@ void PresentationReceiverWindowView::EnterFullscreen(
 
 void PresentationReceiverWindowView::ExitFullscreen() {
   frame_->SetFullscreen(false);
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   OnFullscreenChanged();
 #endif
 }
@@ -305,7 +322,7 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
     ExclusiveAccessBubbleType bubble_type,
     ExclusiveAccessBubbleHideCallback bubble_first_hide_callback,
     bool force_update) {
-#if defined(CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // On Chrome OS, we will not show the toast for the normal browser fullscreen
   // mode.  The 'F11' text is confusing since how to access F11 on a Chromebook
   // is not common knowledge and there is also a dedicated fullscreen toggle
@@ -334,15 +351,15 @@ void PresentationReceiverWindowView::UpdateExclusiveAccessExitBubbleContent(
       this, url, bubble_type, std::move(bubble_first_hide_callback));
 }
 
+bool PresentationReceiverWindowView::IsExclusiveAccessBubbleDisplayed() const {
+  return exclusive_access_bubble_ && exclusive_access_bubble_->IsShowing();
+}
+
 void PresentationReceiverWindowView::OnExclusiveAccessUserInput() {}
 
 content::WebContents* PresentationReceiverWindowView::GetActiveWebContents() {
   return delegate_->web_contents();
 }
-
-void PresentationReceiverWindowView::UnhideDownloadShelf() {}
-
-void PresentationReceiverWindowView::HideDownloadShelf() {}
 
 bool PresentationReceiverWindowView::CanUserExitFullscreen() const {
   return true;
@@ -409,3 +426,6 @@ void PresentationReceiverWindowView::OnFullscreenChanged() {
   if (fullscreen == (location_bar_view_->height() > 0))
     Layout();
 }
+
+BEGIN_METADATA(PresentationReceiverWindowView, views::WidgetDelegateView)
+END_METADATA

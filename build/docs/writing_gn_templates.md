@@ -7,21 +7,39 @@ GN and Ninja are documented here:
 
 ## Things to Consider When Writing Templates
 ### Inputs and Depfiles
-* List all files read (or executed) by an action as `inputs`.
-  * It is [not enough](https://chromium-review.googlesource.com/c/chromium/src/+/1090231)
-    to have inputs listed by dependent targets. They must be listed directly by targets that use them.
-  * Non-system Python imports are inputs! For scripts that import such modules,
-    use [`action_with_pydeps`](https://cs.chromium.org/chromium/src/build/config/python.gni?rcl=320ee4295eb7fabaa112f08d1aacc88efd1444e5&l=75)
-    to ensure all dependent Python files are captured as inputs.
-* For action inputs that are not computable during "gn gen", actions can write
-  depfiles (.d files) to add additional input files as dependencies for
-  subsequent builds. They are relevant only for incremental builds.
-  * Depfiles should not list files that GN already lists as `inputs`.
-    * Besides being redundant, listing them also makes it harder to remove
-      inputs, since removing them from GN does not immediately remove them from
-      depfiles.
-    * Stale paths in depfiles can cause ninja to complain of circular
-      dependencies [in some cases](https://bugs.chromium.org/p/chromium/issues/detail?id=639042).
+List all files read (or executed) by an action as `inputs`.
+ * It is not enough to have inputs listed by dependent targets. They must be
+   listed directly by targets that use them, or added by a depfile.
+ * Non-system Python imports are inputs! For scripts that import such modules,
+   use [`action_with_pydeps`] to ensure all dependent Python files are captured
+   as inputs.
+
+[`action_with_pydeps`]: https://cs.chromium.org/chromium/src/build/config/python.gni?rcl=320ee4295eb7fabaa112f08d1aacc88efd1444e5&l=75
+
+To understand *why* actions must list all inputs directly, you need to
+understand ninja's "restat" directive, which is used for all GN `action()`s.
+
+From https://ninja-build.org/manual.html:
+
+> if present, causes Ninja to re-stat the command’s outputs after execution of
+> the command. Each output whose modification time the command did not change
+> will be treated as though it had never needed to be built. This may cause the
+> output’s reverse dependencies to be removed from the list of pending build
+> actions.
+
+So, if your action depends on target "X", and "X" does not change its outputs
+when rebuilt, then ninja will not bother to rebuild your target.
+
+For action inputs that are not computable during "gn gen", actions can write
+depfiles (.d files) to add additional input files as dependencies for
+subsequent builds. They are relevant only for incremental builds since they
+won't exist for the initial build.
+ * Depfiles should not list files that GN already lists as `inputs`.
+   * Besides being redundant, listing them also makes it harder to remove
+     inputs, since removing them from GN does not immediately remove them from
+     depfiles.
+   * Stale paths in depfiles can cause ninja to complain of circular
+     dependencies [in some cases](https://bugs.chromium.org/p/chromium/issues/detail?id=639042).
 
 ### Ensuring "gn analyze" Knows About your Inputs
 "gn analyze" is used by bots to run only affected tests and build only affected
@@ -67,7 +85,14 @@ if they are:
 Example:
 * An action runs a binary that creates an output as well as a log file. Do not
   list the log file as an output.
-  
+
+Rationale:
+* Inputs and outputs are a node's public API on the build graph. Not listing
+  "implementation detail"-style outputs prevents other targets from depending on
+  them as inputs.
+* Not listing them also helps to minimize the size of the build graph (although
+  this would be noticeable only for frequently used templates).
+
 #### Where to Place Outputs
 **Option 1:** To make outputs visible in codesearch (e.g. generated sources):
 * use `$target_gen_dir/$target_name.$EXTENSION`.
@@ -175,6 +200,36 @@ template("my_template") {
 }
 ```
 
+This scheme ensures that subtargets defined in templates do not conflict with
+top-level targets.
+
+### Visibility for Intermediate Targets
+
+You can restrict what targets can depend on one another using [visibility].
+When writing templates, with multiple intermediate targets, `visibility` should
+only be applied to the final target (the one named `target_name`). Applying only
+to the final target ensures that the invoker-provided visibility does not
+prevent intermediate targets from depending on each other.
+
+[visibility]: https://gn.googlesource.com/gn/+/master/docs/reference.md#var_visibility
+
+Example:
+```python
+template("my_template") {
+  # Do not forward visibility here.
+  action("${target_name}__helper") {
+    # Do not forward visibility here.
+    ...
+  }
+  action(target_name) {
+    # Forward visibility here.
+    forward_variables_from(invoker, [ "visibility" ])
+    deps = [ ":${target_name}__helper" ]
+    ...
+  }
+}
+```
+
 ### Variables
 Prefix variables within templates and targets with an underscore. For example:
 
@@ -232,21 +287,51 @@ template("hello") {
 ```
 
 ### Using forward_variables_from()
-Using `forward_variables_from()` is encouraged, but `testonly` and `visibility`
-should always be listed explicitly in case they are assigned in an enclosing
-scope (applies to the `"*"` variant of `forward_variables_from()`).
-See [this bug](https://bugs.chromium.org/p/chromium/issues/detail?id=862232)
-for more context.
+Using [forward_variables_from()] is encouraged, but special care needs to be
+taken when forwarding `"*"`. The variables `testonly` and `visibility` should
+always be listed explicitly in case they are assigned in an enclosing
+scope.
+See [this bug] for more a full example.
 
+To make this easier, `//build/config/BUILDCONFIG.gn` defines:
+```python
+TESTONLY_AND_VISIBILITY = [ "testonly", "visibility" ]
+```
+
+Example usage:
 ```python
 template("action_wrapper") {
   action(target_name) {
-    forward_variables_from(invoker, "*", [ "testonly", "visibility" ])
-    forward_variables_from(invoker, [ "testonly", "visibility" ])
+    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY)
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
     ...
   }
 }
 ```
+
+If your template defines multiple targets, be careful to apply `testonly` to
+both, but `visibility` only to the primary one (so that the primary one is not
+prevented from depending on the other ones).
+
+Example:
+```python
+template("template_with_multiple_targets") {
+  action("${target_name}__helper) {
+    forward_variables_from(invoker, [ "testonly" ])
+    ...
+  }
+  action(target_name) {
+    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    ...
+  }
+}
+```
+
+An alternative would be to explicitly set `visibility` on all inner targets,
+but doing so tends to be tedious and has little benefit.
+
+[this bug]: https://bugs.chromium.org/p/chromium/issues/detail?id=862232
+[forward_variables_from]: https://gn.googlesource.com/gn/+/master/docs/reference.md#func_forward_variables_from
 
 ## Useful Ninja Flags
 Useful ninja flags when developing build rules:

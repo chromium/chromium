@@ -78,7 +78,7 @@ void WrapContentsInDummySpanCommand::DoReapply() {
   ExecuteApply();
 }
 
-void WrapContentsInDummySpanCommand::Trace(Visitor* visitor) {
+void WrapContentsInDummySpanCommand::Trace(Visitor* visitor) const {
   visitor->Trace(element_);
   visitor->Trace(dummy_span_);
   SimpleEditCommand::Trace(visitor);

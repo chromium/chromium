@@ -27,15 +27,16 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_TOUCH_EVENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EVENTS_TOUCH_EVENT_H_
 
-#include "third_party/blink/public/platform/web_coalesced_input_event.h"
-#include "third_party/blink/public/platform/web_touch_event.h"
+#include "third_party/blink/public/common/input/web_coalesced_input_event.h"
+#include "third_party/blink/public/common/input/web_touch_event.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/events/touch_event_init.h"
 #include "third_party/blink/renderer/core/events/ui_event_with_key_state.h"
 #include "third_party/blink/renderer/core/input/touch_list.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 
 namespace blink {
+
+class TouchEventInit;
 
 class CORE_EXPORT TouchEvent final : public UIEventWithKeyState {
   DEFINE_WRAPPERTYPEINFO();
@@ -97,7 +98,7 @@ class CORE_EXPORT TouchEvent final : public UIEventWithKeyState {
 
   DispatchEventResult DispatchEvent(EventDispatcher&) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool IsTouchStartOrFirstTouchMove() const;
@@ -113,7 +114,10 @@ class CORE_EXPORT TouchEvent final : public UIEventWithKeyState {
   std::unique_ptr<WebCoalescedInputEvent> native_event_;
 };
 
-DEFINE_EVENT_TYPE_CASTS(TouchEvent);
+template <>
+struct DowncastTraits<TouchEvent> {
+  static bool AllowFrom(const Event& event) { return event.IsTouchEvent(); }
+};
 
 }  // namespace blink
 

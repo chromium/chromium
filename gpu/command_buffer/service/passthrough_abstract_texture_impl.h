@@ -15,7 +15,6 @@
 namespace gpu {
 namespace gles2 {
 
-class GLStreamTextureImage;
 class TexturePassthrough;
 class GLES2DecoderPassthroughImpl;
 
@@ -31,11 +30,11 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
   TextureBase* GetTextureBase() const override;
   void SetParameteri(GLenum pname, GLint param) override;
   void BindImage(gl::GLImage* image, bool client_managed) override;
-  void BindStreamTextureImage(GLStreamTextureImage* image,
-                              GLuint service_id) override;
+  void BindStreamTextureImage(gl::GLImage* image, GLuint service_id) override;
   gl::GLImage* GetImage() const override;
   void SetCleared() override;
   void SetCleanupCallback(CleanupCallback cb) override;
+  void NotifyOnContextLost() override;
 
   // Called when our decoder is going away, so that we can try to clean up.
   scoped_refptr<TexturePassthrough> OnDecoderWillDestroy();

@@ -11,8 +11,10 @@
 #include "chrome/browser/ui/webui/sync_file_system_internals/extension_statuses_handler.h"
 #include "chrome/browser/ui/webui/sync_file_system_internals/file_metadata_handler.h"
 #include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_handler.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/sync_file_system_internals_resources.h"
+#include "chrome/grit/sync_file_system_internals_resources_map.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
@@ -23,20 +25,9 @@ content::WebUIDataSource* CreateSyncFileSystemInternalsHTMLSource() {
       content::WebUIDataSource::Create(
           chrome::kChromeUISyncFileSystemInternalsHost);
   source->UseStringsJs();
-  source->AddResourcePath(
-      "utils.js",
-      IDR_SYNC_FILE_SYSTEM_INTERNALS_UTILS_JS);
-  source->AddResourcePath(
-      "extension_statuses.js",
-      IDR_SYNC_FILE_SYSTEM_INTERNALS_EXTENSION_STATUSES_JS);
-  source->AddResourcePath(
-      "file_metadata.js", IDR_SYNC_FILE_SYSTEM_INTERNALS_FILE_METADATA_JS);
-  source->AddResourcePath(
-      "sync_service.js", IDR_SYNC_FILE_SYSTEM_INTERNALS_SYNC_SERVICE_JS);
-  source->AddResourcePath(
-      "task_log.js", IDR_SYNC_FILE_SYSTEM_INTERNALS_TASK_LOG_JS);
-  source->AddResourcePath(
-      "dump_database.js", IDR_SYNC_FILE_SYSTEM_INTERNALS_DUMP_DATABASE_JS);
+  source->AddResourcePaths(
+      base::make_span(kSyncFileSystemInternalsResources,
+                      kSyncFileSystemInternalsResourcesSize));
   source->SetDefaultResource(IDR_SYNC_FILE_SYSTEM_INTERNALS_MAIN_HTML);
   return source;
 }

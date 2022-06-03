@@ -7,9 +7,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
+#include "base/check.h"
+#include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/vector2d.h"
 
-#include "base/logging.h"
+namespace chrome_pdf {
 
 namespace {
 
@@ -45,11 +48,11 @@ PaintAggregator::InternalPaintUpdate::InternalPaintUpdate()
 
 PaintAggregator::InternalPaintUpdate::~InternalPaintUpdate() = default;
 
-pp::Rect PaintAggregator::InternalPaintUpdate::GetScrollDamage() const {
+gfx::Rect PaintAggregator::InternalPaintUpdate::GetScrollDamage() const {
   // Should only be scrolling in one direction at a time.
   DCHECK(!(scroll_delta.x() && scroll_delta.y()));
 
-  pp::Rect damaged_rect;
+  gfx::Rect damaged_rect;
 
   // Compute the region we will expose by scrolling, and paint that into a
   // shared memory section.
@@ -78,7 +81,7 @@ pp::Rect PaintAggregator::InternalPaintUpdate::GetScrollDamage() const {
   }
 
   // In case the scroll offset exceeds the width/height of the scroll rect
-  return scroll_rect.Intersect(damaged_rect);
+  return gfx::IntersectRects(scroll_rect, damaged_rect);
 }
 
 PaintAggregator::PaintAggregator() = default;
@@ -104,7 +107,7 @@ PaintAggregator::PaintUpdate PaintAggregator::GetPendingUpdate() {
   // rects in the next block.
   if (ret.has_scroll && !update_.synthesized_scroll_damage_rect_) {
     update_.synthesized_scroll_damage_rect_ = true;
-    pp::Rect scroll_damage = update_.GetScrollDamage();
+    gfx::Rect scroll_damage = update_.GetScrollDamage();
     InvalidateRectInternal(scroll_damage, false);
   }
 
@@ -116,23 +119,23 @@ PaintAggregator::PaintUpdate PaintAggregator::GetPendingUpdate() {
 }
 
 void PaintAggregator::SetIntermediateResults(
-    const std::vector<ReadyRect>& ready,
-    const std::vector<pp::Rect>& pending) {
+    const std::vector<PaintReadyRect>& ready,
+    const std::vector<gfx::Rect>& pending) {
   update_.ready_rects.insert(update_.ready_rects.end(), ready.begin(),
                              ready.end());
   update_.paint_rects = pending;
 }
 
-std::vector<PaintAggregator::ReadyRect> PaintAggregator::GetReadyRects() const {
+std::vector<PaintReadyRect> PaintAggregator::GetReadyRects() const {
   return update_.ready_rects;
 }
 
-void PaintAggregator::InvalidateRect(const pp::Rect& rect) {
+void PaintAggregator::InvalidateRect(const gfx::Rect& rect) {
   InvalidateRectInternal(rect, true);
 }
 
-void PaintAggregator::ScrollRect(const pp::Rect& clip_rect,
-                                 const pp::Point& amount) {
+void PaintAggregator::ScrollRect(const gfx::Rect& clip_rect,
+                                 const gfx::Vector2d& amount) {
   // We only support scrolling along one axis at a time.
   if (amount.x() != 0 && amount.y() != 0) {
     InvalidateRect(clip_rect);
@@ -178,8 +181,8 @@ void PaintAggregator::ScrollRect(const pp::Rect& clip_rect,
   update_.scroll_delta += amount;
 
   // We might have just wiped out a pre-existing scroll.
-  if (update_.scroll_delta == pp::Point()) {
-    update_.scroll_rect = pp::Rect();
+  if (update_.scroll_delta == gfx::Vector2d()) {
+    update_.scroll_rect = gfx::Rect();
     return;
   }
 
@@ -187,22 +190,22 @@ void PaintAggregator::ScrollRect(const pp::Rect& clip_rect,
   // paint that is inside the scroll area, move it by the scroll amount and
   // replace the existing paint with it. For the portion (if any) that is
   // outside the scroll, just invalidate it.
-  std::vector<pp::Rect> leftover_rects;
+  std::vector<gfx::Rect> leftover_rects;
   for (size_t i = 0; i < update_.paint_rects.size(); ++i) {
     if (!update_.scroll_rect.Intersects(update_.paint_rects[i]))
       continue;
 
-    pp::Rect intersection =
-        update_.paint_rects[i].Intersect(update_.scroll_rect);
-    pp::Rect rect = update_.paint_rects[i];
+    gfx::Rect intersection =
+        gfx::IntersectRects(update_.paint_rects[i], update_.scroll_rect);
+    gfx::Rect rect = update_.paint_rects[i];
     while (!rect.IsEmpty()) {
-      pp::Rect leftover = rect.Subtract(intersection);
+      gfx::Rect leftover = gfx::SubtractRects(rect, intersection);
       if (leftover.IsEmpty())
         break;
       // Don't want to call InvalidateRectInternal now since it'll modify
       // update_.paint_rects, so keep track of this and do it below.
       leftover_rects.push_back(leftover);
-      rect = rect.Subtract(leftover);
+      rect.Subtract(leftover);
     }
 
     update_.paint_rects[i] = ScrollPaintRect(intersection, amount);
@@ -218,40 +221,38 @@ void PaintAggregator::ScrollRect(const pp::Rect& clip_rect,
     InvalidateRectInternal(leftover_rect, false);
 
   for (auto& update_rect : update_.ready_rects) {
-    if (update_.scroll_rect.Contains(update_rect.rect))
-      update_rect.rect = ScrollPaintRect(update_rect.rect, amount);
+    if (update_.scroll_rect.Contains(update_rect.rect()))
+      update_rect.set_rect(ScrollPaintRect(update_rect.rect(), amount));
   }
 
   if (update_.synthesized_scroll_damage_rect_) {
-    pp::Rect damage = update_.GetScrollDamage();
-    InvalidateRect(damage);
+    InvalidateRect(update_.GetScrollDamage());
   }
 }
 
-pp::Rect PaintAggregator::ScrollPaintRect(const pp::Rect& paint_rect,
-                                          const pp::Point& amount) const {
-  pp::Rect result = paint_rect;
-  result.Offset(amount);
-  result = update_.scroll_rect.Intersect(result);
+gfx::Rect PaintAggregator::ScrollPaintRect(const gfx::Rect& paint_rect,
+                                           const gfx::Vector2d& amount) const {
+  gfx::Rect result = paint_rect + amount;
+  result.Intersect(update_.scroll_rect);
   return result;
 }
 
 void PaintAggregator::InvalidateScrollRect() {
-  pp::Rect scroll_rect = update_.scroll_rect;
-  update_.scroll_rect = pp::Rect();
-  update_.scroll_delta = pp::Point();
+  gfx::Rect scroll_rect = update_.scroll_rect;
+  update_.scroll_rect = gfx::Rect();
+  update_.scroll_delta = gfx::Vector2d();
   InvalidateRect(scroll_rect);
 }
 
-void PaintAggregator::InvalidateRectInternal(const pp::Rect& rect_old,
+void PaintAggregator::InvalidateRectInternal(const gfx::Rect& rect_old,
                                              bool check_scroll) {
-  pp::Rect rect = rect_old;
+  gfx::Rect rect = rect_old;
   // Check if any rects that are ready to be painted overlap.
   for (size_t i = 0; i < update_.ready_rects.size(); ++i) {
-    const pp::Rect& existing_rect = update_.ready_rects[i].rect;
+    const gfx::Rect& existing_rect = update_.ready_rects[i].rect();
     if (rect.Intersects(existing_rect)) {
       // Re-invalidate in case the union intersects other paint rects.
-      rect = existing_rect.Union(rect);
+      rect.Union(existing_rect);
       update_.ready_rects.erase(update_.ready_rects.begin() + i);
       break;
     }
@@ -261,12 +262,12 @@ void PaintAggregator::InvalidateRectInternal(const pp::Rect& rect_old,
 
   // Combine overlapping paints using smallest bounding box.
   for (size_t i = 0; i < update_.paint_rects.size(); ++i) {
-    const pp::Rect& existing_rect = update_.paint_rects[i];
+    const gfx::Rect& existing_rect = update_.paint_rects[i];
     if (existing_rect.Contains(rect))  // Optimize out redundancy.
       add_paint = false;
     if (rect.Intersects(existing_rect) || rect.SharesEdgeWith(existing_rect)) {
       // Re-invalidate in case the union intersects other paint rects.
-      pp::Rect combined_rect = existing_rect.Union(rect);
+      gfx::Rect combined_rect = gfx::UnionRects(rect, existing_rect);
       update_.paint_rects.erase(update_.paint_rects.begin() + i);
       InvalidateRectInternal(combined_rect, check_scroll);
       add_paint = false;
@@ -285,3 +286,5 @@ void PaintAggregator::InvalidateRectInternal(const pp::Rect& rect_old,
     InvalidateRectInternal(ScrollPaintRect(rect, update_.scroll_delta), false);
   }
 }
+
+}  // namespace chrome_pdf

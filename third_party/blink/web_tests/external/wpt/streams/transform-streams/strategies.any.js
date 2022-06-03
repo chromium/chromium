@@ -1,4 +1,4 @@
-// META: global=worker,jsshell
+// META: global=window,worker,jsshell
 // META: script=../resources/recording-streams.js
 // META: script=../resources/test-utils.js
 'use strict';
@@ -86,14 +86,14 @@ promise_test(t => {
 }, 'default readable strategy should be equivalent to { highWaterMark: 0 }');
 
 test(() => {
-  assert_throws(new RangeError(), () => new TransformStream(undefined, { highWaterMark: -1 }),
-                'should throw RangeError for negative writableHighWaterMark');
-  assert_throws(new RangeError(), () => new TransformStream(undefined, undefined, { highWaterMark: -1 }),
-                'should throw RangeError for negative readableHighWaterMark');
-  assert_throws(new RangeError(), () => new TransformStream(undefined, { highWaterMark: NaN }),
-                'should throw RangeError for NaN writableHighWaterMark');
-  assert_throws(new RangeError(), () => new TransformStream(undefined, undefined, { highWaterMark: NaN }),
-                'should throw RangeError for NaN readableHighWaterMark');
+  assert_throws_js(RangeError, () => new TransformStream(undefined, { highWaterMark: -1 }),
+                   'should throw RangeError for negative writableHighWaterMark');
+  assert_throws_js(RangeError, () => new TransformStream(undefined, undefined, { highWaterMark: -1 }),
+                   'should throw RangeError for negative readableHighWaterMark');
+  assert_throws_js(RangeError, () => new TransformStream(undefined, { highWaterMark: NaN }),
+                   'should throw RangeError for NaN writableHighWaterMark');
+  assert_throws_js(RangeError, () => new TransformStream(undefined, undefined, { highWaterMark: NaN }),
+                   'should throw RangeError for NaN readableHighWaterMark');
 }, 'a RangeError should be thrown for an invalid highWaterMark');
 
 const objectThatConvertsTo42 = {
@@ -122,14 +122,14 @@ promise_test(t => {
     highWaterMark: 1
   });
   const writer = ts.writable.getWriter();
-  return promise_rejects(t, new RangeError(), writer.write(), 'write should reject');
+  return promise_rejects_js(t, RangeError, writer.write(), 'write should reject');
 }, 'a bad readableStrategy size function should cause writer.write() to reject on an identity transform');
 
 promise_test(t => {
   const ts = new TransformStream({
     transform(chunk, controller) {
       // This assert has the important side-effect of catching the error, so transform() does not throw.
-      assert_throws(new RangeError(), () => controller.enqueue(chunk), 'enqueue should throw');
+      assert_throws_js(RangeError, () => controller.enqueue(chunk), 'enqueue should throw');
     }
   }, undefined, {
     size() {
@@ -141,9 +141,9 @@ promise_test(t => {
   const writer = ts.writable.getWriter();
   return writer.write().then(() => {
     return Promise.all([
-      promise_rejects(t, new RangeError(), writer.ready, 'ready should reject'),
-      promise_rejects(t, new RangeError(), writer.closed, 'closed should reject'),
-      promise_rejects(t, new RangeError(), ts.readable.getReader().closed, 'readable closed should reject')
+      promise_rejects_js(t, RangeError, writer.ready, 'ready should reject'),
+      promise_rejects_js(t, RangeError, writer.closed, 'closed should reject'),
+      promise_rejects_js(t, RangeError, ts.readable.getReader().closed, 'readable closed should reject')
     ]);
   });
 }, 'a bad readableStrategy size function should error the stream on enqueue even when transformer.transform() ' +

@@ -7,64 +7,63 @@
 
 #include <map>
 #include <string>
+#include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
+
+namespace chromeos {
+namespace assistant {
+struct AssistantTimer;
+}  // namespace assistant
+}  // namespace chromeos
 
 namespace ash {
 
 class AssistantAlarmTimerModelObserver;
-
-enum class AlarmTimerType {
-  kAlarm,
-  kTimer,
-};
-
-struct COMPONENT_EXPORT(ASSISTANT_MODEL) AlarmTimer {
-  std::string id;
-  AlarmTimerType type;
-  base::TimeTicks end_time;
-
-  // Returns true if this alarm/timer has expired.
-  bool expired() const { return base::TimeTicks::Now() >= end_time; }
-};
 
 // The model belonging to AssistantAlarmTimerController which tracks alarm/timer
 // state and notifies a pool of observers.
 class COMPONENT_EXPORT(ASSISTANT_MODEL) AssistantAlarmTimerModel {
  public:
   AssistantAlarmTimerModel();
+
+  AssistantAlarmTimerModel(const AssistantAlarmTimerModel&) = delete;
+  AssistantAlarmTimerModel& operator=(const AssistantAlarmTimerModel&) = delete;
+
   ~AssistantAlarmTimerModel();
 
   // Adds/removes the specified alarm/timer model |observer|.
-  void AddObserver(AssistantAlarmTimerModelObserver* observer);
-  void RemoveObserver(AssistantAlarmTimerModelObserver* observer);
+  void AddObserver(AssistantAlarmTimerModelObserver* observer) const;
+  void RemoveObserver(AssistantAlarmTimerModelObserver* observer) const;
 
-  // Adds the specified alarm/timer to the model.
-  void AddAlarmTimer(const AlarmTimer& alarm_timer);
+  // Adds or updates the timer specified by |timer.id| in the model.
+  void AddOrUpdateTimer(const chromeos::assistant::AssistantTimer& timer);
 
-  // Remove all alarms/timers from the model.
-  void RemoveAllAlarmsTimers();
+  // Removes the timer uniquely identified by |id|.
+  void RemoveTimer(const std::string& id);
 
-  // Returns the alarm/timer uniquely identified by |id|.
-  const AlarmTimer* GetAlarmTimerById(const std::string& id) const;
+  // Remove all timers from the model.
+  void RemoveAllTimers();
 
-  // Invoke to tick any alarms/timers and to notify observers of time remaining.
-  void Tick();
+  // Returns all timers from the model.
+  std::vector<const chromeos::assistant::AssistantTimer*> GetAllTimers() const;
+
+  // Returns the timer uniquely identified by |id|.
+  const chromeos::assistant::AssistantTimer* GetTimerById(
+      const std::string& id) const;
+
+  // Returns |true| if the model contains no timers, |false| otherwise.
+  bool empty() const { return timers_.empty(); }
 
  private:
-  void NotifyAlarmTimerAdded(const AlarmTimer& alarm_timer,
-                             const base::TimeDelta& time_remaining);
-  void NotifyAlarmsTimersTicked(
-      const std::map<std::string, base::TimeDelta>& times_remaining);
-  void NotifyAllAlarmsTimersRemoved();
+  void NotifyTimerAdded(const chromeos::assistant::AssistantTimer& timer);
+  void NotifyTimerUpdated(const chromeos::assistant::AssistantTimer& timer);
+  void NotifyTimerRemoved(const chromeos::assistant::AssistantTimer& timer);
 
-  std::map<std::string, AlarmTimer> alarms_timers_;
+  std::map<std::string, chromeos::assistant::AssistantTimer> timers_;
 
-  base::ObserverList<AssistantAlarmTimerModelObserver> observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantAlarmTimerModel);
+  mutable base::ObserverList<AssistantAlarmTimerModelObserver> observers_;
 };
 
 }  // namespace ash

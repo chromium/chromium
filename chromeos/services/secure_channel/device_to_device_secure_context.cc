@@ -11,7 +11,8 @@
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/secure_message_delegate.h"
 #include "chromeos/services/device_sync/proto/cryptauth_api.pb.h"
-#include "chromeos/services/device_sync/proto/securemessage.pb.h"
+#include "third_party/securemessage/proto/securemessage.pb.h"
+#include "third_party/ukey2/proto/device_to_device_messages.pb.h"
 
 namespace chromeos {
 
@@ -48,26 +49,26 @@ DeviceToDeviceSecureContext::DeviceToDeviceSecureContext(
 DeviceToDeviceSecureContext::~DeviceToDeviceSecureContext() {}
 
 void DeviceToDeviceSecureContext::Decode(const std::string& encoded_message,
-                                         const MessageCallback& callback) {
+                                         MessageCallback callback) {
   multidevice::SecureMessageDelegate::UnwrapOptions unwrap_options;
   unwrap_options.encryption_scheme = securemessage::AES_256_CBC;
   unwrap_options.signature_scheme = securemessage::HMAC_SHA256;
 
   secure_message_delegate_->UnwrapSecureMessage(
       encoded_message, decryption_key_, unwrap_options,
-      base::Bind(&DeviceToDeviceSecureContext::HandleUnwrapResult,
-                 weak_ptr_factory_.GetWeakPtr(), callback));
+      base::BindOnce(&DeviceToDeviceSecureContext::HandleUnwrapResult,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void DeviceToDeviceSecureContext::Encode(const std::string& message,
-                                         const MessageCallback& callback) {
+                                         MessageCallback callback) {
   // Create a cryptauth::GcmMetadata field to put in the header.
   cryptauth::GcmMetadata gcm_metadata;
   gcm_metadata.set_type(cryptauth::DEVICE_TO_DEVICE_MESSAGE);
   gcm_metadata.set_version(kGcmMetadataVersion);
 
   // Wrap |message| inside a DeviceToDeviceMessage proto.
-  securemessage::DeviceToDeviceMessage device_to_device_message;
+  securegcm::DeviceToDeviceMessage device_to_device_message;
   device_to_device_message.set_sequence_number(++last_encode_sequence_number_);
   device_to_device_message.set_message(message);
 
@@ -78,7 +79,7 @@ void DeviceToDeviceSecureContext::Encode(const std::string& message,
 
   secure_message_delegate_->CreateSecureMessage(
       device_to_device_message.SerializeAsString(), encryption_key_,
-      create_options, callback);
+      create_options, std::move(callback));
 }
 
 std::string DeviceToDeviceSecureContext::GetChannelBindingData() const {
@@ -91,15 +92,15 @@ SecureContext::ProtocolVersion DeviceToDeviceSecureContext::GetProtocolVersion()
 }
 
 void DeviceToDeviceSecureContext::HandleUnwrapResult(
-    const DeviceToDeviceSecureContext::MessageCallback& callback,
+    DeviceToDeviceSecureContext::MessageCallback callback,
     bool verified,
     const std::string& payload,
     const securemessage::Header& header) {
   // The payload should contain a DeviceToDeviceMessage proto.
-  securemessage::DeviceToDeviceMessage device_to_device_message;
+  securegcm::DeviceToDeviceMessage device_to_device_message;
   if (!verified || !device_to_device_message.ParseFromString(payload)) {
     PA_LOG(ERROR) << "Failed to unwrap secure message.";
-    callback.Run(std::string());
+    std::move(callback).Run(std::string());
     return;
   }
 
@@ -109,7 +110,7 @@ void DeviceToDeviceSecureContext::HandleUnwrapResult(
     PA_LOG(ERROR) << "Expected sequence_number="
                   << last_decode_sequence_number_ + 1 << ", but got "
                   << device_to_device_message.sequence_number();
-    callback.Run(std::string());
+    std::move(callback).Run(std::string());
     return;
   }
 
@@ -119,12 +120,12 @@ void DeviceToDeviceSecureContext::HandleUnwrapResult(
       gcm_metadata.type() != cryptauth::DEVICE_TO_DEVICE_MESSAGE ||
       gcm_metadata.version() != kGcmMetadataVersion) {
     PA_LOG(ERROR) << "Failed to validate cryptauth::GcmMetadata.";
-    callback.Run(std::string());
+    std::move(callback).Run(std::string());
     return;
   }
 
   last_decode_sequence_number_++;
-  callback.Run(device_to_device_message.message());
+  std::move(callback).Run(device_to_device_message.message());
 }
 
 }  // namespace secure_channel

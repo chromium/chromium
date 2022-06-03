@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "gin/runner.h"
 
 namespace gin {
@@ -40,6 +39,8 @@ class GIN_EXPORT ShellRunnerDelegate {
 class GIN_EXPORT ShellRunner : public Runner {
  public:
   ShellRunner(ShellRunnerDelegate* delegate, v8::Isolate* isolate);
+  ShellRunner(const ShellRunner&) = delete;
+  ShellRunner& operator=(const ShellRunner&) = delete;
   ~ShellRunner() override;
 
   // Before running script in this context, you'll need to enter the runner's
@@ -58,8 +59,6 @@ class GIN_EXPORT ShellRunner : public Runner {
   ShellRunnerDelegate* delegate_;
 
   std::unique_ptr<ContextHolder> context_holder_;
-
-  DISALLOW_COPY_AND_ASSIGN(ShellRunner);
 };
 
 }  // namespace gin

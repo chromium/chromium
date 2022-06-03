@@ -38,9 +38,8 @@ NSArray* MakeTestCertChain(const std::string& subject) {
   std::unique_ptr<crypto::RSAPrivateKey> private_key;
   std::string der_cert;
   net::x509_util::CreateKeyAndSelfSignedCert(
-      "CN=" + subject, 1, base::Time::Now(),
-      base::Time::Now() + base::TimeDelta::FromDays(1), &private_key,
-      &der_cert);
+      "CN=" + subject, 1, base::Time::Now(), base::Time::Now() + base::Days(1),
+      &private_key, &der_cert);
 
   base::ScopedCFTypeRef<SecCertificateRef> cert(
       net::x509_util::CreateSecCertificateFromBytes(
@@ -96,15 +95,15 @@ TEST_F(WKWebViewSecurityUtilTest, MakingTrustValid) {
   base::ScopedCFTypeRef<SecTrustRef> trust =
       CreateTestTrust(MakeTestCertChain(kTestSubject));
 
-  SecTrustResultType result = kSecTrustResultInvalid;
-  SecTrustEvaluate(trust, &result);
-  EXPECT_EQ(kSecTrustResultRecoverableTrustFailure, result);
+  CFErrorRef error;
+  BOOL trusted = SecTrustEvaluateWithError(trust, &error);
+  EXPECT_TRUE(!trusted && error);
 
   // Make sure that trust becomes valid after
   // |EnsureFutureTrustEvaluationSucceeds| call.
   EnsureFutureTrustEvaluationSucceeds(trust);
-  SecTrustEvaluate(trust, &result);
-  EXPECT_EQ(kSecTrustResultProceed, result);
+  trusted = SecTrustEvaluateWithError(trust, &error);
+  EXPECT_TRUE(trusted && !error);
 }
 
 // Tests CreateCertFromTrust.

@@ -8,7 +8,7 @@
 
 #import "remoting/ios/app/refresh_control_provider.h"
 
-#import "base/logging.h"
+#import "base/check.h"
 
 static RefreshControlProvider* g_refreshControlProvider;
 

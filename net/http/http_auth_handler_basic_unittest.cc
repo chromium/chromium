@@ -7,13 +7,15 @@
 #include <memory>
 #include <string>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/base/net_errors.h"
+#include "net/base/network_isolation_key.h"
 #include "net/base/test_completion_callback.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_challenge_tokenizer.h"
+#include "net/http/http_auth_preferences.h"
 #include "net/http/http_request_info.h"
 #include "net/log/net_log_with_source.h"
 #include "net/ssl/ssl_info.h"
@@ -21,6 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+using net::test::IsError;
 using net::test::IsOk;
 
 namespace net {
@@ -47,8 +50,9 @@ TEST(HttpAuthHandlerBasicTest, GenerateAuthToken) {
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> basic;
     EXPECT_EQ(OK, factory.CreateAuthHandlerFromString(
-                      challenge, HttpAuth::AUTH_SERVER, null_ssl_info, origin,
-                      NetLogWithSource(), host_resolver.get(), &basic));
+                      challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+                      NetworkIsolationKey(), origin, NetLogWithSource(),
+                      host_resolver.get(), &basic));
     AuthCredentials credentials(base::ASCIIToUTF16(tests[i].username),
                                 base::ASCIIToUTF16(tests[i].password));
     HttpRequestInfo request_info;
@@ -103,7 +107,8 @@ TEST(HttpAuthHandlerBasicTest, HandleAnotherChallenge) {
   std::unique_ptr<HttpAuthHandler> basic;
   EXPECT_EQ(OK, factory.CreateAuthHandlerFromString(
                     tests[0].challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
-                    origin, NetLogWithSource(), host_resolver.get(), &basic));
+                    NetworkIsolationKey(), origin, NetLogWithSource(),
+                    host_resolver.get(), &basic));
 
   for (size_t i = 0; i < base::size(tests); ++i) {
     std::string challenge(tests[i].challenge);
@@ -204,12 +209,42 @@ TEST(HttpAuthHandlerBasicTest, InitFromChallenge) {
     auto host_resolver = std::make_unique<MockHostResolver>();
     std::unique_ptr<HttpAuthHandler> basic;
     int rv = factory.CreateAuthHandlerFromString(
-        challenge, HttpAuth::AUTH_SERVER, null_ssl_info, origin,
-        NetLogWithSource(), host_resolver.get(), &basic);
+        challenge, HttpAuth::AUTH_SERVER, null_ssl_info, NetworkIsolationKey(),
+        origin, NetLogWithSource(), host_resolver.get(), &basic);
     EXPECT_EQ(tests[i].expected_rv, rv);
     if (rv == OK)
       EXPECT_EQ(tests[i].expected_realm, basic->realm());
   }
+}
+
+// Test that when Basic is configured to forbid HTTP, attempting to create a
+// Basic auth handler for a HTTP context is rejected.
+TEST(HttpAuthHandlerBasicTest, BasicAuthRequiresHTTPS) {
+  GURL nonsecure_origin("http://www.example.com");
+  HttpAuthHandlerBasic::Factory factory;
+  HttpAuthPreferences http_auth_preferences;
+  http_auth_preferences.set_basic_over_http_enabled(false);
+  factory.set_http_auth_preferences(&http_auth_preferences);
+
+  std::string challenge = "Basic realm=\"Atlantis\"";
+  SSLInfo null_ssl_info;
+  auto host_resolver = std::make_unique<MockHostResolver>();
+  std::unique_ptr<HttpAuthHandler> basic;
+
+  // Ensure that HTTP is disallowed.
+  EXPECT_THAT(factory.CreateAuthHandlerFromString(
+                  challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+                  NetworkIsolationKey(), nonsecure_origin, NetLogWithSource(),
+                  host_resolver.get(), &basic),
+              IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
+
+  // Ensure that HTTPS is allowed.
+  GURL secure_origin("https://www.example.com");
+  EXPECT_THAT(factory.CreateAuthHandlerFromString(
+                  challenge, HttpAuth::AUTH_SERVER, null_ssl_info,
+                  NetworkIsolationKey(), secure_origin, NetLogWithSource(),
+                  host_resolver.get(), &basic),
+              IsOk());
 }
 
 }  // namespace net

@@ -1,0 +1,40 @@
+<style include="settings-shared shared-style md-select">
+  :host {
+      --cr-dialog-width: 320px;
+      --md-select-width: 280px;
+  }
+
+  #dialogBody {
+    display: flex;
+    flex-direction: column;
+    height: 95px;
+    overflow: auto;
+  }
+
+  .md-select {
+      margin-top: 20px;
+  }
+</style>
+<cr-dialog id="dialog" show-on-attach>
+  <div id="title" slot="title">$i18n{osSearchEngineLabel}</div>
+  <div id="dialogBody" slot="body">
+    <div id="description">$i18n{osSearchEngineDescription}</div>
+    <select class="md-select"
+        aria-labelledby="title"
+        aria-describedby="description"
+        autofocus>
+      <template is="dom-repeat" items="[[searchEngines_]]">
+        <option selected="[[item.default]]">[[item.name]]</option>
+      </template>
+    </select>
+  </div>
+  <div slot="button-container">
+    <cr-button class="cancel-button" on-click="onCancelButtonClick_">
+      $i18n{cancel}
+    </cr-button>
+    <cr-button class="action-button" on-click="onActionButtonClick_"
+        disabled="[[disableActionButton_]]">
+      $i18n{done}
+    </cr-button>
+  </div>
+</cr-dialog>

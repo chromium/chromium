@@ -17,6 +17,9 @@
 #     'nc_testset_1.nc',
 #     'nc_testset_2.nc',
 #   ]
+#
+#   # optional extra include dirs:
+#   include_dirs = [ ... ]
 # }
 #
 # The .nc files are C++ files that contain code we wish to assert will not
@@ -56,13 +59,14 @@
 # least processed when things go right.
 
 import("//build/config/clang/clang.gni")
+import("//build/config/python.gni")
 import("//build/toolchain/toolchain.gni")
 import("//testing/test.gni")
 
 declare_args() {
   # TODO(crbug.com/105388): make sure no-compile test is not flaky.
-  enable_nocompile_tests =
-      (is_linux || is_mac || is_ios) && is_clang && host_cpu == target_cpu
+  enable_nocompile_tests = (is_linux || is_chromeos || is_apple) && is_clang &&
+                           host_cpu == target_cpu
 }
 
 if (enable_nocompile_tests) {
@@ -82,9 +86,7 @@ if (enable_nocompile_tests) {
 
       result_path = "$target_gen_dir/{{source_name_part}}_nc.cc"
       depfile = "${result_path}.d"
-      outputs = [
-        result_path,
-      ]
+      outputs = [ result_path ]
       args = [
         rebase_path("$clang_base_path/bin/clang++", root_build_dir),
         "4",  # number of compilers to invoke in parallel.
@@ -100,11 +102,25 @@ if (enable_nocompile_tests) {
         "-Wfatal-errors",
         "-Wthread-safety",
         "-I" + rebase_path("//", root_build_dir),
+        "-I" + rebase_path("//third_party/abseil-cpp/", root_build_dir),
+        "-I" + rebase_path("//buildtools/third_party/libc++/", root_build_dir),
         "-I" + rebase_path(root_gen_dir, root_build_dir),
 
         # TODO(https://crbug.com/989932): Track build/config/compiler/BUILD.gn
         "-Wno-implicit-int-float-conversion",
       ]
+
+      if (is_apple && host_os != "mac") {
+        args += [ "--target=x86_64-apple-macos" ]
+      }
+
+      # Iterate over any extra include dirs and append them to the command line.
+      if (defined(invoker.include_dirs)) {
+        foreach(include_dir, invoker.include_dirs) {
+          args += [ "-I" + rebase_path(include_dir, root_build_dir) ]
+        }
+      }
+
       if (sysroot != "") {
         args += [
           "--sysroot",

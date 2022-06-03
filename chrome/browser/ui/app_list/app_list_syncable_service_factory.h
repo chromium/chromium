@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -32,6 +31,10 @@ class AppListSyncableServiceFactory : public BrowserContextKeyedServiceFactory {
   // Marks AppListSyncableService to be used in tests.
   static void SetUseInTesting(bool use);
 
+  AppListSyncableServiceFactory(const AppListSyncableServiceFactory&) = delete;
+  AppListSyncableServiceFactory& operator=(
+      const AppListSyncableServiceFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<AppListSyncableServiceFactory>;
 
@@ -47,8 +50,6 @@ class AppListSyncableServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   bool ServiceIsCreatedWithBrowserContext() const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(AppListSyncableServiceFactory);
 };
 
 }  // namespace app_list

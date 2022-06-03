@@ -1,0 +1,23 @@
+<!doctype html>
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Cache-Control"
+        content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <link rel="stylesheet" href="video_player.css">
+    <script type="module" src="video_player.js"></script>
+  </head>
+
+  <body>
+    <video id="video" preload="metadata" controls disablePictureInPicture
+        controlsList="nodownload nofullscreen noremoteplayback">
+      <source type="video/mp4"></source>
+      <track id="track" label="English" kind="captions" srclang="en-us"
+          mode="showing" default >
+    </video>
+  </body>
+</html>
+

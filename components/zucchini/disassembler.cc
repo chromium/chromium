@@ -4,14 +4,14 @@
 
 #include "components/zucchini/disassembler.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace zucchini {
 
 /******** EmptyReferenceReader ********/
 
-base::Optional<Reference> EmptyReferenceReader::GetNext() {
-  return base::nullopt;
+absl::optional<Reference> EmptyReferenceReader::GetNext() {
+  return absl::nullopt;
 }
 
 /******** EmptyReferenceWriter ********/

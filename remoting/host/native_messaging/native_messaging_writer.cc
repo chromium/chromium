@@ -11,6 +11,7 @@
 #include <utility>
 
 #include "base/json/json_writer.h"
+#include "base/logging.h"
 
 namespace {
 

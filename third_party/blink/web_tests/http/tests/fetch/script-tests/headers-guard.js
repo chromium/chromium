@@ -5,38 +5,38 @@ if (self.importScripts) {
 // Tests that invalid names/values throw TypeError.
 function testInvalidNamesAndValues(headers) {
   INVALID_HEADER_NAMES.forEach(function(name) {
-      assert_throws({name: 'TypeError'},
-                    function() { headers.append(name, 'a'); },
-                    'Headers.append with an invalid name (' + name +
-                    ') must throw');
-      assert_throws({name: 'TypeError'},
-                    function() { headers.delete(name); },
-                    'Headers.delete with an invalid name (' + name +
-                    ') must throw');
-      assert_throws({name: 'TypeError'},
-                    function() { headers.get(name); },
-                    'Headers.get with an invalid name (' + name +
-                    ') must throw');
-      assert_throws({name: 'TypeError'},
-                    function() { headers.getAll(name); },
-                    'Headers.getAll with an invalid name (' + name +
-                    ') must throw');
-      assert_throws({name: 'TypeError'},
-                    function() { headers.has(name); },
-                    'Headers.has with an invalid name (' + name +
-                    ') must throw');
-      assert_throws({name: 'TypeError'},
-                    function() { headers.set(name, 'a'); },
-                    'Headers.set with an invalid name (' + name +
-                    ') must throw');
+      assert_throws_js(TypeError,
+                       function() { headers.append(name, 'a'); },
+                       'Headers.append with an invalid name (' + name +
+                       ') must throw');
+      assert_throws_js(TypeError,
+                       function() { headers.delete(name); },
+                       'Headers.delete with an invalid name (' + name +
+                       ') must throw');
+      assert_throws_js(TypeError,
+                       function() { headers.get(name); },
+                       'Headers.get with an invalid name (' + name +
+                       ') must throw');
+      assert_throws_js(TypeError,
+                       function() { headers.getAll(name); },
+                       'Headers.getAll with an invalid name (' + name +
+                       ') must throw');
+      assert_throws_js(TypeError,
+                       function() { headers.has(name); },
+                       'Headers.has with an invalid name (' + name +
+                       ') must throw');
+      assert_throws_js(TypeError,
+                       function() { headers.set(name, 'a'); },
+                       'Headers.set with an invalid name (' + name +
+                       ') must throw');
     });
   INVALID_HEADER_VALUES.forEach(function(value) {
-      assert_throws({name: 'TypeError'},
-                    function() { headers.append('a', value); },
-                    'Headers.append with an invalid value must throw');
-      assert_throws({name: 'TypeError'},
-                    function() { headers.set('a', value); },
-                    'Headers.set with an invalid value must throw');
+      assert_throws_js(TypeError,
+                       function() { headers.append('a', value); },
+                       'Headers.append with an invalid value must throw');
+      assert_throws_js(TypeError,
+                       function() { headers.set('a', value); },
+                       'Headers.set with an invalid value must throw');
     });
 }
 
@@ -383,21 +383,21 @@ promise_test(function(t) {
               .forEach(function(header) {
                   var value = headers.get(header);
 
-                  assert_throws({name: 'TypeError'},
-                                function() { headers.append(header, 'test'); },
-                                'Headers.append(' + header + ') must throw');
+                  assert_throws_js(TypeError,
+                                   function() { headers.append(header, 'test'); },
+                                   'Headers.append(' + header + ') must throw');
                   assert_equals(headers.get(header), value,
                     'header ' + header + ' must be unchanged by append()');
 
-                  assert_throws({name: 'TypeError'},
-                                function() { headers.set(header, 'test'); },
-                                    'Headers.set(' + header + ') must throw');
+                  assert_throws_js(TypeError,
+                                   function() { headers.set(header, 'test'); },
+                                   'Headers.set(' + header + ') must throw');
                   assert_equals(headers.get(header), value,
                     'header ' + header + ' must be unchanged by set()');
 
-                  assert_throws({name: 'TypeError'},
-                                function() { headers.delete(header); },
-                                'Headers.delete(' + header + ') must throw');
+                  assert_throws_js(TypeError,
+                                   function() { headers.delete(header); },
+                                   'Headers.delete(' + header + ') must throw');
                   assert_equals(headers.get(header), value,
                     'header ' + header + ' must be unchanged by delete()');
                 });

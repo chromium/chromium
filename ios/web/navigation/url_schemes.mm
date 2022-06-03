@@ -16,7 +16,7 @@
 
 namespace web {
 
-void RegisterWebSchemes(bool lock_schemes) {
+void RegisterWebSchemes() {
   web::WebClient::Schemes schemes;
   GetWebClient()->AddAdditionalSchemes(&schemes);
   for (const auto& scheme : schemes.standard_schemes)
@@ -30,8 +30,7 @@ void RegisterWebSchemes(bool lock_schemes) {
   // threadsafe so must be called when GURL isn't used on any other thread. This
   // is really easy to mess up, so we say that all calls to Add*Scheme in Chrome
   // must be inside this function.
-  if (lock_schemes)
-    url::LockSchemeRegistries();
+  url::LockSchemeRegistries();
 }
 
 }  // namespace web

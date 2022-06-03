@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<meta name="color-scheme" content="light dark">
+<script src="../../resources/common.js"></script>
+<script src="../../../../resources/run-after-layout-and-paint.js"></script>
+<body>
+
+<select multiple>
+  <optgroup label="unstyled">
+    <option selected id="hoverTarget">selected (hovered)</option>
+    <option>unselected</option
+  </optgroup>
+</select>
+
+<script>
+  runAfterLayoutAndPaint(function () {
+    let hoverTarget = document.getElementById('hoverTarget');
+    hoverOverElement(hoverTarget);
+  }, true);
+</script>
+</body>

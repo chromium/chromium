@@ -5,62 +5,8 @@
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [10, 60, 310, 380],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [10, 60, 310, 380],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [10, 60, 310, 380],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox ' '",
-          "rect": [10, 60, 310, 380],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'PA'",
-          "rect": [10, 60, 310, 380],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'PA'",
-          "rect": [10, 60, 310, 380],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'PASS'",
-          "rect": [10, 60, 310, 380],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'PASS'",
-          "rect": [10, 60, 310, 380],
-          "reason": "appeared"
-        },
-        {
-          "object": "InlineTextBox 'PASS'",
-          "rect": [10, 60, 310, 380],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'PASS'",
-          "rect": [10, 60, 310, 380],
-          "reason": "disappeared"
-        },
-        {
-          "object": "InlineTextBox 'SS'",
-          "rect": [10, 60, 310, 380],
-          "reason": "appeared"
-        }
+      "invalidations": [
+        [10, 60, 310, 380]
       ]
     }
   ]

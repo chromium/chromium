@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+    #test {
+        margin: 5px;
+    }
+    #test.composite > .container {
+        will-change: transform;
+    }
+    .container {
+        position: absolute;
+    }
+    .shifter {
+        position: absolute;
+        background-color: black;
+        width: 12.5px;
+        height: 12.5px;
+    }
+</style>
+</head>
+<body>
+<div id=test class=composite>
+</div>
+<script>
+    function setupGrid(leftOffset, topOffset, leftFraction, topFraction, multiplier)
+    {
+        var test = document.getElementById('test');
+        for (var i = 0; i < 10; i++) {
+            if (i == 5)
+                topOffset += 5;
+            var leftOffsetj = leftOffset;
+            for (var j = 0; j < 10; j++) {
+                if (j == 5)
+                    leftOffsetj += 5;
+                var container = document.createElement("div");
+                var shifter = document.createElement("div");
+                container.setAttribute('class', 'container');
+                shifter.setAttribute('class', 'shifter');
+                container.style.left = (leftOffsetj + j * multiplier + i * leftFraction) + "px"
+                container.style.top = (topOffset + i * multiplier + i * topFraction) + "px"
+                shifter.style.left = (5 + j * leftFraction) + "px"
+                shifter.style.top = (5 + j * topFraction) + "px"
+                container.appendChild(shifter);
+                test.appendChild(container);
+            }
+        }
+    }
+
+    function setupTest()
+    {
+        // Vertical shifts:
+        setupGrid(10, 10, 0, 0.1, 16)
+        // Horizontal shifts:
+        setupGrid(300, 10, 0.1, 0, 16);
+
+        // And in 8x8 (where exactly 0.5 is more common)
+        setupGrid(10, 200, 0, 0.125, 20);
+        setupGrid(300, 200, 0.125, 0, 20);
+    }
+
+    setupTest();
+</script>
+</body>
+</html>

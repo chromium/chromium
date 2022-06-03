@@ -1,27 +1,31 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
-</script>
-<style>
-div {
-    border: 1px solid black;
-    margin: 5px;
-}
-</style>
-<p>When the selection to delete ends at the end of a paragraph, that paragraph will be completely deleted, but a &lt;br&gt; or an empty block will remain. Merging must happen to remove that &lt;br&gt; or prune that block.</p>
-<p>This test illustrates a case where merging wasn't allowed to happen just because the end of the selection to delete was in a fully selected line, which is nonsense.</p>
-<p>Fixing that bug exposed a problem with merging.  If deletion empties out the block that contained the start of the selection to delete, that block can collapse away and become impossible to merge into.  So we insert a placeholder to prop it open so that the merge can happen.</p>
-<div id="test" contenteditable="true"><div style="border: 1px solid red;">bar</div><div style="border: 1px solid blue;">bar<br></div></div>
-
-<script>
-var s = window.getSelection();
-var e = document.getElementById("test");
-
-s.collapse(e, 0);
-s.modify("extend", "forward", "line");
-s.modify("extend", "forward", "line");
-s.modify("extend", "forward", "line");
-document.execCommand("Delete");
+// When the selection to delete ends at the end of a paragraph, that paragraph
+// will be completely deleted, but a <br> or an empty block will remain.
+// Merging must happen to remove that <br> or prune that block.
+//
+// This test illustrates a case where merging wasn't allowed to happen just
+// because the end of the selection to delete was in a fully selected line,
+// which is nonsense.
+//
+// Fixing that bug exposed a problem with merging. If deletion empties out the
+// block that contained the start of the selection to delete, that block can
+// collapse away and become impossible to merge into.  So we insert a
+// placeholder to prop it open so that the merge can happen.
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div style="border: 1px solid red;">^abc</div>',
+            '<div style="border: 1px solid blue;">def|<br></div>',
+        '</div>',
+    ],
+    'Delete',
+    [
+        '<div contenteditable>',
+            '<div style="border: 1px solid red;">|<br></div>',
+        '</div>',
+    ]);
 </script>

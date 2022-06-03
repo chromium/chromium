@@ -1,2 +1,2 @@
 AXWebArea AXRoleDescription='HTML content'
-++AXSlider AXRoleDescription='slider' AXValue='5'
+++AXSlider AXRoleDescription='slider' AXValue=5

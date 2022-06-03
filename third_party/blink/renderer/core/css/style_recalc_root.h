@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_ROOT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_ROOT_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/css/style_traversal_root.h"
 
 namespace blink {
@@ -15,13 +16,14 @@ class CORE_EXPORT StyleRecalcRoot : public StyleTraversalRoot {
  public:
   Element& RootElement() const;
   void RemovedFromFlatTree(const Node& node);
+  void SubtreeModified(ContainerNode& parent) final;
 
  private:
 #if DCHECK_IS_ON()
   ContainerNode* Parent(const Node& node) const final;
+  bool IsChildDirty(const Node& node) const final;
 #endif  // DCHECK_IS_ON()
   bool IsDirty(const Node& node) const final;
-  void RootRemoved(ContainerNode& parent) final;
 };
 
 }  // namespace blink

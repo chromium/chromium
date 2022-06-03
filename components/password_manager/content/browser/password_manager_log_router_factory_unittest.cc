@@ -21,8 +21,6 @@ const char kTestText[] = "abcd1234";
 
 class MockLogReceiver : public autofill::LogReceiver {
  public:
-  MockLogReceiver() {}
-
   MOCK_METHOD1(LogEntry, void(const base::Value&));
 };
 

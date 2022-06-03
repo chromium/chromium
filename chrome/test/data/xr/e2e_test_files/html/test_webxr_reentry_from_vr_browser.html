@@ -13,6 +13,8 @@ presentation from the VR browser.
     <script src="../resources/webxr_e2e.js"></script>
     <script src="../resources/webxr_boilerplate.js"></script>
     <script>
+      setup({single_test: true});
+
       function stepVerifyFirstPresent() {
         onImmersiveXRFrameCallback = () => {
           onImmersiveXRFrameCallback = null;

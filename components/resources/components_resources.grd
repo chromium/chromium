@@ -1,4 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+This file aggregates resource GRDPs for user-facing features under /components.
+Resources for developer-facing chrome:// pages should be aggregated in
+dev_ui_components_resources.grd.
+-->
 <grit latest_public_release="0" current_release="1" output_all_resource_defines="false">
   <outputs>
     <output filename="grit/components_resources.h" type="rc_header">
@@ -8,24 +13,23 @@
   </outputs>
   <release seq="1">
     <includes>
-      <part file="autofill_and_password_manager_internals_resources.grdp" />
       <part file="about_ui_resources.grdp" />
-      <part file="crash_resources.grdp" />
+      <part file="autofill_regex_resources.grdp" />
       <part file="dom_distiller_resources.grdp" />
       <part file="flags_ui_resources.grdp" />
-      <part file="gcm_driver_resources.grdp" />
-      <part file="net_log_resources.grdp" />
+      <part file="management_resources.grdp" />
       <part file="neterror_resources.grdp" />
       <part file="ntp_tiles_resources.grdp" />
       <part file="offline_pages_resources.grdp" />
-      <part file="policy_resources.grdp" />
       <part file="printing_resources.grdp" />
       <part file="safe_browsing_resources.grdp" />
       <part file="security_interstitials_resources.grdp" />
-      <part file="signin_resources.grdp" />
       <part file="translate_resources.grdp" />
-      <part file="user_actions_ui_resources.grdp" />
       <part file="version_ui_resources.grdp" />
+
+      <if expr="is_android">
+        <part file="android_system_error_page_resources.grdp" />
+      </if>
     </includes>
   </release>
 </grit>

@@ -4,6 +4,12 @@
   "Name": {
     "Active": "wifi2"
   },
+  "IPAddressConfigType": {
+    "Active": "DHCP"
+  },
+  "NameServersConfigType": {
+    "Active": "DHCP"
+  },
   "Source": "User",
   "Type": "WiFi",
   "WiFi": {

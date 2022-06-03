@@ -1,0 +1,4 @@
+# Anyone can approve expectation updates. These expectation files exist to
+# prevent changing them without knowing, and to provide a git history of
+# changes to these important aggregated files.
+*

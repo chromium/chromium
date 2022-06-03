@@ -45,7 +45,5 @@ source_set("unit_tests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-  sources = [
-    "cros_dbus_service_unittest.cc",
-  ]
+  sources = [ "cros_dbus_service_unittest.cc" ]
 }

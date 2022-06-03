@@ -4,11 +4,13 @@
 
 package org.chromium.base;
 
+import android.annotation.TargetApi;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.BatteryManager;
+import android.os.Build;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -18,7 +20,7 @@ import org.chromium.base.annotations.NativeMethods;
  * Integrates native PowerMonitor with the java side.
  */
 @JNINamespace("base::android")
-public class PowerMonitor  {
+public class PowerMonitor {
     private static PowerMonitor sInstance;
 
     private boolean mIsBatteryPower;
@@ -42,7 +44,13 @@ public class PowerMonitor  {
         sInstance = new PowerMonitor();
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatusIntent = context.registerReceiver(null, ifilter);
-        if (batteryStatusIntent != null) onBatteryChargingChanged(batteryStatusIntent);
+        if (batteryStatusIntent != null) {
+            // Default to 0, which the EXTRA_PLUGGED docs indicate means "on battery power".  There
+            // is no symbolic constant.  Nonzero values indicate we have some external power source.
+            int chargePlug = batteryStatusIntent.getIntExtra(BatteryManager.EXTRA_PLUGGED, 0);
+            // If we're not plugged, assume we're running on battery power.
+            onBatteryChargingChanged(chargePlug == 0);
+        }
 
         IntentFilter powerConnectedFilter = new IntentFilter();
         powerConnectedFilter.addAction(Intent.ACTION_POWER_CONNECTED);
@@ -50,7 +58,8 @@ public class PowerMonitor  {
         context.registerReceiver(new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                PowerMonitor.onBatteryChargingChanged(intent);
+                PowerMonitor.onBatteryChargingChanged(
+                        intent.getAction().equals(Intent.ACTION_POWER_DISCONNECTED));
             }
         }, powerConnectedFilter);
     }
@@ -58,12 +67,9 @@ public class PowerMonitor  {
     private PowerMonitor() {
     }
 
-    private static void onBatteryChargingChanged(Intent intent) {
+    private static void onBatteryChargingChanged(boolean isBatteryPower) {
         assert sInstance != null;
-        int chargePlug = intent.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-        // If we're not plugged, assume we're running on battery power.
-        sInstance.mIsBatteryPower = chargePlug != BatteryManager.BATTERY_PLUGGED_USB
-                && chargePlug != BatteryManager.BATTERY_PLUGGED_AC;
+        sInstance.mIsBatteryPower = isBatteryPower;
         PowerMonitorJni.get().onBatteryChargingChanged();
     }
 
@@ -75,6 +81,26 @@ public class PowerMonitor  {
         if (sInstance == null) create();
 
         return sInstance.mIsBatteryPower;
+    }
+
+    @CalledByNative
+    private static int getRemainingBatteryCapacity() {
+        // BatteryManager's property for charge level is only supported since Lollipop.
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return 0;
+
+        // Creation of the PowerMonitor can be deferred based on the browser startup path.  If the
+        // battery power is requested prior to the browser triggering the creation, force it to be
+        // created now.
+        if (sInstance == null) create();
+
+        return getRemainingBatteryCapacityImpl();
+    }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private static int getRemainingBatteryCapacityImpl() {
+        return ((BatteryManager) ContextUtils.getApplicationContext().getSystemService(
+                        Context.BATTERY_SERVICE))
+                .getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
     }
 
     @NativeMethods

@@ -10,6 +10,8 @@
 
 #include <string>
 
+#include "build/chromeos_buildflags.h"
+
 namespace content {
 
 // static
@@ -35,9 +37,7 @@ TtsPlatform* TtsPlatform::GetInstance() {
 #endif
 }
 
-bool TtsPlatformImpl::LoadBuiltInTtsEngine(BrowserContext* browser_context) {
-  return false;
-}
+void TtsPlatformImpl::LoadBuiltInTtsEngine(BrowserContext* browser_context) {}
 
 void TtsPlatformImpl::WillSpeakUtteranceWithVoice(TtsUtterance* utterance,
                                                   const VoiceData& voice_data) {
@@ -53,6 +53,12 @@ void TtsPlatformImpl::ClearError() {
 
 void TtsPlatformImpl::SetError(const std::string& error) {
   error_ = error;
+}
+
+void TtsPlatformImpl::Shutdown() {}
+
+bool TtsPlatformImpl::PreferEngineDelegateVoices() {
+  return false;
 }
 
 }  // namespace content

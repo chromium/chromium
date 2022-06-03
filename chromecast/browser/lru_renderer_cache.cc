@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chromecast/browser/renderer_prelauncher.h"
 #include "content/public/browser/site_instance.h"
@@ -21,9 +22,9 @@ LRURendererCache::LRURendererCache(
       in_use_count_(0),
       weak_factory_(this) {
   DCHECK(browser_context_);
-  memory_pressure_listener_ =
-      std::make_unique<base::MemoryPressureListener>(base::BindRepeating(
-          &LRURendererCache::OnMemoryPressure, weak_factory_.GetWeakPtr()));
+  memory_pressure_listener_ = std::make_unique<base::MemoryPressureListener>(
+      FROM_HERE, base::BindRepeating(&LRURendererCache::OnMemoryPressure,
+                                     weak_factory_.GetWeakPtr()));
 }
 
 LRURendererCache::~LRURendererCache() = default;

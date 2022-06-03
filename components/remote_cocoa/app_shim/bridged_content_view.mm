@@ -4,12 +4,11 @@
 
 #import "components/remote_cocoa/app_shim/bridged_content_view.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "base/mac/foundation_util.h"
 #import "base/mac/mac_util.h"
 #import "base/mac/scoped_nsobject.h"
-#import "base/mac/sdk_forward_declarations.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #import "components/remote_cocoa/app_shim/drag_drop_client.h"
 #import "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
@@ -26,6 +25,7 @@
 #include "ui/events/event_utils.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
+#include "ui/events/platform/platform_event_source.h"
 #include "ui/gfx/canvas_paint_mac.h"
 #include "ui/gfx/decorated_text.h"
 #import "ui/gfx/decorated_text_mac.h"
@@ -58,12 +58,30 @@ gfx::Point MovePointToWindow(const NSPoint& point,
                     NSHeight(content_rect) - point_in_window.y);
 }
 
-// Returns true if |event| may have triggered dismissal of an IME and would
-// otherwise be ignored by a ui::TextInputClient when inserted.
-bool IsImeTriggerEvent(NSEvent* event) {
+// Some keys are silently consumed by -[NSView interpretKeyEvents:]
+// They should not be processed as accelerators.
+// See comments at |keyDown:| for details.
+bool ShouldIgnoreAcceleratorWithMarkedText(NSEvent* event) {
   ui::KeyboardCode key = ui::KeyboardCodeFromNSEvent(event);
-  return key == ui::VKEY_RETURN || key == ui::VKEY_TAB ||
-         key == ui::VKEY_ESCAPE;
+  switch (key) {
+    // crbug/883952: Kanji IME completes composition and dismisses itself.
+    case ui::VKEY_RETURN:
+    // Kanji IME: select candidate words.
+    // Pinyin IME: change tone.
+    case ui::VKEY_TAB:
+    // Dismiss IME.
+    case ui::VKEY_ESCAPE:
+    // crbug/915924: Pinyin IME selects candidate.
+    case ui::VKEY_LEFT:
+    case ui::VKEY_RIGHT:
+    case ui::VKEY_UP:
+    case ui::VKEY_DOWN:
+    case ui::VKEY_PRIOR:
+    case ui::VKEY_NEXT:
+      return true;
+    default:
+      return false;
+  }
 }
 
 ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
@@ -111,7 +129,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 // editing command from ui_strings.grd and, when not being sent to a
 // TextInputClient, the keyCode that toolkit-views expects internally.
 // For example, moveToLeftEndOfLine: would pass ui::VKEY_HOME in non-RTL locales
-// even though the Home key on Mac defaults to moveToBeginningOfDocument:.
+// even though the Home key on Mac defaults to scrollToBeginningOfDocument:.
 // This approach also allows action messages a user
 // may have remapped in ~/Library/KeyBindings/DefaultKeyBinding.dict to be
 // catered for.
@@ -172,17 +190,6 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if ((self = [super initWithFrame:initialFrame])) {
     _bridge = bridge;
 
-    // Apple's documentation says that NSTrackingActiveAlways is incompatible
-    // with NSTrackingCursorUpdate, so use NSTrackingActiveInActiveApp.
-    _cursorTrackingArea.reset([[CrTrackingArea alloc]
-        initWithRect:NSZeroRect
-             options:NSTrackingMouseMoved | NSTrackingCursorUpdate |
-                     NSTrackingActiveInActiveApp | NSTrackingInVisibleRect |
-                     NSTrackingMouseEnteredAndExited
-               owner:self
-            userInfo:nil]);
-    [self addTrackingArea:_cursorTrackingArea.get()];
-
     // Get notified whenever Full Keyboard Access mode is changed.
     [[NSDistributedNotificationCenter defaultCenter]
         addObserver:self
@@ -227,8 +234,11 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 - (void)clearView {
   _bridge = nullptr;
   [[NSDistributedNotificationCenter defaultCenter] removeObserver:self];
-  [_cursorTrackingArea.get() clearOwner];
-  [self removeTrackingArea:_cursorTrackingArea.get()];
+  if (_cursorTrackingArea.get()) {
+    [_cursorTrackingArea.get() clearOwner];
+    [self removeTrackingArea:_cursorTrackingArea.get()];
+    _cursorTrackingArea.reset(nil);
+  }
 }
 
 - (bool)needsUpdateWindows {
@@ -277,6 +287,8 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   NSWindow* source = [theEvent window];
   NSWindow* target = [self window];
   DCHECK(target);
+  if (ui::PlatformEventSource::ShouldIgnoreNativePlatformEvents())
+    return;
 
   BOOL isScrollEvent = [theEvent type] == NSScrollWheel;
 
@@ -309,7 +321,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (void)updateTooltipIfRequiredAt:(const gfx::Point&)locationInContent {
   DCHECK(_bridge);
-  base::string16 newTooltipText;
+  std::u16string newTooltipText;
 
   _bridge->host()->GetTooltipTextAt(locationInContent, &newTooltipText);
   if (newTooltipText != _lastTooltipText) {
@@ -322,6 +334,37 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   if (!_bridge)
     return;
   _bridge->host()->SetKeyboardAccessible([NSApp isFullKeyboardAccessEnabled]);
+}
+
+- (void)updateCursorTrackingArea {
+  if (_cursorTrackingArea.get()) {
+    [_cursorTrackingArea.get() clearOwner];
+    [self removeTrackingArea:_cursorTrackingArea.get()];
+    _cursorTrackingArea.reset(nil);
+  }
+  if (![self window])
+    return;
+
+  NSTrackingAreaOptions options =
+      NSTrackingMouseMoved | NSTrackingCursorUpdate | NSTrackingInVisibleRect |
+      NSTrackingMouseEnteredAndExited;
+  if ([[self window] level] == kCGFloatingWindowLevel) {
+    // Floating windows should know when the mouse enters or leaves, regardless
+    // of the first responder, window, or application status.
+    // https://crbug.com/1214013
+    options |= NSTrackingActiveAlways;
+  } else {
+    // Apple's documentation says that NSTrackingActiveAlways is incompatible
+    // with NSTrackingCursorUpdate, so use NSTrackingActiveInActiveApp for all
+    // other levels. See history from  https://crrev.com/314660
+    options |= NSTrackingActiveInActiveApp | NSTrackingCursorUpdate;
+  }
+
+  _cursorTrackingArea.reset([[CrTrackingArea alloc] initWithRect:NSZeroRect
+                                                         options:options
+                                                           owner:self
+                                                        userInfo:nil]);
+  [self addTrackingArea:_cursorTrackingArea.get()];
 }
 
 // BridgedContentView private implementation.
@@ -378,6 +421,15 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // Generate a synthetic event with the keycode toolkit-views expects.
   ui::KeyEvent event(ui::ET_KEY_PRESSED, keyCode, domCode, eventFlags);
 
+  // If the current event is a key event, assume it's the event that led to this
+  // edit command and attach it. Note that it isn't always the case that the
+  // current event is that key event, especially in tests which use synthetic
+  // key events!
+  if (NSApp.currentEvent.type == NSEventTypeKeyDown ||
+      NSApp.currentEvent.type == NSEventTypeKeyUp) {
+    event.SetNativeEvent(NSApp.currentEvent);
+  }
+
   if ([self dispatchKeyEventToMenuController:&event])
     return;
 
@@ -414,6 +466,15 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
     text = [text string];
 
   bool isCharacterEvent = _keyDownEvent && [text length] == 1;
+
+  // For some reason, shift-enter (not shift-return) results in the insertion of
+  // a string with a single character, U+0003, END OF TEXT. Continuing on this
+  // route will result in a forged event that loses the shift modifier.
+  // Therefore, early return. When -keyDown: resumes, it will use a ui::KeyEvent
+  // constructor that works. See https://crbug.com/1188713#c4 for the analysis.
+  if (isCharacterEvent && [text characterAtIndex:0] == 0x0003)
+    return;
+
   // Pass "character" events to the View hierarchy. Cases this handles (non-
   // exhaustive)-
   //    - Space key press on controls. Unlike Tab and newline which have
@@ -604,8 +665,10 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // When this view is added to a window, AppKit calls setFrameSize before it is
   // added to the window, so the behavior in setFrameSize is not triggered.
   NSWindow* window = [self window];
-  if (window)
+  if (window) {
     [self setFrameSize:NSZeroSize];
+    [self updateCursorTrackingArea];
+  }
 }
 
 - (void)setFrameSize:(NSSize)newSize {
@@ -652,11 +715,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (NSDragOperation)draggingUpdated:(id<NSDraggingInfo>)sender {
   remote_cocoa::DragDropClient* client = [self dragDropClient];
-  const auto drag_operation =
-      client ? client->DragUpdate(sender) : ui::DragDropTypes::DRAG_NONE;
-  UMA_HISTOGRAM_BOOLEAN("Event.DragDrop.AcceptDragUpdate",
-                        drag_operation != ui::DragDropTypes::DRAG_NONE);
-  return drag_operation;
+  return client ? client->DragUpdate(sender) : ui::DragDropTypes::DRAG_NONE;
 }
 
 - (void)draggingExited:(id<NSDraggingInfo>)sender {
@@ -702,14 +761,14 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   [self interpretKeyEvents:@[ theEvent ]];
 
   // When there is marked text, -[NSView interpretKeyEvents:] may handle the
-  // event by dismissing the IME window in a way that neither unmarks text, nor
-  // updates any composition. That is, no signal is given either to the
-  // NSTextInputClient or the NSTextInputContext that the IME changed state.
-  // However, we must ensure this key down is not processed as an accelerator.
-  // TODO(tapted): Investigate removing the IsImeTriggerEvent() check - it's
-  // probably not required, but helps tests that expect some events to always
-  // get processed (i.e. TextfieldTest.TextInputClientTest).
-  if (hadMarkedTextAtKeyDown && IsImeTriggerEvent(theEvent))
+  // event by updating the IME state without updating the composition text.
+  // That is, no signal is given either to the NSTextInputClient or the
+  // NSTextInputContext, leaving |hasUnhandledKeyDownEvent_| to be true.
+  // In such a case, the key down event should not processed as an accelerator.
+  // TODO(kerenzhu): Note it may be valid to always mark the key down event as
+  // handled by IME when there is marked text. For now, only certain keys are
+  // skipped.
+  if (hadMarkedTextAtKeyDown && ShouldIgnoreAcceleratorWithMarkedText(theEvent))
     _hasUnhandledKeyDownEvent = NO;
 
   // Even with marked text, some IMEs may follow with -insertNewLine:;
@@ -886,16 +945,16 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (void)moveToBeginningOfLine:(id)sender {
   [self handleAction:ui::TextEditCommand::MOVE_TO_BEGINNING_OF_LINE
-             keyCode:ui::VKEY_HOME
-             domCode:ui::DomCode::HOME
-          eventFlags:0];
+             keyCode:ui::VKEY_LEFT
+             domCode:ui::DomCode::ARROW_LEFT
+          eventFlags:ui::EF_COMMAND_DOWN];
 }
 
 - (void)moveToEndOfLine:(id)sender {
   [self handleAction:ui::TextEditCommand::MOVE_TO_END_OF_LINE
-             keyCode:ui::VKEY_END
-             domCode:ui::DomCode::END
-          eventFlags:0];
+             keyCode:ui::VKEY_RIGHT
+             domCode:ui::DomCode::ARROW_RIGHT
+          eventFlags:ui::EF_COMMAND_DOWN];
 }
 
 - (void)moveToBeginningOfParagraph:(id)sender {
@@ -914,16 +973,16 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 
 - (void)moveToEndOfDocument:(id)sender {
   [self handleAction:ui::TextEditCommand::MOVE_TO_END_OF_DOCUMENT
-             keyCode:ui::VKEY_END
-             domCode:ui::DomCode::END
-          eventFlags:ui::EF_CONTROL_DOWN];
+             keyCode:ui::VKEY_DOWN
+             domCode:ui::DomCode::ARROW_DOWN
+          eventFlags:ui::EF_COMMAND_DOWN];
 }
 
 - (void)moveToBeginningOfDocument:(id)sender {
   [self handleAction:ui::TextEditCommand::MOVE_TO_BEGINNING_OF_DOCUMENT
-             keyCode:ui::VKEY_HOME
-             domCode:ui::DomCode::HOME
-          eventFlags:ui::EF_CONTROL_DOWN];
+             keyCode:ui::VKEY_UP
+             domCode:ui::DomCode::ARROW_UP
+          eventFlags:ui::EF_COMMAND_DOWN];
 }
 
 - (void)pageDown:(id)sender {
@@ -1023,7 +1082,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
                          MOVE_TO_END_OF_DOCUMENT_AND_MODIFY_SELECTION
              keyCode:ui::VKEY_END
              domCode:ui::DomCode::END
-          eventFlags:ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN];
+          eventFlags:ui::EF_SHIFT_DOWN];
 }
 
 - (void)moveToBeginningOfDocumentAndModifySelection:(id)sender {
@@ -1031,7 +1090,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
                          MOVE_TO_BEGINNING_OF_DOCUMENT_AND_MODIFY_SELECTION
              keyCode:ui::VKEY_HOME
              domCode:ui::DomCode::HOME
-          eventFlags:ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN];
+          eventFlags:ui::EF_SHIFT_DOWN];
 }
 
 - (void)pageDownAndModifySelection:(id)sender {
@@ -1124,6 +1183,34 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
 - (void)moveToRightEndOfLineAndModifySelection:(id)sender {
   [self isTextRTL] ? [self moveToBeginningOfLineAndModifySelection:sender]
                    : [self moveToEndOfLineAndModifySelection:sender];
+}
+
+- (void)scrollPageDown:(id)sender {
+  [self handleAction:ui::TextEditCommand::SCROLL_PAGE_DOWN
+             keyCode:ui::VKEY_NEXT
+             domCode:ui::DomCode::PAGE_DOWN
+          eventFlags:ui::EF_NONE];
+}
+
+- (void)scrollPageUp:(id)sender {
+  [self handleAction:ui::TextEditCommand::SCROLL_PAGE_UP
+             keyCode:ui::VKEY_PRIOR
+             domCode:ui::DomCode::PAGE_UP
+          eventFlags:ui::EF_NONE];
+}
+
+- (void)scrollToBeginningOfDocument:(id)sender {
+  [self handleAction:ui::TextEditCommand::SCROLL_TO_BEGINNING_OF_DOCUMENT
+             keyCode:ui::VKEY_HOME
+             domCode:ui::DomCode::HOME
+          eventFlags:ui::EF_NONE];
+}
+
+- (void)scrollToEndOfDocument:(id)sender {
+  [self handleAction:ui::TextEditCommand::SCROLL_TO_END_OF_DOCUMENT
+             keyCode:ui::VKEY_END
+             domCode:ui::DomCode::END
+          eventFlags:ui::EF_NONE];
 }
 
 // Graphical Element transposition
@@ -1237,7 +1324,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
          [types containsObject:base::mac::CFToNSCast(kUTTypeUTF8PlainText)]);
 
   bool result = NO;
-  base::string16 text;
+  std::u16string text;
   if (_bridge)
     _bridge->text_input_host()->GetSelectionText(&result, &text);
   if (!result)
@@ -1271,7 +1358,7 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   // See https://crbug.com/888782.
   if (range.location == NSNotFound)
     range.length = 0;
-  base::string16 substring;
+  std::u16string substring;
   gfx::Range actual_range = gfx::Range::InvalidRange();
   if (_bridge) {
     _bridge->text_input_host()->GetAttributedSubstringForRange(

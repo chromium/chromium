@@ -35,7 +35,7 @@ function initTest() {
 
 function runTest() {
   try {
-    testRunner.copyImageAtAndCapturePixelsAsyncThen(50, 50, completionCallback);
+    testRunner.copyImageThen(50, 50, completionCallback);
   } catch (e) {
     debug('error in runTest');
     debug(e);

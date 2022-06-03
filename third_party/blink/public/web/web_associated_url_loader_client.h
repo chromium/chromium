@@ -22,7 +22,6 @@ class WebAssociatedURLLoaderClient {
   virtual void DidReceiveResponse(const WebURLResponse&) {}
   virtual void DidDownloadData(uint64_t data_length) {}
   virtual void DidReceiveData(const char* data, int data_length) {}
-  virtual void DidReceiveCachedMetadata(const char* data, int data_length) {}
   virtual void DidFinishLoading() {}
   virtual void DidFail(const WebURLError&) {}
 
@@ -32,4 +31,4 @@ class WebAssociatedURLLoaderClient {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_ASSOCIATED_URL_LOADER_CLIENT_H_

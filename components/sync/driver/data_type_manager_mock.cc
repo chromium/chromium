@@ -10,6 +10,6 @@ namespace syncer {
 
 DataTypeManagerMock::DataTypeManagerMock() : result_(OK, ModelTypeSet()) {}
 
-DataTypeManagerMock::~DataTypeManagerMock() {}
+DataTypeManagerMock::~DataTypeManagerMock() = default;
 
 }  // namespace syncer

@@ -8,18 +8,17 @@
 #include <map>
 #include <memory>
 #include <set>
-#include <unordered_set>
+#include <unordered_map>
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
-#include "chrome/browser/media/router/media_routes_observer.h"
 #include "chrome/browser/ui/media_router/cast_modes_with_media_sources.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
 #include "chrome/browser/ui/media_router/media_sink_with_cast_modes.h"
-#include "chrome/common/media_router/media_sink.h"
-#include "chrome/common/media_router/media_source.h"
+#include "components/media_router/browser/media_routes_observer.h"
+#include "components/media_router/common/media_sink.h"
+#include "components/media_router/common/media_source.h"
 
 namespace url {
 class Origin;
@@ -73,6 +72,10 @@ class QueryResultManager {
   };
 
   explicit QueryResultManager(MediaRouter* media_router);
+
+  QueryResultManager(const QueryResultManager&) = delete;
+  QueryResultManager& operator=(const QueryResultManager&) = delete;
+
   ~QueryResultManager();
 
   // Adds/removes an observer that is notified with query results.
@@ -184,8 +187,6 @@ class QueryResultManager {
 
   // Not owned by this object.
   MediaRouter* const router_;
-
-  DISALLOW_COPY_AND_ASSIGN(QueryResultManager);
 };
 
 }  // namespace media_router

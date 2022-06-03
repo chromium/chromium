@@ -25,7 +25,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """GDB support for Blink types.
 
 Add this to your gdb by amending your ~/.gdbinit as follows:
@@ -40,6 +39,7 @@ from __future__ import print_function
 import gdb
 import re
 import struct
+
 
 def guess_string_length(ptr):
     """Guess length of string pointed by ptr.
@@ -68,7 +68,8 @@ def ustring_to_string(ptr, length=None):
     else:
         length = int(length)
     char_vals = [int((ptr + i).dereference()) for i in range(length)]
-    string = struct.pack('H' * length, *char_vals).decode('utf-16', 'replace').encode('utf-8')
+    string = struct.pack('H' * length, *char_vals).decode(
+        'utf-16', 'replace').encode('utf-8')
     return string + error_message
 
 
@@ -88,6 +89,7 @@ def lstring_to_string(ptr, length=None):
 
 class StringPrinter(object):
     "Shared code between different string-printing classes"
+
     def __init__(self, val):
         self.val = val
 
@@ -97,47 +99,56 @@ class StringPrinter(object):
 
 class UCharStringPrinter(StringPrinter):
     "Print a UChar*; we must guess at the length"
+
     def to_string(self):
         return ustring_to_string(self.val)
 
 
 class LCharStringPrinter(StringPrinter):
     "Print a LChar*; we must guess at the length"
+
     def to_string(self):
         return lstring_to_string(self.val)
 
 
 class WTFAtomicStringPrinter(StringPrinter):
     "Print a WTF::AtomicString"
+
     def to_string(self):
         return self.val['string_']
 
+
 class WTFStringImplPrinter(StringPrinter):
     "Print a WTF::StringImpl"
+
     def get_length(self):
         return self.val['length_']
 
     def to_string(self):
         chars_start = self.val.address + 1
         if self.is_8bit():
-            return lstring_to_string(chars_start.cast(gdb.lookup_type('char').pointer()),
-                                     self.get_length())
-        return ustring_to_string(chars_start.cast(gdb.lookup_type('UChar').pointer()),
-                                 self.get_length())
+            return lstring_to_string(
+                chars_start.cast(gdb.lookup_type('char').pointer()),
+                self.get_length())
+        return ustring_to_string(
+            chars_start.cast(gdb.lookup_type('UChar').pointer()),
+            self.get_length())
 
     def is_8bit(self):
-        return self.val['is_8bit_']
+        return int(str(self.val['hash_and_flags_'])) % 2
 
 
 class WTFStringPrinter(StringPrinter):
     "Print a WTF::String"
+
     def stringimpl_ptr(self):
         return self.val['impl_']['ptr_']
 
     def get_length(self):
         if not self.stringimpl_ptr():
             return 0
-        return WTFStringImplPrinter(self.stringimpl_ptr().dereference()).get_length()
+        return WTFStringImplPrinter(
+            self.stringimpl_ptr().dereference()).get_length()
 
     def to_string(self):
         if not self.stringimpl_ptr():
@@ -145,15 +156,16 @@ class WTFStringPrinter(StringPrinter):
         return self.stringimpl_ptr().dereference()
 
 
-
 class blinkKURLPrinter(StringPrinter):
     "Print a blink::KURL"
+
     def to_string(self):
         return WTFStringPrinter(self.val['string_']).to_string()
 
 
 class blinkLayoutUnitPrinter:
     "Print a blink::LayoutUnit"
+
     def __init__(self, val):
         self.val = val
 
@@ -163,6 +175,7 @@ class blinkLayoutUnitPrinter:
 
 class blinkLayoutSizePrinter:
     "Print a blink::LayoutSize"
+
     def __init__(self, val):
         self.val = val
 
@@ -174,13 +187,14 @@ class blinkLayoutSizePrinter:
 
 class blinkLayoutPointPrinter:
     "Print a blink::LayoutPoint"
+
     def __init__(self, val):
         self.val = val
 
     def to_string(self):
-        return 'LayoutPoint(%s, %s)' % (
-            blinkLayoutUnitPrinter(self.val['x_']).to_string(),
-            blinkLayoutUnitPrinter(self.val['y_']).to_string())
+        return 'LayoutPoint(%s, %s)' % (blinkLayoutUnitPrinter(
+            self.val['x_']).to_string(), blinkLayoutUnitPrinter(
+                self.val['y_']).to_string())
 
 
 class blinkQualifiedNamePrinter(StringPrinter):
@@ -198,7 +212,7 @@ class blinkQualifiedNamePrinter(StringPrinter):
             self.prefix_length = self.prefix_printer.get_length()
             if self.prefix_length > 0:
                 self.length = (self.prefix_length + 1 +
-                    self.local_name_printer.get_length())
+                               self.local_name_printer.get_length())
             else:
                 self.length = self.local_name_printer.get_length()
 
@@ -211,13 +225,14 @@ class blinkQualifiedNamePrinter(StringPrinter):
         else:
             if self.prefix_length > 0:
                 return (self.prefix_printer.to_string() + ":" +
-                    self.local_name_printer.to_string())
+                        self.local_name_printer.to_string())
             else:
                 return self.local_name_printer.to_string()
 
 
 class BlinkPixelsAndPercentPrinter:
     "Print a blink::PixelsAndPercent value"
+
     def __init__(self, val):
         self.val = val
 
@@ -227,6 +242,7 @@ class BlinkPixelsAndPercentPrinter:
 
 class BlinkLengthPrinter:
     """Print a blink::Length."""
+
     def __init__(self, val):
         self.val = val
 
@@ -333,8 +349,8 @@ class WTFVectorPrinter:
         return self.Iterator(start, start + self.val['size_'])
 
     def to_string(self):
-        return ('%s of length %d, capacity %d'
-                % ('WTF::Vector', self.val['size_'], self.val['capacity_']))
+        return ('%s of length %d, capacity %d' %
+                ('WTF::Vector', self.val['size_'], self.val['capacity_']))
 
     def display_hint(self):
         return 'array'
@@ -360,6 +376,28 @@ class BlinkDataRefPrinter:
         return 'DataRef(%s)' % (str(self.val['data_']))
 
 
+class BlinkJSONValuePrinter:
+    def __init__(self, val):
+        self.val = val
+
+    def to_string(self):
+        s = str(
+            gdb.parse_and_eval(
+                "((blink::JSONValue*) %s)->ToPrettyJSONString().Utf8(0)" %
+                self.val.address))
+        return s.replace("\\n", "\n").replace('\\"', '"')
+
+
+class CcPaintOpBufferPrinter:
+    def __init__(self, val):
+        self.val = val
+
+    def to_string(self):
+        return gdb.parse_and_eval(
+            "blink::RecordAsJSON(*((cc::PaintOpBuffer*) %s))" %
+            self.val.address)
+
+
 def add_pretty_printers():
     pretty_printers = (
         (re.compile("^WTF::Vector<.*>$"), WTFVectorPrinter),
@@ -371,9 +409,16 @@ def add_pretty_printers():
         (re.compile("^blink::LayoutPoint$"), blinkLayoutPointPrinter),
         (re.compile("^blink::LayoutSize$"), blinkLayoutSizePrinter),
         (re.compile("^blink::QualifiedName$"), blinkQualifiedNamePrinter),
-        (re.compile("^blink::PixelsAndPercent$"), BlinkPixelsAndPercentPrinter),
+        (re.compile("^blink::PixelsAndPercent$"),
+         BlinkPixelsAndPercentPrinter),
         (re.compile("^blink::Length$"), BlinkLengthPrinter),
         (re.compile("^blink::DataRef<.*>$"), BlinkDataRefPrinter),
+        (re.compile("^blink::JSONValue$"), BlinkJSONValuePrinter),
+        (re.compile("^blink::JSONBasicValue$"), BlinkJSONValuePrinter),
+        (re.compile("^blink::JSONString$"), BlinkJSONValuePrinter),
+        (re.compile("^blink::JSONObject$"), BlinkJSONValuePrinter),
+        (re.compile("^blink::JSONArray$"), BlinkJSONValuePrinter),
+        (re.compile("^cc::PaintOpBuffer$"), CcPaintOpBufferPrinter),
     )
 
     def lookup_function(val):
@@ -408,9 +453,8 @@ class PrintPathToRootCommand(gdb.Command):
     Usage: printpathtoroot variable_name"""
 
     def __init__(self):
-        super(PrintPathToRootCommand, self).__init__("printpathtoroot",
-            gdb.COMMAND_SUPPORT,
-            gdb.COMPLETE_NONE)
+        super(PrintPathToRootCommand, self).__init__(
+            "printpathtoroot", gdb.COMMAND_SUPPORT, gdb.COMPLETE_NONE)
 
     def invoke(self, arg, from_tty):
         element_type = gdb.lookup_type('blink::Element')
@@ -426,9 +470,10 @@ class PrintPathToRootCommand(gdb.Command):
         if target_type == str(node_type):
             stack = []
             while val:
-                stack.append([val,
-                              val.cast(element_type.pointer()).dereference()[
-                                  'tag_name_']])
+                stack.append([
+                    val,
+                    val.cast(element_type.pointer()).dereference()['tag_name_']
+                ])
                 val = val.dereference()['parent_']
 
             padding = ''
@@ -437,7 +482,8 @@ class PrintPathToRootCommand(gdb.Command):
                 print(padding, pair[1], pair[0])
                 padding = padding + '  '
         else:
-            print('Sorry: I don\'t know how to deal with %s yet.' % target_type)
+            print(
+                'Sorry: I don\'t know how to deal with %s yet.' % target_type)
 
 
 PrintPathToRootCommand()

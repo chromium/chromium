@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.modules.test_dummy;
 
-import org.chromium.chrome.features.test_dummy.TestDummy;
+import org.chromium.chrome.browser.test_dummy.TestDummy;
 import org.chromium.components.module_installer.builder.ModuleInterface;
 
 /** Provides the test dummy implementation. */

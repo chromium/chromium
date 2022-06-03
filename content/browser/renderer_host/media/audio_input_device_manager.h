@@ -17,11 +17,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/media_stream_provider.h"
 #include "content/common/content_export.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
@@ -36,6 +36,9 @@ namespace content {
 class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
  public:
   explicit AudioInputDeviceManager(media::AudioSystem* audio_system);
+
+  AudioInputDeviceManager(const AudioInputDeviceManager&) = delete;
+  AudioInputDeviceManager& operator=(const AudioInputDeviceManager&) = delete;
 
   // Gets the opened device by |session_id|. Returns NULL if the device
   // is not opened, otherwise the opened device. Called on IO thread.
@@ -52,7 +55,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   // other than Chrome OS.
   class KeyboardMicRegistration {
    public:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     // No registration.
     KeyboardMicRegistration() = default;
 
@@ -75,7 +78,7 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
 #endif
   };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Registers that a stream using keyboard mic has been opened or closed.
   // Keeps count of how many such streams are open and activates and
   // inactivates the keyboard mic accordingly. The (in)activation is done on the
@@ -94,9 +97,8 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   void OpenedOnIOThread(
       const base::UnguessableToken& session_id,
       const blink::MediaStreamDevice& device,
-      base::TimeTicks start_time,
-      const base::Optional<media::AudioParameters>& input_params,
-      const base::Optional<std::string>& matched_output_device_id);
+      const absl::optional<media::AudioParameters>& input_params,
+      const absl::optional<std::string>& matched_output_device_id);
 
   // Callback called on IO thread with the session_id referencing the closed
   // device.
@@ -112,14 +114,12 @@ class CONTENT_EXPORT AudioInputDeviceManager : public MediaStreamProvider {
   base::ObserverList<MediaStreamProviderListener>::Unchecked listeners_;
   blink::MediaStreamDevices devices_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Keeps count of how many streams are using keyboard mic.
   int keyboard_mic_streams_count_;
 #endif
 
   media::AudioSystem* const audio_system_;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioInputDeviceManager);
 };
 
 }  // namespace content

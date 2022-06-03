@@ -9,14 +9,12 @@
 
 #include "base/android/jni_android.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "net/android/network_change_notifier_delegate_android.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
 
 namespace base {
-class SequencedTaskRunner;
 struct OnTaskRunnerDeleter;
 }  // namespace base
 
@@ -51,6 +49,9 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
     : public NetworkChangeNotifier,
       public NetworkChangeNotifierDelegateAndroid::Observer {
  public:
+  NetworkChangeNotifierAndroid(const NetworkChangeNotifierAndroid&) = delete;
+  NetworkChangeNotifierAndroid& operator=(const NetworkChangeNotifierAndroid&) =
+      delete;
   ~NetworkChangeNotifierAndroid() override;
 
   // NetworkChangeNotifier:
@@ -96,8 +97,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
       NetworkChangeNotifierDelegateAndroid* delegate);
 
   NetworkChangeNotifierDelegateAndroid* const delegate_;
-  // |blocking_thread_objects_| will live on this runner.
-  scoped_refptr<base::SequencedTaskRunner> blocking_thread_runner_;
   // A collection of objects that must live on blocking sequences. These objects
   // listen for notifications and relay the notifications to the registered
   // observers without posting back to the thread the object was created on.
@@ -105,8 +104,6 @@ class NET_EXPORT_PRIVATE NetworkChangeNotifierAndroid
   std::unique_ptr<BlockingThreadObjects, base::OnTaskRunnerDeleter>
       blocking_thread_objects_;
   bool force_network_handles_supported_for_testing_;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkChangeNotifierAndroid);
 };
 
 }  // namespace net

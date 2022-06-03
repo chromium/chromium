@@ -5,7 +5,7 @@
 #include "chrome/test/data/webui/chrome_send_browsertest.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/values.h"
 #include "content/public/browser/web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -23,7 +23,7 @@ ChromeSendWebUITest::ChromeSendWebUIMessageHandler::
     ~ChromeSendWebUIMessageHandler() {}
 
 void ChromeSendWebUITest::ChromeSendWebUIMessageHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "checkSend",
       base::BindRepeating(&ChromeSendWebUIMessageHandler::HandleCheckSend,
                           base::Unretained(this)));

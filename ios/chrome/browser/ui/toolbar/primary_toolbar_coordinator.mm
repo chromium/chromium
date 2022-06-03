@@ -11,10 +11,10 @@
 #include "base/mac/foundation_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
-#import "ios/chrome/browser/ui/fullscreen/fullscreen_controller_factory.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_coordinator.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
@@ -55,24 +55,30 @@
 
 @dynamic viewController;
 @synthesize popupPresenterDelegate = _popupPresenterDelegate;
-@synthesize commandDispatcher = _commandDispatcher;
 @synthesize delegate = _delegate;
 
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  DCHECK(self.commandDispatcher);
+  DCHECK(self.browser);
   if (self.started)
     return;
 
   self.enableAnimationsForOmniboxFocus = YES;
 
-  [self.commandDispatcher startDispatchingToTarget:self
-                                       forProtocol:@protocol(FakeboxFocuser)];
+  [self.browser->GetCommandDispatcher()
+      startDispatchingToTarget:self
+                   forProtocol:@protocol(FakeboxFocuser)];
 
   self.viewController = [[PrimaryToolbarViewController alloc] init];
+  self.viewController.shouldHideOmniboxOnNTP =
+      !self.browser->GetBrowserState()->IsOffTheRecord();
   self.viewController.buttonFactory = [self buttonFactoryWithType:PRIMARY];
-  self.viewController.dispatcher = self.dispatcher;
+  // TODO(crbug.com/1045047): Use HandlerForProtocol after commands protocol
+  // clean up.
+  self.viewController.dispatcher =
+      static_cast<id<ApplicationCommands, BrowserCommands, OmniboxCommands>>(
+          self.browser->GetCommandDispatcher());
   self.viewController.delegate = self;
 
   self.orchestrator = [[OmniboxFocusOrchestrator alloc] init];
@@ -87,9 +93,8 @@
   self.orchestrator.editViewAnimatee =
       [self.locationBarCoordinator editViewAnimatee];
 
-  _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-      FullscreenControllerFactory::GetForBrowserState(self.browserState),
-      self.viewController);
+    _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+        FullscreenController::FromBrowser(self.browser), self.viewController);
 
   [super start];
   self.started = YES;
@@ -99,7 +104,7 @@
   if (!self.started)
     return;
   [super stop];
-  [self.commandDispatcher stopDispatchingToTarget:self];
+  [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   [self.locationBarCoordinator stop];
   _fullscreenUIUpdater = nullptr;
   self.started = NO;
@@ -136,6 +141,15 @@
                              animated:self.enableAnimationsForOmniboxFocus];
 }
 
+- (id<ViewRevealingAnimatee>)animatee {
+  return self.viewController;
+}
+
+- (void)setPanGestureHandler:
+    (ViewRevealingVerticalPanHandler*)panGestureHandler {
+  self.viewController.panGestureHandler = panGestureHandler;
+}
+
 #pragma mark - PrimaryToolbarViewControllerDelegate
 
 - (void)viewControllerTraitCollectionDidChange:
@@ -151,9 +165,13 @@
 }
 
 - (void)exitFullscreen {
-  FullscreenControllerFactory::GetInstance()
-      ->GetForBrowserState(self.browserState)
-      ->ExitFullscreen();
+    FullscreenController::FromBrowser(self.browser)->ExitFullscreen();
+}
+
+#pragma mark - NewTabPageControllerDelegate
+
+- (UIResponder<UITextInput>*)fakeboxScribbleForwardingTarget {
+  return self.locationBarCoordinator.omniboxScribbleForwardingTarget;
 }
 
 #pragma mark - FakeboxFocuser
@@ -176,9 +194,10 @@
 
 - (void)onFakeboxBlur {
   // Hide the toolbar if the NTP is currently displayed.
-  web::WebState* webState = self.webStateList->GetActiveWebState();
+  web::WebState* webState =
+      self.browser->GetWebStateList()->GetActiveWebState();
   if (webState && IsVisibleURLNewTabPage(webState)) {
-    self.viewController.view.hidden = IsSplitToolbarMode();
+    self.viewController.view.hidden = IsSplitToolbarMode(self.viewController);
   }
 }
 
@@ -194,7 +213,8 @@
   BOOL isNTP = IsVisibleURLNewTabPage(webState);
 
   // Don't do anything for a live non-ntp tab.
-  if (webState == self.webStateList->GetActiveWebState() && !isNTP) {
+  if (webState == self.browser->GetWebStateList()->GetActiveWebState() &&
+      !isNTP) {
     [self.locationBarCoordinator.locationBarViewController.view setHidden:NO];
   } else {
     self.viewController.view.hidden = NO;
@@ -211,12 +231,9 @@
 
 // Sets the location bar up.
 - (void)setUpLocationBar {
-  self.locationBarCoordinator = [[LocationBarCoordinator alloc] init];
-
-  self.locationBarCoordinator.browser = self.browser;
-  self.locationBarCoordinator.dispatcher =
-      base::mac::ObjCCastStrict<CommandDispatcher>(self.dispatcher);
-  self.locationBarCoordinator.commandDispatcher = self.commandDispatcher;
+  self.locationBarCoordinator =
+      [[LocationBarCoordinator alloc] initWithBaseViewController:nil
+                                                         browser:self.browser];
   self.locationBarCoordinator.delegate = self.delegate;
   self.locationBarCoordinator.popupPresenterDelegate =
       self.popupPresenterDelegate;

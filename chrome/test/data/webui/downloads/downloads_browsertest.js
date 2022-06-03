@@ -6,13 +6,55 @@
 
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
-GEN('#include "services/network/public/cpp/features.h"');
 
-// eslint-disable-next-line no-var
+GEN('#include "content/public/test/browser_test.h"');
+
+/* eslint-disable no-var */
+
 var DownloadsTest = class extends PolymerTest {
   /** @override */
   get browsePreload() {
     return 'chrome://downloads';
+  }
+};
+
+var DownloadsItemTest = class extends DownloadsTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://downloads/test_loader.html?module=downloads/item_tests.js&host=webui-test';
+  }
+};
+
+TEST_F('DownloadsItemTest', 'All', function() {
+  mocha.run();
+});
+
+var DownloadsManagerTest = class extends DownloadsTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://downloads/test_loader.html?module=downloads/manager_tests.js&host=webui-test';
+  }
+};
+
+TEST_F('DownloadsManagerTest', 'All', function() {
+  mocha.run();
+});
+
+var DownloadsToolbarTest = class extends DownloadsTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_tests.js&host=webui-test';
+  }
+};
+
+TEST_F('DownloadsToolbarTest', 'All', function() {
+  mocha.run();
+});
+
+var DownloadsUrlTest = class extends DownloadsTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://downloads/a/b/';
   }
 
   /** @override */
@@ -22,58 +64,10 @@ var DownloadsTest = class extends PolymerTest {
       '//chrome/test/data/webui/mocha_adapter.js',
     ];
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['network::features::kOutOfBlinkCors']};
-  }
 };
 
-// eslint-disable-next-line no-var
-var DownloadsItemTest = class extends DownloadsTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/item_tests.js';
-  }
-};
-
-TEST_F('DownloadsItemTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
-var DownloadsManagerTest = class extends DownloadsTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/manager_tests.js';
-  }
-};
-
-TEST_F('DownloadsManagerTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
-var DownloadsToolbarTest = class extends DownloadsTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/toolbar_tests.js';
-  }
-};
-
-TEST_F('DownloadsToolbarTest', 'All', function() {
-  mocha.run();
-});
-
-// eslint-disable-next-line no-var
-var DownloadsUrlTest = class extends DownloadsTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://downloads/a/b/';
-  }
-};
-
-TEST_F('DownloadsUrlTest', 'All', function() {
+TEST_F('DownloadsUrlTest', 'All', async function() {
+  await import('chrome://webui-test/mojo_webui_test_support.js');
   suite('loading a nonexistent URL of /a/b/', function() {
     test('should load main page with no console errors', function() {
       return customElements.whenDefined('downloads-manager').then(() => {
@@ -84,11 +78,10 @@ TEST_F('DownloadsUrlTest', 'All', function() {
   mocha.run();
 });
 
-// eslint-disable-next-line no-var
 var DownloadsSearchServiceTest = class extends DownloadsTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://downloads/test_loader.html?module=downloads/search_service_test.js';
+    return 'chrome://downloads/test_loader.html?module=downloads/search_service_test.js&host=webui-test';
   }
 };
 

@@ -1,3 +1,5 @@
+static bool AnyMessageDisplayed=0; // For console -idn switch.
+
 // Purely user interface function. Gets and returns user input.
 UIASKREP_RESULT uiAskReplace(wchar *Name,size_t MaxNameSize,int64 FileSize,RarTime *FileTime,uint Flags)
 {
@@ -83,6 +85,8 @@ void uiProcessProgress(const char *Command,int64 CurSize,int64 TotalSize)
 
 void uiMsgStore::Msg()
 {
+  AnyMessageDisplayed=true;
+
   switch(Code)
   {
     case UIERROR_SYSERRMSG:
@@ -99,6 +103,8 @@ void uiMsgStore::Msg()
       Log(Str[0],St(MDataBadCRC),Str[1],Str[0]);
       break;
     case UIERROR_BADPSW:
+      Log(Str[0],St(MWrongFilePassword),Str[1]);
+      break;
     case UIWAIT_BADPSW:
       Log(Str[0],St(MWrongPassword));
       break;
@@ -119,6 +125,7 @@ void uiMsgStore::Msg()
       Log(NULL,St(MErrSeek),Str[0]);
       break;
     case UIERROR_FILEREAD:
+      mprintf(L"\n");
       Log(Str[0],St(MErrRead),Str[1]);
       break;
     case UIERROR_FILEWRITE:
@@ -302,7 +309,15 @@ void uiMsgStore::Msg()
     case UIERROR_ULINKEXIST:
       Log(NULL,St(MSymLinkExists),Str[0]);
       break;
-
+    case UIERROR_READERRTRUNCATED:
+      Log(NULL,St(MErrReadTrunc),Str[0]);
+      break;
+    case UIERROR_READERRCOUNT:
+      Log(NULL,St(MErrReadCount),Num[0]);
+      break;
+    case UIERROR_DIRNAMEEXISTS:
+      Log(NULL,St(MDirNameExists));
+      break;
 
 #ifndef SFX_MODULE
     case UIMSG_STRING:
@@ -395,11 +410,15 @@ bool uiAskNextVolume(wchar *VolName,size_t MaxSize)
 }
 
 
-bool uiAskRepeatRead(const wchar *FileName)
+void uiAskRepeatRead(const wchar *FileName,bool &Ignore,bool &All,bool &Retry,bool &Quit)
 {
-  mprintf(L"\n");
-  Log(NULL,St(MErrRead),FileName);
-  return Ask(St(MRetryAbort))==1;
+  eprintf(St(MErrReadInfo));
+  int Code=Ask(St(MIgnoreAllRetryQuit));
+
+  Ignore=(Code==1);
+  All=(Code==2);
+  Quit=(Code==4);
+  Retry=!Ignore && !All && !Quit; // Default also for invalid input, not just for 'Retry'.
 }
 
 
@@ -421,3 +440,15 @@ const wchar *uiGetMonthName(int Month)
   return St(MonthID[Month]);
 }
 #endif
+
+
+void uiEolAfterMsg()
+{
+  if (AnyMessageDisplayed)
+  {
+    // Avoid deleting several last characters of any previous error message
+    // with percentage indicator in -idn mode.
+    AnyMessageDisplayed=false;
+    mprintf(L"\n");
+  }
+}

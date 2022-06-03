@@ -15,6 +15,9 @@ const char kDisableDrive[] = "gdata.disabled";
 // The pref prefix should remain as "gdata" for backward compatibility.
 const char kDisableDriveOverCellular[] = "gdata.cellular.disabled";
 
+// A boolean pref to enable or disable verbose logging in DriveFS.
+const char kDriveFsEnableVerboseLogging[] = "drivefs.enable_verbose_logging";
+
 // A string pref containing a random salt used to obfuscate account IDs
 // when passed to drivefs.
 const char kDriveFsProfileSalt[] = "drivefs.profile_salt";

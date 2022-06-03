@@ -62,6 +62,12 @@ class TestPendingConnectionRequest
 }  // namespace
 
 class SecureChannelPendingConnectionRequestBaseTest : public testing::Test {
+ public:
+  SecureChannelPendingConnectionRequestBaseTest(
+      const SecureChannelPendingConnectionRequestBaseTest&) = delete;
+  SecureChannelPendingConnectionRequestBaseTest& operator=(
+      const SecureChannelPendingConnectionRequestBaseTest&) = delete;
+
  protected:
   SecureChannelPendingConnectionRequestBaseTest() = default;
   ~SecureChannelPendingConnectionRequestBaseTest() override = default;
@@ -87,7 +93,7 @@ class SecureChannelPendingConnectionRequestBaseTest : public testing::Test {
         test_failure_detail);
   }
 
-  const base::Optional<
+  const absl::optional<
       PendingConnectionRequestDelegate::FailedConnectionReason>&
   GetFailedConnectionReason() {
     return fake_pending_connection_request_delegate_
@@ -99,7 +105,7 @@ class SecureChannelPendingConnectionRequestBaseTest : public testing::Test {
     fake_client_connection_parameters_->CancelClientRequest();
   }
 
-  const base::Optional<mojom::ConnectionAttemptFailureReason>&
+  const absl::optional<mojom::ConnectionAttemptFailureReason>&
   GetConnectionAttemptFailureReason() const {
     return fake_client_connection_parameters_->failure_reason();
   }
@@ -124,8 +130,6 @@ class SecureChannelPendingConnectionRequestBaseTest : public testing::Test {
 
   std::unique_ptr<TestPendingConnectionRequest>
       test_pending_connection_request_;
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelPendingConnectionRequestBaseTest);
 };
 
 TEST_F(SecureChannelPendingConnectionRequestBaseTest,

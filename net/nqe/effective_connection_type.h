@@ -5,9 +5,9 @@
 #ifndef NET_NQE_EFFECTIVE_CONNECTION_TYPE_H_
 #define NET_NQE_EFFECTIVE_CONNECTION_TYPE_H_
 
-#include "base/optional.h"
 #include "base/strings/string_piece.h"
 #include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -69,7 +69,7 @@ NET_EXPORT const char* GetNameForEffectiveConnectionType(
 // |connection_type_name|. If the effective connection type is unavailable or if
 // |connection_type_name| does not match to a known effective connection type,
 // an unset value is returned.
-NET_EXPORT base::Optional<EffectiveConnectionType>
+NET_EXPORT absl::optional<EffectiveConnectionType>
 GetEffectiveConnectionTypeForName(base::StringPiece connection_type_name);
 
 // Returns the string equivalent of |type|. Deprecated, and replaced by

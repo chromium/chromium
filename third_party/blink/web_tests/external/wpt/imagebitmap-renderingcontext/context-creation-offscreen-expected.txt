@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Test that canvas.getContext('bitmaprenderer') returns an instance of ImageBitmapRenderingContext and ctx.canvas on a ImageBitmapRenderingContext returns the original OffscreenCanvas assert_object_equals: unexpected property "width"
-Harness: the test ran to completion.
-

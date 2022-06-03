@@ -1,21 +1,17 @@
-{%- if not use_es_modules %}
+{%- if not use_es_modules -%}
 namespace {{module.namespace}} {
 {% endif %}
 {#--- Constants #}
 {%- for constant in module.constants %}
-export const {{constant.name}}: {{constant.kind|typescript_type_with_nullability}} =
+export const {{constant.name}}: {{constant.kind|typescript_type_with_nullability(use_es_modules)}} =
   {{constant|constant_value}};
 {%- endfor %}
 
 {#--- Enums #}
-{% for enum in enums %}
+{%- for enum in enums %}
 export enum {{enum.name}} {
 {%- for field in enum.fields %}
-{%-  if field.value %}
-  {{field.name}} = {{field.value}},
-{%-  else %}
-  {{field.name}},
-{%-  endif %}
+  {{field.name}} = {{field.numeric_value}},
 {%- endfor %}
 {%- if enum.min_value is not none %}
   MIN_VALUE = {{enum.min_value}},
@@ -23,6 +19,15 @@ export enum {{enum.name}} {
 {%- if enum.max_value is not none %}
   MAX_VALUE = {{enum.max_value}},
 {%- endif %}
+}
+{% endfor %}
+
+{#--- Structs #}
+{%- for struct in structs %}
+export interface {{struct.name}} {
+{%- for packed_field in struct.packed.packed_fields %}
+    {{packed_field.field.name}}: {{packed_field.field.kind|typescript_type_with_nullability(use_es_modules)}};
+{%- endfor %}
 }
 {% endfor %}
 

@@ -1,40 +1,12 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/hidden_style_css.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="../appearance_page/appearance_page.html">
-<link rel="import" href="../privacy_page/privacy_page.html">
-<link rel="import" href="../autofill_page/autofill_page.html">
-<link rel="import" href="../change_password_page/change_password_page.html">
-<link rel="import" href="../controls/settings_idle_load.html">
-<link rel="import" href="../on_startup_page/on_startup_page.html">
-<link rel="import" href="../people_page/people_page.html">
-<link rel="import" href="../reset_page/reset_profile_banner.html">
-<link rel="import" href="../search_page/search_page.html">
-<link rel="import" href="../settings_page/main_page_behavior.html">
-<link rel="import" href="../settings_page/settings_section.html">
-<link rel="import" href="../settings_page_css.html">
-
-<if expr="chromeos">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="../prefs/prefs_behavior.html">
-</if>
-
-<if expr="not chromeos">
-<link rel="import" href="../default_browser_page/default_browser_page.html">
-</if>
-
-<!-- TODO(michaelpg): Rename to something better than "basic" now that this page
-     includes both the basic and advanced settings. -->
-<dom-module id="settings-basic-page">
-  <template>
-    <style include="settings-page-styles cr-hidden-style settings-shared">
+    <style include="cr-shared-style settings-page-styles cr-hidden-style iron-flex settings-shared">
       :host([is-subpage-animating]) {
         /* Prevent an unwanted horizontal scrollbar when transitioning back from
          * a sub-page. */
         overflow: hidden;
+      }
+
+      :host([advanced-toggling-in-progress_]) {
+        -webkit-tap-highlight-color: transparent;
       }
 
       #advancedToggle {
@@ -53,29 +25,14 @@
       }
 
       :host-context(.focus-outline-visible) #advancedToggle:focus {
-        font-weight: 600;
+        outline: auto 5px -webkit-focus-ring-color;
       }
 
-      #osSettingsBanner,
-      #secondaryUserBanner {
-        @apply --cr-card-elevation;
-        align-items: center;
-        background-color: white;
-        border-radius: 2px;
-        display: flex;
+      #osSettingsBanner {
+        background-color: var(--cr-card-background-color);
+        border-radius: var(--cr-card-border-radius);
+        box-shadow: var(--cr-card-shadow);
         margin-top: 21px;
-      }
-
-      #secondaryUserIcon {
-        /* TODO(stevenjb): Replace this with the correct variable or color once
-         * established by UX, see crbug.com/687749. */
-        background-color : rgb(210, 210, 212);
-        background-image: url(chrome://theme/IDR_SECONDARY_USER_SETTINGS);
-        background-position: center;
-        background-repeat: no-repeat;
-        height: 55px;
-        margin: 18px;
-        width: 58px;
       }
 
       #toggleContainer {
@@ -97,6 +54,10 @@
       iron-icon {
         margin-inline-start: 16px;
       }
+
+      :host-context([enable-landing-page-redesign]):host(:not([in-search-mode])) settings-section:not([active]) {
+        display: none;
+      }
     </style>
     <template is="dom-if" if="[[showBasicPage_(
         currentRoute_, inSearchMode, hasExpandedSection_)]]">
@@ -105,10 +66,11 @@
           <settings-reset-profile-banner on-close="onResetProfileBannerClosed_">
           </settings-reset-profile-banner>
         </template>
-<if expr="chromeos">
+<if expr="chromeos or lacros">
         <template is="dom-if" if="[[showOSSettingsBanner_]]">
-          <div id="osSettingsBanner" class="settings-box">
-            <div class="start" on-click="onOSSettingsBannerClick_">
+          <div id="osSettingsBanner" class="cr-row first">
+            <div class="flex cr-padded-text"
+                on-click="onOSSettingsBannerClick_">
               $i18nRaw{osSettingsBannerText}
             </div>
             <cr-icon-button class="icon-clear"
@@ -117,16 +79,7 @@
             </cr-icon-button>
           </div>
         </template>
-        <div id="secondaryUserBanner" hidden="[[!showSecondaryUserBanner_]]">
-          <div id="secondaryUserIcon"></div>
-          <div class="flex">$i18n{secondaryUserBannerText}</div>
-        </div>
 </if>
-        <template is="dom-if" if="[[showChangePassword]]" restamp>
-          <settings-section section="changePassword">
-            <settings-change-password-page></settings-change-password-page>
-          </settings-section>
-        </template>
         <template is="dom-if" if="[[showPage_(pageVisibility.people)]]" restamp>
           <settings-section page-title="$i18n{peoplePageTitle}"
               section="people">
@@ -139,9 +92,23 @@
             restamp>
           <settings-section page-title="$i18n{autofillPageTitle}"
               section="autofill">
-            <settings-autofill-page prefs="{{prefs}}"
-                page-visibility="[[pageVisibility]]">
-            </settings-autofill-page>
+            <settings-autofill-page prefs="{{prefs}}"></settings-autofill-page>
+          </settings-section>
+        </template>
+        <template is="dom-if"
+            if="[[showPrivacyReviewPromo_(pageVisibility.privacy)]]" restamp>
+          <settings-section page-title="" nest-under-section="privacy"
+              no-search>
+            <settings-privacy-review-promo></settings-privacy-review-promo>
+          </settings-section>
+        </template>
+        <template is="dom-if" if="[[showPage_(pageVisibility.safetyCheck)]]"
+            restamp>
+          <settings-section page-title="$i18n{safetyCheckSectionTitle}"
+              section="safetyCheck" nest-under-section="privacy"
+              id="safetyCheckSettingsSection">
+            <settings-safety-check-page prefs="{{prefs}}">
+            </settings-safety-check-page>
           </settings-section>
         </template>
         <template is="dom-if" if="[[showPage_(pageVisibility.privacy)]]"
@@ -166,7 +133,7 @@
             section="search">
           <settings-search-page prefs="{{prefs}}"></settings-search-page>
         </settings-section>
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
         <template is="dom-if" if="[[showPage_(pageVisibility.defaultBrowser)]]"
             restamp>
           <settings-section page-title="$i18n{defaultBrowser}"
@@ -199,7 +166,7 @@
         </h2>
       </template>
 
-      <settings-idle-load id="advancedPageTemplate" url="/lazy_load.html">
+      <settings-idle-load id="advancedPageTemplate">
         <template>
           <div id="advancedPage" hidden$="[[!showAdvancedPage_(
               currentRoute_, inSearchMode, hasExpandedSection_,
@@ -208,38 +175,34 @@
                 restamp>
               <settings-section page-title="$i18n{languagesPageTitle}"
                   section="languages">
-                <settings-languages-page prefs="{{prefs}}"
-                    page-visibility="[[pageVisibility.languages]]">
+<if expr="chromeos">
+                <cr-link-row id="openChromeOSLanguagesSettings"
+                    on-click="onOpenChromeOSLanguagesSettingsClick_"
+                    label="$i18n{openChromeOSLanguagesSettingsLabel}" external>
+                </cr-link-row>
+</if>
+<if expr="not chromeos">
+                <settings-languages-page prefs="{{prefs}}">
                 </settings-languages-page>
+</if>
               </settings-section>
             </template>
             <template is="dom-if" if="[[showPage_(pageVisibility.downloads)]]"
                 restamp>
               <settings-section page-title="$i18n{downloadsPageTitle}"
                   section="downloads">
-                <settings-downloads-page prefs="{{prefs}}"
-                    page-visibility="[[pageVisibility.downloads]]">
+                <settings-downloads-page prefs="{{prefs}}">
                 </settings-downloads-page>
-              </settings-section>
-            </template>
-            <template is="dom-if" if="[[showPage_(pageVisibility.printing)]]"
-                restamp>
-              <settings-section page-title="$i18n{printingPageTitle}"
-                  section="printing">
-                <settings-printing-page prefs="{{prefs}}">
-                </settings-printing-page>
               </settings-section>
             </template>
             <template is="dom-if" if="[[showPage_(pageVisibility.a11y)]]"
                 restamp>
               <settings-section page-title="$i18n{a11yPageTitle}"
                   section="a11y">
-                <settings-a11y-page prefs="{{prefs}}"
-                    page-visibility="[[pageVisibility.a11y]]">
-                </settings-a11y-page>
+                <settings-a11y-page prefs="{{prefs}}"></settings-a11y-page>
               </settings-section>
             </template>
-<if expr="not chromeos">
+<if expr="not chromeos and not lacros">
             <settings-section page-title="$i18n{systemPageTitle}"
                 section="system">
               <settings-system-page prefs="{{prefs}}"></settings-system-page>
@@ -249,15 +212,10 @@
                 restamp>
               <settings-section page-title="$i18n{resetPageTitle}"
                   section="reset">
-                <settings-reset-page prefs="{{prefs}}"
-                    page-visibility="[[pageVisibility.reset]]">
-                </settings-reset-page>
+                <settings-reset-page prefs="{{prefs}}"></settings-reset-page>
               </settings-section>
             </template>
           </div>
         </template>
       </settings-idle-load>
     </template>
-  </template>
-  <script src="basic_page.js"></script>
-</dom-module>

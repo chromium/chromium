@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script type="module">
+import {MockBatteryMonitor} from './resources/mock-battery-monitor.js';
+
+const mock = new MockBatteryMonitor();
+
+promise_test(async _ => {
+  const promise1 = navigator.getBattery();
+  const promise2 = navigator.getBattery();
+  assert_equals(promise1, promise2);
+
+  mock.setBatteryStatus(false, 10, 20, 0.5);
+  mock.verifyBatteryStatus(await promise1);
+  mock.verifyBatteryStatus(await promise2);
+
+}, 'multiple parallel invocations of navigator.getBattery()');
+</script>
+</body>
+</html>

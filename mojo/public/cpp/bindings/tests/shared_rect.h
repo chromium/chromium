@@ -5,7 +5,6 @@
 #ifndef MOJO_PUBLIC_CPP_BINDINGS_TESTS_SHARED_RECT_H_
 #define MOJO_PUBLIC_CPP_BINDINGS_TESTS_SHARED_RECT_H_
 
-#include "base/logging.h"
 
 namespace mojo {
 namespace test {

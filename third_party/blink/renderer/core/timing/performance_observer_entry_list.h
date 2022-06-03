@@ -29,7 +29,7 @@ class PerformanceObserverEntryList : public ScriptWrappable {
       const String& name,
       const AtomicString& entry_type = g_null_atom);
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  protected:
   PerformanceEntryVector performance_entries_;

@@ -19,7 +19,6 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Unit test for xml.py."""
 
 import unittest
@@ -28,7 +27,6 @@ from blinkpy.style.checkers import xml
 
 
 class MockErrorHandler(object):
-
     def __init__(self, handle_style_error):
         self.turned_off_filtering = False
         self._handle_style_error = handle_style_error
@@ -37,7 +35,8 @@ class MockErrorHandler(object):
         self.turned_off_filtering = True
 
     def __call__(self, line_number, category, confidence, message):
-        self._handle_style_error(self, line_number, category, confidence, message)
+        self._handle_style_error(self, line_number, category, confidence,
+                                 message)
         return True
 
 
@@ -45,8 +44,10 @@ class XMLCheckerTest(unittest.TestCase):
     """Tests XMLChecker class."""
 
     def assert_no_error(self, xml_data):
-        def handle_style_error(mock_error_handler, line_number, category, confidence, message):
-            self.fail('Unexpected error: %d %s %d %s' % (line_number, category, confidence, message))
+        def handle_style_error(mock_error_handler, line_number, category,
+                               confidence, message):
+            self.fail('Unexpected error: %d %s %d %s' % \
+                (line_number, category, confidence, message))
 
         error_handler = MockErrorHandler(handle_style_error)
         checker = xml.XMLChecker('foo.xml', error_handler)
@@ -54,7 +55,8 @@ class XMLCheckerTest(unittest.TestCase):
         self.assertTrue(error_handler.turned_off_filtering)
 
     def assert_error(self, expected_line_number, expected_category, xml_data):
-        def handle_style_error(mock_error_handler, line_number, category, confidence, message):
+        def handle_style_error(mock_error_handler, line_number, category,
+                               confidence, message):
             mock_error_handler.had_error = True
             self.assertEqual(expected_line_number, line_number)
             self.assertEqual(expected_category, category)

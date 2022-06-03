@@ -10,6 +10,7 @@
 #include "ui/base/class_property.h"
 #include "ui/gfx/geometry/dip_util.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
 DEFINE_UI_CLASS_PROPERTY_KEY(exo::InputMethodSurface*,
@@ -21,15 +22,14 @@ namespace exo {
 
 InputMethodSurface::InputMethodSurface(InputMethodSurfaceManager* manager,
                                        Surface* surface,
-                                       double default_device_scale_factor)
+                                       bool default_scale_cancellation)
     : ClientControlledShellSurface(
           surface,
           true /* can_minimize */,
-          ash::kShellWindowId_ArcVirtualKeyboardContainer),
+          ash::kShellWindowId_ArcVirtualKeyboardContainer,
+          default_scale_cancellation),
       manager_(manager),
-      input_method_bounds_(),
-      default_device_scale_factor_(default_device_scale_factor) {
-  SetScale(default_device_scale_factor);
+      input_method_bounds_() {
   host_window()->SetName("ExoInputMethodSurface");
   host_window()->SetProperty(kInputMethodSurface, this);
 }
@@ -70,14 +70,30 @@ void InputMethodSurface::OnSurfaceCommit() {
     manager_->AddSurface(this);
   }
 
-  gfx::Rect new_bounds = root_surface()->hit_test_region().bounds();
-  if (input_method_bounds_ != new_bounds) {
-    input_method_bounds_ =
-        gfx::ConvertRectToDIP(default_device_scale_factor_, new_bounds);
+  gfx::RectF new_bounds_in_dips = gfx::ConvertRectToDips(
+      root_surface()->hit_test_region().bounds(), GetScale());
+  // TODO(crbug.com/1131682): We should avoid dropping precision to integers
+  // here if we want to know the true rectangle bounds in DIPs. If not, we
+  // should use ToEnclosingRect() if we want to include DIPs that partly overlap
+  // the physical pixel bounds, or ToEnclosedRect() if we do not.
+  gfx::Rect int_bounds_in_dips =
+      gfx::ToFlooredRectDeprecated(new_bounds_in_dips);
+  if (input_method_bounds_ != int_bounds_in_dips) {
+    input_method_bounds_ = int_bounds_in_dips;
     manager_->OnTouchableBoundsChanged(this);
 
     GetViewAccessibility().OverrideBounds(gfx::RectF(input_method_bounds_));
   }
+}
+
+void InputMethodSurface::SetWidgetBounds(const gfx::Rect& bounds) {
+  if (bounds == widget_->GetWindowBoundsInScreen())
+    return;
+
+  widget_->SetBounds(bounds);
+  UpdateSurfaceBounds();
+
+  // Bounds change requests will be ignored in client side.
 }
 
 gfx::Rect InputMethodSurface::GetBounds() const {

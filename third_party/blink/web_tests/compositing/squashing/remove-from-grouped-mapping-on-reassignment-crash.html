@@ -1,0 +1,57 @@
+<!DOCTYPE HTML>
+<style>
+</style>
+<script>
+if (window.testRunner)
+    testRunner.dumpAsText();
+
+var css = null;
+
+function boom2() {
+    css.insertRule("#el1 { -webkit-animation: el1 2s linear; } ", css.rules.length);
+    css.insertRule("@-webkit-keyframes el1 { from { -webkit-filter: saturate(0.9); } } ", css.rules.length);
+    document.body.offsetTop;
+    document.querySelector('style').appendChild(document.createTextNode("#el0 { -webkit-appearance:square-button } "));
+    document.body.offsetTop;
+}
+
+function boom() {
+    var xs=[
+       "el0=document.createElement('navi'); el0.setAttribute('id','el0'); document.body.appendChild(el0);",
+       "el1=document.createElement('canvas'); el1.setAttribute('id','el1'); document.body.appendChild(el1);",
+       "el2=document.createElement('q'); ",
+       "el3=document.createElement('footer'); ",
+       "el4=document.createElement('dl'); ",
+    ];
+    for(var i=0; i<5; i++) { var xy=xs.shift(); eval(xy); document.body.offsetTop; };
+
+    css.insertRule("#el4 { -webkit-mask-composite: 300 } ", css);
+    css.insertRule("#el1 { -webkit-filter: saturate(0.1); } ", css.rules.length);
+    document.body.offsetTop;
+    css.insertRule("#el0 { -webkit-animation: el1 2s linear; } ", css.rules.length);
+    css.insertRule("@-webkit-keyframes el1 { from { -webkit-filter: invert(0.6); } } ", css.rules.length);
+    document.body.offsetTop;
+    css.insertRule("#el2 { -webkit-animation: el1 2s linear; } ", css.rules.length);
+    css.insertRule("@-webkit-keyframes el1 { from { -webkit-filter: invert(0.005); } } ", css.rules.length);
+    css.insertRule(".c3:indeterminate { border:solidblack; } ", css.rules.length); 
+    css.insertRule(".c4:out-of-range { -webkit-animation:anim1 10s linear 5s 3; } ", css.rules.length); 
+    css.insertRule("#el3 { -webkit-transform-origin:middle  }", css.rules.length);
+
+    setTimeout(boom2, 1);
+}
+
+onload = function() {
+    css = document.styleSheets[0];
+    setTimeout(boom, 1);
+}
+</script>
+<!--
+This test forces a situation where we reassign a Layer's grouped mapping,
+but don't inform the old mapping of the change, and the old mapping attempts to
+use the stale pointer.
+
+FIXME: this test is gross and should be reduced to a minimal repro.
+-->
+
+<!--This test passes if it does not crash-->
+<body>PASS</body>

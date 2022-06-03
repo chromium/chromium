@@ -89,7 +89,7 @@ static_library("hunspell") {
     ]
   }
 
-  if (is_posix && !is_mac && !is_ios && !is_clang) {
+  if (is_posix && !is_apple && !is_clang) {
     cflags += [
       # affentry.hxx has NULL as default parameter for a FLAG in two
       # places.
@@ -138,9 +138,7 @@ fuzzer_test("hunspell_suggest_fuzzer") {
 }
 
 fuzzer_test("bdict_fuzzer") {
-  sources = [
-    "fuzz/bdict_fuzzer.cc",
-  ]
+  sources = [ "fuzz/bdict_fuzzer.cc" ]
   deps = [
     ":hunspell",
     "//base:base",

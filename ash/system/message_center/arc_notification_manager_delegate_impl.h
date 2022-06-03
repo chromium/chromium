@@ -5,10 +5,7 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_ARC_NOTIFICATION_MANAGER_DELEGATE_IMPL_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_ARC_NOTIFICATION_MANAGER_DELEGATE_IMPL_H_
 
-#include <string>
-
-#include "ash/system/message_center/arc/arc_notification_manager_delegate.h"
-#include "base/macros.h"
+#include "ash/public/cpp/message_center/arc_notification_manager_delegate.h"
 
 namespace ash {
 
@@ -16,15 +13,18 @@ class ArcNotificationManagerDelegateImpl
     : public ArcNotificationManagerDelegate {
  public:
   ArcNotificationManagerDelegateImpl();
+
+  ArcNotificationManagerDelegateImpl(
+      const ArcNotificationManagerDelegateImpl&) = delete;
+  ArcNotificationManagerDelegateImpl& operator=(
+      const ArcNotificationManagerDelegateImpl&) = delete;
+
   ~ArcNotificationManagerDelegateImpl() override;
 
   // ArcNotificationManagerDelegate:
   bool IsPublicSessionOrKiosk() const override;
   void ShowMessageCenter() override;
   void HideMessageCenter() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ArcNotificationManagerDelegateImpl);
 };
 
 }  // namespace ash

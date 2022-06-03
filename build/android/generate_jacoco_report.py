@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env vpython3
 
 # Copyright 2013 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -32,7 +32,53 @@ _PARTIAL_PACKAGE_NAMES = ['com/google', 'org/chromium']
 # 'input_path':
 #   '$CHROMIUM_OUTPUT_DIR/\
 #    obj/chrome/android/features/tab_ui/java__process_prebuilt-filtered.jar'
+
 _SOURCES_JSON_FILES_SUFFIX = '__jacoco_sources.json'
+
+
+def _CreateClassfileArgs(class_files, report_type, include_substr=None):
+  """Returns a filtered list of files with classfile option.
+
+  Args:
+    class_files: A list of class files.
+    report_type: A string indicating if device or host files are desired.
+    include_substr: A substring that must be present to include the file.
+
+  Returns:
+    A list of files that don't use the suffix.
+  """
+  # These should match the jar class files generated in internal_rules.gni
+  search_jar_suffix = '%s.filter.jar' % report_type
+  result_class_files = []
+  for f in class_files:
+    include_file = False
+    if f.endswith(search_jar_suffix):
+      include_file = True
+
+    # If include_substr is specified, remove files that don't have the
+    # required substring.
+    if include_file and include_substr and include_substr not in f:
+      include_file = False
+    if include_file:
+      result_class_files += ['--classfiles', f]
+
+  return result_class_files
+
+
+def _GenerateReportOutputArgs(args, class_files, report_type):
+  cmd = _CreateClassfileArgs(class_files, report_type,
+                             args.include_substr_filter)
+  if args.format == 'html':
+    report_dir = os.path.join(args.output_dir, report_type)
+    if not os.path.exists(report_dir):
+      os.makedirs(report_dir)
+    cmd += ['--html', report_dir]
+  elif args.format == 'xml':
+    cmd += ['--xml', args.output_file]
+  elif args.format == 'csv':
+    cmd += ['--csv', args.output_file]
+
+  return cmd
 
 
 def _GetFilesWithSuffix(root_dir, suffix):
@@ -53,6 +99,26 @@ def _GetFilesWithSuffix(root_dir, suffix):
   return files
 
 
+def _GetExecFiles(root_dir, exclude_substr=None):
+  """ Gets all .exec files
+
+  Args:
+    root_dir: Root directory in which to search for files.
+    exclude_substr: Substring which should be absent in filename. If None, all
+      files are selected.
+
+  Returns:
+    A list of absolute paths to .exec files
+
+  """
+  all_exec_files = _GetFilesWithSuffix(root_dir, ".exec")
+  valid_exec_files = []
+  for exec_file in all_exec_files:
+    if not exclude_substr or exclude_substr not in exec_file:
+      valid_exec_files.append(exec_file)
+  return valid_exec_files
+
+
 def _ParseArguments(parser):
   """Parses the command line arguments.
 
@@ -67,13 +133,29 @@ def _ParseArguments(parser):
       required=True,
       choices=['html', 'xml', 'csv'],
       help='Output report format. Choose one from html, xml and csv.')
+  parser.add_argument(
+      '--device-or-host',
+      choices=['device', 'host'],
+      help='Selection on whether to use the device classpath files or the '
+      'host classpath files. Host would typically be used for junit tests '
+      ' and device for tests that run on the device. Only used for xml and csv'
+      ' reports.')
+  parser.add_argument('--include-substr-filter',
+                      help='Substring that must be included in classjars.',
+                      type=str,
+                      default='')
   parser.add_argument('--output-dir', help='html report output directory.')
-  parser.add_argument('--output-file', help='xml or csv report output file.')
+  parser.add_argument('--output-file',
+                      help='xml file to write device coverage results.')
   parser.add_argument(
       '--coverage-dir',
       required=True,
       help='Root of the directory in which to search for '
       'coverage data (.exec) files.')
+  parser.add_argument('--exec-filename-excludes',
+                      required=False,
+                      help='Excludes .exec files which contain a particular '
+                      'substring in their name')
   parser.add_argument(
       '--sources-json-dir',
       help='Root of the directory in which to search for '
@@ -83,8 +165,8 @@ def _ParseArguments(parser):
       nargs='+',
       help='Location of Java non-instrumented class files. '
       'Use non-instrumented jars instead of instrumented jars. '
-      'e.g. use chrome_java__process_prebuilt-filtered.jar instead of'
-      'chrome_java__process_prebuilt-instrumented.jar')
+      'e.g. use chrome_java__process_prebuilt_(host/device)_filter.jar instead'
+      'of chrome_java__process_prebuilt-instrumented.jar')
   parser.add_argument(
       '--sources',
       nargs='+',
@@ -99,15 +181,15 @@ def _ParseArguments(parser):
       'runtime.')
   args = parser.parse_args()
 
-  if args.format == 'html':
-    if not args.output_dir:
-      parser.error('--output-dir needed for html report.')
-  elif not args.output_file:
-    parser.error('--output-file needed for xml or csv report.')
-
+  if args.format == 'html' and not args.output_dir:
+    parser.error('--output-dir needed for report.')
+  if args.format in ('csv', 'xml'):
+    if not args.output_file:
+      parser.error('--output-file needed for xml/csv reports.')
+    if not args.device_or_host and args.sources_json_dir:
+      parser.error('--device-or-host selection needed with --sources-json-dir')
   if not (args.sources_json_dir or args.class_files):
     parser.error('At least either --sources-json-dir or --class-files needed.')
-
   return args
 
 
@@ -117,7 +199,7 @@ def main():
 
   devil_chromium.Initialize()
 
-  coverage_files = _GetFilesWithSuffix(args.coverage_dir, '.exec')
+  coverage_files = _GetExecFiles(args.coverage_dir, args.exec_filename_excludes)
   if not coverage_files:
     parser.error('No coverage file found under %s' % args.coverage_dir)
   print('Found coverage files: %s' % str(coverage_files))
@@ -154,21 +236,22 @@ def main():
                    'jacococli.jar'), 'report'
   ] + coverage_files
 
-  for f in class_files:
-    cmd += ['--classfiles', f]
   for source in fixed_source_dirs:
     cmd += ['--sourcefiles', source]
 
   if args.format == 'html':
-    out_cmd = ['--html', args.output_dir]
-  elif args.format == 'xml':
-    out_cmd = ['--xml', args.output_file]
+    # Both reports are generated for html as the cq bot generates an html
+    # report and we wouldn't know which one a developer needed.
+    device_cmd = cmd + _GenerateReportOutputArgs(args, class_files, 'device')
+    host_cmd = cmd + _GenerateReportOutputArgs(args, class_files, 'host')
+
+    device_exit_code = cmd_helper.RunCmd(device_cmd)
+    host_exit_code = cmd_helper.RunCmd(host_cmd)
+    exit_code = device_exit_code or host_exit_code
   else:
-    out_cmd = ['--csv', args.output_file]
-
-  cmd += out_cmd
-
-  exit_code = cmd_helper.RunCmd(cmd)
+    cmd = cmd + _GenerateReportOutputArgs(args, class_files,
+                                          args.device_or_host)
+    exit_code = cmd_helper.RunCmd(cmd)
 
   if args.cleanup:
     for f in coverage_files:
@@ -181,7 +264,7 @@ def main():
         print('No report generated at %s' % args.output_dir)
         exit_code = 1
     elif not os.path.isfile(args.output_file):
-      print('No report generated at %s' % args.output_file)
+      print('No device coverage report generated at %s' % args.output_file)
       exit_code = 1
 
   return exit_code

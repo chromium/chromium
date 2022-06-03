@@ -40,63 +40,65 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_script_runner.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
+#include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
-#include "third_party/blink/renderer/core/html/imports/html_imports_controller.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
+#include "third_party/blink/renderer/platform/bindings/active_script_wrappable_manager.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
+#include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/wrapper_type_info.h"
-#include "third_party/blink/renderer/platform/heap/heap_stats_collector.h"
-#include "third_party/blink/renderer/platform/heap/unified_heap_controller.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
-#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
 
-Node* V8GCController::OpaqueRootForGC(v8::Isolate*, Node* node) {
+namespace {
+
+const Node& OpaqueRootForGC(v8::Isolate*, const Node* node) {
   DCHECK(node);
   if (node->isConnected())
-    return &node->GetDocument().MasterDocument();
+    return node->GetDocument();
 
   if (auto* attr = DynamicTo<Attr>(node)) {
     Node* owner_element = attr->ownerElement();
     if (!owner_element)
-      return node;
+      return *node;
     node = owner_element;
   }
 
   while (Node* parent = node->ParentOrShadowHostOrTemplateHostNode())
     node = parent;
 
-  return node;
-}
-
-namespace {
-
-bool IsDOMWrapperClassId(uint16_t class_id) {
-  return class_id == WrapperTypeInfo::kNodeClassId ||
-         class_id == WrapperTypeInfo::kObjectClassId ||
-         class_id == WrapperTypeInfo::kCustomWrappableId;
-}
-
-bool IsNestedInV8GC(ThreadState* thread_state, v8::GCType type) {
-  return thread_state && (type == v8::kGCTypeMarkSweepCompact ||
-                          type == v8::kGCTypeIncrementalMarking);
+  return *node;
 }
 
 }  // namespace
+
+// static
+v8::EmbedderGraph::Node::Detachedness V8GCController::DetachednessFromWrapper(
+    v8::Isolate* isolate,
+    const v8::Local<v8::Value>& v8_value,
+    uint16_t class_id,
+    void*) {
+  if (class_id != WrapperTypeInfo::kNodeClassId)
+    return v8::EmbedderGraph::Node::Detachedness::kUnknown;
+  const auto& root_node =
+      OpaqueRootForGC(isolate, V8Node::ToImpl(v8_value.As<v8::Object>()));
+  if (root_node.isConnected() && root_node.GetExecutionContext())
+    return v8::EmbedderGraph::Node::Detachedness::kAttached;
+  return v8::EmbedderGraph::Node::Detachedness::kDetached;
+}
 
 void V8GCController::GcPrologue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcPrologue);
-  ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
-      IsNestedInV8GC(ThreadState::Current(), type)
-          ? ThreadState::Current()->Heap().stats_collector()
-          : nullptr);
+  auto* per_isolate_data = V8PerIsolateData::From(isolate);
+  per_isolate_data->EnterGC();
+
   ScriptForbiddenScope::Enter();
 
   // Attribute garbage collection to the all frames instead of a specific
@@ -105,51 +107,35 @@ void V8GCController::GcPrologue(v8::Isolate* isolate,
           Platform::Current()->GetTopLevelBlameContext())
     blame_context->Enter();
 
-  // TODO(haraken): A GC callback is not allowed to re-enter V8. This means
-  // that it's unsafe to run Oilpan's GC in the GC callback because it may
-  // run finalizers that call into V8. To avoid the risk, we should post
-  // a task to schedule the Oilpan's GC.
-  // (In practice, there is no finalizer that calls into V8 and thus is safe.)
-
   v8::HandleScope scope(isolate);
   switch (type) {
-    case v8::kGCTypeScavenge:
-      if (ThreadState::Current())
-        ThreadState::Current()->WillStartV8GC(BlinkGC::kV8MinorGC);
-      break;
     case v8::kGCTypeIncrementalMarking:
-    case v8::kGCTypeMarkSweepCompact:
-      if (ThreadState::Current())
-        ThreadState::Current()->WillStartV8GC(BlinkGC::kV8MajorGC);
+      // Recomputing ASWs is opportunistic during incremental marking as they
+      // only need to be recomputing during the atomic pause for corectness.
+      if (per_isolate_data->GetActiveScriptWrappableManager()) {
+        per_isolate_data->GetActiveScriptWrappableManager()
+            ->RecomputeActiveScriptWrappables(
+                ActiveScriptWrappableManager::RecomputeMode::kOpportunistic);
+      }
       break;
-    case v8::kGCTypeProcessWeakCallbacks:
+    case v8::kGCTypeMarkSweepCompact:
+      if (per_isolate_data->GetActiveScriptWrappableManager()) {
+        per_isolate_data->GetActiveScriptWrappableManager()
+            ->RecomputeActiveScriptWrappables(
+                ActiveScriptWrappableManager::RecomputeMode::kRequired);
+      }
       break;
     default:
-      NOTREACHED();
+      break;
   }
 }
-
-namespace {
-
-void UpdateCollectedPhantomHandles(v8::Isolate* isolate) {
-  ThreadHeapStatsCollector* stats_collector =
-      ThreadState::Current()->Heap().stats_collector();
-  const size_t count = isolate->NumberOfPhantomHandleResetsSinceLastCall();
-  stats_collector->DecreaseWrapperCount(count);
-  stats_collector->IncreaseCollectedWrapperCount(count);
-}
-
-}  // namespace
 
 void V8GCController::GcEpilogue(v8::Isolate* isolate,
                                 v8::GCType type,
                                 v8::GCCallbackFlags flags) {
   RUNTIME_CALL_TIMER_SCOPE(isolate, RuntimeCallStats::CounterId::kGcEpilogue);
-  ThreadHeapStatsCollector::BlinkGCInV8Scope nested_scope(
-      IsNestedInV8GC(ThreadState::Current(), type)
-          ? ThreadState::Current()->Heap().stats_collector()
-          : nullptr);
-  UpdateCollectedPhantomHandles(isolate);
+
+  V8PerIsolateData::From(isolate)->LeaveGC();
 
   ScriptForbiddenScope::Exit();
 
@@ -158,97 +144,15 @@ void V8GCController::GcEpilogue(v8::Isolate* isolate,
     blame_context->Leave();
 
   ThreadState* current_thread_state = ThreadState::Current();
-  if (current_thread_state && !current_thread_state->IsGCForbidden()) {
-    if (flags & v8::kGCCallbackFlagForced) {
-      // Forces a precise GC at the end of the current event loop.
-      // This is required for testing code that cannot use GC internals but
-      // rather has to rely on window.gc().
-      current_thread_state->ScheduleForcedGCForTesting();
-    }
+  if (current_thread_state) {
+    current_thread_state->NotifyGarbageCollection(type, flags);
   }
 
-  TRACE_EVENT_INSTANT1(TRACE_DISABLED_BY_DEFAULT("devtools.timeline"),
-                       "UpdateCounters", TRACE_EVENT_SCOPE_THREAD, "data",
-                       inspector_update_counters_event::Data());
-}
-
-void V8GCController::CollectAllGarbageForTesting(
-    v8::Isolate* isolate,
-    v8::EmbedderHeapTracer::EmbedderStackState stack_state) {
-  constexpr unsigned kNumberOfGCs = 5;
-
-  if (stack_state != v8::EmbedderHeapTracer::EmbedderStackState::kUnknown) {
-    v8::EmbedderHeapTracer* const tracer = static_cast<v8::EmbedderHeapTracer*>(
-        ThreadState::Current()->unified_heap_controller());
-    // Passing a stack state is only supported when either wrapper tracing or
-    // unified heap is enabled.
-    for (unsigned i = 0; i < kNumberOfGCs; i++)
-      tracer->GarbageCollectionForTesting(stack_state);
-    return;
-  }
-
-  for (unsigned i = 0; i < kNumberOfGCs; i++)
-    isolate->RequestGarbageCollectionForTesting(
-        v8::Isolate::kFullGarbageCollection);
-}
-
-namespace {
-
-// Visitor forwarding all DOM wrapper handles to the provided Blink visitor.
-class DOMWrapperForwardingVisitor final
-    : public v8::PersistentHandleVisitor,
-      public v8::EmbedderHeapTracer::TracedGlobalHandleVisitor {
- public:
-  explicit DOMWrapperForwardingVisitor(Visitor* visitor) : visitor_(visitor) {
-    DCHECK(visitor_);
-  }
-
-  void VisitPersistentHandle(v8::Persistent<v8::Value>* value,
-                             uint16_t class_id) final {
-    // TODO(mlippautz): There should be no more v8::Persistent that have a class
-    // id set.
-    VisitHandle(value, class_id);
-  }
-
-  void VisitTracedGlobalHandle(const v8::TracedGlobal<v8::Value>&) final {
-    CHECK(false) << "Blink does not use v8::TracedGlobal.";
-  }
-
-  void VisitTracedReference(const v8::TracedReference<v8::Value>& value) final {
-    VisitHandle(&value, value.WrapperClassId());
-  }
-
- private:
-  template <typename T>
-  void VisitHandle(T* value, uint16_t class_id) {
-    if (!IsDOMWrapperClassId(class_id))
-      return;
-
-    WrapperTypeInfo* wrapper_type_info = const_cast<WrapperTypeInfo*>(
-        ToWrapperTypeInfo(value->template As<v8::Object>()));
-
-    // WrapperTypeInfo pointer may have been cleared before termination GCs on
-    // worker threads.
-    if (!wrapper_type_info)
-      return;
-
-    wrapper_type_info->Trace(
-        visitor_, ToUntypedWrappable(value->template As<v8::Object>()));
-  }
-
-  Visitor* const visitor_;
-};
-
-}  // namespace
-
-// static
-void V8GCController::TraceDOMWrappers(v8::Isolate* isolate, Visitor* visitor) {
-  DCHECK(isolate);
-  DOMWrapperForwardingVisitor forwarding_visitor(visitor);
-  isolate->VisitHandlesWithClassIds(&forwarding_visitor);
-  v8::EmbedderHeapTracer* const tracer = static_cast<v8::EmbedderHeapTracer*>(
-      ThreadState::Current()->unified_heap_controller());
-  tracer->IterateTracedGlobalHandles(&forwarding_visitor);
+  TRACE_EVENT_INSTANT1(
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "UpdateCounters",
+      TRACE_EVENT_SCOPE_THREAD, "data", [&](perfetto::TracedValue context) {
+        inspector_update_counters_event::Data(std::move(context));
+      });
 }
 
 }  // namespace blink

@@ -4,49 +4,55 @@
 
 package org.chromium.chrome.features.start_surface;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withParent;
+
+import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.util.CallbackHelper.WAIT_TIMEOUT_SECONDS;
-import static org.chromium.chrome.browser.util.UrlConstants.NTP_URL;
-import static org.chromium.content_public.browser.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
-import static org.chromium.content_public.browser.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_POLLING_INTERVAL;
+import static org.chromium.components.embedder_support.util.UrlConstants.NTP_URL;
 
+import android.os.Build.VERSION_CODES;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.espresso.Espresso;
-import android.support.test.espresso.action.ViewActions;
-import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.espresso.matcher.ViewMatchers;
 
 import androidx.annotation.Nullable;
+import androidx.test.espresso.Espresso;
+import androidx.test.espresso.action.ViewActions;
+import androidx.test.espresso.contrib.RecyclerViewActions;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.EnormousTest;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
-import org.chromium.chrome.browser.compositor.animation.CompositorAnimator;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.FeatureUtilities;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabFeatureUtilities;
 import org.chromium.chrome.browser.tab.TabSelectionType;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.WebContentsUtils;
 import org.chromium.net.test.EmbeddedTestServer;
@@ -59,13 +65,16 @@ import java.util.List;
 
 /** Tests for the {@link StartSurfaceLayout}, mainly for animation performance. */
 @RunWith(ChromeJUnit4ClassRunner.class)
+// clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=" + ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID + "<Study,"
                 + ChromeFeatureList.TAB_TO_GTS_ANIMATION + "<Study",
         "force-fieldtrials=Study/Group"})
+@Features.EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID})
 @Restriction(
         {UiRestriction.RESTRICTION_TYPE_PHONE, Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE})
 public class StartSurfaceLayoutPerfTest {
+    // clang-format on
     private static final String TAG = "SSLayoutPerfTest";
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:soft-cleanup-delay/0/cleanup-delay/0/skip-slow-zooming/false"
@@ -77,9 +86,7 @@ public class StartSurfaceLayoutPerfTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Rule
-    public TestRule mProcessor = new Features.InstrumentationProcessor();
-
+    @SuppressWarnings("FieldCanBeLocal")
     private EmbeddedTestServer mTestServer;
     private StartSurfaceLayout mStartSurfaceLayout;
     private String mUrl;
@@ -89,7 +96,6 @@ public class StartSurfaceLayoutPerfTest {
 
     @Before
     public void setUp() {
-        FeatureUtilities.setGridTabSwitcherEnabledForTesting(true);
         mTestServer = EmbeddedTestServer.createAndStartServer(InstrumentationRegistry.getContext());
         mActivityTestRule.startMainActivityFromLauncher();
 
@@ -107,13 +113,10 @@ public class StartSurfaceLayoutPerfTest {
             mWaitingTime = 1000;
             mTabNumCap = 0;
         }
-        assertTrue(TabFeatureUtilities.isTabToGtsAnimationEnabled());
+        assertTrue(TabUiFeatureUtilities.isTabToGtsAnimationEnabled());
 
-        CriteriaHelper.pollUiThread(Criteria.equals(true,
-                mActivityTestRule.getActivity()
-                        .getTabModelSelector()
-                        .getTabModelFilterProvider()
-                        .getCurrentTabModelFilter()::isTabModelRestored));
+        CriteriaHelper.pollUiThread(
+                mActivityTestRule.getActivity().getTabModelSelector()::isTabStateInitialized);
     }
 
     @Test
@@ -135,7 +138,10 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS + "/soft-cleanup-delay/10000/cleanup-delay/10000"})
-    public void testTabToGridFromLiveTabWith10TabsWarm() throws InterruptedException {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testTabToGridFromLiveTabWith10TabsWarm() throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (warm)");
     }
@@ -143,7 +149,11 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS + "/cleanup-delay/10000"})
-    public void testTabToGridFromLiveTabWith10TabsSoft() throws InterruptedException {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184787",
+            supported_abis_includes = "x86", sdk_is_greater_than = VERSION_CODES.O_MR1,
+            sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testTabToGridFromLiveTabWith10TabsSoft() throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (soft)");
     }
@@ -151,7 +161,10 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS + "/downsampling-scale/1"})
-    public void testTabToGridFromLiveTabWith10TabsNoDownsample() throws InterruptedException {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testTabToGridFromLiveTabWith10TabsNoDownsample() throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (no downsample)");
     }
@@ -159,13 +172,17 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS + "/max-duty-cycle/1"})
-    public void testTabToGridFromLiveTabWith10TabsNoRateLimit() throws InterruptedException {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testTabToGridFromLiveTabWith10TabsNoRateLimit() throws InterruptedException {
         prepareTabs(10, NTP_URL);
         reportTabToGridPerf(mUrl, "Tab-to-Grid from live tab with 10 tabs (no rate-limit)");
     }
 
     @Test
     @EnormousTest
+    @FlakyTest(message = "https://crbug.com/1045938")
     @CommandLineFlags.Add({BASE_PARAMS})
     public void testTabToGridFromLiveTabWith10TabsWithoutThumbnail() throws InterruptedException {
         // Note that most of the tabs won't have thumbnails.
@@ -176,6 +193,7 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisabledTest(message = "crbug.com/1048268")
     public void testTabToGridFromLiveTabWith100Tabs() throws InterruptedException {
         // Skip waiting for loading. Otherwise it would take too long.
         // Note that most of the tabs won't have thumbnails.
@@ -245,11 +263,12 @@ public class StartSurfaceLayoutPerfTest {
         assertEquals(
                 numTabs, mActivityTestRule.getActivity().getTabModelSelector().getTotalTabCount());
 
-        // clang-format off
-        CriteriaHelper.pollUiThread(Criteria.equals(0, () ->
-            mActivityTestRule.getActivity().getTabContentManager().getPendingReadbacksForTesting()
-        ));
-        // clang-format on
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(mActivityTestRule.getActivity()
+                                       .getTabContentManager()
+                                       .getPendingReadbacksForTesting(),
+                    Matchers.is(0));
+        });
     }
 
     private void reportTabToGridPerf(String fromUrl, String description)
@@ -304,6 +323,9 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1184787",
+            supported_abis_includes = "x86", sdk_is_greater_than = VERSION_CODES.O_MR1,
+            sdk_is_less_than = VERSION_CODES.Q)
     public void testGridToTabToCurrentNTP() throws InterruptedException {
         prepareTabs(1, NTP_URL);
         reportGridToTabPerf(false, false, "Grid-to-Tab to current NTP");
@@ -312,6 +334,7 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisabledTest(message = "crbug.com/1087608")
     public void testGridToTabToOtherNTP() throws InterruptedException {
         prepareTabs(2, NTP_URL);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other NTP");
@@ -320,6 +343,7 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
+    @DisabledTest(message = "crbug.com/1087608")
     public void testGridToTabToCurrentLive() throws InterruptedException {
         prepareTabs(1, mUrl);
         reportGridToTabPerf(false, false, "Grid-to-Tab to current live tab");
@@ -328,6 +352,7 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
+    @FlakyTest(message = "https://crbug.com/1225926")
     public void testGridToTabToOtherLive() throws InterruptedException {
         prepareTabs(2, mUrl);
         reportGridToTabPerf(true, false, "Grid-to-Tab to other live tab");
@@ -336,7 +361,10 @@ public class StartSurfaceLayoutPerfTest {
     @Test
     @EnormousTest
     @CommandLineFlags.Add({BASE_PARAMS})
-    public void testGridToTabToOtherFrozen() throws InterruptedException {
+    @DisableIf.Build(message = "Flaky on Android P, see https://crbug.com/1161731",
+            sdk_is_greater_than = VERSION_CODES.O_MR1, sdk_is_less_than = VERSION_CODES.Q)
+    public void
+    testGridToTabToOtherFrozen() throws InterruptedException {
         prepareTabs(2, mUrl);
         reportGridToTabPerf(true, true, "Grid-to-Tab to other frozen tab");
     }
@@ -373,7 +401,9 @@ public class StartSurfaceLayoutPerfTest {
 
             mStartSurfaceLayout.setPerfListenerForTesting(collector);
             Thread.sleep(mWaitingTime);
-            Espresso.onView(ViewMatchers.withId(org.chromium.chrome.tab_ui.R.id.tab_list_view))
+            Espresso.onView(allOf(withParent(withId(
+                                          org.chromium.chrome.tab_ui.R.id.compositor_view_holder)),
+                                    withId(org.chromium.chrome.tab_ui.R.id.tab_list_view)))
                     .perform(RecyclerViewActions.actionOnItemAtPosition(
                             targetIndex, ViewActions.click()));
 
@@ -400,7 +430,7 @@ public class StartSurfaceLayoutPerfTest {
                 "The thumbnail " + etc1File.getName() + " is not found",
                 DEFAULT_MAX_TIME_TO_POLL * 10, DEFAULT_POLLING_INTERVAL);
 
-        File jpegFile = TabContentManager.getTabThumbnailFileJpeg(tab);
+        File jpegFile = TabContentManager.getTabThumbnailFileJpeg(tab.getId());
         CriteriaHelper.pollInstrumentationThread(jpegFile::exists,
                 "The thumbnail " + jpegFile.getName() + " is not found",
                 DEFAULT_MAX_TIME_TO_POLL * 10, DEFAULT_POLLING_INTERVAL);

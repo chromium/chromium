@@ -1,17 +1,10 @@
+<!doctype html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
-</script>
-<div style="border:1px solid black" contenteditable="true">
-<div id="item1">Foo<br></div>
-</div>
-
-<script>
-var s = window.getSelection();
-var p1 = document.getElementById("item1");
-s.collapse(p1, 0);
-document.execCommand("FormatBlock", false, "pre");
-
+selection_test(
+    '<div contenteditable><div>|abc<br></div></div>',
+    'FormatBlock pre',
+    '<div contenteditable><pre>|abc</pre></div>');
 </script>

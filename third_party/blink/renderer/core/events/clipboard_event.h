@@ -27,9 +27,10 @@
 
 #include "third_party/blink/renderer/core/clipboard/data_transfer.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
-#include "third_party/blink/renderer/core/events/clipboard_event_init.h"
 
 namespace blink {
+
+class ClipboardEventInit;
 
 class ClipboardEvent final : public Event {
   DEFINE_WRAPPERTYPEINFO();
@@ -51,7 +52,7 @@ class ClipboardEvent final : public Event {
 
   DataTransfer* clipboardData() const { return clipboard_data_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   const AtomicString& InterfaceName() const override;

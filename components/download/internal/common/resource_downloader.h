@@ -44,7 +44,7 @@ class COMPONENTS_DOWNLOAD_EXPORT ResourceDownloader
   // Create a ResourceDownloader from a navigation that turns to be a download.
   // No URLLoader is created, but the URLLoaderClient implementation is
   // transferred.
-  static std::unique_ptr<ResourceDownloader> InterceptNavigationResponse(
+  static void InterceptNavigationResponse(
       base::WeakPtr<UrlDownloadHandler::Delegate> delegate,
       std::unique_ptr<network::ResourceRequest> resource_request,
       int render_process_id,
@@ -75,6 +75,10 @@ class COMPONENTS_DOWNLOAD_EXPORT ResourceDownloader
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const URLSecurityPolicy& url_security_policy,
       mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider);
+
+  ResourceDownloader(const ResourceDownloader&) = delete;
+  ResourceDownloader& operator=(const ResourceDownloader&) = delete;
+
   ~ResourceDownloader() override;
 
   // DownloadResponseHandler::Delegate
@@ -100,9 +104,6 @@ class COMPONENTS_DOWNLOAD_EXPORT ResourceDownloader
       network::mojom::URLResponseHeadPtr response_head,
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints);
-
-  // UrlDownloadHandler implementations.
-  void CancelRequest() override;
 
   // Ask the |delegate_| to destroy this object.
   void Destroy();
@@ -152,7 +153,7 @@ class COMPONENTS_DOWNLOAD_EXPORT ResourceDownloader
   GURL tab_referrer_url_;
 
   // URLLoader status when intercepting the navigation request.
-  base::Optional<network::URLLoaderCompletionStatus> url_loader_status_;
+  absl::optional<network::URLLoaderCompletionStatus> url_loader_status_;
 
   // TaskRunner to post callbacks to the |delegate_|
   scoped_refptr<base::SingleThreadTaskRunner> delegate_task_runner_;
@@ -170,10 +171,6 @@ class COMPONENTS_DOWNLOAD_EXPORT ResourceDownloader
   // system enters power saving mode while a download is alive, it can cause
   // download to be interrupted.
   mojo::Remote<device::mojom::WakeLock> wake_lock_;
-
-  base::WeakPtrFactory<ResourceDownloader> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ResourceDownloader);
 };
 
 }  // namespace download

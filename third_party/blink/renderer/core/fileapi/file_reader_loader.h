@@ -33,12 +33,12 @@
 
 #include <memory>
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "third_party/blink/public/mojom/blob/blob.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/fileapi/file_error.h"
-#include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -97,7 +97,7 @@ class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
 
   // Before OnCalculatedSize() is called: Returns nullopt.
   // After OnCalculatedSize() is called: Returns the size of the resource.
-  base::Optional<uint64_t> TotalBytes() const { return total_bytes_; }
+  absl::optional<uint64_t> TotalBytes() const { return total_bytes_; }
 
   FileErrorCode GetErrorCode() const { return error_code_; }
 
@@ -126,7 +126,7 @@ class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
     // into this bucket. If there are a large number of errors reported here,
     // then there can be a new enumeration reported for mojo pipe errors.
     kMojoPipeUnexpectedReadError = 10,
-    kCount
+    kMaxValue = kMojoPipeUnexpectedReadError,
   };
 
   void Cleanup();
@@ -167,13 +167,16 @@ class CORE_EXPORT FileReaderLoader : public mojom::blink::BlobReaderClient {
   // total_bytes_ is set to the total size of the blob being loaded as soon as
   // it is known, and  the buffer for receiving data of total_bytes_ is
   // allocated and never grow even when extra data is appended.
-  base::Optional<uint64_t> total_bytes_;
+  absl::optional<uint64_t> total_bytes_;
 
   int32_t net_error_ = 0;  // net::OK
   FileErrorCode error_code_ = FileErrorCode::kOK;
 
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
   mojo::SimpleWatcher handle_watcher_;
+  // TODO(crbug.com/937038, crbug.com/1049056): Make FileReaderLoaderClient
+  // GarbageCollected. It will then be possible to use the HeapMojoReceiver
+  // wrapper for receiver_.
   mojo::Receiver<mojom::blink::BlobReaderClient> receiver_{this};
   bool received_all_data_ = false;
   bool received_on_complete_ = false;

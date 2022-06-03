@@ -5,13 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_TEXT_DETECTOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_SHAPEDETECTION_TEXT_DETECTOR_H_
 
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/shape_detection/public/mojom/textdetection.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/modules/shapedetection/shape_detector.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 
 namespace blink {
 
@@ -24,19 +25,18 @@ class MODULES_EXPORT TextDetector final : public ShapeDetector {
   static TextDetector* Create(ExecutionContext*);
 
   explicit TextDetector(ExecutionContext*);
-
-  void Trace(blink::Visitor*) override;
-
- private:
   ~TextDetector() override = default;
 
+  void Trace(Visitor*) const override;
+
+ private:
   ScriptPromise DoDetect(ScriptPromiseResolver*, SkBitmap) override;
   void OnDetectText(
       ScriptPromiseResolver*,
       Vector<shape_detection::mojom::blink::TextDetectionResultPtr>);
   void OnTextServiceConnectionError();
 
-  mojo::Remote<shape_detection::mojom::blink::TextDetection> text_service_;
+  HeapMojoRemote<shape_detection::mojom::blink::TextDetection> text_service_;
 
   HeapHashSet<Member<ScriptPromiseResolver>> text_service_requests_;
 };

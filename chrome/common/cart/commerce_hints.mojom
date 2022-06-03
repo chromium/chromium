@@ -1,0 +1,46 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cart.mojom;
+
+import "url/mojom/url.mojom";
+
+struct Product {
+  // The URL of the product image.
+  url.mojom.Url image_url;
+  // The product name.
+  string name;
+  // The product ID.
+  string product_id;
+};
+
+// This service is implemented in the browser process and is used by the
+// renderer to notify the CommerceHint events.
+interface CommerceHintObserver {
+  // Add-to-cart action is detected. |cart_url| and |product_id|
+  // provided if found.
+  OnAddToCart(url.mojom.Url? cart_url, string product_id);
+
+  // Shopping cart page is visited.
+  OnVisitCart();
+
+  // Products in the shopping cart are updated.
+  OnCartProductUpdated(array<Product> products);
+
+  // Checkout page is visited.
+  OnVisitCheckout();
+
+  // Purchase action is detected.
+  OnPurchase();
+
+  // A form is submitted.
+  OnFormSubmit(bool is_purchase);
+
+  // An XMLHttpRequest is about to be sent.
+  OnWillSendRequest(bool is_addtocart);
+
+  // A navigation is about to happen or has happened. Return whether
+  // we should skip collecting commerce hints on current URL or not.
+  OnNavigation(url.mojom.Url url) => (bool should_skip);
+};

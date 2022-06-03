@@ -6,9 +6,9 @@
 #define IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
-#include <memory>
 
 #include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_animator.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_model_observer.h"
@@ -30,6 +30,10 @@ class WebState;
 class FullscreenMediator : public FullscreenModelObserver {
  public:
   FullscreenMediator(FullscreenController* controller, FullscreenModel* model);
+
+  FullscreenMediator(const FullscreenMediator&) = delete;
+  FullscreenMediator& operator=(const FullscreenMediator&) = delete;
+
   ~FullscreenMediator() override;
 
   // Adds and removes FullscreenControllerObservers.
@@ -55,6 +59,10 @@ class FullscreenMediator : public FullscreenModelObserver {
 
   // Instructs the mediator to stop observing its model.
   void Disconnect();
+
+  // Instructs the mediator to signal the need to resize the horizontal insets.
+  // TODO(crbug.com/1114054) remove after fixing multiwindow resizing issue.
+  void ResizeHorizontalInsets();
 
  private:
   // FullscreenModelObserver:
@@ -92,7 +100,7 @@ class FullscreenMediator : public FullscreenModelObserver {
   // changes.
   base::ObserverList<FullscreenControllerObserver>::Unchecked observers_;
 
-  DISALLOW_COPY_AND_ASSIGN(FullscreenMediator);
+  base::WeakPtrFactory<FullscreenMediator> weak_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_FULLSCREEN_FULLSCREEN_MEDIATOR_H_

@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/public/graph/graph.h"
 
+#include "base/dcheck_is_on.h"
+
 namespace performance_manager {
 
 Graph::Graph() = default;

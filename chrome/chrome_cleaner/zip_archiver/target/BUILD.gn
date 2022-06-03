@@ -32,9 +32,7 @@ static_library("common") {
 source_set("unittest_sources") {
   testonly = true
 
-  sources = [
-    "zip_archiver_impl_unittest.cc",
-  ]
+  sources = [ "zip_archiver_impl_unittest.cc" ]
 
   deps = [
     ":common",

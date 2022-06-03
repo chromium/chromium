@@ -4,10 +4,13 @@
 
 #include "components/payments/content/payment_manifest_web_data_service.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/location.h"
 #include "components/payments/content/payment_method_manifest_table.h"
 #include "components/payments/content/web_app_manifest_section_table.h"
+#include "components/payments/core/secure_payment_confirmation_instrument.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_database_service.h"
 
@@ -24,8 +27,9 @@ void PaymentManifestWebDataService::AddPaymentWebAppManifest(
     std::vector<WebAppManifestSection> manifest) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::Bind(&PaymentManifestWebDataService::AddPaymentWebAppManifestImpl,
-                 this, std::move(manifest)));
+      base::BindOnce(
+          &PaymentManifestWebDataService::AddPaymentWebAppManifestImpl, this,
+          std::move(manifest)));
 }
 
 WebDatabase::State PaymentManifestWebDataService::AddPaymentWebAppManifestImpl(
@@ -44,8 +48,9 @@ void PaymentManifestWebDataService::AddPaymentMethodManifest(
     std::vector<std::string> app_package_names) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::Bind(&PaymentManifestWebDataService::AddPaymentMethodManifestImpl,
-                 this, payment_method, std::move(app_package_names)));
+      base::BindOnce(
+          &PaymentManifestWebDataService::AddPaymentMethodManifestImpl, this,
+          payment_method, std::move(app_package_names)));
 }
 
 WebDatabase::State PaymentManifestWebDataService::AddPaymentMethodManifestImpl(
@@ -66,8 +71,9 @@ PaymentManifestWebDataService::GetPaymentWebAppManifest(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::Bind(&PaymentManifestWebDataService::GetPaymentWebAppManifestImpl,
-                 this, web_app),
+      base::BindOnce(
+          &PaymentManifestWebDataService::GetPaymentWebAppManifestImpl, this,
+          web_app),
       consumer);
 }
 
@@ -88,8 +94,9 @@ PaymentManifestWebDataService::GetPaymentMethodManifest(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::Bind(&PaymentManifestWebDataService::GetPaymentMethodManifestImpl,
-                 this, payment_method),
+      base::BindOnce(
+          &PaymentManifestWebDataService::GetPaymentMethodManifestImpl, this,
+          payment_method),
       consumer);
 }
 
@@ -102,6 +109,84 @@ PaymentManifestWebDataService::GetPaymentMethodManifestImpl(
       PAYMENT_METHOD_MANIFEST,
       PaymentMethodManifestTable::FromWebDatabase(db)->GetManifest(
           payment_method));
+}
+
+WebDataServiceBase::Handle
+PaymentManifestWebDataService::AddSecurePaymentConfirmationInstrument(
+    std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+    WebDataServiceConsumer* consumer) {
+  DCHECK(instrument);
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::
+                         AddSecurePaymentConfirmationInstrumentImpl,
+                     this, std::move(instrument)),
+      consumer);
+}
+
+std::unique_ptr<WDTypedResult>
+PaymentManifestWebDataService::AddSecurePaymentConfirmationInstrumentImpl(
+    std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+    WebDatabase* db) {
+  return std::make_unique<WDResult<bool>>(
+      BOOL_RESULT, PaymentMethodManifestTable::FromWebDatabase(db)
+                       ->AddSecurePaymentConfirmationInstrument(*instrument));
+}
+
+WebDataServiceBase::Handle
+PaymentManifestWebDataService::GetSecurePaymentConfirmationInstruments(
+    std::vector<std::vector<uint8_t>> credential_ids,
+    WebDataServiceConsumer* consumer) {
+  return wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::
+                         GetSecurePaymentConfirmationInstrumentsImpl,
+                     this, std::move(credential_ids)),
+      consumer);
+}
+
+std::unique_ptr<WDTypedResult>
+PaymentManifestWebDataService::GetSecurePaymentConfirmationInstrumentsImpl(
+    std::vector<std::vector<uint8_t>> credential_ids,
+    WebDatabase* db) {
+  return std::make_unique<WDResult<
+      std::vector<std::unique_ptr<SecurePaymentConfirmationInstrument>>>>(
+      SECURE_PAYMENT_CONFIRMATION,
+      PaymentMethodManifestTable::FromWebDatabase(db)
+          ->GetSecurePaymentConfirmationInstruments(std::move(credential_ids)));
+}
+
+void PaymentManifestWebDataService::ClearSecurePaymentConfirmationInstruments(
+    base::Time begin,
+    base::Time end,
+    base::OnceClosure callback) {
+  WebDataServiceBase::Handle handle = wdbs_->ScheduleDBTaskWithResult(
+      FROM_HERE,
+      base::BindOnce(&PaymentManifestWebDataService::
+                         ClearSecurePaymentConfirmationInstrumentsImpl,
+                     this, begin, end),
+      this);
+  clearing_instruments_requests_[handle] = std::move(callback);
+}
+
+std::unique_ptr<WDTypedResult>
+PaymentManifestWebDataService::ClearSecurePaymentConfirmationInstrumentsImpl(
+    base::Time begin,
+    base::Time end,
+    WebDatabase* db) {
+  return std::make_unique<WDResult<bool>>(
+      BOOL_RESULT, PaymentMethodManifestTable::FromWebDatabase(db)
+                       ->ClearSecurePaymentConfirmationInstruments(begin, end));
+}
+
+void PaymentManifestWebDataService::OnWebDataServiceRequestDone(
+    WebDataServiceBase::Handle h,
+    std::unique_ptr<WDTypedResult> result) {
+  if (clearing_instruments_requests_.find(h) ==
+      clearing_instruments_requests_.end())
+    return;
+
+  std::move(clearing_instruments_requests_[h]).Run();
 }
 
 void PaymentManifestWebDataService::RemoveExpiredData(WebDatabase* db) {

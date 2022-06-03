@@ -6,18 +6,51 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojom") {
   generate_java = true
-  sources = [
-    "proxy_resolver.mojom",
-  ]
+  sources = [ "proxy_resolver.mojom" ]
   deps = [
     "//services/network/public/mojom:mojom_ip_address",
     "//services/network/public/mojom:mojom_network_isolation_key",
     "//url/mojom:url_mojom_gurl",
   ]
+  public_deps = [ "//sandbox/policy/mojom" ]
 
   if (!is_ios) {
     export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
     export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
     export_header_blink = "third_party/blink/public/platform/web_common.h"
   }
+
+  cpp_typemaps = [
+    {
+      types = [
+        {
+          mojom = "proxy_resolver.mojom.HostResolveOperation"
+          cpp = "::net::ProxyResolveDnsOperation"
+        },
+
+        {
+          mojom = "proxy_resolver.mojom.ProxyInfo"
+          cpp = "::net::ProxyInfo"
+        },
+
+        {
+          mojom = "proxy_resolver.mojom.ProxyServer"
+          cpp = "::net::ProxyServer"
+        },
+
+        {
+          mojom = "proxy_resolver.mojom.ProxyServer::Scheme"
+          cpp = "::net::ProxyScheme"
+        },
+      ]
+      traits_headers = [
+        "//services/proxy_resolver/public/cpp/mojo_host_mojom_traits.h",
+        "//services/proxy_resolver/public/cpp/proxy_resolver_mojom_traits.h",
+      ]
+      traits_sources = [
+        "//services/proxy_resolver/public/cpp/mojo_host_mojom_traits.cc",
+        "//services/proxy_resolver/public/cpp/proxy_resolver_mojom_traits.cc",
+      ]
+    },
+  ]
 }

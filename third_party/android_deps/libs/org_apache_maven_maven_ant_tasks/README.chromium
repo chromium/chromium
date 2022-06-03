@@ -1,0 +1,13 @@
+Name: Maven Ant Tasks
+Short Name: maven-ant-tasks
+URL: https://ant.apache.org/
+Version: 2.1.3
+License: Apache 2.0
+License File: NOT_SHIPPED
+Security Critical: no
+
+Description:
+Ant Tasks used for Maven integration
+
+Local Modifications:
+No modifications.

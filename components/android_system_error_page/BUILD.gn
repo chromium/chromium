@@ -1,0 +1,27 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_android)
+
+static_library("android_system_error_page") {
+  sources = [
+    "error_page_populator.cc",
+    "error_page_populator.h",
+  ]
+
+  configs += [
+    "//build/config/compiler:noshadowing",
+  ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/resources",
+    "//components/strings",
+    "//net",
+    "//third_party/blink/public:blink",
+    "//ui/base",
+    "//url",
+  ]
+}

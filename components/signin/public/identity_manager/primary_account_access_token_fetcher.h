@@ -8,11 +8,12 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "services/identity/public/cpp/scope_set.h"
+#include "components/signin/public/identity_manager/scope_set.h"
+#include "google_apis/gaia/core_account_id.h"
 
 class GoogleServiceAuthError;
 
@@ -67,18 +68,18 @@ struct AccessTokenInfo;
 //     // introducing wrapper API surfaces.
 //     MyClass::StartAccessTokenRequestForPrimaryAccount() {
 //       // Choose scopes to obtain for the access token.
-//       identity::ScopeSet scopes;
+//       ScopeSet scopes;
 //       scopes.insert(GaiaConstants::kMyFirstScope);
 //       scopes.insert(GaiaConstants::kMySecondScope);
 
 //       // Choose the mode in which to fetch the access token:
 //       // see AccessTokenFetcher::Mode below for definitions.
 //       auto mode =
-//         signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable;
+//         PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable;
 
 //       // Create the fetcher.
 //       access_token_fetcher_ =
-//           std::make_unique<PrimaryAccountAccessTokenFetcher(
+//           std::make_unique<PrimaryAccountAccessTokenFetcher>(
 //               /*consumer_name=*/"MyClass",
 //               identity_manager_,
 //               scopes,
@@ -89,7 +90,7 @@ struct AccessTokenInfo;
 //                              mode);
 //
 //     }
-//     MyClass::OnAccessTokenRequestCompleted(
+//     void MyClass::OnAccessTokenRequestCompleted(
 //         GoogleServiceAuthError error, AccessTokenInfo access_token_info) {
 //       // It is safe to destroy |access_token_fetcher_| from this callback.
 //       access_token_fetcher_.reset();
@@ -149,11 +150,19 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   // the request completes (successful or not). If the
   // PrimaryAccountAccessTokenFetcher is destroyed before the process completes,
   // the callback is not called.
+  // |consent| defaults to kSync because historically having an "authenticated"
+  // account was tied to browser sync. See ./README.md.
   PrimaryAccountAccessTokenFetcher(const std::string& oauth_consumer_name,
                                    IdentityManager* identity_manager,
-                                   const identity::ScopeSet& scopes,
+                                   const ScopeSet& scopes,
                                    AccessTokenFetcher::TokenCallback callback,
-                                   Mode mode);
+                                   Mode mode,
+                                   ConsentLevel consent = ConsentLevel::kSync);
+
+  PrimaryAccountAccessTokenFetcher(const PrimaryAccountAccessTokenFetcher&) =
+      delete;
+  PrimaryAccountAccessTokenFetcher& operator=(
+      const PrimaryAccountAccessTokenFetcher&) = delete;
 
   ~PrimaryAccountAccessTokenFetcher() override;
 
@@ -161,6 +170,10 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   bool access_token_request_retried() { return access_token_retried_; }
 
  private:
+  // Returns the primary account ID. If consent is |kSignin| this may be
+  // the "unconsented" primary account ID.
+  CoreAccountId GetAccountId() const;
+
   // Returns true iff there is a primary account with a refresh token. Should
   // only be called in mode |kWaitUntilAvailable|.
   bool AreCredentialsAvailable() const;
@@ -168,10 +181,12 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   void StartAccessTokenRequest();
 
   // IdentityManager::Observer implementation.
-  void OnPrimaryAccountSet(
-      const CoreAccountInfo& primary_account_info) override;
+  void OnPrimaryAccountChanged(const PrimaryAccountChangeEvent& event) override;
   void OnRefreshTokenUpdatedForAccount(
       const CoreAccountInfo& account_info) override;
+
+  // IdentityManager::DiagnosticsObserver implementation.
+  void OnIdentityManagerShutdown(IdentityManager* identity_manager) override;
 
   // Checks whether credentials are now available and starts an access token
   // request if so. Should only be called in mode |kWaitUntilAvailable|.
@@ -183,7 +198,7 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
 
   std::string oauth_consumer_name_;
   IdentityManager* identity_manager_;
-  identity::ScopeSet scopes_;
+  ScopeSet scopes_;
 
   // Per the contract of this class, it is allowed for clients to delete this
   // object as part of the invocation of |callback_|. Hence, this object must
@@ -191,18 +206,22 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
   // code.
   AccessTokenFetcher::TokenCallback callback_;
 
-  ScopedObserver<IdentityManager, IdentityManager::Observer>
-      identity_manager_observer_{this};
+  base::ScopedObservation<IdentityManager, IdentityManager::Observer>
+      identity_manager_observation_{this};
 
   // Internal fetcher that does the actual access token request.
   std::unique_ptr<AccessTokenFetcher> access_token_fetcher_;
 
   // When a token request gets canceled, we want to retry once.
-  bool access_token_retried_;
+  bool access_token_retried_ = false;
+
+  // Used in kWaitUntilAvailable mode when waiting for the account to be
+  // available.
+  bool waiting_for_account_available_ = false;
 
   Mode mode_;
 
-  DISALLOW_COPY_AND_ASSIGN(PrimaryAccountAccessTokenFetcher);
+  const ConsentLevel consent_;
 };
 
 }  // namespace signin

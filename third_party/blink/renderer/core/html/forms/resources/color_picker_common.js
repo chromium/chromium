@@ -19,6 +19,7 @@ var DefaultColorPalette = [
  * @param {Event} event
  */
 function handleMessage(event) {
+  window.removeEventListener('message', handleMessage, false);
   initialize(JSON.parse(event.data));
   global.argumentsReceived = true;
 }
@@ -39,10 +40,10 @@ function initialize(args) {
   main.innerHTML = '';
   var errorString;
   if (global.params.shouldShowColorSuggestionPicker) {
-    if (global.params.isFormControlsRefreshEnabled) {
-      document.body.classList.add('controls-refresh');
-    }
     main.classList.add('color-suggestion-picker-main');
+    if (global.params.isBorderTransparent) {
+      main.style.borderColor = 'transparent';
+    }
     errorString = validateColorSuggestionPickerArguments(args);
   } else {
     main.classList.add('color-picker-main');

@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_
 
-#include "base/macros.h"
 #include "base/time/time.h"
-#include "base/timer/timer.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/views/view.h"
@@ -17,18 +16,22 @@ class PageActionIconView;
 
 // The view that contains a throbber animation. It is shown when the action
 // related to the page action icon is in progress.
-// TODO(crbug.com/932818): Investigate the possibility of making this a layer
+// TODO(crbug.com/1061635): Investigate the possibility of making this a layer
 // instead of a view.
 class PageActionIconLoadingIndicatorView : public views::View,
                                            public views::ViewObserver,
                                            public gfx::AnimationDelegate {
  public:
+  METADATA_HEADER(PageActionIconLoadingIndicatorView);
   explicit PageActionIconLoadingIndicatorView(PageActionIconView* parent);
+  PageActionIconLoadingIndicatorView(
+      const PageActionIconLoadingIndicatorView&) = delete;
+  PageActionIconLoadingIndicatorView& operator=(
+      const PageActionIconLoadingIndicatorView&) = delete;
   ~PageActionIconLoadingIndicatorView() override;
 
-  void ShowAnimation();
-  void StopAnimation();
-  bool IsAnimating();
+  void SetAnimating(bool animating);
+  bool GetAnimating() const;
 
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
@@ -40,13 +43,11 @@ class PageActionIconLoadingIndicatorView : public views::View,
   void AnimationProgressed(const gfx::Animation* animation) override;
 
  private:
-  base::Optional<base::TimeTicks> throbber_start_time_;
+  absl::optional<base::TimeTicks> throbber_start_time_;
 
   gfx::ThrobAnimation animation_{this};
 
   PageActionIconView* const parent_;
-
-  DISALLOW_COPY_AND_ASSIGN(PageActionIconLoadingIndicatorView);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_LOADING_INDICATOR_VIEW_H_

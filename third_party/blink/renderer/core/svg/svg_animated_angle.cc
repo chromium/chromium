@@ -47,7 +47,7 @@ SVGAnimatedAngle::SVGAnimatedAngle(SVGElement* context_element)
 
 SVGAnimatedAngle::~SVGAnimatedAngle() = default;
 
-void SVGAnimatedAngle::Trace(blink::Visitor* visitor) {
+void SVGAnimatedAngle::Trace(Visitor* visitor) const {
   visitor->Trace(orient_type_);
   SVGAnimatedProperty<SVGAngle>::Trace(visitor);
   ScriptWrappable::Trace(visitor);
@@ -59,9 +59,9 @@ bool SVGAnimatedAngle::NeedsSynchronizeAttribute() const {
 }
 
 void SVGAnimatedAngle::SynchronizeAttribute() {
-  // If the current value is not an <angle> we synchronize the value of the
-  // wrapped enumeration.
-  if (orient_type_->CurrentValue()->EnumValue() != kSVGMarkerOrientAngle) {
+  // If the value is not an <angle> we synchronize the value of the wrapped
+  // enumeration.
+  if (!BaseValue()->IsNumeric()) {
     orient_type_->SynchronizeAttribute();
     return;
   }

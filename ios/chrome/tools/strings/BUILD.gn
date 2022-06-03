@@ -3,12 +3,11 @@
 # found in the LICENSE file.
 
 executable("generate_localizable_strings") {
-  sources = [
-    "generate_localizable_strings.mm",
-  ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "generate_localizable_strings.mm" ]
   deps = [
     "//base",
     "//ui/base:ui_data_pack",
   ]
-  libs = [ "Foundation.framework" ]
+  frameworks = [ "Foundation.framework" ]
 }

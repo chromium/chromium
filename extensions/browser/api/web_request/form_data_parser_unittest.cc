@@ -4,8 +4,8 @@
 
 #include <stddef.h>
 
-#include "base/logging.h"
-#include "base/stl_util.h"
+#include "base/check.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
 #include "extensions/browser/api/web_request/form_data_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,7 +21,7 @@ std::unique_ptr<FormDataParser> InitParser(
   std::unique_ptr<FormDataParser> parser(
       FormDataParser::CreateFromContentTypeHeader(&content_type_header));
   if (parser.get() == NULL)
-    return std::unique_ptr<FormDataParser>();
+    return nullptr;
   return parser;
 }
 
@@ -187,8 +187,8 @@ TEST(WebRequestFormDataParserTest, Parsing) {
                           "select",
                           "one",
                           "binary",
-                          "\u0420\u043e\u0434\u0436\u0435\u0440 "
-                          "\u0416\u0435\u043b\u044f\u0437\u043d\u044b"};
+                          ("\u0420\u043e\u0434\u0436\u0435\u0440 "
+                           "\u0416\u0435\u043b\u044f\u0437\u043d\u044b")};
   const std::vector<std::string> kExpected(kPairs, kPairs + base::size(kPairs));
 
   std::vector<const base::StringPiece*> input;

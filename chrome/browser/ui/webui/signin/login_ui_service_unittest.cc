@@ -4,11 +4,11 @@
 
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 
+#include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -16,14 +16,16 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_builder.h"
@@ -35,6 +37,10 @@ class LoginUIServiceTest : public testing::Test {
   LoginUIServiceTest()
       : profile_manager_(TestingBrowserProcess::GetGlobal()),
         profile_(nullptr) {}
+
+  LoginUIServiceTest(const LoginUIServiceTest&) = delete;
+  LoginUIServiceTest& operator=(const LoginUIServiceTest&) = delete;
+
   ~LoginUIServiceTest() override {}
 
   void SetUp() override {
@@ -48,19 +54,17 @@ class LoginUIServiceTest : public testing::Test {
   TestingProfileManager profile_manager_;
   // Test profile used by all tests - this is owned by profile_manager_.
   TestingProfile* profile_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginUIServiceTest);
 };
 
 class TestLoginUI : public LoginUIService::LoginUI {
  public:
   TestLoginUI() { }
+
+  TestLoginUI(const TestLoginUI&) = delete;
+  TestLoginUI& operator=(const TestLoginUI&) = delete;
+
   ~TestLoginUI() override {}
   void FocusUI() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestLoginUI);
 };
 
 TEST_F(LoginUIServiceTest, CanSetMultipleLoginUIs) {
@@ -92,17 +96,17 @@ TEST_F(LoginUIServiceTest, CanSetMultipleLoginUIs) {
   EXPECT_EQ(nullptr, service.current_login_ui());
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(LoginUIServiceTest, SetProfileBlockingErrorMessage) {
   LoginUIService service(profile_);
 
   service.SetProfileBlockingErrorMessage();
 
-  EXPECT_EQ(base::string16(), service.GetLastLoginResult());
-  EXPECT_EQ(base::string16(), service.GetLastLoginErrorEmail());
-  EXPECT_TRUE(service.IsDisplayingProfileBlockedErrorMessage());
+  EXPECT_EQ(service.GetLastLoginError(), SigninUIError::ProfileIsBlocked());
 }
+#endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 class LoginUIServiceExtensionLoginPromptTest
     : public BrowserWithTestWindowTest {
  public:
@@ -124,11 +128,11 @@ TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {
           extensions::ExtensionSystem::Get(profile()));
   extension_system->CreateExtensionService(
       base::CommandLine::ForCurrentProcess(), base::FilePath(), false);
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/true,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/true,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(1, model_->count());
   // Calling the function again reuses the tab.
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/true,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/true,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(1, model_->count());
 
@@ -140,11 +144,11 @@ TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {
       base::CompareCase::INSENSITIVE_ASCII));
 
   // Changing the parameter opens a new tab.
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/false,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/false,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(2, model_->count());
   // Calling the function again reuses the tab.
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/false,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/false,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(2, model_->count());
   tab = model_->GetWebContentsAt(1);
@@ -156,15 +160,17 @@ TEST_F(LoginUIServiceExtensionLoginPromptTest, Show) {
 }
 
 TEST_F(LoginUIServiceExtensionLoginPromptTest, AsLockedProfile) {
-  ProfileAttributesEntry* entry;
-  ASSERT_TRUE(g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetProfileAttributesWithPath(profile()->GetPath(), &entry));
-  entry->SetIsSigninRequired(true);
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/true,
+  signin_util::ScopedForceSigninSetterForTesting force_signin_setter(true);
+  ProfileAttributesEntry* entry =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetProfileAttributesWithPath(profile()->GetPath());
+  ASSERT_NE(entry, nullptr);
+  entry->LockForceSigninProfile(true);
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/true,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(0, model_->count());
-  service_->ShowExtensionLoginPrompt(/*restricted_to_primary_account=*/false,
+  service_->ShowExtensionLoginPrompt(/*enable_sync=*/false,
                                      /*email_hint=*/std::string());
   EXPECT_EQ(0, model_->count());
 }

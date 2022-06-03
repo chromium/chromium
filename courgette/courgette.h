@@ -57,7 +57,7 @@ enum ExecutableType {
   EXE_UNKNOWN = 0,
   EXE_WIN_32_X86 = 1,
   EXE_ELF_32_X86 = 2,
-  EXE_ELF_32_ARM = 3,
+  // EXE_ELF_32_ARM_DEPRECATED = 3,  // DEPRECATED.
   EXE_WIN_32_X64 = 4,
 };
 

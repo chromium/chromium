@@ -7,10 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 class PrefProxyConfigTracker;
 class PrefService;
+class Profile;
 
 namespace net {
 class ProxyConfigService;
@@ -18,10 +17,15 @@ class ProxyConfigService;
 
 class ProxyServiceFactory {
  public:
+  ProxyServiceFactory() = delete;
+  ProxyServiceFactory(const ProxyServiceFactory&) = delete;
+  ProxyServiceFactory& operator=(const ProxyServiceFactory&) = delete;
+
   // Creates a ProxyConfigService that delivers the system preferences
-  // (or the respective ChromeOS equivalent).
+  // (or the respective Ash-Chrome equivalent).
   static std::unique_ptr<net::ProxyConfigService> CreateProxyConfigService(
-      PrefProxyConfigTracker* tracker);
+      PrefProxyConfigTracker* tracker,
+      Profile* profile);
 
   // Creates a PrefProxyConfigTracker that tracks preferences of a
   // profile. On ChromeOS it additionaly tracks local state for shared proxy
@@ -36,9 +40,6 @@ class ProxyServiceFactory {
   // (ChromeOS only).
   static std::unique_ptr<PrefProxyConfigTracker>
   CreatePrefProxyConfigTrackerOfLocalState(PrefService* local_state_prefs);
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(ProxyServiceFactory);
 };
 
 #endif  // CHROME_BROWSER_NET_PROXY_SERVICE_FACTORY_H_

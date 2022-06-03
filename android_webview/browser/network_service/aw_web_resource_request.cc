@@ -6,11 +6,10 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "content/public/common/resource_type.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_response_headers.h"
-#include "net/url_request/url_request.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "ui/base/page_transition_types.h"
 
 using base::android::ConvertJavaStringToUTF16;
@@ -39,8 +38,8 @@ AwWebResourceRequest::AwWebResourceRequest(
     const network::ResourceRequest& request)
     : url(request.url.spec()),
       method(request.method),
-      is_main_frame(request.resource_type ==
-                    static_cast<int>(content::ResourceType::kMainFrame)),
+      is_main_frame(request.destination ==
+                    network::mojom::RequestDestination::kDocument),
       has_user_gesture(request.has_user_gesture),
       is_renderer_initiated(ui::PageTransitionIsWebTriggerable(
           static_cast<ui::PageTransition>(request.transition_type))) {
@@ -61,6 +60,8 @@ AwWebResourceRequest::AwWebResourceRequest(
   ConvertRequestHeadersToVectors(in_headers, &header_names, &header_values);
 }
 
+AwWebResourceRequest::AwWebResourceRequest(const AwWebResourceRequest& other) =
+    default;
 AwWebResourceRequest::AwWebResourceRequest(AwWebResourceRequest&& other) =
     default;
 AwWebResourceRequest& AwWebResourceRequest::operator=(

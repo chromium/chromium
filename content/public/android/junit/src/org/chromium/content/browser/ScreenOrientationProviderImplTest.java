@@ -15,7 +15,7 @@ import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.content_public.common.ScreenOrientationValues;
+import org.chromium.device.mojom.ScreenOrientationLockType;
 import org.chromium.ui.base.ActivityWindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -36,8 +36,8 @@ public final class ScreenOrientationProviderImplTest {
         // Last orientation lock request should take precedence.
         ScreenOrientationProviderImpl instance = ScreenOrientationProviderImpl.getInstance();
         instance.delayOrientationRequests(window);
-        instance.lockOrientation(window, (byte) ScreenOrientationValues.PORTRAIT_PRIMARY);
-        instance.lockOrientation(window, (byte) ScreenOrientationValues.LANDSCAPE_PRIMARY);
+        instance.lockOrientation(window, (byte) ScreenOrientationLockType.PORTRAIT_PRIMARY);
+        instance.lockOrientation(window, (byte) ScreenOrientationLockType.LANDSCAPE_PRIMARY);
         Assert.assertEquals(
                 ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, activity.getRequestedOrientation());
 
@@ -47,7 +47,7 @@ public final class ScreenOrientationProviderImplTest {
 
         // Lock then unlock screen orientation while requests are delayed.
         instance.delayOrientationRequests(window);
-        instance.lockOrientation(window, (byte) ScreenOrientationValues.PORTRAIT_PRIMARY);
+        instance.lockOrientation(window, (byte) ScreenOrientationLockType.PORTRAIT_PRIMARY);
         instance.unlockOrientation(window);
         Assert.assertEquals(
                 ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE, activity.getRequestedOrientation());
@@ -70,8 +70,8 @@ public final class ScreenOrientationProviderImplTest {
 
         ScreenOrientationProviderImpl instance = ScreenOrientationProviderImpl.getInstance();
         instance.delayOrientationRequests(window1);
-        instance.lockOrientation(window1, (byte) ScreenOrientationValues.PORTRAIT_PRIMARY);
-        instance.lockOrientation(window2, (byte) ScreenOrientationValues.LANDSCAPE_PRIMARY);
+        instance.lockOrientation(window1, (byte) ScreenOrientationLockType.PORTRAIT_PRIMARY);
+        instance.lockOrientation(window2, (byte) ScreenOrientationLockType.LANDSCAPE_PRIMARY);
         Assert.assertEquals(
                 ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED, activity1.getRequestedOrientation());
         Assert.assertEquals(

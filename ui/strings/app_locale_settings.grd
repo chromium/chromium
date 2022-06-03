@@ -6,6 +6,36 @@
     </output>
     <if expr="is_android">
       <output filename="app_locale_settings_af.pak" type="data_package" lang="af" />
+      <output filename="app_locale_settings_as.pak" type="data_package" lang="as" />
+      <output filename="app_locale_settings_az.pak" type="data_package" lang="az" />
+      <output filename="app_locale_settings_be.pak" type="data_package" lang="be" />
+      <output filename="app_locale_settings_bs.pak" type="data_package" lang="bs" />
+      <output filename="app_locale_settings_eu.pak" type="data_package" lang="eu" />
+      <output filename="app_locale_settings_fr-CA.pak" type="data_package" lang="fr-CA" />
+      <output filename="app_locale_settings_gl.pak" type="data_package" lang="gl" />
+      <output filename="app_locale_settings_hy.pak" type="data_package" lang="hy" />
+      <output filename="app_locale_settings_is.pak" type="data_package" lang="is" />
+      <output filename="app_locale_settings_ka.pak" type="data_package" lang="ka" />
+      <output filename="app_locale_settings_kk.pak" type="data_package" lang="kk" />
+      <output filename="app_locale_settings_km.pak" type="data_package" lang="km" />
+      <output filename="app_locale_settings_ky.pak" type="data_package" lang="ky" />
+      <output filename="app_locale_settings_lo.pak" type="data_package" lang="lo" />
+      <output filename="app_locale_settings_mk.pak" type="data_package" lang="mk" />
+      <output filename="app_locale_settings_mn.pak" type="data_package" lang="mn" />
+      <output filename="app_locale_settings_my.pak" type="data_package" lang="my" />
+      <output filename="app_locale_settings_ne.pak" type="data_package" lang="ne" />
+      <output filename="app_locale_settings_or.pak" type="data_package" lang="or" />
+      <output filename="app_locale_settings_pa.pak" type="data_package" lang="pa" />
+      <output filename="app_locale_settings_si.pak" type="data_package" lang="si" />
+      <output filename="app_locale_settings_sq.pak" type="data_package" lang="sq" />
+      <output filename="app_locale_settings_sr-Latn.pak" type="data_package" lang="sr-Latn" />
+      <output filename="app_locale_settings_ur.pak" type="data_package" lang="ur" />
+      <output filename="app_locale_settings_uz.pak" type="data_package" lang="uz" />
+      <output filename="app_locale_settings_zh-HK.pak" type="data_package" lang="zh-HK" />
+      <output filename="app_locale_settings_zu.pak" type="data_package" lang="zu" />
+    </if>
+    <if expr="chromeos or lacros">
+      <output filename="app_locale_settings_is.pak" type="data_package" lang="is" />
     </if>
     <output filename="app_locale_settings_am.pak" type="data_package" lang="am" />
     <output filename="app_locale_settings_ar.pak" type="data_package" lang="ar" />
@@ -28,7 +58,6 @@
     </if>
     <output filename="app_locale_settings_et.pak" type="data_package" lang="et" />
     <output filename="app_locale_settings_fa.pak" type="data_package" lang="fa" />
-    <output filename="app_locale_settings_fake-bidi.pak" type="data_package" lang="fake-bidi" />
     <output filename="app_locale_settings_fi.pak" type="data_package" lang="fi" />
     <output filename="app_locale_settings_fil.pak" type="data_package" lang="fil" />
     <output filename="app_locale_settings_fr.pak" type="data_package" lang="fr" />
@@ -77,6 +106,10 @@
     <output filename="app_locale_settings_vi.pak" type="data_package" lang="vi" />
     <output filename="app_locale_settings_zh-CN.pak" type="data_package" lang="zh-CN" />
     <output filename="app_locale_settings_zh-TW.pak" type="data_package" lang="zh-TW" />
+
+    <!-- Pseudolocales -->
+    <output filename="app_locale_settings_ar-XB.pak" type="data_package" lang="ar-XB" />
+    <output filename="app_locale_settings_en-XA.pak" type="data_package" lang="en-XA" />
   </outputs>
   <translations>
     <file path="translations/app_locale_settings_am.xtb" lang="am" />
@@ -141,7 +174,7 @@
            the family specified. This should be default for locales
            other than Indian locales.
            TODO(jungshik): This and IDS_UI_FONT_SIZE_SCALER are only used
-           on Windows now and are likely to be so in the future because Mac and 
+           on Windows now and are likely to be so in the future because Mac and
            Linux fonts do not have the issue Windows fonts for some locales
            (Indian) have. In that case, this need to be enclosed
            by platform-dependent if-clause. -->
@@ -193,7 +226,7 @@
           75%
         </message>
       </if>
-      <if expr="(is_linux or is_android or is_bsd) and not chromeos">
+      <if expr="(is_linux or is_android or is_bsd or is_fuchsia) and not (chromeos or lacros)">
         <!-- The font used in Web UI (e.g. History). Note that these are only
              backups. We try to use the system font if possible. -->
         <message name="IDS_WEB_FONT_FAMILY" use_name_for_id="true">
@@ -206,7 +239,7 @@
         </message>
       </if>
       <!-- For Chrome OS -->
-      <if expr="chromeos">
+      <if expr="chromeos or lacros">
         <!-- The font name like: 'Font Name, 12px' -->
         <message name="IDS_UI_FONT_FAMILY_CROS" use_name_for_id="true">
           Roboto, 12px

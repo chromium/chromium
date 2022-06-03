@@ -7,12 +7,14 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "chrome/browser/chromeos/printing/printer_configurer.h"
 
 namespace chromeos {
 
 class Printer;
+class TestCupsPrintersManager;
 
 // Test PrinterConfigurer which allows printers to be marked as configured for
 // unit tests.
@@ -21,6 +23,8 @@ class Printer;
 class TestPrinterConfigurer : public PrinterConfigurer {
  public:
   TestPrinterConfigurer();
+  explicit TestPrinterConfigurer(TestCupsPrintersManager* manager);
+
   ~TestPrinterConfigurer() override;
 
   // PrinterConfigurer:
@@ -33,8 +37,13 @@ class TestPrinterConfigurer : public PrinterConfigurer {
 
   void MarkConfigured(const std::string& printer_id);
 
+  void AssignPrinterSetupResult(const std::string& printer_id,
+                                PrinterSetupResult result);
+
  private:
+  TestCupsPrintersManager* manager_ = nullptr;
   base::flat_set<std::string> configured_printers_;
+  base::flat_map<std::string, PrinterSetupResult> assigned_results_;
 };
 
 }  // namespace chromeos

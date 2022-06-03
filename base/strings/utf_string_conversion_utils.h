@@ -11,22 +11,26 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+
 #include "base/base_export.h"
-#include "base/strings/string16.h"
 
 namespace base {
 
 inline bool IsValidCodepoint(uint32_t code_point) {
-  // Excludes the surrogate code points ([0xD800, 0xDFFF]) and
-  // codepoints larger than 0x10FFFF (the highest codepoint allowed).
-  // Non-characters and unassigned codepoints are allowed.
+  // Excludes code points that are not Unicode scalar values, i.e.
+  // surrogate code points ([0xD800, 0xDFFF]). Additionally, excludes
+  // code points larger than 0x10FFFF (the highest codepoint allowed).
+  // Non-characters and unassigned code points are allowed.
+  // https://unicode.org/glossary/#unicode_scalar_value
   return code_point < 0xD800u ||
          (code_point >= 0xE000u && code_point <= 0x10FFFFu);
 }
 
 inline bool IsValidCharacter(uint32_t code_point) {
-  // Excludes non-characters (U+FDD0..U+FDEF, and all codepoints ending in
-  // 0xFFFE or 0xFFFF) from the set of valid code points.
+  // Excludes non-characters (U+FDD0..U+FDEF, and all code points
+  // ending in 0xFFFE or 0xFFFF) from the set of valid code points.
+  // https://unicode.org/faq/private_use.html#nonchar1
   return code_point < 0xD800u || (code_point >= 0xE000u &&
       code_point < 0xFDD0u) || (code_point > 0xFDEFu &&
       code_point <= 0x10FFFFu && (code_point & 0xFFFEu) != 0xFFFEu);
@@ -47,7 +51,7 @@ BASE_EXPORT bool ReadUnicodeCharacter(const char* src,
                                       uint32_t* code_point_out);
 
 // Reads a UTF-16 character. The usage is the same as the 8-bit version above.
-BASE_EXPORT bool ReadUnicodeCharacter(const char16* src,
+BASE_EXPORT bool ReadUnicodeCharacter(const char16_t* src,
                                       int32_t src_len,
                                       int32_t* char_index,
                                       uint32_t* code_point);
@@ -69,7 +73,8 @@ BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point,
 
 // Appends the given code point as a UTF-16 character to the given 16-bit
 // string.  Returns the number of 16-bit values written.
-BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point, string16* output);
+BASE_EXPORT size_t WriteUnicodeCharacter(uint32_t code_point,
+                                         std::u16string* output);
 
 #if defined(WCHAR_T_IS_UTF32)
 // Appends the given UTF-32 character to the given 32-bit string.  Returns the

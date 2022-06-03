@@ -10,13 +10,13 @@
 #include "base/component_export.h"
 #include "base/macros.h"
 #include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/proxy_delegate.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 namespace net {
 class HttpRequestHeaders;
 class ProxyResolutionService;
-class URLRequest;
 }  // namespace net
 
 namespace network {
@@ -28,10 +28,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
     : public net::ProxyDelegate,
       public mojom::CustomProxyConfigClient {
  public:
-  explicit NetworkServiceProxyDelegate(
+  NetworkServiceProxyDelegate(
       mojom::CustomProxyConfigPtr initial_config,
       mojo::PendingReceiver<mojom::CustomProxyConfigClient>
-          config_client_receiver);
+          config_client_receiver,
+      mojo::PendingRemote<mojom::CustomProxyConnectionObserver>
+          observer_remote);
+
+  NetworkServiceProxyDelegate(const NetworkServiceProxyDelegate&) = delete;
+  NetworkServiceProxyDelegate& operator=(const NetworkServiceProxyDelegate&) =
+      delete;
+
   ~NetworkServiceProxyDelegate() override;
 
   void SetProxyResolutionService(
@@ -39,23 +46,15 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
     proxy_resolution_service_ = proxy_resolution_service;
   }
 
-  // These methods are forwarded from the NetworkDelegate.
-  void OnBeforeStartTransaction(net::URLRequest* request,
-                                net::HttpRequestHeaders* headers);
-  void OnBeforeSendHeaders(net::URLRequest* request,
-                           const net::ProxyInfo& proxy_info,
-                           net::HttpRequestHeaders* headers);
-
   // net::ProxyDelegate implementation:
   void OnResolveProxy(const GURL& url,
                       const std::string& method,
                       const net::ProxyRetryInfoMap& proxy_retry_info,
                       net::ProxyInfo* result) override;
   void OnFallback(const net::ProxyServer& bad_proxy, int net_error) override;
-  void OnBeforeHttp1TunnelRequest(
-      const net::ProxyServer& proxy_server,
-      net::HttpRequestHeaders* extra_headers) override;
-  net::Error OnHttp1TunnelHeadersReceived(
+  void OnBeforeTunnelRequest(const net::ProxyServer& proxy_server,
+                             net::HttpRequestHeaders* extra_headers) override;
+  net::Error OnTunnelHeadersReceived(
       const net::ProxyServer& proxy_server,
       const net::HttpResponseHeaders& response_headers) override;
 
@@ -66,22 +65,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
   // Whether the current config may proxy |url|.
   bool MayProxyURL(const GURL& url) const;
 
-  // Whether the current config may have proxied |url| with the current config
-  // or a previous config.
-  bool MayHaveProxiedURL(const GURL& url) const;
-
   // Whether the HTTP |method| with current |proxy_info| is eligible to be
   // proxied.
   bool EligibleForProxy(const net::ProxyInfo& proxy_info,
                         const std::string& method) const;
 
-  // Fills the alternative proxy config in |result| if applicable.
-  void GetAlternativeProxy(const net::ProxyRetryInfoMap& proxy_retry_info,
-                           net::ProxyInfo* result);
+  void OnObserverDisconnect();
 
   // mojom::CustomProxyConfigClient implementation:
   void OnCustomProxyConfigUpdated(
-      mojom::CustomProxyConfigPtr proxy_config) override;
+      mojom::CustomProxyConfigPtr proxy_config,
+      OnCustomProxyConfigUpdatedCallback callback) override;
   void MarkProxiesAsBad(base::TimeDelta bypass_duration,
                         const net::ProxyList& bad_proxies,
                         MarkProxiesAsBadCallback callback) override;
@@ -89,21 +83,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkServiceProxyDelegate
 
   mojom::CustomProxyConfigPtr proxy_config_;
   mojo::Receiver<mojom::CustomProxyConfigClient> receiver_;
-
-  // Cache of URLs for which the usage of custom proxy results
-  // in redirect loops. A container is used here since it's possible that
-  // at any given time, there are multiple URLs that result in redirect loops
-  // when fetched via the custom proxy.
-  std::deque<GURL> redirect_loop_cache_;
-
-  // We keep track of a limited number of previous configs so we can determine
-  // if a request used a custom proxy if the config happened to change during
-  // the request.
-  std::deque<mojom::CustomProxyConfigPtr> previous_proxy_configs_;
+  mojo::Remote<mojom::CustomProxyConnectionObserver> observer_;
 
   net::ProxyResolutionService* proxy_resolution_service_ = nullptr;
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkServiceProxyDelegate);
 };
 
 }  // namespace network

@@ -5,17 +5,16 @@
 #include <cstddef>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/containers/contains.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/blocked_content/framebust_block_tab_helper.h"
-#include "chrome/browser/ui/blocked_content/url_list_manager.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_content_setting_bubble_model_delegate.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -26,20 +25,24 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/blocked_content/url_list_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/common/content_features.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/events/event_constants.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/events/base_event_utils.h"
+#include "ui/events/event.h"
 #include "url/gurl.h"
 
-#if defined(OS_CHROMEOS)
-#include "chrome/browser/web_applications/system_web_app_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #endif
 
@@ -50,8 +53,9 @@ const int kDisallowRadioButtonIndex = 1;
 
 }  // namespace
 
-class FramebustBlockBrowserTest : public InProcessBrowserTest,
-                                  public UrlListManager::Observer {
+class FramebustBlockBrowserTest
+    : public InProcessBrowserTest,
+      public blocked_content::UrlListManager::Observer {
  public:
   FramebustBlockBrowserTest() = default;
 
@@ -106,8 +110,8 @@ class FramebustBlockBrowserTest : public InProcessBrowserTest,
   }
 
  protected:
-  base::Optional<GURL> clicked_url_;
-  base::Optional<size_t> clicked_index_;
+  absl::optional<GURL> clicked_url_;
+  absl::optional<size_t> clicked_index_;
 
   base::OnceClosure blocked_url_added_closure_;
   Browser* current_browser_;
@@ -138,8 +142,10 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
   EXPECT_FALSE(clicked_url_.has_value());
 
   content::TestNavigationObserver observer(GetWebContents());
-  framebust_block_bubble_model.OnListItemClicked(/* index = */ 1,
-                                                 ui::EF_LEFT_MOUSE_BUTTON);
+  ui::MouseEvent click_event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
+                             ui::EF_LEFT_MOUSE_BUTTON);
+  framebust_block_bubble_model.OnListItemClicked(/* index = */ 1, click_event);
   observer.Wait();
 
   EXPECT_TRUE(clicked_index_.has_value());
@@ -152,7 +158,7 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, ModelAllowsRedirection) {
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   const GURL url = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
@@ -163,8 +169,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            settings_map->GetContentSetting(
-                url, GURL(), ContentSettingsType::POPUPS, std::string()));
+            settings_map->GetContentSetting(url, GURL(),
+                                            ContentSettingsType::POPUPS));
 
   // Create a content bubble and simulate clicking on the first radio button
   // before closing it.
@@ -176,13 +182,13 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, AllowRadioButtonSelected) {
   owner->SetSelectedRadioOptionAndCommit(kAllowRadioButtonIndex);
 
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            settings_map->GetContentSetting(
-                url, GURL(), ContentSettingsType::POPUPS, std::string()));
+            settings_map->GetContentSetting(url, GURL(),
+                                            ContentSettingsType::POPUPS));
 }
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
   const GURL url = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
@@ -193,8 +199,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            settings_map->GetContentSetting(
-                url, GURL(), ContentSettingsType::POPUPS, std::string()));
+            settings_map->GetContentSetting(url, GURL(),
+                                            ContentSettingsType::POPUPS));
 
   // Create a content bubble and simulate clicking on the second radio button
   // before closing it.
@@ -207,8 +213,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
   owner->SetSelectedRadioOptionAndCommit(kDisallowRadioButtonIndex);
 
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            settings_map->GetContentSetting(
-                url, GURL(), ContentSettingsType::POPUPS, std::string()));
+            settings_map->GetContentSetting(url, GURL(),
+                                            ContentSettingsType::POPUPS));
 }
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
@@ -217,14 +223,14 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, DisallowRadioButtonSelected) {
 #define MAYBE_ManageButtonClicked ManageButtonClicked
 #endif
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
-#if defined(OS_CHROMEOS)
-  web_app::WebAppProvider::Get(browser()->profile())
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  web_app::WebAppProvider::GetForTest(browser()->profile())
       ->system_web_app_manager()
       .InstallSystemAppsForTesting();
 #endif
 
   const GURL url = embedded_test_server()->GetURL("/iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // Signal that a blocked redirection happened.
   auto* helper = GetFramebustTabHelper();
@@ -248,8 +254,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, MAYBE_ManageButtonClicked) {
 }
 
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest, SimpleFramebust_Blocked) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   GURL child_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   NavigateIframeToUrlWithoutGesture(GetWebContents(), "test", child_url);
@@ -281,8 +287,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   // Create a new browser to test in to ensure that the render process gets the
   // updated content settings.
   CreateAndSetBrowser();
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
   NavigateIframeToUrlWithoutGesture(
       GetWebContents(), "test",
       embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -307,14 +313,14 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
   GURL top_level_url = embedded_test_server()->GetURL("/iframe.html");
   HostContentSettingsMap* settings_map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
-  settings_map->SetContentSettingDefaultScope(
-      top_level_url, GURL(), ContentSettingsType::POPUPS, std::string(),
-      CONTENT_SETTING_ALLOW);
+  settings_map->SetContentSettingDefaultScope(top_level_url, GURL(),
+                                              ContentSettingsType::POPUPS,
+                                              CONTENT_SETTING_ALLOW);
 
   // Create a new browser to test in to ensure that the render process gets the
   // updated content settings.
   CreateAndSetBrowser();
-  ui_test_utils::NavigateToURL(browser(), top_level_url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), top_level_url));
   NavigateIframeToUrlWithoutGesture(
       GetWebContents(), "test",
       embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -338,8 +344,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
 // persist on subsequent navigations.
 IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
                        FramebustBlocked_SubsequentNavigation_NoUI) {
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/iframe.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/iframe.html")));
 
   GURL child_url = embedded_test_server()->GetURL("a.com", "/title1.html");
   NavigateIframeToUrlWithoutGesture(GetWebContents(), "test", child_url);
@@ -361,8 +367,8 @@ IN_PROC_BROWSER_TEST_F(FramebustBlockBrowserTest,
       base::Contains(GetFramebustTabHelper()->blocked_urls(), redirect_url));
 
   // Now, navigate away and check that the UI went away.
-  ui_test_utils::NavigateToURL(browser(),
-                               embedded_test_server()->GetURL("/title2.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), embedded_test_server()->GetURL("/title2.html")));
 
   // TODO(csharrison): Ideally we could query the actual UI here. For now, just
   // look at the internal state of the framebust tab helper.

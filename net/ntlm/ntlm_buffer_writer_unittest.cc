@@ -4,7 +4,7 @@
 
 #include "net/ntlm/ntlm_buffer_writer.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
 #include "base/strings/utf_string_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -200,7 +200,7 @@ TEST(NtlmBufferWriterTest, WriteAsciiStringPastEob) {
 TEST(NtlmBufferWriterTest, WriteUtf16String) {
   uint8_t expected[16] = {'1', 0, '2', 0, '3', 0, '4', 0,
                           '5', 0, '6', 0, '7', 0, '8', 0};
-  base::string16 value = base::ASCIIToUTF16("12345678");
+  std::u16string value = u"12345678";
 
   NtlmBufferWriter writer(value.size() * 2);
 
@@ -212,7 +212,7 @@ TEST(NtlmBufferWriterTest, WriteUtf16String) {
 }
 
 TEST(NtlmBufferWriterTest, WriteUtf16StringPastEob) {
-  base::string16 str = base::ASCIIToUTF16("12345678");
+  std::u16string str = u"12345678";
   NtlmBufferWriter writer((str.length() * 2) - 1);
 
   ASSERT_FALSE(writer.WriteUtf16String(str));

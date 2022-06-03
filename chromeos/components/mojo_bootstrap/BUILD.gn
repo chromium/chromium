@@ -9,17 +9,13 @@ component("mojo_bootstrap") {
     "pending_connection_manager.cc",
     "pending_connection_manager.h",
   ]
-  deps = [
-    "//base",
-  ]
+  deps = [ "//base" ]
   defines = [ "IS_MOJO_BOOTSTRAP_IMPL" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "pending_connection_manager_unittest.cc",
-  ]
+  sources = [ "pending_connection_manager_unittest.cc" ]
 
   deps = [
     ":mojo_bootstrap",

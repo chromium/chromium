@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script src="../../forms/resources/picker-common.js"></script>
+
+<input type=date id=dateElement>
+
+<script>
+promise_test(async () => {
+  await openPickerWithPromise(dateElement);
+  const {Month, Day, isDayOutsideOfRange} = popupWindow;
+
+  assert_true(isDayOutsideOfRange(
+    /*day=*/new Day(1, 1, 1),
+    /*minDay=*/new Day(2, 1, 1),
+    /*maxDay=*/new Day(3, 1, 1)),
+    'day.year < min < max: day is outside of range');
+  assert_false(isDayOutsideOfRange(
+    /*day=*/new Day(2, 9, 9),
+    /*minDay=*/new Day(1, 1, 1),
+    /*maxDay=*/new Day(3, 1, 1)),
+    'min < day.year < max: day is within range');
+  assert_true(isDayOutsideOfRange(
+    /*day=*/new Day(3, 1, 1),
+    /*minDay=*/new Day(1, 1, 1),
+    /*maxDay=*/new Day(2, 1, 1)),
+    'min < max < day.year: day is outside of range');
+
+  assert_true(isDayOutsideOfRange(
+    /*day=*/new Day(1, 1, 1),
+    /*minDay=*/new Day(1, 2, 1),
+    /*maxDay=*/new Day(1, 3, 1)),
+    'day.month < min < max: day is outside of range');
+  assert_false(isDayOutsideOfRange(
+    /*day=*/new Day(1, 2, 9),
+    /*minDay=*/new Day(1, 1, 1),
+    /*maxDay=*/new Day(1, 3, 1)),
+    'min < day.month < max: day is within range');
+  assert_true(isDayOutsideOfRange(
+    /*day=*/new Day(1, 3, 1),
+    /*minDay=*/new Day(1, 1, 1),
+    /*maxDay=*/new Day(1, 2, 1)),
+    'min < max < day.month: day is outside of range');
+
+  assert_true(isDayOutsideOfRange(
+    /*day=*/new Day(1, 1, 1),
+    /*minDay=*/new Day(1, 1, 2),
+    /*maxDay=*/new Day(1, 1, 3)),
+    'day.date < min < max: day is outside of range');
+  assert_false(isDayOutsideOfRange(
+    /*day=*/new Day(1, 1, 2),
+    /*minDay=*/new Day(1, 1, 1),
+    /*maxDay=*/new Day(1, 1, 3)),
+    'min < day.date < max: day is within range');
+  assert_true(isDayOutsideOfRange(
+    /*day=*/new Day(1, 1, 3),
+    /*minDay=*/new Day(1, 1, 1),
+    /*maxDay=*/new Day(1, 1, 2)),
+    'min < max < day.date: day is outside of range');
+
+}, `Tests behavior of the date picker's internal function isTodayOutsideOfRange.`);
+</script>

@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [785, 812],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -15,32 +15,31 @@
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='container'",
+      "position": [58, 230],
       "bounds": [122, 462],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "transform": 3
+      "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='box gray force-layer'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#808080",
-      "transform": 5
+      "transform": 4
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV id='to-animate2' class='box animating2'",
       "bounds": [100, 100],
       "contentsOpaque": true,
       "backgroundColor": "#0000FF",
-      "transform": 7
+      "transform": 6
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='box yellow'",
-      "position": [11, 341],
+      "position": [69, 571],
       "bounds": [100, 100],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFF00",
-      "transform": 3
+      "backgroundColor": "#FFFF00"
     },
     {
       "name": "LayoutBlockFlow (relative positioned) DIV class='box yellow'",
@@ -50,10 +49,9 @@
       "backgroundColor": "#FFFF00"
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [785, 0],
-      "bounds": [15, 600],
-      "contentsOpaque": true
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -97,7 +95,6 @@
     },
     {
       "id": 5,
-      "parent": 4,
       "transform": [
         [...],
         [...],
@@ -107,17 +104,7 @@
     },
     {
       "id": 6,
-      "parent": 3,
-      "transform": [
-        [...],
-        [...],
-        [...],
-        [...]
-      ]
-    },
-    {
-      "id": 7,
-      "parent": 6,
+      "parent": 5,
       "transform": [
         [...],
         [...],

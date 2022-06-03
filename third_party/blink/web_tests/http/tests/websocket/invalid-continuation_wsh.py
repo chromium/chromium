@@ -7,8 +7,8 @@ def web_socket_do_extra_handshake(request):
 
 
 def web_socket_transfer_data(request):
-    payload1 = 'Invalid continuation frame to be ignored.'
-    payload2 = 'Valid frame after closing should be disposed.'
+    payload1 = b'Invalid continuation frame to be ignored.'
+    payload2 = b'Valid frame after closing should be disposed.'
     request.connection.write(
         stream.create_header(common.OPCODE_CONTINUATION,
                              len(payload1), 1, 0, 0, 0, 0) + payload1)

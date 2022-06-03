@@ -1,0 +1,23 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("features") {
+  sources = [ "device_trust_features.cc" ]
+
+  public = [ "device_trust_features.h" ]
+
+  public_deps = [ "//base" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [ "mock_device_trust_service.cc" ]
+
+  public = [ "mock_device_trust_service.h" ]
+
+  public_deps = [
+    "//chrome/browser",
+    "//testing/gmock",
+  ]
+}

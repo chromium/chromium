@@ -1,1 +1,0 @@
-This text should be visible, even though it's preceded by an unclosed canvas tag, because of the </div> that closes an element opened before the canvas. There's nothing special about div; we get the same results with other types of elements.

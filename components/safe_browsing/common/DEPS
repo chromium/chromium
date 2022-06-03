@@ -1,9 +1,0 @@
-include_rules = [
-  "+components/policy/core/browser",
-  "+components/pref_registry",
-  "+components/prefs",
-  "+content/public/test",
-  "+crypto/sha2.h",
-  "+ipc",
-  "+url"
-]

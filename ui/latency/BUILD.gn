@@ -2,66 +2,35 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/jumbo.gni")
 import("//testing/test.gni")
 
-jumbo_source_set("latency") {
+source_set("latency") {
   sources = [
-    "average_lag_tracker.cc",
-    "average_lag_tracker.h",
-    "fixed_point.cc",
-    "fixed_point.h",
-    "frame_metrics.cc",
-    "frame_metrics.h",
-    "histograms.cc",
-    "histograms.h",
     "latency_histogram_macros.h",
     "latency_info.cc",
     "latency_info.h",
     "latency_tracker.cc",
     "latency_tracker.h",
-    "skipped_frame_tracker.cc",
-    "skipped_frame_tracker.h",
-    "stream_analyzer.cc",
-    "stream_analyzer.h",
-    "windowed_analyzer.cc",
-    "windowed_analyzer.h",
   ]
 
   deps = [
     "//base",
+    "//services/tracing/public/cpp:cpp",
     "//ui/gfx",
   ]
 
-  public_deps = [
-    "//services/metrics/public/cpp:metrics_cpp",
-  ]
+  public_deps = [ "//services/metrics/public/cpp:metrics_cpp" ]
 }
 
-jumbo_source_set("test_support") {
+source_set("test_support") {
   testonly = true
-  sources = [
-    "latency_info_test_support.cc",
-  ]
+  sources = [ "latency_info_test_support.cc" ]
 
-  public_deps = [
-    ":latency",
-  ]
+  public_deps = [ ":latency" ]
 }
 
 test("latency_unittests") {
-  sources = [
-    "average_lag_tracker_unittest.cc",
-    "fixed_point_unittest.cc",
-    "frame_metrics_test_common.cc",
-    "frame_metrics_test_common.h",
-    "frame_metrics_unittest.cc",
-    "histograms_unittest.cc",
-    "latency_info_unittest.cc",
-    "skipped_frame_tracker_unittest.cc",
-    "stream_analyzer_unittest.cc",
-    "windowed_analyzer_unittest.cc",
-  ]
+  sources = [ "latency_info_unittest.cc" ]
 
   deps = [
     ":latency",
@@ -85,22 +54,4 @@ test("latency_unittests") {
       "//ui/latency/mojom:test_interfaces",
     ]
   }
-}
-
-test("latency_perftests") {
-  sources = [
-    "frame_metrics_test_common.cc",
-    "frame_metrics_test_common.h",
-    "histograms_perftest.cc",
-  ]
-
-  deps = [
-    ":latency",
-    "//base",
-    "//base/test:test_support",
-    "//mojo/core/test:run_all_unittests",
-    "//testing/gmock",
-    "//testing/gtest",
-    "//testing/perf",
-  ]
 }

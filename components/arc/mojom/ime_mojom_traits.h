@@ -7,6 +7,7 @@
 
 #include "components/arc/mojom/ime.mojom-shared.h"
 #include "ui/base/ime/text_input_type.h"
+#include "ui/events/event.h"
 
 namespace mojo {
 
@@ -59,6 +60,8 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
         return MojoType::TEXT;
       case ui::TEXT_INPUT_TYPE_DATE_TIME_FIELD:
         return MojoType::DATETIME;
+      case ui::TEXT_INPUT_TYPE_NULL:
+        return MojoType::NONE;
     }
     NOTREACHED();
     return MojoType::TEXT;
@@ -67,7 +70,7 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
   static bool FromMojom(MojoType input, ui::TextInputType* out) {
     switch (input) {
       case MojoType::NONE:
-        *out = ui::TEXT_INPUT_TYPE_NONE;
+        *out = ui::TEXT_INPUT_TYPE_NULL;
         return true;
       case MojoType::TEXT:
         *out = ui::TEXT_INPUT_TYPE_TEXT;
@@ -103,6 +106,35 @@ struct EnumTraits<arc::mojom::TextInputType, ui::TextInputType> {
     NOTREACHED();
     return false;
   }
+};
+
+using KeyEventUniquePtr = std::unique_ptr<ui::KeyEvent>;
+template <>
+struct StructTraits<arc::mojom::KeyEventDataDataView, KeyEventUniquePtr> {
+  static bool pressed(const KeyEventUniquePtr& key_event) {
+    return key_event->type() == ui::ET_KEY_PRESSED;
+  }
+  static int32_t key_code(const KeyEventUniquePtr& key_event) {
+    return key_event->key_code();
+  }
+  static bool is_shift_down(const KeyEventUniquePtr& key_event) {
+    return key_event->IsShiftDown();
+  }
+  static bool is_control_down(const KeyEventUniquePtr& key_event) {
+    return key_event->IsControlDown();
+  }
+  static bool is_alt_down(const KeyEventUniquePtr& key_event) {
+    return key_event->IsAltDown();
+  }
+  static bool is_capslock_on(const KeyEventUniquePtr& key_event) {
+    return key_event->IsCapsLockOn();
+  }
+  static int32_t scan_code(const KeyEventUniquePtr& key_event) {
+    return key_event->scan_code();
+  }
+
+  static bool Read(arc::mojom::KeyEventDataDataView data,
+                   KeyEventUniquePtr* out);
 };
 
 }  // namespace mojo

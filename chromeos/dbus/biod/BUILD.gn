@@ -29,9 +29,7 @@ component("biod") {
 
 source_set("test_support") {
   testonly = true
-  public_deps = [
-    ":biod",
-  ]
+  public_deps = [ ":biod" ]
   deps = [
     ":biod_proto",
     "//base",

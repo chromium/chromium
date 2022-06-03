@@ -1,5 +1,0 @@
-CONSOLE ERROR: line 14: Uncaught TypeError: shadowHostV0.createShadowRoot is not a function
-This is a testharness.js-based test.
-FAIL window-event Uncaught TypeError: shadowHostV0.createShadowRoot is not a function
-Harness: the test ran to completion.
-

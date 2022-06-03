@@ -15,7 +15,6 @@
 #include "net/http/http_util.h"
 #include "net/socket/next_proto.h"
 #include "net/spdy/spdy_http_utils.h"
-#include "net/third_party/quiche/src/common/platform/api/quiche_string_piece.h"
 #include "net/third_party/quiche/src/quic/core/quic_connection.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_header_block.h"
 #include "quic_http_stream.h"
@@ -84,12 +83,12 @@ void BidirectionalStreamQuicImpl::Start(
   delegate_ = delegate;
   request_info_ = request_info;
 
-  // Only allow SAFE methods to use early data, unless overriden by the caller.
-  bool use_early_data = !HttpUtil::IsMethodSafe(request_info_->method);
+  // Only allow SAFE methods to use early data, unless overridden by the caller.
+  bool use_early_data = HttpUtil::IsMethodSafe(request_info_->method);
   use_early_data |= request_info_->allow_early_data_override;
 
   int rv = session_->RequestStream(
-      use_early_data,
+      !use_early_data,
       base::BindOnce(&BidirectionalStreamQuicImpl::OnStreamReady,
                      weak_factory_.GetWeakPtr()),
       traffic_annotation);
@@ -98,11 +97,11 @@ void BidirectionalStreamQuicImpl::Start(
 
   if (rv != OK) {
     base::ThreadTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(&BidirectionalStreamQuicImpl::NotifyError,
-                                  weak_factory_.GetWeakPtr(),
-                                  session_->IsCryptoHandshakeConfirmed()
-                                      ? rv
-                                      : ERR_QUIC_HANDSHAKE_FAILED));
+        FROM_HERE,
+        base::BindOnce(
+            &BidirectionalStreamQuicImpl::NotifyError,
+            weak_factory_.GetWeakPtr(),
+            session_->OneRttKeysAvailable() ? rv : ERR_QUIC_HANDSHAKE_FAILED));
     return;
   }
 
@@ -124,7 +123,7 @@ void BidirectionalStreamQuicImpl::SendRequestHeaders() {
 int BidirectionalStreamQuicImpl::WriteHeaders() {
   DCHECK(!has_sent_headers_);
 
-  spdy::SpdyHeaderBlock headers;
+  spdy::Http2HeaderBlock headers;
   HttpRequestInfo http_request_info;
   http_request_info.url = request_info_->url;
   http_request_info.method = request_info_->method;
@@ -264,7 +263,7 @@ void BidirectionalStreamQuicImpl::PopulateNetErrorDetails(
   details->connection_info =
       QuicHttpStream::ConnectionInfoFromQuicVersion(session_->GetQuicVersion());
   session_->PopulateNetErrorDetails(details);
-  if (session_->IsCryptoHandshakeConfirmed() && stream_)
+  if (session_->OneRttKeysAvailable() && stream_)
     details->quic_connection_error = stream_->connection_error();
 }
 

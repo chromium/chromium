@@ -8,6 +8,7 @@
 
 #include <vector>
 
+#include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"

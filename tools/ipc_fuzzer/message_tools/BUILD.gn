@@ -9,9 +9,7 @@ executable("ipc_message_util") {
     "//third_party/re2",
     "//tools/ipc_fuzzer/message_lib:ipc_message_lib",
   ]
-  sources = [
-    "message_util.cc",
-  ]
+  sources = [ "message_util.cc" ]
 }
 
 executable("ipc_message_list") {
@@ -22,7 +20,5 @@ executable("ipc_message_list") {
     "//components/nacl/common:buildflags",
     "//tools/ipc_fuzzer/message_lib:ipc_message_lib",
   ]
-  sources = [
-    "message_list.cc",
-  ]
+  sources = [ "message_list.cc" ]
 }

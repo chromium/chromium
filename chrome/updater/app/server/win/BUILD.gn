@@ -1,0 +1,90 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/toolchain/win/midl.gni")
+import("//build/util/version.gni")
+import("//chrome/updater/branding.gni")
+
+# These GUIDs must depend on branding only.
+branding_only_placeholder_guids = [
+  "PLACEHOLDER-GUID-69464FF0-D9EC-4037-A35F-8AE4358106CC",  # UpdaterLib
+  "PLACEHOLDER-GUID-158428a4-6014-4978-83ba-9fad0dabe791",  # UpdaterUserClass
+  "PLACEHOLDER-GUID-415FD747-D79E-42D7-93AC-1BA6E5FD4E93",  # UpdaterSystemClass
+  "PLACEHOLDER-GUID-63B8FFB1-5314-48C9-9C57-93EC8BC6184B",  # IUpdater
+  "PLACEHOLDER-GUID-3FDEC4CB-8501-4ECD-A4CF-BF70326218D0",  # IUpdaterRegisterAppCallback
+  "PLACEHOLDER-GUID-46ACF70B-AC13-406D-B53B-B2C4BF091FF6",  # IUpdateState
+  "PLACEHOLDER-GUID-2FCD14AF-B645-4351-8359-E80A0E202A0B",  # ICompleteStatus
+  "PLACEHOLDER-GUID-7B416CFD-4216-4FD6-BD83-7C586054676E",  # IUpdaterObserver
+]
+
+uuid5_guids = []
+foreach(guid, branding_only_placeholder_guids) {
+  uuid5_guids += [ guid + "=uuid5:$updater_product_full_name" ]
+}
+uuid5_guids = string_join(",", uuid5_guids)
+
+midl("updater_idl_idl") {
+  dynamic_guids = "ignore_proxy_stub," + uuid5_guids
+
+  header_file = "updater_idl.h"
+  sources = [ "updater_idl.template" ]
+
+  writes_tlb = true
+}
+
+# These GUIDs must depend on branding and version.
+branding_version_placeholder_guids = [
+  "PLACEHOLDER-GUID-C6CE92DB-72CA-42EF-8C98-6EE92481B3C9",  # UpdaterInternalLib
+  "PLACEHOLDER-GUID-1F87FE2F-D6A9-4711-9D11-8187705F8457",  # UpdaterInternalUserClass
+  "PLACEHOLDER-GUID-4556BA55-517E-4F03-8016-331A43C269C9",  # UpdaterInternalSystemClass
+  "PLACEHOLDER-GUID-526DA036-9BD3-4697-865A-DA12D37DFFCA",  # IUpdaterInternal
+  "PLACEHOLDER-GUID-D272C794-2ACE-4584-B993-3B90C622BE65",  # IUpdaterInternalCallback
+]
+
+uuid5_guids = []
+foreach(guid, branding_version_placeholder_guids) {
+  uuid5_guids +=
+      [ guid + "=uuid5:$updater_product_full_name$chrome_version_full" ]
+}
+uuid5_guids = string_join(",", uuid5_guids)
+
+midl("updater_internal_idl_idl") {
+  dynamic_guids = "ignore_proxy_stub," + uuid5_guids
+
+  header_file = "updater_internal_idl.h"
+  sources = [ "updater_internal_idl.template" ]
+
+  writes_tlb = true
+}
+
+midl("updater_legacy_idl_idl") {
+  header_file = "updater_legacy_idl.h"
+  sources = [ "updater_legacy_idl.template" ]
+
+  # These are the Omaha 3 Legacy GUIDs that Omaha 4 supports.
+  defines = [
+    "UPDATER_LEGACY_LIB_UUID=69464FF0-D9EC-4037-A35F-8AE4358106CC",
+    "ICURRENTSTATE_IID=247954F9-9EDC-4E68-8CC3-150C2B89EADF",
+    "IGOOGLEUPDATE3WEB_IID=494B20CF-282E-4BDD-9F5D-B70CB09D351E",
+    "IAPPBUNDLEWEB_IID=DD42475D-6D46-496a-924E-BD5630B4CBBA",
+    "IAPPWEB_IID=18D0F672-18B4-48e6-AD36-6E6BF01DBBC4",
+    "IPROCESSLAUNCHER_IID=128C2DA6-2BC0-44c0-B3F6-4EC22E647964",
+    "IPROCESSLAUNCHER2_IID=D106AB5F-A70E-400E-A21B-96208C1D8DBB",
+  ]
+
+  writes_tlb = true
+}
+
+# The COM server needs to work with Windows 7, so explicitly setting the defines
+# to reflect this. Otherwise, WRL uses APIs that are only available in later
+# Windows versions.
+config("winver") {
+  defines = [
+    "NTDDI_VERSION=NTDDI_WIN7",
+
+    # Hardcoding version 0x0601, since _WIN32_WINNT_WIN7 may not be defined.
+    "_WIN32_WINNT=0x0601",
+    "WINVER=0x0601",
+  ]
+}

@@ -5,16 +5,13 @@
 component("ios") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "insecure_input_tab_helper.h",
-    "insecure_input_tab_helper.mm",
     "security_state_utils.h",
     "security_state_utils.mm",
-    "ssl_status_input_event_data.h",
-    "ssl_status_input_event_data.mm",
   ]
   deps = [
     "//base",
     "//components/autofill/ios/form_util",
+    "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_state/core",
     "//ios/web/common",
     "//ios/web/public",
@@ -25,11 +22,10 @@ component("ios") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [
-    "security_state_utils_unittest.mm",
-  ]
+  sources = [ "security_state_utils_unittest.mm" ]
   deps = [
     ":ios",
+    "//components/safe_browsing/ios/browser:allow_list",
     "//components/security_state/core",
     "//ios/web/public/security",
     "//ios/web/public/test",

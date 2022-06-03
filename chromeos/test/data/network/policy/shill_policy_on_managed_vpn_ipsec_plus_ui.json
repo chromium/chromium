@@ -1,0 +1,20 @@
+{
+   "AutoConnect": false,
+   "Device": "",
+   "GUID": "{a3860e83-f03d-4cb1-bafa-b22c9e746950}",
+   "Name": "my vpn",
+   "ONCSource": "UserPolicy",
+   "Profile": "/profile/user1/shill",
+   "Provider": {
+      "Host": "vpn.my.domain.com",
+      "L2TPIPsec.PSK": "my_updated_psk",
+      "L2TPIPsec.Password": "my_updated_password",
+      "L2TPIPsec.User": "my_username",
+      "Type": "l2tpipsec"
+   },
+   "SaveCredentials": true,
+   "State": "idle",
+   "Type": "vpn",
+   "UIData": "{\"onc_source\":\"user_policy\",\"user_settings\":{\"GUID\":\"{a3860e83-f03d-4cb1-bafa-b22c9e746950}\",\"Name\":\"my vpn\",\"Type\":\"VPN\",\"VPN\":{\"AutoConnect\":false,\"Host\":\"vpn.my.domain.com\",\"IPsec\":{\"AuthenticationType\":\"PSK\",\"ClientCertType\":\"\",\"PSK\":\"FAKE_CREDENTIAL_VPaJDV9x\"},\"L2TP\":{\"Password\":\"FAKE_CREDENTIAL_VPaJDV9x\"},\"Type\":\"L2TP-IPsec\"}}}",
+   "Visible": true
+}

@@ -1,36 +1,41 @@
 {
   "layers": [
     {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
+      "position": [8, 8],
+      "bounds": [160, 90],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000"
+    },
+    {
+      "name": "LayoutImage IMG class='accelerated blended'",
+      "bounds": [160, 90],
+      "contentsOpaqueForText": true,
+      "transform": 1
+    },
+    {
+      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
+      "bounds": [160, 90],
+      "contentsOpaque": true,
+      "backgroundColor": "#008000",
+      "transform": 2
+    },
+    {
+      "name": "LayoutImage IMG class='accelerated blended'",
+      "bounds": [160, 90],
+      "contentsOpaqueForText": true,
+      "transform": 2
+    },
+    {
       "name": "LayoutBlockFlow HTML",
-      "bounds": [800, 600]
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
-      "bounds": [160, 90],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 1
-    },
-    {
-      "name": "ContentsLayer for LayoutImage IMG class='accelerated blended'",
-      "bounds": [160, 90],
-      "transform": 1
-    },
-    {
-      "name": "LayoutBlockFlow (positioned) DIV class='stacking-context'",
-      "bounds": [160, 90],
-      "contentsOpaque": true,
-      "backgroundColor": "#008000",
-      "transform": 2
-    },
-    {
-      "name": "ContentsLayer for LayoutImage IMG class='accelerated blended'",
-      "bounds": [160, 90],
-      "transform": 2
-    },
-    {
-      "name": "LayoutBlockFlow HTML (foreground) Layer",
-      "bounds": [800, 600]
+      "position": [8, 8],
+      "bounds": [784, 579]
     }
   ],
   "transforms": [

@@ -6,14 +6,14 @@
 
 #include <utility>
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "content/common/content_switches_internal.h"
 #include "content/public/common/content_client.h"
 #include "content/public/renderer/content_renderer_client.h"
-#include "content/renderer/pepper/pepper_audio_encoder_host.h"
 #include "content/renderer/pepper/pepper_audio_input_host.h"
 #include "content/renderer/pepper/pepper_audio_output_host.h"
 #include "content/renderer/pepper/pepper_camera_device_host.h"
@@ -36,7 +36,6 @@
 #include "ppapi/proxy/ppapi_messages.h"
 #include "ppapi/proxy/serialized_structs.h"
 #include "ppapi/shared_impl/ppb_image_data_shared.h"
-#include "services/service_manager/sandbox/switches.h"
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_plugin_container.h"
@@ -125,14 +124,11 @@ ContentRendererPepperHostFactory::CreateResourceHost(
       ppapi::PPB_ImageData_Shared::ImageDataType image_type =
           ppapi::PPB_ImageData_Shared::PLATFORM;
 #if defined(OS_WIN)
-      // If Win32K lockdown mitigations are enabled for Windows 8 and beyond
-      // we use the SIMPLE image data type as the PLATFORM image data type
+      // Win32K lockdown mitigations are enabled for Windows 8 and beyond.
+      // We use the SIMPLE image data type as the PLATFORM image data type
       // calls GDI functions to create DIB sections etc which fail in Win32K
       // lockdown mode.
-      // TODO(ananta)
-      // Look into whether this causes a loss of functionality. From cursory
-      // testing things seem to work well.
-      if (service_manager::IsWin32kLockdownEnabled())
+      if (base::win::GetVersion() >= base::win::Version::WIN8)
         image_type = ppapi::PPB_ImageData_Shared::SIMPLE;
 #endif
       scoped_refptr<PPB_ImageData_Impl> image_data(new PPB_ImageData_Impl(
@@ -159,9 +155,6 @@ ContentRendererPepperHostFactory::CreateResourceHost(
   // Dev interfaces.
   if (GetPermissions().HasPermission(ppapi::PERMISSION_DEV)) {
     switch (message.type()) {
-      case PpapiHostMsg_AudioEncoder_Create::ID:
-        return std::make_unique<PepperAudioEncoderHost>(host_, instance,
-                                                        resource);
       case PpapiHostMsg_AudioInput_Create::ID:
         return std::make_unique<PepperAudioInputHost>(host_, instance,
                                                       resource);

@@ -8,7 +8,7 @@ dictionary GPURasterizationStateDescriptor {
     GPUFrontFace frontFace = "ccw";
     GPUCullMode cullMode = "none";
 
-    long depthBias = 0;
+    GPUDepthBias depthBias = 0;
     float depthBiasSlopeScale = 0;
     float depthBiasClamp = 0;
 };

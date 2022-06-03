@@ -21,7 +21,7 @@
 <translation id="6207937957461833379">国家/地区</translation>
 <translation id="6247152910634872706">组织</translation>
 <translation id="6271429879296260742">邮政编码</translation>
-<translation id="6282194474023008486">邮编</translation>
+<translation id="6282194474023008486">邮政编码</translation>
 <translation id="6327653052522436195">城市</translation>
 <translation id="6403469950615936250">系统无法识别此邮编格式（有效邮编的示例：<ph name="EXAMPLE" />）。不知道自己的邮编是多少？请点击<ph name="BEGIN_LINK" />此处<ph name="END_LINK" />查找。</translation>
 <translation id="6735419622867539268">系统无法识别“<ph name="FIELD_VALUE" />”，这不是此字段的有效值。</translation>

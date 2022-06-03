@@ -4,16 +4,8 @@
 
 #include "media/base/android/mock_media_crypto_context.h"
 
-#include "base/bind.h"
-#include "base/callback.h"
 #include "base/test/gmock_move_support.h"
-#include "base/threading/thread_task_runner_handle.h"
 
-using ::testing::DoAll;
-using ::testing::Invoke;
-using ::testing::Not;
-using ::testing::Return;
-using ::testing::SaveArg;
 using ::testing::_;
 
 namespace media {
@@ -23,16 +15,8 @@ MockMediaCryptoContext::MockMediaCryptoContext(bool has_media_crypto_context)
   if (!has_media_crypto_context_)
     return;
 
-  // Provide some sane defaults.
-  ON_CALL(*this, RegisterPlayer(_, _))
-      .WillByDefault(DoAll(SaveArg<0>(&new_key_cb), SaveArg<1>(&cdm_unset_cb),
-                           Return(kRegistrationId)));
   ON_CALL(*this, SetMediaCryptoReadyCB_(_))
-      .WillByDefault(MoveArg<0>(&media_crypto_ready_cb));
-
-  // Don't set any expectation on the number of correct calls to
-  // UnregisterPlayer, but expect no calls with the wrong registration id.
-  EXPECT_CALL(*this, UnregisterPlayer(Not(kRegistrationId))).Times(0);
+      .WillByDefault(MoveArg<0>(&media_crypto_ready_cb_));
 }
 
 MockMediaCryptoContext::~MockMediaCryptoContext() {}

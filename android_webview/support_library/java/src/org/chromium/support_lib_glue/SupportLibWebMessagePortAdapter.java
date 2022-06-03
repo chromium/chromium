@@ -4,6 +4,8 @@
 
 package org.chromium.support_lib_glue;
 
+import static org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.recordApiCall;
+
 import android.os.Handler;
 
 import org.chromium.content_public.browser.MessagePort;
@@ -11,6 +13,7 @@ import org.chromium.support_lib_boundary.WebMessageBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessageCallbackBoundaryInterface;
 import org.chromium.support_lib_boundary.WebMessagePortBoundaryInterface;
 import org.chromium.support_lib_boundary.util.BoundaryInterfaceReflectionUtil;
+import org.chromium.support_lib_glue.SupportLibWebViewChromiumFactory.ApiCall;
 
 import java.lang.reflect.InvocationHandler;
 
@@ -30,6 +33,7 @@ class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface
 
     @Override
     public void postMessage(InvocationHandler message) {
+        recordApiCall(ApiCall.WEB_MESSAGE_PORT_POST_MESSAGE);
         WebMessageBoundaryInterface messageBoundaryInterface =
                 BoundaryInterfaceReflectionUtil.castToSuppLibClass(
                         WebMessageBoundaryInterface.class, message);
@@ -39,16 +43,21 @@ class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface
 
     @Override
     public void close() {
+        recordApiCall(ApiCall.WEB_MESSAGE_PORT_CLOSE);
         mPort.close();
     }
 
     @Override
     public void setWebMessageCallback(InvocationHandler callback) {
+        recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK);
         setWebMessageCallback(callback, null);
     }
 
     @Override
     public void setWebMessageCallback(InvocationHandler callback, Handler handler) {
+        if (handler != null) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER);
+        }
         SupportLibWebMessageCallbackAdapter callbackAdapter =
                 new SupportLibWebMessageCallbackAdapter(
                         BoundaryInterfaceReflectionUtil.castToSuppLibClass(

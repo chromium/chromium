@@ -7,15 +7,17 @@
       "backgroundColor": "#FFFFFF"
     },
     {
-      "name": "VerticalScrollbar",
-      "position": [785, 0],
-      "bounds": [15, 600]
+      "name": "LayoutNGBlockFlow DIV id='container-absolute-grandchildren-not-contained' class='overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 1
     },
     {
       "name": "HorizontalScrollbar",
-      "position": [2, 87],
-      "bounds": [100, 15],
-      "transform": 1
+      "position": [10, 97],
+      "bounds": [104, 257],
+      "contentsOpaqueForText": true
     },
     {
       "name": "VerticalScrollbar",
@@ -24,17 +26,24 @@
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow DIV id='container-absolute-grandchildren-not-contained' class='overflow'",
+      "position": [2, 6],
+      "bounds": [85, 136],
+      "contentsOpaqueForText": true,
+      "transform": 2
+    },
+    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-grandchildren-not-contained' class='positionAbsolute positioned'",
       "position": [35, 10],
       "bounds": [199, 105],
-      "backgroundColor": "#800080"
+      "contentsOpaqueForText": true
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-grandchildren-not-contained' class='scrolled'",
-      "position": [6, 6],
-      "bounds": [75, 108],
-      "backgroundColor": "#0000FF",
-      "transform": 2
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-absolute-grandchildren' class='positionAbsolute overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 3
     },
     {
       "name": "HorizontalScrollbar",
@@ -51,19 +60,28 @@
     {
       "name": "Scroll corner of LayoutNGBlockFlow (positioned) DIV id='container-absolute-grandchildren' class='positionAbsolute overflow'",
       "position": [217, 10],
-      "bounds": [137, 104]
+      "bounds": [137, 104],
+      "contentsOpaqueForText": true
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-grandchildren' class='positionAbsolute positioned'",
-      "position": [6, 6],
-      "bounds": [101, 108],
-      "backgroundColor": "#800080",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-absolute-grandchildren' class='positionAbsolute overflow'",
+      "position": [2, 6],
+      "bounds": [105, 136],
+      "contentsOpaqueForText": true,
       "transform": 4
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='container-absolute-not-contained' class='overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 5
     },
     {
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
+      "contentsOpaqueForText": true,
       "transform": 5
     },
     {
@@ -76,19 +94,27 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-not-contained' class='positionAbsolute positioned'",
       "position": [275, 10],
       "bounds": [199, 105],
-      "backgroundColor": "#800080"
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-not-contained' class='scrolled'",
       "position": [6, 6],
-      "bounds": [75, 108],
-      "backgroundColor": "#0000FF",
+      "bounds": [75, 136],
+      "contentsOpaqueForText": true,
       "transform": 6
+    },
+    {
+      "name": "LayoutNGBlockFlow DIV id='container-absolute-sibling-grandchildren-not-contained' class='overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 7
     },
     {
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
+      "contentsOpaqueForText": true,
       "transform": 7
     },
     {
@@ -98,17 +124,25 @@
       "transform": 7
     },
     {
+      "name": "LayoutNGBlockFlow DIV id='container-absolute-sibling-grandchildren-not-contained' class='overflow'",
+      "position": [2, 6],
+      "bounds": [85, 136],
+      "contentsOpaqueForText": true,
+      "transform": 8
+    },
+    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-sibling-grandchildren-not-contained' class='positionAbsolute positioned'",
-      "position": [10, 75],
-      "bounds": [465, 159],
+      "position": [395, 75],
+      "bounds": [80, 40],
+      "contentsOpaque": true,
       "backgroundColor": "#800080"
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-grandchildren-not-contained' class='scrolled'",
-      "position": [6, 6],
-      "bounds": [75, 108],
-      "backgroundColor": "#0000FF",
-      "transform": 8
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-absolute-sibling-grandchildren' class='positionAbsolute overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 9
     },
     {
       "name": "HorizontalScrollbar",
@@ -125,20 +159,28 @@
     {
       "name": "Scroll corner of LayoutNGBlockFlow (positioned) DIV id='container-absolute-sibling-grandchildren' class='positionAbsolute overflow'",
       "position": [97, 130],
-      "bounds": [137, 104]
+      "bounds": [137, 104],
+      "contentsOpaqueForText": true
     },
     {
-      "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-sibling-grandchildren' class='positionAbsolute positioned'",
-      "position": [6, 6],
-      "bounds": [101, 108],
-      "backgroundColor": "#800080",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-absolute-sibling-grandchildren' class='positionAbsolute overflow'",
+      "position": [2, 6],
+      "bounds": [105, 136],
+      "contentsOpaqueForText": true,
       "transform": 10
     },
     {
-      "name": "HorizontalScrollbar",
-      "position": [2, 87],
-      "bounds": [100, 15],
+      "name": "LayoutNGBlockFlow DIV id='container-absolute-sibling-not-contained' class='overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
       "transform": 11
+    },
+    {
+      "name": "HorizontalScrollbar",
+      "position": [130, 217],
+      "bounds": [224, 137],
+      "contentsOpaqueForText": true
     },
     {
       "name": "VerticalScrollbar",
@@ -150,14 +192,21 @@
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-sibling-not-contained' class='positionAbsolute positioned'",
       "position": [155, 130],
       "bounds": [199, 105],
-      "backgroundColor": "#800080"
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-not-contained' class='scrolled'",
       "position": [6, 6],
       "bounds": [75, 108],
-      "backgroundColor": "#0000FF",
+      "contentsOpaqueForText": true,
       "transform": 12
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-absolute-sibling' class='positionAbsolute overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 13
     },
     {
       "name": "HorizontalScrollbar",
@@ -174,14 +223,22 @@
     {
       "name": "Scroll corner of LayoutNGBlockFlow (positioned) DIV id='container-absolute-sibling' class='positionAbsolute overflow'",
       "position": [337, 130],
-      "bounds": [137, 104]
+      "bounds": [137, 104],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute-sibling' class='positionAbsolute positioned'",
       "position": [6, 6],
       "bounds": [101, 108],
-      "backgroundColor": "#800080",
+      "contentsOpaqueForText": true,
       "transform": 14
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-absolute' class='positionAbsolute overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 15
     },
     {
       "name": "HorizontalScrollbar",
@@ -197,20 +254,30 @@
     },
     {
       "name": "Scroll corner of LayoutNGBlockFlow (positioned) DIV id='container-absolute' class='positionAbsolute overflow'",
-      "position": [10, 217],
-      "bounds": [462, 137]
+      "position": [370, 217],
+      "bounds": [104, 137],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-absolute' class='positionAbsolute positioned'",
       "position": [6, 6],
-      "bounds": [101, 136],
-      "backgroundColor": "#800080",
+      "bounds": [101, 108],
+      "contentsOpaqueForText": true,
       "transform": 16
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-fixed-sibling-grandchildren' class='positionAbsolute overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 17
+    },
+    {
       "name": "HorizontalScrollbar",
-      "position": [12, 250],
-      "bounds": [222, 104]
+      "position": [2, 87],
+      "bounds": [100, 15],
+      "contentsOpaqueForText": true,
+      "transform": 17
     },
     {
       "name": "VerticalScrollbar",
@@ -219,23 +286,32 @@
       "transform": 17
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-fixed-sibling-grandchildren' class='positionAbsolute overflow'",
+      "position": [2, 6],
+      "bounds": [85, 136],
+      "contentsOpaqueForText": true,
+      "transform": 18
+    },
+    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-fixed-sibling-grandchildren' class='positionFixed positioned'",
       "bounds": [80, 40],
       "contentsOpaque": true,
       "backgroundColor": "#800080",
-      "transform": 18
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-sibling-grandchildren' class='scrolled'",
-      "position": [6, 6],
-      "bounds": [75, 108],
-      "backgroundColor": "#0000FF",
       "transform": 19
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-fixed-sibling' class='positionAbsolute overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 20
+    },
+    {
       "name": "HorizontalScrollbar",
-      "position": [132, 250],
-      "bounds": [222, 104]
+      "position": [2, 87],
+      "bounds": [100, 15],
+      "contentsOpaqueForText": true,
+      "transform": 20
     },
     {
       "name": "VerticalScrollbar",
@@ -254,13 +330,22 @@
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-sibling' class='scrolled'",
       "position": [6, 6],
       "bounds": [75, 108],
-      "backgroundColor": "#0000FF",
+      "contentsOpaqueForText": true,
       "transform": 22
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-fixed-grandchildren' class='positionAbsolute overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 23
+    },
+    {
       "name": "HorizontalScrollbar",
-      "position": [252, 250],
-      "bounds": [222, 104]
+      "position": [2, 87],
+      "bounds": [100, 15],
+      "contentsOpaqueForText": true,
+      "transform": 23
     },
     {
       "name": "VerticalScrollbar",
@@ -269,23 +354,31 @@
       "transform": 23
     },
     {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-fixed-grandchildren' class='positionAbsolute overflow'",
+      "position": [2, 6],
+      "bounds": [85, 136],
+      "contentsOpaqueForText": true,
+      "transform": 24
+    },
+    {
       "name": "LayoutNGBlockFlow (positioned) DIV id='positioned-fixed-grandchildren' class='positionFixed positioned'",
       "bounds": [80, 40],
       "contentsOpaque": true,
       "backgroundColor": "#800080",
-      "transform": 24
+      "transform": 25
     },
     {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-grandchildren' class='scrolled'",
-      "position": [6, 6],
-      "bounds": [75, 136],
-      "backgroundColor": "#0000FF",
-      "transform": 25
+      "name": "LayoutNGBlockFlow (positioned) DIV id='container-fixed' class='positionAbsolute overflow'",
+      "position": [2, 2],
+      "bounds": [85, 85],
+      "drawsContent": false,
+      "transform": 26
     },
     {
       "name": "HorizontalScrollbar",
       "position": [2, 87],
       "bounds": [100, 15],
+      "contentsOpaqueForText": true,
       "transform": 26
     },
     {
@@ -304,8 +397,8 @@
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed' class='scrolled'",
       "position": [6, 6],
-      "bounds": [75, 136],
-      "backgroundColor": "#0000FF",
+      "bounds": [75, 108],
+      "contentsOpaqueForText": true,
       "transform": 28
     },
     {
@@ -352,69 +445,78 @@
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-grandchildren-not-contained' class='scrolled onTop'",
-      "position": [6, 118],
-      "bounds": [75, 24],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
+      "position": [6, 62],
+      "bounds": [75, 80],
+      "contentsOpaqueForText": true,
       "transform": 2
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-grandchildren' class='scrolled onTop'",
-      "position": [6, 118],
-      "bounds": [75, 24],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
-      "transform": 4
-    },
-    {
-      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-not-contained' class='scrolled onTop'",
-      "position": [6, 118],
-      "bounds": [75, 24],
-      "contentsOpaque": true,
-      "backgroundColor": "#0000FF",
-      "transform": 6
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-grandchildren-not-contained' class='scrolled onTop'",
       "position": [6, 62],
       "bounds": [75, 80],
-      "backgroundColor": "#0000FF",
+      "contentsOpaqueForText": true,
       "transform": 8
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-grandchildren' class='scrolled onTop'",
       "position": [6, 62],
       "bounds": [75, 80],
-      "backgroundColor": "#0000FF",
+      "contentsOpaqueForText": true,
       "transform": 10
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling-not-contained' class='scrolled onTop'",
       "position": [6, 62],
       "bounds": [75, 80],
-      "backgroundColor": "#0000FF",
+      "contentsOpaqueForText": true,
       "transform": 12
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute-sibling' class='scrolled onTop'",
       "position": [6, 62],
       "bounds": [75, 80],
-      "backgroundColor": "#0000FF",
+      "contentsOpaqueForText": true,
       "transform": 14
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-absolute' class='scrolled onTop'",
+      "position": [6, 62],
+      "bounds": [75, 80],
+      "contentsOpaqueForText": true,
+      "transform": 16
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-sibling-grandchildren' class='scrolled onTop'",
       "position": [6, 62],
       "bounds": [75, 80],
-      "backgroundColor": "#0000FF",
-      "transform": 19
+      "contentsOpaqueForText": true,
+      "transform": 18
     },
     {
       "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-sibling' class='scrolled onTop'",
       "position": [6, 62],
       "bounds": [75, 80],
-      "backgroundColor": "#0000FF",
+      "contentsOpaqueForText": true,
       "transform": 22
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed-grandchildren' class='scrolled onTop'",
+      "position": [6, 62],
+      "bounds": [75, 80],
+      "contentsOpaqueForText": true,
+      "transform": 24
+    },
+    {
+      "name": "LayoutNGBlockFlow (relative positioned) DIV id='scrolled-fixed' class='scrolled onTop'",
+      "position": [6, 62],
+      "bounds": [75, 80],
+      "contentsOpaqueForText": true,
+      "transform": 28
+    },
+    {
+      "name": "VerticalScrollbar",
+      "position": [785, 0],
+      "bounds": [15, 600]
     }
   ],
   "transforms": [
@@ -581,21 +683,21 @@
     },
     {
       "id": 18,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [35, 315, 0, 1]
-      ]
-    },
-    {
-      "id": 19,
       "parent": 17,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -59, 0, 1]
+      ]
+    },
+    {
+      "id": 19,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [35, 315, 0, 1]
       ]
     },
     {
@@ -637,21 +739,21 @@
     },
     {
       "id": 24,
-      "transform": [
-        [1, 0, 0, 0],
-        [0, 1, 0, 0],
-        [0, 0, 1, 0],
-        [275, 315, 0, 1]
-      ]
-    },
-    {
-      "id": 25,
       "parent": 23,
       "transform": [
         [1, 0, 0, 0],
         [0, 1, 0, 0],
         [0, 0, 1, 0],
         [0, -59, 0, 1]
+      ]
+    },
+    {
+      "id": 25,
+      "transform": [
+        [1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [275, 315, 0, 1]
       ]
     },
     {

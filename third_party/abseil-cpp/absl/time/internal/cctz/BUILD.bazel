@@ -14,33 +14,28 @@
 
 package(features = ["-parse_headers"])
 
-licenses(["notice"])  # Apache License
+licenses(["notice"])
+
+filegroup(
+    name = "zoneinfo",
+    srcs = glob(["testdata/zoneinfo/**"]),
+)
 
 config_setting(
     name = "osx",
     constraint_values = [
-        "@bazel_tools//platforms:osx",
+        "@platforms//os:osx",
     ],
 )
 
 config_setting(
     name = "ios",
     constraint_values = [
-        "@bazel_tools//platforms:ios",
+        "@platforms//os:ios",
     ],
 )
 
 ### libraries
-
-cc_library(
-    name = "includes",
-    textual_hdrs = [
-        "include/cctz/civil_time.h",
-        "include/cctz/civil_time_detail.h",
-        "include/cctz/time_zone.h",
-    ],
-    visibility = ["//absl/time:__pkg__"],
-)
 
 cc_library(
     name = "civil_time",
@@ -50,6 +45,7 @@ cc_library(
     ],
     textual_hdrs = ["include/cctz/civil_time_detail.h"],
     visibility = ["//visibility:public"],
+    deps = ["//absl/base:config"],
 )
 
 cc_library(
@@ -86,10 +82,18 @@ cc_library(
         "//conditions:default": [],
     }),
     visibility = ["//visibility:public"],
-    deps = [":civil_time"],
+    deps = [
+        ":civil_time",
+        "//absl/base:config",
+    ],
 )
 
 ### tests
+
+test_suite(
+    name = "all_tests",
+    visibility = ["//visibility:public"],
+)
 
 cc_test(
     name = "civil_time_test",
@@ -97,6 +101,7 @@ cc_test(
     srcs = ["src/civil_time_test.cc"],
     deps = [
         ":civil_time",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -114,6 +119,7 @@ cc_test(
     deps = [
         ":civil_time",
         ":time_zone",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -132,6 +138,7 @@ cc_test(
     deps = [
         ":civil_time",
         ":time_zone",
+        "//absl/base:config",
         "@com_google_googletest//:gtest_main",
     ],
 )
@@ -152,6 +159,7 @@ cc_test(
     deps = [
         ":civil_time",
         ":time_zone",
+        "//absl/base:config",
         "@com_github_google_benchmark//:benchmark_main",
     ],
 )
@@ -159,8 +167,3 @@ cc_test(
 ### examples
 
 ### binaries
-
-filegroup(
-    name = "zoneinfo",
-    srcs = glob(["testdata/zoneinfo/**"]),
-)

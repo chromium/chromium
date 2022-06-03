@@ -7,9 +7,15 @@ import("//build/config/android/rules.gni")
 
 android_library("weblayer_public_javatests") {
   testonly = true
-  java_files = [ "org/chromium/weblayer/ObserverListTest.java" ]
+  sources = [
+    "org/chromium/weblayer/ObserverListTest.java",
+    "org/chromium/weblayer/WebViewCompatibilityHelperTest.java",
+  ]
   deps = [
+    "//base:base_java",
     "//base:base_java_test_support",
+    "//third_party/android_support_test_runner:runner_java",
+    "//third_party/androidx:androidx_test_runner_java",
     "//third_party/junit:junit",
     "//weblayer/public/java",
   ]

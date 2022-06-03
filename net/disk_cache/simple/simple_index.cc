@@ -10,15 +10,13 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/check_op.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
-#include "base/metrics/field_trial.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_tokenizer.h"
-#include "base/task_runner.h"
+#include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "net/base/net_errors.h"
@@ -59,9 +57,6 @@ static const int kEstimatedEntryOverhead = 512;
 
 namespace disk_cache {
 
-const base::Feature kSimpleCacheEvictionWithSize = {
-    "SimpleCacheEvictionWithSize", base::FEATURE_ENABLED_BY_DEFAULT};
-
 EntryMetadata::EntryMetadata()
     : last_used_time_seconds_since_epoch_(0),
       entry_size_256b_chunks_(0),
@@ -91,7 +86,7 @@ base::Time EntryMetadata::GetLastUsedTime() const {
     return base::Time();
 
   return base::Time::UnixEpoch() +
-      base::TimeDelta::FromSeconds(last_used_time_seconds_since_epoch_);
+         base::Seconds(last_used_time_seconds_since_epoch_);
 }
 
 void EntryMetadata::SetLastUsedTime(const base::Time& last_used_time) {
@@ -189,9 +184,9 @@ SimpleIndex::SimpleIndex(
       task_runner_(task_runner),
       // Creating the callback once so it is reused every time
       // write_to_disk_timer_.Start() is called.
-      write_to_disk_cb_(base::Bind(&SimpleIndex::WriteToDisk,
-                                   AsWeakPtr(),
-                                   INDEX_WRITE_REASON_IDLE)) {}
+      write_to_disk_cb_(base::BindRepeating(&SimpleIndex::WriteToDisk,
+                                            AsWeakPtr(),
+                                            INDEX_WRITE_REASON_IDLE)) {}
 
 SimpleIndex::~SimpleIndex() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -221,11 +216,10 @@ void SimpleIndex::Initialize(base::Time cache_mtime) {
 
   SimpleIndexLoadResult* load_result = new SimpleIndexLoadResult();
   std::unique_ptr<SimpleIndexLoadResult> load_result_scoped(load_result);
-  base::Closure reply = base::Bind(
-      &SimpleIndex::MergeInitializingSet,
-      AsWeakPtr(),
-      base::Passed(&load_result_scoped));
-  index_file_->LoadIndexEntries(cache_mtime, reply, load_result);
+  base::OnceClosure reply =
+      base::BindOnce(&SimpleIndex::MergeInitializingSet, AsWeakPtr(),
+                     std::move(load_result_scoped));
+  index_file_->LoadIndexEntries(cache_mtime, std::move(reply), load_result);
 }
 
 void SimpleIndex::SetMaxSize(uint64_t max_bytes) {
@@ -307,11 +301,6 @@ uint64_t SimpleIndex::GetCacheSizeBetween(base::Time initial_time,
       size += metadata.GetEntrySize();
   }
   return size;
-}
-
-size_t SimpleIndex::EstimateMemoryUsage() const {
-  return base::trace_event::EstimateMemoryUsage(entries_set_) +
-         base::trace_event::EstimateMemoryUsage(removed_entries_);
 }
 
 base::Time SimpleIndex::GetLastUsedTime(uint64_t entry_hash) {
@@ -415,26 +404,24 @@ void SimpleIndex::StartEvictionIfNeeded() {
   // Take all live key hashes from the index and sort them by time.
   eviction_in_progress_ = true;
   eviction_start_time_ = base::TimeTicks::Now();
-  SIMPLE_CACHE_UMA(
-      MEMORY_KB, "Eviction.CacheSizeOnStart2", cache_type_,
-      static_cast<base::HistogramBase::Sample>(cache_size_ / kBytesInKb));
-  SIMPLE_CACHE_UMA(
-      MEMORY_KB, "Eviction.MaxCacheSizeOnStart2", cache_type_,
-      static_cast<base::HistogramBase::Sample>(max_size_ / kBytesInKb));
+
+  bool use_size_heuristic =
+      (cache_type_ != net::GENERATED_BYTE_CODE_CACHE &&
+       cache_type_ != net::GENERATED_WEBUI_BYTE_CODE_CACHE);
 
   // Flatten for sorting.
   std::vector<std::pair<uint64_t, const EntrySet::value_type*>> entries;
   entries.reserve(entries_set_.size());
   uint32_t now = (base::Time::Now() - base::Time::UnixEpoch()).InSeconds();
-  bool use_size = base::FeatureList::IsEnabled(kSimpleCacheEvictionWithSize);
   for (EntrySet::const_iterator i = entries_set_.begin();
        i != entries_set_.end(); ++i) {
     uint64_t sort_value = now - i->second.RawTimeForSorting();
-    if (use_size) {
-      // Will not overflow since we're multiplying two 32-bit values and storing
-      // them in a 64-bit variable.
+    // See crbug.com/736437 for context.
+    //
+    // Will not overflow since we're multiplying two 32-bit values and storing
+    // them in a 64-bit variable.
+    if (use_size_heuristic)
       sort_value *= i->second.GetEntrySize() + kEstimatedEntryOverhead;
-    }
     // Subtract so we don't need a custom comparator.
     entries.emplace_back(std::numeric_limits<uint64_t>::max() - sort_value,
                          &*i);
@@ -456,10 +443,6 @@ void SimpleIndex::StartEvictionIfNeeded() {
   SIMPLE_CACHE_UMA(TIMES,
                    "Eviction.TimeToSelectEntries", cache_type_,
                    base::TimeTicks::Now() - eviction_start_time_);
-  SIMPLE_CACHE_UMA(
-      MEMORY_KB, "Eviction.SizeOfEvicted2", cache_type_,
-      static_cast<base::HistogramBase::Sample>(
-          evicted_so_far_size / kBytesInKb));
 
   delegate_->DoomEntries(
       &entry_hashes, base::BindOnce(&SimpleIndex::EvictionDone, AsWeakPtr()));
@@ -508,13 +491,9 @@ void SimpleIndex::EvictionDone(int result) {
 
   // Ignore the result of eviction. We did our best.
   eviction_in_progress_ = false;
-  SIMPLE_CACHE_UMA(BOOLEAN, "Eviction.Result", cache_type_, result == net::OK);
   SIMPLE_CACHE_UMA(TIMES,
                    "Eviction.TimeToDone", cache_type_,
                    base::TimeTicks::Now() - eviction_start_time_);
-  SIMPLE_CACHE_UMA(
-      MEMORY_KB, "Eviction.SizeWhenDone2", cache_type_,
-      static_cast<base::HistogramBase::Sample>(cache_size_ / kBytesInKb));
 }
 
 // static
@@ -540,8 +519,8 @@ void SimpleIndex::PostponeWritingToDisk() {
   const int delay = app_on_background_ ? kWriteToDiskOnBackgroundDelayMSecs
                                        : kWriteToDiskDelayMSecs;
   // If the timer is already active, Start() will just Reset it, postponing it.
-  write_to_disk_timer_.Start(
-      FROM_HERE, base::TimeDelta::FromMilliseconds(delay), write_to_disk_cb_);
+  write_to_disk_timer_.Start(FROM_HERE, base::Milliseconds(delay),
+                             write_to_disk_cb_);
 }
 
 bool SimpleIndex::UpdateEntryIteratorSize(
@@ -597,9 +576,6 @@ void SimpleIndex::MergeInitializingSet(
   if (load_result->flush_required)
     WriteToDisk(INDEX_WRITE_REASON_STARTUP_MERGE);
 
-  SIMPLE_CACHE_UMA(CUSTOM_COUNTS,
-                   "IndexInitializationWaiters", cache_type_,
-                   to_run_when_initialized_.size(), 0, 100, 20);
   SIMPLE_CACHE_UMA(CUSTOM_COUNTS, "IndexNumEntriesOnInit", cache_type_,
                    entries_set_.size(), 0, 100000, 50);
   SIMPLE_CACHE_UMA(
@@ -608,11 +584,6 @@ void SimpleIndex::MergeInitializingSet(
   SIMPLE_CACHE_UMA(
       MEMORY_KB, "MaxCacheSizeOnInit", cache_type_,
       static_cast<base::HistogramBase::Sample>(max_size_ / kBytesInKb));
-  if (max_size_ > 0) {
-    SIMPLE_CACHE_UMA(PERCENTAGE, "PercentFullOnInit", cache_type_,
-                     static_cast<base::HistogramBase::Sample>(
-                         (cache_size_ * 100) / max_size_));
-  }
 
   // Run all callbacks waiting for the index to come up.
   for (auto it = to_run_when_initialized_.begin(),
@@ -647,34 +618,16 @@ void SimpleIndex::WriteToDisk(IndexWriteToDiskReason reason) {
   // Cancel any pending writes since we are about to write to disk now.
   write_to_disk_timer_.AbandonAndStop();
 
-  SIMPLE_CACHE_UMA(CUSTOM_COUNTS,
-                   "IndexNumEntriesOnWrite", cache_type_,
-                   entries_set_.size(), 0, 100000, 50);
-  const base::TimeTicks start = base::TimeTicks::Now();
-  if (!last_write_to_disk_.is_null()) {
-    if (app_on_background_) {
-      SIMPLE_CACHE_UMA(MEDIUM_TIMES,
-                       "IndexWriteInterval.Background", cache_type_,
-                       start - last_write_to_disk_);
-    } else {
-      SIMPLE_CACHE_UMA(MEDIUM_TIMES,
-                       "IndexWriteInterval.Foreground", cache_type_,
-                       start - last_write_to_disk_);
-    }
-  }
-  last_write_to_disk_ = start;
-
-  base::Closure after_write;
+  base::OnceClosure after_write;
   if (cleanup_tracker_) {
     // Make anyone synchronizing with our cleanup wait for the index to be
     // written back.
-    after_write = base::Bind(
-        base::DoNothing::Repeatedly<scoped_refptr<BackendCleanupTracker>>(),
-        cleanup_tracker_);
+    after_write = base::BindOnce([](scoped_refptr<BackendCleanupTracker>) {},
+                                 cleanup_tracker_);
   }
 
   index_file_->WriteToDisk(cache_type_, reason, entries_set_, cache_size_,
-                           start, app_on_background_, after_write);
+                           std::move(after_write));
 }
 
 }  // namespace disk_cache

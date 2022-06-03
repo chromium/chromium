@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/AssistantCollectUserDataNativeDelegate_jni.h"
 #include "chrome/browser/android/autofill_assistant/ui_controller_android.h"
+#include "chrome/browser/android/autofill_assistant/ui_controller_android_utils.h"
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -18,19 +19,6 @@
 
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
-
-namespace {
-// Converts a java string to native. Returns an empty string if input is null.
-std::string SafeConvertJavaStringToNative(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jstring>& jstring) {
-  std::string native_string;
-  if (jstring) {
-    base::android::ConvertJavaStringToUTF8(env, jstring, &native_string);
-  }
-  return native_string;
-}
-}  // namespace
 
 namespace autofill_assistant {
 
@@ -50,34 +38,16 @@ AssistantCollectUserDataDelegate::~AssistantCollectUserDataDelegate() {
 void AssistantCollectUserDataDelegate::OnContactInfoChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
-    const base::android::JavaParamRef<jstring>& jpayer_name,
-    const base::android::JavaParamRef<jstring>& jpayer_phone,
-    const base::android::JavaParamRef<jstring>& jpayer_email) {
-  if (!jpayer_name && !jpayer_phone && !jpayer_email) {
+    const base::android::JavaParamRef<jobject>& jcontact_profile) {
+  if (!jcontact_profile) {
     ui_controller_->OnContactInfoChanged(nullptr);
     return;
   }
 
-  std::string name = SafeConvertJavaStringToNative(env, jpayer_name);
-  std::string phone = SafeConvertJavaStringToNative(env, jpayer_phone);
-  std::string email = SafeConvertJavaStringToNative(env, jpayer_email);
-
   auto contact_profile = std::make_unique<autofill::AutofillProfile>();
-  contact_profile->SetRawInfo(autofill::ServerFieldType::NAME_FULL,
-                              base::UTF8ToUTF16(name));
-  autofill::data_util::NameParts parts =
-      autofill::data_util::SplitName(base::UTF8ToUTF16(name));
-  contact_profile->SetRawInfo(autofill::ServerFieldType::NAME_FIRST,
-                              parts.given);
-  contact_profile->SetRawInfo(autofill::ServerFieldType::NAME_MIDDLE,
-                              parts.middle);
-  contact_profile->SetRawInfo(autofill::ServerFieldType::NAME_LAST,
-                              parts.family);
-  contact_profile->SetRawInfo(autofill::ServerFieldType::EMAIL_ADDRESS,
-                              base::UTF8ToUTF16(email));
-  contact_profile->SetRawInfo(
-      autofill::ServerFieldType::PHONE_HOME_WHOLE_NUMBER,
-      base::UTF8ToUTF16(phone));
+  autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
+      jcontact_profile, env, contact_profile.get());
+
   ui_controller_->OnContactInfoChanged(std::move(contact_profile));
 }
 
@@ -101,14 +71,14 @@ void AssistantCollectUserDataDelegate::OnCreditCardChanged(
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jobject>& jcard,
     const base::android::JavaParamRef<jobject>& jbilling_profile) {
-  std::unique_ptr<autofill::CreditCard> card = nullptr;
+  std::unique_ptr<autofill::CreditCard> card;
   if (jcard) {
     card = std::make_unique<autofill::CreditCard>();
     autofill::PersonalDataManagerAndroid::PopulateNativeCreditCardFromJava(
         jcard, env, card.get());
   }
 
-  std::unique_ptr<autofill::AutofillProfile> billing_profile = nullptr;
+  std::unique_ptr<autofill::AutofillProfile> billing_profile;
   if (jbilling_profile) {
     billing_profile = std::make_unique<autofill::AutofillProfile>();
     autofill::PersonalDataManagerAndroid::PopulateNativeProfileFromJava(
@@ -127,54 +97,94 @@ void AssistantCollectUserDataDelegate::OnTermsAndConditionsChanged(
       static_cast<TermsAndConditionsState>(state));
 }
 
-void AssistantCollectUserDataDelegate::OnTermsAndConditionsLinkClicked(
+void AssistantCollectUserDataDelegate::OnTextLinkClicked(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jint link) {
-  ui_controller_->OnTermsAndConditionsLinkClicked(link);
+  ui_controller_->OnTextLinkClicked(link);
 }
 
 void AssistantCollectUserDataDelegate::OnLoginChoiceChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jstring>& jidentifier) {
-  std::string identifier = SafeConvertJavaStringToNative(env, jidentifier);
+  std::string identifier =
+      ui_controller_android_utils::SafeConvertJavaStringToNative(env,
+                                                                 jidentifier);
   ui_controller_->OnLoginChoiceChanged(identifier);
 }
 
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartChanged(
+void AssistantCollectUserDataDelegate::OnDateTimeRangeStartDateChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jint year,
     jint month,
-    jint day,
-    jint hour,
-    jint minute,
-    jint second) {
-  ui_controller_->OnDateTimeRangeStartChanged(year, month, day, hour, minute,
-                                              second);
+    jint day) {
+  ui_controller_->OnDateTimeRangeStartDateChanged(year, month, day);
 }
 
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndChanged(
+void AssistantCollectUserDataDelegate::OnDateTimeRangeStartDateCleared(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  ui_controller_->OnDateTimeRangeStartDateCleared();
+}
+
+void AssistantCollectUserDataDelegate::OnDateTimeRangeStartTimeSlotChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jint index) {
+  ui_controller_->OnDateTimeRangeStartTimeSlotChanged(index);
+}
+
+void AssistantCollectUserDataDelegate::OnDateTimeRangeStartTimeSlotCleared(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  ui_controller_->OnDateTimeRangeStartTimeSlotCleared();
+}
+
+void AssistantCollectUserDataDelegate::OnDateTimeRangeEndDateChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     jint year,
     jint month,
-    jint day,
-    jint hour,
-    jint minute,
-    jint second) {
-  ui_controller_->OnDateTimeRangeEndChanged(year, month, day, hour, minute,
-                                            second);
+    jint day) {
+  ui_controller_->OnDateTimeRangeEndDateChanged(year, month, day);
+}
+
+void AssistantCollectUserDataDelegate::OnDateTimeRangeEndDateCleared(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  ui_controller_->OnDateTimeRangeEndDateCleared();
+}
+
+void AssistantCollectUserDataDelegate::OnDateTimeRangeEndTimeSlotChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jint index) {
+  ui_controller_->OnDateTimeRangeEndTimeSlotChanged(index);
+}
+
+void AssistantCollectUserDataDelegate::OnDateTimeRangeEndTimeSlotCleared(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller) {
+  ui_controller_->OnDateTimeRangeEndTimeSlotCleared();
 }
 
 void AssistantCollectUserDataDelegate::OnKeyValueChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,
     const base::android::JavaParamRef<jstring>& jkey,
-    const base::android::JavaParamRef<jstring>& jvalue) {
-  ui_controller_->OnKeyValueChanged(SafeConvertJavaStringToNative(env, jkey),
-                                    SafeConvertJavaStringToNative(env, jvalue));
+    const base::android::JavaParamRef<jobject>& jvalue) {
+  ui_controller_->OnKeyValueChanged(
+      ui_controller_android_utils::SafeConvertJavaStringToNative(env, jkey),
+      ui_controller_android_utils::ToNativeValue(env, jvalue));
+}
+
+void AssistantCollectUserDataDelegate::OnInputTextFocusChanged(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jcaller,
+    jboolean jis_focused) {
+  ui_controller_->OnInputTextFocusChanged(jis_focused);
 }
 
 base::android::ScopedJavaGlobalRef<jobject>

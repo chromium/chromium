@@ -18,6 +18,7 @@
 #include "net/cookies/cookie_monster.h"
 #include "net/extras/sqlite/sqlite_persistent_cookie_store.h"
 #include "net/log/net_log_with_source.h"
+#include "services/network/public/cpp/session_cookie_delete_predicate.h"
 
 namespace net {
 class CanonicalCookie;
@@ -26,22 +27,22 @@ class CanonicalCookie;
 namespace network {
 
 // Implements a PersistentCookieStore that keeps an in-memory map of cookie
-// origins, and allows deletion of cookies using the DeleteCookiePredicate. This
-// is used to clear cookies with session-only policy at the end of a session.
+// origins, and allows deletion of cookies using the
+// network::DeleteCookiePredicate. This is used to clear cookies with
+// session-only policy at the end of a session.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SessionCleanupCookieStore
     : public net::CookieMonster::PersistentCookieStore {
  public:
-  // Returns true if the cookie associated with the domain and is_https status
-  // should be deleted.
-  using DeleteCookiePredicate =
-      base::RepeatingCallback<bool(const std::string&, bool)>;
-
   using CookiesPerOriginMap =
       std::map<net::SQLitePersistentCookieStore::CookieOrigin, size_t>;
 
   // Wraps the passed-in |cookie_store|.
   explicit SessionCleanupCookieStore(
       const scoped_refptr<net::SQLitePersistentCookieStore>& cookie_store);
+
+  SessionCleanupCookieStore(const SessionCleanupCookieStore&) = delete;
+  SessionCleanupCookieStore& operator=(const SessionCleanupCookieStore&) =
+      delete;
 
   // net::CookieMonster::PersistentCookieStore:
   void Load(LoadedCallback loaded_callback,
@@ -79,8 +80,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SessionCleanupCookieStore
   bool force_keep_session_state_ = false;
 
   net::NetLogWithSource net_log_;
-
-  DISALLOW_COPY_AND_ASSIGN(SessionCleanupCookieStore);
 };
 
 }  // namespace network

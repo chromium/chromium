@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+testRunner.waitUntilDone();
+</script>
+<script src='../../../fast/forms/resources/picker-common.js'></script>
+</head>
+<body>
+<input type='color' id='color' value='#7EFFC9'>
+
+<p id='description' style='opacity: 0'></p>
+<div id='console' style='opacity: 0'></div>
+
+<script>
+openPickerAppearanceOnly(document.getElementById('color'), openPickerSuccessfulCallback);
+
+function openPickerSuccessfulCallback() {
+  popupWindow.focus();
+  const popupDocument = popupWindow.document;
+  const formatToggler = popupDocument.querySelector('format-toggler');
+  formatToggler.click();
+  testRunner.notifyDone();
+}
+</script>
+</body>
+</html>

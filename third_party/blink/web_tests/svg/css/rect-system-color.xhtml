@@ -14,11 +14,11 @@ function checkSystemColor(id1, id2, systemColor)
     var textElement = document.getElementById(id1);
     computedStyleText = textElement.ownerDocument.defaultView.getComputedStyle(textElement);
     var divElement = document.getElementById(id2);
-    computedStyleDiv = divElement.ownerDocument.defaultView.getComputedStyle(divElement);
+    computedStyleDiv = divElement.computedStyleMap();
 
     debug('Testing system color' + systemColor);
-    shouldBe("computedStyleText.fill", "computedStyleDiv.color");
-    shouldBe("computedStyleText.stroke", "computedStyleDiv.color");
+    shouldBe("computedStyleText.fill", "computedStyleDiv.get('color').toString()");
+    shouldBe("computedStyleText.stroke", "computedStyleDiv.get('color').toString()");
 }
 
 description('Test that fill and stroke properties accept system colors');

@@ -6,18 +6,8 @@
 module blink.mojom;
 
 import "third_party/blink/public/mojom/blob/serialized_blob.mojom";
+import "third_party/blink/public/mojom/webshare/share_error.mojom";
 import "url/mojom/url.mojom";
-
-enum ShareError {
-  // Share successful.
-  OK,
-  // Something went wrong in the implementation.
-  INTERNAL_ERROR,
-  // Potentially dangerous files.
-  PERMISSION_DENIED,
-  // Share was canceled by user.
-  CANCELED,
-};
 
 struct SharedFile {
   string name;

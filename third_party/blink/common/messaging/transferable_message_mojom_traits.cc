@@ -6,6 +6,7 @@
 
 #include "base/containers/span.h"
 #include "third_party/blink/public/common/messaging/cloneable_message_mojom_traits.h"
+#include "third_party/blink/public/common/messaging/message_port_descriptor.h"
 
 namespace mojo {
 
@@ -13,8 +14,8 @@ bool StructTraits<blink::mojom::TransferableMessage::DataView,
                   blink::TransferableMessage>::
     Read(blink::mojom::TransferableMessage::DataView data,
          blink::TransferableMessage* out) {
-  std::vector<mojo::ScopedMessagePipeHandle> ports;
-  std::vector<mojo::ScopedMessagePipeHandle> stream_channels;
+  std::vector<blink::MessagePortDescriptor> ports;
+  std::vector<blink::MessagePortDescriptor> stream_channels;
   if (!data.ReadMessage(static_cast<blink::CloneableMessage*>(out)) ||
       !data.ReadArrayBufferContentsArray(&out->array_buffer_contents_array) ||
       !data.ReadImageBitmapContentsArray(&out->image_bitmap_contents_array) ||
@@ -26,8 +27,7 @@ bool StructTraits<blink::mojom::TransferableMessage::DataView,
   out->ports = blink::MessagePortChannel::CreateFromHandles(std::move(ports));
   out->stream_channels =
       blink::MessagePortChannel::CreateFromHandles(std::move(stream_channels));
-  out->transfer_user_activation = data.transfer_user_activation();
-  out->allow_autoplay = data.allow_autoplay();
+  out->delegate_payment_request = data.delegate_payment_request();
   return true;
 }
 

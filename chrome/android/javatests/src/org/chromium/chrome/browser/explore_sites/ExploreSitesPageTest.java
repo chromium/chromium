@@ -4,18 +4,17 @@
 
 package org.chromium.chrome.browser.explore_sites;
 
-import static android.support.test.espresso.Espresso.onView;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
-import static org.hamcrest.Matchers.instanceOf;
-
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.os.SystemClock;
-import android.support.test.espresso.contrib.RecyclerViewActions;
-import android.support.test.filters.SmallTest;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Assert;
@@ -29,23 +28,23 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.ChromeSwitches;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.UrlConstants;
-import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.Features;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 
@@ -61,30 +60,33 @@ public class ExploreSitesPageTest {
     // clang-format on
 
     ArrayList<ExploreSitesCategory> getTestingCatalog() {
-        final ArrayList<ExploreSitesCategory> categoryList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            ExploreSitesCategory category =
-                    new ExploreSitesCategory(i, i, "Category #" + Integer.toString(i),
-                            /* ntpShownCount = */ 1, /* interactionCount = */ 0);
-            // 0th category would be filtered out. Tests that row maximums are obeyed.
-            int numSites = 4 * i + 1;
-            for (int j = 0; j < numSites; j++) {
-                ExploreSitesSite site = new ExploreSitesSite(
-                        i * 8 + j, "Site #" + Integer.toString(j), "https://example.com/", false);
-                category.addSite(site);
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            final ArrayList<ExploreSitesCategory> categoryList = new ArrayList<>();
+            for (int i = 0; i < 5; i++) {
+                ExploreSitesCategory category =
+                        new ExploreSitesCategory(i, i, "Category #" + Integer.toString(i),
+                                /* ntpShownCount = */ 1, /* interactionCount = */ 0);
+                // 0th category would be filtered out. Tests that row maximums are obeyed.
+                int numSites = 4 * i + 1;
+                for (int j = 0; j < numSites; j++) {
+                    ExploreSitesSite site =
+                            new ExploreSitesSite(i * 8 + j, "Site #" + Integer.toString(j),
+                                    new GURL("https://example.com/"), false);
+                    category.addSite(site);
+                }
+                categoryList.add(category);
             }
-            categoryList.add(category);
-        }
 
-        return categoryList;
+            return categoryList;
+        });
     }
 
     @Rule
-    public ChromeActivityTestRule<ChromeActivity> mActivityTestRule =
-            new ChromeActivityTestRule<>(ChromeActivity.class);
+    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
     @Rule
-    public ChromeRenderTestRule mRenderTestRule = new ChromeRenderTestRule();
+    public ChromeRenderTestRule mRenderTestRule =
+            ChromeRenderTestRule.Builder.withPublicCorpus().build();
 
     private Tab mTab;
     private RecyclerView mRecyclerView;
@@ -137,7 +139,7 @@ public class ExploreSitesPageTest {
     @Features.EnableFeatures(ChromeFeatureList.EXPLORE_SITES)
     public void testScrolledLayout_withBack() throws Exception {
         final int scrollPosition = 2;
-        onView(instanceOf(RecyclerView.class))
+        onView(withId(R.id.feed_stream_recycler_view))
                 .perform(RecyclerViewActions.scrollToPosition(scrollPosition));
         mRenderTestRule.render(mRecyclerView, "recycler_layout");
         Assert.assertEquals(scrollPosition, getFirstVisiblePosition());
@@ -157,7 +159,8 @@ public class ExploreSitesPageTest {
     @Features.EnableFeatures(ChromeFeatureList.EXPLORE_SITES)
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testInitialLayout(boolean nightModeEnabled) throws Exception {
-        onView(instanceOf(RecyclerView.class)).perform(RecyclerViewActions.scrollToPosition(0));
+        onView(withId(R.id.explore_sites_category_recycler))
+                .perform(RecyclerViewActions.scrollToPosition(0));
         mRenderTestRule.render(mRecyclerView, "initial_layout");
     }
 
@@ -245,17 +248,11 @@ public class ExploreSitesPageTest {
         mRecyclerView = mEsp.getView().findViewById(R.id.explore_sites_category_recycler);
     }
 
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     public static void waitForEspLoaded(final Tab tab) {
-        CriteriaHelper.pollUiThread(new Criteria("ESP never fully loaded") {
-            @Override
-            public boolean isSatisfied() {
-                if (tab.getNativePage() instanceof ExploreSitesPage) {
-                    return ((ExploreSitesPage) tab.getNativePage()).isLoadedForTests();
-                } else {
-                    return false;
-                }
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            Criteria.checkThat(tab.getNativePage(), Matchers.instanceOf(ExploreSitesPage.class));
+            Criteria.checkThat(
+                    ((ExploreSitesPage) tab.getNativePage()).isLoadedForTests(), Matchers.is(true));
         });
     }
 }

@@ -1,0 +1,4 @@
+This is an extension with a persistent background page that suppresses the
+update notification events.
+
+This extension is useful for testing specific auto update scenarios.

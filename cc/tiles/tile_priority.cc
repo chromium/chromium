@@ -11,18 +11,6 @@
 
 namespace cc {
 
-std::string WhichTreeToString(WhichTree tree) {
-  switch (tree) {
-  case ACTIVE_TREE:
-    return "ACTIVE_TREE";
-  case PENDING_TREE:
-    return "PENDING_TREE";
-  default:
-      DCHECK(false) << "Unrecognized WhichTree value " << tree;
-      return "<unknown WhichTree value>";
-  }
-}
-
 std::string TileResolutionToString(TileResolution resolution) {
   switch (resolution) {
   case LOW_RESOLUTION:

@@ -1,0 +1,30 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "url/mojom/url.mojom";
+
+// Notifies an execution context host (RenderFrameHost or DedicatedWorkerHost)
+// of content security events (e.g., mixed contents, certificate errors)
+// happened on the execution context. Currently SharedWorkerHost and
+// ServiceWorkerHost don't bind this interface. See comments in
+// BrowserInterfaceBinders for details. This is typically implemented in the
+// browser process and called from renderers.
+interface ContentSecurityNotifier {
+  // Notifies that an active content (such as a script) that was loaded from a
+  // connection with certificate errors was ran.
+  NotifyContentWithCertificateErrorsRan();
+
+  // Notifies that an inactive content (such as an image) that was loaded from a
+  // connection with certificate errors was displayed.
+  NotifyContentWithCertificateErrorsDisplayed();
+
+  // Notifies that an embedded execution context with |origin| ran active
+  // content (such as a script) from an insecure source.
+  // TODO(nhiroki): Stop passing the origin, and instead take it from the
+  // execution context host.
+  NotifyInsecureContentRan(url.mojom.Url origin,
+                           url.mojom.Url insecure_url);
+};

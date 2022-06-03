@@ -1,26 +1,7 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/shared_vars_css.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_row.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-collapse/iron-collapse.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/html/icon.html">
-<link rel="import" href="browser_service.html">
-<link rel="import" href="constants.html">
-<link rel="import" href="searched_label.html">
-<link rel="import" href="shared_style.html">
-<link rel="import" href="strings.html">
-
-<dom-module id="history-synced-device-card">
-  <template>
     <style include="shared-style">
       :host {
-        @apply --card-sizing;
         -webkit-tap-highlight-color: transparent;
         display: block;
-        padding-bottom: var(--card-padding-between);
       }
 
       #card-heading {
@@ -58,9 +39,9 @@
       }
 
       #history-item-container {
-        @apply --cr-card-elevation;
         background-color: var(--cr-card-background-color);
         border-radius: var(--cr-card-border-radius);
+        box-shadow: var(--cr-card-shadow);
       }
 
       .item-container {
@@ -115,6 +96,3 @@
         </div>
       </iron-collapse>
     </div>
-  </template>
-  <script src="synced_device_card.js"></script>
-</dom-module>

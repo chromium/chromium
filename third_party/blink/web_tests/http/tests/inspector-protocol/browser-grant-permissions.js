@@ -17,19 +17,21 @@
   });
 
   await grant('geolocation');
-  await waitPermission('geolocation', 'granted');
+  await waitPermission({name: 'geolocation'}, 'granted');
 
   await grant('audioCapture');
   await Promise.all([
-    waitPermission('geolocation', 'denied'),
-    waitPermission('microphone', 'granted'),
+    waitPermission({name: 'geolocation'}, 'denied'),
+    waitPermission({name: 'microphone'}, 'granted'),
   ]);
 
-
-  await grant('geolocation', 'audioCapture');
+  await grant('geolocation', 'audioCapture', 'videoCapturePanTiltZoom');
   await Promise.all([
-    waitPermission('geolocation', 'granted'),
-    waitPermission('microphone', 'granted'),
+    waitPermission({name: 'geolocation'}, 'granted'),
+    waitPermission({name: 'microphone'}, 'granted'),
+    waitPermission({name: 'camera', panTiltZoom: true}, 'granted'),
+    waitPermission({name: 'camera', panTiltZoom: false}, 'granted'),
+    waitPermission({name: 'camera'}, 'granted'),
   ]);
 
   await grant('eee');
@@ -37,8 +39,11 @@
   testRunner.log('- Resetting all permissions');
   await dp.Browser.resetPermissions();
   await Promise.all([
-    waitPermission('geolocation', 'denied'),
-    waitPermission('microphone', 'denied'),
+    waitPermission({name: 'geolocation'}, 'denied'),
+    waitPermission({name: 'microphone'}, 'denied'),
+    waitPermission({name: 'camera', panTiltZoom: true}, 'denied'),
+    waitPermission({name: 'camera', panTiltZoom: false}, 'denied'),
+    waitPermission({name: 'camera'}, 'denied'),
   ]);
 
   testRunner.log(await session.evaluate(() => window.subscriptionChanges));
@@ -57,14 +62,14 @@
       testRunner.log('- Granted: ' + JSON.stringify(permissions));
   }
 
-  async function waitPermission(name, state) {
-    await session.evaluateAsync(async (permission, state) => {
-      const result = await navigator.permissions.query({name: permission});
+  async function waitPermission(descriptor, state) {
+    await session.evaluateAsync(async (descriptor, state) => {
+      const result = await navigator.permissions.query(descriptor);
       if (result.state && result.state === state)
-        window.messages.push(`${permission}: ${result.state}`);
+        window.messages.push(`${JSON.stringify(descriptor)}: ${result.state}`);
       else
         window.messages.push(`Failed to set ${permission} to state: ${state}`);
-    }, name, state);
+    }, descriptor, state);
   }
 })
 

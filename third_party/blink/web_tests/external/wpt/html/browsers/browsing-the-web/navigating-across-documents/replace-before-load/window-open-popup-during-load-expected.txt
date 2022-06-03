@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL No replace before load, triggered by window.open() on a non-_self window resolve is not defined
+Harness: the test ran to completion.
+

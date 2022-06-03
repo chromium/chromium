@@ -10,3 +10,4 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE n_relations=0
 ++++ROLE_SYSTEM_STATICTEXT name=' has details' n_relations=0
 ++ROLE_SYSTEM_GROUPING n_relations=1
 ++++ROLE_SYSTEM_STATICTEXT name='Text details' n_relations=0
+++ROLE_SYSTEM_GRAPHIC name='Image details' READONLY n_relations=1

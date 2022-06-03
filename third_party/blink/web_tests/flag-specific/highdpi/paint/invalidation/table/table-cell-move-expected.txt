@@ -1,0 +1,16 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling Contents Layer",
+      "bounds": [1200, 900],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [12, 480, 90, 90],
+        [12, 390, 90, 90],
+        [12, 300, 90, 90]
+      ]
+    }
+  ]
+}
+

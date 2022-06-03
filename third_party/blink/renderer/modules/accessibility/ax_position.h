@@ -9,7 +9,8 @@
 
 #include <ostream>
 
-#include <base/logging.h>
+#include "base/dcheck_is_on.h"
+#include "base/logging.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/editing/text_affinity.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -147,6 +148,8 @@ class MODULES_EXPORT AXPosition final {
   const PositionWithAffinity ToPositionWithAffinity(
       const AXPositionAdjustmentBehavior =
           AXPositionAdjustmentBehavior::kMoveLeft) const;
+  const Position ToPosition(const AXPositionAdjustmentBehavior =
+                                AXPositionAdjustmentBehavior::kMoveLeft) const;
 
   // Returns a string representation of this object.
   String ToString() const;
@@ -189,6 +192,8 @@ class MODULES_EXPORT AXPosition final {
   uint64_t dom_tree_version_;
   uint64_t style_version_;
 #endif
+
+  friend class AXSelection;
 };
 
 MODULES_EXPORT bool operator==(const AXPosition&, const AXPosition&);

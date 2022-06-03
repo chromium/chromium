@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/history/core/browser/history_types.h"
 
@@ -41,6 +40,9 @@ class TopSitesBackend : public base::RefCountedThreadSafe<TopSitesBackend> {
       base::OnceCallback<void(MostVisitedURLList)>;
 
   TopSitesBackend();
+
+  TopSitesBackend(const TopSitesBackend&) = delete;
+  TopSitesBackend& operator=(const TopSitesBackend&) = delete;
 
   void Init(const base::FilePath& path);
 
@@ -83,8 +85,6 @@ class TopSitesBackend : public base::RefCountedThreadSafe<TopSitesBackend> {
 
   std::unique_ptr<TopSitesDatabase> db_;
   scoped_refptr<base::SequencedTaskRunner> db_task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(TopSitesBackend);
 };
 
 }  // namespace history

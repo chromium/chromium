@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+GEN('#include "content/public/test/browser_test.h"');
+
 /**
  * TestFixture for SUID Sandbox testing.
  * @extends {testing.Test}
@@ -23,9 +25,9 @@ SandboxStatusUITest.prototype = {
 // - If failures of this test are a problem on a bot under your care,
 //   the proper way to address such failures is to install the SUID
 //   sandbox. See:
-//     https://chromium.googlesource.com/chromium/src/+/master/docs/linux_suid_sandbox_development.md
+//     https://chromium.googlesource.com/chromium/src/+/main/docs/linux/suid_sandbox_development.md
 // - PLEASE DO NOT GLOBALLY DISABLE THIS TEST.
-GEN('#if defined(OS_LINUX)');
+GEN('#if defined(OS_LINUX) || defined(OS_CHROMEOS)');
 GEN('# define MAYBE_testSUIDorNamespaceSandboxEnabled \\');
 GEN('     testSUIDorNamespaceSandboxEnabled');
 GEN('#else');
@@ -51,7 +53,7 @@ TEST_F(
     });
 
 // The seccomp-bpf sandbox is also not compatible with ASAN.
-GEN('#if !defined(OS_LINUX)');
+GEN('#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)');
 GEN('# define MAYBE_testBPFSandboxEnabled \\');
 GEN('     DISABLED_testBPFSandboxEnabled');
 GEN('#else');
@@ -114,7 +116,7 @@ TEST_F('GPUSandboxStatusUITest', 'DISABLED_testGPUSandboxEnabled', function() {
         let gpuno = addedNode.innerText.match(gpunostring);
         if (gpuyes || gpuno) {
           expectEquals(null, gpuno);
-          expectTrue(gpuyes && (gpuyes[0] == gpuyesstring));
+          expectTrue(gpuyes && (gpuyes[0] === gpuyesstring));
           testDone();
         }
       }
@@ -142,7 +144,8 @@ SandboxStatusWindowsUITest.prototype = {
 // This test is for Windows only.
 GEN('#if defined(OS_WIN)');
 GEN('# define MAYBE_testSandboxStatus \\');
-GEN('     testSandboxStatus');
+// TODO(https://crbug.com/1045564) Flaky on Windows.
+GEN('     DISABLED_testSandboxStatus');
 GEN('#else');
 GEN('# define MAYBE_testSandboxStatus \\');
 GEN('     DISABLED_testSandboxStatus');

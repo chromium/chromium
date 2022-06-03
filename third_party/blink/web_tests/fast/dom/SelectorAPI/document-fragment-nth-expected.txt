@@ -1,9 +1,0 @@
-DocumentFragment.querySelector matching nth-child of fragment.
-
-On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
-
-PASS fragment.querySelector(":nth-child(12)").id is "pass"
-PASS successfullyParsed is true
-
-TEST COMPLETE
-

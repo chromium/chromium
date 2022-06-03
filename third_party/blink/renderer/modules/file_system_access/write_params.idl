@@ -1,0 +1,18 @@
+// Copyright 2019 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://wicg.github.io/file-system-access/#enumdef-writecommandtype
+enum WriteCommandType {
+  "truncate",
+  "seek",
+  "write",
+};
+
+// https://wicg.github.io/file-system-access/#dictdef-writeparams
+dictionary WriteParams {
+  required WriteCommandType type;
+  unsigned long long? size;
+  unsigned long long? position;
+  (BufferSource or Blob or USVString)? data;
+};

@@ -7,7 +7,14 @@
     "namespace": "tabs",
     "description": "Use the <code>chrome.tabs</code> API to interact with the browser's tab system. You can use this API to create, modify, and rearrange tabs in the browser.",
     "types": [
-      { "id": "MutedInfoReason",
+      {
+        "id": "TabStatus",
+        "type": "string",
+        "enum": ["unloaded", "loading", "complete"],
+        "description": "The tab's loading status."
+      },
+      {
+        "id": "MutedInfoReason",
         "type": "string",
         "description": "An event that caused a muted state change.",
         "enum": [
@@ -44,6 +51,7 @@
           "id": {"type": "integer", "minimum": -1, "optional": true, "description": "The ID of the tab. Tab IDs are unique within a browser session. Under some circumstances a tab may not be assigned an ID; for example, when querying foreign tabs using the $(ref:sessions) API, in which case a session ID may be present. Tab ID can also be set to <code>chrome.tabs.TAB_ID_NONE</code> for apps and devtools windows."},
           // TODO(kalman): Investigate how this is ending up as -1 (based on window type? a bug?) and whether it should be optional instead.
           "index": {"type": "integer", "minimum": -1, "description": "The zero-based index of the tab within its window."},
+          "groupId": {"type": "integer", "minimum": -1, "description": "The ID of the group that the tab belongs to."},
           "windowId": {"type": "integer", "minimum": 0, "description": "The ID of the window that contains the tab."},
           "openerTabId": {"type": "integer", "minimum": 0, "optional": true, "description": "The ID of the tab that opened this tab, if any. This property is only present if the opener tab still exists."},
           "selected": {"type": "boolean", "description": "Whether the tab is selected.", "deprecated": "Please use $(ref:tabs.Tab.highlighted)."},
@@ -58,7 +66,11 @@
           "pendingUrl": {"type": "string", "optional": true, "description": "The URL the tab is navigating to, before it has committed. This property is only present if the extension's manifest includes the <code>\"tabs\"</code> permission and there is a pending navigation."},
           "title": {"type": "string", "optional": true, "description": "The title of the tab. This property is only present if the extension's manifest includes the <code>\"tabs\"</code> permission."},
           "favIconUrl": {"type": "string", "optional": true, "description": "The URL of the tab's favicon. This property is only present if the extension's manifest includes the <code>\"tabs\"</code> permission. It may also be an empty string if the tab is loading."},
-          "status": {"type": "string", "optional": true, "description": "Either <em>loading</em> or <em>complete</em>."},
+          "status": {
+            "$ref": "TabStatus",
+            "optional": true,
+            "description": "The tab's loading status."
+          },
           "incognito": {"type": "boolean", "description": "Whether the tab is in an incognito window."},
           "width": {"type": "integer", "optional": true, "description": "The width of the tab in pixels."},
           "height": {"type": "integer", "optional": true, "description": "The height of the tab in pixels."},
@@ -122,12 +134,6 @@
         }
       },
       {
-        "id": "TabStatus",
-        "type": "string",
-        "enum": ["loading", "complete"],
-        "description": "Whether the tabs have completed loading."
-      },
-      {
         "id": "WindowType",
         "type": "string",
         "enum": ["normal", "popup", "panel", "app", "devtools"],
@@ -135,6 +141,10 @@
       }
     ],
     "properties": {
+      "MAX_CAPTURE_VISIBLE_TAB_CALLS_PER_SECOND": {
+        "value": 2,
+        "description": "The maximum number of times that $(ref:captureVisibleTab) can be called per second. $(ref:captureVisibleTab) is expensive and should not be called too often."
+      },
       "TAB_ID_NONE": {
         "value": -1,
         "description": "An ID that represents the absence of a browser tab."
@@ -150,33 +160,30 @@
             "type": "integer",
             "name": "tabId",
             "minimum": 0
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {"name": "tab", "$ref": "Tab"}
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"name": "tab", "$ref": "Tab"}
+          ]
+        }
       },
       {
         "name": "getCurrent",
         "type": "function",
         "description": "Gets the tab that this script call is being made from. May be undefined if called from a non-tab context (for example, a background page or popup view).",
-        "parameters": [
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "tab",
-                "$ref": "Tab",
-                "optional": true
-              }
-            ]
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "tab",
+              "$ref": "Tab",
+              "optional": true
+            }
+          ]
+        }
       },
       {
         "name": "connect",
@@ -294,15 +301,14 @@
             "minimum": -2,
             "optional": true,
             "description": "Defaults to the <a href='windows#current-window'>current window</a>."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {"name": "tab", "$ref": "Tab"}
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"name": "tab", "$ref": "Tab"}
+          ]
+        }
       },
       {
         "name": "getAllInWindow",
@@ -316,15 +322,14 @@
             "minimum": -2,
             "optional": true,
             "description": "Defaults to the <a href='windows#current-window'>current window</a>."
-            },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {"name": "tabs", "type": "array", "items": { "$ref": "Tab" } }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {"name": "tabs", "type": "array", "items": { "$ref": "Tab" } }
+          ]
+        }
       },
       {
         "name": "create",
@@ -375,20 +380,19 @@
                 "description": "The ID of the tab that opened this tab. If specified, the opener tab must be in the same window as the newly created tab."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tab",
-                "$ref": "Tab",
-                "description": "The created tab."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tab",
+              "$ref": "Tab",
+              "description": "The created tab."
+            }
+          ]
+        }
       },
       {
         "name": "duplicate",
@@ -400,21 +404,20 @@
             "name": "tabId",
             "minimum": 0,
             "description": "The ID of the tab to duplicate."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tab",
-                "optional": true,
-                "description": "Details about the duplicated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested.",
-                "$ref": "Tab"
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tab",
+              "optional": true,
+              "description": "Details about the duplicated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested.",
+              "$ref": "Tab"
+            }
+          ]
+        }
       },
       {
         "name": "query",
@@ -473,7 +476,7 @@
               "status": {
                 "$ref": "TabStatus",
                 "optional": true,
-                "description": "Whether the tabs have completed loading."
+                "description": "The tab loading status."
               },
               "title": {
                 "type": "string",
@@ -487,6 +490,12 @@
                 ],
                 "optional": true,
                 "description": "Match tabs against one or more <a href='match_patterns'>URL patterns</a>. Fragment identifiers are not matched. This property is ignored if the extension does not have the <code>\"tabs\"</code> permission."
+              },
+              "groupId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -1,
+                "description": "The ID of the group that the tabs are in, or $(ref:tabGroups.TAB_GROUP_ID_NONE) for ungrouped tabs."
               },
               "windowId": {
                 "type": "integer",
@@ -506,21 +515,20 @@
                 "description": "The position of the tabs within their windows."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "name": "result",
-                "type": "array",
-                "items": {
-                  "$ref": "Tab"
-                }
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "name": "result",
+              "type": "array",
+              "items": {
+                "$ref": "Tab"
+              }
+            }
+          ]
+        }
       },
       {
         "name": "highlight",
@@ -531,34 +539,33 @@
             "type": "object",
             "name": "highlightInfo",
             "properties": {
-               "windowId": {
-                 "type": "integer",
-                 "optional": true,
-                 "description": "The window that contains the tabs.",
-                 "minimum": -2
-               },
-               "tabs": {
-                 "description": "One or more tab indices to highlight.",
-                 "choices": [
-                   {"type": "array", "items": {"type": "integer", "minimum": 0}},
-                   {"type": "integer"}
-                 ]
-               }
-             }
-           },
-           {
-             "type": "function",
-             "name": "callback",
-             "optional": true,
-             "parameters": [
-               {
-                 "name": "window",
-                 "$ref": "windows.Window",
-                 "description": "Contains details about the window whose tabs were highlighted."
-               }
-             ]
-           }
-        ]
+              "windowId": {
+                "type": "integer",
+                "optional": true,
+                "description": "The window that contains the tabs.",
+                "minimum": -2
+              },
+              "tabs": {
+                "description": "One or more tab indices to highlight.",
+                "choices": [
+                  {"type": "array", "items": {"type": "integer", "minimum": 0}},
+                  {"type": "integer"}
+                ]
+              }
+            }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "window",
+              "$ref": "windows.Window",
+              "description": "Contains details about the window whose tabs were highlighted."
+            }
+          ]
+        }
       },
       {
         "name": "update",
@@ -579,7 +586,7 @@
               "url": {
                 "type": "string",
                 "optional": true,
-                "description": "A URL to navigate the tab to. JavaScript URLs are not supported; use $(ref:tabs.executeScript) instead."
+                "description": "A URL to navigate the tab to. JavaScript URLs are not supported; use $(ref:scripting.executeScript) instead."
               },
               "active": {
                 "type": "boolean",
@@ -619,21 +626,20 @@
                 "description": "Whether the tab should be discarded automatically by the browser when resources are low."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tab",
-                "$ref": "Tab",
-                "optional": true,
-                "description": "Details about the updated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tab",
+              "$ref": "Tab",
+              "optional": true,
+              "description": "Details about the updated tab. The $(ref:tabs.Tab) object does not contain <code>url</code>, <code>pendingUrl</code>, <code>title</code>, and <code>favIconUrl</code> if the <code>\"tabs\"</code> permission has not been requested."
+            }
+          ]
+        }
       },
       {
         "name": "move",
@@ -664,23 +670,22 @@
                 "description": "The position to move the window to. Use <code>-1</code> to place the tab at the end of the window."
               }
             }
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "tabs",
-                "description": "Details about the moved tabs.",
-                "choices": [
-                  {"$ref": "Tab"},
-                  {"type": "array", "items": {"$ref": "Tab"}}
-                ]
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "tabs",
+              "description": "Details about the moved tabs.",
+              "choices": [
+                {"$ref": "Tab"},
+                {"type": "array", "items": {"$ref": "Tab"}}
+              ]
+            }
+          ]
+        }
       },
       {
         "name": "reload",
@@ -699,9 +704,9 @@
                 "description": "Whether to bypass local caching. Defaults to <code>false</code>."
               }
             }
-          },
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "optional": true, "parameters": []}
       },
       {
         "name": "remove",
@@ -715,9 +720,76 @@
               {"type": "integer", "minimum": 0},
               {"type": "array", "items": {"type": "integer", "minimum": 0}}
             ]
-          },
-          {"type": "function", "name": "callback", "optional": true, "parameters": []}
-        ]
+          }
+        ],
+        "returns_async": {"name": "callback", "optional": true, "parameters": []}
+      },
+      {
+        "name": "group",
+        "type": "function",
+        "description": "Adds one or more tabs to a specified group, or if no group is specified, adds the given tabs to a newly created group.",
+        "parameters": [
+          {
+            "name": "options",
+            "type": "object",
+            "properties": {
+              "tabIds": {
+                "description": "The tab ID or list of tab IDs to add to the specified group.",
+                "choices": [
+                  {"type": "integer", "minimum": 0},
+                  {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 1}
+                ]
+              },
+              "groupId": {
+                "type": "integer",
+                "description": "The ID of the group to add the tabs to. If not specified, a new group will be created.",
+                "minimum": 0,
+                "optional": true
+              },
+              "createProperties": {
+                "type": "object",
+                "optional": true,
+                "description": "Configurations for creating a group. Cannot be used if groupId is already specified.",
+                "properties": {
+                  "windowId": {
+                    "type": "integer",
+                    "minimum": -2,
+                    "optional": true,
+                    "description": "The window of the new group. Defaults to the current window."
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "groupId",
+              "type": "integer",
+              "minimum": 0,
+              "description": "The ID of the group that the tabs were added to."
+            }
+          ]
+        }
+      },
+      {
+        "name": "ungroup",
+        "type": "function",
+        "description": "Removes one or more tabs from their respective groups. If any groups become empty, they are deleted.",
+        "parameters": [
+          {
+            "name": "tabIds",
+            "description": "The tab ID or list of tab IDs to remove from their respective groups.",
+            "choices": [
+              {"type": "integer", "minimum": 0},
+              {"type": "array", "items": {"type": "integer", "minimum": 0}, "minItems": 1}
+            ]
+          }
+        ],
+        "returns_async": {"name": "callback", "optional": true, "parameters": []}
       },
       {
         "name": "detectLanguage",
@@ -730,19 +802,18 @@
             "minimum": 0,
             "optional": true,
             "description": "Defaults to the active tab of the <a href='windows#current-window'>current window</a>."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "parameters": [
-              {
-                "type": "string",
-                "name": "language",
-                "description": "An ISO language code such as <code>en</code> or <code>fr</code>. For a complete list of languages supported by this method, see <a href='http://src.chromium.org/viewvc/chrome/trunk/src/third_party/cld/languages/internal/languages.cc'>kLanguageInfoTable</a>. The second to fourth columns are checked and the first non-NULL value is returned, except for Simplified Chinese for which <code>zh-CN</code> is returned. For an unknown/undefined language, <code>und</code> is returned."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "string",
+              "name": "language",
+              "description": "An ISO language code such as <code>en</code> or <code>fr</code>. For a complete list of languages supported by this method, see <a href='http://src.chromium.org/viewvc/chrome/trunk/src/third_party/cld/languages/internal/languages.cc'>kLanguageInfoTable</a>. The second to fourth columns are checked and the first non-NULL value is returned, except for Simplified Chinese for which <code>zh-CN</code> is returned. For an unknown/undefined language, <code>und</code> is returned."
+            }
+          ]
+        }
       },
       {
         "name": "captureVisibleTab",
@@ -760,16 +831,22 @@
             "$ref": "extensionTypes.ImageDetails",
             "name": "options",
             "optional": true
-          },
-          {
-            "type": "function", "name": "callback", "parameters": [
-              {"type": "string", "name": "dataUrl", "description": "A data URL that encodes an image of the visible area of the captured tab. May be assigned to the 'src' property of an HTML <code>img</code> element for display."}
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "parameters": [
+            {
+              "type": "string",
+              "name": "dataUrl",
+              "description": "A data URL that encodes an image of the visible area of the captured tab. May be assigned to the 'src' property of an HTML <code>img</code> element for display."
+            }
+          ]
+        }
       },
       {
         "name": "executeScript",
+        "deprecated": "Replaced by $(ref:scripting.executeScript) in Manifest V3.",
         "type": "function",
         "description": "Injects JavaScript code into a page. For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
@@ -778,43 +855,68 @@
             "$ref": "extensionTypes.InjectDetails",
             "name": "details",
             "description": "Details of the script to run. Either the code or the file property must be set, but both may not be set at the same time."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called after all the JavaScript has been executed.",
-            "parameters": [
-              {
-                "name": "result",
-                "optional": true,
-                "type": "array",
-                "items": {"type": "any", "minimum": 0},
-                "description": "The result of the script in every injected frame."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called after all the JavaScript has been executed.",
+          "parameters": [
+            {
+              "name": "result",
+              "optional": true,
+              "type": "array",
+              "items": {"type": "any", "minimum": 0},
+              "description": "The result of the script in every injected frame."
+            }
+          ]
+        }
       },
       {
         "name": "insertCSS",
+        "deprecated": "Replaced by $(ref:scripting.insertCSS) in Manifest V3.",
         "type": "function",
-        "description": "Injects CSS into a page. For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
+        "description": "Injects CSS into a page. Styles inserted with this method can be removed with $(ref:scripting.removeCSS). For details, see the <a href='content_scripts#pi'>programmatic injection</a> section of the content scripts doc.",
         "parameters": [
           {"type": "integer", "name": "tabId", "minimum": 0, "optional": true, "description": "The ID of the tab in which to insert the CSS; defaults to the active tab of the current window."},
           {
             "$ref": "extensionTypes.InjectDetails",
             "name": "details",
             "description": "Details of the CSS text to insert. Either the code or the file property must be set, but both may not be set at the same time."
+          }
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when all the CSS has been inserted.",
+          "parameters": []
+        }
+      },
+      {
+        "name": "removeCSS",
+        "deprecated": "Replaced by $(ref:scripting.removeCSS) in Manifest V3.",
+        "type": "function",
+        "description": "Removes from a page CSS that was previously injected by a call to $(ref:scripting.insertCSS).",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "tabId",
+            "minimum": 0,
+            "optional": true,
+            "description": "The ID of the tab from which to remove the CSS; defaults to the active tab of the current window."
           },
           {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called when all the CSS has been inserted.",
-            "parameters": []
+            "$ref": "extensionTypes.DeleteInjectionDetails",
+            "name": "details",
+            "description": "Details of the CSS text to remove. Either the code or the file property must be set, but both may not be set at the same time."
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called when all the CSS has been removed.",
+          "parameters": []
+        }
       },
       {
         "name": "setZoom",
@@ -832,15 +934,14 @@
             "type": "number",
             "name": "zoomFactor",
             "description": "The new zoom factor. A value of <code>0</code> sets the tab to its current default zoom factor. Values greater than <code>0</code> specify a (possibly non-default) zoom factor for the tab."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called after the zoom factor has been changed.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called after the zoom factor has been changed.",
+          "parameters": []
+        }
       },
       {
         "name": "getZoom",
@@ -853,20 +954,19 @@
             "minimum": 0,
             "optional": true,
             "description": "The ID of the tab to get the current zoom factor from; defaults to the active tab of the current window."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Called with the tab's current zoom factor after it has been fetched.",
-            "parameters": [
-              {
-                "type": "number",
-                "name": "zoomFactor",
-                "description": "The tab's current zoom factor."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called with the tab's current zoom factor after it has been fetched.",
+          "parameters": [
+            {
+              "type": "number",
+              "name": "zoomFactor",
+              "description": "The tab's current zoom factor."
+            }
+          ]
+        }
       },
       {
         "name": "setZoomSettings",
@@ -884,15 +984,14 @@
             "$ref": "ZoomSettings",
             "name": "zoomSettings",
             "description": "Defines how zoom changes are handled and at what scope."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called after the zoom settings are changed.",
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called after the zoom settings are changed.",
+          "parameters": []
+        }
       },
       {
         "name": "getZoomSettings",
@@ -905,20 +1004,19 @@
             "optional": true,
             "minimum": 0,
             "description": "The ID of the tab to get the current zoom settings from; defaults to the active tab of the current window."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "description": "Called with the tab's current zoom settings.",
-            "parameters": [
-              {
-                "$ref": "ZoomSettings",
-                "name": "zoomSettings",
-                "description": "The tab's current zoom settings."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called with the tab's current zoom settings.",
+          "parameters": [
+            {
+              "$ref": "ZoomSettings",
+              "name": "zoomSettings",
+              "description": "The tab's current zoom settings."
+            }
+          ]
+        }
       },
       {
         "name": "discard",
@@ -931,22 +1029,21 @@
             "optional": true,
             "minimum": 0,
             "description": "The ID of the tab to be discarded. If specified, the tab is discarded unless it is active or already discarded. If omitted, the browser discards the least important tab. This can fail if no discardable tabs exist."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "description": "Called after the operation is completed.",
-            "parameters": [
-              {
-                "name": "tab",
-                "$ref": "Tab",
-                "optional": true,
-                "description": "The discarded tab, if it was successfully discarded; undefined otherwise."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "description": "Called after the operation is completed.",
+          "parameters": [
+            {
+              "name": "tab",
+              "$ref": "Tab",
+              "optional": true,
+              "description": "The discarded tab, if it was successfully discarded; undefined otherwise."
+            }
+          ]
+        }
       },
       {
         "name": "goForward",
@@ -959,14 +1056,13 @@
             "optional": true,
             "minimum": 0,
             "description": "The ID of the tab to navigate forward; defaults to the selected tab of the current window."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       },
       {
         "name": "goBack",
@@ -979,21 +1075,20 @@
             "optional": true,
             "minimum": 0,
             "description": "The ID of the tab to navigate back; defaults to the selected tab of the current window."
-          },
-          {
-            "type": "function",
-            "name": "callback",
-            "optional": true,
-            "parameters": []
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "optional": true,
+          "parameters": []
+        }
       }
     ],
     "events": [
       {
         "name": "onCreated",
         "type": "function",
-        "description": "Fired when a tab is created. Note that the tab's URL may not be set at the time this event is fired, but you can listen to onUpdated events so as to be notified when a URL is set.",
+        "description": "Fired when a tab is created. Note that the tab's URL and tab group membership may not be set at the time this event is fired, but you can listen to onUpdated events so as to be notified when a URL is set or the tab is added to a tab group.",
         "parameters": [
           {
             "$ref": "Tab",
@@ -1014,14 +1109,20 @@
             "description": "Lists the changes to the state of the tab that was updated.",
             "properties": {
               "status": {
-                "type": "string",
+                "$ref": "TabStatus",
                 "optional": true,
-                "description": "The status of the tab. Can be either <em>loading</em> or <em>complete</em>."
+                "description": "The tab's loading status."
               },
               "url": {
                 "type": "string",
                 "optional": true,
                 "description": "The tab's URL if it has changed."
+              },
+              "groupId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -1,
+                "description": "The tab's new group."
               },
               "pinned": {
                 "type": "boolean",

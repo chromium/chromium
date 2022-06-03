@@ -6,7 +6,6 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/mac/sdk_forward_declarations.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/supports_user_data.h"
 #import "chrome/browser/ui/cocoa/dock_icon.h"
@@ -49,14 +48,14 @@ NSString* ProgressString(NSString* string) {
     foundation = CFBundleGetBundleWithIdentifier(CFSTR("com.apple.Foundation"));
   }
 
-  NSString* result = [cache objectForKey:string];
+  NSString* result = cache[string];
   if (!result) {
     NSString** ref = static_cast<NSString**>(
         CFBundleGetDataPointerForName(foundation,
                                       base::mac::NSToCFCast(string)));
     if (ref) {
       result = *ref;
-      [cache setObject:result forKey:string];
+      cache[string] = result;
     }
   }
 
@@ -67,7 +66,7 @@ NSString* ProgressString(NSString* string) {
                                       CFSTR("NSProgressEstimatedTimeKey")));
     if (ref) {
       result = *ref;
-      [cache setObject:result forKey:string];
+      cache[string] = result;
     }
   }
 

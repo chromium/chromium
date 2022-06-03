@@ -10,13 +10,15 @@
 #include <taskschd.h>
 #include <wrl/client.h>
 
+#include <string>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/native_library.h"
+#include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string16.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
@@ -48,7 +50,7 @@ const size_t kNumDeleteTaskRetry = 3;
 const size_t kDeleteRetryDelayInMs = 100;
 
 // Return |timestamp| in the following string format YYYY-MM-DDTHH:MM:SS.
-base::string16 GetTimestampString(const base::Time& timestamp) {
+std::wstring GetTimestampString(const base::Time& timestamp) {
   base::Time::Exploded exploded_time;
   // The Z timezone info at the end of the string means UTC.
   timestamp.UTCExplode(&exploded_time);
@@ -124,6 +126,9 @@ void PinModule(const wchar_t* module_name) {
 // scheduler for Vista+.
 class TaskSchedulerV2 : public TaskScheduler {
  public:
+  TaskSchedulerV2(const TaskSchedulerV2&) = delete;
+  TaskSchedulerV2& operator=(const TaskSchedulerV2&) = delete;
+
   static bool Initialize() {
     DCHECK(!task_service_);
     DCHECK(!root_task_folder_);
@@ -144,8 +149,8 @@ class TaskSchedulerV2 : public TaskScheduler {
       PLOG(ERROR) << "Failed to connect to task service. " << std::hex << hr;
       return false;
     }
-    hr = task_service_->GetFolder(base::win::ScopedBstr(L"\\"),
-                                  root_task_folder_.GetAddressOf());
+    hr = task_service_->GetFolder(base::win::ScopedBstr(L"\\").Get(),
+                                  &root_task_folder_);
     if (FAILED(hr)) {
       LOG(ERROR) << "Can't get task service folder. " << std::hex << hr;
       return false;
@@ -181,7 +186,7 @@ class TaskSchedulerV2 : public TaskScheduler {
       return false;
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
-    if (!GetTask(task_name, registered_task.GetAddressOf())) {
+    if (!GetTask(task_name, &registered_task)) {
       LOG(ERROR) << "Failed to get task named " << task_name;
       return false;
     }
@@ -194,8 +199,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     SYSTEMTIME start_system_time = {};
     GetLocalTime(&start_system_time);
 
-    base::Time tomorrow(base::Time::NowFromSystemTime() +
-                        base::TimeDelta::FromDays(1));
+    base::Time tomorrow(base::Time::NowFromSystemTime() + base::Days(1));
     SYSTEMTIME end_system_time = {};
     if (!UTCFileTimeToLocalSystemTime(tomorrow.ToFileTime(), &end_system_time))
       return false;
@@ -230,7 +234,7 @@ class TaskSchedulerV2 : public TaskScheduler {
       return false;
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
-    if (!GetTask(task_name, registered_task.GetAddressOf())) {
+    if (!GetTask(task_name, &registered_task)) {
       LOG(ERROR) << "Failed to find the task " << task_name
                  << " to enable/disable";
       return false;
@@ -252,7 +256,7 @@ class TaskSchedulerV2 : public TaskScheduler {
       return false;
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
-    if (!GetTask(task_name, registered_task.GetAddressOf()))
+    if (!GetTask(task_name, &registered_task))
       return false;
 
     HRESULT hr;
@@ -268,7 +272,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     return is_enabled == VARIANT_TRUE;
   }
 
-  bool GetTaskNameList(std::vector<base::string16>* task_names) override {
+  bool GetTaskNameList(std::vector<std::wstring>* task_names) override {
     DCHECK(task_names);
     if (!root_task_folder_)
       return false;
@@ -285,7 +289,7 @@ class TaskSchedulerV2 : public TaskScheduler {
       return false;
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
-    if (!GetTask(task_name, registered_task.GetAddressOf())) {
+    if (!GetTask(task_name, &registered_task)) {
       LOG(ERROR) << "Failed to get task named " << task_name;
       return false;
     }
@@ -327,8 +331,8 @@ class TaskSchedulerV2 : public TaskScheduler {
 
     LOG(INFO) << "Delete Task '" << task_name << "'.";
 
-    HRESULT hr =
-        root_task_folder_->DeleteTask(base::win::ScopedBstr(task_name), 0);
+    HRESULT hr = root_task_folder_->DeleteTask(
+        base::win::ScopedBstr(task_name).Get(), 0);
     // This can happen, e.g., while running tests, when the file system stresses
     // quite a lot. Give it a few more chances to succeed.
     size_t num_retries_left = kNumDeleteTaskRetry;
@@ -339,7 +343,8 @@ class TaskSchedulerV2 : public TaskScheduler {
              --num_retries_left && IsTaskRegistered(task_name)) {
         LOG(WARNING) << "Retrying delete task because transaction not active, "
                      << std::hex << hr << ".";
-        hr = root_task_folder_->DeleteTask(base::win::ScopedBstr(task_name), 0);
+        hr = root_task_folder_->DeleteTask(
+            base::win::ScopedBstr(task_name).Get(), 0);
         ::Sleep(kDeleteRetryDelayInMs);
       }
       if (!IsTaskRegistered(task_name))
@@ -368,7 +373,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     // Create the task definition object to create the task.
     Microsoft::WRL::ComPtr<ITaskDefinition> task;
     DCHECK(task_service_);
-    HRESULT hr = task_service_->NewTask(0, task.GetAddressOf());
+    HRESULT hr = task_service_->NewTask(0, &task);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't create new task. " << std::hex << hr;
       return false;
@@ -381,7 +386,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     if (trigger_type != TRIGGER_TYPE_NOW) {
       // Allow the task to run elevated on startup.
       Microsoft::WRL::ComPtr<IPrincipal> principal;
-      hr = task->get_Principal(principal.GetAddressOf());
+      hr = task->get_Principal(&principal);
       if (FAILED(hr)) {
         PLOG(ERROR) << "Can't get principal. " << std::hex << hr;
         return false;
@@ -393,7 +398,7 @@ class TaskSchedulerV2 : public TaskScheduler {
         return false;
       }
 
-      hr = principal->put_UserId(user_name);
+      hr = principal->put_UserId(user_name.Get());
       if (FAILED(hr)) {
         PLOG(ERROR) << "Can't put user id. " << std::hex << hr;
         return false;
@@ -407,27 +412,27 @@ class TaskSchedulerV2 : public TaskScheduler {
     }
 
     Microsoft::WRL::ComPtr<IRegistrationInfo> registration_info;
-    hr = task->get_RegistrationInfo(registration_info.GetAddressOf());
+    hr = task->get_RegistrationInfo(&registration_info);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't get registration info. " << std::hex << hr;
       return false;
     }
 
-    hr = registration_info->put_Author(user_name);
+    hr = registration_info->put_Author(user_name.Get());
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't set registration info author. " << std::hex << hr;
       return false;
     }
 
     base::win::ScopedBstr description(task_description);
-    hr = registration_info->put_Description(description);
+    hr = registration_info->put_Description(description.Get());
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't set description. " << std::hex << hr;
       return false;
     }
 
     Microsoft::WRL::ComPtr<ITaskSettings> task_settings;
-    hr = task->get_Settings(task_settings.GetAddressOf());
+    hr = task->get_Settings(&task_settings);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't get task settings. " << std::hex << hr;
       return false;
@@ -442,7 +447,7 @@ class TaskSchedulerV2 : public TaskScheduler {
 
     // TODO(csharp): Find a way to only set this for log upload retry.
     hr = task_settings->put_DeleteExpiredTaskAfter(
-        base::win::ScopedBstr(kZeroMinuteText));
+        base::win::ScopedBstr(kZeroMinuteText).Get());
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't put 'DeleteExpiredTaskAfter'. " << std::hex << hr;
       return false;
@@ -471,7 +476,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     }
 
     Microsoft::WRL::ComPtr<ITriggerCollection> trigger_collection;
-    hr = task->get_Triggers(trigger_collection.GetAddressOf());
+    hr = task->get_Triggers(&trigger_collection);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't get trigger collection. " << std::hex << hr;
       return false;
@@ -492,7 +497,7 @@ class TaskSchedulerV2 : public TaskScheduler {
         if (base::CommandLine::ForCurrentProcess()->HasSwitch(
                 kLogUploadRetryIntervalSwitch)) {
           // String format: PT%lsM
-          const base::string16 interval_switch = base::StrCat(
+          const std::wstring interval_switch = base::StrCat(
               {L"PT",
                base::CommandLine::ForCurrentProcess()->GetSwitchValueNative(
                    kLogUploadRetryIntervalSwitch),
@@ -512,7 +517,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     }
 
     Microsoft::WRL::ComPtr<ITrigger> trigger;
-    hr = trigger_collection->Create(task_trigger_type, trigger.GetAddressOf());
+    hr = trigger_collection->Create(task_trigger_type, &trigger);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't create trigger of type " << task_trigger_type
                   << ". " << std::hex << hr;
@@ -522,7 +527,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     if (trigger_type == TRIGGER_TYPE_HOURLY ||
         trigger_type == TRIGGER_TYPE_EVERY_SIX_HOURS) {
       Microsoft::WRL::ComPtr<IDailyTrigger> daily_trigger;
-      hr = trigger.CopyTo(daily_trigger.GetAddressOf());
+      hr = trigger.As(&daily_trigger);
       if (FAILED(hr)) {
         PLOG(ERROR) << "Can't Query for registration trigger. " << std::hex
                     << hr;
@@ -536,7 +541,7 @@ class TaskSchedulerV2 : public TaskScheduler {
       }
 
       Microsoft::WRL::ComPtr<IRepetitionPattern> repetition_pattern;
-      hr = trigger->get_Repetition(repetition_pattern.GetAddressOf());
+      hr = trigger->get_Repetition(&repetition_pattern);
       if (FAILED(hr)) {
         PLOG(ERROR) << "Can't get 'Repetition'. " << std::hex << hr;
         return false;
@@ -545,41 +550,42 @@ class TaskSchedulerV2 : public TaskScheduler {
       // The duration is the time to keep repeating until the next daily
       // trigger.
       hr = repetition_pattern->put_Duration(
-          base::win::ScopedBstr(kTwentyFourHoursText));
+          base::win::ScopedBstr(kTwentyFourHoursText).Get());
       if (FAILED(hr)) {
         PLOG(ERROR) << "Can't put 'Duration' to " << kTwentyFourHoursText
                     << ". " << std::hex << hr;
         return false;
       }
 
-      hr = repetition_pattern->put_Interval(repetition_interval);
+      hr = repetition_pattern->put_Interval(repetition_interval.Get());
       if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put 'Interval' to " << repetition_interval << ". "
-                    << std::hex << hr;
+        PLOG(ERROR) << "Can't put 'Interval' to " << repetition_interval.Get()
+                    << ". " << std::hex << hr;
         return false;
       }
 
       // Start now.
       base::Time now(base::Time::NowFromSystemTime());
       base::win::ScopedBstr start_boundary(GetTimestampString(now));
-      hr = trigger->put_StartBoundary(start_boundary);
+      hr = trigger->put_StartBoundary(start_boundary.Get());
       if (FAILED(hr)) {
-        PLOG(ERROR) << "Can't put 'StartBoundary' to " << start_boundary << ". "
-                    << std::hex << hr;
+        PLOG(ERROR) << "Can't put 'StartBoundary' to " << start_boundary.Get()
+                    << ". " << std::hex << hr;
         return false;
       }
     }
 
     if (trigger_type == TRIGGER_TYPE_POST_REBOOT) {
       Microsoft::WRL::ComPtr<ILogonTrigger> logon_trigger;
-      hr = trigger.CopyTo(logon_trigger.GetAddressOf());
+      hr = trigger.As(&logon_trigger);
       if (FAILED(hr)) {
         PLOG(ERROR) << "Can't query trigger for 'ILogonTrigger'. " << std::hex
                     << hr;
         return false;
       }
 
-      hr = logon_trigger->put_Delay(base::win::ScopedBstr(kFifteenMinutesText));
+      hr = logon_trigger->put_Delay(
+          base::win::ScopedBstr(kFifteenMinutesText).Get());
       if (FAILED(hr)) {
         PLOG(ERROR) << "Can't put 'Delay'. " << std::hex << hr;
         return false;
@@ -588,60 +594,59 @@ class TaskSchedulerV2 : public TaskScheduler {
 
     // None of the triggers should go beyond kNumDaysBeforeExpiry.
     base::Time expiry_date(base::Time::NowFromSystemTime() +
-                           base::TimeDelta::FromDays(kNumDaysBeforeExpiry));
+                           base::Days(kNumDaysBeforeExpiry));
     base::win::ScopedBstr end_boundary(GetTimestampString(expiry_date));
-    hr = trigger->put_EndBoundary(end_boundary);
+    hr = trigger->put_EndBoundary(end_boundary.Get());
     if (FAILED(hr)) {
-      PLOG(ERROR) << "Can't put 'EndBoundary' to " << end_boundary << ". "
+      PLOG(ERROR) << "Can't put 'EndBoundary' to " << end_boundary.Get() << ". "
                   << std::hex << hr;
       return false;
     }
 
     Microsoft::WRL::ComPtr<IActionCollection> actions;
-    hr = task->get_Actions(actions.GetAddressOf());
+    hr = task->get_Actions(&actions);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't get actions collection. " << std::hex << hr;
       return false;
     }
 
     Microsoft::WRL::ComPtr<IAction> action;
-    hr = actions->Create(TASK_ACTION_EXEC, action.GetAddressOf());
+    hr = actions->Create(TASK_ACTION_EXEC, &action);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't create exec action. " << std::hex << hr;
       return false;
     }
 
     Microsoft::WRL::ComPtr<IExecAction> exec_action;
-    hr = action.CopyTo(exec_action.GetAddressOf());
+    hr = action.As(&exec_action);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't query for exec action. " << std::hex << hr;
       return false;
     }
 
     base::win::ScopedBstr path(run_command.GetProgram().value());
-    hr = exec_action->put_Path(path);
+    hr = exec_action->put_Path(path.Get());
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't set path of exec action. " << std::hex << hr;
       return false;
     }
 
     base::win::ScopedBstr args(run_command.GetArgumentsString());
-    hr = exec_action->put_Arguments(args);
+    hr = exec_action->put_Arguments(args.Get());
     if (FAILED(hr)) {
       PLOG(ERROR) << "Can't set arguments of exec action. " << std::hex << hr;
       return false;
     }
 
     Microsoft::WRL::ComPtr<IRegisteredTask> registered_task;
-    base::win::ScopedVariant user(user_name);
+    base::win::ScopedVariant user(user_name.Get());
 
     DCHECK(root_task_folder_);
     hr = root_task_folder_->RegisterTaskDefinition(
-        base::win::ScopedBstr(task_name), task.Get(), TASK_CREATE,
+        base::win::ScopedBstr(task_name).Get(), task.Get(), TASK_CREATE,
         *user.AsInput(),  // Not really input, but API expect non-const.
         base::win::ScopedVariant::kEmptyVariant, TASK_LOGON_NONE,
-        base::win::ScopedVariant::kEmptyVariant,
-        registered_task.GetAddressOf());
+        base::win::ScopedVariant::kEmptyVariant, &registered_task);
     if (FAILED(hr)) {
       LOG(ERROR) << "RegisterTaskDefinition failed. " << std::hex << hr << ": "
                  << logging::SystemErrorCodeToString(hr);
@@ -661,8 +666,7 @@ class TaskSchedulerV2 : public TaskScheduler {
    public:
     explicit TaskIterator(ITaskFolder* task_folder) {
       DCHECK(task_folder);
-      HRESULT hr =
-          task_folder->GetTasks(TASK_ENUM_HIDDEN, tasks_.GetAddressOf());
+      HRESULT hr = task_folder->GetTasks(TASK_ENUM_HIDDEN, &tasks_);
       if (FAILED(hr)) {
         PLOG(ERROR) << "Failed to get registered tasks from folder. "
                     << std::hex << hr;
@@ -691,8 +695,8 @@ class TaskSchedulerV2 : public TaskScheduler {
       }
 
       // Note: get_Item uses 1 based indices.
-      HRESULT hr = tasks_->get_Item(base::win::ScopedVariant(task_index_ + 1),
-                                    task_.GetAddressOf());
+      HRESULT hr =
+          tasks_->get_Item(base::win::ScopedVariant(task_index_ + 1), &task_);
       if (FAILED(hr)) {
         PLOG(ERROR) << "Failed to get task at index: " << task_index_ << ". "
                     << std::hex << hr;
@@ -708,7 +712,7 @@ class TaskSchedulerV2 : public TaskScheduler {
         Next();
         return;
       }
-      name_ = base::string16(task_name_bstr ? task_name_bstr : L"");
+      name_ = std::wstring(task_name_bstr.Get() ? task_name_bstr.Get() : L"");
     }
 
     // Detach the currently active task and pass ownership to the caller.
@@ -723,13 +727,13 @@ class TaskSchedulerV2 : public TaskScheduler {
       return result;
     }
 
-    const base::string16& name() const { return name_; }
+    const std::wstring& name() const { return name_; }
     bool done() const { return done_; }
 
    private:
     Microsoft::WRL::ComPtr<IRegisteredTaskCollection> tasks_;
     Microsoft::WRL::ComPtr<IRegisteredTask> task_;
-    base::string16 name_;
+    std::wstring name_;
     long task_index_ = -1;  // NOLINT, API requires a long.
     long num_tasks_ = 0;    // NOLINT, API requires a long.
     bool done_ = false;
@@ -749,21 +753,20 @@ class TaskSchedulerV2 : public TaskScheduler {
   }
 
   // Return the description of the task.
-  HRESULT GetTaskDescription(IRegisteredTask* task,
-                             base::string16* description) {
+  HRESULT GetTaskDescription(IRegisteredTask* task, std::wstring* description) {
     DCHECK(task);
     DCHECK(description);
 
     base::win::ScopedBstr task_name_bstr;
     HRESULT hr = task->get_Name(task_name_bstr.Receive());
-    base::string16 task_name =
-        base::string16(task_name_bstr ? task_name_bstr : L"");
+    std::wstring task_name =
+        std::wstring(task_name_bstr.Get() ? task_name_bstr.Get() : L"");
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get task name";
     }
 
     Microsoft::WRL::ComPtr<ITaskDefinition> task_info;
-    hr = task->get_Definition(task_info.GetAddressOf());
+    hr = task->get_Definition(&task_info);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get definition for task, " << task_name << ": "
                  << logging::SystemErrorCodeToString(hr);
@@ -771,7 +774,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     }
 
     Microsoft::WRL::ComPtr<IRegistrationInfo> reg_info;
-    hr = task_info->get_RegistrationInfo(reg_info.GetAddressOf());
+    hr = task_info->get_RegistrationInfo(&reg_info);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get registration info, " << task_name << ": "
                  << logging::SystemErrorCodeToString(hr);
@@ -785,7 +788,8 @@ class TaskSchedulerV2 : public TaskScheduler {
                  << logging::SystemErrorCodeToString(hr);
       return hr;
     }
-    *description = base::string16(raw_description ? raw_description : L"");
+    *description =
+        std::wstring(raw_description.Get() ? raw_description.Get() : L"");
     return ERROR_SUCCESS;
   }
 
@@ -796,14 +800,14 @@ class TaskSchedulerV2 : public TaskScheduler {
     DCHECK(task);
     DCHECK(actions);
     Microsoft::WRL::ComPtr<ITaskDefinition> task_definition;
-    HRESULT hr = task->get_Definition(task_definition.GetAddressOf());
+    HRESULT hr = task->get_Definition(&task_definition);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Failed to get definition of task, " << std::hex << hr;
       return false;
     }
 
     Microsoft::WRL::ComPtr<IActionCollection> action_collection;
-    hr = task_definition->get_Actions(action_collection.GetAddressOf());
+    hr = task_definition->get_Actions(&action_collection);
     if (FAILED(hr)) {
       PLOG(ERROR) << "Failed to get action collection, " << std::hex << hr;
       return false;
@@ -823,7 +827,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     for (long action_index = 1;  // NOLINT
          action_index <= actions_count; ++action_index) {
       Microsoft::WRL::ComPtr<IAction> action;
-      hr = action_collection->get_Item(action_index, action.GetAddressOf());
+      hr = action_collection->get_Item(action_index, &action);
       if (FAILED(hr)) {
         PLOG(ERROR) << "Failed to get action at index " << action_index << ", "
                     << std::hex << hr;
@@ -848,7 +852,7 @@ class TaskSchedulerV2 : public TaskScheduler {
         continue;
 
       Microsoft::WRL::ComPtr<IExecAction> exec_action;
-      hr = action.CopyTo(exec_action.GetAddressOf());
+      hr = action.As(&exec_action);
       if (FAILED(hr)) {
         PLOG(ERROR) << "Failed to query from action, " << std::hex << hr;
         success = false;
@@ -882,9 +886,10 @@ class TaskSchedulerV2 : public TaskScheduler {
       }
 
       actions->push_back(
-          {base::FilePath(application_path ? application_path : L""),
-           base::FilePath(working_dir ? working_dir : L""),
-           base::string16(parameters ? parameters : L"")});
+          {base::FilePath(application_path.Get() ? application_path.Get()
+                                                 : L""),
+           base::FilePath(working_dir.Get() ? working_dir.Get() : L""),
+           std::wstring(parameters.Get() ? parameters.Get() : L"")});
     }
     return success;
   }
@@ -894,7 +899,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     DCHECK(task);
     DCHECK(logon_type);
     Microsoft::WRL::ComPtr<ITaskDefinition> task_info;
-    HRESULT hr = task->get_Definition(task_info.GetAddressOf());
+    HRESULT hr = task->get_Definition(&task_info);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get definition, " << std::hex << hr << ": "
                  << logging::SystemErrorCodeToString(hr);
@@ -902,7 +907,7 @@ class TaskSchedulerV2 : public TaskScheduler {
     }
 
     Microsoft::WRL::ComPtr<IPrincipal> principal;
-    hr = task_info->get_Principal(principal.GetAddressOf());
+    hr = task_info->get_Principal(&principal);
     if (FAILED(hr)) {
       LOG(ERROR) << "Failed to get principal info, " << std::hex << hr << ": "
                  << logging::SystemErrorCodeToString(hr);
@@ -941,8 +946,6 @@ class TaskSchedulerV2 : public TaskScheduler {
 
   static Microsoft::WRL::ComPtr<ITaskService> task_service_;
   static Microsoft::WRL::ComPtr<ITaskFolder> root_task_folder_;
-
-  DISALLOW_COPY_AND_ASSIGN(TaskSchedulerV2);
 };
 
 Microsoft::WRL::ComPtr<ITaskService> TaskSchedulerV2::task_service_;
@@ -977,7 +980,7 @@ class TaskSchedulerMock : public TaskScheduler {
   bool IsTaskEnabled(const wchar_t* task_name) override {
     return delegate_->IsTaskEnabled(task_name);
   }
-  bool GetTaskNameList(std::vector<base::string16>* task_names) override {
+  bool GetTaskNameList(std::vector<std::wstring>* task_names) override {
     return delegate_->GetTaskNameList(task_names);
   }
   bool GetTaskInfo(const wchar_t* task_name, TaskInfo* info) override {

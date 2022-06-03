@@ -12,36 +12,14 @@
 
 namespace gl {
 
-bool GLImage::BindTexImageWithInternalformat(unsigned target,
-                                             unsigned internalformat) {
-  return false;
+gfx::Size GLImage::GetSize() {
+  NOTREACHED();
+  return gfx::Size();
 }
 
-void GLImage::SetColorSpace(const gfx::ColorSpace& color_space) {
-  color_space_ = color_space;
-}
-
-bool GLImage::EmulatingRGB() const {
-  return false;
-}
-
-GLImage::Type GLImage::GetType() const {
-  return Type::NONE;
-}
-
-#if defined(OS_ANDROID)
-std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
-GLImage::GetAHardwareBuffer() {
-  return nullptr;
-}
-
-gfx::Rect GLImage::GetCropRect() {
-  return gfx::Rect();
-}
-#endif
-
-bool GLImage::HasMutableState() const {
-  return true;
+unsigned GLImage::GetInternalFormat() {
+  NOTREACHED();
+  return GL_NONE;
 }
 
 unsigned GLImage::GetDataFormat() {
@@ -51,7 +29,9 @@ unsigned GLImage::GetDataFormat() {
   unsigned internalformat = GetInternalFormat();
   switch (internalformat) {
     case GL_R16_EXT:
-      return GL_RED;
+      return GL_RED_EXT;
+    case GL_RG16_EXT:
+      return GL_RG_EXT;
     case GL_RGB10_A2_EXT:
       return GL_RGBA;
     case GL_RGB_YCRCB_420_CHROMIUM:
@@ -68,6 +48,88 @@ unsigned GLImage::GetDataFormat() {
       NOTREACHED();
       return GL_NONE;
   }
+}
+
+unsigned GLImage::GetDataType() {
+  NOTREACHED();
+  return GL_NONE;
+}
+
+GLImage::BindOrCopy GLImage::ShouldBindOrCopy() {
+  NOTREACHED();
+  return BIND;
+}
+
+bool GLImage::BindTexImage(unsigned target) {
+  NOTREACHED();
+  return false;
+}
+
+bool GLImage::BindTexImageWithInternalformat(unsigned target,
+                                             unsigned internalformat) {
+  NOTREACHED();
+  return false;
+}
+
+void GLImage::ReleaseTexImage(unsigned target) {
+  NOTREACHED();
+}
+
+bool GLImage::CopyTexImage(unsigned target) {
+  NOTREACHED();
+  return false;
+}
+
+bool GLImage::CopyTexSubImage(unsigned target,
+                              const gfx::Point& offset,
+                              const gfx::Rect& rect) {
+  NOTREACHED();
+  return false;
+}
+
+void GLImage::SetColorSpace(const gfx::ColorSpace& color_space) {
+  color_space_ = color_space;
+}
+
+void GLImage::Flush() {
+  NOTREACHED();
+}
+
+void GLImage::OnMemoryDump(base::trace_event::ProcessMemoryDump* pmd,
+                           uint64_t process_tracing_id,
+                           const std::string& dump_name) {
+  NOTREACHED();
+}
+
+bool GLImage::EmulatingRGB() const {
+  return false;
+}
+
+bool GLImage::IsInUseByWindowServer() const {
+  return false;
+}
+
+void GLImage::DisableInUseByWindowServer() {
+  NOTIMPLEMENTED();
+}
+
+GLImage::Type GLImage::GetType() const {
+  return Type::NONE;
+}
+
+#if defined(OS_ANDROID)
+std::unique_ptr<base::android::ScopedHardwareBufferFenceSync>
+GLImage::GetAHardwareBuffer() {
+  return nullptr;
+}
+#endif
+
+bool GLImage::HasMutableState() const {
+  return true;
+}
+
+scoped_refptr<gfx::NativePixmap> GLImage::GetNativePixmap() {
+  return nullptr;
 }
 
 }  // namespace gl

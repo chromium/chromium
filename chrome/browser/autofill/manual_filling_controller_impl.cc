@@ -4,21 +4,35 @@
 
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 
+#include <numeric>
 #include <utility>
 
 #include "base/callback.h"
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
+#include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
+#include "base/trace_event/memory_allocator_dump.h"
+#include "base/trace_event/memory_dump_manager.h"
+#include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/process_memory_dump.h"
 #include "chrome/browser/autofill/address_accessory_controller.h"
 #include "chrome/browser/autofill/credit_card_accessory_controller.h"
+#include "chrome/browser/password_manager/android/password_accessory_controller.h"
+#include "chrome/browser/password_manager/android/password_accessory_metrics_util.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/password_manager/password_accessory_controller.h"
-#include "chrome/browser/password_manager/password_accessory_metrics_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_data.h"
+#include "components/autofill/core/browser/ui/accessory_sheet_enums.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/credential_cache.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using autofill::AccessoryAction;
 using autofill::AccessorySheetData;
@@ -31,7 +45,11 @@ using FillingSource = ManualFillingController::FillingSource;
 
 namespace {
 
-FillingSource GetSourceForTab(const AccessorySheetData& accessory_sheet) {
+constexpr auto kAllowedFillingSources = base::MakeFixedFlatSet<FillingSource>(
+    {FillingSource::PASSWORD_FALLBACKS, FillingSource::CREDIT_CARD_FALLBACKS,
+     FillingSource::ADDRESS_FALLBACKS});
+
+FillingSource GetSourceForTabType(const AccessorySheetData& accessory_sheet) {
   switch (accessory_sheet.get_sheet_type()) {
     case AccessoryTabType::PASSWORDS:
       return FillingSource::PASSWORD_FALLBACKS;
@@ -39,19 +57,20 @@ FillingSource GetSourceForTab(const AccessorySheetData& accessory_sheet) {
       return FillingSource::CREDIT_CARD_FALLBACKS;
     case AccessoryTabType::ADDRESSES:
       return FillingSource::ADDRESS_FALLBACKS;
-    case AccessoryTabType::TOUCH_TO_FILL:
-      return FillingSource::TOUCH_TO_FILL;
+    case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
-      break;  // Intentional failure.
+      NOTREACHED() << "Cannot determine filling source";
+      return FillingSource::PASSWORD_FALLBACKS;
   }
-  NOTREACHED() << "Cannot determine filling source";
-  return FillingSource::PASSWORD_FALLBACKS;
 }
 
 }  // namespace
 
-ManualFillingControllerImpl::~ManualFillingControllerImpl() = default;
+ManualFillingControllerImpl::~ManualFillingControllerImpl() {
+  base::trace_event::MemoryDumpManager::GetInstance()->UnregisterDumpProvider(
+      this);
+}
 
 // static
 base::WeakPtr<ManualFillingController> ManualFillingController::GetOrCreate(
@@ -64,6 +83,14 @@ base::WeakPtr<ManualFillingController> ManualFillingController::GetOrCreate(
     mf_controller->Initialize();
   }
   return mf_controller->AsWeakPtr();
+}
+
+// static
+base::WeakPtr<ManualFillingController> ManualFillingController::Get(
+    content::WebContents* contents) {
+  ManualFillingControllerImpl* mf_controller =
+      ManualFillingControllerImpl::FromWebContents(contents);
+  return mf_controller ? mf_controller->AsWeakPtr() : nullptr;
 }
 
 // static
@@ -99,13 +126,25 @@ void ManualFillingControllerImpl::OnAutomaticGenerationStatusChanged(
 void ManualFillingControllerImpl::RefreshSuggestions(
     const AccessorySheetData& accessory_sheet_data) {
   view_->OnItemsAvailable(accessory_sheet_data);
-  UpdateSourceAvailability(GetSourceForTab(accessory_sheet_data),
-                           !accessory_sheet_data.user_info_list().empty());
+  available_sheets_.insert_or_assign(GetSourceForTabType(accessory_sheet_data),
+                                     accessory_sheet_data);
+  UpdateSourceAvailability(
+      GetSourceForTabType(accessory_sheet_data),
+      !accessory_sheet_data.user_info_list().empty() ||
+          !accessory_sheet_data.promo_code_info_list().empty());
 }
 
 void ManualFillingControllerImpl::NotifyFocusedInputChanged(
+    autofill::FieldRendererId focused_field_id,
     autofill::mojom::FocusedFieldType focused_field_type) {
-  focused_field_type_ = focused_field_type;
+  TRACE_EVENT0("passwords",
+               "ManualFillingControllerImpl::NotifyFocusedInputChanged");
+  autofill::LocalFrameToken frame_token;
+  if (content::RenderFrameHost* rfh = web_contents_->GetFocusedFrame()) {
+    frame_token = autofill::LocalFrameToken(rfh->GetFrameToken().value());
+  }
+  last_focused_field_id_ = {frame_token, focused_field_id};
+  last_focused_field_type_ = focused_field_type;
 
   // Ensure warnings and filling state is updated according to focused field.
   if (cc_controller_)
@@ -118,6 +157,18 @@ void ManualFillingControllerImpl::NotifyFocusedInputChanged(
     view_->CloseAccessorySheet();
 
   UpdateVisibility();
+}
+
+void ManualFillingControllerImpl::ShowAccessorySheetTab(
+    const autofill::AccessoryTabType& tab_type) {
+  if (tab_type == autofill::AccessoryTabType::CREDIT_CARDS) {
+    cc_controller_->RefreshSuggestions();
+  } else {
+    NOTIMPLEMENTED()
+        << "ShowAccessorySheetTab does not support the given TabType yet "
+        << tab_type;
+  }
+  view_->ShowAccessorySheetTab(tab_type);
 }
 
 void ManualFillingControllerImpl::UpdateSourceAvailability(
@@ -150,11 +201,11 @@ void ManualFillingControllerImpl::Hide() {
 
 void ManualFillingControllerImpl::OnFillingTriggered(
     AccessoryTabType type,
-    const autofill::UserInfo::Field& selection) {
-  AccessoryController* controller = GetControllerForTab(type);
+    const autofill::AccessorySheetField& selection) {
+  AccessoryController* controller = GetControllerForTabType(type);
   if (!controller)
     return;  // Controller not available anymore.
-  controller->OnFillingTriggered(selection);
+  controller->OnFillingTriggered(last_focused_field_id_, selection);
   view_->SwapSheetWithKeyboard();  // Soft-close the keyboard.
 }
 
@@ -166,6 +217,33 @@ void ManualFillingControllerImpl::OnOptionSelected(
   if (!controller)
     return;  // Controller not available anymore.
   controller->OnOptionSelected(selected_action);
+}
+
+void ManualFillingControllerImpl::OnToggleChanged(
+    AccessoryAction toggled_action,
+    bool enabled) const {
+  AccessoryController* controller = GetControllerForAction(toggled_action);
+  if (!controller)
+    return;  // Controller not available anymore.
+  controller->OnToggleChanged(toggled_action, enabled);
+}
+
+void ManualFillingControllerImpl::RequestAccessorySheet(
+    autofill::AccessoryTabType tab_type,
+    base::OnceCallback<void(const autofill::AccessorySheetData&)> callback) {
+  // TODO(crbug.com/1169167): Consider to execute this async to reduce jank.
+  absl::optional<AccessorySheetData> sheet =
+      GetControllerForTabType(tab_type)->GetSheetData();
+  // After they were loaded, all currently existing sheet types always return a
+  // value and will always result in a called callback.
+  // The only case where they are not available is before their first load (so
+  // if a user entered a tab but didn't focus any fields yet). In that case, the
+  // update is unnecessary since the first focus will push the correct sheet.
+  // TODO(crbug.com/1169167): Consider sending a null or default sheet to cover
+  // future cases where we can't rely on a sheet always being available.
+  if (sheet.has_value()) {
+    std::move(callback).Run(sheet.value());
+  }
 }
 
 gfx::NativeView ManualFillingControllerImpl::container_view() const {
@@ -180,15 +258,21 @@ ManualFillingControllerImpl::AsWeakPtr() {
 
 void ManualFillingControllerImpl::Initialize() {
   DCHECK(FromWebContents(web_contents_)) << "Don't call from constructor!";
+  RegisterObserverForAllowedSources();
   if (address_controller_)
     address_controller_->RefreshSuggestions();
-  if (cc_controller_)
-    cc_controller_->RefreshSuggestions();
 }
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(
     content::WebContents* web_contents)
     : web_contents_(web_contents) {
+  if (PasswordAccessoryController::AllowedForWebContents(web_contents_)) {
+    pwd_controller_ =
+        ChromePasswordManagerClient::FromWebContents(web_contents_)
+            ->GetOrCreatePasswordAccessory()
+            ->AsWeakPtr();
+    DCHECK(pwd_controller_);
+  }
   if (AddressAccessoryController::AllowedForWebContents(web_contents)) {
     address_controller_ =
         AddressAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
@@ -199,6 +283,9 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
         CreditCardAccessoryController::GetOrCreate(web_contents)->AsWeakPtr();
     DCHECK(cc_controller_);
   }
+
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "ManualFillingCache", base::ThreadTaskRunnerHandle::Get());
 }
 
 ManualFillingControllerImpl::ManualFillingControllerImpl(
@@ -208,10 +295,25 @@ ManualFillingControllerImpl::ManualFillingControllerImpl(
     base::WeakPtr<CreditCardAccessoryController> cc_controller,
     std::unique_ptr<ManualFillingViewInterface> view)
     : web_contents_(web_contents),
-      pwd_controller_for_testing_(std::move(pwd_controller)),
+      pwd_controller_(std::move(pwd_controller)),
       address_controller_(std::move(address_controller)),
       cc_controller_(std::move(cc_controller)),
-      view_(std::move(view)) {}
+      view_(std::move(view)) {
+  base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+      this, "ManualFillingCache", base::ThreadTaskRunnerHandle::Get());
+}
+
+bool ManualFillingControllerImpl::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* process_memory_dump) {
+  auto* dump = process_memory_dump->CreateAllocatorDump(
+      base::StringPrintf("passwords/manual_filling_controller/0x%" PRIXPTR,
+                         reinterpret_cast<uintptr_t>(this)));
+  dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
+                  base::trace_event::MemoryAllocatorDump::kUnitsBytes,
+                  base::trace_event::EstimateMemoryUsage(available_sheets_));
+  return true;
+}
 
 bool ManualFillingControllerImpl::ShouldShowAccessory() const {
   // If we only provide password fallbacks (== accessory V1), show them for
@@ -220,11 +322,11 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
           autofill::features::kAutofillKeyboardAccessory) &&
       !base::FeatureList::IsEnabled(
           autofill::features::kAutofillManualFallbackAndroid)) {
-    return focused_field_type_ == FocusedFieldType::kFillablePasswordField ||
-           (focused_field_type_ == FocusedFieldType::kFillableUsernameField &&
-            available_sources_.contains(FillingSource::PASSWORD_FALLBACKS));
+    return last_focused_field_type_ ==
+               FocusedFieldType::kFillablePasswordField ||
+           last_focused_field_type_ == FocusedFieldType::kFillableUsernameField;
   }
-  switch (focused_field_type_) {
+  switch (last_focused_field_type_) {
     // Always show on password fields to provide management and generation.
     case FocusedFieldType::kFillablePasswordField:
       return true;
@@ -232,10 +334,15 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     // If there are suggestions, show on usual form fields.
     case FocusedFieldType::kFillableUsernameField:
     case FocusedFieldType::kFillableNonSearchField:
-      return !available_sources_.empty();
+      // TODO(crbug/1242839): Hide the accessory if no fallback is available.
+      return true;
 
-    // Even if there are suggestions, don't show on search fields and textareas.
+    // Fallbacks aren't really useful on search fields but autocomplete entries
+    // justify showing the accessory.
     case FocusedFieldType::kFillableSearchField:
+      return available_sources_.contains(FillingSource::AUTOFILL);
+
+    // Even if there are suggestions, don't show on textareas.
     case FocusedFieldType::kFillableTextArea:
       return false;  // TODO(https://crbug.com/965478): true on long-press.
 
@@ -244,34 +351,75 @@ bool ManualFillingControllerImpl::ShouldShowAccessory() const {
     case FocusedFieldType::kUnknown:
       return false;
   }
-  NOTREACHED() << "Unhandled field type " << focused_field_type_;
-  return false;
 }
 
 void ManualFillingControllerImpl::UpdateVisibility() {
+  TRACE_EVENT0("passwords", "ManualFillingControllerImpl::UpdateVisibility");
   if (ShouldShowAccessory()) {
+    for (const FillingSource& source : available_sources_) {
+      if (available_sheets_.contains(source)) {
+        // Use a local cached copy if it exists. This will be deprecated with
+        // crbug.com/1169167.
+        view_->OnItemsAvailable(available_sheets_.find(source)->second);
+        continue;
+      }
+      if (source == FillingSource::AUTOFILL)
+        continue;  // Autofill suggestions have no sheet.
+      absl::optional<AccessorySheetData> sheet =
+          GetControllerForFillingSource(source)->GetSheetData();
+      if (sheet.has_value())
+        view_->OnItemsAvailable(std::move(sheet.value()));
+    }
     view_->ShowWhenKeyboardIsVisible();
   } else {
     view_->Hide();
   }
 }
 
-AccessoryController* ManualFillingControllerImpl::GetControllerForTab(
-    AccessoryTabType type) {
+void ManualFillingControllerImpl::RegisterObserverForAllowedSources() {
+  if (!base::FeatureList::IsEnabled(
+          autofill::features::kAutofillKeyboardAccessory)) {
+    return;  // Observer mechanism only available for the modern accessory.
+  }
+  for (FillingSource source : kAllowedFillingSources) {
+    AccessoryController* sheet_controller =
+        GetControllerForFillingSource(source);
+    if (!sheet_controller)
+      continue;  // Ignore disallowed sheets.
+    sheet_controller->RegisterFillingSourceObserver(base::BindRepeating(
+        &ManualFillingControllerImpl::OnSourceAvailabilityChanged,
+        weak_factory_.GetWeakPtr(), source));
+  }
+}
+
+void ManualFillingControllerImpl::OnSourceAvailabilityChanged(
+    FillingSource source,
+    AccessoryController* source_controller,
+    AccessoryController::IsFillingSourceAvailable is_source_available) {
+  absl::optional<AccessorySheetData> sheet = source_controller->GetSheetData();
+  bool show_filling_source = sheet.has_value() && is_source_available;
+  // TODO(crbug.com/1169167): Remove once all sheets pull this information
+  // instead of waiting to get it pushed.
+  view_->OnItemsAvailable(std::move(sheet.value()));
+  UpdateSourceAvailability(source, show_filling_source);
+}
+
+AccessoryController* ManualFillingControllerImpl::GetControllerForTabType(
+    AccessoryTabType type) const {
   switch (type) {
     case AccessoryTabType::ADDRESSES:
       return address_controller_.get();
     case AccessoryTabType::PASSWORDS:
-      return GetPasswordController();
+      return pwd_controller_.get();
     case AccessoryTabType::CREDIT_CARDS:
       return cc_controller_.get();
-    case AccessoryTabType::TOUCH_TO_FILL:
+    case AccessoryTabType::OBSOLETE_TOUCH_TO_FILL:
     case AccessoryTabType::ALL:
     case AccessoryTabType::COUNT:
-      break;  // Intentional failure.
+      NOTREACHED() << "Controller not defined for tab: "
+                   << static_cast<int>(type);
+      return nullptr;
   }
-  NOTREACHED() << "Controller not defined for tab: " << static_cast<int>(type);
-  return nullptr;
 }
 
 AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
@@ -279,30 +427,36 @@ AccessoryController* ManualFillingControllerImpl::GetControllerForAction(
   switch (action) {
     case AccessoryAction::GENERATE_PASSWORD_MANUAL:
     case AccessoryAction::MANAGE_PASSWORDS:
+    case AccessoryAction::USE_OTHER_PASSWORD:
     case AccessoryAction::GENERATE_PASSWORD_AUTOMATIC:
-      return GetPasswordController();
+    case AccessoryAction::TOGGLE_SAVE_PASSWORDS:
+      return pwd_controller_.get();
     case AccessoryAction::MANAGE_ADDRESSES:
       return address_controller_.get();
     case AccessoryAction::MANAGE_CREDIT_CARDS:
       return cc_controller_.get();
     case AccessoryAction::AUTOFILL_SUGGESTION:
     case AccessoryAction::COUNT:
-      break;  // Intentional failure;
+      NOTREACHED() << "Controller not defined for action: "
+                   << static_cast<int>(action);
+      return nullptr;
   }
-  NOTREACHED() << "Controller not defined for action: "
-               << static_cast<int>(action);
-  return nullptr;
 }
 
-PasswordAccessoryController*
-ManualFillingControllerImpl::GetPasswordController() const {
-  if (pwd_controller_for_testing_)
-    return pwd_controller_for_testing_.get();
-
-  return PasswordAccessoryController::AllowedForWebContents(web_contents_)
-             ? ChromePasswordManagerClient::FromWebContents(web_contents_)
-                   ->GetOrCreatePasswordAccessory()
-             : nullptr;
+AccessoryController* ManualFillingControllerImpl::GetControllerForFillingSource(
+    const FillingSource& filling_source) const {
+  switch (filling_source) {
+    case FillingSource::PASSWORD_FALLBACKS:
+      return pwd_controller_.get();
+    case FillingSource::CREDIT_CARD_FALLBACKS:
+      return cc_controller_.get();
+    case FillingSource::ADDRESS_FALLBACKS:
+      return address_controller_.get();
+    case FillingSource::AUTOFILL:
+      NOTREACHED() << "Controller not defined for filling source: "
+                   << static_cast<int>(filling_source);
+      return nullptr;
+  }
 }
 
-WEB_CONTENTS_USER_DATA_KEY_IMPL(ManualFillingControllerImpl)
+WEB_CONTENTS_USER_DATA_KEY_IMPL(ManualFillingControllerImpl);

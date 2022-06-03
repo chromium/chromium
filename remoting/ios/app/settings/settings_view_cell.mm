@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "remoting/ios/app/settings/settings_view_cell.h"
+
+#import <MaterialComponents/MaterialTypography.h>
+
+#import "remoting/ios/app/remoting_theme.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
-
-#import "remoting/ios/app/settings/settings_view_cell.h"
-
-#import "ios/third_party/material_components_ios/src/components/Typography/src/MaterialTypography.h"
-#import "remoting/ios/app/remoting_theme.h"
 
 static const CGFloat kImageViewSize = 24;
 static const CGFloat kImageViewPaddingLeading = 16;
@@ -39,7 +40,13 @@ static const CGFloat kLabelViewsPaddingTrailing = 10;
 
   _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
   _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-  _titleLabel.font = [MDCTypography boldFontFromFont:MDCTypography.subheadFont];
+  UIFont* subheadFont = MDCTypography.subheadFont;
+  UIFontDescriptor* subheadFontDescriptor = [subheadFont.fontDescriptor
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  subheadFontDescriptor = subheadFontDescriptor ?: subheadFont.fontDescriptor;
+  UIFont* boldSubheadFont = [UIFont fontWithDescriptor:subheadFontDescriptor
+                                                  size:subheadFont.pointSize];
+  _titleLabel.font = boldSubheadFont;
   _titleLabel.textColor = RemotingTheme.menuTextColor;
   _titleLabel.numberOfLines = 1;
   [self addSubview:_titleLabel];

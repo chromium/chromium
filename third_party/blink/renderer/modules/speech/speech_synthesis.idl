@@ -26,13 +26,13 @@
 // https://w3c.github.io/speech-api/#speechsynthesis
 
 [
-    NoInterfaceObject
+    LegacyNoInterfaceObject
 ] interface SpeechSynthesis : EventTarget {
     readonly attribute boolean pending;
     readonly attribute boolean speaking;
     readonly attribute boolean paused;
 
-    [Measure] void speak(SpeechSynthesisUtterance utterance);
+    [CallWith=ScriptState, Measure] void speak(SpeechSynthesisUtterance utterance);
     void cancel();
     void pause();
     void resume();

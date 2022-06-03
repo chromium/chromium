@@ -1,0 +1,18 @@
+This is a testharness.js-based test.
+PASS e.style['place-content'] = "normal" should set align-content
+PASS e.style['place-content'] = "normal" should set justify-content
+PASS e.style['place-content'] = "normal" should not set unrelated longhands
+PASS e.style['place-content'] = "first baseline" should set align-content
+PASS e.style['place-content'] = "first baseline" should set justify-content
+PASS e.style['place-content'] = "first baseline" should not set unrelated longhands
+FAIL e.style['place-content'] = "last baseline flex-start" should set align-content assert_equals: align-content should be canonical expected "last baseline" but got ""
+FAIL e.style['place-content'] = "last baseline flex-start" should set justify-content assert_equals: justify-content should be canonical expected "flex-start" but got ""
+FAIL e.style['place-content'] = "last baseline flex-start" should not set unrelated longhands assert_true: expected true got false
+PASS e.style['place-content'] = "space-around" should set align-content
+PASS e.style['place-content'] = "space-around" should set justify-content
+PASS e.style['place-content'] = "space-around" should not set unrelated longhands
+PASS e.style['place-content'] = "space-evenly unsafe end" should set align-content
+PASS e.style['place-content'] = "space-evenly unsafe end" should set justify-content
+PASS e.style['place-content'] = "space-evenly unsafe end" should not set unrelated longhands
+Harness: the test ran to completion.
+

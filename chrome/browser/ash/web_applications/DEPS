@@ -1,0 +1,9 @@
+specific_include_rules = {
+  "eche_app_integration_browsertest.cc": [
+    "+chrome/browser/ui/views",
+  ],
+  "personalization_app_integration_browsertest.cc": [
+    "+chrome/browser/ui/views/frame/browser_view.h",
+    "+ui/message_center/message_center.h",
+  ],
+}

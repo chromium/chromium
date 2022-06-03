@@ -6,8 +6,8 @@
 
 #include <stdio.h>
 
+#include "base/cxx17_backports.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/stl_util.h"
 #include "components/sync/base/stop_source.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service.h"
@@ -29,8 +29,7 @@ SyncSetupService::SyncSetupService(syncer::SyncService* sync_service)
   DCHECK(sync_service_);
 }
 
-SyncSetupService::~SyncSetupService() {
-}
+SyncSetupService::~SyncSetupService() {}
 
 syncer::ModelType SyncSetupService::GetModelType(SyncableDatatype datatype) {
   DCHECK(datatype < base::size(kDataTypes));
@@ -66,7 +65,7 @@ void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
       selected_types.Put(type);
     }
   }
-  if (enabled && !IsSyncEnabled())
+  if (enabled && !CanSyncFeatureStart())
     SetSyncEnabledWithoutChangingDatatypes(true);
   sync_service_->GetUserSettings()->SetSelectedTypes(IsSyncingAllDataTypes(),
                                                      selected_types);
@@ -75,7 +74,7 @@ void SyncSetupService::SetDataTypeEnabled(syncer::ModelType datatype,
 }
 
 bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
-  if (!IsSyncEnabled() || !IsDataTypePreferred(syncer::PROXY_TABS)) {
+  if (!CanSyncFeatureStart() || !IsDataTypePreferred(syncer::PROXY_TABS)) {
     return true;
   }
   switch (this->GetSyncServiceState()) {
@@ -84,14 +83,15 @@ bool SyncSetupService::UserActionIsRequiredToHaveTabSyncWork() {
     // These errors are transient and don't mean that sync is off.
     case SyncSetupService::kSyncServiceCouldNotConnect:
     case SyncSetupService::kSyncServiceServiceUnavailable:
+    case SyncSetupService::kSyncServiceTrustedVaultRecoverabilityDegraded:
       return false;
     // These errors effectively amount to disabled sync and require a signin.
     case SyncSetupService::kSyncServiceSignInNeedsUpdate:
     case SyncSetupService::kSyncServiceNeedsPassphrase:
-    case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
     case SyncSetupService::kSyncServiceUnrecoverableError:
-    case SyncSetupService::kSyncSettingsNotConfirmed:
       return true;
+    case SyncSetupService::kSyncServiceNeedsTrustedVaultKey:
+      return IsEncryptEverythingEnabled();
   }
   NOTREACHED() << "Unknown sync service state.";
   return true;
@@ -104,13 +104,17 @@ bool SyncSetupService::IsSyncingAllDataTypes() const {
 void SyncSetupService::SetSyncingAllDataTypes(bool sync_all) {
   if (!sync_blocker_)
     sync_blocker_ = sync_service_->GetSetupInProgressHandle();
-  if (sync_all && !IsSyncEnabled())
+  if (sync_all && !CanSyncFeatureStart())
     SetSyncEnabled(true);
   sync_service_->GetUserSettings()->SetSelectedTypes(
       sync_all, sync_service_->GetUserSettings()->GetSelectedTypes());
 }
 
-bool SyncSetupService::IsSyncEnabled() const {
+bool SyncSetupService::IsSyncRequested() const {
+  return sync_service_->GetUserSettings()->IsSyncRequested();
+}
+
+bool SyncSetupService::CanSyncFeatureStart() const {
   return sync_service_->CanSyncFeatureStart();
 }
 
@@ -124,7 +128,9 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
   switch (sync_service_->GetAuthError().state()) {
     case GoogleServiceAuthError::REQUEST_CANCELED:
       return kSyncServiceCouldNotConnect;
-    // Based on sync_ui_util::GetStatusLabelsForAuthError, SERVICE_UNAVAILABLE
+    // TODO(crbug.com/1194007): This will support the SyncDisabled policy that
+    // can force the Sync service to become unavailable.
+    // Based on GetSyncStatusLabelsForAuthError, SERVICE_UNAVAILABLE
     // corresponds to sync having been disabled for the user's domain.
     case GoogleServiceAuthError::SERVICE_UNAVAILABLE:
       return kSyncServiceServiceUnavailable;
@@ -134,7 +140,7 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
     case GoogleServiceAuthError::NONE:
     // Connection failed is not shown to the user, as this will happen if the
     // service retuned a 500 error. A more detail error can always be checked
-    // on about:sync.
+    // on chrome://sync-internals.
     case GoogleServiceAuthError::CONNECTION_FAILED:
     case GoogleServiceAuthError::USER_NOT_SIGNED_UP:
     case GoogleServiceAuthError::UNEXPECTED_SERVICE_RESPONSE:
@@ -154,11 +160,13 @@ SyncSetupService::SyncServiceState SyncSetupService::GetSyncServiceState() {
           ->IsPassphraseRequiredForPreferredDataTypes()) {
     return kSyncServiceNeedsPassphrase;
   }
-  if (!IsFirstSetupComplete() && IsSyncEnabled())
-    return kSyncSettingsNotConfirmed;
   if (sync_service_->GetUserSettings()
           ->IsTrustedVaultKeyRequiredForPreferredDataTypes()) {
     return kSyncServiceNeedsTrustedVaultKey;
+  }
+  if (sync_service_->GetUserSettings()
+          ->IsTrustedVaultRecoverabilityDegraded()) {
+    return kSyncServiceTrustedVaultRecoverabilityDegraded;
   }
   return kNoSyncServiceError;
 }
@@ -172,7 +180,11 @@ bool SyncSetupService::HasFinishedInitialSetup() {
   //   1. User is signed in with sync enabled and the sync setup was completed.
   //   OR
   //   2. User is not signed in or has disabled sync.
-  return !sync_service_->CanSyncFeatureStart() ||
+  // Note that if the user visits the Advanced Settings during the opt-in flow,
+  // the Sync consent is not granted yet. In this case, IsSyncRequested() is
+  // set to true, indicating that the sync was requested but the initial setup
+  // has not been finished yet.
+  return !IsSyncRequested() ||
          sync_service_->GetUserSettings()->IsFirstSetupComplete();
 }
 

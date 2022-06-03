@@ -1,0 +1,12 @@
+This content should be visible, if HTMLPopupElement is disabled
+Summary
+
+Harness status: OK
+
+Found 1 tests
+
+1 Pass
+Details
+Result	Test Name	Message
+Pass	<popup> should be HTMLUnknownElement and should be stylable/visible	
+Asserts run

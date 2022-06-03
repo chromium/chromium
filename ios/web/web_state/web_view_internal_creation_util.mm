@@ -4,12 +4,10 @@
 
 #import "ios/web/web_state/web_view_internal_creation_util.h"
 
-#import <objc/runtime.h>
-
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "base/strings/sys_string_conversions.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/web_state/ui/crw_context_menu_controller.h"
+#import "ios/web/web_state/crw_web_view.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -36,16 +34,25 @@ void VerifyWKWebViewCreationPreConditions(
 
 }  // namespace
 
+WKWebView* BuildWKWebViewForQueries(WKWebViewConfiguration* configuration,
+                                    BrowserState* browser_state) {
+  VerifyWKWebViewCreationPreConditions(browser_state, configuration);
+  return [[WKWebView alloc] initWithFrame:CGRectZero
+                            configuration:configuration];
+}
+
 WKWebView* BuildWKWebView(CGRect frame,
                           WKWebViewConfiguration* configuration,
                           BrowserState* browser_state,
                           UserAgentType user_agent_type,
-                          id<CRWContextMenuDelegate> context_menu_delegate) {
+                          id<CRWInputViewProvider> input_view_provider) {
   VerifyWKWebViewCreationPreConditions(browser_state, configuration);
 
   GetWebClient()->PreWebViewCreation();
-  WKWebView* web_view =
-      [[WKWebView alloc] initWithFrame:frame configuration:configuration];
+
+  CRWWebView* web_view = [[CRWWebView alloc] initWithFrame:frame
+                                             configuration:configuration];
+  web_view.inputViewProvider = input_view_provider;
 
   // Set the user agent type.
   if (user_agent_type != web::UserAgentType::NONE) {
@@ -57,38 +64,14 @@ WKWebView* BuildWKWebView(CGRect frame,
   // reasonable value.
   web_view.scrollView.decelerationRate = UIScrollViewDecelerationRateNormal;
 
-  if (context_menu_delegate) {
-    CRWContextMenuController* context_menu_controller =
-        [[CRWContextMenuController alloc]
-            initWithWebView:web_view
-               browserState:browser_state
-                   delegate:context_menu_delegate];
-    void* associated_object_key = (__bridge void*)context_menu_controller;
-    objc_setAssociatedObject(web_view, associated_object_key,
-                             context_menu_controller,
-                             OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-  }
-
-  // Uses the default value for |allowsLinkPreview| i.e., YES in iOS 10 or
-  // later, and NO for iOS 9 or before. But the link preview is still disabled
-  // by default on iOS 10 or later. You need to return true from
-  // web::WebStateDelegate::ShouldPreviewLink() to enable the preview.
   return web_view;
-}
-
-WKWebView* BuildWKWebView(CGRect frame,
-                          WKWebViewConfiguration* configuration,
-                          BrowserState* browser_state,
-                          UserAgentType user_agent_type) {
-  return BuildWKWebView(frame, configuration, browser_state, user_agent_type,
-                        nil);
 }
 
 WKWebView* BuildWKWebView(CGRect frame,
                           WKWebViewConfiguration* configuration,
                           BrowserState* browser_state) {
   return BuildWKWebView(frame, configuration, browser_state,
-                        UserAgentType::MOBILE);
+                        UserAgentType::MOBILE, nil);
 }
 
 }  // namespace web

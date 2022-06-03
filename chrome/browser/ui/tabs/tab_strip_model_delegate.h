@@ -8,9 +8,10 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
-#include "base/optional.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class Browser;
 class GURL;
@@ -21,6 +22,10 @@ class WebContents;
 
 namespace gfx {
 class Rect;
+}
+
+namespace tab_groups {
+class TabGroupId;
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -51,7 +56,7 @@ class TabStripModelDelegate {
       const GURL& url,
       int index,
       bool foreground,
-      base::Optional<tab_groups::TabGroupId> group = base::nullopt) = 0;
+      absl::optional<tab_groups::TabGroupId> group = absl::nullopt) = 0;
 
   // Asks for a new TabStripModel to be created and the given web contentses to
   // be added to it. Its size and position are reflected in |window_bounds|.
@@ -63,15 +68,14 @@ class TabStripModelDelegate {
   // TabStripModelDelegate, or perhaps even move this code elsewhere.
   struct NewStripContents {
     NewStripContents();
+    NewStripContents(const NewStripContents&) = delete;
+    NewStripContents& operator=(const NewStripContents&) = delete;
     ~NewStripContents();
     NewStripContents(NewStripContents&&);
     // The WebContents to add.
     std::unique_ptr<content::WebContents> web_contents;
     // A bitmask of TabStripModel::AddTabTypes to apply to the added contents.
     int add_types = 0;
-
-   private:
-    DISALLOW_COPY_AND_ASSIGN(NewStripContents);
   };
   virtual Browser* CreateNewStripWithContents(
       std::vector<NewStripContents> contentses,
@@ -89,13 +93,42 @@ class TabStripModelDelegate {
   // Returns whether some contents can be duplicated.
   virtual bool CanDuplicateContentsAt(int index) = 0;
 
-  // Duplicates the contents at the provided index and places it into its own
-  // window.
+  // Returns whether tabs can be highlighted. This may return false due to tab
+  // dragging in process, for instance.
+  virtual bool IsTabStripEditable() = 0;
+
+  // Duplicates the contents at the provided index and places it into a new tab.
   virtual void DuplicateContentsAt(int index) = 0;
 
+  // Move the contents at the provided indices into the specified window.
+  virtual void MoveToExistingWindow(const std::vector<int>& indices,
+                                    int browser_index) = 0;
+
+  // Returns whether the contents at |indices| can be moved from the current
+  // tabstrip to a different window.
+  virtual bool CanMoveTabsToWindow(const std::vector<int>& indices) = 0;
+
+  // Removes the contents at |indices| from this tab strip and places it into a
+  // new window.
+  virtual void MoveTabsToNewWindow(const std::vector<int>& indices) = 0;
+
+  // Moves all the tabs in the specified |group| to a new window, keeping them
+  // grouped. The group in the new window will have the same appearance as
+  // |group| but a different ID, since IDs can't be shared across windows.
+  virtual void MoveGroupToNewWindow(const tab_groups::TabGroupId& group) = 0;
+
   // Creates an entry in the historical tab database for the specified
-  // WebContents.
-  virtual void CreateHistoricalTab(content::WebContents* contents) = 0;
+  // WebContents. Returns the tab's unique SessionID if a historical tab was
+  // created.
+  virtual absl::optional<SessionID> CreateHistoricalTab(
+      content::WebContents* contents) = 0;
+
+  // Creates an entry in the historical group database for the specified
+  // |group|.
+  virtual void CreateHistoricalGroup(const tab_groups::TabGroupId& group) = 0;
+
+  // Notifies the tab restore service that the group is no longer closing.
+  virtual void GroupCloseStopped(const tab_groups::TabGroupId& group) = 0;
 
   // Runs any unload listeners associated with the specified WebContents
   // before it is closed. If there are unload listeners that need to be run,
@@ -109,6 +142,28 @@ class TabStripModelDelegate {
   // to close |contents|.
   virtual bool ShouldRunUnloadListenerBeforeClosing(
       content::WebContents* contents) = 0;
+
+  // Returns whether favicon should be shown.
+  virtual bool ShouldDisplayFavicon(
+      content::WebContents* web_contents) const = 0;
+
+  // Returns whether the delegate allows reloading of WebContents.
+  virtual bool CanReload() const = 0;
+
+  // Adds the specified WebContents to read later.
+  virtual void AddToReadLater(content::WebContents* web_contents) = 0;
+
+  // Gives the delegate an opportunity to cache (take ownership) of
+  // WebContents before they are destroyed. The delegate takes ownership by way
+  // of using std::move() on the `owned_contents` and resetting `remove_reason`
+  // to kCached. It is expected that any WebContents the delegate takes
+  // ownership of remain valid until the next message is pumped. In other
+  // words, the delegate must not immediately destroy any of the supplied
+  // WebContents.
+  // TODO(https://crbug.com/1234332): Provide active web contents.
+  virtual void CacheWebContents(
+      const std::vector<std::unique_ptr<TabStripModel::DetachedWebContents>>&
+          web_contents) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_MODEL_DELEGATE_H_

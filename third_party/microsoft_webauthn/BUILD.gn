@@ -3,7 +3,5 @@
 # found in the LICENSE file.
 
 source_set("microsoft_webauthn") {
-  sources = [
-    "webauthn.h",
-  ]
+  sources = [ "webauthn.h" ]
 }

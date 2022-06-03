@@ -1,70 +1,88 @@
 <!DOCTYPE html>
-<body>
-<pre id="console"></pre>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-function log(s) {
-    document.getElementById("console").innerHTML += s + "\n";
-}
+const kStyle = [
+    'font-family: monospace;',
+    'width: 4ch',
+].join(' ');
 
-function createEditableMultilineDiv(text, numLines) {
-    // Put text in a span so that the width can be measured.
-    var span = document.createElement("span");
-    span.innerHTML = text;
-    document.body.appendChild(span);
-    var widthPx = Math.ceil(span.getBoundingClientRect().width);
-    document.body.removeChild(span);
+// LTR
+selection_test(
+    [
+        `<div contenteditable style="${kStyle}">`,
+            '|abc def ghi jkl',
+        '</div>',
+    ],
+    selection => selection.modify("move", "forward", "line"),
+    [
+        `<div contenteditable style="${kStyle}">`,
+            'abc |def ghi jkl',
+        '</div>',
+    ], 'LTR move forward line');
+selection_test(
+    [
+        `<div contenteditable style="${kStyle}">`,
+            'abc |def ghi jkl',
+        '</div>',
+    ],
+    selection => selection.modify("extend", "forward", "lineboundary"),
+    [
+        `<div contenteditable style="${kStyle}">`,
+            'abc ^def |ghi jkl',
+        '</div>',
+    ], 'LTR extend forward lineboundary');
 
-    // Make div with those dimensions so that the text wraps predictably regardless of platform.
-    var lines = text;
-    for (var i = 1; i < numLines; i++)
-        lines += " " + text;
+// RTL-BDO
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">|abc def ghi jkl</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify("move", "forward", "line"),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">abc |def ghi jkl</bdo>',
+        '</div>',
+    ], 'RTL-BDO move forward line');
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">abc |def ghi jkl</bdo>',
+        '</div>',
+    ],
+    selection => selection.modify("extend", "forward", "lineboundary"),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '<bdo dir="rtl">abc ^def |ghi jkl</bdo>',
+        '</div>',
+    ], 'RTL-BDO extend forward lineboundary');
 
-    var div = document.createElement("div");
-    div.setAttribute("style", "width: " + widthPx + "px");
-    div.contentEditable = true;
-    div.innerHTML = lines;
-
-    return div;
-}
-
-function selectSecondLine(element) {
-    getSelection().collapse(element.childNodes[0], 0);
-    getSelection().modify("move", "forward", "line");
-    getSelection().modify("extend", "forward", "lineboundary");
-}
-
-function unescapeRtl(rtlText) {
-    var e = document.createElement("span");
-    e.innerHTML = rtlText;
-    return e.innerHTML;
-}
-
-ltrText = "the quick brown fox jumps";
-ltrTextContainer = createEditableMultilineDiv(ltrText, 3);
-document.body.appendChild(ltrTextContainer);
-selectSecondLine(ltrTextContainer);
-
-if (getSelection().toString() === ltrText + " ")
-    log("PASS for LTR");
-else
-    log("FAIL for LTR, selection is '" + getSelection() + "' but should be '" + ltrText + " '");
-
-rtlText = unescapeRtl("&#x05E9;&#x05D5;&#x05BC;&#x05E8;&#x05D4; " +
-                      "&#x05E9;&#x05D5;&#x05BC;&#x05E8;&#x05D4; " +
-                      "&#x05E9;&#x05D5;&#x05BC;&#x05E8;&#x05D4;");
-rtlTextContainer = createEditableMultilineDiv(rtlText, 3);
-rtlTextContainer.setAttribute("dir", "rtl");
-document.body.appendChild(rtlTextContainer);
-selectSecondLine(rtlTextContainer);
-
-if (getSelection().toString() === rtlText + " ")
-    log("PASS for RTL");
-else
-    log("FAIL for RTL, selection is '" + getSelection() + "' but should be '" + rtlText + " '");
-
-log("");
-
-if (window.testRunner)
-    testRunner.dumpAsText();
+// RTL
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '|\u05D0\u05D1\u05D2 \u05E0\u05E1\u05E2 \u05E5\u05E6\u05E7 \u05D5\u05D6\u05D7',
+        '</div>',
+    ],
+    selection => selection.modify("move", "forward", "line"),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '\u05D0\u05D1\u05D2 |\u05E0\u05E1\u05E2 \u05E5\u05E6\u05E7 \u05D5\u05D6\u05D7',
+        '</div>',
+    ], 'RTL move forward line');
+selection_test(
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '\u05D0\u05D1\u05D2 |\u05E0\u05E1\u05E2 \u05E5\u05E6\u05E7 \u05D5\u05D6\u05D7',
+        '</div>',
+    ],
+    selection => selection.modify("extend", "forward", "lineboundary"),
+    [
+        `<div contenteditable dir="rtl" style="${kStyle}">`,
+            '\u05D0\u05D1\u05D2 ^\u05E0\u05E1\u05E2 |\u05E5\u05E6\u05E7 \u05D5\u05D6\u05D7',
+        '</div>',
+    ], 'RTL extend forward lineboundary');
 </script>
-</body>

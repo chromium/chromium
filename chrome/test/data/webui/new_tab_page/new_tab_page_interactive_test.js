@@ -5,36 +5,38 @@
 /** @fileoverview Test suite for the WebUI new tab page page. */
 
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_interactive_ui_test.js']);
-GEN('#include "services/network/public/cpp/features.h"');
+
+GEN('#include "content/public/test/browser_test.h"');
+
+/* eslint-disable no-var */
 
 class NewTabPageInteractiveTest extends PolymerInteractiveUITest {
   /** @override */
   get browsePreload() {
     throw 'this is abstract and should be overriden by subclasses';
   }
-
-  /** @override */
-  get extraLibraries() {
-    return [
-      '//third_party/mocha/mocha.js',
-      '//chrome/test/data/webui/mocha_adapter.js',
-    ];
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['network::features::kOutOfBlinkCors']};
-  }
 }
 
-// eslint-disable-next-line no-var
-var NewTabPageMostVisitedFocusTest = class extends NewTabPageInteractiveTest {
+var NewTabPageCustomizeDialogFocusTest =
+    class extends NewTabPageInteractiveTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/most_visited_focus_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/customize_dialog_focus_test.js';
   }
 };
 
-TEST_F('NewTabPageMostVisitedFocusTest', 'All', function() {
+TEST_F('NewTabPageCustomizeDialogFocusTest', 'All', function() {
+  mocha.run();
+});
+
+var NewTabPageDoodleShareDialogFocusTest =
+    class extends NewTabPageInteractiveTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://new-tab-page/test_loader.html?module=new_tab_page/doodle_share_dialog_focus_test.js';
+  }
+};
+
+TEST_F('NewTabPageDoodleShareDialogFocusTest', 'All', function() {
   mocha.run();
 });

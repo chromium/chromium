@@ -10,12 +10,12 @@
 TrustedSourcesManager::TrustedSourcesManager() {
   base::CommandLine* command_line(base::CommandLine::ForCurrentProcess());
   DCHECK(command_line);
-  rules_.ParseFromString(
+  matcher_ = net::SchemeHostPortMatcher::FromRawString(
       command_line->GetSwitchValueASCII(switches::kTrustedDownloadSources));
 }
 
 TrustedSourcesManager::~TrustedSourcesManager() = default;
 
 bool TrustedSourcesManager::IsFromTrustedSource(const GURL& url) const {
-  return rules_.Matches(url);
+  return matcher_.Includes(url);
 }

@@ -1,0 +1,5 @@
+include_rules = [
+  "+components/strings/grit/components_strings.h",
+  "+third_party/icu/source/i18n/unicode/ulocdata.h",
+  "+ui/base/l10n/l10n_util.h",
+]

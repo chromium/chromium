@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <iostream>
 #include <list>
+#include <sstream>
 #include <tuple>
 #include <unordered_map>
 
@@ -14,6 +15,21 @@
 #include "tools/binary_size/libsupersize/caspian/function_signature.h"
 
 namespace caspian {
+
+Container::Container(const std::string& name_in) : name(name_in) {}
+Container::~Container() = default;
+Container::Container(const Container& other) = default;
+
+// static
+void Container::AssignShortNames(std::vector<Container>* containers) {
+  for (size_t i = 0; i < containers->size(); ++i) {
+    Container& c = (*containers)[i];
+    std::ostringstream oss;
+    if (!c.name.empty())
+      oss << i;
+    c.short_name = oss.str();
+  }
+}
 
 BaseSymbol::~BaseSymbol() = default;
 
@@ -85,6 +101,9 @@ SectionId Symbol::Section() const {
   return section_id_;
 }
 
+std::string_view Symbol::ContainerName() const {
+  return container_ ? container_->name : std::string_view();
+}
 const char* Symbol::ObjectPath() const {
   return object_path_;
 }
@@ -147,9 +166,11 @@ int32_t DeltaSymbol::Size() const {
 }
 
 int32_t DeltaSymbol::Flags() const {
+  // Compute the union of flags (|) instead of symmetric difference (^), as
+  // that is more useful when querying for symbols with flags.
   int32_t before_flags = before_ ? before_->Flags() : 0;
   int32_t after_flags = after_ ? after_->Flags() : 0;
-  return before_flags ^ after_flags;
+  return before_flags | after_flags;
 }
 
 int32_t DeltaSymbol::Padding() const {
@@ -185,6 +206,10 @@ const std::vector<Symbol*>* DeltaSymbol::Aliases() const {
 
 SectionId DeltaSymbol::Section() const {
   return (after_ ? after_ : before_)->Section();
+}
+
+std::string_view DeltaSymbol::ContainerName() const {
+  return (after_ ? after_ : before_)->ContainerName();
 }
 
 const char* DeltaSymbol::ObjectPath() const {
@@ -326,8 +351,10 @@ void TreeNode::WriteIntoJson(
     std::function<bool(const TreeNode* const& l, const TreeNode* const& r)>
         compare_func,
     bool is_sparse,
+    bool method_count_mode,
     Json::Value* out) {
   if (symbol) {
+    (*out)["container"] = std::string(symbol->ContainerName());
     (*out)["helpme"] = std::string(symbol->Name());
     (*out)["idPath"] = std::string(symbol->TemplateName());
     (*out)["fullName"] = std::string(symbol->FullName());
@@ -342,7 +369,6 @@ void TreeNode::WriteIntoJson(
     }
   } else {
     (*out)["idPath"] = id_path.ToString();
-
     if (!is_sparse && !children.empty()) {
       // Add tag to containers in which all child symbols were added/removed.
       DiffStatus diff_status = node_stats.GetGlobalDiffStatus();
@@ -353,16 +379,15 @@ void TreeNode::WriteIntoJson(
   }
   (*out)["shortNameIndex"] = short_name_index;
   std::string type;
-  if (container_type != ContainerType::kSymbol) {
-    type += static_cast<char>(container_type);
+  if (artifact_type != ArtifactType::kSymbol) {
+    type += static_cast<char>(artifact_type);
   }
   SectionId biggest_section = node_stats.ComputeBiggestSection();
   type += static_cast<char>(biggest_section);
   (*out)["type"] = type;
-
   (*out)["size"] = size;
   (*out)["flags"] = flags;
-  node_stats.WriteIntoJson(&(*out)["childStats"]);
+  node_stats.WriteIntoJson(method_count_mode, &(*out)["childStats"]);
 
   const size_t kMaxChildNodesToExpand = 1000;
   if (children.size() > kMaxChildNodesToExpand) {
@@ -370,7 +395,6 @@ void TreeNode::WriteIntoJson(
     // sending thousands of children and grandchildren to renderer.
     depth = 0;
   }
-
   if (depth < 0 && children.size() > 1) {
     (*out)["children"] = Json::Value();  // null
   } else {
@@ -380,7 +404,7 @@ void TreeNode::WriteIntoJson(
     std::sort(children.begin(), children.end(), compare_func);
     for (unsigned int i = 0; i < children.size(); i++) {
       children[i]->WriteIntoJson(depth - 1, compare_func, is_sparse,
-                                 &(*out)["children"][i]);
+                                 method_count_mode, &(*out)["children"][i]);
     }
   }
 }
@@ -407,17 +431,24 @@ NodeStats::NodeStats(const BaseSymbol& symbol) {
   }
 }
 
-void NodeStats::WriteIntoJson(Json::Value* out) const {
+void NodeStats::WriteIntoJson(bool method_count_mode, Json::Value* out) const {
   (*out) = Json::Value(Json::objectValue);
   for (const auto kv : child_stats) {
     const std::string sectionId = std::string(1, static_cast<char>(kv.first));
     const Stat stats = kv.second;
     (*out)[sectionId] = Json::Value(Json::objectValue);
     (*out)[sectionId]["size"] = stats.size;
-    (*out)[sectionId]["count"] = stats.count;
     (*out)[sectionId]["added"] = stats.added;
     (*out)[sectionId]["removed"] = stats.removed;
     (*out)[sectionId]["changed"] = stats.changed;
+    // Count is used to store value for "method count" mode.
+    // Why? Because that's how it was implemented in the .ndjson worker.
+    int count = stats.count;
+    bool is_diff = stats.added > 0 || stats.removed > 0 || stats.changed > 0;
+    if (method_count_mode && is_diff) {
+      count = stats.added - stats.removed;
+    }
+    (*out)[sectionId]["count"] = count;
   }
 }
 

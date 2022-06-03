@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "components/drive/event_logger.h"
 

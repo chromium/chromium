@@ -1,0 +1,25 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+  <div id="sandbox"></div>
+
+  <div id="button" title="Click for Decorated">
+    Hello Decorated
+  </div>
+
+  <!-- The component DOM must always be created without whitespace. -->
+  <div id="button-box" title="Click for Decorated Box" class="goog-button goog-button-base"><div class="goog-inline-block goog-button-base-outer-box"><div class="goog-inline-block goog-button-base-inner-box"><div class="goog-button-base-pos"><div class="goog-button-base-top-shadow">&nbsp;</div><div class="goog-button-base-content">Hello Decorated Box</div></div></div></div></div>
+
+  <!-- The component DOM must always be created without whitespace. This
+       demonstrates what happens when the content has whitespace.
+   -->
+  <div id="button-box-with-space-in-content" class="goog-button goog-button-base"><div class="goog-inline-block goog-button-base-outer-box"><div class="goog-inline-block goog-button-base-inner-box"><div class="goog-button-base-pos"><div class="goog-button-base-top-shadow">&nbsp;</div><div class="goog-button-base-content">
+    Hello Decorated Box with space
+  </div></div></div></div></div>
+
+  <div id="button-box-with-dom-content">
+    <strong>Hello</strong> <em>Box</em>
+  </div>

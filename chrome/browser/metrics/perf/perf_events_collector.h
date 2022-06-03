@@ -35,6 +35,9 @@ class PerfCollector : public internal::MetricCollector {
  public:
   PerfCollector();
 
+  PerfCollector(const PerfCollector&) = delete;
+  PerfCollector& operator=(const PerfCollector&) = delete;
+
   // MetricCollector:
   ~PerfCollector() override;
   const char* ToolName() const override;
@@ -96,6 +99,27 @@ class PerfCollector : public internal::MetricCollector {
     kMaxValue = kAllZeroCPUFrequencies,
   };
 
+  // Annotations on the collected sampled_profile, including adding process
+  // types and PSI CPU data.
+  static void PostCollectionProfileAnnotation(SampledProfile* sampled_profile,
+                                              bool has_cycles);
+
+  // Collect PSI CPU data and add to sampled_profile.
+  static void CollectPSICPU(SampledProfile* sampled_profile,
+                            const std::string& psi_cpu_path);
+
+  // Enumeration representing success and various failure modes for parsing PSI
+  // CPU data. These values are persisted to logs. Entries should not be
+  // renumbered and numeric values should never be reused.
+  enum class ParsePSICPUStatus {
+    kSuccess,
+    kReadFileFailed,
+    kUnexpectedDataFormat,
+    kParsePSIValueFailed,
+    // Magic constant used by the histogram macros.
+    kMaxValue = kParsePSIValueFailed,
+  };
+
   SampledProfile::TriggerEvent current_trigger_ =
       SampledProfile::UNKNOWN_TRIGGER_EVENT;
 
@@ -119,8 +143,6 @@ class PerfCollector : public internal::MetricCollector {
   std::vector<uint32_t> max_frequencies_mhz_;
 
   base::WeakPtrFactory<PerfCollector> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PerfCollector);
 };
 
 // Exposed for unit testing.

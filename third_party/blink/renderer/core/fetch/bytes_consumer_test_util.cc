@@ -8,7 +8,6 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
-#include "third_party/blink/renderer/platform/wtf/assertions.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
@@ -27,6 +26,8 @@ BytesConsumerTestUtil::MockBytesConsumer::MockBytesConsumer() {
   ON_CALL(*this, GetPublicState()).WillByDefault(Return(PublicState::kErrored));
   ON_CALL(*this, DrainAsBlobDataHandle(_))
       .WillByDefault(Return(ByMove(nullptr)));
+  ON_CALL(*this, DrainAsDataPipe())
+      .WillByDefault(Return(ByMove(mojo::ScopedDataPipeConsumerHandle())));
   ON_CALL(*this, DrainAsFormData()).WillByDefault(Return(ByMove(nullptr)));
 }
 

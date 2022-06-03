@@ -1,0 +1,10 @@
+{
+  "name": "executeScript with non-UTF8 content script",
+  "version": "1",
+  "manifest_version": 2,
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": true
+  },
+  "permissions": ["*://*/*"]
+}

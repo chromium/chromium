@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link rel="manifest" href="service_worker_on_second_load.json">
+  <link rel="icon" href="basic-48.png">
+</head>
+<body>
+  <h1>Service worker on second load</h1>
+  <script>
+    if (localStorage.getItem('seen')) {
+      navigator.serviceWorker.register('/web_apps/service_worker.js');
+    }
+    localStorage.setItem('seen', true);
+  </script>
+</body>
+</html>

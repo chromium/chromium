@@ -1,0 +1,44 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+//https://immersive-web.github.io/webxr-hand-input/#idl-index
+enum XRHandJoint {
+  "wrist",
+  "thumb-metacarpal",
+  "thumb-phalanx-proximal",
+  "thumb-phalanx-distal",
+  "thumb-tip",
+  "index-finger-metacarpal",
+  "index-finger-phalanx-proximal",
+  "index-finger-phalanx-intermediate",
+  "index-finger-phalanx-distal",
+  "index-finger-tip",
+  "middle-finger-metacarpal",
+  "middle-finger-phalanx-proximal",
+  "middle-finger-phalanx-intermediate",
+  "middle-finger-phalanx-distal",
+  "middle-finger-tip",
+  "ring-finger-metacarpal",
+  "ring-finger-phalanx-proximal",
+  "ring-finger-phalanx-intermediate",
+  "ring-finger-phalanx-distal",
+  "ring-finger-tip",
+  "pinky-finger-metacarpal",
+  "pinky-finger-phalanx-proximal",
+  "pinky-finger-phalanx-intermediate",
+  "pinky-finger-phalanx-distal",
+  "pinky-finger-tip"
+};
+
+//https://immersive-web.github.io/webxr-hand-input/#idl-index
+[
+    SecureContext,
+    Exposed=Window,
+    RuntimeEnabled=WebXRHandInput
+] interface XRHand {
+    iterable<XRHandJoint, XRJointSpace>;
+
+    readonly attribute unsigned long size;
+    XRJointSpace get(XRHandJoint key);
+};

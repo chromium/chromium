@@ -1,0 +1,34 @@
+Tests errors when finding DOM nodes by accessible name.
+{
+    error : {
+        code : -32000
+        message : Either nodeId, backendNodeId or objectId must be specified
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32000
+        message : Could not find node with given id
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32000
+        message : No node found for given backend id
+    }
+    id : <number>
+    sessionId : <string>
+}
+{
+    error : {
+        code : -32000
+        message : Invalid remote object id
+    }
+    id : <number>
+    sessionId : <string>
+}
+

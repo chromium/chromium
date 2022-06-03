@@ -6,9 +6,9 @@
 
 namespace blink {
 
-TrustedHTML::TrustedHTML(const String& html) : html_(html) {}
+TrustedHTML::TrustedHTML(String html) : html_(std::move(html)) {}
 
-String TrustedHTML::toString() const {
+const String& TrustedHTML::toString() const {
   return html_;
 }
 

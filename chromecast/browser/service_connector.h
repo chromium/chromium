@@ -5,7 +5,7 @@
 #ifndef CHROMECAST_BROWSER_SERVICE_CONNECTOR_H_
 #define CHROMECAST_BROWSER_SERVICE_CONNECTOR_H_
 
-#include "base/util/type_safety/id_type.h"
+#include "base/types/id_type.h"
 #include "chromecast/common/mojom/service_connector.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -20,7 +20,7 @@ class ServiceConnector;
 //
 // We don't use an enum because the definition of these IDs is split across
 // public and internal sources.
-using ServiceConnectorClientId = util::IdType32<ServiceConnector>;
+using ServiceConnectorClientId = base::IdType32<ServiceConnector>;
 
 // Something in browser process itself (e.g. CastAudioManager)
 extern const ServiceConnectorClientId kBrowserProcessClientId;

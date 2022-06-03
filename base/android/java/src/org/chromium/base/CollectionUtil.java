@@ -7,13 +7,14 @@ package org.chromium.base;
 import android.util.Pair;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -32,22 +33,6 @@ public final class CollectionUtil {
         HashSet<E> set = new HashSet<E>(elements.length);
         Collections.addAll(set, elements);
         return set;
-    }
-
-    @SafeVarargs
-    public static <E> ArrayList<E> newArrayList(E... elements) {
-        ArrayList<E> list = new ArrayList<E>(elements.length);
-        Collections.addAll(list, elements);
-        return list;
-    }
-
-    @VisibleForTesting
-    public static <E> ArrayList<E> newArrayList(Iterable<E> iterable) {
-        ArrayList<E> list = new ArrayList<E>();
-        for (E element : iterable) {
-            list.add(element);
-        }
-        return list;
     }
 
     @SafeVarargs
@@ -97,5 +82,29 @@ public final class CollectionUtil {
         for (Map.Entry<? extends K, ? extends V> entry : map.entrySet()) {
             worker.onResult((Map.Entry<K, V>) entry);
         }
+    }
+
+    /**
+     * Removes null entries from the given collection and then returns a list of strong references.
+     *
+     * Note: This helper is relevant if you have a List<WeakReference<T>> or a Map with weak values.
+     * For Set<WeakReference<T>>, use Collections.newSetFromMap(new WeakHashMap()) instead.
+     *
+     * @param weakRefs Collection to iterate.
+     * @return List of strong references.
+     */
+    public static <T> List<T> strengthen(Collection<WeakReference<T>> weakRefs) {
+        ArrayList<T> ret = new ArrayList<>(weakRefs.size());
+        Iterator<WeakReference<T>> it = weakRefs.iterator();
+        while (it.hasNext()) {
+            WeakReference<T> weakRef = it.next();
+            T strongRef = weakRef.get();
+            if (strongRef == null) {
+                it.remove();
+            } else {
+                ret.add(strongRef);
+            }
+        }
+        return ret;
     }
 }

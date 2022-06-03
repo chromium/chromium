@@ -10,7 +10,7 @@ if (window.testRunner)
     testRunner.dumpAsText();
 
 var f3 = document.createElement('div');
-var s2 = f2.createShadowRoot();
+var s2 = f2.attachShadow({mode: 'open'});
 f1.addEventListener("DOMNodeRemovedFromDocument", function () {
   s2.appendChild(f3);
 });

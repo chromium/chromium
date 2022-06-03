@@ -10,16 +10,15 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/path_service.h"
-#include "base/stl_util.h"
 #include "base/task/post_task.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/assets_loader.h"
-#include "chrome/browser/vr/metrics/metrics_helper.h"
 #include "chrome/browser/vr/vr_buildflags.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/component_updater/component_updater_service.h"
@@ -104,7 +103,6 @@ void VrAssetsComponentInstallerPolicy::UpdateComponent(
 // static
 void VrAssetsComponentInstallerPolicy::OnRegisteredComponent(
     ComponentUpdateService* cus) {
-  vr::AssetsLoader::GetInstance()->GetMetricsHelper()->OnRegisteredComponent();
   VLOG(1) << "Registered VR assets component";
   registration_pending_ = false;
   registered_component_ = true;
@@ -115,7 +113,7 @@ void VrAssetsComponentInstallerPolicy::OnRegisteredComponent(
 
 bool VrAssetsComponentInstallerPolicy::
     SupportsGroupPolicyEnabledComponentUpdates() const {
-  return false;
+  return true;
 }
 
 bool VrAssetsComponentInstallerPolicy::RequiresNetworkEncryption() const {
@@ -124,7 +122,7 @@ bool VrAssetsComponentInstallerPolicy::RequiresNetworkEncryption() const {
 
 update_client::CrxInstaller::Result
 VrAssetsComponentInstallerPolicy::OnCustomInstall(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) {
   return update_client::CrxInstaller::Result(0);
 }
@@ -133,29 +131,22 @@ void VrAssetsComponentInstallerPolicy::OnCustomUninstall() {}
 
 // Called during startup and installation before ComponentReady().
 bool VrAssetsComponentInstallerPolicy::VerifyInstallation(
-    const base::DictionaryValue& manifest,
+    const base::Value& manifest,
     const base::FilePath& install_dir) const {
-  auto* version_value = manifest.FindKey("version");
-  if (!version_value || !version_value->is_string()) {
-    vr::AssetsLoader::GetInstance()->GetMetricsHelper()->OnComponentUpdated(
-        vr::AssetsComponentUpdateStatus::kInvalid, base::nullopt);
+  auto* version_string = manifest.FindStringKey("version");
+  if (!version_string) {
     return false;
   }
 
-  auto version_string = version_value->GetString();
-  base::Version version(version_string);
+  base::Version version(*version_string);
   if (!version.IsValid() || version.components().size() != 2 ||
       !base::PathExists(install_dir)) {
-    vr::AssetsLoader::GetInstance()->GetMetricsHelper()->OnComponentUpdated(
-        vr::AssetsComponentUpdateStatus::kInvalid, base::nullopt);
     return false;
   }
 
   if (version.components()[0] > vr::kTargetMajorVrAssetsComponentVersion) {
     // Component needs to be downgraded. Differential downgrades are not
     // supported. Just delete this component version.
-    vr::AssetsLoader::GetInstance()->GetMetricsHelper()->OnComponentUpdated(
-        vr::AssetsComponentUpdateStatus::kIncompatible, version);
     return false;
   }
 
@@ -165,12 +156,10 @@ bool VrAssetsComponentInstallerPolicy::VerifyInstallation(
 void VrAssetsComponentInstallerPolicy::ComponentReady(
     const base::Version& version,
     const base::FilePath& install_dir,
-    std::unique_ptr<base::DictionaryValue> manifest) {
+    base::Value manifest) {
   if (version.components()[0] < vr::kMinMajorVrAssetsComponentVersion) {
     // Don't propagate component readiness and wait until differential update
     // delivers compatible component version.
-    vr::AssetsLoader::GetInstance()->GetMetricsHelper()->OnComponentUpdated(
-        vr::AssetsComponentUpdateStatus::kIncompatible, version);
     return;
   }
   vr::AssetsLoader::GetInstance()->OnComponentReady(version, install_dir,
@@ -195,11 +184,6 @@ update_client::InstallerAttributes
 VrAssetsComponentInstallerPolicy::GetInstallerAttributes() const {
   return {{"compatible_major_version",
            std::to_string(vr::kTargetMajorVrAssetsComponentVersion)}};
-}
-
-std::vector<std::string> VrAssetsComponentInstallerPolicy::GetMimeTypes()
-    const {
-  return std::vector<std::string>();
 }
 
 bool ShouldRegisterVrAssetsComponentOnStartup() {

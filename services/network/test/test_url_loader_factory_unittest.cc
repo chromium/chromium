@@ -4,7 +4,6 @@
 
 #include "services/network/test/test_url_loader_factory.h"
 
-#include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
@@ -25,15 +24,13 @@ class TestURLLoaderFactoryTest : public testing::Test {
 
   void StartRequest(const std::string& url,
                     TestURLLoaderClient* client,
-                    int load_flags = 0,
-                    bool report_raw_headers = false) {
+                    int load_flags = 0) {
     ResourceRequest request;
     request.url = GURL(url);
     request.load_flags = load_flags;
-    request.report_raw_headers = report_raw_headers;
     loader_.reset();
     factory_.CreateLoaderAndStart(
-        loader_.BindNewPipeAndPassReceiver(), 0, 0, 0, request,
+        loader_.BindNewPipeAndPassReceiver(), 0, 0, request,
         client->CreateRemote(),
         net::MutableNetworkTrafficAnnotationTag(TRAFFIC_ANNOTATION_FOR_TESTS));
   }
@@ -173,6 +170,17 @@ TEST_F(TestURLLoaderFactoryTest, IsPending) {
   EXPECT_TRUE(factory()->IsPending(url));
   client()->Unbind();
   EXPECT_FALSE(factory()->IsPending(url));
+
+  // Cleanup between tests.
+  client()->Unbind();
+  factory()->ClearResponses();
+
+  // Now with multiple requests
+  StartRequest(url);
+  client()->Unbind();
+  EXPECT_FALSE(factory()->IsPending(url));
+  StartRequest(url);
+  EXPECT_TRUE(factory()->IsPending(url));
 }
 
 TEST_F(TestURLLoaderFactoryTest, IsPendingLoadFlags) {
@@ -234,7 +242,7 @@ TEST_F(TestURLLoaderFactoryTest, SimulateResponse) {
   network::URLLoaderCompletionStatus ok_status(net::OK);
   mojom::URLResponseHeadPtr response_head =
       CreateURLResponseHead(net::HTTP_NOT_FOUND);
-  response_head->headers->AddHeader("Foo: Bar");
+  response_head->headers->SetHeader("Foo", "Bar");
 
   // By default no request is pending.
   EXPECT_FALSE(factory()->SimulateResponseForPendingRequest(
@@ -350,33 +358,6 @@ TEST_F(TestURLLoaderFactoryTest, SimulateResponseNoRawHeadersByDefault) {
   EXPECT_TRUE(factory()->SimulateResponseForPendingRequest(
       GURL(url), ok_status, std::move(response_head), /*content=*/""));
   EXPECT_TRUE(client()->has_received_completion());
-  EXPECT_FALSE(client()->response_head()->raw_request_response_info);
-}
-
-TEST_F(TestURLLoaderFactoryTest, SimulateResponseReportRawHeaders) {
-  std::string url = "http://foo/";
-  std::string cookie_line = "my_cookie=myvalue";
-
-  TestURLLoaderClient client;
-  StartRequest(url, &client, /*load_flags=*/0, /*report_raw_headers=*/true);
-  network::URLLoaderCompletionStatus ok_status(net::OK);
-  mojom::URLResponseHeadPtr response_head =
-      CreateURLResponseHead(net::HTTP_NOT_FOUND, /*report_raw_headers=*/true);
-  AddCookiesToURLResponseHead({cookie_line}, response_head.get());
-  EXPECT_TRUE(factory()->SimulateResponseForPendingRequest(
-      GURL(url), ok_status, std::move(response_head), /*content=*/"hello"));
-  EXPECT_TRUE(client.has_received_completion());
-  auto& raw_response_info = client.response_head()->raw_request_response_info;
-  ASSERT_TRUE(raw_response_info);
-  EXPECT_EQ(net::HTTP_NOT_FOUND, raw_response_info->http_status_code);
-  auto& headers = raw_response_info->response_headers;
-  int cookie_count = 0;
-  for (auto iter = headers.begin(); iter != headers.end(); ++iter) {
-    if ((*iter)->key == "Set-Cookie") {
-      cookie_count++;
-      EXPECT_EQ(cookie_line, (*iter)->value);
-    }
-  }
 }
 
 TEST_F(TestURLLoaderFactoryTest,

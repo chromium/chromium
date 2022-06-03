@@ -2,12 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {ImageLoaderClient} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/image_loader_client.js';
+import {LoadImageRequest, LoadImageResponse, LoadImageResponseStatus} from 'chrome-extension://pmfjbimdmchhbnneeidfognadeopoehp/load_image_request.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+
+import {FileType} from '../../common/js/file_type.js';
+
+import {ImageTransformParam} from './metadata/image_orientation.js';
+
 /**
  * Loads a thumbnail using provided url. In CANVAS mode, loaded images
  * are attached as <canvas> element, while in IMAGE mode as <img>.
  * <canvas> renders faster than <img>, however has bigger memory overhead.
  */
-class ThumbnailLoader {
+export class ThumbnailLoader {
   /**
    * @param {!Entry} entry File entry.
    * @param {!ThumbnailLoader.LoaderType=} opt_loaderType Canvas or Image
@@ -105,7 +113,8 @@ class ThumbnailLoader {
         case ThumbnailLoader.LoadTarget.FILE_ENTRY:
           if (FileType.isImage(entry, mimeType) ||
               FileType.isVideo(entry, mimeType) ||
-              FileType.isRaw(entry, mimeType)) {
+              FileType.isRaw(entry, mimeType) ||
+              FileType.isPDF(entry, mimeType)) {
             this.thumbnailUrl_ = entry.toURL();
             this.transform_ =
                 opt_metadata.media && opt_metadata.media.imageTransform;

@@ -2,14 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import BaseHTTPServer
+from six.moves import BaseHTTPServer
 import errno
 import json
 import optparse
 import os
 import re
 import socket
-import SocketServer
+from six.moves import socketserver as SocketServer
 import struct
 import sys
 import warnings
@@ -74,7 +74,7 @@ class BrokenPipeHandlerMixIn:
   def handle_error(self, request, client_address):
     value = sys.exc_info()[1]
     if isinstance(value, tlslite.errors.TLSClosedConnectionError):
-      print "testserver.py: Closed connection"
+      print("testserver.py: Closed connection")
       return
     if isinstance(value, socket.error):
       err = value.args[0]
@@ -84,10 +84,10 @@ class BrokenPipeHandlerMixIn:
       else:
         pipe_err = errno.EPIPE
       if err == pipe_err:
-        print "testserver.py: Broken pipe"
+        print("testserver.py: Broken pipe")
         return
       if err == errno.ECONNRESET:
-        print "testserver.py: Connection reset by peer"
+        print("testserver.py: Connection reset by peer")
         return
     SocketServer.BaseServer.handle_error(self, request, client_address)
 
@@ -219,7 +219,7 @@ class TestServerRunner(object):
     try:
       self.server.serve_forever()
     except KeyboardInterrupt:
-      print 'shutting down server'
+      print('shutting down server')
       self.server.stop = True
 
   def add_options(self):
@@ -256,15 +256,15 @@ class TestServerRunner(object):
     # Notify the parent that we've started. (BaseServer subclasses
     # bind their sockets on construction.)
     if self.options.startup_pipe is not None:
-      server_data_json = json.dumps(server_data)
+      server_data_json = json.dumps(server_data).encode()
       server_data_len = len(server_data_json)
-      print 'sending server_data: %s (%d bytes)' % (
-        server_data_json, server_data_len)
+      print('sending server_data: %s (%d bytes)' %
+            (server_data_json, server_data_len))
       if sys.platform == 'win32':
         fd = msvcrt.open_osfhandle(self.options.startup_pipe, 0)
       else:
         fd = self.options.startup_pipe
-      startup_pipe = os.fdopen(fd, "w")
+      startup_pipe = os.fdopen(fd, "wb")
       # First write the data length as an unsigned 4-byte value.  This
       # is _not_ using network byte ordering since the other end of the
       # pipe is on the same machine.

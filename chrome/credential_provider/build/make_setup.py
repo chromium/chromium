@@ -61,6 +61,38 @@ def GetLZMAExec(src_path):
   return (os.path.join(src_path, r'third_party\lzma_sdk\7zr.exe')
           if sys.platform == 'win32' else '7zr')
 
+def GetCmdLine(command, sz_fn, gcp_7z_fn):
+  """Builds the command line for the given archive.
+
+  Args:
+    command: 7Zip command such as 'u', 'rn'..
+    sz_fn: The executable command to run 7zip.
+    gcp_7z_fn: 7zip file for the archive.
+
+  Returns:
+    Returns the command line for the provided command and 7zip archive. Command
+    needs to be one of the supported 7zip commands.
+  """
+  return [
+      sz_fn,  # Path to 7z executable.
+      command,
+
+      # The follow options are equivalent to -mx9 with bcj2 turned on.
+      # Because //third_party/lzma_sdk is only partial copy of the ful sdk
+      # it does not support all forms of compression.  Make sure to use
+      # compression that is compatible.  These same options are used when
+      # building the chrome install compressed files.
+      '-m0=BCJ2',
+      '-m1=LZMA:d27:fb128',
+      '-m2=LZMA:d22:fb128:mf=bt2',
+      '-m3=LZMA:d22:fb128:mf=bt2',
+      '-mb0:1',
+      '-mb0s1:2',
+      '-mb0s2:3',
+
+      # Full path to archive.
+      gcp_7z_fn,
+  ]
 
 def main():
   parser = argparse.ArgumentParser(
@@ -70,6 +102,7 @@ def main():
                       help='Path to the credential provider directory')
   parser.add_argument('root_build_path', help='$root_build_dir GN variable')
   parser.add_argument('target_gen_path', help='$target_gen_dir GN variable')
+
   args = parser.parse_args()
 
   # Make sure all arguments are converted to absolute paths for use below.
@@ -92,43 +125,59 @@ def main():
   sfx_fn = os.path.join(args.root_build_path, 'gcp_sfx.exe')
 
   # Build the command line for updating files in the GCP 7z archive.
-  cmd = [
-      sz_fn,  # Path to 7z executable.
-      'u',  # Update file in archive.
+  u_cmd = GetCmdLine('u', sz_fn, gcp_7z_fn)
 
-      # The follow options are equivalent to -mx9 with bcj2 turned on.
-      # Because //third_party/lzma_sdk is only partial copy of the ful sdk
-      # it does not support all forms of compression.  Make sure to use
-      # compression that is compatible.  These same options are used when
-      # building the chrome install compressed files.
-      '-m0=BCJ2',
-      '-m1=LZMA:d27:fb128',
-      '-m2=LZMA:d22:fb128:mf=bt2',
-      '-m3=LZMA:d22:fb128:mf=bt2',
-      '-mb0:1',
-      '-mb0s1:2',
-      '-mb0s2:3',
+  # 7Zip CLI doesn't provide a direct way of adding files into a custom
+  # folder. As suggested by the developer of 7Zip the method is to rename
+  # a file with a specific subfolder to achieve the same.
+  # https://sourceforge.net/p/sevenzip/discussion/45798/thread/5856d980/
+  # For instance, if there is a file called "a.txt" in the parent folder of
+  # archive, when it is renamed with "f\a.txt", the "a.txt" file is actually
+  # placed in a folder called "f".
+  rn_cmd = GetCmdLine('rn', sz_fn, gcp_7z_fn)
 
-      # Full path to archive.
-      gcp_7z_fn,
-  ]
+  # Builds the command line for deleting files in the archive.
+  d_cmd = GetCmdLine('d', sz_fn, gcp_7z_fn)
 
   # Because of the way that 7zS2.sfx determine what program to run after
   # extraction, only gcp_setup.exe should be placed in the root of the archive.
   # Other "executable" type files (bat, cmd, exe, inf, msi, html, htm) should
-  # be located only in subfolders.
+  # be located only in subfolders. That's why all the files initially added in
+  # the top folder. Then the ones need to move to subfolders are renamed. 7z
+  # doesn't have a method to achieve the same directly.
 
-  # Add the credential provider dll and setup programs to the archive.
-  # If the files added to the archive are changed, make sure to update the
-  # kFilenames array in setup_lib.cc.
+  # Add the credential provider dll, credential provider extension and setup
+  # programs to the archive. If the files added to the archive are changed,
+  # make sure to update the kFilenames array in setup_lib.cc.
 
-  # 7zip and copy commands don't have a "silent" mode, so redirecting stdout
-  # and stderr to nul.
-  with open(os.devnull) as nul_file:
-    os.chdir(args.root_build_path)
-    subprocess.check_call(cmd + ['gaia1_0.dll'], stdout=nul_file)
-    subprocess.check_call(cmd + ['gcp_setup.exe'], stdout=nul_file)
-    subprocess.check_call(cmd + ['gcp_eventlog_provider.dll'], stdout=nul_file)
+  try:
+    gcpw_log_file = 'gcpw_archive_log_file'
+    if os.path.exists(gcpw_log_file):
+      os.remove(gcpw_log_file)
+
+    # Redirecting output of 7zip and copy commands to a file and only printing
+    # if any of the subprocess commands fail.
+    with open(gcpw_log_file, "w+") as output_file:
+      os.chdir(args.root_build_path)
+      subprocess.check_call(d_cmd + ['*'], stdout=output_file)
+      subprocess.check_call(u_cmd + ['gaia1_0.dll'], stdout=output_file)
+      subprocess.check_call(u_cmd + ['gcp_setup.exe'], stdout=output_file)
+      subprocess.check_call(u_cmd + ['gcp_eventlog_provider.dll'],
+          stdout=output_file)
+      subprocess.check_call(u_cmd + ['gcpw_extension.exe'], stdout=output_file)
+      # Move the executable into a subfolder as there needs to be only one
+      # executable in the parent folder.
+      subprocess.check_call(rn_cmd +
+          [
+            'gcpw_extension.exe',
+            os.path.join('extension', 'gcpw_extension.exe')
+          ],
+          stdout=output_file)
+  except subprocess.CalledProcessError as e:
+    print(e.output)
+    with open(gcpw_log_file, "r") as output_file:
+      print(output_file.read())
+    raise e
 
   # Combine the SFX module with the archive to make a self extracting
   # executable.

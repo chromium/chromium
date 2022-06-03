@@ -12,16 +12,27 @@
       "fileSystem": ["requestFileSystem"]
     },
     "fileManagerPrivate",
+    "nativeMessaging",
     "storage"
   ],
-  "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' blob: filesystem: chrome://resources chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj; style-src 'self' blob: filesystem:; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:",
+  "content_security_policy": "default-src 'none'; script-src 'self' 'wasm-eval' blob: filesystem: chrome://resources style-src 'self' blob: filesystem:; frame-src 'self' blob: filesystem:; img-src 'self' blob: filesystem: data:; media-src 'self' blob: filesystem:; connect-src 'self' blob: filesystem:",
   "background": {
-    "scripts": [
-      "chrome://resources/js/assert.js",
-      "piex/piex.js.wasm",
-      "background_scripts.js"
-    ],
+    "page": "background.html",
     "persistent": false
   },
-  "web_accessible_resources": ["image_loader_client.js"]
+  "externally_connectable": {
+    "ids": [
+      "hhaomjibdihmijegdhdafkllkbggdgoj"  // File Manager
+    ],
+    "matches": [
+      "chrome://file-manager/*"  // File Manager SWA
+    ]
+  },
+  "natively_connectable": ["com.google.ash_thumbnail_loader"],
+  "web_accessible_resources": [
+    "image_loader_client.js",
+    "image_orientation.js",
+    "load_image_request.js",
+    "lru_cache.js"
+  ]
 }

@@ -14,7 +14,7 @@ namespace ash {
 
 // The inset into the work area for a window's resting position. Visible for
 // testing.
-const static int kCollisionWindowWorkAreaInsetsDp = 8;
+constexpr int kCollisionWindowWorkAreaInsetsDp = 8;
 
 // Provides utility functions to compute resting positions for windows which
 // wish to avoid other system windows, for example, the PIP and the Automatic
@@ -30,28 +30,40 @@ class ASH_EXPORT CollisionDetectionUtils {
 
   // Ordered list of windows which do collision detection. Higher numbers take
   // higher priority, i.e. the higher RelativePriority of two windows will not
-  // move when the windows are in conflict. In this case, that means the
-  // Picture in Picture window will move out of the way for the Automatic Clicks
-  // menu, and both will move out of the way for the Automatic Clicks scroll
-  // menu, and all will move for default system windows. Windows with the same
-  // relative priority will not affect collision with each other. kDefault is
-  // used for "everything else", and should not be an input to
-  // GetRestingPosition or AvoidObstacles.
+  // move when the windows are in conflict. For example, the Picture in Picture
+  // window will move out of the way for the Automatic Clicks menu, and both
+  // will move out of the way for the Automatic Clicks scroll menu, and all
+  // will move for default system windows. Windows with the same relative
+  // priority will not affect collision with each other. kDefault is used for
+  // "everything else", and should not be an input to GetRestingPosition or
+  // AvoidObstacles.
   // TODO(crbug.com/955512): Ensure calculations take place from high to low
   // priority to reduce number of collision computations.
   enum class RelativePriority {
     kPictureInPicture = 0,
-    kAutomaticClicksMenu = 1,
-    kAutomaticClicksScrollMenu = 2,
-    kDefault = 3,
+    kSwitchAccessMenu = 1,
+    kAutomaticClicksMenu = 2,
+    kAutomaticClicksScrollMenu = 3,
+    kDefault = 4,
   };
 
   CollisionDetectionUtils() = delete;
+
+  CollisionDetectionUtils(const CollisionDetectionUtils&) = delete;
+  CollisionDetectionUtils& operator=(const CollisionDetectionUtils&) = delete;
+
   ~CollisionDetectionUtils() = delete;
 
   // Returns the area that the window can be positioned inside for a given
   // display |display|.
   static gfx::Rect GetMovementArea(const display::Display& display);
+
+  // Returns the result of adjusting |bounds_in_screen| according to gravity
+  // inside the movement area of |display| without taking obstacles into
+  // account.
+  static gfx::Rect AdjustToFitMovementAreaByGravity(
+      const display::Display& display,
+      const gfx::Rect& bounds_in_screen);
 
   // Returns the position the window should come to rest at. For example,
   // this will be at a screen edge, not in the middle of the screen.
@@ -109,8 +121,6 @@ class ASH_EXPORT CollisionDetectionUtils {
                                           const std::vector<gfx::Rect>& rects,
                                           const gfx::Rect& bounds_in_screen,
                                           RelativePriority priority);
-
-  DISALLOW_COPY_AND_ASSIGN(CollisionDetectionUtils);
 };
 
 }  // namespace ash

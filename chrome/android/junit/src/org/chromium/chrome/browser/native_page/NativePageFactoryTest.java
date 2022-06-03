@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.native_page;
 
+import static org.chromium.chrome.browser.ui.native_page.NativePageTest.INVALID_URLS;
+import static org.chromium.chrome.browser.ui.native_page.NativePageTest.VALID_URLS;
+import static org.chromium.chrome.browser.ui.native_page.NativePageTest.isValidInIncognito;
+
 import android.view.View;
 
 import org.junit.Assert;
@@ -12,12 +16,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.jank_tracker.DummyJankTracker;
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.chrome.browser.ChromeActivity;
-import org.chromium.chrome.browser.native_page.NativePageFactory.NativePageType;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.util.UrlConstants;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
+import org.chromium.chrome.browser.ui.native_page.NativePage.NativePageType;
+import org.chromium.chrome.browser.ui.native_page.NativePageTest.UrlCombo;
+import org.chromium.components.embedder_support.util.UrlConstants;
 
 /**
  * Tests public methods in NativePageFactory.
@@ -25,6 +30,8 @@ import org.chromium.chrome.browser.util.UrlConstants;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class NativePageFactoryTest {
+    private NativePageFactory mNativePageFactory;
+
     private static class MockNativePage implements NativePage {
         public final @NativePageType int type;
         public int updateForUrlCalls;
@@ -52,6 +59,8 @@ public class NativePageFactoryTest {
                     return UrlConstants.BOOKMARKS_HOST;
                 case NativePageType.RECENT_TABS:
                     return UrlConstants.RECENT_TABS_HOST;
+                case NativePageType.HISTORY:
+                    return UrlConstants.HISTORY_HOST;
                 default:
                     Assert.fail("Unexpected NativePageType: " + type);
                     return null;
@@ -83,104 +92,37 @@ public class NativePageFactoryTest {
     }
 
     private static class MockNativePageBuilder extends NativePageFactory.NativePageBuilder {
+        private MockNativePageBuilder() {
+            super(null, null, null, null, null, null, null, null, null, null,
+                    new DummyJankTracker(), null);
+        }
+
         @Override
-        public NativePage buildNewTabPage(ChromeActivity activity, Tab tab,
-                TabModelSelector tabModelSelector) {
+        public NativePage buildNewTabPage(Tab tab, String url) {
             return new MockNativePage(NativePageType.NTP);
         }
 
         @Override
-        public NativePage buildBookmarksPage(ChromeActivity activity, Tab tab) {
+        public NativePage buildBookmarksPage(Tab tab) {
             return new MockNativePage(NativePageType.BOOKMARKS);
         }
 
         @Override
-        public NativePage buildRecentTabsPage(ChromeActivity activity, Tab tab) {
+        public NativePage buildRecentTabsPage(Tab tab) {
             return new MockNativePage(NativePageType.RECENT_TABS);
         }
-    }
 
-    private static class UrlCombo {
-        public String url;
-        public @NativePageType int expectedType;
-
-        public UrlCombo(String url, @NativePageType int expectedType) {
-            this.url = url;
-            this.expectedType = expectedType;
+        @Override
+        public NativePage buildHistoryPage(Tab tab) {
+            return new MockNativePage(NativePageType.HISTORY);
         }
-    }
-
-    private static final UrlCombo[] VALID_URLS = {
-        new UrlCombo("chrome-native://newtab", NativePageType.NTP),
-        new UrlCombo("chrome-native://newtab/", NativePageType.NTP),
-        new UrlCombo("chrome-native://bookmarks", NativePageType.BOOKMARKS),
-        new UrlCombo("chrome-native://bookmarks/", NativePageType.BOOKMARKS),
-        new UrlCombo("chrome-native://bookmarks/#245", NativePageType.BOOKMARKS),
-        new UrlCombo("chrome-native://recent-tabs", NativePageType.RECENT_TABS),
-        new UrlCombo("chrome-native://recent-tabs/", NativePageType.RECENT_TABS),
-    };
-
-    private static final String[] INVALID_URLS = {
-        null,
-        "",
-        "newtab",
-        "newtab@google.com:80",
-        "/newtab",
-        "://newtab",
-        "chrome://",
-        "chrome://newtab",
-        "chrome://newtab#bookmarks",
-        "chrome://newtab/#open_tabs",
-        "chrome://recent-tabs",
-        "chrome://most_visited",
-        "chrome-native://",
-        "chrome-native://newtablet",
-        "chrome-native://bookmarks-inc",
-        "chrome-native://recent_tabs",
-        "chrome-native://recent-tabswitcher",
-        "chrome-native://most_visited",
-        "chrome-native://astronaut",
-        "chrome-internal://newtab",
-        "french-fries://newtab",
-        "http://bookmarks",
-        "https://recent-tabs",
-        "newtab://recent-tabs",
-        "recent-tabs bookmarks",
-    };
-
-    private boolean isValidInIncognito(UrlCombo urlCombo) {
-        return urlCombo.expectedType != NativePageType.RECENT_TABS;
     }
 
     @Before
     public void setUp() {
-        NativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
-    }
-
-    /**
-     * Ensures that NativePageFactory.isNativePageUrl() returns true for native page URLs.
-     */
-    @Test
-    public void testPositiveIsNativePageUrl() {
-        for (UrlCombo urlCombo : VALID_URLS) {
-            String url = urlCombo.url;
-            Assert.assertTrue(url, NativePageFactory.isNativePageUrl(url, false));
-            if (isValidInIncognito(urlCombo)) {
-                Assert.assertTrue(url, NativePageFactory.isNativePageUrl(url, true));
-            }
-        }
-    }
-
-    /**
-     * Ensures that NativePageFactory.isNativePageUrl() returns false for URLs that don't
-     * correspond to a native page.
-     */
-    @Test
-    public void testNegativeIsNativePageUrl() {
-        for (String invalidUrl : INVALID_URLS) {
-            Assert.assertFalse(invalidUrl, NativePageFactory.isNativePageUrl(invalidUrl, false));
-            Assert.assertFalse(invalidUrl, NativePageFactory.isNativePageUrl(invalidUrl, true));
-        }
+        mNativePageFactory = new NativePageFactory(null, null, null, null, null, null, null, null,
+                null, null, null, new DummyJankTracker(), null);
+        mNativePageFactory.setNativePageBuilderForTesting(new MockNativePageBuilder());
     }
 
     /**
@@ -191,15 +133,16 @@ public class NativePageFactoryTest {
     public void testCreateNativePage() {
         @NativePageType
         int[] candidateTypes = new int[] {NativePageType.NONE, NativePageType.NTP,
-                NativePageType.BOOKMARKS, NativePageType.RECENT_TABS};
+                NativePageType.BOOKMARKS, NativePageType.RECENT_TABS, NativePageType.HISTORY};
         for (boolean isIncognito : new boolean[] {true, false}) {
             for (UrlCombo urlCombo : VALID_URLS) {
                 if (isIncognito && !isValidInIncognito(urlCombo)) continue;
                 for (@NativePageType int candidateType : candidateTypes) {
                     MockNativePage candidate = candidateType == NativePageType.NONE ? null
                             : new MockNativePage(candidateType);
-                    MockNativePage page = (MockNativePage) NativePageFactory.createNativePageForURL(
-                            urlCombo.url, candidate, null, null, isIncognito);
+                    MockNativePage page =
+                            (MockNativePage) mNativePageFactory.createNativePageForURL(
+                                    urlCombo.url, candidate, null, isIncognito);
                     String debugMessage = String.format(
                             "Failed test case: isIncognito=%s, urlCombo={%s,%s}, candidateType=%s",
                             isIncognito, urlCombo.url, urlCombo.expectedType, candidateType);
@@ -225,15 +168,14 @@ public class NativePageFactoryTest {
         for (UrlCombo urlCombo : VALID_URLS) {
             if (!isValidInIncognito(urlCombo)) {
                 Assert.assertNull(urlCombo.url,
-                        NativePageFactory.createNativePageForURL(
-                                urlCombo.url, null, null, null, true));
+                        mNativePageFactory.createNativePageForURL(urlCombo.url, null, null, true));
             }
         }
         for (boolean isIncognito : new boolean[] {true, false}) {
             for (String invalidUrl : INVALID_URLS) {
                 Assert.assertNull(invalidUrl,
-                        NativePageFactory.createNativePageForURL(
-                                invalidUrl, null, null, null, isIncognito));
+                        mNativePageFactory.createNativePageForURL(
+                                invalidUrl, null, null, isIncognito));
             }
         }
     }

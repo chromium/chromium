@@ -12,15 +12,15 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/single_thread_task_runner.h"
 #include "base/system/sys_info.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/web_cache/public/features.h"
 
 using base::Time;
-using base::TimeDelta;
 
 namespace web_cache {
 
@@ -41,9 +41,6 @@ int GetDefaultCacheSize() {
     default_cache_size *= 4;
   else if (mem_size_mb >= 512)  // With 512 MB, set a slightly larger default.
     default_cache_size *= 2;
-
-  UMA_HISTOGRAM_MEMORY_MB("Cache.MaxCacheSizeMB",
-                          default_cache_size / 1024 / 1024);
 
   return default_cache_size;
 }
@@ -157,7 +154,7 @@ void WebCacheManager::ClearCacheOnNavigation() {
 void WebCacheManager::OnRenderProcessHostCreated(
     content::RenderProcessHost* process_host) {
   Add(process_host->GetID());
-  rph_observers_.Add(process_host);
+  rph_observations_.AddObservation(process_host);
 }
 
 void WebCacheManager::RenderProcessExited(
@@ -168,7 +165,7 @@ void WebCacheManager::RenderProcessExited(
 
 void WebCacheManager::RenderProcessHostDestroyed(
     content::RenderProcessHost* process_host) {
-  rph_observers_.Remove(process_host);
+  rph_observations_.RemoveObservation(process_host);
   Remove(process_host->GetID());
 }
 
@@ -329,6 +326,8 @@ void WebCacheManager::ClearRendererCache(
 }
 
 void WebCacheManager::ReviseAllocationStrategy() {
+  DCHECK(!base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly));
+
   DCHECK(stats_.size() <=
       active_renderers_.size() + inactive_renderers_.size());
 
@@ -339,16 +338,6 @@ void WebCacheManager::ReviseAllocationStrategy() {
   uint64_t active_capacity, active_size, inactive_capacity, inactive_size;
   GatherStats(active_renderers_, &active_capacity, &active_size);
   GatherStats(inactive_renderers_, &inactive_capacity, &inactive_size);
-
-  UMA_HISTOGRAM_COUNTS_100("Cache.ActiveTabs", active_renderers_.size());
-  UMA_HISTOGRAM_COUNTS_100("Cache.InactiveTabs", inactive_renderers_.size());
-  UMA_HISTOGRAM_MEMORY_MB("Cache.ActiveCapacityMB",
-                          active_capacity / 1024 / 1024);
-  UMA_HISTOGRAM_MEMORY_MB("Cache.ActiveLiveSizeMB", active_size / 1024 / 1024);
-  UMA_HISTOGRAM_MEMORY_MB("Cache.InactiveCapacityMB",
-                          inactive_capacity / 1024 / 1024);
-  UMA_HISTOGRAM_MEMORY_MB("Cache.InactiveLiveSizeMB",
-                          inactive_size / 1024 / 1024);
 
   // Compute an allocation strategy.
   //
@@ -390,13 +379,16 @@ void WebCacheManager::ReviseAllocationStrategy() {
 }
 
 void WebCacheManager::ReviseAllocationStrategyLater() {
+  if (base::FeatureList::IsEnabled(kTrimWebCacheOnMemoryPressureOnly))
+    return;
+
   // Ask to be called back in a few milliseconds to actually recompute our
   // allocation.
   base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&WebCacheManager::ReviseAllocationStrategy,
                      weak_factory_.GetWeakPtr()),
-      base::TimeDelta::FromMilliseconds(kReviseAllocationDelayMS));
+      base::Milliseconds(kReviseAllocationDelayMS));
 }
 
 void WebCacheManager::FindInactiveRenderers() {
@@ -404,8 +396,8 @@ void WebCacheManager::FindInactiveRenderers() {
   while (iter != active_renderers_.end()) {
     auto elmt = stats_.find(*iter);
     DCHECK(elmt != stats_.end());
-    TimeDelta idle = Time::Now() - elmt->second.access;
-    if (idle >= TimeDelta::FromMinutes(kRendererInactiveThresholdMinutes)) {
+    base::TimeDelta idle = Time::Now() - elmt->second.access;
+    if (idle >= base::Minutes(kRendererInactiveThresholdMinutes)) {
       // Moved to inactive status.  This invalidates our iterator.
       inactive_renderers_.insert(*iter);
       active_renderers_.erase(*iter);

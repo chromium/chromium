@@ -6,13 +6,16 @@
 
 #include <vector>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "base/trace_event/typed_macros.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/url_formatter/url_formatter.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
@@ -26,11 +29,10 @@ namespace {
 
 // Hardcode constant to avoid any dependencies on content/.
 const char kViewSourceScheme[] = "view-source";
-const char kDevToolsScheme[] = "devtools";
 
 void AdjustCursorPositionIfNecessary(size_t num_leading_chars_removed,
                                      size_t* cursor_position) {
-  if (*cursor_position == base::string16::npos)
+  if (*cursor_position == std::u16string::npos)
     return;
   if (num_leading_chars_removed < *cursor_position)
     *cursor_position -= num_leading_chars_removed;
@@ -42,16 +44,15 @@ void AdjustCursorPositionIfNecessary(size_t num_leading_chars_removed,
 // one more character and puts the text after the prefix in
 // |terms_prefixed_by_http_or_https|.
 void PopulateTermsPrefixedByHttpOrHttps(
-    const base::string16& text,
-    std::vector<base::string16>* terms_prefixed_by_http_or_https) {
+    const std::u16string& text,
+    std::vector<std::u16string>* terms_prefixed_by_http_or_https) {
   // Split on whitespace rather than use ICU's word iterator because, for
   // example, ICU's iterator may break on punctuation (such as ://) or decide
   // to split a single term in a hostname (if it seems to think that the
   // hostname is multiple words).  Neither of these behaviors is desirable.
   const std::string separator(url::kStandardSchemeSeparator);
-  for (const auto& term :
-       base::SplitString(text, base::ASCIIToUTF16(" "),
-                         base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL)) {
+  for (const auto& term : base::SplitString(text, u" ", base::TRIM_WHITESPACE,
+                                            base::SPLIT_WANT_ALL)) {
     const std::string term_utf8(base::UTF16ToUTF8(term));
     static const char* kSchemes[2] = { url::kHttpScheme, url::kHttpsScheme };
     for (const char* scheme : kSchemes) {
@@ -67,10 +68,31 @@ void PopulateTermsPrefixedByHttpOrHttps(
   }
 }
 
+// Offsets |parts| of a URL after the scheme by |offset| amount.
+void OffsetComponentsExcludingScheme(url::Parsed* parts, int offset) {
+  url::Component* components[] = {
+      &parts->username, &parts->password, &parts->host, &parts->port,
+      &parts->path,     &parts->query,    &parts->ref,
+  };
+  for (size_t i = 0; i < base::size(components); ++i) {
+    url_formatter::OffsetComponent(offset, components[i]);
+  }
+}
+
+bool HasScheme(const std::u16string& input, const char* scheme) {
+  std::string utf8_input(base::UTF16ToUTF8(input));
+  url::Component view_source_scheme;
+  if (url::FindAndCompareScheme(utf8_input, kViewSourceScheme,
+                                &view_source_scheme)) {
+    utf8_input.erase(0, view_source_scheme.end() + 1);
+  }
+  return url::FindAndCompareScheme(utf8_input, scheme, nullptr);
+}
+
 }  // namespace
 
 AutocompleteInput::AutocompleteInput()
-    : cursor_position_(base::string16::npos),
+    : cursor_position_(std::u16string::npos),
       current_page_classification_(metrics::OmniboxEventProto::INVALID_SPEC),
       type_(metrics::OmniboxInputType::EMPTY),
       prevent_inline_autocomplete_(false),
@@ -78,46 +100,60 @@ AutocompleteInput::AutocompleteInput()
       allow_exact_keyword_match_(true),
       keyword_mode_entry_method_(metrics::OmniboxEventProto::INVALID),
       want_asynchronous_matches_(true),
-      from_omnibox_focus_(false) {}
+      should_use_https_as_default_scheme_(false),
+      added_default_scheme_to_typed_url_(false),
+      https_port_for_testing_(0) {}
 
 AutocompleteInput::AutocompleteInput(
-    const base::string16& text,
+    const std::u16string& text,
     metrics::OmniboxEventProto::PageClassification current_page_classification,
-    const AutocompleteSchemeClassifier& scheme_classifier)
+    const AutocompleteSchemeClassifier& scheme_classifier,
+    bool should_use_https_as_default_scheme,
+    int https_port_for_testing)
     : AutocompleteInput(text,
                         std::string::npos,
                         current_page_classification,
-                        scheme_classifier) {}
+                        scheme_classifier,
+                        should_use_https_as_default_scheme,
+                        https_port_for_testing) {}
 
 AutocompleteInput::AutocompleteInput(
-    const base::string16& text,
+    const std::u16string& text,
     size_t cursor_position,
     metrics::OmniboxEventProto::PageClassification current_page_classification,
-    const AutocompleteSchemeClassifier& scheme_classifier)
+    const AutocompleteSchemeClassifier& scheme_classifier,
+    bool should_use_https_as_default_scheme,
+    int https_port_for_testing)
     : AutocompleteInput(text,
                         cursor_position,
                         "",
                         current_page_classification,
-                        scheme_classifier) {}
+                        scheme_classifier,
+                        should_use_https_as_default_scheme,
+                        https_port_for_testing) {}
 
 AutocompleteInput::AutocompleteInput(
-    const base::string16& text,
+    const std::u16string& text,
     size_t cursor_position,
     const std::string& desired_tld,
     metrics::OmniboxEventProto::PageClassification current_page_classification,
-    const AutocompleteSchemeClassifier& scheme_classifier)
+    const AutocompleteSchemeClassifier& scheme_classifier,
+    bool should_use_https_as_default_scheme,
+    int https_port_for_testing)
     : AutocompleteInput() {
   cursor_position_ = cursor_position;
   current_page_classification_ = current_page_classification;
   desired_tld_ = desired_tld;
+  should_use_https_as_default_scheme_ = should_use_https_as_default_scheme;
+  https_port_for_testing_ = https_port_for_testing;
   Init(text, scheme_classifier);
 }
 
 void AutocompleteInput::Init(
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteSchemeClassifier& scheme_classifier) {
   DCHECK(cursor_position_ <= text.length() ||
-         cursor_position_ == base::string16::npos)
+         cursor_position_ == std::u16string::npos)
       << "Text: '" << text << "', cp: " << cursor_position_;
   // None of the providers care about leading white space so we always trim it.
   // Providers that care about trailing white space handle trimming themselves.
@@ -130,6 +166,22 @@ void AutocompleteInput::Init(
   type_ = Parse(text_, desired_tld_, scheme_classifier, &parts_, &scheme_,
                 &canonicalized_url);
   PopulateTermsPrefixedByHttpOrHttps(text_, &terms_prefixed_by_http_or_https_);
+
+  DCHECK(!added_default_scheme_to_typed_url_);
+
+  GURL upgraded_url;
+  if (should_use_https_as_default_scheme_ &&
+      type_ == metrics::OmniboxInputType::URL &&
+      ShouldUpgradeToHttps(text, canonicalized_url, https_port_for_testing_,
+                           &upgraded_url)) {
+    DCHECK(upgraded_url.is_valid());
+    added_default_scheme_to_typed_url_ = true;
+    scheme_ = base::ASCIIToUTF16(url::kHttpsScheme);
+    canonicalized_url = upgraded_url;
+    // We changed the scheme from http to https. Offset remaining components
+    // by one.
+    OffsetComponentsExcludingScheme(&parts_, 1);
+  }
 
   if (((type_ == metrics::OmniboxInputType::UNKNOWN) ||
        (type_ == metrics::OmniboxInputType::URL)) &&
@@ -166,14 +218,14 @@ std::string AutocompleteInput::TypeToString(metrics::OmniboxInputType type) {
 
 // static
 metrics::OmniboxInputType AutocompleteInput::Parse(
-    const base::string16& text,
+    const std::u16string& text,
     const std::string& desired_tld,
     const AutocompleteSchemeClassifier& scheme_classifier,
     url::Parsed* parts,
-    base::string16* scheme,
+    std::u16string* scheme,
     GURL* canonicalized_url) {
   size_t first_non_white = text.find_first_not_of(base::kWhitespaceUTF16, 0);
-  if (first_non_white == base::string16::npos)
+  if (first_non_white == std::u16string::npos)
     return metrics::OmniboxInputType::EMPTY;  // All whitespace.
 
   // Ask our parsing back-end to help us understand what the user typed.  We
@@ -183,7 +235,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   url::Parsed local_parts;
   if (!parts)
     parts = &local_parts;
-  const base::string16 parsed_scheme(url_formatter::SegmentURL(text, parts));
+  const std::u16string parsed_scheme(url_formatter::SegmentURL(text, parts));
   if (scheme)
     *scheme = parsed_scheme;
   const std::string parsed_scheme_utf8(base::UTF16ToUTF8(parsed_scheme));
@@ -203,15 +255,13 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     // A user might or might not type a scheme when entering a file URL.  In
     // either case, |parsed_scheme_utf8| will tell us that this is a file URL,
     // but |parts->scheme| might be empty, e.g. if the user typed "C:\foo".
-    return metrics::OmniboxInputType::URL;
-  }
 
-  if (base::LowerCaseEqualsASCII(parsed_scheme_utf8, kDevToolsScheme)) {
-    // A user might type in the fallback url when using devtools.  In
-    // this case, |parsed_scheme_utf8| will tell us that this is a devtools URL,
-    // but |parts->scheme| might be empty.e.g. if the user typed
-    // "chrome-devtools://".
+#if defined(OS_IOS)
+    // On iOS, which cannot display file:/// URLs, treat this case like a query.
+    return metrics::OmniboxInputType::QUERY;
+#else
     return metrics::OmniboxInputType::URL;
+#endif  // defined(OS_IOS)
   }
 
   // Treat javascript: scheme queries followed by things that are unlikely to
@@ -236,11 +286,10 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
 
     // We don't know about this scheme.  It might be that the user typed a
     // URL of the form "username:password@foo.com".
-    const base::string16 http_scheme_prefix =
-        base::ASCIIToUTF16(std::string(url::kHttpScheme) +
-                           url::kStandardSchemeSeparator);
+    const std::u16string http_scheme_prefix = base::ASCIIToUTF16(
+        std::string(url::kHttpScheme) + url::kStandardSchemeSeparator);
     url::Parsed http_parts;
-    base::string16 http_scheme;
+    std::u16string http_scheme;
     GURL http_canonicalized_url;
     metrics::OmniboxInputType http_type =
         Parse(http_scheme_prefix + text, desired_tld, scheme_classifier,
@@ -254,19 +303,8 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
       // Manually re-jigger the parsed parts to match |text| (without the
       // http scheme added).
       http_parts.scheme.reset();
-      url::Component* components[] = {
-        &http_parts.username,
-        &http_parts.password,
-        &http_parts.host,
-        &http_parts.port,
-        &http_parts.path,
-        &http_parts.query,
-        &http_parts.ref,
-      };
-      for (size_t i = 0; i < base::size(components); ++i) {
-        url_formatter::OffsetComponent(
-            -static_cast<int>(http_scheme_prefix.length()), components[i]);
-      }
+      OffsetComponentsExcludingScheme(
+          &http_parts, -static_cast<int>(http_scheme_prefix.length()));
 
       *parts = http_parts;
       if (scheme)
@@ -315,10 +353,9 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   // Per https://tools.ietf.org/html/rfc6761, the .invalid TLD is considered
   // non-navigable and thus is treated like a non-compliant hostname. (Though
   // just the word "invalid" is not a hostname).
-  const base::string16 original_host(
+  const std::u16string original_host(
       text.substr(parts->host.begin, parts->host.len));
-  if (text != base::ASCIIToUTF16("invalid") &&
-      (host_info.family == url::CanonHostInfo::NEUTRAL) &&
+  if (text != u"invalid" && (host_info.family == url::CanonHostInfo::NEUTRAL) &&
       (!net::IsCanonicalizedHostCompliant(canonicalized_url->host()) ||
        canonicalized_url->DomainIs("invalid"))) {
     // Invalid hostname.  There are several possible cases:
@@ -340,7 +377,7 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
     // without concrete evidence that doing so is necessary.
     return (parts->scheme.is_nonempty() ||
             (has_known_tld &&
-             (original_host.find(' ') == base::string16::npos)))
+             (original_host.find(' ') == std::u16string::npos)))
                ? metrics::OmniboxInputType::UNKNOWN
                : metrics::OmniboxInputType::QUERY;
   }
@@ -408,14 +445,14 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
   const bool username_has_space =
       parts->username.is_nonempty() &&
       (text.substr(parts->username.begin, parts->username.len)
-           .find_first_of(base::kWhitespaceUTF16) != base::string16::npos);
+           .find_first_of(base::kWhitespaceUTF16) != std::u16string::npos);
 
   // Generally, trailing slashes force the input to be treated as a URL.
   // However, if the username has a space, this may be input like
   // "dep missing: @test/", which should not be parsed as a URL (with the
   // username "dep missing: ").
   if (parts->path.is_nonempty() && !username_has_space) {
-    base::char16 c = text[parts->path.end() - 1];
+    char16_t c = text[parts->path.end() - 1];
     if ((c == '\\') || (c == '/'))
       return metrics::OmniboxInputType::URL;
   }
@@ -481,12 +518,12 @@ metrics::OmniboxInputType AutocompleteInput::Parse(
 
 // static
 void AutocompleteInput::ParseForEmphasizeComponents(
-    const base::string16& text,
+    const std::u16string& text,
     const AutocompleteSchemeClassifier& scheme_classifier,
     url::Component* scheme,
     url::Component* host) {
   url::Parsed parts;
-  base::string16 scheme_str;
+  std::u16string scheme_str;
   Parse(text, std::string(), scheme_classifier, &parts, &scheme_str, nullptr);
 
   *scheme = parts.scheme;
@@ -499,7 +536,7 @@ void AutocompleteInput::ParseForEmphasizeComponents(
        base::LowerCaseEqualsASCII(scheme_str, url::kBlobScheme)) &&
       (static_cast<int>(text.length()) > after_scheme_and_colon)) {
     // Obtain the URL prefixed by view-source or blob and parse it.
-    base::string16 real_url(text.substr(after_scheme_and_colon));
+    std::u16string real_url(text.substr(after_scheme_and_colon));
     url::Parsed real_parts;
     AutocompleteInput::Parse(real_url, std::string(), scheme_classifier,
                              &real_parts, nullptr, nullptr);
@@ -525,14 +562,55 @@ void AutocompleteInput::ParseForEmphasizeComponents(
 }
 
 // static
-base::string16 AutocompleteInput::FormattedStringWithEquivalentMeaning(
+bool AutocompleteInput::ShouldUpgradeToHttps(const std::u16string& text,
+                                             const GURL& url,
+                                             int https_port_for_testing,
+                                             GURL* upgraded_url) {
+  if (url.scheme() == url::kHttpScheme &&
+      !base::StartsWith(text, base::ASCIIToUTF16(url.scheme()),
+                        base::CompareCase::INSENSITIVE_ASCII) &&
+      !url::HostIsIPAddress(url.host()) &&
+      !net::IsHostnameNonUnique(url.host()) &&
+      (url.port().empty() || https_port_for_testing)) {
+    // Use HTTPS as the default scheme for URLs that are typed without a scheme.
+    // Inputs of type UNKNOWN can still be valid URLs, but these will be mainly
+    // intranet hosts which we don't to upgrade to HTTPS so we only check the
+    // URL type here.
+    // In particular, we don't want to upgrade these types of inputs:
+    // - Non-unique hostnames such as intranet hosts
+    // - Single word hostnames (these are most likely non-unique).
+    // - IP addresses
+    // - URLs with a specified port. If it's a non-standard HTTP port, we can't
+    //   simply change the scheme to HTTPS and assume that these will load over
+    //   HTTPS. URLs with HTTP port 80 get their port dropped so they will be
+    //   upgraded (e.g. example.com:80 will load https://example.com).
+    DCHECK_EQ(url::kHttpScheme, url.scheme());
+    GURL::Replacements replacements;
+    replacements.SetSchemeStr(url::kHttpsScheme);
+    // This needs to be in scope when ReplaceComponents() is called:
+    const std::string port_str = base::NumberToString(https_port_for_testing);
+    if (https_port_for_testing) {
+      // We'll only get here in tests. Tests should always have a non-default
+      // port on the input text.
+      DCHECK(!url.port().empty());
+      replacements.SetPortStr(port_str);
+    }
+    *upgraded_url = url.ReplaceComponents(replacements);
+    return true;
+  }
+
+  return false;
+}
+
+// static
+std::u16string AutocompleteInput::FormattedStringWithEquivalentMeaning(
     const GURL& url,
-    const base::string16& formatted_url,
+    const std::u16string& formatted_url,
     const AutocompleteSchemeClassifier& scheme_classifier,
     size_t* offset) {
   if (!url_formatter::CanStripTrailingSlash(url))
     return formatted_url;
-  const base::string16 url_with_path(formatted_url + base::char16('/'));
+  const std::u16string url_with_path(formatted_url + u'/');
   if (AutocompleteInput::Parse(formatted_url, std::string(), scheme_classifier,
                                nullptr, nullptr, nullptr) ==
       AutocompleteInput::Parse(url_with_path, std::string(), scheme_classifier,
@@ -566,20 +644,20 @@ int AutocompleteInput::NumNonHostComponents(const url::Parsed& parts) {
 }
 
 // static
-bool AutocompleteInput::HasHTTPScheme(const base::string16& input) {
-  std::string utf8_input(base::UTF16ToUTF8(input));
-  url::Component scheme;
-  if (url::FindAndCompareScheme(utf8_input, kViewSourceScheme, &scheme)) {
-    utf8_input.erase(0, scheme.end() + 1);
-  }
-  return url::FindAndCompareScheme(utf8_input, url::kHttpScheme, nullptr);
+bool AutocompleteInput::HasHTTPScheme(const std::u16string& input) {
+  return HasScheme(input, url::kHttpScheme);
 }
 
-void AutocompleteInput::UpdateText(const base::string16& text,
+// static
+bool AutocompleteInput::HasHTTPSScheme(const std::u16string& input) {
+  return HasScheme(input, url::kHttpsScheme);
+}
+
+void AutocompleteInput::UpdateText(const std::u16string& text,
                                    size_t cursor_position,
                                    const url::Parsed& parts) {
   DCHECK(cursor_position <= text.length() ||
-         cursor_position == base::string16::npos)
+         cursor_position == std::u16string::npos)
       << "Text: '" << text << "', cp: " << cursor_position;
   text_ = text;
   cursor_position_ = cursor_position;
@@ -588,7 +666,7 @@ void AutocompleteInput::UpdateText(const base::string16& text,
 
 void AutocompleteInput::Clear() {
   text_.clear();
-  cursor_position_ = base::string16::npos;
+  cursor_position_ = std::u16string::npos;
   current_url_ = GURL();
   current_title_.clear();
   current_page_classification_ = metrics::OmniboxEventProto::INVALID_SPEC;
@@ -600,8 +678,10 @@ void AutocompleteInput::Clear() {
   prefer_keyword_ = false;
   allow_exact_keyword_match_ = false;
   want_asynchronous_matches_ = true;
-  from_omnibox_focus_ = false;
+  focus_type_ = OmniboxFocusType::DEFAULT;
   terms_prefixed_by_http_or_https_.clear();
+  query_tile_id_.reset();
+  https_port_for_testing_ = false;
 }
 
 size_t AutocompleteInput::EstimateMemoryUsage() const {
@@ -615,6 +695,14 @@ size_t AutocompleteInput::EstimateMemoryUsage() const {
   res += base::trace_event::EstimateMemoryUsage(desired_tld_);
   res +=
       base::trace_event::EstimateMemoryUsage(terms_prefixed_by_http_or_https_);
+  res += query_tile_id_.has_value()
+             ? base::trace_event::EstimateMemoryUsage(query_tile_id_.value())
+             : 0u;
 
   return res;
+}
+
+void AutocompleteInput::WriteIntoTrace(perfetto::TracedValue context) const {
+  auto dict = std::move(context).WriteDictionary();
+  dict.Add("text", text_);
 }

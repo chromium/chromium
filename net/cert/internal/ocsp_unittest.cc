@@ -5,7 +5,7 @@
 #include "net/cert/internal/ocsp.h"
 
 #include "base/base64.h"
-#include "base/logging.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "net/cert/internal/test_helpers.h"
 #include "net/der/encode_values.h"
@@ -17,7 +17,7 @@ namespace net {
 
 namespace {
 
-const base::TimeDelta kOCSPAgeOneWeek = base::TimeDelta::FromDays(7);
+const base::TimeDelta kOCSPAgeOneWeek = base::Days(7);
 
 std::string GetFilePath(const std::string& file_name) {
   return std::string("net/data/ocsp_unittest/") + file_name;
@@ -127,7 +127,7 @@ struct PrintTestName {
     base::StringPiece name(info.param.file_name);
     // Strip ".pem" from the end as GTest names cannot contain period.
     name.remove_suffix(4);
-    return name.as_string();
+    return std::string(name);
   }
 };
 
@@ -153,8 +153,7 @@ TEST_P(CheckOCSPTest, FromFile) {
   ASSERT_TRUE(ReadTestDataFromPemFile(GetFilePath(params.file_name), mappings));
 
   // Mar 5 00:00:00 2017 GMT
-  base::Time kVerifyTime =
-      base::Time::UnixEpoch() + base::TimeDelta::FromSeconds(1488672000);
+  base::Time kVerifyTime = base::Time::UnixEpoch() + base::Seconds(1488672000);
 
   // Test that CheckOCSP() works.
   OCSPVerifyResult::ResponseStatus response_status;

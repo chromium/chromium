@@ -4,7 +4,8 @@
 
 #include <stddef.h>
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/icu/source/common/unicode/ucnv.h"
 #include "url/url_canon.h"
@@ -22,6 +23,10 @@ class UConvScoper {
   explicit UConvScoper(const char* charset_name) {
     UErrorCode err = U_ZERO_ERROR;
     converter_ = ucnv_open(charset_name, &err);
+    if (!converter_) {
+      LOG(ERROR) << "Failed to open charset " << charset_name << ": "
+                 << u_errorName(err);
+    }
   }
 
   ~UConvScoper() {
@@ -62,7 +67,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
     std::string str;
     StdStringCanonOutput output(&str);
 
-    base::string16 input_str(
+    std::u16string input_str(
         test_utils::TruncateWStringToUTF16(icu_cases[i].input));
     int input_len = static_cast<int>(input_str.length());
     converter.ConvertFromUTF16(input_str.c_str(), input_len, &output);
@@ -79,7 +84,7 @@ TEST(URLCanonIcuTest, ICUCharsetConverter) {
   ICUCharsetConverter converter(conv.converter());
   for (int i = static_size - 2; i <= static_size + 2; i++) {
     // Make a string with the appropriate length.
-    base::string16 input;
+    std::u16string input;
     for (int ch = 0; ch < i; ch++)
       input.push_back('a');
 
@@ -133,7 +138,7 @@ TEST(URLCanonIcuTest, QueryWithConverter) {
     }
 
     if (query_cases[i].input16) {
-      base::string16 input16(
+      std::u16string input16(
           test_utils::TruncateWStringToUTF16(query_cases[i].input16));
       int len = static_cast<int>(input16.length());
       Component in_comp(0, len);

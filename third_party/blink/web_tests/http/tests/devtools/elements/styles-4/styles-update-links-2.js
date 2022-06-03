@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that links are updated properly when editing selector.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -42,15 +42,16 @@
     },
 
     function testEditSelector(next) {
-      var section = UI.panels.elements._stylesWidget._sectionBlocks[0].sections[3];
+      var section =
+          UI.panels.elements.stylesWidget.sectionBlocks[0].sections[3];
       section.startEditingSelector();
-      section._selectorElement.textContent = '.should-change, .INSERTED-OTHER-SELECTOR';
+      section.selectorElement.textContent = '.should-change, .INSERTED-OTHER-SELECTOR';
       ElementsTestRunner.waitForSelectorCommitted(onSelectorEdited);
-      section._selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
+      section.selectorElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
 
-      function onSelectorEdited() {
+      async function onSelectorEdited() {
         TestRunner.addResult('\n\n#### AFTER SELECTOR EDIT ####\n\n');
-        ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+        await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
         var rules = ElementsTestRunner.getMatchedRules();
         ElementsTestRunner.validateRuleRanges('container', rules, next);
       }

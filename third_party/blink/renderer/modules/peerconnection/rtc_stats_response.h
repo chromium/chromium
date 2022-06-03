@@ -48,7 +48,7 @@ class RTCStatsResponse final : public RTCStatsResponseBase {
 
   void AddStats(const RTCLegacyStats&) override;
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   HeapVector<Member<RTCLegacyStatsReport>> result_;

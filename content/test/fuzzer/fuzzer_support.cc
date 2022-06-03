@@ -8,6 +8,7 @@
 
 #include "base/feature_list.h"
 #include "base/i18n/icu_util.h"
+#include "base/location.h"
 #include "base/test/test_timeouts.h"
 #include "gin/v8_initializer.h"
 #include "third_party/blink/public/platform/web_runtime_features.h"
@@ -17,14 +18,19 @@ namespace content {
 namespace {
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kWithAdditionalContext;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kWithAdditionalContext;
 #else
-constexpr gin::V8Initializer::V8SnapshotFileType kSnapshotType =
-    gin::V8Initializer::V8SnapshotFileType::kDefault;
+constexpr gin::V8SnapshotFileType kSnapshotType =
+    gin::V8SnapshotFileType::kDefault;
 #endif
 #endif
 }
+
+RenderViewTestAdapter::RenderViewTestAdapter()
+    // Allow fuzzing test a longer Run() timeout than normal (see
+    // htps://crbug.com/1053401).
+    : increased_timeout_(FROM_HERE, TestTimeouts::action_max_timeout()) {}
 
 void RenderViewTestAdapter::SetUp() {
   RenderViewTest::SetUp();

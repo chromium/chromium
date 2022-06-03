@@ -9,15 +9,13 @@
 
 #include "base/bind.h"
 #include "base/fuchsia/fuchsia_logging.h"
+#include "base/location.h"
 #include "base/test/test_timeouts.h"
 
 namespace base {
-namespace fuchsia {
 
 ServiceDirectoryTestBase::ServiceDirectoryTestBase()
-    : run_timeout_(TestTimeouts::action_timeout(), BindRepeating([]() {
-                     ADD_FAILURE() << "Run() timed out.";
-                   })) {
+    : run_timeout_(FROM_HERE, TestTimeouts::action_timeout()) {
   // Mount service dir and publish the service.
   outgoing_directory_ = std::make_unique<sys::OutgoingDirectory>();
   fidl::InterfaceHandle<::fuchsia::io::Directory> directory;
@@ -79,5 +77,4 @@ void ServiceDirectoryTestBase::VerifyTestInterface(
   stub->set_error_handler(nullptr);
 }
 
-}  // namespace fuchsia
 }  // namespace base

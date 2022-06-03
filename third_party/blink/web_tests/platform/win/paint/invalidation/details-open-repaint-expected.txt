@@ -1,21 +1,14 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutTextControl INPUT",
-          "rect": [8, 72, 173, 22],
-          "reason": "appeared"
-        },
-        {
-          "object": "LayoutDetailsMarker DIV id='details-marker'",
-          "rect": [8, 56, 11, 11],
-          "reason": "full"
-        }
+      "invalidations": [
+        [8, 72, 177, 22],
+        [24, 52, 55, 19],
+        [8, 52, 11, 19]
       ]
     }
   ]

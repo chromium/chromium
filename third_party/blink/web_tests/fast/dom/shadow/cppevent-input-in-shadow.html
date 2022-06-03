@@ -27,11 +27,11 @@ function createInput() {
 }
 
 
-var shadowRoot = host.createShadowRoot();
+var shadowRoot = host.attachShadow({mode: 'open'});
 var div = document.createElement('div');
 shadowRoot.appendChild(div);
 
-var darkRoot = div.createShadowRoot();
+var darkRoot = div.attachShadow({mode: 'open'});
 var input = createInput();
 input.setAttribute('value', 'Kotori Otonashi');
 darkRoot.appendChild(input);

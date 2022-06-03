@@ -52,7 +52,7 @@ HTMLDataListOptionsCollection* HTMLDataListElement::options() {
 
 void HTMLDataListElement::ChildrenChanged(const ChildrenChange& change) {
   HTMLElement::ChildrenChanged(change);
-  if (!change.by_parser) {
+  if (!change.ByParser()) {
     GetTreeScope().GetIdTargetObserverRegistry().NotifyObservers(
         GetIdAttribute());
   }

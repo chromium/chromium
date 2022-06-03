@@ -5,7 +5,7 @@
 #include "chrome/browser/gpu/gpu_mode_manager.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "chrome/browser/browser_process.h"
@@ -47,7 +47,7 @@ GpuModeManager::GpuModeManager()
     // Do nothing when the pref changes. It takes effect after
     // chrome restarts.
     pref_registrar_.Add(prefs::kHardwareAccelerationModeEnabled,
-                        base::DoNothing::Repeatedly<>());
+                        base::DoNothingAs<void()>());
 
     initial_gpu_mode_pref_ = IsGpuModePrefEnabled();
     bool previous_gpu_mode_pref = GetPreviousGpuModePref();

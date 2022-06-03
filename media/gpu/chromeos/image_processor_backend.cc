@@ -40,22 +40,22 @@ ImageProcessorBackend::PortConfig::PortConfig(
     Fourcc fourcc,
     const gfx::Size& size,
     const std::vector<ColorPlaneLayout>& planes,
-    const gfx::Size& visible_size,
+    const gfx::Rect& visible_rect,
     const std::vector<VideoFrame::StorageType>& preferred_storage_types)
     : fourcc(fourcc),
       size(size),
       planes(planes),
-      visible_size(visible_size),
+      visible_rect(visible_rect),
       preferred_storage_types(preferred_storage_types) {}
 
 ImageProcessorBackend::PortConfig::~PortConfig() = default;
 
 std::string ImageProcessorBackend::PortConfig::ToString() const {
   return base::StringPrintf(
-      "PortConfig(format:%s, size:%s, planes: %s, visible_size:%s, "
+      "PortConfig(format:%s, size:%s, planes: %s, visible_rect:%s, "
       "storage_types:%s)",
       fourcc.ToString().c_str(), size.ToString().c_str(),
-      VectorToString(planes).c_str(), visible_size.ToString().c_str(),
+      VectorToString(planes).c_str(), visible_rect.ToString().c_str(),
       VectorToString(preferred_storage_types).c_str());
 }
 
@@ -63,11 +63,13 @@ ImageProcessorBackend::ImageProcessorBackend(
     const PortConfig& input_config,
     const PortConfig& output_config,
     OutputMode output_mode,
+    VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner)
     : input_config_(input_config),
       output_config_(output_config),
       output_mode_(output_mode),
+      relative_rotation_(relative_rotation),
       error_cb_(error_cb),
       backend_task_runner_(std::move(backend_task_runner)) {
   DETACH_FROM_SEQUENCE(backend_sequence_checker_);

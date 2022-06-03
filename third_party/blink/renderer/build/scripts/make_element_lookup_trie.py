@@ -43,6 +43,7 @@ class ElementLookupTrieWriter(json5_generator.Writer):
         'interfaceHeaderDir': {},
         'interfaceName': {},
         'noConstructor': {},
+        'noTypeHelpers': {},
         'runtimeEnabled': {},
     }
     default_metadata = {
@@ -55,11 +56,13 @@ class ElementLookupTrieWriter(json5_generator.Writer):
         'namespaceURI': '',
     }
     filters = {
-        'symbol': lambda symbol: 'k' + NameStyleConverter(symbol).to_upper_camel_case()
+        'symbol':
+        lambda symbol: 'k' + NameStyleConverter(symbol).to_upper_camel_case()
     }
 
     def __init__(self, json5_file_paths, output_dir):
-        super(ElementLookupTrieWriter, self).__init__(json5_file_paths, output_dir)
+        super(ElementLookupTrieWriter, self).__init__(json5_file_paths,
+                                                      output_dir)
         self._tags = {}
         for entry in self.json5_file.name_dictionaries:
             self._tags[entry['name'].original] = entry['name'].original
@@ -77,7 +80,8 @@ class ElementLookupTrieWriter(json5_generator.Writer):
             'namespace': self._namespace,
         }
 
-    @template_expander.use_jinja('templates/element_lookup_trie.cc.tmpl', filters=filters)
+    @template_expander.use_jinja(
+        'templates/element_lookup_trie.cc.tmpl', filters=filters)
     def generate_implementation(self):
         return {
             'input_files': self._input_files,

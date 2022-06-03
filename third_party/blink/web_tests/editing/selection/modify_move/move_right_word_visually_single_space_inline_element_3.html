@@ -27,7 +27,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc| def <span>hij opq</span> rst uvw</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def |<span>hij opq</span> rst uvw</div>',
+  '<div contenteditable dir="ltr">abc |def <span>hij opq</span> rst uvw</div>',
   '3-3 right word');
 
 selection_test(
@@ -51,7 +51,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc def| <span>hij opq</span> rst uvw</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def <span>hij |opq</span> rst uvw</div>',
+  '<div contenteditable dir="ltr">abc def |<span>hij opq</span> rst uvw</div>',
   '3-7 right word');
 
 selection_test(
@@ -81,7 +81,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc def <span>hij| opq</span> rst uvw</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def <span>hij opq</span> |rst uvw</div>',
+  '<div contenteditable dir="ltr">abc def <span>hij |opq</span> rst uvw</div>',
   '3-12 right word');
 
 selection_test(
@@ -105,13 +105,13 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc def <span>hij opq|</span> rst uvw</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def <span>hij opq</span> rst |uvw</div>',
+  '<div contenteditable dir="ltr">abc def <span>hij opq</span> |rst uvw</div>',
   '3-16 right word');
 
 selection_test(
   '<div contenteditable dir="ltr">abc def <span>hij opq</span>| rst uvw</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def <span>hij opq</span> rst |uvw</div>',
+  '<div contenteditable dir="ltr">abc def <span>hij opq</span> |rst uvw</div>',
   '3-17 right word');
 
 selection_test(
@@ -135,7 +135,7 @@ selection_test(
 selection_test(
   '<div contenteditable dir="ltr">abc def <span>hij opq</span> rst| uvw</div>',
   selection => selection.modify('move', 'right', 'word'),
-  '<div contenteditable dir="ltr">abc def <span>hij opq</span> rst uvw|</div>',
+  '<div contenteditable dir="ltr">abc def <span>hij opq</span> rst |uvw</div>',
   '3-21 right word');
 
 selection_test(

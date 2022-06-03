@@ -35,14 +35,14 @@ class AwWebContentsDelegate
                  const gfx::Rect& selection_rect,
                  int active_match_ordinal,
                  bool final_update) override;
-  void CanDownload(const GURL& url,
-                   const std::string& request_method,
-                   base::OnceCallback<void(bool)> callback) override;
   void RunFileChooser(content::RenderFrameHost* render_frame_host,
-                      std::unique_ptr<content::FileSelectListener> listener,
+                      scoped_refptr<content::FileSelectListener> listener,
                       const blink::mojom::FileChooserParams& params) override;
+  // See //android_webview/docs/how-does-on-create-window-work.md for more
+  // details.
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
@@ -67,8 +67,7 @@ class AwWebContentsDelegate
       const content::MediaStreamRequest& request,
       content::MediaResponseCallback callback) override;
   void EnterFullscreenModeForTab(
-      content::WebContents* web_contents,
-      const GURL& origin,
+      content::RenderFrameHost* requesting_frame,
       const blink::mojom::FullscreenOptions& options) override;
   void ExitFullscreenModeForTab(content::WebContents* web_contents) override;
   bool IsFullscreenForTabOrPending(
@@ -76,14 +75,14 @@ class AwWebContentsDelegate
   void UpdateUserGestureCarryoverInfo(
       content::WebContents* web_contents) override;
 
-  std::unique_ptr<content::FileSelectListener> TakeFileSelectListener();
+  scoped_refptr<content::FileSelectListener> TakeFileSelectListener();
 
  private:
   bool is_fullscreen_;
 
   // Maintain a FileSelectListener instance passed to RunFileChooser() until
   // a callback is called.
-  std::unique_ptr<content::FileSelectListener> file_select_listener_;
+  scoped_refptr<content::FileSelectListener> file_select_listener_;
 };
 
 }  // namespace android_webview

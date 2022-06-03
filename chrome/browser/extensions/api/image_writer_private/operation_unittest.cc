@@ -5,11 +5,12 @@
 #include "chrome/browser/extensions/api/image_writer_private/operation.h"
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/extensions/api/image_writer_private/test_utils.h"
@@ -31,7 +32,7 @@ using testing::AtLeast;
 using testing::Gt;
 using testing::Lt;
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 
 void SetUpUtilityClientProgressOnVerifyWrite(
     const std::vector<int>& progress_list,
@@ -40,7 +41,7 @@ void SetUpUtilityClientProgressOnVerifyWrite(
   client->SimulateProgressOnVerifyWrite(progress_list, will_succeed);
 }
 
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace
 
@@ -58,16 +59,18 @@ class OperationForTest : public Operation {
 
   // Expose internal stages for testing.
   // Also wraps Operation's methods to run on correct sequence.
-  void Unzip(const base::Closure& continuation) {
-    PostTask(base::BindOnce(&Operation::Unzip, this, continuation));
+  void Extract(base::OnceClosure continuation) {
+    PostTask(
+        base::BindOnce(&Operation::Extract, this, std::move(continuation)));
   }
 
-  void Write(const base::Closure& continuation) {
-    PostTask(base::BindOnce(&Operation::Write, this, continuation));
+  void Write(base::OnceClosure continuation) {
+    PostTask(base::BindOnce(&Operation::Write, this, std::move(continuation)));
   }
 
-  void VerifyWrite(const base::Closure& continuation) {
-    PostTask(base::BindOnce(&Operation::VerifyWrite, this, continuation));
+  void VerifyWrite(base::OnceClosure continuation) {
+    PostTask(
+        base::BindOnce(&Operation::VerifyWrite, this, std::move(continuation)));
   }
 
   void Start() { PostTask(base::BindOnce(&Operation::Start, this)); }
@@ -131,7 +134,7 @@ class ImageWriterOperationTest : public ImageWriterUnitTestBase {
 };
 
 // Unizpping a non-zip should do nothing.
-TEST_F(ImageWriterOperationTest, UnzipNonZipFile) {
+TEST_F(ImageWriterOperationTest, ExtractNonZipFile) {
   EXPECT_CALL(manager_, OnProgress(kDummyExtensionId, _, _)).Times(0);
 
   EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
@@ -140,11 +143,11 @@ TEST_F(ImageWriterOperationTest, UnzipNonZipFile) {
 
   operation_->Start();
   base::RunLoop run_loop;
-  operation_->Unzip(run_loop.QuitClosure());
+  operation_->Extract(run_loop.QuitClosure());
   run_loop.Run();
 }
 
-TEST_F(ImageWriterOperationTest, UnzipZipFile) {
+TEST_F(ImageWriterOperationTest, ExtractZipFile) {
   EXPECT_CALL(manager_, OnError(kDummyExtensionId, _, _, _)).Times(0);
   EXPECT_CALL(manager_,
               OnProgress(kDummyExtensionId, image_writer_api::STAGE_UNZIP, _))
@@ -160,15 +163,15 @@ TEST_F(ImageWriterOperationTest, UnzipZipFile) {
 
   operation_->Start();
   base::RunLoop run_loop;
-  operation_->Unzip(run_loop.QuitClosure());
+  operation_->Extract(run_loop.QuitClosure());
   run_loop.Run();
 
   EXPECT_TRUE(base::ContentsEqual(image_path_, operation_->GetImagePath()));
 }
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   auto set_up_utility_client_progress =
       [](const std::vector<int>& progress_list, bool will_succeed,
          FakeImageWriterClient* client) {
@@ -195,9 +198,9 @@ TEST_F(ImageWriterOperationTest, WriteImageToDevice) {
   operation_->Write(run_loop.QuitClosure());
   run_loop.Run();
 }
-#endif  // defined(OS_LINUX)
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Chrome OS doesn't support verification in the ImageBurner, so these two tests
 // are skipped.
 
@@ -259,7 +262,7 @@ TEST_F(ImageWriterOperationTest, VerifyFileFailure) {
   operation_->VerifyWrite(base::DoNothing());
   content::RunAllTasksUntilIdle();
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Tests that on creation the operation_ has the expected state.
 TEST_F(ImageWriterOperationTest, Creation) {

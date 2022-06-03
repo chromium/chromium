@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "ui/events/event_dispatcher.h"
 #include "ui/events/event_rewriter.h"
 #include "ui/events/events_export.h"
@@ -24,6 +23,10 @@ class EventSink;
 class EVENTS_EXPORT EventSource {
  public:
   EventSource();
+
+  EventSource(const EventSource&) = delete;
+  EventSource& operator=(const EventSource&) = delete;
+
   virtual ~EventSource();
 
   virtual EventSink* GetEventSink() = 0;
@@ -70,8 +73,6 @@ class EVENTS_EXPORT EventSource {
 
   friend class EventRewriter;  // TODO(kpschoedel): Remove along with old API.
   friend class EventSourceTestApi;
-
-  DISALLOW_COPY_AND_ASSIGN(EventSource);
 };
 
 }  // namespace ui

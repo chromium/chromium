@@ -49,7 +49,7 @@ WebBlob WebBlob::CreateFromUUID(const WebString& uuid,
 
 WebBlob WebBlob::CreateFromFile(const WebString& path, uint64_t size) {
   auto blob_data = std::make_unique<BlobData>();
-  blob_data->AppendFile(path, 0, size, base::nullopt);
+  blob_data->AppendFile(path, 0, size, absl::nullopt);
   return MakeGarbageCollected<Blob>(
       BlobDataHandle::Create(std::move(blob_data), size));
 }

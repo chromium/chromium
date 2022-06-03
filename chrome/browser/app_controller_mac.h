@@ -7,6 +7,7 @@
 
 #if defined(__OBJC__)
 
+#import <AuthenticationServices/AuthenticationServices.h>
 #import <Cocoa/Cocoa.h>
 
 #include <memory>
@@ -15,6 +16,7 @@
 #include "base/files/file_path.h"
 #include "base/mac/scoped_nsobject.h"
 #include "base/time/time.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class AppControllerProfileObserver;
@@ -35,9 +37,11 @@ class TabMenuBridge;
 // The application controller object, created by loading the MainMenu nib.
 // This handles things like responding to menus when there are no windows
 // open, etc and acts as the NSApplication delegate.
-@interface AppController : NSObject<NSUserInterfaceValidations,
-                                    NSMenuDelegate,
-                                    NSApplicationDelegate> {
+@interface AppController
+    : NSObject <NSUserInterfaceValidations,
+                NSMenuDelegate,
+                NSApplicationDelegate,
+                ASWebAuthenticationSessionWebBrowserSessionHandling> {
  @private
   // Manages the state of the command menu items.
   std::unique_ptr<CommandUpdater> _menuState;
@@ -111,6 +115,11 @@ class TabMenuBridge;
 }
 
 @property(readonly, nonatomic) BOOL startupComplete;
+@property(readonly, nonatomic) Profile* lastProfileIfLoaded;
+
+// DEPRECATED: use lastProfileIfLoaded instead.
+// TODO(https://crbug.com/1176734): May be blocking, migrate all callers to
+// |-lastProfileIfLoaded|.
 @property(readonly, nonatomic) Profile* lastProfile;
 
 // This method is called very early in application startup after the main menu
@@ -146,13 +155,20 @@ class TabMenuBridge;
 // |-validateUserInterfaceItem:|.
 - (void)commandDispatch:(id)sender;
 
+// Helper function called by -commandDispatch:, to actually execute the command.
+// This runs after -commandDispatch: has obtained a pointer to the last Profile
+// (which possibly requires an async Profile load).
+- (void)executeCommand:(id)sender withProfile:(Profile*)profile;
+
 // Show the preferences window, or bring it to the front if it's already
 // visible.
 - (IBAction)showPreferences:(id)sender;
+- (IBAction)showPreferencesForProfile:(Profile*)profile;
 
 // Redirect in the menu item from the expected target of "File's
 // Owner" (NSApplication) for a Branded About Box
 - (IBAction)orderFrontStandardAboutPanel:(id)sender;
+- (IBAction)orderFrontStandardAboutPanelForProfile:(Profile*)profile;
 
 // Toggles the "Confirm to Quit" preference.
 - (IBAction)toggleConfirmToQuit:(id)sender;
@@ -173,9 +189,9 @@ class TabMenuBridge;
 
 // Called when the user has changed browser windows, meaning the backing profile
 // may have changed. This can cause a rebuild of the user-data menus. This is a
-// no-op if the new profile is the same as the current one. This will always be
-// the original profile and never incognito.
-- (void)windowChangedToProfile:(Profile*)profile;
+// no-op if the new profile is the same as the current one. This can be either
+// the original or the incognito profile.
+- (void)setLastProfile:(Profile*)profile;
 
 // Certain NSMenuItems [Close Tab and Close Window] have different
 // keyEquivalents depending on context. This must be invoked in two locations:

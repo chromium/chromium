@@ -38,6 +38,10 @@ namespace mojo {
 class MOJO_CPP_SYSTEM_EXPORT IsolatedConnection {
  public:
   IsolatedConnection();
+
+  IsolatedConnection(const IsolatedConnection&) = delete;
+  IsolatedConnection& operator=(const IsolatedConnection&) = delete;
+
   ~IsolatedConnection();
 
   // Connects to a process at the other end of the channel. Returns a primordial
@@ -51,8 +55,6 @@ class MOJO_CPP_SYSTEM_EXPORT IsolatedConnection {
 
  private:
   const base::UnguessableToken token_;
-
-  DISALLOW_COPY_AND_ASSIGN(IsolatedConnection);
 };
 
 }  // namespace mojo

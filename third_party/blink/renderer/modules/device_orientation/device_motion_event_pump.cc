@@ -9,7 +9,7 @@
 #include "services/device/public/cpp/generic_sensor/sensor_reading.h"
 #include "services/device/public/mojom/sensor.mojom-blink.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
-#include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/platform_event_controller.h"
 #include "third_party/blink/renderer/modules/device_orientation/device_motion_data.h"
@@ -29,15 +29,15 @@ constexpr double kDefaultPumpDelayMilliseconds =
 
 namespace blink {
 
-DeviceMotionEventPump::DeviceMotionEventPump(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : DeviceSensorEventPump(std::move(task_runner)) {
+DeviceMotionEventPump::DeviceMotionEventPump(LocalFrame& frame)
+    : DeviceSensorEventPump(frame) {
   accelerometer_ = MakeGarbageCollected<DeviceSensorEntry>(
-      this, device::mojom::blink::SensorType::ACCELEROMETER);
+      this, frame.DomWindow(), device::mojom::blink::SensorType::ACCELEROMETER);
   linear_acceleration_sensor_ = MakeGarbageCollected<DeviceSensorEntry>(
-      this, device::mojom::blink::SensorType::LINEAR_ACCELERATION);
+      this, frame.DomWindow(),
+      device::mojom::blink::SensorType::LINEAR_ACCELERATION);
   gyroscope_ = MakeGarbageCollected<DeviceSensorEntry>(
-      this, device::mojom::blink::SensorType::GYROSCOPE);
+      this, frame.DomWindow(), device::mojom::blink::SensorType::GYROSCOPE);
 }
 
 DeviceMotionEventPump::~DeviceMotionEventPump() = default;
@@ -47,9 +47,7 @@ void DeviceMotionEventPump::SetController(PlatformEventController* controller) {
   DCHECK(!controller_);
 
   controller_ = controller;
-  StartListening(controller_->GetDocument()
-                     ? controller_->GetDocument()->GetFrame()
-                     : nullptr);
+  StartListening(*controller_->GetWindow().GetFrame());
 }
 
 void DeviceMotionEventPump::RemoveController() {
@@ -61,7 +59,7 @@ DeviceMotionData* DeviceMotionEventPump::LatestDeviceMotionData() {
   return data_.Get();
 }
 
-void DeviceMotionEventPump::Trace(blink::Visitor* visitor) {
+void DeviceMotionEventPump::Trace(Visitor* visitor) const {
   visitor->Trace(accelerometer_);
   visitor->Trace(linear_acceleration_sensor_);
   visitor->Trace(gyroscope_);
@@ -70,19 +68,15 @@ void DeviceMotionEventPump::Trace(blink::Visitor* visitor) {
   DeviceSensorEventPump::Trace(visitor);
 }
 
-void DeviceMotionEventPump::StartListening(LocalFrame* frame) {
-  // TODO(crbug.com/850619): ensure a valid frame is passed
-  if (!frame)
-    return;
+void DeviceMotionEventPump::StartListening(LocalFrame& frame) {
   Start(frame);
 }
 
-void DeviceMotionEventPump::SendStartMessage(LocalFrame* frame) {
-  if (!sensor_provider_) {
-    DCHECK(frame);
-
-    frame->GetBrowserInterfaceBroker().GetInterface(
-        sensor_provider_.BindNewPipeAndPassReceiver());
+void DeviceMotionEventPump::SendStartMessage(LocalFrame& frame) {
+  if (!sensor_provider_.is_bound()) {
+    frame.GetBrowserInterfaceBroker().GetInterface(
+        sensor_provider_.BindNewPipeAndPassReceiver(
+            frame.GetTaskRunner(TaskType::kSensor)));
     sensor_provider_.set_disconnect_handler(
         WTF::Bind(&DeviceSensorEventPump::HandleSensorProviderError,
                   WrapWeakPersistent(this)));

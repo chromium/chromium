@@ -1,0 +1,7 @@
+include_rules = [
+  "+components/viz/common/gpu/context_provider.h",
+  "+device/base",
+  "+device/vr",
+  "+mojo/public",
+  "+services/viz/public/cpp/gpu"
+]

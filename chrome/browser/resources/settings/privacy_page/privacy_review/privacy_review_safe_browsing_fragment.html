@@ -1,0 +1,79 @@
+<style include="privacy-review-fragment-shared"></style>
+<settings-radio-group id="safeBrowsingRadioGroup"
+    pref="{{prefs.generated.safe_browsing}}"
+    selectable-elements="settings-collapse-radio-button">
+  <settings-collapse-radio-button pref="[[prefs.generated.safe_browsing]]"
+      name="[[safeBrowsingSettingEnum_.ENHANCED]]"
+      label="$i18n{safeBrowsingEnhanced}"
+      sub-label="$i18n{safeBrowsingEnhancedDesc}">
+      <div slot="collapse" class="description-wrapper two-column">
+        <div class="description-column description-column-first">
+          <div class=description-header>
+            $i18n{privacyReviewFeatureDescriptionHeader}
+          </div>
+          <privacy-review-description-item
+              icon="settings20:security"
+              label="$i18n{safeBrowsingEnhancedBulOne}">
+          </privacy-review-description-item>
+          <privacy-review-description-item
+              icon="settings20:googleg"
+              label="$i18n{safeBrowsingEnhancedBulTwo}">
+          </privacy-review-description-item>
+          <privacy-review-description-item
+              icon="settings20:public"
+              label="$i18n{safeBrowsingEnhancedBulThree}">
+          </privacy-review-description-item>
+          <privacy-review-description-item
+              icon="settings20:vpn-key"
+              label="$i18n{safeBrowsingEnhancedBulFour}">
+          </privacy-review-description-item>
+        </div>
+        <div class="description-column">
+          <div class=description-header>
+            $i18n{privacyReviewWhatYouShareWithGoogle}
+          </div>
+          <privacy-review-description-item
+              icon="settings20:data"
+              label="$i18n{privacyReviewSafeBrowsingCardEnhancedProtectionPrivacyDescription1}">
+          </privacy-review-description-item>
+          <privacy-review-description-item
+              icon="settings20:web-asset"
+              label="$i18n{privacyReviewSafeBrowsingCardEnhancedProtectionPrivacyDescription2}">
+          </privacy-review-description-item>
+          <privacy-review-description-item
+              icon="settings20:account-circle"
+              label="$i18n{privacyReviewSafeBrowsingCardEnhancedProtectionPrivacyDescription3}">
+          </privacy-review-description-item>
+        </div>
+      </div>
+  </settings-collapse-radio-button>
+  <settings-collapse-radio-button pref="[[prefs.generated.safe_browsing]]"
+      name="[[safeBrowsingSettingEnum_.STANDARD]]"
+      label="$i18n{safeBrowsingStandard}"
+      sub-label="$i18n{safeBrowsingStandardDesc}">
+      <div slot="collapse" class="description-wrapper two-column">
+        <div class="description-column description-column-first">
+          <div class=description-header>
+            $i18n{privacyReviewFeatureDescriptionHeader}
+          </div>
+          <privacy-review-description-item
+              icon="settings20:security"
+              label="$i18n{privacyReviewSafeBrowsingCardStandardProtectionFeatureDescription1}">
+          </privacy-review-description-item>
+          <privacy-review-description-item
+              icon="settings20:googleg"
+              label="$i18n{privacyReviewSafeBrowsingCardStandardProtectionFeatureDescription2}">
+          </privacy-review-description-item>
+        </div>
+        <div class="description-column">
+          <div class=description-header>
+            $i18n{privacyReviewWhatYouShareWithGoogle}
+          </div>
+          <privacy-review-description-item
+              icon="settings20:data"
+              label="$i18n{privacyReviewSafeBrowsingCardStandardProtectionPrivacyDescription1}">
+          </privacy-review-description-item>
+        </div>
+      </div>
+  </settings-collapse-radio-button>
+</settings-radio-group>

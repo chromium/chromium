@@ -4,8 +4,14 @@
 <script src="../../resources/js-test.js"></script>
 </head>
 <body>
-<p id="description"></p>
-<div id="console"></div>
-<script src="script-tests/keyTimes-parsing-error.js"></script>
+<script>
+description("Tests parsing of keyTimes attribute.");
+
+var animate = document.createElementNS("http://www.w3.org/2000/svg", "animate");
+animate.setAttribute("keyTimes", ";;");
+animate.setAttribute("keyTimes", "0;.25;.5;1;;");
+
+var successfullyParsed = true;
+</script>
 </body>
 </html>

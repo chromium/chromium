@@ -16,7 +16,7 @@ using OverlayRequestImplTest = PlatformTest;
 TEST_F(OverlayRequestImplTest, ExecuteCallback) {
   void* kResponseData = &kResponseData;
   std::unique_ptr<OverlayRequest> request =
-      OverlayRequest::CreateWithConfig<FakeOverlayUserData>(nullptr);
+      OverlayRequest::CreateWithConfig<FakeOverlayUserData>();
   __block bool callback_executed = false;
   request->GetCallbackManager()->AddCompletionCallback(
       base::BindOnce(base::RetainBlock(^(OverlayResponse* response) {

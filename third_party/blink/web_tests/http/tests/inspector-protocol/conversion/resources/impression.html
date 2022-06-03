@@ -1,0 +1,20 @@
+<!doctype html>
+<!-- Test site that creates arbitrary impression anchor elements -->
+
+<script>
+  function createImpressionAnchor(id, url, data, destination, target, reportingOrigin) {
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.setAttribute("attributionsourceeventid", data);
+    anchor.setAttribute("attributiondestination", destination);
+    anchor.setAttribute("target", target);
+    if (reportingOrigin)
+      anchor.setAttribute("attributionreportto", reportingOrigin);
+    anchor.id = id;
+    anchor.textContent = "Adlink";
+
+    document.body.appendChild(anchor);
+
+    return anchor;
+  }
+</script>

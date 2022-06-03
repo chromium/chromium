@@ -31,9 +31,9 @@ bool TransformHelper::DependsOnReferenceBox(const ComputedStyle& style) {
       style.RequireTransformOrigin(ComputedStyle::kIncludeTransformOrigin,
                                    ComputedStyle::kExcludeMotionPath))
     return true;
-  if (style.Transform().DependsOnBoxSize())
+  if (style.Transform().BoxSizeDependencies())
     return true;
-  if (style.Translate() && style.Translate()->DependsOnBoxSize())
+  if (style.Translate() && style.Translate()->BoxSizeDependencies())
     return true;
   if (style.HasOffset())
     return true;
@@ -45,14 +45,14 @@ FloatRect TransformHelper::ComputeReferenceBox(
   const ComputedStyle& style = layout_object.StyleRef();
   FloatRect reference_box;
   if (style.TransformBox() == ETransformBox::kFillBox) {
-    reference_box = layout_object.ObjectBoundingBox();
+    reference_box = FloatRect(layout_object.ObjectBoundingBox());
   } else {
     DCHECK_EQ(style.TransformBox(), ETransformBox::kViewBox);
     SVGLengthContext length_context(
         DynamicTo<SVGElement>(layout_object.GetNode()));
-    FloatSize viewport_size;
+    gfx::SizeF viewport_size;
     length_context.DetermineViewport(viewport_size);
-    reference_box.SetSize(viewport_size);
+    reference_box.set_size(FloatSize(viewport_size));
   }
   const float zoom = style.EffectiveZoom();
   if (zoom != 1)
@@ -61,7 +61,8 @@ FloatRect TransformHelper::ComputeReferenceBox(
 }
 
 AffineTransform TransformHelper::ComputeTransform(
-    const LayoutObject& layout_object) {
+    const LayoutObject& layout_object,
+    ComputedStyle::ApplyTransformOrigin apply_transform_origin) {
   const ComputedStyle& style = layout_object.StyleRef();
   if (DependsOnReferenceBox(style)) {
     UseCounter::Count(layout_object.GetDocument(),
@@ -81,8 +82,7 @@ AffineTransform TransformHelper::ComputeTransform(
   // https://svgwg.org/svg2-draft/coords.html#ObjectBoundingBoxUnits
   TransformationMatrix transform;
   FloatRect reference_box = ComputeReferenceBox(layout_object);
-  style.ApplyTransform(transform, reference_box,
-                       ComputedStyle::kIncludeTransformOrigin,
+  style.ApplyTransform(transform, reference_box, apply_transform_origin,
                        ComputedStyle::kIncludeMotionPath,
                        ComputedStyle::kIncludeIndependentTransformProperties);
   const float zoom = style.EffectiveZoom();
@@ -90,6 +90,19 @@ AffineTransform TransformHelper::ComputeTransform(
     transform.Zoom(1 / zoom);
   // Flatten any 3D transform.
   return transform.ToAffineTransform();
+}
+
+FloatPoint TransformHelper::ComputeTransformOrigin(
+    const LayoutObject& layout_object) {
+  const auto& style = layout_object.StyleRef();
+  FloatRect reference_box = ComputeReferenceBox(layout_object);
+  FloatPoint origin(
+      FloatValueForLength(style.TransformOriginX(), reference_box.width()) +
+          reference_box.x(),
+      FloatValueForLength(style.TransformOriginY(), reference_box.height()) +
+          reference_box.y());
+  // See the comment in ComputeTransform() for the reason of scaling by 1/zoom.
+  return origin.ScaledBy(1 / style.EffectiveZoom());
 }
 
 }  // namespace blink

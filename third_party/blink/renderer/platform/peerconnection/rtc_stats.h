@@ -8,8 +8,8 @@
 #include "base/callback.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_vector.h"
-#include "third_party/blink/renderer/platform/peerconnection/rtc_stats.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
 #include "third_party/webrtc/api/stats/rtc_stats.h"
@@ -31,9 +31,9 @@ class RTCStats;
 class RTCStatsMember;
 
 // Wrapper around a webrtc::RTCStatsReport. Filters out any stats objects that
-// aren't whitelisted. |filter| controls whether to include only standard
-// members (RTCStatsMemberInterface::is_standardized return true) or not
-// (RTCStatsMemberInterface::is_standardized return false).
+// aren't listed in the allow list. |filter| controls whether to include only
+// standard members (RTCStatsMemberInterface::is_standardized return true) or
+// not (RTCStatsMemberInterface::is_standardized return false).
 //
 // Note: This class is named |RTCStatsReportPlatform| not to collide with class
 // |RTCStatsReport|, from renderer/modules/peerconnection/rtc_stats_report.cc|h.
@@ -62,7 +62,7 @@ class PLATFORM_EXPORT RTCStatsReportPlatform {
   webrtc::RTCStatsReport::ConstIterator it_;
   const webrtc::RTCStatsReport::ConstIterator end_;
   Vector<webrtc::NonStandardGroupId> exposed_group_ids_;
-  // Number of whitelisted webrtc::RTCStats in |stats_report_|.
+  // Number of allowlisted webrtc::RTCStats in |stats_report_|.
   const size_t size_;
 };
 
@@ -113,6 +113,8 @@ class PLATFORM_EXPORT RTCStatsMember {
   Vector<uint64_t> ValueSequenceUint64() const;
   Vector<double> ValueSequenceDouble() const;
   Vector<String> ValueSequenceString() const;
+  HashMap<String, uint64_t> ValueMapStringUint64() const;
+  HashMap<String, double> ValueMapStringDouble() const;
 
  private:
   // Reference to keep the report that owns |member_|'s stats object alive.
@@ -156,7 +158,7 @@ class PLATFORM_EXPORT RTCStatsCollectorCallbackImpl
   Vector<webrtc::NonStandardGroupId> exposed_group_ids_;
 };
 
-PLATFORM_EXPORT void WhitelistStatsForTesting(const char* type);
+PLATFORM_EXPORT void AllowStatsForTesting(const char* type);
 
 }  // namespace blink
 

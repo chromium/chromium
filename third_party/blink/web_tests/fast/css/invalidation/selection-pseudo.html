@@ -55,7 +55,7 @@ if (window.internals)
 shouldBe("getComputedStyle(select[0], '::selection').backgroundColor", "green");
 
 shouldBeDefined(window.testRunner);
-testRunner.setWindowIsKey(false);
+testRunner.setWindowFocus(false);
 
 setSelection(select[1].firstChild);
 shouldBe("getComputedStyle(select[1], '::selection').backgroundColor", "red");

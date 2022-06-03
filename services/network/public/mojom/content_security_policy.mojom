@@ -4,6 +4,11 @@
 
 module network.mojom;
 
+import "url/mojom/origin.mojom";
+import "url/mojom/url.mojom";
+import "services/network/public/mojom/source_location.mojom";
+import "services/network/public/mojom/web_sandbox_flags.mojom";
+
 // The HTTP Content-Security-Policy-Report-Only response header allows web
 // developers to experiment with policies by monitoring (but not enforcing)
 // their effects. These violation reports consist of JSON documents sent via an
@@ -26,6 +31,20 @@ enum ContentSecurityPolicySource {
   kOriginPolicy
 };
 
+// Represents a single Content Security Policy header (i.e. coming from a single
+// Content-Security-Policy header in an HTTP response, or from a single <meta
+// http-equiv="Content-Security-Policy"...> element).
+struct ContentSecurityPolicyHeader {
+  string header_value;
+  ContentSecurityPolicyType type = kEnforce;
+  ContentSecurityPolicySource source = kHTTP;
+};
+
+enum CSPDisposition {
+  CHECK,
+  DO_NOT_CHECK,
+};
+
 // A CSPSource represents an expression that matches a set of urls.
 // Examples of CSPSource:
 // - domain.example.com
@@ -44,34 +63,121 @@ struct CSPSource {
   bool is_port_wildcard = false;
 };
 
+enum CSPHashAlgorithm {
+  None = 0,
+  SHA256 = 1,
+  SHA384 = 2,
+  SHA512 = 4,
+};
+
+struct CSPHashSource {
+  CSPHashAlgorithm algorithm;
+  array<uint8> value;
+};
+
 struct CSPSourceList {
   array<CSPSource> sources;
+  array<string> nonces;
+  array<CSPHashSource> hashes;
 
   // Wildcard hosts and 'self' aren't stored in |sources|, but as attributes
   // on the source list itself.
   bool allow_self = false;
   bool allow_star = false;
+  bool allow_response_redirects = false;
+  bool allow_inline = false;
+  bool allow_eval = false;
+  bool allow_wasm_eval = false;
+  bool allow_wasm_unsafe_eval = false;
+  bool allow_dynamic = false;
+  bool allow_unsafe_hashes = false;
+  bool report_sample = false;
 };
 
-struct CSPDirective {
-  enum Name {
-    DefaultSrc,
-    ChildSrc,
-    FrameSrc,
-    FormAction,
-    UpgradeInsecureRequests,
-    NavigateTo,
-    FrameAncestors,
+enum CSPDirectiveName {
+  Unknown,
 
-    Unknown,
-  };
+  BaseURI,
+  BlockAllMixedContent,
+  ChildSrc,
+  ConnectSrc,
+  DefaultSrc,
+  FontSrc,
+  FormAction,
+  FrameAncestors,
+  FrameSrc,
+  ImgSrc,
+  ManifestSrc,
+  MediaSrc,
+  NavigateTo,
+  ObjectSrc,
+  PrefetchSrc,
+  ReportTo,
+  ReportURI,
+  RequireTrustedTypesFor,
+  Sandbox,
+  ScriptSrc,
+  ScriptSrcAttr,
+  ScriptSrcElem,
+  StyleSrc,
+  StyleSrcAttr,
+  StyleSrcElem,
+  TreatAsPublicAddress,
+  TrustedTypes,
+  UpgradeInsecureRequests,
+  WorkerSrc,
+};
 
-  Name name;
-  CSPSourceList source_list;
+enum CSPRequireTrustedTypesFor {
+  None = 0,
+  Script = 1,
+};
+
+// The parsed value of the CSP directive 'trusted-types'.
+// https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive
+struct CSPTrustedTypes {
+  // The list of policies allowed by the 'trusted-types' directive.
+  array<string> list;
+
+  // This is true if the directive value contains the wildcard * (meaning all
+  // policy names are allowed).
+  bool allow_any = false;
+
+  // This is true if the directive value contains the keyword 'allow-duplicates'
+  // (which allows creating policies with a name that was already used).
+  bool allow_duplicates = false;
 };
 
 struct ContentSecurityPolicy {
-  array<CSPDirective> directives;
+  // The origin used for matching the 'self' keyword.
+  // https://w3c.github.io/webappsec-csp/#framework-policy
+  CSPSource self_origin;
+
+  // The raw, unparsed values of the specified CSP directives. Needed for
+  // reporting.
+  map<CSPDirectiveName, string> raw_directives;
+
+  map<CSPDirectiveName, CSPSourceList> directives;
+
+  // Spec: https://www.w3.org/TR/upgrade-insecure-requests/
+  //
+  // Parsed by both the network and blink CSP parsers.
+  // TODO(https://crbug.com/1076894): Only the value coming from blink is used.
+  // We might want to reverse this. The browser could 'push' its value to the
+  // renderer instead of 'pulling' it after the navigation commit.
+  bool upgrade_insecure_requests = false;
+
+  // https://wicg.github.io/cors-rfc1918/#csp
+  bool treat_as_public_address = false;
+
+  // https://www.w3.org/TR/mixed-content/#strict-opt-in
+  bool block_all_mixed_content = false;
+
+  // https://www.w3.org/TR/CSP3/#directive-sandbox
+  // This uses the convention: kNone means "nothing is disallowed".
+  WebSandboxFlags sandbox = WebSandboxFlags.kNone;
+
+  ContentSecurityPolicyHeader header;
 
   // Whether this CSP policy uses the new reporting API.
   // https://w3c.github.io/reporting/
@@ -79,4 +185,69 @@ struct ContentSecurityPolicy {
 
   // Set of reporting endpoints to which violation reports are sent.
   array<string> report_endpoints;
+
+  // The parsed value of the directive 'require-trusted-types-for'.
+  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#require-trusted-types-for-csp-directive
+  CSPRequireTrustedTypesFor require_trusted_types_for =
+      CSPRequireTrustedTypesFor.None;
+
+  // The parsed value of the directive 'trusted-types'.
+  // https://w3c.github.io/webappsec-trusted-types/dist/spec/#trusted-types-csp-directive
+  // Note: If this is null, the directive was not present. On the other side, if
+  // this is a default CSPTrustedTypes struct with empty list, it means that the
+  // directive was present with empty value, so policies may not be created and
+  // no DOM XSS injection sinks can be used at all.
+  CSPTrustedTypes? trusted_types;
+
+  // An array containing a set of errors occurred while parsing the CSP header.
+  array<string> parsing_errors;
+};
+
+// Data to report Content-Security-Policy violations.
+struct CSPViolation {
+  // The name of the directive that violates the policy. |directive| might be a
+  // directive that serves as a fallback to the |effective_directive|.
+  string directive;
+
+  // The name the effective directive that was checked against.
+  string effective_directive;
+
+  // The console message to be displayed to the user.
+  string console_message;
+
+  // The URL that was blocked by the policy.
+  url.mojom.Url blocked_url;
+
+  // The set of endpoints where a report of the violation should be sent.
+  // Based on 'use_reporting_api' it can be either a set of group_names (when
+  // 'use_reporting_api' = true) or a set of URLs. This means that it's not
+  // possible to use both methods of reporting. This is by design.
+  array<string> report_endpoints;
+
+  // Whether to use the reporting api or not.
+  bool use_reporting_api;
+
+  // The raw content security policy header that was violated.
+  string header;
+
+  // Each policy has an associated disposition, which is either "enforce" or
+  // "report".
+  ContentSecurityPolicyType type;
+
+  // Whether or not the violation happens after a redirect.
+  bool after_redirect;
+
+  // The source code location that triggered the blocked navigation.
+  SourceLocation source_location;
+};
+
+union AllowCSPFromHeaderValue {
+  // Set to true if the 'Allow-CSP-From' header just contains '*'.
+  bool allow_star;
+
+  // The parsed origin contained in the 'Allow-CSP-From' header.
+  url.mojom.Origin origin;
+
+  // If the header value is invalid, an error message will be stored here.
+  string error_message;
 };

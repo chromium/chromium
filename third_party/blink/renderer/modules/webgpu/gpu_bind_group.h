@@ -9,6 +9,7 @@
 
 namespace blink {
 
+class ExceptionState;
 class GPUBindGroupDescriptor;
 
 class GPUBindGroup : public DawnObject<WGPUBindGroup> {
@@ -16,12 +17,12 @@ class GPUBindGroup : public DawnObject<WGPUBindGroup> {
 
  public:
   static GPUBindGroup* Create(GPUDevice* device,
-                              const GPUBindGroupDescriptor* webgpu_desc);
+                              const GPUBindGroupDescriptor* webgpu_desc,
+                              ExceptionState& exception_state);
   explicit GPUBindGroup(GPUDevice* device, WGPUBindGroup bind_group);
-  ~GPUBindGroup() override;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(GPUBindGroup);
+  GPUBindGroup(const GPUBindGroup&) = delete;
+  GPUBindGroup& operator=(const GPUBindGroup&) = delete;
 };
 
 }  // namespace blink

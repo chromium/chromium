@@ -10,10 +10,10 @@ host {
 }
 </style>
 <div>
-<div id="sample1" class="sample">012<host id="host1">host1</host>345</div>
-<div id="sample2" class="sample" contenteditable>012<host id="host2">host2</host>345</div>
-<div id="sample3" class="sample">012<host id="host3">host3abc<host id="host4">host4</host>host3def</host>345</div>
-<div id="sample4" class="sample">012<host id="host5">host5</host>345</div>
+<div id="sample1" class="sample">012<div id="host1">host1</div>345</div>
+<div id="sample2" class="sample" contenteditable>012<div id="host2">host2</div>345</div>
+<div id="sample3" class="sample">012<div id="host3">host3abc<div id="host4">host4</div>host3def</div>345</div>
+<div id="sample4" class="sample">012<div id="host5">host5</div>345</div>
 </div>
 <p>end of document</p>
 <script src="../../resources/js-test.js"></script>
@@ -21,8 +21,8 @@ host {
 description('SelectAll and Shadow DOM Tree');
 
 function installShadowTree(host) {
-    var shadowRoot = host.createShadowRoot();
-    shadowRoot.innerHTML = '<i>BEFORE</i> <b><content></b> <i>AFTER</i>';
+    var shadowRoot = host.attachShadow({mode: 'open'});
+    shadowRoot.innerHTML = '<i>BEFORE</i> <b><slot></b> <i>AFTER</i>';
 }
 
 var selection = window.getSelection();

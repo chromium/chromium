@@ -14,7 +14,6 @@
 
 #include "util/win/nt_internals.h"
 
-#include "base/logging.h"
 #include "util/win/get_function.h"
 
 // Declarations that the system headers should provide but don’t.

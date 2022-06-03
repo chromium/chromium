@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
@@ -14,8 +14,9 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
-#include "components/autofill/core/browser/autofill_manager.h"
+#include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_client.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_controller.h"
@@ -24,7 +25,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/url_constants.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -37,46 +40,31 @@ namespace {
 
 class MockAutofillClient : public TestAutofillClient {
  public:
-  MockAutofillClient() {}
-  ~MockAutofillClient() override {}
+  MockAutofillClient() = default;
 
-  PrefService* GetPrefs() override { return &prefs_; }
+  MockAutofillClient(const MockAutofillClient&) = delete;
+  MockAutofillClient& operator=(const MockAutofillClient&) = delete;
+
+  ~MockAutofillClient() override = default;
+
+  PrefService* GetPrefs() override {
+    return const_cast<PrefService*>(base::as_const(*this).GetPrefs());
+  }
+  const PrefService* GetPrefs() const override { return &prefs_; }
 
   user_prefs::PrefRegistrySyncable* GetPrefRegistry() {
     return prefs_.registry();
   }
 
-  MOCK_METHOD6(ShowAutofillPopup,
-               void(const gfx::RectF& element_bounds,
-                    base::i18n::TextDirection text_direction,
-                    const std::vector<autofill::Suggestion>& suggestions,
-                    bool autoselect_first_suggestion,
-                    PopupType popup_type,
-                    base::WeakPtr<AutofillPopupDelegate> delegate));
-
-  MOCK_METHOD0(HideAutofillPopup, void());
+  MOCK_METHOD(void,
+              ShowAutofillPopup,
+              (const PopupOpenArgs& open_args,
+               base::WeakPtr<AutofillPopupDelegate> delegate),
+              (override));
+  MOCK_METHOD(void, HideAutofillPopup, (PopupHidingReason), (override));
 
  private:
   sync_preferences::TestingPrefServiceSyncable prefs_;
-
-  DISALLOW_COPY_AND_ASSIGN(MockAutofillClient);
-};
-
-// Subclass ContentAutofillDriver so we can create an ContentAutofillDriver
-// instance.
-class TestContentAutofillDriver : public ContentAutofillDriver {
- public:
-  TestContentAutofillDriver(content::RenderFrameHost* rfh,
-                            AutofillClient* client)
-      : ContentAutofillDriver(rfh,
-                              client,
-                              g_browser_process->GetApplicationLocale(),
-                              AutofillManager::ENABLE_AUTOFILL_DOWNLOAD_MANAGER,
-                              nullptr) {}
-  ~TestContentAutofillDriver() override {}
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(TestContentAutofillDriver);
 };
 
 }  // namespace
@@ -84,8 +72,16 @@ class TestContentAutofillDriver : public ContentAutofillDriver {
 class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
                                          public content::WebContentsObserver {
  public:
-  ContentAutofillDriverBrowserTest() {}
-  ~ContentAutofillDriverBrowserTest() override {}
+  ContentAutofillDriverBrowserTest()
+      : prerender_helper_(
+            base::BindRepeating(&ContentAutofillDriverBrowserTest::web_contents,
+                                base::Unretained(this))) {}
+  ~ContentAutofillDriverBrowserTest() override = default;
+
+  void SetUp() override {
+    prerender_helper_.SetUp(embedded_test_server());
+    InProcessBrowserTest::SetUp();
+  }
 
   void SetUpOnMainThread() override {
     autofill_client_ =
@@ -101,7 +97,7 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
             kContentAutofillDriverFactoryWebContentsUserDataKey);
     ContentAutofillDriverFactory::CreateForWebContentsAndDelegate(
         web_contents, &autofill_client(), "en-US",
-        AutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
+        BrowserAutofillManager::DISABLE_AUTOFILL_DOWNLOAD_MANAGER);
 
     // Serve both a.com and b.com (and any other domain).
     host_resolver()->AddRule("*", "127.0.0.1");
@@ -139,14 +135,14 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     }
   }
 
-  void GetElementFormAndFieldData(const std::vector<std::string>& selectors,
+  void GetElementFormAndFieldData(const std::string& selector,
                                   size_t expected_form_size) {
     base::RunLoop run_loop;
     ContentAutofillDriverFactory::FromWebContents(web_contents())
         ->DriverForFrame(web_contents()->GetMainFrame())
         ->GetAutofillAgent()
-        ->GetElementFormAndFieldData(
-            selectors,
+        ->GetElementFormAndFieldDataAtIndex(
+            selector, 0,
             base::BindOnce(
                 &ContentAutofillDriverBrowserTest::OnGetElementFormAndFieldData,
                 base::Unretained(this), run_loop.QuitClosure(),
@@ -154,11 +150,11 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     run_loop.Run();
   }
 
-  void OnGetElementFormAndFieldData(const base::Closure& done_callback,
+  void OnGetElementFormAndFieldData(base::RepeatingClosure done_callback,
                                     size_t expected_form_size,
                                     const autofill::FormData& form_data,
                                     const autofill::FormFieldData& form_field) {
-    done_callback.Run();
+    std::move(done_callback).Run();
     if (expected_form_size) {
       ASSERT_EQ(form_data.fields.size(), expected_form_size);
       ASSERT_FALSE(form_field.label.empty());
@@ -172,6 +168,14 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
     return *autofill_client_.get();
   }
 
+  content::test::PrerenderTestHelper& prerender_helper() {
+    return prerender_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
  protected:
   base::OnceClosure web_contents_hidden_callback_;
   base::OnceClosure nav_entry_committed_callback_;
@@ -179,41 +183,68 @@ class ContentAutofillDriverBrowserTest : public InProcessBrowserTest,
   base::OnceClosure subframe_navigation_callback_;
 
   std::unique_ptr<testing::NiceMock<MockAutofillClient>> autofill_client_;
+  content::test::PrerenderTestHelper prerender_helper_;
 };
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        SwitchTabAndHideAutofillPopup) {
-  EXPECT_CALL(autofill_client(), HideAutofillPopup()).Times(1);
+  EXPECT_CALL(autofill_client(),
+              HideAutofillPopup(PopupHidingReason::kTabGone));
 
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   web_contents_hidden_callback_ = runner->QuitClosure();
-  chrome::AddSelectedTabWithURL(browser(),
-                                GURL(url::kAboutBlankURL),
+  chrome::AddSelectedTabWithURL(browser(), GURL(url::kAboutBlankURL),
                                 ui::PAGE_TRANSITION_AUTO_TOPLEVEL);
   runner->Run();
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        SameDocumentNavigationHideAutofillPopup) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html"));
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html")));
 
   // The Autofill popup should be hidden for same document navigations. It may
   // called twice because the zoom changed event may also fire for same-page
   // navigations.
-  EXPECT_CALL(autofill_client(), HideAutofillPopup())
+  EXPECT_CALL(autofill_client(),
+              HideAutofillPopup(PopupHidingReason::kNavigation))
       .Times(testing::AtLeast(1));
 
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
   same_document_navigation_callback_ = runner->QuitClosure();
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
-      embedded_test_server()->GetURL("/autofill/autofill_test_form.html#foo"));
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html#foo")));
   // This will block until a same document navigation is observed.
   runner->Run();
+}
+
+IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
+                       PrerenderNavigationDoesntHideAutofillPopup) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
+  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
+  prerender_helper().NavigatePrimaryPage(initial_url);
+
+  int host_id = content::RenderFrameHost::kNoFrameTreeNodeId;
+
+  {
+    EXPECT_CALL(autofill_client(),
+                HideAutofillPopup(PopupHidingReason::kNavigation))
+        .Times(0);
+    host_id = prerender_helper().AddPrerender(prerender_url);
+  }
+
+  EXPECT_CALL(autofill_client(),
+              HideAutofillPopup(PopupHidingReason::kNavigation))
+      .Times(testing::AtLeast(1));
+
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
 }
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
@@ -221,10 +252,10 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
   // Main frame is on a.com, iframe is on b.com.
   GURL url = embedded_test_server()->GetURL(
       "a.com", "/autofill/cross_origin_iframe.html");
-  ui_test_utils::NavigateToURL(browser(), url);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
 
   // The Autofill popup should NOT be hidden for subframe navigations.
-  EXPECT_CALL(autofill_client(), HideAutofillPopup()).Times(0);
+  EXPECT_CALL(autofill_client(), HideAutofillPopup).Times(0);
 
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
@@ -241,7 +272,9 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        TestPageNavigationHidingAutofillPopup) {
   // HideAutofillPopup is called once for each navigation.
-  EXPECT_CALL(autofill_client(), HideAutofillPopup()).Times(2);
+  EXPECT_CALL(autofill_client(),
+              HideAutofillPopup(PopupHidingReason::kNavigation))
+      .Times(2);
 
   scoped_refptr<content::MessageLoopRunner> runner =
       new content::MessageLoopRunner;
@@ -257,29 +290,66 @@ IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(ContentAutofillDriverBrowserTest,
                        GetElementFormAndFieldData) {
-  ui_test_utils::NavigateToURL(
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
-                     "/autofill/autofill_assistant_test_form.html"));
+                     "/autofill/autofill_assistant_test_form.html")));
 
-  std::vector<std::string> selectors;
-  selectors.emplace_back("#testformone");
-  selectors.emplace_back("#NAME_FIRST");
-  GetElementFormAndFieldData(selectors, /*expected_form_size=*/9u);
+  GetElementFormAndFieldData("#testformone #NAME_FIRST",
+                             /*expected_form_size=*/9u);
 
-  selectors.clear();
-  selectors.emplace_back("#testformtwo");
-  selectors.emplace_back("#NAME_FIRST");
-  GetElementFormAndFieldData(selectors, /*expected_form_size=*/7u);
+  GetElementFormAndFieldData("#testformtwo #NAME_FIRST",
+                             /*expected_form_size=*/7u);
 
-  // Multiple corresponding form fields.
-  selectors.clear();
-  selectors.emplace_back("#NAME_FIRST");
-  GetElementFormAndFieldData(selectors, /*expected_form_size=*/0u);
+  // Multiple corresponding form fields. Takes the first as an implementation
+  // detail of this test helper.
+  GetElementFormAndFieldData("#NAME_FIRST", /*expected_form_size=*/9u);
 
   // No corresponding form field.
-  selectors.clear();
-  selectors.emplace_back("#whatever");
-  GetElementFormAndFieldData(selectors, /*expected_form_size=*/0u);
+  GetElementFormAndFieldData("#whatever", /*expected_form_size=*/0u);
+}
+
+class ContentAutofillDriverPrerenderBrowserTest
+    : public ContentAutofillDriverBrowserTest {
+ public:
+  ContentAutofillDriverPrerenderBrowserTest() {
+    scoped_features_.InitAndEnableFeature(
+        features::kAutofillProbableFormSubmissionInBrowser);
+  }
+  ~ContentAutofillDriverPrerenderBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_features_;
+};
+
+IN_PROC_BROWSER_TEST_F(ContentAutofillDriverPrerenderBrowserTest,
+                       PrerenderingDoesNotSubmitForm) {
+  GURL initial_url =
+      embedded_test_server()->GetURL("/autofill/autofill_test_form.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  // Set a dummy form data to simulate to submit a form. And, OnFormSubmitted
+  // method will be called upon navigation.
+  ContentAutofillDriverFactory::FromWebContents(web_contents())
+      ->DriverForFrame(web_contents()->GetMainFrame())
+      ->SetFormToBeProbablySubmitted(absl::make_optional<FormData>());
+
+  base::HistogramTester histogram_tester;
+
+  // Load a page in the prerendering.
+  GURL prerender_url = embedded_test_server()->GetURL("/empty.html");
+  int host_id = prerender_helper().AddPrerender(prerender_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+  // TODO(crbug.com/1200511): use a mock AutofillManager and
+  // EXPECT_CALL(manager, OnFormSubmitted(_, _, _)).
+  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
+                                    0);
+
+  // Activate the page from the prerendering.
+  prerender_helper().NavigatePrimaryPage(prerender_url);
+  EXPECT_TRUE(host_observer.was_activated());
+  histogram_tester.ExpectTotalCount("Autofill.FormSubmission.PerProfileType",
+                                    1);
 }
 
 }  // namespace autofill

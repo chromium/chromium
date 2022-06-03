@@ -4,9 +4,9 @@
 
 #include "net/cert/x509_util_nss.h"
 
+#include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/stl_util.h"
 #include "net/cert/scoped_nss_types.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -45,13 +45,11 @@ TEST(X509UtilNSSTest, IsSameCertificate) {
   ASSERT_TRUE(webkit_nss_cert);
 
   scoped_refptr<X509Certificate> google_x509_cert(
-      X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(google_der), base::size(google_der)));
+      X509Certificate::CreateFromBytes(google_der));
   ASSERT_TRUE(google_x509_cert);
 
   scoped_refptr<X509Certificate> webkit_x509_cert(
-      X509Certificate::CreateFromBytes(
-          reinterpret_cast<const char*>(webkit_der), base::size(webkit_der)));
+      X509Certificate::CreateFromBytes(webkit_der));
   ASSERT_TRUE(webkit_x509_cert);
 
   EXPECT_TRUE(x509_util::IsSameCertificate(google_nss_cert.get(),

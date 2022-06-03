@@ -6,5 +6,5 @@
 
 dictionary GPUBindGroupDescriptor : GPUObjectDescriptorBase {
     required GPUBindGroupLayout layout;
-    required sequence<GPUBindGroupBinding> bindings;
+    required sequence<GPUBindGroupEntry> entries;
 };

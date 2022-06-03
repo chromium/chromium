@@ -9,11 +9,10 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/optional.h"
-#include "mojo/public/cpp/bindings/associated_receiver.h"
-#include "mojo/public/cpp/bindings/pending_associated_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/dom_storage/storage_area.mojom.h"
 
 // Utility functions and classes for testing StorageArea implementations.
@@ -31,7 +30,7 @@ base::OnceCallback<void(bool)> MakeSuccessCallback(base::OnceClosure callback,
 bool PutSync(blink::mojom::StorageArea* area,
              const std::vector<uint8_t>& key,
              const std::vector<uint8_t>& value,
-             const base::Optional<std::vector<uint8_t>>& old_value,
+             const absl::optional<std::vector<uint8_t>>& old_value,
              const std::string& source);
 
 bool GetSync(blink::mojom::StorageArea* area,
@@ -41,19 +40,11 @@ bool GetSync(blink::mojom::StorageArea* area,
 bool GetAllSync(blink::mojom::StorageArea* area,
                 std::vector<blink::mojom::KeyValuePtr>* data_out);
 
-// Unlike GetAllSync above, this method uses
-// mojo::BindNewEndpointAndPassDedicatedReceiverForTesting for the
-// GetAllCallback object's receiver to the area. This can be necessary if the
-// area is an implementation and not a receiver with it's own pipe already.
-bool GetAllSyncOnDedicatedPipe(
-    blink::mojom::StorageArea* area,
-    std::vector<blink::mojom::KeyValuePtr>* data_out);
-
 // Does a |Delete| call on the area and waits until the response is
 // received. Returns if the call was successful.
 bool DeleteSync(blink::mojom::StorageArea* area,
                 const std::vector<uint8_t>& key,
-                const base::Optional<std::vector<uint8_t>>& client_old_value,
+                const absl::optional<std::vector<uint8_t>>& client_old_value,
                 const std::string& source);
 
 // Does a |DeleteAll| call on the area and waits until the response is
@@ -61,31 +52,9 @@ bool DeleteSync(blink::mojom::StorageArea* area,
 bool DeleteAllSync(blink::mojom::StorageArea* area, const std::string& source);
 
 // Creates a callback that simply sets the  |*_out| variables to the arguments.
-base::OnceCallback<void(bool, std::vector<blink::mojom::KeyValuePtr>)>
-MakeGetAllCallback(bool* success_out,
-                   std::vector<blink::mojom::KeyValuePtr>* data_out);
-
-// Utility class to help using the StorageArea::GetAll method. Use
-// |CreateAndBind| to create the PtrInfo to send to the |GetAll| method.
-// When the call is complete, the |callback| will be called.
-class GetAllCallback : public blink::mojom::StorageAreaGetAllCallback {
- public:
-  static mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-  CreateAndBind(bool* result, base::OnceClosure callback);
-
-  static mojo::PendingAssociatedRemote<blink::mojom::StorageAreaGetAllCallback>
-  CreateAndBindOnDedicatedPipe(bool* result, base::OnceClosure callback);
-
-  ~GetAllCallback() override;
-
- private:
-  GetAllCallback(bool* result, base::OnceClosure callback);
-
-  void Complete(bool success) override;
-
-  bool* result_;
-  base::OnceClosure callback_;
-};
+blink::mojom::StorageArea::GetAllCallback MakeGetAllCallback(
+    base::OnceClosure callback,
+    std::vector<blink::mojom::KeyValuePtr>* data_out);
 
 // Mock observer implementation for use with StorageArea.
 class MockLevelDBObserver : public blink::mojom::StorageAreaObserver {
@@ -93,26 +62,25 @@ class MockLevelDBObserver : public blink::mojom::StorageAreaObserver {
   MockLevelDBObserver();
   ~MockLevelDBObserver() override;
 
-  MOCK_METHOD3(KeyAdded,
-               void(const std::vector<uint8_t>& key,
-                    const std::vector<uint8_t>& value,
-                    const std::string& source));
   MOCK_METHOD4(KeyChanged,
                void(const std::vector<uint8_t>& key,
                     const std::vector<uint8_t>& new_value,
-                    const std::vector<uint8_t>& old_value,
+                    const absl::optional<std::vector<uint8_t>>& old_value,
+                    const std::string& source));
+  MOCK_METHOD2(KeyChangeFailed,
+               void(const std::vector<uint8_t>& key,
                     const std::string& source));
   MOCK_METHOD3(KeyDeleted,
                void(const std::vector<uint8_t>& key,
-                    const std::vector<uint8_t>& old_value,
+                    const absl::optional<std::vector<uint8_t>>& old_value,
                     const std::string& source));
-  MOCK_METHOD1(AllDeleted, void(const std::string& source));
+  MOCK_METHOD2(AllDeleted, void(bool was_nonempty, const std::string& source));
   MOCK_METHOD1(ShouldSendOldValueOnMutations, void(bool value));
 
-  mojo::PendingAssociatedRemote<blink::mojom::StorageAreaObserver> Bind();
+  mojo::PendingRemote<blink::mojom::StorageAreaObserver> Bind();
 
  private:
-  mojo::AssociatedReceiver<blink::mojom::StorageAreaObserver> receiver_{this};
+  mojo::Receiver<blink::mojom::StorageAreaObserver> receiver_{this};
 };
 
 }  // namespace test

@@ -4,10 +4,10 @@
 
 #import "ios/chrome/browser/ui/infobars/modals/infobar_password_table_view_controller.h"
 
-#include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/notreached.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
 #import "ios/chrome/browser/passwords/ios_chrome_password_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/infobars/modals/infobar_modal_constants.h"
@@ -17,7 +17,7 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_edit_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/chrome/common/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -38,6 +38,15 @@ typedef NS_ENUM(NSInteger, ItemType) {
 };
 
 @interface InfobarPasswordTableViewController () <UITextFieldDelegate>
+// Properties backing InfobarPasswordModalConsumer interface.
+@property(nonatomic, copy) NSString* username;
+@property(nonatomic, copy) NSString* maskedPassword;
+@property(nonatomic, copy) NSString* unmaskedPassword;
+@property(nonatomic, copy) NSString* detailsTextMessage;
+@property(nonatomic, copy) NSString* URL;
+@property(nonatomic, copy) NSString* saveButtonText;
+@property(nonatomic, copy) NSString* cancelButtonText;
+@property(nonatomic, assign) BOOL currentCredentialsSaved;
 // Item that holds the Username TextField information.
 @property(nonatomic, strong) TableViewTextEditItem* usernameItem;
 // Item that holds the Password TextField information.
@@ -65,8 +74,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
 - (instancetype)initWithDelegate:(id<InfobarPasswordModalDelegate>)modalDelegate
                             type:(InfobarType)infobarType {
-  self = [super initWithTableViewStyle:UITableViewStylePlain
-                           appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+  self = [super initWithStyle:UITableViewStylePlain];
   if (self) {
     _infobarModalDelegate = modalDelegate;
     _metricsRecorder =
@@ -104,7 +112,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   UIBarButtonItem* cancelButton = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                            target:self
-                           action:@selector(dismissInfobarModal:)];
+                           action:@selector(dismissInfobarModal)];
   cancelButton.accessibilityIdentifier = kInfobarModalCancelButton;
   UIImage* settingsImage = [[UIImage imageNamed:@"infobar_settings_icon"]
       imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
@@ -305,13 +313,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   }
 }
 
-- (void)dismissInfobarModal:(UIButton*)sender {
+- (void)dismissInfobarModal {
   base::RecordAction(
       base::UserMetricsAction("MobileMessagesModalCancelledTapped"));
   [self.metricsRecorder recordModalEvent:MobileMessagesModalEvent::Canceled];
-  [self.infobarModalDelegate dismissInfobarModal:sender
-                                        animated:YES
-                                      completion:nil];
+  [self.infobarModalDelegate dismissInfobarModal:self];
 }
 
 - (void)saveCredentialsButtonWasPressed:(UIButton*)sender {

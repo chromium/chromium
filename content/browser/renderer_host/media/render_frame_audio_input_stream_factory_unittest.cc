@@ -8,11 +8,11 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "base/macros.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "content/browser/media/forwarding_audio_stream_factory.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -32,15 +32,18 @@
 #include "media/audio/test_audio_thread.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
+#include "media/mojo/mojom/audio_stream_factory.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/audio/public/cpp/fake_stream_factory.h"
-#include "services/audio/public/mojom/stream_factory.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif
 
 namespace content {
 
@@ -61,9 +64,9 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         audio_manager_(std::make_unique<media::TestAudioThread>(),
                        &log_factory_),
         audio_system_(media::AudioSystemImpl::CreateInstance()),
-        media_stream_manager_(std::make_unique<MediaStreamManager>(
-            audio_system_.get(),
-            base::CreateSingleThreadTaskRunner({BrowserThread::UI}))) {}
+        media_stream_manager_(
+            std::make_unique<MediaStreamManager>(audio_system_.get(),
+                                                 GetUIThreadTaskRunner({}))) {}
 
   ~MAYBE_RenderFrameAudioInputStreamFactoryTest() override {}
 
@@ -72,7 +75,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
     RenderFrameHostTester::For(main_rfh())->InitializeRenderFrameIfNeeded();
 
     // Set up the ForwardingAudioStreamFactory.
-    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
         base::BindRepeating(
             &MAYBE_RenderFrameAudioInputStreamFactoryTest::BindFactory,
             base::Unretained(this)));
@@ -81,14 +84,14 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
   }
 
   void TearDown() override {
-    ForwardingAudioStreamFactory::OverrideStreamFactoryBinderForTesting(
+    ForwardingAudioStreamFactory::OverrideAudioStreamFactoryBinderForTesting(
         base::NullCallback());
     audio_manager_.Shutdown();
     RenderViewHostTestHarness::TearDown();
   }
 
   void BindFactory(
-      mojo::PendingReceiver<audio::mojom::StreamFactory> receiver) {
+      mojo::PendingReceiver<media::mojom::AudioStreamFactory> receiver) {
     audio_service_stream_factory_.receiver_.Bind(std::move(receiver));
   }
 
@@ -106,8 +109,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
         const media::AudioParameters& params,
         uint32_t shared_memory_count,
         bool enable_agc,
-        mojo::ScopedSharedBufferHandle key_press_count_buffer,
-        audio::mojom::AudioProcessingConfigPtr processing_config,
+        base::ReadOnlySharedMemoryRegion key_press_count_buffer,
         CreateInputStreamCallback created_callback) override {
       last_created_callback = std::move(created_callback);
     }
@@ -126,11 +128,11 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
     CreateInputStreamCallback last_created_callback;
     CreateLoopbackStreamCallback last_created_loopback_callback;
 
-    mojo::Receiver<audio::mojom::StreamFactory> receiver_{this};
+    mojo::Receiver<media::mojom::AudioStreamFactory> receiver_{this};
   };
 
   class FakeRendererAudioInputStreamFactoryClient
-      : public mojom::RendererAudioInputStreamFactoryClient {
+      : public blink::mojom::RendererAudioInputStreamFactoryClient {
    public:
     void StreamCreated(
         mojo::PendingRemote<media::mojom::AudioInputStream> stream,
@@ -138,7 +140,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
             client_receiver,
         media::mojom::ReadOnlyAudioDataPipePtr data_pipe,
         bool initially_muted,
-        const base::Optional<base::UnguessableToken>& stream_id) override {}
+        const absl::optional<base::UnguessableToken>& stream_id) override {}
   };
 
   AudioInputDeviceManager* audio_input_device_manager() {
@@ -182,6 +184,10 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
   const std::string kDeviceName = "test name";
   const bool kAGC = false;
   const uint32_t kSharedMemoryCount = 123;
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Instantiate LacrosService for WakeLock support.
+  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
+#endif
   MockStreamFactory audio_service_stream_factory_;
   media::FakeAudioLogFactory log_factory_;
   media::FakeAudioManager audio_manager_;
@@ -190,7 +196,7 @@ class MAYBE_RenderFrameAudioInputStreamFactoryTest
 };
 
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest, ConstructDestruct) {
-  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
@@ -198,7 +204,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest, ConstructDestruct) {
 
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
        CreateOpenedStream_ForwardsCall) {
-  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
@@ -209,10 +215,11 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
           kDeviceName));
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client;
   ignore_result(client.InitWithNewPipeAndPassReceiver());
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount, nullptr);
+                               kSharedMemoryCount);
 
   base::RunLoop().RunUntilIdle();
 
@@ -222,7 +229,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
        CreateWebContentsCapture_ForwardsCall) {
   std::unique_ptr<WebContents> source_contents = CreateTestWebContents();
-  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
@@ -236,10 +243,11 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
           capture_id.ToString(), kDeviceName));
   base::RunLoop().RunUntilIdle();
 
-  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client;
   ignore_result(client.InitWithNewPipeAndPassReceiver());
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount, nullptr);
+                               kSharedMemoryCount);
 
   base::RunLoop().RunUntilIdle();
 
@@ -249,7 +257,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
        CreateWebContentsCaptureAfterCaptureSourceDestructed_Fails) {
   std::unique_ptr<WebContents> source_contents = CreateTestWebContents();
-  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
@@ -264,10 +272,11 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
   base::RunLoop().RunUntilIdle();
 
   source_contents.reset();
-  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client;
   ignore_result(client.InitWithNewPipeAndPassReceiver());
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount, nullptr);
+                               kSharedMemoryCount);
 
   base::RunLoop().RunUntilIdle();
 
@@ -276,16 +285,17 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 
 TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
        CreateStreamWithoutValidSessionId_Fails) {
-  mojo::Remote<mojom::RendererAudioInputStreamFactory> factory_remote;
+  mojo::Remote<blink::mojom::RendererAudioInputStreamFactory> factory_remote;
   RenderFrameAudioInputStreamFactory factory(
       factory_remote.BindNewPipeAndPassReceiver(), media_stream_manager_.get(),
       main_rfh());
 
   base::UnguessableToken session_id = base::UnguessableToken::Create();
-  mojo::PendingRemote<mojom::RendererAudioInputStreamFactoryClient> client;
+  mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
+      client;
   ignore_result(client.InitWithNewPipeAndPassReceiver());
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
-                               kSharedMemoryCount, nullptr);
+                               kSharedMemoryCount);
 
   base::RunLoop().RunUntilIdle();
 

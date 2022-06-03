@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_DOWNGRADE_DOWNGRADE_MANAGER_H_
 #define CHROME_BROWSER_DOWNGRADE_DOWNGRADE_MANAGER_H_
 
-#include "base/files/file_path.h"
+namespace base {
+class FilePath;
+class Version;
+}  // namespace base
 
 namespace downgrade {
 
@@ -22,32 +25,48 @@ class DowngradeManager {
   DowngradeManager(const DowngradeManager&) = delete;
   DowngradeManager& operator=(const DowngradeManager&) = delete;
 
-  // Inspects the contents of |user_data_dir| to determine whether or not a
-  // downgrade has happened since the last launch. Returns true if a downgrade
-  // has been detected and that downgrade requires migration processing. Note:
-  // this must be called within the protection of the process singleton.
-  bool IsMigrationRequired(const base::FilePath& user_data_dir);
+  // Inspects the contents of |user_data_dir| to determine whether a downgrade
+  // or an upgrade has happened since the last launch. Takes a Snapshot in case
+  // of upgrade, and sets the appropriate |type_| in case of downgrade. Returns
+  // |true| if the data from |user_data_dir| requires migration processing,
+  // |false| if it is usable by the current version. Note: this must be called
+  // within the protection of the process singleton.
+  bool PrepareUserDataDirectoryForCurrentVersion(
+      const base::FilePath& user_data_dir);
 
   // Writes the current version number into the "Last Version" file in
   // |user_data_dir|.
   void UpdateLastVersion(const base::FilePath& user_data_dir);
 
   // Schedules a search for the removal of any directories moved aside by
-  // ProcessDowngrade. This operation is idempotent, and may be safely called
-  // when no such directories exist.
+  // PrepareUserDataDirectoryForCurrentVersion or ProcessDowngrade. This
+  // operation is idempotent, and may be safely called when no such directories
+  // exist.
   void DeleteMovedUserDataSoon(const base::FilePath& user_data_dir);
 
   // Process a previously-detected downgrade of |user_data_dir|. This must be
   // called late in shutdown while the process singleton is still held.
   void ProcessDowngrade(const base::FilePath& user_data_dir);
 
+  static void EnableSnapshotsForTesting(bool enable);
+
  private:
   enum class Type {
-    kNone = 0,
-    kAdministrativeWipe = 1,
-    kUnsupported = 2,
-    kMaxValue = kUnsupported
+    kNone = 0,                // Same version or upgrade.
+    kAdministrativeWipe = 1,  // Admin-driven downgrade with no snapshot.
+    kUnsupported = 2,         // Unsupported downgrade with no data processing.
+    kSnapshotRestore = 3,     // Downgrade with snapshot restoration.
+    kMinorDowngrade = 4,      // Minor version downgrade; no data processing.
+    kMaxValue = kMinorDowngrade
   };
+
+  static Type GetDowngradeType(const base::FilePath& user_data_dir,
+                               const base::Version& current_version,
+                               const base::Version& last_version);
+
+  static Type GetDowngradeTypeWithSnapshot(const base::FilePath& user_data_dir,
+                                           const base::Version& current_version,
+                                           const base::Version& last_version);
 
   Type type_ = Type::kNone;
 };

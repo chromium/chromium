@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sessions/session_service_utils.h"
 
+#include "build/chromeos_buildflags.h"
+
 sessions::SessionWindow::WindowType WindowTypeForBrowserType(
     Browser::Type type) {
   switch (type) {
@@ -17,6 +19,10 @@ sessions::SessionWindow::WindowType WindowTypeForBrowserType(
       return sessions::SessionWindow::TYPE_DEVTOOLS;
     case Browser::TYPE_APP_POPUP:
       return sessions::SessionWindow::TYPE_APP_POPUP;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case Browser::TYPE_CUSTOM_TAB:
+      return sessions::SessionWindow::TYPE_CUSTOM_TAB;
+#endif
   }
   NOTREACHED();
   return sessions::SessionWindow::TYPE_NORMAL;
@@ -35,6 +41,10 @@ Browser::Type BrowserTypeForWindowType(
       return Browser::TYPE_DEVTOOLS;
     case sessions::SessionWindow::TYPE_APP_POPUP:
       return Browser::TYPE_APP_POPUP;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    case sessions::SessionWindow::TYPE_CUSTOM_TAB:
+      return Browser::TYPE_CUSTOM_TAB;
+#endif
   }
   NOTREACHED();
   return Browser::TYPE_NORMAL;

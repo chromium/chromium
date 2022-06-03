@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -39,25 +40,6 @@
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"
 #include "ui/events/event.h"
 
-// TODO(crbug.com/961064): Fix memory leaks in tests and re-enable on LSAN.
-#ifdef LEAK_SANITIZER
-#define MAYBE_LocalInputTest DISABLED_LocalInputTest
-#define MAYBE_ClampMouseEvents DISABLED_ClampMouseEvents
-#define MAYBE_DisableInputs DISABLED_DisableInputs
-#define MAYBE_MultiMonMouseMove_SameSize DISABLED_MultiMonMouseMove_SameSize
-#define MAYBE_RestoreEventState DISABLED_RestoreEventState
-#define MAYBE_MultiMonMouseMove DISABLED_MultiMonMouseMove
-#define MAYBE_DisconnectOnLocalInputTest DISABLED_DisconnectOnLocalInputTest
-#else
-#define MAYBE_LocalInputTest LocalInputTest
-#define MAYBE_ClampMouseEvents ClampMouseEvents
-#define MAYBE_DisableInputs DisableInputs
-#define MAYBE_MultiMonMouseMove_SameSize MultiMonMouseMove_SameSize
-#define MAYBE_RestoreEventState RestoreEventState
-#define MAYBE_MultiMonMouseMove MultiMonMouseMove
-#define MAYBE_DisconnectOnLocalInputTest DisconnectOnLocalInputTest
-#endif
-
 namespace remoting {
 
 using protocol::FakeSession;
@@ -82,7 +64,7 @@ constexpr char kTestDataChannelCallbackName[] = "test_channel_name";
 
 // Matches a |protocol::Capabilities| argument against a list of capabilities
 // formatted as a space-separated string.
-MATCHER_P(EqCapabilities, expected_capabilities, "") {
+MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
   if (!arg.has_capabilities())
     return false;
 
@@ -92,9 +74,14 @@ MATCHER_P(EqCapabilities, expected_capabilities, "") {
   std::vector<std::string> words_expected = base::SplitString(
       expected_capabilities, " ", base::KEEP_WHITESPACE,
       base::SPLIT_WANT_NONEMPTY);
-  std::sort(words_args.begin(), words_args.end());
-  std::sort(words_expected.begin(), words_expected.end());
-  return words_args == words_expected;
+
+  for (const auto& word : words_expected) {
+    if (std::find(words_args.begin(), words_args.end(), word) ==
+        words_args.end()) {
+      return false;
+    }
+  }
+  return true;
 }
 
 protocol::MouseEvent MakeMouseMoveEvent(int x, int y) {
@@ -136,7 +123,6 @@ class ClientSessionTest : public testing::Test {
   static const int kDisplay2Width = 1024;
   static const int kDisplay2Height = 768;
   static const int kDisplay2YOffset = 35;
-  static const int kInvalidDisplayIndex = -2;
 
   // Creates the client session from a FakeSession instance.
   void CreateClientSession(std::unique_ptr<protocol::FakeSession> session);
@@ -223,8 +209,9 @@ void ClientSessionTest::SetUp() {
   task_runner_ = new AutoThreadTaskRunner(
       task_environment_.GetMainThreadTaskRunner(), run_loop_.QuitClosure());
 
-  desktop_environment_factory_.reset(new FakeDesktopEnvironmentFactory(
-      task_environment_.GetMainThreadTaskRunner()));
+  desktop_environment_factory_ =
+      std::make_unique<FakeDesktopEnvironmentFactory>(
+          task_environment_.GetMainThreadTaskRunner());
   desktop_environment_options_ = DesktopEnvironmentOptions::CreateDefault();
 }
 
@@ -253,10 +240,10 @@ void ClientSessionTest::CreateClientSession(
   connection->set_client_stub(&client_stub_);
   connection_ = connection.get();
 
-  client_session_.reset(new ClientSession(
+  client_session_ = std::make_unique<ClientSession>(
       &session_event_handler_, std::move(connection),
       desktop_environment_factory_.get(), desktop_environment_options_,
-      base::TimeDelta(), nullptr, extensions_));
+      base::TimeDelta(), nullptr, extensions_);
 }
 
 void ClientSessionTest::CreateClientSession() {
@@ -313,22 +300,22 @@ void ClientSessionTest::NotifyVideoSizeAll() {
 
   int x_min, x_max, y_min, y_max;
   bool initialized = false;
-  for (DisplayGeometry disp : displays_.displays()) {
-    int disp_x_max = disp.x + disp.width;
-    int disp_y_max = disp.y + disp.height;
+  for (auto& disp : displays_.displays()) {
+    int disp_x_max = disp->x + disp->width;
+    int disp_y_max = disp->y + disp->height;
     if (!initialized) {
-      x_min = disp.x;
+      x_min = disp->x;
       x_max = disp_x_max;
-      y_min = disp.y;
+      y_min = disp->y;
       y_max = disp_y_max;
       initialized = true;
     } else {
-      if (disp.x < x_min)
-        x_min = disp.x;
+      if (disp->x < x_min)
+        x_min = disp->x;
       if (disp_x_max > x_max)
         x_max = disp_x_max;
-      if (disp.y < y_min)
-        y_min = disp.y;
+      if (disp->y < y_min)
+        y_min = disp->y;
       if (disp_y_max > y_max)
         y_max = disp_y_max;
     }
@@ -368,7 +355,7 @@ void ClientSessionTest::NotifySelectDesktopDisplay(std::string id) {
 
 void ClientSessionTest::ResetDisplayInfo() {
   displays_.Reset();
-  curr_display_ = kInvalidDisplayIndex;
+  curr_display_ = webrtc::kInvalidScreenId;
 }
 
 // Set up a single display (default size).
@@ -377,8 +364,8 @@ void ClientSessionTest::SetupSingleDisplay() {
   auto displays = std::make_unique<protocol::VideoLayout>();
   AddDisplayToLayout(displays.get(), 0, 0, kDisplay1Width, kDisplay1Height,
                      kDefaultDpi, kDefaultDpi);
-  NotifyDesktopDisplaySize(std::move(displays));
   NotifyVideoSizeAll();
+  NotifyDesktopDisplaySize(std::move(displays));
 }
 
 // Set up multiple displays:
@@ -395,8 +382,8 @@ void ClientSessionTest::SetupMultiDisplay() {
                      kDefaultDpi, kDefaultDpi);
   AddDisplayToLayout(displays.get(), kDisplay1Width, kDisplay2YOffset,
                      kDisplay2Width, kDisplay2Height, kDefaultDpi, kDefaultDpi);
-  NotifyDesktopDisplaySize(std::move(displays));
   NotifyVideoSizeAll();
+  NotifyDesktopDisplaySize(std::move(displays));
 }
 
 // Set up multiple displays that are the same size:
@@ -412,8 +399,8 @@ void ClientSessionTest::SetupMultiDisplay_SameSize() {
                      kDefaultDpi, kDefaultDpi);
   AddDisplayToLayout(displays.get(), kDisplay1Width, kDisplay2YOffset,
                      kDisplay1Width, kDisplay1Height, kDefaultDpi, kDefaultDpi);
-  NotifyDesktopDisplaySize(std::move(displays));
   NotifyVideoSizeAll();
+  NotifyDesktopDisplaySize(std::move(displays));
 }
 
 void ClientSessionTest::MultiMon_SelectFirstDisplay() {
@@ -431,7 +418,7 @@ void ClientSessionTest::MultiMon_SelectAllDisplays() {
   NotifyVideoSizeAll();
 }
 
-TEST_F(ClientSessionTest, MAYBE_MultiMonMouseMove) {
+TEST_F(ClientSessionTest, MultiMonMouseMove) {
   CreateClientSession();
   ConnectClientSession();
   SetupMultiDisplay();
@@ -488,7 +475,7 @@ TEST_F(ClientSessionTest, MAYBE_MultiMonMouseMove) {
                                    kDisplay2Height + kDisplay2YOffset - 1));
 }
 
-TEST_F(ClientSessionTest, MAYBE_MultiMonMouseMove_SameSize) {
+TEST_F(ClientSessionTest, MultiMonMouseMove_SameSize) {
   CreateClientSession();
   ConnectClientSession();
   SetupMultiDisplay_SameSize();
@@ -544,7 +531,7 @@ TEST_F(ClientSessionTest, MAYBE_MultiMonMouseMove_SameSize) {
                                    kDisplay1Height + kDisplay2YOffset - 1));
 }
 
-TEST_F(ClientSessionTest, MAYBE_DisableInputs) {
+TEST_F(ClientSessionTest, DisableInputs) {
   CreateClientSession();
   ConnectClientSession();
   SetupSingleDisplay();
@@ -600,7 +587,7 @@ TEST_F(ClientSessionTest, MAYBE_DisableInputs) {
               EqualsClipboardEvent(kMimeTypeTextUtf8, "c"));
 }
 
-TEST_F(ClientSessionTest, MAYBE_LocalInputTest) {
+TEST_F(ClientSessionTest, LocalInputTest) {
   CreateClientSession();
   ConnectClientSession();
   SetupSingleDisplay();
@@ -640,7 +627,7 @@ TEST_F(ClientSessionTest, MAYBE_LocalInputTest) {
   // eventually (via dependency injection, not sleep!)
 }
 
-TEST_F(ClientSessionTest, MAYBE_DisconnectOnLocalInputTest) {
+TEST_F(ClientSessionTest, DisconnectOnLocalInputTest) {
   desktop_environment_options_.set_terminate_upon_input(true);
   CreateClientSession();
   ConnectClientSession();
@@ -651,7 +638,7 @@ TEST_F(ClientSessionTest, MAYBE_DisconnectOnLocalInputTest) {
   EXPECT_FALSE(connection_->is_connected());
 }
 
-TEST_F(ClientSessionTest, MAYBE_RestoreEventState) {
+TEST_F(ClientSessionTest, RestoreEventState) {
   CreateClientSession();
   ConnectClientSession();
   SetupSingleDisplay();
@@ -689,7 +676,7 @@ TEST_F(ClientSessionTest, MAYBE_RestoreEventState) {
   EXPECT_THAT(key_events[3], EqualsKeyEvent(2, false));
 }
 
-TEST_F(ClientSessionTest, MAYBE_ClampMouseEvents) {
+TEST_F(ClientSessionTest, ClampMouseEvents) {
   CreateClientSession();
   ConnectClientSession();
   SetupSingleDisplay();
@@ -732,7 +719,7 @@ TEST_F(ClientSessionTest, Extensions) {
   extensions_.push_back(&extension3);
 
   // Verify that the ClientSession reports the correct capabilities.
-  EXPECT_CALL(client_stub_, SetCapabilities(EqCapabilities("cap1 cap3")));
+  EXPECT_CALL(client_stub_, SetCapabilities(IncludesCapabilities("cap1 cap3")));
 
   CreateClientSession();
   ConnectClientSession();
@@ -778,10 +765,10 @@ TEST_F(ClientSessionTest, DataChannelCallbackIsCalled) {
   CreateClientSession();
   client_session_->RegisterCreateHandlerCallbackForTesting(
       kTestDataChannelCallbackName,
-      base::Bind([](bool* callback_was_called, const std::string& name,
-                    std::unique_ptr<protocol::MessagePipe> pipe)
-                     -> void { *callback_was_called = true; },
-                 &callback_called));
+      base::BindRepeating([](bool* callback_was_called, const std::string& name,
+                             std::unique_ptr<protocol::MessagePipe> pipe)
+                              -> void { *callback_was_called = true; },
+                          &callback_called));
   ConnectClientSession();
 
   std::unique_ptr<protocol::MessagePipe> pipe =

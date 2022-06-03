@@ -7,6 +7,7 @@
 #import <Cocoa/Cocoa.h>
 
 #include "extensions/browser/app_window/native_app_window.h"
+#include "third_party/skia/include/core/SkRegion.h"
 #include "ui/base/hit_test.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/views/widget/widget.h"

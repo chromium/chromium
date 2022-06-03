@@ -5,11 +5,13 @@
 #include "device/bluetooth/dbus/bluetooth_profile_manager_client.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/macros.h"
+#include "base/time/time.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "device/bluetooth/dbus/bluetooth_metrics_helper.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace bluez {
@@ -26,14 +28,19 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
  public:
   BluetoothProfileManagerClientImpl() {}
 
+  BluetoothProfileManagerClientImpl(const BluetoothProfileManagerClientImpl&) =
+      delete;
+  BluetoothProfileManagerClientImpl& operator=(
+      const BluetoothProfileManagerClientImpl&) = delete;
+
   ~BluetoothProfileManagerClientImpl() override = default;
 
   // BluetoothProfileManagerClient override.
   void RegisterProfile(const dbus::ObjectPath& profile_path,
                        const std::string& uuid,
                        const Options& options,
-                       const base::Closure& callback,
-                       const ErrorCallback& error_callback) override {
+                       base::OnceClosure callback,
+                       ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_profile_manager::kBluetoothProfileManagerInterface,
         bluetooth_profile_manager::kRegisterProfile);
@@ -155,16 +162,19 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
 
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), callback),
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(), error_callback));
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnRegisterProfileSuccess,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            /*start_time=*/base::Time::Now()),
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnRegisterProfileError,
+            weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
   }
 
   // BluetoothProfileManagerClient override.
   void UnregisterProfile(const dbus::ObjectPath& profile_path,
-                         const base::Closure& callback,
-                         const ErrorCallback& error_callback) override {
+                         base::OnceClosure callback,
+                         ErrorCallback error_callback) override {
     dbus::MethodCall method_call(
         bluetooth_profile_manager::kBluetoothProfileManagerInterface,
         bluetooth_profile_manager::kUnregisterProfile);
@@ -174,10 +184,13 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
 
     object_proxy_->CallMethodWithErrorCallback(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnSuccess,
-                       weak_ptr_factory_.GetWeakPtr(), callback),
-        base::BindOnce(&BluetoothProfileManagerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(), error_callback));
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnUnregisterProfileSuccess,
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            /*start_time=*/base::Time::Now()),
+        base::BindOnce(
+            &BluetoothProfileManagerClientImpl::OnUnregisterProfileError,
+            weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
   }
 
  protected:
@@ -191,15 +204,36 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
   }
 
  private:
-  // Called when a response for successful method call is received.
-  void OnSuccess(const base::Closure& callback, dbus::Response* response) {
+  void OnRegisterProfileSuccess(base::OnceClosure callback,
+                                base::Time start_time,
+                                dbus::Response* response) {
     DCHECK(response);
-    callback.Run();
+    RecordSuccess(kRegisterProfileMethod, start_time);
+    std::move(callback).Run();
+  }
+
+  void OnRegisterProfileError(ErrorCallback error_callback,
+                              dbus::ErrorResponse* response) {
+    RecordFailure(kRegisterProfileMethod, response);
+    OnError(std::move(error_callback), response);
+  }
+
+  void OnUnregisterProfileSuccess(base::OnceClosure callback,
+                                  base::Time start_time,
+                                  dbus::Response* response) {
+    DCHECK(response);
+    RecordSuccess(kUnregisterProfileMethod, start_time);
+    std::move(callback).Run();
+  }
+
+  void OnUnregisterProfileError(ErrorCallback error_callback,
+                                dbus::ErrorResponse* response) {
+    RecordFailure(kUnregisterProfileMethod, response);
+    OnError(std::move(error_callback), response);
   }
 
   // Called when a response for a failed method call is received.
-  void OnError(const ErrorCallback& error_callback,
-               dbus::ErrorResponse* response) {
+  void OnError(ErrorCallback error_callback, dbus::ErrorResponse* response) {
     // Error response has optional error message argument.
     std::string error_name;
     std::string error_message;
@@ -211,7 +245,7 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
       error_name = kNoResponseError;
       error_message = "";
     }
-    error_callback.Run(error_name, error_message);
+    std::move(error_callback).Run(error_name, error_message);
   }
 
   dbus::ObjectProxy* object_proxy_;
@@ -222,8 +256,6 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
   // invalidate its weak pointers before any other members are destroyed.
   base::WeakPtrFactory<BluetoothProfileManagerClientImpl> weak_ptr_factory_{
       this};
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothProfileManagerClientImpl);
 };
 
 BluetoothProfileManagerClient::BluetoothProfileManagerClient() = default;

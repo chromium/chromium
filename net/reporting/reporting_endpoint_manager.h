@@ -6,21 +6,17 @@
 #define NET_REPORTING_REPORTING_ENDPOINT_MANAGER_H_
 
 #include <memory>
-#include <string>
 
 #include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/base/rand_callback.h"
+#include "net/reporting/reporting_endpoint.h"
 
 class GURL;
 
 namespace base {
 class TickClock;
 }
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace net {
 
@@ -52,17 +48,14 @@ class NET_EXPORT ReportingEndpointManager {
 
   virtual ~ReportingEndpointManager();
 
-  // Finds an endpoint that applies to deliveries to |group| for |origin| that
-  // are not expired or in exponential backoff from failed requests.
-  // The returned endpoint may have been configured by a superdomain of
-  // |origin|. Deliberately chooses an endpoint randomly to ensure sites aren't
-  // relying on any sort of fallback ordering.
-  // If no suitable endpoint was found, returns an endpoint with is_valid()
-  // false.
+  // Finds an endpoint that applies to deliveries to the group identified by
+  // |group_key| that are not expired or in exponential backoff from failed
+  // requests. The returned endpoint may have been configured by a superdomain
+  // of the group's origin. Deliberately chooses an endpoint randomly to ensure
+  // sites aren't relying on any sort of fallback ordering. If no suitable
+  // endpoint was found, returns an endpoint with is_valid() false.
   virtual const ReportingEndpoint FindEndpointForDelivery(
-      const NetworkIsolationKey& network_isolation_key,
-      const url::Origin& origin,
-      const std::string& group) = 0;
+      const ReportingEndpointGroupKey& group_key) = 0;
 
   // Informs the EndpointManager of a successful or unsuccessful request made to
   // |endpoint| so it can manage exponential backoff of failing endpoints.

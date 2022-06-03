@@ -17,8 +17,12 @@ class HistoryService;
 class TypedURLModelTypeController : public syncer::ModelTypeController {
  public:
   TypedURLModelTypeController(HistoryService* history_service,
-                              PrefService* pref_service,
-                              const char* history_disabled_pref_name);
+                              PrefService* pref_service);
+
+  TypedURLModelTypeController(const TypedURLModelTypeController&) = delete;
+  TypedURLModelTypeController& operator=(const TypedURLModelTypeController&) =
+      delete;
+
   ~TypedURLModelTypeController() override;
 
   // syncer::DataTypeController implementation.
@@ -30,12 +34,7 @@ class TypedURLModelTypeController : public syncer::ModelTypeController {
   HistoryService* const history_service_;
   PrefService* const pref_service_;
 
-  // Name of the pref that indicates whether saving history is disabled.
-  const char* const history_disabled_pref_name_;
-
   PrefChangeRegistrar pref_registrar_;
-
-  DISALLOW_COPY_AND_ASSIGN(TypedURLModelTypeController);
 };
 
 }  // namespace history

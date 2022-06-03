@@ -7,15 +7,22 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/dbus/properties/types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/models/menu_model.h"
 #include "ui/base/models/menu_separator_types.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/image/image.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep_default.h"
+
+#if defined(OS_LINUX)
+#include "ui/ozone/public/ozone_platform.h"
+#endif
 
 namespace {
 
@@ -25,7 +32,7 @@ class TestMenuModel : public ui::SimpleMenuModel,
   TestMenuModel(bool checked,
                 bool enabled,
                 bool visible,
-                const base::string16& label,
+                const std::u16string& label,
                 const gfx::Image& icon,
                 const ui::Accelerator& accelerator)
       : ui::SimpleMenuModel(this),
@@ -62,16 +69,14 @@ class TestMenuModel : public ui::SimpleMenuModel,
     EXPECT_LE(command_id, 0);
     return visible_;
   }
-  base::string16 GetLabelForCommandId(int command_id) const override {
+  std::u16string GetLabelForCommandId(int command_id) const override {
     EXPECT_LE(command_id, 0);
     return label_;
   }
-  bool GetIconForCommandId(int command_id, gfx::Image* icon) const override {
+  ui::ImageModel GetIconForCommandId(int command_id) const override {
     EXPECT_LE(command_id, 0);
-    if (icon_.IsEmpty())
-      return false;
-    *icon = icon_;
-    return true;
+    return icon_.IsEmpty() ? ui::ImageModel()
+                           : ui::ImageModel::FromImage(icon_);
   }
   void ExecuteCommand(int command_id, int event_flags) override {
     EXPECT_LE(command_id, 0);
@@ -89,7 +94,7 @@ class TestMenuModel : public ui::SimpleMenuModel,
   const bool checked_;
   const bool enabled_;
   const bool visible_;
-  const base::string16 label_;
+  const std::u16string label_;
   const gfx::Image icon_;
   const ui::Accelerator accelerator_;
 };
@@ -171,7 +176,8 @@ class TestMenuModelBuilder {
         menu->AddActionableSubMenu(0, label_, nullptr);
         break;
       case ui::MenuModel::TYPE_HIGHLIGHTED:
-        menu->AddHighlightedItemWithIcon(0, label_, icon_.AsImageSkia());
+        menu->AddHighlightedItemWithIcon(0, label_,
+                                         ui::ImageModel::FromImage(icon_));
         break;
     }
     return menu;
@@ -182,7 +188,7 @@ class TestMenuModelBuilder {
   bool checked_ = false;
   bool enabled_ = true;
   bool visible_ = true;
-  base::string16 label_;
+  std::u16string label_;
   gfx::Image icon_;
   ui::Accelerator accelerator_;
 };
@@ -317,8 +323,12 @@ TEST(MenuPropertyListTest, ComputePropertiesIcon) {
   EXPECT_EQ(menu->ComputeProperties(), props);
 }
 
-#if defined(USE_X11)
+#if defined(OS_LINUX)
 TEST(MenuPropertyListTest, ComputePropertiesAccelerator) {
+  // TODO(1136791): fix for Ozone/Wayland.
+  if (ui::OzonePlatform::GetPlatformNameForTest() != "x11")
+    GTEST_SKIP();
+
   auto builder = TestMenuModelBuilder();
 
   // No accelerator.

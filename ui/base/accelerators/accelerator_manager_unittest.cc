@@ -4,10 +4,15 @@
 
 #include "ui/base/accelerators/accelerator_manager.h"
 
-#include "base/stl_util.h"
+#include "base/cxx17_backports.h"
+#include "base/test/scoped_feature_list.h"
+#include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
+#include "ui/base/ui_base_features.h"
+#include "ui/events/event.h"
 #include "ui/events/event_constants.h"
+#include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace ui {
@@ -161,6 +166,179 @@ TEST_F(AcceleratorManagerTest, Process) {
     manager_.UnregisterAll(&target);
   }
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(AcceleratorManagerTest, NewMappingWithImprovedShortcutsDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kNewShortcutMapping},
+      /*disabled_features=*/{::features::kImprovedKeyboardShortcuts});
+
+  // Test new mapping with a ASCII punctuation shortcut that doesn't involve
+  // shift.
+  TestAcceleratorTarget target;
+  {
+    // ']' + ctrl
+    const Accelerator accelerator(VKEY_OEM_6, EF_CONTROL_DOWN);
+    manager_.Register({accelerator}, AcceleratorManager::kNormalPriority,
+                      &target);
+    KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_1, ui::DomCode::NONE,
+                   ui::EF_CONTROL_DOWN, ui::DomKey::Constant<']'>::Character,
+                   base::TimeTicks());
+    const Accelerator trigger(event);
+    EXPECT_TRUE(manager_.IsRegistered(trigger));
+    EXPECT_TRUE(manager_.Process(trigger));
+  }
+
+  // Test new mapping with a ASCII punctuation shortcut that involves shift.
+  {
+    // ']' + ctrl + shift, which produces '}' on US layout.
+    const Accelerator accelerator(VKEY_OEM_6, EF_CONTROL_DOWN | EF_SHIFT_DOWN);
+    manager_.Register({accelerator}, AcceleratorManager::kNormalPriority,
+                      &target);
+    KeyEvent event(ui::ET_KEY_PRESSED, ui::VKEY_1, ui::DomCode::NONE,
+                   ui::EF_CONTROL_DOWN, ui::DomKey::Constant<'}'>::Character,
+                   base::TimeTicks());
+    const Accelerator trigger(event);
+    EXPECT_TRUE(manager_.IsRegistered(trigger));
+    EXPECT_TRUE(manager_.Process(trigger));
+  }
+}
+
+// TODO(crbug.com/1179893): Remove once the feature is enabled permanently.
+TEST_F(AcceleratorManagerTest, NewMappingSuperseded) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(features::kNewShortcutMapping);
+
+  // When kImprovedKeyboardShortcuts is enabled, it takes precedence
+  // over kNewShortcutMapping. Remove this test when kImprovedShortcutMapping
+  // is made permanent.
+  EXPECT_TRUE(::features::IsImprovedKeyboardShortcutsEnabled());
+  EXPECT_FALSE(::features::IsNewShortcutMappingEnabled());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if defined(OS_CHROMEOS)
+
+TEST_F(AcceleratorManagerTest, PositionalShortcuts_AllEqual) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kImprovedKeyboardShortcuts);
+
+  // Use a local instance so that the feature is enabled during construction.
+  AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
+
+  // Test what would be ctrl + ']' (VKEY_OEM_6) on a US keyboard. This
+  // should match.
+  TestAcceleratorTarget target;
+  const Accelerator accelerator(VKEY_OEM_6, EF_CONTROL_DOWN);
+  manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
+  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_OEM_6, ui::DomCode::BRACKET_RIGHT,
+                 ui::EF_CONTROL_DOWN, ui::DomKey::Constant<']'>::Character,
+                 base::TimeTicks());
+  const Accelerator trigger(event);
+  EXPECT_TRUE(manager.IsRegistered(trigger));
+  EXPECT_TRUE(manager.Process(trigger));
+}
+
+TEST_F(AcceleratorManagerTest, PositionalShortcuts_MatchingDomCode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kImprovedKeyboardShortcuts);
+
+  // Use a local instance so that the feature is enabled during construction.
+  AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
+
+  // Test what would be ctrl + ']' on a US keyboard with matching DomCode
+  // and different VKEY (eg. '+'). This is the use case of a positional key
+  // on the German keyboard. Since the DomCode matches, this should match.
+  TestAcceleratorTarget target;
+  const Accelerator accelerator(VKEY_OEM_6, EF_CONTROL_DOWN);
+  manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
+  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_OEM_PLUS, ui::DomCode::BRACKET_RIGHT,
+                 ui::EF_CONTROL_DOWN, ui::DomKey::Constant<']'>::Character,
+                 base::TimeTicks());
+  const Accelerator trigger(event);
+  EXPECT_TRUE(manager.IsRegistered(trigger));
+  EXPECT_TRUE(manager.Process(trigger));
+}
+
+TEST_F(AcceleratorManagerTest, PositionalShortcuts_NotMatchingDomCode) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kImprovedKeyboardShortcuts);
+
+  // Use a local instance so that the feature is enabled during construction.
+  AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
+
+  // Test what would be ctrl + ']' on a US keyboard using positional mapping
+  // for a German layout. The accelerator is registered using the US VKEY and
+  // triggered with a KeyEvent with the US VKEY but a mismatched DomCode. This
+  // should not match. This prevents ghost shortcuts on non-US layouts.
+  TestAcceleratorTarget target;
+  const Accelerator accelerator(VKEY_OEM_6, EF_CONTROL_DOWN);
+  manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
+  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_OEM_6, ui::DomCode::BRACKET_LEFT,
+                 ui::EF_CONTROL_DOWN, ui::DomKey::Constant<']'>::Character,
+                 base::TimeTicks());
+  const Accelerator trigger(event);
+  EXPECT_FALSE(manager.IsRegistered(trigger));
+  EXPECT_FALSE(manager.Process(trigger));
+}
+
+TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalMatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kImprovedKeyboardShortcuts);
+
+  // Use a local instance so that the feature is enabled during construction.
+  AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
+
+  // Test ctrl + 'Z' for the German layout. Since 'Z' is not a positional
+  // key it should match based on the VKEY, regardless of the DomCode. In this
+  // case the 'Z' has DomCode US_Y (ie. QWERTZ keyboard), but it should still
+  // match.
+  TestAcceleratorTarget target;
+  const Accelerator accelerator(VKEY_Z, EF_CONTROL_DOWN);
+  manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
+  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_Z, ui::DomCode::US_Y,
+                 ui::EF_CONTROL_DOWN, ui::DomKey::Constant<']'>::Character,
+                 base::TimeTicks());
+  const Accelerator trigger(event);
+  EXPECT_TRUE(manager.IsRegistered(trigger));
+  EXPECT_TRUE(manager.Process(trigger));
+}
+
+TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalNonMatch) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kImprovedKeyboardShortcuts);
+
+  // Use a local instance so that the feature is enabled during construction.
+  AcceleratorManager manager;
+  manager.SetUsePositionalLookup(true);
+
+  // Test ctrl + 'Z' for the German layout. The 'Y' key (in the US_Z position),
+  // should not match. Alphanumeric keys are not positional, and pressing the
+  // key with DomCode::US_Z should not match when it's mapped to VKEY_Y.
+  TestAcceleratorTarget target;
+  const Accelerator accelerator(VKEY_Z, EF_CONTROL_DOWN);
+  manager.Register({accelerator}, AcceleratorManager::kNormalPriority, &target);
+  KeyEvent event(ui::ET_KEY_PRESSED, VKEY_Y, ui::DomCode::US_Z,
+                 ui::EF_CONTROL_DOWN, ui::DomKey::Constant<']'>::Character,
+                 base::TimeTicks());
+  const Accelerator trigger(event);
+  EXPECT_FALSE(manager.IsRegistered(trigger));
+  EXPECT_FALSE(manager.Process(trigger));
+}
+
+#endif  // defined(OS_CHROMEOS)
 
 }  // namespace
 }  // namespace test

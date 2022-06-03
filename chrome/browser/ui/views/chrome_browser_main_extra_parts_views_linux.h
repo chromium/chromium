@@ -8,23 +8,34 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
+#include "ui/display/display_observer.h"
 
 // Extra parts, which are used by both Ozone/X11/Wayland and inherited by the
 // non-ozone X11 extra parts.
 class ChromeBrowserMainExtraPartsViewsLinux
-    : public ChromeBrowserMainExtraPartsViews {
+    : public ChromeBrowserMainExtraPartsViews,
+      public display::DisplayObserver {
  public:
   ChromeBrowserMainExtraPartsViewsLinux();
+
+  ChromeBrowserMainExtraPartsViewsLinux(
+      const ChromeBrowserMainExtraPartsViewsLinux&) = delete;
+  ChromeBrowserMainExtraPartsViewsLinux& operator=(
+      const ChromeBrowserMainExtraPartsViewsLinux&) = delete;
+
   ~ChromeBrowserMainExtraPartsViewsLinux() override;
 
   // Overridden from ChromeBrowserMainExtraParts:
   void ToolkitInitialized() override;
+  void PreCreateThreads() override;
 
  private:
-  DISALLOW_COPY_AND_ASSIGN(ChromeBrowserMainExtraPartsViewsLinux);
+  // display::DisplayObserver:
+  void OnCurrentWorkspaceChanged(const std::string& new_workspace) override;
+
+  absl::optional<display::ScopedDisplayObserver> display_observer_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_CHROME_BROWSER_MAIN_EXTRA_PARTS_VIEWS_LINUX_H_

@@ -1,0 +1,253 @@
+Tests accessibility values in modal dialog.
+{
+    childIds : <object>
+    domNode : dialog#modal
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : focused
+            value : {
+                type : booleanOrUndefined
+                value : true
+            }
+        }
+        [1] : {
+            name : modal
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : dialog
+    }
+}
+{
+    childIds : <object>
+    domNode : div
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                type : contents
+            }
+            [3] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+    ]
+    role : {
+        type : role
+        value : button
+    }
+}
+{
+    childIds : <object>
+    domNode : div
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : modal
+            value : {
+                type : boolean
+                value : false
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : dialog
+    }
+}
+{
+    childIds : <object>
+    domNode : div
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : modal
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : dialog
+    }
+}
+{
+    childIds : <object>
+    domNode : div
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : modal
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : alertdialog
+    }
+}
+{
+    childIds : <object>
+    domNode : dialog
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : notRendered
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    nodeId : <string>
+    parentId : <string>
+    role : {
+        type : role
+        value : none
+    }
+}
+{
+    childIds : <object>
+    domNode : dialog
+    ignored : false
+    name : {
+        sources : [
+            [0] : {
+                attribute : aria-labelledby
+                type : relatedElement
+            }
+            [1] : {
+                attribute : aria-label
+                type : attribute
+            }
+            [2] : {
+                attribute : title
+                type : attribute
+            }
+        ]
+        type : computedString
+        value : 
+    }
+    nodeId : <string>
+    parentId : <string>
+    properties : [
+        [0] : {
+            name : modal
+            value : {
+                type : boolean
+                value : false
+            }
+        }
+    ]
+    role : {
+        type : role
+        value : dialog
+    }
+}
+

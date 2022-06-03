@@ -18,7 +18,7 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
-#include "ios/public/provider/chrome/browser/voice/voice_search_prefs.h"
+#include "ios/chrome/browser/voice/voice_search_prefs.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #include "testing/platform_test.h"

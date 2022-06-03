@@ -12,14 +12,13 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
-#include "base/single_thread_task_runner.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_variant.h"
@@ -66,9 +65,12 @@ bool FindSearchBoxElement(IUIAutomation* automation,
 
 class UninstallAppController {
  public:
+  UninstallAppController(const UninstallAppController&) = delete;
+  UninstallAppController& operator=(const UninstallAppController&) = delete;
+
   // Launches the Apps & Features page, ensuring the |application_name| is
   // written into the search box.
-  static void Launch(const base::string16& application_name);
+  static void Launch(const std::wstring& application_name);
 
  private:
   class AutomationControllerDelegate;
@@ -76,7 +78,7 @@ class UninstallAppController {
   // The unique instance of this class.
   static UninstallAppController* instance_;
 
-  explicit UninstallAppController(const base::string16& application_name);
+  explicit UninstallAppController(const std::wstring& application_name);
   ~UninstallAppController();
 
   void OnUninstallFinished();
@@ -85,15 +87,13 @@ class UninstallAppController {
   std::unique_ptr<AutomationController> automation_controller_;
 
   base::WeakPtrFactory<UninstallAppController> weak_ptr_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(UninstallAppController);
 };
 
 // static
 UninstallAppController* UninstallAppController::instance_ = nullptr;
 
 // static
-void UninstallAppController::Launch(const base::string16& application_name) {
+void UninstallAppController::Launch(const std::wstring& application_name) {
   // If an instance already exists, the previous controller is deleted to make
   // sure it doesn't interfere with the current call.
   delete instance_;
@@ -103,7 +103,7 @@ void UninstallAppController::Launch(const base::string16& application_name) {
 }
 
 UninstallAppController::UninstallAppController(
-    const base::string16& application_name)
+    const std::wstring& application_name)
     : weak_ptr_factory_(this) {
   auto automation_controller_delegate =
       std::make_unique<AutomationControllerDelegate>(
@@ -133,7 +133,12 @@ class UninstallAppController::AutomationControllerDelegate
   AutomationControllerDelegate(
       scoped_refptr<base::SequencedTaskRunner> controller_runner,
       base::OnceClosure on_automation_finished,
-      const base::string16& application_name);
+      const std::wstring& application_name);
+
+  AutomationControllerDelegate(const AutomationControllerDelegate&) = delete;
+  AutomationControllerDelegate& operator=(const AutomationControllerDelegate&) =
+      delete;
+
   ~AutomationControllerDelegate() override;
 
   // AutomationController::Delegate:
@@ -156,16 +161,14 @@ class UninstallAppController::AutomationControllerDelegate
   // Called once when the automation work is done.
   mutable base::OnceClosure on_automation_finished_;
 
-  const base::string16 application_name_;
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationControllerDelegate);
+  const std::wstring application_name_;
 };
 
 UninstallAppController::AutomationControllerDelegate::
     AutomationControllerDelegate(
         scoped_refptr<base::SequencedTaskRunner> controller_runner,
         base::OnceClosure on_automation_finished,
-        const base::string16& application_name)
+        const std::wstring& application_name)
     : controller_runner_(std::move(controller_runner)),
       on_automation_finished_(std::move(on_automation_finished)),
       application_name_(application_name) {}
@@ -196,7 +199,7 @@ void UninstallAppController::AutomationControllerDelegate::OnAutomationEvent(
 void UninstallAppController::AutomationControllerDelegate::OnFocusChangedEvent(
     IUIAutomation* automation,
     IUIAutomationElement* sender) const {
-  base::string16 combo_box_id(
+  std::wstring combo_box_id(
       GetCachedBstrValue(sender, UIA_AutomationIdPropertyId));
   if (combo_box_id != L"SystemSettings_AppsFeatures_AppControl_ComboBox")
     return;
@@ -230,7 +233,7 @@ void UninstallAppController::AutomationControllerDelegate::OnFocusChangedEvent(
 
 }  // namespace
 
-void LaunchUninstallFlow(const base::string16& application_name) {
+void LaunchUninstallFlow(const std::wstring& application_name) {
   UninstallAppController::Launch(application_name);
 }
 

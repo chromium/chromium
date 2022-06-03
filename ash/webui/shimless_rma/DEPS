@@ -1,0 +1,16 @@
+include_rules = [
+  "+ash/grit/ash_shimless_rma_resources.h",
+  "+chromeos/dbus",
+  "+chromeos/dbus/rmad",
+  "+chromeos/dbus/update_engine",
+  "+chromeos/dbus/util",
+  "+ui/resources",
+  "+ui/web_dialogs",
+  "+ui/chromeos/strings",
+  "+components/onc/onc_constants.h",
+  "+components/onc/onc_pref_names.h",
+  "+components/proxy_config/pref_proxy_config_tracker_impl.h",
+  "+components/proxy_config/proxy_config_pref_names.h",
+  "+components/qr_code_generator/qr_code_generator.h",
+  "+components/sync_preferences/testing_pref_service_syncable.h",
+]

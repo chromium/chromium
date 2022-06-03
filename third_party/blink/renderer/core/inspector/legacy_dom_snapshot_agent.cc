@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/inspector/legacy_dom_snapshot_agent.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/script_event_listener.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/attribute.h"
@@ -27,6 +26,7 @@
 #include "third_party/blink/renderer/core/html/html_link_element.h"
 #include "third_party/blink/renderer/core/html/html_template_element.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
+#include "third_party/blink/renderer/core/inspector/dom_traversal_utils.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_debugger_agent.h"
@@ -79,7 +79,8 @@ struct LegacyDOMSnapshotAgent::VectorStringHashTraits
   }
 
   static void ConstructDeletedValue(Vector<String>& vec, bool) {
-    new (NotNull, &vec) Vector<String>(WTF::kHashTableDeletedValue);
+    new (NotNullTag::kNotNull, &vec)
+        Vector<String>(WTF::kHashTableDeletedValue);
   }
 
   static bool IsDeletedValue(const Vector<String>& vec) {
@@ -112,6 +113,8 @@ Response LegacyDOMSnapshotAgent::GetSnapshot(
         layout_tree_nodes,
     std::unique_ptr<protocol::Array<protocol::DOMSnapshot::ComputedStyle>>*
         computed_styles) {
+  document->View()->UpdateLifecycleToCompositingInputsClean(
+      DocumentUpdateReason::kInspector);
   // Setup snapshot.
   dom_nodes_ =
       std::make_unique<protocol::Array<protocol::DOMSnapshot::DOMNode>>();
@@ -124,7 +127,8 @@ Response LegacyDOMSnapshotAgent::GetSnapshot(
 
   // Look up the CSSPropertyIDs for each entry in |style_filter|.
   for (const String& entry : *style_filter) {
-    CSSPropertyID property_id = cssPropertyID(entry);
+    CSSPropertyID property_id =
+        CssPropertyID(document->GetExecutionContext(), entry);
     if (property_id == CSSPropertyID::kInvalid)
       continue;
     css_property_filter_->emplace_back(entry, property_id);
@@ -143,8 +147,8 @@ Response LegacyDOMSnapshotAgent::GetSnapshot(
   *computed_styles = std::move(computed_styles_);
   computed_styles_map_.reset();
   css_property_filter_.reset();
-  paint_order_map_.reset();
-  return Response::OK();
+  paint_order_map_ = nullptr;
+  return Response::Success();
 }
 
 int LegacyDOMSnapshotAgent::VisitNode(Node* node,
@@ -184,10 +188,14 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
     String origin_url = origin_url_map_->at(owned_value->getBackendNodeId());
     // In common cases, it is implicit that a child node would have the same
     // origin url as its parent, so no need to mark twice.
-    if (!node->parentNode() || origin_url_map_->at(DOMNodeIds::IdForNode(
-                                   node->parentNode())) != origin_url) {
-      owned_value->setOriginURL(
-          origin_url_map_->at(owned_value->getBackendNodeId()));
+    if (!node->parentNode()) {
+      owned_value->setOriginURL(std::move(origin_url));
+    } else {
+      DOMNodeId parent_id = DOMNodeIds::IdForNode(node->parentNode());
+      auto it = origin_url_map_->find(parent_id);
+      String parent_url = it != origin_url_map_->end() ? it->value : String();
+      if (parent_url != origin_url)
+        owned_value->setOriginURL(std::move(origin_url));
     }
   }
   protocol::DOMSnapshot::DOMNode* value = owned_value.get();
@@ -256,16 +264,12 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
       value->setOptionSelected(option_element->Selected());
 
     if (element->GetPseudoId()) {
-      protocol::DOM::PseudoType pseudo_type;
-      if (InspectorDOMAgent::GetPseudoElementType(element->GetPseudoId(),
-                                                  &pseudo_type)) {
-        value->setPseudoType(pseudo_type);
-      }
-    } else {
-      value->setPseudoElementIndexes(
-          VisitPseudoElements(element, index, include_event_listeners,
-                              include_user_agent_shadow_tree));
+      value->setPseudoType(
+          InspectorDOMAgent::ProtocolPseudoElementType(element->GetPseudoId()));
     }
+    value->setPseudoElementIndexes(
+        VisitPseudoElements(element, index, include_event_listeners,
+                            include_user_agent_shadow_tree));
 
     auto* image_element = DynamicTo<HTMLImageElement>(node);
     if (image_element)
@@ -280,8 +284,8 @@ int LegacyDOMSnapshotAgent::VisitNode(Node* node,
     value->setFrameId(IdentifiersFactory::FrameId(document->GetFrame()));
     if (document->View() && document->View()->LayoutViewport()) {
       auto offset = document->View()->LayoutViewport()->GetScrollOffset();
-      value->setScrollOffsetX(offset.Width());
-      value->setScrollOffsetY(offset.Height());
+      value->setScrollOffsetX(offset.width());
+      value->setScrollOffsetY(offset.height());
     }
   } else if (auto* doc_type = DynamicTo<DocumentType>(node)) {
     value->setPublicId(doc_type->publicId());
@@ -306,16 +310,16 @@ LegacyDOMSnapshotAgent::VisitContainerChildren(
     bool include_user_agent_shadow_tree) {
   auto children = std::make_unique<protocol::Array<int>>();
 
-  if (!InspectorDOMSnapshotAgent::HasChildren(*container,
-                                              include_user_agent_shadow_tree))
+  if (!blink::dom_traversal_utils::HasChildren(*container,
+                                               include_user_agent_shadow_tree))
     return nullptr;
 
-  Node* child = InspectorDOMSnapshotAgent::FirstChild(
+  Node* child = blink::dom_traversal_utils::FirstChild(
       *container, include_user_agent_shadow_tree);
   while (child) {
     children->emplace_back(VisitNode(child, include_event_listeners,
                                      include_user_agent_shadow_tree));
-    child = InspectorDOMSnapshotAgent::NextSibling(
+    child = blink::dom_traversal_utils::NextSibling(
         *child, include_user_agent_shadow_tree);
   }
 
@@ -388,21 +392,20 @@ int LegacyDOMSnapshotAgent::VisitLayoutTreeNode(LayoutObject* layout_object,
   if (style_index != -1)
     layout_tree_node->setStyleIndex(style_index);
 
-  if (layout_object->Style() && layout_object->Style()->IsStackingContext())
+  if (layout_object->Style() && layout_object->IsStackingContext())
     layout_tree_node->setIsStackingContext(true);
 
   if (paint_order_map_) {
     PaintLayer* paint_layer = layout_object->EnclosingLayer();
 
     // We visited all PaintLayers when building |paint_order_map_|.
-    DCHECK(paint_order_map_->Contains(paint_layer));
-
-    if (int paint_order = paint_order_map_->at(paint_layer))
-      layout_tree_node->setPaintOrder(paint_order);
+    const auto paint_order = paint_order_map_->find(paint_layer);
+    if (paint_order != paint_order_map_->end())
+      layout_tree_node->setPaintOrder(paint_order->value);
   }
 
   if (layout_object->IsText()) {
-    LayoutText* layout_text = ToLayoutText(layout_object);
+    auto* layout_text = To<LayoutText>(layout_object);
     layout_tree_node->setLayoutText(layout_text->GetText());
     Vector<LayoutText::TextBoxInfo> text_boxes = layout_text->GetTextBoxInfo();
     if (!text_boxes.IsEmpty()) {

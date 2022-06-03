@@ -1,0 +1,23 @@
+/* Copyright 2020 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+/* This file is generated from:
+ *  colors_test.json5
+ *  colors_test_palette.json5
+ */
+
+html:not(body) {
+  --google-grey-900-rgb: 32, 33, 36;
+  --google-grey-900: rgb(var(--google-grey-900-rgb));
+
+  --cros-text-color-primary-rgb: 255, 255, 255;
+  --cros-text-color-primary: rgb(var(--cros-text-color-primary-rgb));
+
+  --cros-toggle-color-rgb: var(--cros-text-color-primary-rgb);
+  --cros-toggle-color: rgba(var(--cros-toggle-color-rgb), var(--cros-disabled-opacity));
+
+  --cros-disabled-opacity: 0.38;
+
+  --cros-reference-opacity: 1;
+}

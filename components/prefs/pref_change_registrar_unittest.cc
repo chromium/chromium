@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -57,7 +57,7 @@ class PrefChangeRegistrarTest : public testing::Test {
 };
 
 void PrefChangeRegistrarTest::SetUp() {
-  service_.reset(new MockPrefService());
+  service_ = std::make_unique<MockPrefService>();
 }
 
 TEST_F(PrefChangeRegistrarTest, AddAndRemove) {
@@ -131,7 +131,7 @@ TEST_F(PrefChangeRegistrarTest, RemoveAll) {
 class ObserveSetOfPreferencesTest : public testing::Test {
  public:
   void SetUp() override {
-    pref_service_.reset(new TestingPrefServiceSimple);
+    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     PrefRegistrySimple* registry = pref_service_->registry();
     registry->RegisterStringPref(kHomePage, "http://google.com");
     registry->RegisterBooleanPref(kHomePageIsNewTabPage, false);

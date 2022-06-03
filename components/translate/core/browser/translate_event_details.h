@@ -12,9 +12,9 @@
 namespace translate {
 
 struct TranslateEventDetails {
-  TranslateEventDetails(const std::string& in_filename,
+  TranslateEventDetails(std::string in_filename,
                         int in_line,
-                        const std::string& in_message);
+                        std::string in_message);
 
   // The time when this event was created.
   base::Time time;

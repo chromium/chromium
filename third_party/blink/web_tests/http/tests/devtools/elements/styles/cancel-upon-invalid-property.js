@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Verifies that entering poor property value restores original text.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <style>
@@ -18,9 +18,9 @@
   var treeElement;
   ElementsTestRunner.selectNodeAndWaitForStyles('inspected', editProperty);
 
-  function editProperty() {
+  async function editProperty() {
     treeElement = ElementsTestRunner.getMatchedStylePropertyTreeItem('color');
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     treeElement.startEditing();
     treeElement.nameElement.textContent = 'color';
     treeElement.nameElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
@@ -34,8 +34,8 @@
     treeElement.valueElement.dispatchEvent(TestRunner.createKeyEvent('Enter'));
   }
 
-  function dumpAndExit() {
-    ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
+  async function dumpAndExit() {
+    await ElementsTestRunner.dumpSelectedElementStyles(true, false, true);
     TestRunner.completeTest();
   }
 })();

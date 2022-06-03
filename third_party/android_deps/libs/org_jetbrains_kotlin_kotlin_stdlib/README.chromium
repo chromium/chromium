@@ -1,0 +1,13 @@
+Name: Kotlin Stdlib
+Short Name: kotlin-stdlib
+URL: https://kotlinlang.org/
+Version: 1.5.31
+License: Apache Version 2.0
+License File: LICENSE
+Security Critical: yes
+
+Description:
+Kotlin Standard Library for JVM
+
+Local Modifications:
+No modifications.

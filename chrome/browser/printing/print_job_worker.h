@@ -6,17 +6,26 @@
 #define CHROME_BROWSER_PRINTING_PRINT_JOB_WORKER_H_
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
+#include "printing/buildflags/buildflags.h"
+#include "printing/mojom/print.mojom.h"
 #include "printing/page_number.h"
-#include "printing/print_job_constants.h"
 #include "printing/printing_context.h"
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+#include "chrome/services/printing/public/mojom/print_backend_service.mojom-forward.h"
+#endif
+
+namespace content {
+class WebContents;
+}
 
 namespace printing {
 
@@ -33,9 +42,13 @@ class PrintJobWorker {
  public:
   using SettingsCallback =
       base::OnceCallback<void(std::unique_ptr<PrintSettings>,
-                              PrintingContext::Result)>;
+                              mojom::ResultCode)>;
 
   PrintJobWorker(int render_process_id, int render_frame_id);
+
+  PrintJobWorker(const PrintJobWorker&) = delete;
+  PrintJobWorker& operator=(const PrintJobWorker&) = delete;
+
   virtual ~PrintJobWorker();
 
   void SetPrintJob(PrintJob* print_job);
@@ -47,9 +60,9 @@ class PrintJobWorker {
   // |is_scripted| should be true for calls coming straight from window.print().
   // |is_modifiable| implies HTML and not other formats like PDF.
   void GetSettings(bool ask_user_for_settings,
-                   int document_page_count,
+                   uint32_t document_page_count,
                    bool has_selection,
-                   MarginType margin_type,
+                   mojom::MarginType margin_type,
                    bool is_scripted,
                    bool is_modifiable,
                    SettingsCallback callback);
@@ -97,6 +110,9 @@ class PrintJobWorker {
   // Starts the thread.
   bool Start();
 
+  // Returns the WebContents this work corresponds to.
+  content::WebContents* GetWebContents();
+
  protected:
   // Retrieves the context for testing only.
   PrintingContext* printing_context() { return printing_context_.get(); }
@@ -104,10 +120,16 @@ class PrintJobWorker {
  private:
   // The shared NotificationService service can only be accessed from the UI
   // thread, so this class encloses the necessary information to send the
-  // notification from the right thread. Most NOTIFY_PRINT_JOB_EVENT
-  // notifications are sent this way, except USER_INIT_DONE, USER_INIT_CANCELED
-  // and DEFAULT_INIT_DONE. These three are sent through PrintJob::InitDone().
+  // notification from the right thread. All NOTIFY_PRINT_JOB_EVENT
+  // notifications are sent this way.
   class NotificationTask;
+
+#if BUILDFLAG(ENABLE_OOP_PRINTING)
+  // Local callback wrapper for Print Backend Service mojom call.
+  void OnDidUpdatePrintSettings(const std::string& device_name,
+                                SettingsCallback callback,
+                                mojom::PrintSettingsResultPtr print_settings);
+#endif
 
   // Posts a task to call OnNewPage(). Used to wait for pages/document to be
   // available.
@@ -135,7 +157,7 @@ class PrintJobWorker {
   // Asks the user for print settings. Must be called on the UI thread.
   // Required on Mac and Linux. Windows can display UI from non-main threads,
   // but sticks with this for consistency.
-  void GetSettingsWithUI(int document_page_count,
+  void GetSettingsWithUI(uint32_t document_page_count,
                          bool has_selection,
                          bool is_scripted,
                          SettingsCallback callback);
@@ -151,8 +173,7 @@ class PrintJobWorker {
 #endif
 
   // Reports settings back to |callback|.
-  void GetSettingsDone(SettingsCallback callback,
-                       PrintingContext::Result result);
+  void GetSettingsDone(SettingsCallback callback, mojom::ResultCode result);
 
   // Use the default settings. When using GTK+ or Mac, this can still end up
   // displaying a dialog. So this needs to happen from the UI thread on these
@@ -183,8 +204,6 @@ class PrintJobWorker {
 
   // Used to generate a WeakPtr for callbacks.
   base::WeakPtrFactory<PrintJobWorker> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(PrintJobWorker);
 };
 
 }  // namespace printing

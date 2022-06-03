@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+
+      <!-- Tab Group Header Colors -->
+      <message name="IDS_TAB_GROUP_COLOR_GREY" desc="The accessibility label for a button in a color picker that is used to choose the color grey.">
+        Grey
+      </message>
+      <message name="IDS_TAB_GROUP_COLOR_BLUE" desc="The accessibility label for a button in a color picker that is used to choose the color blue.">
+        Blue
+      </message>
+      <message name="IDS_TAB_GROUP_COLOR_RED" desc="The accessibility label for a button in a color picker that is used to choose the color red.">
+        Red
+      </message>
+      <message name="IDS_TAB_GROUP_COLOR_YELLOW" desc="The accessibility label for a button in a color picker that is used to choose the color yellow.">
+        Yellow
+      </message>
+      <message name="IDS_TAB_GROUP_COLOR_GREEN" desc="The accessibility label for a button in a color picker that is used to choose the color green.">
+        Green
+      </message>
+      <message name="IDS_TAB_GROUP_COLOR_PINK" desc="The accessibility label for a button in a color picker that is used to choose the color pink.">
+        Pink
+      </message>
+      <message name="IDS_TAB_GROUP_COLOR_PURPLE" desc="The accessibility label for a button in a color picker that is used to choose the color purple.">
+        Purple
+      </message>
+      <message name="IDS_TAB_GROUP_COLOR_CYAN" desc="The accessibility label for a button in a color picker that is used to choose the color cyan.">
+        Cyan
+      </message>
+
+</grit-part>

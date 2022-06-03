@@ -1,0 +1,168 @@
+<style include="settings-shared">
+  :root {
+    --cr-toggle-margin-inline-start: 16px;
+    --cr-toggle-width: 34px;
+  }
+
+  cr-toggle {
+    margin-inline-start: var(--cr-toggle-margin-inline-start);
+    width: var(--cr-toggle-width);
+  }
+
+  .column-title {
+    color: var(--cr-secondary-text-color);
+  }
+
+  .label-column {
+    flex: 1;
+    flex-grow: 3;
+    word-break: break-all;
+  }
+
+  .no-ports-text {
+    padding-inline-start: 24px;
+    /* TODO(crbug.com/848127): Update with proper number of pixels when
+    formal UI spec is received. */
+  }
+
+  #addPort {
+    padding-top: 10px;
+  }
+
+  #errorIcon {
+    display: inline-block;
+    margin-inline-end: 8px;
+  }
+
+  #protocolText {
+    color: var(--cros-text-color-disabled);
+    margin-inline-start:  8px;
+  }
+
+  #portForwardingListPortLabel {
+    margin-inline-end: calc(var(--cr-toggle-margin-inline-start) +
+                            var(--cr-toggle-width));
+  }
+</style>
+<div class="settings-box first"
+    id="portForwardingDescription">
+  $i18n{crostiniPortForwardingDescription}
+</div>
+<div id="addPort" class="settings-box first">
+  <div id="portForwardingTableTitle" class="start"
+      aria-hidden="true">
+    $i18n{crostiniPortForwardingTableTitle}
+  </div>
+  <cr-button on-click="onAddPortClick_"
+      aria-label="$i18n{crostiniPortForwardingAddPortButtonDescription}"
+      aria-describedby="i18n{portForwardingDescription}">
+    $i18n{crostiniPortForwardingAddPortButton}
+  </cr-button>
+</div>
+<template is="dom-if" if="[[!allPorts_.length]]" restamp>
+  <div id="no-ports-text"
+      class="settings-box continuation">
+    $i18n{crostiniPortForwardingNoPorts}
+  </div>
+</template>
+<template is="dom-if" if="[[allPorts_.length]]" restamp>
+  <div class="list-frame vertical-list">
+    <div class="list-item">
+      <div id="portForwardingListPortNumber"
+          class="start column-title"
+          aria-hidden="true">
+        $i18n{crostiniPortForwardingListPortNumber}
+      </div>
+      <div id="portForwardingListPortLabel"
+          class="column-title label-column"
+          aria-hidden="true">
+        $i18n{crostiniPortForwardingListLabel}
+      </div>
+      <cr-icon-button id="showRemoveAllPortsMenu"
+          class="icon-more-vert"
+          title="$i18n{moreActions}"
+          on-click="onShowRemoveAllPortsMenuClick_"
+          aria-label="$i18n{moreActions}">
+      </cr-icon-button>
+    </div>
+    <template is="dom-repeat" items="[[allPorts_]]">
+      <div class="list-item">
+        <div id="crostiniPort[[index]]" class="start" aria-hidden="true">
+          [[item.port_number]]
+          <span id="protocolText">
+            <template is="dom-if" if="[[!item.protocol_type]]" restamp>
+              $i18n{crostiniPortForwardingTCP}
+            </template>
+            <template is="dom-if" if="[[item.protocol_type]]" restamp>
+              $i18n{crostiniPortForwardingUDP}
+            </template>
+          </span>
+        </div>
+        <div id="crostiniPortLabel[[index]]"
+            class="label-column"
+            aria-hidden="true">
+          [[item.label]]
+        </div>
+        <cr-toggle
+            id="toggleActivationButton[[index]]"
+            checked="[[item.is_active]]"
+            data-port-number$="[[item.port_number]]"
+            data-protocol-type$="[[item.protocol_type]]"
+            on-change="onPortActivationChange_"
+            aria-label="$i18n{crostiniPortForwardingToggleAriaLabel}"
+            aria-describedby$=
+                    "crostiniPort[[index]] crostiniPortLabel[[index]]"
+            disabled="[[!crostiniRunning_]]">
+        </cr-toggle>
+        <cr-icon-button id="showRemoveSinglePortMenu[[index]]"
+            class="icon-more-vert"
+            title="$i18n{moreActions}"
+            on-click="onShowRemoveSinglePortMenuClick_"
+            data-port-number$="[[item.port_number]]"
+            data-protocol-type$="[[item.protocol_type]]"
+            aria-label=
+                    "$i18n{crostiniPortForwardingShowMoreActionsAriaLabel}"
+            aria-describedby$=
+                    "crostiniPort[[index]] crostiniPortLabel[[index]]">
+        </cr-icon-button>
+      </div>
+    </template>
+  </div>
+</template>
+<template is="dom-if" if="[[showAddPortDialog_]]" restamp>
+  <settings-crostini-add-port-dialog
+      on-close="onAddPortDialogClose_"
+      all-ports="[[allPorts_]]">
+  </settings-crostini-add-port-dialog>
+</template>
+<cr-lazy-render id="removeAllPortsMenu">
+  <template>
+    <cr-action-menu class="complex" role-description="$i18n{menu}">
+      <button id="removeAllPortsButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onRemoveAllPortsClick_"
+          aria-label="$i18n{crostiniPortForwardingRemoveAllPortsAriaLabel}">
+        $i18n{crostiniPortForwardingRemoveAllPorts}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+<cr-lazy-render id="removeSinglePortMenu">
+  <template>
+    <cr-action-menu class="complex" role-description="$i18n{menu}">
+      <button id="removeSinglePortButton"
+          class="dropdown-item"
+          role="menuitem"
+          on-click="onRemoveSinglePortClick_">
+        $i18n{crostiniPortForwardingRemovePort}
+      </button>
+    </cr-action-menu>
+  </template>
+</cr-lazy-render>
+<cr-toast id="errorToast" duration="3000">
+  <div class="error-message" id="errorMessage">
+    <iron-icon id="errorIcon" icon="cr:error-outline"></iron-icon>
+    $i18n{crostiniPortForwardingActivatePortError}
+  </div>
+</cr-toast>

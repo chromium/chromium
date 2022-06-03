@@ -8,13 +8,11 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "content/common/content_export.h"
 #include "media/base/android/stream_texture_wrapper.h"
 #include "media/base/renderer_factory.h"
 #include "media/mojo/clients/mojo_renderer_factory.h"
-#include "mojo/public/cpp/bindings/interface_request.h"
 
 namespace media {
 class MojoRendererFactory;
@@ -41,7 +39,7 @@ class CONTENT_EXPORT MediaPlayerRendererClientFactory
       const scoped_refptr<base::TaskRunner>& worker_task_runner,
       media::AudioRendererSink* audio_renderer_sink,
       media::VideoRendererSink* video_renderer_sink,
-      const media::RequestOverlayInfoCB& request_surface_cb,
+      media::RequestOverlayInfoCB request_surface_cb,
       const gfx::ColorSpace& target_color_space) override;
 
   // The MediaPlayerRenderer uses a Type::URL.

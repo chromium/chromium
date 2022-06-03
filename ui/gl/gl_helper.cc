@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/scoped_binders.h"

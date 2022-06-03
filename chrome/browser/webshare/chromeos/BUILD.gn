@@ -1,0 +1,22 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "sharesheet_client_unittest.cc" ]
+
+  deps = [
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/browser/chromeos:chromeos",
+    "//chrome/browser/webshare:storage",
+    "//chrome/common",
+    "//chrome/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

@@ -9,8 +9,8 @@
 
 #include "base/barrier_closure.h"
 #include "base/bind.h"
-#include "base/bind_helpers.h"
-#include "base/stl_util.h"
+#include "base/callback_helpers.h"
+#include "base/cxx17_backports.h"
 
 namespace ash {
 
@@ -30,12 +30,15 @@ const SessionStateAnimator::Container
 class TestSessionStateAnimator::AnimationSequence
     : public SessionStateAnimator::AnimationSequence {
  public:
-  AnimationSequence(base::OnceClosure callback,
+  AnimationSequence(AnimationCallback callback,
                     TestSessionStateAnimator* animator)
       : SessionStateAnimator::AnimationSequence(std::move(callback)),
         sequence_count_(0),
         sequence_aborted_(false),
         animator_(animator) {}
+
+  AnimationSequence(const AnimationSequence&) = delete;
+  AnimationSequence& operator=(const AnimationSequence&) = delete;
 
   ~AnimationSequence() override = default;
 
@@ -70,8 +73,6 @@ class TestSessionStateAnimator::AnimationSequence
 
   // The TestSessionAnimator that created this.  Not owned.
   TestSessionStateAnimator* animator_;
-
-  DISALLOW_COPY_AND_ASSIGN(AnimationSequence);
 };
 
 TestSessionStateAnimator::ActiveAnimation::ActiveAnimation(
@@ -231,8 +232,8 @@ void TestSessionStateAnimator::StartAnimationWithCallback(
   }
 }
 
-ash::SessionStateAnimator::AnimationSequence*
-TestSessionStateAnimator::BeginAnimationSequence(base::OnceClosure callback) {
+SessionStateAnimator::AnimationSequence*
+TestSessionStateAnimator::BeginAnimationSequence(AnimationCallback callback) {
   return new AnimationSequence(std::move(callback), this);
 }
 
@@ -246,6 +247,13 @@ void TestSessionStateAnimator::ShowWallpaper() {
 
 void TestSessionStateAnimator::HideWallpaper() {
   is_wallpaper_hidden_ = true;
+}
+
+void TestSessionStateAnimator::AbortAnimations(int container_mask) {
+  for (size_t i = 0; i < base::size(kAllContainers); ++i) {
+    if (container_mask & kAllContainers[i])
+      AbortAnimation(kAllContainers[i]);
+  }
 }
 
 void TestSessionStateAnimator::StartAnimationInSequence(

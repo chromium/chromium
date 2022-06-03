@@ -5,8 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_MODULATOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_TESTING_DUMMY_MODULATOR_H_
 
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/renderer/bindings/core/v8/module_record.h"
+#include "third_party/blink/renderer/bindings/core/v8/module_request.h"
+#include "third_party/blink/renderer/core/script/import_map_error.h"
 #include "third_party/blink/renderer/core/script/modulator.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
@@ -22,27 +25,23 @@ class ModuleRecordResolver;
 // implementation. Unit tests can implement a subset of Modulator interface
 // which is exercised from unit-under-test.
 class DummyModulator : public Modulator {
-  DISALLOW_COPY_AND_ASSIGN(DummyModulator);
-
  public:
   DummyModulator();
+  DummyModulator(const DummyModulator&) = delete;
+  DummyModulator& operator=(const DummyModulator&) = delete;
   ~DummyModulator() override;
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
   ModuleRecordResolver* GetModuleRecordResolver() override;
   base::SingleThreadTaskRunner* TaskRunner() override;
   ScriptState* GetScriptState() override;
-  V8CacheOptions GetV8CacheOptions() const override;
+  mojom::blink::V8CacheOptions GetV8CacheOptions() const override;
   bool IsScriptingDisabled() const override;
 
-  bool ImportMapsEnabled() const override;
-  bool BuiltInModuleInfraEnabled() const override;
-  bool BuiltInModuleEnabled(blink::layered_api::Module) const override;
-  void BuiltInModuleUseCount(blink::layered_api::Module) const override;
-
   void FetchTree(const KURL&,
+                 ModuleType,
                  ResourceFetcher*,
-                 mojom::RequestContextType context_type,
+                 mojom::blink::RequestContextType context_type,
                  network::mojom::RequestDestination destination,
                  const ScriptFetchOptions&,
                  ModuleScriptCustomFetchType,
@@ -55,31 +54,23 @@ class DummyModulator : public Modulator {
   void FetchDescendantsForInlineScript(
       ModuleScript*,
       ResourceFetcher*,
-      mojom::RequestContextType context_type,
+      mojom::blink::RequestContextType context_type,
       network::mojom::RequestDestination destination,
       ModuleTreeClient*) override;
-  ModuleScript* GetFetchedModuleScript(const KURL&) override;
+  ModuleScript* GetFetchedModuleScript(const KURL&, ModuleType) override;
   KURL ResolveModuleSpecifier(const String&, const KURL&, String*) override;
   bool HasValidContext() override;
-  void ResolveDynamically(const String& specifier,
-                          const KURL&,
+  void ResolveDynamically(const ModuleRequest& module_request,
                           const ReferrerScriptInfo&,
                           ScriptPromiseResolver*) override;
-  ScriptValue CreateTypeError(const String& message) const override;
-  ScriptValue CreateSyntaxError(const String& message) const override;
-  void RegisterImportMap(const ImportMap*,
-                         ScriptValue error_to_rethrow) override;
-  bool IsAcquiringImportMaps() const override;
-  void ClearIsAcquiringImportMaps() override;
   ModuleImportMeta HostGetImportMetaProperties(
       v8::Local<v8::Module>) const override;
-  const ImportMap* GetImportMapForTest() const override;
-  ScriptValue InstantiateModule(v8::Local<v8::Module>, const KURL&) override;
-  Vector<ModuleRequest> ModuleRequestsFromModuleRecord(
-      v8::Local<v8::Module>) override;
-  ScriptValue ExecuteModule(ModuleScript*, CaptureEvalErrorFlag) override;
+  ModuleType ModuleTypeFromRequest(
+      const ModuleRequest& module_request) const override;
   ModuleScriptFetcher* CreateModuleScriptFetcher(
-      ModuleScriptCustomFetchType) override;
+      ModuleScriptCustomFetchType,
+      base::PassKey<ModuleScriptLoader>) override;
+  void ProduceCacheModuleTreeTopLevel(ModuleScript*) override;
 
   Member<ModuleRecordResolver> resolver_;
 };

@@ -3,15 +3,35 @@
 // found in the LICENSE file.
 
 // This file adds defines about the platform we're currently building on.
+//
 //  Operating System:
-//    OS_WIN / OS_MACOSX / OS_LINUX / OS_POSIX (MACOSX or LINUX) /
-//    OS_NACL (NACL_SFI or NACL_NONSFI) / OS_NACL_SFI / OS_NACL_NONSFI
-//    OS_CHROMEOS is set by the build system
+//    OS_AIX / OS_ANDROID / OS_ASMJS / OS_FREEBSD / OS_FUCHSIA / OS_IOS /
+//    OS_LINUX / OS_MAC / OS_NACL (SFI or NONSFI) / OS_NETBSD / OS_OPENBSD /
+//    OS_QNX / OS_SOLARIS / OS_WIN
+//  Operating System family:
+//    OS_APPLE: IOS or MAC
+//    OS_BSD: FREEBSD or NETBSD or OPENBSD
+//    OS_POSIX: AIX or ANDROID or ASMJS or CHROMEOS or FREEBSD or IOS or LINUX
+//              or MAC or NACL or NETBSD or OPENBSD or QNX or SOLARIS
+//
+//  /!\ Note: OS_CHROMEOS is set by the build system, not this file
+//
 //  Compiler:
 //    COMPILER_MSVC / COMPILER_GCC
+//
 //  Processor:
-//    ARCH_CPU_X86 / ARCH_CPU_X86_64 / ARCH_CPU_X86_FAMILY (X86 or X86_64)
-//    ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
+//    ARCH_CPU_ARM64 / ARCH_CPU_ARMEL / ARCH_CPU_MIPS / ARCH_CPU_MIPS64 /
+//    ARCH_CPU_MIPS64EL / ARCH_CPU_MIPSEL / ARCH_CPU_PPC64 / ARCH_CPU_S390 /
+//    ARCH_CPU_S390X / ARCH_CPU_X86 / ARCH_CPU_X86_64
+//  Processor family:
+//    ARCH_CPU_ARM_FAMILY: ARMEL or ARM64
+//    ARCH_CPU_MIPS_FAMILY: MIPS64EL or MIPSEL or MIPS64 or MIPS
+//    ARCH_CPU_PPC64_FAMILY: PPC64
+//    ARCH_CPU_S390_FAMILY: S390 or S390X
+//    ARCH_CPU_X86_FAMILY: X86 or X86_64
+//  Processor features:
+//    ARCH_CPU_31_BITS / ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
+//    ARCH_CPU_BIG_ENDIAN / ARCH_CPU_LITTLE_ENDIAN
 
 #ifndef BUILD_BUILD_CONFIG_H_
 #define BUILD_BUILD_CONFIG_H_
@@ -31,20 +51,25 @@
 #elif defined(ANDROID)
 #define OS_ANDROID 1
 #elif defined(__APPLE__)
-// only include TargetConditions after testing ANDROID as some android builds
-// on mac don't have this header available and it's not needed unless the target
-// is really mac/ios.
+// Only include TargetConditionals after testing ANDROID as some Android builds
+// on the Mac have this header available and it's not needed unless the target
+// is really an Apple platform.
 #include <TargetConditionals.h>
-#define OS_MACOSX 1
 #if defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #define OS_IOS 1
+#else
+#define OS_MAC 1
 #endif  // defined(TARGET_OS_IPHONE) && TARGET_OS_IPHONE
 #elif defined(__linux__)
+#if !defined(OS_CHROMEOS)
+// Do not define OS_LINUX on Chrome OS build.
+// The OS_CHROMEOS macro is defined in GN.
 #define OS_LINUX 1
-// include a system header to pull in features.h for glibc/uclibc macros.
+#endif  // !defined(OS_CHROMEOS)
+// Include a system header to pull in features.h for glibc/uclibc macros.
 #include <unistd.h>
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
-// we really are using glibc, not uClibc pretending to be glibc
+// We really are using glibc, not uClibc pretending to be glibc.
 #define LIBC_GLIBC 1
 #endif
 #elif defined(_WIN32)
@@ -64,12 +89,18 @@
 #elif defined(_AIX)
 #define OS_AIX 1
 #elif defined(__asmjs__) || defined(__wasm__)
-#define OS_ASMJS
+#define OS_ASMJS 1
+#elif defined(__MVS__)
+#define OS_ZOS 1
 #else
 #error Please add support for your platform in build/build_config.h
 #endif
 // NOTE: Adding a new port? Please follow
-// https://chromium.googlesource.com/chromium/src/+/master/docs/new_port_policy.md
+// https://chromium.googlesource.com/chromium/src/+/main/docs/new_port_policy.md
+
+#if defined(OS_MAC) || defined(OS_IOS)
+#define OS_APPLE 1
+#endif
 
 // For access to standard BSD features, use OS_BSD instead of a
 // more specific macro.
@@ -79,14 +110,16 @@
 
 // For access to standard POSIXish features, use OS_POSIX instead of a
 // more specific macro.
-#if defined(OS_AIX) || defined(OS_ANDROID) || defined(OS_ASMJS) ||    \
-    defined(OS_FREEBSD) || defined(OS_LINUX) || defined(OS_MACOSX) || \
-    defined(OS_NACL) || defined(OS_NETBSD) || defined(OS_OPENBSD) ||  \
-    defined(OS_QNX) || defined(OS_SOLARIS)
+#if defined(OS_AIX) || defined(OS_ANDROID) || defined(OS_ASMJS) ||  \
+    defined(OS_FREEBSD) || defined(OS_IOS) || defined(OS_LINUX) ||  \
+    defined(OS_CHROMEOS) || defined(OS_MAC) || defined(OS_NACL) ||  \
+    defined(OS_NETBSD) || defined(OS_OPENBSD) || defined(OS_QNX) || \
+    defined(OS_SOLARIS) || defined(OS_ZOS)
 #define OS_POSIX 1
 #endif
 
-// Compiler detection.
+// Compiler detection. Note: clang masquerades as GCC on POSIX and as MSVC on
+// Windows.
 #if defined(__GNUC__)
 #define COMPILER_GCC 1
 #elif defined(_MSC_VER)
@@ -193,7 +226,7 @@
 // The compiler thinks std::string::const_iterator and "const char*" are
 // equivalent types.
 #define STD_STRING_ITERATOR_IS_CHAR_POINTER
-// The compiler thinks base::string16::const_iterator and "char16*" are
+// The compiler thinks std::u16string::const_iterator and "char16*" are
 // equivalent types.
 #define BASE_STRING16_ITERATOR_IS_CHAR16_POINTER
 #endif

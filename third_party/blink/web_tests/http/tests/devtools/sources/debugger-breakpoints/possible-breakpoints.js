@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Checks that BreakpointManager.possibleBreakpoints returns correct locations\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPageAnonymously(`
       function foo() {
@@ -19,7 +19,7 @@
       () => SourcesTestRunner.showScriptSource('foo.js', didShowScriptSource));
 
   function didShowScriptSource(sourceFrame) {
-    var uiSourceCode = sourceFrame._uiSourceCode;
+    var uiSourceCode = sourceFrame.uiSourceCode();
     var breakpointManager = Bindings.breakpointManager;
 
     TestRunner.addResult('Locations for first line');

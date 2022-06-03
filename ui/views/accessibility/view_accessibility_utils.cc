@@ -4,6 +4,8 @@
 
 #include "ui/views/accessibility/view_accessibility_utils.h"
 
+#include <set>
+
 #include "ui/views/view.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"

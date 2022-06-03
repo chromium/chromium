@@ -6,8 +6,8 @@
 
 namespace blink {
 
-void B::Trace(Visitor* visitor) {
-  static_cast<C*>(this)->TraceAfterDispatch(visitor);
+void B::Trace(Visitor* visitor) const {
+  static_cast<const C*>(this)->TraceAfterDispatch(visitor);
 }
 
 }  // namespace blink

@@ -11,7 +11,6 @@
 #include <sys/sysctl.h>
 #include <string>
 
-#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
@@ -24,9 +23,9 @@
 
 namespace {
 
-const char kDesktopUserAgent[] =
+const char kDesktopUserAgentProductPlaceholder[] =
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_5) "
-    "AppleWebKit/605.1.15 (KHTML, like Gecko) "
+    "AppleWebKit/605.1.15 (KHTML, like Gecko) %s"
     "Version/11.1.1 "
     "Safari/605.1.15";
 
@@ -36,14 +35,13 @@ const char kUserAgentTypeNoneDescription[] = "NONE";
 const char kUserAgentTypeMobileDescription[] = "MOBILE";
 const char kUserAgentTypeDesktopDescription[] = "DESKTOP";
 
-std::string OSVersion(web::UserAgentType type) {
+std::string OSVersion() {
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
   int32_t os_bugfix_version = 0;
   base::SysInfo::OperatingSystemVersionNumbers(
       &os_major_version, &os_minor_version, &os_bugfix_version);
 
-  DCHECK_EQ(web::UserAgentType::MOBILE, type);
   std::string os_version;
   base::StringAppendF(&os_version, "%d_%d", os_major_version, os_minor_version);
   return os_version;
@@ -56,8 +54,7 @@ namespace web {
 std::string GetUserAgentTypeDescription(UserAgentType type) {
   switch (type) {
     case UserAgentType::AUTOMATIC:
-      DCHECK(base::FeatureList::IsEnabled(
-          features::kUseDefaultUserAgentInWebClient));
+      DCHECK(features::UseWebClientDefaultUserAgent());
       return std::string(kUserAgentTypeAutomaticDescription);
     case UserAgentType::NONE:
       return std::string(kUserAgentTypeNoneDescription);
@@ -73,12 +70,13 @@ UserAgentType GetUserAgentTypeWithDescription(const std::string& description) {
     return UserAgentType::MOBILE;
   if (description == std::string(kUserAgentTypeDesktopDescription))
     return UserAgentType::DESKTOP;
+  if (description == std::string(kUserAgentTypeAutomaticDescription))
+    return UserAgentType::AUTOMATIC;
   return UserAgentType::NONE;
 }
 
-std::string BuildOSCpuInfo(web::UserAgentType type) {
+std::string BuildOSCpuInfo() {
   std::string os_cpu;
-  DCHECK_EQ(web::UserAgentType::MOBILE, type);
   // Remove the end of the platform name. For example "iPod touch" becomes
   // "iPod".
   std::string platform =
@@ -89,22 +87,29 @@ std::string BuildOSCpuInfo(web::UserAgentType type) {
 
   base::StringAppendF(&os_cpu, "%s; CPU %s %s like Mac OS X", platform.c_str(),
                       (platform == "iPad") ? "OS" : "iPhone OS",
-                      OSVersion(type).c_str());
+                      OSVersion().c_str());
 
   return os_cpu;
 }
 
-std::string BuildUserAgentFromProduct(UserAgentType type,
-                                      const std::string& product) {
-  if (type == web::UserAgentType::DESKTOP)
-    return kDesktopUserAgent;
+std::string BuildDesktopUserAgent(const std::string& desktop_product) {
+  std::string product = desktop_product;
+  if (!desktop_product.empty()) {
+    // In case the product isn't empty, add a space after it.
+    product = product + " ";
+  }
+  std::string user_agent;
+  base::StringAppendF(&user_agent, kDesktopUserAgentProductPlaceholder,
+                      product.c_str());
+  return user_agent;
+}
 
-  DCHECK_EQ(web::UserAgentType::MOBILE, type);
+std::string BuildMobileUserAgent(const std::string& mobile_product) {
   std::string user_agent;
   base::StringAppendF(&user_agent,
                       "Mozilla/5.0 (%s) AppleWebKit/605.1.15"
                       " (KHTML, like Gecko) %s Mobile/15E148 Safari/604.1",
-                      BuildOSCpuInfo(type).c_str(), product.c_str());
+                      BuildOSCpuInfo().c_str(), mobile_product.c_str());
 
   return user_agent;
 }

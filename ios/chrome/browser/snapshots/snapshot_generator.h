@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 
+@class SnapshotCache;
 @protocol SnapshotGeneratorDelegate;
 
 namespace web {
@@ -17,10 +18,13 @@ class WebState;
 // tab's web page.
 @interface SnapshotGenerator : NSObject
 
+// Weak reference to the snapshot cache which is used to store and retrieve
+// snapshots for the WebState associated with this SnapshotGenerator.
+@property(nonatomic, weak) SnapshotCache* snapshotCache;
+
 // Designated initializer.
 - (instancetype)initWithWebState:(web::WebState*)webState
-               snapshotSessionId:(NSString*)snapshotSessionId
-    NS_DESIGNATED_INITIALIZER;
+                           tabID:(NSString*)tabID NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

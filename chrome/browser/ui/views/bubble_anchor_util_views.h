@@ -18,18 +18,24 @@ class Browser;
 namespace bubble_anchor_util {
 
 struct AnchorConfiguration {
+  // The bubble anchor view.
   views::View* anchor_view = nullptr;
+
+  // The view to be highlighted, or null if it should not be used.
   views::Button* highlighted_button = nullptr;
+
+  // The arrow position for the bubble.
   views::BubbleBorder::Arrow bubble_arrow = views::BubbleBorder::TOP_LEFT;
 };
 
-// Returns:
-// - The PageInfo |anchor| View.
-// - The view the be highlighted for |browser|, or null if it should not be
-//   used.
-// - The arrow position for the PageInfo bubble.
+// Returns the anchor configuration for bubbles that are aligned to the page
+// info bubble.
 AnchorConfiguration GetPageInfoAnchorConfiguration(Browser* browser,
                                                    Anchor = kLocationBar);
+
+// Returns the anchor configuration for the permission bubble.
+AnchorConfiguration GetPermissionPromptBubbleAnchorConfiguration(
+    Browser* browser);
 
 }  // namespace bubble_anchor_util
 

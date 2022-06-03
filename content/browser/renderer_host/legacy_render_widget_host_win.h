@@ -15,7 +15,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/ax_fragment_root_delegate_win.h"
 #include "ui/gfx/geometry/rect.h"
@@ -73,6 +73,10 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // successful creation of a child window parented to the parent window passed
   // in.
   static LegacyRenderWidgetHostHWND* Create(HWND parent);
+
+  LegacyRenderWidgetHostHWND(const LegacyRenderWidgetHostHWND&) = delete;
+  LegacyRenderWidgetHostHWND& operator=(const LegacyRenderWidgetHostHWND&) =
+      delete;
 
   // Destroys the HWND managed by this class.
   void Destroy();
@@ -138,10 +142,11 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   friend class AccessibilityObjectLifetimeWinBrowserTest;
   friend class DirectManipulationBrowserTestBase;
 
-  explicit LegacyRenderWidgetHostHWND(HWND parent);
+  LegacyRenderWidgetHostHWND();
   ~LegacyRenderWidgetHostHWND() override;
 
-  bool Init();
+  // If initialization fails, deletes `this` and returns false.
+  bool InitOrDeleteSelf(HWND parent);
 
   // Returns the target to which the windows input events are forwarded.
   static ui::WindowEventTarget* GetWindowEventTarget(HWND parent);
@@ -186,15 +191,21 @@ class CONTENT_EXPORT LegacyRenderWidgetHostHWND
   // Some assistive software need to track the location of the caret.
   std::unique_ptr<ui::AXSystemCaretWin> ax_system_caret_;
 
-  // Implements IRawElementProviderFragmentRoot when UIA is enabled
+  // Implements IRawElementProviderFragmentRoot when UIA is enabled.
   std::unique_ptr<ui::AXFragmentRootWin> ax_fragment_root_;
+
+  // Set to true when we return a UIA object. Determines whether we need to
+  // call UIA to clean up object references on window destruction.
+  // This is important to avoid triggering a cross-thread COM call which could
+  // cause re-entrancy during teardown. https://crbug.com/1087553
+  bool did_return_uia_object_;
 
   // This class provides functionality to register the legacy window as a
   // Direct Manipulation consumer. This allows us to support smooth scroll
   // in Chrome on Windows 10.
   std::unique_ptr<DirectManipulationHelper> direct_manipulation_helper_;
 
-  DISALLOW_COPY_AND_ASSIGN(LegacyRenderWidgetHostHWND);
+  base::WeakPtrFactory<LegacyRenderWidgetHostHWND> weak_factory_{this};
 };
 
 }  // namespace content

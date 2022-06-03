@@ -7,9 +7,8 @@
 
 #include "ash/ash_export.h"
 #include "ash/lock_screen_action/lock_screen_action_background_controller.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
@@ -30,6 +29,12 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImpl
       public views::WidgetObserver {
  public:
   LockScreenActionBackgroundControllerImpl();
+
+  LockScreenActionBackgroundControllerImpl(
+      const LockScreenActionBackgroundControllerImpl&) = delete;
+  LockScreenActionBackgroundControllerImpl& operator=(
+      const LockScreenActionBackgroundControllerImpl&) = delete;
+
   ~LockScreenActionBackgroundControllerImpl() override;
 
   // LockScreenActionBackgroundController:
@@ -62,12 +67,11 @@ class ASH_EXPORT LockScreenActionBackgroundControllerImpl
   views::Widget* background_widget_ = nullptr;
   LockScreenActionBackgroundView* contents_view_ = nullptr;
 
-  ScopedObserver<views::Widget, views::WidgetObserver> widget_observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver>
+      widget_observation_{this};
 
   base::WeakPtrFactory<LockScreenActionBackgroundControllerImpl>
       weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(LockScreenActionBackgroundControllerImpl);
 };
 
 }  // namespace ash

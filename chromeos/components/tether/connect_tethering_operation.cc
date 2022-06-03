@@ -36,37 +36,30 @@ ConnectTetheringOperation::Factory*
 
 // static
 std::unique_ptr<ConnectTetheringOperation>
-ConnectTetheringOperation::Factory::NewInstance(
+ConnectTetheringOperation::Factory::Create(
     multidevice::RemoteDeviceRef device_to_connect,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
     TetherHostResponseRecorder* tether_host_response_recorder,
     bool setup_required) {
-  if (!factory_instance_) {
-    factory_instance_ = new Factory();
+  if (factory_instance_) {
+    return factory_instance_->CreateInstance(
+        device_to_connect, device_sync_client, secure_channel_client,
+        tether_host_response_recorder, setup_required);
   }
-  return factory_instance_->BuildInstance(
-      device_to_connect, device_sync_client, secure_channel_client,
-      tether_host_response_recorder, setup_required);
-}
 
-// static
-void ConnectTetheringOperation::Factory::SetInstanceForTesting(
-    Factory* factory) {
-  factory_instance_ = factory;
-}
-
-std::unique_ptr<ConnectTetheringOperation>
-ConnectTetheringOperation::Factory::BuildInstance(
-    multidevice::RemoteDeviceRef device_to_connect,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
-    TetherHostResponseRecorder* tether_host_response_recorder,
-    bool setup_required) {
   return base::WrapUnique(new ConnectTetheringOperation(
       device_to_connect, device_sync_client, secure_channel_client,
       tether_host_response_recorder, setup_required));
 }
+
+// static
+void ConnectTetheringOperation::Factory::SetFactoryForTesting(
+    Factory* factory) {
+  factory_instance_ = factory;
+}
+
+ConnectTetheringOperation::Factory::~Factory() = default;
 
 ConnectTetheringOperation::ConnectTetheringOperation(
     multidevice::RemoteDeviceRef device_to_connect,

@@ -4,7 +4,7 @@
 
 #include "ios/net/chunked_data_stream_uploader.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 

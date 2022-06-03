@@ -4,41 +4,78 @@
 
 package org.chromium.chrome.browser.tasks.pseudotab;
 
+import android.content.Context;
+import android.os.SystemClock;
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
-import org.chromium.chrome.browser.flags.FeatureUtilities;
+import org.chromium.base.Log;
+import org.chromium.base.StreamUtil;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabImpl;
+import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModelFilter;
 import org.chromium.chrome.browser.tabmodel.TabModelFilterProvider;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
+import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
+import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.url.GURL;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.WeakHashMap;
+import java.util.Map;
+import java.util.Set;
+
+import javax.annotation.concurrent.GuardedBy;
 
 /**
  * Representation of a Tab-like card in the Grid Tab Switcher.
  */
 public class PseudoTab {
+    private static final String TAG = "PseudoTab";
+
     private final Integer mTabId;
     private final WeakReference<Tab> mTab;
-    private static final WeakHashMap<Integer, PseudoTab> sAllTabs = new WeakHashMap<>();
+
+    @GuardedBy("sLock")
+    private static final Map<Integer, PseudoTab> sAllTabs = new LinkedHashMap<>();
+    private static final Object sLock = new Object();
+    private static boolean sReadStateFile;
+    private static List<PseudoTab> sAllTabsFromStateFile;
+    private static PseudoTab sActiveTabFromStateFile;
 
     /**
      * An interface to get the title to be used for a tab.
      */
-    public interface TitleProvider { String getTitle(PseudoTab tab); }
+    public interface TitleProvider {
+        String getTitle(Context context, PseudoTab tab);
+    }
 
     /**
      * Construct from a tab ID. An earlier instance with the same ID can be returned.
      */
     public static PseudoTab fromTabId(int tabId) {
-        PseudoTab cached = sAllTabs.get(tabId);
-        if (cached != null) return cached;
-        return new PseudoTab(tabId);
+        synchronized (sLock) {
+            PseudoTab cached = sAllTabs.get(tabId);
+            if (cached != null) return cached;
+            return new PseudoTab(tabId);
+        }
     }
 
     private PseudoTab(int tabId) {
@@ -51,13 +88,20 @@ public class PseudoTab {
      * Construct from a {@link Tab}. An earlier instance with the same {@link Tab} can be returned.
      */
     public static PseudoTab fromTab(@NonNull Tab tab) {
-        PseudoTab cached = sAllTabs.get(tab.getId());
-        if (cached != null && cached.hasRealTab()) {
-            assert cached.getTab() == tab;
-            return cached;
+        synchronized (sLock) {
+            PseudoTab cached = sAllTabs.get(tab.getId());
+            if (cached != null && cached.hasRealTab()) {
+                if (cached.getTab() == tab) {
+                    return cached;
+                } else {
+                    assert tab.getWebContents() == null || cached.getTab().getWebContents() == null
+                            || cached.getTab().getWebContents().getTopLevelNativeWindow() == null;
+                    return new PseudoTab(tab);
+                }
+            }
+            // We need to upgrade a pre-native Tab to a post-native Tab.
+            return new PseudoTab(tab);
         }
-        // We need to upgrade a pre-native Tab to a post-native Tab.
-        return new PseudoTab(tab);
     }
 
     private PseudoTab(@NonNull Tab tab) {
@@ -115,11 +159,13 @@ public class PseudoTab {
      * Get the title of the {@link PseudoTab} through a {@link TitleProvider}.
      *
      * If the {@link TitleProvider} is {@code null}, fall back to {@link #getTitle()}.
+     *
+     * @param context The activity context.
      * @param titleProvider The {@link TitleProvider} to provide the title.
      * @return The title
      */
-    public String getTitle(@Nullable TitleProvider titleProvider) {
-        if (titleProvider != null) return titleProvider.getTitle(this);
+    public String getTitle(Context context, @Nullable TitleProvider titleProvider) {
+        if (titleProvider != null) return titleProvider.getTitle(context, this);
         return getTitle();
     }
 
@@ -128,7 +174,7 @@ public class PseudoTab {
      * @return The title
      */
     public String getTitle() {
-        if (mTab != null && mTab.get() != null) {
+        if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
             return mTab.get().getTitle();
         }
         assert mTabId != null;
@@ -139,8 +185,8 @@ public class PseudoTab {
      * Get the URL of the {@link PseudoTab}.
      * @return The URL
      */
-    public String getUrl() {
-        if (mTab != null && mTab.get() != null) {
+    public GURL getUrl() {
+        if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
             return mTab.get().getUrl();
         }
         assert mTabId != null;
@@ -152,11 +198,22 @@ public class PseudoTab {
      * @return The root ID
      */
     public int getRootId() {
-        if (mTab != null && mTab.get() != null) {
-            return ((TabImpl) mTab.get()).getRootId();
+        if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
+            return CriticalPersistedTabData.from(mTab.get()).getRootId();
         }
         assert mTabId != null;
         return TabAttributeCache.getRootId(mTabId);
+    }
+
+    /**
+     * @return The timestamp of the {@link PseudoTab}.
+     */
+    public long getTimestampMillis() {
+        if (mTab != null && mTab.get() != null && mTab.get().isInitialized()) {
+            return CriticalPersistedTabData.from(mTab.get()).getTimestampMillis();
+        }
+        assert mTabId != null;
+        return TabAttributeCache.getTimestampMillis(mTabId);
     }
 
     /**
@@ -166,15 +223,6 @@ public class PseudoTab {
         if (mTab != null && mTab.get() != null) return mTab.get().isIncognito();
         assert mTabId != null;
         return false;
-    }
-
-    /**
-     * @return {@link Tab#getTimestampMillis()} of the underlying real {@link Tab}
-     */
-    public long getTimestampMillis() {
-        assert mTab != null
-                && mTab.get() != null : "getTimestampMillis can only be used with real tabs";
-        return mTab.get().getTimestampMillis();
     }
 
     /**
@@ -195,45 +243,154 @@ public class PseudoTab {
     }
 
     /**
+     * Clear the internal static storage as if the app is restarted.
+     * This should/can be called when emulating restarting in instrumented tests, or between
+     * Robolectric tests.
+     */
+    @VisibleForTesting
+    public static void clearForTesting() {
+        synchronized (sLock) {
+            sAllTabs.clear();
+            sReadStateFile = false;
+            sActiveTabFromStateFile = null;
+            if (sAllTabsFromStateFile != null) {
+                sAllTabsFromStateFile.clear();
+            }
+        }
+    }
+
+    /**
      * Get related tabs of a certain {@link PseudoTab}, through {@link TabModelFilter}s if
      * available.
+     *
+     * @param context The activity context.
      * @param member The {@link PseudoTab} related to
-     * @param provider The {@link TabModelFilterProvider} to query the tab relation
+     * @param tabModelSelector The {@link TabModelSelector} to query the tab relation
      * @return Related {@link PseudoTab}s
      */
     public static @NonNull List<PseudoTab> getRelatedTabs(
-            PseudoTab member, @NonNull TabModelFilterProvider provider) {
-        List<Tab> relatedTabs = getRelatedTabList(provider, member.getId());
-        if (relatedTabs != null) return getListOfPseudoTab(relatedTabs);
+            Context context, PseudoTab member, @NonNull TabModelSelector tabModelSelector) {
+        synchronized (sLock) {
+            List<Tab> relatedTabs = getRelatedTabList(tabModelSelector, member.getId());
+            if (relatedTabs != null) return getListOfPseudoTab(relatedTabs);
 
-        List<PseudoTab> related = new ArrayList<>();
-        int rootId = member.getRootId();
-        if (rootId == Tab.INVALID_TAB_ID || !FeatureUtilities.isTabGroupsAndroidEnabled()) {
-            related.add(member);
+            List<PseudoTab> related = new ArrayList<>();
+            int rootId = member.getRootId();
+            if (rootId == Tab.INVALID_TAB_ID
+                    || !TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)) {
+                related.add(member);
+                return related;
+            }
+            for (Integer key : sAllTabs.keySet()) {
+                PseudoTab tab = sAllTabs.get(key);
+                assert tab != null;
+                if (tab.getRootId() == Tab.INVALID_TAB_ID) continue;
+                if (tab.getRootId() != rootId) continue;
+                related.add(tab);
+            }
+            assert related.size() > 0;
             return related;
         }
-        for (Integer key : sAllTabs.keySet()) {
-            PseudoTab tab = sAllTabs.get(key);
-            assert tab != null;
-            if (tab.getRootId() == Tab.INVALID_TAB_ID) continue;
-            if (tab.getRootId() != rootId) continue;
-            related.add(tab);
+    }
+
+    private static @Nullable List<Tab> getRelatedTabList(
+            @NonNull TabModelSelector tabModelSelector, int tabId) {
+        if (!tabModelSelector.isTabStateInitialized()) {
+            assert CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START);
+            return null;
         }
+        TabModelFilterProvider provider = tabModelSelector.getTabModelFilterProvider();
+        List<Tab> related = provider.getTabModelFilter(false).getRelatedTabList(tabId);
+        if (related.size() > 0) return related;
+        related = provider.getTabModelFilter(true).getRelatedTabList(tabId);
         assert related.size() > 0;
         return related;
     }
 
-    private static @Nullable List<Tab> getRelatedTabList(
-            @NonNull TabModelFilterProvider provider, int tabId) {
-        if (provider.getTabModelFilter(false) != null) {
-            List<Tab> related = provider.getTabModelFilter(false).getRelatedTabList(tabId);
-            if (related.size() > 0) return related;
+    @VisibleForTesting
+    static int getAllTabsCountForTests() {
+        synchronized (sLock) {
+            return sAllTabs.size();
         }
-        if (provider.getTabModelFilter(true) != null) {
-            List<Tab> related = provider.getTabModelFilter(true).getRelatedTabList(tabId);
-            assert related.size() > 0;
-            return related;
+    }
+
+    /**
+     * @param context The activity context.
+     */
+    @Nullable
+    public static List<PseudoTab> getAllPseudoTabsFromStateFile(Context context) {
+        readAllPseudoTabsFromStateFile(context);
+        return sAllTabsFromStateFile;
+    }
+
+    @Nullable
+    public static PseudoTab getActiveTabFromStateFile(Context context) {
+        readAllPseudoTabsFromStateFile(context);
+        return sActiveTabFromStateFile;
+    }
+
+    private static void readAllPseudoTabsFromStateFile(Context context) {
+        assert CachedFeatureFlags.isEnabled(ChromeFeatureList.INSTANT_START)
+                || CachedFeatureFlags.isEnabled(ChromeFeatureList.PAINT_PREVIEW_SHOW_ON_STARTUP);
+        if (sReadStateFile) return;
+        sReadStateFile = true;
+
+        long startMs = SystemClock.elapsedRealtime();
+        File stateFile = new File(TabStateDirectory.getOrCreateTabbedModeStateDirectory(),
+                TabbedModeTabPersistencePolicy.getStateFileName(0));
+        if (!stateFile.exists()) {
+            Log.i(TAG, "State file does not exist.");
+            return;
         }
-        return null;
+        FileInputStream stream = null;
+        byte[] data;
+        try {
+            stream = new FileInputStream(stateFile);
+            data = new byte[(int) stateFile.length()];
+            stream.read(data);
+        } catch (IOException exception) {
+            Log.e(TAG, "Could not read state file.", exception);
+            return;
+        } finally {
+            StreamUtil.closeQuietly(stream);
+        }
+        Log.i(TAG, "Finished fetching tab list.");
+        DataInputStream dataStream = new DataInputStream(new ByteArrayInputStream(data));
+
+        Set<Integer> seenRootId = new HashSet<>();
+        sAllTabsFromStateFile = new ArrayList<>();
+        try {
+            TabPersistentStore.readSavedStateFile(dataStream,
+                    (index, id, url, isIncognito, isStandardActiveIndex, isIncognitoActiveIndex)
+                            -> {
+                        // Skip restoring of non-selected NTP to match the real restoration logic.
+                        if (UrlUtilities.isCanonicalizedNTPUrl(url) && !isStandardActiveIndex) {
+                            return;
+                        } else if (TextUtils.isEmpty(url)) {
+                            // Skip restoring of empty Tabs.
+                            return;
+                        }
+                        PseudoTab tab = PseudoTab.fromTabId(id);
+                        if (isStandardActiveIndex) {
+                            assert sActiveTabFromStateFile == null;
+                            sActiveTabFromStateFile = tab;
+                        }
+                        int rootId = tab.getRootId();
+                        if (TabUiFeatureUtilities.isTabGroupsAndroidEnabled(context)
+                                && seenRootId.contains(rootId)) {
+                            return;
+                        }
+                        sAllTabsFromStateFile.add(tab);
+                        seenRootId.add(rootId);
+                    },
+                    null);
+        } catch (IOException exception) {
+            Log.e(TAG, "Could not read state file.", exception);
+            return;
+        }
+
+        Log.d(TAG, "All pre-native tabs: " + sAllTabsFromStateFile);
+        Log.i(TAG, "readAllPseudoTabsFromStateFile() took %dms",
+                SystemClock.elapsedRealtime() - startMs);
     }
 }

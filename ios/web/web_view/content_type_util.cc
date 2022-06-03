@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "ios/web/web_view/content_type_util.h"
-#include "base/stl_util.h"
 
 namespace web {
 

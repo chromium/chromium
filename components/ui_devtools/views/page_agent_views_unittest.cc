@@ -74,14 +74,14 @@ class PageAgentViewsTest : public views::ViewsTestBase {
 
     auto response =
         page_agent()->getResourceContent("1", url_input, &result, &out_bool);
-    return {response.isSuccess(), result};
+    return {response.IsSuccess(), result};
   }
 
  protected:
   PageAgentViews* page_agent() { return page_agent_.get(); }
   DOMAgentViews* dom_agent() { return dom_agent_.get(); }
-  bool devtools_dismiss_override() {
-    return page_agent()->devtools_dismiss_override();
+  bool devtools_dismiss_override() const {
+    return page_agent_->GetDevtoolsDismissOverrideForTesting();
   }
 
  private:
@@ -151,7 +151,7 @@ TEST_F(PageAgentViewsTest, ResetOnDisable) {
 
 TEST_F(PageAgentViewsTest, GetResourceTree) {
   std::unique_ptr<protocol::Page::FrameResourceTree> resource_tree;
-  EXPECT_TRUE(page_agent()->getResourceTree(&resource_tree).isSuccess());
+  EXPECT_TRUE(page_agent()->getResourceTree(&resource_tree).IsSuccess());
 
   protocol::Page::Frame* frame_object = resource_tree->getFrame();
   EXPECT_EQ(frame_object->getId(), "1");

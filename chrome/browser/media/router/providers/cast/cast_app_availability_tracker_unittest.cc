@@ -5,8 +5,13 @@
 #include "chrome/browser/media/router/providers/cast/cast_app_availability_tracker.h"
 
 #include "base/test/simple_test_tick_clock.h"
-#include "chrome/common/media_router/providers/cast/cast_media_source.h"
 #include "components/cast_channel/cast_message_util.h"
+#include "components/cast_channel/cast_socket.h"
+#include "components/media_router/common/discovery/media_sink_internal.h"
+#include "components/media_router/common/media_route_provider_helper.h"
+#include "components/media_router/common/media_sink.h"
+#include "components/media_router/common/mojom/media_router.mojom.h"
+#include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,21 +31,38 @@ MATCHER_P(CastMediaSourcesEqual, expected, "") {
       });
 }
 
+MediaSinkInternal CreateSink(const std::string& id) {
+  MediaSink sink{id, "Sink Name", SinkIconType::CAST,
+                 mojom::MediaRouteProviderId::CAST};
+  return MediaSinkInternal{sink, CastSinkExtraData{}};
+}
+
 }  // namespace
 
 class CastAppAvailabilityTrackerTest : public testing::Test {
  public:
-  CastAppAvailabilityTrackerTest() {}
+  CastAppAvailabilityTrackerTest() = default;
+
+  CastAppAvailabilityTrackerTest(const CastAppAvailabilityTrackerTest&) =
+      delete;
+  CastAppAvailabilityTrackerTest& operator=(
+      const CastAppAvailabilityTrackerTest&) = delete;
+
   ~CastAppAvailabilityTrackerTest() override = default;
 
   base::TimeTicks Now() const { return clock_.NowTicks(); }
 
+  void SetAvailable(const std::vector<MediaSinkInternal>& sinks,
+                    const std::string& source) {
+    for (const auto& sink : sinks) {
+      tracker_.UpdateAppAvailability(
+          sink, source, {GetAppAvailabilityResult::kAvailable, Now()});
+    }
+  }
+
  protected:
   base::SimpleTestTickClock clock_;
   CastAppAvailabilityTracker tracker_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(CastAppAvailabilityTrackerTest);
 };
 
 TEST_F(CastAppAvailabilityTrackerTest, RegisterSource) {
@@ -108,10 +130,10 @@ TEST_F(CastAppAvailabilityTrackerTest, UpdateAppAvailability) {
   tracker_.RegisterSource(*source3);
 
   // |source3| not affected.
-  EXPECT_THAT(
-      tracker_.UpdateAppAvailability(
-          "sinkId1", "AAAAAAAA", {GetAppAvailabilityResult::kAvailable, Now()}),
-      CastMediaSourcesEqual(std::vector<CastMediaSource>()));
+  EXPECT_THAT(tracker_.UpdateAppAvailability(
+                  CreateSink("sinkId1"), "AAAAAAAA",
+                  {GetAppAvailabilityResult::kAvailable, Now()}),
+              CastMediaSourcesEqual(std::vector<CastMediaSource>()));
 
   base::flat_set<MediaSink::Id> sinks_1 = {"sinkId1"};
   base::flat_set<MediaSink::Id> sinks_1_2 = {"sinkId1", "sinkId2"};
@@ -125,17 +147,17 @@ TEST_F(CastAppAvailabilityTrackerTest, UpdateAppAvailability) {
 
   tracker_.RegisterSource(*source1);
   // Only |source1| is registered for this app.
-  EXPECT_THAT(
-      tracker_.UpdateAppAvailability(
-          "sinkId2", "AAAAAAAA", {GetAppAvailabilityResult::kAvailable, Now()}),
-      CastMediaSourcesEqual(sources_1));
+  EXPECT_THAT(tracker_.UpdateAppAvailability(
+                  CreateSink("sinkId2"), "AAAAAAAA",
+                  {GetAppAvailabilityResult::kAvailable, Now()}),
+              CastMediaSourcesEqual(sources_1));
   EXPECT_EQ(sinks_1_2, tracker_.GetAvailableSinks(*source1));
   EXPECT_EQ(sinks_1_2, tracker_.GetAvailableSinks(*source2));
   EXPECT_TRUE(tracker_.GetAvailableSinks(*source3).empty());
 
   tracker_.RegisterSource(*source2);
   EXPECT_THAT(tracker_.UpdateAppAvailability(
-                  "sinkId2", "AAAAAAAA",
+                  CreateSink("sinkId2"), "AAAAAAAA",
                   {GetAppAvailabilityResult::kUnavailable, Now()}),
               CastMediaSourcesEqual(sources_1_2));
   EXPECT_EQ(sinks_1, tracker_.GetAvailableSinks(*source1));
@@ -147,7 +169,7 @@ TEST_F(CastAppAvailabilityTrackerTest, RemoveResultsForSink) {
   auto source1 = CastMediaSource::FromMediaSourceId("cast:AAAAAAAA?clientId=1");
   ASSERT_TRUE(source1);
 
-  tracker_.UpdateAppAvailability("sinkId1", "AAAAAAAA",
+  tracker_.UpdateAppAvailability(CreateSink("sinkId1"), "AAAAAAAA",
                                  {GetAppAvailabilityResult::kAvailable, Now()});
   EXPECT_EQ(GetAppAvailabilityResult::kAvailable,
             tracker_.GetAvailability("sinkId1", "AAAAAAAA").first);
@@ -166,6 +188,30 @@ TEST_F(CastAppAvailabilityTrackerTest, RemoveResultsForSink) {
   EXPECT_EQ(GetAppAvailabilityResult::kUnknown,
             tracker_.GetAvailability("sinkId1", "AAAAAAAA").first);
   EXPECT_EQ(expected_sink_ids, tracker_.GetAvailableSinks(*source1));
+}
+
+TEST_F(CastAppAvailabilityTrackerTest, FilterByCapability) {
+  auto video_source = CastMediaSource::FromMediaSourceId(
+      "cast:VIDEOSRC?clientId=1&capabilities=video_out,audio_out");
+  auto audio_source = CastMediaSource::FromMediaSourceId(
+      "cast:AUDIOSRC?clientId=3&capabilities=audio_out");
+
+  MediaSinkInternal video_sink = CreateSink("video-sink");
+  video_sink.cast_data().capabilities =
+      cast_channel::VIDEO_OUT | cast_channel::AUDIO_OUT;
+  MediaSinkInternal audio_sink = CreateSink("audio-sink");
+  audio_sink.cast_data().capabilities = cast_channel::AUDIO_OUT;
+
+  // Make both sinks claim that they're compatible with the two sources.
+  SetAvailable({video_sink, audio_sink}, "VIDEOSRC");
+  SetAvailable({video_sink, audio_sink}, "AUDIOSRC");
+
+  // Only |video_sink| has the capabilities required by |video_source|.
+  EXPECT_EQ(base::flat_set<MediaSink::Id>({video_sink.id()}),
+            tracker_.GetAvailableSinks(*video_source));
+  // Both sinks have the capabilities required by |audio_source|.
+  EXPECT_EQ(base::flat_set<MediaSink::Id>({video_sink.id(), audio_sink.id()}),
+            tracker_.GetAvailableSinks(*audio_source));
 }
 
 }  // namespace media_router

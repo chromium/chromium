@@ -7,8 +7,7 @@
 
 #include <list>
 
-#include "base/macros.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/extensions/install_gate.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -39,6 +38,10 @@ class SharedModuleService : public ExtensionRegistryObserver,
   };
 
   explicit SharedModuleService(content::BrowserContext* context);
+
+  SharedModuleService(const SharedModuleService&) = delete;
+  SharedModuleService& operator=(const SharedModuleService&) = delete;
+
   ~SharedModuleService() override;
 
   // Checks an extension's imports. Imports that are not installed are stored
@@ -74,13 +77,11 @@ class SharedModuleService : public ExtensionRegistryObserver,
                               const Extension* extension,
                               extensions::UninstallReason reason) override;
 
-  ScopedObserver<ExtensionRegistry, ExtensionRegistryObserver>
-      extension_registry_observer_{this};
+  base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
+      extension_registry_observation_{this};
 
   // The context associated with this SharedModuleService.
   content::BrowserContext* browser_context_;
-
-  DISALLOW_COPY_AND_ASSIGN(SharedModuleService);
 };
 
 }  // namespace extensions

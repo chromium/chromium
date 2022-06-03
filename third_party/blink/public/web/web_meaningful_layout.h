@@ -7,7 +7,7 @@
 
 namespace blink {
 
-enum WebMeaningfulLayout {
+enum class WebMeaningfulLayout {
   // Signifies that one of the following things were involved during the layout:
   // * > 200 text characters
   // * > 1024 image pixels
@@ -23,4 +23,4 @@ enum WebMeaningfulLayout {
 };
 }
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_MEANINGFUL_LAYOUT_H_

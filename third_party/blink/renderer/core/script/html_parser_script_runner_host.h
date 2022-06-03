@@ -32,14 +32,13 @@
 namespace blink {
 
 class HTMLInputStream;
-class PendingScript;
 
 class CORE_EXPORT HTMLParserScriptRunnerHost : public GarbageCollectedMixin {
  public:
   virtual ~HTMLParserScriptRunnerHost() = default;
-  void Trace(Visitor* visitor) override {}
+  void Trace(Visitor* visitor) const override {}
 
-  virtual void NotifyScriptLoaded(PendingScript*) = 0;
+  virtual void NotifyScriptLoaded() = 0;
   virtual HTMLInputStream& InputStream() = 0;
 
   virtual bool HasPreloadScanner() const = 0;
@@ -48,4 +47,4 @@ class CORE_EXPORT HTMLParserScriptRunnerHost : public GarbageCollectedMixin {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_SCRIPT_HTML_PARSER_SCRIPT_RUNNER_HOST_H_

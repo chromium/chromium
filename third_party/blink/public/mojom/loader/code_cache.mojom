@@ -26,8 +26,6 @@ interface CodeCacheHost {
                                mojo_base.mojom.Time expected_response_time,
                                mojo_base.mojom.BigBuffer data);
 
-  // TODO(crbug.com/867848) Pass the data as mojo data_pipe instead of
-  // array<unit8>.
   FetchCachedCode(CodeCacheType cache_type, url.mojom.Url url) =>
       (mojo_base.mojom.Time response_time, mojo_base.mojom.BigBuffer data);
 

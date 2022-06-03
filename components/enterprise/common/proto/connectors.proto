@@ -1,0 +1,178 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package enterprise_connectors;
+
+// For ClientDownloadRequest.
+import "components/safe_browsing/core/common/proto/csd.proto";
+
+// Which connector is calling BinaryUploadService so that the proper rules can
+// be triggered.  BinaryUploadService also uses this value to find the URL that
+// the payload should be uploaded to.
+//
+// The values in this enum can be extended in future versions of Chrome to
+// support new analysis connectors.
+enum AnalysisConnector {
+  ANALYSIS_CONNECTOR_UNSPECIFIED = 0;
+  FILE_DOWNLOADED = 1;
+  FILE_ATTACHED = 2;
+  BULK_DATA_ENTRY = 3;
+}
+
+message ContentMetaData {
+  // The URL containing the file download/upload or to which web content is
+  // being uploaded.
+  optional string url = 1;
+
+  // Name of file on user system (if applicable).
+  optional string filename = 2;
+
+  // Sha256 digest of file.
+  optional string digest = 3;
+
+  // Specifically for the download case.
+  optional safe_browsing.ClientDownloadRequest csd = 4;
+
+  // Optional email address of user.  This field may be empty if the user
+  // is not signed in.
+  optional string email = 5;
+
+  // MimeType of the field as detected by Chrome.
+  optional string content_type = 6;
+}
+
+message ClientMetadata {
+  // Describes the browser uploading a scan request.
+  message Browser {
+    optional string browser_id = 1;
+    optional string user_agent = 2;
+    optional string chrome_version = 3;
+
+    // This is omitted on scans triggered at the profile level.
+    optional string machine_user = 4;
+  };
+  optional Browser browser = 1;
+
+  // Describes the device uploading a scan request. This is omitted on scans
+  // triggered at the profile level.
+  message Device {
+    optional string dm_token = 1;
+    optional string client_id = 2;
+    optional string os_version = 3;
+    optional string os_platform = 4;
+    optional string name = 5;
+  };
+  optional Device device = 2;
+
+  // Describes the profile uploading a scan request.
+  message Profile {
+    optional string dm_token = 1;
+    optional string gaia_email = 2;
+    optional string profile_path = 3;
+    optional string profile_name = 4;
+    optional string client_id = 5;
+  };
+  optional Profile profile = 3;
+};
+
+// Analysis request sent from chrome to backend.
+message ContentAnalysisRequest {
+  // The TokenID for Enterprise-enrolled devices.  This identifies a specific
+  // chrome instance.
+  optional string device_token = 1;
+
+  // Firebase Cloud Messaging token used to notify this client of the verdict.
+  // This identifies a specific chrome instance.
+  optional string fcm_notification_token = 2;
+
+  // Which enterprise connector fired this request.
+  optional AnalysisConnector analysis_connector = 9;
+
+  // Information about the data that triggered the content analysis request.
+  optional ContentMetaData request_data = 10;
+
+  // Token used to correlate requests and responses. This is different than the
+  // FCM token in that it is unique for each request.
+  optional string request_token = 5;
+
+  // The tags configured for the URL that triggered the content analysis.
+  repeated string tags = 11;
+
+  // Additional information about the browser, device or profile so events can
+  // be reported with device/user identifiable information.
+  optional ClientMetadata client_metadata = 12;
+
+  // Reserved to make sure there is no overlap with DeepScanningClientRequest.
+  reserved 3, 4, 6 to 8;
+}
+
+// Scanning response sent from backend to Chrome.
+message ContentAnalysisResponse {
+  // Token used to correlate requests and responses. Corresponds to field in
+  // ContentAnalysisRequest with the same name.
+  optional string request_token = 1;
+
+  // Represents the analysis result from a given tag.
+  message Result {
+    optional string tag = 1;
+
+    // The status of this result.
+    enum Status {
+      STATUS_UNKNOWN = 0;
+      SUCCESS = 1;
+      FAILURE = 2;
+    }
+    optional Status status = 2;
+
+    message CustomMessage {
+      // An admin-provided url that should lead to a page where the user can
+      // learn more about the restrictions in place in their organization.
+      optional string learn_more_url = 1;
+      // An admin-provided message that will be shown to the user when a scan
+      // results is not clean. This message should not be more than 200
+      // characters long.
+      optional string message = 2;
+    }
+
+    // Identifies the detection rules that were triggered by the analysis.
+    // Only relevant when status is SUCCESS.
+    message TriggeredRule {
+      enum Action {
+        ACTION_UNSPECIFIED = 0;
+        REPORT_ONLY = 1;
+        WARN = 2;
+        BLOCK = 3;
+      }
+      optional Action action = 1;
+      optional string rule_name = 2;
+      optional string rule_id = 3;
+      // This field contains a custom message that is specific to the rules
+      // triggered by this scan, if any. This messages can be shown in addition
+      // to the OU-based message found in the client-side policy or at the
+      // top-level of the Result message.
+      optional CustomMessage custom_message = 4;
+    }
+    repeated TriggeredRule triggered_rules = 3;
+
+    // This field is meant to override the OU-based custom messages set in the
+    // client-side policies. When the result requires a
+    // warning, if this field has a value it's the one that will be displayed to
+    // the user, otherwise the client-side policy's custom message will be used.
+    optional CustomMessage custom_message = 7;
+
+    // TODO(crbug.com/1147036): Remove fields 4-6 once a definitive approach is
+    // agreed upon.
+    optional string malware_family = 4;
+    optional string malware_category = 5;
+    optional string evidence_locker_filepath = 6;
+  }
+  repeated Result results = 4;
+
+  // Reserved to make sure there is no overlap with DeepScanningClientResponse.
+  reserved 2 to 3;
+}

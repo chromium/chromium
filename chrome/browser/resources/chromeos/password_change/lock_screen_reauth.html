@@ -1,0 +1,386 @@
+<!doctype html>
+<html dir="$i18n{textdirection}" lang="$i18n{language}">
+
+<head>
+  <include src="../login/components/oobe_icons.html">
+
+  <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+
+  <script src="chrome://resources/js/cr.js"></script>
+  <script src="chrome://resources/js/cr/event_target.js"></script>
+  <script src="chrome://resources/js/load_time_data.js"></script>
+  <script src="chrome://resources/js/assert.js"></script>
+  <script src="chrome://resources/js/util.js"></script>
+  <script src="chrome://lock-reauth/authenticator.js"></script>
+
+  <script type="module" src="chrome://lock-reauth/lock_screen_reauth.js"></script>
+
+  <dom-module id="lock-reauth">
+    <template>
+      <style>
+        :host {
+          --lock-screen-reauth-dialog-buttons-horizontal-padding: 40px;
+          --lock-screen-reauth-dialog-buttons-vertical-padding: 25px;
+          --lock-screen-reauth-dialog-content-padding: 40px;
+          --lock-screen-reauth-dialog-icon-size: 32px;
+          --lock-screen-reauth-dialog-text-line-height: 18px;
+          --lock-screen-reauth-dialog-title-top-padding: 40px;
+          --lock-screen-reauth-back-button-height: calc(
+              var(--lock-screen-reauth-dialog-buttons-vertical-padding) +
+              var(--cr-button-height));
+          --lock-screen-reauth-dialog-header-top-padding: calc(
+              var(--lock-screen-reauth-dialog-content-padding) +
+              var(--lock-screen-reauth-back-button-height));
+          height: 100%;
+          left: 0;
+          margin: 0;
+          padding: 0;
+          position: fixed;
+          top: 0;
+          width: 100%;
+        }
+
+        :host-context([orientation=horizontal]) {
+          --button-alignment: flex-end;
+          --lock-screen-reauth-dialog-content-direction: row;
+          --lock-screen-reauth-dialog-item-alignment: unset;
+          --lock-screen-reauth-dialog-title-top-padding: 40px;
+          --lock-screen-reauth-text-alignment: start;
+          --lock-screen-reauth-dialog-content-top-padding: calc(
+              var(--lock-screen-reauth-dialog-header-top-padding) +
+              var(--lock-screen-reauth-dialog-title-top-padding) +
+              var(--lock-screen-reauth-dialog-icon-size));
+          /* Header takes 40% of the width remaining after applying padding */
+          --lock-screen-reauth-dialog-header-width: clamp(302px,
+          calc(0.4 * (var(--lock-screen-reauth-dialog-width) -
+          4 * var(--lock-screen-reauth-dialog-content-padding))), 346px);
+          --lock-screen-reauth-dialog-content-width: calc(
+              var(--lock-screen-reauth-dialog-width) -
+              4 * var(--lock-screen-reauth-dialog-content-padding) -
+              var(--lock-screen-reauth-dialog-header-width));
+        }
+
+        :host-context([orientation=vertical]) {
+          --button-alignment: center;
+          --lock-screen-reauth-dialog-content-direction: column;
+          --lock-screen-reauth-dialog-content-top-padding:
+              var(--lock-screen-reauth-dialog-buttons-vertical-padding);
+          --lock-screen-reauth-dialog-item-alignment: center;
+          --lock-screen-reauth-dialog-title-top-padding: 15px;
+          --lock-screen-reauth-text-alignment: center;
+          --lock-screen-reauth-dialog-content-width: calc(
+              var(--lock-screen-reauth-dialog-width) -
+              2 * var(--lock-screen-reauth-dialog-content-padding));
+          /* Header takes 70% of the width remaining after applying padding */
+          --lock-screen-reauth-dialog-header-width: clamp(346px,
+          calc(0.7 * (var(--lock-screen-reauth-dialog-width) -
+          2 * var(--lock-screen-reauth-dialog-content-padding))), 520px);
+        }
+
+        .content-wrapper {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          width: 100%;
+        }
+
+        .main-container {
+          align-items: var(--lock-screen-reauth-dialog-item-alignment);
+          display: flex;
+          flex: 1;
+          flex-direction: var(--lock-screen-reauth-dialog-content-direction);
+        }
+
+        #body {
+          align-self: stretch;
+          display: flex;
+          flex-direction: column;
+          flex-grow: 1;
+          height: 100%;
+          width: 100%;
+        }
+
+        #samlContainer {
+          /* #FFFFFF */
+          background: rgb(255, 255, 255);
+          /* #000000 */
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
+          display: flex;
+          height: 44px;
+          justify-content: flex-end;
+          text-align: center;
+        }
+
+        #samlContainer[saml-notice-message] {
+          /* #F1F3F4 */
+          background: rgb(241, 243, 244);
+        }
+
+        #samlNoticeMessage {
+          /* #6a6a6a */
+          color: rgb(106, 106, 106);
+          flex: 1;
+          font-size: 13px;
+          padding-top: 15px;
+        }
+
+        #saml-close-button {
+          --cr-icon-button-margin-end: 0;
+          --cr-icon-button-margin-start: 0;
+        }
+
+        #signin-frame {
+          flex: 1;
+          height: 100%;
+          width: 100%;
+        }
+
+        .title-icon {
+          /* #1a73e8 */
+          --iron-icon-fill-color: rgb(26, 115, 232);
+          --iron-icon-height: 32px;
+          --iron-icon-width: 32px;
+          align-self: var(--lock-screen-reauth-dialog-item-alignment);
+        }
+
+        .header {
+          background: white;
+          display: flex;
+          flex-direction: column;
+          padding-bottom: var(--lock-screen-reauth-dialog-content-padding);
+          padding-inline-end: var(--lock-screen-reauth-dialog-content-padding);
+          padding-inline-start:
+            var(--lock-screen-reauth-dialog-content-padding);
+          padding-top: var(--lock-screen-reauth-dialog-header-top-padding);
+          width: var(--lock-screen-reauth-dialog-header-width);
+        }
+
+        .title {
+          color: var(--cr-primary-text-color);
+          font-size: 28px;
+          font-weight: 400;
+          margin: 0;
+          padding-top: var(--lock-screen-reauth-dialog-title-top-padding);
+          text-align: var(--lock-screen-reauth-text-alignment);
+        }
+
+        .subtitle {
+          color: var(--cr-secondary-text-color);
+          font-size: 13px;
+          font-weight: 400;
+          line-height: var(--lock-screen-reauth-dialog-text-line-height);
+          margin: 0;
+          overflow-wrap: break-word;
+          padding-top: 15px;
+          text-align: var(--lock-screen-reauth-text-alignment);
+        }
+
+        .illustration-container {
+          align-items: center;
+          display: flex;
+          justify-content: center;
+          padding-bottom: 0;
+          padding-inline-end: var(--lock-screen-reauth-dialog-content-padding);
+          padding-inline-start:
+            var(--lock-screen-reauth-dialog-content-padding);
+          width: var(--lock-screen-reauth-dialog-content-width);
+        }
+
+        .illustration {
+          height: 100%;
+          max-width: 500px;
+          object-fit: contain;
+          width: 100%;
+        }
+
+        .button-container {
+          display: flex;
+          flex-shrink: 0;
+          justify-content: var(--button-alignment);
+          min-height: var(--cr-button-height);
+          padding-bottom:
+            var(--lock-screen-reauth-dialog-buttons-vertical-padding);
+          padding-inline-end:
+            var(--lock-screen-reauth-dialog-buttons-horizontal-padding);
+          padding-inline-start:
+            var(--lock-screen-reauth-dialog-buttons-horizontal-padding);
+          padding-top:
+            var(--lock-screen-reauth-dialog-buttons-vertical-padding);
+          z-index: 1;
+        }
+
+        [hidden] {
+          display: none !important;
+        }
+
+        .input-container {
+          border: 0;
+          flex: 2;
+          padding-bottom: 0;
+          padding-inline-end: var(--lock-screen-reauth-dialog-content-padding);
+          padding-inline-start:
+            var(--lock-screen-reauth-dialog-content-padding);
+          padding-top: var(--lock-screen-reauth-dialog-content-top-padding);
+          width: var(--lock-screen-reauth-dialog-content-width);
+        }
+
+        cr-input {
+          --cr-input-border-radius: 4px 4px 0 0;
+          --cr-input-min-height: 32px;
+          max-width: 560px;
+          padding-bottom: 8px;
+        }
+
+        cr-button {
+          border-radius: 16px;
+        }
+
+        :host-context([dir=rtl]) #arrowForward {
+          transform: rotate(180deg);
+        }
+      </style>
+      <div class="content-wrapper" hidden="[[!isVerifyUser_]]" role="dialog"
+          aria-modal="true" id="verifyAccountScreen"
+          aria-label="$i18n{loginWelcomeMessage}">
+        <div class="main-container">
+          <div class="header">
+            <iron-icon class="title-icon" icon="oobe-32:avatar"></iron-icon>
+            <div class="title">
+              $i18n{loginWelcomeMessage}
+            </div>
+            <div class="subtitle">
+              $i18n{lockScreenReauthSubtitile}
+            </div>
+          </div>
+          <div class="illustration-container">
+            <img class="illustration"
+                srcset="../login/images/1x/verify-account.svg 1x,
+                        ../login/images/2x/verify-account.svg 2x">
+          </div>
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButtonVerifyScreen" class="action-button" on-click="onVerify_">
+            $i18n{lockScreenVerifyButton}
+          </cr-button>
+        </div>
+      </div>
+
+      <div class="content-wrapper" hidden="[[!isErrorDisplayed_]]" role="dialog"
+          aria-modal="true"
+          aria-label="$i18n{loginWelcomeMessageWithError}">
+        <div class="main-container">
+          <div class="header">
+            <iron-icon class="title-icon" icon="oobe-32:warning"></iron-icon>
+            <div class="title">
+              $i18n{loginWelcomeMessageWithError}
+            </div>
+            <div class="subtitle">
+              <div>$i18n{lockScreenReauthSubtitile1WithError}</div>
+              <div>$i18n{lockScreenReauthSubtitile2WithError}</div>
+            </div>
+          </div>
+          <div class="illustration-container">
+            <img src="../login/images/error.svg" class="illustration">
+          </div>
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onVerify_">
+            $i18n{lockScreenVerifyAgainButton}
+          </cr-button>
+        </div>
+      </div>
+
+      <div id="body" hidden="[[!isSamlPage_]]">
+        <div id="samlContainer"
+            saml-notice-message$="[[showSamlNoticeMessage_]]">
+          <span id="samlNoticeMessage" hidden="[[!showSamlNoticeMessage_]]">
+          </span>
+          <cr-icon-button id="saml-close-button" iron-icon="cr:close"
+              on-click="onCloseTap_" aria-label="$i18n{lockScreenCloseButton}">
+          </cr-icon-button>
+        </div>
+        <webview id="signin-frame" name="signin-frame" class="flex">
+        </webview>
+      </div>
+
+      <div class="content-wrapper" hidden="[[!isConfirmPassword_]]">
+        <div class="main-container">
+          <div class="header">
+            <iron-icon class="title-icon" icon="oobe-32:lock"></iron-icon>
+            <div class="title">
+              [[email_]]
+            </div>
+            <div class="subtitle" hidden="[[isManualInput_]]">
+              $i18n{confirmPasswordSubtitle}
+            </div>
+            <div class="subtitle" hidden="[[!isManualInput_]]">
+              $i18n{manualPasswordSubtitle}
+            </div>
+          </div>
+          <div class="input-container">
+            <cr-input type="password" id="passwordInput" required
+                placeholder="[[passwordPlaceholder_(locale, isManualInput_)]]"
+                error-message="[[passwordErrorText_(locale, isManualInput_)]]">
+            </cr-input>
+            <cr-input type="password" id="confirmPasswordInput" required
+                placeholder="$i18n{confirmPasswordLabel}"
+                error-message="$i18n{manualPasswordMismatch}"
+                hidden="[[!isManualInput_]]">
+            </cr-input>
+          </div>
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onConfirm_">
+            $i18n{lockScreenNextButton}
+            <iron-icon id="arrowForward" icon="oobe-20:button-arrow-forward">
+            </iron-icon>
+          </cr-button>
+        </div>
+      </div>
+
+      <div class="content-wrapper" hidden="[[!isPasswordChanged_]]">
+        <div class="main-container">
+          <div class="header">
+            <iron-icon class="title-icon" icon="oobe-32:lock"></iron-icon>
+            <div class="title">
+              $i18n{passwordChangedTitle}
+            </div>
+            <div class="subtitle">
+              $i18n{passwordChangedSubtitle}
+            </div>
+          </div>
+          <div class="input-container">
+            <cr-input type="password" id="oldPasswordInput" required
+                placeholder="$i18n{passwordChangedOldPasswordHint}"
+                error-message="$i18n{passwordChangedIncorrectOldPassword}">
+          </div>
+        </div>
+        <div class="flex layout horizontal button-container">
+          <cr-button id="cancelButton" class="cancel-button" on-click="onCloseTap_">
+            $i18n{lockScreenCancelButton}
+          </cr-button>
+          <cr-button id="nextButton" class="action-button" on-click="onNext_">
+            $i18n{lockScreenNextButton}
+            <iron-icon icon="oobe-20:button-arrow-forward"></iron-icon>
+          </cr-button>
+        </div>
+      </div>
+    </template>
+  </dom-module>
+</head>
+
+<body>
+  <lock-reauth id="main-element">
+  </lock-reauth>
+</body>
+
+</html>

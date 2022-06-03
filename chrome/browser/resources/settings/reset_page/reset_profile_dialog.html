@@ -1,19 +1,3 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
-
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_checkbox/cr_checkbox.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_dialog/cr_dialog.html">
-<link rel="import" href="chrome://resources/html/action_link.html">
-<link rel="import" href="chrome://resources/cr_elements/action_link_css.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-spinner/paper-spinner-lite.html">
-<link rel="import" href="reset_browser_proxy.html">
-<link rel="import" href="../i18n_setup.html">
-<link rel="import" href="../route.html">
-<link rel="import" href="../settings_shared_css.html">
-
-<dom-module id="settings-reset-profile-dialog">
-  <template>
     <style include="settings-shared action-link">
       paper-spinner-lite {
         margin: 0 8px;
@@ -30,8 +14,10 @@
         [[getPageTitle_(isTriggered_, triggeredResetToolName_)]]
       </div>
       <div id="dialog-body" slot="body">
+        <span inner-h-t-m-l="
+          [[getExplanationText_(isTriggered_, triggeredResetToolName_)]]">
+        </span>
         <span>
-          [[getExplanationText_(isTriggered_, triggeredResetToolName_)]]
           <a href="$i18nRaw{resetPageLearnMoreUrl}" target="_blank">
             $i18n{learnMore}
           </a>
@@ -54,6 +40,3 @@
           $i18nRaw{resetPageFeedback}</cr-checkbox>
       </div>
     </cr-dialog>
-  </template>
-  <script src="reset_profile_dialog.js"></script>
-</dom-module>

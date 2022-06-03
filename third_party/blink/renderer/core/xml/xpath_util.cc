@@ -84,5 +84,9 @@ bool IsValidContextNode(Node* node) {
   return false;
 }
 
+bool IsXMLSpace(UChar ch) {
+  return ch <= 0x20 && (ch == 0x20 || ch == 0x09 || ch == 0x0D || ch == 0x0A);
+}
+
 }  // namespace xpath
 }  // namespace blink

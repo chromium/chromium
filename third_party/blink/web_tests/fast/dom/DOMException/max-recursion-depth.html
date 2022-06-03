@@ -8,14 +8,15 @@
   window.created = 0;
 
   function define(name, child) {
-    var prototype = Object.create(HTMLElement.prototype);
-    prototype.createdCallback = function() {
-      created++;
-      if (created == count)
-        document.body.appendChild(document.createTextNode("PASS."))
-      document.createElement(child);
-    };
-    document.registerElement(name, {prototype: prototype});
+    customElements.define(name, class extends HTMLElement {
+      constructor() {
+        super();
+        created++;
+        if (created == count)
+          document.body.appendChild(document.createTextNode("PASS."))
+        document.createElement(child);
+      }
+    });
   }
 
   var prefix = 'x-';

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
 
@@ -21,14 +20,17 @@ class AssistantQuery;
 class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
  public:
   AssistantQueryView();
+
+  AssistantQueryView(const AssistantQueryView&) = delete;
+  AssistantQueryView& operator=(const AssistantQueryView&) = delete;
+
   ~AssistantQueryView() override;
 
   // views::View:
   const char* GetClassName() const override;
   gfx::Size CalculatePreferredSize() const override;
   int GetHeightForWidth(int width) const override;
-  void ChildPreferredSizeChanged(views::View* child) override;
-  void OnBoundsChanged(const gfx::Rect& prev_bounds) override;
+  void OnThemeChanged() override;
 
   void SetQuery(const AssistantQuery& query);
 
@@ -37,9 +39,8 @@ class COMPONENT_EXPORT(ASSISTANT_UI) AssistantQueryView : public views::View {
   void SetText(const std::string& high_confidence_text,
                const std::string& low_confidence_text = std::string());
 
-  views::StyledLabel* label_;                        // Owned by view hierarchy.
-
-  DISALLOW_COPY_AND_ASSIGN(AssistantQueryView);
+  views::Label* high_confidence_label_;  // Owned by view hierarchy.
+  views::Label* low_confidence_label_;   // Owned by view hierarchy.
 };
 
 }  // namespace ash

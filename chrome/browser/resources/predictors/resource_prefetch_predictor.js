@@ -2,19 +2,48 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
+/**
+ * @typedef {{
+ *   enabled: boolean,
+ *   origin_db: !Array<!OriginData>
+ * }}
+ */
+let ResourcePrefetchPredictorDb;
+
+/**
+ * @typedef {{
+ *   main_frame_host: string,
+ *   origins: !Array<!{
+ *     origin: string,
+ *     number_of_hits: number,
+ *     number_of_misses: number,
+ *     consecutive_misses: number,
+ *     position: number,
+ *     always_access_network: boolean,
+ *     accessed_network: boolean,
+ *     score: number
+ *   }>
+ * }}
+ */
+let OriginData;
+
 /**
  * Requests the database from the backend.
  */
 function requestResourcePrefetchPredictorDb() {
-  chrome.send('requestResourcePrefetchPredictorDb');
+  sendWithPromise('requestResourcePrefetchPredictorDb')
+      .then(updateResourcePrefetchPredictorDb);
 }
 
 /**
  * Callback from backend with the database contents. Sets up some globals and
  * calls to create the UI.
- * @param {Object} database Information about ResourcePrefetchPredictor
- *     including the database as a flattened list, a boolean indicating if the
- *     system is enabled.
+ * @param {!ResourcePrefetchPredictorDb} database Information about
+ *     ResourcePrefetchPredictor including the database as a flattened list, a
+ *     boolean indicating if the system is enabled.
  */
 function updateResourcePrefetchPredictorDb(database) {
   updateResourcePrefetchPredictorDbView(database);
@@ -31,9 +60,9 @@ function truncateString(str) {
 
 /**
  * Updates the table from the database.
- * @param {Object} database Information about ResourcePrefetchPredictor
- *     including the database as a flattened list, a boolean indicating if the
- *     system is enabled and the current hit weight.
+ * @param {!ResourcePrefetchPredictorDb} database Information about
+ *     ResourcePrefetchPredictor including the database as a flattened list, a
+ *     boolean indicating if the system is enabled and the current hit weight.
  */
 function updateResourcePrefetchPredictorDbView(database) {
   if (!database.enabled) {
@@ -55,7 +84,7 @@ function updateResourcePrefetchPredictorDbView(database) {
 /**
  * Renders the content of the predictor origin table.
  * @param {HTMLElement} body element of table to render into.
- * @param {Object} database to render.
+ * @param {!Array<!OriginData>} database to render.
  */
 function renderOriginData(body, database) {
   body.textContent = '';

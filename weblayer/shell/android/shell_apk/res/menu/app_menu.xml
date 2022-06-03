@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright 2020 The Chromium Authors. All rights reserved.
+     Use of this source code is governed by a BSD-style license that can be
+     found in the LICENSE file. -->
+
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="HardcodedText">
+    <item android:id="@+id/reload_menu_id"
+        android:title="Reload" />
+    <item android:id="@+id/find_begin_menu_id"
+        android:title="Find in page" />
+    <item android:id="@+id/find_end_menu_id"
+        android:title="Clear find in page" />
+    <item android:id="@+id/site_settings_menu_id"
+        android:title="Site Settings" />
+    <item android:id="@+id/translate_menu_id"
+        android:title="Translate" />
+    <item android:id="@+id/clear_browsing_data_menu_id"
+        android:title="Clear all browsing data" />
+    <item android:id="@+id/enable_incognito_menu_id"
+        android:title="Restart with Incognito" />
+    <item android:id="@+id/disable_incognito_menu_id"
+        android:title="Restart without Incognito" />
+    <item android:id="@+id/set_translate_target_lang_menu_id"
+        android:title="Set translate target language to German" />
+    <item android:id="@+id/clear_translate_target_lang_menu_id"
+        android:title="Clear translate target language override" />
+    <item android:id="@+id/desktop_site_menu_id"
+        android:title="Request desktop site" />
+    <item android:id="@+id/no_desktop_site_menu_id"
+        android:title="Request mobile site" />
+    <item android:id="@+id/add_to_homescreen"
+        android:title="Add to homescreen" />
+</menu>

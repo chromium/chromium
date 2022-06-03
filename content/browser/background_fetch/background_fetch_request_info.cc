@@ -8,7 +8,6 @@
 
 #include "base/guid.h"
 #include "base/strings/string_util.h"
-#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/download/public/common/download_item.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -120,7 +119,7 @@ void BackgroundFetchRequestInfo::SetResult(
 
 void BackgroundFetchRequestInfo::SetEmptyResultWithFailureReason(
     BackgroundFetchResult::FailureReason failure_reason) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   result_ = std::make_unique<BackgroundFetchResult>(
       /* response= */ nullptr, base::Time::Now(), failure_reason);
@@ -128,7 +127,7 @@ void BackgroundFetchRequestInfo::SetEmptyResultWithFailureReason(
 
 void BackgroundFetchRequestInfo::PopulateWithResponse(
     std::unique_ptr<BackgroundFetchResponse> response) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(response);
 
   url_chain_ = response->url_chain;
@@ -185,21 +184,14 @@ void BackgroundFetchRequestInfo::CreateResponseBlobDataHandle(
                            : nullptr;
   result_->blob_handle.reset();
 
-  if (ServiceWorkerContext::IsServiceWorkerOnUIEnabled()) {
-    // base::Unretained is safe because |io_blob_data_| is deleted on the IO
-    // thread in a task that must run after this task.
-    base::PostTask(
-        FROM_HERE, {BrowserThread::IO},
-        base::BindOnce(&BlobDataOnIO::CreateBlobDataHandle,
-                       base::Unretained(io_blob_data_.get()),
-                       std::move(blob_storage_context), std::move(handle),
-                       result_->file_path, result_->file_size, response_size_));
-  } else {
-    DCHECK_CURRENTLY_ON(BrowserThread::IO);
-    io_blob_data_->CreateBlobDataHandle(std::move(blob_storage_context),
-                                        std::move(handle), result_->file_path,
-                                        result_->file_size, response_size_);
-  }
+  // base::Unretained is safe because |io_blob_data_| is deleted on the IO
+  // thread in a task that must run after this task.
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&BlobDataOnIO::CreateBlobDataHandle,
+                     base::Unretained(io_blob_data_.get()),
+                     std::move(blob_storage_context), std::move(handle),
+                     result_->file_path, result_->file_size, response_size_));
 }
 
 std::unique_ptr<storage::BlobDataHandle>

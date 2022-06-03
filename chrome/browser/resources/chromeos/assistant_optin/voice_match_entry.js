@@ -5,6 +5,8 @@
 Polymer({
   is: 'voice-match-entry',
 
+  behaviors: [OobeI18nBehavior],
+
   properties: {
     active: {
       type: Boolean,

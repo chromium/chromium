@@ -8,6 +8,7 @@
 #include "base/files/file_util.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace storage_monitor {
@@ -220,9 +221,9 @@ base::FilePath PathForCameraItem(ICCameraItem* item) {
   // Shared result value from file-copy closure to tell-listener closure.
   // This is worth blocking shutdown, as otherwise a file that has been
   // downloaded will be incorrectly named.
-  base::PostTaskAndReplyWithResult(
+  base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
        base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
       base::BindOnce(&storage_monitor::RenameFile, savedPath, saveAsPath),
       base::BindOnce(&storage_monitor::ReturnRenameResultToListener, _listener,

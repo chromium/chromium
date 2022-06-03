@@ -83,7 +83,6 @@ css3/filters/filter-repaint-child-layers.html
 css3/filters/filter-repaint-shadow.html
 css3/filters/filter-repaint.html
 css3/filters/regions-expanding.html
-css3/masking/mask-luminance-png.html
 css3/masking/mask-repeat-round-auto1.html
 css3/masking/mask-repeat-round-border.html
 css3/masking/mask-repeat-round-content.html
@@ -761,7 +760,6 @@ images/crash-bad-cast.html
 images/cross-fade-svg-size-diff.html
 images/drag-svg-image.html
 images/embed-does-not-propagate-dimensions-to-object-ancestor.html
-images/feature-policy-oversized-images-forced-layout.html
 images/gif-loop-count.html
 images/image-change-src.html
 images/image-empty-src-no-display.html
@@ -853,3 +851,6 @@ transforms/transformed-caret.html
 transforms/transformed-scroller-snapping-crash.html
 transforms/translate.html
 transforms/webkit-perspective-origin-csstext.html
+
+# Also cover the Android related tests
+virtual/android

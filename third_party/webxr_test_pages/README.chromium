@@ -51,3 +51,31 @@ To publish samples for OT:
 2. Serve <dest-folder> locally and make sure everything works.
 
 3. python update_bucket.py --direct-publish-samples-source=<dest-folder> --direct-publish-samples-dest=<bucket-dest-subfolder>
+
+
+
+To create a Google Cloud WebXR-Samples bucket:
+
+1. Navigate to the Google Cloud console at https://console.cloud.google.com/
+
+2. Navigate to storage, and click "Create Bucket"
+
+3. Name the bucket, and set it's configuration to use a Multi-region location type, and uniform
+   access control.
+
+4. (Optional) Grant the bucket public access:
+   a. Select your bucket from the storage browser
+   b. Click "Permissions"
+   c. Click "Add"
+   d. Add the member "allUsers" with the role "Storage Object Viewer"
+   e. Add the member "allAuthenticatedUsers" with the role "Storage Object Viewer"
+   f. Accept the prompt notifying you that you will make the bucket public to the internet.
+
+5. Select a project as bucket owner. (If this is not the default 'chromium-webxr-test' 
+   use `update_bucket.py --bucket gs://PROJECT_ID` in the steps below to override its default.)
+
+6. Create a "media" folder at the top level directory of your bucket, this folder should contain a
+   copy of https://github.com/immersive-web/webxr-samples/tree/master/media
+
+7. Verify the changes are working as intended by navigating to your bucket's index's public access
+   URL.

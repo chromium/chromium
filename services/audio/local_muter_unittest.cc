@@ -100,9 +100,9 @@ TEST(LocalMuter, UnmutesWhenLastBindingIsLost) {
   muter->SetAllBindingsLostCallback(callback.Get());
 
   // Create two bindings to the muter.
-  mojo::AssociatedRemote<mojom::LocalMuter> remote_muter1;
+  mojo::AssociatedRemote<media::mojom::LocalMuter> remote_muter1;
   muter->AddReceiver(remote_muter1.BindNewEndpointAndPassReceiver());
-  mojo::AssociatedRemote<mojom::LocalMuter> remote_muter2;
+  mojo::AssociatedRemote<media::mojom::LocalMuter> remote_muter2;
   muter->AddReceiver(remote_muter2.BindNewEndpointAndPassReceiver());
 
   // A member joins the group and should be muted.

@@ -4,12 +4,13 @@
 
 #include "remoting/host/mouse_shape_pump.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "remoting/host/host_mock_objects.h"
 #include "remoting/proto/video.pb.h"
@@ -35,6 +36,10 @@ static const int kHotspotY = 12;
 class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
  public:
   TestMouseCursorMonitor() : callback_(nullptr) {}
+
+  TestMouseCursorMonitor(const TestMouseCursorMonitor&) = delete;
+  TestMouseCursorMonitor& operator=(const TestMouseCursorMonitor&) = delete;
+
   ~TestMouseCursorMonitor() override = default;
 
   void Init(Callback* callback, Mode mode) override {
@@ -57,8 +62,6 @@ class TestMouseCursorMonitor : public webrtc::MouseCursorMonitor  {
 
  private:
   Callback* callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestMouseCursorMonitor);
 };
 
 class MouseShapePumpTest : public testing::Test {
@@ -99,8 +102,8 @@ TEST_F(MouseShapePumpTest, FirstCursor) {
       .RetiresOnSaturation();
 
   // Start the pump.
-  pump_.reset(new MouseShapePump(base::WrapUnique(new TestMouseCursorMonitor()),
-                                 &client_stub_));
+  pump_ = std::make_unique<MouseShapePump>(
+      base::WrapUnique(new TestMouseCursorMonitor()), &client_stub_);
 
   run_loop_.Run();
 }

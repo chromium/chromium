@@ -9,6 +9,8 @@ assert(is_chromeos, "Non-Chrome-OS builds cannot depend on //chromeos")
 component("authpolicy") {
   defines = [ "IS_AUTHPOLICY_IMPL" ]
 
+  public_deps = [ "//components/policy/proto" ]
+
   deps = [
     ":authpolicy_proto",
     "//base",
@@ -21,7 +23,6 @@ component("authpolicy") {
     "//chromeos/dbus/session_manager",
     "//chromeos/tpm",
     "//components/policy:cloud_policy_proto_generated_compile",
-    "//components/policy/proto",
   ]
 
   sources = [

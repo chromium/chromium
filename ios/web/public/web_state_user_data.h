@@ -5,7 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_USER_DATA_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_USER_DATA_H_
 
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/supports_user_data.h"
 #import "ios/web/public/web_state.h"

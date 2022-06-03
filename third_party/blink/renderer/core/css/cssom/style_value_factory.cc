@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/css/cssom/style_value_factory.h"
 
-#include "third_party/blink/renderer/core/css/css_color_value.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_union_cssstylevalue_string.h"
+#include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -20,7 +21,7 @@
 #include "third_party/blink/renderer/core/css/cssom/css_style_variable_reference_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_transform_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unparsed_value.h"
-#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color_value.h"
+#include "third_party/blink/renderer/core/css/cssom/css_unsupported_color.h"
 #include "third_party/blink/renderer/core/css/cssom/css_unsupported_style_value.h"
 #include "third_party/blink/renderer/core/css/cssom/css_url_image_value.h"
 #include "third_party/blink/renderer/core/css/cssom/cssom_types.h"
@@ -55,8 +56,8 @@ CSSStyleValue* CreateStyleValue(const CSSValue& value) {
     return CSSKeywordValue::FromCSSValue(value);
   if (auto* primitive_value = DynamicTo<CSSPrimitiveValue>(value))
     return CSSNumericValue::FromCSSValue(*primitive_value);
-  if (auto* color_value = DynamicTo<cssvalue::CSSColorValue>(value))
-    return MakeGarbageCollected<CSSUnsupportedColorValue>(*color_value);
+  if (auto* color_value = DynamicTo<cssvalue::CSSColor>(value))
+    return MakeGarbageCollected<CSSUnsupportedColor>(*color_value);
   if (auto* image_value = DynamicTo<CSSImageValue>(value))
     return MakeGarbageCollected<CSSURLImageValue>(*image_value->Clone());
   return nullptr;
@@ -70,7 +71,11 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
     case CSSPropertyID::kBorderBottomLeftRadius:
     case CSSPropertyID::kBorderBottomRightRadius:
     case CSSPropertyID::kBorderTopLeftRadius:
-    case CSSPropertyID::kBorderTopRightRadius: {
+    case CSSPropertyID::kBorderTopRightRadius:
+    case CSSPropertyID::kBorderEndEndRadius:
+    case CSSPropertyID::kBorderEndStartRadius:
+    case CSSPropertyID::kBorderStartEndRadius:
+    case CSSPropertyID::kBorderStartStartRadius: {
       // border-radius-* are always stored as pairs, but when both values are
       // the same, we should reify as a single value.
       if (const auto* pair = DynamicTo<CSSValuePair>(value)) {
@@ -80,8 +85,9 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       }
       return nullptr;
     }
+    case CSSPropertyID::kAccentColor:
     case CSSPropertyID::kCaretColor: {
-      // caret-color also supports 'auto'
+      // caret-color and accent-color also support 'auto'
       auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
       if (identifier_value &&
           identifier_value->GetValueID() == CSSValueID::kAuto)
@@ -287,7 +293,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
   if ((property_id == CSSPropertyID::kVariable && !tokens.IsEmpty()) ||
       CSSVariableParser::ContainsValidVariableReferences(range)) {
     const auto variable_data = CSSVariableData::Create(
-        range, false /* is_animation_tainted */,
+        {range, StringView(css_text)}, false /* is_animation_tainted */,
         false /* needs variable resolution */, parser_context->BaseURL(),
         parser_context->Charset());
     CSSStyleValueVector values;
@@ -301,7 +307,7 @@ CSSStyleValueVector StyleValueFactory::FromString(
 CSSStyleValue* StyleValueFactory::CssValueToStyleValue(
     const CSSPropertyName& name,
     const CSSValue& css_value) {
-  DCHECK(!CSSProperty::Get(name.Id()).IsRepeated());
+  DCHECK(!CSSProperty::IsRepeated(name));
   CSSStyleValue* style_value =
       CreateStyleValueWithProperty(name.Id(), css_value);
   if (!style_value)
@@ -312,31 +318,33 @@ CSSStyleValue* StyleValueFactory::CssValueToStyleValue(
 CSSStyleValueVector StyleValueFactory::CoerceStyleValuesOrStrings(
     const CSSProperty& property,
     const AtomicString& custom_property_name,
-    const HeapVector<CSSStyleValueOrString>& values,
+    const HeapVector<Member<V8UnionCSSStyleValueOrString>>& values,
     const ExecutionContext& execution_context) {
   const CSSParserContext* parser_context = nullptr;
 
   CSSStyleValueVector style_values;
   for (const auto& value : values) {
-    if (value.IsCSSStyleValue()) {
-      if (!value.GetAsCSSStyleValue())
-        return CSSStyleValueVector();
-      style_values.push_back(*value.GetAsCSSStyleValue());
-    } else {
-      DCHECK(value.IsString());
-      if (!parser_context) {
-        parser_context =
-            MakeGarbageCollected<CSSParserContext>(execution_context);
+    DCHECK(value);
+    switch (value->GetContentType()) {
+      case V8UnionCSSStyleValueOrString::ContentType::kCSSStyleValue:
+        style_values.push_back(*value->GetAsCSSStyleValue());
+        break;
+      case V8UnionCSSStyleValueOrString::ContentType::kString: {
+        if (!parser_context) {
+          parser_context =
+              MakeGarbageCollected<CSSParserContext>(execution_context);
+        }
+
+        const auto& subvalues = StyleValueFactory::FromString(
+            property.PropertyID(), custom_property_name, value->GetAsString(),
+            parser_context);
+        if (subvalues.IsEmpty())
+          return CSSStyleValueVector();
+
+        DCHECK(!subvalues.Contains(nullptr));
+        style_values.AppendVector(subvalues);
+        break;
       }
-
-      const auto subvalues = StyleValueFactory::FromString(
-          property.PropertyID(), custom_property_name, value.GetAsString(),
-          parser_context);
-      if (subvalues.IsEmpty())
-        return CSSStyleValueVector();
-
-      DCHECK(!subvalues.Contains(nullptr));
-      style_values.AppendVector(subvalues);
     }
   }
   return style_values;
@@ -361,8 +369,8 @@ CSSStyleValueVector StyleValueFactory::CssValueToStyleValueVector(
       // TODO(andruud): Custom properties claim to not be repeated, even though
       // they may be. Therefore we must ignore "IsRepeated" for custom
       // properties.
-      (!CSSProperty::Get(property_id).IsRepeated() &&
-       property_id != CSSPropertyID::kVariable) ||
+      (property_id != CSSPropertyID::kVariable &&
+       !CSSProperty::Get(property_id).IsRepeated()) ||
       // Note: CSSTransformComponent is parsed as CSSFunctionValue, which is a
       // CSSValueList. We do not yet support such CSSFunctionValues, however.
       // TODO(andruud): Make CSSTransformComponent a subclass of CSSStyleValue,

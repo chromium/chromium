@@ -16,7 +16,7 @@ struct ClientOverview {
 
   ClientOverview();
   ClientOverview(ImpressionDetail impression_detail,
-                 int num_scheduled_notifications);
+                 size_t num_scheduled_notifications);
   ClientOverview(const ClientOverview& other);
   ~ClientOverview();
   bool operator==(const ClientOverview& other) const;
@@ -25,7 +25,7 @@ struct ClientOverview {
   ImpressionDetail impression_detail;
 
   // The number of notifications cached in scheduler but not displayed yet.
-  int num_scheduled_notifications;
+  size_t num_scheduled_notifications;
 };
 
 }  // namespace notifications

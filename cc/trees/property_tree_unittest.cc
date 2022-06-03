@@ -4,15 +4,21 @@
 
 #include "cc/trees/property_tree.h"
 
+#include <utility>
+
 #include "cc/input/main_thread_scrolling_reason.h"
-#include "cc/test/geometry_test_utils.h"
+#include "cc/test/fake_impl_task_runner_provider.h"
+#include "cc/test/fake_layer_tree_host_impl.h"
+#include "cc/test/test_task_graph_runner.h"
 #include "cc/trees/clip_node.h"
 #include "cc/trees/draw_property_utils.h"
 #include "cc/trees/effect_node.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "cc/trees/scroll_node.h"
 #include "cc/trees/transform_node.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace cc {
 namespace {
@@ -29,14 +35,14 @@ TEST(PropertyTreeTest, ComputeTransformRoot) {
   gfx::Transform transform;
   expected.Translate(2, 2);
   tree.CombineTransformsBetween(1, 0, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 
   transform.MakeIdentity();
   expected.MakeIdentity();
   expected.Translate(-2, -2);
   bool success = tree.CombineInversesBetween(0, 1, &transform);
   EXPECT_TRUE(success);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 }
 
 TEST(PropertyTreeTest, SetNeedsUpdate) {
@@ -72,27 +78,27 @@ TEST(PropertyTreeTest, ComputeTransformChild) {
 
   expected.Translate(3, 3);
   tree.CombineTransformsBetween(2, 1, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 
   transform.MakeIdentity();
   expected.MakeIdentity();
   expected.Translate(-3, -3);
   bool success = tree.CombineInversesBetween(1, 2, &transform);
   EXPECT_TRUE(success);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 
   transform.MakeIdentity();
   expected.MakeIdentity();
   expected.Translate(5, 5);
   tree.CombineTransformsBetween(2, 0, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 
   transform.MakeIdentity();
   expected.MakeIdentity();
   expected.Translate(-5, -5);
   success = tree.CombineInversesBetween(0, 2, &transform);
   EXPECT_TRUE(success);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 }
 
 TEST(PropertyTreeTest, ComputeTransformSibling) {
@@ -119,14 +125,14 @@ TEST(PropertyTreeTest, ComputeTransformSibling) {
 
   expected.Translate(4, 4);
   tree.CombineTransformsBetween(3, 2, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 
   transform.MakeIdentity();
   expected.MakeIdentity();
   expected.Translate(-4, -4);
   bool success = tree.CombineInversesBetween(2, 3, &transform);
   EXPECT_TRUE(success);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 }
 
 TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
@@ -167,14 +173,14 @@ TEST(PropertyTreeTest, ComputeTransformSiblingSingularAncestor) {
 
   expected.Translate(4, 4);
   tree.CombineTransformsBetween(4, 3, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 
   transform.MakeIdentity();
   expected.MakeIdentity();
   expected.Translate(-4, -4);
   bool success = tree.CombineInversesBetween(3, 4, &transform);
   EXPECT_TRUE(success);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 }
 
 TEST(PropertyTreeTest, TransformsWithFlattening) {
@@ -219,23 +225,21 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
 
   gfx::Transform to_target;
   property_trees.GetToTarget(child, effect_parent, &to_target);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(rotation_about_x, to_target);
+  EXPECT_TRANSFORM_EQ(rotation_about_x, to_target);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(flattened_rotation_about_x * rotation_about_x,
-                                  tree.ToScreen(child));
+  EXPECT_TRANSFORM_EQ(flattened_rotation_about_x * rotation_about_x,
+                      tree.ToScreen(child));
 
   property_trees.GetToTarget(grand_child, effect_parent, &to_target);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(flattened_rotation_about_x * rotation_about_x,
-                                  to_target);
+  EXPECT_TRANSFORM_EQ(flattened_rotation_about_x * rotation_about_x, to_target);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(flattened_rotation_about_x *
-                                      flattened_rotation_about_x *
-                                      rotation_about_x,
-                                  tree.ToScreen(grand_child));
+  EXPECT_TRANSFORM_EQ(flattened_rotation_about_x * flattened_rotation_about_x *
+                          rotation_about_x,
+                      tree.ToScreen(grand_child));
 
   gfx::Transform grand_child_to_child;
   tree.CombineTransformsBetween(grand_child, child, &grand_child_to_child);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(rotation_about_x, grand_child_to_child);
+  EXPECT_TRANSFORM_EQ(rotation_about_x, grand_child_to_child);
 
   // Remove flattening at grand_child, and recompute transforms.
   tree.Node(grand_child)->flattens_inherited_transform = false;
@@ -243,16 +247,15 @@ TEST(PropertyTreeTest, TransformsWithFlattening) {
   draw_property_utils::ComputeTransforms(&tree);
 
   property_trees.GetToTarget(grand_child, effect_parent, &to_target);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(rotation_about_x * rotation_about_x,
-                                  to_target);
+  EXPECT_TRANSFORM_EQ(rotation_about_x * rotation_about_x, to_target);
 
-  EXPECT_TRANSFORMATION_MATRIX_EQ(
+  EXPECT_TRANSFORM_EQ(
       flattened_rotation_about_x * rotation_about_x * rotation_about_x,
       tree.ToScreen(grand_child));
 
   grand_child_to_child.MakeIdentity();
   tree.CombineTransformsBetween(grand_child, child, &grand_child_to_child);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(rotation_about_x, grand_child_to_child);
+  EXPECT_TRANSFORM_EQ(rotation_about_x, grand_child_to_child);
 }
 
 TEST(PropertyTreeTest, MultiplicationOrder) {
@@ -277,14 +280,14 @@ TEST(PropertyTreeTest, MultiplicationOrder) {
   gfx::Transform inverse;
 
   tree.CombineTransformsBetween(2, 0, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 
   bool success = tree.CombineInversesBetween(0, 2, &inverse);
   EXPECT_TRUE(success);
 
   transform = transform * inverse;
   expected.MakeIdentity();
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 }
 
 TEST(PropertyTreeTest, ComputeTransformWithUninvertibleTransform) {
@@ -307,7 +310,7 @@ TEST(PropertyTreeTest, ComputeTransformWithUninvertibleTransform) {
   gfx::Transform inverse;
 
   tree.CombineTransformsBetween(2, 1, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected, transform);
+  EXPECT_TRANSFORM_EQ(expected, transform);
 
   // To compute this would require inverting the 0 matrix, so we cannot
   // succeed.
@@ -342,7 +345,7 @@ TEST(PropertyTreeTest, ComputeTransformToTargetWithZeroSurfaceContentsScale) {
 
   gfx::Transform transform;
   tree.CombineTransformsBetween(child_id, grand_parent_id, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform, transform);
+  EXPECT_TRANSFORM_EQ(expected_transform, transform);
 
   tree.Node(grand_parent_id)->local.MakeIdentity();
   tree.Node(grand_parent_id)->local.Scale(0.f, 2.f);
@@ -353,7 +356,7 @@ TEST(PropertyTreeTest, ComputeTransformToTargetWithZeroSurfaceContentsScale) {
 
   transform.MakeIdentity();
   tree.CombineTransformsBetween(child_id, grand_parent_id, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform, transform);
+  EXPECT_TRANSFORM_EQ(expected_transform, transform);
 
   tree.Node(grand_parent_id)->local.MakeIdentity();
   tree.Node(grand_parent_id)->local.Scale(0.f, 0.f);
@@ -364,7 +367,7 @@ TEST(PropertyTreeTest, ComputeTransformToTargetWithZeroSurfaceContentsScale) {
 
   transform.MakeIdentity();
   tree.CombineTransformsBetween(child_id, grand_parent_id, &transform);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(expected_transform, transform);
+  EXPECT_TRANSFORM_EQ(expected_transform, transform);
 }
 
 TEST(PropertyTreeTest, FlatteningWhenDestinationHasOnlyFlatAncestors) {
@@ -394,8 +397,7 @@ TEST(PropertyTreeTest, FlatteningWhenDestinationHasOnlyFlatAncestors) {
 
   gfx::Transform grand_child_to_parent;
   tree.CombineTransformsBetween(grand_child, parent, &grand_child_to_parent);
-  EXPECT_TRANSFORMATION_MATRIX_EQ(flattened_rotation_about_x,
-                                  grand_child_to_parent);
+  EXPECT_TRANSFORM_EQ(flattened_rotation_about_x, grand_child_to_parent);
 }
 
 TEST(PropertyTreeTest, ScreenSpaceOpacityUpdateTest) {
@@ -417,45 +419,6 @@ TEST(PropertyTreeTest, ScreenSpaceOpacityUpdateTest) {
   tree.set_needs_update(true);
   draw_property_utils::ComputeEffects(&tree);
   EXPECT_EQ(tree.Node(child)->screen_space_opacity, 0.25f);
-}
-
-TEST(PropertyTreeTest, NonIntegerTranslationTest) {
-  // This tests that when a node has non-integer translation, the information
-  // is propagated to the subtree.
-  PropertyTrees property_trees;
-  TransformTree& tree = property_trees.transform_tree;
-
-  int parent = tree.Insert(TransformNode(), 0);
-  tree.Node(parent)->local.Translate(1.5f, 1.5f);
-
-  int child = tree.Insert(TransformNode(), parent);
-  tree.Node(child)->local.Translate(1, 1);
-  tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
-  EXPECT_FALSE(
-      tree.Node(parent)->node_and_ancestors_have_only_integer_translation);
-  EXPECT_FALSE(
-      tree.Node(child)->node_and_ancestors_have_only_integer_translation);
-
-  tree.Node(parent)->local.Translate(0.5f, 0.5f);
-  tree.Node(child)->local.Translate(0.5f, 0.5f);
-  tree.Node(parent)->needs_local_transform_update = true;
-  tree.Node(child)->needs_local_transform_update = true;
-  tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
-  EXPECT_TRUE(
-      tree.Node(parent)->node_and_ancestors_have_only_integer_translation);
-  EXPECT_FALSE(
-      tree.Node(child)->node_and_ancestors_have_only_integer_translation);
-
-  tree.Node(child)->local.Translate(0.5f, 0.5f);
-  tree.Node(child)->needs_local_transform_update = true;
-  tree.set_needs_update(true);
-  draw_property_utils::ComputeTransforms(&tree);
-  EXPECT_TRUE(
-      tree.Node(parent)->node_and_ancestors_have_only_integer_translation);
-  EXPECT_TRUE(
-      tree.Node(child)->node_and_ancestors_have_only_integer_translation);
 }
 
 TEST(PropertyTreeTest, SingularTransformSnapTest) {
@@ -632,6 +595,105 @@ TEST(EffectTreeTest, CopyOutputRequestsThatBecomeIllegalAreDropped) {
   effect_tree.TakeCopyRequestsAndTransformToSurface(effect_node.id,
                                                     &requests_out);
   EXPECT_TRUE(requests_out.empty());
+}
+
+// Tests that GetPixelSnappedScrollOffset cannot return a negative offset, even
+// when the snap amount is larger than the scroll offset. The snap amount can be
+// (fractionally) larger due to floating point precision errors, and if the
+// scroll offset is near zero that can naively lead to a negative offset being
+// returned which is not desirable.
+TEST(ScrollTreeTest, GetPixelSnappedScrollOffsetNegativeOffset) {
+  PropertyTrees property_trees;
+  ScrollTree& scroll_tree = property_trees.scroll_tree;
+  TransformTree& transform_tree = property_trees.transform_tree;
+
+  ElementId element_id(5);
+  int transform_node_id = transform_tree.Insert(TransformNode(), 0);
+  int scroll_node_id = scroll_tree.Insert(ScrollNode(), 0);
+  scroll_tree.Node(scroll_node_id)->transform_id = transform_node_id;
+  scroll_tree.Node(scroll_node_id)->element_id = element_id;
+
+  // Set a scroll value close to 0.
+  scroll_tree.SetScrollOffset(element_id, gfx::Vector2dF(0, 0.1));
+  transform_tree.Node(transform_node_id)->scrolls = true;
+  transform_tree.Node(transform_node_id)->scroll_offset =
+      gfx::Vector2dF(0, 0.1);
+
+  // Pretend that the snap amount was slightly larger than 0.1.
+  transform_tree.Node(transform_node_id)->snap_amount = gfx::Vector2dF(0, 0.2);
+  transform_tree.Node(transform_node_id)->needs_local_transform_update = false;
+
+  // The returned offset should be clamped at a minimum of 0.
+  gfx::Vector2dF offset =
+      scroll_tree.GetPixelSnappedScrollOffset(scroll_node_id);
+  EXPECT_EQ(offset.y(), 0);
+}
+
+// Verify that when fractional scroll delta is turned off, that the remaining
+// fractional delta does not cause additional property changes.
+TEST(ScrollTreeTest, PushScrollUpdatesFromMainThreadIntegerDelta) {
+  const bool use_fractional_deltas = false;
+
+  // Set up main property trees.
+  PropertyTrees property_trees;
+  ScrollTree& main_scroll_tree = property_trees.scroll_tree;
+  TransformTree& transform_tree = property_trees.transform_tree;
+  ElementId element_id(5);
+  int transform_node_id = transform_tree.Insert(TransformNode(), 0);
+  int scroll_node_id = main_scroll_tree.Insert(ScrollNode(), 0);
+  main_scroll_tree.Node(scroll_node_id)->transform_id = transform_node_id;
+  main_scroll_tree.Node(scroll_node_id)->element_id = element_id;
+  main_scroll_tree.Node(scroll_node_id)->is_composited = true;
+
+  // Set up FakeLayerTreeHostImpl.
+  TestTaskGraphRunner task_graph_runner;
+  FakeImplTaskRunnerProvider impl_task_runner_provider;
+  FakeLayerTreeHostImpl host_impl(
+      LayerTreeSettings(), &impl_task_runner_provider, &task_graph_runner);
+  host_impl.CreatePendingTree();
+
+  // Set up pending property trees.
+  PropertyTrees* pending_property_trees =
+      host_impl.pending_tree()->property_trees();
+  EXPECT_TRUE(pending_property_trees);
+  ScrollTree& pending_scroll_tree = pending_property_trees->scroll_tree;
+  TransformTree& pending_transform_tree =
+      pending_property_trees->transform_tree;
+  transform_node_id = pending_transform_tree.Insert(TransformNode(), 0);
+  scroll_node_id = pending_scroll_tree.Insert(ScrollNode(), 0);
+  pending_scroll_tree.Node(scroll_node_id)->transform_id = transform_node_id;
+  pending_scroll_tree.Node(scroll_node_id)->element_id = element_id;
+  pending_scroll_tree.Node(scroll_node_id)->is_composited = true;
+  pending_property_trees->element_id_to_scroll_node_index[element_id] =
+      scroll_node_id;
+
+  // Push main scroll to pending.
+  main_scroll_tree.SetScrollOffset(element_id, gfx::Vector2dF(0, 1));
+  pending_scroll_tree.PushScrollUpdatesFromMainThread(
+      &property_trees, host_impl.pending_tree(), use_fractional_deltas);
+  const SyncedScrollOffset* scroll_offset =
+      pending_scroll_tree.GetSyncedScrollOffset(element_id);
+  EXPECT_TRUE(scroll_offset);
+
+  // Set a fractional delta and check it is not pulled with fractional delta
+  // turned off.
+  pending_scroll_tree.SetScrollOffsetDeltaForTesting(element_id,
+                                                     gfx::Vector2dF(0, 0.25));
+  main_scroll_tree.CollectScrollDeltasForTesting(use_fractional_deltas);
+  EXPECT_EQ(gfx::Vector2dF(0, 1),
+            main_scroll_tree.current_scroll_offset(element_id));
+
+  // Rounding logic turned on should not cause property change on push.
+  host_impl.pending_tree()->property_trees()->changed = false;
+  pending_scroll_tree.PushScrollUpdatesFromMainThread(
+      &property_trees, host_impl.pending_tree(), use_fractional_deltas);
+  EXPECT_FALSE(host_impl.pending_tree()->property_trees()->changed);
+
+  // Rounding logic turned off should cause property change on push.
+  host_impl.pending_tree()->property_trees()->changed = false;
+  pending_scroll_tree.PushScrollUpdatesFromMainThread(
+      &property_trees, host_impl.pending_tree(), true);
+  EXPECT_TRUE(host_impl.pending_tree()->property_trees()->changed);
 }
 
 }  // namespace

@@ -16,15 +16,8 @@ ScopedJavaLocalRef<jstring> JNI_GURLUtils_GetOrigin(
     const JavaParamRef<jstring>& url) {
   GURL host(base::android::ConvertJavaStringToUTF16(env, url));
 
-  return base::android::ConvertUTF8ToJavaString(env, host.GetOrigin().spec());
-}
-
-ScopedJavaLocalRef<jstring> JNI_GURLUtils_GetScheme(
-    JNIEnv* env,
-    const JavaParamRef<jstring>& url) {
-  GURL host(base::android::ConvertJavaStringToUTF16(env, url));
-
-  return base::android::ConvertUTF8ToJavaString(env, host.scheme());
+  return base::android::ConvertUTF8ToJavaString(
+      env, host.DeprecatedGetOriginAsURL().spec());
 }
 
 }  // namespace net

@@ -11,7 +11,6 @@
 #include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/net_export.h"
 #include "net/nqe/cached_network_quality.h"
@@ -21,11 +20,6 @@
 
 namespace net {
 class NetworkQualityEstimator;
-
-typedef base::Callback<void(
-    const nqe::internal::NetworkID& network_id,
-    const nqe::internal::CachedNetworkQuality& cached_network_quality)>
-    OnChangeInCachedNetworkQualityCallback;
 
 typedef std::map<nqe::internal::NetworkID, nqe::internal::CachedNetworkQuality>
     ParsedPrefs;
@@ -51,6 +45,11 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   // |pref_delegate| is taken by this class.
   explicit NetworkQualitiesPrefsManager(
       std::unique_ptr<PrefDelegate> pref_delegate);
+
+  NetworkQualitiesPrefsManager(const NetworkQualitiesPrefsManager&) = delete;
+  NetworkQualitiesPrefsManager& operator=(const NetworkQualitiesPrefsManager&) =
+      delete;
+
   ~NetworkQualitiesPrefsManager() override;
 
   // Initialize on the Network thread. Must be called after pref service has
@@ -88,8 +87,6 @@ class NET_EXPORT NetworkQualitiesPrefsManager
   ParsedPrefs read_prefs_startup_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(NetworkQualitiesPrefsManager);
 };
 
 }  // namespace net

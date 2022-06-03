@@ -21,10 +21,10 @@ class COMPONENT_EXPORT(TRACING_CPP) JavaHeapProfiler
   JavaHeapProfiler();
 
   // PerfettoTracedProcess::DataSourceBase implementation:
-  void StartTracing(
+  void StartTracingImpl(
       PerfettoProducer* producer,
       const perfetto::DataSourceConfig& data_source_config) override;
-  void StopTracing(base::OnceClosure stop_complete_callback) override;
+  void StopTracingImpl(base::OnceClosure stop_complete_callback) override;
   void Flush(base::RepeatingClosure flush_complete_callback) override;
 };
 }  // namespace tracing

@@ -4,7 +4,7 @@
 
 syntax = "proto2";
 
-package org.chromium.android_webview.proto;
+package android_webview;
 
 option optimize_for = LITE_RUNTIME; // TODO(crbug/800281): Remove this after proto 4.0
 option java_package = "org.chromium.android_webview.proto";

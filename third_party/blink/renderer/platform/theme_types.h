@@ -28,25 +28,11 @@
 
 namespace blink {
 
-enum ControlState {
-  kHoverControlState = 1,
-  kPressedControlState = 1 << 1,
-  kFocusControlState = 1 << 2,
-  kEnabledControlState = 1 << 3,
-  kCheckedControlState = 1 << 4,
-  kReadOnlyControlState = 1 << 5,
-  kWindowInactiveControlState = 1 << 7,
-  kIndeterminateControlState = 1 << 8,
-  kSpinUpControlState =
-      1 << 9,  // Sub-state for HoverControlState and PressedControlState.
-  kAllControlStates = 0xffffffff
-};
-
-typedef unsigned ControlStates;
-
 // Must follow css_value_keywords.json5 order
+// kAutoPart is never returned by ComputedStyle::EffectiveAppearance()
 enum ControlPart {
   kNoControlPart,
+  kAutoPart,
   kCheckboxPart,
   kRadioPart,
   kPushButtonPart,
@@ -73,55 +59,5 @@ enum ControlPart {
   kTextAreaPart,
 };
 
-enum SelectionPart { kSelectionBackground, kSelectionForeground };
-
-enum ThemeFont {
-  kCaptionFont,
-  kIconFont,
-  kMenuFont,
-  kMessageBoxFont,
-  kSmallCaptionFont,
-  kStatusBarFont,
-  kMiniControlFont,
-  kSmallControlFont,
-  kControlFont
-};
-
-enum ThemeColor {
-  kActiveBorderColor,
-  kActiveCaptionColor,
-  kAppWorkspaceColor,
-  kBackgroundColor,
-  kButtonFaceColor,
-  kButtonHighlightColor,
-  kButtonShadowColor,
-  kButtonTextColor,
-  kCaptionTextColor,
-  kGrayTextColor,
-  kHighlightColor,
-  kHighlightTextColor,
-  kInactiveBorderColor,
-  kInactiveCaptionColor,
-  kInactiveCaptionTextColor,
-  kInfoBackgroundColor,
-  kInfoTextColor,
-  kMatchColor,
-  kMenuTextColor,
-  kScrollbarColor,
-  kThreeDDarkDhasowColor,
-  kThreeDFaceColor,
-  kThreeDHighlightColor,
-  kThreeDLightShadowColor,
-  kThreeDShadowCLor,
-  kWindowColor,
-  kWindowFrameColor,
-  kWindowTextColor,
-  kFocusRingColor,
-  kActiveListBoxSelection,
-  kActiveListBoxSelectionText,
-  kInactiveListBoxSelection,
-  kInactiveListBoxSelectionText
-};
-
 }  // namespace blink
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_THEME_TYPES_H_

@@ -29,8 +29,9 @@ class DownloadItemData : public base::SupportsUserData::Data,
   BrowserContext* browser_context() const { return browser_context_; }
 
  private:
-   // WebContentsObserver methods.
-   void WebContentsDestroyed() override;
+  // WebContentsObserver methods.
+  void PrimaryPageChanged(Page& page) override;
+  void WebContentsDestroyed() override;
 
   static const char kKey[];
   BrowserContext* browser_context_;
@@ -61,6 +62,12 @@ DownloadItemData* DownloadItemData::Get(
 // static
 void DownloadItemData::Detach(download::DownloadItem* download_item) {
   download_item->RemoveUserData(&kKey);
+}
+
+void DownloadItemData::PrimaryPageChanged(Page& page) {
+  // To prevent reuse of a render in a different primary page, we will reset
+  // web_contents when the primary page changed.
+  Observe(nullptr);
 }
 
 void DownloadItemData::WebContentsDestroyed() {

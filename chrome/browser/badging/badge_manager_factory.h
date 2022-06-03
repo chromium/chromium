@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_BADGING_BADGE_MANAGER_FACTORY_H_
 #define CHROME_BROWSER_BADGING_BADGE_MANAGER_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace base {
@@ -29,6 +28,9 @@ class BadgeManagerFactory : public BrowserContextKeyedServiceFactory {
   // Returns the BadgeManagerFactory singleton.
   static BadgeManagerFactory* GetInstance();
 
+  BadgeManagerFactory(const BadgeManagerFactory&) = delete;
+  BadgeManagerFactory& operator=(const BadgeManagerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<BadgeManagerFactory>;
 
@@ -38,8 +40,6 @@ class BadgeManagerFactory : public BrowserContextKeyedServiceFactory {
   // BrowserContextKeyedServiceFactory
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* profile) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(BadgeManagerFactory);
 };
 
 }  // namespace badging

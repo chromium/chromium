@@ -2,13 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+import {assert} from 'chrome://resources/js/assert.m.js';
+import {getDisplayApi} from './device_page_browser_proxy.js';
+// clang-format on
+
 /**
  * @fileoverview Behavior for handling display layout, specifically
  *     edge snapping and collisions.
  */
 
 /** @polymerBehavior */
-const LayoutBehavior = {
+export const LayoutBehavior = {
   properties: {
     /**
      * Array of display layouts.
@@ -54,7 +59,7 @@ const LayoutBehavior = {
    * @param {!Array<!chrome.system.display.DisplayUnitInfo>} displays
    * @param {!Array<!chrome.system.display.DisplayLayout>} layouts
    */
-  initializeDisplayLayout: function(displays, layouts) {
+  initializeDisplayLayout(displays, layouts) {
     this.dragLayoutId_ = '';
     this.dragParentId_ = '';
 
@@ -84,7 +89,7 @@ const LayoutBehavior = {
    *     bounds for the display.
    * @return {!chrome.system.display.Bounds}
    */
-  updateDisplayBounds: function(id, newBounds) {
+  updateDisplayBounds(id, newBounds) {
     this.dragLayoutId_ = id;
 
     // Find the closest parent.
@@ -113,8 +118,8 @@ const LayoutBehavior = {
     this.collideAndModifyDelta_(id, oldBounds, deltaPos);
 
     // If the edge changed, update and highlight it.
-    if (layoutPosition != this.dragLayoutPosition_ ||
-        closestId != this.dragParentId_) {
+    if (layoutPosition !== this.dragLayoutPosition_ ||
+        closestId !== this.dragParentId_) {
       this.dragLayoutPosition_ = layoutPosition;
       this.dragParentId_ = closestId;
       this.highlightEdge_(closestId, layoutPosition);
@@ -132,9 +137,9 @@ const LayoutBehavior = {
    * Called when dragging ends. Sends the updated layout to chrome.
    * @param {string} id
    */
-  finishUpdateDisplayBounds: function(id) {
+  finishUpdateDisplayBounds(id) {
     this.highlightEdge_('', undefined);  // Remove any highlights.
-    if (id != this.dragLayoutId_ || !this.dragBounds_ ||
+    if (id !== this.dragLayoutId_ || !this.dragBounds_ ||
         !this.dragLayoutPosition_) {
       return;
     }
@@ -142,7 +147,7 @@ const LayoutBehavior = {
     const layout = this.displayLayoutMap_.get(id);
 
     let orphanIds;
-    if (!layout || layout.parentId == '') {
+    if (!layout || layout.parentId === '') {
       // Primary display. Set the calculated position to |dragBounds_|.
       this.setCalculatedDisplayBounds_(id, this.dragBounds_);
 
@@ -161,8 +166,8 @@ const LayoutBehavior = {
       // When re-parenting to a descendant, also parent any immediate child to
       // drag display's current parent.
       let topLayout = this.displayLayoutMap_.get(this.dragParentId_);
-      while (topLayout && topLayout.parentId != '') {
-        if (topLayout.parentId == id) {
+      while (topLayout && topLayout.parentId !== '') {
+        if (topLayout.parentId === id) {
           topLayout.parentId = layout.parentId;
           break;
         }
@@ -180,12 +185,13 @@ const LayoutBehavior = {
     this.updateOrphans_(orphanIds);
 
     // Send the updated layouts.
-    chrome.system.display.setDisplayLayout(this.layouts, function() {
-      if (chrome.runtime.lastError) {
-        console.error(
-            'setDisplayLayout Error: ' + chrome.runtime.lastError.message);
-      }
-    });
+    getDisplayApi().setDisplayLayout(
+        this.layouts, function() {
+          if (chrome.runtime.lastError) {
+            console.error(
+                'setDisplayLayout Error: ' + chrome.runtime.lastError.message);
+          }
+        });
   },
 
   /**
@@ -193,7 +199,7 @@ const LayoutBehavior = {
    * @param {boolean=} opt_notest Set to true if bounds may not be set.
    * @return {!chrome.system.display.Bounds} bounds
    */
-  getCalculatedDisplayBounds: function(displayId, opt_notest) {
+  getCalculatedDisplayBounds(displayId, opt_notest) {
     const bounds = this.calculatedBoundsMap_.get(displayId);
     assert(opt_notest || bounds);
     return bounds;
@@ -204,7 +210,7 @@ const LayoutBehavior = {
    * @param {!chrome.system.display.Bounds|undefined} bounds
    * @private
    */
-  setCalculatedDisplayBounds_: function(displayId, bounds) {
+  setCalculatedDisplayBounds_(displayId, bounds) {
     assert(bounds);
     this.calculatedBoundsMap_.set(
         displayId,
@@ -217,7 +223,7 @@ const LayoutBehavior = {
    * @param {!Array<string>} orphanIds The list of ids affected by the move.
    * @private
    */
-  updateOrphans_: function(orphanIds) {
+  updateOrphans_(orphanIds) {
     const orphans = orphanIds.slice();
     for (let i = 0; i < orphanIds.length; ++i) {
       const orphan = orphanIds[i];
@@ -248,10 +254,10 @@ const LayoutBehavior = {
    *     to ignore when re-parenting.
    * @private
    */
-  reparentOrphan_: function(orphanId, otherOrphanIds) {
+  reparentOrphan_(orphanId, otherOrphanIds) {
     const layout = this.displayLayoutMap_.get(orphanId);
     assert(layout);
-    if (orphanId == this.dragId && layout.parentId != '') {
+    if (orphanId === this.dragId && layout.parentId !== '') {
       this.setCalculatedDisplayBounds_(orphanId, this.dragBounds_);
       return;
     }
@@ -259,7 +265,7 @@ const LayoutBehavior = {
 
     // Find the closest parent.
     const newParentId = this.findClosest_(orphanId, bounds, otherOrphanIds);
-    assert(newParentId != '');
+    assert(newParentId !== '');
     layout.parentId = newParentId;
 
     // Find the closest edge.
@@ -293,11 +299,11 @@ const LayoutBehavior = {
    * @return {!Array<string>}
    * @private
    */
-  findChildren_: function(parentId, recurse) {
+  findChildren_(parentId, recurse) {
     let children = [];
     this.displayLayoutMap_.forEach((value, key) => {
       const childId = key;
-      if (childId != parentId && value.parentId == parentId) {
+      if (childId !== parentId && value.parentId === parentId) {
         // Insert immediate children at the front of the array.
         children.unshift(childId);
         if (recurse) {
@@ -317,7 +323,7 @@ const LayoutBehavior = {
    * @param {number} height
    * @private
    */
-  calculateBounds_: function(id, width, height) {
+  calculateBounds_(id, width, height) {
     let left, top;
     const layout = this.displayLayoutMap_.get(id);
     if (this.mirroring || !layout || !layout.parentId) {
@@ -367,7 +373,7 @@ const LayoutBehavior = {
    * @return {string}
    * @private
    */
-  findClosest_: function(displayId, bounds, opt_ignoreIds) {
+  findClosest_(displayId, bounds, opt_ignoreIds) {
     const x = bounds.left + bounds.width / 2;
     const y = bounds.top + bounds.height / 2;
     let closestId = '';
@@ -375,7 +381,7 @@ const LayoutBehavior = {
     const keys = this.calculatedBoundsMap_.keys();
     for (let iter = keys.next(); !iter.done; iter = keys.next()) {
       const otherId = iter.value;
-      if (otherId == displayId) {
+      if (otherId === displayId) {
         continue;
       }
       if (opt_ignoreIds && opt_ignoreIds.includes(otherId)) {
@@ -405,7 +411,7 @@ const LayoutBehavior = {
         dy = 0;
       }
       const delta2 = dx * dx + dy * dy;
-      if (closestId == '' || delta2 < closestDelta2) {
+      if (closestId === '' || delta2 < closestDelta2) {
         closestId = otherId;
         closestDelta2 = delta2;
       }
@@ -419,7 +425,7 @@ const LayoutBehavior = {
    * @param {!chrome.system.display.Bounds} parentBounds
    * @return {!chrome.system.display.LayoutPosition}
    */
-  getLayoutPositionForBounds_: function(bounds, parentBounds) {
+  getLayoutPositionForBounds_(bounds, parentBounds) {
     // Translate bounds from top-left to center.
     const x = bounds.left + bounds.width / 2;
     const y = bounds.top + bounds.height / 2;
@@ -461,22 +467,22 @@ const LayoutBehavior = {
    * @param {!chrome.system.display.LayoutPosition} layoutPosition
    * @return {!{x: number, y: number}}
    */
-  snapBounds_: function(bounds, parentId, layoutPosition) {
+  snapBounds_(bounds, parentId, layoutPosition) {
     const parentBounds = this.getCalculatedDisplayBounds(parentId);
 
     let x;
-    if (layoutPosition == chrome.system.display.LayoutPosition.LEFT) {
+    if (layoutPosition === chrome.system.display.LayoutPosition.LEFT) {
       x = parentBounds.left - bounds.width;
-    } else if (layoutPosition == chrome.system.display.LayoutPosition.RIGHT) {
+    } else if (layoutPosition === chrome.system.display.LayoutPosition.RIGHT) {
       x = parentBounds.left + parentBounds.width;
     } else {
       x = this.snapToX_(bounds, parentBounds);
     }
 
     let y;
-    if (layoutPosition == chrome.system.display.LayoutPosition.TOP) {
+    if (layoutPosition === chrome.system.display.LayoutPosition.TOP) {
       y = parentBounds.top - bounds.height;
-    } else if (layoutPosition == chrome.system.display.LayoutPosition.BOTTOM) {
+    } else if (layoutPosition === chrome.system.display.LayoutPosition.BOTTOM) {
       y = parentBounds.top + parentBounds.height;
     } else {
       y = this.snapToY_(bounds, parentBounds);
@@ -493,7 +499,7 @@ const LayoutBehavior = {
    *     0 means snap from any distance.
    * @return {number}
    */
-  snapToX_: function(newBounds, parentBounds, opt_snapDistance) {
+  snapToX_(newBounds, parentBounds, opt_snapDistance) {
     return this.snapToEdge_(
         newBounds.left, newBounds.width, parentBounds.left, parentBounds.width,
         opt_snapDistance);
@@ -507,7 +513,7 @@ const LayoutBehavior = {
    *     0 means snap from any distance.
    * @return {number}
    */
-  snapToY_: function(newBounds, parentBounds, opt_snapDistance) {
+  snapToY_(newBounds, parentBounds, opt_snapDistance) {
     return this.snapToEdge_(
         newBounds.top, newBounds.height, parentBounds.top, parentBounds.height,
         opt_snapDistance);
@@ -526,7 +532,7 @@ const LayoutBehavior = {
    *     need to snap to the edge.
    * @private
    */
-  snapToEdge_: function(point, width, basePoint, baseWidth, opt_snapDistance) {
+  snapToEdge_(point, width, basePoint, baseWidth, opt_snapDistance) {
     // If the edge of the region is smaller than this, it will snap to the
     // base's edge.
     const SNAP_DISTANCE_PX = 16;
@@ -556,7 +562,7 @@ const LayoutBehavior = {
    * @param {!chrome.system.display.Bounds} bounds
    * @param {!{x: number, y: number}} deltaPos
    */
-  collideAndModifyDelta_: function(id, bounds, deltaPos) {
+  collideAndModifyDelta_(id, bounds, deltaPos) {
     const keys = this.calculatedBoundsMap_.keys();
     const others = new Set(keys);
     others.delete(id);
@@ -570,7 +576,7 @@ const LayoutBehavior = {
         const otherBounds = this.getCalculatedDisplayBounds(otherId);
         if (this.collideWithBoundsAndModifyDelta_(
                 bounds, otherBounds, deltaPos)) {
-          if (deltaPos.x == 0 && deltaPos.y == 0) {
+          if (deltaPos.x === 0 && deltaPos.y === 0) {
             return;
           }
           others.delete(otherId);
@@ -590,7 +596,7 @@ const LayoutBehavior = {
    * @param {!{x: number, y: number}} deltaPos
    * @return {boolean} Whether there was a collision.
    */
-  collideWithBoundsAndModifyDelta_: function(bounds, otherBounds, deltaPos) {
+  collideWithBoundsAndModifyDelta_(bounds, otherBounds, deltaPos) {
     const newX = bounds.left + deltaPos.x;
     const newY = bounds.top + deltaPos.y;
 
@@ -640,7 +646,7 @@ const LayoutBehavior = {
    * @param {!chrome.system.display.LayoutPosition} position
    * @param {!chrome.system.display.DisplayLayout} layout
    */
-  updateOffsetAndPosition_: function(bounds, position, layout) {
+  updateOffsetAndPosition_(bounds, position, layout) {
     layout.position = position;
     if (!layout.parentId) {
       layout.offset = 0;
@@ -650,8 +656,8 @@ const LayoutBehavior = {
     // Offset is calculated from top or left edge.
     const parentBounds = this.getCalculatedDisplayBounds(layout.parentId);
     let offset, minOffset, maxOffset;
-    if (position == chrome.system.display.LayoutPosition.LEFT ||
-        position == chrome.system.display.LayoutPosition.RIGHT) {
+    if (position === chrome.system.display.LayoutPosition.LEFT ||
+        position === chrome.system.display.LayoutPosition.RIGHT) {
       offset = bounds.top - parentBounds.top;
       minOffset = -bounds.height;
       maxOffset = parentBounds.height;
@@ -676,7 +682,7 @@ const LayoutBehavior = {
    * @return {!chrome.system.display.Bounds}
    * @private
    */
-  getCornerBounds_: function(bounds, parentBounds) {
+  getCornerBounds_(bounds, parentBounds) {
     let x;
     if (bounds.left > parentBounds.left + parentBounds.width / 2) {
       x = parentBounds.left + parentBounds.width;
@@ -705,23 +711,25 @@ const LayoutBehavior = {
    * @param {chrome.system.display.LayoutPosition|undefined} layoutPosition
    * @private
    */
-  highlightEdge_: function(id, layoutPosition) {
+  highlightEdge_(id, layoutPosition) {
     for (let i = 0; i < this.layouts.length; ++i) {
       const layout = this.layouts[i];
-      const highlight = (layout.id == id) ? layoutPosition : undefined;
-      const div = this.$$('#_' + layout.id);
+      const highlight = (layout.id === id || layout.parentId === id) ?
+          layoutPosition :
+          undefined;
+      const div = id ? this.$$('#_' + id) : this.$$('#_' + layout.id);
       div.classList.toggle(
           'highlight-right',
-          highlight == chrome.system.display.LayoutPosition.RIGHT);
+          highlight === chrome.system.display.LayoutPosition.RIGHT);
       div.classList.toggle(
           'highlight-left',
-          highlight == chrome.system.display.LayoutPosition.LEFT);
+          highlight === chrome.system.display.LayoutPosition.LEFT);
       div.classList.toggle(
           'highlight-top',
-          highlight == chrome.system.display.LayoutPosition.TOP);
+          highlight === chrome.system.display.LayoutPosition.TOP);
       div.classList.toggle(
           'highlight-bottom',
-          highlight == chrome.system.display.LayoutPosition.BOTTOM);
+          highlight === chrome.system.display.LayoutPosition.BOTTOM);
     }
   },
 };

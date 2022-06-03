@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/time/time.h"
 #include "chrome/test/base/testing_profile.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +19,11 @@ void ExpectAppIdentifiersEqual(const PushMessagingAppIdentifier& a,
   EXPECT_EQ(a.origin(), b.origin());
   EXPECT_EQ(a.service_worker_registration_id(),
             b.service_worker_registration_id());
+  EXPECT_EQ(a.expiration_time(), b.expiration_time());
 }
+
+base::Time kExpirationTime =
+    base::Time::FromDeltaSinceWindowsEpoch(base::Seconds(1));
 
 }  // namespace
 
@@ -45,6 +50,11 @@ class PushMessagingAppIdentifierTest : public testing::Test {
         GURL("https://foobar.example.com/"), 1);
     different_sw_ = PushMessagingAppIdentifier::Generate(
         GURL("https://www.example.com/"), 42);
+    with_et_ = PushMessagingAppIdentifier::Generate(
+        GURL("https://www.example.com/"), 1, kExpirationTime);
+    different_et_ = PushMessagingAppIdentifier::Generate(
+        GURL("https://www.example.com/"), 1,
+        kExpirationTime + base::Seconds(100));
   }
 
   Profile* profile() { return &profile_; }
@@ -53,6 +63,8 @@ class PushMessagingAppIdentifierTest : public testing::Test {
   PushMessagingAppIdentifier same_origin_and_sw_;
   PushMessagingAppIdentifier different_origin_;
   PushMessagingAppIdentifier different_sw_;
+  PushMessagingAppIdentifier different_et_;
+  PushMessagingAppIdentifier with_et_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -253,4 +265,46 @@ TEST_F(PushMessagingAppIdentifierTest, GetAll) {
   }
   EXPECT_TRUE(contained_different_origin);
   EXPECT_TRUE(contained_different_sw);
+}
+
+TEST_F(PushMessagingAppIdentifierTest, PersistWithExpirationTime) {
+  ASSERT_TRUE(with_et_.expiration_time());
+  ASSERT_TRUE(different_et_.expiration_time());
+  ASSERT_EQ(with_et_.origin(), different_et_.origin());
+  ASSERT_EQ(with_et_.service_worker_registration_id(),
+            different_et_.service_worker_registration_id());
+  ASSERT_FALSE(kExpirationTime.is_null());
+
+  different_et_.PersistToPrefs(profile());
+
+  // Test PersistToPrefs and FindByAppId, whether expiration time is saved
+  // properly
+  std::vector<PushMessagingAppIdentifier> all_app_identifiers =
+      PushMessagingAppIdentifier::GetAll(profile());
+  EXPECT_EQ(1u, all_app_identifiers.size());
+  {
+    PushMessagingAppIdentifier found_by_app_id =
+        PushMessagingAppIdentifier::FindByAppId(profile(),
+                                                different_et_.app_id());
+    // Check whether expiration time was saved
+    ExpectAppIdentifiersEqual(found_by_app_id, different_et_);
+  }
+  with_et_.PersistToPrefs(profile());
+  {
+    all_app_identifiers = PushMessagingAppIdentifier::GetAll(profile());
+    EXPECT_EQ(1u, all_app_identifiers.size());
+  }
+  {
+    PushMessagingAppIdentifier found_by_with_et_app_id =
+        PushMessagingAppIdentifier::FindByAppId(profile(), with_et_.app_id());
+    EXPECT_FALSE(found_by_with_et_app_id.is_null());
+    EXPECT_EQ(found_by_with_et_app_id.expiration_time(), kExpirationTime);
+    ExpectAppIdentifiersEqual(found_by_with_et_app_id, with_et_);
+  }
+  {
+    PushMessagingAppIdentifier found_by_different_et_app_id =
+        PushMessagingAppIdentifier::FindByAppId(profile(),
+                                                different_et_.app_id());
+    EXPECT_TRUE(found_by_different_et_app_id.is_null());
+  }
 }

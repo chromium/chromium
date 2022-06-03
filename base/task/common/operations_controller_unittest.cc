@@ -8,6 +8,7 @@
 #include <cstdint>
 #include <utility>
 
+#include "base/ranges/algorithm.h"
 #include "base/threading/platform_thread.h"
 #include "base/threading/simple_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -124,8 +125,7 @@ class TestThread : public SimpleThread {
       }
       if (!was_started)
         continue;
-      if (std::any_of(tokens.begin(), tokens.end(),
-                      [](const auto& token) { return !token; })) {
+      if (ranges::any_of(tokens, [](const auto& token) { return !token; })) {
         break;
       }
     }
@@ -156,7 +156,7 @@ TEST(OperationsControllerTest, BeginsFromMultipleThreads) {
     }
 
     // Wait a bit before starting to try to introduce races.
-    constexpr TimeDelta kRaceInducingTimeout = TimeDelta::FromMicroseconds(50);
+    constexpr TimeDelta kRaceInducingTimeout = Microseconds(50);
     PlatformThread::Sleep(kRaceInducingTimeout);
 
     ref_controller.StartAcceptingOperations();
@@ -164,7 +164,7 @@ TEST(OperationsControllerTest, BeginsFromMultipleThreads) {
     started.store(true, std::memory_order_relaxed);
 
     // Let the test run for a while before shuting down.
-    PlatformThread::Sleep(TimeDelta::FromMilliseconds(5));
+    PlatformThread::Sleep(Milliseconds(5));
     ref_controller.ShutdownAndWaitForZeroOperations();
     for (const auto& t : threads) {
       t->Join();

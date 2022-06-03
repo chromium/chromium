@@ -9,9 +9,8 @@
 #include <wrl/implements.h>
 
 #include <memory>
+#include <string>
 
-#include "base/macros.h"
-#include "base/strings/string16.h"
 #include "base/threading/thread_checker.h"
 
 // The known values for NOTIFYITEM's dwPreference member.
@@ -59,6 +58,10 @@ class StatusTrayStateChangerWin
           INotificationCB> {
  public:
   StatusTrayStateChangerWin(UINT icon_id, HWND window);
+
+  StatusTrayStateChangerWin(const StatusTrayStateChangerWin&) = delete;
+  StatusTrayStateChangerWin& operator=(const StatusTrayStateChangerWin&) =
+      delete;
 
   // Call this method to move the icon matching |icon_id| and |window| to the
   // taskbar from the overflow area.  This will not make any changes if the
@@ -116,7 +119,7 @@ class StatusTrayStateChangerWin
   const HWND window_;
   // Executable name of the current program.  Along with |icon_id_| and
   // |window_|, this uniquely identifies a notification area entry to Explorer.
-  base::string16 file_name_;
+  std::wstring file_name_;
 
   // Temporary storage for the matched NOTIFYITEM.  This is necessary because
   // Notify doesn't return anything.  The call flow looks like this:
@@ -127,8 +130,6 @@ class StatusTrayStateChangerWin
   std::unique_ptr<NOTIFYITEM> notify_item_;
 
   THREAD_CHECKER(thread_checker_);
-
-  DISALLOW_COPY_AND_ASSIGN(StatusTrayStateChangerWin);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_STATUS_ICONS_STATUS_TRAY_STATE_CHANGER_WIN_H_

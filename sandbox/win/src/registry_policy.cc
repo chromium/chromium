@@ -8,7 +8,8 @@
 
 #include <string>
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/notreached.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_params.h"

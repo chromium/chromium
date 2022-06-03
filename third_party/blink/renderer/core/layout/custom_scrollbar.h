@@ -36,23 +36,21 @@ namespace blink {
 
 class ComputedStyle;
 class Element;
-class LayoutBox;
 class LayoutCustomScrollbarPart;
-class LayoutObject;
 
 // Custom scrollbars are created when a box has -webkit-scrollbar* pseudo
 // styles. The parts of a custom scrollbar are layout objects of class
 // LayoutCustomScrollbarPart.
-class CustomScrollbar final : public Scrollbar {
+class CORE_EXPORT CustomScrollbar final : public Scrollbar {
  public:
-  CustomScrollbar(ScrollableArea*, ScrollbarOrientation, Element*);
+  CustomScrollbar(ScrollableArea*, ScrollbarOrientation, Element* style_source);
   ~CustomScrollbar() override;
 
-  // Return the thickness that a custom scrollbar would have, without actually
-  // constructing the scrollbar.
-  static int HypotheticalScrollbarThickness(ScrollbarOrientation,
-                                            const LayoutBox& enclosing_box,
-                                            const LayoutObject& style_source);
+  // Return the thickness that a custom scrollbar would have, before actually
+  // constructing the real scrollbar.
+  static int HypotheticalScrollbarThickness(const ScrollableArea*,
+                                            ScrollbarOrientation,
+                                            Element* style_source);
 
   IntRect ButtonRect(ScrollbarPart) const;
   IntRect TrackRect(int start_length, int end_length) const;
@@ -62,18 +60,23 @@ class CustomScrollbar final : public Scrollbar {
 
   bool IsOverlayScrollbar() const override { return false; }
 
+  void OffsetDidChange(mojom::blink::ScrollType) override;
+
+  void PositionScrollbarParts();
+
   LayoutCustomScrollbarPart* GetPart(ScrollbarPart part_type) {
-    return parts_.at(part_type);
+    auto it = parts_.find(part_type);
+    return it != parts_.end() ? it->value : nullptr;
   }
   const LayoutCustomScrollbarPart* GetPart(ScrollbarPart part_type) const {
-    return parts_.at(part_type);
+    auto it = parts_.find(part_type);
+    return it != parts_.end() ? it->value : nullptr;
   }
 
   void InvalidateDisplayItemClientsOfScrollbarParts();
+  void ClearPaintFlags();
 
-  void SetVisualRect(const IntRect&) final;
-
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   friend class Scrollbar;
@@ -88,13 +91,15 @@ class CustomScrollbar final : public Scrollbar {
 
   bool IsCustomScrollbar() const override { return true; }
 
-  void UpdateScrollbarParts(bool destroy = false);
+  void DestroyScrollbarParts();
+  void UpdateScrollbarParts();
+  scoped_refptr<const ComputedStyle> GetScrollbarPseudoElementStyle(
+      ScrollbarPart,
+      PseudoId);
+  void UpdateScrollbarPart(ScrollbarPart);
 
-  scoped_refptr<ComputedStyle> GetScrollbarPseudoElementStyle(ScrollbarPart,
-                                                              PseudoId);
-  void UpdateScrollbarPart(ScrollbarPart, bool destroy = false);
-
-  HashMap<unsigned, LayoutCustomScrollbarPart*> parts_;
+  HeapHashMap<ScrollbarPart, Member<LayoutCustomScrollbarPart>> parts_;
+  bool needs_position_scrollbar_parts_ = true;
 };
 
 template <>

@@ -5,10 +5,10 @@
 function dumpPreviewPanel() {
   TestRunner.addResult('Panel view:');
 
-  const treeElement = UI.panels.resources._sidebar.backgroundFetchTreeElement;
+  const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
 
-  const preview = treeElement._view._preview;
+  const preview = treeElement.view.preview;
 
   let text = '';
   if (preview.contentElement.getElementsByClassName('background-service-metadata-entry').length)
@@ -24,11 +24,11 @@ function dumpPreviewPanel() {
 };
 
 async function toggleRecord(model) {
-  const treeElement = UI.panels.resources._sidebar.backgroundFetchTreeElement;
+  const treeElement = UI.panels.resources.sidebar.backgroundFetchTreeElement;
   treeElement.onselect(false);
 
   // Simulate click.
-  treeElement._view._toggleRecording();
+  treeElement.view.toggleRecording();
 
   // Wait for the view to be aware of the change.
   await new Promise(r => {
@@ -43,6 +43,7 @@ async function toggleRecord(model) {
   Root.Runtime.experiments.setEnabled('backgroundServices', true);
 
   TestRunner.addResult(`Tests the bottom panel shows information as expected.\n`);
+  await TestRunner.loadLegacyModule('resources');
   await TestRunner.showPanel('resources');
 
   const backgroundServiceModel = TestRunner.mainTarget.model(Resources.BackgroundServiceModel);
@@ -55,33 +56,37 @@ async function toggleRecord(model) {
   dumpPreviewPanel();
 
   backgroundServiceModel.backgroundServiceEventReceived({
-    timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
-    origin: 'http://127.0.0.1:8000/',
-    serviceWorkerRegistrationId: 42,  // invalid.
-    service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
-    eventName: 'Event1',
-    instanceId: 'Instance1',
-    eventMetadata: [],
+    backgroundServiceEvent: {
+      timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
+      origin: 'http://127.0.0.1:8000/',
+      serviceWorkerRegistrationId: 42,  // invalid.
+      service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
+      eventName: 'Event1',
+      instanceId: 'Instance1',
+      eventMetadata: [],
+    }
   });
   backgroundServiceModel.backgroundServiceEventReceived({
-    timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
-    origin: 'http://127.0.0.1:8000/',
-    serviceWorkerRegistrationId: 42,  // invalid.
-    service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
-    eventName: 'Event2',
-    instanceId: 'Instance1',
-    eventMetadata: [{key: 'key', value: 'value'}],
+    backgroundServiceEvent: {
+      timestamp: 1556889085,  // 2019-05-03 14:11:25.000.
+      origin: 'http://127.0.0.1:8000/',
+      serviceWorkerRegistrationId: 42,  // invalid.
+      service: Protocol.BackgroundService.ServiceName.BackgroundFetch,
+      eventName: 'Event2',
+      instanceId: 'Instance1',
+      eventMetadata: [{key: 'key', value: 'value'}],
+    }
   });
   dumpPreviewPanel();
 
-  const dataGrid = UI.panels.resources._sidebar.backgroundFetchTreeElement._view._dataGrid;
+  const dataGrid = UI.panels.resources.sidebar.backgroundFetchTreeElement.view.dataGrid;
   dataGrid.rootNode().children[0].select();
   dumpPreviewPanel();
   dataGrid.rootNode().children[1].select();
   dumpPreviewPanel();
 
   // Simulate clicking the clear button.
-  UI.panels.resources._sidebar.backgroundFetchTreeElement._view._clearEvents();
+  UI.panels.resources.sidebar.backgroundFetchTreeElement.view.clearEvents();
   dumpPreviewPanel();
 
   TestRunner.completeTest();

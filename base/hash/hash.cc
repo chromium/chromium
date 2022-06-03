@@ -4,6 +4,8 @@
 
 #include "base/hash/hash.h"
 
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "base/rand_util.h"
 #include "base/third_party/cityhash/city.h"
 #include "build/build_config.h"
@@ -128,7 +130,7 @@ uint32_t Hash(const std::string& str) {
   return PersistentHash(as_bytes(make_span(str)));
 }
 
-uint32_t Hash(const string16& str) {
+uint32_t Hash(const std::u16string& str) {
   return PersistentHash(as_bytes(make_span(str)));
 }
 

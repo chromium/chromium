@@ -5,13 +5,14 @@
 #include "chrome/installer/util/delete_reg_key_work_item.h"
 
 #include <windows.h>
+
 #include <atlsecurity.h>  // NOLINT
 #include <stddef.h>
 
 #include <memory>
 
+#include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/stl_util.h"
 #include "base/win/registry.h"
 #include "chrome/installer/util/registry_test_data.h"
 #include "chrome/installer/util/work_item.h"
@@ -21,9 +22,7 @@ using base::win::RegKey;
 
 class DeleteRegKeyWorkItemTest : public testing::Test {
  protected:
-  static void TearDownTestCase() {
-    logging::CloseLogFile();
-  }
+  static void TearDownTestCase() { logging::CloseLogFile(); }
 
   void SetUp() override {
     ASSERT_TRUE(test_data_.Initialize(HKEY_CURRENT_USER, L"SOFTWARE\\TmpTmp"));
@@ -36,9 +35,8 @@ class DeleteRegKeyWorkItemTest : public testing::Test {
 // nothing.
 TEST_F(DeleteRegKeyWorkItemTest, TestNoKey) {
   const std::wstring key_paths[] = {
-    std::wstring(test_data_.base_path() + L"\\NoKeyHere"),
-    std::wstring(test_data_.base_path() + L"\\NoKeyHere\\OrHere")
-  };
+      std::wstring(test_data_.base_path() + L"\\NoKeyHere"),
+      std::wstring(test_data_.base_path() + L"\\NoKeyHere\\OrHere")};
   RegKey key;
   for (size_t i = 0; i < base::size(key_paths); ++i) {
     const std::wstring& key_path = key_paths[i];
@@ -46,12 +44,12 @@ TEST_F(DeleteRegKeyWorkItemTest, TestNoKey) {
         WorkItem::CreateDeleteRegKeyWorkItem(test_data_.root_key(), key_path,
                                              WorkItem::kWow64Default));
     EXPECT_TRUE(item->Do());
-    EXPECT_NE(ERROR_SUCCESS, key.Open(test_data_.root_key(), key_path.c_str(),
-                                      KEY_READ));
+    EXPECT_NE(ERROR_SUCCESS,
+              key.Open(test_data_.root_key(), key_path.c_str(), KEY_READ));
     item->Rollback();
     item.reset();
-    EXPECT_NE(ERROR_SUCCESS, key.Open(test_data_.root_key(), key_path.c_str(),
-                                      KEY_READ));
+    EXPECT_NE(ERROR_SUCCESS,
+              key.Open(test_data_.root_key(), key_path.c_str(), KEY_READ));
   }
 }
 
@@ -63,12 +61,12 @@ TEST_F(DeleteRegKeyWorkItemTest, TestEmptyKey) {
       WorkItem::CreateDeleteRegKeyWorkItem(test_data_.root_key(), key_path,
                                            WorkItem::kWow64Default));
   EXPECT_TRUE(item->Do());
-  EXPECT_NE(ERROR_SUCCESS, key.Open(test_data_.root_key(), key_path.c_str(),
-                                    KEY_READ));
+  EXPECT_NE(ERROR_SUCCESS,
+            key.Open(test_data_.root_key(), key_path.c_str(), KEY_READ));
   item->Rollback();
   item.reset();
-  EXPECT_EQ(ERROR_SUCCESS, key.Open(test_data_.root_key(), key_path.c_str(),
-                                    KEY_READ));
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.Open(test_data_.root_key(), key_path.c_str(), KEY_READ));
 }
 
 // Test that deleting a key with subkeys and values succeeds, and that rollback
@@ -80,8 +78,8 @@ TEST_F(DeleteRegKeyWorkItemTest, TestNonEmptyKey) {
       WorkItem::CreateDeleteRegKeyWorkItem(test_data_.root_key(), key_path,
                                            WorkItem::kWow64Default));
   EXPECT_TRUE(item->Do());
-  EXPECT_NE(ERROR_SUCCESS, key.Open(test_data_.root_key(), key_path.c_str(),
-                                    KEY_READ));
+  EXPECT_NE(ERROR_SUCCESS,
+            key.Open(test_data_.root_key(), key_path.c_str(), KEY_READ));
   item->Rollback();
   item.reset();
   test_data_.ExpectMatchesNonEmptyKey(test_data_.root_key(), key_path.c_str());
@@ -94,17 +92,17 @@ TEST_F(DeleteRegKeyWorkItemTest, TestNonEmptyKey) {
 TEST_F(DeleteRegKeyWorkItemTest, DISABLED_TestUndeletableKey) {
   RegKey key;
   std::wstring key_name(test_data_.base_path() + L"\\UndeletableKey");
-  EXPECT_EQ(ERROR_SUCCESS, key.Create(test_data_.root_key(), key_name.c_str(),
-                                      KEY_WRITE));
-  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(NULL, key_name.c_str()));
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.Create(test_data_.root_key(), key_name.c_str(), KEY_WRITE));
+  EXPECT_EQ(ERROR_SUCCESS, key.WriteValue(nullptr, key_name.c_str()));
   DWORD dw_value = 1;
   RegKey subkey;
   RegKey subkey2;
-  EXPECT_EQ(ERROR_SUCCESS, subkey.Create(key.Handle(), L"Subkey",
-                                         KEY_WRITE | WRITE_DAC));
+  EXPECT_EQ(ERROR_SUCCESS,
+            subkey.Create(key.Handle(), L"Subkey", KEY_WRITE | WRITE_DAC));
   EXPECT_EQ(ERROR_SUCCESS, subkey.WriteValue(L"SomeValue", 1U));
-  EXPECT_EQ(ERROR_SUCCESS, subkey2.Create(subkey.Handle(), L"Subkey2",
-                                          KEY_WRITE | WRITE_DAC));
+  EXPECT_EQ(ERROR_SUCCESS,
+            subkey2.Create(subkey.Handle(), L"Subkey2", KEY_WRITE | WRITE_DAC));
   EXPECT_EQ(ERROR_SUCCESS, subkey2.WriteValue(L"", 2U));
   CSecurityDesc sec_desc;
   sec_desc.FromString(L"D:PAI(A;OICI;KR;;;BU)");  // builtin users read
@@ -124,14 +122,14 @@ TEST_F(DeleteRegKeyWorkItemTest, DISABLED_TestUndeletableKey) {
       WorkItem::CreateDeleteRegKeyWorkItem(test_data_.root_key(), key_name,
                                            WorkItem::kWow64Default));
   EXPECT_FALSE(item->Do());
-  EXPECT_EQ(ERROR_SUCCESS, key.Open(test_data_.root_key(), key_name.c_str(),
-                                    KEY_QUERY_VALUE));
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.Open(test_data_.root_key(), key_name.c_str(), KEY_QUERY_VALUE));
   item->Rollback();
   item.reset();
-  EXPECT_EQ(ERROR_SUCCESS, key.Open(test_data_.root_key(), key_name.c_str(),
-                                    KEY_QUERY_VALUE));
+  EXPECT_EQ(ERROR_SUCCESS,
+            key.Open(test_data_.root_key(), key_name.c_str(), KEY_QUERY_VALUE));
   std::wstring str_value;
-  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(NULL, &str_value));
+  EXPECT_EQ(ERROR_SUCCESS, key.ReadValue(nullptr, &str_value));
   EXPECT_EQ(key_name, str_value);
   EXPECT_EQ(ERROR_SUCCESS, key.OpenKey(L"Subkey", KEY_READ | WRITE_DAC));
   dw_value = 0;
@@ -139,9 +137,9 @@ TEST_F(DeleteRegKeyWorkItemTest, DISABLED_TestUndeletableKey) {
   EXPECT_EQ(1U, dw_value);
   // Give users all access to the subkey so it can be deleted.
   EXPECT_EQ(ERROR_SUCCESS,
-      RegSetKeySecurity(key.Handle(), DACL_SECURITY_INFORMATION,
-                        const_cast<SECURITY_DESCRIPTOR*>(
-                            sec_desc.GetPSECURITY_DESCRIPTOR())));
+            RegSetKeySecurity(key.Handle(), DACL_SECURITY_INFORMATION,
+                              const_cast<SECURITY_DESCRIPTOR*>(
+                                  sec_desc.GetPSECURITY_DESCRIPTOR())));
   EXPECT_EQ(ERROR_SUCCESS, key.OpenKey(L"Subkey2", KEY_QUERY_VALUE));
   EXPECT_EQ(ERROR_SUCCESS, key.ReadValueDW(L"", &dw_value));
   EXPECT_EQ(2U, dw_value);

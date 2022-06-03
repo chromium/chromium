@@ -9,20 +9,20 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/test/bind.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
+#include "net/cookies/cookie_access_result.h"
+#include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
-
-using CookieInclusionStatus = net::CanonicalCookie::CookieInclusionStatus;
 
 namespace content {
 
 network::mojom::CookieManager* GetCookieManager(
     BrowserContext* browser_context) {
   StoragePartition* storage_partition =
-      BrowserContext::GetDefaultStoragePartition(browser_context);
+      browser_context->GetDefaultStoragePartition();
   return storage_partition->GetCookieManagerForBrowserProcess();
 }
 
@@ -37,15 +37,16 @@ void CreateCookieForTest(
   net::CookieOptions options;
   options.set_same_site_cookie_context(cookie_context);
   bool result_out;
+  auto cookie = net::CanonicalCookie::CreateUnsafeCookieForTesting(
+      cookie_name, "1", cookie_domain, "/", base::Time(), base::Time(),
+      base::Time(), is_cookie_secure, false, same_site,
+      net::COOKIE_PRIORITY_LOW, false);
   GetCookieManager(browser_context)
       ->SetCanonicalCookie(
-          net::CanonicalCookie(cookie_name, "1", cookie_domain, "/",
-                               base::Time(), base::Time(), base::Time(),
-                               is_cookie_secure, false, same_site,
-                               net::COOKIE_PRIORITY_LOW),
-          "https", options,
-          base::BindLambdaForTesting([&](CookieInclusionStatus result) {
-            result_out = result.IsInclude();
+          *cookie, net::cookie_util::SimulatedCookieSource(*cookie, "https"),
+          options,
+          base::BindLambdaForTesting([&](net::CookieAccessResult result) {
+            result_out = result.status.IsInclude();
             run_loop.Quit();
           }));
   run_loop.Run();

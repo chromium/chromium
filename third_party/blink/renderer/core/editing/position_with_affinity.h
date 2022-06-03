@@ -47,7 +47,7 @@ class PositionWithAffinityTemplate {
   Node* AnchorNode() const { return position_.AnchorNode(); }
   Document* GetDocument() const { return position_.GetDocument(); }
 
-  void Trace(Visitor*);
+  void Trace(Visitor*) const;
 
  private:
   PositionTemplate<Strategy> position_;

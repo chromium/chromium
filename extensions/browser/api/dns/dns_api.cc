@@ -14,6 +14,7 @@
 #include "net/base/net_errors.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/public/resolve_error_info.h"
+#include "url/origin.h"
 
 using content::BrowserThread;
 using extensions::api::dns::ResolveCallbackResolveInfo;
@@ -28,7 +29,7 @@ DnsResolveFunction::~DnsResolveFunction() {}
 
 ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(*args_));
+  std::unique_ptr<Resolve::Params> params(Resolve::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
   // Yes, we are passing zero as the port. There are some interesting but not
@@ -36,15 +37,16 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   // hostname you'd like to resolve, even though it doesn't use that value in
   // determining its answer.
   net::HostPortPair host_port_pair(params->hostname, 0);
-  // TODO(https://crbug.com/997049): Pass in a non-empty NetworkIsolationKey.
-  content::BrowserContext::GetDefaultStoragePartition(browser_context())
+  url::Origin origin = url::Origin::Create(extension_->url());
+  browser_context()
+      ->GetDefaultStoragePartition()
       ->GetNetworkContext()
-      ->ResolveHost(host_port_pair, net::NetworkIsolationKey::Todo(), nullptr,
-                    receiver_.BindNewPipeAndPassRemote());
+      ->ResolveHost(host_port_pair, net::NetworkIsolationKey(origin, origin),
+                    nullptr, receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&DnsResolveFunction::OnComplete, base::Unretained(this),
                      net::ERR_NAME_NOT_RESOLVED,
-                     net::ResolveErrorInfo(net::ERR_FAILED), base::nullopt));
+                     net::ResolveErrorInfo(net::ERR_FAILED), absl::nullopt));
 
   // Balanced in OnComplete().
   AddRef();
@@ -54,7 +56,7 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
 void DnsResolveFunction::OnComplete(
     int result,
     const net::ResolveErrorInfo& resolve_error_info,
-    const base::Optional<net::AddressList>& resolved_addresses) {
+    const absl::optional<net::AddressList>& resolved_addresses) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   receiver_.reset();
 

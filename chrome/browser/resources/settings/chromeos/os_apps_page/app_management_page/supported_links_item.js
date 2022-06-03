@@ -1,0 +1,231 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import './supported_links_overlapping_apps_dialog.js';
+import './supported_links_dialog.js';
+import '//resources/cr_components/chromeos/localized_link/localized_link.js';
+import '//resources/cr_elements/cr_radio_button/cr_radio_button.m.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.m.js';
+
+import {assert} from '//resources/js/assert.m.js';
+import {focusWithoutInk} from '//resources/js/cr/ui/focus_without_ink.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {I18nBehavior} from 'chrome://resources/js/i18n_behavior.m.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {recordSettingChange} from '../../metrics_recorder.m.js';
+
+import {BrowserProxy} from './browser_proxy.js';
+import {AppManagementUserAction, AppType} from './constants.js';
+import {AppManagementStoreClient} from './store_client.js';
+import {recordAppManagementUserAction} from './util.js';
+
+const PREFERRED_APP_PREF = 'preferred';
+
+Polymer({
+  _template: html`{__html_template__}`,
+  is: 'app-management-supported-links-item',
+
+  behaviors: [
+    AppManagementStoreClient,
+    I18nBehavior,
+  ],
+
+  properties: {
+    /** @type {!App} */
+    app: Object,
+
+    /**
+     * @type {boolean}
+     */
+    hidden: {
+      type: Boolean,
+      computed: 'isHidden_(app)',
+      reflectToAttribute: true,
+    },
+
+    /**
+     * @type {boolean}
+     * @private
+     */
+    disabled_: {
+      type: Boolean,
+      computed: 'isDisabled_(app)',
+    },
+
+    /**
+     * @private {boolean}
+     */
+    showSupportedLinksDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * @private {boolean}
+     */
+    showOverlappingAppsDialog_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /**
+     * @private {Array<string>}
+     */
+    overlappingAppIds_: {
+      type: Array,
+    },
+  },
+
+  /**
+   * The supported links item is not available when an app has no supported
+   * links.
+   *
+   * @param {!App} app
+   * @returns {boolean}
+   * @private
+   */
+  isHidden_(app) {
+    if (!loadTimeData.getBoolean('appManagementIntentSettingsEnabled')) {
+      return true;
+    }
+    return !app.supportedLinks.length;
+  },
+
+  /**
+   * Disable the radio button options if the app is a PWA and is set to open
+   * in the browser.
+   *
+   * @param {!App} app
+   * @returns {boolean} If the preference settings should be disabled
+   * @private
+   */
+  isDisabled_(app) {
+    return app.type === AppType.kWeb &&
+        app.windowMode === apps.mojom.WindowMode.kBrowser;
+  },
+
+  /**
+   * @param {!App} app
+   * @return {!string} which indicates if the app is currently preferred or not.
+   * @private
+   */
+  getCurrentPref_(app) {
+    return app.isPreferredApp ? 'preferred' : 'browser';
+  },
+
+  /**
+   * @param {!App} app
+   * @return {!string} label for 'preferred' radio button
+   * @private
+   */
+  getPreferredLabel_(app) {
+    return this.i18n(
+        'appManagementIntentSharingOpenAppLabel', String(app.title));
+  },
+
+  /**
+   * @param {!App} app
+   * @return {!string} which explains why the setting is disabled.
+   * @private
+   */
+  getDisabledExplanation_(app) {
+    return this.i18nAdvanced(
+        'appManagementIntentSharingTabExplanation',
+        {substitutions: [String(app.title)]});
+  },
+
+  /* Supported links list dialog functions ************************************/
+  /**
+   * Stamps and opens the Supported Links dialog.
+   * @param {!Event} e
+   * @private
+   */
+  launchDialog_(e) {
+    // A place holder href with the value "#" is used to have a compliant link.
+    // This prevents the browser from navigating the window to "#"
+    e.detail.event.preventDefault();
+    e.stopPropagation();
+    this.showSupportedLinksDialog_ = true;
+
+    recordSettingChange();
+    recordAppManagementUserAction(
+        this.app.type, AppManagementUserAction.SupportedLinksListShown);
+  },
+
+  /**
+   * @private
+   */
+  onDialogClose_() {
+    this.showSupportedLinksDialog_ = false;
+    focusWithoutInk(assert(this.$.heading));
+  },
+
+  /* Preferred app state change dialog and related functions ******************/
+
+  /**
+   * @param {!CustomEvent<{value: string}>} event
+   * @private
+   */
+  async onSupportedLinkPrefChanged_(event) {
+    const preference = event.detail.value;
+
+    let overlappingAppIds = [];
+
+    try {
+      const {appIds: appIds} =
+          await BrowserProxy.getInstance().handler.getOverlappingPreferredApps(
+              this.app.id);
+      overlappingAppIds = appIds;
+    } catch (err) {
+      // If we fail to get the overlapping preferred apps, don't prevent the
+      // user from setting their preference.
+      console.log(err);
+    }
+
+    // If there are overlapping apps, show the overlap dialog to the user.
+    if (preference === PREFERRED_APP_PREF && overlappingAppIds.length > 0) {
+      this.overlappingAppIds_ = overlappingAppIds;
+      this.showOverlappingAppsDialog_ = true;
+      recordAppManagementUserAction(
+          this.app.type, AppManagementUserAction.OverlappingAppsDialogShown);
+      return;
+    }
+
+    this.setAppAsPreferredApp_(preference);
+  },
+
+  onOverlappingDialogClosed_() {
+    this.showOverlappingAppsDialog_ = false;
+
+    if (this.shadowRoot.querySelector('#overlap-dialog').wasConfirmed()) {
+      this.setAppAsPreferredApp_(PREFERRED_APP_PREF);
+      // Return keyboard focus to the preferred radio button.
+      focusWithoutInk(this.$.preferred);
+    } else {
+      // Reset the radio button.
+      this.shadowRoot.querySelector('#radio-group').selected =
+          this.getCurrentPref_(this.app);
+      // Return keyboard focus to the browser radio button.
+      focusWithoutInk(this.$.browser);
+    }
+  },
+
+  /**
+   * Sets this.app as a preferred app or not depending on the value of
+   * |preference|.
+   *
+   * @param {string} preference either "preferred" or "browser"
+   */
+  setAppAsPreferredApp_(preference) {
+    const newState = preference === PREFERRED_APP_PREF;
+
+    BrowserProxy.getInstance().handler.setPreferredApp(this.app.id, newState);
+
+    recordSettingChange();
+    const userAction = newState ? AppManagementUserAction.PreferredAppTurnedOn :
+                                  AppManagementUserAction.PreferredAppTurnedOff;
+    recordAppManagementUserAction(this.app.type, userAction);
+  },
+});

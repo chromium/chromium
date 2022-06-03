@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef UI_OZONE_PLATFORM_CAST_OZONE_PLATFORM_CAST_H
-#define UI_OZONE_PLATFORM_CAST_OZONE_PLATFORM_CAST_H
+#ifndef UI_OZONE_PLATFORM_CAST_OZONE_PLATFORM_CAST_H_
+#define UI_OZONE_PLATFORM_CAST_OZONE_PLATFORM_CAST_H_
 
 namespace ui {
 
@@ -14,4 +14,4 @@ OzonePlatform* CreateOzonePlatformCast();
 
 }  // namespace ui
 
-#endif  // UI_OZONE_PLATFORM_CAST_OZONE_PLATFORM_CAST_H
+#endif  // UI_OZONE_PLATFORM_CAST_OZONE_PLATFORM_CAST_H_

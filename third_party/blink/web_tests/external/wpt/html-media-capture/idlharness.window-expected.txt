@@ -11,7 +11,7 @@ PASS HTMLElement includes HTMLOrSVGElement: member names are unique
 PASS Element includes ParentNode: member names are unique
 PASS Element includes NonDocumentTypeChildNode: member names are unique
 PASS Element includes ChildNode: member names are unique
-PASS Element includes Slotable: member names are unique
+PASS Element includes Slottable: member names are unique
 FAIL HTMLInputElement interface: attribute capture assert_true: The prototype object must have a property "capture" expected true got false
 FAIL HTMLInputElement interface: input must inherit property "capture" with the proper type assert_inherits: property "capture" not found in prototype chain
 Harness: the test ran to completion.

@@ -2,6 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
+
+import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {FakeEntry, FilesAppDirEntry} from '../../externs/files_app_entry_interfaces.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
+
+import {FileFilter} from './directory_contents.js';
+import {DirectoryModel} from './directory_model.js';
+
 /**
  * @returns {!FileFilter} fake for unittests.
  */
@@ -9,7 +18,7 @@ function createFakeFileFilter() {
   /**
    * FileFilter fake.
    */
-  class FakeFileFilter extends cr.EventTarget {
+  class FakeFileFilter extends EventTarget {
     /**
      * @param {Entry} entry File entry.
      * @return {boolean} True if the file should be shown.
@@ -26,11 +35,11 @@ function createFakeFileFilter() {
 /**
  * @returns {!DirectoryModel} fake for unittests.
  */
-function createFakeDirectoryModel() {
+export function createFakeDirectoryModel() {
   /**
    * DirectoryModel fake.
    */
-  class FakeDirectoryModel extends cr.EventTarget {
+  class FakeDirectoryModel extends EventTarget {
     constructor() {
       super();
 
@@ -53,6 +62,43 @@ function createFakeDirectoryModel() {
      */
     getFileFilter() {
       return this.fileFilter_;
+    }
+
+    /**
+     * @return {DirectoryEntry|FakeEntry|FilesAppDirEntry} Current directory.
+     */
+    getCurrentDirEntry() {
+      return null;
+    }
+
+    /**
+     * @returns {?VolumeInfo}
+     */
+    getCurrentVolumeInfo() {
+      return null;
+    }
+
+    /**
+     * @returns {?VolumeManagerCommon.RootType}
+     */
+    getCurrentRootType() {
+      return null;
+    }
+
+    /**
+     * @param {!DirectoryEntry|!FilesAppDirEntry} dirEntry The entry of the new
+     *     directory to be changed to.
+     * @param {function()=} opt_callback Executed if the directory loads
+     *     successfully.
+     */
+    changeDirectoryEntry(dirEntry, opt_callback) {
+      if (opt_callback) {
+        opt_callback();
+      }
+    }
+
+    isReadOnly() {
+      return false;
     }
   }
 

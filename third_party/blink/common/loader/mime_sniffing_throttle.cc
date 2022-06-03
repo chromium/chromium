@@ -4,6 +4,7 @@
 
 #include "third_party/blink/public/common/loader/mime_sniffing_throttle.h"
 
+#include "base/threading/thread_task_runner_handle.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/mime_sniffer.h"
@@ -13,10 +14,19 @@
 namespace blink {
 
 MimeSniffingThrottle::MimeSniffingThrottle(
-    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-    : task_runner_(std::move(task_runner)) {}
+    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    : task_runner_(std::move(task_runner)) {
+  DCHECK(task_runner_);
+}
 
 MimeSniffingThrottle::~MimeSniffingThrottle() = default;
+
+void MimeSniffingThrottle::DetachFromCurrentSequence() {
+  // This should only happen when the throttle loader runs on its own sequenced
+  // task runner (so getting the current sequenced runner later should be
+  // fine).
+  task_runner_ = nullptr;
+}
 
 void MimeSniffingThrottle::WillProcessResponse(
     const GURL& response_url,
@@ -49,12 +59,16 @@ void MimeSniffingThrottle::WillProcessResponse(
     std::tie(new_remote, new_receiver, mime_sniffing_loader) =
         MimeSniffingURLLoader::CreateLoader(
             weak_factory_.GetWeakPtr(), response_url, response_head->Clone(),
-            task_runner_);
+            task_runner_ ? task_runner_ : base::ThreadTaskRunnerHandle::Get());
     delegate_->InterceptResponse(std::move(new_remote), std::move(new_receiver),
                                  &source_loader, &source_client_receiver);
     mime_sniffing_loader->Start(std::move(source_loader),
                                 std::move(source_client_receiver));
   }
+}
+
+const char* MimeSniffingThrottle::NameForLoggingWillProcessResponse() {
+  return "MimeSniffingThrottle";
 }
 
 void MimeSniffingThrottle::ResumeWithNewResponseHead(

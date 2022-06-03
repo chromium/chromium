@@ -4,7 +4,7 @@
 <div id="host"></div>
 <script>
 (function() {
-    var shadow = document.getElementById("host").createShadowRoot();
+    var shadow = document.getElementById("host").attachShadow({mode: 'open'});
     shadow.innerHTML = "<article id='target'></article>";
     document.targetInShadow = shadow.getElementById("target");
 })();

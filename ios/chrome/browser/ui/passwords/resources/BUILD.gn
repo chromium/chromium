@@ -6,18 +6,7 @@ import("//build/config/ios/asset_catalog.gni")
 import("//build/config/ios/rules.gni")
 
 group("resources") {
-  deps = [
-    ":password_breach_ic_help",
-    ":password_breach_illustration",
-  ]
-}
-
-imageset("password_breach_ic_help") {
-  sources = [
-    "password_breach_ic_help.imageset/Contents.json",
-    "password_breach_ic_help.imageset/password_breach_ic_help@2x.png",
-    "password_breach_ic_help.imageset/password_breach_ic_help@3x.png",
-  ]
+  deps = [ ":password_breach_illustration" ]
 }
 
 imageset("password_breach_illustration") {

@@ -14,6 +14,8 @@
 #include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "net/ssl/ssl_info.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -63,6 +65,7 @@ struct HttpRequest {
   HeaderMap headers;
   std::string content;
   bool has_content;
+  absl::optional<SSLInfo> ssl_info;
 };
 
 // Parses the input data and produces a valid HttpRequest object. If there is
@@ -92,6 +95,10 @@ class HttpRequestParser {
   };
 
   HttpRequestParser();
+
+  HttpRequestParser(const HttpRequestParser&) = delete;
+  HttpRequestParser& operator=(const HttpRequestParser&) = delete;
+
   ~HttpRequestParser();
 
   // Adds chunk of data into the internal buffer.
@@ -108,9 +115,9 @@ class HttpRequestParser {
   // another request.
   std::unique_ptr<HttpRequest> GetRequest();
 
- private:
-  HttpMethod GetMethodType(const std::string& token) const;
+  static HttpMethod GetMethodType(const std::string& token);
 
+ private:
   // Parses headers and returns ACCEPTED if whole request was parsed. Otherwise
   // returns WAITING.
   ParseResult ParseHeaders();
@@ -132,8 +139,6 @@ class HttpRequestParser {
   size_t declared_content_length_;
 
   std::unique_ptr<HttpChunkedDecoder> chunked_decoder_;
-
-  DISALLOW_COPY_AND_ASSIGN(HttpRequestParser);
 };
 
 }  // namespace test_server

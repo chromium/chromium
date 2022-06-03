@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/extensions/extensions_internals_source.h"
 
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -20,13 +21,17 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/activity.h"
+#include "extensions/browser/disable_reason.h"
 #include "extensions/browser/event_listener_map.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/process_manager.h"
 #include "extensions/common/manifest_handlers/permissions_parser.h"
 #include "extensions/common/permissions/permission_set.h"
 #include "extensions/common/permissions/permissions_data.h"
+
+using extensions::mojom::ManifestLocation;
 
 namespace {
 
@@ -50,6 +55,8 @@ const char* TypeToString(extensions::Manifest::Type type) {
       return "TYPE_SHARED_MODULE";
     case extensions::Manifest::TYPE_LOGIN_SCREEN_EXTENSION:
       return "TYPE_LOGIN_SCREEN_EXTENSION";
+    case extensions::Manifest::TYPE_CHROMEOS_SYSTEM_EXTENSION:
+      return "TYPE_CHROMEOS_SYSTEM_EXTENSION";
     case extensions::Manifest::NUM_LOAD_TYPES:
       break;
   }
@@ -57,32 +64,30 @@ const char* TypeToString(extensions::Manifest::Type type) {
   return "";
 }
 
-const char* LocationToString(extensions::Manifest::Location loc) {
+const char* LocationToString(ManifestLocation loc) {
   switch (loc) {
-    case extensions::Manifest::INVALID_LOCATION:
+    case ManifestLocation::kInvalidLocation:
       return "INVALID_LOCATION";
-    case extensions::Manifest::INTERNAL:
+    case ManifestLocation::kInternal:
       return "INTERNAL";
-    case extensions::Manifest::EXTERNAL_PREF:
+    case ManifestLocation::kExternalPref:
       return "EXTERNAL_PREF";
-    case extensions::Manifest::EXTERNAL_REGISTRY:
+    case ManifestLocation::kExternalRegistry:
       return "EXTERNAL_REGISTRY";
-    case extensions::Manifest::UNPACKED:
+    case ManifestLocation::kUnpacked:
       return "UNPACKED";
-    case extensions::Manifest::COMPONENT:
+    case ManifestLocation::kComponent:
       return "COMPONENT";
-    case extensions::Manifest::EXTERNAL_PREF_DOWNLOAD:
+    case ManifestLocation::kExternalPrefDownload:
       return "EXTERNAL_PREF_DOWNLOAD";
-    case extensions::Manifest::EXTERNAL_POLICY_DOWNLOAD:
+    case ManifestLocation::kExternalPolicyDownload:
       return "EXTERNAL_POLICY_DOWNLOAD";
-    case extensions::Manifest::COMMAND_LINE:
+    case ManifestLocation::kCommandLine:
       return "COMMAND_LINE";
-    case extensions::Manifest::EXTERNAL_POLICY:
+    case ManifestLocation::kExternalPolicy:
       return "EXTERNAL_POLICY";
-    case extensions::Manifest::EXTERNAL_COMPONENT:
+    case ManifestLocation::kExternalComponent:
       return "EXTERNAL_COMPONENT";
-    case extensions::Manifest::NUM_LOCATIONS:
-      break;
   }
   NOTREACHED();
   return "";
@@ -121,6 +126,42 @@ base::Value CreationFlagsToList(int creation_flags) {
   return flags_value;
 }
 
+base::Value DisableReasonsToList(int disable_reasons) {
+  base::Value disable_reasons_value(base::Value::Type::LIST);
+  if (disable_reasons &
+      extensions::disable_reason::DISABLE_PERMISSIONS_INCREASE) {
+    disable_reasons_value.Append("DISABLE_PERMISSIONS_INCREASE");
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_RELOAD)
+    disable_reasons_value.Append("DISABLE_RELOAD");
+  if (disable_reasons &
+      extensions::disable_reason::DISABLE_UNSUPPORTED_REQUIREMENT) {
+    disable_reasons_value.Append("DISABLE_UNSUPPORTED_REQUIREMENT");
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_SIDELOAD_WIPEOUT)
+    disable_reasons_value.Append("DISABLE_SIDELOAD_WIPEOUT");
+  if (disable_reasons & extensions::disable_reason::DISABLE_NOT_VERIFIED)
+    disable_reasons_value.Append("DISABLE_NOT_VERIFIED");
+  if (disable_reasons & extensions::disable_reason::DISABLE_GREYLIST)
+    disable_reasons_value.Append("DISABLE_GREYLIST");
+  if (disable_reasons & extensions::disable_reason::DISABLE_CORRUPTED)
+    disable_reasons_value.Append("DISABLE_CORRUPTED");
+  if (disable_reasons & extensions::disable_reason::DISABLE_REMOTE_INSTALL)
+    disable_reasons_value.Append("DISABLE_REMOTE_INSTALL");
+  if (disable_reasons & extensions::disable_reason::DISABLE_EXTERNAL_EXTENSION)
+    disable_reasons_value.Append("DISABLE_EXTERNAL_EXTENSION");
+  if (disable_reasons &
+      extensions::disable_reason::DISABLE_UPDATE_REQUIRED_BY_POLICY) {
+    disable_reasons_value.Append("DISABLE_UPDATE_REQUIRED_BY_POLICY");
+  }
+  if (disable_reasons &
+      extensions::disable_reason::DISABLE_CUSTODIAN_APPROVAL_REQUIRED) {
+    disable_reasons_value.Append("DISABLE_CUSTODIAN_APPROVAL_REQUIRED");
+  }
+  if (disable_reasons & extensions::disable_reason::DISABLE_BLOCKED_BY_POLICY)
+    disable_reasons_value.Append("DISABLE_BLOCKED_BY_POLICY");
+  return disable_reasons_value;
+}
 // The JSON we generate looks like this:
 // Note:
 // - tab_specific permissions can have 0 or more DICT entries with each tab id
@@ -133,6 +174,7 @@ base::Value CreationFlagsToList(int creation_flags) {
 //
 // [ {
 //    "creation_flags": [ "ALLOW_FILE_ACCESS", "FROM_WEBSTORE" ],
+//    "disable_reasons": ["DISABLE_USER_ACTION"],
 //    "event_listeners": {
 //       "count": 2,
 //       "events": [ {
@@ -189,6 +231,8 @@ base::Value CreationFlagsToList(int creation_flags) {
 // LIST
 //  DICT
 //    "creation_flags": LIST
+//      STRING
+//    "disable_reasons": LIST
 //      STRING
 //    "event_listeners": DICT
 //      "count": INT
@@ -251,6 +295,7 @@ constexpr base::StringPiece kEventsListenersKey = "event_listeners";
 constexpr base::StringPiece kExtraDataKey = "extra_data";
 constexpr base::StringPiece kFilterKey = "filter";
 constexpr base::StringPiece kInternalsCreationFlagsKey = "creation_flags";
+constexpr base::StringPiece kInternalsDisableReasonsKey = "disable_reasons";
 constexpr base::StringPiece kInternalsIdKey = "id";
 constexpr base::StringPiece kInternalsNameKey = "name";
 constexpr base::StringPiece kInternalsVersionKey = "version";
@@ -389,7 +434,7 @@ void AddEventListenerData(extensions::EventRouter* event_router,
                            base::Value(listener_entry->listener_url().spec()));
       // Add the filter if one exists.
       base::Value* const filter = listener_entry->filter();
-      if (filter != nullptr) {
+      if (filter) {
         listener_data.SetKey(kFilterKey, filter->Clone());
       }
       listeners_list.Append(std::move(listener_data));
@@ -448,12 +493,16 @@ std::string ExtensionsInternalsSource::WriteToString() const {
           ->GenerateInstalledExtensionsSet();
   extensions::ProcessManager* process_manager =
       extensions::ProcessManager::Get(profile_);
+  extensions::ExtensionPrefs* prefs = extensions::ExtensionPrefs::Get(profile_);
   base::Value data(base::Value::Type::LIST);
   for (const auto& extension : *extensions) {
     base::Value extension_data(base::Value::Type::DICTIONARY);
     extension_data.SetKey(kInternalsIdKey, base::Value(extension->id()));
     extension_data.SetKey(kInternalsCreationFlagsKey,
                           CreationFlagsToList(extension->creation_flags()));
+    extension_data.SetKey(
+        kInternalsDisableReasonsKey,
+        DisableReasonsToList(prefs->GetDisableReasons(extension->id())));
     extension_data.SetKey(
         kKeepaliveKey, FormatKeepaliveData(process_manager, extension.get()));
     extension_data.SetKey(kLocationKey,

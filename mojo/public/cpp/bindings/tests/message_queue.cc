@@ -4,7 +4,7 @@
 
 #include "mojo/public/cpp/bindings/tests/message_queue.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "mojo/public/cpp/bindings/message.h"
 
 namespace mojo {

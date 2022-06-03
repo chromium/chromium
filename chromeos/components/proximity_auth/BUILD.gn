@@ -37,8 +37,6 @@ static_library("proximity_auth") {
     "remote_status_update.h",
     "screenlock_bridge.cc",
     "screenlock_bridge.h",
-    "screenlock_state.cc",
-    "screenlock_state.h",
     "smart_lock_metrics_recorder.cc",
     "smart_lock_metrics_recorder.h",
     "unlock_manager.h",
@@ -47,11 +45,12 @@ static_library("proximity_auth") {
   ]
 
   deps = [
+    "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice/logging",
     "//chromeos/components/proximity_auth/public/mojom",
-    "//chromeos/constants",
     "//chromeos/dbus/power",
     "//chromeos/dbus/session_manager",
     "//chromeos/services/multidevice_setup/public/cpp",
@@ -78,9 +77,7 @@ static_library("test_support") {
     "mock_proximity_auth_client.h",
   ]
 
-  public_deps = [
-    ":proximity_auth",
-  ]
+  public_deps = [ ":proximity_auth" ]
 
   deps = [
     "//base",
@@ -107,17 +104,16 @@ source_set("unit_tests") {
     "unlock_manager_impl_unittest.cc",
   ]
 
-  configs += [ "//build/config/compiler:no_size_t_to_int_warning" ]
-
   deps = [
     ":proximity_auth",
     ":test_support",
+    "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//base/test:test_support",
     "//chromeos/components/multidevice",
     "//chromeos/components/multidevice:test_support",
     "//chromeos/components/multidevice/logging",
-    "//chromeos/constants",
     "//chromeos/dbus/power",
     "//chromeos/dbus/power:power_manager_proto",
     "//chromeos/services/multidevice_setup/public/cpp:prefs",
@@ -135,9 +131,7 @@ source_set("unit_tests") {
 # Note: This is a convenience target for ease of rapid iteration during
 # development. It is not executed on any try or build bots.
 test("proximity_auth_unittests") {
-  sources = [
-    "run_all_unittests.cc",
-  ]
+  sources = [ "run_all_unittests.cc" ]
   deps = [
     ":unit_tests",
     "//base",

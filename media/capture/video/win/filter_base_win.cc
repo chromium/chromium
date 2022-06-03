@@ -4,6 +4,8 @@
 
 #include "media/capture/video/win/filter_base_win.h"
 
+#include "base/notreached.h"
+
 #pragma comment(lib, "strmiids.lib")
 
 namespace media {
@@ -15,7 +17,7 @@ class PinEnumerator final : public IEnumPins,
   explicit PinEnumerator(FilterBase* filter) : filter_(filter), index_(0) {}
 
   // IUnknown implementation.
-  STDMETHOD(QueryInterface)(REFIID iid, void** object_ptr) override {
+  IFACEMETHODIMP QueryInterface(REFIID iid, void** object_ptr) override {
     if (iid == IID_IEnumPins || iid == IID_IUnknown) {
       AddRef();
       *object_ptr = static_cast<IEnumPins*>(this);
@@ -24,18 +26,18 @@ class PinEnumerator final : public IEnumPins,
     return E_NOINTERFACE;
   }
 
-  STDMETHOD_(ULONG, AddRef)() override {
+  IFACEMETHODIMP_(ULONG) AddRef() override {
     base::RefCounted<PinEnumerator>::AddRef();
     return 1;
   }
 
-  STDMETHOD_(ULONG, Release)() override {
+  IFACEMETHODIMP_(ULONG) Release() override {
     base::RefCounted<PinEnumerator>::Release();
     return 1;
   }
 
   // Implement IEnumPins.
-  STDMETHOD(Next)(ULONG count, IPin** pins, ULONG* fetched) override {
+  IFACEMETHODIMP Next(ULONG count, IPin** pins, ULONG* fetched) override {
     ULONG pins_fetched = 0;
     while (pins_fetched < count && filter_->NoOfPins() > index_) {
       IPin* pin = filter_->GetPin(index_++);
@@ -49,7 +51,7 @@ class PinEnumerator final : public IEnumPins,
     return pins_fetched == count ? S_OK : S_FALSE;
   }
 
-  STDMETHOD(Skip)(ULONG count) override {
+  IFACEMETHODIMP Skip(ULONG count) override {
     if (filter_->NoOfPins() - index_ > count) {
       index_ += count;
       return S_OK;
@@ -58,12 +60,12 @@ class PinEnumerator final : public IEnumPins,
     return S_FALSE;
   }
 
-  STDMETHOD(Reset)() override {
+  IFACEMETHODIMP Reset() override {
     index_ = 0;
     return S_OK;
   }
 
-  STDMETHOD(Clone)(IEnumPins** clone) override {
+  IFACEMETHODIMP Clone(IEnumPins** clone) override {
     PinEnumerator* pin_enum = new PinEnumerator(filter_.get());
     pin_enum->AddRef();
     pin_enum->index_ = index_;
@@ -82,17 +84,17 @@ class PinEnumerator final : public IEnumPins,
 FilterBase::FilterBase() : state_(State_Stopped) {
 }
 
-STDMETHODIMP FilterBase::EnumPins(IEnumPins** enum_pins) {
+HRESULT FilterBase::EnumPins(IEnumPins** enum_pins) {
   *enum_pins = new PinEnumerator(this);
   (*enum_pins)->AddRef();
   return S_OK;
 }
 
-STDMETHODIMP FilterBase::FindPin(LPCWSTR id, IPin** pin) {
+HRESULT FilterBase::FindPin(LPCWSTR id, IPin** pin) {
   return E_NOTIMPL;
 }
 
-STDMETHODIMP FilterBase::QueryFilterInfo(FILTER_INFO* info) {
+HRESULT FilterBase::QueryFilterInfo(FILTER_INFO* info) {
   info->pGraph = owning_graph_.Get();
   info->achName[0] = L'\0';
   if (info->pGraph)
@@ -100,52 +102,52 @@ STDMETHODIMP FilterBase::QueryFilterInfo(FILTER_INFO* info) {
   return S_OK;
 }
 
-STDMETHODIMP FilterBase::JoinFilterGraph(IFilterGraph* graph, LPCWSTR name) {
+HRESULT FilterBase::JoinFilterGraph(IFilterGraph* graph, LPCWSTR name) {
   owning_graph_ = graph;
   return S_OK;
 }
 
-STDMETHODIMP FilterBase::QueryVendorInfo(LPWSTR* pVendorInfo) {
+HRESULT FilterBase::QueryVendorInfo(LPWSTR* pVendorInfo) {
   return S_OK;
 }
 
 // Implement IMediaFilter.
-STDMETHODIMP FilterBase::Stop() {
+HRESULT FilterBase::Stop() {
   state_ = State_Stopped;
   return S_OK;
 }
 
-STDMETHODIMP FilterBase::Pause() {
+HRESULT FilterBase::Pause() {
   state_ = State_Paused;
   return S_OK;
 }
 
-STDMETHODIMP FilterBase::Run(REFERENCE_TIME start) {
+HRESULT FilterBase::Run(REFERENCE_TIME start) {
   state_ = State_Running;
   return S_OK;
 }
 
-STDMETHODIMP FilterBase::GetState(DWORD msec_timeout, FILTER_STATE* state) {
+HRESULT FilterBase::GetState(DWORD msec_timeout, FILTER_STATE* state) {
   *state = state_;
   return S_OK;
 }
 
-STDMETHODIMP FilterBase::SetSyncSource(IReferenceClock* clock) {
+HRESULT FilterBase::SetSyncSource(IReferenceClock* clock) {
   return S_OK;
 }
 
-STDMETHODIMP FilterBase::GetSyncSource(IReferenceClock** clock) {
+HRESULT FilterBase::GetSyncSource(IReferenceClock** clock) {
   return E_NOTIMPL;
 }
 
 // Implement from IPersistent.
-STDMETHODIMP FilterBase::GetClassID(CLSID* class_id) {
+HRESULT FilterBase::GetClassID(CLSID* class_id) {
   NOTREACHED();
   return E_NOTIMPL;
 }
 
 // Implement IUnknown.
-STDMETHODIMP FilterBase::QueryInterface(REFIID id, void** object_ptr) {
+HRESULT FilterBase::QueryInterface(REFIID id, void** object_ptr) {
   if (id == IID_IMediaFilter || id == IID_IUnknown) {
     *object_ptr = static_cast<IMediaFilter*>(this);
   } else if (id == IID_IPersist) {

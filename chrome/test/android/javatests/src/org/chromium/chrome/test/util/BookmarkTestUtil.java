@@ -4,10 +4,8 @@
 
 package org.chromium.chrome.test.util;
 
-import org.chromium.chrome.browser.ChromeActivity;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
-import org.chromium.chrome.browser.bookmarks.BookmarkUtils;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 /**
@@ -26,13 +24,5 @@ public class BookmarkTestUtil {
         CriteriaHelper.pollUiThread(bookmarkModel::isBookmarkModelLoaded);
 
         TestThreadUtils.runOnUiThreadBlocking(bookmarkModel::destroy);
-    }
-
-    /**
-     * Show BookmarkManager and wait till the bookmark model is loaded.
-     */
-    public static void showBookmarkManager(ChromeActivity activity) {
-        TestThreadUtils.runOnUiThreadBlocking(() -> BookmarkUtils.showBookmarkManager(activity));
-        waitForBookmarkModelLoaded();
     }
 }

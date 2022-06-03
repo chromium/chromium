@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/containers/span.h"
 #include "content/common/content_export.h"
 
 namespace content {
@@ -26,7 +27,7 @@ class DevToolsExternalAgentProxyDelegate {
 
   // Sends a message to the agent from a client.
   virtual void SendMessageToBackend(DevToolsExternalAgentProxy* proxy,
-                                    const std::string& message) = 0;
+                                    base::span<const uint8_t> message) = 0;
 
   // Returns agent host type.
   virtual std::string GetType() = 0;

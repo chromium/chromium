@@ -8,8 +8,11 @@ from .code_node import ListNode
 from .code_node import LiteralNode
 from .code_node import SymbolNode
 from .code_node import SymbolScopeNode
+from .code_node import SymbolSensitiveSelectionNode
 from .code_node import TextNode
-from .codegen_utils import render_code_node
+from .code_node import WeakDependencyNode
+from .code_node import render_code_node
+from .codegen_accumulator import CodeGenAccumulator
 from .mako_renderer import MakoRenderer
 
 
@@ -21,6 +24,8 @@ class CodeNodeTest(unittest.TestCase):
     def assertRenderResult(self, node, expected):
         if node.renderer is None:
             node.set_renderer(MakoRenderer())
+        if node.accumulator is None:
+            node.set_accumulator(CodeGenAccumulator())
 
         def simplify(text):
             return "\n".join(
@@ -72,6 +77,14 @@ class CodeNodeTest(unittest.TestCase):
         root.remove(root[-1])
         self.assertRenderResult(root, "2,3,5")
 
+    def test_list_node_head_and_tail(self):
+        self.assertRenderResult(ListNode(), "")
+        self.assertRenderResult(ListNode(head="head"), "")
+        self.assertRenderResult(ListNode(tail="tail"), "")
+        self.assertRenderResult(
+            ListNode([TextNode("-content-")], head="head", tail="tail"),
+            "head-content-tail")
+
     def test_nested_sequence(self):
         """Tests nested ListNodes."""
         root = ListNode(separator=",")
@@ -93,7 +106,7 @@ class CodeNodeTest(unittest.TestCase):
         Tests that use of SymbolNode inserts necessary SymbolDefinitionNode
         appropriately.
         """
-        root = SymbolScopeNode(separator_last="\n")
+        root = SymbolScopeNode(tail="\n")
 
         root.register_code_symbols([
             SymbolNode("var1", "int ${var1} = ${var2} + ${var3};"),
@@ -115,6 +128,83 @@ int var1 = var2 + var3;
 (void)var1;
 """)
 
+    def test_weak_dependency_node(self):
+        root = SymbolScopeNode(tail="\n")
+
+        root.register_code_symbols([
+            SymbolNode("var1", "int ${var1} = 1;"),
+            SymbolNode("var2", "int ${var2} = 2;"),
+            SymbolNode("var3", "int ${var3} = 3;"),
+        ])
+
+        root.extend([
+            WeakDependencyNode(dep_syms=["var1", "var2"]),
+            TextNode("f();"),
+            TextNode("(void)${var3};"),
+            TextNode("(void)${var1};"),
+        ])
+
+        self.assertRenderResult(
+            root, """\
+int var1 = 1;
+
+f();
+int var3 = 3;
+(void)var3;
+(void)var1;
+""")
+
+    def test_symbol_sensitive_selection_node(self):
+        root = SymbolScopeNode(tail="\n")
+
+        root.register_code_symbols([
+            SymbolNode("var1", "int ${var1} = 1;"),
+            SymbolNode("var2", "int ${var2} = 2;"),
+            SymbolNode("var3", "int ${var3} = 3;"),
+        ])
+
+        choice1 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=["var1", "var2"],
+            code_node=TextNode("F(${var1}, ${var2});"))
+        choice2 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=["var3"], code_node=TextNode("F(${var3});"))
+        choice3 = SymbolSensitiveSelectionNode.Choice(
+            symbol_names=[], code_node=TextNode("F();"))
+        root.append(SymbolSensitiveSelectionNode([choice1, choice2, choice3]))
+
+        self.assertRenderResult(root, """\
+F();
+""")
+
+        root.insert(0, TextNode("(void)${var3};"))
+        self.assertRenderResult(root, """\
+int var3 = 3;
+(void)var3;
+F(var3);
+""")
+
+        root.insert(0, TextNode("(void)${var2};"))
+        self.assertRenderResult(
+            root, """\
+int var2 = 2;
+(void)var2;
+int var3 = 3;
+(void)var3;
+F(var3);
+""")
+
+        root.insert(0, TextNode("(void)${var1};"))
+        self.assertRenderResult(
+            root, """\
+int var1 = 1;
+(void)var1;
+int var2 = 2;
+(void)var2;
+int var3 = 3;
+(void)var3;
+F(var1, var2);
+""")
+
     def test_template_error_handling(self):
         renderer = MakoRenderer()
         root = SymbolScopeNode()
@@ -127,7 +217,8 @@ int var1 = var2 + var3;
             ]))
 
         with self.assertRaises(NameError):
-            root.render()
+            renderer.reset()
+            root.render(renderer)
 
         callers_on_error = list(renderer.callers_on_error)
         self.assertEqual(len(callers_on_error), 3)

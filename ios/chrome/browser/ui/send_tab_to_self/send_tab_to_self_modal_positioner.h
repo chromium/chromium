@@ -11,8 +11,8 @@
 // to self modal dialog.
 @protocol SendTabToSelfModalPositioner
 
-// The target height for the modal view to be presented.
-- (CGFloat)modalHeight;
+// The target height for the modal view for |width|.
+- (CGFloat)modalHeightForWidth:(CGFloat)width;
 
 @end
 

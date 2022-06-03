@@ -28,10 +28,10 @@ test(function() {
 }, 'Constructor can be initialized with output from another constructor');
 
 test(function() {
-    assert_throws({name: 'TypeError'}, () => new RTCIceCandidate({}));
-    assert_throws({name: 'TypeError'}, () => new RTCIceCandidate(5));
-    assert_throws({name: 'TypeError'}, () => new RTCIceCandidate('foobar'));
-    assert_throws({name: 'TypeError'}, () => new RTCIceCandidate({candidate: ''}));
+    assert_throws_js(TypeError, () => new RTCIceCandidate({}));
+    assert_throws_js(TypeError, () => new RTCIceCandidate(5));
+    assert_throws_js(TypeError, () => new RTCIceCandidate('foobar'));
+    assert_throws_js(TypeError, () => new RTCIceCandidate({candidate: ''}));
 }, 'Constructor throws on invalid input');
 
 test(function() {

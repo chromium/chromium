@@ -8,7 +8,7 @@ Script execution paused.
 Call stack:
     0) testFunction (disable-breakpoints.js:13)
 Breakpoint sidebar pane 
-disable-breakpoints.js:13          var x = Math.sqrt(10);
+disable-breakpoints.js:13checked          var x = Math.sqrt(10);
 Script execution resumed.
 Test function finished.
 Disabling breakpoints...
@@ -24,11 +24,11 @@ Script execution paused.
 Call stack:
     0) testFunction (disable-breakpoints.js:13)
 Breakpoint sidebar pane 
-disable-breakpoints.js:13          var x = Math.sqrt(10);
+disable-breakpoints.js:13checked          var x = Math.sqrt(10);
 Script execution resumed.
 Test function finished.
 Breakpoint sidebar pane 
-disable-breakpoints.js:13          var x = Math.sqrt(10);
+disable-breakpoints.js:13checked          var x = Math.sqrt(10);
 Breakpoints removed.
 Breakpoint sidebar pane 
 No breakpoints

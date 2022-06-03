@@ -5,35 +5,47 @@
 #include "components/pdf/renderer/pdf_ax_action_target.h"
 
 #include "components/pdf/renderer/pdf_accessibility_tree.h"
+#include "pdf/accessibility_structs.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace pdf {
 
 namespace {
 
-PP_PdfAccessibilityScrollAlignment ConvertAXScrollToPdfScrollAlignment(
+chrome_pdf::AccessibilityScrollAlignment ConvertAXScrollToPdfScrollAlignment(
     ax::mojom::ScrollAlignment scroll_alignment) {
   switch (scroll_alignment) {
     case ax::mojom::ScrollAlignment::kScrollAlignmentCenter:
-      return PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_CENTER;
+      return chrome_pdf::AccessibilityScrollAlignment::kCenter;
     case ax::mojom::ScrollAlignment::kScrollAlignmentTop:
-      return PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_TOP;
+      return chrome_pdf::AccessibilityScrollAlignment::kTop;
     case ax::mojom::ScrollAlignment::kScrollAlignmentBottom:
-      return PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_BOTTOM;
+      return chrome_pdf::AccessibilityScrollAlignment::kBottom;
     case ax::mojom::ScrollAlignment::kScrollAlignmentLeft:
-      return PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_LEFT;
+      return chrome_pdf::AccessibilityScrollAlignment::kLeft;
     case ax::mojom::ScrollAlignment::kScrollAlignmentRight:
-      return PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_ALIGNMENT_RIGHT;
+      return chrome_pdf::AccessibilityScrollAlignment::kRight;
     case ax::mojom::ScrollAlignment::kScrollAlignmentClosestEdge:
-      return PP_PdfAccessibilityScrollAlignment::
-          PP_PDF_SCROLL_ALIGNMENT_CLOSEST_EDGE;
+      return chrome_pdf::AccessibilityScrollAlignment::kClosestToEdge;
     case ax::mojom::ScrollAlignment::kNone:
-    default:
-      return PP_PdfAccessibilityScrollAlignment::PP_PDF_SCROLL_NONE;
+      return chrome_pdf::AccessibilityScrollAlignment::kNone;
   }
 }
 
 }  // namespace
+
+// static
+const PdfAXActionTarget* PdfAXActionTarget::FromAXActionTarget(
+    const ui::AXActionTarget* ax_action_target) {
+  if (ax_action_target &&
+      ax_action_target->GetType() == ui::AXActionTarget::Type::kPdf) {
+    return static_cast<const PdfAXActionTarget*>(ax_action_target);
+  }
+
+  return nullptr;
+}
 
 PdfAXActionTarget::PdfAXActionTarget(const ui::AXNode& plugin_node,
                                      PdfAccessibilityTree* pdf_tree_source)
@@ -48,42 +60,40 @@ ui::AXActionTarget::Type PdfAXActionTarget::GetType() const {
   return ui::AXActionTarget::Type::kPdf;
 }
 
-bool PdfAXActionTarget::ClearAccessibilityFocus() const {
-  return false;
+bool PdfAXActionTarget::PerformAction(
+    const ui::AXActionData& action_data) const {
+  switch (action_data.action) {
+    case ax::mojom::Action::kDoDefault:
+      return Click();
+    case ax::mojom::Action::kShowContextMenu:
+      return ShowContextMenu();
+    case ax::mojom::Action::kScrollToPoint:
+      return ScrollToGlobalPoint(action_data.target_point);
+    default:
+      return false;
+  }
 }
 
 bool PdfAXActionTarget::Click() const {
-  PP_PdfAccessibilityActionData pdf_action_data = {};
-
-  if (target_plugin_node_.data().role != ax::mojom::Role::kLink)
+  if (target_plugin_node_.GetRole() != ax::mojom::Role::kLink)
     return false;
 
-  base::Optional<PdfAccessibilityTree::AnnotationInfo> annotation_info_result =
+  absl::optional<PdfAccessibilityTree::AnnotationInfo> annotation_info_result =
       pdf_accessibility_tree_source_->GetPdfAnnotationInfoFromAXNode(
           target_plugin_node_.data().id);
   if (!annotation_info_result.has_value())
     return false;
-
   const auto& annotation_info = annotation_info_result.value();
+
+  chrome_pdf::AccessibilityActionData pdf_action_data;
   pdf_action_data.page_index = annotation_info.page_index;
   pdf_action_data.annotation_index = annotation_info.annotation_index;
   pdf_action_data.annotation_type =
-      PP_PdfAccessibilityAnnotationType::PP_PDF_LINK;
-  pdf_action_data.action = PP_PdfAccessibilityAction::PP_PDF_DO_DEFAULT_ACTION;
+      chrome_pdf::AccessibilityAnnotationType::kLink;
+  pdf_action_data.action = chrome_pdf::AccessibilityAction::kDoDefaultAction;
+
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
-}
-
-bool PdfAXActionTarget::Decrement() const {
-  return false;
-}
-
-bool PdfAXActionTarget::Increment() const {
-  return false;
-}
-
-bool PdfAXActionTarget::Focus() const {
-  return false;
 }
 
 gfx::Rect PdfAXActionTarget::GetRelativeBounds() const {
@@ -102,10 +112,6 @@ gfx::Point PdfAXActionTarget::MaximumScrollOffset() const {
   return gfx::Point();
 }
 
-bool PdfAXActionTarget::SetAccessibilityFocus() const {
-  return false;
-}
-
 void PdfAXActionTarget::SetScrollOffset(const gfx::Point& point) const {}
 
 bool PdfAXActionTarget::SetSelected(bool selected) const {
@@ -116,19 +122,32 @@ bool PdfAXActionTarget::SetSelection(const ui::AXActionTarget* anchor_object,
                                      int anchor_offset,
                                      const ui::AXActionTarget* focus_object,
                                      int focus_offset) const {
-  return false;
-}
+  const PdfAXActionTarget* pdf_anchor_object =
+      FromAXActionTarget(anchor_object);
+  const PdfAXActionTarget* pdf_focus_object = FromAXActionTarget(focus_object);
+  if (!pdf_anchor_object || !pdf_focus_object || anchor_offset < 0 ||
+      focus_offset < 0) {
+    return false;
+  }
+  chrome_pdf::AccessibilityActionData pdf_action_data;
+  if (!pdf_accessibility_tree_source_->FindCharacterOffset(
+          pdf_anchor_object->AXNode(), anchor_offset,
+          pdf_action_data.selection_start_index) ||
+      !pdf_accessibility_tree_source_->FindCharacterOffset(
+          pdf_focus_object->AXNode(), focus_offset,
+          pdf_action_data.selection_end_index)) {
+    return false;
+  }
+  pdf_action_data.action = chrome_pdf::AccessibilityAction::kSetSelection;
+  pdf_action_data.target_rect =
+      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds);
 
-bool PdfAXActionTarget::SetSequentialFocusNavigationStartingPoint() const {
-  return false;
-}
-
-bool PdfAXActionTarget::SetValue(const std::string& value) const {
-  return false;
+  pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
+  return true;
 }
 
 bool PdfAXActionTarget::ShowContextMenu() const {
-  return false;
+  return pdf_accessibility_tree_source_->ShowContextMenu();
 }
 
 bool PdfAXActionTarget::ScrollToMakeVisible() const {
@@ -140,32 +159,28 @@ bool PdfAXActionTarget::ScrollToMakeVisibleWithSubFocus(
     ax::mojom::ScrollAlignment horizontal_scroll_alignment,
     ax::mojom::ScrollAlignment vertical_scroll_alignment,
     ax::mojom::ScrollBehavior scroll_behavior) const {
-  PP_PdfAccessibilityActionData pdf_action_data = {};
+  chrome_pdf::AccessibilityActionData pdf_action_data;
   pdf_action_data.action =
-      PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_MAKE_VISIBLE;
+      chrome_pdf::AccessibilityAction::kScrollToMakeVisible;
   pdf_action_data.horizontal_scroll_alignment =
       ConvertAXScrollToPdfScrollAlignment(horizontal_scroll_alignment);
   pdf_action_data.vertical_scroll_alignment =
       ConvertAXScrollToPdfScrollAlignment(vertical_scroll_alignment);
-  pdf_action_data.target_rect = {
-      {target_plugin_node_.data().relative_bounds.bounds.x(),
-       target_plugin_node_.data().relative_bounds.bounds.y()},
-      {target_plugin_node_.data().relative_bounds.bounds.width(),
-       target_plugin_node_.data().relative_bounds.bounds.height()}};
+  pdf_action_data.target_rect =
+      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds);
+
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
 }
 
 bool PdfAXActionTarget::ScrollToGlobalPoint(const gfx::Point& point) const {
-  PP_PdfAccessibilityActionData pdf_action_data = {};
+  chrome_pdf::AccessibilityActionData pdf_action_data;
   pdf_action_data.action =
-      PP_PdfAccessibilityAction::PP_PDF_SCROLL_TO_GLOBAL_POINT;
-  pdf_action_data.target_point = {point.x(), point.y()};
-  pdf_action_data.target_rect = {
-      {target_plugin_node_.data().relative_bounds.bounds.x(),
-       target_plugin_node_.data().relative_bounds.bounds.y()},
-      {target_plugin_node_.data().relative_bounds.bounds.width(),
-       target_plugin_node_.data().relative_bounds.bounds.height()}};
+      chrome_pdf::AccessibilityAction::kScrollToGlobalPoint;
+  pdf_action_data.target_point = point;
+  pdf_action_data.target_rect =
+      gfx::ToEnclosingRect(target_plugin_node_.data().relative_bounds.bounds);
+
   pdf_accessibility_tree_source_->HandleAction(pdf_action_data);
   return true;
 }

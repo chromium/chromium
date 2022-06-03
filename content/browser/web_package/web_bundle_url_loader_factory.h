@@ -25,6 +25,11 @@ class CONTENT_EXPORT WebBundleURLLoaderFactory final
  public:
   explicit WebBundleURLLoaderFactory(scoped_refptr<WebBundleReader> reader,
                                      int frame_tree_node_id);
+
+  WebBundleURLLoaderFactory(const WebBundleURLLoaderFactory&) = delete;
+  WebBundleURLLoaderFactory& operator=(const WebBundleURLLoaderFactory&) =
+      delete;
+
   ~WebBundleURLLoaderFactory() override;
 
   // Set a |network::mojom::URLLoaderFactory| remote interface used for requests
@@ -36,7 +41,6 @@ class CONTENT_EXPORT WebBundleURLLoaderFactory final
   // mojom::URLLoaderFactory implementation.
   void CreateLoaderAndStart(
       mojo::PendingReceiver<network::mojom::URLLoader> loader_receiver,
-      int32_t routing_id,
       int32_t request_id,
       uint32_t options,
       const network::ResourceRequest& resource_request,
@@ -50,7 +54,8 @@ class CONTENT_EXPORT WebBundleURLLoaderFactory final
 
  private:
   class EntryLoader;
-  friend class EntryLoader;
+
+  bool CanHandleRequest(const network::ResourceRequest& resource_request) const;
 
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> receivers_;
   scoped_refptr<WebBundleReader> reader_;
@@ -58,8 +63,6 @@ class CONTENT_EXPORT WebBundleURLLoaderFactory final
   mojo::Remote<network::mojom::URLLoaderFactory> fallback_factory_;
 
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(WebBundleURLLoaderFactory);
 };
 
 }  // namespace content

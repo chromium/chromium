@@ -21,12 +21,10 @@ void ExtensionPrefStore::OnInitializationCompleted() {
 
 void ExtensionPrefStore::OnPrefValueChanged(const std::string& key) {
   CHECK(extension_pref_value_map_);
-  const base::Value *winner =
-      extension_pref_value_map_->GetEffectivePrefValue(key,
-                                                       incognito_pref_store_,
-                                                       NULL);
+  const base::Value* winner = extension_pref_value_map_->GetEffectivePrefValue(
+      key, incognito_pref_store_, nullptr);
   if (winner) {
-    SetValue(key, winner->CreateDeepCopy(),
+    SetValue(key, base::Value::ToUniquePtrValue(winner->Clone()),
              WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   } else {
     RemoveValue(key, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
@@ -36,7 +34,7 @@ void ExtensionPrefStore::OnPrefValueChanged(const std::string& key) {
 void ExtensionPrefStore::OnExtensionPrefValueMapDestruction() {
   CHECK(extension_pref_value_map_);
   extension_pref_value_map_->RemoveObserver(this);
-  extension_pref_value_map_ = NULL;
+  extension_pref_value_map_ = nullptr;
 }
 
 ExtensionPrefStore::~ExtensionPrefStore() {

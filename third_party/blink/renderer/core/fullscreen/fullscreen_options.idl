@@ -11,5 +11,8 @@ enum FullscreenNavigationUI {
 };
 
 dictionary FullscreenOptions {
-    FullscreenNavigationUI navigationUI = "auto";
+  FullscreenNavigationUI navigationUI = "auto";
+
+  // https://github.com/webscreens/window-placement
+  [RuntimeEnabled=WindowPlacement] Screen screen;
 };

@@ -4,7 +4,8 @@
 
 #include "components/url_pattern_index/url_rule_test_support.h"
 
-#include "base/logging.h"
+#include "base/check.h"
+#include "base/strings/string_piece.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -15,7 +16,7 @@ namespace testing {
 proto::UrlRule MakeUrlRule(const UrlPattern& url_pattern) {
   proto::UrlRule rule;
 
-  rule.set_semantics(proto::RULE_SEMANTICS_BLACKLIST);
+  rule.set_semantics(proto::RULE_SEMANTICS_BLOCKLIST);
   rule.set_source_type(proto::SOURCE_TYPE_ANY);
   rule.set_element_types(kAllElementTypes);
 
@@ -23,7 +24,7 @@ proto::UrlRule MakeUrlRule(const UrlPattern& url_pattern) {
   rule.set_anchor_left(url_pattern.anchor_left());
   rule.set_anchor_right(url_pattern.anchor_right());
   rule.set_match_case(url_pattern.match_case());
-  rule.set_url_pattern(url_pattern.url_pattern().as_string());
+  rule.set_url_pattern(std::string(url_pattern.url_pattern()));
 
   return rule;
 }

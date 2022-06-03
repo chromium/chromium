@@ -5,20 +5,21 @@
 #ifndef SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 #define SERVICES_DATA_DECODER_DATA_DECODER_SERVICE_H_
 
-#include <memory>
-
 #include "base/macros.h"
+#include "build/chromeos_buildflags.h"
+#include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "services/data_decoder/public/mojom/data_decoder_service.mojom.h"
+#include "services/data_decoder/public/mojom/gzipper.mojom.h"
 #include "services/data_decoder/public/mojom/image_decoder.mojom.h"
 #include "services/data_decoder/public/mojom/json_parser.mojom.h"
-#include "services/data_decoder/public/mojom/web_bundle_parser.mojom.h"
+#include "services/data_decoder/public/mojom/web_bundler.mojom.h"
 #include "services/data_decoder/public/mojom/xml_parser.mojom.h"
 
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "services/data_decoder/public/mojom/ble_scan_parser.mojom.h"
-#endif  // OS_CHROMEOS
+#endif
 
 namespace data_decoder {
 
@@ -27,6 +28,10 @@ class DataDecoderService : public mojom::DataDecoderService {
   DataDecoderService();
   explicit DataDecoderService(
       mojo::PendingReceiver<mojom::DataDecoderService> receiver);
+
+  DataDecoderService(const DataDecoderService&) = delete;
+  DataDecoderService& operator=(const DataDecoderService&) = delete;
+
   ~DataDecoderService() override;
 
   // May be used to establish a latent DataDecoderService binding for this
@@ -49,9 +54,18 @@ class DataDecoderService : public mojom::DataDecoderService {
   // WebBundleParserFactory in subsequent
   // BindWebBundleParserFactory() calls.
   void SetWebBundleParserFactoryBinderForTesting(
-      base::RepeatingCallback<
-          void(mojo::PendingReceiver<mojom::WebBundleParserFactory>)> binder) {
+      base::RepeatingCallback<void(
+          mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>)>
+          binder) {
     web_bundle_parser_factory_binder_ = binder;
+  }
+
+  // Configures the service to use |binder| to bind WebBundler in subsequent
+  // BindWebBundler() calls.
+  void SetWebBundlerBinderForTesting(
+      base::RepeatingCallback<void(mojo::PendingReceiver<mojom::WebBundler>)>
+          binder) {
+    web_bundler_binder_ = binder;
   }
 
  private:
@@ -62,12 +76,16 @@ class DataDecoderService : public mojom::DataDecoderService {
       mojo::PendingReceiver<mojom::JsonParser> receiver) override;
   void BindXmlParser(mojo::PendingReceiver<mojom::XmlParser> receiver) override;
   void BindWebBundleParserFactory(
-      mojo::PendingReceiver<mojom::WebBundleParserFactory> receiver) override;
+      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>
+          receiver) override;
+  void BindWebBundler(
+      mojo::PendingReceiver<mojom::WebBundler> receiver) override;
+  void BindGzipper(mojo::PendingReceiver<mojom::Gzipper> receiver) override;
 
-#ifdef OS_CHROMEOS
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void BindBleScanParser(
       mojo::PendingReceiver<mojom::BleScanParser> receiver) override;
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // In-process instances (e.g. on iOS or in tests) may have multiple concurrent
   // remote DataDecoderService clients.
@@ -76,10 +94,10 @@ class DataDecoderService : public mojom::DataDecoderService {
   bool drop_image_decoders_ = false;
   bool drop_json_parsers_ = false;
   base::RepeatingCallback<void(
-      mojo::PendingReceiver<mojom::WebBundleParserFactory>)>
+      mojo::PendingReceiver<web_package::mojom::WebBundleParserFactory>)>
       web_bundle_parser_factory_binder_;
-
-  DISALLOW_COPY_AND_ASSIGN(DataDecoderService);
+  base::RepeatingCallback<void(mojo::PendingReceiver<mojom::WebBundler>)>
+      web_bundler_binder_;
 };
 
 }  // namespace data_decoder

@@ -19,18 +19,18 @@ TEST_F(AccessibilityTest, CommonAncestorContainerOfRange) {
 
   const AXObject* root = GetAXRootObject();
   ASSERT_NE(nullptr, root);
-  const AXObject* body = root->FirstChild();
+  const AXObject* body = GetAXBodyObject();
   ASSERT_NE(nullptr, body);
   const AXObject* input = GetAXObjectByElementId("input");
   ASSERT_NE(nullptr, input);
   const AXObject* paragraph = GetAXObjectByElementId("paragraph");
   ASSERT_NE(nullptr, paragraph);
-  const AXObject* text1 = paragraph->FirstChild();
+  const AXObject* text1 = paragraph->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, text1);
   ASSERT_EQ(ax::mojom::Role::kStaticText, text1->RoleValue());
   const AXObject* br = GetAXObjectByElementId("br");
   ASSERT_NE(nullptr, br);
-  const AXObject* text2 = paragraph->LastChild();
+  const AXObject* text2 = paragraph->LastChildIncludingIgnored();
   ASSERT_NE(nullptr, text2);
   ASSERT_EQ(ax::mojom::Role::kStaticText, text2->RoleValue());
   const AXObject* button = GetAXObjectByElementId("button");
@@ -55,7 +55,7 @@ TEST_F(AccessibilityTest, IsCollapsedRange) {
 
   const AXObject* paragraph = GetAXObjectByElementId("paragraph");
   ASSERT_NE(nullptr, paragraph);
-  const AXObject* text = paragraph->FirstChild();
+  const AXObject* text = paragraph->FirstChildIncludingIgnored();
   ASSERT_NE(nullptr, text);
   ASSERT_EQ(ax::mojom::Role::kStaticText, text->RoleValue());
 

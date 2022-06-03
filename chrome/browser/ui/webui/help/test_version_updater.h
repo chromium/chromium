@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_
 #define CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/webui/help/version_updater.h"
 
 // A very simple VersionUpdater implementation that immediately invokes the
@@ -16,24 +16,27 @@
 class TestVersionUpdater : public VersionUpdater {
  public:
   TestVersionUpdater();
+
+  TestVersionUpdater(const TestVersionUpdater&) = delete;
+  TestVersionUpdater& operator=(const TestVersionUpdater&) = delete;
+
   ~TestVersionUpdater() override;
 
-  void CheckForUpdate(const StatusCallback& callback,
-                      const PromoteCallback&) override;
+  void CheckForUpdate(StatusCallback callback, PromoteCallback) override;
 
   void SetReturnedStatus(Status status) { status_ = status; }
 
 // VersionUpdater implementation:
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   void PromoteUpdater() const override {}
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   void SetChannel(const std::string& channel,
                   bool is_powerwash_allowed) override {}
-  void GetChannel(bool get_current_channel,
-                  const ChannelCallback& callback) override {}
+  void GetChannel(bool get_current_channel, ChannelCallback callback) override {
+  }
   void GetEolInfo(EolInfoCallback callback) override {}
-  void SetUpdateOverCellularOneTimePermission(const StatusCallback& callback,
+  void SetUpdateOverCellularOneTimePermission(StatusCallback callback,
                                               const std::string& update_version,
                                               int64_t update_size) override {}
 #endif
@@ -42,11 +45,10 @@ class TestVersionUpdater : public VersionUpdater {
   Status status_ = Status::UPDATED;
   int progress_ = 0;
   bool rollback_ = false;
+  bool powerwash_ = false;
   std::string version_;
   int64_t update_size_ = 0;
-  base::string16 message_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestVersionUpdater);
+  std::u16string message_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_HELP_TEST_VERSION_UPDATER_H_

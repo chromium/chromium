@@ -1,0 +1,40 @@
+<!--
+Copyright The Closure Library Authors. All Rights Reserved.
+
+Use of this source code is governed by the Apache License, Version 2.0.
+See the COPYING file for details.
+-->
+<style type="text/css">
+ .goog-tooltip {
+    background: infobackground;
+    color: infotext;
+    border: 1px solid infotext;
+    padding: 1px;
+    font:menu;
+  }
+</style>
+<p id="notpopup">
+ Content
+</p>
+<span email="john@gmail.com" id="john">
+ Span for John that can trigger a
+    hovercard.
+</span>
+<br/>
+<span id="jane">
+ Span for Jane that doesn't trigger a hovercard (no email
+    attribute)
+</span>
+<br/>
+<span email="james@gmail.com" id="james">
+ Span for James that can trigger a
+    hovercard
+ <span id="child">
+  Child of james
+ </span>
+</span>
+<br/>
+<div email="bill@gmail.com" id="bill">
+ Doesn't trigger for Bill because
+    it's a div
+</div>

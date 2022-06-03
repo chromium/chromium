@@ -3,9 +3,8 @@
 // found in the LICENSE file.
 package org.chromium.ui.modelutil;
 
-import android.support.v7.widget.RecyclerView;
-
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * A model change processor (MCP), i.e. an implementation of {@link RecyclerViewAdapter.Delegate},

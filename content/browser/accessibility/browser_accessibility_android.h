@@ -8,10 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <string>
+#include <vector>
+
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
-#include "base/timer/elapsed_timer.h"
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
 namespace content {
@@ -19,17 +21,20 @@ namespace content {
 class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
  public:
   static BrowserAccessibilityAndroid* GetFromUniqueId(int32_t unique_id);
+
+  BrowserAccessibilityAndroid(const BrowserAccessibilityAndroid&) = delete;
+  BrowserAccessibilityAndroid& operator=(const BrowserAccessibilityAndroid&) =
+      delete;
+
+  ~BrowserAccessibilityAndroid() override;
+
   int32_t unique_id() const { return GetUniqueId().Get(); }
 
-  // Overrides from BrowserAccessibility.
+  // BrowserAccessibility Overrides.
   void OnDataChanged() override;
-  bool IsNative() const override;
   void OnLocationChanged() override;
-  base::string16 GetValue() const override;
-
-  bool PlatformIsLeafIncludingIgnored() const override;
-  // Android needs events even on objects that are trimmed away.
-  bool CanFireEvents() const override;
+  std::u16string GetLocalizedStringForImageAnnotationStatus(
+      ax::mojom::ImageAnnotationStatus status) const override;
 
   bool IsCheckable() const;
   bool IsChecked() const;
@@ -37,20 +42,24 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsCollapsed() const;
   bool IsCollection() const;
   bool IsCollectionItem() const;
+  bool IsCombobox() const;
+  bool IsComboboxControl() const;
   bool IsContentInvalid() const;
+  bool IsDisabledDescendant() const;
   bool IsDismissable() const;
-  bool IsEditableText() const;
   bool IsEnabled() const;
   bool IsExpanded() const;
   bool IsFocusable() const;
-  bool IsFocused() const;
+  bool IsFormDescendant() const;
   bool IsHeading() const;
   bool IsHierarchical() const;
   bool IsLink() const;
   bool IsMultiLine() const;
-  bool IsPassword() const;
-  bool IsRangeType() const;
+  bool IsMultiselectable() const;
+  bool IsRangeControlWithoutAriaValueText() const;
+  bool IsReportingCheckable() const;
   bool IsScrollable() const;
+  bool IsSeekControl() const;
   bool IsSelected() const;
   bool IsSlider() const;
   bool IsVisibleToUser() const;
@@ -74,26 +83,48 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // aren't any to load.
   bool AreInlineTextBoxesLoaded() const;
 
+  // Returns a relative score of how likely a node is to be clickable.
+  int ClickableScore() const;
+
   bool CanOpenPopup() const;
 
-  bool HasFocusableNonOptionChild() const;
+  bool HasAriaCurrent() const;
+
   bool HasNonEmptyValue() const;
 
   bool HasCharacterLocations() const;
   bool HasImage() const;
 
   const char* GetClassName() const;
-  base::string16 GetInnerText() const override;
-  base::string16 GetHint() const;
+  bool IsChildOfLeaf() const override;
+  bool IsLeaf() const override;
+  bool IsLeafConsideringChildren() const;
+  std::u16string GetInnerText() const override;
+  std::u16string GetValueForControl() const override;
+  std::u16string GetHint() const;
 
   std::string GetRoleString() const;
 
-  base::string16 GetContentInvalidErrorMessage() const;
+  std::u16string GetDialogModalMessageText() const;
 
-  base::string16 GetRoleDescription() const;
+  std::u16string GetContentInvalidErrorMessage() const;
+
+  std::u16string GetStateDescription() const;
+  std::u16string GetMultiselectableStateDescription() const;
+  std::u16string GetToggleButtonStateDescription() const;
+  std::u16string GetCheckboxStateDescription() const;
+  std::u16string GetListBoxStateDescription() const;
+  std::u16string GetListBoxItemStateDescription() const;
+  std::u16string GetAriaCurrentStateDescription() const;
+
+  std::u16string GetComboboxExpandedText() const;
+  std::u16string GetComboboxExpandedTextFallback() const;
+
+  std::u16string GetRoleDescription() const;
 
   int GetItemIndex() const;
   int GetItemCount() const;
+  int GetSelectedItemCount() const;
 
   bool CanScrollForward() const;
   bool CanScrollBackward() const;
@@ -107,12 +138,12 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   int GetMinScrollY() const;
   int GetMaxScrollX() const;
   int GetMaxScrollY() const;
-  bool Scroll(int direction) const;
+  bool Scroll(int direction, bool is_page_scroll) const;
 
   int GetTextChangeFromIndex() const;
   int GetTextChangeAddedCount() const;
   int GetTextChangeRemovedCount() const;
-  base::string16 GetTextChangeBeforeText() const;
+  std::u16string GetTextChangeBeforeText() const;
 
   int GetSelectionStart() const;
   int GetSelectionEnd() const;
@@ -155,7 +186,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
                          int offset);
 
   // Return the target of a link or the source of an image.
-  base::string16 GetTargetUrl() const;
+  std::u16string GetTargetUrl() const;
 
   // On Android, spelling errors are returned as "suggestions". Retreive
   // all of the suggestions for a given text field as vectors of start
@@ -163,38 +194,36 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   void GetSuggestions(std::vector<int>* suggestion_starts,
                       std::vector<int>* suggestion_ends) const;
 
-  // Used to keep track of when to stop reporting content_invalid.
-  // Timer only applies if node has focus.
-  void ResetContentInvalidTimer();
-  base::ElapsedTimer content_invalid_timer_ = base::ElapsedTimer();
+ protected:
+  BrowserAccessibilityAndroid(BrowserAccessibilityManager* manager,
+                              ui::AXNode* node);
+
+  friend class BrowserAccessibility;  // Needs access to our constructor.
 
  private:
-  // This gives BrowserAccessibility::Create access to the class constructor.
-  friend class BrowserAccessibility;
+  static size_t CommonPrefixLength(const std::u16string a,
+                                   const std::u16string b);
+  static size_t CommonSuffixLength(const std::u16string a,
+                                   const std::u16string b);
+  static size_t CommonEndLengths(const std::u16string a,
+                                 const std::u16string b);
 
-  BrowserAccessibilityAndroid();
-  ~BrowserAccessibilityAndroid() override;
+  // BrowserAccessibility overrides.
+  BrowserAccessibility* PlatformGetLowestPlatformAncestor() const override;
 
   bool HasOnlyTextChildren() const;
   bool HasOnlyTextAndImageChildren() const;
-  bool IsIframe() const;
+  bool HasListMarkerChild() const;
   bool ShouldExposeValueAsName() const;
-
   int CountChildrenWithRole(ax::mojom::Role role) const;
 
-  static size_t CommonPrefixLength(const base::string16 a,
-                                   const base::string16 b);
-  static size_t CommonSuffixLength(const base::string16 a,
-                                   const base::string16 b);
-  static size_t CommonEndLengths(const base::string16 a,
-                                 const base::string16 b);
+  void AppendTextToString(std::u16string extra_text,
+                          std::u16string* string) const;
 
-  base::string16 cached_text_;
-  base::string16 old_value_;
-  base::string16 new_value_;
+  std::u16string cached_text_;
+  std::u16string old_value_;
+  std::u16string new_value_;
   int32_t unique_id_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowserAccessibilityAndroid);
 };
 
 }  // namespace content

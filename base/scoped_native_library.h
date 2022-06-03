@@ -6,7 +6,6 @@
 #define BASE_SCOPED_NATIVE_LIBRARY_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/native_library.h"
 #include "base/scoped_generic.h"
 
@@ -33,8 +32,6 @@ class BASE_EXPORT ScopedNativeLibrary
   // Initializes with a NULL library.
   ScopedNativeLibrary();
 
-  ~ScopedNativeLibrary() override;
-
   // Takes ownership of the given library handle.
   explicit ScopedNativeLibrary(NativeLibrary library);
 
@@ -49,14 +46,17 @@ class BASE_EXPORT ScopedNativeLibrary
   ScopedNativeLibrary& operator=(ScopedNativeLibrary&& scoped_library) =
       default;
 
+  ScopedNativeLibrary(const ScopedNativeLibrary&) = delete;
+  ScopedNativeLibrary& operator=(const ScopedNativeLibrary&) = delete;
+
+  ~ScopedNativeLibrary() override;
+
   void* GetFunctionPointer(const char* function_name) const;
 
   const NativeLibraryLoadError* GetError() const;
 
  private:
   NativeLibraryLoadError error_;
-
-  DISALLOW_COPY_AND_ASSIGN(ScopedNativeLibrary);
 };
 
 }  // namespace base

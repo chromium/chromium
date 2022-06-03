@@ -20,11 +20,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_BYTE_STREAM_SOURCE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_PATH_BYTE_STREAM_SOURCE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/core/svg/svg_path_byte_stream.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -34,6 +33,8 @@ class SVGPathByteStreamSource {
  public:
   explicit SVGPathByteStreamSource(const SVGPathByteStream& stream)
       : stream_current_(stream.begin()), stream_end_(stream.end()) {}
+  SVGPathByteStreamSource(const SVGPathByteStreamSource&) = delete;
+  SVGPathByteStreamSource& operator=(const SVGPathByteStreamSource&) = delete;
 
   bool HasMoreData() const { return stream_current_ < stream_end_; }
   PathSegmentData ParseSegment();
@@ -55,15 +56,14 @@ class SVGPathByteStreamSource {
   bool ReadFlag() { return ReadType<bool>(); }
   float ReadFloat() { return ReadType<float>(); }
   uint16_t ReadSVGSegmentType() { return ReadType<uint16_t>(); }
-  FloatPoint ReadFloatPoint() {
+  gfx::PointF ReadPoint() {
     float x = ReadType<float>();
     float y = ReadType<float>();
-    return FloatPoint(x, y);
+    return gfx::PointF(x, y);
   }
 
   SVGPathByteStream::DataIterator stream_current_;
   SVGPathByteStream::DataIterator stream_end_;
-  DISALLOW_COPY_AND_ASSIGN(SVGPathByteStreamSource);
 };
 
 }  // namespace blink

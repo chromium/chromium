@@ -3,93 +3,79 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview Handles media automation events.  Note that to perform any of
- * the actions below such as ducking, and suspension of media sessions, the
- * --enable-audio-focus flag must be passed at the command line.
+ * @fileoverview Handles media automation events.
  */
 
-goog.provide('MediaAutomationHandler');
-
-goog.require('BaseAutomationHandler');
-goog.require('TtsCapturingEventListener');
-
-goog.scope(function() {
-var AutomationEvent = chrome.automation.AutomationEvent;
-var AutomationNode = chrome.automation.AutomationNode;
-var EventType = chrome.automation.EventType;
-var RoleType = chrome.automation.RoleType;
+const AutomationEvent = chrome.automation.AutomationEvent;
+const AutomationNode = chrome.automation.AutomationNode;
+const EventType = chrome.automation.EventType;
+const RoleType = chrome.automation.RoleType;
 
 /**
- * @constructor
- * @extends {BaseAutomationHandler}
  * @implements {TtsCapturingEventListener}
  */
-MediaAutomationHandler = function() {
-  /** @type {!Set<AutomationNode>} @private */
-  this.mediaRoots_ = new Set();
+export class MediaAutomationHandler extends BaseAutomationHandler {
+  constructor() {
+    super(null);
+    /** @type {!Set<AutomationNode>} @private */
+    this.mediaRoots_ = new Set();
 
-  /** @type {Date} @private */
-  this.lastTtsEvent_ = new Date();
+    /** @type {Date} @private */
+    this.lastTtsEvent_ = new Date();
 
-  ChromeVox.tts.addCapturingEventListener(this);
+    ChromeVox.tts.addCapturingEventListener(this);
 
-  chrome.automation.getDesktop(function(node) {
-    BaseAutomationHandler.call(this, node);
+    chrome.automation.getDesktop((node) => {
+      this.node_ = node;
 
-    this.addListener_(
-        EventType.MEDIA_STARTED_PLAYING, this.onMediaStartedPlaying);
-    this.addListener_(
-        EventType.MEDIA_STOPPED_PLAYING, this.onMediaStoppedPlaying);
-  }.bind(this));
-};
-
-/** @type {number} */
-MediaAutomationHandler.MIN_WAITTIME_MS = 1000;
-
-MediaAutomationHandler.prototype = {
-  __proto__: BaseAutomationHandler.prototype,
+      this.addListener_(
+          EventType.MEDIA_STARTED_PLAYING, this.onMediaStartedPlaying);
+      this.addListener_(
+          EventType.MEDIA_STOPPED_PLAYING, this.onMediaStoppedPlaying);
+    });
+  }
 
   /** @override */
-  onTtsStart: function() {
+  onTtsStart() {
     this.lastTtsEvent_ = new Date();
     this.update_({start: true});
-  },
+  }
 
   /** @override */
-  onTtsEnd: function() {
-    var now = new Date();
+  onTtsEnd() {
+    const now = new Date();
     setTimeout(function() {
-      var then = this.lastTtsEvent_;
+      const then = this.lastTtsEvent_;
       if (now < then) {
         return;
       }
       this.lastTtsEvent_ = now;
       this.update_({end: true});
     }.bind(this), MediaAutomationHandler.MIN_WAITTIME_MS);
-  },
+  }
 
   /** @override */
-  onTtsInterrupted: function() {
+  onTtsInterrupted() {
     this.onTtsEnd();
-  },
+  }
 
   /**
    * @param {!AutomationEvent} evt
    */
-  onMediaStartedPlaying: function(evt) {
+  onMediaStartedPlaying(evt) {
     this.mediaRoots_.add(evt.target);
-    var audioStrategy = localStorage['audioStrategy'];
-    if (ChromeVox.tts.isSpeaking() && audioStrategy == 'audioDuck') {
+    const audioStrategy = localStorage['audioStrategy'];
+    if (ChromeVox.tts.isSpeaking() && audioStrategy === 'audioDuck') {
       this.update_({start: true});
     }
-  },
+  }
 
   /**
    * @param {!AutomationEvent} evt
    */
-  onMediaStoppedPlaying: function(evt) {
+  onMediaStoppedPlaying(evt) {
     // Intentionally does nothing (to cover resume).
-  },
+  }
 
   /**
    * Updates the media state for all observed automation roots.
@@ -97,29 +83,29 @@ MediaAutomationHandler.prototype = {
    *          end: (boolean|undefined)}} options
    * @private
    */
-  update_: function(options) {
-    var it = this.mediaRoots_.values();
-    var item = it.next();
-    var audioStrategy = localStorage['audioStrategy'];
+  update_(options) {
+    const it = this.mediaRoots_.values();
+    let item = it.next();
+    const audioStrategy = localStorage['audioStrategy'];
     while (!item.done) {
-      var root = item.value;
+      const root = item.value;
       if (options.start) {
-        if (audioStrategy == 'audioDuck') {
+        if (audioStrategy === 'audioDuck') {
           root.startDuckingMedia();
-        } else if (audioStrategy == 'audioSuspend') {
+        } else if (audioStrategy === 'audioSuspend') {
           root.suspendMedia();
         }
       } else if (options.end) {
-        if (audioStrategy == 'audioDuck') {
+        if (audioStrategy === 'audioDuck') {
           root.stopDuckingMedia();
-        } else if (audioStrategy == 'audioSuspend') {
+        } else if (audioStrategy === 'audioSuspend') {
           root.resumeMedia();
         }
       }
       item = it.next();
     }
   }
-};
-});  // goog.scope
+}
 
-new MediaAutomationHandler();
+/** @type {number} */
+MediaAutomationHandler.MIN_WAITTIME_MS = 1000;

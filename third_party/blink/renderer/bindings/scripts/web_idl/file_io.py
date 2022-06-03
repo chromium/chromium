@@ -10,7 +10,7 @@ def read_pickle_file(filepath):
     """
     Reads the content of the file as a pickled object.
     """
-    with open(filepath, 'r') as file_obj:
+    with open(filepath, 'rb') as file_obj:
         return pickle.load(file_obj)
 
 
@@ -30,7 +30,7 @@ def write_to_file_if_changed(filepath, contents):
     Returns True if the data is written to the file, and False if skipped.
     """
     try:
-        with open(filepath, 'r') as file_obj:
+        with open(filepath, 'rb') as file_obj:
             old_contents = file_obj.read()
     except (OSError, EnvironmentError):
         pass
@@ -38,6 +38,10 @@ def write_to_file_if_changed(filepath, contents):
         if contents == old_contents:
             return False
         os.remove(filepath)
-    with open(filepath, 'w') as file_obj:
+
+    if not os.path.exists(os.path.dirname(filepath)):
+        os.makedirs(os.path.dirname(filepath))
+
+    with open(filepath, 'wb') as file_obj:
         file_obj.write(contents)
     return True

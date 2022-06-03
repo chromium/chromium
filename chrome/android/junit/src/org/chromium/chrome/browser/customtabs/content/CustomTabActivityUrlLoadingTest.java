@@ -32,9 +32,12 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.util.UrlUtilities;
-import org.chromium.chrome.browser.util.UrlUtilitiesJni;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.testing.local.LocalRobolectricTestRunner;
 
@@ -44,10 +47,17 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
  */
 @RunWith(LocalRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@Features.DisableFeatures({ChromeFeatureList.CCT_EXTERNAL_LINK_HANDLING})
 public class CustomTabActivityUrlLoadingTest {
     @Rule
     public final CustomTabActivityContentTestEnvironment env =
             new CustomTabActivityContentTestEnvironment();
+
+    @Rule
+    public Features.JUnitProcessor processor = new Features.JUnitProcessor();
+
+    @Mock
+    private Profile mProfile;
 
     private CustomTabActivityTabController mTabController;
     private CustomTabActivityNavigationController mNavigationController;
@@ -63,6 +73,7 @@ public class CustomTabActivityUrlLoadingTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mocker.mock(UrlUtilitiesJni.TEST_HOOKS, mUrlUtilitiesJniMock);
+        Profile.setLastUsedProfileForTesting(mProfile);
         mTabController = env.createTabController();
         mNavigationController = env.createNavigationController(mTabController);
         mIntentHandler = env.createIntentHandler(mNavigationController);

@@ -42,7 +42,26 @@ enum class SoftwareFeature {
   // Messages for Web, which gives the user the ability to sync messages (e.g.,
   // SMS) between an Android phone and a Chromebook.
   kMessagesForWebHost = 7,
-  kMessagesForWebClient = 8
+  kMessagesForWebClient = 8,
+
+  // Phone Hub, which allows users to view phone metadata and send commands to
+  // their phone directly from the Chrome OS UI.
+  kPhoneHubHost = 9,
+  kPhoneHubClient = 10,
+
+  // Wifi Sync with Android, which allows users to sync wifi network
+  // configurations between Chrome OS devices and a connected Android phone
+  kWifiSyncHost = 11,
+  kWifiSyncClient = 12,
+
+  // Eche
+  kEcheHost = 13,
+  kEcheClient = 14,
+
+  // Camera Roll allows users to view and download recent photos and videos from
+  // the Phone Hub tray
+  kPhoneHubCameraRollHost = 15,
+  kPhoneHubCameraRollClient = 16
 };
 
 SoftwareFeature FromCryptAuthFeature(
@@ -55,5 +74,13 @@ std::ostream& operator<<(std::ostream& stream, const SoftwareFeature& feature);
 }  // namespace multidevice
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace multidevice {
+using ::chromeos::multidevice::SoftwareFeature;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_SOFTWARE_FEATURE_H_

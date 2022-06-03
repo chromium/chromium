@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import logging
 import os
 import sys
 
 
-ALL_RUNTIMES = frozenset(['OculusVR', 'OpenVR', 'WindowsMixedReality'])
+ALL_RUNTIMES = frozenset(['OpenXR'])
 SANDBOX_FEATURE = 'XRSandbox'
 
 
@@ -31,6 +32,15 @@ class DesktopRuntimeBase(object):
     else:
       self._finder_options.browser_options.AppendExtraBrowserArgs(
         '--disable-features=%s' % SANDBOX_FEATURE)
+
+    if self._finder_options.mock_runtime_directory:
+      self._mock_runtime_directory = os.path.abspath(
+          self._finder_options.mock_runtime_directory)
+    else:
+      self._mock_runtime_directory = os.path.abspath(
+          os.path.join(self._possible_browser.browser_directory,
+                       'mock_vr_clients'))
+      logging.warning('Using mock directory %s', self._mock_runtime_directory)
 
   def Setup(self):
     """Called once before any stories are run."""

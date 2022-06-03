@@ -5,7 +5,7 @@
 #include <random>
 #include <utility>
 
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
 #include "media/base/win/d3d11_mocks.h"
 #include "media/gpu/windows/d3d11_copying_texture_wrapper.h"
 #include "media/gpu/windows/d3d11_texture_wrapper.h"
@@ -35,12 +35,12 @@ class D3D11VideoProcessorProxyUnittest : public ::testing::Test {
   MockD3D11VideoProcessorEnumerator enumerator_;
   MockD3D11VideoProcessor proc_;
 
-  std::unique_ptr<VideoProcessorProxy> CreateProxy() {
-    dev_ = CreateD3D11Mock<D3D11VideoDeviceMock>();
-    ctx_ = CreateD3D11Mock<D3D11DeviceContextMock>();
-    vctx_ = CreateD3D11Mock<D3D11VideoContextMock>();
-    proc_ = CreateD3D11Mock<D3D11VideoProcessorMock>();
-    enumerator_ = CreateD3D11Mock<D3D11VideoProcessorEnumeratorMock>();
+  scoped_refptr<VideoProcessorProxy> CreateProxy() {
+    dev_ = MakeComPtr<D3D11VideoDeviceMock>();
+    ctx_ = MakeComPtr<D3D11DeviceContextMock>();
+    vctx_ = MakeComPtr<D3D11VideoContextMock>();
+    proc_ = MakeComPtr<D3D11VideoProcessorMock>();
+    enumerator_ = MakeComPtr<D3D11VideoProcessorEnumeratorMock>();
 
     EXPECT_CALL(*dev_.Get(), CreateVideoProcessorEnumerator(_, _))
         .WillOnce(SetComPointeeAndReturnOk<1>(enumerator_.Get()));
@@ -51,7 +51,7 @@ class D3D11VideoProcessorProxyUnittest : public ::testing::Test {
     EXPECT_CALL(*ctx_.Get(), QueryInterface(_, _))
         .WillOnce(SetComPointeeAndReturnOk<1>(vctx_.Get()));
 
-    return std::make_unique<VideoProcessorProxy>(dev_, ctx_);
+    return base::MakeRefCounted<VideoProcessorProxy>(dev_, ctx_);
   }
 
   // Pull a random pointer off the stack, rather than relying on nullptrs.
@@ -86,7 +86,7 @@ TEST_F(D3D11VideoProcessorProxyUnittest, EnsureMethodPassthrough) {
   EXPECT_CALL(*vctx_.Get(),
               VideoProcessorBlt(proc_.Get(), out_view, 6, 7, streams));
 
-  EXPECT_TRUE(proxy->Init(0, 0));
+  EXPECT_TRUE(proxy->Init(0, 0).is_ok());
   proxy->CreateVideoProcessorOutputView(texture, out_desc, nullptr);
   proxy->CreateVideoProcessorInputView(texture, in_desc, nullptr);
   proxy->VideoProcessorBlt(out_view, 6, 7, streams);

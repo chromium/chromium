@@ -69,8 +69,8 @@ public class BackgroundScheduler {
         TaskExtrasPacker.packTriggerConditionsInBundle(taskExtras, triggerConditions);
 
         TaskInfo taskInfo =
-                TaskInfo.createOneOffTask(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID,
-                                OfflineBackgroundTask.class, delayStartMs, executionDeadlineMs)
+                TaskInfo.createOneOffTask(TaskIds.OFFLINE_PAGES_BACKGROUND_JOB_ID, delayStartMs,
+                                executionDeadlineMs)
                         .setRequiredNetworkType(triggerConditions.requireUnmeteredNetwork()
                                         ? TaskInfo.NetworkType.UNMETERED
                                         : TaskInfo.NetworkType.ANY)

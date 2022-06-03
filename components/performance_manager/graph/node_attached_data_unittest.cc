@@ -31,16 +31,20 @@ constexpr size_t kFooDataSize = sizeof(uintptr_t);
 // A dummy node type so that we can exercise node attached storage code paths.
 class DummyNode : public NodeBase, public Node {
  public:
-  explicit DummyNode(GraphImpl* graph)
-      : NodeBase(NodeTypeEnum::kInvalidType, graph) {}
+  DummyNode() : NodeBase(NodeTypeEnum::kInvalidType) {}
+
+  DummyNode(const DummyNode&) = delete;
+  DummyNode& operator=(const DummyNode&) = delete;
 
   ~DummyNode() override = default;
 
   // NodeBase implementation:
   const Node* ToNode() const override { return static_cast<const Node*>(this); }
+  void RemoveNodeAttachedData() override {}
 
   // Node implementation:
   Graph* GetGraph() const override { return graph(); }
+  NodeState GetNodeState() const override { return NodeState::kActiveInGraph; }
   uintptr_t GetImplType() const override {
     static const uintptr_t kImplType = reinterpret_cast<uintptr_t>(&kImplType);
     return kImplType;
@@ -56,9 +60,6 @@ class DummyNode : public NodeBase, public Node {
   // in the tests.
   std::unique_ptr<NodeAttachedData> dummy_data_;
   InternalNodeAttachedDataStorage<kFooDataSize> foo_data_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyNode);
 };
 
 // A NodeAttachedData class that can only be attached to page and process nodes
@@ -73,6 +74,10 @@ class DummyData : public NodeAttachedDataImpl<DummyData> {
   explicit DummyData(const PageNodeImpl* page_node) {}
   explicit DummyData(const ProcessNodeImpl* process_node) {}
   explicit DummyData(const DummyNode* dummy_node) {}
+
+  DummyData(const DummyData&) = delete;
+  DummyData& operator=(const DummyData&) = delete;
+
   ~DummyData() override = default;
 
   // Provides access to storage on DummyNodes.
@@ -80,9 +85,6 @@ class DummyData : public NodeAttachedDataImpl<DummyData> {
       DummyNode* dummy_node) {
     return &dummy_node->dummy_data_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(DummyData);
 };
 
 // Another NodeAttachedData class that can only be attached to page nodes in the
@@ -95,6 +97,10 @@ class FooData : public NodeAttachedDataImpl<FooData> {
   FooData() = default;
   explicit FooData(const PageNodeImpl* page_node) {}
   explicit FooData(const DummyNode* dummy_node) {}
+
+  FooData(const FooData&) = delete;
+  FooData& operator=(const FooData&) = delete;
+
   ~FooData() override = default;
 
   // Provides access to storage on DummyNodes.
@@ -102,9 +108,6 @@ class FooData : public NodeAttachedDataImpl<FooData> {
       DummyNode* dummy_node) {
     return &dummy_node->foo_data_;
   }
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FooData);
 };
 
 // An implementation of map-stored user-data using the public interface.
@@ -233,7 +236,7 @@ TEST_F(NodeAttachedDataTest, NodeDeathDestroysData) {
 }
 
 TEST_F(NodeAttachedDataTest, NodeOwnedStorage) {
-  DummyNode dummy_node(graph());
+  DummyNode dummy_node;
 
   // The storage in the dummy node should not be initialized.
   EXPECT_FALSE(dummy_node.dummy_data_.get());
@@ -256,7 +259,7 @@ TEST_F(NodeAttachedDataTest, NodeOwnedStorage) {
 }
 
 TEST_F(NodeAttachedDataTest, NodeInternalStorage) {
-  DummyNode dummy_node(graph());
+  DummyNode dummy_node;
 
   // The storage in the dummy node should not be initialized.
   EXPECT_FALSE(dummy_node.foo_data_.Get());

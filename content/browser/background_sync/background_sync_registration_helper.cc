@@ -8,7 +8,9 @@
 #include "content/browser/background_sync/background_sync_context_impl.h"
 #include "content/browser/background_sync/background_sync_manager.h"
 #include "content/browser/background_sync/background_sync_status.h"
+#include "content/browser/service_worker/service_worker_registration.h"
 #include "content/public/browser/browser_thread.h"
+#include "url/origin.h"
 
 namespace content {
 
@@ -20,11 +22,27 @@ BackgroundSyncRegistrationHelper::BackgroundSyncRegistrationHelper(
 
 BackgroundSyncRegistrationHelper::~BackgroundSyncRegistrationHelper() = default;
 
+bool BackgroundSyncRegistrationHelper::ValidateSWRegistrationID(
+    int64_t sw_registration_id,
+    const url::Origin& origin) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  BackgroundSyncManager* background_sync_manager =
+      background_sync_context_->background_sync_manager();
+  DCHECK(background_sync_manager);
+
+  scoped_refptr<ServiceWorkerRegistration> service_worker_registration =
+      background_sync_manager->service_worker_context()->GetLiveRegistration(
+          sw_registration_id);
+  return service_worker_registration &&
+         service_worker_registration->key().origin().IsSameOriginWith(origin);
+}
+
 void BackgroundSyncRegistrationHelper::Register(
     blink::mojom::SyncRegistrationOptionsPtr options,
     int64_t sw_registration_id,
     RegisterCallback callback) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();
@@ -38,7 +56,7 @@ void BackgroundSyncRegistrationHelper::Register(
 
 void BackgroundSyncRegistrationHelper::DidResolveRegistration(
     blink::mojom::BackgroundSyncRegistrationInfoPtr registration_info) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   BackgroundSyncManager* background_sync_manager =
       background_sync_context_->background_sync_manager();
@@ -51,7 +69,7 @@ void BackgroundSyncRegistrationHelper::OnRegisterResult(
     RegisterCallback callback,
     BackgroundSyncStatus status,
     std::unique_ptr<BackgroundSyncRegistration> result) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   // TODO(crbug.com/932591): Use blink::mojom::BackgroundSyncError
   // directly.
@@ -81,7 +99,7 @@ void BackgroundSyncRegistrationHelper::OnGetRegistrationsResult(
     BackgroundSyncStatus status,
     std::vector<std::unique_ptr<BackgroundSyncRegistration>>
         result_registrations) {
-  DCHECK_CURRENTLY_ON(ServiceWorkerContext::GetCoreThreadId());
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   std::vector<blink::mojom::SyncRegistrationOptionsPtr> mojo_registrations;
   mojo_registrations.reserve(result_registrations.size());

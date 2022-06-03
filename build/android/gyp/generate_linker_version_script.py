@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -36,11 +36,11 @@ def main():
       action='store_true',
       help='Export Java_* JNI methods')
   parser.add_argument(
-      '--export-symbol-whitelist-file',
+      '--export-symbol-allowlist-file',
       action='append',
       default=[],
-      dest='whitelists',
-      help='Path to an input file containing a whitelist of extra symbols to '
+      dest='allowlists',
+      help='Path to an input file containing an allowlist of extra symbols to '
       'export, one symbol per line. Multiple files may be specified.')
   parser.add_argument(
       '--export-feature-registrations',
@@ -59,8 +59,8 @@ def main():
   if options.export_feature_registrations:
     symbol_list.append('JNI_OnLoad_*')
 
-  for whitelist in options.whitelists:
-    with open(whitelist, 'rt') as f:
+  for allowlist in options.allowlists:
+    with open(allowlist, 'rt') as f:
       for line in f:
         line = line.strip()
         if not line or line[0] == '#':
@@ -74,7 +74,7 @@ def main():
 
   script = ''.join(script_content)
 
-  with build_utils.AtomicOutput(options.output) as f:
+  with build_utils.AtomicOutput(options.output, mode='w') as f:
     f.write(script)
 
 

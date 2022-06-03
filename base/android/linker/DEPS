@@ -1,6 +1,14 @@
 include_rules = [
-  # This code cannot depend on anything from base/, except for the current
+  # This code cannot depend on anything from //base, except for the current
   # directory.
   "-base",
   "+base/android/linker",
 ]
+
+# Allow using //base in unittests. These unittests are included in targets that
+# already depend on //base.
+specific_include_rules = {
+  ".*_unittest\.cc": [
+    "+base",
+  ],
+}

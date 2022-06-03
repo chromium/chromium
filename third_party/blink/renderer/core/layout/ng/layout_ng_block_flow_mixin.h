@@ -8,22 +8,32 @@
 #include <type_traits>
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_progress.h"
-#include "third_party/blink/renderer/core/layout/layout_table_caption.h"
-#include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/ng/layout_ng_mixin.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 
 namespace blink {
 
 enum class NGBaselineAlgorithmType;
-class NGPaintFragment;
-class NGPhysicalFragment;
 struct NGInlineNodeData;
 
 // This mixin holds code shared between LayoutNG subclasses of LayoutBlockFlow.
+//
+// If you'd like to make a LayoutNGFoo class inheriting from
+// LayoutNGBlockFlowMixin<LayoutBar>, you need to do:
+//  * Add the following to the header for LayoutNGFoo.
+//     extern template class CORE_EXTERN_TEMPLATE_EXPORT
+//         LayoutNGBlockFlowMixin<LayoutBar>;
+//     extern template class CORE_EXTERN_TEMPLATE_EXPORT
+//         LayoutNGMixin<LayoutBar>;
+//  * Add |#include "header for LayoutNGFoo"| to layout_ng_block_flow_mixin.cc
+//    and layout_ng_mixin.cc.
+//    It's the header for LayoutNGFoo, not for LayoutBar. The purpose is to
+//    include the above |extern template| declarations.
+//  * Add |template class CORE_TEMPLATE_EXPORT
+//    LayoutNGBlockFlowMixin<LayoutBar>;| to layout_ng_block_flow_mixin.cc.
+//  * Add |template class CORE_TEMPLATE_EXPORT LayoutNGMixin<LayoutBar>;| to
+//    layout_ng_mixin.cc.
 template <typename Base>
 class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
  public:
@@ -34,31 +44,19 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   NGInlineNodeData* GetNGInlineNodeData() const final;
   void ResetNGInlineNodeData() final;
   void ClearNGInlineNodeData() final;
-  bool HasNGInlineNodeData() const final { return ng_inline_node_data_.get(); }
+  bool HasNGInlineNodeData() const final { return ng_inline_node_data_; }
 
   LayoutUnit FirstLineBoxBaseline() const final;
   LayoutUnit InlineBlockBaseline(LineDirectionMode) const final;
 
-  void Paint(const PaintInfo&) const override;
-
   bool NodeAtPoint(HitTestResult&,
                    const HitTestLocation&,
                    const PhysicalOffset& accumulated_offset,
-                   HitTestAction) final;
+                   HitTestAction) override;
 
   PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
 
-  const NGPaintFragment* PaintFragment() const final {
-    // TODO(layout-dev) crbug.com/963103
-    // Safer option here is to return nullptr only if
-    // Lifecycle > DocumentLifecycle::kAfterPerformLayout, but this breaks
-    // some layout tests.
-    if (Base::NeedsLayout())
-      return nullptr;
-    return paint_fragment_.get();
-  }
-  void SetPaintFragment(const NGBlockBreakToken*,
-                        scoped_refptr<const NGPhysicalFragment>) final;
+  void Trace(Visitor*) const override;
 
   using LayoutNGMixin<Base>::CurrentFragment;
 
@@ -71,10 +69,6 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
                        const PhysicalOffset& additional_offset,
                        NGOutlineType) const final;
 
-  bool PaintedOutputOfObjectHasNoEffectRegardlessOfSize() const final;
-
-  base::Optional<LayoutUnit> FragmentBaseline(NGBaselineAlgorithmType) const;
-
   void DirtyLinesFromChangedChild(LayoutObject* child,
                                   MarkingBehavior marking_behavior) final;
 
@@ -82,26 +76,13 @@ class LayoutNGBlockFlowMixin : public LayoutNGMixin<Base> {
   // behavior as LayoutNGBlockFlow.
   void UpdateNGBlockLayout();
 
-  std::unique_ptr<NGInlineNodeData> ng_inline_node_data_;
-  scoped_refptr<NGPaintFragment> paint_fragment_;
+  Member<NGInlineNodeData> ng_inline_node_data_;
 
   friend class NGBaseLayoutAlgorithmTest;
 
  private:
   void AddScrollingOverflowFromChildren();
-  void UpdateMargins(const NGConstraintSpace& space);
 };
-
-// If you edit these export templates, also update templates in
-// layout_ng_mixin.h.
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutBlockFlow>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutProgress>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutTableCaption>;
-extern template class CORE_EXTERN_TEMPLATE_EXPORT
-    LayoutNGBlockFlowMixin<LayoutTableCell>;
 
 }  // namespace blink
 

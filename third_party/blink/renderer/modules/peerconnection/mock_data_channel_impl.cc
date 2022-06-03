@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/peerconnection/mock_data_channel_impl.h"
 
-#include "base/logging.h"
+#include "base/notreached.h"
 
 namespace blink {
 

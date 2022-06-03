@@ -126,9 +126,11 @@ class MemoryRegionMap {
   class LockHolder {
    public:
     LockHolder() { Lock(); }
+
+    LockHolder(const LockHolder&) = delete;
+    LockHolder& operator=(const LockHolder&) = delete;
+
     ~LockHolder() { Unlock(); }
-   private:
-    DISALLOW_COPY_AND_ASSIGN(LockHolder);
   };
 
   // A memory region that we know about through malloc_hook-s.

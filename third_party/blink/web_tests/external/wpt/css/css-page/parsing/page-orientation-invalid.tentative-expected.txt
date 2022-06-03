@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+PASS e.style['page-orientation'] = "hotpink" should not set the property value
+FAIL e.style['page-orientation'] = "upright" should not set the property value assert_equals: expected "" but got "upright"
+FAIL e.style['page-orientation'] = "rotate-left" should not set the property value assert_equals: expected "" but got "rotate-left"
+FAIL e.style['page-orientation'] = "rotate-right" should not set the property value assert_equals: expected "" but got "rotate-right"
+Harness: the test ran to completion.
+

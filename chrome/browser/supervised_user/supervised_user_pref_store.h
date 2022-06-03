@@ -45,12 +45,9 @@ class SupervisedUserPrefStore : public PrefStore {
 
   void OnSettingsServiceShutdown();
 
-  std::unique_ptr<
-      base::CallbackList<void(const base::DictionaryValue*)>::Subscription>
-      user_settings_subscription_;
+  base::CallbackListSubscription user_settings_subscription_;
 
-  std::unique_ptr<base::CallbackList<void()>::Subscription>
-      shutdown_subscription_;
+  base::CallbackListSubscription shutdown_subscription_;
 
   std::unique_ptr<PrefValueMap> prefs_;
 

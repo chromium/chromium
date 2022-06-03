@@ -8,11 +8,12 @@
 #include "ash/login/ui/arrow_button_view.h"
 #include "ash/login/ui/login_test_base.h"
 #include "ash/login/ui/login_test_utils.h"
-#include "ash/login/ui/public_account_warning_dialog.h"
+#include "ash/login/ui/public_account_monitoring_info_dialog.h"
 #include "ash/login/ui/views_utils.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/strings/grit/ash_strings.h"
-#include "base/bind_helpers.h"
+#include "base/callback_helpers.h"
+#include "base/ranges/algorithm.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -26,7 +27,7 @@ namespace ash {
 namespace {
 
 // Total width of the expanded view.
-constexpr int kBubbleTotalWidthDp = 600;
+constexpr int kBubbleTotalWidthDp = 628;
 // Total height of the expanded view.
 constexpr int kBubbleTotalHeightDp = 324;
 
@@ -44,6 +45,12 @@ constexpr char kKeyboardNameForItem2[] = "keyboard2";
 class LoginExpandedPublicAccountViewTest
     : public LoginTestBase,
       public ::testing::WithParamInterface<const char*> {
+ public:
+  LoginExpandedPublicAccountViewTest(
+      const LoginExpandedPublicAccountViewTest&) = delete;
+  LoginExpandedPublicAccountViewTest& operator=(
+      const LoginExpandedPublicAccountViewTest&) = delete;
+
  protected:
   LoginExpandedPublicAccountViewTest() = default;
   ~LoginExpandedPublicAccountViewTest() override = default;
@@ -120,9 +127,6 @@ class LoginExpandedPublicAccountViewTest
   views::View* container_ = nullptr;
   LoginExpandedPublicAccountView* public_account_ = nullptr;
   views::View* other_view_ = nullptr;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(LoginExpandedPublicAccountViewTest);
 };
 
 }  // namespace
@@ -155,31 +159,32 @@ TEST_P(LoginExpandedPublicAccountViewTest, ToggleAdvancedView) {
   EXPECT_EQ(public_account_->height(), kBubbleTotalHeightDp);
 }
 
-// Verifies warning dialog shows up correctly.
-TEST_P(LoginExpandedPublicAccountViewTest, ShowWarningDialog) {
+// Verifies learn more dialog shows up correctly.
+TEST_P(LoginExpandedPublicAccountViewTest, ShowLearnMoreDialog) {
   LoginExpandedPublicAccountView::TestApi test_api(public_account_);
-  views::StyledLabel::TestApi styled_label_test(test_api.learn_more_label());
-  EXPECT_EQ(test_api.warning_dialog(), nullptr);
-  EXPECT_EQ(styled_label_test.link_targets().size(), 1U);
+  EXPECT_EQ(test_api.learn_more_dialog(), nullptr);
 
   // Tap on the learn more link.
-  views::Link* link = styled_label_test.link_targets().begin()->first;
-  TapOnView(link);
-  EXPECT_NE(test_api.warning_dialog(), nullptr);
-  EXPECT_TRUE(test_api.warning_dialog()->GetVisible());
+  const auto& children = test_api.learn_more_label()->children();
+  const auto it = base::ranges::find(children, views::Link::kViewClassName,
+                                     &views::View::GetClassName);
+  DCHECK(it != children.cend());
+  TapOnView(*it);
+  ASSERT_NE(test_api.learn_more_dialog(), nullptr);
+  EXPECT_TRUE(test_api.learn_more_dialog()->GetVisible());
 
-  // When warning dialog is shown, tap outside of public account expanded view
-  // should not hide it.
+  // When learn more dialog is shown, tap outside of public account expanded
+  // view should not hide it.
   TapOnView(other_view_);
   EXPECT_TRUE(public_account_->GetVisible());
-  EXPECT_NE(test_api.warning_dialog(), nullptr);
-  EXPECT_TRUE(test_api.warning_dialog()->GetVisible());
+  ASSERT_NE(test_api.learn_more_dialog(), nullptr);
+  EXPECT_TRUE(test_api.learn_more_dialog()->GetVisible());
 
-  // If the warning dialog is shown, escape key should close the waring dialog,
-  // but not the public account view.
+  // If the learn more dialog is shown, escape key should close the learn more
+  // dialog, but not the public account view.
   GetEventGenerator()->PressKey(ui::KeyboardCode::VKEY_ESCAPE, 0);
   base::RunLoop().RunUntilIdle();
-  EXPECT_EQ(test_api.warning_dialog(), nullptr);
+  EXPECT_EQ(test_api.learn_more_dialog(), nullptr);
   EXPECT_TRUE(public_account_->GetVisible());
 
   // Press escape again should hide the public account expanded view.
@@ -203,7 +208,7 @@ TEST_P(LoginExpandedPublicAccountViewTest, LaunchPublicSession) {
   EXPECT_EQ(selected_language, kEnglishLanguageCode);
   EXPECT_EQ(selected_keyboard, kKeyboardIdForItem2);
 
-  // Expect LanuchPublicSession mojo call when the submit button is clicked.
+  // Expect LaunchPublicSession mojo call when the submit button is clicked.
   auto client = std::make_unique<MockLoginScreenClient>();
   EXPECT_CALL(*client,
               LaunchPublicSession(user_.basic_user_info.account_id,
@@ -231,8 +236,9 @@ TEST_P(LoginExpandedPublicAccountViewTest, ShowLanguageAndKeyboardMenu) {
 
   // First language item is selected, and selected item should have focus.
   EXPECT_EQ(test_api.selected_language_item().value, kEnglishLanguageCode);
-  LoginMenuView::TestApi language_test_api(test_api.language_menu_view());
-  EXPECT_EQ(2u, language_test_api.contents()->children().size());
+  PublicAccountMenuView::TestApi language_test_api(
+      test_api.language_menu_view());
+  ASSERT_EQ(2u, language_test_api.contents()->children().size());
   EXPECT_TRUE(language_test_api.contents()->children()[0]->HasFocus());
 
   // Select language item should close the language menu.
@@ -245,8 +251,9 @@ TEST_P(LoginExpandedPublicAccountViewTest, ShowLanguageAndKeyboardMenu) {
 
   // Second keyboard item is selected, and selected item should have focus.
   EXPECT_EQ(test_api.selected_keyboard_item().value, kKeyboardIdForItem2);
-  LoginMenuView::TestApi keyboard_test_api(test_api.keyboard_menu_view());
-  EXPECT_EQ(2u, keyboard_test_api.contents()->children().size());
+  PublicAccountMenuView::TestApi keyboard_test_api(
+      test_api.keyboard_menu_view());
+  ASSERT_EQ(2u, keyboard_test_api.contents()->children().size());
   EXPECT_TRUE(keyboard_test_api.contents()->children()[1]->HasFocus());
 
   // Select keyboard item should close the keyboard menu.
@@ -276,7 +283,8 @@ TEST_P(LoginExpandedPublicAccountViewTest, ChangeMenuSelection) {
                   user_.basic_user_info.account_id, kFrenchLanguageCode));
 
   EXPECT_EQ(test_api.selected_language_item().value, kEnglishLanguageCode);
-  LoginMenuView::TestApi language_test_api(test_api.language_menu_view());
+  PublicAccountMenuView::TestApi language_test_api(
+      test_api.language_menu_view());
   TapOnView(language_test_api.contents()->children()[1]);
   EXPECT_FALSE(test_api.language_menu_view()->GetVisible());
   EXPECT_EQ(test_api.selected_language_item().value, kFrenchLanguageCode);
@@ -291,7 +299,8 @@ TEST_P(LoginExpandedPublicAccountViewTest, ChangeMenuSelection) {
   // 1. Keyboard menu will be closed automatically.
   // 2. Selected keyboard item will change.
   EXPECT_EQ(test_api.selected_keyboard_item().value, kKeyboardIdForItem2);
-  LoginMenuView::TestApi keyboard_test_api(test_api.keyboard_menu_view());
+  PublicAccountMenuView::TestApi keyboard_test_api(
+      test_api.keyboard_menu_view());
   TapOnView(keyboard_test_api.contents()->children()[0]);
   EXPECT_FALSE(test_api.keyboard_menu_view()->GetVisible());
   EXPECT_EQ(test_api.selected_keyboard_item().value, kKeyboardIdForItem1);
@@ -301,22 +310,22 @@ TEST_P(LoginExpandedPublicAccountViewTest, ChangeWarningLabel) {
   LoginExpandedPublicAccountView::TestApi test_api(public_account_);
   views::Label* label = test_api.monitoring_warning_label();
   test_api.ResetUserForTest();
-  const base::string16 default_warning = l10n_util::GetStringUTF16(
+  const std::u16string default_warning = l10n_util::GetStringUTF16(
       IDS_ASH_LOGIN_PUBLIC_ACCOUNT_MONITORING_WARNING);
   EXPECT_EQ(label->GetText(), default_warning);
 
   public_account_->SetShowFullManagementDisclosure(false);
   EXPECT_EQ(label->GetText(), default_warning);
   const std::string domain =
-      user_.public_account_info->enterprise_domain.value();
+      user_.public_account_info->device_enterprise_manager.value();
   public_account_->UpdateForUser(user_);
-  const base::string16 soft_warning = l10n_util::GetStringFUTF16(
+  const std::u16string soft_warning = l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_SOFT_WARNING,
       base::UTF8ToUTF16(domain));
   EXPECT_EQ(label->GetText(), soft_warning);
 
   public_account_->SetShowFullManagementDisclosure(true);
-  const base::string16 full_warning = l10n_util::GetStringFUTF16(
+  const std::u16string full_warning = l10n_util::GetStringFUTF16(
       IDS_ASH_LOGIN_MANAGED_SESSION_MONITORING_FULL_WARNING,
       base::UTF8ToUTF16(domain));
   EXPECT_EQ(label->GetText(), full_warning);

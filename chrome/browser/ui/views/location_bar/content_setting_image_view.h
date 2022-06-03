@@ -7,10 +7,10 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chrome/browser/ui/content_settings/content_setting_image_model.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/painter.h"
@@ -19,7 +19,6 @@
 #include "ui/views/widget/widget_observer.h"
 
 class ContentSettingImageModel;
-class FeaturePromoBubbleView;
 
 namespace content {
 class WebContents;
@@ -33,16 +32,22 @@ namespace views {
 class BubbleDialogDelegateView;
 }
 
+namespace base {
+class Token;
+}
+
 // The ContentSettingImageView displays an icon and optional text label for
 // various content settings affordances in the location bar (i.e. plugin
 // blocking, geolocation).
 class ContentSettingImageView : public IconLabelBubbleView,
                                 public views::WidgetObserver {
  public:
+  METADATA_HEADER(ContentSettingImageView);
+
   class Delegate {
    public:
-    // Gets the color to use for the ink highlight.
-    virtual SkColor GetContentSettingInkDropColor() const = 0;
+    // Delegate should return true if the content setting icon should be hidden.
+    virtual bool ShouldHideContentSettingImage() = 0;
 
     // Gets the web contents the ContentSettingImageView is for.
     virtual content::WebContents* GetContentSettingWebContents() = 0;
@@ -58,36 +63,41 @@ class ContentSettingImageView : public IconLabelBubbleView,
   };
 
   ContentSettingImageView(std::unique_ptr<ContentSettingImageModel> image_model,
+                          IconLabelBubbleView::Delegate* parent_delegate,
                           Delegate* delegate,
                           const gfx::FontList& font_list);
+  ContentSettingImageView(const ContentSettingImageView&) = delete;
+  ContentSettingImageView& operator=(const ContentSettingImageView&) = delete;
   ~ContentSettingImageView() override;
 
   // Updates the decoration from the shown WebContents.
   void Update();
 
   // Set the color of the button icon. Based on the text color by default.
-  void SetIconColor(SkColor color);
+  void SetIconColor(absl::optional<SkColor> color);
+  absl::optional<SkColor> GetIconColor() const;
 
   void disable_animation() { can_animate_ = false; }
 
   bool ShowBubbleImpl();
 
   // IconLabelBubbleView:
-  const char* GetClassName() const override;
-  void OnBoundsChanged(const gfx::Rect& previous_bounds) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnKeyPressed(const ui::KeyEvent& event) override;
   void OnThemeChanged() override;
-  SkColor GetTextColor() const override;
   bool ShouldShowSeparator() const override;
   bool ShowBubble(const ui::Event& event) override;
   bool IsBubbleShowing() const override;
-  SkColor GetInkDropBaseColor() const override;
   void AnimationEnded(const gfx::Animation* animation) override;
 
   ContentSettingImageModel::ImageType GetTypeForTesting() const;
 
-  FeaturePromoBubbleView* indicator_promo() { return indicator_promo_; }
+  void reset_animation_for_testing() {
+    IconLabelBubbleView::ResetSlideAnimation(true);
+  }
+  absl::optional<base::Token> get_critical_promo_id_for_testing() {
+    return current_iph_id_for_testing_;
+  }
 
  private:
   // views::WidgetObserver:
@@ -99,18 +109,17 @@ class ContentSettingImageView : public IconLabelBubbleView,
   Delegate* delegate_;  // Weak.
   std::unique_ptr<ContentSettingImageModel> content_setting_image_model_;
   views::BubbleDialogDelegateView* bubble_view_;
-  base::Optional<SkColor> icon_color_;
-
-  // Promotional UI that appears under the indicator icon in the right side of
-  // the omnibox and encourages its use. Owned by |indicator_promo_|'s
-  // NativeWidget.
-  FeaturePromoBubbleView* indicator_promo_ = nullptr;
+  absl::optional<SkColor> icon_color_;
 
   // Observes destruction of bubble's Widgets spawned by this ImageView.
-  ScopedObserver<views::Widget, views::WidgetObserver> observer_{this};
+  base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
+      this};
   bool can_animate_ = true;
 
-  DISALLOW_COPY_AND_ASSIGN(ContentSettingImageView);
+  // Has a value that is not is_zero() if a promo is showing, or has an
+  // is_zero() value if the promo was considered but it was decided not to show
+  // it.
+  absl::optional<base::Token> current_iph_id_for_testing_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_CONTENT_SETTING_IMAGE_VIEW_H_

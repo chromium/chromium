@@ -5,15 +5,14 @@
 #include "remoting/protocol/remoting_ice_config_request.h"
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
-#include "remoting/base/grpc_test_support/grpc_test_server.h"
-#include "remoting/proto/remoting/v1/network_traversal_service.grpc.pb.h"
+#include "remoting/base/protobuf_http_status.h"
+#include "remoting/base/protobuf_http_test_responder.h"
+#include "remoting/proto/remoting/v1/network_traversal_messages.pb.h"
 #include "remoting/protocol/ice_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/grpc/src/include/grpcpp/grpcpp.h"
 
 namespace remoting {
 namespace protocol {
@@ -21,67 +20,54 @@ namespace protocol {
 namespace {
 
 using testing::_;
-using testing::Invoke;
 
-class MockNetworkTraversalService final
-    : public apis::v1::RemotingNetworkTraversalService::Service {
- public:
-  MOCK_METHOD3(GetIceConfig,
-               grpc::Status(grpc::ServerContext*,
-                            const apis::v1::GetIceConfigRequest*,
-                            apis::v1::GetIceConfigResponse*));
-};
+using MockOnResultCallback =
+    base::MockCallback<IceConfigRequest::OnIceConfigCallback>;
 
 }  // namespace
 
 class RemotingIceConfigRequestTest : public testing::Test {
- public:
-  RemotingIceConfigRequestTest() {
-    request_.SetGrpcChannelForTest(test_server_.CreateInProcessChannel());
-  }
-
  protected:
-  IceConfig SendRequestAndReceiveConfig() {
-    base::MockCallback<IceConfigRequest::OnIceConfigCallback> mock_on_result;
-    IceConfig received_config;
-    base::RunLoop run_loop;
-    EXPECT_CALL(mock_on_result, Run(_))
-        .WillOnce(Invoke([&](const IceConfig& config) {
-          received_config = config;
-          run_loop.Quit();
-        }));
-    request_.Send(mock_on_result.Get());
-    run_loop.Run();
-    return received_config;
+  std::unique_ptr<MockOnResultCallback> SendRequest(
+      base::RunLoop* run_loop_to_quit,
+      IceConfig* out_config) {
+    auto mock_on_result = std::make_unique<MockOnResultCallback>();
+    EXPECT_CALL(*mock_on_result, Run(_)).WillOnce([=](const IceConfig& config) {
+      *out_config = config;
+      run_loop_to_quit->Quit();
+    });
+    request_.Send(mock_on_result->Get());
+    return mock_on_result;
   }
 
   base::test::TaskEnvironment task_environment_;
-  RemotingIceConfigRequest request_;
-  test::GrpcTestServer<MockNetworkTraversalService> test_server_;
+  ProtobufHttpTestResponder test_responder_;
+  RemotingIceConfigRequest request_{test_responder_.GetUrlLoaderFactory(),
+                                    nullptr};
 };
 
 TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {
-  EXPECT_CALL(*test_server_, GetIceConfig(_, _, _))
-      .WillOnce(Invoke([](grpc::ServerContext* context,
-                          const apis::v1::GetIceConfigRequest* request,
-                          apis::v1::GetIceConfigResponse* response) {
-        // Verify API key is set.
-        auto it = context->client_metadata().find("x-goog-api-key");
-        EXPECT_NE(context->client_metadata().end(), it);
-        EXPECT_FALSE(it->second.empty());
+  base::RunLoop run_loop;
+  IceConfig received_config;
+  auto mock_on_result = SendRequest(&run_loop, &received_config);
 
-        // Fill out the response.
-        response->mutable_lifetime_duration()->set_seconds(43200);
-        apis::v1::IceServer* turn_server = response->add_servers();
-        turn_server->add_urls("turns:the_server.com");
-        turn_server->set_username("123");
-        turn_server->set_credential("abc");
-        apis::v1::IceServer* stun_server = response->add_servers();
-        stun_server->add_urls("stun:stun_server.com:18344");
+  std::string api_key;
+  ASSERT_TRUE(
+      test_responder_.GetMostRecentPendingRequest().request.headers.GetHeader(
+          "x-goog-api-key", &api_key));
+  EXPECT_FALSE(api_key.empty());
 
-        return grpc::Status::OK;
-      }));
-  IceConfig received_config = SendRequestAndReceiveConfig();
+  // Fill out the response.
+  apis::v1::GetIceConfigResponse response;
+  response.mutable_lifetime_duration()->set_seconds(43200);
+  apis::v1::IceServer* turn_server = response.add_servers();
+  turn_server->add_urls("turns:the_server.com");
+  turn_server->set_username("123");
+  turn_server->set_credential("abc");
+  apis::v1::IceServer* stun_server = response.add_servers();
+  stun_server->add_urls("stun:stun_server.com:18344");
+  test_responder_.AddResponseToMostRecentRequestUrl(response);
+  run_loop.Run();
 
   ASSERT_FALSE(received_config.is_null());
 
@@ -90,14 +76,15 @@ TEST_F(RemotingIceConfigRequestTest, SuccessfulRequest) {
 }
 
 TEST_F(RemotingIceConfigRequestTest, FailedRequest) {
-  EXPECT_CALL(*test_server_, GetIceConfig(_, _, _))
-      .WillOnce(Invoke([](grpc::ServerContext* context,
-                          const apis::v1::GetIceConfigRequest* request,
-                          apis::v1::GetIceConfigResponse* response) {
-        return grpc::Status(grpc::StatusCode::INVALID_ARGUMENT, "");
-      }));
+  base::RunLoop run_loop;
+  IceConfig received_config;
+  auto mock_on_result = SendRequest(&run_loop, &received_config);
 
-  IceConfig received_config = SendRequestAndReceiveConfig();
+  ASSERT_LT(0, test_responder_.GetNumPending());
+  test_responder_.AddErrorToMostRecentRequestUrl(
+      ProtobufHttpStatus(ProtobufHttpStatus::Code::INVALID_ARGUMENT, ""));
+  run_loop.Run();
+
   EXPECT_TRUE(received_config.is_null());
 }
 

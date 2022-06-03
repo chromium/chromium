@@ -32,6 +32,7 @@ namespace internal {
 namespace {
 
 constexpr uint32_t kFakeSerial = 123;
+const char kTestProductName[] = "Foo";
 
 }  // anonymous namespace
 
@@ -48,6 +49,7 @@ class MockSystemMediaControlsObserver : public SystemMediaControlsObserver {
   MOCK_METHOD0(OnPlayPause, void());
   MOCK_METHOD0(OnStop, void());
   MOCK_METHOD0(OnPlay, void());
+  MOCK_METHOD1(OnSeekTo, void(const base::TimeDelta&));
 };
 
 class SystemMediaControlsLinuxTest : public testing::Test,
@@ -55,6 +57,11 @@ class SystemMediaControlsLinuxTest : public testing::Test,
  public:
   SystemMediaControlsLinuxTest()
       : task_environment_(base::test::TaskEnvironment::MainThreadType::UI) {}
+
+  SystemMediaControlsLinuxTest(const SystemMediaControlsLinuxTest&) = delete;
+  SystemMediaControlsLinuxTest& operator=(const SystemMediaControlsLinuxTest&) =
+      delete;
+
   ~SystemMediaControlsLinuxTest() override = default;
 
   void SetUp() override { StartMprisServiceAndWaitForReady(); }
@@ -89,7 +96,7 @@ class SystemMediaControlsLinuxTest : public testing::Test,
  private:
   void StartMprisServiceAndWaitForReady() {
     service_wait_loop_ = std::make_unique<base::RunLoop>();
-    service_ = std::make_unique<SystemMediaControlsLinux>();
+    service_ = std::make_unique<SystemMediaControlsLinux>(kTestProductName);
 
     SetUpMocks();
 
@@ -162,6 +169,7 @@ class SystemMediaControlsLinuxTest : public testing::Test,
   void OnPause() override {}
   void OnPlayPause() override {}
   void OnStop() override {}
+  void OnSeekTo(const base::TimeDelta& time) override {}
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<base::RunLoop> service_wait_loop_;
@@ -172,8 +180,6 @@ class SystemMediaControlsLinuxTest : public testing::Test,
 
   base::flat_map<std::string, dbus::ExportedObject::MethodCallCallback>
       player_interface_exported_methods_;
-
-  DISALLOW_COPY_AND_ASSIGN(SystemMediaControlsLinuxTest);
 };
 
 TEST_F(SystemMediaControlsLinuxTest, ObserverNotifiedOfServiceReadyWhenAdded) {
@@ -317,11 +323,11 @@ TEST_F(SystemMediaControlsLinuxTest, ChangingMetadataEmitsSignal) {
 
   // Setting the title should emit an
   // org.freedesktop.DBus.Properties.PropertiesChanged signal.
-  GetService()->SetTitle(base::ASCIIToUTF16("Foo"));
+  GetService()->SetTitle(u"Foo");
   wait_for_signal.Run();
 
   // Setting the title to the same value as before should not emit a new signal.
-  GetService()->SetTitle(base::ASCIIToUTF16("Foo"));
+  GetService()->SetTitle(u"Foo");
 }
 
 }  // namespace internal

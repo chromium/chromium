@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "chrome/browser/browsing_data/browsing_data_flash_lso_helper.h"
 #include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "net/cookies/canonical_cookie.h"
@@ -16,21 +15,18 @@
 // LocalDataContainer, public:
 
 LocalDataContainer::LocalDataContainer(
-    scoped_refptr<BrowsingDataCookieHelper> cookie_helper,
-    scoped_refptr<BrowsingDataDatabaseHelper> database_helper,
-    scoped_refptr<BrowsingDataLocalStorageHelper> local_storage_helper,
-    scoped_refptr<BrowsingDataLocalStorageHelper> session_storage_helper,
-    scoped_refptr<BrowsingDataAppCacheHelper> appcache_helper,
-    scoped_refptr<BrowsingDataIndexedDBHelper> indexed_db_helper,
-    scoped_refptr<BrowsingDataFileSystemHelper> file_system_helper,
+    scoped_refptr<browsing_data::CookieHelper> cookie_helper,
+    scoped_refptr<browsing_data::DatabaseHelper> database_helper,
+    scoped_refptr<browsing_data::LocalStorageHelper> local_storage_helper,
+    scoped_refptr<browsing_data::LocalStorageHelper> session_storage_helper,
+    scoped_refptr<browsing_data::IndexedDBHelper> indexed_db_helper,
+    scoped_refptr<browsing_data::FileSystemHelper> file_system_helper,
     scoped_refptr<BrowsingDataQuotaHelper> quota_helper,
-    scoped_refptr<BrowsingDataServiceWorkerHelper> service_worker_helper,
-    scoped_refptr<BrowsingDataSharedWorkerHelper> shared_worker_helper,
-    scoped_refptr<BrowsingDataCacheStorageHelper> cache_storage_helper,
-    scoped_refptr<BrowsingDataFlashLSOHelper> flash_lso_helper,
+    scoped_refptr<browsing_data::ServiceWorkerHelper> service_worker_helper,
+    scoped_refptr<browsing_data::SharedWorkerHelper> shared_worker_helper,
+    scoped_refptr<browsing_data::CacheStorageHelper> cache_storage_helper,
     scoped_refptr<BrowsingDataMediaLicenseHelper> media_license_helper)
-    : appcache_helper_(std::move(appcache_helper)),
-      cookie_helper_(std::move(cookie_helper)),
+    : cookie_helper_(std::move(cookie_helper)),
       database_helper_(std::move(database_helper)),
       local_storage_helper_(std::move(local_storage_helper)),
       session_storage_helper_(std::move(session_storage_helper)),
@@ -40,7 +36,6 @@ LocalDataContainer::LocalDataContainer(
       service_worker_helper_(std::move(service_worker_helper)),
       shared_worker_helper_(std::move(shared_worker_helper)),
       cache_storage_helper_(std::move(cache_storage_helper)),
-      flash_lso_helper_(std::move(flash_lso_helper)),
       media_license_helper_(std::move(media_license_helper)) {}
 
 LocalDataContainer::~LocalDataContainer() {}
@@ -75,15 +70,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
     batches_started_++;
     session_storage_helper_->StartFetching(
         base::BindOnce(&LocalDataContainer::OnSessionStorageModelInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
-  // TODO(michaeln): When all of the UI implementations have been updated, make
-  // this a required parameter.
-  if (appcache_helper_.get()) {
-    batches_started_++;
-    appcache_helper_->StartFetching(
-        base::BindOnce(&LocalDataContainer::OnAppCacheModelInfoLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -129,13 +115,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
-  if (flash_lso_helper_.get()) {
-    batches_started_++;
-    flash_lso_helper_->StartFetching(
-        base::BindOnce(&LocalDataContainer::OnFlashLSOInfoLoaded,
-                       weak_ptr_factory_.GetWeakPtr()));
-  }
-
   if (media_license_helper_.get()) {
     batches_started_++;
     media_license_helper_->StartFetching(
@@ -144,13 +123,6 @@ void LocalDataContainer::Init(CookiesTreeModel* model) {
   }
 
   model_->SetBatchExpectation(batches_started_, true);
-}
-
-void LocalDataContainer::OnAppCacheModelInfoLoaded(
-    const AppCacheInfoList& info_list) {
-  appcache_info_list_ = info_list;
-  DCHECK(model_);
-  model_->PopulateAppCacheInfo(this);
 }
 
 void LocalDataContainer::OnCookiesModelInfoLoaded(
@@ -223,13 +195,6 @@ void LocalDataContainer::OnCacheStorageModelInfoLoaded(
   cache_storage_info_list_ = cache_storage_info;
   DCHECK(model_);
   model_->PopulateCacheStorageUsageInfo(this);
-}
-
-void LocalDataContainer::OnFlashLSOInfoLoaded(
-    const FlashLSODomainList& domains) {
-  flash_lso_domain_list_ = domains;
-  DCHECK(model_);
-  model_->PopulateFlashLSOInfo(this);
 }
 
 void LocalDataContainer::OnMediaLicenseInfoLoaded(

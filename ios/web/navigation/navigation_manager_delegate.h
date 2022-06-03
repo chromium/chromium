@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "ios/web/common/user_agent.h"
 
 @protocol CRWWebViewNavigationProxy;
 @class WKBackForwardListItem;
@@ -23,10 +24,6 @@ class NavigationManagerDelegate {
  public:
   virtual ~NavigationManagerDelegate() {}
 
-  // Instructs the delegate to clear any transient content to prepare for new
-  // navigation.
-  virtual void ClearTransientContent() = 0;
-
   // Instructs the delegate to clear any presented dialogs to prepare for a new
   // navigation.
   virtual void ClearDialogs() = 0;
@@ -35,10 +32,6 @@ class NavigationManagerDelegate {
   // values, whatever can be harvested) from the current page into the
   // navigation item.
   virtual void RecordPageStateInNavigationItem() = 0;
-
-  // Informs the delegate that a go to index same-document navigation occured.
-  virtual void OnGoToIndexSameDocumentNavigation(NavigationInitiationType type,
-                                                 bool has_user_gesture) = 0;
 
   // Instructs the delegate to load the current navigation item.
   virtual void LoadCurrentItem(NavigationInitiationType type) = 0;
@@ -55,6 +48,9 @@ class NavigationManagerDelegate {
 
   // Returns the WebState associated with this delegate.
   virtual WebState* GetWebState() = 0;
+
+  // Sets the UserAgent that should be used by the WebState.
+  virtual void SetWebStateUserAgent(UserAgentType user_agent_type) = 0;
 
   // Returns a CRWWebViewNavigationProxy protocol that can be used to access
   // navigation related functions on the main WKWebView.

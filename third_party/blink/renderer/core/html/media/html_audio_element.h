@@ -51,7 +51,6 @@ class CORE_EXPORT HTMLAudioElement final : public HTMLMediaElement {
       const WebString& remote_device_friendly_name) override {}
   void MediaRemotingStopped(int error_code) override {}
   void OnPictureInPictureStateChange() final { NOTREACHED(); }
-  void ActivateViewportIntersectionMonitoring(bool) final {}
 };
 
 }  // namespace blink

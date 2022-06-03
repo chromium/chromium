@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/observer_list_types.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/serial_chooser.h"
 #include "services/device/public/mojom/serial.mojom.h"
@@ -19,6 +20,13 @@ class RenderFrameHost;
 
 class CONTENT_EXPORT SerialDelegate {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnPortAdded(const device::mojom::SerialPortInfo& port) = 0;
+    virtual void OnPortRemoved(const device::mojom::SerialPortInfo& port) = 0;
+    virtual void OnPortManagerConnectionError() = 0;
+  };
+
   virtual ~SerialDelegate() = default;
 
   // Shows a chooser for the user to select a serial port.  |callback| will be
@@ -46,6 +54,11 @@ class CONTENT_EXPORT SerialDelegate {
   // possible.
   virtual device::mojom::SerialPortManager* GetPortManager(
       RenderFrameHost* frame) = 0;
+
+  // Functions to manage the set of Observer instances registered to this
+  // object.
+  virtual void AddObserver(RenderFrameHost* frame, Observer* observer) = 0;
+  virtual void RemoveObserver(RenderFrameHost* frame, Observer* observer) = 0;
 };
 
 }  // namespace content

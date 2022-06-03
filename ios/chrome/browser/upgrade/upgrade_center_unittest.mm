@@ -56,7 +56,7 @@ TEST_F(UpgradeCenterTest, NoUpgrade) {
   EXPECT_EQ(count_, 0u);
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withDispatcher:nil];
+  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 0u);
   [[UpgradeCenter sharedInstance] unregisterClient:fake];
 }
@@ -65,7 +65,7 @@ TEST_F(UpgradeCenterTest, GoodUpgradeAfterRegistration) {
   EXPECT_EQ(count_, 0u);
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withDispatcher:nil];
+  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 0u);
 
   UpgradeRecommendedDetails details;
@@ -84,7 +84,7 @@ TEST_F(UpgradeCenterTest, GoodUpgradeBeforeRegistration) {
   EXPECT_EQ(count_, 0u);
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withDispatcher:nil];
+  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 1u);
   [[UpgradeCenter sharedInstance] unregisterClient:fake];
 }
@@ -92,7 +92,7 @@ TEST_F(UpgradeCenterTest, GoodUpgradeBeforeRegistration) {
 TEST_F(UpgradeCenterTest, NoRepeatedDisplay) {
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withDispatcher:nil];
+  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 0u);
 
   // First notification should display
@@ -117,7 +117,7 @@ TEST_F(UpgradeCenterTest, NoRepeatedDisplay) {
 TEST_F(UpgradeCenterTest, NewVersionResetsInterval) {
   FakeUpgradeCenterClient* fake =
       [[FakeUpgradeCenterClient alloc] initWithTest:this];
-  [[UpgradeCenter sharedInstance] registerClient:fake withDispatcher:nil];
+  [[UpgradeCenter sharedInstance] registerClient:fake withHandler:nil];
   EXPECT_EQ(count_, 0u);
 
   // First notification should display

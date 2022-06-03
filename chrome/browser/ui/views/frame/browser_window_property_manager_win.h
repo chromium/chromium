@@ -7,31 +7,32 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class BrowserView;
 
-// This class is resposible for updating the app id and relaunch details of a
+// This class is responsible for updating the app id and relaunch details of a
 // browser frame.
 class BrowserWindowPropertyManager {
  public:
+  BrowserWindowPropertyManager(const BrowserWindowPropertyManager&) = delete;
+  BrowserWindowPropertyManager& operator=(const BrowserWindowPropertyManager&) =
+      delete;
   virtual ~BrowserWindowPropertyManager();
 
   static std::unique_ptr<BrowserWindowPropertyManager>
-  CreateBrowserWindowPropertyManager(BrowserView* view, HWND hwnd);
+  CreateBrowserWindowPropertyManager(const BrowserView* view, HWND hwnd);
 
  private:
-  BrowserWindowPropertyManager(BrowserView* view, HWND hwnd);
+  BrowserWindowPropertyManager(const BrowserView* view, HWND hwnd);
 
   void UpdateWindowProperties();
   void OnProfileIconVersionChange();
 
   PrefChangeRegistrar profile_pref_registrar_;
-  BrowserView* view_;
+  const BrowserView* view_;
   const HWND hwnd_;
 
-  DISALLOW_COPY_AND_ASSIGN(BrowserWindowPropertyManager);
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_WINDOW_PROPERTY_MANAGER_WIN_H_

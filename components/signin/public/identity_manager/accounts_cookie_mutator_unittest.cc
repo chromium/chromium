@@ -9,7 +9,8 @@
 
 #include "base/bind.h"
 #include "base/run_loop.h"
-#include "base/test/bind_test_util.h"
+#include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
@@ -26,6 +27,7 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "google_apis/gaia/google_service_auth_error.h"
+#include "services/network/test/test_cookie_manager.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -54,12 +56,15 @@ enum class AccountsCookiesMutatorAction {
   kTriggerCookieJarUpdateNoAccounts,
   kTriggerCookieJarUpdateOneAccount,
   kTriggerOnCookieChangeNoAccounts,
+  kLogOutFromCookie,
 };
 
 }  // namespace
 
 namespace signin {
-class AccountsCookieMutatorTest : public testing::Test {
+class AccountsCookieMutatorTest
+    : public testing::Test,
+      public AccountsCookieMutator::PartitionDelegate {
  public:
   const CoreAccountId kTestUnavailableAccountId;
   const CoreAccountId kTestOtherUnavailableAccountId;
@@ -72,6 +77,10 @@ class AccountsCookieMutatorTest : public testing::Test {
                            &prefs_,
                            AccountConsistencyMethod::kDisabled,
                            &test_signin_client_) {}
+
+  AccountsCookieMutatorTest(const AccountsCookieMutatorTest&) = delete;
+  AccountsCookieMutatorTest& operator=(const AccountsCookieMutatorTest&) =
+      delete;
 
   ~AccountsCookieMutatorTest() override {}
 
@@ -113,7 +122,7 @@ class AccountsCookieMutatorTest : public testing::Test {
         GetTestURLLoaderFactory()->AddResponse(
             GaiaUrls::GetInstance()
                 ->oauth_multilogin_url()
-                .Resolve(base::StringPrintf("?source=%s&mlreuse=0",
+                .Resolve(base::StringPrintf("?source=%s&reuseCookies=0",
                                             GaiaConstants::kChromeSource))
                 .spec(),
             std::string(kTestOAuthMultiLoginResponse), net::HTTP_OK);
@@ -127,6 +136,13 @@ class AccountsCookieMutatorTest : public testing::Test {
         break;
       case AccountsCookiesMutatorAction::kTriggerOnCookieChangeNoAccounts:
         SetListAccountsResponseNoAccounts(GetTestURLLoaderFactory());
+        break;
+      case AccountsCookiesMutatorAction::kLogOutFromCookie:
+        GetTestURLLoaderFactory()->AddResponse(
+            GaiaUrls::GetInstance()
+                ->LogOutURLWithSource(GaiaConstants::kChromeSource)
+                .spec(),
+            std::string(), net::HTTP_OK);
         break;
     }
   }
@@ -146,12 +162,22 @@ class AccountsCookieMutatorTest : public testing::Test {
   }
 
  private:
+  // AccountsCookieMutator::PartitionDelegate
+  std::unique_ptr<GaiaAuthFetcher> CreateGaiaAuthFetcherForPartition(
+      GaiaAuthConsumer* consumer,
+      const gaia::GaiaSource& source) override {
+    return test_signin_client_.CreateGaiaAuthFetcher(consumer, source);
+  }
+
+  network::mojom::CookieManager* GetCookieManagerForPartition() override {
+    return &cookie_manager_for_partition_;
+  }
+
   base::test::TaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
   TestSigninClient test_signin_client_;
   IdentityTestEnvironment identity_test_env_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccountsCookieMutatorTest);
+  network::TestCookieManager cookie_manager_for_partition_;
 };
 
 // Test that adding a non existing account without providing an access token
@@ -204,8 +230,7 @@ TEST_F(AccountsCookieMutatorTest, AddAccountToCookie_ExistingAccount) {
       account_id, gaia::GaiaSource::kChrome, std::move(completion_callback));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
   run_loop.Run();
 
   EXPECT_EQ(account_id_from_add_account_to_cookie_completed_callback,
@@ -351,13 +376,67 @@ TEST_F(AccountsCookieMutatorTest, SetAccountsInCookie_AllExistingAccounts) {
           run_loop.QuitClosure()));
 
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
   identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
-      other_account_id, kTestAccessToken,
-      base::Time::Now() + base::TimeDelta::FromHours(1));
+      other_account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
 
   run_loop.Run();
+}
+
+// Test that trying to set a list of accounts in a partitionned cookie jar where
+// all of those accounts have refresh tokens in IdentityManager results in them
+// being successfully set.
+TEST_F(AccountsCookieMutatorTest,
+       SetAccountsInCookieForPartition_AllExistingAccounts) {
+  PrepareURLLoaderResponsesForAction(
+      AccountsCookiesMutatorAction::kSetAccountsInCookie);
+  PrepareURLLoaderResponsesForAction(
+      AccountsCookiesMutatorAction::kTriggerCookieJarUpdateNoAccounts);
+
+  CoreAccountId account_id = AddAcountWithRefreshToken(kTestAccountEmail);
+  CoreAccountId other_account_id =
+      AddAcountWithRefreshToken(kTestOtherAccountEmail);
+  base::RunLoop run_loop;
+  MultiloginParameters parameters = {
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      {account_id, other_account_id}};
+  std::unique_ptr<AccountsCookieMutator::SetAccountsInCookieTask> task =
+      accounts_cookie_mutator()->SetAccountsInCookieForPartition(
+          this, parameters, gaia::GaiaSource::kChrome,
+          base::BindOnce(
+              [](base::OnceClosure quit_closure,
+                 SetAccountsInCookieResult result) {
+                EXPECT_EQ(result, SetAccountsInCookieResult::kSuccess);
+                std::move(quit_closure).Run();
+              },
+              run_loop.QuitClosure()));
+
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
+  identity_test_env()->WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      other_account_id, kTestAccessToken, base::Time::Now() + base::Hours(1));
+
+  run_loop.Run();
+}
+
+// Test that setting accounts in a partition can be cancelled.
+TEST_F(AccountsCookieMutatorTest, SetAccountsInCookieForPartition_Cancel) {
+  PrepareURLLoaderResponsesForAction(
+      AccountsCookiesMutatorAction::kSetAccountsInCookie);
+  PrepareURLLoaderResponsesForAction(
+      AccountsCookiesMutatorAction::kTriggerCookieJarUpdateNoAccounts);
+
+  CoreAccountId account_id = AddAcountWithRefreshToken(kTestAccountEmail);
+  CoreAccountId other_account_id =
+      AddAcountWithRefreshToken(kTestOtherAccountEmail);
+  MultiloginParameters parameters = {
+      gaia::MultiloginMode::MULTILOGIN_UPDATE_COOKIE_ACCOUNTS_ORDER,
+      {account_id, other_account_id}};
+  std::unique_ptr<AccountsCookieMutator::SetAccountsInCookieTask> task =
+      accounts_cookie_mutator()->SetAccountsInCookieForPartition(
+          this, parameters, gaia::GaiaSource::kChrome,
+          base::BindOnce([](SetAccountsInCookieResult) { NOTREACHED(); }));
+  task.reset();
 }
 
 // Test triggering the update of a cookie jar with no accounts works.
@@ -432,19 +511,19 @@ TEST_F(AccountsCookieMutatorTest, ForceTriggerOnCookieChange) {
 
 // Test that trying to log out all sessions generates the right network request.
 TEST_F(AccountsCookieMutatorTest, LogOutAllAccounts) {
-  base::RunLoop run_loop;
-  GetTestURLLoaderFactory()->SetInterceptor(base::BindRepeating(
-      [](base::OnceClosure quit_closure,
-         const network::ResourceRequest& request) {
-        EXPECT_EQ(request.url.spec(),
-                  GaiaUrls::GetInstance()
-                      ->LogOutURLWithSource(GaiaConstants::kChromeSource)
-                      .spec());
-        std::move(quit_closure).Run();
-      },
-      run_loop.QuitClosure()));
+  PrepareURLLoaderResponsesForAction(
+      AccountsCookiesMutatorAction::kLogOutFromCookie);
 
-  accounts_cookie_mutator()->LogOutAllAccounts(gaia::GaiaSource::kChrome);
+  base::RunLoop run_loop;
+  accounts_cookie_mutator()->LogOutAllAccounts(
+      gaia::GaiaSource::kChrome, base::BindOnce(
+                                     [](base::OnceClosure quit_closure,
+                                        const GoogleServiceAuthError& error) {
+                                       EXPECT_EQ(error.state(),
+                                                 GoogleServiceAuthError::NONE);
+                                       std::move(quit_closure).Run();
+                                     },
+                                     run_loop.QuitClosure()));
   run_loop.Run();
 }
 

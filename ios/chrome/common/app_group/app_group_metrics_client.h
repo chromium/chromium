@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/scoped_block.h"
 #include "ios/chrome/common/app_group/app_group_constants.h"
 
 namespace app_group {

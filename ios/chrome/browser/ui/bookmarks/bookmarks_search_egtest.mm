@@ -12,7 +12,7 @@
 #include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
-#import "ios/chrome/test/earl_grey/chrome_test_case.h"
+#import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #include "ui/base/l10n/l10n_util.h"
 
@@ -22,17 +22,17 @@
 
 using chrome_test_util::BookmarksSaveEditFolderButton;
 using chrome_test_util::BookmarksDeleteSwipeButton;
+using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::CancelButton;
 using chrome_test_util::ContextBarCenterButtonWithLabel;
 using chrome_test_util::ContextBarLeadingButtonWithLabel;
 using chrome_test_util::ContextBarTrailingButtonWithLabel;
-using chrome_test_util::NavigateBackButtonTo;
 using chrome_test_util::SearchIconButton;
 using chrome_test_util::TappableBookmarkNodeWithLabel;
 
 // Bookmark search integration tests for Chrome.
-@interface BookmarksSearchTestCase : ChromeTestCase
+@interface BookmarksSearchTestCase : WebHttpServerChromeTestCase
 @end
 
 @implementation BookmarksSearchTestCase
@@ -345,7 +345,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Invoke Edit through context menu.
   [BookmarkEarlGreyUI
-      tapOnLongPressContextMenuButton:IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT
+      tapOnLongPressContextMenuButton:chrome_test_util::
+                                          BookmarksContextMenuEditButton()
                                onItem:TappableBookmarkNodeWithLabel(
                                           @"First URL")
                            openEditor:kBookmarkEditViewContainerIdentifier
@@ -386,9 +387,9 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           existingFolderTitle)]
       performAction:grey_longPress()];
 
-  [[EarlGrey
-      selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                   IDS_IOS_BOOKMARK_CONTEXT_MENU_EDIT_FOLDER)]
+  id<GREYMatcher> editFolderAction =
+      chrome_test_util::BookmarksContextMenuEditButton();
+  [[EarlGrey selectElementWithMatcher:editFolderAction]
       performAction:grey_tap()];
 
   // Verify that the editor is present.
@@ -735,13 +736,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 }
 
 // Tests that you can search folders.
-// TODO(crbug.com/1034183): Enable for EG2 once NavigateBackButtonTo() is fixed.
-#if defined(CHROME_EARL_GREY_2)
-#define MAYBE_testSearchFolders DISABLED_testSearchFolders
-#else
-#define MAYBE_testSearchFolders testSearchFolders
-#endif
-- (void)MAYBE_testSearchFolders {
+- (void)testSearchFolders {
   [BookmarkEarlGrey setupStandardBookmarks];
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
@@ -765,7 +760,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Go back and verify we are in MobileBooknarks. (i.e. not back to Folder 2)
-  [[EarlGrey selectElementWithMatcher:NavigateBackButtonTo(@"Mobile Bookmarks")]
+  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
 
   // Search and go to Folder 2.
@@ -776,7 +771,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Go back and verify we are in Folder 1. (i.e. not back to Mobile Bookmarks)
-  [[EarlGrey selectElementWithMatcher:NavigateBackButtonTo(@"Folder 1")]
+  [[EarlGrey selectElementWithMatcher:BookmarksNavigationBarBackButton()]
       performAction:grey_tap()];
 }
 

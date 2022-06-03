@@ -6,8 +6,16 @@
 
 #include <utility>
 
+#include "ash/public/cpp/session/session_observer.h"
+
 TestSessionController::TestSessionController() = default;
 TestSessionController::~TestSessionController() = default;
+
+void TestSessionController::SetScreenLocked(bool locked) {
+  is_screen_locked_ = locked;
+  for (auto& observer : observers_)
+    observer.OnLockStateChanged(locked);
+}
 
 void TestSessionController::SetClient(ash::SessionControllerClient* client) {}
 
@@ -18,11 +26,13 @@ void TestSessionController::SetSessionInfo(const ash::SessionInfo& info) {
 void TestSessionController::UpdateUserSession(
     const ash::UserSession& user_session) {
   last_user_session_ = user_session;
-  update_user_session_count_++;
+  ++update_user_session_count_;
 }
 
 void TestSessionController::SetUserSessionOrder(
-    const std::vector<uint32_t>& user_session_order) {}
+    const std::vector<uint32_t>& user_session_order) {
+  ++set_user_session_order_count_;
+}
 
 void TestSessionController::PrepareForLock(PrepareForLockCallback callback) {
   std::move(callback).Run();
@@ -44,7 +54,7 @@ void TestSessionController::RunUnlockAnimation(
 void TestSessionController::NotifyChromeTerminating() {}
 
 void TestSessionController::SetSessionLengthLimit(base::TimeDelta length_limit,
-                                                  base::TimeTicks start_time) {
+                                                  base::Time start_time) {
   last_session_length_limit_ = length_limit;
   last_session_start_time_ = start_time;
 }
@@ -74,3 +84,15 @@ void TestSessionController::AddSessionActivationObserverForAccountId(
 void TestSessionController::RemoveSessionActivationObserverForAccountId(
     const AccountId& account_id,
     ash::SessionActivationObserver* observer) {}
+
+void TestSessionController::AddObserver(ash::SessionObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void TestSessionController::RemoveObserver(ash::SessionObserver* observer) {
+  observers_.RemoveObserver(observer);
+}
+
+bool TestSessionController::IsScreenLocked() const {
+  return is_screen_locked_;
+}

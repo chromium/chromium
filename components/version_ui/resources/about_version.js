@@ -6,14 +6,24 @@
 // resolution, unlike the other return* functions, which are called
 // asynchronously by the host.
 
+// <if expr="is_ios">
+import 'chrome://resources/js/ios/web_ui.js';
+// </if>
+
+import './strings.m.js';
+import {addWebUIListener, sendWithPromise} from 'chrome://resources/js/cr.m.js';
+import {$} from 'chrome://resources/js/util.m.js';
+
 /**
  * Promise resolution handler for variations list and command line equivalent.
  * @param {{variationsList: !Array<string>, variationsCmd: string=}}
  */
 function handleVariationInfo({variationsList, variationsCmd}) {
   $('variations-section').hidden = !variationsList.length;
-  $('variations-list').appendChild(
-      parseHtmlSubset(variationsList.join('<br>'), ['BR']));
+  for (const item of variationsList) {
+    $('variations-list').appendChild(document.createTextNode(item));
+    $('variations-list').appendChild(document.createElement('br'));
+  }
 
   if (variationsCmd) {
     $('variations-cmd-section').hidden = !variationsCmd;
@@ -31,14 +41,7 @@ function handlePathInfo({execPath, profilePath}) {
   $('profile_path').textContent = profilePath;
 }
 
-/**
- * Promise resolution handler for the Flash version to display.
- * @param {string} flashVersion The Flash version to display.
- */
-function handlePluginInfo(flashVersion) {
-  $('flash_version').textContent = flashVersion;
-}
-
+// <if expr="chromeos or is_win">
 /**
  * Callback from the backend with the OS version to display.
  * @param {string} osVersion The OS version to display.
@@ -46,7 +49,9 @@ function handlePluginInfo(flashVersion) {
 function returnOsVersion(osVersion) {
   $('os_version').textContent = osVersion;
 }
+// </if>
 
+// <if expr="chromeos">
 /**
  * Callback from the backend with the firmware version to display.
  * @param {string} firmwareVersion
@@ -75,21 +80,30 @@ function returnCustomizationId(response) {
   $('customization_id_holder').hidden = false;
   $('customization_id').textContent = response.customizationId;
 }
+// </if>
 
 /* All the work we do onload. */
 function onLoadWork() {
+  // <if expr="chromeos or is_win">
+  addWebUIListener('return-os-version', returnOsVersion);
+  // </if>
+  // <if expr="chromeos">
+  addWebUIListener('return-os-firmware-version', returnOsFirmwareVersion);
+  addWebUIListener('return-arc-version', returnARCVersion);
+  // </if>
+
   chrome.send('requestVersionInfo');
   const includeVariationsCmd = location.search.includes("show-variations-cmd");
-  cr.sendWithPromise('requestVariationInfo', includeVariationsCmd)
+  sendWithPromise('requestVariationInfo', includeVariationsCmd)
       .then(handleVariationInfo);
-  cr.sendWithPromise('requestPluginInfo').then(handlePluginInfo);
-  cr.sendWithPromise('requestPathInfo').then(handlePathInfo);
+  sendWithPromise('requestPathInfo').then(handlePathInfo);
 
-  if (cr.isChromeOS) {
-    $('arc_holder').hidden = true;
-    chrome.chromeosInfoPrivate.get(['customizationId'], returnCustomizationId);
-  }
-  if ($('sanitizer').textContent != '') {
+  // <if expr="chromeos">
+  $('arc_holder').hidden = true;
+  chrome.chromeosInfoPrivate.get(['customizationId'], returnCustomizationId);
+  // </if>
+
+  if ($('sanitizer').textContent !== '') {
     $('sanitizer-section').hidden = false;
   }
 }

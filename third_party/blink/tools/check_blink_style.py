@@ -28,7 +28,6 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 """Check Blink style on C/C++ or text files.
 
 The goal of this script is to identify places in the code that *may*
@@ -39,9 +38,7 @@ find is legitimately a problem."""
 
 import sys
 
-from blinkpy.common import version_check  # pylint: disable=unused-import
 from blinkpy.style.main import CheckBlinkStyle
-
 
 if __name__ == "__main__":
     sys.exit(CheckBlinkStyle().main())

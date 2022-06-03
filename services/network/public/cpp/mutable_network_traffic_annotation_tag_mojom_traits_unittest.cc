@@ -5,7 +5,6 @@
 #include "services/network/public/cpp/mutable_network_traffic_annotation_tag_mojom_traits.h"
 
 #include "base/macros.h"
-#include "mojo/public/cpp/bindings/binding_set.h"
 #include "services/network/public/mojom/mutable_network_traffic_annotation_tag.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

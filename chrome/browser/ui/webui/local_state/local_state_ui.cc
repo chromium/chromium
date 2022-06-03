@@ -8,10 +8,10 @@
 
 #include "base/bind.h"
 #include "base/json/json_string_value_serializer.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
@@ -25,18 +25,22 @@
 namespace {
 
 // On ChromeOS, the local state file contains some information about other
-// user accounts which we don't want to expose to other users. Use a whitelist
+// user accounts which we don't want to expose to other users. Use an allowlist
 // to only show variations and UMA related fields which don't contain PII.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #define ENABLE_FILTERING true
 #else
 #define ENABLE_FILTERING false
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // UI Handler for chrome://local-state. Displays the Local State file as JSON.
 class LocalStateUIHandler : public content::WebUIMessageHandler {
  public:
   LocalStateUIHandler();
+
+  LocalStateUIHandler(const LocalStateUIHandler&) = delete;
+  LocalStateUIHandler& operator=(const LocalStateUIHandler&) = delete;
+
   ~LocalStateUIHandler() override;
 
   // content::WebUIMessageHandler:
@@ -46,8 +50,6 @@ class LocalStateUIHandler : public content::WebUIMessageHandler {
   // Called from JS when the page has loaded. Serializes local state prefs and
   // sends them to the page.
   void HandleRequestJson(const base::ListValue* args);
-
-  DISALLOW_COPY_AND_ASSIGN(LocalStateUIHandler);
 };
 
 LocalStateUIHandler::LocalStateUIHandler() {
@@ -57,7 +59,7 @@ LocalStateUIHandler::~LocalStateUIHandler() {
 }
 
 void LocalStateUIHandler::RegisterMessages() {
-  web_ui()->RegisterMessageCallback(
+  web_ui()->RegisterDeprecatedMessageCallback(
       "requestJson",
       base::BindRepeating(&LocalStateUIHandler::HandleRequestJson,
                           base::Unretained(this)));
@@ -65,18 +67,18 @@ void LocalStateUIHandler::RegisterMessages() {
 
 void LocalStateUIHandler::HandleRequestJson(const base::ListValue* args) {
   AllowJavascript();
-  std::unique_ptr<base::DictionaryValue> local_state_values(
+  base::Value local_state_values =
       g_browser_process->local_state()->GetPreferenceValues(
-          PrefService::EXCLUDE_DEFAULTS));
+          PrefService::EXCLUDE_DEFAULTS);
   if (ENABLE_FILTERING) {
-    std::vector<std::string> whitelisted_prefixes = {
-        "variations", "user_experience_metrics", "uninstall_metrics"};
-    internal::FilterPrefs(whitelisted_prefixes, local_state_values.get());
+    std::vector<std::string> allowlisted_prefixes = {"variations",
+                                                     "user_experience_metrics"};
+    internal::FilterPrefs(allowlisted_prefixes, local_state_values);
   }
   std::string json;
   JSONStringValueSerializer serializer(&json);
   serializer.set_pretty_print(true);
-  bool result = serializer.Serialize(*local_state_values);
+  bool result = serializer.Serialize(local_state_values);
   if (!result)
     json = "Error loading Local State file.";
 
@@ -99,16 +101,14 @@ bool HasValidPrefix(const std::string& pref_name,
 namespace internal {
 
 void FilterPrefs(const std::vector<std::string>& valid_prefixes,
-                 base::DictionaryValue* prefs) {
+                 base::Value& prefs) {
   std::vector<std::string> prefs_to_remove;
-  for (base::DictionaryValue::Iterator it(*prefs); !it.IsAtEnd();
-       it.Advance()) {
-    if (!HasValidPrefix(it.key(), valid_prefixes))
-      prefs_to_remove.push_back(it.key());
+  for (auto it : prefs.DictItems()) {
+    if (!HasValidPrefix(it.first, valid_prefixes))
+      prefs_to_remove.push_back(it.first);
   }
   for (const std::string& pref_to_remove : prefs_to_remove) {
-    std::unique_ptr<base::Value> removed_value;
-    bool successfully_removed = prefs->Remove(pref_to_remove, &removed_value);
+    bool successfully_removed = prefs.RemovePath(pref_to_remove);
     DCHECK(successfully_removed);
   }
 }

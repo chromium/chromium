@@ -22,17 +22,18 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_SVG_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_SVG_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/core/svg/svg_fit_to_view_box.h"
 #include "third_party/blink/renderer/core/svg/svg_graphics_element.h"
 #include "third_party/blink/renderer/core/svg/svg_point.h"
 #include "third_party/blink/renderer/core/svg/svg_zoom_and_pan.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
 
 class SMILTimeContainer;
 class SVGAngleTearOff;
+class SVGAnimatedLength;
 class SVGLengthTearOff;
 class SVGMatrixTearOff;
 class SVGNumberTearOff;
@@ -44,22 +45,25 @@ class SVGSVGElement final : public SVGGraphicsElement,
                             public SVGFitToViewBox,
                             public SVGZoomAndPan {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGSVGElement);
 
  public:
   explicit SVGSVGElement(Document&);
+  ~SVGSVGElement() override;
 
-  float IntrinsicWidth() const;
-  float IntrinsicHeight() const;
-  FloatSize CurrentViewportSize() const;
-  FloatRect CurrentViewBoxRect() const;
+  absl::optional<float> IntrinsicWidth() const;
+  absl::optional<float> IntrinsicHeight() const;
+  gfx::SizeF CurrentViewportSize() const;
+  gfx::RectF CurrentViewBoxRect() const;
+  bool HasEmptyViewBox() const;
   const SVGPreserveAspectRatio* CurrentPreserveAspectRatio() const;
 
   float currentScale() const;
   void setCurrentScale(float scale);
 
-  FloatPoint CurrentTranslate() { return translation_->Value(); }
-  void SetCurrentTranslate(const FloatPoint&);
+  gfx::Vector2dF CurrentTranslate() {
+    return translation_->Value().OffsetFromOrigin();
+  }
+  void SetCurrentTranslate(const gfx::Vector2dF&);
   SVGPointTearOff* currentTranslateFromJavascript();
 
   SMILTimeContainer* TimeContainer() const { return time_container_.Get(); }
@@ -94,26 +98,20 @@ class SVGSVGElement final : public SVGGraphicsElement,
   static SVGTransformTearOff* createSVGTransform();
   static SVGTransformTearOff* createSVGTransformFromMatrix(SVGMatrixTearOff*);
 
-  AffineTransform ViewBoxToViewTransform(float view_width,
-                                         float view_height) const;
+  AffineTransform ViewBoxToViewTransform(const gfx::SizeF& viewport_size) const;
 
   void SetupInitialView(const String& fragment_identifier,
                         Element* anchor_node);
   bool ZoomAndPanEnabled() const;
-
-  bool HasIntrinsicWidth() const;
-  bool HasIntrinsicHeight() const;
 
   SVGAnimatedLength* x() const { return x_.Get(); }
   SVGAnimatedLength* y() const { return y_.Get(); }
   SVGAnimatedLength* width() const { return width_.Get(); }
   SVGAnimatedLength* height() const { return height_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
-  ~SVGSVGElement() override;
-
   void SetViewSpec(const SVGViewSpec*);
 
   void ParseAttribute(const AttributeModificationParams&) override;
@@ -130,12 +128,13 @@ class SVGSVGElement final : public SVGGraphicsElement,
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   void DidMoveToNewDocument(Document& old_document) override;
 
   bool SelfHasRelativeLengths() const override;
 
+  bool HasValidViewBox() const;
   bool ShouldSynthesizeViewBox() const;
   void UpdateUserTransform();
 
@@ -144,10 +143,10 @@ class SVGSVGElement final : public SVGGraphicsElement,
   enum GeometryMatchingMode { kCheckIntersection, kCheckEnclosure };
 
   bool CheckIntersectionOrEnclosure(const SVGElement&,
-                                    const FloatRect&,
+                                    const gfx::RectF&,
                                     GeometryMatchingMode) const;
   StaticNodeList* CollectIntersectionOrEnclosureList(
-      const FloatRect&,
+      const gfx::RectF&,
       SVGElement*,
       GeometryMatchingMode) const;
 

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "base/strings/utf_string_conversions.h"
-#include "components/autofill/core/common/password_form.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -21,19 +21,19 @@ struct SortEntry {
   const char* const password;
   const char* const app_display_name;
   const char* const federation;
-  const bool is_blacklisted;
+  const bool is_blocked;
   const int expected_position;
 };
 
 void SortAndCheckPositions(const std::vector<SortEntry>& test_entries) {
-  std::vector<std::unique_ptr<autofill::PasswordForm>> list;
+  std::vector<std::unique_ptr<PasswordForm>> list;
   size_t expected_number_of_unique_entries = 0;
   for (const SortEntry& entry : test_entries) {
-    auto form = std::make_unique<autofill::PasswordForm>();
+    auto form = std::make_unique<PasswordForm>();
     form->signon_realm = entry.origin;
-    form->origin = GURL(entry.origin);
-    form->blacklisted_by_user = entry.is_blacklisted;
-    if (!entry.is_blacklisted) {
+    form->url = GURL(entry.origin);
+    form->blocked_by_user = entry.is_blocked;
+    if (!entry.is_blocked) {
       form->username_value = base::ASCIIToUTF16(entry.username);
       form->password_value = base::ASCIIToUTF16(entry.password);
       if (entry.federation != nullptr)
@@ -56,8 +56,8 @@ void SortAndCheckPositions(const std::vector<SortEntry>& test_entries) {
     if (entry.expected_position >= 0) {
       SCOPED_TRACE(testing::Message("position in sorted list: ")
                    << entry.expected_position);
-      EXPECT_EQ(GURL(entry.origin), list[entry.expected_position]->origin);
-      if (!entry.is_blacklisted) {
+      EXPECT_EQ(GURL(entry.origin), list[entry.expected_position]->url);
+      if (!entry.is_blocked) {
         EXPECT_EQ(base::ASCIIToUTF16(entry.username),
                   list[entry.expected_position]->username_value);
         EXPECT_EQ(base::ASCIIToUTF16(entry.password),
@@ -187,6 +187,20 @@ TEST(PasswordListSorterTest, Sorting_SpecialCharacters) {
       {"https://xn--ndalk.com/", "user_a", "pwd", nullptr, nullptr, false, 5},
   };
   SortAndCheckPositions(test_cases);
+}
+
+TEST(PasswordListSorterTest, EntriesDifferingByStoreShouldMapToSameKey) {
+  PasswordForm account_form;
+  account_form.signon_realm = "https://g.com/";
+  account_form.url = GURL(account_form.signon_realm);
+  account_form.blocked_by_user = false;
+  account_form.in_store = PasswordForm::Store::kAccountStore;
+
+  PasswordForm profile_form(account_form);
+  profile_form.in_store = PasswordForm::Store::kProfileStore;
+
+  EXPECT_EQ(CreateSortKey(account_form, IgnoreStore(true)),
+            CreateSortKey(profile_form, IgnoreStore(true)));
 }
 
 }  // namespace password_manager

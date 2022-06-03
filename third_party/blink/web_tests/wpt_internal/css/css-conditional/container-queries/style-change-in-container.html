@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<title>Container Queries: Recalculate style inside a container</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<style>
+  #container { contain: size layout style }
+  @container (min-width: 1px) {
+    #content { color: green; }
+  }
+</style>
+<div id=container>
+  <div id=content>
+    Test
+  </div>
+</div>
+<script>
+  test(() => {
+    assert_equals(getComputedStyle(content).color, 'rgb(0, 128, 0)');
+
+    // Dirty style of an element inside the container:
+    content.style.backgroundColor = 'lightgray';
+
+    // The container query should still evaluate correctly:
+    assert_equals(getComputedStyle(content).color, 'rgb(0, 128, 0)');
+  }, 'Hello');
+</script>

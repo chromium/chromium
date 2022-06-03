@@ -13,11 +13,14 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/window_open_disposition.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/views/controls/progress_bar.h"
-#include "ui/views/controls/separator.h"
+#include "ui/views/controls/webview/unhandled_keyboard_event_handler.h"
 #include "url/gurl.h"
 
 class Profile;
+
+namespace views {
+class ProgressBar;
+}
 
 namespace payments {
 
@@ -45,9 +48,9 @@ class PaymentHandlerWebFlowViewController
   // |first_navigation_complete_callback| is invoked once the payment handler
   // WebContents finishes the initial navigation to |target|.
   PaymentHandlerWebFlowViewController(
-      PaymentRequestSpec* spec,
-      PaymentRequestState* state,
-      PaymentRequestDialogView* dialog,
+      base::WeakPtr<PaymentRequestSpec> spec,
+      base::WeakPtr<PaymentRequestState> state,
+      base::WeakPtr<PaymentRequestDialogView> dialog,
       content::WebContents* payment_request_web_contents,
       Profile* profile,
       GURL target,
@@ -56,12 +59,12 @@ class PaymentHandlerWebFlowViewController
 
  private:
   // PaymentRequestSheetController:
-  base::string16 GetSheetTitle() override;
+  std::u16string GetSheetTitle() override;
   void FillContentView(views::View* content_view) override;
+  bool ShouldShowPrimaryButton() override;
   bool ShouldShowSecondaryButton() override;
   std::unique_ptr<views::View> CreateHeaderContentView(
       views::View* header_view) override;
-  views::View* CreateHeaderContentSeparatorView() override;
   std::unique_ptr<views::Background> GetHeaderBackground(
       views::View* header_view) override;
   bool GetSheetId(DialogViewID* sheet_id) override;
@@ -71,10 +74,14 @@ class PaymentHandlerWebFlowViewController
   void VisibleSecurityStateChanged(content::WebContents* source) override;
   void AddNewContents(content::WebContents* source,
                       std::unique_ptr<content::WebContents> new_contents,
+                      const GURL& target_url,
                       WindowOpenDisposition disposition,
                       const gfx::Rect& initial_rect,
                       bool user_gesture,
                       bool* was_blocked) override;
+  bool HandleKeyboardEvent(
+      content::WebContents* source,
+      const content::NativeWebKeyboardEvent& event) override;
 
   // content::WebContentsObserver:
   void DidStartNavigation(
@@ -83,21 +90,21 @@ class PaymentHandlerWebFlowViewController
       content::NavigationHandle* navigation_handle) override;
   void LoadProgressChanged(double progress) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
-  void DidAttachInterstitialPage() override;
 
   void AbortPayment();
 
   DeveloperConsoleLogger log_;
   Profile* profile_;
   GURL target_;
-  bool show_progress_bar_;
-  std::unique_ptr<views::ProgressBar> progress_bar_;
-  std::unique_ptr<views::Separator> separator_;
+  views::ProgressBar* progress_bar_ = nullptr;
+  views::View* separator_ = nullptr;
   PaymentHandlerOpenWindowCallback first_navigation_complete_callback_;
-  base::string16 https_prefix_;
   // Used to present modal dialog triggered from the payment handler web view,
   // e.g. an authenticator dialog.
   PaymentHandlerModalDialogManagerDelegate dialog_manager_delegate_;
+  // A handler to handle unhandled keyboard messages coming back from the
+  // renderer process.
+  views::UnhandledKeyboardEventHandler unhandled_keyboard_event_handler_;
 };
 
 }  // namespace payments

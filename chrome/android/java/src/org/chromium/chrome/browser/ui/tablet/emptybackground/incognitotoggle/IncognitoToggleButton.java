@@ -5,15 +5,14 @@
 package org.chromium.chrome.browser.ui.tablet.emptybackground.incognitotoggle;
 
 import android.content.Context;
-import android.support.v7.content.res.AppCompatResources;
 import android.util.AttributeSet;
 import android.view.View;
 
 import androidx.annotation.StringRes;
+import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.tabmodel.EmptyTabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
@@ -58,7 +57,7 @@ public class IncognitoToggleButton extends ChromeImageButton {
         if (selector != null) {
             updateButtonResource();
 
-            mTabModelSelectorObserver = new EmptyTabModelSelectorObserver() {
+            mTabModelSelectorObserver = new TabModelSelectorObserver() {
                 @Override
                 public void onTabModelSelected(TabModel newModel, TabModel oldModel) {
                     updateButtonResource();
@@ -77,7 +76,7 @@ public class IncognitoToggleButton extends ChromeImageButton {
         ApiCompatibilityUtils.setImageTintList(this,
                 AppCompatResources.getColorStateList(getContext(),
                         isIncognitoSelected ? R.color.white_mode_tint
-                                            : R.color.standard_mode_tint));
+                                            : R.color.default_icon_color_tint_list));
     }
 
     private void updateButtonResource() {

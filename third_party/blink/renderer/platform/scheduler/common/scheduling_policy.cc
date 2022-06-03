@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/platform/scheduler/public/scheduling_policy.h"
 
-#include "base/logging.h"
-
 namespace blink {
 
 bool SchedulingPolicy::IsFeatureSticky(SchedulingPolicy::Feature feature) {
@@ -13,15 +11,23 @@ bool SchedulingPolicy::IsFeatureSticky(SchedulingPolicy::Feature feature) {
     case Feature::kWebSocket:
     case Feature::kWebRTC:
     case Feature::kDedicatedWorkerOrWorklet:
-    case Feature::kOutstandingNetworkRequest:
     case Feature::kOutstandingIndexedDBTransaction:
-    case Feature::kHasScriptableFramesInMultipleTabs:
+    case Feature::kOutstandingNetworkRequestDirectSocket:
+    case Feature::kOutstandingNetworkRequestFetch:
+    case Feature::kOutstandingNetworkRequestOthers:
+    case Feature::kOutstandingNetworkRequestXHR:
     case Feature::kBroadcastChannel:
     case Feature::kIndexedDBConnection:
     case Feature::kWebGL:
     case Feature::kWebVR:
     case Feature::kWebXR:
     case Feature::kSharedWorker:
+    case Feature::kWebHID:
+    case Feature::kWebShare:
+    case Feature::kWebDatabase:
+    case Feature::kPortal:
+    case Feature::kSpeechRecognizer:
+    case Feature::kSpeechSynthesis:
       return false;
     case Feature::kMainResourceHasCacheControlNoStore:
     case Feature::kMainResourceHasCacheControlNoCache:
@@ -35,8 +41,6 @@ bool SchedulingPolicy::IsFeatureSticky(SchedulingPolicy::Feature feature) {
     case Feature::kResumeEventListener:
     case Feature::kContainsPlugins:
     case Feature::kDocumentLoaded:
-    case Feature::kServiceWorkerControlledPage:
-    case Feature::kRequestedGeolocationPermission:
     case Feature::kRequestedNotificationsPermission:
     case Feature::kRequestedMIDIPermission:
     case Feature::kRequestedAudioCapturePermission:
@@ -44,6 +48,16 @@ bool SchedulingPolicy::IsFeatureSticky(SchedulingPolicy::Feature feature) {
     case Feature::kRequestedBackForwardCacheBlockedSensors:
     case Feature::kRequestedBackgroundWorkPermission:
     case Feature::kWebLocks:
+    case Feature::kRequestedStorageAccessGrant:
+    case Feature::kWebNfc:
+    case Feature::kWebFileSystem:
+    case Feature::kAppBanner:
+    case Feature::kPrinting:
+    case Feature::kPictureInPicture:
+    case Feature::kIdleManager:
+    case Feature::kPaymentManager:
+    case Feature::kKeyboardLock:
+    case Feature::kWebOTPService:
       return true;
   }
 }

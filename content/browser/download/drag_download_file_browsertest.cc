@@ -4,11 +4,9 @@
 
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/task/post_task.h"
 #include "content/browser/download/download_manager_impl.h"
 #include "content/browser/download/drag_download_file.h"
 #include "content/browser/download/drag_download_util.h"
@@ -18,9 +16,11 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/download_test_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_download_manager_delegate.h"
@@ -38,21 +38,25 @@ class MockDownloadFileObserver : public ui::DownloadFileObserver {
  public:
   MockDownloadFileObserver() {}
 
+  MockDownloadFileObserver(const MockDownloadFileObserver&) = delete;
+  MockDownloadFileObserver& operator=(const MockDownloadFileObserver&) = delete;
+
   MOCK_METHOD1(OnDownloadCompleted, void(const base::FilePath& file_path));
   MOCK_METHOD0(OnDownloadAborted, void());
 
  private:
   ~MockDownloadFileObserver() override {}
-
-  DISALLOW_COPY_AND_ASSIGN(MockDownloadFileObserver);
 };
 
 class DragDownloadFileTest : public ContentBrowserTest {
  public:
   DragDownloadFileTest() = default;
 
+  DragDownloadFileTest(const DragDownloadFileTest&) = delete;
+  DragDownloadFileTest& operator=(const DragDownloadFileTest&) = delete;
+
   void Succeed() {
-    base::PostTask(FROM_HERE, {BrowserThread::UI}, std::move(quit_closure_));
+    GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(quit_closure_));
   }
 
   void FailFast() {
@@ -86,8 +90,6 @@ class DragDownloadFileTest : public ContentBrowserTest {
  private:
   base::ScopedTempDir downloads_directory_;
   base::OnceClosure quit_closure_;
-
-  DISALLOW_COPY_AND_ASSIGN(DragDownloadFileTest);
 };
 
 IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_NetError) {
@@ -129,6 +131,28 @@ IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_Complete) {
   RunUntilSucceed();
 }
 
+IN_PROC_BROWSER_TEST_F(DragDownloadFileTest, DragDownloadFileTest_ClosePage) {
+  base::FilePath name(
+      downloads_directory().AppendASCII("DragDownloadFileTest_Complete.txt"));
+  GURL url = embedded_test_server()->GetURL("/download/download-test.lib");
+  Referrer referrer;
+  std::string referrer_encoding;
+  auto file = std::make_unique<DragDownloadFile>(name, base::File(), url,
+                                                 referrer, referrer_encoding,
+                                                 shell()->web_contents());
+  scoped_refptr<MockDownloadFileObserver> observer(
+      new MockDownloadFileObserver());
+  ON_CALL(*observer.get(), OnDownloadAborted())
+      .WillByDefault(InvokeWithoutArgs(this, &DragDownloadFileTest::FailFast));
+  DownloadManager* manager =
+      shell()->web_contents()->GetBrowserContext()->GetDownloadManager();
+  file->Start(observer.get());
+  shell()->web_contents()->Close();
+  RunAllTasksUntilIdle();
+  std::vector<download::DownloadItem*> downloads;
+  manager->GetAllDownloads(&downloads);
+  ASSERT_EQ(0u, downloads.size());
+}
 // TODO(benjhayden): Test Stop().
 
 }  // namespace content

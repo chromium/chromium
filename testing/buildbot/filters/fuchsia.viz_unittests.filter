@@ -1,0 +1,3 @@
+# Fuchsia DCHECK failure crbug.com/1098090
+-HostGpuMemoryBufferManagerTest.AllocationRequestFromDeadGpuService
+-HostGpuMemoryBufferManagerTest.AllocationRequestsForDestroyedClient

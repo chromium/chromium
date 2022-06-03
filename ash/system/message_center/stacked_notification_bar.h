@@ -5,41 +5,40 @@
 #ifndef ASH_SYSTEM_MESSAGE_CENTER_STACKED_NOTIFICATION_BAR_H_
 #define ASH_SYSTEM_MESSAGE_CENTER_STACKED_NOTIFICATION_BAR_H_
 
-#include "ash/ash_export.h"
-#include "ash/system/message_center/message_center_scroll_bar.h"
 #include "ash/system/message_center/unified_message_center_view.h"
-#include "ash/system/message_center/unified_message_list_view.h"
-#include "ui/compositor/layer_animation_observer.h"
-#include "ui/gfx/animation/animation_delegate.h"
+#include "base/memory/weak_ptr.h"
 #include "ui/message_center/message_center_observer.h"
-#include "ui/views/background.h"
-#include "ui/views/controls/button/button.h"
-#include "ui/views/controls/image_view.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/view.h"
 
 namespace message_center {
 class Notification;
 }  // namespace message_center
 
+namespace views {
+class Label;
+}  // namespace views
+
 namespace ash {
 
 // The header shown above the notification list displaying the number of hidden
-// notifications. There are currently two UI implementations toggled by the
-// NotificationStackedBarRedesign feature flag.
+// notifications. Has a dynamic list of icons which hide/show as notifications
+// are scrolled.
 class StackedNotificationBar : public views::View,
-                               public views::ButtonListener,
                                public message_center::MessageCenterObserver {
  public:
   explicit StackedNotificationBar(
       UnifiedMessageCenterView* message_center_view);
+
+  StackedNotificationBar(const StackedNotificationBar&) = delete;
+  StackedNotificationBar& operator=(const StackedNotificationBar&) = delete;
+
   ~StackedNotificationBar() override;
 
   // Sets the icons and overflow count for hidden notifications as well as the
-  // total notifications count. Returns true if the state of the bar has
-  // changed.
+  // total/pinned notifications count. Returns true if the state of the bar
+  // has changed.
   bool Update(int total_notification_count,
+              int pinned_notification_count,
               std::vector<message_center::Notification*> stacked_notifications);
 
   // Sets the current animation state.
@@ -51,15 +50,9 @@ class StackedNotificationBar : public views::View,
   // Set notification bar state to expanded.
   void SetExpanded();
 
-  // Clean up icon view after it's removal animation is complete.
-  void OnIconAnimatedOut(views::View* icon);
-
   // views::View:
   void OnPaint(gfx::Canvas* canvas) override;
   const char* GetClassName() const override;
-
-  // views::ButtonListener:
-  void ButtonPressed(views::Button* sender, const ui::Event& event) override;
 
   // message_center::MessageCenterObserver:
   void OnNotificationAdded(const std::string& id) override;
@@ -70,8 +63,13 @@ class StackedNotificationBar : public views::View,
   class StackedNotificationBarIcon;
   friend class UnifiedMessageCenterViewTest;
 
-  // Get the first icon which is not animating out.
-  StackedNotificationBarIcon* GetFrontIcon();
+  // Clean up icon view after it's removal animation is complete, adds an icon
+  // for `notification` if needed. Called from a callback registered in
+  // `ShiftIconsLeft()`.
+  void OnIconAnimatedOut(std::string notification_id, views::View* icon);
+
+  // Get the first icon which is `animating_out`.
+  StackedNotificationBarIcon* GetFrontIcon(bool animating_out);
 
   // Search for a icon view in the stacked notification bar based on a provided
   // notification id.
@@ -98,6 +96,7 @@ class StackedNotificationBar : public views::View,
       std::vector<message_center::Notification*> stacked_notifications);
 
   int total_notification_count_ = 0;
+  int pinned_notification_count_ = 0;
   int stacked_notification_count_ = 0;
 
   UnifiedMessageCenterAnimationState animation_state_ =
@@ -106,9 +105,11 @@ class StackedNotificationBar : public views::View,
   UnifiedMessageCenterView* const message_center_view_;
   views::View* notification_icons_container_;
   views::Label* const count_label_;
+  views::View* const spacer_;
   views::Button* const clear_all_button_;
   views::Button* const expand_all_button_;
-  DISALLOW_COPY_AND_ASSIGN(StackedNotificationBar);
+
+  base::WeakPtrFactory<StackedNotificationBar> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

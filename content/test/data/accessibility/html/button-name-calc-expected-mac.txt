@@ -1,10 +1,10 @@
 AXWebArea
 ++AXButton AXTitle='InnerText0'
-++AXButton AXTitle='InnerText1' AXHelp='Title1'
+++AXButton AXHelp='Title1' AXTitle='InnerText1'
 ++AXButton AXDescription='AriaLabel2' AXHelp='Title2'
-++AXButton AXTitle='LabelledBy3' AXHelp='Title3'
-++AXButton AXTitle='LabelledBy4' AXHelp='DescribedBy4'
-++AXButton AXTitle='InnerText5' AXHelp='DescribedBy5'
+++AXButton AXHelp='Title3' AXTitle='LabelledBy3'
+++AXButton AXHelp='DescribedBy4' AXTitle='LabelledBy4'
+++AXButton AXHelp='DescribedBy5' AXTitle='InnerText5'
 ++AXButton AXTitle='Outer inner'
 ++++AXStaticText
 ++++AXGroup

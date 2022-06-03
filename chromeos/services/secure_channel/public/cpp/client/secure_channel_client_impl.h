@@ -24,17 +24,24 @@ class SecureChannelClientImpl : public SecureChannelClient {
  public:
   class Factory {
    public:
-    static Factory* Get();
-    static void SetInstanceForTesting(Factory* test_factory);
-    virtual ~Factory();
-    virtual std::unique_ptr<SecureChannelClient> BuildInstance(
+    static std::unique_ptr<SecureChannelClient> Create(
         mojo::PendingRemote<mojom::SecureChannel> channel,
         scoped_refptr<base::TaskRunner> task_runner =
             base::ThreadTaskRunnerHandle::Get());
+    static void SetFactoryForTesting(Factory* test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<SecureChannelClient> CreateInstance(
+        mojo::PendingRemote<mojom::SecureChannel> channel,
+        scoped_refptr<base::TaskRunner> task_runner) = 0;
 
    private:
     static Factory* test_factory_;
   };
+
+  SecureChannelClientImpl(const SecureChannelClientImpl&) = delete;
+  SecureChannelClientImpl& operator=(const SecureChannelClientImpl&) = delete;
 
   ~SecureChannelClientImpl() override;
 
@@ -49,17 +56,21 @@ class SecureChannelClientImpl : public SecureChannelClient {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) override;
   std::unique_ptr<ConnectionAttempt> ListenForConnectionFromDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority) override;
+  void SetNearbyConnector(NearbyConnector* nearby_connector) override;
 
   void PerformInitiateConnectionToDevice(
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojo::PendingRemote<mojom::ConnectionDelegate>
           connection_delegate_remote);
@@ -67,6 +78,7 @@ class SecureChannelClientImpl : public SecureChannelClient {
       multidevice::RemoteDeviceRef device_to_connect,
       multidevice::RemoteDeviceRef local_device,
       const std::string& feature,
+      ConnectionMedium connection_medium,
       ConnectionPriority connection_priority,
       mojo::PendingRemote<mojom::ConnectionDelegate>
           connection_delegate_remote);
@@ -78,12 +90,18 @@ class SecureChannelClientImpl : public SecureChannelClient {
   scoped_refptr<base::TaskRunner> task_runner_;
 
   base::WeakPtrFactory<SecureChannelClientImpl> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecureChannelClientImpl);
 };
 
 }  // namespace secure_channel
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace secure_channel {
+using ::chromeos::secure_channel::SecureChannelClientImpl;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_SECURE_CHANNEL_PUBLIC_CPP_CLIENT_SECURE_CHANNEL_CLIENT_IMPL_H_

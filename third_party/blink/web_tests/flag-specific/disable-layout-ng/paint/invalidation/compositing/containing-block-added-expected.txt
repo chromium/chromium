@@ -1,33 +1,19 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV class='fixed'",
-          "rect": [50, 50, 75, 75],
-          "reason": "chunk disappeared"
-        }
-      ]
+      "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutBlockFlow (positioned) DIV id='container'",
       "bounds": [125, 125],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#0000FF",
-      "paintInvalidations": [
-        {
-          "object": "LayoutBlockFlow (positioned) DIV id='container'",
-          "rect": [0, 0, 100, 100],
-          "reason": "paint property change"
-        },
-        {
-          "object": "LayoutBlockFlow (positioned) DIV class='fixed'",
-          "rect": [50, 50, 75, 75],
-          "reason": "chunk appeared"
-        }
+      "invalidations": [
+        [0, 0, 100, 100],
+        [50, 50, 75, 75]
       ],
       "transform": 1
     }

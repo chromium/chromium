@@ -9,6 +9,9 @@
 #include <strsafe.h>
 #include <windows.h>
 
+// Must be after windows.h.
+#include <versionhelpers.h>
+
 namespace util {
 
 const char* kLogPrefixes[] = {
@@ -29,10 +32,7 @@ void GetLogFilePath(wchar_t* log_file_path) {
     return;
   }
 
-  OSVERSIONINFO info = {0};
-  info.dwOSVersionInfoSize = sizeof(info);
-  GetVersionEx(&info);
-  if (info.dwMajorVersion >= 6) {
+  if (IsWindowsVistaOrGreater()) {
     wchar_t* path;
     // On modern Windows versions there is a special AppData folder for
     // processes with lowered execution rights, however older versions lack

@@ -27,6 +27,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_GRADIENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_GRADIENT_H_
 
+#include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
@@ -41,18 +42,30 @@ class MODULES_EXPORT CanvasGradient final : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
+  // Linear Gradient
   CanvasGradient(const FloatPoint& p0, const FloatPoint& p1);
+  // Radial Gradient
   CanvasGradient(const FloatPoint& p0,
                  float r0,
                  const FloatPoint& p1,
                  float r1);
+  // Conic Gradient
+  CanvasGradient(float startAngle, const FloatPoint& center);
 
   Gradient* GetGradient() const { return gradient_.get(); }
 
   void addColorStop(double value, const String& color, ExceptionState&);
 
+  IdentifiableToken GetIdentifiableToken() const;
+
+  // Sets on internal IdentifiabilityStudyHelper.
+  void SetExecutionContext(ExecutionContext*);
+
+  void Trace(Visitor* visitor) const override;
+
  private:
   scoped_refptr<Gradient> gradient_;
+  IdentifiabilityStudyHelper identifiability_study_helper_;
 };
 
 }  // namespace blink

@@ -16,11 +16,11 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
 #include <mach-o/loader.h>
 #elif defined(OS_WIN)
 #include <windows.h>
-#endif  // OS_MACOSX
+#endif  // OS_APPLE
 
 namespace crashpad {
 
@@ -67,7 +67,7 @@ struct TestCrashpadInfo {
 // of the point of this test).
 #if defined(OS_POSIX)
 __attribute__((
-#if defined(OS_MACOSX)
+#if defined(OS_APPLE)
     section(SEG_DATA ",crashpad_info"),
 #endif
 #if defined(ADDRESS_SANITIZER)

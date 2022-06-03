@@ -5,8 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_API_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_API_H_
 
-#include <string>
-
 #include "base/macros.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/extension_function.h"
@@ -22,14 +20,15 @@ class IdentityGetAuthTokenFunction : public ExtensionFunction {
 
   IdentityGetAuthTokenFunction();
 
+  IdentityGetAuthTokenFunction(const IdentityGetAuthTokenFunction&) = delete;
+  IdentityGetAuthTokenFunction& operator=(const IdentityGetAuthTokenFunction&) =
+      delete;
+
  protected:
   ~IdentityGetAuthTokenFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdentityGetAuthTokenFunction);
 };
 
 // Stub. See the IDL file for documentation.
@@ -39,14 +38,16 @@ class IdentityRemoveCachedAuthTokenFunction : public ExtensionFunction {
 
   IdentityRemoveCachedAuthTokenFunction();
 
+  IdentityRemoveCachedAuthTokenFunction(
+      const IdentityRemoveCachedAuthTokenFunction&) = delete;
+  IdentityRemoveCachedAuthTokenFunction& operator=(
+      const IdentityRemoveCachedAuthTokenFunction&) = delete;
+
  protected:
   ~IdentityRemoveCachedAuthTokenFunction() override;
 
   // ExtensionFunction:
   ResponseAction Run() override;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(IdentityRemoveCachedAuthTokenFunction);
 };
 
 }  // namespace cast

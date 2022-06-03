@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+FAIL history.pushState assert_equals: url was resolved against the iframe's URL instead of the settings object's API base URL expected -1 but got 84
+FAIL history.replaceState assert_equals: url was resolved against the iframe's URL instead of the settings object's API base URL expected -1 but got 84
+Harness: the test ran to completion.
+

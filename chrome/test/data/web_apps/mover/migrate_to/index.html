@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<head>
+  <title id="title">Migration has happened!</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <meta id="themeColor" name="theme-color" content="#b2ec40" />
+  <link
+    rel="icon"
+    type="image/png"
+    href="icon144.png"
+  />
+</head>
+
+<style>
+  * {
+    font-family: monospace;
+    background-color: #b2ec40;
+  }
+</style>
+
+<h1>
+  Migration success! (probably)
+</h1>
+
+<div>
+  This is app we are trying to migrate to!
+</div>
+
+
+<div style="border: solid 1px grey; margin: 5px; padding: 5px;">
+  Directory:
+  <ul>
+    <li><a href="../migrate_from/a/index.html">migrate_from/a/index.html</a></li>
+    <li><a href="../migrate_from/b/index.html">migrate_from/b/index.html</a></li>
+    <li><a href="../migrate_from/c/index.html">migrate_from/c/index.html</a></li>
+    <li><a href="index.html">migrate_to/index.html (here)</a></li>
+    <li><a href="../index.html">index.html</a></li>
+  </ul>
+</div>
+
+<script>
+navigator.serviceWorker.register('./serviceworker.js')
+</script>

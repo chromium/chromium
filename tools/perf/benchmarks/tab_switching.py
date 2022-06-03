@@ -5,6 +5,7 @@
 import os
 
 from core import perf_benchmark
+from core import platforms
 
 from page_sets.system_health import multi_tab_stories
 from telemetry import benchmark
@@ -23,7 +24,11 @@ class TabSwitchingTypical25(perf_benchmark.PerfBenchmark):
   tabs, waits for them to load, and then switches to each tab and records the
   metric. The pages were chosen from Alexa top ranking sites.
   """
+  # TODO(rmhasan): Remove the SUPPORTED_PLATFORMS lists.
+  # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
+  # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORMS = [story.expectations.ALL_DESKTOP]
+  SUPPORTED_PLATFORM_TAGS = [platforms.DESKTOP]
 
   @classmethod
   def AddBenchmarkCommandLineArgs(cls, parser):

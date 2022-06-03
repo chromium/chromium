@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/logging.h"
 #import "ios/net/cookies/cookie_creation_time_manager.h"
 #include "ios/net/ios_net_buildflags.h"
 

@@ -5,18 +5,18 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 
-#if defined(OS_CHROMEOS)
-#include "chromeos/dbus/dbus_thread_manager.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/power/power_policy_controller.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/dbus/update_engine_client.h"
+#include "chromeos/dbus/update_engine/update_engine_client.h"
 #include "chromeos/login/session/session_termination_manager.h"
 #endif
 
@@ -38,7 +38,7 @@ void NotifyAndTerminate(bool fast_path) {
 }
 
 void NotifyAndTerminate(bool fast_path, RebootPolicy reboot_policy) {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool notified = false;
   // Return if a shutdown request has already been sent.
   if (notified)
@@ -49,7 +49,7 @@ void NotifyAndTerminate(bool fast_path, RebootPolicy reboot_policy) {
   if (fast_path)
     NotifyAppTerminating();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::PowerPolicyController::IsInitialized())
     chromeos::PowerPolicyController::Get()->NotifyChromeIsExiting();
 
@@ -73,8 +73,8 @@ void NotifyAndTerminate(bool fast_path, RebootPolicy reboot_policy) {
     if (chrome::IsAttemptingShutdown()) {
       // If running the Chrome OS build, but we're not on the device, act
       // as if we received signal from SessionManager.
-      base::PostTask(FROM_HERE, {content::BrowserThread::UI},
-                     base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE, base::BindOnce(&chrome::ExitIgnoreUnloadHandlers));
     }
   }
 #endif

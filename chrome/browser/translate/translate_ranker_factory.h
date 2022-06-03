@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_TRANSLATE_TRANSLATE_RANKER_FACTORY_H_
 #define CHROME_BROWSER_TRANSLATE_TRANSLATE_RANKER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -23,6 +22,9 @@ class TranslateRankerFactory : public BrowserContextKeyedServiceFactory {
   static translate::TranslateRanker* GetForBrowserContext(
       content::BrowserContext* browser_context);
 
+  TranslateRankerFactory(const TranslateRankerFactory&) = delete;
+  TranslateRankerFactory& operator=(const TranslateRankerFactory&) = delete;
+
  private:
   friend struct base::DefaultSingletonTraits<TranslateRankerFactory>;
 
@@ -34,8 +36,6 @@ class TranslateRankerFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(TranslateRankerFactory);
 };
 
 }  // namespace translate

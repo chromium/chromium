@@ -4,16 +4,16 @@
 
 #include "chromeos/services/device_sync/cryptauth_v2_device_manager_impl.h"
 
-#include <sstream>
 #include <utility>
 
 #include "base/memory/ptr_util.h"
-#include "base/no_destructor.h"
+#include "base/metrics/histogram_functions.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
 #include "chromeos/services/device_sync/cryptauth_device_syncer_impl.h"
 #include "chromeos/services/device_sync/cryptauth_key_registry.h"
-#include "chromeos/services/device_sync/public/cpp/client_app_metadata_provider.h"
+#include "chromeos/services/device_sync/proto/cryptauth_logging.h"
+#include "chromeos/services/device_sync/synced_bluetooth_address_tracker_impl.h"
 
 namespace chromeos {
 
@@ -21,10 +21,15 @@ namespace device_sync {
 
 namespace {
 
-// Timeout value for asynchronous operation.
-// TODO(https://crbug.com/933656): Tune these values.
-constexpr base::TimeDelta kWaitingForClientAppMetadataTimeout =
-    base::TimeDelta::FromSeconds(10);
+void RecordDeviceSyncResult(CryptAuthDeviceSyncResult result) {
+  base::UmaHistogramEnumeration("CryptAuth.DeviceSyncV2.Result.ResultType",
+                                result.GetResultType());
+  base::UmaHistogramEnumeration("CryptAuth.DeviceSyncV2.Result.ResultCode",
+                                result.result_code());
+  base::UmaHistogramBoolean(
+      "CryptAuth.DeviceSyncV2.Result.DidDeviceRegistryChange",
+      result.did_device_registry_change());
+}
 
 }  // namespace
 
@@ -33,13 +38,24 @@ CryptAuthV2DeviceManagerImpl::Factory*
     CryptAuthV2DeviceManagerImpl::Factory::test_factory_ = nullptr;
 
 // static
-CryptAuthV2DeviceManagerImpl::Factory*
-CryptAuthV2DeviceManagerImpl::Factory::Get() {
-  if (test_factory_)
-    return test_factory_;
+std::unique_ptr<CryptAuthV2DeviceManager>
+CryptAuthV2DeviceManagerImpl::Factory::Create(
+    const cryptauthv2::ClientAppMetadata& client_app_metadata,
+    CryptAuthDeviceRegistry* device_registry,
+    CryptAuthKeyRegistry* key_registry,
+    CryptAuthClientFactory* client_factory,
+    CryptAuthGCMManager* gcm_manager,
+    CryptAuthScheduler* scheduler,
+    PrefService* pref_service) {
+  if (test_factory_) {
+    return test_factory_->CreateInstance(client_app_metadata, device_registry,
+                                         key_registry, client_factory,
+                                         gcm_manager, scheduler, pref_service);
+  }
 
-  static base::NoDestructor<CryptAuthV2DeviceManagerImpl::Factory> factory;
-  return factory.get();
+  return base::WrapUnique(new CryptAuthV2DeviceManagerImpl(
+      client_app_metadata, device_registry, key_registry, client_factory,
+      gcm_manager, scheduler, pref_service));
 }
 
 // static
@@ -50,35 +66,24 @@ void CryptAuthV2DeviceManagerImpl::Factory::SetFactoryForTesting(
 
 CryptAuthV2DeviceManagerImpl::Factory::~Factory() = default;
 
-std::unique_ptr<CryptAuthV2DeviceManager>
-CryptAuthV2DeviceManagerImpl::Factory::BuildInstance(
-    ClientAppMetadataProvider* client_app_metadata_provider,
-    CryptAuthDeviceRegistry* device_registry,
-    CryptAuthKeyRegistry* key_registry,
-    CryptAuthClientFactory* client_factory,
-    CryptAuthGCMManager* gcm_manager,
-    CryptAuthScheduler* scheduler,
-    std::unique_ptr<base::OneShotTimer> timer) {
-  return base::WrapUnique(new CryptAuthV2DeviceManagerImpl(
-      client_app_metadata_provider, device_registry, key_registry,
-      client_factory, gcm_manager, scheduler, std::move(timer)));
-}
-
 CryptAuthV2DeviceManagerImpl::CryptAuthV2DeviceManagerImpl(
-    ClientAppMetadataProvider* client_app_metadata_provider,
+    const cryptauthv2::ClientAppMetadata& client_app_metadata,
     CryptAuthDeviceRegistry* device_registry,
     CryptAuthKeyRegistry* key_registry,
     CryptAuthClientFactory* client_factory,
     CryptAuthGCMManager* gcm_manager,
     CryptAuthScheduler* scheduler,
-    std::unique_ptr<base::OneShotTimer> timer)
-    : client_app_metadata_provider_(client_app_metadata_provider),
+    PrefService* pref_service)
+    : synced_bluetooth_address_tracker_(
+          SyncedBluetoothAddressTrackerImpl::Factory::Create(scheduler,
+                                                             pref_service)),
+      client_app_metadata_(client_app_metadata),
       device_registry_(device_registry),
       key_registry_(key_registry),
       client_factory_(client_factory),
       gcm_manager_(gcm_manager),
       scheduler_(scheduler),
-      timer_(std::move(timer)) {
+      pref_service_(pref_service) {
   gcm_manager_->AddObserver(this);
 }
 
@@ -87,6 +92,10 @@ CryptAuthV2DeviceManagerImpl::~CryptAuthV2DeviceManagerImpl() {
 }
 
 void CryptAuthV2DeviceManagerImpl::Start() {
+  PA_LOG(VERBOSE)
+      << "Starting CryptAuth v2 device manager with device registry:\n"
+      << *device_registry_;
+
   scheduler_->StartDeviceSyncScheduling(
       scheduler_weak_ptr_factory_.GetWeakPtr());
 }
@@ -98,16 +107,16 @@ CryptAuthV2DeviceManagerImpl::GetSyncedDevices() const {
 
 void CryptAuthV2DeviceManagerImpl::ForceDeviceSyncNow(
     const cryptauthv2::ClientMetadata::InvocationReason& invocation_reason,
-    const base::Optional<std::string>& session_id) {
+    const absl::optional<std::string>& session_id) {
   scheduler_->RequestDeviceSync(invocation_reason, session_id);
 }
 
-base::Optional<base::Time> CryptAuthV2DeviceManagerImpl::GetLastDeviceSyncTime()
+absl::optional<base::Time> CryptAuthV2DeviceManagerImpl::GetLastDeviceSyncTime()
     const {
   return scheduler_->GetLastSuccessfulDeviceSyncTime();
 }
 
-base::Optional<base::TimeDelta>
+absl::optional<base::TimeDelta>
 CryptAuthV2DeviceManagerImpl::GetTimeToNextAttempt() const {
   return scheduler_->GetTimeToNextDeviceSyncRequest();
 }
@@ -126,115 +135,40 @@ void CryptAuthV2DeviceManagerImpl::OnDeviceSyncRequested(
 
   current_client_metadata_ = client_metadata;
 
-  // TODO(nohle): Log invocation reason metric.
+  base::UmaHistogramExactLinear(
+      "CryptAuth.DeviceSyncV2.InvocationReason",
+      current_client_metadata_->invocation_reason(),
+      cryptauthv2::ClientMetadata::InvocationReason_ARRAYSIZE);
 
-  if (!client_app_metadata_) {
-    // GCM registration is expected to be completed before the first enrollment.
-    DCHECK(!gcm_manager_->GetRegistrationId().empty())
-        << "DeviceSync requested before GCM registration complete.";
-
-    SetState(State::kWaitingForClientAppMetadata);
-    client_app_metadata_provider_->GetClientAppMetadata(
-        gcm_manager_->GetRegistrationId(),
-        base::BindOnce(
-            &CryptAuthV2DeviceManagerImpl::OnClientAppMetadataFetched,
-            callback_weak_ptr_factory_.GetWeakPtr()));
-    return;
-  }
-
-  AttemptDeviceSync();
+  PA_LOG(VERBOSE) << "Starting CryptAuth v2 DeviceSync.";
+  device_syncer_ = CryptAuthDeviceSyncerImpl::Factory::Create(
+      device_registry_, key_registry_, client_factory_,
+      synced_bluetooth_address_tracker_.get(), pref_service_);
+  device_syncer_->Sync(
+      *current_client_metadata_, client_app_metadata_,
+      base::BindOnce(&CryptAuthV2DeviceManagerImpl::OnDeviceSyncFinished,
+                     base::Unretained(this)));
 }
 
 void CryptAuthV2DeviceManagerImpl::OnResyncMessage(
-    const base::Optional<std::string>& session_id,
-    const base::Optional<CryptAuthFeatureType>& feature_type) {
+    const absl::optional<std::string>& session_id,
+    const absl::optional<CryptAuthFeatureType>& feature_type) {
   PA_LOG(VERBOSE) << "Received GCM message to re-sync devices (session ID: "
                   << session_id.value_or("[No session ID]") << ").";
 
   ForceDeviceSyncNow(cryptauthv2::ClientMetadata::SERVER_INITIATED, session_id);
 }
 
-void CryptAuthV2DeviceManagerImpl::SetState(State state) {
-  timer_->Stop();
-
-  PA_LOG(INFO) << "Transitioning from " << state_ << " to " << state << ".";
-  state_ = state;
-
-  // Note: CryptAuthDeviceSyncerImpl guarantees that the callback passed to its
-  // public method is always invoked; in other words, the class handles is
-  // relevant timeouts internally.
-  if (state_ != State::kWaitingForClientAppMetadata)
-    return;
-
-  // TODO(https://crbug.com/936273): Add metrics to track failure rates due
-  // to async timeouts.
-  timer_->Start(FROM_HERE, kWaitingForClientAppMetadataTimeout,
-                base::BindOnce(&CryptAuthV2DeviceManagerImpl::OnTimeout,
-                               callback_weak_ptr_factory_.GetWeakPtr()));
-}
-
-void CryptAuthV2DeviceManagerImpl::OnTimeout() {
-  DCHECK_EQ(State::kWaitingForClientAppMetadata, state_);
-
-  OnDeviceSyncFinished(
-      CryptAuthDeviceSyncResult(CryptAuthDeviceSyncResult::ResultCode::
-                                    kErrorTimeoutWaitingForClientAppMetadata,
-                                false /* did_device_registry_change */,
-                                base::nullopt /* client_directive */));
-}
-
-void CryptAuthV2DeviceManagerImpl::OnClientAppMetadataFetched(
-    const base::Optional<cryptauthv2::ClientAppMetadata>& client_app_metadata) {
-  DCHECK(state_ == State::kWaitingForClientAppMetadata);
-
-  bool success = client_app_metadata.has_value();
-
-  if (!success) {
-    OnDeviceSyncFinished(
-        CryptAuthDeviceSyncResult(CryptAuthDeviceSyncResult::ResultCode::
-                                      kErrorClientAppMetadataFetchFailed,
-                                  false /* did_device_registry_change */,
-                                  base::nullopt /* client_directive */));
-    return;
-  }
-
-  client_app_metadata_ = client_app_metadata;
-
-  AttemptDeviceSync();
-}
-
-void CryptAuthV2DeviceManagerImpl::AttemptDeviceSync() {
-  DCHECK(current_client_metadata_);
-  DCHECK(client_app_metadata_);
-
-  device_syncer_ = CryptAuthDeviceSyncerImpl::Factory::Get()->BuildInstance(
-      device_registry_, key_registry_, client_factory_);
-
-  SetState(State::kWaitingForDeviceSync);
-
-  device_syncer_->Sync(
-      *current_client_metadata_, *client_app_metadata_,
-      base::BindOnce(&CryptAuthV2DeviceManagerImpl::OnDeviceSyncFinished,
-                     callback_weak_ptr_factory_.GetWeakPtr()));
-}
-
 void CryptAuthV2DeviceManagerImpl::OnDeviceSyncFinished(
     CryptAuthDeviceSyncResult device_sync_result) {
-  // Once a DeviceSync attempt finishes, no other callbacks should be invoked.
-  // This is particularly relevant for timeout failures.
-  callback_weak_ptr_factory_.InvalidateWeakPtrs();
-
-  // The DeviceSync result might be owned by the device syncer, so we copy the
-  // result here before destroying the device syncer.
-  CryptAuthDeviceSyncResult device_sync_result_copy = device_sync_result;
   device_syncer_.reset();
 
   std::stringstream prefix;
   prefix << "DeviceSync attempt with invocation reason "
          << current_client_metadata_->invocation_reason();
   std::stringstream suffix;
-  suffix << "with result code " << device_sync_result_copy.result_code() << ".";
-  switch (device_sync_result_copy.GetResultType()) {
+  suffix << "with result code " << device_sync_result.result_code() << ".";
+  switch (device_sync_result.GetResultType()) {
     case CryptAuthDeviceSyncResult::ResultType::kSuccess:
       PA_LOG(INFO) << prefix.str() << " succeeded  " << suffix.str();
       break;
@@ -248,18 +182,18 @@ void CryptAuthV2DeviceManagerImpl::OnDeviceSyncFinished(
   }
 
   PA_LOG(INFO) << "The device registry "
-               << (device_sync_result_copy.did_device_registry_change()
+               << (device_sync_result.did_device_registry_change()
                        ? "changed."
                        : "did not change.");
+  PA_LOG(VERBOSE) << "Device registry:\n" << *device_registry_;
 
   current_client_metadata_.reset();
 
-  // TODO(nohle): Log DeviceSync result metrics: success, result code, and if
-  // devices changed.
+  RecordDeviceSyncResult(device_sync_result);
 
-  scheduler_->HandleDeviceSyncResult(device_sync_result_copy);
+  scheduler_->HandleDeviceSyncResult(device_sync_result);
 
-  base::Optional<base::TimeDelta> time_to_next_attempt = GetTimeToNextAttempt();
+  absl::optional<base::TimeDelta> time_to_next_attempt = GetTimeToNextAttempt();
   if (time_to_next_attempt) {
     PA_LOG(INFO) << "Time until next DeviceSync attempt: "
                  << *time_to_next_attempt << ".";
@@ -267,31 +201,12 @@ void CryptAuthV2DeviceManagerImpl::OnDeviceSyncFinished(
     PA_LOG(INFO) << "No future DeviceSync requests currently scheduled.";
   }
 
-  if (!device_sync_result_copy.IsSuccess()) {
+  if (!device_sync_result.IsSuccess()) {
     PA_LOG(INFO) << "Number of consecutive DeviceSync failures: "
                  << scheduler_->GetNumConsecutiveDeviceSyncFailures() << ".";
   }
 
-  SetState(State::kIdle);
-
-  NotifyDeviceSyncFinished(device_sync_result_copy);
-}
-
-std::ostream& operator<<(std::ostream& stream,
-                         const CryptAuthV2DeviceManagerImpl::State& state) {
-  switch (state) {
-    case CryptAuthV2DeviceManagerImpl::State::kIdle:
-      stream << "[DeviceManager state: Idle]";
-      break;
-    case CryptAuthV2DeviceManagerImpl::State::kWaitingForClientAppMetadata:
-      stream << "[DeviceManager state: Waiting for ClientAppMetadata]";
-      break;
-    case CryptAuthV2DeviceManagerImpl::State::kWaitingForDeviceSync:
-      stream << "[DeviceManager state: Waiting for DeviceSync to finish]";
-      break;
-  }
-
-  return stream;
+  NotifyDeviceSyncFinished(device_sync_result);
 }
 
 }  // namespace device_sync

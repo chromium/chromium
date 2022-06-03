@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that keyframes are shown in styles pane inside display:none.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
     <style>
@@ -27,15 +27,15 @@
 
   ElementsTestRunner.selectNodeAndWaitForStyles('element', step1);
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('=== #element styles ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     ElementsTestRunner.selectNodeAndWaitForStyles('container', step2);
   }
 
-  function step2() {
+  async function step2() {
     TestRunner.addResult('=== #container styles ===');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

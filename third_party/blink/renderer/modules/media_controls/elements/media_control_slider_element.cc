@@ -4,11 +4,13 @@
 
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_slider_element.h"
 
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
-#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer.h"
 #include "third_party/blink/renderer/core/resize_observer/resize_observer_entry.h"
 #include "third_party/blink/renderer/modules/media_controls/elements/media_control_elements_helper.h"
@@ -22,8 +24,8 @@ void SetSegmentDivPosition(blink::HTMLDivElement* segment,
                            int width,
                            float zoom_factor) {
   int segment_width =
-      clampTo<int>(floor((position.width * width) / zoom_factor));
-  int segment_left = clampTo<int>(floor((position.left * width) / zoom_factor));
+      ClampTo<int>(floor((position.width * width) / zoom_factor));
+  int segment_left = ClampTo<int>(floor((position.left * width) / zoom_factor));
   int current_width = 0;
   int current_left = 0;
 
@@ -69,7 +71,7 @@ class MediaControlSliderElement::MediaControlSliderElementResizeObserverDelegate
     element_->NotifyElementSizeChanged();
   }
 
-  void Trace(blink::Visitor* visitor) override {
+  void Trace(Visitor* visitor) const override {
     visitor->Trace(element_);
     ResizeObserver::Delegate::Trace(visitor);
   }
@@ -86,7 +88,7 @@ MediaControlSliderElement::MediaControlSliderElement(
       segment_highlight_before_(nullptr),
       segment_highlight_after_(nullptr),
       resize_observer_(ResizeObserver::Create(
-          GetDocument(),
+          GetDocument().domWindow(),
           MakeGarbageCollected<MediaControlSliderElementResizeObserverDelegate>(
               this))) {
   setType(input_type_names::kRange);
@@ -114,7 +116,8 @@ void MediaControlSliderElement::SetupBarSegments() {
     return;
 
   Element& track = GetTrackElement();
-  track.SetShadowPseudoId("-internal-media-controls-segmented-track");
+  track.SetShadowPseudoId(
+      shadow_element_names::kPseudoMediaControlsSegmentedTrack);
 
   // Add the following structure to #track.
   //
@@ -151,9 +154,8 @@ int MediaControlSliderElement::TrackWidth() {
 }
 
 float MediaControlSliderElement::ZoomFactor() const {
-  if (!GetDocument().GetLayoutView())
-    return 1;
-  return GetDocument().GetLayoutView()->ZoomFactor();
+  const LocalFrame* frame = GetDocument().GetFrame();
+  return frame ? frame->PageZoomFactor() : 1;
 }
 
 void MediaControlSliderElement::NotifyElementSizeChanged() {
@@ -163,7 +165,7 @@ void MediaControlSliderElement::NotifyElementSizeChanged() {
                         TrackWidth(), ZoomFactor());
 }
 
-void MediaControlSliderElement::Trace(blink::Visitor* visitor) {
+void MediaControlSliderElement::Trace(Visitor* visitor) const {
   visitor->Trace(segment_highlight_before_);
   visitor->Trace(segment_highlight_after_);
   visitor->Trace(resize_observer_);

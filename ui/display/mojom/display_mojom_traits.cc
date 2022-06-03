@@ -140,6 +140,9 @@ bool StructTraits<display::mojom::DisplayDataView, display::Display>::Read(
   if (!data.ReadMaximumCursorSize(&out->maximum_cursor_size_))
     return false;
 
+  if (!data.ReadColorSpaces(&out->color_spaces_))
+    return false;
+
   out->set_color_depth(data.color_depth());
   out->set_depth_per_component(data.depth_per_component());
   out->set_is_monochrome(data.is_monochrome());

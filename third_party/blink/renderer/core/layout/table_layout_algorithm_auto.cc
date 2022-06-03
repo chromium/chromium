@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/layout/layout_table_cell.h"
 #include "third_party/blink/renderer/core/layout/layout_table_col.h"
 #include "third_party/blink/renderer/core/layout/layout_table_section.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell_interface.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_interface.h"
 #include "third_party/blink/renderer/core/layout/text_autosizer.h"
@@ -53,7 +54,7 @@ void TableLayoutAlgorithmAuto::RecalcColumn(unsigned eff_col) {
       // we need to clear their dirty bits so that if we call
       // setPreferredWidthsDirty(true) on a col or one of its descendants, we'll
       // mark it's ancestors as dirty.
-      ToLayoutTableCol(child)->ClearPreferredLogicalWidthsDirtyBits();
+      To<LayoutTableCol>(child)->ClearIntrinsicLogicalWidthsDirtyBits();
     } else if (child->IsTableSection()) {
       LayoutTableSection* section = To<LayoutTableSection>(child);
       unsigned num_rows = section->NumRows();
@@ -67,17 +68,20 @@ void TableLayoutAlgorithmAuto::RecalcColumn(unsigned eff_col) {
           continue;
         column_layout.column_has_no_cells = false;
 
-        if (cell->MaxPreferredLogicalWidth())
+        MinMaxSizes cell_preferred_logical_widths =
+            cell->PreferredLogicalWidths();
+
+        if (cell_preferred_logical_widths.max_size)
           column_layout.empty_cells_only = false;
 
         if (cell->ColSpan() == 1) {
           column_layout.min_logical_width =
-              std::max<int>(cell->MinPreferredLogicalWidth().ToInt(),
+              std::max<int>(cell_preferred_logical_widths.min_size.ToInt(),
                             column_layout.min_logical_width);
-          if (cell->MaxPreferredLogicalWidth() >
+          if (cell_preferred_logical_widths.max_size >
               column_layout.max_logical_width) {
             column_layout.max_logical_width =
-                cell->MaxPreferredLogicalWidth().ToInt();
+                cell_preferred_logical_widths.max_size.ToInt();
             max_contributor = cell;
           }
 
@@ -143,7 +147,7 @@ void TableLayoutAlgorithmAuto::RecalcColumn(unsigned eff_col) {
           // min/max width of at least 1px for it.
           column_layout.min_logical_width =
               std::max<int>(column_layout.min_logical_width,
-                            cell->MaxPreferredLogicalWidth() ? 1 : 0);
+                            cell_preferred_logical_widths.max_size ? 1 : 0);
 
           // This spanning cell originates in this column. Insert the cell into
           // spanning cells list.
@@ -174,7 +178,7 @@ void TableLayoutAlgorithmAuto::FullRecalc() {
   unsigned n_eff_cols = table_->NumEffectiveColumns();
   layout_struct_.resize(n_eff_cols);
   layout_struct_.Fill(Layout());
-  span_cells_.Fill(0);
+  span_cells_.clear();
 
   Length group_logical_width;
   unsigned current_column = 0;
@@ -220,7 +224,7 @@ static bool ShouldScaleColumnsForParent(LayoutTable* table) {
   // TODO(layout-dev): We can probably abort before reaching LayoutView in many
   // cases. For example, if we find an object with contain:size, or even if we
   // find a regular block with fixed logical width.
-  while (!cb->IsLayoutView()) {
+  while (!IsA<LayoutView>(cb)) {
     // It doesn't matter if our table is auto or fixed: auto means we don't
     // scale. Fixed doesn't care if we do or not because it doesn't depend
     // on the cell contents' preferred widths.
@@ -237,7 +241,7 @@ static bool ShouldScaleColumnsForParent(LayoutTable* table) {
     const bool is_deprecated_webkit_box =
         cb->StyleRef().IsDeprecatedWebkitBox();
     if ((!is_deprecated_webkit_box && cb->IsFlexibleBoxIncludingNG()) ||
-        cb->IsLayoutGrid()) {
+        cb->IsLayoutGridIncludingNG()) {
       return false;
     }
     cb = cb->ContainingBlock();
@@ -262,7 +266,7 @@ static bool ShouldScaleColumnsForSelf(LayoutNGTableInterface* table) {
       return true;
     LayoutBlock* cb = layout_table->ContainingBlock();
 
-    while (!cb->IsLayoutView() && !cb->IsTableCell() &&
+    while (!IsA<LayoutView>(cb) && !cb->IsTableCell() &&
            cb->StyleRef().Width().IsAuto() && !cb->IsOutOfFlowPositioned())
       cb = cb->ContainingBlock();
 
@@ -278,7 +282,7 @@ static bool ShouldScaleColumnsForSelf(LayoutNGTableInterface* table) {
         table->ToLayoutObject()->StyleRef().LogicalWidth();
     bool width_is_auto = (!table_logical_width.IsSpecified() ||
                           !table_logical_width.IsPositive()) &&
-                         !table_logical_width.IsIntrinsic();
+                         !table_logical_width.IsContentOrIntrinsic();
     if (cell->ColSpan() > 1 || width_is_auto)
       return false;
   }
@@ -404,10 +408,13 @@ int TableLayoutAlgorithmAuto::CalcEffectiveLogicalWidth() {
     unsigned eff_col =
         table_->AbsoluteColumnToEffectiveColumn(cell->AbsoluteColumnIndex());
     wtf_size_t last_col = eff_col;
+    MinMaxSizes cell_preferred_logical_widths = cell->PreferredLogicalWidths();
     int cell_min_logical_width =
-        (cell->MinPreferredLogicalWidth() + spacing_in_row_direction).ToInt();
+        (cell_preferred_logical_widths.min_size + spacing_in_row_direction)
+            .ToInt();
     int cell_max_logical_width =
-        (cell->MaxPreferredLogicalWidth() + spacing_in_row_direction).ToInt();
+        (cell_preferred_logical_widths.max_size + spacing_in_row_direction)
+            .ToInt();
     float total_percent = 0;
     int span_min_logical_width = 0;
     int span_max_logical_width = 0;
@@ -465,9 +472,9 @@ int TableLayoutAlgorithmAuto::CalcEffectiveLogicalWidth() {
 
     // adjust table max width if needed
     if (cell_logical_width.IsPercentOrCalc()) {
-      if (total_percent > cell_logical_width.Percent() ||
+      if (total_percent >= cell_logical_width.Percent() ||
           all_cols_are_percent) {
-        // can't satify this condition, treat as variable
+        // can't satisfy this condition, treat as variable
         cell_logical_width = Length();
       } else {
         max_logical_width =
@@ -507,14 +514,14 @@ int TableLayoutAlgorithmAuto::CalcEffectiveLogicalWidth() {
     if (cell_min_logical_width > span_min_logical_width) {
       if (all_cols_are_fixed) {
         for (unsigned pos = eff_col; fixed_width > 0 && pos < last_col; ++pos) {
-          int cell_logical_width = std::max(
+          int col_logical_width = std::max(
               layout_struct_[pos].effective_min_logical_width,
               static_cast<int>(cell_min_logical_width *
                                layout_struct_[pos].logical_width.Value() /
                                fixed_width));
           fixed_width -= layout_struct_[pos].logical_width.Value();
-          cell_min_logical_width -= cell_logical_width;
-          layout_struct_[pos].effective_min_logical_width = cell_logical_width;
+          cell_min_logical_width -= col_logical_width;
+          layout_struct_[pos].effective_min_logical_width = col_logical_width;
         }
       } else if (all_cols_are_percent) {
         // In this case, we just split the colspan's min amd max widths
@@ -538,8 +545,11 @@ int TableLayoutAlgorithmAuto::CalcEffectiveLogicalWidth() {
           layout_struct_[pos].effective_min_logical_width =
               std::max(layout_struct_[pos].effective_min_logical_width,
                        column_min_logical_width);
+          column_max_logical_width =
+              std::max(column_max_logical_width, column_min_logical_width);
           layout_struct_[pos].effective_max_logical_width =
-              column_max_logical_width;
+              std::max(layout_struct_[pos].effective_max_logical_width,
+                       column_max_logical_width);
           allocated_min_logical_width += column_min_logical_width;
           allocated_max_logical_width += column_max_logical_width;
         }
@@ -651,7 +661,7 @@ void TableLayoutAlgorithmAuto::InsertSpanCell(LayoutTableCell* cell) {
   if (!size || span_cells_[size - 1] != 0) {
     span_cells_.Grow(size + 10);
     for (unsigned i = 0; i < 10; i++)
-      span_cells_[size + i] = 0;
+      span_cells_[size + i] = nullptr;
     size += 10;
   }
 
@@ -836,9 +846,9 @@ void TableLayoutAlgorithmAuto::UpdateLayout() {
 
 template <typename Total,
           Length::Type lengthType,
-          CellsToProcess cellsToProcess,
-          DistributionMode distributionMode,
-          DistributionDirection distributionDirection>
+          TableLayoutAlgorithmAuto::CellsToProcess cellsToProcess,
+          TableLayoutAlgorithmAuto::DistributionMode distributionMode,
+          TableLayoutAlgorithmAuto::DistributionDirection distributionDirection>
 void TableLayoutAlgorithmAuto::DistributeWidthToColumns(int& available,
                                                         Total total) {
   // TODO(alancutter): Make this work correctly for calc lengths.
@@ -917,4 +927,10 @@ void TableLayoutAlgorithmAuto::ShrinkColumnWidth(
     }
   }
 }
+
+void TableLayoutAlgorithmAuto::Trace(Visitor* visitor) const {
+  visitor->Trace(span_cells_);
+  TableLayoutAlgorithm::Trace(visitor);
+}
+
 }  // namespace blink

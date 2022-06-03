@@ -36,7 +36,7 @@ class InsertIntoTextNodeCommand final : public SimpleEditCommand {
  public:
   InsertIntoTextNodeCommand(Text* node, unsigned offset, const String& text);
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void DoApply(EditingState*) override;

@@ -5,10 +5,11 @@
 package org.chromium.android_webview.test;
 
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.SmallTest;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.LinearLayout;
+
+import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Rule;
@@ -85,6 +86,7 @@ public class AndroidViewIntegrationTest {
     private OnContentSizeChangedHelper mOnContentSizeChangedHelper =
             new OnContentSizeChangedHelper();
     private CallbackHelper mOnPageScaleChangedHelper = new CallbackHelper();
+    private AwTestContainerView mTestContainerView;
 
     private class TestAwLayoutSizer extends AwLayoutSizer {
         @Override
@@ -158,13 +160,12 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testZeroByZeroViewLoadsContent() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView = createCustomTestContainerViewOnMainSync(
-                contentsClient, View.VISIBLE);
-        assertZeroHeight(testContainerView);
+        mTestContainerView = createCustomTestContainerViewOnMainSync(contentsClient, View.VISIBLE);
+        assertZeroHeight(mTestContainerView);
 
         final int contentSizeChangeCallCount = mOnContentSizeChangedHelper.getCallCount();
         mActivityTestRule.loadDataAsync(
-                testContainerView.getAwContents(), CommonResources.ABOUT_HTML, "text/html", false);
+                mTestContainerView.getAwContents(), CommonResources.ABOUT_HTML, "text/html", false);
         mOnContentSizeChangedHelper.waitForCallback(contentSizeChangeCallCount);
         Assert.assertTrue(mOnContentSizeChangedHelper.getHeight() > 0);
     }
@@ -180,18 +181,18 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testInvisibleViewLoadsContent() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView = createCustomTestContainerViewOnMainSync(
-                contentsClient, View.INVISIBLE);
-        assertZeroHeight(testContainerView);
+        mTestContainerView =
+                createCustomTestContainerViewOnMainSync(contentsClient, View.INVISIBLE);
+        assertZeroHeight(mTestContainerView);
 
         final int contentSizeChangeCallCount = mOnContentSizeChangedHelper.getCallCount();
         mActivityTestRule.loadDataAsync(
-                testContainerView.getAwContents(), CommonResources.ABOUT_HTML, "text/html", false);
+                mTestContainerView.getAwContents(), CommonResources.ABOUT_HTML, "text/html", false);
         mOnContentSizeChangedHelper.waitForCallback(contentSizeChangeCallCount);
         Assert.assertTrue(mOnContentSizeChangedHelper.getHeight() > 0);
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> Assert.assertEquals(View.INVISIBLE, testContainerView.getVisibility()));
+                () -> Assert.assertEquals(View.INVISIBLE, mTestContainerView.getVisibility()));
     }
 
     /**
@@ -202,14 +203,13 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testDisconnectedViewLoadsContent() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                createDetachedTestContainerViewOnMainSync(contentsClient);
-        assertZeroHeight(testContainerView);
+        mTestContainerView = createDetachedTestContainerViewOnMainSync(contentsClient);
+        assertZeroHeight(mTestContainerView);
 
         final int contentSizeChangeCallCount = mOnContentSizeChangedHelper.getCallCount();
         final int pageScaleChangeCallCount = mOnPageScaleChangedHelper.getCallCount();
         mActivityTestRule.loadDataAsync(
-                testContainerView.getAwContents(), CommonResources.ABOUT_HTML, "text/html", false);
+                mTestContainerView.getAwContents(), CommonResources.ABOUT_HTML, "text/html", false);
         mOnPageScaleChangedHelper.waitForCallback(pageScaleChangeCallCount);
         mOnContentSizeChangedHelper.waitForCallback(contentSizeChangeCallCount);
         Assert.assertTrue(mOnContentSizeChangedHelper.getHeight() > 0);
@@ -268,14 +268,13 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testSizeUpdateWhenDetached() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView = createDetachedTestContainerViewOnMainSync(
-                contentsClient);
-        assertZeroHeight(testContainerView);
+        mTestContainerView = createDetachedTestContainerViewOnMainSync(contentsClient);
+        assertZeroHeight(mTestContainerView);
 
         final int contentWidthCss = 142;
         final int contentHeightCss = 180;
 
-        loadPageOfSizeAndWaitForSizeChange(testContainerView.getAwContents(),
+        loadPageOfSizeAndWaitForSizeChange(mTestContainerView.getAwContents(),
                 mOnContentSizeChangedHelper, contentWidthCss, contentHeightCss, false);
     }
 
@@ -292,9 +291,8 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testAbsolutePositionContributesToContentSize() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView = createDetachedTestContainerViewOnMainSync(
-                contentsClient);
-        assertZeroHeight(testContainerView);
+        mTestContainerView = createDetachedTestContainerViewOnMainSync(contentsClient);
+        assertZeroHeight(mTestContainerView);
 
         final int widthCss = 142;
         final int heightCss = 180;
@@ -312,7 +310,7 @@ public class AndroidViewIntegrationTest {
         final int contentSizeChangeCallCount = mOnContentSizeChangedHelper.getCallCount();
         Assert.assertEquals(0, contentSizeChangeCallCount);
         mActivityTestRule.loadDataAsync(
-                testContainerView.getAwContents(), htmlData, "text/html", false);
+                mTestContainerView.getAwContents(), htmlData, "text/html", false);
 
         waitForContentSizeToChangeTo(mOnContentSizeChangedHelper, contentSizeChangeCallCount,
                 widthCss, heightCss);
@@ -323,12 +321,11 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testViewIsNotBlankInWrapContentsMode() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView =
-                createCustomTestContainerViewOnMainSync(contentsClient, View.VISIBLE);
-        assertZeroHeight(testContainerView);
+        mTestContainerView = createCustomTestContainerViewOnMainSync(contentsClient, View.VISIBLE);
+        assertZeroHeight(mTestContainerView);
 
         final double deviceDIPScale =
-                GraphicsTestUtils.dipScaleForContext(testContainerView.getContext());
+                GraphicsTestUtils.dipScaleForContext(mTestContainerView.getContext());
         final int contentHeightCss = 180;
 
         // In wrap-content mode the AwLayoutSizer will size the view to be as wide as the parent
@@ -337,11 +334,10 @@ public class AndroidViewIntegrationTest {
                 (int) Math.ceil(getRootLayoutWidthOnMainThread() / deviceDIPScale);
         final int expectedHeightCss = contentHeightCss;
 
-        loadPageOfSizeAndWaitForSizeChange(testContainerView.getAwContents(),
+        loadPageOfSizeAndWaitForSizeChange(mTestContainerView.getAwContents(),
                 mOnContentSizeChangedHelper, expectedWidthCss, expectedHeightCss, false);
 
-        GraphicsTestUtils.pollForBackgroundColor(
-                testContainerView.getAwContents(), 0xFF227788);
+        GraphicsTestUtils.pollForBackgroundColor(mTestContainerView.getAwContents(), 0xFF227788);
     }
 
     @Test
@@ -349,12 +345,11 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testViewSizedCorrectlyInWrapContentMode() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView = createCustomTestContainerViewOnMainSync(
-                contentsClient, View.VISIBLE);
-        assertZeroHeight(testContainerView);
+        mTestContainerView = createCustomTestContainerViewOnMainSync(contentsClient, View.VISIBLE);
+        assertZeroHeight(mTestContainerView);
 
         final double deviceDIPScale =
-                GraphicsTestUtils.dipScaleForContext(testContainerView.getContext());
+                GraphicsTestUtils.dipScaleForContext(mTestContainerView.getContext());
         final int contentHeightCss = 180;
 
         // In wrap-content mode the AwLayoutSizer will size the view to be as wide as the parent
@@ -363,7 +358,7 @@ public class AndroidViewIntegrationTest {
                 (int) Math.ceil(getRootLayoutWidthOnMainThread() / deviceDIPScale);
         final int expectedHeightCss = contentHeightCss;
 
-        loadPageOfSizeAndWaitForSizeChange(testContainerView.getAwContents(),
+        loadPageOfSizeAndWaitForSizeChange(mTestContainerView.getAwContents(),
                 mOnContentSizeChangedHelper, expectedWidthCss, expectedHeightCss, false);
 
         waitForNoLayoutsPending();
@@ -376,19 +371,18 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testViewSizedCorrectlyInWrapContentModeWithDynamicContents() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView = createCustomTestContainerViewOnMainSync(
-                contentsClient, View.VISIBLE);
-        assertZeroHeight(testContainerView);
+        mTestContainerView = createCustomTestContainerViewOnMainSync(contentsClient, View.VISIBLE);
+        assertZeroHeight(mTestContainerView);
 
         final double deviceDIPScale =
-                GraphicsTestUtils.dipScaleForContext(testContainerView.getContext());
+                GraphicsTestUtils.dipScaleForContext(mTestContainerView.getContext());
         final int contentHeightCss = 180;
 
         final int expectedWidthCss =
                 (int) Math.ceil(getRootLayoutWidthOnMainThread() / deviceDIPScale);
         final int expectedHeightCss = contentHeightCss;
 
-        loadPageOfSizeAndWaitForSizeChange(testContainerView.getAwContents(),
+        loadPageOfSizeAndWaitForSizeChange(mTestContainerView.getAwContents(),
                 mOnContentSizeChangedHelper, expectedWidthCss, contentHeightCss, true);
 
         waitForNoLayoutsPending();
@@ -401,12 +395,11 @@ public class AndroidViewIntegrationTest {
     @Feature({"AndroidWebView"})
     public void testReceivingSizeAfterLoadUpdatesLayout() throws Throwable {
         final TestAwContentsClient contentsClient = new TestAwContentsClient();
-        final AwTestContainerView testContainerView = createDetachedTestContainerViewOnMainSync(
-                contentsClient);
-        final AwContents awContents = testContainerView.getAwContents();
+        mTestContainerView = createDetachedTestContainerViewOnMainSync(contentsClient);
+        final AwContents awContents = mTestContainerView.getAwContents();
 
         final double deviceDIPScale =
-                GraphicsTestUtils.dipScaleForContext(testContainerView.getContext());
+                GraphicsTestUtils.dipScaleForContext(mTestContainerView.getContext());
         final int physicalWidth = 600;
         final int spanWidth = 42;
         final int expectedWidthCss =
@@ -432,7 +425,7 @@ public class AndroidViewIntegrationTest {
 
         contentSizeChangeCallCount = mOnContentSizeChangedHelper.getCallCount();
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> testContainerView.onSizeChanged(physicalWidth, 0, 0, 0));
+                () -> mTestContainerView.onSizeChanged(physicalWidth, 0, 0, 0));
         mOnContentSizeChangedHelper.waitForCallback(contentSizeChangeCallCount);
 
         // As a result of calling the onSizeChanged method the layout size should be updated to

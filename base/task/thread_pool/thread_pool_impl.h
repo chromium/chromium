@@ -6,15 +6,12 @@
 #define BASE_TASK_THREAD_POOL_THREAD_POOL_IMPL_H_
 
 #include <memory>
-#include <vector>
 
 #include "base/base_export.h"
 #include "base/callback.h"
-#include "base/logging.h"
-#include "base/macros.h"
+#include "base/check_op.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
-#include "base/optional.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
@@ -25,16 +22,18 @@
 #include "base/task/thread_pool/environment_config.h"
 #include "base/task/thread_pool/pooled_single_thread_task_runner_manager.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
+#include "base/task/thread_pool/service_thread.h"
 #include "base/task/thread_pool/task_source.h"
 #include "base/task/thread_pool/task_tracker.h"
 #include "base/task/thread_pool/thread_group.h"
 #include "base/task/thread_pool/thread_group_impl.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
-#include "base/updateable_sequenced_task_runner.h"
+#include "base/task/updateable_sequenced_task_runner.h"
 #include "build/build_config.h"
 
 #if defined(OS_POSIX) && !defined(OS_NACL_SFI)
 #include "base/task/thread_pool/task_tracker_posix.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #endif
 
 #if defined(OS_WIN)
@@ -42,8 +41,6 @@
 #endif
 
 namespace base {
-
-class Thread;
 
 namespace internal {
 
@@ -68,6 +65,8 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   ThreadPoolImpl(StringPiece histogram_label,
                  std::unique_ptr<TaskTrackerImpl> task_tracker);
 
+  ThreadPoolImpl(const ThreadPoolImpl&) = delete;
+  ThreadPoolImpl& operator=(const ThreadPoolImpl&) = delete;
   ~ThreadPoolImpl() override;
 
   // ThreadPoolInstance:
@@ -100,8 +99,6 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
       const TaskTraits& traits,
       SingleThreadTaskRunnerThreadMode thread_mode) override;
 #endif  // defined(OS_WIN)
-  const scoped_refptr<SequencedTaskRunner>& GetContinuationTaskRunner()
-      override;
   scoped_refptr<UpdateableSequencedTaskRunner>
   CreateUpdateableSequencedTaskRunner(const TaskTraits& traits);
 
@@ -110,27 +107,30 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   void RemoveJobTaskSource(scoped_refptr<JobTaskSource> task_source) override;
   void UpdatePriority(scoped_refptr<TaskSource> task_source,
                       TaskPriority priority) override;
+  void UpdateJobPriority(scoped_refptr<TaskSource> task_source,
+                         TaskPriority priority) override;
 
   // Returns the TimeTicks of the next task scheduled on ThreadPool (Now() if
   // immediate, nullopt if none). This is thread-safe, i.e., it's safe if tasks
   // are being posted in parallel with this call but such a situation obviously
   // results in a race as to whether this call will see the new tasks in time.
-  Optional<TimeTicks> NextScheduledRunTimeForTesting() const;
+  absl::optional<TimeTicks> NextScheduledRunTimeForTesting() const;
 
   // Forces ripe delayed tasks to be posted (e.g. when time is mocked and
   // advances faster than the real-time delay on ServiceThread).
   void ProcessRipeDelayedTasksForTesting();
 
+  // Requests that all threads started by future ThreadPoolImpls in this process
+  // have a synchronous start (if |enabled|; cancels this behavior otherwise).
+  // Must be called while no ThreadPoolImpls are alive in this process. This is
+  // exposed here on this internal API rather than as a ThreadPoolInstance
+  // configuration param because only one internal test truly needs this.
+  static void SetSynchronousThreadStartForTesting(bool enabled);
+
  private:
   // Invoked after |num_fences_| or |num_best_effort_fences_| is updated. Sets
   // the CanRunPolicy in TaskTracker and wakes up workers as appropriate.
   void UpdateCanRunPolicy();
-
-  // Returns |traits|, with priority set to TaskPriority::USER_BLOCKING if
-  // |all_tasks_user_blocking_| is set.
-  TaskTraits SetUserBlockingPriorityIfNeeded(TaskTraits traits) const;
-
-  void ReportHeartbeatMetrics() const;
 
   const ThreadGroup* GetThreadGroupForTraits(const TaskTraits& traits) const;
 
@@ -145,23 +145,19 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   // PooledTaskRunnerDelegate:
   bool PostTaskWithSequence(Task task,
                             scoped_refptr<Sequence> sequence) override;
-  bool ShouldYield(const TaskSource* task_source) const override;
+  bool ShouldYield(const TaskSource* task_source) override;
 
   const std::unique_ptr<TaskTrackerImpl> task_tracker_;
-  std::unique_ptr<Thread> service_thread_;
+  ServiceThread service_thread_;
   DelayedTaskManager delayed_task_manager_;
   PooledSingleThreadTaskRunnerManager single_thread_task_runner_manager_;
 
-  // Indicates that all tasks are handled as if they had been posted with
-  // TaskPriority::USER_BLOCKING. Since this is set in Start(), it doesn't apply
-  // to tasks posted before Start() or to tasks posted to TaskRunners created
-  // before Start().
-  //
-  // TODO(fdoray): Remove after experiment. https://crbug.com/757022
-  AtomicFlag all_tasks_user_blocking_;
-
   std::unique_ptr<ThreadGroup> foreground_thread_group_;
-  std::unique_ptr<ThreadGroupImpl> background_thread_group_;
+  std::unique_ptr<ThreadGroup> background_thread_group_;
+
+  bool disable_job_yield_ = false;
+  bool disable_fair_scheduling_ = false;
+  std::atomic<bool> disable_job_update_priority_{false};
 
   // Whether this TaskScheduler was started. Access controlled by
   // |sequence_checker_|.
@@ -190,8 +186,6 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
   SEQUENCE_CHECKER(sequence_checker_);
 
   TrackedRefFactory<ThreadGroup::Delegate> tracked_ref_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadPoolImpl);
 };
 
 }  // namespace internal

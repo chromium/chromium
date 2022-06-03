@@ -36,29 +36,29 @@ SVGClipPathElement::SVGClipPathElement(Document& document)
   AddToPropertyMap(clip_path_units_);
 }
 
-void SVGClipPathElement::Trace(blink::Visitor* visitor) {
+void SVGClipPathElement::Trace(Visitor* visitor) const {
   visitor->Trace(clip_path_units_);
   SVGGraphicsElement::Trace(visitor);
 }
 
-void SVGClipPathElement::SvgAttributeChanged(const QualifiedName& attr_name) {
-  if (attr_name == svg_names::kClipPathUnitsAttr) {
+void SVGClipPathElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  if (params.name == svg_names::kClipPathUnitsAttr) {
     SVGElement::InvalidationGuard invalidation_guard(this);
 
-    LayoutSVGResourceContainer* layout_object =
-        ToLayoutSVGResourceContainer(GetLayoutObject());
+    auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject());
     if (layout_object)
       layout_object->InvalidateCacheAndMarkForLayout();
     return;
   }
 
-  SVGGraphicsElement::SvgAttributeChanged(attr_name);
+  SVGGraphicsElement::SvgAttributeChanged(params);
 }
 
 void SVGClipPathElement::ChildrenChanged(const ChildrenChange& change) {
   SVGGraphicsElement::ChildrenChanged(change);
 
-  if (change.by_parser)
+  if (change.ByParser())
     return;
 
   if (LayoutObject* object = GetLayoutObject()) {
@@ -69,7 +69,7 @@ void SVGClipPathElement::ChildrenChanged(const ChildrenChange& change) {
 
 LayoutObject* SVGClipPathElement::CreateLayoutObject(const ComputedStyle&,
                                                      LegacyLayout) {
-  return new LayoutSVGResourceClipper(this);
+  return MakeGarbageCollected<LayoutSVGResourceClipper>(this);
 }
 
 }  // namespace blink

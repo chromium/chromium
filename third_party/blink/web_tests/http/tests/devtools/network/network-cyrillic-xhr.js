@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Tests cyrillic xhr content is correctly loaded in inspector.
     https://bugs.webkit.org/show_bug.cgi?id=79026\n`);
-  await TestRunner.loadModule('network_test_runner');
+  await TestRunner.loadTestModule('network_test_runner');
   await TestRunner.showPanel('network');
 
   function dumpRequest(request, callback) {

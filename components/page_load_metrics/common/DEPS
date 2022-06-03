@@ -2,4 +2,5 @@ include_rules = [
   "+base",
   "+net/base",
   "+third_party/blink/public",
+  "+ui/gfx/geometry",
 ]

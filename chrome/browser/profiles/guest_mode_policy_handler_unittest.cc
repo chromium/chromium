@@ -4,6 +4,7 @@
 
 #include "chrome/browser/profiles/guest_mode_policy_handler.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/browser_signin_policy_handler.h"
 #include "chrome/common/pref_names.h"
@@ -16,6 +17,9 @@ namespace policy {
 
 class GuestModePolicyHandlerTest : public ::testing::Test {
  public:
+  GuestModePolicyHandlerTest() = default;
+
+ public:
   void SetUp() override {
     prefs_.Clear();
     policies_.Clear();
@@ -24,14 +28,12 @@ class GuestModePolicyHandlerTest : public ::testing::Test {
  protected:
   void SetUpPolicy(const char* policy_name, bool value) {
     policies_.Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                  POLICY_SOURCE_PLATFORM, std::make_unique<base::Value>(value),
-                  nullptr);
+                  POLICY_SOURCE_PLATFORM, base::Value(value), nullptr);
   }
 
   void SetUpPolicy(const char* policy_name, int value) {
     policies_.Set(policy_name, POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
-                  POLICY_SOURCE_PLATFORM, std::make_unique<base::Value>(value),
-                  nullptr);
+                  POLICY_SOURCE_PLATFORM, base::Value(value), nullptr);
   }
 
   PolicyMap policies_;

@@ -9,15 +9,30 @@
 
 #import "cwv_export.h"
 
-#import "ios/web_view/public/cwv_back_forward_list_item.h"
-
 NS_ASSUME_NONNULL_BEGIN
 
+@class CWVBackForwardListItem;
 @class CWVWebView;
 
 // This just behaves like a NSArray<CWVBackForwardListItem*>.
+//
+// |objectAtIndexedSubscript:| and |NSFastEnumeration| are implemented to
+// allow to use [] operator and a for-in statement to iterate |self|, like:
+//   for (CWVBackForwardListItem* item in backList) { ... }
+//   CWVBackForwardListItem* lastItem = backList[backList.count-1];
+//
+// WARNING: Do not use nested for-in statements to iterate one list at the
+// same time, otherwise it will cause a use-after-free bug. Example:
+//   for (CWVBackForwardListItem* item in forwardList) {  // OK
+//     for (CWVBackForwardListItem* item2 in forwardList) {  // BAD!!
+//       // |item| will be deallocated here so the above line is BAD!
+//     }
+//     // |item| has been deallocated, so using |item| will cause a
+//     // use-after-free bug.
+//     for (CWVBackForwardListItem* item2 in backList) {}  // OK
+//   }
 CWV_EXPORT
-@interface CWVBackForwardListItemArray : NSObject
+@interface CWVBackForwardListItemArray : NSObject <NSFastEnumeration>
 
 // The number of items in this array-like |self|.
 @property(nonatomic, readonly) NSUInteger count;

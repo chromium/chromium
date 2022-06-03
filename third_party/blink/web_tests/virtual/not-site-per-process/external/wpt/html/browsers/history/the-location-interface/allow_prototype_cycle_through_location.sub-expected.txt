@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL same-origin, same-window location cycle Immutable prototype object '#<Location>' cannot have their prototype set
+PASS cross-origin location has null prototype
+FAIL same-origin, different-window location cycle Immutable prototype object '[object Location]' cannot have their prototype set
+FAIL cross-origin, but joined via document.domain, location cycle Immutable prototype object '[object Location]' cannot have their prototype set
+Harness: the test ran to completion.
+

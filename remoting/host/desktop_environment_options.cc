@@ -7,8 +7,8 @@
 #include <string>
 #include <utility>
 
-#include "base/optional.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if defined(OS_WIN)
 #include "remoting/host/win/evaluate_d3d.h"
@@ -103,17 +103,42 @@ void DesktopEnvironmentOptions::set_enable_file_transfer(bool enabled) {
   enable_file_transfer_ = enabled;
 }
 
+bool DesktopEnvironmentOptions::enable_remote_open_url() const {
+  return enable_remote_open_url_;
+}
+
+void DesktopEnvironmentOptions::set_enable_remote_open_url(bool enabled) {
+  enable_remote_open_url_ = enabled;
+}
+
+bool DesktopEnvironmentOptions::enable_remote_webauthn() const {
+  return enable_remote_webauthn_;
+}
+
+void DesktopEnvironmentOptions::set_enable_remote_webauthn(bool enabled) {
+  enable_remote_webauthn_ = enabled;
+}
+
+const absl::optional<size_t>& DesktopEnvironmentOptions::clipboard_size()
+    const {
+  return clipboard_size_;
+}
+
+void DesktopEnvironmentOptions::set_clipboard_size(
+    absl::optional<size_t> clipboard_size) {
+  clipboard_size_ = std::move(clipboard_size);
+}
+
 void DesktopEnvironmentOptions::ApplySessionOptions(
     const SessionOptions& options) {
 #if defined(OS_WIN)
-  base::Optional<bool> directx_capturer =
-      options.GetBool("DirectX-Capturer");
+  absl::optional<bool> directx_capturer = options.GetBool("DirectX-Capturer");
   if (directx_capturer) {
     desktop_capture_options_.set_allow_directx_capturer(*directx_capturer);
   }
 #endif
   // This field is for test purpose. Usually it should not be set to false.
-  base::Optional<bool> detect_updated_region =
+  absl::optional<bool> detect_updated_region =
       options.GetBool("Detect-Updated-Region");
   if (detect_updated_region) {
     desktop_capture_options_.set_detect_updated_region(*detect_updated_region);

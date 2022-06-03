@@ -1,57 +1,39 @@
 #!/usr/bin/env lucicfg
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
 # See https://chromium.googlesource.com/infra/luci/luci-go/+/HEAD/lucicfg/doc/README.md
 # for information on starlark/lucicfg
 
+load("//lib/branches.star", "branches")
+
+lucicfg.check_version(
+    min = "1.28.0",
+    message = "Update depot_tools",
+)
+
+# Enable LUCI Realms support.
+lucicfg.enable_experiment("crbug.com/1085650")
+
 # Tell lucicfg what files it is allowed to touch
 lucicfg.config(
-    config_dir = 'generated',
+    config_dir = "generated",
     tracked_files = [
-        'cr-buildbucket-dev.cfg',
-        'luci-logdog-dev.cfg',
-        'luci-milo-dev.cfg',
-        'luci-scheduler-dev.cfg',
+        "luci/chops-weetbix-dev.cfg",
+        "luci/cr-buildbucket-dev.cfg",
+        "luci/luci-logdog-dev.cfg",
+        "luci/luci-milo-dev.cfg",
+        "luci/luci-scheduler-dev.cfg",
+        "luci/realms-dev.cfg",
     ],
     fail_on_warnings = True,
 )
 
-luci.project(
-    name = 'chromium',
-    buildbucket = 'cr-buildbucket-dev.appspot.com',
-    logdog = 'luci-logdog-dev.appspot.com',
-    milo = 'luci-milo-dev.appspot.com',
-    scheduler = 'luci-scheduler-dev.appspot.com',
-    swarming = 'chromium-swarm-dev.appspot.com',
-    acls = [
-        acl.entry(
-            roles = [
-                acl.LOGDOG_READER,
-                acl.PROJECT_CONFIGS_READER,
-                acl.SCHEDULER_READER,
-            ],
-            groups = 'all',
-        ),
-        acl.entry(
-            roles = acl.LOGDOG_WRITER,
-            groups = 'luci-logdog-chromium-dev-writers',
-        ),
-        acl.entry(
-            roles = acl.SCHEDULER_OWNER,
-            groups = 'project-chromium-admins',
-        ),
-    ],
+# Just copy chops-weetbix-dev.cfg to generated outputs.
+lucicfg.emit(
+    dest = "luci/chops-weetbix-dev.cfg",
+    data = io.read_file("chops-weetbix-dev.cfg"),
 )
 
-luci.logdog(
-    gs_bucket = 'chromium-luci-logdog',
-)
-
-luci.milo(
-    logo = 'https://storage.googleapis.com/chrome-infra-public/logo/chromium.svg',
-)
-
-exec('//dev/buckets/ci.star')
-exec('//dev/buckets/cron.star')
-exec('//dev/buckets/try.star')
-
-exec('//dev/consoles/chromium.swarm.star')
-exec('//dev/consoles/snapshots.star')
+branches.exec("//dev/dev.star")

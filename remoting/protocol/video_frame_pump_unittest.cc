@@ -4,13 +4,14 @@
 
 #include "remoting/protocol/video_frame_pump.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "remoting/base/auto_thread.h"
 #include "remoting/base/auto_thread_task_runner.h"
@@ -78,6 +79,10 @@ class ThreadCheckVideoEncoder : public VideoEncoderVerbatim {
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner) {
   }
+
+  ThreadCheckVideoEncoder(const ThreadCheckVideoEncoder&) = delete;
+  ThreadCheckVideoEncoder& operator=(const ThreadCheckVideoEncoder&) = delete;
+
   ~ThreadCheckVideoEncoder() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
@@ -89,8 +94,6 @@ class ThreadCheckVideoEncoder : public VideoEncoderVerbatim {
 
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckVideoEncoder);
 };
 
 class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
@@ -98,6 +101,11 @@ class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
   ThreadCheckDesktopCapturer(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner), callback_(nullptr) {}
+
+  ThreadCheckDesktopCapturer(const ThreadCheckDesktopCapturer&) = delete;
+  ThreadCheckDesktopCapturer& operator=(const ThreadCheckDesktopCapturer&) =
+      delete;
+
   ~ThreadCheckDesktopCapturer() override {
     EXPECT_TRUE(task_runner_->BelongsToCurrentThread());
   }
@@ -134,8 +142,6 @@ class ThreadCheckDesktopCapturer : public webrtc::DesktopCapturer {
  private:
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
   webrtc::DesktopCapturer::Callback* callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(ThreadCheckDesktopCapturer);
 };
 
 class VideoFramePumpTest : public testing::Test {
@@ -190,8 +196,9 @@ TEST_F(VideoFramePumpTest, StartAndStop) {
       .RetiresOnSaturation();
 
   // Start video frame capture.
-  pump_.reset(new VideoFramePump(encode_task_runner_, std::move(capturer),
-                                 std::move(encoder), &video_stub_));
+  pump_ =
+      std::make_unique<VideoFramePump>(encode_task_runner_, std::move(capturer),
+                                       std::move(encoder), &video_stub_);
 
   // Run MessageLoop until the first frame is received.
   run_loop.Run();
@@ -205,7 +212,7 @@ TEST_F(VideoFramePumpTest, NullFrame) {
   base::RunLoop run_loop;
 
   // Set up the capturer to return null frames.
-  capturer->set_frame_generator(base::Bind(&CreateNullFrame));
+  capturer->set_frame_generator(base::BindRepeating(&CreateNullFrame));
 
   // Expect that the VideoEncoder::Encode() method is never called.
   EXPECT_CALL(*encoder, EncodePtr(_)).Times(0);
@@ -217,8 +224,9 @@ TEST_F(VideoFramePumpTest, NullFrame) {
       .RetiresOnSaturation();
 
   // Start video frame capture.
-  pump_.reset(new VideoFramePump(encode_task_runner_, std::move(capturer),
-                                 std::move(encoder), &video_stub_));
+  pump_ =
+      std::make_unique<VideoFramePump>(encode_task_runner_, std::move(capturer),
+                                       std::move(encoder), &video_stub_);
 
   // Run MessageLoop until the first frame is received..
   run_loop.Run();
@@ -232,7 +240,7 @@ TEST_F(VideoFramePumpTest, UnchangedFrame) {
   base::RunLoop run_loop;
 
   // Set up the capturer to return unchanged frames.
-  capturer->set_frame_generator(base::Bind(&CreateUnchangedFrame));
+  capturer->set_frame_generator(base::BindRepeating(&CreateUnchangedFrame));
 
   // Expect that the VideoEncoder::Encode() method is called.
   EXPECT_CALL(*encoder, EncodePtr(_)).WillRepeatedly(Return(nullptr));
@@ -245,8 +253,9 @@ TEST_F(VideoFramePumpTest, UnchangedFrame) {
       .RetiresOnSaturation();
 
   // Start video frame capture.
-  pump_.reset(new VideoFramePump(encode_task_runner_, std::move(capturer),
-                                 std::move(encoder), &video_stub_));
+  pump_ =
+      std::make_unique<VideoFramePump>(encode_task_runner_, std::move(capturer),
+                                       std::move(encoder), &video_stub_);
 
   // Run MessageLoop until the first frame is received.
   run_loop.Run();

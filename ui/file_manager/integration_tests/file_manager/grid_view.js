@@ -2,7 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
+import {addEntries, ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
+import {testcase} from '../testcase.js';
+
+import {openNewWindow, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {BASIC_DRIVE_ENTRY_SET, BASIC_LOCAL_ENTRY_SET} from './test_data.js';
 
 /**
  * Shows the grid view and checks the label texts of entries.
@@ -21,6 +25,20 @@ async function showGridView(rootPath, expectedSet) {
 
   // Open Files app on |rootPath|.
   const appId = await setupAndWaitUntilReady(rootPath);
+  const isBannersFrameworkEnabled =
+      await sendTestMessage({name: 'isBannersFrameworkEnabled'}) === 'true';
+
+  // Disable all banners.
+  if (isBannersFrameworkEnabled) {
+    await remoteCall.disableBannersForTesting(appId);
+  }
+
+  // Dismiss the Drive banners so Grid View can display the all entries.
+  if (rootPath === RootPath.DRIVE && !isBannersFrameworkEnabled) {
+    await remoteCall.waitAndClickElement(
+        appId, '.drive-welcome-wrapper .banner-close');
+    await remoteCall.waitAndClickElement(appId, '#offline-learn-more');
+  }
 
   // Click the grid view button.
   await remoteCall.waitForElement(appId, '#view-button');
@@ -101,4 +119,73 @@ testcase.showGridViewKeyboardSelectionA11y = async () => {
 testcase.showGridViewMouseSelectionA11y = async () => {
   const isGridView = true;
   return testcase.fileListMouseSelectionA11y(isGridView);
+};
+
+/**
+ * Tests that Grid View shows "Folders" and "Files" titles before folders and
+ * files respectively.
+ */
+testcase.showGridViewTitles = async () => {
+  const appId = await showGridView(RootPath.DOWNLOADS, BASIC_LOCAL_ENTRY_SET);
+
+  const titles = await remoteCall.callRemoteTestUtil(
+      'queryAllElements', appId, ['.thumbnail-grid .grid-title']);
+  chrome.test.assertEq(2, titles.length, 'Grid view should show 2 titles');
+  const titleTexts = titles.map((title) => title.text).sort();
+  chrome.test.checkDeepEq(['Files', 'Folders'], titleTexts);
+};
+
+/**
+ * Tests that Grid View shows DocumentsProvider thumbnails.
+ */
+testcase.showGridViewDocumentsProvider = async () => {
+  const caller = getCaller();
+
+  // Add files to the DocumentsProvider volume.
+  await addEntries(['documents_provider'], BASIC_LOCAL_ENTRY_SET);
+
+  // Open Files app.
+  const appId = await openNewWindow(RootPath.DOWNLOADS);
+
+  // Wait for the DocumentsProvider volume to mount.
+  const documentsProviderVolumeQuery =
+      '[has-children="true"] [volume-type-icon="documents_provider"]';
+  await remoteCall.waitForElement(appId, documentsProviderVolumeQuery);
+
+  // Click to open the DocumentsProvider volume.
+  chrome.test.assertTrue(
+      !!await remoteCall.callRemoteTestUtil(
+          'fakeMouseClick', appId, [documentsProviderVolumeQuery]),
+      'fakeMouseClick failed');
+
+  // Click the grid view button.
+  await remoteCall.waitForElement(appId, '#view-button');
+  await remoteCall.callRemoteTestUtil(
+      'fakeEvent', appId, ['#view-button', 'click']);
+
+  // Wait for the grid view to load.
+  await remoteCall.callRemoteTestUtil(
+      'queryAllElements', appId, ['grid:not([hidden])']);
+
+  // Check that all DocumentsProvider thumbnails are loaded where expected.
+  await repeatUntil(async () => {
+    for (const [fname, hasThumbnail] of [
+             [ENTRIES.hello.targetPath, false],
+             [ENTRIES.world.targetPath, true],
+             [ENTRIES.desktop.targetPath, true],
+             [ENTRIES.beautiful.targetPath, false],
+             [ENTRIES.photos.targetPath, false],
+    ]) {
+      const item = await remoteCall.waitForElement(
+          appId, `#file-list [file-name="${fname}"]`);
+      const thumbnailLoaded =
+          item.attributes['class'].split(/\s+/).includes('thumbnail-loaded');
+      if (thumbnailLoaded !== hasThumbnail) {
+        return pending(
+            caller, 'Unexpected thumbnail state for %j: %j', fname,
+            hasThumbnail);
+      }
+    }
+    return true;
+  });
 };

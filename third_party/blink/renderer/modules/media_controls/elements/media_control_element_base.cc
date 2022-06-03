@@ -24,6 +24,9 @@ bool MediaControlElementBase::IsWanted() const {
 }
 
 void MediaControlElementBase::SetDoesFit(bool fits) {
+  if (does_fit_ == fits)
+    return;
+
   does_fit_ = fits;
   UpdateShownState();
 }
@@ -62,7 +65,7 @@ HTMLMediaElement& MediaControlElementBase::MediaElement() const {
   return GetMediaControls().MediaElement();
 }
 
-void MediaControlElementBase::Trace(blink::Visitor* visitor) {
+void MediaControlElementBase::Trace(Visitor* visitor) const {
   visitor->Trace(media_controls_);
   visitor->Trace(element_);
 }

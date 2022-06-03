@@ -155,8 +155,8 @@ int WebPWritePNG(const char* out_file_name, int use_stdout,
 }
 
 #elif defined(WEBP_HAVE_PNG)    // !HAVE_WINCODEC_H
-static void PNGAPI PNGErrorFunction(png_structp png, png_const_charp dummy) {
-  (void)dummy;  // remove variable-unused warning
+static void PNGAPI PNGErrorFunction(png_structp png, png_const_charp unused) {
+  (void)unused;  // remove variable-unused warning
   longjmp(png_jmpbuf(png), 1);
 }
 
@@ -320,7 +320,7 @@ int WebPWriteBMP(FILE* fout, const WebPDecBuffer* const buffer) {
   PutLE16(bmp_header + 26, 1);                    // number of planes
   PutLE16(bmp_header + 28, bytes_per_px * 8);     // bits per pixel
   PutLE32(bmp_header + 30, 0);                    // no compression (BI_RGB)
-  PutLE32(bmp_header + 34, 0);                    // image size (dummy)
+  PutLE32(bmp_header + 34, 0);                    // image size (placeholder)
   PutLE32(bmp_header + 38, 2400);                 // x pixels/meter
   PutLE32(bmp_header + 42, 2400);                 // y pixels/meter
   PutLE32(bmp_header + 46, 0);                    // number of palette colors

@@ -8,23 +8,25 @@
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
-#include "chrome/browser/chromeos/login/users/mock_user_manager.h"
-#include "chrome/browser/chromeos/settings/scoped_cros_settings_test_helper.h"
+#include "base/test/mock_callback.h"
+#include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "chromeos/dbus/fake_update_engine_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
-#include "chromeos/network/network_handler.h"
+#include "chromeos/dbus/update_engine/fake_update_engine_client.h"
+#include "chromeos/network/network_handler_test_helper.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
+using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Return;
+using ::testing::StrictMock;
 
 namespace chromeos {
 
@@ -33,16 +35,23 @@ namespace {
 void CheckNotification(VersionUpdater::Status /* status */,
                        int /* progress */,
                        bool /* rollback */,
+                       bool /* powerwash */,
                        const std::string& /* version */,
                        int64_t /* size */,
-                       const base::string16& /* message */) {}
+                       const std::u16string& /* message */) {}
 
 }  // namespace
 
 class VersionUpdaterCrosTest : public ::testing::Test {
+ public:
+  VersionUpdaterCrosTest(const VersionUpdaterCrosTest&) = delete;
+  VersionUpdaterCrosTest& operator=(const VersionUpdaterCrosTest&) = delete;
+
  protected:
   VersionUpdaterCrosTest()
       : version_updater_(VersionUpdater::Create(nullptr)),
+        version_updater_cros_ptr_(
+            reinterpret_cast<VersionUpdaterCros*>(version_updater_.get())),
         fake_update_engine_client_(NULL),
         mock_user_manager_(new MockUserManager()),
         user_manager_enabler_(base::WrapUnique(mock_user_manager_)) {}
@@ -51,22 +60,21 @@ class VersionUpdaterCrosTest : public ::testing::Test {
 
   void SetUp() override {
     fake_update_engine_client_ = new FakeUpdateEngineClient();
-    std::unique_ptr<DBusThreadManagerSetter> dbus_setter =
-        DBusThreadManager::GetSetterForTesting();
-    dbus_setter->SetUpdateEngineClient(
+    DBusThreadManager::Initialize();
+    DBusThreadManager::GetSetterForTesting()->SetUpdateEngineClient(
         std::unique_ptr<UpdateEngineClient>(fake_update_engine_client_));
 
     EXPECT_CALL(*mock_user_manager_, IsCurrentUserOwner())
         .WillRepeatedly(Return(false));
     EXPECT_CALL(*mock_user_manager_, Shutdown()).Times(AtLeast(0));
 
-    NetworkHandler::Initialize();
+    network_handler_test_helper_ = std::make_unique<NetworkHandlerTestHelper>();
     base::RunLoop().RunUntilIdle();
   }
 
   void SetEthernetService() {
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        network_handler_test_helper_->service_test();
     service_test->ClearServices();
     service_test->AddService("/service/eth",
                              "eth" /* guid */,
@@ -78,7 +86,7 @@ class VersionUpdaterCrosTest : public ::testing::Test {
 
   void SetCellularService() {
     ShillServiceClient::TestInterface* service_test =
-        DBusThreadManager::Get()->GetShillServiceClient()->GetTestInterface();
+        network_handler_test_helper_->service_test();
     service_test->ClearServices();
     service_test->AddService("/service/cell", "cell" /* guid */, "cell",
                              shill::kTypeCellular, shill::kStateOnline,
@@ -87,18 +95,20 @@ class VersionUpdaterCrosTest : public ::testing::Test {
   }
 
   void TearDown() override {
-    NetworkHandler::Shutdown();
+    network_handler_test_helper_.reset();
+    version_updater_.reset();
+    DBusThreadManager::Shutdown();
   }
 
   content::BrowserTaskEnvironment task_environment_;
+  std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   std::unique_ptr<VersionUpdater> version_updater_;
+  VersionUpdaterCros* version_updater_cros_ptr_;
   FakeUpdateEngineClient* fake_update_engine_client_;  // Not owned.
 
   MockUserManager* mock_user_manager_;  // Not owned.
   user_manager::ScopedUserManager user_manager_enabler_;
   ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-
-  DISALLOW_COPY_AND_ASSIGN(VersionUpdaterCrosTest);
 };
 
 // The test checks following behaviour:
@@ -125,7 +135,7 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
   EXPECT_EQ(0, fake_update_engine_client_->request_update_check_call_count());
 
   // IDLE -> DOWNLOADING transition after update check.
-  version_updater_->CheckForUpdate(base::Bind(&CheckNotification),
+  version_updater_->CheckForUpdate(base::BindRepeating(&CheckNotification),
                                    VersionUpdater::PromoteCallback());
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 
@@ -149,7 +159,7 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
     fake_update_engine_client_->NotifyObserversThatStatusChanged(status);
   }
 
-  version_updater_->CheckForUpdate(base::Bind(&CheckNotification),
+  version_updater_->CheckForUpdate(base::BindRepeating(&CheckNotification),
                                    VersionUpdater::PromoteCallback());
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 
@@ -171,7 +181,7 @@ TEST_F(VersionUpdaterCrosTest, TwoOverlappingSetChannelRequests) {
 TEST_F(VersionUpdaterCrosTest, InteractiveCellularUpdateAllowed) {
   SetCellularService();
   EXPECT_EQ(0, fake_update_engine_client_->request_update_check_call_count());
-  version_updater_->CheckForUpdate(base::Bind(&CheckNotification),
+  version_updater_->CheckForUpdate(base::BindRepeating(&CheckNotification),
                                    VersionUpdater::PromoteCallback());
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
 }
@@ -184,8 +194,30 @@ TEST_F(VersionUpdaterCrosTest, CellularUpdateOneTimePermission) {
   const std::string& update_version = "9999.0.0";
   const int64_t update_size = 99999;
   version_updater_->SetUpdateOverCellularOneTimePermission(
-      base::Bind(&CheckNotification), update_version, update_size);
+      base::BindRepeating(&CheckNotification), update_version, update_size);
   EXPECT_EQ(1, fake_update_engine_client_->request_update_check_call_count());
+}
+
+TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_NoCallbackDuringInstallations) {
+  SetEthernetService();
+  update_engine::StatusResult status;
+  status.set_is_install(true);
+  fake_update_engine_client_->set_default_status(status);
+
+  // Expect the callback not to be called as it's an installation (not update).
+  StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
+}
+
+TEST_F(VersionUpdaterCrosTest, GetUpdateStatus_CallbackDuringUpdates) {
+  SetEthernetService();
+  update_engine::StatusResult status;
+  fake_update_engine_client_->set_default_status(status);
+
+  // Expect the callbac kto be called as it's an update status change.
+  StrictMock<base::MockCallback<VersionUpdater::StatusCallback>> mock_callback;
+  EXPECT_CALL(mock_callback, Run(_, _, _, _, _, _, _)).Times(1);
+  version_updater_cros_ptr_->GetUpdateStatus(mock_callback.Get());
 }
 
 }  // namespace chromeos

@@ -6,7 +6,6 @@
 
 #include <string>
 
-#include "base/logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace storage {

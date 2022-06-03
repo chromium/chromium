@@ -60,6 +60,10 @@ class DeviceInfoSetTraits {
  public:
   typedef HDEVINFO Handle;
 
+  DeviceInfoSetTraits() = delete;
+  DeviceInfoSetTraits(const DeviceInfoSetTraits&) = delete;
+  DeviceInfoSetTraits& operator=(const DeviceInfoSetTraits&) = delete;
+
   static bool CloseHandle(HDEVINFO handle) {
     return ::SetupDiDestroyDeviceInfoList(handle) != FALSE;
   }
@@ -69,9 +73,6 @@ class DeviceInfoSetTraits {
   }
 
   static HDEVINFO NullHandle() { return INVALID_HANDLE_VALUE; }
-
- private:
-  DISALLOW_IMPLICIT_CONSTRUCTORS(DeviceInfoSetTraits);
 };
 
 typedef base::win::GenericScopedHandle<DeviceInfoSetTraits,
@@ -459,8 +460,7 @@ bool CollectBluetoothLowEnergyDeviceInfo(
 
   std::unique_ptr<device::win::BluetoothLowEnergyDeviceInfo> result(
       new device::win::BluetoothLowEnergyDeviceInfo());
-  result->path = base::FilePath(
-      base::as_u16cstr(device_interface_detail_data->DevicePath));
+  result->path = base::FilePath(device_interface_detail_data->DevicePath);
   if (!CollectBluetoothLowEnergyDeviceInstanceId(
           device_info_handle, &device_info_data, result, error)) {
     return false;
@@ -801,20 +801,15 @@ HRESULT BluetoothLowEnergyWrapper::ReadCharacteristicValue(
 HRESULT BluetoothLowEnergyWrapper::WriteCharacteristicValue(
     base::FilePath& service_path,
     const PBTH_LE_GATT_CHARACTERISTIC characteristic,
-    PBTH_LE_GATT_CHARACTERISTIC_VALUE new_value) {
+    PBTH_LE_GATT_CHARACTERISTIC_VALUE new_value,
+    ULONG flags) {
   base::File file(service_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
                                     base::File::FLAG_WRITE);
   if (!file.IsValid())
     return HRESULT_FROM_WIN32(ERROR_OPEN_FAILED);
 
-  ULONG flag = BLUETOOTH_GATT_FLAG_NONE;
-  if (!characteristic->IsWritable) {
-    DCHECK(characteristic->IsWritableWithoutResponse);
-    flag |= BLUETOOTH_GATT_FLAG_WRITE_WITHOUT_RESPONSE;
-  }
-
   return BluetoothGATTSetCharacteristicValue(
-      file.GetPlatformFile(), characteristic, new_value, NULL, flag);
+      file.GetPlatformFile(), characteristic, new_value, {}, flags);
 }
 
 HRESULT BluetoothLowEnergyWrapper::RegisterGattEvents(

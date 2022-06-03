@@ -9,7 +9,7 @@ import android.content.Context;
 import org.chromium.base.CommandLine;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
-import org.chromium.chrome.browser.util.ConversionUtils;
+import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.variations.VariationsAssociatedData;
 
 /**

@@ -6,7 +6,7 @@
 #define SERVICES_VIZ_PRIVILEGED_CPP_OVERLAY_STRATEGY_MOJOM_TRAITS_H_
 
 #include "components/viz/common/display/overlay_strategy.h"
-#include "services/viz/privileged/mojom/compositing/overlay_strategy.mojom.h"
+#include "services/viz/privileged/mojom/compositing/overlay_strategy.mojom-shared.h"
 
 namespace mojo {
 

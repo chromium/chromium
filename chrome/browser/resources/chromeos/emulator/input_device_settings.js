@@ -19,7 +19,7 @@ Polymer({
 
   behaviors: [WebUIListenerBehavior],
 
-  ready: function() {
+  ready() {
     this.addWebUIListener(
         'touchpad-exists-changed', this.setTouchpadExists_.bind(this));
     this.addWebUIListener(
@@ -30,7 +30,7 @@ Polymer({
    * @param {!Event} e
    * Callback when the user toggles the touchpad.
    */
-  onTouchpadChange: function(e) {
+  onTouchpadChange(e) {
     chrome.send('setHasTouchpad', [e.target.checked]);
     this.$.changeDescription.opened = true;
   },
@@ -39,7 +39,7 @@ Polymer({
    * @param {!Event} e
    * Callback when the user toggles the mouse.
    */
-  onMouseChange: function(e) {
+  onMouseChange(e) {
     chrome.send('setHasMouse', [e.target.checked]);
     this.$.changeDescription.opened = true;
   },
@@ -49,7 +49,7 @@ Polymer({
    * @param {boolean} exists
    * @private
    */
-  setMouseExists_: function(exists) {
+  setMouseExists_(exists) {
     this.$.mouse.checked = exists;
   },
 
@@ -58,7 +58,7 @@ Polymer({
    * @param {boolean} exists
    * @private
    */
-  setTouchpadExists_: function(exists) {
+  setTouchpadExists_(exists) {
     this.$.touchpad.checked = exists;
   },
 });

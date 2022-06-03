@@ -6,17 +6,21 @@
 
 #include "base/command_line.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/views/widget/widget.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/shell.h"
-#else
+#endif
+
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
 #include "chrome/browser/notifications/notification_ui_manager.h"
 #endif
 
@@ -26,14 +30,16 @@ void HandleAppExitingForPlatform() {
   // Close all non browser windows now. Those includes notifications
   // and windows created by Ash (launcher, background, etc).
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (ash::Shell::HasInstance()) {
     // Releasing the capture will close any menus that might be open:
     // http://crbug.com/134472
     aura::client::GetCaptureClient(ash::Shell::GetPrimaryRootWindow())
         ->SetCapture(nullptr);
   }
-#else
+#endif
+
+#if BUILDFLAG(ENABLE_CHROME_NOTIFICATIONS)
   // This clears existing notifications from the message center and their
   // associated ScopedKeepAlives. Chrome OS doesn't use ScopedKeepAlives for
   // notifications.
@@ -42,7 +48,7 @@ void HandleAppExitingForPlatform() {
 
   views::Widget::CloseAllSecondaryWidgets();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kDisableZeroBrowsersOpenForTests)) {
     // App is exiting, release the keep alive on behalf of Aura Shell.

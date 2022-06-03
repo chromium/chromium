@@ -22,6 +22,7 @@ struct VR_BASE_EXPORT UiInitialState {
   bool needs_keyboard_update = false;
   bool is_standalone_vr_device = false;
   bool create_tabs_view = false;
+  bool gvr_input_support = false;
 };
 
 }  // namespace vr

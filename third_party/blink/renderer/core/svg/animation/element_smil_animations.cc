@@ -41,7 +41,7 @@ bool ElementSMILAnimations::Apply(SMILTime elapsed) {
   return did_apply;
 }
 
-void ElementSMILAnimations::Trace(Visitor* visitor) {
+void ElementSMILAnimations::Trace(Visitor* visitor) const {
   visitor->Trace(sandwiches_);
 }
 

@@ -7,18 +7,20 @@
 
 #include "base/component_export.h"
 #include "device/fido/fido_constants.h"
+#include "device/fido/fido_types.h"
 
 namespace device {
 
 // Represents authenticator properties the relying party can specify to restrict
 // the type of authenticator used in creating credentials.
+//
 // https://w3c.github.io/webauthn/#authenticatorSelection
 class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSelectionCriteria {
  public:
   AuthenticatorSelectionCriteria();
   AuthenticatorSelectionCriteria(
       AuthenticatorAttachment authenticator_attachment,
-      bool require_resident_key,
+      ResidentKeyRequirement resident_key,
       UserVerificationRequirement user_verification_requirement);
   AuthenticatorSelectionCriteria(const AuthenticatorSelectionCriteria& other);
   AuthenticatorSelectionCriteria(AuthenticatorSelectionCriteria&& other);
@@ -33,7 +35,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSelectionCriteria {
     return authenticator_attachment_;
   }
 
-  bool require_resident_key() const { return require_resident_key_; }
+  ResidentKeyRequirement resident_key() const { return resident_key_; }
 
   UserVerificationRequirement user_verification_requirement() const {
     return user_verification_requirement_;
@@ -43,8 +45,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSelectionCriteria {
       AuthenticatorAttachment attachment) {
     authenticator_attachment_ = attachment;
   }
-  void SetRequireResidentKeyForTesting(bool require) {
-    require_resident_key_ = require;
+  void SetResidentKeyForTesting(ResidentKeyRequirement resident_key) {
+    resident_key_ = resident_key;
   }
   void SetUserVerificationRequirementForTesting(
       UserVerificationRequirement uv) {
@@ -54,7 +56,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorSelectionCriteria {
  private:
   AuthenticatorAttachment authenticator_attachment_ =
       AuthenticatorAttachment::kAny;
-  bool require_resident_key_ = false;
+  ResidentKeyRequirement resident_key_ = ResidentKeyRequirement::kDiscouraged;
   UserVerificationRequirement user_verification_requirement_ =
       UserVerificationRequirement::kPreferred;
 };

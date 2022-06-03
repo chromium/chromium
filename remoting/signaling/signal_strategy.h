@@ -80,6 +80,10 @@ class SignalStrategy {
   };
 
   SignalStrategy() {}
+
+  SignalStrategy(const SignalStrategy&) = delete;
+  SignalStrategy& operator=(const SignalStrategy&) = delete;
+
   virtual ~SignalStrategy() {}
 
   // Starts connection attempt. If connection is currently active
@@ -109,8 +113,12 @@ class SignalStrategy {
   // Remove a |listener| previously added with AddListener().
   virtual void RemoveListener(Listener* listener) = 0;
 
-  // Sends a raw XMPP stanza. Returns false if the stanza couldn't be send.
+  // Sends a raw XMPP stanza. Returns false if the stanza couldn't be sent.
   virtual bool SendStanza(std::unique_ptr<jingle_xmpp::XmlElement> stanza) = 0;
+
+  // Sends a ChromotingMessage. Returns false if the message couldn't be sent.
+  virtual bool SendMessage(const SignalingAddress& destination_address,
+                           const ftl::ChromotingMessage& message) = 0;
 
   // Returns new ID that should be used for the next outgoing IQ
   // request.
@@ -120,9 +128,6 @@ class SignalStrategy {
   // to sign in. You can get back the actual error by calling GetError().
   // The default implementation always returns false.
   virtual bool IsSignInError() const;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(SignalStrategy);
 };
 
 }  // namespace remoting

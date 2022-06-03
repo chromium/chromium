@@ -13,7 +13,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "media/base/audio_decoder_config.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -21,6 +20,7 @@
 #include "media/base/stream_parser_buffer.h"
 #include "media/formats/webm/webm_parser.h"
 #include "media/formats/webm/webm_tracks_parser.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace media {
 
@@ -46,6 +46,10 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   // to the duration of each frame of the packet in microseconds. See
   // https://tools.ietf.org/html/rfc6716#page-14
   static const uint16_t kOpusFrameDurationsMu[];
+
+  WebMClusterParser() = delete;
+  WebMClusterParser(const WebMClusterParser&) = delete;
+  WebMClusterParser& operator=(const WebMClusterParser&) = delete;
 
  private:
   typedef StreamParserBuffer::Type TrackType;
@@ -279,7 +283,11 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
 
   WebMListParser parser_;
 
-  int64_t last_block_timecode_ = -1;
+  // A |last_block_timecode_| value of -1 is not enough to indicate it is unset
+  // now that negative block timecodes are allowed, so we explicitly use
+  // absl::optional to know if it is currently set.
+  absl::optional<int64_t> last_block_timecode_ = absl::nullopt;
+
   std::unique_ptr<uint8_t[]> block_data_;
   int block_data_size_ = -1;
   int64_t block_duration_ = -1;
@@ -317,8 +325,6 @@ class MEDIA_EXPORT WebMClusterParser : public WebMParserClient {
   DecodeTimestamp ready_buffer_upper_bound_;
 
   MediaLog* media_log_;
-
-  DISALLOW_IMPLICIT_CONSTRUCTORS(WebMClusterParser);
 };
 
 }  // namespace media

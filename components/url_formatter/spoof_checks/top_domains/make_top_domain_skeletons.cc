@@ -13,25 +13,18 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/icu_util.h"
+#include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-
+#include "base/strings/utf_string_conversions.h"
+#include "components/url_formatter/spoof_checks/skeleton_generator.h"
 #include "third_party/icu/source/common/unicode/unistr.h"
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "third_party/icu/source/i18n/unicode/uspoof.h"
 
-std::string GetSkeleton(const std::string& domain,
-                        const USpoofChecker* spoof_checker) {
-  UErrorCode status = U_ZERO_ERROR;
-  icu::UnicodeString ustr_skeleton;
-  uspoof_getSkeletonUnicodeString(spoof_checker, 0 /* not used */,
-                                  icu::UnicodeString::fromUTF8(domain),
-                                  ustr_skeleton, &status);
-  std::string skeleton;
-  return U_SUCCESS(status) ? ustr_skeleton.toUTF8String(skeleton) : skeleton;
-}
+const char* kTop500Separator = "###END_TOP_500###";
 
 base::FilePath GetPath(base::StringPiece basename) {
   base::FilePath path;
@@ -52,6 +45,31 @@ bool WriteToFile(const std::string& content, base::StringPiece basename) {
   return succeeded;
 }
 
+std::string GenerateTop500OutputLine(const Skeletons& skeletons,
+                                     const Skeletons& no_separators_skeletons,
+                                     const std::string& domain) {
+  std::string output;
+  for (const std::string& skeleton : skeletons) {
+    for (const std::string& no_separators_skeleton : no_separators_skeletons) {
+      DCHECK(!skeleton.empty()) << "Empty skeleton for " << domain;
+      DCHECK(!no_separators_skeleton.empty())
+          << "Empty without separator skeleton for " << domain;
+      output += skeleton + ", " + no_separators_skeleton + ", " + domain + "\n";
+    }
+  }
+  return output;
+}
+
+std::string GenerateTop5kOutputLine(const Skeletons& skeletons,
+                                    const std::string& domain) {
+  std::string output;
+  for (const std::string& skeleton : skeletons) {
+    DCHECK(!skeleton.empty()) << "Empty skeleton for " << domain;
+    output += skeleton + ", " + domain + "\n";
+  }
+  return output;
+}
+
 int GenerateSkeletons(const char* input_file_name,
                       const char* output_file_name,
                       const USpoofChecker* spoof_checker) {
@@ -63,6 +81,10 @@ int GenerateSkeletons(const char* input_file_name,
     return 1;
   }
 
+  // These characters are used to separate labels in a hostname. We generate
+  // skeletons of top 500 domains without these separators as well. These
+  // skeletons could be used in lookalike heuristics such as Target Embedding.
+  std::u16string kLabelSeparators = u".-";
   std::stringstream input(input_content);
   std::string output =
       R"(# Copyright 2018 The Chromium Authors. All rights reserved.
@@ -73,24 +95,59 @@ int GenerateSkeletons(const char* input_file_name,
 # components/url_formatter/spoof_checks/make_top_domain_skeletons.cc
 # DO NOT MANUALLY EDIT!
 
+# This list contains top 500 domains followed by the top 5000 domains. These are
+# separated by ###END_TOP_500### line.
+
+# For top 500 domains, each row has three columns: full skeleton, skeleton
+# without label separators (e.g. '.' and '-'), and the domain itself.
+
+# For top 5000 domains, each row has two columns: full skeleton and the domain
+# itself.
+
 # Each entry is the skeleton of a top domain for the confusability check
 # in components/url_formatter/url_formatter.cc.
 
 )";
 
+  SkeletonGenerator skeleton_generator(spoof_checker);
+
   std::string domain;
   size_t max_labels = 0;
   std::string domain_with_max_labels;
+  bool is_top_500 = true;
   while (std::getline(input, domain)) {
+    base::TrimWhitespaceASCII(domain, base::TRIM_ALL, &domain);
+
+    if (domain == kTop500Separator) {
+      output += std::string(kTop500Separator) + "\n";
+      is_top_500 = false;
+      continue;
+    }
+
     if (domain[0] == '#')
       continue;
-    std::string skeleton = GetSkeleton(domain, spoof_checker);
-    if (skeleton.empty()) {
-      std::cerr << "Failed to generate the skeleton of " << domain << '\n';
-      output += "# " + domain + '\n';
+
+    const std::u16string domain16 = base::UTF8ToUTF16(domain);
+    const Skeletons skeletons = skeleton_generator.GetSkeletons(domain16);
+    DCHECK(!skeletons.empty()) << "Failed to generate skeletons of " << domain;
+
+    // Generate skeletons for domains without their separators (e.g. googlecom).
+    // These skeletons are used in target embedding lookalikes.
+    std::u16string domain16_with_no_separators;
+    base::ReplaceChars(domain16, kLabelSeparators, std::u16string(),
+                       &domain16_with_no_separators);
+    const Skeletons no_separators_skeletons =
+        skeleton_generator.GetSkeletons(domain16_with_no_separators);
+    DCHECK(!no_separators_skeletons.empty())
+        << "No skeletons generated for " << domain16_with_no_separators;
+
+    if (is_top_500) {
+      output +=
+          GenerateTop500OutputLine(skeletons, no_separators_skeletons, domain);
     } else {
-      output += skeleton + ", " + domain + "\n";
+      output += GenerateTop5kOutputLine(skeletons, domain);
     }
+
     std::vector<base::StringPiece> labels = base::SplitStringPiece(
         domain, ".", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (labels.size() > max_labels) {
@@ -128,5 +185,7 @@ int main(int argc, const char** argv) {
   }
   GenerateSkeletons("domains.list", "domains.skeletons", spoof_checker.get());
   GenerateSkeletons("test_domains.list", "test_domains.skeletons",
+                    spoof_checker.get());
+  GenerateSkeletons("browsertest_domains.list", "browsertest_domains.skeletons",
                     spoof_checker.get());
 }

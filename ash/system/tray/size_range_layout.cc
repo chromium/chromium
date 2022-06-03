@@ -6,7 +6,7 @@
 
 #include "ash/system/tray/size_range_layout.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 #include "ui/views/layout/fill_layout.h"
 
 namespace ash {

@@ -4,7 +4,10 @@
 
 import {getPatternFromSite} from 'chrome://extensions/extensions.js';
 
+import {eventToPromise} from '../test_util.js';
+
 import {TestService} from './test_service.js';
+import {MetricsPrivateMock} from './test_util.js';
 
 suite('RuntimeHostsDialog', function() {
   /** @type {RuntimeHostsDialogElement} */ let dialog;
@@ -12,7 +15,7 @@ suite('RuntimeHostsDialog', function() {
   const ITEM_ID = 'a'.repeat(32);
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     dialog = document.createElement('extensions-runtime-hosts-dialog');
 
     delegate = new TestService();
@@ -20,6 +23,8 @@ suite('RuntimeHostsDialog', function() {
     dialog.itemId = ITEM_ID;
 
     document.body.appendChild(dialog);
+
+    chrome.metricsPrivate = new MetricsPrivateMock();
   });
 
   teardown(function() {
@@ -27,7 +32,7 @@ suite('RuntimeHostsDialog', function() {
   });
 
   test('valid input', function() {
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     const site = 'http://www.example.com';
     input.value = site;
     input.fire('input');
@@ -47,7 +52,7 @@ suite('RuntimeHostsDialog', function() {
   test('invalid input', function() {
     // Initially the action button should be disabled, but the error warning
     // should not be shown for an empty input.
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     assertFalse(input.invalid);
     const submit = dialog.$.submit;
     assertTrue(submit.disabled);
@@ -69,7 +74,7 @@ suite('RuntimeHostsDialog', function() {
   test('delegate indicates invalid input', function() {
     delegate.acceptRuntimeHostPermission = false;
 
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     const site = 'http://....a';
     input.value = site;
     input.fire('input');
@@ -89,7 +94,7 @@ suite('RuntimeHostsDialog', function() {
     const newPattern = 'http://chromium.org/*';
 
     dialog.currentSite = oldPattern;
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     input.value = newPattern;
     input.fire('input');
     const submit = dialog.$.submit;
@@ -104,6 +109,14 @@ suite('RuntimeHostsDialog', function() {
         .then((args) => {
           expectEquals(ITEM_ID, args[0] /* id */);
           expectEquals(newPattern, args[1] /* pattern */);
+          return eventToPromise('close', dialog);
+        })
+        .then(() => {
+          expectFalse(dialog.isOpen());
+          expectEquals(
+              chrome.metricsPrivate.getUserActionCount(
+                  'Extensions.Settings.Hosts.AddHostDialogSubmitted'),
+              1);
         });
   });
 
@@ -121,11 +134,13 @@ suite('RuntimeHostsDialog', function() {
     expectEquals(
         'https://example.com:80/*',
         getPatternFromSite('https://example.com:80/*'));
+    expectEquals(
+        'http://localhost:3030/*', getPatternFromSite('http://localhost:3030'));
   });
 
   test('update site access', function() {
     dialog.updateHostAccess = true;
-    const input = dialog.$$('cr-input');
+    const input = dialog.shadowRoot.querySelector('cr-input');
     const site = 'http://www.example.com';
     input.value = site;
     input.fire('input');

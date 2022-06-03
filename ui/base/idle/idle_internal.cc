@@ -4,13 +4,11 @@
 
 #include "ui/base/idle/idle_internal.h"
 
-#include "base/no_destructor.h"
-
 namespace ui {
 
-base::Optional<IdleState>& IdleStateForTesting() {
-  static base::NoDestructor<base::Optional<IdleState>> idle_state;
-  return *idle_state;
+absl::optional<IdleState>& IdleStateForTesting() {
+  static absl::optional<IdleState> idle_state;
+  return idle_state;
 }
 
 }  // namespace ui

@@ -5,7 +5,7 @@
 /*
  * A mock chrome.storage API for tests.
  */
-let MockStorage = {
+const MockStorage = {
 
   /** @type {Object<string, string>} */
   prefs_: {},

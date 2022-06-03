@@ -7,7 +7,8 @@
 #ifndef CHROME_BROWSER_UI_OMNIBOX_CLIPBOARD_UTILS_H_
 #define CHROME_BROWSER_UI_OMNIBOX_CLIPBOARD_UTILS_H_
 
-#include "base/strings/string16.h"
+#include <string>
+
 
 // Truncates the clipboard text returned in order to improve performance and
 // prevent unresponsiveness. For reference, a book is about ~500k characters and
@@ -24,6 +25,8 @@ static const size_t kMaxClipboardTextLength = 500 * 1024;
 // Returns the current clipboard contents as a string that can be pasted in.
 // In addition to just getting CF_UNICODETEXT out, this can also extract URLs
 // from bookmarks on the clipboard.
-base::string16 GetClipboardText();
+// If `notify_if_restricted` is set to true, a notification will be shown to
+// the user if the clipboard contents can't be accessed.
+std::u16string GetClipboardText(bool notify_if_restricted);
 
 #endif  // CHROME_BROWSER_UI_OMNIBOX_CLIPBOARD_UTILS_H_

@@ -5,6 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_H_
 
+#import <Foundation/Foundation.h>
+
 #include "base/callback.h"
 #include "base/macros.h"
 #include "base/observer_list.h"
@@ -19,6 +21,10 @@ class BrowsingDataRemoverObserver;
 class BrowsingDataRemover : public KeyedService {
  public:
   BrowsingDataRemover();
+
+  BrowsingDataRemover(const BrowsingDataRemover&) = delete;
+  BrowsingDataRemover& operator=(const BrowsingDataRemover&) = delete;
+
   ~BrowsingDataRemover() override;
 
   // Is the service currently in the process of removing data?
@@ -31,6 +37,9 @@ class BrowsingDataRemover : public KeyedService {
                       BrowsingDataRemoveMask remove_mask,
                       base::OnceClosure callback) = 0;
 
+  // Removes all persisted data for sessions with |session_ids|.
+  virtual void RemoveSessionsData(NSArray<NSString*>* session_ids) = 0;
+
   // Adds/removes |observer| from the list of observers notified when data is
   // removed by BrowsingDataRemover.
   void AddObserver(BrowsingDataRemoverObserver* observer);
@@ -42,8 +51,6 @@ class BrowsingDataRemover : public KeyedService {
 
  private:
   base::ObserverList<BrowsingDataRemoverObserver, true>::Unchecked observers_;
-
-  DISALLOW_COPY_AND_ASSIGN(BrowsingDataRemover);
 };
 
 #endif  // IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_H_

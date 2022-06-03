@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/metrics/ukm_background_recorder_service.h"
@@ -25,9 +27,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/permissions/permission_uma_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -36,8 +40,10 @@
 #include "content/public/browser/platform_notification_context.h"
 #include "content/public/browser/storage_partition.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/notifications/notification_resources.h"
 #include "third_party/blink/public/common/notifications/platform_notification_data.h"
+#include "third_party/blink/public/mojom/notifications/notification.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -49,6 +55,9 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registrar.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -88,15 +97,14 @@ static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
     //      notification.
     //  (b) the browser is fullscreen
     //  (c) the browser has focus.
-    if (active_contents->GetURL().GetOrigin() == origin &&
+    if (active_contents->GetURL().DeprecatedGetOriginAsURL() == origin &&
         browser->exclusive_access_manager()->context()->IsFullscreen() &&
         browser->window()->IsActive()) {
       return true;
     }
   }
-#endif
-
   return false;
+#endif
 }
 
 // Records the total number of deleted notifications after all storage
@@ -106,6 +114,9 @@ class RevokeDeleteCountRecorder
     : public base::RefCounted<RevokeDeleteCountRecorder> {
  public:
   RevokeDeleteCountRecorder() : total_deleted_count_(0) {}
+  RevokeDeleteCountRecorder(const RevokeDeleteCountRecorder&) = delete;
+  RevokeDeleteCountRecorder& operator=(const RevokeDeleteCountRecorder&) =
+      delete;
 
   void OnDeleted(bool success, size_t deleted_count) {
     total_deleted_count_ += deleted_count;
@@ -120,8 +131,6 @@ class RevokeDeleteCountRecorder
   }
 
   size_t total_deleted_count_;
-
-  DISALLOW_COPY_AND_ASSIGN(RevokeDeleteCountRecorder);
 };
 
 }  // namespace
@@ -162,16 +171,14 @@ void PlatformNotificationServiceImpl::Shutdown() {
 void PlatformNotificationServiceImpl::OnContentSettingChanged(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
-    ContentSettingsType content_type,
-    const std::string& resource_identifier) {
+    ContentSettingsTypeSet content_type_set) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  if (content_type != ContentSettingsType::NOTIFICATIONS)
+  if (!content_type_set.Contains(ContentSettingsType::NOTIFICATIONS))
     return;
 
   auto recorder = base::MakeRefCounted<RevokeDeleteCountRecorder>();
-  content::BrowserContext::ForEachStoragePartition(
-      profile_,
+  profile_->ForEachStoragePartition(
       base::BindRepeating(
           [](scoped_refptr<RevokeDeleteCountRecorder> recorder,
              content::StoragePartition* partition) {
@@ -191,6 +198,7 @@ bool PlatformNotificationServiceImpl::WasClosedProgrammatically(
 void PlatformNotificationServiceImpl::DisplayNotification(
     const std::string& notification_id,
     const GURL& origin,
+    const GURL& document_url,
     const blink::PlatformNotificationData& notification_data,
     const blink::NotificationResources& notification_resources) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -204,12 +212,19 @@ void PlatformNotificationServiceImpl::DisplayNotification(
   DCHECK_EQ(0u, notification_data.actions.size());
   DCHECK_EQ(0u, notification_resources.action_icons.size());
 
-  message_center::Notification notification = CreateNotificationFromData(
-      origin, notification_id, notification_data, notification_resources);
+  message_center::Notification notification =
+      CreateNotificationFromData(origin, notification_id, notification_data,
+                                 notification_resources, document_url);
+  auto metadata = std::make_unique<NonPersistentNotificationMetadata>();
+  metadata->document_url = document_url;
 
   NotificationDisplayServiceFactory::GetForProfile(profile_)->Display(
       NotificationHandler::Type::WEB_NON_PERSISTENT, notification,
-      /*metadata=*/nullptr);
+      std::move(metadata));
+
+  permissions::PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
+      notification.origin_url());
 }
 
 void PlatformNotificationServiceImpl::DisplayPersistentNotification(
@@ -225,13 +240,14 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
   // Posted tasks can request notifications to be added, which would cause a
   // crash (see |ScopedKeepAlive|). We just do nothing here, the user would not
   // see the notification anyway, since we are shutting down.
-  // TODO(knollr): IsShuttingDown check should not be required anymore, but some
+  // Note that the IsShuttingDown() check should not be required here, but some
   // tests try to display a notification during shutdown.
   if (g_browser_process->IsShuttingDown() || !profile_)
     return;
 
-  message_center::Notification notification = CreateNotificationFromData(
-      origin, notification_id, notification_data, notification_resources);
+  message_center::Notification notification =
+      CreateNotificationFromData(origin, notification_id, notification_data,
+                                 notification_resources, service_worker_scope);
   auto metadata = std::make_unique<PersistentNotificationMetadata>();
   metadata->service_worker_scope = service_worker_scope;
 
@@ -241,6 +257,10 @@ void PlatformNotificationServiceImpl::DisplayPersistentNotification(
 
   NotificationMetricsLoggerFactory::GetForBrowserContext(profile_)
       ->LogPersistentNotificationShown();
+
+  permissions::PermissionUmaUtil::RecordPermissionUsage(
+      ContentSettingsType::NOTIFICATIONS, profile_, nullptr,
+      notification.origin_url());
 }
 
 void PlatformNotificationServiceImpl::CloseNotification(
@@ -351,7 +371,7 @@ PlatformNotificationServiceImpl::GetNotificationTriggerScheduler() {
 void PlatformNotificationServiceImpl::DidGetBackgroundSourceId(
     base::OnceClosure recorded_closure,
     const content::NotificationDatabaseData& data,
-    base::Optional<ukm::SourceId> source_id) {
+    absl::optional<ukm::SourceId> source_id) {
   // This background event did not meet the requirements for the UKM service.
   if (!source_id)
     return;
@@ -400,14 +420,37 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
     const GURL& origin,
     const std::string& notification_id,
     const blink::PlatformNotificationData& notification_data,
-    const blink::NotificationResources& notification_resources) const {
-  DCHECK_EQ(notification_data.actions.size(),
-            notification_resources.action_icons.size());
+    const blink::NotificationResources& notification_resources,
+    const GURL& web_app_hint_url) const {
+  // Blink always populates action icons to match the actions, even if no icon
+  // was fetched, so this indicates a compromised renderer.
+  CHECK_EQ(notification_data.actions.size(),
+           notification_resources.action_icons.size());
 
   message_center::RichNotificationData optional_fields;
 
   optional_fields.settings_button_handler =
       message_center::SettingsButtonHandler::INLINE;
+
+  absl::optional<WebAppIconAndTitle> web_app_icon_and_title;
+
+  if (base::FeatureList::IsEnabled(
+          features::kDesktopPWAsNotificationIconAndTitle)) {
+    web_app_icon_and_title = FindWebAppIconAndTitle(web_app_hint_url);
+    if (web_app_icon_and_title && notification_resources.badge.isNull()) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      // ChromeOS: Enables web app theme color only if monochrome web app icon
+      // has been specified. `badge` Notifications API icons must be masked with
+      // the accent color.
+      optional_fields.ignore_accent_color_for_small_image = true;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    }
+  }
+
+  message_center::NotifierId notifier_id(
+      origin, web_app_icon_and_title
+                  ? absl::make_optional(web_app_icon_and_title->title)
+                  : absl::nullopt);
 
   // TODO(peter): Handle different screen densities instead of always using the
   // 1x bitmap - crbug.com/585815.
@@ -415,8 +458,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
       message_center::NOTIFICATION_TYPE_SIMPLE, notification_id,
       notification_data.title, notification_data.body,
       gfx::Image::CreateFrom1xBitmap(notification_resources.notification_icon),
-      base::UTF8ToUTF16(origin.host()), origin,
-      message_center::NotifierId(origin), optional_fields,
+      base::UTF8ToUTF16(origin.host()), origin, notifier_id, optional_fields,
       nullptr /* delegate */);
 
   notification.set_context_message(DisplayNameForContextMessage(origin));
@@ -435,23 +477,27 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
         gfx::Image::CreateFrom1xBitmap(notification_resources.image));
   }
 
+  if (web_app_icon_and_title && !web_app_icon_and_title->icon.isNull())
+    notification.set_small_image(gfx::Image(web_app_icon_and_title->icon));
+
   // TODO(peter): Handle different screen densities instead of always using the
   // 1x bitmap - crbug.com/585815.
-  notification.set_small_image(
-      gfx::Image::CreateFrom1xBitmap(notification_resources.badge));
+  if (!notification_resources.badge.isNull()) {
+    notification.set_small_image(
+        gfx::Image::CreateFrom1xBitmap(notification_resources.badge));
+  }
 
   // Developer supplied action buttons.
   std::vector<message_center::ButtonInfo> buttons;
   for (size_t i = 0; i < notification_data.actions.size(); ++i) {
-    const blink::PlatformNotificationAction& action =
-        notification_data.actions[i];
-    message_center::ButtonInfo button(action.title);
+    const auto& action = notification_data.actions[i];
+    message_center::ButtonInfo button(action->title);
     // TODO(peter): Handle different screen densities instead of always using
     // the 1x bitmap - crbug.com/585815.
     button.icon =
         gfx::Image::CreateFrom1xBitmap(notification_resources.action_icons[i]);
-    if (action.type == blink::PLATFORM_NOTIFICATION_ACTION_TYPE_TEXT) {
-      button.placeholder = action.placeholder.as_optional_string16().value_or(
+    if (action->type == blink::mojom::NotificationActionType::TEXT) {
+      button.placeholder = action->placeholder.value_or(
           l10n_util::GetStringUTF16(IDS_NOTIFICATION_REPLY_PLACEHOLDER));
     }
     buttons.push_back(button);
@@ -467,7 +513,7 @@ PlatformNotificationServiceImpl::CreateNotificationFromData(
   return notification;
 }
 
-base::string16 PlatformNotificationServiceImpl::DisplayNameForContextMessage(
+std::u16string PlatformNotificationServiceImpl::DisplayNameForContextMessage(
     const GURL& origin) const {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // If the source is an extension, lookup the display name.
@@ -481,5 +527,30 @@ base::string16 PlatformNotificationServiceImpl::DisplayNameForContextMessage(
   }
 #endif
 
-  return base::string16();
+  return std::u16string();
+}
+
+absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
+PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
+    const GURL& web_app_hint_url) const {
+#if !defined(OS_ANDROID)
+  web_app::WebAppProvider* web_app_provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
+  if (web_app_provider) {
+    const absl::optional<web_app::AppId> app_id =
+        web_app_provider->registrar().FindAppWithUrlInScope(web_app_hint_url);
+    if (app_id) {
+      absl::optional<WebAppIconAndTitle> icon_and_title;
+      icon_and_title.emplace();
+
+      icon_and_title->title = base::UTF8ToUTF16(
+          web_app_provider->registrar().GetAppShortName(*app_id));
+      icon_and_title->icon =
+          web_app_provider->icon_manager().GetMonochromeFavicon(*app_id);
+      return icon_and_title;
+    }
+  }
+#endif
+
+  return absl::nullopt;
 }

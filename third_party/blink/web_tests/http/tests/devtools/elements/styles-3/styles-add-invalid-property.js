@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests that adding an invalid property retains its syntax.\n`);
-  await TestRunner.loadModule('elements_test_runner');
+  await TestRunner.loadLegacyModule('elements'); await TestRunner.loadTestModule('elements_test_runner');
   await TestRunner.showPanel('elements');
   await TestRunner.loadHTML(`
       <div id="inspected" style="font-size: 12px">Text</div>
@@ -16,9 +16,9 @@
   var treeElement;
   var section;
 
-  function step1() {
+  async function step1() {
     TestRunner.addResult('Before append:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     section = ElementsTestRunner.inlineStyleSection();
 
     // Create and increment.
@@ -48,9 +48,9 @@
     ElementsTestRunner.selectNodeAndWaitForStyles('inspected', step5);
   }
 
-  function step5() {
+  async function step5() {
     TestRunner.addResult('After append:');
-    ElementsTestRunner.dumpSelectedElementStyles(true);
+    await ElementsTestRunner.dumpSelectedElementStyles(true);
     TestRunner.completeTest();
   }
 })();

@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_output_ipc.h"
@@ -37,6 +36,10 @@ class PepperPlatformAudioOutputDev
                                               int frames_per_buffer,
                                               PepperAudioOutputHost* client);
 
+  PepperPlatformAudioOutputDev(const PepperPlatformAudioOutputDev&) = delete;
+  PepperPlatformAudioOutputDev& operator=(const PepperPlatformAudioOutputDev&) =
+      delete;
+
   // The following three methods are all called on main thread.
 
   // Request authorization to use the device.
@@ -64,7 +67,7 @@ class PepperPlatformAudioOutputDev
                           const media::AudioParameters& output_params,
                           const std::string& matched_device_id) override;
   void OnStreamCreated(base::UnsafeSharedMemoryRegion shared_memory_region,
-                       base::SyncSocket::Handle socket_handle,
+                       base::SyncSocket::ScopedHandle socket_handle,
                        bool playing_automatically) override;
   void OnIPCClosed() override;
 
@@ -144,8 +147,6 @@ class PepperPlatformAudioOutputDev
 
   const base::TimeDelta auth_timeout_;
   std::unique_ptr<base::OneShotTimer> auth_timeout_action_;
-
-  DISALLOW_COPY_AND_ASSIGN(PepperPlatformAudioOutputDev);
 };
 
 }  // namespace content

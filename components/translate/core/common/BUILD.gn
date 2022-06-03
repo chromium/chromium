@@ -1,6 +1,9 @@
 # Copyright 2014 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
 
 static_library("common") {
   sources = [
@@ -38,4 +41,16 @@ source_set("unit_tests") {
     "//third_party/metrics_proto",
     "//url",
   ]
+}
+
+if (is_android) {
+  java_cpp_enum("translate_infobar_event_enum") {
+    sources = [ "translate_constants.h" ]
+  }
+
+  android_library("translate_infobar_event_enum_java") {
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+
+    srcjar_deps = [ ":translate_infobar_event_enum" ]
+  }
 }

@@ -1,4 +1,3 @@
-CONSOLE WARNING: line 11: Synchronous XMLHttpRequest on the main thread is deprecated because of its detrimental effects to the end user's experience. For more help, check https://xhr.spec.whatwg.org/.
 Test that setRequestHeader throws a SYNTAX_ERR exception when called with an empty header name.
 
 SUCCESS: got exception SyntaxError: Failed to execute 'setRequestHeader' on 'XMLHttpRequest': '' is not a valid HTTP header field name.

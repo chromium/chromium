@@ -190,11 +190,11 @@ class IRMap(object):
         """Returns a flattened list of IRs of the given kind."""
         if IRMap.IR.Kind.does_support_multiple_defs(kind):
             accumulated = []
-            for irs in self.find_by_kind(kind).itervalues():
+            for irs in self.find_by_kind(kind).values():
                 accumulated.extend(irs)
             return accumulated
         else:
-            return self.find_by_kind(kind).itervalues()
+            return list(self.find_by_kind(kind).values())
 
     def irs_of_kinds(self, *kinds):
         """

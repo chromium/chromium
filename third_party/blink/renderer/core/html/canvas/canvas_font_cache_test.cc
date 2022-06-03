@@ -8,6 +8,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/dom_implementation.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
@@ -36,13 +37,13 @@ CanvasRenderingContext* CanvasFontCacheTest::Context2D() const {
   // If the following check fails, perhaps you forgot to call createContext
   // in your test?
   EXPECT_NE(nullptr, CanvasElement().RenderingContext());
-  EXPECT_TRUE(CanvasElement().RenderingContext()->Is2d());
+  EXPECT_TRUE(CanvasElement().RenderingContext()->IsRenderingContext2D());
   return CanvasElement().RenderingContext();
 }
 
 void CanvasFontCacheTest::SetUp() {
   PageTestBase::SetUp();
-  GetDocument().documentElement()->SetInnerHTMLFromString(
+  GetDocument().documentElement()->setInnerHTML(
       "<body><canvas id='c'></canvas></body>");
   UpdateAllLifecyclePhasesForTest();
   canvas_element_ = To<HTMLCanvasElement>(GetDocument().getElementById("c"));
@@ -71,7 +72,7 @@ TEST_F(CanvasFontCacheTest, CacheHardLimit) {
 TEST_F(CanvasFontCacheTest, PageVisibilityChange) {
   Context2D()->setFont("10px sans-serif");
   EXPECT_TRUE(Cache()->IsInCache("10px sans-serif"));
-  GetPage().SetVisibilityState(PageVisibilityState::kHidden,
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kHidden,
                                /*initial_state=*/false);
   EXPECT_FALSE(Cache()->IsInCache("10px sans-serif"));
 
@@ -83,12 +84,19 @@ TEST_F(CanvasFontCacheTest, PageVisibilityChange) {
   EXPECT_TRUE(Cache()->IsInCache("10px sans-serif"));
   EXPECT_FALSE(Cache()->IsInCache("15px sans-serif"));
 
-  GetPage().SetVisibilityState(PageVisibilityState::kVisible,
+  GetPage().SetVisibilityState(mojom::blink::PageVisibilityState::kVisible,
                                /*initial_state=*/false);
   Context2D()->setFont("15px sans-serif");
   Context2D()->setFont("10px sans-serif");
   EXPECT_TRUE(Cache()->IsInCache("10px sans-serif"));
   EXPECT_TRUE(Cache()->IsInCache("15px sans-serif"));
+}
+
+TEST_F(CanvasFontCacheTest, CreateDocumentFontCache) {
+  // Create a document via script not connected to a tab or frame.
+  Document* document = GetDocument().implementation().createHTMLDocument();
+  // This document should also create a CanvasFontCache and should not crash.
+  EXPECT_TRUE(document->GetCanvasFontCache());
 }
 
 }  // namespace blink

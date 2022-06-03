@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "chrome/browser/safe_browsing/incident_reporting/incident_report_uploader.h"
 #include "url/gurl.h"
@@ -33,13 +32,17 @@ class IncidentReportUploaderImpl : public IncidentReportUploader {
   // The id associated with the URLFetcher, for use by tests.
   static const int kTestUrlFetcherId;
 
+  IncidentReportUploaderImpl(const IncidentReportUploaderImpl&) = delete;
+  IncidentReportUploaderImpl& operator=(const IncidentReportUploaderImpl&) =
+      delete;
+
   ~IncidentReportUploaderImpl() override;
 
   // Uploads a report with a caller-provided URL context. |callback| will be run
   // when the upload is complete. Returns NULL if |report| cannot be serialized
   // for transmission, in which case the delegate is not notified.
   static std::unique_ptr<IncidentReportUploader> UploadReport(
-      const OnResultCallback& callback,
+      OnResultCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const ClientIncidentReport& report);
 
@@ -47,7 +50,7 @@ class IncidentReportUploaderImpl : public IncidentReportUploader {
   FRIEND_TEST_ALL_PREFIXES(IncidentReportUploaderImplTest, Success);
 
   IncidentReportUploaderImpl(
-      const OnResultCallback& callback,
+      OnResultCallback callback,
       const scoped_refptr<network::SharedURLLoaderFactory>& url_loader_factory,
       const std::string& post_data);
 
@@ -67,8 +70,6 @@ class IncidentReportUploaderImpl : public IncidentReportUploader {
 
   // The time at which the upload was initiated.
   base::TimeTicks time_begin_;
-
-  DISALLOW_COPY_AND_ASSIGN(IncidentReportUploaderImpl);
 };
 
 }  // namespace safe_browsing

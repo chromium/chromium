@@ -8,10 +8,9 @@
 #include <memory>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "content/common/content_export.h"
-#include "content/public/common/input_event_ack_state.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 #include "ui/android/overscroll_glow.h"
 #include "ui/android/overscroll_refresh.h"
 #include "ui/gfx/geometry/vector2d_f.h"
@@ -48,6 +47,10 @@ class CONTENT_EXPORT OverscrollControllerAndroid
       std::unique_ptr<ui::OverscrollGlow> glow_effect,
       std::unique_ptr<ui::OverscrollRefresh> refresh_effect);
 
+  OverscrollControllerAndroid(const OverscrollControllerAndroid&) = delete;
+  OverscrollControllerAndroid& operator=(const OverscrollControllerAndroid&) =
+      delete;
+
   ~OverscrollControllerAndroid() override;
 
   // Returns true if |event| is consumed by an overscroll effect, in which
@@ -56,7 +59,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
 
   // To be called upon receipt of a gesture event ack.
   void OnGestureEventAck(const blink::WebGestureEvent& event,
-                         InputEventAckState ack_result);
+                         blink::mojom::InputEventResultState ack_result);
 
   // To be called upon receipt of an overscroll event.
   void OnOverscrolled(const ui::DidOverscrollParams& overscroll_params);
@@ -87,7 +90,7 @@ class CONTENT_EXPORT OverscrollControllerAndroid
       std::unique_ptr<ui::OverscrollRefresh> refresh_effect);
 
   // OverscrollGlowClient implementation.
-  std::unique_ptr<ui::EdgeEffectBase> CreateEdgeEffect() override;
+  std::unique_ptr<ui::EdgeEffect> CreateEdgeEffect() override;
 
   void SetNeedsAnimate();
 
@@ -99,8 +102,6 @@ class CONTENT_EXPORT OverscrollControllerAndroid
   // TODO(jdduke): Factor out a common API from the two overscroll effects.
   std::unique_ptr<ui::OverscrollGlow> glow_effect_;
   std::unique_ptr<ui::OverscrollRefresh> refresh_effect_;
-
-  DISALLOW_COPY_AND_ASSIGN(OverscrollControllerAndroid);
 };
 
 }  // namespace content

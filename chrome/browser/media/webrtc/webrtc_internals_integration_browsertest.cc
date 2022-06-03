@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_restrictions.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,8 +29,6 @@ class WebRTCInternalsIntegrationBrowserTest : public WebRtcTestBase {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     InProcessBrowserTest::SetUpDefaultCommandLine(command_line);
-
-    command_line->AppendSwitch(switches::kUseFakeDeviceForMediaStream);
 
     {
       base::ScopedAllowBlockingForTesting allow_blocking;

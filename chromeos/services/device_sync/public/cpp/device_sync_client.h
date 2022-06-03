@@ -10,16 +10,15 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
-#include "base/optional.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/components/multidevice/software_feature.h"
 #include "chromeos/services/device_sync/feature_status_change.h"
 #include "chromeos/services/device_sync/proto/cryptauth_common.pb.h"
 #include "chromeos/services/device_sync/public/mojom/device_sync.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {
 class TaskRunner;
@@ -54,6 +53,10 @@ class DeviceSyncClient {
                               multidevice::RemoteDeviceRefList)>;
 
   DeviceSyncClient();
+
+  DeviceSyncClient(const DeviceSyncClient&) = delete;
+  DeviceSyncClient& operator=(const DeviceSyncClient&) = delete;
+
   virtual ~DeviceSyncClient();
 
   // Completes initialization. Must be called after connecting the DeviceSync
@@ -76,7 +79,7 @@ class DeviceSyncClient {
   virtual void ForceSyncNow(
       mojom::DeviceSync::ForceSyncNowCallback callback) = 0;
   virtual multidevice::RemoteDeviceRefList GetSyncedDevices() = 0;
-  virtual base::Optional<multidevice::RemoteDeviceRef>
+  virtual absl::optional<multidevice::RemoteDeviceRef>
   GetLocalDeviceMetadata() = 0;
 
   // Note: In the special case of passing |software_feature| =
@@ -114,12 +117,18 @@ class DeviceSyncClient {
  private:
   bool is_ready_ = false;
   base::ObserverList<Observer>::Unchecked observer_list_;
-
-  DISALLOW_COPY_AND_ASSIGN(DeviceSyncClient);
 };
 
 }  // namespace device_sync
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source migration is finished.
+namespace ash {
+namespace device_sync {
+using ::chromeos::device_sync::DeviceSyncClient;
+}
+}  // namespace ash
 
 #endif  // CHROMEOS_SERVICES_DEVICE_SYNC_PUBLIC_CPP_DEVICE_SYNC_CLIENT_H_

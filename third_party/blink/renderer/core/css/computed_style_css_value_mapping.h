@@ -13,7 +13,7 @@ namespace blink {
 class ComputedStyle;
 class PropertyRegistry;
 
-class ComputedStyleCSSValueMapping {
+class CORE_EXPORT ComputedStyleCSSValueMapping {
   STATIC_ONLY(ComputedStyleCSSValueMapping);
 
  public:
@@ -22,7 +22,7 @@ class ComputedStyleCSSValueMapping {
       const PropertyRegistry*);
 
  private:
-  static const CSSValue* Get(const AtomicString custom_property_name,
+  static const CSSValue* Get(const AtomicString& custom_property_name,
                              const ComputedStyle&,
                              const PropertyRegistry*);
 };

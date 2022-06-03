@@ -48,7 +48,7 @@ HTMLMediaElement& MediaControls::MediaElement() const {
   return *media_element_;
 }
 
-void MediaControls::Trace(Visitor* visitor) {
+void MediaControls::Trace(Visitor* visitor) const {
   visitor->Trace(media_element_);
 }
 

@@ -6,8 +6,7 @@
 
 #include "base/bind.h"
 #include "base/mac/scoped_nsobject.h"
-#include "base/macros.h"
-#include "base/memory/singleton.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
 #include "content/browser/speech/tts_platform_impl.h"
@@ -51,7 +50,11 @@ class TtsPlatformImplMac;
 
 class TtsPlatformImplMac : public content::TtsPlatformImpl {
  public:
-  bool PlatformImplAvailable() override { return true; }
+  TtsPlatformImplMac(const TtsPlatformImplMac&) = delete;
+  TtsPlatformImplMac& operator=(const TtsPlatformImplMac&) = delete;
+
+  bool PlatformImplSupported() override { return true; }
+  bool PlatformImplInitialized() override { return true; }
 
   void Speak(int utterance_id,
              const std::string& utterance,
@@ -82,8 +85,8 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
   static TtsPlatformImplMac* GetInstance();
 
  private:
+  friend base::NoDestructor<TtsPlatformImplMac>;
   TtsPlatformImplMac();
-  ~TtsPlatformImplMac() override;
 
   void ProcessSpeech(int utterance_id,
                      const std::string& lang,
@@ -94,16 +97,10 @@ class TtsPlatformImplMac : public content::TtsPlatformImpl {
 
   base::scoped_nsobject<SingleUseSpeechSynthesizer> speech_synthesizer_;
   base::scoped_nsobject<ChromeTtsDelegate> delegate_;
-  int utterance_id_;
+  int utterance_id_ = -1;
   std::string utterance_;
-  int last_char_index_;
-  bool paused_;
-
-  friend struct base::DefaultSingletonTraits<TtsPlatformImplMac>;
-
-  base::WeakPtrFactory<TtsPlatformImplMac> weak_factory_;
-
-  DISALLOW_COPY_AND_ASSIGN(TtsPlatformImplMac);
+  int last_char_index_ = 0;
+  bool paused_ = false;
 };
 
 // static
@@ -121,7 +118,7 @@ void TtsPlatformImplMac::Speak(
   // Parse SSML and process speech.
   content::TtsController::GetInstance()->StripSSML(
       utterance, base::BindOnce(&TtsPlatformImplMac::ProcessSpeech,
-                                weak_factory_.GetWeakPtr(), utterance_id, lang,
+                                base::Unretained(this), utterance_id, lang,
                                 voice, params, std::move(on_speak_finished)));
 }
 
@@ -299,18 +296,14 @@ void TtsPlatformImplMac::OnSpeechEvent(NSSpeechSynthesizer* sender,
   last_char_index_ = char_index;
 }
 
-TtsPlatformImplMac::TtsPlatformImplMac() : weak_factory_(this) {
-  utterance_id_ = -1;
-  paused_ = false;
-
+TtsPlatformImplMac::TtsPlatformImplMac() {
   delegate_.reset([[ChromeTtsDelegate alloc] initWithPlatformImplMac:this]);
 }
 
-TtsPlatformImplMac::~TtsPlatformImplMac() {}
-
 // static
 TtsPlatformImplMac* TtsPlatformImplMac::GetInstance() {
-  return base::Singleton<TtsPlatformImplMac>::get();
+  static base::NoDestructor<TtsPlatformImplMac> tts_platform;
+  return tts_platform.get();
 }
 
 @implementation ChromeTtsDelegate

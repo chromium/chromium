@@ -4,11 +4,6 @@
 
 Android WebView has supported core Safe Browsing features since 2017.
 
-*** promo
-Googlers may wish to consult [internal
-documentation](http://go/clank-webview/safebrowsing).
-***
-
 ## What is Safe Browsing?
 
 See the relevant Chromium classes in
@@ -16,9 +11,34 @@ See the relevant Chromium classes in
 
 For info on the feature, see https://safebrowsing.google.com/.
 
+## Building your own WebView
+
+Depending on which Safe Browsing features you need to test, you may need to
+build WebView from an upstream (public) or a downstream (internal) build target.
+
+### Upstream
+
+Upstream (public) WebView targets support a limited form of Safe Browsing.
+WebView only supports blocking [hard-coded URLs](#hard_coded-urls), but this is
+sufficient if all you need is to create an interstitial for testing. You can
+build and install `system_webview_apk` (see [quick
+start](/android_webview/docs/quick-start.md)).
+
+### Downstream
+
+The WebView we ship to users is based on downstream (private) build targets. If
+you need to test the GMS-based implementation which we use to block real
+malware, you need to build one of the downstream targets. See [Google-internal
+instructions](http://go/clank-webview/build_instructions.md).
+
 ## Opt-in/consent/requirements
 
 ### Google Play Services
+
+*** note
+**Note:** this is only relevant for the GMS-based implementation in downstream
+WebView targets.
+***
 
 If Google Play Services (AKA GMSCore) is uninstalled, disabled, or out-of-date,
 WebView cannot perform Safe Browsing checks (with the exception of [hard-coded
@@ -53,7 +73,7 @@ with a manifest tag:
 
 WebView supports Safe Browsing checks (for testing purposes) on hard-coded WebUI
 URLs defined in
-[`//components/safe_browsing/web_ui/constants.cc`](/components/safe_browsing/web_ui/constants.cc)
+[`//components/safe_browsing/core/common/web_ui_constants.cc`](/components/safe_browsing/core/common/web_ui_constants.cc)
 (ex. `chrome://safe-browsing/match?type=malware`).
 
 These URLs don't show meaningful content, but will trigger an interstitial when
@@ -88,9 +108,10 @@ As Chrome supports more threat types, so can WebView. The steps are:
 
 1. Create quiet interstitial resources for the new threat type ([example
    CL](https://chromium-review.googlesource.com/c/chromium/src/+/1256021)).
-1. Whitelist [resources](/android_webview/ui/grit_resources_whitelist.txt) and
-   [strings](/android_webview/ui/grit_strings_whitelist.txt) (
-   [general docs](/android_webview/ui/README.md), [example
+1. Add IDs to their respective allowlist files:
+   [resources](/android_webview/ui/grit_resources_allowlist.txt) and
+   [strings](/android_webview/ui/grit_strings_allowlist.txt) ([general
+   docs](/android_webview/ui/README.md), [example
    CL](https://chromium-review.googlesource.com/c/chromium/src/+/1270476/12/android_webview/ui/grit_strings_whitelist.txt)).
 1. Add the new threat type to our list of threats ([example
    CL](https://chromium-review.googlesource.com/c/chromium/src/+/1270476/12/android_webview/browser/aw_url_checker_delegate_impl.cc)).

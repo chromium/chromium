@@ -9,14 +9,13 @@
 
 #include "base/mac/dispatch_source_mach.h"
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/process/port_provider_mac.h"
 #include "base/process/process_handle.h"
 #include "base/synchronization/lock.h"
 #include "content/common/child_process.mojom-forward.h"
 #include "content/common/content_export.h"
-#include "mojo/public/cpp/system/handle.h"
+#include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace content {
 
@@ -27,6 +26,10 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
  public:
   // Returns the singleton instance.
   static ChildProcessTaskPortProvider* GetInstance();
+
+  ChildProcessTaskPortProvider(const ChildProcessTaskPortProvider&) = delete;
+  ChildProcessTaskPortProvider& operator=(const ChildProcessTaskPortProvider&) =
+      delete;
 
   // Called by BrowserChildProcessHostImpl and RenderProcessHostImpl when
   // a new child has been created. This will invoke the GetTaskPort() method
@@ -51,7 +54,7 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
 
   // Callback for mojom::ChildProcess::GetTaskPort reply.
   void OnTaskPortReceived(base::ProcessHandle pid,
-                          mojo::ScopedHandle task_port);
+                          mojo::PlatformHandle task_port);
 
   // Event handler for |notification_source_|, invoked for
   // MACH_NOTIFY_DEAD_NAME.
@@ -72,8 +75,6 @@ class CONTENT_EXPORT ChildProcessTaskPortProvider : public base::PortProvider {
 
   // Dispatch source for |notification_port_|.
   std::unique_ptr<base::DispatchSourceMach> notification_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(ChildProcessTaskPortProvider);
 };
 
 }  // namespace content

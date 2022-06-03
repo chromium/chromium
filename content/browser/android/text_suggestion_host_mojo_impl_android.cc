@@ -9,18 +9,23 @@
 
 namespace content {
 
-TextSuggestionHostMojoImplAndroid::TextSuggestionHostMojoImplAndroid(
-    TextSuggestionHostAndroid* text_suggestion_host)
-    : text_suggestion_host_(text_suggestion_host) {}
-
 // static
-void TextSuggestionHostMojoImplAndroid::Create(
+std::unique_ptr<TextSuggestionHostMojoImplAndroid>
+TextSuggestionHostMojoImplAndroid::Create(
     TextSuggestionHostAndroid* text_suggestion_host,
     mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver) {
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<TextSuggestionHostMojoImplAndroid>(text_suggestion_host),
-      std::move(receiver));
+  return std::make_unique<TextSuggestionHostMojoImplAndroid>(
+      text_suggestion_host, std::move(receiver));
 }
+
+TextSuggestionHostMojoImplAndroid::TextSuggestionHostMojoImplAndroid(
+    TextSuggestionHostAndroid* text_suggestion_host,
+    mojo::PendingReceiver<blink::mojom::TextSuggestionHost> receiver)
+    : text_suggestion_host_(text_suggestion_host),
+      receiver_(this, std::move(receiver)) {}
+
+TextSuggestionHostMojoImplAndroid::~TextSuggestionHostMojoImplAndroid() =
+    default;
 
 void TextSuggestionHostMojoImplAndroid::StartSuggestionMenuTimer() {
   text_suggestion_host_->StartSuggestionMenuTimer();

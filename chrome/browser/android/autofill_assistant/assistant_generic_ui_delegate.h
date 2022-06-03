@@ -9,16 +9,37 @@
 
 namespace autofill_assistant {
 class UiControllerAndroid;
-// Delegate class for the generic UI.
+// Delegate class for the generic UI. Receives events from the Java UI and
+// forwards them to the ui controller.
 class AssistantGenericUiDelegate {
  public:
   explicit AssistantGenericUiDelegate(UiControllerAndroid* ui_controller);
   ~AssistantGenericUiDelegate();
 
-  void OnViewClicked(JNIEnv* env,
-                     const base::android::JavaParamRef<jobject>& jcaller,
-                     const base::android::JavaParamRef<jstring>& jidentifier,
-                     const base::android::JavaParamRef<jobject>& jvalue);
+  void OnViewClicked(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      const base::android::JavaParamRef<jstring>& jview_identifier);
+
+  void OnValueChanged(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      const base::android::JavaParamRef<jstring>& jmodel_identifier,
+      const base::android::JavaParamRef<jobject>& jvalue);
+
+  void OnTextLinkClicked(JNIEnv* env,
+                         const base::android::JavaParamRef<jobject>& jcaller,
+                         jint jlink);
+
+  void OnGenericPopupDismissed(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      const base::android::JavaParamRef<jstring>& jpopup_identifier);
+
+  void OnViewContainerCleared(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jcaller,
+      const base::android::JavaParamRef<jstring>& jview_identifier);
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject();
 

@@ -21,6 +21,7 @@
 #include "base/file_version_info_win.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
 #include "base/strings/string_split.h"
@@ -111,7 +112,7 @@ bool GetProductVersion(std::wstring* path, std::string* product_version) {
     FileVersionInfoWin* version_info_win =
         static_cast<FileVersionInfoWin*>(version_info.get());
     std::string version_str =
-        base::SysWideToUTF8(version_info_win->product_version());
+        base::UTF16ToUTF8(version_info_win->product_version());
 
     *product_version = std::move(version_str);
     return true;
@@ -145,7 +146,7 @@ internal::ResultCode FillAntiVirusProductsFromWSC(
     return internal::ResultCode::kFailedToGetProductCount;
 
   for (LONG i = 0; i < product_count; i++) {
-    IWscProduct* product = nullptr;
+    Microsoft::WRL::ComPtr<IWscProduct> product;
     result = product_list->get_Item(i, &product);
     if (FAILED(result))
       return internal::ResultCode::kFailedToGetItem;
@@ -188,8 +189,8 @@ internal::ResultCode FillAntiVirusProductsFromWSC(
     result = product->get_ProductName(product_name.Receive());
     if (FAILED(result))
       return internal::ResultCode::kFailedToGetProductName;
-    std::string name = internal::TrimVersionOfAvProductName(
-        base::SysWideToUTF8(std::wstring(product_name, product_name.Length())));
+    std::string name = internal::TrimVersionOfAvProductName(base::SysWideToUTF8(
+        std::wstring(product_name.Get(), product_name.Length())));
     product_name.Release();
     if (report_full_names)
       av_product.set_product_name(name);
@@ -199,7 +200,7 @@ internal::ResultCode FillAntiVirusProductsFromWSC(
     result = product->get_RemediationPath(remediation_path.Receive());
     if (FAILED(result))
       return internal::ResultCode::kFailedToGetRemediationPath;
-    std::wstring path_str(remediation_path, remediation_path.Length());
+    std::wstring path_str(remediation_path.Get(), remediation_path.Length());
     remediation_path.Release();
 
     std::string product_version;
@@ -237,7 +238,7 @@ internal::ResultCode FillAntiVirusProductsFromWMI(
 
   Microsoft::WRL::ComPtr<IWbemServices> wmi_services;
   hr = wmi_locator->ConnectServer(
-      base::win::ScopedBstr(L"ROOT\\SecurityCenter2"), nullptr, nullptr,
+      base::win::ScopedBstr(L"ROOT\\SecurityCenter2").Get(), nullptr, nullptr,
       nullptr, 0, nullptr, nullptr, &wmi_services);
   if (FAILED(hr))
     return internal::ResultCode::kFailedToConnectToWMI;
@@ -255,7 +256,7 @@ internal::ResultCode FillAntiVirusProductsFromWMI(
   Microsoft::WRL::ComPtr<IEnumWbemClassObject> enumerator;
 
   hr = wmi_services->ExecQuery(
-      query_language, query,
+      query_language.Get(), query.Get(),
       WBEM_FLAG_FORWARD_ONLY | WBEM_FLAG_RETURN_IMMEDIATELY, nullptr,
       &enumerator);
   if (FAILED(hr))
@@ -311,7 +312,6 @@ internal::ResultCode FillAntiVirusProductsFromWMI(
       default:
         // unknown state.
         return internal::ResultCode::kProductStateInvalid;
-        break;
     }
 
     base::win::ScopedVariant display_name;
@@ -357,11 +357,8 @@ internal::ResultCode FillAntiVirusProductsFromWMI(
   return internal::ResultCode::kSuccess;
 }
 
-void MaybeAddUnregisteredAntiVirusProducts(bool report_full_names,
-                                           std::vector<AvProduct>* products) {
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-
+void MaybeAddTrusteerEndpointProtection(bool report_full_names,
+                                        std::vector<AvProduct>* products) {
   // Trusteer Rapport does not register with WMI or Security Center so do some
   // "best efforts" detection here.
 
@@ -401,6 +398,54 @@ void MaybeAddUnregisteredAntiVirusProducts(bool report_full_names,
   av_product.set_product_version_hash(variations::HashName(product_version));
 
   products->push_back(av_product);
+}
+
+void MaybeAddCarbonBlack(bool report_full_names,
+                         std::vector<AvProduct>* products) {
+  // Carbon Black does not register with WMI or Security Center so do some
+  // "best efforts" detection here.
+
+  // Look for driver in the Windows drivers directory.
+  base::FilePath driver_path;
+  if (!base::PathService::Get(base::DIR_SYSTEM, &driver_path))
+    return;
+
+  driver_path = driver_path.AppendASCII("drivers").AppendASCII("parity.sys");
+
+  if (!base::PathExists(driver_path))
+    return;
+
+  std::wstring mutable_path_str(driver_path.value());
+  std::string product_version;
+
+  // Note: this is full version including patch level.
+  if (!GetProductVersion(&mutable_path_str, &product_version))
+    return;
+
+  AvProduct av_product;
+
+  // Assume enabled, no easy way of knowing for sure.
+  av_product.set_product_state(metrics::SystemProfileProto::AntiVirusState::
+                                   SystemProfileProto_AntiVirusState_STATE_ON);
+
+  // This name is taken from the driver properties.
+  std::string product_name("CB Protection");
+  if (report_full_names) {
+    av_product.set_product_name(product_name);
+    av_product.set_product_version(product_version);
+  }
+  av_product.set_product_name_hash(variations::HashName(product_name));
+  av_product.set_product_version_hash(variations::HashName(product_version));
+
+  products->push_back(av_product);
+}
+
+void MaybeAddUnregisteredAntiVirusProducts(bool report_full_names,
+                                           std::vector<AvProduct>* products) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  MaybeAddTrusteerEndpointProtection(report_full_names, products);
+  MaybeAddCarbonBlack(report_full_names, products);
 }
 
 }  // namespace

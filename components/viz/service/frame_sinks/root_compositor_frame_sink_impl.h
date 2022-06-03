@@ -6,15 +6,18 @@
 #define COMPONENTS_VIZ_SERVICE_FRAME_SINKS_ROOT_COMPOSITOR_FRAME_SINK_IMPL_H_
 
 #include <memory>
+#include <vector>
 
-#include "base/macros.h"
+#include "base/callback_helpers.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
 #include "components/viz/service/display/display_client.h"
 #include "components/viz/service/display/frame_rate_decider.h"
 #include "components/viz/service/frame_sinks/compositor_frame_sink_support.h"
+#include "components/viz/service/viz_service_export.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -22,6 +25,10 @@
 #include "services/viz/privileged/mojom/compositing/display_private.mojom.h"
 #include "services/viz/privileged/mojom/compositing/frame_sink_manager.mojom.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
+
+namespace gfx {
+class RenderingPipeline;
+}
 
 namespace viz {
 
@@ -34,9 +41,10 @@ class VSyncParameterListener;
 
 // The viz portion of a root CompositorFrameSink. Holds the Binding/InterfacePtr
 // for the mojom::CompositorFrameSink interface and owns the Display.
-class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
-                                    public mojom::DisplayPrivate,
-                                    public DisplayClient {
+class VIZ_SERVICE_EXPORT RootCompositorFrameSinkImpl
+    : public mojom::CompositorFrameSink,
+      public mojom::DisplayPrivate,
+      public DisplayClient {
  public:
   // Creates a new RootCompositorFrameSinkImpl.
   static std::unique_ptr<RootCompositorFrameSinkImpl> Create(
@@ -44,17 +52,29 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       FrameSinkManagerImpl* frame_sink_manager,
       OutputSurfaceProvider* output_surface_provider,
       uint32_t restart_id,
-      bool run_all_compositor_stages_before_draw);
+      bool run_all_compositor_stages_before_draw,
+      const DebugRendererSettings* debug_settings,
+      gfx::RenderingPipeline* gpu_pipeline);
+
+  RootCompositorFrameSinkImpl(const RootCompositorFrameSinkImpl&) = delete;
+  RootCompositorFrameSinkImpl& operator=(const RootCompositorFrameSinkImpl&) =
+      delete;
 
   ~RootCompositorFrameSinkImpl() override;
 
+  void DidEvictSurface(const SurfaceId& surface_id);
+
+  const SurfaceId& CurrentSurfaceId() const;
+
   // mojom::DisplayPrivate:
   void SetDisplayVisible(bool visible) override;
+#if defined(OS_WIN)
   void DisableSwapUntilResize(DisableSwapUntilResizeCallback callback) override;
+#endif
   void Resize(const gfx::Size& size) override;
   void SetDisplayColorMatrix(const gfx::Transform& color_matrix) override;
-  void SetDisplayColorSpace(const gfx::ColorSpace& device_color_space,
-                            float sdr_white_level) override;
+  void SetDisplayColorSpaces(
+      const gfx::DisplayColorSpaces& display_color_spaces) override;
   void SetOutputIsSecure(bool secure) override;
   void SetDisplayVSyncParameters(base::TimeTicks timebase,
                                  base::TimeDelta interval) override;
@@ -64,9 +84,15 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   void UpdateRefreshRate(float refresh_rate) override;
   void SetSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override;
+  void PreserveChildSurfaceControls() override;
+  void SetSwapCompletionCallbackEnabled(bool enable) override;
 #endif
   void AddVSyncParameterObserver(
       mojo::PendingRemote<mojom::VSyncParameterObserver> observer) override;
+
+  void SetDelegatedInkPointRenderer(
+      mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver)
+      override;
 
   // mojom::CompositorFrameSink:
   void SetNeedsBeginFrame(bool needs_begin_frame) override;
@@ -74,7 +100,7 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   void SubmitCompositorFrame(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      base::Optional<HitTestRegionList> hit_test_region_list,
+      absl::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time) override;
   void DidNotProduceFrame(const BeginFrameAck& begin_frame_ack) override;
   void DidAllocateSharedBitmap(base::ReadOnlySharedMemoryRegion region,
@@ -83,9 +109,11 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   void SubmitCompositorFrameSync(
       const LocalSurfaceId& local_surface_id,
       CompositorFrame frame,
-      base::Optional<HitTestRegionList> hit_test_region_list,
+      absl::optional<HitTestRegionList> hit_test_region_list,
       uint64_t submit_time,
       SubmitCompositorFrameSyncCallback callback) override;
+  void InitializeCompositorFrameSinkType(
+      mojom::CompositorFrameSinkType type) override;
 
   base::ScopedClosureRunner GetCacheBackBufferCb();
 
@@ -101,21 +129,25 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
       std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source,
       std::unique_ptr<ExternalBeginFrameSource> external_begin_frame_source,
       std::unique_ptr<Display> display,
-      bool use_preferred_interval_for_video);
+      bool use_preferred_interval_for_video,
+      bool hw_support_for_multiple_refresh_rates,
+      bool apply_simple_frame_rate_throttling);
 
   // DisplayClient:
   void DisplayOutputSurfaceLost() override;
   void DisplayWillDrawAndSwap(bool will_draw_and_swap,
-                              RenderPassList* render_passes) override;
+                              AggregatedRenderPassList* render_passes) override;
   void DisplayDidDrawAndSwap() override;
   void DisplayDidReceiveCALayerParams(
       const gfx::CALayerParams& ca_layer_params) override;
   void DisplayDidCompleteSwapWithSize(const gfx::Size& pixel_size) override;
+  void SetWideColorEnabled(bool enabled) override;
   void SetPreferredFrameInterval(base::TimeDelta interval) override;
   base::TimeDelta GetPreferredFrameIntervalForFrameSinkId(
-      const FrameSinkId& id) override;
-  void UpdateVSyncParameters();
+      const FrameSinkId& id,
+      mojom::CompositorFrameSinkType* type) override;
 
+  void UpdateVSyncParameters();
   BeginFrameSource* begin_frame_source();
 
   mojo::Remote<mojom::CompositorFrameSinkClient> compositor_frame_sink_client_;
@@ -149,11 +181,20 @@ class RootCompositorFrameSinkImpl : public mojom::CompositorFrameSink,
   base::TimeDelta preferred_frame_interval_ =
       FrameRateDecider::UnspecifiedFrameInterval();
 
-#if defined(OS_LINUX) && !defined(OS_CHROMEOS)
+  // Determines whether to throttle frame rate by half.
+  // TODO(http://crbug.com/1153404): Remove this field when experiment is over.
+  bool apply_simple_frame_rate_throttling_ = false;
+
+// TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
+// of lacros-chrome is complete.
+#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   gfx::Size last_swap_pixel_size_;
 #endif
 
-  DISALLOW_COPY_AND_ASSIGN(RootCompositorFrameSinkImpl);
+#if defined(OS_ANDROID)
+  // Let client control whether it wants `DidCompleteSwapWithSize`.
+  bool enable_swap_competion_callback_ = false;
+#endif
 };
 
 }  // namespace viz

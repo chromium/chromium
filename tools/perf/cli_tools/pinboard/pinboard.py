@@ -29,7 +29,7 @@ JOBS_STATE_FILE = 'jobs_state.json'
 DATASET_PKL_FILE = 'dataset.pkl'
 DATASET_CSV_FILE = 'dataset.csv'
 
-CLOUD_STORAGE_DIR = 'gs://chrome-health-tvdata/pinboard'
+CLOUD_STORAGE_DIR = 'gs://showy-dashboard-data/pinboard'
 TZ = 'America/Los_Angeles'  # MTV-time.
 
 
@@ -40,6 +40,7 @@ MEASUREMENTS = set([
     'Optimize-Background:duration',
     'Optimize:duration',
     'RunsPerMinute',
+    'Score',
     'Total-Main-Thread:duration',
     'Total:duration',
     'V8-Only-Main-Thread:duration',
@@ -58,25 +59,55 @@ MEASUREMENTS = set([
 # Compute averages over a fixed set of active stories. These may need to be
 # periodically updated.
 ACTIVE_STORIES = set([
-    'browse:chrome:newtab',
-    'browse:chrome:omnibox',
-    'browse:media:facebook_photos',
+    # v8.browsing_mobile.
+    'browse:chrome:newtab:2019',
+    'browse:chrome:omnibox:2019',
+    'browse:media:facebook_photos:2019',
+    'browse:media:flickr_infinite_scroll:2019',
     'browse:media:googleplaystore:2019',
-    'browse:media:imgur',
-    'browse:media:youtube',
-    'browse:news:cricbuzz',
-    'browse:news:toi',
-    'browse:shopping:amazon',
-    'browse:shopping:lazada',
-    'browse:social:facebook',
-    'browse:social:instagram',
-    'browse:tools:maps',
-    'load:media:facebook_photos',
-    'load:media:youtube:2018',
-    'load:news:irctc',
-    'load:news:wikipedia:2018',
-    'intent:coldish:bbc',
+    'browse:media:imgur:2019',
+    'browse:media:youtube:2019',
+    'browse:news:cricbuzz:2019',
+    'browse:news:globo:2019',
+    'browse:news:nytimes:2019',
+    'browse:news:qq:2019',
+    'browse:news:reddit:2019',
+    'browse:news:toi:2019',
+    'browse:shopping:amazon:2019',
+    'browse:news:washingtonpost:2019',
+    'browse:search:amp:sxg:2019',
+    'browse:shopping:amazon:2019',
+    'browse:shopping:avito:2019',
+    'browse:shopping:flipkart:2019',
+    'browse:shopping:lazada:2019',
+    'browse:social:facebook:2019',
+    'browse:social:instagram:2019',
+    'browse:social:twitter:2019',
+    'browse:tools:maps:2019',
+
+    # v8.browsing_desktop.
+    'browse:news:nytimes:2020',
+    'browse:news:flipboard:2020',
+    'browse:social:facebook_infinite_scroll:2018',
+    'browse:tools:sheets:2019',
+    'browse:media:tumblr:2018',
+    'browse:tools:maps:2019',
+    'browse:social:twitter_infinite_scroll:2018',
+    'browse:tech:discourse_infinite_scroll:2018',
+    'browse:social:twitter:2018',
+    'browse:social:tumblr_infinite_scroll:2018',
+    'browse:media:googleplaystore:2021',
+    'browse:search:google:2020',
+    'browse:news:cnn:2018',
+    'browse:news:reddit:2020',
+    'browse:search:google_india:2021',
+    'browse:media:youtubetv:2019',
+
+    # Speedometer2.
     'Speedometer2',
+
+    # JetStream2.
+    'JetStream2',
 ])
 
 
@@ -92,9 +123,8 @@ def StartPinpointJobs(state, date):
   item = {'revision': revision, 'timestamp': timestamp, 'jobs': []}
   configs = LoadJsonFile(JOB_CONFIGS_PATH)
   for config in configs:
-    config['start_git_hash'] = revision
-    config['end_git_hash'] = revision
-    with tempfile_ext.NamedTemporaryFile() as tmp:
+    config['base_git_hash'] = revision
+    with tempfile_ext.NamedTemporaryFile(mode='w') as tmp:
       json.dump(config, tmp)
       tmp.close()
       output = subprocess.check_output(
@@ -102,7 +132,14 @@ def StartPinpointJobs(state, date):
           universal_newlines=True).strip()
     logging.info(output)
     assert 'https://pinpoint' in output
-    item['jobs'].append({'id': output.split('/')[-1], 'status': 'queued'})
+    bot = config['configuration']
+    patch = config['patch']
+    item['jobs'].append({
+        'id': output.split('/')[-1],
+        'status': 'queued',
+        'bot': bot,
+        'patch': patch,
+    })
   state.append(item)
   state.sort(key=lambda p: p['timestamp'])  # Keep items sorted by date.
 
@@ -157,7 +194,7 @@ def UpdateJobsState(state):
   storage are updated.
   """
   local_path = CachedFilePath(JOBS_STATE_FILE)
-  with tempfile_ext.NamedTemporaryFile() as tmp:
+  with tempfile_ext.NamedTemporaryFile(mode='w') as tmp:
     json.dump(state, tmp, sort_keys=True, indent=2, separators=(',', ': '))
     tmp.close()
     if not os.path.exists(local_path) or not filecmp.cmp(tmp.name, local_path):
@@ -255,14 +292,15 @@ def GetRevisionResults(item):
 
   if not df.empty:
     # Aggregate over the results of individual stories.
-    df = df.groupby(['change', 'name', 'benchmark', 'unit'])['mean'].agg(
-        ['mean', 'count']).reset_index()
+    df = df.groupby(['change', 'job_id', 'name', 'benchmark',
+                     'unit'])['mean'].agg(['mean', 'count']).reset_index()
   else:
     # Otherwise build a single row with an "empty" aggregate for this revision.
     # This is needed so we can remember in the cache that this revision has
     # been processed.
     df = pd.DataFrame(index=[0])
     df['change'] = item['revision']
+    df['job_id'] = '(missing)'
     df['name'] = '(missing)'
     df['benchmark'] = '(missing)'
     df['unit'] = ''
@@ -291,8 +329,18 @@ def GetRevisionResults(item):
   df.loc[df['label'] == 'without_patch', 'timestamp'] = (
       df['timestamp'] - pd.DateOffset(years=1))
 
-  return df[['revision', 'timestamp', 'label',
-             'benchmark', 'name', 'mean', 'count']]
+  df['bot'] = 'unknown'
+  df['patch'] = 'unknown'
+  for j in item['jobs']:
+    bot = j.get('bot', 'unknown')
+    patch = j.get('patch', 'unknown')
+    df.loc[df['job_id'].str.contains(str(j['id'])), 'bot'] = bot
+    df.loc[df['job_id'].str.contains(str(j['id'])), 'patch'] = patch
+
+  return df[[
+      'revision', 'timestamp', 'bot', 'patch', 'label', 'benchmark', 'name',
+      'mean', 'count'
+  ]]
 
 
 def _SkipProcessing(item):

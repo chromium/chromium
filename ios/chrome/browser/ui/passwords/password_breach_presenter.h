@@ -13,11 +13,11 @@
 // Presents more information related to the feature.
 - (void)presentLearnMore;
 
-// Dismisses more information related to the feature.
-- (void)dismissLearnMore;
-
 // Informs the presenter that the feature should dismiss.
 - (void)stop;
+
+// Informs the presenter that the Password page should be open.
+- (void)startPasswordCheck;
 
 @end
 

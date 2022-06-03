@@ -25,7 +25,8 @@ class TablePainter {
   void PaintMask(const PaintInfo&, const PhysicalOffset& paint_offset);
 
  private:
-  void PaintCollapsedBorders(const PaintInfo&);
+  void PaintCollapsedBorders(const PaintInfo&,
+                             const PhysicalOffset& paint_offset);
 
   const LayoutTable& layout_table_;
 };

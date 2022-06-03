@@ -1,17 +1,22 @@
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-if (window.testRunner) {
-    testRunner.dumpEditingCallbacks();
-    testRunner.dumpAsLayoutWithPixelResults();
-}
-</script>
-<p>This is a test to make sure that the final &lt;br&gt; in an incoming fragment is interpretted strictly in quirks mode (where brs at the end of blocks are collapsed).  This test used to fail because of unrendered content to the left of the collapsed br.</p>
-<div id="test" contenteditable="true"><div>The test should add a single blank line after this paragraph.<span></span><br></div></div>
-
-<script>
-var s = window.getSelection();
-var e = document.getElementById("test");
-
-s.collapse(e, 0);
-s.modify("move", "forward", "line");
-document.execCommand("InsertHTML", false, "<br>");
+// This is a test to make sure that the final <br> in an incoming fragment is
+// interpretted strictly in quirks mode (where <br>s at the end of blocks are
+// collapsed). This test used to fail because of unrendered content to the left
+// of the collapsed <br>
+selection_test(
+    [
+        '<div contenteditable>',
+            '<div>abc.|<span></span><br></div>',
+        '</div>',
+    ],
+    'InsertHTML <br>',
+    [
+        '<div contenteditable>',
+            '<div>abc.<span></span><br></div>',
+            '|<br>',
+        '</div>',
+    ]);
 </script>

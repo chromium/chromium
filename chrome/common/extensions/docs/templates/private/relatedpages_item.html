@@ -1,9 +1,0 @@
-{{#r:items}}
-  {{?r.related}}
-    <li{{?r.separator}} class="separator"{{/}}>
-      <a href="{{r.href}}"{{?r.selected}} class="active"{{/}}>{{r.title}}</a>
-    </li>
-  {{:r.related}}
-      {{?r.items +partials.relatedpages_item items:r.items /}}
-  {{/r.related}}
-{{/items}}

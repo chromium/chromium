@@ -14,9 +14,7 @@ template("sizes_test") {
     executable = "//tools/binary_size/sizes.py"
     wrapper_script = "$root_out_dir/bin/run_${target_name}"
 
-    data_deps = [
-      "//tools/binary_size:sizes_py",
-    ]
+    data_deps = [ "//tools/binary_size:sizes_py" ]
     if (defined(invoker.data_deps)) {
       data_deps += invoker.data_deps
     }
@@ -43,6 +41,7 @@ template("sizes_test") {
       data += [
         mac_bin_path + "llvm-size",
         mac_bin_path + "size",
+        mac_bin_path + "size-classic",
       ]
     }
   }

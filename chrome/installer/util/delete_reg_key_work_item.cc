@@ -11,8 +11,7 @@
 
 using base::win::RegKey;
 
-DeleteRegKeyWorkItem::~DeleteRegKeyWorkItem() {
-}
+DeleteRegKeyWorkItem::~DeleteRegKeyWorkItem() {}
 
 DeleteRegKeyWorkItem::DeleteRegKeyWorkItem(HKEY predefined_root,
                                            const std::wstring& path,
@@ -23,8 +22,7 @@ DeleteRegKeyWorkItem::DeleteRegKeyWorkItem(HKEY predefined_root,
   DCHECK(predefined_root);
   // It's a safe bet that we don't want to delete one of the root trees.
   DCHECK(!path.empty());
-  DCHECK(wow64_access == 0 ||
-         wow64_access == KEY_WOW64_32KEY ||
+  DCHECK(wow64_access == 0 || wow64_access == KEY_WOW64_32KEY ||
          wow64_access == KEY_WOW64_64KEY);
 }
 
@@ -44,8 +42,8 @@ bool DeleteRegKeyWorkItem::DoImpl() {
   }
 
   // Delete the key.
-  if (!InstallUtil::DeleteRegistryKey(
-          predefined_root_, path_.c_str(), wow64_access_)) {
+  if (!InstallUtil::DeleteRegistryKey(predefined_root_, path_.c_str(),
+                                      wow64_access_)) {
     return false;
   }
 
@@ -58,8 +56,7 @@ void DeleteRegKeyWorkItem::RollbackImpl() {
 
   // Delete anything in the key before restoring the backup in case someone else
   // put new data in the key after Do().
-  InstallUtil::DeleteRegistryKey(predefined_root_,
-                                 path_.c_str(),
+  InstallUtil::DeleteRegistryKey(predefined_root_, path_.c_str(),
                                  wow64_access_);
 
   // Restore the old contents.  The restoration takes on its default security

@@ -5,8 +5,8 @@
 #include "chrome/browser/chromeos/printing/print_servers_provider_factory.h"
 
 #include "base/no_destructor.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/printing/print_servers_provider.h"
-#include "chrome/browser/chromeos/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
@@ -43,6 +43,15 @@ base::WeakPtr<PrintServersProvider> PrintServersProviderFactory::GetForProfile(
   return GetForAccountId(user->GetAccountId());
 }
 
+base::WeakPtr<PrintServersProvider>
+PrintServersProviderFactory::GetForDevice() {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (!device_provider_) {
+    device_provider_ = PrintServersProvider::Create();
+  }
+  return device_provider_->AsWeakPtr();
+}
+
 void PrintServersProviderFactory::RemoveForAccountId(
     const AccountId& account_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -52,6 +61,7 @@ void PrintServersProviderFactory::RemoveForAccountId(
 void PrintServersProviderFactory::Shutdown() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   providers_by_user_.clear();
+  device_provider_ = nullptr;
 }
 
 PrintServersProviderFactory::PrintServersProviderFactory() = default;

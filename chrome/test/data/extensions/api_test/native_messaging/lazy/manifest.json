@@ -1,0 +1,15 @@
+{
+  // Extension ID: knldjmfmopnpolahpmmgbagdohdnhkik
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDcBHwzDvyBQ6bDppkIs9MP4ksKqCMyXQ/A52JivHZKh4YO/9vJsT3oaYhSpDCE9RPocOEQvwsHsFReW2nUEc6OLLyoCFFxIb7KkLGsmfakkut/fFdNJYh0xOTbSN8YvLWcqph09XAY2Y/f0AL7vfO1cuCqtkMt8hFrBGWxDdf9CQIDAQAB",
+  "version": "1.0.0.0",
+  "manifest_version": 2,
+  "name": "native messaging test",
+  "description": "Tests one time messaging functionality in event page or SW based extension.",
+  "background": {
+    "scripts": ["test.js"],
+    "persistent": false
+  },
+  "permissions": [
+    "nativeMessaging"
+  ]
+}

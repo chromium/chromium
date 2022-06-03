@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import("//ios/build/config.gni")
-import("//ios/third_party/earl_grey/ios_eg_test.gni")
 import("//ios/third_party/earl_grey2/ios_eg2_test.gni")
 
 group("all_tests") {
@@ -11,94 +10,13 @@ group("all_tests") {
   deps = [
     ":ios_web_shell_eg2tests",
     ":ios_web_shell_eg2tests_module",
-    ":ios_web_shell_egtests",
   ]
-}
-
-ios_eg_test("ios_web_shell_egtests") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  info_plist = "//ios/web/shell/Info.plist"
-  sources = [
-    "context_menu_egtest.mm",
-    "page_state_egtest.mm",
-  ]
-
-  deps = [
-    ":earl_grey_test_support",
-    "//base",
-    "//base/test:test_support",
-    "//ios/testing:http_server_bundle_data",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/web",
-    "//ios/web:earl_grey_test_support",
-    "//ios/web/public/test",
-    "//ios/web/public/test:element_selector",
-    "//ios/web/public/test/fakes",
-    "//ios/web/shell",
-    "//net:test_support",
-    "//url",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
-
-  assert_no_deps = ios_assert_no_deps
-}
-
-source_set("earl_grey_test_support") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  testonly = true
-
-  deps = [
-    "//base",
-    "//base/test:test_support",
-    "//ios/testing:nserror_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/web",
-    "//ios/web:earl_grey_test_support",
-    "//ios/web/public/test",
-    "//ios/web/public/test:element_selector",
-    "//ios/web/shell",
-    "//ios/web/shell:shell_interfaces",
-    "//testing/gtest:gtest",
-    "//url",
-  ]
-
-  public_deps = [
-    "//build/config/ios:xctest",
-  ]
-
-  sources = [
-    "app/navigation_test_util.h",
-    "app/navigation_test_util.mm",
-    "app/web_shell_test_util.h",
-    "app/web_shell_test_util.mm",
-    "app/web_view_interaction_test_util.h",
-    "app/web_view_interaction_test_util.mm",
-    "earl_grey/shell_actions.h",
-    "earl_grey/shell_actions.mm",
-    "earl_grey/shell_actions_app_interface.h",
-    "earl_grey/shell_actions_app_interface.mm",
-    "earl_grey/shell_earl_grey.h",
-    "earl_grey/shell_earl_grey.mm",
-    "earl_grey/shell_earl_grey_app_interface.h",
-    "earl_grey/shell_earl_grey_app_interface.mm",
-    "earl_grey/shell_matchers.h",
-    "earl_grey/shell_matchers.mm",
-    "earl_grey/shell_matchers_app_interface.h",
-    "earl_grey/shell_matchers_app_interface.mm",
-    "earl_grey/web_shell_test_case.h",
-    "earl_grey/web_shell_test_case.mm",
-  ]
-
-  configs += [ "//build/config/compiler:enable_arc" ]
 }
 
 ################################
 # EG2 targets.
 
 source_set("eg_app_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -137,7 +55,6 @@ source_set("eg_app_support+eg2") {
 }
 
 source_set("eg_test_support+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -148,12 +65,15 @@ source_set("eg_test_support+eg2") {
     "earl_grey/shell_actions.h",
     "earl_grey/shell_actions.mm",
     "earl_grey/shell_actions_app_interface.h",
+    "earl_grey/shell_actions_app_interface_stub.mm",
     "earl_grey/shell_earl_grey.h",
     "earl_grey/shell_earl_grey.mm",
     "earl_grey/shell_earl_grey_app_interface.h",
+    "earl_grey/shell_earl_grey_app_interface_stub.mm",
     "earl_grey/shell_matchers.h",
     "earl_grey/shell_matchers.mm",
     "earl_grey/shell_matchers_app_interface.h",
+    "earl_grey/shell_matchers_app_interface_stub.mm",
     "earl_grey/web_shell_test_case.h",
     "earl_grey/web_shell_test_case.mm",
   ]
@@ -172,7 +92,6 @@ source_set("eg_test_support+eg2") {
 }
 
 source_set("eg_tests+eg2") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
@@ -194,7 +113,7 @@ source_set("eg_tests+eg2") {
     "//net:test_support",
   ]
 
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 ios_eg2_test_app_host("ios_web_shell_eg2tests") {
@@ -216,4 +135,6 @@ ios_eg2_test("ios_web_shell_eg2tests_module") {
     # Test support libraries.
     ":eg_tests+eg2",
   ]
+
+  data_deps = [ ":ios_web_shell_eg2tests" ]
 }

@@ -18,7 +18,7 @@ VideoTrack::VideoTrack(const String& id,
 
 VideoTrack::~VideoTrack() = default;
 
-void VideoTrack::Trace(Visitor* visitor) {
+void VideoTrack::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   TrackBase::Trace(visitor);
 }

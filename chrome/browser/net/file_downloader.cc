@@ -9,8 +9,9 @@
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/task/post_task.h"
+#include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
-#include "base/task_runner_util.h"
+#include "base/task/thread_pool.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/storage_partition.h"
@@ -19,6 +20,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 const int kNumFileDownloaderRetries = 1;
@@ -48,14 +50,13 @@ FileDownloader::FileDownloader(
                        base::Unretained(this)));
   } else {
     base::PostTaskAndReplyWithResult(
-        base::CreateTaskRunner(
-            {base::ThreadPool(), base::MayBlock(),
-             base::TaskPriority::BEST_EFFORT,
+        base::ThreadPool::CreateTaskRunner(
+            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
             .get(),
-        FROM_HERE, base::Bind(&base::PathExists, local_path_),
-        base::Bind(&FileDownloader::OnFileExistsCheckDone,
-                   weak_ptr_factory_.GetWeakPtr()));
+        FROM_HERE, base::BindOnce(&base::PathExists, local_path_),
+        base::BindOnce(&FileDownloader::OnFileExistsCheckDone,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -76,13 +77,13 @@ void FileDownloader::OnSimpleDownloadComplete(base::FilePath response_path) {
   }
 
   base::PostTaskAndReplyWithResult(
-      base::CreateTaskRunner({base::ThreadPool(), base::MayBlock(),
-                              base::TaskPriority::BEST_EFFORT,
-                              base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
+      base::ThreadPool::CreateTaskRunner(
+          {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+           base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})
           .get(),
-      FROM_HERE, base::Bind(&base::Move, response_path, local_path_),
-      base::Bind(&FileDownloader::OnFileMoveDone,
-                 weak_ptr_factory_.GetWeakPtr()));
+      FROM_HERE, base::BindOnce(&base::Move, response_path, local_path_),
+      base::BindOnce(&FileDownloader::OnFileMoveDone,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FileDownloader::OnFileExistsCheckDone(bool exists) {

@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/core/common/cloud/cloud_policy_store.h"
@@ -49,15 +48,22 @@ class POLICY_EXPORT CloudPolicyManager
       const scoped_refptr<base::SequencedTaskRunner>& task_runner,
       network::NetworkConnectionTrackerGetter
           network_connection_tracker_getter);
+  CloudPolicyManager(const CloudPolicyManager&) = delete;
+  CloudPolicyManager& operator=(const CloudPolicyManager&) = delete;
   ~CloudPolicyManager() override;
 
   CloudPolicyCore* core() { return &core_; }
   const CloudPolicyCore* core() const { return &core_; }
 
+  // Returns true if the underlying CloudPolicyClient is already registered.
+  // Virtual for mocking.
+  virtual bool IsClientRegistered() const;
+
   // ConfigurationPolicyProvider:
   void Init(SchemaRegistry* registry) override;
   void Shutdown() override;
   bool IsInitializationComplete(PolicyDomain domain) const override;
+  bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
   void RefreshPolicies() override;
 
   // CloudPolicyStore::Observer:
@@ -80,7 +86,6 @@ class POLICY_EXPORT CloudPolicyManager
   void CreateComponentCloudPolicyService(
       const std::string& policy_type,
       const base::FilePath& policy_cache_path,
-      PolicySource policy_source,
       CloudPolicyClient* client,
       SchemaRegistry* schema_registry);
 
@@ -107,8 +112,6 @@ class POLICY_EXPORT CloudPolicyManager
   // Whether there's a policy refresh operation pending, in which case all
   // policy update notifications are deferred until after it completes.
   bool waiting_for_policy_refresh_;
-
-  DISALLOW_COPY_AND_ASSIGN(CloudPolicyManager);
 };
 
 }  // namespace policy

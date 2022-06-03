@@ -26,13 +26,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_FONT_DATA_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 namespace blink {
 
@@ -41,6 +40,8 @@ class SimpleFontData;
 class PLATFORM_EXPORT FontData : public RefCounted<FontData> {
  public:
   FontData() = default;
+  FontData(const FontData&) = delete;
+  FontData& operator=(const FontData&) = delete;
 
   virtual ~FontData();
 
@@ -52,19 +53,7 @@ class PLATFORM_EXPORT FontData : public RefCounted<FontData> {
   virtual bool IsLoadingFallback() const = 0;
   virtual bool IsSegmented() const = 0;
   virtual bool ShouldSkipDrawing() const = 0;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(FontData);
 };
-
-#define DEFINE_FONT_DATA_TYPE_CASTS(thisType, predicate)     \
-  template <typename T>                                      \
-  inline thisType* To##thisType(const scoped_refptr<T>& fontData) { \
-    return To##thisType(fontData.get());                     \
-  }                                                          \
-  DEFINE_TYPE_CASTS(thisType, FontData, fontData,            \
-                    fontData->IsSegmented() == predicate,    \
-                    fontData.IsSegmented() == predicate)
 
 }  // namespace blink
 

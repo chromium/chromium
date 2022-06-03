@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_ANDROID_RENDER_WIDGET_HOST_CONNECTOR_H_
 #define CONTENT_BROWSER_ANDROID_RENDER_WIDGET_HOST_CONNECTOR_H_
 
+#include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/renderer_host/render_widget_host_view_android.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -16,10 +17,17 @@ namespace content {
 // override |UpdateRenderProcessConnection| to set itself to the RWHVA
 // brought up foreground, and null out its reference in the RWHVA going
 // away so it won't access the object any more.
-// This class owns itself and gets deleted when the Java WebContents is deleted.
+// This class owns itself and gets deleted when the WebContents is deleted.
+// Can also delete this object early (before the WebContents is destroyed)
+// by calling Destroy directly.
 class RenderWidgetHostConnector {
  public:
   explicit RenderWidgetHostConnector(WebContents* web_contents);
+
+  RenderWidgetHostConnector(const RenderWidgetHostConnector&) = delete;
+  RenderWidgetHostConnector& operator=(const RenderWidgetHostConnector&) =
+      delete;
+
   virtual ~RenderWidgetHostConnector();
 
   // Establish initial connection to rwhva if it is present.
@@ -39,13 +47,17 @@ class RenderWidgetHostConnector {
   RenderWidgetHostViewAndroid* GetRWHVAForTesting() const;
 
  protected:
+  FRIEND_TEST_ALL_PREFIXES(RenderWidgetHostConnectorTest, DestroyEarly);
+
   WebContents* web_contents() const;
+
+  // Deletes this now. Note this is usually not required as this is
+  // deleted when the corresponding WebContents is destroyed.
+  void DestroyEarly();
 
  private:
   class Observer;
   std::unique_ptr<Observer> render_widget_observer_;
-
-  DISALLOW_COPY_AND_ASSIGN(RenderWidgetHostConnector);
 };
 
 }  // namespace content

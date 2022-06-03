@@ -6,9 +6,10 @@
 
 #include <stddef.h>
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/process/kill.h"
 #include "base/process/launch.h"
@@ -87,8 +88,9 @@ void CloudPrintProxy::EnableForUserWithRobot(const std::string& robot_auth_code,
     // Keep only proxy id;
     service_prefs_->SetString(prefs::kCloudPrintProxyId, proxy_id);
   }
-  service_prefs_->SetValue(prefs::kCloudPrintUserSettings,
-                           user_settings.CreateDeepCopy());
+  service_prefs_->SetValue(
+      prefs::kCloudPrintUserSettings,
+      base::Value::ToUniquePtrValue(user_settings.Clone()));
   service_prefs_->WritePrefs();
 
   if (!CreateBackend())
@@ -223,8 +225,6 @@ void CloudPrintProxy::OnPrintSystemUnavailable() {
 void CloudPrintProxy::OnUnregisterPrinters(
     const std::string& auth_token,
     const std::list<std::string>& printer_ids) {
-  UMA_HISTOGRAM_COUNTS_10000("CloudPrint.UnregisterPrinters",
-                             printer_ids.size());
   ShutdownBackend();
   ConnectorSettings settings;
   settings.InitFrom(service_prefs_);
@@ -240,8 +240,8 @@ void CloudPrintProxy::OnUnregisterPrinters(
               "policy regarding Cloud Print."
             data: "OAuth2 token and list of printer ids to unregister."
           })");
-  wipeout_.reset(new CloudPrintWipeout(this, settings.server_url(),
-                                       partial_traffic_annotation));
+  wipeout_ = std::make_unique<CloudPrintWipeout>(this, settings.server_url(),
+                                                 partial_traffic_annotation);
   wipeout_->UnregisterPrinters(auth_token, printer_ids);
 }
 

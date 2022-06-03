@@ -27,6 +27,7 @@
 #include "absl/types/span.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 namespace random_internal {
 
 // Returns the number of 32-bit blocks needed to contain the given number of
@@ -97,6 +98,7 @@ void MixIntoSeedMaterial(absl::Span<const uint32_t> sequence,
 absl::optional<uint32_t> GetSaltMaterial();
 
 }  // namespace random_internal
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_RANDOM_INTERNAL_SEED_MATERIAL_H_

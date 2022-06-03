@@ -20,8 +20,8 @@ enum class ActivationDecision : int {
   ACTIVATION_DISABLED = 2,
 
   // Did not activate because although there was a configuration whose
-  // activation conditions were met, the main frame URL was whitelisted.
-  URL_WHITELISTED = 4,
+  // activation conditions were met, the main frame URL was allowlisted.
+  URL_ALLOWLISTED = 4,
 
   // Did not activate because the main frame document URL did not match the
   // activation conditions of any of enabled configurations.

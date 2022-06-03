@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "components/search_engines/template_url.h"
 
@@ -22,6 +21,10 @@ class SearchHostToURLsMap {
   using TemplateURLSet = base::flat_set<TemplateURL*>;
 
   SearchHostToURLsMap();
+
+  SearchHostToURLsMap(const SearchHostToURLsMap&) = delete;
+  SearchHostToURLsMap& operator=(const SearchHostToURLsMap&) = delete;
+
   ~SearchHostToURLsMap();
 
   // Initializes the map.
@@ -61,8 +64,6 @@ class SearchHostToURLsMap {
 
   // Has Init been called?
   bool initialized_;
-
-  DISALLOW_COPY_AND_ASSIGN(SearchHostToURLsMap);
 };
 
 #endif  // COMPONENTS_SEARCH_ENGINES_SEARCH_HOST_TO_URLS_MAP_H_

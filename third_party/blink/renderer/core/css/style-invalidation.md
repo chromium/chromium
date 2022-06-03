@@ -1,6 +1,6 @@
 # CSS Style Invalidation in Blink
 
-[Rendered](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/css/style-invalidation.md)
+[Rendered](https://chromium.googlesource.com/chromium/src/+/HEAD/third_party/blink/renderer/core/css/style-invalidation.md)
 
 # About this document
 

@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/components/tether/asynchronous_shutdown_object_container.h"
 #include "chromeos/components/tether/disconnect_tethering_request_sender.h"
@@ -42,7 +41,7 @@ class AsynchronousShutdownObjectContainerImpl
  public:
   class Factory {
    public:
-    static std::unique_ptr<AsynchronousShutdownObjectContainer> NewInstance(
+    static std::unique_ptr<AsynchronousShutdownObjectContainer> Create(
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
         TetherHostFetcher* tether_host_fetcher,
@@ -51,10 +50,10 @@ class AsynchronousShutdownObjectContainerImpl
             managed_network_configuration_handler,
         NetworkConnectionHandler* network_connection_handler,
         PrefService* pref_service);
-    static void SetInstanceForTesting(Factory* factory);
+    static void SetFactoryForTesting(Factory* factory);
 
    protected:
-    virtual std::unique_ptr<AsynchronousShutdownObjectContainer> BuildInstance(
+    virtual std::unique_ptr<AsynchronousShutdownObjectContainer> CreateInstance(
         device_sync::DeviceSyncClient* device_sync_client,
         secure_channel::SecureChannelClient* secure_channel_client,
         TetherHostFetcher* tether_host_fetcher,
@@ -62,17 +61,22 @@ class AsynchronousShutdownObjectContainerImpl
         ManagedNetworkConfigurationHandler*
             managed_network_configuration_handler,
         NetworkConnectionHandler* network_connection_handler,
-        PrefService* pref_service);
+        PrefService* pref_service) = 0;
     virtual ~Factory();
 
    private:
     static Factory* factory_instance_;
   };
 
+  AsynchronousShutdownObjectContainerImpl(
+      const AsynchronousShutdownObjectContainerImpl&) = delete;
+  AsynchronousShutdownObjectContainerImpl& operator=(
+      const AsynchronousShutdownObjectContainerImpl&) = delete;
+
   ~AsynchronousShutdownObjectContainerImpl() override;
 
   // AsynchronousShutdownObjectContainer:
-  void Shutdown(const base::Closure& shutdown_complete_callback) override;
+  void Shutdown(base::OnceClosure shutdown_complete_callback) override;
   TetherHostFetcher* tether_host_fetcher() override;
   DisconnectTetheringRequestSender* disconnect_tethering_request_sender()
       override;
@@ -109,9 +113,7 @@ class AsynchronousShutdownObjectContainerImpl
   std::unique_ptr<WifiHotspotDisconnector> wifi_hotspot_disconnector_;
 
   // Not set until Shutdown() is invoked.
-  base::Closure shutdown_complete_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(AsynchronousShutdownObjectContainerImpl);
+  base::OnceClosure shutdown_complete_callback_;
 };
 
 }  // namespace tether

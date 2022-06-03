@@ -23,6 +23,8 @@ NullAppSorting::NullAppSorting() {
 NullAppSorting::~NullAppSorting() {
 }
 
+void NullAppSorting::InitializePageOrdinalMapFromWebApps() {}
+
 void NullAppSorting::FixNTPOrdinalCollisions() {
 }
 

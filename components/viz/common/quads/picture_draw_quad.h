@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_PICTURE_DRAW_QUAD_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_PICTURE_DRAW_QUAD_H_
 
-#include <memory>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/display_item_list.h"
@@ -35,11 +33,11 @@ class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
               const gfx::RectF& tex_coord_rect,
               const gfx::Size& texture_size,
               bool nearest_neighbor,
-              ResourceFormat texture_format,
-              const gfx::Rect& content_rect,
-              float contents_scale,
-              ImageAnimationMap image_animation_map,
-              scoped_refptr<cc::DisplayItemList> display_item_list);
+              ResourceFormat format,
+              const gfx::Rect& content,
+              float scale,
+              ImageAnimationMap animation_map,
+              scoped_refptr<cc::DisplayItemList> display_items);
 
   void SetAll(const SharedQuadState* shared_quad_state,
               const gfx::Rect& rect,
@@ -48,11 +46,11 @@ class VIZ_COMMON_EXPORT PictureDrawQuad : public ContentDrawQuadBase {
               const gfx::RectF& tex_coord_rect,
               const gfx::Size& texture_size,
               bool nearest_neighbor,
-              ResourceFormat texture_format,
-              const gfx::Rect& content_rect,
-              float contents_scale,
-              ImageAnimationMap image_animation_map,
-              scoped_refptr<cc::DisplayItemList> display_item_list);
+              ResourceFormat format,
+              const gfx::Rect& content,
+              float scale,
+              ImageAnimationMap animation_map,
+              scoped_refptr<cc::DisplayItemList> display_items);
 
   gfx::Rect content_rect;
   float contents_scale;

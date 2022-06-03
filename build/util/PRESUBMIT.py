@@ -6,8 +6,11 @@ import re
 """Presubmit for build/util"""
 
 
-def _GetBlacklist(input_api):
-  blacklist = []
+USE_PYTHON3 = True
+
+
+def _GetFilesToSkip(input_api):
+  files_to_skip = []
   affected_files = input_api.change.AffectedFiles()
   version_script_change = next(
       (f for f in affected_files
@@ -15,7 +18,7 @@ def _GetBlacklist(input_api):
       None)
 
   if version_script_change is None:
-    blacklist.append('version_test\\.py$')
+    files_to_skip.append('version_test\\.py$')
 
   android_chrome_version_script_change = next(
       (f for f in affected_files if re.search(
@@ -23,21 +26,24 @@ def _GetBlacklist(input_api):
           '\\/android_chrome_version_test\\.py$', f.LocalPath())), None)
 
   if android_chrome_version_script_change is None:
-    blacklist.append('android_chrome_version_test\\.py$')
+    files_to_skip.append('android_chrome_version_test\\.py$')
 
-  return blacklist
+  return files_to_skip
 
 
 def _GetPythonUnitTests(input_api, output_api):
   # No need to test if files are unchanged
-  blacklist = _GetBlacklist(input_api)
+  files_to_skip = _GetFilesToSkip(input_api)
 
   return input_api.canned_checks.GetUnitTestsRecursively(
       input_api,
       output_api,
       input_api.PresubmitLocalPath(),
-      whitelist=['.*_test\\.py$'],
-      blacklist=blacklist)
+      files_to_check=['.*_test\\.py$'],
+      files_to_skip=files_to_skip,
+      run_on_python2=False,
+      run_on_python3=True,
+      skip_shebang_check=True)
 
 
 def CommonChecks(input_api, output_api):

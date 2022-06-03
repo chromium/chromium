@@ -6,17 +6,21 @@
 #define UI_PLATFORM_WINDOW_PLATFORM_WINDOW_H_
 
 #include <memory>
+#include <string>
+#include <vector>
 
 #include "base/component_export.h"
-#include "base/strings/string16.h"
 #include "ui/base/class_property.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/native_widget_types.h"
 #include "ui/platform_window/platform_window_delegate.h"
 
+template <class T>
+class scoped_refptr;
+
 namespace gfx {
 class ImageSkia;
+class Insets;
 class Point;
 class Rect;
 class SizeF;
@@ -24,6 +28,7 @@ class Transform;
 }  // namespace gfx
 
 namespace ui {
+class PlatformCursor;
 
 // Generic PlatformWindow interface.
 class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
@@ -49,9 +54,9 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // Sets and gets the bounds of the platform-window. Note that the bounds is in
   // physical pixel coordinates.
   virtual void SetBounds(const gfx::Rect& bounds) = 0;
-  virtual gfx::Rect GetBounds() = 0;
+  virtual gfx::Rect GetBounds() const = 0;
 
-  virtual void SetTitle(const base::string16& title) = 0;
+  virtual void SetTitle(const std::u16string& title) = 0;
 
   virtual void SetCapture() = 0;
   virtual void ReleaseCapture() = 0;
@@ -73,7 +78,12 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   virtual void SetUseNativeFrame(bool use_native_frame) = 0;
   virtual bool ShouldUseNativeFrame() const = 0;
 
-  virtual void SetCursor(PlatformCursor cursor) = 0;
+  // This method sets the current cursor to `cursor`. Note that the platform
+  // window should keep a copy of `cursor` and also avoid replacing it until the
+  // new value has been set if any kind of platform-specific resources are
+  // managed by the platform cursor, e.g. HCURSOR on Windows, which are
+  // destroyed once the last copy of the platform cursor goes out of scope.
+  virtual void SetCursor(scoped_refptr<PlatformCursor> cursor) = 0;
 
   // Moves the cursor to |location|. Location is in platform window coordinates.
   virtual void MoveCursorTo(const gfx::Point& location) = 0;
@@ -140,6 +150,37 @@ class COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindow
   // Enables or disables platform provided animations of the PlatformWindow.
   // If |enabled| is set to false, animations are disabled.
   virtual void SetVisibilityChangedAnimationsEnabled(bool enabled);
+
+  // Returns a unique ID for the window. The interpretation of the ID is
+  // platform specific. Overriding this method is optional.
+  virtual std::string GetWindowUniqueId() const;
+
+  // Returns true if window shape should be updated in host,
+  // otherwise false when platform window or specific frame views updates the
+  // window shape.
+  virtual bool ShouldUpdateWindowShape() const;
+
+  // Returns true if the WM supports setting the frame extents for client side
+  // decorations.  This typically requires a compositor and an extension for
+  // specifying the decoration insets.
+  virtual bool CanSetDecorationInsets() const;
+
+  // Lets the WM know which portion of the window is the frame decoration.  The
+  // WM may use this to eg. snap windows to each other starting where the window
+  // begins rather than starting where the shadow begins.  If |insets_px| is
+  // nullptr, then any existing insets will be reset.
+  virtual void SetDecorationInsets(const gfx::Insets* insets_px);
+
+  // Sets a hint for the compositor so it can avoid unnecessarily redrawing
+  // occluded portions of windows.  If |region_px| is nullptr, then any existing
+  // region will be reset.
+  virtual void SetOpaqueRegion(const std::vector<gfx::Rect>* region_px);
+
+  // Sets the clickable region of a window.  This is useful for trimming down a
+  // potentially large (24px) hit area for window resizing on the window shadow
+  // to a more reasonable (10px) area.  If |region_px| is nullptr, then any
+  // existing region will be reset.
+  virtual void SetInputRegion(const gfx::Rect* region_px);
 };
 
 }  // namespace ui

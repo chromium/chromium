@@ -22,7 +22,7 @@ TranslateRankerFactory* TranslateRankerFactory::GetInstance() {
 
 // static
 translate::TranslateRanker* TranslateRankerFactory::GetForBrowserState(
-    ios::ChromeBrowserState* state) {
+    ChromeBrowserState* state) {
   return static_cast<TranslateRanker*>(
       GetInstance()->GetServiceForBrowserState(state, true));
 }
@@ -36,8 +36,8 @@ TranslateRankerFactory::~TranslateRankerFactory() {}
 
 std::unique_ptr<KeyedService> TranslateRankerFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  ios::ChromeBrowserState* browser_state =
-      ios::ChromeBrowserState::FromBrowserState(context);
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
   return std::make_unique<TranslateRankerImpl>(
       TranslateRankerImpl::GetModelPath(browser_state->GetStatePath()),
       TranslateRankerImpl::GetModelURL(),

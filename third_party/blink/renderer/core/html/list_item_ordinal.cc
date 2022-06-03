@@ -1,42 +1,20 @@
-/*
- * Copyright (C) 1999 Lars Knoll (knoll@kde.org)
- *           (C) 1999 Antti Koivisto (koivisto@kde.org)
- * Copyright (C) 2003, 2004, 2005, 2006, 2007, 2009 Apple Inc.
- *               All rights reserved.
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Library General Public
- * License as published by the Free Software Foundation; either
- * version 2 of the License, or (at your option) any later version.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * Library General Public License for more details.
- *
- * You should have received a copy of the GNU Library General Public License
- * along with this library; see the file COPYING.LIB.  If not, write to
- * the Free Software Foundation, Inc., 51 Franklin Street, Fifth Floor,
- * Boston, MA 02110-1301, USA.
- *
- */
-
 // Copyright 2017 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/html/list_item_ordinal.h"
 
-#include "base/numerics/clamped_math.h"
+#include "base/numerics/safe_conversions.h"
+#include "third_party/blink/renderer/core/dom/flat_tree_traversal.h"
 #include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_olist_element.h"
 #include "third_party/blink/renderer/core/layout/layout_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 
 namespace blink {
 
-ListItemOrdinal::ListItemOrdinal()
-    : type_(kNeedsUpdate), not_in_list_(false), not_in_list_changed_(false) {}
+ListItemOrdinal::ListItemOrdinal() : type_(kNeedsUpdate) {}
 
 bool ListItemOrdinal::IsList(const Node& node) {
   return IsA<HTMLUListElement>(node) || IsA<HTMLOListElement>(node);
@@ -51,13 +29,19 @@ bool ListItemOrdinal::IsListItem(const Node& node) {
   return IsListItem(node.GetLayoutObject());
 }
 
+bool ListItemOrdinal::IsInReversedOrderedList(const Node& node) {
+  const Node* list = EnclosingList(&node);
+  auto* olist = DynamicTo<HTMLOListElement>(list);
+  return olist && olist->IsReversed();
+}
+
 ListItemOrdinal* ListItemOrdinal::Get(const Node& item_node) {
   LayoutObject* layout_object = item_node.GetLayoutObject();
   if (layout_object) {
     if (layout_object->IsListItem())
-      return &ToLayoutListItem(layout_object)->Ordinal();
+      return &To<LayoutListItem>(layout_object)->Ordinal();
     if (layout_object->IsLayoutNGListItem())
-      return &ToLayoutNGListItem(layout_object)->Ordinal();
+      return &To<LayoutNGListItem>(layout_object)->Ordinal();
   }
   return nullptr;
 }
@@ -92,7 +76,6 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::NextListItem(
 
   const Node* current = item ? item : list_node;
   DCHECK(current);
-  DCHECK(!current->GetDocument().ChildNeedsDistributionRecalc());
   current = LayoutTreeBuilderTraversal::Next(*current, list_node);
 
   while (current) {
@@ -120,7 +103,6 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::PreviousListItem(
     const Node* item) {
   const Node* current = item;
   DCHECK(current);
-  DCHECK(!current->GetDocument().ChildNeedsDistributionRecalc());
   for (current = LayoutTreeBuilderTraversal::Previous(*current, list_node);
        current && current != list_node;
        current = LayoutTreeBuilderTraversal::Previous(*current, list_node)) {
@@ -151,7 +133,7 @@ ListItemOrdinal::NodeAndOrdinal ListItemOrdinal::NextOrdinalItem(
                           : NextListItem(list, item);
 }
 
-base::Optional<int> ListItemOrdinal::ExplicitValue() const {
+absl::optional<int> ListItemOrdinal::ExplicitValue() const {
   if (!HasExplicitValue())
     return {};
   return value_;
@@ -163,19 +145,27 @@ int ListItemOrdinal::CalcValue(const Node& item_node) const {
 
   Node* list = EnclosingList(&item_node);
   auto* o_list_element = DynamicTo<HTMLOListElement>(list);
-  int value_step = 1;
-  if (o_list_element && o_list_element->IsReversed())
-    value_step = -1;
+  const bool is_reversed = o_list_element && o_list_element->IsReversed();
+  int value_step = is_reversed ? -1 : 1;
+  if (const auto* style = item_node.GetComputedStyle()) {
+    const auto directives =
+        style->GetCounterDirectives(AtomicString("list-item"));
+    if (directives.IsSet())
+      return directives.CombinedValue();
+    if (directives.IsIncrement())
+      value_step = directives.CombinedValue();
+  }
 
+  int64_t base_value = 0;
   // FIXME: This recurses to a possible depth of the length of the list.
   // That's not good -- we need to change this to an iterative algorithm.
-  if (NodeAndOrdinal previous = PreviousListItem(list, &item_node))
-    return base::ClampAdd(previous.ordinal->Value(*previous.node), value_step);
-
-  if (o_list_element)
-    return o_list_element->StartConsideringItemCount();
-
-  return 1;
+  if (NodeAndOrdinal previous = PreviousListItem(list, &item_node)) {
+    base_value = previous.ordinal->Value(*previous.node);
+  } else if (o_list_element) {
+    base_value = o_list_element->StartConsideringItemCount();
+    base_value += (is_reversed ? 1 : -1);
+  }
+  return base::saturated_cast<int>(base_value + value_step);
 }
 
 int ListItemOrdinal::Value(const Node& item_node) const {
@@ -193,9 +183,9 @@ void ListItemOrdinal::InvalidateSelf(const Node& item_node, ValueType type) {
 
   LayoutObject* layout_object = item_node.GetLayoutObject();
   if (layout_object->IsListItem())
-    ToLayoutListItem(layout_object)->OrdinalValueChanged();
+    To<LayoutListItem>(layout_object)->OrdinalValueChanged();
   else if (layout_object->IsLayoutNGListItem())
-    ToLayoutNGListItem(layout_object)->OrdinalValueChanged();
+    To<LayoutNGListItem>(layout_object)->OrdinalValueChanged();
 }
 
 // Invalidate items after |item_node| in the DOM order.
@@ -242,21 +232,6 @@ void ListItemOrdinal::ClearExplicitValue(const Node& item_node) {
   InvalidateAfter(EnclosingList(&item_node), &item_node);
 }
 
-void ListItemOrdinal::SetNotInList(bool not_in_list, const Node& item_node) {
-  if (not_in_list_ == not_in_list)
-    return;
-
-  not_in_list_ = not_in_list;
-  SetNotInListChanged(true);
-  LayoutObject* layout_object = item_node.GetLayoutObject();
-  if (layout_object->IsLayoutNGListItem())
-    layout_object->NotifyOfSubtreeChange();
-}
-
-void ListItemOrdinal::SetNotInListChanged(bool changed) {
-  not_in_list_changed_ = changed;
-}
-
 unsigned ListItemOrdinal::ItemCountForOrderedList(
     const HTMLOListElement* list_node) {
   DCHECK(list_node);
@@ -282,10 +257,8 @@ void ListItemOrdinal::InvalidateAllItemsForOrderedList(
 // TODO(layout-dev): We should use layout tree traversal instead of flat tree
 // traversal to invalidate ordinal number cache since lite items in unassigned
 // slots don't have cached value. See http://crbug.com/844277 for details.
-void ListItemOrdinal::ItemInsertedOrRemoved(
-    const LayoutObject* layout_list_item) {
-  // If distribution recalc is needed, updateListMarkerNumber will be re-invoked
-  // after distribution is calculated.
+void ListItemOrdinal::ItemUpdated(const LayoutObject* layout_list_item,
+                                  UpdateType type) {
   const Node* item_node = layout_list_item->GetNode();
   if (item_node->GetDocument().IsSlotAssignmentOrLegacyDistributionDirty())
     return;
@@ -297,7 +270,8 @@ void ListItemOrdinal::ItemInsertedOrRemoved(
 
   bool is_list_reversed = false;
   if (auto* o_list_element = DynamicTo<HTMLOListElement>(list_node)) {
-    o_list_element->ItemCountChanged();
+    if (type == kInsertedOrRemoved)
+      o_list_element->ItemCountChanged();
     is_list_reversed = o_list_element->IsReversed();
   }
 
@@ -309,7 +283,22 @@ void ListItemOrdinal::ItemInsertedOrRemoved(
   if (list_node->NeedsReattachLayoutTree())
     return;
 
+  if (type == kCounterStyle) {
+    ListItemOrdinal* ordinal = Get(*item_node);
+    DCHECK(ordinal);
+    ordinal->InvalidateSelf(*item_node);
+  }
   InvalidateOrdinalsAfter(is_list_reversed, list_node, item_node);
+}
+
+void ListItemOrdinal::ItemInsertedOrRemoved(
+    const LayoutObject* layout_list_item) {
+  ItemUpdated(layout_list_item, kInsertedOrRemoved);
+}
+
+void ListItemOrdinal::ItemCounterStyleUpdated(
+    const LayoutObject& layout_list_item) {
+  ItemUpdated(&layout_list_item, kCounterStyle);
 }
 
 }  // namespace blink

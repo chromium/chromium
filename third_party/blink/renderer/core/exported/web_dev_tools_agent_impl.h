@@ -31,12 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_DEV_TOOLS_AGENT_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_DEV_TOOLS_AGENT_IMPL_H_
 
-#include <memory>
-
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
-#include "third_party/blink/public/platform/web_size.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/inspector/devtools_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_layer_tree_agent.h"
@@ -69,7 +66,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
 
   WebDevToolsAgentImpl(WebLocalFrameImpl*, bool include_view_agents);
   ~WebDevToolsAgentImpl() override;
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
   DevToolsAgent* GetDevToolsAgent() const { return agent_.Get(); }
 
   void WillBeDestroyed();
@@ -81,6 +78,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
 
   WebInputEventResult HandleInputEvent(const WebInputEvent&);
   void DispatchBufferedTouchEvents();
+  void SetPageIsScrolling(bool is_scrolling);
   void BindReceiver(
       mojo::PendingAssociatedRemote<mojom::blink::DevToolsAgentHost>,
       mojo::PendingAssociatedReceiver<mojom::blink::DevToolsAgent>);
@@ -90,6 +88,9 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   bool ScreencastEnabled();
   String NavigationInitiatorInfo(LocalFrame*);
   String EvaluateInOverlayForTesting(const String& script);
+  void DidShowNewWindow();
+
+  void WaitForDebuggerWhenShown();
 
  private:
   friend class ClientMessageLoopAdapter;
@@ -97,7 +98,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   // DevToolsAgent::Client implementation.
   void AttachSession(DevToolsSession*, bool restore) override;
   void DetachSession(DevToolsSession*) override;
-  void InspectElement(const WebPoint& point_in_local_root) override;
+  void InspectElement(const gfx::Point& point_in_local_root) override;
   void DebuggerTaskStarted() override;
   void DebuggerTaskFinished() override;
 
@@ -125,8 +126,9 @@ class CORE_EXPORT WebDevToolsAgentImpl final
   Member<InspectorResourceContainer> resource_container_;
   Member<Node> node_to_inspect_;
   bool include_view_agents_;
+  bool wait_for_debugger_when_shown_ = false;
 };
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_EXPORTED_WEB_DEV_TOOLS_AGENT_IMPL_H_

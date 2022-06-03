@@ -45,6 +45,9 @@ const char kRendererTerminationSawMemoryWarning[] =
 const char kRendererTerminationAliveRenderers[] =
     "Tab.RendererTermination.AliveRenderersCount";
 
+const char kRendererTerminationTotalTabCount[] =
+    "Tab.RendererTermination.TotalTabCount";
+
 // Name of histogram to record the number of renderers that were alive shortly
 // before a renderer termination. This metric is being recorded in case the OS
 // kills renderers in batches.

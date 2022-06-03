@@ -9,10 +9,100 @@
 
 goog.provide('Msgs');
 
-/**
- * @constructor
- */
-Msgs = function() {};
+Msgs = class {
+  constructor() {}
+
+  /**
+   * Return the current locale.
+   * @return {string} The locale.
+   */
+  static getLocale() {
+    return chrome.i18n.getMessage('locale');
+  }
+
+  /**
+   * Returns the message with the given message id from the ChromeVox namespace.
+   *
+   * If we can't find a message, throw an exception.  This allows us to catch
+   * typos early.
+   *
+   * @param {string} messageId The id.
+   * @param {Array<string>=} opt_subs Substitution strings.
+   * @return {string} The localized message.
+   */
+  static getMsg(messageId, opt_subs) {
+    let message = Msgs.Untranslated[messageId.toUpperCase()];
+    if (message !== undefined) {
+      return Msgs.applySubstitutions_(message, opt_subs);
+    }
+    message = chrome.i18n.getMessage(Msgs.NAMESPACE_ + messageId, opt_subs);
+    if ((message === undefined || message === '') &&
+        messageId.endsWith('_brl')) {
+      // Braille string entries are optional. If we couldn't find a braille-
+      // specific string, try again without the '_brl' suffix.
+      message = chrome.i18n.getMessage(
+          Msgs.NAMESPACE_ + messageId.replace('_brl', ''), opt_subs);
+    }
+
+    if (message === undefined || message === '') {
+      throw new Error('Invalid ChromeVox message id: ' + messageId);
+    }
+    return message;
+  }
+
+  /**
+   * Processes an HTML DOM, replacing text content with translated text messages
+   * on elements marked up for translation.  Elements whose class attributes
+   * contain the 'i18n' class name are expected to also have an msgid
+   * attribute. The value of the msgid attributes are looked up as message
+   * IDs and the resulting text is used as the text content of the elements.
+   *
+   * @param {Node} root The root node where the translation should be performed.
+   */
+  static addTranslatedMessagesToDom(root) {
+    const elts = root.querySelectorAll('.i18n');
+    for (let i = 0; i < elts.length; i++) {
+      const msgid = elts[i].getAttribute('msgid');
+      if (!msgid) {
+        throw new Error('Element has no msgid attribute: ' + elts[i]);
+      }
+      const val = Msgs.getMsg(msgid);
+      if (elts[i].tagName === 'INPUT') {
+        elts[i].setAttribute('placeholder', val);
+      } else {
+        elts[i].textContent = val;
+      }
+      elts[i].classList.add('i18n-processed');
+    }
+  }
+
+  /**
+   * Retuns a number formatted correctly.
+   *
+   * @param {number} num The number.
+   * @return {string} The number in the correct locale.
+   */
+  static getNumber(num) {
+    return '' + num;
+  }
+
+  /**
+   * Applies substitions of the form $N, where N is a number from 1 to 9, to a
+   * string. The numbers are one-based indices into |opt_subs|.
+   * @param {string} message
+   * @param {Array<string>=} opt_subs
+   * @return {string}
+   * @private
+   */
+  static applySubstitutions_(message, opt_subs) {
+    if (opt_subs) {
+      for (let i = 0; i < opt_subs.length; i++) {
+        message = message.replace('$' + (i + 1), opt_subs[i]);
+      }
+    }
+    return message;
+  }
+};
 
 /**
  * The namespace for all Chromevox messages.
@@ -21,116 +111,6 @@ Msgs = function() {};
  * @private
  */
 Msgs.NAMESPACE_ = 'chromevox_';
-
-/**
- * Dictionary of locale names.
- * @type {Object<string>}
- * @private
- */
-Msgs.localeNameDict_ = null;
-
-/**
- * Return the current locale.
- * @return {string} The locale.
- */
-Msgs.getLocale = function() {
-  return chrome.i18n.getMessage('locale');
-};
-
-/**
- * Returns the message with the given message id from the ChromeVox namespace.
- *
- * If we can't find a message, throw an exception.  This allows us to catch
- * typos early.
- *
- * @param {string} messageId The id.
- * @param {Array<string>=} opt_subs Substitution strings.
- * @return {string} The localized message.
- */
-Msgs.getMsg = function(messageId, opt_subs) {
-  var message = Msgs.Untranslated[messageId.toUpperCase()];
-  if (message !== undefined) {
-    return Msgs.applySubstitutions_(message, opt_subs);
-  }
-  message = chrome.i18n.getMessage(Msgs.NAMESPACE_ + messageId, opt_subs);
-  if (message == undefined || message == '') {
-    throw new Error('Invalid ChromeVox message id: ' + messageId);
-  }
-  return message;
-};
-
-/**
- * Processes an HTML DOM, replacing text content with translated text messages
- * on elements marked up for translation.  Elements whose class attributes
- * contain the 'i18n' class name are expected to also have an msgid
- * attribute. The value of the msgid attributes are looked up as message
- * IDs and the resulting text is used as the text content of the elements.
- *
- * @param {Node} root The root node where the translation should be performed.
- */
-Msgs.addTranslatedMessagesToDom = function(root) {
-  var elts = root.querySelectorAll('.i18n');
-  for (var i = 0; i < elts.length; i++) {
-    var msgid = elts[i].getAttribute('msgid');
-    if (!msgid) {
-      throw new Error('Element has no msgid attribute: ' + elts[i]);
-    }
-    var val = Msgs.getMsg(msgid);
-    if (elts[i].tagName == 'INPUT') {
-      elts[i].setAttribute('placeholder', val);
-    } else {
-      elts[i].textContent = val;
-    }
-    elts[i].classList.add('i18n-processed');
-  }
-};
-
-/**
- * Retuns a number formatted correctly.
- *
- * @param {number} num The number.
- * @return {string} The number in the correct locale.
- */
-Msgs.getNumber = function(num) {
-  return '' + num;
-};
-
-/**
- * Gets a localized display name for a locale.
- * NOTE: Only a subset of locale identifiers are supported.  See the
- * |CHROMEVOX_LOCALE_DICT| message.
- * @param {string} locale On the form |ll| or |ll_CC|, where |ll| is
- *     the language code and |CC| the country code.
- * @return {string} The display name.
- */
-Msgs.getLocaleDisplayName = function(locale) {
-  if (!Msgs.localeNameDict_) {
-    Msgs.localeNameDict_ =
-        /** @type {!Object<string>} */ (JSON.parse(Msgs.getMsg('locale_dict')));
-  }
-  var name = Msgs.localeNameDict_[locale];
-  if (!name) {
-    throw Error('Unsupported locale identifier: ' + locale);
-  }
-  return name;
-};
-
-/**
- * Applies substitions of the form $N, where N is a number from 1 to 9, to a
- * string. The numbers are one-based indices into |opt_subs|.
- * @param {string} message
- * @param {Array<string>=} opt_subs
- * @return {string}
- * @private
- */
-Msgs.applySubstitutions_ = function(message, opt_subs) {
-  if (opt_subs) {
-    for (var i = 0; i < opt_subs.length; i++) {
-      message = message.replace('$' + (i + 1), opt_subs[i]);
-    }
-  }
-  return message;
-};
 
 /**
  * Strings that are displayed in the user interface but don't need

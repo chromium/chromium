@@ -5,8 +5,6 @@
 #include "ui/gfx/mojom/buffer_types_mojom_traits.h"
 
 #include "build/build_config.h"
-#include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
-#include "mojo/public/cpp/system/platform_handle.h"
 
 #if defined(OS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
@@ -24,59 +22,6 @@ bool StructTraits<gfx::mojom::BufferUsageAndFormatDataView,
   return data.ReadUsage(&out->usage) && data.ReadFormat(&out->format);
 }
 
-#if defined(OS_LINUX) || defined(USE_OZONE)
-mojo::ScopedHandle StructTraits<
-    gfx::mojom::NativePixmapPlaneDataView,
-    gfx::NativePixmapPlane>::buffer_handle(gfx::NativePixmapPlane& plane) {
-#if defined(OS_LINUX)
-  return mojo::WrapPlatformFile(plane.fd.release());
-#elif defined(OS_FUCHSIA)
-  return mojo::WrapPlatformHandle(mojo::PlatformHandle(std::move(plane.vmo)));
-#endif  // defined(OS_LINUX)
-}
-
-bool StructTraits<
-    gfx::mojom::NativePixmapPlaneDataView,
-    gfx::NativePixmapPlane>::Read(gfx::mojom::NativePixmapPlaneDataView data,
-                                  gfx::NativePixmapPlane* out) {
-  out->stride = data.stride();
-  out->offset = data.offset();
-  out->size = data.size();
-
-  mojo::PlatformHandle handle =
-      mojo::UnwrapPlatformHandle(data.TakeBufferHandle());
-#if defined(OS_LINUX)
-  if (!handle.is_fd())
-    return false;
-  out->fd = handle.TakeFD();
-#elif defined(OS_FUCHSIA)
-  if (!handle.is_handle())
-    return false;
-  out->vmo = zx::vmo(handle.TakeHandle());
-#endif  // defined(OS_LINUX)
-
-  return true;
-}
-
-bool StructTraits<
-    gfx::mojom::NativePixmapHandleDataView,
-    gfx::NativePixmapHandle>::Read(gfx::mojom::NativePixmapHandleDataView data,
-                                   gfx::NativePixmapHandle* out) {
-#if defined(OS_LINUX)
-  out->modifier = data.modifier();
-#endif
-
-#if defined(OS_FUCHSIA)
-  if (!data.ReadBufferCollectionId(&out->buffer_collection_id))
-    return false;
-  out->buffer_index = data.buffer_index();
-  out->ram_coherency = data.ram_coherency();
-#endif
-
-  return data.ReadPlanes(&out->planes);
-}
-#endif  // defined(OS_LINUX) || defined(USE_OZONE)
-
 gfx::mojom::GpuMemoryBufferPlatformHandlePtr StructTraits<
     gfx::mojom::GpuMemoryBufferHandleDataView,
     gfx::GpuMemoryBufferHandle>::platform_handle(gfx::GpuMemoryBufferHandle&
@@ -88,24 +33,31 @@ gfx::mojom::GpuMemoryBufferPlatformHandlePtr StructTraits<
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewSharedMemoryHandle(
           std::move(handle.region));
     case gfx::NATIVE_PIXMAP:
-#if defined(OS_LINUX) || defined(USE_OZONE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewNativePixmapHandle(
           std::move(handle.native_pixmap_handle));
 #else
       break;
 #endif
-    case gfx::IO_SURFACE_BUFFER:
-#if defined(OS_MACOSX) && !defined(OS_IOS)
+    case gfx::IO_SURFACE_BUFFER: {
+#if defined(OS_MAC)
+      gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
+          IOSurfaceCreateMachPort(handle.io_surface.get()));
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewMachPort(
-          mojo::WrapMachPort(handle.mach_port.get()));
+          mojo::PlatformHandle(
+              base::mac::RetainMachSendRight(io_surface_mach_port.get())));
 #else
       break;
 #endif
+    }
     case gfx::DXGI_SHARED_HANDLE:
 #if defined(OS_WIN)
       DCHECK(handle.dxgi_handle.IsValid());
+      DCHECK(handle.dxgi_token.has_value());
       return gfx::mojom::GpuMemoryBufferPlatformHandle::NewDxgiHandle(
-          mojo::WrapPlatformFile(handle.dxgi_handle.GetHandle()));
+          gfx::mojom::DXGIHandle::New(
+              mojo::PlatformHandle(std::move(handle.dxgi_handle)),
+              std::move(handle.dxgi_token.value()), std::move(handle.region)));
 #else
       break;
 #endif
@@ -118,9 +70,8 @@ gfx::mojom::GpuMemoryBufferPlatformHandlePtr StructTraits<
       // closed. We will eventually detect this and release the AHB reference.
       mojo::MessagePipe tracking_pipe;
       auto wrapped_handle = gfx::mojom::AHardwareBufferHandle::New(
-          mojo::WrapPlatformFile(
-              handle.android_hardware_buffer.SerializeAsFileDescriptor()
-                  .release()),
+          mojo::PlatformHandle(
+              handle.android_hardware_buffer.SerializeAsFileDescriptor()),
           std::move(tracking_pipe.handle0));
 
       // Pass ownership of the input handle to our tracking pipe to keep the AHB
@@ -164,33 +115,35 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
       out->type = gfx::SHARED_MEMORY_BUFFER;
       out->region = std::move(platform_handle->get_shared_memory_handle());
       return true;
-#if defined(OS_LINUX) || defined(USE_OZONE)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::
         NATIVE_PIXMAP_HANDLE:
       out->type = gfx::NATIVE_PIXMAP;
       out->native_pixmap_handle =
           std::move(platform_handle->get_native_pixmap_handle());
       return true;
-#elif defined(OS_MACOSX) && !defined(OS_IOS)
+#elif defined(OS_MAC)
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::MACH_PORT: {
       out->type = gfx::IO_SURFACE_BUFFER;
-      mach_port_t mach_port;
-      MojoResult unwrap_result = mojo::UnwrapMachPort(
-          std::move(platform_handle->get_mach_port()), &mach_port);
-      if (unwrap_result != MOJO_RESULT_OK)
+      if (!platform_handle->get_mach_port().is_mach_send())
         return false;
-      out->mach_port.reset(mach_port);
+      gfx::ScopedRefCountedIOSurfaceMachPort io_surface_mach_port(
+          platform_handle->get_mach_port().ReleaseMachSendRight());
+      if (io_surface_mach_port) {
+        out->io_surface.reset(
+            IOSurfaceLookupFromMachPort(io_surface_mach_port.get()));
+      } else {
+        out->io_surface.reset();
+      }
       return true;
     }
 #elif defined(OS_WIN)
     case gfx::mojom::GpuMemoryBufferPlatformHandleDataView::Tag::DXGI_HANDLE: {
       out->type = gfx::DXGI_SHARED_HANDLE;
-      HANDLE handle;
-      MojoResult unwrap_result = mojo::UnwrapPlatformFile(
-          std::move(platform_handle->get_dxgi_handle()), &handle);
-      if (unwrap_result != MOJO_RESULT_OK)
-        return false;
-      out->dxgi_handle = IPC::PlatformFileForTransit(handle);
+      auto dxgi_handle = std::move(platform_handle->get_dxgi_handle());
+      out->dxgi_handle = dxgi_handle->buffer_handle.TakeHandle();
+      out->dxgi_token = std::move(dxgi_handle->token);
+      out->region = std::move(dxgi_handle->shared_memory_handle);
       return true;
     }
 #elif defined(OS_ANDROID)
@@ -202,13 +155,9 @@ bool StructTraits<gfx::mojom::GpuMemoryBufferHandleDataView,
       if (!buffer_handle)
         return false;
 
-      base::PlatformFile fd;
-      MojoResult unwrap_result = mojo::UnwrapPlatformFile(
-          std::move(buffer_handle->buffer_handle), &fd);
-      base::ScopedFD scoped_fd(fd);
-      if (unwrap_result != MOJO_RESULT_OK || !scoped_fd.is_valid())
+      base::ScopedFD scoped_fd = buffer_handle->buffer_handle.TakeFD();
+      if (!scoped_fd.is_valid())
         return false;
-
       out->android_hardware_buffer = base::android::ScopedHardwareBufferHandle::
           DeserializeFromFileDescriptor(std::move(scoped_fd));
       return out->android_hardware_buffer.is_valid();

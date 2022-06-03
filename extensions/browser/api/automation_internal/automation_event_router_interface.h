@@ -15,6 +15,7 @@
 #include "extensions/common/api/automation_internal.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_messages.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace content {
 class BrowserContext;
@@ -24,23 +25,22 @@ namespace ui {
 struct AXActionData;
 }  // namespace ui
 
-struct ExtensionMsg_AccessibilityEventBundleParams;
 struct ExtensionMsg_AccessibilityLocationChangeParams;
 
 namespace extensions {
 
-// NOTE: This interface is implemented in chromecast/internal by
-// ax_tree_source_flutter_unittest.cc
 class AutomationEventRouterInterface {
  public:
   virtual void DispatchAccessibilityEvents(
-      const ExtensionMsg_AccessibilityEventBundleParams& events) = 0;
-
+      const ui::AXTreeID& tree_id,
+      std::vector<ui::AXTreeUpdate> updates,
+      const gfx::Point& mouse_location,
+      std::vector<ui::AXEvent> events) = 0;
   virtual void DispatchAccessibilityLocationChange(
       const ExtensionMsg_AccessibilityLocationChangeParams& params) = 0;
 
   // Notify all automation extensions that an accessibility tree was
-  // destroyed. If |browser_context| is null,
+  // destroyed. If |browser_context| is null, use the currently active context.
   virtual void DispatchTreeDestroyedEvent(
       ui::AXTreeID tree_id,
       content::BrowserContext* browser_context) = 0;
@@ -52,14 +52,11 @@ class AutomationEventRouterInterface {
       content::BrowserContext* browser_context = nullptr) = 0;
 
   // Notify the source extension of the result to getTextLocation.
+  // Currently only supported by ARC++ in response to
+  // ax::mojom::Action::kGetTextLocation.
   virtual void DispatchGetTextLocationDataResult(
       const ui::AXActionData& data,
-      const base::Optional<gfx::Rect>& rect) {}
-
-  AutomationEventRouterInterface() {}
-  virtual ~AutomationEventRouterInterface() {}
-
-  DISALLOW_COPY_AND_ASSIGN(AutomationEventRouterInterface);
+      const absl::optional<gfx::Rect>& rect) = 0;
 };
 
 }  // namespace extensions

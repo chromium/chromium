@@ -73,7 +73,7 @@ class CORE_EXPORT Text : public CharacterData {
   bool CanContainRangeEndPoint() const final { return true; }
   NodeType getNodeType() const override;
 
-  void Trace(Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   String nodeName() const override;

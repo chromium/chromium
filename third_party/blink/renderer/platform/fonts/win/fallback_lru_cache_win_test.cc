@@ -2,9 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/platform/fonts/win/fallback_lru_cache_win.h"
+#include "third_party/blink/renderer/platform/fonts/win/fallback_family_style_cache_win.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/renderer/platform/wtf/text/character_names.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
@@ -29,7 +32,7 @@ void fillCacheWithDummies(blink::FallbackLruCache& lru_cache,
                           const char* format_string,
                           size_t count) {
   for (size_t i = 0; i < count; ++i) {
-    blink::FallbackLruCache::TypefaceVector dummy_typefaces;
+    blink::TypefaceVector dummy_typefaces;
     dummy_typefaces.push_back(
         SkTypeface::MakeFromName(kFontFamilyNameArial, SkFontStyle()));
     lru_cache.Put(String::Format(format_string, i), std::move(dummy_typefaces));
@@ -48,7 +51,7 @@ TEST(FallbackLruCacheTest, KeepChineseWhenFetched) {
   // the Chinese font and ensure it's gone.
   FallbackLruCache lru_cache(kLruCacheTestSize);
   EXPECT_EQ(lru_cache.size(), 0u);
-  FallbackLruCache::TypefaceVector fallback_typefaces_zh;
+  TypefaceVector fallback_typefaces_zh;
   fallback_typefaces_zh.push_back(
       fallbackForLocale(kHanSimplifiedLocale, kFirstCJKIdeograph));
   lru_cache.Put(kHanSimplifiedLocale, std::move(fallback_typefaces_zh));
@@ -56,8 +59,7 @@ TEST(FallbackLruCacheTest, KeepChineseWhenFetched) {
   EXPECT_EQ(lru_cache.size(), 1u);
 
   fillCacheWithDummies(lru_cache, "dummy_locale_%zu", kLruCacheTestSize - 1);
-  FallbackLruCache::TypefaceVector* chinese_typefaces =
-      lru_cache.Get(kHanSimplifiedLocale);
+  TypefaceVector* chinese_typefaces = lru_cache.Get(kHanSimplifiedLocale);
   EXPECT_TRUE(chinese_typefaces);
   EXPECT_TRUE(chinese_typefaces->at(0)->unicharToGlyph(0x4E01));
   EXPECT_EQ(lru_cache.size(), kLruCacheTestSize);

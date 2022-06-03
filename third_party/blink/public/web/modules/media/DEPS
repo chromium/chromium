@@ -1,4 +1,6 @@
 include_rules = [
+    "+media/audio/audio_sink_parameters.h",
+    "+media/audio/audio_source_parameters.h",
     "+media/base/audio_renderer_sink.h",
     "+media/base/eme_constants.h",
     "+media/base/pipeline_status.h",

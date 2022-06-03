@@ -48,7 +48,7 @@
             assert_array_equals(notification.actions, options.actions);
 
             // The `actions` field should be immutable.
-            assert_throws(new TypeError, () => notification.actions.push(null));
+            assert_throws_js(TypeError, () => notification.actions.push(null));
 
             notification.actions.foo = 'bar';
             assert_false(notification.actions.hasOwnProperty('foo'));
@@ -106,7 +106,7 @@
             assert_array_equals(vibrateNotification.vibrate, [1000]);
 
             // The `vibrate` property should be immutable.
-            assert_throws(new TypeError, () => vibrateNotification.vibrate.push(1000));
+            assert_throws_js(TypeError, () => vibrateNotification.vibrate.push(1000));
 
             vibrateNotification.vibrate[0] = 2000;
             assert_equals(vibrateNotification.vibrate[0], 1000);
@@ -125,28 +125,28 @@
             assert_array_equals(invalidVibrateNotification.vibrate, [100, 200, 0]);
 
             // Notification actions should only be supported for persistent notifications.
-            assert_throws(new TypeError(), function() {
+            assert_throws_js(TypeError, function() {
                 new Notification("My Notification", {
                     actions: [{ action: "foo", title: "Foo" }]
                 });
             }, 'Providing non-empty `actions` for a non-persistent notification should throw a TypeError.');
 
             // Notification showTrigger should only be supported for persistent notifications.
-            assert_throws(new TypeError(), function() {
+            assert_throws_js(TypeError, function() {
                 new Notification("My Notification", {
                     showTrigger: new TimestampTrigger(Date.now())
                 });
             }, 'Providing non-empty `showTrigger` for a non-persistent notification should throw a TypeError.');
 
             // Notification actions should only support the placeholder attribute if they are type text.
-            assert_throws(new TypeError(), function() {
+            assert_throws_js(TypeError, function() {
                 new Notification("My Notification", {
                     actions: [{ action: "foo", title: "Foo", placeholder: "I'm sorry, Dave." }]
                 });
             }, 'Providing a placeholder for an action that is not type text should throw a TypeError.');
 
             // Notification actions should not accept invalid types.
-            assert_throws(new TypeError(), function() {
+            assert_throws_js(TypeError, function() {
                 new Notification("My Notification", {
                     actions: [{ type: "blah", action: "foo", title: "Foo" }]
                 });

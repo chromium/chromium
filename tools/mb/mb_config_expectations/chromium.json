@@ -1,0 +1,185 @@
+{
+  "android-archive-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "android-archive-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "strip_debug_info": true,
+      "symbol_level": 1,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "android-official": {
+    "gn_args": {
+      "is_official_build": true,
+      "target_os": "android",
+      "use_goma": true
+    }
+  },
+  "fuchsia-official": {
+    "gn_args": {
+      "is_official_build": true,
+      "target_os": "fuchsia",
+      "use_goma": true
+    }
+  },
+  "linux-archive-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "linux-archive-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "use_goma": true
+    }
+  },
+  "linux-archive-tagged": {
+    "gn_args": {
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "linux-official": {
+    "gn_args": {
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "mac-archive-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "mac-archive-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_stripping": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "mac-archive-tagged": {
+    "gn_args": {
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "mac-arm64-archive-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
+  "mac-arm64-archive-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "enable_stripping": true,
+      "is_component_build": false,
+      "is_debug": false,
+      "symbol_level": 1,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
+  "mac-arm64-archive-tagged": {
+    "gn_args": {
+      "is_official_build": true,
+      "target_cpu": "arm64",
+      "use_goma": true
+    }
+  },
+  "mac-official": {
+    "gn_args": {
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "win-archive-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-archive-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "skip_archive_compression": false,
+      "symbol_level": 1,
+      "use_goma": true
+    }
+  },
+  "win-archive-tagged": {
+    "gn_args": {
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "win-official": {
+    "gn_args": {
+      "is_official_build": true,
+      "use_goma": true
+    }
+  },
+  "win32-archive-dbg": {
+    "gn_args": {
+      "is_component_build": true,
+      "is_debug": true,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "win32-archive-rel": {
+    "gn_args": {
+      "dcheck_always_on": false,
+      "is_component_build": false,
+      "is_debug": false,
+      "skip_archive_compression": false,
+      "symbol_level": 1,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "win32-archive-tagged": {
+    "gn_args": {
+      "is_official_build": true,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  },
+  "win32-official": {
+    "gn_args": {
+      "is_official_build": true,
+      "target_cpu": "x86",
+      "use_goma": true
+    }
+  }
+}

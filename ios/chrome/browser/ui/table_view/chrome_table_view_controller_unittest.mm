@@ -64,9 +64,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 using ChromeTableViewControllerTest = PlatformTest;
 
 TEST_F(ChromeTableViewControllerTest, CellForItemAtIndexPath) {
-  ChromeTableViewController* controller = [[ChromeTableViewController alloc]
-      initWithTableViewStyle:UITableViewStylePlain
-                 appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+  ChromeTableViewController* controller =
+      [[ChromeTableViewController alloc] initWithStyle:UITableViewStylePlain];
   [controller loadModel];
 
   [[controller tableViewModel] addSectionWithIdentifier:SectionIdentifierFoo];
@@ -82,9 +81,8 @@ TEST_F(ChromeTableViewControllerTest, CellForItemAtIndexPath) {
 }
 
 TEST_F(ChromeTableViewControllerTest, HeaderForItemAtSection) {
-  ChromeTableViewController* controller = [[ChromeTableViewController alloc]
-      initWithTableViewStyle:UITableViewStylePlain
-                 appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+  ChromeTableViewController* controller =
+      [[ChromeTableViewController alloc] initWithStyle:UITableViewStylePlain];
   [controller loadModel];
 
   [[controller tableViewModel] addSectionWithIdentifier:SectionIdentifierFoo];
@@ -99,9 +97,8 @@ TEST_F(ChromeTableViewControllerTest, HeaderForItemAtSection) {
 }
 
 TEST_F(ChromeTableViewControllerTest, FooterForItemAtSection) {
-  ChromeTableViewController* controller = [[ChromeTableViewController alloc]
-      initWithTableViewStyle:UITableViewStylePlain
-                 appBarStyle:ChromeTableViewControllerStyleNoAppBar];
+  ChromeTableViewController* controller =
+      [[ChromeTableViewController alloc] initWithStyle:UITableViewStylePlain];
   [controller loadModel];
 
   [[controller tableViewModel] addSectionWithIdentifier:SectionIdentifierFoo];

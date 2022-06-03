@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_change_event.h"
 
-#include "third_party/blink/renderer/modules/push_messaging/push_subscription_change_event_init.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_push_subscription_change_event_init.h"
 
 namespace blink {
 
@@ -37,7 +37,7 @@ PushSubscription* PushSubscriptionChangeEvent::oldSubscription() const {
   return old_subscription_;
 }
 
-void PushSubscriptionChangeEvent::Trace(blink::Visitor* visitor) {
+void PushSubscriptionChangeEvent::Trace(Visitor* visitor) const {
   visitor->Trace(new_subscription_);
   visitor->Trace(old_subscription_);
   ExtendableEvent::Trace(visitor);

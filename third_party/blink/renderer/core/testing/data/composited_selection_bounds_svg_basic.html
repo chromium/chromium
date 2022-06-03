@@ -1,0 +1,23 @@
+<style>
+    @font-face {
+        font-family: ahem;
+        src: url(Ahem.ttf);
+    }
+    * {
+        font-family: ahem;
+    }
+</style>
+<svg width="100%" height="100%">
+<text y="14" id="text">
+    The quick brown fox jumped over the lazy dog.
+</text>
+</svg>
+<script>
+    var range = document.createRange();
+    var textNode = document.getElementById("text").firstChild;
+    range.setStart(textNode, 10);
+    range.setEnd(textNode, 35);
+    document.getSelection().addRange(range);
+
+    window.expectedResult = [document, 68, 12, 68, 24, document, 368, 12, 368, 24];
+</script>

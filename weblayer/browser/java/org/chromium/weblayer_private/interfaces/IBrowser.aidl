@@ -6,8 +6,9 @@ package org.chromium.weblayer_private.interfaces;
 
 import org.chromium.weblayer_private.interfaces.IBrowserClient;
 import org.chromium.weblayer_private.interfaces.IObjectWrapper;
-import org.chromium.weblayer_private.interfaces.ITab;
 import org.chromium.weblayer_private.interfaces.IProfile;
+import org.chromium.weblayer_private.interfaces.ITab;
+import org.chromium.weblayer_private.interfaces.IUrlBarController;
 
 import java.util.List;
 
@@ -30,4 +31,28 @@ interface IBrowser {
 
   void addTab(in ITab tab) = 7;
   void destroyTab(in ITab tab) = 8;
+  IUrlBarController getUrlBarController() = 9;
+
+  void setBottomView(in IObjectWrapper view) = 10;
+
+  ITab createTab() = 11;
+
+  void setTopViewAndScrollingBehavior(in IObjectWrapper view, in int minHeight,
+                                      in boolean onlyExpandControlsAtPageTop,
+                                      in boolean animate) = 12;
+
+  boolean isRestoringPreviousState() = 14;
+
+  // Added in 88.
+  void setBrowserControlsOffsetsEnabled(in boolean enable) = 13;
+
+  // Added in 89.
+  void setMinimumSurfaceSize(in int width, in int height) = 15;
+
+  // Added in 90.
+  void setDarkModeStrategy(in int strategy) = 16;
+  void setEmbeddabilityMode(in int mode, in IObjectWrapper valueCallback) = 17;
+
+  // Added in 91.
+  void setChangeVisibilityOnNextDetach(in boolean changeVisibility) = 18;
 }

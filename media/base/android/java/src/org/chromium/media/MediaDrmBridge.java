@@ -59,7 +59,6 @@ import java.util.UUID;
 @JNINamespace("media")
 @MainDex
 @SuppressLint("WrongConstant")
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class MediaDrmBridge {
     private static final String TAG = "media";
     private static final String SECURITY_LEVEL = "securityLevel";
@@ -210,7 +209,6 @@ public class MediaDrmBridge {
     /**
      *  An equivalent of MediaDrm.KeyStatus, which is only available on M+.
      */
-    @MainDex
     private static class KeyStatus {
         private final byte[] mKeyId;
         private final int mStatusCode;
@@ -419,7 +417,8 @@ public class MediaDrmBridge {
             final Method getInt = systemProperties.getMethod("getInt", String.class, int.class);
             firstApiLevel = (Integer) getInt.invoke(null, FIRST_API_LEVEL, 0);
         } catch (Exception e) {
-            Log.e("Exception while getting system property %s. Using default.", FIRST_API_LEVEL, e);
+            Log.e(TAG, "Exception while getting system property %s. Using default.",
+                    FIRST_API_LEVEL, e);
             firstApiLevel = 0;
         }
         return firstApiLevel;
@@ -441,13 +440,13 @@ public class MediaDrmBridge {
         Log.i(TAG, "Create MediaDrmBridge with level %s and origin %s", securityLevel,
                 securityOrigin);
 
-        UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
-        if (cryptoScheme == null || !MediaDrm.isCryptoSchemeSupported(cryptoScheme)) {
-            return null;
-        }
-
         MediaDrmBridge mediaDrmBridge = null;
         try {
+            UUID cryptoScheme = getUUIDFromBytes(schemeUUID);
+            if (cryptoScheme == null || !MediaDrm.isCryptoSchemeSupported(cryptoScheme)) {
+                return null;
+            }
+
             mediaDrmBridge = new MediaDrmBridge(cryptoScheme, requiresMediaCrypto,
                     nativeMediaDrmBridge, nativeMediaDrmStorageBridge);
         } catch (android.media.UnsupportedSchemeException e) {
@@ -730,12 +729,11 @@ public class MediaDrmBridge {
                     keyType == MediaDrm.KEY_TYPE_RELEASE ? sessionId.keySetId() : sessionId.drmId();
             assert scopeId != null;
             request = mMediaDrm.getKeyRequest(scopeId, data, mime, keyType, optionalParameters);
-        } catch (IllegalStateException e) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP
-                    && e instanceof android.media.MediaDrm.MediaDrmStateException) {
-                // See b/21307186 for details.
-                Log.e(TAG, "MediaDrmStateException fired during getKeyRequest().", e);
-            }
+        } catch (java.lang.IllegalStateException e) {
+            // We've seen both MediaDrmStateException and MediaDrmResetException happening.
+            // Since both are IllegalStateExceptions, so they will be handled here.
+            // See b/21307186 and crbug.com/1169050 for details.
+            Log.e(TAG, "Failed to getKeyRequest().", e);
         }
 
         String result = (request != null) ? "successed" : "failed";
@@ -1395,7 +1393,6 @@ public class MediaDrmBridge {
         }
     }
 
-    @MainDex
     private class EventListener implements MediaDrm.OnEventListener {
         @Override
         public void onEvent(
@@ -1457,7 +1454,6 @@ public class MediaDrmBridge {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    @MainDex
     private class KeyStatusChangeListener implements MediaDrm.OnKeyStatusChangeListener {
         private List<KeyStatus> getKeysInfo(List<MediaDrm.KeyStatus> keyInformation) {
             List<KeyStatus> keysInfo = new ArrayList<KeyStatus>();
@@ -1492,7 +1488,6 @@ public class MediaDrmBridge {
     }
 
     @TargetApi(Build.VERSION_CODES.M)
-    @MainDex
     private class ExpirationUpdateListener implements MediaDrm.OnExpirationUpdateListener {
         @Override
         public void onExpirationUpdate(
@@ -1512,7 +1507,6 @@ public class MediaDrmBridge {
         }
     }
 
-    @MainDex
     private class KeyUpdatedCallback implements Callback<Boolean> {
         private final SessionId mSessionId;
         private final long mPromiseId;

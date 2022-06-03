@@ -5,7 +5,10 @@
 #include <string>
 
 #include "base/location.h"
-#include "base/test/bind_test_util.h"
+#include "base/strings/strcat.h"
+#include "base/test/bind.h"
+#include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/network_error_logging/mock_persistent_nel_store.h"
 #include "net/network_error_logging/network_error_logging_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -15,11 +18,13 @@
 namespace net {
 
 namespace {
-const url::Origin kOrigin = url::Origin::Create(GURL("https://example.test/"));
 
-NetworkErrorLoggingService::NelPolicy MakePolicyForOrigin(url::Origin origin) {
+NetworkErrorLoggingService::NelPolicy MakePolicy(
+    const url::Origin& origin,
+    const net::NetworkIsolationKey& network_isolation_key) {
   NetworkErrorLoggingService::NelPolicy policy;
-  policy.origin = std::move(origin);
+  policy.key =
+      NetworkErrorLoggingService::NelPolicyKey(network_isolation_key, origin);
   policy.expires = base::Time();
   policy.last_used = base::Time();
 
@@ -44,8 +49,23 @@ MakeExpectedRunNelPoliciesLoadedCallback(
                         policies_out);
 }
 
+class MockPersistentNelStoreTest : public testing::Test {
+ public:
+  MockPersistentNelStoreTest() = default;
+  ~MockPersistentNelStoreTest() override = default;
+
+ protected:
+  const url::Origin origin_ =
+      url::Origin::Create(GURL("https://example.test/"));
+  const NetworkIsolationKey network_isolation_key_ =
+      NetworkIsolationKey(SchemefulSite(GURL("https://foo.test/")),
+                          SchemefulSite(GURL("https://bar.test/")));
+  const NetworkErrorLoggingService::NelPolicy nel_policy_ =
+      MakePolicy(origin_, network_isolation_key_);
+};
+
 // Test that FinishLoading() runs the callback.
-TEST(MockPersistentNelStoreTest, FinishLoading) {
+TEST_F(MockPersistentNelStoreTest, FinishLoading) {
   MockPersistentNelStore store;
   MockPersistentNelStore::CommandList expected_commands;
   std::vector<NetworkErrorLoggingService::NelPolicy> loaded_policies;
@@ -60,18 +80,20 @@ TEST(MockPersistentNelStoreTest, FinishLoading) {
 
   EXPECT_EQ(1u, store.GetAllCommands().size());
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ", store.GetDebugString());
 
   // Test should not crash because the callback has been run.
 }
 
-TEST(MockPersistentNelStoreTest, PreStoredPolicies) {
+TEST_F(MockPersistentNelStoreTest, PreStoredPolicies) {
+  const url::Origin origin_ =
+      url::Origin::Create(GURL("https://example.test/"));
+
   MockPersistentNelStore store;
   MockPersistentNelStore::CommandList expected_commands;
   std::vector<NetworkErrorLoggingService::NelPolicy> loaded_policies;
 
   std::vector<NetworkErrorLoggingService::NelPolicy> prestored_policies = {
-      MakePolicyForOrigin(kOrigin)};
+      nel_policy_};
   store.SetPrestoredPolicies(std::move(prestored_policies));
   EXPECT_EQ(1, store.StoredPoliciesCount());
 
@@ -81,21 +103,22 @@ TEST(MockPersistentNelStoreTest, PreStoredPolicies) {
       MockPersistentNelStore::Command::Type::LOAD_NEL_POLICIES);
   store.FinishLoading(true /* load_success */);
   ASSERT_EQ(1u, loaded_policies.size());
-  EXPECT_EQ(kOrigin, loaded_policies[0].origin);
+  EXPECT_EQ(origin_, loaded_policies[0].key.origin);
+  EXPECT_EQ(network_isolation_key_,
+            loaded_policies[0].key.network_isolation_key);
 
   EXPECT_EQ(1u, store.GetAllCommands().size());
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ", store.GetDebugString());
 }
 
 // Failed load should yield empty vector of policies.
-TEST(MockPersistentNelStoreTest, FailedLoad) {
+TEST_F(MockPersistentNelStoreTest, FailedLoad) {
   MockPersistentNelStore store;
   MockPersistentNelStore::CommandList expected_commands;
   std::vector<NetworkErrorLoggingService::NelPolicy> loaded_policies;
 
   std::vector<NetworkErrorLoggingService::NelPolicy> prestored_policies = {
-      MakePolicyForOrigin(kOrigin)};
+      nel_policy_};
   store.SetPrestoredPolicies(std::move(prestored_policies));
   EXPECT_EQ(1, store.StoredPoliciesCount());
 
@@ -109,10 +132,9 @@ TEST(MockPersistentNelStoreTest, FailedLoad) {
 
   EXPECT_EQ(1u, store.GetAllCommands().size());
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ", store.GetDebugString());
 }
 
-TEST(MockPersistentNelStoreTest, Add) {
+TEST_F(MockPersistentNelStoreTest, Add) {
   MockPersistentNelStore store;
   MockPersistentNelStore::CommandList expected_commands;
   std::vector<NetworkErrorLoggingService::NelPolicy> loaded_policies;
@@ -126,7 +148,7 @@ TEST(MockPersistentNelStoreTest, Add) {
   store.FinishLoading(true /* load_success */);
   EXPECT_EQ(0u, loaded_policies.size());
 
-  NetworkErrorLoggingService::NelPolicy policy = MakePolicyForOrigin(kOrigin);
+  NetworkErrorLoggingService::NelPolicy policy = nel_policy_;
   store.AddNelPolicy(policy);
   expected_commands.emplace_back(
       MockPersistentNelStore::Command::Type::ADD_NEL_POLICY, policy);
@@ -140,11 +162,9 @@ TEST(MockPersistentNelStoreTest, Add) {
 
   EXPECT_EQ(3u, store.GetAllCommands().size());
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ADD(" + kOrigin.Serialize() + "); FLUSH; ",
-            store.GetDebugString());
 }
 
-TEST(MockPersistentNelStoreTest, AddThenDelete) {
+TEST_F(MockPersistentNelStoreTest, AddThenDelete) {
   MockPersistentNelStore store;
   MockPersistentNelStore::CommandList expected_commands;
   std::vector<NetworkErrorLoggingService::NelPolicy> loaded_policies;
@@ -158,7 +178,7 @@ TEST(MockPersistentNelStoreTest, AddThenDelete) {
   store.FinishLoading(true /* load_success */);
   EXPECT_EQ(0u, loaded_policies.size());
 
-  NetworkErrorLoggingService::NelPolicy policy = MakePolicyForOrigin(kOrigin);
+  NetworkErrorLoggingService::NelPolicy policy = nel_policy_;
   store.AddNelPolicy(policy);
   expected_commands.emplace_back(
       MockPersistentNelStore::Command::Type::ADD_NEL_POLICY, policy);
@@ -175,14 +195,9 @@ TEST(MockPersistentNelStoreTest, AddThenDelete) {
   EXPECT_EQ(4u, store.GetAllCommands().size());
 
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ADD(" + kOrigin.Serialize() +
-                "); "
-                "DELETE(" +
-                kOrigin.Serialize() + "); FLUSH; ",
-            store.GetDebugString());
 }
 
-TEST(MockPersistentNelStoreTest, AddFlushThenDelete) {
+TEST_F(MockPersistentNelStoreTest, AddFlushThenDelete) {
   MockPersistentNelStore store;
   MockPersistentNelStore::CommandList expected_commands;
   std::vector<NetworkErrorLoggingService::NelPolicy> loaded_policies;
@@ -196,7 +211,7 @@ TEST(MockPersistentNelStoreTest, AddFlushThenDelete) {
   store.FinishLoading(true /* load_success */);
   EXPECT_EQ(0u, loaded_policies.size());
 
-  NetworkErrorLoggingService::NelPolicy policy = MakePolicyForOrigin(kOrigin);
+  NetworkErrorLoggingService::NelPolicy policy = nel_policy_;
   store.AddNelPolicy(policy);
   expected_commands.emplace_back(
       MockPersistentNelStore::Command::Type::ADD_NEL_POLICY, policy);
@@ -218,14 +233,9 @@ TEST(MockPersistentNelStoreTest, AddFlushThenDelete) {
   EXPECT_EQ(5u, store.GetAllCommands().size());
 
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ADD(" + kOrigin.Serialize() +
-                "); FLUSH; "
-                "DELETE(" +
-                kOrigin.Serialize() + "); FLUSH; ",
-            store.GetDebugString());
 }
 
-TEST(MockPersistentNelStoreTest, AddThenUpdate) {
+TEST_F(MockPersistentNelStoreTest, AddThenUpdate) {
   MockPersistentNelStore store;
   MockPersistentNelStore::CommandList expected_commands;
   std::vector<NetworkErrorLoggingService::NelPolicy> loaded_policies;
@@ -238,7 +248,7 @@ TEST(MockPersistentNelStoreTest, AddThenUpdate) {
 
   store.FinishLoading(true /* load_success */);
 
-  NetworkErrorLoggingService::NelPolicy policy = MakePolicyForOrigin(kOrigin);
+  NetworkErrorLoggingService::NelPolicy policy = nel_policy_;
   store.AddNelPolicy(policy);
   expected_commands.emplace_back(
       MockPersistentNelStore::Command::Type::ADD_NEL_POLICY, policy);
@@ -255,11 +265,6 @@ TEST(MockPersistentNelStoreTest, AddThenUpdate) {
   EXPECT_EQ(4u, store.GetAllCommands().size());
 
   EXPECT_TRUE(store.VerifyCommands(expected_commands));
-  EXPECT_EQ("LOAD; ADD(" + kOrigin.Serialize() +
-                "); "
-                "UPDATE(" +
-                kOrigin.Serialize() + "); FLUSH; ",
-            store.GetDebugString());
 }
 
 }  // namespace

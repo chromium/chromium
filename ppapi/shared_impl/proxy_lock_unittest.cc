@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/logging.h"
 #include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
@@ -36,12 +35,16 @@ class CheckLockStateInDestructor
     : public base::RefCounted<CheckLockStateInDestructor> {
  public:
   CheckLockStateInDestructor() {}
+
+  CheckLockStateInDestructor(const CheckLockStateInDestructor&) = delete;
+  CheckLockStateInDestructor& operator=(const CheckLockStateInDestructor&) =
+      delete;
+
   void Method() { ++called_num; }
 
  private:
   friend class base::RefCounted<CheckLockStateInDestructor>;
   ~CheckLockStateInDestructor() { CheckLockState(); }
-  DISALLOW_COPY_AND_ASSIGN(CheckLockStateInDestructor);
 };
 
 void TestCallback_0() {
@@ -76,20 +79,20 @@ TEST_F(PpapiProxyLockTest, Locking) {
   TestGlobals globals;
   expect_to_be_locked = true;
 
-  base::Callback<void()> cb0;
+  base::OnceCallback<void()> cb0;
   {
     ProxyAutoLock lock;
-    cb0 = RunWhileLocked(base::Bind(TestCallback_0));
+    cb0 = RunWhileLocked(base::BindOnce(TestCallback_0));
   }
-  cb0.Run();
+  std::move(cb0).Run();
   ASSERT_EQ(1, called_num);
   called_num = 0;
 
   {
     ProxyAutoLock lock;
-    cb0 = RunWhileLocked(base::Bind(TestCallback_1, 123));
+    cb0 = RunWhileLocked(base::BindOnce(TestCallback_1, 123));
   }
-  cb0.Run();
+  std::move(cb0).Run();
   ASSERT_EQ(1, called_num);
   called_num = 0;
 
@@ -97,55 +100,56 @@ TEST_F(PpapiProxyLockTest, Locking) {
     ProxyAutoLock lock;
     scoped_refptr<CheckLockStateInDestructor> object =
         new CheckLockStateInDestructor();
-    cb0 =
-        RunWhileLocked(base::Bind(&CheckLockStateInDestructor::Method, object));
+    cb0 = RunWhileLocked(
+        base::BindOnce(&CheckLockStateInDestructor::Method, object));
     // Note after this scope, the Callback owns the only reference.
   }
-  cb0.Run();
+  std::move(cb0).Run();
   ASSERT_EQ(1, called_num);
   called_num = 0;
 
-  base::Callback<void(int)> cb1;
+  base::OnceCallback<void(int)> cb1;
   {
     ProxyAutoLock lock;
-    cb1 = RunWhileLocked(base::Bind(TestCallback_1));
+    cb1 = RunWhileLocked(base::BindOnce(TestCallback_1));
   }
-  cb1.Run(123);
+  std::move(cb1).Run(123);
   ASSERT_EQ(1, called_num);
   called_num = 0;
 
-  base::Callback<void(int, const std::string&)> cb2;
+  base::OnceCallback<void(int, const std::string&)> cb2;
   {
     ProxyAutoLock lock;
-    cb2 = RunWhileLocked(base::Bind(TestCallback_2));
+    cb2 = RunWhileLocked(base::BindOnce(TestCallback_2));
   }
-  cb2.Run(123, std::string("yo"));
+  std::move(cb2).Run(123, std::string("yo"));
   ASSERT_EQ(1, called_num);
   called_num = 0;
 
-  base::Callback<void(int, const std::string&, Param)> cb3;
+  base::OnceCallback<void(int, const std::string&, Param)> cb3;
   {
     ProxyAutoLock lock;
-    cb3 = RunWhileLocked(base::Bind(TestCallback_3));
+    cb3 = RunWhileLocked(base::BindOnce(TestCallback_3));
   }
-  cb3.Run(123, std::string("yo"), Param());
+  std::move(cb3).Run(123, std::string("yo"), Param());
   ASSERT_EQ(1, called_num);
   called_num = 0;
 
-  base::Callback<void(const std::string&)> cb1_string;
+  base::OnceCallback<void(const std::string&)> cb1_string;
   {
     ProxyAutoLock lock;
-    cb1_string = RunWhileLocked(base::Bind(TestCallback_2, 123));
+    cb1_string = RunWhileLocked(base::BindOnce(TestCallback_2, 123));
   }
-  cb1_string.Run(std::string("yo"));
+  std::move(cb1_string).Run(std::string("yo"));
   ASSERT_EQ(1, called_num);
   called_num = 0;
 
   {
     ProxyAutoLock lock;
-    cb0 = RunWhileLocked(base::Bind(TestCallback_2, 123, std::string("yo")));
+    cb0 =
+        RunWhileLocked(base::BindOnce(TestCallback_2, 123, std::string("yo")));
   }
-  cb0.Run();
+  std::move(cb0).Run();
   ASSERT_EQ(1, called_num);
   called_num = 0;
 }
@@ -168,16 +172,13 @@ TEST_F(PpapiProxyLockTest, Unlocking) {
     called_num = 0;
   }
   {
-    // TODO(dmichael): Make const-ref arguments work properly with type
-    // deduction.
-    CallWhileUnlocked<void, int, const std::string&>(
-        TestCallback_2, 123, std::string("yo"));
+    CallWhileUnlocked(TestCallback_2, 123, std::string("yo"));
     ASSERT_EQ(1, called_num);
     called_num = 0;
   }
   {
-    base::Callback<void()> callback(base::Bind(TestCallback_0));
-    CallWhileUnlocked(callback);
+    base::OnceCallback<void()> callback(base::BindOnce(TestCallback_0));
+    CallWhileUnlocked(std::move(callback));
     ASSERT_EQ(1, called_num);
     called_num = 0;
   }

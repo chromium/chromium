@@ -26,6 +26,8 @@
 #include "third_party/blink/renderer/core/dom/id_target_observer.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_container.h"
 #include "third_party/blink/renderer/core/svg/gradient_attributes.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
+#include "third_party/blink/renderer/core/svg/svg_animated_transform_list.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg/svg_stop_element.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_list.h"
@@ -67,7 +69,7 @@ SVGGradientElement::SVGGradientElement(const QualifiedName& tag_name,
   AddToPropertyMap(gradient_units_);
 }
 
-void SVGGradientElement::Trace(blink::Visitor* visitor) {
+void SVGGradientElement::Trace(Visitor* visitor) const {
   visitor->Trace(gradient_transform_);
   visitor->Trace(spread_method_);
   visitor->Trace(gradient_units_);
@@ -105,7 +107,9 @@ void SVGGradientElement::CollectStyleForPresentationAttribute(
   SVGElement::CollectStyleForPresentationAttribute(name, value, style);
 }
 
-void SVGGradientElement::SvgAttributeChanged(const QualifiedName& attr_name) {
+void SVGGradientElement::SvgAttributeChanged(
+    const SvgAttributeChangedParams& params) {
+  const QualifiedName& attr_name = params.name;
   if (attr_name == svg_names::kGradientTransformAttr) {
     InvalidateSVGPresentationAttributeStyle();
     SetNeedsStyleRecalc(kLocalStyleChange,
@@ -126,7 +130,7 @@ void SVGGradientElement::SvgAttributeChanged(const QualifiedName& attr_name) {
     return;
   }
 
-  SVGElement::SvgAttributeChanged(attr_name);
+  SVGElement::SvgAttributeChanged(params);
 }
 
 Node::InsertionNotificationRequest SVGGradientElement::InsertedInto(
@@ -146,15 +150,13 @@ void SVGGradientElement::RemovedFrom(ContainerNode& root_parent) {
 void SVGGradientElement::ChildrenChanged(const ChildrenChange& change) {
   SVGElement::ChildrenChanged(change);
 
-  if (change.by_parser)
-    return;
-
-  InvalidateGradient(layout_invalidation_reason::kChildChanged);
+  if (!change.ByParser())
+    InvalidateGradient(layout_invalidation_reason::kChildChanged);
 }
 
 void SVGGradientElement::InvalidateGradient(
     LayoutInvalidationReasonForTracing reason) {
-  if (auto* layout_object = ToLayoutSVGResourceContainer(GetLayoutObject()))
+  if (auto* layout_object = To<LayoutSVGResourceContainer>(GetLayoutObject()))
     layout_object->InvalidateCacheAndMarkForLayout(reason);
 }
 
@@ -170,10 +172,10 @@ void SVGGradientElement::InvalidateDependentGradients() {
 void SVGGradientElement::CollectCommonAttributes(
     GradientAttributes& attributes) const {
   if (!attributes.HasSpreadMethod() && spreadMethod()->IsSpecified())
-    attributes.SetSpreadMethod(spreadMethod()->CurrentValue()->EnumValue());
+    attributes.SetSpreadMethod(spreadMethod()->CurrentEnumValue());
 
   if (!attributes.HasGradientUnits() && gradientUnits()->IsSpecified())
-    attributes.SetGradientUnits(gradientUnits()->CurrentValue()->EnumValue());
+    attributes.SetGradientUnits(gradientUnits()->CurrentEnumValue());
 
   if (!attributes.HasGradientTransform() &&
       HasTransform(SVGElement::kExcludeMotionTransform)) {

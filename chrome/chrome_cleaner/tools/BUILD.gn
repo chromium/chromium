@@ -8,9 +8,7 @@ visibility = [ "//chrome/chrome_cleaner/*" ]
 # We need at least one non-executable to prevent an "unused visibility
 # declaration" warning.
 source_set("generate_test_uws_src") {
-  sources = [
-    "generate_test_uws.cc",
-  ]
+  sources = [ "generate_test_uws.cc" ]
 
   deps = [
     "//base:base",

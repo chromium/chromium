@@ -82,8 +82,8 @@ TEST_F(CookieCreationTimeManagerTest, MakeUniqueCreationTime) {
   creation_time_manager_.SetCreationTime(GetCookie(@"C=D"), creation_time);
   // Override |C| with a cookie that has a different time, to make |now|
   // available again.
-  creation_time_manager_.SetCreationTime(
-      GetCookie(@"C=E"), now - base::TimeDelta::FromMilliseconds(1));
+  creation_time_manager_.SetCreationTime(GetCookie(@"C=E"),
+                                         now - base::Milliseconds(1));
   // |now| is available again because |C| was overriden.
   creation_time = creation_time_manager_.MakeUniqueCreationTime(now);
   EXPECT_EQ(now, creation_time);

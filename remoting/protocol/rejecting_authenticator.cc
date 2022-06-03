@@ -5,7 +5,8 @@
 #include "remoting/protocol/rejecting_authenticator.h"
 
 #include "base/callback.h"
-#include "base/logging.h"
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "remoting/protocol/channel_authenticator.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
 
@@ -33,10 +34,10 @@ RejectingAuthenticator::rejection_reason() const {
 
 void RejectingAuthenticator::ProcessMessage(
     const jingle_xmpp::XmlElement* message,
-    const base::Closure& resume_callback) {
+    base::OnceClosure resume_callback) {
   DCHECK_EQ(state_, WAITING_MESSAGE);
   state_ = REJECTED;
-  resume_callback.Run();
+  std::move(resume_callback).Run();
 }
 
 std::unique_ptr<jingle_xmpp::XmlElement> RejectingAuthenticator::GetNextMessage() {

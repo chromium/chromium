@@ -37,8 +37,11 @@
 // types. Hashing of that combined state is separately done by `absl::Hash`.
 //
 // One should assume that a hash algorithm is chosen randomly at the start of
-// each process.  E.g., absl::Hash<int>()(9) in one process and
-// absl::Hash<int>()(9) in another process are likely to differ.
+// each process.  E.g., `absl::Hash<int>{}(9)` in one process and
+// `absl::Hash<int>{}(9)` in another process are likely to differ.
+//
+// `absl::Hash` is intended to strongly mix input bits with a target of passing
+// an [Avalanche Test](https://en.wikipedia.org/wiki/Avalanche_effect).
 //
 // Example:
 //
@@ -70,9 +73,12 @@
 #ifndef ABSL_HASH_HASH_H_
 #define ABSL_HASH_HASH_H_
 
+#include <tuple>
+
 #include "absl/hash/internal/hash.h"
 
 namespace absl {
+ABSL_NAMESPACE_BEGIN
 
 // -----------------------------------------------------------------------------
 // `absl::Hash`
@@ -84,7 +90,6 @@ namespace absl {
 //  * T is an arithmetic or pointer type
 //  * T defines an overload for `AbslHashValue(H, const T&)` for an arbitrary
 //    hash state `H`.
-//  - T defines a specialization of `HASH_NAMESPACE::hash<T>`
 //  - T defines a specialization of `std::hash<T>`
 //
 // `absl::Hash` intrinsically supports the following types:
@@ -97,6 +102,7 @@ namespace absl {
 //   * std::tuple<Ts...>, if all the Ts... are hashable
 //   * std::unique_ptr and std::shared_ptr
 //   * All string-like types including:
+//     * absl::Cord
 //     * std::string
 //     * std::string_view (as well as any instance of std::basic_string that
 //       uses char and std::char_traits)
@@ -123,8 +129,6 @@ namespace absl {
 //   * Natively supported types out of the box (see above)
 //   * Types for which an `AbslHashValue()` overload is provided (such as
 //     user-defined types). See "Adding Type Support to `absl::Hash`" below.
-//   * Types which define a `HASH_NAMESPACE::hash<T>` specialization (aka
-//     `__gnu_cxx::hash<T>` for gcc/Clang or `stdext::hash<T>` for MSVC)
 //   * Types which define a `std::hash<T>` specialization
 //
 // The fallback to legacy hash functions exists mainly for backwards
@@ -211,6 +215,26 @@ namespace absl {
 //
 template <typename T>
 using Hash = absl::hash_internal::Hash<T>;
+
+// HashOf
+//
+// absl::HashOf() is a helper that generates a hash from the values of its
+// arguments.  It dispatches to absl::Hash directly, as follows:
+//  * HashOf(t) == absl::Hash<T>{}(t)
+//  * HashOf(a, b, c) == HashOf(std::make_tuple(a, b, c))
+//
+// HashOf(a1, a2, ...) == HashOf(b1, b2, ...) is guaranteed when
+//  * The argument lists have pairwise identical C++ types
+//  * a1 == b1 && a2 == b2 && ...
+//
+// The requirement that the arguments match in both type and value is critical.
+// It means that `a == b` does not necessarily imply `HashOf(a) == HashOf(b)` if
+// `a` and `b` have different types. For example, `HashOf(2) != HashOf(2.0)`.
+template <int&... ExplicitArgumentBarrier, typename... Types>
+size_t HashOf(const Types&... values) {
+  auto tuple = std::tie(values...);
+  return absl::Hash<decltype(tuple)>{}(tuple);
+}
 
 // HashState
 //
@@ -317,6 +341,7 @@ class HashState : public hash_internal::HashStateBase<HashState> {
   void (*combine_contiguous_)(void*, const unsigned char*, size_t);
 };
 
+ABSL_NAMESPACE_END
 }  // namespace absl
 
 #endif  // ABSL_HASH_HASH_H_

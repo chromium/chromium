@@ -1,0 +1,3 @@
+# crbug.com/1088479: Partial Raster isn't supported using Skia Dawn Vulkan
+-All/LayerTreeHostTilesTestPartialInvalidation.PartialRaster/SkiaDawn_OOP
+-All/LayerTreeHostTilesTestPartialInvalidationMultiThread.PartialRaster/SkiaDawn_OOP

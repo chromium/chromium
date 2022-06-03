@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 497 tests; 467 PASS, 30 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 496 tests; 483 PASS, 13 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Test driver for asyncInitCertificate
@@ -23,25 +23,25 @@ PASS RTCPeerConnection interface object name
 PASS RTCPeerConnection interface: existence and properties of interface prototype object
 PASS RTCPeerConnection interface: existence and properties of interface prototype object's "constructor" property
 PASS RTCPeerConnection interface: existence and properties of interface prototype object's @@unscopables property
-PASS RTCPeerConnection interface: operation createOffer(RTCOfferOptions)
-PASS RTCPeerConnection interface: operation createAnswer(RTCAnswerOptions)
-PASS RTCPeerConnection interface: operation setLocalDescription(RTCSessionDescriptionInit)
+PASS RTCPeerConnection interface: operation createOffer(optional RTCOfferOptions)
+PASS RTCPeerConnection interface: operation createAnswer(optional RTCAnswerOptions)
+PASS RTCPeerConnection interface: operation setLocalDescription(optional RTCLocalSessionDescriptionInit)
 PASS RTCPeerConnection interface: attribute localDescription
 PASS RTCPeerConnection interface: attribute currentLocalDescription
 PASS RTCPeerConnection interface: attribute pendingLocalDescription
-FAIL RTCPeerConnection interface: operation setRemoteDescription(RTCSessionDescriptionInit) assert_equals: property has wrong .length expected 0 but got 1
+PASS RTCPeerConnection interface: operation setRemoteDescription(RTCSessionDescriptionInit)
 PASS RTCPeerConnection interface: attribute remoteDescription
 PASS RTCPeerConnection interface: attribute currentRemoteDescription
 PASS RTCPeerConnection interface: attribute pendingRemoteDescription
-FAIL RTCPeerConnection interface: operation addIceCandidate(RTCIceCandidateInit) assert_equals: property has wrong .length expected 0 but got 1
+PASS RTCPeerConnection interface: operation addIceCandidate(optional RTCIceCandidateInit)
 PASS RTCPeerConnection interface: attribute signalingState
 PASS RTCPeerConnection interface: attribute iceGatheringState
 PASS RTCPeerConnection interface: attribute iceConnectionState
 PASS RTCPeerConnection interface: attribute connectionState
-FAIL RTCPeerConnection interface: attribute canTrickleIceCandidates assert_true: The prototype object must have a property "canTrickleIceCandidates" expected true got false
+PASS RTCPeerConnection interface: attribute canTrickleIceCandidates
 PASS RTCPeerConnection interface: operation restartIce()
 PASS RTCPeerConnection interface: operation getConfiguration()
-FAIL RTCPeerConnection interface: operation setConfiguration(RTCConfiguration) assert_equals: property has wrong .length expected 0 but got 1
+FAIL RTCPeerConnection interface: operation setConfiguration(optional RTCConfiguration) assert_equals: property has wrong .length expected 0 but got 1
 PASS RTCPeerConnection interface: operation close()
 PASS RTCPeerConnection interface: attribute onnegotiationneeded
 PASS RTCPeerConnection interface: attribute onicecandidate
@@ -50,31 +50,31 @@ PASS RTCPeerConnection interface: attribute onsignalingstatechange
 PASS RTCPeerConnection interface: attribute oniceconnectionstatechange
 PASS RTCPeerConnection interface: attribute onicegatheringstatechange
 PASS RTCPeerConnection interface: attribute onconnectionstatechange
-PASS RTCPeerConnection interface: operation createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, RTCOfferOptions)
-PASS RTCPeerConnection interface: operation setLocalDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)
+PASS RTCPeerConnection interface: operation createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, optional RTCOfferOptions)
+PASS RTCPeerConnection interface: operation setLocalDescription(RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)
 PASS RTCPeerConnection interface: operation createAnswer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback)
-FAIL RTCPeerConnection interface: operation setRemoteDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback) assert_equals: property has wrong .length expected 0 but got 1
-FAIL RTCPeerConnection interface: operation addIceCandidate(RTCIceCandidateInit, VoidFunction, RTCPeerConnectionErrorCallback) assert_equals: property has wrong .length expected 0 but got 1
+PASS RTCPeerConnection interface: operation setRemoteDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)
+PASS RTCPeerConnection interface: operation addIceCandidate(RTCIceCandidateInit, VoidFunction, RTCPeerConnectionErrorCallback)
 PASS RTCPeerConnection interface: operation generateCertificate(AlgorithmIdentifier)
 PASS RTCPeerConnection interface: operation getSenders()
 PASS RTCPeerConnection interface: operation getReceivers()
 PASS RTCPeerConnection interface: operation getTransceivers()
-PASS RTCPeerConnection interface: operation addTrack(MediaStreamTrack, MediaStream)
+PASS RTCPeerConnection interface: operation addTrack(MediaStreamTrack, MediaStream...)
 PASS RTCPeerConnection interface: operation removeTrack(RTCRtpSender)
-PASS RTCPeerConnection interface: operation addTransceiver([object Object],[object Object], RTCRtpTransceiverInit)
+PASS RTCPeerConnection interface: operation addTransceiver((MediaStreamTrack or DOMString), optional RTCRtpTransceiverInit)
 PASS RTCPeerConnection interface: attribute ontrack
 PASS RTCPeerConnection interface: attribute sctp
-PASS RTCPeerConnection interface: operation createDataChannel(USVString, RTCDataChannelInit)
+PASS RTCPeerConnection interface: operation createDataChannel(USVString, optional RTCDataChannelInit)
 PASS RTCPeerConnection interface: attribute ondatachannel
-PASS RTCPeerConnection interface: operation getStats(MediaStreamTrack)
+PASS RTCPeerConnection interface: operation getStats(optional MediaStreamTrack?)
 PASS RTCPeerConnection must be primary interface of new RTCPeerConnection()
 PASS Stringification of new RTCPeerConnection()
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createOffer(RTCOfferOptions)" with the proper type
-PASS RTCPeerConnection interface: calling createOffer(RTCOfferOptions) on new RTCPeerConnection() with too few arguments must throw TypeError
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createAnswer(RTCAnswerOptions)" with the proper type
-PASS RTCPeerConnection interface: calling createAnswer(RTCAnswerOptions) on new RTCPeerConnection() with too few arguments must throw TypeError
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setLocalDescription(RTCSessionDescriptionInit)" with the proper type
-PASS RTCPeerConnection interface: calling setLocalDescription(RTCSessionDescriptionInit) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createOffer(optional RTCOfferOptions)" with the proper type
+PASS RTCPeerConnection interface: calling createOffer(optional RTCOfferOptions) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createAnswer(optional RTCAnswerOptions)" with the proper type
+PASS RTCPeerConnection interface: calling createAnswer(optional RTCAnswerOptions) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setLocalDescription(optional RTCLocalSessionDescriptionInit)" with the proper type
+PASS RTCPeerConnection interface: calling setLocalDescription(optional RTCLocalSessionDescriptionInit) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "localDescription" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "currentLocalDescription" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "pendingLocalDescription" with the proper type
@@ -83,17 +83,17 @@ PASS RTCPeerConnection interface: calling setRemoteDescription(RTCSessionDescrip
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "remoteDescription" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "currentRemoteDescription" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "pendingRemoteDescription" with the proper type
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "addIceCandidate(RTCIceCandidateInit)" with the proper type
-PASS RTCPeerConnection interface: calling addIceCandidate(RTCIceCandidateInit) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "addIceCandidate(optional RTCIceCandidateInit)" with the proper type
+PASS RTCPeerConnection interface: calling addIceCandidate(optional RTCIceCandidateInit) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "signalingState" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "iceGatheringState" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "iceConnectionState" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "connectionState" with the proper type
-FAIL RTCPeerConnection interface: new RTCPeerConnection() must inherit property "canTrickleIceCandidates" with the proper type assert_inherits: property "canTrickleIceCandidates" not found in prototype chain
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "canTrickleIceCandidates" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "restartIce()" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "getConfiguration()" with the proper type
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setConfiguration(RTCConfiguration)" with the proper type
-PASS RTCPeerConnection interface: calling setConfiguration(RTCConfiguration) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setConfiguration(optional RTCConfiguration)" with the proper type
+PASS RTCPeerConnection interface: calling setConfiguration(optional RTCConfiguration) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "close()" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "onnegotiationneeded" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "onicecandidate" with the proper type
@@ -102,10 +102,10 @@ PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property 
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "oniceconnectionstatechange" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "onicegatheringstatechange" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "onconnectionstatechange" with the proper type
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, RTCOfferOptions)" with the proper type
-PASS RTCPeerConnection interface: calling createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, RTCOfferOptions) on new RTCPeerConnection() with too few arguments must throw TypeError
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setLocalDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)" with the proper type
-PASS RTCPeerConnection interface: calling setLocalDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, optional RTCOfferOptions)" with the proper type
+PASS RTCPeerConnection interface: calling createOffer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback, optional RTCOfferOptions) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setLocalDescription(RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)" with the proper type
+PASS RTCPeerConnection interface: calling setLocalDescription(RTCLocalSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createAnswer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback)" with the proper type
 PASS RTCPeerConnection interface: calling createAnswer(RTCSessionDescriptionCallback, RTCPeerConnectionErrorCallback) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "setRemoteDescription(RTCSessionDescriptionInit, VoidFunction, RTCPeerConnectionErrorCallback)" with the proper type
@@ -117,21 +117,21 @@ PASS RTCPeerConnection interface: calling generateCertificate(AlgorithmIdentifie
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "getSenders()" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "getReceivers()" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "getTransceivers()" with the proper type
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "addTrack(MediaStreamTrack, MediaStream)" with the proper type
-PASS RTCPeerConnection interface: calling addTrack(MediaStreamTrack, MediaStream) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "addTrack(MediaStreamTrack, MediaStream...)" with the proper type
+PASS RTCPeerConnection interface: calling addTrack(MediaStreamTrack, MediaStream...) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "removeTrack(RTCRtpSender)" with the proper type
 PASS RTCPeerConnection interface: calling removeTrack(RTCRtpSender) on new RTCPeerConnection() with too few arguments must throw TypeError
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "addTransceiver([object Object],[object Object], RTCRtpTransceiverInit)" with the proper type
-PASS RTCPeerConnection interface: calling addTransceiver([object Object],[object Object], RTCRtpTransceiverInit) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "addTransceiver((MediaStreamTrack or DOMString), optional RTCRtpTransceiverInit)" with the proper type
+PASS RTCPeerConnection interface: calling addTransceiver((MediaStreamTrack or DOMString), optional RTCRtpTransceiverInit) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "ontrack" with the proper type
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "sctp" with the proper type
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createDataChannel(USVString, RTCDataChannelInit)" with the proper type
-PASS RTCPeerConnection interface: calling createDataChannel(USVString, RTCDataChannelInit) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "createDataChannel(USVString, optional RTCDataChannelInit)" with the proper type
+PASS RTCPeerConnection interface: calling createDataChannel(USVString, optional RTCDataChannelInit) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "ondatachannel" with the proper type
-PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "getStats(MediaStreamTrack)" with the proper type
-PASS RTCPeerConnection interface: calling getStats(MediaStreamTrack) on new RTCPeerConnection() with too few arguments must throw TypeError
+PASS RTCPeerConnection interface: new RTCPeerConnection() must inherit property "getStats(optional MediaStreamTrack?)" with the proper type
+PASS RTCPeerConnection interface: calling getStats(optional MediaStreamTrack?) on new RTCPeerConnection() with too few arguments must throw TypeError
 PASS RTCSessionDescription interface: existence and properties of interface object
-PASS RTCSessionDescription interface object length
+FAIL RTCSessionDescription interface object length assert_equals: wrong value for RTCSessionDescription.length expected 1 but got 0
 PASS RTCSessionDescription interface object name
 PASS RTCSessionDescription interface: existence and properties of interface prototype object
 PASS RTCSessionDescription interface: existence and properties of interface prototype object's "constructor" property
@@ -142,9 +142,9 @@ PASS RTCSessionDescription interface: operation toJSON()
 PASS RTCSessionDescription must be primary interface of new RTCSessionDescription({ type: 'offer' })
 PASS Stringification of new RTCSessionDescription({ type: 'offer' })
 PASS RTCSessionDescription interface: new RTCSessionDescription({ type: 'offer' }) must inherit property "type" with the proper type
-FAIL RTCSessionDescription interface: new RTCSessionDescription({ type: 'offer' }) must inherit property "sdp" with the proper type assert_equals: expected "string" but got "object"
+PASS RTCSessionDescription interface: new RTCSessionDescription({ type: 'offer' }) must inherit property "sdp" with the proper type
 PASS RTCSessionDescription interface: new RTCSessionDescription({ type: 'offer' }) must inherit property "toJSON()" with the proper type
-FAIL RTCSessionDescription interface: default toJSON operation on new RTCSessionDescription({ type: 'offer' }) assert_equals: expected "string" but got "object"
+PASS RTCSessionDescription interface: default toJSON operation on new RTCSessionDescription({ type: 'offer' })
 PASS RTCIceCandidate interface: existence and properties of interface object
 PASS RTCIceCandidate interface object length
 PASS RTCIceCandidate interface object name
@@ -202,18 +202,18 @@ PASS RTCPeerConnectionIceErrorEvent interface object name
 PASS RTCPeerConnectionIceErrorEvent interface: existence and properties of interface prototype object
 PASS RTCPeerConnectionIceErrorEvent interface: existence and properties of interface prototype object's "constructor" property
 PASS RTCPeerConnectionIceErrorEvent interface: existence and properties of interface prototype object's @@unscopables property
-FAIL RTCPeerConnectionIceErrorEvent interface: attribute address assert_true: The prototype object must have a property "address" expected true got false
-FAIL RTCPeerConnectionIceErrorEvent interface: attribute port assert_true: The prototype object must have a property "port" expected true got false
+PASS RTCPeerConnectionIceErrorEvent interface: attribute address
+PASS RTCPeerConnectionIceErrorEvent interface: attribute port
 PASS RTCPeerConnectionIceErrorEvent interface: attribute url
 PASS RTCPeerConnectionIceErrorEvent interface: attribute errorCode
 PASS RTCPeerConnectionIceErrorEvent interface: attribute errorText
-PASS RTCPeerConnectionIceErrorEvent must be primary interface of new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 });
-PASS Stringification of new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 });
-FAIL RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 }); must inherit property "address" with the proper type assert_inherits: property "address" not found in prototype chain
-FAIL RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 }); must inherit property "port" with the proper type assert_inherits: property "port" not found in prototype chain
-PASS RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 }); must inherit property "url" with the proper type
-PASS RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 }); must inherit property "errorCode" with the proper type
-PASS RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { errorCode: 701 }); must inherit property "errorText" with the proper type
+PASS RTCPeerConnectionIceErrorEvent must be primary interface of new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 });
+PASS Stringification of new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 });
+PASS RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 }); must inherit property "address" with the proper type
+PASS RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 }); must inherit property "port" with the proper type
+PASS RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 }); must inherit property "url" with the proper type
+PASS RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 }); must inherit property "errorCode" with the proper type
+PASS RTCPeerConnectionIceErrorEvent interface: new RTCPeerConnectionIceErrorEvent('ice-error', { port: 0, errorCode: 701 }); must inherit property "errorText" with the proper type
 PASS RTCCertificate interface: existence and properties of interface object
 PASS RTCCertificate interface object length
 PASS RTCCertificate interface object name
@@ -235,10 +235,10 @@ PASS RTCRtpSender interface: existence and properties of interface prototype obj
 PASS RTCRtpSender interface: attribute track
 PASS RTCRtpSender interface: attribute transport
 PASS RTCRtpSender interface: operation getCapabilities(DOMString)
-FAIL RTCRtpSender interface: operation setParameters(RTCRtpSendParameters) assert_equals: property has wrong .length expected 1 but got 0
+PASS RTCRtpSender interface: operation setParameters(RTCRtpSendParameters)
 PASS RTCRtpSender interface: operation getParameters()
-PASS RTCRtpSender interface: operation replaceTrack(MediaStreamTrack)
-PASS RTCRtpSender interface: operation setStreams(MediaStream)
+PASS RTCRtpSender interface: operation replaceTrack(MediaStreamTrack?)
+PASS RTCRtpSender interface: operation setStreams(MediaStream...)
 PASS RTCRtpSender interface: operation getStats()
 PASS RTCRtpSender interface: attribute dtmf
 PASS RTCRtpSender must be primary interface of new RTCPeerConnection().addTransceiver('audio').sender
@@ -250,10 +250,10 @@ PASS RTCRtpSender interface: calling getCapabilities(DOMString) on new RTCPeerCo
 PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "setParameters(RTCRtpSendParameters)" with the proper type
 PASS RTCRtpSender interface: calling setParameters(RTCRtpSendParameters) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
 PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "getParameters()" with the proper type
-PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "replaceTrack(MediaStreamTrack)" with the proper type
-PASS RTCRtpSender interface: calling replaceTrack(MediaStreamTrack) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
-PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "setStreams(MediaStream)" with the proper type
-PASS RTCRtpSender interface: calling setStreams(MediaStream) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
+PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "replaceTrack(MediaStreamTrack?)" with the proper type
+PASS RTCRtpSender interface: calling replaceTrack(MediaStreamTrack?) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
+PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "setStreams(MediaStream...)" with the proper type
+PASS RTCRtpSender interface: calling setStreams(MediaStream...) on new RTCPeerConnection().addTransceiver('audio').sender with too few arguments must throw TypeError
 PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "getStats()" with the proper type
 PASS RTCRtpSender interface: new RTCPeerConnection().addTransceiver('audio').sender must inherit property "dtmf" with the proper type
 PASS RTCRtpReceiver interface: existence and properties of interface object
@@ -290,8 +290,8 @@ PASS RTCRtpTransceiver interface: attribute sender
 PASS RTCRtpTransceiver interface: attribute receiver
 PASS RTCRtpTransceiver interface: attribute direction
 PASS RTCRtpTransceiver interface: attribute currentDirection
-FAIL RTCRtpTransceiver interface: operation stop() assert_own_property: interface prototype object missing non-static operation expected property "stop" missing
-PASS RTCRtpTransceiver interface: operation setCodecPreferences([object Object])
+PASS RTCRtpTransceiver interface: operation stop()
+PASS RTCRtpTransceiver interface: operation setCodecPreferences(sequence<RTCRtpCodecCapability>)
 PASS RTCRtpTransceiver must be primary interface of new RTCPeerConnection().addTransceiver('audio')
 PASS Stringification of new RTCPeerConnection().addTransceiver('audio')
 PASS RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio') must inherit property "mid" with the proper type
@@ -299,9 +299,9 @@ PASS RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio'
 PASS RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio') must inherit property "receiver" with the proper type
 PASS RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio') must inherit property "direction" with the proper type
 PASS RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio') must inherit property "currentDirection" with the proper type
-FAIL RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio') must inherit property "stop()" with the proper type assert_inherits: property "stop" not found in prototype chain
-PASS RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio') must inherit property "setCodecPreferences([object Object])" with the proper type
-PASS RTCRtpTransceiver interface: calling setCodecPreferences([object Object]) on new RTCPeerConnection().addTransceiver('audio') with too few arguments must throw TypeError
+PASS RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio') must inherit property "stop()" with the proper type
+PASS RTCRtpTransceiver interface: new RTCPeerConnection().addTransceiver('audio') must inherit property "setCodecPreferences(sequence<RTCRtpCodecCapability>)" with the proper type
+PASS RTCRtpTransceiver interface: calling setCodecPreferences(sequence<RTCRtpCodecCapability>) on new RTCPeerConnection().addTransceiver('audio') with too few arguments must throw TypeError
 PASS RTCDtlsTransport interface: existence and properties of interface object
 PASS RTCDtlsTransport interface object length
 PASS RTCDtlsTransport interface object name
@@ -320,9 +320,7 @@ PASS RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit prope
 PASS RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "getRemoteCertificates()" with the proper type
 PASS RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "onstatechange" with the proper type
 PASS RTCDtlsTransport interface: idlTestObjects.dtlsTransport must inherit property "onerror" with the proper type
-FAIL RTCIceTransport interface: existence and properties of interface object assert_throws: interface object didn't throw TypeError when called as a constructor function "function() {
-                new interface_object();
-            }" did not throw
+PASS RTCIceTransport interface: existence and properties of interface object
 PASS RTCIceTransport interface object length
 PASS RTCIceTransport interface object name
 PASS RTCIceTransport interface: existence and properties of interface prototype object
@@ -407,7 +405,7 @@ PASS RTCDataChannel interface: attribute bufferedAmountLowThreshold
 PASS RTCDataChannel interface: attribute onopen
 PASS RTCDataChannel interface: attribute onbufferedamountlow
 PASS RTCDataChannel interface: attribute onerror
-FAIL RTCDataChannel interface: attribute onclosing assert_true: The prototype object must have a property "onclosing" expected true got false
+PASS RTCDataChannel interface: attribute onclosing
 PASS RTCDataChannel interface: attribute onclose
 PASS RTCDataChannel interface: operation close()
 PASS RTCDataChannel interface: attribute onmessage
@@ -431,7 +429,7 @@ PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') mus
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onopen" with the proper type
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onbufferedamountlow" with the proper type
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onerror" with the proper type
-FAIL RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onclosing" with the proper type assert_inherits: property "onclosing" not found in prototype chain
+PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onclosing" with the proper type
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onclose" with the proper type
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "close()" with the proper type
 PASS RTCDataChannel interface: new RTCPeerConnection().createDataChannel('') must inherit property "onmessage" with the proper type
@@ -466,7 +464,7 @@ PASS RTCDTMFSender interface object name
 PASS RTCDTMFSender interface: existence and properties of interface prototype object
 PASS RTCDTMFSender interface: existence and properties of interface prototype object's "constructor" property
 PASS RTCDTMFSender interface: existence and properties of interface prototype object's @@unscopables property
-PASS RTCDTMFSender interface: operation insertDTMF(DOMString, unsigned long, unsigned long)
+PASS RTCDTMFSender interface: operation insertDTMF(DOMString, optional unsigned long, optional unsigned long)
 PASS RTCDTMFSender interface: attribute ontonechange
 PASS RTCDTMFSender interface: attribute canInsertDTMF
 PASS RTCDTMFSender interface: attribute toneBuffer
@@ -491,7 +489,6 @@ PASS RTCError interface: existence and properties of interface prototype object'
 PASS RTCError interface: existence and properties of interface prototype object's @@unscopables property
 PASS RTCError interface: attribute errorDetail
 PASS RTCError interface: attribute sdpLineNumber
-PASS RTCError interface: attribute httpRequestStatusCode
 PASS RTCError interface: attribute sctpCauseCode
 PASS RTCError interface: attribute receivedAlert
 PASS RTCError interface: attribute sentAlert

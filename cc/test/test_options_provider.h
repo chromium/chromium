@@ -5,7 +5,6 @@
 #ifndef CC_TEST_TEST_OPTIONS_PROVIDER_H_
 #define CC_TEST_TEST_OPTIONS_PROVIDER_H_
 
-#include "base/containers/flat_map.h"
 #include "cc/paint/image_provider.h"
 #include "cc/paint/image_transfer_cache_entry.h"
 #include "cc/paint/paint_cache.h"
@@ -25,15 +24,10 @@ class TestOptionsProvider : public ImageProvider,
   const PaintOp::SerializeOptions& serialize_options() const {
     return serialize_options_;
   }
-  PaintOp::SerializeOptions& mutable_serialize_options() {
-    return serialize_options_;
-  }
   const PaintOp::DeserializeOptions& deserialize_options() const {
     return deserialize_options_;
   }
-  PaintOp::DeserializeOptions& mutable_deserialize_options() {
-    return deserialize_options_;
-  }
+
   ImageProvider* image_provider() { return this; }
   TransferCacheTestHelper* transfer_cache_helper() { return this; }
 
@@ -48,7 +42,6 @@ class TestOptionsProvider : public ImageProvider,
     return context_supports_distance_field_text_;
   }
   int max_texture_size() const { return max_texture_size_; }
-  size_t max_texture_bytes() const { return max_texture_bytes_; }
 
   const std::vector<DrawImage>& decoded_images() const {
     return decoded_images_;
@@ -64,7 +57,6 @@ class TestOptionsProvider : public ImageProvider,
   ImageProvider::ScopedResult GetRasterContent(
       const DrawImage& draw_image) override;
 
-  testing::StrictMock<MockCanvas> canvas_;
   std::vector<DrawImage> decoded_images_;
 
   sk_sp<DiscardableManager> discardable_manager_;
@@ -74,7 +66,6 @@ class TestOptionsProvider : public ImageProvider,
   bool can_use_lcd_text_ = true;
   bool context_supports_distance_field_text_ = true;
   int max_texture_size_ = 1024;
-  size_t max_texture_bytes_ = 4 * 1024 * 1024;
 
   ServicePaintCache service_paint_cache_;
   ClientPaintCache client_paint_cache_;

@@ -1,0 +1,20 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+  This update manifest points to multiple versions of the extension.
+  It is also pointed to by good_prodversion_v1.crx in its manifest.json file.
+  It is meant to be used with a URLRequestMockHTTPJob, and the hostname must be kept in sync.
+-->
+<gupdate xmlns='http://www.google.com/update2/response' protocol='2.0'>
+   <app appid='ldnnhddmnhbkjipkidpdiheffobcpfmf'>
+    <updatecheck codebase='http://update.extension/extensions/good3.crx'
+                 version='2.0.0.0' prodversionmin='999999.99' />
+   </app>
+   <app appid='ldnnhddmnhbkjipkidpdiheffobcpfmf'>
+    <updatecheck codebase='http://update.extension/extensions/good2.crx'
+                 version='1.0.0.1' prodversionmin='80' />
+   </app>
+   <app appid='ldnnhddmnhbkjipkidpdiheffobcpfmf'>
+    <updatecheck codebase='http://update.extension/extensions/good_v1.crx'
+                 version='1.0.0.0' />
+   </app>
+</gupdate>

@@ -3,16 +3,22 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "chrome/browser/ui/exclusive_access/fullscreen_controller_test.h"
+#include "chrome/browser/ui/exclusive_access/exclusive_access_test.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "content/public/test/browser_test.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-class ExclusiveAccessBubbleViewsTest : public FullscreenControllerTest,
+class ExclusiveAccessBubbleViewsTest : public ExclusiveAccessTest,
                                        public views::WidgetObserver {
  public:
   ExclusiveAccessBubbleViewsTest() {}
+
+  ExclusiveAccessBubbleViewsTest(const ExclusiveAccessBubbleViewsTest&) =
+      delete;
+  ExclusiveAccessBubbleViewsTest& operator=(
+      const ExclusiveAccessBubbleViewsTest&) = delete;
 
   ExclusiveAccessBubbleViews* bubble() {
     BrowserView* browser_view =
@@ -30,9 +36,6 @@ class ExclusiveAccessBubbleViewsTest : public FullscreenControllerTest,
  protected:
   bool was_destroying_ = false;
   bool was_observing_in_destroying_ = false;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ExclusiveAccessBubbleViewsTest);
 };
 
 // Simulate obscure codepaths resulting in the bubble Widget being closed before

@@ -1,6 +1,5 @@
-<script src="media-file.js"></script>
 <script src="video-paint-test.js"></script>
-<body onload="setSrcByTagName('video', 'content/test.ogv'); init()">
+<body onload="setVideoSrcAndWaitForFirstFrame('content/test.ogv')">
 <p>Test video sizing. You should see one bigger image (paused video) and 7 small ones of 1/4 its size. </p>
 <video></video><br>
 <video style="width: 160px; height:120px">

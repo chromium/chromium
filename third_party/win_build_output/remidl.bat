@@ -11,4 +11,6 @@ ninja -C out\gn ^
     gen/third_party/iaccessible2/ia2_api_all.h ^
     gen/third_party/isimpledom/ISimpleDOMDocument.h ^
     gen/third_party/isimpledom/ISimpleDOMNode.h ^
-    gen/third_party/isimpledom/ISimpleDOMText.h
+    gen/third_party/isimpledom/ISimpleDOMText.h ^
+    gen/ui/accessibility/platform/ichromeaccessible.h
+

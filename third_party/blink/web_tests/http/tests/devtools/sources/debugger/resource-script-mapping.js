@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests ResourceScriptMapping class.\n`);
-  await TestRunner.loadModule('sources_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
   await TestRunner.showPanel('sources');
   await TestRunner.evaluateInPagePromise(`
       function loadIframe()
@@ -36,7 +36,7 @@
     }
   }
 
-  function onUISourceCode(uiSourceCode) {
+  async function onUISourceCode(uiSourceCode) {
     TestRunner.addResult('UISourceCode arrived');
     scripts.sort((s1, s2) => {
       return s1.lineOffset - s2.lineOffset;
@@ -46,9 +46,9 @@
       var line = script.lineOffset;
       var column = script.columnOffset + 2;
       var rawLocation = TestRunner.debuggerModel.createRawLocation(script, line, column);
-      var uiLocation = Bindings.debuggerWorkspaceBinding.rawLocationToUILocation(rawLocation);
+      var uiLocation = await Bindings.debuggerWorkspaceBinding.rawLocationToUILocation(rawLocation);
       SourcesTestRunner.checkUILocation(uiSourceCode, line, column, uiLocation);
-      var reverseLocation = Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(uiSourceCode, line, column)[0];
+      var reverseLocation = (await Bindings.debuggerWorkspaceBinding.uiLocationToRawLocations(uiSourceCode, line, column))[0];
       SourcesTestRunner.checkRawLocation(script, line, column, reverseLocation);
     }
     TestRunner.completeTest();

@@ -53,7 +53,7 @@ class DirectoryReader : public DirectoryReaderBase {
     return static_cast<DOMFileSystem*>(file_system_.Get());
   }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   void AddEntries(const EntryHeapVector& entries);

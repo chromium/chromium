@@ -12,7 +12,8 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.blink.mojom.CloneableMessage;
-import org.chromium.blink.mojom.NativeFileSystemTransferToken;
+import org.chromium.blink.mojom.FileSystemAccessTransferToken;
+import org.chromium.blink.mojom.MessagePortDescriptor;
 import org.chromium.blink.mojom.SerializedArrayBufferContents;
 import org.chromium.blink.mojom.SerializedBlob;
 import org.chromium.blink.mojom.TransferableMessage;
@@ -23,11 +24,9 @@ import org.chromium.mojo.bindings.Message;
 import org.chromium.mojo.bindings.MessageHeader;
 import org.chromium.mojo.bindings.MessageReceiver;
 import org.chromium.mojo.system.Core;
-import org.chromium.mojo.system.MessagePipeHandle;
 import org.chromium.mojo.system.Pair;
-import org.chromium.mojo.system.impl.CoreImpl;
 import org.chromium.mojo_base.BigBufferUtil;
-import org.chromium.skia.mojom.Bitmap;
+import org.chromium.skia.mojom.BitmapN32;
 
 /**
  * Represents the MessageChannel MessagePort object. Inspired from
@@ -129,7 +128,7 @@ public class AppWebMessagePort implements MessagePort {
                         mojoMessage.asServiceMessage().getPayload());
                 AppWebMessagePort[] ports = new AppWebMessagePort[msg.ports.length];
                 for (int i = 0; i < ports.length; ++i) {
-                    ports[i] = new AppWebMessagePort(msg.ports[i]);
+                    ports[i] = new AppWebMessagePort(new AppWebMessagePortDescriptor(msg.ports[i]));
                 }
                 MessagePortMessage portMsg = new MessagePortMessage();
                 portMsg.encodedMessage =
@@ -153,37 +152,63 @@ public class AppWebMessagePort implements MessagePort {
     private boolean mWatching;
 
     private Core mMojoCore;
+    private AppWebMessagePortDescriptor mDescriptor;
     private Connector mConnector;
 
-    private AppWebMessagePort(MessagePipeHandle messagePipeHandle) {
-        mMojoCore = messagePipeHandle.getCore();
-        mConnector = new Connector(messagePipeHandle);
+    private AppWebMessagePort(AppWebMessagePortDescriptor messagePortDescriptor) {
+        mMojoCore = messagePortDescriptor.getCore();
+        mDescriptor = messagePortDescriptor;
+        // Note that the AppWebMessagePortDescriptor sets the error handler. If
+        // this class ever wants to set an error handler, then that code needs
+        // reworking.
+        mConnector = messagePortDescriptor.entangleWithConnector();
     }
 
     // Called to create an entangled pair of ports.
     public static AppWebMessagePort[] createPair() {
-        Pair<MessagePipeHandle, MessagePipeHandle> handles =
-                CoreImpl.getInstance().createMessagePipe(new MessagePipeHandle.CreateOptions());
-        AppWebMessagePort[] ports = new AppWebMessagePort[] {
-                new AppWebMessagePort(handles.first), new AppWebMessagePort(handles.second)};
+        Pair<AppWebMessagePortDescriptor, AppWebMessagePortDescriptor> descriptors =
+                AppWebMessagePortDescriptor.createPair();
+        AppWebMessagePort[] ports =
+                new AppWebMessagePort[] {new AppWebMessagePort(descriptors.first),
+                        new AppWebMessagePort(descriptors.second)};
         return ports;
     }
 
-    // Called to create a port from handle.
-    public static AppWebMessagePort create(MessagePipeHandle handle) {
-        return new AppWebMessagePort(handle);
+    // Called to create a port from a descriptor.
+    public static AppWebMessagePort create(AppWebMessagePortDescriptor descriptor) {
+        return new AppWebMessagePort(descriptor);
     }
 
-    private MessagePipeHandle passHandle() {
-        mTransferred = true;
-        MessagePipeHandle handle = mConnector.passHandle();
-        mConnector = null;
-        return handle;
-    }
-
+    // See app_web_message_port.h. This is indirectly exposed to content/public
+    // so that embedders can translate from blink::MessagePortDescriptors to
+    // Java MessagePorts.
     @CalledByNative
-    private int releaseNativeHandle() {
-        return passHandle().releaseNativeHandle();
+    private static AppWebMessagePort[] createFromNativeBlinkMessagePortDescriptors(
+            long[] nativeBlinkMessagePortDescriptors) {
+        AppWebMessagePort[] ports = new AppWebMessagePort[nativeBlinkMessagePortDescriptors.length];
+        for (int i = 0; i < ports.length; ++i) {
+            ports[i] = new AppWebMessagePort(
+                    AppWebMessagePortDescriptor.createFromNativeBlinkMessagePortDescriptor(
+                            nativeBlinkMessagePortDescriptors[i]));
+        }
+        return ports;
+    }
+
+    private AppWebMessagePortDescriptor passDescriptor() {
+        mTransferred = true;
+        mDescriptor.disentangleFromConnector();
+        mConnector = null;
+        AppWebMessagePortDescriptor descriptor = mDescriptor;
+        mDescriptor = null;
+        return descriptor;
+    }
+
+    // See app_web_message_port.h. This is indirectly exposed to content/public
+    // so that embedders can translate from Java MessagePorts to
+    // blink::MessagePortDescriptors.
+    @CalledByNative
+    private long releaseNativeMessagePortDescriptor() {
+        return passDescriptor().releaseNativeMessagePortDescriptor();
     }
 
     @Override
@@ -193,7 +218,14 @@ public class AppWebMessagePort implements MessagePort {
         }
         if (mClosed) return;
         mClosed = true;
+
+        // Give the connector back to the descriptor and close it from there. This ensures that the
+        // instrumentation delegate is notified of all relevant events.
+        mDescriptor.disentangleFromConnector();
+        mDescriptor.close();
         mConnector.close();
+
+        mDescriptor = null;
         mConnector = null;
     }
 
@@ -237,7 +269,8 @@ public class AppWebMessagePort implements MessagePort {
         if (isClosed() || isTransferred()) {
             throw new IllegalStateException("Port is already closed or transferred");
         }
-        MessagePipeHandle[] ports = new MessagePipeHandle[sentPorts == null ? 0 : sentPorts.length];
+        MessagePortDescriptor[] ports =
+                new MessagePortDescriptor[sentPorts == null ? 0 : sentPorts.length];
         if (sentPorts != null) {
             for (MessagePort port : sentPorts) {
                 if (port.equals(this)) {
@@ -251,7 +284,9 @@ public class AppWebMessagePort implements MessagePort {
                 }
             }
             for (int i = 0; i < sentPorts.length; ++i) {
-                ports[i] = ((AppWebMessagePort) sentPorts[i]).passHandle();
+                ports[i] = ((AppWebMessagePort) sentPorts[i])
+                                   .passDescriptor()
+                                   .passAsBlinkMojomMessagePortDescriptor();
             }
         }
         mStarted = true;
@@ -261,12 +296,12 @@ public class AppWebMessagePort implements MessagePort {
         msg.message.encodedMessage = BigBufferUtil.createBigBufferFromBytes(
                 AppWebMessagePortJni.get().encodeStringMessage(message));
         msg.message.blobs = new SerializedBlob[0];
-        msg.message.nativeFileSystemTokens = new NativeFileSystemTransferToken[0];
+        msg.message.fileSystemAccessTokens = new FileSystemAccessTransferToken[0];
         msg.message.senderOrigin = null;
         msg.arrayBufferContentsArray = new SerializedArrayBufferContents[0];
-        msg.imageBitmapContentsArray = new Bitmap[0];
+        msg.imageBitmapContentsArray = new BitmapN32[0];
         msg.ports = ports;
-        msg.streamChannels = new MessagePipeHandle[0];
+        msg.streamChannels = new MessagePortDescriptor[0];
         mConnector.accept(msg.serializeWithHeader(mMojoCore, MESSAGE_HEADER));
     }
 

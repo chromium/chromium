@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 import("//testing/libfuzzer/fuzzer_test.gni")
+import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
+import("//third_party/openscreen/src/build/config/data_headers_template.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 static_library("cast_channel") {
   sources = [
@@ -26,6 +29,10 @@ static_library("cast_channel") {
     "enum_table.h",
     "keep_alive_delegate.cc",
     "keep_alive_delegate.h",
+    "keep_alive_handler.cc",
+    "keep_alive_handler.h",
+    "libcast_socket_service.cc",
+    "libcast_socket_service.h",
     "logger.cc",
     "logger.h",
     "mojo_data_pump.cc",
@@ -33,19 +40,24 @@ static_library("cast_channel") {
   ]
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//components/cast_certificate",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
+    "//components/openscreen_platform:openscreen_platform_network_service",
     "//components/prefs",
     "//components/version_info",
     "//content/public/browser",
-    "//content/public/common",
     "//crypto",
     "//net",
     "//services/data_decoder/public/cpp",
+    "//third_party/openscreen/src/cast/common:channel",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+    "//third_party/openscreen/src/cast/sender:channel",
+    "//third_party/openscreen/src/platform",
   ]
   public_deps = [
+    "//services/data_decoder/public/cpp",
     "//services/network/public/mojom",
   ]
 }
@@ -80,6 +92,7 @@ source_set("unit_tests") {
     "cast_transport_unittest.cc",
     "enum_table_unittest.cc",
     "keep_alive_delegate_unittest.cc",
+    "libcast_socket_service_unittest.cc",
     "logger_unittest.cc",
   ]
   deps = [
@@ -87,7 +100,9 @@ source_set("unit_tests") {
     ":test_support",
     "//base/test:test_support",
     "//components/cast_certificate",
+    "//components/cast_certificate:cast_certificate_reader",
     "//components/cast_certificate:test_support",
+    "//components/openscreen_platform:openscreen_platform",
     "//components/prefs",
     "//components/prefs:test_support",
     "//content/test:test_support",
@@ -96,15 +111,92 @@ source_set("unit_tests") {
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/openscreen/src/cast/common:test_helpers",
     "//third_party/openscreen/src/cast/common/certificate/proto:certificate_unittest_proto",
     "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
   ]
 }
 
-fuzzer_test("cast_message_fuzzer") {
-  sources = [
-    "cast_message_fuzzer.cc",
+# TODO(issuetracker.google.com/185815206): Fuzzers should also work with
+# openscreen code.
+if (use_fuzzing_engine) {
+  source_set("cast_auth_util_fuzzer_shared") {
+    sources = [
+      "cast_auth_util_fuzzer_shared.cc",
+      "cast_auth_util_fuzzer_shared.h",
+    ]
+    public_deps = [ ":cast_channel_fuzzer_inputs" ]
+    deps = [
+      "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+    ]
+  }
+
+  data_headers("cast_auth_util_fuzzer_certs") {
+    namespace = "cast"
+    sources =
+        [ "../test/data/cast_certificate/certificates/chromecast_gen1.pem" ]
+  }
+
+  fuzzable_proto_library("cast_channel_fuzzer_inputs") {
+    sources = [ "proto/fuzzer_inputs.proto" ]
+    import_dirs = [
+      "//third_party/openscreen/src/cast/common/certificate/proto",
+      "//third_party/openscreen/src/cast/common/channel/proto",
+    ]
+    link_deps = [
+      "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
+      "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+    ]
+    proto_out_dir = "components/cast_channel/fuzz_proto"
+  }
+
+  protoc_convert("cast_auth_util_fuzzer_convert_corpus") {
+    sources = [
+      "test/data/error.textproto",
+      "test/data/good.textproto",
+    ]
+
+    inputs = [ "proto/fuzzer_inputs.proto" ]
+
+    output_pattern = "$target_gen_dir/cast_auth_util_fuzzer_corpus/{{source_name_part}}.binarypb"
+
+    args = [
+      "--encode=cast_channel.fuzz.CastAuthUtilInputs",
+      "-I",
+      rebase_path("//third_party/openscreen/src/cast/common/channel/proto"),
+      "-I",
+      rebase_path("//third_party/openscreen/src/cast/common/certificate/proto"),
+      "-I",
+      rebase_path("proto"),
+      "fuzzer_inputs.proto",
+    ]
+  }
+}
+
+fuzzer_test("cast_auth_util_fuzzer") {
+  sources = [ "cast_auth_util_fuzzer.cc" ]
+  deps = [
+    ":cast_auth_util_fuzzer_certs",
+    ":cast_auth_util_fuzzer_shared",
+    ":cast_channel",
+    ":cast_channel_fuzzer_inputs",
+    "//components/cast_certificate",
+    "//components/cast_certificate:cast_certificate_reader",
+    "//components/cast_certificate:test_support",
+    "//net:test_support",
+    "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
   ]
+  seed_corpus = "$target_gen_dir/cast_auth_util_fuzzer_corpus"
+  seed_corpus_deps = [ ":cast_auth_util_fuzzer_convert_corpus" ]
+}
+
+# TODO(jrw): Rename target to cast_framer_ingest_fuzzer.  The name
+# is left unchanged for now to avoid the need to get reviews for
+# various files that include it.
+fuzzer_test("cast_message_fuzzer") {
+  sources = [ "cast_framer_ingest_fuzzer.cc" ]
   deps = [
     ":test_support",
     "//base",
@@ -116,4 +208,66 @@ fuzzer_test("cast_message_fuzzer") {
 
   # See MessageFramer::MessageHeader::max_message_size()
   libfuzzer_options = [ "max_len=65535" ]
+}
+
+fuzzer_test("cast_framer_serialize_fuzzer") {
+  sources = [ "cast_framer_serialize_fuzzer.cc" ]
+  deps = [
+    ":cast_channel",
+    ":cast_channel_fuzzer_inputs",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+  ]
+}
+
+fuzzer_test("cast_message_util_fuzzer") {
+  sources = [ "cast_message_util_fuzzer.cc" ]
+  dict = "fuzz.dict"
+  deps = [
+    ":cast_channel",
+    ":cast_channel_fuzzer_inputs",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common/channel/proto:channel_proto",
+  ]
+}
+
+fuzzer_test("openscreen_cast_auth_util_fuzzer") {
+  sources = [ "openscreen_cast_auth_util_fuzzer.cc" ]
+  deps = [
+    ":cast_auth_util_fuzzer_certs",
+    ":cast_auth_util_fuzzer_shared",
+    ":cast_channel_fuzzer_inputs",
+    "//base",
+    "//components/cast_certificate:cast_certificate_reader",
+    "//components/openscreen_platform",
+    "//net/data/ssl/certificates:generate_fuzzer_cert_includes",
+    "//third_party/boringssl",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common/certificate/proto:certificate_proto",
+    "//third_party/openscreen/src/cast/sender:channel",
+  ]
+  seed_corpus = "$target_gen_dir/cast_auth_util_fuzzer_corpus"
+  seed_corpus_deps = [ ":cast_auth_util_fuzzer_convert_corpus" ]
+}
+
+fuzzer_test("openscreen_message_framer_deserialize_fuzzer") {
+  sources = [ "openscreen_message_framer_deserialize_fuzzer.cc" ]
+  deps = [
+    "//components/openscreen_platform",
+    "//third_party/openscreen/src/cast/common:channel",
+  ]
+  seed_corpus = "fuzz_corpus"
+
+  # NOTE: Max message size is 65536 + 4, so this allows some overhang.
+  libfuzzer_options = [ "max_len=65600" ]
+}
+
+fuzzer_test("openscreen_message_framer_serialize_fuzzer") {
+  sources = [ "openscreen_message_framer_serialize_fuzzer.cc" ]
+  deps = [
+    ":cast_channel_fuzzer_inputs",
+    "//components/openscreen_platform",
+    "//third_party/libprotobuf-mutator",
+    "//third_party/openscreen/src/cast/common:channel",
+  ]
 }

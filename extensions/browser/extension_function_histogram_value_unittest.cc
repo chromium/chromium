@@ -18,7 +18,7 @@
 namespace extensions {
 
 TEST(ExtensionFunctionHistogramValueTest, CheckEnums) {
-  base::Optional<base::HistogramEnumEntryMap> enums =
+  absl::optional<base::HistogramEnumEntryMap> enums =
       base::ReadEnumFromEnumsXml("ExtensionFunctions");
   ASSERT_TRUE(enums);
   // The number of enums in the histogram entry should be equal to the number of

@@ -6,7 +6,6 @@
 
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/logging.h"
 
 using base::Value;
 
@@ -50,6 +49,14 @@ JSONStringValueDeserializer::~JSONStringValueDeserializer() = default;
 std::unique_ptr<Value> JSONStringValueDeserializer::Deserialize(
     int* error_code,
     std::string* error_str) {
-  return base::JSONReader::ReadAndReturnErrorDeprecated(json_string_, options_,
-                                                        error_code, error_str);
+  base::JSONReader::ValueWithError ret =
+      base::JSONReader::ReadAndReturnValueWithError(json_string_, options_);
+  if (ret.value)
+    return base::Value::ToUniquePtrValue(std::move(*ret.value));
+
+  if (error_code)
+    *error_code = base::ValueDeserializer::kErrorCodeInvalidFormat;
+  if (error_str)
+    *error_str = std::move(ret.error_message);
+  return nullptr;
 }

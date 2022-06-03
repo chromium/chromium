@@ -1,0 +1,23 @@
+<!DOCTYPE HTML>
+<title>Check active state of windows</title>
+<script src="../../../resources/user-gesture-utils.js"></script>
+<script src="../../../resources/testharness.js"></script>
+<script src="../../../resources/testharnessreport.js"></script>
+<script>
+  var popupWin = window.open('about:blank');
+  async_test((t) => {
+    window.addEventListener("blur", t.step_func(() => {
+      // Give a time to `popupWin` for activation.
+      setTimeout(() => {
+        assert_true(popupWin.internals.isActivated(), "Popup window should be activated");
+        assert_false(window.internals.isActivated(), "Parent window should be deactivated");
+        t.done();
+      }, 0);
+    }));
+
+    window.addEventListener("load", t.step_func(() => {
+      assert_true(window.internals.isActivated(), "Parent window should be activated");
+      focusWithUserGesture(popupWin);
+    }));
+  }, "This test passes if no crash");
+</script>

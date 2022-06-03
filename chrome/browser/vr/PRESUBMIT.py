@@ -8,14 +8,11 @@ See http://dev.chromium.org/developers/how-tos/depottools/presubmit-scripts
 for more details about the presubmit API built into depot_tools.
 """
 
-import re
+USE_PYTHON3 = True
 
 # chrome/PRESUBMIT.py blocks several linters due to the infeasibility of
 # enforcing them on a large codebase. Here we'll start by enforcing all
 # linters, and add exclusions if necessary.
-#
-# Note that this list must be non-empty, or cpplint will use its default set of
-# filters.
 LINT_FILTERS = [
   '-build/include',
 ]
@@ -26,7 +23,7 @@ INCLUDE_CPP_FILES_ONLY = (r'.*\.(cc|h)$',)
 
 def _CheckChangeLintsClean(input_api, output_api):
   sources = lambda x: input_api.FilterSourceFile(
-      x, white_list=INCLUDE_CPP_FILES_ONLY)
+      x, files_to_check=INCLUDE_CPP_FILES_ONLY)
   return input_api.canned_checks.CheckChangeLintsClean(
       input_api, output_api, sources, LINT_FILTERS, VERBOSITY_LEVEL)
 

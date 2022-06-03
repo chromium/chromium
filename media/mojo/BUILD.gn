@@ -16,50 +16,37 @@ buildflag_header("buildflags") {
   enable_mojo_video_decoder = false
   enable_mojo_media_in_browser_process = false
   enable_mojo_media_in_gpu_process = false
-  enable_mojo_media_in_utility_process = false
 
-  if (!enable_mojo_media) {
-    assert(mojo_media_services == [], "Mojo media is not enabled")
-    assert(mojo_media_host == "none", "Mojo media is not enabled")
-    assert(!enable_test_mojo_media_client, "Mojo media is not enabled")
-  } else {
-    assert(mojo_media_services != [], "No mojo media service specified")
-    foreach(service, mojo_media_services) {
-      if (service == "renderer") {
-        enable_mojo_renderer = true
-      } else if (service == "cdm") {
-        enable_mojo_cdm = true
-      } else if (service == "audio_decoder") {
-        enable_mojo_audio_decoder = true
-      } else if (service == "video_decoder") {
-        enable_mojo_video_decoder = true
-      } else {
-        assert(false, "Invalid mojo media service: $service")
-      }
-    }
-
-    if (mojo_media_host == "browser") {
-      enable_mojo_media_in_browser_process = true
-    } else if (mojo_media_host == "gpu") {
-      enable_mojo_media_in_gpu_process = true
-    } else if (mojo_media_host == "utility") {
-      enable_mojo_media_in_utility_process = true
+  foreach(service, mojo_media_services) {
+    if (service == "renderer") {
+      enable_mojo_renderer = true
+    } else if (service == "cdm") {
+      enable_mojo_cdm = true
+    } else if (service == "audio_decoder") {
+      enable_mojo_audio_decoder = true
+    } else if (service == "video_decoder") {
+      enable_mojo_video_decoder = true
     } else {
-      assert(false, "Invalid mojo media host: $mojo_media_host")
+      assert(false, "Invalid mojo media service: $service")
     }
+  }
+
+  if (mojo_media_host == "browser") {
+    enable_mojo_media_in_browser_process = true
+  } else if (mojo_media_host == "gpu") {
+    enable_mojo_media_in_gpu_process = true
+  } else if (mojo_media_host != "") {
+    assert(false, "Invalid mojo media host: $mojo_media_host")
   }
 
   flags = [
     "ENABLE_CAST_RENDERER=$enable_cast_renderer",
-    "ENABLE_MOJO_MEDIA=$enable_mojo_media",
-    "ENABLE_TEST_MOJO_MEDIA_CLIENT=$enable_test_mojo_media_client",
     "ENABLE_MOJO_RENDERER=$enable_mojo_renderer",
     "ENABLE_MOJO_CDM=$enable_mojo_cdm",
     "ENABLE_MOJO_AUDIO_DECODER=$enable_mojo_audio_decoder",
     "ENABLE_MOJO_VIDEO_DECODER=$enable_mojo_video_decoder",
     "ENABLE_MOJO_MEDIA_IN_BROWSER_PROCESS=$enable_mojo_media_in_browser_process",
     "ENABLE_MOJO_MEDIA_IN_GPU_PROCESS=$enable_mojo_media_in_gpu_process",
-    "ENABLE_MOJO_MEDIA_IN_UTILITY_PROCESS=$enable_mojo_media_in_utility_process",
   ]
 }
 

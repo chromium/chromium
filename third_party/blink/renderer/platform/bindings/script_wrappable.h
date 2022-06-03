@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_BINDINGS_SCRIPT_WRAPPABLE_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/bindings/name_client.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
@@ -43,17 +42,21 @@
 
 namespace blink {
 
+class ScriptState;
+
 // ScriptWrappable provides a way to map from/to C++ DOM implementation to/from
 // JavaScript object (platform object).  ToV8() converts a ScriptWrappable to
 // a v8::Object and toScriptWrappable() converts a v8::Object back to
 // a ScriptWrappable.  v8::Object as platform object is called "wrapper object".
 // The wrapper object for the main world is stored in ScriptWrappable.  Wrapper
-// objects for other worlds are stored in DOMWrapperMap.
+// objects for other worlds are stored in DOMDataStore.
 class PLATFORM_EXPORT ScriptWrappable
     : public GarbageCollected<ScriptWrappable>,
       public NameClient {
  public:
-  virtual ~ScriptWrappable() = default;
+  ScriptWrappable(const ScriptWrappable&) = delete;
+  ScriptWrappable& operator=(const ScriptWrappable&) = delete;
+  ~ScriptWrappable() override = default;
 
   // The following methods may override lifetime of ScriptWrappable objects when
   // needed. In particular if |HasPendingActivity| or |HasEventListeners|
@@ -68,7 +71,7 @@ class PLATFORM_EXPORT ScriptWrappable
 
   const char* NameInHeapSnapshot() const override;
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
   template <typename T>
   T* ToImpl() {
@@ -78,16 +81,14 @@ class PLATFORM_EXPORT ScriptWrappable
         sizeof(T) && WTF::IsGarbageCollectedType<T>::value,
         "Classes implementing ScriptWrappable must be garbage collected.");
 
-// Check if T* is castable to ScriptWrappable*, which means T doesn't
-// have two or more ScriptWrappable as superclasses. If T has two
-// ScriptWrappable as superclasses, conversions from T* to
-// ScriptWrappable* are ambiguous.
-#if !defined(COMPILER_MSVC)
-    // MSVC 2013 doesn't support static_assert + constexpr well.
+    // Check if T* is castable to ScriptWrappable*, which means T doesn't
+    // have two or more ScriptWrappable as superclasses. If T has two
+    // ScriptWrappable as superclasses, conversions from T* to
+    // ScriptWrappable* are ambiguous.
     static_assert(!static_cast<ScriptWrappable*>(static_cast<T*>(nullptr)),
                   "Class T must not have two or more ScriptWrappable as its "
                   "superclasses.");
-#endif
+
     return static_cast<T*>(this);
   }
 
@@ -97,8 +98,7 @@ class PLATFORM_EXPORT ScriptWrappable
   virtual const WrapperTypeInfo* GetWrapperTypeInfo() const = 0;
 
   // Creates and returns a new wrapper object.
-  virtual v8::Local<v8::Object> Wrap(v8::Isolate*,
-                                     v8::Local<v8::Object> creation_context);
+  virtual v8::MaybeLocal<v8::Value> Wrap(ScriptState*);
 
   // Associates the instance with the given |wrapper| if this instance is not
   // yet associated with any wrapper.  Returns the wrapper already associated
@@ -122,18 +122,18 @@ class PLATFORM_EXPORT ScriptWrappable
       wrapper = MainWorldWrapper(isolate);
       return false;
     }
-    main_world_wrapper_.Set(isolate, wrapper);
+    main_world_wrapper_.Reset(isolate, wrapper);
     DCHECK(ContainsWrapper());
-    wrapper_type_info->ConfigureWrapper(&main_world_wrapper_.Get());
+    wrapper_type_info->ConfigureWrapper(&main_world_wrapper_);
     return true;
   }
 
   bool IsEqualTo(const v8::Local<v8::Object>& other) const {
-    return main_world_wrapper_.Get() == other;
+    return main_world_wrapper_ == other;
   }
 
   bool SetReturnValue(v8::ReturnValue<v8::Value> return_value) {
-    return_value.Set(main_world_wrapper_.Get());
+    return_value.Set(main_world_wrapper_);
     return ContainsWrapper();
   }
 
@@ -144,7 +144,7 @@ class PLATFORM_EXPORT ScriptWrappable
 
  private:
   v8::Local<v8::Object> MainWorldWrapper(v8::Isolate* isolate) const {
-    return main_world_wrapper_.NewLocal(isolate);
+    return main_world_wrapper_.Get(isolate);
   }
 
   // Clear the main world wrapper if it is set to |handle|.
@@ -163,16 +163,12 @@ class PLATFORM_EXPORT ScriptWrappable
   friend class DOMDataStore;
   friend class DOMWrapperWorld;
   friend class HeapSnaphotWrapperVisitor;
-  friend class V8HiddenValue;
-  friend class V8PrivateProperty;
-
-  DISALLOW_COPY_AND_ASSIGN(ScriptWrappable);
 };
 
 inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
     const v8::TracedReference<v8::Object>& handle) {
-  if (main_world_wrapper_.Get() == handle) {
-    main_world_wrapper_.Clear();
+  if (main_world_wrapper_ == handle) {
+    main_world_wrapper_.Reset();
     return true;
   }
   return false;
@@ -190,27 +186,12 @@ inline bool ScriptWrappable::UnsetMainWorldWrapperIfSet(
   const WrapperTypeInfo* GetWrapperTypeInfo() const override { \
     return &wrapper_type_info_;                                \
   }                                                            \
+  static const WrapperTypeInfo* GetStaticWrapperTypeInfo() {   \
+    return &wrapper_type_info_;                                \
+  }                                                            \
                                                                \
  private:                                                      \
   static const WrapperTypeInfo& wrapper_type_info_
-
-// Declares |GetWrapperTypeInfo| method without definition.
-//
-// This macro is used for template classes. e.g. DOMTypedArray<>.
-// To export such a template class X, we need to instantiate X with EXPORT_API,
-// i.e. "extern template class EXPORT_API X;"
-// However, once we instantiate X, we cannot specialize X after
-// the instantiation. i.e. we will see "error: explicit specialization of ...
-// after instantiation". So we cannot define X's s_wrapper_type_info in
-// generated code by using specialization. Instead, we need to implement
-// wrapper_type_info in X's cpp code, and instantiate X, i.e. "template class
-// X;".
-#define DECLARE_WRAPPERTYPEINFO()                             \
- public:                                                      \
-  const WrapperTypeInfo* GetWrapperTypeInfo() const override; \
-                                                              \
- private:                                                     \
-  typedef void end_of_declare_wrappertypeinfo_t
 
 }  // namespace blink
 

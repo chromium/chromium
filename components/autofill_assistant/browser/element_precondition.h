@@ -9,52 +9,91 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/selector.h"
 #include "components/autofill_assistant/browser/service.pb.h"
+#include "components/autofill_assistant/browser/web/element.h"
+#include "components/autofill_assistant/browser/web/element_finder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 class BatchElementChecker;
-struct Selector;
 
 class ElementPrecondition {
  public:
-  ElementPrecondition(
-      const google::protobuf::RepeatedPtrField<ElementReferenceProto>&
-          element_exists,
-      const google::protobuf::RepeatedPtrField<FormValueMatchProto>&
-          form_value_match);
+  // Callback being called after the checks are done with the success status,
+  // the matching payloads and a set of matching element lookup results.
+  using Callback = base::OnceCallback<void(
+      const ClientStatus&,
+      const std::vector<std::string>&,
+      const base::flat_map<std::string, DomObjectFrameStack>&)>;
+
+  ElementPrecondition(const ElementConditionProto& proto);
+
+  ElementPrecondition(const ElementPrecondition&) = delete;
+  ElementPrecondition& operator=(const ElementPrecondition&) = delete;
+
   ~ElementPrecondition();
 
-  // Check whether the conditions satisfied and return the result through
+  // Check whether the conditions are satisfied and return the result through
   // |callback|. |batch_checks| must remain valid until the callback is run.
   //
   // Calling Check() while another check is in progress cancels the previously
   // running check.
-  void Check(BatchElementChecker* batch_checks,
-             base::OnceCallback<void(bool)> callback);
+  //
+  // The callback gets a status, which is ACTION_APPLIED if the overall
+  // condition matched, the payloads of specific conditions that matched and
+  // a representation of element results found during the checks.
+  // Note that payloads and element results can still be sent out even though
+  // the overall condition did not match.
+  void Check(BatchElementChecker* batch_checks, Callback callback);
 
-  bool empty() { return elements_exist_.empty() && form_value_match_.empty(); }
+  bool empty() {
+    return proto_.type_case() == ElementConditionProto::TYPE_NOT_SET;
+  }
 
  private:
-  void OnCheckElementExists(const ClientStatus& element_status);
-  void OnGetFieldValue(int index,
-                       const ClientStatus& element_status,
-                       const std::string& value);
-  void ReportCheckResult(bool success);
+  // Selector that should be checked and the result of checking that selector.
+  struct Result {
+    Result();
+    ~Result();
+    Result(const Result&);
 
-  std::vector<Selector> elements_exist_;
-  std::vector<FormValueMatchProto> form_value_match_;
+    Selector selector;
+    bool match = false;
 
-  // Number of checks for which there's still no result.
-  int pending_check_count_;
+    // The identifier given to this result through the script. This identifier
+    // can be used to later find the element in the |ElementStore|.
+    absl::optional<std::string> client_id;
 
-  base::OnceCallback<void(bool)> callback_;
+    // Whether the matching should be done strict or not.
+    bool strict = false;
+  };
+
+  // Add selectors from |proto| to |results_|, doing a depth-first search.
+  void AddResults(const ElementConditionProto& proto);
+
+  void OnCheckElementExists(size_t result_index,
+                            const ClientStatus& element_status,
+                            const ElementFinder::Result& element_reference);
+
+  void OnAllElementChecksDone(Callback callback);
+
+  bool EvaluateResults(const ElementConditionProto& proto_,
+                       size_t* next_result_index,
+                       std::vector<std::string>* payloads);
+
+  const ElementConditionProto proto_;
+
+  // Maps ElementConditionProto.match from proto_ to result. Results appear in
+  // the same order as in proto_, assuming a depth first search.
+  std::vector<Result> results_;
+
+  base::flat_map<std::string, DomObjectFrameStack> elements_;
 
   base::WeakPtrFactory<ElementPrecondition> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ElementPrecondition);
 };
 
 }  // namespace autofill_assistant

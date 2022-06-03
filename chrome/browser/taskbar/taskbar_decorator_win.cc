@@ -7,13 +7,17 @@
 #include <objbase.h>
 #include <shobjidl.h>
 #include <wrl/client.h>
+
+#include <memory>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/win/scoped_gdi_object.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/avatar_menu.h"
@@ -22,6 +26,7 @@
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "skia/ext/image_operations.h"
+#include "skia/ext/legacy_display_globals.h"
 #include "skia/ext/platform_canvas.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -40,8 +45,6 @@ namespace taskbar {
 namespace {
 
 constexpr int kOverlayIconSize = 16;
-static const SkRRect kOverlayIconClip =
-    SkRRect::MakeOval(SkRect::MakeWH(kOverlayIconSize, kOverlayIconSize));
 
 // Responsible for invoking TaskbarList::SetOverlayIcon(). The call to
 // TaskbarList::SetOverlayIcon() runs a nested run loop that proves
@@ -65,9 +68,9 @@ void SetOverlayIcon(HWND hwnd,
 
     // Maintain aspect ratio on resize, but prefer more square.
     // (We used to round down here, but rounding up produces nicer results.)
-    const int resized_height =
-        std::ceilf(kOverlayIconSize * (float{bitmap.get()->height()} /
-                                       float{bitmap.get()->width()}));
+    const int resized_height = base::ClampCeil(
+        kOverlayIconSize *
+        (static_cast<float>(bitmap.get()->height()) / bitmap.get()->width()));
 
     DCHECK_GE(kOverlayIconSize, resized_height);
     // Since the target size is so small, we use our best resizer.
@@ -80,16 +83,19 @@ void SetOverlayIcon(HWND hwnd,
     // way profile icons are rendered in the profile switcher.
     SkBitmap offscreen_bitmap;
     offscreen_bitmap.allocN32Pixels(kOverlayIconSize, kOverlayIconSize);
-    SkCanvas offscreen_canvas(offscreen_bitmap);
+    SkCanvas offscreen_canvas(offscreen_bitmap, SkSurfaceProps{});
     offscreen_canvas.clear(SK_ColorTRANSPARENT);
-    offscreen_canvas.clipRRect(kOverlayIconClip, true);
+
+    static const SkRRect overlay_icon_clip =
+        SkRRect::MakeOval(SkRect::MakeWH(kOverlayIconSize, kOverlayIconSize));
+    offscreen_canvas.clipRRect(overlay_icon_clip, true);
 
     // Note: the original code used kOverlayIconSize - resized_height, but in
     // order to center the icon in the circle clip area, we're going to center
     // it in the paintable region instead, rounding up to the closest pixel to
     // avoid smearing.
     const int y_offset = std::ceilf((kOverlayIconSize - resized_height) / 2.0f);
-    offscreen_canvas.drawBitmap(sk_icon, 0, y_offset);
+    offscreen_canvas.drawImage(sk_icon.asImage(), 0, y_offset);
 
     icon = IconUtil::CreateHICONFromSkBitmap(offscreen_bitmap);
     if (!icon.is_valid())
@@ -101,10 +107,10 @@ void SetOverlayIcon(HWND hwnd,
 void PostSetOverlayIcon(HWND hwnd,
                         std::unique_ptr<SkBitmap> bitmap,
                         const std::string& alt_text) {
-  base::CreateCOMSTATaskRunner(
-      {base::ThreadPool(), base::MayBlock(), base::TaskPriority::USER_VISIBLE})
+  base::ThreadPool::CreateCOMSTATaskRunner(
+      {base::MayBlock(), base::TaskPriority::USER_VISIBLE})
       ->PostTask(FROM_HERE, base::BindOnce(&SetOverlayIcon, hwnd,
-                                           base::Passed(&bitmap), alt_text));
+                                           std::move(bitmap), alt_text));
 }
 
 }  // namespace
@@ -129,7 +135,8 @@ void DrawTaskbarDecorationString(gfx::NativeWindow window,
   auto badge = std::make_unique<SkBitmap>();
   badge->allocN32Pixels(kOverlayIconSize, kOverlayIconSize);
 
-  SkCanvas canvas(*badge.get());
+  SkCanvas canvas(*badge.get(),
+                  skia::LegacyDisplayGlobals::GetSkSurfaceProps());
 
   SkPaint paint;
   paint.setAntiAlias(true);
@@ -174,8 +181,10 @@ void DrawTaskbarDecoration(gfx::NativeWindow window, const gfx::Image* image) {
   // gfx::Image isn't thread safe.
   std::unique_ptr<SkBitmap> bitmap;
   if (image) {
-    bitmap.reset(
-        new SkBitmap(profiles::GetAvatarIconAsSquare(*image->ToSkBitmap(), 1)));
+    // If `image` is an old avatar, then it's guaranteed to by 2x by code in
+    // ProfileAttributesEntry::GetAvatarIcon().
+    bitmap = std::make_unique<SkBitmap>(
+        profiles::GetWin2xAvatarIconAsSquare(*image->ToSkBitmap()));
   }
 
   PostSetOverlayIcon(hwnd, std::move(bitmap), "");
@@ -200,18 +209,15 @@ void UpdateTaskbarDecoration(Profile* profile, gfx::NativeWindow window) {
   // with the default shortcut being pinned, we add the runtime badge for
   // safety. See crbug.com/313800.
   gfx::Image decoration;
-  AvatarMenu::ImageLoadStatus status =
-      AvatarMenu::GetImageForMenuButton(profile->GetPath(), &decoration);
-
-  UMA_HISTOGRAM_ENUMERATION(
-      "Profile.AvatarLoadStatus", status,
-      static_cast<int>(AvatarMenu::ImageLoadStatus::MAX) + 1);
+  AvatarMenu::ImageLoadStatus status = AvatarMenu::GetImageForMenuButton(
+      profile->GetPath(), &decoration, kOverlayIconSize);
 
   // If the user is using a Gaia picture and the picture is still being loaded,
   // wait until the load finishes. This taskbar decoration will be triggered
   // again upon the finish of the picture load.
   if (status == AvatarMenu::ImageLoadStatus::LOADING ||
-      status == AvatarMenu::ImageLoadStatus::PROFILE_DELETED) {
+      status == AvatarMenu::ImageLoadStatus::PROFILE_DELETED ||
+      status == AvatarMenu::ImageLoadStatus::BROWSER_SHUTTING_DOWN) {
     return;
   }
 

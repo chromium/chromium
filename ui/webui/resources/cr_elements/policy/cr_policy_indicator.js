@@ -24,7 +24,7 @@ Polymer({
    *     See chrome.settingsPrivate.PrefObject.controlledByName
    * @return {string} The tooltip text for |type|.
    */
-  getIndicatorTooltip_: function(indicatorType, indicatorSourceName) {
+  getIndicatorTooltip_(indicatorType, indicatorSourceName) {
     return this.getIndicatorTooltip(indicatorType, indicatorSourceName);
   },
 });

@@ -4,20 +4,24 @@
 
 #include "content/public/browser/browser_main_parts.h"
 
-#include "services/service_manager/embedder/result_codes.h"
+#include "content/public/common/result_codes.h"
 
 namespace content {
 
 int BrowserMainParts::PreEarlyInitialization() {
-  return service_manager::RESULT_CODE_NORMAL_EXIT;
+  return RESULT_CODE_NORMAL_EXIT;
 }
 
 int BrowserMainParts::PreCreateThreads() {
-  return 0;
+  return RESULT_CODE_NORMAL_EXIT;
 }
 
-bool BrowserMainParts::MainMessageLoopRun(int* result_code) {
-  return false;
+int BrowserMainParts::PreMainMessageLoopRun() {
+  return RESULT_CODE_NORMAL_EXIT;
+}
+
+bool BrowserMainParts::ShouldInterceptMainMessageLoopRun() {
+  return true;
 }
 
 }  // namespace content

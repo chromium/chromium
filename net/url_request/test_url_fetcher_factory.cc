@@ -4,6 +4,7 @@
 
 #include "net/url_request/test_url_fetcher_factory.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -13,7 +14,7 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/sequenced_task_runner.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/threading/thread_restrictions.h"
 #include "net/base/completion_once_callback.h"
@@ -25,7 +26,6 @@
 #include "net/url_request/url_fetcher_delegate.h"
 #include "net/url_request/url_fetcher_impl.h"
 #include "net/url_request/url_fetcher_response_writer.h"
-#include "net/url_request/url_request_status.h"
 
 namespace net {
 
@@ -105,18 +105,15 @@ int TestURLFetcher::GetLoadFlags() const {
 void TestURLFetcher::SetReferrer(const std::string& referrer) {
 }
 
-void TestURLFetcher::SetReferrerPolicy(
-    URLRequest::ReferrerPolicy referrer_policy) {
-}
+void TestURLFetcher::SetReferrerPolicy(ReferrerPolicy referrer_policy) {}
 
-void TestURLFetcher::SetExtraRequestHeaders(
-    const std::string& extra_request_headers) {
+void TestURLFetcher::ClearExtraRequestHeaders() {
   fake_extra_request_headers_.Clear();
-  fake_extra_request_headers_.AddHeadersFromString(extra_request_headers);
 }
 
-void TestURLFetcher::AddExtraRequestHeader(const std::string& header_line) {
-  fake_extra_request_headers_.AddHeaderFromString(header_line);
+void TestURLFetcher::AddExtraRequestHeader(const std::string& name,
+                                           const std::string& value) {
+  fake_extra_request_headers_.SetHeader(name, value);
 }
 
 void TestURLFetcher::SetRequestContext(
@@ -124,7 +121,7 @@ void TestURLFetcher::SetRequestContext(
 }
 
 void TestURLFetcher::SetInitiator(
-    const base::Optional<url::Origin>& initiator) {}
+    const absl::optional<url::Origin>& initiator) {}
 
 void TestURLFetcher::SetURLRequestUserData(
     const void* key,
@@ -230,7 +227,7 @@ void TestURLFetcher::Start() {
     delegate_for_tests_->OnRequestStart(id_);
 
   // If the response should go into a file, write it out now.
-  if (fake_status_.is_success() && fake_response_code_ == net::HTTP_OK &&
+  if (fake_error_ == net::OK && fake_response_code_ == net::HTTP_OK &&
       write_response_file_ && !fake_response_file_path_.empty()) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     size_t written_bytes =
@@ -248,8 +245,8 @@ const GURL& TestURLFetcher::GetURL() const {
   return fake_url_;
 }
 
-const URLRequestStatus& TestURLFetcher::GetStatus() const {
-  return fake_status_;
+Error TestURLFetcher::GetError() const {
+  return fake_error_;
 }
 
 int TestURLFetcher::GetResponseCode() const {
@@ -280,10 +277,6 @@ bool TestURLFetcher::GetResponseAsFilePath(
 void TestURLFetcher::GetExtraRequestHeaders(
     HttpRequestHeaders* headers) const {
   *headers = fake_extra_request_headers_;
-}
-
-void TestURLFetcher::set_status(const URLRequestStatus& status) {
-  fake_status_ = status;
 }
 
 void TestURLFetcher::set_was_cached(bool flag) {
@@ -318,24 +311,9 @@ FakeURLFetcher::FakeURLFetcher(const GURL& url,
                                URLFetcherDelegate* d,
                                const std::string& response_data,
                                HttpStatusCode response_code,
-                               URLRequestStatus::Status status)
+                               Error error)
     : TestURLFetcher(0, url, d) {
-  Error error = OK;
-  switch(status) {
-    case URLRequestStatus::SUCCESS:
-      // |error| is initialized to OK.
-      break;
-    case URLRequestStatus::IO_PENDING:
-      error = ERR_IO_PENDING;
-      break;
-    case URLRequestStatus::CANCELED:
-      error = ERR_ABORTED;
-      break;
-    case URLRequestStatus::FAILED:
-      error = ERR_FAILED;
-      break;
-  }
-  set_status(URLRequestStatus(status, error));
+  set_error(error);
   set_response_code(response_code);
   SetResponseString(response_data);
   response_bytes_ = response_data.size();
@@ -365,12 +343,10 @@ const GURL& FakeURLFetcher::GetURL() const {
   return TestURLFetcher::GetOriginalURL();
 }
 
-FakeURLFetcherFactory::FakeURLFetcherFactory(
-    URLFetcherFactory* default_factory)
+FakeURLFetcherFactory::FakeURLFetcherFactory(URLFetcherFactory* default_factory)
     : ScopedURLFetcherFactory(this),
-      creator_(base::Bind(&DefaultFakeURLFetcherCreator)),
-      default_factory_(default_factory) {
-}
+      creator_(base::BindRepeating(&DefaultFakeURLFetcherCreator)),
+      default_factory_(default_factory) {}
 
 FakeURLFetcherFactory::FakeURLFetcherFactory(
     URLFetcherFactory* default_factory,
@@ -386,9 +362,9 @@ FakeURLFetcherFactory::DefaultFakeURLFetcherCreator(
     URLFetcherDelegate* delegate,
     const std::string& response_data,
     HttpStatusCode response_code,
-    URLRequestStatus::Status status) {
-  return std::unique_ptr<FakeURLFetcher>(
-      new FakeURLFetcher(url, delegate, response_data, response_code, status));
+    Error error) {
+  return std::make_unique<FakeURLFetcher>(url, delegate, response_data,
+                                          response_code, error);
 }
 
 FakeURLFetcherFactory::~FakeURLFetcherFactory() = default;
@@ -413,20 +389,19 @@ std::unique_ptr<URLFetcher> FakeURLFetcherFactory::CreateURLFetcher(
 
   std::unique_ptr<URLFetcher> fake_fetcher =
       creator_.Run(url, d, it->second.response_data, it->second.response_code,
-                   it->second.status);
+                   it->second.error);
   return fake_fetcher;
 }
 
-void FakeURLFetcherFactory::SetFakeResponse(
-    const GURL& url,
-    const std::string& response_data,
-    HttpStatusCode response_code,
-    URLRequestStatus::Status status) {
+void FakeURLFetcherFactory::SetFakeResponse(const GURL& url,
+                                            const std::string& response_data,
+                                            HttpStatusCode response_code,
+                                            Error error) {
   // Overwrite existing URL if it already exists.
   FakeURLResponse response;
   response.response_data = response_data;
   response.response_code = response_code;
-  response.status = status;
+  response.error = error;
   fake_responses_[url] = response;
 }
 

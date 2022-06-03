@@ -7,6 +7,7 @@
 
 #include "chrome/browser/chromeos/extensions/login_screen/login_screen_apitest_base.h"
 #include "components/version_info/version_info.h"
+#include "content/public/test/browser_test.h"
 
 namespace {
 
@@ -21,22 +22,23 @@ namespace chromeos {
 class StorageApitest : public LoginScreenApitestBase {
  public:
   StorageApitest() : LoginScreenApitestBase(version_info::Channel::DEV) {}
-  ~StorageApitest() override = default;
 
- private:
-  DISALLOW_COPY_AND_ASSIGN(StorageApitest);
+  StorageApitest(const StorageApitest&) = delete;
+  StorageApitest& operator=(const StorageApitest&) = delete;
+
+  ~StorageApitest() override = default;
 };
 
 IN_PROC_BROWSER_TEST_F(StorageApitest, CannotAccessLocalStorage) {
-  SetUpExtensionAndRunTest(kCannotAccessLocalStorage);
+  SetUpLoginScreenExtensionAndRunTest(kCannotAccessLocalStorage);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageApitest, CannotAccessSyncStorage) {
-  SetUpExtensionAndRunTest(kCannotAccessSyncStorage);
+  SetUpLoginScreenExtensionAndRunTest(kCannotAccessSyncStorage);
 }
 
 IN_PROC_BROWSER_TEST_F(StorageApitest, CanAccessManagedStorage) {
-  SetUpExtensionAndRunTest(kCanAccessManagedStorage);
+  SetUpLoginScreenExtensionAndRunTest(kCanAccessManagedStorage);
 }
 
 }  // namespace chromeos

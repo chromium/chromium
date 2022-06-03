@@ -5,16 +5,17 @@
 #ifndef CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_NATIVE_EVENT_OBSERVER_H_
 #define CONTENT_BROWSER_SCHEDULER_RESPONSIVENESS_NATIVE_EVENT_OBSERVER_H_
 
+#include <vector>
+
 #include "base/callback.h"
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
 #include "content/public/browser/native_event_processor_observer_mac.h"
 #endif
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "ui/aura/window_event_dispatcher_observer.h"
 #endif
 
@@ -37,9 +38,9 @@ namespace responsiveness {
 // On Windows, the hook should be in MessagePumpForUI::ProcessMessageHelper.
 // On Android, the hook should be in <TBD>.
 class CONTENT_EXPORT NativeEventObserver
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
     : public NativeEventProcessorObserver
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
     : public aura::WindowEventDispatcherObserver
 #elif defined(OS_WIN)
     : public base::MessagePumpForUI::Observer
@@ -56,19 +57,23 @@ class CONTENT_EXPORT NativeEventObserver
   NativeEventObserver(WillRunEventCallback will_run_event_callback,
                       DidRunEventCallback did_run_event_callback);
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+
+  NativeEventObserver(const NativeEventObserver&) = delete;
+  NativeEventObserver& operator=(const NativeEventObserver&) = delete;
+
   ~NativeEventObserver() override;
 #else
   virtual ~NativeEventObserver();
 #endif
 
  protected:
-#if defined(OS_MACOSX)
+#if defined(OS_MAC)
   // NativeEventProcessorObserver overrides:
   // Exposed for tests.
   void WillRunNativeEvent(const void* opaque_identifier) override;
   void DidRunNativeEvent(const void* opaque_identifier) override;
-#elif defined(OS_LINUX)
+#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
   // aura::WindowEventDispatcherObserver overrides:
   void OnWindowEventDispatcherStartedProcessing(
       aura::WindowEventDispatcher* dispatcher,
@@ -85,7 +90,7 @@ class CONTENT_EXPORT NativeEventObserver
   void RegisterObserver();
   void DeregisterObserver();
 
-#if defined(OS_LINUX)
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
   struct EventInfo {
     const void* unique_id;
   };
@@ -94,8 +99,6 @@ class CONTENT_EXPORT NativeEventObserver
 
   WillRunEventCallback will_run_event_callback_;
   DidRunEventCallback did_run_event_callback_;
-
-  DISALLOW_COPY_AND_ASSIGN(NativeEventObserver);
 };
 
 }  // namespace responsiveness

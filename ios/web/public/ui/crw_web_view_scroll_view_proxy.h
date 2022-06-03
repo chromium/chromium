@@ -22,6 +22,34 @@
 // information look at the UIScrollView documentation.
 // TODO(crbug.com/546152): rename class to CRWContentViewScrollViewProxy.
 @interface CRWWebViewScrollViewProxy : NSObject
+
+@property(nonatomic, readonly, copy) NSArray<__kindof UIView*>* subviews;
+
+// Used by the CRWWebViewProxy to set the UIScrollView to be managed.
+- (void)setScrollView:(UIScrollView*)scrollView;
+
+// Adds |observer| to subscribe to change notifications.
+- (void)addObserver:(id<CRWWebViewScrollViewProxyObserver>)observer;
+
+// Removes |observer| as a subscriber for change notifications.
+- (void)removeObserver:(id<CRWWebViewScrollViewProxyObserver>)observer;
+
+// Returns a scroll view proxy which can be accessed as UIScrollView.
+//
+// Note: This method is introduced because CRWWebViewScrollViewProxy cannot
+// simply be a subclass of UIScrollView. Its implementation relies on
+// -forwardInvocation: which only works for methods not implemented in the class
+// (including those implemented in its superclass). So -forwardInvocation:
+// cannot forward methods in UIScrollView if CRWWebViewScrollViewProxy is a
+// subclass of UIScrollView.
+- (UIScrollView*)asUIScrollView;
+
+@end
+
+// Methods/properties implemented by -forwardInvocation:. Declared in a category
+// to avoid compilation error saying they are not implemented.
+@interface CRWWebViewScrollViewProxy (ForwardedMethods)
+
 @property(nonatomic, assign) CGPoint contentOffset;
 @property(nonatomic, assign) UIEdgeInsets contentInset;
 @property(nonatomic, readonly, getter=isDecelerating) BOOL decelerating;
@@ -45,34 +73,10 @@
     UIPanGestureRecognizer* panGestureRecognizer;
 // Returns the scrollview's gesture recognizers.
 @property(weak, nonatomic, readonly) NSArray* gestureRecognizers;
-@property(nonatomic, readonly, copy) NSArray<__kindof UIView*>* subviews;
 
 - (void)addGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer;
 - (void)removeGestureRecognizer:(UIGestureRecognizer*)gestureRecognizer;
 - (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated;
-
-// Used by the CRWWebViewProxy to set the UIScrollView to be managed.
-- (void)setScrollView:(UIScrollView*)scrollView;
-
-// Adds |observer| to subscribe to change notifications.
-- (void)addObserver:(id<CRWWebViewScrollViewProxyObserver>)observer;
-
-// Removes |observer| as a subscriber for change notifications.
-- (void)removeObserver:(id<CRWWebViewScrollViewProxyObserver>)observer;
-
-// Returns a scroll view proxy which can be accessed as UIScrollView.
-//
-// Note: This method is introduced because CRWWebViewScrollViewProxy cannot
-// simply be a subclass of UIScrollView. Its implementation relies on
-// -forwardInvocation: which only works for methods not implemented in the class
-// (including those implemented in its superclass). So -forwardInvocation:
-// cannot forward methods in UIScrollView if CRWWebViewScrollViewProxy is a
-// subclass of UIScrollView.
-//
-// TODO(crbug.com/1023250): Support KVO of this scroll view.
-// TODO(crbug.com/1023250): Restore properties of the scroll view when the
-// scroll view is reset.
-- (UIScrollView*)asUIScrollView;
 
 @end
 

@@ -8,9 +8,10 @@ import("//third_party/harfbuzz-ng/harfbuzz.gni")
 
 assert(!use_system_freetype, "Not used when using system freetype.")
 
-config("freetype_config") {
+config("freetype_component_config") {
   include_dirs = [
     "include",
+    "include/freetype-custom",
     "src/include",
   ]
 
@@ -19,14 +20,13 @@ config("freetype_config") {
     # GN currently does not escape '<' and '>' when generating xml based Visual
     # Studio project files. As a result, use quotes instead of pointy brackets
     # in these defines.
-    "FT_CONFIG_CONFIG_H=\"freetype-custom-config/ftconfig.h\"",
-    "FT_CONFIG_MODULES_H=\"freetype-custom-config/ftmodule.h\"",
-    "FT_CONFIG_OPTIONS_H=\"freetype-custom-config/ftoption.h\"",
+    "FT_CONFIG_MODULES_H=\"freetype-custom/freetype/config/ftmodule.h\"",
+    "FT_CONFIG_OPTIONS_H=\"freetype-custom/freetype/config/ftoption.h\"",
   ]
 
   if (!is_android) {
     # Selects type1cid.c and type1.c modules in
-    # freetype-custom-config/ftmodule.h.
+    # freetype-custom-include/freetype/config/ftmodule.h.
     defines += [ "PDFIUM_REQUIRED_MODULES" ]
   } else {
     # Using HarfBuzz assisted autohinting has a performance impact that we do
@@ -39,6 +39,15 @@ config("freetype_config") {
   }
 }
 
+config("freetype_config") {
+  configs = [ ":freetype_component_config" ]
+
+  if (is_win && is_component_build) {
+    # Used for managing declspec(dllimport/export) visibility.
+    defines = [ "FT2_BUILD_DLL" ]
+  }
+}
+
 config("freetype-warnings") {
   cflags = []
 
@@ -46,11 +55,12 @@ config("freetype-warnings") {
     # The reduction of FreeType files to a minimum triggers -Wunused-function
     # warnings in ftbase.c
     cflags += [
-      "-Wno-unused-function",
-
       # TODO(drott): Remove once we can roll past a commit that fixes:
       # https://savannah.nongnu.org/bugs/index.php?54852
       "-Wno-deprecated-declarations",
+
+      "-Wno-shadow",
+      "-Wno-unused-function",
     ]
   }
 }
@@ -63,14 +73,12 @@ source_set("freetype_source") {
 
   # FreeType only exposes ft2build.h, all other FreeType headers are accessed by macro names.
   # gn check does not expand macros, so list only this header.
-  public = [
-    "src/include/ft2build.h",
-  ]
+  public = [ "src/include/ft2build.h" ]
 
   sources = [
-    "include/freetype-custom-config/ftconfig.h",
-    "include/freetype-custom-config/ftmodule.h",
-    "include/freetype-custom-config/ftoption.h",
+    "include/freetype-custom/freetype/config/ftmodule.h",
+    "include/freetype-custom/freetype/config/ftoption.h",
+    "include/freetype-custom/freetype/config/public-macros.h",
     "src/src/autofit/autofit.c",
     "src/src/base/ftbase.c",
     "src/src/base/ftbbox.c",
@@ -105,7 +113,7 @@ source_set("freetype_source") {
     # FT_CONFIG_CONFIG_H. The includes/freetype/config directory should not be
     # on the include path to avoid accidentally using the ftoption or ftmodule
     # from there.
-    include_dirs += [ "include/freetype-custom-config" ]
+    include_dirs += [ "src/include/freetype/config" ]
 
     # builds/unix/ftsystem.c requires the following defines to be set.
     defines += [
@@ -118,18 +126,17 @@ source_set("freetype_source") {
 
   if (!is_android) {
     sources += [
+      "src/src/base/ftcid.c",
       "src/src/cid/type1cid.c",
       "src/src/type1/type1.c",
     ]
   }
 
-  if (is_linux || is_chromecast) {
+  if (is_linux || is_chromeos || is_chromecast) {
     # Needed for content_shell on Linux and Chromecast, since fontconfig
     # requires FT_Get_BDF_Property.
     sources += [ "src/src/base/ftbdf.c" ]
-  }
 
-  if (is_linux || is_chromecast) {
     # Needed on Fedora whose libfreetype builds ftsynth.c containing
     # FT_GlyphSlot_Embolden, which we need to replace in content_shell if
     # we are linking against our own FreeType.
@@ -137,11 +144,6 @@ source_set("freetype_source") {
   }
 
   defines += [ "FT2_BUILD_LIBRARY" ]
-
-  if (is_win && is_component_build) {
-    # Used for managing declspec(dllimport/export) visibility.
-    defines += [ "FT2_BUILD_DLL" ]
-  }
 
   if (use_system_harfbuzz) {
     configs += [ "//third_party/harfbuzz-ng:harfbuzz_from_pkgconfig" ]

@@ -1,6 +1,9 @@
 <style include="animations action-link-style splash-pages-shared-css">
   onboarding-background {
     --animation-delay: 275ms;
+    flex: 1;
+    transform: scale(0.5);
+    width: 100%;
   }
 
   h1 {
@@ -13,14 +16,17 @@
   }
 </style>
 <div id="container">
-  <onboarding-background class="fade-in"></onboarding-background>
-  <h2 class="fade-in">$i18n{landingDescription}</h2>
-  <h1 class="fade-in" tabindex="-1">$i18n{landingTitle}</h1>
-  <cr-button class="action-button fade-in" on-click="onNewUserClick_">
-    $i18n{landingNewUser}
-  </cr-button>
-  <button class="action-link fade-in" on-click="onExistingUserClick_">
-    <span hidden$="[[!signinAllowed_]]">$i18n{landingExistingUser}</span>
-    <span hidden$="[[signinAllowed_]]">$i18n{skip}</span>
-  </button>
+  <onboarding-background id="background" class="fade-in">
+  </onboarding-background>
+  <div id="text">
+    <h2 class="fade-in">$i18n{landingDescription}</h2>
+    <h1 class="fade-in" tabindex="-1">$i18n{landingTitle}</h1>
+    <cr-button class="action-button fade-in" on-click="onNewUserClick_">
+      $i18n{landingNewUser}
+    </cr-button>
+    <button class="action-link fade-in" on-click="onExistingUserClick_">
+      <span hidden$="[[!signinAllowed_]]">$i18n{landingExistingUser}</span>
+      <span hidden$="[[signinAllowed_]]">$i18n{skip}</span>
+    </button>
+  </div>
 </div>

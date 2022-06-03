@@ -21,6 +21,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_SCRIPT_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_SCRIPT_ELEMENT_H_
 
+#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/dom/create_element_flags.h"
 #include "third_party/blink/renderer/core/script/script_element_base.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -37,7 +38,6 @@ class SVGScriptElement final : public SVGElement,
                                public SVGURIReference,
                                public ScriptElementBase {
   DEFINE_WRAPPERTYPEINFO();
-  USING_GARBAGE_COLLECTED_MIXIN(SVGScriptElement);
 
  public:
   SVGScriptElement(Document&, const CreateElementFlags);
@@ -52,7 +52,10 @@ class SVGScriptElement final : public SVGElement,
 
   const AttrNameToTrustedType& GetCheckedAttributeTypes() const override;
 
-  void Trace(blink::Visitor*) override;
+  V8HTMLOrSVGScriptElement* AsV8HTMLOrSVGScriptElement() override;
+  DOMNodeId GetDOMNodeId() override;
+
+  void Trace(Visitor*) const override;
 
  private:
   void ParseAttribute(const AttributeModificationParams&) override;
@@ -61,7 +64,7 @@ class SVGScriptElement final : public SVGElement,
   void ChildrenChanged(const ChildrenChange&) override;
   void DidMoveToNewDocument(Document& old_document) override;
 
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   bool IsURLAttribute(const Attribute&) const override;
   bool IsStructurallyExternal() const override { return HasSourceAttribute(); }
   void FinishParsingChildren() override;
@@ -95,10 +98,11 @@ class SVGScriptElement final : public SVGElement,
                                const WTF::OrdinalNumber&,
                                const String& script_content) override;
   Document& GetDocument() const override;
+  ExecutionContext* GetExecutionContext() const override;
   void DispatchLoadEvent() override;
   void DispatchErrorEvent() override;
-  void SetScriptElementForBinding(
-      HTMLScriptElementOrSVGScriptElement&) override;
+
+  Type GetScriptElementType() override;
 
   Element& CloneWithoutAttributesAndChildren(Document&) const override;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override {

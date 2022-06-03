@@ -6,10 +6,11 @@
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_DEVICE_ORIENTATION_DEVICE_SENSOR_EVENT_PUMP_H_
 
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "mojo/public/cpp/bindings/remote.h"
 #include "services/device/public/mojom/sensor_provider.mojom-blink.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
 #include "third_party/blink/renderer/platform/timer.h"
 
 namespace blink {
@@ -30,9 +31,6 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
   // RUNNING -> STOPPED
   enum class PumpState { STOPPED, RUNNING, PENDING_START };
 
-  virtual void Start(LocalFrame* frame);
-  virtual void Stop();
-
   void HandleSensorProviderError();
 
   void SetSensorProviderForTesting(
@@ -40,21 +38,26 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
           sensor_provider);
   PumpState GetPumpStateForTesting();
 
+  void Trace(Visitor* visitor) const override;
+
  protected:
   friend class DeviceSensorEntry;
 
-  explicit DeviceSensorEventPump(
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+  explicit DeviceSensorEventPump(LocalFrame&);
   virtual ~DeviceSensorEventPump();
 
-  // This method is expected to send an IPC to the browser process to let it
-  // know that it should start observing.
-  // It is expected for subclasses to override it.
-  virtual void SendStartMessage(LocalFrame*) = 0;
+  // Manage PumpState and call SendStartMessage.
+  void Start(LocalFrame& frame);
 
   // This method is expected to send an IPC to the browser process to let it
   // know that it should start observing.
-  // It is expected for subclasses to override it.
+  virtual void SendStartMessage(LocalFrame&) = 0;
+
+  // Manage PumpState and call SendStopMessage.
+  void Stop();
+
+  // This method is expected to send an IPC to the browser process to let it
+  // know that it should start observing.
   virtual void SendStopMessage() = 0;
 
   // Even though the TimerBase* parameter is not used, it is required by
@@ -63,13 +66,15 @@ class MODULES_EXPORT DeviceSensorEventPump : public GarbageCollectedMixin {
 
   virtual void DidStartIfPossible();
 
-  mojo::Remote<device::mojom::blink::SensorProvider> sensor_provider_;
+  HeapMojoRemote<device::mojom::blink::SensorProvider> sensor_provider_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
  private:
   virtual bool SensorsReadyOrErrored() const = 0;
 
   PumpState state_;
-  TaskRunnerTimer<DeviceSensorEventPump> timer_;
+  HeapTaskRunnerTimer<DeviceSensorEventPump> timer_;
 };
 
 }  // namespace blink

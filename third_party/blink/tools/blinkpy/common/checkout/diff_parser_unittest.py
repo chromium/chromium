@@ -34,7 +34,6 @@ from blinkpy.common.checkout.diff_test_data import DIFF_TEST_DATA
 
 
 class DiffParserTest(unittest.TestCase):
-
     def test_diff_parser(self, parser=None):
         if not parser:
             parser = DiffParser(DIFF_TEST_DATA.splitlines())
@@ -48,11 +47,13 @@ class DiffParserTest(unittest.TestCase):
         self.assertEqual((47, 47), diff.lines[0][0:2])
         self.assertEqual('', diff.lines[0][2])
         self.assertEqual((48, 48), diff.lines[1][0:2])
-        self.assertEqual('    unsigned align : 3; // EBoxAlignment', diff.lines[1][2])
+        self.assertEqual('    unsigned align : 3; // EBoxAlignment',
+                         diff.lines[1][2])
 
         # The deleted line.
         self.assertEqual((50, 0), diff.lines[3][0:2])
-        self.assertEqual('    unsigned orient: 1; // EBoxOrient', diff.lines[3][2])
+        self.assertEqual('    unsigned orient: 1; // EBoxOrient',
+                         diff.lines[3][2])
 
         # The first file looks OK. Let's check the next, more complicated file.
         self.assertIn('WebCore/style/StyleRareInheritedData.cpp', parser.files)
@@ -78,7 +79,8 @@ class DiffParserTest(unittest.TestCase):
         self.assertEqual((87, 90), diff.lines[22][0:2])
 
         # Check if a newly added file is correctly handled.
-        diff = parser.files['web_tests/platform/mac/fast/flexbox/box-orient-button-expected.checksum']
+        diff = parser.files[
+            'web_tests/platform/mac/fast/flexbox/box-orient-button-expected.checksum']
         self.assertEqual(1, len(diff.lines))
         self.assertEqual((0, 1), diff.lines[0][0:2])
 
@@ -86,11 +88,16 @@ class DiffParserTest(unittest.TestCase):
         # This repeats test_diff_parser but with different versions
         # of DIFF_TEST_DATA that use other prefixes instead of a/b.
         prefixes = (
-            ('i', 'w'),  # git-diff (compares the (i)ndex and the (w)ork tree)
-            ('c', 'w'),  # git-diff HEAD (compares a (c)ommit and the (w)ork tree)
-            ('c', 'i'),  # git diff --cached (compares a (c)ommit and the (i)ndex)
-            ('o', 'w'),  # git-diff HEAD:file1 file2 (compares an (o)bject and a (w)ork tree entity)
-            ('1', '2'),  # git diff --no-index a b (compares two non-git things (1) and (2))
+            # git-diff (compares the (i)ndex and the (w)ork tree)
+            ('i', 'w'),
+            # git-diff HEAD (compares a (c)ommit and the (w)ork tree)
+            ('c', 'w'),
+            # git diff --cached (compares a (c)ommit and the (i)ndex)
+            ('c', 'i'),
+            # git-diff HEAD:file1 file2 (compares an (o)bject and a (w)ork tree entity)
+            ('o', 'w'),
+            # git diff --no-index a b (compares two non-git things (1) and (2))
+            ('1', '2'),
         )
         for a_replacement, b_replacement in prefixes:
             patch = self._patch(a_replacement, b_replacement)

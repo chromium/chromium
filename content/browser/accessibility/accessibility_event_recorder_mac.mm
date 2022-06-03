@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder.h"
+#include "content/browser/accessibility/accessibility_event_recorder_mac.h"
 
 #import <Cocoa/Cocoa.h>
 
+#include <algorithm>
 #include <string>
 
 #include "base/logging.h"
@@ -13,105 +14,78 @@
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "content/browser/accessibility/accessibility_tools_utils_mac.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/ax_private_webkit_constants_mac.h"
 
 namespace content {
-
-// Implementation of AccessibilityEventRecorder that uses AXObserver to
-// watch for NSAccessibility events.
-class AccessibilityEventRecorderMac : public AccessibilityEventRecorder {
- public:
-  AccessibilityEventRecorderMac(BrowserAccessibilityManager* manager,
-                                base::ProcessId pid);
-  ~AccessibilityEventRecorderMac() override;
-
-  // Callback executed every time we receive an event notification.
-  void EventReceived(AXUIElementRef element, CFStringRef notification);
-
- private:
-  // Add one notification to the list of notifications monitored by our
-  // observer.
-  void AddNotification(NSString* notification);
-
-  // Convenience function to get the value of an AX attribute from
-  // an AXUIElementRef as a string.
-  std::string GetAXAttributeValue(AXUIElementRef element,
-                                  NSString* attribute_name);
-
-  // The AXUIElement for the Chrome application.
-  base::ScopedCFTypeRef<AXUIElementRef> application_;
-
-  // The AXObserver we use to monitor AX notifications.
-  base::ScopedCFTypeRef<AXObserverRef> observer_ref_;
-  CFRunLoopSourceRef observer_run_loop_source_;
-
-  DISALLOW_COPY_AND_ASSIGN(AccessibilityEventRecorderMac);
-};
 
 // Callback function registered using AXObserverCreate.
 static void EventReceivedThunk(AXObserverRef observer_ref,
                                AXUIElementRef element,
                                CFStringRef notification,
+                               CFDictionaryRef user_info,
                                void* refcon) {
   AccessibilityEventRecorderMac* this_ptr =
       static_cast<AccessibilityEventRecorderMac*>(refcon);
-  this_ptr->EventReceived(element, notification);
-}
-
-// static
-std::unique_ptr<AccessibilityEventRecorder> AccessibilityEventRecorder::Create(
-    BrowserAccessibilityManager* manager,
-    base::ProcessId pid,
-    const base::StringPiece& application_name_match_pattern) {
-  if (!application_name_match_pattern.empty()) {
-    LOG(ERROR) << "Recording accessibility events from an application name "
-                  "match pattern not supported on this platform yet.";
-    NOTREACHED();
-  }
-
-  return std::make_unique<AccessibilityEventRecorderMac>(manager, pid);
-}
-
-std::vector<AccessibilityEventRecorder::TestPass>
-AccessibilityEventRecorder::GetTestPasses() {
-  // Both the Blink pass and native pass use the same recorder
-  return {
-      {"blink", &AccessibilityEventRecorder::Create},
-      {"mac", &AccessibilityEventRecorder::Create},
-  };
+  this_ptr->EventReceived(element, notification, user_info);
 }
 
 AccessibilityEventRecorderMac::AccessibilityEventRecorderMac(
     BrowserAccessibilityManager* manager,
-    base::ProcessId pid)
-    : AccessibilityEventRecorder(manager), observer_run_loop_source_(NULL) {
-  if (kAXErrorSuccess != AXObserverCreate(pid, EventReceivedThunk,
-                                          observer_ref_.InitializeInto())) {
+    base::ProcessId pid,
+    const AXTreeSelector& selector)
+    : AccessibilityEventRecorder(manager), observer_run_loop_source_(nullptr) {
+  AXUIElementRef node = nil;
+  if (pid) {
+    node = AXUIElementCreateApplication(pid);
+    if (!node) {
+      LOG(FATAL) << "Failed to get AXUIElement for pid " << pid;
+    }
+  } else {
+    std::tie(node, pid) = a11y::FindAXUIElement(selector);
+    if (!node) {
+      LOG(FATAL) << "Failed to get AXUIElement for selector";
+    }
+  }
+
+  if (kAXErrorSuccess !=
+      AXObserverCreateWithInfoCallback(pid, EventReceivedThunk,
+                                       observer_ref_.InitializeInto())) {
     LOG(FATAL) << "Failed to create AXObserverRef";
   }
 
   // Get an AXUIElement for the Chrome application.
-  application_.reset(AXUIElementCreateApplication(pid));
+  application_.reset(node);
   if (!application_.get())
     LOG(FATAL) << "Failed to create AXUIElement for application.";
 
   // Add the notifications we care about to the observer.
-  AddNotification(@"AXAutocorrectionOccurred");
-  AddNotification(@"AXExpandedChanged");
-  AddNotification(@"AXInvalidStatusChanged");
-  AddNotification(@"AXLiveRegionChanged");
-  AddNotification(@"AXLiveRegionCreated");
-  AddNotification(@"AXLoadComplete");
-  AddNotification(@"AXMenuItemSelected");
-  AddNotification(@"AXRowCollapsed");
-  AddNotification(@"AXRowExpanded");
-  AddNotification(NSAccessibilityFocusedUIElementChangedNotification);
-  AddNotification(NSAccessibilityRowCollapsedNotification);
-  AddNotification(NSAccessibilityRowCountChangedNotification);
-  AddNotification(NSAccessibilitySelectedChildrenChangedNotification);
-  AddNotification(NSAccessibilitySelectedRowsChangedNotification);
-  AddNotification(NSAccessibilitySelectedTextChangedNotification);
-  AddNotification(NSAccessibilityValueChangedNotification);
+  static NSArray* notifications = [@[
+    @"AXAutocorrectionOccurred",
+    @"AXExpandedChanged",
+    @"AXInvalidStatusChanged",
+    @"AXLiveRegionChanged",
+    @"AXLiveRegionCreated",
+    @"AXLoadComplete",
+    @"AXMenuItemSelected",
+    @"AXRowCollapsed",
+    @"AXRowExpanded",
+    (NSString*)kAXMenuClosedNotification,
+    (NSString*)kAXMenuOpenedNotification,
+    NSAccessibilityFocusedUIElementChangedNotification,
+    NSAccessibilityRowCollapsedNotification,
+    NSAccessibilityRowCountChangedNotification,
+    NSAccessibilitySelectedChildrenChangedNotification,
+    NSAccessibilitySelectedRowsChangedNotification,
+    NSAccessibilitySelectedTextChangedNotification,
+    NSAccessibilityTitleChangedNotification,
+    NSAccessibilityValueChangedNotification,
+  ] retain];
+
+  for (NSString* notification : notifications) {
+    AddNotification(notification);
+  }
 
   // Add the observer to the current message loop.
   observer_run_loop_source_ = AXObserverGetRunLoopSource(observer_ref_.get());
@@ -147,7 +121,8 @@ std::string AccessibilityEventRecorderMac::GetAXAttributeValue(
 }
 
 void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
-                                                  CFStringRef notification) {
+                                                  CFStringRef notification,
+                                                  CFDictionaryRef user_info) {
   std::string notification_str = base::SysCFStringRefToUTF8(notification);
   std::string role = GetAXAttributeValue(element, NSAccessibilityRoleAttribute);
   if (role.empty())
@@ -170,7 +145,49 @@ void AccessibilityEventRecorderMac::EventReceived(AXUIElementRef element,
   if (!value.empty())
     log += base::StringPrintf(" AXValue=\"%s\"", value.c_str());
 
+  if (notification_str ==
+      base::SysNSStringToUTF8(NSAccessibilitySelectedTextChangedNotification))
+    log += " " + SerializeTextSelectionChangedProperties(user_info);
+
   OnEvent(log);
+}
+
+std::string
+AccessibilityEventRecorderMac::SerializeTextSelectionChangedProperties(
+    CFDictionaryRef user_info) {
+  std::vector<std::string> serialized_info;
+  CFDictionaryApplyFunction(
+      user_info,
+      [](const void* raw_key, const void* raw_value, void* context) {
+        auto* key = static_cast<NSString*>(raw_key);
+        auto* value = static_cast<NSObject*>(raw_value);
+        auto* serialized_info = static_cast<std::vector<std::string>*>(context);
+        std::string value_string;
+        if ([key isEqual:ui::NSAccessibilityTextStateChangeTypeKey]) {
+          value_string = ToString(static_cast<ui::AXTextStateChangeType>(
+              [static_cast<NSNumber*>(value) intValue]));
+        } else if ([key isEqual:ui::NSAccessibilityTextSelectionDirection]) {
+          value_string = ToString(static_cast<ui::AXTextSelectionDirection>(
+              [static_cast<NSNumber*>(value) intValue]));
+        } else if ([key isEqual:ui::NSAccessibilityTextSelectionGranularity]) {
+          value_string = ToString(static_cast<ui::AXTextSelectionGranularity>(
+              [static_cast<NSNumber*>(value) intValue]));
+        } else if ([key isEqual:ui::NSAccessibilityTextEditType]) {
+          value_string = ToString(static_cast<ui::AXTextEditType>(
+              [static_cast<NSNumber*>(value) intValue]));
+        } else {
+          return;
+        }
+        serialized_info->push_back(base::SysNSStringToUTF8(key) + "=" +
+                                   value_string);
+      },
+      &serialized_info);
+
+  // Always sort the info so that we don't depend on CFDictionary for
+  // consistent output ordering.
+  std::sort(serialized_info.begin(), serialized_info.end());
+
+  return base::JoinString(serialized_info, " ");
 }
 
 }  // namespace content

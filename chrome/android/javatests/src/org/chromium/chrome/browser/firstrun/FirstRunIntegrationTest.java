@@ -4,6 +4,10 @@
 
 package org.chromium.chrome.browser.firstrun;
 
+import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+
+import android.accounts.Account;
 import android.app.Activity;
 import android.app.Instrumentation;
 import android.app.Instrumentation.ActivityMonitor;
@@ -12,149 +16,948 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.test.InstrumentationRegistry;
-import android.support.test.filters.MediumTest;
-import android.support.test.filters.SmallTest;
+import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 
+import androidx.test.filters.MediumTest;
+import androidx.test.filters.SmallTest;
+
+import org.hamcrest.Matcher;
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
+import org.chromium.base.Callback;
+import org.chromium.base.CollectionUtil;
+import org.chromium.base.Promise;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
+import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.ScalableTimeout;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
+import org.chromium.chrome.browser.DeferredStartupHandler;
+import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.customtabs.CustomTabsTestUtils;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
-import org.chromium.chrome.browser.locale.DefaultSearchEngineDialogHelperUtils;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
+import org.chromium.chrome.browser.firstrun.FirstRunActivityTestObserver.ScopedObserverData;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.locale.LocaleManager.SearchEnginePromoType;
+import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.search_engines.DefaultSearchEngineDialogHelperUtils;
+import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
+import org.chromium.chrome.browser.signin.SigninFirstRunFragment;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.MultiActivityTestRule;
+import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.components.policy.AbstractAppRestrictionsProvider;
 import org.chromium.components.search_engines.TemplateUrl;
+import org.chromium.components.signin.AccountManagerFacade;
+import org.chromium.components.signin.AccountManagerFacadeProvider;
+import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
-import org.chromium.content_public.browser.test.util.Criteria;
-import org.chromium.content_public.browser.test.util.CriteriaHelper;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.content_public.common.ContentUrlConstants;
 
+import java.util.BitSet;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Integration test suite for the first run experience.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
+@CommandLineFlags.Add({ChromeSwitches.FORCE_DISABLE_SIGNIN_FRE})
 public class FirstRunIntegrationTest {
+    private static final String TEST_URL = "https://test.com";
+    private static final String FOO_URL = "https://foo.com";
+    private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
+    private static final String TEST_ENROLLMENT_TOKEN = "enrollment-token";
+    private static final String FRE_PROGRESS_MAIN_INTENT_HISTOGRAM =
+            "MobileFre.Progress.MainIntent";
 
     @Rule
     public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
 
+    @Rule
+    public TestRule mProcessor = new Features.JUnitProcessor();
+
+    @Rule
+    public JniMocker mJniMocker = new JniMocker();
+
+    @Mock
+    public FirstRunAppRestrictionInfo mMockAppRestrictionInfo;
+    @Mock
+    public EnterpriseInfo mEnterpriseInfo;
+    @Mock
+    private AccountManagerFacade mAccountManagerFacade;
+
+    private TestFirstRunFlowSequencerDelegate mDelegate;
+
+    private Promise<List<Account>> mAccountsPromise;
+
+    private final Set<Class> mSupportedActivities =
+            CollectionUtil.newHashSet(ChromeLauncherActivity.class, FirstRunActivity.class,
+                    ChromeTabbedActivity.class, CustomTabActivity.class);
+    private final Map<Class, ActivityMonitor> mMonitorMap = new HashMap<>();
+    private Instrumentation mInstrumentation;
+    private Context mContext;
+
     private FirstRunActivityTestObserver mTestObserver = new FirstRunActivityTestObserver();
-    private Activity mActivity;
+    private Activity mLastActivity;
 
     @Before
     public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        FirstRunStatus.setFirstRunSkippedByPolicy(false);
+        FirstRunUtils.setDisableDelayOnExitFreForTest(true);
         FirstRunActivity.setObserverForTest(mTestObserver);
+        ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(true);
+
+        mInstrumentation = InstrumentationRegistry.getInstrumentation();
+        mContext = mInstrumentation.getTargetContext();
+        for (Class clazz : mSupportedActivities) {
+            ActivityMonitor monitor = new ActivityMonitor(clazz.getName(), null, false);
+            mMonitorMap.put(clazz, monitor);
+            mInstrumentation.addMonitor(monitor);
+        }
     }
 
     @After
     public void tearDown() {
-        if (mActivity != null) mActivity.finish();
+        // Tear down the last activity first, otherwise the other cleanup, in particular skipped by
+        // policy pref, might trigger an assert in activity initialization because of the statics
+        // we reset below. Run it on UI so there are no threading issues.
+        if (mLastActivity != null) {
+            TestThreadUtils.runOnUiThreadBlocking(() -> mLastActivity.finish());
+        }
+
+        FirstRunStatus.setFirstRunSkippedByPolicy(false);
+        FirstRunUtils.setDisableDelayOnExitFreForTest(false);
+        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(null);
+        ToSAndUMAFirstRunFragment.setShowUmaCheckBoxForTesting(false);
+        EnterpriseInfo.setInstanceForTest(null);
+        AccountManagerFacadeProvider.resetInstanceForTests();
+        FirstRunFlowSequencer.setDelegateForTesting(null);
+    }
+
+    private ActivityMonitor getMonitor(Class activityClass) {
+        Assert.assertTrue(mSupportedActivities.contains(activityClass));
+        return mMonitorMap.get(activityClass);
+    }
+
+    private FirstRunActivity launchFirstRunActivity() {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(TEST_URL));
+        intent.setPackage(mContext.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+
+        // Because the AsyncInitializationActivity notices that the FRE hasn't been run yet, it
+        // redirects to it.  Once the user closes the FRE, the user should be kicked back into the
+        // startup flow where they were interrupted.
+        return waitForActivity(FirstRunActivity.class);
+    }
+
+    private <T extends Activity> T waitForActivity(Class<T> activityClass) {
+        Assert.assertTrue(mSupportedActivities.contains(activityClass));
+        ActivityMonitor monitor = getMonitor(activityClass);
+        mLastActivity = mInstrumentation.waitForMonitorWithTimeout(monitor, ACTIVITY_WAIT_LONG_MS);
+        Assert.assertNotNull("Could not find " + activityClass.getName(), mLastActivity);
+        return (T) mLastActivity;
+    }
+
+    private void setHasAppRestrictionForMock(boolean hasAppRestriction) {
+        Mockito.doAnswer(invocation -> {
+                   Callback<Boolean> callback = invocation.getArgument(0);
+                   callback.onResult(hasAppRestriction);
+                   return null;
+               })
+                .when(mMockAppRestrictionInfo)
+                .getHasAppRestriction(any());
+        FirstRunAppRestrictionInfo.setInitializedInstanceForTest(mMockAppRestrictionInfo);
+    }
+
+    private void setDeviceOwnedForMock() {
+        Mockito.doAnswer(invocation -> {
+                   Callback<EnterpriseInfo.OwnedState> callback = invocation.getArgument(0);
+                   callback.onResult(new EnterpriseInfo.OwnedState(true, false));
+                   return null;
+               })
+                .when(mEnterpriseInfo)
+                .getDeviceEnterpriseInfo(any());
+        EnterpriseInfo.setInstanceForTest(mEnterpriseInfo);
+    }
+
+    private void skipTosDialogViaPolicy() {
+        setHasAppRestrictionForMock(true);
+        Bundle restrictions = new Bundle();
+        restrictions.putInt("TosDialogBehavior", TosDialogBehavior.SKIP);
+        AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
+        setDeviceOwnedForMock();
+    }
+
+    private void enableCloudManagementViaPolicy() {
+        setHasAppRestrictionForMock(true);
+        Bundle restrictions = new Bundle();
+        restrictions.putString("CloudManagementEnrollmentToken", TEST_ENROLLMENT_TOKEN);
+        AbstractAppRestrictionsProvider.setTestRestrictions(restrictions);
+    }
+
+    private void launchCustomTabs(String url) {
+        mContext.startActivity(CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, url));
+    }
+
+    private void launchViewIntent(String url) {
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+        intent.setPackage(mContext.getPackageName());
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        mContext.startActivity(intent);
+    }
+
+    private void clickThroughFirstRun(
+            FirstRunActivity firstRunActivity, FirstRunPagesTestCase testCase) throws Exception {
+        // Start FRE.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity);
+        navigationHelper.ensurePagesCreationSucceeded().acceptTermsOfService();
+
+        if (testCase.showDataSaverPromo()) {
+            navigationHelper.acknowledgeDataSaverEnabled();
+        } else {
+            navigationHelper.ensureDataSaverPromoNotCurrentPage();
+        }
+
+        if (testCase.searchPromoType() == SearchEnginePromoType.DONT_SHOW) {
+            navigationHelper.ensureDefaultSearchEnginePromoNotCurrentPage();
+        } else {
+            navigationHelper.selectDefaultSearchEngine();
+        }
+
+        if (testCase.showSigninPromo()) {
+            navigationHelper.skipSigninPromo();
+        } else {
+            navigationHelper.ensureSigninPromoNotCurrentPage();
+        }
+    }
+
+    private void verifyUrlEquals(String expected, Uri actual) {
+        Assert.assertEquals("Expected " + expected + " did not match actual " + actual,
+                Uri.parse(expected), actual);
+    }
+
+    /**
+     * When launching a second Chrome, the new FRE should replace the old FRE. In order to know when
+     * the second FirstRunActivity is ready, use object inequality with old one.
+     * @param previousFreActivity The previous activity.
+     */
+    private FirstRunActivity waitForDifferentFirstRunActivity(
+            FirstRunActivity previousFreActivity) {
+        CriteriaHelper.pollInstrumentationThread(
+                ()
+                        -> {
+                    for (Activity runningActivity : ApplicationStatus.getRunningActivities()) {
+                        @ActivityState
+                        int state = ApplicationStatus.getStateForActivity(runningActivity);
+                        if (runningActivity.getClass() == FirstRunActivity.class
+                                && runningActivity != previousFreActivity
+                                && (state == ActivityState.STARTED
+                                        || state == ActivityState.RESUMED)) {
+                            mLastActivity = runningActivity;
+                            return true;
+                        }
+                    }
+                    return false;
+                },
+                "Did not find a different FirstRunActivity from " + previousFreActivity,
+                /*maxTimeoutMs*/ ACTIVITY_WAIT_LONG_MS,
+                /*checkIntervalMs*/ CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+
+        CriteriaHelper.pollInstrumentationThread(()
+                                                         -> previousFreActivity.isFinishing(),
+                "The original FirstRunActivity should be finished, instead "
+                        + ApplicationStatus.getStateForActivity(previousFreActivity));
+        return (FirstRunActivity) mLastActivity;
+    }
+
+    private <T extends ChromeActivity> Uri waitAndGetUriFromChromeActivity(Class<T> activityClass)
+            throws Exception {
+        ChromeActivity chromeActivity = waitForActivity(activityClass);
+        return chromeActivity.getIntent().getData();
+    }
+
+    private ScopedObserverData getObserverData(FirstRunActivity freActivity) {
+        return mTestObserver.getScopedObserverData(freActivity);
+    }
+
+    private void blockOnFlowIsKnown() {
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            Assert.assertNull("mAccountsPromise is already initialized!", mAccountsPromise);
+            mAccountsPromise = new Promise<>();
+        });
+        Mockito.when(mAccountManagerFacade.getAccounts()).thenReturn(mAccountsPromise);
+        AccountManagerFacadeProvider.setInstanceForTests(mAccountManagerFacade);
+    }
+
+    private void unblockOnFlowIsKnown() {
+        Mockito.verify(mAccountManagerFacade).getAccounts();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> mAccountsPromise.fulfill(Collections.emptyList()));
     }
 
     @Test
     @SmallTest
     public void testHelpPageSkipsFirstRun() {
-        final ActivityMonitor customTabActivityMonitor =
-                new ActivityMonitor(CustomTabActivity.class.getName(), null, false);
-        final ActivityMonitor freMonitor =
-                new ActivityMonitor(FirstRunActivity.class.getName(), null, false);
-
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        instrumentation.addMonitor(customTabActivityMonitor);
-        instrumentation.addMonitor(freMonitor);
-
         // Fire an Intent to load a generic URL.
-        final Context context = instrumentation.getTargetContext();
-        CustomTabActivity.showInfoPage(context, "http://google.com");
+        CustomTabActivity.showInfoPage(mContext, TEST_URL);
 
         // The original activity should be started because it's a "help page".
-        final Activity original = instrumentation.waitForMonitorWithTimeout(
-                customTabActivityMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull(original);
-        Assert.assertFalse(original.isFinishing());
+        waitForActivity(CustomTabActivity.class);
+        Assert.assertFalse(mLastActivity.isFinishing());
 
         // First run should be skipped for this Activity.
-        Assert.assertEquals(0, freMonitor.getHits());
+        Assert.assertEquals(0, getMonitor(FirstRunActivity.class).getHits());
     }
 
     @Test
     @SmallTest
     public void testAbortFirstRun() throws Exception {
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        final ActivityMonitor launcherActivityMonitor =
-                new ActivityMonitor(ChromeLauncherActivity.class.getName(), null, false);
-        instrumentation.addMonitor(launcherActivityMonitor);
-        final ActivityMonitor freMonitor =
-                new ActivityMonitor(FirstRunActivity.class.getName(), null, false);
-        instrumentation.addMonitor(freMonitor);
-
-        final Context context = instrumentation.getTargetContext();
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://test.com"));
-        intent.setPackage(context.getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
-
-        final Activity chromeLauncherActivity = instrumentation.waitForMonitorWithTimeout(
-                launcherActivityMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull(chromeLauncherActivity);
+        launchViewIntent(TEST_URL);
+        Activity chromeLauncherActivity = waitForActivity(ChromeLauncherActivity.class);
 
         // Because the ChromeLauncherActivity notices that the FRE hasn't been run yet, it
         // redirects to it.
-        mActivity = instrumentation.waitForMonitorWithTimeout(
-                freMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull(mActivity);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
 
         // Once the user closes the FRE, the user should be kicked back into the
         // startup flow where they were interrupted.
-        Assert.assertEquals(0, mTestObserver.abortFirstRunExperienceCallback.getCallCount());
-        mActivity.onBackPressed();
-        mTestObserver.abortFirstRunExperienceCallback.waitForCallback(
+        ScopedObserverData scopedObserverData = getObserverData(firstRunActivity);
+        Assert.assertEquals(0, scopedObserverData.abortFirstRunExperienceCallback.getCallCount());
+        mLastActivity.onBackPressed();
+        scopedObserverData.abortFirstRunExperienceCallback.waitForCallback(
                 "FirstRunActivity didn't abort", 0);
 
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return mActivity.isFinishing();
-            }
-        });
+        CriteriaHelper.pollInstrumentationThread(() -> mLastActivity.isFinishing());
 
         // ChromeLauncherActivity should finish if FRE was aborted.
-        CriteriaHelper.pollInstrumentationThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return chromeLauncherActivity.isFinishing();
+        CriteriaHelper.pollInstrumentationThread(() -> chromeLauncherActivity.isFinishing());
+    }
+
+    // TODO(http://crbug.com/1240516): Add test cases for the new Welcome screen that includes the
+    // Sign-in promo once the sign-in components can be disabled by policy.
+
+    // TODO(http://crbug.com/1254470): Add test cases for ToS page disabled by policy after the user
+    // accepted ToS and aborted first run.
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_AbsenceOfPromos() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_DataSaverPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withDataSaverPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_DataSaverPromo_SearchPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withDataSaverPromo().withSearchPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_DataSaverPromo_SearchPromo_SigninPromo()
+            throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase()
+                                     .withDataSaverPromo()
+                                     .withSearchPromo()
+                                     .withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_DataSaverPromo_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withDataSaverPromo().withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_SearchPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_SearchPromo_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withSearchPromo().withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_NoCctPolicy_OnBackPressed() throws Exception {
+        initializePreferences(new FirstRunPagesTestCase()
+                                      .withDataSaverPromo()
+                                      .withSearchPromo()
+                                      .withSigninPromo());
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one, go back until initial page, and
+        // then complete first run.
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_AbsenceOfPromos() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_DataSaverPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withDataSaverPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_DataSaverPromo_SearchPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase()
+                                     .withCctTosDisabled()
+                                     .withDataSaverPromo()
+                                     .withSearchPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_DataSaverPromo_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase()
+                                     .withCctTosDisabled()
+                                     .withDataSaverPromo()
+                                     .withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_DataSaverPromo_SearchPromo_SigninPromo()
+            throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase()
+                                     .withCctTosDisabled()
+                                     .withDataSaverPromo()
+                                     .withSearchPromo()
+                                     .withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_SearchPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSearchPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_SearchPromo_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase()
+                                     .withCctTosDisabled()
+                                     .withSearchPromo()
+                                     .withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_SigninPromo() throws Exception {
+        runFirstRunPagesTest(new FirstRunPagesTestCase().withCctTosDisabled().withSigninPromo());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_WithCctPolicy_OnBackPressed() throws Exception {
+        initializePreferences(new FirstRunPagesTestCase()
+                                      .withCctTosDisabled()
+                                      .withDataSaverPromo()
+                                      .withSearchPromo()
+                                      .withSigninPromo());
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one, go back until initial page, and
+        // then complete first run.
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    private void runFirstRunPagesTest(FirstRunPagesTestCase testCase) throws Exception {
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+        clickThroughFirstRun(firstRunActivity, testCase);
+
+        // FRE should be completed now, which will kick the user back into the interrupted flow.
+        // In this case, the user gets sent to the ChromeTabbedActivity after a View Intent is
+        // processed by ChromeLauncherActivity.
+        getObserverData(firstRunActivity)
+                .updateCachedEngineCallback.waitForCallback(
+                        "Failed to alert search widgets that an update is necessary", 0);
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    private void initializePreferences(FirstRunPagesTestCase testCase) throws Exception {
+        if (testCase.cctTosDisabled()) skipTosDialogViaPolicy();
+
+        mDelegate = new TestFirstRunFlowSequencerDelegate(testCase);
+        FirstRunFlowSequencer.setDelegateForTesting(mDelegate);
+
+        setUpLocaleManagerDelegate(testCase.searchPromoType());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_ProgressHistogramRecordedOnlyOnce() throws Exception {
+        initializePreferences(new FirstRunPagesTestCase()
+                                      .withDataSaverPromo()
+                                      .withSearchPromo()
+                                      .withSigninPromo());
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one, go back until initial page, and
+        // then complete first run.
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+
+        checkRecordedProgressSteps(BitSet.valueOf(new long[] {
+                MobileFreProgress.STARTED,
+                MobileFreProgress.WELCOME_SHOWN,
+                MobileFreProgress.DATA_SAVER_SHOWN,
+                MobileFreProgress.SYNC_CONSENT_SHOWN,
+                MobileFreProgress.SYNC_CONSENT_ACCEPTED,
+                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
+        }));
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunPages_ProgressHistogramRecording_NoPromos() throws Exception {
+        initializePreferences(new FirstRunPagesTestCase());
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        new FirstRunNavigationHelper(firstRunActivity)
+                .ensurePagesCreationSucceeded()
+                .acceptTermsOfService();
+
+        waitForActivity(ChromeTabbedActivity.class);
+
+        checkRecordedProgressSteps(BitSet.valueOf(new long[] {
+                MobileFreProgress.STARTED,
+                MobileFreProgress.WELCOME_SHOWN,
+                MobileFreProgress.SYNC_CONSENT_DISMISSED,
+        }));
+    }
+
+    private void checkRecordedProgressSteps(BitSet bucketsRecorded) {
+        for (int bucket = MobileFreProgress.STARTED; bucket < MobileFreProgress.MAX; ++bucket) {
+            int recordedValue = RecordHistogram.getHistogramValueCountForTesting(
+                    FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket);
+            if (bucketsRecorded.get(bucket)) {
+                Assert.assertEquals(
+                        String.format(
+                                "Histogram <%s>, bucket <%d> should be recorded exactly once.",
+                                FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket),
+                        1, recordedValue);
+            } else {
+                Assert.assertEquals(
+                        String.format("Histogram <%s>, bucket <%d> should not be recorded.",
+                                FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket),
+                        0, recordedValue);
             }
+        }
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "https://crbug.com/1221647")
+    public void testExitFirstRunWithPolicy() throws Exception {
+        initializePreferences(new FirstRunPagesTestCase().withCctTosDisabled());
+
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
+        mContext.startActivity(intent);
+
+        FirstRunActivity freActivity = waitForActivity(FirstRunActivity.class);
+        CriteriaHelper.pollUiThread(
+                () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
+        // Make sure native is initialized so that the subsequent transition is not blocked.
+        CriteriaHelper.pollUiThread((() -> freActivity.isNativeSideIsInitializedForTest()),
+                "native never initialized.");
+
+        waitForActivity(CustomTabActivity.class);
+        Assert.assertFalse("Usage and crash reporting pref was set to true after skip",
+                PrivacyPreferencesManagerImpl.getInstance()
+                        .isUsageAndCrashReportingPermittedByUser());
+        Assert.assertTrue(
+                "FRE should be skipped for CCT.", FirstRunStatus.isFirstRunSkippedByPolicy());
+    }
+
+    @Test
+    @MediumTest
+    public void testFirstRunSkippedSharedPreferenceRefresh() throws Exception {
+        // Set that the first run was previous skipped by policy in shared preference, then
+        // refreshing shared preference should cause its value to become false, since there's no
+        // policy set in this test case.
+        FirstRunStatus.setFirstRunSkippedByPolicy(true);
+
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(
+                mContext, ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+        mContext.startActivity(intent);
+        CustomTabActivity activity = waitForActivity(CustomTabActivity.class);
+        CriteriaHelper.pollUiThread(() -> activity.didFinishNativeInitialization());
+
+        // DeferredStartupHandler could not finish with CriteriaHelper#DEFAULT_MAX_TIME_TO_POLL.
+        // Use longer timeout here to avoid flakiness. See https://crbug.com/1157611.
+        CriteriaHelper.pollUiThread(() -> activity.deferredStartupPostedForTesting());
+        Assert.assertTrue("Deferred startup never completed",
+                DeferredStartupHandler.waitForDeferredStartupCompleteForTesting(
+                        ScalableTimeout.scaleTimeout(ACTIVITY_WAIT_LONG_MS)));
+
+        // FirstRun status should be refreshed by TosDialogBehaviorSharedPrefInvalidator in deferred
+        // start up task.
+        CriteriaHelper.pollUiThread(() -> !FirstRunStatus.isFirstRunSkippedByPolicy());
+    }
+
+    @Test
+    @MediumTest
+    public void testSkipTosPage() throws TimeoutException {
+        // Test case that verifies when the ToS Page was previously accepted, launching the FRE
+        // should transition to the next page.
+        FirstRunStatus.setSkipWelcomePage(true);
+
+        FirstRunActivity freActivity = launchFirstRunActivity();
+        CriteriaHelper.pollUiThread(
+                () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
+
+        getObserverData(freActivity)
+                .jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
+    }
+
+    @Test
+    @MediumTest
+    // TODO(https://crbug.com/1111490): Change this test case when policy can handle cases when ToS
+    // is accepted in Browser App.
+    public void testSkipTosPage_WithCctPolicy() throws Exception {
+        skipTosDialogViaPolicy();
+        FirstRunStatus.setSkipWelcomePage(true);
+
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
+        mContext.startActivity(intent);
+
+        FirstRunActivity freActivity = waitForActivity(FirstRunActivity.class);
+        CriteriaHelper.pollUiThread(
+                () -> freActivity.getSupportFragmentManager().getFragments().size() > 0);
+
+        // A page skip should happen, while we are still staying at FRE.
+        getObserverData(freActivity)
+                .jumpToPageCallback.waitForCallback("Welcome page should be skipped.", 0);
+        Assert.assertFalse(
+                "FRE should not be skipped for CCT.", FirstRunStatus.isFirstRunSkippedByPolicy());
+        Assert.assertFalse(
+                "FreActivity should still be alive.", freActivity.isActivityFinishingOrDestroyed());
+    }
+
+    @Test
+    @MediumTest
+    public void testFastDestroy() {
+        // Inspired by crbug.com/1119548, where onDestroy() before triggerLayoutInflation() caused
+        // a crash.
+        Intent intent = CustomTabsTestUtils.createMinimalCustomTabIntent(mContext, TEST_URL);
+        mContext.startActivity(intent);
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "https://crbug.com/1197556")
+    public void testResetOnBackPress() throws Exception {
+        testResetOnBackPressImpl(true);
+    }
+
+    @Test
+    @MediumTest
+    @DisabledTest(message = "https://crbug.com/1197556")
+    public void testResetOnBackPress_NoUmaAccepted() throws Exception {
+        testResetOnBackPressImpl(false);
+    }
+
+    private void testResetOnBackPressImpl(boolean allowedCrashUpLoad) throws Exception {
+        // Inspired by crbug.com/1192854.
+        // When the policy initialization is finishing after ToS accepted, the small loading circle
+        // will be shown on the screen. If user decide to go back with backpress, the UI should be
+        // reset with ToS UI visible.
+        FirstRunStatus.setSkipWelcomePage(true);
+        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
+        sharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.FIRST_RUN_CACHED_TOS_ACCEPTED, true);
+        sharedPreferencesManager.writeBoolean(
+                ChromePreferenceKeys.PRIVACY_METRICS_REPORTING, allowedCrashUpLoad);
+        setHasAppRestrictionForMock(false);
+        FirstRunActivity freActivity = launchFirstRunActivity();
+
+        // ToS page should be skipped and jumped to the next page, since ToS is marked accepted in
+        // shared preference.
+        ScopedObserverData scopedObserverData = getObserverData(freActivity);
+        scopedObserverData.createPostNativeAndPoliciesPageSequenceCallback.waitForCallback(
+                "Failed to finalize the flow.", 0);
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(freActivity.isNativeSideIsInitializedForTest(), is(true)));
+        scopedObserverData.jumpToPageCallback.waitForCallback(
+                "ToS should be skipped after native initialized.", 0);
+
+        // Press back button.
+        TestThreadUtils.runOnUiThreadBlocking(() -> mLastActivity.onBackPressed());
+
+        View tosAndPrivacy = mLastActivity.findViewById(R.id.tos_and_privacy);
+        CheckBox umaCheckbox = mLastActivity.findViewById(R.id.send_report_checkbox);
+        Assert.assertNotNull("ToS should not be null.", tosAndPrivacy);
+        Assert.assertNotNull("UMA Checkbox should not be null.", umaCheckbox);
+        Assert.assertEquals("ToS should be visible.", View.VISIBLE, tosAndPrivacy.getVisibility());
+        Assert.assertEquals(
+                "UMA Checkbox should be visible.", View.VISIBLE, umaCheckbox.getVisibility());
+        Assert.assertEquals(
+                "UMA Checkbox state is different.", allowedCrashUpLoad, umaCheckbox.isChecked());
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleFresCustomIntoView() throws Exception {
+        FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
+        initializePreferences(testCase);
+
+        launchCustomTabs(TEST_URL);
+        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+
+        launchViewIntent(FOO_URL);
+        FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
+
+        clickThroughFirstRun(secondFreActivity, testCase);
+        verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleFresViewIntoCustom() throws Exception {
+        FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
+        initializePreferences(testCase);
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+
+        launchCustomTabs(FOO_URL);
+        FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
+
+        clickThroughFirstRun(secondFreActivity, testCase);
+        verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(CustomTabActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleFresBothView() throws Exception {
+        FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
+        initializePreferences(testCase);
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+
+        launchViewIntent(FOO_URL);
+        FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
+
+        clickThroughFirstRun(secondFreActivity, testCase);
+        verifyUrlEquals(FOO_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
+    }
+
+    @Test
+    @MediumTest
+    public void testMultipleFresBackButton() throws Exception {
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstFreActivity = waitForActivity(FirstRunActivity.class);
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity secondFreActivity = waitForDifferentFirstRunActivity(firstFreActivity);
+
+        ScopedObserverData secondFreData = getObserverData(secondFreActivity);
+        Assert.assertEquals("Second FRE should not have aborted before back button is pressed.", 0,
+                secondFreData.abortFirstRunExperienceCallback.getCallCount());
+
+        secondFreActivity.onBackPressed();
+        secondFreData.abortFirstRunExperienceCallback.waitForCallback(
+                "Second FirstRunActivity didn't abort", 0);
+        CriteriaHelper.pollInstrumentationThread(
+                () -> secondFreActivity.isFinishing(), "Second FRE should be finishing now.");
+    }
+
+    @Test
+    @MediumTest
+    public void testInitialDrawBlocked() throws Exception {
+        // This should block the FRE from showing any UI.
+        blockOnFlowIsKnown();
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+
+        // Wait for the activity to initialize views or else later find call will NPE.
+        CriteriaHelper.pollUiThread(() -> firstRunActivity.findViewById(R.id.fre_pager) != null);
+
+        CallbackHelper onDrawCallbackHelper = new CallbackHelper();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            View frePager = firstRunActivity.findViewById(R.id.fre_pager);
+            Assert.assertNotNull(frePager);
+            frePager.getViewTreeObserver().addOnDrawListener(onDrawCallbackHelper::notifyCalled);
         });
+
+        // Wait for a second to ensure Android would have had time to do a draw pass if it was ever
+        // going to.
+        Thread.sleep(1000);
+        Assert.assertEquals(0, onDrawCallbackHelper.getCallCount());
+
+        // Now return account status which should result in both the first fragment being generated,
+        // and the first draw call being let happen.
+        unblockOnFlowIsKnown();
+        onDrawCallbackHelper.waitForCallback(0);
     }
 
     @Test
     @MediumTest
-    public void testDefaultSearchEngine_DontShow() throws Exception {
-        runSearchEnginePromptTest(LocaleManager.SearchEnginePromoType.DONT_SHOW);
+    public void testNativeInitBeforeFragment() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase();
+        initializePreferences(testCase);
+
+        // Inspired by https://crbug.com/1207683 where a notification was dropped because native
+        // initialized before the first fragment was attached to the activity.
+        blockOnFlowIsKnown();
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        CriteriaHelper.pollUiThread((() -> firstRunActivity.isNativeSideIsInitializedForTest()),
+                "native never initialized.");
+
+        unblockOnFlowIsKnown();
+        clickThroughFirstRun(firstRunActivity, testCase);
+        verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
     }
 
     @Test
     @MediumTest
-    public void testDefaultSearchEngine_ShowExisting() throws Exception {
-        runSearchEnginePromptTest(LocaleManager.SearchEnginePromoType.SHOW_EXISTING);
+    public void testNativeInitBeforeFragmentSkip() throws Exception {
+        skipTosDialogViaPolicy();
+        blockOnFlowIsKnown();
+
+        launchCustomTabs(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        CriteriaHelper.pollUiThread((() -> firstRunActivity.isNativeSideIsInitializedForTest()),
+                "native never initialized.");
+
+        unblockOnFlowIsKnown();
+        verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(CustomTabActivity.class));
     }
 
-    private void runSearchEnginePromptTest(@SearchEnginePromoType final int searchPromoType)
+    @Test
+    @MediumTest
+    public void testCloudManagementDoesNotBlockFirstRun() throws Exception {
+        // Ensures FRE is not blocked if cloud management is enabled.
+        FirstRunPagesTestCase testCase = FirstRunPagesTestCase.createWithShowAllPromos();
+        initializePreferences(testCase);
+        enableCloudManagementViaPolicy();
+
+        launchViewIntent(TEST_URL);
+        FirstRunActivity firstRunActivity = waitForActivity(FirstRunActivity.class);
+        clickThroughFirstRun(firstRunActivity, testCase);
+        verifyUrlEquals(TEST_URL, waitAndGetUriFromChromeActivity(ChromeTabbedActivity.class));
+    }
+
+    private void setUpLocaleManagerDelegate(@SearchEnginePromoType final int searchPromoType)
             throws Exception {
         // Force the LocaleManager into a specific state.
-        LocaleManager mockManager = new LocaleManager() {
+        LocaleManagerDelegate mockDelegate = new LocaleManagerDelegate() {
             @Override
             public int getSearchEnginePromoShowType() {
                 return searchPromoType;
@@ -165,90 +968,298 @@ public class FirstRunIntegrationTest {
                 return TemplateUrlServiceFactory.get().getTemplateUrls();
             }
         };
-        LocaleManager.setInstanceForTest(mockManager);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> LocaleManager.getInstance().setDelegateForTest(mockDelegate));
+    }
 
-        final ActivityMonitor freMonitor =
-                new ActivityMonitor(FirstRunActivity.class.getName(), null, false);
-        Instrumentation instrumentation = InstrumentationRegistry.getInstrumentation();
-        instrumentation.addMonitor(freMonitor);
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_allPagesAlreadyShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
 
-        final Context context = instrumentation.getTargetContext();
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("http://test.com"));
-        intent.setPackage(context.getPackageName());
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        context.startActivity(intent);
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
 
-        // Because the AsyncInitializationActivity notices that the FRE hasn't been run yet, it
-        // redirects to it.  Once the user closes the FRE, the user should be kicked back into the
-        // startup flow where they were interrupted.
-        mActivity = instrumentation.waitForMonitorWithTimeout(
-                freMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull(mActivity);
+        // Go until the last page without skipping the last one.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled()
+                                                            .selectDefaultSearchEngine()
+                                                            .ensureSigninPromoIsCurrentPage();
 
-        ActivityMonitor activityMonitor =
-                new ActivityMonitor(ChromeTabbedActivity.class.getName(), null, false);
-        instrumentation.addMonitor(activityMonitor);
+        // Change preferences to disable all promos.
+        testCase.setDataSaverPromo(false);
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+        testCase.setSigninPromo(false);
 
-        mTestObserver.flowIsKnownCallback.waitForCallback("Failed to finalize the flow", 0);
-        Bundle freProperties = mTestObserver.freProperties;
-        Assert.assertEquals(0, mTestObserver.updateCachedEngineCallback.getCallCount());
+        // Go back should skip all the promo pages and reach the terms of service page. Accepting
+        // terms of service completes first run.
+        navigationHelper.goBackToPreviousPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService();
 
-        // Accept the ToS.
-        if (freProperties.getBoolean(FirstRunActivityBase.SHOW_WELCOME_PAGE)) {
-            clickButton(mActivity, R.id.terms_accept, "Failed to accept ToS");
-            mTestObserver.jumpToPageCallback.waitForCallback(
-                    "Failed to try moving to the next screen", 0);
-            mTestObserver.acceptTermsOfServiceCallback.waitForCallback(
-                    "Failed to accept the ToS", 0);
-        }
+        waitForActivity(ChromeTabbedActivity.class);
+    }
 
-        // Acknowledge that Data Saver will be enabled.
-        if (freProperties.getBoolean(FirstRunActivityBase.SHOW_DATA_REDUCTION_PAGE)) {
-            int jumpCallCount = mTestObserver.jumpToPageCallback.getCallCount();
-            clickButton(mActivity, R.id.next_button, "Failed to skip data saver");
-            mTestObserver.jumpToPageCallback.waitForCallback(
-                    "Failed to try moving to next screen", jumpCallCount);
-        }
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_noPagesShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
 
-        // Select a default search engine.
-        if (searchPromoType == LocaleManager.SearchEnginePromoType.DONT_SHOW) {
-            Assert.assertFalse("Search engine page was shown.",
-                    freProperties.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-        } else {
-            Assert.assertTrue("Search engine page wasn't shown.",
-                    freProperties.getBoolean(FirstRunActivityBase.SHOW_SEARCH_ENGINE_PAGE));
-            int jumpCallCount = mTestObserver.jumpToPageCallback.getCallCount();
-            DefaultSearchEngineDialogHelperUtils.clickOnFirstEngine(
-                    mActivity.findViewById(android.R.id.content));
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
 
-            mTestObserver.jumpToPageCallback.waitForCallback(
-                    "Failed to try moving to next screen", jumpCallCount);
-        }
+        // Show terms of services.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .ensureTermsOfServiceIsCurrentPage();
 
-        // Don't sign in the user.
-        if (freProperties.getBoolean(FirstRunActivityBase.SHOW_SIGNIN_PAGE)) {
-            int jumpCallCount = mTestObserver.jumpToPageCallback.getCallCount();
-            clickButton(mActivity, R.id.negative_button, "Failed to skip signing-in");
-            mTestObserver.jumpToPageCallback.waitForCallback(
-                    "Failed to try moving to next screen", jumpCallCount);
-        }
+        // Change preferences before any promo page is shown.
+        testCase.setDataSaverPromo(false);
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+        testCase.setSigninPromo(false);
 
-        // FRE should be completed now, which will kick the user back into the interrupted flow.
-        // In this case, the user gets sent to the ChromeTabbedActivity after a View Intent is
-        // processed by ChromeLauncherActivity.
-        mTestObserver.updateCachedEngineCallback.waitForCallback(
-                "Failed to alert search widgets that an update is necessary", 0);
-        mActivity = instrumentation.waitForMonitorWithTimeout(
-                activityMonitor, CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL);
-        Assert.assertNotNull(mActivity);
+        // Accepting terms of services should complete first run, since all the promos are disabled.
+        navigationHelper.acceptTermsOfService()
+                .ensureDataSaverPromoNotCurrentPage()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .ensureSigninPromoNotCurrentPage();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_dataReductionPromoDisableAfterPromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Accept terms of service and pass through data saver prompt.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled();
+
+        // Disable data saver prompt after the next page is shown.
+        testCase.setDataSaverPromo(false);
+
+        // Go until the last page without skipping the last one, go back until initial page, and
+        // then complete first run. The data server prompt shouldn't be shown again in either
+        // direction.
+        navigationHelper.selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoNotCurrentPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService()
+                .ensureDataSaverPromoNotCurrentPage()
+                .selectDefaultSearchEngine()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_dataReductionPromoDisableWhilePromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Accept terms of service and don't skip the data saver prompt.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .ensureDataSaverPromoIsCurrentPage();
+
+        // Disable data saver prompt while it's shown. This will not hide the page.
+        testCase.setDataSaverPromo(false);
+
+        // Pass the data saver prompt, and go until the last page without skipping the last one.
+        // Go back until initial page, and then complete first run. The data server prompt shouldn't
+        // be shown again in either direction.
+        navigationHelper.acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoNotCurrentPage()
+                .ensureTermsOfServiceIsCurrentPage()
+                .acceptTermsOfService()
+                .ensureDataSaverPromoNotCurrentPage()
+                .selectDefaultSearchEngine()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_searchEnginePromoDisableAfterPromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled()
+                                                            .selectDefaultSearchEngine()
+                                                            .ensureSigninPromoIsCurrentPage();
+
+        // Disable search engine prompt after the next page is shown.
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+        setUpLocaleManagerDelegate(SearchEnginePromoType.DONT_SHOW);
+
+        // Go back until initial page, and
+        // then complete first run. The search engine prompt shouldn't be shown again in either
+        // direction.
+        navigationHelper.goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_searchEnginePromoDisableWhilePromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go over first run prompts and stop at the search engine page.
+        FirstRunNavigationHelper navigationHelper =
+                new FirstRunNavigationHelper(firstRunActivity)
+                        .ensurePagesCreationSucceeded()
+                        .acceptTermsOfService()
+                        .acknowledgeDataSaverEnabled()
+                        .ensureDefaultSearchEnginePromoIsCurrentPage();
+
+        // Disable search engine prompt while it's shown. This will not hide the page.
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+        setUpLocaleManagerDelegate(SearchEnginePromoType.DONT_SHOW);
+
+        // Pass the search engine prompt, and move to the last page without skipping it.
+        // Go back until initial page, and then complete first run. The search engine prompt
+        // shouldn't be shown again in either direction.
+        navigationHelper.selectDefaultSearchEngine()
+                .ensureSigninPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .ensureDefaultSearchEnginePromoNotCurrentPage()
+                .skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_signinPromoPromoDisableAfterPromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled()
+                                                            .selectDefaultSearchEngine()
+                                                            .ensureSigninPromoIsCurrentPage();
+
+        // Disable sign-in prompt while it's shown. This will not hide the page.
+        testCase.setSigninPromo(false);
+
+        // Go back until initial page, and then complete first run. The sign-in prompt shouldn't be
+        // shown again.
+        navigationHelper.goBackToPreviousPage()
+                .ensureDefaultSearchEnginePromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .ensureDataSaverPromoIsCurrentPage()
+                .goBackToPreviousPage()
+                .acceptTermsOfService()
+                .acknowledgeDataSaverEnabled()
+                .selectDefaultSearchEngine();
+
+        waitForActivity(ChromeTabbedActivity.class);
+    }
+
+    @Test
+    @MediumTest
+    public void testPrefsUpdated_signinPromoPromoDisableWhilePromoShown() throws Exception {
+        FirstRunPagesTestCase testCase = new FirstRunPagesTestCase()
+                                                 .withDataSaverPromo()
+                                                 .withSearchPromo()
+                                                 .withSigninPromo();
+        initializePreferences(testCase);
+
+        FirstRunActivity firstRunActivity = launchFirstRunActivity();
+
+        // Go until the last page without skipping the last one.
+        FirstRunNavigationHelper navigationHelper = new FirstRunNavigationHelper(firstRunActivity)
+                                                            .ensurePagesCreationSucceeded()
+                                                            .acceptTermsOfService()
+                                                            .acknowledgeDataSaverEnabled()
+                                                            .selectDefaultSearchEngine()
+                                                            .ensureSigninPromoIsCurrentPage();
+
+        // Disable sign-in prompt while it's shown. This will not hide the page.
+        testCase.setSearchPromoType(SearchEnginePromoType.DONT_SHOW);
+
+        // User should be able to interact with sign-in promo page and complete first run.
+        navigationHelper.ensureSigninPromoIsCurrentPage().skipSigninPromo();
+
+        waitForActivity(ChromeTabbedActivity.class);
     }
 
     private void clickButton(final Activity activity, final int id, final String message) {
-        CriteriaHelper.pollUiThread(new Criteria() {
-            @Override
-            public boolean isSatisfied() {
-                return activity.findViewById(id) != null;
-            }
+        CriteriaHelper.pollUiThread(() -> {
+            View view = activity.findViewById(id);
+            Criteria.checkThat(view, Matchers.notNullValue());
+            Criteria.checkThat(view.getVisibility(), Matchers.is(View.VISIBLE));
+            Criteria.checkThat(view.isEnabled(), Matchers.is(true));
         });
 
         PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
@@ -256,5 +1267,236 @@ public class FirstRunIntegrationTest {
             Assert.assertNotNull(message, button);
             button.performClick();
         });
+    }
+
+    /** Configuration for tests that depend on showing First Run pages. */
+    static class FirstRunPagesTestCase {
+        private boolean mCctTosDisabled;
+        private @SearchEnginePromoType int mSearchPromoType = SearchEnginePromoType.DONT_SHOW;
+        private boolean mShowDataSaverPromo;
+        private boolean mShowSigninPromo;
+
+        boolean cctTosDisabled() {
+            return mCctTosDisabled;
+        }
+
+        boolean showDataSaverPromo() {
+            return mShowDataSaverPromo;
+        }
+
+        @SearchEnginePromoType
+        int searchPromoType() {
+            return mSearchPromoType;
+        }
+
+        boolean showSearchPromo() {
+            return mSearchPromoType == SearchEnginePromoType.SHOW_NEW
+                    || mSearchPromoType == SearchEnginePromoType.SHOW_EXISTING;
+        }
+
+        boolean showSigninPromo() {
+            return mShowSigninPromo;
+        }
+
+        FirstRunPagesTestCase setCctTosDisabled(boolean cctTosDisabled) {
+            mCctTosDisabled = cctTosDisabled;
+            return this;
+        }
+
+        FirstRunPagesTestCase setDataSaverPromo(boolean showDataSaverPromo) {
+            mShowDataSaverPromo = showDataSaverPromo;
+            return this;
+        }
+
+        FirstRunPagesTestCase setSearchPromoType(@SearchEnginePromoType int searchPromoType) {
+            mSearchPromoType = searchPromoType;
+            return this;
+        }
+
+        FirstRunPagesTestCase setSigninPromo(boolean showSigninPromo) {
+            mShowSigninPromo = showSigninPromo;
+            return this;
+        }
+
+        FirstRunPagesTestCase withCctTosDisabled() {
+            return setCctTosDisabled(true);
+        }
+
+        FirstRunPagesTestCase withDataSaverPromo() {
+            return setDataSaverPromo(true);
+        }
+
+        FirstRunPagesTestCase withSearchPromo() {
+            return setSearchPromoType(SearchEnginePromoType.SHOW_EXISTING);
+        }
+
+        FirstRunPagesTestCase withSigninPromo() {
+            return setSigninPromo(true);
+        }
+
+        static FirstRunPagesTestCase createWithShowAllPromos() {
+            return new FirstRunPagesTestCase()
+                    .withDataSaverPromo()
+                    .withSearchPromo()
+                    .withSigninPromo();
+        }
+    }
+
+    /**
+     * Performs basic navigation operations on First Run pages, such as checking if a given promo
+     * is current shown, moving to the next page, or going back to the previous page.
+     */
+    class FirstRunNavigationHelper {
+        private FirstRunActivity mFirstRunActivity;
+        private ScopedObserverData mScopedObserverData;
+
+        protected FirstRunNavigationHelper(FirstRunActivity firstRunActivity) {
+            mFirstRunActivity = firstRunActivity;
+            mScopedObserverData = getObserverData(mFirstRunActivity);
+        }
+
+        protected FirstRunNavigationHelper ensurePagesCreationSucceeded() throws Exception {
+            mScopedObserverData.createPostNativeAndPoliciesPageSequenceCallback.waitForCallback(
+                    "Failed to finalize the flow and create subsequent pages", 0);
+            Assert.assertEquals("Search engine name should not have been set yet", 0,
+                    mScopedObserverData.updateCachedEngineCallback.getCallCount());
+
+            return this;
+        }
+
+        protected FirstRunNavigationHelper ensureTermsOfServiceIsCurrentPage() throws Exception {
+            return waitForCurrentFragmentToMatch("Terms of Service should be the current page",
+                    Matchers.either(Matchers.instanceOf(ToSAndUMAFirstRunFragment.class))
+                            .or(Matchers.instanceOf(
+                                    TosAndUmaFirstRunFragmentWithEnterpriseSupport.class))
+                            .or(Matchers.instanceOf(SigninFirstRunFragment.class)));
+        }
+
+        protected FirstRunNavigationHelper ensureDataSaverPromoIsCurrentPage() {
+            return waitForCurrentFragmentToMatch("Data reduction promo should be the current page",
+                    Matchers.instanceOf(DataReductionProxyFirstRunFragment.class));
+        }
+
+        protected FirstRunNavigationHelper ensureDataSaverPromoNotCurrentPage() {
+            return waitForCurrentFragmentToMatch(
+                    "Data reduction promo shouldn't be the current page",
+                    Matchers.not(Matchers.instanceOf(DataReductionProxyFirstRunFragment.class)));
+        }
+
+        protected FirstRunNavigationHelper ensureDefaultSearchEnginePromoIsCurrentPage() {
+            return waitForCurrentFragmentToMatch("Search engine promo should be the current page",
+                    Matchers.instanceOf(DefaultSearchEngineFirstRunFragment.class));
+        }
+
+        protected FirstRunNavigationHelper ensureDefaultSearchEnginePromoNotCurrentPage() {
+            return waitForCurrentFragmentToMatch(
+                    "Search engine promo shouldn't be the current page",
+                    Matchers.not(Matchers.instanceOf(DefaultSearchEngineFirstRunFragment.class)));
+        }
+
+        protected FirstRunNavigationHelper ensureSigninPromoIsCurrentPage() {
+            return waitForCurrentFragmentToMatch("Sign-in promo should be the current page",
+                    Matchers.instanceOf(SyncConsentFirstRunFragment.class));
+        }
+
+        protected FirstRunNavigationHelper ensureSigninPromoNotCurrentPage() {
+            return waitForCurrentFragmentToMatch("Sign-in promo shouldn't be the current page",
+                    Matchers.not(Matchers.instanceOf(SyncConsentFirstRunFragment.class)));
+        }
+
+        protected FirstRunNavigationHelper acceptTermsOfService() throws Exception {
+            ensureTermsOfServiceIsCurrentPage();
+
+            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
+            int acceptCallCount = mScopedObserverData.acceptTermsOfServiceCallback.getCallCount();
+
+            clickButton(mFirstRunActivity, R.id.terms_accept, "Failed to accept ToS");
+            mScopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed to try moving to the next screen", jumpCallCount);
+            mScopedObserverData.acceptTermsOfServiceCallback.waitForCallback(
+                    "Failed to accept the ToS", acceptCallCount);
+            return this;
+        }
+
+        protected FirstRunNavigationHelper acknowledgeDataSaverEnabled() throws Exception {
+            ensureDataSaverPromoIsCurrentPage();
+
+            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
+            clickButton(mFirstRunActivity, R.id.next_button, "Failed to skip data saver");
+            mScopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed try to move past the data saver fragment", jumpCallCount);
+
+            return this;
+        }
+
+        protected FirstRunNavigationHelper selectDefaultSearchEngine() throws Exception {
+            ensureDefaultSearchEnginePromoIsCurrentPage();
+
+            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
+            DefaultSearchEngineDialogHelperUtils.clickOnFirstEngine(
+                    mFirstRunActivity.findViewById(android.R.id.content));
+            mScopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed trying to move past the search engine fragment", jumpCallCount);
+
+            return this;
+        }
+
+        protected FirstRunNavigationHelper skipSigninPromo() throws Exception {
+            ensureSigninPromoIsCurrentPage();
+
+            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
+            clickButton(mFirstRunActivity, R.id.negative_button, "Failed to skip signing-in");
+            mScopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed trying to move past the sign in fragment", jumpCallCount);
+
+            return this;
+        }
+
+        protected FirstRunNavigationHelper goBackToPreviousPage() throws Exception {
+            int jumpCallCount = mScopedObserverData.jumpToPageCallback.getCallCount();
+            TestThreadUtils.runOnUiThreadBlocking(() -> mFirstRunActivity.onBackPressed());
+            mScopedObserverData.jumpToPageCallback.waitForCallback(
+                    "Failed go back to previous page", jumpCallCount);
+
+            return this;
+        }
+
+        protected FirstRunNavigationHelper waitForCurrentFragmentToMatch(
+                String failureReason, Matcher<Object> matcher) {
+            CriteriaHelper.pollUiThread(
+                    ()
+                            -> matcher.matches(mFirstRunActivity.getCurrentFragmentForTesting()),
+                    failureReason);
+            return this;
+        }
+    }
+
+    /**
+     * Overrides the default {@link FirstRunFlowSequencer}'s delegate to make decisions on
+     * showing/skipping promo pages based on the current {@link FirstRunPagesTestCase}.
+     */
+    private static class TestFirstRunFlowSequencerDelegate
+            extends FirstRunFlowSequencer.FirstRunFlowSequencerDelegate {
+        private FirstRunPagesTestCase mTestCase;
+
+        public TestFirstRunFlowSequencerDelegate(FirstRunPagesTestCase testCase) {
+            mTestCase = testCase;
+        }
+
+        @Override
+        public boolean shouldShowSyncConsentPage(
+                Activity activity, List<Account> accounts, @Status int childAccountStatus) {
+            return mTestCase.showSigninPromo();
+        }
+
+        @Override
+        public boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
+            return mTestCase.showDataSaverPromo();
+        }
+
+        @Override
+        public boolean shouldShowSearchEnginePage() {
+            return mTestCase.showSearchPromo();
+        }
     }
 }

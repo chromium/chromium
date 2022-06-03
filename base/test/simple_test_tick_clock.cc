@@ -4,7 +4,7 @@
 
 #include "base/test/simple_test_tick_clock.h"
 
-#include "base/logging.h"
+#include "base/check.h"
 
 namespace base {
 

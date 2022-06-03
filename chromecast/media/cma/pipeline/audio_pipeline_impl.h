@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_MEDIA_CMA_BASE_AUDIO_PIPELINE_IMPL_H_
-#define CHROMECAST_MEDIA_CMA_BASE_AUDIO_PIPELINE_IMPL_H_
+#ifndef CHROMECAST_MEDIA_CMA_PIPELINE_AUDIO_PIPELINE_IMPL_H_
+#define CHROMECAST_MEDIA_CMA_PIPELINE_AUDIO_PIPELINE_IMPL_H_
 
 #include <memory>
 #include <vector>
 
 #include "base/macros.h"
-#include "chromecast/media/cma/backend/cma_backend.h"
+#include "chromecast/media/api/cma_backend.h"
 #include "chromecast/media/cma/pipeline/av_pipeline_client.h"
 #include "chromecast/media/cma/pipeline/av_pipeline_impl.h"
 #include "chromecast/public/media/stream_id.h"
@@ -26,8 +26,11 @@ class CodedFrameProvider;
 
 class AudioPipelineImpl : public AvPipelineImpl {
  public:
-  AudioPipelineImpl(CmaBackend::AudioDecoder* decoder,
-                    const AvPipelineClient& client);
+  AudioPipelineImpl(CmaBackend::AudioDecoder* decoder, AvPipelineClient client);
+
+  AudioPipelineImpl(const AudioPipelineImpl&) = delete;
+  AudioPipelineImpl& operator=(const AudioPipelineImpl&) = delete;
+
   ~AudioPipelineImpl() override;
 
   ::media::PipelineStatus Initialize(
@@ -50,11 +53,9 @@ class AudioPipelineImpl : public AvPipelineImpl {
   CmaBackend::AudioDecoder* const audio_decoder_;
 
   EncryptionScheme encryption_scheme_ = EncryptionScheme::kUnencrypted;
-
-  DISALLOW_COPY_AND_ASSIGN(AudioPipelineImpl);
 };
 
 }  // namespace media
 }  // namespace chromecast
 
-#endif  // CHROMECAST_MEDIA_CMA_BASE_AUDIO_PIPELINE_IMPL_H_
+#endif  // CHROMECAST_MEDIA_CMA_PIPELINE_AUDIO_PIPELINE_IMPL_H_

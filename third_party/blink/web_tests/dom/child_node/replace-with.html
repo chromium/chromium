@@ -129,7 +129,7 @@ function test_replaceWith(nodeName) {
         var parent = document.createElement('div');
         parent.appendChild(child);
         var doc2 = document.implementation.createDocument("http://www.w3.org/1999/xhtml", "html");
-        assert_throws('HierarchyRequestError', () => { child.replaceWith(doc2, "foo") });
+        assert_throws_dom('HierarchyRequestError', () => { child.replaceWith(doc2, "foo") });
         assert_equals(parent.firstChild, child);
     }, nodeName + '.replaceWith() with a Document as an argument should throw.');
 }

@@ -2,8 +2,7 @@ var validWriteExpectations = [ "normal",
                                '"abcd" 1',
                                '"abcd" 0, "efgh" 1',
                                '"abcd" 0.3, "efgh" 1.4',
-                               '"abcd" -1000, "efgh" -10000',
-                               '"abcd" 0.3, "abcd" 0.4, "abcd" 0.5, "abcd" 0.6, "abcd" 0.7' ];
+                               '"abcd" -1000, "efgh" -10000'];
 
 var writeInvalidExpectations = ["none",
                                 "'abc' 1",

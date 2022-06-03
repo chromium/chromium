@@ -1,0 +1,285 @@
+# Copyright 2020 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
+source_set("feed_core_v2") {
+  public = [
+    "public/feed_api.h",
+    "public/feed_service.h",
+    "public/feed_stream_surface.h",
+    "public/persistent_key_value_store.h",
+    "public/persistent_key_value_store.h",
+    "public/refresh_task_scheduler.h",
+    "public/refresh_task_scheduler.h",
+    "public/reliability_logging_bridge.h",
+    "public/stream_type.h",
+    "public/types.h",
+    "public/unread_content_observer.h",
+    "public/web_feed_subscriptions.h",
+
+    # Includes that should be made private:
+    "config.h",
+  ]
+
+  sources = [
+    "algorithm.h",
+    "config.cc",
+    "config.h",
+    "enums.cc",
+    "enums.h",
+    "feed_network.cc",
+    "feed_network.h",
+    "feed_network_impl.cc",
+    "feed_network_impl.h",
+    "feed_store.cc",
+    "feed_store.h",
+    "feed_stream.cc",
+    "feed_stream.h",
+    "feedstore_util.cc",
+    "feedstore_util.h",
+    "image_fetcher.cc",
+    "image_fetcher.h",
+    "launch_reliability_logger.cc",
+    "launch_reliability_logger.h",
+    "metrics_reporter.cc",
+    "metrics_reporter.h",
+    "persistent_key_value_store_impl.cc",
+    "persistent_key_value_store_impl.h",
+    "prefs.cc",
+    "prefs.h",
+    "proto_util.cc",
+    "proto_util.h",
+    "protocol_translator.cc",
+    "protocol_translator.h",
+    "public/feed_api.cc",
+    "public/feed_service.cc",
+    "public/feed_stream_surface.cc",
+    "public/persistent_key_value_store.cc",
+    "public/public_types.cc",
+    "public/stream_type.cc",
+    "public/unread_content_observer.cc",
+    "request_throttler.cc",
+    "request_throttler.h",
+    "scheduling.cc",
+    "scheduling.h",
+    "stream/notice_card_tracker.cc",
+    "stream/notice_card_tracker.h",
+    "stream/privacy_notice_card_tracker.cc",
+    "stream/privacy_notice_card_tracker.h",
+    "stream/unread_content_notifier.cc",
+    "stream/unread_content_notifier.h",
+    "stream/upload_criteria.cc",
+    "stream/upload_criteria.h",
+    "stream_model.cc",
+    "stream_model.h",
+    "stream_model/ephemeral_change.cc",
+    "stream_model/ephemeral_change.h",
+    "stream_model/feature_tree.cc",
+    "stream_model/feature_tree.h",
+    "stream_surface_set.cc",
+    "stream_surface_set.h",
+    "surface_updater.cc",
+    "surface_updater.h",
+    "tasks/clear_all_task.cc",
+    "tasks/clear_all_task.h",
+    "tasks/load_more_task.cc",
+    "tasks/load_more_task.h",
+    "tasks/load_stream_from_store_task.cc",
+    "tasks/load_stream_from_store_task.h",
+    "tasks/load_stream_task.cc",
+    "tasks/load_stream_task.h",
+    "tasks/prefetch_images_task.cc",
+    "tasks/prefetch_images_task.h",
+    "tasks/upload_actions_task.cc",
+    "tasks/upload_actions_task.h",
+    "tasks/wait_for_store_initialize_task.cc",
+    "tasks/wait_for_store_initialize_task.h",
+    "types.cc",
+    "types.h",
+    "web_feed_subscription_coordinator.cc",
+    "web_feed_subscription_coordinator.h",
+    "web_feed_subscriptions/fetch_recommended_web_feeds_task.cc",
+    "web_feed_subscriptions/fetch_recommended_web_feeds_task.h",
+    "web_feed_subscriptions/fetch_subscribed_web_feeds_task.cc",
+    "web_feed_subscriptions/fetch_subscribed_web_feeds_task.h",
+    "web_feed_subscriptions/subscribe_to_web_feed_task.cc",
+    "web_feed_subscriptions/subscribe_to_web_feed_task.h",
+    "web_feed_subscriptions/unsubscribe_from_web_feed_task.cc",
+    "web_feed_subscriptions/unsubscribe_from_web_feed_task.h",
+    "web_feed_subscriptions/web_feed_index.cc",
+    "web_feed_subscriptions/web_feed_index.h",
+    "web_feed_subscriptions/wire_to_store.cc",
+    "web_feed_subscriptions/wire_to_store.h",
+    "wire_response_translator.cc",
+    "wire_response_translator.h",
+  ]
+  friend = [
+    ":core_unit_tests",
+    "//components/feed/core/v2/ios/public:feed_ios_public",
+    "//components/feed/core/v2/ios/public:feed_ios_unit_tests",
+  ]
+  deps = [
+    "public:common",
+    "//components/feed:feature_list",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/history/core/browser",
+    "//components/leveldb_proto:leveldb_proto",
+    "//components/offline_pages/task:task",
+    "//components/prefs",
+    "//components/reading_list/features:flags",
+    "//components/signin/public/identity_manager",
+    "//components/url_matcher:url_matcher",
+    "//components/variations",
+    "//components/variations/net",
+    "//components/version_info:channel",
+    "//components/web_resource:web_resource",
+    "//net",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//third_party/zlib/google:compression_utils",
+  ]
+
+  public_deps = [
+    ":ios_shared",
+    "//base",
+    "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/proto:proto_v2",
+  ]
+}
+
+# This smaller source set is used by Chrome for iOS.
+source_set("ios_shared") {
+  sources = [
+    "ios_shared_prefs.cc",
+    "ios_shared_prefs.h",
+  ]
+  deps = [
+    "//base",
+    "//components/feed/core/common:feed_core_common",
+    "//components/prefs",
+  ]
+}
+
+source_set("test_helpers") {
+  testonly = true
+  sources = [
+    "test/callback_receiver.cc",
+    "test/callback_receiver.h",
+  ]
+  deps = [
+    "//base",
+    "//base/test:test_support",
+  ]
+}
+
+source_set("core_unit_tests") {
+  testonly = true
+  sources = [
+    "algorithm_unittest.cc",
+    "api_test/feed_api_notice_card_unittest.cc",
+    "api_test/feed_api_reliability_logging_unittest.cc",
+    "api_test/feed_api_stream_unittest.cc",
+    "api_test/feed_api_subscriptions_unittest.cc",
+    "api_test/feed_api_test.cc",
+    "api_test/feed_api_test.h",
+    "feed_network_impl_unittest.cc",
+    "feed_store_unittest.cc",
+    "feedstore_util_unittest.cc",
+    "image_fetcher_unittest.cc",
+    "metrics_reporter_unittest.cc",
+    "persistent_key_value_store_impl_unittest.cc",
+    "proto_util_unittest.cc",
+    "protocol_translator_unittest.cc",
+    "public/feed_service_unittest.cc",
+    "public/public_types_unittest.cc",
+    "request_throttler_unittest.cc",
+    "scheduling_unittest.cc",
+    "stream/notice_card_tracker_unittest.cc",
+    "stream/privacy_notice_card_tracker_unittest.cc",
+    "stream_model_unittest.cc",
+    "test/callback_receiver_unittest.cc",
+    "test/proto_printer.cc",
+    "test/proto_printer.h",
+    "test/stream_builder.cc",
+    "test/stream_builder.h",
+    "test/test_util.cc",
+    "test/test_util.h",
+    "types_unittest.cc",
+    "web_feed_subscriptions/web_feed_index_unittest.cc",
+  ]
+
+  public_deps = [ ":test_helpers" ]
+  deps = [
+    ":feed_core_stubs",
+    ":feed_core_v2",
+    ":unit_tests_bundle_data",
+    "public:common",
+    "//base",
+    "//base/test:test_support",
+    "//build:chromeos_buildflags",
+    "//components/feed:feature_list",
+    "//components/feed/core/common:feed_core_common",
+    "//components/feed/core/shared_prefs:feed_shared_prefs",
+    "//components/history/core/browser",
+    "//components/leveldb_proto:test_support",
+    "//components/offline_pages/core:test_support",
+    "//components/prefs:test_support",
+    "//components/reading_list/features:flags",
+    "//components/signin/public/identity_manager",
+    "//components/signin/public/identity_manager:test_support",
+    "//components/variations:test_support",
+    "//components/version_info:channel",
+    "//net:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
+    "//testing/gtest",
+    "//third_party/zlib/google:compression_utils",
+  ]
+}
+
+source_set("feed_core_stubs") {
+  testonly = true
+  sources = [
+    "public/test/stub_feed_api.cc",
+    "public/test/stub_feed_api.h",
+    "public/test/stub_web_feed_subscriptions.cc",
+    "public/test/stub_web_feed_subscriptions.h",
+  ]
+  deps = [
+    ":feed_core_v2",
+    "//testing/gmock",
+  ]
+}
+
+bundle_data("unit_tests_bundle_data") {
+  visibility = [ ":core_unit_tests" ]
+  testonly = true
+  sources = [ "//components/test/data/feed/response.binarypb" ]
+  outputs = [ "{{bundle_resources_dir}}/" +
+              "{{source_root_relative_dir}}/{{source_file_part}}" ]
+}
+
+if (is_android) {
+  java_cpp_enum("feedv2_enums_java") {
+    sources = [
+      "enums.h",
+      "public/common_enums.h",
+      "public/types.h",
+    ]
+  }
+
+  # Wrap feedv2_enums_java in an android_library so that only one
+  # android_library needs to depend on feedv2_enums_java. Otherwise, we will get
+  # classes define multiple times.
+  android_library("feedv2_core_java") {
+    srcjar_deps = [ ":feedv2_enums_java" ]
+    deps = [ "//third_party/androidx:androidx_annotation_annotation_java" ]
+  }
+}

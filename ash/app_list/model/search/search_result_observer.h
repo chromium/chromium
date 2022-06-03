@@ -6,28 +6,21 @@
 #define ASH_APP_LIST_MODEL_SEARCH_SEARCH_RESULT_OBSERVER_H_
 
 #include "ash/app_list/model/app_list_model_export.h"
+#include "base/observer_list_types.h"
 
 namespace ash {
 
-class APP_LIST_MODEL_EXPORT SearchResultObserver {
+class APP_LIST_MODEL_EXPORT SearchResultObserver
+    : public base::CheckedObserver {
  public:
   // Invoked when the SearchResult's metadata has changed.
   virtual void OnMetadataChanged() {}
-
-  // Invoked when the SearchResult's is_installing flag has changed.
-  virtual void OnIsInstallingChanged() {}
-
-  // Invoked when the download percentage has changed.
-  virtual void OnPercentDownloadedChanged() {}
-
-  // Invoked when the item represented by the SearchResult is installed.
-  virtual void OnItemInstalled() {}
 
   // Invoked just before the SearchResult is destroyed.
   virtual void OnResultDestroying() {}
 
  protected:
-  virtual ~SearchResultObserver() {}
+  ~SearchResultObserver() override = default;
 };
 
 }  // namespace ash

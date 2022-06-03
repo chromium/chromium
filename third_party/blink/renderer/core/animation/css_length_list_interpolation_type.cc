@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/animation/underlying_length_checker.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
+#include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -56,16 +57,17 @@ static InterpolationValue MaybeConvertLengthList(
 }
 
 InterpolationValue CSSLengthListInterpolationType::MaybeConvertInitial(
-    const StyleResolverState&,
+    const StyleResolverState& state,
     ConversionCheckers& conversion_checkers) const {
   Vector<Length> initial_length_list;
-  if (!LengthListPropertyFunctions::GetInitialLengthList(CssProperty(),
-                                                         initial_length_list))
+  if (!LengthListPropertyFunctions::GetInitialLengthList(
+          CssProperty(), state.GetDocument().GetStyleResolver().InitialStyle(),
+          initial_length_list))
     return nullptr;
   return MaybeConvertLengthList(initial_length_list, 1);
 }
 
-class InheritedLengthListChecker
+class InheritedLengthListChecker final
     : public CSSInterpolationType::CSSConversionChecker {
  public:
   InheritedLengthListChecker(const CSSProperty& property,
@@ -164,12 +166,11 @@ void CSSLengthListInterpolationType::ApplyStandardPropertyValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue* non_interpolable_value,
     StyleResolverState& state) const {
-  const InterpolableList& interpolable_list =
-      ToInterpolableList(interpolable_value);
+  const auto& interpolable_list = To<InterpolableList>(interpolable_value);
   const wtf_size_t length = interpolable_list.length();
   DCHECK_GT(length, 0U);
-  const NonInterpolableList& non_interpolable_list =
-      ToNonInterpolableList(*non_interpolable_value);
+  const auto& non_interpolable_list =
+      To<NonInterpolableList>(*non_interpolable_value);
   DCHECK_EQ(non_interpolable_list.length(), length);
   Vector<Length> result(length);
   for (wtf_size_t i = 0; i < length; i++) {

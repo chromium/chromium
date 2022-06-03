@@ -7,11 +7,11 @@
 #include <string>
 
 #include "base/bind.h"
-#include "base/bind_helpers.h"
 #include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/location.h"
-#include "base/single_thread_task_runner.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -27,14 +27,15 @@ void FakeSMSClient::GetAll(const std::string& service_name,
                            const dbus::ObjectPath& object_path,
                            GetAllCallback callback) {
   if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kSmsTestMessages))
+          chromeos::switches::kSmsTestMessages)) {
     return;
-
+  }
   // Ownership passed to callback
-  base::DictionaryValue sms;
-  sms.SetString("Number", "000-000-0000");
-  sms.SetString("Text", "FakeSMSClient: Test Message: " + object_path.value());
-  sms.SetString("Timestamp", "Fri Jun  8 13:26:04 EDT 2012");
+  base::Value sms(base::Value::Type::DICTIONARY);
+  sms.SetStringKey("Number", "000-000-0000");
+  sms.SetStringKey("Text",
+                   "FakeSMSClient: Test Message: " + object_path.value());
+  sms.SetStringKey("Timestamp", "Fri Jun  8 13:26:04 EDT 2012");
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(sms)));

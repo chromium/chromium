@@ -1,6 +1,0 @@
-tools/traffic_annotation/auditor/tests/git_list.txt
-tools/traffic_annotation/auditor/tests/irrelevant_file_content.cc
-tools/traffic_annotation/auditor/tests/irrelevant_file_content.mm
-tools/traffic_annotation/auditor/tests/irrelevant_file_name.txt
-tools/traffic_annotation/auditor/tests/relevant_file_name_and_content.cc
-tools/traffic_annotation/auditor/tests/relevant_file_name_and_content.mm

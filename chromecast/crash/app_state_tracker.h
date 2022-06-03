@@ -17,6 +17,13 @@ class AppStateTracker {
   // The current app becomes the previous app, |app_id| becomes the current app.
   static void SetCurrentApp(const std::string& app_id);
 
+  // Record |app_id| as the previous app.
+  static void SetPreviousApp(const std::string& app_id);
+
+  // Set the Stadia session ID, when a Stadia session starts running.
+  // Clear the Stadia session ID by passing in an empty string
+  static void SetStadiaSessionId(const std::string& stadia_session_id);
+
   // Returns the id of the app that was last attempted to launch.
   static std::string GetLastLaunchedApp();
 
@@ -25,6 +32,9 @@ class AppStateTracker {
 
   // Returns the id of the app which was previously active.
   static std::string GetPreviousApp();
+
+  // Returns the Stadia session ID, if a Stadia session is running.
+  static std::string GetStadiaSessionId();
 };
 
 }  // namespace chromecast

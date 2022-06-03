@@ -23,7 +23,7 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) MockAuthStatusConsumer
   MOCK_METHOD1(OnRetailModeAuthSuccess, void(const UserContext& user_context));
   MOCK_METHOD1(OnAuthSuccess, void(const UserContext& user_context));
   MOCK_METHOD0(OnOffTheRecordAuthSuccess, void(void));
-  MOCK_METHOD0(OnPasswordChangeDetected, void(void));
+  MOCK_METHOD1(OnPasswordChangeDetected, void(const UserContext& user_context));
 
   // The following functions can be used in gmock Invoke() clauses.
 
@@ -52,5 +52,11 @@ class COMPONENT_EXPORT(CHROMEOS_LOGIN_AUTH) MockAuthStatusConsumer
 };
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove after the //chrome/browser/chromeos
+// source code migration is finished.
+namespace ash {
+using ::chromeos::MockAuthStatusConsumer;
+}
 
 #endif  // CHROMEOS_LOGIN_AUTH_MOCK_AUTH_STATUS_CONSUMER_H_

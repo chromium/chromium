@@ -7,7 +7,9 @@
 #include <errno.h>
 #include <stdint.h>
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check_op.h"
 #include "build/build_config.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 

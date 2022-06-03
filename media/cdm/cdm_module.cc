@@ -5,14 +5,18 @@
 #include "media/cdm/cdm_module.h"
 
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/crash/core/common/crash_key.h"
 
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
+#include "base/feature_list.h"
+#include "media/base/media_switches.h"
 #include "media/cdm/cdm_host_files.h"
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
@@ -105,8 +109,8 @@ CdmModule::~CdmModule() {
 }
 
 CdmModule::CreateCdmFunc CdmModule::GetCreateCdmFunc() {
-  if (!was_initialize_called_) {
-    NOTREACHED() << __func__ << " called before CdmModule is initialized.";
+  if (!initialized_) {
+    DLOG(ERROR) << __func__ << " called before CdmModule is initialized.";
     return nullptr;
   }
 
@@ -121,10 +125,9 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path,
 bool CdmModule::Initialize(const base::FilePath& cdm_path) {
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
   DVLOG(1) << __func__ << ": cdm_path = " << cdm_path.value();
+  CHECK(!initialized_) << "CdmModule can only be initialized once!";
 
-  DCHECK(!was_initialize_called_);
-  was_initialize_called_ = true;
-
+  initialized_ = true;
   cdm_path_ = cdm_path;
 
   // Load the CDM.
@@ -180,7 +183,8 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
 #endif  // defined(OS_WIN)
 
 #if BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
-  InitCdmHostVerification(library_.get(), cdm_path_, cdm_host_file_paths);
+  if (base::FeatureList::IsEnabled(media::kCdmHostVerification))
+    InitCdmHostVerification(library_.get(), cdm_path_, cdm_host_file_paths);
 #endif  // BUILDFLAG(ENABLE_CDM_HOST_VERIFICATION)
 
   ReportLoadResult(LoadResult::kLoadSuccess);
@@ -188,14 +192,9 @@ bool CdmModule::Initialize(const base::FilePath& cdm_path) {
 }
 
 void CdmModule::InitializeCdmModule() {
-  DCHECK(was_initialize_called_);
+  DCHECK(initialized_);
   DCHECK(initialize_cdm_module_func_);
   initialize_cdm_module_func_();
-}
-
-base::FilePath CdmModule::GetCdmPath() const {
-  DCHECK(was_initialize_called_);
-  return cdm_path_;
 }
 
 }  // namespace media

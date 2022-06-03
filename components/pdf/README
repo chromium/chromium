@@ -1,4 +1,0 @@
-The PDF component contains code necessary for using the PDF plugin in
-content-based clients. It provides an implementation for the PPB_PDF ppapi
-interface, and the necessary browser and renderer-side code for processing the
-relevant IPC mesages.

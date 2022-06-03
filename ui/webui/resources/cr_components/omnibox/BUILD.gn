@@ -1,0 +1,17 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/polymer/html_to_js.gni")
+
+js_type_check("closure_compile") {
+  deps = [ ":cr_autocomplete_match_list" ]
+}
+
+js_library("cr_autocomplete_match_list") {
+}
+
+html_to_js("web_components") {
+  js_files = [ "cr_autocomplete_match_list.js" ]
+}

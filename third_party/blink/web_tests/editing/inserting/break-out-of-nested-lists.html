@@ -1,29 +1,92 @@
 <!DOCTYPE>
-<html>
-<body>
-<p id="description">Tests breaking out of empty list item in case of nested lists.</p>
-<div contenteditable>
-<ol>
-<li>one</li>
-<ul>
-<li id="li">1</li>
-<li>2</li>
-</ul>
-<li>two</li>
-</ol>
-</div>
-<script src="../../resources/dump-as-markup.js"></script>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script src="../assert_selection.js"></script>
 <script>
-var li = document.getElementById("li");
-var selection = window.getSelection();
-selection.collapse(li, li.childNodes[0].length);
-document.execCommand('InsertText', false, '\n'); //Split the inner list into two
-document.execCommand('InsertText', false, '\n'); //Break out of the first inner list
-document.execCommand('InsertText', false, '\n'); //Break out of the outer list
-document.execCommand('InsertText', false, 'foo');
-Markup.description(document.getElementById('description').textContent);
-Markup.dump(document.querySelector('div'));
-</script>
-</body>
-</html>
+// Tests breaking out of empty list item in case of nested lists.
+function insertNewline(selection) {
+  selection.document.execCommand('insertText', false, '\n')
+}
 
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li>',
+            '<ul><li>1|</li><li>2</li></ul>',
+            '<li>two</li>',
+        '</ol></div>'
+    ],
+    insertNewline,
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li>',
+            '<ul><li>1</li><li>|<br></li><li>2</li></ul>',
+            '<li>two</li>',
+        '</ol></div>'
+    ],
+    'Split the inner list into two');
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li>',
+            '<ul><li>1</li><li>|<br></li><li>2</li></ul>',
+            '<li>two</li>',
+        '</ol></div>'
+    ],
+    insertNewline,
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li>',
+            '<ul><li>1</li></ul>',
+            '<li>|<br></li>',
+            '<ul><li>2</li></ul>',
+            '<li>two</li>',
+        '</ol></div>'
+    ],
+    'Break out of the first inner list');
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li>',
+            '<ul><li>1</li></ul>',
+            '<li>|<br></li>',
+            '<ul><li>2</li></ul>',
+            '<li>two</li>',
+        '</ol></div>'
+    ],
+    insertNewline,
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li>',
+            '<ul><li>1</li></ul>',
+        '</ol>',
+        '<div>|<br></div>',
+        '<ol>',
+            '<ul><li>2</li></ul>',
+            '<li>two</li>',
+        '</ol></div>'
+    ],
+    'Break out of the outer list');
+
+selection_test(
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li>',
+            '<ul><li>1</li></ul>',
+            '<li>|<br></li>',
+            '<ul><li>2</li></ul>',
+            '<li>two</li>',
+        '</ol></div>'
+    ],
+    'insertText XYZ',
+    [
+        '<div contenteditable><ol>',
+            '<li>one</li>',
+            '<ul><li>1</li></ul>',
+            '<li>XYZ|</li>',
+            '<ul><li>2</li></ul>',
+            '<li>two</li>',
+        '</ol></div>'
+    ],
+    'insert XYZ');
+</script>

@@ -12,7 +12,7 @@ test(function () {
     originWithAuth.password += 'password';
     originWithAuth = originWithAuth.href;
 
-    assert_throws('SecurityError', function () {
+    assert_throws_dom('SecurityError', function () {
         history.pushState(null, null, originWithAuth);
     });
 }, 'pushState that changes credentials should fail with SecurityError (even with whitelisted origins)');

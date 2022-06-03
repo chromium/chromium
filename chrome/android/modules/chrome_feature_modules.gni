@@ -8,12 +8,14 @@ import(
 import("//chrome/android/features/dev_ui/dev_ui_module.gni")
 import("//chrome/android/features/tab_ui/tab_ui_module.gni")
 import("//chrome/android/modules/buildflags.gni")
-import("//chrome/android/modules/chime/chime_module.gni")
+import(
+    "//chrome/android/modules/cablev2_authenticator/cablev2_authenticator_module.gni")
 import("//chrome/android/modules/extra_icu/extra_icu_module.gni")
-import("//chrome/android/modules/image_editor/image_editor_module.gni")
 import("//chrome/android/modules/stack_unwinder/stack_unwinder_module.gni")
 import("//chrome/android/modules/test_dummy/test_dummy_module.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//weblayer/variables.gni")
+import("//weblayer/weblayer_module.gni")
 
 if (enable_vr) {
   import("//chrome/android/features/vr/vr_module.gni")
@@ -28,6 +30,7 @@ if (enable_arcore) {
 #   name: Name of feature module.
 #   java_deps: Java libraries and resources going into module.
 #   android_manifest: AndroidManifest.xml of module.
+#   android_manifest_dep: (Optional) Target that generates AndroidManifest.xml.
 #   native_deps: (Optional) Native code going into module.
 #   native_entrypoints: (Optional) File with list of exposed symbols from native
 #     feature module library.
@@ -51,16 +54,10 @@ if (enable_vr) {
 if (dfmify_dev_ui) {
   chrome_modern_module_descs += [ dev_ui_module_desc ]
 }
-if (use_chime_android_sdk) {
-  chrome_modern_module_descs += [ chime_module_desc ]
-}
-if (enable_image_editor) {
-  chrome_modern_module_descs += [ image_editor_module_desc ]
-}
 
 # Modules shipped in Monochrome (Android N+).
 monochrome_module_descs = chrome_modern_module_descs
-if (enable_arcore) {
+if (false) {  # AR DFM is currently disabled
   monochrome_module_descs += [ ar_module_desc ]
 }
 if (!disable_autofill_assistant_dfm) {
@@ -69,6 +66,13 @@ if (!disable_autofill_assistant_dfm) {
 if (!disable_tab_ui_dfm) {
   monochrome_module_descs += [ tab_ui_module_desc ]
 }
+monochrome_module_descs += [ cablev2_authenticator_module_desc ]
 
 # Modules shipped in Trichrome (Android Q+).
 trichrome_module_descs = monochrome_module_descs
+
+# Add this after we assign trichrome_module_descs, since WebLayer should only be
+# part of Monochrome.
+if (webview_includes_weblayer) {
+  monochrome_module_descs += [ weblayer_module_desc ]
+}

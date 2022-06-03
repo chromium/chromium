@@ -22,8 +22,6 @@ shim_headers("re2_shim") {
 }
 
 source_set("re2") {
-  deps = [
-    ":re2_shim",
-  ]
+  deps = [ ":re2_shim" ]
   libs = [ "re2" ]
 }

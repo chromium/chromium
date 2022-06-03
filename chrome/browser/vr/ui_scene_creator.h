@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_VR_UI_SCENE_CREATOR_H_
 #define CHROME_BROWSER_VR_UI_SCENE_CREATOR_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "chrome/browser/vr/elements/content_element.h"
 #include "chrome/browser/vr/elements/text_input.h"
@@ -32,6 +31,10 @@ class UiSceneCreator {
                  TextInputDelegate* text_input_delegate,
                  AudioDelegate* audio_delegate,
                  Model* model);
+
+  UiSceneCreator(const UiSceneCreator&) = delete;
+  UiSceneCreator& operator=(const UiSceneCreator&) = delete;
+
   ~UiSceneCreator();
 
   void CreateScene();
@@ -67,8 +70,6 @@ class UiSceneCreator {
   TextInputDelegate* text_input_delegate_;
   AudioDelegate* audio_delegate_;
   Model* model_;
-
-  DISALLOW_COPY_AND_ASSIGN(UiSceneCreator);
 };
 
 }  // namespace vr

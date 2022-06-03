@@ -193,7 +193,7 @@ result size: 5
 result: Hello
 Received loadend event
 readyState after recalling read method: 1
-result after recalling read method: 
+result after recalling read method: null
 error after recalling read method: null
 Received loadstart event
 readyState: 1
@@ -210,7 +210,7 @@ error name: NotFoundError
 result: null
 Received loadend event
 readyState after recalling read method: 1
-result after recalling read method: 
+result after recalling read method: null
 error after recalling read method: null
 Received loadstart event
 readyState: 1

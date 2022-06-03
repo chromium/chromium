@@ -1,0 +1,17 @@
+# This file is generated from:
+{%- for path in in_files %}
+#   {{path}}
+{%-  endfor %}
+{% for field in fields -%}
+{{field.name}}: [
+  {%-   for obj in field['values'] %}
+  {
+    key: "{{obj.name}}",
+    value: {
+      light_value: {{obj.mode_values[Modes.LIGHT] | proto_color}},
+      dark_value: {{obj.mode_values[Modes.DARK] | proto_color}}
+    }
+  }{{ "," if not loop.last }}
+  {%-    endfor %}
+]
+{%  endfor -%}

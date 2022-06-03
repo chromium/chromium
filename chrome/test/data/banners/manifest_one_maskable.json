@@ -1,0 +1,14 @@
+{
+  "name": "Manifest test app",
+  "icons": [
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "start_url": "manifest_test_page.html",
+  "display": "standalone",
+  "orientation": "landscape"
+}

@@ -9,15 +9,14 @@
 
 #include <memory>
 
-#include "base/logging.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process_handle.h"
 #include "content/common/pepper_file_util.h"
 #include "content/renderer/pepper/host_globals.h"
 #include "content/renderer/pepper/plugin_module.h"
 #include "content/renderer/pepper/renderer_ppapi_host_impl.h"
 #include "content/renderer/render_thread_impl.h"
-#include "mojo/public/cpp/base/shared_memory_utils.h"
 #include "ppapi/c/pp_instance.h"
 
 using ppapi::ArrayBufferVar;
@@ -56,7 +55,7 @@ void HostArrayBufferVar::Unmap() {
 }
 
 uint32_t HostArrayBufferVar::ByteLength() {
-  return buffer_.ByteLength();
+  return base::checked_cast<uint32_t>(buffer_.ByteLength());
 }
 
 bool HostArrayBufferVar::CopyToNewShmem(
@@ -64,7 +63,7 @@ bool HostArrayBufferVar::CopyToNewShmem(
     int* host_shm_handle_id,
     base::UnsafeSharedMemoryRegion* plugin_shm_region) {
   base::UnsafeSharedMemoryRegion shm =
-      mojo::CreateUnsafeSharedMemoryRegion(ByteLength());
+      base::UnsafeSharedMemoryRegion::Create(ByteLength());
   if (!shm.IsValid())
     return false;
 

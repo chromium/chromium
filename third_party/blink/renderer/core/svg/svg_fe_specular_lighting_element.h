@@ -22,13 +22,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_SPECULAR_LIGHTING_ELEMENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_FE_SPECULAR_LIGHTING_ELEMENT_H_
 
-#include "third_party/blink/renderer/core/svg/svg_animated_number.h"
-#include "third_party/blink/renderer/core/svg/svg_animated_number_optional_number.h"
-#include "third_party/blink/renderer/core/svg/svg_fe_light_element.h"
 #include "third_party/blink/renderer/core/svg/svg_filter_primitive_standard_attributes.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
+
+class SVGAnimatedNumber;
+class SVGAnimatedNumberOptionalNumber;
+class SVGFELightElement;
 
 class SVGFESpecularLightingElement final
     : public SVGFilterPrimitiveStandardAttributes {
@@ -43,19 +44,15 @@ class SVGFESpecularLightingElement final
   SVGAnimatedNumber* specularConstant() { return specular_constant_.Get(); }
   SVGAnimatedNumber* specularExponent() { return specular_exponent_.Get(); }
   SVGAnimatedNumber* surfaceScale() { return surface_scale_.Get(); }
-  SVGAnimatedNumber* kernelUnitLengthX() {
-    return kernel_unit_length_->FirstNumber();
-  }
-  SVGAnimatedNumber* kernelUnitLengthY() {
-    return kernel_unit_length_->SecondNumber();
-  }
+  SVGAnimatedNumber* kernelUnitLengthX();
+  SVGAnimatedNumber* kernelUnitLengthY();
   SVGAnimatedString* in1() { return in1_.Get(); }
 
-  void Trace(blink::Visitor*) override;
+  void Trace(Visitor*) const override;
 
  private:
   bool SetFilterEffectAttribute(FilterEffect*, const QualifiedName&) override;
-  void SvgAttributeChanged(const QualifiedName&) override;
+  void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
   FilterEffect* Build(SVGFilterBuilder*, Filter*) override;
   bool TaintsOrigin() const override;
 

@@ -29,8 +29,8 @@ SVGIntegerOptionalIntegerInterpolationType::MaybeConvertSVGValue(
   if (svg_value.GetType() != kAnimatedIntegerOptionalInteger)
     return nullptr;
 
-  const SVGIntegerOptionalInteger& integer_optional_integer =
-      ToSVGIntegerOptionalInteger(svg_value);
+  const auto& integer_optional_integer =
+      To<SVGIntegerOptionalInteger>(svg_value);
   auto result = std::make_unique<InterpolableList>(2);
   result->Set(0, std::make_unique<InterpolableNumber>(
                      integer_optional_integer.FirstInteger()->Value()));
@@ -41,13 +41,13 @@ SVGIntegerOptionalIntegerInterpolationType::MaybeConvertSVGValue(
 
 static SVGInteger* ToPositiveInteger(const InterpolableValue* number) {
   return MakeGarbageCollected<SVGInteger>(
-      clampTo<int>(round(ToInterpolableNumber(number)->Value()), 1));
+      ClampTo<int>(round(To<InterpolableNumber>(number)->Value()), 1));
 }
 
 SVGPropertyBase* SVGIntegerOptionalIntegerInterpolationType::AppliedSVGValue(
     const InterpolableValue& interpolable_value,
     const NonInterpolableValue*) const {
-  const InterpolableList& list = ToInterpolableList(interpolable_value);
+  const auto& list = To<InterpolableList>(interpolable_value);
   return MakeGarbageCollected<SVGIntegerOptionalInteger>(
       ToPositiveInteger(list.Get(0)), ToPositiveInteger(list.Get(1)));
 }

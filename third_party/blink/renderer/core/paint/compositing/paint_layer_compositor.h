@@ -26,28 +26,23 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_PAINT_LAYER_COMPOSITOR_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_COMPOSITING_PAINT_LAYER_COMPOSITOR_H_
 
-#include <memory>
+#include "base/dcheck_is_on.h"
 #include "base/gtest_prod_util.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_inputs_root.h"
 #include "third_party/blink/renderer/core/paint/compositing/compositing_reason_finder.h"
+#include "third_party/blink/renderer/core/paint/compositing/compositing_update_type.h"
+#include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
 
 class PaintLayer;
 class GraphicsLayer;
 class LayoutEmbeddedContent;
+class LayoutView;
 class Page;
 class Scrollbar;
-class ScrollingCoordinator;
-
-enum CompositingUpdateType {
-  kCompositingUpdateNone,
-  kCompositingUpdateAfterGeometryChange,
-  kCompositingUpdateAfterCompositingInputChange,
-  kCompositingUpdateRebuildTree,
-};
 
 enum CompositingStateTransitionType {
   kNoCompositingStateChange,
@@ -68,9 +63,8 @@ enum CompositingStateTransitionType {
 // With CompositeAfterPaint, PaintLayerCompositor will be eventually replaced by
 // PaintArtifactCompositor.
 
-class CORE_EXPORT PaintLayerCompositor {
-  USING_FAST_MALLOC(PaintLayerCompositor);
-
+class CORE_EXPORT PaintLayerCompositor final
+    : public GarbageCollected<PaintLayerCompositor> {
  public:
   explicit PaintLayerCompositor(LayoutView&);
   ~PaintLayerCompositor();
@@ -80,11 +74,10 @@ class CORE_EXPORT PaintLayerCompositor {
   // pointers out of this object become invalid.
   void CleanUp();
 
-  // Called after layout is performed on the LocalFrame holding the LayoutView,
-  // during the document lifecycle update.
-  void DidLayout();
-
-  void UpdateIfNeededRecursive(DocumentLifecycle::LifecycleState target_state);
+  void UpdateInputsIfNeededRecursive(
+      DocumentLifecycle::LifecycleState target_state);
+  void UpdateAssignmentsIfNeededRecursive(
+      DocumentLifecycle::LifecycleState target_state);
 
   // Return true if this LayoutView is in "compositing mode" (i.e. has one or
   // more composited Layers)
@@ -95,21 +88,16 @@ class CORE_EXPORT PaintLayerCompositor {
   // to the native view/window system.
   void SetCompositingModeEnabled(bool);
 
-  // Returns true if the accelerated compositing is enabled
-  bool HasAcceleratedCompositing() const {
-    return has_accelerated_compositing_;
-  }
-
-  bool PreferCompositingToLCDTextEnabled() const;
-
-  bool RootShouldAlwaysComposite() const;
-
   // Notifies about changes to PreferCompositingToLCDText or
   // AcceleratedCompositing.
   void UpdateAcceleratedCompositingSettings();
 
   // Used to indicate that a compositing update will be needed for the next
-  // frame that gets drawn.
+  // frame that gets drawn. If called from before the compositing inputs
+  // step has run, and the type is > kCompositingUpdateNone, compositing
+  // inputs will be re-computed. If called during pre-paint (which is after
+  // compositing inputs and before the rest of compositing), it will cause
+  // the rest of compositing to run, but not compositing inputs.
   void SetNeedsCompositingUpdate(CompositingUpdateType);
 
   // Whether the given layer needs an extra 'contents' layer.
@@ -117,9 +105,7 @@ class CORE_EXPORT PaintLayerCompositor {
 
   // Issue paint invalidations of the appropriate layers when the given Layer
   // starts or stops being composited.
-  void PaintInvalidationOnCompositingChange(PaintLayer*);
-
-  void FullyInvalidatePaint();
+  static void PaintInvalidationOnCompositingChange(PaintLayer*);
 
   PaintLayer* RootLayer() const;
 
@@ -131,9 +117,8 @@ class CORE_EXPORT PaintLayerCompositor {
   // swapped out for an overlay video or immersive-ar DOM overlay layer.
   GraphicsLayer* PaintRootGraphicsLayer() const;
 
-  static PaintLayerCompositor* FrameContentsCompositor(LayoutEmbeddedContent&);
-  // Return true if the layers changed.
-  static bool AttachFrameContentLayersToIframeLayer(LayoutEmbeddedContent&);
+  static PaintLayerCompositor* FrameContentsCompositor(
+      const LayoutEmbeddedContent&);
 
   void UpdateTrackingRasterInvalidations();
 
@@ -141,8 +126,7 @@ class CORE_EXPORT PaintLayerCompositor {
 
   void UpdatePotentialCompositingReasonsFromStyle(PaintLayer&);
 
-  // Whether the layer could ever be composited.
-  bool CanBeComposited(const PaintLayer*) const;
+  void ClearRootLayerAttachmentDirty() { root_layer_attachment_dirty_ = false; }
 
   // FIXME: Move allocateOrClearCompositedLayerMapping to
   // CompositingLayerAssigner once we've fixed the compositing chicken/egg
@@ -161,32 +145,24 @@ class CORE_EXPORT PaintLayerCompositor {
     compositing_inputs_root_.Update(layer);
   }
 
-  void ForceRecomputeVisualRectsIncludingNonCompositingDescendants(
-      LayoutObject&);
+  void Trace(Visitor*) const;
 
  private:
 #if DCHECK_IS_ON()
   void AssertNoUnresolvedDirtyBits();
 #endif
 
-  void UpdateIfNeededRecursiveInternal(
-      DocumentLifecycle::LifecycleState target_state,
-      CompositingReasonsStats&);
+  void UpdateAssignmentsIfNeededRecursiveInternal(
+      DocumentLifecycle::LifecycleState target_state);
+  void UpdateInputsIfNeededRecursiveInternal(
+      DocumentLifecycle::LifecycleState target_state);
 
-  void UpdateWithoutAcceleratedCompositing(CompositingUpdateType);
-  void UpdateIfNeeded(DocumentLifecycle::LifecycleState target_state,
-                      CompositingReasonsStats&);
+  void UpdateAssignmentsIfNeeded(
+      DocumentLifecycle::LifecycleState target_state);
 
-  void AttachRootLayer();
-  void DetachRootLayer();
+  void SetOwnerNeedsCompositingInputsUpdate();
 
   Page* GetPage() const;
-
-  ScrollingCoordinator* GetScrollingCoordinator() const;
-
-  void EnableCompositingModeIfNeeded();
-
-  GraphicsLayer* OverlayFullscreenVideoGraphicsLayer() const;
 
   // Checks the given graphics layer against the compositor's horizontal and
   // vertical scrollbar graphics layers, returning the associated Scrollbar
@@ -195,32 +171,14 @@ class CORE_EXPORT PaintLayerCompositor {
 
   bool IsMainFrame() const;
 
-  GraphicsLayer* GetXrImmersiveDomOverlayLayer() const;
-
-  LayoutView& layout_view_;
-  const bool has_accelerated_compositing_ = true;
+  Member<LayoutView> layout_view_;
 
   bool compositing_ = false;
-
-  // The root layer doesn't composite if it's a non-scrollable frame.
-  // So, after a layout we set this dirty bit to know that we need
-  // to recompute whether the root layer should composite even if
-  // none of its descendants composite.
-  // FIXME: Get rid of all the callers of SetCompositingModeEnabled()
-  // except the one in UpdateIfNeeded(), then rename this to
-  // compositing_dirty_.
-  bool root_should_always_composite_dirty_ = true;
+  bool root_layer_attachment_dirty_ = false;
 
   // After initialization, compositing updates must be done, so start dirty.
   CompositingUpdateType pending_update_type_ =
       kCompositingUpdateAfterCompositingInputChange;
-
-  enum RootLayerAttachment {
-    kRootLayerUnattached,
-    kRootLayerAttachedViaEnclosingFrame,
-    kRootLayerOfLocalFrameRoot  // which doesn't need to attach to anything.
-  };
-  RootLayerAttachment root_layer_attachment_ = kRootLayerUnattached;
 
   CompositingInputsRoot compositing_inputs_root_;
 

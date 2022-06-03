@@ -6,8 +6,11 @@
 
 #include <cstddef>
 #include <limits>
+#include <ostream>
 #include <type_traits>
 
+#include "base/check_op.h"
+#include "base/notreached.h"
 #include "sql/recover_module/integers.h"
 #include "sql/recover_module/payload.h"
 #include "third_party/sqlite/sqlite3.h"
@@ -244,7 +247,7 @@ bool RecordReader::ReadValue(int column_index,
     DCHECK(!header.has_inline_value);
 
     uint8_t* const value_bytes = new uint8_t[size];
-    if (!payload_reader_->ReadPayload(offset, size, value_bytes)) {
+    if (size > 0 && !payload_reader_->ReadPayload(offset, size, value_bytes)) {
       delete[] value_bytes;
       return false;
     }

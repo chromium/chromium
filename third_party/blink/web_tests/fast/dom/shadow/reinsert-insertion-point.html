@@ -6,14 +6,14 @@
 
 <script>
 var inside = document.getElementById('inside');
-var insideRoot = inside.createShadowRoot();
+var insideRoot = inside.attachShadow({mode: 'open'});
 
-var content = insideRoot.appendChild(document.createElement('content'));
+var slot = insideRoot.appendChild(document.createElement('slot'));
 
 shouldBeTrue("inside.offsetHeight > 0");
 
-content.remove();
-insideRoot.appendChild(content);
+slot.remove();
+insideRoot.appendChild(slot);
 
 shouldBeTrue("inside.offsetHeight > 0");
 </script>

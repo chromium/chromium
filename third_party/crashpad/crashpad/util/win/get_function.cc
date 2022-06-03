@@ -14,7 +14,9 @@
 
 #include "util/win/get_function.h"
 
-#include "base/logging.h"
+#include <ostream>
+
+#include "base/check.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace crashpad {
@@ -23,7 +25,7 @@ namespace internal {
 FARPROC GetFunctionInternal(
     const wchar_t* library, const char* function, bool required) {
   HMODULE module = LoadLibrary(library);
-  DPCHECK(!required || module) << "LoadLibrary " << base::UTF16ToUTF8(library);
+  DPCHECK(!required || module) << "LoadLibrary " << base::WideToUTF8(library);
   if (!module) {
     return nullptr;
   }

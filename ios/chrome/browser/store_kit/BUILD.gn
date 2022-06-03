@@ -16,7 +16,7 @@ source_set("store_kit") {
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/web",
   ]
-  libs = [
+  frameworks = [
     "StoreKit.framework",
     "UIKit.framework",
   ]
@@ -33,6 +33,7 @@ source_set("unit_tests") {
     ":store_kit",
     "//base",
     "//base/test:test_support",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/test:test_support",
     "//ios/chrome/test/fakes",
     "//ios/web",

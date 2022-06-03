@@ -41,9 +41,11 @@ class CORE_EXPORT PseudoElement : public Element {
 
   PseudoElement(Element*, PseudoId);
 
-  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject() override;
+  scoped_refptr<ComputedStyle> CustomStyleForLayoutObject(
+      const StyleRecalcContext&) override;
   void AttachLayoutTree(AttachContext&) override;
   bool LayoutObjectIsNeeded(const ComputedStyle&) const override;
+  bool CanGeneratePseudoElement(PseudoId) const override;
 
   bool CanStartSelection() const override { return false; }
   bool CanContainRangeEndPoint() const override { return false; }
@@ -52,6 +54,7 @@ class CORE_EXPORT PseudoElement : public Element {
       const ComputedStyle&);
 
   static const AtomicString& PseudoElementNameForEvents(PseudoId);
+  static bool IsWebExposed(PseudoId, const Node*);
 
   // Pseudo element are not allowed to be the inner node for hit testing. Find
   // the closest ancestor which is a real dom node.
@@ -68,7 +71,7 @@ class CORE_EXPORT PseudoElement : public Element {
     ~AttachLayoutTreeScope();
 
    private:
-    Member<PseudoElement> element_;
+    PseudoElement* element_;
     scoped_refptr<const ComputedStyle> original_style_;
   };
 
@@ -77,7 +80,8 @@ class CORE_EXPORT PseudoElement : public Element {
 
 const QualifiedName& PseudoElementTagName(PseudoId);
 
-bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle*);
+bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
+                                       const Element* originating_element);
 
 template <>
 struct DowncastTraits<PseudoElement> {
@@ -86,4 +90,4 @@ struct DowncastTraits<PseudoElement> {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_DOM_PSEUDO_ELEMENT_H_

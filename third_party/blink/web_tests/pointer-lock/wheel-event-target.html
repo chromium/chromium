@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<head>
+  <link rel="help" href="https://w3c.github.io/pointerlock/#extensions-to-the-element-interface">
+  <script src="../resources/testharness.js"></script>
+  <script src="../resources/testharnessreport.js"></script>
+  <script src="../resources/gesture-util.js"></script>
+</head>
+<body>
+<h1>Verify wheel events are sent to the pointerlock target instead of the hittest element when pointer is locked</h1>
+
+<canvas id="target" style="touch-action:none" width="640" height="360">
+  Your browser does not support HTML5 canvas
+</canvas>
+
+<div id="text">
+  Click here to lock the pointer.
+  Using mousewheel in this area when pointer is locked should direct wheel
+  events to target.
+</div>
+
+<script type="text/javascript">
+  let target = document.getElementById("target");
+  let textDiv = document.getElementById("text");
+  let didTargetReceiveWheel = false;
+
+  textDiv.addEventListener("click",()=>{
+    target.requestPointerLock();
+  });
+
+  async function runTest(){
+   target.addEventListener("wheel",()=>{
+    didTargetReceiveWheel = true;
+   });
+
+   textDiv.addEventListener("wheel",
+      testObject.unreached_func("wheel event should not fire on element with id = text!"));
+
+   let rect = textDiv.getBoundingClientRect();
+   let x = rect.left + 5;
+   let y = rect.top + 5;
+   await mouseMoveTo(x, y);
+   await smoothScrollWithXY(5, 5, x, y, GestureSourceType.MOUSE_INPUT, SPEED_INSTANT);
+
+   if(didTargetReceiveWheel)
+     testPromiseResolve();
+   else
+     testPromiseReject("wheel event should fire on element with id = target !");
+  }
+
+  let testPromiseResolve;
+  let testPromiseReject;
+  let testObject;
+  promise_test(function(test){
+    return new Promise(async (resolve,reject)=>{
+     testPromiseResolve = resolve;
+     testPromiseReject = reject;
+     testObject = test;
+     let runTestFirstPointerLockChange = true;
+
+     document.addEventListener("pointerlockchange", async (e)=>{
+       if(runTestFirstPointerLockChange){
+          runTestFirstPointerLockChange = false;
+          await runTest();
+       }
+     });
+     document.addEventListener("pointerlockerror",
+       test.unreached_func("PointerLock should succeed!"));
+
+     let rect = textDiv.getBoundingClientRect();
+     let x = rect.left;
+     let y = rect.top;
+
+     await mouseMoveTo(x,y);
+     await mouseClickOn(x,y);
+   });
+  });
+</script>
+</body>

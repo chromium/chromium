@@ -9,9 +9,10 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/form_parsing/form_field.h"
+#include "components/autofill/core/browser/pattern_provider/pattern_provider.h"
+#include "components/autofill/core/common/language_code.h"
 
 namespace autofill {
 
@@ -22,8 +23,13 @@ class LogManager;
 class CreditCardField : public FormField {
  public:
   explicit CreditCardField(LogManager* log_manager);
+
+  CreditCardField(const CreditCardField&) = delete;
+  CreditCardField& operator=(const CreditCardField&) = delete;
+
   ~CreditCardField() override;
   static std::unique_ptr<FormField> Parse(AutofillScanner* scanner,
+                                          const LanguageCode& page_language,
                                           LogManager* log_manager);
 
  protected:
@@ -38,8 +44,11 @@ class CreditCardField : public FormField {
 
   // Returns true if |scanner| points to a field that looks like a year
   // <select> for a credit card. i.e. it contains the current year and
-  // the next few years.
-  static bool LikelyCardYearSelectField(AutofillScanner* scanner);
+  // the next few years. |log_manager| is used to log any parsing details
+  // to chrome://autofill-internals
+  static bool LikelyCardYearSelectField(AutofillScanner* scanner,
+                                        LogManager* log_manager,
+                                        const LanguageCode& page_language);
 
   // Returns true if |scanner| points to a <select> field that contains credit
   // card type options.
@@ -50,11 +59,14 @@ class CreditCardField : public FormField {
   // Prepaid debit cards do not count as gift cards, since they can be used like
   // a credit card.
   static bool IsGiftCardField(AutofillScanner* scanner,
-                              LogManager* log_manager);
+                              LogManager* log_manager,
+                              const LanguageCode& page_language);
 
   // Parses the expiration month/year/date fields. Returns true if it finds
   // something new.
-  bool ParseExpirationDate(AutofillScanner* scanner);
+  bool ParseExpirationDate(AutofillScanner* scanner,
+                           LogManager* log_manager,
+                           const LanguageCode& page_language);
 
   // For the combined expiration field we return |exp_year_type_|; otherwise if
   // |expiration_year_| is having year with |max_length| of 2-digits we return
@@ -94,8 +106,6 @@ class CreditCardField : public FormField {
   // |CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR|; otherwise we store
   // |CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR|.
   ServerFieldType exp_year_type_;
-
-  DISALLOW_COPY_AND_ASSIGN(CreditCardField);
 };
 
 }  // namespace autofill

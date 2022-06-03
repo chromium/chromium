@@ -39,7 +39,6 @@
 // Specifically for this case we avoid supporting complex formats such as MP3
 // or WMA. Complex format decoding should be done by the renderers.
 
-
 // Models an audio stream that gets rendered to the audio hardware output.
 // Because we support more audio streams than physically available channels
 // a given AudioOutputStream might or might not talk directly to hardware.
@@ -155,9 +154,20 @@ class MEDIA_EXPORT AudioInputStream {
 
   virtual ~AudioInputStream() {}
 
+  enum class OpenOutcome {
+    kSuccess,
+    kAlreadyOpen,
+    // Failed due to an unknown or unspecified reason.
+    kFailed,
+    // Failed to open due to OS-level System permissions.
+    kFailedSystemPermissions,
+    // Failed to open as the device is exclusively opened by another app.
+    kFailedInUse,
+  };
+
   // Open the stream and prepares it for recording. Call Start() to actually
   // begin recording.
-  virtual bool Open() = 0;
+  virtual OpenOutcome Open() = 0;
 
   // Starts recording audio and generating AudioInputCallback::OnData().
   // The input stream does not take ownership of this callback.

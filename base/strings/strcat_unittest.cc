@@ -18,14 +18,14 @@ TEST(StrCat, 8Bit) {
 }
 
 TEST(StrCat, 16Bit) {
-  string16 arg1 = ASCIIToUTF16("1");
-  string16 arg2 = ASCIIToUTF16("22");
-  string16 arg3 = ASCIIToUTF16("333");
+  std::u16string arg1 = u"1";
+  std::u16string arg2 = u"22";
+  std::u16string arg3 = u"333";
 
-  EXPECT_EQ(ASCIIToUTF16(""), StrCat({string16()}));
-  EXPECT_EQ(ASCIIToUTF16("1"), StrCat({arg1}));
-  EXPECT_EQ(ASCIIToUTF16("122"), StrCat({arg1, arg2}));
-  EXPECT_EQ(ASCIIToUTF16("122333"), StrCat({arg1, arg2, arg3}));
+  EXPECT_EQ(u"", StrCat({std::u16string()}));
+  EXPECT_EQ(u"1", StrCat({arg1}));
+  EXPECT_EQ(u"122", StrCat({arg1, arg2}));
+  EXPECT_EQ(u"122333", StrCat({arg1, arg2, arg3}));
 }
 
 TEST(StrAppend, 8Bit) {
@@ -45,23 +45,41 @@ TEST(StrAppend, 8Bit) {
 }
 
 TEST(StrAppend, 16Bit) {
-  string16 arg1 = ASCIIToUTF16("1");
-  string16 arg2 = ASCIIToUTF16("22");
-  string16 arg3 = ASCIIToUTF16("333");
+  std::u16string arg1 = u"1";
+  std::u16string arg2 = u"22";
+  std::u16string arg3 = u"333";
 
-  string16 result;
+  std::u16string result;
 
-  result = ASCIIToUTF16("foo");
-  StrAppend(&result, {string16()});
-  EXPECT_EQ(ASCIIToUTF16("foo"), result);
+  result = u"foo";
+  StrAppend(&result, {std::u16string()});
+  EXPECT_EQ(u"foo", result);
 
-  result = ASCIIToUTF16("foo");
+  result = u"foo";
   StrAppend(&result, {arg1});
-  EXPECT_EQ(ASCIIToUTF16("foo1"), result);
+  EXPECT_EQ(u"foo1", result);
 
-  result = ASCIIToUTF16("foo");
+  result = u"foo";
   StrAppend(&result, {arg1, arg2, arg3});
-  EXPECT_EQ(ASCIIToUTF16("foo122333"), result);
+  EXPECT_EQ(u"foo122333", result);
+}
+
+TEST(StrAppendT, ReserveAdditionalIfNeeded) {
+  std::string str = "foo";
+  const char* prev_data = str.data();
+  size_t prev_capacity = str.capacity();
+  // Fully exhaust current capacity.
+  StrAppend(&str, {std::string(str.capacity() - str.size(), 'o')});
+  // Expect that we hit capacity, but didn't require a re-alloc.
+  EXPECT_EQ(str.capacity(), str.size());
+  EXPECT_EQ(prev_data, str.data());
+  EXPECT_EQ(prev_capacity, str.capacity());
+
+  // Force a re-alloc by appending another character.
+  StrAppend(&str, {"o"});
+
+  // Expect at least 2x growth in capacity.
+  EXPECT_LE(2 * prev_capacity, str.capacity());
 }
 
 }  // namespace base

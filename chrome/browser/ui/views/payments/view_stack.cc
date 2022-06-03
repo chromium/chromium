@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/views/layout/fill_layout.h"
 
 ViewStack::ViewStack()
@@ -41,17 +43,16 @@ void ViewStack::Push(std::unique_ptr<views::View> view, bool animate) {
     view->SetBoundsRect(destination);
   }
   view->Layout();
-  AddChildView(view.get());
-
-  view->set_owned_by_client();
 
   // Add the new view to the stack so it can be popped later when navigating
   // back to the previous screen.
-  stack_.push_back(std::move(view));
+  stack_.push_back(view.get());
+
+  AddChildView(std::move(view));
 
   if (animate) {
     // Animate the new view to be right on top of this one.
-    slide_in_animator_->AnimateViewTo(stack_.back().get(), destination);
+    slide_in_animator_->AnimateViewTo(stack_.back(), destination);
   } else {
     // This is handled by the post-animation callback in the animated case, so
     // trigger it synchronously here.
@@ -61,25 +62,35 @@ void ViewStack::Push(std::unique_ptr<views::View> view, bool animate) {
 }
 
 void ViewStack::Pop(bool animate) {
-  DCHECK_LT(1u, size());  // There must be at least one view left after popping.
+  DCHECK_LT(1u,
+            GetSize());  // There must be at least one view left after popping.
 
   // Set the second-to-last view as visible, since it is about to be revealed
   // when the last view animates out.
-  stack_[size() - 2]->SetVisible(true);
+  stack_[GetSize() - 2]->SetVisible(true);
 
   if (animate) {
     gfx::Rect destination = bounds();
     destination.set_origin(gfx::Point(width(), 0));
-    slide_out_animator_->AnimateViewTo(stack_.back().get(), destination);
+    slide_out_animator_->AnimateViewTo(stack_.back(), destination);
   } else {
+    RemoveChildViewT(stack_.back());
     stack_.pop_back();
   }
 }
 
 void ViewStack::PopMany(int n, bool animate) {
-  DCHECK_LT(static_cast<size_t>(n), size());  // The stack can never be empty.
+  DCHECK_LT(static_cast<size_t>(n),
+            GetSize());  // The stack can never be empty.
 
   size_t pre_size = stack_.size();
+
+  // Remove N - 1 child views from the hierarchy now, the last one will be
+  // removed when its animation completes
+  for (unsigned i = pre_size - n; i < (pre_size - 1); i++) {
+    RemoveChildViewT(stack_.at(i));
+  }
+
   // Erase N - 1 elements now, the last one will be erased when its animation
   // completes
   stack_.erase(stack_.end() - n, stack_.end() - 1);
@@ -88,11 +99,11 @@ void ViewStack::PopMany(int n, bool animate) {
   Pop(animate);
 }
 
-size_t ViewStack::size() const {
+size_t ViewStack::GetSize() const {
   return stack_.size();
 }
 
-bool ViewStack::CanProcessEventsWithinSubtree() const {
+bool ViewStack::GetCanProcessEventsWithinSubtree() const {
   return !slide_in_animator_->IsAnimating() &&
          !slide_out_animator_->IsAnimating();
 }
@@ -107,12 +118,12 @@ void ViewStack::RequestFocus() {
 
 void ViewStack::OnBoundsChanged(const gfx::Rect& previous_bounds) {
   UpdateAnimatorBounds(slide_in_animator_.get(), GetLocalBounds());
-  UpdateAnimatorBounds(slide_out_animator_.get(), {{width(), 0}, View::size()});
+  UpdateAnimatorBounds(slide_out_animator_.get(), {{width(), 0}, size()});
 }
 
 void ViewStack::HideCoveredViews() {
   // Iterate through all but the last (topmost) view.
-  for (size_t i = 0; i + 1 < size(); i++) {
+  for (size_t i = 0; i + 1 < GetSize(); i++) {
     stack_[i]->SetVisible(false);
   }
 }
@@ -122,9 +133,9 @@ void ViewStack::UpdateAnimatorBounds(
   // If an animator is currently animating, figure out which views and update
   // their target bounds.
   if (animator->IsAnimating()) {
-    for (auto& view : stack_) {
-      if (animator->IsAnimating(view.get())) {
-        animator->SetTargetBounds(view.get(), target);
+    for (auto* view : stack_) {
+      if (animator->IsAnimating(view)) {
+        animator->SetTargetBounds(view, target);
       }
     }
   }
@@ -132,6 +143,7 @@ void ViewStack::UpdateAnimatorBounds(
 
 void ViewStack::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   if (animator == slide_out_animator_.get()) {
+    RemoveChildViewT(stack_.back());
     stack_.pop_back();
     DCHECK(!stack_.empty()) << "State stack should never be empty";
   } else if (animator == slide_in_animator_.get()) {
@@ -141,3 +153,7 @@ void ViewStack::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
   }
   RequestFocus();
 }
+
+BEGIN_METADATA(ViewStack, views::View)
+ADD_READONLY_PROPERTY_METADATA(size_t, Size)
+END_METADATA

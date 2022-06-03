@@ -23,14 +23,13 @@
 
 #include "build/build_config.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/public/platform/web_rect.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
-#include "third_party/blink/renderer/core/fileapi/file_list.h"
+#include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
@@ -44,23 +43,23 @@
 #include "third_party/blink/renderer/core/html/html_collection.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 #include "third_party/blink/renderer/core/layout/layout_theme_mobile.h"
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/core/paint/fallback_theme.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/fonts/font_selector.h"
-#include "third_party/blink/renderer/platform/fonts/string_truncator.h"
 #include "third_party/blink/renderer/platform/graphics/touch_action.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
-#include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/web_test_support.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/native_theme/native_theme.h"
 
 // The methods in this file are shared by all themes on every platform.
@@ -122,18 +121,17 @@ ControlPart AutoAppearanceFor(const Element& element) {
   if (element.IsInUserAgentShadowRoot()) {
     const AtomicString& id_value =
         element.FastGetAttribute(html_names::kIdAttr);
-    if (id_value == shadow_element_names::SliderThumb())
+    if (id_value == shadow_element_names::kIdSliderThumb)
       return kSliderThumbHorizontalPart;
-    if (id_value == shadow_element_names::SearchClearButton() ||
-        id_value == shadow_element_names::ClearButton())
+    if (id_value == shadow_element_names::kIdSearchClearButton ||
+        id_value == shadow_element_names::kIdClearButton)
       return kSearchFieldCancelButtonPart;
 
     // Slider container elements and -webkit-meter-inner-element don't have IDs.
-    const AtomicString& shadow_pseudo = element.ShadowPseudoId();
-    if (shadow_pseudo == "-webkit-media-slider-container" ||
-        shadow_pseudo == "-webkit-slider-container")
+    if (IsSliderContainer(element))
       return kSliderHorizontalPart;
-    if (shadow_pseudo == "-webkit-meter-inner-element")
+    if (element.ShadowPseudoId() ==
+        shadow_element_names::kPseudoMeterInnerElement)
       return kMeterPart;
   }
   return kNoControlPart;
@@ -150,7 +148,9 @@ LayoutTheme& LayoutTheme::GetTheme() {
   return NativeTheme();
 }
 
-LayoutTheme::LayoutTheme() : has_custom_focus_ring_color_(false) {}
+LayoutTheme::LayoutTheme() : has_custom_focus_ring_color_(false) {
+  UpdateForcedColorsState();
+}
 
 ControlPart LayoutTheme::AdjustAppearanceWithAuthorStyle(
     ControlPart part,
@@ -164,9 +164,6 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
     const ComputedStyle& style,
     const Element* element) {
   ControlPart part = style.EffectiveAppearance();
-  if (!RuntimeEnabledFeatures::RestrictedWebkitAppearanceEnabled())
-    return part;
-
   if (!element)
     return kNoControlPart;
 
@@ -186,6 +183,7 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
 
     // Aliases of 'auto'.
     // https://drafts.csswg.org/css-ui-4/#typedef-appearance-compat-auto
+    case kAutoPart:
     case kCheckboxPart:
     case kRadioPart:
     case kPushButtonPart:
@@ -231,7 +229,7 @@ ControlPart LayoutTheme::AdjustAppearanceWithElementType(
   return part;
 }
 
-void LayoutTheme::AdjustStyle(ComputedStyle& style, Element* e) {
+void LayoutTheme::AdjustStyle(const Element* e, ComputedStyle& style) {
   ControlPart original_part = style.Appearance();
   style.SetEffectiveAppearance(original_part);
   if (original_part == ControlPart::kNoControlPart)
@@ -254,21 +252,15 @@ void LayoutTheme::AdjustStyle(ComputedStyle& style, Element* e) {
            style.Display() == EDisplay::kTable)
     style.SetDisplay(EDisplay::kBlock);
 
-  // TODO(tkent): We should not update Appearance, which is a source of
-  // getComputedStyle(). https://drafts.csswg.org/css-ui-4/#propdef-appearance
-  // says "Computed value: specified keyword".
-  style.SetAppearance(AdjustAppearanceWithAuthorStyle(original_part, style));
-
   ControlPart part = AdjustAppearanceWithAuthorStyle(
       AdjustAppearanceWithElementType(style, e), style);
   style.SetEffectiveAppearance(part);
+  DCHECK_NE(part, kAutoPart);
   if (part == kNoControlPart)
     return;
-
-  if (ShouldUseFallbackTheme(style)) {
-    AdjustStyleUsingFallbackTheme(style);
-    return;
-  }
+  DCHECK(e);
+  // After this point, a Node must be non-null Element if
+  // EffectiveAppearance() != kNoControlPart.
 
   AdjustControlPartStyle(style);
 
@@ -276,14 +268,14 @@ void LayoutTheme::AdjustStyle(ComputedStyle& style, Element* e) {
   // value.
   switch (part) {
     case kMenulistPart:
-      return AdjustMenuListStyle(style, e);
+      return AdjustMenuListStyle(style);
     case kMenulistButtonPart:
-      return AdjustMenuListButtonStyle(style, e);
+      return AdjustMenuListButtonStyle(style);
     case kSliderHorizontalPart:
     case kSliderVerticalPart:
     case kMediaSliderPart:
     case kMediaVolumeSliderPart:
-      return AdjustSliderContainerStyle(style, e);
+      return AdjustSliderContainerStyle(*e, style);
     case kSliderThumbHorizontalPart:
     case kSliderThumbVerticalPart:
       return AdjustSliderThumbStyle(style);
@@ -309,43 +301,50 @@ String LayoutTheme::ExtraFullscreenStyleSheet() {
 }
 
 Color LayoutTheme::ActiveSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
-  return PlatformActiveSelectionBackgroundColor(color_scheme).BlendWithWhite();
+    mojom::blink::ColorScheme color_scheme) const {
+  Color color = PlatformActiveSelectionBackgroundColor(color_scheme);
+#if defined(OS_MAC)
+  // BlendWithWhite() darkens Mac system colors too much.
+  // Apply .8 (204/255) alpha instead, same as Safari.
+  if (color_scheme == mojom::blink::ColorScheme::kDark)
+    return Color(color.Red(), color.Green(), color.Blue(), 204);
+#endif
+  return color.BlendWithWhite();
 }
 
 Color LayoutTheme::InactiveSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformInactiveSelectionBackgroundColor(color_scheme)
       .BlendWithWhite();
 }
 
 Color LayoutTheme::ActiveSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformActiveSelectionForegroundColor(color_scheme);
 }
 
 Color LayoutTheme::InactiveSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformInactiveSelectionForegroundColor(color_scheme);
 }
 
 Color LayoutTheme::ActiveListBoxSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformActiveListBoxSelectionBackgroundColor(color_scheme);
 }
 
 Color LayoutTheme::InactiveListBoxSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformInactiveListBoxSelectionBackgroundColor(color_scheme);
 }
 
 Color LayoutTheme::ActiveListBoxSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformActiveListBoxSelectionForegroundColor(color_scheme);
 }
 
 Color LayoutTheme::InactiveListBoxSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformInactiveListBoxSelectionForegroundColor(color_scheme);
 }
 
@@ -362,59 +361,48 @@ Color LayoutTheme::PlatformActiveSpellingMarkerHighlightColor() const {
 }
 
 Color LayoutTheme::PlatformActiveSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   // Use a blue color by default if the platform theme doesn't define anything.
   return Color(0, 0, 255);
 }
 
 Color LayoutTheme::PlatformActiveSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   // Use a white color by default if the platform theme doesn't define anything.
   return Color::kWhite;
 }
 
 Color LayoutTheme::PlatformInactiveSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   // Use a grey color by default if the platform theme doesn't define anything.
   // This color matches Firefox's inactive color.
   return Color(176, 176, 176);
 }
 
 Color LayoutTheme::PlatformInactiveSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   // Use a black color by default.
   return Color::kBlack;
 }
 
 Color LayoutTheme::PlatformActiveListBoxSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformActiveSelectionBackgroundColor(color_scheme);
 }
 
 Color LayoutTheme::PlatformActiveListBoxSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformActiveSelectionForegroundColor(color_scheme);
 }
 
 Color LayoutTheme::PlatformInactiveListBoxSelectionBackgroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformInactiveSelectionBackgroundColor(color_scheme);
 }
 
 Color LayoutTheme::PlatformInactiveListBoxSelectionForegroundColor(
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   return PlatformInactiveSelectionForegroundColor(color_scheme);
-}
-
-LayoutUnit LayoutTheme::BaselinePositionAdjustment(
-    const ComputedStyle& style) const {
-  return LayoutUnit();
-}
-
-bool LayoutTheme::IsControlContainer(ControlPart appearance) const {
-  // There are more leaves than this, but we'll patch this function as we add
-  // support for more controls.
-  return appearance != kCheckboxPart && appearance != kRadioPart;
 }
 
 bool LayoutTheme::IsControlStyled(ControlPart part,
@@ -440,8 +428,6 @@ bool LayoutTheme::IsControlStyled(ControlPart part,
 
 bool LayoutTheme::ShouldDrawDefaultFocusRing(const Node* node,
                                              const ComputedStyle& style) const {
-  if (ThemeDrawsFocusRing(style))
-    return false;
   if (!node)
     return true;
   if (!style.HasEffectiveAppearance() && !node->IsLink())
@@ -451,129 +437,6 @@ bool LayoutTheme::ShouldDrawDefaultFocusRing(const Node* node,
   if (node->IsFocused() && !node->ShouldHaveFocusAppearance())
     return false;
   return true;
-}
-
-bool LayoutTheme::ControlStateChanged(const Node* node,
-                                      const ComputedStyle& style,
-                                      ControlState state) const {
-  if (!style.HasEffectiveAppearance())
-    return false;
-
-  // Default implementation assumes the controls don't respond to changes in
-  // :hover state
-  if (state == kHoverControlState && !SupportsHover(style))
-    return false;
-
-  // Assume pressed state is only responded to if the control is enabled.
-  if (state == kPressedControlState && !IsEnabled(node))
-    return false;
-
-  return true;
-}
-
-ControlStates LayoutTheme::ControlStatesForNode(const Node* node,
-                                                const ComputedStyle& style) {
-  ControlStates result = 0;
-  if (IsHovered(node)) {
-    result |= kHoverControlState;
-    if (IsSpinUpButtonPartHovered(node))
-      result |= kSpinUpControlState;
-  }
-  if (IsPressed(node)) {
-    result |= kPressedControlState;
-    if (IsSpinUpButtonPartPressed(node))
-      result |= kSpinUpControlState;
-  }
-  if (IsFocused(node) && style.OutlineStyleIsAuto())
-    result |= kFocusControlState;
-  if (IsEnabled(node))
-    result |= kEnabledControlState;
-  if (IsChecked(node))
-    result |= kCheckedControlState;
-  if (IsReadOnlyControl(node))
-    result |= kReadOnlyControlState;
-  if (!IsActive(node))
-    result |= kWindowInactiveControlState;
-  if (IsIndeterminate(node))
-    result |= kIndeterminateControlState;
-  return result;
-}
-
-bool LayoutTheme::IsActive(const Node* node) {
-  if (!node)
-    return false;
-
-  Page* page = node->GetDocument().GetPage();
-  if (!page)
-    return false;
-
-  return page->GetFocusController().IsActive();
-}
-
-bool LayoutTheme::IsChecked(const Node* node) {
-  if (auto* input = DynamicTo<HTMLInputElement>(node))
-    return input->ShouldAppearChecked();
-  return false;
-}
-
-bool LayoutTheme::IsIndeterminate(const Node* node) {
-  if (auto* input = DynamicTo<HTMLInputElement>(node))
-    return input->ShouldAppearIndeterminate();
-  return false;
-}
-
-bool LayoutTheme::IsEnabled(const Node* node) {
-  auto* element = DynamicTo<Element>(node);
-  if (!element)
-    return true;
-  return !element->IsDisabledFormControl();
-}
-
-bool LayoutTheme::IsFocused(const Node* node) {
-  if (!node)
-    return false;
-
-  node = node->FocusDelegate();
-  Document& document = node->GetDocument();
-  LocalFrame* frame = document.GetFrame();
-  return node == document.FocusedElement() && node->IsFocused() &&
-         node->ShouldHaveFocusAppearance() && frame &&
-         frame->Selection().FrameIsFocusedAndActive();
-}
-
-bool LayoutTheme::IsPressed(const Node* node) {
-  if (!node)
-    return false;
-  return node->IsActive();
-}
-
-bool LayoutTheme::IsSpinUpButtonPartPressed(const Node* node) {
-  const auto* element = DynamicTo<SpinButtonElement>(node);
-  if (!element || !element->IsActive())
-    return false;
-  return element->GetUpDownState() == SpinButtonElement::kUp;
-}
-
-bool LayoutTheme::IsReadOnlyControl(const Node* node) {
-  auto* form_control_element = DynamicTo<HTMLFormControlElement>(node);
-  return form_control_element && form_control_element->IsReadOnly();
-}
-
-bool LayoutTheme::IsHovered(const Node* node) {
-  if (!node)
-    return false;
-  const auto* element = DynamicTo<SpinButtonElement>(node);
-  if (!element)
-    return node->IsHovered();
-  return element->IsHovered() &&
-         element->GetUpDownState() != SpinButtonElement::kIndeterminate;
-}
-
-bool LayoutTheme::IsSpinUpButtonPartHovered(const Node* node) {
-  const auto* element = DynamicTo<SpinButtonElement>(node);
-  if (!element)
-    return false;
-  return element->GetUpDownState() == SpinButtonElement::kUp;
 }
 
 void LayoutTheme::AdjustCheckboxStyle(ComputedStyle& style) const {
@@ -612,35 +475,35 @@ void LayoutTheme::AdjustButtonStyle(ComputedStyle& style) const {}
 
 void LayoutTheme::AdjustInnerSpinButtonStyle(ComputedStyle&) const {}
 
-void LayoutTheme::AdjustMenuListStyle(ComputedStyle&, Element*) const {}
-
-base::TimeDelta LayoutTheme::AnimationRepeatIntervalForProgressBar() const {
-  return base::TimeDelta();
+void LayoutTheme::AdjustMenuListStyle(ComputedStyle& style) const {
+  // Menulists should have visible overflow
+  // https://bugs.webkit.org/show_bug.cgi?id=21287
+  style.SetOverflowX(EOverflow::kVisible);
+  style.SetOverflowY(EOverflow::kVisible);
 }
 
-base::TimeDelta LayoutTheme::AnimationDurationForProgressBar() const {
-  return base::TimeDelta();
-}
+void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&) const {}
 
-bool LayoutTheme::ShouldHaveSpinButton(HTMLInputElement* input_element) const {
-  return input_element->IsSteppable() &&
-         input_element->type() != input_type_names::kRange;
-}
-
-void LayoutTheme::AdjustMenuListButtonStyle(ComputedStyle&, Element*) const {}
-
-void LayoutTheme::AdjustSliderContainerStyle(ComputedStyle& style,
-                                             Element* e) const {
-  if (e && (e->ShadowPseudoId() == "-webkit-media-slider-container" ||
-            e->ShadowPseudoId() == "-webkit-slider-container")) {
-    if (style.EffectiveAppearance() == kSliderVerticalPart) {
-      style.SetTouchAction(TouchAction::kPanX);
-      style.SetEffectiveAppearance(kNoControlPart);
-    } else {
-      style.SetTouchAction(TouchAction::kPanY);
-      style.SetEffectiveAppearance(kNoControlPart);
+void LayoutTheme::AdjustSliderContainerStyle(const Element& e,
+                                             ComputedStyle& style) const {
+  const AtomicString& pseudo = e.ShadowPseudoId();
+  if (pseudo != shadow_element_names::kPseudoMediaSliderContainer &&
+      pseudo != shadow_element_names::kPseudoSliderContainer)
+    return;
+  if (style.EffectiveAppearance() == kSliderVerticalPart) {
+    style.SetTouchAction(TouchAction::kPanX);
+    style.SetWritingMode(WritingMode::kVerticalRl);
+    // It's always in RTL because the slider value increases up even in LTR.
+    style.SetDirection(TextDirection::kRtl);
+  } else {
+    style.SetTouchAction(TouchAction::kPanY);
+    style.SetWritingMode(WritingMode::kHorizontalTb);
+    if (To<HTMLInputElement>(e.OwnerShadowHost())->list()) {
+      style.SetAlignSelf(StyleSelfAlignmentData(ItemPosition::kCenter,
+                                                OverflowAlignment::kUnsafe));
     }
   }
+  style.SetEffectiveAppearance(kNoControlPart);
 }
 
 void LayoutTheme::AdjustSliderThumbStyle(ComputedStyle& style) const {
@@ -654,6 +517,7 @@ void LayoutTheme::AdjustSearchFieldStyle(ComputedStyle&) const {}
 void LayoutTheme::AdjustSearchFieldCancelButtonStyle(ComputedStyle&) const {}
 
 void LayoutTheme::PlatformColorsDidChange() {
+  UpdateForcedColorsState();
   Page::PlatformColorsChanged();
 }
 
@@ -711,26 +575,36 @@ static FontDescription& GetCachedFontDescription(CSSValueID system_font_id) {
 }
 
 void LayoutTheme::SystemFont(CSSValueID system_font_id,
-                             FontDescription& font_description) {
+                             FontDescription& font_description,
+                             const Document* document) {
   font_description = GetCachedFontDescription(system_font_id);
   if (font_description.IsAbsoluteSize())
     return;
 
-  FontSelectionValue font_slope = NormalSlopeValue();
-  FontSelectionValue font_weight = NormalWeightValue();
-  float font_size = 0;
-  AtomicString font_family;
-  SystemFont(system_font_id, font_slope, font_weight, font_size, font_family);
-  font_description.SetStyle(font_slope);
-  font_description.SetWeight(font_weight);
-  font_description.SetSpecifiedSize(font_size);
+  font_description.SetStyle(
+      LayoutThemeFontProvider::SystemFontStyle(system_font_id));
+  font_description.SetWeight(
+      LayoutThemeFontProvider::SystemFontWeight(system_font_id));
+  font_description.SetSpecifiedSize(
+      LayoutThemeFontProvider::SystemFontSize(system_font_id, document));
   font_description.SetIsAbsoluteSize(true);
-  font_description.FirstFamily().SetFamily(font_family);
+  const AtomicString& system_font =
+      LayoutThemeFontProvider::SystemFontFamily(system_font_id);
+  font_description.FirstFamily().SetFamily(
+      system_font, FontFamily::InferredTypeFor(system_font));
   font_description.SetGenericFamily(FontDescription::kNoFamily);
 }
 
 Color LayoutTheme::SystemColor(CSSValueID css_value_id,
-                               WebColorScheme color_scheme) const {
+                               mojom::blink::ColorScheme color_scheme) const {
+  if (!WebTestSupport::IsRunningWebTest() && InForcedColorsMode())
+    return SystemColorFromNativeTheme(css_value_id, color_scheme);
+  return DefaultSystemColor(css_value_id, color_scheme);
+}
+
+Color LayoutTheme::DefaultSystemColor(
+    CSSValueID css_value_id,
+    mojom::blink::ColorScheme color_scheme) const {
   switch (css_value_id) {
     case CSSValueID::kActiveborder:
       return 0xFFFFFFFF;
@@ -739,29 +613,36 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
     case CSSValueID::kActivetext:
       return 0xFFFF0000;
     case CSSValueID::kAppworkspace:
-      return color_scheme == WebColorScheme::kDark ? 0xFF000000 : 0xFFFFFFFF;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF000000
+                                                              : 0xFFFFFFFF;
     case CSSValueID::kBackground:
       return 0xFF6363CE;
     case CSSValueID::kButtonface:
-      return color_scheme == WebColorScheme::kDark ? 0xFF404040 : 0xFFC0C0C0;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF444444
+                                                              : 0xFFDDDDDD;
     case CSSValueID::kButtonhighlight:
       return 0xFFDDDDDD;
     case CSSValueID::kButtonshadow:
       return 0xFF888888;
     case CSSValueID::kButtontext:
-      return color_scheme == WebColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFAAAAAA
+                                                              : 0xFF000000;
     case CSSValueID::kCaptiontext:
-      return color_scheme == WebColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
+                                                              : 0xFF000000;
     case CSSValueID::kField:
-      return color_scheme == WebColorScheme::kDark ? 0xFF000000 : 0xFFFFFFFF;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF000000
+                                                              : 0xFFFFFFFF;
     case CSSValueID::kFieldtext:
-      return color_scheme == WebColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
+                                                              : 0xFF000000;
     case CSSValueID::kGraytext:
       return 0xFF808080;
     case CSSValueID::kHighlight:
       return 0xFFB5D5FF;
     case CSSValueID::kHighlighttext:
-      return color_scheme == WebColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
+                                                              : 0xFF000000;
     case CSSValueID::kInactiveborder:
       return 0xFFFFFFFF;
     case CSSValueID::kInactivecaption:
@@ -769,19 +650,24 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
     case CSSValueID::kInactivecaptiontext:
       return 0xFF7F7F7F;
     case CSSValueID::kInfobackground:
-      return color_scheme == WebColorScheme::kDark ? 0xFFB46E32 : 0xFFFBFCC5;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFB46E32
+                                                              : 0xFFFBFCC5;
     case CSSValueID::kInfotext:
-      return color_scheme == WebColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
+                                                              : 0xFF000000;
     case CSSValueID::kLinktext:
       return 0xFF0000EE;
     case CSSValueID::kMenu:
-      return color_scheme == WebColorScheme::kDark ? 0xFF404040 : 0xFFC0C0C0;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF404040
+                                                              : 0xFFF7F7F7;
     case CSSValueID::kMenutext:
-      return color_scheme == WebColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
+                                                              : 0xFF000000;
     case CSSValueID::kScrollbar:
       return 0xFFFFFFFF;
     case CSSValueID::kText:
-      return color_scheme == WebColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
+                                                              : 0xFF000000;
     case CSSValueID::kThreeddarkshadow:
       return 0xFF666666;
     case CSSValueID::kThreedface:
@@ -796,12 +682,14 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
       return 0xFF551A8B;
     case CSSValueID::kWindow:
     case CSSValueID::kCanvas:
-      return color_scheme == WebColorScheme::kDark ? 0xFF000000 : 0xFFFFFFFF;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFF000000
+                                                              : 0xFFFFFFFF;
     case CSSValueID::kWindowframe:
       return 0xFFCCCCCC;
     case CSSValueID::kWindowtext:
     case CSSValueID::kCanvastext:
-      return color_scheme == WebColorScheme::kDark ? 0xFFFFFFFF : 0xFF000000;
+      return color_scheme == mojom::blink::ColorScheme::kDark ? 0xFFFFFFFF
+                                                              : 0xFF000000;
     case CSSValueID::kInternalActiveListBoxSelection:
       return ActiveListBoxSelectionBackgroundColor(color_scheme);
     case CSSValueID::kInternalActiveListBoxSelectionText:
@@ -817,22 +705,67 @@ Color LayoutTheme::SystemColor(CSSValueID css_value_id,
   return Color();
 }
 
+Color LayoutTheme::SystemColorFromNativeTheme(
+    CSSValueID css_value_id,
+    mojom::blink::ColorScheme color_scheme) const {
+  blink::WebThemeEngine::SystemThemeColor theme_color;
+  switch (css_value_id) {
+    case CSSValueID::kActivetext:
+    case CSSValueID::kLinktext:
+    case CSSValueID::kVisitedtext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kHotlight;
+      break;
+    case CSSValueID::kButtonface:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kButtonFace;
+      break;
+    case CSSValueID::kButtontext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kButtonText;
+      break;
+    case CSSValueID::kGraytext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kGrayText;
+      break;
+    case CSSValueID::kHighlight:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kHighlight;
+      break;
+    case CSSValueID::kHighlighttext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kHighlightText;
+      break;
+    case CSSValueID::kWindow:
+    case CSSValueID::kCanvas:
+    case CSSValueID::kField:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kWindow;
+      break;
+    case CSSValueID::kWindowtext:
+    case CSSValueID::kCanvastext:
+    case CSSValueID::kFieldtext:
+      theme_color = blink::WebThemeEngine::SystemThemeColor::kWindowText;
+      break;
+    default:
+      return DefaultSystemColor(css_value_id, color_scheme);
+  }
+  DCHECK(Platform::Current() && Platform::Current()->ThemeEngine());
+  const absl::optional<SkColor> system_color =
+      Platform::Current()->ThemeEngine()->GetSystemColor(theme_color);
+  if (system_color)
+    return Color(system_color.value());
+  return DefaultSystemColor(css_value_id, color_scheme);
+}
+
 Color LayoutTheme::PlatformTextSearchHighlightColor(
     bool active_match,
-    bool in_forced_colors_mode,
-    WebColorScheme color_scheme) const {
+    mojom::blink::ColorScheme color_scheme) const {
   if (active_match) {
-    if (in_forced_colors_mode)
+    if (InForcedColorsMode())
       return GetTheme().SystemColor(CSSValueID::kHighlight, color_scheme);
     return Color(255, 150, 50);  // Orange.
   }
   return Color(255, 255, 0);     // Yellow.
 }
 
-Color LayoutTheme::PlatformTextSearchColor(bool active_match,
-                                           bool in_forced_colors_mode,
-                                           WebColorScheme color_scheme) const {
-  if (in_forced_colors_mode && active_match)
+Color LayoutTheme::PlatformTextSearchColor(
+    bool active_match,
+    mojom::blink::ColorScheme color_scheme) const {
+  if (InForcedColorsMode() && active_match)
     return GetTheme().SystemColor(CSSValueID::kHighlighttext, color_scheme);
   return Color::kBlack;
 }
@@ -846,192 +779,33 @@ void LayoutTheme::SetCustomFocusRingColor(const Color& c) {
   has_custom_focus_ring_color_ = true;
 }
 
-bool LayoutTheme::IsFocusRingOutset() const {
-  return false;
-}
-
-Color LayoutTheme::FocusRingColor() const {
+Color LayoutTheme::FocusRingColor(
+    mojom::blink::ColorScheme color_scheme) const {
   return has_custom_focus_ring_color_ ? custom_focus_ring_color_
                                       : GetTheme().PlatformFocusRingColor();
 }
 
-String LayoutTheme::FileListNameForWidth(Locale& locale,
-                                         const FileList* file_list,
-                                         const Font& font,
-                                         int width) const {
-  if (width <= 0)
-    return String();
-
-  String string;
-  if (file_list->IsEmpty()) {
-    string = locale.QueryString(IDS_FORM_FILE_NO_FILE_LABEL);
-  } else if (file_list->length() == 1) {
-    string = file_list->item(0)->name();
-  } else {
-    return StringTruncator::RightTruncate(
-        locale.QueryString(IDS_FORM_FILE_MULTIPLE_UPLOAD,
-                           locale.ConvertToLocalizedNumber(
-                               String::Number(file_list->length()))),
-        width, font);
-  }
-
-  return StringTruncator::CenterTruncate(string, width, font);
+bool LayoutTheme::DelegatesMenuListRendering() const {
+  return delegates_menu_list_rendering_;
 }
 
-bool LayoutTheme::ShouldOpenPickerWithF4Key() const {
-  return false;
+void LayoutTheme::SetDelegatesMenuListRenderingForTesting(bool flag) {
+  delegates_menu_list_rendering_ = flag;
+}
+
+String LayoutTheme::DisplayNameForFile(const File& file) const {
+  return file.name();
 }
 
 bool LayoutTheme::SupportsCalendarPicker(const AtomicString& type) const {
   DCHECK(RuntimeEnabledFeatures::InputMultipleFieldsUIEnabled());
-  if (RuntimeEnabledFeatures::FormControlsRefreshEnabled() &&
-      type == input_type_names::kTime)
+  if (type == input_type_names::kTime)
     return true;
 
   return type == input_type_names::kDate ||
          type == input_type_names::kDatetime ||
          type == input_type_names::kDatetimeLocal ||
          type == input_type_names::kMonth || type == input_type_names::kWeek;
-}
-
-bool LayoutTheme::ShouldUseFallbackTheme(const ComputedStyle&) const {
-  return false;
-}
-
-void LayoutTheme::AdjustStyleUsingFallbackTheme(ComputedStyle& style) {
-  ControlPart part = style.EffectiveAppearance();
-  switch (part) {
-    case kCheckboxPart:
-      return AdjustCheckboxStyleUsingFallbackTheme(style);
-    case kRadioPart:
-      return AdjustRadioStyleUsingFallbackTheme(style);
-    default:
-      break;
-  }
-}
-
-// static
-void LayoutTheme::SetSizeIfAuto(ComputedStyle& style, const IntSize& size) {
-  if (style.Width().IsIntrinsicOrAuto())
-    style.SetWidth(Length::Fixed(size.Width()));
-  if (style.Height().IsIntrinsicOrAuto())
-    style.SetHeight(Length::Fixed(size.Height()));
-}
-
-// static
-void LayoutTheme::SetMinimumSize(ComputedStyle& style,
-                                 const LengthSize* part_size,
-                                 const LengthSize* min_part_size) {
-  DCHECK(part_size || min_part_size);
-  // We only want to set a minimum size if no explicit size is specified, to
-  // avoid overriding author intentions.
-  if (part_size && style.MinWidth().IsIntrinsicOrAuto() &&
-      style.Width().IsIntrinsicOrAuto())
-    style.SetMinWidth(part_size->Width());
-  else if (min_part_size && min_part_size->Width() != style.MinWidth())
-    style.SetMinWidth(min_part_size->Width());
-  if (part_size && style.MinHeight().IsIntrinsicOrAuto() &&
-      style.Height().IsIntrinsicOrAuto())
-    style.SetMinHeight(part_size->Height());
-  else if (min_part_size && min_part_size->Height() != style.MinHeight())
-    style.SetMinHeight(min_part_size->Height());
-}
-
-// static
-void LayoutTheme::SetMinimumSizeIfAuto(ComputedStyle& style,
-                                       const IntSize& size) {
-  LengthSize length_size(Length::Fixed(size.Width()),
-                         Length::Fixed(size.Height()));
-  SetMinimumSize(style, &length_size);
-}
-
-void LayoutTheme::AdjustCheckboxStyleUsingFallbackTheme(
-    ComputedStyle& style) const {
-  // If the width and height are both specified, then we have nothing to do.
-  if (!style.Width().IsIntrinsicOrAuto() && !style.Height().IsAuto())
-    return;
-
-  IntSize size(GetFallbackTheme().GetPartSize(ui::NativeTheme::kCheckbox,
-                                              ui::NativeTheme::kNormal,
-                                              ui::NativeTheme::ExtraParams()));
-  float zoom_level = style.EffectiveZoom();
-  size.SetWidth(size.Width() * zoom_level);
-  size.SetHeight(size.Height() * zoom_level);
-  SetMinimumSizeIfAuto(style, size);
-  SetSizeIfAuto(style, size);
-
-  // padding - not honored by WinIE, needs to be removed.
-  style.ResetPadding();
-
-  // border - honored by WinIE, but looks terrible (just paints in the control
-  // box and turns off the Windows XP theme)
-  // for now, we will not honor it.
-  style.ResetBorder();
-}
-
-void LayoutTheme::AdjustRadioStyleUsingFallbackTheme(
-    ComputedStyle& style) const {
-  // If the width and height are both specified, then we have nothing to do.
-  if (!style.Width().IsIntrinsicOrAuto() && !style.Height().IsAuto())
-    return;
-
-  IntSize size(GetFallbackTheme().GetPartSize(ui::NativeTheme::kRadio,
-                                              ui::NativeTheme::kNormal,
-                                              ui::NativeTheme::ExtraParams()));
-  float zoom_level = style.EffectiveZoom();
-  size.SetWidth(size.Width() * zoom_level);
-  size.SetHeight(size.Height() * zoom_level);
-  SetMinimumSizeIfAuto(style, size);
-  SetSizeIfAuto(style, size);
-
-  // padding - not honored by WinIE, needs to be removed.
-  style.ResetPadding();
-
-  // border - honored by WinIE, but looks terrible (just paints in the control
-  // box and turns off the Windows XP theme)
-  // for now, we will not honor it.
-  style.ResetBorder();
-}
-
-Color LayoutTheme::RootElementColor(WebColorScheme color_scheme) const {
-  if (color_scheme == WebColorScheme::kDark)
-    return Color::kWhite;
-  return ComputedStyleInitialValues::InitialColor();
-}
-
-LengthBox LayoutTheme::ControlPadding(ControlPart part,
-                                      const FontDescription&,
-                                      const Length& zoomed_box_top,
-                                      const Length& zoomed_box_right,
-                                      const Length& zoomed_box_bottom,
-                                      const Length& zoomed_box_left,
-                                      float) const {
-  switch (part) {
-    case kMenulistPart:
-    case kMenulistButtonPart:
-    case kCheckboxPart:
-    case kRadioPart:
-      return LengthBox(0);
-    default:
-      return LengthBox(zoomed_box_top, zoomed_box_right, zoomed_box_bottom,
-                       zoomed_box_left);
-  }
-}
-
-LengthBox LayoutTheme::ControlBorder(ControlPart part,
-                                     const FontDescription&,
-                                     const LengthBox& zoomed_box,
-                                     float) const {
-  switch (part) {
-    case kPushButtonPart:
-    case kMenulistPart:
-    case kSearchFieldPart:
-    case kCheckboxPart:
-    case kRadioPart:
-      return LengthBox(0);
-    default:
-      return zoomed_box;
-  }
 }
 
 void LayoutTheme::AdjustControlPartStyle(ComputedStyle& style) {
@@ -1051,6 +825,21 @@ void LayoutTheme::AdjustControlPartStyle(ComputedStyle& style) {
     default:
       break;
   }
+}
+
+bool LayoutTheme::HasCustomFocusRingColor() const {
+  return has_custom_focus_ring_color_;
+}
+
+Color LayoutTheme::GetCustomFocusRingColor() const {
+  return custom_focus_ring_color_;
+}
+
+void LayoutTheme::UpdateForcedColorsState() {
+  in_forced_colors_mode_ =
+      Platform::Current() && Platform::Current()->ThemeEngine() &&
+      Platform::Current()->ThemeEngine()->GetForcedColors() !=
+          ForcedColors::kNone;
 }
 
 }  // namespace blink

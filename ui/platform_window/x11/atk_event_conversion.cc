@@ -4,36 +4,41 @@
 
 #include "ui/platform_window/x11/atk_event_conversion.h"
 
+#include "base/check.h"
+#include "base/notreached.h"
 #include "ui/events/x/events_x_utils.h"
+#include "ui/gfx/x/connection.h"
+#include "ui/gfx/x/xproto.h"
+#include "ui/gfx/x/xproto_types.h"
 
 namespace ui {
 
-std::unique_ptr<AtkKeyEventStruct> AtkKeyEventFromXEvent(XEvent* xevent) {
-  DCHECK(xevent);
+std::unique_ptr<AtkKeyEventStruct> AtkKeyEventFromXEvent(
+    const x11::Event& x11_event) {
   auto atk_key_event = std::make_unique<AtkKeyEventStruct>();
 
-  if (xevent->type == KeyPress)
-    atk_key_event->type = ATK_KEY_EVENT_PRESS;
-  else if (xevent->type == KeyRelease)
-    atk_key_event->type = ATK_KEY_EVENT_RELEASE;
-  else
-    NOTREACHED() << xevent->type;
+  auto* xkey = x11_event.As<x11::KeyEvent>();
+  DCHECK(xkey);
 
-  XKeyEvent& xkey = xevent->xkey;
-  KeySym keysym = NoSymbol;
-  XLookupString(&xkey, nullptr, 0, &keysym, nullptr);
+  atk_key_event->type = xkey->opcode == x11::KeyEvent::Press
+                            ? ATK_KEY_EVENT_PRESS
+                            : ATK_KEY_EVENT_RELEASE;
 
-  atk_key_event->state = xkey.state;
+  auto state = static_cast<int>(xkey->state);
+  auto keycode = xkey->detail;
+  auto keysym = x11::Connection::Get()->KeycodeToKeysym(keycode, state);
+
+  atk_key_event->state = state;
   atk_key_event->keyval = keysym;
-  atk_key_event->keycode = xkey.keycode;
-  atk_key_event->timestamp = xkey.time;
+  atk_key_event->keycode = static_cast<uint8_t>(keycode);
+  atk_key_event->timestamp = static_cast<uint32_t>(xkey->time);
 
   // This string property matches the one that was removed from GdkEventKey. In
   // the future, ATK clients should no longer rely on it, so we set it to null.
   atk_key_event->string = nullptr;
   atk_key_event->length = 0;
 
-  int flags = ui::EventFlagsFromXEvent(*xevent);
+  int flags = ui::EventFlagsFromXEvent(x11_event);
   if (flags & ui::EF_SHIFT_DOWN)
     atk_key_event->state |= AtkKeyModifierMask::kAtkShiftMask;
   if (flags & ui::EF_CAPS_LOCK_ON)

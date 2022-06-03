@@ -10,7 +10,6 @@
 #include <memory>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "ipc/ipc_listener.h"
@@ -31,9 +30,12 @@ class MediaGpuChannelManager
     : public base::SupportsWeakPtr<MediaGpuChannelManager> {
  public:
   explicit MediaGpuChannelManager(gpu::GpuChannelManager* channel_manager);
+  MediaGpuChannelManager(const MediaGpuChannelManager&) = delete;
+  MediaGpuChannelManager& operator=(const MediaGpuChannelManager&) = delete;
   ~MediaGpuChannelManager();
 
-  void AddChannel(int32_t client_id);
+  void AddChannel(int32_t client_id,
+                  const base::UnguessableToken& channel_token);
   void RemoveChannel(int32_t client_id);
   void DestroyAllChannels();
 
@@ -50,7 +52,6 @@ class MediaGpuChannelManager
   std::map<base::UnguessableToken, int32_t> token_to_channel_;
   std::map<int32_t, base::UnguessableToken> channel_to_token_;
   AndroidOverlayMojoFactoryCB overlay_factory_cb_;
-  DISALLOW_COPY_AND_ASSIGN(MediaGpuChannelManager);
 };
 
 }  // namespace media

@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+FAIL 2 lines resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A| BC</bdo></div>,
+	 but got  <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A |BC</bdo></div>,
+	 sameupto <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A
+FAIL 3 lines-1 resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A BC| DE</bdo></div>,
+	 but got  <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A BC |DE</bdo></div>,
+	 sameupto <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A BC
+PASS 3 lines-2
+FAIL 5 lines-1 resources/testharness.js:2092:25)
+	 expected <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A BC DE FG| HI</bdo></div>,
+	 but got  <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A BC DE FG |HI</bdo></div>,
+	 sameupto <div contenteditable dir="rtl" style="font-family: monospace; width: 2ch"><bdo dir="rtl">A BC DE FG
+PASS 5 lines-2
+PASS 5 lines-3
+PASS 5 lines-4
+Harness: the test ran to completion.
+

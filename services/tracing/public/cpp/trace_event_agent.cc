@@ -21,8 +21,12 @@
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
 #include "services/tracing/public/cpp/perfetto/trace_event_data_source.h"
 #include "services/tracing/public/cpp/stack_sampling/tracing_sampler_profiler.h"
-#include "services/tracing/public/cpp/trace_event_args_whitelist.h"
+#include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+
+#if defined(OS_ANDROID)
+#include "services/tracing/public/cpp/stack_sampling/reached_code_data_source_android.h"
+#endif
 
 namespace tracing {
 
@@ -41,14 +45,17 @@ TraceEventAgent::TraceEventAgent() {
           ->GetArgumentFilterPredicate()
           .is_null()) {
     base::trace_event::TraceLog::GetInstance()->SetArgumentFilterPredicate(
-        base::BindRepeating(&IsTraceEventArgsWhitelisted));
+        base::BindRepeating(&IsTraceEventArgsAllowlisted));
     base::trace_event::TraceLog::GetInstance()->SetMetadataFilterPredicate(
-        base::BindRepeating(&IsMetadataWhitelisted));
+        base::BindRepeating(&IsMetadataAllowlisted));
   }
 
   PerfettoTracedProcess::Get()->AddDataSource(
       TraceEventDataSource::GetInstance());
   TracingSamplerProfiler::RegisterDataSource();
+#if defined(OS_ANDROID)
+  PerfettoTracedProcess::Get()->AddDataSource(ReachedCodeDataSource::Get());
+#endif
 }
 
 TraceEventAgent::~TraceEventAgent() = default;

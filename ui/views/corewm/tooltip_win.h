@@ -5,13 +5,13 @@
 #ifndef UI_VIEWS_COREWM_TOOLTIP_WIN_H_
 #define UI_VIEWS_COREWM_TOOLTIP_WIN_H_
 
-#include <windows.h>
+#include <windows.h>  // Must come before other Windows system headers.
+
 #include <commctrl.h>
 
+#include <string>
+
 #include "base/compiler_specific.h"
-#include "base/macros.h"
-#include "base/optional.h"
-#include "base/strings/string16.h"
 #include "base/win/scoped_gdi_object.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/views/corewm/tooltip.h"
@@ -24,6 +24,10 @@ namespace corewm {
 class VIEWS_EXPORT TooltipWin : public Tooltip {
  public:
   explicit TooltipWin(HWND parent);
+
+  TooltipWin(const TooltipWin&) = delete;
+  TooltipWin& operator=(const TooltipWin&) = delete;
+
   ~TooltipWin() override;
 
   // HandleNotify() is forwarded from DesktopWindowTreeHostWin to keep the
@@ -43,9 +47,9 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
 
   // Tooltip:
   int GetMaxWidth(const gfx::Point& location) const override;
-  void SetText(aura::Window* window,
-               const base::string16& tooltip_text,
-               const gfx::Point& location) override;
+  void Update(aura::Window* window,
+              const std::u16string& tooltip_text,
+              const TooltipPosition& position) override;
   void Show() override;
   void Hide() override;
   bool IsVisible() override;
@@ -66,16 +70,13 @@ class VIEWS_EXPORT TooltipWin : public Tooltip {
   // Is the tooltip showing?
   bool showing_;
 
-  // Location to show the tooltip at. In order to position the tooltip we need
-  // to know the size. The size is only available from TTN_SHOW, so we have to
-  // cache it.
-  gfx::Point location_;
+  // In order to position the tooltip we need to know the size. The size is only
+  // available from TTN_SHOW, so we have to cache it.
+  TooltipPosition position_;
 
   // What the scale was the last time we overrode the font, to see if we can
   // re-use our previous override.
   float override_scale_ = 0.0f;
-
-  DISALLOW_COPY_AND_ASSIGN(TooltipWin);
 };
 
 }  // namespace corewm

@@ -31,7 +31,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -46,15 +45,21 @@ class PLATFORM_EXPORT Panner {
   USING_FAST_MALLOC(Panner);
 
  public:
-  // This values are used in histograms and should not be renumbered or deleted.
-  enum { kPanningModelEqualPower = 0, kPanningModelHRTF = 1 };
-
-  typedef unsigned PanningModel;
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  enum class PanningModel {
+    kEqualPower = 0,
+    kHRTF = 1,
+    kMaxValue = kHRTF,
+  };
 
   static std::unique_ptr<Panner> Create(PanningModel,
                                         float sample_rate,
+                                        unsigned render_quantum_frames,
                                         HRTFDatabaseLoader*);
 
+  Panner(const Panner&) = delete;
+  Panner& operator=(const Panner&) = delete;
   virtual ~Panner() = default;
 
   virtual void Pan(double azimuth,
@@ -77,12 +82,7 @@ class PLATFORM_EXPORT Panner {
   virtual bool RequiresTailProcessing() const = 0;
 
  protected:
-  Panner(PanningModel model) : panning_model_(model) {}
-
-  PanningModel panning_model_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(Panner);
+  Panner() = default;
 };
 
 }  // namespace blink

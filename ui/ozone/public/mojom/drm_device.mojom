@@ -6,6 +6,7 @@ module ui.ozone.mojom;
 
 import "mojo/public/mojom/base/file.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "ui/display/mojom/display_configuration_params.mojom";
 import "ui/display/mojom/display_constants.mojom";
 import "ui/display/mojom/display_mode.mojom";
 import "ui/display/mojom/display_snapshot.mojom";
@@ -50,20 +51,22 @@ interface DrmDevice {
   // Instructs the GPU to abandon a DRM device.
   RemoveGraphicsDevice(mojo_base.mojom.FilePath path);
 
-  // Instructs the GPU to disable a DRM device.
-  DisableNativeDisplay(int64 display_id) => (int64 display_id, bool success);
+  // Configures (Enables/Disables) DRM displays, returns whether or not the
+  // configuration was successful.
+  ConfigureNativeDisplays(
+      array<display.mojom.DisplayConfigurationParams> config_requests) =>
+    (bool config_success);
 
-  // Configures a DRM display returning true on success.
-  ConfigureNativeDisplay(int64 display_id,
-                         display.mojom.DisplayMode display_mode,
-                         gfx.mojom.Point point) =>
-      (int64 display_id, bool success);
-
-  // Gets or sets high-definition content protection (HDCP) (DRM as in
+  // Gets high-definition content protection (HDCP) (DRM as in
   // digital rights management) state.
   GetHDCPState(int64 display_id) =>
-      (int64 display_id, bool success, display.mojom.HDCPState state);
-  SetHDCPState(int64 display_id, display.mojom.HDCPState  state) =>
+      (int64 display_id, bool success, display.mojom.HDCPState state,
+       display.mojom.ContentProtectionMethod protection_method);
+
+  // Sets high-definition content protection (HDCP) (DRM as in
+  // digital rights management) state.
+  SetHDCPState(int64 display_id, display.mojom.HDCPState state,
+               display.mojom.ContentProtectionMethod protection_method) =>
       (int64 display_id, bool success);
 
   // Sets a 3x3 color transform matrix on the display hardware.
@@ -75,6 +78,9 @@ interface DrmDevice {
   SetGammaCorrection(int64 display_id,
                      array<display.mojom.GammaRampRGBEntry> degamma_lut,
                      array<display.mojom.GammaRampRGBEntry> gamma_lut);
+
+  // Sets the state of the privacy screen feature.
+  SetPrivacyScreen(int64 display_id, bool enabled);
 
   // Provides a DeviceCursor interface. The provided interface needs to be
   // associated because the AcceleratedWidgets referenced by its methods are

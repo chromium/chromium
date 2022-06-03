@@ -23,6 +23,12 @@ found in the LICENSE file.
         input.value = select.options[select.selectedIndex].label;
       }
     </script>
+
+    <style>
+      #full_height_section {
+        height: 100vh;
+      }
+    </style>
   </head>
   <body>
     <button id="button" type="button" onclick="removeDiv()">Button</button>
@@ -37,5 +43,11 @@ found in the LICENSE file.
       <option value="Fish">Fish</option>
     </select>
     <input type="text" id="myPet"/>
+
+    <!--
+    Intentionally make this section has the full height of the window
+    to force scroll when operating on the elements below this section.
+    -->
+    <div id="full_height_section"></div>
   </body>
 </html>

@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -77,9 +77,13 @@ class MockAudioManagerAlsa : public AudioManagerAlsa {
 };
 
 class AlsaPcmOutputStreamTest : public testing::Test {
+ public:
+  AlsaPcmOutputStreamTest(const AlsaPcmOutputStreamTest&) = delete;
+  AlsaPcmOutputStreamTest& operator=(const AlsaPcmOutputStreamTest&) = delete;
+
  protected:
   AlsaPcmOutputStreamTest() {
-    mock_manager_.reset(new StrictMock<MockAudioManagerAlsa>());
+    mock_manager_ = std::make_unique<StrictMock<MockAudioManagerAlsa>>();
   }
 
   ~AlsaPcmOutputStreamTest() override { mock_manager_->Shutdown(); }
@@ -114,7 +118,7 @@ class AlsaPcmOutputStreamTest : public testing::Test {
     DCHECK(test_stream);
     packet_ = new DataBuffer(kTestPacketSize);
     packet_->set_data_size(kTestPacketSize);
-    test_stream->buffer_.reset(new SeekableBuffer(0, kTestPacketSize));
+    test_stream->buffer_ = std::make_unique<SeekableBuffer>(0, kTestPacketSize);
     test_stream->buffer_->Append(packet_.get());
   }
 
@@ -144,9 +148,6 @@ class AlsaPcmOutputStreamTest : public testing::Test {
   StrictMock<MockAlsaWrapper> mock_alsa_wrapper_;
   std::unique_ptr<StrictMock<MockAudioManagerAlsa>> mock_manager_;
   scoped_refptr<DataBuffer> packet_;
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(AlsaPcmOutputStreamTest);
 };
 
 const ChannelLayout AlsaPcmOutputStreamTest::kTestChannelLayout =
@@ -177,7 +178,7 @@ char AlsaPcmOutputStreamTest::kSurround70[] = "surround70:CARD=foo,DEV=0";
 char AlsaPcmOutputStreamTest::kSurround71[] = "surround71:CARD=foo,DEV=0";
 void* AlsaPcmOutputStreamTest::kFakeHints[] = {
     kSurround40, kSurround41, kSurround50, kSurround51,
-    kSurround70, kSurround71, NULL };
+    kSurround70, kSurround71, nullptr};
 char AlsaPcmOutputStreamTest::kGenericSurround50[] = "surround50";
 
 // Custom action to clear a memory buffer.
@@ -315,7 +316,7 @@ TEST_F(AlsaPcmOutputStreamTest, PcmOpenFailed) {
 
   // Ensure internal state is set for a no-op stream if PcmOpen() failes.
   EXPECT_TRUE(test_stream->stop_stream_);
-  EXPECT_TRUE(test_stream->playback_handle_ == NULL);
+  EXPECT_FALSE(test_stream->playback_handle_);
   EXPECT_FALSE(test_stream->buffer_.get());
 
   // Close the stream since we opened it to make destruction happy.
@@ -342,7 +343,7 @@ TEST_F(AlsaPcmOutputStreamTest, PcmSetParamsFailed) {
 
   // Ensure internal state is set for a no-op stream if PcmSetParams() failes.
   EXPECT_TRUE(test_stream->stop_stream_);
-  EXPECT_TRUE(test_stream->playback_handle_ == NULL);
+  EXPECT_FALSE(test_stream->playback_handle_);
   EXPECT_FALSE(test_stream->buffer_.get());
 
   // Close the stream since we opened it to make destruction happy.
@@ -636,13 +637,16 @@ TEST_F(AlsaPcmOutputStreamTest, AutoSelectDevice_DeviceSelect) {
   //
   // Note that the loop starts at "1", so the first parameter is ignored in
   // these arrays.
-  const char* kExpectedDeviceName[] = { NULL,
-                                        AlsaPcmOutputStream::kDefaultDevice,
-                                        AlsaPcmOutputStream::kDefaultDevice,
-                                        AlsaPcmOutputStream::kDefaultDevice,
-                                        kSurround40, kSurround50, kSurround51,
-                                        kSurround70, kSurround71,
-                                        AlsaPcmOutputStream::kDefaultDevice };
+  const char* kExpectedDeviceName[] = {nullptr,
+                                       AlsaPcmOutputStream::kDefaultDevice,
+                                       AlsaPcmOutputStream::kDefaultDevice,
+                                       AlsaPcmOutputStream::kDefaultDevice,
+                                       kSurround40,
+                                       kSurround50,
+                                       kSurround51,
+                                       kSurround70,
+                                       kSurround71,
+                                       AlsaPcmOutputStream::kDefaultDevice};
   bool kExpectedDownmix[] = { false, false, false, false, false, true,
                               false, false, false, false };
   ChannelLayout kExpectedLayouts[] = { CHANNEL_LAYOUT_NONE,

@@ -12,10 +12,7 @@
 #ifndef COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CTR_AGGREGATOR_H_
 #define COMPONENTS_CONTEXTUAL_SEARCH_CORE_BROWSER_CTR_AGGREGATOR_H_
 
-#include <string>
-
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "components/contextual_search/core/browser/weekly_activity_storage.h"
 
 namespace contextual_search {
@@ -39,6 +36,10 @@ class CtrAggregator {
   // so the |storage| must be fully initialized when this constructor is
   // called.
   CtrAggregator(WeeklyActivityStorage& storage);
+
+  CtrAggregator(const CtrAggregator&) = delete;
+  CtrAggregator& operator=(const CtrAggregator&) = delete;
+
   ~CtrAggregator();
 
   // Records an impression.  Records a click if |did_click| is true.
@@ -109,8 +110,6 @@ class CtrAggregator {
 
   // The current week number, expressed as the number of weeks since Epoch.
   int week_number_;
-
-  DISALLOW_COPY_AND_ASSIGN(CtrAggregator);
 };
 
 }  // namespace contextual_search

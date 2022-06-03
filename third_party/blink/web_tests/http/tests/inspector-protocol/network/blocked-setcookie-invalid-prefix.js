@@ -11,10 +11,10 @@
   const helper = (await testRunner.loadScript('resources/extra-info-helper.js'))(dp, session);
 
   var {requestExtraInfo, responseExtraInfo} = await helper.navigateWithExtraInfo(setCookieUrlBadSecure);
-  testRunner.log(`Bad __Secure- prefix blocked set-cookies: ${JSON.stringify(responseExtraInfo.params.blockedCookies, null, 2)}`);
+  testRunner.log(responseExtraInfo.params.blockedCookies, 'Bad __Secure- prefix blocked set-cookies:');
 
   var {requestExtraInfo, responseExtraInfo} = await helper.navigateWithExtraInfo(setCookieUrlBadHost);
-  testRunner.log(`Bad __Host- prefix blocked set-cookies: ${JSON.stringify(responseExtraInfo.params.blockedCookies, null, 2)}`);
+  testRunner.log(responseExtraInfo.params.blockedCookies, 'Bad __Host- prefix blocked set-cookies:');
 
   testRunner.completeTest();
 })

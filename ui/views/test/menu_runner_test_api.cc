@@ -13,8 +13,7 @@ namespace views {
 namespace test {
 
 MenuRunnerTestAPI::MenuRunnerTestAPI(MenuRunner* menu_runner)
-    : menu_runner_(menu_runner) {
-}
+    : menu_runner_(menu_runner) {}
 
 MenuRunnerTestAPI::~MenuRunnerTestAPI() = default;
 

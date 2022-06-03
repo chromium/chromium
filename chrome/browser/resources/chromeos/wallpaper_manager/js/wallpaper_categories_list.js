@@ -24,14 +24,14 @@ cr.define('wallpapers', function() {
     /**
      * @override
      */
-    getIndexBefore: function(index) {
+    getIndexBefore(index) {
       return this.getIndexAbove(index);
     },
 
     /**
      * @override
      */
-    getIndexAfter: function(index) {
+    getIndexAfter(index) {
       return this.getIndexBelow(index);
     },
   };
@@ -49,7 +49,7 @@ cr.define('wallpapers', function() {
     /**
      * @override
      */
-    decorate: function() {
+    decorate() {
       List.prototype.decorate.call(this);
       this.selectionModel = new ListSingleSelectionModel();
       this.dataModel = new ArrayDataModel([]);
@@ -102,7 +102,7 @@ cr.define('wallpapers', function() {
     /**
      * @override
      */
-    createSelectionController: function(sm) {
+    createSelectionController(sm) {
       return new WallpaperCategoriesListSelectionController(assert(sm));
     },
   };

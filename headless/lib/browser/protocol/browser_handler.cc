@@ -5,7 +5,6 @@
 #include "headless/lib/browser/protocol/browser_handler.h"
 
 #include "base/bind.h"
-#include "base/task/post_task.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
@@ -42,7 +41,7 @@ void BrowserHandler::Wire(UberDispatcher* dispatcher) {
 }
 
 Response BrowserHandler::Disable() {
-  return Response::OK();
+  return Response::Success();
 }
 
 Response BrowserHandler::GetWindowForTarget(
@@ -53,12 +52,12 @@ Response BrowserHandler::GetWindowForTarget(
       browser_->GetWebContentsForDevToolsAgentHostId(
           target_id.fromMaybe(target_id_)));
   if (!web_contents)
-    return Response::Error("No web contents for the given target id");
+    return Response::ServerError("No web contents for the given target id");
 
   auto result = std::make_unique<base::DictionaryValue>();
   *out_window_id = web_contents->window_id();
   *out_bounds = CreateBrowserBounds(web_contents);
-  return Response::OK();
+  return Response::Success();
 }
 
 Response BrowserHandler::GetWindowBounds(
@@ -67,16 +66,16 @@ Response BrowserHandler::GetWindowBounds(
   HeadlessWebContentsImpl* web_contents =
       browser_->GetWebContentsForWindowId(window_id);
   if (!web_contents)
-    return Response::Error("Browser window not found");
+    return Response::ServerError("Browser window not found");
   *out_bounds = CreateBrowserBounds(web_contents);
-  return Response::OK();
+  return Response::Success();
 }
 
 Response BrowserHandler::Close() {
-  base::PostTask(
-      FROM_HERE, {content::BrowserThread::UI},
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
       base::BindOnce(&HeadlessBrowserImpl::Shutdown, browser_->GetWeakPtr()));
-  return Response::OK();
+  return Response::Success();
 }
 
 Response BrowserHandler::SetWindowBounds(
@@ -85,7 +84,7 @@ Response BrowserHandler::SetWindowBounds(
   HeadlessWebContentsImpl* web_contents =
       browser_->GetWebContentsForWindowId(window_id);
   if (!web_contents)
-    return Response::Error("Browser window not found");
+    return Response::ServerError("Browser window not found");
 
   gfx::Rect bounds = web_contents->web_contents()->GetContainerBounds();
   const bool set_bounds = window_bounds->HasLeft() || window_bounds->HasTop() ||
@@ -100,25 +99,25 @@ Response BrowserHandler::SetWindowBounds(
 
   const std::string window_state = window_bounds->GetWindowState("normal");
   if (set_bounds && window_state != "normal") {
-    return Response::Error(
+    return Response::ServerError(
         "The 'minimized', 'maximized' and 'fullscreen' states cannot be "
         "combined with 'left', 'top', 'width' or 'height'");
   }
 
   if (set_bounds && web_contents->window_state() != "normal") {
-    return Response::Error(
+    return Response::ServerError(
         "To resize minimized/maximized/fullscreen window, restore it to normal "
         "state first.");
   }
 
   web_contents->set_window_state(window_state);
   web_contents->SetBounds(bounds);
-  return Response::OK();
+  return Response::Success();
 }
 
 protocol::Response BrowserHandler::SetDockTile(Maybe<std::string> label,
                                                Maybe<protocol::Binary> image) {
-  return Response::OK();
+  return Response::Success();
 }
 
 }  // namespace protocol

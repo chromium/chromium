@@ -211,16 +211,29 @@ bool MinidumpFileWriter::AddUserExtensionStream(
 }
 
 bool MinidumpFileWriter::WriteEverything(FileWriterInterface* file_writer) {
+  return WriteMinidump(file_writer, true);
+}
+
+bool MinidumpFileWriter::WriteMinidump(FileWriterInterface* file_writer,
+                                       bool allow_seek) {
   DCHECK_EQ(state(), kStateMutable);
 
-  FileOffset start_offset = file_writer->Seek(0, SEEK_CUR);
-  if (start_offset < 0) {
-    return false;
+  FileOffset start_offset = -1;
+  if (allow_seek) {
+    start_offset = file_writer->Seek(0, SEEK_CUR);
+    if (start_offset < 0) {
+      return false;
+    }
+  } else {
+    header_.Signature = MINIDUMP_SIGNATURE;
   }
 
   if (!MinidumpWritable::WriteEverything(file_writer)) {
     return false;
   }
+
+  if (!allow_seek)
+    return true;
 
   FileOffset end_offset = file_writer->Seek(0, SEEK_CUR);
   if (end_offset < 0) {

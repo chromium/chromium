@@ -42,7 +42,6 @@ class OpenTabsUIDelegateImplTest : public testing::Test {
       : session_tracker_(&mock_sync_sessions_client_),
         delegate_(&mock_sync_sessions_client_,
                   &session_tracker_,
-                  /*favicon_cache=*/nullptr,
                   base::BindRepeating(&IngnoreForeignSessionDeletion)) {}
 
   testing::NiceMock<MockSyncSessionsClient> mock_sync_sessions_client_;
@@ -59,30 +58,30 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortSessions) {
   sessions::SerializedNavigationEntry entry1 =
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   entry1.set_virtual_url(GURL("http://url1"));
-  entry1.set_title(base::UTF8ToUTF16("title1"));
+  entry1.set_title(u"title1");
   session_tracker_.GetTab(kSessionTag1, kTabId1)->navigations.push_back(entry1);
   session_tracker_.GetSession(kSessionTag1)->modified_time =
-      kTime0 + base::TimeDelta::FromSeconds(3);
+      kTime0 + base::Seconds(3);
 
   session_tracker_.PutWindowInSession(kSessionTag2, kWindowId2);
   session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
   sessions::SerializedNavigationEntry entry2 =
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   entry2.set_virtual_url(GURL("http://url2"));
-  entry2.set_title(base::UTF8ToUTF16("title2"));
+  entry2.set_title(u"title2");
   session_tracker_.GetTab(kSessionTag2, kTabId2)->navigations.push_back(entry2);
   session_tracker_.GetSession(kSessionTag2)->modified_time =
-      kTime0 + base::TimeDelta::FromSeconds(1);
+      kTime0 + base::Seconds(1);
 
   session_tracker_.PutWindowInSession(kSessionTag3, kWindowId3);
   session_tracker_.PutTabInWindow(kSessionTag3, kWindowId3, kTabId3);
   sessions::SerializedNavigationEntry entry3 =
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   entry3.set_virtual_url(GURL("http://url3"));
-  entry3.set_title(base::UTF8ToUTF16("title3"));
+  entry3.set_title(u"title3");
   session_tracker_.GetTab(kSessionTag3, kTabId3)->navigations.push_back(entry3);
   session_tracker_.GetSession(kSessionTag3)->modified_time =
-      kTime0 + base::TimeDelta::FromSeconds(2);
+      kTime0 + base::Seconds(2);
 
   std::vector<const SyncedSession*> sessions;
   EXPECT_TRUE(delegate_.GetAllForeignSessions(&sessions));
@@ -103,17 +102,17 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSortTabs) {
   sessions::SessionTab* tab1 = session_tracker_.GetTab(kSessionTag1, kTabId1);
   tab1->navigations.push_back(
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
-  tab1->timestamp = kTime0 + base::TimeDelta::FromSeconds(3);
+  tab1->timestamp = kTime0 + base::Seconds(3);
 
   sessions::SessionTab* tab2 = session_tracker_.GetTab(kSessionTag1, kTabId2);
   tab2->navigations.push_back(
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
-  tab2->timestamp = kTime0 + base::TimeDelta::FromSeconds(1);
+  tab2->timestamp = kTime0 + base::Seconds(1);
 
   sessions::SessionTab* tab3 = session_tracker_.GetTab(kSessionTag1, kTabId3);
   tab3->navigations.push_back(
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest());
-  tab3->timestamp = kTime0 + base::TimeDelta::FromSeconds(2);
+  tab3->timestamp = kTime0 + base::Seconds(2);
 
   std::vector<const SessionTab*> tabs;
   EXPECT_TRUE(delegate_.GetForeignSessionTabs(kSessionTag1, &tabs));
@@ -155,7 +154,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
   sessions::SerializedNavigationEntry nonsyncable_entry =
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   nonsyncable_entry.set_virtual_url(GURL("http://url1"));
-  nonsyncable_entry.set_title(base::UTF8ToUTF16("title1"));
+  nonsyncable_entry.set_title(u"title1");
   session_tracker_.PutWindowInSession(kSessionTag1, kWindowId1);
   session_tracker_.PutTabInWindow(kSessionTag1, kWindowId1, kTabId1);
   session_tracker_.GetTab(kSessionTag1, kTabId1)
@@ -164,7 +163,7 @@ TEST_F(OpenTabsUIDelegateImplTest, ShouldSkipNonSyncableTabs) {
   sessions::SerializedNavigationEntry syncable_entry =
       sessions::SerializedNavigationEntryTestHelper::CreateNavigationForTest();
   syncable_entry.set_virtual_url(GURL("http://otherurl"));
-  syncable_entry.set_title(base::UTF8ToUTF16("title1"));
+  syncable_entry.set_title(u"title1");
   session_tracker_.PutWindowInSession(kSessionTag2, kWindowId2);
   session_tracker_.PutTabInWindow(kSessionTag2, kWindowId2, kTabId2);
   session_tracker_.GetTab(kSessionTag2, kTabId2)

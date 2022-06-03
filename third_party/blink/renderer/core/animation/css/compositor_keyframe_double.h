@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 
@@ -24,8 +25,12 @@ class CORE_EXPORT CompositorKeyframeDouble final
   double number_;
 };
 
-DEFINE_COMPOSITOR_KEYFRAME_VALUE_TYPE_CASTS(CompositorKeyframeDouble,
-                                            IsDouble());
+template <>
+struct DowncastTraits<CompositorKeyframeDouble> {
+  static bool AllowFrom(const CompositorKeyframeValue& value) {
+    return value.IsDouble();
+  }
+};
 
 }  // namespace blink
 

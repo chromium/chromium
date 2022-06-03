@@ -9,15 +9,22 @@ namespace blink {
 // If updating this enum, also update DevTools protocol usages.
 // Contact devtools owners for help.
 enum class ResourceRequestBlockedReason {
-  kOther,
+  kOther = 0,
   kCSP,
   kMixedContent,
   kOrigin,
   kInspector,
   kSubresourceFilter,
   kContentType,
-  kCollapsedByClient,
+  kCoepFrameResourceNeedsCoepHeader,
+  kCoopSandboxedIFrameCannotNavigateToCoopPage,
+  kCorpNotSameOrigin,
+  kCorpNotSameOriginAfterDefaultedToSameOriginByCoep,
+  kCorpNotSameSite,
+  kConversionRequest,
+  kMax = kConversionRequest,
 };
+
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_PUBLIC_PLATFORM_RESOURCE_REQUEST_BLOCKED_REASON_H_

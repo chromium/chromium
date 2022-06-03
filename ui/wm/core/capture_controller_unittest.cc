@@ -4,10 +4,9 @@
 
 #include "ui/wm/core/capture_controller.h"
 
+#include <memory>
 #include <utility>
 
-#include "base/logging.h"
-#include "base/macros.h"
 #include "ui/aura/client/capture_delegate.h"
 #include "ui/aura/env.h"
 #include "ui/aura/test/aura_test_base.h"
@@ -30,6 +29,10 @@ namespace {
 class TestCaptureDelegate : public aura::client::CaptureDelegate {
  public:
   TestCaptureDelegate() : has_capture_(false) {}
+
+  TestCaptureDelegate(const TestCaptureDelegate&) = delete;
+  TestCaptureDelegate& operator=(const TestCaptureDelegate&) = delete;
+
   ~TestCaptureDelegate() override {}
 
   bool HasNativeCapture() const {
@@ -45,8 +48,6 @@ class TestCaptureDelegate : public aura::client::CaptureDelegate {
 
  private:
   bool has_capture_;
-
-  DISALLOW_COPY_AND_ASSIGN(TestCaptureDelegate);
 };
 
 }  // namespace
@@ -54,6 +55,9 @@ class TestCaptureDelegate : public aura::client::CaptureDelegate {
 class CaptureControllerTest : public aura::test::AuraTestBase {
  public:
   CaptureControllerTest() {}
+
+  CaptureControllerTest(const CaptureControllerTest&) = delete;
+  CaptureControllerTest& operator=(const CaptureControllerTest&) = delete;
 
   void SetUp() override {
     AuraTestBase::SetUp();
@@ -64,8 +68,8 @@ class CaptureControllerTest : public aura::test::AuraTestBase {
     second_host_->InitHost();
     second_host_->window()->Show();
     second_host_->SetBoundsInPixels(gfx::Rect(800, 600));
-    second_capture_controller_.reset(
-        new ScopedCaptureClient(second_host_->window()));
+    second_capture_controller_ =
+        std::make_unique<ScopedCaptureClient>(second_host_->window());
   }
 
   void TearDown() override {
@@ -89,7 +93,7 @@ class CaptureControllerTest : public aura::test::AuraTestBase {
         delegate
             ? delegate
             : aura::test::TestWindowDelegate::CreateSelfDestroyingDelegate());
-    window->set_id(id);
+    window->SetId(id);
     window->Init(ui::LAYER_TEXTURED);
     parent->AddChild(window);
     window->SetBounds(bounds);
@@ -104,8 +108,6 @@ class CaptureControllerTest : public aura::test::AuraTestBase {
   std::unique_ptr<ScopedCaptureClient> capture_controller_;
   std::unique_ptr<aura::WindowTreeHost> second_host_;
   std::unique_ptr<ScopedCaptureClient> second_capture_controller_;
-
-  DISALLOW_COPY_AND_ASSIGN(CaptureControllerTest);
 };
 
 // Makes sure that internal details that are set on mouse down (such as
@@ -204,6 +206,11 @@ class GestureEventDeleteWindowOnScrollEnd
  public:
   GestureEventDeleteWindowOnScrollEnd() {}
 
+  GestureEventDeleteWindowOnScrollEnd(
+      const GestureEventDeleteWindowOnScrollEnd&) = delete;
+  GestureEventDeleteWindowOnScrollEnd& operator=(
+      const GestureEventDeleteWindowOnScrollEnd&) = delete;
+
   void SetWindow(std::unique_ptr<aura::Window> window) {
     window_ = std::move(window);
   }
@@ -219,7 +226,6 @@ class GestureEventDeleteWindowOnScrollEnd
 
  private:
   std::unique_ptr<aura::Window> window_;
-  DISALLOW_COPY_AND_ASSIGN(GestureEventDeleteWindowOnScrollEnd);
 };
 
 // Tests a scenario when a window gets deleted while a capture is being set on

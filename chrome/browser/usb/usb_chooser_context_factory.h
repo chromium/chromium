@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_USB_USB_CHOOSER_CONTEXT_FACTORY_H_
 #define CHROME_BROWSER_USB_USB_CHOOSER_CONTEXT_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
@@ -15,7 +14,11 @@ class Profile;
 class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
  public:
   static UsbChooserContext* GetForProfile(Profile* profile);
+  static UsbChooserContext* GetForProfileIfExists(Profile* profile);
   static UsbChooserContextFactory* GetInstance();
+
+  UsbChooserContextFactory(const UsbChooserContextFactory&) = delete;
+  UsbChooserContextFactory& operator=(const UsbChooserContextFactory&) = delete;
 
  private:
   friend struct base::DefaultSingletonTraits<UsbChooserContextFactory>;
@@ -28,8 +31,7 @@ class UsbChooserContextFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* profile) const override;
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
-
-  DISALLOW_COPY_AND_ASSIGN(UsbChooserContextFactory);
+  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 #endif  // CHROME_BROWSER_USB_USB_CHOOSER_CONTEXT_FACTORY_H_

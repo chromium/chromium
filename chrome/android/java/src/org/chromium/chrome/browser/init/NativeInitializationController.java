@@ -6,9 +6,11 @@ package org.chromium.chrome.browser.init;
 
 import android.content.Intent;
 
+import org.chromium.base.CommandLine;
+import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.chrome.browser.firstrun.FirstRunFlowSequencer;
+import org.chromium.chrome.browser.flags.ChromeSwitches;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +22,7 @@ import java.util.List;
  *    the library has been loaded.
  */
 class NativeInitializationController {
-    private static final String TAG = "NativeInitializationController";
+    private static final String TAG = "NIController";
 
     private final ChromeActivityNativeDelegate mActivityDelegate;
 
@@ -68,9 +70,16 @@ class NativeInitializationController {
      */
     public void startBackgroundTasks(final boolean allocateChildConnection) {
         ThreadUtils.assertOnUiThread();
-        assert mBackgroundTasksComplete == null;
+        if (CommandLine.getInstance().hasSwitch(ChromeSwitches.DISABLE_NATIVE_INITIALIZATION)) {
+            Log.i(TAG, "Exit early and start Chrome without loading native library!");
+            return;
+        }
+
+        // This is a fairly low cost way to check if fetching the variations seed is needed. It can
+        // produces false positives, but that's okay. There's a later mechanism that checks a
+        // dedicated durable field to make sure the actual network request is only made once.
         boolean fetchVariationsSeed = FirstRunFlowSequencer.checkIfFirstRunIsNecessary(
-                mActivityDelegate.getInitialIntent(), false);
+                false, mActivityDelegate.getInitialIntent());
 
         mBackgroundTasksComplete = false;
         new AsyncInitTaskRunner() {
@@ -84,11 +93,11 @@ class NativeInitializationController {
             }
 
             @Override
-            protected void onFailure() {
+            protected void onFailure(Exception failureCause) {
                 // Initialization has failed, call onStartup failure to abandon the activity.
                 // This is not expected to return, so there is no need to set
                 // mBackgroundTasksComplete or do any other tidying up.
-                mActivityDelegate.onStartupFailure();
+                mActivityDelegate.onStartupFailure(failureCause);
             }
 
         }.startBackgroundTasks(allocateChildConnection, fetchVariationsSeed);
@@ -133,8 +142,6 @@ class NativeInitializationController {
             mOnResumePending = false;
             onResume();
         }
-
-        LibraryLoader.getInstance().onBrowserNativeInitializationComplete();
     }
 
     /**

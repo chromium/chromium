@@ -24,4 +24,8 @@ bool WorkerId::operator==(const WorkerId& other) const {
          version_id == other.version_id && thread_id == other.thread_id;
 }
 
+bool WorkerId::operator!=(const WorkerId& other) const {
+  return !this->operator==(other);
+}
+
 }  // namespace extensions

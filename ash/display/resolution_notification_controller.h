@@ -8,38 +8,39 @@
 #include <stdint.h>
 
 #include "ash/ash_export.h"
+#include "ash/display/display_change_dialog.h"
 #include "ash/display/window_tree_host_manager.h"
 #include "ash/public/mojom/cros_display_config.mojom.h"
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
-#include "base/timer/timer.h"
 #include "ui/display/display_observer.h"
 #include "ui/gfx/geometry/size.h"
-#include "ui/message_center/public/cpp/notification_delegate.h"
 
 namespace ash {
 
 FORWARD_DECLARE_TEST(DisplayPrefsTest, PreventStore);
 
-// A class which manages the notification of display resolution change and
-// also manages the timeout in case the new resolution is unusable.
+// A class which manages the dialog displayed to notify the user that
+// the display configuration has been changed.
 class ASH_EXPORT ResolutionNotificationController
     : public display::DisplayObserver,
-      public WindowTreeHostManager::Observer,
-      public message_center::NotificationObserver {
+      public WindowTreeHostManager::Observer {
  public:
   ResolutionNotificationController();
+
+  ResolutionNotificationController(const ResolutionNotificationController&) =
+      delete;
+  ResolutionNotificationController& operator=(
+      const ResolutionNotificationController&) = delete;
+
   ~ResolutionNotificationController() override;
 
   // If |display_id| is not the internal display and |source| is |kSourceUser|
   // (which means user initiated the change), Prepare a resolution change
   // notification for |display_id| from |old_resolution| to |new_resolution|,
   // which offers a button to revert the change in case something goes wrong.
-  // The notification times out if there's only one display connected and the
-  // user is trying to modify its resolution. In that case, the timeout has to
-  // be set since the user cannot make any changes if something goes wrong.
+  // The dialog is not dismissed by the user, the change is reverted.
   //
   // Then call DisplayManager::SetDisplayMode() to apply the resolution change,
   // and return the result; true if success, false otherwise.
@@ -62,17 +63,14 @@ class ASH_EXPORT ResolutionNotificationController
       int64_t display_id,
       const display::ManagedDisplayMode& old_resolution,
       const display::ManagedDisplayMode& new_resolution,
-      ash::mojom::DisplayConfigSource source,
+      mojom::DisplayConfigSource source,
       base::OnceClosure accept_callback) WARN_UNUSED_RESULT;
 
-  // Returns true if the notification is visible or scheduled to be visible and
-  // the notification times out.
-  bool DoesNotificationTimeout();
+  DisplayChangeDialog* dialog_for_testing() const {
+    return confirmation_dialog_.get();
+  }
 
-  // message_center::NotificationObserver
-  void Close(bool by_user) override;
-  void Click(const base::Optional<int>& button_index,
-             const base::Optional<base::string16>& reply) override;
+  bool ShouldShowDisplayChangeDialog() const;
 
  private:
   friend class ResolutionNotificationControllerTest;
@@ -82,24 +80,15 @@ class ASH_EXPORT ResolutionNotificationController
   // A struct to bundle the data for a single resolution change.
   struct ResolutionChangeInfo;
 
-  static const int kTimeoutInSec;
-  static const char kNotificationId[];
-
-  // Create a new notification, or update its content if it already exists.
-  // |enable_spoken_feedback| is set to false when the notification is updated
-  // during the countdown so the update isn't necessarily read by the spoken
-  // feedback.
-  void CreateOrUpdateNotification(bool enable_spoken_feedback);
+  // Create a new modal dialog, or replace the dialog if it already exists.
+  void CreateOrReplaceModalDialog();
 
   // Called when the user accepts the display resolution change. Set
   // |close_notification| to true when the notification should be removed.
-  void AcceptResolutionChange(bool close_notification);
+  void AcceptResolutionChange();
 
   // Called when the user wants to revert the display resolution change.
   void RevertResolutionChange(bool display_was_removed);
-
-  // Called every second for timeout.
-  void OnTimerTick();
 
   // display::DisplayObserver overrides:
   void OnDisplayRemoved(const display::Display& old_display) override;
@@ -107,13 +96,13 @@ class ASH_EXPORT ResolutionNotificationController
   // WindowTreeHostManager::Observer overrides:
   void OnDisplayConfigurationChanged() override;
 
-  static void SuppressTimerForTest();
-
   std::unique_ptr<ResolutionChangeInfo> change_info_;
 
-  base::WeakPtrFactory<ResolutionNotificationController> weak_factory_{this};
+  display::ScopedDisplayObserver display_observer_{this};
 
-  DISALLOW_COPY_AND_ASSIGN(ResolutionNotificationController);
+  base::WeakPtr<DisplayChangeDialog> confirmation_dialog_;
+
+  base::WeakPtrFactory<ResolutionNotificationController> weak_factory_{this};
 };
 
 }  // namespace ash

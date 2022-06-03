@@ -76,7 +76,7 @@ static int xmlLittleEndian = 1;
 
 /**
  * xmlEncodingErrMemory:
- * @extra:  extra informations
+ * @extra:  extra information
  *
  * Handle an out of memory condition
  */
@@ -170,7 +170,7 @@ closeIcuConverter(uconv_t *conv)
  * Returns 0 if success, or -1 otherwise
  * The value of @inlen after return is the number of octets consumed
  *     if the return value is positive, else unpredictable.
- * The value of @outlen after return is the number of octets consumed.
+ * The value of @outlen after return is the number of octets produced.
  */
 static int
 asciiToUTF8(unsigned char* out, int *outlen,
@@ -217,7 +217,7 @@ asciiToUTF8(unsigned char* out, int *outlen,
  * Returns 0 if success, -2 if the transcoding fails, or -1 otherwise
  * The value of @inlen after return is the number of octets consumed
  *     if the return value is positive, else unpredictable.
- * The value of @outlen after return is the number of octets consumed.
+ * The value of @outlen after return is the number of octets produced.
  */
 static int
 UTF8Toascii(unsigned char* out, int *outlen,
@@ -301,7 +301,7 @@ UTF8Toascii(unsigned char* out, int *outlen,
  * Returns the number of bytes written if success, or -1 otherwise
  * The value of @inlen after return is the number of octets consumed
  *     if the return value is positive, else unpredictable.
- * The value of @outlen after return is the number of octets consumed.
+ * The value of @outlen after return is the number of octets produced.
  */
 int
 isolat1ToUTF8(unsigned char* out, int *outlen,
@@ -373,6 +373,11 @@ UTF8ToUTF8(unsigned char* out, int *outlen,
     if (len < 0)
 	return(-1);
 
+    /*
+     * FIXME: Conversion functions must assure valid UTF-8, so we have
+     * to check for UTF-8 validity. Preferably, this converter shouldn't
+     * be used at all.
+     */
     memcpy(out, inb, len);
 
     *outlen = len;
@@ -396,7 +401,7 @@ UTF8ToUTF8(unsigned char* out, int *outlen,
            or -1 otherwise
  * The value of @inlen after return is the number of octets consumed
  *     if the return value is positive, else unpredictable.
- * The value of @outlen after return is the number of octets consumed.
+ * The value of @outlen after return is the number of octets produced.
  */
 int
 UTF8Toisolat1(unsigned char* out, int *outlen,
@@ -496,13 +501,18 @@ UTF16LEToUTF8(unsigned char* out, int *outlen,
 {
     unsigned char* outstart = out;
     const unsigned char* processed = inb;
-    unsigned char* outend = out + *outlen;
+    unsigned char* outend;
     unsigned short* in = (unsigned short*) inb;
     unsigned short* inend;
     unsigned int c, d, inlen;
     unsigned char *tmp;
     int bits;
 
+    if (*outlen == 0) {
+        *inlenb = 0;
+        return(0);
+    }
+    outend = out + *outlen;
     if ((*inlenb % 2) == 1)
         (*inlenb)--;
     inlen = *inlenb / 2;
@@ -1483,16 +1493,25 @@ xmlRegisterCharEncodingHandler(xmlCharEncodingHandlerPtr handler) {
     if ((handler == NULL) || (handlers == NULL)) {
         xmlEncodingErr(XML_I18N_NO_HANDLER,
 		"xmlRegisterCharEncodingHandler: NULL handler !\n", NULL);
-	return;
+        goto free_handler;
     }
 
     if (nbCharEncodingHandler >= MAX_ENCODING_HANDLERS) {
         xmlEncodingErr(XML_I18N_EXCESS_HANDLER,
 	"xmlRegisterCharEncodingHandler: Too many handler registered, see %s\n",
 	               "MAX_ENCODING_HANDLERS");
-	return;
+        goto free_handler;
     }
     handlers[nbCharEncodingHandler++] = handler;
+    return;
+
+free_handler:
+    if (handler != NULL) {
+        if (handler->name != NULL) {
+            xmlFree(handler->name);
+        }
+        xmlFree(handler);
+    }
 }
 
 /**
@@ -1784,7 +1803,7 @@ xmlFindCharEncodingHandler(const char *name) {
  * @cd:		iconv converter data structure
  * @out:  a pointer to an array of bytes to store the result
  * @outlen:  the length of @out
- * @in:  a pointer to an array of ISO Latin 1 chars
+ * @in:  a pointer to an array of input bytes
  * @inlen:  the length of @in
  *
  * Returns 0 if success, or
@@ -1795,7 +1814,7 @@ xmlFindCharEncodingHandler(const char *name) {
  *
  * The value of @inlen after return is the number of octets consumed
  *     as the return value is positive, else unpredictable.
- * The value of @outlen after return is the number of ocetes consumed.
+ * The value of @outlen after return is the number of octets produced.
  */
 static int
 xmlIconvWrapper(iconv_t cd, unsigned char *out, int *outlen,
@@ -1851,7 +1870,7 @@ xmlIconvWrapper(iconv_t cd, unsigned char *out, int *outlen,
  * @toUnicode : non-zero if toUnicode. 0 otherwise.
  * @out:  a pointer to an array of bytes to store the result
  * @outlen:  the length of @out
- * @in:  a pointer to an array of ISO Latin 1 chars
+ * @in:  a pointer to an array of input bytes
  * @inlen:  the length of @in
  * @flush: if true, indicates end of input
  *
@@ -1863,7 +1882,7 @@ xmlIconvWrapper(iconv_t cd, unsigned char *out, int *outlen,
  *
  * The value of @inlen after return is the number of octets consumed
  *     as the return value is positive, else unpredictable.
- * The value of @outlen after return is the number of ocetes consumed.
+ * The value of @outlen after return is the number of octets produced.
  */
 static int
 xmlUconvWrapper(uconv_t *cd, int toUnicode, unsigned char *out, int *outlen,
@@ -1912,6 +1931,25 @@ xmlUconvWrapper(uconv_t *cd, int toUnicode, unsigned char *out, int *outlen,
  *									*
  ************************************************************************/
 
+/**
+ * xmlEncInputChunk:
+ * @handler:  encoding handler
+ * @out:  a pointer to an array of bytes to store the result
+ * @outlen:  the length of @out
+ * @in:  a pointer to an array of input bytes
+ * @inlen:  the length of @in
+ * @flush:  flush (ICU-related)
+ *
+ * Returns 0 if success, or
+ *     -1 by lack of space, or
+ *     -2 if the transcoding fails (for *in is not valid utf8 string or
+ *        the result of transformation can't fit into the encoding we want), or
+ *     -3 if there the last byte can't form a single output char.
+ *
+ * The value of @inlen after return is the number of octets consumed
+ *     as the return value is 0, else unpredictable.
+ * The value of @outlen after return is the number of octets produced.
+ */
 static int
 xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
                  int *outlen, const unsigned char *in, int *inlen, int flush) {
@@ -1920,6 +1958,8 @@ xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
 
     if (handler->input != NULL) {
         ret = handler->input(out, outlen, in, inlen);
+        if (ret > 0)
+           ret = 0;
     }
 #ifdef LIBXML_ICONV_ENABLED
     else if (handler->iconv_in != NULL) {
@@ -1941,7 +1981,25 @@ xmlEncInputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
     return(ret);
 }
 
-/* Returns -4 if no output function was found. */
+/**
+ * xmlEncOutputChunk:
+ * @handler:  encoding handler
+ * @out:  a pointer to an array of bytes to store the result
+ * @outlen:  the length of @out
+ * @in:  a pointer to an array of input bytes
+ * @inlen:  the length of @in
+ *
+ * Returns 0 if success, or
+ *     -1 by lack of space, or
+ *     -2 if the transcoding fails (for *in is not valid utf8 string or
+ *        the result of transformation can't fit into the encoding we want), or
+ *     -3 if there the last byte can't form a single output char.
+ *     -4 if no output function was found.
+ *
+ * The value of @inlen after return is the number of octets consumed
+ *     as the return value is 0, else unpredictable.
+ * The value of @outlen after return is the number of octets produced.
+ */
 static int
 xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
                   int *outlen, const unsigned char *in, int *inlen) {
@@ -1949,6 +2007,8 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
 
     if (handler->output != NULL) {
         ret = handler->output(out, outlen, in, inlen);
+        if (ret > 0)
+           ret = 0;
     }
 #ifdef LIBXML_ICONV_ENABLED
     else if (handler->iconv_out != NULL) {
@@ -1958,7 +2018,7 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
 #ifdef LIBXML_ICU_ENABLED
     else if (handler->uconv_out != NULL) {
         ret = xmlUconvWrapper(handler->uconv_out, 0, out, outlen, in, inlen,
-                              TRUE);
+                              1);
     }
 #endif /* LIBXML_ICU_ENABLED */
     else {
@@ -1972,7 +2032,7 @@ xmlEncOutputChunk(xmlCharEncodingHandler *handler, unsigned char *out,
 
 /**
  * xmlCharEncFirstLineInt:
- * @handler:	char enconding transformation data structure
+ * @handler:	char encoding transformation data structure
  * @out:  an xmlBuffer for the output.
  * @in:  an xmlBuffer for the input
  * @len:  number of bytes to convert for the first line, or -1
@@ -2054,12 +2114,12 @@ xmlCharEncFirstLineInt(xmlCharEncodingHandler *handler, xmlBufferPtr out,
      */
     if (ret == -3) ret = 0;
     if (ret == -1) ret = 0;
-    return(ret);
+    return(written ? written : ret);
 }
 
 /**
  * xmlCharEncFirstLine:
- * @handler:	char enconding transformation data structure
+ * @handler:	char encoding transformation data structure
  * @out:  an xmlBuffer for the output.
  * @in:  an xmlBuffer for the input
  *
@@ -2184,7 +2244,7 @@ xmlCharEncFirstLineInput(xmlParserInputBufferPtr input, int len)
      */
     if (ret == -3) ret = 0;
     if (ret == -1) ret = 0;
-    return(ret);
+    return(c_out ? c_out : ret);
 }
 
 /**
@@ -2394,7 +2454,7 @@ xmlCharEncOutput(xmlOutputBufferPtr output, int init)
 {
     int ret;
     size_t written;
-    size_t writtentot = 0;
+    int writtentot = 0;
     size_t toconv;
     int c_in;
     int c_out;
@@ -2427,7 +2487,7 @@ retry:
 	xmlGenericError(xmlGenericErrorContext,
 		"initialized encoder\n");
 #endif
-        return(0);
+        return(c_out);
     }
 
     /*
@@ -2540,13 +2600,13 @@ retry:
             goto retry;
 	}
     }
-    return(ret);
+    return(writtentot ? writtentot : ret);
 }
 #endif
 
 /**
  * xmlCharEncOutFunc:
- * @handler:	char enconding transformation data structure
+ * @handler:	char encoding transformation data structure
  * @out:  an xmlBuffer for the output.
  * @in:  an xmlBuffer for the input
  *
@@ -2569,7 +2629,6 @@ xmlCharEncOutFunc(xmlCharEncodingHandler *handler, xmlBufferPtr out,
     int written;
     int writtentot = 0;
     int toconv;
-    int output = 0;
 
     if (handler == NULL) return(-1);
     if (out == NULL) return(-1);
@@ -2621,8 +2680,6 @@ retry:
         }
         ret = -3;
     }
-
-    if (ret >= 0) output += ret;
 
     /*
      * Attempt to handle error cases
@@ -2705,12 +2762,12 @@ retry:
             goto retry;
 	}
     }
-    return(ret);
+    return(writtentot ? writtentot : ret);
 }
 
 /**
  * xmlCharEncCloseFunc:
- * @handler:	char enconding transformation data structure
+ * @handler:	char encoding transformation data structure
  *
  * Generic front-end for encoding handler close function
  *
@@ -2811,7 +2868,7 @@ xmlByteConsumed(xmlParserCtxtPtr ctxt) {
 	xmlCharEncodingHandler * handler = in->buf->encoder;
         /*
 	 * Encoding conversion, compute the number of unused original
-	 * bytes from the input not consumed and substract that from
+	 * bytes from the input not consumed and subtract that from
 	 * the raw consumed value, this is not a cheap operation
 	 */
         if (in->end - in->cur > 0) {
@@ -2860,7 +2917,7 @@ xmlByteConsumed(xmlParserCtxtPtr ctxt) {
  * Returns 0 if success, -2 if the transcoding fails, or -1 otherwise
  * The value of @inlen after return is the number of octets consumed
  *     as the return value is positive, else unpredictable.
- * The value of @outlen after return is the number of ocetes consumed.
+ * The value of @outlen after return is the number of octets consumed.
  */
 static int
 UTF8ToISO8859x(unsigned char* out, int *outlen,
@@ -2976,7 +3033,7 @@ UTF8ToISO8859x(unsigned char* out, int *outlen,
  * block of chars out.
  * Returns 0 if success, or -1 otherwise
  * The value of @inlen after return is the number of octets consumed
- * The value of @outlen after return is the number of ocetes produced.
+ * The value of @outlen after return is the number of octets produced.
  */
 static int
 ISO8859xToUTF8(unsigned char* out, int *outlen,

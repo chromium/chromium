@@ -1,0 +1,33 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
+
+static_library("language_packs") {
+  sources = [
+    "language_pack_manager.cc",
+    "language_pack_manager.h",
+    "language_packs_impl.cc",
+    "language_packs_impl.h",
+  ]
+  deps = [
+    "//base",
+    "//chromeos/dbus/dlcservice:dlcservice",
+    "//chromeos/dbus/dlcservice:dlcservice_proto",
+    "//chromeos/language/public/mojom",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "language_pack_manager_unittest.cc" ]
+  deps = [
+    ":language_packs",
+    "//base",
+    "//base/test:test_support",
+    "//chromeos/dbus/dlcservice",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}

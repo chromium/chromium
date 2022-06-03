@@ -1,0 +1,25 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//third_party/closure_compiler/compile_js.gni")
+
+js_library("cast_feedback_ui_test") {
+  deps = [
+    "..:chai_assert",
+    "..:test_browser_proxy",
+    "//chrome/browser/resources/media_router:cast_feedback_ui",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_type_check("closure_compile") {
+  is_polymer3 = true
+  deps = [ ":cast_feedback_ui_test" ]
+  closure_flags = default_closure_args + [
+                    "browser_resolver_prefix_replacements=\"chrome://cast-feedback/=../../chrome/browser/resources/media_router/\"",
+                    "js_module_root=../../chrome/test/data/webui/",
+                    "js_module_root=./gen/chrome/test/data/webui/",
+                  ]
+}

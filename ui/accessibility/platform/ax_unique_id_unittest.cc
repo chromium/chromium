@@ -21,11 +21,14 @@ static const int32_t kMaxId = 100;
 class AXTestSmallBankUniqueId : public AXUniqueId {
  public:
   AXTestSmallBankUniqueId();
+
+  AXTestSmallBankUniqueId(const AXTestSmallBankUniqueId&) = delete;
+  AXTestSmallBankUniqueId& operator=(const AXTestSmallBankUniqueId&) = delete;
+
   ~AXTestSmallBankUniqueId() override;
 
  private:
   friend class AXUniqueId;
-  DISALLOW_COPY_AND_ASSIGN(AXTestSmallBankUniqueId);
 };
 
 AXTestSmallBankUniqueId::AXTestSmallBankUniqueId() : AXUniqueId(kMaxId) {}
@@ -51,6 +54,24 @@ TEST(AXPlatformUniqueIdTest, UnassignedIdsAreReused) {
 
   // Expect that the original Id gets reused.
   EXPECT_EQ(ids[kIdToReplace]->Get(), expected_id);
+}
+
+TEST(AXPlatformUniqueIdTest, DoesCreateCorrectId) {
+  int kLargerThanMaxId = kMaxId * 2;
+  std::unique_ptr<AXUniqueId> ids[kLargerThanMaxId];
+  // Creates and releases to fill up the internal static counter.
+  for (int i = 0; i < kLargerThanMaxId; i++) {
+    ids[i] = std::make_unique<AXUniqueId>();
+  }
+  for (int i = 0; i < kLargerThanMaxId; i++) {
+    ids[i].reset(nullptr);
+  }
+  // Creates an unique id whose max value is less than the internal
+  // static counter.
+  std::unique_ptr<AXTestSmallBankUniqueId> unique_id =
+      std::make_unique<AXTestSmallBankUniqueId>();
+
+  EXPECT_LE(unique_id->Get(), kMaxId);
 }
 
 }  // namespace ui

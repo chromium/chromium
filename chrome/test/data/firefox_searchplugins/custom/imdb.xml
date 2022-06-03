@@ -1,9 +1,0 @@
-<SearchPlugin xmlns="http://www.mozilla.org/2006/browser/search/" xmlns:os="http://a9.com/-/spec/opensearch/1.1/">
-<os:ShortName>IMDB</os:ShortName>
-<os:Description>IMDB Movie Search</os:Description>
-<os:InputEncoding>ISO-8859-1</os:InputEncoding>
-<os:Image width="16" height="16">data:image/x-icon;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAMAAAAoLQ9TAAAABGdBTUEAAK/INwWK6QAAABl0RVh0U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAGYUExURf//5PHr0v//d+7TXVFQTjY3N///efXYXvLfXv/4c/LWYvv69Pr00dK2QfPntvnuv+zn0byxZ/r25KuiXVRUTlVUTktLRzw8PrWnW/DTWv/8cubHTYuBSyMjI7isaGVgRFhVTeLFT1JRScCmOPv58u/p0/TWW56SUl1aVkdFQeXTicevSeDVp/TXXf/+4+/p0v7gX//5dODVpigoKeTYq/LVW1tZTjc3OxQUG//84fLr0u/p0PrjW+/TW5iNUkxKRuvly2BbROfOYPfsvv333khISmJfVP/74cKyafv54PHr0fPt0sO4a9bCaVZVUM+6WPXZTfXps8G1bPLWTbKkY/Lr0/PWWzk7Pzs7PNG2SvHTWtC1Sd3DVllUQv//duXJUufKUu7p0vPosLqsa7OlYOzRW//naqiaW//53//nYtnOnu7jsf3oY//ras2zSD4/QvHVXc66YOLHU/3997ipXTAvLUdFO7KkZSwuMf79+rSlX7CkXVpWRebhzJOIUN/Upy8wNPnz2uPIV/Ht3bCjY/fy2sq0UP////l+xa8AAADYSURBVHjaYmhHAwABxIAuABBAGAIAAcTQXszjyQAEepbuGS6N3O0AAcRQmcRhyMQWxyTFmZvGFa+lAhBADHzBNoJBwj7VcuqFKakJvCYAAcQQGJBTo2FhXsrSoMAq7x9pBBBADPzsmY5ussZlZiJKmvkS0ToAAcTgXGAQ6yfuai9WIRoRXpJXDxBADNnSalXlLckh6TIednW+ylkAAcTQ6qQoGaZrGmXLXNQUo93mDRBADO1CDtZejKFWjPqqiQK1ze0AAYThUoAAwhAACCAMAYAAwhAACDAAVrdghQaAW5AAAAAASUVORK5CYII=</os:Image>
-<SearchForm>http://www.imdb.com/</SearchForm>
-<os:Url type="text/html" method="GET" template="http://www.imdb.com/find?q={searchTerms}&amp;sourceid=mozilla-search">
-</os:Url>
-</SearchPlugin>

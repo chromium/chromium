@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Calling vibrate returns true assert_true: vibrate() returns true when vibration is not supported expected true got false
-Harness: the test ran to completion.
-

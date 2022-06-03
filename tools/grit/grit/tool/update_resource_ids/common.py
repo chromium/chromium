@@ -87,7 +87,7 @@ def BuildItemList(root_obj):
   """
   item_list = []
   grd_seen = set()
-  for raw_key, raw_item in root_obj.iteritems():  # Unordered.
+  for raw_key, raw_item in root_obj.items():  # Unordered.
     grd = raw_key.val
     if grd == 'SRCDIR':
       continue

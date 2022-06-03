@@ -4,7 +4,7 @@
 
 #include "media/base/audio_timestamp_helper.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #include "media/base/timestamp_constants.h"
 
 namespace media {
@@ -12,9 +12,9 @@ namespace media {
 // static
 base::TimeDelta AudioTimestampHelper::FramesToTime(int64_t frames,
                                                    int samples_per_second) {
-  DCHECK_GE(samples_per_second, 0);
-  return base::TimeDelta::FromMicroseconds(
-      frames * base::Time::kMicrosecondsPerSecond / samples_per_second);
+  DCHECK_GT(samples_per_second, 0);
+  return base::Microseconds(frames * base::Time::kMicrosecondsPerSecond /
+                            samples_per_second);
 }
 
 // static
@@ -82,7 +82,7 @@ base::TimeDelta AudioTimestampHelper::ComputeTimestamp(
   DCHECK_GE(frame_count, 0);
   DCHECK(base_timestamp_ != kNoTimestamp);
   double frames_us = microseconds_per_frame_ * frame_count;
-  return base_timestamp_ + base::TimeDelta::FromMicroseconds(frames_us);
+  return base_timestamp_ + base::Microseconds(frames_us);
 }
 
 }  // namespace media

@@ -26,9 +26,8 @@
 # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-import cgi
 import json
+from six.moves.urllib import parse
 from mod_pywebsocket import msgutil
 
 connections = {}
@@ -43,7 +42,7 @@ def web_socket_transfer_data(request):
     r = request.ws_resource.split('?', 1)
     if len(r) == 1:
         return
-    param = cgi.parse_qs(r[1])
+    param = parse.parse_qs(r[1])
     if 'p' not in param:
         return
     page_group = param['p'][0]

@@ -12,12 +12,12 @@
 #include "base/containers/queue.h"
 #include "base/file_descriptor_posix.h"
 #include "base/files/scoped_file.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/display/types/native_display_delegate.h"
 #include "ui/events/ozone/device/device_event.h"
 #include "ui/events/ozone/device/device_event_observer.h"
 #include "ui/events/ozone/evdev/event_factory_evdev.h"
+#include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/host/gpu_thread_observer.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -30,8 +30,6 @@ class DrmDisplayHostManager;
 class DrmNativeDisplayDelegate;
 class GpuThreadAdapter;
 
-struct DisplaySnapshot_Params;
-
 // The portion of the DrmDisplayHostManager implementation that is agnostic
 // in how its communication with GPU-specific functionality is implemented.
 // This is used from both the IPC and the in-process versions in  MUS.
@@ -40,8 +38,12 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   DrmDisplayHostManager(
       GpuThreadAdapter* proxy,
       DeviceManager* device_manager,
-      OzonePlatform::InitializedHostProperties* host_properties,
+      OzonePlatform::PlatformRuntimeProperties* host_properties,
       InputControllerEvdev* input_controller);
+
+  DrmDisplayHostManager(const DrmDisplayHostManager&) = delete;
+  DrmDisplayHostManager& operator=(const DrmDisplayHostManager&) = delete;
+
   ~DrmDisplayHostManager() override;
 
   DrmDisplayHost* GetDisplay(int64_t display_id);
@@ -52,6 +54,9 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   void TakeDisplayControl(display::DisplayControlCallback callback);
   void RelinquishDisplayControl(display::DisplayControlCallback callback);
   void UpdateDisplays(display::GetDisplaysCallback callback);
+  void ConfigureDisplays(
+      const std::vector<display::DisplayConfigurationParams>& config_requests,
+      display::ConfigureCallback callback);
 
   // DeviceEventObserver overrides:
   void OnDeviceEvent(const DeviceEvent& event) override;
@@ -63,12 +68,11 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
 
   // Communication-free implementations of actions performed in response to
   // messages from the GPU thread.
-  void GpuHasUpdatedNativeDisplays(
-      const std::vector<DisplaySnapshot_Params>& displays);
-  void GpuConfiguredDisplay(int64_t display_id, bool status);
+  void GpuHasUpdatedNativeDisplays(MovableDisplaySnapshots displays);
   void GpuReceivedHDCPState(int64_t display_id,
                             bool status,
-                            display::HDCPState state);
+                            display::HDCPState state,
+                            display::ContentProtectionMethod protection_method);
   void GpuUpdatedHDCPState(int64_t display_id, bool status);
   void GpuTookDisplayControl(bool status);
   void GpuRelinquishedDisplayControl(bool status);
@@ -140,8 +144,6 @@ class DrmDisplayHostManager : public DeviceEventObserver, GpuThreadObserver {
   std::unique_ptr<DrmDeviceHandle> primary_drm_device_handle_;
 
   base::WeakPtrFactory<DrmDisplayHostManager> weak_ptr_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(DrmDisplayHostManager);
 };
 
 }  // namespace ui

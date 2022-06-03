@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string>
 
 #include "base/bind.h"
 #include "base/run_loop.h"
@@ -93,8 +94,8 @@ class TestUI : public WebUIIOSController {
  public:
   // Constructs controller from |web_ui| and |ui_handler| which will communicate
   // with test WebUI page.
-  TestUI(WebUIIOS* web_ui, TestUIHandler* ui_handler)
-      : WebUIIOSController(web_ui) {
+  TestUI(WebUIIOS* web_ui, const std::string& host, TestUIHandler* ui_handler)
+      : WebUIIOSController(web_ui, host) {
     web::WebUIIOSDataSource* source =
         web::WebUIIOSDataSource::Create(kTestWebUIURLHost);
 
@@ -128,7 +129,7 @@ class TestWebUIControllerFactory : public WebUIIOSControllerFactory {
     if (!url.SchemeIs(kTestWebUIScheme))
       return nullptr;
     DCHECK_EQ(url.host(), kTestWebUIURLHost);
-    return std::make_unique<TestUI>(web_ui, ui_handler_);
+    return std::make_unique<TestUI>(web_ui, url.host(), ui_handler_);
   }
 
   NSInteger GetErrorCodeForWebUIURL(const GURL& url) const override {

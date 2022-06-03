@@ -16,19 +16,21 @@ source_set("sad_tab") {
     "//components/strings",
     "//components/ui_metrics",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/colors",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
     "//ios/third_party/material_components_ios",
     "//ios/web",
     "//net",
     "//ui/base",
     "//ui/gfx",
   ]
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("coordinator") {
@@ -41,13 +43,15 @@ source_set("coordinator") {
     ":sad_tab",
     "//components/ui_metrics",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
+    "//ios/chrome/browser/ui/fullscreen:coordinators",
     "//ios/chrome/browser/ui/overscroll_actions",
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/browser/web",
     "//ios/chrome/browser/web:tab_helper_delegates",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/common/ui/util",
     "//ios/web",
   ]
 }
@@ -62,11 +66,13 @@ source_set("unit_tests") {
   deps = [
     "//components/strings:components_strings_grit",
     "//ios/chrome/browser/browser_state:test_support",
+    "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/sad_tab",
     "//ios/chrome/browser/ui/sad_tab:coordinator",
     "//ios/chrome/browser/ui/util",
-    "//ios/chrome/common/ui_util",
+    "//ios/chrome/browser/web",
+    "//ios/chrome/common/ui/util",
     "//ios/web/public/test",
     "//ios/web/public/test/fakes",
     "//testing/gtest",
@@ -75,40 +81,13 @@ source_set("unit_tests") {
   ]
 }
 
-source_set("eg_tests") {
-  defines = [ "CHROME_EARL_GREY_1" ]
-  configs += [ "//build/config/compiler:enable_arc" ]
-  testonly = true
-  sources = [
-    "sad_tab_view_egtest.mm",
-  ]
-
-  deps = [
-    ":sad_tab",
-    "//base",
-    "//components/strings",
-    "//ios/chrome/app/strings",
-    "//ios/chrome/browser/ui/popup_menu:constants",
-    "//ios/chrome/test/app:test_support",
-    "//ios/chrome/test/earl_grey:test_support",
-    "//ios/testing/earl_grey:earl_grey_support",
-    "//ios/third_party/earl_grey:earl_grey+link",
-    "//ios/web/public/test/http_server",
-    "//ui/base",
-  ]
-  libs = [ "XCTest.framework" ]
-}
-
 source_set("eg2_tests") {
-  defines = [ "CHROME_EARL_GREY_2" ]
   configs += [
     "//build/config/compiler:enable_arc",
     "//build/config/ios:xctest_config",
   ]
   testonly = true
-  sources = [
-    "sad_tab_view_egtest.mm",
-  ]
+  sources = [ "sad_tab_view_egtest.mm" ]
 
   deps = [
     "//components/strings",
@@ -119,9 +98,9 @@ source_set("eg2_tests") {
     "//ios/testing:embedded_test_server_support",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
-    "//ios/web/public/test/http_server",
+    "//net:test_support",
     "//ui/base",
   ]
 
-  libs = [ "UIKit.framework" ]
+  frameworks = [ "UIKit.framework" ]
 }

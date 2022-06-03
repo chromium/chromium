@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observer.h"
+#include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_observer.h"
 #include "chrome/browser/ui/views/desktop_capture/desktop_media_source_view.h"
@@ -36,15 +36,18 @@ class DesktopMediaListController : public DesktopMediaListObserver,
     virtual void OnSourceMoved(size_t old_index, size_t new_index) = 0;
     virtual void OnSourceNameChanged(size_t index) = 0;
     virtual void OnSourceThumbnailChanged(size_t index) = 0;
+    virtual void OnSourcePreviewChanged(size_t index) = 0;
   };
 
   // The abstract interface implemented by any view controlled by this
   // controller.
   class ListView : public views::View {
    public:
+    METADATA_HEADER(ListView);
+
     // Returns the DesktopMediaID of the selected element of this list, or
     // nullopt if no element is selected.
-    virtual base::Optional<content::DesktopMediaID> GetSelection() = 0;
+    virtual absl::optional<content::DesktopMediaID> GetSelection() = 0;
 
     // Returns the SourceListListener to use to notify this ListView of changes
     // to the backing DesktopMediaList.
@@ -65,10 +68,10 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   std::unique_ptr<views::View> CreateView(
       DesktopMediaSourceViewStyle generic_style,
       DesktopMediaSourceViewStyle single_style,
-      const base::string16& accessible_name);
+      const std::u16string& accessible_name);
 
   std::unique_ptr<views::View> CreateTabListView(
-      const base::string16& accessible_name);
+      const std::u16string& accessible_name);
 
   // Starts observing the DesktopMediaList given earlier, ignoring any entries
   // whose id matches dialog_window_id.
@@ -79,7 +82,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
 
   // Returns the DesktopMediaID corresponding to the current selection in this
   // controller's view, if there is one.
-  base::Optional<content::DesktopMediaID> GetSelection() const;
+  absl::optional<content::DesktopMediaID> GetSelection() const;
 
   // These three methods are called by the view to inform the controller of
   // events. The first two indicate changes in the visual state of the view; the
@@ -94,6 +97,7 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   size_t GetSourceCount() const;
   const DesktopMediaList::Source& GetSource(size_t index) const;
   void SetThumbnailSize(const gfx::Size& size);
+  void SetPreviewedSource(const absl::optional<content::DesktopMediaID>& id);
 
  private:
   friend class DesktopMediaPickerViewsTestApi;
@@ -104,22 +108,35 @@ class DesktopMediaListController : public DesktopMediaListObserver,
   // dialog.
   void AcceptSpecificSource(content::DesktopMediaID source);
 
+  // Analogous to AcceptSpecificSource, but rejects rather than accepts.
+  // Used in tests.
+  void Reject();
+
   // DesktopMediaListObserver:
-  void OnSourceAdded(DesktopMediaList* list, int index) override;
-  void OnSourceRemoved(DesktopMediaList* list, int index) override;
-  void OnSourceMoved(DesktopMediaList* list,
-                     int old_index,
-                     int new_index) override;
-  void OnSourceNameChanged(DesktopMediaList* list, int index) override;
-  void OnSourceThumbnailChanged(DesktopMediaList* list, int index) override;
+  void OnSourceAdded(int index) override;
+  void OnSourceRemoved(int index) override;
+  void OnSourceMoved(int old_index, int new_index) override;
+  void OnSourceNameChanged(int index) override;
+  void OnSourceThumbnailChanged(int index) override;
+  void OnSourcePreviewChanged(size_t index) override;
 
   // ViewObserver:
   void OnViewIsDeleting(views::View* view) override;
 
+  bool ShouldAutoAccept(const DesktopMediaList::Source& source) const;
+  bool ShouldAutoReject(const DesktopMediaList::Source& source) const;
+
   DesktopMediaPickerDialogView* dialog_;
   std::unique_ptr<DesktopMediaList> media_list_;
   ListView* view_ = nullptr;
-  ScopedObserver<views::View, views::ViewObserver> view_observer_{this};
+  base::ScopedMultiSourceObservation<views::View, views::ViewObserver>
+      view_observations_{this};
+
+  // Auto-selection. Used only in tests.
+  const std::string auto_select_tab_;        // Only tabs, by title.
+  const std::string auto_select_source_;     // Any source by its title.
+  const bool auto_accept_this_tab_capture_;  // Only for current-tab capture.
+  const bool auto_reject_this_tab_capture_;  // Only for current-tab capture.
 
   base::WeakPtrFactory<DesktopMediaListController> weak_factory_{this};
 };

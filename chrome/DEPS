@@ -5,7 +5,9 @@ include_rules = [
   "+pdf/buildflags.h",
   "+pdf/pdf_features.h",
   "+printing",
+  "+sandbox/policy",
   "+sql",
+  "+ui/lottie",
   # Browser, renderer, common and tests access V8 for various purposes.
   "-v8",
   "+v8/include",
@@ -13,15 +15,19 @@ include_rules = [
   # Limit what we include from nacl.
   "-native_client",
 
-  # The subdirectories in chrome/ will manually allow their own include
-  # directories in chrome/ so we disallow all of them.
+  # Individual subdirectories of chrome/ must explicitly declare their
+  # dependencies on other subdirectories of chrome/.
   "-chrome",
+
   "+chrome/common",
   "+chrome/test",
+  "+components/content_settings/common",
   "+components/content_settings/core/common",
   "+components/embedder_support/switches.h",
   "+components/error_page/common",
+  "+components/media_router/common",
   "+components/omnibox/common",
+  "+components/power_scheduler",
   "+components/services/heap_profiling/public",
   "+components/url_formatter",
   "+components/variations",

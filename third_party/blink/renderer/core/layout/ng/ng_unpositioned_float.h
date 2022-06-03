@@ -43,7 +43,7 @@ struct CORE_EXPORT NGUnpositionedFloat final {
         parent_style(parent_style) {}
 
   NGBlockNode node;
-  scoped_refptr<const NGBlockBreakToken> token;
+  const NGBlockBreakToken* token = nullptr;
 
   const LogicalSize available_size;
   const LogicalSize percentage_size;

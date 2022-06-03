@@ -6,8 +6,8 @@
 
 #include <map>
 
+#include "base/check.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "components/feature_engagement/public/configuration.h"
 
 namespace feature_engagement {

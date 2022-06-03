@@ -2,342 +2,175 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/**
- * Class to manage SwitchAccess and interact with other controllers.
- * @implements {SwitchAccessInterface}
- */
-class SwitchAccess {
-  static initialize() {
-    window.switchAccess = new SwitchAccess();
-  }
+import {Commands} from './commands.js';
+import {Navigator} from './navigator.js';
+import {KeyboardRootNode} from './nodes/keyboard_node.js';
+import {PreferenceManager} from './preference_manager.js';
+import {SAConstants} from './switch_access_constants.js';
 
-  static get() {
-    return window.switchAccess;
+const AutomationNode = chrome.automation.AutomationNode;
+
+/**
+ * The top-level class for the Switch Access accessibility feature. Handles
+ * initialization and small matters that don't fit anywhere else in the
+ * codebase.
+ */
+export class SwitchAccess {
+  static initialize() {
+    SwitchAccess.instance = new SwitchAccess();
+
+    chrome.automation.getDesktop((desktop) => {
+      chrome.automation.getFocus(focus => {
+        // Focus is available. Finish init without waiting for further events.
+        // Disallow web view nodes, which indicate a root web area is still
+        // loading and pending focus.
+        if (focus && focus.role !== chrome.automation.RoleType.WEB_VIEW) {
+          SwitchAccess.finishInit_(desktop);
+          return;
+        }
+
+        // Wait for the focus to be sent. If |focus| was undefined, this is
+        // guaranteed. Otherwise, also set a timed callback to ensure we do
+        // eventually init.
+        let callbackId = 0;
+        const listener = maybeEvent => {
+          if (maybeEvent &&
+              maybeEvent.target.role === chrome.automation.RoleType.WEB_VIEW) {
+            return;
+          }
+
+          desktop.removeEventListener(
+              chrome.automation.EventType.FOCUS, listener, false);
+          window.clearTimeout(callbackId);
+
+          SwitchAccess.finishInit_(desktop);
+        };
+
+        desktop.addEventListener(
+            chrome.automation.EventType.FOCUS, listener, false);
+        callbackId = window.setTimeout(listener, 5000);
+      });
+    });
   }
 
   /** @private */
   constructor() {
-    /**
-     * User commands.
-     * @private {Commands}
-     */
-    this.commands_ = null;
-
-    /**
-     * User preferences.
-     * @private {SwitchAccessPreferences}
-     */
-    this.switchAccessPreferences_ = null;
-
-    /**
-     * Handles changes to auto-scan.
-     * @private {AutoScanManager}
-     */
-    this.autoScanManager_ = null;
-
-    /**
-     * Handles interactions with the accessibility tree, including moving to and
-     * selecting nodes.
-     * @private {NavigationManager}
-     */
-    this.navigationManager_ = null;
-
-    /**
-     * Callback for testing use only.
-     * @private {?function()}
-     */
-    this.onMoveForwardForTesting_ = null;
-
-    /**
-     * Callback that is called once the navigation manager is initialized.
-     * Used to setup communications with the menu panel.
-     * @private {?function()}
-     */
-    this.navReadyCallback_ = null;
-
     /**
      * Feature flag controlling improvement of text input capabilities.
      * @private {boolean}
      */
     this.enableImprovedTextInput_ = false;
 
-    /**
-     * The automation node for the back button.
-     * @private {chrome.automation.AutomationNode}
-     */
-    this.backButtonAutomationNode_;
+    /** @private {boolean} */
+    this.enableMultistepAutomationFeatures_ = false;
 
-    /**
-     * The desktop node.
-     * @private {chrome.automation.AutomationNode}
-     */
-    this.desktop_;
-
-    this.init_();
-  }
-
-  /**
-   * Set up preferences, controllers, and event listeners.
-   * @private
-   */
-  init_() {
     chrome.commandLinePrivate.hasSwitch(
         'enable-experimental-accessibility-switch-access-text', (result) => {
           this.enableImprovedTextInput_ = result;
         });
 
-    this.commands_ = new Commands(this);
-    this.autoScanManager_ = new AutoScanManager(this);
-    this.switchAccessPreferences_ =
-        new SwitchAccessPreferences(this, this.onPrefsReady_.bind(this));
+    chrome.commandLinePrivate.hasSwitch(
+        'enable-experimental-accessibility-switch-access-multistep-automation',
+        (enabled) => {
+          this.enableMultistepAutomationFeatures_ = enabled;
+        });
 
-    chrome.automation.getDesktop(function(desktop) {
-      this.navigationManager_ = new NavigationManager(desktop);
-      this.desktop_ = desktop;
-      this.findBackButtonNode_();
-
-      if (this.navReadyCallback_) {
-        this.navReadyCallback_();
-      }
-    }.bind(this));
-  }
-
-  /**
-   * Open and jump to the Switch Access menu.
-   * @override
-   */
-  enterMenu() {
-    if (this.navigationManager_) {
-      this.navigationManager_.enterMenu();
-    }
-  }
-
-  /**
-   * Move to the next interesting node.
-   * @override
-   */
-  moveForward() {
-    if (this.navigationManager_) {
-      this.navigationManager_.moveForward();
-    }
-    if (this.onMoveForwardForTesting_) {
-      this.onMoveForwardForTesting_();
-    }
-  }
-
-  /**
-   * Move to the previous interesting node.
-   * @override
-   */
-  moveBackward() {
-    if (this.navigationManager_) {
-      this.navigationManager_.moveBackward();
-    }
-  }
-
-  /**
-   * Perform the default action on the current node.
-   * @override
-   */
-  selectCurrentNode() {
-    if (this.navigationManager_) {
-      this.navigationManager_.selectCurrentNode();
-    }
+    /* @private {!SAConstants.Mode} */
+    this.mode_ = SAConstants.Mode.ITEM_SCAN;
   }
 
   /**
    * Returns whether or not the feature flag
    * for improved text input is enabled.
    * @return {boolean}
-   * @override
    */
   improvedTextInputEnabled() {
     return this.enableImprovedTextInput_;
   }
 
-  /**
-   * Restarts auto-scan if it is enabled.
-   * @override
-   */
-  restartAutoScan() {
-    this.autoScanManager_.restartIfRunning();
+  /** @return {boolean} */
+  multistepAutomationFeaturesEnabled() {
+    return this.enableMultistepAutomationFeatures_;
+  }
+
+  /** @return {!SAConstants.Mode} */
+  get mode() {
+    return this.mode_;
+  }
+
+  /** @param {!SAConstants.Mode} newMode */
+  set mode(newMode) {
+    this.mode_ = newMode;
   }
 
   /**
-   * Sets whether the current node is in the virtual keyboard.
-   * @param {boolean} inKeyboard
-   * @override
+   * Helper function to robustly find a node fitting a given FindParams, even if
+   * that node has not yet been created.
+   * Used to find the menu and back button.
+   * @param {!chrome.automation.FindParams} findParams
+   * @param {!function(!AutomationNode): void} foundCallback
    */
-  setInKeyboard(inKeyboard) {
-    this.autoScanManager_.setInKeyboard(inKeyboard);
-  }
-
-  /**
-   * Handle a change in user preferences.
-   * @override
-   * @param {!Object} changes
-   */
-  onPreferencesChanged(changes) {
-    for (const key of Object.keys(changes)) {
-      switch (key) {
-        case SAConstants.Preference.AUTO_SCAN_ENABLED:
-          this.autoScanManager_.setEnabled(changes[key]);
-          break;
-        case SAConstants.Preference.AUTO_SCAN_TIME:
-          this.autoScanManager_.setDefaultScanTime(changes[key]);
-          break;
-        case SAConstants.Preference.AUTO_SCAN_KEYBOARD_TIME:
-          this.autoScanManager_.setKeyboardScanTime(changes[key]);
-          break;
-      }
-    }
-  }
-
-  /**
-   * Returns whether prefs have initially loaded or not.
-   * @return {boolean}
-   * @override
-   */
-  prefsAreReady() {
-    return this.switchAccessPreferences_.isReady();
-  }
-
-  /**
-   * Set the value of the preference |name| to |value| in chrome.storage.sync.
-   * Once the storage is set, the Switch Access preferences/behavior are
-   * updated.
-   *
-   * @override
-   * @param {SAConstants.Preference} name
-   * @param {boolean|number} value
-   */
-  setPreference(name, value) {
-    this.switchAccessPreferences_.setPreference(name, value);
-  }
-
-  /**
-   * Get the boolean value for the given name. Will throw an error if the
-   * value associated with |name| is not a boolean, or undefined.
-   *
-   * @override
-   * @param  {SAConstants.Preference} name
-   * @return {boolean}
-   */
-  getBooleanPreference(name) {
-    return this.switchAccessPreferences_.getBooleanPreference(name);
-  }
-
-  /**
-   * Get the string value for the given name. Will throw an error if the
-   * value associated with |name| is not a string, or is undefined.
-   *
-   * @override
-   * @param {SAConstants.Preference} name
-   * @return {string}
-   */
-  getStringPreference(name) {
-    return this.switchAccessPreferences_.getStringPreference(name);
-  }
-
-  /**
-   * Get the number value for the given name. Will throw an error if the
-   * value associated with |name| is not a number, or undefined.
-   *
-   * @override
-   * @param  {SAConstants.Preference} name
-   * @return {number}
-   */
-  getNumberPreference(name) {
-    return this.switchAccessPreferences_.getNumberPreference(name);
-  }
-
-  /**
-   * Get the number value for the given name, or |null| if none exists.
-   *
-   * @override
-   * @param  {SAConstants.Preference} name
-   * @return {number|null}
-   */
-  getNumberPreferenceIfDefined(name) {
-    return this.switchAccessPreferences_.getNumberPreferenceIfDefined(name);
-  }
-
-  /**
-   * Sets up the connection between the menuPanel and menuManager.
-   * @param {!PanelInterface} menuPanel
-   * @return {MenuManager}
-   */
-  connectMenuPanel(menuPanel) {
-    // Because this may be called before init_(), check if navigationManager_
-    // is initialized.
-    if (this.navigationManager_) {
-      return this.navigationManager_.connectMenuPanel(menuPanel);
-    }
-
-    // If not, set navReadyCallback_ to have the menuPanel try again.
-    this.navReadyCallback_ = menuPanel.connectToBackground.bind(menuPanel);
-    return null;
-  }
-
-  /**
-   * Notifies managers that the preferences have initially loaded.
-   */
-  onPrefsReady_() {
-    this.autoScanManager_.onPrefsReady();
-    if (this.navigationManager_) {
-      this.navigationManager_.onPrefsReady();
-    }
-  }
-
-  /** @return {chrome.automation.AutomationNode} */
-  getBackButtonAutomationNode() {
-    if (!this.backButtonAutomationNode_) {
-      this.findBackButtonNode_();
-      if (!this.backButtonAutomationNode_) {
-        console.log('Error: unable to find back button');
-      }
-    }
-    return this.backButtonAutomationNode_;
-  }
-
-  /**
-   * Looks for the back button node.
-   */
-  findBackButtonNode_() {
-    if (!this.desktop_) {
+  static findNodeMatching(findParams, foundCallback) {
+    const desktop = Navigator.byItem.desktopNode;
+    // First, check if the node is currently in the tree.
+    let node = desktop.find(findParams);
+    if (node) {
+      foundCallback(node);
       return;
     }
-    this.backButtonAutomationNode_ =
-        new AutomationTreeWalker(
-            this.desktop_, constants.Dir.FORWARD,
-            {visit: (node) => node.htmlAttributes.id === SAConstants.BACK_ID})
-            .next()
-            .node;
+    // If it's not currently in the tree, listen for changes to the desktop
+    // tree.
+    const eventHandler = new EventHandler(
+        desktop, chrome.automation.EventType.CHILDREN_CHANGED,
+        null /** callback */);
+
+    const onEvent = (event) => {
+      if (event.target.matches(findParams)) {
+        // If the event target is the node we're looking for, we've found it.
+        eventHandler.stop();
+        foundCallback(event.target);
+      } else if (event.target.children.length > 0) {
+        // Otherwise, see if one of its children is the node we're looking for.
+        node = event.target.find(findParams);
+        if (node) {
+          eventHandler.stop();
+          foundCallback(node);
+        }
+      }
+    };
+
+    eventHandler.setCallback(onEvent);
+    eventHandler.start();
   }
 
-  /*
+  /**
    * Creates and records the specified error.
    * @param {SAConstants.ErrorType} errorType
    * @param {string} errorString
+   * @param {boolean} shouldRecover
    * @return {!Error}
    */
-  static error(errorType, errorString) {
-    let errorTypeCountForUMA = Object.keys(SAConstants.ErrorType).length;
+  static error(errorType, errorString, shouldRecover = false) {
+    if (shouldRecover) {
+      setTimeout(Navigator.byItem.moveToValidNode.bind(Navigator.byItem), 0);
+    }
+    const errorTypeCountForUMA = Object.keys(SAConstants.ErrorType).length;
     chrome.metricsPrivate.recordEnumerationValue(
-        'Accessibility.CrosSwitchAccess.Error', errorType,
-        errorTypeCountForUMA);
+        'Accessibility.CrosSwitchAccess.Error',
+        /** @type {number} */ (errorType), errorTypeCountForUMA);
     return new Error(errorString);
   }
 
   /**
-   * Prints out the current Switch Access tree for debugging.
-   * @param {boolean=} wholeTree whether to print the whole tree, or the current
-   * focus.
-   * @return {SARootNode|undefined}
+   * @param {!chrome.automation.AutomationNode} desktop
+   * @private
    */
-  getTreeForDebugging(wholeTree = false) {
-    if (this.navigationManager_) {
-      return this.navigationManager_.getTreeForDebugging(wholeTree);
-    }
+  static finishInit_(desktop) {
+    // Navigator must be initialized first.
+    Navigator.initializeSingletonInstance(desktop);
+
+    Commands.initialize();
+    KeyboardRootNode.startWatchingVisibility();
+    PreferenceManager.initialize();
   }
 }

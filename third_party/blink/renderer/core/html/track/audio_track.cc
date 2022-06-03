@@ -22,7 +22,7 @@ AudioTrack::AudioTrack(const String& id,
 
 AudioTrack::~AudioTrack() = default;
 
-void AudioTrack::Trace(Visitor* visitor) {
+void AudioTrack::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
   TrackBase::Trace(visitor);
 }

@@ -27,6 +27,10 @@ class DictionaryHashStoreContents : public HashStoreContents {
   // |storage|.
   explicit DictionaryHashStoreContents(base::DictionaryValue* storage);
 
+  DictionaryHashStoreContents(const DictionaryHashStoreContents&) = delete;
+  DictionaryHashStoreContents& operator=(const DictionaryHashStoreContents&) =
+      delete;
+
   // Registers required preferences.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
@@ -55,8 +59,6 @@ class DictionaryHashStoreContents : public HashStoreContents {
   // Helper function to get a mutable version of the macs from |storage_|,
   // creating it if needed and |create_if_null| is true.
   base::DictionaryValue* GetMutableContents(bool create_if_null);
-
-  DISALLOW_COPY_AND_ASSIGN(DictionaryHashStoreContents);
 };
 
 #endif  // SERVICES_PREFERENCES_TRACKED_DICTIONARY_HASH_STORE_CONTENTS_H_

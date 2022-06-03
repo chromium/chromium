@@ -8,7 +8,7 @@
 
 namespace ui {
 
-base::string16 WebDialogDelegate::GetAccessibleDialogTitle() const {
+std::u16string WebDialogDelegate::GetAccessibleDialogTitle() const {
   return GetDialogTitle();
 }
 
@@ -20,12 +20,8 @@ void WebDialogDelegate::GetMinimumDialogSize(gfx::Size* size) const {
   GetDialogSize(size);
 }
 
-bool WebDialogDelegate::CanCloseDialog() const {
-  return true;
-}
-
-bool WebDialogDelegate::CanResizeDialog() const {
-  return true;
+bool WebDialogDelegate::CanMaximizeDialog() const {
+  return false;
 }
 
 bool WebDialogDelegate::OnDialogCloseRequested() {
@@ -50,7 +46,7 @@ void WebDialogDelegate::OnDialogCloseFromWebUI(
 }
 
 bool WebDialogDelegate::HandleContextMenu(
-    content::RenderFrameHost* render_frame_host,
+    content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   return false;
 }
@@ -72,6 +68,17 @@ std::vector<Accelerator> WebDialogDelegate::GetAccelerators() {
 
 bool WebDialogDelegate::AcceleratorPressed(const Accelerator& accelerator) {
   return false;
+}
+
+bool WebDialogDelegate::CheckMediaAccessPermission(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& security_origin,
+    blink::mojom::MediaStreamType type) {
+  return false;
+}
+
+WebDialogDelegate::FrameKind WebDialogDelegate::GetWebDialogFrameKind() const {
+  return WebDialogDelegate::FrameKind::kNonClient;
 }
 
 }  // namespace ui

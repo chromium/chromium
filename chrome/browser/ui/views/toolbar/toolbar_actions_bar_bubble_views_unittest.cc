@@ -45,11 +45,8 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> CreateAnchorWidget() {
-    std::unique_ptr<views::Widget> anchor_widget(new views::Widget());
-    views::Widget::InitParams params =
-        CreateParams(views::Widget::InitParams::TYPE_WINDOW);
-    params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    anchor_widget->Init(std::move(params));
+    std::unique_ptr<views::Widget> anchor_widget =
+        CreateTestWidget(views::Widget::InitParams::TYPE_WINDOW);
     anchor_widget->Show();
     return anchor_widget;
   }
@@ -64,7 +61,7 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
         anchor_widget_->GetContentsView(), anchored_to_action,
         delegate->GetDelegate());
     bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_);
-    bubble_->Show();
+    bubble_widget_->Show();
   }
 
   void CloseBubble() {
@@ -88,14 +85,12 @@ class ToolbarActionsBarBubbleViewsTest : public ChromeViewsTestBase {
     base::RunLoop().RunUntilIdle();
   }
 
-  base::string16 HeadingString() { return base::ASCIIToUTF16("Heading"); }
-  base::string16 BodyString() { return base::ASCIIToUTF16("Body"); }
-  base::string16 ActionString() { return base::ASCIIToUTF16("Action"); }
-  base::string16 DismissString() { return base::ASCIIToUTF16("Dismiss"); }
-  base::string16 LearnMoreString() { return base::ASCIIToUTF16("Learn"); }
-  base::string16 ItemListString() {
-    return base::ASCIIToUTF16("Item 1\nItem2");
-  }
+  std::u16string HeadingString() { return u"Heading"; }
+  std::u16string BodyString() { return u"Body"; }
+  std::u16string ActionString() { return u"Action"; }
+  std::u16string DismissString() { return u"Dismiss"; }
+  std::u16string LearnMoreString() { return u"Learn"; }
+  std::u16string ItemListString() { return u"Item 1\nItem2"; }
 
   views::Widget* anchor_widget() { return anchor_widget_.get(); }
   views::Widget* bubble_widget() { return bubble_widget_; }
@@ -126,8 +121,8 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutNoButtons) {
       extra_view_info =
           std::make_unique<ToolbarActionsBarBubbleDelegate::ExtraViewInfo>();
   delegate.set_extra_view_info(std::move(extra_view_info));
-  delegate.set_dismiss_button_text(base::string16());
-  delegate.set_action_button_text(base::string16());
+  delegate.set_dismiss_button_text(std::u16string());
+  delegate.set_action_button_text(std::u16string());
   ShowBubble(&delegate);
 
   EXPECT_EQ(nullptr, bubble()->GetExtraView());
@@ -200,7 +195,7 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutListView) {
 
 TEST_F(ToolbarActionsBarBubbleViewsTest, TestBubbleLayoutNoBodyText) {
   TestToolbarActionsBarBubbleDelegate delegate(
-      HeadingString(), base::string16(), ActionString());
+      HeadingString(), std::u16string(), ActionString());
   ShowBubble(&delegate);
 
   EXPECT_TRUE(bubble()->GetOkButton());
@@ -242,7 +237,7 @@ TEST_F(ToolbarActionsBarBubbleViewsTest, TestShowAndCloseBubble) {
   views::Widget* bubble_widget =
       views::BubbleDialogDelegateView::CreateBubble(bubble);
   views::test::TestWidgetObserver bubble_observer(bubble_widget);
-  bubble->Show();
+  bubble_widget->Show();
   EXPECT_TRUE(delegate.shown());
   EXPECT_FALSE(delegate.close_action());
 

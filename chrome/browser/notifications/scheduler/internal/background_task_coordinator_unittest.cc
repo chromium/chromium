@@ -34,21 +34,36 @@ const char kDeliverTimeWindowEnd[] = "04/25/1984 08:50:00 AM";
 const char kTommorow[] = "04/26/1984 00:00:00 AM";
 
 const char kGuid[] = "1234";
-const std::vector<test::ImpressionTestData> kSingleClientImpressionTestData = {
-    {SchedulerClientType::kTest1,
-     1 /* current_max_daily_show */,
-     {},
-     base::nullopt /* suppression_info */}};
+const std::vector<test::ImpressionTestData> kSingleClientImpressionTestData = {{
+    SchedulerClientType::kTest1,
+    1 /* current_max_daily_show */,
+    {} /* impressions */,
+    absl::nullopt /* suppression_info */,
+    0 /* negative_events_count */,
+    absl::nullopt /* negative_event_ts */,
+    absl::nullopt /* last_shown_ts */
+}
+
+};
 
 const std::vector<test::ImpressionTestData> kClientsImpressionTestData = {
     {SchedulerClientType::kTest1,
      1 /* current_max_daily_show */,
-     {},
-     base::nullopt /* suppression_info */},
-    {SchedulerClientType::kTest2,
-     2 /* current_max_daily_show */,
-     {},
-     base::nullopt /* suppression_info */}};
+     {} /* impressions */,
+     absl::nullopt /* suppression_info */,
+     0 /* negative_events_count */,
+     absl::nullopt /* negative_event_ts */,
+     absl::nullopt /* last_shown_ts */},
+    {
+        SchedulerClientType::kTest2,
+        2 /* current_max_daily_show */,
+        {} /* impressions */,
+        absl::nullopt /* suppression_info */,
+        0 /* negative_events_count */,
+        absl::nullopt /* negative_event_ts */,
+        absl::nullopt /* last_shown_ts */,
+
+    }};
 
 struct TestData {
   // Impression data as the input.
@@ -61,6 +76,9 @@ struct TestData {
 class BackgroundTaskCoordinatorTest : public testing::Test {
  public:
   BackgroundTaskCoordinatorTest() = default;
+  BackgroundTaskCoordinatorTest(const BackgroundTaskCoordinatorTest&) = delete;
+  BackgroundTaskCoordinatorTest& operator=(
+      const BackgroundTaskCoordinatorTest&) = delete;
   ~BackgroundTaskCoordinatorTest() override = default;
 
  protected:
@@ -68,7 +86,7 @@ class BackgroundTaskCoordinatorTest : public testing::Test {
     // Setup configuration used by this test.
     config_.max_daily_shown_all_type = 3;
     config_.max_daily_shown_per_type = 2;
-    config_.suppression_duration = base::TimeDelta::FromDays(3);
+    config_.suppression_duration = base::Days(3);
 
     auto background_task =
         std::make_unique<test::MockNotificationBackgroundTaskScheduler>();
@@ -123,8 +141,6 @@ class BackgroundTaskCoordinatorTest : public testing::Test {
   test::MockNotificationBackgroundTaskScheduler* background_task_;
   TestData test_data_;
   std::map<SchedulerClientType, std::unique_ptr<ClientState>> client_states_;
-
-  DISALLOW_COPY_AND_ASSIGN(BackgroundTaskCoordinatorTest);
 };
 
 // No notification persisted, then no background task needs to be scheduled.
@@ -186,7 +202,7 @@ TEST_F(BackgroundTaskCoordinatorTest, ThrottlePerTypeNextDay) {
   test_data.impression_test_data = kSingleClientImpressionTestData;
   test_data.impression_test_data.front().current_max_daily_show = 1;
   Impression impression_today(SchedulerClientType::kTest1, "guid",
-                              clock()->Now() - base::TimeDelta::FromMinutes(5));
+                              clock()->Now() - base::Minutes(5));
   test_data.impression_test_data.front().impressions = {impression_today};
   test_data.notification_entries = {
       CreateNotification(SchedulerClientType::kTest1, kGuid,
@@ -219,8 +235,7 @@ TEST_F(BackgroundTaskCoordinatorTest, Suppression) {
       CreateNotification(SchedulerClientType::kTest1, kGuid,
                          kDeliverTimeWindowStart, kDeliverTimeWindowEnd)};
   test_data.impression_test_data.front().suppression_info =
-      SuppressionInfo(clock()->Now() - base::TimeDelta::FromHours(1),
-                      base::TimeDelta::FromDays(7));
+      SuppressionInfo(clock()->Now() - base::Hours(1), base::Days(7));
   EXPECT_CALL(*background_task(), Schedule(_, _)).Times(0);
   EXPECT_CALL(*background_task(), Cancel()).Times(0);
   ScheduleTask(test_data);
@@ -236,8 +251,7 @@ TEST_F(BackgroundTaskCoordinatorTest, DeliverTimeAfterSuppressionExpired) {
                          "04/26/1984 05:00:00 AM", "04/26/1984 23:59:00 PM")};
   // Suppression will expire at 04/26/1984 06:00:00 AM.
   test_data.impression_test_data.front().suppression_info =
-      SuppressionInfo(clock()->Now() - base::TimeDelta::FromDays(1),
-                      base::TimeDelta::FromDays(2));
+      SuppressionInfo(clock()->Now() - base::Days(1), base::Days(2));
   EXPECT_CALL(*background_task(),
               Schedule(GetTime("04/26/1984 06:00:00 AM") - GetTime(kNow), _));
   EXPECT_CALL(*background_task(), Cancel()).Times(0);

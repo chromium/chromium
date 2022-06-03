@@ -5,23 +5,24 @@
 #ifndef UI_BASE_COCOA_SECURE_PASSWORD_INPUT_H_
 #define UI_BASE_COCOA_SECURE_PASSWORD_INPUT_H_
 
-#include "base/macros.h"
-#include "ui/base/ui_base_export.h"
+#include "base/component_export.h"
 
 namespace ui {
 
 // Enables the secure password input mode while in scope.
-class UI_BASE_EXPORT ScopedPasswordInputEnabler {
+class COMPONENT_EXPORT(UI_BASE) ScopedPasswordInputEnabler {
  public:
   ScopedPasswordInputEnabler();
+
+  ScopedPasswordInputEnabler(const ScopedPasswordInputEnabler&) = delete;
+  ScopedPasswordInputEnabler& operator=(const ScopedPasswordInputEnabler&) =
+      delete;
+
   ~ScopedPasswordInputEnabler();
 
   // Returns true if the password input mode is currently enabled. Useful for
   // unit tests.
   static bool IsPasswordInputEnabled();
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(ScopedPasswordInputEnabler);
 };
 
 }  // namespace ui

@@ -4,6 +4,9 @@
 
 #include "third_party/blink/renderer/core/frame/remote_frame_view.h"
 
+#include "base/cxx17_backports.h"
+#include "components/paint_preview/common/paint_preview_tracker.h"
+#include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -18,6 +21,15 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
+#include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
+#include "third_party/blink/renderer/platform/widget/frame_widget.h"
+#include "ui/gfx/geometry/transform_util.h"
+
+#if BUILDFLAG(ENABLE_PRINTING)
+// nogncheck because dependency on //printing is conditional upon
+// enable_basic_printing flags.
+#include "printing/metafile_skia.h"  // nogncheck
+#endif
 
 namespace blink {
 
@@ -34,8 +46,10 @@ LocalFrameView* RemoteFrameView::ParentFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner && owner->OwnerType() == FrameOwnerElementType::kPortal)
+  if (owner && (owner->OwnerType() == FrameOwnerElementType::kPortal ||
+                owner->OwnerType() == FrameOwnerElementType::kFencedframe)) {
     return owner->GetDocument().GetFrame()->View();
+  }
 
   // |is_attached_| is only set from AttachToLayout(), which ensures that the
   // parent is a local frame.
@@ -51,8 +65,10 @@ LocalFrameView* RemoteFrameView::ParentLocalRootFrameView() const {
     return nullptr;
 
   HTMLFrameOwnerElement* owner = remote_frame_->DeprecatedLocalOwner();
-  if (owner && owner->OwnerType() == FrameOwnerElementType::kPortal)
+  if (owner && (owner->OwnerType() == FrameOwnerElementType::kPortal ||
+                owner->OwnerType() == FrameOwnerElementType::kFencedframe)) {
     return owner->GetDocument().GetFrame()->LocalFrameRoot().View();
+  }
 
   // |is_attached_| is only set from AttachToLayout(), which ensures that the
   // parent is a local frame.
@@ -69,7 +85,8 @@ void RemoteFrameView::AttachToLayout() {
   UpdateFrameVisibility(true);
   UpdateRenderThrottlingStatus(
       IsHiddenForThrottling(),
-      ParentFrameView()->CanThrottleRenderingForPropagation());
+      ParentFrameView()->CanThrottleRenderingForPropagation(),
+      IsDisplayLocked());
   needs_frame_rect_propagation_ = true;
   ParentFrameView()->SetNeedsUpdateGeometries();
 }
@@ -81,17 +98,22 @@ void RemoteFrameView::DetachFromLayout() {
 }
 
 bool RemoteFrameView::UpdateViewportIntersectionsForSubtree(
-    unsigned parent_flags) {
+    unsigned parent_flags,
+    absl::optional<base::TimeTicks>&) {
   UpdateViewportIntersection(parent_flags, needs_occlusion_tracking_);
   return needs_occlusion_tracking_;
 }
 
 void RemoteFrameView::SetViewportIntersection(
-    const ViewportIntersectionState& intersection_state) {
-  if (intersection_state != last_intersection_state_) {
-    last_intersection_state_ = intersection_state;
-    remote_frame_->Client()->UpdateRemoteViewportIntersection(
-        intersection_state);
+    const mojom::blink::ViewportIntersectionState& intersection_state) {
+  mojom::blink::ViewportIntersectionState new_state(intersection_state);
+  new_state.compositor_visible_rect = ToGfxRect(compositing_rect_);
+  if (!last_intersection_state_.Equals(new_state)) {
+    last_intersection_state_ = new_state;
+    GetFrame().SynchronizeVisualProperties();
+    remote_frame_->SetViewportIntersection(new_state);
+  } else if (needs_frame_rect_propagation_) {
+    PropagateFrameRects();
   }
 }
 
@@ -105,30 +127,39 @@ void RemoteFrameView::SetNeedsOcclusionTracking(bool needs_tracking) {
   }
 }
 
-IntRect RemoteFrameView::GetCompositingRect() {
+void RemoteFrameView::UpdateCompositingRect() {
+  IntRect previous_rect = compositing_rect_;
+  compositing_rect_ = IntRect();
   LocalFrameView* local_root_view = ParentLocalRootFrameView();
-  if (!local_root_view || !remote_frame_->OwnerLayoutObject())
-    return IntRect();
+  LayoutEmbeddedContent* owner_layout_object =
+      remote_frame_->OwnerLayoutObject();
+  if (!local_root_view || !owner_layout_object) {
+    needs_frame_rect_propagation_ = true;
+    return;
+  }
 
   // For main frames we constrain the rect that gets painted to the viewport.
   // If the local frame root is an OOPIF itself, then we use the root's
   // intersection rect. This represents a conservative maximum for the area
   // that needs to be rastered by the OOPIF compositor.
-  IntSize viewport_size = local_root_view->Size();
+  IntRect viewport_rect(gfx::Point(), local_root_view->Size());
   if (local_root_view->GetPage()->MainFrame() != local_root_view->GetFrame()) {
-    viewport_size =
-        local_root_view->GetFrame().RemoteViewportIntersection().Size();
+    viewport_rect = local_root_view->GetFrame().RemoteViewportIntersection();
   }
 
-  // The viewport size needs to account for intermediate CSS transforms before
+  // The viewport rect needs to account for intermediate CSS transforms before
   // being compared to the frame size.
-  PhysicalRect viewport_rect =
-      remote_frame_->OwnerLayoutObject()->AncestorToLocalRect(
-          local_root_view->GetLayoutView(),
-          PhysicalRect(PhysicalOffset(), PhysicalSize(viewport_size)),
-          kTraverseDocumentBoundaries);
-  IntSize converted_viewport_size = EnclosingIntRect(viewport_rect).Size();
-
+  TransformState local_root_transform_state(
+      TransformState::kApplyTransformDirection);
+  local_root_transform_state.Move(
+      owner_layout_object->PhysicalContentBoxOffset());
+  owner_layout_object->MapLocalToAncestor(nullptr, local_root_transform_state,
+                                          kTraverseDocumentBoundaries);
+  TransformationMatrix matrix =
+      local_root_transform_state.AccumulatedTransform().Inverse();
+  PhysicalRect local_viewport_rect = PhysicalRect::EnclosingRect(
+      matrix.ProjectQuad(FloatRect(viewport_rect)).BoundingBox());
+  compositing_rect_ = EnclosingIntRect(local_viewport_rect);
   IntSize frame_size = Size();
 
   // Iframes that fit within the window viewport get fully rastered. For
@@ -139,22 +170,69 @@ IntRect RemoteFrameView::GetCompositingRect() {
   // it seems to make guttering rare with slow to medium speed wheel scrolling.
   // Can we collect UMA data to estimate how much extra rastering this causes,
   // and possibly how common guttering is?
-  converted_viewport_size.Scale(1.3f);
-  converted_viewport_size.SetWidth(
-      std::min(frame_size.Width(), converted_viewport_size.Width()));
-  converted_viewport_size.SetHeight(
-      std::min(frame_size.Height(), converted_viewport_size.Height()));
-  IntPoint expanded_origin;
-  const IntRect& last_rect = last_intersection_state_.viewport_intersection;
-  if (!last_rect.IsEmpty()) {
-    IntSize expanded_size =
-        last_rect.Size().ExpandedTo(converted_viewport_size);
-    expanded_size -= last_rect.Size();
-    expanded_size.Scale(0.5f, 0.5f);
-    expanded_origin = last_rect.Location() - expanded_size;
-    expanded_origin.ClampNegativeToZero();
+  compositing_rect_.OutsetX(ceilf(local_viewport_rect.Width() * 0.15f));
+  compositing_rect_.OutsetY(ceilf(local_viewport_rect.Height() * 0.15f));
+  compositing_rect_.set_width(
+      std::min(frame_size.width(), compositing_rect_.width()));
+  compositing_rect_.set_height(
+      std::min(frame_size.height(), compositing_rect_.height()));
+  gfx::Point compositing_rect_location = compositing_rect_.origin();
+  compositing_rect_location.SetToMax(gfx::Point());
+  compositing_rect_.set_origin(compositing_rect_location);
+
+  if (compositing_rect_ != previous_rect)
+    needs_frame_rect_propagation_ = true;
+}
+
+void RemoteFrameView::UpdateCompositingScaleFactor() {
+  float previous_scale_factor = compositing_scale_factor_;
+
+  LocalFrameView* local_root_view = ParentLocalRootFrameView();
+  LayoutEmbeddedContent* owner_layout_object =
+      remote_frame_->OwnerLayoutObject();
+  if (!local_root_view || !owner_layout_object)
+    return;
+
+  TransformState local_root_transform_state(
+      TransformState::kApplyTransformDirection);
+  local_root_transform_state.Move(
+      owner_layout_object->PhysicalContentBoxOffset());
+  owner_layout_object->MapLocalToAncestor(nullptr, local_root_transform_state,
+                                          kTraverseDocumentBoundaries);
+
+  float frame_to_local_root_scale_factor = 1.0f;
+  gfx::Transform local_root_transform = TransformationMatrix::ToTransform(
+      local_root_transform_state.AccumulatedTransform());
+  absl::optional<gfx::Vector2dF> scale_components =
+      gfx::TryComputeTransform2dScaleComponents(local_root_transform);
+  if (!scale_components) {
+    frame_to_local_root_scale_factor =
+        gfx::ComputeApproximateMaxScale(local_root_transform);
+  } else {
+    frame_to_local_root_scale_factor =
+        std::max(scale_components->x(), scale_components->y());
   }
-  return IntRect(expanded_origin, converted_viewport_size);
+
+  // The compositing scale factor is calculated by multiplying the scale factor
+  // from the local root to main frame with the scale factor between child frame
+  // and local root.
+  FrameWidget* widget = local_root_view->GetFrame().GetWidgetForLocalRoot();
+  compositing_scale_factor_ =
+      widget->GetCompositingScaleFactor() * frame_to_local_root_scale_factor;
+
+  // Force compositing scale factor to be within reasonable minimum and maximum
+  // values to prevent dependent values such as scroll deltas in the compositor
+  // going to zero or extremely high memory usage due to large raster scales.
+  // It's possible for the calculated scale factor to become very large or very
+  // small since it depends on arbitrary intermediate CSS transforms.
+  constexpr float kMinCompositingScaleFactor = 0.25f;
+  constexpr float kMaxCompositingScaleFactor = 5.0f;
+  compositing_scale_factor_ =
+      base::clamp(compositing_scale_factor_, kMinCompositingScaleFactor,
+                  kMaxCompositingScaleFactor);
+
+  if (compositing_scale_factor_ != previous_scale_factor)
+    remote_frame_->SynchronizeVisualProperties();
 }
 
 void RemoteFrameView::Dispose() {
@@ -164,17 +242,6 @@ void RemoteFrameView::Dispose() {
   if (owner_element && owner_element->OwnedEmbeddedContentView() == this)
     owner_element->SetEmbeddedContentView(nullptr);
   SetNeedsOcclusionTracking(false);
-}
-
-void RemoteFrameView::InvalidateRect(const IntRect& rect) {
-  auto* object = remote_frame_->OwnerLayoutObject();
-  if (!object)
-    return;
-
-  PhysicalRect repaint_rect(rect);
-  repaint_rect.Move(PhysicalOffset(object->BorderLeft() + object->PaddingLeft(),
-                                   object->BorderTop() + object->PaddingTop()));
-  object->InvalidatePaintRectangle(repaint_rect);
 }
 
 void RemoteFrameView::SetFrameRect(const IntRect& rect) {
@@ -194,32 +261,46 @@ void RemoteFrameView::PropagateFrameRects() {
   if (LocalFrameView* parent = ParentFrameView()) {
     screen_space_rect = parent->ConvertToRootFrame(screen_space_rect);
   }
-  remote_frame_->Client()->FrameRectsChanged(frame_rect, screen_space_rect);
+  remote_frame_->FrameRectsChanged(frame_rect, screen_space_rect);
 }
 
 void RemoteFrameView::Paint(GraphicsContext& context,
                             const GlobalPaintFlags flags,
                             const CullRect& rect,
                             const IntSize& paint_offset) const {
-  // Painting remote frames is only for printing.
-  if (!context.Printing())
+  if (!rect.Intersects(ToGfxRect(FrameRect())))
     return;
 
-  if (!rect.Intersects(FrameRect()))
-    return;
+  const auto& owner_layout_object = *GetFrame().OwnerLayoutObject();
+  if (owner_layout_object.GetDocument().IsPrintingOrPaintingPreview()) {
+    DrawingRecorder recorder(context, owner_layout_object,
+                             DisplayItem::kDocumentBackground);
+    context.Save();
+    context.Translate(paint_offset.width(), paint_offset.height());
+    DCHECK(context.Canvas());
 
-  DrawingRecorder recorder(context, *GetFrame().OwnerLayoutObject(),
-                           DisplayItem::kDocumentBackground);
-  context.Save();
-  context.Translate(paint_offset.Width(), paint_offset.Height());
+    uint32_t content_id = 0;
+    if (owner_layout_object.GetDocument().Printing()) {
+      // Inform the remote frame to print.
+      content_id = Print(FrameRect(), context.Canvas());
+    } else {
+      DCHECK_NE(Document::kNotPaintingPreview,
+                owner_layout_object.GetDocument().GetPaintPreviewState());
+      // Inform the remote frame to capture a paint preview.
+      content_id = CapturePaintPreview(FrameRect(), context.Canvas());
+    }
+    // Record the place holder id on canvas.
+    context.Canvas()->recordCustomData(content_id);
+    context.Restore();
+  }
 
-  DCHECK(context.Canvas());
-  // Inform the remote frame to print.
-  uint32_t content_id = Print(FrameRect(), context.Canvas());
-
-  // Record the place holder id on canvas.
-  context.Canvas()->recordCustomData(content_id);
-  context.Restore();
+  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
+      GetFrame().GetCcLayer()) {
+    RecordForeignLayer(context, owner_layout_object,
+                       DisplayItem::kForeignLayerRemoteFrame,
+                       GetFrame().GetCcLayer(),
+                       FrameRect().origin() + ToGfxVector2d(paint_offset));
+  }
 }
 
 void RemoteFrameView::UpdateGeometry() {
@@ -248,10 +329,10 @@ void RemoteFrameView::ParentVisibleChanged() {
 
 void RemoteFrameView::VisibilityForThrottlingChanged() {
   TRACE_EVENT0("blink", "RemoteFrameView::VisibilityForThrottlingChanged");
-  if (!remote_frame_->Client())
-    return;
-  remote_frame_->Client()->UpdateRenderThrottlingStatus(IsHiddenForThrottling(),
-                                                        IsSubtreeThrottled());
+  // TODO(szager,vmpstr): Send IsSubtreeThrottled() and IsDisplayLocked() as
+  // separate bits.
+  remote_frame_->GetRemoteFrameHostRemote().UpdateRenderThrottlingStatus(
+      IsHiddenForThrottling(), IsSubtreeThrottled(), IsDisplayLocked());
 }
 
 void RemoteFrameView::VisibilityChanged(
@@ -260,7 +341,7 @@ void RemoteFrameView::VisibilityChanged(
 }
 
 bool RemoteFrameView::CanThrottleRendering() const {
-  return IsSubtreeThrottled() || IsHiddenForThrottling();
+  return IsHiddenForThrottling() || IsSubtreeThrottled() || IsDisplayLocked();
 }
 
 void RemoteFrameView::SetIntrinsicSizeInfo(
@@ -284,10 +365,53 @@ bool RemoteFrameView::HasIntrinsicSizingInfo() const {
 
 uint32_t RemoteFrameView::Print(const IntRect& rect,
                                 cc::PaintCanvas* canvas) const {
-  return remote_frame_->Client()->Print(rect, canvas);
+#if BUILDFLAG(ENABLE_PRINTING)
+  auto* metafile = canvas->GetPrintingMetafile();
+  DCHECK(metafile);
+
+  // Create a place holder content for the remote frame so it can be replaced
+  // with actual content later.
+  // TODO(crbug.com/1093929): Consider to use an embedding token which
+  // represents the state of the remote frame. See also comments on
+  // https://crrev.com/c/2245430/.
+  uint32_t content_id = metafile->CreateContentForRemoteFrame(
+      ToGfxRect(rect), remote_frame_->GetFrameToken().value());
+
+  // Inform browser to print the remote subframe.
+  remote_frame_->GetRemoteFrameHostRemote().PrintCrossProcessSubframe(
+      ToGfxRect(rect), metafile->GetDocumentCookie());
+  return content_id;
+#else
+  return 0;
+#endif
 }
 
-void RemoteFrameView::Trace(blink::Visitor* visitor) {
+uint32_t RemoteFrameView::CapturePaintPreview(const IntRect& rect,
+                                              cc::PaintCanvas* canvas) const {
+  auto* tracker = canvas->GetPaintPreviewTracker();
+  DCHECK(tracker);  // |tracker| must exist or there is a bug upstream.
+
+  // RACE: there is a possibility that the embedding token will be null and
+  // still be in a valid state. This can occur is the frame has recently
+  // navigated and the embedding token hasn't propagated from the FrameTreeNode
+  // to this HTMLFrameOwnerElement yet (over IPC). If the token is null the
+  // failure can be handled gracefully by simply ignoring the subframe in the
+  // result.
+  absl::optional<base::UnguessableToken> maybe_embedding_token =
+      remote_frame_->GetEmbeddingToken();
+  if (!maybe_embedding_token.has_value())
+    return 0;
+  uint32_t content_id = tracker->CreateContentForRemoteFrame(
+      ToGfxRect(rect), maybe_embedding_token.value());
+
+  // Send a request to the browser to trigger a capture of the remote frame.
+  remote_frame_->GetRemoteFrameHostRemote()
+      .CapturePaintPreviewOfCrossProcessSubframe(ToGfxRect(rect),
+                                                 tracker->Guid());
+  return content_id;
+}
+
+void RemoteFrameView::Trace(Visitor* visitor) const {
   visitor->Trace(remote_frame_);
 }
 

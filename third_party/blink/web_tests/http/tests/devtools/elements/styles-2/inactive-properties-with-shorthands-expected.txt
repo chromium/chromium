@@ -1,0 +1,128 @@
+Tests that properties overridden by a shorthand are displayed as inactive in the sidebar.
+
+display: block;
+    block - div user agent stylesheet
+margin-bottom: 0px;
+    0px - #inspected1 <style>
+margin-left: 0px;
+    0px - #inspected1 <style>
+margin-right: 0px;
+    0px - #inspected1 <style>
+margin-top: 0px;
+    0px - #inspected1 <style>
+[expanded] 
+element.style { ()
+
+[expanded] 
+#inspected1 { (<style>)
+/-- overloaded --/     margin-top: 100px;
+    margin: 0;
+        margin-top: 0px;
+        margin-right: 0px;
+        margin-bottom: 0px;
+        margin-left: 0px;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+display: block;
+    block - div user agent stylesheet
+padding-bottom: 0px;
+    0px - #inspected2 <style>
+padding-left: 0px;
+    0px - #inspected2 <style>
+padding-right: 0px;
+    0px - #inspected2 <style>
+padding-top: 0px;
+    0px - #inspected2 <style>
+[expanded] 
+element.style { ()
+
+[expanded] 
+#inspected2 { (<style>)
+/-- overloaded --/     padding: 100px;
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-bottom: 0px;
+        padding-left: 0px;
+    padding: 0;
+        padding-top: 0px;
+        padding-right: 0px;
+        padding-bottom: 0px;
+        padding-left: 0px;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+border-bottom-color: rgb(0, 0, 0);
+    initial - #inspected3 <style>
+border-bottom-style: solid;
+    solid - #inspected3 <style>
+border-bottom-width: 0px;
+    0px - #inspected3 <style>
+border-image-outset: 0;
+    initial - #inspected3 <style>
+border-image-repeat: stretch;
+    initial - #inspected3 <style>
+border-image-slice: 100%;
+    initial - #inspected3 <style>
+border-image-source: none;
+    initial - #inspected3 <style>
+border-image-width: 1;
+    initial - #inspected3 <style>
+border-left-color: rgb(0, 0, 0);
+    initial - #inspected3 <style>
+border-left-style: solid;
+    solid - #inspected3 <style>
+border-left-width: 0px;
+    0px - #inspected3 <style>
+border-right-color: rgb(0, 0, 0);
+    initial - #inspected3 <style>
+border-right-style: solid;
+    solid - #inspected3 <style>
+border-right-width: 0px;
+    0px - #inspected3 <style>
+border-top-color: rgb(0, 0, 0);
+    initial - #inspected3 <style>
+border-top-style: solid;
+    solid - #inspected3 <style>
+border-top-width: 0px;
+    0px - #inspected3 <style>
+display: block;
+    block - div user agent stylesheet
+[expanded] 
+element.style { ()
+
+[expanded] 
+#inspected3 { (<style>)
+    border-width: 100px;
+        border-top-width: 0px;
+        border-right-width: 0px;
+        border-bottom-width: 0px;
+        border-left-width: 0px;
+    border: 0 solid;
+        border-top-color: initial;
+        border-top-style: solid;
+        border-top-width: 0px;
+        border-right-color: initial;
+        border-right-style: solid;
+        border-right-width: 0px;
+        border-bottom-color: initial;
+        border-bottom-style: solid;
+        border-bottom-width: 0px;
+        border-left-color: initial;
+        border-left-style: solid;
+        border-left-width: 0px;
+        border-image-source: initial;
+        border-image-slice: initial;
+        border-image-width: initial;
+        border-image-outset: initial;
+        border-image-repeat: initial;
+
+[expanded] 
+div { (user agent stylesheet)
+    display: block;
+
+

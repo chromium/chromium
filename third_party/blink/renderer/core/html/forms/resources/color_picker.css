@@ -3,10 +3,6 @@
  * found in the LICENSE file.
  */
 
-body {
-  font-family: sans-serif;
-}
-
 .color-picker-main {
   border: 0;
   padding: 0;
@@ -14,14 +10,15 @@ body {
 
 color-picker {
   background: #FFFFFF;
+  border: 1px solid #bfbfbf;
   display: flex;
   flex-direction: column;
-  height: 304px;
+  height: 250px;
   width: 232px;
 }
 
 visual-color-picker {
-  height: 59%;
+  height: 71.5%;
   min-height: 0;
 }
 
@@ -48,10 +45,29 @@ hue-slider {
 }
 
 eye-dropper {
+  background-image: -webkit-image-set(url(eye_dropper_icon.svg) 1x);
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: contain;
+  border-radius: 2px;
+  box-sizing: border-box;
   height: 32px;
   margin-left: 2%;
+  padding: 6px;
   position: relative;
   width: 32px;
+}
+
+eye-dropper.hidden {
+  visibility: hidden;
+}
+
+eye-dropper:not(.selected):hover {
+  background-color: #F7F7F7;
+}
+
+eye-dropper.selected {
+  background-color: #CECECE;
 }
 
 color-viewer {
@@ -70,7 +86,7 @@ color-well > canvas {
 
 hue-slider > canvas {
   border-radius: 2px;
-  height: 11px;
+  height: 12px;
   margin-top: 7%;
   width: 100%;
 }
@@ -81,6 +97,15 @@ color-selection-ring {
   box-shadow: 0px 0px 4px rgba(0, 0, 0, 0.4);
   box-sizing: border-box;
   position: absolute;
+}
+
+color-selection-ring:focus {
+  /* Simulate the outline using box-shadow because it follows the border radius
+   * (unlike outline).
+   */
+  box-shadow: 0px 0px 0px 2px;
+  color: -webkit-focus-ring-color;
+  outline: none;
 }
 
 color-well > color-selection-ring {
@@ -126,7 +151,7 @@ input {
 }
 
 color-value-container > input:not(:first-child) {
-  margin-left: 1%;
+  margin-left: 4%;
 }
 
 format-toggler {
@@ -167,31 +192,6 @@ channel-label {
   width: 172px;
 }
 
-submission-controls {
-  align-items: center;
-  border-top: 1px solid #CECECE;
-  display: flex;
-  flex-direction: row;
-  height: 13%;
-  min-height: 0;
-}
-
-#submission-controls-padding {
-  height: 100%;
-  width: 84%;
-}
-
-submission-button {
-  padding: 3%;
-  text-align: center;
-  width: 8%;
-}
-
-submission-button:hover {
-  background-color: #F3F3F3;
-  border-radius: 2px;
-}
-
 @media (forced-colors: active) {
   color-viewer {
     forced-color-adjust: none;
@@ -211,4 +211,47 @@ submission-button:hover {
   format-toggler {
     border: 1px solid WindowText;
   }
+  format-toggler:hover,
+  input:hover {
+    border: 1px solid Highlight;
+  }
+  eye-dropper:hover {
+    border: 1px solid Highlight;
+    padding: 5px;
+  }
 }
+
+@media (prefers-color-scheme: dark) {
+  color-picker {
+    background: #3B3B3B;
+    color: #FFFFFF;
+    border: 1px solid #858585;
+  }
+
+  eye-dropper {
+    background-image: -webkit-image-set(url(eye_dropper_icon_dark.svg) 1x);
+  }
+
+  eye-dropper.selected {
+    background-color: #454545;
+  }
+
+  eye-dropper:not(.selected):hover,
+  format-toggler:hover {
+    background-color: #545454;
+  }
+
+  input {
+    background: #3B3B3B;
+    color: #FFFFFF;
+    border: 1px solid #858585;
+  }
+
+  input:hover {
+    border: 1px solid #ACACAC;
+  }
+
+  .up-down-icon path {
+    fill: #FFFFFF;
+  }
+ }

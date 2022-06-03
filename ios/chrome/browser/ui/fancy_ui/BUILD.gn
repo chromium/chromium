@@ -13,20 +13,18 @@ source_set("fancy_ui") {
   deps = [
     "//base",
     "//base:i18n",
+    "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
-    "//ios/chrome/common/colors",
+    "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/util",
   ]
-  public_deps = [
-    "//ios/third_party/material_components_ios",
-  ]
-  libs = [ "UIKit.framework" ]
+  public_deps = [ "//ios/third_party/material_components_ios" ]
+  frameworks = [ "UIKit.framework" ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "bidi_container_view_unittest.mm",
-  ]
+  sources = [ "bidi_container_view_unittest.mm" ]
   deps = [
     ":fancy_ui",
     "//base",

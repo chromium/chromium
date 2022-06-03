@@ -11,6 +11,20 @@ namespace identity {
     DOMString id;
   };
 
+  enum AccountStatus {
+    // Sync is enabled for the primary account.
+    SYNC,
+    // Any primary account, if exists.
+    ANY
+  };
+
+  dictionary ProfileDetails {
+    // A status of the primary account signed into a profile whose
+    // <code>ProfileUserInfo</code> should be returned. Defaults to
+    // <code>SYNC</code> account status.
+    AccountStatus? accountStatus;
+  };
+
   dictionary ProfileUserInfo {
     // An email address for the user account signed into the current
     // profile. Empty if the user is not signed in or the
@@ -44,6 +58,11 @@ namespace identity {
     // When the <code>scopes</code> field is present, it overrides the
     // list of scopes specified in manifest.json.
     DOMString[]? scopes;
+
+    // The <code>enableGranularPermissions</code> flag allows extensions to
+    // opt-in early to the granular permissions consent screen, in which
+    // requested permissions are granted or denied individually.
+    boolean? enableGranularPermissions;
   };
 
   dictionary InvalidTokenDetails {
@@ -70,10 +89,12 @@ namespace identity {
     boolean? interactive;
   };
 
-  callback GetAuthTokenCallback = void (optional DOMString token);
+  callback GetAuthTokenCallback = void (optional DOMString token,
+                                        optional DOMString[] grantedScopes);
   callback GetAccountsCallback = void (AccountInfo[] accounts);
   callback GetProfileUserInfoCallback = void (ProfileUserInfo userInfo);
   callback InvalidateAuthTokenCallback = void ();
+  callback ClearAllCachedAuthTokensCallback = void ();
   callback LaunchWebAuthFlowCallback = void (optional DOMString responseUrl);
 
   interface Functions {
@@ -101,17 +122,30 @@ namespace identity {
     //
     // |details| : Token options.
     // |callback| : Called with an OAuth2 access token as specified by the
-    // manifest, or undefined if there was an error.
+    // manifest, or undefined if there was an error. The
+    // <code>grantedScopes</code> parameter is populated since Chrome 87. When
+    // available, this parameter contains the list of granted scopes
+    // corresponding with the returned token.
     static void getAuthToken(optional TokenDetails details,
                              optional GetAuthTokenCallback callback);
 
     // Retrieves email address and obfuscated gaia id of the user
     // signed into a profile.
     //
+    // Requires the <code>identity.email</code> manifest permission. Otherwise,
+    // returns an empty result.
+    //
     // This API is different from identity.getAccounts in two
     // ways. The information returned is available offline, and it
     // only applies to the primary account for the profile.
-    static void getProfileUserInfo(GetProfileUserInfoCallback callback);
+    //
+    // |details|: Profile options.
+    // |callback|: Called with the <code>ProfileUserInfo</code> of the primary
+    // Chrome account, of an empty <code>ProfileUserInfo</code> if the account
+    // with given <code>details</code> doesn't exist.
+    static void getProfileUserInfo(
+        optional ProfileDetails details,
+        GetProfileUserInfoCallback callback);
 
     // Removes an OAuth2 access token from the Identity API's token cache.
     //
@@ -125,6 +159,17 @@ namespace identity {
     static void removeCachedAuthToken(
         InvalidTokenDetails details,
         optional InvalidateAuthTokenCallback callback);
+
+    // Resets the state of the Identity API:
+    // <ul>
+    //   <li>Removes all OAuth2 access tokens from the token cache</li>
+    //   <li>Removes user's account preferences</li>
+    //   <li>De-authorizes the user from all auth flows</li>
+    // </ul>
+    //
+    // |callback| : Called when the state has been cleared.
+    static void clearAllCachedAuthTokens(
+        ClearAllCachedAuthTokensCallback callback);
 
     // Starts an auth flow at the specified URL.
     //

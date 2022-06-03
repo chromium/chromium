@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS Sanity check: this all works as expected with no promises involved
+PASS Fulfillment handler on fulfilled promise
+FAIL Fulfillment handler on fulfilled promise, using backup incumbent settings object stack assert_equals: expected "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/resources/promise-job-incumbent-incumbent.html" but got "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/promise-job-incumbent.html"
+PASS Rejection handler on rejected promise
+FAIL Rejection handler on rejected promise, using backup incumbent settings object stack assert_equals: expected "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/resources/promise-job-incumbent-incumbent.html" but got "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/promise-job-incumbent.html"
+PASS Fulfillment handler on pending-then-fulfilled promise
+FAIL Fulfillment handler on pending-then-fulfilled promise, using backup incumbent settings object stack assert_equals: expected "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/resources/promise-job-incumbent-incumbent.html" but got "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/promise-job-incumbent.html"
+PASS Rejection handler on pending-then-rejected promise
+FAIL Rejection handler on pending-then-rejected promise, using backup incumbent settings object stack assert_equals: expected "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/resources/promise-job-incumbent-incumbent.html" but got "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/promise-job-incumbent.html"
+PASS Thenable resolution
+FAIL Thenable resolution, using backup incumbent settings object stack assert_equals: expected "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/resources/promise-job-incumbent-incumbent.html" but got "http://web-platform.test:8001/html/webappapis/scripting/processing-model-2/integration-with-the-javascript-job-queue/promise-job-incumbent.html"
+Harness: the test ran to completion.
+

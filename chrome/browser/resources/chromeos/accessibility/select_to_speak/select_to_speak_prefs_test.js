@@ -4,64 +4,75 @@
 
 GEN_INCLUDE(['select_to_speak_e2e_test_base.js']);
 GEN_INCLUDE(['../../../../../../ui/webui/resources/js/cr.js']);
-GEN_INCLUDE(['../../../../../test/data/webui/fake_chrome_event.js']);
-GEN_INCLUDE(
-    ['../../../../../test/data/webui/settings/fake_settings_private.js']);
+GEN_INCLUDE(['fake_chrome_event.js']);
+GEN_INCLUDE(['fake_settings_private.js']);
 GEN_INCLUDE(['mock_storage.js']);
 
 /**
  * Browser tests for select-to-speak's feature to speak text
  * at the press of a keystroke.
- * @constructor
- * @extends {SelectToSpeakE2ETest}
  */
-function SelectToSpeakPrefsTest() {
-  SelectToSpeakE2ETest.call(this);
+SelectToSpeakPrefsTest = class extends SelectToSpeakE2ETest {
+  constructor() {
+    super();
+    this.mockStorage_ = MockStorage;
+    chrome.storage = this.mockStorage_;
 
-  this.mockStorage_ = MockStorage;
-  chrome.storage = this.mockStorage_;
+    const enhancedNetworkVoicesAllowedKey =
+        'settings.a11y.enhanced_network_voices_in_select_to_speak_allowed';
+    this.mockSettingsPrivate_ = new settings.FakeSettingsPrivate([
+      {type: 'number', key: 'settings.tts.speech_rate', value: 1.0},
+      {type: 'number', key: 'settings.tts.speech_pitch', value: 1.0},
+      {type: 'boolean', key: enhancedNetworkVoicesAllowedKey, value: true}
+    ]);
+    this.mockSettingsPrivate_.allowSetPref();
+    chrome.settingsPrivate = this.mockSettingsPrivate_;
 
-  this.mockSettingsPrivate_ = new settings.FakeSettingsPrivate([
-    {type: 'number', key: 'settings.tts.speech_rate', value: 1.0},
-    {type: 'number', key: 'settings.tts.speech_pitch', value: 1.0}
-  ]);
-  this.mockSettingsPrivate_.allowSetPref();
-  chrome.settingsPrivate = this.mockSettingsPrivate_;
+    chrome.i18n = {
+      getMessage(msgid) {
+        return msgid;
+      }
+    };
+  }
 
-  chrome.i18n = {
-    getMessage: function(msgid) {
-      return msgid;
-    }
-  };
+  /** @override */
+  setUp() {
+    var runTest = this.deferRunTest(WhenTestDone.EXPECT);
 
-  this.resetStorage();
-}
+    (async () => {
+      await importModule(
+          'selectToSpeak', '/select_to_speak/select_to_speak_main.js');
+      await importModule(
+          'SelectToSpeakConstants',
+          '/select_to_speak/select_to_speak_constants.js');
+      this.resetStorage();
 
-SelectToSpeakPrefsTest.prototype = {
-  __proto__: SelectToSpeakE2ETest.prototype,
+      runTest();
+    })();
+  }
 
-  resetStorage: function() {
+  resetStorage() {
     this.mockStorage_.clear();
     selectToSpeak.prefsManager_.initPreferences();
-  },
+  }
 
   // This must be done before setting STS rate and pitch for tests to work
   // properly.
-  setGlobalRateAndPitch: function(rate, pitch) {
-    let unused = () => {};
+  setGlobalRateAndPitch(rate, pitch) {
+    const unused = () => {};
     this.mockSettingsPrivate_.setPref(
         'settings.tts.speech_rate', rate, '', unused);
     this.mockSettingsPrivate_.setPref(
         'settings.tts.speech_pitch', pitch, '', unused);
-  },
+  }
 
-  setStsRateAndPitch: function(rate, pitch) {
-    this.mockStorage_.sync.set({'rate': rate});
-    this.mockStorage_.sync.set({'pitch': pitch});
-  },
+  setStsRateAndPitch(rate, pitch) {
+    this.mockStorage_.sync.set({rate});
+    this.mockStorage_.sync.set({pitch});
+  }
 
-  ensurePrefsRemovedAndGlobalSetTo: function(rate, pitch) {
-    let onPrefsRemovedFromStorage = this.newCallback(() => {
+  ensurePrefsRemovedAndGlobalSetTo(rate, pitch) {
+    const onPrefsRemovedFromStorage = this.newCallback(() => {
       // Once prefs are removed from storage, make sure the global prefs are
       // updated to the appropriate values.
       this.mockSettingsPrivate_.getPref(

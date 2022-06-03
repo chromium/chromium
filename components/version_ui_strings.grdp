@@ -15,6 +15,17 @@
   <message name="IDS_VERSION_UI_64BIT" desc="64-bit on the chrome://version page">
     (64-bit)
   </message>
+  <if expr="is_macosx">
+    <message name="IDS_VERSION_UI_64BIT_INTEL" desc="On the chrome://version page, an indicator that this is an instance of Chromium built for the 64-bit x86 processor. Translation is not needed; this is a technical term.">
+      (x86_64)
+    </message>
+    <message name="IDS_VERSION_UI_64BIT_TRANSLATED_INTEL" desc="On the chrome://version page, an indicator that this is an instance of Chromium built for the 64-bit x86 processor, but being run on an Arm processor. Do not translate 'x86_64' as that is a technical term. The 'translated' in this string refers to the fact that these two processors use different languages, so the sense of 'translated' for this string is as in a language translation.">
+      (x86_64 translated)
+    </message>
+    <message name="IDS_VERSION_UI_64BIT_ARM" desc="On the chrome://version page, an indicator that this is an instance of Chromium built for the 64-bit Arm processor. Translation is not needed; this is a technical term.">
+      (arm64)
+    </message>
+  </if>
   <message name="IDS_VERSION_UI_REVISION" desc="label for the revision on the about:version page">
     Revision
   </message>

@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+PASS scrollingElement in quirks mode
+PASS scrollingElement in no-quirks mode 
+FAIL scrollingElement in quirks mode (body table) assert_equals: scrollingElement in quirks mode should be null if overflow of body and root element isn't visible. expected null but got Element node <body style="display: table; overflow: scroll;"></body>
+PASS scrollingElement in no-quirks mode  (body table)
+FAIL scrollingElement in quirks mode (root table) assert_equals: scrollingElement in quirks mode should be null if overflow of body and root element isn't visible. expected null but got Element node <body style="overflow: scroll;"></body>
+PASS scrollingElement in no-quirks mode  (root table)
+FAIL scrollingElement in quirks mode (root table, body table) assert_equals: scrollingElement in quirks mode should be null if overflow of body and root element isn't visible. expected null but got Element node <body style="display: table; overflow: scroll;"></body>
+PASS scrollingElement in no-quirks mode  (root table, body table)
+Harness: the test ran to completion.
+

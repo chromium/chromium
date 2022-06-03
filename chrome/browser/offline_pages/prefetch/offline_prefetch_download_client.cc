@@ -10,9 +10,8 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "chrome/browser/download/download_service_factory.h"
+#include "chrome/browser/download/background_download_service_factory.h"
 #include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
 #include "components/download/public/background_service/download_metadata.h"
 #include "components/offline_pages/core/prefetch/prefetch_downloader.h"

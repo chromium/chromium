@@ -11,26 +11,28 @@
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 #include "ios/chrome/browser/browser_state/browser_state_otr_helper.h"
 
-enum class ServiceAccessType;
-
-namespace ios {
 class ChromeBrowserState;
-}
+enum class ServiceAccessType;
 
 namespace password_manager {
 class PasswordRequirementsService;
 }
 
 // Singleton that owns all PasswordRequirementsService and associates them with
-// ios::ChromeBrowserState.
+// ChromeBrowserState.
 class IOSPasswordRequirementsServiceFactory
     : public BrowserStateKeyedServiceFactory {
  public:
   static password_manager::PasswordRequirementsService* GetForBrowserState(
-      ios::ChromeBrowserState* browser_state,
+      ChromeBrowserState* browser_state,
       ServiceAccessType access_type);
 
   static IOSPasswordRequirementsServiceFactory* GetInstance();
+
+  IOSPasswordRequirementsServiceFactory(
+      const IOSPasswordRequirementsServiceFactory&) = delete;
+  IOSPasswordRequirementsServiceFactory& operator=(
+      const IOSPasswordRequirementsServiceFactory&) = delete;
 
  private:
   friend class base::NoDestructor<IOSPasswordRequirementsServiceFactory>;
@@ -42,8 +44,6 @@ class IOSPasswordRequirementsServiceFactory
   std::unique_ptr<KeyedService> BuildServiceInstanceFor(
       web::BrowserState* context) const override;
   bool ServiceIsNULLWhileTesting() const override;
-
-  DISALLOW_COPY_AND_ASSIGN(IOSPasswordRequirementsServiceFactory);
 };
 
 #endif  // IOS_CHROME_BROWSER_PASSWORDS_IOS_PASSWORD_REQUIREMENTS_SERVICE_FACTORY_H_

@@ -11,7 +11,7 @@ package content;
 // Stores information about a Web Notification. This message is the protocol
 // buffer meant to serialize the content::NotificationDatabaseData structure.
 //
-// Next tag: 15
+// Next tag: 16
 message NotificationDatabaseDataProto {
   enum ClosedReason {
     USER = 0;
@@ -39,7 +39,7 @@ message NotificationDatabaseDataProto {
   //
   // Next tag: 6
   message NotificationAction {
-    // Corresponds to blink::PlatformNotificationActionType.
+    // Corresponds to blink::mojom::NotificationActionType.
     enum Type {
       BUTTON = 0;
       TEXT = 1;
@@ -87,4 +87,8 @@ message NotificationDatabaseDataProto {
   // Keeps track if a notification with a |show_trigger_timestamp| has been
   // displayed already.
   optional bool has_triggered = 14;
+
+  // Flag for notifications shown by the browser that should not be visible to
+  // the origin when requesting a list of notifications.
+  optional bool is_shown_by_browser = 15;
 }

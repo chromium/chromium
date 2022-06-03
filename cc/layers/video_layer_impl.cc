@@ -6,8 +6,11 @@
 
 #include <stddef.h>
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
-#include "base/logging.h"
+#include "base/check.h"
 #include "base/memory/ptr_util.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
 #include "cc/trees/layer_tree_frame_sink.h"
@@ -18,7 +21,6 @@
 #include "components/viz/common/quads/stream_video_draw_quad.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
 #include "components/viz/common/quads/yuv_video_draw_quad.h"
-#include "components/viz/common/resources/single_release_callback.h"
 #include "media/base/video_frame.h"
 #include "media/renderers/video_resource_updater.h"
 #include "ui/gfx/color_space.h"
@@ -30,7 +32,7 @@ std::unique_ptr<VideoLayerImpl> VideoLayerImpl::Create(
     LayerTreeImpl* tree_impl,
     int id,
     VideoFrameProvider* provider,
-    media::VideoRotation video_rotation) {
+    media::VideoTransformation video_transform) {
   DCHECK(tree_impl->task_runner_provider()->IsMainThreadBlocked());
   DCHECK(tree_impl->task_runner_provider()->IsImplThread());
 
@@ -39,18 +41,17 @@ std::unique_ptr<VideoLayerImpl> VideoLayerImpl::Create(
           provider, tree_impl->GetVideoFrameControllerClient());
 
   return base::WrapUnique(new VideoLayerImpl(
-      tree_impl, id, std::move(provider_client_impl), video_rotation));
+      tree_impl, id, std::move(provider_client_impl), video_transform));
 }
 
 VideoLayerImpl::VideoLayerImpl(
     LayerTreeImpl* tree_impl,
     int id,
     scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl,
-    media::VideoRotation video_rotation)
+    media::VideoTransformation video_transform)
     : LayerImpl(tree_impl, id),
       provider_client_impl_(std::move(provider_client_impl)),
-      frame_(nullptr),
-      video_rotation_(video_rotation) {
+      video_transform_(video_transform) {
   set_may_contain_video(true);
 }
 
@@ -70,7 +71,7 @@ VideoLayerImpl::~VideoLayerImpl() {
 std::unique_ptr<LayerImpl> VideoLayerImpl::CreateLayerImpl(
     LayerTreeImpl* tree_impl) {
   return base::WrapUnique(new VideoLayerImpl(
-      tree_impl, id(), provider_client_impl_, video_rotation_));
+      tree_impl, id(), provider_client_impl_, video_transform_));
 }
 
 void VideoLayerImpl::DidBecomeActive() {
@@ -78,7 +79,8 @@ void VideoLayerImpl::DidBecomeActive() {
 }
 
 bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
-                              viz::ClientResourceProvider* resource_provider) {
+                              viz::ClientResourceProvider* resource_provider)
+    NO_THREAD_SAFETY_ANALYSIS {
   if (draw_mode == DRAW_MODE_RESOURCELESS_SOFTWARE)
     return false;
 
@@ -98,6 +100,7 @@ bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
     // Drop any resources used by the updater if there is no frame to display.
     updater_ = nullptr;
 
+    // NO_THREAD_SAFETY_ANALYSIS: Releasing the lock in some return paths only.
     provider_client_impl_->ReleaseLock();
     return false;
   }
@@ -120,32 +123,41 @@ bool VideoLayerImpl::WillDraw(DrawMode draw_mode,
   return true;
 }
 
-void VideoLayerImpl::AppendQuads(viz::RenderPass* render_pass,
+void VideoLayerImpl::AppendQuads(viz::CompositorRenderPass* render_pass,
                                  AppendQuadsData* append_quads_data) {
-  DCHECK(frame_.get());
+  DCHECK(frame_);
 
   gfx::Transform transform = DrawTransform();
+
   // bounds() is in post-rotation space so quad rect in content space must be
   // in pre-rotation space
   gfx::Size rotated_size = bounds();
 
-  switch (video_rotation_) {
+  // Prefer the frame level transform if set.
+  auto media_transform =
+      frame_->metadata().transformation.value_or(video_transform_);
+  switch (media_transform.rotation) {
     case media::VIDEO_ROTATION_90:
       rotated_size = gfx::Size(rotated_size.height(), rotated_size.width());
-      transform.Rotate(90.0);
+      transform.RotateAboutZAxis(90.0);
       transform.Translate(0.0, -rotated_size.height());
       break;
     case media::VIDEO_ROTATION_180:
-      transform.Rotate(180.0);
+      transform.RotateAboutZAxis(180.0);
       transform.Translate(-rotated_size.width(), -rotated_size.height());
       break;
     case media::VIDEO_ROTATION_270:
       rotated_size = gfx::Size(rotated_size.height(), rotated_size.width());
-      transform.Rotate(270.0);
+      transform.RotateAboutZAxis(270.0);
       transform.Translate(-rotated_size.width(), 0);
       break;
     case media::VIDEO_ROTATION_0:
       break;
+  }
+
+  if (media_transform.mirrored) {
+    transform.RotateAboutYAxis(180.0);
+    transform.Translate(-rotated_size.width(), 0);
   }
 
   gfx::Rect quad_rect(rotated_size);
@@ -158,13 +170,18 @@ void VideoLayerImpl::AppendQuads(viz::RenderPass* render_pass,
   if (visible_quad_rect.IsEmpty())
     return;
 
-  updater_->AppendQuads(
-      render_pass, frame_, transform, quad_rect, visible_quad_rect,
-      draw_properties().rounded_corner_bounds, clip_rect(), is_clipped(),
-      contents_opaque(), draw_opacity(), GetSortingContextId());
+  absl::optional<gfx::Rect> clip_rect_opt;
+  if (is_clipped()) {
+    clip_rect_opt = clip_rect();
+  }
+  updater_->AppendQuads(render_pass, frame_, transform, quad_rect,
+                        visible_quad_rect, draw_properties().mask_filter_info,
+                        clip_rect_opt, contents_opaque(), draw_opacity(),
+                        GetSortingContextId());
 }
 
 void VideoLayerImpl::DidDraw(viz::ClientResourceProvider* resource_provider) {
+  provider_client_impl_->AssertLocked();
   LayerImpl::DidDraw(resource_provider);
 
   DCHECK(frame_.get());
@@ -185,6 +202,13 @@ SimpleEnclosedRegion VideoLayerImpl::VisibleOpaqueRegion() const {
 
 void VideoLayerImpl::ReleaseResources() {
   updater_ = nullptr;
+}
+
+gfx::ContentColorUsage VideoLayerImpl::GetContentColorUsage() const {
+  gfx::ColorSpace frame_color_space;
+  if (frame_)
+    frame_color_space = frame_->ColorSpace();
+  return frame_color_space.GetContentColorUsage();
 }
 
 void VideoLayerImpl::SetNeedsRedraw() {

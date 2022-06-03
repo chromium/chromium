@@ -7,18 +7,19 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
-#include "third_party/blink/renderer/core/css/parser/media_query_block_watcher.h"
 #include "third_party/blink/renderer/core/css/parser/media_query_parser.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
+class ExecutionContext;
+
 class CORE_EXPORT SizesAttributeParser {
   STACK_ALLOCATED();
 
  public:
-  SizesAttributeParser(MediaValues*, const String&);
+  SizesAttributeParser(MediaValues*, const String&, const ExecutionContext*);
 
   float length();
 
@@ -30,7 +31,8 @@ class CORE_EXPORT SizesAttributeParser {
   float EffectiveSizeDefaultValue();
 
   scoped_refptr<MediaQuerySet> media_condition_;
-  Member<MediaValues> media_values_;
+  MediaValues* media_values_;
+  const ExecutionContext* execution_context_;
   float length_;
   bool length_was_set_;
   bool is_valid_;
@@ -38,4 +40,4 @@ class CORE_EXPORT SizesAttributeParser {
 
 }  // namespace blink
 
-#endif
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_SIZES_ATTRIBUTE_PARSER_H_

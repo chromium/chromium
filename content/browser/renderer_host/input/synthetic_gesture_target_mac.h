@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_TARGET_MAC_H_
 #define CONTENT_BROWSER_RENDERER_HOST_INPUT_SYNTHETIC_GESTURE_TARGET_MAC_H_
 
-#include "base/macros.h"
 #include "content/browser/renderer_host/input/synthetic_gesture_target_base.h"
 #include "content/browser/renderer_host/render_widget_host_view_mac.h"
 #include "content/common/input/synthetic_gesture_params.h"
@@ -17,6 +16,10 @@ class SyntheticGestureTargetMac : public SyntheticGestureTargetBase {
  public:
   SyntheticGestureTargetMac(RenderWidgetHostImpl* host,
                             RenderWidgetHostViewCocoa* cocoa_view);
+
+  SyntheticGestureTargetMac(const SyntheticGestureTargetMac&) = delete;
+  SyntheticGestureTargetMac& operator=(const SyntheticGestureTargetMac&) =
+      delete;
 
   // SyntheticGestureTargetBase:
   void DispatchWebTouchEventToPlatform(
@@ -33,8 +36,8 @@ class SyntheticGestureTargetMac : public SyntheticGestureTargetBase {
       const ui::LatencyInfo& latency_info) override;
 
   // SyntheticGestureTarget:
-  SyntheticGestureParams::GestureSourceType
-  GetDefaultSyntheticGestureSourceType() const override;
+  content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
+      const override;
 
   float GetTouchSlopInDips() const override;
   float GetSpanSlopInDips() const override;
@@ -42,9 +45,9 @@ class SyntheticGestureTargetMac : public SyntheticGestureTargetBase {
 
  private:
   RenderWidgetHostViewMac* GetView() const;
+  bool PointIsWithinContents(RenderWidgetHostView* view,
+                             const gfx::PointF& point);
   RenderWidgetHostViewCocoa* cocoa_view_;
-
-  DISALLOW_COPY_AND_ASSIGN(SyntheticGestureTargetMac);
 };
 
 }  // namespace content

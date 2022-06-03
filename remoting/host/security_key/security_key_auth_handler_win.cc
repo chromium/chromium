@@ -13,7 +13,6 @@
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -34,13 +33,11 @@ namespace {
 
 // The timeout used to disconnect a client from the IPC Server channel if it
 // forgets to do so.  This ensures the server channel is not blocked forever.
-constexpr base::TimeDelta kInitialRequestTimeout =
-    base::TimeDelta::FromSeconds(5);
+constexpr base::TimeDelta kInitialRequestTimeout = base::Seconds(5);
 
 // This value represents the amount of time to wait for a security key request
 // from the client before terminating the connection.
-constexpr base::TimeDelta kSecurityKeyRequestTimeout =
-    base::TimeDelta::FromSeconds(60);
+constexpr base::TimeDelta kSecurityKeyRequestTimeout = base::Seconds(60);
 
 }  // namespace
 
@@ -57,6 +54,11 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
  public:
   explicit SecurityKeyAuthHandlerWin(
       ClientSessionDetails* client_session_details);
+
+  SecurityKeyAuthHandlerWin(const SecurityKeyAuthHandlerWin&) = delete;
+  SecurityKeyAuthHandlerWin& operator=(const SecurityKeyAuthHandlerWin&) =
+      delete;
+
   ~SecurityKeyAuthHandlerWin() override;
 
  private:
@@ -105,8 +107,6 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   base::ThreadChecker thread_checker_;
 
   base::WeakPtrFactory<SecurityKeyAuthHandlerWin> weak_factory_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(SecurityKeyAuthHandlerWin);
 };
 
 std::unique_ptr<SecurityKeyAuthHandler> SecurityKeyAuthHandler::Create(
@@ -192,10 +192,11 @@ void SecurityKeyAuthHandlerWin::StartIpcServerChannel() {
   std::unique_ptr<SecurityKeyIpcServer> ipc_server(SecurityKeyIpcServer::Create(
       new_connection_id, client_session_details_, disconnect_timeout_,
       send_message_callback_,
-      base::Bind(&SecurityKeyAuthHandlerWin::OnChannelConnected,
-                 base::Unretained(this)),
-      base::Bind(&SecurityKeyAuthHandlerWin::CloseSecurityKeyRequestIpcChannel,
-                 base::Unretained(this), new_connection_id)));
+      base::BindOnce(&SecurityKeyAuthHandlerWin::OnChannelConnected,
+                     base::Unretained(this)),
+      base::BindOnce(
+          &SecurityKeyAuthHandlerWin::CloseSecurityKeyRequestIpcChannel,
+          base::Unretained(this), new_connection_id)));
   ipc_server->CreateChannel(remoting::GetSecurityKeyIpcChannel(),
                             kSecurityKeyRequestTimeout);
   active_channels_[new_connection_id] = std::move(ipc_server);

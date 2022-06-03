@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/macros.h"
-#include "base/optional.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace data_decoder {
 
@@ -29,18 +29,18 @@ class JsonSanitizer {
 
     static Result Error(const std::string& error);
 
-    base::Optional<std::string> value;
-    base::Optional<std::string> error;
+    absl::optional<std::string> value;
+    absl::optional<std::string> error;
   };
+
+  JsonSanitizer(const JsonSanitizer&) = delete;
+  JsonSanitizer& operator=(const JsonSanitizer&) = delete;
 
   // Starts sanitizing the passed in unsafe JSON string. The passed |callback|
   // will be called with the result of the sanitization or an error message, but
   // not before the method returns.
   using Callback = base::OnceCallback<void(Result)>;
   static void Sanitize(const std::string& json, Callback callback);
-
- private:
-  DISALLOW_COPY_AND_ASSIGN(JsonSanitizer);
 };
 
 }  // namespace data_decoder

@@ -4,6 +4,8 @@
 
 #include "content/browser/media/cdm_storage_impl.h"
 
+#include <memory>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/file.h"
@@ -45,13 +47,17 @@ void SimulateNavigation(RenderFrameHost** rfh, const GURL& url) {
 class RunLoopWithExpectedCount {
  public:
   RunLoopWithExpectedCount() = default;
+
+  RunLoopWithExpectedCount(const RunLoopWithExpectedCount&) = delete;
+  RunLoopWithExpectedCount& operator=(const RunLoopWithExpectedCount&) = delete;
+
   ~RunLoopWithExpectedCount() { DCHECK_EQ(0, remaining_quit_calls_); }
 
   void Run(int expected_quit_calls) {
     DCHECK_GT(expected_quit_calls, 0);
     DCHECK_EQ(remaining_quit_calls_, 0);
     remaining_quit_calls_ = expected_quit_calls;
-    run_loop_.reset(new base::RunLoop());
+    run_loop_ = std::make_unique<base::RunLoop>();
     run_loop_->Run();
   }
 
@@ -64,8 +70,6 @@ class RunLoopWithExpectedCount {
  private:
   std::unique_ptr<base::RunLoop> run_loop_;
   int remaining_quit_calls_ = 0;
-
-  DISALLOW_COPY_AND_ASSIGN(RunLoopWithExpectedCount);
 };
 
 }  // namespace

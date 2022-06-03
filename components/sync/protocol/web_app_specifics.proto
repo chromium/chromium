@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// If you change or add any fields in this file, update
+// components/sync/protocol/proto_visitors.h and potentially
+// components/sync/protocol/proto_enum_conversions.{h, cc}.
+
 syntax = "proto2";
 
 option java_multiple_files = true;
@@ -11,6 +15,26 @@ option optimize_for = LITE_RUNTIME;
 
 package sync_pb;
 
+// Sync & local data: Information about web app icon.
+message WebAppIconInfo {
+  enum Purpose {
+    UNSPECIFIED = 0;
+    // Suitable for any purpose.
+    ANY = 1;
+    // Designed for masking.
+    MASKABLE = 2;
+    // Suitable for monochrome purposes.
+    MONOCHROME = 3;
+  }
+
+  // The size of the square app icon, in raw pixels.
+  optional int32 size_in_px = 1;
+  // The URL of the app icon.
+  optional string url = 2;
+  // The purpose or context in which the icon should be used.
+  optional Purpose purpose = 3;
+}
+
 // WebApp data. This is a synced part of
 // chrome/browser/web_applications/proto/web_app.proto data.
 message WebAppSpecifics {
@@ -18,15 +42,29 @@ message WebAppSpecifics {
   // chrome/browser/web_applications/proto/web_app.proto and
   // third_party/blink/public/mojom/manifest/display_mode.mojom
   enum UserDisplayMode {
-    // UNDEFINED is never serialized.
+    UNSPECIFIED = 0;
     BROWSER = 1;
     // MINIMAL_UI is never serialized.
-    STANDALONE= 3;
+    STANDALONE = 3;
     // FULLSCREEN is never serialized.
+    // WINDOW_CONTROLS_OVERLAY is never serialized.
+    TABBED = 6;
   }
 
-  optional string launch_url = 1;
+  optional string start_url = 1;
   optional string name = 2;
   optional UserDisplayMode user_display_mode = 3;
   optional uint32 theme_color = 4;
+  optional string scope = 5;
+  repeated WebAppIconInfo icon_infos = 6;
+
+  // Used to store the page number that the app is displayed on in
+  // chrome://apps.
+  optional string user_page_ordinal = 7;
+  // Used to store the in-page ranking for ordering apps in its given
+  // |user_page_ordinal| page.
+  optional string user_launch_ordinal = 8;
+
+  // Used to store id specified in the manifest.
+  optional string manifest_id = 9;
 }

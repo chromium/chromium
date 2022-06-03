@@ -5,16 +5,16 @@
 (async function() {
   TestRunner.addResult(
       `Tests that webInspector.inspectedWindow.reload() successfully injects and preprocesses user's code upon reload\n`);
-  await TestRunner.loadModule('sources_test_runner');
-  await TestRunner.loadModule('extensions_test_runner');
-  await TestRunner.loadModule('console_test_runner');
+  await TestRunner.loadLegacyModule('sources'); await TestRunner.loadTestModule('sources_test_runner');
+  await TestRunner.loadTestModule('extensions_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('console_test_runner');
   await TestRunner.navigatePromise(TestRunner.url('resources/reload.html'));
 
   TestRunner.lastMessageScriptId = function(callback) {
     var consoleView = Console.ConsoleView.instance();
-    if (consoleView._needsFullUpdate)
-      consoleView._updateMessageList();
-    var viewMessages = consoleView._visibleViewMessages;
+    if (consoleView.needsFullUpdate)
+      consoleView.updateMessageList();
+    var viewMessages = consoleView.visibleViewMessages;
     if (viewMessages.length !== 1)
       callback(null);
     var uiMessage = viewMessages[viewMessages.length - 1];

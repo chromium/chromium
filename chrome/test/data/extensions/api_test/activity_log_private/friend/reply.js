@@ -165,7 +165,6 @@ function sendMessageToOther() {
     chrome.runtime.sendMessage('ocacnieaapoflmkebkeaidpgfngocapl',
         'knock knock',
         function response() {
-          console.log("who's there?");
           appendCompleted('sendMessageToOther');
         });
   } catch (err) {
@@ -325,9 +324,9 @@ function executeDOMChangesOnTabUpdated() {
           'var testContext = testCanvas.getContext("2d");';
 
   // Does an XHR from inside a content script.
-  var cnnUrl = getURLWithPort('http://www.cnn.com');
+  var xhrUrl = getURLWithPort(defaultUrl);
   code += 'var request = new XMLHttpRequest(); ' +
-          'request.open("POST", "' + cnnUrl + '", false); ' +
+          'request.open("POST", "' + xhrUrl + '", false); ' +
           'request.setRequestHeader("Content-type", ' +
           '                         "text/plain;charset=UTF-8"); ' +
           'request.send(); ' +
@@ -452,7 +451,6 @@ function appendCompleted(str) {
     }
   }
   completed += 1;
-  console.log('Completed ' + str);
 }
 
 function appendError(str) {

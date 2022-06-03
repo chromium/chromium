@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_TOKENIZER_INPUT_STREAM_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PARSER_CSS_TOKENIZER_INPUT_STREAM_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -16,6 +15,8 @@ class CSSTokenizerInputStream {
 
  public:
   explicit CSSTokenizerInputStream(const String& input);
+  CSSTokenizerInputStream(const CSSTokenizerInputStream&) = delete;
+  CSSTokenizerInputStream& operator=(const CSSTokenizerInputStream&) = delete;
 
   // Gets the char in the stream replacing NUL characters with a unicode
   // replacement character. Will return (NUL) kEndOfFileMarker when at the
@@ -75,7 +76,6 @@ class CSSTokenizerInputStream {
   wtf_size_t offset_;
   const wtf_size_t string_length_;
   const scoped_refptr<StringImpl> string_;
-  DISALLOW_COPY_AND_ASSIGN(CSSTokenizerInputStream);
 };
 
 }  // namespace blink

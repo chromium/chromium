@@ -7,9 +7,9 @@
 #include <Cocoa/Cocoa.h>
 #include <stdint.h>
 
-#include "base/logging.h"
+#include "base/check_op.h"
 #import "base/mac/mac_util.h"
-#import "base/mac/sdk_forward_declarations.h"
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "ui/events/base_event_utils.h"
@@ -84,6 +84,11 @@ base::TimeTicks EventTimeFromNative(const PlatformEvent& native_event) {
   return timestamp;
 }
 
+base::TimeTicks EventLatencyTimeFromNative(const PlatformEvent& native_event,
+                                           base::TimeTicks current_time) {
+  return EventTimeFromNative(native_event);
+}
+
 gfx::PointF EventLocationFromNative(const PlatformEvent& native_event) {
   NSWindow* window = [native_event window];
   NSPoint location = [native_event locationInWindow];
@@ -127,7 +132,7 @@ int GetChangedMouseButtonFlagsFromNative(const PlatformEvent& native_event) {
 
 PointerDetails GetMousePointerDetailsFromNative(
     const PlatformEvent& native_event) {
-  return PointerDetails(EventPointerType::POINTER_TYPE_MOUSE);
+  return PointerDetails(EventPointerType::kMouse);
 }
 
 gfx::Vector2d GetMouseWheelOffset(const PlatformEvent& event) {
@@ -151,6 +156,22 @@ gfx::Vector2d GetMouseWheelOffset(const PlatformEvent& event) {
   }
 }
 
+gfx::Vector2d GetMouseWheelTick120ths(const PlatformEvent& event) {
+  CGEventRef cg_event = [event CGEvent];
+
+  if (!cg_event ||
+      CGEventGetIntegerValueField(cg_event, kCGScrollWheelEventIsContinuous)) {
+    // Since the device does continuous scrolling, it has no concept of ticks.
+    return gfx::Vector2d(0, 0);
+  }
+
+  return gfx::Vector2d(
+      CGEventGetIntegerValueField(cg_event, kCGScrollWheelEventDeltaAxis2) *
+          120,
+      CGEventGetIntegerValueField(cg_event, kCGScrollWheelEventDeltaAxis1) *
+          120);
+}
+
 PlatformEvent CopyNativeEvent(const PlatformEvent& event) {
   return [event copy];
 }
@@ -163,15 +184,10 @@ void ClearTouchIdIfReleased(const PlatformEvent& native_event) {
   NOTIMPLEMENTED();
 }
 
-int GetTouchId(const PlatformEvent& native_event) {
-  NOTIMPLEMENTED();
-  return 0;
-}
-
 PointerDetails GetTouchPointerDetailsFromNative(
     const PlatformEvent& native_event) {
   NOTIMPLEMENTED();
-  return PointerDetails(EventPointerType::POINTER_TYPE_UNKNOWN,
+  return PointerDetails(EventPointerType::kUnknown,
                         /* pointer_id*/ 0,
                         /* radius_x */ 1.0,
                         /* radius_y */ 1.0,
@@ -196,6 +212,8 @@ bool GetScrollOffsets(const PlatformEvent& native_event,
 
   // If a user just rests two fingers on the touchpad without moving, AppKit
   // uses NSEventPhaseMayBegin. Treat this the same as NSEventPhaseBegan.
+  // TODO(bokan): Now that ui::ScrollEvent supports the scroll phase as well as
+  // the momentum phase, we should plumb these through individually.
   const NSUInteger kBeginPhaseMask = NSEventPhaseBegan | NSEventPhaseMayBegin;
   const NSUInteger kEndPhaseMask = NSEventPhaseCancelled | NSEventPhaseEnded;
 

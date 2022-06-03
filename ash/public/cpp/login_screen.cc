@@ -4,7 +4,7 @@
 
 #include "ash/public/cpp/login_screen.h"
 
-#include "base/logging.h"
+#include "base/check_op.h"
 
 namespace ash {
 

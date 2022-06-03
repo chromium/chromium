@@ -12,6 +12,7 @@ import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.components.embedder_support.util.Origin;
 
 import java.util.Set;
 

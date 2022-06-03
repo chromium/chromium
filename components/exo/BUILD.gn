@@ -2,17 +2,39 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
+import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//chrome/common/features.gni")
+import("//components/exo/buildflags.gni")
 import("//testing/test.gni")
+import("//ui/base/ui_features.gni")
 
-source_set("exo") {
+buildflag_header("buildflags") {
+  header = "buildflags.h"
+  flags = [
+    "ENABLE_COLOR_MANAGER=$enable_color_manager",
+    "ENABLE_WESTON_TEST=$enable_weston_test",
+  ]
+}
+
+if (use_xkbcommon) {
+  pkg_config("xkbcommon") {
+    packages = [ "xkbcommon" ]
+  }
+}
+
+static_library("exo") {
   sources = [
     "buffer.cc",
     "buffer.h",
+    "capabilities.cc",
+    "capabilities.h",
     "data_device.cc",
     "data_device.h",
     "data_device_delegate.h",
+    "data_exchange_delegate.h",
     "data_offer.cc",
     "data_offer.h",
     "data_offer_delegate.h",
@@ -28,6 +50,7 @@ source_set("exo") {
     "frame_sink_resource_manager.cc",
     "frame_sink_resource_manager.h",
     "input_trace.h",
+    "key_state.h",
     "keyboard_delegate.h",
     "keyboard_device_configuration_delegate.h",
     "keyboard_observer.h",
@@ -61,15 +84,17 @@ source_set("exo") {
     "touch_delegate.h",
     "vsync_timing_manager.cc",
     "vsync_timing_manager.h",
+    "window_properties.cc",
+    "window_properties.h",
     "wm_helper.cc",
     "wm_helper.h",
   ]
 
   deps = [
     "//base",
+    "//build:chromeos_buildflags",
     "//cc",
     "//components/viz/host",
-    "//components/viz/service",
     "//device/gamepad",
     "//device/gamepad/public/cpp:shared_with_blink",
     "//gpu",
@@ -79,7 +104,11 @@ source_set("exo") {
     "//services/viz/privileged/mojom/compositing",
     "//skia",
     "//third_party/blink/public/common",
+    "//ui/accessibility:ax_base",
     "//ui/aura",
+    "//ui/base/cursor",
+    "//ui/base/dragdrop:types",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime",
     "//ui/compositor",
     "//ui/compositor_extra",
@@ -97,17 +126,45 @@ source_set("exo") {
     "//ui/wm/public",
   ]
 
-  if (is_chromeos) {
+  assert_no_deps = [
+    "//components/arc",
+    "//content/public/browser",
+    "//content/public/common",
+  ]
+
+  public_deps = [
+    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor/mojom:cursor_type",
+    "//ui/base/dragdrop/mojom:mojom_headers",
+  ]
+
+  if (is_chromeos_ash) {
     deps += [
+      "//ash",
+      "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
-      "//chromeos/constants",
+      "//chromeos/crosapi/cpp",
+      "//chromeos/ui/base",
+      "//chromeos/ui/frame",
+      "//components/app_restore",
+      "//components/fullscreen_control",
+      "//components/strings",
+      "//ui/base",
+      "//ui/events/ozone/layout",
     ]
     sources += [
       "client_controlled_accelerators.cc",
       "client_controlled_accelerators.h",
       "client_controlled_shell_surface.cc",
       "client_controlled_shell_surface.h",
+      "extended_drag_offer.cc",
+      "extended_drag_offer.h",
+      "extended_drag_source.cc",
+      "extended_drag_source.h",
+      "gamepad.cc",
+      "gamepad.h",
+      "gamepad_observer.h",
       "gaming_seat.cc",
       "gaming_seat.h",
       "input_method_surface.cc",
@@ -115,6 +172,7 @@ source_set("exo") {
       "input_method_surface_manager.h",
       "keyboard.cc",
       "keyboard.h",
+      "keyboard_modifiers.h",
       "notification.cc",
       "notification.h",
       "notification_surface.cc",
@@ -126,11 +184,21 @@ source_set("exo") {
       "shell_surface_base.h",
       "text_input.cc",
       "text_input.h",
+      "toast_surface.cc",
+      "toast_surface.h",
+      "toast_surface_manager.h",
+      "ui_lock_controller.cc",
+      "ui_lock_controller.h",
       "wm_helper_chromeos.cc",
       "wm_helper_chromeos.h",
       "xdg_shell_surface.cc",
       "xdg_shell_surface.h",
+      "xkb_tracker.cc",
+      "xkb_tracker.h",
     ]
+    if (use_xkbcommon) {
+      configs += [ ":xkbcommon" ]
+    }
   }
 
   if (is_chromecast) {
@@ -146,21 +214,25 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "mock_vsync_timing_observer.cc",
+    "mock_vsync_timing_observer.h",
     "test/exo_test_base_views.cc",
     "test/exo_test_base_views.h",
     "test/exo_test_suite_aura.cc",
     "test/exo_test_suite_aura.h",
   ]
 
+  public_deps = [ "//testing/gtest" ]
+
   deps = [
     ":exo",
     "//base",
     "//base/test:test_support",
-    "//components/viz/service:service",
+    "//components/viz/service",
     "//gpu",
     "//skia",
-    "//testing/gtest",
     "//ui/aura",
+    "//ui/base/dragdrop/mojom",
     "//ui/base/ime/init",
     "//ui/compositor",
     "//ui/compositor:test_support",
@@ -172,16 +244,21 @@ source_set("test_support") {
     "//ui/wm",
   ]
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "test/exo_test_base.cc",
       "test/exo_test_base.h",
+      "test/exo_test_data_exchange_delegate.cc",
+      "test/exo_test_data_exchange_delegate.h",
       "test/exo_test_helper.cc",
       "test/exo_test_helper.h",
+      "test/shell_surface_builder.cc",
+      "test/shell_surface_builder.h",
     ]
     deps += [
       "//ash:test_support",
       "//ash/public/cpp",
+      "//chromeos/ui/base",
     ]
   }
 }
@@ -217,15 +294,13 @@ source_set("unit_tests") {
     "//ui/wm",
   ]
 
-  sources = [
-    "mime_utils_unittest.cc",
-  ]
+  sources = [ "mime_utils_unittest.cc" ]
 
   if (use_ozone) {
     deps += [ "//ui/ozone" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../../ui/events/ozone/gamepad/gamepad_event.cc",
       "buffer_unittest.cc",
@@ -234,7 +309,11 @@ source_set("unit_tests") {
       "data_offer_unittest.cc",
       "data_source_unittest.cc",
       "display_unittest.cc",
+      "drag_drop_operation_unittest.cc",
+      "extended_drag_source_unittest.cc",
+      "gamepad_unittest.cc",
       "gaming_seat_unittest.cc",
+      "input_method_surface_unittest.cc",
       "keyboard_unittest.cc",
       "notification_unittest.cc",
       "permission_unittest.cc",
@@ -242,18 +321,34 @@ source_set("unit_tests") {
       "seat_unittest.cc",
       "shared_memory_unittest.cc",
       "shell_surface_unittest.cc",
+      "shell_surface_util_unittest.cc",
       "sub_surface_unittest.cc",
       "surface_unittest.cc",
       "text_input_unittest.cc",
+      "toast_surface_unittest.cc",
       "touch_unittest.cc",
+      "ui_lock_controller_unittest.cc",
+      "wm_helper_chromeos_unittest.cc",
       "xdg_shell_surface_unittest.cc",
     ]
 
     deps += [
       "//ash",
       "//ash:test_support",
+      "//ash/constants",
       "//ash/keyboard/ui",
       "//ash/public/cpp",
+      "//ash/public/cpp/external_arc",
+      "//build:chromeos_buildflags",
+      "//chromeos/ui/base",
+      "//chromeos/ui/frame",
+      "//components/fullscreen_control",
+      "//ui/base:test_support",
+      "//ui/base/cursor/mojom:cursor_type",
+      "//ui/base/dragdrop:types",
+      "//ui/base/dragdrop/mojom",
+      "//ui/gfx:test_support",
+      "//ui/gfx/geometry",
     ]
   }
 
@@ -264,15 +359,16 @@ source_set("unit_tests") {
 }
 
 test("exo_unittests") {
-  sources = [
-    "test/run_all_unittests.cc",
-  ]
+  use_xvfb = use_xvfb_in_this_config
+
+  sources = [ "test/run_all_unittests.cc" ]
 
   deps = [
     ":test_support",
     ":unit_tests",
     "//base",
     "//base/test:test_support",
+    "//build:chromeos_buildflags",
     "//cc:test_support",
     "//components/viz/test:test_support",
     "//device/gamepad:test_helpers",
@@ -282,17 +378,16 @@ test("exo_unittests") {
     "//ui/aura:test_support",
     "//ui/base",
     "//ui/compositor:test_support",
-    "//ui/display:display_manager_test_api",
     "//ui/gl:test_support",
   ]
 
   data_deps = []
 
-  if (is_linux) {
+  if (is_linux || is_chromeos) {
     deps += [ "//components/exo/wayland:unit_tests" ]
   }
 
-  if (is_chromeos) {
+  if (is_chromeos_ash) {
     sources += [
       "../../ash/test/ash_test_suite.cc",
       "../../ash/test/ash_test_suite.h",
@@ -301,6 +396,8 @@ test("exo_unittests") {
     deps += [
       "//ash:test_support",
       "//ash/public/cpp",
+      "//components/exo/server:unit_tests",
+      "//ui/display:display_manager_test_api",
     ]
 
     data_deps += [

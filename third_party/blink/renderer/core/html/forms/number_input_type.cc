@@ -153,7 +153,7 @@ bool NumberInputType::SizeShouldIncludeDecoration(int default_size,
 
   const String step_string =
       GetElement().FastGetAttribute(html_names::kStepAttr);
-  if (DeprecatedEqualIgnoringCase(step_string, "any"))
+  if (EqualIgnoringASCIICase(step_string, "any"))
     return false;
 
   const Decimal minimum = ParseToDecimalForNumberType(
@@ -183,6 +183,10 @@ bool NumberInputType::IsSteppable() const {
   return true;
 }
 
+static bool IsE(UChar ch) {
+  return ch == 'e' || ch == 'E';
+}
+
 void NumberInputType::HandleKeydownEvent(KeyboardEvent& event) {
   EventQueueScope scope;
   HandleKeydownEventForSpinButton(event);
@@ -192,8 +196,82 @@ void NumberInputType::HandleKeydownEvent(KeyboardEvent& event) {
 
 void NumberInputType::HandleBeforeTextInsertedEvent(
     BeforeTextInsertedEvent& event) {
-  event.SetText(GetLocale().StripInvalidNumberCharacters(event.GetText(),
-                                                         "0123456789.Ee-+"));
+  Locale& locale = GetLocale();
+
+  // If the cleaned up text doesn't match input text, don't insert partial input
+  // since it could be an incorrect paste.
+  String updated_event_text =
+      locale.StripInvalidNumberCharacters(event.GetText(), "0123456789.Ee-+");
+
+  // Check if locale supports more cleanup rules
+  if (!locale.UsesSingleCharNumberFiltering()) {
+    event.SetText(updated_event_text);
+    return;
+  }
+
+  // Get left and right of cursor
+  String original_value = GetElement().InnerEditorValue();
+  String left_half = original_value.Substring(0, GetElement().selectionStart());
+  String right_half = original_value.Substring(GetElement().selectionEnd());
+
+  // Process 1 char at a time
+  unsigned len = updated_event_text.length();
+  StringBuilder final_event_text;
+  for (unsigned i = 0; i < len; ++i) {
+    UChar c = updated_event_text[i];
+
+    // For a decimal point input:
+    // - Reject if the editing value already contains another decimal point
+    // - Reject if the editing value contains 'e' and the caret is placed
+    // after the 'e'.
+    // - Reject if the editing value contains '+' or '-' and the caret is
+    // placed before it unless it's after an e
+    if (locale.IsDecimalSeparator(c)) {
+      if (locale.HasDecimalSeparator(left_half) ||
+          locale.HasDecimalSeparator(right_half) ||
+          left_half.Find(IsE) != kNotFound ||
+          locale.HasSignNotAfterE(right_half))
+        continue;
+    }
+    // For 'e' input:
+    // - Reject if the editing value already contains another 'e'
+    // - Reject if the editing value contains a decimal point, and the caret
+    // is placed before it
+    else if (IsE(c)) {
+      if (left_half.Find(IsE) != kNotFound ||
+          right_half.Find(IsE) != kNotFound ||
+          locale.HasDecimalSeparator(right_half))
+        continue;
+    }
+    // For '-' or '+' input:
+    // - Reject if the editing value already contains two signs
+    // - Reject if the editing value contains 'e' and the caret is placed
+    // neither at the beginning of the value nor just after 'e'
+    else if (locale.IsSignPrefix(c)) {
+      String both_halves = left_half + right_half;
+      if (locale.HasTwoSignChars(both_halves) ||
+          (both_halves.Find(IsE) != kNotFound &&
+           !(left_half == "" || IsE(left_half[left_half.length() - 1]))))
+        continue;
+    }
+    // For a digit input:
+    // - Reject if the first letter of the editing value is a sign and the
+    // caret is placed just before it
+    // - Reject if the editing value contains 'e' + a sign, and the caret is
+    // placed between them.
+    else if (locale.IsDigit(c)) {
+      if ((left_half.IsEmpty() && !right_half.IsEmpty() &&
+           locale.IsSignPrefix(right_half[0])) ||
+          (!left_half.IsEmpty() && IsE(left_half[left_half.length() - 1]) &&
+           !right_half.IsEmpty() && locale.IsSignPrefix(right_half[0])))
+        continue;
+    }
+
+    // Add character
+    left_half = left_half + c;
+    final_event_text.Append(c);
+  }
+  event.SetText(final_event_text.ToString());
 }
 
 Decimal NumberInputType::ParseToNumber(const String& src,
@@ -205,10 +283,6 @@ String NumberInputType::Serialize(const Decimal& value) const {
   if (!value.IsFinite())
     return String();
   return SerializeForNumberType(value);
-}
-
-static bool IsE(UChar ch) {
-  return ch == 'e' || ch == 'E';
 }
 
 String NumberInputType::LocalizeValue(const String& proposed_value) const {
@@ -246,10 +320,7 @@ void NumberInputType::WarnIfValueIsInvalid(const String& value) const {
   if (value.IsEmpty() || !GetElement().SanitizeValue(value).IsEmpty())
     return;
   AddWarningToConsole(
-      "The specified value %s is not a valid number. The value must match to "
-      "the following regular expression: "
-      "-?(\\d+|\\d+\\.\\d+|\\.\\d+)([eE][-+]?\\d+)?",
-      value);
+      "The specified value %s cannot be parsed, or is out of range.", value);
 }
 
 bool NumberInputType::HasBadInput() const {
@@ -261,6 +332,11 @@ bool NumberInputType::HasBadInput() const {
 
 String NumberInputType::BadInputText() const {
   return GetLocale().QueryString(IDS_FORM_VALIDATION_BAD_INPUT_NUMBER);
+}
+
+String NumberInputType::ValueNotEqualText(const Decimal& value) const {
+  return GetLocale().QueryString(IDS_FORM_VALIDATION_VALUE_NOT_EQUAL,
+                                 LocalizeValue(Serialize(value)));
 }
 
 String NumberInputType::RangeOverflowText(const Decimal& maximum) const {
@@ -283,7 +359,7 @@ void NumberInputType::MinOrMaxAttributeChanged() {
   if (GetElement().GetLayoutObject()) {
     GetElement()
         .GetLayoutObject()
-        ->SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
+        ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
             layout_invalidation_reason::kAttributeChanged);
   }
 }
@@ -294,7 +370,7 @@ void NumberInputType::StepAttributeChanged() {
   if (GetElement().GetLayoutObject()) {
     GetElement()
         .GetLayoutObject()
-        ->SetNeedsLayoutAndPrefWidthsRecalcAndFullPaintInvalidation(
+        ->SetNeedsLayoutAndIntrinsicWidthsRecalcAndFullPaintInvalidation(
             layout_invalidation_reason::kAttributeChanged);
   }
 }

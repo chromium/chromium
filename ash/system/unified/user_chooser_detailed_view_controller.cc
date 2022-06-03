@@ -7,8 +7,11 @@
 #include "ash/multi_profile_uma.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/user_chooser_view.h"
+#include "components/user_manager/user_type.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -31,10 +34,12 @@ bool UserChooserDetailedViewController::IsUserChooserEnabled() {
   if (session->IsUserSessionBlocked())
     return false;
 
-  // Don't show if we cannot add or switch users.
-  if (session->GetAddUserPolicy() != AddUserSessionPolicy::ALLOWED &&
-      session->NumberOfLoggedInUsers() <= 1)
+  // Only allow for regular user session.
+  if (session->GetPrimaryUserSession()->user_info.type !=
+      user_manager::USER_TYPE_REGULAR) {
     return false;
+  }
+
   return true;
 }
 
@@ -63,7 +68,6 @@ void UserChooserDetailedViewController::HandleUserSwitch(int user_index) {
 }
 
 void UserChooserDetailedViewController::HandleAddUserAction() {
-  MultiProfileUMA::RecordSigninUser(MultiProfileUMA::SIGNIN_USER_BY_TRAY);
   tray_controller_->CloseBubble();
   Shell::Get()->session_controller()->ShowMultiProfileLogin();
   // ShowMultiProfileLogin may delete us.
@@ -71,6 +75,11 @@ void UserChooserDetailedViewController::HandleAddUserAction() {
 
 views::View* UserChooserDetailedViewController::CreateView() {
   return new UserChooserView(this);
+}
+
+std::u16string UserChooserDetailedViewController::GetAccessibleName() const {
+  return l10n_util::GetStringUTF16(
+      IDS_ASH_QUICK_SETTINGS_BUBBLE_USER_SETTINGS_ACCESSIBLE_DESCRIPTION);
 }
 
 }  // namespace ash

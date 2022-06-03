@@ -1,9 +1,6 @@
 Tests that src and href element targets are rewritten properly.
 
-TEST ENDED IN ERROR: TypeError: Cannot read property 'nodeType' of null
-    at Elements.ElementsTreeOutline.findTreeElement (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:508:91)
-    at Elements.ElementsTreeOutline._innerUpdateChildren (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:674:177)
-    at Elements.ElementsTreeOutline._updateChildren (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:664:50)
-    at Elements.ElementsTreeOutline._updateModifiedParentNode (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:633:6)
-    at Elements.ElementsTreeOutline._updateModifiedNodes (file:///b/s/w/ir/out/Release/resources/inspector/elements/elements_module.js:625:6)
-
+ javascript:alert('foo')
+4	http://127.0.0.1/script.js
+5	http://127.0.0.1/stylesheet.css
+6	http://127.0.0.1/target.html

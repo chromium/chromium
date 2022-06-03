@@ -4,39 +4,59 @@
 
 package org.chromium.chrome.browser.settings;
 
-import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
-import android.content.res.Resources;
-import android.graphics.BitmapFactory;
-import android.nfc.NfcAdapter;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Process;
-import android.support.graphics.drawable.VectorDrawableCompat;
-import android.support.v4.app.Fragment;
-import android.support.v7.preference.Preference;
-import android.support.v7.preference.PreferenceFragmentCompat;
-import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.VisibleForTesting;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.preference.Preference;
+import androidx.preference.PreferenceFragmentCompat;
+import androidx.vectordrawable.graphics.drawable.VectorDrawableCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.IntentUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ApplicationLifetime;
 import org.chromium.chrome.browser.ChromeBaseAppCompatActivity;
-import org.chromium.chrome.browser.ChromeFeatureList;
-import org.chromium.chrome.browser.help.HelpAndFeedback;
+import org.chromium.chrome.browser.LaunchIntentDispatcher;
+import org.chromium.chrome.browser.browsing_data.ClearBrowsingDataFragmentBasic;
+import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
+import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsController;
+import org.chromium.chrome.browser.image_descriptions.ImageDescriptionsSettings;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.language.settings.LanguageSettings;
+import org.chromium.chrome.browser.locale.LocaleManager;
+import org.chromium.chrome.browser.password_check.PasswordCheckComponentUiFactory;
+import org.chromium.chrome.browser.password_check.PasswordCheckEditFragmentView;
+import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
+import org.chromium.chrome.browser.password_check.PasswordCheckFragmentView;
+import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
+import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase;
+import org.chromium.chrome.browser.privacy_sandbox.FlocSettingsFragment;
+import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileManagerUtils;
-import org.chromium.chrome.browser.settings.homepage.HomepageEditor;
-import org.chromium.chrome.browser.util.ColorUtils;
+import org.chromium.chrome.browser.safety_check.SafetyCheckCoordinator;
+import org.chromium.chrome.browser.safety_check.SafetyCheckSettingsFragment;
+import org.chromium.chrome.browser.safety_check.SafetyCheckUpdatesDelegateImpl;
+import org.chromium.chrome.browser.search_engines.settings.SearchEngineSettings;
+import org.chromium.chrome.browser.signin.SyncConsentActivityLauncherImpl;
+import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
+import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarManageable;
+import org.chromium.components.browser_ui.settings.FragmentSettingsLauncher;
+import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.browser_ui.site_settings.SiteSettingsPreferenceFragment;
 import org.chromium.ui.UiUtils;
 
 /**
@@ -46,15 +66,9 @@ import org.chromium.ui.UiUtils;
  * As the user navigates through settings, a separate Settings activity is created for each
  * screen. Thus each fragment may freely modify its activity's action bar or title. This mimics the
  * behavior of {@link android.preference.PreferenceActivity}.
- *
- * If the main fragment is not an instance of {@link PreferenceFragmentCompat} (e.g. {@link
- * HomepageEditor}) or overrides {@link PreferenceFragmentCompat}'s layout, add the following:
- * 1) settings_action_bar_shadow.xml to the custom XML hierarchy and
- * 2) an OnScrollChangedListener to the main content's view's view tree observer via
- *    {@link SettingsUtils#getShowShadowOnScrollListener(View, View)}.
  */
 public class SettingsActivity extends ChromeBaseAppCompatActivity
-        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback {
+        implements PreferenceFragmentCompat.OnPreferenceStartFragmentCallback, SnackbarManageable {
     /**
      * Preference fragments may implement this interface to intercept "Back" button taps in this
      * activity.
@@ -79,9 +93,15 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
     private static boolean sActivityNotExportedChecked;
 
+    /** An instance of settings launcher that can be injected into a fragment */
+    private SettingsLauncher mSettingsLauncher = new SettingsLauncherImpl();
+
+    private SnackbarManager mSnackbarManager;
+
     @SuppressLint("InlinedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        setTitle(R.string.settings);
         ensureActivityNotExported();
 
         // The browser process must be started here because this Activity may be started explicitly
@@ -92,39 +112,25 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
 
         super.onCreate(savedInstanceState);
 
+        setContentView(R.layout.settings_activity);
+
+        Toolbar actionBar = findViewById(R.id.action_bar);
+        setSupportActionBar(actionBar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         mIsNewlyCreated = savedInstanceState == null;
 
         String initialFragment = getIntent().getStringExtra(EXTRA_SHOW_FRAGMENT);
         Bundle initialArguments = getIntent().getBundleExtra(EXTRA_SHOW_FRAGMENT_ARGUMENTS);
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setElevation(0);
-
         // If savedInstanceState is non-null, then the activity is being
         // recreated and super.onCreate() has already recreated the fragment.
         if (savedInstanceState == null) {
-            if (initialFragment == null) initialFragment = MainPreferences.class.getName();
+            if (initialFragment == null) initialFragment = MainSettings.class.getName();
 
             Fragment fragment = Fragment.instantiate(this, initialFragment, initialArguments);
-            getSupportFragmentManager()
-                    .beginTransaction()
-                    .replace(android.R.id.content, fragment)
-                    .commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.content, fragment).commit();
         }
-
-        if (ApiCompatibilityUtils.checkPermission(
-                    this, Manifest.permission.NFC, Process.myPid(), Process.myUid())
-                == PackageManager.PERMISSION_GRANTED) {
-            // Disable Android Beam on JB and later devices.
-            // In ICS it does nothing - i.e. we will send a Play Store link if NFC is used.
-            NfcAdapter nfcAdapter = NfcAdapter.getDefaultAdapter(this);
-            if (nfcAdapter != null) nfcAdapter.setNdefPushMessage(null, this);
-        }
-
-        Resources res = getResources();
-        ApiCompatibilityUtils.setTaskDescription(this, res.getString(R.string.app_name),
-                BitmapFactory.decodeResource(res, R.mipmap.app_icon),
-                ApiCompatibilityUtils.getColor(res, R.color.default_primary_color));
 
         setStatusBarColor();
     }
@@ -155,25 +161,17 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
+        ViewGroup contentView = findViewById(android.R.id.content);
+        mSnackbarManager = new SnackbarManager(this, contentView, null);
 
         Fragment fragment = getMainFragment();
-        if (!(fragment instanceof PreferenceFragmentCompat)) {
-            return;
+
+        if (fragment instanceof SiteSettingsPreferenceFragment) {
+            ChromeSiteSettingsDelegate delegate =
+                    (ChromeSiteSettingsDelegate) (((SiteSettingsPreferenceFragment) fragment)
+                                                          .getSiteSettingsDelegate());
+            delegate.setSnackbarManager(mSnackbarManager);
         }
-
-        RecyclerView recyclerView = ((PreferenceFragmentCompat) fragment).getListView();
-        if (recyclerView == null) {
-            return;
-        }
-
-        // Append action bar shadow to layout.
-        View inflatedView = getLayoutInflater().inflate(
-                R.layout.settings_action_bar_shadow, findViewById(android.R.id.content));
-
-        // Display shadow on scroll.
-        recyclerView.getViewTreeObserver().addOnScrollChangedListener(
-                SettingsUtils.getShowShadowOnScrollListener(
-                        recyclerView, inflatedView.findViewById(R.id.shadow)));
     }
 
     @Override
@@ -217,7 +215,7 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
      */
     @VisibleForTesting
     public Fragment getMainFragment() {
-        return getSupportFragmentManager().findFragmentById(android.R.id.content);
+        return getSupportFragmentManager().findFragmentById(R.id.content);
     }
 
     @Override
@@ -251,8 +249,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             finish();
             return true;
         } else if (item.getItemId() == R.id.menu_id_general_help) {
-            HelpAndFeedback.getInstance().show(this, getString(R.string.help_context_settings),
-                    Profile.getLastUsedProfile(), null);
+            HelpAndFeedbackLauncherImpl.getInstance().show(this,
+                    getString(R.string.help_context_settings), Profile.getLastUsedRegularProfile(),
+                    null);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -272,6 +271,88 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
     }
 
+    @Override
+    public void onAttachFragment(Fragment fragment) {
+        if (fragment instanceof SiteSettingsPreferenceFragment) {
+            ((SiteSettingsPreferenceFragment) fragment)
+                    .setSiteSettingsDelegate(new ChromeSiteSettingsDelegate(
+                            this, Profile.getLastUsedRegularProfile()));
+        }
+        if (fragment instanceof FragmentSettingsLauncher) {
+            FragmentSettingsLauncher fragmentSettingsLauncher = (FragmentSettingsLauncher) fragment;
+            fragmentSettingsLauncher.setSettingsLauncher(mSettingsLauncher);
+        }
+        if (fragment instanceof FragmentHelpAndFeedbackLauncher) {
+            FragmentHelpAndFeedbackLauncher fragmentHelpAndFeedbackLauncher =
+                    (FragmentHelpAndFeedbackLauncher) fragment;
+            fragmentHelpAndFeedbackLauncher.setHelpAndFeedbackLauncher(
+                    HelpAndFeedbackLauncherImpl.getInstance());
+        }
+        if (fragment instanceof SafetyCheckSettingsFragment) {
+            SafetyCheckCoordinator.create((SafetyCheckSettingsFragment) fragment,
+                    new SafetyCheckUpdatesDelegateImpl(this), mSettingsLauncher,
+                    SyncConsentActivityLauncherImpl.get());
+        }
+        if (fragment instanceof PasswordCheckFragmentView) {
+            PasswordCheckComponentUiFactory.create((PasswordCheckFragmentView) fragment,
+                    HelpAndFeedbackLauncherImpl.getInstance(), mSettingsLauncher,
+                    LaunchIntentDispatcher::createCustomTabActivityIntent,
+                    IntentUtils::addTrustedIntentExtras);
+        } else if (fragment instanceof PasswordCheckEditFragmentView) {
+            PasswordCheckEditFragmentView editFragment = (PasswordCheckEditFragmentView) fragment;
+            editFragment.setCheckProvider(
+                    () -> PasswordCheckFactory.getOrCreate(mSettingsLauncher));
+        }
+        if (fragment instanceof CredentialEntryFragmentViewBase) {
+            CredentialEditUiFactory.create((CredentialEntryFragmentViewBase) fragment,
+                    HelpAndFeedbackLauncherImpl.getInstance());
+        }
+        if (fragment instanceof SearchEngineSettings) {
+            SearchEngineSettings settings = (SearchEngineSettings) fragment;
+            settings.setDisableAutoSwitchRunnable(
+                    () -> LocaleManager.getInstance().setSearchEngineAutoSwitch(false));
+            settings.setSettingsLauncher(mSettingsLauncher);
+        }
+        if (fragment instanceof ImageDescriptionsSettings) {
+            Profile profile = Profile.getLastUsedRegularProfile();
+            ImageDescriptionsSettings imageFragment = (ImageDescriptionsSettings) fragment;
+            Bundle extras = imageFragment.getArguments();
+            if (extras != null) {
+                extras.putBoolean(ImageDescriptionsSettings.IMAGE_DESCRIPTIONS,
+                        ImageDescriptionsController.getInstance().imageDescriptionsEnabled(
+                                profile));
+                extras.putBoolean(ImageDescriptionsSettings.IMAGE_DESCRIPTIONS_DATA_POLICY,
+                        ImageDescriptionsController.getInstance().onlyOnWifiEnabled(profile));
+            }
+            imageFragment.setDelegate(ImageDescriptionsController.getInstance().getDelegate());
+        }
+        if (fragment instanceof PrivacySandboxSettingsFragment) {
+            ((PrivacySandboxSettingsFragment) fragment)
+                    .setCustomTabIntentHelper(
+                            LaunchIntentDispatcher::createCustomTabActivityIntent);
+        }
+        if (fragment instanceof FlocSettingsFragment) {
+            ((FlocSettingsFragment) fragment)
+                    .setCustomTabIntentHelper(
+                            LaunchIntentDispatcher::createCustomTabActivityIntent);
+        }
+        if (fragment instanceof LanguageSettings) {
+            ((LanguageSettings) fragment).setRestartAction(() -> {
+                ApplicationLifetime.terminate(true);
+            });
+        }
+        if (fragment instanceof ClearBrowsingDataFragmentBasic) {
+            ((ClearBrowsingDataFragmentBasic) fragment)
+                    .setCustomTabIntentHelper(
+                            LaunchIntentDispatcher::createCustomTabActivityIntent);
+        }
+    }
+
+    @Override
+    public SnackbarManager getSnackbarManager() {
+        return mSnackbarManager;
+    }
+
     private void ensureActivityNotExported() {
         if (sActivityNotExportedChecked) return;
         sActivityNotExportedChecked = true;
@@ -289,6 +370,13 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         }
     }
 
+    @Override
+    protected void applyThemeOverlays() {
+        super.applyThemeOverlays();
+
+        setTheme(R.style.ThemeRefactorOverlay_Disabled_Settings);
+    }
+
     /**
      * Set device status bar to match the activity background color, if supported.
      */
@@ -296,24 +384,16 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
         // On P+, the status bar color is set via the XML theme.
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) return;
 
-        // Kill switch included due to past crashes when programmatically setting status bar color:
-        // https://crbug.com/880694.
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SETTINGS_MODERN_STATUS_BAR)) return;
-
         if (UiUtils.isSystemUiThemingDisabled()) return;
 
         // Dark status icons only supported on M+.
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return;
 
-        // Use background color as status bar color.
-        int statusBarColor =
-                ApiCompatibilityUtils.getColor(getResources(), R.color.modern_primary_color);
-        ApiCompatibilityUtils.setStatusBarColor(getWindow(), statusBarColor);
+        // Use transparent color, so the AppBarLayout can color the status bar on scroll.
+        ApiCompatibilityUtils.setStatusBarColor(getWindow(), Color.TRANSPARENT);
 
         // Set status bar icon color according to background color.
-        boolean needsDarkStatusBarIcons =
-                !ColorUtils.shouldUseLightForegroundOnBackground(statusBarColor);
-        ApiCompatibilityUtils.setStatusBarIconColor(
-                getWindow().getDecorView().getRootView(), needsDarkStatusBarIcons);
+        ApiCompatibilityUtils.setStatusBarIconColor(getWindow().getDecorView().getRootView(),
+                getResources().getBoolean(R.bool.window_light_status_bar));
     }
 }

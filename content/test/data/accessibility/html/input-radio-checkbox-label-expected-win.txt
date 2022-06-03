@@ -1,0 +1,10 @@
+ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
+++IA2_ROLE_SECTION
+++++ROLE_SYSTEM_RADIOBUTTON name='label ignored for radio button' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++ROLE_SYSTEM_CHECKBUTTON name='label ignored for checkbox' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++IA2_ROLE_LABEL name='label exposed for radio button ' FOCUSABLE
+++++++ROLE_SYSTEM_STATICTEXT name='label exposed for radio button '
+++++++ROLE_SYSTEM_RADIOBUTTON name='label exposed for radio button' FOCUSABLE IA2_STATE_CHECKABLE checkable:true
+++++IA2_ROLE_LABEL name='label exposed for checkbox ' FOCUSABLE
+++++++ROLE_SYSTEM_STATICTEXT name='label exposed for checkbox '
+++++++ROLE_SYSTEM_CHECKBUTTON name='label exposed for checkbox' FOCUSABLE IA2_STATE_CHECKABLE checkable:true

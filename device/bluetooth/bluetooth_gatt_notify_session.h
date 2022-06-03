@@ -25,6 +25,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattNotifySession {
   explicit BluetoothGattNotifySession(
       base::WeakPtr<BluetoothRemoteGattCharacteristic> characteristic);
 
+  BluetoothGattNotifySession(const BluetoothGattNotifySession&) = delete;
+  BluetoothGattNotifySession& operator=(const BluetoothGattNotifySession&) =
+      delete;
+
   // Destructor automatically stops this session.
   virtual ~BluetoothGattNotifySession();
 
@@ -51,8 +55,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothGattNotifySession {
   base::WeakPtr<BluetoothRemoteGattCharacteristic> characteristic_;
   std::string characteristic_id_;
   bool active_;
-
-  DISALLOW_COPY_AND_ASSIGN(BluetoothGattNotifySession);
 };
 
 }  // namespace device

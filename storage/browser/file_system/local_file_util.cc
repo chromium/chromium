@@ -23,7 +23,7 @@
 namespace storage {
 
 AsyncFileUtil* AsyncFileUtil::CreateForLocalFileSystem() {
-  return new AsyncFileUtilAdapter(new LocalFileUtil());
+  return new AsyncFileUtilAdapter(std::make_unique<LocalFileUtil>());
 }
 
 class LocalFileUtil::LocalFileEnumerator
@@ -136,7 +136,7 @@ LocalFileUtil::CreateFileEnumerator(FileSystemOperationContext* context,
                                     bool recursive) {
   base::FilePath file_path;
   if (GetLocalFilePath(context, root_url, &file_path) != base::File::FILE_OK) {
-    return base::WrapUnique(new EmptyFileEnumerator);
+    return std::make_unique<EmptyFileEnumerator>();
   }
   return std::make_unique<LocalFileEnumerator>(
       this, file_path, root_url.path(), recursive,
@@ -182,7 +182,7 @@ base::File::Error LocalFileUtil::CopyOrMoveFile(
     FileSystemOperationContext* context,
     const FileSystemURL& src_url,
     const FileSystemURL& dest_url,
-    CopyOrMoveOption option,
+    CopyOrMoveOptionSet options,
     bool copy) {
   base::FilePath src_file_path;
   base::File::Error error = GetLocalFilePath(context, src_url, &src_file_path);
@@ -195,8 +195,8 @@ base::File::Error LocalFileUtil::CopyOrMoveFile(
     return error;
 
   return NativeFileUtil::CopyOrMoveFile(
-      src_file_path, dest_file_path, option,
-      storage::NativeFileUtil::CopyOrMoveModeForDestination(dest_url, copy));
+      src_file_path, dest_file_path, options,
+      NativeFileUtil::CopyOrMoveModeForDestination(dest_url, copy));
 }
 
 base::File::Error LocalFileUtil::CopyInForeignFile(
@@ -212,9 +212,8 @@ base::File::Error LocalFileUtil::CopyInForeignFile(
   if (error != base::File::FILE_OK)
     return error;
   return NativeFileUtil::CopyOrMoveFile(
-      src_file_path, dest_file_path, FileSystemOperation::OPTION_NONE,
-      storage::NativeFileUtil::CopyOrMoveModeForDestination(dest_url,
-                                                            true /* copy */));
+      src_file_path, dest_file_path, FileSystemOperation::CopyOrMoveOptionSet(),
+      NativeFileUtil::CopyOrMoveModeForDestination(dest_url, true /* copy */));
 }
 
 base::File::Error LocalFileUtil::DeleteFile(FileSystemOperationContext* context,
@@ -236,7 +235,7 @@ base::File::Error LocalFileUtil::DeleteDirectory(
   return NativeFileUtil::DeleteDirectory(file_path);
 }
 
-storage::ScopedFile LocalFileUtil::CreateSnapshotFile(
+ScopedFile LocalFileUtil::CreateSnapshotFile(
     FileSystemOperationContext* context,
     const FileSystemURL& url,
     base::File::Error* error,
@@ -247,7 +246,7 @@ storage::ScopedFile LocalFileUtil::CreateSnapshotFile(
   *error = GetFileInfo(context, url, file_info, platform_path);
   if (*error == base::File::FILE_OK && file_info->is_directory)
     *error = base::File::FILE_ERROR_NOT_A_FILE;
-  return storage::ScopedFile();
+  return ScopedFile();
 }
 
 bool LocalFileUtil::IsHiddenItem(const base::FilePath& local_file_path) const {

@@ -13,7 +13,7 @@ window.onload = function()
     document.getElementById('b').style.left = '400px';
 
     document.body.offsetTop;
-    var layerTree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_PAINT_INVALIDATIONS);
+    var layerTree = internals.layerTreeAsText(document, internals.LAYER_TREE_INCLUDES_INVALIDATIONS);
     internals.stopTrackingRepaints(document);
     document.getElementById('result').textContent = layerTree.indexOf('repaint') == -1 ? 'SUCCESS' : 'FAIL';
 };

@@ -5,12 +5,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_TEXT_SEARCHER_ICU_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EDITING_ITERATORS_TEXT_SEARCHER_ICU_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/finder/find_options.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
-#include "third_party/blink/renderer/platform/wtf/text/unicode.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_uchar.h"
 
 struct UStringSearch;
 
@@ -26,6 +25,8 @@ class CORE_EXPORT TextSearcherICU {
 
  public:
   TextSearcherICU();
+  TextSearcherICU(const TextSearcherICU&) = delete;
+  TextSearcherICU& operator=(const TextSearcherICU&) = delete;
   ~TextSearcherICU();
 
   void SetPattern(const StringView& pattern, FindOptions options);
@@ -44,8 +45,6 @@ class CORE_EXPORT TextSearcherICU {
   wtf_size_t text_length_ = 0;
   Vector<UChar> normalized_search_text_;
   FindOptions options_;
-
-  DISALLOW_COPY_AND_ASSIGN(TextSearcherICU);
 };
 
 }  // namespace blink

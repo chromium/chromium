@@ -25,12 +25,10 @@ TEST_F(CanMakePaymentQueryTest,
        SameHttpsOriginCannotQueryTwoDifferentCardNetworks) {
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
-                      {{"basic-card", {"{supportedNetworks: ['amex']}"}}},
-                      /*per_method_quota=*/true));
+                      {{"basic-card", {"{supportedNetworks: ['amex']}"}}}));
   EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
-                      {{"basic-card", {"{supportedNetworks: ['visa']}"}}},
-                      /*per_method_quota=*/true));
+                      {{"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 // A localhost website is not allowed to query all of the networks of the cards
@@ -39,12 +37,10 @@ TEST_F(CanMakePaymentQueryTest,
        SameLocalhostOriginCannotQueryTwoDifferentCardNetworks) {
   EXPECT_TRUE(guard_.CanQuery(
       GURL("http://localhost:8080"), GURL("http://localhost:8080"),
-      {{"basic-card", {"{supportedNetworks: ['amex']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['amex']}"}}}));
   EXPECT_FALSE(guard_.CanQuery(
       GURL("http://localhost:8080"), GURL("http://localhost:8080"),
-      {{"basic-card", {"{supportedNetworks: ['visa']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 // A file website is not allowed to query all of the networks of the cards in
@@ -53,12 +49,10 @@ TEST_F(CanMakePaymentQueryTest,
        SameFileOriginCannotQueryTwoDifferentCardNetworks) {
   EXPECT_TRUE(guard_.CanQuery(
       GURL("file:///tmp/test.html"), GURL("file:///tmp/test.html"),
-      {{"basic-card", {"{supportedNetworks: ['amex']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['amex']}"}}}));
   EXPECT_FALSE(guard_.CanQuery(
       GURL("file:///tmp/test.html"), GURL("file:///tmp/test.html"),
-      {{"basic-card", {"{supportedNetworks: ['visa']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 // Different HTTPS websites are allowed to query different card networks in
@@ -67,12 +61,10 @@ TEST_F(CanMakePaymentQueryTest,
        DifferentHttpsOriginsCanQueryTwoDifferentCardNetworks) {
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
-                      {{"basic-card", {"{supportedNetworks: ['amex']}"}}},
-                      /*per_method_quota=*/true));
+                      {{"basic-card", {"{supportedNetworks: ['amex']}"}}}));
   EXPECT_TRUE(guard_.CanQuery(
       GURL("https://not-example.com"), GURL("https://not-example.com"),
-      {{"basic-card", {"{supportedNetworks: ['visa']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 // Different localhost websites are allowed to query different card networks in
@@ -81,12 +73,10 @@ TEST_F(CanMakePaymentQueryTest,
        DifferentLocalhostOriginsCanQueryTwoDifferentCardNetworks) {
   EXPECT_TRUE(guard_.CanQuery(
       GURL("http://localhost:8080"), GURL("http://localhost:8080"),
-      {{"basic-card", {"{supportedNetworks: ['amex']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['amex']}"}}}));
   EXPECT_TRUE(guard_.CanQuery(
       GURL("http://localhost:9090"), GURL("http://localhost:9090"),
-      {{"basic-card", {"{supportedNetworks: ['visa']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 // Different file websites are allowed to query different card networks in
@@ -95,12 +85,10 @@ TEST_F(CanMakePaymentQueryTest,
        DifferentFileOriginsCanQueryTwoDifferentCardNetworks) {
   EXPECT_TRUE(guard_.CanQuery(
       GURL("file:///tmp/test.html"), GURL("file:///tmp/test.html"),
-      {{"basic-card", {"{supportedNetworks: ['amex']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['amex']}"}}}));
   EXPECT_TRUE(guard_.CanQuery(
       GURL("file:///tmp/not-test.html"), GURL("file:///tmp/not-test.html"),
-      {{"basic-card", {"{supportedNetworks: ['visa']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 // The same website is not allowed to query the same payment method with
@@ -110,18 +98,15 @@ TEST_F(CanMakePaymentQueryTest,
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['visa']}"}},
-                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}},
-                      /*per_method_quota=*/true));
-  EXPECT_TRUE(
+                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}}));
+  EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['visa']}"}},
-                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}},
-                      /*per_method_quota=*/true));
+                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}}));
   EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['amex']}"}},
-                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}},
-                      /*per_method_quota=*/true));
+                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}}));
 }
 
 // Two different websites are allowed to query the same payment method with
@@ -130,12 +115,10 @@ TEST_F(CanMakePaymentQueryTest,
        DifferentOriginsCanQueryBasicCardWithTwoDifferentCardNetworks) {
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
-                      {{"basic-card", {"{supportedNetworks: ['visa']}"}}},
-                      /*per_method_quota=*/true));
+                      {{"basic-card", {"{supportedNetworks: ['visa']}"}}}));
   EXPECT_TRUE(guard_.CanQuery(
       GURL("https://not-example.com"), GURL("https://not-example.com"),
-      {{"basic-card", {"{supportedNetworks: ['amex']}"}}},
-      /*per_method_quota=*/true));
+      {{"basic-card", {"{supportedNetworks: ['amex']}"}}}));
 }
 
 // A website can query several different payment methods, as long as each
@@ -145,18 +128,15 @@ TEST_F(CanMakePaymentQueryTest,
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['visa']}"}},
-                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}},
-                      /*per_method_quota=*/true));
-  EXPECT_TRUE(
+                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}}));
+  EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://alicepay.com", {"{alicePayParameter: 1}"}},
-                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}},
-                      /*per_method_quota=*/true));
-  EXPECT_TRUE(
+                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}}));
+  EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://bobpay.com", {"{bobPayParameter: 2}"}},
-                       {"basic-card", {"{supportedNetworks: ['visa']}"}}},
-                      /*per_method_quota=*/true));
+                       {"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 // A website cannot query several different payment methods without the
@@ -166,18 +146,15 @@ TEST_F(CanMakePaymentQueryTest,
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['visa']}"}},
-                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}},
-                      /*per_method_quota=*/false));
+                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}}));
   EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://alicepay.com", {"{alicePayParameter: 1}"}},
-                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}},
-                      /*per_method_quota=*/false));
+                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}}));
   EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://bobpay.com", {"{bobPayParameter: 2}"}},
-                       {"basic-card", {"{supportedNetworks: ['visa']}"}}},
-                      /*per_method_quota=*/false));
+                       {"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 // An instance of a website with per-method quota enabled (e.g., through an
@@ -192,69 +169,57 @@ TEST_F(CanMakePaymentQueryTest, SameWebsiteDifferentQuotaPolicy) {
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['visa']}"}},
-                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}},
-                      /*per_method_quota=*/true));
-  EXPECT_TRUE(
+                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}}));
+  EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://alicepay.com", {"{alicePayParameter: 1}"}},
-                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}},
-                      /*per_method_quota=*/true));
-  EXPECT_TRUE(
+                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}}));
+  EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://bobpay.com", {"{bobPayParameter: 2}"}},
-                       {"basic-card", {"{supportedNetworks: ['visa']}"}}},
-                      /*per_method_quota=*/true));
+                       {"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 
   // Second instance of https://example.com has per-method quota feature
   // disabled and so can only repeat the first query.
   EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://alicepay.com", {"{alicePayParameter: 1}"}},
-                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}},
-                      /*per_method_quota=*/false));
+                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}}));
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['visa']}"}},
-                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}},
-                      /*per_method_quota=*/false));
+                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}}));
   EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://bobpay.com", {"{bobPayParameter: 2}"}},
-                       {"basic-card", {"{supportedNetworks: ['visa']}"}}},
-                      /*per_method_quota=*/false));
+                       {"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 
   // The two website queries can be interleaved any number of times in any order
   // with the same results.
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['visa']}"}},
-                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}},
-                      /*per_method_quota=*/true));
-  EXPECT_TRUE(
+                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}}));
+  EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://bobpay.com", {"{bobPayParameter: 2}"}},
-                       {"basic-card", {"{supportedNetworks: ['visa']}"}}},
-                      /*per_method_quota=*/true));
+                       {"basic-card", {"{supportedNetworks: ['visa']}"}}}));
   EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://alicepay.com", {"{alicePayParameter: 1}"}},
-                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}},
-                      /*per_method_quota=*/false));
+                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}}));
   EXPECT_TRUE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"basic-card", {"{supportedNetworks: ['visa']}"}},
-                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}},
-                      /*per_method_quota=*/false));
-  EXPECT_TRUE(
+                       {"https://alicepay.com", {"{alicePayParameter: 1}"}}}));
+  EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://alicepay.com", {"{alicePayParameter: 1}"}},
-                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}},
-                      /*per_method_quota=*/true));
+                       {"https://bobpay.com", {"{bobPayParameter: 2}"}}}));
   EXPECT_FALSE(
       guard_.CanQuery(GURL("https://example.com"), GURL("https://example.com"),
                       {{"https://bobpay.com", {"{bobPayParameter: 2}"}},
-                       {"basic-card", {"{supportedNetworks: ['visa']}"}}},
-                      /*per_method_quota=*/false));
+                       {"basic-card", {"{supportedNetworks: ['visa']}"}}}));
 }
 
 }  // namespace

@@ -1,0 +1,36 @@
+<!--
+@BLINK-ALLOW:offscreen
+@AURALINUX-ALLOW:visible
+@WAIT-FOR:doneActivating
+-->
+<div>
+  <div id="initialSpacer" style="height: 10000px;">
+    initial spacer, will initially make everything below this far away from the viewport
+  </div>
+  <div id="inViewport" style="content-visibility: auto">
+    This text will get viewport-activated because it's in the viewport, and will be in AX tree with layout.
+  </div>
+  <div id="alsoInViewport" style="content-visibility: auto">
+    This text is also in viewport.
+  </div>
+  <div style="height: 10000px;">
+    spacer so that everything below will be offscreen (and won't get viewport-activated)
+  </div>
+  <div id="wayBelowViewport" style="content-visibility: auto">
+    This text will not get viewport-activated, and will be in AX tree but without layout.
+  </div>
+  <div id="statusDiv"></div>
+</div>
+<script>
+  // Viewport activation happens on the next frame, so we'll wait until then before ending.
+  window.addEventListener("scroll", () => {
+    window.requestAnimationFrame(() => {
+      window.requestAnimationFrame(() => {
+        statusDiv.innerText = "doneActivating";
+      });
+    });
+  });
+  // Scroll so that #inViewport will be at the top of the viewport.
+  window.scrollTo(0, initialSpacer.offsetHeight);
+</script>
+

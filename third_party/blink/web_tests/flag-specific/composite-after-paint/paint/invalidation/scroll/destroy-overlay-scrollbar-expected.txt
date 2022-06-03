@@ -4,14 +4,7 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
-      "paintInvalidations": [
-        {
-          "object": "VerticalScrollbar",
-          "rect": [193, 100, 7, 200],
-          "reason": "chunk disappeared"
-        }
-      ]
+      "backgroundColor": "#FFFFFF"
     }
   ]
 }

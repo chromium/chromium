@@ -1,4 +1,2 @@
-file://chrome/browser/permissions/PERMISSIONS_OWNERS
-felt@chromium.org
+file://components/permissions/PERMISSIONS_OWNERS
 msramek@chromium.org
-raymes@chromium.org

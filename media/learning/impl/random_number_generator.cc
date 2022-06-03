@@ -6,7 +6,6 @@
 
 #include <limits>
 
-#include "base/logging.h"
 #include "base/rand_util.h"
 
 namespace media {

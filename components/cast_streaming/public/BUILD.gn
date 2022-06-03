@@ -1,0 +1,47 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//testing/test.gni")
+
+source_set("public") {
+  deps = [ "//url" ]
+
+  sources = [
+    "cast_streaming_url.cc",
+    "cast_streaming_url.h",
+  ]
+}
+
+source_set("config_conversions") {
+  deps = [
+    "//base",
+    "//components/openscreen_platform",
+    "//media",
+    "//ui/gfx/geometry",
+    "//url",
+  ]
+  public_deps = [
+    "//third_party/openscreen/src/cast/streaming:receiver",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
+  ]
+  sources = [
+    "config_conversions.cc",
+    "config_conversions.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":config_conversions",
+    ":public",
+    "//base/test:test_support",
+    "//media:test_support",
+    "//media/mojo:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/openscreen/src/cast/streaming:streaming_configs",
+  ]
+  sources = [ "config_conversions_unittest.cc" ]
+}

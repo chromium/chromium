@@ -28,6 +28,6 @@
 [
     Exposed=Window
 ] interface FocusEvent : UIEvent {
-    constructor(DOMString type, optional FocusEventInit eventInitDict);
+    constructor(DOMString type, optional FocusEventInit eventInitDict = {});
     readonly attribute EventTarget? relatedTarget;
 };

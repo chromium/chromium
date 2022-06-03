@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<script>
+if (window.internals)
+  internals.useMockOverlayScrollbars();
+</script>
+<div style="width: 200px; height: 200px; overflow: scroll">
+  <div style="background: green; width: 200px; height: 70px"></div>
+  <!-- This div let the top-level div have the same layout overflow as in the test. -->
+  <div style="width: 210px; height: 220px"></div>
+</div>

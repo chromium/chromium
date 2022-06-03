@@ -4,10 +4,11 @@
 
 #import "ios/chrome/browser/ui/activity_services/activities/copy_activity.h"
 
+#import "ios/chrome/browser/ui/activity_services/data/share_to_data.h"
 #import "ios/chrome/browser/ui/util/pasteboard_util.h"
-#include "ios/chrome/grit/ios_strings.h"
-#include "ui/base/l10n/l10n_util_mac.h"
-#include "url/gurl.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+#import "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -19,20 +20,22 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 
 }  // namespace
 
-@implementation CopyActivity {
-  GURL _URL;
-}
+@interface CopyActivity ()
 
-+ (NSString*)activityIdentifier {
-  return kCopyActivityType;
-}
+@property(nonatomic, strong) NSArray<ShareToData*>* dataItems;
+
+@end
+
+@implementation CopyActivity
 
 #pragma mark - Public
 
-- (instancetype)initWithURL:(const GURL&)URL {
+- (instancetype)initWithDataItems:(NSArray<ShareToData*>*)dataItems {
+  DCHECK(dataItems);
+  DCHECK(dataItems.count);
   self = [super init];
   if (self) {
-    _URL = URL;
+    _dataItems = dataItems;
   }
   return self;
 }
@@ -40,7 +43,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 #pragma mark - UIActivity
 
 - (NSString*)activityType {
-  return [[self class] activityIdentifier];
+  return kCopyActivityType;
 }
 
 - (NSString*)activityTitle {
@@ -52,7 +55,7 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (BOOL)canPerformWithActivityItems:(NSArray*)activityItems {
-  return YES;
+  return !!self.dataItems && self.dataItems.count;
 }
 
 - (void)prepareWithActivityItems:(NSArray*)activityItems {
@@ -63,8 +66,17 @@ NSString* const kCopyActivityType = @"com.google.chrome.copyActivity";
 }
 
 - (void)performActivity {
-  StoreURLInPasteboard(_URL);
   [self activityDidFinish:YES];
+  if (self.dataItems.count == 1 && self.dataItems.firstObject.additionalText) {
+    StoreInPasteboard(self.dataItems.firstObject.additionalText,
+                      self.dataItems.firstObject.shareURL);
+  } else {
+    std::vector<const GURL> urls;
+    for (ShareToData* shareToData in self.dataItems) {
+      urls.push_back(shareToData.shareURL);
+    }
+    StoreURLsInPasteboard(urls);
+  }
 }
 
 @end

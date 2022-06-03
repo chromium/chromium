@@ -88,6 +88,9 @@ class BASE_EXPORT SimpleThread : public PlatformThread::Delegate {
   explicit SimpleThread(const std::string& name);
   SimpleThread(const std::string& name, const Options& options);
 
+  SimpleThread(const SimpleThread&) = delete;
+  SimpleThread& operator=(const SimpleThread&) = delete;
+
   ~SimpleThread() override;
 
   // Starts the thread and returns only after the thread has started and
@@ -148,8 +151,6 @@ class BASE_EXPORT SimpleThread : public PlatformThread::Delegate {
   bool joined_ = false;                      // True if Join has been called.
   // Set to true when the platform-thread creation has started.
   bool start_called_ = false;
-
-  DISALLOW_COPY_AND_ASSIGN(SimpleThread);
 };
 
 // A SimpleThread which delegates Run() to its Delegate. Non-joinable
@@ -171,13 +172,14 @@ class BASE_EXPORT DelegateSimpleThread : public SimpleThread {
                        const std::string& name_prefix,
                        const Options& options);
 
+  DelegateSimpleThread(const DelegateSimpleThread&) = delete;
+  DelegateSimpleThread& operator=(const DelegateSimpleThread&) = delete;
+
   ~DelegateSimpleThread() override;
   void Run() override;
 
  private:
   Delegate* delegate_;
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateSimpleThread);
 };
 
 // DelegateSimpleThreadPool allows you to start up a fixed number of threads,
@@ -195,6 +197,10 @@ class BASE_EXPORT DelegateSimpleThreadPool
   typedef DelegateSimpleThread::Delegate Delegate;
 
   DelegateSimpleThreadPool(const std::string& name_prefix, int num_threads);
+
+  DelegateSimpleThreadPool(const DelegateSimpleThreadPool&) = delete;
+  DelegateSimpleThreadPool& operator=(const DelegateSimpleThreadPool&) = delete;
+
   ~DelegateSimpleThreadPool() override;
 
   // Start up all of the underlying threads, and start processing work if we
@@ -222,8 +228,6 @@ class BASE_EXPORT DelegateSimpleThreadPool
   base::queue<Delegate*> delegates_;
   base::Lock lock_;            // Locks delegates_
   WaitableEvent dry_;    // Not signaled when there is no work to do.
-
-  DISALLOW_COPY_AND_ASSIGN(DelegateSimpleThreadPool);
 };
 
 }  // namespace base

@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_CONTENT_CAPTURE_RENDERER_CONTENT_CAPTURE_SENDER_H_
 #define COMPONENTS_CONTENT_CAPTURE_RENDERER_CONTENT_CAPTURE_SENDER_H_
 
-#include <vector>
-
 #include "components/content_capture/common/content_capture.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
@@ -33,6 +31,10 @@ class ContentCaptureSender : public content::RenderFrameObserver,
  public:
   explicit ContentCaptureSender(content::RenderFrame* render_frame,
                                 blink::AssociatedInterfaceRegistry* registry);
+
+  ContentCaptureSender(const ContentCaptureSender&) = delete;
+  ContentCaptureSender& operator=(const ContentCaptureSender&) = delete;
+
   ~ContentCaptureSender() override;
 
   void BindPendingReceiver(
@@ -40,8 +42,7 @@ class ContentCaptureSender : public content::RenderFrameObserver,
           pending_receiver);
 
   // blink::WebContentCaptureClient:
-  void GetTaskTimingParameters(base::TimeDelta& short_delay,
-                               base::TimeDelta& long_delay) const override;
+  base::TimeDelta GetTaskInitialDelay() const override;
   void DidCaptureContent(const blink::WebVector<blink::WebContentHolder>& data,
                          bool first_data) override;
   void DidUpdateContent(
@@ -66,8 +67,6 @@ class ContentCaptureSender : public content::RenderFrameObserver,
   mojo::AssociatedRemote<mojom::ContentCaptureReceiver>
       content_capture_receiver_;
   mojo::AssociatedReceiver<mojom::ContentCaptureSender> receiver_{this};
-
-  DISALLOW_COPY_AND_ASSIGN(ContentCaptureSender);
 };
 
 }  // namespace content_capture

@@ -1,0 +1,57 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROME_BROWSER_UI_VIEWS_BLUETOOTH_DEVICE_CREDENTIALS_VIEW_H_
+#define CHROME_BROWSER_UI_VIEWS_BLUETOOTH_DEVICE_CREDENTIALS_VIEW_H_
+
+#include <string>
+
+#include "base/memory/weak_ptr.h"
+#include "chrome/browser/ui/browser_dialogs.h"
+#include "content/public/browser/bluetooth_delegate.h"
+#include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/window/dialog_delegate.h"
+
+// A dialog allowing the user to enter Bluetooth credentials (i.e. a PIN).
+class BluetoothDeviceCredentialsView : public views::DialogDelegateView,
+                                       public views::TextfieldController {
+ public:
+  METADATA_HEADER(BluetoothDeviceCredentialsView);
+  BluetoothDeviceCredentialsView(
+      const std::u16string& device_identifier,
+      content::BluetoothDelegate::CredentialsCallback close_callback);
+  BluetoothDeviceCredentialsView(const BluetoothDeviceCredentialsView&) =
+      delete;
+  BluetoothDeviceCredentialsView& operator=(
+      const BluetoothDeviceCredentialsView&) = delete;
+  ~BluetoothDeviceCredentialsView() override;
+
+  // Initialize the controls on the dialog.
+  void InitControls(const std::u16string& device_identifier);
+
+  // View:
+  gfx::Size CalculatePreferredSize() const override;
+
+  // DialogDelegateView:
+  bool IsDialogButtonEnabled(ui::DialogButton button) const override;
+  std::u16string GetWindowTitle() const override;
+
+  // WidgetDelegate:
+  views::View* GetInitiallyFocusedView() override;
+
+ private:
+  void OnDialogAccepted();
+  // TextfieldController:
+  void ContentsChanged(views::Textfield* sender,
+                       const std::u16string& new_contents) override;
+
+  content::BluetoothDelegate::CredentialsCallback close_callback_;
+  views::Textfield* passkey_text_ = nullptr;
+  views::View* icon_view_ = nullptr;
+  views::View* contents_wrapper_ = nullptr;
+  base::WeakPtrFactory<BluetoothDeviceCredentialsView> weak_ptr_factory_{this};
+};
+
+#endif  // CHROME_BROWSER_UI_VIEWS_BLUETOOTH_DEVICE_CREDENTIALS_VIEW_H_

@@ -36,13 +36,15 @@ class CodecSurfaceBundle;
 // bundle (and overlay) may be accessed.  All other methods will run on the
 // provided task runner.
 class MEDIA_GPU_EXPORT CodecImageGroup
-    : public base::RefCountedThreadSafe<CodecImageGroup> {
+    : public base::RefCountedThreadSafe<CodecImageGroup>,
+      public gpu::RefCountedLockHelperDrDc {
  public:
   // NOTE: Construction happens on the correct thread to access |bundle| and
   // any overlay it contains.  All other access to this class will happen on
   // |task_runner|, including destruction.
   CodecImageGroup(scoped_refptr<base::SequencedTaskRunner> task_runner,
-                  scoped_refptr<CodecSurfaceBundle> bundle);
+                  scoped_refptr<CodecSurfaceBundle> bundle,
+                  scoped_refptr<gpu::RefCountedLock> drdc_lock);
 
   // Notify us that |image| uses |surface_bundle_|.  We will remove |image| from
   // the group automatically when it's no longer using |surface_bundle_|.
@@ -74,4 +76,4 @@ class MEDIA_GPU_EXPORT CodecImageGroup
 
 }  // namespace media
 
-#endif  // MEDIA_GPU_ANDROID_CODEC_IMAGE_H_
+#endif  // MEDIA_GPU_ANDROID_CODEC_IMAGE_GROUP_H_

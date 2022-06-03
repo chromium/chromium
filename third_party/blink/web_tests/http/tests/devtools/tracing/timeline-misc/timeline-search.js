@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test search in Timeline FlameChart View.\n`);
-  await TestRunner.loadModule('performance_test_runner');
+  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';
@@ -26,7 +26,7 @@
     },
     {
       'args': {'name': 'Renderer'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'process_name',
       'ph': 'M',
       'pid': pid,
@@ -35,7 +35,7 @@
     },
     {
       'args': {'name': 'CrRendererMain'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': pid,
@@ -44,7 +44,7 @@
     },
     {
       'args': {'name': 'CompositorTileWorker'},
-      'cat': '__metadata',
+      'cat': '_metadata',
       'name': 'thread_name',
       'ph': 'M',
       'pid': pid,
@@ -115,7 +115,7 @@
       'tid': mainThread,
       'pid': pid,
       'cat': 'disabled-by-default-devtools.timeline',
-      'args': {'beginData': {'frame': 0x12345678}, 'endData': {'rootNode': 1}}
+      'args': {'beginData': {'frame': 0x12345678}, 'endData': {'layoutRoots':[]}}
     },
     {
       'name': 'Paint',
@@ -200,13 +200,13 @@
 
   var timeline = UI.panels.timeline;
   var model = PerformanceTestRunner.createPerformanceModelWithEvents(testData);
-  timeline._setModel(model);
-  var flameChartView = timeline._flameChart;
+  timeline.setModel(model);
+  var flameChartView = timeline.flameChart;
   var searchConfig = new UI.SearchableView.SearchConfig('Paint', false, false);
   flameChartView.performSearch(searchConfig, true, false);
-  TestRunner.addResult(`Count: ${flameChartView._searchResults.length}`);
-  for (var i = 0; i <= flameChartView._searchResults.length; ++i) {
-    var selection = timeline._selection;
+  TestRunner.addResult(`Count: ${flameChartView.searchResults.length}`);
+  for (var i = 0; i <= flameChartView.searchResults.length; ++i) {
+    var selection = timeline.selection;
     if (!selection || selection.type() !== Timeline.TimelineSelection.Type.TraceEvent) {
       TestRunner.addResult(`Invalid selection type: ${selection && selection.type()}`);
       continue;

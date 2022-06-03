@@ -4,7 +4,6 @@
 
 #include "mojo/public/cpp/base/shared_memory_mojom_traits.h"
 
-#include "base/logging.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace mojo {

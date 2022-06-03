@@ -1,0 +1,49 @@
+# Copyright 2017 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//printing/buildflags/buildflags.gni")
+
+static_library("print_compositor") {
+  sources = [
+    "print_compositor_impl.cc",
+    "print_compositor_impl.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/crash/core/common:crash_key",
+    "//components/discardable_memory/client",
+    "//content/public/utility",
+    "//printing/common",
+    "//third_party/blink/public:blink_headers",
+    "//ui/accessibility",
+  ]
+
+  if (is_win) {
+    deps += [ "//content/public/child" ]
+  }
+
+  public_deps = [
+    "//components/services/print_compositor/public/cpp",
+    "//components/services/print_compositor/public/mojom",
+    "//printing/buildflags",
+    "//skia",
+  ]
+}
+
+if (enable_basic_printing) {
+  source_set("unit_tests") {
+    testonly = true
+    sources = [ "print_compositor_impl_unittest.cc" ]
+
+    deps = [
+      ":print_compositor",
+      "//base/test:test_support",
+      "//components/crash/core/common:crash_key",
+      "//components/services/print_compositor/public/cpp",
+      "//testing/gmock",
+      "//testing/gtest",
+    ]
+  }
+}

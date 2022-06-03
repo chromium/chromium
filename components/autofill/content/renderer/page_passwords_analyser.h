@@ -7,6 +7,7 @@
 
 #include <set>
 
+#include "components/autofill/core/common/unique_ids.h"
 #include "third_party/blink/public/web/web_console_message.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 
@@ -42,9 +43,9 @@ class PagePasswordsAnalyser {
   // By default, the analyser will log to the DevTools console.
   void AnalyseDocumentDOM(blink::WebLocalFrame* frame);
 
-  // A set of renderer_ids which have already been analyzed.
-  std::set<uint32_t> skip_control_element_renderer_ids_;
-  std::set<uint32_t> skip_form_element_renderer_ids_;
+  // Sets of renderer_ids which have already been analyzed.
+  std::set<FormRendererId> skip_form_element_renderer_ids_;
+  std::set<FieldRendererId> skip_control_element_renderer_ids_;
   // This is true when new DOM content is available since the last time
   // the page was analysed, meaning the page needs to be reanalysed.
   bool page_dirty_;

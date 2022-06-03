@@ -6,6 +6,7 @@
 #define CHROMECAST_COMMON_MOJOM_APPLICATION_MEDIA_CAPABILITIES_TRAITS_H_
 
 #include "chromecast/base/bitstream_audio_codecs.h"
+#include "chromecast/common/mojom/application_media_capabilities.mojom-shared.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {

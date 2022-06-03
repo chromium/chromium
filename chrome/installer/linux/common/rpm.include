@@ -221,24 +221,34 @@ KEYDATA
 
 determine_rpm_package_manager() {
   local RELEASE
-  LSB_RELEASE="$(which lsb_release 2> /dev/null)"
+
+  # Modern method using os-release(5)
+  if [ -f "/etc/os-release" ]; then
+    RELEASE=$(. "/etc/os-release"; echo "$ID")
+    case $RELEASE in
+    "fedora"|"rhel"|"centos"|"amzn"|"mageia"|"openmandriva")
+      PACKAGEMANAGERS=(yum)
+      ;;
+    "suse"|"sles"|"sled"|"opensuse"|"opensuse-leap"|"opensuse-tumbleweed")
+      PACKAGEMANAGERS=(zypp)
+      ;;
+    esac
+  fi
+
+  if [ "$PACKAGEMANAGERS" ]; then
+    return
+  fi
+
+  # Fallback method using lsb_release(1)
+  LSB_RELEASE="$(command -v lsb_release 2> /dev/null)"
   if [ -x "$LSB_RELEASE" ]; then
     RELEASE=$(lsb_release -i 2> /dev/null | sed 's/:\t/:/' | cut -d ':' -f 2-)
     case $RELEASE in
-    "Fedora"|"Amazon")
+    "Fedora"|"Amazon"|"Mageia"|"OpenMandrivaLinux")
       PACKAGEMANAGERS=(yum)
       ;;
-    "Mageia")
-      PACKAGEMANAGERS=(urpmi)
-      if [ "$(lsb_release -rs 2> /dev/null)" -ge "6" ]; then
-        PACKAGEMANAGERS=(yum urpmi)
-      fi
-      ;;
-    "MandrivaLinux")
-      PACKAGEMANAGERS=(urpmi)
-      ;;
     "SUSE LINUX"|"openSUSE")
-      PACKAGEMANAGERS=(yast)
+      PACKAGEMANAGERS=(zypp)
       ;;
     esac
   fi
@@ -248,35 +258,18 @@ determine_rpm_package_manager() {
   fi
 
   # Fallback methods that are probably unnecessary on modern systems.
-  if [ -f "/etc/lsb-release" ]; then
-    # file missing on Fedora, does not contain DISTRIB_ID on OpenSUSE.
-    eval $(sed -e '/DISTRIB_ID/!d' /etc/lsb-release)
-    case $DISTRIB_ID in
-    MandrivaLinux)
-      PACKAGEMANAGERS=(urpmi)
-      ;;
-    esac
-  fi
-
-  if [ "$PACKAGEMANAGERS" ]; then
-    return
-  fi
-
   if [ -f "/etc/fedora-release" ] || [ -f "/etc/redhat-release" ]; then
     PACKAGEMANAGERS=(yum)
   elif [ -f "/etc/system-release" ] && grep -Fq "Amazon Linux" "/etc/system-release"; then
     PACKAGEMANAGERS=(yum)
   elif [ -f "/etc/SuSE-release" ]; then
-    PACKAGEMANAGERS=(yast)
-  elif [ -f "/etc/mandriva-release" ]; then
-    PACKAGEMANAGERS=(urpmi)
+    PACKAGEMANAGERS=(zypp)
   fi
 }
 
 DEFAULT_ARCH="@@ARCHITECTURE@@"
 YUM_REPO_FILE="/etc/yum.repos.d/@@PACKAGE@@.repo"
 ZYPPER_REPO_FILE="/etc/zypp/repos.d/@@PACKAGE@@.repo"
-URPMI_REPO_FILE="/etc/urpmi/urpmi.cfg"
 
 install_yum() {
   install_rpm_key
@@ -297,42 +290,10 @@ REPOCONTENT
   fi
 }
 
-# This is called by the cron job, rather than in the RPM postinstall.
-# We cannot do this during the install when urpmi is running due to
-# database locking. We also need to enable the repository, and we can
-# only do that while we are online.
-# see: https://qa.mandriva.com/show_bug.cgi?id=31893
-configure_urpmi() {
+install_zypp() {
   if [ ! "$REPOCONFIG" ]; then
     return 0
   fi
-
-  urpmq --list-media | grep -q -s "^@@PACKAGE@@$"
-  if [ "$?" -eq "0" ]; then
-    # Repository already configured
-    return 0
-  fi
-  urpmi.addmedia --update \
-    "@@PACKAGE@@" "$REPOCONFIG/$DEFAULT_ARCH"
-}
-
-install_urpmi() {
-  # urpmi not smart enough to pull media_info/pubkey from the repository?
-  install_rpm_key
-
-  # Defer urpmi.addmedia to configure_urpmi() in the cron job.
-  # See comment there.
-  #
-  # urpmi.addmedia --update \
-  #   "@@PACKAGE@@" "$REPOCONFIG/$DEFAULT_ARCH"
-}
-
-install_yast() {
-  if [ ! "$REPOCONFIG" ]; then
-    return 0
-  fi
-
-  # We defer adding the key to later. See comment in the cron job.
 
   # Ideally, we would run: zypper addrepo -t YUM -f \
   # "$REPOCONFIG/$DEFAULT_ARCH" "@@PACKAGE@@"
@@ -344,6 +305,8 @@ name=@@PACKAGE@@
 enabled=1
 autorefresh=1
 baseurl=$REPOCONFIG/$DEFAULT_ARCH
+gpgcheck=1
+gpgkey=https://dl.google.com/linux/linux_signing_key.pub
 type=rpm-md
 keeppackages=0
 REPOCONTENT
@@ -359,11 +322,8 @@ verify_install() {
   "yum")
     [ -f "$YUM_REPO_FILE" ]
     ;;
-  "yast")
+  "zypp")
     [ -f "$ZYPPER_REPO_FILE" ]
-    ;;
-  "urpmi")
-    urpmq --list-url | grep -q -s "\b@@PACKAGE@@\b"
     ;;
   esac
 }
@@ -382,11 +342,8 @@ update_bad_repo() {
     "yum")
       update_repo_file "$YUM_REPO_FILE"
       ;;
-    "yast")
+    "zypp")
       update_repo_file "$ZYPPER_REPO_FILE"
-      ;;
-    "urpmi")
-      update_urpmi_cfg
       ;;
     esac
   done
@@ -428,26 +385,6 @@ update_repo_file() {
   sed -i -e "s,^baseurl=.*,baseurl=$REPOCONFIG/$DEFAULT_ARCH," "$REPO_FILE"
 }
 
-update_urpmi_cfg() {
-  REPOCFG=$(urpmq --list-url | grep "\b@@PACKAGE@@\b")
-  if [ ! "$REPOCFG" ]; then
-    # Don't do anything if the repo isn't there, since that probably means the
-    # user deleted it.
-    return 0
-  fi
-
-  # See if it's the right repo URL
-  REPOMATCH=$(echo "$REPOCFG" | grep "\b$REPOCONFIG/$DEFAULT_ARCH\b")
-  # If so, nothing to do
-  if [ "$REPOMATCH" ]; then
-    return 0
-  fi
-
-  # Looks like it's the wrong URL, so recreate it.
-  urpmi.removemedia "@@PACKAGE@@" && \
-    urpmi.addmedia --update "@@PACKAGE@@" "$REPOCONFIG/$DEFAULT_ARCH"
-}
-
 # We only remove the repository configuration during a purge. Since RPM has
 # no equivalent to dpkg --purge, the code below is actually never used. We
 # keep it only for reference purposes, should we ever need it.
@@ -456,18 +393,7 @@ update_urpmi_cfg() {
 #  rm -f "$YUM_REPO_FILE"
 #}
 #
-#remove_urpmi() {
-#  # Ideally, we would run: urpmi.removemedia "@@PACKAGE@@"
-#  # but that does not work when urpmi is running.
-#  # Sentinel comment text does not work either because urpmi.update removes
-#  # all comments. So we just delete the entry that matches what we originally
-#  # inserted. If such an entry was added manually, that's tough luck.
-#  if [ -f "$URPMI_REPO_FILE" ]; then
-#    sed -i '\_^@@PACKAGE@@ $REPOCONFIG/$DEFAULT_ARCH {$_,/^}$/d' "$URPMI_REPO_FILE"
-#  fi
-#}
-#
-#remove_yast() {
+#remove_zypp() {
 #  # Ideally, we would run: zypper removerepo "@@PACKAGE@@"
 #  # but that does not work when zypper is running.
 #  rm -f /etc/zypp/repos.d/@@PACKAGE@@.repo
@@ -476,9 +402,11 @@ update_urpmi_cfg() {
 DEFAULT_ARCH="@@ARCHITECTURE@@"
 
 get_lib_dir() {
-  if [ "$DEFAULT_ARCH" = "i386" ]; then
+  if [ "$DEFAULT_ARCH" = "i386" ] || [ "$DEFAULT_ARCH" = "armhf" ] || \
+      [ "$DEFAULT_ARCH" = "mipsel" ]; then
     LIBDIR=lib
-  elif [ "$DEFAULT_ARCH" = "x86_64" ]; then
+  elif [ "$DEFAULT_ARCH" = "x86_64" ] || [ "$DEFAULT_ARCH" = "aarch64" ] || \
+        [ "$DEFAULT_ARCH" = "mips64el" ]; then
     LIBDIR=lib64
   else
     echo Unknown CPU Architecture: "$DEFAULT_ARCH"

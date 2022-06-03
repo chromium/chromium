@@ -1,3 +1,0 @@
-This is a testharness.js-based test.
-FAIL Font size to width ratio should match Safari and stay constant above 78px, according to the font's trak table. assert_less_than: expected a number less than 0.01 but got 0.7212239583333346
-Harness: the test ran to completion.

@@ -1,10 +1,8 @@
 include_rules = [
-   "+components/crash/core/common/crash_key.h",  # Temporary: crbug.com/888478
    "+media/audio",
    "+media/base",
    "+media/mojo",
    "+media/webrtc",
    "+sandbox",
    "+services/audio/public",
-   "+services/service_manager/sandbox",
 ]

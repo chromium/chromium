@@ -1,0 +1,19 @@
+<html>
+  <title>WakeLock test</title>
+</html>
+<script>
+let lock;
+async function acquireWakeLock() {
+  try {
+    lock = await navigator.wakeLock.request('screen');
+    return 'DONE';
+  } catch (error) {
+    return 'error: request failed';
+  }
+}
+
+function wakeLockIsReleased() {
+  return !lock || lock.released;
+}
+
+</script>

@@ -20,9 +20,6 @@ namespace usersPrivate {
     // Whether this user is the device owner.
     boolean isOwner;
 
-    // Whether this user is supervised.
-    boolean isSupervised;
-
     // Whether this user is Child.
     boolean isChild;
   };
@@ -41,35 +38,37 @@ namespace usersPrivate {
   callback ManagedCallback = void (boolean managed);
   callback UserCallback = void (User user);
   callback LoginStatusCallback = void (LoginStatusDict status);
-  callback IsWhiteListedUserCallback = void (boolean found);
+  callback IsUserInListCallback = void (boolean found);
 
   interface Functions {
-    // Gets a list of the currently whitelisted users.
-    static void getWhitelistedUsers(UsersCallback callback);
+    // Gets a list of known users.
+    [supportsPromises] static void getUsers(UsersCallback callback);
 
-    // Checks to see if the user is already present as a whitelisted user.
-    static void isWhitelistedUser(DOMString email,
-                                  IsWhiteListedUserCallback callback);
+    // Checks to see if the user is already present in the user list.
+    [supportsPromises] static void isUserInList(DOMString email,
+                                                IsUserInListCallback callback);
 
-    // Adds a new user with the given email to the whitelist.
+    // Adds a new user with the given email to the user list.
     // The callback is called with true if the user was added succesfully, or
     // with false if not (e.g. because the user was already present, or the
     // current user isn't the owner).
-    static void addWhitelistedUser(DOMString email, UserAddedCallback callback);
+    [supportsPromises] static void addUser(DOMString email,
+                                           UserAddedCallback callback);
 
-    // Removes the user with the given email from the whitelist.
+    // Removes the user with the given email from the user list.
     // The callback is called with true if the user was removed succesfully, or
     // with false if not (e.g. because the user was not already present, or
     // the current user isn't the owner).
-    static void removeWhitelistedUser(DOMString email, UserRemovedCallback callback);
+    [supportsPromises] static void removeUser(DOMString email,
+                                              UserRemovedCallback callback);
 
-    // Whether the whitelist is managed by enterprise.
-    static void isWhitelistManaged(ManagedCallback callback);
+    // Whether the user list is managed by enterprise.
+    [supportsPromises] static void isUserListManaged(ManagedCallback callback);
 
     // Returns the current user.
-    static void getCurrentUser(UserCallback callback);
+    [supportsPromises] static void getCurrentUser(UserCallback callback);
 
     // Get login status.
-    static void getLoginStatus(LoginStatusCallback callback);
+    [supportsPromises] static void getLoginStatus(LoginStatusCallback callback);
   };
 };

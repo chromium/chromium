@@ -7,8 +7,9 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_main_parts.h"
+#include "content/public/common/main_function_params.h"
 
 namespace base {
 class RunLoop;
@@ -16,11 +17,10 @@ class RunLoop;
 
 namespace content {
 class ShellBrowserContext;
-struct MainFunctionParams;
 }
 
 namespace views {
-class ViewsDelegate;
+class TestViewsDelegate;
 }
 
 namespace ui {
@@ -31,17 +31,19 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
  public:
   // Platform-specific create function.
   static std::unique_ptr<ViewsContentClientMainParts> Create(
-      const content::MainFunctionParams& content_params,
+      content::MainFunctionParams content_params,
       ViewsContentClient* views_content_client);
 
-  // Invoked before the BrowserMainLoop constructor.
-  static void PreCreateMainMessageLoop();
+  static void PreBrowserMain();
+
+  ViewsContentClientMainParts(const ViewsContentClientMainParts&) = delete;
+  ViewsContentClientMainParts& operator=(const ViewsContentClientMainParts&) =
+      delete;
 
   ~ViewsContentClientMainParts() override;
 
   // content::BrowserMainParts:
-  void PreMainMessageLoopRun() override;
-  bool MainMessageLoopRun(int* result_code) override;
+  int PreMainMessageLoopRun() override;
   void PostMainMessageLoopRun() override;
 
   content::ShellBrowserContext* browser_context() {
@@ -53,20 +55,21 @@ class ViewsContentClientMainParts : public content::BrowserMainParts {
   }
 
  protected:
-  ViewsContentClientMainParts(
-      const content::MainFunctionParams& content_params,
-      ViewsContentClient* views_content_client);
+  ViewsContentClientMainParts(content::MainFunctionParams content_params,
+                              ViewsContentClient* views_content_client);
+
+#if defined(OS_APPLE)
+  views::TestViewsDelegate* views_delegate() { return views_delegate_.get(); }
+#endif
 
  private:
   std::unique_ptr<content::ShellBrowserContext> browser_context_;
 
-  std::unique_ptr<views::ViewsDelegate> views_delegate_;
+  std::unique_ptr<views::TestViewsDelegate> views_delegate_;
 
   ViewsContentClient* views_content_client_;
 
   std::unique_ptr<base::RunLoop> run_loop_;
-
-  DISALLOW_COPY_AND_ASSIGN(ViewsContentClientMainParts);
 };
 
 }  // namespace ui

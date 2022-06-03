@@ -11,9 +11,15 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
+#include "base/path_service.h"
+#include "chrome/common/chrome_paths.h"
+#include "chrome/common/profiler/thread_profiler.h"
+#include "chrome/common/profiler/thread_profiler_configuration.h"
 #include "chrome/utility/browser_exposed_utility_interfaces.h"
 #include "chrome/utility/services.h"
-#include "services/service_manager/sandbox/switches.h"
+#include "content/public/child/child_thread.h"
+#include "content/public/common/content_switches.h"
+#include "sandbox/policy/switches.h"
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
 #include "chrome/utility/printing_handler.h"
@@ -28,9 +34,6 @@ base::LazyInstance<ChromeContentUtilityClient::NetworkBinderCreationCallback>::
 
 ChromeContentUtilityClient::ChromeContentUtilityClient()
     : utility_process_running_elevated_(false) {
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
-  printing_handler_ = std::make_unique<printing::PrintingHandler>();
-#endif
 }
 
 ChromeContentUtilityClient::~ChromeContentUtilityClient() = default;
@@ -40,7 +43,7 @@ void ChromeContentUtilityClient::ExposeInterfacesToBrowser(
 #if defined(OS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   utility_process_running_elevated_ = command_line->HasSwitch(
-      service_manager::switches::kNoSandboxAndElevatedPrivileges);
+      sandbox::policy::switches::kNoSandboxAndElevatedPrivileges);
 #endif
 
   // If our process runs with elevated privileges, only add elevated Mojo
@@ -53,33 +56,49 @@ void ChromeContentUtilityClient::ExposeInterfacesToBrowser(
     ExposeElevatedChromeUtilityInterfacesToBrowser(binders);
 }
 
-bool ChromeContentUtilityClient::OnMessageReceived(
-    const IPC::Message& message) {
-  if (utility_process_running_elevated_)
-    return false;
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && defined(OS_WIN)
-  if (printing_handler_->OnMessageReceived(message))
-    return true;
-#endif
-  return false;
-}
-
 void ChromeContentUtilityClient::RegisterNetworkBinders(
     service_manager::BinderRegistry* registry) {
   if (g_network_binder_creation_callback.Get())
     std::move(g_network_binder_creation_callback.Get()).Run(registry);
 }
 
-mojo::ServiceFactory*
-ChromeContentUtilityClient::GetMainThreadServiceFactory() {
-  if (utility_process_running_elevated_)
-    return ::GetElevatedMainThreadServiceFactory();
-  return ::GetMainThreadServiceFactory();
+void ChromeContentUtilityClient::UtilityThreadStarted() {
+  // Only builds message pipes for utility processes which enable sampling
+  // profilers.
+  const base::CommandLine* command_line =
+      base::CommandLine::ForCurrentProcess();
+  const std::string process_type =
+      command_line->GetSwitchValueASCII(switches::kProcessType);
+  if (process_type ==
+          switches::kUtilityProcess &&  // An in-process utility thread may run
+                                        // in other processes, only set up
+                                        // collector in a utility process.
+      ThreadProfilerConfiguration::Get()
+          ->IsProfilerEnabledForCurrentProcess()) {
+    mojo::PendingRemote<metrics::mojom::CallStackProfileCollector> collector;
+    content::ChildThread::Get()->BindHostReceiver(
+        collector.InitWithNewPipeAndPassReceiver());
+    ThreadProfiler::SetCollectorForChildProcess(std::move(collector));
+  }
 }
 
-mojo::ServiceFactory* ChromeContentUtilityClient::GetIOThreadServiceFactory() {
-  return ::GetIOThreadServiceFactory();
+void ChromeContentUtilityClient::RegisterMainThreadServices(
+    mojo::ServiceFactory& services) {
+  if (utility_process_running_elevated_)
+    return ::RegisterElevatedMainThreadServices(services);
+  return ::RegisterMainThreadServices(services);
+}
+
+void ChromeContentUtilityClient::PostIOThreadCreated(
+    base::SingleThreadTaskRunner* io_thread_task_runner) {
+  io_thread_task_runner->PostTask(
+      FROM_HERE, base::BindOnce(&ThreadProfiler::StartOnChildThread,
+                                metrics::CallStackProfileParams::Thread::kIo));
+}
+
+void ChromeContentUtilityClient::RegisterIOThreadServices(
+    mojo::ServiceFactory& services) {
+  return ::RegisterIOThreadServices(services);
 }
 
 // static

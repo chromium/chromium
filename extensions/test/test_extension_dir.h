@@ -23,16 +23,15 @@ class TestExtensionDir {
   // is performed. If desired this should be done on extension installation.
   void WriteManifest(base::StringPiece manifest);
 
-  // Like WriteManifest, but where the |manifest| is given in single-quotes
-  // rather than double-quotes. This is for convenience to avoid escaping.
-  //
-  // E.g. |manifest| can be {'name': 'me'} rather than {\"name\": \"me\"}.
-  void WriteManifestWithSingleQuotes(base::StringPiece manifest);
-
   // Writes |contents| to |filename| within the unpacked dir, overwriting
   // anything that was already there.
   void WriteFile(const base::FilePath::StringType& filename,
                  base::StringPiece contents);
+
+  // Copies the file at |from_path| into |local_filename| under the temp
+  // directory, overwriting anything that was already there.
+  void CopyFileTo(const base::FilePath& from_path,
+                  const base::FilePath::StringType& local_filename);
 
   // Packs the extension into a .crx, and returns the path to that
   // .crx. Multiple calls to Pack() will produce extensions with the same ID.

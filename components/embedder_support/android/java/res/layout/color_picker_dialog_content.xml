@@ -27,25 +27,14 @@
         android:layout_height="wrap_content"
         android:divider="@color/color_picker_border_color"
         android:dividerHeight="1px"
-        android:paddingStart="1px"
-        android:paddingEnd="1px"
-        android:paddingTop="1px"
+        android:padding="1px"
         android:background="@drawable/color_picker_border" />
 
-    <FrameLayout
-        android:id="@+id/more_colors_button_border"
+    <org.chromium.ui.widget.ButtonCompat
+        android:id="@+id/more_colors_button"
+        style="@style/TextButton"
+        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/color_picker_border"
-        android:padding="1px">
-
-        <org.chromium.components.embedder_support.delegate.ColorPickerMoreButton
-            android:id="@+id/more_colors_button"
-            style="?android:attr/buttonBarButtonStyle"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:minHeight="48dp"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="@string/color_picker_button_more" />
-    </FrameLayout>
+        android:text="@string/color_picker_button_more" />
 </LinearLayout>

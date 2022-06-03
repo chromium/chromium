@@ -22,7 +22,9 @@ public class TaskTraits {
     // Keep in sync with base::TaskTraitsExtensionStorage::kStorageSize
     public static final int EXTENSION_STORAGE_SIZE = 8;
 
-    // Convenience variables explicitly specifying common priorities
+    // Convenience variables explicitly specifying common priorities.
+    // These also imply THREAD_POOL unless explicitly overwritten.
+    // TODO(1026641): Make destination explicit in Java too.
 
     // This task will only be scheduled when machine resources are available. Once
     // running, it may be descheduled if higher priority work arrives (in this
@@ -75,45 +77,38 @@ public class TaskTraits {
     public static final TaskTraits THREAD_POOL_BEST_EFFORT =
             THREAD_POOL.taskPriority(TaskPriority.BEST_EFFORT);
 
-    // For tasks that should run on the current thread.
-    public static final TaskTraits CURRENT_THREAD =
-            new TaskTraits().currentThread().taskPriority(TaskPriority.USER_BLOCKING);
-    public static final TaskTraits CURRENT_THREAD_USER_BLOCKING =
-            CURRENT_THREAD.taskPriority(TaskPriority.USER_BLOCKING);
-    public static final TaskTraits CURRENT_THREAD_USER_VISIBLE =
-            CURRENT_THREAD.taskPriority(TaskPriority.USER_VISIBLE);
-    public static final TaskTraits CURRENT_THREAD_BEST_EFFORT =
-            CURRENT_THREAD.taskPriority(TaskPriority.BEST_EFFORT);
-
     // For convenience of the JNI code, we use primitive types only.
     // Note shutdown behavior is not supported on android.
-    boolean mPrioritySetExplicitly;
     int mPriority;
     boolean mMayBlock;
     boolean mUseThreadPool;
-    boolean mUseCurrentThread;
     byte mExtensionId;
     byte mExtensionData[];
     boolean mIsChoreographerFrame;
 
     // Derive custom traits from existing trait constants.
     private TaskTraits() {
-        mPriority = TaskPriority.USER_VISIBLE;
+        // Assume USER_BLOCKING by default.
+        mPriority = TaskPriority.USER_BLOCKING;
     }
 
     private TaskTraits(TaskTraits other) {
-        mPrioritySetExplicitly = other.mPrioritySetExplicitly;
         mPriority = other.mPriority;
         mMayBlock = other.mMayBlock;
         mUseThreadPool = other.mUseThreadPool;
         mExtensionId = other.mExtensionId;
-        mUseCurrentThread = other.mUseCurrentThread;
         mExtensionData = other.mExtensionData;
+    }
+
+    // Exposed to allow changing the priority of UiThreadTaskTraits.DEFAULT for the experiment being
+    // tracked in crbug.com/1259560. SHOULD NOT BE CALLED FOR ANY OTHER REASON and will be removed
+    // once that experiment is concluded.
+    public void setTaskPriorityToUserBlockingForUiThreadDefaultTaskPriorityExperiment() {
+        mPriority = TaskPriority.USER_BLOCKING;
     }
 
     public TaskTraits taskPriority(int taskPriority) {
         TaskTraits taskTraits = new TaskTraits(this);
-        taskTraits.mPrioritySetExplicitly = true;
         taskTraits.mPriority = taskPriority;
         return taskTraits;
     }
@@ -134,12 +129,6 @@ public class TaskTraits {
     public TaskTraits threadPool() {
         TaskTraits taskTraits = new TaskTraits(this);
         taskTraits.mUseThreadPool = true;
-        return taskTraits;
-    }
-
-    public TaskTraits currentThread() {
-        TaskTraits taskTraits = new TaskTraits(this);
-        taskTraits.mUseCurrentThread = true;
         return taskTraits;
     }
 
@@ -176,17 +165,29 @@ public class TaskTraits {
         return taskTraits;
     }
 
+    /**
+     * Returns a TaskTraits with an explicit destination.
+     *
+     * The C++ side enforces that a destination _must_ be specified. The Java
+     * side loosely considers lack of destination as implying THREAD_POOL
+     * destination.
+     * TODO(1026641): Bring the Java side inline with the C++ side.
+     */
+    public TaskTraits withExplicitDestination() {
+        if (!mUseThreadPool && !hasExtension()) {
+            return this.threadPool();
+        }
+        return this;
+    }
+
     @Override
     public boolean equals(@Nullable Object object) {
         if (object == this) {
             return true;
         } else if (object instanceof TaskTraits) {
             TaskTraits other = (TaskTraits) object;
-            return mPrioritySetExplicitly == other.mPrioritySetExplicitly
-                    && mPriority == other.mPriority && mMayBlock == other.mMayBlock
-                    && mUseThreadPool == other.mUseThreadPool
-                    && mUseCurrentThread == other.mUseCurrentThread
-                    && mExtensionId == other.mExtensionId
+            return mPriority == other.mPriority && mMayBlock == other.mMayBlock
+                    && mUseThreadPool == other.mUseThreadPool && mExtensionId == other.mExtensionId
                     && Arrays.equals(mExtensionData, other.mExtensionData)
                     && mIsChoreographerFrame == other.mIsChoreographerFrame;
         } else {
@@ -197,11 +198,9 @@ public class TaskTraits {
     @Override
     public int hashCode() {
         int hash = 31;
-        hash = 37 * hash + (mPrioritySetExplicitly ? 0 : 1);
         hash = 37 * hash + mPriority;
         hash = 37 * hash + (mMayBlock ? 0 : 1);
         hash = 37 * hash + (mUseThreadPool ? 0 : 1);
-        hash = 37 * hash + (mUseCurrentThread ? 0 : 1);
         hash = 37 * hash + (int) mExtensionId;
         hash = 37 * hash + Arrays.hashCode(mExtensionData);
         hash = 37 * hash + (mIsChoreographerFrame ? 0 : 1);

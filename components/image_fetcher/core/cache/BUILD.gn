@@ -12,7 +12,6 @@ static_library("cache") {
     "image_metadata_store.h",
     "image_metadata_store_leveldb.cc",
     "image_metadata_store_leveldb.h",
-    "image_store_types.h",
   ]
   deps = [
     "proto",
@@ -23,11 +22,20 @@ static_library("cache") {
     "//net",
   ]
   public_deps = [
+    ":types",
     "//base",
   ]
 }
 
-source_set("cache_unit_tests") {
+source_set("types") {
+  sources = [ "image_store_types.h" ]
+  deps = [
+    "proto",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
   testonly = true
   sources = [
     "image_cache_unittest.cc",

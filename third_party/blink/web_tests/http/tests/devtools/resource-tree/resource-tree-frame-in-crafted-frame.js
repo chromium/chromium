@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(
       `Tests that frame inside crafted frame doesn't cause 'MainFrameNavigated' event and correctly attaches to frame tree. crbug/259036\n`);
-  await TestRunner.loadModule('application_test_runner');
+  await TestRunner.loadLegacyModule('console'); await TestRunner.loadTestModule('application_test_runner');
   await TestRunner.showPanel('resources');
 
   var frameId = Symbol('frameId');
@@ -32,7 +32,7 @@
   TestRunner.completeTest();
 
   function log(name, frame) {
-    var parentFrameId = frame.parentFrame ? ', parentFrameId: ' + (frame.parentFrame[frameId] || 1) : '';
+    var parentFrameId = frame.parentFrame() ? ', parentFrameId: ' + (frame.parentFrame()[frameId] || 1) : '';
     TestRunner.addResult(
         '    ' + name + ' id: ' + frame[frameId] + parentFrameId + ', isMainFrame: ' + frame.isMainFrame());
   }

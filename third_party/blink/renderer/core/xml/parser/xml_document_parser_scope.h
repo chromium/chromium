@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_XML_PARSER_XML_DOCUMENT_PARSER_SCOPE_H_
 
 #include <libxml/xmlerror.h>
-#include "base/macros.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 
 namespace blink {
@@ -43,17 +42,18 @@ class XMLDocumentParserScope {
                          xmlGenericErrorFunc,
                          xmlStructuredErrorFunc = nullptr,
                          void* error_context = nullptr);
+  XMLDocumentParserScope(const XMLDocumentParserScope&) = delete;
+  XMLDocumentParserScope& operator=(const XMLDocumentParserScope&) = delete;
   ~XMLDocumentParserScope();
 
   static Document* current_document_;
 
  private:
-  Member<Document> old_document_;
+  Document* old_document_;
 
   xmlGenericErrorFunc old_generic_error_func_;
   xmlStructuredErrorFunc old_structured_error_func_;
   void* old_error_context_;
-  DISALLOW_COPY_AND_ASSIGN(XMLDocumentParserScope);
 };
 
 }  // namespace blink

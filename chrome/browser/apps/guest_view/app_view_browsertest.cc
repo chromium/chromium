@@ -4,7 +4,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
@@ -18,6 +17,7 @@
 #include "content/public/browser/render_process_host_observer.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/api/app_runtime/app_runtime_api.h"
@@ -43,6 +43,8 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
   AppViewTest() {
     GuestViewManager::set_factory_for_testing(&factory_);
   }
+  AppViewTest(const AppViewTest&) = delete;
+  AppViewTest& operator=(const AppViewTest&) = delete;
 
   enum TestServer {
     NEEDS_TEST_SERVER,
@@ -102,8 +104,6 @@ class AppViewTest : public extensions::PlatformAppBrowserTest {
 
   TestGuestViewManagerFactory factory_;
   guest_view::TestGuestViewManager* test_guest_view_manager_;
-
-  DISALLOW_COPY_AND_ASSIGN(AppViewTest);
 };
 
 // Tests that <appview> is able to navigate to another installed app.
@@ -118,7 +118,8 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, TestAppViewWithUndefinedDataShouldSucceed) {
 
 // Tests that <appview> correctly processes parameters passed on connect.
 // Flaky on Windows, Linux and Mac. See https://crbug.com/875908
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MACOSX)
+#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
+    defined(OS_MAC)
 #define MAYBE_TestAppViewRefusedDataShouldFail \
   DISABLED_TestAppViewRefusedDataShouldFail
 #else
@@ -201,7 +202,16 @@ IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestWithInvalidInstanceID) {
   EXPECT_FALSE(exit_observer.did_exit_normally());
 }
 
-IN_PROC_BROWSER_TEST_F(AppViewTest, KillGuestCommunicatingWithWrongAppView) {
+// TODO(https://crbug.com/1179298): this is flaky on wayland-ozone.
+#if defined(USE_OZONE)
+#define MAYBE_KillGuestCommunicatingWithWrongAppView \
+  DISABLED_KillGuestCommunicatingWithWrongAppView
+#else
+#define MAYBE_KillGuestCommunicatingWithWrongAppView \
+  KillGuestCommunicatingWithWrongAppView
+#endif
+IN_PROC_BROWSER_TEST_F(AppViewTest,
+                       MAYBE_KillGuestCommunicatingWithWrongAppView) {
   const extensions::Extension* host_app =
       LoadAndLaunchPlatformApp("app_view/host_app", "AppViewTest.LAUNCHED");
   const extensions::Extension* guest_app =

@@ -10,12 +10,12 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/optional.h"
 #include "base/sys_byteorder.h"
 #include "net/base/io_buffer.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/record_rdata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -58,13 +58,13 @@ size_t DeterminePaddingSize(size_t unpadded_size,
   }
 }
 
-base::Optional<OptRecordRdata> AddPaddingIfNecessary(
+absl::optional<OptRecordRdata> AddPaddingIfNecessary(
     const OptRecordRdata* opt_rdata,
     DnsQuery::PaddingStrategy padding_strategy,
     size_t no_opt_buffer_size) {
   // If no input OPT record rdata and no padding, no OPT record rdata needed.
   if (!opt_rdata && padding_strategy == DnsQuery::PaddingStrategy::NONE)
-    return base::nullopt;
+    return absl::nullopt;
 
   OptRecordRdata merged_opt_rdata;
   if (opt_rdata)
@@ -100,10 +100,13 @@ DnsQuery::DnsQuery(uint16_t id,
                    const OptRecordRdata* opt_rdata,
                    PaddingStrategy padding_strategy)
     : qname_size_(qname.size()) {
-  DCHECK(!DNSDomainToString(qname).empty());
+#if DCHECK_IS_ON()
+  absl::optional<std::string> dotted_name = DnsDomainToString(qname);
+  DCHECK(dotted_name && !dotted_name.value().empty());
+#endif  // DCHECK_IS_ON()
 
   size_t buffer_size = kHeaderSize + QuestionSize(qname_size_);
-  base::Optional<OptRecordRdata> merged_opt_rdata =
+  absl::optional<OptRecordRdata> merged_opt_rdata =
       AddPaddingIfNecessary(opt_rdata, padding_strategy, buffer_size);
   if (merged_opt_rdata)
     buffer_size += OptRecordSize(&merged_opt_rdata.value());
@@ -148,6 +151,15 @@ DnsQuery::DnsQuery(uint16_t id,
 DnsQuery::DnsQuery(scoped_refptr<IOBufferWithSize> buffer)
     : io_buffer_(std::move(buffer)) {}
 
+DnsQuery::DnsQuery(const DnsQuery& query) {
+  CopyFrom(query);
+}
+
+DnsQuery& DnsQuery::operator=(const DnsQuery& query) {
+  CopyFrom(query);
+  return *this;
+}
+
 DnsQuery::~DnsQuery() = default;
 
 std::unique_ptr<DnsQuery> DnsQuery::CloneWithNewId(uint16_t id) const {
@@ -171,8 +183,9 @@ bool DnsQuery::Parse(size_t valid_bytes) {
   if (header.flags & dns_protocol::kFlagResponse) {
     return false;
   }
-  if (header.qdcount > 1) {
-    VLOG(1) << "Not supporting parsing a DNS query with multiple questions.";
+  if (header.qdcount != 1) {
+    VLOG(1) << "Not supporting parsing a DNS query with multiple (or zero) "
+               "questions.";
     return false;
   }
   std::string qname;
@@ -221,12 +234,16 @@ void DnsQuery::set_flags(uint16_t flags) {
 }
 
 DnsQuery::DnsQuery(const DnsQuery& orig, uint16_t id) {
+  CopyFrom(orig);
+  header_->id = base::HostToNet16(id);
+}
+
+void DnsQuery::CopyFrom(const DnsQuery& orig) {
   qname_size_ = orig.qname_size_;
   io_buffer_ = base::MakeRefCounted<IOBufferWithSize>(orig.io_buffer()->size());
   memcpy(io_buffer_.get()->data(), orig.io_buffer()->data(),
          io_buffer_.get()->size());
   header_ = reinterpret_cast<dns_protocol::Header*>(io_buffer_->data());
-  header_->id = base::HostToNet16(id);
 }
 
 bool DnsQuery::ReadHeader(base::BigEndianReader* reader,
@@ -240,13 +257,18 @@ bool DnsQuery::ReadHeader(base::BigEndianReader* reader,
 bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
   DCHECK(out != nullptr);
   out->clear();
-  out->reserve(dns_protocol::kMaxNameLength);
+  out->reserve(dns_protocol::kMaxNameLength + 1);
   uint8_t label_length;
   if (!reader->ReadU8(&label_length)) {
     return false;
   }
-  out->append(reinterpret_cast<char*>(&label_length), 1);
   while (label_length) {
+    if (out->size() + 1 + label_length > dns_protocol::kMaxNameLength) {
+      return false;
+    }
+
+    out->append(reinterpret_cast<char*>(&label_length), 1);
+
     base::StringPiece label;
     if (!reader->ReadPiece(&label, label_length)) {
       return false;
@@ -255,8 +277,9 @@ bool DnsQuery::ReadName(base::BigEndianReader* reader, std::string* out) {
     if (!reader->ReadU8(&label_length)) {
       return false;
     }
-    out->append(reinterpret_cast<char*>(&label_length), 1);
   }
+  DCHECK_LE(out->size(), static_cast<size_t>(dns_protocol::kMaxNameLength));
+  out->append(1, '\0');
   return true;
 }
 

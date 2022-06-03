@@ -5,22 +5,44 @@
 package org.chromium.chrome.browser.browserservices;
 
 import android.app.Notification;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import android.os.Bundle;
+import android.os.RemoteException;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.browser.trusted.Token;
 import androidx.browser.trusted.TokenStore;
+import androidx.browser.trusted.TrustedWebActivityCallbackRemote;
 import androidx.browser.trusted.TrustedWebActivityService;
 
 /**
  * A TrustedWebActivityService to be used in TrustedWebActivityClientTest.
  */
 public class TestTrustedWebActivityService extends TrustedWebActivityService {
+    private static final String TAG = "TestTWAService";
+
+    public static final String COMMAND_SET_RESPONSE = "setResponse";
+    public static final String SET_RESPONSE_NAME = "setResponse.name";
+    public static final String SET_RESPONSE_BUNDLE = "setResponse.bundle";
+    public static final String SET_RESPONSE_RESPONSE = "setResponse.response";
+
     // TODO(peconn): Add an image resource to chrome_public_test_support, supply that in
     // getSmallIconId and verify it is used in notifyNotificationWithChannel.
     public static final int SMALL_ICON_ID = 42;
 
+    private static final String CHECK_LOCATION_PERMISSION_COMMAND_NAME =
+            "checkAndroidLocationPermission";
+    private static final String LOCATION_PERMISSION_RESULT = "locationPermissionResult";
+    private static final String START_LOCATION_COMMAND_NAME = "startLocation";
+    private static final String STOP_LOCATION_COMMAND_NAME = "stopLocation";
+    private static final String LOCATION_ARG_ENABLE_HIGH_ACCURACY = "enableHighAccuracy";
+    private static final String EXTRA_NEW_LOCATION_AVAILABLE_CALLBACK = "onNewLocationAvailable";
+    private static final String EXTRA_NEW_LOCATION_ERROR_CALLBACK = "onNewLocationError";
+    private static final String EXTRA_COMMAND_SUCCESS = "success";
+
     private final TokenStore mTokenStore = new InMemoryStore();
+    private String mResponseName;
+    private Bundle mResponseBundle;
 
     @Override
     public void onCreate() {
@@ -53,6 +75,58 @@ public class TestTrustedWebActivityService extends TrustedWebActivityService {
     public int onGetSmallIconId() {
         MessengerService.sMessageHandler.recordGetSmallIconId();
         return SMALL_ICON_ID;
+    }
+
+    @Nullable
+    @Override
+    public Bundle onExtraCommand(
+            String commandName, Bundle args, @Nullable TrustedWebActivityCallbackRemote callback) {
+        Bundle executionResult = new Bundle();
+        executionResult.putBoolean(EXTRA_COMMAND_SUCCESS, true);
+
+        switch (commandName) {
+            case CHECK_LOCATION_PERMISSION_COMMAND_NAME:
+                if (callback == null) break;
+
+                Bundle permission = new Bundle();
+                permission.putBoolean(LOCATION_PERMISSION_RESULT, true);
+                runCallback(callback, CHECK_LOCATION_PERMISSION_COMMAND_NAME, permission);
+                break;
+            case START_LOCATION_COMMAND_NAME:
+                if (callback == null) break;
+
+                Bundle locationResult = new Bundle();
+                locationResult.putDouble("latitude", 1.0);
+                locationResult.putDouble("longitude", -2.0);
+                locationResult.putDouble("accuracy", 0.5);
+                locationResult.putLong("timeStamp", System.currentTimeMillis());
+                runCallback(callback, EXTRA_NEW_LOCATION_AVAILABLE_CALLBACK, locationResult);
+                break;
+            case STOP_LOCATION_COMMAND_NAME:
+                break;
+            case COMMAND_SET_RESPONSE:
+                mResponseName = args.getString(SET_RESPONSE_NAME);
+                mResponseBundle = args.getBundle(SET_RESPONSE_BUNDLE);
+                runCallback(callback, SET_RESPONSE_RESPONSE, null);
+                break;
+            default:
+                if (mResponseBundle != null) {
+                    runCallback(callback, mResponseName, mResponseBundle);
+                } else {
+                    executionResult.putBoolean(EXTRA_COMMAND_SUCCESS, false);
+                }
+        }
+        return executionResult;
+    }
+
+    private static void runCallback(TrustedWebActivityCallbackRemote callback, String name,
+            Bundle args) {
+        if (callback == null) return;
+        try {
+            callback.runExtraCallback(name, args);
+        } catch (RemoteException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private static class InMemoryStore implements TokenStore {

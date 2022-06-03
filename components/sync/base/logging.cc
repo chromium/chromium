@@ -4,6 +4,8 @@
 
 #include "components/sync/base/logging.h"
 
+#include <string.h>
+
 #include "base/location.h"
 
 namespace syncer {

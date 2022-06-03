@@ -17,4 +17,4 @@ typedef _sig_func_ptr sighandler_t;
 #endif
 #endif /*  !WIN23 */
 
-#endif  /* LIBRARIES_NACL_IO_OSSIGNAL_H_ */
+#endif  // LIBRARIES_NACL_IO_OSSIGNAL_H_

@@ -6,7 +6,5 @@
 # to run tlslite in the test environment.
 group("tlslite") {
   # For now, depend on the entire directory.
-  data = [
-    "//third_party/tlslite/",
-  ]
+  data = [ "//third_party/tlslite/" ]
 }

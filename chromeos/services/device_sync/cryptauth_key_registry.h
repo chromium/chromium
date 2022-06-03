@@ -6,7 +6,6 @@
 #define CHROMEOS_SERVICES_DEVICE_SYNC_CRYPTAUTH_KEY_REGISTRY_H_
 
 #include "base/containers/flat_map.h"
-#include "base/values.h"
 #include "chromeos/services/device_sync/cryptauth_key_bundle.h"
 #include "chromeos/services/device_sync/proto/cryptauth_enrollment.pb.h"
 
@@ -22,6 +21,9 @@ class CryptAuthKeyRegistry {
  public:
   using KeyBundleMap =
       base::flat_map<CryptAuthKeyBundle::Name, CryptAuthKeyBundle>;
+
+  CryptAuthKeyRegistry(const CryptAuthKeyRegistry&) = delete;
+  CryptAuthKeyRegistry& operator=(const CryptAuthKeyRegistry&) = delete;
 
   virtual ~CryptAuthKeyRegistry();
 
@@ -67,8 +69,6 @@ class CryptAuthKeyRegistry {
   virtual void OnKeyRegistryUpdated() = 0;
 
   KeyBundleMap key_bundles_;
-
-  DISALLOW_COPY_AND_ASSIGN(CryptAuthKeyRegistry);
 };
 
 }  // namespace device_sync

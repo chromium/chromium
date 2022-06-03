@@ -4,6 +4,7 @@
 
 #include "components/policy/core/common/registry_dict.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 
@@ -79,7 +80,7 @@ TEST(RegistryDictTest, SetAndGetKeys) {
   ASSERT_TRUE(actual_subdict);
   EXPECT_EQ(int_value, *actual_subdict->GetValue("one"));
 
-  subdict.reset(new RegistryDict());
+  subdict = std::make_unique<RegistryDict>();
   subdict->SetValue("three", string_value.CreateDeepCopy());
   test_dict.SetKey("four", std::move(subdict));
   EXPECT_EQ(2u, test_dict.keys().size());
@@ -138,10 +139,10 @@ TEST(RegistryDictTest, Merge) {
   dict_a.SetKey("three", std::move(subdict));
 
   dict_b.SetValue("four", string_value.CreateDeepCopy());
-  subdict.reset(new RegistryDict());
+  subdict = std::make_unique<RegistryDict>();
   subdict->SetValue("two", int_value.CreateDeepCopy());
   dict_b.SetKey("three", std::move(subdict));
-  subdict.reset(new RegistryDict());
+  subdict = std::make_unique<RegistryDict>();
   subdict->SetValue("five", int_value.CreateDeepCopy());
   dict_b.SetKey("six", std::move(subdict));
 
@@ -280,6 +281,86 @@ TEST(RegistryDictTest, NonSequentialConvertToJSON) {
   expected.Set("dict-to-list", std::move(expected_list));
 
   EXPECT_EQ(expected, *actual);
+}
+
+TEST(RegistryDictTest, PatternPropertySchema) {
+  RegistryDict test_dict;
+
+  base::Value string_dict("[ \"*://*.google.com\" ]");
+  base::Value version_string("1.0.0");
+
+  std::unique_ptr<RegistryDict> policy_dict(new RegistryDict());
+  std::unique_ptr<RegistryDict> subdict_id(new RegistryDict());
+  // Values with schema are parsed even if the schema is a regexp property.
+  subdict_id->SetValue("runtime_blocked_hosts", string_dict.CreateDeepCopy());
+  subdict_id->SetValue("runtime_allowed_hosts", string_dict.CreateDeepCopy());
+  // Regexp. validated properties are valid too.
+  subdict_id->SetValue("minimum_version_required",
+                       version_string.CreateDeepCopy());
+  policy_dict->SetKey("aaaabbbbaaaabbbbaaaabbbbaaaabbbb",
+                      std::move(subdict_id));
+  // Values that have no schema are left as strings regardless of structure.
+  policy_dict->SetValue("invalid_key", string_dict.CreateDeepCopy());
+  test_dict.SetKey("ExtensionSettings", std::move(policy_dict));
+
+  std::string error;
+  Schema schema = Schema::Parse(
+      "{"
+      "  \"type\": \"object\","
+      "  \"properties\": {"
+      "    \"ExtensionSettings\": {"
+      "      \"type\": \"object\","
+      "      \"patternProperties\": {"
+      "        \"^[a-p]{32}(?:,[a-p]{32})*,?$\": {"
+      "          \"type\": \"object\","
+      "          \"properties\": {"
+      "            \"minimum_version_required\": {"
+      "              \"type\": \"string\","
+      "              \"pattern\": \"^[0-9]+([.][0-9]+)*$\","
+      "            },"
+      "            \"runtime_blocked_hosts\": {"
+      "              \"type\": \"array\","
+      "              \"items\": {"
+      "                \"type\": \"string\""
+      "              },"
+      "              \"id\": \"ListOfUrlPatterns\""
+      "            },"
+      "            \"runtime_allowed_hosts\": {"
+      "              \"$ref\": \"ListOfUrlPatterns\""
+      "            },"
+      "          },"
+      "        },"
+      "      },"
+      "    },"
+      "  },"
+      "}",
+      &error);
+  ASSERT_TRUE(schema.valid()) << error;
+
+  std::unique_ptr<base::Value> actual(test_dict.ConvertToJSON(schema));
+
+  base::DictionaryValue expected;
+  std::unique_ptr<base::DictionaryValue> expected_extension_settings(
+      new base::DictionaryValue());
+  std::unique_ptr<base::ListValue> list_value(new base::ListValue());
+  list_value->Append("*://*.google.com");
+  std::unique_ptr<base::DictionaryValue> restrictions_properties(
+      new base::DictionaryValue());
+  restrictions_properties->Set("runtime_blocked_hosts",
+                               list_value->CreateDeepCopy());
+  restrictions_properties->Set("runtime_allowed_hosts",
+                               list_value->CreateDeepCopy());
+  restrictions_properties->Set("minimum_version_required",
+                               version_string.CreateDeepCopy());
+  expected_extension_settings->Set("aaaabbbbaaaabbbbaaaabbbbaaaabbbb",
+                                   std::move(restrictions_properties));
+  expected_extension_settings->Set(
+      "invalid_key", std::make_unique<base::Value>(std::move(string_dict)));
+  expected.Set("ExtensionSettings", std::move(expected_extension_settings));
+
+  // Needed so that the EXPECT below prints good values in case of a mismatch.
+  const base::Value* expected_pointer = &expected;
+  EXPECT_EQ(*expected_pointer, *actual);
 }
 #endif
 

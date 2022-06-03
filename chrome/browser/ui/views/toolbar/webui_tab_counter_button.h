@@ -5,12 +5,18 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TAB_COUNTER_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TAB_COUNTER_BUTTON_H_
 
+#include <memory>
+
 #include "ui/views/controls/button/button.h"
 
-class TabStripModel;
+namespace views {
+class View;
+}  // namespace views
+
+class BrowserView;
 
 std::unique_ptr<views::View> CreateWebUITabCounterButton(
-    views::ButtonListener* listener,
-    TabStripModel* tab_strip_model);
+    views::Button::PressedCallback pressed_callback,
+    BrowserView* browser_view);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_WEBUI_TAB_COUNTER_BUTTON_H_

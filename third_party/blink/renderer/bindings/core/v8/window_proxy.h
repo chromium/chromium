@@ -31,10 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WINDOW_PROXY_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_WINDOW_PROXY_H_
 
+#include "base/dcheck_is_on.h"
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
+#include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "v8/include/v8.h"
 
@@ -42,7 +43,6 @@ namespace blink {
 
 class DOMWindow;
 class Frame;
-struct WrapperTypeInfo;
 
 // WindowProxy implements the split window model of a window for a frame. In the
 // HTML standard, the split window model is composed of the Window interface
@@ -145,7 +145,7 @@ class WindowProxy : public GarbageCollected<WindowProxy> {
  public:
   virtual ~WindowProxy();
 
-  virtual void Trace(blink::Visitor*);
+  virtual void Trace(Visitor*) const;
 
   void InitializeIfNeeded();
 
@@ -156,6 +156,8 @@ class WindowProxy : public GarbageCollected<WindowProxy> {
 
   CORE_EXPORT v8::Local<v8::Object> GlobalProxyIfNotDetached();
   v8::Local<v8::Object> ReleaseGlobalProxy();
+  // This does not initialize the window proxy, either Initialize or
+  // InitializeIfNeeded needs to be called after this method.
   void SetGlobalProxy(v8::Local<v8::Object>);
 
   // TODO(dcheng): Temporarily exposed to avoid include cycles. Remove the need
@@ -256,14 +258,7 @@ class WindowProxy : public GarbageCollected<WindowProxy> {
 
   virtual void Initialize() = 0;
 
-  virtual void DisposeContext(Lifecycle next_status,
-                              FrameReuseStatus,
-                              v8::Context::DetachedWindowReason) = 0;
-
-  WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
-      DOMWindow*,
-      const WrapperTypeInfo*,
-      v8::Local<v8::Object> wrapper);
+  virtual void DisposeContext(Lifecycle next_status, FrameReuseStatus) = 0;
 
   v8::Isolate* GetIsolate() const { return isolate_; }
   Frame* GetFrame() const { return frame_.Get(); }
@@ -283,11 +278,20 @@ class WindowProxy : public GarbageCollected<WindowProxy> {
  protected:
   // TODO(dcheng): Consider making these private and using getters.
   const scoped_refptr<DOMWrapperWorld> world_;
-  // |global_proxy_| is the root reference from Blink to v8::Context (a strong
-  // reference to the global proxy makes the entire context alive).  In order to
-  // discard the v8::Context, |global_proxy_| needs to be a weak reference or
-  // to be destroyed.
-  ScopedPersistent<v8::Object> global_proxy_;
+  // Note: this used to be a ScopedPersistent, making `global_proxy_` a strong
+  // GC root from Blink to v8::Context. When the context was disposed (e.g. when
+  // detaching the frame or purging v8), it was important to call `SetPhantom()`
+  // to convert `global_proxy_` to a weak GC root. Otherwise, even if
+  // `WindowProxy` was no longer reachable via Blink GC, the strong reference
+  // could create a reference cycle preventing GC of both Blink and v8 objects:
+  //
+  //   WindowProxy -> global_proxy_ -> v8::Context -> JS object
+  //       -> chain of Blink C++ objects -> WindowProxy
+  //
+  // With unified tracing, `global_proxy_` can simply be a traced v8 reference.
+  // Once `WindowProxy` is no longer reachable from a GC root, `global_proxy_`
+  // will also become collectible with no need to explicitly break a cycle.
+  TraceWrapperV8Reference<v8::Object> global_proxy_;
   Lifecycle lifecycle_;
 };
 

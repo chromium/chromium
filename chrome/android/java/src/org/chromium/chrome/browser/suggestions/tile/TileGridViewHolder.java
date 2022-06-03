@@ -20,7 +20,7 @@ public class TileGridViewHolder extends SiteSectionViewHolder {
     public TileGridViewHolder(ViewGroup view, int maxRows, int maxColumns) {
         super(view);
 
-        mSectionView = (TileGridLayout) itemView;
+        mSectionView = (TileGridLayout) view;
         mSectionView.setMaxRows(maxRows);
         mSectionView.setMaxColumns(maxColumns);
     }
@@ -43,10 +43,5 @@ public class TileGridViewHolder extends SiteSectionViewHolder {
     @Override
     public void bindDataSource(TileGroup tileGroup, TileRenderer tileRenderer) {
         super.bindDataSource(tileGroup, tileRenderer);
-    }
-
-    @Override
-    public void recycle() {
-        super.recycle();
     }
 }

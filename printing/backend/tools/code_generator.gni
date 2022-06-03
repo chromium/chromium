@@ -1,0 +1,26 @@
+# Copyright 2019 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+attributes_path = "//printing/backend/tools/ipp-registrations-2.csv"
+keyword_values_path = "//printing/backend/tools/ipp-registrations-4.csv"
+enum_values_path = "//printing/backend/tools/ipp-registrations-6.csv"
+
+template("ipp_code_generate") {
+  action(target_name) {
+    script = "//printing/backend/tools/code_generator.py"
+    inputs = [
+      attributes_path,
+      keyword_values_path,
+      enum_values_path,
+    ]
+    outputs = invoker.outputs
+    args = [
+      "--attributes-file=" + rebase_path(attributes_path, root_build_dir),
+      "--keyword-values-file=" +
+          rebase_path(keyword_values_path, root_build_dir),
+      "--enum-values-file=" + rebase_path(enum_values_path, root_build_dir),
+    ]
+    args += invoker.args
+  }
+}

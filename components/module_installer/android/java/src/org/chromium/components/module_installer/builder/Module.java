@@ -4,50 +4,37 @@
 
 package org.chromium.components.module_installer.builder;
 
+import android.content.Context;
+
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BuildConfig;
+import org.chromium.base.BundleUtils;
+import org.chromium.base.ContextUtils;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.components.module_installer.engine.InstallEngine;
 import org.chromium.components.module_installer.engine.InstallListener;
 import org.chromium.components.module_installer.util.Timer;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.TreeSet;
-
 /**
  * Represents a feature module. Can be used to install the module, access its interface, etc. See
  * {@link ModuleInterface} for how to conveniently create an instance of the module class for a
- * specific feature module.
+ * specific feature module. The @MainDex annotation supports module use in the renderer process.
  *
  * @param <T> The interface of the module
  */
 @JNINamespace("module_installer")
+@MainDex
 public class Module<T> {
-    private static final Set<String> sInitializedModules = new HashSet<>();
-    private static Set<String> sPendingNativeRegistrations = new TreeSet<>();
-
     private final String mName;
     private final Class<T> mInterfaceClass;
     private final String mImplClassName;
     private T mImpl;
     private InstallEngine mInstaller;
-
-    /**
-     * To be called after the main native library has been loaded. Any module instances created
-     * before the native library is loaded have their native component queued for loading and
-     * registration. Calling this methed completes that process.
-     */
-    public static void doDeferredNativeRegistrations() {
-        if (sPendingNativeRegistrations == null) return;
-        for (String name : sPendingNativeRegistrations) {
-            loadNative(name);
-        }
-        sPendingNativeRegistrations = null;
-    }
+    private boolean mIsNativeLoaded;
 
     /**
      * Instantiates a module.
@@ -113,33 +100,52 @@ public class Module<T> {
     public T getImpl() {
         try (Timer timer = new Timer()) {
             if (mImpl != null) return mImpl;
-
             assert isInstalled();
-            // Load the module's native code and/or resources if they are present, and the Chrome
-            // native library itself has been loaded.
-            if (sPendingNativeRegistrations == null) {
-                loadNative(mName);
-            } else {
-                // We have to defer native initialization because VR is calling getImpl in early
-                // startup. As soon as VR stops doing that we want to deprecate deferred native
-                // initialization.
-                sPendingNativeRegistrations.add(mName);
+
+            ModuleDescriptor moduleDescriptor = loadModuleDescriptor(mName);
+            if (moduleDescriptor.getLoadNativeOnGetImpl()) {
+                // Load the module's native code and/or resources if they are present, and the
+                // Chrome native library itself has been loaded.
+                ensureNativeLoaded();
             }
-            mImpl = mInterfaceClass.cast(instantiateReflectively(mImplClassName));
+
+            Object impl = instantiateReflectively(mName, mImplClassName);
+            try {
+                mImpl = mInterfaceClass.cast(impl);
+            } catch (ClassCastException e) {
+                ClassLoader interfaceClassLoader = mInterfaceClass.getClassLoader();
+                ClassLoader implClassLoader = impl.getClass().getClassLoader();
+                throw new RuntimeException("Failure casting " + mName
+                                + " module class, interface ClassLoader: " + interfaceClassLoader
+                                + " (parent " + interfaceClassLoader.getParent() + ")"
+                                + ", impl ClassLoader: " + implClassLoader + " (parent "
+                                + implClassLoader.getParent() + ")"
+                                + ", equal: " + interfaceClassLoader.equals(implClassLoader)
+                                + " (parents equal: "
+                                + interfaceClassLoader.getParent().equals(
+                                        implClassLoader.getParent())
+                                + ")",
+                        e);
+            }
             return mImpl;
         }
     }
 
-    private static void loadNative(String name) {
+    /**
+     * Loads native libraries and/or resources if and only if this is not already done, assuming
+     * that the module is installed, and enableNativeLoad() has been called.
+     */
+    public void ensureNativeLoaded() {
         // Can only initialize native once per lifetime of Chrome.
-        if (sInitializedModules.contains(name)) return;
-        ModuleDescriptor moduleDescriptor = loadModuleDescriptor(name);
+        if (mIsNativeLoaded) return;
+        assert LibraryLoader.getInstance().isInitialized();
+        ModuleDescriptor moduleDescriptor = loadModuleDescriptor(mName);
         String[] libraries = moduleDescriptor.getLibraries();
         String[] paks = moduleDescriptor.getPaks();
         if (libraries.length > 0 || paks.length > 0) {
-            ModuleJni.get().loadNative(name, libraries, paks);
+            ModuleJni.get().loadNative(mName, libraries, paks);
         }
-        sInitializedModules.add(name);
+        mIsNativeLoaded = true;
     }
 
     /**
@@ -153,7 +159,7 @@ public class Module<T> {
      * @return The module's {@link ModuleDescriptor}.
      */
     private static ModuleDescriptor loadModuleDescriptor(String name) {
-        if (!BuildConfig.IS_BUNDLE) {
+        if (!BundleUtils.isBundle()) {
             return new ModuleDescriptor() {
                 @Override
                 public String[] getLibraries() {
@@ -164,11 +170,16 @@ public class Module<T> {
                 public String[] getPaks() {
                     return new String[0];
                 }
+
+                @Override
+                public boolean getLoadNativeOnGetImpl() {
+                    return false;
+                }
             };
         }
 
         return (ModuleDescriptor) instantiateReflectively(
-                "org.chromium.components.module_installer.builder.ModuleDescriptor_" + name);
+                name, "org.chromium.components.module_installer.builder.ModuleDescriptor_" + name);
     }
 
     /**
@@ -177,12 +188,17 @@ public class Module<T> {
      * Ignores strict mode violations since accessing code in a module may cause its DEX file to be
      * loaded and on some devices that can cause such a violation.
      *
+     * @param moduleName The module's name.
      * @param className The object's class name.
      * @return The object.
      */
-    private static Object instantiateReflectively(String className) {
+    private static Object instantiateReflectively(String moduleName, String className) {
+        Context context = ContextUtils.getApplicationContext();
+        if (BundleUtils.isIsolatedSplitInstalled(context, moduleName)) {
+            context = BundleUtils.createIsolatedSplitContext(context, moduleName);
+        }
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
-            return Class.forName(className).newInstance();
+            return context.getClassLoader().loadClass(className).newInstance();
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

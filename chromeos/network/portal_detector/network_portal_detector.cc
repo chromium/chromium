@@ -16,8 +16,8 @@ NetworkPortalDetector* network_portal_detector_ = nullptr;
 
 const char kCaptivePortalStatusUnknown[] = "Unknown";
 const char kCaptivePortalStatusOffline[] = "Offline";
-const char kCaptivePortalStatusOnline[]  = "Online";
-const char kCaptivePortalStatusPortal[]  = "Portal";
+const char kCaptivePortalStatusOnline[] = "Online";
+const char kCaptivePortalStatusPortal[] = "Portal";
 const char kCaptivePortalStatusProxyAuthRequired[] = "ProxyAuthRequired";
 const char kCaptivePortalStatusUnrecognized[] = "Unrecognized";
 
@@ -38,8 +38,9 @@ std::string NetworkPortalDetector::CaptivePortalStatusString(
     case CAPTIVE_PORTAL_STATUS_PROXY_AUTH_REQUIRED:
       return kCaptivePortalStatusProxyAuthRequired;
     case CAPTIVE_PORTAL_STATUS_COUNT:
-      NOTREACHED();
+      break;
   }
+  NOTREACHED();
   return kCaptivePortalStatusUnrecognized;
 }
 

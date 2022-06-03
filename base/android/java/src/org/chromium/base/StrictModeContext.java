@@ -9,7 +9,7 @@ import android.os.StrictMode;
 import java.io.Closeable;
 
 /**
- * Enables try-with-resources compatible StrictMode violation whitelisting.
+ * Enables try-with-resources compatible StrictMode violation allowlisting.
  *
  * Prefer "ignored" as the variable name to appease Android Studio's "Unused symbol" inspection.
  *
